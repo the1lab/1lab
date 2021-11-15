@@ -1,0 +1,229 @@
+```
+open import 1Lab.Type
+open import 1Lab.Path
+
+module 1Lab.HLevel where
+```
+
+# h-Levels
+
+The "homotopy level" (h-level for short) of a type is a measure of how
+[truncated] it is, where the numbering is offset by 2. Specifically, a
+(-2)-truncated type is a type of h-level 0. The h-levels are defined by
+induction, where the base case are the _contractible types_.
+
+[truncated]: https://ncatlab.org/nlab/show/truncated+object
+
+```
+record isContr {ℓ : _} (A : Type ℓ) : Type ℓ where
+  constructor contr
+  field
+    centre : A
+    paths : (x : A) → centre ≡ x
+
+open isContr
+```
+
+A contractible type is one for which the unique map `X → ⊤` is an
+equivalence. Thus, it has "one element". This doesn't mean that we can't
+have multiple, distinctly named, inhabitants of the type, it just means
+any inhabitants of the type must be connected by a path, and this path
+can be picked uniformly.
+
+```
+module _ where
+  data [0,1] : Type where
+    ii0 : [0,1]
+    ii1 : [0,1]
+    seg : ii0 ≡ ii1
+```
+
+An example of a contractible type that is not directly defined as
+another name for `⊥` is the unit interval, defined as a higher inductive
+type.
+
+```
+  interval-contractible : isContr [0,1]
+  isContr.centre interval-contractible = ii0
+  isContr.paths interval-contractible ii0 i = ii0
+  isContr.paths interval-contractible ii1 i = seg i
+  isContr.paths interval-contractible (seg i) j = seg (i ∧ j)
+```
+
+A type is (n+1)-truncated if its path types are all n-truncated.
+However, if we directly take this as the definition, the types we end up
+with are very inconvenient! That's why we introduce this immediate step:
+An h-proposition, or proposition for short, is a type where any two
+elements are connected by a path.
+
+```
+isProp : {ℓ : _} → Type ℓ → Type _
+isProp A = (x y : A) → Path A x y
+```
+
+With this, we can define the `isHLevel`{.Agda} predicate. For h-levels
+greater than zero, this definition results in much simpler types!
+
+```
+isHLevel : {ℓ : _} → Type ℓ → Nat → Type _
+isHLevel A 0 = isContr A
+isHLevel A 1 = isProp A
+isHLevel A (suc n) = (x y : A) → isHLevel (Path A x y) n
+```
+
+The types of h-level 2 are called the _sets_.
+
+```
+isSet : {ℓ : _} → Type ℓ → Type _
+isSet A = isHLevel A 2
+```
+
+The universe of all sets of a given level is called `Set`{.Agda}.
+
+```
+Set : (ℓ : _) → Type (lsuc ℓ)
+Set _ = Σ isSet
+
+Set₀ = Set lzero
+```
+
+---
+
+```
+private
+  variable
+    ℓ : Level
+    A : Type ℓ
+```
+
+# Preservation of h-levels
+
+If a type is of h-level $n$, then it's automatically of h-level $k+n$,
+for any $k$. We first prove a couple of common cases that deserve their
+own names:
+
+```
+isContr→isProp : isContr A → isProp A
+isContr→isProp C x y = sym (C.paths _) ∙ C.paths _
+  where module C = isContr C
+```
+
+The proof that any contractible type is a proposition is not too
+complicated. Any pair of elements is connected by a path which factors
+through the `center`{.Agda}.
+
+```
+isProp→isSet : isProp A → isSet A
+isProp→isSet h x y p q i j =
+  hcomp (λ k → λ { (i = i0) → h x (p j) k
+                 ; (i = i1) → h x (q j) k
+                 ; (j = i0) → h x x k
+                 ; (j = i1) → h x y k
+                 })
+        x
+```
+
+The proof that any proposition is a set is significantly more
+complicated. Since the desired equality `p ≡ q` is a square, we need to
+describe a _cube_ where the missing face is the square we need. I have
+painstakingly illustrated it here:
+
+~~~{.quiver .tall-2}
+\[\begin{tikzcd}
+  x &&&& x \\
+  & x && y \\
+  \\
+  & x && y \\
+  x &&&& x
+  \arrow[""{name=0, anchor=center, inner sep=0}, "p"{description}, from=2-2, to=2-4]
+  \arrow[""{name=1, anchor=center, inner sep=0}, "q"{description}, from=4-2, to=4-4]
+  \arrow[from=1-1, to=2-2]
+  \arrow[from=5-1, to=4-2]
+  \arrow[from=5-5, to=4-4]
+  \arrow[""{name=2, anchor=center, inner sep=0}, from=5-1, to=5-5]
+  \arrow[""{name=3, anchor=center, inner sep=0}, from=5-1, to=1-1]
+  \arrow[""{name=4, anchor=center, inner sep=0}, from=4-2, to=2-2]
+  \arrow[""{name=5, anchor=center, inner sep=0}, from=4-4, to=2-4]
+  \arrow[""{name=6, anchor=center, inner sep=0}, from=5-5, to=1-5]
+  \arrow[""{name=7, anchor=center, inner sep=0}, from=1-1, to=1-5]
+  \arrow[from=1-5, to=2-4]
+  \arrow["{h(x,p(j),k)}", shorten <=4pt, shorten >=4pt, Rightarrow, from=7, to=0]
+  \arrow["{h(x,q(j),k)}"', shorten <=4pt, shorten >=4pt, Rightarrow, from=2, to=1]
+  \arrow["{h(x,x,k)}"', shorten <=6pt, shorten >=6pt, Rightarrow, from=3, to=4]
+  \arrow["{h(x,y,k)}", shorten <=6pt, shorten >=6pt, Rightarrow, from=6, to=5]
+\end{tikzcd}\]
+~~~
+
+To set your perspective: You are looking at a cube that has a
+transparent front face. The front face has four `x` corners, and four `λ
+i → x` edges. Each double arrow pointing from the front face to the back
+face is one of the sides of the composition. They're labelled with the
+terms in the `hcomp`{.Agda} for `isProp→isSet`{.Agda}: For example, the
+square you get when fixing `i = i0` is on top of the diagram. Since we
+have an open box, it has a lid --- which, in this case, is the back face
+--- which expresses the equality we wanted: `p ≡ q`.
+
+With these two base cases, we can prove the general case by recursion:
+
+```
+isHLevel-suc : {ℓ : _} {A : Type ℓ} (n : Nat) → isHLevel A n → isHLevel A (suc n)
+isHLevel-suc 0 x = isContr→isProp x
+isHLevel-suc 1 x = isProp→isSet x
+isHLevel-suc (suc (suc n)) h x y = isHLevel-suc (suc n) (h x y)
+```
+
+By another inductive argument, we can prove that any offset works:
+
+```
+isHLevel-+ : {ℓ : _} {A : Type ℓ} (n k : Nat) → isHLevel A n → isHLevel A (k + n)
+isHLevel-+ n zero x    = x
+isHLevel-+ n (suc k) x = isHLevel-suc _ (isHLevel-+ n k x)
+```
+
+# isHLevel is a proposition
+
+Perhaps surprisingly, "being of h-level n" is a proposition, for any n!
+To get an intuitive feel for why this might be true before we go prove
+it, I'd like to suggest an alternative interpretation of the proposition
+`isHLevel A n`: The type `A` admits _unique_ fillers for any `n`-cube.
+
+A contractible type is one that has a unique point: It has a unique
+filler for the 0-cube, which is just a point. A proposition is a type
+that admits unique fillers for 1-cubes, which are lines: given any
+endpoint, there is a line that connects them. A set is a type that
+admits unique fillers for 2-cubes, or squares, and so on.
+
+Since these fillers are _unique_, if a type has them, it has them in at
+most one way!
+
+```
+isProp-isContr : isProp (isContr A)
+isProp-isContr {A = A} (contr c₁ h₁) (contr c₂ h₂) i =
+  record { centre = h₁ c₂ i
+         ; paths = λ x j → hcomp (λ k → λ { (i = i0) → h₁ (h₁ x j) k 
+                                          ; (i = i1) → h₁ (h₂ x j) k
+                                          ; (j = i0) → h₁ (h₁ c₂ i) k
+                                          ; (j = i1) → h₁ x k })
+                                 c₁
+         }
+```
+
+First, we prove that being contractible is a proposition. Next, we prove
+that being a proposition is a proposition. This follows from
+`isProp→isSet`{.Agda}, since what we want to prove is that `h₁` and `h₂`
+always give equal paths.
+
+```
+isProp-isProp : isProp (isProp A)
+isProp-isProp {A = A} h₁ h₂ i x y = isProp→isSet h₁ x y (h₁ x y) (h₂ x y) i
+```
+
+Now we can prove the general case by the same inductive argument we used
+to prove h-levels can be raised:
+
+```
+isProp-isHLevel : {ℓ : _} {A : Type ℓ} (n : Nat) → isProp (isHLevel A n)
+isProp-isHLevel 0 = isProp-isContr
+isProp-isHLevel 1 = isProp-isProp
+isProp-isHLevel (suc (suc n)) x y i a b = isProp-isHLevel (suc n) (x a b) (y a b) i
+```

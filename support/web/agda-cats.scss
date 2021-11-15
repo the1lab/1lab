@@ -1,0 +1,267 @@
+$code-bg:     #fff;
+$code-fg:     #222;
+$text-bg:     #fff;
+$text-fg:     #222;
+
+$code-red:    #d52753;
+$code-red-br: #AE3B36;
+$code-green:  #207b1d;
+$code-yellow: #DEB468;
+$code-orange: #CA7124;
+$code-blue:   #0054f4;
+$code-pink:   #8a1060;
+$code-purple: #9C1BD6;
+$code-violet: #7a82da;
+$code-cyan:   #48A8B5;
+$code-white:  #ABB2BF;
+$code-grey:   #7F848E;
+$link-ul:       $code-blue;
+
+html {
+  height: 100vh;
+}
+
+main {
+  font-size: 16pt;
+  padding: 0;
+  padding-bottom: 0.4em;
+}
+
+pre.Agda {
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  overflow-y: clip;
+  font-size: 16pt;
+}
+
+.mathpar {
+  .diagram-container {
+    width: unset;
+  }
+  figure {
+    background: #eee;
+    border: 1px dotted black;
+
+    padding: 0.75em;
+    box-shadow: 2px 2px 6px black;
+    border-radius: 10px;
+  }
+}
+
+div.diagram-container {
+  width: 100%;
+  overflow-x: auto;
+
+  img.diagram {
+    height: 200px;
+    margin: auto;
+    display: block;
+
+    overflow-x: auto;
+
+    &.short-1 {
+      height: 105px;
+    }
+
+    &.short-2 {
+      height: 55px;
+    }
+    
+    &.tall-1 {
+      height: 250px;
+    }
+
+    &.tall-2 {
+      height: 350px;
+    }
+  }
+}
+
+article a[href], div#return > a[href], div#top > a[href], aside#toc > div#toc-container ul a[href] {
+  color: $code-blue;
+  text-decoration: none;
+  &:hover {
+    text-decoration: 2px currentColor underline !important;
+  }
+  &:visited {
+    color: $code-purple;
+  }
+}
+
+div#return {
+  text-align: center;
+}
+
+aside#toc > div#toc-container {
+  padding-right: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5em;
+
+  ul {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  > ul {
+    border-left: 0 !important;
+    padding-left: 0 !important;
+  }
+
+  > hr {
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid #94a3b8;
+  }
+
+  button {
+    display: none;
+  }
+}
+
+article {
+  padding-top: 2em;
+  padding-bottom: 2em;
+  margin-top: 0 !important;
+  width: 85ch;
+
+  > :nth-child(1), > pre.Agda:first-of-type {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  #article-nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  > p {
+    width: 100%;
+  }
+}
+
+blockquote {
+  background-color: $code-bg;
+  border-left: 5px solid $code-fg;
+}
+
+hr {
+  color: #ABB2BF;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+body {
+  background-color: $text-bg;
+  color: $text-fg;
+  margin: 0;
+
+  &.show-equations {
+    span.reasoning-step {
+      .as-written {
+        display: inline;
+      }
+      .alternate {
+        display: none;
+      }
+    }
+  }
+
+  span.reasoning-step {
+    .as-written {
+      display: none;
+    }
+    .alternate {
+      display: inline;
+    }
+  }
+}
+
+html {
+  background-color: $code-bg;
+  color:            $code-fg;
+}
+
+pre.Agda {
+  margin:           0;
+  padding:          1em;
+  background-color: $code-bg;
+  color:            $code-fg;
+}
+
+@keyframes highlight {
+  0% {
+    background-color: #F5DEB3;
+  }
+  100% {
+    background-color: $code-bg;
+  }
+}
+
+/* Aspects. */
+.Agda {
+  .Comment       { color: $code-grey; }
+  .Background    { background-color: $code-bg; }
+  .Markup        { color: $code-fg; }
+  .Keyword       { color: $code-orange; }
+  .String        { color: $code-red; }
+  .Number        { color: $code-pink; }
+  .Symbol        { color: $code-fg; }
+  .PrimitiveType { color: $code-blue; }
+  .Pragma        { color: $code-fg; }
+
+/* NameKinds. */
+  .Bound                  { color: $code-fg !important;      }
+  .Generalizable          { color: $code-fg !important;      }
+  .InductiveConstructor   { color: $code-green !important;   }
+  .CoinductiveConstructor { color: $code-green !important;   }
+  .Datatype               { color: $code-blue !important;    }
+  .Field                  { color: $code-purple !important;  }
+  .Function               { color: $code-blue !important;    }
+  .Module                 { color: $code-pink !important;    }
+  .Postulate              { color: $code-blue !important;    }
+  .Primitive              { color: $code-blue !important;    }
+  .Record                 { color: $code-blue !important;    }
+
+/* OtherAspects. */
+  .UnsolvedMeta         { color: $code-fg; background: yellow         }
+  .UnsolvedConstraint   { color: $code-fg; background: yellow         }
+  .TerminationProblem   { color: $code-fg; background: #FFA07A        }
+  .IncompletePattern    { color: $code-fg; background: #F5DEB3        }
+  .Error                { color: red;   text-decoration: underline }
+  .TypeChecks           { color: $code-fg; background: #ADD8E6        }
+  .ShadowingInTelescope { color: $code-fg; background: #808080        }
+  .Deadcode             {
+    color: $code-orange;
+    font-weight: bold;
+  }
+
+  /* Standard attributes. */
+  a { text-decoration: none }
+  a[href]:hover {
+    text-decoration: 2px $link-ul underline;
+  }
+  a[href]:target {
+    animation: highlight 2.5s;
+  }
+
+  // background-color: $code-bg;
+  font-family: 'Iosevka', 'Fantasque Sans Mono', 'Roboto Mono', monospace;
+  font-weight: 400;
+  font-size: 16pt;
+}
+
+@font-face {
+  font-family: 'Iosevka';
+  font-display: swap;
+  font-weight: 400;
+  font-stretch: normal;
+  font-style: normal;
+  src: url('/static/woff2/iosevk-abbie-regular.woff2') format('woff2'), url('/static/ttf/iosevk-abbie-regular.ttf') format('truetype');
+}

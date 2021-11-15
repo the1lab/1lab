@@ -1,0 +1,453 @@
+@import "vars.scss";
+
+@mixin center-that-bitch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+html {
+  min-height: 100%;
+  height: 100%;
+  max-width: 100%;
+  margin: 0; 
+
+  overflow-x: clip;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+  width: 100%;
+
+  @include center-that-bitch;
+
+  margin: 0;
+
+  color: $bluegray-900;
+  font-size: $font-size;
+
+  overflow-x: clip;
+}
+
+body > header {
+  background-color: $purple-600;
+  display: flex;
+  height: $nav-height;
+  width: 100%;
+  z-index: 999;
+  
+  position: fixed;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding-left: 1em;
+  padding-right: 1em;
+
+  border-bottom: 3px solid $purple-700;
+  box-sizing: border-box;
+
+  div, nav > a {
+    height: $nav-height;
+    
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+
+    display: flex;
+    align-items: center;
+  }
+
+  div:hover, nav > a:hover {
+    background-color: $purple-500;
+    transition: background-color 0.3s ease-in-out;
+  }
+
+  a {
+    color: white;
+    font-size: $font-size * 1.2;
+    text-decoration: none;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+}
+
+@mixin left-bordered-block($color) {
+  padding-left:   1em;
+  padding-top:    0.2em;
+  padding-bottom: 0.2em;
+
+  border-left: 5px dashed $color;
+}
+
+@mixin material {
+  padding: 1em;
+
+  margin-top: 1em;
+  margin-bottom: 1em;
+
+  box-shadow: 2px 2px 6px black;
+
+  border-radius: 10px;
+}
+
+main {
+  max-width: 100ch;
+  width: 100%;
+  margin: 0px auto 0px auto;
+  flex: 1 0 auto;
+
+  padding: 2ch;
+  padding-top: $nav-height;
+
+  box-sizing: border-box;
+
+  div#title h2 {
+    display: none;
+  }
+
+  div#post-toc-container {
+    aside#toc {
+      display: none;
+    }
+
+    article {
+      grid-column: 2;
+      width: 100%;
+      line-height: 1.5;
+    }
+    
+  }
+
+  div#post-info {
+    font-style: italic;
+    line-height: 1.2;
+
+    @include left-bordered-block($bluegray-500);
+  }
+}
+
+div.warning {
+  @include material;
+  background-color: $red-200;
+}
+
+figure.wraparound {
+  float: right;
+  width: auto;
+
+  margin-left: 2em;
+}
+
+figure {
+  overflow-x: auto;
+  overflow-y: clip;
+  width: 100%;
+  margin: auto;
+
+  @include center-that-bitch;
+  
+  figcaption {
+    margin-top: 0.3em;
+    display: inline-block;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+ol, ul {
+  padding-left: 1.2em;
+  li {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    p {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+  }
+}
+
+.katex-display {
+  > span.katex {
+    white-space: normal;
+  }
+}
+
+div.mathpar {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  
+
+  gap: 1em;
+
+  > figure {
+    width: auto;
+    max-width: 33%;
+  }
+}
+
+div.columns {
+  blockquote, details.blockquote {
+    padding-right:  1em;
+    padding-left:   1em;
+    padding-top:    0.2em;
+    padding-bottom: 0.2em;
+
+    border: 0;
+  }
+}
+
+code, pre, .sourceCode {
+  font-size: $font-size * 1.2;
+  font-family: 'Iosevka', 'Fantasque Sans Mono', Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+  font-weight: 500;
+}
+
+div.sourceCode, pre {
+  background-color: $code-bg;
+  color: $code-fg;
+  flex-grow: 0;
+
+  @include material;
+
+  overflow-x: auto;
+  line-height: 1.2;
+  
+  code {
+    display: block;
+  }
+
+  > pre {
+    padding: unset;
+    margin-top: unset;
+    margin-bottom: unset;
+    box-shadow: unset;
+
+    margin: 0;
+
+    overflow-y: clip;
+  }
+}
+
+p > code {
+  white-space: nowrap;
+}
+
+blockquote, details.blockquote {
+  @include material;
+
+  background-color: $purple-100;
+
+  margin-left: 0;
+  margin-right: 0;
+
+  h2 {
+    margin-top: 0;
+  }
+}
+
+table {
+  width: 70%;
+  margin: auto;
+  border-collapse: collapse;
+
+  td, th { 
+    text-align: center;
+    padding: 0px 1em 0px 1em;
+    border: 2px solid $purple-400;
+  }
+}
+
+ul#post-list {
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+
+  .post-list-item {
+    @include left-bordered-block($yellow-500);
+    @include material;
+
+    background-color: $yellow-50;
+
+    .post-list-header {
+      margin-top: 0.2em;
+
+      display: flex;
+      justify-content: space-between;
+      line-height: 14pt;
+
+      font-style: italic;
+      font-size: 10pt;
+
+      a {
+        font-size: 14pt;
+        font-style: normal;
+        color: $bluegray-800;
+      }
+    }
+  }
+}
+
+div.contact-list {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: stretch;
+  gap: 3em;
+
+  div.contact-card {
+    background-color: $purple-200;
+    @include material;
+
+    width: 33%;
+    max-width: 33%;
+    flex-grow: 1;
+
+    p {
+      margin: 0;
+    }
+
+    div.contact-header {
+      // I really hate Pandoc sometimes
+      display: flex;
+      align-items: center;
+      gap: 1em;
+
+      margin-bottom: 10px;
+
+      img {
+        height: 48px;
+        clip-path: url(#squircle);
+      }
+
+      span.username {
+        font-size: 16pt;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 450px) {
+  body > header {
+    div#logo {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+    }
+    nav {
+      display: none;
+    }
+  }
+}
+
+@media only screen and (min-width: 1500px) {
+  .narrow-only {
+    display: none !important;
+  }
+
+  main {
+    max-width: 100%;
+    > div#title {
+      font-size: 15pt;
+      h1, h2 {
+        margin: 0;
+      }
+      
+      h2 {
+        font-style: italic;
+        font-weight: normal;
+        display: block;
+        z-index: 1;
+      }
+
+      margin-top: 0.5em;
+      margin-bottom: 1em;
+      @include center-that-bitch;
+    }
+
+    div#post-toc-container {
+      display: grid;
+      grid-template-columns: 0.5fr 2fr 0.5fr;
+
+      aside#toc {
+        display: block !important;
+        max-width: 80%;
+
+        h3 { @include center-that-bitch; }
+
+        div#toc-container {
+          overflow-x: hidden;
+          width: min-content;
+
+          ul {
+            border-left: 2px solid $bluegray-400;
+            list-style-type: none;
+            padding-left: 1em;
+
+            a {
+              text-decoration: none;
+            }
+
+            a:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+
+      article {
+        max-width: 100ch;
+        margin-top: -100px;
+        margin: auto;
+      }
+    }
+
+    div.columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1em;
+
+    }
+  }
+}
+
+details {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+// Styles for code
+code.kw, span.kw { color: $code-pink; } /* Keyword */
+code.dt, span.dt { color: $code-blue; } /* DataType */
+code.dv, span.dv { color: $code-orange; } /* DecVal */
+code.bn, span.bn { color: $code-orange; } /* BaseN */
+code.fl, span.fl { color: $code-orange; } /* Float */
+code.ch, span.ch { color: $code-green; } /* Char */
+code.st, span.st { color: $code-green; } /* String */
+code.co, span.co { color: $code-grey; } /* Comment */
+code.ot, span.ot { color: $code-green; } /* Other */
+code.al, span.al { color: #ff0000; } /* Alert */
+code.fu, span.fu { color: $code-fg; } /* Function */
+code.er, span.er { color: #ff0000; } /* Error */
+code.wa, span.wa { color: #60a0b0; } /* Warning */
+code.cn, span.cn { color: $code-orange; } /* Constant */
+code.sc, span.sc { color: $code-yellow; } /* SpecialChar */
+code.vs, span.vs { color: $code-blue; } /* VerbatimString */
+code.ss, span.ss { color: $code-green; } /* SpecialString */
+code.va, span.va { color: $code-fg; } /* Variable */
+code.cf, span.cf { color: $code-pink; } /* ControlFlow */
+code.op, span.op { color: $code-green; } /* Operator */
+code.pp, span.pp { color: $code-orange; } /* Preprocessor */
+code.at, span.at { color: $code-green; } /* Attribute */
+code.do, span.do { color: $code-red; } /* Documentation */
+code.an, span.an { color: $code-red; } /* Annotation */
+code.cv, span.cv { color: $code-red; } /* CommentVar */

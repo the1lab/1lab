@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="$lang$" xml:lang="$lang$" $if(dir)$ dir="$dir$" $endif$>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="keywords" content="Agda,categories,topos" />
+
+  <title>$pagetitle$ - 1Lab</title>
+
+  <link rel="stylesheet" href="/css/default.css" />
+  <link rel="stylesheet" href="/css/katex.min.css" />
+  <link rel="stylesheet" href="/css/agda-cats.css" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="$pagetitle$ - 1Lab" />
+  <meta name="twitter:description" content="A formalised, explorable online resource for Homotopy Type Theory." />
+  <meta name="twitter:image" content="/static/cube-128x.png" />
+
+  <meta name="og:title" content="$pagetitle$ - 1Lab" />
+  <meta name="og:description" content="A formalised, explorable online resource for Homotopy Type Theory." />
+  <meta name="og:image" content="/static/cube-128x.png" />
+  <meta name="og:site-name" content="The 1Lab" />
+  <meta name="og:type" content="website" />
+
+  <script src="/equations.js" type="text/javascript"></script> 
+
+  <noscript>
+    <style>
+      body span.reasoning-step .as-written {
+        display: inline;
+      }
+
+      body span.reasoning-step .alternate {
+        display: none;
+      }
+    </style>
+  </noscript>
+</head>
+
+<body>
+<main>
+<div id="post-toc-container" style="padding-left: 1em; padding-right: 1em;">
+  $if(toc)$
+  <aside id=toc>
+    <div id=toc-container style="padding-left: 1em; padding-top: 2em; min-width: 10em;">
+      <h3 class="Agda" style="margin-top: 0; margin-bottom: 0;">
+        <a class="Module">$title$</a>
+      </h3>
+      <img alt="1Lab"
+           src="/static/cube-72x.png"
+           style="display: block; margin-bottom: 1em; margin: auto; height: 32px;"
+        />
+      <hr />
+      $table-of-contents$
+      <hr />
+      <button type="button" class="equations">
+        Toggle equations
+      </button>
+      <div id=return style="white-space: nowrap;">
+      $if(is-index)$
+      $else$
+        <a href="index.html">️back to index</a> <br />
+      $endif$
+        <a href="all-pages.html">view all pages</a> <br />
+      </div>
+    </div>
+  </aside>
+  $endif$
+  <article style="max-width: 85ch;">
+    <div class="narrow-only" id="article-nav">
+      $if(is-index)$
+      $else$
+      <div id=return>
+        <a href="index.html">️back to index</a>
+      </div>
+      $endif$
+      <button type="button" class="narrow-only equations">
+        Toggle equations
+      </button>
+    </div>
+$body$
+  </article>
+</div>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,9 @@
+name: cubical-1lab
+include:
+  src
+  wip
+  _build
+  .
+flags:
+  --cubical
+  --no-import-sorts

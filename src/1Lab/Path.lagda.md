@@ -1,0 +1,364 @@
+```
+open import 1Lab.Type
+
+module 1Lab.Path where
+```
+
+# Paths
+
+In HoTT, the inductively-defined propositional equality type gets a new
+semantics: continuous _paths_. The "key idea" of cubical type theory -
+and thus, Cubical Agda - is that we can take this as a new _definition_
+of the equality type, where we interpret a `Path`{.Agda} in a type by a
+function where the domain is the _interval type_.
+
+```
+open import Agda.Builtin.Cubical.Path public
+open import Agda.Builtin.Cubical.Sub public
+  renaming ( inc to inS
+           ; primSubOut to outS
+           )
+open import Agda.Primitive.Cubical public
+  renaming ( primIMin       to _∧_
+           ; primIMax       to _∨_
+           ; primINeg       to ~_
+           ; isOneEmpty     to empty
+           ; primComp       to comp
+           ; primHComp      to hcomp
+           ; primTransp     to transp
+           ; itIsOne        to 1=1 )
+
+Path : {ℓ : _} (A : Type ℓ) → A → A → Type ℓ
+Path A = PathP (λ i → A)
+```
+
+The type `I`{.Agda} is meant to represent the unit interval $[0,1]$, the
+same unit interval used in the definition of path. Since all functions
+definable in type theory are automatically continuous, we can take a
+path to simply be a function `I -> A`. More practically, it's useful to
+write out the endpoints of the path - that is, the values the function
+takes when applied to `i0` and to `i1`. This we call a `Path`{.Agda}.
+
+```
+refl : {ℓ : _} {A : Type ℓ} {x : A} → x ≡ x
+refl {x = x} i = x
+```
+
+The type `Path A x y` is also written `x ≡ y`, when `A` is not important
+- i.e. when it can be inferred from `x` and `y`. The proof that equality
+is reflexive is given by a `Path`{.Agda} which yields the same element
+everywhere on `I`: The constant function.
+
+The endpoints of a path - even a path we do not know the definition of -
+are equal, by computation, to the ones specified in its type.
+
+```
+module _ {ℓ : _} {A : Type ℓ} {x y : A} {p : x ≡ y} where
+  private
+    left-endpoint : p i0 ≡ x
+    left-endpoint i = x
+
+    right-endpoint : p i1 ≡ y
+    right-endpoint i = y
+```
+
+## Symmetry
+
+The De Morgan involution `~_`{.Agda} on the interval type gives a way of
+inverting paths - a proof that equality is symmetric.
+
+```
+sym : {ℓ₁ : _} {A : I → Type ℓ₁} {x : A i0} {y : A i1}
+    → PathP A x y
+    → PathP (λ i → A (~ i)) y x
+sym p i = p (~ i)
+```
+
+As a minor improvement over "Book HoTT", this operation is
+_definitionally_ involutive:
+
+```
+module _ {ℓ : _} {A : Type ℓ} {x y : A} {p : x ≡ y} where
+  private
+    sym-invol : sym (sym p) ≡ p
+    sym-invol i = p
+```
+
+## Substitution
+
+A basic principle of equality is that, if `x ≡ y`, then any predicate
+that is true of `x` is true of `y`. In type theory, this is extended:
+Any _construction_ done to an element `x` can be transported to a
+construction done on `y`.
+
+```
+subst : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} (P : A → Type ℓ₂) {x y : A}
+      → x ≡ y → P x → P y
+subst P p x = transp (λ i → P (p i)) i0 x
+```
+
+Furthermore, this operation is "_uniform_": There is always a path
+connecting `x` and `subst P p x`. However, these terms have different
+types! One's an inhabitant of the left endpoint --- that's `P (p i0)`,
+which computes to `P x` --- and the other's in `P y`. That's why we
+have, rather than a `Path`{.Agda}, a `PathP`{.Agda}: A **Path** over a
+**P**ath.
+
+```
+subst-filler : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} (P : A → Type ℓ₂) {x y : A}
+             → (p : x ≡ y) (x : P x)
+             → PathP (λ i → P (p i)) x (subst P p x)
+subst-filler P p x i = transp (λ j → P (p (i ∧ j))) (~ i) x
+```
+
+It's called a filler because it's the _inside_ - the space that fills -
+a cube. Specifically, it can be pictured as in this diagram:
+
+~~~{.quiver .short-1}
+\[\begin{tikzcd}
+  x &&& {\text{subst}(P,p,x)}
+  \arrow["{\text{subst-filler}(P,p,x)}", from=1-1, to=1-4]
+\end{tikzcd}\]
+~~~
+
+```
+transport : {ℓ : _} {A B : Type ℓ} → A ≡ B → A → B
+transport = subst (λ x → x)
+
+transport-filler : {ℓ : _} {A B : Type ℓ}
+                 → (p : A ≡ B) (x : A)
+                 → PathP (λ i → p i) x (transport p x)
+transport-filler = subst-filler (λ x → x)
+```
+
+Substitution where `P` is taken to be the identity function is called
+`transport`{.Agda}, since it's very common. In that case, we're
+_transporting_ inhabitants between provably equal types.
+
+## Transitivity
+
+In Cubical Agda, types are interpreted as objects called _cubical Kan
+complexes_. I wrote a blog post explaining them [here]. The gist of it
+is that, just like we did above and drew a path as a _line_, we can draw
+iterated paths as _squares_. In a type, any _open box_ we can draw has a
+_lid_, that is, the dashed path in the diagram below.
+
+[here]: https://abby.how/posts/cubical-sets.html
+
+<figure>
+<div class=mathpar>
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  x & y \\
+  w & z
+  \arrow[from=1-1, to=2-1]
+  \arrow[""{name=1, anchor=center, inner sep=0}, from=1-1, to=1-2]
+  \arrow[from=1-2, to=2-2]
+\end{tikzcd}\]
+~~~
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  x & y \\
+  w & z
+  \arrow[""{name=0, anchor=center, inner sep=0}, dashed, from=2-1, to=2-2]
+  \arrow[from=1-1, to=2-1]
+  \arrow[""{name=1, anchor=center, inner sep=0}, from=1-1, to=1-2]
+  \arrow[from=1-2, to=2-2]
+  \arrow[shorten <=4pt, shorten >=4pt, Rightarrow, from=1, to=0]
+\end{tikzcd}\]
+~~~
+
+</div>
+<figcaption style="text-align: center;">
+Please don't mind how the _lid_ of the box is drawn on the bottom.
+</figcaption>
+</figure>
+
+Because of the De Morgan algebra structure on the interval type, we can
+extend any lid to a _`filler`{.Agda ident=hfill}_ for the open box - an
+inside. This is the `hfill`{.Agda} operation, defined below. The
+definition is not enlightening, so pay attention mainly to the type:
+
+```
+_[_↦_] : ∀ {ℓ} (A : Type ℓ) (φ : I) (u : Partial φ A) → _
+A [ φ ↦ u ] = Sub A φ u
+
+hfill : {ℓ : _} {A : Type ℓ} {φ : I}
+        (u : I → Partial φ A)
+        (u0 : A [ φ ↦ u i0 ])
+      → Path A (outS u0) (hcomp u (outS u0))
+hfill {φ = φ} u u0 i =
+  hcomp (λ j → λ { (φ = i1) → u (i ∧ j) 1=1
+                 ; (i = i0) → outS u0 })
+        (outS u0)
+```
+
+Given the inputs to a composition - a family of partial paths `u` and a
+base `u0` - `hfill`{.Agda} connects the input of the composition - `u0`
+- and the output.
+
+The cubical shape of iterated equalities lead to a slight oddity: The
+only unbiased definition of path composition we can give is _double
+composition_, which corresponds to the lid for the [the square] at the
+start of this section.
+
+[the square]: 1Lab.Path.html#transitivity
+
+```
+_··_··_ : {ℓ : _} {A : Type ℓ} {w x y z : A}
+        → w ≡ x → x ≡ y → y ≡ z
+        → w ≡ z
+(p ·· q ·· r) i =
+  hcomp (λ j → λ { (i = i0) → p (~ j)
+                 ; (i = i1) → r j })
+        (q i)
+```
+
+We can define the ordinary, single composition by taking `p = refl`, as
+is done below. The figure in <span style="background-color: #eee">`#eee`
+background</span> is a diagram illustrating the composition. A big part
+of understanding cubical type theory is being able to make diagrams like
+this, so don't skip over it!
+
+<div class=mathpar>
+
+<div>
+```
+_∙_ : {ℓ : _} {A : Type ℓ} {x y z : A}
+    → x ≡ y → y ≡ z → x ≡ z
+p ∙ q = refl ·· p ·· q
+```
+
+The composition is the lid, but the associated box also has a filler:
+
+```
+∙-filler : {ℓ : _} {A : Type ℓ} {x y z : A}
+         → (p : x ≡ y) (q : y ≡ z)
+         → PathP (λ i → x ≡ q i) p (p ∙ q)
+∙-filler {x = x} {y} {z} p q j i =
+  hfill (λ k → λ { (i = i0) → x
+                 ; (i = i1) → q k })
+        (inS (p i))
+        j
+```
+</div>
+
+<figure>
+~~~{.quiver}
+\[\begin{tikzcd}[background color=eee]
+  x & y \\
+  x & z
+  \arrow[""{name=0, anchor=center, inner sep=0}, "{p \bullet q}"', dashed, from=2-1, to=2-2]
+  \arrow["{\mathrm{refl}}"', from=1-1, to=2-1]
+  \arrow[""{name=1, anchor=center, inner sep=0}, "p", from=1-1, to=1-2]
+  \arrow["q", from=1-2, to=2-2]
+  \arrow[shorten <=4pt, shorten >=4pt, Rightarrow, from=1, to=0]
+\end{tikzcd}\]
+~~~
+<figcaption>
+
+In the diagram, the faces represent the paths involved. The double arrow
+represents the `filler`{.Agda ident="∙-filler"} of the square, that is,
+the path connecting `p` and `p ∙ q`.
+
+</figcaption>
+</figure>
+
+</div>
+
+## Path Elimination
+
+Using the decomposition of J as transport + contractibility of
+singletons, we can show that the Path types satisfy the same eliminator
+as the equality type in "Book HoTT".
+
+```
+J : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} {x : A}
+    (P : (y : A) → x ≡ y → Type ℓ₂)
+  → P x refl
+  → {y : A} (p : x ≡ y)
+  → P y p
+J P prefl p = transport (λ i → P (p i) (λ j → p (i ∧ j))) prefl
+```
+
+This eliminator _doesn't_ definitionally compute to `prefl` when `p` is
+`refl`, due to a "problem" in cubical type theory called _regularity_.
+However, since it _is_ a transport, we can use the
+`transport-filler`{.Agda} to get a path expressing the computation rule.
+
+```
+JRefl : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} {x : A}
+        (P : (y : A) → x ≡ y → Type ℓ₂)
+      → (pxr : P x refl)
+      → J P pxr refl ≡ pxr
+JRefl {x = x} P prefl i = transport-filler (λ i → P _ (λ j → x)) prefl (~ i)
+```
+
+## The Action on Paths
+
+In HoTT, every function behaves like a funct**or**, in that it has an
+action on objects (the actual computational content of the function) and
+an action on _morphisms_ - how that function acts on paths. Reading
+paths as equality, this is a proof that all functions preserve equality.
+
+```
+ap : {a b : _} {A : Type a} {B : Type b} (f : A → B) {x y : A}
+   → x ≡ y → f x ≡ f y
+ap f p i = f (p i)
+```
+
+# Dependent Paths
+
+In the HoTT book, we characterise paths over paths using
+`transport`{.Agda}: A "path from x to y over P" is a path `transport P x
+≡ y`. In cubical type theory, we have the primitive `PathP`. These
+notions, fortunately, coincide!
+
+```
+PathP≡Path : {ℓ : _} → (P : I → Type ℓ) (p : P i0) (q : P i1) →
+             PathP P p q ≡ Path (P i1) (transport (λ i → P i) p) q
+PathP≡Path P p q i = PathP (λ j → P (i ∨ j)) (transport-filler (λ j → P j) p i) q
+```
+
+We can see this by substituting either `i0` or `i1` for the variable `i`.
+
+* When `i = i0`, we have `PathP (λ j → P j) p q`, by the endpoint rule
+for `transport-filler`{.Agda}.
+
+* When `i = i1`, we have `PathP (λ j → P i1) (transport P p) q`, again
+by the endpoint rule for `transport-filler`{.Agda}.
+
+# Characterisations of equality
+
+Here we make explicit the structure of equality of some type formers.
+
+## Sigma types
+
+For sigma types, an equality between `(a , b) ≡ (x , y)` is a
+non-dependent equality `p : a ≡ x`, and a path between `b` and `y`
+laying over `p`.
+
+```
+Σ-PathP : {a b : _} {A : Type a} {B : A → Type b}
+        → {x y : Σ B}
+        → (p : x .fst ≡ y .fst)
+        → PathP (λ i → B (p i)) (x .snd) (y .snd)
+        → x ≡ y
+Σ-PathP p q i = p i , q i
+```
+
+We can also use the book characterisation of dependent paths, which is
+simpler in the case where the `Σ`{.Agda} represents a subset - i.e., `B`
+is a family of propositions.
+
+```
+Σ-Path : {a b : _} {A : Type a} {B : A → Type b}
+        → {x y : Σ B}
+        → (p : x .fst ≡ y .fst)
+        → subst B p (x .snd) ≡ (y .snd)
+        → x ≡ y
+Σ-Path {A = A} {B} {x} {y} p q =
+  Σ-PathP p (transport (λ i → PathP≡Path (λ i → B (p i)) (x .snd) (y .snd) (~ i)) q)
+```

@@ -1,0 +1,91 @@
+```
+{-# OPTIONS --type-in-type #-}
+open import 1Lab.Type
+open import 1Lab.Path
+
+module 1Lab.Counterexamples.Russell where
+```
+
+# Russell's Paradox
+
+This page reproduces [Russell's paradox] from naïve set theory using an
+inductive type of `Type`{.Agda}-indexed trees. By default, Agda places
+the type `Type₀` in `Type₁`, meaning the definition of `V`{.Agda} below
+would not be accepted. The `--type-in-type` flag disables this check,
+meaning the definition goes through.
+
+[Russell's paradox]: https://en.wikipedia.org/wiki/Russell%27s_paradox
+
+```
+data V : Type where
+  set : (A : Type) -> (A -> V) -> V
+```
+
+The names `V`{.Agda} and `set`{.Agda} are meant to evoke the [cumulative
+hierarchy] of sets. A ZF set is merely a particular type of tree, so we
+can represent the cumulative hierarchy as a particular type of trees -
+one where the branching factor of a node is given by a type `A`.
+
+[cumulative hierarchy]: https://en.wikipedia.org/wiki/Von_Neumann_universe
+
+We define the membership predicate `_∈_`{.Agda} by pattern matching,
+using the [path type] `_≡_`{.Agda}:
+
+[path type]: agda://1Lab.Path
+
+```
+_∈_ : V → V → Type
+x ∈ set A f = Σ λ i → f i ≡ x
+```
+
+A set `x` is an element of some other set if there exists an element of
+the index type which the indexing function maps to `x`. As an example,
+we have the empty set:
+
+```
+Ø : V
+Ø = set ⊥ absurd
+
+X∉Ø : {X : V} → X ∈ Ø → ⊥ {lzero}
+X∉Ø ()
+```
+
+Given the `_∈_`{.Agda} predicate, and the fact that we can quantify over
+all of `V` and still stay in `Type₀`, we can make _the set of all sets
+that do not contain themselves_:
+
+```
+R : V
+R = set (Σ λ x → x ∈ x → ⊥) fst
+```
+
+If `X` is an element of `R`, then it does not contain itself:
+
+```
+X∈R→X∉X : {X : V} → X ∈ R → X ∈ X → ⊥
+X∈R→X∉X ((I , I∉I) , prf) elem =
+  let I∈I : I ∈ I
+      I∈I = subst (λ x → x ∈ x) (sym prf) elem
+  in I∉I I∈I
+```
+
+Using a diagonal argument, we can show that R does not contain itself:
+
+```
+R∉R : R ∈ R → ⊥
+R∉R R∈R = X∈R→X∉X R∈R R∈R
+```
+
+And every set that doesn't contain itself is an element of `R`:
+
+```
+X∉X→X∈R : {X : V} → (X ∈ X → ⊥) → X ∈ R
+X∉X→X∈R X∉X = (_ , X∉X) , refl
+```
+
+This leads to a contradiction.
+
+```
+Russell : ⊥
+Russell = R∉R (X∉X→X∈R R∉R)
+```

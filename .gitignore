@@ -1,0 +1,7 @@
+/html
+/_build/
+config.mk
+/.vscode
+/rubtmp*
+/Makefile
+/wip/
