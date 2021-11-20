@@ -137,6 +137,16 @@ div.warning {
   background-color: $red-200;
 }
 
+div.asides {
+  * {
+    margin: 0;
+  }
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
 figure.wraparound {
   float: right;
   width: auto;
@@ -147,7 +157,6 @@ figure.wraparound {
 figure {
   overflow-x: auto;
   overflow-y: clip;
-  width: 100%;
   margin: auto;
 
   @include center-that-bitch;

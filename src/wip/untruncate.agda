@@ -83,6 +83,10 @@ module untruncate {ℓ : _} {A : Type∙ ℓ} (hom : Homogeneous A) where
   untruncate : (x : ∥ A .fst ∥) → f' x .fst .fst
   untruncate x = f' x .fst .snd
 
+  module _ {x : A .fst} where
+    test : untruncate (inc x) ≡ x
+    test = refl
+
 module _ where
   open untruncate (Discrete→Homogeneous (Bool , true) Discrete-Bool)
 
