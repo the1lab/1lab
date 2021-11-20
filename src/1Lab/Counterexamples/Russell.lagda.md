@@ -1,7 +1,11 @@
+---
+customtitle: "Counterexamples: Type-in-type"
+---
+
 ```
 {-# OPTIONS --type-in-type #-}
-open import 1Lab.Type
 open import 1Lab.Path
+open import 1Lab.Type
 
 module 1Lab.Counterexamples.Russell where
 ```
@@ -46,7 +50,7 @@ we have the empty set:
 Ø : V
 Ø = set ⊥ absurd
 
-X∉Ø : {X : V} → X ∈ Ø → ⊥ {lzero}
+X∉Ø : {X : V} → X ∈ Ø → ⊥
 X∉Ø ()
 ```
 

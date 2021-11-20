@@ -1,4 +1,5 @@
 ```
+
 module 1Lab.Type where
 ```
 
@@ -7,15 +8,12 @@ module 1Lab.Type where
 A **universe** is a type whose inhabitants are types. In Agda, there is
 a family of universes, which, by default, is called `Set`. Rather
 recently, Agda gained [a flag] to make `Set` not act like a keyword, and
-allow renaming it by an import declaration from the [Agda
-primitives] module.
+allow renaming it in an import declaration from the `Agda.Primitive`
+module.
 
-[Agda primitives]: agda://Agda.Primitive
-
-[a flag]: https://agda.readthedocs.io/en/v2.6.2/language/built-ins.html?highlight=no-import-sorts#sorts
 
 ```
-open import Agda.Primitive renaming (Set to Type) public
+open import Agda.Primitive renaming (Set to Type ; Setω to Typeω) public
 ```
 
 `Type`{.Agda} is, of course, a type itself, so it's a natural question
@@ -50,9 +48,9 @@ open import Agda.Builtin.Nat public
 It does not, however, come with a built-in definition of the empty type:
 
 ```
-data ⊥ {ℓ : _} : Type ℓ where
+data ⊥ : Type where
 
-absurd : {ℓ ℓ₁ : _} {A : Type ℓ₁} → ⊥ {ℓ} → A
+absurd : {ℓ : _} {A : Type ℓ} → ⊥ → A
 absurd ()
 ```
 
@@ -66,4 +64,24 @@ must be made explicit.
 
 Σ-syntax = Σ
 syntax Σ-syntax {A = A} (λ x → B) = Σ[ x ∈ A ] B
+infix 5 Σ-syntax
+```
+
+The non-dependent product type `_×_`{.Agda} can be defined in terms of
+the dependent sum type:
+
+```
+_×_ : {a b : _} → Type a → Type b → Type _
+A × B = Σ[ _ ∈ A ] B
+```
+
+## Lifting
+
+There is a function which lifts a type to a higher universe:
+
+```
+record Lift {a} ℓ (A : Type a) : Type (a ⊔ ℓ) where
+  constructor lift
+  field
+    lower : A
 ```

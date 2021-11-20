@@ -183,7 +183,7 @@ main = run \flags -> do
   fileIdMap <- newCache parseFileIdents
 
   "_build/all-pages.agda" %> \out -> do
-    files <- getDirectoryFiles "src" ["**"]
+    files <- sort <$> getDirectoryFiles "src" ["**"]
     need (map ("src" </>) files)
     let
       toOut x | takeExtensions x == ".lagda.md"

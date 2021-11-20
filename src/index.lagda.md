@@ -1,4 +1,5 @@
 ```
+
 module index where
 ```
 
@@ -41,7 +42,7 @@ _pages_; Links rendered in one of the syntax highlighting colours and
 `monospace`{.agda ident=Category} link to a _definition_. Specifically,
 the following colours are used:
 
-* Blue for records and functions: `isEquiv`, `sym`{.agda}
+* Blue for records and functions: `isEquiv`{.Agda}, `sym`{.agda}
 
 * Green for inductive constructors, coinductive constructors, and the
 endpoints of the interval: `i0`{.agda}
@@ -53,6 +54,7 @@ endpoints of the interval: `i0`{.agda}
 <!--
 ```
 _ = i0
+_ = isEquiv
 _ = isEquiv.isEqv
 _ = sym
 ```
@@ -97,9 +99,22 @@ are developed under the `1Lab` namespace. Start here:
 [univalence]: agda://1Lab.Univalence#univalence
 
 ```
-open import 1Lab.Type
-open import 1Lab.Path
-open import 1Lab.Equiv
-open import 1Lab.HLevel
-open import 1Lab.Univalence
+-- All of these module names are links you can click!
+
+open import 1Lab.Type            -- Universes
+
+open import 1Lab.Path            -- Path types
+open import 1Lab.Path.Groupoid   -- The groupoid structure on types
+
+open import 1Lab.Equiv           -- Equivalences
+open import 1Lab.Equiv.Fibrewise -- Fibrewise equivalences
+
+open import 1Lab.HLevel          -- h-Levels
+open import 1Lab.HLevel.Retracts -- Closure of h-levels under retractions/isos/equivs
+open import 1Lab.HLevel.Sets     -- K, Rijke's theorem, Hedberg's theorem
+
+open import 1Lab.Univalence      -- The univalence "axiom"
+
+open import 1Lab.Data.Dec        -- Decidability, discreteness
+open import 1Lab.Data.Bool       -- The type of booleans and its automorphisms
 ```

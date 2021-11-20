@@ -1,7 +1,7 @@
 ```
-open import 1Lab.Type
-open import 1Lab.Path
 open import 1Lab.HLevel
+open import 1Lab.Path
+open import 1Lab.Type
 
 open isContr
 
@@ -14,7 +14,7 @@ The big idea of homotopy type theory is that isomorphic types can be
 identified: the univalence axiom. However, the notion of isomorphism,
 is, in a sense, not structured enough to be used in the definition. For
 that, we need a coherent definition of _equivalence_, where "being an
-equivalence" is [a proposition](agda://1Lab.HLevel#isProp)
+equivalence" is [a proposition](agda://1Lab.HLevel#isProp).
 
 ```
 private
@@ -42,7 +42,7 @@ record isEquiv (f : A → B) : Type (level-of A ⊔ level-of B) where
   field
     isEqv : (y : B) → isContr (fibre f y)
 
-open isEquiv
+open isEquiv public
 
 _≃_ : {ℓ₁ ℓ₂ : _} → Type ℓ₁ → Type ℓ₂ → Type _
 _≃_ A B = Σ (isEquiv {A = A} {B = B})
@@ -88,14 +88,34 @@ isProp-isEquiv f x y i .isEqv p = isProp-isContr (x .isEqv p) (y .isEqv p) i
 
 For this section, we need a definition of _isomorphism_. This is the
 same as ever! An isomorphism is a function that has a two-sided inverse.
+We first define what it means for a function to invert another on the
+left and on the right:
+
+```
+isLeftInverse : (B → A) → (A → B) → Type _
+isLeftInverse g f = (x : _) → g (f x) ≡ x
+
+isRightInverse : (B → A) → (A → B) → Type _
+isRightInverse g f = (x : _) → f (g x) ≡ x
+```
+
+A proof that a function $f$ is an isomorphism consists of a function $g$
+in the other direction, together with homotopies exhibiting $g$ as a
+left- and right- inverse to $f$.
 
 ```
 record isIso (f : A → B) : Type (level-of A ⊔ level-of B) where
   no-eta-equality
+  constructor iso
   field
     g : B → A
-    right-inverse : (x : _) → f (g x) ≡ x
-    left-inverse : (x : _) → g (f x) ≡ x
+    right-inverse : isRightInverse g f
+    left-inverse : isLeftInverse g f
+
+  inverse : isIso g
+  g inverse = f
+  right-inverse inverse = left-inverse
+  left-inverse inverse = right-inverse
 
 Iso : {ℓ₁ ℓ₂ : _} → Type ℓ₁ → Type ℓ₂ → Type _
 Iso A B = Σ (isIso {A = A} {B = B})
@@ -104,8 +124,8 @@ Iso A B = Σ (isIso {A = A} {B = B})
 Any function that is an equivalence is an isomorphism:
 
 ```
-isEquiv→isIso : (f : A → B) → isEquiv f → isIso f
-isIso.g (isEquiv→isIso f eqv) y =
+isEquiv→isIso : {f : A → B} → isEquiv f → isIso f
+isIso.g (isEquiv→isIso eqv) y =
   eqv .isEqv y .centre .fst
 ```
 
@@ -114,7 +134,7 @@ it's the point of `A` mapped to `y`, which we get from centre of
 contraction for the fibres of `f` over `y`.
 
 ```
-isIso.right-inverse (isEquiv→isIso f eqv) y =
+isIso.right-inverse (isEquiv→isIso eqv) y =
   eqv .isEqv y .centre .snd
 ```
 
@@ -122,7 +142,7 @@ Similarly, that one fibre gives us a proof that the function above is a
 right inverse to `f`.
 
 ```
-isIso.left-inverse (isEquiv→isIso f eqv) x i =
+isIso.left-inverse (isEquiv→isIso {f = f} eqv) x i =
   eqv .isEqv (f x) .paths (x , refl) i .fst
 ```
 
@@ -137,7 +157,7 @@ cubical argument that honestly does not matter all that much. That's why
 I put it in a details tag!
 
 ```
-module _ (f : A → B) (i : isIso f) where
+module _ {f : A → B} (i : isIso f) where
 ```
 
 <details>
@@ -205,5 +225,40 @@ any isomorphism into a coherent equivalence.
 Iso→Equiv : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} {B : Type ℓ₂}
           → Iso A B
           → A ≃ B
-Iso→Equiv (f , isIso) = f , isIso→isEquiv f isIso
+Iso→Equiv (f , isIso) = f , isIso→isEquiv isIso
 ```
+
+A helpful lemma: Any function between contractible types is an equivalence:
+
+```
+isContr→isEquiv : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} {B : Type ℓ₂}
+                → isContr A → isContr B → {f : A → B}
+                → isEquiv f
+isContr→isEquiv cA cB = isIso→isEquiv f-is-iso where
+  f-is-iso : isIso _
+  isIso.g f-is-iso _ = cA .centre
+  isIso.right-inverse f-is-iso _ = isContr→isProp cB _ _
+  isIso.left-inverse f-is-iso _ = isContr→isProp cA _ _
+```
+
+<!--
+```
+Σ-PathP-iso : {a b : _} {A : Type a} {B : A → Type b}
+           → {x y : Σ B}
+           → Iso (Σ[ p ∈ x .fst ≡ y .fst ] (PathP (λ i → B (p i)) (x .snd) (y .snd)))
+                 (x ≡ y)
+fst Σ-PathP-iso (p , q) i = p i , q i
+isIso.g (snd Σ-PathP-iso) p = ap fst p , ap snd p
+isIso.right-inverse (snd Σ-PathP-iso) x = refl
+isIso.left-inverse (snd Σ-PathP-iso) x = refl
+
+Σ-Path-iso : {a b : _} {A : Type a} {B : A → Type b}
+           → {x y : Σ B}
+           → Iso (Σ[ p ∈ x .fst ≡ y .fst ] (subst B p (x .snd) ≡ y .snd))
+                 (x ≡ y)
+Σ-Path-iso {B = B} {x} {y} =
+  transport (λ i → Iso (Σ[ p ∈ x .fst ≡ y .fst ] (PathP≡Path (λ j → B (p j)) (x .snd) (y .snd) i))
+                       (x ≡ y))
+            Σ-PathP-iso
+```
+-->

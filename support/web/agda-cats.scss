@@ -27,14 +27,6 @@ main {
   padding-bottom: 0.4em;
 }
 
-pre.Agda {
-  border-radius: 0;
-  box-shadow: none;
-  padding: 0;
-  overflow-y: clip;
-  font-size: 16pt;
-}
-
 .mathpar {
   .diagram-container {
     width: unset;
@@ -144,6 +136,11 @@ article {
   > p {
     width: 100%;
   }
+
+  > figure > figcaption {
+    text-align: center;
+    font-style: italic;
+  }
 }
 
 blockquote {
@@ -181,6 +178,10 @@ body {
       display: inline;
     }
   }
+
+  .footnote-back {
+    padding-left: 0.5em;
+  }
 }
 
 html {
@@ -189,8 +190,16 @@ html {
 }
 
 pre.Agda {
+  border-radius: 0;
+  box-shadow: none;
+  overflow-y: clip;
+  font-size: 16pt;
+
   margin:           0;
   padding:          1em;
+  padding-top:      0.25em;
+  padding-bottom:   0.25em;
+
   background-color: $code-bg;
   color:            $code-fg;
 }
@@ -264,4 +273,8 @@ pre.Agda {
   font-stretch: normal;
   font-style: normal;
   src: url('/static/woff2/iosevk-abbie-regular.woff2') format('woff2'), url('/static/ttf/iosevk-abbie-regular.ttf') format('truetype');
+}
+
+span.qed {
+  float: right;
 }

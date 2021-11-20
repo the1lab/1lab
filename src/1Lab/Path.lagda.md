@@ -8,7 +8,7 @@ module 1Lab.Path where
 
 In HoTT, the inductively-defined propositional equality type gets a new
 semantics: continuous _paths_. The "key idea" of cubical type theory -
-and thus, Cubical Agda - is that we can take this as a new _definition_
+and thus, Cubical Agda --- is that we can take this as a new _definition_
 of the equality type, where we interpret a `Path`{.Agda} in a type by a
 function where the domain is the _interval type_.
 
@@ -36,12 +36,16 @@ The type `I`{.Agda} is meant to represent the unit interval $[0,1]$, the
 same unit interval used in the definition of path. Since all functions
 definable in type theory are automatically continuous, we can take a
 path to simply be a function `I -> A`. More practically, it's useful to
-write out the endpoints of the path - that is, the values the function
+write out the endpoints of the path --- that is, the values the function
 takes when applied to `i0` and to `i1`. This we call a `Path`{.Agda}.
 
 ```
+private
+  toPath : {ℓ : _} {A : Type ℓ} → (f : I → A) → Path A (f i0) (f i1)
+  toPath f i = f i
+
 refl : {ℓ : _} {A : Type ℓ} {x : A} → x ≡ x
-refl {x = x} i = x
+refl {x = x} = toPath (λ i → x)
 ```
 
 The type `Path A x y` is also written `x ≡ y`, when `A` is not important
@@ -49,7 +53,7 @@ The type `Path A x y` is also written `x ≡ y`, when `A` is not important
 is reflexive is given by a `Path`{.Agda} which yields the same element
 everywhere on `I`: The constant function.
 
-The endpoints of a path - even a path we do not know the definition of -
+The endpoints of a path --- even a path we do not know the definition of -
 are equal, by computation, to the ones specified in its type.
 
 ```
@@ -62,15 +66,34 @@ module _ {ℓ : _} {A : Type ℓ} {x y : A} {p : x ≡ y} where
     right-endpoint i = y
 ```
 
+In addition to the two endpoints `i0`{.Agda} and `i1`{.Agda}, the
+interval has the structure of a De Morgan algebra. All the following
+equations are respected (definitionally), but they can not be expressed
+internally as a `Path`{.Agda} because `I`{.Agda} is not in
+`Type`{.Agda}, the interval has the structure of a De Morgan algebra.
+All the following equations are respected (definitionally), but they can
+not be expressed internally as a `Path`{.Agda} because `I`{.Agda} is not
+in `Type`{.Agda}.
+
+- $x \land \mathrm{i0} = \mathrm{i0}$, $x \land \mathrm{i1} = x$
+- $x \lor \mathrm{i0} = x$, $x \lor \mathrm{i1} = \mathrm{i1}$
+- $\neg(x \land y) = \neg x \lor \neg y$
+- $\neg\mathrm{i0} = \mathrm{i1}$, $\neg\mathrm{i0} = \mathrm{i1}$, $\neg\neg{}x = x$
+- $\land$ and $\lor$ are both commutative, and distribute over eachother.
+
+Note that, in the formalisation, $\neg x$ is written `~ x`. As a more
+familiar description, a De Morgan algebra is a Boolean algebra that does
+not (necessarily) satisfy the law of excluded middle. This is necessary
+to maintain type safety.
+
 ## Symmetry
 
-The De Morgan involution `~_`{.Agda} on the interval type gives a way of
-inverting paths - a proof that equality is symmetric.
+The involution `~_`{.Agda} on the interval type gives a way of
+inverting paths --- a proof that equality is symmetric.
 
 ```
-sym : {ℓ₁ : _} {A : I → Type ℓ₁} {x : A i0} {y : A i1}
-    → PathP A x y
-    → PathP (λ i → A (~ i)) y x
+sym : {ℓ₁ : _} {A : Type ℓ₁} {x y : A}
+    → x ≡ y → y ≡ x
 sym p i = p (~ i)
 ```
 
@@ -111,7 +134,7 @@ subst-filler : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} (P : A → Type ℓ₂) {x 
 subst-filler P p x i = transp (λ j → P (p (i ∧ j))) (~ i) x
 ```
 
-It's called a filler because it's the _inside_ - the space that fills -
+It's called a filler because it's the _inside_ --- the space that fills -
 a cube. Specifically, it can be pictured as in this diagram:
 
 ~~~{.quiver .short-1}
@@ -129,6 +152,10 @@ transport-filler : {ℓ : _} {A B : Type ℓ}
                  → (p : A ≡ B) (x : A)
                  → PathP (λ i → p i) x (transport p x)
 transport-filler = subst-filler (λ x → x)
+
+transport-refl : {ℓ : _} {A : Type ℓ} (x : A)
+               → transport (λ i → A) x ≡ x
+transport-refl {A = A} x i = transp (λ _ → A) i x
 ```
 
 Substitution where `P` is taken to be the identity function is called
@@ -177,7 +204,7 @@ Please don't mind how the _lid_ of the box is drawn on the bottom.
 </figure>
 
 Because of the De Morgan algebra structure on the interval type, we can
-extend any lid to a _`filler`{.Agda ident=hfill}_ for the open box - an
+extend any lid to a _`filler`{.Agda ident=hfill}_ for the open box --- an
 inside. This is the `hfill`{.Agda} operation, defined below. The
 definition is not enlightening, so pay attention mainly to the type:
 
@@ -195,9 +222,9 @@ hfill {φ = φ} u u0 i =
         (outS u0)
 ```
 
-Given the inputs to a composition - a family of partial paths `u` and a
-base `u0` - `hfill`{.Agda} connects the input of the composition - `u0`
-- and the output.
+Given the inputs to a composition --- a family of partial paths `u` and a
+base `u0` --- `hfill`{.Agda} connects the input of the composition (`u0`)
+and the output.
 
 The cubical shape of iterated equalities lead to a slight oddity: The
 only unbiased definition of path composition we can give is _double
@@ -268,6 +295,20 @@ the path connecting `p` and `p ∙ q`.
 
 </div>
 
+The composition has a filler in the other direction, too, connecting `q`
+and `p ∙ q` over `p`.
+
+```
+∙-filler' : {ℓ : _} {A : Type ℓ} {x y z : A}
+          → (p : x ≡ y) (q : y ≡ z)
+          → PathP (λ i → p (~ i) ≡ z) q (p ∙ q)
+∙-filler' {x = x} {y} {z} p q j i =
+  hcomp (λ k → λ { (i = i0) -> p (~ j)
+                  ; (i = i1) -> q k
+                  ; (j = i0) -> q (i ∧ k) })
+        (p (i ∨ ~ j))
+```
+
 ## Path Elimination
 
 Using the decomposition of J as transport + contractibility of
@@ -300,18 +341,56 @@ JRefl {x = x} P prefl i = transport-filler (λ i → P _ (λ j → x)) prefl (~ 
 
 In HoTT, every function behaves like a funct**or**, in that it has an
 action on objects (the actual computational content of the function) and
-an action on _morphisms_ - how that function acts on paths. Reading
+an action on _morphisms_ --- how that function acts on paths. Reading
 paths as equality, this is a proof that all functions preserve equality.
 
 ```
-ap : {a b : _} {A : Type a} {B : Type b} (f : A → B) {x y : A}
-   → x ≡ y → f x ≡ f y
+ap : {a b : _} {A : Type a} {B : A → Type b} (f : (x : A) → B x) {x y : A}
+   → (p : x ≡ y) → PathP (λ i → B (p i)) (f x) (f y)
 ap f p i = f (p i)
+
+ap₂ : {a b c : _} {A : Type a} {B : A → Type b} {C : (x : A) → B x → Type c}
+      (f : (x : A) (y : B x) → C x y)
+      {x y : A} {α : B x} {β : B y}
+    → (p : x ≡ y)
+    → (q : PathP (λ i → B (p i)) α β)
+    → PathP (λ i → C (p i) (q i))
+            (f x α)
+            (f y β)
+ap₂ f p q i = f (p i) (q i)
 ```
+
+This operation satisfies many equalities definitionally that are only
+propositional when `ap`{.Agda} is defined in terms of `J`{.Agda}. For instance:
+
+```
+module _ {A B C : Type} {f : A → B} {g : B → C} where
+  ap-comp : {x y : A} {p : x ≡ y}
+          → ap (λ x → g (f x)) p ≡ ap g (ap f p)
+  ap-comp = refl
+
+  ap-id : {x y : A} {p : x ≡ y}
+        → ap (λ x → x) p ≡ p
+  ap-id = refl
+
+  ap-sym : {x y : A} {p : x ≡ y}
+          → sym (ap f p) ≡ ap f (sym p)
+  ap-sym = refl
+
+  ap-refl : {x : A} → ap f (λ i → x) ≡ (λ i → f x) 
+  ap-refl = refl
+```
+
+The last lemma, that `ap` respects composition of _paths_, needs path
+induction, and the rest of the groupoid structure on type formers, so
+it's in [a different module].
+
+[a different module]: agda://1Lab.Path.Groupoid#ap-comp-path
 
 # Dependent Paths
 
 In the HoTT book, we characterise paths over paths using
+
 `transport`{.Agda}: A "path from x to y over P" is a path `transport P x
 ≡ y`. In cubical type theory, we have the primitive `PathP`. These
 notions, fortunately, coincide!
@@ -334,7 +413,7 @@ by the endpoint rule for `transport-filler`{.Agda}.
 
 Here we make explicit the structure of equality of some type formers.
 
-## Sigma types
+## Dependent sums
 
 For sigma types, an equality between `(a , b) ≡ (x , y)` is a
 non-dependent equality `p : a ≡ x`, and a path between `b` and `y`
@@ -350,15 +429,106 @@ laying over `p`.
 ```
 
 We can also use the book characterisation of dependent paths, which is
-simpler in the case where the `Σ`{.Agda} represents a subset - i.e., `B`
+simpler in the case where the `Σ`{.Agda} represents a subset --- i.e., `B`
 is a family of propositions.
 
 ```
 Σ-Path : {a b : _} {A : Type a} {B : A → Type b}
-        → {x y : Σ B}
-        → (p : x .fst ≡ y .fst)
-        → subst B p (x .snd) ≡ (y .snd)
-        → x ≡ y
+       → {x y : Σ B}
+       → (p : x .fst ≡ y .fst)
+       → subst B p (x .snd) ≡ (y .snd)
+       → x ≡ y
 Σ-Path {A = A} {B} {x} {y} p q =
   Σ-PathP p (transport (λ i → PathP≡Path (λ i → B (p i)) (x .snd) (y .snd) (~ i)) q)
 ```
+
+## Dependent functions
+
+For dependent functions, the paths are _homotopies_, in the topological
+sense: `Path ((x : A) → B x) f g` is the same thing as a function `I ->
+(x : A) → B x` - which we could turn into a product if we really wanted
+to.
+
+```
+happly : {a b : _} {A : Type a} {B : A → Type b}
+         {f g : (x : A) → B x}
+       → f ≡ g → (x : A) → f x ≡ g x
+happly p x i = p i x
+```
+
+With this, we have made definitional yet another principle which is
+propositional in the HoTT book: _function extensionality_. Functions are
+equal precisely if they assign the same outputs to every input.
+
+```
+funext : {a b : _} {A : Type a} {B : A → Type b}
+         {f g : (x : A) → B x}
+       → ((x : A) → f x ≡ g x) → f ≡ g
+funext p i x = p x i
+```
+
+Furthermore, we know (since types are groupoids, and functions are
+functors) that, by analogy with 1-category theory, paths in a function
+type should behave like natural transformations (because they are arrows
+in a functor category). This is indeed the case:
+
+```
+homotopy-natural : {a b : _} {A : Type a} {B : Type b}
+                 → {f g : A → B}
+                 → (H : (x : A) → f x ≡ g x)
+                 → {x y : A} (p : x ≡ y)
+                 → H x ∙ ap g p ≡ ap f p ∙ H y
+homotopy-natural {f = f} {g = g} H p =
+  J (λ _ p → H _ ∙ ap g p ≡ ap f p ∙ H _)
+    (sym (∙-filler (H _) refl) ∙ ∙-filler' refl (H _))
+    p
+```
+
+# Equational Reasoning
+
+When constructing long chains of equalities, it's rather helpful to be
+able to visualise _what_ is being equated with more "priority" than
+_how_ they are being equated. For this, a handful of combinators with
+weird names are defined:
+
+```
+_≡⟨_⟩_ : {ℓ : _} {A : Type ℓ} (x : A) {y z : A} → x ≡ y → y ≡ z → x ≡ z
+x ≡⟨ p ⟩ q = p ∙ q
+
+_≡⟨⟩_ : {ℓ : _} {A : Type ℓ} (x : A) {y : A} → x ≡ y → x ≡ y
+x ≡⟨⟩ x≡y = x≡y
+
+_∎ : {ℓ : _} {A : Type ℓ} (x : A) → x ≡ x
+x ∎ = refl
+
+infixr 30 _∙_
+infixr 2 _≡⟨⟩_ _≡⟨_⟩_
+infix  3 _∎
+```
+
+These functions are used to make _equational reasoning chains_. For
+instance, the following proof that addition of naturals is associative
+is done in equational reasoning style:
+
+```
+private
+  +-associative : (x y z : Nat) → (x + y) + z ≡ x + (y + z)
+  +-associative zero y z = refl
+  +-associative (suc x) y z =
+    suc ((x + y) + z) ≡⟨ ap suc (+-associative x y z) ⟩
+    suc (x + (y + z)) ∎
+```
+
+If your browser runs JavaScript, these equational reasoning chains, by
+default, render with the _justifications_ (the argument written between
+`⟨ ⟩`) hidden; There is a button to display them, either on the sidebar
+or on the top bar depending on how narrow your screen is. For your
+convenience, it's here too:
+
+<div style="display: flex; flex-direction: column; align-items: center;">
+<button type="button" class="equations">
+  Toggle equations
+</button>
+</div>
+
+Try pressing it!

@@ -1,6 +1,6 @@
 ```
-open import 1Lab.Type
 open import 1Lab.Path
+open import 1Lab.Type
 
 module 1Lab.HLevel where
 ```
@@ -9,8 +9,31 @@ module 1Lab.HLevel where
 
 The "homotopy level" (h-level for short) of a type is a measure of how
 [truncated] it is, where the numbering is offset by 2. Specifically, a
-(-2)-truncated type is a type of h-level 0. The h-levels are defined by
-induction, where the base case are the _contractible types_.
+(-2)-truncated type is a type of h-level 0. In another sense, h-level
+measures how "homotopically interesting" a given type is:
+
+* The contractible types are maximally uninteresting because there is
+only one.
+
+* The only interesting information about a proposition is whether it is
+inhabited.
+
+* The interesting information about a set is the collection of its inhabitants.
+
+* The interesting information about a groupoid includes, in addition to
+its inhabitants, the way those are related by paths. As an extreme example,
+the [delooping groupoid] of a group has uninteresting inhabitants
+(there's only one), but interesting _loops_.
+
+[delooping groupoid]: agda://1Lab.Data.Delooping
+
+For convenience, we refer to the collection of types of h-level $n$ as
+_homotopy $(n-2)$-types_. For instance: "The sets are the homotopy
+0-types". The use of the $-2$ offset is so the naming here matches that
+of the HoTT book.
+
+The h-levels are defined by induction, where the base case are the
+_contractible types_.
 
 [truncated]: https://ncatlab.org/nlab/show/truncated+object
 
@@ -71,7 +94,7 @@ isHLevel A 1 = isProp A
 isHLevel A (suc n) = (x y : A) → isHLevel (Path A x y) n
 ```
 
-The types of h-level 2 are called the _sets_.
+The types of h-level 2 are the _sets_.
 
 ```
 isSet : {ℓ : _} → Type ℓ → Type _
@@ -85,6 +108,22 @@ Set : (ℓ : _) → Type (lsuc ℓ)
 Set _ = Σ isSet
 
 Set₀ = Set lzero
+```
+
+The types of h-level 3 are the _groupoids_.
+
+```
+isGroupoid : {ℓ : _} → Type ℓ → Type _
+isGroupoid A = isHLevel A 2
+```
+
+The universe of all groupoids of a given level is called `Grpd`{.Agda}.
+
+```
+Grpd : (ℓ : _) → Type (lsuc ℓ)
+Grpd _ = Σ isGroupoid
+
+Grpd₀ = Set lzero
 ```
 
 ---
@@ -226,4 +265,49 @@ isProp-isHLevel : {ℓ : _} {A : Type ℓ} (n : Nat) → isProp (isHLevel A n)
 isProp-isHLevel 0 = isProp-isContr
 isProp-isHLevel 1 = isProp-isProp
 isProp-isHLevel (suc (suc n)) x y i a b = isProp-isHLevel (suc n) (x a b) (y a b) i
+```
+
+# Dependent h-Levels
+
+In cubical type theory, it's natural to consider a notion of _dependent_
+h-level for a _family_ of types, where, rather than having (e.g.)
+`Path`{.Agda}s for any two elements, we have `PathP`{.Agda}s. Since
+dependent contractibility doesn't make a lot of sense, this definition
+is offset by one to start at the propositions.
+
+```
+isHLevelDep : {ℓ ℓ' : _} {A : Type ℓ} → (A → Type ℓ') → Nat → Type _
+isHLevelDep B zero = {x y : _} (α : B x) (β : B y) (p : x ≡ y)
+                   → PathP (λ i → B (p i)) α β
+isHLevelDep B (suc n) =
+     {a0 a1 : _} (b0 : B a0) (b1 : B a1)
+   → isHLevelDep {A = a0 ≡ a1} (λ p → PathP (λ i → B (p i)) b0 b1) n
+```
+
+It's sufficient for a type family to be of an h-level everywhere for the
+whole family to be the same h-level.
+
+```
+isProp→PathP : ∀ {B : I → Type ℓ} → ((i : I) → isProp (B i))
+             → (b0 : B i0) (b1 : B i1)
+             → PathP (λ i → B i) b0 b1
+isProp→PathP {B = B} hB b0 b1 =
+  transport (λ i → PathP≡Path B b0 b1 (~ i)) (hB _ _ _)
+```
+
+The base case is turning a proof that a type is a proposition uniformly
+over the interval to a filler for any PathP.
+
+```
+isHLevel→isHLevelDep : {ℓ ℓ' : _} {A : Type ℓ} {B : A → Type ℓ'}
+                     → (n : Nat) → ((x : A) → isHLevel (B x) (suc n))
+                     → isHLevelDep B n
+isHLevel→isHLevelDep zero hl α β p = isProp→PathP (λ i → hl (p i)) α β
+isHLevel→isHLevelDep {A = A} {B = B} (suc n) hl {a0} {a1} b0 b1 =
+  isHLevel→isHLevelDep n (λ p → helper a1 p b1)
+  where
+    helper : (a1 : A) (p : a0 ≡ a1) (b1 : B a1)
+           → isHLevel (PathP (λ i → B (p i)) b0 b1) (suc n)
+    helper a1 p b1 = J (λ a1 p → ∀ b1 → isHLevel (PathP (λ i → B (p i)) b0 b1) (suc n))
+                      (λ _ → hl _ _ _) p b1
 ```
