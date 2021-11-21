@@ -5,7 +5,7 @@ module 1Lab.Data.Delooping where
 
 # Deloopings
 
-⚠️ WIP ⚠️
+⚠️ This page is a work in progress! ⚠️
 
 The _delooping_ of a group is a type (more specifically, a [groupoid])
 with a single point, where the loop space of that point is given by the

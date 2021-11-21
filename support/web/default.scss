@@ -460,3 +460,57 @@ code.at, span.at { color: $code-green; } /* Attribute */
 code.do, span.do { color: $code-red; } /* Documentation */
 code.an, span.an { color: $code-red; } /* Annotation */
 code.cv, span.cv { color: $code-red; } /* CommentVar */
+
+div.profile {
+  &.pfp-left {
+    flex-direction: row;
+  }
+  &.pfp-right {
+    flex-direction: row-reverse;
+  }
+
+  border-top: 2px solid #444;
+
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: flex-start;
+
+  gap: 1em;
+
+  .profile-pfp {
+    width: 20%;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .profile-pfp p {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+    width: 20%;
+
+    img {
+      width: 128px;
+      height: 128px;
+      clip-path: url(#squircle);
+      margin-bottom: 0.25em;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .profile-name {
+      font-size: 19pt;
+    }
+    .profile-pronouns {
+      font-style: italic;
+    }
+  }
+}

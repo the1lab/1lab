@@ -60,6 +60,115 @@ _ = sym
 ```
 -->
 
+## About
+
+The 1lab is an [open-source] project with the goal of making formalised
+mathematics, and especially formalised mathematics done in Homotopy Type
+Theory, accessible to as wide as audience as possible. However, the
+pages here still do assume a baseline level of knowledge: Nothing
+specific to HoTT, but familiarity with MLTT, especially with Agda, is
+helpful.
+
+[open-source]: https://gitlab.com/plt_amy/cubical-1lab
+
+Contributions are, of course, welcome! If you need help getting set up,
+you can ask me [on Twitter]. If you don't feel like your contribution
+merits a pull request (i.e.: it's just fixing a typo), it's fine to just
+tweet a correction at me and I'll see that it gets addressed as soon as
+possible.
+
+[on Twitter]: https://twitter.com/plt_amy
+
+Since this website is about mathematics, and mathematics is done by
+people, there is a page where contributors can write short profiles
+about themselves: Keeping with the theme, it's an Agda module:
+`Authors`{.Agda} (there isn't any code there, though!)
+
+<!--
+```
+open import Authors
+```
+-->
+
+It'd be very unfair of me not to mention other resources that could be
+helpful for learning about Homotopy Type Theory:
+
+* Of course, the “canonical” reference is [the HoTT Book], written by a
+variety of mathematicians at the IAS Special Year for Univalent
+Mathematics, held between 2012-2013 and organised by Steve Awodey,
+Thierry Coquand, and the late Vladimir Voevodsky.
+
+  The Book is often referred to on this site - with those words - so if
+  you don't know which book "The Book" is, it's the HoTT book! It's
+  split into two parts: Type Theory, which introduces the concepts of
+  Homotopy Type Theory with no previous knowledge of type theory
+  assumed; and Mathematics, which develops some mathematics (homotopy
+  theory, category theory, set theory, and real analysis) in this theory.
+
+[the HoTT Book]: https://homotopytypetheory.org/book
+
+* Prof. Martín Escardó, at Birmingham, has done a great service to the
+community by _also_ formalising a great deal of univalent mathematics in
+Literate Agda, in his [Introduction to Univalent Foundations of
+Mathematics with Agda].
+
+  Prof. Escardó's notes, unlike the 1lab, are done in base Agda, with
+  univalence assumed explicitly in the theorems that need it. This is a
+  principled decision when the goal is introducing univalent
+  mathematics, but it is not practical when the goal is to _practice_
+  univalent mathematics in Agda.
+
+  Even still, that document is _much better_ than this site will _ever_
+  be as an introduction to the subject! While many of the pages of the
+  1lab have introductory _flavour_, it is not meant as an introduction
+  to the subject of univalent mathematics.
+
+[Introduction to Univalent Foundations of Mathematics with Agda]: https://www.cs.bham.ac.uk/~mhe/HoTT-UF-in-Agda-Lecture-Notes/HoTT-UF-Agda.html
+
+With those two references in mind, the 1lab aims to:
+
+* Provide a comprehensibly documented example of mathematics done in
+HoTT, formalised entirely in safe[^1] Cubical Agda, for other students
+of homotopy type theory to consult. This doesn't bring anything new to
+the table for HoTT: Many, if not most, of the theorems in the book were
+already formalised in Coq.
+
+[^1]: The 1lab is not compiled with `--safe` because some modules
+explicitly assume inconsistent principles with the goal of providing
+_counterexamples_. For instance, to formalise how [type-in-type leads to
+Russell's paradox], we need to enable type-in-type!
+
+[type-in-type leads to Russell's paradox]: 1Lab.Counterexamples.Russell.html
+
+* Provide an introduction to HoTT as it's done in Cubical Type Theory to
+those who are already familiar with "Book HoTT". There are significant
+differences, including, but very much not limited to, univalence having
+computational content!
+
+* Do both of these in a _discoverable_ manner:
+
+  * All Agda identifiers are
+  cross-linked (this is an Agda feature and requires no effort on my
+  part);
+
+  * Concepts are linked to the first time they are used in a
+  page[^2];
+
+  * Diagrams are employed where appropriate, and there is
+  infrastructure in place to make this easy to do;
+
+  * Definitions are done in multiple ways, when appropriate, so it is
+  possible to compare different approaches.
+
+[^2]: If you encounter a case where this isn't true, please do not
+hesitate to contribute!
+
+Again, I want to stress that _the 1lab is free and open-source
+software_. If you feel like _any_ of the goals above are not being
+achieved, [submit a merge request]!
+
+[submit a merge request]: https://gitlab.com/plt_amy/cubical-1lab/-/merge_requests
+
 ## Technology
 
 The 1Lab uses [Iosevka](https://typeof.net/Iosevka/) as its monospace
@@ -83,7 +192,8 @@ Commutative diagrams appearing in body text are created using
 [pdftocairo](https://poppler.freedesktop.org/), part of the Poppler
 project. No part of these projects is redistributed.
 
-And, of course, the formalisation would not be possible without [Agda](https://github.com/agda/agda).
+And, of course, the formalisation would not be possible without
+[Agda](https://github.com/agda/agda).
 
 # Type Theory
 

@@ -135,9 +135,9 @@ total.
 \[\begin{tikzcd}
   {T(i0)} && {T(i1)} \\
   \\
-  {B(i0)} && {B(i1)}
+  {A(i0)} && {A(i1)}
   \arrow[dashed, from=1-1, to=1-3]
-  \arrow["B", from=3-1, to=3-3]
+  \arrow["A", from=3-1, to=3-3]
   \arrow["{f(i1)}"{description}, from=1-3, to=3-3]
   \arrow["{f(i0)}"{description}, from=1-1, to=3-1]
 \end{tikzcd}\]
