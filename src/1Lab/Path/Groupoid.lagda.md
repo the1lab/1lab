@@ -231,6 +231,7 @@ are here:
      → Σ B ≃ Σ C
 ```
 
+<!--
 ```
 fst Σ-PathP-iso (p , q) i = p i , q i
 isIso.g (snd Σ-PathP-iso) p = ap fst p , ap snd p
@@ -252,3 +253,4 @@ isIso.left-inverse (snd Σ-PathP-iso) x = refl
   isIso.right-inverse (snd morp) (i , x) = ap₂ _,_ refl (pwise i .snd .isIso.right-inverse _)
   isIso.left-inverse (snd morp) (i , x) = ap₂ _,_ refl (pwise i .snd .isIso.left-inverse _)
 ```
+-->
