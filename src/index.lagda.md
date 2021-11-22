@@ -197,6 +197,14 @@ And, of course, the formalisation would not be possible without
 
 # Type Theory
 
+<div class=warning>
+Specifically for the type theory namespace, there is a **[recommended
+reading order]** for modules, which should be useful as a first
+introduction to Cubical Type Theory.
+</div>
+
+[recommended reading order]: agda://1Lab.index
+
 The first things to be explained are the foundational constructions in
 (cubical) type theory - things like types themselves, [universes],
 [paths], [equivalences], [glueing] and the [univalence] "axiom". These
