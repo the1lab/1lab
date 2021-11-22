@@ -73,3 +73,21 @@ Subset-proj-embedding {A = A} {B = B} prop .isEqv path = contr cent contract whe
     ctrP≡ i = Σ-PathP (fzsingl i .fst) (ctrSnd i)
 ```
 </details>
+
+It can be seen that embeddings are a generalisation of injective
+functions (hence, of subset inclusions) by considering how embeddings
+behave when applied to sets:
+
+```
+injective-sets→embedding : isSet A → isSet B → (f : A → B)
+                         → injective f
+                         → isEmbedding f
+```
+
+In this case, we have that both `f x ≡ f y` and `x ≡ y` are mere
+propositions, so biimplication becomes equivalence:
+
+```
+injective-sets→embedding Aset Bset f injective =
+  isIso→isEquiv (iso injective (λ _ → Bset _ _ _ _) (λ _ → Aset _ _ _ _))
+```
