@@ -7,7 +7,7 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
-module Category where
+module Category.Base where
 ```
 
 # Precategories
@@ -120,11 +120,11 @@ categories_: The opposite of $C$, written $C^{op}$, has the same
 ```
 infixl 60 _^op
 _^op : {o₁ h₁ : _} → Precategory o₁ h₁ → Precategory o₁ h₁
-Precategory.Ob      (C ^op) = Precategory.Ob C
-Precategory.Hom     (C ^op) x y = Precategory.Hom C y x
-Precategory.Hom-set (C ^op) x y = Precategory.Hom-set C y x
-Precategory.id      (C ^op) = Precategory.id C
-Precategory._∘_     (C ^op) f g = Precategory._∘_ C g f
+(C ^op) .Precategory.Ob = Precategory.Ob C
+(C ^op) .Precategory.Hom x y = Precategory.Hom C y x
+(C ^op) .Precategory.Hom-set x y = Precategory.Hom-set C y x
+(C ^op) .Precategory.id = Precategory.id C
+(C ^op) .Precategory._∘_ f g = Precategory._∘_ C g f
 ```
 
 Composition in the opposite precategory $C^{op}$ is "backwards" with
@@ -134,8 +134,8 @@ computation - An equality that arises like this, automatically from what
 Agda computes, is called _definitional_.
 
 ```
-Precategory.idr   (C ^op) = Precategory.idl C
-Precategory.idl   (C ^op) = Precategory.idr C
+(C ^op) .Precategory.idl x = C .Precategory.idr x
+(C ^op) .Precategory.idr x = C .Precategory.idl x
 ```
 
 The left and right identity laws are swapped for the construction of the
@@ -144,7 +144,7 @@ opposite precategory: For `idr`{.Agda} one has to show $f \circ_{op}
 \circ_op{f} = f$. The case for `idl`{.Agda} is symmetric.
 
 ```
-Precategory.assoc (C ^op) f g h i = Precategory.assoc C h g f (~ i)
+(C ^op) .Precategory.assoc f g h i = Precategory.assoc C h g f (~ i)
 ```
 
 For associativity, consider the case of `assoc`{.Agda} for the
@@ -231,12 +231,12 @@ isCategory→isEquiv-pathToIso {C = C} iscat {A} {B} = total→equiv isEquiv-tot
   Q B = C [ A ≅ B ]
 ```
 
-We consider the map `pathToIso`{.Agda} as a [fiberwise equivalence]
+We consider the map `pathToIso`{.Agda} as a [fibrewise equivalence]
 between the two families `A ≡ -` and `C [ A ≅ - ]`. This lets us reduce
 the problem of proving that `pathToIso`{.Agda} is an equivalence to the
 problem of proving that it induces an equivalence of total spaces.
 
-[fiberwise equivalence]: agda://1Lab.Equiv.Fiberwise
+[fibrewise equivalence]: agda://1Lab.Equiv.Fibrewise
 
 ```
   isEquiv-total : isEquiv (total {P = P} {Q = Q} (λ A p → pathToIso {C = C} p))
@@ -273,15 +273,15 @@ module _ where
   open Precategory
 
   Sets : (o : _) → Precategory (lsuc o) o
-  Ob (Sets o) = Set o
-  Hom (Sets o) A B = A .fst → B .fst
-  Hom-set (Sets o) _ (B , bset) f g p q i j a =
+  Sets o .Ob = Set o
+  Sets o .Hom A B = A .fst → B .fst
+  Sets o .Hom-set _ (B , bset) f g p q i j a =
     bset (f a) (g a) (happly p a) (happly q a) i j
-  id (Sets o) x = x
-  _∘_ (Sets o) f g x = f (g x)
-  idr (Sets o) f = refl
-  idl (Sets o) f = refl
-  assoc (Sets o) f g h = refl
+  Sets o .id x = x
+  Sets o ._∘_ f g x = f (g x)
+  Sets o .idl f = refl
+  Sets o .idr f = refl
+  Sets o .assoc f g h = refl
 ```
 
 Furthermore, this is a category, essentially by the same argument used
@@ -291,8 +291,8 @@ to prove [EquivJ].
 
 ```
   Sets-category : {o : _} → isCategory (Sets o)
-  centre (Sets-category {o = o} {A = a}) = a , idIso {C = Sets o} {a = a}
-  paths (Sets-category {o = o} {A = a}) (b , isiso) =
+  Sets-category {o = o} {A = a} .centre = a , idIso {C = Sets o} {a = a}
+  Sets-category {o = o} {A = a} .paths (b , isiso) =
     Σ-Path
       (Σ-Path (ua eqv) (isProp-isHLevel 2 _ _))
       (Σ-Path (λ i → (λ x → transp (λ i → b .fst) i
