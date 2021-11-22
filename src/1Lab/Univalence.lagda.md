@@ -312,6 +312,22 @@ which means the `uaIdEquiv`{.Agda} lemma proves what we wanted.
 
 [path induction]: agda://1Lab.Path#J
 
+In many situations, it is helpful to have a proof that
+`pathToEquiv`{.Agda} followed by `an adjustment of levels`{.Agda
+ident=Lift} is still an equivalence:
+
+```
+univalence-lift : {A B : Type ℓ} → isEquiv (λ e → lift (pathToEquiv {A = A} {B} e))
+univalence-lift {ℓ = ℓ} = isIso→isEquiv morp where
+  morp : isIso (λ e → lift {ℓ = lsuc ℓ} (pathToEquiv e))
+  morp .isIso.g x = ua (x .Lift.lower)
+  morp .isIso.right-inverse x =
+    lift (pathToEquiv (ua (x .Lift.lower))) ≡⟨ ap lift (univalence-Iso .snd .isIso.right-inverse _) ⟩
+    x                                       ∎
+  morp .isIso.left-inverse x = univalence-Iso .snd .isIso.left-inverse _
+```
+
+
 ## Consequences
 
 One useful consequence of the fact that `(A ≡ B) ≡ (A ≃ B)`[^2] is that
@@ -382,3 +398,16 @@ where $B$ is $A$, and $f$ is the identity function.
 > But then, we have that $\mathrm{ap}(\mathrm{id})$ is [definitionally
 equal](agda://1Lab.Path#ap-id) to $\mathrm{id}$, which is known to be
 `an equivalence`{.Agda ident=idEquiv}. <span class=qed>$\blacksquare$</span>
+
+<!--
+```
+Σ-change-of-variables : {a c : _} {A B : Type a} {C : B → Type c}
+                      → (f : A → B) → isEquiv f
+                      → (Σ C) ≃ Σ (λ x → C (f x))
+Σ-change-of-variables {C = C} f equiv =
+  EquivJ (λ B eqv → {C : B → Type _} → Σ C ≃ Σ (λ x → C (eqv .fst x)))
+         (λ {C} → _ , idEquiv)
+         (f , equiv)
+         {C = C}
+```
+-->
