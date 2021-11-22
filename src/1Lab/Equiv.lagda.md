@@ -250,6 +250,12 @@ do equivalence reasoning in the same style as equational reasoning.
 _∙e_ : {ℓ ℓ₁ ℓ₂ : _} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
      → A ≃ B → B ≃ C → A ≃ C
 
+_e¯¹ : {ℓ ℓ₁ : _} {A : Type ℓ} {B : Type ℓ₁}
+    → A ≃ B → B ≃ A
+_e¯¹ eqv = Iso→Equiv (_ , isIso.inverse (isEquiv→isIso (eqv .snd)))
+```
+<!--
+```
 _∙e_ (f , e) (g , e') = (λ x → g (f x)) , eqv where
   g¯¹ : isIso g
   g¯¹ = isEquiv→isIso e'
@@ -281,11 +287,8 @@ _∙e_ (f , e) (g , e') = (λ x → g (f x)) , eqv where
           → isEquiv g
           → isEquiv (λ x → g (f x))
 ∙-isEquiv {f = f} {g = g} e e' = ((f , e) ∙e (g , e')) .snd
-
-_e¯¹ : {ℓ ℓ₁ : _} {A : Type ℓ} {B : Type ℓ₁}
-    → A ≃ B → B ≃ A
-_e¯¹ eqv = Iso→Equiv (_ , isIso.inverse (isEquiv→isIso (eqv .snd)))
 ```
+-->
 
 The proofs that equivalences are closed under composition assemble
 nicely into transitivity operators resembling equational reasoning:
