@@ -1,4 +1,5 @@
 ```
+open import 1Lab.Equiv
 open import 1Lab.Path hiding (_∙_)
 open import 1Lab.Type
 
@@ -205,4 +206,49 @@ identities:
             ap f q             ≡⟨ sym (∙-id-left (ap f q)) ⟩
             refl ∙ ap f q      ≡⟨⟩
             ap f refl ∙ ap f q ∎
+```
+
+# Groupoid structure of types (cont.)
+
+In the Path module, there is a preliminary characterisation of the path
+structure of some types. Since the definition of isomorphism is not
+available in that module, the characterisations of path spaces up-to-iso
+are here:
+
+```
+Σ-PathP-iso : {a b : _} {A : Type a} {B : A → Type b}
+           → {x y : Σ B}
+           → Iso (Σ[ p ∈ x .fst ≡ y .fst ] (PathP (λ i → B (p i)) (x .snd) (y .snd)))
+                 (x ≡ y)
+
+Σ-Path-iso : {a b : _} {A : Type a} {B : A → Type b}
+           → {x y : Σ B}
+           → Iso (Σ[ p ∈ x .fst ≡ y .fst ] (subst B p (x .snd) ≡ y .snd))
+                 (x ≡ y)
+
+Σ-ap : {a b c : _} {A : Type a} {B : A → Type b} {C : A → Type c}
+     → ((x : A) → B x ≃ C x)
+     → Σ B ≃ Σ C
+```
+
+```
+fst Σ-PathP-iso (p , q) i = p i , q i
+isIso.g (snd Σ-PathP-iso) p = ap fst p , ap snd p
+isIso.right-inverse (snd Σ-PathP-iso) x = refl
+isIso.left-inverse (snd Σ-PathP-iso) x = refl
+
+Σ-Path-iso {B = B} {x} {y} =
+  transport (λ i → Iso (Σ[ p ∈ x .fst ≡ y .fst ] (PathP≡Path (λ j → B (p j)) (x .snd) (y .snd) i))
+                       (x ≡ y))
+            Σ-PathP-iso
+
+Σ-ap {A = A} {B} {C} pointwise = Iso→Equiv morp where
+  pwise : (x : A) → Iso (B x) (C x)
+  pwise x = _ , isEquiv→isIso (pointwise x .snd)
+
+  morp : Iso (Σ B) (Σ C)
+  fst morp (i , x) = i , pointwise i .fst x
+  isIso.g (snd morp) (i , x) = i , pwise i .snd .isIso.g x
+  isIso.right-inverse (snd morp) (i , x) = ap₂ _,_ refl (pwise i .snd .isIso.right-inverse _)
+  isIso.left-inverse (snd morp) (i , x) = ap₂ _,_ refl (pwise i .snd .isIso.left-inverse _)
 ```
