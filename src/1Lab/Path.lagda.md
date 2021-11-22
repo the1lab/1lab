@@ -86,6 +86,120 @@ familiar description, a De Morgan algebra is a Boolean algebra that does
 not (necessarily) satisfy the law of excluded middle. This is necessary
 to maintain type safety.
 
+## Raising Dimension
+
+To wit: In cubical type theory, a term in a context with $n$ interval
+variables expresses a way of mapping an $n$-cube into that type. One
+very important class of these maps are the $1$-cubes, lines, or
+[_paths_], which represent simple equalities between terms of that type.
+
+Iterating this construction, a term in a context with 2 interval
+variables represents a square in the type, which can be read as saying
+that some _paths_ (specialising one of the variables to $i0$ or $i1$) in
+that space are equal: An equality between equalities.
+
+The structural operations on contexts, and the $\land$ and $\lor$
+operations on the interval, give a way of extending from $n$-dimensional
+cubes to $n+k$-dimensional cubes. For instance, if we have a path like
+the one below, we can extend it to any of a bunch of different squares:
+
+~~~{.quiver .short-2}
+\[\begin{tikzcd}
+  a && b
+  \arrow[from=1-1, to=1-3]
+\end{tikzcd}\]
+~~~
+
+```
+module _ {ℓ : _} {A : Type ℓ} {a b : A} {p : Path A a b} where
+```
+
+The first thing we can do is introduce another interval variable, and
+just ignore it, varying the path over the non-ignored variable. These
+give us squares where either the top/bottom or left/right faces are the
+path `p`, and the other two are refl.
+
+```
+  private
+    drop-j : PathP (λ i → p i ≡ p i) refl refl
+    drop-j i j = p i
+
+    drop-i : PathP (λ i → a ≡ b) p p
+    drop-i i j = p j
+```
+
+These squares can be drawn as below:
+
+<div class="mathpar">
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  a && b \\
+  \\
+  a && b
+  \arrow["p", from=1-1, to=1-3]
+  \arrow["p"', from=3-1, to=3-3]
+  \arrow["{\mathrm{refl}}"{description}, from=1-1, to=3-1]
+  \arrow["{\mathrm{refl}}"{description}, from=1-3, to=3-3]
+\end{tikzcd}\]
+~~~
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  a && a \\
+  \\
+  b && b
+  \arrow["{\mathrm{refl}}", from=1-1, to=1-3]
+  \arrow["{\mathrm{refl}}"', from=3-1, to=3-3]
+  \arrow["p"{description}, from=1-1, to=3-1]
+  \arrow["p"{description}, from=1-3, to=3-3]
+\end{tikzcd}\]
+~~~
+
+</div>
+
+The other thing we can do is use one of the binary operators on the
+interval to get squares called _connections_, where two adjacent faces
+are `p` and the other two are refl:
+
+```
+    ∧-conn : PathP (λ i → a ≡ p i) refl p
+    ∧-conn i j = p (i ∧ j)
+
+    ∨-conn : PathP (λ i → p i ≡ b) p refl
+    ∨-conn i j = p (i ∨ j)
+```
+
+These correspond to the following two squares:
+
+<div class="mathpar">
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  a && a \\
+  \\
+  a && b
+  \arrow["{\mathrm{refl}}", from=1-1, to=1-3]
+  \arrow["p"', from=3-1, to=3-3]
+  \arrow["{\mathrm{refl}}"{description}, from=1-1, to=3-1]
+  \arrow["{p}"{description}, from=1-3, to=3-3]
+\end{tikzcd}\]
+~~~
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  a && b \\
+  \\
+  b && b
+  \arrow["{p}", from=1-1, to=1-3]
+  \arrow["{\mathrm{refl}}"', from=3-1, to=3-3]
+  \arrow["p"{description}, from=1-1, to=3-1]
+  \arrow["{\mathrm{refl}}"{description}, from=1-3, to=3-3]
+\end{tikzcd}\]
+~~~
+
+</div>
+
 ## Symmetry
 
 The involution `~_`{.Agda} on the interval type gives a way of
@@ -337,6 +451,18 @@ JRefl : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} {x : A}
 JRefl {x = x} P prefl i = transport-filler (λ i → P _ (λ j → x)) prefl (~ i)
 ```
 
+Another way of stating J is as the fact that _singletons are contractible_:
+
+```
+Singleton : {ℓ : _} {A : Type ℓ} → A → Type _
+Singleton x = Σ[ y ∈ _ ] (x ≡ y)
+
+isContr-Singleton : {ℓ : _} {A : Type ℓ} {x : A} (y : Singleton x)
+                  → Path (Singleton x) (x , refl) y
+isContr-Singleton (_ , p) i = p i , λ j → p (i ∧ j)
+```
+
+
 ## The Action on Paths
 
 In HoTT, every function behaves like a funct**or**, in that it has an
@@ -532,3 +658,15 @@ convenience, it's here too:
 </div>
 
 Try pressing it!
+
+<!--
+```
+SquareP : {ℓ : _}
+  (A : I → I → Type ℓ)
+  {a₀₀ : A i0 i0} {a₀₁ : A i0 i1} (a₀₋ : PathP (λ j → A i0 j) a₀₀ a₀₁)
+  {a₁₀ : A i1 i0} {a₁₁ : A i1 i1} (a₁₋ : PathP (λ j → A i1 j) a₁₀ a₁₁)
+  (a₋₀ : PathP (λ i → A i i0) a₀₀ a₁₀) (a₋₁ : PathP (λ i → A i i1) a₀₁ a₁₁)
+  → Type ℓ
+SquareP A a₀₋ a₁₋ a₋₀ a₋₁ = PathP (λ i → PathP (λ j → A i j) (a₋₀ i) (a₋₁ i)) a₀₋ a₁₋
+```
+-->
