@@ -4,13 +4,17 @@
 
 let links = [];
 
-const highlight = (self) => () => {
+const highlight = (self, on) => () => {
   links.forEach(that => {
     if (self.href != that.href) {
       return;
     }
 
-    that.classList.toggle("hover-highlight");
+    if (on) {
+      that.classList.add("hover-highlight");
+    } else {
+      that.classList.remove("hover-highlight");
+    }
   });
 };
 
@@ -18,8 +22,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   links = Array(...document.getElementsByTagName("a"));
   links.forEach(link => {
     if (link.hasAttribute("href")) {
-      link.onmouseover = highlight(link);
-      link.onmouseout = highlight(link);
+      link.onmouseover = highlight(link, true);
+      link.onmouseout = highlight(link, false);
     }
   });
 });
