@@ -311,3 +311,21 @@ isHLevel→isHLevelDep {A = A} {B = B} (suc n) hl {a0} {a1} b0 b1 =
     helper a1 p b1 = J (λ a1 p → ∀ b1 → isHLevel (PathP (λ i → B (p i)) b0 b1) (suc n))
                       (λ _ → hl _ _ _) p b1
 ```
+
+<!--
+```
+isProp→SquareP : ∀ {B : I → I → Type ℓ} → ((i j : I) → isProp (B i j))
+             → {a : B i0 i0} {b : B i0 i1} {c : B i1 i0} {d : B i1 i1}
+             → (r : PathP (λ j → B j i0) a c) (s : PathP (λ j → B j i1) b d)
+             → (t : PathP (λ j → B i0 j) a b) (u : PathP (λ j → B i1 j) c d)
+             → SquareP B t u r s
+isProp→SquareP {B = B} isPropB {a = a} r s t u i j =
+  hcomp (λ { k (i = i0) → isPropB i0 j (base i0 j) (t j) k
+           ; k (i = i1) → isPropB i1 j (base i1 j) (u j) k
+           ; k (j = i0) → isPropB i i0 (base i i0) (r i) k
+           ; k (j = i1) → isPropB i i1 (base i i1) (s i) k
+        }) (base i j) where
+    base : (i j : I) → B i j
+    base i j = transport (λ k → B (i ∧ k) (j ∧ k)) a
+```
+-->
