@@ -215,6 +215,10 @@ pre.Agda {
   }
 }
 
+a[href].hover-highlight {
+  background-color: #F5DEB3;
+}
+
 /* Aspects. */
 .Agda {
   .Comment       { color: $code-grey; }
@@ -261,6 +265,7 @@ pre.Agda {
   a[href]:target {
     animation: highlight 2.5s;
   }
+
 
   // background-color: $code-bg;
   font-family: 'Iosevka', 'Fantasque Sans Mono', 'Roboto Mono', monospace;

@@ -1,7 +1,6 @@
 const lsItem = "1lab.eqn_display";
 let equations_displayed = false;
 if (window.localStorage.getItem(lsItem) === "displayed") {
-  console.log("equations displayed!")
   equations_displayed = true;
 }
 
@@ -24,8 +23,6 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   buttons.forEach((button) => {
-    console.log(button);
-
     if (equations_displayed) {
       button.innerText = "Hide equations";
     } else {
@@ -37,8 +34,6 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     button.onclick = () => {
-      console.log("toggling equations");
-
       equations_displayed = !equations_displayed;
 
       if (equations_displayed) {
