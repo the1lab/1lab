@@ -250,6 +250,7 @@ that `A ≡ B` to get an equivalence `A ≃ B`.
 
 
 ```
+univalence-Iso : {A B : Type ℓ} → Iso (A ≡ B) (A ≃ B)
 univalence : {A B : Type ℓ} → isEquiv (pathToEquiv {A = A} {B})
 ```
 
@@ -261,7 +262,7 @@ and thus, an equivalence. First, we need a small lemma that says `ua id
 uaIdEquiv : {A : Type ℓ} → ua (_ , idEquiv {A = A}) ≡ refl
 uaIdEquiv {A = A} i j = Glue A {φ = i ∨ ~ j ∨ j} (λ _ → A , _ , idEquiv)
 
-univalence {A = A} {B} = isIso→isEquiv iiso where
+univalence-Iso {A = A} {B = B} = pathToEquiv , iiso where
 ```
 
 It's easy to show that using `Glue`{.Agda}. There are two interval
@@ -301,8 +302,7 @@ like the identity function.
     J (λ _ p → ua (pathToEquiv p) ≡ p)
       (ap ua (JRefl (λ x _ → A ≃ x) (_ , idEquiv)) ∙ uaIdEquiv)
 
-univalence-Iso : {A B : Type ℓ} → Iso (A ≡ B) (A ≃ B)
-univalence-Iso = pathToEquiv , isEquiv→isIso univalence
+univalence {A = A} {B} = isIso→isEquiv (univalence-Iso .snd)
 ```
 
 To show that `pathToEquiv (ua p) ≡ p`, we do [path induction] on `p`,
