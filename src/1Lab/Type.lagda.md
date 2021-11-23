@@ -62,9 +62,8 @@ must be made explicit.
 Σ : {a b : _} {A : Type a} (B : A → Type b) → Type _
 Σ = Agda.Builtin.Sigma.Σ _
 
-Σ-syntax = Σ
-syntax Σ-syntax {A = A} (λ x → B) = Σ[ x ∈ A ] B
-infix 5 Σ-syntax
+syntax Σ {A = A} (λ x → B) = Σ[ x ∈ A ] B
+infix 5 Σ
 ```
 
 The non-dependent product type `_×_`{.Agda} can be defined in terms of
