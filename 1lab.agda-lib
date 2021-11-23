@@ -7,3 +7,4 @@ include:
 flags:
   --cubical
   --no-import-sorts
+  --postfix-projections
