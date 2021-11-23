@@ -114,7 +114,7 @@ The types of h-level 3 are the _groupoids_.
 
 ```
 isGroupoid : {ℓ : _} → Type ℓ → Type _
-isGroupoid A = isHLevel A 2
+isGroupoid A = isHLevel A 3
 ```
 
 The universe of all groupoids of a given level is called `Grpd`{.Agda}.

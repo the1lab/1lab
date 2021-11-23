@@ -241,14 +241,14 @@ problem of proving that it induces an equivalence of total spaces.
 ```
   isEquiv-total : isEquiv (total {P = P} {Q = Q} (λ A p → pathToIso {C = C} p))
   isEquiv-total =
-    isContr→isEquiv (contr (A , λ i → A) λ { (p , q) i → q i , λ j → q (i ∧ j) })
+    isContr→isEquiv (contr (A , λ i → A) isContr-Singleton)
                     iscat
 ```
 
-Since the total spaces are contractible - `Σ P` by J, `Σ Q` by the
-assumption that C is a category - then [any map between them is an
-equivalence](agda://1Lab.Equiv#isContr→isEquiv). This implies that we
-can turn categorical isomorphisms into paths of objects:
+Since the total spaces are contractible (`Σ P` by `path induction`{.Agda
+ident=J}, `Σ Q` by the assumption that C is a category) [any map between
+them is an equivalence](agda://1Lab.Equiv#isContr→isEquiv). This implies
+that we can turn categorical isomorphisms into paths of objects:
 
 ```
 isCategory→isoToPath : {o h : _} {C : Precategory o h}
@@ -260,12 +260,49 @@ isCategory→isoToPath {C = C} cat =
   isEquiv→isIso (isCategory→isEquiv-pathToIso {C = C} cat) .isIso.g
 ```
 
+Furthermore, we have that this function is an equivalence, and so the
+type of objects in a univalent category is at most a [groupoid]. We use
+the fact that [h-levels are closed under equivalences] and that
+[dependent sums preserve h-levels].
+
+[h-levels are closed under equivalences]: agda://1Lab.HLevel.Retracts#isHLevel-equiv
+[dependent sums preserve h-levels]: agda://1Lab.HLevel.Retracts#isHLevelΣ
+[groupoid]: agda://1Lab.HLevel#isGroupoid
+
+```
+isCategory→isGroupoid-Ob : {o h : _} {C : Precategory o h}
+                         → isCategory C
+                         → isGroupoid (C .Precategory.Ob)
+isCategory→isGroupoid-Ob {C = C} iscat x y =
+  isHLevel-equiv 2
+    (isCategory→isoToPath {C = C} iscat)
+    (((_ , isCategory→isEquiv-pathToIso {C = C} iscat) e¯¹) .snd)
+```
+
+Since `an isomorphism`{.Agda ident=_[_≅_]} is a big dependent sum of
+[sets], we have that the paths `x ≡ y` are a set, and so `C` is a
+groupoid.
+
+[sets]: agda://1Lab.HLevel#isSet
+
+
+```
+    (isHLevelΣ 2
+      (isHLevelΣ 2
+        (C.Hom-set _ _) λ _ → C.Hom-set _ _)
+        λ { (f , g) →
+            isProp→isSet (isHLevelΣ 1 (C.Hom-set _ _ _ _)
+                                      λ _ → C.Hom-set _ _ _ _) })
+  where module C = Precategory C
+```
+
 ## The category of Sets
 
-Given a universe level, we can consider the collection of [all sets] of
-that level. This assembles into a precategory quite nicely, since
-functions preserve h-levels.
+Given a [universe level], we can consider the collection of [all sets]
+of that level. This assembles into a `precategory`{.Agda
+ident=Precategory} quite nicely, since functions preserve h-levels.
 
+[universe level]: agda://1Lab.Type
 [all sets]: agda://1Lab.HLevel#Set
 
 ```
@@ -284,14 +321,25 @@ module _ where
   Sets o .assoc f g h = refl
 ```
 
-Furthermore, this is a category, essentially by the same argument used
-to prove [EquivJ].
+Furthermore, Sets is a univalent category, essentially by the same
+argument used to prove [EquivJ].
 
 [EquivJ]: agda://1Lab.Univalence#EquivJ
 
 ```
   Sets-category : {o : _} → isCategory (Sets o)
   Sets-category {o = o} {A = a} .centre = a , idIso {C = Sets o} {a = a}
+```
+
+We take the centre of contraction to be the object itself, together with
+the identity isomorphism. Given any other object and isomorphism, we can
+use `ua`{.Agda} to get a path `a ≡ b`, and it's not too hard - but quite
+tedious - to prove that the other isomorphism is equal to the identity
+isomorphism [over] ua.
+
+[over]: 1Lab.Path.html#dependent-paths
+
+```
   Sets-category {o = o} {A = a} .paths (b , isiso) =
     Σ-Path
       (Σ-Path (ua eqv) (isProp-isHLevel 2 _ _))
@@ -299,6 +347,15 @@ to prove [EquivJ].
                               (isiso .fst .fst (transp (λ i → a .fst) i x)))
                    , (λ x → transp (λ i → a .fst) i
                               (isiso .fst .snd (transp (λ i → b .fst) i x))))
+```
+
+The functions that make up the isomorphism are equal essentially by a
+[transport filler], and the data that proves this is an isomorphism does
+not matter since `hom-sets are sets`{.Agda ident=Hom-set}.
+
+[transport filler]: agda://1Lab.Path#transport-filler
+
+```
               (Σ-Path (isHLevelΠ 2 (λ _ → b .snd) _ _ _ _)
                       (isHLevelΠ 2 (λ _ → a .snd) _ _ _ _)))
     where
