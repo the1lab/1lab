@@ -16,7 +16,7 @@ open isContr public
 <!--
 ```
 private variable
-  ℓ : Level
+  ℓ ℓ' : Level
   A B C : Type ℓ
   F G : A → Type ℓ
 ```
@@ -127,7 +127,7 @@ isHLevel-equiv : (n : Nat) (f : A → B) → isEquiv f → isHLevel A n → isHL
 isHLevel-equiv n f eqv = isHLevel-iso n f (isEquiv→isIso eqv)
 ```
 
-# Functions into n-types
+## Functions into n-types
 
 Since h-levels are closed under retracts, The type of functions into a
 homotopy n-type is itself a homotopy n-type.
@@ -143,3 +143,29 @@ isHLevelΠ (suc (suc n)) bhl f g =
     (isHLevelΠ (suc n) λ x → bhl x (f x) (g x))
 ```
 
+## Sums of n-types
+
+A similar argument, using the fact that [paths of pairs are pairs of
+paths], shows that dependent sums are also closed under h-levels.
+
+[paths of pairs are pairs of paths]: agda://1Lab.Path.Groupoid#Σ-Path-iso
+
+```
+isHLevelΣ : {A : Type ℓ} {B : A → Type ℓ'} (n : Nat)
+            → isHLevel A n
+            → ((x : A) → isHLevel (B x) n)
+            → isHLevel (Σ B) n
+isHLevelΣ 0 acontr bcontr =
+  contr (acontr .centre , bcontr _ .centre)
+    λ x → Σ-PathP (acontr .paths _)
+                  (isProp→PathP (λ _ → isContr→isProp (bcontr _)) _ _)
+
+isHLevelΣ 1 aprop bprop (a , b) (a' , b') i =
+  (aprop a a' i) , (isProp→PathP (λ i → bprop (aprop a a' i)) b b' i)
+
+isHLevelΣ {B = B} (suc (suc n)) h1 h2 x y =
+  isHLevel-iso (suc n)
+    (isIso.inverse (Σ-Path-iso .snd) .isIso.g)
+    (Σ-Path-iso .snd)
+    (isHLevelΣ (suc n) (h1 (fst x) (fst y)) λ x → h2 _ _ _)
+```
