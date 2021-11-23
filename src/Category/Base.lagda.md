@@ -365,3 +365,353 @@ not matter since `hom-sets are sets`{.Agda ident=Hom-set}.
                           (happly (isiso .snd .fst))
                           (happly (isiso .snd .snd)))
 ```
+
+# Functors
+
+```
+record
+  Functor
+    {o₁ h₁ o₂ h₂}
+    (C : Precategory o₁ h₁)
+    (D : Precategory o₂ h₂)
+  : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂)
+  where
+
+  private
+    module C = Precategory C
+    module D = Precategory D
+```
+
+Since a category is an algebraic structure, there is a natural
+definition of _homomorphism of categories_ defined in the same fashion
+as, for instance, a _homomorphism of groups_. Since this kind of
+morphism is ubiquitous, it gets a shorter name: `Functor`{.Agda}.
+
+Alternatively, functors can be characterised as the "proof-relevant
+version" of a monotone map: A monotone map is a map $F : C \to D$ which
+preserves the ordering relation, $x \le y \to F(x) \le F(y)$.
+Categorifying, "preserves the ordering relation" becomes a function
+between Hom-sets.
+
+<!--
+A great deal of mathematical constructions are functorial. As an
+example, the projection of the object set of a category - `Ob`{.Agda} -
+extends to a [forgetful functor] $\mathrm{Cat}_{o,h} \to
+\mathrm{Sets}_{o}$. The construction of [endomorphism monoids] extends
+to [a functor] from $\mathrm{Cat}_*$ (the category of [pointed
+categories]) to $\mathrm{Mon}$, which yields the endomorphism monoid of
+the distinguished object.
+
+[forgetful functor]: agda://Category.Instances.Cat.Disc#Ob-functor
+[endomorphism monoids]: agda://Algebra.Monoid#endo
+[pointed categories]: agda://Category.Instances.Cat.Cartesian#Cat*
+[a functor]: agda://Algebra.Monoid.Endomorphism#Endomorphism
+
+In examples more familiar to programmers, most kinds of containers are
+functors. Sometimes, these even admit descriptions in terms of abstract
+nonsense: The type of [lists] can be described as the [monad from an
+adjunction] of the [free-forgetful adjunction] characterising
+$\mathrm{Mon}$ as an algebraic category.
+
+[free-forgetful adjunction]: agda://Algebra.Monoid#Free⊣Forget
+[monad from an adjunction]: agda://Category.Functor.Adjoints.Monad
+[linked lists]: agda://1Lab.Data.List#List
+-->
+
+```
+  field
+    F₀ : C.Ob → D.Ob
+    F₁ : {x y : _} → C.Hom x y → D.Hom (F₀ x) (F₀ y)
+```
+
+A Functor $F : C \to D$ consists of a `function between the object
+sets`{.Agda ident="F₀"} - $F_0 : \mathrm{Ob}(C) \to \mathrm{Ob}(D)$, and
+a `function between Hom-sets`{.Agda ident="F₁"} - which takes $f : x \to
+y \in C$ to $F_1(f) : F_0(x) \to F_0(y) \in D$.
+
+```
+  field
+    F-id : {x : _} → F₁ (C.id {x}) ≡ D.id
+    F-∘ : {x y z : _} (f : C.Hom y z) (g : C.Hom x y)
+        → F₁ (f C.∘ g) ≡ F₁ f D.∘ F₁ g
+```
+
+Furthermore, the morphism mapping $F_1$ must be homomorphic: Identity
+morphisms are taken to identity morphisms (`F-id`{.Agda}) and
+compositions are taken to compositions (`F-∘`{.Agda}).
+
+<!--
+```
+  -- Alias for F₀ for use in Functor record modules.
+  ₀ : C.Ob → D.Ob
+  ₀ = F₀
+
+  -- Alias for F₁ for use in Functor record modules.
+  ₁ : {x y : _} → C.Hom x y → D.Hom (F₀ x) (F₀ y)
+  ₁ = F₁
+```
+-->
+
+Functors also have duals: The opposite of $F : C \to D$ is $F^{op} :
+C^{op} \to D^{op}$.
+
+```
+  op : Functor (C ^op) (D ^op)
+  F₀ op      = F₀
+  F₁ op      = F₁
+  F-id op    = F-id
+  F-∘ op f g = F-∘ g f
+```
+
+## Composition
+
+```
+_F∘_ : {o₁ h₁ o₂ h₂ o₃ h₃ : _}
+       {C : Precategory o₁ h₁} {D : Precategory o₂ h₂} {E : Precategory o₃ h₃}
+     → Functor D E → Functor C D → Functor C E
+```
+
+Functors, being made up of functions, can themselves be composed. The
+object mapping of $(F \circ G)$ is given by $F_0 \circ G_0$, and
+similarly for the morphism mapping. Alternatively, composition of
+functors is a categorification of the fact that monotone maps compose.
+
+```
+_F∘_ {C = C} {D} {E} F G = record { F₀ = F₀ ; F₁ = F₁ ; F-id = F-id ; F-∘ = F-∘ }
+  where
+    module C = Precategory C
+    module D = Precategory D
+    module E = Precategory E
+
+    module F = Functor F
+    module G = Functor G
+
+    F₀ : C.Ob → E.Ob
+    F₀ x = F.F₀ (G.F₀ x)
+
+    F₁ : {x y : C.Ob} → C.Hom x y → E.Hom (F₀ x) (F₀ y)
+    F₁ f = F.F₁ (G.F₁ f)
+```
+
+To verify that the result is functorial, equational reasoning is employed, using
+the witnesses that $F$ and $G$ are functorial.
+
+```
+    F-id : {x : C.Ob} → F₁ (C.id {x}) ≡ E.id {F₀ x}
+    F-id {x} =
+        F.F₁ (G.F₁ C.id) ≡⟨ ap F.F₁ G.F-id ⟩
+        F.F₁ D.id        ≡⟨ F.F-id ⟩
+        E.id             ∎
+
+    F-∘ : {x y z : C.Ob} (f : C.Hom y z) (g : C.Hom x y)
+        → F₁ (f C.∘ g) ≡ (F₁ f E.∘ F₁ g)
+    F-∘ f g =
+        F.F₁ (G.F₁ (f C.∘ g))     ≡⟨ ap F.F₁ (G.F-∘ f g) ⟩
+        F.F₁ (G.F₁ f D.∘ G.F₁ g)  ≡⟨ F.F-∘ _ _ ⟩
+        F₁ f E.∘ F₁ g             ∎
+```
+
+<!--
+The identity function (twice) is a functor $C \to C$. These composition
+and identities assemble into a category, where the objects are
+categories: [Cat](agda://Category.Instances.Cat.Base#Cat). The
+construction of Cat is not in this module for performance reasons.
+-->
+
+```
+Id : {o₁ h₁ : _} {C : Precategory o₁ h₁} → Functor C C
+Functor.F₀ Id x = x
+Functor.F₁ Id f = f
+Functor.F-id Id = refl
+Functor.F-∘ Id f g = refl
+```
+
+# Natural Transformations
+
+Another common theme in category theory is that roughly _every_ concept
+can be considered the objects of a category. This is the case for
+functors, as well! The functors between $C$ and $D$ assemble into a
+category, notated $[C, D]$ - the [functor category] between $C$ and $D$.
+
+[functor category]: agda://Category.Instances.Functor
+
+```
+record _=>_ {o₁ h₁ o₂ h₂}
+            {C : Precategory o₁ h₁}
+            {D : Precategory o₂ h₂} 
+            (F G : Functor C D)
+      : Type (o₁ ⊔ h₁ ⊔ h₂)
+  where
+  constructor NT
+```
+
+The morphisms between functors are called **natural transformations**. A
+natural transformation $F \Rightarrow G$ can be thought of as a way of
+turning $F(x)$s into $G(x)$s that doesn't involve any "arbitrary
+choices".
+
+```
+  private
+    module F = Functor F
+    module G = Functor G
+    module D = Precategory D
+    module C = Precategory C
+
+  field
+    η : (x : _) → D.Hom (F.₀ x) (G.₀ x)
+```
+
+The transformation itself is given by `η`{.Agda}, the family of
+_components_, where the component at $x$ is a map $F(x) \to G(x)$. The
+"without arbitrary choices" part is encoded in the field
+`is-natural`{.Agda}, which encodes commutativity of the square below:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {F_0(x)} && {F_0(y)} \\
+  \\
+  {G_0(x)} && {G_0(y)}
+  \arrow["{\eta_x}"', from=1-1, to=3-1]
+  \arrow["{\eta_y}", from=1-3, to=3-3]
+  \arrow["{F_1(f)}", from=1-1, to=1-3]
+  \arrow["{G_1(f)}"', from=3-1, to=3-3]
+\end{tikzcd}\]
+~~~
+
+```
+    is-natural : (x y : _) (f : C.Hom x y)
+               → η y D.∘ F.₁ f ≡ G.₁ f D.∘ η x
+```
+
+<!--
+Alternatively, natural transformations can be thought of as [homotopies
+between functors](agda://Category.Functor.NatTrans.Homotopy). That
+module contains a direct proof of the correspondence, but an argument by
+abstract nonsense is even simpler to write down: Since [Cat is cartesian
+closed](agda://Category.Instances.Cat.Closed#Cat-closed), there is [an
+isomorphism of Hom-sets](agda://Category.Functor.Adjoints) from the
+[tensor-hom
+adjunction](agda://Category.Structure.CartesianClosed#Tensor⊣Hom)
+
+$$
+\mathrm{Hom}_{\mathrm{Cat}}(C \times \left\{0 \le 1\right\}, D) \simeq
+\mathrm{Hom}_{\mathrm{Cat}}(\left\{0 \le 1\right\}, [C, D])
+$$
+
+Since a functor from [the interval
+category](agda://Category.Instances.Interval) $\left\{0 \le 1\right\}$
+amounts to a choice of morphism, we conclude that a functor $C \times
+\left\{0\le 1\right\} \to D$ is the same as a natural transformation $C
+\Rightarrow D$. There is more to this correspondence: the [geometric
+realisation] of a natural transformation is a [homotopy in the
+topological sense].
+
+[geometric realisation]: https://ncatlab.org/nlab/show/geometric+realization+of+categories
+[homotopy in the topological sense]: https://ncatlab.org/nlab/show/homotopy
+-->
+
+Natural transformations also dualize. The opposite of $\eta : F
+\Rightarrow G$ is $\eta^{op} : G^{op} \Rightarrow F^{op}$.
+
+```
+  op : Functor.op G => Functor.op F
+  op = record
+    { η = η
+    ; is-natural = λ x y f → sym (is-natural _ _ f)
+    }
+```
+
+We verify that natural transformations are [sets] by showing that `F =>
+G` is equivalent to a Σ-type which can be easily shown to be a set by
+closure properties of h-levels.
+
+```
+module _ {o₁ h₁ o₂ h₂ : _}
+         {C : Precategory o₁ h₁}
+         {D : Precategory o₂ h₂} 
+         {F G : Functor C D} where
+  private
+    module F = Functor F
+    module G = Functor G
+    module D = Precategory D
+    module C = Precategory C
+
+  open _=>_
+
+  isSet-Nat : isSet (F => G)
+  isSet-Nat = isHLevel-retract 2 NT'→NT NT→NT' (λ x → refl) NT'-isSet where
+
+      NT' : Type _
+      NT' = Σ[ eta ∈ ((x : _) → D.Hom (F.₀ x) (G.₀ x)) ]
+              ((x y : _) (f : C.Hom x y) → eta y D.∘ F.₁ f ≡ G.₁ f D.∘ eta x)
+      
+      NT'→NT : NT' → F => G
+      NT'→NT (eta , is-n) .η = eta
+      NT'→NT (eta , is-n) .is-natural = is-n
+
+      NT→NT' : F => G → NT'
+      NT→NT' x = x .η , x .is-natural
+```
+
+The type `NT'`{.Agda} is a literal restatement of the definition of
+`_=>_`{.Agda} using `Σ`{.Agda} rather than an Agda record. The trade-off
+is that a record has semantic information (the names `η`{.Agda} and
+`is-natural`{.Agda} mean more than `fst` and `snd`), but a `Σ`{.Agda}
+can be proven to be a set compositionally:
+
+```
+      NT'-isSet : isSet NT'
+      NT'-isSet =
+        isHLevelΣ 2 (isHLevelΠ 2 λ x → D.Hom-set _ _)
+                    (λ _ → isHLevelΠ 2
+                     λ _ → isHLevelΠ 2
+                     λ _ → isHLevelΠ 2
+                     λ _ x y p q → isHLevel-suc 2 (D.Hom-set _ _) _ _ x y p q) 
+```
+
+Another fundamental lemma is that equality of natural transformations
+depends only on equality of the family of morphisms, since being natural
+is a proposition:
+
+```
+  Nat-path : {a b : F => G}
+           → ((x : _) → a .η x ≡ b .η x)
+           → a ≡ b
+  Nat-path path i .η x = path x i
+  Nat-path {a} {b} path i .is-natural x y f =
+    isProp→PathP (λ i → D.Hom-set _ _ (path y i D.∘ F.₁ f) (G.₁ f D.∘ path x i))
+                 (a .is-natural x y f)
+                 (b .is-natural x y f) i
+```
+
+## Natural Isomorphism
+
+```
+record
+  _≅_ {o₁ h₁ o₂ h₂ : _} {C : Precategory o₁ h₁} {D : Precategory o₂ h₂}
+       (F G : Functor C D)
+  : Type (o₁ ⊔ h₁ ⊔ h₂)
+  where
+  private
+    module D = Precategory D
+  open _=>_
+```
+
+A natural transformation where all the `components`{.Agda ident=η} are
+isomorphisms is called a `natural isomorphism`{.Agda ident=_≅_}. This
+is equivalently a natural transformation with a two-sided inverse.
+  
+```
+  field
+    to   : F => G
+    from : G => F
+  
+  field
+    to-from : {x : Precategory.Ob C} → η from x D.∘ η to x ≡ D.id
+    from-to : {x : Precategory.Ob C} → η to x D.∘ η from x ≡ D.id
+```
+
+Natural isomorphisms are the `isomorphisms`{.Agda ident=is-Iso} in
+[functor categories](agda://Category.Instances.Functor), but this
+explicit characterisation improves compilation time by untangling the
+dependency graph.
