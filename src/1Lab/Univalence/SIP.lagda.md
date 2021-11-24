@@ -450,8 +450,8 @@ structure `S` and the new `axioms`.
     ish : _
     ish A B x = σ .fst .is-hom [ A ] [ B ] x
 
-    id : _
-    id = σ .fst .is-hom-id
+    idh : _
+    idh = σ .fst .is-hom-id
 ```
 
 * A homomorphism of S' is the same thing as a homomorphism of the
@@ -461,7 +461,7 @@ not need to be preserved.
 
 ```
     str : Structure S'
-    str = record { is-hom = ish ; is-hom-id = id }
+    str = record { is-hom = ish ; is-hom-id = idh }
 ```
 
 * This already assembles into a notion of `Structure`{.Agda}. We'll

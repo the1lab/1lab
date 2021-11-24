@@ -84,3 +84,17 @@ record Lift {a} ℓ (A : Type a) : Type (a ⊔ ℓ) where
   field
     lower : A
 ```
+
+## Function composition
+
+Since the following definitions are fundamental, they deserve a place in
+this module:
+
+```
+_∘_ : {ℓ₁ ℓ₂ ℓ₃ : _} {A : Type ℓ₁} {B : Type ℓ₂} {C : Type ℓ₃}
+    → (B → C) → (A → B) → A → C
+f ∘ g = λ z → f (g z)
+
+id : {ℓ : _} {A : Type ℓ} → A → A
+id x = x
+```

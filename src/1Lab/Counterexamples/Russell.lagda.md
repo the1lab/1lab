@@ -22,7 +22,7 @@ meaning the definition goes through.
 
 ```
 data V : Type where
-  set : (A : Type) -> (A -> V) -> V
+  set : (A : Type) → (A → V) → V
 ```
 
 The names `V`{.Agda} and `set`{.Agda} are meant to evoke the [cumulative

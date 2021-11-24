@@ -35,7 +35,7 @@ Path A = PathP (λ i → A)
 The type `I`{.Agda} is meant to represent the unit interval $[0,1]$, the
 same unit interval used in the definition of path. Since all functions
 definable in type theory are automatically continuous, we can take a
-path to simply be a function `I -> A`. More practically, it's useful to
+path to simply be a function `I → A`. More practically, it's useful to
 write out the endpoints of the path --- that is, the values the function
 takes when applied to `i0` and to `i1`. This we call a `Path`{.Agda}.
 
@@ -417,9 +417,9 @@ and `p ∙ q` over `p`.
           → (p : x ≡ y) (q : y ≡ z)
           → PathP (λ i → p (~ i) ≡ z) q (p ∙ q)
 ∙-filler' {x = x} {y} {z} p q j i =
-  hcomp (λ k → λ { (i = i0) -> p (~ j)
-                  ; (i = i1) -> q k
-                  ; (j = i0) -> q (i ∧ k) })
+  hcomp (λ k → λ { (i = i0) → p (~ j)
+                 ; (i = i1) → q k
+                 ; (j = i0) → q (i ∧ k) })
         (p (i ∨ ~ j))
 ```
 
@@ -571,7 +571,7 @@ is a family of propositions.
 ## Dependent functions
 
 For dependent functions, the paths are _homotopies_, in the topological
-sense: `Path ((x : A) → B x) f g` is the same thing as a function `I ->
+sense: `Path ((x : A) → B x) f g` is the same thing as a function `I →
 (x : A) → B x` - which we could turn into a product if we really wanted
 to.
 

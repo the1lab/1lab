@@ -157,7 +157,7 @@ And the family of paths can be defined by extending the element which is
 $x$ when $i = i1$, and undefined otherwise.
 
 ```
-isContr.paths (isContr'→isContr extend) x i = outS (extend λ { (i = i1) -> x })
+isContr.paths (isContr'→isContr extend) x i = outS (extend λ { (i = i1) → x })
 ```
 
 This interface - having any partial element extensible, as a notion of
