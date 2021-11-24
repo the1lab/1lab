@@ -1,7 +1,3 @@
----
-customtitle: "Counterexamples: Type-in-type"
----
-
 ```
 {-# OPTIONS --type-in-type #-}
 open import 1Lab.Path
