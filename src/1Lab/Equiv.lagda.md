@@ -11,10 +11,36 @@ module 1Lab.Equiv where
 # Equivalences
 
 The big idea of homotopy type theory is that isomorphic types can be
-identified: the univalence axiom. However, the notion of isomorphism,
-is, in a sense, not structured enough to be used in the definition. For
-that, we need a coherent definition of _equivalence_, where "being an
-equivalence" is [a proposition](agda://1Lab.HLevel#isProp).
+identified: the [univalence axiom]. However, the notion of
+`isomorphism`{.Agda ident=isIso}, is, in a sense, not "coherent" enough
+to be used in the definition. For that, we need a coherent definition of
+_equivalence_, where "being an equivalence" is [a
+proposition](agda://1Lab.HLevel#isProp).
+
+[univalence axiom]: 1Lab.Univalence.html
+
+To be more specific, what we desire of a coherent notion of equivalence
+$\mathrm{isEquiv}(f)$ is that:
+
+- Being an `isomorphism`{.Agda ident=isIso} implies being an
+`equivalence`{.Agda ident=isEquiv} ($\mathrm{isIso}(f) \to
+\mathrm{isEquiv}(f)$)
+
+- Being an equivalence implies being an isomorphism; Taken together with
+the first point we may summarise: "Being an equivalence and being an
+isomorphism are logically equivalent."
+
+- Most importantly, being an equivalence _must_ be a proposition.
+
+The notion we adopt is due to Voevodsky: An equivalence is one that has
+`contractible`{.Agda ident=isContr} `fibres`{.Agda ident=fibre}. Other
+definitions are possible (e.g.: [bi-inverible maps]) --- but
+contractible fibres are "privileged" in Cubical Agda because for
+[glueing] to work, we need a proof that `equivalences have contractible
+fibres`{.Agda ident=isEqv'} anyway.
+
+[bi-inverible maps]: 1Lab.Equiv.Biinv.html
+[glueing]: 1Lab.Univalence.html#Glue
 
 ```
 private
@@ -23,8 +49,10 @@ private
     A B : Type ℓ₁
 ```
 
-A _fibre_ of a function `f` at a point `y : B` is the collection of all
-elements of `A` that `f` maps to `y`.
+A _homotopy fibre_, _fibre_ or _preimage_ of a function `f` at a point
+`y : B` is the collection of all elements of `A` that `f` maps to `y`.
+Since many choices of name are possible, we settle on the one that is
+shortest and most aesthetic: `fibre`{.Agda}.
 
 ```
 fibre : (A → B) → B → Type _
@@ -34,7 +62,8 @@ fibre f y = Σ λ x → f x ≡ y
 A function `f` is an equivalence if every one of its fibres is
 [contractible](agda://1Lab.HLevel#isContr) - that is, for any element
 `y` in the range, there is exactly one element in the domain which `f`
-maps to `y`.
+maps to `y`. Using set-theoretic language, `f` is an equivalence if the
+preimage of every element of the codomain is a singleton.
 
 ```
 record isEquiv (f : A → B) : Type (level-of A ⊔ level-of B) where
