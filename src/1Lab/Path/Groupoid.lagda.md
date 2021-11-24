@@ -186,6 +186,8 @@ In addition to the groupoid identities for paths in a type, it has been
 established that functions behave like functors: These are the lemmas
 `ap-refl`{.Agda} and `ap-sym`{.Agda} in the [1Lab.Path] module.
 
+[1Lab.Path]: 1Lab.Path.html#the-action-on-paths
+
 There, a proof that functions preserve path composition wasn't included,
 because it's best written using equational reasoning and the groupoid
 identities:
@@ -254,3 +256,28 @@ isIso.left-inverse (snd Σ-PathP-iso) x = refl
   isIso.left-inverse (snd morp) (i , x) = ap₂ _,_ refl (pwise i .snd .isIso.left-inverse _)
 ```
 -->
+
+The groupoid structure of _paths_ is also interesting. It can be proven
+using path induction that transporting a path along a path is the same
+thing as path composition:
+
+```
+open 1Lab.Path
+
+subst-path-both : {ℓ : _} {A : Type ℓ} {x y : A}
+                → (loop : x ≡ x)
+                → (adj : x ≡ y)
+                → subst (λ x → x ≡ x) adj loop ≡ sym adj ∙ loop ∙ adj
+subst-path-both loop adj =
+  J (λ _ adj → subst (λ x → x ≡ x) adj loop ≡ sym adj ∙ loop ∙ adj)
+    (sym lemma)
+    adj
+  where
+    lemma : sym refl ∙ loop ∙ refl ≡ subst (λ x → x ≡ x) refl loop
+    lemma =
+      sym refl ∙ loop ∙ refl    ≡⟨⟩
+      refl ∙ loop ∙ refl        ≡⟨ ∙-id-left _ ⟩
+      loop ∙ refl               ≡⟨ ∙-id-right _ ⟩
+      loop                      ≡⟨ sym (transport-refl _) ⟩
+      subst (λ x → x) refl loop ∎
+```
