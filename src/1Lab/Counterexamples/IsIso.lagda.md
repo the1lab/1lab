@@ -1,0 +1,68 @@
+```
+open import 1Lab.HLevel.Retracts
+open import 1Lab.Path.Groupoid
+open import 1Lab.Univalence
+open import 1Lab.HIT.S1
+open import 1Lab.HLevel
+open import 1Lab.Equiv
+open import 1Lab.Path
+open import 1Lab.Type
+
+module 1Lab.Counterexamples.IsIso where
+```
+
+# isIso is not a proposition
+
+We show that if `isIso`{.Agda} were a proposition, then `(x : A) → x ≡
+x` would be contractible for any choice of `A`. Taking `A` to be
+`S¹`{.Agda}, we show that this can not be the case. Suppose that isIso is a proposition.
+
+```
+module
+  _ (isoProp : {ℓ : _} {A B : Type ℓ} {f : A → B} → isProp (isIso f))
+  where
+```
+
+First we characterise the type `isIso f`{.Agda ident=isIso} by showing
+that, if it is inhabited, then it is equivalent to the _centre_ of `A`,
+i.e. the loop-assigning maps of `A`:
+
+```
+  lemma : {ℓ : _} {A B : Type ℓ} {f : A → B} → isIso f → isIso f ≃ ((x : A) → x ≡ x)
+  lemma {A = A} {B} {f} iiso = 
+    EquivJ (λ _ f → isIso (f .fst) ≃ ((x : A) → x ≡ x))
+          (Iso→Equiv helper)
+          (f , isIso→isEquiv iiso)
+    where
+      helper : Iso _ _
+      helper .fst (iso g right-inverse left-inverse) x =
+        sym (left-inverse x) ∙ right-inverse x
+      helper .snd .isIso.g x = iso (λ x → x) x (λ _ → refl)
+      helper .snd .isIso.right-inverse p = funext λ x → ∙-id-left _
+      helper .snd .isIso.left-inverse x = isoProp _ _
+```
+
+We thus have that `isIso id ≃ ((x : A) → x ≡ x)` - since the former is a
+prop (by assumption), then so is the latter:
+
+```
+  isProp-loops : {ℓ : _} {A : Type ℓ} → isProp ((x : A) → x ≡ x)
+  isProp-loops {A = A} = isHLevel-equiv 1 (helper .fst) (helper .snd) isoProp
+    where helper = lemma {f = λ (x : A) → x}
+                     (iso (λ x → x) (λ x → refl) (λ x → refl))
+```
+
+Thus, it suffices to choose a type for which `(x : A) → x ≡ x` has two
+distinct elements. We go with the circle, `S¹`{.Agda}:
+
+```
+  ¬isProp-loops : isProp ((x : S¹) → x ≡ x) → ⊥
+  ¬isProp-loops prop = refl≠loop (happly (prop (λ x → refl) always-loop) base)
+```
+
+Hence, a contradiction:
+
+```
+  contra : ⊥
+  contra = ¬isProp-loops isProp-loops
+```
