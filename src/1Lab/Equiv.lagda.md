@@ -26,8 +26,9 @@ $\mathrm{isEquiv}(f)$ is that:
 `equivalence`{.Agda ident=isEquiv} ($\mathrm{isIso}(f) \to
 \mathrm{isEquiv}(f)$)
 
-- Being an equivalence implies being an isomorphism; Taken together with
-the first point we may summarise: "Being an equivalence and being an
+- Being an equivalence implies being an isomorphism
+($\mathrm{isEquiv}(f) \to \mathrm{isIso}(f)$); Taken together with the
+first point we may summarise: "Being an equivalence and being an
 isomorphism are logically equivalent."
 
 - Most importantly, being an equivalence _must_ be a proposition.
