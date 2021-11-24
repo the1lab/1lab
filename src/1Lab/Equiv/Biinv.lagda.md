@@ -25,6 +25,33 @@ private variable
 
 # Bi-invertible maps
 
+Recall the three conditions that make up the notion of [equivalence].
+
+> To be more specific, what we desire of a coherent notion of equivalence
+$\mathrm{isEquiv}(f)$ is that:
+>
+> - Being an `isomorphism`{.Agda ident=isIso} implies being an
+`equivalence`{.Agda ident=isEquiv} ($\mathrm{isIso}(f) \to
+\mathrm{isEquiv}(f)$)
+>
+> - Being an equivalence implies being an isomorphism
+($\mathrm{isEquiv}(f) \to \mathrm{isIso}(f)$); Taken together with the
+first point we may summarise: "Being an equivalence and being an
+isomorphism are logically equivalent."
+>
+> - Most importantly, being an equivalence _must_ be a proposition.
+
+[equivalence]: 1Lab.Equiv.html#equivalences
+
+The "blessed" definition of equivalence is that of a map with
+[contractible fibres]. However, this definition is highly abstract, so
+it begs the question: Is it possible to describe a simpler notion of
+equivalence that still satisfies the three conditions? The answer is
+yes! Paradoxically, adding _more_ data to `isIso`{.Agda} leaves us with
+a good notion of equivalence.
+
+[contractible fibres]: agda://1Lab.Equiv#isEquiv
+
 A **left inverse** to a function $f : A \to B$ is a function $g : B \to
 A$ equipped with a [homotopy] $g \circ f \sim \mathrm{id}$. Symmetrically,
 a **right inverse** to $f$ is a function $h : B \to A$ equipped with a
@@ -41,8 +68,8 @@ rinv f = Σ[ h ∈ (_ → _) ] (f ∘ h ≡ id)
 ```
 
 A map $f$ equipped with a choice of left- and right- inverse is said to
-be **biinvertible**. We shall see that `isBiinv`{.Agda} is a [good notion
-of equivalence].
+be **biinvertible**. Perhaps surprisingly, `isBiinv`{.Agda} is a [good
+notion of equivalence].
 
 [good notion of equivalence]: 1Lab.Equiv.html#equivalences
 
@@ -67,7 +94,9 @@ isEquiv→isEquiv-precomp  : {f : A → B} → isEquiv f → isEquiv {A = C → 
 isEquiv→isEquiv-postcomp : {f : A → B} → isEquiv f → isEquiv {A = B → C} (_∘ f)
 ```
 
-<!--
+<details>
+<summary> The proof is by `isEquiv→isIso`{.Agda} and
+`isIso→isEquiv`{.Agda}. Nothing too clever. </summary>
 ```
 isEquiv→isEquiv-precomp {f = f} f-eqv = isIso→isEquiv isiso where
   f-iso : isIso f
@@ -80,6 +109,7 @@ isEquiv→isEquiv-precomp {f = f} f-eqv = isIso→isEquiv isiso where
   isiso .isIso.g f x = f¯¹ (f x)
   isiso .isIso.right-inverse f = funext λ x → f-iso .isIso.right-inverse _
   isiso .isIso.left-inverse f = funext λ x → f-iso .isIso.left-inverse _
+
 isEquiv→isEquiv-postcomp {f = f} f-eqv = isIso→isEquiv isiso where
   f-iso : isIso f
   f-iso = isEquiv→isIso f-eqv
@@ -92,7 +122,7 @@ isEquiv→isEquiv-postcomp {f = f} f-eqv = isIso→isEquiv isiso where
   isiso .isIso.right-inverse f = funext λ x → ap f (f-iso .isIso.left-inverse _)
   isiso .isIso.left-inverse f = funext λ x → ap f (f-iso .isIso.right-inverse _)
 ```
--->
+</details>
 
 With this lemma, it can be shown that if $f$ is an isomorphism, then
 `linv(f)`{.Agda ident=linv} and `rinv(f)`{.Agda ident=rinv} are both
