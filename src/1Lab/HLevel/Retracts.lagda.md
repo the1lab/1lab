@@ -143,6 +143,16 @@ isHLevelΠ (suc (suc n)) bhl f g =
     (isHLevelΠ (suc n) λ x → bhl x (f x) (g x))
 ```
 
+By taking `B` to be a type rather than a family, we get that `A → B`
+also inherits the h-level of B.
+
+```
+isHLevel→ : {a b : _} {A : Type a} {B : Type b}
+          → (n : Nat) → isHLevel B n
+          → isHLevel (A → B) n
+isHLevel→ n hl = isHLevelΠ n (λ _ → hl)
+```
+
 ## Sums of n-types
 
 A similar argument, using the fact that [paths of pairs are pairs of
@@ -168,4 +178,16 @@ isHLevelΣ {B = B} (suc (suc n)) h1 h2 x y =
     (isIso.inverse (Σ-Path-iso .snd) .isIso.g)
     (Σ-Path-iso .snd)
     (isHLevelΣ (suc n) (h1 (fst x) (fst y)) λ x → h2 _ _ _)
+```
+
+Similarly for dependent products and functions, there is a non-dependent
+version of `isHLevelΣ`{.Agda} that expresses closure of h-levels under
+`_×_`{.Agda}.
+
+```
+isHLevel× : {a b : _} {A : Type a} {B : Type b}
+          → (n : Nat)
+          → isHLevel A n → isHLevel B n
+          → isHLevel (A × B) n
+isHLevel× n ahl bhl = isHLevelΣ n ahl (λ _ → bhl)
 ```

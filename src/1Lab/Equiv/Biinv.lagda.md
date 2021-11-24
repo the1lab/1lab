@@ -1,3 +1,10 @@
+---
+description: |
+  While isomorphism is not well-behaved as a notion of equivalence, it
+  turns out that equipping a map with 2 inverses instead of 1 makes
+  *is*. We call these biinvertible maps.
+---
+
 ```
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel
@@ -140,8 +147,8 @@ isProp-isBiinv : {f : A → B} → isProp (isBiinv f)
 isProp-isBiinv {f = f} = inhContr→isProp contract where
   contract : isBiinv f → isContr (isBiinv f)
   contract ibiinv =
-    isHLevelΣ 0 (isIso→isContr-linv iiso)
-                (λ _ → isIso→isContr-rinv iiso)
+    isHLevel× 0 (isIso→isContr-linv iiso)
+                (isIso→isContr-rinv iiso)
     where
       iiso = isBiinv→isIso ibiinv
 ```
