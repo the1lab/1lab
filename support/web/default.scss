@@ -396,6 +396,13 @@ div.contact-list {
         div#toc-container {
           overflow-x: hidden;
           width: min-content;
+          position: sticky;
+          top: 2em;
+
+          overflow-y: auto;
+          max-height: 90vh;
+
+          bottom: 2em;
 
           ul {
             border-left: 2px solid $bluegray-400;
