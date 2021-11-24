@@ -175,7 +175,7 @@ it's extensible at `i1`{.Agda}_:
 private
   hcomp-verbose : {ℓ : _} {A : Type ℓ} {φ : I}
                 → (u : (i : I) → Partial φ A) -- A family of partial paths
-                → (u0 : A [ φ ↦ u i0 ])       -- extensible at i0
+                → A [ φ ↦ u i0 ]              -- extensible at i0
                 → A [ φ ↦ u i1 ]              -- is extensible at i1
   hcomp-verbose u u0 = inS (hcomp u (outS u0))
 ```
