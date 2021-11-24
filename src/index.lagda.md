@@ -219,20 +219,28 @@ are developed under the `1Lab` namespace. Start here:
 ```
 -- All of these module names are links you can click!
 
-open import 1Lab.Type            -- Universes
+open import 1Lab.Type -- Universes
 
-open import 1Lab.Path            -- Path types
-open import 1Lab.Path.Groupoid   -- The groupoid structure on types
+open import 1Lab.Path          -- Path types
+open import 1Lab.Path.Partial  -- Partial elements
+open import 1Lab.Path.Groupoid -- Groupoid structure of types
 
-open import 1Lab.Equiv           -- Equivalences
+open import 1Lab.Equiv           -- Contractible fibre equivalences, isomorphisms
+open import 1Lab.Equiv.Biinv     -- Biinvertible maps
+open import 1Lab.Equiv.Embedding -- Embeddings
 open import 1Lab.Equiv.Fibrewise -- Fibrewise equivalences
 
-open import 1Lab.HLevel          -- h-Levels
-open import 1Lab.HLevel.Retracts -- Closure of h-levels under retractions/isos/equivs
+open import 1Lab.HLevel          -- h-levels
 open import 1Lab.HLevel.Sets     -- K, Rijke's theorem, Hedberg's theorem
+open import 1Lab.HLevel.Retracts -- Closure of h-levels under retractions/isos
 
-open import 1Lab.Univalence      -- The univalence "axiom"
+open import 1Lab.Univalence     -- Equivalence is equivalent to equality
+open import 1Lab.Univalence.SIP -- Univalence + preservation of structure
 
-open import 1Lab.Data.Dec        -- Decidability, discreteness
-open import 1Lab.Data.Bool       -- The type of booleans and its automorphisms
+open import 1Lab.Data.Dec            -- Decidable types, discrete types
+open import 1Lab.Data.Bool           -- Booleans and their automorphisms
+open import 1Lab.Data.List           -- Finite lists
+open import 1Lab.Data.Relation.Order -- Prop-valued ordering relations
+
+open import 1Lab.Counterexamples.Russell -- Counterexample: Russell's paradox
 ```
