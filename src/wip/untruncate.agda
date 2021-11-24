@@ -1,10 +1,10 @@
-open import 1Lab.Type
-open import 1Lab.Path
+open import 1Lab.Univalence
+open import 1Lab.Data.Bool
+open import 1Lab.Data.Dec
 open import 1Lab.HLevel
 open import 1Lab.Equiv
-open import 1Lab.Data.Dec
-open import 1Lab.Data.Bool
-open import 1Lab.Univalence
+open import 1Lab.Path
+open import 1Lab.Type
 
 module wip.untruncate where
 
