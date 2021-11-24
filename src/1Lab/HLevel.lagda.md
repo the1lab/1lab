@@ -143,13 +143,41 @@ own names:
 
 ```
 isContr→isProp : isContr A → isProp A
-isContr→isProp C x y = sym (C.paths _) ∙ C.paths _
-  where module C = isContr C
+isContr→isProp C x y i =
+  hcomp (λ j → λ { (i = i0) → C .paths x j
+                 ; (i = i1) → C .paths y j
+                 } )
+        (C .centre)
+```
+
+This enables another useful characterisation of being a proposition,
+which is that the propositions are precisely the types which are
+contractible when they are inhabited:
+
+```
+inhContr→isProp : {ℓ : _} {A : Type ℓ} → (A → isContr A) → isProp A
+inhContr→isProp cont x y = isContr→isProp (cont x) x y
 ```
 
 The proof that any contractible type is a proposition is not too
-complicated. Any pair of elements is connected by a path which factors
-through the `center`{.Agda}.
+complicated. We can get a line connecting any two elements as the lid of
+the square below:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  x && y \\
+  \\
+  {C \mathrm{.centre}} && {C .\mathrm{centre}}
+  \arrow[dashed, from=1-1, to=1-3]
+  \arrow["{C \mathrm{.paths}\ x\ j}", from=3-1, to=1-1]
+  \arrow["{C \mathrm{.paths}\ y\ j}"', from=3-3, to=1-3]
+  \arrow["{C \mathrm{.centre}}"', from=3-1, to=3-3]
+\end{tikzcd}\]
+~~~
+
+This is equivalently the composition of `sym (C .paths x) ∙ C.paths y` -
+a path $x \to y$ which factors through the `centre`{.Agda}. The direct
+cubical description is, however, slightly more efficient.
 
 ```
 isProp→isSet : isProp A → isSet A
@@ -162,9 +190,9 @@ isProp→isSet h x y p q i j =
         x
 ```
 
-The proof that any proposition is a set is significantly more
-complicated. Since the desired equality `p ≡ q` is a square, we need to
-describe a _cube_ where the missing face is the square we need. I have
+The proof that any proposition is a set is slightly more complicated.
+Since the desired equality `p ≡ q` is a square, we need to describe a
+_cube_ where the missing face is the square we need. I have
 painstakingly illustrated it here:
 
 ~~~{.quiver .tall-2}
