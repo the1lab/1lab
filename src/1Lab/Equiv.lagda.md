@@ -352,3 +352,19 @@ transport-is-equiv p = J (λ y p → isEquiv (transport p)) (isIso→isEquiv e) 
   isIso.right-inverse e x = transport-refl _
   isIso.left-inverse e x = transport-refl _
 ```
+
+# Propositional Extensionality
+
+The following observation is not very complex, but it is incredibly
+useful: Equivalence of propositions is the same as biimplication.
+
+```
+propExt : {ℓ ℓ' : _} {P : Type ℓ} {Q : Type ℓ'}
+        → isProp P → isProp Q
+        → (P → Q) → (Q → P)
+        → P ≃ Q
+propExt pprop qprop p→q q→p .fst = p→q
+propExt pprop qprop p→q q→p .snd .isEqv y .centre = q→p y , qprop _ _
+propExt pprop qprop p→q q→p .snd .isEqv y .paths (p' , path) =
+  Σ-Path (pprop _ _) (isProp→isSet qprop _ _ _ _)
+```
