@@ -5,11 +5,15 @@ Theory.
 
 ## Building
 
-In addition to KaTeX, sassc, rubber-pipe, pdftocairo, and Lua, you'll
-need [`agda-reference-filter`] in your PATH, so download and install
-that:
+In addition to [Pandoc], KaTeX, sassc, [rubber], pdftocairo, and Lua,
+you'll need [`agda-reference-filter`] and [`agda-fold-equations`] in
+your PATH, so download and install those:
+
+[rubber]: https://github.com/petrhosek/rubber
 
 [`agda-reference-filter`]: https://git.amelia.how/amelia/agda-reference-filter
+
+[`agda-fold-equations`]: https://git.amelia.how/amelia/agda-fold-equations
 
 ```
 % git clone https://git.amelia.how/amelia/agda-reference-filter.git
