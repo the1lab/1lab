@@ -124,7 +124,7 @@ Then, we need the actual monoid axioms:
     monoid-idˡ : {x : _} → unit · x ≡ x
     monoid-assoc : {x y z : _} → (x · y) · z ≡ x · y · z
 
-open isMonoid public
+open isMonoid hiding (_·_ ; unit)
 ```
 
 The condition that `monoids are sets`{.Agda} ensure that the latter
