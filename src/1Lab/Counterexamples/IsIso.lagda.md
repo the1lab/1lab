@@ -31,12 +31,22 @@ i.e. the loop-assigning maps of `A`:
   lemma : {ℓ : _} {A B : Type ℓ} {f : A → B} → isIso f → isIso f ≃ ((x : A) → x ≡ x)
   lemma {A = A} {B} {f} iiso = 
     EquivJ (λ _ f → isIso (f .fst) ≃ ((x : A) → x ≡ x))
-          (Iso→Equiv helper)
-          (f , isIso→isEquiv iiso)
+           (Iso→Equiv helper)
+           (f , isIso→isEquiv iiso)
     where
+```
+
+By [equivalence induction], it suffices to cover the case where `f` is
+the identity function. In that case, we can construct an isomorphism
+quite readily, where the proof uses our assumption `isoProp`{.Agda} for
+convenience.
+
+[equivalence induction]: 1Lab.Univalence.html#consequences
+
+```
       helper : Iso _ _
-      helper .fst (iso g right-inverse left-inverse) x =
-        sym (left-inverse x) ∙ right-inverse x
+      helper .fst iiso x =
+        sym (iiso .isIso.left-inverse x) ∙ iiso .isIso.right-inverse x
       helper .snd .isIso.g x = iso (λ x → x) x (λ _ → refl)
       helper .snd .isIso.right-inverse p = funext λ x → ∙-id-left _
       helper .snd .isIso.left-inverse x = isoProp _ _
