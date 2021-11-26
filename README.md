@@ -12,7 +12,7 @@ that:
 [`agda-reference-filter`]: https://git.amelia.how/amelia/agda-reference-filter
 
 ```
-% git clone https://git.abby.how/abby/agda-reference-filter.git
+% git clone https://git.amelia.how/amelia/agda-reference-filter.git
 % cd agda-reference-filter
 % stack install
 # you can get rid of the source now
