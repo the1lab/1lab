@@ -98,11 +98,10 @@ module Group {ℓ : _} (group : Group ℓ) where
   private
     module M = isMonoid (group .snd .fst .snd)
 
-  -- Stuff
   G : Type _
+
   _⋆_ : G → G → G
   unit : G
-
   _¯¹ : G → G
 
   ⋆-assoc-l→r : {x y z : G} → (x ⋆ y) ⋆ z ≡ x ⋆ y ⋆ z
@@ -137,8 +136,12 @@ module Group {ℓ : _} (group : Group ℓ) where
 
 # Symmetric groups
 
-The **symmetric group** on a set $X$ is the set of its automorphisms
-under composition.
+The **symmetric group** on a _set_ $X$ is given the set of its
+automorphisms under composition. Note that since we're dealing with
+groups, and not general $\infty$-groups, we require that the type be, in
+fact, a [set].
+
+[set]: agda://1Lab.HLevel#isSet
 
 ```
 Sym : {ℓ : _} → Set ℓ → Group ℓ
