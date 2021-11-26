@@ -100,40 +100,40 @@ module Group {ℓ : _} (group : Group ℓ) where
 
   -- Stuff
   G : Type _
+  _⋆_ : G → G → G
+  unit : G
+
+  _¯¹ : G → G
+
+  ⋆-assoc-l→r : {x y z : G} → (x ⋆ y) ⋆ z ≡ x ⋆ y ⋆ z
+  ⋆-assoc-r→l : {x y z : G} → x ⋆ y ⋆ z ≡ (x ⋆ y) ⋆ z
+  ⋆-unitˡ : {z : G} → unit ⋆ z ≡ z
+  ⋆-unitʳ : {z : G} → z ⋆ unit ≡ z
+  ⋆-invˡ : {z : G} → z ⋆ z ¯¹ ≡ unit
+  ⋆-invʳ : {z : G} → z ¯¹ ⋆ z ≡ unit
+```
+
+<!--
+```
   G = group .fst
 
   -- Structure
-  _⋆_ : G → G → G
   x ⋆ y = x M.· y
-
-  unit : G
   unit = M.unit
-
-  _¯¹ : G → G
   _¯¹ x = group .snd .snd x .fst
 
   infixr 30 _⋆_
   infixl 40 _¯¹
 
   -- Properties
-  ⋆-assoc-l→r : {x y z : G} → (x ⋆ y) ⋆ z ≡ x ⋆ y ⋆ z
   ⋆-assoc-l→r = M.monoid-assoc
-
-  ⋆-assoc-r→l : {x y z : G} → x ⋆ y ⋆ z ≡ (x ⋆ y) ⋆ z
   ⋆-assoc-r→l = sym M.monoid-assoc
-
-  ⋆-unitˡ : {z : G} → unit ⋆ z ≡ z
   ⋆-unitˡ = M.monoid-idˡ
-
-  ⋆-unitʳ : {z : G} → z ⋆ unit ≡ z
   ⋆-unitʳ = M.monoid-idʳ
-
-  ⋆-invˡ : {z : G} → z ⋆ z ¯¹ ≡ unit
   ⋆-invˡ {z} = group .snd .snd z .snd .fst
-
-  ⋆-invʳ : {z : G} → z ¯¹ ⋆ z ≡ unit
   ⋆-invʳ {z} = group .snd .snd z .snd .snd
 ```
+-->
 
 # Symmetric groups
 
