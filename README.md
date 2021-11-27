@@ -5,7 +5,7 @@ Theory.
 
 ## Building
 
-In addition to [Pandoc], KaTeX, sassc, [rubber], pdftocairo, and Lua,
+In addition to Pandoc, KaTeX, sass, [rubber], pdftocairo, and Lua,
 you'll need [`agda-reference-filter`] and [`agda-fold-equations`] in
 your PATH, so download and install those:
 
@@ -15,27 +15,30 @@ your PATH, so download and install those:
 
 [`agda-fold-equations`]: https://git.amelia.how/amelia/agda-fold-equations
 
-```agda
+```bash
 % git clone https://git.amelia.how/amelia/agda-reference-filter.git
 % cd agda-reference-filter
 % stack install
 % cd ..
+
 % git clone https://git.amelia.how/amelia/agda-fold-equations.git
 % cd agda-fold-equations
 % stack install
+
 # you can get rid of the sources now
 ```
 
 Now you can build the 1lab pages & its part of the CSS:
 
-```agda
+```bash
 % ./Shakefile.hs all -j$(nproc)
 ```
 
-A complete deployment also includes the following free software projects:
+A complete deployment also redistributes parts of the following free
+software projects:
 
 * KaTeX CSS & fonts: put `katex.min.css` under `_build/html/css/`, and
-the KaTeX font files under `_build/html/css/fonts`
+the KaTeX font files under `_build/html/css/fonts`.
 
 * Iosevka (as iosevk-abbie): Either build it yourself or get mine
 [here](https://files.amelia.how/3OYp.xz), as a xz'd tar. Put the `woff2`
@@ -43,7 +46,7 @@ and `ttf` directories of the tar under static/.
 
 ## Contributing
 
-Before submitting a merge request, please check the items below
+Before submitting a merge request, please check the items below:
 
 - [ ] The imports are sorted (use `find -type f -name \*.agda -or -name \*.lagda.md | xargs support/sort-imports.hs`)
 
@@ -54,6 +57,8 @@ tools like Tokei can report accurate line counts for proofs vs. text.
 of course, but proofs should be comprehensible to a hypothetical human
 whose knowledge is limited to a working understanding of non-cubical
 Agda, and the stuff your pages link to.
+
+The following items are encouraged, but optional:
 
 - [ ] If you feel comfortable, add yourself to the Authors page! Add a
 profile picture that's recognisably "you" under support/pfps; The
