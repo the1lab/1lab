@@ -1,4 +1,4 @@
-```
+```agda
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -105,7 +105,7 @@ having a term `ua`{.Agda} wouldn't do! Instead, we introduce a new _type
 former_, **Glue**, which, unlike the type formers like `Type`{.Agda},
 `Σ`{.Agda}, and dependent functions, has **computational content**.
 
-```
+```agda
 Glue : (A : Type ℓ)
      → {φ : I}
      → (Te : Partial φ (Σ[ T ∈ Type ℓ' ] (T ≃ A)))
@@ -160,7 +160,7 @@ could be called a **_boundary condition_**, since it specifies how
 `Glue`{.Agda} behaves on the boundaries of cubes. When $\phi = i1$, we
 have that `Glue`{.Agda} evaluates to the partial type:
 
-```
+```agda
 module _ {A B : Type} {e : A ≃ B} where
   private
     Glue-boundary : Glue B {i1} (λ x → A , e) ≡ A
@@ -169,7 +169,7 @@ module _ {A B : Type} {e : A ≃ B} where
 
 Using Glue, we can turn any equivalence into a path:
 
-```
+```agda
 ua : {A B : Type ℓ} → A ≃ B → A ≡ B
 ua {A = A} {B} eqv i = Glue B λ { (i = i0) → A , eqv
                                 ; (i = i1) → B , _ , idEquiv
@@ -217,7 +217,7 @@ refl _`, and on the right endpoint disappears.
 3. Finally, we apply the inverse of the identity equivalence, which
 computes away, and contributes nothing to the term.
 
-```
+```agda
 uaβ : {A B : Type ℓ} (f : A ≃ B) (x : A) → transport (ua f) x ≡ f .fst x
 uaβ {A = A} {B} f x i = transp (λ _ → B) i (f .fst x)
 ```
@@ -227,14 +227,14 @@ compose it with a function that turns
 [isomorphisms](agda://1Lab.Equiv#Iso) into equivalences to get the map
 `Iso→path`{.Agda}.
 
-```
+```agda
 Iso→path : {A B : Type ℓ} → Iso A B → A ≡ B
 Iso→path (f , iiso) = ua (f , isIso→isEquiv iiso)
 ```
 
 # The “axiom”
 
-```
+```agda
 pathToEquiv : {A B : Type ℓ} → A ≡ B → A ≃ B
 pathToEquiv {A = A} {B} = J (λ x _ → A ≃ x) (_ , idEquiv)
 
@@ -249,7 +249,7 @@ terms, it's "casting" the identity equivalence `A ≃ A` along a proof
 that `A ≡ B` to get an equivalence `A ≃ B`.
 
 
-```
+```agda
 univalence-Iso : {A B : Type ℓ} → Iso (A ≡ B) (A ≃ B)
 univalence : {A B : Type ℓ} → isEquiv (pathToEquiv {A = A} {B})
 ```
@@ -258,7 +258,7 @@ We can now prove the univalence theorem - this map is an isomorphism,
 and thus, an equivalence. First, we need a small lemma that says `ua id
 ≡ refl`. This will be used to show one direction of the inverse.
 
-```
+```agda
 uaIdEquiv : {A : Type ℓ} → ua (_ , idEquiv {A = A}) ≡ refl
 uaIdEquiv {A = A} i j = Glue A {φ = i ∨ ~ j ∨ j} (λ _ → A , _ , idEquiv)
 
@@ -273,7 +273,7 @@ hence the type.
 
 [^1]: Pardon the pun.
 
-```
+```agda
   iiso : isIso pathToEquiv
   isIso.g iiso = ua
 ```
@@ -281,7 +281,7 @@ hence the type.
 The inverse to `pathToEquiv`{.Agda} is the `ua`{.Agda} map which turns
 equivalences into paths.
 
-```
+```agda
   isIso.right-inverse iiso (f , isEqv) = Σ-Path p (isProp-isEquiv f _ _) where
     p : transport (λ i → A → ua (f , isEqv) i) (λ x → x) ≡ f
     p i x = transp (λ j → B) i (f (transp (λ j → A) i x))
@@ -297,7 +297,7 @@ show is that `transport (λ i → B) (f (transport (λ i → A) x))` is equal
 to `f`. This we do using `transp`{.Agda}, which, when `i = i1`, behaves
 like the identity function.
 
-```
+```agda
   isIso.left-inverse iiso = 
     J (λ _ p → ua (pathToEquiv p) ≡ p)
       (ap ua (JRefl (λ x _ → A ≃ x) (_ , idEquiv)) ∙ uaIdEquiv)
@@ -316,7 +316,7 @@ In many situations, it is helpful to have a proof that
 `pathToEquiv`{.Agda} followed by `an adjustment of levels`{.Agda
 ident=Lift} is still an equivalence:
 
-```
+```agda
 univalence-lift : {A B : Type ℓ} → isEquiv (λ e → lift (pathToEquiv {A = A} {B} e))
 univalence-lift {ℓ = ℓ} = isIso→isEquiv morp where
   morp : isIso (λ e → lift {ℓ = lsuc ℓ} (pathToEquiv e))
@@ -338,7 +338,7 @@ B)` is contractible, just like the type `Σ B (A ≡ B)`. From this, we get
 
 [the same induction principle]: agda://1Lab.Path#J
 
-```
+```agda
 EquivContr : {ℓ : _} (A : Type ℓ) → isContr (Σ[ B ∈ Type ℓ ] A ≃ B)
 isContr.centre (EquivContr A)          = A , _ , idEquiv
 isContr.paths (EquivContr A) (B , A≃B) = Σ-Path (ua A≃B) (Σ-Path p q)
@@ -356,7 +356,7 @@ _ , idEquiv) ≡ (B , eqv)`, we can transport a proof of `P (A , _)` to a
 proof of `P (B , eqv)`. Modulo currying, this is exactly the same thing
 as `J`{.Agda}.
 
-```
+```agda
 EquivJ : {ℓ ℓ' : _} {A : Type ℓ}
        → (P : (B : Type ℓ) → A ≃ B → Type ℓ')
        → P A (_ , idEquiv)
@@ -374,7 +374,7 @@ Equivalence induction makes proving several properties about
 equivalences almost trivial. For example, if `f` is an equivalence, then
 so is its action on paths. 
 
-```
+```agda
 isEquiv→isEquiv-ap : {ℓ : _} {A B : Type ℓ}
                    → (f : A → B) → isEquiv f
                    → {x y : A}

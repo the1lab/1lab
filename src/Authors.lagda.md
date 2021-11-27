@@ -1,5 +1,4 @@
-```
-
+```agda
 module Authors where
 ```
 

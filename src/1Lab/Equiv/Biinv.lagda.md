@@ -5,7 +5,7 @@ description: |
   *is*. We call these biinvertible maps.
 ---
 
-```
+```agda
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -59,7 +59,7 @@ homotopy $f \circ h \sim \mathrm{id}$.
 
 [homotopy]: agda://1Lab.Path#funext
 
-```
+```agda
 linv : (A → B) → Type _
 linv f = Σ[ g ∈ (_ → _) ] (g ∘ f ≡ id)
 
@@ -73,7 +73,7 @@ notion of equivalence].
 
 [good notion of equivalence]: 1Lab.Equiv.html#equivalences
 
-```
+```agda
 isBiinv : (A → B) → Type _
 isBiinv f = linv f × rinv f
 ```
@@ -89,7 +89,7 @@ The proof is simple: If $f : A \to B$ has inverse $f^{-1} : B → A$, then
 $(f^{-1} \circ -)$ and $(- \circ f^{-1})$ are inverses to $(f \circ -)$
 and $(- \circ f)$.
 
-```
+```agda
 isEquiv→isEquiv-precomp  : {f : A → B} → isEquiv f → isEquiv {A = C → A} (f ∘_)
 isEquiv→isEquiv-postcomp : {f : A → B} → isEquiv f → isEquiv {A = B → C} (_∘ f)
 ```
@@ -128,7 +128,7 @@ With this lemma, it can be shown that if $f$ is an isomorphism, then
 `linv(f)`{.Agda ident=linv} and `rinv(f)`{.Agda ident=rinv} are both
 contractible.
 
-```
+```agda
 isIso→isContr-linv : {f : A → B} → isIso f → isContr (linv f)
 isIso→isContr-linv isiso =
   isEquiv→isEquiv-postcomp (isIso→isEquiv isiso) .isEqv id
@@ -142,7 +142,7 @@ This is because `linv(f)`{.Agda} is the fibre of $(- \circ f)$ over
 `id`{.Agda}, and the fibres of an equivalence are contractible. Dually,
 `rinv(f)`{.Agda} is the fibre of $(f \circ -)$ over `id`{.Agda}.
 
-```
+```agda
 _ : {f : A → B} → linv f ≡ fibre (_∘ f) id
 _ = refl
 
@@ -153,7 +153,7 @@ _ = refl
 We show that if a map is biinvertible, then it is invertible. This is
 because if a function has two inverses, they coincide:
 
-```
+```agda
 isBiinv→isIso : {f : A → B} → isBiinv f → isIso f
 isBiinv→isIso {f = f} ((g , g∘f≡id) , h , h∘f≡id) = iso h (happly h∘f≡id) beta
   where
@@ -172,7 +172,7 @@ suffices to show that `isBiinv` is contractible when it is inhabited:
 [a proposition]: agda://1Lab.HLevel#isProp
 [contractible if inhabited]: agda://1Lab.HLevel#inhContr→isProp
 
-```
+```agda
 isProp-isBiinv : {f : A → B} → isProp (isBiinv f)
 isProp-isBiinv {f = f} = inhContr→isProp contract where
   contract : isBiinv f → isContr (isBiinv f)
@@ -188,7 +188,7 @@ inhabited, then it is contractible. Finally, we have that
 $\mathrm{isIso}(f) \to \mathrm{isBiinv}(f)$: simply pick the given
 inverse as both a left- and right- inverse.
 
-```
+```agda
 isIso→isBiinv : {f : A → B} → isIso f → isBiinv f
 isIso→isBiinv iiso .fst = iiso .isIso.g , funext (iiso .isIso.left-inverse)
 isIso→isBiinv iiso .snd = iiso .isIso.g , funext (iiso .isIso.right-inverse)

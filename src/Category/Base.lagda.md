@@ -1,4 +1,4 @@
-```
+```agda
 open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Univalence
@@ -18,7 +18,7 @@ directly corresponds to the definition of precategory as it is
 traditionally formalised, whereas a **category** (or univalent category)
 has an extra condition: Isomorphic objects must be identified.
 
-```
+```agda
 record Precategory (o h : Level) : Type (lsuc (o ⊔ h)) where
 ```
 
@@ -36,7 +36,7 @@ name Hom is historical and it betrays the original context in which
 categories where employed: algebra(ic topology), where the maps in
 question are **hom**omorphisms.
 
-```
+```agda
   field
     Ob  : Type o
     Hom : Ob → Ob → Type h
@@ -48,7 +48,7 @@ of a universe](agda://1Lab.Type). But in HoTT, if we want categories to
 be well-behaved, we do actually mean _set_: A type of
 [h-level](agda://1Lab.HLevel) 2.
 
-```
+```agda
   field
     Hom-set : (x y : Ob) → isSet (Hom x y)
 ```
@@ -77,7 +77,7 @@ This means, for instance, that there is no single "category of sets" -
 there is a _family_ of categories of sets, parametrised by the level in
 which its objects live.
 
-```
+```agda
   field
     id  : {x : _}     → Hom x x
     _∘_ : {x y z : _} → Hom y z → Hom x y → Hom x z
@@ -117,7 +117,7 @@ categories_: The opposite of $C$, written $C^{op}$, has the same
 `objects`{.Agda}, but with $\mathrm{Hom}_{C^{op}}(x, y) =
 \mathrm{Hom}_{C}(y, x)$.
 
-```
+```agda
 infixl 60 _^op
 _^op : {o₁ h₁ : _} → Precategory o₁ h₁ → Precategory o₁ h₁
 (C ^op) .Precategory.Ob = Precategory.Ob C
@@ -133,7 +133,7 @@ twice, ends up equal to what we started with by the nature of
 computation - An equality that arises like this, automatically from what
 Agda computes, is called _definitional_.
 
-```
+```agda
 (C ^op) .Precategory.idl x = C .Precategory.idr x
 (C ^op) .Precategory.idr x = C .Precategory.idl x
 ```
@@ -143,7 +143,7 @@ opposite precategory: For `idr`{.Agda} one has to show $f \circ_{op}
 \mathrm{id} = f$, which computes into having to show that $\mathrm{id}
 \circ_op{f} = f$. The case for `idl`{.Agda} is symmetric.
 
-```
+```agda
 (C ^op) .Precategory.assoc f g h i = Precategory.assoc C h g f (~ i)
 ```
 
@@ -157,7 +157,7 @@ Taking opposite categories is an involution. Since `sym (sym p) = p` by
 definition, taking opposite categories is also definitionally
 involutive.
 
-```
+```agda
 _ : {o₁ h₁ : _} {C : Precategory o₁ h₁} → (C ^op) ^op ≡ C
 _ = refl
 ```
@@ -170,7 +170,7 @@ identified. This is a generalisation of the univalence axiom to
 arbitrary categories, and, indeed, it's phrased in the same way: asking
 for a canonically defined map to be an equivalence.
 
-```
+```agda
 _[_≅_] : {o h : _} (C : Precategory o h) (a b : Precategory.Ob C) → Type h
 ```
 
@@ -181,7 +181,7 @@ that both ways of composing them are the identity.
 
 [isomorphism of sets]: agda://1Lab.Equiv#Iso
 
-```
+```agda
 _[_≅_] C a b =
   Σ[ fg ∈ C.Hom a b × C.Hom b a ]
   Σ[ _ ∈ (fg .fst) C.∘ (fg .snd) ≡ C.id ]
@@ -201,7 +201,7 @@ category. This is because `Σ[ B ∈ _ ] (A ≡ _)` is also contractible.
 Further, the type `C [ A ≃ B ]` satisfies J, by the same argument used
 to construct `EquivJ`{.Agda}.
 
-```
+```agda
 isCategory : {o h : _} → Precategory o h → Type _
 isCategory C = {A : _} → isContr (Σ[ B ∈ _ ] C [ A ≅ B ])
 ```
@@ -212,7 +212,7 @@ equivalence --- by the following argument: Since the types `(Σ[ B ∈ _ ]
 C [ A ≅ B ])` and `Σ[ B ∈ _ ] A ≣ B`, the action of `pathToIso`{.Agda}
 on total spaces is an equivalence; Hence `pathToIso` is an equivalence.
 
-```
+```agda
 pathToIso : {o h : _} {C : Precategory o h} {A : Precategory.Ob C} {B : Precategory.Ob C}
           → A ≡ B → C [ A ≅ B ]
 pathToIso {C = C} {A = A} = J (λ B p → C [ A ≅ B ]) (idIso {C = C})
@@ -220,7 +220,7 @@ pathToIso {C = C} {A = A} = J (λ B p → C [ A ≅ B ]) (idIso {C = C})
 
 First we define, exactly as in the book, the canonical map `pathToIso`{.Agda}.
 
-```
+```agda
 isCategory→isEquiv-pathToIso
   : {o h : _} {C : Precategory o h}
   → isCategory C → {A B : _}
@@ -238,7 +238,7 @@ problem of proving that it induces an equivalence of total spaces.
 
 [fibrewise equivalence]: agda://1Lab.Equiv.Fibrewise
 
-```
+```agda
   isEquiv-total : isEquiv (total {P = P} {Q = Q} (λ A p → pathToIso {C = C} p))
   isEquiv-total =
     isContr→isEquiv (contr (A , λ i → A) isContr-Singleton)
@@ -250,7 +250,7 @@ ident=J}, `Σ Q` by the assumption that C is a category) [any map between
 them is an equivalence](agda://1Lab.Equiv#isContr→isEquiv). This implies
 that we can turn categorical isomorphisms into paths of objects:
 
-```
+```agda
 isCategory→isoToPath : {o h : _} {C : Precategory o h}
                      → isCategory C
                      → {A B : _}
@@ -269,7 +269,7 @@ the fact that [h-levels are closed under equivalences] and that
 [dependent sums preserve h-levels]: agda://1Lab.HLevel.Retracts#isHLevelΣ
 [groupoid]: agda://1Lab.HLevel#isGroupoid
 
-```
+```agda
 isCategory→isGroupoid-Ob : {o h : _} {C : Precategory o h}
                          → isCategory C
                          → isGroupoid (C .Precategory.Ob)
@@ -286,7 +286,7 @@ groupoid.
 [sets]: agda://1Lab.HLevel#isSet
 
 
-```
+```agda
     (isHLevelΣ 2
       (isHLevelΣ 2
         (C.Hom-set _ _) λ _ → C.Hom-set _ _)
@@ -305,7 +305,7 @@ ident=Precategory} quite nicely, since functions preserve h-levels.
 [universe level]: agda://1Lab.Type
 [all sets]: agda://1Lab.HLevel#Set
 
-```
+```agda
 module _ where
   open Precategory
 
@@ -326,7 +326,7 @@ argument used to prove [EquivJ].
 
 [EquivJ]: agda://1Lab.Univalence#EquivJ
 
-```
+```agda
   Sets-category : {o : _} → isCategory (Sets o)
   Sets-category {o = o} {A = a} .centre = a , idIso {C = Sets o} {a = a}
 ```
@@ -339,7 +339,7 @@ isomorphism [over] ua.
 
 [over]: 1Lab.Path.html#dependent-paths
 
-```
+```agda
   Sets-category {o = o} {A = a} .paths (b , isiso) =
     Σ-Path
       (Σ-Path (ua eqv) (isProp-isHLevel 2 _ _))
@@ -355,7 +355,7 @@ not matter since `hom-sets are sets`{.Agda ident=Hom-set}.
 
 [transport filler]: agda://1Lab.Path#transport-filler
 
-```
+```agda
               (Σ-Path (isHLevelΠ 2 (λ _ → b .snd) _ _ _ _)
                       (isHLevelΠ 2 (λ _ → a .snd) _ _ _ _)))
     where
@@ -368,7 +368,7 @@ not matter since `hom-sets are sets`{.Agda ident=Hom-set}.
 
 # Functors
 
-```
+```agda
 record
   Functor
     {o₁ h₁ o₂ h₂}
@@ -418,7 +418,7 @@ $\mathrm{Mon}$ as an algebraic category.
 [linked lists]: agda://1Lab.Data.List#List
 -->
 
-```
+```agda
   field
     F₀ : C.Ob → D.Ob
     F₁ : {x y : _} → C.Hom x y → D.Hom (F₀ x) (F₀ y)
@@ -429,7 +429,7 @@ sets`{.Agda ident="F₀"} - $F_0 : \mathrm{Ob}(C) \to \mathrm{Ob}(D)$, and
 a `function between Hom-sets`{.Agda ident="F₁"} - which takes $f : x \to
 y \in C$ to $F_1(f) : F_0(x) \to F_0(y) \in D$.
 
-```
+```agda
   field
     F-id : {x : _} → F₁ (C.id {x}) ≡ D.id
     F-∘ : {x y z : _} (f : C.Hom y z) (g : C.Hom x y)
@@ -455,7 +455,7 @@ compositions are taken to compositions (`F-∘`{.Agda}).
 Functors also have duals: The opposite of $F : C \to D$ is $F^{op} :
 C^{op} \to D^{op}$.
 
-```
+```agda
   op : Functor (C ^op) (D ^op)
   F₀ op      = F₀
   F₁ op      = F₁
@@ -465,7 +465,7 @@ C^{op} \to D^{op}$.
 
 ## Composition
 
-```
+```agda
 _F∘_ : {o₁ h₁ o₂ h₂ o₃ h₃ : _}
        {C : Precategory o₁ h₁} {D : Precategory o₂ h₂} {E : Precategory o₃ h₃}
      → Functor D E → Functor C D → Functor C E
@@ -476,7 +476,7 @@ object mapping of $(F \circ G)$ is given by $F_0 \circ G_0$, and
 similarly for the morphism mapping. Alternatively, composition of
 functors is a categorification of the fact that monotone maps compose.
 
-```
+```agda
 _F∘_ {C = C} {D} {E} F G = record { F₀ = F₀ ; F₁ = F₁ ; F-id = F-id ; F-∘ = F-∘ }
   where
     module C = Precategory C
@@ -496,7 +496,7 @@ _F∘_ {C = C} {D} {E} F G = record { F₀ = F₀ ; F₁ = F₁ ; F-id = F-id ; 
 To verify that the result is functorial, equational reasoning is employed, using
 the witnesses that $F$ and $G$ are functorial.
 
-```
+```agda
     F-id : {x : C.Ob} → F₁ (C.id {x}) ≡ E.id {F₀ x}
     F-id {x} =
         F.F₁ (G.F₁ C.id) ≡⟨ ap F.F₁ G.F-id ⟩
@@ -518,7 +518,7 @@ categories: [Cat](agda://Category.Instances.Cat.Base#Cat). The
 construction of Cat is not in this module for performance reasons.
 -->
 
-```
+```agda
 Id : {o₁ h₁ : _} {C : Precategory o₁ h₁} → Functor C C
 Functor.F₀ Id x = x
 Functor.F₁ Id f = f
@@ -535,7 +535,7 @@ category, notated $[C, D]$ - the [functor category] between $C$ and $D$.
 
 [functor category]: agda://Category.Instances.Functor
 
-```
+```agda
 record _=>_ {o₁ h₁ o₂ h₂}
             {C : Precategory o₁ h₁}
             {D : Precategory o₂ h₂} 
@@ -550,7 +550,7 @@ natural transformation $F \Rightarrow G$ can be thought of as a way of
 turning $F(x)$s into $G(x)$s that doesn't involve any "arbitrary
 choices".
 
-```
+```agda
   private
     module F = Functor F
     module G = Functor G
@@ -578,7 +578,7 @@ _components_, where the component at $x$ is a map $F(x) \to G(x)$. The
 \end{tikzcd}\]
 ~~~
 
-```
+```agda
     is-natural : (x y : _) (f : C.Hom x y)
                → η y D.∘ F.₁ f ≡ G.₁ f D.∘ η x
 ```
@@ -613,7 +613,7 @@ topological sense].
 Natural transformations also dualize. The opposite of $\eta : F
 \Rightarrow G$ is $\eta^{op} : G^{op} \Rightarrow F^{op}$.
 
-```
+```agda
   op : Functor.op G => Functor.op F
   op = record
     { η = η
@@ -625,7 +625,7 @@ We verify that natural transformations are [sets] by showing that `F =>
 G` is equivalent to a Σ-type which can be easily shown to be a set by
 closure properties of h-levels.
 
-```
+```agda
 module _ {o₁ h₁ o₂ h₂ : _}
          {C : Precategory o₁ h₁}
          {D : Precategory o₂ h₂} 
@@ -659,7 +659,7 @@ is that a record has semantic information (the names `η`{.Agda} and
 `is-natural`{.Agda} mean more than `fst` and `snd`), but a `Σ`{.Agda}
 can be proven to be a set compositionally:
 
-```
+```agda
       NT'-isSet : isSet NT'
       NT'-isSet =
         isHLevelΣ 2 (isHLevelΠ 2 λ x → D.Hom-set _ _)
@@ -673,7 +673,7 @@ Another fundamental lemma is that equality of natural transformations
 depends only on equality of the family of morphisms, since being natural
 is a proposition:
 
-```
+```agda
   Nat-path : {a b : F => G}
            → ((x : _) → a .η x ≡ b .η x)
            → a ≡ b
@@ -686,7 +686,7 @@ is a proposition:
 
 ## Natural Isomorphism
 
-```
+```agda
 record
   _≅_ {o₁ h₁ o₂ h₂ : _} {C : Precategory o₁ h₁} {D : Precategory o₂ h₂}
        (F G : Functor C D)

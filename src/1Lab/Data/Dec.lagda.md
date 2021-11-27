@@ -1,4 +1,4 @@
-```
+```agda
 open import 1Lab.Path
 open import 1Lab.Type
 
@@ -10,7 +10,7 @@ module 1Lab.Data.Dec where
 A type is decidable if it's computable whether or not that type is
 inhabited.
 
-```
+```agda
 data Dec {ℓ : _} (A : Type ℓ) : Type ℓ where
   yes : A → Dec A
   no : (A → ⊥) → Dec A
@@ -25,7 +25,7 @@ case P f g (no x) = g x
 
 A type is _discrete_ if it has decidable equality.
 
-```
+```agda
 Discrete : {ℓ : _} → Type ℓ → Type ℓ
 Discrete A = (x y : A) → Dec (x ≡ y)
 ```

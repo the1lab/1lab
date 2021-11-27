@@ -1,4 +1,4 @@
-```
+```agda
 open import 1Lab.HLevel.Sets
 open import 1Lab.HLevel
 open import 1Lab.Path
@@ -12,7 +12,7 @@ module 1Lab.Data.List where
 A _list_ is a finite, ordered sequence of elements of some type. Lists
 are an inductive type:
 
-```
+```agda
 data List {ℓ} (A : Type ℓ) : Type ℓ where
   nil : List A
   _∷_ : A → List A → List A
@@ -21,7 +21,7 @@ data List {ℓ} (A : Type ℓ) : Type ℓ where
 The first thing we prove is that, if `A` is a set, then so is `List
 A`{.Agda ident=List}.
 
-```
+```agda
 isSet→List-isSet : {ℓ : _} {A : Type ℓ} → isSet A
                  → isSet (List A)
 isSet→List-isSet {A = A} set = Rijke-isSet {R = R} R-refl R-impliesId R-isProp where
@@ -47,7 +47,7 @@ isSet→List-isSet {A = A} set = Rijke-isSet {R = R} R-refl R-impliesId R-isProp
 
 We can define concatenation of lists by recursion:
 
-```
+```agda
 _++_ : {ℓ : _} {A : Type ℓ} → List A → List A → List A
 nil      ++ ys = ys
 (x ∷ xs) ++ ys = x ∷ (xs ++ ys)
@@ -56,7 +56,7 @@ nil      ++ ys = ys
 Then we can prove that this operation is associative and has `nil` as
 both left and right units:
 
-```
+```agda
 ++-assoc : {ℓ : _} {A : Type ℓ} (xs ys zs : List A)
          → (xs ++ ys) ++ zs ≡ xs ++ (ys ++ zs)
 ++-assoc nil ys zs = refl

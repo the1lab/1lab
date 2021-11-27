@@ -1,5 +1,4 @@
-```
-
+```agda
 module index where
 ```
 
@@ -15,7 +14,7 @@ equality_](agda://1Lab.Path) (paths) and [_equivalences_](agda://1Lab.Equiv):
 [HoTT book]: https://homotopytypetheory.org/book/
 
 <!--
-```
+```agda
 open import 1Lab.Type
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -24,7 +23,7 @@ open import 1Lab.HLevel
 ```
 -->
 
-```
+```agda
 _ : {ℓ : _} {A B : Type ℓ} → isEquiv (pathToEquiv {A = A} {B})
 _ = univalence
 ```
@@ -52,7 +51,7 @@ endpoints of the interval: `i0`{.agda}
 * Purple for record selectors: `isEqv`{.agda ident="isEquiv.isEqv"}
 
 <!--
-```
+```agda
 _ = i0
 _ = isEquiv
 _ = isEquiv.isEqv
@@ -85,7 +84,7 @@ about themselves: Keeping with the theme, it's an Agda module:
 `Authors`{.Agda} (there isn't any code there, though!)
 
 <!--
-```
+```agda
 open import Authors
 ```
 -->
@@ -216,7 +215,7 @@ are developed under the `1Lab` namespace. Start here:
 [glueing]: agda://1Lab.Univalence#Glue
 [univalence]: agda://1Lab.Univalence#univalence
 
-```
+```agda
 -- All of these module names are links you can click!
 
 open import 1Lab.Type -- Universes

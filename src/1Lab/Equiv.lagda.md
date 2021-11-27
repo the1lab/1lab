@@ -1,4 +1,4 @@
-```
+```agda
 open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type
@@ -43,7 +43,7 @@ fibres`{.Agda ident=isEqv'} anyway.
 [bi-inverible maps]: 1Lab.Equiv.Biinv.html
 [glueing]: 1Lab.Univalence.html#Glue
 
-```
+```agda
 private
   variable
     ℓ₁ : Level
@@ -55,7 +55,7 @@ A _homotopy fibre_, _fibre_ or _preimage_ of a function `f` at a point
 Since many choices of name are possible, we settle on the one that is
 shortest and most aesthetic: `fibre`{.Agda}.
 
-```
+```agda
 fibre : (A → B) → B → Type _
 fibre f y = Σ λ x → f x ≡ y
 ```
@@ -66,7 +66,7 @@ A function `f` is an equivalence if every one of its fibres is
 maps to `y`. Using set-theoretic language, `f` is an equivalence if the
 preimage of every element of the codomain is a singleton.
 
-```
+```agda
 record isEquiv (f : A → B) : Type (level-of A ⊔ level-of B) where
   no-eta-equality
   field
@@ -84,7 +84,7 @@ idEquiv .isEqv y = contr (y , λ i → y) λ { (y' , p) i → p (~ i) , λ j →
 For Cubical Agda, the type of equivalences is special, so we have to
 make a small wrapper to match the interface Agda expects:
 
-```
+```agda
 {-# BUILTIN EQUIV _≃_ #-}
 {-# BUILTIN EQUIVFUN fst #-}
 
@@ -109,7 +109,7 @@ A function can be an equivalence in at most one way. This follows from
 propositions being closed under dependent products, and `isContr`{.Agda}
 being a proposition.
 
-```
+```agda
 isProp-isEquiv : (f : A → B) → isProp (isEquiv f)
 isProp-isEquiv f x y i .isEqv p = isProp-isContr (x .isEqv p) (y .isEqv p) i
 ```
@@ -121,7 +121,7 @@ same as ever! An isomorphism is a function that has a two-sided inverse.
 We first define what it means for a function to invert another on the
 left and on the right:
 
-```
+```agda
 isLeftInverse : (B → A) → (A → B) → Type _
 isLeftInverse g f = (x : _) → g (f x) ≡ x
 
@@ -133,7 +133,7 @@ A proof that a function $f$ is an isomorphism consists of a function $g$
 in the other direction, together with homotopies exhibiting $g$ as a
 left- and right- inverse to $f$.
 
-```
+```agda
 record isIso (f : A → B) : Type (level-of A ⊔ level-of B) where
   no-eta-equality
   constructor iso
@@ -153,7 +153,7 @@ Iso A B = Σ (isIso {A = A} {B = B})
 
 Any function that is an equivalence is an isomorphism:
 
-```
+```agda
 isEquiv→isIso : {f : A → B} → isEquiv f → isIso f
 isIso.g (isEquiv→isIso eqv) y =
   eqv .isEqv y .centre .fst
@@ -163,7 +163,7 @@ We can get an element of `x` from the proof that `f` is an equivalence -
 it's the point of `A` mapped to `y`, which we get from centre of
 contraction for the fibres of `f` over `y`.
 
-```
+```agda
 isIso.right-inverse (isEquiv→isIso eqv) y =
   eqv .isEqv y .centre .snd
 ```
@@ -171,7 +171,7 @@ isIso.right-inverse (isEquiv→isIso eqv) y =
 Similarly, that one fibre gives us a proof that the function above is a
 right inverse to `f`.
 
-```
+```agda
 isIso.left-inverse (isEquiv→isIso {f = f} eqv) x i =
   eqv .isEqv (f x) .paths (x , refl) i .fst
 ```
@@ -186,14 +186,14 @@ Any isomorphism can be made into a coherent equivalence, by a complex
 cubical argument that honestly does not matter all that much. That's why
 I put it in a details tag!
 
-```
+```agda
 module _ {f : A → B} (i : isIso f) where
 ```
 
 <details>
 <summary> Honestly, there are no explanations here. </summary>
 
-```
+```agda
   open isIso i renaming ( g to g
                         ; right-inverse to s
                         ; left-inverse to t)
@@ -241,7 +241,7 @@ module _ {f : A → B} (i : isIso f) where
 This is the important part: if we have `isIso f`, we can conclude
 `isEquiv f`.
 
-```
+```agda
   isIso→isEquiv : isEquiv f
   isIso→isEquiv .isEqv y .centre .fst = g y
   isIso→isEquiv .isEqv y .centre .snd = s y
@@ -251,7 +251,7 @@ This is the important part: if we have `isIso f`, we can conclude
 Applying this to the `Iso`{.Agda} and `_≃_`{.Agda} pairs, we can turn
 any isomorphism into a coherent equivalence.
 
-```
+```agda
 Iso→Equiv : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} {B : Type ℓ₂}
           → Iso A B
           → A ≃ B
@@ -260,7 +260,7 @@ Iso→Equiv (f , isIso) = f , isIso→isEquiv isIso
 
 A helpful lemma: Any function between contractible types is an equivalence:
 
-```
+```agda
 isContr→isEquiv : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} {B : Type ℓ₂}
                 → isContr A → isContr B → {f : A → B}
                 → isEquiv f
@@ -276,7 +276,7 @@ isContr→isEquiv cA cB = isIso→isEquiv f-is-iso where
 To make composing equivalences more intuitive, we implement operators to
 do equivalence reasoning in the same style as equational reasoning.
 
-```
+```agda
 _∙e_ : {ℓ ℓ₁ ℓ₂ : _} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
      → A ≃ B → B ≃ C → A ≃ C
 
@@ -323,7 +323,7 @@ _∙e_ (f , e) (g , e') = (λ x → g (f x)) , eqv where
 The proofs that equivalences are closed under composition assemble
 nicely into transitivity operators resembling equational reasoning:
 
-```
+```agda
 _≃⟨_⟩_ : {ℓ ℓ₁ ℓ₂ : _} (A : Type ℓ) {B : Type ℓ₁} {C : Type ℓ₂}
        → A ≃ B → B ≃ C → A ≃ C
 A ≃⟨ f ⟩ g = f ∙e g
@@ -345,7 +345,7 @@ The canonical example of equivalence are those generated by transport
 along paths. In a sense, the univalence axiom ensures that these are the
 _only_ examples:
 
-```
+```agda
 transport-is-equiv : {ℓ : _} {A B : Type ℓ} (p : A ≡ B) → isEquiv (transport p)
 transport-is-equiv p = J (λ y p → isEquiv (transport p)) (isIso→isEquiv e) p where
   e : isIso (transport refl)
@@ -359,7 +359,7 @@ transport-is-equiv p = J (λ y p → isEquiv (transport p)) (isIso→isEquiv e) 
 The following observation is not very complex, but it is incredibly
 useful: Equivalence of propositions is the same as biimplication.
 
-```
+```agda
 propExt : {ℓ ℓ' : _} {P : Type ℓ} {Q : Type ℓ'}
         → isProp P → isProp Q
         → (P → Q) → (Q → P)

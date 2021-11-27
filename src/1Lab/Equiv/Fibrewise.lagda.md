@@ -1,4 +1,4 @@
-```
+```agda
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -27,7 +27,7 @@ private variable
 ```
 -->
 
-```
+```agda
 total : ((x : A) → P x → Q x)
       → Σ P → Σ Q
 total f (x , y) = x , f x y
@@ -36,7 +36,7 @@ total f (x , y) = x , f x y
 Furthermore, the fibres of `total f` correspond to fibres of f, in the
 following manner:
 
-```
+```agda
 total-fibers : {f : (x : A) → P x → Q x} {x : A} {v : Q x}
              → Iso (fibre (f x) v) (fibre (total f) (x , v))
 total-fibers {A = A} {P = P} {Q = Q} {f = f} {x = x} {v = v} = the-iso where
@@ -67,7 +67,7 @@ total-fibers {A = A} {P = P} {Q = Q} {f = f} {x = x} {v = v} = the-iso where
 From this, we immediately get that a fibrewise transformation is an
 equivalence iff. it induces an equivalence of total spaces by `total`.
 
-```
+```agda
 total→equiv : {f : (x : A) → P x → Q x}
             → isEquiv (total f)
             → {x : A} → isEquiv (f x)

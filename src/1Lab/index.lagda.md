@@ -1,5 +1,4 @@
-```
-
+```agda
 module 1Lab.index where
 ```
 
@@ -16,7 +15,7 @@ header, then come back here.
 
 [substitution]: 1Lab.Path.html#substitution
 
-```
+```agda
 open import 1Lab.Path -- Don't read past "Transitivity"
 ```
 
@@ -25,7 +24,7 @@ to understand how the composition operation is defined in cubical type
 theory. This module can be read bottom-to-top after understanding the
 basics of paths.
 
-```
+```agda
 open import 1Lab.Path.Partial
 ```
 
@@ -33,7 +32,7 @@ Knowing about partial elements, you can now understand the definition of
 the **composition** operation. Go back and read the rest of the
 `1Lab.Path`{.Agda} module.
 
-```
+```agda
 open import 1Lab.Path -- From "Transitivity" to the end
 ```
 
@@ -42,7 +41,7 @@ accessible. The most important h-levels to understand are the
 **contractible types** and the **propositions**, so focus on
 understanding those first.
 
-```
+```agda
 open import 1Lab.HLevel
 ```
 
@@ -50,7 +49,7 @@ The notion of contractible type is used directly in the definition of
 **equivalence**, and equivalences are one of the central concepts in
 Homotopy Type Theory. They're in the module `1Lab.Equiv`{.Agda}.
 
-```
+```agda
 open import 1Lab.Equiv
 ```
 
@@ -58,7 +57,7 @@ Equivalences are used to define **glueing** and prove **univalence**:
 Paths in the universe are the same thing as equivalences of types. This
 module also has an example of a proof by **equivalence induction**.
 
-```
+```agda
 open import 1Lab.Univalence
 open import 1Lab.Type -- if you need a refresher on universes
 ```
@@ -69,7 +68,7 @@ some of interest:
 - The type of **booleans** and a characterisation of its type of
 automorphisms: `(Bool ≡ Bool) ≡ Bool`.
 
-  ```
+  ```agda
 open import 1Lab.Data.Bool
   ```
 
@@ -77,7 +76,7 @@ open import 1Lab.Data.Bool
 equivalences of **total spaces**. This is used in proving e.g. [Rijke's
 theorem](agda://1Lab.HLevel.Sets#Rijke-isSet).
 
-  ```
+  ```agda
 open import 1Lab.Equiv.Fibrewise
   ```
 
@@ -86,6 +85,6 @@ The sets are the types in HoTT that behave like the types in Agda w/ K.
 This is quite literal: "Satisfies K" is an equivalent characterisation
 of "is of h-level 2".
 
-  ```
+  ```agda
 open import 1Lab.HLevel.Sets
   ```

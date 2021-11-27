@@ -1,4 +1,4 @@
-```
+```agda
 open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type
@@ -30,7 +30,7 @@ For instance, if we have a variable `i : I` of interval type, we can
 represent _disjoint endpoints_ of a [Path] by a partial element with
 formula $\neg i \lor i$:
 
-```
+```agda
 private
   notAPath : (i : I) → Partial (~ i ∨ i) Bool
   notAPath i (i = i0) = true
@@ -50,7 +50,7 @@ A `Partial`{.Agda} element can be understood as a function where the
 domain is the predicate `IsOne`{.Agda}, which has an inhabitant
 `1=1`{.Agda}, stating that one is one:
 
-```
+```agda
   _ : notAPath i0 1=1 ≡ true
   _ = refl
 ```
@@ -103,7 +103,7 @@ instance, we can define a partial element of `Bool` - `true`{.Agda} on
 the left endpoint of the interval - and prove that the path
 `refl`{.Agda} _extends_ this to a line in `Bool`{.Agda}.
 
-```
+```agda
 private
   left-true : (i : I) → Partial (~ i) Bool
   left-true i (i = i0) = true
@@ -116,7 +116,7 @@ The constructor `inS` expresses that _any_ totally-defined cube $u$ can
 be seen as a partial cube, one that agrees with $u$ for any choice of
 formula $\phi$:
 
-```
+```agda
   _ : ∀ {ℓ} {A : Type ℓ} {φ : I} (u : A) → A [ φ ↦ (λ _ → u) ]
   _ = inS
 ```
@@ -129,7 +129,7 @@ and only if, any partial element of $A$ is extensible.
 
 [contractibility]: agda://1Lab.HLevel#isContr
 
-```
+```agda
 isContr' : {ℓ : _} → Type ℓ → _
 isContr' A = {φ : I} (u : Partial φ A) → A [ φ ↦ u ]
 ```
@@ -138,7 +138,7 @@ In the "only if" direction, we can fill the cube defined by $\phi$ (for
 any $\phi$) using the paths that contract $A$; The base of this cube can
 be taken to be the centre of contraction.
 
-```
+```agda
 isContr→isContr' : {ℓ : _} {A : Type ℓ} → isContr A → isContr' A
 isContr→isContr' isc {φ} u0 =
   inS (hcomp (λ j → λ { (φ = i1) → isc .isContr.paths (u0 1=1) j })
@@ -148,7 +148,7 @@ isContr→isContr' isc {φ} u0 =
 In the "if" direction, given a proof that any partial element is
 extensible, we can extend the _empty_ element to get a point of $A$:
 
-```
+```agda
 isContr'→isContr : {ℓ : _} {A : Type ℓ} → isContr' A → isContr A
 isContr.centre (isContr'→isContr extend) = outS (extend {φ = i0} λ { () })
 ```
@@ -156,7 +156,7 @@ isContr.centre (isContr'→isContr extend) = outS (extend {φ = i0} λ { () })
 And the family of paths can be defined by extending the element which is
 $x$ when $i = i1$, and undefined otherwise.
 
-```
+```agda
 isContr.paths (isContr'→isContr extend) x i = outS (extend λ { (i = i1) → x })
 ```
 
@@ -171,7 +171,7 @@ to the notion of "filling a cube": The primitive `hcomp`{.Agda}
 expresses that _if a family of paths is extensible at `i0`{.Agda}, then
 it's extensible at `i1`{.Agda}_:
 
-```
+```agda
 private
   hcomp-verbose : {ℓ : _} {A : Type ℓ} {φ : I}
                 → (u : (i : I) → Partial φ A) -- A family of partial paths

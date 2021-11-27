@@ -1,4 +1,4 @@
-```
+```agda
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Path.Groupoid
 open import 1Lab.Univalence
@@ -17,7 +17,7 @@ We show that if `isIso`{.Agda} were a proposition, then `(x : A) → x ≡
 x` would be contractible for any choice of `A`. Taking `A` to be
 `S¹`{.Agda}, we show that this can not be the case. Suppose that isIso is a proposition.
 
-```
+```agda
 module
   _ (isoProp : {ℓ : _} {A B : Type ℓ} {f : A → B} → isProp (isIso f))
   where
@@ -27,7 +27,7 @@ First we characterise the type `isIso f`{.Agda ident=isIso} by showing
 that, if it is inhabited, then it is equivalent to the _centre_ of `A`,
 i.e. the loop-assigning maps of `A`:
 
-```
+```agda
   lemma : {ℓ : _} {A B : Type ℓ} {f : A → B} → isIso f → isIso f ≃ ((x : A) → x ≡ x)
   lemma {A = A} {B} {f} iiso = 
     EquivJ (λ _ f → isIso (f .fst) ≃ ((x : A) → x ≡ x))
@@ -43,7 +43,7 @@ convenience.
 
 [equivalence induction]: 1Lab.Univalence.html#consequences
 
-```
+```agda
       helper : Iso _ _
       helper .fst iiso x =
         sym (iiso .isIso.left-inverse x) ∙ iiso .isIso.right-inverse x
@@ -55,7 +55,7 @@ convenience.
 We thus have that `isIso id ≃ ((x : A) → x ≡ x)` - since the former is a
 prop (by assumption), then so is the latter:
 
-```
+```agda
   isProp-loops : {ℓ : _} {A : Type ℓ} → isProp ((x : A) → x ≡ x)
   isProp-loops {A = A} = isHLevel-equiv 1 (helper .fst) (helper .snd) isoProp
     where helper = lemma {f = λ (x : A) → x}
@@ -65,14 +65,14 @@ prop (by assumption), then so is the latter:
 Thus, it suffices to choose a type for which `(x : A) → x ≡ x` has two
 distinct elements. We go with the circle, `S¹`{.Agda}:
 
-```
+```agda
   ¬isProp-loops : isProp ((x : S¹) → x ≡ x) → ⊥
   ¬isProp-loops prop = refl≠loop (happly (prop (λ x → refl) always-loop) base)
 ```
 
 Hence, a contradiction:
 
-```
+```agda
   contra : ⊥
   contra = ¬isProp-loops isProp-loops
 ```

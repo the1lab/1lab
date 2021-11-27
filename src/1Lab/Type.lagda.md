@@ -1,5 +1,4 @@
-```
-
+```agda
 module 1Lab.Type where
 ```
 
@@ -12,7 +11,7 @@ allow renaming it in an import declaration from the `Agda.Primitive`
 module.
 
 
-```
+```agda
 open import Agda.Primitive renaming (Set to Type ; Setω to Typeω) public
 ```
 
@@ -26,7 +25,7 @@ done [in this module].
 To prevent this, the universes are parametrised by a _`Level`{.Agda}_,
 where the collection of all `ℓ`-sized types is `Type (lsuc ℓ)`:
 
-```
+```agda
 _ : (ℓ : Level) → Type (lsuc ℓ)
 _ = λ ℓ → Type ℓ
 
@@ -38,7 +37,7 @@ level-of {ℓ} _ = ℓ
 
 Agda comes with built-in definitions for a bunch of types:
 
-```
+```agda
 open import Agda.Builtin.Sigma hiding (Σ) public
 open import Agda.Builtin.Unit public
 open import Agda.Builtin.Bool public
@@ -47,7 +46,7 @@ open import Agda.Builtin.Nat public
 
 It does not, however, come with a built-in definition of the empty type:
 
-```
+```agda
 data ⊥ : Type where
 
 absurd : {ℓ : _} {A : Type ℓ} → ⊥ → A
@@ -58,7 +57,7 @@ The dependent sum of a family of types is notated by `Σ`{.Agda}. The
 domain of the family is left implicit. We use a notation for when it
 must be made explicit.
 
-```
+```agda
 Σ : {a b : _} {A : Type a} (B : A → Type b) → Type _
 Σ = Agda.Builtin.Sigma.Σ _
 
@@ -69,7 +68,7 @@ infix 5 Σ
 The non-dependent product type `_×_`{.Agda} can be defined in terms of
 the dependent sum type:
 
-```
+```agda
 _×_ : {a b : _} → Type a → Type b → Type _
 A × B = Σ[ _ ∈ A ] B
 ```
@@ -78,7 +77,7 @@ A × B = Σ[ _ ∈ A ] B
 
 There is a function which lifts a type to a higher universe:
 
-```
+```agda
 record Lift {a} ℓ (A : Type a) : Type (a ⊔ ℓ) where
   constructor lift
   field
@@ -90,7 +89,7 @@ record Lift {a} ℓ (A : Type a) : Type (a ⊔ ℓ) where
 Since the following definitions are fundamental, they deserve a place in
 this module:
 
-```
+```agda
 _∘_ : {ℓ₁ ℓ₂ ℓ₃ : _} {A : Type ℓ₁} {B : Type ℓ₂} {C : Type ℓ₃}
     → (B → C) → (A → B) → A → C
 f ∘ g = λ z → f (g z)

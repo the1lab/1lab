@@ -65,10 +65,16 @@ sortImportsLiterate path = do
       _ -> traverse_ (Text.hPutStrLn handle) first_code_rest
 
 sortImpl :: [Text.Text] -> [Text.Text]
-sortImpl lines = sorted ++ emptyLineBefore mod where
+sortImpl lines = sorted ++ emptyLineBefore' mod where
   emptyLineBefore xs = case xs of
     [] -> []
     (_:_) -> "":xs
+
+  emptyLineBefore' xs
+    | null sorted = xs
+    | otherwise = case xs of
+      [] -> []
+      (_:_) -> "":xs
 
   (oi_i_o, mod) = break ("module" `Text.isPrefixOf`) lines
   (open_imports, io') = partition ("open import" `Text.isPrefixOf`) oi_i_o

@@ -6,7 +6,7 @@ description: |
   preservation of structure.
 ---
 
-```
+```agda
 open import 1Lab.Equiv.Embedding
 open import 1Lab.Path.Groupoid
 open import 1Lab.Univalence
@@ -43,7 +43,7 @@ equipped with this structure are then represented by the [total space]
 
 In reality, we need slightly more:
 
-```
+```agda
 record Structure {ℓ₁ ℓ₂ : _} (S : Type ℓ₁ → Type ℓ₂) : Type (ℓ₂ ⊔ lsuc ℓ₁) where
   field
 ```
@@ -52,21 +52,21 @@ First, we need a way of picking out, of all the equivalences of the
 underlying types, which preserve the `S`-structure. For example, this
 would pick out the group (iso)morphisms out from all the equivalences.
 
-```
+```agda
    is-hom : (A B : Σ S) → A .fst ≃ B .fst → Type ℓ₁
 ```
 
 Furthermore, we require that the identity equivalence always preserves
 any structure:
 
-```
+```agda
    is-hom-id : {A : Σ S} → is-hom A A (_ , idEquiv)
 ```
 
 This data lets us define a binary relation - embedding of structures -
 by comparing them with the identity equivalence:
 
-```
+```agda
   [_]_∼_ : {X : _} (x y : S X) → Type _
   [_]_∼_ a b = is-hom (_ , a) (_ , b) (_ , idEquiv)
 
@@ -87,7 +87,7 @@ This is done with `J`{.Agda}: By induction, we may assume `t = s`, after
 which the goal is reduced to proving that `[ ST ] s ∼ s`. But this is
 guaranteed by `is-hom-id`{.Agda}, so we are done.
 
-```
+```agda
 structure-path→structure-equiv
   : {X : Type ℓ}
     {S : Type ℓ → Type ℓ₁}
@@ -105,7 +105,7 @@ structure**, abbreviated `SNS`{.Agda}. A `SNS`{.Agda} is a
 `Structure`{.Agda} in which related structures are equal, in a coherent
 manner:
 
-```
+```agda
 isSNS : {ℓ₁ ℓ₂ : _} (S : Type ℓ₁ → Type ℓ₂) → Structure S → Type _
 isSNS S ST = {X : _} {s t : S X}
            → isEquiv (structure-path→structure-equiv ST {s} {t})
@@ -118,7 +118,7 @@ There are also _two_ abbreviations for packaging together the data that
 a given equivalence of underlying types is a homomorphism according to a
 `SNS`{.Agda}. The first, `_≃[_]_`{.Agda}, is convenient:
 
-```
+```agda
 _≃[_]_ : {S : Type ℓ₁ → Type ℓ₂} → Σ S → SNS S → Σ S → Type ℓ₁
 _≃[_]_ {ℓ₁ = ℓ₁} A σ B =
   Σ[ f ∈ A .fst ≃ B .fst ]
@@ -128,7 +128,7 @@ _≃[_]_ {ℓ₁ = ℓ₁} A σ B =
 The second, `_≃L[_]_`{.Agda}, is slightly more complicated, and
 inconvenient: It's `Lift`{.Agda}ed.
 
-```
+```agda
 _≃L[_]_ : {S : Type ℓ₁ → Type ℓ₂} → Σ S → SNS S → Σ S → Type (lsuc ℓ₁)
 _≃L[_]_ {ℓ₁ = ℓ₁} A σ B =
   Σ[ f ∈ Lift (lsuc ℓ₁) (A .fst ≃ B .fst) ]
@@ -141,7 +141,7 @@ This is a technical concern that will help make the proof of
 `SIP`{.Agda} simpler. These are nevertheless related by a simple
 isomorphism:
 
-```
+```agda
 ≃[]-unlift : {S : Type ℓ₁ → Type ℓ₂} {A B : Σ S} {σ : SNS S}
            → (A ≃L[ σ ] B) ≃ (A ≃[ σ ] B)
 ≃[]-unlift {A = A} {B} {σ} = Iso→Equiv morp where
@@ -158,7 +158,7 @@ We fix a standard notion of structure, `S`, and prove that the identity
 type on the total space of S is equivalent to the type of homomorphic
 equivalences over S.
 
-```
+```agda
 module _ {S : Type ℓ₁ → Type ℓ₂} (σ : SNS S) where
   private
     homomorphism-lemma : {A B : Σ S}
@@ -173,7 +173,7 @@ homomorphic structures: Given a path `path : A .fst ≡ B .fst`, it
 induces a homomorphic equivalence if, and only if, `A .snd ≡ B .snd`
 _over `path`_.
 
-```
+```agda
       J (λ B path' → (t : S B)
                    → (subst S path' s ≡ t)
                    ≃ σ .fst .is-hom (A , s) (B , t) (pathToEquiv path'))
@@ -185,7 +185,7 @@ The construction of `helper`{.Agda} is done in stages. Since `J`{.Agda}
 can not prove directly the goal `helper`{.Agda}; What we _can_ prove is
 `helper''`{.Agda}.
 
-```
+```agda
       where
         helper'' : (t : S A)
                  → (s ≡ t) ≃ σ .fst .is-hom (A , s) (A , t) (_ , idEquiv)
@@ -235,7 +235,7 @@ same level as `A ≡ B`.
 
 [equivalence reasoning]: 1Lab.Equiv.html#equivalence-reasoning
 
-```
+```agda
   ℓ-SIP : {A B : Σ S} → (A ≡ B) ≃ (A ≃L[ σ ] B)
   ℓ-SIP {A} {B} =
     (A ≡ B)                                                                ≃⟨ Iso→Equiv (_ , isIso.inverse (Σ-Path-iso .snd)) ⟩
@@ -256,7 +256,7 @@ With the `ℓ-SIP`{.Agda} - the _lifted Structure Identity Principle_ - we
 can prove the `SIP`{.Agda} which does not involve this `lift`{.Agda}.
 This is simpler than proving directly that `(A ≡ B) ≃ (A ≃[ σ ] B)`.
 
-```
+```agda
   SIP : {A B : Σ S} → (A ≡ B) ≃ (A ≃[ σ ] B)
   SIP {A} {B} = 
     (A ≡ B)       ≃⟨ ℓ-SIP ⟩
@@ -281,7 +281,7 @@ equipped with a binary operation.
 [magma]: https://ncatlab.org/nlab/show/magma
 [Set]: agda://1Lab.HLevel#Set
 
-```
+```agda
 private
   binop : Type → Type
   binop X = X → X → X
@@ -292,7 +292,7 @@ private
 An equivalence of $\infty$-magmas is an equivalence of underlying types
 that commutes with with the binary operation. 
 
-```
+```agda
   ∞-Magma-Structure : Structure binop
   ∞-Magma-Structure .is-hom (A , _·_) (B , _·'_) (f , eqv) =
     Path (A → A → B) (λ x y → f (x · y)) (λ x y → f x ·' f y)
@@ -305,7 +305,7 @@ function, and the latter is an equivalence, then so is the former.
 
 [homotopic]: agda://1Lab.Path#funext
 
-```
+```agda
   ∞-Magma-SNS : SNS binop
   ∞-Magma-SNS .fst = ∞-Magma-Structure
   ∞-Magma-SNS .snd {s = s} {t = t} = goal where
@@ -322,7 +322,7 @@ We can do this by path induction. In that case, the goal amounts to
 proving that transporting along the reflexivity path is the identity:
 `transport-refl`{.Agda}.
     
-```
+```agda
     goal : isEquiv (structure-path→structure-equiv ∞-Magma-Structure {s = s} {t = t})
     goal = subst isEquiv (sym (funext sp→se~id)) idEquiv
 ```
@@ -332,7 +332,7 @@ path `sp→se~id`{.Agda} to get the proof we wanted. Thus,
 `∞-Magma`{.Agda} extends to an `SNS`{.Agda}. We can now apply the
 `SIP`{.Agda} to get a characterisation of equality in $\infty$-magmas:
 
-```
+```agda
   ∞-Magma-Path : {A B : ∞-Magma} → (A ≡ B) ≃ (A ≃[ ∞-Magma-SNS ] B)
   ∞-Magma-Path = SIP ∞-Magma-SNS
 ```
@@ -342,13 +342,13 @@ structures, one given by conjunction, one by disjunction, and prove that
 `not`{.Agda} makes them equal as ∞-magmas:
 
 <div class=mathpar>
-```
+```agda
   open import 1Lab.Data.Bool
 ```
 </pre></div>
 
 <div class=mathpar>
-```
+```agda
   Conj : ∞-Magma
   Conj .fst = Bool
   Conj .snd false false = false
@@ -357,7 +357,7 @@ structures, one given by conjunction, one by disjunction, and prove that
   Conj .snd true  true  = true
 ```
 
-```
+```agda
   Disj : ∞-Magma
   Disj .fst = Bool
   Disj .snd false false = false
@@ -370,7 +370,7 @@ structures, one given by conjunction, one by disjunction, and prove that
 I claim that `not`{.Agda} is a $\infty$-magma isomorphism between
 `Conj`{.Agda} and `Disj`{.Agda}:
 
-```
+```agda
   not-iso : Conj ≃[ ∞-Magma-SNS ] Disj
   not-iso .fst = not , isEquiv-not
   not-iso .snd i false false = true
@@ -392,7 +392,7 @@ $$
 From this and the SIP we get that `Conj`{.Agda} and `Disj`{.Agda} are the same
 $\infty$-magma:
 
-```
+```agda
   Conj≡Disj : Conj ≡ Disj
   Conj≡Disj = SIP← ∞-Magma-SNS not-iso
 ```
@@ -415,7 +415,7 @@ notion of structure with _axioms_, then equality of structures with
 axioms is still isomorphism. For this, we require that the axioms be
 [valued in propositions](agda://1Lab.HLevel#isProp).
 
-```
+```agda
 module _
   {S : Type ℓ₁ → Type ℓ₂}
   (σ : SNS S)
@@ -427,7 +427,7 @@ module _
 First, there is a map that forgets the fact that the structure was
 augmented with axioms:
 
-```
+```agda
   [_] : Σ[ x ∈ _ ] Σ[ s ∈ S x ] (axioms x s) → Σ S
   [ x , s , ax ] = _ , s
 ```
@@ -436,7 +436,7 @@ Then we can prove that including the original structures and the axioms
 (which - recall - are valued in propositions!) into a big Σ also defines
 a standard notion of structure. Let's look at it in parts:
 
-```
+```agda
   add-axioms : SNS (λ x → Σ[ s ∈ S x ] axioms x s)
   add-axioms = str , isequiv where
     S' : _ → Type _
@@ -446,7 +446,7 @@ a standard notion of structure. Let's look at it in parts:
 * First we have the carrier type, `S'`. It consists of the original
 structure `S` and the new `axioms`.
 
-```
+```agda
     ish : _
     ish A B x = σ .fst .is-hom [ A ] [ B ] x
 
@@ -459,7 +459,7 @@ underlying S. This is because the `axioms` are valued in propositions,
 so they can not meaningfully be "altered" by a homomorphism, and so do
 not need to be preserved.
 
-```
+```agda
     str : Structure S'
     str = record { is-hom = ish ; is-hom-id = idh }
 ```
@@ -467,7 +467,7 @@ not need to be preserved.
 * This already assembles into a notion of `Structure`{.Agda}. We'll
 prove that it's standard:
 
-```
+```agda
     π : {X : _} → S' X → S X
     π (fst , _) = fst
 
@@ -484,7 +484,7 @@ homomorphisms breaks down as a composition of two equivalences: The
 `old`{.Agda} canonical map (the one from `σ`), and `ap π`{.Agda
 ident=π}.
 
-```
+```agda
     isequiv : {X : _} {s t : S' X}
             → isEquiv (new {s = s} {t = t})
     isequiv {X} {s} {t} = hence-so-is-new where
@@ -498,7 +498,7 @@ we use the fact that `equivalences are closed under composition`{.Agda
 ident=∙-isEquiv} to conclude that, since `old`{.Agda} and `ap π`{.Agda
 ident=π} are equivalences, then so is their composite:
 
-```
+```agda
       composite-is-equivalence : isEquiv (λ (p : s ≡ t) → old (ap π p))
       composite-is-equivalence =
         ∙-isEquiv
@@ -515,7 +515,7 @@ equivalence because `π`{.Agda} is a projection from a _subset_: an
 
 [embedding]: agda://1Lab.Equiv.Embedding#isEmbedding
 
-```
+```agda
       hence-so-is-new : isEquiv new
       hence-so-is-new = subst isEquiv (sym (funext p)) composite-is-equivalence
 ```

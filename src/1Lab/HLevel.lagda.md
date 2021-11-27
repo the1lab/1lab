@@ -1,4 +1,4 @@
-```
+```agda
 open import 1Lab.Path
 open import 1Lab.Type
 
@@ -37,7 +37,7 @@ _contractible types_.
 
 [truncated]: https://ncatlab.org/nlab/show/truncated+object
 
-```
+```agda
 record isContr {ℓ : _} (A : Type ℓ) : Type ℓ where
   constructor contr
   field
@@ -53,7 +53,7 @@ have multiple, distinctly named, inhabitants of the type, it just means
 any inhabitants of the type must be connected by a path, and this path
 can be picked uniformly.
 
-```
+```agda
 module _ where
   data [0,1] : Type where
     ii0 : [0,1]
@@ -65,7 +65,7 @@ An example of a contractible type that is not directly defined as
 another name for `⊥` is the unit interval, defined as a higher inductive
 type.
 
-```
+```agda
   interval-contractible : isContr [0,1]
   interval-contractible .centre = ii0
   interval-contractible .paths ii0 i = ii0
@@ -79,7 +79,7 @@ with are very inconvenient! That's why we introduce this immediate step:
 An h-proposition, or proposition for short, is a type where any two
 elements are connected by a path.
 
-```
+```agda
 isProp : {ℓ : _} → Type ℓ → Type _
 isProp A = (x y : A) → Path A x y
 ```
@@ -87,7 +87,7 @@ isProp A = (x y : A) → Path A x y
 With this, we can define the `isHLevel`{.Agda} predicate. For h-levels
 greater than zero, this definition results in much simpler types!
 
-```
+```agda
 isHLevel : {ℓ : _} → Type ℓ → Nat → Type _
 isHLevel A 0 = isContr A
 isHLevel A 1 = isProp A
@@ -96,14 +96,14 @@ isHLevel A (suc n) = (x y : A) → isHLevel (Path A x y) n
 
 The types of h-level 2 are the _sets_.
 
-```
+```agda
 isSet : {ℓ : _} → Type ℓ → Type _
 isSet A = isHLevel A 2
 ```
 
 The universe of all sets of a given level is called `Set`{.Agda}.
 
-```
+```agda
 Set : (ℓ : _) → Type (lsuc ℓ)
 Set _ = Σ isSet
 
@@ -112,14 +112,14 @@ Set₀ = Set lzero
 
 The types of h-level 3 are the _groupoids_.
 
-```
+```agda
 isGroupoid : {ℓ : _} → Type ℓ → Type _
 isGroupoid A = isHLevel A 3
 ```
 
 The universe of all groupoids of a given level is called `Grpd`{.Agda}.
 
-```
+```agda
 Grpd : (ℓ : _) → Type (lsuc ℓ)
 Grpd _ = Σ isGroupoid
 
@@ -128,7 +128,7 @@ Grpd₀ = Grpd lzero
 
 ---
 
-```
+```agda
 private
   variable
     ℓ : Level
@@ -141,7 +141,7 @@ If a type is of h-level $n$, then it's automatically of h-level $k+n$,
 for any $k$. We first prove a couple of common cases that deserve their
 own names:
 
-```
+```agda
 isContr→isProp : isContr A → isProp A
 isContr→isProp C x y i =
   hcomp (λ j → λ { (i = i0) → C .paths x j
@@ -154,7 +154,7 @@ This enables another useful characterisation of being a proposition,
 which is that the propositions are precisely the types which are
 contractible when they are inhabited:
 
-```
+```agda
 inhContr→isProp : {ℓ : _} {A : Type ℓ} → (A → isContr A) → isProp A
 inhContr→isProp cont x y = isContr→isProp (cont x) x y
 ```
@@ -179,7 +179,7 @@ This is equivalently the composition of `sym (C .paths x) ∙ C.paths y` -
 a path $x \to y$ which factors through the `centre`{.Agda}. The direct
 cubical description is, however, slightly more efficient.
 
-```
+```agda
 isProp→isSet : isProp A → isSet A
 isProp→isSet h x y p q i j =
   hcomp (λ k → λ { (i = i0) → h x (p j) k
@@ -232,7 +232,7 @@ have an open box, it has a lid --- which, in this case, is the back face
 
 With these two base cases, we can prove the general case by recursion:
 
-```
+```agda
 isHLevel-suc : {ℓ : _} {A : Type ℓ} (n : Nat) → isHLevel A n → isHLevel A (suc n)
 isHLevel-suc 0 x = isContr→isProp x
 isHLevel-suc 1 x = isProp→isSet x
@@ -241,7 +241,7 @@ isHLevel-suc (suc (suc n)) h x y = isHLevel-suc (suc n) (h x y)
 
 By another inductive argument, we can prove that any offset works:
 
-```
+```agda
 isHLevel-+ : {ℓ : _} {A : Type ℓ} (n k : Nat) → isHLevel A n → isHLevel A (k + n)
 isHLevel-+ n zero x    = x
 isHLevel-+ n (suc k) x = isHLevel-suc _ (isHLevel-+ n k x)
@@ -263,7 +263,7 @@ admits unique fillers for 2-cubes, or squares, and so on.
 Since these fillers are _unique_, if a type has them, it has them in at
 most one way!
 
-```
+```agda
 isProp-isContr : isProp (isContr A)
 isProp-isContr {A = A} (contr c₁ h₁) (contr c₂ h₂) i =
   record { centre = h₁ c₂ i
@@ -280,7 +280,7 @@ that being a proposition is a proposition. This follows from
 `isProp→isSet`{.Agda}, since what we want to prove is that `h₁` and `h₂`
 always give equal paths.
 
-```
+```agda
 isProp-isProp : isProp (isProp A)
 isProp-isProp {A = A} h₁ h₂ i x y = isProp→isSet h₁ x y (h₁ x y) (h₂ x y) i
 ```
@@ -288,7 +288,7 @@ isProp-isProp {A = A} h₁ h₂ i x y = isProp→isSet h₁ x y (h₁ x y) (h₂
 Now we can prove the general case by the same inductive argument we used
 to prove h-levels can be raised:
 
-```
+```agda
 isProp-isHLevel : {ℓ : _} {A : Type ℓ} (n : Nat) → isProp (isHLevel A n)
 isProp-isHLevel 0 = isProp-isContr
 isProp-isHLevel 1 = isProp-isProp
@@ -303,7 +303,7 @@ h-level for a _family_ of types, where, rather than having (e.g.)
 dependent contractibility doesn't make a lot of sense, this definition
 is offset by one to start at the propositions.
 
-```
+```agda
 isHLevelDep : {ℓ ℓ' : _} {A : Type ℓ} → (A → Type ℓ') → Nat → Type _
 isHLevelDep B zero = {x y : _} (α : B x) (β : B y) (p : x ≡ y)
                    → PathP (λ i → B (p i)) α β
@@ -315,7 +315,7 @@ isHLevelDep B (suc n) =
 It's sufficient for a type family to be of an h-level everywhere for the
 whole family to be the same h-level.
 
-```
+```agda
 isProp→PathP : ∀ {B : I → Type ℓ} → ((i : I) → isProp (B i))
              → (b0 : B i0) (b1 : B i1)
              → PathP (λ i → B i) b0 b1
@@ -326,7 +326,7 @@ isProp→PathP {B = B} hB b0 b1 =
 The base case is turning a proof that a type is a proposition uniformly
 over the interval to a filler for any PathP.
 
-```
+```agda
 isHLevel→isHLevelDep : {ℓ ℓ' : _} {A : Type ℓ} {B : A → Type ℓ'}
                      → (n : Nat) → ((x : A) → isHLevel (B x) (suc n))
                      → isHLevelDep B n

@@ -1,4 +1,4 @@
-```
+```agda
 open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Data.Dec
@@ -27,14 +27,14 @@ proofs): Any two proofs of the same equality are equal. There are many
 ways to prove that a type is a set. An equivalence that is well-known in
 type theory is that UIP is equivalent to **Axiom K**:
 
-```
+```agda
 hasK : Type ℓ → Typeω
 hasK A = {ℓ : _} {x : A} (P : x ≡ x → Type ℓ) → P refl → (p : x ≡ x) → P p
 ```
 
 A type is a Set if, and only if, it satisfies K:
 
-```
+```agda
 K→isSet : hasK A → isSet A
 K→isSet K x y =
   J (λ y p → (q : x ≡ y) → p ≡ q) (λ q → K (λ q → refl ≡ q) refl q)
@@ -51,7 +51,7 @@ the elements of `A`; `R x y` is always a proposition; `R` is reflexive,
 and `R x y` implies `x ≡ y`. Then we have that `(x ≡ y) ≃ R x y`, and by
 closure of h-levels under equivalences, `A` is a set.
 
-```
+```agda
 Rijke-equivalence : {R : A → A → Type ℓ}
                   → (refl : {x : A} → R x x)
                   → (toid : {x y : A} → R x y → x ≡ y)
@@ -72,7 +72,7 @@ contract the total space of `R x` to `(x , refl)`.
 
 [fibrewise equivalences]: agda://1Lab.Equiv.Fibrewise
 
-```
+```agda
 Rijke-isSet : {R : A → A → Type ℓ}
             → (refl : {x : A} → R x x)
             → (toid : {x y : A} → R x y → x ≡ y)
@@ -88,7 +88,7 @@ Rijke-isSet refl toid isprop x y =
 As a consequence of Rijke's theorem, we get that any type for which we
 can conclude equality from a double-negated equality is a set:
 
-```
+```agda
 ¬¬-separated→isSet : ({x y : A} → ((x ≡ y → ⊥) → ⊥) → x ≡ y)
                    → isSet A
 ¬¬-separated→isSet stable = Rijke-isSet (λ x → x refl) stable prop where
@@ -98,7 +98,7 @@ can conclude equality from a double-negated equality is a set:
 
 From this we get **Hedberg's theorem**: Any type with decidable equality is a set.
 
-```
+```agda
 Discrete→isSet : Discrete A → isSet A
 Discrete→isSet {A = A} dec = ¬¬-separated→isSet sep where
   sep : {x y : A} → ((x ≡ y → ⊥) → ⊥) → x ≡ y

@@ -1,4 +1,4 @@
-```
+```agda
 open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type hiding (id ; _∘_)
@@ -21,7 +21,7 @@ private variable
 
 The identity natural transformation sends any functor to itself:
 
-```
+```agda
 idnt : {F : Functor C D} → F => F
 idnt {C = C} {D = D} .η x = D .id
 idnt {C = C} {D = D} .is-natural x y f = D .idl _ ∙ sym (D .idr _)
@@ -29,7 +29,7 @@ idnt {C = C} {D = D} .is-natural x y f = D .idl _ ∙ sym (D .idr _)
 
 Natural transformations compose:
 
-```
+```agda
 _∘nt_ : {F G H : Functor C D} → G => H → F => G → F => H
 ```
 
@@ -61,7 +61,7 @@ natural transformations inherit the identity and associativity laws from
 the codomain category $D$, and since hom-sets are sets,
 `is-natural`{.Agda} does not matter.
 
-```
+```agda
 module _ {o₁ h₁ o₂ h₂ : _} (C : Precategory o₁ h₁) (D : Precategory o₂ h₂) where
   open Precategory
 
@@ -77,7 +77,7 @@ the characterisation of equalities in natural transformations: They `are
 a set`{.Agda ident=isSet-Nat}, and equality of the components
 `determines`{.Agda ident=Nat-path} equality of the transformation.
 
-```
+```agda
   FunctorCat .Hom-set F G = isSet-Nat
   FunctorCat .idr f = Nat-path λ x → D .idr _
   FunctorCat .idl f = Nat-path λ x → D .idl _

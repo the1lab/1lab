@@ -1,4 +1,4 @@
-```
+```agda
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Univalence.SIP
 open import 1Lab.Path.Groupoid
@@ -26,7 +26,7 @@ element $y$ such that both $x \star y$ and $y \star x$ are the identity:
 [a proposition]: agda://1Lab.HLevel#isProp
 [imposing axioms]: 1Lab.Univalence.SIP.html#adding-axioms
 
-```
+```agda
 module _ {ℓ : _} {X : Type ℓ} (M : MonoidStr X) where
   open isMonoid (M .snd)
 
@@ -39,7 +39,7 @@ If an element $x$ has two inverses $y$ and $y'$, then $y = y'$. Since
 · y ≡ unit` and `y · x ≡ unit` "immaterial" --- we then have that
 `invertible`{.Agda} `is a proposition`{.Agda ident=isProp-invertible}.
 
-```
+```agda
   inverses-unique : (x : X) (y y' : invertible x) → y .fst ≡ y' .fst
   inverses-unique x (y , y-r , y-l) (y' , y'-r , y'-l ) =
     y            ≡⟨ sym monoid-idʳ ⟩
@@ -58,7 +58,7 @@ If an element $x$ has two inverses $y$ and $y'$, then $y = y'$. Since
 From this we immediately get a `SNS`{.Agda} for groups as the monoids
 where every element is invertible:
 
-```
+```agda
 isGroup : {ℓ : _} {X : Type ℓ} → MonoidStr X → _
 isGroup {X = X} M = (y : X) → invertible M y
 
@@ -79,7 +79,7 @@ preserves the monoid structure:
 
 [structure identity principle]: agda://1Lab.Univalence.SIP
 
-```
+```agda
 Group : (ℓ : _) → Type (lsuc ℓ)
 Group ℓ = Σ GroupStr
 
@@ -93,7 +93,7 @@ Since the way `Group`{.Agda} is associated is very inconvenient, the
 following module can be used to bring the group data into scope using
 more friendly names.
 
-```
+```agda
 module Group {ℓ : _} (group : Group ℓ) where
   private
     module M = isMonoid (group .snd .fst .snd)
@@ -143,7 +143,7 @@ fact, a [set].
 
 [set]: agda://1Lab.HLevel#isSet
 
-```
+```agda
 Sym : {ℓ : _} → Set ℓ → Group ℓ
 Sym (X , X-Set) = X ≃ X , groupStr where
   monoidStr : MonoidStr (X ≃ X)
@@ -155,7 +155,7 @@ The pointed magma structure is given by `composition of
 equivalences`{.Agda ident=_∙e_}, with the `identity equivalence`{.Agda
 ident=idEquiv} as the unit;
 
-```
+```agda
   monoidStr .snd .isMonoid.monoid-set =
     isHLevelΣ 2 (isHLevel→ 2 X-Set)
                 (λ f → isProp→isSet (isProp-isEquiv f))
@@ -174,7 +174,7 @@ The `monoid laws`{.Agda ident=isMonoid} all follow from $X$ being a
 `Set`{.Agda}, and from `isEquiv` `being a proposition`{.Agda
 ident=isProp-isEquiv}; The underlying functions are equal by computation.
 
-```
+```agda
   groupStr : GroupStr (X ≃ X)
   groupStr .fst = monoidStr
   groupStr .snd eqv .fst = eqv e¯¹

@@ -5,7 +5,7 @@ description: |
   the Structure Identity Principle.
 ---
 
-```
+```agda
 open import 1Lab.Univalence.SIP
 open import 1Lab.Path.Groupoid
 open import 1Lab.Univalence
@@ -48,7 +48,7 @@ underlying a monoid has a scary name, but it's quite simple in reality:
 [equipped with axioms]: agda://1Lab.Univalence.SIP#add-axioms
 [standard notion of structure]: agda://1Lab.Univalence.SIP#SNS
 
-```
+```agda
 Pointed∞Magma : Type ℓ → Type ℓ
 Pointed∞Magma X = (X → X → X) × X
 ```
@@ -59,7 +59,7 @@ other conditions. This is why it gets prefixed with $\infty$: it's not
 subject to any truncation conditions, so it can be an arbitrary
 $\infty$-groupoid.
 
-```
+```agda
 Pointed∞Magma-SNS : {ℓ : _} → SNS (Pointed∞Magma {ℓ})
 Pointed∞Magma-SNS = sns where
   str : Structure Pointed∞Magma
@@ -74,7 +74,7 @@ A **pointed $\infty$-magma homomorphism** is an equivalence of the
 underlying types that commutes with the operation, and preserves the
 identity element.
 
-```
+```agda
   sns : SNS _
   sns .fst = str
   sns .snd = equiv where
@@ -95,7 +95,7 @@ types].
 [homotopic]: agda://1Lab.Path#funext
 [characterises paths in Σ types]: agda://1Lab.Path.Groupoid#Σ-PathP-iso
 
-```
+```agda
     simpler : isEquiv (λ x → ap fst x , ap snd x)
     simpler = isIso→isEquiv (isIso.inverse (Σ-PathP-iso .snd))
     
@@ -105,7 +105,7 @@ types].
 
 We define the monoid axioms in a record, for convenience of naming:
 
-```
+```agda
 record isMonoid {ℓ : _} {X : Type ℓ} (P : Pointed∞Magma X) : Type ℓ where
   open Sigma P renaming (fst to infixr 30 _·_ ; snd to unit) public
 
@@ -120,7 +120,7 @@ of the axioms are [propositions].
 
 Then, we need the actual monoid axioms:
 
-```
+```agda
     monoid-idʳ : {x : _} → x · unit ≡ x
     monoid-idˡ : {x : _} → unit · x ≡ x
     monoid-assoc : {x y z : _} → (x · y) · z ≡ x · y · z
@@ -134,7 +134,7 @@ three equations are propositions. This characterises
 
 [axioms we can add to a SNS]: agda://1Lab.Univalence.SIP#add-axioms
 
-```
+```agda
 isProp-isMonoid : {P : Pointed∞Magma A} → isProp (isMonoid P)
 isProp-isMonoid {P = P} m n i .monoid-set =
   isProp-isHLevel 2 (m .monoid-set) (n .monoid-set) i
@@ -145,7 +145,7 @@ ident=isProp-isHLevel}, we can construct the path relating the witnesses
 `monoid-set`{.Agda}. The rest of the squares have fillers _precisely_
 because `A` is assumed to be a set:
 
-```
+```agda
 isProp-isMonoid {P = P} m n i .monoid-idʳ {e} =
   m .monoid-set _ _ (m .monoid-idʳ {e}) (n .monoid-idʳ {e}) i
 isProp-isMonoid {P = P} m n i .monoid-idˡ {e} = 
@@ -157,7 +157,7 @@ isProp-isMonoid {P = P} m n i .monoid-assoc {e} {f} {g} =
 We can then characterise `monoid structures`{.Agda ident=MonoidStr} and
 that they are `standard`{.Agda ident=Monoid-SNS}.
 
-```
+```agda
 MonoidStr : Type ℓ → Type ℓ
 MonoidStr X = Σ[ P ∈ Pointed∞Magma X ] (isMonoid P)
 
@@ -171,7 +171,7 @@ as an equivalence of the underlying types that preserves the monoid structure:
 
 [structure identity principle]: agda://1Lab.Univalence.SIP
 
-```
+```agda
 Monoid : Type (lsuc ℓ)
 Monoid = Σ MonoidStr
 
@@ -190,7 +190,7 @@ generators** - better known as `the type of lists`{.Agda} on a set. We
 require that the type be a set since _monoids_ have to be sets, and
 `lists preserve set-ness`{.Agda isSet→List-isSet}.
 
-```
+```agda
 open import 1Lab.Data.List
 
 List-monoid : {ℓ : _} {A : Type ℓ} → isSet A → MonoidStr (List A)
@@ -201,7 +201,7 @@ List-monoid isS .fst .snd = nil
 The underlying pointed $\infty$-monoid structure is given by
 `_++_`{.Agda} and `nil`{.Agda}.
 
-```
+```agda
 List-monoid isS .snd .monoid-set = isSet→List-isSet isS
 List-monoid isS .snd .monoid-idʳ = ++-idʳ _
 List-monoid isS .snd .monoid-idˡ = ++-idˡ _
@@ -216,7 +216,7 @@ equalities to make this into a monoid.
 Since `Nat`{.Agda} is a set, we can prove it has a multitude of `monoid
 structures`{.Agda ident=MonoidStr}:
 
-```
+```agda
 ℕ-+ : MonoidStr Nat
 ℕ-+ .fst .fst = _+_
 ℕ-+ .fst .snd = 0

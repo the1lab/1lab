@@ -1,4 +1,4 @@
-```
+```agda
 open import 1Lab.Univalence
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -22,7 +22,7 @@ In HoTT, the notion of _injective map_ is not well-behaved for types
 that are not sets. Thus, we strengthen the notion: Rather than using
 `injective`{.Agda}, we use `isEmbedding`{.Agda}.
 
-```
+```agda
 injective : (A → B) → Type _
 injective f = {x y : _} → f x ≡ f y → x ≡ y
 
@@ -34,7 +34,7 @@ One of the canonical sources of embeddings are the _subtype inclusions_.
 A subtype of `A` is given by a predicate `B : A → Type`, such that `B x`
 is always a proposition:
 
-```
+```agda
 Subset-proj-embedding : {a b : _} {A : Type a} {B : A → Type b}
                       → ((x : A) → isProp (B x))
 ```
@@ -42,7 +42,7 @@ Subset-proj-embedding : {a b : _} {A : Type a} {B : A → Type b}
 When this is the case, we have that the `first projection`{.Agda
 ident=fst} is an embedding:
 
-```
+```agda
                       → isEmbedding (fst {A = A} {B = B})
 ```
 
@@ -78,7 +78,7 @@ It can be seen that embeddings are a generalisation of injective
 functions (hence, of subset inclusions) by considering how embeddings
 behave when applied to sets:
 
-```
+```agda
 injective-sets→embedding : isSet A → isSet B → (f : A → B)
                          → injective f
                          → isEmbedding f
@@ -87,7 +87,7 @@ injective-sets→embedding : isSet A → isSet B → (f : A → B)
 In this case, we have that both `f x ≡ f y` and `x ≡ y` are mere
 propositions, so biimplication becomes equivalence:
 
-```
+```agda
 injective-sets→embedding Aset Bset f injective =
   isIso→isEquiv (iso injective (λ _ → Bset _ _ _ _) (λ _ → Aset _ _ _ _))
 ```

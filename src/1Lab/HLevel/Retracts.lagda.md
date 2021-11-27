@@ -1,4 +1,4 @@
-```
+```agda
 open import 1Lab.Path.Groupoid
 open import 1Lab.Univalence
 open import 1Lab.HLevel
@@ -36,7 +36,7 @@ are contractible. We say that $A$ is a retract of $B$ if there is a map
 $f : A \to B$ admitting a `right-inverse`{.Agda}. This means that $f$ is
 the retraction (the left inverse). The proof is a calculation:
 
-```
+```agda
 isContr-retract : (f : A → B) (g : B → A)
                 → isLeftInverse f g
                 → isContr A
@@ -50,7 +50,7 @@ paths (isContr-retract f g h isC) x =
 
 We must also show that retracts of _propositions_ are propositions:
 
-```
+```agda
 isProp-retract : (f : A → B) (g : B → A)
                → isLeftInverse f g
                → isProp A
@@ -64,7 +64,7 @@ isProp-retract f g h propA x y =
 
 Now we can extend this to all h-levels by induction:
 
-```
+```agda
 isHLevel-retract : (n : Nat) (f : A → B) (g : B → A)
                  → isLeftInverse f g
                  → isHLevel A n
@@ -78,7 +78,7 @@ inductive case, a function `g x ≡ g y → x ≡ y` is constructed, which is
 a left inverse to the function `ap g`. Then, since `(g x) ≡ (g y)` is a
 homotopy (n+1)-type, we conclude that so is `x ≡ y`.
 
-```
+```agda
 isHLevel-retract (suc (suc n)) f g h hlevel x y =
   isHLevel-retract (suc n) sect (ap g) inv (hlevel (g x) (g y))
   where
@@ -117,7 +117,7 @@ of paths that annihilates on the left, and `path` on the right.
 It follows, without a use of univalence, that h-levels are closed under
 isomorphisms and equivalences:
 
-```
+```agda
 isHLevel-iso : (n : Nat) (f : A → B) → isIso f → isHLevel A n → isHLevel B n
 isHLevel-iso n f is-iso =
   isHLevel-retract n f (is-iso .isIso.g)
@@ -132,7 +132,7 @@ isHLevel-equiv n f eqv = isHLevel-iso n f (isEquiv→isIso eqv)
 Since h-levels are closed under retracts, The type of functions into a
 homotopy n-type is itself a homotopy n-type.
 
-```
+```agda
 isHLevelΠ : {a b : _} {A : Type a} {B : A → Type b}
           → (n : Nat) (Bhl : (x : A) → isHLevel (B x) n)
           → isHLevel ((x : A) → B x) n
@@ -146,7 +146,7 @@ isHLevelΠ (suc (suc n)) bhl f g =
 By taking `B` to be a type rather than a family, we get that `A → B`
 also inherits the h-level of B.
 
-```
+```agda
 isHLevel→ : {a b : _} {A : Type a} {B : Type b}
           → (n : Nat) → isHLevel B n
           → isHLevel (A → B) n
@@ -160,7 +160,7 @@ paths], shows that dependent sums are also closed under h-levels.
 
 [paths of pairs are pairs of paths]: agda://1Lab.Path.Groupoid#Σ-Path-iso
 
-```
+```agda
 isHLevelΣ : {A : Type ℓ} {B : A → Type ℓ'} (n : Nat)
             → isHLevel A n
             → ((x : A) → isHLevel (B x) n)
@@ -184,7 +184,7 @@ Similarly for dependent products and functions, there is a non-dependent
 version of `isHLevelΣ`{.Agda} that expresses closure of h-levels under
 `_×_`{.Agda}.
 
-```
+```agda
 isHLevel× : {a b : _} {A : Type a} {B : Type b}
           → (n : Nat)
           → isHLevel A n → isHLevel B n

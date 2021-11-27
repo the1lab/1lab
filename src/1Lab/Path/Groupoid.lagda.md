@@ -1,4 +1,4 @@
-```
+```agda
 open import 1Lab.Equiv
 open import 1Lab.Path hiding (_∙_)
 open import 1Lab.Type
@@ -32,7 +32,7 @@ This is the approach taken in the HoTT book. We fix a type, and some
 variables of that type, and some paths between variables of that type,
 so that each definition doesn't start with 12 parameters.
 
-```
+```agda
 module WithJ where
   private variable
     ℓ : Level
@@ -43,7 +43,7 @@ module WithJ where
 First, we (re)define the operations using J. These will be closer to the
 structure given in the book.
 
-```
+```agda
   _∙_ : x ≡ y → y ≡ z → x ≡ z
   _∙_ {x = x} {y} {z} = J (λ y _ → y ≡ z → x ≡ z) (λ x → x)
 ```
@@ -51,7 +51,7 @@ structure given in the book.
 First we define path composition. Then, we can prove that the identity
 path - `refl`{.Agda} - acts as an identity for path composition.
 
-```
+```agda
   ∙-id-right : (p : x ≡ y) → p ∙ refl ≡ p
   ∙-id-right {x = x} {y = y} p =
     J (λ _ p → p ∙ refl ≡ p)
@@ -63,14 +63,14 @@ This isn't as simple as it would be in "Book HoTT" because - remember -
 J doesn't compute definitionally, only up to the path `JRefl`{.Agda}.
 Now the other identity law:
 
-```
+```agda
   ∙-id-left : (p : y ≡ z) → refl ∙ p ≡ p
   ∙-id-left {y = y} {z = z} p = happly (JRefl (λ y _ → y ≡ z → y ≡ z) (λ x → x)) p
 ```
 
 This case we get for less since it's essentially the computation rule for `J`{.Agda}.
 
-```
+```agda
   ∙-assoc : (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
           → p ∙ (q ∙ r) ≡ (p ∙ q) ∙ r
   ∙-assoc {w = w} {x = x} {y = y} {z = z} p q r =
@@ -94,7 +94,7 @@ automatic - it's expressed by the `lemma`{.Agda}.
 This expresses that the paths behave like morphisms in a category. For a
 groupoid, we also need inverses and cancellation:
 
-```
+```agda
   inv : x ≡ y → y ≡ x
   inv {x = x} = J (λ y _ → y ≡ x) refl
 ```
@@ -102,7 +102,7 @@ groupoid, we also need inverses and cancellation:
 The operation which assigns inverses has to be involutive, which follows
 from two computations.
 
-```
+```agda
   inv-inv : (p : x ≡ y) → inv (inv p) ≡ p
   inv-inv {x = x} =
     J (λ y p → inv (inv p) ≡ p)
@@ -111,7 +111,7 @@ from two computations.
 
 And we have to prove that composing with an inverse gives the reflexivity path.
 
-```
+```agda
   ∙-inv-l : (p : x ≡ y) → p ∙ inv p ≡ refl
   ∙-inv-l {x = x} = J (λ y p → p ∙ inv p ≡ refl)
                       (∙-id-left (inv refl) ∙ JRefl (λ y _ → y ≡ x) refl)
@@ -125,7 +125,7 @@ And we have to prove that composing with an inverse gives the reflexivity path.
 
 Now we do the same using `hfill`{.Agda} instead of path induction.
 
-```
+```agda
 module _ where
   private variable
     ℓ : Level
@@ -138,7 +138,7 @@ module _ where
 The left and right identity laws follow directly from the two fillers
 for the composition operation.
 
-```
+```agda
   ∙-id-right : (p : x ≡ y) → p ∙ refl ≡ p
   ∙-id-right p = sym (∙-filler p refl)
 
@@ -148,7 +148,7 @@ for the composition operation.
 
 For associativity, we use both:
 
-```
+```agda
   ∙-assoc : (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
           → p ∙ (q ∙ r) ≡ (p ∙ q) ∙ r
   ∙-assoc p q r i = ∙-filler p q i ∙ ∙-filler' q r (~ i)
@@ -158,7 +158,7 @@ For cancellation, we need to sketch an open cube where the missing
 square expresses the equation we're looking for. Thankfully, we only
 have to do this once!
 
-```
+```agda
   private
     inv-r-filler : ∀ {x y : A} (p : x ≡ y) → (i j k : I) → A
     inv-r-filler {x = x} p k j i =
@@ -177,7 +177,7 @@ For the other direction, we use the fact that `p` is definitionally
 equal to `sym (sym p)`. In that case, we show that `sym p ∙ sym (sym p)
 ≡ refl` - which computes to the thing we want!
 
-```
+```agda
   ∙-inv-l : (p : x ≡ y) → sym p ∙ p ≡ refl
   ∙-inv-l p = ∙-inv-r (sym p)
 ```
@@ -199,7 +199,7 @@ identities:
 ```
 -->
 
-```
+```agda
   ap-comp-path : {f : A → B} {x y z : A} (p : x ≡ y) (q : y ≡ z)
                → ap f (p ∙ q) ≡ ap f p ∙ ap f q
   ap-comp-path {f = f} =
@@ -217,7 +217,7 @@ structure of some types. Since the definition of isomorphism is not
 available in that module, the characterisations of path spaces up-to-iso
 are here:
 
-```
+```agda
 Σ-PathP-iso : {a b : _} {A : Type a} {B : A → Type b}
            → {x y : Σ B}
            → Iso (Σ[ p ∈ x .fst ≡ y .fst ] (PathP (λ i → B (p i)) (x .snd) (y .snd)))
