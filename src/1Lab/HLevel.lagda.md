@@ -21,11 +21,11 @@ inhabited.
 * The interesting information about a set is the collection of its inhabitants.
 
 * The interesting information about a groupoid includes, in addition to
-its inhabitants, the way those are related by paths. As an extreme example,
-the [delooping groupoid] of a group has uninteresting inhabitants
-(there's only one), but interesting _loops_.
+its inhabitants, the way those are related by paths. As an extreme
+example, the delooping groupoid of a group -- for instance, [the circle] --
+has uninteresting points (there's only one), but interesting _loops_.
 
-[delooping groupoid]: agda://1Lab.Data.Delooping
+[the circle]: agda://1Lab.HIT.S1
 
 For convenience, we refer to the collection of types of h-level $n$ as
 _homotopy $(n-2)$-types_. For instance: "The sets are the homotopy
@@ -123,7 +123,7 @@ The universe of all groupoids of a given level is called `Grpd`{.Agda}.
 Grpd : (ℓ : _) → Type (lsuc ℓ)
 Grpd _ = Σ isGroupoid
 
-Grpd₀ = Set lzero
+Grpd₀ = Grpd lzero
 ```
 
 ---
