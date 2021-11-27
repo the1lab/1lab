@@ -113,10 +113,10 @@ fibre-paths {f = f} {y} {f1} {f2} =
     lemma : {x' : _} {p' : _} → (γ : f1 .fst ≡ x')
           → (subst (λ x → f x ≡ _) γ (f1 .snd) ≡ p')
           ≡ (ap f γ ∙ p' ≡ f1 .snd)
-    lemma {x'} {p'} path =
+    lemma {x'} {p'} p =
       J (λ x' γ → {p' : _} → (subst (λ x → f x ≡ _) γ (f1 .snd) ≡ p')
                            ≡ (ap f γ ∙ p' ≡ f1 .snd))
-        helper path {p' = p'}
+        helper p {p' = p'}
 ```
 </details>
 
