@@ -70,10 +70,7 @@ In addition to the two endpoints `i0`{.Agda} and `i1`{.Agda}, the
 interval has the structure of a De Morgan algebra. All the following
 equations are respected (definitionally), but they can not be expressed
 internally as a `Path`{.Agda} because `I`{.Agda} is not in
-`Type`{.Agda}, the interval has the structure of a De Morgan algebra.
-All the following equations are respected (definitionally), but they can
-not be expressed internally as a `Path`{.Agda} because `I`{.Agda} is not
-in `Type`{.Agda}.
+`Type`{.Agda}.
 
 - $x \land \mathrm{i0} = \mathrm{i0}$, $x \land \mathrm{i1} = x$
 - $x \lor \mathrm{i0} = x$, $x \lor \mathrm{i1} = \mathrm{i1}$
