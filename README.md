@@ -1,7 +1,11 @@
 # [Cubical 1lab](https://cubical.1lab.dev)
 
 A section of the 1lab dedicated to mathematics done in Homotopy Type
-Theory.
+Theory. We have a Discord server for asking questions/discussing
+contributions/yelling at Amy for being bad at explaining things: [join
+here!]
+
+[join here]: https://discord.gg/NvXkUVYcxV
 
 ## Building
 

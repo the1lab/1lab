@@ -71,12 +71,12 @@ helpful.
 [open-source]: https://gitlab.com/plt_amy/cubical-1lab
 
 Contributions are, of course, welcome! If you need help getting set up,
-you can ask me [on Twitter]. If you don't feel like your contribution
-merits a pull request (i.e.: it's just fixing a typo), it's fine to just
-tweet a correction at me and I'll see that it gets addressed as soon as
-possible.
+want to discuss a contribution, or just ask a question, [join our
+Discord server]! If you don't feel like your contribution merits a pull
+request (i.e.: it's just fixing a typo), it's fine to just mention it on
+the server and I'll see that it gets addressed as soon as possible.
 
-[on Twitter]: https://twitter.com/plt_amy
+[join our Discord server]: https://discord.gg/NvXkUVYcxV
 
 Since this website is about mathematics, and mathematics is done by
 people, there is a page where contributors can write short profiles
