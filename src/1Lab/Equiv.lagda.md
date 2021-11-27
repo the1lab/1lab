@@ -82,7 +82,12 @@ idEquiv .isEqv y = contr (y , λ i → y) λ { (y' , p) i → p (~ i) , λ j →
 ```
 
 For Cubical Agda, the type of equivalences is special, so we have to
-make a small wrapper to match the interface Agda expects:
+make a small wrapper to match the interface Agda expects. This is the
+[geometric definition of contractibility], in terms of [partial
+elements].
+
+[geometric definition of contractibility]: 1Lab.Path.Partial.html#contractibility
+[partial elements]: 1Lab.Path.Partial.html
 
 ```agda
 {-# BUILTIN EQUIV _≃_ #-}
@@ -182,16 +187,21 @@ maps `x` to `f x` by `refl`{.Agda} - we can get any other we want!
 
 # Equivalences from isomorphisms
 
-Any isomorphism can be made into a coherent equivalence, by a complex
-cubical argument that honestly does not matter all that much. That's why
-I put it in a details tag!
+Any isomorphism can be made into a coherent equivalence. The proof here
+is _efficient_, at the cost of being done with an impenetrable cubical
+argument. To understand the details of the construction, there is an
+[alternative proof] that factors through [half-adjoint equivalences].
+
+[alternative proof]: 1Lab.Equiv.HalfAdjoint.html#isIso→isEquiv'
+[half-adjoint equivalences]: 1Lab.Equiv.HalfAdjoint.html#adjoint-equivalences
 
 ```agda
 module _ {f : A → B} (i : isIso f) where
 ```
 
-<details>
-<summary> Honestly, there are no explanations here. </summary>
+<details> <summary>The details of this proof are hidden in a `<details>`
+tag so you can collapse them away. Click on the black triangle to expand
+it, if you want to. </summary>
 
 ```agda
   open isIso i renaming ( g to g

@@ -256,3 +256,25 @@ isIso.left-inverse (snd Σ-PathP-iso) x = refl
   isIso.left-inverse (snd morp) (i , x) = ap₂ _,_ refl (pwise i .snd .isIso.left-inverse _)
 ```
 -->
+
+Another useful fact is that if $H$ is a homotopy `f ~ id`, then we can
+"invert" it as such:
+
+```
+open 1Lab.Path
+
+homotopy-invert : {a : _} {A : Type a} {f : A → A}
+                → (H : (x : A) → f x ≡ x) {x : A}
+                → H (f x) ≡ ap f (H x)
+homotopy-invert {f = f} H {x = x} =
+  sym (
+    ap f (H x)                     ≡⟨ sym (∙-id-right _) ⟩
+    ap f (H x) ∙ refl              ≡⟨ ap₂ _∙_ refl (sym (∙-inv-r _)) ⟩
+    ap f (H x) ∙ H x ∙ sym (H x)   ≡⟨ ∙-assoc _ _ _ ⟩
+    (ap f (H x) ∙ H x) ∙ sym (H x) ≡⟨ ap₂ _∙_ (sym (homotopy-natural H _)) refl ⟩
+    (H (f x) ∙ H x) ∙ sym (H x)    ≡⟨ sym (∙-assoc _ _ _) ⟩
+    H (f x) ∙ H x ∙ sym (H x)      ≡⟨ ap₂ _∙_ refl (∙-inv-r _) ⟩
+    H (f x) ∙ refl                 ≡⟨ ∙-id-right _ ⟩
+    H (f x)                        ∎
+  )
+```

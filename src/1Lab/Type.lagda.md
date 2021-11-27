@@ -94,6 +94,8 @@ _∘_ : {ℓ₁ ℓ₂ ℓ₃ : _} {A : Type ℓ₁} {B : Type ℓ₂} {C : Type
     → (B → C) → (A → B) → A → C
 f ∘ g = λ z → f (g z)
 
+infixr 40 _∘_
+
 id : {ℓ : _} {A : Type ℓ} → A → A
 id x = x
 ```
