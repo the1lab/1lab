@@ -67,10 +67,10 @@ type.
 
 ```
   interval-contractible : isContr [0,1]
-  isContr.centre interval-contractible = ii0
-  isContr.paths interval-contractible ii0 i = ii0
-  isContr.paths interval-contractible ii1 i = seg i
-  isContr.paths interval-contractible (seg i) j = seg (i ∧ j)
+  interval-contractible .centre = ii0
+  interval-contractible .paths ii0 i = ii0
+  interval-contractible .paths ii1 i = seg i
+  interval-contractible .paths (seg i) j = seg (i ∧ j)
 ```
 
 A type is (n+1)-truncated if its path types are all n-truncated.
