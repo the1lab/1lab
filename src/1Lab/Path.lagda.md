@@ -275,13 +275,23 @@ _transporting_ inhabitants between provably equal types.
 
 ## Transitivity
 
-In Cubical Agda, types are interpreted as objects called _cubical Kan
-complexes_. I wrote a blog post explaining them [here]. The gist of it
-is that, just like we did above and drew a path as a _line_, we can draw
-iterated paths as _squares_. In a type, any _open box_ we can draw has a
-_lid_, that is, the dashed path in the diagram below.
+<div class=warning>
+**Heads up!** Cubical Type Theory gets really intense, really fast. If
+you're reading this page as an introduction, you should probably read
+about [partial elements] first, like the [recommended reading order]
+says.
+</div>
 
-[here]: https://abby.how/posts/cubical-sets.html
+[partial elements]: 1Lab.Path.Partial.html
+[recommended reading order]: 1Lab.index.html
+
+In Cubical Agda, types are interpreted as objects called _cubical Kan
+complexes_. I (Amy) wrote a blog post explaining them [here]. The gist
+of it is that, just like we did above and drew a path as a _line_, we
+can draw iterated paths as _squares_. In a type, any _open box_ we can
+draw has a _lid_, that is, the dashed path in the diagram below.
+
+[here]: https://amelia.how/posts/cubical-sets.html
 
 <figure>
 <div class=mathpar>
