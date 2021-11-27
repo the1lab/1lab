@@ -9,6 +9,7 @@ description: |
 open import 1Lab.Univalence.SIP
 open import 1Lab.Path.Groupoid
 open import 1Lab.Univalence
+open import 1Lab.Data.Nat
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -209,3 +210,26 @@ List-monoid isS .snd .monoid-assoc {f} {g} {h} = ++-assoc f g h
 
 The [list module](agda://1Lab.Data.List) has the proofs of the required
 equalities to make this into a monoid.
+
+## Monoid structures on ℕ
+
+Since `Nat`{.Agda} is a set, we can prove it has a multitude of `monoid
+structures`{.Agda ident=MonoidStr}:
+
+```
+ℕ-+ : MonoidStr Nat
+ℕ-+ .fst .fst = _+_
+ℕ-+ .fst .snd = 0
+ℕ-+ .snd .isMonoid.monoid-set = isSet-Nat
+ℕ-+ .snd .isMonoid.monoid-idʳ {x} = +-zeroʳ x
+ℕ-+ .snd .isMonoid.monoid-idˡ {x} = refl
+ℕ-+ .snd .isMonoid.monoid-assoc {x} {y} {z} = +-associative x y z
+
+ℕ-* : MonoidStr Nat
+ℕ-* .fst .fst = _*_
+ℕ-* .fst .snd = 1
+ℕ-* .snd .monoid-set = isSet-Nat
+ℕ-* .snd .monoid-idʳ {x} = *-oneʳ x
+ℕ-* .snd .monoid-idˡ {x} = +-zeroʳ x
+ℕ-* .snd .monoid-assoc {x} {y} {z} = *-associative x y z
+```
