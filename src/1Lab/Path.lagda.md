@@ -532,6 +532,67 @@ for `transport-filler`{.Agda}.
 * When `i = i1`, we have `PathP (λ j → P i1) (transport P p) q`, again
 by the endpoint rule for `transport-filler`{.Agda}.
 
+# Equational Reasoning
+
+When constructing long chains of equalities, it's rather helpful to be
+able to visualise _what_ is being equated with more "priority" than
+_how_ they are being equated. For this, a handful of combinators with
+weird names are defined:
+
+```
+_≡⟨_⟩_ : {ℓ : _} {A : Type ℓ} (x : A) {y z : A} → x ≡ y → y ≡ z → x ≡ z
+x ≡⟨ p ⟩ q = p ∙ q
+
+_≡⟨⟩_ : {ℓ : _} {A : Type ℓ} (x : A) {y : A} → x ≡ y → x ≡ y
+x ≡⟨⟩ x≡y = x≡y
+
+_∎ : {ℓ : _} {A : Type ℓ} (x : A) → x ≡ x
+x ∎ = refl
+
+infixr 30 _∙_
+infixr 2 _≡⟨⟩_ _≡⟨_⟩_
+infix  3 _∎
+```
+
+These functions are used to make _equational reasoning chains_. For
+instance, the following proof that addition of naturals is associative
+is done in equational reasoning style:
+
+```
+private
+  +-associative : (x y z : Nat) → (x + y) + z ≡ x + (y + z)
+  +-associative zero y z = refl
+  +-associative (suc x) y z =
+    suc ((x + y) + z) ≡⟨ ap suc (+-associative x y z) ⟩
+    suc (x + (y + z)) ∎
+```
+
+If your browser runs JavaScript, these equational reasoning chains, by
+default, render with the _justifications_ (the argument written between
+`⟨ ⟩`) hidden; There is a button to display them, either on the sidebar
+or on the top bar depending on how narrow your screen is. For your
+convenience, it's here too:
+
+<div style="display: flex; flex-direction: column; align-items: center;">
+<button type="button" class="equations">
+  Toggle equations
+</button>
+</div>
+
+Try pressing it!
+
+<!--
+```
+SquareP : {ℓ : _}
+  (A : I → I → Type ℓ)
+  {a₀₀ : A i0 i0} {a₀₁ : A i0 i1} (a₀₋ : PathP (λ j → A i0 j) a₀₀ a₀₁)
+  {a₁₀ : A i1 i0} {a₁₁ : A i1 i1} (a₁₋ : PathP (λ j → A i1 j) a₁₀ a₁₁)
+  (a₋₀ : PathP (λ i → A i i0) a₀₀ a₁₀) (a₋₁ : PathP (λ i → A i i1) a₀₁ a₁₁)
+  → Type ℓ
+SquareP A a₀₋ a₁₋ a₋₀ a₋₁ = PathP (λ i → PathP (λ j → A i j) (a₋₀ i) (a₋₁ i)) a₀₋ a₁₋
+```
+-->
+
 # Characterisations of equality
 
 Here we make explicit the structure of equality of some type formers.
@@ -607,63 +668,80 @@ homotopy-natural {f = f} {g = g} H p =
     p
 ```
 
-# Equational Reasoning
+## Paths
 
-When constructing long chains of equalities, it's rather helpful to be
-able to visualise _what_ is being equated with more "priority" than
-_how_ they are being equated. For this, a handful of combinators with
-weird names are defined:
-
-```
-_≡⟨_⟩_ : {ℓ : _} {A : Type ℓ} (x : A) {y z : A} → x ≡ y → y ≡ z → x ≡ z
-x ≡⟨ p ⟩ q = p ∙ q
-
-_≡⟨⟩_ : {ℓ : _} {A : Type ℓ} (x : A) {y : A} → x ≡ y → x ≡ y
-x ≡⟨⟩ x≡y = x≡y
-
-_∎ : {ℓ : _} {A : Type ℓ} (x : A) → x ≡ x
-x ∎ = refl
-
-infixr 30 _∙_
-infixr 2 _≡⟨⟩_ _≡⟨_⟩_
-infix  3 _∎
-```
-
-These functions are used to make _equational reasoning chains_. For
-instance, the following proof that addition of naturals is associative
-is done in equational reasoning style:
+The groupoid structure of _paths_ is also interesting. While the
+characterisation of `Path (Path A x y) p q` is fundamentally tied to the
+characterisation of `A`, there are general theorems that can be proven
+about _transport_ in path spaces. For example, substituting on both
+endpoints of a path is equivalent to a ternary composition:
 
 ```
-private
-  +-associative : (x y z : Nat) → (x + y) + z ≡ x + (y + z)
-  +-associative zero y z = refl
-  +-associative (suc x) y z =
-    suc ((x + y) + z) ≡⟨ ap suc (+-associative x y z) ⟩
-    suc (x + (y + z)) ∎
+subst-path-both : {ℓ : _} {A : Type ℓ} {x y : A}
+                → (loop : x ≡ x)
+                → (adj : x ≡ y)
+                → subst (λ x → x ≡ x) adj loop ≡ sym adj ∙ loop ∙ adj
+subst-path-both loop adj =
+  J (λ _ adj → subst (λ x → x ≡ x) adj loop ≡ sym adj ∙ loop ∙ adj)
+    (sym lemma)
+    adj
+  where
 ```
 
-If your browser runs JavaScript, these equational reasoning chains, by
-default, render with the _justifications_ (the argument written between
-`⟨ ⟩`) hidden; There is a button to display them, either on the sidebar
-or on the top bar depending on how narrow your screen is. For your
-convenience, it's here too:
+The proof is by induction on the path `adj` (for `adjustment`): It
+suffices to consider the case where it is `refl`. In that case, it
+becomes a simple application of the [groupoid laws for types].
 
-<div style="display: flex; flex-direction: column; align-items: center;">
-<button type="button" class="equations">
-  Toggle equations
-</button>
-</div>
+[groupoid laws for types]: 1Lab.Path.Groupoid.html
 
-Try pressing it!
-
-<!--
 ```
-SquareP : {ℓ : _}
-  (A : I → I → Type ℓ)
-  {a₀₀ : A i0 i0} {a₀₁ : A i0 i1} (a₀₋ : PathP (λ j → A i0 j) a₀₀ a₀₁)
-  {a₁₀ : A i1 i0} {a₁₁ : A i1 i1} (a₁₋ : PathP (λ j → A i1 j) a₁₀ a₁₁)
-  (a₋₀ : PathP (λ i → A i i0) a₀₀ a₁₀) (a₋₁ : PathP (λ i → A i i1) a₀₁ a₁₁)
-  → Type ℓ
-SquareP A a₀₋ a₁₋ a₋₀ a₋₁ = PathP (λ i → PathP (λ j → A i j) (a₋₀ i) (a₋₁ i)) a₀₋ a₁₋
+    lemma : sym refl ∙ loop ∙ refl ≡ subst (λ x → x ≡ x) refl loop
+    lemma =
+      sym refl ∙ loop ∙ refl    ≡⟨⟩
+      refl ∙ loop ∙ refl        ≡⟨ sym (∙-filler' refl _) ⟩
+      loop ∙ refl               ≡⟨ sym (∙-filler _ refl) ⟩
+      loop                      ≡⟨ sym (transport-refl _) ⟩
+      subst (λ x → x) refl loop ∎
 ```
--->
+
+Similar statements can be proven about substitution where we hold the
+right endpoint constant, in which case we get something provably equal
+to composing with the inverse of the adjustment:
+
+```
+subst-path-left : {ℓ : _} {A : Type ℓ} {x y z : A}
+                → (loop : x ≡ z)
+                → (adj : x ≡ y)
+                → subst (λ e → e ≡ z) adj loop ≡ sym adj ∙ loop
+subst-path-left {x = x} {y} {z} loop adj =
+  J (λ _ adj → subst (λ e → e ≡ z) adj loop ≡ sym adj ∙ loop)
+    (sym lemma)
+    adj
+  where
+    lemma : sym refl ∙ loop ≡ subst (λ e → e ≡ z) refl loop
+    lemma =
+      sym refl ∙ loop           ≡⟨⟩
+      refl ∙ loop               ≡⟨ sym (∙-filler' refl _) ⟩
+      loop                      ≡⟨ sym (transport-refl _) ⟩
+      subst (λ x → x) refl loop ∎
+```
+
+And for the case where we hold the left endpoint constant, in which case
+we just get a respelling of composition:
+
+```
+subst-path-right : {ℓ : _} {A : Type ℓ} {x y z : A}
+                 → (loop : x ≡ z)
+                 → (adj : z ≡ y)
+                 → subst (λ e → x ≡ e) adj loop ≡ loop ∙ adj
+subst-path-right {x = x} loop adj =
+  J (λ _ adj → subst (λ e → x ≡ e) adj loop ≡ loop ∙ adj)
+    (sym lemma)
+    adj
+  where
+    lemma : loop ∙ refl ≡ subst (λ e → x ≡ e) refl loop
+    lemma =
+      loop ∙ refl               ≡⟨ sym (∙-filler _ refl) ⟩
+      loop                      ≡⟨ sym (transport-refl _) ⟩
+      subst (λ x → x) refl loop ∎
+```
