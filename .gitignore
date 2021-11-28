@@ -5,3 +5,5 @@ config.mk
 /rubtmp*
 /Makefile
 /wip/
+.DS_Store
+*~
