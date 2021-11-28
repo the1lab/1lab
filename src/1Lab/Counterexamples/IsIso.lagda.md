@@ -48,7 +48,7 @@ convenience.
       helper .fst iiso x =
         sym (iiso .isIso.left-inverse x) ∙ iiso .isIso.right-inverse x
       helper .snd .isIso.g x = iso (λ x → x) x (λ _ → refl)
-      helper .snd .isIso.right-inverse p = funext λ x → ∙-id-left _
+      helper .snd .isIso.right-inverse p = funext λ x → ∙-id-l _
       helper .snd .isIso.left-inverse x = isoProp _ _
 ```
 

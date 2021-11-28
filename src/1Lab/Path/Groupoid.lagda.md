@@ -52,8 +52,8 @@ First we define path composition. Then, we can prove that the identity
 path - `refl`{.Agda} - acts as an identity for path composition.
 
 ```agda
-  ∙-id-right : (p : x ≡ y) → p ∙ refl ≡ p
-  ∙-id-right {x = x} {y = y} p =
+  ∙-id-r : (p : x ≡ y) → p ∙ refl ≡ p
+  ∙-id-r {x = x} {y = y} p =
     J (λ _ p → p ∙ refl ≡ p)
       (happly (JRefl (λ y _ → y ≡ y → x ≡ y) (λ x → x)) _)
       p
@@ -64,8 +64,8 @@ J doesn't compute definitionally, only up to the path `JRefl`{.Agda}.
 Now the other identity law:
 
 ```agda
-  ∙-id-left : (p : y ≡ z) → refl ∙ p ≡ p
-  ∙-id-left {y = y} {z = z} p = happly (JRefl (λ y _ → y ≡ z → y ≡ z) (λ x → x)) p
+  ∙-id-l : (p : y ≡ z) → refl ∙ p ≡ p
+  ∙-id-l {y = y} {z = z} p = happly (JRefl (λ y _ → y ≡ z → y ≡ z) (λ x → x)) p
 ```
 
 This case we get for less since it's essentially the computation rule for `J`{.Agda}.
@@ -79,8 +79,8 @@ This case we get for less since it's essentially the computation rule for `J`{.A
       lemma : (q : w ≡ y) (r : y ≡ z)
             → (refl ∙ (q ∙ r)) ≡ ((refl ∙ q) ∙ r)
       lemma q r =
-        (refl ∙ (q ∙ r)) ≡⟨ ∙-id-left (q ∙ r) ⟩
-        q ∙ r            ≡⟨ sym (ap (λ e → e ∙ r) (∙-id-left q)) ⟩
+        (refl ∙ (q ∙ r)) ≡⟨ ∙-id-l (q ∙ r) ⟩
+        q ∙ r            ≡⟨ sym (ap (λ e → e ∙ r) (∙-id-l q)) ⟩
         (refl ∙ q) ∙ r   ∎
 ```
 
@@ -114,11 +114,11 @@ And we have to prove that composing with an inverse gives the reflexivity path.
 ```agda
   ∙-inv-l : (p : x ≡ y) → p ∙ inv p ≡ refl
   ∙-inv-l {x = x} = J (λ y p → p ∙ inv p ≡ refl)
-                      (∙-id-left (inv refl) ∙ JRefl (λ y _ → y ≡ x) refl)
+                      (∙-id-l (inv refl) ∙ JRefl (λ y _ → y ≡ x) refl)
 
   ∙-inv-r : (p : x ≡ y) → inv p ∙ p ≡ refl
   ∙-inv-r {x = x} = J (λ y p → inv p ∙ p ≡ refl)
-                      (∙-id-right (inv refl) ∙ JRefl (λ y _ → y ≡ x) refl)
+                      (∙-id-r (inv refl) ∙ JRefl (λ y _ → y ≡ x) refl)
 ```
 
 ## Cubically
@@ -139,11 +139,11 @@ The left and right identity laws follow directly from the two fillers
 for the composition operation.
 
 ```agda
-  ∙-id-right : (p : x ≡ y) → p ∙ refl ≡ p
-  ∙-id-right p = sym (∙-filler p refl)
+  ∙-id-r : (p : x ≡ y) → p ∙ refl ≡ p
+  ∙-id-r p = sym (∙-filler p refl)
 
-  ∙-id-left : (p : x ≡ y) → refl ∙ p ≡ p
-  ∙-id-left p = sym (∙-filler' refl p)
+  ∙-id-l : (p : x ≡ y) → refl ∙ p ≡ p
+  ∙-id-l p = sym (∙-filler' refl p)
 ```
 
 For associativity, we use both:
@@ -204,10 +204,27 @@ identities:
                → ap f (p ∙ q) ≡ ap f p ∙ ap f q
   ap-comp-path {f = f} =
     J (λ y p → (q : y ≡ _) → ap f (p ∙ q) ≡ ap f p ∙ ap f q)
-      λ q → ap f (refl ∙ q)    ≡⟨ ap (ap f) (∙-id-left q) ⟩
-            ap f q             ≡⟨ sym (∙-id-left (ap f q)) ⟩
+      λ q → ap f (refl ∙ q)    ≡⟨ ap (ap f) (∙-id-l q) ⟩
+            ap f q             ≡⟨ sym (∙-id-l (ap f q)) ⟩
             refl ∙ ap f q      ≡⟨⟩
             ap f refl ∙ ap f q ∎
+```
+
+### Convenient helpers
+
+Since a _lot_ of Homotopy Type Theory is dealing with paths, this
+section introduces useful helpers for dealing with $n$-ary compositions.
+For instance, we know that $p^{-1} ∙ p ∙ q$ is $q$, but this involves
+more than a handful of intermediate steps:
+
+```
+  ∙-cancel-l : {x y z : A} (p : x ≡ y) (q : y ≡ z)
+             → (sym p ∙ p ∙ q) ≡ q
+  ∙-cancel-l p q =
+    sym p ∙ p ∙ q   ≡⟨ ∙-assoc _ _ _ ⟩
+    (sym p ∙ p) ∙ q ≡⟨ ap₂ _∙_ (∙-inv-l p) refl ⟩
+    refl ∙ q        ≡⟨ ∙-id-l q ⟩
+    q               ∎
 ```
 
 # Groupoid structure of types (cont.)
@@ -268,13 +285,13 @@ homotopy-invert : {a : _} {A : Type a} {f : A → A}
                 → H (f x) ≡ ap f (H x)
 homotopy-invert {f = f} H {x = x} =
   sym (
-    ap f (H x)                     ≡⟨ sym (∙-id-right _) ⟩
+    ap f (H x)                     ≡⟨ sym (∙-id-r _) ⟩
     ap f (H x) ∙ refl              ≡⟨ ap₂ _∙_ refl (sym (∙-inv-r _)) ⟩
     ap f (H x) ∙ H x ∙ sym (H x)   ≡⟨ ∙-assoc _ _ _ ⟩
     (ap f (H x) ∙ H x) ∙ sym (H x) ≡⟨ ap₂ _∙_ (sym (homotopy-natural H _)) refl ⟩
     (H (f x) ∙ H x) ∙ sym (H x)    ≡⟨ sym (∙-assoc _ _ _) ⟩
     H (f x) ∙ H x ∙ sym (H x)      ≡⟨ ap₂ _∙_ refl (∙-inv-r _) ⟩
-    H (f x) ∙ refl                 ≡⟨ ∙-id-right _ ⟩
+    H (f x) ∙ refl                 ≡⟨ ∙-id-r _ ⟩
     H (f x)                        ∎
   )
 ```

@@ -57,10 +57,9 @@ recursive call `pathsS∞′ x`{.Agda}.
 
 ```agda
       (transport (λ j → N ≡ merid x j) refl ≡⟨ subst-path-right refl (merid x) ⟩
-      refl ∙ merid x                        ≡⟨ ∙-id-left (merid x) ⟩
+      refl ∙ merid x                        ≡⟨ ∙-id-l (merid x) ⟩
       merid x                               ≡⟨ ap merid (sym (pathsS∞′ x)) ⟩
-      merid N
-                                            ∎) i
+      merid N                               ∎) i
 
 isContrS∞′ : isContr S∞
 isContrS∞′ .centre = N

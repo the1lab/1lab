@@ -20,7 +20,7 @@ Homotopy Type Theory, we can use a _half_ adjoint equivalence -
 satisfying only _one_ of the triangle identities - as a [good notion of
 equivalence].
 
-[isomorphism]: agda://1Lab.Equiv#isIso
+[isomorphism]: 1Lab.Equiv.html#isomorphisms-from-equivalences
 [homotopies]: 1Lab.Path.html#dependent-functions
 [triangle identities]: https://ncatlab.org/nlab/show/triangle+identities
 [adjoint functors]: https://ncatlab.org/nlab/show/adjoint+functor
@@ -51,25 +51,41 @@ isIso→isHAE {A = A} {B} {f} iiso = g , η , ε' , λ x → sym (zig x) where
 For $g$ and $\eta$, we can just take the values provided by
 `isIso`{.Agda}. However, if we want $(\eta, \epsilon)$ to satisfy the
 triangle identities, we can not in general take $\epsilon' = \epsilon$.
-We must perturb it slightly:
+We can, however, alter it like thus:
 
 ```
   ε' : (y : B) → f (g y) ≡ y
   ε' y = sym (ε (f (g y))) ∙ ap f (η (g y)) ∙ ε y
 ```
 
-Now we can calculate that it satisfies the required triangle identity:
+Drawn as a diagram, the path above factors like:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {f(g(y))} && y \\
+  {f(g(f(g(y))))} && {f(g(y))}
+  \arrow["{\mathrm{sym}\ (\varepsilon(f(g(y))))}"', from=1-1, to=2-1]
+  \arrow["{\mathrm{ap}\ f\ (\eta(g(y)))}"', from=2-1, to=2-3]
+  \arrow["{\varepsilon \ y}"', from=2-3, to=1-3]
+  \arrow["{\varepsilon'\ y}", dashed, from=1-1, to=1-3]
+\end{tikzcd}\]
+~~~
+
+There is clearly a great deal of redundancy in this definition, given
+that $\varepsilon y$ and $\varepsilon' y$ have the same boundary! The
+point is that while the definition of $\varepsilon$ is entirely opaque
+to us, $\varepsilon'$ is written in such a way that we can use
+properties of paths to make the $\mathrm{sym}\ (\varepsilon ...)$ and
+$\varepsilon$ cancel:
 
 ```
   zig : (x : A) → ε' (f x) ≡ ap f (η x)
   zig x =
-    ε' (f x)                                      ≡⟨⟩
-    sym (ε _) ∙ ap f (η (g (f x))) ∙ ε (f x)      ≡⟨ ap₂ _∙_ refl (ap₂ _∙_ (ap (ap f) (homotopy-invert η)) refl) ⟩
-    sym (ε _) ∙ ap (f ∘ g ∘ f) (η x) ∙ ε (f x)    ≡⟨ ap₂ _∙_ refl (sym (homotopy-natural ε _)) ⟩
-    sym (ε _) ∙ ε _ ∙ ap f (η x)                  ≡⟨ ∙-assoc _ _ _ ⟩
-    (sym (ε _) ∙ ε _) ∙ ap f (η x)                ≡⟨ ap₂ _∙_ (∙-inv-l _) refl ⟩
-    refl ∙ ap f (η x)                             ≡⟨ ∙-id-left _ ⟩
-    ap f (η x)                                    ∎
+    ε' (f x)                                                    ≡⟨⟩
+    sym (ε (f (g (f x))))  ∙ ap f (η (g (f x)))   ∙ ε (f x)     ≡⟨ ap₂ _∙_ refl (ap₂ _∙_ (ap (ap f) (homotopy-invert η)) refl) ⟩
+    sym (ε (f (g (f x))))  ∙ ap (f ∘ g ∘ f) (η x) ∙ ε (f x)     ≡⟨ ap₂ _∙_ refl (sym (homotopy-natural ε _)) ⟩
+    sym (ε (f (g (f x))))  ∙ ε (f (g (f x)))      ∙ ap f (η x)  ≡⟨ ∙-cancel-l (ε (f (g (f x)))) (ap f (η x)) ⟩
+    ap f (η x)                                                  ∎
 ```
 
 The notion of `half-adjoint equivalence`{.Agda ident=isHAE} is a useful
@@ -106,7 +122,7 @@ fibre-paths {f = f} {y} {f1} {f2} =
     helper {p'} =
       subst (λ x → f x ≡ y) refl (f1 .snd) ≡ p' ≡⟨ ap₂ _≡_ (transport-refl _) refl ⟩
       (f1 .snd) ≡ p'                            ≡⟨ Iso→path (sym , iso sym (λ x → refl) (λ x → refl)) ⟩
-      p' ≡ f1 .snd                              ≡⟨ ap₂ _≡_ (sym (∙-id-left _)) refl ⟩
+      p' ≡ f1 .snd                              ≡⟨ ap₂ _≡_ (sym (∙-id-l _)) refl ⟩
       refl ∙ p' ≡ f1 .snd                       ≡⟨⟩
       ap f refl ∙ p' ≡ f1 .snd                  ∎
 
@@ -158,7 +174,7 @@ lets us "push it past $p$" to get something we can cancel:
       (ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p) ∙ ε y   ≡⟨ ap₂ _∙_ (sym (ap-comp-path {f = f ∘ g} (sym p) p)) refl ⟩
       ap (f ∘ g) (sym p ∙ p) ∙ ε y                ≡⟨ ap₂ _∙_ (ap (ap (f ∘ g)) (∙-inv-r _)) refl ⟩
       ap (f ∘ g) refl ∙ ε y                       ≡⟨⟩
-      refl ∙ ε y                                  ≡⟨ ∙-id-left (ε y) ⟩
+      refl ∙ ε y                                  ≡⟨ ∙-id-l (ε y) ⟩
       ε y                                         ∎
 ```
 

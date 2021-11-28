@@ -114,9 +114,8 @@ using lemmas on transport in pathspaces. </summary>
   iso-pf .right-inverse (loop i) =
     ap (λ p → p i)
       (ap SuspS⁰→S¹ (merid N ∙ sym (merid S))  ≡⟨ ap-comp-path {f = SuspS⁰→S¹} (merid N) (sym (merid S))⟩
-      loop ∙ refl                              ≡⟨ ∙-id-right loop ⟩
-      loop
-                                               ∎) 
+      loop ∙ refl                              ≡⟨ ∙-id-r loop ⟩
+      loop                                     ∎) 
   iso-pf .left-inverse N = refl
   iso-pf .left-inverse S = merid S
   iso-pf .left-inverse (merid N i) j =

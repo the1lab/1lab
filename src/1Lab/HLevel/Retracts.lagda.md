@@ -96,11 +96,11 @@ homotopy.
 ```
     inv : isLeftInverse sect (ap g)
     inv path =
-      sym (h x) ∙ ap f (ap g path) ∙ h y ∙ refl ≡⟨ ap (λ e → sym (h _) ∙ _ ∙ e) (∙-id-right (h _)) ⟩
+      sym (h x) ∙ ap f (ap g path) ∙ h y ∙ refl ≡⟨ ap (λ e → sym (h _) ∙ _ ∙ e) (∙-id-r (h _)) ⟩
       sym (h x) ∙ ap f (ap g path) ∙ h y        ≡⟨ ap₂ _∙_ refl (sym (homotopy-natural h _)) ⟩
       sym (h x) ∙ h x ∙ path                    ≡⟨ ∙-assoc _ _ _ ⟩
       (sym (h x) ∙ h x) ∙ path                  ≡⟨ ap₂ _∙_ (∙-inv-l (h x)) refl ⟩
-      refl ∙ path                               ≡⟨ ∙-id-left path ⟩
+      refl ∙ path                               ≡⟨ ∙-id-l path ⟩
       path                                      ∎
 ```
 
