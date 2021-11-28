@@ -542,6 +542,17 @@ for `transport-filler`{.Agda}.
 * When `i = i1`, we have `PathP (λ j → P i1) (transport P p) q`, again
 by the endpoint rule for `transport-filler`{.Agda}.
 
+We can write a helper function that allows us to write Book-style proofs:
+
+```
+transp→PathP : {ℓ : _} (P : I → Type ℓ) (p : P i0) (q : P i1) →
+  transport (λ i → P i) p ≡ q → PathP P p q
+transp→PathP P p q a = transport (sym (PathP≡Path P p q)) a
+```
+
+Note that, due to limitations with unification, the parameters `P`, `p`,
+and `q` cannot usually be inferred from context.
+
 # Equational Reasoning
 
 When constructing long chains of equalities, it's rather helpful to be
