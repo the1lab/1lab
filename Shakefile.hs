@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
-{- stack --resolver lts-18.14 script
+{- stack --resolver lts-18.18 script
          --package shake
          --package directory
          --package tagsoup
@@ -10,7 +10,7 @@
 -}
 {-# LANGUAGE BlockArguments, OverloadedStrings #-}
 {-# LANGUAGE LambdaCase #-}
-module Shakefile (main) where
+module Main (main) where
 
 import Control.Monad.IO.Class
 import Control.Concurrent
@@ -227,8 +227,8 @@ main = run \flags -> do
     command_ [] "sassc" [inp, out]
 
   "_build/html/favicon.ico" %> \out -> do
-    need ["support/static/cube-128x.png"]
-    command_ [] "ffmpeg" ["-y", "-i", "support/static/cube-128x.png", out]
+    need ["support/favicon.ico"]
+    copyFile' "support/favicon.ico" out
 
   "_build/html/static/**/*" %> \out -> do
     let inp = "support/" </> dropDirectory1 (dropDirectory1 out)

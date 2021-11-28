@@ -86,7 +86,7 @@ equivalences are equivalences`{.Agda ident=isHAE→isEquiv}.
 ```
 fibre-paths : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B} {y : B}
             → {f1 f2 : fibre f y}
-            → Path (fibre f y) f1 f2
+            → (f1 ≡ f2)
             ≃ (Σ[ γ ∈ f1 .fst ≡ f2 .fst ] (ap f γ ∙ f2 .snd ≡ f1 .snd))
 ```
 

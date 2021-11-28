@@ -9,33 +9,16 @@ here!]
 
 ## Building
 
-In addition to Pandoc, KaTeX, sass, [rubber], pdftocairo, and Lua,
-you'll need [`agda-reference-filter`] and [`agda-fold-equations`] in
-your PATH, so download and install those:
+The recommended way of building the 1Lab is using Docker. The Dockerfile
+in the repository builds an Arch Linux installation with everything
+needed to build, and the build script precompiled as `1lab-shake`. The
+image is also prebuilt in the [Gitlab container registry for this
+repo](https://gitlab.com/plt_amy/cubical-1lab/container_registry/), so
+you can build like this:
 
-[rubber]: https://github.com/petrhosek/rubber
-
-[`agda-reference-filter`]: https://git.amelia.how/amelia/agda-reference-filter
-
-[`agda-fold-equations`]: https://git.amelia.how/amelia/agda-fold-equations
-
-```bash
-% git clone https://git.amelia.how/amelia/agda-reference-filter.git
-% cd agda-reference-filter
-% stack install
-% cd ..
-
-% git clone https://git.amelia.how/amelia/agda-fold-equations.git
-% cd agda-fold-equations
-% stack install
-
-# you can get rid of the sources now
 ```
-
-Now you can build the 1lab pages & its part of the CSS:
-
-```bash
-% ./Shakefile.hs all -j$(nproc)
+% docker run -it -v $PWD:/workspace registry.gitlab.com/plt_amy/cubical-1lab /bin/bash -i
+$ 1lab-shake all -j # (in the container)
 ```
 
 A complete deployment also redistributes parts of the following free
