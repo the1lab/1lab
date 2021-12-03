@@ -12,7 +12,10 @@ module.
 
 
 ```agda
-open import Agda.Primitive renaming (Set to Type ; Setω to Typeω) public
+open import Agda.Primitive
+  renaming (Set to Type ; Setω to Typeω)
+  hiding (Prop)
+  public
 ```
 
 `Type`{.Agda} is, of course, a type itself, so it's a natural question

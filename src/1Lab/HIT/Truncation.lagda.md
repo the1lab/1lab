@@ -69,7 +69,17 @@ would have. Specifically, let `B` be a proposition. We have:
   beta f = funext (∥-∥-elim (λ _ → isProp→isSet bprop _ _) (λ _ → refl))
 ```
 
-Using propositional truncation, we can define the **existential
+Furthermore, as required of a free construction, the propositional
+truncation extends to a functor:
+
+```
+∥-∥-map : {ℓ ℓ' : _} {A : Type ℓ} {B : Type ℓ'}
+        → (A → B) → ∥ A ∥ → ∥ B ∥ 
+∥-∥-map f (inc x)        = inc (f x)
+∥-∥-map f (squash x y i) = squash (∥-∥-map f x) (∥-∥-map f y) i
+```
+
+Using the propositional truncation, we can define the **existential
 quantifier** as a truncated `Σ`{.Agda}.
 
 ```agda
@@ -79,14 +89,16 @@ quantifier** as a truncated `Σ`{.Agda}.
 syntax ∃ A (λ x → B) = ∃[ x ∈ A ] B
 ```
 
-Note that if $P$ is a proposition, then its truncation does nothing:
+Note that if $P$ is already a proposition, then truncating it does
+nothing:
 
 ```agda
 isProp→equiv∥-∥ : {ℓ : _} {P : Type ℓ} → isProp P → P ≃ ∥ P ∥
 isProp→equiv∥-∥ pprop = propExt pprop squash inc (∥-∥-elim (λ x → pprop) λ x → x)
 ```
 
-In fact, we can take this as a definition of `isProp`{.Agda}:
+In fact, an alternative definition of `isProp`{.Agda} is given by "being
+equivalent to your own truncation":
 
 ```agda
 isProp≃equiv∥-∥ : {ℓ : _} {P : Type ℓ}

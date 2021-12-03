@@ -4,6 +4,6 @@ config.mk
 /.vscode
 /rubtmp*
 /Makefile
-/wip/
+src/wip/
 .DS_Store
 *~

@@ -81,7 +81,7 @@ elements are connected by a path.
 
 ```agda
 isProp : {ℓ : _} → Type ℓ → Type _
-isProp A = (x y : A) → Path A x y
+isProp A = (x y : A) → x ≡ y
 ```
 
 With this, we can define the `isHLevel`{.Agda} predicate. For h-levels
