@@ -5,6 +5,9 @@ jobs:
     runs-on: ubuntu-latest
     container: pltamy/1lab:latest
     steps:
+      - uses: actions/checkout@v2
       - run: |
-          bash -ic "1lab-shake all -j"
+          export PATH=/root/.local/bin:$PATH
+          which 1lab-shake
+          1lab-shake all -j
         name: Type check and build
