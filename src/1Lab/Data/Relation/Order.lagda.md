@@ -81,7 +81,8 @@ results from it!
 To start, trichotomy immediately implies discreteness:
 
 ```agda
-trichotomous-discrete : ∀ {A : Type ℓ} {R : A → A → Type ℓ'} → isTrichotomous R → Discrete A
+trichotomous-discrete : ∀ {A : Type ℓ} {R : A → A → Type ℓ'}
+  → isTrichotomous R → Discrete A
 trichotomous-discrete compare x y with compare x y
 ... | lt _ ¬x≡y _ = no ¬x≡y
 ... | eq _  x≡y _ = yes x≡y
