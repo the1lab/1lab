@@ -10,7 +10,7 @@ module 1Lab.Data.Relation.Order.Lexicographic where
 
 # Lexicographic Orderings
 
-A **Lexicographic Orderings** can be thought of as a generalization of how we sort words.
+A **Lexicographic Ordering** can be thought of as a generalization of how we sort words.
 For instance, if we were to look up "math" in the dictionary, it would come
 before "mathematician", but after "cube". By generalizing the order in question,
 we can get a notion of ordering for any arbitrary list, instead of just lists of characters.
