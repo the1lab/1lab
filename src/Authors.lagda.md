@@ -76,4 +76,14 @@ A cool project that I recently completed was formalising a
 
 [categorical glueing argument]: https://github.com/FrozenWinters/stlc/blob/main/README.md
 </div>
+<span class="profile-name">Reed</span>
+<span class="profile-pronouns">he/him</span>
+<span><a href="https://twitter.com/totbwf">@totbwf</a></span>
+<span><a href="https://github.com/totbwf">totbwf</a></span>
+<div class="profile-profile">
+Hey! I'm Reed! I develop proof assistants for a living, and write a _lot_ of Agda.
+I'm interested in how we can make our tools more human friendly. In that vein,
+I like writing various forms of automation, especially those with a more
+semantic flavor.
+</div>
 </div>
