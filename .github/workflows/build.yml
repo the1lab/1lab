@@ -5,6 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     container: pltamy/1lab:latest
     steps:
+      - uses: actions/checkout@v2
       - run: |
           export PATH=/root/.local/bin:$PATH
           which 1lab-shake
