@@ -60,9 +60,11 @@ record isPartialOrder {A : Type ℓ} (R : A → A → Type ℓ') : Type (ℓ ⊔
 
   open isPreorder preorder public
 ```
+
 We say a relation is **trichotomous** for all `x,y` if exactly _one_ of `R x y`, `x ≡ y`, or `R y x` holds.
 We define this in two parts: First we define what trichotomy means for 2 elements via `Tri`, then
 `Trichotomous` in terms of `Tri`.
+
 ```agda
 data Tri {A : Type ℓ} (R : A → A → Type ℓ') (x y : A) : Type (ℓ ⊔ ℓ') where
   lt : R x y       → (x ≡ y → ⊥) → (R y x → ⊥) → Tri R x y
@@ -77,6 +79,7 @@ Trichotomy is a very powerful property, and we can derive a lot of useful
 results from it!
 
 To start, trichotomy immediately implies discreteness:
+
 ```agda
 trichotomous-discrete : ∀ {A : Type ℓ} {R : A → A → Type ℓ'} → isTrichotomous R → Discrete A
 trichotomous-discrete compare x y with compare x y
@@ -88,6 +91,7 @@ trichotomous-discrete compare x y with compare x y
 These results aren't particularly deep, but are useful nonetheless.
 If `x` and `y` are trichotomous with respect to one another, then
 we can flip everything around without consequence.
+
 ```agda
 tri-sym : ∀ {x y} → Tri R x y → Tri R y x
 tri-sym (lt  x≺y ¬x≡y ¬y≺x) = gt ¬y≺x (¬x≡y ∘ sym)  x≺y
