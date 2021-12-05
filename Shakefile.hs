@@ -61,20 +61,30 @@ findModule modname = do
     then modfile <.> "lagda.md"
     else modfile <.> "agda"
 
-buildMarkdown :: (Text -> Action (Map Text Reference))
+buildMarkdown :: String
+              -> (Text -> Action (Map Text Reference))
               -> FilePath -> FilePath -> Action ()
-buildMarkdown cache input output = do
+buildMarkdown gitCommit cache input output = do
   need ["support/web/template.html"]
 
   liftIO $ Dir.createDirectoryIfMissing False "_build/diagrams"
 
   let
     modname = moduleName (dropDirectory1 (dropDirectory1 (dropExtension input)))
+
+  modulePath <- findModule modname
+
+  let
     diagrams = "_build/diagrams" </> takeFileName output <.> "txt"
+    permalink = "https://gitlab.com/plt_amy/cubical-1lab/-/blob"
+            </> gitCommit
+            </> modulePath
+
     pandoc_args path =
       [ "--from", "markdown", "-i", input
       , "--to", "html", "-o", path
       , "--metadata", "title=" ++ modname
+      , "--metadata", "source=" ++ permalink
       , "--template", "support/web/template.html"
       , "--lua-filter", "support/maths-filter.lua"
       , "--filter", "agda-reference-filter"
@@ -181,6 +191,7 @@ main = run \flags -> do
     Nothing -> pure ()
 
   fileIdMap <- newCache parseFileIdents
+  gitCommit <- newCache gitCommit
 
   "_build/all-pages.agda" %> \out -> do
     files <- sort <$> getDirectoryFiles "src" ["**"]
@@ -210,8 +221,10 @@ main = run \flags -> do
 
     ismd <- liftIO $ Dir.doesFileExist (input <.> ".md")
 
+    gitCommit <- gitCommit ()
+
     if ismd
-      then buildMarkdown fileIdMap (input <.> ".md") out
+      then buildMarkdown gitCommit fileIdMap (input <.> ".md") out
       else liftIO $ Dir.copyFile (input <.> ".html") out
 
   "_build/html/*.svg" %> \out -> do
@@ -321,3 +334,8 @@ parseFileIdents mod =
       = go (Map.insert name (Reference href (Text.words classes)) x) xs
     go x (_:xs) = go x xs
     go x [] = x
+
+gitCommit :: () -> Action String
+gitCommit () = do
+  Stdout t <- command [] "git" ["rev-parse", "--verify", "HEAD"] 
+  pure (head (lines t))
