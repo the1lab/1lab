@@ -90,46 +90,32 @@ GroupPath = SIP Group-SNS
 
 ## Friendly Interface
 
-Since the way `Group`{.Agda} is associated is very inconvenient, the
-following module can be used to bring the group data into scope using
-more friendly names.
+Similarly to monoids, there is a friendly interface for groups, which
+reexports the underlying monoid structure and additionally exports the
+group data:
 
 ```agda
 module Group {ℓ : _} (group : Group ℓ) where
   private
     module M = isMonoid (group .snd .fst .snd)
+  
+  open Monoid (group .fst , group .snd .fst)
+    renaming (M to G)
 
-  G : Type _
-
-  _⋆_ : G → G → G
-  unit : G
   _¯¹ : G → G
 
-  ⋆-assoc-l→r : {x y z : G} → (x ⋆ y) ⋆ z ≡ x ⋆ y ⋆ z
-  ⋆-assoc-r→l : {x y z : G} → x ⋆ y ⋆ z ≡ (x ⋆ y) ⋆ z
-  ⋆-unitˡ : {z : G} → unit ⋆ z ≡ z
-  ⋆-unitʳ : {z : G} → z ⋆ unit ≡ z
   ⋆-invˡ : {z : G} → z ⋆ z ¯¹ ≡ unit
   ⋆-invʳ : {z : G} → z ¯¹ ⋆ z ≡ unit
 ```
 
 <!--
 ```
-  G = group .fst
-
   -- Structure
-  x ⋆ y = x M.· y
-  unit = M.unit
   _¯¹ x = group .snd .snd x .fst
 
-  infixr 30 _⋆_
   infixl 40 _¯¹
 
   -- Properties
-  ⋆-assoc-l→r = M.monoid-assoc
-  ⋆-assoc-r→l = sym M.monoid-assoc
-  ⋆-unitˡ = M.monoid-idˡ
-  ⋆-unitʳ = M.monoid-idʳ
   ⋆-invˡ {z} = group .snd .snd z .snd .fst
   ⋆-invʳ {z} = group .snd .snd z .snd .snd
 ```

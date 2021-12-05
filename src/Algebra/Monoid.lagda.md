@@ -172,10 +172,10 @@ as an equivalence of the underlying types that preserves the monoid structure:
 [structure identity principle]: agda://1Lab.Univalence.SIP
 
 ```agda
-Monoid : Type (lsuc ℓ)
-Monoid = Σ MonoidStr
+Monoid : (ℓ : _) → Type (lsuc ℓ)
+Monoid _ = Σ MonoidStr
 
-MonoidPath : {ℓ : _} {A B : Monoid {ℓ}} → (A ≡ B) ≃ (A ≃[ Monoid-SNS ] B)
+MonoidPath : {ℓ : _} {A B : Monoid ℓ} → (A ≡ B) ≃ (A ≃[ Monoid-SNS ] B)
 MonoidPath = SIP Monoid-SNS
 ```
 
@@ -232,4 +232,55 @@ structures`{.Agda ident=MonoidStr}:
 ℕ-* .snd .monoid-idʳ {x} = *-oneʳ x
 ℕ-* .snd .monoid-idˡ {x} = +-zeroʳ x
 ℕ-* .snd .monoid-assoc {x} {y} {z} = *-associative x y z
+```
+
+## Friendly Interface
+
+Since the way `Monoid`{.Agda} is associated is very inconvenient, the
+following module can be used to bring the monoid data into scope using
+more friendly names.
+
+```agda
+module Monoid {ℓ : _} (monoid : Monoid ℓ) where
+  private
+    module M = isMonoid (monoid .snd .snd)
+
+  M : Type ℓ
+
+  _⋆_ : M → M → M
+  unit : M
+
+  ⋆-assoc-l→r : {x y z : M} → (x ⋆ y) ⋆ z ≡ x ⋆ y ⋆ z
+  ⋆-assoc-r→l : {x y z : M} → x ⋆ y ⋆ z ≡ (x ⋆ y) ⋆ z
+  ⋆-unitˡ : {z : M} → unit ⋆ z ≡ z
+  ⋆-unitʳ : {z : M} → z ⋆ unit ≡ z
+```
+
+<!--
+```
+  M = monoid .fst
+
+  -- Structure
+  x ⋆ y = x M.· y
+  unit = M.unit
+
+  infixr 30 _⋆_
+
+  -- Properties
+  ⋆-assoc-l→r = M.monoid-assoc
+  ⋆-assoc-r→l = sym M.monoid-assoc
+  ⋆-unitˡ = M.monoid-idˡ
+  ⋆-unitʳ = M.monoid-idʳ
+```
+-->
+
+## Properties
+
+If we have $x \star y = y \star x$ for every $x, y$, then the monoid is
+said to be _commutative_:
+
+```
+isCommutative : {ℓ : _} → Monoid ℓ → Type _
+isCommutative mon = (x y : M) → x ⋆ y ≡ y ⋆ x
+  where open Monoid mon
 ```
