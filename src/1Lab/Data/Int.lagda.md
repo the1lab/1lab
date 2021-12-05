@@ -45,10 +45,57 @@ $(a, b)$ has a path to the "canonical zero", $(0, 0)$:
 zeroes : (n : Nat) → diff 0 0 ≡ diff n n
 zeroes zero = refl
 zeroes (suc n) = zeroes n ∙ quot _ _
+```
 
+Furthermore, offsetting both components by the same natural does nothing:
+
+```
 cancel : (a b n : Nat) → diff a b ≡ diff (n + a) (n + b)
 cancel a b zero = refl
 cancel a b (suc n) = cancel a b n ∙ quot _ _
+```
+
+All equivalence classes have a representative of the form $(0,b)$ or
+$(b,0)$:
+
+```
+offset-negative : (a b : Nat) → diff a (a + b) ≡ diff 0 b
+offset-negative zero b = refl
+offset-negative (suc a) b =
+  diff (suc a) (suc (a + b)) ≡⟨ sym (quot _ _) ⟩
+  diff a (a + b)             ≡⟨ offset-negative a b ⟩
+  diff 0 b                   ∎
+
+offset-positive : (a b : Nat) → diff (a + b) a ≡ diff b 0
+offset-positive zero b = refl
+offset-positive (suc a) b =
+  diff (suc (a + b)) (suc a) ≡⟨ sym (quot _ _) ⟩
+  diff (a + b) a             ≡⟨ offset-positive a b ⟩
+  diff b 0                   ∎
+```
+
+And finally, we can _prove_ that this definition satisfies the more
+common equality used in the construction of integers as a quotient set:
+$(a, b) = (c, d)$ if $(a + d) = (b + c)$.
+
+```
+same-difference : {a b c d : Nat} → a + d ≡ b + c → diff a b ≡ diff c d
+same-difference {zero} {b} {c} {d} path =
+  sym ( diff c d       ≡⟨ ap₂ diff refl path ⟩
+        diff c (b + c) ≡⟨ ap₂ diff refl (+-commutative b c) ⟩
+        diff c (c + b) ≡⟨ offset-negative _ _ ⟩
+        diff 0 b       ∎ 
+      )
+same-difference {suc a} {zero} {c} {d} path =
+  sym ( diff c d             ≡⟨ ap₂ diff (sym path) refl ⟩
+        diff (suc a + d) d   ≡⟨ ap₂ diff (+-commutative (suc a) d) refl ⟩
+        diff (d + suc a) d   ≡⟨ offset-positive _ _ ⟩
+        diff (suc a) 0       ∎
+      )
+same-difference {suc a} {suc b} {c} {d} path =
+  diff (suc a) (suc b) ≡⟨ sym (quot _ _) ⟩
+  diff a b             ≡⟨ same-difference (suc-inj path) ⟩
+  diff c d             ∎
 ```
 
 Furthermore, using a cubical argument, we can prove that the
