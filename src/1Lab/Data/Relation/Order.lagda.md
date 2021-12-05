@@ -14,8 +14,9 @@ particular, ordering relations.
 <!--
 ```
 private variable
-  ℓ : Level
+  ℓ ℓ' : Level
   A : Type ℓ
+  R : A → A → Type ℓ'
 ```
 -->
 
@@ -37,7 +38,7 @@ A **preorder** is a reflexive, transitive relation. Furthermore, we
 impose that a preorder take value in propositions.
 
 ```agda
-record isPreorder {ℓ ℓ' : _} {A : Type ℓ} (R : A → A → Type ℓ') : Type (ℓ ⊔ ℓ') where
+record isPreorder {A : Type ℓ} (R : A → A → Type ℓ') : Type (ℓ ⊔ ℓ') where
   field
     reflexive     : isReflexive R
     transitive    : isTransitive R
@@ -50,6 +51,11 @@ A **partial order** is a preorder which, in addition, is antisymmetric:
 isAntiSymmetric : (R : A → A → Type ℓ) → Type _
 isAntiSymmetric R = {x y : _} → R x y → R y x → x ≡ y
 
-isPartialOrder : (R : A → A → Type ℓ) → Type _
-isPartialOrder R = isPreorder R × isAntiSymmetric R
+record isPartialOrder {A : Type ℓ} (R : A → A → Type ℓ') : Type (ℓ ⊔ ℓ') where
+  field
+    preorder : isPreorder R
+    antisym : isAntiSymmetric R
+
+  open isPreorder preorder public
+```
 ```
