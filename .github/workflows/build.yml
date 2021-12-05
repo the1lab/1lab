@@ -5,5 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     container: pltamy/1lab:latest
     steps:
-      - run: 1lab-shake all -j
+      - run: |
+          source /root/.bashrc;
+          1lab-shake all -j
         name: Type check and build
