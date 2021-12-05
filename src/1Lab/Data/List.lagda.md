@@ -12,6 +12,14 @@ module 1Lab.Data.List where
 A _list_ is a finite, ordered sequence of elements of some type. Lists
 are an inductive type:
 
+<!--
+```
+private variable
+  ℓ : Level
+  A : Type ℓ
+```
+-->
+
 ```agda
 data List {ℓ} (A : Type ℓ) : Type ℓ where
   nil : List A
@@ -48,6 +56,7 @@ isSet→List-isSet {A = A} set = Rijke-isSet {R = R} R-refl R-impliesId R-isProp
 We can define concatenation of lists by recursion:
 
 ```agda
+infixr 5 _++_
 _++_ : ∀ {ℓ} {A : Type ℓ} → List A → List A → List A
 nil      ++ ys = ys
 (x ∷ xs) ++ ys = x ∷ (xs ++ ys)
@@ -68,4 +77,45 @@ both left and right units:
 ++-idʳ : ∀ {ℓ} {A : Type ℓ} (xs : List A) → xs ++ nil ≡ xs
 ++-idʳ nil i = nil
 ++-idʳ (x ∷ xs) i = x ∷ ++-idʳ xs i
+```
+
+## Lemmas
+
+Now, for a bunch of useful little lemmas! First, `∷` is injective
+in both arguments:
+
+```agda
+head : A → List A → A
+head def nil     = def
+head _   (x ∷ _) = x
+
+tail : List A → List A
+tail nil      = nil
+tail (_ ∷ xs) = xs
+
+∷-head-inj : ∀ {x y : A} {xs ys} → (x ∷ xs) ≡ (y ∷ ys) → x ≡ y
+∷-head-inj {x = x} p = ap (head x) p
+
+∷-tail-inj : ∀ {x y : A} {xs ys} → (x ∷ xs) ≡ (y ∷ ys) → xs ≡ ys
+∷-tail-inj p = ap tail p
+```
+
+Continuing with the useful lemmas, if the head and tail of two lists are equal,
+then the two lists are equal:
+
+```agda
+ap-∷ : ∀ {x y : A} {xs ys} → x ≡ y → xs ≡ ys → x ∷ xs ≡ y ∷ ys
+ap-∷ {x = x} {y = y} {xs = xs} {ys = ys} x≡y xs≡ys =
+  subst (λ z → x ∷ xs ≡ z ∷ ys) x≡y (ap (x ∷_) xs≡ys)
+```
+
+It is impossible for an empty list to be equal to a non-empty one:
+
+```agda
+∷≠nil : ∀ {x : A} {xs} → (x ∷ xs) ≡ nil → ⊥
+∷≠nil {A = A} p = subst distinguish p tt
+  where
+    distinguish : List A → Type
+    distinguish nil     = ⊥
+    distinguish (_ ∷ _) = ⊤
 ```
