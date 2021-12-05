@@ -1,8 +1,0 @@
-default:
-  image: "registry.gitlab.com/plt_amy/cubical-1lab:latest"
-
-build:
-  stage: build
-  script:
-    - source ~/.bashrc
-    - 1lab-shake -j all
