@@ -19,7 +19,7 @@ provides a tool to define them: _higher inductive types_.
 [proposition]: agda://1Lab.HLevel#isProp
 
 ```agda
-data ∥_∥ {ℓ : _} (A : Type ℓ) : Type ℓ where
+data ∥_∥ {ℓ} (A : Type ℓ) : Type ℓ where
   inc    : A → ∥ A ∥
   squash : (x y : ∥ A ∥) → x ≡ y
 ```
@@ -29,7 +29,7 @@ truncation is inhabited when `A` is (`inc`{.Agda}), and that it is a
 proposition (`squash`{.Agda}).
 
 ```agda
-isProp-∥-∥ : {ℓ : _} {A : Type ℓ} → isProp ∥ A ∥
+isProp-∥-∥ : ∀ {ℓ} {A : Type ℓ} → isProp ∥ A ∥
 isProp-∥-∥ = squash
 ```
 
@@ -38,7 +38,7 @@ whenever it is a family of propositions, by providing a case for
 `inc`{.Agda}.
 
 ```agda
-∥-∥-elim : {ℓ ℓ' : _} {A : Type ℓ}
+∥-∥-elim : ∀ {ℓ ℓ'} {A : Type ℓ}
            {P : ∥ A ∥ → Type ℓ'}
          → ((x : _) → isProp (P x))
          → ((x : A) → P (inc x))
@@ -55,7 +55,7 @@ type, because it satisfies the universal property that a left adjoint
 would have. Specifically, let `B` be a proposition. We have:
 
 ```agda
-∥-∥-univ : {ℓ : _} {A : Type ℓ} {B : Type ℓ}
+∥-∥-univ : ∀ {ℓ} {A : Type ℓ} {B : Type ℓ}
          → isProp B → (∥ A ∥ → B) ≃ (A → B)
 ∥-∥-univ {A = A} {B = B} bprop = Iso→Equiv (inc' , iso rec (λ _ → refl) beta) where
   inc' : (x : ∥ A ∥ → B) → A → B
@@ -73,7 +73,7 @@ Furthermore, as required of a free construction, the propositional
 truncation extends to a functor:
 
 ```
-∥-∥-map : {ℓ ℓ' : _} {A : Type ℓ} {B : Type ℓ'}
+∥-∥-map : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
         → (A → B) → ∥ A ∥ → ∥ B ∥ 
 ∥-∥-map f (inc x)        = inc (f x)
 ∥-∥-map f (squash x y i) = squash (∥-∥-map f x) (∥-∥-map f y) i
@@ -83,7 +83,7 @@ Using the propositional truncation, we can define the **existential
 quantifier** as a truncated `Σ`{.Agda}.
 
 ```agda
-∃ : {a b : _} (A : Type a) (B : A → Type b) → Type _
+∃ : ∀ {a b} (A : Type a) (B : A → Type b) → Type _
 ∃ A B = ∥ Σ B ∥
 
 syntax ∃ A (λ x → B) = ∃[ x ∈ A ] B
@@ -93,7 +93,7 @@ Note that if $P$ is already a proposition, then truncating it does
 nothing:
 
 ```agda
-isProp→equiv∥-∥ : {ℓ : _} {P : Type ℓ} → isProp P → P ≃ ∥ P ∥
+isProp→equiv∥-∥ : ∀ {ℓ} {P : Type ℓ} → isProp P → P ≃ ∥ P ∥
 isProp→equiv∥-∥ pprop = propExt pprop squash inc (∥-∥-elim (λ x → pprop) λ x → x)
 ```
 
@@ -101,7 +101,7 @@ In fact, an alternative definition of `isProp`{.Agda} is given by "being
 equivalent to your own truncation":
 
 ```agda
-isProp≃equiv∥-∥ : {ℓ : _} {P : Type ℓ}
+isProp≃equiv∥-∥ : ∀ {ℓ} {P : Type ℓ}
                → isProp P ≃ (P ≃ ∥ P ∥)
 isProp≃equiv∥-∥ {P = P} = propExt isProp-isProp eqv-prop isProp→equiv∥-∥ inv where
   inv : (P ≃ ∥ P ∥) → isProp P

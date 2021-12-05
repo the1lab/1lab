@@ -29,7 +29,7 @@ type theory is that UIP is equivalent to **Axiom K**:
 
 ```agda
 hasK : Type ℓ → Typeω
-hasK A = {ℓ : _} {x : A} (P : x ≡ x → Type ℓ) → P refl → (p : x ≡ x) → P p
+hasK A = ∀ {ℓ} {x : A} (P : x ≡ x → Type ℓ) → P refl → (p : x ≡ x) → P p
 ```
 
 A type is a Set if, and only if, it satisfies K:

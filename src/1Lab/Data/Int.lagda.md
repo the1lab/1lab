@@ -251,7 +251,7 @@ function $f : \mathbb{N}^2 \to X$ which respects the quotient, in the
 following sense:
 
 ```
-Int-rec : {ℓ : _} {X : Type ℓ}
+Int-rec : ∀ {ℓ} {X : Type ℓ}
         → (f : Nat → Nat → X)
         → (q : (a b : _) → f a b ≡ f (suc a) (suc b))
         → Int → X
@@ -265,7 +265,7 @@ involved! It doesn't suffice to exhibit a function from $\mathbb{N}^4$
 which respects the quotient separately in each argument:
 
 ```
-Int-rec₂ : {ℓ : _} {B : Type ℓ}
+Int-rec₂ : ∀ {ℓ} {B : Type ℓ}
          → (f : Nat × Nat → Nat × Nat → B)
          → (pl     : (a b x y : _) → f (a , b) (x , y) ≡ f (suc a , suc b) (x , y))
          → (pr     : (a b x y : _) → f (a , b) (x , y) ≡ f (a , b) (suc x , suc y))
@@ -316,7 +316,7 @@ principle:
 
 ```
 Int-rec₂-set :
-    {ℓ : _} {B : Type ℓ}
+  ∀ {ℓ} {B : Type ℓ}
   → isSet B
   → (f : Nat × Nat → Nat × Nat → B)
   → (pl     : (a b x y : _) → f (a , b) (x , y) ≡ f (suc a , suc b) (x , y))
@@ -336,7 +336,7 @@ integers, the quotient is automatically respected, so it suffices to
 give the case for `diff`{.Agda}:
 
 ```
-Int-elim-prop : {ℓ : _} {P : Int → Type ℓ}
+Int-elim-prop : ∀ {ℓ} {P : Int → Type ℓ}
               → ((x : Int) → isProp (P x))
               → (f : (a b : Nat) → P (diff a b))
               → (x : Int) → P x
@@ -348,7 +348,7 @@ Int-elim-prop pprop f (quot m n i) =
 <details>
 <summary>There are also variants for binary and ternary predicates.</summary>
 ```
-Int-elim₂-prop : {ℓ : _} {P : Int → Int → Type ℓ}
+Int-elim₂-prop : ∀ {ℓ} {P : Int → Int → Type ℓ}
                → ((x y : Int) → isProp (P x y))
                → (f : (a b x y : Nat) → P (diff a b) (diff x y))
                → (x : Int) (y : Int) → P x y
@@ -356,7 +356,7 @@ Int-elim₂-prop pprop f =
   Int-elim-prop (λ x → isHLevelΠ 1 (pprop x))
     λ a b int → Int-elim-prop (λ x → pprop (diff a b) x) (f a b) int
 
-Int-elim₃-prop : {ℓ : _} {P : Int → Int → Int → Type ℓ}
+Int-elim₃-prop : ∀ {ℓ} {P : Int → Int → Int → Type ℓ}
                → ((x y z : Int) → isProp (P x y z))
                → (f : (a b c d e f : Nat) → P (diff a b) (diff c d) (diff e f))
                → (x : Int) (y : Int) (z : Int) → P x y z

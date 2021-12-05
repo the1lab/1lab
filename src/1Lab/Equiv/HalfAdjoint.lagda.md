@@ -27,7 +27,7 @@ equivalence].
 [good notion of equivalence]: 1Lab.Equiv.html#equivalences
 
 ```
-isHAE : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} {B : Type ℓ₂} (f : A → B) → Type _
+isHAE : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} (f : A → B) → Type _
 isHAE {A = A} {B = B} f =
   Σ[ g ∈ (B → A) ]
   Σ[ η ∈ ((x : A) → g (f x) ≡ x) ]
@@ -42,7 +42,7 @@ strong homotopy equivalence (Vogt's lemma). In HoTT, we show this
 synthetically for equivalences between $\infty$-groupoids.
 
 ```
-isIso→isHAE : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
+isIso→isHAE : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
             → isIso f → isHAE f
 isIso→isHAE {A = A} {B} {f} iiso = g , η , ε' , λ x → sym (zig x) where
   open isIso iiso renaming (left-inverse to η ; right-inverse to ε)
@@ -100,7 +100,7 @@ First, we give an equivalent characterisation of equality in
 equivalences are equivalences`{.Agda ident=isHAE→isEquiv}.
 
 ```
-fibre-paths : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B} {y : B}
+fibre-paths : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B} {y : B}
             → {f1 f2 : fibre f y}
             → (f1 ≡ f2)
             ≃ (Σ[ γ ∈ f1 .fst ≡ f2 .fst ] (ap f γ ∙ f2 .snd ≡ f1 .snd))
@@ -116,23 +116,23 @@ fibre-paths {f = f} {y} {f1} {f2} =
   (Σ[ γ ∈ f1 .fst ≡ f2 .fst ] (subst (λ x₁ → f x₁ ≡ _) γ (f1 .snd) ≡ f2 .snd)) ≃⟨ Σ-ap (λ x → pathToEquiv (lemma x)) ⟩
   (Σ[ γ ∈ f1 .fst ≡ f2 .fst ] (ap f γ ∙ f2 .snd ≡ f1 .snd))                    ≃∎
   where
-    helper : {p' : f (f1 .fst) ≡ y}
+    helper : (p' : f (f1 .fst) ≡ y)
            → (subst (λ x → f x ≡ y) refl (f1 .snd) ≡ p')
            ≡ (ap f refl ∙ p' ≡ f1 .snd)
-    helper {p'} =
+    helper p' =
       subst (λ x → f x ≡ y) refl (f1 .snd) ≡ p' ≡⟨ ap₂ _≡_ (transport-refl _) refl ⟩
       (f1 .snd) ≡ p'                            ≡⟨ Iso→path (sym , iso sym (λ x → refl) (λ x → refl)) ⟩
       p' ≡ f1 .snd                              ≡⟨ ap₂ _≡_ (sym (∙-id-l _)) refl ⟩
       refl ∙ p' ≡ f1 .snd                       ≡⟨⟩
       ap f refl ∙ p' ≡ f1 .snd                  ∎
 
-    lemma : {x' : _} {p' : _} → (γ : f1 .fst ≡ x')
+    lemma : ∀ {x'} {p'} → (γ : f1 .fst ≡ x')
           → (subst (λ x → f x ≡ _) γ (f1 .snd) ≡ p')
           ≡ (ap f γ ∙ p' ≡ f1 .snd)
     lemma {x'} {p'} p =
-      J (λ x' γ → {p' : _} → (subst (λ x → f x ≡ _) γ (f1 .snd) ≡ p')
-                           ≡ (ap f γ ∙ p' ≡ f1 .snd))
-        helper p {p' = p'}
+      J (λ x' γ → ∀ p' → (subst (λ x → f x ≡ _) γ (f1 .snd) ≡ p')
+                       ≡ (ap f γ ∙ p' ≡ f1 .snd))
+        helper p p'
 ```
 </details>
 
@@ -141,7 +141,7 @@ using the above characterisation of equality, prove that this fibre is a
 centre of contraction:
 
 ```
-isHAE→isEquiv : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
+isHAE→isEquiv : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
               → isHAE f → isEquiv f
 isHAE→isEquiv {A = A} {B} {f} (g , η , ε , zig) .isEqv y = contr fib contract where
   fib : fibre f y
@@ -182,7 +182,7 @@ Putting these together, we get an alternative definition of
 `isIso→isEquiv`{.Agda}:
 
 ```
-isIso→isEquiv' : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
+isIso→isEquiv' : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
                → isIso f → isEquiv f
 isIso→isEquiv' = isHAE→isEquiv ∘ isIso→isHAE
 ```

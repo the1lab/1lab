@@ -62,7 +62,7 @@ the codomain category $D$, and since hom-sets are sets,
 `is-natural`{.Agda} does not matter.
 
 ```agda
-module _ {o₁ h₁ o₂ h₂ : _} (C : Precategory o₁ h₁) (D : Precategory o₂ h₂) where
+module _ {o₁ h₁ o₂ h₂} (C : Precategory o₁ h₁) (D : Precategory o₂ h₂) where
   open Precategory
 
   FunctorCat : Precategory (o₁ ⊔ o₂ ⊔ h₁ ⊔ h₂) (o₁ ⊔ h₁ ⊔ h₂)

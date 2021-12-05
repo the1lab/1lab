@@ -38,7 +38,7 @@ _contractible types_.
 [truncated]: https://ncatlab.org/nlab/show/truncated+object
 
 ```agda
-record isContr {ℓ : _} (A : Type ℓ) : Type ℓ where
+record isContr {ℓ} (A : Type ℓ) : Type ℓ where
   constructor contr
   field
     centre : A
@@ -80,7 +80,7 @@ An h-proposition, or proposition for short, is a type where any two
 elements are connected by a path.
 
 ```agda
-isProp : {ℓ : _} → Type ℓ → Type _
+isProp : ∀ {ℓ} → Type ℓ → Type _
 isProp A = (x y : A) → x ≡ y
 ```
 
@@ -88,7 +88,7 @@ With this, we can define the `isHLevel`{.Agda} predicate. For h-levels
 greater than zero, this definition results in much simpler types!
 
 ```agda
-isHLevel : {ℓ : _} → Type ℓ → Nat → Type _
+isHLevel : ∀ {ℓ} → Type ℓ → Nat → Type _
 isHLevel A 0 = isContr A
 isHLevel A 1 = isProp A
 isHLevel A (suc n) = (x y : A) → isHLevel (Path A x y) n
@@ -97,7 +97,7 @@ isHLevel A (suc n) = (x y : A) → isHLevel (Path A x y) n
 The types of h-level 2 are the _sets_.
 
 ```agda
-isSet : {ℓ : _} → Type ℓ → Type _
+isSet : ∀ {ℓ} → Type ℓ → Type _
 isSet A = isHLevel A 2
 ```
 
@@ -113,7 +113,7 @@ Set₀ = Set lzero
 The types of h-level 3 are the _groupoids_.
 
 ```agda
-isGroupoid : {ℓ : _} → Type ℓ → Type _
+isGroupoid : ∀ {ℓ} → Type ℓ → Type _
 isGroupoid A = isHLevel A 3
 ```
 
@@ -155,7 +155,7 @@ which is that the propositions are precisely the types which are
 contractible when they are inhabited:
 
 ```agda
-inhContr→isProp : {ℓ : _} {A : Type ℓ} → (A → isContr A) → isProp A
+inhContr→isProp : ∀ {ℓ} {A : Type ℓ} → (A → isContr A) → isProp A
 inhContr→isProp cont x y = isContr→isProp (cont x) x y
 ```
 
@@ -233,7 +233,7 @@ have an open box, it has a lid --- which, in this case, is the back face
 With these two base cases, we can prove the general case by recursion:
 
 ```agda
-isHLevel-suc : {ℓ : _} {A : Type ℓ} (n : Nat) → isHLevel A n → isHLevel A (suc n)
+isHLevel-suc : ∀ {ℓ} {A : Type ℓ} (n : Nat) → isHLevel A n → isHLevel A (suc n)
 isHLevel-suc 0 x = isContr→isProp x
 isHLevel-suc 1 x = isProp→isSet x
 isHLevel-suc (suc (suc n)) h x y = isHLevel-suc (suc n) (h x y)
@@ -242,7 +242,7 @@ isHLevel-suc (suc (suc n)) h x y = isHLevel-suc (suc n) (h x y)
 By another inductive argument, we can prove that any offset works:
 
 ```agda
-isHLevel-+ : {ℓ : _} {A : Type ℓ} (n k : Nat) → isHLevel A n → isHLevel A (k + n)
+isHLevel-+ : ∀ {ℓ} {A : Type ℓ} (n k : Nat) → isHLevel A n → isHLevel A (k + n)
 isHLevel-+ n zero x    = x
 isHLevel-+ n (suc k) x = isHLevel-suc _ (isHLevel-+ n k x)
 ```
@@ -289,7 +289,7 @@ Now we can prove the general case by the same inductive argument we used
 to prove h-levels can be raised:
 
 ```agda
-isProp-isHLevel : {ℓ : _} {A : Type ℓ} (n : Nat) → isProp (isHLevel A n)
+isProp-isHLevel : ∀ {ℓ} {A : Type ℓ} (n : Nat) → isProp (isHLevel A n)
 isProp-isHLevel 0 = isProp-isContr
 isProp-isHLevel 1 = isProp-isProp
 isProp-isHLevel (suc (suc n)) x y i a b = isProp-isHLevel (suc n) (x a b) (y a b) i
@@ -304,11 +304,11 @@ dependent contractibility doesn't make a lot of sense, this definition
 is offset by one to start at the propositions.
 
 ```agda
-isHLevelDep : {ℓ ℓ' : _} {A : Type ℓ} → (A → Type ℓ') → Nat → Type _
-isHLevelDep B zero = {x y : _} (α : B x) (β : B y) (p : x ≡ y)
+isHLevelDep : ∀ {ℓ ℓ'} {A : Type ℓ} → (A → Type ℓ') → Nat → Type _
+isHLevelDep B zero = ∀ {x y} (α : B x) (β : B y) (p : x ≡ y)
                    → PathP (λ i → B (p i)) α β
 isHLevelDep B (suc n) =
-     {a0 a1 : _} (b0 : B a0) (b1 : B a1)
+   ∀ {a0 a1} (b0 : B a0) (b1 : B a1)
    → isHLevelDep {A = a0 ≡ a1} (λ p → PathP (λ i → B (p i)) b0 b1) n
 ```
 
@@ -327,7 +327,7 @@ The base case is turning a proof that a type is a proposition uniformly
 over the interval to a filler for any PathP.
 
 ```agda
-isHLevel→isHLevelDep : {ℓ ℓ' : _} {A : Type ℓ} {B : A → Type ℓ'}
+isHLevel→isHLevelDep : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
                      → (n : Nat) → ((x : A) → isHLevel (B x) (suc n))
                      → isHLevelDep B n
 isHLevel→isHLevelDep zero hl α β p = isProp→PathP (λ i → hl (p i)) α β

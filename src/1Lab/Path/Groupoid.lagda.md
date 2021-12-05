@@ -235,17 +235,17 @@ available in that module, the characterisations of path spaces up-to-iso
 are here:
 
 ```agda
-Σ-PathP-iso : {a b : _} {A : Type a} {B : A → Type b}
+Σ-PathP-iso : ∀ {a b} {A : Type a} {B : A → Type b}
            → {x y : Σ B}
            → Iso (Σ[ p ∈ x .fst ≡ y .fst ] (PathP (λ i → B (p i)) (x .snd) (y .snd)))
                  (x ≡ y)
 
-Σ-Path-iso : {a b : _} {A : Type a} {B : A → Type b}
+Σ-Path-iso : ∀ {a b} {A : Type a} {B : A → Type b}
            → {x y : Σ B}
            → Iso (Σ[ p ∈ x .fst ≡ y .fst ] (subst B p (x .snd) ≡ y .snd))
                  (x ≡ y)
 
-Σ-ap : {a b c : _} {A : Type a} {B : A → Type b} {C : A → Type c}
+Σ-ap : ∀ {a b c} {A : Type a} {B : A → Type b} {C : A → Type c}
      → ((x : A) → B x ≃ C x)
      → Σ B ≃ Σ C
 ```
@@ -280,7 +280,7 @@ Another useful fact is that if $H$ is a homotopy `f ~ id`, then we can
 ```
 open 1Lab.Path
 
-homotopy-invert : {a : _} {A : Type a} {f : A → A}
+homotopy-invert : ∀ {a} {A : Type a} {f : A → A}
                 → (H : (x : A) → f x ≡ x) {x : A}
                 → H (f x) ≡ ap f (H x)
 homotopy-invert {f = f} H {x = x} =

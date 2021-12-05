@@ -11,7 +11,7 @@ Given a type `A`, the type `Susp A` is defined by the property that `Susp A`
 has two _poles_ denoted `N` and `S` and an `A`-indexed family of paths `N ≡ S`.
 
 ```agda
-data Susp {ℓ : _} (A : Type ℓ) : Type ℓ where
+data Susp {ℓ} (A : Type ℓ) : Type ℓ where
   N S   : Susp A
   merid : A → N ≡ S
   

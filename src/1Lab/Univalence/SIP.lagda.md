@@ -44,7 +44,7 @@ equipped with this structure are then represented by the [total space]
 In reality, we need slightly more:
 
 ```agda
-record Structure {ℓ₁ ℓ₂ : _} (S : Type ℓ₁ → Type ℓ₂) : Type (ℓ₂ ⊔ lsuc ℓ₁) where
+record Structure {ℓ₁ ℓ₂} (S : Type ℓ₁ → Type ℓ₂) : Type (ℓ₂ ⊔ lsuc ℓ₁) where
   field
 ```
 
@@ -67,7 +67,7 @@ This data lets us define a binary relation - embedding of structures -
 by comparing them with the identity equivalence:
 
 ```agda
-  [_]_∼_ : {X : _} (x y : S X) → Type _
+  [_]_∼_ : ∀ {X} (x y : S X) → Type _
   [_]_∼_ a b = is-hom (_ , a) (_ , b) (_ , idEquiv)
 
 open Structure public
@@ -106,11 +106,11 @@ structure**, abbreviated `SNS`{.Agda}. A `SNS`{.Agda} is a
 manner:
 
 ```agda
-isSNS : {ℓ₁ ℓ₂ : _} (S : Type ℓ₁ → Type ℓ₂) → Structure S → Type _
-isSNS S ST = {X : _} {s t : S X}
+isSNS : ∀ {ℓ₁ ℓ₂} (S : Type ℓ₁ → Type ℓ₂) → Structure S → Type _
+isSNS S ST = ∀ {X} {s t : S X}
            → isEquiv (structure-path→structure-equiv ST {s} {t})
 
-SNS : {ℓ₁ ℓ₂ : _} (S : Type ℓ₁ → Type ℓ₂) → Type _
+SNS : ∀ {ℓ₁ ℓ₂} (S : Type ℓ₁ → Type ℓ₂) → Type _
 SNS S = Σ[ ST ∈ Structure S ] (isSNS _ ST)
 ```
 
@@ -309,7 +309,7 @@ function, and the latter is an equivalence, then so is the former.
   ∞-Magma-SNS : SNS binop
   ∞-Magma-SNS .fst = ∞-Magma-Structure
   ∞-Magma-SNS .snd {s = s} {t = t} = goal where
-    sp→se~id : {X : _} {s t : binop X} (p : _)
+    sp→se~id : ∀ {X} {s t : binop X} (p : _)
              → structure-path→structure-equiv ∞-Magma-Structure {s = s} {t = t} p
              ≡ p
     sp→se~id {X} {s} =
@@ -420,7 +420,7 @@ module _
   {S : Type ℓ₁ → Type ℓ₂}
   (σ : SNS S)
   (axioms : (X : _) → S X → Type ℓ₃)
-  (axioms-prop : {X : _} {s : _} → isProp (axioms X s))
+  (axioms-prop : ∀ {X} {s} → isProp (axioms X s))
   where
 ```
 
@@ -468,13 +468,13 @@ not need to be preserved.
 prove that it's standard:
 
 ```agda
-    π : {X : _} → S' X → S X
+    π : ∀ {X} → S' X → S X
     π (fst , _) = fst
 
-    new : {X : _} {s t : _} → s ≡ t → _
+    new : ∀ {X} {s t} → s ≡ t → _
     new {X = X} {s = s} {t = t} = structure-path→structure-equiv {X = X} str {s} {t}
 
-    old : {X : _} {s t : _} → s ≡ t → _
+    old : ∀ {X} {s t} → s ≡ t → _
     old {X = X} {s = s} {t = t} =
       structure-path→structure-equiv {X = X} (σ .fst) {s} {t}
 ```
@@ -485,7 +485,7 @@ homomorphisms breaks down as a composition of two equivalences: The
 ident=π}.
 
 ```agda
-    isequiv : {X : _} {s t : S' X}
+    isequiv : ∀ {X} {s t : S' X}
             → isEquiv (new {s = s} {t = t})
     isequiv {X} {s} {t} = hence-so-is-new where
       p : (x : s ≡ t) → new x ≡ old (ap π x)

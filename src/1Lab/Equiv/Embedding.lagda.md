@@ -35,7 +35,7 @@ A subtype of `A` is given by a predicate `B : A → Type`, such that `B x`
 is always a proposition:
 
 ```agda
-Subset-proj-embedding : {a b : _} {A : Type a} {B : A → Type b}
+Subset-proj-embedding : ∀ {a b} {A : Type a} {B : A → Type b}
                       → ((x : A) → isProp (B x))
 ```
 

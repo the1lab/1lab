@@ -339,7 +339,7 @@ B)` is contractible, just like the type `Σ B (A ≡ B)`. From this, we get
 [the same induction principle]: agda://1Lab.Path#J
 
 ```agda
-EquivContr : {ℓ : _} (A : Type ℓ) → isContr (Σ[ B ∈ Type ℓ ] A ≃ B)
+EquivContr : ∀ {ℓ} (A : Type ℓ) → isContr (Σ[ B ∈ Type ℓ ] A ≃ B)
 isContr.centre (EquivContr A)          = A , _ , idEquiv
 isContr.paths (EquivContr A) (B , A≃B) = Σ-Path (ua A≃B) (Σ-Path p q)
   where
@@ -357,7 +357,7 @@ proof of `P (B , eqv)`. Modulo currying, this is exactly the same thing
 as `J`{.Agda}.
 
 ```agda
-EquivJ : {ℓ ℓ' : _} {A : Type ℓ}
+EquivJ : ∀ {ℓ ℓ'} {A : Type ℓ}
        → (P : (B : Type ℓ) → A ≃ B → Type ℓ')
        → P A (_ , idEquiv)
        → {B : Type ℓ} (e : A ≃ B)
@@ -375,7 +375,7 @@ equivalences almost trivial. For example, if `f` is an equivalence, then
 so is its action on paths. 
 
 ```agda
-isEquiv→isEquiv-ap : {ℓ : _} {A B : Type ℓ}
+isEquiv→isEquiv-ap : ∀ {ℓ} {A B : Type ℓ}
                    → (f : A → B) → isEquiv f
                    → {x y : A}
                    → isEquiv (ap f {x = x} {y = y})
@@ -401,7 +401,7 @@ equal](agda://1Lab.Path#ap-id) to $\mathrm{id}$, which is known to be
 
 <!--
 ```
-Σ-change-of-variables : {a c : _} {A B : Type a} {C : B → Type c}
+Σ-change-of-variables : ∀ {a c} {A B : Type a} {C : B → Type c}
                       → (f : A → B) → isEquiv f
                       → (Σ C) ≃ Σ (λ x → C (f x))
 Σ-change-of-variables {C = C} f equiv =

@@ -28,7 +28,7 @@ element $y$ such that both $x \star y$ and $y \star x$ are the identity:
 [imposing axioms]: 1Lab.Univalence.SIP.html#adding-axioms
 
 ```agda
-module _ {ℓ : _} {X : Type ℓ} (M : MonoidStr X) where
+module _ {ℓ} {X : Type ℓ} (M : MonoidStr X) where
   open isMonoid (M .snd)
 
   invertible : X → _
@@ -60,13 +60,13 @@ From this we immediately get a `SNS`{.Agda} for groups as the monoids
 where every element is invertible:
 
 ```agda
-isGroup : {ℓ : _} {X : Type ℓ} → MonoidStr X → _
+isGroup : ∀ {ℓ} {X : Type ℓ} → MonoidStr X → _
 isGroup {X = X} M = (y : X) → invertible M y
 
-GroupStr : {ℓ : _} → Type ℓ → Type ℓ
+GroupStr : ∀ {ℓ} → Type ℓ → Type ℓ
 GroupStr X = Σ[ M ∈ MonoidStr X ] (isGroup M)
 
-Group-SNS : {ℓ : _} → SNS (GroupStr {ℓ})
+Group-SNS : ∀ {ℓ} → SNS (GroupStr {ℓ})
 Group-SNS =
   add-axioms Monoid-SNS
     (λ _ → isGroup)
@@ -84,7 +84,7 @@ preserves the monoid structure:
 Group : (ℓ : _) → Type (lsuc ℓ)
 Group ℓ = Σ GroupStr
 
-GroupPath : {ℓ : _} {A B : Group ℓ} → (A ≡ B) ≃ (A ≃[ Group-SNS ] B)
+GroupPath : ∀ {ℓ} {A B : Group ℓ} → (A ≡ B) ≃ (A ≃[ Group-SNS ] B)
 GroupPath = SIP Group-SNS
 ```
 
@@ -95,7 +95,7 @@ reexports the underlying monoid structure and additionally exports the
 group data:
 
 ```agda
-module Group {ℓ : _} (group : Group ℓ) where
+module Group {ℓ} (group : Group ℓ) where
   private
     module M = isMonoid (group .snd .fst .snd)
   
@@ -131,7 +131,7 @@ fact, a [set].
 [set]: agda://1Lab.HLevel#isSet
 
 ```agda
-Sym : {ℓ : _} → Set ℓ → Group ℓ
+Sym : ∀ {ℓ} → Set ℓ → Group ℓ
 Sym (X , X-Set) = X ≃ X , groupStr where
   monoidStr : MonoidStr (X ≃ X)
   monoidStr .fst .fst = _∙e_

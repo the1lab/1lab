@@ -52,7 +52,7 @@ It does not, however, come with a built-in definition of the empty type:
 ```agda
 data ⊥ : Type where
 
-absurd : {ℓ : _} {A : Type ℓ} → ⊥ → A
+absurd : ∀ {ℓ} {A : Type ℓ} → ⊥ → A
 absurd ()
 ```
 
@@ -61,7 +61,7 @@ domain of the family is left implicit. We use a notation for when it
 must be made explicit.
 
 ```agda
-Σ : {a b : _} {A : Type a} (B : A → Type b) → Type _
+Σ : ∀ {a b} {A : Type a} (B : A → Type b) → Type _
 Σ = Agda.Builtin.Sigma.Σ _
 
 syntax Σ {A = A} (λ x → B) = Σ[ x ∈ A ] B
@@ -72,7 +72,7 @@ The non-dependent product type `_×_`{.Agda} can be defined in terms of
 the dependent sum type:
 
 ```agda
-_×_ : {a b : _} → Type a → Type b → Type _
+_×_ : ∀ {a b} → Type a → Type b → Type _
 A × B = Σ[ _ ∈ A ] B
 ```
 
@@ -93,13 +93,13 @@ Since the following definitions are fundamental, they deserve a place in
 this module:
 
 ```agda
-_∘_ : {ℓ₁ ℓ₂ ℓ₃ : _} {A : Type ℓ₁} {B : Type ℓ₂} {C : Type ℓ₃}
+_∘_ : ∀ {ℓ₁ ℓ₂ ℓ₃} {A : Type ℓ₁} {B : Type ℓ₂} {C : Type ℓ₃}
     → (B → C) → (A → B) → A → C
 f ∘ g = λ z → f (g z)
 
 infixr 40 _∘_
 
-id : {ℓ : _} {A : Type ℓ} → A → A
+id : ∀ {ℓ} {A : Type ℓ} → A → A
 id x = x
 ```
 

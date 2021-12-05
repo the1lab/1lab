@@ -16,7 +16,7 @@ and closed under taking `suc`{.Agda}cessors. Thus, they satisfy the
 following induction principle, which is familiar:
 
 ```agda
-Nat-elim : {ℓ : _} (P : Nat → Type ℓ)
+Nat-elim : ∀ {ℓ} (P : Nat → Type ℓ)
          → P 0
          → ({n : Nat} → P n → P (suc n))
          → (n : Nat) → P n

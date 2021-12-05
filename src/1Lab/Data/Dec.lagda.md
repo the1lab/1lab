@@ -11,11 +11,11 @@ A type is decidable if it's computable whether or not that type is
 inhabited.
 
 ```agda
-data Dec {ℓ : _} (A : Type ℓ) : Type ℓ where
+data Dec {ℓ} (A : Type ℓ) : Type ℓ where
   yes : A → Dec A
   no : (A → ⊥) → Dec A
 
-case : {ℓ ℓ' : _} {A : Type ℓ} (P : Dec A → Type ℓ')
+case : ∀ {ℓ ℓ'} {A : Type ℓ} (P : Dec A → Type ℓ')
      → ((y : A) → P (yes y))
      → ((y : (A → ⊥)) → P (no y))
      → (x : Dec A) → P x
@@ -26,7 +26,7 @@ case P f g (no x) = g x
 A type is _discrete_ if it has decidable equality.
 
 ```agda
-Discrete : {ℓ : _} → Type ℓ → Type ℓ
+Discrete : ∀ {ℓ} → Type ℓ → Type ℓ
 Discrete A = (x y : A) → Dec (x ≡ y)
 ```
 

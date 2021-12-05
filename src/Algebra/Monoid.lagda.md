@@ -60,7 +60,7 @@ subject to any truncation conditions, so it can be an arbitrary
 $\infty$-groupoid.
 
 ```agda
-Pointed∞Magma-SNS : {ℓ : _} → SNS (Pointed∞Magma {ℓ})
+Pointed∞Magma-SNS : ∀ {ℓ} → SNS (Pointed∞Magma {ℓ})
 Pointed∞Magma-SNS = sns where
   str : Structure Pointed∞Magma
   str .is-hom (X , _·_ , x) (Y , _*_ , y) (f , _) =
@@ -78,7 +78,7 @@ identity element.
   sns : SNS _
   sns .fst = str
   sns .snd = equiv where
-    sp→se~id : {X : _} {s t : Pointed∞Magma X} (p : _)
+    sp→se~id : ∀ {X} {s t : Pointed∞Magma X} (p : _)
              → structure-path→structure-equiv str {s = s} {t = t} p
              ≡ (ap fst p , ap snd p)
     sp→se~id {X} {s} =
@@ -106,7 +106,7 @@ types].
 We define the monoid axioms in a record, for convenience of naming:
 
 ```agda
-record isMonoid {ℓ : _} {X : Type ℓ} (P : Pointed∞Magma X) : Type ℓ where
+record isMonoid {ℓ} {X : Type ℓ} (P : Pointed∞Magma X) : Type ℓ where
   open Sigma P renaming (fst to infixr 30 _·_ ; snd to unit) public
 
   field
@@ -121,9 +121,9 @@ of the axioms are [propositions].
 Then, we need the actual monoid axioms:
 
 ```agda
-    monoid-idʳ : {x : _} → x · unit ≡ x
-    monoid-idˡ : {x : _} → unit · x ≡ x
-    monoid-assoc : {x y z : _} → (x · y) · z ≡ x · y · z
+    monoid-idʳ : ∀ {x} → x · unit ≡ x
+    monoid-idˡ : ∀ {x} → unit · x ≡ x
+    monoid-assoc : ∀ {x y z} → (x · y) · z ≡ x · y · z
 
 open isMonoid hiding (_·_ ; unit)
 ```
@@ -161,7 +161,7 @@ that they are `standard`{.Agda ident=Monoid-SNS}.
 MonoidStr : Type ℓ → Type ℓ
 MonoidStr X = Σ[ P ∈ Pointed∞Magma X ] (isMonoid P)
 
-Monoid-SNS : {ℓ : _} → SNS (MonoidStr {ℓ})
+Monoid-SNS : ∀ {ℓ} → SNS (MonoidStr {ℓ})
 Monoid-SNS = add-axioms Pointed∞Magma-SNS (λ _ → isMonoid) isProp-isMonoid
 ```
 
@@ -175,7 +175,7 @@ as an equivalence of the underlying types that preserves the monoid structure:
 Monoid : (ℓ : _) → Type (lsuc ℓ)
 Monoid _ = Σ MonoidStr
 
-MonoidPath : {ℓ : _} {A B : Monoid ℓ} → (A ≡ B) ≃ (A ≃[ Monoid-SNS ] B)
+MonoidPath : ∀ {ℓ} {A B : Monoid ℓ} → (A ≡ B) ≃ (A ≃[ Monoid-SNS ] B)
 MonoidPath = SIP Monoid-SNS
 ```
 
@@ -193,7 +193,7 @@ require that the type be a set since _monoids_ have to be sets, and
 ```agda
 open import 1Lab.Data.List
 
-List-monoid : {ℓ : _} {A : Type ℓ} → isSet A → MonoidStr (List A)
+List-monoid : ∀ {ℓ} {A : Type ℓ} → isSet A → MonoidStr (List A)
 List-monoid isS .fst .fst = _++_
 List-monoid isS .fst .snd = nil
 ```
@@ -241,7 +241,7 @@ following module can be used to bring the monoid data into scope using
 more friendly names.
 
 ```agda
-module Monoid {ℓ : _} (monoid : Monoid ℓ) where
+module Monoid {ℓ} (monoid : Monoid ℓ) where
   private
     module M = isMonoid (monoid .snd .snd)
 
@@ -280,7 +280,7 @@ If we have $x \star y = y \star x$ for every $x, y$, then the monoid is
 said to be _commutative_:
 
 ```
-isCommutative : {ℓ : _} → Monoid ℓ → Type _
+isCommutative : ∀ {ℓ} → Monoid ℓ → Type _
 isCommutative mon = (x y : M) → x ⋆ y ≡ y ⋆ x
   where open Monoid mon
 ```

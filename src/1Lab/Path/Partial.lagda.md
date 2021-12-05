@@ -130,7 +130,7 @@ and only if, any partial element of $A$ is extensible.
 [contractibility]: agda://1Lab.HLevel#isContr
 
 ```agda
-isContr' : {ℓ : _} → Type ℓ → _
+isContr' : ∀ {ℓ} → Type ℓ → _
 isContr' A = {φ : I} (u : Partial φ A) → A [ φ ↦ u ]
 ```
 
@@ -139,7 +139,7 @@ any $\phi$) using the paths that contract $A$; The base of this cube can
 be taken to be the centre of contraction.
 
 ```agda
-isContr→isContr' : {ℓ : _} {A : Type ℓ} → isContr A → isContr' A
+isContr→isContr' : ∀ {ℓ} {A : Type ℓ} → isContr A → isContr' A
 isContr→isContr' isc {φ} u0 =
   inS (hcomp (λ j → λ { (φ = i1) → isc .isContr.paths (u0 1=1) j })
              (isc .isContr.centre))
@@ -149,7 +149,7 @@ In the "if" direction, given a proof that any partial element is
 extensible, we can extend the _empty_ element to get a point of $A$:
 
 ```agda
-isContr'→isContr : {ℓ : _} {A : Type ℓ} → isContr' A → isContr A
+isContr'→isContr : ∀ {ℓ} {A : Type ℓ} → isContr' A → isContr A
 isContr.centre (isContr'→isContr extend) = outS (extend {φ = i0} λ { () })
 ```
 
@@ -173,7 +173,7 @@ it's extensible at `i1`{.Agda}_:
 
 ```agda
 private
-  hcomp-verbose : {ℓ : _} {A : Type ℓ} {φ : I}
+  hcomp-verbose : ∀ {ℓ} {A : Type ℓ} {φ : I}
                 → (u : (i : I) → Partial φ A) -- A family of partial paths
                 → A [ φ ↦ u i0 ]              -- extensible at i0
                 → A [ φ ↦ u i1 ]              -- is extensible at i1

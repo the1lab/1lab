@@ -74,7 +74,7 @@ record isEquiv (f : A → B) : Type (level-of A ⊔ level-of B) where
 
 open isEquiv public
 
-_≃_ : {ℓ₁ ℓ₂ : _} → Type ℓ₁ → Type ℓ₂ → Type _
+_≃_ : ∀ {ℓ₁ ℓ₂} → Type ℓ₁ → Type ℓ₂ → Type _
 _≃_ A B = Σ (isEquiv {A = A} {B = B})
 
 idEquiv : isEquiv {A = A} (λ x → x)
@@ -93,7 +93,7 @@ elements].
 {-# BUILTIN EQUIV _≃_ #-}
 {-# BUILTIN EQUIVFUN fst #-}
 
-isEqv' : {a b : _} (A : Type a) (B : Type b)
+isEqv' : ∀ {a b} (A : Type a) (B : Type b)
        → (w : A ≃ B) (a : B)
        → (ψ : I)
        → Partial ψ (fibre (w .fst) a)
@@ -152,7 +152,7 @@ record isIso (f : A → B) : Type (level-of A ⊔ level-of B) where
   right-inverse inverse = left-inverse
   left-inverse inverse = right-inverse
 
-Iso : {ℓ₁ ℓ₂ : _} → Type ℓ₁ → Type ℓ₂ → Type _
+Iso : ∀ {ℓ₁ ℓ₂} → Type ℓ₁ → Type ℓ₂ → Type _
 Iso A B = Σ (isIso {A = A} {B = B})
 ```
 
@@ -262,7 +262,7 @@ Applying this to the `Iso`{.Agda} and `_≃_`{.Agda} pairs, we can turn
 any isomorphism into a coherent equivalence.
 
 ```agda
-Iso→Equiv : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} {B : Type ℓ₂}
+Iso→Equiv : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂}
           → Iso A B
           → A ≃ B
 Iso→Equiv (f , isIso) = f , isIso→isEquiv isIso
@@ -271,7 +271,7 @@ Iso→Equiv (f , isIso) = f , isIso→isEquiv isIso
 A helpful lemma: Any function between contractible types is an equivalence:
 
 ```agda
-isContr→isEquiv : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} {B : Type ℓ₂}
+isContr→isEquiv : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂}
                 → isContr A → isContr B → {f : A → B}
                 → isEquiv f
 isContr→isEquiv cA cB = isIso→isEquiv f-is-iso where
@@ -287,10 +287,10 @@ To make composing equivalences more intuitive, we implement operators to
 do equivalence reasoning in the same style as equational reasoning.
 
 ```agda
-_∙e_ : {ℓ ℓ₁ ℓ₂ : _} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
+_∙e_ : ∀ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
      → A ≃ B → B ≃ C → A ≃ C
 
-_e¯¹ : {ℓ ℓ₁ : _} {A : Type ℓ} {B : Type ℓ₁}
+_e¯¹ : ∀ {ℓ ℓ₁} {A : Type ℓ} {B : Type ℓ₁}
     → A ≃ B → B ≃ A
 _e¯¹ eqv = Iso→Equiv (_ , isIso.inverse (isEquiv→isIso (eqv .snd)))
 ```
@@ -321,7 +321,7 @@ _∙e_ (f , e) (g , e') = (λ x → g (f x)) , eqv where
     eqv : isEquiv (λ x → g (f x))
     eqv = isIso→isEquiv (iso (λ x → f¯¹ .isIso.g (g¯¹ .isIso.g x)) right left)
 
-∙-isEquiv : {ℓ ℓ₁ ℓ₂ : _} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
+∙-isEquiv : ∀ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
           → {f : A → B} {g : B → C}
           → isEquiv f
           → isEquiv g
@@ -334,14 +334,14 @@ The proofs that equivalences are closed under composition assemble
 nicely into transitivity operators resembling equational reasoning:
 
 ```agda
-_≃⟨_⟩_ : {ℓ ℓ₁ ℓ₂ : _} (A : Type ℓ) {B : Type ℓ₁} {C : Type ℓ₂}
+_≃⟨_⟩_ : ∀ {ℓ ℓ₁ ℓ₂} (A : Type ℓ) {B : Type ℓ₁} {C : Type ℓ₂}
        → A ≃ B → B ≃ C → A ≃ C
 A ≃⟨ f ⟩ g = f ∙e g
 
-_≃⟨⟩_ : {ℓ ℓ₁ : _} (A : Type ℓ) {B : Type ℓ₁} → A ≃ B → A ≃ B
+_≃⟨⟩_ : ∀ {ℓ ℓ₁} (A : Type ℓ) {B : Type ℓ₁} → A ≃ B → A ≃ B
 x ≃⟨⟩ x≡y = x≡y
 
-_≃∎ : {ℓ : _} (A : Type ℓ) → A ≃ A
+_≃∎ : ∀ {ℓ} (A : Type ℓ) → A ≃ A
 x ≃∎ = _ , idEquiv
 
 infixr 30 _∙e_
@@ -356,7 +356,7 @@ along paths. In a sense, the univalence axiom ensures that these are the
 _only_ examples:
 
 ```agda
-isEquiv-transport : {ℓ : _} {A B : Type ℓ} (p : A ≡ B) → isEquiv (transport p)
+isEquiv-transport : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B) → isEquiv (transport p)
 isEquiv-transport p = J (λ y p → isEquiv (transport p)) (isIso→isEquiv e) p where
   e : isIso (transport refl)
   isIso.g e x = x
@@ -370,7 +370,7 @@ The following observation is not very complex, but it is incredibly
 useful: Equivalence of propositions is the same as biimplication.
 
 ```agda
-propExt : {ℓ ℓ' : _} {P : Type ℓ} {Q : Type ℓ'}
+propExt : ∀ {ℓ ℓ'} {P : Type ℓ} {Q : Type ℓ'}
         → isProp P → isProp Q
         → (P → Q) → (Q → P)
         → P ≃ Q

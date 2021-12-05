@@ -19,7 +19,7 @@ x` would be contractible for any choice of `A`. Taking `A` to be
 
 ```agda
 module
-  _ (isoProp : {ℓ : _} {A B : Type ℓ} {f : A → B} → isProp (isIso f))
+  _ (isoProp : ∀ {ℓ} {A B : Type ℓ} {f : A → B} → isProp (isIso f))
   where
 ```
 
@@ -28,7 +28,7 @@ that, if it is inhabited, then it is equivalent to the _centre_ of `A`,
 i.e. the loop-assigning maps of `A`:
 
 ```agda
-  lemma : {ℓ : _} {A B : Type ℓ} {f : A → B} → isIso f → isIso f ≃ ((x : A) → x ≡ x)
+  lemma : ∀ {ℓ} {A B : Type ℓ} {f : A → B} → isIso f → isIso f ≃ ((x : A) → x ≡ x)
   lemma {A = A} {B} {f} iiso = 
     EquivJ (λ _ f → isIso (f .fst) ≃ ((x : A) → x ≡ x))
            (Iso→Equiv helper)
@@ -56,7 +56,7 @@ We thus have that `isIso id ≃ ((x : A) → x ≡ x)` - since the former is a
 prop (by assumption), then so is the latter:
 
 ```agda
-  isProp-loops : {ℓ : _} {A : Type ℓ} → isProp ((x : A) → x ≡ x)
+  isProp-loops : ∀ {ℓ} {A : Type ℓ} → isProp ((x : A) → x ≡ x)
   isProp-loops {A = A} = isHLevel-equiv 1 (helper .fst) (helper .snd) isoProp
     where helper = lemma {f = λ (x : A) → x}
                      (iso (λ x → x) (λ x → refl) (λ x → refl))

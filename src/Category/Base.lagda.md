@@ -79,8 +79,8 @@ which its objects live.
 
 ```agda
   field
-    id  : {x : _}     → Hom x x
-    _∘_ : {x y z : _} → Hom y z → Hom x y → Hom x z
+    id  : ∀ {x}     → Hom x x
+    _∘_ : ∀ {x y z} → Hom y z → Hom x y → Hom x z
 
   infixr 40 _∘_
 ```
@@ -93,8 +93,8 @@ operations _matter_, and thus must satisfy laws:
   
 ```
   field
-    idr : {x y : _} (f : Hom x y) → f ∘ id ≡ f
-    idl : {x y : _} (f : Hom x y) → id ∘ f ≡ f
+    idr : ∀ {x y} (f : Hom x y) → f ∘ id ≡ f
+    idl : ∀ {x y} (f : Hom x y) → id ∘ f ≡ f
 ```
 
 The two identity laws say that the identity morphisms serve as neutral
@@ -104,7 +104,7 @@ parentheses around a composition of three morphisms is equal: $(f \circ
 g) \circ h = f \circ (g \circ h)$.
     
 ```
-    assoc : {w x y z : _} (f : Hom y z) (g : Hom x y) (h : Hom w x)
+    assoc : ∀ {w x y z} (f : Hom y z) (g : Hom x y) (h : Hom w x)
           → f ∘ (g ∘ h) ≡ (f ∘ g) ∘ h
 ```
 
@@ -119,7 +119,7 @@ categories_: The opposite of $C$, written $C^{op}$, has the same
 
 ```agda
 infixl 60 _^op
-_^op : {o₁ h₁ : _} → Precategory o₁ h₁ → Precategory o₁ h₁
+_^op : ∀ {o₁ h₁} → Precategory o₁ h₁ → Precategory o₁ h₁
 (C ^op) .Precategory.Ob = Precategory.Ob C
 (C ^op) .Precategory.Hom x y = Precategory.Hom C y x
 (C ^op) .Precategory.Hom-set x y = Precategory.Hom-set C y x
@@ -158,7 +158,7 @@ definition, taking opposite categories is also definitionally
 involutive.
 
 ```agda
-_ : {o₁ h₁ : _} {C : Precategory o₁ h₁} → (C ^op) ^op ≡ C
+_ : ∀ {o₁ h₁} {C : Precategory o₁ h₁} → (C ^op) ^op ≡ C
 _ = refl
 ```
 
@@ -171,7 +171,7 @@ arbitrary categories, and, indeed, it's phrased in the same way: asking
 for a canonically defined map to be an equivalence.
 
 ```agda
-_[_≅_] : {o h : _} (C : Precategory o h) (a b : Precategory.Ob C) → Type h
+_[_≅_] : ∀ {o h} (C : Precategory o h) (a b : Precategory.Ob C) → Type h
 ```
 
 First, we have to define what it means for two objects in a category to
@@ -188,7 +188,7 @@ _[_≅_] C a b =
   (fg .snd C.∘ fg .fst ≡ C.id)
   where module C = Precategory C
 
-idIso : {o h : _} {C : Precategory o h} {a : Precategory.Ob C}
+idIso : ∀ {o h} {C : Precategory o h} {a : Precategory.Ob C}
       → C [ a ≅ a ]
 idIso {C = C} = (C.id , C.id) , C.idl _ , C.idl _
   where module C = Precategory C
@@ -202,8 +202,8 @@ Further, the type `C [ A ≃ B ]` satisfies J, by the same argument used
 to construct `EquivJ`{.Agda}.
 
 ```agda
-isCategory : {o h : _} → Precategory o h → Type _
-isCategory C = {A : _} → isContr (Σ[ B ∈ _ ] C [ A ≅ B ])
+isCategory : ∀ {o h} → Precategory o h → Type _
+isCategory C = ∀ {A} → isContr (Σ[ B ∈ _ ] C [ A ≅ B ])
 ```
 
 This notion of univalent category corresponds to the usual notion ---
@@ -213,7 +213,7 @@ C [ A ≅ B ])` and `Σ[ B ∈ _ ] A ≣ B`, the action of `pathToIso`{.Agda}
 on total spaces is an equivalence; Hence `pathToIso` is an equivalence.
 
 ```agda
-pathToIso : {o h : _} {C : Precategory o h} {A : Precategory.Ob C} {B : Precategory.Ob C}
+pathToIso : ∀ {o h} {C : Precategory o h} {A : Precategory.Ob C} {B : Precategory.Ob C}
           → A ≡ B → C [ A ≅ B ]
 pathToIso {C = C} {A = A} = J (λ B p → C [ A ≅ B ]) (idIso {C = C})
 ```
@@ -222,8 +222,8 @@ First we define, exactly as in the book, the canonical map `pathToIso`{.Agda}.
 
 ```agda
 isCategory→isEquiv-pathToIso
-  : {o h : _} {C : Precategory o h}
-  → isCategory C → {A B : _}
+  : ∀ {o h} {C : Precategory o h}
+  → isCategory C → ∀ {A B}
   → isEquiv (pathToIso {C = C} {A = A} {B = B})
 isCategory→isEquiv-pathToIso {C = C} iscat {A} {B} = total→equiv isEquiv-total where
   P Q : Precategory.Ob C → Type _
@@ -251,9 +251,9 @@ them is an equivalence](agda://1Lab.Equiv#isContr→isEquiv). This implies
 that we can turn categorical isomorphisms into paths of objects:
 
 ```agda
-isCategory→isoToPath : {o h : _} {C : Precategory o h}
+isCategory→isoToPath : ∀ {o h} {C : Precategory o h}
                      → isCategory C
-                     → {A B : _}
+                     → ∀ {A B}
                      → C [ A ≅ B ]
                      → A ≡ B
 isCategory→isoToPath {C = C} cat =
@@ -270,7 +270,7 @@ the fact that [h-levels are closed under equivalences] and that
 [groupoid]: agda://1Lab.HLevel#isGroupoid
 
 ```agda
-isCategory→isGroupoid-Ob : {o h : _} {C : Precategory o h}
+isCategory→isGroupoid-Ob : ∀ {o h} {C : Precategory o h}
                          → isCategory C
                          → isGroupoid (C .Precategory.Ob)
 isCategory→isGroupoid-Ob {C = C} iscat x y =
@@ -327,7 +327,7 @@ argument used to prove [EquivJ].
 [EquivJ]: agda://1Lab.Univalence#EquivJ
 
 ```agda
-  Sets-category : {o : _} → isCategory (Sets o)
+  Sets-category : ∀ {o} → isCategory (Sets o)
   Sets-category {o = o} {A = a} .centre = a , idIso {C = Sets o} {a = a}
 ```
 
@@ -421,7 +421,7 @@ $\mathrm{Mon}$ as an algebraic category.
 ```agda
   field
     F₀ : C.Ob → D.Ob
-    F₁ : {x y : _} → C.Hom x y → D.Hom (F₀ x) (F₀ y)
+    F₁ : ∀ {x y} → C.Hom x y → D.Hom (F₀ x) (F₀ y)
 ```
 
 A Functor $F : C \to D$ consists of a `function between the object
@@ -431,8 +431,8 @@ y \in C$ to $F_1(f) : F_0(x) \to F_0(y) \in D$.
 
 ```agda
   field
-    F-id : {x : _} → F₁ (C.id {x}) ≡ D.id
-    F-∘ : {x y z : _} (f : C.Hom y z) (g : C.Hom x y)
+    F-id : ∀ {x} → F₁ (C.id {x}) ≡ D.id
+    F-∘ : ∀ {x y z} (f : C.Hom y z) (g : C.Hom x y)
         → F₁ (f C.∘ g) ≡ F₁ f D.∘ F₁ g
 ```
 
@@ -447,7 +447,7 @@ compositions are taken to compositions (`F-∘`{.Agda}).
   ₀ = F₀
 
   -- Alias for F₁ for use in Functor record modules.
-  ₁ : {x y : _} → C.Hom x y → D.Hom (F₀ x) (F₀ y)
+  ₁ : ∀ {x y} → C.Hom x y → D.Hom (F₀ x) (F₀ y)
   ₁ = F₁
 ```
 -->
@@ -466,7 +466,7 @@ C^{op} \to D^{op}$.
 ## Composition
 
 ```agda
-_F∘_ : {o₁ h₁ o₂ h₂ o₃ h₃ : _}
+_F∘_ : ∀ {o₁ h₁ o₂ h₂ o₃ h₃}
        {C : Precategory o₁ h₁} {D : Precategory o₂ h₂} {E : Precategory o₃ h₃}
      → Functor D E → Functor C D → Functor C E
 ```
@@ -519,7 +519,7 @@ construction of Cat is not in this module for performance reasons.
 -->
 
 ```agda
-Id : {o₁ h₁ : _} {C : Precategory o₁ h₁} → Functor C C
+Id : ∀ {o₁ h₁} {C : Precategory o₁ h₁} → Functor C C
 Functor.F₀ Id x = x
 Functor.F₁ Id f = f
 Functor.F-id Id = refl
@@ -626,7 +626,7 @@ G` is equivalent to a Σ-type which can be easily shown to be a set by
 closure properties of h-levels.
 
 ```agda
-module _ {o₁ h₁ o₂ h₂ : _}
+module _ {o₁ h₁ o₂ h₂}
          {C : Precategory o₁ h₁}
          {D : Precategory o₂ h₂} 
          {F G : Functor C D} where
@@ -688,7 +688,7 @@ is a proposition:
 
 ```agda
 record
-  _≅_ {o₁ h₁ o₂ h₂ : _} {C : Precategory o₁ h₁} {D : Precategory o₂ h₂}
+  _≅_ {o₁ h₁ o₂ h₂} {C : Precategory o₁ h₁} {D : Precategory o₂ h₂}
        (F G : Functor C D)
   : Type (o₁ ⊔ h₁ ⊔ h₂)
   where

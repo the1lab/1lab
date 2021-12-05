@@ -133,7 +133,7 @@ Since h-levels are closed under retracts, The type of functions into a
 homotopy n-type is itself a homotopy n-type.
 
 ```agda
-isHLevelΠ : {a b : _} {A : Type a} {B : A → Type b}
+isHLevelΠ : ∀ {a b} {A : Type a} {B : A → Type b}
           → (n : Nat) (Bhl : (x : A) → isHLevel (B x) n)
           → isHLevel ((x : A) → B x) n
 isHLevelΠ 0 bhl = contr (λ x → bhl _ .centre) λ x i a → bhl _ .paths (x a) i
@@ -147,7 +147,7 @@ By taking `B` to be a type rather than a family, we get that `A → B`
 also inherits the h-level of B.
 
 ```agda
-isHLevel→ : {a b : _} {A : Type a} {B : Type b}
+isHLevel→ : ∀ {a b} {A : Type a} {B : Type b}
           → (n : Nat) → isHLevel B n
           → isHLevel (A → B) n
 isHLevel→ n hl = isHLevelΠ n (λ _ → hl)
@@ -185,7 +185,7 @@ version of `isHLevelΣ`{.Agda} that expresses closure of h-levels under
 `_×_`{.Agda}.
 
 ```agda
-isHLevel× : {a b : _} {A : Type a} {B : Type b}
+isHLevel× : ∀ {a b} {A : Type a} {B : Type b}
           → (n : Nat)
           → isHLevel A n → isHLevel B n
           → isHLevel (A × B) n

@@ -28,7 +28,7 @@ open import Agda.Primitive.Cubical public
            ; primTransp     to transp
            ; itIsOne        to 1=1 )
 
-Path : {ℓ : _} (A : Type ℓ) → A → A → Type ℓ
+Path : ∀ {ℓ} (A : Type ℓ) → A → A → Type ℓ
 Path A = PathP (λ i → A)
 ```
 
@@ -41,10 +41,10 @@ takes when applied to `i0` and to `i1`. This we call a `Path`{.Agda}.
 
 ```agda
 private
-  toPath : {ℓ : _} {A : Type ℓ} → (f : I → A) → Path A (f i0) (f i1)
+  toPath : ∀ {ℓ} {A : Type ℓ} → (f : I → A) → Path A (f i0) (f i1)
   toPath f i = f i
 
-refl : {ℓ : _} {A : Type ℓ} {x : A} → x ≡ x
+refl : ∀ {ℓ} {A : Type ℓ} {x : A} → x ≡ x
 refl {x = x} = toPath (λ i → x)
 ```
 
@@ -57,7 +57,7 @@ The endpoints of a path --- even a path we do not know the definition of -
 are equal, by computation, to the ones specified in its type.
 
 ```agda
-module _ {ℓ : _} {A : Type ℓ} {x y : A} {p : x ≡ y} where
+module _ {ℓ} {A : Type ℓ} {x y : A} {p : x ≡ y} where
   private
     left-endpoint : p i0 ≡ x
     left-endpoint i = x
@@ -108,7 +108,7 @@ the one below, we can extend it to any of a bunch of different squares:
 ~~~
 
 ```agda
-module _ {ℓ : _} {A : Type ℓ} {a b : A} {p : Path A a b} where
+module _ {ℓ} {A : Type ℓ} {a b : A} {p : Path A a b} where
 ```
 
 The first thing we can do is introduce another interval variable, and
@@ -203,7 +203,7 @@ The involution `~_`{.Agda} on the interval type gives a way of
 inverting paths --- a proof that equality is symmetric.
 
 ```agda
-sym : {ℓ₁ : _} {A : Type ℓ₁} {x y : A}
+sym : ∀ {ℓ₁} {A : Type ℓ₁} {x y : A}
     → x ≡ y → y ≡ x
 sym p i = p (~ i)
 ```
@@ -212,7 +212,7 @@ As a minor improvement over "Book HoTT", this operation is
 _definitionally_ involutive:
 
 ```agda
-module _ {ℓ : _} {A : Type ℓ} {x y : A} {p : x ≡ y} where
+module _ {ℓ} {A : Type ℓ} {x y : A} {p : x ≡ y} where
   private
     sym-invol : sym (sym p) ≡ p
     sym-invol i = p
@@ -226,7 +226,7 @@ Any _construction_ done to an element `x` can be transported to a
 construction done on `y`.
 
 ```agda
-subst : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} (P : A → Type ℓ₂) {x y : A}
+subst : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} (P : A → Type ℓ₂) {x y : A}
       → x ≡ y → P x → P y
 subst P p x = transp (λ i → P (p i)) i0 x
 ```
@@ -239,7 +239,7 @@ have, rather than a `Path`{.Agda}, a `PathP`{.Agda}: A **Path** over a
 **P**ath.
 
 ```agda
-subst-filler : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} (P : A → Type ℓ₂) {x y : A}
+subst-filler : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} (P : A → Type ℓ₂) {x y : A}
              → (p : x ≡ y) (x : P x)
              → PathP (λ i → P (p i)) x (subst P p x)
 subst-filler P p x i = transp (λ j → P (p (i ∧ j))) (~ i) x
@@ -256,15 +256,15 @@ a cube. Specifically, it can be pictured as in this diagram:
 ~~~
 
 ```agda
-transport : {ℓ : _} {A B : Type ℓ} → A ≡ B → A → B
+transport : ∀ {ℓ} {A B : Type ℓ} → A ≡ B → A → B
 transport = subst (λ x → x)
 
-transport-filler : {ℓ : _} {A B : Type ℓ}
+transport-filler : ∀ {ℓ} {A B : Type ℓ}
                  → (p : A ≡ B) (x : A)
                  → PathP (λ i → p i) x (transport p x)
 transport-filler = subst-filler (λ x → x)
 
-transport-refl : {ℓ : _} {A : Type ℓ} (x : A)
+transport-refl : ∀ {ℓ} {A : Type ℓ} (x : A)
                → transport (λ i → A) x ≡ x
 transport-refl {A = A} x i = transp (λ _ → A) i x
 ```
@@ -333,7 +333,7 @@ definition is not enlightening, so pay attention mainly to the type:
 _[_↦_] : ∀ {ℓ} (A : Type ℓ) (φ : I) (u : Partial φ A) → _
 A [ φ ↦ u ] = Sub A φ u
 
-hfill : {ℓ : _} {A : Type ℓ} {φ : I}
+hfill : ∀ {ℓ} {A : Type ℓ} {φ : I}
         (u : I → Partial φ A)
         (u0 : A [ φ ↦ u i0 ])
       → Path A (outS u0) (hcomp u (outS u0))
@@ -355,7 +355,7 @@ start of this section.
 [the square]: 1Lab.Path.html#transitivity
 
 ```agda
-_··_··_ : {ℓ : _} {A : Type ℓ} {w x y z : A}
+_··_··_ : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
         → w ≡ x → x ≡ y → y ≡ z
         → w ≡ z
 (p ·· q ·· r) i =
@@ -374,7 +374,7 @@ this, so don't skip over it!
 
 <div>
 ```
-_∙_ : {ℓ : _} {A : Type ℓ} {x y z : A}
+_∙_ : ∀ {ℓ} {A : Type ℓ} {x y z : A}
     → x ≡ y → y ≡ z → x ≡ z
 p ∙ q = refl ·· p ·· q
 ```
@@ -382,7 +382,7 @@ p ∙ q = refl ·· p ·· q
 The composition is the lid, but the associated box also has a filler:
 
 ```agda
-∙-filler : {ℓ : _} {A : Type ℓ} {x y z : A}
+∙-filler : ∀ {ℓ} {A : Type ℓ} {x y z : A}
          → (p : x ≡ y) (q : y ≡ z)
          → PathP (λ i → x ≡ q i) p (p ∙ q)
 ∙-filler {x = x} {y} {z} p q j i =
@@ -420,7 +420,7 @@ The composition has a filler in the other direction, too, connecting `q`
 and `p ∙ q` over `p`.
 
 ```agda
-∙-filler' : {ℓ : _} {A : Type ℓ} {x y z : A}
+∙-filler' : ∀ {ℓ} {A : Type ℓ} {x y z : A}
           → (p : x ≡ y) (q : y ≡ z)
           → PathP (λ i → p (~ i) ≡ z) q (p ∙ q)
 ∙-filler' {x = x} {y} {z} p q j i =
@@ -437,7 +437,7 @@ singletons, we can show that the Path types satisfy the same eliminator
 as the equality type in "Book HoTT".
 
 ```agda
-J : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} {x : A}
+J : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {x : A}
     (P : (y : A) → x ≡ y → Type ℓ₂)
   → P x refl
   → {y : A} (p : x ≡ y)
@@ -451,7 +451,7 @@ However, since it _is_ a transport, we can use the
 `transport-filler`{.Agda} to get a path expressing the computation rule.
 
 ```agda
-JRefl : {ℓ₁ ℓ₂ : _} {A : Type ℓ₁} {x : A}
+JRefl : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {x : A}
         (P : (y : A) → x ≡ y → Type ℓ₂)
       → (pxr : P x refl)
       → J P pxr refl ≡ pxr
@@ -461,10 +461,10 @@ JRefl {x = x} P prefl i = transport-filler (λ i → P _ (λ j → x)) prefl (~ 
 Another way of stating J is as the fact that _singletons are contractible_:
 
 ```agda
-Singleton : {ℓ : _} {A : Type ℓ} → A → Type _
+Singleton : ∀ {ℓ} {A : Type ℓ} → A → Type _
 Singleton x = Σ[ y ∈ _ ] (x ≡ y)
 
-isContr-Singleton : {ℓ : _} {A : Type ℓ} {x : A} (y : Singleton x)
+isContr-Singleton : ∀ {ℓ} {A : Type ℓ} {x : A} (y : Singleton x)
                   → Path (Singleton x) (x , refl) y
 isContr-Singleton (_ , p) i = p i , λ j → p (i ∧ j)
 ```
@@ -478,11 +478,11 @@ an action on _morphisms_ --- how that function acts on paths. Reading
 paths as equality, this is a proof that all functions preserve equality.
 
 ```agda
-ap : {a b : _} {A : Type a} {B : A → Type b} (f : (x : A) → B x) {x y : A}
+ap : ∀ {a b} {A : Type a} {B : A → Type b} (f : (x : A) → B x) {x y : A}
    → (p : x ≡ y) → PathP (λ i → B (p i)) (f x) (f y)
 ap f p i = f (p i)
 
-ap₂ : {a b c : _} {A : Type a} {B : A → Type b} {C : (x : A) → B x → Type c}
+ap₂ : ∀ {a b c} {A : Type a} {B : A → Type b} {C : (x : A) → B x → Type c}
       (f : (x : A) (y : B x) → C x y)
       {x y : A} {α : B x} {β : B y}
     → (p : x ≡ y)
@@ -529,7 +529,7 @@ In the HoTT book, we characterise paths over paths using
 notions, fortunately, coincide!
 
 ```agda
-PathP≡Path : {ℓ : _} → (P : I → Type ℓ) (p : P i0) (q : P i1) →
+PathP≡Path : ∀ {ℓ} → (P : I → Type ℓ) (p : P i0) (q : P i1) →
              PathP P p q ≡ Path (P i1) (transport (λ i → P i) p) q
 PathP≡Path P p q i = PathP (λ j → P (i ∨ j)) (transport-filler (λ j → P j) p i) q
 ```
@@ -545,7 +545,7 @@ by the endpoint rule for `transport-filler`{.Agda}.
 We can write a helper function that allows us to write Book-style proofs:
 
 ```
-transp→PathP : {ℓ : _} (P : I → Type ℓ) (p : P i0) (q : P i1) →
+transp→PathP : ∀ {ℓ} (P : I → Type ℓ) (p : P i0) (q : P i1) →
   transport (λ i → P i) p ≡ q → PathP P p q
 transp→PathP P p q a = transport (sym (PathP≡Path P p q)) a
 ```
@@ -561,13 +561,13 @@ _how_ they are being equated. For this, a handful of combinators with
 weird names are defined:
 
 ```agda
-_≡⟨_⟩_ : {ℓ : _} {A : Type ℓ} (x : A) {y z : A} → x ≡ y → y ≡ z → x ≡ z
+_≡⟨_⟩_ : ∀ {ℓ} {A : Type ℓ} (x : A) {y z : A} → x ≡ y → y ≡ z → x ≡ z
 x ≡⟨ p ⟩ q = p ∙ q
 
-_≡⟨⟩_ : {ℓ : _} {A : Type ℓ} (x : A) {y : A} → x ≡ y → x ≡ y
+_≡⟨⟩_ : ∀ {ℓ} {A : Type ℓ} (x : A) {y : A} → x ≡ y → x ≡ y
 x ≡⟨⟩ x≡y = x≡y
 
-_∎ : {ℓ : _} {A : Type ℓ} (x : A) → x ≡ x
+_∎ : ∀ {ℓ} {A : Type ℓ} (x : A) → x ≡ x
 x ∎ = refl
 
 infixr 30 _∙_
@@ -604,7 +604,7 @@ Try pressing it!
 
 <!--
 ```
-SquareP : {ℓ : _}
+SquareP : ∀ {ℓ}
   (A : I → I → Type ℓ)
   {a₀₀ : A i0 i0} {a₀₁ : A i0 i1} (a₀₋ : PathP (λ j → A i0 j) a₀₀ a₀₁)
   {a₁₀ : A i1 i0} {a₁₁ : A i1 i1} (a₁₋ : PathP (λ j → A i1 j) a₁₀ a₁₁)
@@ -625,7 +625,7 @@ non-dependent equality `p : a ≡ x`, and a path between `b` and `y`
 laying over `p`.
 
 ```agda
-Σ-PathP : {a b : _} {A : Type a} {B : A → Type b}
+Σ-PathP : ∀ {a b} {A : Type a} {B : A → Type b}
         → {x y : Σ B}
         → (p : x .fst ≡ y .fst)
         → PathP (λ i → B (p i)) (x .snd) (y .snd)
@@ -638,7 +638,7 @@ simpler in the case where the `Σ`{.Agda} represents a subset --- i.e., `B`
 is a family of propositions.
 
 ```agda
-Σ-Path : {a b : _} {A : Type a} {B : A → Type b}
+Σ-Path : ∀ {a b} {A : Type a} {B : A → Type b}
        → {x y : Σ B}
        → (p : x .fst ≡ y .fst)
        → subst B p (x .snd) ≡ (y .snd)
@@ -655,7 +655,7 @@ sense: `Path ((x : A) → B x) f g` is the same thing as a function `I →
 to.
 
 ```agda
-happly : {a b : _} {A : Type a} {B : A → Type b}
+happly : ∀ {a b} {A : Type a} {B : A → Type b}
          {f g : (x : A) → B x}
        → f ≡ g → (x : A) → f x ≡ g x
 happly p x i = p i x
@@ -666,7 +666,7 @@ propositional in the HoTT book: _function extensionality_. Functions are
 equal precisely if they assign the same outputs to every input.
 
 ```agda
-funext : {a b : _} {A : Type a} {B : A → Type b}
+funext : ∀ {a b} {A : Type a} {B : A → Type b}
          {f g : (x : A) → B x}
        → ((x : A) → f x ≡ g x) → f ≡ g
 funext p i x = p x i
@@ -678,7 +678,7 @@ type should behave like natural transformations (because they are arrows
 in a functor category). This is indeed the case:
 
 ```agda
-homotopy-natural : {a b : _} {A : Type a} {B : Type b}
+homotopy-natural : ∀ {a b} {A : Type a} {B : Type b}
                  → {f g : A → B}
                  → (H : (x : A) → f x ≡ g x)
                  → {x y : A} (p : x ≡ y)
@@ -698,7 +698,7 @@ about _transport_ in path spaces. For example, substituting on both
 endpoints of a path is equivalent to a ternary composition:
 
 ```agda
-subst-path-both : {ℓ : _} {A : Type ℓ} {x y : A}
+subst-path-both : ∀ {ℓ} {A : Type ℓ} {x y : A}
                 → (loop : x ≡ x)
                 → (adj : x ≡ y)
                 → subst (λ x → x ≡ x) adj loop ≡ sym adj ∙ loop ∙ adj
@@ -730,7 +730,7 @@ right endpoint constant, in which case we get something provably equal
 to composing with the inverse of the adjustment:
 
 ```agda
-subst-path-left : {ℓ : _} {A : Type ℓ} {x y z : A}
+subst-path-left : ∀ {ℓ} {A : Type ℓ} {x y z : A}
                 → (loop : x ≡ z)
                 → (adj : x ≡ y)
                 → subst (λ e → e ≡ z) adj loop ≡ sym adj ∙ loop
@@ -751,7 +751,7 @@ And for the case where we hold the left endpoint constant, in which case
 we just get a respelling of composition:
 
 ```agda
-subst-path-right : {ℓ : _} {A : Type ℓ} {x y z : A}
+subst-path-right : ∀ {ℓ} {A : Type ℓ} {x y z : A}
                  → (loop : x ≡ z)
                  → (adj : z ≡ y)
                  → subst (λ e → x ≡ e) adj loop ≡ loop ∙ adj

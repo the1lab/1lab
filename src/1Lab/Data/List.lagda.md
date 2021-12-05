@@ -22,7 +22,7 @@ The first thing we prove is that, if `A` is a set, then so is `List
 A`{.Agda ident=List}.
 
 ```agda
-isSet→List-isSet : {ℓ : _} {A : Type ℓ} → isSet A
+isSet→List-isSet : ∀ {ℓ} {A : Type ℓ} → isSet A
                  → isSet (List A)
 isSet→List-isSet {A = A} set = Rijke-isSet {R = R} R-refl R-impliesId R-isProp where
   R : List A → List A → Type (level-of A)
@@ -48,7 +48,7 @@ isSet→List-isSet {A = A} set = Rijke-isSet {R = R} R-refl R-impliesId R-isProp
 We can define concatenation of lists by recursion:
 
 ```agda
-_++_ : {ℓ : _} {A : Type ℓ} → List A → List A → List A
+_++_ : ∀ {ℓ} {A : Type ℓ} → List A → List A → List A
 nil      ++ ys = ys
 (x ∷ xs) ++ ys = x ∷ (xs ++ ys)
 ```
@@ -57,15 +57,15 @@ Then we can prove that this operation is associative and has `nil` as
 both left and right units:
 
 ```agda
-++-assoc : {ℓ : _} {A : Type ℓ} (xs ys zs : List A)
+++-assoc : ∀ {ℓ} {A : Type ℓ} (xs ys zs : List A)
          → (xs ++ ys) ++ zs ≡ xs ++ (ys ++ zs)
 ++-assoc nil ys zs = refl
 ++-assoc (x ∷ xs) ys zs i = x ∷ ++-assoc xs ys zs i
 
-++-idˡ : {ℓ : _} {A : Type ℓ} (xs : List A) → nil ++ xs ≡ xs
+++-idˡ : ∀ {ℓ} {A : Type ℓ} (xs : List A) → nil ++ xs ≡ xs
 ++-idˡ xs i = xs
 
-++-idʳ : {ℓ : _} {A : Type ℓ} (xs : List A) → xs ++ nil ≡ xs
+++-idʳ : ∀ {ℓ} {A : Type ℓ} (xs : List A) → xs ++ nil ≡ xs
 ++-idʳ nil i = nil
 ++-idʳ (x ∷ xs) i = x ∷ ++-idʳ xs i
 ```

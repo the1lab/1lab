@@ -24,7 +24,7 @@ open import 1Lab.HLevel
 -->
 
 ```agda
-_ : {ℓ : _} {A B : Type ℓ} → isEquiv (pathToEquiv {A = A} {B})
+_ : ∀ {ℓ} {A B : Type ℓ} → isEquiv (pathToEquiv {A = A} {B})
 _ = univalence
 ```
 
