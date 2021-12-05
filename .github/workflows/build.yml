@@ -6,5 +6,7 @@ jobs:
     container: pltamy/1lab:latest
     steps:
       - run: |
+          ls /etc/;
+          ls /root/.local/bin;
           bash -ic "1lab-shake all -j"
         name: Type check and build
