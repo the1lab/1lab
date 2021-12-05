@@ -356,8 +356,8 @@ along paths. In a sense, the univalence axiom ensures that these are the
 _only_ examples:
 
 ```agda
-transport-is-equiv : {ℓ : _} {A B : Type ℓ} (p : A ≡ B) → isEquiv (transport p)
-transport-is-equiv p = J (λ y p → isEquiv (transport p)) (isIso→isEquiv e) p where
+isEquiv-transport : {ℓ : _} {A B : Type ℓ} (p : A ≡ B) → isEquiv (transport p)
+isEquiv-transport p = J (λ y p → isEquiv (transport p)) (isIso→isEquiv e) p where
   e : isIso (transport refl)
   isIso.g e x = x
   isIso.right-inverse e x = transport-refl _

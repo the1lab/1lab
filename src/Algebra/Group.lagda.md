@@ -3,6 +3,7 @@ open import 1Lab.HLevel.Retracts
 open import 1Lab.Univalence.SIP
 open import 1Lab.Path.Groupoid
 open import 1Lab.Univalence
+open import 1Lab.Data.Int
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -191,3 +192,29 @@ inverse; This works the left- and right- identity laws because
 `equivalences are isomorphisms`{.Agda ident=isEquiv→isIso}, and
 isomorphisms have data expressing that composing in either direction
 leaves you with the identity.
+
+# The Integers
+
+Another canonical example of a group are **the integers**, which are
+precisely what you get when you freely turn the natural numbers, with
+their monoid structure, into a group, by adding all the missing
+inverses.
+
+```
+ℤ : Group lzero
+ℤ = Int , groupStr where
+  magmaStr : Pointed∞Magma Int
+  magmaStr .fst = _+ℤ_
+  magmaStr .snd = 0
+
+  monoidStr : isMonoid magmaStr
+  monoidStr .isMonoid.monoid-set = isSet-Int
+  monoidStr .isMonoid.monoid-idʳ = +ℤ-zeroʳ _
+  monoidStr .isMonoid.monoid-idˡ = +ℤ-zeroˡ _
+  monoidStr .isMonoid.monoid-assoc {x} {y} {z} = +ℤ-associative x y z
+
+  groupStr : GroupStr Int
+  groupStr .fst = magmaStr , monoidStr
+  groupStr .snd x .fst = negate x
+  groupStr .snd x .snd = +ℤ-inverseʳ x , +ℤ-inverseˡ x
+```

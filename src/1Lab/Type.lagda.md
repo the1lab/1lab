@@ -102,3 +102,15 @@ infixr 40 _∘_
 id : {ℓ : _} {A : Type ℓ} → A → A
 id x = x
 ```
+
+<!--
+```
+open import Agda.Builtin.FromNat public
+open import Agda.Builtin.FromNeg public
+
+instance
+  Number-Nat : Number Nat
+  Number-Nat .Number.Constraint _ = ⊤
+  Number-Nat .Number.fromNat n = n
+```
+-->

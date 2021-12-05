@@ -45,9 +45,7 @@ self-explanatory:
 
 +-sucʳ : (x y : Nat) → x + suc y ≡ suc (x + y)
 +-sucʳ zero y = refl
-+-sucʳ (suc x) y =
-  suc (x + suc y)   ≡⟨ ap suc (+-sucʳ x y) ⟩
-  suc (suc (x + y)) ∎
++-sucʳ (suc x) y = ap suc (+-sucʳ x y)
 
 +-commutative : (x y : Nat) → x + y ≡ y + x
 +-commutative zero y = sym (+-zeroʳ y)
