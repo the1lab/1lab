@@ -76,9 +76,7 @@ buildMarkdown gitCommit cache input output = do
 
   let
     diagrams = "_build/diagrams" </> takeFileName output <.> "txt"
-    permalink = "https://gitlab.com/plt_amy/cubical-1lab/-/blob"
-            </> gitCommit
-            </> modulePath
+    permalink = gitCommit </> modulePath
 
     pandoc_args path =
       [ "--from", "markdown", "-i", input
