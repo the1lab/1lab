@@ -78,10 +78,14 @@ buildMarkdown gitCommit cache input output = do
     diagrams = "_build/diagrams" </> takeFileName output <.> "txt"
     permalink = gitCommit </> modulePath
 
+    title
+      | length modname > 24 = '…':reverse (take 24 (reverse modname))
+      | otherwise = modname
+
     pandoc_args path =
       [ "--from", "markdown", "-i", input
       , "--to", "html", "-o", path
-      , "--metadata", "title=" ++ modname
+      , "--metadata", "title=" ++ title
       , "--metadata", "source=" ++ permalink
       , "--template", "support/web/template.html"
       , "--lua-filter", "support/maths-filter.lua"
