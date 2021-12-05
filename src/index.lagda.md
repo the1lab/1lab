@@ -68,7 +68,7 @@ pages here still do assume a baseline level of knowledge: Nothing
 specific to HoTT, but familiarity with MLTT, especially with Agda, is
 helpful.
 
-[open-source]: https://gitlab.com/plt_amy/cubical-1lab
+[open-source]: https://github.com/plt_amy/cubical-1lab
 
 Contributions are, of course, welcome! If you need help getting set up,
 want to discuss a contribution, or just ask a question, [join our
@@ -166,7 +166,7 @@ Again, I want to stress that _the 1lab is free and open-source
 software_. If you feel like _any_ of the goals above are not being
 achieved, [submit a merge request]!
 
-[submit a merge request]: https://gitlab.com/plt_amy/cubical-1lab/-/merge_requests
+[submit a merge request]: https://github.com/plt-amy/cubical-1lab/pulls
 
 ## Technology
 
