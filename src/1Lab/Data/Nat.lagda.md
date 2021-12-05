@@ -182,14 +182,17 @@ it into a partial order:
 ≤-prop zero (suc y) p q = refl
 ≤-prop (suc x) (suc y) p q = ≤-prop x y p q
 
+≤-Preorder : isPreorder _≤_
+≤-Preorder .isPreorder.reflexive {x} = ≤-refl x
+≤-Preorder .isPreorder.transitive {x} {y} {z} = ≤-trans x y z
+≤-Preorder .isPreorder.propositional {x} {y} = ≤-prop x y
+
 ≤-PartialOrder : isPartialOrder _≤_
-≤-PartialOrder .fst .isPreorder.reflexive {x} = ≤-refl x
-≤-PartialOrder .fst .isPreorder.transitive {x} {y} {z} = ≤-trans x y z
-≤-PartialOrder .fst .isPreorder.propositional {x} {y} = ≤-prop x y
-≤-PartialOrder .snd {x} {y} = ≤-antisym x y
+≤-PartialOrder .isPartialOrder.preorder = ≤-Preorder
+≤-PartialOrder .isPartialOrder.antisym {x} {y} = ≤-antisym x y
 ```
 
-Furthermore, this is a total order:
+Furthermore, ≤ is decidable:
 
 ```agda
 ≤-flip : (x y : Nat) → (x ≤ y → ⊥) → y ≤ x
