@@ -1,9 +1,0 @@
-name: Build 1Lab
-on: [push, pull_request]
-jobs:
-  container:
-    runs-on: ubuntu-latest
-    container: pltamy/1lab:latest
-    steps:
-      - run: 1lab-shake all -j
-        name: Type check and build
