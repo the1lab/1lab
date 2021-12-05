@@ -105,6 +105,61 @@ self-explanatory:
   y * z + x * (y * z) ∎
 ```
 
+The exponentiation operator `^`{.Agda} is defined by recursion on the
+exponent and satisfies its typical properties:
+
+```agda
+_^_ : Nat → Nat → Nat
+x ^ zero = 1
+x ^ suc y = x * (x ^ y)
+
+infixr 8 _^_
+
+^-oneʳ : (x : Nat) → x ^ 1 ≡ x
+^-oneʳ x = *-oneʳ x
+
+^-oneˡ : (x : Nat) → 1 ^ x ≡ 1
+^-oneˡ zero = refl
+^-oneˡ (suc x) =
+  (1 ^ x) + 0 ≡⟨ +-zeroʳ (1 ^ x) ⟩
+  (1 ^ x)     ≡⟨ ^-oneˡ x ⟩
+  1 ∎
+
+^-+-hom-*ʳ : (x y z : Nat) → x ^ (y + z) ≡ (x ^ y) * (x ^ z)
+^-+-hom-*ʳ x zero z = sym (+-zeroʳ (x ^ z))
+^-+-hom-*ʳ x (suc y) z =
+  x * x ^ (y + z)     ≡⟨ ap (x *_) (^-+-hom-*ʳ x y z) ⟩
+  x * (x ^ y * x ^ z) ≡⟨ sym (*-associative x (x ^ y) (x ^ z)) ⟩
+  x * x ^ y * x ^ z ∎
+
+^-distrib-*ʳ : (x y z : Nat) → (x * y) ^ z ≡ x ^ z * y ^ z
+^-distrib-*ʳ x y zero = refl
+^-distrib-*ʳ x y (suc z) = 
+  x * y * (x * y) ^ z     ≡⟨ ap (λ a → x * y * a) (^-distrib-*ʳ x y z) ⟩
+  x * y * (x ^ z * y ^ z) ≡⟨ sym (*-associative (x * y) (x ^ z) (y ^ z)) ⟩
+  x * y * x ^ z * y ^ z   ≡⟨ ap (_* y ^ z) (*-associative x y (x ^ z)) ⟩
+  x * (y * x ^ z) * y ^ z ≡⟨ ap (λ a → x * a * y ^ z) (*-commutative y (x ^ z)) ⟩
+  x * (x ^ z * y) * y ^ z ≡⟨ ap (_* y ^ z) (sym (*-associative x (x ^ z) y)) ⟩
+  x * x ^ z * y * y ^ z   ≡⟨ *-associative (x * x ^ z) y (y ^ z) ⟩
+  x * x ^ z * (y * y ^ z) ∎
+
+^-*-adjunct : (x y z : Nat) → (x ^ y) ^ z ≡ x ^ (y * z)
+^-*-adjunct x zero z = ^-oneˡ z
+^-*-adjunct x (suc y) zero = ^-*-adjunct x y zero
+^-*-adjunct x (suc y) (suc z) =
+  x * x ^ y * (x * x ^ y) ^ z       ≡⟨ ap (λ a → x * x ^ y * a) (^-distrib-*ʳ x (x ^ y) z) ⟩
+  x * x ^ y * (x ^ z * (x ^ y) ^ z) ≡⟨ ap (λ a → x * x ^ y * (x ^ z * a)) (^-*-adjunct x y z) ⟩
+  x * x ^ y * (x ^ z * x ^ (y * z)) ≡⟨ ap (λ a → x * x ^ y * a) (sym (^-+-hom-*ʳ x z (y * z))) ⟩
+  x * x ^ y * (x ^ (z + (y * z)))   ≡⟨ *-associative x (x ^ y) (x ^ (z + y * z)) ⟩
+  x * (x ^ y * (x ^ (z + (y * z)))) ≡⟨ ap (x *_) (sym (^-+-hom-*ʳ x y (z + y * z))) ⟩
+  x * x ^ (y + (z + y * z))         ≡⟨ ap (λ a → x * x ^ a) (sym (+-associative y z (y * z))) ⟩
+  x * x ^ (y + z + y * z)           ≡⟨ ap (λ a → x * x ^ (a + y * z)) (+-commutative y z) ⟩
+  x * x ^ (z + y + y * z)           ≡⟨ ap (λ a → x * x ^ a) (+-associative z y (y * z)) ⟩
+  x * x ^ (z + (y + y * z))         ≡⟨ ap (λ a → x * x ^ (z + a)) (sym (*-sucʳ y z))  ⟩
+  x * x ^ (z + y * suc z) ∎
+```
+
+
 ## Discreteness
 
 A more interesting property of the natural numbers is that they are
