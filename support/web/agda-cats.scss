@@ -1,21 +1,4 @@
-$code-bg:     #fafafa;
-$code-fg:     #222;
-$text-bg:     #fafafa;
-$text-fg:     #222;
-
-$code-red:    #d52753;
-$code-red-br: #AE3B36;
-$code-green:  #207b1d;
-$code-yellow: #DEB468;
-$code-orange: #CA7124;
-$code-blue:   #0054f4;
-$code-pink:   #8a1060;
-$code-purple: #9C1BD6;
-$code-violet: #7a82da;
-$code-cyan:   #48A8B5;
-$code-white:  #ABB2BF;
-$code-grey:   #7F848E;
-$link-ul:       $code-blue;
+@import "vars.scss";
 
 html {
   height: 100vh;

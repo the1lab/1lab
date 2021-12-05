@@ -46,15 +46,21 @@ $nav-height: 48px;
 
 $font-size: 14pt;
 
-$code-bg:     #282C34;
-$code-fg:     #ABB2BF;
-$code-red:    #D65122;
+$code-bg:     #fafafa;
+$code-fg:     #222;
+$text-bg:     #fafafa;
+$text-fg:     #222;
+
+$code-red:    #d52753;
 $code-red-br: #AE3B36;
-$code-green:  #88B966;
+$code-green:  #207b1d;
 $code-yellow: #DEB468;
-$code-orange: #C58853;
-$code-blue:   #519DEB;
-$code-pink:   #C678DD;
+$code-orange: #CA7124;
+$code-blue:   #0054f4;
+$code-pink:   #8a1060;
+$code-purple: #9C1BD6;
+$code-violet: #7a82da;
 $code-cyan:   #48A8B5;
 $code-white:  #ABB2BF;
 $code-grey:   #7F848E;
+$link-ul:       $code-blue;

@@ -439,6 +439,21 @@ div.contact-list {
 details {
   margin-top: 1em;
   margin-bottom: 1em;
+
+  > summary {
+    list-style-type: none;
+  }
+
+  & > summary::before {
+    content: "⯈";
+    display: inline-block;
+    cursor: pointer;
+    color: $code-blue;
+  }
+
+  &[open] > summary::before {
+    transform: rotate(90deg);
+  }
 }
 
 // Styles for code
