@@ -76,6 +76,11 @@ Note that we have provided a _non-strict_ version! This means the relation
 is irreflexive rather than reflexive. There's a good reason for doing so:
 it makes the relation trichotomous.
 
+This proof is a bit of a monster, so don't feel bad if it's
+overwhelming! The core idea is that we can walk down both lists,
+comparing each element as we go. Most of the code here is
+simply to convince Agda that various situations are impossible.
+
 ```agda
 lex-trichotomous : isTrichotomous _≺_ → isTrichotomous (Lex _≺_)
 lex-trichotomous tri nil      nil      = eq (λ ()) refl (λ ())
