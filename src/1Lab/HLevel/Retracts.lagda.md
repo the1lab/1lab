@@ -191,3 +191,15 @@ isHLevel× : ∀ {a b} {A : Type a} {B : Type b}
           → isHLevel (A × B) n
 isHLevel× n ahl bhl = isHLevelΣ n ahl (λ _ → bhl)
 ```
+
+Similarly, `Lift`{.Agda} does not induce a change of h-levels, i.e. if
+$A$ is an $n$-type in a universe $U$, then it's also an $n$-type in any
+successor universe:
+
+```
+isHLevel-Lift : ∀ {a b} {A : Type a}
+              → (n : Nat)
+              → isHLevel A n
+              → isHLevel (Lift b A) n
+isHLevel-Lift n a-hl = isHLevel-retract n lift Lift.lower (λ _ → refl) a-hl
+```

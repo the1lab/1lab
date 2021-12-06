@@ -1,5 +1,9 @@
 ```agda
+open import 1Lab.HLevel.Retracts
+open import 1Lab.Data.Bool
+open import 1Lab.Data.Nat
 open import 1Lab.Data.Dec
+open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
@@ -75,9 +79,10 @@ of _dependent functions_ out of the disjoint union: A dependent function
 right cases.
 
 ```
-⊎-universal : ∀ {a b p} {A : Type a} {B : Type b} {P : A ⊎ B → Type p}
-            → ((x : A ⊎ B) → P x)
-            ≃ (((x : A) → P (inₗ x)) × ((y : B) → P (inᵣ y)))
+⊎-universal : ∀ {A : Type a} {B : Type b} {C : A ⊎ B → Type c}
+            → ((x : A ⊎ B) → C x)
+            ≃ ( ((x : A) → C (inₗ x))
+              × ((y : B) → C (inᵣ y)))
 ⊎-universal {A = A} {B} {P} = Iso→Equiv the-iso where
   the-iso : Iso _ _
 ```
@@ -133,4 +138,105 @@ from-dec (no ¬a) = inᵣ ¬a
 to-dec : A ⊎ (A → ⊥) → Dec A
 to-dec (inₗ  a) = yes a
 to-dec (inᵣ ¬a) = no ¬a
+```
+
+These helpers are clearly inverses, and thus constitute an equivalence:
+
+```
+isEquiv-from-dec : {A : Type a} → isEquiv (from-dec {A = A})
+isEquiv-from-dec = isIso→isEquiv (iso to-dec p q) where
+  p : _
+  p (inₗ x) = refl
+  p (inᵣ x) = refl
+
+  q : _
+  q (yes x) = refl
+  q (no x) = refl
+```
+
+## Closure under h-levels
+
+If $A$ and $B$ are $n$-types, for $n \ge 2$, then so is their coproduct.
+This is because the coproduct can be expressed as a `dependent
+sum`{.Agda ident=_⊎_} indexed by `Bool`{.Agda}
+
+```
+isHLevel⊎ : (n : Nat)
+          → isHLevel A (2 + n) → isHLevel B (2 + n)
+          → isHLevel (A ⊎ B) (2 + n)
+isHLevel⊎ {A = A} {B = B} hl a-hl b-hl =
+  isHLevel-retract (2 + hl) ∐→⊎ ⊎→∐ retraction ∐-hlevel
+  where
+    common : Level
+    common = level-of A ⊔ level-of B
+
+    ∐ : Type common
+    ∐ = Σ {A = Bool} λ { true → Lift common A ; false → Lift common B } 
+```
+
+We start by respelling the definition of `_⊎_`{.Agda} in terms of
+`Σ`{.Agda}. This is a common _implementation_ of coproducts in languages
+that do not support them: We have a _tag_, in this case `Bool`{.Agda},
+and based on the tag, we store a value of either type. In this case, we
+store `A` with `true`{.Agda} and `B` with `false`{.Agda}.
+
+Note that since `A` and `B` may live in different universes, we must
+`Lift`{.Agda} them to the least universe which contains both. Then we
+can prove that `_⊎_`{.Agda} is a retract of `∐`{.Agda}:
+
+```
+    ⊎→∐ : A ⊎ B → ∐
+    ⊎→∐ (inₗ x) = true , lift x
+    ⊎→∐ (inᵣ x) = false , lift x
+
+    ∐→⊎ : ∐ → A ⊎ B
+    ∐→⊎ (false , snd₁) = inᵣ (Lift.lower snd₁)
+    ∐→⊎ (true , snd₁) = inₗ (Lift.lower snd₁)
+
+    retraction : (x : A ⊎ B) → ∐→⊎ (⊎→∐ x) ≡ x
+    retraction (inₗ x) = refl
+    retraction (inᵣ x) = refl
+```
+
+Because of computation, this is essentially automatic. Note that we must
+both `lift`{.Agda} and `lower`{.Agda} values of type A/B when passing
+from `_⊎_` to `∐`. Then a simple case split gives us the required property:
+
+```
+    bool' : isHLevel Bool (2 + hl)
+    bool' = subst (λ e → isHLevel Bool e)
+                  (+-commutative hl 2)
+                  (isHLevel-+ 2 hl isSet-Bool)
+```
+
+Since `Bool`{.Agda} `is a set`{.Agda ident=isSet-Bool}, we have that it
+automatically has any h-level greater than 2, i.e. `2 + hl`. We've
+reduced the problem of showing that `_⊎_`{.Agda} has said h-level to the
+problem of proving that `∐` does, which follows from `closure of
+h-levels under Σ`{.Agda ident=isHLevelΣ}.
+
+```
+    ∐-hlevel : isHLevel ∐ (2 + hl)
+    ∐-hlevel = isHLevelΣ (2 + hl) bool'
+      λ { false → isHLevel-Lift (2 + hl) b-hl
+        ; true → isHLevel-Lift (2 + hl) a-hl
+        }
+```
+
+Note that, in general, [being a proposition] and [being contractible]
+are not preserved under coproducts. Consider the case where `(A, a)` and
+`(B, b)` are both contractible (this generalises to propositions): Then
+their coproduct has two distinct points, `in­ₗ a` and `inᵣ b`. However,
+the coproduct of _disjoint_ propositions is a proposition:
+
+[being a proposition]: agda://1Lab.HLevel#isProp
+[being contractible]: agda://1Lab.HLevel#isContr
+
+```
+isProp-disjoint-⊎ : isProp A → isProp B → (A × B → ⊥)
+                  → isProp (A ⊎ B)
+isProp-disjoint-⊎ Ap Bp notab (inₗ x) (inₗ y) = ap inₗ (Ap x y)
+isProp-disjoint-⊎ Ap Bp notab (inₗ x) (inᵣ y) = absurd (notab (x , y))
+isProp-disjoint-⊎ Ap Bp notab (inᵣ x) (inₗ y) = absurd (notab (y , x))
+isProp-disjoint-⊎ Ap Bp notab (inᵣ x) (inᵣ y) = ap inᵣ (Bp x y)
 ```

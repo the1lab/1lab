@@ -1,4 +1,5 @@
 ```agda
+open import 1Lab.HLevel.Sets
 open import 1Lab.Univalence
 open import 1Lab.Data.Dec
 open import 1Lab.HLevel
@@ -48,6 +49,9 @@ Discrete-Bool false false = yes refl
 Discrete-Bool false true = no (λ p → true≠false (sym p))
 Discrete-Bool true false = no true≠false
 Discrete-Bool true true = yes refl
+
+isSet-Bool : isSet Bool
+isSet-Bool = Discrete→isSet Discrete-Bool
 ```
 
 Furthermore, if we know we're not looking at true, then we must be
