@@ -1,9 +1,9 @@
 ```agda
+open import 1Lab.HLevel.Sets
+open import 1Lab.Data.Dec
 open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type
-
-open import 1Lab.Data.Dec
 
 module 1Lab.Data.Relation.Order where
 ```
@@ -47,6 +47,8 @@ record isPreorder {A : Type ℓ} (R : A → A → Type ℓ') : Type (ℓ ⊔ ℓ
     propositional : {x y : A} → isProp (R x y)
 ```
 
+## Partial Orders
+
 A **partial order** is a preorder which, in addition, is antisymmetric:
 
 ```agda
@@ -61,8 +63,40 @@ record isPartialOrder {A : Type ℓ} (R : A → A → Type ℓ') : Type (ℓ ⊔
   open isPreorder preorder public
 ```
 
-We say a relation is **trichotomous** for all `x,y` if exactly _one_ of `R x y`, `x ≡ y`, or `R y x` holds.
-We define this in two parts: First we define what trichotomy means for 2 elements via `Tri`, then
+Any type with a choice of partial order is a set. This is because of
+`Rijke's theorem`{.Agda ident=Rijke-isSet}: Any type with a reflexive
+relation implying equality is a set.
+
+```
+hasPartialOrder→isSet : {A : Type ℓ} {R : A → A → Type ℓ'}
+                      → isPartialOrder R
+                      → isSet A
+hasPartialOrder→isSet {A = A} {_≤_} ispo =
+  Rijke-isSet {R = R'} reflexive' (λ { (x , y) → antisym x y }) isProp'
+  where
+    open isPartialOrder ispo
+```
+
+For the relation, we take $R(x, y) = (x \le y) \land (y \le x)$. By
+antisymmetry, this implies $x = y$. Since propositions are closed under
+products, this is a proposition.
+
+```
+    R' : A → A → Type _
+    R' x y = (x ≤ y) × (y ≤ x)
+
+    reflexive' : {x : A} → R' x x
+    reflexive' = reflexive , reflexive
+
+    isProp' : {x y : A} → isProp (R' x y)
+    isProp' (a , b) (a' , b') i = propositional a a' i , propositional b b' i
+```
+
+## Trichotomous orders
+
+We say a relation is **trichotomous** for all `x,y` if exactly _one_ of
+`R x y`, `x ≡ y`, or `R y x` holds.  We define this in two parts: First
+we define what trichotomy means for 2 elements via `Tri`, then
 `Trichotomous` in terms of `Tri`.
 
 ```agda
@@ -82,7 +116,7 @@ To start, trichotomy immediately implies discreteness:
 
 ```agda
 trichotomous-discrete : ∀ {A : Type ℓ} {R : A → A → Type ℓ'}
-  → isTrichotomous R → Discrete A
+                      → isTrichotomous R → Discrete A
 trichotomous-discrete compare x y with compare x y
 ... | lt _ ¬x≡y _ = no ¬x≡y
 ... | eq _  x≡y _ = yes x≡y
