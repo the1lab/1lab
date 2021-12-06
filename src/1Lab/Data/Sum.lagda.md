@@ -1,8 +1,8 @@
 ```agda
+open import 1Lab.Data.Dec
+open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
-
-open import 1Lab.Data.Dec
 
 module 1Lab.Data.Sum where
 ```
@@ -58,15 +58,48 @@ if we have some function `h : A ⊎ B → C` that behaves like
 ```
 
 We also have the following **eta law**. In general, eta laws relate the
-**introduction** forms with the **elimination** forms. The most familiar
-eta law is the one for functions: `λ x → (f x)` is the same as `f`. In agda,
-the eta law for functions requires no proof, it holds by definition. However,
-the same cannot be said for sum types, so we prove it here.
+_introduction_ forms with the _elimination_ forms. The most familiar eta
+law is the one for functions: `λ x → (f x)` is the same as `f`. In agda,
+the eta law for functions requires no proof, it holds by definition.
+However, the same cannot be said for sum types, so we prove it here.
 
 ```agda
 []-η : ∀ (x : A ⊎ B) → [ inₗ , inᵣ ] x ≡ x
 []-η (inₗ x) = refl
 []-η (inᵣ x) = refl
+```
+
+This universal property can be strengthened to characterising the space
+of _dependent functions_ out of the disjoint union: A dependent function
+`(x : A ⊎ B) → P x` is the product of functions covering the left and
+right cases.
+
+```
+⊎-universal : ∀ {a b p} {A : Type a} {B : Type b} {P : A ⊎ B → Type p}
+            → ((x : A ⊎ B) → P x)
+            ≃ (((x : A) → P (inₗ x)) × ((y : B) → P (inᵣ y)))
+⊎-universal {A = A} {B} {P} = Iso→Equiv the-iso where
+  the-iso : Iso _ _
+```
+
+For "splitting" a dependent function from the coproduct, we can compose
+it with either of the constructors to restrict to a function on that
+factor:
+
+```
+  the-iso .fst f = (λ x → f (inₗ x)) , (λ x → f (inᵣ x))
+```
+
+Similarly, given a pair of functions, we can do a case split on the
+coproduct to decide which function to apply:
+
+```
+  the-iso .snd .isIso.g (f , g) (inₗ x) = f x
+  the-iso .snd .isIso.g (f , g) (inᵣ x) = g x
+
+  the-iso .snd .isIso.right-inverse x = refl
+  the-iso .snd .isIso.left-inverse f i (inₗ x) = f (inₗ x)
+  the-iso .snd .isIso.left-inverse f i (inᵣ x) = f (inᵣ x)
 ```
 
 ## Transformations
