@@ -92,6 +92,60 @@ products, this is a proposition.
     isProp' (a , b) (a' , b') i = propositional a a' i , propositional b b' i
 ```
 
+With this theorem, we can prove that being a partial order is a
+proposition. We do this by the characterisation of propositions as those
+types which are `contractible when inhabited`{.Agda
+ident=inhContr→isProp}, since then we're free to assume A is a set.
+
+```
+isProp-isPartialOrder : {A : Type ℓ} {R : A → A → Type ℓ'}
+                      → isProp (isPartialOrder R)
+isProp-isPartialOrder {A = A} {R} = inhContr→isProp contract
+  where
+    open isPartialOrder
+    open isPreorder
+
+    contract : isPartialOrder R → isContr (isPartialOrder R)
+    contract order = contr order paths where
+      A-set : isSet A
+      A-set = hasPartialOrder→isSet order
+```
+
+For the centre of contraction, we're free to use the given witness.
+Since the paths end up being a big product of propositions, most of the
+construction follows directly from the fact that `preorders are
+propositional`{.Agda ident=propositional}.
+
+```
+      paths : (x : isPartialOrder R) → order ≡ x
+      paths x i .preorder .reflexive =
+        x .propositional (order .preorder .reflexive)
+                         (x .preorder .reflexive)
+                         i
+      paths x i .preorder .transitive p q =
+        x .propositional (order .preorder .transitive p q)
+                         (x .preorder .transitive p q)
+                         i
+```
+
+To connect the propositionality witnesses, we use the fact that `isProp
+is a proposition`{.Agda ident=isProp-isProp}.
+
+```
+      paths x i .preorder .propositional =
+        isProp-isProp (order .preorder .propositional)
+                      (x .preorder .propositional)
+                      i
+```
+
+The construction is finished by relating the antisymmetry witnesses.
+Since `A` admits a partial order, and thus is a set, all of its path
+spaces are propositions:
+
+```
+      paths x i .antisym p q = A-set _ _ (order .antisym p q) (x .antisym p q) i
+```
+
 ## Trichotomous orders
 
 We say a relation is **trichotomous** for all `x,y` if exactly _one_ of
