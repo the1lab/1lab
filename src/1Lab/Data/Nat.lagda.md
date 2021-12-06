@@ -134,7 +134,7 @@ infixr 8 _^_
 
 ^-distrib-*ʳ : (x y z : Nat) → (x * y) ^ z ≡ x ^ z * y ^ z
 ^-distrib-*ʳ x y zero = refl
-^-distrib-*ʳ x y (suc z) = 
+^-distrib-*ʳ x y (suc z) =
   x * y * (x * y) ^ z     ≡⟨ ap (λ a → x * y * a) (^-distrib-*ʳ x y z) ⟩
   x * y * (x ^ z * y ^ z) ≡⟨ sym (*-associative (x * y) (x ^ z) (y ^ z)) ⟩
   x * y * x ^ z * y ^ z   ≡⟨ ap (_* y ^ z) (*-associative x y (x ^ z)) ⟩
@@ -208,6 +208,7 @@ zero ≤ zero = ⊤
 zero ≤ suc y = ⊤
 suc x ≤ zero = ⊥
 suc x ≤ suc y = x ≤ y
+infix 3 _≤_
 ```
 
 Then we can prove it is reflexive, transitive and antisymmetric, making
@@ -261,4 +262,40 @@ Furthermore, ≤ is decidable:
 ≤-dec zero (suc y) = yes tt
 ≤-dec (suc x) zero = no (λ z → z)
 ≤-dec (suc x) (suc y) = ≤-dec x y
+```
+
+It is also preserved by the main arithmetical operations:
+
+```agda
++-preserves-≤ˡ : (x y z : Nat) → x ≤ y → z + x ≤ z + y
++-preserves-≤ˡ x y zero prf = prf
++-preserves-≤ˡ x y (suc z) prf = +-preserves-≤ˡ x y z prf
+
++-preserves-≤ʳ : (x y z : Nat) → x ≤ y → x + z ≤ y + z
++-preserves-≤ʳ x y z prf = subst (λ a → a ≤ y + z) (+-commutative z x)
+  (subst (λ a → z + x ≤ a) (+-commutative z y) (+-preserves-≤ˡ x y z prf))
+
++-preserves-≤ : (x y x' y' : Nat) → x ≤ y → x' ≤ y' → x + x' ≤ y + y'
++-preserves-≤ x y x' y' prf prf' = ≤-trans (x + x') (y + x') (y + y')
+  (+-preserves-≤ʳ x y x' prf) (+-preserves-≤ˡ x' y' y prf')
+
+*-preserves-≤ˡ : (x y z : Nat) → x ≤ y → z * x ≤ z * y
+*-preserves-≤ˡ x y zero prf = tt
+*-preserves-≤ˡ x y (suc z) prf = +-preserves-≤ x y (z * x) (z * y) prf
+  (*-preserves-≤ˡ x y z prf)
+
+*-preserves-≤ʳ : (x y z : Nat) → x ≤ y → x * z ≤ y * z
+*-preserves-≤ʳ x y z prf = subst (λ a → a ≤ y * z) (*-commutative z x)
+  (subst (λ a → z * x ≤ a) (*-commutative z y) (*-preserves-≤ˡ x y z prf))
+
+*-preserves-≤ : (x y x' y' : Nat) → x ≤ y → x' ≤ y' → x * x' ≤ y * y'
+*-preserves-≤ x y x' y' prf prf' = ≤-trans (x * x') (y * x') (y * y')
+  (*-preserves-≤ʳ x y x' prf) (*-preserves-≤ˡ x' y' y prf')
+
++-reflects-≤ˡ : (x y z : Nat) → z + x ≤ z + y → x ≤ y
++-reflects-≤ˡ x y zero prf = prf
++-reflects-≤ˡ x y (suc z) prf = +-reflects-≤ˡ x y z prf
+
++-reflects-≤ʳ : (x y z : Nat) → x + z ≤ y + z → x ≤ y
++-reflects-≤ʳ x y z prf = +-reflects-≤ˡ x y z (subst (_≤ z + y) (+-commutative x z) (subst (x + z ≤_) (+-commutative y z) prf))
 ```
