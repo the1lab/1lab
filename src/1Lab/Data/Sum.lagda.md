@@ -10,7 +10,7 @@ module 1Lab.Data.Sum where
 # Sum Types
 
 Sum types are one of the fundemental ingredients of type theory.
-They play a dual role to the [product type](agda://agda://1Lab.Types#_×_);
+They play a dual role to the [product type](agda://agda://1Lab.Type#_×_);
 if products allow us to state that we have elements of two types simultaneously,
 sum types allow us to state that we have an element of _one_ of two types.
 
