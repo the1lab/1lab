@@ -39,6 +39,97 @@ predicate that distinguishes them by mapping one to `⊤`{.Agda}, and one
 to `⊥`{.Agda}. Then we can substitute under P along the claimed equality
 to get an element of `⊥`{.Agda} - a contradiction.
 
+## Basic algebraic properties
+
+The booleans form a [Boolean algebra][1], as one might already expect, given its name.
+
+```agda
+not : Bool → Bool
+not true = false
+not false = true
+
+and or : Bool → Bool → Bool
+and false y = false
+and true y = y
+
+or false y = y
+or true y = true
+
+and-associative : (x y z : Bool) → and x (and y z) ≡ and (and x y) z
+and-associative false y z = refl
+and-associative true y z = refl
+
+or-associative : (x y z : Bool) → or x (or y z) ≡ or (or x y) z
+or-associative false y z = refl
+or-associative true y z = refl
+
+and-commutative : (x y : Bool) → and x y ≡ and y x
+and-commutative false false = refl
+and-commutative false true = refl
+and-commutative true false = refl
+and-commutative true true = refl
+
+or-commutative : (x y : Bool) → or x y ≡ or y x
+or-commutative false false = refl
+or-commutative false true = refl
+or-commutative true false = refl
+or-commutative true true = refl
+
+and-trueʳ : (x : Bool) → and x true ≡ x
+and-trueʳ false = refl
+and-trueʳ true = refl
+
+and-trueˡ : (x : Bool) → and true x ≡ x
+and-trueˡ x = refl
+
+or-falseʳ : (x : Bool) → or x false ≡ x
+or-falseʳ false = refl
+or-falseʳ true = refl
+
+or-falseˡ : (x : Bool) → or false x ≡ x
+or-falseˡ x = refl
+
+and-absorbs-orʳ : (x y : Bool) → and x (or x y) ≡ x
+and-absorbs-orʳ false y = refl
+and-absorbs-orʳ true y = refl
+
+or-absorbs-andʳ : (x y : Bool) → or x (and x y) ≡ x
+or-absorbs-andʳ false y = refl
+or-absorbs-andʳ true y = refl
+
+and-distrib-orˡ : (x y z : Bool) → and x (or y z) ≡ or (and x y) (and x z)
+and-distrib-orˡ false y z = refl
+and-distrib-orˡ true y z = refl
+
+or-distrib-andˡ : (x y z : Bool) → or x (and y z) ≡ and (or x y) (or x z)
+or-distrib-andˡ false y z = refl
+or-distrib-andˡ true y z = refl
+
+or-complementˡ : (x : Bool) → or (not x) x ≡ true
+or-complementˡ false = refl
+or-complementˡ true = refl
+
+and-complementˡ : (x : Bool) → and (not x) x ≡ false
+and-complementˡ false = refl
+and-complementˡ true = refl
+
+and-idempotent : (x : Bool) → and x x ≡ x
+and-idempotent false = refl
+and-idempotent true = refl
+
+or-idempotent : (x : Bool) → or x x ≡ x
+or-idempotent false = refl
+or-idempotent true = refl
+
+not-involutive : (x : Bool) → not (not x) ≡ x
+not-involutive false i = false
+not-involutive true i = true
+```
+
+[1]: <https://en.wikipedia.org/wiki/Boolean_algebra_(structure)> "Boolean algebra"
+
+```
+
 ## Discreteness
 
 It's quite easy to tell whether two booleans are equal:
@@ -69,22 +160,9 @@ x≠false→x≡true true p = refl
 
 ## The "not" equivalence
 
-```agda
-not : Bool → Bool
-not true = false
-not false = true
-```
-
 The construction of `not`{.Agda} as an equivalence factors through
 showing that `not` is an isomorphism. In particular, `not`{.Agda} is its
-own inverse, so we just need a proof that it's involutive:
-
-```agda
-not-involutive : (x : Bool) → not (not x) ≡ x
-not-involutive false i = false
-not-involutive true i = true
-```
-
+own inverse, so we just need a proof that it's involutive, as is proven in `not-involutive`{.Agda}.
 With this, we can get a proof that it's an equivalence:
 
 ```agda
