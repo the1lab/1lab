@@ -25,19 +25,38 @@ the disjoint union.
 infixr 1 _⊎_
 
 data _⊎_ {a b} (A : Type a) (B : Type b) : Type (a ⊔ b) where
-  inₗ : A → A ⊎ B
-  inᵣ : B → A ⊎ B
+  inl : A → A ⊎ B
+  inr : B → A ⊎ B
 ```
 <!--
 ```agda
 private variable
-    a b c d : Level
-    A : Type a
-    B : Type b
-    C : Type c
-    D : Type d
+  a b c d : Level
+  A : Type a
+  B : Type b
+  C : Type c
+  D : Type d
 ```
 -->
+
+As warmup, we have that both constructors are embeddings:
+
+```
+inl-inj : {B : Type b} {x y : A} → inl {B = B} x ≡ inl y → x ≡ y
+inl-inj {A = A} {x = x} path = ap f path where
+  f : A ⊎ B → A
+  f (inl x) = x
+  f (inr _) = x
+
+inr-inj : {A : Type b} {x y : B} → inr {A = A} x ≡ inr y → x ≡ y
+inr-inj {B = B} {x = x} path = ap f path where
+  f : A ⊎ B → B
+  f (inl _) = x
+  f (inr x) = x
+
+⊎-disjoint : {A : Type a} {B : Type b} {x : A} {y : B} → inl x ≡ inr y → ⊥
+⊎-disjoint path = subst (λ { (inl x) → ⊤ ; (inr x) → ⊥ }) path tt
+```
 
 ## Universal Properties
 
@@ -47,18 +66,18 @@ given two functions `A → C` and `B → C`, we can construct a function
 
 ```agda
 [_,_] : (A → C) → (B → C) → (A ⊎ B) → C
-[ f , g ] (inₗ x) = f x
-[ f , g ] (inᵣ x) = g x
+[ f , g ] (inl x) = f x
+[ f , g ] (inr x) = g x
 ```
 
 Furthermore, this function is "universal" in the following sense:
 if we have some function `h : A ⊎ B → C` that behaves like
-`f` when provided an `inₗ a`, and like `g` when provided `inᵣ b`, then
+`f` when provided an `inl a`, and like `g` when provided `inr b`, then
 `h` _must_ be equal to `[ f , g ]`.
 
 ```agda
-[]-unique : ∀ {f : A → C} {g : B → C} {h} → f ≡ h ∘ inₗ → g ≡ h ∘ inᵣ → [ f , g ] ≡ h
-[]-unique p q = funext λ { (inₗ x) i → p i x ; (inᵣ x) i → q i x }
+[]-unique : ∀ {f : A → C} {g : B → C} {h} → f ≡ h ∘ inl → g ≡ h ∘ inr → [ f , g ] ≡ h
+[]-unique p q = funext λ { (inl x) i → p i x ; (inr x) i → q i x }
 ```
 
 We also have the following **eta law**. In general, eta laws relate the
@@ -68,9 +87,9 @@ the eta law for functions requires no proof, it holds by definition.
 However, the same cannot be said for sum types, so we prove it here.
 
 ```agda
-[]-η : ∀ (x : A ⊎ B) → [ inₗ , inᵣ ] x ≡ x
-[]-η (inₗ x) = refl
-[]-η (inᵣ x) = refl
+[]-η : ∀ (x : A ⊎ B) → [ inl , inr ] x ≡ x
+[]-η (inl x) = refl
+[]-η (inr x) = refl
 ```
 
 This universal property can be strengthened to characterising the space
@@ -81,8 +100,8 @@ right cases.
 ```
 ⊎-universal : ∀ {A : Type a} {B : Type b} {C : A ⊎ B → Type c}
             → ((x : A ⊎ B) → C x)
-            ≃ ( ((x : A) → C (inₗ x))
-              × ((y : B) → C (inᵣ y)))
+            ≃ ( ((x : A) → C (inl x))
+              × ((y : B) → C (inr y)))
 ⊎-universal {A = A} {B} {P} = Iso→Equiv the-iso where
   the-iso : Iso _ _
 ```
@@ -92,19 +111,19 @@ it with either of the constructors to restrict to a function on that
 factor:
 
 ```
-  the-iso .fst f = (λ x → f (inₗ x)) , (λ x → f (inᵣ x))
+  the-iso .fst f = (λ x → f (inl x)) , (λ x → f (inr x))
 ```
 
 Similarly, given a pair of functions, we can do a case split on the
 coproduct to decide which function to apply:
 
 ```
-  the-iso .snd .isIso.g (f , g) (inₗ x) = f x
-  the-iso .snd .isIso.g (f , g) (inᵣ x) = g x
+  the-iso .snd .isIso.g (f , g) (inl x) = f x
+  the-iso .snd .isIso.g (f , g) (inr x) = g x
 
   the-iso .snd .isIso.right-inverse x = refl
-  the-iso .snd .isIso.left-inverse f i (inₗ x) = f (inₗ x)
-  the-iso .snd .isIso.left-inverse f i (inᵣ x) = f (inᵣ x)
+  the-iso .snd .isIso.left-inverse f i (inl x) = f (inl x)
+  the-iso .snd .isIso.left-inverse f i (inr x) = f (inr x)
 ```
 
 ## Transformations
@@ -115,14 +134,14 @@ types.
 
 ```agda
 ⊎-map : (A → C) → (B → D) → A ⊎ B → C ⊎ D
-⊎-map f g (inₗ a) = inₗ (f a)
-⊎-map f g (inᵣ b) = inᵣ (g b)
+⊎-map f g (inl a) = inl (f a)
+⊎-map f g (inr b) = inr (g b)
 
-⊎-mapₗ : (A → C) → A ⊎ B → C ⊎ B
-⊎-mapₗ f = ⊎-map f id
+⊎-mapl : (A → C) → A ⊎ B → C ⊎ B
+⊎-mapl f = ⊎-map f id
 
-⊎-mapᵣ : (B → C) → A ⊎ B → A ⊎ C
-⊎-mapᵣ f = ⊎-map id f
+⊎-mapr : (B → C) → A ⊎ B → A ⊎ C
+⊎-mapr f = ⊎-map id f
 ```
 
 ## Decidablity
@@ -132,12 +151,12 @@ we provide some helpers to convert between the two.
 
 ```agda
 from-dec : Dec A → A ⊎ (A → ⊥)
-from-dec (yes a) = inₗ a
-from-dec (no ¬a) = inᵣ ¬a
+from-dec (yes a) = inl a
+from-dec (no ¬a) = inr ¬a
 
 to-dec : A ⊎ (A → ⊥) → Dec A
-to-dec (inₗ  a) = yes a
-to-dec (inᵣ ¬a) = no ¬a
+to-dec (inl  a) = yes a
+to-dec (inr ¬a) = no ¬a
 ```
 
 These helpers are clearly inverses, and thus constitute an equivalence:
@@ -146,8 +165,8 @@ These helpers are clearly inverses, and thus constitute an equivalence:
 isEquiv-from-dec : {A : Type a} → isEquiv (from-dec {A = A})
 isEquiv-from-dec = isIso→isEquiv (iso to-dec p q) where
   p : _
-  p (inₗ x) = refl
-  p (inᵣ x) = refl
+  p (inl x) = refl
+  p (inr x) = refl
 
   q : _
   q (yes x) = refl
@@ -186,16 +205,16 @@ can prove that `_⊎_`{.Agda} is a retract of `∐`{.Agda}:
 
 ```
     ⊎→∐ : A ⊎ B → ∐
-    ⊎→∐ (inₗ x) = true , lift x
-    ⊎→∐ (inᵣ x) = false , lift x
+    ⊎→∐ (inl x) = true , lift x
+    ⊎→∐ (inr x) = false , lift x
 
     ∐→⊎ : ∐ → A ⊎ B
-    ∐→⊎ (false , snd₁) = inᵣ (Lift.lower snd₁)
-    ∐→⊎ (true , snd₁) = inₗ (Lift.lower snd₁)
+    ∐→⊎ (false , snd₁) = inr (Lift.lower snd₁)
+    ∐→⊎ (true , snd₁) = inl (Lift.lower snd₁)
 
     retraction : (x : A ⊎ B) → ∐→⊎ (⊎→∐ x) ≡ x
-    retraction (inₗ x) = refl
-    retraction (inᵣ x) = refl
+    retraction (inl x) = refl
+    retraction (inr x) = refl
 ```
 
 Because of computation, this is essentially automatic. Note that we must
@@ -226,7 +245,7 @@ h-levels under Σ`{.Agda ident=isHLevelΣ}.
 Note that, in general, [being a proposition] and [being contractible]
 are not preserved under coproducts. Consider the case where `(A, a)` and
 `(B, b)` are both contractible (this generalises to propositions): Then
-their coproduct has two distinct points, `in­ₗ a` and `inᵣ b`. However,
+their coproduct has two distinct points, `in­l a` and `inr b`. However,
 the coproduct of _disjoint_ propositions is a proposition:
 
 [being a proposition]: agda://1Lab.HLevel#isProp
@@ -235,8 +254,92 @@ the coproduct of _disjoint_ propositions is a proposition:
 ```
 isProp-disjoint-⊎ : isProp A → isProp B → (A × B → ⊥)
                   → isProp (A ⊎ B)
-isProp-disjoint-⊎ Ap Bp notab (inₗ x) (inₗ y) = ap inₗ (Ap x y)
-isProp-disjoint-⊎ Ap Bp notab (inₗ x) (inᵣ y) = absurd (notab (x , y))
-isProp-disjoint-⊎ Ap Bp notab (inᵣ x) (inₗ y) = absurd (notab (y , x))
-isProp-disjoint-⊎ Ap Bp notab (inᵣ x) (inᵣ y) = ap inᵣ (Bp x y)
+isProp-disjoint-⊎ Ap Bp notab (inl x) (inl y) = ap inl (Ap x y)
+isProp-disjoint-⊎ Ap Bp notab (inl x) (inr y) = absurd (notab (x , y))
+isProp-disjoint-⊎ Ap Bp notab (inr x) (inl y) = absurd (notab (y , x))
+isProp-disjoint-⊎ Ap Bp notab (inr x) (inr y) = ap inr (Bp x y)
+```
+
+## Closure under equivalences
+
+[Univalence] automatically implies that all type formers respect
+equivalences. However, the proof using univalence is restricted to types
+of the same universe level. Thus, `⊎-cong`{.Agda}: Coproducts respect
+equivalences in both arguments, across levels.
+
+```
+⊎-ap : A ≃ B → C ≃ D → (A ⊎ C) ≃ (B ⊎ D)
+⊎-ap (f , f-eqv) (g , g-eqv) = Iso→Equiv cong where
+  f-iso = isEquiv→isIso f-eqv
+  g-iso = isEquiv→isIso g-eqv
+
+  cong : Iso _ _
+  cong .fst (inl x) = inl (f x)
+  cong .fst (inr x) = inr (g x)
+
+  cong .snd .isIso.g (inl x) = inl (f-iso .isIso.g x)
+  cong .snd .isIso.g (inr x) = inr (g-iso .isIso.g x)
+
+  cong .snd .isIso.right-inverse (inl x) = ap inl (f-iso .isIso.right-inverse x)
+  cong .snd .isIso.right-inverse (inr x) = ap inr (g-iso .isIso.right-inverse x)
+
+  cong .snd .isIso.left-inverse (inl x) = ap inl (f-iso .isIso.left-inverse x)
+  cong .snd .isIso.left-inverse (inr x) = ap inr (g-iso .isIso.left-inverse x)
+
+⊎-apˡ : A ≃ B → (A ⊎ C) ≃ (B ⊎ C)
+⊎-apˡ f = ⊎-ap f (id , idEquiv)
+
+⊎-apʳ : B ≃ C → (A ⊎ B) ≃ (A ⊎ C)
+⊎-apʳ f = ⊎-ap (id , idEquiv) f
+```
+
+## Algebraic properties
+
+Considered as an algebraic operator on _types_, the coproduct satisfies
+many of the same properties of addition. Specifically, when restricted
+to finite types, the coproduct is exactly the same as addition.
+
+```
+⊎-comm : (A ⊎ B) ≃ (B ⊎ A)
+⊎-comm = Iso→Equiv i where
+  i : Iso _ _
+  i .fst (inl x) = inr x
+  i .fst (inr x) = inl x
+
+  i .snd .isIso.g (inl x) = inr x
+  i .snd .isIso.g (inr x) = inl x
+
+  i .snd .isIso.right-inverse (inl x) = refl
+  i .snd .isIso.right-inverse (inr x) = refl
+  i .snd .isIso.left-inverse (inl x) = refl
+  i .snd .isIso.left-inverse (inr x) = refl
+
+⊎-assoc : ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C))
+⊎-assoc = Iso→Equiv i where
+  i : Iso _ _
+  i .fst (inl (inl x)) = inl x
+  i .fst (inl (inr x)) = inr (inl x)
+  i .fst (inr x)       = inr (inr x)
+
+  i .snd .isIso.g (inl x)       = inl (inl x)
+  i .snd .isIso.g (inr (inl x)) = inl (inr x)
+  i .snd .isIso.g (inr (inr x)) = inr x
+
+  i .snd .isIso.right-inverse (inl x) = refl
+  i .snd .isIso.right-inverse (inr (inl x)) = refl
+  i .snd .isIso.right-inverse (inr (inr x)) = refl
+
+  i .snd .isIso.left-inverse (inl (inl x)) = refl
+  i .snd .isIso.left-inverse (inl (inr x)) = refl
+  i .snd .isIso.left-inverse (inr x) = refl
+
+⊎-zeroʳ : (A ⊎ ⊥) ≃ A
+⊎-zeroʳ .fst (inl x) = x
+⊎-zeroʳ .snd .isEqv y .centre = inl y , refl
+⊎-zeroʳ .snd .isEqv y .paths (inl x , p) i = inl (p (~ i)) , λ j → p (~ i ∨ j)
+
+⊎-zeroˡ : (⊥ ⊎ A) ≃ A
+⊎-zeroˡ .fst (inr x) = x
+⊎-zeroˡ .snd .isEqv y .centre = inr y , refl
+⊎-zeroˡ .snd .isEqv y .paths (inr x , p) i = inr (p (~ i)) , λ j → p (~ i ∨ j)
 ```
