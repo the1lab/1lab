@@ -42,6 +42,7 @@ to get an element of `⊥`{.Agda} - a contradiction.
 ## Basic algebraic properties
 
 The booleans form a [Boolean algebra][1], as one might already expect, given its name.
+The operations required to define such a structure are quite simple:
 
 ```agda
 not : Bool → Bool
@@ -54,7 +55,13 @@ and true y = y
 
 or false y = y
 or true y = true
+```
 
+Pattern matching on only the first argument might seem like a somewhat inpractical choice
+due to its asymmetry - however, it shortens a lot of proofs since we get a lot of judgemental
+equalities for free. For example, see the following statements:
+
+```agda
 and-associative : (x y z : Bool) → and x (and y z) ≡ and (and x y) z
 and-associative false y z = refl
 and-associative true y z = refl
@@ -113,14 +120,6 @@ or-distrib-andˡ : (x y z : Bool) → or x (and y z) ≡ and (or x y) (or x z)
 or-distrib-andˡ false y z = refl
 or-distrib-andˡ true y z = refl
 
-or-complementˡ : (x : Bool) → or (not x) x ≡ true
-or-complementˡ false = refl
-or-complementˡ true = refl
-
-and-complementˡ : (x : Bool) → and (not x) x ≡ false
-and-complementˡ false = refl
-and-complementˡ true = refl
-
 and-idempotent : (x : Bool) → and x x ≡ x
 and-idempotent false = refl
 and-idempotent true = refl
@@ -129,6 +128,13 @@ or-idempotent : (x : Bool) → or x x ≡ x
 or-idempotent false = refl
 or-idempotent true = refl
 
+```
+
+All the properties above hold both in classical and constructive mathematics, even in
+*[minimal logic][2]* that fails to validate both the law of the excluded middle as well
+as the law of noncontradiction. However, the boolean operations satisfy both of these laws:
+
+```agda
 not-involutive : (x : Bool) → not (not x) ≡ x
 not-involutive false i = false
 not-involutive true i = true
@@ -140,11 +146,22 @@ not-and≡or-not true y = refl
 not-or≡and-not : (x y : Bool) → not (or x y) ≡ and (not x) (not y)
 not-or≡and-not false y = refl
 not-or≡and-not true y = refl
+
+or-complementˡ : (x : Bool) → or (not x) x ≡ true
+or-complementˡ false = refl
+or-complementˡ true = refl
+
+and-complementˡ : (x : Bool) → and (not x) x ≡ false
+and-complementˡ false = refl
+and-complementˡ true = refl
 ```
 
 [1]: <https://en.wikipedia.org/wiki/Boolean_algebra_(structure)> "Boolean algebra"
+[2]: <https://en.wikipedia.org/wiki/Minimal_logic> "Minimal logic"
 
-Exclusive disjunction (usually known as *XOR*) also yields additional structure:
+Exclusive disjunction (usually known as *XOR*) also yields additional structure -
+in particular, it can be viewed as an addition operator in a ring whose multiplication
+is defined by conjunction:
 
 ```agda
 xor : Bool → Bool → Bool
@@ -178,7 +195,6 @@ and-distrib-xorʳ : (x y z : Bool) → and (xor x y) z ≡ xor (and x z) (and y 
 and-distrib-xorʳ false y z = refl
 and-distrib-xorʳ true y false = and-falseʳ (not y) ∙ sym (and-falseʳ y)
 and-distrib-xorʳ true y true = (and-trueʳ (not y)) ∙ ap not (sym (and-trueʳ y))
-
 ```
 
 ## Discreteness
