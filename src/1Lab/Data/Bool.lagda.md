@@ -79,12 +79,20 @@ and-trueʳ : (x : Bool) → and x true ≡ x
 and-trueʳ false = refl
 and-trueʳ true = refl
 
+and-falseʳ : (x : Bool) → and x false ≡ false
+and-falseʳ false = refl
+and-falseʳ true = refl
+
 and-trueˡ : (x : Bool) → and true x ≡ x
 and-trueˡ x = refl
 
 or-falseʳ : (x : Bool) → or x false ≡ x
 or-falseʳ false = refl
 or-falseʳ true = refl
+
+or-trueʳ : (x : Bool) → or x true ≡ true
+or-trueʳ false = refl
+or-trueʳ true = refl
 
 or-falseˡ : (x : Bool) → or false x ≡ x
 or-falseˡ x = refl
@@ -127,6 +135,41 @@ not-involutive true i = true
 ```
 
 [1]: <https://en.wikipedia.org/wiki/Boolean_algebra_(structure)> "Boolean algebra"
+
+Exclusive disjunction (usually known as *XOR*) also yields additional structure:
+
+```agda
+xor : Bool → Bool → Bool
+xor false y = y
+xor true y = not y
+
+xor-associative : (x y z : Bool) → xor x (xor y z) ≡ xor (xor x y) z
+xor-associative false y z = refl
+xor-associative true false z = refl
+xor-associative true true z = not-involutive z
+
+xor-commutative : (x y : Bool) → xor x y ≡ xor y x
+xor-commutative false false = refl
+xor-commutative false true = refl
+xor-commutative true false = refl
+xor-commutative true true = refl
+
+xor-falseʳ : (x : Bool) → xor x false ≡ x
+xor-falseʳ false = refl
+xor-falseʳ true = refl
+
+xor-trueʳ : (x : Bool) → xor x true ≡ not x
+xor-trueʳ false = refl
+xor-trueʳ true = refl
+
+xor-inverse-self : (x : Bool) → xor x x ≡ false
+xor-inverse-self false = refl
+xor-inverse-self true = refl
+
+and-distrib-xorʳ : (x y z : Bool) → and (xor x y) z ≡ xor (and x z) (and y z)
+and-distrib-xorʳ false y z = refl
+and-distrib-xorʳ true y false = and-falseʳ (not y) ∙ sym (and-falseʳ y)
+and-distrib-xorʳ true y true = (and-trueʳ (not y)) ∙ ap not (sym (and-trueʳ y))
 
 ```
 
