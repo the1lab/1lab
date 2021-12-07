@@ -61,8 +61,8 @@ module _ where
     seg : ii0 ≡ ii1
 ```
 
-An example of a contractible type that is not directly defined as
-another name for `⊥` is the unit interval, defined as a higher inductive
+An example of a contractible type that is not _directly_ defined as
+another name for `⊤` is the unit interval, defined as a higher inductive
 type.
 
 ```agda
