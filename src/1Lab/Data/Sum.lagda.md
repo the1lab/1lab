@@ -264,8 +264,10 @@ isProp-disjoint-⊎ Ap Bp notab (inr x) (inr y) = ap inr (Bp x y)
 
 [Univalence] automatically implies that all type formers respect
 equivalences. However, the proof using univalence is restricted to types
-of the same universe level. Thus, `⊎-cong`{.Agda}: Coproducts respect
+of the same universe level. Thus, `⊎-ap`{.Agda}: Coproducts respect
 equivalences in both arguments, across levels.
+
+[Univalence]: 1Lab.Univalence.html#the-axiom
 
 ```
 ⊎-ap : A ≃ B → C ≃ D → (A ⊎ C) ≃ (B ⊎ D)
