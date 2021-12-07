@@ -375,11 +375,11 @@ equivalences almost trivial. For example, if `f` is an equivalence, then
 so is its action on paths. 
 
 ```agda
-isEquiv→isEquiv-ap : ∀ {ℓ} {A B : Type ℓ}
-                   → (f : A → B) → isEquiv f
-                   → {x y : A}
-                   → isEquiv (ap f {x = x} {y = y})
-isEquiv→isEquiv-ap f eqv =
+isEquiv→isEmbedding : ∀ {ℓ} {A B : Type ℓ}
+                    → (f : A → B) → isEquiv f
+                    → {x y : A}
+                    → isEquiv (ap f {x = x} {y = y})
+isEquiv→isEmbedding f eqv =
   EquivJ
     (λ B e → isEquiv (ap (e .fst)))
     idEquiv
