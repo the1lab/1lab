@@ -132,6 +132,14 @@ or-idempotent true = refl
 not-involutive : (x : Bool) → not (not x) ≡ x
 not-involutive false i = false
 not-involutive true i = true
+
+not-and≡or-not : (x y : Bool) → not (and x y) ≡ or (not x) (not y)
+not-and≡or-not false y = refl
+not-and≡or-not true y = refl
+
+not-or≡and-not : (x y : Bool) → not (or x y) ≡ and (not x) (not y)
+not-or≡and-not false y = refl
+not-or≡and-not true y = refl
 ```
 
 [1]: <https://en.wikipedia.org/wiki/Boolean_algebra_(structure)> "Boolean algebra"
