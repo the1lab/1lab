@@ -39,6 +39,164 @@ predicate that distinguishes them by mapping one to `⊤`{.Agda}, and one
 to `⊥`{.Agda}. Then we can substitute under P along the claimed equality
 to get an element of `⊥`{.Agda} - a contradiction.
 
+## Basic algebraic properties
+
+The booleans form a [Boolean algebra][1], as one might already expect, given its name.
+The operations required to define such a structure are quite simple:
+
+```agda
+not : Bool → Bool
+not true = false
+not false = true
+
+and or : Bool → Bool → Bool
+and false y = false
+and true y = y
+
+or false y = y
+or true y = true
+```
+
+Pattern matching on only the first argument might seem like a somewhat inpractical choice
+due to its asymmetry - however, it shortens a lot of proofs since we get a lot of judgemental
+equalities for free. For example, see the following statements:
+
+```agda
+and-associative : (x y z : Bool) → and x (and y z) ≡ and (and x y) z
+and-associative false y z = refl
+and-associative true y z = refl
+
+or-associative : (x y z : Bool) → or x (or y z) ≡ or (or x y) z
+or-associative false y z = refl
+or-associative true y z = refl
+
+and-commutative : (x y : Bool) → and x y ≡ and y x
+and-commutative false false = refl
+and-commutative false true = refl
+and-commutative true false = refl
+and-commutative true true = refl
+
+or-commutative : (x y : Bool) → or x y ≡ or y x
+or-commutative false false = refl
+or-commutative false true = refl
+or-commutative true false = refl
+or-commutative true true = refl
+
+and-trueʳ : (x : Bool) → and x true ≡ x
+and-trueʳ false = refl
+and-trueʳ true = refl
+
+and-falseʳ : (x : Bool) → and x false ≡ false
+and-falseʳ false = refl
+and-falseʳ true = refl
+
+and-trueˡ : (x : Bool) → and true x ≡ x
+and-trueˡ x = refl
+
+or-falseʳ : (x : Bool) → or x false ≡ x
+or-falseʳ false = refl
+or-falseʳ true = refl
+
+or-trueʳ : (x : Bool) → or x true ≡ true
+or-trueʳ false = refl
+or-trueʳ true = refl
+
+or-falseˡ : (x : Bool) → or false x ≡ x
+or-falseˡ x = refl
+
+and-absorbs-orʳ : (x y : Bool) → and x (or x y) ≡ x
+and-absorbs-orʳ false y = refl
+and-absorbs-orʳ true y = refl
+
+or-absorbs-andʳ : (x y : Bool) → or x (and x y) ≡ x
+or-absorbs-andʳ false y = refl
+or-absorbs-andʳ true y = refl
+
+and-distrib-orˡ : (x y z : Bool) → and x (or y z) ≡ or (and x y) (and x z)
+and-distrib-orˡ false y z = refl
+and-distrib-orˡ true y z = refl
+
+or-distrib-andˡ : (x y z : Bool) → or x (and y z) ≡ and (or x y) (or x z)
+or-distrib-andˡ false y z = refl
+or-distrib-andˡ true y z = refl
+
+and-idempotent : (x : Bool) → and x x ≡ x
+and-idempotent false = refl
+and-idempotent true = refl
+
+or-idempotent : (x : Bool) → or x x ≡ x
+or-idempotent false = refl
+or-idempotent true = refl
+
+```
+
+All the properties above hold both in classical and constructive mathematics, even in
+*[minimal logic][2]* that fails to validate both the law of the excluded middle as well
+as the law of noncontradiction. However, the boolean operations satisfy both of these laws:
+
+```agda
+not-involutive : (x : Bool) → not (not x) ≡ x
+not-involutive false i = false
+not-involutive true i = true
+
+not-and≡or-not : (x y : Bool) → not (and x y) ≡ or (not x) (not y)
+not-and≡or-not false y = refl
+not-and≡or-not true y = refl
+
+not-or≡and-not : (x y : Bool) → not (or x y) ≡ and (not x) (not y)
+not-or≡and-not false y = refl
+not-or≡and-not true y = refl
+
+or-complementˡ : (x : Bool) → or (not x) x ≡ true
+or-complementˡ false = refl
+or-complementˡ true = refl
+
+and-complementˡ : (x : Bool) → and (not x) x ≡ false
+and-complementˡ false = refl
+and-complementˡ true = refl
+```
+
+[1]: <https://en.wikipedia.org/wiki/Boolean_algebra_(structure)> "Boolean algebra"
+[2]: <https://en.wikipedia.org/wiki/Minimal_logic> "Minimal logic"
+
+Exclusive disjunction (usually known as *XOR*) also yields additional structure -
+in particular, it can be viewed as an addition operator in a ring whose multiplication
+is defined by conjunction:
+
+```agda
+xor : Bool → Bool → Bool
+xor false y = y
+xor true y = not y
+
+xor-associative : (x y z : Bool) → xor x (xor y z) ≡ xor (xor x y) z
+xor-associative false y z = refl
+xor-associative true false z = refl
+xor-associative true true z = not-involutive z
+
+xor-commutative : (x y : Bool) → xor x y ≡ xor y x
+xor-commutative false false = refl
+xor-commutative false true = refl
+xor-commutative true false = refl
+xor-commutative true true = refl
+
+xor-falseʳ : (x : Bool) → xor x false ≡ x
+xor-falseʳ false = refl
+xor-falseʳ true = refl
+
+xor-trueʳ : (x : Bool) → xor x true ≡ not x
+xor-trueʳ false = refl
+xor-trueʳ true = refl
+
+xor-inverse-self : (x : Bool) → xor x x ≡ false
+xor-inverse-self false = refl
+xor-inverse-self true = refl
+
+and-distrib-xorʳ : (x y z : Bool) → and (xor x y) z ≡ xor (and x z) (and y z)
+and-distrib-xorʳ false y z = refl
+and-distrib-xorʳ true y false = and-falseʳ (not y) ∙ sym (and-falseʳ y)
+and-distrib-xorʳ true y true = (and-trueʳ (not y)) ∙ ap not (sym (and-trueʳ y))
+```
+
 ## Discreteness
 
 It's quite easy to tell whether two booleans are equal:
@@ -69,22 +227,9 @@ x≠false→x≡true true p = refl
 
 ## The "not" equivalence
 
-```agda
-not : Bool → Bool
-not true = false
-not false = true
-```
-
 The construction of `not`{.Agda} as an equivalence factors through
 showing that `not` is an isomorphism. In particular, `not`{.Agda} is its
-own inverse, so we just need a proof that it's involutive:
-
-```agda
-not-involutive : (x : Bool) → not (not x) ≡ x
-not-involutive false i = false
-not-involutive true i = true
-```
-
+own inverse, so we just need a proof that it's involutive, as is proven in `not-involutive`{.Agda}.
 With this, we can get a proof that it's an equivalence:
 
 ```agda
