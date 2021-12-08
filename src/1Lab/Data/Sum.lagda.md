@@ -159,7 +159,8 @@ to-dec (inl  a) = yes a
 to-dec (inr ¬a) = no ¬a
 ```
 
-These helpers are clearly inverses, and thus constitute an equivalence:
+The proof that these functions are inverses is automatic by computation,
+and thus it can be shown they are equivalences:
 
 ```
 isEquiv-from-dec : {A : Type a} → isEquiv (from-dec {A = A})
@@ -219,7 +220,8 @@ can prove that `_⊎_`{.Agda} is a retract of `∐`{.Agda}:
 
 Because of computation, this is essentially automatic. Note that we must
 both `lift`{.Agda} and `lower`{.Agda} values of type A/B when passing
-from `_⊎_` to `∐`. Then a simple case split gives us the required property:
+from `_⊎_` to `∐`. Then a case split gives us the required property,
+namely `retraction`{.Agda}.
 
 ```
     bool' : isHLevel Bool (2 + hl)

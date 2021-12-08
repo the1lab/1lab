@@ -15,7 +15,7 @@ $x : X$ with $f(x) = y$. In set theoretical notation: $\mathrm{im}(f) =
 
 It is a commonly held misunderstanding that when translating such a
 definition into type theory, both subsets and existential quantifiers
-should be read as special cases of the dependent sum, `Σ`{.Agda} -
+should be read as specific cases of the dependent sum, `Σ`{.Agda} -
 perhaps using "subset" to mean "`Σ` for which the type family is
 [propositional]". Indeed, the first projection out of these is [a
 (generalised) subset inclusion], so this translation is accurate **for

@@ -9,10 +9,11 @@ module 1Lab.Data.Relation.Order.Lexicographic where
 
 # Lexicographic Orderings
 
-A **Lexicographic Ordering** can be thought of as a generalization of how we sort words.
-For instance, if we were to look up "math" in the dictionary, it would come
-before "mathematician", but after "cube". By generalizing the order in question,
-we can get a notion of ordering for any arbitrary list, instead of just lists of characters.
+A **Lexicographic Ordering** can be thought of as a generalization of
+how we sort words.  For instance, if we were to look up "math" in the
+dictionary, it would come before "mathematician", but after "cube". By
+generalizing the order in question, we can get a notion of ordering for
+any arbitrary list, instead of being restricted to lists of characters.
 
 We define our ordering as an inductive type:
 
@@ -71,14 +72,14 @@ ap-∷-next {x = x} {xs = xs} {ys = ys} x≡y xs≺ys =
 
 ## Trichotomy
 
-Note that we have provided a _non-strict_ version! This means the relation
-is irreflexive rather than reflexive. There's a good reason for doing so:
-it makes the relation trichotomous.
+Note that we have provided a _non-strict_ version! This means the
+relation is irreflexive rather than reflexive. There's a good reason for
+doing so: it makes the relation trichotomous.
 
 This proof is a bit of a monster, so don't feel bad if it's
 overwhelming! The core idea is that we can walk down both lists,
-comparing each element as we go. Most of the code here is
-simply to convince Agda that various situations are impossible.
+comparing each element as we go. Most of the code here is to convince
+Agda that various situations are impossible.
 
 ```agda
 lex-trichotomous : isTrichotomous _≺_ → isTrichotomous (Lex _≺_)

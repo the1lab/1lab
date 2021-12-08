@@ -41,8 +41,9 @@ to get an element of `⊥`{.Agda} - a contradiction.
 
 ## Basic algebraic properties
 
-The booleans form a [Boolean algebra][1], as one might already expect, given its name.
-The operations required to define such a structure are quite simple:
+The booleans form a [Boolean algebra][1], as one might already expect,
+given its name. The operations required to define such a structure are
+straightforward to define using pattern matching:
 
 ```agda
 not : Bool → Bool
@@ -199,7 +200,9 @@ and-distrib-xorʳ true y true = (and-trueʳ (not y)) ∙ ap not (sym (and-trueʳ
 
 ## Discreteness
 
-It's quite easy to tell whether two booleans are equal:
+Using pattern matching, and the fact that `true isn't false`{.Agda
+ident=true≠false}, one can write an algorithm to tell whether or not two
+booleans are the same:
 
 ```agda
 Discrete-Bool : Discrete Bool
@@ -229,8 +232,9 @@ x≠false→x≡true true p = refl
 
 The construction of `not`{.Agda} as an equivalence factors through
 showing that `not` is an isomorphism. In particular, `not`{.Agda} is its
-own inverse, so we just need a proof that it's involutive, as is proven in `not-involutive`{.Agda}.
-With this, we can get a proof that it's an equivalence:
+own inverse, so we need a proof that it's involutive, as is proven in
+`not-involutive`{.Agda}.  With this, we can get a proof that it's an
+equivalence:
 
 ```agda
 isEquiv-not : isEquiv not
@@ -312,7 +316,7 @@ Now we classify the isomorphism by looking at what it does to
   g (snd the-iso) (lift true)  = ua (not , isEquiv-not)
 ```
 
-The inverse is determined by the same rule, just backwards. That's why
+The inverse is determined by the same rule, but backwards. That's why
 it's an inverse! Everything computes in a way that lines up to this
 function being a `right-inverse`{.Agda} on the nose.
 

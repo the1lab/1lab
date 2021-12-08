@@ -48,10 +48,10 @@ isIso→isHAE {A = A} {B} {f} iiso = g , η , ε' , λ x → sym (zig x) where
   open isIso iiso renaming (left-inverse to η ; right-inverse to ε)
 ```
 
-For $g$ and $\eta$, we can just take the values provided by
-`isIso`{.Agda}. However, if we want $(\eta, \epsilon)$ to satisfy the
-triangle identities, we can not in general take $\epsilon' = \epsilon$.
-We can, however, alter it like thus:
+For $g$ and $\eta$, we can take the values provided by `isIso`{.Agda}.
+However, if we want $(\eta, \epsilon)$ to satisfy the triangle
+identities, we can not in general take $\epsilon' = \epsilon$.  We can,
+however, alter it like thus:
 
 ```
   ε' : (y : B) → f (g y) ≡ y
@@ -71,12 +71,12 @@ Drawn as a diagram, the path above factors like:
 \end{tikzcd}\]
 ~~~
 
-There is clearly a great deal of redundancy in this definition, given
-that $\varepsilon y$ and $\varepsilon' y$ have the same boundary! The
-point is that while the definition of $\varepsilon$ is entirely opaque
-to us, $\varepsilon'$ is written in such a way that we can use
-properties of paths to make the $\mathrm{sym}\ (\varepsilon ...)$ and
-$\varepsilon$ cancel:
+There is a great deal of redundancy in this definition, given that
+$\varepsilon y$ and $\varepsilon' y$ have the same boundary! The point
+is that while the definition of $\varepsilon$ is entirely opaque to us,
+$\varepsilon'$ is written in such a way that we can use properties of
+paths to make the $\mathrm{sym}\ (\varepsilon ...)$ and $\varepsilon$
+cancel:
 
 ```
   zig : (x : A) → ε' (f x) ≡ ap f (η x)

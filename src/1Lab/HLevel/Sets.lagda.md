@@ -64,11 +64,11 @@ Rijke-equivalence {A = A} {R = R} refl toid isprop = total→equiv equiv where
     (contr (x , λ i → x) λ { (x , q) i → q i , λ j → q (i ∧ j) })
 ```
 
-The proof is simple: By the characterisation of [fibrewise
-equivalences], it suffices to show that `total toid` induces an
-equivalence of total spaces. By J, the total space of `x ≡_` is
-contractible; By `toid`, and the fact that `R` is propositional, we can
-contract the total space of `R x` to `(x , refl)`.
+By the characterisation of [fibrewise equivalences], it suffices to show
+that `total toid` induces an equivalence of total spaces. By J, the
+total space of `x ≡_` is contractible; By `toid`, and the fact that `R`
+is propositional, we can contract the total space of `R x` to `(x ,
+refl)`.
 
 [fibrewise equivalences]: agda://1Lab.Equiv.Fibrewise
 

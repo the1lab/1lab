@@ -23,7 +23,7 @@ module 1Lab.Univalence.SIP where
 In mathematics in general, it's often _notationally_ helpful to identify
 isomorphic _structures_ (e.g.: groups) in a proof. However, when this
 mathematics is done using material set theory as a foundations, this
-identification is simply a shorthand --- nothing _prevents_ you from
+identification is merely a shorthand --- nothing _prevents_ you from
 distinguishing isomorphic groups in ZFC by, for instance, asking about
 membership of a particular set in the underlying set of each group.
 
@@ -138,8 +138,7 @@ _≃L[_]_ {ℓ₁ = ℓ₁} A σ B =
 The difference is that `the lifted version`{.Agda ident=_≃L[_]_} lives
 in the same universe as `_≡_`{.Agda} for `Type ℓ`{.Agda ident=Type}.
 This is a technical concern that will help make the proof of
-`SIP`{.Agda} simpler. These are nevertheless related by a simple
-isomorphism:
+`SIP`{.Agda} simpler. These are nevertheless related by an isomorphism:
 
 ```agda
 ≃[]-unlift : {S : Type ℓ₁ → Type ℓ₂} {A B : Σ S} {σ : SNS S}
@@ -379,11 +378,10 @@ I claim that `not`{.Agda} is a $\infty$-magma isomorphism between
   not-iso .snd i true true   = false
 ```
 
-It's not obvious that this should be the case, especially since the case
-analysis makes it not immediately obvious what is going on. However,
-writing $\land$ and $\lor$ for the actions of `Conj`{.Agda} and
-`Disj`{.Agda} (as one should!), then we see that `not-iso`{.Agda} says
-exactly that
+It's not clear that this should be the case, especially since the case
+analysis obfuscates the result further. However, writing $\land$ and
+$\lor$ for the actions of `Conj`{.Agda} and `Disj`{.Agda} (as one
+should!), then we see that `not-iso`{.Agda} says exactly that
 
 $$
 \neg (x \land y) = \neg x \lor \neg y
@@ -399,11 +397,11 @@ $\infty$-magma:
 
 # Adding Axioms
 
-Of course, most mathematical objects of interest aren't merely sets with
-structure. More often, the objects we're interested in have _stuff_ (the
-underlying type), _structure_ (such as a `SNS`{.Agda}), and _properties_
-- for instance, equations imposed on the structure. A concrete example
-may help:
+Most mathematical objects of interest aren't merely sets with structure.
+More often, the objects we're interested in have _stuff_ (the underlying
+type), _structure_ (such as a `SNS`{.Agda}), and _properties_ - for
+instance, equations imposed on the structure. A concrete example may
+help:
 
 - A **pointed $\infty$-magma** is a pointed type equipped with a binary operation;
 - A **monoid** is a pointed $\infty$-magma with additional data

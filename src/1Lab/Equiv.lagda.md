@@ -19,8 +19,8 @@ proposition](agda://1Lab.HLevel#isProp).
 
 [univalence axiom]: 1Lab.Univalence.html
 
-To be more specific, what we desire of a coherent notion of equivalence
-$\mathrm{isEquiv}(f)$ is that:
+To be more specific, what we need for a notion of equivalence
+$\mathrm{isEquiv}(f)$ to be "coherent" is:
 
 - Being an `isomorphism`{.Agda ident=isIso} implies being an
 `equivalence`{.Agda ident=isEquiv} ($\mathrm{isIso}(f) \to
@@ -81,8 +81,8 @@ idEquiv : isEquiv {A = A} (λ x → x)
 idEquiv .isEqv y = contr (y , λ i → y) λ { (y' , p) i → p (~ i) , λ j → p (~ i ∨ j) } 
 ```
 
-For Cubical Agda, the type of equivalences is special, so we have to
-make a small wrapper to match the interface Agda expects. This is the
+For Cubical Agda, the type of equivalences is distinguished, so we have
+to make a small wrapper to match the interface Agda expects. This is the
 [geometric definition of contractibility], in terms of [partial
 elements].
 

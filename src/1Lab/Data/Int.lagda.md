@@ -259,7 +259,7 @@ Int-rec f q (diff x y) = f x y
 Int-rec f q (quot m n i) = q m n i
 ```
 
-However, since $X$ can be a more general space and not just a set,
+However, since $X$ can be a more general space, not necessarily a _set_,
 defining a _binary_ operation $f' : \mathbb{Z}^2 \to X$ can be quite
 involved! It doesn't suffice to exhibit a function from $\mathbb{N}^4$
 which respects the quotient separately in each argument:

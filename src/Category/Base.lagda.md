@@ -43,9 +43,9 @@ question are **hom**omorphisms.
 ```
 
 Whereas reading a classical definition into a type theory where equality
-is a proposition, the word **set** may be read to just mean [inhabitant
-of a universe](agda://1Lab.Type). But in HoTT, if we want categories to
-be well-behaved, we do actually mean _set_: A type of
+is a proposition, the word **set** may be read to mean [inhabitant of a
+universe](agda://1Lab.Type). But in HoTT, if we want categories to be
+well-behaved, we do actually mean _set_: A type of
 [h-level](agda://1Lab.HLevel) 2.
 
 ```agda
@@ -88,8 +88,8 @@ which its objects live.
 The "proof-relevant" version of the reflexivity and transitivity laws
 are, respectively, the `identity morphisms`{.Agda} and `composition of
 morphisms`{.Agda ident="_∘_"}. Unlike in the proof-irrelevant case, in
-which an inhabitant of $x \le y$ just says two things are related, these
-operations _matter_, and thus must satisfy laws:
+which an inhabitant of $x \le y$ merely witnesses that two things are
+related, these operations _matter_, and thus must satisfy laws:
   
 ```
   field
@@ -164,11 +164,11 @@ _ = refl
 
 # Categories
 
-Just like a partial order is a preorder where $x \le y \and y \le x \to
-x = y$, a **category** is a precategory where isomorphic objects are
-identified. This is a generalisation of the univalence axiom to
-arbitrary categories, and, indeed, it's phrased in the same way: asking
-for a canonically defined map to be an equivalence.
+In much the same way that a partial order is a preorder where $x \le y
+\and y \le x \to x = y$, a **category** is a precategory where
+isomorphic objects are identified. This is a generalisation of the
+univalence axiom to arbitrary categories, and, indeed, it's phrased in
+the same way: asking for a canonically defined map to be an equivalence.
 
 ```agda
 _[_≅_] : ∀ {o h} (C : Precategory o h) (a b : Precategory.Ob C) → Type h
@@ -622,7 +622,7 @@ Natural transformations also dualize. The opposite of $\eta : F
 ```
 
 We verify that natural transformations are [sets] by showing that `F =>
-G` is equivalent to a Σ-type which can be easily shown to be a set by
+G` is equivalent to a Σ-type which can be shown to be a set by the
 closure properties of h-levels.
 
 ```agda

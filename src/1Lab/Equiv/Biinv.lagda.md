@@ -27,8 +27,8 @@ private variable
 
 Recall the three conditions that make up the notion of [equivalence].
 
-> To be more specific, what we desire of a coherent notion of equivalence
-$\mathrm{isEquiv}(f)$ is that:
+> To be more specific, what we need for a notion of equivalence
+$\mathrm{isEquiv}(f)$ to be "coherent" is:
 >
 > - Being an `isomorphism`{.Agda ident=isIso} implies being an
 `equivalence`{.Agda ident=isEquiv} ($\mathrm{isIso}(f) \to
@@ -78,16 +78,16 @@ isBiinv : (A → B) → Type _
 isBiinv f = linv f × rinv f
 ```
 
-A simple argument shows that if $f$ is an equivalence, then so are pre-
-and post- composition with $f$. This can easily be proven using
-[equivalence induction], but a more elementary argument suffices, and
-doesn't use the sledgehammer that is univalence.
+If $f$ is an equivalence, then so are pre- and post- composition with
+$f$. This can be proven using [equivalence induction], but a more
+elementary argument --- directly constructing quasi-inverses ---
+suffices, and doesn't use the sledgehammer that is univalence.
 
 [equivalence induction]: agda://1Lab.Univalence#EquivJ
 
-The proof is simple: If $f : A \to B$ has inverse $f^{-1} : B → A$, then
-$(f^{-1} \circ -)$ and $(- \circ f^{-1})$ are inverses to $(f \circ -)$
-and $(- \circ f)$.
+The proof is as follows: If $f : A \to B$ has inverse $f^{-1} : B → A$,
+then $(f^{-1} \circ -)$ and $(- \circ f^{-1})$ are inverses to $(f \circ
+-)$ and $(- \circ f)$.
 
 ```agda
 isEquiv→isEquiv-precomp  : {f : A → B} → isEquiv f → isEquiv {A = C → A} (f ∘_)
@@ -185,8 +185,8 @@ isProp-isBiinv {f = f} = inhContr→isProp contract where
 
 Since `isBiinv`{.Agda} is a product of contractibles whenever it is
 inhabited, then it is contractible. Finally, we have that
-$\mathrm{isIso}(f) \to \mathrm{isBiinv}(f)$: simply pick the given
-inverse as both a left- and right- inverse.
+$\mathrm{isIso}(f) \to \mathrm{isBiinv}(f)$: pick the given inverse as
+both a left- and right- inverse.
 
 ```agda
 isIso→isBiinv : {f : A → B} → isIso f → isBiinv f

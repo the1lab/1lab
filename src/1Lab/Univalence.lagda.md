@@ -20,7 +20,7 @@ axiom**.
 [identified]: agda://1Lab.Path#Path
 
 Precisely, the axiom as presented in the book consists of the following
-data (just under remark §2.10.4):
+data (right under remark §2.10.4):
 
 * A map which turns equivalences into propositional equalities of type.
 This map is called `ua`{.Agda}.
@@ -100,7 +100,7 @@ open import Agda.Builtin.Cubical.HCompU
 ```
 -->
 
-Since in Cubical Agda, things are naturally higher-dimensional, just
+Since in Cubical Agda, things are naturally higher-dimensional, only
 having a term `ua`{.Agda} wouldn't do! Instead, we introduce a new _type
 former_, **Glue**, which, unlike the type formers like `Type`{.Agda},
 `Σ`{.Agda}, and dependent functions, has **computational content**.
@@ -128,8 +128,8 @@ complete the square.
 
 In the case where we set $\phi = i \lor \neg i$, we can illustrate `Glue
 A (T, f)` as the dashed line in the diagram below. The equivalences $f$
-provide us _just enough_ data to Glue $T$ onto $A$ and get something
-total.
+provide us _exactly_ the right amount of data to Glue $T$ onto $A$ and
+get something total.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -265,11 +265,11 @@ uaIdEquiv {A = A} i j = Glue A {φ = i ∨ ~ j ∨ j} (λ _ → A , _ , idEquiv)
 univalence-Iso {A = A} {B = B} = pathToEquiv , iiso where
 ```
 
-It's easy to show that using `Glue`{.Agda}. There are two interval
-variables, this is a path between paths: a square. When `i = i0`, the
-glue is stuck[^1], so we get `Glue A (λ _ → A , _ , idEquiv)`. When `i =
-i1`, by the argument `φ`, the glue computes away, and we get `refl`,
-hence the type.
+This can be shown using `Glue`{.Agda}. There are two interval variables,
+this is a path between paths: a square. When `i = i0`, the glue is
+stuck[^1], so we get `Glue A (λ _ → A , _ , idEquiv)`. When `i = i1`, by
+the argument `φ`, the glue computes away, and we get `refl`, hence the
+type.
 
 [^1]: Pardon the pun.
 
@@ -289,13 +289,13 @@ equivalences into paths.
 
 We have that `pathToEquiv (ua f) ≡ f` in two parts. Since equivalences
 are pairs, we can reduce this to proving that the function is preserved,
-and proving that the equivalence proof is preserved. The latter is easy
-since equivalence proofs are propositions.
+and proving that the equivalence proof is preserved. The latter follows
+from `isEquiv`{.Agda} being a proposition.
 
-For the former, Agda basically does all the work for us: All we need to
-show is that `transport (λ i → B) (f (transport (λ i → A) x))` is equal
-to `f`. This we do using `transp`{.Agda}, which, when `i = i1`, behaves
-like the identity function.
+For the former, Agda does all the work for us: All we need to show is
+that `transport (λ i → B) (f (transport (λ i → A) x))` is equal to `f`.
+This we do using `transp`{.Agda}, which, when `i = i1`, behaves like the
+identity function.
 
 ```agda
   isIso.left-inverse iiso = 
@@ -331,9 +331,9 @@ univalence-lift {ℓ = ℓ} = isIso→isEquiv morp where
 ## Consequences
 
 One useful consequence of the fact that `(A ≡ B) ≡ (A ≃ B)`[^2] is that
-the type of _equivalences_ satisfies [the same induction principle] as the
-type of _equalities_. What I mean, precisely, is that the type `Σ B (A ≃
-B)` is contractible, just like the type `Σ B (A ≡ B)`. From this, we get
+the type of _equivalences_ satisfies [the same induction principle] as
+the type of _equalities_. What I mean, precisely, is that the type `Σ B
+(A ≃ B)` is contractible, like the type `Σ B (A ≡ B)`. From this, we get
 "equivalence induction": `EquivJ`{.Agda}.
 
 [the same induction principle]: agda://1Lab.Path#J

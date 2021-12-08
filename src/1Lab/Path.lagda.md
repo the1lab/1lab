@@ -35,7 +35,7 @@ Path A = PathP (λ i → A)
 The type `I`{.Agda} is meant to represent the unit interval $[0,1]$, the
 same unit interval used in the definition of path. Since all functions
 definable in type theory are automatically continuous, we can take a
-path to simply be a function `I → A`. More practically, it's useful to
+path to be a _function_ `I → A`. More practically, it's useful to
 write out the endpoints of the path --- that is, the values the function
 takes when applied to `i0` and to `i1`. This we call a `Path`{.Agda}.
 
@@ -88,7 +88,7 @@ to maintain type safety.
 To wit: In cubical type theory, a term in a context with $n$ interval
 variables expresses a way of mapping an $n$-cube into that type. One
 very important class of these maps are the $1$-cubes, lines, or
-[_paths_], which represent simple equalities between terms of that type.
+[_paths_], which represent equalities between terms of that type.
 
 Iterating this construction, a term in a context with 2 interval
 variables represents a square in the type, which can be read as saying
@@ -111,10 +111,10 @@ the one below, we can extend it to any of a bunch of different squares:
 module _ {ℓ} {A : Type ℓ} {a b : A} {p : Path A a b} where
 ```
 
-The first thing we can do is introduce another interval variable, and
-just ignore it, varying the path over the non-ignored variable. These
-give us squares where either the top/bottom or left/right faces are the
-path `p`, and the other two are refl.
+The first thing we can do is introduce another interval variable and
+ignore it, varying the path over the non-ignored variable. These give us
+squares where either the top/bottom or left/right faces are the path
+`p`, and the other two are refl.
 
 ```agda
   private
@@ -287,9 +287,9 @@ says.
 
 In Cubical Agda, types are interpreted as objects called _cubical Kan
 complexes_. I (Amy) wrote a blog post explaining them [here]. The gist
-of it is that, just like we did above and drew a path as a _line_, we
-can draw iterated paths as _squares_. In a type, any _open box_ we can
-draw has a _lid_, that is, the dashed path in the diagram below.
+of it is that, like we did above and drew a path as a _line_, we can
+draw iterated paths as _squares_. In a type, any _open box_ we can draw
+has a _lid_, that is, the dashed path in the diagram below.
 
 [here]: https://amelia.how/posts/cubical-sets.html
 
@@ -525,7 +525,7 @@ it's in [a different module].
 In the HoTT book, we characterise paths over paths using
 
 `transport`{.Agda}: A "path from x to y over P" is a path `transport P x
-≡ y`. In cubical type theory, we have the primitive `PathP`. These
+≡ y`. In cubical type theory, we have the built-in type `PathP`. These
 notions, fortunately, coincide!
 
 ```agda
@@ -711,7 +711,7 @@ subst-path-both loop adj =
 
 The proof is by induction on the path `adj` (for `adjustment`): It
 suffices to consider the case where it is `refl`. In that case, it
-becomes a simple application of the [groupoid laws for types].
+becomes an application of the [groupoid laws for types].
 
 [groupoid laws for types]: 1Lab.Path.Groupoid.html
 
@@ -748,7 +748,7 @@ subst-path-left {x = x} {y} {z} loop adj =
 ```
 
 And for the case where we hold the left endpoint constant, in which case
-we just get a respelling of composition:
+we get a respelling of composition:
 
 ```agda
 subst-path-right : ∀ {ℓ} {A : Type ℓ} {x y z : A}

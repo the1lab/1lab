@@ -49,9 +49,9 @@ open isContr
 
 A contractible type is one for which the unique map `X → ⊤` is an
 equivalence. Thus, it has "one element". This doesn't mean that we can't
-have multiple, distinctly named, inhabitants of the type, it just means
-any inhabitants of the type must be connected by a path, and this path
-can be picked uniformly.
+have "multiple", distinctly named, inhabitants of the type; It means any
+inhabitants of the type must be connected by a path, and this path must
+be picked uniformly.
 
 ```agda
 module _ where
@@ -255,7 +255,7 @@ it, I'd like to suggest an alternative interpretation of the proposition
 `isHLevel A n`: The type `A` admits _unique_ fillers for any `n`-cube.
 
 A contractible type is one that has a unique point: It has a unique
-filler for the 0-cube, which is just a point. A proposition is a type
+filler for the 0-cube, which is a point. A proposition is a type
 that admits unique fillers for 1-cubes, which are lines: given any
 endpoint, there is a line that connects them. A set is a type that
 admits unique fillers for 2-cubes, or squares, and so on.

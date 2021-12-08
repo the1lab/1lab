@@ -18,10 +18,10 @@ open import Agda.Primitive
   public
 ```
 
-`Type`{.Agda} is, of course, a type itself, so it's a natural question
-to ask: does it belong to a universe? The answer is _yes_. However, Type
-can not belong to itself, or we could reproduce Russell's Paradox, as is
-done [in this module].
+`Type`{.Agda} is a type itself, so it's a natural question to ask: does
+it belong to a universe? The answer is _yes_. However, Type can not
+belong to itself, or we could reproduce Russell's Paradox, as is done
+[in this module].
 
 [in this module]: agda://1Lab.Counterexamples.Russell
 

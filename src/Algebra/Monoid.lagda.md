@@ -41,9 +41,9 @@ preferrable:
 [set]: agda://1Lab.HLevel#Set
 
 We can characterise what makes a type a monoid as a [standard notion of
-structure] that is [equipped with axioms]. The structure
-underlying a monoid has a scary name, but it's quite simple in reality:
-**Pointed $\infty$-magmas**
+structure] that is [equipped with axioms]. The structure underlying a
+monoid, a **pointed $\infty$-magma**, has a much scarier name than it
+has any right to!
 
 [equipped with axioms]: agda://1Lab.Univalence.SIP#add-axioms
 [standard notion of structure]: agda://1Lab.Univalence.SIP#SNS
@@ -185,7 +185,7 @@ MonoidPath = SIP Monoid-SNS
 
 ## Lists
 
-The most obvious example of a monoid is the **free monoid on a set of
+A canonical example of monoid are the **free monoids on sets of
 generators** - better known as `the type of lists`{.Agda} on a set. We
 require that the type be a set since _monoids_ have to be sets, and
 `lists preserve set-ness`{.Agda isSet→List-isSet}.

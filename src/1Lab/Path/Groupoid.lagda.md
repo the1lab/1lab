@@ -59,9 +59,9 @@ path - `refl`{.Agda} - acts as an identity for path composition.
       p
 ```
 
-This isn't as simple as it would be in "Book HoTT" because - remember -
-J doesn't compute definitionally, only up to the path `JRefl`{.Agda}.
-Now the other identity law:
+This isn't as straightforward as it would be in "Book HoTT" because -
+remember - J doesn't compute definitionally, only up to the path
+`JRefl`{.Agda}.  Now the other identity law:
 
 ```agda
   ∙-id-l : (p : y ≡ z) → refl ∙ p ≡ p
@@ -84,7 +84,7 @@ This case we get for less since it's essentially the computation rule for `J`{.A
         (refl ∙ q) ∙ r   ∎
 ```
 
-The associativity rule is harder to prove, since we do inductive where
+The associativity rule is trickier to prove, since we do inductive where
 the motive is a dependent product. What we're doing can be summarised
 using words: By induction, it suffices to assume `p` is refl. Then, what
 we want to show is `(refl ∙ (q ∙ r)) ≡ ((refl ∙ q) ∙ r)`. But both of

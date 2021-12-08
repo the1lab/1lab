@@ -9,10 +9,10 @@ module 1Lab.Path.Partial where
 # Partial elements
 
 Recall that a term in a context with $n$ interval variables corresponds
-to a way of mapping $n$-cubes into the type. Iteratively: No variables
-is just an inhabitant, one variable is a [Path], two variables is a path
-between paths, etc, and that we can [raise the dimension of a path]
-using structural and logical operations on the interval.
+to a way of mapping $n$-cubes into the type. Iteratively: Zero variables
+is an inhabitant (or "point"), one variable is a [Path], two variables
+is a path between paths, etc, and that we can [raise the dimension of a
+path] using structural and logical operations on the interval.
 
 [path]: 1Lab.Path.html
 [raise the dimension of a path]: 1Lab.Path.html#raising-dimension
@@ -167,7 +167,7 @@ equivalences: See [`isEqv'`](agda://1Lab.Equiv#isEqv').
 ## Composition
 
 The notion of extensibility also lets us give a more precise definition
-to the notion of "filling a cube": The primitive `hcomp`{.Agda}
+to the notion of "filling a cube": The built-in operation `hcomp`{.Agda}
 expresses that _if a family of paths is extensible at `i0`{.Agda}, then
 it's extensible at `i1`{.Agda}_:
 

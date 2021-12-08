@@ -92,7 +92,7 @@ open import Authors
 It'd be very unfair of me not to mention other resources that could be
 helpful for learning about Homotopy Type Theory:
 
-* Of course, the “canonical” reference is [the HoTT Book], written by a
+* The “canonical” reference is [the HoTT Book], written by a
 variety of mathematicians at the IAS Special Year for Univalent
 Mathematics, held between 2012-2013 and organised by Steve Awodey,
 Thierry Coquand, and the late Vladimir Voevodsky.
