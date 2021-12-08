@@ -1,7 +1,7 @@
 name: Build 1Lab
 on: [push, pull_request]
 jobs:
-  container:
+  build:
     runs-on: ubuntu-latest
     container: pltamy/1lab:latest
     steps:
