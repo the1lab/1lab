@@ -48,7 +48,7 @@ numbers]. Since they're mostly simple inductive arguments written in
 
 ## Multiplication
 
-```
+```agda
 *-distrib-+ʳ : (x y z : Nat) → (x + y) * z ≡ x * z + y * z
 *-distrib-+ʳ zero y z = refl
 *-distrib-+ʳ (suc x) y z =
@@ -102,7 +102,7 @@ numbers]. Since they're mostly simple inductive arguments written in
 
 ## Exponentiation
 
-```
+```agda
 ^-oneʳ : (x : Nat) → x ^ 1 ≡ x
 ^-oneʳ x = *-oneʳ x
 
@@ -151,7 +151,7 @@ numbers]. Since they're mostly simple inductive arguments written in
 
 The ordering relation on the natural numbers is a partial order:
 
-```
+```agda
 ≤-Preorder : isPreorder _≤_
 ≤-Preorder .isPreorder.reflexive {x} = ≤-refl x
 ≤-Preorder .isPreorder.transitive {x} {y} {z} = ≤-trans x y z

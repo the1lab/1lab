@@ -49,7 +49,7 @@ successor. Since we know that `⊤`{.Agda} is inhabited (by `tt`{.Agda}),
 we can transport that along the claimed path to get an inhabitant of
 `⊥`{.Agda}, i.e., a contradiction.
 
-```
+```agda
 suc-inj : {x y : Nat} → suc x ≡ suc y → x ≡ y
 suc-inj = ap pred where
   pred : Nat → Nat
@@ -61,7 +61,7 @@ Furthermore, observe that the `successor`{.Agda} operation is injective,
 i.e., we can “cancel” it on paths. Putting these together, we get a
 proof that equality for the natural numbers is decidable:
 
-```
+```agda
 Discrete-Nat : Discrete Nat
 Discrete-Nat zero zero    = yes refl
 Discrete-Nat zero (suc y) = no λ zero≡suc → absurd (zero≠suc zero≡suc)
@@ -95,7 +95,7 @@ Agda already comes with definitions for addition and multiplication of
 natural numbers. They are reproduced below, using different names, for
 the sake of completeness:
 
-```
+```agda
 plus : Nat → Nat → Nat
 plus zero y = y
 plus (suc x) y = suc (plus x y)
@@ -108,7 +108,7 @@ times (suc x) y = y + times x y
 These match up with the built-in definitions of `_+_`{.Agda} and
 `_*_`{.Agda}:
 
-```
+```agda
 plus≡+ : plus ≡ _+_
 plus≡+ i zero y = y
 plus≡+ i (suc x) y = suc (plus≡+ i x y)
@@ -171,7 +171,7 @@ A simple inductive argument proves that `_≤_`{.Agda} always takes values
 in `propositions`{.Agda ident=isProp}, i.e. any "two" proofs that `x ≤
 y` are equal:
 
-```
+```agda
 ≤-prop : (x y : Nat) → isProp (x ≤ y)
 ≤-prop zero zero p q = refl
 ≤-prop zero (suc y) p q = refl
