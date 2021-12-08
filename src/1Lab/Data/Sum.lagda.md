@@ -1,8 +1,8 @@
 ```agda
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Data.Bool
-open import 1Lab.Data.Nat
 open import 1Lab.Data.Dec
+open import 1Lab.Data.Nat
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
