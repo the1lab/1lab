@@ -31,7 +31,13 @@ USER root
 RUN \
   pacman --noconfirm -U pandoc-bin/*.pkg.tar.zst \
     agda-bin-git/*.pkg.tar.zst \
-    stack-static/*.pkg.tar.zst
+    stack-static/*.pkg.tar.zst; \
+  rm -fr pandoc-bin agda-bin-git stack-static
+
+RUN \
+  pacman --noconfirm -S python-pip; \
+  pip install pandoc-include; \
+  pacman --noconfirm -Rsc python-pip;
 
 WORKDIR /root/
 
@@ -59,16 +65,19 @@ RUN \
   stack install -j16 tagsoup; \
   stack install -j16 unordered-containers; \
   stack install -j16 uri-encode; \
+\
   git clone https://git.amelia.how/amelia/agda-reference-filter.git; \
   cd agda-reference-filter; \
   stack config set resolver lts-18.18; \
   stack install; \
+\
   cd ..; \
   rm -rf agda-reference-filter; \
   git clone https://git.amelia.how/amelia/agda-fold-equations.git; \
   cd agda-fold-equations; \
   stack config set resolver lts-18.18; \
   stack install; \
+\
   cd ..; \
   rm -rf agda-fold-equations; \
   stack exec -- ghc Shakefile.hs -o /root/.local/bin/1lab-shake; \
