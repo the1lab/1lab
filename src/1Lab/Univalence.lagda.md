@@ -411,3 +411,51 @@ equal](agda://1Lab.Path#ap-id) to $\mathrm{id}$, which is known to be
          {C = C}
 ```
 -->
+
+## Paths over `ua`
+
+A very useful theorem is a specialisation of `PathP≡Path`{.Agda} to the
+case of paths dependent over `ua`{.Agda}. This is proven using the
+following cubical helpers, which use the glueing primitives:
+
+```
+ua-unglue : ∀ {A B : Type ℓ} (e : A ≃ B) (i : I) (x : ua e i)
+            → B [ _ ↦ (λ { (i = i0) → e .fst x ; (i = i1) → x }) ]
+ua-unglue e i x = inS (unglue (i ∨ ~ i) x)
+
+ua-glue : ∀ {A B : Type ℓ} (e : A ≃ B) (i : I) (x : Partial (~ i) A)
+            (y : B [ _ ↦ (λ { (i = i0) → e .fst (x 1=1) }) ])
+          → ua e i [ _ ↦ (λ { (i = i0) → x 1=1 ; (i = i1) → outS y }) ]
+ua-glue e i x y = inS (prim^glue {φ = i ∨ ~ i}
+                                 (λ { (i = i0) → x 1=1
+                                    ; (i = i1) → outS y })
+                                 (outS y))
+```
+
+Fortunately, the types of these shrink a lot if the interval variable is
+factored in:
+
+```
+uaPathP→Path : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
+             → PathP (λ i → ua e i) x y
+             → e .fst x ≡ y
+uaPathP→Path e p i = outS (ua-unglue e i (p i))
+
+Path→uaPathP : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
+             → e .fst x ≡ y
+             → PathP (λ i → ua e i) x y
+Path→uaPathP e {x = x} p i = outS (ua-glue e i (λ { (i = i0) → x }) (inS (p i)))
+```
+
+These functions are definitional inverses, and thus they provide a
+characterisation of `PathP (ua f)` in terms of non-dependent paths:
+
+```
+uaPathP≃Path : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
+             → (e .fst x ≡ y) ≃ (PathP (λ i → ua e i) x y)
+uaPathP≃Path eqv = Iso→Equiv ( Path→uaPathP eqv
+                             , iso (uaPathP→Path eqv)
+                                   (λ x → refl)
+                                   (λ x → refl)
+                             )
+```
