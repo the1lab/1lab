@@ -44,7 +44,7 @@ record isContr {ℓ} (A : Type ℓ) : Type ℓ where
     centre : A
     paths : (x : A) → centre ≡ x
 
-open isContr
+open isContr public
 ```
 
 A contractible type is one for which the unique map `X → ⊤` is an
@@ -76,8 +76,8 @@ type.
 A type is (n+1)-truncated if its path types are all n-truncated.
 However, if we directly take this as the definition, the types we end up
 with are very inconvenient! That's why we introduce this immediate step:
-An h-proposition, or proposition for short, is a type where any two
-elements are connected by a path.
+An **h-proposition**, or **proposition** for short, is a type where any
+two elements are connected by a path.
 
 ```agda
 isProp : ∀ {ℓ} → Type ℓ → Type _
@@ -94,36 +94,26 @@ isHLevel A 1 = isProp A
 isHLevel A (suc n) = (x y : A) → isHLevel (Path A x y) n
 ```
 
-The types of h-level 2 are the _sets_.
+Since types of h-level 2 are very common, they get a special name:
+**h-sets**, or just **sets** for short. This is justified because we can
+think of classical sets as being equipped with an equality _proposition_
+$x = y$ - having propositional paths is exactly the definition of
+`isSet`{.Agda}.  The universe of all types that are sets, is,
+correspondingly, called **Set**.
 
 ```agda
-isSet : ∀ {ℓ} → Type ℓ → Type _
+isSet : ∀ {ℓ} → Type ℓ → Type ℓ
 isSet A = isHLevel A 2
+
+Set : (ℓ : Level) → Type (lsuc ℓ)
+Set ℓ = Σ (isSet {ℓ = ℓ})
 ```
 
-The universe of all sets of a given level is called `Set`{.Agda}.
+Similarly, the types of h-level 3 are called **groupoids**.
 
-```agda
-Set : (ℓ : _) → Type (lsuc ℓ)
-Set _ = Σ isSet
-
-Set₀ = Set lzero
 ```
-
-The types of h-level 3 are the _groupoids_.
-
-```agda
-isGroupoid : ∀ {ℓ} → Type ℓ → Type _
+isGroupoid : ∀ {ℓ} → Type ℓ → Type ℓ
 isGroupoid A = isHLevel A 3
-```
-
-The universe of all groupoids of a given level is called `Grpd`{.Agda}.
-
-```agda
-Grpd : (ℓ : _) → Type (lsuc ℓ)
-Grpd _ = Σ isGroupoid
-
-Grpd₀ = Grpd lzero
 ```
 
 ---
@@ -245,6 +235,30 @@ By another inductive argument, we can prove that any offset works:
 isHLevel-+ : ∀ {ℓ} {A : Type ℓ} (n k : Nat) → isHLevel A n → isHLevel A (k + n)
 isHLevel-+ n zero x    = x
 isHLevel-+ n (suc k) x = isHLevel-suc _ (isHLevel-+ n k x)
+```
+
+A very convenient specialisation of the argument above is that if $A$ is
+a proposition, then it has any non-zero h-level:
+
+```
+isProp→isHLevel-suc : ∀ {ℓ} {A : Type ℓ} {n : Nat} → isProp A → isHLevel A (suc n)
+isProp→isHLevel-suc {n = zero} aprop = aprop
+isProp→isHLevel-suc {n = suc n} aprop =
+  isHLevel-suc (suc n) (isProp→isHLevel-suc aprop)
+```
+
+Furthermore, by the upwards closure of h-levels, we have that if $A$ is
+an n-type, then paths in $A$ are also $n$-types. This is because, by
+definition, the paths in a $n$-type are "$(n-1)$-types", which
+`isHLevel-suc`{.Agda} extends into $n$-types.
+
+```
+isHLevelPath : ∀ {ℓ} {A : Type ℓ} (n : Nat) → isHLevel A n → {x y : A}
+             → isHLevel (x ≡ y) n
+isHLevelPath zero ahl =
+  contr (isContr→isProp ahl _ _)
+        λ x → isProp→isSet (isContr→isProp ahl) _ _ _ x
+isHLevelPath (suc n) ahl = isHLevel-suc (suc n) ahl _ _
 ```
 
 # isHLevel is a proposition

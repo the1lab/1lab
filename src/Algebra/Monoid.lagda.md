@@ -6,6 +6,7 @@ description: |
 ---
 
 ```agda
+open import 1Lab.Data.Sigma.Properties
 open import 1Lab.Univalence.SIP
 open import 1Lab.Path.Groupoid
 open import 1Lab.Univalence
@@ -93,7 +94,7 @@ to the underlying map of the isomorphism that [characterises paths in Σ
 types].
 
 [homotopic]: agda://1Lab.Path#funext
-[characterises paths in Σ types]: agda://1Lab.Path.Groupoid#Σ-PathP-iso
+[characterises paths in Σ types]: agda://1Lab.Data.Sigma.Properties#Σ-PathP-iso
 
 ```agda
     simpler : isEquiv (λ x → ap fst x , ap snd x)

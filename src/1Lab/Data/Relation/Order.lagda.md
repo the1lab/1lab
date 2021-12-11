@@ -106,7 +106,7 @@ isProp-isPartialOrder {A = A} {R} = inhContr→isProp contract
     open isPreorder
 
     contract : isPartialOrder R → isContr (isPartialOrder R)
-    contract order = contr order paths where
+    contract order = contr order deform where
       A-set : isSet A
       A-set = hasPartialOrder→isSet order
 ```
@@ -117,12 +117,12 @@ construction follows directly from the fact that `preorders are
 propositional`{.Agda ident=propositional}.
 
 ```
-      paths : (x : isPartialOrder R) → order ≡ x
-      paths x i .preorder .reflexive =
+      deform : (x : isPartialOrder R) → order ≡ x
+      deform x i .preorder .reflexive =
         x .propositional (order .preorder .reflexive)
                          (x .preorder .reflexive)
                          i
-      paths x i .preorder .transitive p q =
+      deform x i .preorder .transitive p q =
         x .propositional (order .preorder .transitive p q)
                          (x .preorder .transitive p q)
                          i
@@ -132,7 +132,7 @@ To connect the propositionality witnesses, we use the fact that `isProp
 is a proposition`{.Agda ident=isProp-isProp}.
 
 ```
-      paths x i .preorder .propositional =
+      deform x i .preorder .propositional =
         isProp-isProp (order .preorder .propositional)
                       (x .preorder .propositional)
                       i
@@ -143,7 +143,7 @@ Since `A` admits a partial order, and thus is a set, all of its path
 spaces are propositions:
 
 ```
-      paths x i .antisym p q = A-set _ _ (order .antisym p q) (x .antisym p q) i
+      deform x i .antisym p q = A-set _ _ (order .antisym p q) (x .antisym p q) i
 ```
 
 ## Trichotomous orders

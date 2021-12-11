@@ -64,6 +64,8 @@ must be made explicit.
 Σ : ∀ {a b} {A : Type a} (B : A → Type b) → Type _
 Σ = Agda.Builtin.Sigma.Σ _
 
+module Σ = Agda.Builtin.Sigma.Σ
+
 syntax Σ {A = A} (λ x → B) = Σ[ x ∈ A ] B
 infix 5 Σ
 ```

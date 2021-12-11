@@ -343,6 +343,22 @@ hfill {φ = φ} u u0 i =
         (outS u0)
 ```
 
+<!--
+```
+fill : ∀ {ℓ} (A : ∀ i → Type ℓ)
+       {φ : I}
+       (u : ∀ i → Partial φ (A i))
+       (u0 : A i0 [ φ ↦ u i0 ])
+       (i : I) → A i
+fill A {φ = φ} u u0 i =
+  comp (λ j → A (i ∧ j))
+       (λ j → λ { (φ = i1) → u (i ∧ j) 1=1
+                ; (i = i0) → outS u0 })
+       (outS u0)
+```
+-->
+
+
 Given the inputs to a composition --- a family of partial paths `u` and a
 base `u0` --- `hfill`{.Agda} connects the input of the composition (`u0`)
 and the output.
@@ -634,8 +650,8 @@ laying over `p`.
 ```
 
 We can also use the book characterisation of dependent paths, which is
-simpler in the case where the `Σ`{.Agda} represents a subset --- i.e., `B`
-is a family of propositions.
+simpler in the case where the `Σ`{.Agda} represents a subset --- i.e.,
+`B` is a family of propositions.
 
 ```agda
 Σ-Path : ∀ {a b} {A : Type a} {B : A → Type b}

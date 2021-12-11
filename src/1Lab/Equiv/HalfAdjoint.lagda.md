@@ -1,4 +1,5 @@
 ```agda
+open import 1Lab.Data.Sigma.Properties
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Path.Groupoid
 open import 1Lab.Equiv.Biinv
@@ -113,7 +114,7 @@ completeness:</summary>
 ```
 fibre-paths {f = f} {y} {f1} {f2} =
   Path (fibre f y) f1 f2                                                       ≃⟨ Iso→Equiv Σ-Path-iso e¯¹ ⟩
-  (Σ[ γ ∈ f1 .fst ≡ f2 .fst ] (subst (λ x₁ → f x₁ ≡ _) γ (f1 .snd) ≡ f2 .snd)) ≃⟨ Σ-ap (λ x → pathToEquiv (lemma x)) ⟩
+  (Σ[ γ ∈ f1 .fst ≡ f2 .fst ] (subst (λ x₁ → f x₁ ≡ _) γ (f1 .snd) ≡ f2 .snd)) ≃⟨ Σ-ap-snd (λ x → pathToEquiv (lemma x)) ⟩
   (Σ[ γ ∈ f1 .fst ≡ f2 .fst ] (ap f γ ∙ f2 .snd ≡ f1 .snd))                    ≃∎
   where
     helper : (p' : f (f1 .fst) ≡ y)

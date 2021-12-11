@@ -7,6 +7,7 @@ description: |
 ---
 
 ```agda
+open import 1Lab.Data.Sigma.Properties
 open import 1Lab.Equiv.Embedding
 open import 1Lab.Path.Groupoid
 open import 1Lab.Univalence
@@ -238,15 +239,15 @@ same level as `A ≡ B`.
   ℓ-SIP : {A B : Σ S} → (A ≡ B) ≃ (A ≃L[ σ ] B)
   ℓ-SIP {A} {B} =
     (A ≡ B)                                                                ≃⟨ Iso→Equiv (_ , isIso.inverse (Σ-Path-iso .snd)) ⟩
-    Σ[ p ∈ A .fst ≡ B .fst ] (subst S p (A .snd) ≡ B .snd)                 ≃⟨ Σ-ap homomorphism-lemma ⟩
-    Σ[ p ∈ A .fst ≡ B .fst ] (σ .fst .is-hom A B (pathToEquiv p))          ≃⟨ change-of-vars e¯¹ ⟩
+    Σ[ p ∈ A .fst ≡ B .fst ] (subst S p (A .snd) ≡ B .snd)                 ≃⟨ Σ-ap-snd homomorphism-lemma ⟩
+    Σ[ p ∈ A .fst ≡ B .fst ] (σ .fst .is-hom A B (pathToEquiv p))          ≃⟨ change-of-vars ⟩
     Σ[ p ∈ Lift _ (A .fst ≃ B .fst) ] (σ .fst .is-hom A B (p .Lift.lower)) ≃⟨⟩
     (A ≃L[ σ ] B)                                                          ≃∎
     where
-      change-of-vars = Σ-change-of-variables {A = A .fst ≡ B .fst}
-                                             {B = Lift _ (A .fst ≃ B .fst)}
-                                             (λ x → lift (pathToEquiv x))
-                                             univalence-lift
+      change-of-vars = Σ-ap-fst {A = A .fst ≡ B .fst}
+                                {A' = Lift _ (A .fst ≃ B .fst)}
+                                (_ , univalence-lift)
+
   ℓ-SIP← : {A B : Σ S} → A ≃L[ σ ] B → A ≡ B
   ℓ-SIP← = isEquiv→isIso (ℓ-SIP .snd) .isIso.g
 ```

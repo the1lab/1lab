@@ -252,6 +252,7 @@ that `A ≡ B` to get an equivalence `A ≃ B`.
 ```agda
 univalence-Iso : {A B : Type ℓ} → Iso (A ≡ B) (A ≃ B)
 univalence : {A B : Type ℓ} → isEquiv (pathToEquiv {A = A} {B})
+univalence¯¹ : {A B : Type ℓ} → isEquiv (ua {A = A} {B})
 ```
 
 We can now prove the univalence theorem - this map is an isomorphism,
@@ -303,6 +304,7 @@ identity function.
       (ap ua (JRefl (λ x _ → A ≃ x) (_ , idEquiv)) ∙ uaIdEquiv)
 
 univalence {A = A} {B} = isIso→isEquiv (univalence-Iso .snd)
+univalence¯¹ {A = A} {B} = isIso→isEquiv (isIso.inverse (univalence-Iso .snd))
 ```
 
 To show that `pathToEquiv (ua p) ≡ p`, we do [path induction] on `p`,
@@ -398,19 +400,6 @@ where $B$ is $A$, and $f$ is the identity function.
 > But then, we have that $\mathrm{ap}(\mathrm{id})$ is [definitionally
 equal](agda://1Lab.Path#ap-id) to $\mathrm{id}$, which is known to be
 `an equivalence`{.Agda ident=idEquiv}. <span class=qed>$\blacksquare$</span>
-
-<!--
-```
-Σ-change-of-variables : ∀ {a c} {A B : Type a} {C : B → Type c}
-                      → (f : A → B) → isEquiv f
-                      → (Σ C) ≃ Σ (λ x → C (f x))
-Σ-change-of-variables {C = C} f equiv =
-  EquivJ (λ B eqv → {C : B → Type _} → Σ C ≃ Σ (λ x → C (eqv .fst x)))
-         (λ {C} → _ , idEquiv)
-         (f , equiv)
-         {C = C}
-```
--->
 
 ## Paths over `ua`
 

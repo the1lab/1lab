@@ -100,7 +100,7 @@ module Group {ℓ} (group : Group ℓ) where
     module M = isMonoid (group .snd .fst .snd)
   
   open Monoid (group .fst , group .snd .fst)
-    renaming (M to G)
+    renaming (M to G) public
 
   _¯¹ : G → G
 

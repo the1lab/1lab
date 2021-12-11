@@ -1,4 +1,5 @@
 ```agda
+open import 1Lab.Data.Sigma.Properties
 open import 1Lab.Path.Groupoid
 open import 1Lab.Univalence
 open import 1Lab.HLevel
@@ -7,8 +8,6 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 module 1Lab.HLevel.Retracts where
-
-open isContr public
 ```
 
 # Closure of h-levels
@@ -41,8 +40,8 @@ isContr-retract : (f : A → B) (g : B → A)
                 → isLeftInverse f g
                 → isContr A
                 → isContr B
-centre (isContr-retract f g h isC) = f (isC .centre)
-paths (isContr-retract f g h isC) x =
+isContr-retract f g h isC .centre = f (isC .centre)
+isContr-retract f g h isC .paths x =
   f (isC .centre) ≡⟨ ap f (isC .paths _) ⟩
   f (g x)         ≡⟨ h _ ⟩
   x               ∎
@@ -125,6 +124,9 @@ isHLevel-iso n f is-iso =
 
 isHLevel-equiv : (n : Nat) (f : A → B) → isEquiv f → isHLevel A n → isHLevel B n
 isHLevel-equiv n f eqv = isHLevel-iso n f (isEquiv→isIso eqv)
+
+isHLevel≃ : (n : Nat) → (A ≃ B) → isHLevel A n → isHLevel B n
+isHLevel≃ n (f , eqv) = isHLevel-iso n f (isEquiv→isIso eqv)
 ```
 
 ## Functions into n-types
@@ -158,7 +160,7 @@ isHLevel→ n hl = isHLevelΠ n (λ _ → hl)
 A similar argument, using the fact that [paths of pairs are pairs of
 paths], shows that dependent sums are also closed under h-levels.
 
-[paths of pairs are pairs of paths]: agda://1Lab.Path.Groupoid#Σ-Path-iso
+[paths of pairs are pairs of paths]: agda://1Lab.Data.Sigma.Properties#Σ-Path-iso
 
 ```agda
 isHLevelΣ : {A : Type ℓ} {B : A → Type ℓ'} (n : Nat)
