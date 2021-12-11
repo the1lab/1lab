@@ -199,7 +199,7 @@ functionStr-univalent {S = S} {T = T} {σ = σ} {τ} θ₁ θ₂ eqv =
   Π-impl-cod≃ (λ s → Π-impl-cod≃ λ t → function≃ (θ₁ eqv) (θ₂ eqv)) ∙e funextDep≃
 ```
 
-# Example: $\infty$-magmas
+{!   !}le: $\infty$-magmas
 
 We provide an example of applying the SIP, and the structure
 combinators: **$\infty$-magmas**. Recall that a [magma] is a [Set]
@@ -342,8 +342,7 @@ require that the axioms be [valued in propositions](agda://1Lab.HLevel#isProp).
 
 ```agda
 module _
-  {σ : Structure ℓ S}
-  (univ : isUnivalent σ)
+  (σ : Structure ℓ S)
   (axioms : (X : _) → S X → Type ℓ₃)
   where
 ```
@@ -361,7 +360,9 @@ Then, if the axioms are propositional, a calculation by equivalence
 reasoning concludes what we wanted: `axiomsStr`{.Agda} is univalent.
 
 ```agda
-  module _ (axioms-prop : ∀ {X} {s} → isProp (axioms X s)) where
+  module _
+    (univ : isUnivalent σ)
+    (axioms-prop : ∀ {X} {s} → isProp (axioms X s)) where
     axiomsStr-univalent : isUnivalent axiomsStr
     axiomsStr-univalent {X = A , s , a} {Y = B , t , b} f =
       σ .is-hom (A , s) (B , t) (f . fst)
@@ -384,9 +385,76 @@ pointed ∞-magmas, then `Bin` inherits the monoid structure.
 transferAxioms 
   : {σ : Structure ℓ S} {univ : isUnivalent σ}
     {axioms : (X : _) → S X → Type ℓ₃}
-  → (A : TypeWith (axiomsStr univ axioms)) (B : TypeWith σ)
+  → (A : TypeWith (axiomsStr σ axioms)) (B : TypeWith σ)
   → (A .fst , A .snd .fst) ≃[ σ ] B
   → axioms (B .fst) (B .snd)
 transferAxioms {univ = univ} {axioms = axioms} A B eqv =
   subst (λ { (x , y) → axioms x y }) (sip univ eqv) (A .snd .snd)
+```
+
+# A Language for Structures
+
+The structure combinators can be abstracted away into a _language_ for
+defining structures. The syntax is _inductive-recursive_: At the same
+time as we define the type of terms `StrTm`{.Agda}, we define an
+interpretation function `interp`{.Agda}, which calculates, from a
+`StrTm`{.Agda}, what the data of the structure looks like.
+
+```
+data StrTm ℓ : Type (lsuc ℓ)
+interp : ∀ {ℓ} → StrTm ℓ → Type ℓ → Type ℓ
+
+data StrTm ℓ where
+  s-const : Type ℓ → StrTm ℓ         -- Constant structures
+  s∙   : StrTm ℓ                     -- Pointed structures
+  _s→_ : StrTm ℓ → StrTm ℓ → StrTm ℓ -- Function structures
+  _s×_ : StrTm ℓ → StrTm ℓ → StrTm ℓ -- Product structures
+  axioms : (L : StrTm ℓ)
+         → (ax : (X : Type ℓ) → interp L X → Type ℓ)
+         → (ax-p : ∀ X s → isProp (ax X s))
+         → StrTm ℓ
+
+interp (s-const A) _ = A
+interp s∙ x = x
+interp (s s→ t) x = interp s x → interp t x
+interp (s s× t) x = interp s x × interp t x
+interp (axioms str ax ax-p) x = Σ[ a ∈ interp str x ] (ax x a)
+```
+
+Since each term of the language corresponds to one of the combinators
+for building univalent structures, an inductive argument lets us `derive
+a Structure from a term`{.Agda ident=tm→Structure},
+
+```
+tm→Structure : (s : StrTm ℓ) → Structure ℓ (interp s)
+tm→Structure (s-const x) = constantStr x
+tm→Structure s∙ = pointedStr
+tm→Structure (s s→ s₁) = functionStr (tm→Structure s) (tm→Structure s₁)
+tm→Structure (s s× s₁) = productStr (tm→Structure s) (tm→Structure s₁)
+tm→Structure (axioms s ax ax-p) = axiomsStr (tm→Structure s) ax
+
+tm→Structure-univalent : (s : StrTm ℓ) → isUnivalent (tm→Structure s)
+tm→Structure-univalent (s-const x) = constantStr-univalent
+tm→Structure-univalent s∙ = pointedStr-univalent
+tm→Structure-univalent (s s→ s₁) =
+  functionStr-univalent {τ = tm→Structure s₁}
+    (tm→Structure-univalent s)
+    (tm→Structure-univalent s₁)
+tm→Structure-univalent (s s× s₁) =
+  productStr-univalent {σ = tm→Structure s} {τ = tm→Structure s₁}
+    (tm→Structure-univalent s) (tm→Structure-univalent s₁)
+tm→Structure-univalent (axioms s ax ax-p) =
+  axiomsStr-univalent (tm→Structure s) ax (tm→Structure-univalent s)
+    λ {X} {s} → ax-p X s
+
+module Lang→Str {ℓ} (lang : StrTm ℓ) where
+  Data = interp lang
+
+  Str : Structure _ Data
+  Str = tm→Structure lang
+
+  Str-univalent : isUnivalent Str
+  Str-univalent = tm→Structure-univalent lang
+
+  Str-type = TypeWith Str
 ```
