@@ -12,7 +12,7 @@ module 1Lab.Equiv.Embedding where
 <!--
 ```
 private variable
-  ℓ : Level
+  ℓ ℓ₁ : Level
   A B : Type ℓ
 ```
 -->
@@ -29,6 +29,9 @@ injective f = {x y : _} → f x ≡ f y → x ≡ y
 
 isEmbedding : (A → B) → Type _
 isEmbedding f = {x y : _} → isEquiv (λ (p : x ≡ y) → ap f p)
+
+_↪_ : Type ℓ → Type ℓ₁ → Type (ℓ ⊔ ℓ₁)
+A ↪ B = Σ[ f ∈ (A → B) ] isEmbedding f
 ```
 
 One of the canonical sources of embeddings are the _subtype inclusions_.

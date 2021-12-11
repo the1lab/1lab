@@ -90,14 +90,19 @@ isUnivalent {S = S} ι =
 ```
 
 There are also abbreviations for referring to an equivalence of
-structures (i.e. an equivalence with homomorphic underlying map) and a
-homomorphism of structures (i.e. an arbitrary map).
+structures (i.e. an equivalence with homomorphic underlying map),
+homomorphisms of structures (i.e. an arbitrary homomorphic map), and
+embeddings of structures (i.e. an embedding with homomorphic underlying
+map).
 
 ```agda
 _≃[_]_ : Σ S → Structure ℓ S → Σ S → Type _
 A ≃[ σ ] B =
   Σ[ f ∈ A .fst ≃ B .fst ]
    (σ .is-hom A B (f .fst))
+
+_[_↪_] : Structure ℓ S → Σ S → Σ S → Type _
+σ [ A ↪ B ] = Σ[ f ∈ (A .fst ↪ B .fst) ] (σ .is-hom A B (f .fst))
 
 _[_⇒_] : Structure ℓ S → Σ S → Σ S → Type _
 σ [ A ⇒ B ] = Σ[ f ∈ (A .fst → B .fst) ] (σ .is-hom A B f)
