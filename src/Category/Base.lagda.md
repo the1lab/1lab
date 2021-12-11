@@ -393,31 +393,6 @@ preserves the ordering relation, $x \le y \to F(x) \le F(y)$.
 Categorifying, "preserves the ordering relation" becomes a function
 between Hom-sets.
 
-<!--
-A great deal of mathematical constructions are functorial. As an
-example, the projection of the object set of a category - `Ob`{.Agda} -
-extends to a [forgetful functor] $\mathrm{Cat}_{o,h} \to
-\mathrm{Sets}_{o}$. The construction of [endomorphism monoids] extends
-to [a functor] from $\mathrm{Cat}_*$ (the category of [pointed
-categories]) to $\mathrm{Mon}$, which yields the endomorphism monoid of
-the distinguished object.
-
-[forgetful functor]: agda://Category.Instances.Cat.Disc#Ob-functor
-[endomorphism monoids]: agda://Algebra.Monoid#endo
-[pointed categories]: agda://Category.Instances.Cat.Cartesian#Cat*
-[a functor]: agda://Algebra.Monoid.Endomorphism#Endomorphism
-
-In examples more familiar to programmers, most kinds of containers are
-functors. Sometimes, these even admit descriptions in terms of abstract
-nonsense: The type of [lists] can be described as the [monad from an
-adjunction] of the [free-forgetful adjunction] characterising
-$\mathrm{Mon}$ as an algebraic category.
-
-[free-forgetful adjunction]: agda://Algebra.Monoid#Free⊣Forget
-[monad from an adjunction]: agda://Category.Functor.Adjoints.Monad
-[linked lists]: agda://1Lab.Data.List#List
--->
-
 ```agda
   field
     F₀ : C.Ob → D.Ob

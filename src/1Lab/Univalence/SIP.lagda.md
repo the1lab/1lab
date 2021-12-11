@@ -8,6 +8,7 @@ description: |
 
 ```agda
 open import 1Lab.Data.Sigma.Properties
+open import 1Lab.Data.Pi.Properties
 open import 1Lab.Equiv.Embedding
 open import 1Lab.Path.Groupoid
 open import 1Lab.Univalence
@@ -38,38 +39,28 @@ like we would need a bit more power, but in reality, we don't!
 The idea of the structure identity principle is that we can describe,
 generically, a **structure on a type** by a map `S : Type → Type`. Types
 equipped with this structure are then represented by the [total space]
-`Σ S`.
+`Σ S`. 
 
 [total space]: agda://1Lab.Type#Σ
 
-In reality, we need slightly more:
-
 ```agda
-record Structure {ℓ₁ ℓ₂} (S : Type ℓ₁ → Type ℓ₂) : Type (ℓ₂ ⊔ lsuc ℓ₁) where
-  field
+record
+  Structure
+    {ℓ₁ ℓ₂}
+    (ℓ₃ : _)
+    (S : Type ℓ₁ → Type ℓ₂)
+  : Type (lsuc (ℓ₁ ⊔ ℓ₃) ⊔ ℓ₂)
+  where field
 ```
 
-First, we need a way of picking out, of all the equivalences of the
-underlying types, which preserve the `S`-structure. For example, this
-would pick out the group (iso)morphisms out from all the equivalences.
+In reality, a `Structure`{.Agda} also comes with a notion of
+_homomorphism_: those functions between the underlying types which
+preserve the structure. For example, if `S` = groups, then
+`is-hom`{.Agda} would be the predicate representing "f is a group
+homomorphism".
 
 ```agda
-   is-hom : (A B : Σ S) → A .fst ≃ B .fst → Type ℓ₁
-```
-
-Furthermore, we require that the identity equivalence always preserves
-any structure:
-
-```agda
-   is-hom-id : {A : Σ S} → is-hom A A (_ , idEquiv)
-```
-
-This data lets us define a binary relation - embedding of structures -
-by comparing them with the identity equivalence:
-
-```agda
-  [_]_∼_ : ∀ {X} (x y : S X) → Type _
-  [_]_∼_ a b = is-hom (_ , a) (_ , b) (_ , idEquiv)
+   is-hom : (A B : Σ S) → (A .fst → B .fst) → Type ℓ₃
 
 open Structure public
 ```
@@ -79,204 +70,138 @@ open Structure public
 private variable
   ℓ ℓ₁ ℓ₂ ℓ₃ : Level
   A : Type ℓ
-  S : Type ℓ → Type ℓ₁
+  S T : Type ℓ → Type ℓ₁
+
+TypeWith : Structure ℓ₁ S → Type _
+TypeWith {S = S} _ = Σ S
 ```
 -->
 
-We can then show that, if `s ≡ t`, then `s ∼ t` as structures on `X`.
-This is done with `J`{.Agda}: By induction, we may assume `t = s`, after
-which the goal is reduced to proving that `[ ST ] s ∼ s`. But this is
-guaranteed by `is-hom-id`{.Agda}, so we are done.
+A structure is said to be **univalent** if a homomorphic equivalence of
+structures `A`, `B` induces a path of the structures, over the
+univalence axiom:
 
-```agda
-structure-path→structure-equiv
-  : {X : Type ℓ}
-    {S : Type ℓ → Type ℓ₁}
-  → (ST : Structure S)
-  → {s t : S X}
-  → s ≡ t → [ ST ] s ∼ t
-structure-path→structure-equiv {X = X} ST {s} {t} path =
-  J (λ y _ → [ ST ] s ∼ y)
-    (ST .is-hom-id)
-    path
+```
+isUnivalent : Structure ℓ S → Type _
+isUnivalent {S = S} ι =
+  ∀ {X Y}
+  → (f : X .fst ≃ Y .fst)
+  → ι .is-hom X Y (fst f) ≃ PathP (λ i → S (ua f i)) (X .snd) (Y .snd)
 ```
 
-If this map is an equivalence, we call S a **standard notion of
-structure**, abbreviated `SNS`{.Agda}. A `SNS`{.Agda} is a
-`Structure`{.Agda} in which related structures are equal, in a coherent
-manner:
+There are also abbreviations for referring to an equivalence of
+structures (i.e. an equivalence with homomorphic underlying map) and a
+homomorphism of structures (i.e. an arbitrary map).
 
 ```agda
-isSNS : ∀ {ℓ₁ ℓ₂} (S : Type ℓ₁ → Type ℓ₂) → Structure S → Type _
-isSNS S ST = ∀ {X} {s t : S X}
-           → isEquiv (structure-path→structure-equiv ST {s} {t})
-
-SNS : ∀ {ℓ₁ ℓ₂} (S : Type ℓ₁ → Type ℓ₂) → Type _
-SNS S = Σ[ ST ∈ Structure S ] (isSNS _ ST)
-```
-
-There are also _two_ abbreviations for packaging together the data that
-a given equivalence of underlying types is a homomorphism according to a
-`SNS`{.Agda}. The first, `_≃[_]_`{.Agda}, is convenient:
-
-```agda
-_≃[_]_ : {S : Type ℓ₁ → Type ℓ₂} → Σ S → SNS S → Σ S → Type ℓ₁
-_≃[_]_ {ℓ₁ = ℓ₁} A σ B =
+_≃[_]_ : Σ S → Structure ℓ S → Σ S → Type _
+A ≃[ σ ] B =
   Σ[ f ∈ A .fst ≃ B .fst ]
-   (σ .fst .is-hom A B f)
-```
+   (σ .is-hom A B (f .fst))
 
-The second, `_≃L[_]_`{.Agda}, is slightly more complicated, and
-inconvenient: It's `Lift`{.Agda}ed.
-
-```agda
-_≃L[_]_ : {S : Type ℓ₁ → Type ℓ₂} → Σ S → SNS S → Σ S → Type (lsuc ℓ₁)
-_≃L[_]_ {ℓ₁ = ℓ₁} A σ B =
-  Σ[ f ∈ Lift (lsuc ℓ₁) (A .fst ≃ B .fst) ]
-   (σ .fst .is-hom A B (f .Lift.lower))
-```
-
-The difference is that `the lifted version`{.Agda ident=_≃L[_]_} lives
-in the same universe as `_≡_`{.Agda} for `Type ℓ`{.Agda ident=Type}.
-This is a technical concern that will help make the proof of
-`SIP`{.Agda} simpler. These are nevertheless related by an isomorphism:
-
-```agda
-≃[]-unlift : {S : Type ℓ₁ → Type ℓ₂} {A B : Σ S} {σ : SNS S}
-           → (A ≃L[ σ ] B) ≃ (A ≃[ σ ] B)
-≃[]-unlift {A = A} {B} {σ} = Iso→Equiv morp where
-  morp : Iso (A ≃L[ σ ] B) (A ≃[ σ ] B)
-  morp .fst (lift f , h) = f , h
-  morp .snd .isIso.inv (f , h) = lift f , h
-  morp .snd .isIso.rinv x = refl
-  morp .snd .isIso.linv x = refl
+_[_⇒_] : Structure ℓ S → Σ S → Σ S → Type _
+σ [ A ⇒ B ] = Σ[ f ∈ (A .fst → B .fst) ] (σ .is-hom A B f)
 ```
 
 ## The principle
 
-We fix a standard notion of structure, `S`, and prove that the identity
-type on the total space of S is equivalent to the type of homomorphic
-equivalences over S.
-
-```agda
-module _ {S : Type ℓ₁ → Type ℓ₂} (σ : SNS S) where
-  private
-    homomorphism-lemma : {A B : Σ S}
-                       → (path : A .fst ≡ B .fst)
-                       → (subst S path (A .snd) ≡ B .snd)
-                       ≃ σ .fst .is-hom A B (pathToEquiv path)
-    homomorphism-lemma {A , s} {B , t} path =
-```
-
-First we prove, in steps, a lemma characterising when _paths_ induce
-homomorphic structures: Given a path `path : A .fst ≡ B .fst`, it
-induces a homomorphic equivalence if, and only if, `A .snd ≡ B .snd`
-_over `path`_.
-
-```agda
-      J (λ B path' → (t : S B)
-                   → (subst S path' s ≡ t)
-                   ≃ σ .fst .is-hom (A , s) (B , t) (pathToEquiv path'))
-        helper
-        path t
-```
-The construction of `helper`{.Agda} is done in stages. Since `J`{.Agda}
-(and `subst`{.Agda}) does not compute nicely in Cubical Type Theory, we
-can not prove directly the goal `helper`{.Agda}; What we _can_ prove is
-`helper''`{.Agda}.
-
-```agda
-      where
-        helper'' : (t : S A)
-                 → (s ≡ t) ≃ σ .fst .is-hom (A , s) (A , t) (_ , idEquiv)
-        helper'' t = structure-path→structure-equiv (σ .fst) , σ .snd
-
-        helper' : (t : S A)
-                → (s ≡ t) ≃ σ .fst .is-hom (A , s) (A , t) (pathToEquiv refl)
-
-        helper : (t : S A)
-               → (subst S refl s ≡ t) ≃ σ .fst .is-hom (A , s) (A , t)
-                                          (pathToEquiv refl)
-```
-
-With each step, we get progressively closer to something we can give
-`J`. `helper''`{.Agda} is the actual proof: It directly constructs an
-equivalence out of the canonical map
-`structure-path→structure-equiv`{.Agda} and the proof that `σ` is a
-`SNS`{.Agda}.
-
-Next, we adjust the type slightly by "fixing" `(_ , idEquiv)` to be
-`pathToEquiv`{.Agda}, and `s ≡ t` to be a dependent path over
-`refl`{.Agda}. After these rather technical adjustments,
-`helper''`{.Agda} is exactly what we need to give `J`{.Agda}. Again,
-this is necessary because `J`{.Agda} does not definitionally compute in
-Cubical Type Theory.
-
-<!--
-```
-        helper' t = subst (λ x → (s ≡ t) ≃ σ .fst .is-hom (A , s) (A , t) x)
-                          lemma (helper'' t)
-          where
-            lemma : _
-            lemma = Σ-Path (λ i → transp (λ _ → A → A) (~ i) (λ x → x))
-                           (isProp-isEquiv _ _ _)
-        helper t = subst (λ x → x ≃ _)
-                         (ap₂ _≡_ (sym (transport-refl _)) refl)
-                         (helper' t)
+The **structure identity principle** says that, if `S` is a `univalent
+structure`{.Agda ident=isUnivalent}, then the path space of `Σ S` is equivalent
+to the space of S-homomorphic equivalences of types. Again using groups
+as a grounding example: equality of groups is group isomorphism.
 
 ```
--->
+SIP : {σ : Structure ℓ S} → isUnivalent σ → {X Y : Σ S} → (X ≃[ σ ] Y) ≃ (X ≡ Y)
+SIP {S = S} {σ = σ} is-univ {X} {Y} =
+  X ≃[ σ ] Y                                                       ≃⟨⟩
+  Σ[ e ∈ X .fst ≃ Y .fst ] (σ .is-hom X Y (fst e))                 ≃⟨ Σ-ap (ua , univalence¯¹) is-univ ⟩
+  Σ[ p ∈ X .fst ≡ Y .fst ] PathP (λ i → S (p i)) (X .snd) (Y .snd) ≃⟨ Iso→Equiv Σ-PathP-iso ⟩
+  (X ≡ Y)                                                          ≃∎
 
-The `SIP`{.Agda} says that `A ≡ B` is equivalent to the type of
-homomorphic equivalences. The path is built using [equivalence
-reasoning], and it relates `_≡_`{.Agda} and `_≃[_]_`{.Agda}. Note that
-the equivalence contained in the latter type is _lifted_ to be in the
-same level as `A ≡ B`.
-
-[equivalence reasoning]: 1Lab.Equiv.html#equivalence-reasoning
-
-```agda
-  ℓ-SIP : {A B : Σ S} → (A ≡ B) ≃ (A ≃L[ σ ] B)
-  ℓ-SIP {A} {B} =
-    (A ≡ B)                                                                ≃⟨ Iso→Equiv (_ , isIso.inverse (Σ-Path-iso .snd)) ⟩
-    Σ[ p ∈ A .fst ≡ B .fst ] (subst S p (A .snd) ≡ B .snd)                 ≃⟨ Σ-ap-snd homomorphism-lemma ⟩
-    Σ[ p ∈ A .fst ≡ B .fst ] (σ .fst .is-hom A B (pathToEquiv p))          ≃⟨ change-of-vars ⟩
-    Σ[ p ∈ Lift _ (A .fst ≃ B .fst) ] (σ .fst .is-hom A B (p .Lift.lower)) ≃⟨⟩
-    (A ≃L[ σ ] B)                                                          ≃∎
-    where
-      change-of-vars = Σ-ap-fst {A = A .fst ≡ B .fst}
-                                {A' = Lift _ (A .fst ≃ B .fst)}
-                                (_ , univalence-lift)
-
-  ℓ-SIP← : {A B : Σ S} → A ≃L[ σ ] B → A ≡ B
-  ℓ-SIP← = isEquiv→isIso (ℓ-SIP .snd) .isIso.inv
+sip : {σ : Structure ℓ S} → isUnivalent σ → {X Y : Σ S} → (X ≃[ σ ] Y) → (X ≡ Y)
+sip σ = SIP σ .fst
 ```
 
-With the `ℓ-SIP`{.Agda} - the _lifted Structure Identity Principle_ - we
-can prove the `SIP`{.Agda} which does not involve this `lift`{.Agda}.
-This is simpler than proving directly that `(A ≡ B) ≃ (A ≃[ σ ] B)`.
+# Structure Combinators
 
-```agda
-  SIP : {A B : Σ S} → (A ≡ B) ≃ (A ≃[ σ ] B)
-  SIP {A} {B} = 
-    (A ≡ B)       ≃⟨ ℓ-SIP ⟩
-    (A ≃L[ σ ] B) ≃⟨ ≃[]-unlift {A = A} {B = B} {σ = σ} ⟩
-    (A ≃[ σ ] B)  ≃∎
+Structures can be built up in an algebraic manner through the use of
+_structure combinators_. These express closure of structures under a
+number of type formers. For instance, if `S` and `T` are univalent
+structures, then so is `λ X → S X → T X`.
 
-  SIP← : {A B : Σ S} → A ≃[ σ ] B → A ≡ B
-  SIP← = isEquiv→isIso (SIP .snd) .isIso.inv
+The simplest case of a structure is the _constant structure_, which is
+what you get when you equip a type `X` with a choice of inhabitant of
+some other type `Y`, unrelated to `X`. Since the given function is `f :
+A → B`, it can't act on `T`, so the notion of homomorphism is
+independent of `f`.
 
-  SIP→ : {A B : Σ S} → A ≡ B → A ≃[ σ ] B
-  SIP→ = SIP .fst
+```
+constantStr : (A : Type ℓ) → Structure {ℓ₁} ℓ (λ X → A)
+constantStr T .is-hom (A , x) (B , y) f = x ≡ y
+
+constantStr-univalent : {A : Type ℓ} → isUnivalent (constantStr {ℓ₁ = ℓ₁} A)
+constantStr-univalent f = _ , idEquiv
 ```
 
-# Example: $\infty$-magmas
+The next simplest case is considering the identity function as a
+structure. In that case, the resulting structured type is that of a
+_pointed type_:
 
-We provide an example of applying the SIP: **$\infty$-magmas**. Recall
-that a [magma] is a [Set] equipped with a binary operation, with no
-further conditions imposed. In HoTT, we can relax this even further: An
-$\infty$-magma is a `Type`{.Agda} - that is, an $\infty$-groupoid -
-equipped with a binary operation.
+```
+pointedStr : Structure ℓ (λ X → X)
+pointedStr .is-hom (A , x) (B , y) f = f x ≡ y
+```
+
+This is univalent by `uaPathP≃Path`{.Agda}, which says `PathP (ua f) x
+y` is equivalent to `f .fst x ≡ y`.
+
+```
+pointedStr-univalent : isUnivalent (pointedStr {ℓ})
+pointedStr-univalent f = uaPathP≃Path _
+```
+
+If `S` and `T` are univalent structures, then so is their pointwise
+product. The notion of a `S × T`-homomorphism is that of a function
+homomorphic for both `S` and `T`, simultaneously:
+
+```
+productStr : Structure ℓ S → Structure ℓ₂ T → Structure _ (λ X → S X × T X)
+productStr S T .is-hom (A , x , y) (B , x' , y') f =
+  S .is-hom (A , x) (B , x') f × T .is-hom (A , y) (B , y') f
+
+productStr-univalent : {σ : Structure ℓ₁ S} {τ : Structure ℓ₂ T}
+                     → isUnivalent σ → isUnivalent τ
+                     → isUnivalent (productStr σ τ)
+productStr-univalent {S = S} {T = T} {σ = σ} {τ} θ₁ θ₂ {X , x , y} {Y , x' , y'} f =
+  (σ .is-hom (X , x) (Y , x') _ × τ .is-hom (X , y) (Y , y') _) ≃⟨ Σ-ap (θ₁ f) (λ _ → θ₂ f) ⟩
+  (PathP _ _ _ × PathP _ _ _)                                   ≃⟨ Iso→Equiv Σ-PathP-iso ⟩
+  PathP (λ i → S (ua f i) × T (ua f i)) (x , y) (x' , y')       ≃∎
+```
+
+If `S` and `T` are univalent structures, then so are the families of
+functions between them:
+
+```
+functionStr : Structure ℓ₁ S → Structure ℓ₂ T → Structure _ (λ X → S X → T X)
+functionStr {S = S} σ τ .is-hom (A , f) (B , g) h =
+  {s : S A} {t : S B} → σ .is-hom (A , s) (B , t) h
+                      → τ .is-hom (A , f s) (B , g t) h
+
+functionStr-univalent : {σ : Structure ℓ₁ S} {τ : Structure ℓ₂ T}
+                      → isUnivalent σ → isUnivalent τ
+                      → isUnivalent (functionStr σ τ)
+functionStr-univalent {S = S} {T = T} {σ = σ} {τ} θ₁ θ₂ eqv =
+  Π-impl-cod≃ (λ s → Π-impl-cod≃ λ t → function≃ (θ₁ eqv) (θ₂ eqv)) ∙e funextDep≃
+```
+
+-- # Example: $\infty$-magmas
+
+We provide an example of applying the SIP, and the structure
+combinators: **$\infty$-magmas**. Recall that a [magma] is a [Set]
+equipped with a binary operation, with no further conditions imposed. In
+HoTT, we can relax this even further: An $\infty$-magma is a
+`Type`{.Agda} - that is, an $\infty$-groupoid - equipped with a binary
+operation.
 
 [magma]: https://ncatlab.org/nlab/show/magma
 [Set]: agda://1Lab.HLevel#Set
@@ -285,56 +210,49 @@ equipped with a binary operation.
 private
   binop : Type → Type
   binop X = X → X → X
-
-  ∞-Magma = Σ binop
 ```
 
-An equivalence of $\infty$-magmas is an equivalence of underlying types
-that commutes with with the binary operation. 
+We can impose a `Structure`{.Agda} on `binop`{.Agda} by applying nested
+`functionStr`{.Agda} and `pointedStr`{.Agda}. Since this structure is
+built out of structure combinators, it's automatically univalent:
 
-```agda
-  ∞-Magma-Structure : Structure binop
-  ∞-Magma-Structure .is-hom (A , _·_) (B , _·'_) (f , eqv) =
-    Path (A → A → B) (λ x y → f (x · y)) (λ x y → f x ·' f y)
-  ∞-Magma-Structure .is-hom-id = refl
+```
+  ∞-Magma : Structure lzero binop
+  ∞-Magma = functionStr pointedStr (functionStr pointedStr pointedStr)
+
+  ∞-Magma-univ : isUnivalent ∞-Magma
+  ∞-Magma-univ =
+    functionStr-univalent {τ = functionStr pointedStr pointedStr}
+      pointedStr-univalent
+      (functionStr-univalent {τ = pointedStr}
+        pointedStr-univalent
+        pointedStr-univalent)
 ```
 
-We'll prove that this is a `SNS`{.Agda}. The proof is indirect: Since
-`structure-path→structure-equiv`{.Agda} is [homotopic] to the identity
-function, and the latter is an equivalence, then so is the former.
+The type of `∞-Magma`{.Agda} homomorphisms generated by this equivalence
+is slightly inconvenient: Instead of getting $f (x \star y) = f x * f
+y$, we get something that is parameterised over two paths:
 
-[homotopic]: agda://1Lab.Path#funext
-
-```agda
-  ∞-Magma-SNS : SNS binop
-  ∞-Magma-SNS .fst = ∞-Magma-Structure
-  ∞-Magma-SNS .snd {s = s} {t = t} = goal where
-    sp→se~id : ∀ {X} {s t : binop X} (p : _)
-             → structure-path→structure-equiv ∞-Magma-Structure {s = s} {t = t} p
-             ≡ p
-    sp→se~id {X} {s} =
-      J (λ y p → structure-path→structure-equiv
-                 ∞-Magma-Structure {s = s} {t = y} p ≡ p)
-        (transport-refl _)
+```
+  _ : {A B : TypeWith ∞-Magma} {f : A .fst → B .fst}
+    → ∞-Magma .is-hom A B f
+    ≡ ( {s : A .fst} {t : B .fst} → f s ≡ t
+      → {x : A .fst} {y : B .fst} → f x ≡ y
+      → f (A .snd s x) ≡ B .snd t y)
+  _ = refl
 ```
 
-We can do this by path induction. In that case, the goal amounts to
-proving that transporting along the reflexivity path is the identity:
-`transport-refl`{.Agda}.
-    
-```agda
-    goal : isEquiv (structure-path→structure-equiv ∞-Magma-Structure {s = s} {t = t})
-    goal = subst isEquiv (sym (funext sp→se~id)) idEquiv
+This condition, although it looks a lot more complicated, is essentially
+the same as the standard notion:
+
 ```
-
-Then, we can substitute the proof `idEquiv`{.Agda} backwards along the
-path `sp→se~id`{.Agda} to get the proof we wanted. Thus,
-`∞-Magma`{.Agda} extends to an `SNS`{.Agda}. We can now apply the
-`SIP`{.Agda} to get a characterisation of equality in $\infty$-magmas:
-
-```agda
-  ∞-Magma-Path : {A B : ∞-Magma} → (A ≡ B) ≃ (A ≃[ ∞-Magma-SNS ] B)
-  ∞-Magma-Path = SIP ∞-Magma-SNS
+  fixup : {A B : TypeWith ∞-Magma} {f : A .fst → B .fst}
+        → ((x y : A .fst) → f (A .snd x y) ≡ B .snd (f x) (f y))
+        → ∞-Magma .is-hom A B f
+  fixup {A = A} {B} {f} path {s} {t} p {s₁} {t₁} q =
+    f (A .snd s s₁)     ≡⟨ path _ _ ⟩
+    B .snd (f s) (f s₁) ≡⟨ ap₂ (B .snd) p q ⟩
+    B .snd t     t₁     ∎
 ```
 
 As an example, we equip the type of booleans with two ∞-magma
@@ -349,7 +267,7 @@ structures, one given by conjunction, one by disjunction, and prove that
 
 <div class=mathpar>
 ```agda
-  Conj : ∞-Magma
+  Conj : TypeWith ∞-Magma
   Conj .fst = Bool
   Conj .snd false false = false
   Conj .snd false true  = false
@@ -358,7 +276,7 @@ structures, one given by conjunction, one by disjunction, and prove that
 ```
 
 ```agda
-  Disj : ∞-Magma
+  Disj : TypeWith ∞-Magma
   Disj .fst = Bool
   Disj .snd false false = false
   Disj .snd false true  = true
@@ -371,12 +289,13 @@ I claim that `not`{.Agda} is a $\infty$-magma isomorphism between
 `Conj`{.Agda} and `Disj`{.Agda}:
 
 ```agda
-  not-iso : Conj ≃[ ∞-Magma-SNS ] Disj
+  not-iso : Conj ≃[ ∞-Magma ] Disj
   not-iso .fst = not , isEquiv-not
-  not-iso .snd i false false = true
-  not-iso .snd i false true  = true
-  not-iso .snd i true false  = true
-  not-iso .snd i true true   = false
+  not-iso .snd = fixup {A = Conj} {B = Disj} λ where
+    false false → refl
+    false true → refl
+    true false → refl
+    true true → refl
 ```
 
 It's not clear that this should be the case, especially since the case
@@ -393,7 +312,7 @@ $\infty$-magma:
 
 ```agda
   Conj≡Disj : Conj ≡ Disj
-  Conj≡Disj = SIP← ∞-Magma-SNS not-iso
+  Conj≡Disj = sip ∞-Magma-univ not-iso
 ```
 
 # Adding Axioms
@@ -404,117 +323,65 @@ type), _structure_ (such as a `SNS`{.Agda}), and _properties_ - for
 instance, equations imposed on the structure. A concrete example may
 help:
 
-- A **pointed $\infty$-magma** is a pointed type equipped with a binary operation;
+- A **pointed $\infty$-magma** is a pointed type equipped with a binary
+operation;
+
 - A **monoid** is a pointed $\infty$-magma with additional data
 witnessing that a) the type is a set; b) the operation is associative;
 and c) the point acts as a left- and right- identity for the operation.
 
 Fortunately, the SIP again applies here: If you augment a standard
 notion of structure with _axioms_, then equality of structures with
-axioms is still isomorphism. For this, we require that the axioms be
-[valued in propositions](agda://1Lab.HLevel#isProp).
+axioms is still isomorphism of the underlying structures. For this, we
+require that the axioms be [valued in propositions](agda://1Lab.HLevel#isProp).
 
 ```agda
 module _
-  {S : Type ℓ₁ → Type ℓ₂}
-  (σ : SNS S)
+  {σ : Structure ℓ S}
+  (univ : isUnivalent σ)
   (axioms : (X : _) → S X → Type ℓ₃)
-  (axioms-prop : ∀ {X} {s} → isProp (axioms X s))
   where
 ```
 
-First, there is a map that forgets the fact that the structure was
-augmented with axioms:
+First, the notion of structure that you get is just a lifting of the
+underlying structure `σ` to ignore the witnesses for the axioms:
 
-```agda
-  [_] : Σ[ x ∈ _ ] Σ[ s ∈ S x ] (axioms x s) → Σ S
-  [ x , s , ax ] = _ , s
+```
+  axiomsStr : Structure ℓ (λ X → Σ[ s ∈ S X ] (axioms X s))
+  axiomsStr .is-hom (A , s , a) (B , t , b) f =
+    σ .is-hom (A , s) (B , t) f
 ```
 
-Then we can prove that including the original structures and the axioms
-(which - recall - are valued in propositions!) into a big Σ also defines
-a standard notion of structure. Let's look at it in parts:
+Then, if the axioms are propositional, a calculation by equivalence
+reasoning concludes what we wanted: `axiomsStr`{.Agda} is univalent.
 
-```agda
-  add-axioms : SNS (λ x → Σ[ s ∈ S x ] axioms x s)
-  add-axioms = str , isequiv where
-    S' : _ → Type _
-    S' x = Σ[ s ∈ S x ] (axioms x s)
+```
+  module _ (axioms-prop : ∀ {X} {s} → isProp (axioms X s)) where
+    axiomsStr-univalent : isUnivalent axiomsStr
+    axiomsStr-univalent {X = A , s , a} {Y = B , t , b} f =
+      σ .is-hom (A , s) (B , t) (f . fst)
+        ≃⟨ univ f ⟩
+      PathP (λ i → S (ua f i)) s t 
+        ≃⟨ Σ-contract (λ x → isHLevelPathP 0 (contr b (axioms-prop b))) e¯¹ ⟩
+      Σ[ p ∈ PathP (λ i → S (ua f i)) s t ] PathP (λ i → axioms (ua f i) (p i)) a b
+        ≃⟨ Iso→Equiv Σ-PathP-iso ⟩
+      _ 
+        ≃∎
 ```
 
-* First we have the carrier type, `S'`. It consists of the original
-structure `S` and the new `axioms`.
+A very useful consequence of the SIP is that axioms can be lifted from
+equivalent underlying structures. For instance: $\mathbb{N}$ can be
+defined as both unary numbers (the construction of `Nat`{.Agda}), or as binary
+numbers. If you prove that `Nat`{.Agda} is a monoid, and `Nat ≃ Bin` as
+pointed ∞-magmas, then `Bin` inherits the monoid structure.
 
-```agda
-    ish : _
-    ish A B x = σ .fst .is-hom [ A ] [ B ] x
-
-    idh : _
-    idh = σ .fst .is-hom-id
 ```
-
-* A homomorphism of S' is the same thing as a homomorphism of the
-underlying S. This is because the `axioms` are valued in propositions,
-so they can not meaningfully be "altered" by a homomorphism, and so do
-not need to be preserved.
-
-```agda
-    str : Structure S'
-    str = record { is-hom = ish ; is-hom-id = idh }
-```
-
-* This already assembles into a notion of `Structure`{.Agda}. We'll
-prove that it's standard:
-
-```agda
-    π : ∀ {X} → S' X → S X
-    π (fst , _) = fst
-
-    new : ∀ {X} {s t} → s ≡ t → _
-    new {X = X} {s = s} {t = t} = structure-path→structure-equiv {X = X} str {s} {t}
-
-    old : ∀ {X} {s t} → s ≡ t → _
-    old {X = X} {s = s} {t = t} =
-      structure-path→structure-equiv {X = X} (σ .fst) {s} {t}
-```
-
-We'll show that the `new`{.Agda} way of turning structure-paths into
-homomorphisms breaks down as a composition of two equivalences: The
-`old`{.Agda} canonical map (the one from `σ`), and `ap π`{.Agda
-ident=π}.
-
-```agda
-    isequiv : ∀ {X} {s t : S' X}
-            → isEquiv (new {s = s} {t = t})
-    isequiv {X} {s} {t} = hence-so-is-new where
-      p : (x : s ≡ t) → new x ≡ old (ap π x)
-      p = J (λ y p → new {s = s} {t = y} p ≡ old (ap π p))
-            refl
-```
-
-With `J`{.Agda}, this is automatic, so the proof is `refl`{.Agda}! Then
-we use the fact that `equivalences are closed under composition`{.Agda
-ident=∙-isEquiv} to conclude that, since `old`{.Agda} and `ap π`{.Agda
-ident=π} are equivalences, then so is their composite:
-
-```agda
-      composite-is-equivalence : isEquiv (λ (p : s ≡ t) → old (ap π p))
-      composite-is-equivalence =
-        ∙-isEquiv
-          {f = ap π}
-          {g = structure-path→structure-equiv (σ .fst)}
-          (Subset-proj-embedding (λ _ → axioms-prop))
-          (σ .snd)
-```
-
-Since maps [homotopic] to equivalences are equivalences, `new`{.Agda} is
-an equivalence, and we are done. The map `ap π`{.Agda ident=π} is an
-equivalence because `π`{.Agda} is a projection from a _subset_: an
-[embedding], as witnessed by `Subset-proj-embedding`{.Agda}.
-
-[embedding]: agda://1Lab.Equiv.Embedding#isEmbedding
-
-```agda
-      hence-so-is-new : isEquiv new
-      hence-so-is-new = subst isEquiv (sym (funext p)) composite-is-equivalence
+transferAxioms 
+  : {σ : Structure ℓ S} {univ : isUnivalent σ}
+    {axioms : (X : _) → S X → Type ℓ₃}
+  → (A : TypeWith (axiomsStr univ axioms)) (B : TypeWith σ)
+  → (A .fst , A .snd .fst) ≃[ σ ] B
+  → axioms (B .fst) (B .snd)
+transferAxioms {univ = univ} {axioms = axioms} A B eqv =
+  subst (λ { (x , y) → axioms x y }) (sip univ eqv) (A .snd .snd)
 ```

@@ -788,3 +788,83 @@ subst-path-right {x = x} loop adj =
       loop                      ≡⟨ sym (transport-refl _) ⟩
       subst (λ x → x) refl loop ∎
 ```
+
+# Cartesian Kan operations
+
+In Cubical Agda, we have a transport operation `A i0 → A i1`. In
+Cartesian cubical type theory, a type theory based on a different cube
+category, we have a primitive operation `coe i j : A i → A j`.
+Regardless, this operation can be defined in Cubical Agda. First, we
+define the coercions where one endpoint is a variable and one is
+constant:
+
+```
+coe0→1 : ∀ {ℓ} (A : I → Type ℓ) → A i0 → A i1
+coe0→1 A a = transp (λ i → A i) i0 a
+
+coe0→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i0 → A i
+coe0→i A i a = transp (λ j → A (i ∧ j)) (~ i) a
+
+coe1→0 : ∀ {ℓ} (A : I → Type ℓ) → A i1 → A i0
+coe1→0 A a = transp (λ i → A (~ i)) i0 a
+
+coe1→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i1 → A i
+coe1→i A i a = transp (λ j → A (i ∨ ~ j)) i a
+
+coei→0 : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i → A i0
+coei→0 A i a = transp (λ j → A (i ∧ ~ j)) (~ i) a
+```
+
+Then, using a filler, we can construct the "master coercion" operation
+of Cartesian cubical type theory:
+
+```
+coei→j : ∀ {ℓ} (A : I → Type ℓ) (i j : I) → A i → A j
+coei→j A i j a =
+  fill (\ i → A i)
+    (λ j → λ { (i = i0) → coe0→i A j a
+             ; (i = i1) → coe1→i A j a
+             })
+    (inS (coei→0 A i a))
+    j
+
+coei→1 : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i → A i1
+coei→1 A i a = coei→j A i i1 a
+
+coei0→1 : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → coei→1 A i0 a ≡ coe0→1 A a
+coei0→1 A a = refl
+
+coei1→1 : ∀ {ℓ} (A : I → Type ℓ) (a : A i1) → coei→1 A i1 a ≡ a
+coei1→1 A a = refl
+
+coei→i0 : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i) → coei→j A i i0 a ≡ coei→0 A i a
+coei→i0 A i a = refl
+
+coei0→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i0) → coei→j A i0 i a ≡ coe0→i A i a
+coei0→i A i a = refl
+
+coei→i1 : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i) → coei→j A i i1 a ≡ coei→1 A i a
+coei→i1 A i a = refl
+
+coei1→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i1) → coei→j A i1 i a ≡ coe1→i A i a
+coei1→i A i a = refl
+
+coei→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i) → coei→j A i i a ≡ a
+coei→i A i = coe0→i (λ i → (a : A i) → coei→j A i i a ≡ a) i (λ _ → refl)
+```
+
+<!--
+TODO: Explain these whiskerings
+
+```
+_◁_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ a₀' : A i0} {a₁ : A i1}
+  → a₀ ≡ a₀' → PathP A a₀' a₁ → PathP A a₀ a₁
+(p ◁ q) i =
+  hcomp (λ j → λ {(i = i0) → p (~ j); (i = i1) → q i1}) (q i)
+
+_▷_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ : A i0} {a₁ a₁' : A i1}
+  → PathP A a₀ a₁ → a₁ ≡ a₁' → PathP A a₀ a₁'
+(p ▷ q) i =
+  hcomp (λ j → λ {(i = i0) → p i0; (i = i1) → q j}) (p i)
+```
+-->

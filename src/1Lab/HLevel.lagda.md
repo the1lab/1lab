@@ -259,6 +259,15 @@ isHLevelPath zero ahl =
   contr (isContr→isProp ahl _ _)
         λ x → isProp→isSet (isContr→isProp ahl) _ _ _ x
 isHLevelPath (suc n) ahl = isHLevel-suc (suc n) ahl _ _
+
+isHLevelPathP : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
+              → isHLevel (A i1) n
+              → {x : A i0} {y : A i1}
+              → isHLevel (PathP A x y) n
+isHLevelPathP {A = A} n ahl {x} {y} =
+  subst (λ e → isHLevel e n)
+        (sym (PathP≡Path A x y))
+        (isHLevelPath n ahl)
 ```
 
 # isHLevel is a proposition

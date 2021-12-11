@@ -125,6 +125,17 @@ isEqv' A B (f , isEquiv) a ψ u0 =
 {-# BUILTIN EQUIVPROOF isEqv' #-}
 ```
 
+<!--
+```
+equiv-centre : (e : A ≃ B) (y : B) → fibre (e .fst) y
+equiv-centre e y = e .snd .isEqv y .centre
+
+equiv-path : (e : A ≃ B) (y : B) →
+  (v : fibre (e .fst) y) → Path _ (equiv-centre e y) v
+equiv-path e y = e .snd .isEqv y .paths
+```
+-->
+
 ## isEquiv is propositional
 
 A function can be an equivalence in at most one way. This follows from

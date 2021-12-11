@@ -10,7 +10,7 @@ module 1Lab.Data.Sigma.Properties where
 <!--
 ```
 private variable
-  ℓ : Level
+  ℓ ℓ₁ : Level
   A A' : Type ℓ
   B P Q : A → Type ℓ
 ```
@@ -27,10 +27,11 @@ The first thing we prove is that _paths in sigmas are sigmas of paths_.
 The type signatures make it clearer:
 
 ```agda
-Σ-PathP-iso : {x y : Σ B}
-            → Iso (Σ[ p ∈ x .fst ≡ y .fst ]
-                    (PathP (λ i → B (p i)) (x .snd) (y .snd)))
-                  (x ≡ y)
+Σ-PathP-iso : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
+              {x : Σ (B i0)} {y : Σ (B i1)}
+            → Iso (Σ[ p ∈ PathP A (x .fst) (y .fst) ]
+                    (PathP (λ i → B i (p i)) (x .snd) (y .snd)))
+                  (PathP (λ i → Σ (B i)) x y)
 
 Σ-Path-iso : {x y : Σ B}
            → Iso (Σ[ p ∈ x .fst ≡ y .fst ] (subst B p (x .snd) ≡ y .snd))
@@ -45,7 +46,7 @@ same`{.Agda ident=PathP≡Path}.
 
 ```
 fst Σ-PathP-iso (p , q) i = p i , q i
-isIso.inv (snd Σ-PathP-iso) p = ap fst p , ap snd p
+isIso.inv (snd Σ-PathP-iso) p = (λ i → p i .fst) , (λ i → p i .snd)
 isIso.rinv (snd Σ-PathP-iso) x = refl
 isIso.linv (snd Σ-PathP-iso) x = refl
 
@@ -189,4 +190,18 @@ into an equivalence:
         → {x y : Σ B}
         → (x .fst ≡ y .fst) ≃ (x ≡ y)
 Σ≡Prop≃ bp = Σ≡Prop bp , isEquiv-Σ≡Prop bp
+```
+
+## Dependent sums of contractibles
+
+If `B` is a family of contractible types, then `Σ B ≃ A`:
+
+```
+Σ-contract : {B : A → Type ℓ} → (∀ x → isContr (B x)) → Σ B ≃ A
+Σ-contract bcontr = Iso→Equiv the-iso where
+  the-iso : Iso _ _
+  the-iso .fst (a , b) = a
+  the-iso .snd .isIso.inv x = x , bcontr _ .centre
+  the-iso .snd .isIso.rinv x = refl
+  the-iso .snd .isIso.linv (a , b) i = a , bcontr a .paths b i
 ```
