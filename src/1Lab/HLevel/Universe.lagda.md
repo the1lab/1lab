@@ -40,7 +40,7 @@ As warmup, we prove that if $A$ and $B$ are $n$-types, then so is the
 type of equivalences $A \simeq B$. For the case where $n$ is a
 successor, this only depends on the h-level of $B$.
 
-```
+```agda
 isHLevel-≃ : (n : Nat) → isHLevel A n → isHLevel B n → isHLevel (A ≃ B) n
 isHLevel-≃ {A = A} {B = B} zero Ahl Bhl = contr (f , f-eqv) deform where
   f : A → B
@@ -61,7 +61,7 @@ fact that `being an equivalence is a proposition`{.Agda
 ident=isProp-isEquiv}, we get the required family of paths deforming any
 $A \simeq B$ to our `f`.
 
-```
+```agda
   deform : (g : A ≃ B) → (f , f-eqv) ≡ g
   deform (g , g-eqv) = Σ-Path (λ i x → Bhl .paths (g x) i)
                              (isProp-isEquiv _ _ _)
@@ -71,7 +71,7 @@ As mentioned before, the case for successors does not depend on the
 proof that $A$ has the given h-level. This is because, for $n \ge 1$, $A
 \simeq B$ has the same h-level as $A \to B$, which is the same as $B$.
 
-```
+```agda
 isHLevel-≃ (suc n) _ Bhl =
   isHLevelΣ (suc n) (isHLevel→ (suc n) Bhl)
                     λ f → isProp→isHLevel-suc (isProp-isEquiv f)
@@ -83,7 +83,7 @@ Univalence states that the type $X ≡ Y$ is equivalent to $X \simeq Y$.
 Since the latter is of h-level $n$ when $X$ and $Y$ are $n$-types, then
 so is the former:
 
-```
+```agda
 isHLevel-≡ : (n : Nat) → isHLevel A n → isHLevel B n → isHLevel (A ≡ B) n
 isHLevel-≡ n Ahl Bhl = isHLevel-equiv n ua univalence¯¹ (isHLevel-≃ n Ahl Bhl)
 ```
@@ -93,7 +93,7 @@ isHLevel-≡ n Ahl Bhl = isHLevel-equiv n ua univalence¯¹ (isHLevel-≃ n Ahl 
 We refer to the dependent sum of the family `isHLevel - n`{.Agda
 ident=isHLevel} as `n-Type`:
 
-```
+```agda
 nType : (ℓ : Level) → Nat → Type (lsuc ℓ)
 nType ℓ n = Σ[ T ∈ Type ℓ ] (isHLevel T n)
 ```
@@ -102,7 +102,7 @@ Like mentioned in the introduction, the main theorem of this section is
 that `n-Type` is a type of h-level $n+1$. First, the base case: the
 universe of all contractible types is a proposition.
 
-```
+```agda
 isProp-hContr : isProp (nType ℓ 0)
 isProp-hContr (A , ac) (B , bc) =
   Σ-PathP (ua (f , f-eqv))
@@ -119,7 +119,7 @@ In reality, this can be strengthened: The type of all contractible types
 relative to a universe is _itself_ contractible, because it is an
 inhabited proposition:
 
-```
+```agda
 isContr-hContr : isContr (nType ℓ 0)
 isContr-hContr {ℓ = ℓ} = contr (Lift ℓ ⊤ , contr (lift tt) λ x i → lift tt)
                                (isProp-hContr _)
@@ -132,7 +132,7 @@ very useful intermediate step: `nType-univalence`{.Agda}, which says
 that paths in `nType`{.Agda} are `equivalences`{.Agda ident=_≃_} of the
 underlying types.
 
-```
+```agda
 nType-ua : {n : Nat} {X Y : nType ℓ n} → (X .fst ≃ Y .fst) → (X ≡ Y)
 nType-ua f = Σ≡Prop (λ _ → isProp-isHLevel _) (ua f)
 
@@ -147,7 +147,7 @@ nType-univalence {X = X} {Y} =
 `h-levels of equivalences`{.Agda ident=isHlevel-≃}, implies the promised
 theorem: `nType`{.Agda} is a $(n+1)$-type.
 
-```
+```agda
 isHLevel-nType : (n : Nat) → isHLevel (nType ℓ n) (suc n)
 isHLevel-nType zero = isProp-hContr
 isHLevel-nType (suc n) (A , a) (B , b) =
@@ -157,14 +157,14 @@ isHLevel-nType (suc n) (A , a) (B , b) =
 Recall that we defined `Set`{.Agda} to be `nType ℓ 2`, just not with
 those words.
 
-```
+```agda
 _ : ∀ {ℓ} → Set ℓ ≡ nType ℓ 2
 _ = refl
 ```
 
 The theorem above implies that `Set`{.Agda} is a groupoid:
 
-```
+```agda
 isGroupoid-Set : ∀ {ℓ} → isGroupoid (Set ℓ)
 isGroupoid-Set = isHLevel-nType 2
 ```

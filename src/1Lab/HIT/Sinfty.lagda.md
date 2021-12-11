@@ -19,7 +19,6 @@ iterated suspension and is thus referred to as the $\infty$-sphere.
 data S∞ : Type where
   N S   : S∞
   merid : S∞ → N ≡ S
-
 ```
 
 In classical topology, there are several definitions of the $\infty$-sphere.

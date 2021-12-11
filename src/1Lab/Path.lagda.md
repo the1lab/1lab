@@ -566,7 +566,7 @@ by the endpoint rule for `transport-filler`{.Agda}.
 
 We can write a helper function that allows us to write Book-style proofs:
 
-```
+```agda
 transp→PathP : ∀ {ℓ} (P : I → Type ℓ) (p : P i0) (q : P i1) →
   transport (λ i → P i) p ≡ q → PathP P p q
 transp→PathP P p q a = transport (sym (PathP≡Path P p q)) a
@@ -798,7 +798,7 @@ Regardless, this operation can be defined in Cubical Agda. First, we
 define the coercions where one endpoint is a variable and one is
 constant:
 
-```
+```agda
 coe0→1 : ∀ {ℓ} (A : I → Type ℓ) → A i0 → A i1
 coe0→1 A a = transp (λ i → A i) i0 a
 
@@ -818,7 +818,7 @@ coei→0 A i a = transp (λ j → A (i ∧ ~ j)) (~ i) a
 Then, using a filler, we can construct the "master coercion" operation
 of Cartesian cubical type theory:
 
-```
+```agda
 coei→j : ∀ {ℓ} (A : I → Type ℓ) (i j : I) → A i → A j
 coei→j A i j a =
   fill (\ i → A i)
@@ -856,7 +856,7 @@ coei→i A i = coe0→i (λ i → (a : A i) → coei→j A i i a ≡ a) i (λ _ 
 <!--
 TODO: Explain these whiskerings
 
-```
+```agda
 _◁_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ a₀' : A i0} {a₁ : A i1}
   → a₀ ≡ a₀' → PathP A a₀' a₁ → PathP A a₀ a₁
 (p ◁ q) i =

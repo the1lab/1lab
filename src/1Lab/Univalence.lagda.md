@@ -407,7 +407,7 @@ A very useful theorem is a specialisation of `PathP≡Path`{.Agda} to the
 case of paths dependent over `ua`{.Agda}. This is proven using the
 following cubical helpers, which use the glueing primitives:
 
-```
+```agda
 ua-unglue : ∀ {A B : Type ℓ} (e : A ≃ B) (i : I) (x : ua e i)
             → B [ _ ↦ (λ { (i = i0) → e .fst x ; (i = i1) → x }) ]
 ua-unglue e i x = inS (unglue (i ∨ ~ i) x)
@@ -424,7 +424,7 @@ ua-glue e i x y = inS (prim^glue {φ = i ∨ ~ i}
 Fortunately, the types of these shrink a lot if the interval variable is
 factored in:
 
-```
+```agda
 uaPathP→Path : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
              → PathP (λ i → ua e i) x y
              → e .fst x ≡ y
@@ -439,7 +439,7 @@ Path→uaPathP e {x = x} p i = outS (ua-glue e i (λ { (i = i0) → x }) (inS (p
 These functions are definitional inverses, and thus they provide a
 characterisation of `PathP (ua f)` in terms of non-dependent paths:
 
-```
+```agda
 uaPathP≃Path : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
              → (e .fst x ≡ y) ≃ (PathP (λ i → ua e i) x y)
 uaPathP≃Path eqv .fst = Path→uaPathP eqv

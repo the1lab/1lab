@@ -27,7 +27,7 @@ subsets**.
 However, let's see what happens when we naïvely translate the definition
 of image above:
 
-```
+```agda
 private variable
   ℓ : Level
   A B : Type ℓ
@@ -40,7 +40,7 @@ The definition above, which could be called "Curry-Howard image", does
 not accurately represent the image of a function: $\mathrm{image}(f)
 \simeq A$, independent of $f$:
 
-```
+```agda
 image≃domain : {f : A → B} → image f ≃ A
 image≃domain {f = f} = Iso→Equiv the-iso where
   the-iso : Iso _ _
@@ -62,7 +62,7 @@ something isomorphic to `Σ[ x ∈ A ] *`, which is evidently isomorphic to
 Hence we have, for example, that the "image" of the canonical function
 `Bool → ⊤` is isomorphic to `Bool`{.Agda}:
 
-```
+```agda
 ignore-bool : Bool → ⊤
 ignore-bool _ = tt
 

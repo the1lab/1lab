@@ -111,7 +111,7 @@ Set ℓ = Σ (isSet {ℓ = ℓ})
 
 Similarly, the types of h-level 3 are called **groupoids**.
 
-```
+```agda
 isGroupoid : ∀ {ℓ} → Type ℓ → Type ℓ
 isGroupoid A = isHLevel A 3
 ```
@@ -240,7 +240,7 @@ isHLevel-+ n (suc k) x = isHLevel-suc _ (isHLevel-+ n k x)
 A very convenient specialisation of the argument above is that if $A$ is
 a proposition, then it has any non-zero h-level:
 
-```
+```agda
 isProp→isHLevel-suc : ∀ {ℓ} {A : Type ℓ} {n : Nat} → isProp A → isHLevel A (suc n)
 isProp→isHLevel-suc {n = zero} aprop = aprop
 isProp→isHLevel-suc {n = suc n} aprop =
@@ -252,7 +252,7 @@ an n-type, then paths in $A$ are also $n$-types. This is because, by
 definition, the paths in a $n$-type are "$(n-1)$-types", which
 `isHLevel-suc`{.Agda} extends into $n$-types.
 
-```
+```agda
 isHLevelPath : ∀ {ℓ} {A : Type ℓ} (n : Nat) → isHLevel A n → {x y : A}
              → isHLevel (x ≡ y) n
 isHLevelPath zero ahl =

@@ -128,7 +128,6 @@ and-idempotent true = refl
 or-idempotent : (x : Bool) → or x x ≡ x
 or-idempotent false = refl
 or-idempotent true = refl
-
 ```
 
 All the properties above hold both in classical and constructive mathematics, even in

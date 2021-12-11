@@ -41,7 +41,7 @@ private variable
 
 As warmup, we have that both constructors are embeddings:
 
-```
+```agda
 inl-inj : {B : Type b} {x y : A} → inl {B = B} x ≡ inl y → x ≡ y
 inl-inj {A = A} {x = x} path = ap f path where
   f : A ⊎ B → A
@@ -97,7 +97,7 @@ of _dependent functions_ out of the disjoint union: A dependent function
 `(x : A ⊎ B) → P x` is the product of functions covering the left and
 right cases.
 
-```
+```agda
 ⊎-universal : ∀ {A : Type a} {B : Type b} {C : A ⊎ B → Type c}
             → ((x : A ⊎ B) → C x)
             ≃ ( ((x : A) → C (inl x))
@@ -110,14 +110,14 @@ For "splitting" a dependent function from the coproduct, we can compose
 it with either of the constructors to restrict to a function on that
 factor:
 
-```
+```agda
   the-iso .fst f = (λ x → f (inl x)) , (λ x → f (inr x))
 ```
 
 Similarly, given a pair of functions, we can do a case split on the
 coproduct to decide which function to apply:
 
-```
+```agda
   the-iso .snd .isIso.inv (f , g) (inl x) = f x
   the-iso .snd .isIso.inv (f , g) (inr x) = g x
 
@@ -162,7 +162,7 @@ to-dec (inr ¬a) = no ¬a
 The proof that these functions are inverses is automatic by computation,
 and thus it can be shown they are equivalences:
 
-```
+```agda
 isEquiv-from-dec : {A : Type a} → isEquiv (from-dec {A = A})
 isEquiv-from-dec = isIso→isEquiv (iso to-dec p q) where
   p : _
@@ -180,7 +180,7 @@ If $A$ and $B$ are $n$-types, for $n \ge 2$, then so is their coproduct.
 This is because the coproduct can be expressed as a `dependent
 sum`{.Agda ident=_⊎_} indexed by `Bool`{.Agda}
 
-```
+```agda
 isHLevel⊎ : (n : Nat)
           → isHLevel A (2 + n) → isHLevel B (2 + n)
           → isHLevel (A ⊎ B) (2 + n)
@@ -204,7 +204,7 @@ Note that since `A` and `B` may live in different universes, we must
 `Lift`{.Agda} them to the least universe which contains both. Then we
 can prove that `_⊎_`{.Agda} is a retract of `∐`{.Agda}:
 
-```
+```agda
     ⊎→∐ : A ⊎ B → ∐
     ⊎→∐ (inl x) = true , lift x
     ⊎→∐ (inr x) = false , lift x
@@ -223,7 +223,7 @@ both `lift`{.Agda} and `lower`{.Agda} values of type A/B when passing
 from `_⊎_` to `∐`. Then a case split gives us the required property,
 namely `retraction`{.Agda}.
 
-```
+```agda
     bool' : isHLevel Bool (2 + hl)
     bool' = subst (λ e → isHLevel Bool e)
                   (+-commutative hl 2)
@@ -236,7 +236,7 @@ reduced the problem of showing that `_⊎_`{.Agda} has said h-level to the
 problem of proving that `∐` does, which follows from `closure of
 h-levels under Σ`{.Agda ident=isHLevelΣ}.
 
-```
+```agda
     ∐-hlevel : isHLevel ∐ (2 + hl)
     ∐-hlevel = isHLevelΣ (2 + hl) bool'
       λ { false → isHLevel-Lift (2 + hl) b-hl
@@ -253,7 +253,7 @@ the coproduct of _disjoint_ propositions is a proposition:
 [being a proposition]: agda://1Lab.HLevel#isProp
 [being contractible]: agda://1Lab.HLevel#isContr
 
-```
+```agda
 isProp-disjoint-⊎ : isProp A → isProp B → (A × B → ⊥)
                   → isProp (A ⊎ B)
 isProp-disjoint-⊎ Ap Bp notab (inl x) (inl y) = ap inl (Ap x y)
@@ -271,7 +271,7 @@ equivalences in both arguments, across levels.
 
 [Univalence]: 1Lab.Univalence.html#the-axiom
 
-```
+```agda
 ⊎-ap : A ≃ B → C ≃ D → (A ⊎ C) ≃ (B ⊎ D)
 ⊎-ap (f , f-eqv) (g , g-eqv) = Iso→Equiv cong where
   f-iso = isEquiv→isIso f-eqv
@@ -303,7 +303,7 @@ Considered as an algebraic operator on _types_, the coproduct satisfies
 many of the same properties of addition. Specifically, when restricted
 to finite types, the coproduct is exactly the same as addition.
 
-```
+```agda
 ⊎-comm : (A ⊎ B) ≃ (B ⊎ A)
 ⊎-comm = Iso→Equiv i where
   i : Iso _ _

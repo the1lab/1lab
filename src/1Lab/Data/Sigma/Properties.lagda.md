@@ -44,7 +44,7 @@ structure of their domain types. The second is a consequence of the
 first, using the fact  that `PathPs and paths over a transport are the
 same`{.Agda ident=PathP≡Path}.
 
-```
+```agda
 fst Σ-PathP-iso (p , q) i = p i , q i
 isIso.inv (snd Σ-PathP-iso) p = (λ i → p i .fst) , (λ i → p i .snd)
 isIso.rinv (snd Σ-PathP-iso) x = refl
@@ -65,7 +65,7 @@ types _in the same universe_. Thus, we provide `Σ-ap-fst`{.Agda},
 `Σ-ap-snd`{.Agda}, and `Σ-ap`{.Agda}, which allows one to perturb a
 `Σ`{.Agda} by equivalences across levels:
 
-```
+```agda
 Σ-ap-snd : ((x : A) → P x ≃ Q x) → Σ P ≃ Σ Q
 Σ-ap-fst : (e : A ≃ A') → Σ (B ∘ e .fst) ≃ Σ B
 
@@ -125,7 +125,6 @@ they are included for completeness. </summary>
         { (i = i0) → ctrP (~ k)
         ; (i = i1) → σ (~ k)
         })) (inS b) (~ j)
-
 ```
 </details>
 
@@ -136,7 +135,7 @@ When `P` is a family of propositions, it is sound to regard `Σ[ x ∈ A ]
 (P x)` as a _subtype_ of `A`. This is because equality in the subtype is
 characterised uniquely by equality of the first projections:
 
-```
+```agda
 Σ≡Prop : {B : A → Type ℓ}
        → (∀ x → isProp (B x))
        → {x y : Σ B}
@@ -149,7 +148,7 @@ gist of it is that since `B` is a family of propositions, it really
 doesn't matter where we get our equality of `B`-s from - whether it was
 from the input, or from `Σ≡Path`{.Agda}.
 
-```
+```agda
 isEquiv-Σ≡Prop
   : {B : A → Type ℓ}
   → (bp : ∀ x → isProp (B x))
@@ -167,7 +166,7 @@ conclude `x .fst ≡ y .fst` from `x ≡ y`. This is a left inverse to
 `Σ≡Prop`{.Agda} on the nose. For the other direction, we have the
 aforementioned cubical argument:
 
-```
+```agda
   is-iso .isIso.rinv p i j =
     p j .fst , isProp→PathP (λ k → isHLevelPath 1 (bp (p k .fst))
                                       {x = Σ≡Prop bp {x} {y} (ap fst p) k .snd}
@@ -184,7 +183,7 @@ for `fst`{.Agda} to be an [embedding].
 There is also a convenient packaging of the previous two definitions
 into an equivalence:
 
-```
+```agda
 Σ≡Prop≃ : {B : A → Type ℓ}
         → (∀ x → isProp (B x))
         → {x y : Σ B}
@@ -196,7 +195,7 @@ into an equivalence:
 
 If `B` is a family of contractible types, then `Σ B ≃ A`:
 
-```
+```agda
 Σ-contract : {B : A → Type ℓ} → (∀ x → isContr (B x)) → Σ B ≃ A
 Σ-contract bcontr = Iso→Equiv the-iso where
   the-iso : Iso _ _

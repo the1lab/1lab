@@ -198,7 +198,7 @@ Similarly, `Lift`{.Agda} does not induce a change of h-levels, i.e. if
 $A$ is an $n$-type in a universe $U$, then it's also an $n$-type in any
 successor universe:
 
-```
+```agda
 isHLevel-Lift : ∀ {a b} {A : Type a}
               → (n : Nat)
               → isHLevel A n

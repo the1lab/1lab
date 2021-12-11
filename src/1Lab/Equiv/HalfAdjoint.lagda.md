@@ -27,7 +27,7 @@ equivalence].
 [adjoint functors]: https://ncatlab.org/nlab/show/adjoint+functor
 [good notion of equivalence]: 1Lab.Equiv.html#equivalences
 
-```
+```agda
 isHAE : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} (f : A → B) → Type _
 isHAE {A = A} {B = B} f =
   Σ[ g ∈ (B → A) ]
@@ -42,7 +42,7 @@ categories into an adjoint equivalence, or a homotopy equivalence into a
 strong homotopy equivalence (Vogt's lemma). In HoTT, we show this
 synthetically for equivalences between $\infty$-groupoids.
 
-```
+```agda
 isIso→isHAE : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
             → isIso f → isHAE f
 isIso→isHAE {A = A} {B} {f} iiso = g , η , ε' , λ x → sym (zig x) where
@@ -54,7 +54,7 @@ However, if we want $(\eta, \epsilon)$ to satisfy the triangle
 identities, we can not in general take $\epsilon' = \epsilon$.  We can,
 however, alter it like thus:
 
-```
+```agda
   ε' : (y : B) → f (g y) ≡ y
   ε' y = sym (ε (f (g y))) ∙ ap f (η (g y)) ∙ ε y
 ```
@@ -79,7 +79,7 @@ $\varepsilon'$ is written in such a way that we can use properties of
 paths to make the $\mathrm{sym}\ (\varepsilon ...)$ and $\varepsilon$
 cancel:
 
-```
+```agda
   zig : (x : A) → ε' (f x) ≡ ap f (η x)
   zig x =
     ε' (f x)                                                    ≡⟨⟩
@@ -100,7 +100,7 @@ First, we give an equivalent characterisation of equality in
 `fibre`{.Agda}s, which will be used in proving that `half adjoint
 equivalences are equivalences`{.Agda ident=isHAE→isEquiv}.
 
-```
+```agda
 fibre-paths : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B} {y : B}
             → {f1 f2 : fibre f y}
             → (f1 ≡ f2)
@@ -141,7 +141,7 @@ Then, given an element $y : B$, we can construct a fibre of of $f$, and,
 using the above characterisation of equality, prove that this fibre is a
 centre of contraction:
 
-```
+```agda
 isHAE→isEquiv : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
               → isHAE f → isEquiv f
 isHAE→isEquiv {A = A} {B} {f} (g , η , ε , zig) .isEqv y = contr fib contract where
@@ -152,7 +152,7 @@ isHAE→isEquiv {A = A} {B} {f} (g , η , ε , zig) .isEqv y = contr fib contrac
 The fibre is given by $(g(y), ε(y))$, which we can prove equal to another
 $(x, p)$ using a very boring calculation:
 
-```
+```agda
   contract : (fib₂ : fibre f y) → fib ≡ fib₂
   contract (x , p) = (fibre-paths e¯¹) .fst (x≡gy , path) where
     x≡gy = ap g (sym p) ∙ η x
@@ -170,7 +170,7 @@ interesting steps above: The triangle identity says that
 $\mathrm{ap}(f)(\eta x) = \epsilon(f x)$, and naturality of $\epsilon$
 lets us "push it past $p$" to get something we can cancel:
 
-```
+```agda
       ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p ∙ ε y     ≡⟨ ∙-assoc _ _ _ ⟩
       (ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p) ∙ ε y   ≡⟨ ap₂ _∙_ (sym (ap-comp-path {f = f ∘ g} (sym p) p)) refl ⟩
       ap (f ∘ g) (sym p ∙ p) ∙ ε y                ≡⟨ ap₂ _∙_ (ap (ap (f ∘ g)) (∙-inv-r _)) refl ⟩
@@ -182,14 +182,14 @@ lets us "push it past $p$" to get something we can cancel:
 Putting these together, we get an alternative definition of
 `isIso→isEquiv`{.Agda}:
 
-```
+```agda
 isIso→isEquiv' : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
                → isIso f → isEquiv f
 isIso→isEquiv' = isHAE→isEquiv ∘ isIso→isHAE
 ```
 
 <!--
-```
+```agda
 _ = isIso→isEquiv
 ```
 -->

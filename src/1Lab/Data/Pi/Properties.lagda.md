@@ -28,7 +28,7 @@ equivalences. However, this theorem is limited to equivalences between
 types _in the same universe_. Thus, there are functions to perturb the
 codomain of a dependent function by an equivalence across universe levels:
 
-```
+```agda
 Π-cod≃ : ((x : A) → P x ≃ Q x) → ((x : A) → P x) ≃ ((x : A) → Q x)
 Π-cod≃ k .fst f x = k x .fst (f x)
 Π-cod≃ k .snd .isEqv f .centre .fst x   = equiv-centre (k x) (f x) .fst
@@ -51,7 +51,7 @@ codomain of a dependent function by an equivalence across universe levels:
 For non-dependent functions, we can easily perturb both domain and
 codomain:
 
-```
+```agda
 function≃ : (A ≃ B) → (C ≃ D) → (A → C) ≃ (B → D)
 function≃ dom rng = Iso→Equiv the-iso where
   rng-iso = isEquiv→isIso (rng .snd)
@@ -75,7 +75,7 @@ When the domain and codomain are simple types, equality of functions is
 characterised by `funext`{.Agda}. We can generalise this to `funextDep`,
 in which the domain and codomain are allowed to be lines of types:
 
-```
+```agda
 funextDep
   : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
     {f : (x : A i0) → B i0 x} {g : (x : A i1) → B i1 x}
@@ -96,7 +96,7 @@ funextDep {A = A} {B} {f} {g} h i x =
 
 A very ugly cubical argument shows that this function is an equivalence:
 
-```
+```agda
 funextDep≃
   : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
     {f : (x : A i0) → B i0 x} {g : (x : A i1) → B i1 x}
