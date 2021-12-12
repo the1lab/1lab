@@ -1,8 +1,6 @@
 ```agda
 open import 1Lab.HLevel.Retracts
-open import 1Lab.Data.Bool
 open import 1Lab.Data.Dec
-open import 1Lab.Data.Nat
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -32,10 +30,7 @@ data _⊎_ {a b} (A : Type a) (B : Type b) : Type (a ⊔ b) where
 ```agda
 private variable
   a b c d : Level
-  A : Type a
-  B : Type b
-  C : Type c
-  D : Type d
+  A B C D : Type a
 ```
 -->
 
@@ -177,71 +172,104 @@ isEquiv-from-dec = isIso→isEquiv (iso to-dec p q) where
 ## Closure under h-levels
 
 If $A$ and $B$ are $n$-types, for $n \ge 2$, then so is their coproduct.
-This is because the coproduct can be expressed as a `dependent
-sum`{.Agda ident=_⊎_} indexed by `Bool`{.Agda}
+The way we prove this is by characterising the entire path space of `A ⊎
+B` in terms of the path spaces for `A` and `B`, using a recursive
+definition:
 
-```agda
-isHLevel⊎ : (n : Nat)
-          → isHLevel A (2 + n) → isHLevel B (2 + n)
-          → isHLevel (A ⊎ B) (2 + n)
-isHLevel⊎ {A = A} {B = B} hl a-hl b-hl =
-  isHLevel-retract (2 + hl) ∐→⊎ ⊎→∐ retraction ∐-hlevel
-  where
-    common : Level
-    common = level-of A ⊔ level-of B
-
-    ∐ : Type common
-    ∐ = Σ {A = Bool} λ { true → Lift common A ; false → Lift common B } 
+```
+module ⊎Path where
+  Code : A ⊎ B → A ⊎ B → Type (level-of A ⊔ level-of B)
+  Code {B = B} (inl x) (inl y) = Lift (level-of B) (x ≡ y)
+  Code (inl x) (inr y) = Lift _ ⊥
+  Code (inr x) (inl y) = Lift _ ⊥
+  Code {A = A} (inr x) (inr y) = Lift (level-of A) (x ≡ y)
 ```
 
-We start by respelling the definition of `_⊎_`{.Agda} in terms of
-`Σ`{.Agda}. This is a common _implementation_ of coproducts in languages
-that do not support them: We have a _tag_, in this case `Bool`{.Agda},
-and based on the tag, we store a value of either type. In this case, we
-store `A` with `true`{.Agda} and `B` with `false`{.Agda}.
+Given a `Code`{.Agda} for a path in `A ⊎ B`, we can turn it into a
+legitimate equality. Agda automatically lets us ignore the cases where
+the `Code`{.Agda} computes to `the empty type`{.Agda ident=⊥}.
 
-Note that since `A` and `B` may live in different universes, we must
-`Lift`{.Agda} them to the least universe which contains both. Then we
-can prove that `_⊎_`{.Agda} is a retract of `∐`{.Agda}:
-
-```agda
-    ⊎→∐ : A ⊎ B → ∐
-    ⊎→∐ (inl x) = true , lift x
-    ⊎→∐ (inr x) = false , lift x
-
-    ∐→⊎ : ∐ → A ⊎ B
-    ∐→⊎ (false , snd₁) = inr (Lift.lower snd₁)
-    ∐→⊎ (true , snd₁) = inl (Lift.lower snd₁)
-
-    retraction : (x : A ⊎ B) → ∐→⊎ (⊎→∐ x) ≡ x
-    retraction (inl x) = refl
-    retraction (inr x) = refl
+```
+  decode : {x y : A ⊎ B} → Code x y → x ≡ y
+  decode {x = inl x} {y = inl x₁} code = ap inl (Lift.lower code)
+  decode {x = inr x} {y = inr x₁} code = ap inr (Lift.lower code)
 ```
 
-Because of computation, this is essentially automatic. Note that we must
-both `lift`{.Agda} and `lower`{.Agda} values of type A/B when passing
-from `_⊎_` to `∐`. Then a case split gives us the required property,
-namely `retraction`{.Agda}.
+In the inverse direction, we have a procedure for turning equalities
+into codes:
 
-```agda
-    bool' : isHLevel Bool (2 + hl)
-    bool' = subst (λ e → isHLevel Bool e)
-                  (+-commutative hl 2)
-                  (isHLevel-+ 2 hl isSet-Bool)
+```
+  encode : {x y : A ⊎ B} → x ≡ y → Code x y
+  encode {x = inl x} {y = inl y} path = lift (inl-inj path)
+  encode {x = inl x} {y = inr y} path = absurd (⊎-disjoint path)
+  encode {x = inr x} {y = inl y} path = absurd (⊎-disjoint (sym path))
+  encode {x = inr x} {y = inr y} path = lift (inr-inj path)
 ```
 
-Since `Bool`{.Agda} `is a set`{.Agda ident=isSet-Bool}, we have that it
-automatically has any h-level greater than 2, i.e. `2 + hl`. We've
-reduced the problem of showing that `_⊎_`{.Agda} has said h-level to the
-problem of proving that `∐` does, which follows from `closure of
-h-levels under Σ`{.Agda ident=isHLevelΣ}.
+Now we must establish that `encode`{.Agda} and `decode`{.Agda} are
+inverses. In the one direction, we can use path induction:
 
-```agda
-    ∐-hlevel : isHLevel ∐ (2 + hl)
-    ∐-hlevel = isHLevelΣ (2 + hl) bool'
-      λ { false → isHLevel-Lift (2 + hl) b-hl
-        ; true → isHLevel-Lift (2 + hl) a-hl
-        }
+```
+  decode-encode : {x y : A ⊎ B} (p : x ≡ y) → decode (encode p) ≡ p
+  decode-encode = J (λ _ p → decode (encode p) ≡ p) d-e-refl where
+    d-e-refl : {x : A ⊎ B} → decode (encode (λ i → x)) ≡ (λ i → x)
+    d-e-refl {x = inl x} = refl
+    d-e-refl {x = inr x} = refl
+```
+
+In the other direction, the proof is by case analysis, and everything
+computes wonderfully to make the right-hand sides fillable by
+`refl`{.Agda}:
+
+```
+  encode-decode : {x y : A ⊎ B} (p : Code x y) → encode (decode p) ≡ p
+  encode-decode {x = inl x} {y = inl y} p = refl
+  encode-decode {x = inr x} {y = inr y} p = refl
+```
+
+Thus, we have an equivalence between codes for equalities in `A ⊎ B` and
+_actual_ equalities `A ⊎ B`. Since `Code`{.Agda} has a nice
+computational structure, we can establish its h-level by induction:
+
+```
+  Code≃Path : {x y : A ⊎ B} → Code x y ≃ (x ≡ y)
+  Code≃Path = Iso→Equiv (decode , iso encode decode-encode encode-decode)
+```
+
+```
+open ⊎Path
+
+isHLevel-Code : {x y : A ⊎ B} {n : Nat}
+            → isHLevel A (suc (suc n))
+            → isHLevel B (suc (suc n))
+            → isHLevel (Code x y) (suc n)
+isHLevel-Code {x = inl x} {inl y} {n} ahl bhl =
+  isHLevel-Lift (suc n) (ahl x y)
+isHLevel-Code {x = inr x} {inr y} {n} ahl bhl =
+  isHLevel-Lift (suc n) (bhl x y)
+```
+
+In the two cases where `x` and `y` match, we can use the fact that `Lift
+preserves h-levels`{.Agda ident=isHLevel-Lift} and the assumption that
+`A` (or `B`) have the given h-level.
+
+```
+isHLevel-Code {x = inl x} {inr y} {n} ahl bhl =
+  isHLevel-Lift (suc n) (isProp→isHLevel-suc λ x → absurd x)
+isHLevel-Code {x = inr x} {inl y} {n} ahl bhl = 
+  isHLevel-Lift (suc n) (isProp→isHLevel-suc λ x → absurd x)
+```
+
+In the mismatched cases, we use the fact that `propositions have any
+successor h-level`{.Agda ident=isProp→isHLevel-suc} to prove that `⊥` is
+also at the same h-level as `A` and `B`. Thus, we have:
+
+```
+isHLevel-⊎ : (n : Nat)
+           → isHLevel A (2 + n)
+           → isHLevel B (2 + n)
+           → isHLevel (A ⊎ B) (2 + n)
+isHLevel-⊎ n ahl bhl x y = isHLevel≃ (1 + n) Code≃Path (isHLevel-Code ahl bhl)
 ```
 
 Note that, in general, [being a proposition] and [being contractible]
