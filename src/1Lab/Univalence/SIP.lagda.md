@@ -199,7 +199,7 @@ functionStr-univalent {S = S} {T = T} {σ = σ} {τ} θ₁ θ₂ eqv =
   Π-impl-cod≃ (λ s → Π-impl-cod≃ λ t → function≃ (θ₁ eqv) (θ₂ eqv)) ∙e funextDep≃
 ```
 
-{!   !}le: $\infty$-magmas
+## Example: $\infty$-magmas
 
 We provide an example of applying the SIP, and the structure
 combinators: **$\infty$-magmas**. Recall that a [magma] is a [Set]
