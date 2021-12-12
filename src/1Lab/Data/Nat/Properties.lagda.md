@@ -159,6 +159,14 @@ The ordering relation on the natural numbers is a partial order:
 ≤-PartialOrder .isPartialOrder.antisym {x} {y} = ≤-antisym x y
 ```
 
+We also have that a successor is never smaller than the number it
+succeeds:
+
+```
+¬sucx≤x : (x : Nat) → suc x ≤ x → ⊥
+¬sucx≤x (suc x) ord = ¬sucx≤x x ord
+```
+
 ### Compatibility
 
 The order relation on the natural numbers is also compatible with the
@@ -199,4 +207,56 @@ arithmetic operators:
   +-reflects-≤ˡ x y z
     (subst (_≤ z + y) (+-commutative x z)
     (subst (x + z ≤_) (+-commutative y z) prf))
+```
+
+### Maximum
+
+```
+max-assoc : (x y z : Nat) → max x (max y z) ≡ max (max x y) z
+max-assoc zero zero zero = refl
+max-assoc zero zero (suc z) = refl
+max-assoc zero (suc y) zero = refl
+max-assoc zero (suc y) (suc z) = refl
+max-assoc (suc x) zero zero = refl
+max-assoc (suc x) zero (suc z) = refl
+max-assoc (suc x) (suc y) zero = refl
+max-assoc (suc x) (suc y) (suc z) = ap suc (max-assoc x y z)
+
+max-≤ˡ : (x y : Nat) → x ≤ max x y
+max-≤ˡ zero zero = tt
+max-≤ˡ zero (suc y) = tt
+max-≤ˡ (suc x) zero = ≤-refl (suc x)
+max-≤ˡ (suc x) (suc y) = max-≤ˡ x y
+
+max-≤ʳ : (x y : Nat) → y ≤ max x y
+max-≤ʳ zero zero = tt
+max-≤ʳ zero (suc y) = ≤-refl (suc y)
+max-≤ʳ (suc x) zero = tt
+max-≤ʳ (suc x) (suc y) = max-≤ʳ x y
+```
+
+### Minimum
+
+```
+min-assoc : (x y z : Nat) → min x (min y z) ≡ min (min x y) z
+min-assoc zero zero zero = refl
+min-assoc zero zero (suc z) = refl
+min-assoc zero (suc y) zero = refl
+min-assoc zero (suc y) (suc z) = refl
+min-assoc (suc x) zero zero = refl
+min-assoc (suc x) zero (suc z) = refl
+min-assoc (suc x) (suc y) zero = refl
+min-assoc (suc x) (suc y) (suc z) = ap suc (min-assoc x y z)
+
+min-≤ˡ : (x y : Nat) → min x y ≤ x
+min-≤ˡ zero zero = tt
+min-≤ˡ zero (suc y) = tt
+min-≤ˡ (suc x) zero = tt
+min-≤ˡ (suc x) (suc y) = min-≤ˡ x y
+
+min-≤ʳ : (x y : Nat) → min x y ≤ y
+min-≤ʳ zero zero = tt
+min-≤ʳ zero (suc y) = tt
+min-≤ʳ (suc x) zero = tt
+min-≤ʳ (suc x) (suc y) = min-≤ʳ x y
 ```
