@@ -58,14 +58,14 @@ function≃ dom rng = Iso→Equiv the-iso where
   dom-iso = isEquiv→isIso (dom .snd)
 
   the-iso : Iso _ _
-  the-iso .fst f x = rng .fst (f (dom-iso .isIso.g x))
-  the-iso .snd .isIso.g f x = rng-iso .isIso.g (f (dom .fst x))
-  the-iso .snd .isIso.right-inverse f =
-    funext λ x → rng-iso .isIso.right-inverse _
-               ∙ ap f (dom-iso .isIso.right-inverse _)
-  the-iso .snd .isIso.left-inverse f =
-    funext λ x → rng-iso .isIso.left-inverse _
-               ∙ ap f (dom-iso .isIso.left-inverse _)
+  the-iso .fst f x = rng .fst (f (dom-iso .isIso.inv x))
+  the-iso .snd .isIso.inv f x = rng-iso .isIso.inv (f (dom .fst x))
+  the-iso .snd .isIso.rinv f =
+    funext λ x → rng-iso .isIso.rinv _
+               ∙ ap f (dom-iso .isIso.rinv _)
+  the-iso .snd .isIso.linv f =
+    funext λ x → rng-iso .isIso.linv _
+               ∙ ap f (dom-iso .isIso.linv _)
 ```
 
 
@@ -107,12 +107,12 @@ funextDep≃
   ≃ PathP (λ i → (x : A i) → B i x) f g
 
 funextDep≃ {A = A} {B} {f} {g} = Iso→Equiv isom where
-  open isIso hiding (g)
+  open isIso
   isom : Iso _ _
   isom .fst = funextDep
-  isom .snd .isIso.g q p i = q i (p i)
+  isom .snd .isIso.inv q p i = q i (p i)
 
-  isom .snd .right-inverse q m i x =
+  isom .snd .rinv q m i x =
     comp
       (λ k → B i (coei→i A i x (k ∨ m)))
       (λ k → λ
@@ -122,7 +122,7 @@ funextDep≃ {A = A} {B} {f} {g} = Iso→Equiv isom where
         })
       (q i (coei→i A i x m))
 
-  isom .snd .left-inverse h m p i =
+  isom .snd .linv h m p i =
     comp
       (λ k → B i (lemi→i m k))
       (λ k → λ
