@@ -176,7 +176,7 @@ The way we prove this is by characterising the entire path space of `A ⊎
 B` in terms of the path spaces for `A` and `B`, using a recursive
 definition:
 
-```
+```agda
 module ⊎Path where
   Code : A ⊎ B → A ⊎ B → Type (level-of A ⊔ level-of B)
   Code {B = B} (inl x) (inl y) = Lift (level-of B) (x ≡ y)
@@ -189,7 +189,7 @@ Given a `Code`{.Agda} for a path in `A ⊎ B`, we can turn it into a
 legitimate equality. Agda automatically lets us ignore the cases where
 the `Code`{.Agda} computes to `the empty type`{.Agda ident=⊥}.
 
-```
+```agda
   decode : {x y : A ⊎ B} → Code x y → x ≡ y
   decode {x = inl x} {y = inl x₁} code = ap inl (Lift.lower code)
   decode {x = inr x} {y = inr x₁} code = ap inr (Lift.lower code)
@@ -198,7 +198,7 @@ the `Code`{.Agda} computes to `the empty type`{.Agda ident=⊥}.
 In the inverse direction, we have a procedure for turning equalities
 into codes:
 
-```
+```agda
   encode : {x y : A ⊎ B} → x ≡ y → Code x y
   encode {x = inl x} {y = inl y} path = lift (inl-inj path)
   encode {x = inl x} {y = inr y} path = absurd (⊎-disjoint path)
@@ -209,7 +209,7 @@ into codes:
 Now we must establish that `encode`{.Agda} and `decode`{.Agda} are
 inverses. In the one direction, we can use path induction:
 
-```
+```agda
   decode-encode : {x y : A ⊎ B} (p : x ≡ y) → decode (encode p) ≡ p
   decode-encode = J (λ _ p → decode (encode p) ≡ p) d-e-refl where
     d-e-refl : {x : A ⊎ B} → decode (encode (λ i → x)) ≡ (λ i → x)
@@ -221,7 +221,7 @@ In the other direction, the proof is by case analysis, and everything
 computes wonderfully to make the right-hand sides fillable by
 `refl`{.Agda}:
 
-```
+```agda
   encode-decode : {x y : A ⊎ B} (p : Code x y) → encode (decode p) ≡ p
   encode-decode {x = inl x} {y = inl y} p = refl
   encode-decode {x = inr x} {y = inr y} p = refl
@@ -231,12 +231,12 @@ Thus, we have an equivalence between codes for equalities in `A ⊎ B` and
 _actual_ equalities `A ⊎ B`. Since `Code`{.Agda} has a nice
 computational structure, we can establish its h-level by induction:
 
-```
+```agda
   Code≃Path : {x y : A ⊎ B} → Code x y ≃ (x ≡ y)
   Code≃Path = Iso→Equiv (decode , iso encode decode-encode encode-decode)
 ```
 
-```
+```agda
 open ⊎Path
 
 isHLevel-Code : {x y : A ⊎ B} {n : Nat}
@@ -253,7 +253,7 @@ In the two cases where `x` and `y` match, we can use the fact that `Lift
 preserves h-levels`{.Agda ident=isHLevel-Lift} and the assumption that
 `A` (or `B`) have the given h-level.
 
-```
+```agda
 isHLevel-Code {x = inl x} {inr y} {n} ahl bhl =
   isHLevel-Lift (suc n) (isProp→isHLevel-suc λ x → absurd x)
 isHLevel-Code {x = inr x} {inl y} {n} ahl bhl = 
@@ -264,7 +264,7 @@ In the mismatched cases, we use the fact that `propositions have any
 successor h-level`{.Agda ident=isProp→isHLevel-suc} to prove that `⊥` is
 also at the same h-level as `A` and `B`. Thus, we have:
 
-```
+```agda
 isHLevel-⊎ : (n : Nat)
            → isHLevel A (2 + n)
            → isHLevel B (2 + n)
