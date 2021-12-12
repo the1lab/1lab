@@ -166,10 +166,10 @@ ident=isProp-isEquiv}; The underlying functions are equal by computation.
   groupStr .fst = monoidStr
   groupStr .snd eqv .fst = eqv e¯¹
   groupStr .snd eqv .snd .fst =
-    Σ-Path (funext (isEquiv→isIso (eqv .snd) .isIso.left-inverse))
+    Σ-Path (funext (isEquiv→isIso (eqv .snd) .isIso.linv))
            (isProp-isEquiv _ _ _)
   groupStr .snd eqv .snd .snd =
-    Σ-Path (funext (isEquiv→isIso (eqv .snd) .isIso.right-inverse))
+    Σ-Path (funext (isEquiv→isIso (eqv .snd) .isIso.rinv))
            (isProp-isEquiv _ _ _)
 ```
 

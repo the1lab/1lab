@@ -46,7 +46,7 @@ fibres`{.Agda ident=isEqv'} anyway.
 ```agda
 private
   variable
-    ℓ₁ : Level
+    ℓ₁ ℓ₂ : Level
     A B : Type ℓ₁
 ```
 
@@ -80,6 +80,23 @@ _≃_ A B = Σ (isEquiv {A = A} {B = B})
 idEquiv : isEquiv {A = A} (λ x → x)
 idEquiv .isEqv y = contr (y , λ i → y) λ { (y' , p) i → p (~ i) , λ j → p (~ i ∨ j) } 
 ```
+
+<!--
+```
+-- This helper is for functions f, g that cancel eachother, up to
+-- definitional equality, without any case analysis on the argument:
+
+strict-fibres : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} (g : B → A) (b : B)
+  → Σ[ t ∈ fibre f (f (g b)) ]
+    ((t' : fibre f b) → Path (fibre f (f (g b))) t
+                          (g (f (t' .fst)) , ap (f ∘ g) (t' .snd)))
+strict-fibres {f = f} g b .fst = (g b , refl)
+strict-fibres {f = f} g b .snd (a , p) i = (g (p (~ i)) , λ j → f (g (p (~ i ∨ j))))
+
+-- This is more efficient than using Iso→Equiv. When f (g x) is definitionally x,
+-- the type reduces to essentially isContr (fibre f b).
+```
+-->
 
 For Cubical Agda, the type of equivalences is distinguished, so we have
 to make a small wrapper to match the interface Agda expects. This is the
@@ -143,14 +160,14 @@ record isIso (f : A → B) : Type (level-of A ⊔ level-of B) where
   no-eta-equality
   constructor iso
   field
-    g : B → A
-    right-inverse : isRightInverse g f
-    left-inverse : isLeftInverse g f
+    inv : B → A
+    rinv : isRightInverse inv f
+    linv : isLeftInverse inv f
 
-  inverse : isIso g
-  g inverse = f
-  right-inverse inverse = left-inverse
-  left-inverse inverse = right-inverse
+  inverse : isIso inv
+  inv inverse = f
+  rinv inverse = linv
+  linv inverse = rinv
 
 Iso : ∀ {ℓ₁ ℓ₂} → Type ℓ₁ → Type ℓ₂ → Type _
 Iso A B = Σ (isIso {A = A} {B = B})
@@ -159,9 +176,17 @@ Iso A B = Σ (isIso {A = A} {B = B})
 Any function that is an equivalence is an isomorphism:
 
 ```agda
+equiv→inverse : {f : A → B} → isEquiv f → B → A
+equiv→inverse eqv y = eqv .isEqv y .centre .fst
+
+equiv→section : {f : A → B} (eqv : isEquiv f) → isRightInverse (equiv→inverse eqv) f
+equiv→section eqv y = eqv .isEqv y .centre .snd
+
+equiv→retraction : {f : A → B} (eqv : isEquiv f) → isLeftInverse (equiv→inverse eqv) f
+equiv→retraction {f = f} eqv x i = eqv .isEqv (f x) .paths (x , refl) i .fst
+
 isEquiv→isIso : {f : A → B} → isEquiv f → isIso f
-isIso.g (isEquiv→isIso eqv) y =
-  eqv .isEqv y .centre .fst
+isIso.inv (isEquiv→isIso eqv) = equiv→inverse eqv
 ```
 
 We can get an element of `x` from the proof that `f` is an equivalence -
@@ -169,7 +194,7 @@ it's the point of `A` mapped to `y`, which we get from centre of
 contraction for the fibres of `f` over `y`.
 
 ```agda
-isIso.right-inverse (isEquiv→isIso eqv) y =
+isIso.rinv (isEquiv→isIso eqv) y =
   eqv .isEqv y .centre .snd
 ```
 
@@ -177,7 +202,7 @@ Similarly, that one fibre gives us a proof that the function above is a
 right inverse to `f`.
 
 ```agda
-isIso.left-inverse (isEquiv→isIso {f = f} eqv) x i =
+isIso.linv (isEquiv→isIso {f = f} eqv) x i =
   eqv .isEqv (f x) .paths (x , refl) i .fst
 ```
 
@@ -204,9 +229,10 @@ tag so you can collapse them away. Click on the black triangle to expand
 it, if you want to. </summary>
 
 ```agda
-  open isIso i renaming ( g to g
-                        ; right-inverse to s
-                        ; left-inverse to t)
+  open isIso i renaming ( inv to g
+                        ; rinv to s
+                        ; linv to t
+                        )
 
   private
     module _ (y : B) (x0 x1 : A) (p0 : f x0 ≡ y) (p1 : f x1 ≡ y) where
@@ -265,7 +291,7 @@ any isomorphism into a coherent equivalence.
 Iso→Equiv : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂}
           → Iso A B
           → A ≃ B
-Iso→Equiv (f , isIso) = f , isIso→isEquiv isIso
+Iso→Equiv (f , is-iso) = f , isIso→isEquiv is-iso
 ```
 
 A helpful lemma: Any function between contractible types is an equivalence:
@@ -276,9 +302,9 @@ isContr→isEquiv : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂}
                 → isEquiv f
 isContr→isEquiv cA cB = isIso→isEquiv f-is-iso where
   f-is-iso : isIso _
-  isIso.g f-is-iso _ = cA .centre
-  isIso.right-inverse f-is-iso _ = isContr→isProp cB _ _
-  isIso.left-inverse f-is-iso _ = isContr→isProp cA _ _
+  isIso.inv f-is-iso _ = cA .centre
+  isIso.rinv f-is-iso _ = isContr→isProp cB _ _
+  isIso.linv f-is-iso _ = isContr→isProp cA _ _
 ```
 
 # Equivalence Reasoning
@@ -292,7 +318,11 @@ _∙e_ : ∀ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ�
 
 _e¯¹ : ∀ {ℓ ℓ₁} {A : Type ℓ} {B : Type ℓ₁}
     → A ≃ B → B ≃ A
-_e¯¹ eqv = Iso→Equiv (_ , isIso.inverse (isEquiv→isIso (eqv .snd)))
+_e¯¹ eqv = Iso→Equiv ( equiv→inverse (eqv .snd)
+                     , record { inv  = eqv .fst
+                              ; rinv = equiv→retraction (eqv .snd)
+                              ; linv = equiv→section (eqv .snd)
+                              })
 ```
 <!--
 ```
@@ -304,22 +334,22 @@ _∙e_ (f , e) (g , e') = (λ x → g (f x)) , eqv where
   f¯¹ = isEquiv→isIso e
 
   inv : _ → _
-  inv x = f¯¹ .isIso.g (g¯¹ .isIso.g x)
+  inv x = f¯¹ .isIso.inv (g¯¹ .isIso.inv x)
 
   abstract
     right : isRightInverse inv (λ x → g (f x))
     right z =
-      g (f (f¯¹ .isIso.g (g¯¹ .isIso.g z))) ≡⟨ ap g (f¯¹ .isIso.right-inverse _) ⟩
-      g (g¯¹ .isIso.g z)                    ≡⟨ g¯¹ .isIso.right-inverse _ ⟩
-      z                                     ∎
+      g (f (f¯¹ .isIso.inv (g¯¹ .isIso.inv z))) ≡⟨ ap g (f¯¹ .isIso.rinv _) ⟩
+      g (g¯¹ .isIso.inv z)                      ≡⟨ g¯¹ .isIso.rinv _ ⟩
+      z                                         ∎
 
     left : isLeftInverse inv (λ x → g (f x))
     left z =
-      f¯¹ .isIso.g (g¯¹ .isIso.g (g (f z))) ≡⟨ ap (f¯¹ .isIso.g) (g¯¹ .isIso.left-inverse _) ⟩
-      f¯¹ .isIso.g (f z)                    ≡⟨ f¯¹ .isIso.left-inverse _ ⟩
-      z                                     ∎
+      f¯¹ .isIso.inv (g¯¹ .isIso.inv (g (f z))) ≡⟨ ap (f¯¹ .isIso.inv) (g¯¹ .isIso.linv _) ⟩
+      f¯¹ .isIso.inv (f z)                      ≡⟨ f¯¹ .isIso.linv _ ⟩
+      z                                         ∎
     eqv : isEquiv (λ x → g (f x))
-    eqv = isIso→isEquiv (iso (λ x → f¯¹ .isIso.g (g¯¹ .isIso.g x)) right left)
+    eqv = isIso→isEquiv (iso (λ x → f¯¹ .isIso.inv (g¯¹ .isIso.inv x)) right left)
 
 ∙-isEquiv : ∀ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
           → {f : A → B} {g : B → C}
@@ -359,9 +389,9 @@ _only_ examples:
 isEquiv-transport : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B) → isEquiv (transport p)
 isEquiv-transport p = J (λ y p → isEquiv (transport p)) (isIso→isEquiv e) p where
   e : isIso (transport refl)
-  isIso.g e x = x
-  isIso.right-inverse e x = transport-refl _
-  isIso.left-inverse e x = transport-refl _
+  isIso.inv e x = x
+  isIso.rinv e x = transport-refl _
+  isIso.linv e x = transport-refl _
 ```
 
 # Propositional Extensionality

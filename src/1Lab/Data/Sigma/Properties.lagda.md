@@ -45,9 +45,9 @@ same`{.Agda ident=PathP≡Path}.
 
 ```
 fst Σ-PathP-iso (p , q) i = p i , q i
-isIso.g (snd Σ-PathP-iso) p = ap fst p , ap snd p
-isIso.right-inverse (snd Σ-PathP-iso) x = refl
-isIso.left-inverse (snd Σ-PathP-iso) x = refl
+isIso.inv (snd Σ-PathP-iso) p = ap fst p , ap snd p
+isIso.rinv (snd Σ-PathP-iso) x = refl
+isIso.linv (snd Σ-PathP-iso) x = refl
 
 Σ-Path-iso {B = B} {x} {y} =
   transport (λ i → Iso (Σ[ p ∈ x .fst ≡ y .fst ]
@@ -82,9 +82,9 @@ they are included for completeness. </summary>
 
   morp : Iso (Σ P) (Σ Q)
   fst morp (i , x) = i , pointwise i .fst x
-  isIso.g (snd morp) (i , x) = i , pwise i .snd .isIso.g x
-  isIso.right-inverse (snd morp) (i , x) = ap₂ _,_ refl (pwise i .snd .isIso.right-inverse _)
-  isIso.left-inverse (snd morp) (i , x) = ap₂ _,_ refl (pwise i .snd .isIso.left-inverse _)
+  isIso.inv (snd morp) (i , x) = i , pwise i .snd .isIso.inv x
+  isIso.rinv (snd morp) (i , x) = ap₂ _,_ refl (pwise i .snd .isIso.rinv _)
+  isIso.linv (snd morp) (i , x) = ap₂ _,_ refl (pwise i .snd .isIso.linv _)
 
 Σ-ap-fst {A = A} {A' = A'} {B = B} e = intro , isEqIntro
  where
@@ -110,8 +110,8 @@ they are included for completeness. </summary>
 
     isCtr : ∀ y → ctr ≡ y
     isCtr ((r , s) , p) = λ i → (a≡r i , b!≡s i) , Σ-PathP (α≡ρ i) (coh i) where
-      open Σ (Σ-PathP-iso .snd .isIso.g p) renaming (fst to ρ; snd to σ)
-      open Σ (Σ-PathP-iso .snd .isIso.g (e .snd .isEqv a' .isContr.paths (r , ρ))) renaming (fst to a≡r; snd to α≡ρ)
+      open Σ (Σ-PathP-iso .snd .isIso.inv p) renaming (fst to ρ; snd to σ)
+      open Σ (Σ-PathP-iso .snd .isIso.inv (e .snd .isEqv a' .isContr.paths (r , ρ))) renaming (fst to a≡r; snd to α≡ρ)
 
       b!≡s : PB (ap (e .fst) a≡r) ctrB s
       b!≡s i = comp (λ k → B (α≡ρ i (~ k))) (λ k → (λ
@@ -156,18 +156,18 @@ isEquiv-Σ≡Prop
   → isEquiv (Σ≡Prop bp {x} {y})
 isEquiv-Σ≡Prop bp {x} {y} = isIso→isEquiv is-iso where
   is-iso : isIso _
-  is-iso .isIso.g = ap fst
-  is-iso .isIso.left-inverse p = refl
+  is-iso .isIso.inv = ap fst
+  is-iso .isIso.linv p = refl
 ```
 
-The `inverse`{.Agda ident=isIso.g} is the `action on paths`{.Agda
+The `inverse`{.Agda ident=isIso.inv} is the `action on paths`{.Agda
 ident=ap} of the `first projection`{.Agda ident=fst}, which lets us
 conclude `x .fst ≡ y .fst` from `x ≡ y`. This is a left inverse to
 `Σ≡Prop`{.Agda} on the nose. For the other direction, we have the
 aforementioned cubical argument:
 
 ```
-  is-iso .isIso.right-inverse p i j =
+  is-iso .isIso.rinv p i j =
     p j .fst , isProp→PathP (λ k → isHLevelPath 1 (bp (p k .fst))
                                       {x = Σ≡Prop bp {x} {y} (ap fst p) k .snd}
                                       {y = p k .snd})

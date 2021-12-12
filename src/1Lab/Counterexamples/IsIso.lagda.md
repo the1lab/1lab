@@ -46,10 +46,10 @@ convenience.
 ```agda
       helper : Iso _ _
       helper .fst iiso x =
-        sym (iiso .isIso.left-inverse x) ∙ iiso .isIso.right-inverse x
-      helper .snd .isIso.g x = iso (λ x → x) x (λ _ → refl)
-      helper .snd .isIso.right-inverse p = funext λ x → ∙-id-l _
-      helper .snd .isIso.left-inverse x = isoProp _ _
+        sym (iiso .isIso.linv x) ∙ iiso .isIso.rinv x
+      helper .snd .isIso.inv x = iso (λ x → x) x (λ _ → refl)
+      helper .snd .isIso.rinv p = funext λ x → ∙-id-l _
+      helper .snd .isIso.linv x = isoProp _ _
 ```
 
 We thus have that `isIso id ≃ ((x : A) → x ≡ x)` - since the former is a

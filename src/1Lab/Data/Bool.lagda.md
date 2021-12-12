@@ -312,30 +312,30 @@ Now we classify the isomorphism by looking at what it does to
 `not`{.Agda} to `true`{.Agda}.
 
 ```agda
-  g (snd the-iso) (lift false) = refl
-  g (snd the-iso) (lift true)  = ua (not , isEquiv-not)
+  the-iso .snd .isIso.inv (lift false) = refl
+  the-iso .snd .isIso.inv (lift true)  = ua (not , isEquiv-not)
 ```
 
 The inverse is determined by the same rule, but backwards. That's why
 it's an inverse! Everything computes in a way that lines up to this
-function being a `right-inverse`{.Agda} on the nose.
+function being a `right inverse`{.Agda ident=isIso.rinv} on the nose.
 
 ```agda
-  right-inverse (snd the-iso) (lift false) = refl
-  right-inverse (snd the-iso) (lift true) = refl
+  the-iso .snd .isIso.rinv (lift false) = refl
+  the-iso .snd .isIso.rinv (lift true) = refl
 ```
 
 The left inverse is a lot more complicated to prove. We examine how the
 path acts on both `true` and `false`. There are four cases:
 
 ```agda
-  left-inverse (snd the-iso) path with Discrete-Bool (transport path true) true
+  the-iso .snd .isIso.linv path with Discrete-Bool (transport path true) true
                                      | Discrete-Bool (transport path false) false
   ... | yes true→true | yes false→false =
-    refl                  ≡⟨ sym (univalence-Iso .snd .left-inverse _) ⟩
+    refl                  ≡⟨ sym (univalence-Iso .snd .linv _) ⟩
     ua (pathToEquiv refl) ≡⟨ ap ua pathToEquiv-refl ⟩
     ua (_ , idEquiv)      ≡⟨ ap ua (sym (idLemma _ true→true false→false)) ⟩
-    ua (pathToEquiv path) ≡⟨ univalence-Iso .snd .left-inverse _ ⟩
+    ua (pathToEquiv path) ≡⟨ univalence-Iso .snd .linv _ ⟩
     path                  ∎
 ```
 
@@ -374,7 +374,7 @@ The other case is analogous.
     ua (not , isEquiv-not) ≡⟨ ap ua (sym (notLemma _ (lemma (transport path) x)
                                                      (lemma (transport path) x₁)))
                             ⟩
-    ua (pathToEquiv path)  ≡⟨ univalence-Iso .snd .left-inverse _ ⟩
+    ua (pathToEquiv path)  ≡⟨ univalence-Iso .snd .linv _ ⟩
     path                   ∎
 ```
 

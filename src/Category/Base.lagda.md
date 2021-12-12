@@ -257,7 +257,7 @@ isCategory→isoToPath : ∀ {o h} {C : Precategory o h}
                      → C [ A ≅ B ]
                      → A ≡ B
 isCategory→isoToPath {C = C} cat =
-  isEquiv→isIso (isCategory→isEquiv-pathToIso {C = C} cat) .isIso.g
+  isEquiv→isIso (isCategory→isEquiv-pathToIso {C = C} cat) .isIso.inv
 ```
 
 Furthermore, we have that this function is an equivalence, and so the

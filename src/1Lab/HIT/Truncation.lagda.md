@@ -39,7 +39,7 @@ whenever it is a family of propositions, by providing a case for
 
 ```agda
 ∥-∥-elim : ∀ {ℓ ℓ'} {A : Type ℓ}
-           {P : ∥ A ∥ → Type ℓ'}
+             {P : ∥ A ∥ → Type ℓ'}
          → ((x : _) → isProp (P x))
          → ((x : A) → P (inc x))
          → (x : ∥ A ∥) → P x

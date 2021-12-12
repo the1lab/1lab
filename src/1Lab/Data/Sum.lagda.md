@@ -118,12 +118,12 @@ Similarly, given a pair of functions, we can do a case split on the
 coproduct to decide which function to apply:
 
 ```
-  the-iso .snd .isIso.g (f , g) (inl x) = f x
-  the-iso .snd .isIso.g (f , g) (inr x) = g x
+  the-iso .snd .isIso.inv (f , g) (inl x) = f x
+  the-iso .snd .isIso.inv (f , g) (inr x) = g x
 
-  the-iso .snd .isIso.right-inverse x = refl
-  the-iso .snd .isIso.left-inverse f i (inl x) = f (inl x)
-  the-iso .snd .isIso.left-inverse f i (inr x) = f (inr x)
+  the-iso .snd .isIso.rinv x = refl
+  the-iso .snd .isIso.linv f i (inl x) = f (inl x)
+  the-iso .snd .isIso.linv f i (inr x) = f (inr x)
 ```
 
 ## Transformations
@@ -281,14 +281,14 @@ equivalences in both arguments, across levels.
   cong .fst (inl x) = inl (f x)
   cong .fst (inr x) = inr (g x)
 
-  cong .snd .isIso.g (inl x) = inl (f-iso .isIso.g x)
-  cong .snd .isIso.g (inr x) = inr (g-iso .isIso.g x)
+  cong .snd .isIso.inv (inl x) = inl (f-iso .isIso.inv x)
+  cong .snd .isIso.inv (inr x) = inr (g-iso .isIso.inv x)
 
-  cong .snd .isIso.right-inverse (inl x) = ap inl (f-iso .isIso.right-inverse x)
-  cong .snd .isIso.right-inverse (inr x) = ap inr (g-iso .isIso.right-inverse x)
+  cong .snd .isIso.rinv (inl x) = ap inl (f-iso .isIso.rinv x)
+  cong .snd .isIso.rinv (inr x) = ap inr (g-iso .isIso.rinv x)
 
-  cong .snd .isIso.left-inverse (inl x) = ap inl (f-iso .isIso.left-inverse x)
-  cong .snd .isIso.left-inverse (inr x) = ap inr (g-iso .isIso.left-inverse x)
+  cong .snd .isIso.linv (inl x) = ap inl (f-iso .isIso.linv x)
+  cong .snd .isIso.linv (inr x) = ap inr (g-iso .isIso.linv x)
 
 ⊎-apˡ : A ≃ B → (A ⊎ C) ≃ (B ⊎ C)
 ⊎-apˡ f = ⊎-ap f (id , idEquiv)
@@ -310,13 +310,13 @@ to finite types, the coproduct is exactly the same as addition.
   i .fst (inl x) = inr x
   i .fst (inr x) = inl x
 
-  i .snd .isIso.g (inl x) = inr x
-  i .snd .isIso.g (inr x) = inl x
+  i .snd .isIso.inv (inl x) = inr x
+  i .snd .isIso.inv (inr x) = inl x
 
-  i .snd .isIso.right-inverse (inl x) = refl
-  i .snd .isIso.right-inverse (inr x) = refl
-  i .snd .isIso.left-inverse (inl x) = refl
-  i .snd .isIso.left-inverse (inr x) = refl
+  i .snd .isIso.rinv (inl x) = refl
+  i .snd .isIso.rinv (inr x) = refl
+  i .snd .isIso.linv (inl x) = refl
+  i .snd .isIso.linv (inr x) = refl
 
 ⊎-assoc : ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C))
 ⊎-assoc = Iso→Equiv i where
@@ -325,17 +325,17 @@ to finite types, the coproduct is exactly the same as addition.
   i .fst (inl (inr x)) = inr (inl x)
   i .fst (inr x)       = inr (inr x)
 
-  i .snd .isIso.g (inl x)       = inl (inl x)
-  i .snd .isIso.g (inr (inl x)) = inl (inr x)
-  i .snd .isIso.g (inr (inr x)) = inr x
+  i .snd .isIso.inv (inl x)       = inl (inl x)
+  i .snd .isIso.inv (inr (inl x)) = inl (inr x)
+  i .snd .isIso.inv (inr (inr x)) = inr x
 
-  i .snd .isIso.right-inverse (inl x) = refl
-  i .snd .isIso.right-inverse (inr (inl x)) = refl
-  i .snd .isIso.right-inverse (inr (inr x)) = refl
+  i .snd .isIso.rinv (inl x) = refl
+  i .snd .isIso.rinv (inr (inl x)) = refl
+  i .snd .isIso.rinv (inr (inr x)) = refl
 
-  i .snd .isIso.left-inverse (inl (inl x)) = refl
-  i .snd .isIso.left-inverse (inl (inr x)) = refl
-  i .snd .isIso.left-inverse (inr x) = refl
+  i .snd .isIso.linv (inl (inl x)) = refl
+  i .snd .isIso.linv (inl (inr x)) = refl
+  i .snd .isIso.linv (inr x) = refl
 
 ⊎-zeroʳ : (A ⊎ ⊥) ≃ A
 ⊎-zeroʳ .fst (inl x) = x

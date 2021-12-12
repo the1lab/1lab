@@ -276,14 +276,14 @@ type.
 
 ```agda
   iiso : isIso pathToEquiv
-  isIso.g iiso = ua
+  isIso.inv iiso = ua
 ```
 
 The inverse to `pathToEquiv`{.Agda} is the `ua`{.Agda} map which turns
 equivalences into paths.
 
 ```agda
-  isIso.right-inverse iiso (f , isEqv) = Σ-Path p (isProp-isEquiv f _ _) where
+  isIso.rinv iiso (f , isEqv) = Σ-Path p (isProp-isEquiv f _ _) where
     p : transport (λ i → A → ua (f , isEqv) i) (λ x → x) ≡ f
     p i x = transp (λ j → B) i (f (transp (λ j → A) i x))
 ```
@@ -299,7 +299,7 @@ This we do using `transp`{.Agda}, which, when `i = i1`, behaves like the
 identity function.
 
 ```agda
-  isIso.left-inverse iiso = 
+  isIso.linv iiso = 
     J (λ _ p → ua (pathToEquiv p) ≡ p)
       (ap ua (JRefl (λ x _ → A ≃ x) (_ , idEquiv)) ∙ uaIdEquiv)
 
@@ -322,11 +322,11 @@ ident=Lift} is still an equivalence:
 univalence-lift : {A B : Type ℓ} → isEquiv (λ e → lift (pathToEquiv {A = A} {B} e))
 univalence-lift {ℓ = ℓ} = isIso→isEquiv morp where
   morp : isIso (λ e → lift {ℓ = lsuc ℓ} (pathToEquiv e))
-  morp .isIso.g x = ua (x .Lift.lower)
-  morp .isIso.right-inverse x =
-    lift (pathToEquiv (ua (x .Lift.lower))) ≡⟨ ap lift (univalence-Iso .snd .isIso.right-inverse _) ⟩
+  morp .isIso.inv x = ua (x .Lift.lower)
+  morp .isIso.rinv x =
+    lift (pathToEquiv (ua (x .Lift.lower))) ≡⟨ ap lift (univalence-Iso .snd .isIso.rinv _) ⟩
     x                                       ∎
-  morp .isIso.left-inverse x = univalence-Iso .snd .isIso.left-inverse _
+  morp .isIso.linv x = univalence-Iso .snd .isIso.linv _
 ```
 
 
@@ -442,9 +442,7 @@ characterisation of `PathP (ua f)` in terms of non-dependent paths:
 ```
 uaPathP≃Path : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
              → (e .fst x ≡ y) ≃ (PathP (λ i → ua e i) x y)
-uaPathP≃Path eqv = Iso→Equiv ( Path→uaPathP eqv
-                             , iso (uaPathP→Path eqv)
-                                   (λ x → refl)
-                                   (λ x → refl)
-                             )
+uaPathP≃Path eqv .fst = Path→uaPathP eqv
+uaPathP≃Path eqv .snd .isEqv y .centre = strict-fibres (uaPathP→Path eqv) y .fst
+uaPathP≃Path eqv .snd .isEqv y .paths = strict-fibres (uaPathP→Path eqv) y .snd
 ```

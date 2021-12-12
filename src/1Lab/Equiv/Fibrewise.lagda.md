@@ -52,13 +52,13 @@ total-fibers {A = A} {P = P} {Q = Q} {f = f} {x = x} {v = v} = the-iso where
       p
   
   the-iso : {x : A} {v : Q x} → Iso (fibre (f x) v) (fibre (total f) (x , v))
-  fst the-iso = to
-  g (snd the-iso) = from
-  right-inverse (snd the-iso) ((x , v) , p) =
+  the-iso .fst = to
+  the-iso .snd .isIso.inv = from
+  the-iso .snd .isIso.rinv ((x , v) , p) =
     J (λ { _ p → to (from ((x , v) , p)) ≡ ((x , v) , p) })
       (ap to (JRefl {A = Σ Q} (λ { (x , v) _ → fibre (f x) v } ) (v , refl)))
       p
-  left-inverse (snd the-iso) (v , p) =
+  the-iso .snd .isIso.linv (v , p) =
     J (λ { _ p → from (to (v , p)) ≡ (v , p) })
       (JRefl {A = Σ Q} (λ { (x , v) _ → fibre (f x) v } ) (v , refl))
       p
@@ -72,7 +72,7 @@ total→equiv : {f : (x : A) → P x → Q x}
             → isEquiv (total f)
             → {x : A} → isEquiv (f x)
 isEquiv.isEqv (total→equiv eqv {x}) y =
-  isHLevel-iso 0 (total-fibers .snd .isIso.g)
+  isHLevel-iso 0 (total-fibers .snd .isIso.inv)
                  (isIso.inverse (total-fibers .snd))
                  (eqv .isEqv (x , y))
 

@@ -46,7 +46,7 @@ synthetically for equivalences between $\infty$-groupoids.
 isIso→isHAE : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
             → isIso f → isHAE f
 isIso→isHAE {A = A} {B} {f} iiso = g , η , ε' , λ x → sym (zig x) where
-  open isIso iiso renaming (left-inverse to η ; right-inverse to ε)
+  open isIso iiso renaming (inv to g ; linv to η ; rinv to ε)
 ```
 
 For $g$ and $\eta$, we can take the values provided by `isIso`{.Agda}.

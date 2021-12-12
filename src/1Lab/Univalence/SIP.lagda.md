@@ -147,9 +147,9 @@ This is a technical concern that will help make the proof of
 ≃[]-unlift {A = A} {B} {σ} = Iso→Equiv morp where
   morp : Iso (A ≃L[ σ ] B) (A ≃[ σ ] B)
   morp .fst (lift f , h) = f , h
-  morp .snd .isIso.g (f , h) = lift f , h
-  morp .snd .isIso.right-inverse x = refl
-  morp .snd .isIso.left-inverse x = refl
+  morp .snd .isIso.inv (f , h) = lift f , h
+  morp .snd .isIso.rinv x = refl
+  morp .snd .isIso.linv x = refl
 ```
 
 ## The principle
@@ -249,7 +249,7 @@ same level as `A ≡ B`.
                                 (_ , univalence-lift)
 
   ℓ-SIP← : {A B : Σ S} → A ≃L[ σ ] B → A ≡ B
-  ℓ-SIP← = isEquiv→isIso (ℓ-SIP .snd) .isIso.g
+  ℓ-SIP← = isEquiv→isIso (ℓ-SIP .snd) .isIso.inv
 ```
 
 With the `ℓ-SIP`{.Agda} - the _lifted Structure Identity Principle_ - we
@@ -264,7 +264,7 @@ This is simpler than proving directly that `(A ≡ B) ≃ (A ≃[ σ ] B)`.
     (A ≃[ σ ] B)  ≃∎
 
   SIP← : {A B : Σ S} → A ≃[ σ ] B → A ≡ B
-  SIP← = isEquiv→isIso (SIP .snd) .isIso.g
+  SIP← = isEquiv→isIso (SIP .snd) .isIso.inv
 
   SIP→ : {A B : Σ S} → A ≡ B → A ≃[ σ ] B
   SIP→ = SIP .fst

@@ -103,24 +103,24 @@ isEquiv→isEquiv-precomp {f = f} f-eqv = isIso→isEquiv isiso where
   f-iso = isEquiv→isIso f-eqv
 
   f¯¹ : _
-  f¯¹ = f-iso .isIso.g
+  f¯¹ = f-iso .isIso.inv
 
   isiso : isIso (_∘_ f)
-  isiso .isIso.g f x = f¯¹ (f x)
-  isiso .isIso.right-inverse f = funext λ x → f-iso .isIso.right-inverse _
-  isiso .isIso.left-inverse f = funext λ x → f-iso .isIso.left-inverse _
+  isiso .isIso.inv f x = f¯¹ (f x)
+  isiso .isIso.rinv f = funext λ x → f-iso .isIso.rinv _
+  isiso .isIso.linv f = funext λ x → f-iso .isIso.linv _
 
 isEquiv→isEquiv-postcomp {f = f} f-eqv = isIso→isEquiv isiso where
   f-iso : isIso f
   f-iso = isEquiv→isIso f-eqv
 
   f¯¹ : _
-  f¯¹ = f-iso .isIso.g
+  f¯¹ = f-iso .isIso.inv
 
   isiso : isIso _
-  isiso .isIso.g f x = f (f¯¹ x)
-  isiso .isIso.right-inverse f = funext λ x → ap f (f-iso .isIso.left-inverse _)
-  isiso .isIso.left-inverse f = funext λ x → ap f (f-iso .isIso.right-inverse _)
+  isiso .isIso.inv f x = f (f¯¹ x)
+  isiso .isIso.rinv f = funext λ x → ap f (f-iso .isIso.linv _)
+  isiso .isIso.linv f = funext λ x → ap f (f-iso .isIso.rinv _)
 ```
 </details>
 
@@ -190,6 +190,6 @@ both a left- and right- inverse.
 
 ```agda
 isIso→isBiinv : {f : A → B} → isIso f → isBiinv f
-isIso→isBiinv iiso .fst = iiso .isIso.g , funext (iiso .isIso.left-inverse)
-isIso→isBiinv iiso .snd = iiso .isIso.g , funext (iiso .isIso.right-inverse)
+isIso→isBiinv iiso .fst = iiso .isIso.inv , funext (iiso .isIso.linv)
+isIso→isBiinv iiso .snd = iiso .isIso.inv , funext (iiso .isIso.rinv)
 ```

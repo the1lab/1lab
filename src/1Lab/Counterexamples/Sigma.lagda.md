@@ -45,9 +45,9 @@ image≃domain : {f : A → B} → image f ≃ A
 image≃domain {f = f} = Iso→Equiv the-iso where
   the-iso : Iso _ _
   the-iso .fst (y , x , p) = x
-  the-iso .snd .isIso.g x = f x , x , refl
-  the-iso .snd .isIso.right-inverse x = refl
-  the-iso .snd .isIso.left-inverse (y , x , p) i = p i , x , λ j → p (i ∧ j)
+  the-iso .snd .isIso.inv x = f x , x , refl
+  the-iso .snd .isIso.rinv x = refl
+  the-iso .snd .isIso.linv (y , x , p) i = p i , x , λ j → p (i ∧ j)
 ```
 
 This is a direct cubical interpretation of the following argument, which

@@ -119,8 +119,8 @@ isomorphisms and equivalences:
 ```agda
 isHLevel-iso : (n : Nat) (f : A → B) → isIso f → isHLevel A n → isHLevel B n
 isHLevel-iso n f is-iso =
-  isHLevel-retract n f (is-iso .isIso.g)
-                       (is-iso .isIso.right-inverse)
+  isHLevel-retract n f (is-iso .isIso.inv)
+                       (is-iso .isIso.rinv)
 
 isHLevel-equiv : (n : Nat) (f : A → B) → isEquiv f → isHLevel A n → isHLevel B n
 isHLevel-equiv n f eqv = isHLevel-iso n f (isEquiv→isIso eqv)
@@ -177,7 +177,7 @@ isHLevelΣ 1 aprop bprop (a , b) (a' , b') i =
 
 isHLevelΣ {B = B} (suc (suc n)) h1 h2 x y =
   isHLevel-iso (suc n)
-    (isIso.inverse (Σ-Path-iso .snd) .isIso.g)
+    (isIso.inverse (Σ-Path-iso .snd) .isIso.inv)
     (Σ-Path-iso .snd)
     (isHLevelΣ (suc n) (h1 (fst x) (fst y)) λ x → h2 _ _ _)
 ```

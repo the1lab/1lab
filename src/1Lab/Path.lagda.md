@@ -485,6 +485,12 @@ isContr-Singleton : ∀ {ℓ} {A : Type ℓ} {x : A} (y : Singleton x)
 isContr-Singleton (_ , p) i = p i , λ j → p (i ∧ j)
 ```
 
+<!--
+```agda
+inspect : ∀ {a} {A : Type a} (x : A) → Singleton x
+inspect x = x , refl
+```
+-->
 
 ## The Action on Paths
 

@@ -46,11 +46,11 @@ SuspS⁻¹≃S⁰ = ua (SuspS⁻¹→S⁰ , isIso→isEquiv iso-pf) where
   S⁰→SuspS⁻¹ false = S
 
   iso-pf : isIso SuspS⁻¹→S⁰
-  iso-pf .g = S⁰→SuspS⁻¹
-  iso-pf .right-inverse false = refl
-  iso-pf .right-inverse true = refl
-  iso-pf .left-inverse N = refl
-  iso-pf .left-inverse S = refl
+  iso-pf .inv = S⁰→SuspS⁻¹
+  iso-pf .rinv false = refl
+  iso-pf .rinv true = refl
+  iso-pf .linv N = refl
+  iso-pf .linv S = refl
 ```
 
 # n-Spheres
@@ -109,23 +109,23 @@ using lemmas on transport in pathspaces. </summary>
 
 ```agda
   iso-pf : isIso SuspS⁰→S¹
-  iso-pf .g = S¹→SuspS⁰
-  iso-pf .right-inverse base = refl
-  iso-pf .right-inverse (loop i) =
+  iso-pf .inv = S¹→SuspS⁰
+  iso-pf .rinv base = refl
+  iso-pf .rinv (loop i) =
     ap (λ p → p i)
       (ap SuspS⁰→S¹ (merid N ∙ sym (merid S))  ≡⟨ ap-comp-path {f = SuspS⁰→S¹} (merid N) (sym (merid S))⟩
       loop ∙ refl                              ≡⟨ ∙-id-r loop ⟩
       loop                                     ∎) 
-  iso-pf .left-inverse N = refl
-  iso-pf .left-inverse S = merid S
-  iso-pf .left-inverse (merid N i) j =
+  iso-pf .linv N = refl
+  iso-pf .linv S = merid S
+  iso-pf .linv (merid N i) j =
     hcomp
       (λ k → λ { (i = i0) → N
                ; (i = i1) → merid S (j ∨ ~ k)
                ; (j = i0) → ∙-filler (merid N) (sym (merid S)) k i
                ; (j = i1) → merid N i})
       (merid N i)
-  iso-pf .left-inverse (merid S i) j =
+  iso-pf .linv (merid S i) j =
     merid S (i ∧ j)
 ```
 </details>
