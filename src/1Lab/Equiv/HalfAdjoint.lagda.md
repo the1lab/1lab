@@ -14,12 +14,12 @@ module 1Lab.Equiv.HalfAdjoint where
 
 # Adjoint Equivalences
 
-An **adjoint equivalence** is an [isomorphism] $(f, g, \eta, \epsilon)$
-where the [homotopies] ($\eta$, $\epsilon$) satisfy the [triangle
-identities], thus witnessing $f$ and $g$ as [adjoint functors]. In
-Homotopy Type Theory, we can use a _half_ adjoint equivalence -
-satisfying only _one_ of the triangle identities - as a [good notion of
-equivalence].
+An **adjoint equivalence** is an [isomorphism] $(f, g, \eta,
+\varepsilon)$ where the [homotopies] ($\eta$, $\varepsilon$) satisfy the
+[triangle identities], thus witnessing $f$ and $g$ as [adjoint
+functors]. In Homotopy Type Theory, we can use a _half_ adjoint
+equivalence - satisfying only _one_ of the triangle identities - as a
+[good notion of equivalence].
 
 [isomorphism]: 1Lab.Equiv.html#isomorphisms-from-equivalences
 [homotopies]: 1Lab.Path.html#dependent-functions
@@ -50,9 +50,9 @@ isIso→isHAE {A = A} {B} {f} iiso = g , η , ε' , λ x → sym (zig x) where
 ```
 
 For $g$ and $\eta$, we can take the values provided by `isIso`{.Agda}.
-However, if we want $(\eta, \epsilon)$ to satisfy the triangle
-identities, we can not in general take $\epsilon' = \epsilon$.  We can,
-however, alter it like thus:
+However, if we want $(\eta, \varepsilon)$ to satisfy the triangle
+identities, we can not in general take $\varepsilon' = \varepsilon$.  We
+can, however, alter it like thus:
 
 ```agda
   ε' : (y : B) → f (g y) ≡ y
@@ -167,8 +167,8 @@ $(x, p)$ using a very boring calculation:
 The calculation of `path`{.Agda} factors as a bunch of boring
 adjustments to paths using the groupoid structure of types, and the two
 interesting steps above: The triangle identity says that
-$\mathrm{ap}(f)(\eta x) = \epsilon(f x)$, and naturality of $\epsilon$
-lets us "push it past $p$" to get something we can cancel:
+$\mathrm{ap}(f)(\eta x) = \varepsilon(f x)$, and naturality of
+$\varepsilon$ lets us "push it past $p$" to get something we can cancel:
 
 ```agda
       ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p ∙ ε y     ≡⟨ ∙-assoc _ _ _ ⟩

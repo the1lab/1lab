@@ -128,7 +128,7 @@ what we need to equate the fibres:
 As an intermediate step in the construction of `δ`{.Agda}, we construct
 `θ`{.Agda}. However, that is also hard to do directly, so we have four
 (really, two) more intermediate steps: `ω₀`{.Agda}/`θ₀`{.Agda} and
-`ω₁`/`θ₁`{.Agda}.
+`ω₁`{.Agda}/`θ₁`{.Agda}.
 
 The line `ω₀`{.Agda} is the dashed line in the composition below, and
 `θ₀`{.Agda} is the square itself. The type of `θ₀`{.Agda} is hard to
@@ -236,7 +236,7 @@ The full cube is right after the definition:
   & \textcolor{rgb,255:red,92;green,92;blue,214}{g\ y} && \textcolor{rgb,255:red,92;green,92;blue,214}{g\ y} \\
   \\
   & \textcolor{rgb,255:red,92;green,92;blue,214}{x_0} && \textcolor{rgb,255:red,92;green,92;blue,214}{x_1} \\
-  \textcolor{rgb,255:red,171;green,43;blue,43}{f\ x0} &&&& \textcolor{rgb,255:red,171;green,43;blue,43}{f\ x1}
+  \textcolor{rgb,255:red,171;green,43;blue,43}{f\ x_0} &&&& \textcolor{rgb,255:red,171;green,43;blue,43}{f\ x_1}
   \arrow[""{name=0, anchor=center, inner sep=0}, "\omega", color={rgb,255:red,92;green,92;blue,214}, from=4-2, to=4-4]
   \arrow[""{name=1, anchor=center, inner sep=0}, "{\omega_0\ j}", color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=4-2]
   \arrow[""{name=2, anchor=center, inner sep=0}, "{\omega _1 j}"', color={rgb,255:red,92;green,92;blue,214}, from=2-4, to=4-4]
@@ -250,7 +250,7 @@ The full cube is right after the definition:
   \arrow[from=4-4, to=5-5]
   \arrow[from=4-2, to=5-1]
   \arrow["{\theta_1\ j\ \neg i}"{marking}, Rightarrow, draw=none, from=2, to=5]
-  \arrow["{\theta_0\ j\ \neg i}", Rightarrow, draw=none, from=1, to=4]
+  \arrow["{\theta_0\ j\ \neg i}"{marking}, Rightarrow, draw=none, from=1, to=4]
   \arrow["{v\ i\ y}"{description}, Rightarrow, draw=none, from=3, to=7]
   \arrow["{u\ i\ (\omega\ i)}"{description}, Rightarrow, draw=none, from=0, to=6]
   \arrow["\theta"{description}, color={rgb,255:red,92;green,92;blue,214}, Rightarrow, draw=none, from=3, to=0]

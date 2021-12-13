@@ -13,10 +13,19 @@ html {
   margin: 0; 
 
   overflow-x: clip;
+
+}
+
+:root {
+  --tg-pagella: "tgpagella", "TeX Gyre Pagella", "serif";
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: var(--tg-pagella), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+  &.sans-serif {
+    --tg-pagella: "";
+  }
 
   width: 100%;
 
@@ -25,7 +34,7 @@ body {
   margin: 0;
 
   color: $bluegray-900;
-  font-size: $font-size;
+  font-size: $font-size * 1.1;
 
   overflow-x: clip;
 }
@@ -119,7 +128,7 @@ main {
     article {
       grid-column: 2;
       width: 100%;
-      line-height: 1.5;
+      line-height: 1.3;
     }
     
   }
@@ -216,7 +225,7 @@ div.columns {
 }
 
 code, pre, .sourceCode {
-  font-size: $font-size * 1.2;
+  font-size: $font-size;
   font-family: 'Iosevka', 'Fantasque Sans Mono', Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
   font-weight: 500;
 }
@@ -535,4 +544,40 @@ div.profile {
       font-style: italic;
     }
   }
+}
+
+@font-face {
+  font-family: 'tgpagella';
+  font-display: swap;
+  font-weight: 400;
+  font-stretch: normal;
+  font-style: normal;
+  src: url('/static/otf/texgyrepagella-regular.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'tgpagella';
+  font-display: swap;
+  font-weight: 700;
+  font-stretch: normal;
+  font-style: normal;
+  src: url('/static/otf/texgyrepagella-bold.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'tgpagella';
+  font-display: swap;
+  font-weight: 400;
+  font-stretch: normal;
+  font-style: italic;
+  src: url('/static/otf/texgyrepagella-italic.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'tgpagella';
+  font-display: swap;
+  font-weight: 700;
+  font-stretch: normal;
+  font-style: italic;
+  src: url('/static/otf/texgyrepagella-bolditalic.otf') format('opentype');
 }

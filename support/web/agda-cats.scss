@@ -5,7 +5,6 @@ html {
 }
 
 main {
-  font-size: 16pt;
   padding: 0;
   padding-bottom: 0.4em;
 }
@@ -29,6 +28,9 @@ main {
 div.diagram-container {
   width: 100%;
   overflow-x: auto;
+
+  margin-top: 1em;
+  margin-bottom: 1em;
 
   img.diagram {
     height: 200px;
@@ -164,7 +166,7 @@ body {
 }
 
 html {
-  background-color: $code-bg;
+  background-color: #fff;
   color:            $code-fg;
 }
 
@@ -172,7 +174,6 @@ pre.Agda {
   border-radius: 0;
   box-shadow: none;
   overflow-y: clip;
-  font-size: 16pt;
 
   margin:           0;
   padding:          1em;
@@ -245,13 +246,12 @@ a[href].hover-highlight {
 
 
   // background-color: $code-bg;
-  font-family: 'Iosevka', 'Fantasque Sans Mono', 'Roboto Mono', monospace;
+  font-family: 'iosevka', 'Iosevka', 'Fantasque Sans Mono', 'Roboto Mono', monospace;
   font-weight: 400;
-  font-size: 16pt;
 }
 
 @font-face {
-  font-family: 'Iosevka';
+  font-family: 'iosevka';
   font-display: swap;
   font-weight: 400;
   font-stretch: normal;

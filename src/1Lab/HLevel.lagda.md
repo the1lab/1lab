@@ -202,27 +202,28 @@ painstakingly illustrated it here:
 
 ~~~{.quiver .tall-2}
 \[\begin{tikzcd}
-  x &&&& x \\
-  & x && y \\
+  \textcolor{rgb,255:red,214;green,92;blue,92}{x} &&&& \textcolor{rgb,255:red,214;green,92;blue,92}{y} \\
+  & \textcolor{rgb,255:red,92;green,92;blue,214}{x} && \textcolor{rgb,255:red,92;green,92;blue,214}{x} \\
   \\
-  & x && y \\
-  x &&&& x
-  \arrow[""{name=0, anchor=center, inner sep=0}, "p"{description}, from=2-2, to=2-4]
-  \arrow[""{name=1, anchor=center, inner sep=0}, "q"{description}, from=4-2, to=4-4]
-  \arrow[from=1-1, to=2-2]
-  \arrow[from=5-1, to=4-2]
-  \arrow[from=5-5, to=4-4]
-  \arrow[""{name=2, anchor=center, inner sep=0}, from=5-1, to=5-5]
-  \arrow[""{name=3, anchor=center, inner sep=0}, from=5-1, to=1-1]
-  \arrow[""{name=4, anchor=center, inner sep=0}, from=4-2, to=2-2]
-  \arrow[""{name=5, anchor=center, inner sep=0}, from=4-4, to=2-4]
-  \arrow[""{name=6, anchor=center, inner sep=0}, from=5-5, to=1-5]
-  \arrow[""{name=7, anchor=center, inner sep=0}, from=1-1, to=1-5]
-  \arrow[from=1-5, to=2-4]
-  \arrow["{h(x,p(j),k)}", shorten <=4pt, shorten >=4pt, Rightarrow, from=7, to=0]
-  \arrow["{h(x,q(j),k)}"', shorten <=4pt, shorten >=4pt, Rightarrow, from=2, to=1]
-  \arrow["{h(x,x,k)}"', shorten <=6pt, shorten >=6pt, Rightarrow, from=3, to=4]
-  \arrow["{h(x,y,k)}", shorten <=6pt, shorten >=6pt, Rightarrow, from=6, to=5]
+  & \textcolor{rgb,255:red,92;green,92;blue,214}{x} && \textcolor{rgb,255:red,92;green,92;blue,214}{x} \\
+  \textcolor{rgb,255:red,214;green,92;blue,92}{x} &&&& \textcolor{rgb,255:red,214;green,92;blue,92}{y}
+  \arrow[""{name=0, anchor=center, inner sep=0}, "p", color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-5]
+  \arrow[""{name=1, anchor=center, inner sep=0}, "q"', color={rgb,255:red,214;green,92;blue,92}, from=5-1, to=5-5]
+  \arrow[""{name=2, anchor=center, inner sep=0}, color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=5-1]
+  \arrow[""{name=3, anchor=center, inner sep=0}, color={rgb,255:red,214;green,92;blue,92}, from=1-5, to=5-5]
+  \arrow[""{name=4, anchor=center, inner sep=0}, color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=2-4]
+  \arrow[""{name=5, anchor=center, inner sep=0}, color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=4-2]
+  \arrow[""{name=6, anchor=center, inner sep=0}, color={rgb,255:red,92;green,92;blue,214}, from=2-4, to=4-4]
+  \arrow[""{name=7, anchor=center, inner sep=0}, color={rgb,255:red,92;green,92;blue,214}, from=4-2, to=4-4]
+  \arrow[from=4-4, to=5-5]
+  \arrow[from=2-4, to=1-5]
+  \arrow[from=2-2, to=1-1]
+  \arrow[from=4-2, to=5-1]
+  \arrow["x"{description}, color={rgb,255:red,92;green,92;blue,214}, Rightarrow, draw=none, from=4, to=7]
+  \arrow["{h\ x\ p(j)\ k}"{description}, Rightarrow, draw=none, from=4, to=0]
+  \arrow["{h\ x\ q(j)\ k}"{description}, Rightarrow, draw=none, from=7, to=1]
+  \arrow["{h\ x\ x\ k}"{description}, Rightarrow, draw=none, from=5, to=2]
+  \arrow["{h\ y\ y\ k}"', Rightarrow, draw=none, from=6, to=3]
 \end{tikzcd}\]
 ~~~
 

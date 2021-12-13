@@ -64,9 +64,17 @@
       <hr />
       $table-of-contents$
       <hr />
-      <button type="button" class="equations">
-        Toggle equations
-      </button>
+      <div style="display: flex; gap: 0.25em; flex-flow: row wrap;">
+        <span class="equations" style="display: flex; gap: 0.25em; flex-wrap: nowrap;">
+          <input name=sidebar-eqns type="checkbox" class="equations" id=sidebar-eqns>
+          <label for=sidebar-eqns>Equations</label>
+        </span>
+        <span style="display: flex; gap: 0.25em; flex-wrap: nowrap;">
+          <input name=sidebar-font type="checkbox" id="toggle-fonts">
+          <label for=toggle-fonts>Serif Font</label>
+        </span>
+      </div>
+      <hr />
       <div id=return style="white-space: nowrap;">
       $if(is-index)$
       $else$
@@ -78,7 +86,8 @@
     </div>
   </aside>
   $endif$
-  <article style="max-width: 85ch;">
+
+  <article>
     <div class="narrow-only" id="article-nav">
       $if(is-index)$
       $else$
