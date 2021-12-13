@@ -97,6 +97,7 @@ private
                 → primGlue A T e → A
 
 open import Agda.Builtin.Cubical.HCompU
+open import 1Lab.Equiv.FromPath
 ```
 -->
 
@@ -235,19 +236,33 @@ Iso→path (f , iiso) = ua (f , isIso→isEquiv iiso)
 # The “axiom”
 
 ```agda
-pathToEquiv : {A B : Type ℓ} → A ≡ B → A ≃ B
-pathToEquiv {A = A} {B} = J (λ x _ → A ≃ x) (_ , idEquiv)
+module _ where private
+  idToEquiv : {A B : Type ℓ} → A ≡ B → A ≃ B
+  idToEquiv {A = A} {B} = J (λ x _ → A ≃ x) (_ , idEquiv)
 
-pathToEquiv-refl : {A : Type ℓ} → pathToEquiv (λ i → A) ≡ (_ , idEquiv)
-pathToEquiv-refl {A = A} = JRefl (λ x _ → A ≃ x) (_ , idEquiv)
+  idToEquiv-refl : {A : Type ℓ} → idToEquiv (λ i → A) ≡ (_ , idEquiv)
+  idToEquiv-refl {A = A} = JRefl (λ x _ → A ≃ x) (_ , idEquiv)
 ```
 
 The actual “univalence axiom”, as stated in the HoTT book, says that the
 canonical map `A ≡ B`, defined using `J`{.Agda}, is an equivalence. This
-map is `pathToEquiv`{.Agda}, defined right above. In more intuitive
-terms, it's "casting" the identity equivalence `A ≃ A` along a proof
-that `A ≡ B` to get an equivalence `A ≃ B`.
+map is `idToEquiv`{.Agda}, defined right above. In more intuitive terms,
+it's "casting" the identity equivalence `A ≃ A` along a proof that `A ≡
+B` to get an equivalence `A ≃ B`.
 
+However, because of efficiency concerns (Agda _is_ a programming
+language, after all), instead of using `idToEquiv`{.Agda} defined using
+J, we use `pathToEquiv`{.Agda}, which is [defined in an auxilliary
+module](agda://1Lab.Equiv.FromPath).
+
+```
+pathToEquiv : {A B : Type ℓ} → A ≡ B → A ≃ B
+pathToEquiv p = line→equiv (λ i → p i)
+
+pathToEquiv-refl : {A : Type ℓ} → pathToEquiv (refl {x = A}) ≡ (id , idEquiv)
+pathToEquiv-refl {A = A} =
+  Σ-Path (λ i x → transp (λ j → A) i x) (isProp-isEquiv _ _ _)
+```
 
 ```agda
 univalence-Iso : {A B : Type ℓ} → Iso (A ≡ B) (A ≃ B)
@@ -283,9 +298,9 @@ The inverse to `pathToEquiv`{.Agda} is the `ua`{.Agda} map which turns
 equivalences into paths.
 
 ```agda
-  isIso.rinv iiso (f , isEqv) = Σ-Path p (isProp-isEquiv f _ _) where
-    p : transport (λ i → A → ua (f , isEqv) i) (λ x → x) ≡ f
-    p i x = transp (λ j → B) i (f (transp (λ j → A) i x))
+  isIso.rinv iiso (f , isEqv) =
+    Σ-Path (λ i x → transp (λ i → B) i (f x))
+           (isProp-isEquiv f _ _)
 ```
 
 We have that `pathToEquiv (ua f) ≡ f` in two parts. Since equivalences
@@ -294,14 +309,14 @@ and proving that the equivalence proof is preserved. The latter follows
 from `isEquiv`{.Agda} being a proposition.
 
 For the former, Agda does all the work for us: All we need to show is
-that `transport (λ i → B) (f (transport (λ i → A) x))` is equal to `f`.
-This we do using `transp`{.Agda}, which, when `i = i1`, behaves like the
-identity function.
+that `transport (λ i → B) (f x)` is equal to `f`.  This we do using
+`transp`{.Agda}, which, when `i = i1`, behaves like the identity
+function.
 
 ```agda
   isIso.linv iiso = 
     J (λ _ p → ua (pathToEquiv p) ≡ p)
-      (ap ua (JRefl (λ x _ → A ≃ x) (_ , idEquiv)) ∙ uaIdEquiv)
+      (ap ua pathToEquiv-refl ∙ uaIdEquiv)
 
 univalence {A = A} {B} = isIso→isEquiv (univalence-Iso .snd)
 univalence¯¹ {A = A} {B} = isIso→isEquiv (isIso.inverse (univalence-Iso .snd))
@@ -309,8 +324,9 @@ univalence¯¹ {A = A} {B} = isIso→isEquiv (isIso.inverse (univalence-Iso .snd
 
 To show that `pathToEquiv (ua p) ≡ p`, we do [path induction] on `p`,
 reducing this to showing that `ua (pathToEquiv refl) ≡ refl`. By
-`JRefl`{.Agda}, we have that `pathToEquiv refl` is `idEquiv`{.Agda},
-which means the `uaIdEquiv`{.Agda} lemma proves what we wanted.
+`pathToEquiv-refl`{.Agda}, we have that `pathToEquiv refl` is
+`idEquiv`{.Agda}, which means the `uaIdEquiv`{.Agda} lemma proves what
+we wanted.
 
 [path induction]: agda://1Lab.Path#J
 
