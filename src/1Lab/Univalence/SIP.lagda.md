@@ -34,35 +34,63 @@ distinguish between isomorphic structures.  [Univalence] is this
 statement, but for _types_. For structures built out of types, it seems
 like we would need a bit more power, but in reality, we don't!
 
+
 [Univalence]: 1Lab.Univalence.html
 
-The idea of the structure identity principle is that we can describe,
-generically, a **structure on a type** by a map `S : Type → Type`. Types
-equipped with this structure are then represented by the [total space]
-`Σ S`. 
+"Structure Identity Principle" is the name for several related theorems
+in Homotopy Type Theory, which generically say that "paths on a
+structure are isomorphisms of that structure".
+
+For instance, the version in the HoTT Book says that if a structure `S`
+on the objects of a univalent category `S` can be described in a certain
+way, then the category of `S`-structured objects of `C` is univalent. As
+a benefit, the Book version of the SIP characterises the _homomorphisms_
+of `S`-structures, not just the _isomorphisms_. As a downside, it only
+applies to [set-level] structures.
+
+[set-level]: agda://1Lab.HLevel#isSet
+
 
 [total space]: agda://1Lab.Type#Σ
 
 ```agda
 record
-  Structure
-    {ℓ₁ ℓ₂}
-    (ℓ₃ : _)
-    (S : Type ℓ₁ → Type ℓ₂)
-  : Type (lsuc (ℓ₁ ⊔ ℓ₃) ⊔ ℓ₂)
+  Structure {ℓ₁ ℓ₂} (ℓ₃ : _) (S : Type ℓ₁ → Type ℓ₂) : Type (lsuc (ℓ₁ ⊔ ℓ₃) ⊔ ℓ₂)
   where field
 ```
 
-In reality, a `Structure`{.Agda} also comes with a notion of
-_homomorphic equivalence_: the equivalences between the underlying types
-which preserve the structure. For example, if `S` = groups, then
-`is-hom`{.Agda} would be the predicate representing "f is a group
-isomorphism".
+The material on this page, especially the definition of
+`isUnivalent`{.Agda} and `isTransportStr`{.Agda}, is adapted from
+<cite>[Internalizing Representation Independence with
+Univalence]</cite>. The SIP formalised here says, very generically, that
+a `Structure`{.Agda} is a family of types `S : Type → Type`, and a `type
+with`{.Agda ident=TypeWith} structure is an inhabitant of the [total
+space] `Σ S`.
+
+[Internalizing Representation Independence with Univalence]: https://arxiv.org/abs/2009.05547
+
+What sets a `Structure`{.Agda} apart from a type family is a notion of
+_homomorphic equivalence_: Given an equivalence of the underlying types,
+the predicate `is-hom (A , x) (B , y) eqv` should represent what it
+means for `eqv` to take the `x`-structure on `A` to the `y`-structure on
+`B`.
 
 ```agda
    is-hom : (A B : Σ S) → (A .fst ≃ B .fst) → Type ℓ₃
+```
 
+As a grounding example, consider equipping types with group structure:
+If `(A , _⋆_)` and `(B , _*_)` are types with group structure (with many
+fields omitted!), and `f : A → B` is the underlying map of an
+equivalence `A ≃ B`, then `is-hom`{.Agda} would be $\forall (x y\colon
+A) f(x \star y) = f(x) * f(y)$ - the "usual" definition of group
+homomorphism.
+
+```
 open Structure public
+
+TypeWith : ∀ {ℓ ℓ₁ ℓ₂} {S : Type ℓ → Type ℓ₁} → Structure ℓ₂ S → Type _
+TypeWith {S = S} _ = Σ S
 ```
 
 <!--
@@ -71,9 +99,6 @@ private variable
   ℓ ℓ₁ ℓ₂ ℓ₃ : Level
   A : Type ℓ
   S T : Type ℓ → Type ℓ₁
-
-TypeWith : Structure ℓ₁ S → Type _
-TypeWith {S = S} _ = Σ S
 ```
 -->
 
@@ -91,8 +116,9 @@ isUnivalent {S = S} ι =
   → ι .is-hom X Y f ≃ PathP (λ i → S (ua f i)) (X .snd) (Y .snd)
 ```
 
-The abbreviation `A ≃[ σ ] B` stands for the type of equivalences, where
-the underlying map is a σ-homomorphism:
+The notation `A ≃[ σ ] B`{.Agda ident=_≃[_]_} stands for the type of
+σ-homomorphic equivalences, i.e. those equivalences of the types
+underlying `A` and `B` that σ identifies as being homomorphic.
 
 ```agda
 _≃[_]_ : Σ S → Structure ℓ S → Σ S → Type _
@@ -115,7 +141,16 @@ SIP {S = S} {σ = σ} is-univ {X} {Y} =
   Σ[ e ∈ X .fst ≃ Y .fst ] (σ .is-hom X Y e)                       ≃⟨ Σ-ap (ua , univalence¯¹) is-univ ⟩
   Σ[ p ∈ X .fst ≡ Y .fst ] PathP (λ i → S (p i)) (X .snd) (Y .snd) ≃⟨ Iso→Equiv Σ-PathP-iso ⟩
   (X ≡ Y)                                                          ≃∎
+```
 
+The proof of the `SIP`{.Agda} follows essentially from
+`univalence`{.Agda ident=univalence¯¹}, and the fact that `Σ types
+respect equivalences`{.Agda ident=Σ-ap}. In one fell swoop, we convert
+from the type of homomorphic equivalences to a dependent pair of paths.
+By the characterisation of `path spaces of Σ types`{.Agda
+ident=Σ-PathP-iso}, this latter pair is equivalent to `X ≡ Y`.
+
+```
 sip : {σ : Structure ℓ S} → isUnivalent σ → {X Y : Σ S} → (X ≃[ σ ] Y) → (X ≡ Y)
 sip σ = SIP σ .fst
 ```
