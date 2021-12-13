@@ -218,8 +218,8 @@ Cubical Type Theory.
                           lemma (helper'' t)
           where
             lemma : _
-            lemma = Σ-Path (λ i → transp (λ _ → A → A) (~ i) (λ x → x))
-                           (isProp-isEquiv _ _ _)
+            lemma = sym pathToEquiv-refl
+
         helper t = subst (λ x → x ≃ _)
                          (ap₂ _≡_ (sym (transport-refl _)) refl)
                          (helper' t)
