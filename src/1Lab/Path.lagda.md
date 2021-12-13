@@ -4,7 +4,7 @@ open import 1Lab.Type
 module 1Lab.Path where
 ```
 
-# Paths
+# The Interval
 
 In HoTT, the inductively-defined propositional equality type gets a new
 semantics: continuous _paths_. The "key idea" of cubical type theory -
@@ -218,12 +218,95 @@ module _ {ℓ} {A : Type ℓ} {x y : A} {p : x ≡ y} where
     sym-invol i = p
 ```
 
-## Substitution
+# Paths
 
-A basic principle of equality is that, if `x ≡ y`, then any predicate
-that is true of `x` is true of `y`. In type theory, this is extended:
-Any _construction_ done to an element `x` can be transported to a
-construction done on `y`.
+While the basic structure of the path type is inherited from its nature
+as functions out of an internal De Morgan algebra, the _equality_
+structure induced by paths is more complicated. For starters, let's see
+how paths correspond to equality in that they witness the logical
+principle of "indiscernibility of identicals".
+
+## Transport
+
+A basic principle of equality is that _equals may be substituted for
+equals_: if $x = y$ and $P(x)$ holds, then $P(y)$ also holds, for any
+choice of predicate $P$. In type theory, this is generalised, as $P$ can
+be not only a predicate, but any type family.
+
+The way this is incarnated is by an operation called `transport`{.Agda},
+which says that every path between `A` and `B` gives rise to a
+_function_ `A → B`.
+
+```agda
+transport : ∀ {ℓ} {A B : Type ℓ} → A ≡ B → A → B
+transport p = transp (λ i → p i) i0
+```
+
+The transport operation is the earliest case of when thinking of `p : A
+≡ B` as merely saying "A and B are equal" goes seriously wrong. A path
+gives a _specific_ identification of `A` and `B`, which can be highly
+non-trivial.
+
+As a concrete example, it can be shown that the type `Bool ≡ Bool` has
+exactly two inhabitants ([see here]), which is something like saying
+"the set of booleans is equal to itself in two ways". That phrase is
+nonsensical, which is why "there are two paths Bool → Bool" is
+preferred: it's not nonsense.
+
+[see here]: agda://1Lab.Data.Bool#AutBool≡2
+
+In Cubical Agda, `transport`{.Agda} is a derived notion, with the actual
+primitive being `transp`{.Agda}. Unlike `transport`{.Agda}, which has
+two arguments (the path, and the point to transport), `transp` has _three_:
+
+- The first argument to `transp`{.Agda} is a _line_ of types, i.e. a
+function `A : I → Type`, just as for `transport`{.Agda}.
+
+- The second argument to `transp`{.Agda} has type `I`{.Agda}, but it's
+not playing the role of an endpoint of the interval. It's playing the
+role of a _formula_, which specifies _where the transport is constant_:
+In `transp P i1`, `P` is required to be constant, and the transport is
+the identity function:
+
+  ```
+_ : ∀ {ℓ} {A : Type ℓ} → transp (λ i → A) i1 ≡ id
+_ = refl
+  ```
+
+- The third argument is an inhabitant of `A i0`, as for `transport`{.Agda}.
+
+This second argument, which lets us control where `transp`{.Agda} is
+constant, brings a lot of power to the table! For example, the proof
+that transporting along `refl`{.Agda} is `id`{.Agda} is as follows:
+
+```
+transport-refl : ∀ {ℓ} {A : Type ℓ} (x : A)
+               → transport (λ i → A) x ≡ x
+transport-refl {A = A} x i = transp (λ _ → A) i x
+```
+
+Since `λ i → A` is a constant function, the definition of
+`transport-refl`{.Agda} is well-typed, and it has the stated endpoints
+because `transport`{.Agda} is defined to be `transp P i0`, and `transp P
+i1` is the identity function.
+
+In fact, this generalises to something called the _filler_ of
+`transport`{.Agda}: `transport p x` and `x` _are_ equal, but they're
+equal _over_ the given path:
+
+```
+transport-filler : ∀ {ℓ} {A B : Type ℓ}
+                 → (p : A ≡ B) (x : A)
+                 → PathP (λ i → p i) x (transport p x)
+transport-filler p x i = transp (λ j → p (i ∧ j)) (~ i) x
+```
+
+The path is constant when `i = i1` because `(λ j → p (i1 ∧ j))` is
+`(λ j → p i1)` (by the reduction rules for `_∧_`{.Agda}). It has the
+stated endpoints, again, because `transp P i1` is the identity function.
+
+By altering a path `p` using a predicate `P`, we get the promised
+principle of _indiscernibility of identicals_:
 
 ```agda
 subst : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} (P : A → Type ℓ₂) {x y : A}
@@ -231,49 +314,218 @@ subst : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} (P : A → Type ℓ₂) {x y : A}
 subst P p x = transp (λ i → P (p i)) i0 x
 ```
 
-Furthermore, this operation is "_uniform_": There is always a path
-connecting `x` and `subst P p x`. However, these terms have different
-types! One's an inhabitant of the left endpoint --- that's `P (p i0)`,
-which computes to `P x` --- and the other's in `P y`. That's why we
-have, rather than a `Path`{.Agda}, a `PathP`{.Agda}: A **Path** over a
-**P**ath.
+### Computation
 
-```agda
-subst-filler : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} (P : A → Type ℓ₂) {x y : A}
-             → (p : x ≡ y) (x : P x)
-             → PathP (λ i → P (p i)) x (subst P p x)
-subst-filler P p x i = transp (λ j → P (p (i ∧ j))) (~ i) x
+In “Book HoTT”, `transport`{.Agda} is defined using path induction, and
+it computes definitionally on `refl`{.Agda}. We have already seen that
+this is not definitional in cubical type theory, which might lead you to
+ask: When does `transport`{.Agda} compute? The answer is: By cases on
+the path. The structure of the path `P` is what guides reduction of
+`transport`{.Agda}. Here are some reductions:
+
+For the natural numbers, and other inductive types without parameters,
+transport is always the identity function. This is justified because
+there's nothing to vary in `Nat`{.Agda}, so we can just ignore the
+transport:
+
+```
+_ : {x : Nat} → transport (λ i → Nat) x ≡ x
+_ = refl
 ```
 
-It's called a filler because it's the _inside_ --- the space that fills -
-a cube. Specifically, it can be pictured as in this diagram:
+For other type formers, the definition is a bit more involved. Let's
+assume that we have two lines, `A` and `B`, to see how transport reduces
+in types built out of `A` and `B`:
 
-~~~{.quiver .short-2}
-\[\begin{tikzcd}
-  x &&& {\text{subst}(P,p,x)}
-  \arrow["{\text{subst-filler}(P,p,x)}", from=1-1, to=1-4]
-\end{tikzcd}\]
-~~~
-
-```agda
-transport : ∀ {ℓ} {A B : Type ℓ} → A ≡ B → A → B
-transport = subst (λ x → x)
-
-transport-filler : ∀ {ℓ} {A B : Type ℓ}
-                 → (p : A ≡ B) (x : A)
-                 → PathP (λ i → p i) x (transport p x)
-transport-filler = subst-filler (λ x → x)
-
-transport-refl : ∀ {ℓ} {A : Type ℓ} (x : A)
-               → transport (λ i → A) x ≡ x
-transport-refl {A = A} x i = transp (λ _ → A) i x
+```
+module _ {A : I → Type} {B : I → Type} where private
 ```
 
-Substitution where `P` is taken to be the identity function is called
-`transport`{.Agda}, since it's very common. In that case, we're
-_transporting_ inhabitants between provably equal types.
+For non-dependent products, the reduction rule says that
+"`transport`{.Agda} is homomorphic over forming products":
 
-## Transitivity
+```
+  _ : {x : A i0} {y : B i0}
+    → transport (λ i → A i × B i) (x , y)
+    ≡ (transport (λ i → A i) x , transport (λ i → B i) y)
+  _ = refl
+```
+
+For non-dependent functions, we have a similar situation, except one the
+transports is _backwards_. This is because, given an `f : A i0 → B i0`,
+we have to turn an `A i1` into an `A i0` to apply f!
+
+```
+  _ : {f : A i0 → B i0}
+    → transport (λ i → A i → B i) f
+    ≡ λ x → transport (λ i → B i) (f (transport (λ i → A (~ i)) x))
+  _ = refl
+
+module _ {A : I → Type} {B : (i : I) → A i → Type} where private
+```
+
+In the dependent cases, we have slightly more work to do. Suppose that
+we have a line `A : I → Type ℓ` and a _dependent_ line `B : (i : I) → A
+i → Type ℓ`. Let's characterise `transport`{.Agda} in the lines `(λ i →
+(x : A i) → B i x)`. A first attempt would be to repeat the
+non-dependent construction: Given an `f : (x : A i0) → B i0 x` and an
+argument `x : A i1`, we first get `x' : A i0` by transporting along `λ i
+→ A (~ i)`, compute `f x' : B i0 x`, then transport along `(λ i → B i x')` to g- Wait.
+
+```
+  _ : {f : (x : A i0) → B i0 x}
+    → transport (λ i → (x : A i) → B i x) f
+    ≡ λ (x : A i1) →
+        let
+          x' : A i0
+          x' = transport (λ i → A (~ i)) x
+```
+
+We can't "transport along `(λ i → B i x')`", that's not even a
+well-formed type! Indeed, `B i : A i → Type`, but `x' : A i1`. What we
+need is some way of connecting our original `x` and `x'`, so that we may
+get a `B i1 x'`. This is where `transport-filler`{.Agda} comes in:
+
+```
+          x≡x' : PathP (λ i → A (~ i)) x x'
+          x≡x' = transport-filler (λ i → A (~ i)) x
+```
+
+By using `λ i → B i (x≡x' (~ i))` as our path, we a) get something
+type-correct, and b) get something with the right endpoints. `(λ i → B i
+(x≡x' (~ i)))` connects `B i0 x` and `B i1 x'`, which is what we wanted.
+
+```
+          fx' : B i0 x'
+          fx' = f x'
+        in transport (λ i → B i (x≡x' (~ i))) fx'
+  _ = refl
+```
+
+The case for dependent products (i.e. general `Σ`{.Agda} types) is
+analogous, but without any inverse transports.
+
+## Path Induction
+
+The path induction principle, also known as "axiom J", essentially
+breaks down as the following two statements:
+
+- Identicals are indiscernible (`transport`{.Agda})
+- Singletons are contractible. The type `Singleton A x` is the "subtype
+of A of the elements equal to x":
+
+```
+Singleton : ∀ {ℓ} {A : Type ℓ} → A → Type _
+Singleton x = Σ[ y ∈ _ ] (x ≡ y)
+```
+
+There is a canonical inhabitant of `Singleton x`, namely `(x, refl)`. To
+say that `singletons`{.Agda ident=singleton} are contractible is to say
+that every other inhabitant has a path to `(x, refl)`:
+
+```
+isContr-Singleton : ∀ {ℓ} {A : Type ℓ} {x : A} (y : Singleton x)
+                  → Path (Singleton x) (x , refl) y
+isContr-Singleton {x = x} (y , path) i = p i , square i where
+  p : x ≡ y
+  p = path
+
+  square : PathP (λ i → x ≡ p i) refl p
+  square i j = p (i ∧ j)
+```
+
+Thus, the definition of `J`{.Agda}: `transport`{.Agda} +
+`isContr-Singleton`{.Agda}.
+
+```agda
+J : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {x : A}
+    (P : (y : A) → x ≡ y → Type ℓ₂)
+  → P x refl
+  → {y : A} (p : x ≡ y)
+  → P y p
+J {x = x} P prefl {y} p = transport (λ i → P (path i .fst) (path i .snd)) prefl where
+  path : (x , refl) ≡ (y , p)
+  path = isContr-Singleton (y , p)
+```
+
+This eliminator _doesn't_ definitionally compute to `prefl` when `p` is
+`refl`, again since `transport (λ i → A)` isn't definitionally the
+identity.  However, since it _is_ a transport, we can use the
+`transport-filler`{.Agda} to get a path expressing the computation rule.
+
+```agda
+JRefl : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {x : A}
+        (P : (y : A) → x ≡ y → Type ℓ₂)
+      → (pxr : P x refl)
+      → J P pxr refl ≡ pxr
+JRefl {x = x} P prefl i = transport-filler (λ i → P _ (λ j → x)) prefl (~ i)
+```
+
+<!--
+```agda
+inspect : ∀ {a} {A : Type a} (x : A) → Singleton x
+inspect x = x , refl
+```
+-->
+
+## Functorial Action
+
+In HoTT, every function behaves like a funct**or**, in that it has an
+action on objects (the actual computational content of the function) and
+an action on _morphisms_ --- how that function acts on paths. Reading
+paths as equality, this is a proof that all functions preserve equality.
+
+```agda
+ap : ∀ {a b} {A : Type a} {B : A → Type b} (f : (x : A) → B x) {x y : A}
+   → (p : x ≡ y) → PathP (λ i → B (p i)) (f x) (f y)
+ap f p i = f (p i)
+```
+
+The following function expresses the same thing as `ap`{.Agda}, but for
+binary functions. The type is huge! That's because it applies to the
+most general type of 2-argument dependent function possible: `(x : A) (y
+: B x) → C x y`. Even then, the proof is beautifully short:
+
+```
+ap₂ : ∀ {a b c} {A : Type a} {B : A → Type b} {C : (x : A) → B x → Type c}
+      (f : (x : A) (y : B x) → C x y)
+      {x y : A} {α : B x} {β : B y}
+    → (p : x ≡ y)
+    → (q : PathP (λ i → B (p i)) α β)
+    → PathP (λ i → C (p i) (q i))
+            (f x α)
+            (f y β)
+ap₂ f p q i = f (p i) (q i)
+```
+
+This operation satisfies many equalities definitionally that are only
+propositional when `ap`{.Agda} is defined in terms of `J`{.Agda}. For instance:
+
+```agda
+module _ {A B C : Type} {f : A → B} {g : B → C} where
+  ap-comp : {x y : A} {p : x ≡ y}
+          → ap (λ x → g (f x)) p ≡ ap g (ap f p)
+  ap-comp = refl
+
+  ap-id : {x y : A} {p : x ≡ y}
+        → ap (λ x → x) p ≡ p
+  ap-id = refl
+
+  ap-sym : {x y : A} {p : x ≡ y}
+          → sym (ap f p) ≡ ap f (sym p)
+  ap-sym = refl
+
+  ap-refl : {x : A} → ap f (λ i → x) ≡ (λ i → f x) 
+  ap-refl = refl
+```
+
+The last lemma, that `ap` respects composition of _paths_, needs path
+induction, and the rest of the groupoid structure on type formers, so
+it's in [a different module].
+
+[a different module]: agda://1Lab.Path.Groupoid#ap-comp-path
+
+# Composition
 
 <div class=warning>
 **Heads up!** Cubical Type Theory gets really intense, really fast. If
@@ -336,7 +588,7 @@ A [ φ ↦ u ] = Sub A φ u
 hfill : ∀ {ℓ} {A : Type ℓ} {φ : I}
         (u : I → Partial φ A)
         (u0 : A [ φ ↦ u i0 ])
-      → Path A (outS u0) (hcomp u (outS u0))
+      → outS u0 ≡ hcomp u (outS u0)
 hfill {φ = φ} u u0 i =
   hcomp (λ j → λ { (φ = i1) → u (i ∧ j) 1=1
                  ; (i = i0) → outS u0 })
@@ -357,7 +609,6 @@ fill A {φ = φ} u u0 i =
        (outS u0)
 ```
 -->
-
 
 Given the inputs to a composition --- a family of partial paths `u` and a
 base `u0` --- `hfill`{.Agda} connects the input of the composition (`u0`)
@@ -446,106 +697,9 @@ and `p ∙ q` over `p`.
         (p (i ∨ ~ j))
 ```
 
-## Path Elimination
-
-Using the decomposition of J as transport + contractibility of
-singletons, we can show that the Path types satisfy the same eliminator
-as the equality type in "Book HoTT".
-
-```agda
-J : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {x : A}
-    (P : (y : A) → x ≡ y → Type ℓ₂)
-  → P x refl
-  → {y : A} (p : x ≡ y)
-  → P y p
-J P prefl p = transport (λ i → P (p i) (λ j → p (i ∧ j))) prefl
-```
-
-This eliminator _doesn't_ definitionally compute to `prefl` when `p` is
-`refl`, due to a "problem" in cubical type theory called _regularity_.
-However, since it _is_ a transport, we can use the
-`transport-filler`{.Agda} to get a path expressing the computation rule.
-
-```agda
-JRefl : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {x : A}
-        (P : (y : A) → x ≡ y → Type ℓ₂)
-      → (pxr : P x refl)
-      → J P pxr refl ≡ pxr
-JRefl {x = x} P prefl i = transport-filler (λ i → P _ (λ j → x)) prefl (~ i)
-```
-
-Another way of stating J is as the fact that _singletons are contractible_:
-
-```agda
-Singleton : ∀ {ℓ} {A : Type ℓ} → A → Type _
-Singleton x = Σ[ y ∈ _ ] (x ≡ y)
-
-isContr-Singleton : ∀ {ℓ} {A : Type ℓ} {x : A} (y : Singleton x)
-                  → Path (Singleton x) (x , refl) y
-isContr-Singleton (_ , p) i = p i , λ j → p (i ∧ j)
-```
-
-<!--
-```agda
-inspect : ∀ {a} {A : Type a} (x : A) → Singleton x
-inspect x = x , refl
-```
--->
-
-## The Action on Paths
-
-In HoTT, every function behaves like a funct**or**, in that it has an
-action on objects (the actual computational content of the function) and
-an action on _morphisms_ --- how that function acts on paths. Reading
-paths as equality, this is a proof that all functions preserve equality.
-
-```agda
-ap : ∀ {a b} {A : Type a} {B : A → Type b} (f : (x : A) → B x) {x y : A}
-   → (p : x ≡ y) → PathP (λ i → B (p i)) (f x) (f y)
-ap f p i = f (p i)
-
-ap₂ : ∀ {a b c} {A : Type a} {B : A → Type b} {C : (x : A) → B x → Type c}
-      (f : (x : A) (y : B x) → C x y)
-      {x y : A} {α : B x} {β : B y}
-    → (p : x ≡ y)
-    → (q : PathP (λ i → B (p i)) α β)
-    → PathP (λ i → C (p i) (q i))
-            (f x α)
-            (f y β)
-ap₂ f p q i = f (p i) (q i)
-```
-
-This operation satisfies many equalities definitionally that are only
-propositional when `ap`{.Agda} is defined in terms of `J`{.Agda}. For instance:
-
-```agda
-module _ {A B C : Type} {f : A → B} {g : B → C} where
-  ap-comp : {x y : A} {p : x ≡ y}
-          → ap (λ x → g (f x)) p ≡ ap g (ap f p)
-  ap-comp = refl
-
-  ap-id : {x y : A} {p : x ≡ y}
-        → ap (λ x → x) p ≡ p
-  ap-id = refl
-
-  ap-sym : {x y : A} {p : x ≡ y}
-          → sym (ap f p) ≡ ap f (sym p)
-  ap-sym = refl
-
-  ap-refl : {x : A} → ap f (λ i → x) ≡ (λ i → f x) 
-  ap-refl = refl
-```
-
-The last lemma, that `ap` respects composition of _paths_, needs path
-induction, and the rest of the groupoid structure on type formers, so
-it's in [a different module].
-
-[a different module]: agda://1Lab.Path.Groupoid#ap-comp-path
-
 # Dependent Paths
 
 In the HoTT book, we characterise paths over paths using
-
 `transport`{.Agda}: A "path from x to y over P" is a path `transport P x
 ≡ y`. In cubical type theory, we have the built-in type `PathP`. These
 notions, fortunately, coincide!
@@ -636,13 +790,24 @@ SquareP A a₀₋ a₁₋ a₋₀ a₋₁ = PathP (λ i → PathP (λ j → A i 
 ```
 -->
 
-# Characterisations of equality
+# Path Spaces
 
-Here we make explicit the structure of equality of some type formers.
+A large part of the study of HoTT is the _characterisation of path
+spaces_. Given a type `A`, what does `Path A x y` look like? [Hedberg's
+theorem] says that for types with decidable equality, it's boring. For
+[the circle], we can prove its loop space is the integers - we have
+`Path S¹ base base ≡ Int`.
+
+[Hedberg's theorem]: 1Lab.HLevel.Sets.html
+[the circle]: 1Lab.HIT.S1.html
+
+Most of these characterisations need machinery that is not in this
+module to be properly stated. Even then, we can begin to outline a few
+simple cases:
 
 ## Dependent sums
 
-For sigma types, an equality between `(a , b) ≡ (x , y)` is a
+For `Σ`{.Agda} types, an equality between `(a , b) ≡ (x , y)` is a
 non-dependent equality `p : a ≡ x`, and a path between `b` and `y`
 laying over `p`.
 
