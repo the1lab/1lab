@@ -269,6 +269,23 @@ transport-refl : ∀ {ℓ} {A : Type ℓ} (x : A)
 transport-refl {A = A} x i = transp (λ _ → A) i x
 ```
 
+<!--
+```
+transport-fillerExt : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B)
+                    → PathP (λ i → A → p i) (λ x → x) (transport p)
+transport-fillerExt p i x = transport-filler p x i
+
+transport¯-fillerExt : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B)
+                     → PathP (λ i → p i → A) (λ x → x) (transport (sym p))
+transport¯-fillerExt p i x = transp (λ j → p (i ∧ ~ j)) (~ i) x
+
+transport¯Transport : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B) (a : A)
+                    → transport (sym p) (transport p a) ≡ a
+transport¯Transport p a i = 
+  transport¯-fillerExt p (~ i) (transport-fillerExt p (~ i) a)
+```
+-->
+
 Substitution where `P` is taken to be the identity function is called
 `transport`{.Agda}, since it's very common. In that case, we're
 _transporting_ inhabitants between provably equal types.
@@ -551,9 +568,14 @@ In the HoTT book, we characterise paths over paths using
 notions, fortunately, coincide!
 
 ```agda
-PathP≡Path : ∀ {ℓ} → (P : I → Type ℓ) (p : P i0) (q : P i1) →
+PathP≡Path : ∀ {ℓ} (P : I → Type ℓ) (p : P i0) (q : P i1) →
              PathP P p q ≡ Path (P i1) (transport (λ i → P i) p) q
 PathP≡Path P p q i = PathP (λ j → P (i ∨ j)) (transport-filler (λ j → P j) p i) q
+
+PathP≡Path⁻ : ∀ {ℓ} (P : I → Type ℓ) (p : P i0) (q : P i1) →
+             PathP P p q ≡ Path (P i0) p (transport (λ i → P (~ i)) q)
+PathP≡Path⁻ P p q i = PathP (λ j → P (~ i ∧ j)) p
+                            (transport-filler (λ j → P (~ j)) q i)
 ```
 
 We can see this by substituting either `i0` or `i1` for the variable `i`.

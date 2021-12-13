@@ -140,6 +140,21 @@ isContr→isProp C x y i =
         (C .centre)
 ```
 
+<!--
+```
+SingletonP : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → Type _
+SingletonP A a = Σ[ x ∈ A i1 ] PathP A a x
+
+isContrSinglP : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → isContr (SingletonP A a)
+isContrSinglP A a .centre = _ , transport-filler (λ i → A i) a
+isContrSinglP A a .paths (x , p) i =
+  _ , λ j → fill A (λ j → λ {(i = i0) → transport-filler (λ i → A i) a j; (i = i1) → p j}) (inS a) j
+
+isPropSinglP : ∀ {ℓ} {A : I → Type ℓ} {a : A i0} → isProp (SingletonP A a)
+isPropSinglP = isContr→isProp (isContrSinglP _ _)
+```
+-->
+
 This enables another useful characterisation of being a proposition,
 which is that the propositions are precisely the types which are
 contractible when they are inhabited:

@@ -140,4 +140,31 @@ funextDep≃ {A = A} {B} {f} {g} = Iso→Equiv isom where
     lemi→i =
       sym (coei→i (λ k → coei→j A i k (p i) ≡ p k) i (coei→i A i (p i)))
       ◁ λ m k → lemi→j i (m ∨ k)
+
+heteroHomotopy≃Homotopy
+  : {A : I → Type ℓ} {B : (i : I) → Type ℓ₁}
+    {f : A i0 → B i0} {g : A i1 → B i1}
+
+  → ({x₀ : A i0} {x₁ : A i1} → PathP A x₀ x₁ → PathP B (f x₀) (g x₁))
+  ≃ ((x₀ : A i0) → PathP B (f x₀) (g (transport (λ i → A i) x₀)))
+
+heteroHomotopy≃Homotopy {A = A} {B} {f} {g} = Iso→Equiv isom where
+  open isIso
+  isom : Iso _ _
+  isom .fst h x₀ = h (isContrSinglP A x₀ .centre .snd)
+  isom .snd .inv k {x₀} {x₁} p =
+    subst (λ fib → PathP B (f x₀) (g (fib .fst))) (isContrSinglP A x₀ .paths (x₁ , p)) (k x₀)
+
+  isom .snd .rinv k = funext λ x₀ →
+    ap (λ α → subst (λ fib → PathP B (f x₀) (g (fib .fst))) α (k x₀))
+      (isProp→isSet isPropSinglP (isContrSinglP A x₀ .centre) _
+        (isContrSinglP A x₀ .paths (isContrSinglP A x₀ .centre))
+        refl)
+    ∙ transport-refl (k x₀)
+
+  isom .snd .linv h j {x₀} {x₁} p =
+    transp
+      (λ i → PathP B (f x₀) (g (isContrSinglP A x₀ .paths (x₁ , p) (i ∨ j) .fst)))
+      j
+      (h (isContrSinglP A x₀ .paths (x₁ , p) j .snd))
 ```

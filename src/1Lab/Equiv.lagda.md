@@ -316,6 +316,14 @@ isContr→isEquiv cA cB = isIso→isEquiv f-is-iso where
   isIso.inv f-is-iso _ = cA .centre
   isIso.rinv f-is-iso _ = isContr→isProp cB _ _
   isIso.linv f-is-iso _ = isContr→isProp cA _ _
+
+isContr→≃ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂}
+          → isContr A → isContr B → A ≃ B
+isContr→≃ cA cB = (λ _ → cB .centre) , isIso→isEquiv f-is-iso where
+  f-is-iso : isIso _
+  isIso.inv f-is-iso _ = cA .centre
+  isIso.rinv f-is-iso _ = isContr→isProp cB _ _
+  isIso.linv f-is-iso _ = isContr→isProp cA _ _
 ```
 
 # Equivalence Reasoning

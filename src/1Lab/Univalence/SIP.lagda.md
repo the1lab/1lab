@@ -54,13 +54,13 @@ record
 ```
 
 In reality, a `Structure`{.Agda} also comes with a notion of
-_homomorphism_: those functions between the underlying types which
-preserve the structure. For example, if `S` = groups, then
+_homomorphic equivalence_: the equivalences between the underlying types
+which preserve the structure. For example, if `S` = groups, then
 `is-hom`{.Agda} would be the predicate representing "f is a group
-homomorphism".
+isomorphism".
 
 ```agda
-   is-hom : (A B : Σ S) → (A .fst → B .fst) → Type ℓ₃
+   is-hom : (A B : Σ S) → (A .fst ≃ B .fst) → Type ℓ₃
 
 open Structure public
 ```
@@ -86,7 +86,7 @@ isUnivalent : Structure ℓ S → Type _
 isUnivalent {S = S} ι =
   ∀ {X Y}
   → (f : X .fst ≃ Y .fst)
-  → ι .is-hom X Y (fst f) ≃ PathP (λ i → S (ua f i)) (X .snd) (Y .snd)
+  → ι .is-hom X Y f ≃ PathP (λ i → S (ua f i)) (X .snd) (Y .snd)
 ```
 
 There are also abbreviations for referring to an equivalence of
@@ -99,13 +99,7 @@ map).
 _≃[_]_ : Σ S → Structure ℓ S → Σ S → Type _
 A ≃[ σ ] B =
   Σ[ f ∈ A .fst ≃ B .fst ]
-   (σ .is-hom A B (f .fst))
-
-_[_↪_] : Structure ℓ S → Σ S → Σ S → Type _
-σ [ A ↪ B ] = Σ[ f ∈ (A .fst ↪ B .fst) ] (σ .is-hom A B (f .fst))
-
-_[_⇒_] : Structure ℓ S → Σ S → Σ S → Type _
-σ [ A ⇒ B ] = Σ[ f ∈ (A .fst → B .fst) ] (σ .is-hom A B f)
+   (σ .is-hom A B f)
 ```
 
 ## The principle
@@ -119,7 +113,7 @@ as a grounding example: equality of groups is group isomorphism.
 SIP : {σ : Structure ℓ S} → isUnivalent σ → {X Y : Σ S} → (X ≃[ σ ] Y) ≃ (X ≡ Y)
 SIP {S = S} {σ = σ} is-univ {X} {Y} =
   X ≃[ σ ] Y                                                       ≃⟨⟩
-  Σ[ e ∈ X .fst ≃ Y .fst ] (σ .is-hom X Y (fst e))                 ≃⟨ Σ-ap (ua , univalence¯¹) is-univ ⟩
+  Σ[ e ∈ X .fst ≃ Y .fst ] (σ .is-hom X Y e)                 ≃⟨ Σ-ap (ua , univalence¯¹) is-univ ⟩
   Σ[ p ∈ X .fst ≡ Y .fst ] PathP (λ i → S (p i)) (X .snd) (Y .snd) ≃⟨ Iso→Equiv Σ-PathP-iso ⟩
   (X ≡ Y)                                                          ≃∎
 
@@ -129,16 +123,16 @@ sip σ = SIP σ .fst
 
 # Structure Combinators
 
-Structures can be built up in an algebraic manner through the use of
-_structure combinators_. These express closure of structures under a
-number of type formers. For instance, if `S` and `T` are univalent
-structures, then so is `λ X → S X → T X`.
+Univalent structures can be built up in an algebraic manner through the
+use of _structure combinators_. These express closure of structures
+under a number of type formers. For instance, if `S` and `T` are
+univalent structures, then so is `λ X → S X → T X`.
 
-The simplest case of a structure is the _constant structure_, which is
-what you get when you equip a type `X` with a choice of inhabitant of
-some other type `Y`, unrelated to `X`. Since the given function is `f :
-A → B`, it can't act on `T`, so the notion of homomorphism is
-independent of `f`.
+The simplest case of univalent structure is the _constant structure_,
+which is what you get when you equip a type `X` with a choice of
+inhabitant of some other type `Y`, unrelated to `X`. Since the given
+function is `f : A → B`, it can't act on `T`, so the notion of
+homomorphism is independent of `f`.
 
 ```agda
 constantStr : (A : Type ℓ) → Structure {ℓ₁} ℓ (λ X → A)
@@ -150,11 +144,19 @@ constantStr-univalent f = _ , idEquiv
 
 The next simplest case is considering the identity function as a
 structure. In that case, the resulting structured type is that of a
-_pointed type_:
+_pointed type_, whence the name `pointedStr`{.Agda}.
+
+The name `pointedStr`{.Agda} breaks down when it is used with some of
+the other combinators: A type equipped with the `product`{.Agda
+ident=productStr} of two `pointed structures`{.Agda ident=pointedStr} is
+indeed a "bipointed structure", but a type equipped with `maps
+between`{.Agda ident=functionStr} two `pointed structures`{.Agda
+ident=pointedStr} is a type equipped with an endomorphism, which does
+not necessitate a point.
 
 ```agda
 pointedStr : Structure ℓ (λ X → X)
-pointedStr .is-hom (A , x) (B , y) f = f x ≡ y
+pointedStr .is-hom (A , x) (B , y) f = f .fst x ≡ y
 ```
 
 This is univalent by `uaPathP≃Path`{.Agda}, which says `PathP (ua f) x
@@ -184,18 +186,19 @@ productStr-univalent {S = S} {T = T} {σ = σ} {τ} θ₁ θ₂ {X , x , y} {Y ,
 ```
 
 If `S` and `T` are univalent structures, then so are the families of
-functions between them:
+functions between them. For reasons we'll see below, this is called
+`Str-functionStr`{.Agda} (a rather redundant name!) instead of `functionStr`{.Agda}.
 
 ```agda
-functionStr : Structure ℓ₁ S → Structure ℓ₂ T → Structure _ (λ X → S X → T X)
-functionStr {S = S} σ τ .is-hom (A , f) (B , g) h =
+Str-functionStr : Structure ℓ₁ S → Structure ℓ₂ T → Structure _ (λ X → S X → T X)
+Str-functionStr {S = S} σ τ .is-hom (A , f) (B , g) h =
   {s : S A} {t : S B} → σ .is-hom (A , s) (B , t) h
                       → τ .is-hom (A , f s) (B , g t) h
 
-functionStr-univalent : {σ : Structure ℓ₁ S} {τ : Structure ℓ₂ T}
-                      → isUnivalent σ → isUnivalent τ
-                      → isUnivalent (functionStr σ τ)
-functionStr-univalent {S = S} {T = T} {σ = σ} {τ} θ₁ θ₂ eqv =
+Str-functionStr-univalent : {σ : Structure ℓ₁ S} {τ : Structure ℓ₂ T}
+                          → isUnivalent σ → isUnivalent τ
+                          → isUnivalent (Str-functionStr σ τ)
+Str-functionStr-univalent {S = S} {T = T} {σ = σ} {τ} θ₁ θ₂ eqv =
   Π-impl-cod≃ (λ s → Π-impl-cod≃ λ t → function≃ (θ₁ eqv) (θ₂ eqv)) ∙e funextDep≃
 ```
 
@@ -223,13 +226,13 @@ built out of structure combinators, it's automatically univalent:
 
 ```agda
   ∞-Magma : Structure lzero binop
-  ∞-Magma = functionStr pointedStr (functionStr pointedStr pointedStr)
+  ∞-Magma = Str-functionStr pointedStr (Str-functionStr pointedStr pointedStr)
 
   ∞-Magma-univ : isUnivalent ∞-Magma
   ∞-Magma-univ =
-    functionStr-univalent {τ = functionStr pointedStr pointedStr}
+    Str-functionStr-univalent {τ = Str-functionStr pointedStr pointedStr}
       pointedStr-univalent
-      (functionStr-univalent {τ = pointedStr}
+      (Str-functionStr-univalent {τ = pointedStr}
         pointedStr-univalent
         pointedStr-univalent)
 ```
@@ -239,11 +242,11 @@ is slightly inconvenient: Instead of getting $f (x \star y) = f x * f
 y$, we get something that is parameterised over two paths:
 
 ```agda
-  _ : {A B : TypeWith ∞-Magma} {f : A .fst → B .fst}
+  _ : {A B : TypeWith ∞-Magma} {f : A .fst ≃ B .fst}
     → ∞-Magma .is-hom A B f
-    ≡ ( {s : A .fst} {t : B .fst} → f s ≡ t
-      → {x : A .fst} {y : B .fst} → f x ≡ y
-      → f (A .snd s x) ≡ B .snd t y)
+    ≡ ( {s : A .fst} {t : B .fst} → f .fst s ≡ t
+      → {x : A .fst} {y : B .fst} → f .fst x ≡ y
+      → f .fst (A .snd s x) ≡ B .snd t y)
   _ = refl
 ```
 
@@ -251,12 +254,12 @@ This condition, although it looks a lot more complicated, is essentially
 the same as the standard notion:
 
 ```agda
-  fixup : {A B : TypeWith ∞-Magma} {f : A .fst → B .fst}
-        → ((x y : A .fst) → f (A .snd x y) ≡ B .snd (f x) (f y))
+  fixup : {A B : TypeWith ∞-Magma} {f : A .fst ≃ B .fst}
+        → ((x y : A .fst) → f .fst (A .snd x y) ≡ B .snd (f .fst x) (f .fst y))
         → ∞-Magma .is-hom A B f
   fixup {A = A} {B} {f} path {s} {t} p {s₁} {t₁} q =
-    f (A .snd s s₁)     ≡⟨ path _ _ ⟩
-    B .snd (f s) (f s₁) ≡⟨ ap₂ (B .snd) p q ⟩
+    f .fst (A .snd s s₁)     ≡⟨ path _ _ ⟩
+    B .snd (f .fst s) (f .fst s₁) ≡⟨ ap₂ (B .snd) p q ⟩
     B .snd t     t₁     ∎
 ```
 
@@ -296,7 +299,7 @@ I claim that `not`{.Agda} is a $\infty$-magma isomorphism between
 ```agda
   not-iso : Conj ≃[ ∞-Magma ] Disj
   not-iso .fst = not , isEquiv-not
-  not-iso .snd = fixup {A = Conj} {B = Disj} λ where
+  not-iso .snd = fixup {A = Conj} {B = Disj} {f = _ , isEquiv-not} λ where
     false false → refl
     false true → refl
     true false → refl
@@ -319,6 +322,184 @@ $\infty$-magma:
   Conj≡Disj : Conj ≡ Disj
   Conj≡Disj = sip ∞-Magma-univ not-iso
 ```
+
+We have a similar phenomenon that happens with NAND and NOR:
+
+<div class=mathpar>
+```agda
+  Nand : TypeWith ∞-Magma
+  Nand .fst = Bool
+  Nand .snd false false = true
+  Nand .snd false true  = true
+  Nand .snd true  false = true
+  Nand .snd true  true  = false
+```
+
+```agda
+  Nor : TypeWith ∞-Magma
+  Nor .fst = Bool
+  Nor .snd false false = true
+  Nor .snd false true  = false
+  Nor .snd true  false = false
+  Nor .snd true  true  = false
+```
+</div>
+
+```agda
+  not-iso' : Nand ≃[ ∞-Magma ] Nor
+  not-iso' .fst = not , isEquiv-not
+  not-iso' .snd = fixup {A = Nand} {B = Nor} {f = _ , isEquiv-not} λ where
+    false false → refl
+    false true → refl
+    true false → refl
+    true true → refl
+```
+
+# Transport Structures
+
+As an alternative to equipping a type family `S : Type → Type` with a
+notion of S-homomorphism, we can equip it with a notion of _action_.
+Equipping a structure with a notion of action canonically equips it with
+a notion of homomorphism:
+
+```
+EqvAction : (S : Type ℓ → Type ℓ₁) → Type _
+EqvAction {ℓ = ℓ} S = {X Y : Type ℓ} → (X ≃ Y) → (S X ≃ S Y)
+
+Action→Structure : {S : Type  ℓ → Type ℓ₁} → EqvAction S → Structure _ S
+Action→Structure act .is-hom (A , x) (B , y) f = act f .fst x ≡ y
+```
+
+A **transport structure** is one with an action which, when restricted
+to _equivalences_ rather than arbitrary maps, agrees with substitution:
+
+```
+isTransportStr : {S : Type ℓ → Type ℓ₁} → EqvAction S → Type _
+isTransportStr {ℓ = ℓ} {S = S} act =
+  {X Y : Type ℓ} (e : X ≃ Y) (s : S X) → act e .fst s ≡ subst S (ua e) s
+```
+
+<!--
+```
+transportStr¯¹ :
+  {S : Type ℓ → Type ℓ₂} (α : EqvAction S) (τ : isTransportStr α)
+  {X Y : Type ℓ} (e : X ≃ Y) (t : S Y)
+  → equiv→inverse (α e .snd) t ≡ subst S (sym (ua e)) t
+transportStr¯¹ {S = S} α τ e t =
+     sym (transport¯Transport (ap S (ua e)) (equiv→inverse (α e .snd) t))
+  ·· sym (ap (subst S (sym (ua e))) (τ e (equiv→inverse (α e .snd) t)))
+  ·· ap (subst S (sym (ua e))) (equiv→section (α e .snd) t)
+```
+-->
+
+If `S` is a `transport structure`{.Agda id=isTransportStr}, then its
+canonical equipment as a `Structure`{.Agda} is univalent:
+
+```
+isTransp→isUnivalent : {S : Type ℓ → Type ℓ₁} (a : EqvAction S)
+                     → isTransportStr a
+                     → isUnivalent (Action→Structure a)
+isTransp→isUnivalent {S = S} act is-tr {X , s} {Y , t} eqv =
+  act eqv .fst s ≡ t              ≃⟨ pathToEquiv (ap (_≡ t) (is-tr eqv s)) ⟩
+  subst S (ua eqv) s ≡ t          ≃⟨ pathToEquiv (sym (PathP≡Path (λ i → S (ua eqv i)) s t)) ⟩
+  PathP (λ i → S (ua eqv i)) s t  ≃∎
+```
+
+We can mix and match these different notions of structure at will. For
+example, a more convenient definition of function univalent structure
+uses an equivalence action on the domain:
+
+```
+functionStr : EqvAction S → Structure ℓ T → Structure _ (λ X → S X → T X)
+functionStr {S = S} act str .is-hom (A , f) (B , g) e =
+  (s : S A) → str .is-hom (A , f s) (B , g (act e .fst s)) e
+```
+
+This alternative definition of structure is univalent when `T` is a
+univalent structure and `S` is a transport structure:
+
+```
+functionStr-univalent : (α : EqvAction S) → isTransportStr α
+                      → (τ : Structure ℓ T) → isUnivalent τ
+                      → isUnivalent (functionStr α τ)
+functionStr-univalent {S = S} {T = T} α α-tr τ τ-univ {X , f} {Y , g} eqv =
+  ((s : S X) → τ .is-hom (X , f s) (Y , _) eqv)     ≃⟨ Π-cod≃ (λ s → τ-univ eqv ∙e pathToEquiv (ap (PathP (λ i → T (ua eqv i)) (f s) ∘ g) (α-tr _ _))) ⟩
+  ((s : S X) → PathP (λ i → T (ua eqv i)) (f s) _)  ≃⟨ (heteroHomotopy≃Homotopy e¯¹) ∙e funextDep≃ ⟩
+  _                                                 ≃∎
+```
+
+To see why `functionStr`{.Agda ident=functionStr} is more convenient
+than `the previous definition`{.Agda ident=Str-functionStr} - which is
+why it gets the shorter name - it's convenient to consider how the
+`pointed structure`{.Agda ident=pointedStr} acts on equivvalences: _not
+at all_. Recall the definition of ∞-magma equivalence generated by
+`functionStr`{.Agda}:
+
+```
+private
+  _ : {A B : TypeWith ∞-Magma} {f : A .fst ≃ B .fst}
+    → ∞-Magma .is-hom A B f
+    ≡ ( {s : A .fst} {t : B .fst} → f .fst s ≡ t
+      → {x : A .fst} {y : B .fst} → f .fst x ≡ y
+      → f .fst (A .snd s x) ≡ B .snd t y)
+  _ = refl
+```
+
+Let's rewrite `∞-Magma`{.Agda} using `functionStr`{.Agda} to see how it
+compares:
+
+```
+  ∞-Magma′ : Structure lzero binop
+  ∞-Magma′ = functionStr id (functionStr id pointedStr)
+
+  _ : {A B : TypeWith ∞-Magma} {f : A .fst ≃ B .fst}
+    → ∞-Magma′ .is-hom A B f
+    ≡ ( (x y : A .fst) → f .fst (A .snd x y) ≡ B .snd (f .fst x) (f .fst y))
+  _ = refl
+```
+
+Much better! This gets rid of all those redundant paths that were
+previously present, using the fact that `λ X → X` _does not need to act
+on equivalences_.
+
+In general, transport structures are closed under all of the same
+operations as univalent structures, which begs the question: Why mention
+univalent structures at all? The reason is that a definition of
+structure homomorphism is very often needed, and the data of a univalent
+structure is perfect to use in the definition of `SIP`{.Agda}.
+
+<details>
+<summary>The closure properties of transport structures are in this
+`<details>` tag to keep the length of the page shorter </summary>
+```
+constantAction : (A : Type ℓ) → EqvAction {ℓ = ℓ₁} (λ X → A)
+constantAction A eqv = _ , idEquiv
+
+constantAction-isTransp : {A : Type ℓ} → isTransportStr {ℓ = ℓ₁} (constantAction A)
+constantAction-isTransp f s = sym (transport-refl _)
+
+idAction-isTransp : isTransportStr {ℓ = ℓ} {ℓ₁ = ℓ} id
+idAction-isTransp f s = sym (transport-refl _)
+
+productAction : EqvAction S → EqvAction T → EqvAction (λ X → S X × T X)
+productAction actx acty eqv = Σ-ap (actx eqv) λ x → acty eqv
+
+productAction-isTransp : {α : EqvAction S} {β : EqvAction T}
+                       → isTransportStr α → isTransportStr β
+                       → isTransportStr (productAction α β)
+productAction-isTransp α-tr β-tr e s = Σ-PathP (α-tr e (s .fst)) (β-tr e (s .snd))
+
+functionAction : EqvAction S → EqvAction T → EqvAction (λ X → S X → T X)
+functionAction actx acty eqv = function≃ (actx eqv) (acty eqv)
+
+functionAction-isTransp : {α : EqvAction S} {β : EqvAction T}
+                        → isTransportStr α → isTransportStr β
+                        → isTransportStr (functionAction α β)
+functionAction-isTransp {S = S} {α = α} {β = β} α-tr β-tr eqv f =
+  funext λ x → ap (β eqv .fst ∘ f) (transportStr¯¹ α α-tr eqv x)
+             ∙ β-tr eqv (f (subst S (sym (ua eqv)) x))
+```
+</details>
 
 # Adding Axioms
 
@@ -365,21 +546,28 @@ reasoning concludes what we wanted: `axiomsStr`{.Agda} is univalent.
     (axioms-prop : ∀ {X} {s} → isProp (axioms X s)) where
     axiomsStr-univalent : isUnivalent axiomsStr
     axiomsStr-univalent {X = A , s , a} {Y = B , t , b} f =
-      σ .is-hom (A , s) (B , t) (f . fst)
+      σ .is-hom (A , s) (B , t) f
         ≃⟨ univ f ⟩
       PathP (λ i → S (ua f i)) s t 
         ≃⟨ Σ-contract (λ x → isHLevelPathP 0 (contr b (axioms-prop b))) e¯¹ ⟩
       Σ[ p ∈ PathP (λ i → S (ua f i)) s t ] PathP (λ i → axioms (ua f i) (p i)) a b
         ≃⟨ Iso→Equiv Σ-PathP-iso ⟩
-      _ 
+      _
         ≃∎
 ```
 
-A very useful consequence of the SIP is that axioms can be lifted from
-equivalent underlying structures. For instance: $\mathbb{N}$ can be
-defined as both unary numbers (the construction of `Nat`{.Agda}), or as binary
-numbers. If you prove that `Nat`{.Agda} is a monoid, and `Nat ≃ Bin` as
-pointed ∞-magmas, then `Bin` inherits the monoid structure.
+Here, another facet of the trade-offs between transport and univalent
+structures make themselves clear: It's possible (albeit less than
+straightforward) to add axioms to a _univalent_ structure, but without
+imposing further structure on the axioms themselves, it is not clear how
+to add axioms to a _transport_ structure.
+
+Regardless, a very useful consequence of the SIP is that axioms can be
+lifted from equivalent underlying structures. For instance: $\mathbb{N}$
+can be defined as both unary numbers (the construction of `Nat`{.Agda}),
+or as binary numbers. If you prove that `Nat`{.Agda} is a monoid, and
+`Nat ≃ Bin` as pointed ∞-magmas, then `Bin` inherits the monoid
+structure.
 
 ```agda
 transferAxioms 
@@ -395,66 +583,126 @@ transferAxioms {univ = univ} {axioms = axioms} A B eqv =
 # A Language for Structures
 
 The structure combinators can be abstracted away into a _language_ for
-defining structures. The syntax is _inductive-recursive_: At the same
-time as we define the type of terms `StrTm`{.Agda}, we define an
-interpretation function `interp`{.Agda}, which calculates, from a
-`StrTm`{.Agda}, what the data of the structure looks like.
+defining structures. A `StrTm`{.Agda} describes a structure, that may be
+`interpreted`{.Agda ident=interp} into a family of types, and defines
+both transport and univalent structures.
 
 ```
-data StrTm ℓ : Type (lsuc ℓ)
-interp : ∀ {ℓ} → StrTm ℓ → Type ℓ → Type ℓ
-
-data StrTm ℓ where
+data StrTm ℓ : Type (lsuc ℓ) where
   s-const : Type ℓ → StrTm ℓ         -- Constant structures
   s∙   : StrTm ℓ                     -- Pointed structures
   _s→_ : StrTm ℓ → StrTm ℓ → StrTm ℓ -- Function structures
   _s×_ : StrTm ℓ → StrTm ℓ → StrTm ℓ -- Product structures
-  axioms : (L : StrTm ℓ)
-         → (ax : (X : Type ℓ) → interp L X → Type ℓ)
-         → (ax-p : ∀ X s → isProp (ax X s))
-         → StrTm ℓ
 
+interp : StrTm ℓ → Type ℓ → Type ℓ
 interp (s-const A) _ = A
 interp s∙ x = x
 interp (s s→ t) x = interp s x → interp t x
 interp (s s× t) x = interp s x × interp t x
-interp (axioms str ax ax-p) x = Σ[ a ∈ interp str x ] (ax x a)
 ```
 
 Since each term of the language corresponds to one of the combinators
-for building univalent structures, an inductive argument lets us `derive
-a Structure from a term`{.Agda ident=tm→Structure},
+for building univalent structures, a pair of _mutually recursive_
+functions lets us derive a `Structure`{.Agda} and an `action on
+equivalences`{.Agda ident=EqvAction} from a term, at the same time.
 
 ```
 tm→Structure : (s : StrTm ℓ) → Structure ℓ (interp s)
+tm→Action : (s : StrTm ℓ) → EqvAction (interp s)
+
 tm→Structure (s-const x) = constantStr x
 tm→Structure s∙ = pointedStr
-tm→Structure (s s→ s₁) = functionStr (tm→Structure s) (tm→Structure s₁)
+tm→Structure (s s→ s₁) = functionStr (tm→Action s) (tm→Structure s₁)
 tm→Structure (s s× s₁) = productStr (tm→Structure s) (tm→Structure s₁)
-tm→Structure (axioms s ax ax-p) = axiomsStr (tm→Structure s) ax
 
+tm→Action (s-const x₁) x = _ , idEquiv
+tm→Action s∙ x = x
+tm→Action (s s→ s₁) = functionAction (tm→Action s) (tm→Action s₁)
+tm→Action (s s× s₁) = productAction (tm→Action s) (tm→Action s₁)
+```
+
+The reason for this mutual recursion is the same reason that transport
+structures are considered in the first place: `functionStr`{.Agda} gives
+much better results for the definition of homomorphism than can be
+gotten directly using `Str-functionStr`{.Agda}. As an example of using
+the language, and the generated definition of homomorphism, consider
+pointed ∞-magmas:
+
+```
+private
+  Pointed∞Magma : Structure lzero _
+  Pointed∞Magma = tm→Structure (s∙ s× (s∙ s→ (s∙ s→ s∙)))
+
+  _ : {A B : TypeWith Pointed∞Magma} {f : A .fst ≃ B .fst}
+    → Pointed∞Magma .is-hom A B f
+    ≡ ( (f .fst (A .snd .fst) ≡ B .snd .fst)
+      × ((x y : A .fst) → f .fst (A .snd .snd x y)
+                        ≡ B .snd .snd (f .fst x) (f .fst y)))
+  _ = refl
+```
+
+A homomorphic equivalence of pointed ∞-magmas is an equivalence of their
+underlying types that preserves the basepoint and is homomorphic over
+the operation. The use of `tm→Action`{.Agda} in contravariant positions
+is responsible for making sure the computed `is-hom`{.Agda} doesn't have
+any redundant paths in argument positions.
+
+A mutually _inductive_ argument proves that `tm→Action`{.Agda} produces
+transport structures, and that `tm→Structure`{.Agda} produces univalent
+structures. At every case, the proof is by appeal to a lemma that was
+proved above.
+
+```
 tm→Structure-univalent : (s : StrTm ℓ) → isUnivalent (tm→Structure s)
+tm→Action-isTransp : (s : StrTm ℓ) → isTransportStr (tm→Action s)
+
 tm→Structure-univalent (s-const x) = constantStr-univalent
 tm→Structure-univalent s∙ = pointedStr-univalent
 tm→Structure-univalent (s s→ s₁) =
-  functionStr-univalent {τ = tm→Structure s₁}
-    (tm→Structure-univalent s)
-    (tm→Structure-univalent s₁)
+  functionStr-univalent
+    (tm→Action s) (tm→Action-isTransp s)
+    (tm→Structure s₁) (tm→Structure-univalent s₁)
 tm→Structure-univalent (s s× s₁) =
   productStr-univalent {σ = tm→Structure s} {τ = tm→Structure s₁}
     (tm→Structure-univalent s) (tm→Structure-univalent s₁)
-tm→Structure-univalent (axioms s ax ax-p) =
-  axiomsStr-univalent (tm→Structure s) ax (tm→Structure-univalent s)
-    λ {X} {s} → ax-p X s
 
-module Lang→Str {ℓ} (lang : StrTm ℓ) where
-  Data = interp lang
+tm→Action-isTransp (s-const x) = constantAction-isTransp
+tm→Action-isTransp s∙ = idAction-isTransp
+tm→Action-isTransp (s s→ s₁) =
+  functionAction-isTransp {α = tm→Action s} {β = tm→Action s₁}
+    (tm→Action-isTransp s) (tm→Action-isTransp s₁)
+tm→Action-isTransp (s s× s₁) =
+  productAction-isTransp {α = tm→Action s} {β = tm→Action s₁}
+    (tm→Action-isTransp s) (tm→Action-isTransp s₁)
+```
 
-  Str : Structure _ Data
-  Str = tm→Structure lang
+## Descriptions of Structures
 
-  Str-univalent : isUnivalent Str
-  Str-univalent = tm→Structure-univalent lang
+To make convenient descriptions of structures-with-axioms, we introduce
+a record type, `StrDesc`{.Agda}, which packages together the structure
+term and the properties that are imposed:
 
-  Str-type = TypeWith Str
+```
+record StrDesc ℓ ax : Type (lsuc (lsuc ℓ ⊔ ax)) where
+  field
+    descriptor : StrTm ℓ
+
+    axioms : ∀ X → interp descriptor X → Type ax
+    axioms-prop : ∀ X s → isProp (axioms X s)
+
+Desc→Fam : ∀ {ax} → StrDesc ℓ ax → Type ℓ → Type (ℓ ⊔ ax)
+Desc→Fam desc X =
+  Σ[ S ∈ interp (desc .StrDesc.descriptor) X ]
+    (desc .StrDesc.axioms _ S)
+
+Desc→Str : ∀ {ax} → (S : StrDesc ℓ ax) → Structure _ (Desc→Fam S)
+Desc→Str desc = axiomsStr (tm→Structure descriptor) axioms
+  where open StrDesc desc
+
+Desc→isUnivalent : ∀ {ax} → (S : StrDesc ℓ ax) → isUnivalent (Desc→Str S)
+Desc→isUnivalent desc =
+  axiomsStr-univalent
+    (tm→Structure descriptor) axioms
+    (tm→Structure-univalent descriptor) (λ {X} {s} → axioms-prop X s)
+  where open StrDesc desc
 ```
