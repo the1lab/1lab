@@ -11,6 +11,9 @@ cat <<EOF
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{amsopn}
+\usepackage{mathpazo}
+\usepackage[T1]{fontenc}
+
 \usetikzlibrary{calc}
 \usetikzlibrary{decorations.pathmorphing}
 \definecolor{eee}{HTML}{EEEEEE}
@@ -25,7 +28,6 @@ cat <<EOF
 \tikzset{tail reversed/.code={\pgfsetarrowsstart{tikzcd to}}}
 \tikzset{2tail/.code={\pgfsetarrowsstart{Implies[reversed]}}}
 \tikzset{2tail reversed/.code={\pgfsetarrowsstart{Implies}}}
-\tikzset{no body/.style={/tikz/dash pattern=on 0 off 1mm}}
 \begin{document}
 \begin{page}
 EOF

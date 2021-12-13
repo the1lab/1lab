@@ -248,7 +248,7 @@ subst-filler P p x i = transp (λ j → P (p (i ∧ j))) (~ i) x
 It's called a filler because it's the _inside_ --- the space that fills -
 a cube. Specifically, it can be pictured as in this diagram:
 
-~~~{.quiver .short-1}
+~~~{.quiver .short-2}
 \[\begin{tikzcd}
   x &&& {\text{subst}(P,p,x)}
   \arrow["{\text{subst-filler}(P,p,x)}", from=1-1, to=1-4]
