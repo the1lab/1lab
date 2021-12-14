@@ -404,13 +404,56 @@ Action→Structure : {S : Type  ℓ → Type ℓ₁} → EqvAction S → Structu
 Action→Structure act .is-hom (A , x) (B , y) f = act f .fst x ≡ y
 ```
 
-A **transport structure** is one with an action which, when restricted
-to _equivalences_ rather than arbitrary maps, agrees with substitution:
+A **transport structure** is a structure `S : Type → Type` with a choice
+of equivalence action `α : EqvAction S` which agrees with the
+“intrinsic” notion of equivalence action that is induced by [the
+computation rules for transport].
+
+[the computation rules for transport]: 1Lab.Path.html#computation
 
 ```
 isTransportStr : {S : Type ℓ → Type ℓ₁} → EqvAction S → Type _
 isTransportStr {ℓ = ℓ} {S = S} act =
   {X Y : Type ℓ} (e : X ≃ Y) (s : S X) → act e .fst s ≡ subst S (ua e) s
+```
+
+While the above definition of `transport structure`{.Agda} is natural,
+it can sometimes be unwieldy to work with. Using `univalence`{.Agda
+ident=EquivJ}, the condition for being a transport structure can be
+weakened to "preserves the identity equivalence", with no loss of
+generality:
+
+```
+preservesId : {S : Type ℓ → Type ℓ} → EqvAction S → Type _
+preservesId {ℓ = ℓ} {S = S} act =
+  {X : Type ℓ} (s : S X) → act (id , idEquiv) .fst s ≡ s
+```
+
+The proof is by equivalence induction: To show something about all `Y :
+Type, x : X ≃ Y` (with X fixed), it suffices to cover the case where `Y`
+is `X` and `e` is the identity equivalence. This case is by the
+assumption that `σ preserves id`{.Agda ident=preservesId}.
+
+```
+preservesId→isTransportStr : (σ : EqvAction S) → preservesId σ → isTransportStr σ
+preservesId→isTransportStr {S = S} σ pres-id e s =
+  EquivJ (λ _ e → σ e .fst s ≡ subst S (ua e) s) lemma' e
+  where
+```
+
+Unfortunately we can not directly use the assumption that `σ` preserves
+`id`{.Agda} in the proof, but it can be used as the final step in an
+equational proof:
+
+```
+    lemma' : σ (id , idEquiv) .fst s ≡ subst S (ua (id , idEquiv)) s
+    lemma' =
+      sym (
+        subst S (ua (id , idEquiv)) s ≡⟨ ap (λ p → subst S p s) uaIdEquiv ⟩
+        transport refl s              ≡⟨ transport-refl _ ⟩
+        s                             ≡⟨ sym (pres-id s) ⟩ 
+        σ (id , idEquiv) .fst s       ∎
+      )
 ```
 
 <!--

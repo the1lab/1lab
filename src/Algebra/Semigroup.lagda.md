@@ -53,8 +53,8 @@ _associative_ binary operation `⋆`.
 
 ```
   field
-    smg-isSet       : isSet A
-    smg-associative : {x y z : A} → x ⋆ (y ⋆ z) ≡ (x ⋆ y) ⋆ z
+    hasIsSet    : isSet A
+    associative : {x y z : A} → x ⋆ (y ⋆ z) ≡ (x ⋆ y) ⋆ z
 
 open isSemigroup public
 ```
@@ -101,11 +101,11 @@ operator is a _property_ of the operator:
 
 ```
 isProp-isSemigroup : {_⋆_ : A → A → A} → isProp (isSemigroup _⋆_)
-isProp-isSemigroup x y i .smg-isSet =
-  isProp-isHLevel 2 (x .smg-isSet) (y .smg-isSet) i
-isProp-isSemigroup {_⋆_ = _⋆_} x y i .smg-associative {a} {b} {c} =
-  x .smg-isSet (a ⋆ (b ⋆ c)) ((a ⋆ b) ⋆ c)
-               (x .smg-associative) (y .smg-associative) i
+isProp-isSemigroup x y i .hasIsSet =
+  isProp-isHLevel 2 (x .hasIsSet) (y .hasIsSet) i
+isProp-isSemigroup {_⋆_ = _⋆_} x y i .associative {a} {b} {c} =
+  x .hasIsSet (a ⋆ (b ⋆ c)) ((a ⋆ b) ⋆ c)
+              (x .associative) (y .associative) i
 ```
 
 A **semigroup structure on** a type packages up the binary operation and
@@ -161,8 +161,8 @@ under taking `minimums`{.Agda ident=min}.
 
 ```
 Nat-min : isSemigroup min
-Nat-min .smg-isSet = isSet-Nat
-Nat-min .smg-associative = min-assoc _ _ _
+Nat-min .hasIsSet = isSet-Nat
+Nat-min .associative = min-assoc _ _ _
 ```
 
 What is meant by "naturally occuring" is that this semigroup can not be
@@ -215,7 +215,7 @@ Set - thus they are propositions).
 isProp-twoSideId : {⋆ : A → A → A} → isSemigroup ⋆
                  → isProp (Σ[ u ∈ A ] (isTwoSideId ⋆ u))
 isProp-twoSideId semi x y =
-  Σ≡Prop (λ u → isHLevel× 1 (isHLevelΠ 1 (λ _ → semi .smg-isSet _ _))
-                            (isHLevelΠ 1 (λ _ → semi .smg-isSet _ _)))
+  Σ≡Prop (λ u → isHLevel× 1 (isHLevelΠ 1 (λ _ → semi .hasIsSet _ _))
+                            (isHLevelΠ 1 (λ _ → semi .hasIsSet _ _)))
     (left-right (x .fst) (y .fst) (x .snd .fst) (y .snd .snd))
 ```
