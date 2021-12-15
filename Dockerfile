@@ -18,11 +18,6 @@ RUN \
   makepkg;
 
 RUN \
-  git clone https://aur.archlinux.org/agda-bin-git.git; \
-  cd agda-bin-git; \
-  makepkg;
-
-RUN \
   git clone https://aur.archlinux.org/stack-static.git; \
   cd stack-static; \
   makepkg --skipinteg;
@@ -30,14 +25,8 @@ RUN \
 USER root
 RUN \
   pacman --noconfirm -U pandoc-bin/*.pkg.tar.zst \
-    agda-bin-git/*.pkg.tar.zst \
     stack-static/*.pkg.tar.zst; \
-  rm -fr pandoc-bin agda-bin-git stack-static
-
-RUN \
-  pacman --noconfirm -S python-pip; \
-  pip install pandoc-include; \
-  pacman --noconfirm -Rsc python-pip;
+  rm -fr pandoc-bin stack-static
 
 WORKDIR /root/
 
@@ -60,11 +49,12 @@ RUN \
   echo -e "packages: []\nresolver: lts-18.18" >> /root/.stack/global-project/stack.yaml
 
 RUN \
-  stack install -j16 shake; \
-  stack install -j16 pandoc-types; \
-  stack install -j16 tagsoup; \
-  stack install -j16 unordered-containers; \
-  stack install -j16 uri-encode; \
+  stack install -j4 --ghc-options "-j12" shake; \
+  stack install -j4 --ghc-options "-j12" pandoc-types; \
+  stack install -j4 --ghc-options "-j12" tagsoup; \
+  stack install -j4 --ghc-options "-j12" unordered-containers; \
+  stack install -j4 --ghc-options "-j12" uri-encode; \
+  stack install -j4 --ghc-options "-j12" Agda; \
 \
   git clone https://git.amelia.how/amelia/agda-reference-filter.git; \
   cd agda-reference-filter; \
@@ -81,10 +71,12 @@ RUN \
   cd ..; \
   rm -rf agda-fold-equations; \
   stack exec -- ghc Shakefile.hs -o /root/.local/bin/1lab-shake; \
+\
+  mv $(/root/.local/bin/agda --print-agda-dir) /root/Agda -v; \
   rm -rf /root/.stack
 
 RUN \
-  mkdir -p $(dirname $(agda --print-agda-dir)); \
-  ln -sf /usr/share/agda/ $(agda --print-agda-dir);
+  mkdir -p $(dirname $(/root/.local/bin/agda --print-agda-dir)); \
+  ln -sf /root/Agda/ $(/root/.local/bin/agda --print-agda-dir);
 
 WORKDIR /workspace

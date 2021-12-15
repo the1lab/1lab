@@ -128,7 +128,6 @@ and-idempotent true = refl
 or-idempotent : (x : Bool) → or x x ≡ x
 or-idempotent false = refl
 or-idempotent true = refl
-
 ```
 
 All the properties above hold both in classical and constructive mathematics, even in
@@ -370,9 +369,10 @@ equivalences have contractible fibres; Since we have two fibres over
 The other case is analogous.
 
 ```agda
-  ... | no x  | no x₁  =
-    ua (not , isEquiv-not) ≡⟨ ap ua (sym (notLemma _ (lemma (transport path) x)
-                                                     (lemma (transport path) x₁)))
+  ... | no true→false' | no false→true' =
+    ua (not , isEquiv-not) ≡⟨ ap ua (sym (notLemma _
+                                            (lemma (transport path) true→false')
+                                            (lemma (transport path) false→true')))
                             ⟩
     ua (pathToEquiv path)  ≡⟨ univalence-Iso .snd .linv _ ⟩
     path                   ∎

@@ -67,7 +67,7 @@ Any type with a choice of partial order is a set. This is because of
 `Rijke's theorem`{.Agda ident=Rijke-isSet}: Any type with a reflexive
 relation implying equality is a set.
 
-```
+```agda
 hasPartialOrder→isSet : {A : Type ℓ} {R : A → A → Type ℓ'}
                       → isPartialOrder R
                       → isSet A
@@ -81,7 +81,7 @@ For the relation, we take $R(x, y) = (x \le y) \land (y \le x)$. By
 antisymmetry, this implies $x = y$. Since propositions are closed under
 products, this is a proposition.
 
-```
+```agda
     R' : A → A → Type _
     R' x y = (x ≤ y) × (y ≤ x)
 
@@ -97,7 +97,7 @@ proposition. We do this by the characterisation of propositions as those
 types which are `contractible when inhabited`{.Agda
 ident=inhContr→isProp}, since then we're free to assume A is a set.
 
-```
+```agda
 isProp-isPartialOrder : {A : Type ℓ} {R : A → A → Type ℓ'}
                       → isProp (isPartialOrder R)
 isProp-isPartialOrder {A = A} {R} = inhContr→isProp contract
@@ -116,7 +116,7 @@ Since the paths end up being a big product of propositions, most of the
 construction follows directly from the fact that `preorders are
 propositional`{.Agda ident=propositional}.
 
-```
+```agda
       deform : (x : isPartialOrder R) → order ≡ x
       deform x i .preorder .reflexive =
         x .propositional (order .preorder .reflexive)
@@ -131,7 +131,7 @@ propositional`{.Agda ident=propositional}.
 To connect the propositionality witnesses, we use the fact that `isProp
 is a proposition`{.Agda ident=isProp-isProp}.
 
-```
+```agda
       deform x i .preorder .propositional =
         isProp-isProp (order .preorder .propositional)
                       (x .preorder .propositional)
@@ -142,7 +142,7 @@ The construction is finished by relating the antisymmetry witnesses.
 Since `A` admits a partial order, and thus is a set, all of its path
 spaces are propositions:
 
-```
+```agda
       deform x i .antisym p q = A-set _ _ (order .antisym p q) (x .antisym p q) i
 ```
 

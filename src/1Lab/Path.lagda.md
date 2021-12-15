@@ -279,7 +279,7 @@ This second argument, which lets us control where `transp`{.Agda} is
 constant, brings a lot of power to the table! For example, the proof
 that transporting along `refl`{.Agda} is `id`{.Agda} is as follows:
 
-```
+```agda
 transport-refl : ∀ {ℓ} {A : Type ℓ} (x : A)
                → transport (λ i → A) x ≡ x
 transport-refl {A = A} x i = transp (λ _ → A) i x
@@ -294,12 +294,34 @@ In fact, this generalises to something called the _filler_ of
 `transport`{.Agda}: `transport p x` and `x` _are_ equal, but they're
 equal _over_ the given path:
 
-```
+```agda
 transport-filler : ∀ {ℓ} {A B : Type ℓ}
                  → (p : A ≡ B) (x : A)
                  → PathP (λ i → p i) x (transport p x)
 transport-filler p x i = transp (λ j → p (i ∧ j)) (~ i) x
 ```
+
+<details>
+<summary>
+We also have some special cases of `transport-filler`{.Agda} which are
+very convenient when working with iterated transports.
+</summary>
+
+```agda
+transport-fillerExt : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B)
+                    → PathP (λ i → A → p i) (λ x → x) (transport p)
+transport-fillerExt p i x = transport-filler p x i
+
+transport¯-fillerExt : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B)
+                     → PathP (λ i → p i → A) (λ x → x) (transport (sym p))
+transport¯-fillerExt p i x = transp (λ j → p (i ∧ ~ j)) (~ i) x
+
+transport¯Transport : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B) (a : A)
+                    → transport (sym p) (transport p a) ≡ a
+transport¯Transport p a i = 
+  transport¯-fillerExt p (~ i) (transport-fillerExt p (~ i) a)
+```
+</details>
 
 The path is constant when `i = i1` because `(λ j → p (i1 ∧ j))` is
 `(λ j → p i1)` (by the reduction rules for `_∧_`{.Agda}). It has the
@@ -328,7 +350,7 @@ transport is always the identity function. This is justified because
 there's nothing to vary in `Nat`{.Agda}, so we can just ignore the
 transport:
 
-```
+```agda
 _ : {x : Nat} → transport (λ i → Nat) x ≡ x
 _ = refl
 ```
@@ -337,14 +359,14 @@ For other type formers, the definition is a bit more involved. Let's
 assume that we have two lines, `A` and `B`, to see how transport reduces
 in types built out of `A` and `B`:
 
-```
+```agda
 module _ {A : I → Type} {B : I → Type} where private
 ```
 
 For non-dependent products, the reduction rule says that
 "`transport`{.Agda} is homomorphic over forming products":
 
-```
+```agda
   _ : {x : A i0} {y : B i0}
     → transport (λ i → A i × B i) (x , y)
     ≡ (transport (λ i → A i) x , transport (λ i → B i) y)
@@ -355,7 +377,7 @@ For non-dependent functions, we have a similar situation, except one the
 transports is _backwards_. This is because, given an `f : A i0 → B i0`,
 we have to turn an `A i1` into an `A i0` to apply f!
 
-```
+```agda
   _ : {f : A i0 → B i0}
     → transport (λ i → A i → B i) f
     ≡ λ x → transport (λ i → B i) (f (transport (λ i → A (~ i)) x))
@@ -372,7 +394,7 @@ non-dependent construction: Given an `f : (x : A i0) → B i0 x` and an
 argument `x : A i1`, we first get `x' : A i0` by transporting along `λ i
 → A (~ i)`, compute `f x' : B i0 x`, then transport along `(λ i → B i x')` to g- Wait.
 
-```
+```agda
   _ : {f : (x : A i0) → B i0 x}
     → transport (λ i → (x : A i) → B i x) f
     ≡ λ (x : A i1) →
@@ -386,7 +408,7 @@ well-formed type! Indeed, `B i : A i → Type`, but `x' : A i1`. What we
 need is some way of connecting our original `x` and `x'`, so that we may
 get a `B i1 x'`. This is where `transport-filler`{.Agda} comes in:
 
-```
+```agda
           x≡x' : PathP (λ i → A (~ i)) x x'
           x≡x' = transport-filler (λ i → A (~ i)) x
 ```
@@ -395,7 +417,7 @@ By using `λ i → B i (x≡x' (~ i))` as our path, we a) get something
 type-correct, and b) get something with the right endpoints. `(λ i → B i
 (x≡x' (~ i)))` connects `B i0 x` and `B i1 x'`, which is what we wanted.
 
-```
+```agda
           fx' : B i0 x'
           fx' = f x'
         in transport (λ i → B i (x≡x' (~ i))) fx'
@@ -414,7 +436,7 @@ breaks down as the following two statements:
 - Singletons are contractible. The type `Singleton A x` is the "subtype
 of A of the elements equal to x":
 
-```
+```agda
 Singleton : ∀ {ℓ} {A : Type ℓ} → A → Type _
 Singleton x = Σ[ y ∈ _ ] (x ≡ y)
 ```
@@ -423,7 +445,7 @@ There is a canonical inhabitant of `Singleton x`, namely `(x, refl)`. To
 say that `singletons`{.Agda ident=singleton} are contractible is to say
 that every other inhabitant has a path to `(x, refl)`:
 
-```
+```agda
 isContr-Singleton : ∀ {ℓ} {A : Type ℓ} {x : A} (y : Singleton x)
                   → Path (Singleton x) (x , refl) y
 isContr-Singleton {x = x} (y , path) i = p i , square i where
@@ -486,7 +508,7 @@ binary functions. The type is huge! That's because it applies to the
 most general type of 2-argument dependent function possible: `(x : A) (y
 : B x) → C x y`. Even then, the proof is beautifully short:
 
-```
+```agda
 ap₂ : ∀ {a b c} {A : Type a} {B : A → Type b} {C : (x : A) → B x → Type c}
       (f : (x : A) (y : B x) → C x y)
       {x y : A} {α : B x} {β : B y}
@@ -597,6 +619,16 @@ hfill {φ = φ} u u0 i =
 
 <!--
 ```
+ghcomp : ∀ {ℓ} {A : Type ℓ} {φ : I}
+       → (u : I → Partial φ A)
+       → (u0 : A [ φ ↦ u i0 ])
+       → A [ φ ↦ u i1 ]
+ghcomp {φ = φ} u u0 =
+  inS (hcomp (λ { j (φ = i1) → u j 1=1
+                ; j (φ = i0) → outS u0
+                })
+        (outS u0))
+
 fill : ∀ {ℓ} (A : ∀ i → Type ℓ)
        {φ : I}
        (u : ∀ i → Partial φ (A i))
@@ -705,9 +737,14 @@ In the HoTT book, we characterise paths over paths using
 notions, fortunately, coincide!
 
 ```agda
-PathP≡Path : ∀ {ℓ} → (P : I → Type ℓ) (p : P i0) (q : P i1) →
+PathP≡Path : ∀ {ℓ} (P : I → Type ℓ) (p : P i0) (q : P i1) →
              PathP P p q ≡ Path (P i1) (transport (λ i → P i) p) q
 PathP≡Path P p q i = PathP (λ j → P (i ∨ j)) (transport-filler (λ j → P j) p i) q
+
+PathP≡Path⁻ : ∀ {ℓ} (P : I → Type ℓ) (p : P i0) (q : P i1) →
+             PathP P p q ≡ Path (P i0) p (transport (λ i → P (~ i)) q)
+PathP≡Path⁻ P p q i = PathP (λ j → P (~ i ∧ j)) p
+                            (transport-filler (λ j → P (~ j)) q i)
 ```
 
 We can see this by substituting either `i0` or `i1` for the variable `i`.
@@ -720,7 +757,7 @@ by the endpoint rule for `transport-filler`{.Agda}.
 
 We can write a helper function that allows us to write Book-style proofs:
 
-```
+```agda
 transp→PathP : ∀ {ℓ} (P : I → Type ℓ) (p : P i0) (q : P i1) →
   transport (λ i → P i) p ≡ q → PathP P p q
 transp→PathP P p q a = transport (sym (PathP≡Path P p q)) a
@@ -953,3 +990,83 @@ subst-path-right {x = x} loop adj =
       loop                      ≡⟨ sym (transport-refl _) ⟩
       subst (λ x → x) refl loop ∎
 ```
+
+# Cartesian Kan operations
+
+In Cubical Agda, we have a transport operation `A i0 → A i1`. In
+Cartesian cubical type theory, a type theory based on a different cube
+category, we have a primitive operation `coe i j : A i → A j`.
+Regardless, this operation can be defined in Cubical Agda. First, we
+define the coercions where one endpoint is a variable and one is
+constant:
+
+```agda
+coe0→1 : ∀ {ℓ} (A : I → Type ℓ) → A i0 → A i1
+coe0→1 A a = transp (λ i → A i) i0 a
+
+coe0→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i0 → A i
+coe0→i A i a = transp (λ j → A (i ∧ j)) (~ i) a
+
+coe1→0 : ∀ {ℓ} (A : I → Type ℓ) → A i1 → A i0
+coe1→0 A a = transp (λ i → A (~ i)) i0 a
+
+coe1→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i1 → A i
+coe1→i A i a = transp (λ j → A (i ∨ ~ j)) i a
+
+coei→0 : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i → A i0
+coei→0 A i a = transp (λ j → A (i ∧ ~ j)) (~ i) a
+```
+
+Then, using a filler, we can construct the "master coercion" operation
+of Cartesian cubical type theory:
+
+```agda
+coei→j : ∀ {ℓ} (A : I → Type ℓ) (i j : I) → A i → A j
+coei→j A i j a =
+  fill (\ i → A i)
+    (λ j → λ { (i = i0) → coe0→i A j a
+             ; (i = i1) → coe1→i A j a
+             })
+    (inS (coei→0 A i a))
+    j
+
+coei→1 : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i → A i1
+coei→1 A i a = coei→j A i i1 a
+
+coei0→1 : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → coei→1 A i0 a ≡ coe0→1 A a
+coei0→1 A a = refl
+
+coei1→1 : ∀ {ℓ} (A : I → Type ℓ) (a : A i1) → coei→1 A i1 a ≡ a
+coei1→1 A a = refl
+
+coei→i0 : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i) → coei→j A i i0 a ≡ coei→0 A i a
+coei→i0 A i a = refl
+
+coei0→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i0) → coei→j A i0 i a ≡ coe0→i A i a
+coei0→i A i a = refl
+
+coei→i1 : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i) → coei→j A i i1 a ≡ coei→1 A i a
+coei→i1 A i a = refl
+
+coei1→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i1) → coei→j A i1 i a ≡ coe1→i A i a
+coei1→i A i a = refl
+
+coei→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i) → coei→j A i i a ≡ a
+coei→i A i = coe0→i (λ i → (a : A i) → coei→j A i i a ≡ a) i (λ _ → refl)
+```
+
+<!--
+TODO: Explain these whiskerings
+
+```agda
+_◁_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ a₀' : A i0} {a₁ : A i1}
+  → a₀ ≡ a₀' → PathP A a₀' a₁ → PathP A a₀ a₁
+(p ◁ q) i =
+  hcomp (λ j → λ {(i = i0) → p (~ j); (i = i1) → q i1}) (q i)
+
+_▷_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ : A i0} {a₁ a₁' : A i1}
+  → PathP A a₀ a₁ → a₁ ≡ a₁' → PathP A a₀ a₁'
+(p ▷ q) i =
+  hcomp (λ j → λ {(i = i0) → p i0; (i = i1) → q j}) (p i)
+```
+-->

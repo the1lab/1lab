@@ -111,7 +111,7 @@ Set ℓ = Σ (isSet {ℓ = ℓ})
 
 Similarly, the types of h-level 3 are called **groupoids**.
 
-```
+```agda
 isGroupoid : ∀ {ℓ} → Type ℓ → Type ℓ
 isGroupoid A = isHLevel A 3
 ```
@@ -139,6 +139,21 @@ isContr→isProp C x y i =
                  } )
         (C .centre)
 ```
+
+<!--
+```
+SingletonP : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → Type _
+SingletonP A a = Σ[ x ∈ A i1 ] PathP A a x
+
+isContrSinglP : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → isContr (SingletonP A a)
+isContrSinglP A a .centre = _ , transport-filler (λ i → A i) a
+isContrSinglP A a .paths (x , p) i =
+  _ , λ j → fill A (λ j → λ {(i = i0) → transport-filler (λ i → A i) a j; (i = i1) → p j}) (inS a) j
+
+isPropSinglP : ∀ {ℓ} {A : I → Type ℓ} {a : A i0} → isProp (SingletonP A a)
+isPropSinglP = isContr→isProp (isContrSinglP _ _)
+```
+-->
 
 This enables another useful characterisation of being a proposition,
 which is that the propositions are precisely the types which are
@@ -241,7 +256,7 @@ isHLevel-+ n (suc k) x = isHLevel-suc _ (isHLevel-+ n k x)
 A very convenient specialisation of the argument above is that if $A$ is
 a proposition, then it has any non-zero h-level:
 
-```
+```agda
 isProp→isHLevel-suc : ∀ {ℓ} {A : Type ℓ} {n : Nat} → isProp A → isHLevel A (suc n)
 isProp→isHLevel-suc {n = zero} aprop = aprop
 isProp→isHLevel-suc {n = suc n} aprop =
@@ -253,14 +268,42 @@ an n-type, then paths in $A$ are also $n$-types. This is because, by
 definition, the paths in a $n$-type are "$(n-1)$-types", which
 `isHLevel-suc`{.Agda} extends into $n$-types.
 
-```
+```agda
 isHLevelPath : ∀ {ℓ} {A : Type ℓ} (n : Nat) → isHLevel A n → {x y : A}
              → isHLevel (x ≡ y) n
 isHLevelPath zero ahl =
   contr (isContr→isProp ahl _ _)
         λ x → isProp→isSet (isContr→isProp ahl) _ _ _ x
 isHLevelPath (suc n) ahl = isHLevel-suc (suc n) ahl _ _
+
+isHLevelPathP : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
+              → isHLevel (A i1) n
+              → {x : A i0} {y : A i1}
+              → isHLevel (PathP A x y) n
+isHLevelPathP {A = A} n ahl {x} {y} =
+  subst (λ e → isHLevel e n)
+        (sym (PathP≡Path A x y))
+        (isHLevelPath n ahl)
 ```
+
+<!--
+```
+isHLevelPath' : (n : Nat) → isHLevel A (suc n) → (x y : A) → isHLevel (x ≡ y) n
+isHLevelPath' 0 ahl x y =
+  contr (ahl x y)
+        λ x → isProp→isSet ahl _ _ _ x
+isHLevelPath' (suc n) h x y = h x y
+
+isHLevelPathP' : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
+               → isHLevel (A i1) (suc n)
+               → (x : A i0) (y : A i1)
+               → isHLevel (PathP A x y) n
+isHLevelPathP' {A = A} n ahl x y =
+  subst (λ e → isHLevel e n)
+        (sym (PathP≡Path A x y))
+        (isHLevelPath' n ahl _ _)
+```
+-->
 
 # isHLevel is a proposition
 

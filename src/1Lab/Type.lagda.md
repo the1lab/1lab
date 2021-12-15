@@ -76,6 +76,8 @@ the dependent sum type:
 ```agda
 _×_ : ∀ {a b} → Type a → Type b → Type _
 A × B = Σ[ _ ∈ A ] B
+
+infixr 4 _×_
 ```
 
 ## Lifting

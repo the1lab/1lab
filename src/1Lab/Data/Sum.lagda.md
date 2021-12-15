@@ -36,7 +36,7 @@ private variable
 
 As warmup, we have that both constructors are embeddings:
 
-```
+```agda
 inl-inj : {B : Type b} {x y : A} → inl {B = B} x ≡ inl y → x ≡ y
 inl-inj {A = A} {x = x} path = ap f path where
   f : A ⊎ B → A
@@ -92,7 +92,7 @@ of _dependent functions_ out of the disjoint union: A dependent function
 `(x : A ⊎ B) → P x` is the product of functions covering the left and
 right cases.
 
-```
+```agda
 ⊎-universal : ∀ {A : Type a} {B : Type b} {C : A ⊎ B → Type c}
             → ((x : A ⊎ B) → C x)
             ≃ ( ((x : A) → C (inl x))
@@ -105,14 +105,14 @@ For "splitting" a dependent function from the coproduct, we can compose
 it with either of the constructors to restrict to a function on that
 factor:
 
-```
+```agda
   the-iso .fst f = (λ x → f (inl x)) , (λ x → f (inr x))
 ```
 
 Similarly, given a pair of functions, we can do a case split on the
 coproduct to decide which function to apply:
 
-```
+```agda
   the-iso .snd .isIso.inv (f , g) (inl x) = f x
   the-iso .snd .isIso.inv (f , g) (inr x) = g x
 
@@ -157,7 +157,7 @@ to-dec (inr ¬a) = no ¬a
 The proof that these functions are inverses is automatic by computation,
 and thus it can be shown they are equivalences:
 
-```
+```agda
 isEquiv-from-dec : {A : Type a} → isEquiv (from-dec {A = A})
 isEquiv-from-dec = isIso→isEquiv (iso to-dec p q) where
   p : _

@@ -72,7 +72,7 @@ would have. Specifically, let `B` be a proposition. We have:
 Furthermore, as required of a free construction, the propositional
 truncation extends to a functor:
 
-```
+```agda
 ∥-∥-map : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
         → (A → B) → ∥ A ∥ → ∥ B ∥ 
 ∥-∥-map f (inc x)        = inc (f x)

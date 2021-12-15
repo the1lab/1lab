@@ -193,3 +193,26 @@ Furthermore, `_≤_`{.Agda} is decidable:
 ≤-dec (suc x) zero = no (λ z → z)
 ≤-dec (suc x) (suc y) = ≤-dec x y
 ```
+
+As an "ordering combinator", we can define the _maximum_ of two natural
+numbers by recursion: The maximum of zero and a successor (on either
+side) is the successor, and the maximum of successors is the successor of
+their maximum.
+
+```agda
+max : Nat → Nat → Nat
+max zero zero = zero
+max zero (suc y) = suc y
+max (suc x) zero = suc x
+max (suc x) (suc y) = suc (max x y)
+```
+
+Similarly, we can define the minimum of two numbers:
+
+```agda
+min : Nat → Nat → Nat
+min zero zero = zero
+min zero (suc y) = zero
+min (suc x) zero = zero
+min (suc x) (suc y) = suc (min x y)
+```

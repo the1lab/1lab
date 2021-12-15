@@ -217,7 +217,7 @@ section introduces useful helpers for dealing with $n$-ary compositions.
 For instance, we know that $p^{-1} ∙ p ∙ q$ is $q$, but this involves
 more than a handful of intermediate steps:
 
-```
+```agda
   ∙-cancel-l : {x y z : A} (p : x ≡ y) (q : y ≡ z)
              → (sym p ∙ p ∙ q) ≡ q
   ∙-cancel-l p q =
@@ -232,7 +232,7 @@ more than a handful of intermediate steps:
 A useful fact is that if $H$ is a homotopy `f ~ id`, then we can
 "invert" it as such:
 
-```
+```agda
 open 1Lab.Path
 
 homotopy-invert : ∀ {a} {A : Type a} {f : A → A}

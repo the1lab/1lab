@@ -125,6 +125,17 @@ isEqv' A B (f , isEquiv) a ψ u0 =
 {-# BUILTIN EQUIVPROOF isEqv' #-}
 ```
 
+<!--
+```
+equiv-centre : (e : A ≃ B) (y : B) → fibre (e .fst) y
+equiv-centre e y = e .snd .isEqv y .centre
+
+equiv-path : (e : A ≃ B) (y : B) →
+  (v : fibre (e .fst) y) → Path _ (equiv-centre e y) v
+equiv-path e y = e .snd .isEqv y .paths
+```
+-->
+
 ## isEquiv is propositional
 
 A function can be an equivalence in at most one way. This follows from
@@ -301,6 +312,14 @@ isContr→isEquiv : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂}
                 → isContr A → isContr B → {f : A → B}
                 → isEquiv f
 isContr→isEquiv cA cB = isIso→isEquiv f-is-iso where
+  f-is-iso : isIso _
+  isIso.inv f-is-iso _ = cA .centre
+  isIso.rinv f-is-iso _ = isContr→isProp cB _ _
+  isIso.linv f-is-iso _ = isContr→isProp cA _ _
+
+isContr→≃ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂}
+          → isContr A → isContr B → A ≃ B
+isContr→≃ cA cB = (λ _ → cB .centre) , isIso→isEquiv f-is-iso where
   f-is-iso : isIso _
   isIso.inv f-is-iso _ = cA .centre
   isIso.rinv f-is-iso _ = isContr→isProp cB _ _
