@@ -286,6 +286,25 @@ isHLevelPathP {A = A} n ahl {x} {y} =
         (isHLevelPath n ahl)
 ```
 
+<!--
+```
+isHLevelPath' : (n : Nat) → isHLevel A (suc n) → (x y : A) → isHLevel (x ≡ y) n
+isHLevelPath' 0 ahl x y =
+  contr (ahl x y)
+        λ x → isProp→isSet ahl _ _ _ x
+isHLevelPath' (suc n) h x y = h x y
+
+isHLevelPathP' : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
+               → isHLevel (A i1) (suc n)
+               → (x : A i0) (y : A i1)
+               → isHLevel (PathP A x y) n
+isHLevelPathP' {A = A} n ahl x y =
+  subst (λ e → isHLevel e n)
+        (sym (PathP≡Path A x y))
+        (isHLevelPath' n ahl _ _)
+```
+-->
+
 # isHLevel is a proposition
 
 Perhaps surprisingly, "being of h-level n" is a proposition, for any n!

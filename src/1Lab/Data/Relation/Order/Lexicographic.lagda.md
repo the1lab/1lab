@@ -20,7 +20,7 @@ We define our ordering as an inductive type:
 ```agda
 data Lex {ℓ ℓ'} {A : Type ℓ}
          (_≺_ : A → A → Type ℓ') : List A → List A → Type (ℓ ⊔ ℓ') where
-  done     : ∀ {y ys}                      → Lex _≺_ nil      (y ∷ ys)
+  done     : ∀ {y ys}                      → Lex _≺_ []      (y ∷ ys)
   here     : ∀ {x xs y ys} → x ≺ y         → Lex _≺_ (x ∷ xs) (y ∷ ys)
   next     : ∀ {x xs ys}   → Lex _≺_ xs ys → Lex _≺_ (x ∷ xs) (x ∷ ys)
 ```
@@ -83,9 +83,9 @@ Agda that various situations are impossible.
 
 ```agda
 lex-trichotomous : isTrichotomous _≺_ → isTrichotomous (Lex _≺_)
-lex-trichotomous tri nil      nil      = eq (λ ()) refl (λ ())
-lex-trichotomous tri nil      (x ∷ ys) = lt done (∷≠nil ∘ sym) (λ ())
-lex-trichotomous tri (x ∷ xs) nil      = gt (λ ()) ∷≠nil done
+lex-trichotomous tri []      []      = eq (λ ()) refl (λ ())
+lex-trichotomous tri []      (x ∷ ys) = lt done (∷≠[] ∘ sym) (λ ())
+lex-trichotomous tri (x ∷ xs) []      = gt (λ ()) ∷≠[] done
 lex-trichotomous tri (x ∷ xs) (y ∷ ys) with tri x y | lex-trichotomous tri xs ys
 ... | lt  x≺y ¬x≡y ¬y≺x | _ =
   lt (here x≺y) (¬x≡y ∘ ∷-head-inj) (lex-antisym-head ¬y≺x (¬x≡y ∘ sym))

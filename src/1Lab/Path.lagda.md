@@ -619,6 +619,16 @@ hfill {φ = φ} u u0 i =
 
 <!--
 ```
+ghcomp : ∀ {ℓ} {A : Type ℓ} {φ : I}
+       → (u : I → Partial φ A)
+       → (u0 : A [ φ ↦ u i0 ])
+       → A [ φ ↦ u i1 ]
+ghcomp {φ = φ} u u0 =
+  inS (hcomp (λ { j (φ = i1) → u j 1=1
+                ; j (φ = i0) → outS u0
+                })
+        (outS u0))
+
 fill : ∀ {ℓ} (A : ∀ i → Type ℓ)
        {φ : I}
        (u : ∀ i → Partial φ (A i))

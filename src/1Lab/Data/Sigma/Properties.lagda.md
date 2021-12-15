@@ -204,3 +204,8 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
   the-iso .snd .isIso.rinv x = refl
   the-iso .snd .isIso.linv (a , b) i = a , bcontr a .paths b i
 ```
+
+```
+Σ-map₂ : ({x : A} → P x → Q x) → Σ P → Σ Q
+Σ-map₂ f (x , y) = (x , f y)
+```
