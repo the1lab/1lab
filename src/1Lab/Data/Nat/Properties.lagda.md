@@ -162,7 +162,7 @@ The ordering relation on the natural numbers is a partial order:
 We also have that a successor is never smaller than the number it
 succeeds:
 
-```
+```agda
 ¬sucx≤x : (x : Nat) → suc x ≤ x → ⊥
 ¬sucx≤x (suc x) ord = ¬sucx≤x x ord
 ```
@@ -211,7 +211,7 @@ arithmetic operators:
 
 ### Maximum
 
-```
+```agda
 max-assoc : (x y z : Nat) → max x (max y z) ≡ max (max x y) z
 max-assoc zero zero zero = refl
 max-assoc zero zero (suc z) = refl
@@ -237,7 +237,7 @@ max-≤ʳ (suc x) (suc y) = max-≤ʳ x y
 
 ### Minimum
 
-```
+```agda
 min-assoc : (x y z : Nat) → min x (min y z) ≡ min (min x y) z
 min-assoc zero zero zero = refl
 min-assoc zero zero (suc z) = refl

@@ -255,7 +255,7 @@ language, after all), instead of using `idToEquiv`{.Agda} defined using
 J, we use `pathToEquiv`{.Agda}, which is [defined in an auxilliary
 module](agda://1Lab.Equiv.FromPath).
 
-```
+```agda
 pathToEquiv : {A B : Type ℓ} → A ≡ B → A ≃ B
 pathToEquiv p = line→equiv (λ i → p i)
 

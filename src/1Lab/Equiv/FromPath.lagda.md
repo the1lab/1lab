@@ -15,7 +15,7 @@ equivalence `A ≃ B` from a path `A ≡ B`. This is in contrast with the
 _indirect_ definition, transporting the identity equivalence along the
 path:
 
-```
+```agda
 private
   badPathToEquiv : P i0 ≃ P i1
   badPathToEquiv = transport (λ i → P i0 ≃ P i) (id , idEquiv)
@@ -28,7 +28,7 @@ gives a much shorter normal form for `line→equiv`{.Agda}.
 
 [1]: https://arxiv.org/abs/1611.02108
 
-```
+```agda
 private
   ~P : (i : I) → Type ℓ
   ~P = λ i → P (~ i)
@@ -42,7 +42,7 @@ The construction begins by giving the endpoints of `P`{.Agda} -- and the
 inverse of `P`{.Agda} -- better names. We do the same for transports
 along `P`{.Agda} and `~P`{.Agda}:
 
-```
+```agda
   f : A → B
   f x = transp P i0 x
 
@@ -55,7 +55,7 @@ along a path, we can define _fillers_ `u`{.Agda} and `v`{.Agda}
 connecting `f`{.Agda} (resp `g`{.Agda}) to the identity function, over
 `P`{.Agda}:
 
-```
+```agda
   u : PathP (λ i → A → P i) id f
   u i x = transp (λ j → P (i ∧ j)) (~ i) x
 
@@ -85,7 +85,7 @@ square below (this is the `comp`{.Agda} term):
 \end{tikzcd}\]
 ~~~
 
-```
+```agda
   hasFib : (y : B) → fibre f y
   hasFib y .fst = g y
   hasFib y .snd i = comp P (λ j → λ { (i = i1) → v j y
@@ -99,7 +99,7 @@ dependent, and thus none of the path operations (especially
 `sym`{.Agda}!) apply. We begin by stating the types of what we're going
 to construct:
 
-```
+```agda
   fibProp : (y : B) → isProp (fibre f y)
   fibProp y (x₀ , β₀) (x₁ , β₁) k = ω k , λ j → δ k (~ j) where
     ω : x₀ ≡ x₁
@@ -147,7 +147,7 @@ look at, so focus on the diagram: It connects `β₀`{.Agda} and
 \end{tikzcd}\]
 ~~~
 
-```
+```agda
     square : A → ∀ j i → PartialP (~ j ∨ j) (λ _ → P (~ i))
     square x j i (j = i0) = v (~ i) y
     square x j i (j = i1) = u (~ i) x
@@ -176,7 +176,7 @@ and that, as the dashed line and filler of the square below:
 \end{tikzcd}\]
 ~~~
 
-```
+```agda
     ω₁ : g y ≡ x₁
     ω₁ j = comp ~P (square x₁ j) (β₁ (~ j))
 
@@ -203,7 +203,7 @@ below:
 \end{tikzcd}\]
 ~~~
 
-```
+```agda
     sys : (k j : I) → _
     sys k j (k = i0) = ω₀ j
     sys k j (k = i1) = ω₁ j
@@ -220,7 +220,7 @@ a _cube_, i.e. a path of paths of paths! The "full" face of this cube is
 given by `θ`{.Agda}, which indicates the boundaries of the other faces.
 The full cube is right after the definition:
 
-```
+```agda
     δ k j =
       comp P
         (λ i → λ { (j = i0) → v i y
@@ -265,7 +265,7 @@ together the `proof of inhabitation`{.Agda ident=hasFib} and the `proof
 of propositionality`{.Agda ident=fibProp}, we get the desired:
 `f`{.Agda} is an equivalence.
 
-```
+```agda
 lineToisEquiv : isEquiv f
 lineToisEquiv .isEqv y .centre = hasFib y
 lineToisEquiv .isEqv y .paths = fibProp y _

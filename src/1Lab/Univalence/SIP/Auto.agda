@@ -1,10 +1,10 @@
 open import 1Lab.Data.Sigma.Properties
 open import 1Lab.Univalence.SIP
-open import 1Lab.Univalence
 open import 1Lab.Reflection
+open import 1Lab.Univalence
 open import 1Lab.Equiv
-open import 1Lab.Type
 open import 1Lab.Path
+open import 1Lab.Type
 
 module 1Lab.Univalence.SIP.Auto where
 

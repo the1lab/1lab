@@ -31,7 +31,7 @@ equipped with.
 which sends everything to zero is a semigroup homomorphism, but does not
 preserve the unit of $(\mathbb{Z}, *)$.
 
-```
+```agda
 record isMonoid (id : A) (_⋆_ : A → A → A) : Type (level-of A) where
   field
     monoid-semigroup : isSemigroup _⋆_
@@ -49,7 +49,7 @@ The condition of $(A, 0, \star)$ defining a monoid is a proposition, so
 that we may safely decompose monoids as the _structure_ $(0, \star)$,
 which has to satisfy the _property_ of being a monoid.
 
-```
+```agda
 isProp-isMonoid : {id : A} {_⋆_ : A → A → A}
                 → isProp (isMonoid id _⋆_)
 isProp-isMonoid x y i .monoid-semigroup =
@@ -63,7 +63,7 @@ choice of identity element, the choice of binary operation, and the
 witness that these choices form a monoid. A `Monoid`{.Agda}, then, is a
 `type with`{.Agda ident=Σ} a monoid structure.
 
-```
+```agda
 record MonoidOn (A : Type ℓ) : Type ℓ where
   field
     identity : A
@@ -83,7 +83,7 @@ There is also a predicate which witnesses when an equivalence between
 monoids is a monoid homomorphism. It has to preserve the identity, and
 commute with the multiplication:
 
-```
+```agda
 record
   Monoid≃ (A B : Σ (MonoidOn {ℓ = ℓ})) (e : A .fst ≃ B .fst) : Type ℓ where
   private
@@ -100,7 +100,7 @@ open Monoid≃
 We automatically derive a proof that `MonoidOn`{.Agda} is univalent for
 the `structure induced`{.Agda ident=HomT→Str} by `Monoid≃`{.Agda}:
 
-```
+```agda
 Monoid-univalent : isUnivalent {ℓ = ℓ} (HomT→Str Monoid≃)
 Monoid-univalent {ℓ = ℓ} =
   autoUnivalentRecord (autoRecord
@@ -115,7 +115,7 @@ From this, we automatically get a specialisation of the `SIP`{.Agda} for
 `Monoid`{.Agda}s, which says that _equality of monoids is monoid
 isomorphism_.
 
-```
+```agda
 Monoid≡ : {A B : Monoid ℓ} → (A ≃[ HomT→Str Monoid≃ ] B) ≃ (A ≡ B)
 Monoid≡ = SIP Monoid-univalent
 ```

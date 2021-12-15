@@ -1,12 +1,12 @@
 open import 1Lab.Data.Sigma.Properties
-open import 1Lab.Data.List
 open import 1Lab.Univalence.SIP
+open import 1Lab.Reflection
 open import 1Lab.Univalence
+open import 1Lab.Data.List
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
-open import 1Lab.Reflection
 
 module 1Lab.Univalence.SIP.Record.Base where
 

@@ -279,7 +279,7 @@ This second argument, which lets us control where `transp`{.Agda} is
 constant, brings a lot of power to the table! For example, the proof
 that transporting along `refl`{.Agda} is `id`{.Agda} is as follows:
 
-```
+```agda
 transport-refl : ∀ {ℓ} {A : Type ℓ} (x : A)
                → transport (λ i → A) x ≡ x
 transport-refl {A = A} x i = transp (λ _ → A) i x
@@ -294,7 +294,7 @@ In fact, this generalises to something called the _filler_ of
 `transport`{.Agda}: `transport p x` and `x` _are_ equal, but they're
 equal _over_ the given path:
 
-```
+```agda
 transport-filler : ∀ {ℓ} {A B : Type ℓ}
                  → (p : A ≡ B) (x : A)
                  → PathP (λ i → p i) x (transport p x)
@@ -350,7 +350,7 @@ transport is always the identity function. This is justified because
 there's nothing to vary in `Nat`{.Agda}, so we can just ignore the
 transport:
 
-```
+```agda
 _ : {x : Nat} → transport (λ i → Nat) x ≡ x
 _ = refl
 ```
@@ -359,14 +359,14 @@ For other type formers, the definition is a bit more involved. Let's
 assume that we have two lines, `A` and `B`, to see how transport reduces
 in types built out of `A` and `B`:
 
-```
+```agda
 module _ {A : I → Type} {B : I → Type} where private
 ```
 
 For non-dependent products, the reduction rule says that
 "`transport`{.Agda} is homomorphic over forming products":
 
-```
+```agda
   _ : {x : A i0} {y : B i0}
     → transport (λ i → A i × B i) (x , y)
     ≡ (transport (λ i → A i) x , transport (λ i → B i) y)
@@ -377,7 +377,7 @@ For non-dependent functions, we have a similar situation, except one the
 transports is _backwards_. This is because, given an `f : A i0 → B i0`,
 we have to turn an `A i1` into an `A i0` to apply f!
 
-```
+```agda
   _ : {f : A i0 → B i0}
     → transport (λ i → A i → B i) f
     ≡ λ x → transport (λ i → B i) (f (transport (λ i → A (~ i)) x))
@@ -394,7 +394,7 @@ non-dependent construction: Given an `f : (x : A i0) → B i0 x` and an
 argument `x : A i1`, we first get `x' : A i0` by transporting along `λ i
 → A (~ i)`, compute `f x' : B i0 x`, then transport along `(λ i → B i x')` to g- Wait.
 
-```
+```agda
   _ : {f : (x : A i0) → B i0 x}
     → transport (λ i → (x : A i) → B i x) f
     ≡ λ (x : A i1) →
@@ -408,7 +408,7 @@ well-formed type! Indeed, `B i : A i → Type`, but `x' : A i1`. What we
 need is some way of connecting our original `x` and `x'`, so that we may
 get a `B i1 x'`. This is where `transport-filler`{.Agda} comes in:
 
-```
+```agda
           x≡x' : PathP (λ i → A (~ i)) x x'
           x≡x' = transport-filler (λ i → A (~ i)) x
 ```
@@ -417,7 +417,7 @@ By using `λ i → B i (x≡x' (~ i))` as our path, we a) get something
 type-correct, and b) get something with the right endpoints. `(λ i → B i
 (x≡x' (~ i)))` connects `B i0 x` and `B i1 x'`, which is what we wanted.
 
-```
+```agda
           fx' : B i0 x'
           fx' = f x'
         in transport (λ i → B i (x≡x' (~ i))) fx'
@@ -436,7 +436,7 @@ breaks down as the following two statements:
 - Singletons are contractible. The type `Singleton A x` is the "subtype
 of A of the elements equal to x":
 
-```
+```agda
 Singleton : ∀ {ℓ} {A : Type ℓ} → A → Type _
 Singleton x = Σ[ y ∈ _ ] (x ≡ y)
 ```
@@ -445,7 +445,7 @@ There is a canonical inhabitant of `Singleton x`, namely `(x, refl)`. To
 say that `singletons`{.Agda ident=singleton} are contractible is to say
 that every other inhabitant has a path to `(x, refl)`:
 
-```
+```agda
 isContr-Singleton : ∀ {ℓ} {A : Type ℓ} {x : A} (y : Singleton x)
                   → Path (Singleton x) (x , refl) y
 isContr-Singleton {x = x} (y , path) i = p i , square i where
@@ -508,7 +508,7 @@ binary functions. The type is huge! That's because it applies to the
 most general type of 2-argument dependent function possible: `(x : A) (y
 : B x) → C x y`. Even then, the proof is beautifully short:
 
-```
+```agda
 ap₂ : ∀ {a b c} {A : Type a} {B : A → Type b} {C : (x : A) → B x → Type c}
       (f : (x : A) (y : B x) → C x y)
       {x y : A} {α : B x} {β : B y}

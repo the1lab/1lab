@@ -122,9 +122,7 @@ It is impossible for an empty list to be equal to a non-empty one:
     distinguish : List A → Type
     distinguish []     = ⊥
     distinguish (_ ∷ _) = ⊤
-```
 
-```
 map : (A → B) → List A → List B
 map f [] = []
 map f (x₁ ∷ x₂) = f x₁ ∷ map f x₂

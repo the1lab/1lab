@@ -1,8 +1,8 @@
 ```
 open import 1Lab.HLevel
 open import 1Lab.Equiv
-open import 1Lab.Type
 open import 1Lab.Path
+open import 1Lab.Type
 
 module 1Lab.Data.Sigma.Properties where
 ```
@@ -205,7 +205,7 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
   the-iso .snd .isIso.linv (a , b) i = a , bcontr a .paths b i
 ```
 
-```
+```agda
 Σ-map₂ : ({x : A} → P x → Q x) → Σ P → Σ Q
 Σ-map₂ f (x , y) = (x , f y)
 ```
