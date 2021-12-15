@@ -14,6 +14,8 @@ private variable
 ```
 -->
 
+# Monoids
+
 A **monoid** is a semigroup equipped with a _two-sided identity_
 element: An element $e \in M$ such that $e \star x = x = x \star e$. For
 any particular choice of binary operator $\star$, if a two-sided
@@ -43,9 +45,9 @@ record isMonoid (id : A) (_⋆_ : A → A → A) : Type (level-of A) where
 open isMonoid
 ```
 
-The condition of $(A, id, \star)$ defining a monoid is a proposition, so
-that we may safely decompose monoids as the _structure_ $(id, \star)
-satisfying the _property_ of being a monoid.
+The condition of $(A, 0, \star)$ defining a monoid is a proposition, so
+that we may safely decompose monoids as the _structure_ $(0, \star)$,
+which has to satisfy the _property_ of being a monoid.
 
 ```
 isProp-isMonoid : {id : A} {_⋆_ : A → A → A}
@@ -56,10 +58,10 @@ isProp-isMonoid x y i .idˡ = x .hasIsSet _ _ (x .idˡ) (y .idˡ) i
 isProp-isMonoid x y i .idʳ = x .hasIsSet _ _ (x .idʳ) (y .idʳ) i
 ```
 
-A `monoid structure on`{.Agda} a type is given by the choice of identity
-element, the choice of binary operation, and the witness that these
-choices form a monoid. A `Monoid`{.Agda}, then, is a `type with`{.Agda
-ident=Σ} a monoid structure.
+A `monoid structure on`{.Agda ident=MonoidOn} a type is given by the
+choice of identity element, the choice of binary operation, and the
+witness that these choices form a monoid. A `Monoid`{.Agda}, then, is a
+`type with`{.Agda ident=Σ} a monoid structure.
 
 ```
 record MonoidOn (A : Type ℓ) : Type ℓ where
@@ -68,6 +70,8 @@ record MonoidOn (A : Type ℓ) : Type ℓ where
     _⋆_ : A → A → A
 
     hasIsMonoid : isMonoid identity _⋆_
+
+  open isMonoid hasIsMonoid public
 
 Monoid : (ℓ : Level) → Type (lsuc ℓ)
 Monoid ℓ = Σ (MonoidOn {ℓ = ℓ})
@@ -94,7 +98,7 @@ open Monoid≃
 ```
 
 We automatically derive a proof that `MonoidOn`{.Agda} is univalent for
-the `structure induced`{.Agda HomT→Str} by `Monoid≃`{.Agda}:
+the `structure induced`{.Agda ident=HomT→Str} by `Monoid≃`{.Agda}:
 
 ```
 Monoid-univalent : isUnivalent {ℓ = ℓ} (HomT→Str Monoid≃)

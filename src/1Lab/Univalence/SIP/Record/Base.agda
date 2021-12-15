@@ -13,24 +13,34 @@ module 1Lab.Univalence.SIP.Record.Base where
 IsHomT : ∀ {ℓ ℓ₁} (l : Level) → (Type ℓ → Type ℓ₁) → Type _
 IsHomT l S = (A B : Σ S) → (A .fst ≃ B .fst) → Type l
 
+-- We declare, inductively-recursively(!), a syntax for describing how
+-- to project the fields _and_ their corresponding presentation
+-- properties from a pair of records. Here are the signatures for stuff
+-- involved in the recursion:
 module _ {ℓ ℓ₁ ℓ₁'} where
+  -- Actual descriptors for record fields
   data RecordFields (R : Type ℓ → Type ℓ₁) (ι : IsHomT ℓ₁' R) : Typeω
 
+  -- Computes the LUB level of the fields described
   level-of-fields→prod
     : {R : Type ℓ → Type ℓ₁} {ι : IsHomT ℓ₁' R}
     → RecordFields R ι
     → Level
   
+  -- Computes a nested product type of the fields described
   fields→prod
     : {R : Type ℓ → Type ℓ₁} {ι : IsHomT ℓ₁' R}
       (fields : RecordFields R ι)
     → Type ℓ → Type (level-of-fields→prod fields)
 
+  -- Projects the fields described into the nested product type
+  -- structure
   project-fields
     : {R : Type ℓ → Type ℓ₁} {ι : IsHomT ℓ₁' R}
       (fs : RecordFields R ι)
     → {X : Type ℓ} → R X → fields→prod fs X
 
+  -- What it means for P to be a proposition over the fields fs
   isPropProperty
     : ∀ {ℓ₂} (R : Type ℓ → Type ℓ₁) (ι : IsHomT ℓ₁' R)
         (fs : RecordFields R ι)
@@ -39,24 +49,46 @@ module _ {ℓ ℓ₁ ℓ₁'} where
   isPropProperty R ι fs P =
     {X : Type ℓ} (r  : R X) → isProp (P X (project-fields fs r))
 
-
+  -- Now the actual definitions.
   data RecordFields R ι where
+    -- The empty record descriptor
     record: : RecordFields R ι
 
+    -- Project a field (must not depend on previous fields of the
+    -- record)
     _field[_by_]
       : (previous-fields : RecordFields R ι)
+
       → ∀ {ℓ₂ ℓ₂'} {S : Type ℓ → Type ℓ₂} {ι' : IsHomT ℓ₂' S}
+      --           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      --           These arguments specify a notion of structure
+      --           for the field
+
       → (project : {X : Type ℓ} → R X → S X)
+      -- ^ Projection from the record to the notion of structure
+
       → (project-preservation : {A B : Σ R} {e : A .fst ≃ B .fst}
                               → ι A B e
                               → ι' (Σ-map₂ project A) (Σ-map₂ project B) e)
+      -- ^ Corresponding preservation datum for the field
+
       → RecordFields R ι
 
+    -- Project a proposition/predicate, which /can/ depend on previous
+    -- fields of the record.
     _axiom[_by_]
       : (previous-fields : RecordFields R ι)
+      -- ^ The previous fields
+
       → ∀ {ℓ₂} {P : (X : Type ℓ) → fields→prod previous-fields X → Type ℓ₂}
+      --       ^ The actual proposition
+
       → (predicate : {X : Type ℓ} (r : R X) → P X (project-fields previous-fields r))
+      -- ^ Extract a proof of the proposition from the record
+
       → isPropProperty R ι previous-fields P
+      -- ^ "Preservation datum" (P must be a proposition)
+
       → RecordFields R ι
 
   level-of-fields→prod record: = lzero
@@ -82,6 +114,9 @@ data AutoRecord : Typeω where
              → (R : Type ℓ → Type ℓ₁) (ι : IsHomT ℓ₁' R)
              → RecordFields R ι
              → AutoRecord
+
+  -- ^ Package a record, notion of structure, and field descriptors onto
+  -- an AutoRecord that the autoUnivalentRecord macro can consume.
 
 isUnivalent' : ∀ {ℓ ℓ₁ ℓ₂} (S : Type ℓ → Type ℓ₁) → IsHomT ℓ₂ S → Type _
 isUnivalent' S ι =
