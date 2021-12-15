@@ -56,7 +56,10 @@ applies to [set-level] structures.
 ```agda
 record
   Structure {ℓ₁ ℓ₂} (ℓ₃ : _) (S : Type ℓ₁ → Type ℓ₂) : Type (lsuc (ℓ₁ ⊔ ℓ₃) ⊔ ℓ₂)
-  where field
+  where
+
+  constructor HomT→Str
+  field
 ```
 
 The material on this page, especially the definition of

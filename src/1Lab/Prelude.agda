@@ -19,6 +19,14 @@ open import 1Lab.Equiv.HalfAdjoint public
 
 open import 1Lab.Univalence public
 open import 1Lab.Univalence.SIP public
+open import 1Lab.Univalence.SIP.Auto
+  using ( autoUnivalentStr
+        ; autoStructure )
+open import 1Lab.Univalence.SIP.Record public
+open import 1Lab.Univalence.SIP.Record.Base public
+  using ( record: ; _field[_by_] ; _axiom[_by_]
+        ; autoRecord
+        )
 
 open import 1Lab.Data.Nat public
 open import 1Lab.Data.Int public

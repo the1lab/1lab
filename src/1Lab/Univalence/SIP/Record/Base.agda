@@ -98,6 +98,12 @@ tm→⌜isUnivalent⌝ tm = isUnivalent' (interp tm) (tm→isHomT tm)
 tm→isUnivalent' : ∀ {ℓ} (tm : StrTm ℓ) → isUnivalent' (interp tm) (tm→isHomT tm)
 tm→isUnivalent' tm X Y f = tm→Structure-univalent tm f
 
+repackage : ∀ {ℓ ℓ₁ ℓ₂} (S : Type ℓ → Type ℓ₁)
+          → (ι : IsHomT ℓ₂ S)
+          → isUnivalent' S ι
+          → isUnivalent {S = S} (HomT→Str ι)
+repackage S ι ua = ua _ _
+
 record TypedTm : Type where
   field type : Term
         term : Term

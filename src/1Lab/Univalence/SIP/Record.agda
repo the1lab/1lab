@@ -292,7 +292,12 @@ private module _ (spec : Spec TypedTm) where
   spec→isUnivalent = def (quote idfun) (closure-type v∷ closure v∷ environment)
 
 macro
-  autoUnivalent : Term → Term → TC ⊤
-  autoUnivalent spec goal = do
+  autoUnivalentRecord : Term → Term → TC ⊤
+  autoUnivalentRecord spec goal = do
     spec ← reduce spec >>= parseSpec
-    unify goal (spec→isUnivalent spec)
+    unify goal
+      (def (quote repackage)
+        (  spec .Spec.structure
+        v∷ spec .Spec.homomorphism
+        v∷ spec→isUnivalent spec
+        v∷ []))
