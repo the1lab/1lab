@@ -106,7 +106,10 @@ record
 open Magma≃
 ```
 
-By using 
+By using record machinery that transforms our given definition into an equivalent
+`description`{.Agda ident=StrDesc}, we can see that `MagmaOn`{.Agda} forms a univalent structure,
+which allows us to characterise the path type between two magmas as the type of their equivalences
+by making use of the general `structure identity principle`{.Agda ident=SIP}.
 
 ```agda
 Magma-univalent : isUnivalent {ℓ = ℓ} (HomT→Str Magma≃)
@@ -131,25 +134,25 @@ has a two-sided identity element, consider `boolean implication`{.Agda imp}. Sin
 form a set, this obviously defines a magma: 
 
 ```agda
-isMagma-imp : isMagma imp
-isMagma-imp .hasIsSet = isSet-Bool
-
+private 
+  isMagma-imp : isMagma imp
+  isMagma-imp .hasIsSet = isSet-Bool
 ```
 
 We show it is not commutative or associative by giving counterexamples:
 
 ```agda
-imp-not-commutative : ((x y : Bool) → imp x y ≡ imp y x) → ⊥
-imp-not-commutative commutative = true≠false (commutative false true)
+  imp-not-commutative : ((x y : Bool) → imp x y ≡ imp y x) → ⊥
+  imp-not-commutative commutative = true≠false (commutative false true)
 
-imp-not-associative : ((x y z : Bool) → imp (imp x y) z ≡ imp x (imp y z)) → ⊥
-imp-not-associative associative = true≠false (sym (associative false false false))
+  imp-not-associative : ((x y z : Bool) → imp (imp x y) z ≡ imp x (imp y z)) → ⊥
+  imp-not-associative associative = true≠false (sym (associative false false false))
 ```
 
 It also has no two-sided unit, as can be shown by case-splitting on the candidates:
 
 ```agda
-imp-not-unital : (x : Bool) → ((y : Bool) → imp x y ≡ y) → ((y : Bool) → imp y x ≡ y) → ⊥
-imp-not-unital false left-unital right-unital = true≠false (right-unital false)
-imp-not-unital true left-unital right-unital = true≠false (right-unital false)
+  imp-not-unital : (x : Bool) → ((y : Bool) → imp x y ≡ y) → ((y : Bool) → imp y x ≡ y) → ⊥
+  imp-not-unital false left-unital right-unital = true≠false (right-unital false)
+  imp-not-unital true left-unital right-unital = true≠false (right-unital false)
 ```
