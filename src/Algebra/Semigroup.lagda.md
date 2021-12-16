@@ -31,7 +31,7 @@ equipped with a choice of _associative_ binary operation `⋆`.
 
   open isMagma hasIsMagma public
 
-open isSemigroup
+open isSemigroup public
 ```
 
 To see why the set truncation is really necessary, it helps to

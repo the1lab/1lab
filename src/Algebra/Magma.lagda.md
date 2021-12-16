@@ -163,35 +163,3 @@ these paths results in a right identity or a left identity. In
 particular, this theorem can be weakened: If $l$ is a left identity and
 $r$ is a right identity, then $l = r$.
 
-```agda
-isLeftId : (⋆ : A → A → A) → A → Type _
-isLeftId _⋆_ l = ∀ y → l ⋆ y ≡ y
-
-isRightId : (⋆ : A → A → A) → A → Type _
-isRightId _⋆_ r = ∀ y → y ⋆ r ≡ y
-
-isTwoSideId : (⋆ : A → A → A) → A → Type _
-isTwoSideId ⋆ r = isLeftId ⋆ r × isRightId ⋆ r
-
-left-right : {⋆ : A → A → A} (l r : A) → isLeftId ⋆ l → isRightId ⋆ r → l ≡ r
-left-right {⋆ = _⋆_} l r lid rid =
-  l     ≡⟨ sym (rid _) ⟩
-  l ⋆ r ≡⟨ lid _ ⟩
-  r     ∎
-```
-
-In a magma, since the underlying type is a set, we have that the
-type of two-sided identities is a proposition. This is because
-`left-right`{.Agda} shows the elements are equal, and the witnesses are
-equal because they are propositions (they are `products`{.Agda
-ident=isHLevel×} of `families`{.Agda ident=isHLevelΠ} of equalities in a
-Set - thus they are propositions).
-
-```agda
-isProp-twoSideId : {⋆ : A → A → A} → isMagma ⋆
-                 → isProp (Σ[ u ∈ A ] (isTwoSideId ⋆ u))
-isProp-twoSideId mgm x y =
-  Σ≡Prop (λ u → isHLevel× 1 (isHLevelΠ 1 (λ _ → mgm .hasIsSet _ _))
-                            (isHLevelΠ 1 (λ _ → mgm .hasIsSet _ _)))
-    (left-right (x .fst) (y .fst) (x .snd .fst) (y .snd .snd))
-```
