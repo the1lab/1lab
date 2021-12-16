@@ -49,7 +49,8 @@ the algebraic hierarchy, we define general magmas anyways.
 record isMagma {A : Type ℓ} (_⋆_ : A → A → A) : Type ℓ where
 ```
 
-A **magma** is a `set`{.Agda ident=isSet} equipped with an arbitrary binary operation `⋆`.
+A **magma** is a `set`{.Agda ident=isSet} equipped with an arbitrary binary operation `⋆`,
+on which no further laws are imposed. 
 
 ```agda
   field
@@ -70,7 +71,8 @@ isProp-isMagma x y i .hasIsSet = isProp-isHLevel 2 (x .hasIsSet) (y .hasIsSet) i
 ```
 
 By turning the operation parameter into an additional piece of data, we get the notion of
-a **magma structure** on a type.
+a **magma structure** on a type, as well as the notion of a magma in general by doing
+the same to the carrier type.
 
 ```agda
 record MagmaOn (A : Type ℓ) : Type ℓ where
@@ -86,11 +88,14 @@ open MagmaOn
 Magma : (ℓ : Level) → Type (lsuc ℓ)
 Magma ℓ = Σ MagmaOn
 ```
-STUB STUB STUB
+
+We then define what it means for an equivalence between the carrier types of two
+given magmas to be an **equivalence of magmas**. In particular,
+it has to preserve the magma operation.
 
 ```agda
 record
-  Magma≃ (A B : Σ (MagmaOn {ℓ = ℓ})) (e : A .fst ≃ B .fst) : Type ℓ where
+  Magma≃ (A B : Magma ℓ) (e : A .fst ≃ B .fst) : Type ℓ where
   private
     module A = MagmaOn (A .snd)
     module B = MagmaOn (B .snd)
@@ -101,7 +106,7 @@ record
 open Magma≃
 ```
 
-STUB STUB STUB
+By using 
 
 ```agda
 Magma-univalent : isUnivalent {ℓ = ℓ} (HomT→Str Magma≃)
@@ -113,4 +118,38 @@ Magma-univalent {ℓ = ℓ} = autoUnivalentRecord
 
 Magma≡ : {A B : Magma ℓ} → (A ≃[ HomT→Str Magma≃ ] B) ≃ (A ≡ B)
 Magma≡ = SIP Magma-univalent
+```
+
+## The boolean implication magma
+
+```agda
+open import 1Lab.Data.Bool
+```
+
+To give a somewhat natural example for a magma that is neither associative, commutative, nor
+has a two-sided identity element, consider `boolean implication`{.Agda imp}. Since the booleans
+form a set, this obviously defines a magma: 
+
+```agda
+isMagma-imp : isMagma imp
+isMagma-imp .hasIsSet = isSet-Bool
+
+```
+
+We show it is not commutative or associative by giving counterexamples:
+
+```agda
+imp-not-commutative : ((x y : Bool) → imp x y ≡ imp y x) → ⊥
+imp-not-commutative commutative = true≠false (commutative false true)
+
+imp-not-associative : ((x y z : Bool) → imp (imp x y) z ≡ imp x (imp y z)) → ⊥
+imp-not-associative associative = true≠false (sym (associative false false false))
+```
+
+It also has no two-sided unit, as can be shown by case-splitting on the candidates:
+
+```agda
+imp-not-unital : (x : Bool) → ((y : Bool) → imp x y ≡ y) → ((y : Bool) → imp y x ≡ y) → ⊥
+imp-not-unital false left-unital right-unital = true≠false (right-unital false)
+imp-not-unital true left-unital right-unital = true≠false (right-unital false)
 ```
