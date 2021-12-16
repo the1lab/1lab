@@ -12,7 +12,6 @@ module Algebra.EckmannHilton where
 # The Eckmann-Hilton Argument
 
 ```agda
-
 module _ {ℓ : _} {A : Type ℓ} {_⋆_ : A → A → A} {_✦_ : A → A → A} {e : A} {e' : A}
   (unitalMgm : isUnitalMagma e _⋆_) (unitalMgm' : isUnitalMagma e' _✦_)
   (interchange : (a b c d : A) → (a ⋆ b) ✦ (c ⋆ d) ≡ (a ✦ c) ⋆ (b ✦ d)) where
@@ -61,5 +60,4 @@ module _ {ℓ : _} {A : Type ℓ} {_⋆_ : A → A → A} {_✦_ : A → A → A
   ⋆-isMonoid .monoid-semigroup .associative = ⋆-associative _ _ _
   ⋆-isMonoid .idˡ = unitalMgm .idˡ
   ⋆-isMonoid .idʳ = unitalMgm .idʳ
-
 ```
