@@ -413,5 +413,16 @@ isProp→SquareP {B = B} isPropB {a = a} r s t u i j =
         }) (base i j) where
     base : (i j : I) → B i j
     base i j = transport (λ k → B (i ∧ k) (j ∧ k)) a
+
+isSet→SquareP :
+  {A : I → I → Type ℓ}
+  (isSet : (i j : I) → isSet (A i j))
+  {a₀₀ : A i0 i0} {a₀₁ : A i0 i1} (a₀₋ : PathP (λ j → A i0 j) a₀₀ a₀₁)
+  {a₁₀ : A i1 i0} {a₁₁ : A i1 i1} (a₁₋ : PathP (λ j → A i1 j) a₁₀ a₁₁)
+  (a₋₀ : PathP (λ i → A i i0) a₀₀ a₁₀) (a₋₁ : PathP (λ i → A i i1) a₀₁ a₁₁)
+  → SquareP A a₀₋ a₁₋ a₋₀ a₋₁
+isSet→SquareP isset a₀₋ a₁₋ a₋₀ a₋₁ =
+  transport (sym (PathP≡Path _ _ _))
+            (isHLevelPathP' 1 (isset _ _) _ _ _ _ )
 ```
 -->
