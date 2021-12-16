@@ -154,12 +154,3 @@ It also has no two-sided unit, as can be shown by case-splitting on the candidat
   imp-not-unital false left-unital right-unital = true≠false (right-unital false)
   imp-not-unital true left-unital right-unital = true≠false (right-unital false)
 ```
-
-## Identities
-
-In a magma, an element $e$ such that $x \star e = x$ and $e \star x = x$
-is called a **two-sided identity**. Accordingly, dropping either of
-these paths results in a right identity or a left identity. In
-particular, this theorem can be weakened: If $l$ is a left identity and
-$r$ is a right identity, then $l = r$.
-
