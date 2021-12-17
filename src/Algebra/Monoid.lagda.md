@@ -34,9 +34,9 @@ preserve the unit of $(\mathbb{Z}, *)$.
 ```agda
 record isMonoid (id : A) (_⋆_ : A → A → A) : Type (level-of A) where
   field
-    monoid-semigroup : isSemigroup _⋆_
+    hasIsSemigroup : isSemigroup _⋆_
 
-  open isSemigroup monoid-semigroup public
+  open isSemigroup hasIsSemigroup public
 
   field
     idˡ : {x : A} → id ⋆ x ≡ x
@@ -52,8 +52,8 @@ which has to satisfy the _property_ of being a monoid.
 ```agda
 isProp-isMonoid : {id : A} {_⋆_ : A → A → A}
                 → isProp (isMonoid id _⋆_)
-isProp-isMonoid x y i .monoid-semigroup =
-  isProp-isSemigroup (x .monoid-semigroup) (y .monoid-semigroup) i
+isProp-isMonoid x y i .hasIsSemigroup =
+  isProp-isSemigroup (x .hasIsSemigroup) (y .hasIsSemigroup) i
 isProp-isMonoid x y i .idˡ = x .hasIsSet _ _ (x .idˡ) (y .idˡ) i
 isProp-isMonoid x y i .idʳ = x .hasIsSet _ _ (x .idʳ) (y .idʳ) i
 ```
@@ -119,3 +119,4 @@ isomorphism_.
 Monoid≡ : {A B : Monoid ℓ} → (A ≃[ HomT→Str Monoid≃ ] B) ≃ (A ≡ B)
 Monoid≡ = SIP Monoid-univalent
 ```
+
