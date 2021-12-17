@@ -248,34 +248,35 @@ module _ {f : A → B} (i : isIso f) where
                         )
 ```
 
-Suppose, then, that $f : A \to B$ and $g : B \to a$, and we're given
-witnesses $s : f (g x) = x$ and $t : g (f x) = x$ (named for **s**ection
-and re**t**raction) that $f$ and $g$ are inverses. We want to show that,
-for any $y$, the `fibre`{.Agda} of $f$ over $y$ is contractible. It
-suffices to show that the fibre is propositional, and that it is
-inhabited.
+Suppose, then, that $f : A \to B$ and $g : B \to A$, and we're given
+witnesses $s : f (g\ x) = x$ and $t : g (f\ x) = x$ (named for
+**s**ection and re**t**raction) that $f$ and $g$ are inverses. We want
+to show that, for any $y$, the `fibre`{.Agda} of $f$ over $y$ is
+contractible. It suffices to show that the fibre is propositional, and
+that it is inhabited.
 
 We begin with showing that the fibre over $y$ is propositional, since
 that's the harder of the two arguments. Suppose that we have $y$, $x_0$,
-$x_1$, $p_0$ and $p_1$ as below; Note that $(x_0, p_0)$ and $(x_1,
-$p_1)$ are fibres of $f$ over $y$. What we need to show is that we have
-some $\pi : x_0 ≡ x_1$ and $p_0 ≡ p_1$ _`over`{.Agda ident=PathP}_
-$\pi$.
+$x_1$, $p_0$ and $p_1$ as below; Note that $(x_0, p_0)$ and $(x_1, p_1)$
+are fibres of $f$ over $y$. What we need to show is that we have some
+$\pi : x_0 ≡ x_1$ and $p_0 ≡ p_1$ _`over`{.Agda ident=PathP}_ $\pi$.
 
 ```agda
   private module _ (y : B) (x0 x1 : A) (p0 : f x0 ≡ y) (p1 : f x1 ≡ y) where
 ```
 
-To start with, we'll build the line $\pi : x_0 ≡ x_1$. This construction
-is incremental: First we'll exhibit lines $g\ y ≡ x_0$ and $g\ y ≡ x_1$,
-which we can put together to form $x_0 ≡ x_1$.
+As an intermediate step in proving that $p_0 ≡ p_1$, we _must_ show that
+$x_0 ≡ x_1$ - without this, we can't even _state_ that $p_0$ and $p_1$
+are equal, since they live in different types!  To this end, we will
+build $\pi : p_0 ≡ p_1$, parts of which will be required to assemble the
+overall proof that $p_0 ≡ p_1$.
 
-We'll detail the construction of $\pi_0$; $\pi_1$ is analogous. We want
-to construct a _line_, which we can do by exhibiting that line as the
-missing face in a _square_. We have equations $g y ≡ g y$
-(`refl`{.Agda}), $g\ (f\ x_0) ≡ g\ y$ (the action of `g` on `p0`), and
-$g\ (f\ x_0)$ by the assumption that $g$ is a right inverse to $f$.
-Diagramatically, these fit together into a square:
+We'll detail the construction of $\pi_0$; for $\pi_1$, the same method
+is used. We want to construct a _line_, which we can do by exhibiting
+that line as the missing face in a _square_. We have equations $g\ y ≡
+g\ y$ (`refl`{.Agda}), $g\ (f\ x_0) ≡ g\ y$ (the action of `g` on `p0`),
+and $g\ (f\ x_0) = x_0$ by the assumption that $g$ is a right inverse to
+$f$.  Diagramatically, these fit together into a square:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -290,9 +291,9 @@ Diagramatically, these fit together into a square:
 \end{tikzcd}\]
 ~~~
 
-The missing line in this square is $\pi_0$, and the _inside_ (the
-`filler`{.Agda ident=hfill}) we call $\theta_0$, since we will need it
-later.
+The missing line in this square is $\pi_0$. Since the _inside_ (the
+`filler`{.Agda ident=hfill}) will be useful to us later, we also give it
+a name: $\theta$.
 
 ```agda
     π₀ : g y ≡ x0
@@ -308,9 +309,9 @@ later.
                    (inS (g (p0 (~ i)))) j
 ```
 
-Since the construction of $\pi_1$ is exactly analogous, I'll simply
-present the square. We again give names to both the missing face $\pi_1$
-and the filler $\theta_1$.
+Since the construction of $\pi_1$ is analogous, I'll simply present the
+square. We correspondingly name the missing face $\pi_1$ and the filler
+$\theta_1$.
 
 <div class=mathpar>
 
@@ -344,7 +345,7 @@ and the filler $\theta_1$.
 
 Joining these paths by their common $g\ y$ face, we obtain $\pi : x_0 ≡
 x_1$. This square _also_ has a filler, connecting $\pi_0$ and $\pi_1$
-over the line $g y ≡ \pi\ i$.
+over the line $g\ y ≡ \pi\ i$.
 
 <div class=mathpar>
 ~~~{.quiver}
@@ -366,19 +367,27 @@ over the line $g y ≡ \pi\ i$.
                          ; (i = i1) → π₁ k
                          })
                 (g y)
+```
+</div>
 
+This concludes the construction of $\pi$, and thus, the 2D part of the
+proof. Now, we want to show that $p_0 ≡ p_1$ over a path induced by
+$\pi$. This is a _square_ with a specific boundary, which can be built
+by constructing an appropriate _open cube_, where the missing face is
+that square. As an intermediate step, we define $\theta$ to be the
+filler for the square above.
+
+```
     θ : PathP (λ i → g y ≡ π i) π₀ π₁
     θ i j = hfill (λ k → λ { (i = i1) → π₁ k
                            ; (i = i0) → π₀ k
                            })
                       (inS (g y)) j
 ```
-</div>
 
-That concludes the 2D part of the proof. Now it remains to show that
-$p_0 ≡ p_1$, which we show by constructing an appropriate _cube_ where
-the missing _square_ face has the boundary we want. Observe that we can
-coherently alter $\theta$ to get $\iota$ below:
+Observe that we can coherently alter $\theta$ to get $\iota$ below,
+which expresses that $\mathrm{ap}\ g\ p_0$ and $\mathrm{ap}\ g\ p_1$ are
+equal.
 
 ```agda
     ι : PathP (λ i → g (f (π i)) ≡ g y)
@@ -429,7 +438,7 @@ The fact that $j$ only appears as $\neg j$ can be understood as the
 diagram above being _upside-down_. Indeed, $\pi_0$ and $\pi_1$ in the
 boundary of $\theta$ (the inner, blue face) are inverted when their
 types are considered. We're in the home stretch: Using our assumption $s
-: f (g x) = x$, we can cancel all of the $f \circ g$s in the diagram
+: f (g\ x) = x$, we can cancel all of the $f \circ g$s in the diagram
 above to get what we wanted: $p_0 ≡ p_1$.
 
 ```agda
@@ -448,10 +457,11 @@ cubical diagram below. Once more, left is $i = \mathrm{i0}$, right is $i
 = \mathrm{i1}$, up is $j = \mathrm{i0}$, and down is $j = \mathrm{i1}$.
 
 ~~~{.quiver .tall-2}
+\small
 \[\begin{tikzcd}
   \textcolor{rgb,255:red,214;green,92;blue,92}{f(x_0)} &&&& \textcolor{rgb,255:red,214;green,92;blue,92}{f(x_1)} \\
-  & \textcolor{rgb,255:red,92;green,92;blue,214}{f(g(f(g\ x_0))))} && \textcolor{rgb,255:red,92;green,92;blue,214}{f(g(f(g\ x_1)))} \\
-  && \textcolor{rgb,255:red,92;green,92;blue,214}{\iota\ i\ j} \\
+  & \textcolor{rgb,255:red,92;green,92;blue,214}{f(g(f(g\ x_0)))} && \textcolor{rgb,255:red,92;green,92;blue,214}{f(g(f(g\ x_1)))} \\
+  && \textcolor{rgb,255:red,92;green,92;blue,214}{f\ (\iota\ i\ j)} \\
   & \textcolor{rgb,255:red,92;green,92;blue,214}{f\ (g\ y)} && \textcolor{rgb,255:red,92;green,92;blue,214}{f\ (g\ y)} \\
   \textcolor{rgb,255:red,214;green,92;blue,92}{y} &&&& \textcolor{rgb,255:red,214;green,92;blue,92}{y}
   \arrow[""{name=0, anchor=center, inner sep=0}, "{p_1}", from=1-5, to=5-5]
