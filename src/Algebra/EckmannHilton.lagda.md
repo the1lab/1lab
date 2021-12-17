@@ -93,8 +93,8 @@ that the operation is a monoid.
     x ⋆ (y ⋆ z) ∎)
 
   ⋆-isMonoid : isMonoid e _⋆_
-  ⋆-isMonoid .monoid-semigroup .hasIsMagma = unitalMgm .hasIsMagma
-  ⋆-isMonoid .monoid-semigroup .associative = ⋆-associative _ _ _
+  ⋆-isMonoid .hasIsSemigroup .hasIsMagma = unitalMgm .hasIsMagma
+  ⋆-isMonoid .hasIsSemigroup .associative = ⋆-associative _ _ _
   ⋆-isMonoid .idˡ = unitalMgm .idˡ
   ⋆-isMonoid .idʳ = unitalMgm .idʳ
 ```
