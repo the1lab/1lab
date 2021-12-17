@@ -223,76 +223,273 @@ maps `x` to `f x` by `refl`{.Agda} - we can get any other we want!
 
 # Equivalences from isomorphisms
 
-Any isomorphism can be made into a coherent equivalence. The proof here
-is _efficient_, at the cost of being done with an impenetrable cubical
-argument. To understand the details of the construction, there is an
-[alternative proof] that factors through [half-adjoint equivalences].
+Any isomorphism can be upgraded into an equivalence, in a way that
+preserves the function $f$, its inverse $g$, _and_ the proof $s$ that
+$g$ is a right inverse to $f$. We can not preserve _everything_, though,
+as is usual when making something "more coherent". Furthermore, if
+everything was preserved, `isIso`{.Agda} would be a proposition, and
+this is [provably not the case].
 
-[alternative proof]: 1Lab.Equiv.HalfAdjoint.html#isIso→isEquiv'
-[half-adjoint equivalences]: 1Lab.Equiv.HalfAdjoint.html#adjoint-equivalences
+[provably not the case]: 1Lab.Counterexamples.IsIso.html
+
+The argument presented here is done directly in cubical style, but a
+less direct proof is also available, by showing that every isomorphism
+is a [half-adjoint equivalence], and that half-adjoint equivalences have
+contractible fibres.
+
+[half-adjoint equivalence]: 1Lab.Equiv.HalfAdjoint.html
 
 ```agda
 module _ {f : A → B} (i : isIso f) where
-```
 
-<details> <summary>The details of this proof are hidden in a `<details>`
-tag so you can collapse them away. Click on the black triangle to expand
-it, if you want to. </summary>
-
-```agda
   open isIso i renaming ( inv to g
                         ; rinv to s
                         ; linv to t
                         )
-
-  private
-    module _ (y : B) (x0 x1 : A) (p0 : f x0 ≡ y) (p1 : f x1 ≡ y) where
-      fill0 : I → I → A
-      fill0 i j = hfill (λ k → λ { (i = i1) → t x0 k
-                                 ; (i = i0) → g y })
-                        (inS (g (p0 (~ i)))) j
-
-      fill1 : I → I → A
-      fill1 i j = hfill (λ k → λ { (i = i1) → t x1 k
-                                 ; (i = i0) → g y })
-                        (inS (g (p1 (~ i)))) j
-
-      fill2 : I → I → A
-      fill2 i j = hfill (λ k → λ { (i = i1) → fill1 k i1
-                                 ; (i = i0) → fill0 k i1 })
-                        (inS (g y)) j
-
-      p : x0 ≡ x1
-      p i = fill2 i i1
-
-      sq : I → I → A
-      sq i j = hcomp (λ k → λ { (i = i1) → fill1 j (~ k)
-                              ; (i = i0) → fill0 j (~ k)
-                              ; (j = i1) → t (fill2 i i1) (~ k)
-                              ; (j = i0) → g y })
-                     (fill2 i j)
-
-      sq1 : I → I → B
-      sq1 i j = hcomp (λ k → λ { (i = i1) → s (p1 (~ j)) k
-                               ; (i = i0) → s (p0 (~ j)) k
-                               ; (j = i1) → s (f (p i)) k
-                               ; (j = i0) → s y k })
-                      (f (sq i j))
-
-      lemIso : (x0 , p0) ≡ (x1 , p1)
-      lemIso i .fst = p i
-      lemIso i .snd = λ j → sq1 i (~ j)
 ```
-</details>
 
-This is the important part: if we have `isIso f`, we can conclude
-`isEquiv f`.
+Suppose, then, that $f : A \to B$ and $g : B \to a$, and we're given
+witnesses $s : f (g x) = x$ and $t : g (f x) = x$ (named for **s**ection
+and re**t**raction) that $f$ and $g$ are inverses. We want to show that,
+for any $y$, the `fibre`{.Agda} of $f$ over $y$ is contractible. It
+suffices to show that the fibre is propositional, and that it is
+inhabited.
+
+We begin with showing that the fibre over $y$ is propositional, since
+that's the harder of the two arguments. Suppose that we have $y$, $x_0$,
+$x_1$, $p_0$ and $p_1$ as below; What we need to show is that we have
+some $\pi : x_0 ≡ x_1$ and $p_0 ≡ p_1$ _`over`{.Agda ident=PathP}_ $\pi$.
+
+```agda
+  private module _ (y : B) (x0 x1 : A) (p0 : f x0 ≡ y) (p1 : f x1 ≡ y) where
+```
+
+To start with, we'll build the line $\pi : x_0 ≡ x_1$. This construction
+is incremental: First we'll exhibit lines $g\ y ≡ x_0$ and $g\ y ≡ x_1$,
+which we can put together to form $x_0 ≡ x_1$.
+
+We'll detail the construction of $\pi_0$; $\pi_1$ is analogous. We want
+to construct a _line_, which we can do by exhibiting that line as the
+missing face in a _square_. We have equations $g y ≡ g y$
+(`refl`{.Agda}), $g\ (f\ x_0) ≡ g\ y$ (the action of `g` on `p0`), and
+$g\ (f\ x_0)$ by the assumption that $g$ is a right inverse to $f$.
+Diagramatically, these fit together into a square:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {g\ y} && {g\ (f\ x_0)} \\
+  \\
+  {g\ y} && {x_0}
+  \arrow["{g\ y}"', from=1-1, to=3-1]
+  \arrow["{t\ x_0\ k}", from=1-3, to=3-3]
+  \arrow[""{name=0, anchor=center, inner sep=0}, "{g\ (p_0\ \neg i)}", from=1-1, to=1-3]
+  \arrow[""{name=1, anchor=center, inner sep=0}, "{\pi_0}"', dashed, from=3-1, to=3-3]
+  \arrow["{\theta_0}"{description}, Rightarrow, draw=none, from=0, to=1]
+\end{tikzcd}\]
+~~~
+
+The missing line in this square is $\pi_0$, and the _inside_ (the
+`filler`{.Agda ident=hfill}) we call $\theta_0$, since we will need it
+later.
+
+```agda
+    π₀ : g y ≡ x0
+    π₀ i = hcomp (λ k → λ { (i = i0) → g y
+                          ; (i = i1) → t x0 k
+                          })
+                    (g (p0 (~ i)))
+
+    θ₀ : PathP (λ i → g (p0 (~ i)) ≡ π₀ i) refl (t x0)
+    θ₀ i j = hfill (λ k → λ { (i = i0) → g y
+                            ; (i = i1) → t x0 k
+                            })
+                   (inS (g (p0 (~ i)))) j
+```
+
+Since the construction of $\pi_1$ is exactly analogous, I'll simply
+present the square. We again give names to both the missing face $\pi_1$
+and the filler $\theta_1$.
+
+<div class=mathpar>
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {g\ y} && {g\ (f\ x_1)} \\
+  \\
+  {g\ y} && {x_1}
+  \arrow["{g\ y}"', from=1-1, to=3-1]
+  \arrow["{t\ x_1\ k}", from=1-3, to=3-3]
+  \arrow[""{name=0, anchor=center, inner sep=0}, "{g\ (p_1\ \neg i)}", from=1-1, to=1-3]
+  \arrow[""{name=1, anchor=center, inner sep=0}, "{\pi_1}"', dashed, from=3-1, to=3-3]
+  \arrow["{\theta_1}"{description}, Rightarrow, draw=none, from=0, to=1]
+\end{tikzcd}\]
+~~~
+
+```agda
+    π₁ : g y ≡ x1
+    π₁ i = hcomp (λ k → λ { (i = i0) → g y
+                          ; (i = i1) → t x1 k
+                          })
+                    (g (p1 (~ i)))
+
+    θ₁ : PathP (λ i → g (p1 (~ i)) ≡ π₁ i) refl (t x1)
+    θ₁ i j = hfill (λ k → λ { (i = i0) → g y
+                            ; (i = i1) → t x1 k
+                            })
+                      (inS (g (p1 (~ i)))) j
+```
+</div>
+
+Joining these paths by their common $g\ y$ face, we obtain $\pi : x_0 ≡
+x_1$. This square _also_ has a filler, connecting $\pi_0$ and $\pi_1$
+over the line $g y ≡ \pi\ i$.
+
+<div class=mathpar>
+~~~{.quiver}
+\[\begin{tikzcd}
+  {g\ y} && {g\ y} \\
+  \\
+  {x_0} && {x_1}
+  \arrow[""{name=0, anchor=center, inner sep=0}, "{g\ y}", from=1-1, to=1-3]
+  \arrow["{\pi_0}\ k"', from=1-1, to=3-1]
+  \arrow[""{name=1, anchor=center, inner sep=0}, "\pi"', dashed, from=3-1, to=3-3]
+  \arrow["{\pi_1}\ k", from=1-3, to=3-3]
+  \arrow["\theta"{description}, Rightarrow, draw=none, from=0, to=1]
+\end{tikzcd}\]
+~~~
+
+```agda
+    π : x0 ≡ x1
+    π i = hcomp (λ k → λ { (i = i0) → π₀ k
+                         ; (i = i1) → π₁ k
+                         })
+                (g y)
+
+    θ : PathP (λ i → g y ≡ π i) π₀ π₁
+    θ i j = hfill (λ k → λ { (i = i1) → π₁ k
+                           ; (i = i0) → π₀ k
+                           })
+                      (inS (g y)) j
+```
+</div>
+
+That concludes the 2D part of the proof. Now it remains to show that
+$p_0 ≡ p_1$, which we show by constructing an appropriate _cube_ where
+the missing _square_ face has the boundary we want. Observe that we can
+coherently alter $\theta$ to get $\iota$ below:
+
+```agda
+    ι : PathP (λ i → g (f (π i)) ≡ g y)
+              (ap g p0)
+              (ap g p1)
+    ι i j = hcomp (λ k → λ { (i = i0) → θ₀ (~ j) (~ k)
+                           ; (i = i1) → θ₁ (~ j) (~ k)
+                           ; (j = i0) → t (π i) (~ k)
+                           ; (j = i1) → g y
+                           })
+                  (θ i (~ j))
+```
+
+This composition can be visualised as the _red_ (front) face in the
+diagram below. The back face is $\theta\ i\ (\neg\ j)$, i.e. `(θ i (~
+j))` in the code. Similarly, the $j = \mathrm{i1}$ (bottom) face is `g
+y`, the $j = \mathrm{i0}$ (top) face is `t (π i) (~ k)`, and similarly
+for $i = \mathrm{i0}$ (left) and $i = \mathrm{i1}$ (right).
+
+~~~{.quiver .tall-2}
+\[\begin{tikzcd}
+  \textcolor{rgb,255:red,214;green,92;blue,92}{g\ (f\ (g\ x_0))} &&&& \textcolor{rgb,255:red,214;green,92;blue,92}{g\ (f\ (g\ x_1))} \\
+  & \textcolor{rgb,255:red,92;green,92;blue,214}{x_0} && \textcolor{rgb,255:red,92;green,92;blue,214}{x_1} \\
+  \\
+  & \textcolor{rgb,255:red,92;green,92;blue,214}{g\ y} && \textcolor{rgb,255:red,92;green,92;blue,214}{g\ y} \\
+  \textcolor{rgb,255:red,214;green,92;blue,92}{g\ y} &&&& \textcolor{rgb,255:red,214;green,92;blue,92}{g\ y}
+  \arrow[""{name=0, anchor=center, inner sep=0}, "\pi"', color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=2-4]
+  \arrow[""{name=1, anchor=center, inner sep=0}, "{g\ y}", color={rgb,255:red,92;green,92;blue,214}, from=4-2, to=4-4]
+  \arrow[""{name=2, anchor=center, inner sep=0}, "{\pi_0}", color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=4-2]
+  \arrow[""{name=3, anchor=center, inner sep=0}, "{\pi_1}"', color={rgb,255:red,92;green,92;blue,214}, from=2-4, to=4-4]
+  \arrow[from=4-4, to=5-5]
+  \arrow[""{name=4, anchor=center, inner sep=0}, "{\mathrm{ap}\ (g \circ f)\ \pi}", color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-5]
+  \arrow[""{name=5, anchor=center, inner sep=0}, "{g\ y}"', color={rgb,255:red,214;green,92;blue,92}, from=5-1, to=5-5]
+  \arrow[from=2-4, to=1-5]
+  \arrow[""{name=6, anchor=center, inner sep=0}, "{\mathrm{ap}\ g\ p_1}", color={rgb,255:red,214;green,92;blue,92}, from=1-5, to=5-5]
+  \arrow[""{name=7, anchor=center, inner sep=0}, "{\mathrm{ap}\ g\ p_0}"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=5-1]
+  \arrow[from=2-2, to=1-1]
+  \arrow[from=4-2, to=5-1]
+  \arrow["{\theta\ i\ (\neg\ j)}"{description}, color={rgb,255:red,92;green,92;blue,214}, Rightarrow, draw=none, from=1, to=0]
+  \arrow["{t\ (\pi\ i)\ (\neg\ k)}"{description}, Rightarrow, draw=none, from=0, to=4]
+  \arrow["{\theta_0(\neg j)(\neg k)}"{description}, Rightarrow, draw=none, from=2, to=7]
+  \arrow["{g\ y}"{description}, Rightarrow, draw=none, from=1, to=5]
+  \arrow["{\theta_1(\neg j)(\neg k)}"{description}, Rightarrow, draw=none, from=3, to=6]
+\end{tikzcd}\]
+~~~
+
+The fact that $j$ only appears as $\neg j$ can be understood as the
+diagram above being _upside-down_. Indeed, $\pi_0$ and $\pi_1$ in the
+boundary of $\theta$ (the inner, blue face) are inverted when their
+types are considered. We're in the home stretch: Using our assumption $s
+: f (g x) = x$, we can cancel all of the $f \circ g$s in the diagram
+above to get what we wanted: $p_0 ≡ p_1$.
+
+```agda
+    sq1 : PathP (λ i → f (π i) ≡ y)
+                p0 p1
+    sq1 i j = hcomp (λ k → λ { (i = i0) → s (p0 j) k
+                             ; (i = i1) → s (p1 j) k
+                             ; (j = i0) → s (f (π i)) k
+                             ; (j = i1) → s y k
+                             })
+                    (f (ι i j))
+```
+
+The composition above can be visualised as the front (red) face in the
+cubical diagram below. Once more, left is $i = \mathrm{i0}$, right is $i
+= \mathrm{i1}$, up is $j = \mathrm{i0}$, and down is $j = \mathrm{i1}$.
+
+~~~{.quiver .tall-2}
+\[\begin{tikzcd}
+  \textcolor{rgb,255:red,214;green,92;blue,92}{f(x_0)} &&&& \textcolor{rgb,255:red,214;green,92;blue,92}{f(x_1)} \\
+  & \textcolor{rgb,255:red,92;green,92;blue,214}{f(g(f(g\ x_0))))} && \textcolor{rgb,255:red,92;green,92;blue,214}{f(g(f(g\ x_1)))} \\
+  && \textcolor{rgb,255:red,92;green,92;blue,214}{\iota\ i\ j} \\
+  & \textcolor{rgb,255:red,92;green,92;blue,214}{f\ (g\ y)} && \textcolor{rgb,255:red,92;green,92;blue,214}{f\ (g\ y)} \\
+  \textcolor{rgb,255:red,214;green,92;blue,92}{y} &&&& \textcolor{rgb,255:red,214;green,92;blue,92}{y}
+  \arrow[""{name=0, anchor=center, inner sep=0}, "{p_1}", from=1-5, to=5-5]
+  \arrow[""{name=1, anchor=center, inner sep=0}, "{\mathrm{ap}\ f\ \pi}", color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-5]
+  \arrow[""{name=2, anchor=center, inner sep=0}, "{p_0}"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=5-1]
+  \arrow[""{name=3, anchor=center, inner sep=0}, "y"', color={rgb,255:red,214;green,92;blue,92}, from=5-1, to=5-5]
+  \arrow[""{name=4, anchor=center, inner sep=0}, "{\mathrm{ap}\ (f \circ g\circ f)\ \pi}"', color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=2-4]
+  \arrow[""{name=5, anchor=center, inner sep=0}, "{f(g\ y)}", color={rgb,255:red,92;green,92;blue,214}, from=4-2, to=4-4]
+  \arrow[""{name=6, anchor=center, inner sep=0}, "{\mathrm{ap}\ f\ p_1}"', color={rgb,255:red,92;green,92;blue,214}, from=2-4, to=4-4]
+  \arrow[""{name=7, anchor=center, inner sep=0}, "{\mathrm{ap}\ f\ p_0}", color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=4-2]
+  \arrow[from=2-2, to=1-1]
+  \arrow[from=2-4, to=1-5]
+  \arrow[from=4-4, to=5-5]
+  \arrow[from=4-2, to=5-1]
+  \arrow["{s\ y\ k}"{description}, Rightarrow, draw=none, from=5, to=3]
+  \arrow["{s\ (f\ (\pi\ i))\ k}"{description}, Rightarrow, draw=none, from=4, to=1]
+  \arrow["{s\ (p1\ j)\ k}"{description}, Rightarrow, draw=none, from=6, to=0]
+  \arrow["{s\ (p0\ j)\ k}"{description}, Rightarrow, draw=none, from=7, to=2]
+\end{tikzcd}\]
+~~~
+
+Putting all of this together, we get that $(x_0, p_0) ≡ (x_1, p_1)$.
+Since there were no assumptions on any of the variables under
+consideration, this indeed says that the fibre over $y$ is a proposition
+for any choice of $y$.
+
+```agda
+    isIso→propFibre : (x0 , p0) ≡ (x1 , p1)
+    isIso→propFibre i .fst = π i
+    isIso→propFibre i .snd = sq1 i
+```
+
+Since the fibre over $y$ is inhabited by $(g\ y, s\ y)$, we get that any
+isomorphism has contractible fibres:
 
 ```agda
   isIso→isEquiv : isEquiv f
   isIso→isEquiv .isEqv y .centre .fst = g y
   isIso→isEquiv .isEqv y .centre .snd = s y
-  isIso→isEquiv .isEqv y .paths z = lemIso y (g y) (fst z) (s y) (snd z)
+  isIso→isEquiv .isEqv y .paths z = isIso→propFibre y (g y) (fst z) (s y) (snd z)
 ```
 
 Applying this to the `Iso`{.Agda} and `_≃_`{.Agda} pairs, we can turn
