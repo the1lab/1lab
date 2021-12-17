@@ -1,9 +1,10 @@
 
 ```agda
 open import 1Lab.Prelude
+
 open import Algebra.UnitalMagma
-open import Algebra.Monoid
 open import Algebra.Semigroup
+open import Algebra.Monoid
 
 module Algebra.EckmannHilton where
 ```

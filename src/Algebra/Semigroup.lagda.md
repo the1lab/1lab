@@ -1,5 +1,6 @@
 ```agda
 open import 1Lab.Prelude
+
 open import Algebra.Magma
 
 module Algebra.Semigroup where
