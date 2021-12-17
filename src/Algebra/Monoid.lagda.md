@@ -120,3 +120,36 @@ Monoid≡ : {A B : Monoid ℓ} → (A ≃[ HomT→Str Monoid≃ ] B) ≃ (A ≡ 
 Monoid≡ = SIP Monoid-univalent
 ```
 
+# Relationships to Unital Magmas
+
+```agda
+open import Algebra.UnitalMagma
+```
+
+By definition, every monoid is exactly a `unital magma`{.Agda ident=isUnitalMagma}
+that is also a `semigroup`{.Agda ident=isSemigroup}. However, adopting this as
+a definition yields several issues especially when it comes to metaprogramming,
+which is why this is instead expressed by explicitly proving the implications
+between the properties.
+
+First, we show that every monoid is a unital magma:
+
+```agda
+module _ (id : A) (_⋆_ : A → A → A) where
+  isMonoid→isUnitalMagma : isMonoid id _⋆_ → isUnitalMagma id _⋆_
+  isMonoid→isUnitalMagma mon .hasIsMagma = mon .hasIsSemigroup .hasIsMagma
+  isMonoid→isUnitalMagma mon .idˡ = mon .idˡ
+  isMonoid→isUnitalMagma mon .idʳ = mon .idʳ
+```
+
+"Reshuffling" the record fields also allows us to show the reverse direction,
+namely, that every unital semigroup is a monoid.
+
+```agda
+  isUnitalMagma→isSemigroup→isMonoid : isUnitalMagma id _⋆_ → isSemigroup _⋆_ →
+    isMonoid id _⋆_
+  isUnitalMagma→isSemigroup→isMonoid uni sem .hasIsSemigroup = sem
+  isUnitalMagma→isSemigroup→isMonoid uni sem .idˡ = uni .idˡ
+  isUnitalMagma→isSemigroup→isMonoid uni sem .idʳ = uni .idʳ
+```
+    
