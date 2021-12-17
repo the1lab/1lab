@@ -113,10 +113,10 @@ UnitalMagma→Magma : {ℓ : _} → UnitalMagma ℓ → Magma ℓ
 UnitalMagma→Magma (A , unital-mgm) = A , UnitalMagmaOn.hasMagmaOn unital-mgm
 ```
 
-This allows us to define **equivalences of unital magmas** -
-two unital magmas are equivalent if there is an equivalence of
-their carrier sets that preserves both the magma operation
-(which implies it is a magma homomorphism) and the identity element.
+This allows us to define **equivalences of unital magmas** - two unital
+magmas are equivalent if there is an equivalence of their carrier sets
+that preserves both the magma operation (which implies it is a magma
+homomorphism) and the identity element.
 
 ```
 record
@@ -135,9 +135,9 @@ record
 open UnitalMagma≃
 ```
 
-Similar to the `process for magmas`{.Agda ident=Magma≡},
-we can see that the identity type between two unital magmas
-is the same as the type of their equivalences.
+Similar to the `process for magmas`{.Agda ident=Magma≡}, we can see that
+the identity type between two unital magmas is the same as the type of
+their equivalences.
 
 ```agda
 UnitalMagma-univalent : isUnivalent {ℓ = ℓ} (HomT→Str UnitalMagma≃)
@@ -155,8 +155,8 @@ UnitalMagma≡ = SIP UnitalMagma-univalent
 
 * One-sided identities
 
-Dropping either of the paths involved in a unital magma results
-in a right identity or a left identity.
+Dropping either of the paths involved in a unital magma results in a
+right identity or a left identity.
 
 ```agda
 isLeftId : (⋆ : A → A → A) → A → Type _
@@ -178,8 +178,8 @@ left-right-identities-equal {⋆ = _⋆_} l r lid rid =
 ```
 
 This also allows us to show that a magma with both a left as well as a
-right identity has to be unital - the identities are equal, which
-makes them both be left as well as right identities.
+right identity has to be unital - the identities are equal, which makes
+them both be left as well as right identities.
 
 ```agda
 left-right-identities-unital
