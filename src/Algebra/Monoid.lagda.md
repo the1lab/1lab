@@ -34,15 +34,15 @@ preserve the unit of $(\mathbb{Z}, *)$.
 ```agda
 record isMonoid (id : A) (_⋆_ : A → A → A) : Type (level-of A) where
   field
-    monoid-semigroup : isSemigroup _⋆_
+    hasIsSemigroup : isSemigroup _⋆_
 
-  open isSemigroup monoid-semigroup public
+  open isSemigroup hasIsSemigroup public
 
   field
     idˡ : {x : A} → id ⋆ x ≡ x
     idʳ : {x : A} → x ⋆ id ≡ x
 
-open isMonoid
+open isMonoid public
 ```
 
 The condition of $(A, 0, \star)$ defining a monoid is a proposition, so
@@ -52,8 +52,8 @@ which has to satisfy the _property_ of being a monoid.
 ```agda
 isProp-isMonoid : {id : A} {_⋆_ : A → A → A}
                 → isProp (isMonoid id _⋆_)
-isProp-isMonoid x y i .monoid-semigroup =
-  isProp-isSemigroup (x .monoid-semigroup) (y .monoid-semigroup) i
+isProp-isMonoid x y i .hasIsSemigroup =
+  isProp-isSemigroup (x .hasIsSemigroup) (y .hasIsSemigroup) i
 isProp-isMonoid x y i .idˡ = x .hasIsSet _ _ (x .idˡ) (y .idˡ) i
 isProp-isMonoid x y i .idʳ = x .hasIsSet _ _ (x .idʳ) (y .idʳ) i
 ```
@@ -119,3 +119,37 @@ isomorphism_.
 Monoid≡ : {A B : Monoid ℓ} → (A ≃[ HomT→Str Monoid≃ ] B) ≃ (A ≡ B)
 Monoid≡ = SIP Monoid-univalent
 ```
+
+# Relationships to Unital Magmas
+
+```agda
+open import Algebra.UnitalMagma
+```
+
+By definition, every monoid is exactly a `unital magma`{.Agda ident=isUnitalMagma}
+that is also a `semigroup`{.Agda ident=isSemigroup}. However, adopting
+this as a definition yields several issues especially when it comes to
+metaprogramming, which is why this is instead expressed by explicitly
+proving the implications between the properties.
+
+First, we show that every monoid is a unital magma:
+
+```agda
+module _ (id : A) (_⋆_ : A → A → A) where
+  isMonoid→isUnitalMagma : isMonoid id _⋆_ → isUnitalMagma id _⋆_
+  isMonoid→isUnitalMagma mon .hasIsMagma = mon .hasIsSemigroup .hasIsMagma
+  isMonoid→isUnitalMagma mon .idˡ = mon .idˡ
+  isMonoid→isUnitalMagma mon .idʳ = mon .idʳ
+```
+
+"Reshuffling" the record fields also allows us to show the reverse
+direction, namely, that every unital semigroup is a monoid.
+
+```agda
+  isUnitalMagma→isSemigroup→isMonoid : isUnitalMagma id _⋆_ → isSemigroup _⋆_ →
+    isMonoid id _⋆_
+  isUnitalMagma→isSemigroup→isMonoid uni sem .hasIsSemigroup = sem
+  isUnitalMagma→isSemigroup→isMonoid uni sem .idˡ = uni .idˡ
+  isUnitalMagma→isSemigroup→isMonoid uni sem .idʳ = uni .idʳ
+```
+    

@@ -197,6 +197,19 @@ and-distrib-xorʳ true y false = and-falseʳ (not y) ∙ sym (and-falseʳ y)
 and-distrib-xorʳ true y true = (and-trueʳ (not y)) ∙ ap not (sym (and-trueʳ y))
 ```
 
+Material implication between booleans also interacts nicely with many of the other operations:
+
+```agda
+imp : Bool → Bool → Bool
+imp false y = true
+imp true y = y
+
+imp-trueʳ : (x : Bool) → imp x true ≡ true
+imp-trueʳ false = refl
+imp-trueʳ true = refl
+```
+
+
 ## Discreteness
 
 Using pattern matching, and the fact that `true isn't false`{.Agda

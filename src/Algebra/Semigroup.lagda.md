@@ -1,6 +1,8 @@
 ```agda
 open import 1Lab.Prelude
 
+open import Algebra.Magma
+
 module Algebra.Semigroup where
 ```
 
@@ -12,35 +14,7 @@ private variable
 ```
 -->
 
-# ∞-Magmas
 
-In common mathematical parlance, a **magma** is a set equipped with a
-binary operation. In HoTT, we free ourselves from considering sets as a
-primitive, and generalise to ∞-groupoids: An **∞-magma** is a _type_
-equipped with a binary operation.
-
-```agda
-is∞Magma : Type ℓ → Type ℓ
-is∞Magma X = X → X → X
-```
-
-Since we can canonically identify the predicate `is∞Magma`{.Agda} with a
-`Structure`{.Agda} built with the structure language, we automatically
-get a notion of ∞-Magma homomorphism, and a proof that
-`∞MagmaStr`{.Agda} is a `univalent structure`{.Agda ident=isUnivalent}.
-
-```agda
-∞MagmaStr : Structure ℓ is∞Magma
-∞MagmaStr = tm→Structure (s∙ s→ (s∙ s→ s∙))
-
-∞MagmaStr-univ : isUnivalent (∞MagmaStr {ℓ = ℓ})
-∞MagmaStr-univ = tm→Structure-univalent (s∙ s→ (s∙ s→ s∙))
-```
-
-Generalising magmas to ∞-magmas does not pose a problem because ∞-magmas
-do not have any _paths_. However, when considering structures with
-equalities, like semigroups, we must restrict ourselves to sets to get a
-coherent object, hence the field `smg-isSet`{.Agda}.
 
 # Semigroups
 
@@ -48,13 +22,15 @@ coherent object, hence the field `smg-isSet`{.Agda}.
 record isSemigroup {A : Type ℓ} (_⋆_ : A → A → A) : Type ℓ where
 ```
 
-A **semigroup** is a `set`{.Agda ident=isSet} equipped with a choice of
-_associative_ binary operation `⋆`.
+A **semigroup** is an associative `magma`{.Agda ident=isMagma}, that is, a set
+equipped with a choice of _associative_ binary operation `⋆`.
 
 ```agda
   field
-    hasIsSet    : isSet A
+    hasIsMagma : isMagma _⋆_
     associative : {x y z : A} → x ⋆ (y ⋆ z) ≡ (x ⋆ y) ⋆ z
+
+  open isMagma hasIsMagma public
 
 open isSemigroup public
 ```
@@ -101,11 +77,9 @@ operator is a _property_ of the operator:
 
 ```agda
 isProp-isSemigroup : {_⋆_ : A → A → A} → isProp (isSemigroup _⋆_)
-isProp-isSemigroup x y i .hasIsSet =
-  isProp-isHLevel 2 (x .hasIsSet) (y .hasIsSet) i
+isProp-isSemigroup x y i .hasIsMagma = isProp-isMagma (x .hasIsMagma) (y .hasIsMagma) i
 isProp-isSemigroup {_⋆_ = _⋆_} x y i .associative {a} {b} {c} =
-  x .hasIsSet (a ⋆ (b ⋆ c)) ((a ⋆ b) ⋆ c)
-              (x .associative) (y .associative) i
+  x .hasIsSet (a ⋆ (b ⋆ c)) ((a ⋆ b) ⋆ c) (x .associative) (y .associative) i
 ```
 
 A **semigroup structure on** a type packages up the binary operation and
@@ -161,7 +135,7 @@ under taking `minimums`{.Agda ident=min}.
 
 ```agda
 Nat-min : isSemigroup min
-Nat-min .hasIsSet = isSet-Nat
+Nat-min .hasIsMagma .hasIsSet = isSet-Nat
 Nat-min .associative = min-assoc _ _ _
 ```
 
@@ -179,43 +153,3 @@ private
     in ¬sucx≤x x sucx≤x
 ```
 
-## Identities
-
-In a magma, an element $e$ such that $x \star e = x$ and $e \star x = x$
-is called a **two-sided identity**. Accordingly, dropping either of
-these paths results in a right identity or a left identity. In
-particular, this theorem can be weakened: If $l$ is a left identity and
-$r$ is a right identity, then $l = r$.
-
-```agda
-isLeftId : (⋆ : A → A → A) → A → Type _
-isLeftId _⋆_ l = ∀ y → l ⋆ y ≡ y
-
-isRightId : (⋆ : A → A → A) → A → Type _
-isRightId _⋆_ r = ∀ y → y ⋆ r ≡ y
-
-isTwoSideId : (⋆ : A → A → A) → A → Type _
-isTwoSideId ⋆ r = isLeftId ⋆ r × isRightId ⋆ r
-
-left-right : {⋆ : A → A → A} (l r : A) → isLeftId ⋆ l → isRightId ⋆ r → l ≡ r
-left-right {⋆ = _⋆_} l r lid rid =
-  l     ≡⟨ sym (rid _) ⟩
-  l ⋆ r ≡⟨ lid _ ⟩
-  r     ∎
-```
-
-In a semigroup, since the underlying type is a set, we have that the
-type of two-sided identities is a proposition. This is because
-`left-right`{.Agda} shows the elements are equal, and the witnesses are
-equal because they are propositions (they are `products`{.Agda
-ident=isHLevel×} of `families`{.Agda ident=isHLevelΠ} of equalities in a
-Set - thus they are propositions).
-
-```agda
-isProp-twoSideId : {⋆ : A → A → A} → isSemigroup ⋆
-                 → isProp (Σ[ u ∈ A ] (isTwoSideId ⋆ u))
-isProp-twoSideId semi x y =
-  Σ≡Prop (λ u → isHLevel× 1 (isHLevelΠ 1 (λ _ → semi .hasIsSet _ _))
-                            (isHLevelΠ 1 (λ _ → semi .hasIsSet _ _)))
-    (left-right (x .fst) (y .fst) (x .snd .fst) (y .snd .snd))
-```
