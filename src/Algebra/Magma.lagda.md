@@ -38,12 +38,13 @@ get a notion of ∞-Magma homomorphism, and a proof that
 ∞MagmaStr-univ = tm→Structure-univalent (s∙ s→ (s∙ s→ s∙))
 ```
 
-Generalising magmas to ∞-magmas does not pose a problem because ∞-magmas
-do not have any _paths_. However, when considering structures with
-equalities, like semigroups, we must restrict ourselves to sets to get a
-coherent object, hence the field `hasIsSet`{.Agda}.
-In order to properly set up the algebraic hierarchy, we define general
-magmas anyways.
+∞-magmas form a viable structure because magmas (and therefore their
+higher version) do not axiomatize any _paths_ that would require
+further coherence conditions. However, when considering structures with
+equalities, like semigroups or loops, we must restrict ourselves to sets
+to get a reasonable object, hence the field `hasIsSet`{.Agda}.
+To be able to properly generalize over these notions, we define magmas
+as ∞-magmas whose carrier type is a set.
 
 # Magmas
 ```agda
