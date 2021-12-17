@@ -207,7 +207,6 @@ imp true y = y
 imp-trueʳ : (x : Bool) → imp x true ≡ true
 imp-trueʳ false = refl
 imp-trueʳ true = refl
-
 ```
 
 

@@ -41,16 +41,17 @@ get a notion of ∞-Magma homomorphism, and a proof that
 Generalising magmas to ∞-magmas does not pose a problem because ∞-magmas
 do not have any _paths_. However, when considering structures with
 equalities, like semigroups, we must restrict ourselves to sets to get a
-coherent object, hence the field `hasIsSet`{.Agda}. In order to properly set up
-the algebraic hierarchy, we define general magmas anyways.
+coherent object, hence the field `hasIsSet`{.Agda}.
+In order to properly set up the algebraic hierarchy, we define general
+magmas anyways.
 
 # Magmas
 ```agda
 record isMagma {A : Type ℓ} (_⋆_ : A → A → A) : Type ℓ where
 ```
 
-A **magma** is a `set`{.Agda ident=isSet} equipped with an arbitrary binary operation `⋆`,
-on which no further laws are imposed. 
+A **magma** is a `set`{.Agda ident=isSet} equipped with an arbitrary
+binary operation `⋆`, on which no further laws are imposed. 
 
 ```agda
   field
@@ -59,9 +60,10 @@ on which no further laws are imposed.
 open isMagma public
 ```
     
-Note that we do not generally benefit from the set truncation of arbitrary magmas - however,
-practically all structures built upon `isMagma`{.Agda} do, since they contain equality fields
-which would require complicated if not outright undefinable coherence conditions.
+Note that we do not generally benefit from the set truncation of
+arbitrary magmas - however, practically all structures built upon
+`isMagma`{.Agda} do, since they contain equality fields which would
+require complicated if not outright undefinable coherence conditions.
 
 It also allows us to show that being a magma is a _property_:
 
@@ -70,9 +72,9 @@ isProp-isMagma : {_⋆_ : A → A → A} → isProp (isMagma _⋆_)
 isProp-isMagma x y i .hasIsSet = isProp-isHLevel 2 (x .hasIsSet) (y .hasIsSet) i
 ```
 
-By turning the operation parameter into an additional piece of data, we get the notion of
-a **magma structure** on a type, as well as the notion of a magma in general by doing
-the same to the carrier type.
+By turning the operation parameter into an additional piece of data, we
+get the notion of a **magma structure** on a type, as well as the
+notion of a magma in general by doing the same to the carrier type.
 
 ```agda
 record MagmaOn (A : Type ℓ) : Type ℓ where
@@ -87,9 +89,9 @@ Magma : (ℓ : Level) → Type (lsuc ℓ)
 Magma ℓ = Σ MagmaOn
 ```
 
-We then define what it means for an equivalence between the carrier types of two
-given magmas to be an **equivalence of magmas**. In particular,
-it has to preserve the magma operation.
+We then define what it means for an equivalence between the carrier
+types of two given magmas to be an **equivalence of magmas**: it has to
+preserve the magma operation.
 
 ```agda
 record
@@ -104,10 +106,12 @@ record
 open Magma≃
 ```
 
-By using record machinery that transforms our given definition into an equivalent
-`description`{.Agda ident=StrDesc}, we can see that `MagmaOn`{.Agda} forms a univalent structure,
-which allows us to characterise the path type between two magmas as the type of their equivalences
-by making use of the general `structure identity principle`{.Agda ident=SIP}.
+By using record machinery that transforms our given definition into an
+equivalent `description`{.Agda ident=StrDesc}, we can see that
+`MagmaOn`{.Agda} forms a univalent structure, which allows us to
+characterise the path type between two magmas as the type of their
+equivalences by making use of the general
+`structure identity principle`{.Agda ident=SIP}.
 
 ```agda
 Magma-univalent : isUnivalent {ℓ = ℓ} (HomT→Str Magma≃)
@@ -127,9 +131,10 @@ Magma≡ = SIP Magma-univalent
 open import 1Lab.Data.Bool
 ```
 
-To give a somewhat natural example for a magma that is neither associative, commutative, nor
-has a two-sided identity element, consider `boolean implication`{.Agda imp}. Since the booleans
-form a set, this obviously defines a magma: 
+To give a somewhat natural example for a magma that is neither
+associative, commutative, nor has a two-sided identity element,
+consider `boolean implication`{.Agda imp}. Since the booleans form a
+set, this obviously defines a magma: 
 
 ```agda
 private 
@@ -147,7 +152,8 @@ We show it is not commutative or associative by giving counterexamples:
   imp-not-associative associative = true≠false (sym (associative false false false))
 ```
 
-It also has no two-sided unit, as can be shown by case-splitting on the candidates:
+It also has no two-sided unit, as can be shown by case-splitting 
+on the candidates:
 
 ```agda
   imp-not-unital : (x : Bool) → ((y : Bool) → imp x y ≡ y) → ((y : Bool) → imp y x ≡ y) → ⊥
