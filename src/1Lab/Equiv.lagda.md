@@ -257,8 +257,10 @@ inhabited.
 
 We begin with showing that the fibre over $y$ is propositional, since
 that's the harder of the two arguments. Suppose that we have $y$, $x_0$,
-$x_1$, $p_0$ and $p_1$ as below; What we need to show is that we have
-some $\pi : x_0 ≡ x_1$ and $p_0 ≡ p_1$ _`over`{.Agda ident=PathP}_ $\pi$.
+$x_1$, $p_0$ and $p_1$ as below; Note that $(x_0, p_0)$ and $(x_1,
+$p_1)$ are fibres of $f$ over $y$. What we need to show is that we have
+some $\pi : x_0 ≡ x_1$ and $p_0 ≡ p_1$ _`over`{.Agda ident=PathP}_
+$\pi$.
 
 ```agda
   private module _ (y : B) (x0 x1 : A) (p0 : f x0 ≡ y) (p1 : f x1 ≡ y) where
