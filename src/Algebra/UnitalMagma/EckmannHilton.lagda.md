@@ -6,7 +6,7 @@ open import Algebra.UnitalMagma
 open import Algebra.Semigroup
 open import Algebra.Monoid
 
-module Algebra.EckmannHilton where
+module Algebra.UnitalMagma.EckmannHilton where
 ```
 
 
