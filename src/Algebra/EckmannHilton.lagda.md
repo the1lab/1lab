@@ -31,11 +31,11 @@ which can then be transformed into another by making use of the interchange equa
 ```agda
   unitsEqual : e ≡ e'
   unitsEqual =
-    e ≡⟨ sym (idˡ unitalMgm) ⟩
-    (e ⋆ e) ≡⟨ ap₂ _⋆_ (sym (idˡ unitalMgm')) (sym (idʳ unitalMgm')) ⟩
+    e                        ≡⟨ sym (idˡ unitalMgm) ⟩
+    (e ⋆ e)                  ≡⟨ ap₂ _⋆_ (sym (idˡ unitalMgm')) (sym (idʳ unitalMgm')) ⟩
     ((e' ⋆'  e) ⋆ (e ⋆' e')) ≡⟨ sym (interchange e' e e e') ⟩
-    ((e' ⋆ e) ⋆' (e ⋆ e')) ≡⟨ ap₂ _⋆'_ (idʳ unitalMgm) (idˡ unitalMgm) ⟩
-    (e' ⋆' e') ≡⟨ idˡ unitalMgm' ⟩
+    ((e' ⋆ e) ⋆' (e ⋆ e'))   ≡⟨ ap₂ _⋆'_ (idʳ unitalMgm) (idˡ unitalMgm) ⟩
+    (e' ⋆' e')               ≡⟨ idˡ unitalMgm' ⟩
     e' ∎
 ```
 
@@ -45,10 +45,10 @@ once again by using the interchange law as well as swapping units whenever neede
 ```agda
   ⋆-reverse-⋆' : (x y : A) → x ⋆ y ≡ y ⋆' x
   ⋆-reverse-⋆' x y =
-    x ⋆ y ≡⟨ ap₂ _⋆_ (sym (idˡ unitalMgm')) (sym (idʳ unitalMgm')) ⟩
+    x ⋆ y                 ≡⟨ ap₂ _⋆_ (sym (idˡ unitalMgm')) (sym (idʳ unitalMgm')) ⟩
     (e' ⋆' x) ⋆ (y ⋆' e') ≡⟨ sym (interchange e' y x e') ⟩
-    (e' ⋆ y) ⋆' (x ⋆ e') ≡⟨ ap₂ _⋆'_ (ap (_⋆ y) (sym unitsEqual)) (ap (x ⋆_) (sym unitsEqual)) ⟩
-    (e ⋆ y) ⋆' (x ⋆ e) ≡⟨ ap₂ _⋆'_ (idˡ unitalMgm) (idʳ unitalMgm) ⟩
+    (e' ⋆ y) ⋆' (x ⋆ e')  ≡⟨ ap₂ _⋆'_ (ap (_⋆ y) (sym unitsEqual)) (ap (x ⋆_) (sym unitsEqual)) ⟩
+    (e ⋆ y) ⋆' (x ⋆ e)    ≡⟨ ap₂ _⋆'_ (idˡ unitalMgm) (idʳ unitalMgm) ⟩
     y ⋆' x ∎
 ```
 
@@ -57,10 +57,10 @@ By a similar method, we can show pointwise equality of the two operators.
 ```agda
   operationsEqual : (x y : A) → x ⋆ y ≡ x ⋆' y
   operationsEqual x y =
-    x ⋆ y ≡⟨ ap₂ _⋆_ (sym (idʳ unitalMgm')) (sym (idˡ unitalMgm')) ⟩
+    x ⋆ y                 ≡⟨ ap₂ _⋆_ (sym (idʳ unitalMgm')) (sym (idˡ unitalMgm')) ⟩
     (x ⋆' e') ⋆ (e' ⋆' y) ≡⟨ sym (interchange x e' e' y) ⟩
-    (x ⋆ e') ⋆' (e' ⋆ y) ≡⟨ ap₂ _⋆'_ (sym (ap (_⋆_ x) unitsEqual)) (sym (ap (_⋆ y) unitsEqual)) ⟩
-    (x ⋆ e) ⋆' (e ⋆ y) ≡⟨ ap₂ _⋆'_ (idʳ unitalMgm) (idˡ unitalMgm) ⟩
+    (x ⋆ e') ⋆' (e' ⋆ y)  ≡⟨ ap₂ _⋆'_ (sym (ap (_⋆_ x) unitsEqual)) (sym (ap (_⋆ y) unitsEqual)) ⟩
+    (x ⋆ e) ⋆' (e ⋆ y)    ≡⟨ ap₂ _⋆'_ (idʳ unitalMgm) (idˡ unitalMgm) ⟩
     x ⋆' y ∎
 ```
 
@@ -82,13 +82,13 @@ that the operation is a monoid.
 ```agda
   ⋆-associative : (x y z : A) → x ⋆ (y ⋆ z) ≡ (x ⋆ y) ⋆ z
   ⋆-associative x y z = sym (
-    (x ⋆ y) ⋆ z ≡⟨ ap (λ a → (x ⋆ y) ⋆ a) (sym (idʳ unitalMgm)) ⟩
-    (x ⋆ y) ⋆ (z ⋆ e) ≡⟨ ap (λ x → x ⋆ (z ⋆ e)) (⋆-commutative x y) ⟩
-    (y ⋆ x) ⋆ (z ⋆ e) ≡⟨ operationsEqual (y ⋆ x) (z ⋆ e) ⟩
-    (y ⋆ x) ⋆' (z ⋆ e) ≡⟨ interchange y x z e ⟩
+    (x ⋆ y) ⋆ z         ≡⟨ ap (λ a → (x ⋆ y) ⋆ a) (sym (idʳ unitalMgm)) ⟩
+    (x ⋆ y) ⋆ (z ⋆ e)   ≡⟨ ap (λ x → x ⋆ (z ⋆ e)) (⋆-commutative x y) ⟩
+    (y ⋆ x) ⋆ (z ⋆ e)   ≡⟨ operationsEqual (y ⋆ x) (z ⋆ e) ⟩
+    (y ⋆ x) ⋆' (z ⋆ e)  ≡⟨ interchange y x z e ⟩
     (y ⋆' z) ⋆ (x ⋆' e) ≡⟨ ⋆-commutative (y ⋆' z) (x ⋆' e) ⟩
     (x ⋆' e) ⋆ (y ⋆' z) ≡⟨ ap₂ _⋆_ (sym (operationsEqual x e)) (sym (operationsEqual y z)) ⟩
-    (x ⋆ e) ⋆ (y ⋆ z) ≡⟨ ap (_⋆ (y ⋆ z)) (idʳ unitalMgm) ⟩
+    (x ⋆ e) ⋆ (y ⋆ z)   ≡⟨ ap (_⋆ (y ⋆ z)) (idʳ unitalMgm) ⟩
     x ⋆ (y ⋆ z) ∎)
 
   ⋆-isMonoid : isMonoid e _⋆_
