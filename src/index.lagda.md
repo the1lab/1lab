@@ -224,26 +224,43 @@ open import 1Lab.Path          -- Path types
 open import 1Lab.Path.Partial  -- Partial elements
 open import 1Lab.Path.Groupoid -- Groupoid structure of types
 
-open import 1Lab.Equiv           -- Contractible fibre equivalences, isomorphisms
-open import 1Lab.Equiv.Biinv     -- Biinvertible maps
-open import 1Lab.Equiv.Embedding -- Embeddings
-open import 1Lab.Equiv.Fibrewise -- Fibrewise equivalences
+open import 1Lab.Equiv             -- “Contractible fibres” equivalences
+open import 1Lab.Equiv.Biinv       -- Biinvertible maps
+open import 1Lab.Equiv.FromPath    -- Transport is an equivalence, cubically
+open import 1Lab.Equiv.Embedding   -- Embeddings
+open import 1Lab.Equiv.Fibrewise   -- Fibrewise equivalences
+open import 1Lab.Equiv.HalfAdjoint -- Half-adjoint equivalences
 
 open import 1Lab.HLevel          -- h-levels
 open import 1Lab.HLevel.Sets     -- K, Rijke's theorem, Hedberg's theorem
 open import 1Lab.HLevel.Retracts -- Closure of h-levels under retractions/isos
+open import 1Lab.HLevel.Universe -- n-Type is a (n+1)-Type
 
-open import 1Lab.Univalence     -- Equivalence is equivalent to equality
-open import 1Lab.Univalence.SIP -- Univalence + preservation of structure
+open import 1Lab.Univalence            -- Equivalence is equivalent to equality
+open import 1Lab.Univalence.SIP        -- Univalence + preservation of structure
+open import 1Lab.Univalence.SIP.Auto   -- Derive isUnivalent for families of types
+open import 1Lab.Univalence.SIP.Record -- Derive isUnivalent for record types
 
-open import 1Lab.Data.Dec            -- Decidable types, discrete types
-open import 1Lab.Data.Bool           -- Booleans and their automorphisms
-open import 1Lab.Data.List           -- Finite lists
-open import 1Lab.Data.Relation.Order -- Prop-valued ordering relations
+open import 1Lab.Data.Dec                          -- Decidable types, discrete types
+open import 1Lab.Data.Nat                          -- The natural numbers
+open import 1Lab.Data.Int                          -- The integers
+open import 1Lab.Data.Sum                          -- Coproduct types
+open import 1Lab.Data.Bool                         -- The type of booleans
+open import 1Lab.Data.List                         -- Finite lists
+open import 1Lab.Data.Nat.Base                     -- Definition of the naturals
+open import 1Lab.Data.Pi.Properties                -- Properties of function types
+open import 1Lab.Data.Nat.Properties               -- Properties of the naturals
+open import 1Lab.Data.Sigma.Properties             -- Properties of product types
+open import 1Lab.Data.Relation.Order               -- Prop-valued ordering relations
+open import 1Lab.Data.Relation.Order.Lexicographic -- Lexicographical orderings
 
 open import 1Lab.HIT.S1              -- The circle as a cell complex
+open import 1Lab.HIT.Sinfty          -- The "infinite dimensional" sphere S^∞
+open import 1Lab.HIT.Sphere          -- Spheres of natural dimension
 open import 1Lab.HIT.Truncation      -- Propositional truncation
+open import 1Lab.HIT.Suspension      -- The suspension of a type
 
-open import 1Lab.Counterexamples.IsIso -- Counterexample: isIso is not a prop
+open import 1Lab.Counterexamples.IsIso   -- Counterexample: isIso is not a prop
+open import 1Lab.Counterexamples.Sigma   -- Counterexample: Σ is not ∃
 open import 1Lab.Counterexamples.Russell -- Counterexample: Russell's paradox
 ```
