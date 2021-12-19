@@ -7,11 +7,11 @@ description: |
 ---
 
 ```agda
-open import 1Lab.Type.Sigma
-open import 1Lab.Type.Pi
 open import 1Lab.Equiv.Embedding
 open import 1Lab.Path.Groupoid
+open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
+open import 1Lab.Type.Pi
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path

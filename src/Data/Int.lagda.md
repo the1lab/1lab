@@ -3,11 +3,12 @@ open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Sets
 open import 1Lab.Univalence
 open import 1Lab.Type.Dec
-open import Data.Nat
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+
+open import Data.Nat
 
 module Data.Int where
 ```

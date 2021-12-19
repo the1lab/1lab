@@ -1,8 +1,10 @@
 ```agda
-open import Relation.Order
-open import Data.Nat.Base
 open import 1Lab.Path
 open import 1Lab.Type
+
+open import Data.Nat.Base
+
+open import Relation.Order
 
 module Data.Nat.Properties where
 ```
