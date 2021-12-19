@@ -149,33 +149,21 @@ definition of the integers. Since this definition (which we call
 [discrete]: agda://1Lab.Data.Dec#Discrete
 [a set]: agda://1Lab.HLevel#isSet
 
-
 ```agda
 module _ where
-  private
-    data Int' : Type where
-      pos : Nat → Int'
-      negsuc : Nat → Int'
-```
-
-As the names indicate, these constructors are meant to represent a
-`pos`{.Agda}itive integer, and the `negation of a successor`{.Agda
-ident=negsuc} of a natural number, i.e. `negsuc`{.Agda} is the map
-taking $n$ to $-(n + 1)$.
-
-```agda
-    _ℕ-_ : Nat → Nat → Int'
-    x ℕ- zero = pos x
-    zero ℕ- suc y = negsuc y
-    suc x ℕ- suc y = x ℕ- y
+  open import 1Lab.Data.Int.Inductive
+    renaming ( Int to Int'
+             ; Discrete-Int to Discrete-Int'
+             )
 ```
 
 There is a canonical map which takes pairs of naturals to their
-difference as an `Int'`{.Agda}; It can be shown that this map extends to
-a function from `Int`{.Agda}, since it respects the generating equation
-`quot`{.Agda} definitionally (that's the third clause):
+difference as an `Int'`{.Agda}, which is `ℕ-`{.Agda}; It can be shown
+that this map extends to a function from `Int`{.Agda}, since it respects
+the generating equation `quot`{.Agda} definitionally:
 
 ```agda
+  private
     toInt' : Int → Int'
     toInt' (diff x y) = x ℕ- y
     toInt' (quot m n i) = m ℕ- n
@@ -205,32 +193,6 @@ $(x, 0)$ and the negative numbers to $(0, x)$.
 
     Int'≡Int : Int' ≡ Int
     Int'≡Int = Iso→path (fromInt' , iso toInt' toFromInt' fromToInt')
-```
-
-We can decide equality of two `Int'`{.Agda}s by `comparing`{.Agda
-ident=Discrete-Nat} their underlying naturals when the constructors
-match (i.e. `pos`{.Agda}/`pos`{.Agda} or
-`negsuc`{.Agda}/`negsuc`{.Agda}):
-
-```agda
-    Discrete-Int' : Discrete Int'
-    Discrete-Int' (pos x) (pos y) with Discrete-Nat x y
-    ... | yes p = yes (ap pos p)
-    ... | no ¬p = no λ path → ¬p (ap (λ { (pos x) → x ; _ → zero }) path)
-
-    Discrete-Int' (negsuc x) (negsuc y) with Discrete-Nat x y
-    ... | yes p = yes (ap negsuc p)
-    ... | no ¬p = no λ path → ¬p (ap (λ { (negsuc x) → x ; _ → zero }) path)
-```
-
-And in case the constructors are mismatched, there can be no path
-between them:
-
-```agda
-    Discrete-Int' (pos x) (negsuc y) =
-      no λ path → subst (λ { (pos x) → ⊤ ; _ → ⊥ }) path tt
-    Discrete-Int' (negsuc x) (pos y) =
-      no λ path → subst (λ { (pos x) → ⊥ ; _ → ⊤ }) path tt
 ```
 
 With a quick appeal to `univalence`{.Agda ident=Iso→path}, we get that
