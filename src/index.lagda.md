@@ -224,7 +224,7 @@ open import 1Lab.Path          -- Path types
 open import 1Lab.Path.Partial  -- Partial elements
 open import 1Lab.Path.Groupoid -- Groupoid structure of types
 
-open import 1Lab.Equiv           -- Contractible fibre equivalences, isomorphisms
+open import 1Lab.Equiv             -- Contractible fibre equivalences, isomorphisms
 open import 1Lab.Equiv.Biinv       -- Biinvertible maps
 open import 1Lab.Equiv.Embedding   -- Embeddings
 open import 1Lab.Equiv.Fibrewise   -- Fibrewise equivalences
@@ -243,11 +243,11 @@ open import 1Lab.Type.Dec   -- Decidable types, discrete types
 open import 1Lab.Type.Pi    -- Properties of dependent products
 open import 1Lab.Type.Sigma -- Properties of dependent coproducts
 
-open import 1Lab.HIT.S1              -- The circle as a cell complex
-open import 1Lab.HIT.Sphere          -- Spheres of arbitrary dimension
-open import 1Lab.HIT.Sinfty          -- The infinity-dimensional sphere
-open import 1Lab.HIT.Suspension      -- The suspension operation
-open import 1Lab.HIT.Truncation      -- Propositional truncation
+open import 1Lab.HIT.S1         -- The circle as a cell complex
+open import 1Lab.HIT.Sphere     -- Spheres of arbitrary dimension
+open import 1Lab.HIT.Sinfty     -- The infinity-dimensional sphere
+open import 1Lab.HIT.Suspension -- The suspension operation
+open import 1Lab.HIT.Truncation -- Propositional truncation
 
 open import 1Lab.Counterexamples.IsIso   -- Counterexample: isIso is not a prop
 open import 1Lab.Counterexamples.Russell -- Counterexample: Russell's paradox
@@ -262,9 +262,9 @@ open import Data.Sum  -- The coproduct type
 open import Relation.Order               -- Prop-valued ordering relations
 open import Relation.Order.Lexicographic -- Lexicographic orderings
 
-open import Algebra.Magma                    -- Binary operations 
-open import Algebra.UnitalMagma              -- Operations with a two-sided unit
-open import Algebra.Semigroup                -- Semigroups as associative magmas
-open import Algebra.Monoid                   -- Monoids as unital semigroups
+open import Algebra.Magma                     -- Binary operations 
+open import Algebra.UnitalMagma               -- Operations with two-sided units
+open import Algebra.Semigroup                 -- Semigroups (associative magmas)
+open import Algebra.Monoid                    -- Monoids as unital semigroups
 open import Algebra.UnitalMagma.EckmannHilton -- The Eckmann-Hilton argument
 ```
