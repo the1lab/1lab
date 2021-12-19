@@ -1,5 +1,5 @@
 ```agda
-open import Data.Relation.Order
+open import Relation.Order
 open import Data.Nat.Base
 open import 1Lab.Path
 open import 1Lab.Type

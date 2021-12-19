@@ -129,7 +129,7 @@ Magma≡ = SIP Magma-univalent
 ## The boolean implication magma
 
 ```agda
-open import 1Lab.Data.Bool
+open import Data.Bool
 ```
 
 To give a somewhat natural example for a magma that is neither

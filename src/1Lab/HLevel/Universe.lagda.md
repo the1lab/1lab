@@ -1,5 +1,5 @@
 ```
-open import 1Lab.Data.Sigma.Properties
+open import 1Lab.Type.Sigma
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Univalence
 open import 1Lab.HLevel

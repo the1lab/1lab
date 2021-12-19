@@ -28,11 +28,7 @@ open import 1Lab.Univalence.SIP.Record.Base public
         ; autoRecord
         )
 
-open import 1Lab.Data.Nat public
-open import 1Lab.Data.Int public
-open import 1Lab.Data.Sum public
-open import 1Lab.Data.List public
-open import 1Lab.Data.Pi.Properties public
-open import 1Lab.Data.Sigma.Properties public
+open import 1Lab.Type.Pi public
+open import 1Lab.Type.Sigma public
 
 open import 1Lab.HIT.Truncation public
