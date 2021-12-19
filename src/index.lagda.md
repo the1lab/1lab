@@ -252,16 +252,38 @@ open import 1Lab.HIT.Truncation -- Propositional truncation
 open import 1Lab.Counterexamples.IsIso   -- Counterexample: isIso is not a prop
 open import 1Lab.Counterexamples.Russell -- Counterexample: Russell's paradox
 open import 1Lab.Counterexamples.Sigma   -- Counterexample: Sigma is not prop
+```
 
+## Data types
+
+Multiple commonly used data types as well as operations and structure on
+them are introduced and examined here, showing set-ness, algebraic properties,
+etc.
+
+```agda
 open import Data.Bool -- Booleans and their automorphisms
 open import Data.List -- Finite lists
 open import Data.Nat  -- Natural numbers
 open import Data.Int  -- Integer numbers
 open import Data.Sum  -- The coproduct type      
+```
 
+# Relation
+
+Here, we define often-used types of relations like partial orders as well as
+actual relations themselves, for example, lexicographic orderings on lists.
+
+```agda
 open import Relation.Order               -- Prop-valued ordering relations
 open import Relation.Order.Lexicographic -- Lexicographic orderings
+```
 
+# Algebra
+
+In this namespace, algebraic structures like monoids are defined and studied -
+relevant theorems will also be proven here.
+
+```agda
 open import Algebra.Magma                     -- Binary operations 
 open import Algebra.UnitalMagma               -- Operations with two-sided units
 open import Algebra.Semigroup                 -- Semigroups (associative magmas)
