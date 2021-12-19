@@ -1,10 +1,10 @@
 ```agda
-open import 1Lab.Data.Relation.Order
-open import 1Lab.Data.Nat.Base
+open import Data.Relation.Order
+open import Data.Nat.Base
 open import 1Lab.Path
 open import 1Lab.Type
 
-module 1Lab.Data.Nat.Properties where
+module Data.Nat.Properties where
 ```
 
 # Natural Numbers - Properties

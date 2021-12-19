@@ -1,11 +1,11 @@
 ```
 open import 1Lab.HLevel.Sets
-open import 1Lab.Data.Dec
+open import 1Lab.Type.Dec
 open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type
 
-module 1Lab.Data.Nat.Base where
+module Data.Nat.Base where
 ```
 
 # Natural Numbers

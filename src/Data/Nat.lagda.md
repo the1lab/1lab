@@ -1,8 +1,8 @@
 ```agda
-module 1Lab.Data.Nat where
+module Data.Nat where
 
-open import 1Lab.Data.Nat.Properties public
-open import 1Lab.Data.Nat.Base public
+open import Data.Nat.Properties public
+open import Data.Nat.Base public
 ```
 
 # Natural Numbers - Index

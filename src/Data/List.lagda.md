@@ -4,7 +4,7 @@ open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type
 
-module 1Lab.Data.List where
+module Data.List where
 
 open import Agda.Builtin.List public
 ```

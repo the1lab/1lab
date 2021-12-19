@@ -2,14 +2,14 @@
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Sets
 open import 1Lab.Univalence
-open import 1Lab.Data.Dec
-open import 1Lab.Data.Nat
+open import 1Lab.Type.Dec
+open import Data.Nat
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
-module 1Lab.Data.Int where
+module Data.Int where
 ```
 
 # Integers

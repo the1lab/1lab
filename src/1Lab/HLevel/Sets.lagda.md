@@ -1,7 +1,7 @@
 ```agda
 open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Retracts
-open import 1Lab.Data.Dec
+open import 1Lab.Type.Dec
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path

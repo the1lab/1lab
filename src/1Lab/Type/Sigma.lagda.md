@@ -4,7 +4,7 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
-module 1Lab.Data.Sigma.Properties where
+module 1Lab.Type.Sigma where
 ```
 
 <!--

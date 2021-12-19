@@ -7,8 +7,8 @@ description: |
 ---
 
 ```agda
-open import 1Lab.Data.Sigma.Properties
-open import 1Lab.Data.Pi.Properties
+open import 1Lab.Type.Sigma
+open import 1Lab.Type.Pi
 open import 1Lab.Equiv.Embedding
 open import 1Lab.Path.Groupoid
 open import 1Lab.Univalence
@@ -306,7 +306,7 @@ structures, one given by conjunction, one by disjunction, and prove that
 
 <div class=mathpar>
 ```agda
-  open import 1Lab.Data.Bool
+  open import Data.Bool
 ```
 </pre></div>
 

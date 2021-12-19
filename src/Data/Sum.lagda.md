@@ -1,12 +1,12 @@
 ```agda
 open import 1Lab.HLevel.Retracts
-open import 1Lab.Data.Dec
+open import 1Lab.Type.Dec
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
-module 1Lab.Data.Sum where
+module Data.Sum where
 ```
 
 # Sum Types

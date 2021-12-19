@@ -236,10 +236,10 @@ open import 1Lab.HLevel.Retracts -- Closure of h-levels under retractions/isos
 open import 1Lab.Univalence     -- Equivalence is equivalent to equality
 open import 1Lab.Univalence.SIP -- Univalence + preservation of structure
 
-open import 1Lab.Data.Dec            -- Decidable types, discrete types
-open import 1Lab.Data.Bool           -- Booleans and their automorphisms
-open import 1Lab.Data.List           -- Finite lists
-open import 1Lab.Data.Relation.Order -- Prop-valued ordering relations
+open import 1Lab.Type.Dec       -- Decidable types, discrete types
+open import Data.Bool           -- Booleans and their automorphisms
+open import Data.List           -- Finite lists
+open import Relation.Order      -- Prop-valued ordering relations
 
 open import 1Lab.HIT.S1              -- The circle as a cell complex
 open import 1Lab.HIT.Truncation      -- Propositional truncation
