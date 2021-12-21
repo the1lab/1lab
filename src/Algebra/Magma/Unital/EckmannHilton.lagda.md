@@ -2,13 +2,12 @@
 ```agda
 open import 1Lab.Prelude
 
-open import Algebra.UnitalMagma
+open import Algebra.Magma.Unital
 open import Algebra.Semigroup
 open import Algebra.Monoid
 
-module Algebra.UnitalMagma.EckmannHilton where
+module Algebra.Magma.Unital.EckmannHilton where
 ```
-
 
 # The Eckmann-Hilton Argument
 

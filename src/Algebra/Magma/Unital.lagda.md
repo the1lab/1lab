@@ -4,7 +4,7 @@ open import 1Lab.Prelude
 
 open import Algebra.Magma
 
-module Algebra.UnitalMagma where
+module Algebra.Magma.Unital where
 ```
 
 <!--
@@ -191,5 +191,3 @@ left-right-identities-unital l r lid rid isMgm .idˡ = lid _
 left-right-identities-unital {_⋆_ = _⋆_} l r lid rid isMgm .idʳ {x = x} =
   subst (λ a → (x ⋆ a) ≡ x) (sym (left-right-identities-equal l r lid rid)) (rid _)
 ```
-
-

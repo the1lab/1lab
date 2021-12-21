@@ -258,18 +258,20 @@ open import 1Lab.Counterexamples.Sigma   -- Counterexample: Sigma is not prop
 
 ## Data types
 
-Multiple commonly used data types as well as operations and structure on
-them are introduced and examined here, showing set-ness, algebraic properties,
-etc.
+The `Data` namespace contains definitions of oft-used data types, which
+are fundamental to the rest of the development but not “basic type
+theory”. These modules contain (or re-export) the types themselves,
+useful operations on them, characterisation of their path spaces, etc.
 
 ```agda
-open import Data.Nat                          -- The natural numbers
-open import Data.Int                          -- The integers
-open import Data.Sum                          -- Coproduct types
-open import Data.Bool                         -- The type of booleans
-open import Data.List                         -- Finite lists
+open import Data.Nat  -- The natural numbers
+open import Data.Int  -- The integers
+open import Data.Sum  -- Coproduct types
+open import Data.Bool -- The booleans
+open import Data.List -- Finite lists
 ```
 
+<!--
 # Relation
 
 Here, we define often-used types of relations like partial orders as well as
@@ -279,16 +281,21 @@ actual relations themselves, for example, lexicographic orderings on lists.
 open import Relation.Order               -- Prop-valued ordering relations
 open import Relation.Order.Lexicographic -- Lexicographic orderings
 ```
+-->
 
 # Algebra
 
-In this namespace, algebraic structures like monoids are defined and studied -
-relevant theorems will also be proven here.
+In the `Algebra` namespace, the theory of universal algebra is developed
+from a univalent perspective. Specifically, every definition of an
+algebraic structure comes with an associated proof that it is univalent
+--- concretely, equality of groups is group isomorphism (for instance).
 
 ```agda
-open import Algebra.Magma                     -- Binary operations 
-open import Algebra.UnitalMagma               -- Operations with two-sided units
-open import Algebra.Semigroup                 -- Semigroups (associative magmas)
-open import Algebra.Monoid                    -- Monoids as unital semigroups
-open import Algebra.UnitalMagma.EckmannHilton -- The Eckmann-Hilton argument
+open import Algebra.Magma                      -- Binary operations 
+open import Algebra.Magma.Unital               -- Operations with two-sided units
+open import Algebra.Magma.Unital.EckmannHilton -- The Eckmann-Hilton argument
+
+open import Algebra.Semigroup                  -- Semigroups (associative magmas)
+open import Algebra.Monoid                     -- Monoids as unital semigroups
+open import Algebra.Group                      -- Groups as monoids with inverses
 ```

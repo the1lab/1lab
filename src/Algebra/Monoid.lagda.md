@@ -85,16 +85,19 @@ commute with the multiplication:
 
 ```agda
 record
-  Monoid≃ (A B : Σ (MonoidOn {ℓ = ℓ})) (e : A .fst ≃ B .fst) : Type ℓ where
+  MonoidHom (A B : Σ (MonoidOn {ℓ = ℓ})) (e : A .fst → B .fst) : Type ℓ where
   private
     module A = MonoidOn (A .snd)
     module B = MonoidOn (B .snd)
 
   field
-    pres-id : e .fst A.identity ≡ B.identity
-    pres-⋆ : (x y : A .fst) → e .fst (x A.⋆ y) ≡ e .fst x B.⋆ e .fst y
+    pres-id : e A.identity ≡ B.identity
+    pres-⋆ : (x y : A .fst) → e (x A.⋆ y) ≡ e x B.⋆ e y
 
-open Monoid≃
+open MonoidHom
+
+Monoid≃ : (A B : Σ (MonoidOn {ℓ = ℓ})) (e : A .fst ≃ B .fst) → Type _
+Monoid≃ A B (e , _) = MonoidHom A B e
 ```
 
 We automatically derive a proof that `MonoidOn`{.Agda} is univalent for
@@ -123,7 +126,7 @@ Monoid≡ = SIP Monoid-univalent
 # Relationships to Unital Magmas
 
 ```agda
-open import Algebra.UnitalMagma
+open import Algebra.Magma.Unital
 ```
 
 By definition, every monoid is exactly a `unital magma`{.Agda ident=isUnitalMagma}
@@ -135,7 +138,7 @@ proving the implications between the properties.
 First, we show that every monoid is a unital magma:
 
 ```agda
-module _ (id : A) (_⋆_ : A → A → A) where
+module _ {id : A} {_⋆_ : A → A → A} where
   isMonoid→isUnitalMagma : isMonoid id _⋆_ → isUnitalMagma id _⋆_
   isMonoid→isUnitalMagma mon .hasIsMagma = mon .hasIsSemigroup .hasIsMagma
   isMonoid→isUnitalMagma mon .idˡ = mon .idˡ
@@ -152,4 +155,35 @@ direction, namely, that every unital semigroup is a monoid.
   isUnitalMagma→isSemigroup→isMonoid uni sem .idˡ = uni .idˡ
   isUnitalMagma→isSemigroup→isMonoid uni sem .idʳ = uni .idʳ
 ```
-    
+
+# Inverses
+
+A useful application of the monoid laws is in showing that _having an
+**inverse**_ is a _proprety_ of a specific element, not structure on
+that element. To make this precise: Let $e$ be an element of a monoid,
+say $(M, 1, \star)$; If there are $x$ and $y$ such that $x \star e = e$
+and $e \star y = e$, then $x = y$.
+
+```
+monoid-inverse-unique
+  : ∀ {1M : A} {_⋆_ : A → A → A}
+  → (m : isMonoid 1M _⋆_)
+  → (e x y : A)
+  → (x ⋆ e ≡ 1M) → (e ⋆ y ≡ 1M)
+  → x ≡ y
+```
+
+This is a happy theorem where stating the assumptions takes as many
+lines as the proof, which is a rather boring calculation. Since $1$ is
+an identity for $\star$, we can freely multiply by $1$ to "sneak in" a
+$y$:
+
+```
+monoid-inverse-unique {1M = 1M} {_⋆_} m e x y li1 ri2 =
+  x             ≡⟨ sym (m .idʳ) ⟩
+  x ⋆ 1M        ≡⟨ ap₂ _⋆_ refl (sym ri2) ⟩ 
+  x ⋆ (e ⋆ y)   ≡⟨ m .associative ⟩
+  (x ⋆ e) ⋆ y   ≡⟨ ap₂ _⋆_ li1 refl ⟩ 
+  1M ⋆ y        ≡⟨ m .idˡ ⟩
+  y             ∎
+```
