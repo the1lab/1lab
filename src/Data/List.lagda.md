@@ -1,6 +1,7 @@
 ```agda
-open import 1Lab.HLevel.Sets
+open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel
+open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
@@ -30,31 +31,100 @@ module _ where private
     _∷_ : A → List' A → List' A
 ```
 
-The first thing we prove is that, if `A` is a set, then so is `List
-A`{.Agda ident=List}.
+## Path Space
+
+We begin by characteristing the behaviour of paths of lists. For
+instance, `∷`{.Agda} is injective in both its arguments:
 
 ```agda
-isSet→List-isSet : ∀ {ℓ} {A : Type ℓ} → isSet A
-                 → isSet (List A)
-isSet→List-isSet {A = A} set = Rijke-isSet {R = R} R-refl R-impliesId R-isProp where
-  R : List A → List A → Type (level-of A)
-  R [] [] = Lift _ ⊤
-  R [] (h ∷ t) = Lift _ ⊥
-  R (h ∷ t) [] = Lift _ ⊥
-  R (h ∷ t) (h' ∷ t') = (h ≡ h') × R t t'
+head : A → List A → A
+head def []     = def
+head _   (x ∷ _) = x
 
-  R-refl : {x : List A} → R x x
-  R-refl {[]} = lift tt
-  R-refl {x ∷ t} = refl , R-refl {x = t}
+tail : List A → List A
+tail []      = []
+tail (_ ∷ xs) = xs
 
-  R-impliesId : {x y : List A} → R x y → x ≡ y
-  R-impliesId {[]} {[]} _                = refl
-  R-impliesId {_ ∷ _} {_ ∷ _} (p , rest) i = p i ∷ R-impliesId rest i
+∷-head-inj : ∀ {x y : A} {xs ys} → (x ∷ xs) ≡ (y ∷ ys) → x ≡ y
+∷-head-inj {x = x} p = ap (head x) p
 
-  R-isProp : {x y : List A} (p q : R x y) → p ≡ q
-  R-isProp {[]} {[]} p q = refl
-  R-isProp {x ∷ x₁} {x₂ ∷ y} p q i = 
-    set _ _ (p .fst) (q .fst) i , R-isProp (p .snd) (q .snd) i 
+∷-tail-inj : ∀ {x y : A} {xs ys} → (x ∷ xs) ≡ (y ∷ ys) → xs ≡ ys
+∷-tail-inj p = ap tail p
+```
+
+Similarly, it is possible to distinguish `_ ∷ _` from `[]`{.Agda}, so
+they are not equal:
+
+```
+∷≠[] : ∀ {x : A} {xs} → (x ∷ xs) ≡ [] → ⊥
+∷≠[] {A = A} p = subst distinguish p tt where
+  distinguish : List A → Type
+  distinguish []     = ⊥
+  distinguish (_ ∷ _) = ⊤
+```
+
+Using these lemmas, we can characterise the path space of `List A` in
+terms of the path space of `A`. For this, we define by induction a type
+family `Code`{.Agda}, which represents equalities in `List A` by
+iterated products of equality in `A`.
+
+```agda
+module ListPath {A : Type ℓ} where
+  Code : List A → List A → Type (level-of A)
+  Code [] []             = Lift (level-of A) ⊤
+  Code [] (x ∷ x₁)       = Lift (level-of A) ⊥
+  Code (h ∷ t) []        = Lift (level-of A) ⊥
+  Code (h ∷ t) (h' ∷ t') = (h ≡ h') × Code t t'
+```
+
+We have a map `encode`{.Agda} which turns a path into a `Code`{.Agda},
+and a function `decode`{.Agda} which does the opposite.
+
+```
+  encode : {xs ys : List A} → xs ≡ ys → Code xs ys
+  encode {xs = []} {ys = []} path = lift tt
+  encode {xs = []} {ys = x ∷ ys} path = lift (∷≠[] (sym path))
+  encode {xs = x ∷ xs} {ys = []} path = lift (∷≠[] path)
+  encode {xs = x ∷ xs} {ys = x₁ ∷ ys} path =
+    ∷-head-inj path , encode {xs = xs} {ys = ys} (ap tail path)
+
+  decode : {xs ys : List A} → Code xs ys → xs ≡ ys
+  decode {[]} {[]} code = refl
+  decode {x ∷ xs} {x₁ ∷ ys} (p , q) i = p i ∷ decode q i
+```
+
+These maps are inverses by construction:
+
+```
+  encode-decode : {xs ys : List A} (p : Code xs ys) → encode (decode p) ≡ p
+  encode-decode {[]} {[]} (lift tt) = refl
+  encode-decode {x ∷ xs} {x₁ ∷ ys} (p , q) i = p , encode-decode q i
+
+  decode-encode : {xs ys : List A} (p : xs ≡ ys) → decode (encode p) ≡ p
+  decode-encode = J (λ y p → decode (encode p) ≡ p) de-refl where
+    de-refl : {xs : List A} → decode (encode (λ i → xs)) ≡ (λ i → xs)
+    de-refl {[]}         = refl
+    de-refl {x ∷ xs} i j = x ∷ de-refl {xs = xs} i j
+
+  Code≃Path : {xs ys : List A} → Code xs ys ≃ (xs ≡ ys)
+  Code≃Path = Iso→Equiv (decode , iso encode decode-encode encode-decode)
+```
+
+Thus we have a characterisation of `Path (List A)` in terms of `Path A`.
+We use this to prove that lists preserve h-levels for $n \ge 2$, i.e. if
+`A` is a set (or more) then `List A` is a type of the same h-level.
+
+```
+  isHLevel-List : (n : Nat) → isHLevel A (2 + n) → isHLevel (List A) (2 + n)
+  isHLevel-List n ahl x y = isHLevel≃ (suc n) Code≃Path isHLevel-Code where
+    isHLevel-Code : {x y : List A} → isHLevel (Code x y) (suc n)
+    isHLevel-Code {[]} {[]}         = isProp→isHLevel-suc λ x y → refl
+    isHLevel-Code {[]} {x ∷ y}      = isProp→isHLevel-suc λ x → absurd (Lift.lower x)
+    isHLevel-Code {x ∷ x₁} {[]}     = isProp→isHLevel-suc λ x → absurd (Lift.lower x)
+    isHLevel-Code {x ∷ x₁} {x₂ ∷ y} = isHLevel× (suc n) (ahl _ _) isHLevel-Code
+
+  isSet→isSet-List : isSet A → isSet (List A)
+  isSet→isSet-List = isHLevel-List zero
 ```
 
 We can define concatenation of lists by recursion:
@@ -85,27 +155,8 @@ both left and right units:
 
 ## Lemmas
 
-Now, for a bunch of useful little lemmas! First, `∷` is injective
-in both arguments:
-
-```agda
-head : A → List A → A
-head def []     = def
-head _   (x ∷ _) = x
-
-tail : List A → List A
-tail []      = []
-tail (_ ∷ xs) = xs
-
-∷-head-inj : ∀ {x y : A} {xs ys} → (x ∷ xs) ≡ (y ∷ ys) → x ≡ y
-∷-head-inj {x = x} p = ap (head x) p
-
-∷-tail-inj : ∀ {x y : A} {xs ys} → (x ∷ xs) ≡ (y ∷ ys) → xs ≡ ys
-∷-tail-inj p = ap tail p
-```
-
-Continuing with the useful lemmas, if the head and tail of two lists are equal,
-then the two lists are equal:
+Continuing with the useful lemmas, if the heads and tails of two lists
+are equal, then the lists themselves are equal:
 
 ```agda
 ap-∷ : ∀ {x y : A} {xs ys : List A} → x ≡ y → xs ≡ ys
@@ -113,16 +164,10 @@ ap-∷ : ∀ {x y : A} {xs ys : List A} → x ≡ y → xs ≡ ys
 ap-∷ x≡y xs≡ys i = x≡y i ∷ xs≡ys i
 ```
 
-It is impossible for an empty list to be equal to a non-empty one:
+<!--
+⚠️ TODO: Explain these ⚠️
 
 ```agda
-∷≠[] : ∀ {x : A} {xs} → (x ∷ xs) ≡ [] → ⊥
-∷≠[] {A = A} p = subst distinguish p tt
-  where
-    distinguish : List A → Type
-    distinguish []     = ⊥
-    distinguish (_ ∷ _) = ⊤
-
 map : (A → B) → List A → List B
 map f [] = []
 map f (x₁ ∷ x₂) = f x₁ ∷ map f x₂
@@ -152,3 +197,4 @@ reverse = go [] where
 _∷ʳ_ : List A → A → List A
 xs ∷ʳ x = xs ++ (x ∷ [])
 ```
+-->

@@ -224,20 +224,22 @@ open import 1Lab.Path          -- Path types
 open import 1Lab.Path.Partial  -- Partial elements
 open import 1Lab.Path.Groupoid -- Groupoid structure of types
 
-open import 1Lab.Equiv             -- Contractible fibre equivalences, isomorphisms
+open import 1Lab.Equiv             -- “Contractible fibres” equivalences
 open import 1Lab.Equiv.Biinv       -- Biinvertible maps
+open import 1Lab.Equiv.FromPath    -- Transport is an equivalence, cubically
 open import 1Lab.Equiv.Embedding   -- Embeddings
 open import 1Lab.Equiv.Fibrewise   -- Fibrewise equivalences
-open import 1Lab.Equiv.FromPath    -- Turning paths into equivalences
-open import 1Lab.Equiv.HalfAdjoint -- The half-adjoint definition for equivs
+open import 1Lab.Equiv.HalfAdjoint -- Half-adjoint equivalences
 
 open import 1Lab.HLevel          -- h-levels
 open import 1Lab.HLevel.Sets     -- K, Rijke's theorem, Hedberg's theorem
 open import 1Lab.HLevel.Retracts -- Closure of h-levels under retractions/isos
 open import 1Lab.HLevel.Universe -- The type of n-types is a (n+1)-type
 
-open import 1Lab.Univalence     -- Equivalence is equivalent to equality
-open import 1Lab.Univalence.SIP -- Univalence + preservation of structure
+open import 1Lab.Univalence            -- Equivalence is equivalent to equality
+open import 1Lab.Univalence.SIP        -- Univalence + preservation of structure
+open import 1Lab.Univalence.SIP.Auto   -- Derive isUnivalent for families of types
+open import 1Lab.Univalence.SIP.Record -- Derive isUnivalent for record types
 
 open import 1Lab.Type.Dec   -- Decidable types, discrete types
 open import 1Lab.Type.Pi    -- Properties of dependent products
@@ -261,11 +263,11 @@ them are introduced and examined here, showing set-ness, algebraic properties,
 etc.
 
 ```agda
-open import Data.Bool -- Booleans and their automorphisms
-open import Data.List -- Finite lists
-open import Data.Nat  -- Natural numbers
-open import Data.Int  -- Integer numbers
-open import Data.Sum  -- The coproduct type      
+open import 1Lab.Data.Nat                          -- The natural numbers
+open import 1Lab.Data.Int                          -- The integers
+open import 1Lab.Data.Sum                          -- Coproduct types
+open import 1Lab.Data.Bool                         -- The type of booleans
+open import 1Lab.Data.List                         -- Finite lists
 ```
 
 # Relation
