@@ -152,7 +152,7 @@ definition of the integers. Since this definition (which we call
 
 ```agda
 module _ where
-  open import 1Lab.Data.Int.Inductive
+  open import Data.Int.Inductive
     renaming ( Int to Int'
              ; Discrete-Int to Discrete-Int'
              )
