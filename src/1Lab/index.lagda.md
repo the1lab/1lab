@@ -69,7 +69,7 @@ some of interest:
 automorphisms: `(Bool ≡ Bool) ≡ Bool`.
 
   ```agda
-open import 1Lab.Data.Bool
+open import Data.Bool
   ```
 
 - Families of **fibrewise equivalences** are logically equivalent as
