@@ -1,7 +1,7 @@
 ```agda
 open import 1Lab.HLevel.Sets
 open import 1Lab.Univalence
-open import 1Lab.Data.Dec
+open import 1Lab.Type.Dec
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -13,7 +13,7 @@ open isEquiv
 open isContr
 open isIso
 
-module 1Lab.Data.Bool where
+module Data.Bool where
 
 open Agda.Builtin.Bool public
 ```

@@ -1,4 +1,4 @@
-open import 1Lab.Data.Sigma.Properties
+open import 1Lab.Type.Sigma
 open import 1Lab.Equiv
 open import 1Lab.Type
 

@@ -1,11 +1,11 @@
 ```
-open import 1Lab.Data.Nat
-open import 1Lab.Data.Dec
+open import Data.Nat
+open import 1Lab.Type.Dec
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
-module 1Lab.Data.Int.Inductive where
+module Data.Int.Inductive where
 ```
 
 # Inductive Integers

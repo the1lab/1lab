@@ -1,16 +1,17 @@
 open import 1Lab.Univalence.SIP.Record.Base
-open import 1Lab.Data.Sigma.Properties
 open import 1Lab.Univalence.SIP.Auto
 open import 1Lab.Univalence.SIP
 open import 1Lab.Reflection
+open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
-open import 1Lab.Data.List
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
 open import Agda.Builtin.List
+
+open import Data.List
 
 module 1Lab.Univalence.SIP.Record.Prop where
   module _

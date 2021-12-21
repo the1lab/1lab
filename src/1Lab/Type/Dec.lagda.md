@@ -2,7 +2,7 @@
 open import 1Lab.Path
 open import 1Lab.Type
 
-module 1Lab.Data.Dec where
+module 1Lab.Type.Dec where
 ```
 
 # Decidable types

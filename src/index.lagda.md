@@ -234,33 +234,61 @@ open import 1Lab.Equiv.HalfAdjoint -- Half-adjoint equivalences
 open import 1Lab.HLevel          -- h-levels
 open import 1Lab.HLevel.Sets     -- K, Rijke's theorem, Hedberg's theorem
 open import 1Lab.HLevel.Retracts -- Closure of h-levels under retractions/isos
-open import 1Lab.HLevel.Universe -- n-Type is a (n+1)-Type
+open import 1Lab.HLevel.Universe -- The type of n-types is a (n+1)-type
 
 open import 1Lab.Univalence            -- Equivalence is equivalent to equality
 open import 1Lab.Univalence.SIP        -- Univalence + preservation of structure
 open import 1Lab.Univalence.SIP.Auto   -- Derive isUnivalent for families of types
 open import 1Lab.Univalence.SIP.Record -- Derive isUnivalent for record types
 
-open import 1Lab.Data.Dec                          -- Decidable types, discrete types
-open import 1Lab.Data.Nat                          -- The natural numbers
-open import 1Lab.Data.Int                          -- The integers
-open import 1Lab.Data.Sum                          -- Coproduct types
-open import 1Lab.Data.Bool                         -- The type of booleans
-open import 1Lab.Data.List                         -- Finite lists
-open import 1Lab.Data.Nat.Base                     -- Definition of the naturals
-open import 1Lab.Data.Pi.Properties                -- Properties of function types
-open import 1Lab.Data.Nat.Properties               -- Properties of the naturals
-open import 1Lab.Data.Sigma.Properties             -- Properties of product types
-open import 1Lab.Data.Relation.Order               -- Prop-valued ordering relations
-open import 1Lab.Data.Relation.Order.Lexicographic -- Lexicographical orderings
+open import 1Lab.Type.Dec   -- Decidable types, discrete types
+open import 1Lab.Type.Pi    -- Properties of dependent products
+open import 1Lab.Type.Sigma -- Properties of dependent coproducts
 
-open import 1Lab.HIT.S1              -- The circle as a cell complex
-open import 1Lab.HIT.Sinfty          -- The "infinite dimensional" sphere S^∞
-open import 1Lab.HIT.Sphere          -- Spheres of natural dimension
-open import 1Lab.HIT.Truncation      -- Propositional truncation
-open import 1Lab.HIT.Suspension      -- The suspension of a type
+open import 1Lab.HIT.S1         -- The circle as a cell complex
+open import 1Lab.HIT.Sphere     -- Spheres of arbitrary dimension
+open import 1Lab.HIT.Sinfty     -- The infinity-dimensional sphere
+open import 1Lab.HIT.Suspension -- The suspension operation
+open import 1Lab.HIT.Truncation -- Propositional truncation
 
 open import 1Lab.Counterexamples.IsIso   -- Counterexample: isIso is not a prop
-open import 1Lab.Counterexamples.Sigma   -- Counterexample: Σ is not ∃
 open import 1Lab.Counterexamples.Russell -- Counterexample: Russell's paradox
+open import 1Lab.Counterexamples.Sigma   -- Counterexample: Sigma is not prop
+```
+
+## Data types
+
+Multiple commonly used data types as well as operations and structure on
+them are introduced and examined here, showing set-ness, algebraic properties,
+etc.
+
+```agda
+open import Data.Nat                          -- The natural numbers
+open import Data.Int                          -- The integers
+open import Data.Sum                          -- Coproduct types
+open import Data.Bool                         -- The type of booleans
+open import Data.List                         -- Finite lists
+```
+
+# Relation
+
+Here, we define often-used types of relations like partial orders as well as
+actual relations themselves, for example, lexicographic orderings on lists.
+
+```agda
+open import Relation.Order               -- Prop-valued ordering relations
+open import Relation.Order.Lexicographic -- Lexicographic orderings
+```
+
+# Algebra
+
+In this namespace, algebraic structures like monoids are defined and studied -
+relevant theorems will also be proven here.
+
+```agda
+open import Algebra.Magma                     -- Binary operations 
+open import Algebra.UnitalMagma               -- Operations with two-sided units
+open import Algebra.Semigroup                 -- Semigroups (associative magmas)
+open import Algebra.Monoid                    -- Monoids as unital semigroups
+open import Algebra.UnitalMagma.EckmannHilton -- The Eckmann-Hilton argument
 ```

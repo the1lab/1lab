@@ -1,8 +1,8 @@
 ```agda
-open import 1Lab.Data.Sigma.Properties
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Path.Groupoid
 open import 1Lab.Equiv.Biinv
+open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
 open import 1Lab.HLevel
 open import 1Lab.Equiv

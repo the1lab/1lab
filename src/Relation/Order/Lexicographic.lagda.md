@@ -1,10 +1,12 @@
 ```agda
-open import 1Lab.Data.Relation.Order
-open import 1Lab.Data.List
 open import 1Lab.Path
 open import 1Lab.Type
 
-module 1Lab.Data.Relation.Order.Lexicographic where
+open import Data.List
+
+open import Relation.Order
+
+module Relation.Order.Lexicographic where
 ```
 
 # Lexicographic Orderings

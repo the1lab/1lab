@@ -1,6 +1,6 @@
-open import 1Lab.Data.Sigma.Properties
 open import 1Lab.Univalence.SIP
 open import 1Lab.Reflection
+open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
 open import 1Lab.Equiv
 open import 1Lab.Path

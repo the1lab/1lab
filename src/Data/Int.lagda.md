@@ -2,14 +2,15 @@
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Sets
 open import 1Lab.Univalence
-open import 1Lab.Data.Dec
-open import 1Lab.Data.Nat
+open import 1Lab.Type.Dec
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
-module 1Lab.Data.Int where
+open import Data.Nat
+
+module Data.Int where
 ```
 
 # Integers
@@ -146,12 +147,12 @@ that it is equivalent to an inductive (rather than higher-inductive)
 definition of the integers. Since this definition (which we call
 `Int'`{.Agda}) has decidable equality, it is a set.
 
-[discrete]: agda://1Lab.Data.Dec#Discrete
+[discrete]: agda://1Lab.Type.Dec#Discrete
 [a set]: agda://1Lab.HLevel#isSet
 
 ```agda
 module _ where
-  open import 1Lab.Data.Int.Inductive
+  open import Data.Int.Inductive
     renaming ( Int to Int'
              ; Discrete-Int to Discrete-Int'
              )

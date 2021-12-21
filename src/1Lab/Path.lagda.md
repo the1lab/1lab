@@ -253,7 +253,7 @@ exactly two inhabitants ([see here]), which is something like saying
 nonsensical, which is why "there are two paths Bool → Bool" is
 preferred: it's not nonsense.
 
-[see here]: agda://1Lab.Data.Bool#AutBool≡2
+[see here]: agda://Data.Bool#AutBool≡2
 
 In Cubical Agda, `transport`{.Agda} is a derived notion, with the actual
 primitive being `transp`{.Agda}. Unlike `transport`{.Agda}, which has

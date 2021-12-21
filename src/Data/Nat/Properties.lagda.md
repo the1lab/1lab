@@ -1,10 +1,12 @@
 ```agda
-open import 1Lab.Data.Relation.Order
-open import 1Lab.Data.Nat.Base
 open import 1Lab.Path
 open import 1Lab.Type
 
-module 1Lab.Data.Nat.Properties where
+open import Data.Nat.Base
+
+open import Relation.Order
+
+module Data.Nat.Properties where
 ```
 
 # Natural Numbers - Properties
@@ -13,7 +15,7 @@ This module contains proofs of arithmetic identities for [the natural
 numbers]. Since they're mostly simple inductive arguments written in
 [equational reasoning] style, they are very lightly commented:
 
-[the natural numbers]: 1Lab.Data.Nat.Base.html
+[the natural numbers]: Data.Nat.Base.html
 [equational reasoning]: 1Lab.Path.html#equational-reasoning
 
 ## Addition

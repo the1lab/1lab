@@ -1,12 +1,12 @@
 ```agda
 open import 1Lab.HLevel.Retracts
-open import 1Lab.Data.Dec
+open import 1Lab.Type.Dec
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
-module 1Lab.Data.Sum where
+module Data.Sum where
 ```
 
 # Sum Types
@@ -141,7 +141,7 @@ types.
 
 ## Decidablity
 
-This type has a very similar structure to [Dec](agda://1Lab.Data.Dec#Dec), so
+This type has a very similar structure to [Dec](agda://1Lab.Type.Dec#Dec), so
 we provide some helpers to convert between the two.
 
 ```agda
