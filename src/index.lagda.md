@@ -263,11 +263,11 @@ them are introduced and examined here, showing set-ness, algebraic properties,
 etc.
 
 ```agda
-open import 1Lab.Data.Nat                          -- The natural numbers
-open import 1Lab.Data.Int                          -- The integers
-open import 1Lab.Data.Sum                          -- Coproduct types
-open import 1Lab.Data.Bool                         -- The type of booleans
-open import 1Lab.Data.List                         -- Finite lists
+open import Data.Nat                          -- The natural numbers
+open import Data.Int                          -- The integers
+open import Data.Sum                          -- Coproduct types
+open import Data.Bool                         -- The type of booleans
+open import Data.List                         -- Finite lists
 ```
 
 # Relation
