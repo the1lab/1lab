@@ -15,7 +15,7 @@ This module contains proofs of arithmetic identities for [the natural
 numbers]. Since they're mostly simple inductive arguments written in
 [equational reasoning] style, they are very lightly commented:
 
-[the natural numbers]: 1Lab.Data.Nat.Base.html
+[the natural numbers]: Data.Nat.Base.html
 [equational reasoning]: 1Lab.Path.html#equational-reasoning
 
 ## Addition

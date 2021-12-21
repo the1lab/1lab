@@ -147,7 +147,7 @@ that it is equivalent to an inductive (rather than higher-inductive)
 definition of the integers. Since this definition (which we call
 `Int'`{.Agda}) has decidable equality, it is a set.
 
-[discrete]: agda://1Lab.Data.Dec#Discrete
+[discrete]: agda://1Lab.Type.Dec#Discrete
 [a set]: agda://1Lab.HLevel#isSet
 
 ```agda

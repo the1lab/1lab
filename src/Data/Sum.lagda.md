@@ -141,7 +141,7 @@ types.
 
 ## Decidablity
 
-This type has a very similar structure to [Dec](agda://1Lab.Data.Dec#Dec), so
+This type has a very similar structure to [Dec](agda://1Lab.Type.Dec#Dec), so
 we provide some helpers to convert between the two.
 
 ```agda

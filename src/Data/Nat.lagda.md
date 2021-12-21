@@ -8,8 +8,8 @@ open import Data.Nat.Base public
 # Natural Numbers - Index
 
 The natural numbers are constructed in the module
-[`1Lab.Data.Nat.Base`]. Their arithmetical properties are proved in
-[`1Lab.Data.Nat.Properties`].
+[`Data.Nat.Base`]. Their arithmetical properties are proved in
+[`Data.Nat.Properties`].
 
-[`1Lab.Data.Nat.Base`]: 1Lab.Data.Nat.Base.html
-[`1Lab.Data.Nat.Properties`]: 1Lab.Data.Nat.Properties.html
+[`Data.Nat.Base`]: Data.Nat.Base.html
+[`Data.Nat.Properties`]: Data.Nat.Properties.html

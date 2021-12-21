@@ -89,7 +89,7 @@ isSet-Nat = Discrete→isSet Discrete-Nat
 numbers are in the module [`1Lab.Data.Nat.Properties`].
 </div>
 
-[`1Lab.Data.Nat.Properties`]: 1Lab.Data.Nat.Properties.html
+[`1Lab.Data.Nat.Properties`]: Data.Nat.Properties.html
 
 Agda already comes with definitions for addition and multiplication of
 natural numbers. They are reproduced below, using different names, for
