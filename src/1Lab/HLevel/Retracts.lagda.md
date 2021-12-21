@@ -160,7 +160,7 @@ isHLevel→ n hl = isHLevelΠ n (λ _ → hl)
 A similar argument, using the fact that [paths of pairs are pairs of
 paths], shows that dependent sums are also closed under h-levels.
 
-[paths of pairs are pairs of paths]: agda://1Lab.Type.Sigma.#Σ-Path-iso
+[paths of pairs are pairs of paths]: agda://1Lab.Type.Sigma#Σ-Path-iso
 
 ```agda
 isHLevelΣ : {A : Type ℓ} {B : A → Type ℓ'} (n : Nat)
