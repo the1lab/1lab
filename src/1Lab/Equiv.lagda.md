@@ -100,11 +100,10 @@ strict-fibres {f = f} g b .snd (a , p) i = (g (p (~ i)) , λ j → f (g (p (~ i 
 
 For Cubical Agda, the type of equivalences is distinguished, so we have
 to make a small wrapper to match the interface Agda expects. This is the
-[geometric definition of contractibility], in terms of [partial
-elements].
+geometric definition of contractibility, in terms of [partial elements]
+and extensibility.
 
-[geometric definition of contractibility]: 1Lab.Path.Partial.html#contractibility
-[partial elements]: 1Lab.Path.Partial.html
+[partial elements]: 1Lab.Path.html#extensibility
 
 ```agda
 {-# BUILTIN EQUIV _≃_ #-}

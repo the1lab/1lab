@@ -221,7 +221,6 @@ are developed under the `1Lab` namespace. Start here:
 open import 1Lab.Type -- Universes
 
 open import 1Lab.Path          -- Path types
-open import 1Lab.Path.Partial  -- Partial elements
 open import 1Lab.Path.Groupoid -- Groupoid structure of types
 
 open import 1Lab.Equiv             -- “Contractible fibres” equivalences

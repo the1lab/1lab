@@ -47,9 +47,12 @@
 <body>
 <main>
 <div id="post-toc-container" style="padding-left: 1em; padding-right: 1em;">
+
+  <!-- Table of contents (only if the page has a table of contents) -->
   $if(toc)$
   <aside id=toc>
     <div id=toc-container style="min-width: 10em;">
+      <!-- Title for the page -->
       <h3 class="Agda" style="margin-top: 0; margin-bottom: 0;">
         $if(customtitle)$
         <a class="Module">$customtitle$</a>
@@ -57,24 +60,37 @@
         <a class="Module">$title$</a>
         $endif$
       </h3>
+
+      <!-- Cube logo -->
       <img alt="1Lab"
            src="/static/cube-72x.png"
            style="display: block; margin-bottom: 1em; margin: auto; height: 32px;"
         />
+      
+      <!-- Actual table of contents (separated from the rest by
+      horizontal rules) -->
       <hr />
       $table-of-contents$
       <hr />
+
+      <!-- Sidebar controls -->
       <div style="display: flex; gap: 0.25em; flex-flow: row wrap;">
+        <!-- Sidebar equations control -->
         <span class="equations" style="display: flex; gap: 0.25em; flex-wrap: nowrap;">
           <input name=sidebar-eqns type="checkbox" class="equations" id=sidebar-eqns>
           <label for=sidebar-eqns>Equations</label>
         </span>
+
+        <!-- Sidebar fonts control -->
         <span style="display: flex; gap: 0.25em; flex-wrap: nowrap;">
           <input name=sidebar-font type="checkbox" id="toggle-fonts">
           <label for=toggle-fonts>Serif Font</label>
         </span>
       </div>
+
       <hr />
+
+      <!-- Navbar navigation (lol) -->
       <div id=return style="white-space: nowrap;">
       $if(is-index)$
       $else$
@@ -88,17 +104,23 @@
   $endif$
 
   <article>
+    <!-- Article navigation (narrow screens only) -->
     <div class="narrow-only" id="article-nav">
+      <!-- Index return anchor (only if the page is not the index) -->
       $if(is-index)$
       $else$
       <div id=return>
         <a href="index.html">️back to index</a>
       </div>
       $endif$
-      <button type="button" class="narrow-only equations">
-        Toggle equations
-      </button>
+
+      <!-- Font toggle checkbox -->
+      <span class="equations" style="display: flex; gap: 0.25em; flex-wrap: nowrap;">
+        <input name=navbar-eqns type="checkbox" class="equations" id=navbar-eqns>
+        <label for=navbar-eqns>Equations</label>
+      </span>
     </div>
+
 $body$
   </article>
 </div>

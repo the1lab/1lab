@@ -10,30 +10,29 @@ Familiarity with base Agda is assumed throughout. As a quick reminder,
 the moduel names in the code blocks below are all clickable.
 
 **Paths**. The first thing to read about is the main idea of cubical
-type theory. Read this module up until the end of the [substitution]
-header, then come back here.
+type theory, which can be summed up as "representing equalities as maps
+out of an interval". For engineering reasons (Agda won't let us have
+cyclic dependencies), the `1Lab.Path`{.Agda} module is _massive_. It
+contains explanations of all the fundamental concepts of cubical type
+theory:
 
-[substitution]: 1Lab.Path.html#substitution
+* The interval type, and its De Morgan structure; How to use this De
+Morgan structure to extend paths to higher dimensions, and how to invert
+paths;
+
+* Paths in more generality;
+
+* The transport operation, and how it computes;
+
+* Deriving path induction from the transport operation and the De Morgan
+operations on the interval;
+
+* The functorial action of functions $A \to B$ on paths $x ≡ y$;
+
+* Partial elements, extensibility, and the composition operation.
 
 ```agda
-open import 1Lab.Path -- Don't read past "Transitivity"
-```
-
-After reading about paths, you need an idea of **partial elements**
-to understand how the composition operation is defined in cubical type
-theory. This module can be read bottom-to-top after understanding the
-basics of paths.
-
-```agda
-open import 1Lab.Path.Partial
-```
-
-Knowing about partial elements, you can now understand the definition of
-the **composition** operation. Go back and read the rest of the
-`1Lab.Path`{.Agda} module.
-
-```agda
-open import 1Lab.Path -- From "Transitivity" to the end
+open import 1Lab.Path -- Don't read past "Composition"
 ```
 
 After reading about paths, the definition of **h-level** should be

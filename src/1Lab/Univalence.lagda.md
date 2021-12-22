@@ -125,7 +125,7 @@ equivalences $e$. The idea is that we are extending a partial cube `Te`
 to one which is [totally defined], by adding "enough equivalences" to
 complete the square.
 
-[totally defined]: 1Lab.Path.Partial.html#extensibility
+[totally defined]: 1Lab.Path.html#extensibility
 
 In the case where we set $\phi = i \lor \neg i$, we can illustrate `Glue
 A (T, f)` as the dashed line in the diagram below. The equivalences $f$
@@ -154,7 +154,7 @@ unglue φ = prim^unglue {φ = φ}
 ```
 -->
 
-[family of partial types]: agda://1Lab.Path.Partial
+[family of partial types]: 1Lab.Path.html#partial-elements
 
 The point of `Glue`{.Agda} is that it satisfies a computation rule which
 could be called a **_boundary condition_**, since it specifies how
