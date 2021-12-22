@@ -218,7 +218,7 @@ Sym : ∀ {ℓ} → Set ℓ → Group ℓ
 Sym (X , X-set) .fst = X ≃ X
 Sym (X , X-set) .snd = groupStr where
   groupStr : GroupOn (X ≃ X)
-  groupStr ._⋆_ = _∙e_
+  groupStr ._⋆_ g f = f ∙e g
 ```
 
 The group operation is `composition of equivalences`{.Agda ident=_∙e_};
@@ -253,7 +253,7 @@ equivalence is both a section and a retraction.
 ```agda
   groupStr .hasIsGroup .inverse = _e¯¹
   groupStr .hasIsGroup .inverseˡ {x = f , eqv} =
-    Σ≡Prop isProp-isEquiv (funext (equiv→section eqv))
-  groupStr .hasIsGroup .inverseʳ {x = f , eqv} =
     Σ≡Prop isProp-isEquiv (funext (equiv→retraction eqv))
+  groupStr .hasIsGroup .inverseʳ {x = f , eqv} =
+    Σ≡Prop isProp-isEquiv (funext (equiv→section eqv))
 ```

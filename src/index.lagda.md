@@ -297,4 +297,5 @@ open import Algebra.Magma.Unital.EckmannHilton -- The Eckmann-Hilton argument
 open import Algebra.Semigroup                  -- Semigroups (associative magmas)
 open import Algebra.Monoid                     -- Monoids as unital semigroups
 open import Algebra.Group                      -- Groups as monoids with inverses
+open import Algebra.Group.Cayley               -- Cayley's theorem
 ```

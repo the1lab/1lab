@@ -57,6 +57,9 @@ binary operation `⋆`, on which no further laws are imposed.
 ```agda
   field
     hasIsSet : isSet A
+
+  underlying-set : Set ℓ
+  underlying-set = _ , hasIsSet
     
 open isMagma public
 ```
