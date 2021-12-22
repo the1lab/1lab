@@ -24,14 +24,14 @@ _property_ rather than _property-like structure_.
 [necessarily, unique]: Algebra.Monoid.html#inverses
 
 In particular, for a binary operator to be a group operator, it has to
-`be a monoid`{.Agda ident=group-monoid}, meaning it must have a
+`be a monoid`{.Agda ident=hasIsMonoid}, meaning it must have a
 `unit`{.Agda}.
 
 ```agda
 record isGroup {ℓ} {A : Type ℓ} (_*_ : A → A → A) : Type ℓ where
   field
     unit : A
-    group-monoid : isMonoid unit _*_
+    hasIsMonoid : isMonoid unit _*_
 ```
 
 There is also a map which assigns to each element $x$ its _`inverse`{.Agda
@@ -44,7 +44,7 @@ give the unit, both on the left and on the right:
     inverseˡ : {x : A} → inverse x * x ≡ unit
     inverseʳ : {x : A} → x * inverse x ≡ unit
 
-  open isMonoid group-monoid public
+  open isMonoid hasIsMonoid public
 
 open isGroup
 ```
@@ -62,7 +62,7 @@ isProp-isGroup {A = A} {_*_ = _*_} x y = path where
 ```
 
 We begin by constructing a line showing that the `underlying monoid
-structures`{.Agda ident=group-monoid} are equal -- but since these have
+structures`{.Agda ident=hasIsMonoid are equal -- but since these have
 different _types_, we must also show that `the units are the same`{.Agda
 ident=same-unit}.
 
@@ -70,8 +70,8 @@ ident=same-unit}.
   same-unit : x .unit ≡ y .unit
   same-unit =
     identities-equal (x .unit) (y .unit)
-      (isMonoid→isUnitalMagma (x .group-monoid))
-      (isMonoid→isUnitalMagma (y .group-monoid))
+      (isMonoid→isUnitalMagma (x .hasIsMonoid))
+      (isMonoid→isUnitalMagma (y .hasIsMonoid))
 ```
 
 We then use the fact that `isMonoid is a proposition`{.Agda
@@ -80,10 +80,10 @@ $x$ and $y$ are the same.
 
 ```agda
   same-monoid : PathP (λ i → isMonoid (same-unit i) _*_)
-                      (x .group-monoid) (y .group-monoid)
+                      (x .hasIsMonoid) (y .hasIsMonoid)
   same-monoid = 
     isProp→PathP (λ i → isProp-isMonoid {id = same-unit i})
-      (x .group-monoid) (y .group-monoid)
+      (x .hasIsMonoid) (y .hasIsMonoid)
 ```
 
 Since `inverses in monoids are unique`{.Agda
@@ -94,7 +94,7 @@ extensionality, they are the same map.
 ```agda
   same-inverses : (e : A) → x .inverse e ≡ y .inverse e
   same-inverses e =
-    monoid-inverse-unique (y .group-monoid) _ _ _
+    monoid-inverse-unique (y .hasIsMonoid) _ _ _
       (x .inverseˡ ∙ same-unit) (y .inverseʳ)
 ```
 
@@ -107,13 +107,13 @@ dependent! This gives us the equations between the `inverseˡ`{.Agda} and
   same-invˡ : (e : A) → PathP (λ i → same-inverses e i * e ≡ same-unit i)
                               (x .inverseˡ) (y .inverseˡ)
   same-invˡ e =
-    isSet→SquareP (λ _ _ → x .group-monoid .hasIsSet)
+    isSet→SquareP (λ _ _ → x .hasIsMonoid .hasIsSet)
       (x .inverseˡ) (y .inverseˡ) (ap₂ _*_ (same-inverses e) refl) same-unit
 
   same-invʳ : (e : A) → PathP (λ i → e * same-inverses e i ≡ same-unit i)
                               (x .inverseʳ) (y .inverseʳ)
   same-invʳ e =
-    isSet→SquareP (λ _ _ → x .group-monoid .hasIsSet)
+    isSet→SquareP (λ _ _ → x .hasIsMonoid .hasIsSet)
       (x .inverseʳ) (y .inverseʳ) (ap₂ _*_ refl (same-inverses e)) same-unit
 ```
 
@@ -123,7 +123,7 @@ equal.
 ```agda
   path : x ≡ y
   path i .unit         = same-unit i
-  path i .group-monoid = same-monoid i
+  path i .hasIsMonoid  = same-monoid i
   path i .inverse e    = same-inverses e i
   path i .inverseˡ {e} = same-invˡ e i
   path i .inverseʳ {e} = same-invʳ e i
@@ -233,17 +233,17 @@ assumption), and `being an equivalence is a proposition`{.Agdaa
 ident=isProp-isEquiv}.
 
 ```agda
-  groupStr .hasIsGroup .group-monoid .hasIsSemigroup .hasIsMagma .hasIsSet =
+  groupStr .hasIsGroup .hasIsMonoid .hasIsSemigroup .hasIsMagma .hasIsSet =
     isHLevelΣ 2 (isHLevel→ 2 X-set) (λ f → isProp→isSet (isProp-isEquiv f))
 ```
 
 The associativity and identity laws hold definitionally.
 
 ```agda
-  groupStr .hasIsGroup .group-monoid .hasIsSemigroup .associative =
+  groupStr .hasIsGroup .hasIsMonoid .hasIsSemigroup .associative =
     Σ≡Prop isProp-isEquiv refl
-  groupStr .hasIsGroup .group-monoid .idˡ = Σ≡Prop isProp-isEquiv refl
-  groupStr .hasIsGroup .group-monoid .idʳ = Σ≡Prop isProp-isEquiv refl
+  groupStr .hasIsGroup .hasIsMonoid .idˡ = Σ≡Prop isProp-isEquiv refl
+  groupStr .hasIsGroup .hasIsMonoid .idʳ = Σ≡Prop isProp-isEquiv refl
 ```
 
 The inverse is given by `the inverse equivalence`{.Agda ident=_e¯¹}, and
