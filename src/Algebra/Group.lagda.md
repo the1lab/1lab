@@ -1,10 +1,10 @@
 ```agda
+open import 1Lab.Prelude
+
 open import Algebra.Magma.Unital
 open import Algebra.Semigroup
 open import Algebra.Monoid
 open import Algebra.Magma
-
-open import 1Lab.Prelude
 
 module Algebra.Group where
 ```

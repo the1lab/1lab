@@ -17,46 +17,46 @@ open import Data.List
 
 module 1Lab.Univalence.SIP.Record where
 
-pathMap
-  : ∀ {ℓ ℓ'} {S : I → Type ℓ} {T : I → Type ℓ'}
-    → (f : {i : I} → S i → T i)
-    → {x : S i0} {y : S i1}
-    → PathP S x y → PathP T (f x) (f y)
-
-pathMap f p i = f (p i)
-
   -- Build proof of univalence from an isomorphism
-module _ {ℓ ℓ₁ ℓ₁'} (S : Type ℓ → Type ℓ₁) (ι : IsHomT ℓ₁' S) where
-  private
-    fwdShape : Type _
-    fwdShape =
-        (A B : Σ S) (e : A .fst ≃ B .fst)
-      → ι A B e → PathP (λ i → S (ua e i)) (A .snd) (B .snd)
+private
+  pathMap
+    : ∀ {ℓ ℓ'} {S : I → Type ℓ} {T : I → Type ℓ'}
+      → (f : {i : I} → S i → T i)
+      → {x : S i0} {y : S i1}
+      → PathP S x y → PathP T (f x) (f y)
+  pathMap f p i = f (p i)
 
-    bwdShape : Type _
-    bwdShape =
-        (A B : Σ S) (e : A .fst ≃ B .fst)
-      → PathP (λ i → S (ua e i)) (A .snd) (B .snd) → ι A B e
+  module _ {ℓ ℓ₁ ℓ₁'} (S : Type ℓ → Type ℓ₁) (ι : IsHomT ℓ₁' S) where
+    private
+      fwdShape : Type _
+      fwdShape =
+          (A B : Σ S) (e : A .fst ≃ B .fst)
+        → ι A B e → PathP (λ i → S (ua e i)) (A .snd) (B .snd)
 
-    fwdBwdShape : fwdShape → bwdShape → Type _
-    fwdBwdShape fwd bwd =
-      (A B : Σ S) (e : A .fst ≃ B .fst) → ∀ p → fwd A B e (bwd A B e p) ≡ p
+      bwdShape : Type _
+      bwdShape =
+          (A B : Σ S) (e : A .fst ≃ B .fst)
+        → PathP (λ i → S (ua e i)) (A .snd) (B .snd) → ι A B e
 
-    bwdFwdShape : fwdShape → bwdShape → Type _
-    bwdFwdShape fwd bwd =
-      (A B : Σ S) (e : A .fst ≃ B .fst) → ∀ r → bwd A B e (fwd A B e r) ≡ r
+      fwdBwdShape : fwdShape → bwdShape → Type _
+      fwdBwdShape fwd bwd =
+        (A B : Σ S) (e : A .fst ≃ B .fst) → ∀ p → fwd A B e (bwd A B e p) ≡ p
 
-  explicitUnivalentStr : (fwd : fwdShape) (bwd : bwdShape)
-    → fwdBwdShape fwd bwd → bwdFwdShape fwd bwd
-    → isUnivalent' S ι
-  explicitUnivalentStr fwd bwd fwdBwd bwdFwd A B e = Iso→Equiv isom
-    where
-    open isIso
-    isom : Iso _ _
-    isom .fst = fwd A B e
-    isom .snd .inv = bwd A B e
-    isom .snd .rinv = fwdBwd A B e
-    isom .snd .linv = bwdFwd A B e
+      bwdFwdShape : fwdShape → bwdShape → Type _
+      bwdFwdShape fwd bwd =
+        (A B : Σ S) (e : A .fst ≃ B .fst) → ∀ r → bwd A B e (fwd A B e r) ≡ r
+
+    explicitUnivalentStr : (fwd : fwdShape) (bwd : bwdShape)
+      → fwdBwdShape fwd bwd → bwdFwdShape fwd bwd
+      → isUnivalent' S ι
+    explicitUnivalentStr fwd bwd fwdBwd bwdFwd A B e = Iso→Equiv isom
+      where
+      open isIso
+      isom : Iso _ _
+      isom .fst = fwd A B e
+      isom .snd .inv = bwd A B e
+      isom .snd .rinv = fwdBwd A B e
+      isom .snd .linv = bwdFwd A B e
 
 -- Build an isomorphism given a Spec numbered with the variables of each
 -- pre-built equivalence. More explicitly, the iso built is a term with
@@ -298,10 +298,8 @@ macro
   autoUnivalentRecord spec goal = do
     spec ← parseSpec spec
     unify goal
-    -- (typeError (termErr
       (def (quote isUnivalent'→isUnivalent)
         (  spec .Spec.structure
         v∷ spec .Spec.homomorphism
         v∷ spec→isUnivalent spec
         v∷ []))
-      -- ∷ []))

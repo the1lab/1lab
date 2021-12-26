@@ -1,7 +1,7 @@
 ```
-open import Algebra.Group
-
 open import 1Lab.Prelude
+
+open import Algebra.Group
 
 module Algebra.Group.Cayley {ℓ} (G : Group ℓ) where
 

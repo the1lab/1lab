@@ -1,4 +1,3 @@
-
 ```agda
 open import 1Lab.Prelude
 
