@@ -125,13 +125,13 @@ isUnivalent' S ι =
   → (f : X .fst ≃ Y .fst)
   → ι X Y f ≃ PathP (λ i → S (ua f i)) (X .snd) (Y .snd)
 
-tm→isHomT : ∀ {ℓ ℓ₁} (tm : StrTm ℓ ℓ₁) → IsHomT ℓ₁ (interp tm)
+tm→isHomT : ∀ {ℓ ℓ₁} {S} (tm : StrTm ℓ ℓ₁ S) → IsHomT ℓ₁ S
 tm→isHomT tm = tm→Structure tm .is-hom
 
-tm→⌜isUnivalent⌝ : ∀ {ℓ ℓ₁} (tm : StrTm ℓ ℓ₁) → Type _
-tm→⌜isUnivalent⌝ tm = isUnivalent' (interp tm) (tm→isHomT tm)
+tm→⌜isUnivalent⌝ : ∀ {ℓ ℓ₁} {S} (tm : StrTm ℓ ℓ₁ S) → Type _
+tm→⌜isUnivalent⌝ tm = isUnivalent' _ (tm→isHomT tm)
 
-tm→isUnivalent' : ∀ {ℓ ℓ₁} (tm : StrTm ℓ ℓ₁) → isUnivalent' (interp tm) (tm→isHomT tm)
+tm→isUnivalent' : ∀ {ℓ ℓ₁} {S} (tm : StrTm ℓ ℓ₁ S) → isUnivalent' S (tm→isHomT tm)
 tm→isUnivalent' tm X Y f = tm→Structure-univalent tm f
 
 isUnivalent'→isUnivalent

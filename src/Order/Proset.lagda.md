@@ -25,7 +25,6 @@ record isPreorder (R : A → A → Type ℓ') : Type (level-of A ⊔ ℓ') where
     reflexive     : ∀ {x} → R x x
     transitive    : ∀ {x y z} → R x y → R y z → R x z
     propositional : ∀ {x y} → isProp (R x y)
-    hasIsSet      : isSet A
 
 open isPreorder
 ```
@@ -37,6 +36,7 @@ preorder $x \le y$.
 record ProsetOn {ℓ'} (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ') where
   field
     _≤_           : A → A → Type ℓ'
+    hasIsSet      : isSet A
     hasIsPreorder : isPreorder _≤_
 
   open isPreorder hasIsPreorder public
@@ -58,8 +58,6 @@ isProp-isPreorder x y i .transitive p q =
   y .propositional (x .transitive p q) (y .transitive p q) i
 isProp-isPreorder x y i .propositional =
   isProp-isProp (x .propositional) (y .propositional) i
-isProp-isPreorder x y i .hasIsSet =
-  isProp-isHLevel 2 (x .hasIsSet) (y .hasIsSet) i
 ```
 
 An **equivalence of prosets** is an equivalence whose underlying map
@@ -77,84 +75,21 @@ record Proset≃ (A B : Proset ℓ) (e : A .fst ≃ B .fst) : Type (lsuc ℓ) wh
     pres-≤ : (x y : A .fst) → x A.≤ y ≡ e .fst x B.≤ e .fst y
 
 open Proset≃
+```
 
+The `Proset`{.Agda} type is univalent, where its notion of equivalence
+is `Proset≃`{.Agda}.
+
+```agda
 Proset-univalent : isUnivalent (HomT→Str (Proset≃ {ℓ = ℓ}))
-```
-
-<!--
-```
 Proset-univalent {ℓ = ℓ} = 
-  -- TODO: This causes an unsolved level meta and I literally don't have
-  -- the faintest clue why. I also don't care enough to try to solve it
-  -- anymore, lol.
-  --
   autoUnivalentRecord
     (autoRecord (ProsetOn {ℓ = ℓ} {ℓ' = ℓ}) (Proset≃ {ℓ = ℓ})
       (record:
         field[ _≤_ by pres-≤ ]
+        axiom[ hasIsSet by (λ x → isProp-isHLevel 2) ]
         axiom[ hasIsPreorder by (λ x → isProp-isPreorder {R = x ._≤_}) ]))
-  --
-  -- Here's the macro expansion; It works, Agda just hates me.
-  -- isUnivalent'→isUnivalent ProsetOn Proset≃
-  -- (idfun
-  --   ( (tm→⌜isUnivalent⌝ (s∙ s→ s∙ s→ s-const (Type ℓ)))
-
-  --   → PropHelperType ProsetOn Proset≃
-  --       (record: field[ _≤_ by pres-≤ ])
-  --       (λ X₁ z → isSet X₁) hasIsSet
-
-  --   → PropHelperType ProsetOn Proset≃
-  --       (record: field[ _≤_ by pres-≤ ] axiom[ hasIsSet by (λ x → isProp-isHLevel 2) ])
-  --       (λ X₁ z → isPreorder (z .fst .snd)) hasIsPreorder
-
-  --   → isUnivalent' ProsetOn Proset≃)
-  --  (λ ≤-univ isS-prop isP-prop →
-  --     explicitUnivalentStr _ _
-  --     (λ A B e streq i →
-  --       λ { ._≤_ → ≤-univ (Σ-map₂ _≤_ A) (Σ-map₂ _≤_ B) e .fst (pres-≤ streq) i
-  --         ; .hasIsSet
-  --             → isS-prop .fst A B e (λ i₁ → tt , ≤-univ (Σ-map₂ _≤_ A) (Σ-map₂ _≤_ B) e .fst (pres-≤ streq) i₁) i
-  --         ; .hasIsPreorder
-  --             → isP-prop .fst A B e (λ i₁ →
-  --                 (tt , equivFun (≤-univ (Σ-map₂ _≤_ A) (Σ-map₂ _≤_ B) e) (pres-≤ streq) i₁) ,
-  --                 isS-prop .fst A B e (λ i₂ → tt , ≤-univ (Σ-map₂ _≤_ A) (Σ-map₂ _≤_ B) e .fst (pres-≤ streq) i₂) i₁)
-  --               i
-  --         })
-  --     (λ A B e q → λ { .pres-≤ → equivInv (≤-univ (Σ-map₂ _≤_ A) (Σ-map₂ _≤_ B) e) (pathMap _≤_ q) })
-  --     (λ A B e q j i →
-  --       λ { ._≤_
-  --             → equivSec (≤-univ (Σ-map₂ _≤_ A) (Σ-map₂ _≤_ B) e) (pathMap _≤_ q) j i
-  --         ; .hasIsSet
-  --             → isS-prop .snd A B e q (λ j₁ i₁ → tt , equivSec (≤-univ (Σ-map₂ _≤_ A) (Σ-map₂ _≤_ B) e) (pathMap _≤_ q) j₁ i₁) j i
-  --         ; .hasIsPreorder
-  --             → isP-prop .snd A B e q
-  --               (λ j₁ i₁ →
-  --                   (tt , equivSec (≤-univ (Σ-map₂ _≤_ A) (Σ-map₂ _≤_ B) e) (pathMap _≤_ q) j₁ i₁)
-  --                   ,
-  --                   isS-prop .snd A B e q
-  --                   (λ j₂ i₂ → tt , equivSec (≤-univ (Σ-map₂ _≤_ A) (Σ-map₂ _≤_ B) e) (pathMap _≤_ q) j₂ i₂) j₁ i₁)
-  --               j i
-  --         })
-  --     (λ A B e streq j → λ { .pres-≤ → equivRet (≤-univ (Σ-map₂ _≤_ A) (Σ-map₂ _≤_ B) e) (pres-≤ streq) j }))
-  -- (tm→isUnivalent' (s∙ s→ s∙ s→ s-const (Type ℓ)))
-
-  -- (derivePropHelper ProsetOn Proset≃
-  --   (record: field[ _≤_ by pres-≤ ])
-  --   (λ X₁ z → isSet X₁) hasIsSet
-  --   (λ x → isProp-isHLevel 2))
-
-  -- (derivePropHelper ProsetOn Proset≃
-  --   (record: field[ _≤_ by pres-≤ ] axiom[ hasIsSet by (λ x → isProp-isHLevel 2) ])
-  --   (λ X₁ z → isPreorder (z .fst .snd)) hasIsPreorder
-  --   (λ x → isProp-isPreorder)))
-  -- where
-  --   open import 1Lab.Reflection
-  --   open import 1Lab.Univalence.SIP.Record.Base
-  --   open import 1Lab.Univalence.SIP.Record.Prop
-  --   open import 1Lab.Univalence.SIP.Record
-  --   open import 1Lab.Univalence.SIP.Auto
 ```
--->
 
 A **monotone map** between prosets is a function between the underlying
 types that preserves the ordering. It can be shown that if an

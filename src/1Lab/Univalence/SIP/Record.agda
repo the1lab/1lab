@@ -296,10 +296,12 @@ private module _ (spec : Spec TypedTm) where
 macro
   autoUnivalentRecord : Term → Term → TC ⊤
   autoUnivalentRecord spec goal = do
-    spec ← reduce spec >>= parseSpec
+    spec ← parseSpec spec
     unify goal
+    -- (typeError (termErr
       (def (quote isUnivalent'→isUnivalent)
         (  spec .Spec.structure
         v∷ spec .Spec.homomorphism
         v∷ spec→isUnivalent spec
         v∷ []))
+      -- ∷ []))

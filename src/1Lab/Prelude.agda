@@ -22,8 +22,7 @@ open import 1Lab.Equiv.HalfAdjoint public
 open import 1Lab.Univalence public
 open import 1Lab.Univalence.SIP public
 open import 1Lab.Univalence.SIP.Auto
-  using ( autoUnivalentStr
-        ; autoStructure )
+  using ( autoStrTm )
 open import 1Lab.Univalence.SIP.Record public
 open import 1Lab.Univalence.SIP.Record.Base public
   using ( record: ; _field[_by_] ; _axiom[_by_]
