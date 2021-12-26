@@ -669,13 +669,15 @@ defining structures. A `StrTm`{.Agda} describes a structure, that may be
 both transport and univalent structures.
 
 ```agda
-data StrTm ℓ : Type (lsuc ℓ) where
-  s-const : Type ℓ → StrTm ℓ         -- Constant structures
-  s∙   : StrTm ℓ                     -- Pointed structures
-  _s→_ : StrTm ℓ → StrTm ℓ → StrTm ℓ -- Function structures
-  _s×_ : StrTm ℓ → StrTm ℓ → StrTm ℓ -- Product structures
+data StrTm ℓ : Level → Typeω where
+  s-const : ∀ {ℓ₁} → Type ℓ₁ → StrTm ℓ ℓ₁
+  s∙      : StrTm ℓ ℓ
+  _s→_    : ∀ {ℓ₁ ℓ₂} → StrTm ℓ ℓ₁ → StrTm ℓ ℓ₂ → StrTm ℓ (ℓ₁ ⊔ ℓ₂)
+  _s×_    : ∀ {ℓ₁ ℓ₂} → StrTm ℓ ℓ₁ → StrTm ℓ ℓ₂ → StrTm ℓ (ℓ₁ ⊔ ℓ₂)
 
-interp : StrTm ℓ → Type ℓ → Type ℓ
+infixr 30 _s→_ _s×_
+
+interp : StrTm ℓ ℓ₁ → Type ℓ → Type ℓ₁
 interp (s-const A) _ = A
 interp s∙ x = x
 interp (s s→ t) x = interp s x → interp t x
@@ -688,8 +690,8 @@ functions lets us derive a `Structure`{.Agda} and an `action on
 equivalences`{.Agda ident=EqvAction} from a term, at the same time.
 
 ```agda
-tm→Structure : (s : StrTm ℓ) → Structure ℓ (interp s)
-tm→Action : (s : StrTm ℓ) → EqvAction (interp s)
+tm→Structure : (s : StrTm ℓ ℓ₁) → Structure ℓ₁ (interp s)
+tm→Action : (s : StrTm ℓ ℓ₁) → EqvAction (interp s)
 
 tm→Structure (s-const x) = constantStr x
 tm→Structure s∙ = pointedStr
@@ -734,8 +736,8 @@ structures. At every case, the proof is by appeal to a lemma that was
 proved above.
 
 ```agda
-tm→Structure-univalent : (s : StrTm ℓ) → isUnivalent (tm→Structure s)
-tm→Action-isTransp : (s : StrTm ℓ) → isTransportStr (tm→Action s)
+tm→Structure-univalent : (s : StrTm ℓ ℓ₁) → isUnivalent (tm→Structure s)
+tm→Action-isTransp : (s : StrTm ℓ ℓ₁) → isTransportStr (tm→Action s)
 
 tm→Structure-univalent (s-const x) = constantStr-univalent
 tm→Structure-univalent s∙ = pointedStr-univalent
@@ -764,23 +766,23 @@ a record type, `StrDesc`{.Agda}, which packages together the structure
 term and the properties that are imposed:
 
 ```agda
-record StrDesc ℓ ax : Type (lsuc (lsuc ℓ ⊔ ax)) where
+record StrDesc ℓ ℓ₁ ax : Typeω where
   field
-    descriptor : StrTm ℓ
+    descriptor : StrTm ℓ ℓ₁
 
     axioms : ∀ X → interp descriptor X → Type ax
     axioms-prop : ∀ X s → isProp (axioms X s)
 
-Desc→Fam : ∀ {ax} → StrDesc ℓ ax → Type ℓ → Type (ℓ ⊔ ax)
+Desc→Fam : ∀ {ax} → StrDesc ℓ ℓ₁ ax → Type ℓ → Type (ℓ₁ ⊔ ax)
 Desc→Fam desc X =
   Σ[ S ∈ interp (desc .StrDesc.descriptor) X ]
     (desc .StrDesc.axioms _ S)
 
-Desc→Str : ∀ {ax} → (S : StrDesc ℓ ax) → Structure _ (Desc→Fam S)
+Desc→Str : ∀ {ax} → (S : StrDesc ℓ ℓ₁ ax) → Structure _ (Desc→Fam S)
 Desc→Str desc = axiomsStr (tm→Structure descriptor) axioms
   where open StrDesc desc
 
-Desc→isUnivalent : ∀ {ax} → (S : StrDesc ℓ ax) → isUnivalent (Desc→Str S)
+Desc→isUnivalent : ∀ {ax} → (S : StrDesc ℓ ℓ₁ ax) → isUnivalent (Desc→Str S)
 Desc→isUnivalent desc =
   axiomsStr-univalent
     (tm→Structure descriptor) axioms

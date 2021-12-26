@@ -50,6 +50,24 @@ whenever it is a family of propositions, by providing a case for
                                             i
 ```
 
+<!--
+```
+∥-∥-elim₂ : ∀ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁}
+              {P : ∥ A ∥ → ∥ B ∥ → Type ℓ₂}
+           → (∀ x y → isProp (P x y))
+           → (∀ x y → P (inc x) (inc y))
+           → ∀ x y → P x y
+∥-∥-elim₂ {A = A} {B} {P} pprop work x y = go x y where
+  go : ∀ x y → P x y
+  go (inc x) (inc x₁) = work x x₁
+  go (inc x) (squash y y₁ i) =
+    isProp→PathP (λ i → pprop (inc x) (squash y y₁ i))
+                 (go (inc x) y) (go (inc x) y₁) i
+  go (squash x x₁ i) z =
+    isProp→PathP (λ i → pprop (squash x x₁ i) z)
+                  (go x z) (go x₁ z) i
+```
+
 The propositional truncation can be called the **free proposition** on a
 type, because it satisfies the universal property that a left adjoint
 would have. Specifically, let `B` be a proposition. We have:

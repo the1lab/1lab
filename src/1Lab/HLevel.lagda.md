@@ -414,6 +414,12 @@ isProp→SquareP {B = B} isPropB {a = a} r s t u i j =
     base : (i j : I) → B i j
     base i j = transport (λ k → B (i ∧ k) (j ∧ k)) a
 
+isProp→isContrPathP : {A : I → Type ℓ} → ((i : I) → isProp (A i))
+                    → (x : A i0) (y : A i1) → isContr (PathP A x y)
+isProp→isContrPathP ap x y .centre = isProp→PathP ap x y
+isProp→isContrPathP ap x y .paths p =
+  isProp→SquareP (λ _ → ap) refl refl _ _
+
 isSet→SquareP :
   {A : I → I → Type ℓ}
   (isSet : (i j : I) → isSet (A i j))
