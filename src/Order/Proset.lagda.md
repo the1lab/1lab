@@ -30,7 +30,9 @@ open isPreorder
 ```
 
 A **proset structure** on a type equips the type with a choice of
-preorder $x \le y$.
+preorder $x \le y$. Additionally, we require that the type `be a
+set`{.Agda ident=hasIsSet}, so that prosets and monotone maps form a
+category.
 
 ```
 record ProsetOn {ℓ'} (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ') where
