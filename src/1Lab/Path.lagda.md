@@ -725,7 +725,7 @@ The diagram above - a tube - is a partial path in $A$, which is
 $\mathrm{sym} p$ on `i0`{.Agda} and $r$ on `i1`{.Agda}. We can make this
 explicit by giving a construction of this as a `Partial`{.Agda} element:
 
-```
+```agda
 module _ {A : Type} {w x y z : A} {p : w ≡ x} {q : x ≡ y} {r : y ≡ z} where private
   double-comp-tube : (i : I) → I → Partial (~ i ∨ i) A
   double-comp-tube i j (i = i0) = sym p j
@@ -742,7 +742,7 @@ means that for this path to be extensible at `i0`{.Agda}, we need a path
 with that boundary. By assumption, `q` extends `double-comp-tube`{.Agda}
 at `i0`{.Agda}.
 
-```
+```agda
   extensible-at-i0 : (i : I) → A [ (i ∨ ~ i) ↦ double-comp-tube i i0 ]
   extensible-at-i0 i = inS (q i)
 ```
@@ -751,7 +751,7 @@ The Kan condition says that this path is then extensible at `i1`, i.e.
 there is some inhabitant of `A [ (i ∨ ~ i) ↦ double-comp-tube i i1 ]`.
 This element is written using the operator `hcomp`{.Agda}:
 
-```
+```agda
   extensible-at-i1 : (i : I) → A [ (i ∨ ~ i) ↦ double-comp-tube i i1 ]
   extensible-at-i1 i =
     inS (hcomp {φ = ~ i ∨ i} (λ k is1 → double-comp-tube i k is1) (q i))
@@ -760,7 +760,7 @@ This element is written using the operator `hcomp`{.Agda}:
 Unwinding what it means for this element to exist, we see that the
 `hcomp`{.Agda} operation guarantees the existence of a path $w \to z$.
 
-```
+```agda
   double-comp : w ≡ z
   double-comp i = outS (extensible-at-i1 i)
 ```
@@ -844,7 +844,7 @@ be reflexivity. For definiteness, we chose the left face:
 \end{tikzcd}\]
 ~~~
 
-```
+```agda
 _∙_ : ∀ {ℓ} {A : Type ℓ} {x y z : A}
     → x ≡ y → y ≡ z → x ≡ z
 p ∙ q = refl ·· p ·· q

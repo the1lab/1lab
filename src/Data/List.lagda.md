@@ -55,7 +55,7 @@ tail (_ ∷ xs) = xs
 Similarly, it is possible to distinguish `_ ∷ _` from `[]`{.Agda}, so
 they are not equal:
 
-```
+```agda
 ∷≠[] : ∀ {x : A} {xs} → (x ∷ xs) ≡ [] → ⊥
 ∷≠[] {A = A} p = subst distinguish p tt where
   distinguish : List A → Type
@@ -80,7 +80,7 @@ module ListPath {A : Type ℓ} where
 We have a map `encode`{.Agda} which turns a path into a `Code`{.Agda},
 and a function `decode`{.Agda} which does the opposite.
 
-```
+```agda
   encode : {xs ys : List A} → xs ≡ ys → Code xs ys
   encode {xs = []} {ys = []} path = lift tt
   encode {xs = []} {ys = x ∷ ys} path = lift (∷≠[] (sym path))
@@ -95,7 +95,7 @@ and a function `decode`{.Agda} which does the opposite.
 
 These maps are inverses by construction:
 
-```
+```agda
   encode-decode : {xs ys : List A} (p : Code xs ys) → encode (decode p) ≡ p
   encode-decode {[]} {[]} (lift tt) = refl
   encode-decode {x ∷ xs} {x₁ ∷ ys} (p , q) i = p , encode-decode q i
@@ -114,7 +114,7 @@ Thus we have a characterisation of `Path (List A)` in terms of `Path A`.
 We use this to prove that lists preserve h-levels for $n \ge 2$, i.e. if
 `A` is a set (or more) then `List A` is a type of the same h-level.
 
-```
+```agda
   isHLevel-List : (n : Nat) → isHLevel A (2 + n) → isHLevel (List A) (2 + n)
   isHLevel-List n ahl x y = isHLevel≃ (suc n) Code≃Path isHLevel-Code where
     isHLevel-Code : {x y : List A} → isHLevel (Code x y) (suc n)

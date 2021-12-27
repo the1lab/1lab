@@ -188,7 +188,7 @@ identity:
 An `equivalence`{.Agda ident=_≃_} is an equivalence of groups when its
 underlying map is a group homomorphism.
 
-```
+```agda
 Group≃ : ∀ {ℓ} (A B : Σ (GroupOn {ℓ = ℓ})) (e : A .fst ≃ B .fst) → Type ℓ
 Group≃ A B (f , _) = isGroupHom A B f
 
@@ -198,7 +198,7 @@ open isGroupHom
 We automatically derive the proof that paths between groups are
 homomorphic equivalences:
 
-```
+```agda
 Group-univalent : ∀ {ℓ} → isUnivalent {ℓ = ℓ} (HomT→Str Group≃)
 Group-univalent {ℓ = ℓ} =
   autoUnivalentRecord (autoRecord

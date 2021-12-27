@@ -30,7 +30,7 @@ is a univalent category enriched over propositions.
 [Rijke's theorem]: 1Lab.HLevel.Sets.html#Rijke-isSet
 [set]: 1Lab.HLevel.html#isSet
 
-```
+```agda
 record isPartialOrder (R : A → A → Type ℓ') : Type (level-of A ⊔ ℓ') where
   field
     hasIsPreorder : isPreorder R
@@ -69,7 +69,7 @@ products, this is a proposition.
 This implies that the path component in `isPartialOrder`{.Agda} does not
 get in the way of it being a proposition:
 
-```
+```agda
 isProp-isPartialOrder : isProp (isPartialOrder R)
 isProp-isPartialOrder x y i = p where
   open isPartialOrder
@@ -83,7 +83,7 @@ A **poset** is a type equipped with a partial order relation. Since
 admitting a preorder implies that the type is a set, it is not necessary
 to additionally require that the type be a set.
 
-```
+```agda
 record PosetOn {ℓ'} (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ') where
   field
     _≤_ : A → A → Type ℓ'
@@ -163,7 +163,7 @@ _reflects_ the ordering.
 
 A map is said to be **antitone** if it _inverts_ the ordering relation:
 
-```
+```agda
 isAntitone : (A B : Poset ℓ' ℓ) (e : A .fst → B .fst) → Type _
 isAntitone (A , o) (B , o') f = (x y : A) → x ≤₁ y → f y ≤₂ f x
   where open PosetOn o  renaming (_≤_ to _≤₁_)
@@ -172,7 +172,7 @@ isAntitone (A , o) (B , o') f = (x y : A) → x ≤₁ y → f y ≤₂ f x
 
 # Meets and Joins
 
-```
+```agda
 module _ (A : Poset ℓ' ℓ) where
   open PosetOn (A .snd)
 ```
@@ -182,7 +182,7 @@ Let $x$ and $y$ be elements of an arbitrary poset. We say that m is the
 than $x$ and $y$. Diagramatically, we can draw a meet of $x$ and $y$ as
 below.
 
-```
+```agda
   record isMeet (m x y : A .fst) : Type (ℓ' ⊔ ℓ) where
     field
       m≤x : m ≤ x
@@ -194,7 +194,7 @@ below.
 Dually, the **join** of $x$ and $y$ is the least element which is
 greater than $x$ and $y$.
 
-```
+```agda
   record isJoin (j x y : A .fst) : Type (ℓ' ⊔ ℓ) where
     field
       x≤j : x ≤ j
@@ -212,7 +212,7 @@ In a poset, because of antisymmetry, meets and joins are unique:
 ```
 -->
 
-```
+```agda
   meet-unique : isMeet m x y → isMeet m' x y → m ≡ m'
   meet-unique m1 m2 = antisym m'≤m m≤m' where
     m≤m' = m1 .limiting _ (m2 .m≤x) (m2 .m≤y)
@@ -230,7 +230,7 @@ We also have that being a meet and being a join are properties of an
 element, not structure.
 </summary>
 
-```
+```agda
   isProp-isMeet : isProp (isMeet m x y)
   isProp-isMeet x y i .m≤x = propositional (x .m≤x) (y .m≤x) i
   isProp-isMeet x y i .m≤y = propositional (x .m≤y) (y .m≤y) i

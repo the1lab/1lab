@@ -34,7 +34,7 @@ preorder $x \le y$. Additionally, we require that the type `be a
 set`{.Agda ident=hasIsSet}, so that prosets and monotone maps form a
 category.
 
-```
+```agda
 record ProsetOn {ℓ'} (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ') where
   field
     _≤_           : A → A → Type ℓ'

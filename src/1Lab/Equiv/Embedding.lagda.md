@@ -97,7 +97,7 @@ PathP≡fibAp p
 ```
 -->
 
-```
+```agda
 hasPropFibres→isEmbedding : (f : A → B) → ((x : B) → isProp (fibre f x))
                           → isEmbedding f
 hasPropFibres→isEmbedding f prop-fib {w} {x} .isEqv y =
