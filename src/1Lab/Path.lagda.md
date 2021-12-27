@@ -576,9 +576,9 @@ That's where the "Kan" part of "cubical Kan complex" comes in:
 Semantically, _every open box extends to a cube_. The concept of "open
 box" might make even less sense than the concept of "cube in a type"
 initially, so it helps to picture them! Suppose we have three paths $p :
-w ≡ x$, $q : x ≡ y$, and $r : y ≡ z$. We can pictorially them into an
-open box like in the diagram below, by joining the paths by their common
-endpoints:
+w ≡ x$, $q : x ≡ y$, and $r : y ≡ z$. We can pictorially arrange them
+into an open box like in the diagram below, by joining the paths by
+their common endpoints:
 
 <figure>
 ~~~{.quiver}
@@ -619,7 +619,7 @@ interval, and they are "true" when they are equal to 1. The predicate
 inhabitant `1=1`{.Agda} which says `i1`{.Agda} is `i1`{.Agda}.
 
 For instance, if we have a variable `i : I` of interval type, we can
-represent _disjoint endpoints_ of a [Path] by a partial element with
+represent _disjoint endpoints_ of a line by a partial element with
 formula $\neg i \lor i$:
 
 ```agda
@@ -697,7 +697,23 @@ private
 
 The constructor `inS` expresses that _any_ totally-defined cube $u$ can
 be seen as a partial cube, one that agrees with $u$ for any choice of
-formula $\phi$:
+formula $\phi$. This might be a bit abstract, so let's diagram the case
+where we have some square $a$, and the partial element has formula $i
+\land j$. This extension can be drawn as in the diagram below: The red
+"backwards L" shape is the partial element, which is "extended by" the
+black lines to make a complete square.
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {a_{0,0}} && \textcolor{rgb,255:red,214;green,92;blue,92}{a_{0,1}} \\
+  & {a_{i,j}} \\
+  \textcolor{rgb,255:red,214;green,92;blue,92}{a_{1,0}} && \textcolor{rgb,255:red,214;green,92;blue,92}{a_{1,1}}
+  \arrow[from=1-1, to=1-3]
+  \arrow[color={rgb,255:red,214;green,92;blue,92}, from=1-3, to=3-3]
+  \arrow[from=1-1, to=3-1]
+  \arrow[color={rgb,255:red,214;green,92;blue,92}, from=3-1, to=3-3]
+\end{tikzcd}\]
+~~~
 
 ```agda
   _ : ∀ {ℓ} {A : Type ℓ} {φ : I} (u : A) → A [ φ ↦ (λ _ → u) ]
@@ -1188,7 +1204,14 @@ coe0→i A i a = transp (λ j → A (i ∧ j)) (~ i) a
 
 coe1→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i1 → A i
 coe1→i A i a = transp (λ j → A (i ∨ ~ j)) i a
+```
 
+The `coe0→i`{.Agda} and `coe1→i`{.Agda} operations can be seen as taking
+a value from one of the endpoints and "spreading" it along the variable
+`i`. Similarly, we have `coei→0`{.Agda} and `coei→1`{.Agda}, which
+"squeeze" a value from `A i` to one of the endpoints.
+
+```
 coei→0 : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i → A i0
 coei→0 A i a = transp (λ j → A (i ∧ ~ j)) (~ i) a
 ```
