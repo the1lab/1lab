@@ -738,8 +738,11 @@ define path composition.
 ~~~
 
 The diagram above - a tube - is a partial path in $A$, which is
-$\mathrm{sym} p$ on `i0`{.Agda} and $r$ on `i1`{.Agda}. We can make this
-explicit by giving a construction of this as a `Partial`{.Agda} element:
+$\mathrm{sym}\ p$ on the `i0`{.Agda} face and $r$ on the `i1`{.Agda}
+face. Note that there are two interval variables here: The $i$ direction
+(by convention) is left-to-right, and the $j$ direction is
+top-to-bottom. We can make this diagram concrete by constructing a
+`Partial`{.Agda} element:
 
 ```
 module _ {A : Type} {w x y z : A} {p : w ≡ x} {q : x ≡ y} {r : y ≡ z} where private
@@ -747,13 +750,14 @@ module _ {A : Type} {w x y z : A} {p : w ≡ x} {q : x ≡ y} {r : y ≡ z} wher
   double-comp-tube i j (i = i0) = sym p j
   double-comp-tube i j (i = i1) = r j
 ```
+
 This element has type `(i : I) → I → Partial (~ i ∨ i) A` rather than
 `(i : I) → Partial (~ i ∨ i) (I → A)` because of a universe restriction
 in Agda: The second argument to `Partial`{.Agda} must be a
 `Type`{.Agda}, but `I`{.Agda} is not a `Type`{.Agda}.
 
-When given `i0`{.Agda} as `j`, `double-comp-tube`{.Agda} has boundary
-`p\ \mathrm{i1} \to r\ \mathrm{i0}`, which computes to $x \to y$. This
+When given `i0`{.Agda} for `j`, `double-comp-tube`{.Agda} has boundary
+$p\ \mathrm{i1} \to r\ \mathrm{i0}$, which computes to $x \to y$. This
 means that for this path to be extensible at `i0`{.Agda}, we need a path
 with that boundary. By assumption, `q` extends `double-comp-tube`{.Agda}
 at `i0`{.Agda}.
