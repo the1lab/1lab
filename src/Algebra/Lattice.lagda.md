@@ -3,8 +3,8 @@ open import 1Lab.Prelude
 
 open import Algebra.Semilattice
 
-open import Order.Poset
 open import Order.Proset
+open import Order.Poset
 
 module Algebra.Lattice where
 ```

@@ -1,5 +1,6 @@
 ```agda
 open import 1Lab.Prelude
+
 open import Algebra.Semigroup
 
 open import Order.Proset hiding (isMonotone)
