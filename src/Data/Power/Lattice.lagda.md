@@ -24,7 +24,10 @@ y$. Furthermore, we prove that the ordering induced by this lattice is
 the same as the subset inclusion ordering.
 
 First, we take a detour to define the structure of `ℙ` as a
-`Poset`{.Agda} ordered by `subset inclusion`{.Agda ident=_⊆_}:
+`Poset`{.Agda} ordered by `subset inclusion`{.Agda ident=_⊆_}. This
+packages up the reflexivity and transitivity of the subset relation.
+Antisymmetry for this relation is exactly the `principle of
+extensionality for subsets`{.Agda ident=ℙ-ext}.
 
 ```agda
 ℙ⊆ : ∀ {ℓ} → Type ℓ → Poset ℓ (lsuc ℓ)
@@ -56,7 +59,7 @@ semilattice:
   r .hasIsSemigroup .hasIsMagma .hasIsSet = isSet-ℙ
   r .hasIsSemigroup .associative =
     ℙ-ext (λ { x (a , b , c) → (a , b) , c })
-              (λ { x ((a , b) , c) → a , b , c })
+          (λ { x ((a , b) , c) → a , b , c })
 
   r .commutative =
     ℙ-ext (λ { x (a , b) → b , a }) (λ { x (a , b) → b , a })
@@ -74,7 +77,17 @@ in `_∪_`{.Agda}, but it is essentially shuffling sums around:
 ∪-semilattice = r where
   open isSemilattice
   open isSemigroup
+```
 
+To show that subset union is associative, we must "shuffle" coproducts
+`(x ∈ X) ⊎ (x ∈ Y ⊎ x ∈ Z)` to `(x ∈ X ⊎ x ∈ Y) ⊎ (x ∈ Z)`, which would
+be simple enough to do with pattern matching. The complication arises
+because in reality we're shuffling `P ⊎ ∥ Q ⊎ R ∥` into `∥ P ⊎ Q ∥ ⊎ R`
+and vice-versa, so we must use `∥-∥-elim`{.Agda} to get at the
+underlying coproduct, even though all of `P`, `Q`, and `R` are
+propositions.
+
+```agda
   r : isSemilattice _
   r .hasIsSemigroup .hasIsMagma .hasIsSet = isSet-ℙ
   r .hasIsSemigroup .associative =
@@ -90,13 +103,26 @@ in `_∪_`{.Agda}, but it is essentially shuffling sums around:
                                   ; (inr y) → inc (inr (inc (inl y))) }) x
                    ; (inr x) → inc (inr (inc (inr x)))
                    })
+```
 
+For commutativity, since we are changing `∥ (x ∈ X) ⊎ (x ∈ Y) ∥` to `∥
+(x ∈ Y) ⊎ (x ∈ X) ∥`, ‵∥-∥-map`{.Agda} suffices - there is no need to
+reassociate _truncations_.
+
+```agda
   r .commutative =
     ℙ-ext (λ _ → ∥-∥-map λ { (inl x) → inr x
                            ; (inr x) → inl x })
           (λ _ → ∥-∥-map λ { (inl x) → inr x
-                               ; (inr x) → inl x })
+                           ; (inr x) → inl x })
+```
 
+For idempotence, we must show that `x ∈ X ≃ ∥ (x ∈ X) ⊎ (x ∈ X) ∥`.
+Since `x ∈ X` is a proposition, we can eliminate from a truncation to
+it, at which point either branch will do just fine. In the other
+direction, we inject it into the left summand for definiteness.
+
+```agda
   r .idempotent {x = X} =
     ℙ-ext (λ _ → ∥-∥-elim (λ _ → X _ .snd)
                  (λ { (inl x) → x
@@ -135,9 +161,9 @@ Power X .hasIsLattice .∧-absorbs-∨ {y = y} = ∩-absorbs-∪ {Y = y}
 Power X .hasIsLattice .∨-absorbs-∧ {y = y} = ∪-absorbs-∩ {Y = y}
 ```
 
-It remains to show that the covariant ordering of `Power`{.Agda} is
-`ℙ⊆`{.Agda}. For this we show that $(x ⊆ y) \leftrightarrow (x ≡ (x ∩
-y))$.
+It remains to show that the covariant ordering induced by the
+`Power`{.Agda} lattice is the same as `ℙ⊆`{.Agda}. For this we show that
+$(x ⊆ y) \leftrightarrow (x ≡ (x ∩ y))$.
 
 ```agda
 subset-∩ : ∀ {ℓ} {A : Type ℓ} {X Y : ℙ A} → (X ⊆ Y) ≃ (X ≡ (X ∩ Y))
