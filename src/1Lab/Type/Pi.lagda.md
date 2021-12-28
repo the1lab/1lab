@@ -91,7 +91,7 @@ funextDep {A = A} {B} {f} {g} h i x =
       { (i = i0) → f (coei→i A i0 x k)
       ; (i = i1) → g (coei→i A i1 x k)
       })
-    (h (λ j → coei→j A i j x) i)
+    (h (λ j → coe A i j x) i)
 ```
 
 A very ugly cubical argument shows that this function is an equivalence:
@@ -132,13 +132,13 @@ funextDep≃ {A = A} {B} {f} {g} = Iso→Equiv isom where
         })
       (h (λ j → lemi→j j m) i)
     where
-    lemi→j : ∀ j → coei→j A i j (p i) ≡ p j
+    lemi→j : ∀ j → coe A i j (p i) ≡ p j
     lemi→j j =
-      coei→j (λ k → coei→j A i k (p i) ≡ p k) i j (coei→i A i (p i))
+      coe (λ k → coe A i k (p i) ≡ p k) i j (coei→i A i (p i))
 
     lemi→i : PathP (λ m → lemi→j i m ≡ p i) (coei→i A i (p i)) refl
     lemi→i =
-      sym (coei→i (λ k → coei→j A i k (p i) ≡ p k) i (coei→i A i (p i)))
+      sym (coei→i (λ k → coe A i k (p i) ≡ p k) i (coei→i A i (p i)))
       ◁ λ m k → lemi→j i (m ∨ k)
 
 heteroHomotopy≃Homotopy
