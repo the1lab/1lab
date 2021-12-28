@@ -125,20 +125,21 @@ isUnivalent' S ι =
   → (f : X .fst ≃ Y .fst)
   → ι X Y f ≃ PathP (λ i → S (ua f i)) (X .snd) (Y .snd)
 
-tm→isHomT : ∀ {ℓ} (tm : StrTm ℓ) → IsHomT ℓ (interp tm)
+tm→isHomT : ∀ {ℓ ℓ₁} {S} (tm : StrTm ℓ ℓ₁ S) → IsHomT ℓ₁ S
 tm→isHomT tm = tm→Structure tm .is-hom
 
-tm→⌜isUnivalent⌝ : ∀ {ℓ} (tm : StrTm ℓ) → Type _
-tm→⌜isUnivalent⌝ tm = isUnivalent' (interp tm) (tm→isHomT tm)
+tm→⌜isUnivalent⌝ : ∀ {ℓ ℓ₁} {S} (tm : StrTm ℓ ℓ₁ S) → Type _
+tm→⌜isUnivalent⌝ tm = isUnivalent' _ (tm→isHomT tm)
 
-tm→isUnivalent' : ∀ {ℓ} (tm : StrTm ℓ) → isUnivalent' (interp tm) (tm→isHomT tm)
+tm→isUnivalent' : ∀ {ℓ ℓ₁} {S} (tm : StrTm ℓ ℓ₁ S) → isUnivalent' S (tm→isHomT tm)
 tm→isUnivalent' tm X Y f = tm→Structure-univalent tm f
 
-repackage : ∀ {ℓ ℓ₁ ℓ₂} (S : Type ℓ → Type ℓ₁)
-          → (ι : IsHomT ℓ₂ S)
-          → isUnivalent' S ι
-          → isUnivalent {S = S} (HomT→Str ι)
-repackage S ι ua = ua _ _
+isUnivalent'→isUnivalent
+  : ∀ {ℓ ℓ₁ ℓ₂ : Level} (S : Type ℓ → Type ℓ₁)
+  → (ι : IsHomT ℓ₂ S)
+  → isUnivalent' S ι
+  → isUnivalent {ℓ = ℓ₂} {S = S} (HomT→Str ι)
+isUnivalent'→isUnivalent S ι ua {X} {Y} = ua X Y
 
 record TypedTm : Type where
   field type : Term

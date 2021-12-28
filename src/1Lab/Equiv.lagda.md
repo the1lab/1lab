@@ -376,7 +376,7 @@ by constructing an appropriate _open cube_, where the missing face is
 that square. As an intermediate step, we define $\theta$ to be the
 filler for the square above.
 
-```
+```agda
     θ : PathP (λ i → g y ≡ π i) π₀ π₁
     θ i j = hfill (λ k → λ { (i = i1) → π₁ k
                            ; (i = i0) → π₀ k

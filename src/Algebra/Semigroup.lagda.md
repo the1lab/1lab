@@ -99,7 +99,7 @@ part" (the binary operation) and an "axiom part" (the associativity)!
 ```agda
 module _ where
   private
-    sg-desc : StrDesc ℓ ℓ
+    sg-desc : StrDesc ℓ ℓ (λ X → (X → X → X)) ℓ
     sg-desc .StrDesc.descriptor = s∙ s→ (s∙ s→ s∙)
     sg-desc .StrDesc.axioms X = isSemigroup
     sg-desc .StrDesc.axioms-prop X s = isProp-isSemigroup

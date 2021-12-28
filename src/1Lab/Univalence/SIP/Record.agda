@@ -17,34 +17,34 @@ open import Data.List
 
 module 1Lab.Univalence.SIP.Record where
 
+  -- Build proof of univalence from an isomorphism
 private
   pathMap
     : ∀ {ℓ ℓ'} {S : I → Type ℓ} {T : I → Type ℓ'}
       → (f : {i : I} → S i → T i)
       → {x : S i0} {y : S i1}
       → PathP S x y → PathP T (f x) (f y)
-
   pathMap f p i = f (p i)
 
-  -- Build proof of univalence from an isomorphism
   module _ {ℓ ℓ₁ ℓ₁'} (S : Type ℓ → Type ℓ₁) (ι : IsHomT ℓ₁' S) where
-    fwdShape : Type _
-    fwdShape =
-        (A B : Σ S) (e : A .fst ≃ B .fst)
-      → ι A B e → PathP (λ i → S (ua e i)) (A .snd) (B .snd)
+    private
+      fwdShape : Type _
+      fwdShape =
+          (A B : Σ S) (e : A .fst ≃ B .fst)
+        → ι A B e → PathP (λ i → S (ua e i)) (A .snd) (B .snd)
 
-    bwdShape : Type _
-    bwdShape =
-        (A B : Σ S) (e : A .fst ≃ B .fst)
-      → PathP (λ i → S (ua e i)) (A .snd) (B .snd) → ι A B e
+      bwdShape : Type _
+      bwdShape =
+          (A B : Σ S) (e : A .fst ≃ B .fst)
+        → PathP (λ i → S (ua e i)) (A .snd) (B .snd) → ι A B e
 
-    fwdBwdShape : fwdShape → bwdShape → Type _
-    fwdBwdShape fwd bwd =
-      (A B : Σ S) (e : A .fst ≃ B .fst) → ∀ p → fwd A B e (bwd A B e p) ≡ p
+      fwdBwdShape : fwdShape → bwdShape → Type _
+      fwdBwdShape fwd bwd =
+        (A B : Σ S) (e : A .fst ≃ B .fst) → ∀ p → fwd A B e (bwd A B e p) ≡ p
 
-    bwdFwdShape : fwdShape → bwdShape → Type _
-    bwdFwdShape fwd bwd =
-      (A B : Σ S) (e : A .fst ≃ B .fst) → ∀ r → bwd A B e (fwd A B e r) ≡ r
+      bwdFwdShape : fwdShape → bwdShape → Type _
+      bwdFwdShape fwd bwd =
+        (A B : Σ S) (e : A .fst ≃ B .fst) → ∀ r → bwd A B e (fwd A B e r) ≡ r
 
     explicitUnivalentStr : (fwd : fwdShape) (bwd : bwdShape)
       → fwdBwdShape fwd bwd → bwdFwdShape fwd bwd
@@ -167,8 +167,9 @@ private module _ (spec : Spec Nat) where
       -- Clause for a structure field: use fwdDatum to piggyback off the
       -- assumption that all structure fields are univalent structures
       fwdClauses k ((structureField str pres , n) ∷ fs) =
-        ((str , fwdDatum (makeVarsFrom k) (var 0 []) (str , pres , 4 + k + n))
-          ∷_) ∘ fwdClauses k fs
+         fwdClauses k fs ∘
+          ((str , fwdDatum (makeVarsFrom k) (var 0 []) (str , pres , 4 + k + n))
+            ∷_)
 
       -- For a property field: *HAS TO GO AFTER THE STRUCTURE IT
       -- MENTIONS* (hence we put it AFTER fs - by the type of
@@ -184,7 +185,7 @@ private module _ (spec : Spec Nat) where
               (foldl
                 (λ t (_ , t') → con (quote _,_) (t v∷ t' v∷ []))
                 (con (quote tt) [])
-                (reverse (fwdClauses (suc k) fs [])))
+                (fwdClauses (suc k) fs []))
 
       body =
         map (λ (n , t) → clause [] (varg (proj n) ∷ []) t) (fwdClauses 1 fields [])
@@ -208,11 +209,12 @@ private module _ (spec : Spec Nat) where
                     → List (Name × Term) → List (Name × Term)
       fwdBwdClauses k [] = id
       fwdBwdClauses k ((structureField struct pres , n) ∷ fs) =
+        fwdBwdClauses k fs ∘
         ((struct , fwdBwdDatum (makeVarsFrom k)
                     (var 1 [])
                     (var 0 [])
                     (struct , pres , 4 + k + n))
-        ∷_) ∘ fwdBwdClauses k fs
+        ∷_)
 
       -- For a property field: *HAS TO GO AFTER THE STRUCTURE IT
       -- MENTIONS* (hence we put it AFTER fs - by the type of
@@ -227,7 +229,7 @@ private module _ (spec : Spec Nat) where
               (foldl
                 (λ t (_ , t') → con (quote _,_) (t v∷ t' v∷ []))
                 (con (quote tt) [])
-                (reverse (fwdBwdClauses (2 + k) fs []))))
+                (fwdBwdClauses (2 + k) fs [])))
 
       body = map (λ (n , t) → clause [] (varg (proj n) ∷ []) t)
               (fwdBwdClauses 2 fields [])
@@ -294,9 +296,9 @@ private module _ (spec : Spec TypedTm) where
 macro
   autoUnivalentRecord : Term → Term → TC ⊤
   autoUnivalentRecord spec goal = do
-    spec ← reduce spec >>= parseSpec
+    spec ← parseSpec spec
     unify goal
-      (def (quote repackage)
+      (def (quote isUnivalent'→isUnivalent)
         (  spec .Spec.structure
         v∷ spec .Spec.homomorphism
         v∷ spec→isUnivalent spec

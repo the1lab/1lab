@@ -1,7 +1,7 @@
 ```
-open import Algebra.Group
-
 open import 1Lab.Prelude
+
+open import Algebra.Group
 
 module Algebra.Group.Cayley {ℓ} (G : Group ℓ) where
 
@@ -22,7 +22,7 @@ the left. The inverse of this bijection is given by multiplication with
 $x^{-1}$, and the proof that these are in fact inverse functions are
 given by the group laws:
 
-```
+```agda
 Cayley : G .fst → G .fst ≃ G .fst
 Cayley x = Iso→Equiv bij where
   bij : Iso _ _
@@ -43,7 +43,7 @@ Cayley x = Iso→Equiv bij where
 We then show that this map is a group homomorphism from $G$ to
 $\mathrm{Sym}(G)$:
 
-```
+```agda
 Cayley-isHom : isGroupHom G (Sym G-set) Cayley
 Cayley-isHom .isGroupHom.pres-⋆ x y = Σ≡Prop isProp-isEquiv (funext lemma) where
   lemma : (e : G .fst) → (x ⋆ y) ⋆ e ≡ x ⋆ (y ⋆ e)
@@ -53,7 +53,7 @@ Cayley-isHom .isGroupHom.pres-⋆ x y = Σ≡Prop isProp-isEquiv (funext lemma) 
 Finally, we show that this map is injective; Thus, $G$ embeds as a
 subgroup of $\mathrm{Sym}(G)$ (the image of `Cayley`{.Agda}).
 
-```
+```agda
 Cayley-injective : injective Cayley
 Cayley-injective {x} {y} eqvs-equal =
   x                   ≡⟨ sym idʳ ⟩

@@ -14,6 +14,7 @@ module 1Lab.Equiv.Embedding where
 private variable
   ℓ ℓ₁ : Level
   A B : Type ℓ
+  w x : A
 ```
 -->
 
@@ -64,4 +65,42 @@ propositions, so biimplication becomes equivalence:
 ```agda
 injective-sets→embedding Aset Bset f injective =
   isIso→isEquiv (iso injective (λ _ → Bset _ _ _ _) (λ _ → Aset _ _ _ _))
+```
+
+An equivalent characterisation of the embeddings is that they are the
+types with `propositional`{.Agda ident=isProp} `fibres`{.Agda
+ident=fibre}.
+
+<!--
+```
+private
+  fibAp→PathP
+    : {f : A → B}
+    → (p : f w ≡ f x)
+    → (fi : fibre (ap f) p)
+    → PathP (λ i → fibre f (p i)) (w , refl) (x , refl)
+  fibAp→PathP p (q , r) i = q i , λ j → r j i
+
+  PathP→fibAp
+    : {f : A → B}
+    → (p : f w ≡ f x)
+    → (pp : PathP (λ i → fibre f (p i)) (w , refl) (x , refl))
+    → fibre (ap f) p
+  PathP→fibAp p pp = (λ i → fst (pp i)) , (λ j i → snd (pp i) j)
+
+PathP≡fibAp
+  : {f : A → B}
+  → (p : f w ≡ f x)
+  → PathP (λ i → fibre f (p i)) (w , refl) (x , refl) ≡ fibre (ap f) p
+PathP≡fibAp p
+  = Iso→path (PathP→fibAp p , iso (fibAp→PathP p) (λ _ → refl) (λ _ → refl))
+```
+-->
+
+```agda
+hasPropFibres→isEmbedding : (f : A → B) → ((x : B) → isProp (fibre f x))
+                          → isEmbedding f
+hasPropFibres→isEmbedding f prop-fib {w} {x} .isEqv y =
+  subst isContr (PathP≡fibAp y)
+    (isProp→isContrPathP (λ i → prop-fib (y i)) (w , refl) (x , refl))
 ```

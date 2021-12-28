@@ -7,10 +7,15 @@ module 1Lab.Path where
 # The Interval
 
 In HoTT, the inductively-defined propositional equality type gets a new
-semantics: continuous _paths_. The "key idea" of cubical type theory -
+semantics: continuous _paths_. The "key idea" of cubical type theory ---
 and thus, Cubical Agda --- is that we can take this as a new _definition_
 of the equality type, where we interpret a `Path`{.Agda} in a type by a
 function where the domain is the _interval type_.
+
+<details>
+<summary>
+But first, pay no mind to these imports.
+</summary>
 
 ```agda
 open import Agda.Builtin.Cubical.Path public
@@ -27,17 +32,30 @@ open import Agda.Primitive.Cubical public
            ; primHComp      to hcomp
            ; primTransp     to transp
            ; itIsOne        to 1=1 )
+```
+</details>
 
+```agda
 Path : ∀ {ℓ} (A : Type ℓ) → A → A → Type ℓ
 Path A = PathP (λ i → A)
 ```
 
-The type `I`{.Agda} is meant to represent the unit interval $[0,1]$, the
-same unit interval used in the definition of path. Since all functions
-definable in type theory are automatically continuous, we can take a
-path to be a _function_ `I → A`. More practically, it's useful to
-write out the endpoints of the path --- that is, the values the function
-takes when applied to `i0` and to `i1`. This we call a `Path`{.Agda}.
+The type `I`{.Agda} is meant to represent the (real, closed) unit
+interval $[0,1]$, the same unit interval used in the topological
+definition of path. Because the real unit interval has a least and
+greatest element --- 0 and 1 --- the interval _type_ also has two global
+inhabitants, `i0`{.Agda} and `i1`{.Agda}. This is where the analogy with
+the reals breaks down: There's no such thing as `i0.5` (much less
+`i1/π`). In reality, the interval type internalises an abstract interval
+_object_.
+
+Regardless, since all functions definable in type theory are
+automatically continuous, we can take a path to be any value in the
+function type `I → A`. When working with paths, though, it's useful to
+mention the endpoints of a path in its type --- that is, the values the
+function takes when applied to `i0` and to `i1`. We can "upgrade" any
+function `f : I → A` to a `Path`{.Agda}, using a definition that looks
+suspiciously like the identity function:
 
 ```agda
 private
@@ -49,12 +67,19 @@ refl {x = x} = toPath (λ i → x)
 ```
 
 The type `Path A x y` is also written `x ≡ y`, when `A` is not important
-- i.e. when it can be inferred from `x` and `y`. The proof that equality
-is reflexive is given by a `Path`{.Agda} which yields the same element
-everywhere on `I`: The constant function.
+- i.e. when it can be inferred from `x` and `y`. Under this
+interpretation, proof that equality is reflexive (i.e. that $x = x$) is
+given by a `Path`{.Agda} which yields the same element everywhere on
+`I`: The function that is constantly $x$.
 
-The endpoints of a path --- even a path we do not know the definition of -
-are equal, by computation, to the ones specified in its type.
+If we have a `Path`{.Agda}, we can apply it to a value of the interval
+type to get an element of the underlying type. When a path is applied to
+one of the endpoints, the result is the same as declared in its type ---
+even when we're applying a path we don't know the definition of.[^cofibration]
+
+[^cofibration]: For the semantically inclined, these correspond to face inclusions
+(including the inclusions of endpoints into a line) being monomorphisms,
+and thus _cofibrations_ in the model structure on cubical sets.
 
 ```agda
 module _ {ℓ} {A : Type ℓ} {x y : A} {p : x ≡ y} where
@@ -70,13 +95,19 @@ In addition to the two endpoints `i0`{.Agda} and `i1`{.Agda}, the
 interval has the structure of a De Morgan algebra. All the following
 equations are respected (definitionally), but they can not be expressed
 internally as a `Path`{.Agda} because `I`{.Agda} is not in
-`Type`{.Agda}.
+`Type`{.Agda}.[^inotkan]
+
+[^inotkan]: Since `I`{.Agda} is not Kan (that is --- it does not have a
+[_composition_](#composition) structure), it is not an inhabitant of the
+“fibrant universe” `Type`{.Agda}. Instead it lives in `SSet`, or, in
+Agda 2.6.3, its own universe -- `IUniv`.
 
 - $x \land \mathrm{i0} = \mathrm{i0}$, $x \land \mathrm{i1} = x$
 - $x \lor \mathrm{i0} = x$, $x \lor \mathrm{i1} = \mathrm{i1}$
 - $\neg(x \land y) = \neg x \lor \neg y$
-- $\neg\mathrm{i0} = \mathrm{i1}$, $\neg\mathrm{i0} = \mathrm{i1}$, $\neg\neg{}x = x$
-- $\land$ and $\lor$ are both commutative, and distribute over eachother.
+- $\neg\mathrm{i0} = \mathrm{i1}$, $\neg\mathrm{i1} = \mathrm{i0}$, $\neg\neg{}x = x$
+- $\land$ and $\lor$ are both associative, commutative and idempotent,
+and distribute over eachother.
 
 Note that, in the formalisation, $\neg x$ is written `~ x`. As a more
 familiar description, a De Morgan algebra is a Boolean algebra that does
@@ -87,8 +118,9 @@ to maintain type safety.
 
 To wit: In cubical type theory, a term in a context with $n$ interval
 variables expresses a way of mapping an $n$-cube into that type. One
-very important class of these maps are the $1$-cubes, lines, or
-[_paths_], which represent equalities between terms of that type.
+very important class of these maps are the $1$-cubes --- lines or
+_`paths`{.Agda ident=Path}_ --- which represent equalities between terms
+of that type.
 
 Iterating this construction, a term in a context with 2 interval
 variables represents a square in the type, which can be read as saying
@@ -125,7 +157,14 @@ squares where either the top/bottom or left/right faces are the path
     drop-i i j = p j
 ```
 
-These squares can be drawn as below:
+These squares can be drawn as below. Take a moment to appreciate how the
+_types_ of `drop-j`{.Agda} and `drop-i`{.Agda} specify the _boundary_ of
+the diagram --- A `PathP (λ i → p i ≡ p i) refl refl` corresponds to a
+square whose top/bottom faces are both `p`, and whose left/right faces
+are both `refl`{.Agda} (by convention). Similarly, `PathP (λ i → a ≡ b)
+p p` has `refl`{.Agda} as top/bottom faces (recall that `refl`{.Agda} is
+the constant function regarded as a path), and `p` as both left/right
+faces.
 
 <div class="mathpar">
 
@@ -253,7 +292,7 @@ exactly two inhabitants ([see here]), which is something like saying
 nonsensical, which is why "there are two paths Bool → Bool" is
 preferred: it's not nonsense.
 
-[see here]: agda://Data.Bool#AutBool≡2
+[see here]: Data.Bool.html#AutBool≡2
 
 In Cubical Agda, `transport`{.Agda} is a derived notion, with the actual
 primitive being `transp`{.Agda}. Unlike `transport`{.Agda}, which has
@@ -545,7 +584,7 @@ The last lemma, that `ap` respects composition of _paths_, needs path
 induction, and the rest of the groupoid structure on type formers, so
 it's in [a different module].
 
-[a different module]: agda://1Lab.Path.Groupoid#ap-comp-path
+[a different module]: 1Lab.Path.Groupoid.html#ap-comp-path
 
 # Composition
 
@@ -559,7 +598,7 @@ univalence, so much so that, in the book, univalence and HITs only
 compute up to paths.
 
 In Cubical Agda, types are interpreted as objects called _cubical Kan
-complexes_[^1], which are a _geometric_ description description of
+complexes_[^blogpost], which are a _geometric_ description description of
 spaces as "sets we can probe by cubes". In Agda, this "probing" is
 reflected by mapping the interval into a type: A "probe" of $A$ by an
 $n$-cube is a term of type $A$ in a context with $n$ variables of type
@@ -567,7 +606,7 @@ $n$-cube is a term of type $A$ in a context with $n$ variables of type
 us “explore” the higher dimensional structure of a type, but it does not
 specify how this structure behaves.
 
-[^1]: I (Amélia) wrote [a blog post] explaining the semantics of them in
+[^blogpost]: I (Amélia) wrote [a blog post] explaining the semantics of them in
 a lot of depth.
 
 [a blog post]: https://amelia.how/posts/cubical-sets.html
@@ -598,7 +637,7 @@ $x ≡ y$, and $y ≡ z$. Note that in the left face of the diagram, the
 path was inverted; This is because while we have a path $w ≡ x$, we need
 a path $x ≡ w$, and all parallel faces of a cube must "point" in the
 same direction. The way the diagram is drawn strongly implies that there
-is a face missing - the line $w ≡ z$. The interpretation of types as
+is a face missing --- the line $w ≡ z$. The interpretation of types as
 _Kan_ cubical sets guarantees that the open box above extends to a
 complete square, and thus the line $w ≡ z$ exists.
 
@@ -619,8 +658,11 @@ interval, and they are "true" when they are equal to 1. The predicate
 inhabitant `1=1`{.Agda} which says `i1`{.Agda} is `i1`{.Agda}.
 
 For instance, if we have a variable `i : I` of interval type, we can
-represent _disjoint endpoints_ of a line by a partial element with
-formula $\neg i \lor i$:
+represent _disjoint endpoints_ of a `Path`{.Agda} by a partial element with
+formula $\neg i \lor i$. Note that this is not the same thing as
+`i1`{.Agda}! Since elements of `I` are meant to represent real numbers
+$r \in [0,1]$, it suffices to find one for which $\max(x, 1 - x)$ is
+not $1$ --- like 0.5.
 
 ```agda
 private
@@ -649,6 +691,15 @@ of the underlying type.
   _ = refl
 ```
 
+Note that if we _did_ have `(~i ∨ i) = i1` (i.e. our De Morgan algebra
+was a Boolean algebra), the partial element above would give us a
+contradiction, since any `I → Partial i1 T` extends to a path:
+
+```
+  _ : (f : I → Partial i1 Bool) → Path Bool (f i0 1=1) (f i1 1=1)
+  _ = λ f i → f i 1=1
+```
+
 ## Extensibility
 
 A partial element in a context with $n$-variables gives us a way of
@@ -658,41 +709,52 @@ to a honest-to-god _element_ of $A$, which agrees with $e$ where it is
 defined?
 
 Specifically, when this is the case, we say that $x : A$ _extends_ $e :
-\mathrm{Partial}\ \phi\ A$. We can depict the situation by drawing a
-commutative triangle like the one below, with $\phi$ representing the
-subobject of the $n$-cube of shape $\phi$.
+\mathrm{Partial}\ \phi\ A$. We could represent this very generically as
+a _lifting problem_, i.e. trying to find a map $\square^n$ which agrees
+with $e$ when restricted to $\phi$, but I believe a specific example
+will be more helpful.
 
-~~~{.quiver}
+Suppose we have a partial element of `Bool`{.Agda} which is
+`true`{.Agda} on the left endpoint of the interval, and undefined
+elsewhere. This is a partial element with one interval variable, so it
+would be extended by a _path_ --- a 1-dimensional cube. The reflexivity
+path is a line in `Bool`, which is `true`{.Agda} on the left endpoint of
+the interval (in fact, it is `true`{.Agda} everywhere), so we say that
+`refl`{.Agda} _extends_ the partial element.
+
+~~~{.quiver .short-1}
 \[\begin{tikzcd}
-  \phi \\
-  \\
-  {\square^n} && A
-  \arrow[hook, from=1-1, to=3-1]
-  \arrow["e", from=1-1, to=3-3]
-  \arrow["x"', dashed, from=3-1, to=3-3]
+  \textcolor{rgb,255:red,214;green,92;blue,92}{\mathrm{true}} && {\mathrm{true}}
+  \arrow["{\mathrm{refl}}", from=1-1, to=1-3]
 \end{tikzcd}\]
 ~~~
 
-In Agda, extensions are represented by the type former `Sub`{.Agda},
-which we abbreviate by `_[_↦_]`{.Agda}. Fully applied, that operator
-looks like `A [ φ → u ]`.
+In the diagram, we draw the specific partial element being extended in
+red, and the total path extending it in black. In Agda, extensions are
+represented by the type former `Sub`{.Agda}, which we abbreviate by
+`_[_↦_]`{.Agda}. Fully applied, that operator looks like `A [ φ → u
+]`.[^extensionkind]
+
+[^extensionkind]: `Sub`{.Agda} lives in the universe `SSetω`, which we
+do not have a binding for, so we can not name the type of
+`_[_↦_]`{.Agda}.
 
 ```agda
 _[_↦_] : ∀ {ℓ} (A : Type ℓ) (φ : I) (u : Partial φ A) → _
 A [ φ ↦ u ] = Sub A φ u
 ```
 
-For instance, we can define a partial element of `Bool` - `true`{.Agda}
-on the left endpoint of the interval, and undefined elsewhere, and prove
-that the path `refl`{.Agda} _extends_ this to a line in `Bool`{.Agda}.
+We can formalise the red-black extensibility diagram above by defining
+the partial element `left-true`{.Agda} and giving `refl`{.Agda} to
+`inS`{.Agda}, the constructor for `_[_↦_]`{.Agda}.
 
 ```agda
 private
   left-true : (i : I) → Partial (~ i) Bool
   left-true i (i = i0) = true
 
-  refl-extends : (i : I) → Bool [ _ ↦ left-true i ]
-  refl-extends i = inS true
+  refl-extends : (i : I) → Bool [ (~ i) ↦ left-true i ]
+  refl-extends i = inS (refl {x = true} i)
 ```
 
 The constructor `inS` expresses that _any_ totally-defined cube $u$ can
@@ -720,58 +782,131 @@ black lines to make a complete square.
   _ = inS
 ```
 
+Note that since an extension must agree with the partial element
+_everywhere_, there are elements that can not be extended at all. Take
+`notAPath`{.Agda} from before --- since there is no path that is
+`true`{.Agda} at `i0`{.Agda} and `false`{.Agda} at `i1`{.Agda}, it is
+not extensible. If it were extensible, we would have `true ≡ false` ---
+a contradiction.[^truenotfalse]
+
+[^truenotfalse]: Although it is not proven to be a contradiction in
+_this_ module, see [Data.Bool](Data.Bool.html) for that construction.
+
+```agda
+  notExtensible : ((i : I) → Bool [ (~ i ∨ i) ↦ notAPath i ]) → true ≡ false
+  notExtensible ext i = outS (ext i)
+```
+
+This counterexample demonstrates the eliminator for `_[_↦_]`{.Agda},
+`outS`{.Agda}, which turns an `A [ φ ↦ u ]` to `A`, with a computation
+rule saying that, for `x : A [ i1 ↦ u ]`, `outS x` computes to `u 1=1`:
+
+```agda
+  _ : ∀ {A : Type} {u : Partial i1 A} {x : A [ i1 ↦ u ]}
+    → outS x ≡ u 1=1
+  _ = refl
+```
+
 The notion of partial elements and extensibility captures the specific
 interface of the Kan operations, which can be summed up in the following
 sentence: _If a partial path is extensible at `i0`{.Agda}, then it is
-extensible at `i1`{.Agda}_. Let's draw some more diagrams to connect
-this with the previous concept of open box, and to see how this lets us
-define path composition.
+extensible at `i1`{.Agda}_. Let's unpack that a bit:
 
+A _partial path_ is anything of type `I → Partial φ A` -- let's say we
+have an `f` in that type. It takes a value at `i0`{.Agda} (that's `f
+i0`), and a value at `i1`{.Agda}. The Kan condition expresses that, if
+there exists an `A [ φ → f i0 ]`, then we also have an `A [ φ → f i1 ]`.
+In other words: Extensibility is preserved by paths.
+
+Recall the open box we drew by gluing paths together at the start of the
+section (on the left). It has a _top face_ `q`, and it has a _tube_ ---
+its left/right faces, which can be considered as a partial (in the
+left-right direction) path going in the top-down direction.
+
+<div class=mathpar style="gap: 2em;">
+<div style="display: flex; flex-flow: column nowrap; align-items: center;">
 ~~~{.quiver}
 \[\begin{tikzcd}
   x && y \\
   \\
   w && z
-  \arrow["{\mathrm{sym}\ p}"', from=1-1, to=3-1]
-  \arrow["r", from=1-3, to=3-3]
+  \arrow["{\mathrm{sym}\ p\ j}", from=1-1, to=3-1]
+  \arrow["q\ i", from=1-1, to=1-3]
+  \arrow["r\ j"', from=1-3, to=3-3]
 \end{tikzcd}\]
 ~~~
+<figcaption>
+The complete “open box”.
+</figcaption>
+</div>
 
-The diagram above - a tube - is a partial path in $A$, which is
-$\mathrm{sym}\ p$ on the `i0`{.Agda} face and $r$ on the `i1`{.Agda}
-face. Note that there are two interval variables here: The $i$ direction
-(by convention) is left-to-right, and the $j$ direction is
-top-to-bottom. We can make this diagram concrete by constructing a
-`Partial`{.Agda} element:
+<div style="display: flex; flex-flow: column nowrap; align-items: center;">
+~~~{.quiver}
+\[\begin{tikzcd}
+  x && y \\
+  \\
+  w && z
+  \arrow["{\mathrm{sym}\ p\ j}", from=1-1, to=3-1]
+  \arrow["r\ j"', from=1-3, to=3-3]
+\end{tikzcd}\]
+~~~
+<figcaption>
+The partially-defined “tube”.
+</figcaption>
+</div>
 
-```
+</div>
+
+We can make this the construction of this “tube” formal by giving a
+`Partial`{.Agda} element of `A`, which is defined on $\neg i \lor i$
+(that is: only the left/right faces of a square), as is done below.
+Since it is a tube of a _square_, it has _two_ interval variables: $j$
+gives the top-down direction.[^partialpath]
+
+[^partialpath]: This element has type `(i : I) → I → Partial (~ i ∨ i)
+A` rather than `(i : I) → Partial (~ i ∨ i) (I → A)` because of a
+universe restriction in Agda: The second argument to `Partial`{.Agda}
+must be a `Type`{.Agda}, but `I`{.Agda} is not a `Type`{.Agda}.
+
+```agda
 module _ {A : Type} {w x y z : A} {p : w ≡ x} {q : x ≡ y} {r : y ≡ z} where private
   double-comp-tube : (i : I) → I → Partial (~ i ∨ i) A
   double-comp-tube i j (i = i0) = sym p j
   double-comp-tube i j (i = i1) = r j
 ```
 
-This element has type `(i : I) → I → Partial (~ i ∨ i) A` rather than
-`(i : I) → Partial (~ i ∨ i) (I → A)` because of a universe restriction
-in Agda: The second argument to `Partial`{.Agda} must be a
-`Type`{.Agda}, but `I`{.Agda} is not a `Type`{.Agda}.
-
-When given `i0`{.Agda} for `j`, `double-comp-tube`{.Agda} has boundary
+When given `i0`{.Agda} as `j`, `double-comp-tube`{.Agda} has boundary
 $p\ \mathrm{i1} \to r\ \mathrm{i0}$, which computes to $x \to y$. This
 means that for this path to be extensible at `i0`{.Agda}, we need a path
 with that boundary. By assumption, `q` extends `double-comp-tube`{.Agda}
 at `i0`{.Agda}.
 
-```
+```agda
   extensible-at-i0 : (i : I) → A [ (i ∨ ~ i) ↦ double-comp-tube i i0 ]
   extensible-at-i0 i = inS (q i)
 ```
+
+We can draw this as one of our red-black extensibility diagrams
+colouring the left/right faces in red --- since that is the partial
+element --- and colouring the top face black, since that is a
+totally-defined cube.
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  \textcolor{rgb,255:red,214;green,92;blue,92}{x} && \textcolor{rgb,255:red,214;green,92;blue,92}{y} \\
+  \\
+  \textcolor{rgb,255:red,214;green,92;blue,92}{w} && \textcolor{rgb,255:red,214;green,92;blue,92}{z}
+  \arrow["{\mathrm{sym}\ p\ j}"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=3-1]
+  \arrow["{r\ j}", color={rgb,255:red,214;green,92;blue,92}, from=1-3, to=3-3]
+  \arrow["{q\ i}", from=1-1, to=1-3]
+\end{tikzcd}\]
+~~~
 
 The Kan condition says that this path is then extensible at `i1`, i.e.
 there is some inhabitant of `A [ (i ∨ ~ i) ↦ double-comp-tube i i1 ]`.
 This element is written using the operator `hcomp`{.Agda}:
 
-```
+```agda
   extensible-at-i1 : (i : I) → A [ (i ∨ ~ i) ↦ double-comp-tube i i1 ]
   extensible-at-i1 i =
     inS (hcomp {φ = ~ i ∨ i} (λ k is1 → double-comp-tube i k is1) (q i))
@@ -779,8 +914,10 @@ This element is written using the operator `hcomp`{.Agda}:
 
 Unwinding what it means for this element to exist, we see that the
 `hcomp`{.Agda} operation guarantees the existence of a path $w \to z$.
+It is the face that is hinted at by completing the open box above to a
+complete square.
 
-```
+```agda
   double-comp : w ≡ z
   double-comp i = outS (extensible-at-i1 i)
 ```
@@ -788,8 +925,8 @@ Unwinding what it means for this element to exist, we see that the
 Note that `hcomp`{.Agda} gives us the missing face of the open box, but
 the semantics guarantees the existence of the box itself, as a $n$-cube.
 From the De Morgan structure on the interval, we can derive the
-existence of the boxes (called **fillers**) from the existence of the
-missing faces:
+existence of the cubes themselves (called **fillers**) from the
+existence of the missing faces:
 
 ```agda
 hfill : ∀ {ℓ} {A : Type ℓ} {φ : I}
@@ -802,39 +939,57 @@ hfill {φ = φ} u u0 i =
         (outS u0)
 ```
 
-<!--
-```
-ghcomp : ∀ {ℓ} {A : Type ℓ} {φ : I}
-       → (u : I → Partial φ A)
-       → (u0 : A [ φ ↦ u i0 ])
-       → A [ φ ↦ u i1 ]
-ghcomp {φ = φ} u u0 =
-  inS (hcomp (λ { j (φ = i1) → u j 1=1
-                ; j (φ = i0) → outS u0
-                })
-        (outS u0))
+**Note**: While every inhabitant of `Type`{.Agda} has a composition
+operation, not every _type_ (something that can be on the right of type
+signature `e : T`) does. We call the types that _do_ have a composition
+operation “fibrant”, since these are semantically the cubical sets
+which are Kan complices. Examples of types which are _not_ fibrant
+include the interval `I`{.Agda}, the partial elements `Partial`{.Agda},
+and the extensions `_[_↦_]`[^notfibrant].
+
+[^notfibrant]: In Agda 2.6.2, function types `I → A` are _not_ fibrant,
+even though they correspond to paths with “unmarked” endpoints. In Agda
+2.6.3 (in development at the time of writing), `I` was moved to its own
+universe, `IUniv`, with a typing rule for functions saying that `A → B`
+is fibrant whenever `B : Type` and `A : Type` _or_ `A : IUniv` - i.e.
+function types `I → A` were made fibrant whenever `A` is.
+
+Agda also provides a _heterogeneous_ version of composition (also called
+CCHM composition), called `comp`{.Agda}. It too has a corresponding
+filler, called `fill`{.Agda}. The idea behind CCHM composition is --- by
+analogy with `hcomp`{.Agda} expressing that "paths preserve
+extensibility" --- that `PathP`{.Agda}s preserve extensibility. Thus we
+have:
+
+```agda
+private
+  comp-verbose : ∀ {ℓ} (A : I → Type ℓ)
+                   {φ : I}
+               → (u : ∀ i → Partial φ (A i))
+               → (u0 : A i0 [ φ ↦ u i0 ] )
+               → A i1 [ φ ↦ u i1 ]
+  comp-verbose A u u0 = inS (comp A u (outS u0))
 
 fill : ∀ {ℓ} (A : ∀ i → Type ℓ)
        {φ : I}
-       (u : ∀ i → Partial φ (A i))
-       (u0 : A i0 [ φ ↦ u i0 ])
-       (i : I) → A i
+     → (u : ∀ i → Partial φ (A i))
+     → (u0 : A i0 [ φ ↦ u i0 ])
+     → PathP A (outS u0) (comp A u (outS u0))
 fill A {φ = φ} u u0 i =
   comp (λ j → A (i ∧ j))
        (λ j → λ { (φ = i1) → u (i ∧ j) 1=1
                 ; (i = i0) → outS u0 })
        (outS u0)
 ```
--->
 
-Given the inputs to a composition --- a family of partial paths `u` and a
-base `u0` --- `hfill`{.Agda} connects the input of the composition (`u0`)
-and the output. The cubical shape of iterated equalities lead to a
-slight oddity: The only unbiased definition of path composition we can
+Given the inputs to a composition --- a family of partial paths `u` and
+a base `u0` --- `hfill`{.Agda} connects the input of the composition
+(`u0`) and the output. The cubical shape of iterated equalities lead to
+a slight oddity: The only unbiased definition of path composition we can
 give is _double composition_, which corresponds to the missing face for
-the [the square] at the start of this section.
+the [square] at the start of this section.
 
-[the square]: 1Lab.Path.html#composition
+[square]: 1Lab.Path.html#composition
 
 ```agda
 _··_··_ : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
@@ -864,7 +1019,7 @@ be reflexivity. For definiteness, we chose the left face:
 \end{tikzcd}\]
 ~~~
 
-```
+```agda
 _∙_ : ∀ {ℓ} {A : Type ℓ} {x y z : A}
     → x ≡ y → y ≡ z → x ≡ z
 p ∙ q = refl ·· p ·· q
@@ -899,7 +1054,7 @@ and `p ∙ q` over `p`.
         (p (i ∨ ~ j))
 ```
 
-## Equational Reasoning
+## Syntax Sugar
 
 When constructing long chains of equalities, it's rather helpful to be
 able to visualise _what_ is being equated with more "priority" than
@@ -1008,12 +1163,164 @@ transp→PathP P p q a = transport (sym (PathP≡Path P p q)) a
 Note that, due to limitations with unification, the parameters `P`, `p`,
 and `q` cannot usually be inferred from context. Thus, they are explicit arguments.
 
+## Coercion
+
+In Cubical Agda, the interval is given the structure of a De Morgan
+algebra. This is not the only choice of structure on the interval that
+gives a model of univalent type theory: We could also subject the
+interval to _no_ additional structure other than what comes from the
+structural rules of type theory (introducing variables, ignoring
+variables, swapping variables, etc). This is a different cubical type
+theory, called _Cartesian cubical type theory_.
+
+In Cartesian cubical type theory, instead of having a `transp`{.Agda}
+operation which takes $A(\mathrm{i0}) \to A(\mathrm{i1})$, there is a
+“more powerful” _coercion_ operation, written $\mathrm{coe}^A_{i \to
+j}$, which takes $A(i) \to A(j)$, as in the subscript. However, despite
+the seeming added power, the coercion operation can be implemented in
+Cubical Agda: First, we introduce alternative names for several uses of
+`transp`{.Agda}.
+
+```agda
+coe0→1 : ∀ {ℓ} (A : I → Type ℓ) → A i0 → A i1
+coe0→1 A a = transp (λ i → A i) i0 a
+-- ^ This is another name for transport
+
+coe1→0 : ∀ {ℓ} (A : I → Type ℓ) → A i1 → A i0
+coe1→0 A a = transp (λ i → A (~ i)) i0 a
+-- ^ This is equivalent to transport ∘ sym
+```
+
+There are also “more exciting” operations, which transport from one of
+the endpoints to a path which can vary over the interval. These
+generalise the `transport-filler`{.Agda} operation.
+
+```agda
+coe0→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i0 → A i
+coe0→i A i a = transp (λ j → A (i ∧ j)) (~ i) a
+
+coe1→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i1 → A i
+coe1→i A i a = transp (λ j → A (i ∨ ~ j)) i a
+```
+
+We visualise `coe0→i`{.Agda} and `coe1→i`{.Agda} as being "spread"
+operations, since they take a value from one endpoint of the interval (0
+or 1, respectively) and "spread it" to a line varying over the variable
+`i`. Similarly, we have "squeeze" operations, which take a line varying
+over `i` to one of the endpoints:
+
+```
+coei→0 : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i → A i0
+coei→0 A i a = transp (λ j → A (i ∧ ~ j)) (~ i) a
+```
+
+Using the filler of a square, we can put together the `0→i` and `1→i`
+coercions to get the "master coercion" operation. That square is drawn
+as the diagram below, where the edges are more important than the
+corners, and the dashed line is `coe A i i1`.
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {a} && {\mathrm{coe}^A_{1\to0}(a)} \\
+  \\
+  {\mathrm{coe}^A_{0\to1}(a)} && {a}
+  \arrow["{\mathrm{coe}^A_{0\to j}(a)}"', from=1-1, to=3-1]
+  \arrow["{\mathrm{coe}^A_{1\to j}(a)}", from=1-3, to=3-3]
+  \arrow[""{name=0, anchor=center, inner sep=0}, "{\mathrm{coe}^A_{i\to0}(a)}", from=1-1, to=1-3]
+  \arrow[""{name=1, anchor=center, inner sep=0}, "{\mathrm{coe}^A_{i\to1}(a)}"', dashed, from=3-1, to=3-3]
+  \arrow["{\mathrm{coe}^A_{i\to j}(a)}"{description}, Rightarrow, draw=none, from=0, to=1]
+\end{tikzcd}\]
+~~~
+
+```agda
+coe : ∀ {ℓ} (A : I → Type ℓ) (i j : I) → A i → A j
+coe A i j a =
+  fill A (λ j → λ { (i = i0) → coe0→i A j a
+                  ; (i = i1) → coe1→i A j a
+                  })
+    (inS (coei→0 A i a)) j
+```
+
+As the square implies, when `j = i1`, we have the squeeze operation
+opposite to `coei→0`{.Agda}, which we call `coei→1`{.Agda}.
+
+```
+coei→1 : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i → A i1
+coei→1 A i a = coe A i i1 a
+```
+
+**Sidenote**: The boundary for the square implies that we can give a
+more verbose type for `coe`{.Agda}, one which mentions all of the
+spreads and squeezes. Note that this is a _dependent path between
+functions $A\ i \to A\ j$_, a very complicated construction indeed!
+
+```agda
+private
+  coe-verbose : ∀ {ℓ} (A : I → Type ℓ)
+              → PathP (λ i → PathP (λ j → A i → A j)
+                                (coei→0 A i)
+                                (coei→1 A i))
+                      (λ j → coe0→i A j)
+                      (λ j → coe1→i A j)
+  coe-verbose A i j = coe A i j
+```
+
+This operation satisfies, _definitionally_, a whole host of equations.
+For starters, we have that the $\mathrm{coe}^A_{i\to1}$ (resp $i \to 0$)
+specialises to transport when $i = 0$ (resp. $i = 1$), and to the
+identity when $i = 1$ (resp. $i = 0$):
+
+```agda
+coei0→1 : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → coei→1 A i0 a ≡ coe0→1 A a
+coei0→1 A a = refl
+
+coei1→1 : ∀ {ℓ} (A : I → Type ℓ) (a : A i1) → coei→1 A i1 a ≡ a
+coei1→1 A a = refl
+
+coei1→0 : ∀ {ℓ} (A : I → Type ℓ) (a : A i1) → coei→0 A i1 a ≡ coe1→0 A a
+coei1→0 A a = refl
+
+coei0→0 : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → coei→0 A i0 a ≡ a
+coei0→0 A a = refl
+```
+
+Then we have paths connecting the "master coercion" `coe`{.Agda} and
+its several faces:
+
+```
+coei→i0 : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i)
+        → coe A i i0 a ≡ coei→0 A i a
+coei→i0 A i a = refl
+
+coei0→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i0)
+        → coe A i0 i a ≡ coe0→i A i a
+coei0→i A i a = refl
+
+coei→i1 : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i)
+        → coe A i i1 a ≡ coei→1 A i a
+coei→i1 A i a = refl
+
+coei1→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i1)
+        → coe A i1 i a ≡ coe1→i A i a
+coei1→i A i a = refl
+```
+
+In Cartesian cubical type theory, the following equation is
+definitional. It says that the top right and bottom left corners of the
+diagram are indeed what I said they were! However, in Cubical Agda, it
+is only propositional:
+
+```agda
+coei→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i) → coe A i i a ≡ a
+coei→i A i = coe0→i (λ i → (a : A i) → coe A i i a ≡ a) i (λ _ → refl)
+```
+
 # Path Spaces
 
 A large part of the study of HoTT is the _characterisation of path
 spaces_. Given a type `A`, what does `Path A x y` look like? [Hedberg's
 theorem] says that for types with decidable equality, it's boring. For
-[the circle], we can prove its loop space is the integers - we have
+[the circle], we can prove its loop space is the integers --- we have
 `Path S¹ base base ≡ Int`.
 
 [Hedberg's theorem]: 1Lab.HLevel.Sets.html
@@ -1056,7 +1363,7 @@ simpler in the case where the `Σ`{.Agda} represents a subset --- i.e.,
 
 For dependent functions, the paths are _homotopies_, in the topological
 sense: `Path ((x : A) → B x) f g` is the same thing as a function `I →
-(x : A) → B x` - which we could turn into a product if we really wanted
+(x : A) → B x` --- which we could turn into a product if we really wanted
 to.
 
 ```agda
@@ -1170,99 +1477,6 @@ subst-path-right {x = x} loop adj =
       loop ∙ refl               ≡⟨ sym (∙-filler _ refl) ⟩
       loop                      ≡⟨ sym (transport-refl _) ⟩
       subst (λ x → x) refl loop ∎
-```
-
-# Cartesian coercion
-
-In Cubical Agda, the interval is given the structure of a De Morgan
-algebra. This is not the only choice of structure on the interval that
-gives a model of univalent type theory: We could also subject the
-interval to _no_ additional structure other than what comes from the
-structural rules of type theory (introducing variables, ignoring
-variables, swapping variables, etc). This is a different cubical type
-theory, called _Cartesian cubical type theory_.
-
-In Cartesian cubical type theory, instead of having a `transp`{.Agda}
-operation which takes $A(\mathrm{i0}) \to A(\mathrm{i1})$, there is a
-“more powerful” $\mathrm{coe}^{i \to j}$ operation which takes, as the
-superscript implies, $A(i) \to A(j)$. First, we introduce alternative
-names for several uses of `transp`{.Agda}.
-
-```agda
-coe0→1 : ∀ {ℓ} (A : I → Type ℓ) → A i0 → A i1
-coe0→1 A a = transp (λ i → A i) i0 a
--- ^ This is another name for transport
-
-coe1→0 : ∀ {ℓ} (A : I → Type ℓ) → A i1 → A i0
-coe1→0 A a = transp (λ i → A (~ i)) i0 a
--- ^ This is equivalent to transport ∘ sym
-```
-
-There are also “more exciting” operations which transport from one of
-the endpoints, to a path which can vary over the interval. In a sense,
-these are generalised transport fillers.
-
-```agda
-coe0→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i0 → A i
-coe0→i A i a = transp (λ j → A (i ∧ j)) (~ i) a
-
-coe1→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i1 → A i
-coe1→i A i a = transp (λ j → A (i ∨ ~ j)) i a
-```
-
-The `coe0→i`{.Agda} and `coe1→i`{.Agda} operations can be seen as taking
-a value from one of the endpoints and "spreading" it along the variable
-`i`. Similarly, we have `coei→0`{.Agda} and `coei→1`{.Agda}, which
-"squeeze" a value from `A i` to one of the endpoints.
-
-```
-coei→0 : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i → A i0
-coei→0 A i a = transp (λ j → A (i ∧ ~ j)) (~ i) a
-```
-
-Using a filler, we can put together the `0→i` and `1→i` coercions to get
-the "master coercion" operation.
-
-```agda
-coei→j : ∀ {ℓ} (A : I → Type ℓ) (i j : I) → A i → A j
-coei→j A i j a =
-  fill A (λ j → λ { (i = i0) → coe0→i A j a
-                  ; (i = i1) → coe1→i A j a
-                  })
-    (inS (coei→0 A i a)) j
-
-coei→1 : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i → A i1
-coei→1 A i a = coei→j A i i1 a
-```
-
-This operation satisfies, _definitionally_, a whole host of equations:
-
-```agda
-coei0→1 : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → coei→1 A i0 a ≡ coe0→1 A a
-coei0→1 A a = refl
-
-coei1→1 : ∀ {ℓ} (A : I → Type ℓ) (a : A i1) → coei→1 A i1 a ≡ a
-coei1→1 A a = refl
-
-coei→i0 : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i) → coei→j A i i0 a ≡ coei→0 A i a
-coei→i0 A i a = refl
-
-coei0→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i0) → coei→j A i0 i a ≡ coe0→i A i a
-coei0→i A i a = refl
-
-coei→i1 : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i) → coei→j A i i1 a ≡ coei→1 A i a
-coei→i1 A i a = refl
-
-coei1→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i1) → coei→j A i1 i a ≡ coe1→i A i a
-coei1→i A i a = refl
-```
-
-It is not definitional, however, that _not_ changing the endpoint is the
-identity function.
-
-```agda
-coei→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i) → coei→j A i i a ≡ a
-coei→i A i = coe0→i (λ i → (a : A i) → coei→j A i i a ≡ a) i (λ _ → refl)
 ```
 
 <!--

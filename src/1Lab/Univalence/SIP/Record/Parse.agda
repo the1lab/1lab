@@ -1,6 +1,7 @@
 open import 1Lab.Univalence.SIP.Record.Base
 open import 1Lab.Univalence.SIP.Record.Prop
 open import 1Lab.Univalence.SIP.Auto
+open import 1Lab.Univalence.SIP
 open import 1Lab.Reflection
 open import 1Lab.Type.Sigma
 open import 1Lab.HLevel
@@ -22,7 +23,10 @@ parseFields s h (con (quote _field[_by_]) (ℓ h∷ ℓ₁ h∷ ℓ₁' h∷ R h
   = do ℓ ← reduce ℓ
        struct-field ← findName sfieldTerm 
        pres-field ← findName efieldTerm
-       desc ← parseShape 100 ℓ ℓ₂ S
+
+       desc ← newMeta (def (quote StrTm) (ℓ v∷ ℓ₂' v∷ S v∷ []))
+       tt ← makeAutoStrTm 100 desc
+
        let f : InternalField × TypedTm
            f = (structureField struct-field pres-field)
              , record { type = def (quote tm→⌜isUnivalent⌝) (desc v∷ [])

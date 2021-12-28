@@ -1,4 +1,3 @@
-
 ```agda
 open import 1Lab.Prelude
 
@@ -118,7 +117,7 @@ magmas are equivalent if there is an equivalence of their carrier sets
 that preserves both the magma operation (which implies it is a magma
 homomorphism) and the identity element.
 
-```
+```agda
 record
   UnitalMagma≃ (A B : UnitalMagma ℓ) (e : A .fst ≃ B .fst) : Type ℓ where
   private

@@ -11,8 +11,10 @@ open import 1Lab.Path.Groupoid public
 open import 1Lab.HLevel public
 open import 1Lab.HLevel.Sets public
 open import 1Lab.HLevel.Retracts public
+open import 1Lab.HLevel.Universe public
 
 open import 1Lab.Equiv public
+open import 1Lab.Equiv.FromPath public
 open import 1Lab.Equiv.Fibrewise public
 open import 1Lab.Equiv.Embedding public
 open import 1Lab.Equiv.HalfAdjoint public
@@ -20,8 +22,7 @@ open import 1Lab.Equiv.HalfAdjoint public
 open import 1Lab.Univalence public
 open import 1Lab.Univalence.SIP public
 open import 1Lab.Univalence.SIP.Auto
-  using ( autoUnivalentStr
-        ; autoStructure )
+  using ( autoStrTm )
 open import 1Lab.Univalence.SIP.Record public
 open import 1Lab.Univalence.SIP.Record.Base public
   using ( record: ; _field[_by_] ; _axiom[_by_]
@@ -29,6 +30,7 @@ open import 1Lab.Univalence.SIP.Record.Base public
         )
 
 open import 1Lab.Type.Pi public
+open import 1Lab.Type.Dec public
 open import 1Lab.Type.Sigma public
 
 open import 1Lab.HIT.Truncation public
