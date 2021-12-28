@@ -105,7 +105,8 @@ Agda 2.6.3, its own universe -- `IUniv`.
 - $x \land \mathrm{i0} = \mathrm{i0}$, $x \land \mathrm{i1} = x$
 - $x \lor \mathrm{i0} = x$, $x \lor \mathrm{i1} = \mathrm{i1}$
 - $\neg(x \land y) = \neg x \lor \neg y$
-- $\neg\mathrm{i0} = \mathrm{i1}$, $\neg\mathrm{i1} = \mathrm{i0}$, $\neg\neg{}x = x$
+- $\neg\mathrm{i0} = \mathrm{i1}$, $\neg\mathrm{i1} = \mathrm{i0}$,
+$\neg\neg x = x$
 - $\land$ and $\lor$ are both associative, commutative and idempotent,
 and distribute over eachother.
 
