@@ -690,9 +690,9 @@ need a way of reflecting the idea of "open box" as syntax. This is done
 is by using the `Partial`{.Agda} type former.
 
 The `Partial`{.Agda} type former takes two arguments: A _formula_
-$\phi$, and a _type_ $A$. The idea is that a term of type
-$\mathrm{Partial}\ \phi\ A$ in a context with $n$ `I`{.Agda}-typed
-variables is a $n$-cube that is only defined when $\phi$ "is true". In
+$\varphi$, and a _type_ $A$. The idea is that a term of type
+$\mathrm{Partial}\ \varphi\ A$ in a context with $n$ `I`{.Agda}-typed
+variables is a $n$-cube that is only defined when $\varphi$ "is true". In
 Agda, formulas are represented using the De Morgan structure of the
 interval, and they are "true" when they are equal to 1. The predicate
 `IsOne`{.Agda} represents truth of a formula, and there is a canonical
@@ -750,9 +750,9 @@ to a honest-to-god _element_ of $A$, which agrees with $e$ where it is
 defined?
 
 Specifically, when this is the case, we say that $x : A$ _extends_ $e :
-\mathrm{Partial}\ \phi\ A$. We could represent this very generically as
+\mathrm{Partial}\ \varphi\ A$. We could represent this very generically as
 a _lifting problem_, i.e. trying to find a map $\square^n$ which agrees
-with $e$ when restricted to $\phi$, but I believe a specific example
+with $e$ when restricted to $\varphi$, but I believe a specific example
 will be more helpful.
 
 Suppose we have a partial element of `Bool`{.Agda} which is
@@ -800,7 +800,7 @@ private
 
 The constructor `inS` expresses that _any_ totally-defined cube $u$ can
 be seen as a partial cube, one that agrees with $u$ for any choice of
-formula $\phi$. This might be a bit abstract, so let's diagram the case
+formula $\varphi$. This might be a bit abstract, so let's diagram the case
 where we have some square $a$, and the partial element has formula $i
 \land j$. This extension can be drawn as in the diagram below: The red
 "backwards L" shape is the partial element, which is "extended by" the
@@ -987,6 +987,13 @@ operation “fibrant”, since these are semantically the cubical sets
 which are Kan complices. Examples of types which are _not_ fibrant
 include the interval `I`{.Agda}, the partial elements `Partial`{.Agda},
 and the extensions `_[_↦_]`[^notfibrant].
+
+> <a id="fibrant">**Definition**</a>: A type is _fibrant_ if it supports
+`hcomp`{.Agda}. This word comes up a lot when discussing not only the
+semantics of Cubical type theory, but also its practice! For instance,
+the fibrancy of `Type`{.Agda} is what powers [univalence].
+
+[univalence]: 1Lab.Univalence.html
 
 [^notfibrant]: In Agda 2.6.2, function types `I → A` are _not_ fibrant,
 even though they correspond to paths with “unmarked” endpoints. In Agda

@@ -142,9 +142,31 @@ propositions being closed under dependent products, and `isContr`{.Agda}
 being a proposition.
 
 ```agda
-isProp-isEquiv : (f : A → B) → isProp (isEquiv f)
-isProp-isEquiv f x y i .isEqv p = isProp-isContr (x .isEqv p) (y .isEqv p) i
+module _ where private
+  isProp-isEquiv : (f : A → B) → isProp (isEquiv f)
+  isProp-isEquiv f x y i .isEqv p = isProp-isContr (x .isEqv p) (y .isEqv p) i
 ```
+
+<details>
+<summary>
+Even though the proof above works, we use the direct cubical proof in
+this `<details>` tag (lifted from the Cubical Agda library) in the rest
+of the development for efficiency concerns.
+</summary>
+
+```agda
+isProp-isEquiv : (f : A → B) → isProp (isEquiv f)
+isProp-isEquiv f p q i .isEqv y =
+  let p2 = p .isEqv y .paths
+      q2 = q .isEqv y .paths
+  in contr (p2 (q .isEqv y .centre) i)
+      λ w j → hcomp (λ k → λ { (i = i0) → p2 w j
+                             ; (i = i1) → q2 w (j ∨ ~ k)
+                             ; (j = i0) → p2 (q2 w (~ k)) i
+                             ; (j = i1) → w })
+                    (p2 w (i ∨ j))
+```
+</details>
 
 # Isomorphisms from equivalences
 

@@ -16,8 +16,8 @@ principle, so it was added to the theory as an axiom: the **univalence
 axiom**.
 
 [the book]: https://homotopytypetheory.org/book
-[equivalent]: agda://1Lab.Equiv#_≃_
-[identified]: agda://1Lab.Path#Path
+[equivalent]: 1Lab.Equiv.html#_≃_
+[identified]: 1Lab.Path.html#Path
 
 Precisely, the axiom as presented in the book consists of the following
 data (right under remark §2.10.4):
@@ -41,44 +41,40 @@ interpretations, i.e., make them definable in the theory, in terms of
 constructions that have computational behaviour. Let's see how this is
 done.
 
-## Cubically
+## Glue
+ 
+To even _state_ univalence, we first have to make sure that the concept
+of “paths between types” makes sense in the first place. In “Book HoTT”,
+paths between types are a well-formed concept because the path type is
+uniformly inductively defined for _everything_ --- including universes.
+This is not the case in Cubical type theory, where for paths in $T$ to
+be well-behaved, $T$ must [be _fibrant_].
 
-The idea is that if you have an [open box] in `Type`{.Agda}, it's possible
-to replace some faces with [_equivalences_](agda://1Lab.Equiv#isEquiv)
-rather than _paths_ and still have everything work out. For example, we
-can extend the canonical equivalence between unary and binary natural
-numbers to a path in the universe:
+[be _fibrant_]: 1Lab.Path.html#fibrant
 
+Since there's no obvious choice for how to interpret `hcomp`{.Agda} in
+`Type`{.Agda}, a fine solution is to make `hcomp`{.Agda} its own type
+former. This is the approach taken by some Cubical type theories in the
+[RedPRL school]. Univalence in those type theories is then achieved by
+adding a type former, called `V`, which turns an equivalence into a
+path.
+
+[RedPRL school]: https://redprl.org/
+
+[_equivalences_]: 1Lab.Equiv.html#isEquiv
 [open box]: 1Lab.Path.html#transitivity
 
-<figure>
+In [CCHM] --- and therefore Cubical Agda --- a different approach is
+taken, which combines proving univalence with defining a fibrancy
+structure for the universe. The core idea is to define a new type
+former, `Glue`{.Agda}, which "glues" a [partial type], along an
+equivalence, to a total type.
 
-~~~{.quiver .short-2}
-\[\begin{tikzcd}
-  {\mathrm{Nat}} && {\mathrm{Bin}}
-  \arrow["\simeq", from=1-1, to=1-3]
-\end{tikzcd}\]
-~~~
-
-<figcaption>
-Even though this diagram indicates a _path_, the arrow is marked with
-$\simeq$, to indicate that it comes from an equivalence.
-</figcaption>
-
-</figure>
-
-In the one-dimensional case, this corresponds to having a constant
-`ua`{.Agda} which turns an equivalence into a
-[path](agda://1Lab.Path#Path). If this function additionally satisfies
-"[transport](agda://1Lab.Path#transport) along ua(f) is the same as
-applying f" (`uaβ`{.Agda}), then this function can be shown to be an
-inverse to the map `pathToEquiv`{.Agda}.
-
-
-[an internal Agda module]: Agda.Builtin.Cubical.HCompU.html
+[CCHM]: https://arxiv.org/abs/1611.02108
+[partial type]: 1Lab.Path.html#partial-elements
 
 <!--
-```
+```agda
 private
   variable
     ℓ ℓ' : Level
@@ -101,11 +97,6 @@ open import 1Lab.Equiv.FromPath
 ```
 -->
 
-Since in Cubical Agda, things are naturally higher-dimensional, only
-having a term `ua`{.Agda} wouldn't do! Instead, we introduce a new _type
-former_, **Glue**, which, unlike the type formers like `Type`{.Agda},
-`Σ`{.Agda}, and dependent functions, has **computational content**.
-
 ```agda
 Glue : (A : Type ℓ)
      → {φ : I}
@@ -113,24 +104,19 @@ Glue : (A : Type ℓ)
      → Type ℓ'
 ```
 
-To make **Glue**, you need:
+The public interface of `Glue`{.Agda} demands a type $A$, called the
+_base type_, a formula $\varphi$, and a [partial type] $T$ which is
+equivalent to $A$. Since the equivalence is defined _inside_ the partial
+element, it can also (potentially) vary over the interval, so in reality
+we have a _family_ of partial types $T$ and a _family_ of partial
+equivalences $T \simeq A$.
 
-- A type `A`, called the _base type_. Since this is a term of type
-`Type`{.Agda}, it can depend on interval variables which are in-scope,
-so in reality we have a $n$-cube of base types.
+In the specific case where we set $\varphi = \neg i \lor i$, we can
+illustrate `Glue A (T, f)` as the dashed line in the square diagram
+below. The conceptual idea is that by "gluing" $T$ onto a totally
+defined type, we get a type which [extends] $T$.
 
-- An interval formula `φ`, and a _[family of partial types]_ $(T, e)$,
-defined along `φ`. These must all be equivalent to the base type, by the
-equivalences $e$. The idea is that we are extending a partial cube `Te`
-to one which is [totally defined], by adding "enough equivalences" to
-complete the square.
-
-[totally defined]: 1Lab.Path.html#extensibility
-
-In the case where we set $\phi = i \lor \neg i$, we can illustrate `Glue
-A (T, f)` as the dashed line in the diagram below. The equivalences $f$
-provide us _exactly_ the right amount of data to Glue $T$ onto $A$ and
-get something total.
+[extends]: 1Lab.Path.html#extensibility
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -145,7 +131,7 @@ get something total.
 ~~~
 
 <!--
-```
+```agda
 Glue A Te = primGlue A (λ x → Te x .fst) (λ x → Te x .snd)
 
 unglue : {A : Type ℓ} (φ : I) {T : Partial φ (Type ℓ')}
@@ -156,10 +142,11 @@ unglue φ = prim^unglue {φ = φ}
 
 [family of partial types]: 1Lab.Path.html#partial-elements
 
-The point of `Glue`{.Agda} is that it satisfies a computation rule which
-could be called a **_boundary condition_**, since it specifies how
-`Glue`{.Agda} behaves on the boundaries of cubes. When $\phi = i1$, we
-have that `Glue`{.Agda} evaluates to the partial type:
+For `Glue`{.Agda} to extend $T$, we add a computation rule which could
+be called a **boundary condition**, since it specifies how `Glue`{.Agda}
+behaves on the boundaries of cubes. Concisely, when $\varphi = i1$, we
+have that `Glue`{.Agda} evaluates to the partial type. This is exactly
+what it means for `Glue`{.Agda} to extend $T$!
 
 ```agda
 module _ {A B : Type} {e : A ≃ B} where
@@ -168,7 +155,75 @@ module _ {A B : Type} {e : A ≃ B} where
     Glue-boundary i = A
 ```
 
-Using Glue, we can turn any equivalence into a path:
+Furthermore, since we can turn any path into an equivalence, we can use
+the `Glue`{.Agda} construct to implement something with precisely the
+same interface as `hcomp`{.Agda} for `Type`{.Agda}:
+
+```agda
+glue-hfill
+  : ∀ {ℓ} φ (u : I → Partial φ (Type ℓ)) (u0 : Type ℓ [ φ ↦ u i0 ])
+  → ∀ i → Type ℓ [ _ ↦ (λ { (i = i0) → outS u0
+                          ; (φ = i1) → u i 1=1 }) ]
+```
+
+The type of `glue-hfill`{.Agda} is the same as that of `hfill`{.Agda},
+but the type is stated much more verbosely --- so that we may define it
+without previous reference to a `hcomp`{.Agda} analogue. It, like
+`hfill`{.Agda}, an element $u_0$ which extends $u\ \mathrm{i0}$, and
+produces a cube with dimension one higher which - when $i = \mathrm{i0}$
+- agrees with $u_0$, and when $i = \mathrm{i1}$ extends $u\
+\mathrm{i1}$.
+
+```agda
+glue-hfill φ u u0 i = inS (
+  Glue (outS u0) {φ = φ ∨ ~ i}
+    λ { (φ = i1) → u i 1=1 , line→equiv (λ j → u (i ∧ ~ j) 1=1)
+      ; (i = i0) → outS u0 , line→equiv (λ i → outS u0)
+      })
+```
+
+When $i = \mathrm{i0}$, we glue $u0$ onto itself using the identity
+equivalence. This guarantees that the boundary of the stated type for
+`glue-hfill`{.Agda} is satisfied.
+
+When $\varphi = \mathrm{\phi}$, hence where $u$ is defined, we glue the
+endpoint $u$ onto $u0$ using the equivalence generated by the path
+provided by $u$ itself! It's a family of partial paths, after all, and
+that can be turned into a family of partial equivalences.
+
+We can prove a theorem which says that anything which satisfies the
+interface of `hfill`{.Agda} must agree with `hcomp`{.Agda} on
+`i1`{.Agda}, hence we can conclude that `hcomp`{.Agda} on `Type`{.Agda}
+agrees with the definition of `glue-hfill`{.Agda}.
+
+```agda
+hcomp-unique : ∀ {ℓ} {A : Type ℓ} {φ}
+               (u : I → Partial φ A)
+               (u0 : A [ φ ↦ u i0 ])
+             → (h2 : ∀ i → A [ _ ↦ (λ { (i = i0) → outS u0
+                                      ; (φ = i1) → u i 1=1 }) ])
+             → hcomp u (outS u0) ≡ outS (h2 i1)
+hcomp-unique {φ = φ} u u0 h2 i =
+  hcomp (λ k → λ { (φ = i1) → u k 1=1
+                 ; (i = i1) → outS (h2 k) })
+        (outS u0)
+```
+
+Putting `hcomp-unique`{.Agda} and `glue-hfill`{.Agda}, we get an
+internal characterisation of the fibrancy structure of the universe.
+
+```agda
+hcomp≡Glue : ∀ {ℓ} {φ} (u : I → Partial φ (Type ℓ)) (u0 : Type ℓ [ φ ↦ u i0 ])
+           → hcomp u (outS u0)
+           ≡ Glue (outS u0)
+              (λ { (φ = i1) → u i1 1=1 , line→equiv (λ j → u (~ j) 1=1) })
+hcomp≡Glue u u0 = hcomp-unique u u0 (glue-hfill _ u u0)
+```
+
+## Paths from Glue
+
+As a special case of the `Glue`{.Agda} construction, we can use `Glue`
+to turn any equivalence into a path:
 
 ```agda
 ua : {A B : Type ℓ} → A ≃ B → A ≡ B
@@ -183,11 +238,11 @@ the left endpoint of the path is correct. The same thing happens with
 the right endpoint.
 
 The action of [transporting] along `ua(f)` can be described exactly by
-chasing an element around the diagram that illustrates Glue in the $\phi
+chasing an element around the diagram that illustrates Glue in the $\varphi
 = i \lor \neg i$ case, specialising to `ua`{.Agda}, remembering that we
 can invert equivalences to make this possible.
 
-[transporting]: agda://1Lab.Path#transport
+[transporting]: 1Lab.Path.html
 
 <figure>
 ~~~{.quiver}
@@ -204,16 +259,17 @@ can invert equivalences to make this possible.
 </figure>
 
 1. First, we apply the equivalence `f`. Keeping in mind that `f` is [a
-pair](agda://1Lab.Equiv#_≃_) of a function and a proof that this
-function is an equivalence, we must project the underlying function to
-apply it.
+pair] of a function and a proof that this function is an equivalence, we
+must project the underlying function to apply it.
 
-2. Then, we do a vacuous [transport](agda://1Lab.Path#transport) along
-the reflexivity path on `B`. While in the case of `ua`{.Agda}, `B`
-doesn't depend on `i`, in the general case of `Glue`{.Agda}, it might.
-This is where the `transp (λ _ → B) i` in the path term `uaβ`{.Agda}
-comes from: We need something that, on the left endpoint, is `transport
-refl _`, and on the right endpoint disappears.
+[a pair]: 1Lab.Equiv.html#_≃_
+
+2. Then, we do a vacuous [transport] along the reflexivity path on `B`.
+While in the case of `ua`{.Agda}, `B` doesn't depend on `i`, in the
+general case of `Glue`{.Agda}, it might.  This is where the `transp (λ _
+→ B) i` in the path term `uaβ`{.Agda} comes from: We need something
+that, on the left endpoint, is `transport refl _`, and on the right
+endpoint disappears.
 
 3. Finally, we apply the inverse of the identity equivalence, which
 computes away, and contributes nothing to the term.
@@ -224,9 +280,10 @@ uaβ {A = A} {B} f x i = transp (λ _ → B) i (f .fst x)
 ```
 
 Since `ua`{.Agda} is a map that turns equivalences into paths, we can
-compose it with a function that turns
-[isomorphisms](agda://1Lab.Equiv#Iso) into equivalences to get the map
-`Iso→path`{.Agda}.
+compose it with a function that turns [isomorphisms] into equivalences
+to get the map `Iso→path`{.Agda}.
+
+[isomorphisms]: 1Lab.Equiv.html#Iso
 
 ```agda
 Iso→path : {A B : Type ℓ} → Iso A B → A ≡ B
@@ -234,6 +291,12 @@ Iso→path (f , iiso) = ua (f , isIso→isEquiv iiso)
 ```
 
 # The “axiom”
+
+The actual “univalence axiom”, as stated in the HoTT book, says that the
+canonical map `A ≡ B`, defined using `J`{.Agda}, is an equivalence. This
+map is `idToEquiv`{.Agda}, defined right above. In more intuitive terms,
+it's "casting" the identity equivalence `A ≃ A` along a proof that `A ≡
+B` to get an equivalence `A ≃ B`.
 
 ```agda
 module _ where private
@@ -244,16 +307,10 @@ module _ where private
   idToEquiv-refl {A = A} = JRefl (λ x _ → A ≃ x) (_ , idEquiv)
 ```
 
-The actual “univalence axiom”, as stated in the HoTT book, says that the
-canonical map `A ≡ B`, defined using `J`{.Agda}, is an equivalence. This
-map is `idToEquiv`{.Agda}, defined right above. In more intuitive terms,
-it's "casting" the identity equivalence `A ≃ A` along a proof that `A ≡
-B` to get an equivalence `A ≃ B`.
-
 However, because of efficiency concerns (Agda _is_ a programming
 language, after all), instead of using `idToEquiv`{.Agda} defined using
 J, we use `pathToEquiv`{.Agda}, which is [defined in an auxilliary
-module](agda://1Lab.Equiv.FromPath).
+module](1Lab.Equiv.FromPath.html).
 
 ```agda
 pathToEquiv : {A B : Type ℓ} → A ≡ B → A ≃ B
@@ -328,7 +385,7 @@ reducing this to showing that `ua (pathToEquiv refl) ≡ refl`. By
 `idEquiv`{.Agda}, which means the `uaIdEquiv`{.Agda} lemma proves what
 we wanted.
 
-[path induction]: agda://1Lab.Path#J
+[path induction]: 1Lab.Path.html#J
 
 In many situations, it is helpful to have a proof that
 `pathToEquiv`{.Agda} followed by `an adjustment of levels`{.Agda
@@ -354,7 +411,7 @@ the type of _equalities_. What I mean, precisely, is that the type `Σ B
 (A ≃ B)` is contractible, like the type `Σ B (A ≡ B)`. From this, we get
 "equivalence induction": `EquivJ`{.Agda}.
 
-[the same induction principle]: agda://1Lab.Path#J
+[the same induction principle]: 1Lab.Path.html#J
 
 ```agda
 EquivContr : ∀ {ℓ} (A : Type ℓ) → isContr (Σ[ B ∈ Type ℓ ] A ≃ B)
@@ -414,8 +471,8 @@ x \equiv y \to f(x) \equiv f(y)$ is an equivalence.
 where $B$ is $A$, and $f$ is the identity function.
 >
 > But then, we have that $\mathrm{ap}(\mathrm{id})$ is [definitionally
-equal](agda://1Lab.Path#ap-id) to $\mathrm{id}$, which is known to be
-`an equivalence`{.Agda ident=idEquiv}. <span class=qed>$\blacksquare$</span>
+equal](1Lab.Path.html#ap-id) to $\mathrm{id}$, which is known to be `an
+equivalence`{.Agda ident=idEquiv}. <span class=qed>$\blacksquare$</span>
 
 ## Paths over `ua`
 
