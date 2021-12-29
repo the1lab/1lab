@@ -223,6 +223,16 @@ more than a handful of intermediate steps:
     (sym p ∙ p) ∙ q ≡⟨ ap₂ _∙_ (∙-inv-l p) refl ⟩
     refl ∙ q        ≡⟨ ∙-id-l q ⟩
     q               ∎
+  
+  ∙-cancel'-l : {x y z : A} (p : x ≡ y) (q r : y ≡ z)
+              → p ∙ q ≡ p ∙ r → q ≡ r
+  ∙-cancel'-l = J (λ y p → (q r : y ≡ _) → p ∙ q ≡ p ∙ r → q ≡ r)
+                  (λ q r proof → sym (∙-id-l q) ·· proof ·· ∙-id-l r)
+
+  ∙-cancel'-r : {x y z : A} (p : y ≡ z) (q r : x ≡ y)
+              → q ∙ p ≡ r ∙ p → q ≡ r
+  ∙-cancel'-r = J (λ y p → (q r : _ ≡ _) → q ∙ p ≡ r ∙ p → q ≡ r)
+                  (λ q r proof → sym (∙-id-r q) ·· proof ·· ∙-id-r r)
 ```
 
 # Groupoid structure of types (cont.)

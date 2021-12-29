@@ -1002,6 +1002,19 @@ _··_··_ : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
         (q i)
 ```
 
+Since it will be useful later, we also give an explicit name for the
+filler of the double composition square.
+
+```
+··-filler : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
+          → (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
+          → PathP (λ i → p (~ i) ≡ r i) q (p ·· q ·· r)
+··-filler p q r i j =
+  hfill (λ k → λ { (j = i0) → p (~ k)
+                 ; (j = i1) → r k })
+        (inS (q j)) i
+```
+
 We can define the ordinary, single composition by taking `p = refl`, as
 is done below. The square associated with the binary composition
 operation is obtained as the same open box at the start of the section,
@@ -1026,23 +1039,23 @@ _∙_ : ∀ {ℓ} {A : Type ℓ} {x y z : A}
 p ∙ q = refl ·· p ·· q
 ```
 
-The composition is the missing face (the dashed line in the diagram),
-but the associated box also has a filler, which turns out to be very
-useful.
+The ordinary, “single composite” of $p$ and $q$ is the dashed face in
+the diagram above.  Since we bound `··-filler`{.Agda} above, and defined
+`_∙_`{.Agda} in terms of `_··_··_`{.Agda}, we can reuse the latter's
+filler to get one for the former:
 
 ```agda
 ∙-filler : ∀ {ℓ} {A : Type ℓ} {x y z : A}
          → (p : x ≡ y) (q : y ≡ z)
          → PathP (λ i → x ≡ q i) p (p ∙ q)
-∙-filler {x = x} {y} {z} p q j i =
-  hfill (λ k → λ { (i = i0) → x
-                 ; (i = i1) → q k })
-        (inS (p i))
-        j
+∙-filler {x = x} {y} {z} p q = ··-filler refl p q
 ```
 
-The composition has a filler in the other direction, too, connecting `q`
-and `p ∙ q` over `p`.
+The single composition has a filler “in the other direction”, which
+connects $q$ and $p \bullet q$. This is, essentially, because the choice
+of setting the left face to `refl`{.Agda} was completely arbitrary in
+the definition of `_∙_`{.Agda}: we could just as well have gone with
+setting the _right_ face to `refl`{.Agda}.
 
 ```agda
 ∙-filler' : ∀ {ℓ} {A : Type ℓ} {x y z : A}
@@ -1053,6 +1066,121 @@ and `p ∙ q` over `p`.
                  ; (i = i1) → q k
                  ; (j = i0) → q (i ∧ k) })
         (p (i ∨ ~ j))
+```
+
+## Uniqueness
+
+A common characteristic of _geometric_ interpretations of higher
+categories --- like the one we have here --- when compared to algebraic
+definitions is that there is no prescription in general for how to find
+composites of morphisms. Instead, we have that each triple of morphism
+has a _contractible space_ of composites. We call the proof of this fact
+`··-unique`{.Agda}:
+
+```agda
+··-unique : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
+          → (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
+          → (α β : Σ[ s ∈ (w ≡ z) ] PathP (λ j → p (~ j) ≡ r j) q s)
+          → α ≡ β
+```
+
+Note that the type of `α` and `β` asks for a path `w ≡ z` which
+_specifically_ completes the open box for double composition. We would
+not in general expect that `w ≡ z` is contractible for an arbitrary `a`!
+Note that the proof of this involves filling a cube in a context that
+*already* has an interval variable in scope - a hypercube!
+
+```agda
+··-unique {w = w} {x} {y} {z} p q r (α , α-fill) (β , β-fill) =
+  λ i → (λ j → square i j) , (λ j k → cube i j k)
+  where
+    cube : (i j : I) → p (~ j) ≡ r j
+    cube i j k =
+      hfill (λ l → λ { (i = i0) → α-fill l k
+                     ; (i = i1) → β-fill l k
+                     ; (k = i0) → p (~ l)
+                     ; (k = i1) → r l
+                     })
+            (inS (q k)) j
+    
+    square : PathP (λ i → w ≡ z) α β
+    square i j = cube i i1 j
+```
+
+The term `cube` above has the following cube as a boundary. Since it is
+a filler, there is a missing face at the bottom which has no name, so we
+denote it by `hcomp...` in the diagram.
+
+
+~~~{.quiver .tall-2}
+\[\begin{tikzcd}
+  \textcolor{rgb,255:red,153;green,92;blue,214}{x} &&&& \textcolor{rgb,255:red,153;green,92;blue,214}{x} \\
+  & \textcolor{rgb,255:red,214;green,92;blue,92}{y} && \textcolor{rgb,255:red,214;green,92;blue,92}{y} \\
+  \\
+  & \textcolor{rgb,255:red,214;green,92;blue,92}{z} && \textcolor{rgb,255:red,214;green,92;blue,92}{z} & {} \\
+  \textcolor{rgb,255:red,153;green,92;blue,214}{w} &&&& \textcolor{rgb,255:red,153;green,92;blue,214}{w}
+  \arrow[""{name=0, anchor=center, inner sep=0}, color={rgb,255:red,214;green,92;blue,92}, from=4-2, to=4-4]
+  \arrow[""{name=1, anchor=center, inner sep=0}, color={rgb,255:red,214;green,92;blue,92}, from=2-4, to=4-4]
+  \arrow[""{name=2, anchor=center, inner sep=0}, color={rgb,255:red,214;green,92;blue,92}, from=2-2, to=2-4]
+  \arrow[""{name=3, anchor=center, inner sep=0}, color={rgb,255:red,214;green,92;blue,92}, from=2-2, to=4-2]
+  \arrow[""{name=4, anchor=center, inner sep=0}, color={rgb,255:red,153;green,92;blue,214}, from=1-5, to=5-5]
+  \arrow[""{name=5, anchor=center, inner sep=0}, color={rgb,255:red,153;green,92;blue,214}, from=1-1, to=5-1]
+  \arrow[""{name=6, anchor=center, inner sep=0}, color={rgb,255:red,153;green,92;blue,214}, from=5-1, to=5-5]
+  \arrow[""{name=7, anchor=center, inner sep=0}, color={rgb,255:red,153;green,92;blue,214}, from=1-1, to=1-5]
+  \arrow[from=1-5, to=2-4]
+  \arrow[from=1-1, to=2-2]
+  \arrow["{\alpha\ k}"', from=5-1, to=4-2]
+  \arrow["{\beta\ k}", from=5-5, to=4-4]
+  \arrow["{\alpha\text{-filler}\ j\ k}"{description}, shorten >=6pt, Rightarrow, from=5, to=3]
+  \arrow["{\beta\text{-filler}\ j\ k}"{description}, Rightarrow, draw=none, from=4, to=1]
+  \arrow[""{name=8, anchor=center, inner sep=0}, "{\mathrm{hcomp}\dots}"{description}, Rightarrow, draw=none, from=6, to=0]
+  \arrow["{r\ j}"{description}, color={rgb,255:red,214;green,92;blue,92}, Rightarrow, draw=none, from=0, to=2]
+  \arrow["{q\ k}"{description}, Rightarrow, draw=none, from=2, to=7]
+  \arrow["{p\ \neg j}"{description}, shift left=2, color={rgb,255:red,153;green,92;blue,214}, Rightarrow, draw=none, from=8, to=7]
+\end{tikzcd}\]
+~~~
+
+This diagram is quite busy because it is a 3D commutative diagram, but
+it could be busier: all of the unimportant edges were not annotated. By
+the way, the lavender face (including the lavender $p\ \neg j$) is the
+$k = \mathrm{i0}$ face, and the red face is the $k = \mathrm{i1}$ face.
+
+However, even though the diagram is very busy, most of the detail it
+contains can be ignored. Reading it in the left-right direction, it
+expresses an equality between `α-filler j k` and `β-filler j k`, lying
+over an equality `α = β`. This latter equality is what you get when you
+read the bottom square of the diagram in the left-right direction.
+Explicitly, here is that bottom square:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  \textcolor{rgb,255:red,214;green,92;blue,92}{z} && \textcolor{rgb,255:red,214;green,92;blue,92}{z} \\
+  \\
+  \textcolor{rgb,255:red,153;green,92;blue,214}{w} && \textcolor{rgb,255:red,153;green,92;blue,214}{w}
+  \arrow["\alpha", from=3-1, to=1-1]
+  \arrow["\beta"', from=3-3, to=1-3]
+  \arrow[""{name=0, anchor=center, inner sep=0}, "w", color={rgb,255:red,153;green,92;blue,214}, from=3-1, to=3-3]
+  \arrow[""{name=1, anchor=center, inner sep=0}, "z"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-3]
+  \arrow["{\mathrm{hcomp}\dots}"{description}, Rightarrow, draw=none, from=0, to=1]
+\end{tikzcd}\]
+~~~
+
+Note that, exceptionally, this diagram is drawn with the left/right
+edges going up rather than down. This is to match the direction of the
+3D diagram above. The colours are also matching.
+
+Readers who are already familiar with the notion of h-level will have
+noticed that the proof `··-unique`{.Agda} expresses that the type of
+double composites `p ·· q ·· r` is a _proposition_, not that it is
+contractible. However, since it is inhabited (by `_··_··_`{.Agda} and
+its filler), it is contractible:
+
+```
+··-contract : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
+            → (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
+            → (β : Σ[ s ∈ (w ≡ z) ] PathP (λ j → p (~ j) ≡ r j) q s)
+            → (p ·· q ·· r , ··-filler p q r) ≡ β
+··-contract p q r β = ··-unique p q r _ β
 ```
 
 ## Syntax Sugar
@@ -1150,19 +1278,6 @@ for `transport-filler`{.Agda}.
 
 * When `i = i1`, we have `PathP (λ j → P i1) (transport P p) q`, again
 by the endpoint rule for `transport-filler`{.Agda}.
-
-There is a helper function which combines `PathP≡Path`{.Agda} and
-`transport`{.Agda} to let us concisely write Book-style proofs.
-
-```agda
-transp→PathP : ∀ {ℓ} (P : I → Type ℓ) (p : P i0) (q : P i1)
-             → transport (λ i → P i) p ≡ q
-             → PathP P p q
-transp→PathP P p q a = transport (sym (PathP≡Path P p q)) a
-```
-
-Note that, due to limitations with unification, the parameters `P`, `p`,
-and `q` cannot usually be inferred from context. Thus, they are explicit arguments.
 
 ## Coercion
 
@@ -1315,6 +1430,30 @@ is only propositional:
 coei→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i) → coe A i i a ≡ a
 coei→i A i = coe0→i (λ i → (a : A i) → coe A i i a ≡ a) i (λ _ → refl)
 ```
+
+Using the Cartesian coercions, we define maps that convert between
+`PathP`{.Agda}s and Book dependent paths. These maps could also be
+defined in terms of `transp`{.Agda} and `PathP≡Path`{.Agda}, but this
+definition is more efficient.
+
+```agda
+toPathP : ∀ {ℓ} (A : I → Type ℓ) (x : A i0) (y : A i1)
+        → coe0→1 A x ≡ y
+        → PathP A x y
+toPathP A x y p i =
+  hcomp (λ j → λ { (i = i0) → x
+                 ; (i = i1) → p j })
+        (coe0→i A i x)
+
+fromPathP : ∀ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1}
+          → PathP A x y
+          → coe0→1 A x ≡ y
+fromPathP {A = A} p i = coei→1 A i (p i)
+```
+
+These definitions illustrate how using the named squeezes and spreads
+--- `coe0→i`{.Agda}, `coei→1`{.Agda} --- can be a lot more elegant than
+trying to work out what composition to use in a `transp`{.Agda}.
 
 # Path Spaces
 

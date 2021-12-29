@@ -44,23 +44,24 @@ along `P`{.Agda} and `~P`{.Agda}:
 
 ```agda
   f : A → B
-  f x = transp P i0 x
+  f x = coe0→1 P x
 
   g : B → A
-  g y = transp ~P i0 y
+  g y = coe1→0 P y
 ```
 
-Since `f`{.Agda} and `g`{.Agda} are defined by `transporting`{.Agda}
-along a path, we can define _fillers_ `u`{.Agda} and `v`{.Agda}
-connecting `f`{.Agda} (resp `g`{.Agda}) to the identity function, over
-`P`{.Agda}:
+Since `f`{.Agda} and `g`{.Agda} are defined by [coercion] along a path,
+we can define _fillers_ `u`{.Agda} and `v`{.Agda} connecting `f`{.Agda}
+(resp `g`{.Agda}) to the identity function, over `P`{.Agda}:
+
+[coercion]: 1Lab.Path.html#cartesian-coercion
 
 ```agda
   u : PathP (λ i → A → P i) id f
-  u i x = transp (λ j → P (i ∧ j)) (~ i) x
+  u i x = coe0→i P i x
 
   v : PathP (λ i → B → P i) g id
-  v i y = transp (λ j → ~P ( ~ i ∧ j)) i y
+  v i y = coe1→i P i y
 ```
 
 To prove that `f`{.Agda} is an equivalence, by definition, it must have

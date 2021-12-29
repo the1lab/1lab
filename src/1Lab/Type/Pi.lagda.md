@@ -146,7 +146,7 @@ heteroHomotopy≃Homotopy
     {f : A i0 → B i0} {g : A i1 → B i1}
 
   → ({x₀ : A i0} {x₁ : A i1} → PathP A x₀ x₁ → PathP B (f x₀) (g x₁))
-  ≃ ((x₀ : A i0) → PathP B (f x₀) (g (transport (λ i → A i) x₀)))
+  ≃ ((x₀ : A i0) → PathP B (f x₀) (g (coe0→1 A x₀)))
 
 heteroHomotopy≃Homotopy {A = A} {B} {f} {g} = Iso→Equiv isom where
   open isIso

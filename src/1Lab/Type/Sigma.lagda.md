@@ -104,7 +104,7 @@ they are included for completeness. </summary>
     ctrB = subst B (sym α) b
 
     ctrP : PB α ctrB b
-    ctrP i = transport-filler (λ i → B (sym α i)) b (~ i)
+    ctrP i = coe1→i (λ i → B (α i)) i b
 
     ctr : fibre intro x
     ctr = (ctrA , ctrB) , Σ-PathP α ctrP
