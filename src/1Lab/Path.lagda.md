@@ -237,6 +237,41 @@ These correspond to the following two squares:
 
 </div>
 
+Since iterated equalities are used _a lot_ in homotopy type theory, we
+introduce a shorthand for 2D non-dependent paths. A `Square`{.Agda} in a
+type is exactly what it says on the tin: a square. 
+
+```
+Square : ∀ {ℓ} {A : Type ℓ} {a00 a01 a10 a11 : A}
+       → (p : a00 ≡ a01)
+       → (q : a00 ≡ a10)
+       → (s : a01 ≡ a11)
+       → (r : a10 ≡ a11)
+       → Type ℓ
+Square p q s r = PathP (λ i → p i ≡ r i) q s
+```
+
+The arguments to `Square`{.Agda} are as in the following diagram, listed
+in the order “PQSR”. This order is a bit unusual (it's one off from
+being alphabetical, for instance) but it does have a significant
+benefit: If you imagine that the letters are laid out in a circle,
+_equal paths are adjacent_. Reading the square in the left-right
+direction, it says that $p$ and $r$ are equal --- these are adjacent if
+you "fold up" the sequence `p q s r`. Similarly, reading top-down, it
+says that $q$ and $s$ are equal - these are directly adjacent.
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  \bullet && \bullet \\
+  \\
+  \bullet && \bullet
+  \arrow["p"', from=1-1, to=3-1]
+  \arrow["q", from=1-1, to=1-3]
+  \arrow["r", from=1-3, to=3-3]
+  \arrow["s"', from=3-1, to=3-3]
+\end{tikzcd}\]
+~~~
+
 ## Symmetry
 
 The involution `~_`{.Agda} on the interval type gives a way of
@@ -247,6 +282,14 @@ sym : ∀ {ℓ₁} {A : Type ℓ₁} {x y : A}
     → x ≡ y → y ≡ x
 sym p i = p (~ i)
 ```
+
+<!--
+```
+symP : ∀ {ℓ₁} {A : I → Type ℓ₁} {x : A i0} {y : A i1}
+     → PathP A x y → PathP (λ i → A (~ i)) y x
+symP p i = p (~ i)
+```
+-->
 
 As a minor improvement over "Book HoTT", this operation is
 _definitionally_ involutive:
@@ -488,12 +531,9 @@ that every other inhabitant has a path to `(x, refl)`:
 ```agda
 isContr-Singleton : ∀ {ℓ} {A : Type ℓ} {x : A} (y : Singleton x)
                   → Path (Singleton x) (x , refl) y
-isContr-Singleton {x = x} (y , path) i = p i , square i where
-  p : x ≡ y
-  p = path
-
-  square : PathP (λ i → x ≡ p i) refl p
-  square i j = p (i ∧ j)
+isContr-Singleton {x = x} (y , path) i = path i , square i where
+  square : Square refl refl path path
+  square i j = path (i ∧ j)
 ```
 
 Thus, the definition of `J`{.Agda}: `transport`{.Agda} +
@@ -1008,7 +1048,7 @@ filler of the double composition square.
 ```
 ··-filler : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
           → (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
-          → PathP (λ i → p (~ i) ≡ r i) q (p ·· q ·· r)
+          → Square (sym p) q (p ·· q ·· r) r
 ··-filler p q r i j =
   hfill (λ k → λ { (j = i0) → p (~ k)
                  ; (j = i1) → r k })
@@ -1047,7 +1087,7 @@ filler to get one for the former:
 ```agda
 ∙-filler : ∀ {ℓ} {A : Type ℓ} {x y z : A}
          → (p : x ≡ y) (q : y ≡ z)
-         → PathP (λ i → x ≡ q i) p (p ∙ q)
+         → Square refl p (p ∙ q) q
 ∙-filler {x = x} {y} {z} p q = ··-filler refl p q
 ```
 
@@ -1060,7 +1100,7 @@ setting the _right_ face to `refl`{.Agda}.
 ```agda
 ∙-filler' : ∀ {ℓ} {A : Type ℓ} {x y z : A}
           → (p : x ≡ y) (q : y ≡ z)
-          → PathP (λ i → p (~ i) ≡ z) q (p ∙ q)
+          → Square (sym p) q (p ∙ q) refl
 ∙-filler' {x = x} {y} {z} p q j i =
   hcomp (λ k → λ { (i = i0) → p (~ j)
                  ; (i = i1) → q k
@@ -1080,7 +1120,7 @@ has a _contractible space_ of composites. We call the proof of this fact
 ```agda
 ··-unique : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
           → (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
-          → (α β : Σ[ s ∈ (w ≡ z) ] PathP (λ j → p (~ j) ≡ r j) q s)
+          → (α β : Σ[ s ∈ (w ≡ z) ] Square (sym p) q s r)
           → α ≡ β
 ```
 
@@ -1103,7 +1143,7 @@ Note that the proof of this involves filling a cube in a context that
                      })
             (inS (q k)) j
     
-    square : PathP (λ i → w ≡ z) α β
+    square : α ≡ β
     square i j = cube i i1 j
 ```
 
@@ -1178,7 +1218,7 @@ its filler), it is contractible:
 ```
 ··-contract : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
             → (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
-            → (β : Σ[ s ∈ (w ≡ z) ] PathP (λ j → p (~ j) ≡ r j) q s)
+            → (β : Σ[ s ∈ (w ≡ z) ] Square (sym p) q s r)
             → (p ·· q ·· r , ··-filler p q r) ≡ β
 ··-contract p q r β = ··-unique p q r _ β
 ```

@@ -104,14 +104,12 @@ dependent! This gives us the equations between the `inverseˡ`{.Agda} and
 `inverseʳ`{.Agda} fields of `x` and `y`.
 
 ```agda
-  same-invˡ : (e : A) → PathP (λ i → same-inverses e i * e ≡ same-unit i)
-                              (x .inverseˡ) (y .inverseˡ)
+  same-invˡ : (e : A) → Square _ _ _ _
   same-invˡ e =
     isSet→SquareP (λ _ _ → x .hasIsMonoid .hasIsSet)
       (x .inverseˡ) (y .inverseˡ) (ap₂ _*_ (same-inverses e) refl) same-unit
 
-  same-invʳ : (e : A) → PathP (λ i → e * same-inverses e i ≡ same-unit i)
-                              (x .inverseʳ) (y .inverseʳ)
+  same-invʳ : (e : A) → Square _ _ _ _
   same-invʳ e =
     isSet→SquareP (λ _ _ → x .hasIsMonoid .hasIsSet)
       (x .inverseʳ) (y .inverseʳ) (ap₂ _*_ refl (same-inverses e)) same-unit

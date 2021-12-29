@@ -377,8 +377,7 @@ whole family to be the same h-level.
 isProp→PathP : ∀ {B : I → Type ℓ} → ((i : I) → isProp (B i))
              → (b0 : B i0) (b1 : B i1)
              → PathP (λ i → B i) b0 b1
-isProp→PathP {B = B} hB b0 b1 =
-  transport (λ i → PathP≡Path B b0 b1 (~ i)) (hB _ _ _)
+isProp→PathP {B = B} hB b0 b1 = toPathP _ _ _ (hB _ _ _)
 ```
 
 The base case is turning a proof that a type is a proposition uniformly
@@ -429,6 +428,6 @@ isSet→SquareP :
   → SquareP A a₀₋ a₁₋ a₋₀ a₋₁
 isSet→SquareP isset a₀₋ a₁₋ a₋₀ a₋₁ =
   transport (sym (PathP≡Path _ _ _))
-            (isHLevelPathP' 1 (isset _ _) _ _ _ _ )
+            (isHLevelPathP' 1 (isset _ _) _ _ _ _)
 ```
 -->

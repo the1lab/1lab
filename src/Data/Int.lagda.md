@@ -106,9 +106,9 @@ definition which can be shown to have decidable equality:
 
 ```agda
 quot-diamond : (a b : Nat)
-             → PathP (λ j → quot a b j ≡ quot (suc a) (suc b) j)
-                     (quot a b)
-                     (quot (suc a) (suc b))
+             → Square (quot a b) (quot a b)
+                      (quot (suc a) (suc b))
+                      (quot (suc a) (suc b))
 quot-diamond a b i j =
   hcomp (λ k → λ { (i = i0) → quot a b j
                  ; (i = i1) → quot (suc a) (suc b) (j ∧ k)
@@ -241,9 +241,9 @@ f(\mathrm{S}a,\mathrm{S}b,\mathrm{S}x,\mathrm{S}y)$ (`pl` after `pr` and
 
 ```agda
          → (square : (a b x y : _) →
-              PathP (λ i → pl a b x y i ≡ pl a b (suc x) (suc y) i)
-                    (pr a b x y)
-                    (pr (suc a) (suc b) x y))
+              Square (pl a b x y) (pr a b x y)
+                     (pr (suc a) (suc b) x y)
+                     (pl a b (suc x) (suc y)))
          → Int → Int → B
 ```
 

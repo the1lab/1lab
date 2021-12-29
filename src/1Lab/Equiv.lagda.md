@@ -301,7 +301,7 @@ a name: $\theta$.
                           })
                     (g (p0 (~ i)))
 
-    θ₀ : PathP (λ i → g (p0 (~ i)) ≡ π₀ i) refl (t x0)
+    θ₀ : Square (ap g (sym p0)) refl (t x0) π₀
     θ₀ i j = hfill (λ k → λ { (i = i0) → g y
                             ; (i = i1) → t x0 k
                             })
@@ -334,7 +334,7 @@ $\theta_1$.
                           })
                     (g (p1 (~ i)))
 
-    θ₁ : PathP (λ i → g (p1 (~ i)) ≡ π₁ i) refl (t x1)
+    θ₁ : Square (ap g (sym p1)) refl (t x1) π₁
     θ₁ i j = hfill (λ k → λ { (i = i0) → g y
                             ; (i = i1) → t x1 k
                             })
@@ -377,7 +377,7 @@ that square. As an intermediate step, we define $\theta$ to be the
 filler for the square above.
 
 ```agda
-    θ : PathP (λ i → g y ≡ π i) π₀ π₁
+    θ : Square refl π₀ π₁ π
     θ i j = hfill (λ k → λ { (i = i1) → π₁ k
                            ; (i = i0) → π₀ k
                            })
@@ -389,9 +389,7 @@ which expresses that $\mathrm{ap}\ g\ p_0$ and $\mathrm{ap}\ g\ p_1$ are
 equal.
 
 ```agda
-    ι : PathP (λ i → g (f (π i)) ≡ g y)
-              (ap g p0)
-              (ap g p1)
+    ι : Square (ap (g ∘ f) π) (ap g p0) (ap g p1) refl
     ι i j = hcomp (λ k → λ { (i = i0) → θ₀ (~ j) (~ k)
                            ; (i = i1) → θ₁ (~ j) (~ k)
                            ; (j = i0) → t (π i) (~ k)
@@ -441,8 +439,7 @@ types are considered. We're in the home stretch: Using our assumption $s
 above to get what we wanted: $p_0 ≡ p_1$.
 
 ```agda
-    sq1 : PathP (λ i → f (π i) ≡ y)
-                p0 p1
+    sq1 : Square (ap f π) p0 p1 refl
     sq1 i j = hcomp (λ k → λ { (i = i0) → s (p0 j) k
                              ; (i = i1) → s (p1 j) k
                              ; (j = i0) → s (f (π i)) k

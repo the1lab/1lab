@@ -104,9 +104,7 @@ to construct:
   fibProp : (y : B) → isProp (fibre f y)
   fibProp y (x₀ , β₀) (x₁ , β₁) k = ω k , λ j → δ k (~ j) where
     ω : x₀ ≡ x₁
-    δ : PathP (λ j → y ≡ f (ω j))
-              (λ i → β₀ (~ i))
-              (λ i → β₁ (~ i))
+    δ : Square refl (sym β₀) (sym β₁) (ap f ω)
 ```
 
 While `ω`{.Agda} is a line, `δ`{.Agda} is a _square_. Namely, by looking
@@ -156,9 +154,7 @@ look at, so focus on the diagram: It connects `β₀`{.Agda} and
     ω₀ : g y ≡ x₀
     ω₀ j = comp ~P (square x₀ j) (β₀ (~ j))
 
-    θ₀ : PathP (λ j → PathP (λ z → P (~ z)) (β₀ (~ j)) (ω₀ j))
-               (λ j → v (~ j) y)
-               (λ j → u (~ j) x₀)
+    θ₀ : SquareP (λ j z → P (~ z)) (λ i → v (~ i) y) (λ i → u (~ i) x₀) (sym β₀) ω₀
     θ₀ j i = fill ~P (square x₀ j) (inS (β₀ (~ j))) i
 ```
 
@@ -181,9 +177,7 @@ and that, as the dashed line and filler of the square below:
     ω₁ : g y ≡ x₁
     ω₁ j = comp ~P (square x₁ j) (β₁ (~ j))
 
-    θ₁ : PathP (λ j → PathP (λ z → P (~ z)) (β₁ (~ j)) (ω₁ j))
-               (λ j → v (~ j) y)
-               (λ j → u (~ j) x₁)
+    θ₁ : SquareP (λ j z → P (~ z)) (λ i → v (~ i) y) (λ i → u (~ i) x₁) (sym β₁) ω₁
     θ₁ j i = fill ~P (square x₁ j) (inS (β₁ (~ j))) i
 ```
 
@@ -210,7 +204,7 @@ below:
     sys k j (k = i1) = ω₁ j
 
     ω k = hcomp (sys k) (g y)
-    θ : PathP (λ i → g y ≡ ω i) ω₀ ω₁
+    θ : Square refl ω₀ ω₁ ω
     θ k = hfill (sys k) (inS (g y))
 ```
 

@@ -136,7 +136,7 @@ funextDep≃ {A = A} {B} {f} {g} = Iso→Equiv isom where
     lemi→j j =
       coe (λ k → coe A i k (p i) ≡ p k) i j (coei→i A i (p i))
 
-    lemi→i : PathP (λ m → lemi→j i m ≡ p i) (coei→i A i (p i)) refl
+    lemi→i : Square (lemi→j i) (coei→i A i (p i)) refl refl
     lemi→i =
       sym (coei→i (λ k → coe A i k (p i) ≡ p k) i (coei→i A i (p i)))
       ◁ λ m k → lemi→j i (m ∨ k)
