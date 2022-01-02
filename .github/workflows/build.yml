@@ -11,10 +11,12 @@ jobs:
       - name: Build 🛠️
         run: |
           export PATH=/root/.local/bin:$PATH
-          which 1lab-shake
           1lab-shake all -j
+          support/make-site.sh
 
       - name: Deploy 🚀
-        if: ${{ github.ref_name == 'master' }} # won't run on the wip branch
-        run: |
-          ls _build/html
+        # if: ${{ github.ref_name == 'master' }}
+        uses: JamesIves/github-pages-deploy-action@4.1.7
+        with:
+          branch: gh-pages
+          folder: _build/site
