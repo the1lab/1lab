@@ -13,7 +13,6 @@ jobs:
           export PATH=/root/.local/bin:$PATH
           which 1lab-shake
           1lab-shake all -j
-
   deploy:
     runs-on: ubuntu-latest
     container: pltamy/1lab:latest
