@@ -5,9 +5,18 @@ jobs:
     runs-on: ubuntu-latest
     container: pltamy/1lab:latest
     steps:
-      - uses: actions/checkout@v2
-      - run: |
+      - name: Checkout ⬇️
+        uses: actions/checkout@v2
+
+      - name: Build 🛠️
+        run: |
           export PATH=/root/.local/bin:$PATH
-          which 1lab-shake
           1lab-shake all -j
-        name: Type check and build
+          ./support/make-site.sh
+
+      - name: Deploy 🚀
+        if: ${{ github.ref_name == 'main' }}
+        uses: JamesIves/github-pages-deploy-action@4.1.7
+        with:
+          branch: gh-pages
+          folder: _build/site
