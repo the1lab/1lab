@@ -12,7 +12,7 @@ jobs:
         run: |
           export PATH=/root/.local/bin:$PATH
           1lab-shake all -j
-          support/make-site.sh
+          ./support/make-site.sh
 
       - name: Deploy 🚀
         # if: ${{ github.ref_name == 'master' }}
