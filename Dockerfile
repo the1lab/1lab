@@ -3,10 +3,11 @@ FROM archlinux
 # Install system-wide dependencies (there are a lot of them! almost 4
 # gigs, most of which comes from texlive)
 RUN pacman --noconfirm -Syu
-RUN pacman --noconfirm -S base-devel sassc
-RUN pacman --noconfirm -S npm
-RUN pacman --noconfirm -S texlive-core texlive-pictures texlive-latexextra rubber
-RUN pacman --noconfirm -S git
+RUN pacman --noconfirm -Syu base-devel sassc
+RUN pacman --noconfirm -Syu npm
+RUN pacman --noconfirm -Syu texlive-core texlive-pictures texlive-latexextra rubber
+RUN pacman --noconfirm -Syu git
+RUN pacman --noconfirm -Syu rsync
 
 RUN useradd -ms /bin/bash build
 USER build
