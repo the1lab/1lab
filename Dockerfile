@@ -79,4 +79,14 @@ RUN \
   mkdir -p $(dirname $(/root/.local/bin/agda --print-agda-dir)); \
   ln -sf /root/Agda/ $(/root/.local/bin/agda --print-agda-dir);
 
+# Fetch fonts
+RUN \
+  mkdir -p /root/static/{ttf,woff2,otf}; \
+  curl -L https://cubical.1lab.dev/static/woff2/iosevk-abbie-regular.woff2    -o /root/static/woff2/iosevk-abbie-regular.woff2; \
+  curl -L https://cubical.1lab.dev/static/ttf/iosevk-abbie-regular.ttf        -o /root/static/ttf/iosevk-abbie-regular.ttf; \
+  curl -L https://cubical.1lab.dev/static/otf/texgyrepagella-regular.otf      -o /root/static/otf/texgyrepagella-regular.otf; \
+  curl -L https://cubical.1lab.dev/static/otf/texgyrepagella-bold.otf         -o /root/static/otf/texgyrepagella-bold.otf; \
+  curl -L https://cubical.1lab.dev/static/otf/texgyrepagella-italic.otf       -o /root/static/otf/texgyrepagella-italic.otf; \
+  curl -L https://cubical.1lab.dev/static/otf/texgyrepagella-bolditalic.otf   -o /root/static/otf/texgyrepagella-bolditalic.otf;
+
 WORKDIR /workspace
