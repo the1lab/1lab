@@ -20,4 +20,5 @@ jobs:
     # if: github.ref == 'refs/heads/master'
     steps:
     - name: Deploy 🚀
-      uses: ls _build/html
+      run: |
+        ls _build/html
