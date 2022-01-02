@@ -15,7 +15,7 @@ jobs:
           ./support/make-site.sh
 
       - name: Deploy 🚀
-        if: ${{ github.ref_name == 'master' }}
+        if: ${{ github.ref_name == 'main' }}
         uses: JamesIves/github-pages-deploy-action@4.1.7
         with:
           branch: gh-pages
