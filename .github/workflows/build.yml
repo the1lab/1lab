@@ -15,6 +15,6 @@ jobs:
           1lab-shake all -j
 
       - name: Deploy 🚀
-        if: ${{ github.ref_name }} == 'master' # won't run on the wip branch
+        if: ${{ github.ref_name == 'master' }} # won't run on the wip branch
         run: |
           ls _build/html
