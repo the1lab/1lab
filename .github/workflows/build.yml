@@ -18,5 +18,6 @@ jobs:
     container: pltamy/1lab:latest
     needs: build
     # if: github.ref == 'refs/heads/master'
+    steps:
     - name: Deploy 🚀
       uses: ls _build/html
