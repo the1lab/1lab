@@ -5,9 +5,19 @@ jobs:
     runs-on: ubuntu-latest
     container: pltamy/1lab:latest
     steps:
-      - uses: actions/checkout@v2
-      - run: |
+      - name: Checkout ⬇️
+        uses: actions/checkout@v2
+
+      - name: Build 🛠️
+        run: |
           export PATH=/root/.local/bin:$PATH
           which 1lab-shake
           1lab-shake all -j
-        name: Type check and build
+      
+  deploy:
+    runs-on: ubuntu-latest
+    container: pltamy/1lab:latest
+    needs: build
+    # if: github.ref == 'refs/heads/master'
+    - name: Deploy 🚀
+      uses: ls _build/html
