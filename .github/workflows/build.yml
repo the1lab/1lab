@@ -13,12 +13,8 @@ jobs:
           export PATH=/root/.local/bin:$PATH
           which 1lab-shake
           1lab-shake all -j
-  deploy:
-    runs-on: ubuntu-latest
-    container: pltamy/1lab:latest
-    needs: build
-    # if: github.ref == 'refs/heads/master'
-    steps:
-    - name: Deploy 🚀
-      run: |
-        ls _build/html
+
+      - name: Deploy 🚀
+        if: ${{ github.ref_name }} == 'master' # won't run on the wip branch
+        run: |
+          ls _build/html
