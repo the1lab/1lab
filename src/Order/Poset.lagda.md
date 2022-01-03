@@ -142,7 +142,7 @@ monotoneEqv→Poset≃ : {A B : Poset ℓ' ℓ} (e : A .fst ≃ B .fst)
                    → isMonotone A B (e .fst)
                    → isMonotone B A (equiv→inverse (e .snd))
                    → Poset≃ A B e
-monotoneEqv→Poset≃ {A = A} {B} (f , eqv) f-mono f¯¹-mono .pres-≤ x y = ua eq' where
+monotoneEqv→Poset≃ {A = A} {B} (f , eqv) f-mono f⁻¹-mono .pres-≤ x y = ua eq' where
   module A = PosetOn (A .snd)
   module B = PosetOn (B .snd)
 ```
@@ -156,7 +156,7 @@ _reflects_ the ordering.
   f-reflects x y q =
     transport
       (λ i → equiv→retraction eqv x i A.≤ equiv→retraction eqv y i)
-      (f¯¹-mono (f x) (f y) q)
+      (f⁻¹-mono (f x) (f y) q)
 
   eq' = propExt A.propositional B.propositional (f-mono x y) (f-reflects x y)
 ```

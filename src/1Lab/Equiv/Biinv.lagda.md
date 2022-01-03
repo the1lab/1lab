@@ -102,11 +102,11 @@ isEquiv→isEquiv-precomp {f = f} f-eqv = isIso→isEquiv isiso where
   f-iso : isIso f
   f-iso = isEquiv→isIso f-eqv
 
-  f¯¹ : _
-  f¯¹ = f-iso .isIso.inv
+  f⁻¹ : _
+  f⁻¹ = f-iso .isIso.inv
 
   isiso : isIso (_∘_ f)
-  isiso .isIso.inv f x = f¯¹ (f x)
+  isiso .isIso.inv f x = f⁻¹ (f x)
   isiso .isIso.rinv f = funext λ x → f-iso .isIso.rinv _
   isiso .isIso.linv f = funext λ x → f-iso .isIso.linv _
 
@@ -114,11 +114,11 @@ isEquiv→isEquiv-postcomp {f = f} f-eqv = isIso→isEquiv isiso where
   f-iso : isIso f
   f-iso = isEquiv→isIso f-eqv
 
-  f¯¹ : _
-  f¯¹ = f-iso .isIso.inv
+  f⁻¹ : _
+  f⁻¹ = f-iso .isIso.inv
 
   isiso : isIso _
-  isiso .isIso.inv f x = f (f¯¹ x)
+  isiso .isIso.inv f x = f (f⁻¹ x)
   isiso .isIso.rinv f = funext λ x → ap f (f-iso .isIso.linv _)
   isiso .isIso.linv f = funext λ x → ap f (f-iso .isIso.rinv _)
 ```

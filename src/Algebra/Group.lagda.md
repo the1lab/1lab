@@ -244,12 +244,12 @@ The associativity and identity laws hold definitionally.
   groupStr .hasIsGroup .hasIsMonoid .idʳ = Σ≡Prop isProp-isEquiv refl
 ```
 
-The inverse is given by `the inverse equivalence`{.Agda ident=_e¯¹}, and
+The inverse is given by `the inverse equivalence`{.Agda ident=_e⁻¹}, and
 the inverse equations hold by the fact that the inverse of an
 equivalence is both a section and a retraction.
 
 ```agda
-  groupStr .hasIsGroup .inverse = _e¯¹
+  groupStr .hasIsGroup .inverse = _e⁻¹
   groupStr .hasIsGroup .inverseˡ {x = f , eqv} =
     Σ≡Prop isProp-isEquiv (funext (equiv→retraction eqv))
   groupStr .hasIsGroup .inverseʳ {x = f , eqv} =

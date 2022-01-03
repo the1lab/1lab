@@ -141,13 +141,13 @@ as a grounding example: equality of groups is group isomorphism.
 SIP : {σ : Structure ℓ S} → isUnivalent σ → {X Y : Σ S} → (X ≃[ σ ] Y) ≃ (X ≡ Y)
 SIP {S = S} {σ = σ} is-univ {X} {Y} =
   X ≃[ σ ] Y                                                       ≃⟨⟩
-  Σ[ e ∈ X .fst ≃ Y .fst ] (σ .is-hom X Y e)                       ≃⟨ Σ-ap (ua , univalence¯¹) is-univ ⟩
+  Σ[ e ∈ X .fst ≃ Y .fst ] (σ .is-hom X Y e)                       ≃⟨ Σ-ap (ua , univalence⁻¹) is-univ ⟩
   Σ[ p ∈ X .fst ≡ Y .fst ] PathP (λ i → S (p i)) (X .snd) (Y .snd) ≃⟨ Iso→Equiv Σ-PathP-iso ⟩
   (X ≡ Y)                                                          ≃∎
 ```
 
 The proof of the `SIP`{.Agda} follows essentially from
-`univalence`{.Agda ident=univalence¯¹}, and the fact that `Σ types
+`univalence`{.Agda ident=univalence⁻¹}, and the fact that `Σ types
 respect equivalences`{.Agda ident=Σ-ap}. In one fell swoop, we convert
 from the type of homomorphic equivalences to a dependent pair of paths.
 By the characterisation of `path spaces of Σ types`{.Agda
@@ -461,12 +461,12 @@ equational proof:
 
 <!--
 ```agda
-transportStr¯¹ :
+transportStr⁻¹ :
   {S : Type ℓ → Type ℓ₂} (α : EqvAction S) (τ : isTransportStr α)
   {X Y : Type ℓ} (e : X ≃ Y) (t : S Y)
   → equiv→inverse (α e .snd) t ≡ subst S (sym (ua e)) t
-transportStr¯¹ {S = S} α τ e t =
-     sym (transport¯Transport (ap S (ua e)) (equiv→inverse (α e .snd) t))
+transportStr⁻¹ {S = S} α τ e t =
+     sym (transport⁻Transport (ap S (ua e)) (equiv→inverse (α e .snd) t))
   ·· sym (ap (subst S (sym (ua e))) (τ e (equiv→inverse (α e .snd) t)))
   ·· ap (subst S (sym (ua e))) (equiv→section (α e .snd) t)
 ```
@@ -504,7 +504,7 @@ functionStr-univalent : (α : EqvAction S) → isTransportStr α
                       → isUnivalent (functionStr α τ)
 functionStr-univalent {S = S} {T = T} α α-tr τ τ-univ {X , f} {Y , g} eqv =
   ((s : S X) → τ .is-hom (X , f s) (Y , _) eqv)     ≃⟨ Π-cod≃ (λ s → τ-univ eqv ∙e pathToEquiv (ap (PathP (λ i → T (ua eqv i)) (f s) ∘ g) (α-tr _ _))) ⟩
-  ((s : S X) → PathP (λ i → T (ua eqv i)) (f s) _)  ≃⟨ (heteroHomotopy≃Homotopy e¯¹) ∙e funextDep≃ ⟩
+  ((s : S X) → PathP (λ i → T (ua eqv i)) (f s) _)  ≃⟨ (heteroHomotopy≃Homotopy e⁻¹) ∙e funextDep≃ ⟩
   _                                                 ≃∎
 ```
 
@@ -577,7 +577,7 @@ functionAction-isTransp : {α : EqvAction S} {β : EqvAction T}
                         → isTransportStr α → isTransportStr β
                         → isTransportStr (functionAction α β)
 functionAction-isTransp {S = S} {α = α} {β = β} α-tr β-tr eqv f =
-  funext λ x → ap (β eqv .fst ∘ f) (transportStr¯¹ α α-tr eqv x)
+  funext λ x → ap (β eqv .fst ∘ f) (transportStr⁻¹ α α-tr eqv x)
              ∙ β-tr eqv (f (subst S (sym (ua eqv)) x))
 ```
 </details>
@@ -630,7 +630,7 @@ reasoning concludes what we wanted: `axiomsStr`{.Agda} is univalent.
       σ .is-hom (A , s) (B , t) f
         ≃⟨ univ f ⟩
       PathP (λ i → S (ua f i)) s t 
-        ≃⟨ Σ-contract (λ x → isHLevelPathP 0 (contr b (axioms-prop b))) e¯¹ ⟩
+        ≃⟨ Σ-contract (λ x → isHLevelPathP 0 (contr b (axioms-prop b))) e⁻¹ ⟩
       Σ[ p ∈ PathP (λ i → S (ua f i)) s t ] PathP (λ i → axioms (ua f i) (p i)) a b
         ≃⟨ Iso→Equiv Σ-PathP-iso ⟩
       _

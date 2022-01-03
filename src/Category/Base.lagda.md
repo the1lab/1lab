@@ -276,7 +276,7 @@ isCategory→isGroupoid-Ob : ∀ {o h} {C : Precategory o h}
 isCategory→isGroupoid-Ob {C = C} iscat x y =
   isHLevel-equiv 2
     (isCategory→isoToPath {C = C} iscat)
-    (((_ , isCategory→isEquiv-pathToIso {C = C} iscat) e¯¹) .snd)
+    (((_ , isCategory→isEquiv-pathToIso {C = C} iscat) e⁻¹) .snd)
 ```
 
 Since `an isomorphism`{.Agda ident=_[_≅_]} is a big dependent sum of

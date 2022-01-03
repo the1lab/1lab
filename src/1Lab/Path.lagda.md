@@ -395,14 +395,14 @@ transport-fillerExt : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B)
                     → PathP (λ i → A → p i) (λ x → x) (transport p)
 transport-fillerExt p i x = transport-filler p x i
 
-transport¯-fillerExt : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B)
+transport⁻-fillerExt : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B)
                      → PathP (λ i → p i → A) (λ x → x) (transport (sym p))
-transport¯-fillerExt p i x = transp (λ j → p (i ∧ ~ j)) (~ i) x
+transport⁻-fillerExt p i x = transp (λ j → p (i ∧ ~ j)) (~ i) x
 
-transport¯Transport : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B) (a : A)
+transport⁻Transport : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B) (a : A)
                     → transport (sym p) (transport p a) ≡ a
-transport¯Transport p a i = 
-  transport¯-fillerExt p (~ i) (transport-fillerExt p (~ i) a)
+transport⁻Transport p a i = 
+  transport⁻-fillerExt p (~ i) (transport-fillerExt p (~ i) a)
 ```
 </details>
 
@@ -1543,7 +1543,7 @@ simpler in the case where the `Σ`{.Agda} represents a subset --- i.e.,
        → subst B p (x .snd) ≡ (y .snd)
        → x ≡ y
 Σ-Path {A = A} {B} {x} {y} p q =
-  Σ-PathP p (transport (λ i → PathP≡Path (λ i → B (p i)) (x .snd) (y .snd) (~ i)) q)
+  Σ-PathP p (toPathP _ _ _ q)
 ```
 
 ## Π types

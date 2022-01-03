@@ -562,9 +562,9 @@ do equivalence reasoning in the same style as equational reasoning.
 _∙e_ : ∀ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
      → A ≃ B → B ≃ C → A ≃ C
 
-_e¯¹ : ∀ {ℓ ℓ₁} {A : Type ℓ} {B : Type ℓ₁}
+_e⁻¹ : ∀ {ℓ ℓ₁} {A : Type ℓ} {B : Type ℓ₁}
     → A ≃ B → B ≃ A
-_e¯¹ eqv = Iso→Equiv ( equiv→inverse (eqv .snd)
+_e⁻¹ eqv = Iso→Equiv ( equiv→inverse (eqv .snd)
                      , record { inv  = eqv .fst
                               ; rinv = equiv→retraction (eqv .snd)
                               ; linv = equiv→section (eqv .snd)
@@ -573,29 +573,29 @@ _e¯¹ eqv = Iso→Equiv ( equiv→inverse (eqv .snd)
 <!--
 ```
 _∙e_ (f , e) (g , e') = (λ x → g (f x)) , eqv where
-  g¯¹ : isIso g
-  g¯¹ = isEquiv→isIso e'
+  g⁻¹ : isIso g
+  g⁻¹ = isEquiv→isIso e'
 
-  f¯¹ : isIso f
-  f¯¹ = isEquiv→isIso e
+  f⁻¹ : isIso f
+  f⁻¹ = isEquiv→isIso e
 
   inv : _ → _
-  inv x = f¯¹ .isIso.inv (g¯¹ .isIso.inv x)
+  inv x = f⁻¹ .isIso.inv (g⁻¹ .isIso.inv x)
 
   abstract
     right : isRightInverse inv (λ x → g (f x))
     right z =
-      g (f (f¯¹ .isIso.inv (g¯¹ .isIso.inv z))) ≡⟨ ap g (f¯¹ .isIso.rinv _) ⟩
-      g (g¯¹ .isIso.inv z)                      ≡⟨ g¯¹ .isIso.rinv _ ⟩
+      g (f (f⁻¹ .isIso.inv (g⁻¹ .isIso.inv z))) ≡⟨ ap g (f⁻¹ .isIso.rinv _) ⟩
+      g (g⁻¹ .isIso.inv z)                      ≡⟨ g⁻¹ .isIso.rinv _ ⟩
       z                                         ∎
 
     left : isLeftInverse inv (λ x → g (f x))
     left z =
-      f¯¹ .isIso.inv (g¯¹ .isIso.inv (g (f z))) ≡⟨ ap (f¯¹ .isIso.inv) (g¯¹ .isIso.linv _) ⟩
-      f¯¹ .isIso.inv (f z)                      ≡⟨ f¯¹ .isIso.linv _ ⟩
+      f⁻¹ .isIso.inv (g⁻¹ .isIso.inv (g (f z))) ≡⟨ ap (f⁻¹ .isIso.inv) (g⁻¹ .isIso.linv _) ⟩
+      f⁻¹ .isIso.inv (f z)                      ≡⟨ f⁻¹ .isIso.linv _ ⟩
       z                                         ∎
     eqv : isEquiv (λ x → g (f x))
-    eqv = isIso→isEquiv (iso (λ x → f¯¹ .isIso.inv (g¯¹ .isIso.inv x)) right left)
+    eqv = isIso→isEquiv (iso (λ x → f⁻¹ .isIso.inv (g⁻¹ .isIso.inv x)) right left)
 
 ∙-isEquiv : ∀ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
           → {f : A → B} {g : B → C}

@@ -113,7 +113,7 @@ here (rather than being completely invisible) for
 completeness:</summary>
 ```
 fibre-paths {f = f} {y} {f1} {f2} =
-  Path (fibre f y) f1 f2                                                       ≃⟨ Iso→Equiv Σ-Path-iso e¯¹ ⟩
+  Path (fibre f y) f1 f2                                                       ≃⟨ Iso→Equiv Σ-Path-iso e⁻¹ ⟩
   (Σ[ γ ∈ f1 .fst ≡ f2 .fst ] (subst (λ x₁ → f x₁ ≡ _) γ (f1 .snd) ≡ f2 .snd)) ≃⟨ Σ-ap-snd (λ x → pathToEquiv (lemma x)) ⟩
   (Σ[ γ ∈ f1 .fst ≡ f2 .fst ] (ap f γ ∙ f2 .snd ≡ f1 .snd))                    ≃∎
   where
@@ -154,7 +154,7 @@ $(x, p)$ using a very boring calculation:
 
 ```agda
   contract : (fib₂ : fibre f y) → fib ≡ fib₂
-  contract (x , p) = (fibre-paths e¯¹) .fst (x≡gy , path) where
+  contract (x , p) = (fibre-paths e⁻¹) .fst (x≡gy , path) where
     x≡gy = ap g (sym p) ∙ η x
 
     path : ap f (ap g (sym p) ∙ η x) ∙ p ≡ ε y

@@ -123,7 +123,7 @@ isProp≃equiv∥-∥ : ∀ {ℓ} {P : Type ℓ}
                → isProp P ≃ (P ≃ ∥ P ∥)
 isProp≃equiv∥-∥ {P = P} = propExt isProp-isProp eqv-prop isProp→equiv∥-∥ inv where
   inv : (P ≃ ∥ P ∥) → isProp P
-  inv eqv = isHLevel-equiv 1 ((eqv e¯¹) .fst) ((eqv e¯¹) .snd) squash
+  inv eqv = isHLevel-equiv 1 ((eqv e⁻¹) .fst) ((eqv e⁻¹) .snd) squash
 
   eqv-prop : isProp (P ≃ ∥ P ∥)
   eqv-prop x y = Σ-Path (λ i p → squash (x .fst p) (y .fst p) i)
