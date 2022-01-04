@@ -1,6 +1,6 @@
 @import "vars.scss";
 
-@mixin center-that-bitch {
+@mixin centered-contents {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -13,7 +13,6 @@ html {
   margin: 0; 
 
   overflow-x: clip;
-
 }
 
 :root {
@@ -29,7 +28,7 @@ body {
 
   width: 100%;
 
-  @include center-that-bitch;
+  @include centered-contents;
 
   margin: 0;
 
@@ -37,53 +36,6 @@ body {
   font-size: $font-size * 1.1;
 
   overflow-x: clip;
-}
-
-body > header {
-  background-color: $purple-600;
-  display: flex;
-  height: $nav-height;
-  width: 100%;
-  z-index: 999;
-  
-  position: fixed;
-
-  justify-content: space-between;
-
-  align-items: center;
-
-  padding-left: 1em;
-  padding-right: 1em;
-
-  border-bottom: 3px solid $purple-700;
-  box-sizing: border-box;
-
-  div, nav > a {
-    height: $nav-height;
-    
-    padding-left: 0.3em;
-    padding-right: 0.3em;
-
-    display: flex;
-    align-items: center;
-  }
-
-  div:hover, nav > a:hover {
-    background-color: $purple-500;
-    transition: background-color 0.3s ease-in-out;
-  }
-
-  a {
-    color: white;
-    font-size: $font-size * 1.2;
-    text-decoration: none;
-  }
-
-  nav {
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-  }
 }
 
 @mixin left-bordered-block($color) {
@@ -168,7 +120,7 @@ figure {
   overflow-y: clip;
   margin: auto;
 
-  @include center-that-bitch;
+  @include centered-contents;
   
   figcaption {
     margin-top: 0.3em;
@@ -229,7 +181,6 @@ div.columns {
 }
 
 code, pre, .sourceCode {
-  font-size: $font-size;
   font-family: 'Iosevka', 'Fantasque Sans Mono', Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
   font-weight: 500;
 }
@@ -289,74 +240,6 @@ table {
   }
 }
 
-ul#post-list {
-  list-style-type: none;
-  display: flex;
-  flex-direction: column;
-
-  .post-list-item {
-    @include left-bordered-block($yellow-500);
-    @include material;
-
-    background-color: $yellow-50;
-
-    .post-list-header {
-      margin-top: 0.2em;
-
-      display: flex;
-      justify-content: space-between;
-      line-height: 14pt;
-
-      font-style: italic;
-      font-size: 10pt;
-
-      a {
-        font-size: 14pt;
-        font-style: normal;
-        color: $bluegray-800;
-      }
-    }
-  }
-}
-
-div.contact-list {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: stretch;
-  gap: 3em;
-
-  div.contact-card {
-    background-color: $purple-200;
-    @include material;
-
-    width: 33%;
-    max-width: 33%;
-    flex-grow: 1;
-
-    p {
-      margin: 0;
-    }
-
-    div.contact-header {
-      // I really hate Pandoc sometimes
-      display: flex;
-      align-items: center;
-      gap: 1em;
-
-      margin-bottom: 10px;
-
-      img {
-        height: 48px;
-        clip-path: url(#squircle);
-      }
-
-      span.username {
-        font-size: 16pt;
-      }
-    }
-  }
-}
-
 @media only screen and (max-width: 450px) {
   body > header {
     div#logo {
@@ -393,7 +276,7 @@ div.contact-list {
 
       margin-top: 0.5em;
       margin-bottom: 1em;
-      @include center-that-bitch;
+      @include centered-contents;
     }
 
     div#post-toc-container {
@@ -404,7 +287,7 @@ div.contact-list {
         display: block !important;
         max-width: 80%;
 
-        h3 { @include center-that-bitch; }
+        h3 { @include centered-contents; }
 
         div#toc-container {
           overflow-x: hidden;

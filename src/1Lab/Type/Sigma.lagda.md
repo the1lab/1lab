@@ -125,6 +125,19 @@ they are included for completeness. </summary>
         { (i = i0) → ctrP (~ k)
         ; (i = i1) → σ (~ k)
         })) (inS b) (~ j)
+
+Σ-assoc : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : (x : A) → B x → Type ℓ''}
+        → (Σ[ x ∈ A ] Σ[ y ∈ B x ] C x y) ≃ (Σ[ x ∈ Σ B ] (C (x .fst) (x .snd)))
+Σ-assoc .fst (x , y , z) = (x , y) , z
+Σ-assoc .snd .isEqv y .centre = strict-fibres (λ { ((x , y) , z) → x , y , z}) y .fst
+Σ-assoc .snd .isEqv y .paths = strict-fibres (λ { ((x , y) , z) → x , y , z}) y .snd
+
+Σ-Π-distrib : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : (x : A) → B x → Type ℓ''}
+            → ((x : A) → Σ[ y ∈ B x ] C x y)
+            ≃ (Σ[ f ∈ ((x : A) → B x) ] ((x : A) → C x (f x)))
+Σ-Π-distrib .fst f = (λ x → f x .fst) , λ x → f x .snd
+Σ-Π-distrib .snd .isEqv y .centre = strict-fibres (λ f x → f .fst x , f .snd x) y .fst
+Σ-Π-distrib .snd .isEqv y .paths = strict-fibres (λ f x → f .fst x , f .snd x) y .snd
 ```
 </details>
 

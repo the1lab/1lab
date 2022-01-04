@@ -159,7 +159,7 @@ $(x, p)$ using a very boring calculation:
 
     path : ap f (ap g (sym p) ∙ η x) ∙ p ≡ ε y
     path =
-      ap f (ap g (sym p) ∙ η x) ∙ p               ≡⟨ ap₂ _∙_ (ap-comp-path (ap g (sym p)) (η x)) refl ∙ sym (∙-assoc _ _ _) ⟩
+      ap f (ap g (sym p) ∙ η x) ∙ p               ≡⟨ ap₂ _∙_ (ap-comp-path f (ap g (sym p)) (η x)) refl ∙ sym (∙-assoc _ _ _) ⟩
       ap (f ∘ g) (sym p) ∙ ap f (η x) ∙ p         ≡⟨ ap₂ _∙_ refl (ap₂ _∙_ (zig _) refl) ⟩ -- by the triangle identity
       ap (f ∘ g) (sym p) ∙ ε (f x)    ∙ p         ≡⟨ ap₂ _∙_ refl (homotopy-natural ε p)  ⟩ -- by naturality of ε
 ```
@@ -172,7 +172,7 @@ $\varepsilon$ lets us "push it past $p$" to get something we can cancel:
 
 ```agda
       ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p ∙ ε y     ≡⟨ ∙-assoc _ _ _ ⟩
-      (ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p) ∙ ε y   ≡⟨ ap₂ _∙_ (sym (ap-comp-path {f = f ∘ g} (sym p) p)) refl ⟩
+      (ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p) ∙ ε y   ≡⟨ ap₂ _∙_ (sym (ap-comp-path (f ∘ g) (sym p) p)) refl ⟩
       ap (f ∘ g) (sym p ∙ p) ∙ ε y                ≡⟨ ap₂ _∙_ (ap (ap (f ∘ g)) (∙-inv-r _)) refl ⟩
       ap (f ∘ g) refl ∙ ε y                       ≡⟨⟩
       refl ∙ ε y                                  ≡⟨ ∙-id-l (ε y) ⟩
@@ -191,5 +191,34 @@ isIso→isEquiv' = isHAE→isEquiv ∘ isIso→isHAE
 <!--
 ```agda
 _ = isIso→isEquiv
+
+equiv→zig : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
+          → (eqv : isEquiv f) (a : A)
+          → ap f (equiv→retraction eqv a) ≡ equiv→section eqv (f a)
+equiv→zig {f = f} eqv = commPathIsEq where
+  commSqIsEq : ∀ a → Square (sym (ap f (equiv→retraction eqv a)))
+                            refl
+                            (equiv→section eqv (f a))
+                            refl
+  commSqIsEq a i = eqv .isEqv (f a) .paths (a , refl) (~ i) .snd
+
+  commPathIsEq : ∀ a → ap f (equiv→retraction eqv a) ≡ equiv→section eqv (f a)
+  commPathIsEq a i j =
+    hcomp
+      (λ k → λ
+        { (i = i1) → equiv→section eqv (f a) j
+        ; (i = i0) → f (equiv→retraction eqv a (j ∨ ~ k))
+        ; (j = i0) → f (equiv→retraction eqv a (~ i ∧ ~ k))
+        ; (j = i1) → f a
+        })
+      (commSqIsEq a i j)
+
+isEquiv→isHAE : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
+              → isEquiv f → isHAE f
+isEquiv→isHAE {f = f} eqv =
+    equiv→inverse eqv
+  , equiv→retraction eqv
+  , equiv→section eqv
+  , equiv→zig eqv
 ```
 -->

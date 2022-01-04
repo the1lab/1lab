@@ -1,4 +1,5 @@
 ```agda
+open import 1Lab.Type.Sigma
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -622,7 +623,7 @@ equivalent to the dependent sum of the fibres. The theorems
 `Total-equiv`{.Agda} and `Fibre-equiv`{.Agda} are what justify referring
 to `Σ`{.Agda} the "total space" of a type family.
 
-```
+```agda
 Total-equiv : (p : E → B) → E ≃ Σ (fibre p)
 Total-equiv p = Iso→Equiv isom where
   isom : Iso _ (Σ (fibre p))
@@ -642,7 +643,7 @@ makes fundamental use of `ua`{.Agda}, to construct the witnesses that
 taking fibres and taking total spaces are inverses. Without `ua`{.Agda},
 we could only get an "isomorphism-up-to-equivalence" of types.
 
-```
+```agda
 Fibration-equiv : ∀ {ℓ ℓ'} {B : Type ℓ}
                 → (Σ[ E ∈ Type (ℓ ⊔ ℓ') ] (E → B))
                 ≃ (B → Type (ℓ ⊔ ℓ'))
@@ -654,4 +655,59 @@ Fibration-equiv {B = B} = Iso→Equiv isom where
   isom .snd .linv (E , p) i
     = ua e (~ i) , λ x → fst (outS (ua-unglue e (~ i) x))
     where e = Total-equiv p
+```
+
+To solidify the explanation that object classifiers generalise the
+$(n-2)$-truncated object classifiers you would find in a $(n,1)$-topos,
+we prove that any class of maps described by a property $P$ which holds
+of all of its fibres (or even _structure_ on all of its fibres!) has a
+classifying object --- the total space $\Sigma P$.
+
+For instance, if we take $P$ to be the property of `being a
+proposition`{.Agda ident=isProp}, this theorem tells us that `Σ isProp`
+classifies _subobjects_. With the slight caveat that `Σ isProp` is not
+closed under impredicative quantification, this corresponds exactly to
+the notion of subobject classifier in a $(1,1)$-topos, since the maps
+with propositional fibres are precisely the injective maps.
+
+<!--
+```
+_ = isProp
+```
+-->
+
+Since the type of "maps into B with variable domain and P fibres" has a
+very unwieldy description --- both in words or in Agda syntax --- we
+abbreviate it by $\ell /_{[P]} B$. The notation is meant to evoke the
+idea of a slice category: The objects of $C/c$ are objects of the
+category $C$ equipped with choices of maps into $c$. Similarly, the
+objects of $\ell/_{[P]}B$ are objects of the universe $\mathrm{Type}\
+\ell$, with a choice of map $f$ into $B$, such that $P$ holds for all
+the fibres of $f$.
+
+```agda
+_/[_]_ : ∀ {ℓ' ℓ''} (ℓ : Level) → (Type (ℓ ⊔ ℓ') → Type ℓ'') → Type ℓ' → Type _
+_/[_]_ {ℓ} ℓ' P B =
+  Σ λ (A : Type (ℓ ⊔ ℓ')) →
+  Σ λ (f : A → B) →
+  (x : B) → P (fibre f x)
+```
+
+The proof that the slice $\ell /_{[P]} B$ is classified by $\Sigma P$
+follows from elementary properties of $\Sigma$ types (namely:
+`reassociation`{.Agda ident=Σ-assoc}, `distributivity`{.Agda
+ident=Σ-Π-distrib} of $\Sigma$ over $\Pi$), and the classification
+theorem `Fibration-equiv`{.Agda}. Really, the most complicated part of
+this proof is rearranging the nested sum and product types to a form to
+which we can apply `Fibration-equiv`{.Agda}.
+
+```agda
+Map-classifier
+  : ∀ {ℓ ℓ' ℓ''} {B : Type ℓ'} (P : Type (ℓ ⊔ ℓ') → Type ℓ'')
+  → (ℓ /[ P ] B) ≃ (B → Σ P)
+Map-classifier {ℓ = ℓ} {B = B} P =
+  (Σ λ A → Σ λ f → (x : B) → P (fibre f x))     ≃⟨ Σ-assoc ⟩
+  (Σ λ { (x , f) → (x : B) → P (fibre f x) })   ≃⟨ Σ-ap-fst (Fibration-equiv {ℓ' = ℓ}) ⟩
+  (Σ λ A → (x : B) → P (A x))                   ≃⟨ Σ-Π-distrib e⁻¹ ⟩
+  (B → Σ P)                                     ≃∎
 ```

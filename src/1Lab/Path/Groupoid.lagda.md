@@ -198,9 +198,9 @@ ap f q` as the right face.
 -->
 
 ```agda
-  ap-comp-path : {f : A → B} {x y z : A} (p : x ≡ y) (q : y ≡ z)
+  ap-comp-path : (f : A → B) {x y z : A} (p : x ≡ y) (q : y ≡ z)
                → ap f (p ∙ q) ≡ ap f p ∙ ap f q
-  ap-comp-path {f = f} {x} p q i j =
+  ap-comp-path f {x} p q i j =
     hcomp (λ k → λ { (i = i0) → f (∙-filler p q k j)
                    ; (j = i0) → f x
                    ; (j = i1) → f (q k)
