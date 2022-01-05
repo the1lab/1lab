@@ -401,14 +401,16 @@ isHLevel→isHLevelDep {A = A} {B = B} (suc n) hl {a0} {a1} b0 b1 =
 ```
 isProp→SquareP : ∀ {B : I → I → Type ℓ} → ((i j : I) → isProp (B i j))
              → {a : B i0 i0} {b : B i0 i1} {c : B i1 i0} {d : B i1 i1}
-             → (r : PathP (λ j → B j i0) a c) (s : PathP (λ j → B j i1) b d)
-             → (t : PathP (λ j → B i0 j) a b) (u : PathP (λ j → B i1 j) c d)
-             → SquareP B t u r s
-isProp→SquareP {B = B} isPropB {a = a} r s t u i j =
-  hcomp (λ { k (i = i0) → isPropB i0 j (base i0 j) (t j) k
-           ; k (i = i1) → isPropB i1 j (base i1 j) (u j) k
-           ; k (j = i0) → isPropB i i0 (base i i0) (r i) k
-           ; k (j = i1) → isPropB i i1 (base i i1) (s i) k
+             → (p : PathP (λ j → B j i0) a c)
+             → (q : PathP (λ j → B i0 j) a b)
+             → (s : PathP (λ j → B i1 j) c d)
+             → (r : PathP (λ j → B j i1) b d)
+             → SquareP B p q s r
+isProp→SquareP {B = B} isPropB {a = a} p q s r i j =
+  hcomp (λ { k (j = i0) → isPropB i j (base i j) (p i) k
+           ; k (j = i1) → isPropB i j (base i j) (r i) k
+           ; k (i = i0) → isPropB i j (base i j) (q j) k
+           ; k (i = i1) → isPropB i j (base i j) (s j) k
         }) (base i j) where
     base : (i j : I) → B i j
     base i j = transport (λ k → B (i ∧ k) (j ∧ k)) a
@@ -417,17 +419,24 @@ isProp→isContrPathP : {A : I → Type ℓ} → ((i : I) → isProp (A i))
                     → (x : A i0) (y : A i1) → isContr (PathP A x y)
 isProp→isContrPathP ap x y .centre = isProp→PathP ap x y
 isProp→isContrPathP ap x y .paths p =
-  isProp→SquareP (λ _ → ap) refl refl _ _
+  isProp→SquareP (λ i j → ap j) refl _ _ refl
 
 isSet→SquareP :
   {A : I → I → Type ℓ}
   (isSet : (i j : I) → isSet (A i j))
-  {a₀₀ : A i0 i0} {a₀₁ : A i0 i1} (a₀₋ : PathP (λ j → A i0 j) a₀₀ a₀₁)
-  {a₁₀ : A i1 i0} {a₁₁ : A i1 i1} (a₁₋ : PathP (λ j → A i1 j) a₁₀ a₁₁)
-  (a₋₀ : PathP (λ i → A i i0) a₀₀ a₁₀) (a₋₁ : PathP (λ i → A i i1) a₀₁ a₁₁)
-  → SquareP A a₀₋ a₁₋ a₋₀ a₋₁
+  → {a : A i0 i0} {b : A i0 i1} {c : A i1 i0} {d : A i1 i1}
+  → (p : PathP (λ j → A j i0) a c)
+  → (q : PathP (λ j → A i0 j) a b)
+  → (s : PathP (λ j → A i1 j) c d)
+  → (r : PathP (λ j → A j i1) b d)
+  → SquareP A p q s r
 isSet→SquareP isset a₀₋ a₁₋ a₋₀ a₋₁ =
   transport (sym (PathP≡Path _ _ _))
             (isHLevelPathP' 1 (isset _ _) _ _ _ _)
+
+-- Has to go through:
+_ : ∀ {A : Type} {a b c d : A} (p : a ≡ c) (q : a ≡ b) (s : c ≡ d) (r : b ≡ d)
+  → Square p q s r ≡ SquareP (λ _ _ → A) p q s r
+_ = λ _ _ _ _ → refl
 ```
 -->

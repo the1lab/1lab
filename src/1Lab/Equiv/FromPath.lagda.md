@@ -154,7 +154,7 @@ look at, so focus on the diagram: It connects `β₀`{.Agda} and
     ω₀ : g y ≡ x₀
     ω₀ j = comp ~P (square x₀ j) (β₀ (~ j))
 
-    θ₀ : SquareP (λ j z → P (~ z)) (λ i → v (~ i) y) (λ i → u (~ i) x₀) (sym β₀) ω₀
+    θ₀ : SquareP (λ i j → P (~ j)) (sym β₀) (λ i → v (~ i) y) (λ i → u (~ i) x₀) ω₀
     θ₀ j i = fill ~P (square x₀ j) (inS (β₀ (~ j))) i
 ```
 
@@ -177,7 +177,7 @@ and that, as the dashed line and filler of the square below:
     ω₁ : g y ≡ x₁
     ω₁ j = comp ~P (square x₁ j) (β₁ (~ j))
 
-    θ₁ : SquareP (λ j z → P (~ z)) (λ i → v (~ i) y) (λ i → u (~ i) x₁) (sym β₁) ω₁
+    θ₁ : SquareP (λ i j → P (~ j)) (sym β₁) (λ i → v (~ i) y) (λ i → u (~ i) x₁) ω₁
     θ₁ j i = fill ~P (square x₁ j) (inS (β₁ (~ j))) i
 ```
 

@@ -1284,11 +1284,14 @@ Try pressing it!
 ```
 SquareP : ∀ {ℓ}
   (A : I → I → Type ℓ)
-  {a₀₀ : A i0 i0} {a₀₁ : A i0 i1} (a₀₋ : PathP (λ j → A i0 j) a₀₀ a₀₁)
-  {a₁₀ : A i1 i0} {a₁₁ : A i1 i1} (a₁₋ : PathP (λ j → A i1 j) a₁₀ a₁₁)
-  (a₋₀ : PathP (λ i → A i i0) a₀₀ a₁₀) (a₋₁ : PathP (λ i → A i i1) a₀₁ a₁₁)
+  {a₀₀ : A i0 i0} {a₀₁ : A i0 i1}
+  {a₁₀ : A i1 i0} {a₁₁ : A i1 i1}
+  (p : PathP (λ i → A i i0) a₀₀ a₁₀)
+  (q : PathP (λ j → A i0 j) a₀₀ a₀₁)
+  (s : PathP (λ j → A i1 j) a₁₀ a₁₁)
+  (r : PathP (λ i → A i i1) a₀₁ a₁₁)
   → Type ℓ
-SquareP A a₀₋ a₁₋ a₋₀ a₋₁ = PathP (λ i → PathP (λ j → A i j) (a₋₀ i) (a₋₁ i)) a₀₋ a₁₋
+SquareP A p q s r = PathP (λ i → PathP (λ j → A i j) (p i) (r i)) q s
 ```
 -->
 

@@ -107,12 +107,12 @@ dependent! This gives us the equations between the `inverseˡ`{.Agda} and
   same-invˡ : (e : A) → Square _ _ _ _
   same-invˡ e =
     isSet→SquareP (λ _ _ → x .hasIsMonoid .hasIsSet)
-      (x .inverseˡ) (y .inverseˡ) (ap₂ _*_ (same-inverses e) refl) same-unit
+      (ap₂ _*_ (same-inverses e) refl) (x .inverseˡ) (y .inverseˡ) same-unit 
 
   same-invʳ : (e : A) → Square _ _ _ _
   same-invʳ e =
     isSet→SquareP (λ _ _ → x .hasIsMonoid .hasIsSet)
-      (x .inverseʳ) (y .inverseʳ) (ap₂ _*_ refl (same-inverses e)) same-unit
+      (ap₂ _*_ refl (same-inverses e)) (x .inverseʳ) (y .inverseʳ) same-unit 
 ```
 
 Putting all of this together lets us conclude that `x` and `y` are

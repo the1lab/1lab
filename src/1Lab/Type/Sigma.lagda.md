@@ -13,6 +13,9 @@ private variable
   ℓ ℓ₁ : Level
   A A' : Type ℓ
   B P Q : A → Type ℓ
+
+open import Agda.Builtin.Sigma renaming (Σ to ∑) public
+-- ^ for Agda display
 ```
 -->
 
