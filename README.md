@@ -1,9 +1,12 @@
-# [Cubical 1lab](https://cubical.1lab.dev)
+[![Discord Badge](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/NvXkUVYcxV)
+[![Build 1Lab](https://github.com/plt-amy/cubical-1lab/actions/workflows/build.yml/badge.svg)](https://github.com/plt-amy/cubical-1lab/actions/workflows/build.yml)
 
-A section of the 1lab dedicated to mathematics done in Homotopy Type
-Theory. We have a Discord server for asking questions/discussing
-contributions/yelling at Amy for being bad at explaining things: [join
-here!](https://discord.gg/NvXkUVYcxV)
+# [1Lab](https://cubical.1lab.dev)
+
+A formalised, cross-linked reference resource for mathematics done in
+Homotopy Type Theory. Unlike the HoTT book, the 1lab is not a “linear”
+resource: Concepts are presented as a directed graph, with links
+indicating dependencies.
 
 # Building
 
