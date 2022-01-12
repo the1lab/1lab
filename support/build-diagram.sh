@@ -41,6 +41,6 @@ EOF
 }
 
 latex \
-  | rubber-pipe --pdf 2>/dev/null \
+  | rubber-pipe --pdf \
   | pdftocairo -svg - - \
   > ${target}
