@@ -232,7 +232,7 @@ main = run \flags -> do
   "_build/html/*.svg" %> \out -> do
     let inp = "_build/diagrams" </> takeFileName out -<.> "tex"
     need [inp]
-    command_ [Traced "build-diagram"] "bash"
+    command_ [Traced "build-diagram"] "sh"
       ["support/build-diagram.sh", out, inp]
     removeFilesAfter "." ["rubtmp*"]
 

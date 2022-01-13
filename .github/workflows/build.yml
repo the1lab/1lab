@@ -10,7 +10,6 @@ jobs:
 
       - name: Build 🛠️
         run: |
-          export PATH=/root/.local/bin:$PATH
           1lab-shake all -j
           ./support/make-site.sh
 
