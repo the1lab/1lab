@@ -18,10 +18,17 @@ const highlight = (self, on) => () => {
       currentHover = document.createElement("div");
       currentHover.innerText = type;
       currentHover.classList.add("typeTooltip", "sourceCode");
-      currentHover.style.top = `${self.offsetTop + self.offsetHeight}px`;
-      currentHover.style.left = `${self.offsetLeft}px`;
       document.body.appendChild(currentHover);
-      console.log(currentHover);
+
+      const selfRect = self.getBoundingClientRect();
+      const hoverRect = currentHover.getBoundingClientRect();
+      if (selfRect.bottom + hoverRect.height > window.innerHeight) {
+        // 2em from the material mixin. I'm sorry
+        currentHover.style.top = `calc(${self.offsetTop - hoverRect.height}px - 2em`;
+      } else {
+        currentHover.style.top = `${self.offsetTop + self.offsetHeight}px`;
+      }
+      currentHover.style.left = `${self.offsetLeft}px`;
     }
   }
 
