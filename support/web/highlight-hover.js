@@ -4,7 +4,28 @@
 
 let links = [];
 
+let currentHover = null;
+
 const highlight = (self, on) => () => {
+  const type = self.getAttribute("data-type");
+  if (type) {
+    if (currentHover) {
+      currentHover.remove();
+      currentHover = null;
+    }
+
+    if (on) {
+      currentHover = document.createElement("div");
+      currentHover.innerText = type;
+      currentHover.classList.add("typeTooltip", "sourceCode");
+      currentHover.style.top = `${self.offsetTop + self.offsetHeight}px`;
+      currentHover.style.left = `${self.offsetLeft}px`;
+      document.body.appendChild(currentHover);
+      console.log(currentHover);
+    }
+  }
+
+
   links.forEach(that => {
     if (self.href != that.href) {
       return;

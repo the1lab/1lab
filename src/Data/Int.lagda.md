@@ -448,7 +448,7 @@ Since `negate`{.Agda} is precisely what's missing for `Nat`{.Agda} to be
 a group, we _can_ turn [the integers] into a group. Subtraction is
 defined as addition with the inverse, rather than directly on `diff`{.Agda}:
 
-[the integers]: 1Lab.Algebra.Group.html#the-integers
+[the integers]: Algebra.Group.html#the-integers
 
 ```agda
 _-ℤ_ : Int → Int → Int

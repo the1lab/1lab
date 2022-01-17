@@ -10,7 +10,7 @@ html {
   min-height: 100%;
   height: 100%;
   max-width: 100%;
-  margin: 0; 
+  margin: 0;
 
   overflow-x: clip;
 }
@@ -82,7 +82,7 @@ main {
       width: 100%;
       line-height: 1.3;
     }
-    
+
   }
 
   div#post-info {
@@ -121,7 +121,7 @@ figure {
   margin: auto;
 
   @include centered-contents;
-  
+
   figcaption {
     margin-top: 0.3em;
     display: inline-block;
@@ -159,7 +159,7 @@ div.mathpar {
   flex-flow: row wrap;
   justify-content: center;
   align-items: center;
-  
+
 
   gap: 1em;
 
@@ -194,7 +194,7 @@ div.sourceCode, pre {
 
   overflow-x: auto;
   line-height: 1.2;
-  
+
   code {
     display: block;
   }
@@ -233,7 +233,7 @@ table {
   margin: auto;
   border-collapse: collapse;
 
-  td, th { 
+  td, th {
     text-align: center;
     padding: 0px 1em 0px 1em;
     border: 2px solid $purple-400;
@@ -266,7 +266,7 @@ table {
       h1, h2 {
         margin: 0;
       }
-      
+
       h2 {
         font-style: italic;
         font-weight: normal;
@@ -378,6 +378,16 @@ code.at, span.at { color: $code-green; } /* Attribute */
 code.do, span.do { color: $code-red; } /* Documentation */
 code.an, span.an { color: $code-red; } /* Annotation */
 code.cv, span.cv { color: $code-red; } /* CommentVar */
+
+.typeTooltip {
+  position: absolute;
+  z-index: 100;
+
+  font-size: 0.8em;
+  color: $code-fg;
+  background: $code-bg;
+}
+
 
 div.profile {
   &.pfp-left {

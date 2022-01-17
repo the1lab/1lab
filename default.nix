@@ -125,6 +125,7 @@ in
         # For building the text and maths:
         git sassc pandoc nodePackages.katex
         agda-reference-filter agda-fold-equations
+        python
 
         # For building diagrams:
         poppler_utils rubber
