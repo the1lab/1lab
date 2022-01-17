@@ -39,8 +39,8 @@ let
         sha256 = hash;
       };
     in ''
-      mkdir -p ${prefix}/static/${type}
-      cp ${p} ${prefix}/static/${type}/${family}.${type};
+      mkdir -p ${prefix}/static/${type};
+      install -Dm 655 ${p} ${prefix}/static/${type}/${family}.${type};
     '';
 
   fonts = { prefix ? "$out" }: concatStringsSep "\n" (map make-font [
@@ -73,7 +73,7 @@ let
     '';
   };
 in
-  stdenv.mkDerivation {
+  stdenv.mkDerivation rec {
     name = "cubical-1lab";
     src =
       filterSource
@@ -98,24 +98,26 @@ in
     ];
 
     buildPhase = ''
-    export LANG=C.UTF-8
+    export LANG=C.UTF-8;
     1lab-shake all -j
     '';
 
     installPhase = ''
-    mkdir -p $out{,/css/}
+    mkdir -p $out{,/css/};
 
     # Copy our build artifacts
-    cp -rv _build/html/* $out
+    cp -Lrv _build/html/* $out;
 
     # Copy KaTeX CSS and fonts
-    cp ${nodePackages.katex}/lib/node_modules/katex/dist/{katex.min.css,fonts} $out/css/ -rv
+    cp -Lrv --no-preserve=mode ${nodePackages.katex}/lib/node_modules/katex/dist/{katex.min.css,fonts} $out/css/;
 
     # Copy bits of Iosevka
     ${fonts {}}
 
-    mkdir -p $out/static/otf
-    cp ${gyre-fonts}/share/fonts/truetype/texgyrepagella*.otf $out/static/otf -rv
+    install -Dm 655 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-bold.otf;
+    install -Dm 655 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-regular.otf;
+    install -Dm 655 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-italic.otf;
+    install -Dm 655 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-bolditalic.otf;
     '';
 
     passthru = {
