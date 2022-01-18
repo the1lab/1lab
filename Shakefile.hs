@@ -196,7 +196,7 @@ main = run \flags -> do
   gitCommit <- newCache gitCommit
 
   "_build/all-pages.agda" %> \out -> do
-    files <- sort <$> getDirectoryFiles "src" ["**"]
+    files <- sort <$> getDirectoryFiles "src" ["**/*.agda", "**/*.lagda.md"]
     need (map ("src" </>) files)
     let
       toOut x | takeExtensions x == ".lagda.md"

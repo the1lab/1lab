@@ -580,13 +580,13 @@ _discrete_ fibres.
 
 Since a $(1,1)$-topos has classifiers for maps with $(-1)$-truncated
 fibres, and a $(2,1)$-topos has classifiers for maps with $0$-truncated
-fibres, one might expect that an [$(\infty,1)$-topos] would have
+fibres, one might expect that an [$\io$-topos] would have
 classifiers for maps with fibres that are not truncated at all. This is
 indeed the case! In HoTT, this fact is internalised using the univalent
 universes, and we can prove that univalent universes are [_object
 classifiers_].
 
-[$(\infty,1)$-topos]: https://ncatlab.org/nlab/show/(infinity,1)-topos
+[$\io$-topos]: https://ncatlab.org/nlab/show/(infinity,1)-topos
 [_object classifiers_]: https://ncatlab.org/nlab/show/object+classifier
 
 <!--
@@ -634,8 +634,8 @@ Total-equiv p = Iso→Equiv isom where
 ```
 
 Putting these together, we get the promised theorem: The space of maps
-$B \to \mathrm{Type}$ is equivalent to the space of fibrations with base
-space $B$ and variable total space $E$, $\Sigma_{(E : \mathrm{Type})}
+$B \to \ty$ is equivalent to the space of fibrations with base
+space $B$ and variable total space $E$, $\Sigma_{(E : \ty)}
 (E \to B)$. If we allow $E$ and $B$ to live in different universes, then
 the maps are classified by the biggest universe in which they both fit,
 namely `Type (ℓ ⊔ ℓ')`. Note that the proof of `Fibration-equiv`{.Agda}
@@ -681,7 +681,7 @@ very unwieldy description --- both in words or in Agda syntax --- we
 abbreviate it by $\ell /_{[P]} B$. The notation is meant to evoke the
 idea of a slice category: The objects of $C/c$ are objects of the
 category $C$ equipped with choices of maps into $c$. Similarly, the
-objects of $\ell/_{[P]}B$ are objects of the universe $\mathrm{Type}\
+objects of $\ell/_{[P]}B$ are objects of the universe $\ty\
 \ell$, with a choice of map $f$ into $B$, such that $P$ holds for all
 the fibres of $f$.
 

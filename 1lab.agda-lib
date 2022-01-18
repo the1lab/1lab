@@ -8,3 +8,5 @@ flags:
   --cubical
   --no-import-sorts
   --postfix-projections
+  --rewriting
+  --guardedness

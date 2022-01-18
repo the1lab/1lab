@@ -34,9 +34,31 @@ local makefile = io.open(DIAGRAMS, "w")
 
 return {
   {
+    Inlines = function(inlines)
+      for i = #inlines-1, 1, -1 do
+        local m = inlines[i];
+        local t = inlines[i+1];
+        if (m.t == 'Math' and t.t == 'Str' and t.text:sub(1,1) ~= ' ') then
+          inlines:insert(i, pandoc.RawInline("html", "<span style=\"white-space: nowrap;\">"));
+          inlines:insert(i+3,pandoc.RawInline("html", "</span>"));
+        end
+      end
+      return inlines
+    end,
+    Header = function(header)
+      header.content:insert(1,
+        pandoc.RawInline("html", ("<a href=%q class=\"header-link\">"):format('#' .. header.identifier))
+      );
+      header.content:insert(
+        pandoc.RawInline("html", ("<span class=\"header-link-emoji\">🔗</span></a>"):format('#' .. header.identifier))
+      );
+      return header;
+    end
+  },
+  {
     Math = function(x)
       local t = 't'
-      local command = "katex -t"
+      local command = "katex -f .macros -t"
       if x.mathtype == "DisplayMath" then
         command = command .. " -d"
         t = 'd'
