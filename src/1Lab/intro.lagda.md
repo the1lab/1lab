@@ -5,28 +5,13 @@ customtitle: Introduction to HoTT
 <!--
 ```agda
 open import 1Lab.Prelude hiding (fibre)
-
-module 1Lab.intro where
 ```
 -->
 
-<style>
-.draft {
-  background-color: yellow;
-  font-style: italic;
-}
-
-article {
-  counter-reset: paragraph;
-}
-
-p::after {
-  background-color: yellow;
-  padding-left: 0.3em;
-  content: counter(paragraph);
-  counter-increment: paragraph;
-}
-</style>
+```agda
+module 1Lab.intro where
+```
+-->
 
 # Introduction
 
