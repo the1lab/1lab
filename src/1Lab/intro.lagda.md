@@ -11,7 +11,6 @@ open import 1Lab.Prelude hiding (fibre)
 ```agda
 module 1Lab.intro where
 ```
--->
 
 # Introduction
 
