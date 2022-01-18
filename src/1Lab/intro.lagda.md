@@ -195,7 +195,7 @@ specific _set_, or as denoting a specific _space_.
 | $a : A$               | proof                  | element                         | point                     |
 | $B(x)$                | predicate              | family of sets                  | fibration                 |
 | $b(x) : B(x)$         | conditional proof      | family of elements              | section                   |
-| $\top, \bot$          | $\top, \bot$           | $\emptyset, \{\emptyset\}$      | $\emptyset, \{*\}$        |
+| $\bot, \top$          | $\bot, \top$           | $\emptyset, \{\emptyset\}$      | $\emptyset, \{*\}$        |
 | $A \times B$          | $A \land B$            | Cartesian product               | product space             |
 | $A \uplus B$          | $A \lor B$             | disjoint union                  | coproduct space           |
 | $A \to B$             | $A \to B$              | function set                    | mapping space             |
