@@ -213,7 +213,7 @@ main = run \flags -> do
 
     writeFileLines out $ "{-# OPTIONS --cubical #-}"
                        : ["open import " ++ toOut x | x <- files]
-                      ++ ["open import " ++ x ++ " -- (builtin)" | x <- builtinModules]
+                      ++ ["import " ++ x ++ " -- (builtin)" | x <- builtinModules]
 
     command [] "agda"
       [ "--html"
