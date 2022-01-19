@@ -21,6 +21,7 @@ import qualified Data.Text.IO as Text
 import qualified Data.Map.Lazy as Map
 import qualified Data.Text as Text
 import Data.Aeson (eitherDecodeFileStrict')
+import Data.List.NonEmpty (NonEmpty((:|)))
 import Data.Map.Lazy (Map)
 import Data.Text (Text)
 import Data.Foldable
@@ -34,12 +35,17 @@ import Development.Shake
 import Network.URI.Encode (decodeText)
 
 import qualified System.Directory as Dir
-import System.Process (callCommand)
-import System.Console.GetOpt
 import System.IO.Unsafe
+import System.Console.GetOpt
+import System.Process (callCommand)
 import System.IO
 
 import Text.HTML.TagSoup
+
+import Agda.Syntax.Concrete
+import Agda.Syntax.Parser
+import Agda.Utils.Pretty
+import Agda.Syntax.Common
 
 data Reference
   = Reference { refHref :: Text
@@ -197,7 +203,7 @@ main = run \flags -> do
   gitCommit <- newCache gitCommit
 
   "_build/all-pages.agda" %> \out -> do
-    files <- sort <$> getDirectoryFiles "src" ["**"]
+    files <- sort <$> getDirectoryFiles "src" ["**/*.lagda.md", "**/*.agda"]
     need (map ("src" </>) files)
     let
       toOut x | takeExtensions x == ".lagda.md"
@@ -215,7 +221,7 @@ main = run \flags -> do
       ]
 
   "_build/types.json" %> \out -> do
-    files <- sort <$> getDirectoryFiles "src" ["**"]
+    files <- sort <$> getDirectoryFiles "src" ["**/*.lagda.md", "**/*.agda"]
     need (["_build/all-pages.agda", "support/get-types.py"] ++ map ("src" </>) files)
 
     let modules = map (moduleName . dropExtensions) files
@@ -386,4 +392,37 @@ gitCommit () = do
 parseFileTypes :: () -> Action (Map Text (Map Text Text))
 parseFileTypes () = do
   need ["_build/types.json"]
-  liftIO (eitherDecodeFileStrict' "_build/types.json") >>= either fail pure
+  liftIO (eitherDecodeFileStrict' "_build/types.json")
+    >>= either fail (liftIO . traverse (traverse instantiate))
+
+-- | Removes implicit arguments from the spine of an Agda type.
+--
+-- Implicits are removed in both rank-1 and higher rank positions (i.e.,
+-- to the left and right of function arrows), including the domains of
+-- Pi-types. Other positions are unaffected.
+
+instantiate :: Text -> IO Text
+instantiate ty = do
+  t <- runPMIO (parse exprParser (map flipDot (Text.unpack ty)))
+  case t of
+    (Right exp, _)
+      -> pure (Text.pack (map flipDot (render (pretty (removeImpls exp)))))
+    (Left e, _) -> pure ty
+  where
+    removeImpls :: Expr -> Expr
+    removeImpls (Pi (x :| xs) e) =
+      makePi (map (fmap removeImpls) $ filter ((/= Hidden) . getHiding) (x:xs)) (removeImpls e)
+    removeImpls (Fun span arg ret) =
+      Fun span (removeImpls <$> arg) (removeImpls ret)
+    removeImpls e = e
+
+    -- Swaps the character '.' (illegal in Agda identifiers, but
+    -- printed by Agda to indicate dependencies in generalisable
+    -- variables) for the Katakana middle dot character, and vice-versa.
+    --
+    -- We call this function to swap '.' -> middle dot when parsing, and
+    -- middle dot -> dot when printing.
+    flipDot :: Char -> Char
+    flipDot '.' = '\12539' -- Katakana middle dot
+    flipDot '\12539' = '.'
+    flipDot c = c

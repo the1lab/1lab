@@ -18,7 +18,7 @@ let
   our-ghc = ghc.withPackages (pkgs: with pkgs; [
     shake directory tagsoup
     text containers uri-encode
-    process aeson
+    process aeson Agda
   ]);
 
   our-texlive = texlive.combine {
