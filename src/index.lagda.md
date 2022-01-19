@@ -8,8 +8,11 @@ A formalised, cross-linked reference resource for mathematics done in
 Homotopy Type Theory. Unlike the [HoTT book], the 1lab is not a "linear"
 resource: Concepts are presented as a directed graph, with links
 indicating _dependencies_. For instance, the statement of the univalence
-axiom depends on [_universes_](agda://1Lab.Type), [_propositional
-equality_](agda://1Lab.Path) (paths) and [_equivalences_](agda://1Lab.Equiv):
+principle depends on [_universes_](agda://1Lab.Type), [_propositional
+equality_](agda://1Lab.Path) (paths) and [_equivalences_](agda://1Lab.Equiv). 
+In addition to the hyperlinked "web of concepts" provided by the Agda
+code, there is a short introduction to homotopy type theory: **[Start
+here](1Lab.intro.html)**.
 
 [HoTT book]: https://homotopytypetheory.org/book/
 
@@ -30,10 +33,10 @@ _ = univalence
 
 If you don't know what those concepts refer to, it could be challenging
 to figure out what the definition above is even saying - or how it's
-proven. Fortunately, every single element there is a link! Try clicking
-on the word `isEquiv`{.Agda} - either here in the text, or there in the
-code. It'll take you to the definition, which will be highlighted in
-orange to draw your attention.
+proven. Fortunately, every single text element there is a link! Try
+clicking on the word `isEquiv`{.Agda} - either here in the text, or
+there in the code. It'll take you to the definition, which will be
+highlighted in orange to draw your attention.
 
 Links are colour-coded to indicate what they point to. In body text,
 links rendered in [blue (or purple) sans-serif font](index.html) link to
@@ -63,10 +66,9 @@ _ = sym
 
 The 1lab is an [open-source] project with the goal of making formalised
 mathematics, and especially formalised mathematics done in Homotopy Type
-Theory, accessible to as wide as audience as possible. However, the
-pages here still do assume a baseline level of knowledge: Nothing
-specific to HoTT, but familiarity with MLTT, especially with Agda, is
-helpful.
+Theory, accessible to as wide as audience as possible. In addition to
+the hyperlinked "web of concepts" provided by the Agda code, there is a
+short introduction to homotopy type theory: **[Start here]**.
 
 [open-source]: https://github.com/plt-amy/cubical-1lab
 
@@ -197,12 +199,9 @@ And, of course, the formalisation would not be possible without
 # Type Theory
 
 <div class=warning>
-Specifically for the type theory namespace, there is a **[recommended
-reading order]** for modules, which should be useful as a first
-introduction to Cubical Type Theory.
+Most of the modules in the 1Lab assume a baseline knowledge of type
+theory. For this, [**read the introduction here**](1Lab.intro.html).
 </div>
-
-[recommended reading order]: agda://1Lab.index
 
 The first things to be explained are the foundational constructions in
 (cubical) type theory - things like types themselves, [universes],

@@ -13,6 +13,9 @@ html {
   margin: 0;
 
   overflow-x: clip;
+
+  background-color: #fff;
+  color:            $code-fg;
 }
 
 :root {
@@ -30,12 +33,36 @@ body {
 
   @include centered-contents;
 
+  font-size: $font-size * 1.1;
+  overflow-x: clip;
+
+  background-color: $text-bg;
+  color: $text-fg;
   margin: 0;
 
-  color: $bluegray-900;
-  font-size: $font-size * 1.1;
+  &.show-equations {
+    span.reasoning-step {
+      .as-written {
+        display: inline;
+      }
+      .alternate {
+        display: none;
+      }
+    }
+  }
 
-  overflow-x: clip;
+  span.reasoning-step {
+    .as-written {
+      display: none;
+    }
+    .alternate {
+      display: inline;
+    }
+  }
+
+  .footnote-back {
+    padding-left: 0.5em;
+  }
 }
 
 @mixin left-bordered-block($color) {
@@ -75,12 +102,43 @@ main {
   div#post-toc-container {
     aside#toc {
       display: none;
+      a[href].header-link span {
+        display: none;
+      }
     }
 
     article {
       grid-column: 2;
       width: 100%;
       line-height: 1.3;
+
+      a[href].header-link {
+        color: black;
+        cursor: default;
+
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+
+        &:hover {
+          text-decoration: none !important;
+          background-color: white !important;
+          span {
+            display: inline-block;
+          }
+        }
+
+        &.hover-highlight {
+          background-color: white !important;
+        }
+
+        span {
+          display: none;
+          font-size: 12pt;
+          margin-left: 1em;
+          cursor: pointer;
+        }
+      }
     }
 
   }
@@ -138,14 +196,18 @@ ol, ul {
     margin-top: 5px;
     margin-bottom: 5px;
     p {
-      margin-top: 5px;
-      margin-bottom: 5px;
+      margin-top: 10px;
+      margin-bottom: 10px;
     }
   }
 }
 
 span.katex {
   font-size: 18pt;
+}
+
+span.abbrev {
+  text-decoration: 2px dotted underline;
 }
 
 .katex-display {
@@ -164,8 +226,13 @@ div.mathpar {
   gap: 1em;
 
   > figure {
-    width: auto;
     max-width: 33%;
+    padding: 0.75em;
+    width: auto !important;
+  }
+
+  .diagram-container {
+    width: unset;
   }
 }
 
@@ -229,14 +296,12 @@ blockquote, details.blockquote {
 }
 
 table {
-  width: 70%;
   margin: auto;
   border-collapse: collapse;
 
   td, th {
     text-align: center;
     padding: 0px 1em 0px 1em;
-    border: 2px solid $purple-400;
   }
 }
 
@@ -285,13 +350,12 @@ table {
 
       aside#toc {
         display: block !important;
-        max-width: 80%;
+        margin-right: 1em;
 
         h3 { @include centered-contents; }
 
         div#toc-container {
           overflow-x: hidden;
-          width: min-content;
           position: sticky;
           top: 2em;
 
@@ -300,10 +364,30 @@ table {
 
           bottom: 2em;
 
+          padding-right: 1em;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5em;
+          width: 100%;
+          
+          > hr {
+            margin-top: 0.25em;
+            margin-bottom: 0.25em;
+            width: 100%;
+            border: none;
+            border-bottom: 2px solid #94a3b8;
+          }
+
+          button {
+            display: none;
+          }
+
           ul {
             border-left: 2px solid $bluegray-400;
             list-style-type: none;
             padding-left: 1em;
+            margin-top: 0;
+            margin-bottom: 0;
 
             a {
               text-decoration: none;
@@ -327,8 +411,10 @@ table {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1em;
-
     }
+
+    padding: 0;
+    padding-bottom: 0.4em;
   }
 }
 
@@ -336,19 +422,66 @@ details {
   margin-top: 1em;
   margin-bottom: 1em;
 
+  border: 3px solid $cyan-100;
+  transition: border 0.3s ease-in-out;
+
   > summary {
     list-style-type: none;
-  }
+    background-color: $cyan-100;
 
-  & > summary::before {
-    content: "⯈";
-    display: inline-block;
+    border-left: 1em solid $cyan-100;
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
+    padding-right: 1em;
+
+    transition: background-color 0.3s ease-in-out, border-left 0.3s ease-in-out;
+
     cursor: pointer;
-    color: $code-blue;
+
+    &:hover::after {
+      text-decoration: underline;
+    }
+
+    &::after {
+      content: 'read more';
+      font-style: italic;
+      margin-left: 0.223em;
+      color: black;
+    }
+
+    > :nth-child(1) {
+      margin-top: 0;
+    }
   }
 
-  &[open] > summary::before {
-    transform: rotate(90deg);
+  &[open] { 
+    border: 3px solid $cyan-200;
+    summary {
+      border-left: 1em solid $cyan-200;
+      background-color: $cyan-200;
+      &::after {
+        content: 'read less';
+      }
+    }
+  }
+
+  &:not([open]) {
+    &:hover {
+      border: 3px solid $cyan-200;
+    }
+    summary:hover {
+      border-left: 1em solid $cyan-200;
+      background-color: $cyan-200;
+
+      &::after {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  >*:not(summary) {
+    margin-left: 1em;
+    margin-right: 1em;
   }
 }
 

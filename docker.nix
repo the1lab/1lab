@@ -24,10 +24,10 @@ let
       buildInputs = [
         glibc
         glibc.static
-        (gmp.override { withStatic = true; }).static
-        (libffi.overrideAttrs (old: { dontDisableStatic = true; }))
+        pkgsStatic.gmp
+        pkgsStatic.libffi
+        pkgsStatic.ncurses
         zlib.static
-        (ncurses.override { enableStatic = true; })
       ];
 
       # Since we have static glibc, etc. we have to build
@@ -77,6 +77,7 @@ in
 
     contents = the-lab.deps ++ [ 
       pkgs.pkgsStatic.busybox # Need a shell, so go with static busybox
+      python
       static-agda
 
       # Needed for Github Actions:

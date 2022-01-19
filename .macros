@@ -1,0 +1,8 @@
+\ty:\mathrm{Type}
+\set:\mathrm{Set}
+\cat:\mathrm{Cat}
+\grpd:\mathrm{Grpd}
+\ht:\mathbf{#1}
+\igpd:\text{$\infty$-\textbf{Grpd}}
+\hra:\hookrightarrow
+\io:{(\infty,1)}
