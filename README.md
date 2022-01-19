@@ -78,6 +78,7 @@ Cabal packages and can be installed however you prefer
 
 - If you're using Stack, that's all. If using cabal-install, you're
 going to need the following Haskell packages:
+  + Agda
   + shake
   + tagsoup
   + uri-encode

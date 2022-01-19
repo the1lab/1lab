@@ -26,7 +26,7 @@ automatically a [set], since we can take $R(x, y) = (x \le y) \land (y
 Using the language of enriched category theory, we can say that a poset
 is a univalent category enriched over propositions.
 
-[preorder relation]: 1Lab.Proset.html#isPreorder
+[preorder relation]: Order.Proset.html#isPreorder
 [Rijke's theorem]: 1Lab.HLevel.Sets.html#Rijke-isSet
 [set]: 1Lab.HLevel.html#isSet
 

@@ -18,15 +18,15 @@ let
   our-ghc = ghc.withPackages (pkgs: with pkgs; [
     shake directory tagsoup
     text containers uri-encode
-    process
+    process aeson Agda
   ]);
 
-  our-texlive = texlive.combine { 
+  our-texlive = texlive.combine {
     inherit (texlive)
       collection-basic
       collection-latex
       xcolor
-      preview 
+      preview
       pgf tikz-cd
       mathpazo
       varwidth xkeyval standalone;
@@ -84,7 +84,7 @@ in
 
     buildInputs = [
       # For driving the compilation:
-      shakefile agda 
+      shakefile agda
 
       # For building the text and maths:
       git sassc pandoc nodePackages.katex
@@ -134,6 +134,7 @@ in
         # For building the text and maths:
         git sassc pandoc nodePackages.katex
         agda-reference-filter agda-fold-equations
+        python
 
         # For building diagrams:
         poppler_utils rubber

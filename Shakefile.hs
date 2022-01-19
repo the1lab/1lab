@@ -1,12 +1,14 @@
 #!/usr/bin/env stack
 {- stack --resolver lts-18.18 script
-         --package shake
+         --package aeson
+         --package Agda
+         --package containers
          --package directory
+         --package process
+         --package shake
          --package tagsoup
          --package text
-         --package containers
          --package uri-encode
-         --package process
 -}
 {-# LANGUAGE BlockArguments, OverloadedStrings #-}
 {-# LANGUAGE LambdaCase #-}
@@ -19,6 +21,8 @@ import Control.Monad
 import qualified Data.Text.IO as Text
 import qualified Data.Map.Lazy as Map
 import qualified Data.Text as Text
+import Data.Aeson (eitherDecodeFileStrict')
+import Data.List.NonEmpty (NonEmpty((:|)))
 import Data.Map.Lazy (Map)
 import Data.Text (Text)
 import Data.Foldable
@@ -26,20 +30,23 @@ import Data.Either
 import Data.Maybe
 import Data.List
 
-import Debug.Trace
-
 import Development.Shake.FilePath
 import Development.Shake
 
 import Network.URI.Encode (decodeText)
 
 import qualified System.Directory as Dir
-import System.Process (callCommand)
-import System.Console.GetOpt
 import System.IO.Unsafe
+import System.Console.GetOpt
+import System.Process (callCommand)
 import System.IO
 
 import Text.HTML.TagSoup
+
+import Agda.Syntax.Concrete
+import Agda.Syntax.Parser
+import Agda.Utils.Pretty
+import Agda.Syntax.Common
 
 data Reference
   = Reference { refHref :: Text
@@ -62,9 +69,9 @@ findModule modname = do
     else modfile <.> "agda"
 
 buildMarkdown :: String
-              -> (Text -> Action (Map Text Reference))
+              -> (Text -> Action (Map Text Reference, Map Text Text))
               -> FilePath -> FilePath -> Action ()
-buildMarkdown gitCommit cache input output = do
+buildMarkdown gitCommit moduleIds input output = do
   need ["support/web/template.html"]
 
   liftIO $ Dir.createDirectoryIfMissing False "_build/diagrams"
@@ -105,7 +112,7 @@ buildMarkdown gitCommit cache input output = do
       (pandoc_args path)
 
     text <- liftIO $ Text.readFile path
-    tags <- traverse (parseAgdaLink cache) (parseTags text)
+    tags <- traverse (parseAgdaLink moduleIds) (parseTags text)
     liftIO $ Text.writeFile output (renderTags tags)
     command_ [] "agda-fold-equations" [output]
 
@@ -193,6 +200,7 @@ main = run \flags -> do
     Nothing -> pure ()
 
   fileIdMap <- newCache parseFileIdents
+  fileTyMap <- newCache parseFileTypes
   gitCommit <- newCache gitCommit
 
   "_build/all-pages.agda" %> \out -> do
@@ -203,7 +211,9 @@ main = run \flags -> do
               = moduleName (dropExtensions x) ++ " -- (text page)"
       toOut x = moduleName (dropExtensions x) ++ " -- (code only)"
 
-    writeFileLines out $ "{-# OPTIONS --cubical #-}":["open import " ++ toOut x | x <- files]
+    writeFileLines out $ "{-# OPTIONS --cubical #-}"
+                       : ["open import " ++ toOut x | x <- files]
+                      ++ ["open import " ++ x ++ " -- (builtin)" | x <- builtinModules]
 
     command [] "agda"
       [ "--html"
@@ -213,7 +223,15 @@ main = run \flags -> do
       , out
       ]
 
-  "_build/html/*.html" %> \out -> do
+  "_build/types.json" %> \out -> do
+    files <- sort <$> getDirectoryFiles "src" ["**/*.lagda.md", "**/*.agda"]
+    need (["_build/all-pages.agda", "support/get-types.py"] ++ map ("src" </>) files)
+
+    let modules = builtinModules ++ map (moduleName . dropExtensions) files
+
+    command_ [FileStdout out, Stdin (intercalate "\n" modules)] "python3" ["support/get-types.py"]
+
+  "_build/html1/*.html" %> \out -> do
     act <- traced "Agda dependency" $ agdaDependency flags out
     act
 
@@ -228,6 +246,14 @@ main = run \flags -> do
     if ismd
       then buildMarkdown gitCommit fileIdMap (input <.> ".md") out
       else liftIO $ Dir.copyFile (input <.> ".html") out
+
+  "_build/html/*.html" %> \out -> do
+    let input = "_build/html1" </> takeFileName out
+    need [input]
+
+    text <- liftIO $ Text.readFile input
+    tags <- traverse (addLinkType fileIdMap fileTyMap) (parseTags text)
+    liftIO $ Text.writeFile out (renderTags tags)
 
   "_build/html/*.svg" %> \out -> do
     let inp = "_build/diagrams" </> takeFileName out -<.> "tex"
@@ -294,14 +320,14 @@ main = run \flags -> do
 
 -- | Possibly interpret an <a href="agda://"> link to be a honest-to-god
 -- link to the definition.
-parseAgdaLink :: (Text -> Action (Map Text Reference))
-              -> Tag Text -> Action (Tag Text)
-parseAgdaLink cache tag@(TagOpen "a" attrs)
+parseAgdaLink :: (Text -> Action (Map Text Reference, Map Text Text))
+                 -> Tag Text -> Action (Tag Text)
+parseAgdaLink fileIds tag@(TagOpen "a" attrs)
   | Just href <- lookup "href" attrs, Text.pack "agda://" `Text.isPrefixOf` href = do
     href <- pure $ Text.splitOn "#" (Text.drop (Text.length "agda://") href)
     let
       cont mod ident = do
-        idMap <- cache mod
+        (idMap, _) <- fileIds mod
         case Map.lookup ident idMap of
           Just (Reference href classes) -> do
             pure (TagOpen "a" (emplace [("href", href)] attrs))
@@ -316,28 +342,113 @@ emplace :: Eq a => [(a, b)] -> [(a, b)] -> [(a, b)]
 emplace ((p, x):xs) ys = (p, x):emplace xs (filter ((/= p) . fst) ys)
 emplace [] ys = ys
 
+-- | Lookup an identifier given a module name and ID within that module,
+-- returning its type.
+addLinkType :: (Text -> Action (Map Text Reference, Map Text Text)) -- ^ Lookup an ident from a module name and location
+             -> (() -> Action (Map Text (Map Text Text))) -- ^ Lookup a type from a module name and ident
+             -> Tag Text -> Action (Tag Text)
+addLinkType fileIds fileTys tag@(TagOpen "a" attrs)
+  | Just href <- lookup "href" attrs
+  , [mod, _] <- Text.splitOn ".html#" href = do
+    ty <- resolveId mod href <$> fileIds mod <*> fileTys ()
+    pure case ty of
+      Nothing -> tag
+      Just ty -> TagOpen "a" (emplace [("data-type", ty)] attrs)
+
+    where
+      resolveId mod href (_, ids) types = do
+        types <- Map.lookup mod types
+        id <- Map.lookup href ids
+        Map.lookup id types
+addLinkType _ _ x = pure x
+
 -- | Parse an Agda module (in the final build directory) to find a list
 -- of its definitions.
-parseFileIdents :: Text -> Action (Map Text Reference)
+parseFileIdents :: Text -> Action (Map Text Reference, Map Text Text)
 parseFileIdents mod =
   do
-    let path = "_build/html" </> Text.unpack mod <.> "html"
+    let path = "_build/html1" </> Text.unpack mod <.> "html"
     need [ path ]
     traced ("parsing " ++ Text.unpack mod) do
-      go mempty . parseTags <$> Text.readFile path
+      go mempty mempty . parseTags <$> Text.readFile path
   where
-    go x (TagOpen "a" attrs:TagText name:TagClose "a":xs)
+    go fwd rev (TagOpen "a" attrs:TagText name:TagClose "a":xs)
       | Just id <- lookup "id" attrs, Just href <- lookup "href" attrs
       , Just classes <- lookup "class" attrs
       , mod `Text.isPrefixOf` href, id `Text.isSuffixOf` href
-      = go (Map.insert name (Reference href (Text.words classes)) x) xs
+      = go (Map.insert name (Reference href (Text.words classes)) fwd)
+           (Map.insert href name rev) xs
       | Just classes <- lookup "class" attrs, Just href <- lookup "href" attrs
       , "Module" `elem` Text.words classes, mod `Text.isPrefixOf` href
-      = go (Map.insert name (Reference href (Text.words classes)) x) xs
-    go x (_:xs) = go x xs
-    go x [] = x
+      = go (Map.insert name (Reference href (Text.words classes)) fwd)
+           (Map.insert href name rev) xs
+    go fwd rev (_:xs) = go fwd rev xs
+    go fwd rev [] = (fwd, rev)
+
 
 gitCommit :: () -> Action String
 gitCommit () = do
-  Stdout t <- command [] "git" ["rev-parse", "--verify", "HEAD"] 
+  Stdout t <- command [] "git" ["rev-parse", "--verify", "HEAD"]
   pure (head (lines t))
+
+--  Loads our type lookup table into memory
+parseFileTypes :: () -> Action (Map Text (Map Text Text))
+parseFileTypes () = do
+  need ["_build/types.json"]
+  liftIO (eitherDecodeFileStrict' "_build/types.json")
+    >>= either fail (liftIO . traverse (traverse instantiate))
+
+-- | Removes implicit arguments from the spine of an Agda type.
+--
+-- Implicits are removed in both rank-1 and higher rank positions (i.e.,
+-- to the left and right of function arrows), including the domains of
+-- Pi-types. Other positions are unaffected.
+
+instantiate :: Text -> IO Text
+instantiate ty = do
+  t <- runPMIO (parse exprParser (map flipDot (Text.unpack ty)))
+  case t of
+    (Right exp, _)
+      -> pure (Text.pack (map flipDot (render (pretty (removeImpls exp)))))
+    (Left e, _) -> pure ty
+  where
+    removeImpls :: Expr -> Expr
+    removeImpls (Pi (x :| xs) e) =
+      makePi (map (fmap removeImpls) $ filter ((/= Hidden) . getHiding) (x:xs)) (removeImpls e)
+    removeImpls (Fun span arg ret) =
+      Fun span (removeImpls <$> arg) (removeImpls ret)
+    removeImpls e = e
+
+    -- Swaps the character '.' (illegal in Agda identifiers, but
+    -- printed by Agda to indicate dependencies in generalisable
+    -- variables) for the Katakana middle dot character, and vice-versa.
+    --
+    -- We call this function to swap '.' -> middle dot when parsing, and
+    -- middle dot -> dot when printing.
+    flipDot :: Char -> Char
+    flipDot '.' = '\12539' -- Katakana middle dot
+    flipDot '\12539' = '.'
+    flipDot c = c
+
+builtinModules :: [String]
+builtinModules =
+  [ "Agda.Builtin.Bool"
+  , "Agda.Builtin.Char"
+  , "Agda.Builtin.Cubical.HCompU"
+  , "Agda.Builtin.Cubical.Path"
+  , "Agda.Builtin.Cubical.Sub"
+  , "Agda.Builtin.Float"
+  , "Agda.Builtin.FromNat"
+  , "Agda.Builtin.FromNeg"
+  , "Agda.Builtin.Int"
+  , "Agda.Builtin.List"
+  , "Agda.Builtin.Maybe"
+  , "Agda.Builtin.Nat"
+  , "Agda.Builtin.Reflection"
+  , "Agda.Builtin.Sigma"
+  , "Agda.Builtin.String"
+  , "Agda.Builtin.Unit"
+  , "Agda.Builtin.Word"
+  , "Agda.Primitive.Cubical"
+  , "Agda.Primitive"
+  ]
