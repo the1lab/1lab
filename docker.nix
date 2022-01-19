@@ -77,7 +77,7 @@ in
 
     contents = the-lab.deps ++ [ 
       pkgs.pkgsStatic.busybox # Need a shell, so go with static busybox
-      python
+      python3
       static-agda
 
       # Needed for Github Actions:
