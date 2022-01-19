@@ -40,7 +40,7 @@ let
       };
     in ''
       mkdir -p ${prefix}/static/${type};
-      install -Dm 655 ${p} ${prefix}/static/${type}/${family}.${type};
+      install -Dm 644 ${p} ${prefix}/static/${type}/${family}.${type};
     '';
 
   fonts = { prefix ? "$out" }: concatStringsSep "\n" (map make-font [
@@ -103,7 +103,7 @@ in
     '';
 
     installPhase = ''
-    mkdir -p $out{,/css/};
+    mkdir -p $out{,/css/,/lib/};
 
     # Copy our build artifacts
     cp -Lrv _build/html/* $out;
@@ -114,10 +114,17 @@ in
     # Copy bits of Iosevka
     ${fonts {}}
 
-    install -Dm 655 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-bold.otf;
-    install -Dm 655 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-regular.otf;
-    install -Dm 655 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-italic.otf;
-    install -Dm 655 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-bolditalic.otf;
+    # Copy bits of TeX Gyre
+    install -Dm 644 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-bold.otf;
+    install -Dm 644 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-regular.otf;
+    install -Dm 644 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-italic.otf;
+    install -Dm 644 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-bolditalic.otf;
+
+    # Copy Agda interface files
+    for f in src/**/*.agdai; do
+      install -Dm 644 $f $out/lib/''${f#$(dirname "$(dirname "$f")")}
+    done;
+    install -Dm 644 _build/all-pages.agdai $out/lib/all-pages.agdai
     '';
 
     passthru = {
