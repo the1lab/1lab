@@ -211,7 +211,9 @@ main = run \flags -> do
               = moduleName (dropExtensions x) ++ " -- (text page)"
       toOut x = moduleName (dropExtensions x) ++ " -- (code only)"
 
-    writeFileLines out $ "{-# OPTIONS --cubical #-}":["open import " ++ toOut x | x <- files]
+    writeFileLines out $ "{-# OPTIONS --cubical #-}"
+                       : ["open import " ++ toOut x | x <- files]
+                      ++ ["open import " ++ x ++ " -- (builtin)" | x <- builtinModules]
 
     command [] "agda"
       [ "--html"
@@ -225,7 +227,7 @@ main = run \flags -> do
     files <- sort <$> getDirectoryFiles "src" ["**/*.lagda.md", "**/*.agda"]
     need (["_build/all-pages.agda", "support/get-types.py"] ++ map ("src" </>) files)
 
-    let modules = map (moduleName . dropExtensions) files
+    let modules = builtinModules ++ map (moduleName . dropExtensions) files
 
     command_ [FileStdout out, Stdin (intercalate "\n" modules)] "python3" ["support/get-types.py"]
 
@@ -427,3 +429,26 @@ instantiate ty = do
     flipDot '.' = '\12539' -- Katakana middle dot
     flipDot '\12539' = '.'
     flipDot c = c
+
+builtinModules :: [String]
+builtinModules =
+  [ "Agda.Builtin.Bool"
+  , "Agda.Builtin.Char"
+  , "Agda.Builtin.Cubical.HCompU"
+  , "Agda.Builtin.Cubical.Path"
+  , "Agda.Builtin.Cubical.Sub"
+  , "Agda.Builtin.Float"
+  , "Agda.Builtin.FromNat"
+  , "Agda.Builtin.FromNeg"
+  , "Agda.Builtin.Int"
+  , "Agda.Builtin.List"
+  , "Agda.Builtin.Maybe"
+  , "Agda.Builtin.Nat"
+  , "Agda.Builtin.Reflection"
+  , "Agda.Builtin.Sigma"
+  , "Agda.Builtin.String"
+  , "Agda.Builtin.Unit"
+  , "Agda.Builtin.Word"
+  , "Agda.Primitive.Cubical"
+  , "Agda.Primitive"
+  ]
