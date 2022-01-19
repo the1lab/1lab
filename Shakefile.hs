@@ -1,6 +1,7 @@
 #!/usr/bin/env stack
 {- stack --resolver lts-18.18 script
          --package aeson
+         --package Agda
          --package containers
          --package directory
          --package process
@@ -279,7 +280,7 @@ main = run \flags -> do
     traced "copying" $ Dir.copyFile inp out
 
   unless (Only `elem` flags) $ phony "all" do
-    need ["_build/all-pages.agda", "_build/types.json"]
+    need ["_build/all-pages.agda"]
     files <- filter ("open import" `isPrefixOf`) . lines <$> readFile' "_build/all-pages.agda"
     need $ "_build/html/all-pages.html"
          : [ "_build/html" </> (words file !! 2) <.> "html"
