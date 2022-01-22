@@ -52,7 +52,7 @@ to a built-in Agda page, have their own explanations, linked below:
 
 With that out of the way, the first thing to do is the aforementioned
 refresher on type theory. **If you're already familiar with type theory,
-feel free to skip to [What's next?](whats-next)**. If you're not
+feel free to skip to [What's next?](#what-next)**. If you're not
 familiar with some of the connections that HoTT has to other areas of
 mathematics, like higher category theory and topology, I recommend that
 you read the type theory section anyway!
@@ -265,7 +265,7 @@ back into focus, while if this is your first time interacting with it,
 then the content here should be enough for you to understand the rest of
 the 1lab development.
 
-## Functions
+# Functions
 
 If we have two previously-constructed types $A$ and $B$, we can form the
 type of **functions from $A$ to $B$**, written $A \to B$. Often,
@@ -379,7 +379,7 @@ module _ where private
   f x y = x + 3 * y
 ```
 
-## Universes
+# Universes
 
 Instead of jumping right into the syntactic definition (and motivation)
 for universes, I'm going to take a longer route, through _topos theory_
@@ -674,7 +674,7 @@ Specifically, any object $B$ has a _name_, a map $\ulcorner B \urcorner
 connection clearer, let's pass back to a syntactic presentation of type
 theory, to see what universes look like "from the inside".
 
-### Universes, internally
+## Universes, internally
 
 Inside type theory, object classifiers present themselves as types which
 contain types, which we call **universes**. Every type is contained in
@@ -758,7 +758,7 @@ to be taken to the page where it is defined and explained.
   _ = Fibration-equiv
 ```
 
-## Interlude: Just enough about paths
+# Interlude: Basics of Paths
 
 Since the treatment of paths is the most important aspect of homotopy
 type theory, rest assured that we'll talk about it in more detail later.
@@ -999,7 +999,7 @@ of the ideas in the following section, about dependent sums, precise.
 It's not meant to be a comprehensive treatment of the path type; For
 that, see the section _[Paths, in detail]_ later on.
 
-## Sums
+# Sums
 
 Recall that in the construction of a map into $B$ from a predicate 
 $\chi : B \to \Omega$, we interpreted $\chi$ as a family of sets with at
@@ -1144,7 +1144,7 @@ module _ {A B : Type} where private
   fibre f y = Σ[ x ∈ A ] (f x ≡ y)
 ```
 
-## Dependent products
+# Dependent products
 
 Imagine that we have two types, $A$ and $B$. For simplicity, they live
 in the same universe, which can be any universe of our choice. We know
@@ -1293,6 +1293,7 @@ terminology "contractible if inhabited" or **subsingleton** instead.
 
 </details>
 
+
 # What next?
 
 While the text above was meant to serve as a linearly-structured
@@ -1310,7 +1311,7 @@ open import 1Lab.Path
 ```
 
 The module `1Lab.Path`{.Agda} develops the theory of path types, filling
-in the details that were missing in _[Interlude - Just enough about
+in the details that were missing in _[Interlude - Basics of
 paths](#interlude-just-enough-about-paths)_ above. In particular, the
 Path module talks about the structure of the **interval type**
 $\mathbb{I}$, the definition of **dependent paths**, **squares**, and
