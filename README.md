@@ -20,13 +20,18 @@ required for a complete deployment. Since this container is on the
 registry, we can do a one-line build of the 1Lab as follows:
 
 ```bash
-% docker run -it -v $PWD:/workspace docker.io/pltamy/1lab:latest /bin/bash -i
-$ 1lab-shake all -j         # build everything
-$ bash support/make-site.sh # copy everything into place
+% docker run -it -v $PWD:/workspace docker.io/pltamy/1lab:latest /bin/sh -i
+$ 1lab-shake all -j       # build everything
+$ sh support/make-site.sh # copy everything into place
 ```
 
 After this, the directory `_build/site` will have everything in place
-for use as the HTTP root of a static site to serve the 1Lab.
+for use as the HTTP root of a static site to serve the 1Lab, for example
+using the Python distribution that the container ships with:
+
+```bash
+$ python -m http.server --directory _build/site
+```
 
 ## Using Nix
 
@@ -37,20 +42,33 @@ deployment of the 1Lab. This has the benefit of also providing
 development which supports compilation of the HTML and SVG files, in
 addition to the Agda.
 
-To build, invoke `nix build`. The result will be linked as `result` as
-usual. This directory tree can then be copied or used directly as the
-root for a web server, since all the required dependencies are copied
-into place.
+You can then use Nix to compile the project as usual. As a quick point
+of reference, `nix build` will type-check and compile the entire thing,
+and copy the necessary assets (TeX Gyre Pagella and KaTeX css/fonts) to
+the right locations. The result will be linked as `./result`, which can
+then be used to serve a website:
 
 ```bash
 $ nix build
+$ python -m http.server --directory result
 ```
 
-The `buildInputs` to `default.nix` _don't_ include Stack, so you'll have
-to use `runghc` to build incrementally:
+For interactive development, keep in mind that the `buildInputs` to
+`default.nix` _don't_ include Stack or `ghc`. However, just like the
+Docker container, a pre-built version of the Shakefile is included as
+`1lab-shake`:
 
 ```bash
-$ runghc ./Shakefile.hs all -j
+$ 1lab-shake all -j
+```
+
+Since `nix-shell` will load the derivation steps as environment
+variables, you can use something like this to copy the static assets
+into place:
+
+```bash
+$ export out=_build/site
+$ echo "${installPhase}" | bash
 ```
 
 ## Directly
