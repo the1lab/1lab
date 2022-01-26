@@ -355,6 +355,7 @@ table {
         h3 { @include centered-contents; }
 
         div#toc-container {
+          box-sizing: border-box;
           overflow-x: hidden;
           position: sticky;
           top: 2em;
@@ -369,7 +370,7 @@ table {
           flex-direction: column;
           gap: 0.5em;
           width: 100%;
-          
+
           > hr {
             margin-top: 0.25em;
             margin-bottom: 0.25em;
@@ -454,7 +455,7 @@ details {
     }
   }
 
-  &[open] { 
+  &[open] {
     border: 3px solid $cyan-200;
     summary {
       border-left: 1em solid $cyan-200;
