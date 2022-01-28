@@ -21,7 +21,7 @@ provides a tool to define them: _higher inductive types_.
 ```agda
 data ∥_∥ {ℓ} (A : Type ℓ) : Type ℓ where
   inc    : A → ∥ A ∥
-  squash : (x y : ∥ A ∥) → x ≡ y
+  squash : isProp ∥ A ∥
 ```
 
 The two constructors that generate `∥_∥`{.Agda} state precisely that the
@@ -51,12 +51,12 @@ whenever it is a family of propositions, by providing a case for
 ```
 
 <!--
-```
+```agda
 ∥-∥-elim₂ : ∀ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁}
               {P : ∥ A ∥ → ∥ B ∥ → Type ℓ₂}
-           → (∀ x y → isProp (P x y))
-           → (∀ x y → P (inc x) (inc y))
-           → ∀ x y → P x y
+          → (∀ x y → isProp (P x y))
+          → (∀ x y → P (inc x) (inc y))
+          → ∀ x y → P x y
 ∥-∥-elim₂ {A = A} {B} {P} pprop work x y = go x y where
   go : ∀ x y → P x y
   go (inc x) (inc x₁) = work x x₁
@@ -67,6 +67,7 @@ whenever it is a family of propositions, by providing a case for
     isProp→PathP (λ i → pprop (squash x x₁ i) z)
                   (go x z) (go x₁ z) i
 ```
+-->
 
 The propositional truncation can be called the **free proposition** on a
 type, because it satisfies the universal property that a left adjoint
