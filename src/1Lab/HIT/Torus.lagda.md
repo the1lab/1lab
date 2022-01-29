@@ -28,7 +28,7 @@ data T² : Type where
   base : T² 
   loopA : base ≡ base
   loopB : base ≡ base
-  square : PathP ( λ i → loopA i ≡ loopA i ) loopB loopB
+  square : Square loopA loopB loopB loopA
 ```
 
 The resulting HIT is equivalent to the product of two circles.
