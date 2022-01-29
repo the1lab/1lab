@@ -37,12 +37,12 @@ The resulting HIT is equivalent to the product of two circles.
 open isIso
 
 T²≃S¹×S¹ : T² ≡ ( S¹ × S¹ )
-T²≃S¹×S¹ = ua ( T²→S¹×S¹ , isIso→isEquiv iso-pf) where
+T²≃S¹×S¹ = ua (T²→S¹×S¹ , isIso→isEquiv iso-pf) where
   T²→S¹×S¹ : T² → S¹ × S¹
-  T²→S¹×S¹ base = ( base , base ) 
-  T²→S¹×S¹ (loopA i) = ( loop i , base ) 
-  T²→S¹×S¹ (loopB j) = ( base , loop j ) 
-  T²→S¹×S¹ (square i j) = ( loop i , loop j ) 
+  T²→S¹×S¹ base = base , base 
+  T²→S¹×S¹ (loopA i) = loop i , base 
+  T²→S¹×S¹ (loopB j) = base , loop j 
+  T²→S¹×S¹ (square i j) = loop i , loop j 
 
   S¹×S¹→T² : S¹ × S¹ → T²
   S¹×S¹→T² (base , base) =  base
@@ -56,6 +56,7 @@ T²≃S¹×S¹ = ua ( T²→S¹×S¹ , isIso→isEquiv iso-pf) where
   iso-pf .rinv (base , loop j) = refl 
   iso-pf .rinv (loop i , base) = refl 
   iso-pf .rinv (loop i , loop j) = refl 
+
   iso-pf .linv base = refl 
   iso-pf .linv (loopA i) = refl
   iso-pf .linv (loopB j) = refl 
