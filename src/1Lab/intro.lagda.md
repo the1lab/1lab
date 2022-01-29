@@ -1293,7 +1293,6 @@ terminology "contractible if inhabited" or **subsingleton** instead.
 
 </details>
 
-
 # What next?
 
 While the text above was meant to serve as a linearly-structured

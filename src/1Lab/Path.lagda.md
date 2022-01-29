@@ -1682,5 +1682,13 @@ _▷_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ : A i0} {a₁ a₁' : A i1}
   → PathP A a₀ a₁ → a₁ ≡ a₁' → PathP A a₀ a₁'
 (p ▷ q) i =
   hcomp (λ j → λ {(i = i0) → p i0; (i = i1) → q j}) (p i)
+
+Square≡·· : ∀ {ℓ} {A : Type ℓ}
+          → {w x y z : A} 
+          → {p : x ≡ w} {q : x ≡ y} {s : w ≡ z} {r : y ≡ z}
+          → Square p q s r ≡ (sym p ·· q ·· r ≡ s)
+Square≡·· {p = p} {q} {s} {r} k = 
+  PathP (λ i → p (i ∨ k) ≡ r (i ∨ k)) 
+    (··-filler (sym p) q r k) s
 ```
 -->

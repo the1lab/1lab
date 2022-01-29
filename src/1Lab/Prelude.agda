@@ -34,3 +34,4 @@ open import 1Lab.Type.Dec public
 open import 1Lab.Type.Sigma public
 
 open import 1Lab.HIT.Truncation public
+open import 1Lab.HIT.Truncation.Set public

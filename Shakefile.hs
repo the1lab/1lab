@@ -141,64 +141,8 @@ buildAgda path = do
   putVerbose $ "Identified Agda dependencies: " ++ show modules
   need modules
 
-data Flags = Only | Ding String
-  deriving (Eq, Show)
-
-run :: ([Flags] -> Rules ()) -> IO ()
-run f = do
-  ref <- newEmptyMVar
-  files <- unsafeInterleaveIO (takeMVar ref)
-  cwd <- Dir.getCurrentDirectory
-  shakeArgsWith shakeOptions{shakeFiles=files} (opts cwd)
-    \arguments targets -> do
-      let
-        flags :: [Flags]
-        targets' :: [[String] -> [String]]
-        (flags, targets') = partitionEithers arguments
-
-      let paths = foldr (.) id targets' targets
-
-      if Only `elem` flags
-        then do
-          putMVar ref "_build/shake-only"
-          when (length paths > 1)
-               (error "Invalid options specified: --only can only be used with one target")
-        else
-          putMVar ref "_build/shake"
-
-      putStrLn $ "Building: " ++ show paths
-      pure (Just (f flags *> want paths))
-  where
-    opts :: String
-         -> [OptDescr (Either String
-                              (Either Flags ([String] -> [String])))]
-    opts cwd =
-      [ Option "" ["only"] (NoArg (Right (Left Only)))
-          "Rebuild only the mentioned Agda file."
-      , Option "" ["at-exit"]
-          (ReqArg (\x -> Right (Left (Ding x))) "The program to invoke")
-          "Invoke a command after compilation finishes."
-      , Option "" ["reverse"]
-          (ReqArg (\x -> Right (Right (reverseTarget cwd x:))) "The Agda file to build")
-          "Build the HTML file corresponding to the given Agda file"
-      ]
-
-    reverseTarget cwd path =
-          "_build/html"
-      </> moduleName (dropDirectory1 (dropExtensions (makeRelative cwd path)))
-      <.> "html"
-
-agdaDependency :: [Flags] -> FilePath -> IO (Action ())
-agdaDependency flags file
-  | Only `elem` flags = buildAgda <$> findModule (dropExtension (takeFileName file))
-  | otherwise = pure $ need ["_build/all-pages.agda"]
-
 main :: IO ()
-main = run \flags -> do
-  case listToMaybe $ mapMaybe (\case { Ding x -> Just x; _ -> Nothing }) flags of
-    Just d -> action $ runAfter $ callCommand d
-    Nothing -> pure ()
-
+main = shakeArgs shakeOptions{shakeFiles="_build"} $ do
   fileIdMap <- newCache parseFileIdents
   fileTyMap <- newCache parseFileTypes
   gitCommit <- newCache gitCommit
@@ -232,8 +176,7 @@ main = run \flags -> do
     command_ [FileStdout out, Stdin (intercalate "\n" modules)] "python3" ["support/get-types.py"]
 
   "_build/html1/*.html" %> \out -> do
-    act <- traced "Agda dependency" $ agdaDependency flags out
-    act
+    need ["_build/all-pages.agda"]
 
     let
       modname = dropExtension (takeFileName out)
@@ -281,7 +224,7 @@ main = run \flags -> do
     need [inp]
     traced "copying" $ Dir.copyFile inp out
 
-  unless (Only `elem` flags) $ phony "all" do
+  phony "all" do
     need ["_build/all-pages.agda"]
     files <- filter ("open import" `isPrefixOf`) . lines <$> readFile' "_build/all-pages.agda"
     need $ "_build/html/all-pages.html"
@@ -293,7 +236,7 @@ main = run \flags -> do
     f2 <- getDirectoryFiles "." ["**/*.js"] >>= \files -> pure ["_build/html/" </> takeFileName f | f <- files]
     f3 <- getDirectoryFiles "support/static/" ["**/*"] >>= \files ->
       pure ["_build/html/static" </> f | f <- files]
-    f4 <- getDirectoryFiles "_build/html0" ["Agda.*"] >>= \files ->
+    f4 <- getDirectoryFiles "_build/html0" ["Agda.*.agda"] >>= \files ->
       pure ["_build/html/" </> f | f <- files]
     need $ "_build/html/favicon.ico":(f1 ++ f2 ++ f3 ++ f4)
 
@@ -303,20 +246,6 @@ main = run \flags -> do
   phony "really-clean" do
     need ["clean"]
     removeFilesAfter "_build" ["**/*.agdai", "*.lua"]
-
-  phony "sync" do
-    need ["all"]
-    config <- lines <$> readFile' "Makefile"
-    let
-      servers = concatMap (drop 2 . words) $ filter ("UPLOAD_SERVERS" `isPrefixOf`) config
-      configs
-        = map (\x -> let [s,_,b] = words x in (drop (Text.length "UPLOAD_DIR_") s, b))
-        $ filter ("UPLOAD_DIR" `isPrefixOf`) config
-
-    for_ servers \server -> do
-      let
-        Just t = lookup server configs
-      command_ [Traced ("rsync (for " ++ server ++ ")")] "rsync" ["_build/html/", server ++ ':':t, "-avx" ]
 
 -- | Possibly interpret an <a href="agda://"> link to be a honest-to-god
 -- link to the definition.

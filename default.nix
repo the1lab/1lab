@@ -119,12 +119,6 @@ in
     install -Dm 644 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-regular.otf;
     install -Dm 644 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-italic.otf;
     install -Dm 644 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-bolditalic.otf;
-
-    # Copy Agda interface files
-    for f in src/**/*.agdai; do
-      install -Dm 644 $f $out/lib/''${f#$(dirname "$(dirname "$f")")}
-    done;
-    install -Dm 644 _build/all-pages.agdai $out/lib/all-pages.agdai
     '';
 
     passthru = {

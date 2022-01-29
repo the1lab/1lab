@@ -206,6 +206,41 @@ Group-univalent {ℓ = ℓ} =
       axiom[ hasIsGroup by (λ _ → isProp-isGroup) ]))
 ```
 
+## Making groups
+
+Since the interface of `GroupOn`{.Agda} is very deeply nested, we
+introduce a helper function for arranging the data of a group into a
+record.
+
+```agda
+makeGroup 
+  : ∀ {ℓ} {G : Type ℓ}
+  → isSet G
+  → (unit : G) (_⋆_ : G → G → G) (inv : G → G)
+  → (∀ x y z → (x ⋆ y) ⋆ z ≡ x ⋆ (y ⋆ z))
+  → (∀ x → inv x ⋆ x ≡ unit) → (∀ x → x ⋆ inv x ≡ unit)
+  → (∀ x → unit ⋆ x ≡ x)
+  → GroupOn G
+makeGroup gset id star inv assoc invl invr idl = r where
+  open isGroup
+  
+  r : GroupOn _
+  r ._⋆_ = star
+  r .hasIsGroup .unit = id
+  r .hasIsGroup .hasIsMonoid .hasIsSemigroup .hasIsMagma .hasIsSet = gset
+  r .hasIsGroup .hasIsMonoid .hasIsSemigroup .associative = sym (assoc _ _ _)
+  r .hasIsGroup .hasIsMonoid .idˡ = idl _
+  r .hasIsGroup .hasIsMonoid .idʳ {x = x} = 
+    star x id               ≡⟨ ap₂ star refl (sym (invl x)) ⟩
+    star x (star (inv x) x) ≡⟨ sym (assoc _ _ _) ⟩
+    star (star x (inv x)) x ≡⟨ ap₂ star (invr x) refl ⟩
+    star id x               ≡⟨ idl x ⟩
+    x                       ∎
+  r .hasIsGroup .inverse = inv
+  r .hasIsGroup .inverseˡ = invl _
+  r .hasIsGroup .inverseʳ = invr _
+```
+
 # Symmetric Groups
 
 If $X$ is a set, then the type of all bijections $X \simeq X$ is also a
@@ -255,3 +290,11 @@ equivalence is both a section and a retraction.
   groupStr .hasIsGroup .inverseʳ {x = f , eqv} =
     Σ≡Prop isProp-isEquiv (funext (equiv→section eqv))
 ```
+
+<!--
+```agda
+isCommutative : ∀ {ℓ} (G : Group ℓ) → Type ℓ
+isCommutative (G , st) = ∀ (x y : G) → x G.⋆ y ≡ y G.⋆ x
+  where module G = GroupOn st
+```
+-->
