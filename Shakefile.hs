@@ -99,7 +99,7 @@ buildMarkdown gitCommit moduleIds input output = do
     templateName = "support/web/template.html"
     modname = moduleName (dropDirectory1 (dropDirectory1 (dropExtension input)))
 
-  need [templateName]
+  need [templateName, input]
 
   modulePath <- findModule modname
   let
