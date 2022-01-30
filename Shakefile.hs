@@ -137,7 +137,9 @@ buildMarkdown gitCommit moduleIds input output = do
       let
         digest = showDigest . sha1 . LazyBS.fromStrict $ Text.encodeUtf8 contents
         title = fromMaybe "commutative diagram" (lookup "title" attrs)
-      liftIO $ Text.writeFile ("_build/diagrams" </> digest <.> "tex") contents
+        output = "_build/diagrams" </> digest <.> "tex"
+      liftIO $ Text.writeFile output contents
+      lift $ produces [output]
       tell ["_build/html" </> digest <.> "svg"]
 
       pure $ Div ("", ["diagram-container"], [])
@@ -175,26 +177,6 @@ buildMarkdown gitCommit moduleIds input output = do
 
   command_ [] "agda-fold-equations" [output]
 
-buildAgda :: String -> Action ()
-buildAgda path = do
-  need [path]
-  (Stdout s) <-
-    command [] "agda"
-      [ "--html"
-      , "--html-dir=_build/html0"
-      , "--html-highlight=auto"
-      , "--css=/css/agda-cats.css"
-      , path
-      ]
-  let
-    out = lines s
-    html = filter (not . ("Generating HTML for Agda." `isPrefixOf`))
-         $ filter ("Generating HTML for" `isPrefixOf`) out
-
-  modules <- traverse (findModule . (!! 3) . words) html
-  putVerbose $ "Identified Agda dependencies: " ++ show modules
-  need modules
-
 main :: IO ()
 main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ do
   fileIdMap <- newCache parseFileIdents
@@ -217,6 +199,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
       [ "--html"
       , "--html-dir=_build/html0"
       , "--html-highlight=auto"
+      , "--local-interfaces"
       , "--css=/css/agda-cats.css"
       , out
       ]
