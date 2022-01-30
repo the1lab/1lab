@@ -109,6 +109,13 @@ Set : (ℓ : Level) → Type (lsuc ℓ)
 Set ℓ = Σ (isSet {ℓ = ℓ})
 ```
 
+<!--
+```agda
+Prop : (ℓ : Level) → Type (lsuc ℓ)
+Prop ℓ = Σ (isProp {ℓ = ℓ})
+```
+-->
+
 Similarly, the types of h-level 3 are called **groupoids**.
 
 ```agda
@@ -141,7 +148,7 @@ isContr→isProp C x y i =
 ```
 
 <!--
-```
+```agda
 SingletonP : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → Type _
 SingletonP A a = Σ[ x ∈ A i1 ] PathP A a x
 
@@ -398,7 +405,7 @@ isHLevel→isHLevelDep {A = A} {B = B} (suc n) hl {a0} {a1} b0 b1 =
 ```
 
 <!--
-```
+```agda
 isProp→SquareP : ∀ {B : I → I → Type ℓ} → ((i j : I) → isProp (B i j))
              → {a : B i0 i0} {b : B i0 i1} {c : B i1 i0} {d : B i1 i1}
              → (p : PathP (λ j → B j i0) a c)
