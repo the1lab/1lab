@@ -46,6 +46,10 @@ give the unit, both on the left and on the right:
 
   open isMonoid hasIsMonoid public
 
+  inv-unit≡unit : inverse unit ≡ unit
+  inv-unit≡unit = monoid-inverse-unique 
+    hasIsMonoid unit _ _ inverseˡ (idˡ hasIsMonoid)
+
 open isGroup
 ```
 
@@ -181,6 +185,12 @@ identity:
     (e 1A B.⋆ e 1A) B.⋆ B.inverse (e 1A) ≡⟨ ap₂ B._⋆_ (sym (pres-⋆ _ _) ∙ ap e A.idˡ) refl ⟩ 
     e 1A B.⋆ B.inverse (e 1A)            ≡⟨ B.inverseʳ ⟩ 
     1B                                   ∎
+
+  pres-inv : ∀ x → e (A.inverse x) ≡ B.inverse (e x)
+  pres-inv x = 
+    monoid-inverse-unique B.hasIsMonoid (e x) _ _ 
+      (sym (pres-⋆ _ _) ·· ap e A.inverseˡ ·· pres-id) 
+      B.inverseʳ
 ```
 
 An `equivalence`{.Agda ident=_≃_} is an equivalence of groups when its

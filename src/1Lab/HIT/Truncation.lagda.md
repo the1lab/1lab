@@ -98,6 +98,16 @@ truncation extends to a functor:
 ∥-∥-map f (squash x y i) = squash (∥-∥-map f x) (∥-∥-map f y) i
 ```
 
+<!--
+```agda
+∥-∥-map₂ : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
+         → (A → B → C) → ∥ A ∥ → ∥ B ∥ → ∥ C ∥
+∥-∥-map₂ f (inc x) (inc y)  = inc (f x y)
+∥-∥-map₂ f (squash x y i) z = squash (∥-∥-map₂ f x z) (∥-∥-map₂ f y z) i
+∥-∥-map₂ f x (squash y z i) = squash (∥-∥-map₂ f x y) (∥-∥-map₂ f x z) i
+```
+-->
+
 Using the propositional truncation, we can define the **existential
 quantifier** as a truncated `Σ`{.Agda}.
 
