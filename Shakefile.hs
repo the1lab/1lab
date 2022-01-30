@@ -10,11 +10,12 @@
          --package pandoc
          --package pandoc-types
          --package process
+         --package SHA
          --package shake
+         --package syb
          --package tagsoup
          --package text
          --package uri-encode
-         --package SHA
 -}
 {-# LANGUAGE BlockArguments, OverloadedStrings #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving, TypeFamilies, FlexibleContexts #-}
@@ -424,12 +425,12 @@ tcAndLoadPublicNames path basepn = do
       Left _ -> pure Nothing
       Right d -> do
         expr <- reify . killDomainNames $ defType d
-        t <- fmap (render . pretty . killQual) . 
+        t <- fmap (render . pretty . killQual) .
           abstractToConcrete_ . removeImpls $ expr
 
         case rangeFile (nameBindingSite (qnameName name)) of
           S.Just (filePath -> f)
-            | ("Agda/Builtin" `isInfixOf` f) || ("Agda/Primitive" `isInfixOf` f) -> 
+            | ("Agda/Builtin" `isInfixOf` f) || ("Agda/Primitive" `isInfixOf` f) ->
               pure $ do
                 fp <- fakePath name
                 pure (name, fp, t)
@@ -452,8 +453,8 @@ tcAndLoadPublicNames path basepn = do
   pure (Map.fromList (mapMaybe f li))
 
 fakePath :: QName -> Maybe FilePath
-fakePath (QName (MName xs) _) = 
-  listToMaybe 
+fakePath (QName (MName xs) _) =
+  listToMaybe
     [ l <.> "html"
     | l <- map (intercalate ".") (inits (map (render . pretty . nameConcrete) xs))
     , l `elem` builtinModules
