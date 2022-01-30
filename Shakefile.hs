@@ -286,11 +286,11 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
            | file <- files
            ]
 
-    f1 <- getDirectoryFiles "." ["**/*.scss"] >>= \files -> pure ["_build/html/css/" </> takeFileName f -<.> "css" | f <- files]
-    f2 <- getDirectoryFiles "." ["**/*.js"] >>= \files -> pure ["_build/html/" </> takeFileName f | f <- files]
+    f1 <- getDirectoryFiles "support" ["**/*.scss"] >>= \files -> pure ["_build/html/css/" </> takeFileName f -<.> "css" | f <- files]
+    f2 <- getDirectoryFiles "support" ["**/*.js"] >>= \files -> pure ["_build/html/" </> takeFileName f | f <- files]
     f3 <- getDirectoryFiles "support/static/" ["**/*"] >>= \files ->
       pure ["_build/html/static" </> f | f <- files]
-    f4 <- getDirectoryFiles "_build/html0" ["Agda.*.agda"] >>= \files ->
+    f4 <- getDirectoryFiles "_build/html0" ["Agda.*.html"] >>= \files ->
       pure ["_build/html/" </> f | f <- files]
     need $ "_build/html/favicon.ico":(f1 ++ f2 ++ f3 ++ f4)
 
