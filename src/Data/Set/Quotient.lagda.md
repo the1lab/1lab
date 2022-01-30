@@ -8,8 +8,8 @@ module Data.Set.Quotient where
 ```agda
 private variable
   ℓ ℓ' : Level
-  A B : Type ℓ
-  R S : A → A → Type ℓ
+  A B C : Type ℓ
+  R S T : A → A → Type ℓ
 ```
 -->
 
@@ -83,6 +83,24 @@ Quot-elimProp bp f =
   Quot-elim (λ x → isProp→isSet (bp x)) f λ x y r i → 
     isProp→PathP (λ i → bp (quot x y r i)) (f x) (f y) i
 
+Quot-elimProp₂ 
+  : ∀ {ℓ} {B : A / R → B / S → Type ℓ}
+  → (∀ x y → isProp (B x y))
+  → (f : ∀ x y → B (inc x) (inc y))
+  → ∀ x y → B x y
+Quot-elimProp₂ bp f = 
+  Quot-elimProp (λ x → isHLevelΠ 1 (bp x)) 
+    λ x → Quot-elimProp (bp (inc x)) (f x)
+
+Quot-elimProp₃
+  : ∀ {ℓ} {B : A / R → B / S → C / T → Type ℓ}
+  → (∀ x y z → isProp (B x y z))
+  → (f : ∀ x y z → B (inc x) (inc y) (inc z))
+  → ∀ x y z → B x y z
+Quot-elimProp₃ bp f = 
+  Quot-elimProp₂ (λ x y → isHLevelΠ 1 (bp x y)) 
+    λ x y → Quot-elimProp (bp (inc x) (inc y)) (f x y)
+
 Quot-rec : ∀ {ℓ} {B : Type ℓ}
          → isSet B
          → (f : A → B)
@@ -100,6 +118,15 @@ Quot-rec₂
 Quot-rec₂ cs f r1 r2 = 
   Quot-rec (isHLevel→ 2 cs) (λ x → Quot-rec cs (f x) (r2 x)) 
     (λ x y r → funext (Quot-elimProp (λ _ → cs _ _) λ e → r1 e x y r))
+
+Quot-op₂ : (∀ x → R x x) → (∀ y → S y y)
+         → (_⋆_ : A → B → C)
+         → (∀ a b x y → R a b → S x y → T (a ⋆ x) (b ⋆ y))
+         → A / R → B / S → C / T
+Quot-op₂ Rr Sr op resp = 
+  Quot-rec₂ squash (λ x y → inc (op x y)) 
+    (λ z x y r → quot _ _ (resp x y z z r (Sr z))) 
+    λ z x y r → quot _ _ (resp z z x y (Rr z) r)
 ```
 -->
 

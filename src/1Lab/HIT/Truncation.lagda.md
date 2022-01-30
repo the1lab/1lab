@@ -105,6 +105,24 @@ truncation extends to a functor:
 ∥-∥-map₂ f (inc x) (inc y)  = inc (f x y)
 ∥-∥-map₂ f (squash x y i) z = squash (∥-∥-map₂ f x z) (∥-∥-map₂ f y z) i
 ∥-∥-map₂ f x (squash y z i) = squash (∥-∥-map₂ f x y) (∥-∥-map₂ f x z) i
+
+∥-∥-recSet : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+           → (f : A → B)
+           → (∀ x y → f x ≡ f y)
+           → isSet B
+           → ∥ A ∥ → B
+∥-∥-recSet {A = A} {B} f const b = go where
+  go : ∥ A ∥ → B
+  helper : ∀ x y → go x ≡ go y
+
+  go (inc x) = f x
+  go (squash x y i) = helper x y i
+
+  helper (inc x) (inc y) = const x y
+  helper (squash x y i) z =
+    isSet→SquareP (λ _ _ → b) (helper x y) (helper x z) (helper y z) refl i
+  helper x (squash y z i) =
+    isSet→SquareP (λ _ _ → b) refl (helper x y) (helper x z) (helper y z) i
 ```
 -->
 

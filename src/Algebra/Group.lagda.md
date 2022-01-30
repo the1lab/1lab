@@ -46,9 +46,31 @@ give the unit, both on the left and on the right:
 
   open isMonoid hasIsMonoid public
 
-  inv-unit≡unit : inverse unit ≡ unit
-  inv-unit≡unit = monoid-inverse-unique 
-    hasIsMonoid unit _ _ inverseˡ (idˡ hasIsMonoid)
+  abstract
+    inv-unit≡unit : inverse unit ≡ unit
+    inv-unit≡unit = monoid-inverse-unique 
+      hasIsMonoid unit _ _ inverseˡ (idˡ hasIsMonoid)
+
+    inv-inv : ∀ {x} → inverse (inverse x) ≡ x
+    inv-inv = monoid-inverse-unique
+      hasIsMonoid _ _ _ inverseˡ inverseˡ
+
+    inv-comm : ∀ {x y} → inverse (x * y) ≡ inverse y * inverse x
+    inv-comm {x = x} {y} = 
+      monoid-inverse-unique hasIsMonoid _ _ _ inverseˡ p
+      where
+        p : (x * y) * (inverse y * inverse x) ≡ unit
+        p = associative hasIsMonoid 
+         ·· ap₂ _*_ 
+              (  sym (associative hasIsMonoid) 
+              ·· ap₂ _*_ refl inverseʳ 
+              ·· idʳ hasIsMonoid) 
+              refl 
+         ·· inverseʳ
+
+    zero-diff→≡ : ∀ {x y} → x * inverse y ≡ unit → x ≡ y
+    zero-diff→≡ {x = x} {y = y} p =
+      monoid-inverse-unique hasIsMonoid _ _ _ p inverseˡ
 
 open isGroup
 ```

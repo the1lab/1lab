@@ -67,6 +67,14 @@ record isNormal (G : Group ℓ) (N : ℙ (G .fst)) : Type ℓ where
 
   has-conjugateˡ : ∀ {x y} → y ∈ N → ((x ⋆ y) ⋆ inverse x) ∈ N
   has-conjugateˡ yin = subst (_∈ N) associative (has-conjugate yin)
+
+  has-comm : ∀ {x y} → (x ⋆ y) ∈ N → (y ⋆ x) ∈ N
+  has-comm {x = x} {y} ∈ = subst (_∈ N) p (has-conjugate ∈)
+    where
+      p = inverse x ⋆ ((x ⋆ y) ⋆ inverse (inverse x)) ≡⟨ ap₂ _⋆_ refl (sym associative) ∙ (λ i → inverse x ⋆ (x ⋆ (y ⋆ inv-inv {x = x} i))) ⟩ 
+          inverse x ⋆ (x ⋆ (y ⋆ x))                   ≡⟨ associative ⟩
+          (inverse x ⋆ x) ⋆ (y ⋆ x)                   ≡⟨ ap₂ _⋆_ inverseˡ refl ∙ idˡ ⟩
+          y ⋆ x                                       ∎
   
   open isSubgroup has-subgroup public
 ```
@@ -162,6 +170,9 @@ and cancel the remaining $f(x)f(x)^{-1}$.
 
   ker : NormalSubgroup A
   ker = record { subgroup = inKernel ; hasIsNormal = ker-normal }
+
+  kerᴳ : Group ℓ
+  kerᴳ = _ , isSubgroup→GroupOn _ ker-subgroup
 ```
 
 Now we turn to the image, $\mathrm{im}(f)$. An element $y : B$ is in the
