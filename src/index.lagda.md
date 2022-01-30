@@ -68,7 +68,8 @@ The 1lab is an [open-source] project with the goal of making formalised
 mathematics, and especially formalised mathematics done in Homotopy Type
 Theory, accessible to as wide as audience as possible. In addition to
 the hyperlinked "web of concepts" provided by the Agda code, there is a
-short introduction to homotopy type theory: **[Start here]**.
+short introduction to homotopy type theory: **[Start
+here](1lab.intro.html)**.
 
 [open-source]: https://github.com/plt-amy/cubical-1lab
 
