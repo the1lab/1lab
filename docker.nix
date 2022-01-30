@@ -73,11 +73,8 @@ in
     tag = "latest";
     fromImage = texlive-layer;
 
-    maxLayers = 10;
-
     contents = the-lab.deps ++ [ 
       pkgs.pkgsStatic.busybox # Need a shell, so go with static busybox
-      python3
       static-agda
 
       # Needed for Github Actions:
