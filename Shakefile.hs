@@ -17,7 +17,8 @@
          --package SHA
 -}
 {-# LANGUAGE BlockArguments, OverloadedStrings #-}
-{-# LANGUAGE LambdaCase, GeneralizedNewtypeDeriving, TypeFamilies, FlexibleContexts #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, TypeFamilies, FlexibleContexts #-}
+{-# LANGUAGE ViewPatterns #-}
 module Main (main) where
 
 import Control.Monad.IO.Class
@@ -31,14 +32,16 @@ import qualified Data.Text.Encoding as Text
 import qualified Data.Text.IO as Text
 import qualified Data.Map.Lazy as Map
 import qualified Data.Text as Text
-import Data.Aeson (eitherDecodeFileStrict')
 import Data.List.NonEmpty (NonEmpty((:|)))
+import Data.Traversable
 import Data.Digest.Pure.SHA
 import Data.Map.Lazy (Map)
-import Data.Text (Text)
+import Data.Generics
+import Data.Function (on)
 import Data.Foldable
 import Data.Either
 import Data.Maybe
+import Data.Text (Text)
 import Data.List
 
 import Development.Shake.FilePath
@@ -60,11 +63,28 @@ import Text.Pandoc.Filter
 import Text.Pandoc.Walk
 import Text.Pandoc
 
-import Agda.Syntax.Concrete
-import Agda.Syntax.Parser
-import Agda.Utils.Pretty
+import Agda.Syntax.Translation.AbstractToConcrete (abstractToConcrete_)
+import Agda.Interaction.FindFile (SourceFile(..), rootNameModule)
+import Agda.TypeChecking.Pretty (PrettyTCM(prettyTCM))
+import Agda.Syntax.Translation.InternalToAbstract ( Reify(reify) )
+import Agda.Syntax.Internal (Type, Dom, domName)
+import Agda.TypeChecking.Serialise (decodeFile)
+import qualified Agda.Interaction.FindFile as Agda
+import qualified Agda.Utils.Maybe.Strict as S
+import qualified Agda.Syntax.Concrete as Con
+import Agda.TypeChecking.Monad.Options
+import Agda.TypeChecking.Monad.Base
+import Agda.Syntax.Abstract.Views
+import Agda.Interaction.Options
+import Agda.Interaction.Imports
+import Agda.TypeChecking.Monad
+import Agda.Syntax.Scope.Base
+import Agda.Syntax.Abstract
+import Agda.Syntax.Position
+import Agda.Utils.FileName
 import Agda.Syntax.Common
-
+import Agda.Utils.Pretty
+import Agda.Syntax.Info
 
 newtype LatexEquation = LatexEquation (Bool, Text) -- TODO: Less lazy instance
   deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
@@ -78,7 +98,7 @@ data Reference
   deriving (Eq, Show)
 
 moduleName :: FilePath -> String
-moduleName = concat . intersperse "." . splitDirectories
+moduleName = intercalate "." . splitDirectories
 
 findModule :: MonadIO m => String -> m FilePath
 findModule modname = do
@@ -202,14 +222,6 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
       , out
       ]
 
-  "_build/types.json" %> \out -> do
-    files <- sort <$> getDirectoryFiles "src" ["**/*.lagda.md", "**/*.agda"]
-    need (["_build/all-pages.agda", "support/get-types.py"] ++ map ("src" </>) files)
-
-    let modules = builtinModules ++ map (moduleName . dropExtensions) files
-
-    command_ [FileStdout out, Stdin (intercalate "\n" modules)] "python3" ["support/get-types.py"]
-
   "_build/html1/*.html" %> \out -> do
     need ["_build/all-pages.agda"]
 
@@ -286,7 +298,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     _ <- addOracleCache \(LatexEquation (display, tex)) -> do
       need [".macros"]
 
-      let args = ["-f", ".macros", "-t"] ++ (if display then ["-d"] else [])
+      let args = ["-f", ".macros", "-t"] ++ ["-d" | display]
           stdin = LazyBS.fromStrict $ Text.encodeUtf8 tex
       Stdout out <- command [StdinBS stdin] "katex" args
       pure $ Text.decodeUtf8 out
@@ -320,7 +332,7 @@ emplace [] ys = ys
 -- | Lookup an identifier given a module name and ID within that module,
 -- returning its type.
 addLinkType :: (Text -> Action (Map Text Reference, Map Text Text)) -- ^ Lookup an ident from a module name and location
-             -> (() -> Action (Map Text (Map Text Text))) -- ^ Lookup a type from a module name and ident
+             -> (() -> Action (Map Text Text)) -- ^ Lookup a type from a module name and ident
              -> Tag Text -> Action (Tag Text)
 addLinkType fileIds fileTys tag@(TagOpen "a" attrs)
   | Just href <- lookup "href" attrs
@@ -331,10 +343,7 @@ addLinkType fileIds fileTys tag@(TagOpen "a" attrs)
       Just ty -> TagOpen "a" (emplace [("data-type", ty)] attrs)
 
     where
-      resolveId mod href (_, ids) types = do
-        types <- Map.lookup mod types
-        id <- Map.lookup href ids
-        Map.lookup id types
+      resolveId mod href (_, ids) types = Map.lookup href types
 addLinkType _ _ x = pure x
 
 -- | Parse an Agda module (in the final build directory) to find a list
@@ -367,43 +376,99 @@ gitCommit () = do
   pure (head (lines t))
 
 --  Loads our type lookup table into memory
-parseFileTypes :: () -> Action (Map Text (Map Text Text))
+parseFileTypes :: () -> Action (Map Text Text)
 parseFileTypes () = do
-  need ["_build/types.json"]
-  liftIO (eitherDecodeFileStrict' "_build/types.json")
-    >>= either fail (liftIO . traverse (traverse instantiate))
+  need ["_build/all-pages.agda"]
+  traced "loading types from iface" . runAgda $
+    tcAndLoadPublicNames "_build/all-pages.agda"
 
--- | Removes implicit arguments from the spine of an Agda type.
---
--- Implicits are removed in both rank-1 and higher rank positions (i.e.,
--- to the left and right of function arrows), including the domains of
--- Pi-types. Other positions are unaffected.
+runAgda :: (String -> TCMT IO a) -> IO a
+runAgda k = do
+  e <- runTCMTop $ do
+    p <- setupTCM
+    k p
+  case e of
+    Left s -> error (show s)
+    Right x -> pure x
 
-instantiate :: Text -> IO Text
-instantiate ty = do
-  t <- runPMIO (parse exprParser (map flipDot (Text.unpack ty)))
-  case t of
-    (Right exp, _)
-      -> pure (Text.pack (map flipDot (render (pretty (removeImpls exp)))))
-    (Left e, _) -> pure ty
-  where
-    removeImpls :: Expr -> Expr
-    removeImpls (Pi (x :| xs) e) =
-      makePi (map (fmap removeImpls) $ filter ((/= Hidden) . getHiding) (x:xs)) (removeImpls e)
-    removeImpls (Fun span arg ret) =
-      Fun span (removeImpls <$> arg) (removeImpls ret)
-    removeImpls e = e
+setupTCM :: TCMT IO String
+setupTCM = do
+  absp <- liftIO $ absolute "./src"
+  setCommandLineOptions' absp defaultOptions{optLocalInterfaces = True}
+  pure (filePath absp)
 
-    -- Swaps the character '.' (illegal in Agda identifiers, but
-    -- printed by Agda to indicate dependencies in generalisable
-    -- variables) for the Katakana middle dot character, and vice-versa.
-    --
-    -- We call this function to swap '.' -> middle dot when parsing, and
-    -- middle dot -> dot when printing.
-    flipDot :: Char -> Char
-    flipDot '.' = '\12539' -- Katakana middle dot
-    flipDot '\12539' = '.'
-    flipDot c = c
+killDomainNames :: Type -> Type
+killDomainNames = everywhere (mkT unDomName) where
+  unDomName :: Dom Type -> Dom Type
+  unDomName m = m{ domName = Nothing }
+
+killQual :: Con.Expr -> Con.Expr
+killQual = everywhere (mkT unQual) where
+  unQual :: Con.QName -> Con.QName
+  unQual (Con.Qual _ x) = unQual x
+  unQual x = x
+
+tcAndLoadPublicNames :: FilePath -> String -> TCMT IO (Map Text Text)
+tcAndLoadPublicNames path basepn = do
+  source <- parseSource . SourceFile =<< liftIO (absolute path)
+  cr <- typeCheckMain TypeCheck source
+
+  let iface = crInterface cr
+
+  setScope (iInsideScope iface)
+  scope <- getScope
+
+  li <- fmap catMaybes . for (toList (_scopeInScope scope)) $ \name -> do
+    t <- getConstInfo' name
+    case t of
+      Left _ -> pure Nothing
+      Right d -> do
+        expr <- reify . killDomainNames $ defType d
+        t <- fmap (render . pretty . killQual) . 
+          abstractToConcrete_ . removeImpls $ expr
+
+        case rangeFile (nameBindingSite (qnameName name)) of
+          S.Just (filePath -> f)
+            | ("Agda/Builtin" `isInfixOf` f) || ("Agda/Primitive" `isInfixOf` f) -> 
+              pure $ do
+                fp <- fakePath name
+                pure (name, fp, t)
+            | otherwise -> do
+              let
+                f' = moduleName $ dropExtensions (makeRelative basepn f)
+                modMatches = f' `isPrefixOf` render (pretty name)
+
+              pure $ do
+                unless modMatches Nothing
+                pure (name, f' <.> "html", t)
+          S.Nothing -> pure Nothing
+
+  let
+    f (name, modn, ty) =
+      case rStart (nameBindingSite (qnameName name)) of
+        Just pn -> pure (Text.pack (modn <> "#" <> show (posPos pn)), Text.pack ty)
+        Nothing -> Nothing
+
+  pure (Map.fromList (mapMaybe f li))
+
+fakePath :: QName -> Maybe FilePath
+fakePath (QName (MName xs) _) = 
+  listToMaybe 
+    [ l <.> "html"
+    | l <- map (intercalate ".") (inits (map (render . pretty . nameConcrete) xs))
+    , l `elem` builtinModules
+    ]
+
+removeImpls :: Expr -> Expr
+removeImpls (Pi _ (x :| xs) e) =
+  makePi (map (mapExpr removeImpls) $ filter ((/= Hidden) . getHiding) (x:xs)) (removeImpls e)
+removeImpls (Fun span arg ret) =
+  Fun span (removeImpls <$> arg) (removeImpls ret)
+removeImpls e = e
+
+makePi :: [TypedBinding] -> Expr -> Expr
+makePi [] = id
+makePi (b:bs) = Pi exprNoRange (b :| bs)
 
 builtinModules :: [String]
 builtinModules =
