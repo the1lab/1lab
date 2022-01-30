@@ -78,11 +78,6 @@ environments above. You will need:
 
 - A Haskell package manager (either cabal or stack);
 
-- Pandoc, preferably installed from the same Haskell package manager. No
-specific version of Pandoc is required, but the version you choose is
-required to match what your Haskell package manager will install for
-pandoc-types;
-
 - A working LaTeX installation (TeXLive, etc) with the packages
 `tikz-cd` (depends on `pgf`), `mathpazo`, `xcolor`, `preview`, and
 `standalone` (depends on `varwidth` and `xkeyval`);
@@ -97,6 +92,7 @@ Cabal packages and can be installed however you prefer
 - If you're using Stack, that's all. If using cabal-install, you're
 going to need the following Haskell packages:
   + Agda
+  + pandoc
   + shake
   + tagsoup
   + uri-encode

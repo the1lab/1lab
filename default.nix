@@ -18,7 +18,7 @@ let
   our-ghc = ghc.withPackages (pkgs: with pkgs; [
     shake directory tagsoup
     text containers uri-encode
-    process aeson Agda
+    process aeson Agda pandoc SHA
   ]);
 
   our-texlive = texlive.combine {
@@ -87,7 +87,7 @@ in
       shakefile agda
 
       # For building the text and maths:
-      git sassc pandoc nodePackages.katex
+      git sassc nodePackages.katex
       agda-reference-filter agda-fold-equations
 
       # For building diagrams:

@@ -2,27 +2,38 @@
 {- stack --resolver lts-18.18 script
          --package aeson
          --package Agda
+         --package bytestring
          --package containers
          --package directory
+         --package doctemplates
+         --package mtl
+         --package pandoc
+         --package pandoc-types
          --package process
          --package shake
          --package tagsoup
          --package text
          --package uri-encode
+         --package SHA
 -}
 {-# LANGUAGE BlockArguments, OverloadedStrings #-}
-{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE LambdaCase, GeneralizedNewtypeDeriving, TypeFamilies, FlexibleContexts #-}
 module Main (main) where
 
 import Control.Monad.IO.Class
+import Control.Monad.Error.Class
+import Control.Monad.Writer
 import Control.Concurrent
 import Control.Monad
 
+import qualified Data.ByteString.Lazy as LazyBS
+import qualified Data.Text.Encoding as Text
 import qualified Data.Text.IO as Text
 import qualified Data.Map.Lazy as Map
 import qualified Data.Text as Text
 import Data.Aeson (eitherDecodeFileStrict')
 import Data.List.NonEmpty (NonEmpty((:|)))
+import Data.Digest.Pure.SHA
 import Data.Map.Lazy (Map)
 import Data.Text (Text)
 import Data.Foldable
@@ -31,6 +42,7 @@ import Data.Maybe
 import Data.List
 
 import Development.Shake.FilePath
+import Development.Shake.Classes
 import Development.Shake
 
 import Network.URI.Encode (decodeText)
@@ -42,11 +54,22 @@ import System.Process (callCommand)
 import System.IO
 
 import Text.HTML.TagSoup
+import Text.DocTemplates
+
+import Text.Pandoc.Filter
+import Text.Pandoc.Walk
+import Text.Pandoc
 
 import Agda.Syntax.Concrete
 import Agda.Syntax.Parser
 import Agda.Utils.Pretty
 import Agda.Syntax.Common
+
+
+newtype LatexEquation = LatexEquation (Bool, Text) -- TODO: Less lazy instance
+  deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
+
+type instance RuleResult LatexEquation = Text
 
 data Reference
   = Reference { refHref :: Text
@@ -72,54 +95,85 @@ buildMarkdown :: String
               -> (Text -> Action (Map Text Reference, Map Text Text))
               -> FilePath -> FilePath -> Action ()
 buildMarkdown gitCommit moduleIds input output = do
-  need ["support/web/template.html"]
-
-  liftIO $ Dir.createDirectoryIfMissing False "_build/diagrams"
-
   let
+    templateName = "support/web/template.html"
     modname = moduleName (dropDirectory1 (dropDirectory1 (dropExtension input)))
 
-  modulePath <- findModule modname
+  need [templateName]
 
+  modulePath <- findModule modname
   let
-    diagrams = "_build/diagrams" </> takeFileName output <.> "txt"
     permalink = gitCommit </> modulePath
 
     title
       | length modname > 24 = '…':reverse (take 24 (reverse modname))
       | otherwise = modname
 
-    pandoc_args path =
-      [ "--from", "markdown", "-i", input
-      , "--to", "html", "-o", path
-      , "--metadata", "title=" ++ title
-      , "--metadata", "source=" ++ permalink
-      , "--template", "support/web/template.html"
-      , "--lua-filter", "support/maths-filter.lua"
-      , "--filter", "agda-reference-filter"
-      , "--toc"
-      ] ++ ["-V is-index" | modname == "index"]
+  Pandoc meta markdown <- liftIO do
+    contents <- Text.readFile input
+    either (fail . show) pure =<< runIO do
+      md <- readMarkdown def { readerExtensions = getDefaultExtensions "markdown" } [(input, contents)]
+      applyFilters def [JSONFilter "agda-reference-filter"] ["html"] md
 
-  withTempFile $ \path -> do
-    Exit c <- command
-      [ AddEnv "HTML_DIR" "_build/html"
-      , AddEnv "MODULE_NAME" (takeFileName output)
-      , AddEnv "DIAGRAM_LIST" diagrams
-      , WithStdout True
-      , WithStderr True
-      ]
-      "pandoc"
-      (pandoc_args path)
+  let
+    htmlInl = RawInline (Format "html")
 
-    text <- liftIO $ Text.readFile path
-    tags <- traverse (parseAgdaLink moduleIds) (parseTags text)
-    liftIO $ Text.writeFile output (renderTags tags)
-    command_ [] "agda-fold-equations" [output]
+    -- | Replace any expression $foo$-bar with <span ...>$foo$-bar</span>, so that
+    -- the equation is not split when word wrapping.
+    patchInlines (m@Math{}:s@(Str txt):xs)
+      | not (Text.isPrefixOf " " txt)
+      = htmlInl "<span style=\"white-space: nowrap;\">" : m : s : htmlInl "</span>"
+      : patchInlines xs
+    patchInlines (x:xs) = x:patchInlines xs
+    patchInlines [] = []
 
-  diag <- doesFileExist diagrams
-  when diag do
-    diagrams <- lines <$> readFile' diagrams
-    need [diag -<.> "svg" | diag <- diagrams]
+    -- Make all headers links, and add an anchor emoji.
+    patchBlock (Header i a@(ident, _, _) inl) = pure $ Header i a
+      $ htmlInl (Text.concat ["<a href=\"#", ident, "\" class=\"header-link\">"])
+      : inl
+      ++ [htmlInl "<span class=\"header-link-emoji\">🔗</span></a>"]
+    -- Replace quiver code blocks with a link to an SVG file, and depend on the SVG file.
+    patchBlock (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes = do
+      let
+        digest = showDigest . sha1 . LazyBS.fromStrict $ Text.encodeUtf8 contents
+        title = fromMaybe "commutative diagram" (lookup "title" attrs)
+      liftIO $ Text.writeFile ("_build/diagrams" </> digest <.> "tex") contents
+      tell ["_build/html" </> digest <.> "svg"]
+
+      pure $ Div ("", ["diagram-container"], [])
+        [ Plain [ Image (id, "diagram":classes, attrs) [] (Text.pack (digest <.> "svg"), title) ]
+        ]
+    patchBlock h = pure h
+
+    patchInline (Math DisplayMath contents) = htmlInl <$> askOracle (LatexEquation (True, contents))
+    patchInline (Math InlineMath contents) = htmlInl <$> askOracle (LatexEquation (False, contents))
+    patchInline h = pure h
+
+    mStr = MetaString . Text.pack
+    patchMeta = Meta . Map.insert "title" (mStr title) . Map.insert "source" (mStr permalink) . unMeta
+
+  liftIO $ Dir.createDirectoryIfMissing False "_build/diagrams"
+
+  markdown <- pure . walk patchInlines . Pandoc (patchMeta meta) $ markdown
+  markdown <- walkM patchInline markdown
+  (markdown, dependencies) <- runWriterT $ walkM patchBlock markdown
+  need dependencies
+
+  text <- liftIO $ either (fail . show) pure =<< runIO do
+    template <- getTemplate templateName >>= runWithPartials . compileTemplate templateName
+                >>= either (throwError . PandocTemplateError . Text.pack) pure
+    let
+      context = Context $ Map.fromList [ (Text.pack "is-index", toVal (modname == "index")) ]
+      options = def { writerTemplate = Just template
+                    , writerTableOfContents = True
+                    , writerVariables = context
+                    , writerExtensions = getDefaultExtensions "html" }
+    writeHtml5String options markdown
+
+  tags <- traverse (parseAgdaLink moduleIds) (parseTags text)
+  liftIO $ Text.writeFile output (renderTags tags)
+
+  command_ [] "agda-fold-equations" [output]
 
 buildAgda :: String -> Action ()
 buildAgda path = do
@@ -142,7 +196,7 @@ buildAgda path = do
   need modules
 
 main :: IO ()
-main = shakeArgs shakeOptions{shakeFiles="_build"} $ do
+main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ do
   fileIdMap <- newCache parseFileIdents
   fileTyMap <- newCache parseFileTypes
   gitCommit <- newCache gitCommit
@@ -246,6 +300,17 @@ main = shakeArgs shakeOptions{shakeFiles="_build"} $ do
   phony "really-clean" do
     need ["clean"]
     removeFilesAfter "_build" ["**/*.agdai", "*.lua"]
+
+  versioned 1 do
+    _ <- addOracleCache \(LatexEquation (display, tex)) -> do
+      need [".macros"]
+
+      let args = ["-f", ".macros", "-t"] ++ (if display then ["-d"] else [])
+          stdin = LazyBS.fromStrict $ Text.encodeUtf8 tex
+      Stdout out <- command [StdinBS stdin] "katex" args
+      pure $ Text.decodeUtf8 out
+
+    pure ()
 
 -- | Possibly interpret an <a href="agda://"> link to be a honest-to-god
 -- link to the definition.
