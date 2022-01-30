@@ -137,9 +137,7 @@ buildMarkdown gitCommit moduleIds input output = do
       let
         digest = showDigest . sha1 . LazyBS.fromStrict $ Text.encodeUtf8 contents
         title = fromMaybe "commutative diagram" (lookup "title" attrs)
-        output = "_build/diagrams" </> digest <.> "tex"
-      liftIO $ Text.writeFile output contents
-      lift $ produces [output]
+      liftIO $ Text.writeFile ("_build/diagrams" </> digest <.> "tex") contents
       tell ["_build/html" </> digest <.> "svg"]
 
       pure $ Div ("", ["diagram-container"], [])

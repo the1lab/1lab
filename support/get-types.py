@@ -12,7 +12,7 @@ async def main() -> None:
   result: Dict[str, Dict[str, str]] = {}
 
   agda_proc = await asyncio.create_subprocess_exec(
-    "agda", "--interaction-json",
+    "agda", "--interaction-json", "--local-interfaces",
     stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE
   )
   for module in modules:
@@ -26,7 +26,7 @@ async def main() -> None:
         sys.stderr.write(f"Error querying {module}:\n")
         sys.stderr.write(data["info"]["error"]["message"])
         break
-      elif data['kind'] in ("Status", "ClearRunningInfo", "ClearHighlighting", "HighlightingInfo"):
+      elif data['kind'] in ("Status", "RunningInfo", "ClearRunningInfo", "ClearHighlighting", "HighlightingInfo"):
         continue
       elif data["kind"] == "DisplayInfo":
         items: Dict[str, str] = {item['name']: item['term'] for item in data["info"]["contents"]}
