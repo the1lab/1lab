@@ -245,6 +245,7 @@ open import 1Lab.Type.Sigma -- Properties of dependent coproducts
 
 open import 1Lab.HIT.S1         -- The circle as a cell complex
 open import 1Lab.HIT.Sphere     -- Spheres of arbitrary dimension
+open import 1Lab.HIT.Torus      -- Torus as a cell complex and as a product space
 open import 1Lab.HIT.Sinfty     -- The infinity-dimensional sphere
 open import 1Lab.HIT.Suspension -- The suspension operation
 open import 1Lab.HIT.Truncation -- Propositional truncation
@@ -267,6 +268,9 @@ open import Data.Int  -- The integers
 open import Data.Sum  -- Coproduct types
 open import Data.Bool -- The booleans
 open import Data.List -- Finite lists
+open import Data.Power         -- Power sets
+open import Data.Power.Lattice -- Power sets form a lattice
+open import Data.Set.Quotient  -- Set quotients
 ```
 
 <!--
@@ -293,8 +297,13 @@ open import Algebra.Magma                      -- Binary operations
 open import Algebra.Magma.Unital               -- Operations with two-sided units
 open import Algebra.Magma.Unital.EckmannHilton -- The Eckmann-Hilton argument
 
-open import Algebra.Semigroup                  -- Semigroups (associative magmas)
-open import Algebra.Monoid                     -- Monoids as unital semigroups
-open import Algebra.Group                      -- Groups as monoids with inverses
-open import Algebra.Group.Cayley               -- Cayley's theorem
+open import Algebra.Semigroup   -- Semigroups (associative magmas)
+open import Algebra.Monoid      -- Monoids as unital semigroups
+
+open import Algebra.Group                   -- Groups as monoids with inverses
+open import Algebra.Group.Cayley            -- Cayley's theorem
+open import Algebra.Group.Homotopy          -- Homotopy groups
+open import Algebra.Group.Subgroup          -- Subgroups; Images and kernels
+open import Algebra.Group.Quotients         -- Quotients by normal subgroups
+open import Algebra.Group.Quotients.IsoThms -- Isomorphism theorems
 ```
