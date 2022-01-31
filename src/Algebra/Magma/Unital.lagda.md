@@ -64,10 +64,13 @@ We can also show that two units of a magma are necessarily the same,
 since the products of the identities has to be equal to either one:
 
 ```agda
-identities-equal : (e e' : A) → {_⋆_ : A → A → A} → isUnitalMagma e _⋆_
-  → isUnitalMagma e' _⋆_ → e ≡ e'
+identities-equal 
+  : (e e' : A) {_⋆_ : A → A → A} 
+  → isUnitalMagma e _⋆_
+  → isUnitalMagma e' _⋆_ 
+  → e ≡ e'
 identities-equal e e' {_⋆_ = _⋆_} unital unital' =
-  e ≡⟨ sym (idʳ unital') ⟩
+  e      ≡⟨ sym (idʳ unital') ⟩
   e ⋆ e' ≡⟨ idˡ unital ⟩
   e' ∎
 ```
@@ -80,8 +83,9 @@ and the witnesses are equal because they are propositions, as can
 be derived from `isProp-isUnitalMagma`{.Agda}
 
 ```agda
-isProp-hasIdentity : {⋆ : A → A → A} → isMagma ⋆
-                   → isProp (Σ[ u ∈ A ] (isUnitalMagma u ⋆))
+isProp-hasIdentity 
+  : {⋆ : A → A → A} 
+  → isMagma ⋆ → isProp (Σ[ u ∈ A ] (isUnitalMagma u ⋆))
 isProp-hasIdentity mgm x y = Σ≡Prop (λ x → isProp-isUnitalMagma)
  (identities-equal (x .fst) (y .fst) (x .snd) (y .snd))
 ```
@@ -145,8 +149,7 @@ UnitalMagma-univalent {ℓ = ℓ} = autoUnivalentRecord
   (record:
     field[ UnitalMagmaOn._⋆_ by pres-⋆ ]
     field[ UnitalMagmaOn.identity by pres-identity ]
-    axiom[ UnitalMagmaOn.hasIsUnitalMagma by (λ _ → isProp-isUnitalMagma) ]
-  ))
+    axiom[ UnitalMagmaOn.hasIsUnitalMagma by (λ _ → isProp-isUnitalMagma) ] ))
 
 UnitalMagma≡ : {A B : UnitalMagma ℓ} → (A ≃[ HomT→Str UnitalMagma≃ ] B) ≃ (A ≡ B)
 UnitalMagma≡ = SIP UnitalMagma-univalent 
@@ -169,7 +172,9 @@ Perhaps surprisingly, the premises of the above theorem can be weakened:
 If $l$ is a left identity and $r$ is a right identity, then $l = r$.
 
 ```agda
-left-right-identities-equal : {⋆ : A → A → A} (l r : A) → isLeftId ⋆ l → isRightId ⋆ r → l ≡ r
+left-right-identities-equal 
+  : {⋆ : A → A → A} (l r : A) 
+  → isLeftId ⋆ l → isRightId ⋆ r → l ≡ r
 left-right-identities-equal {⋆ = _⋆_} l r lid rid =
   l     ≡⟨ sym (rid _) ⟩
   l ⋆ r ≡⟨ lid _ ⟩
