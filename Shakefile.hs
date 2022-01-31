@@ -244,6 +244,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
 
     text <- liftIO $ Text.readFile input
     tags <- traverse (addLinkType fileIdMap fileTyMap) (parseTags text)
+    traverse_ (checkMarkup (takeFileName out)) tags
     liftIO $ Text.writeFile out (renderTags tags)
 
   "_build/html/*.svg" %> \out -> do
@@ -346,6 +347,14 @@ addLinkType fileIds fileTys tag@(TagOpen "a" attrs)
     where
       resolveId mod href (_, ids) types = Map.lookup href types
 addLinkType _ _ x = pure x
+
+checkMarkup :: FilePath -> Tag Text -> Action ()
+checkMarkup file (TagText txt)
+  |  "<!--" `Text.isInfixOf` txt || "<!–" `Text.isInfixOf` txt
+  || "-->" `Text.isInfixOf` txt  || "–>" `Text.isInfixOf` txt
+  = putWarn $ "[WARN] " ++ file ++ " contains misplaced <!-- or -->"
+checkMarkup _ _ = pure ()
+
 
 -- | Parse an Agda module (in the final build directory) to find a list
 -- of its definitions.
