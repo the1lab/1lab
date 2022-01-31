@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="$lang$" xml:lang="$lang$" $if(dir)$ dir="$dir$" $endif$>
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,18 +13,21 @@
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="$pagetitle$ - 1Lab" />
-  <meta name="twitter:image" content="https://cubical.1lab.dev/static/cube-128x.png" />
+  <meta name="twitter:image" content="https://1lab.dev/static/cube-128x.png" />
 
   <meta name="og:title" content="$pagetitle$ - 1Lab" />
-  <meta name="og:image" content="https://cubical.1lab.dev/static/cube-128x.png" />
-  <meta name="og:site-name" content="The 1Lab" />
+  <meta name="og:image" content="https://1lab.dev/static/cube-128x.png" />
+  <meta name="og:site-name" content="1Lab" />
   <meta name="og:type" content="website" />
+
   $if(description)$
   <meta name="og:description" content="$description$" />
   <meta name="twitter:description" content="$description$" />
+  <meta name="description" content="$description$" />
   $else$
   <meta name="og:description" content="A formalised, explorable online resource for Homotopy Type Theory." />
   <meta name="twitter:description" content="A formalised, explorable online resource for Homotopy Type Theory." />
+  <meta name="description" content="A formalised, explorable online resource for Homotopy Type Theory." />
   $endif$
 
   <script src="/equations.js" type="text/javascript"></script> 
