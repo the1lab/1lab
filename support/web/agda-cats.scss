@@ -110,7 +110,7 @@ a[href].hover-highlight {
 
 /* Aspects. */
 .Agda {
-  .Comment       { color: $code-grey; }
+  .Comment       { color: $code-fg; font-style: italic; }
   .Background    { background-color: $code-bg; }
   .Markup        { color: $code-fg; }
   .Keyword       { color: $code-orange; }
