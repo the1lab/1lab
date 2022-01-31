@@ -33,6 +33,7 @@ import qualified Data.Text.Encoding as Text
 import qualified Data.Text.IO as Text
 import qualified Data.Map.Lazy as Map
 import qualified Data.Text as Text
+import qualified Data.Set as Set
 import Data.List.NonEmpty (NonEmpty((:|)))
 import Data.Traversable
 import Data.Digest.Pure.SHA
@@ -113,9 +114,10 @@ findModule modname = do
     else modfile <.> "agda"
 
 buildMarkdown :: String
+              -> (FilePath -> Action [Text])
               -> (Text -> Action (Map Text Reference, Map Text Text))
               -> FilePath -> FilePath -> Action ()
-buildMarkdown gitCommit moduleIds input output = do
+buildMarkdown gitCommit gitAuthors moduleIds input output = do
   let
     templateName = "support/web/template.html"
     modname = moduleName (dropDirectory1 (dropDirectory1 (dropExtension input)))
@@ -123,6 +125,7 @@ buildMarkdown gitCommit moduleIds input output = do
   need [templateName, input]
 
   modulePath <- findModule modname
+  authors <- gitAuthors modulePath
   let
     permalink = gitCommit </> modulePath
 
@@ -184,7 +187,15 @@ buildMarkdown gitCommit moduleIds input output = do
     template <- getTemplate templateName >>= runWithPartials . compileTemplate templateName
                 >>= either (throwError . PandocTemplateError . Text.pack) pure
     let
-      context = Context $ Map.fromList [ (Text.pack "is-index", toVal (modname == "index")) ]
+      authors' = case authors of
+        [] -> "Nobody"
+        [x] -> x
+        _ -> Text.intercalate ", " (init authors) `Text.append` " and " `Text.append` last authors
+
+      context = Context $ Map.fromList
+                [ (Text.pack "is-index", toVal (modname == "index"))
+                , (Text.pack "authors", toVal authors')
+                ]
       options = def { writerTemplate = Just template
                     , writerTableOfContents = True
                     , writerVariables = context
@@ -201,6 +212,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
   fileIdMap <- newCache parseFileIdents
   fileTyMap <- newCache parseFileTypes
   gitCommit <- newCache gitCommit
+  gitAuthors <- newCache (gitAuthors (gitCommit ()))
 
   "_build/all-pages.agda" %> \out -> do
     files <- sort <$> getDirectoryFiles "src" ["**/*.agda", "**/*.lagda.md"]
@@ -235,7 +247,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     gitCommit <- gitCommit ()
 
     if ismd
-      then buildMarkdown gitCommit fileIdMap (input <.> ".md") out
+      then buildMarkdown gitCommit gitAuthors fileIdMap (input <.> ".md") out
       else liftIO $ Dir.copyFile (input <.> ".html") out
 
   "_build/html/*.html" %> \out -> do
@@ -384,6 +396,14 @@ gitCommit :: () -> Action String
 gitCommit () = do
   Stdout t <- command [] "git" ["rev-parse", "--verify", "HEAD"]
   pure (head (lines t))
+
+gitAuthors :: Action String -> FilePath -> Action [Text]
+gitAuthors commit path = do
+  _commit <- commit -- We depend on the commit, but don't actually need it.
+
+  Stdout out <- command [] "git" ["log", "--format=%aN", "--", path]
+  -- Sort authors list and make it unique.
+  pure . Set.toList . Set.fromList . Text.lines . Text.decodeUtf8 $ out
 
 --  Loads our type lookup table into memory
 parseFileTypes :: () -> Action (Map Text Text)
