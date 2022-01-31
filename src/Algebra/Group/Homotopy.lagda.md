@@ -3,8 +3,8 @@ open import 1Lab.Prelude
 
 open import Algebra.Semigroup
 open import Algebra.Monoid
-open import Algebra.Magma
 open import Algebra.Group
+open import Algebra.Magma
 
 module Algebra.Group.Homotopy where
 ```

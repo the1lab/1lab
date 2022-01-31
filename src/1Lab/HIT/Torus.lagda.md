@@ -1,10 +1,9 @@
 ```agda
 open import 1Lab.Univalence
+open import 1Lab.HIT.S1
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
-
-open import 1Lab.HIT.S1
 
 module 1Lab.HIT.Torus where
 ```
