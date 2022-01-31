@@ -352,7 +352,7 @@ checkMarkup :: FilePath -> Tag Text -> Action ()
 checkMarkup file (TagText txt)
   |  "<!--" `Text.isInfixOf` txt || "<!–" `Text.isInfixOf` txt
   || "-->" `Text.isInfixOf` txt  || "–>" `Text.isInfixOf` txt
-  = putWarn $ "[WARN] " ++ file ++ " contains misplaced <!-- or -->"
+  = fail $ "[WARN] " ++ file ++ " contains misplaced <!-- or -->"
 checkMarkup _ _ = pure ()
 
 
