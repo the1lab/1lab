@@ -22,7 +22,9 @@ const highlight = (self, on) => () => {
 
       const selfRect = self.getBoundingClientRect();
       const hoverRect = currentHover.getBoundingClientRect();
-      if (selfRect.bottom + hoverRect.height > window.innerHeight) {
+      // If we're close to the bottom of the page, push the tooltip above instead.
+      // The constant here is arbitrary, because trying to convert em to px in JS is a fool's errand.
+      if (selfRect.bottom + hoverRect.height + 30 > window.innerHeight) {
         // 2em from the material mixin. I'm sorry
         currentHover.style.top = `calc(${self.offsetTop - hoverRect.height}px - 2em`;
       } else {
