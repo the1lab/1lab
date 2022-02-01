@@ -6,17 +6,48 @@ module 1Lab.Path where
 
 # The Interval
 
-In HoTT, the inductively-defined propositional equality type gets a new
-semantics: continuous _paths_. The "key idea" of cubical type theory ---
-and thus, Cubical Agda --- is that we can take this as a new _definition_
-of the equality type, where we interpret a `Path`{.Agda} in a type by a
-function where the domain is the _interval type_.
+In HoTT, the inductively-defined identity type gets a new meaning
+explanation: continuous paths, in a topological sense. The "key idea" of
+cubical type theory --- and thus, Cubical Agda --- is that we can take
+this as a new _definition_ of the identity type, where we interpret a
+`Path`{.Agda} in a type by a function where the domain is the _interval
+type_.
 
 <details>
 <summary>
-But first, pay no mind to these imports.
+**Aside**: A brief comment on the meanings of "equal", "identical" and
+"identified", and how we refer to inhabitants of path types.
 </summary>
 
+Before getting started, it's worth taking a second to point out the
+terminology that will be used in this module (and most of the other
+pages). In intensional type theory, there is both an external notion of
+"sameness" (definitional equality), and an internal notion of
+"sameness", which goes by many names: identity type, equality type,
+propositional equality, path type, etc.[^starthere]
+
+[^starthere]: The distinction between these two is elaborated on in the
+[Intro to HoTT](1Lab.intro.html) page.
+
+In this module, we refer to the type `A ≡ B` as either (the type of)
+_paths from A to B_ or (the type of) _identifications between A and B_,
+but **never** as "equalities between A and B". In particular, the HoTT
+book comments that we may say "$a$ and $b$ are equal" when the type $a
+\equiv b$ is inhabited, but in this development we refer this
+terminology for the case where $a$ and $b$ inhabit a [set].
+
+[set]: 1Lab.HLevel.html
+
+Instead, for general types, we use "$a$ and $b$ are **identical**" or
+"$a$ and $b$ are **identified**" (or even the wordier, and rather more
+literal, "there is a path between $a$ and $b$"). Depending on the type,
+we might use more specific words: Paths are said to be **homotopic**
+when they're connected by a path-of-paths, and types are said to be
+**equivalent** when they are connected by a path.
+
+</details>
+
+<!--
 ```agda
 open import Agda.Builtin.Cubical.Path public
 open import Agda.Builtin.Cubical.Sub public
@@ -33,7 +64,7 @@ open import Agda.Primitive.Cubical public
            ; primTransp     to transp
            ; itIsOne        to 1=1 )
 ```
-</details>
+-->
 
 ```agda
 Path : ∀ {ℓ} (A : Type ℓ) → A → A → Type ℓ
@@ -68,9 +99,9 @@ refl {x = x} = toPath (λ i → x)
 
 The type `Path A x y` is also written `x ≡ y`, when `A` is not important
 - i.e. when it can be inferred from `x` and `y`. Under this
-interpretation, proof that equality is reflexive (i.e. that $x = x$) is
-given by a `Path`{.Agda} which yields the same element everywhere on
-`I`: The function that is constantly $x$.
+interpretation, proof that identification is reflexive (i.e. that $x =
+x$) is given by a `Path`{.Agda} which yields the same element everywhere
+on `I`: The function that is constantly $x$.
 
 If we have a `Path`{.Agda}, we can apply it to a value of the interval
 type to get an element of the underlying type. When a path is applied to
@@ -120,13 +151,14 @@ to maintain type safety.
 To wit: In cubical type theory, a term in a context with $n$ interval
 variables expresses a way of mapping an $n$-cube into that type. One
 very important class of these maps are the $1$-cubes --- lines or
-_`paths`{.Agda ident=Path}_ --- which represent equalities between terms
-of that type.
+_`paths`{.Agda ident=Path}_ --- which represent identifications between
+terms of that type.
 
 Iterating this construction, a term in a context with 2 interval
 variables represents a square in the type, which can be read as saying
 that some _paths_ (specialising one of the variables to $i0$ or $i1$) in
-that space are equal: An equality between equalities.
+that space are identical: A path between paths, which we call a
+_homotopy_.
 
 The structural operations on contexts, and the $\land$ and $\lor$
 operations on the interval, give a way of extending from $n$-dimensional
@@ -237,7 +269,7 @@ These correspond to the following two squares:
 
 </div>
 
-Since iterated equalities are used _a lot_ in homotopy type theory, we
+Since iterated paths are used _a lot_ in homotopy type theory, we
 introduce a shorthand for 2D non-dependent paths. A `Square`{.Agda} in a
 type is exactly what it says on the tin: a square. 
 
@@ -255,10 +287,10 @@ The arguments to `Square`{.Agda} are as in the following diagram, listed
 in the order “PQSR”. This order is a bit unusual (it's one off from
 being alphabetical, for instance) but it does have a significant
 benefit: If you imagine that the letters are laid out in a circle,
-_equal paths are adjacent_. Reading the square in the left-right
-direction, it says that $p$ and $r$ are equal --- these are adjacent if
-you "fold up" the sequence `p q s r`. Similarly, reading top-down, it
-says that $q$ and $s$ are equal - these are directly adjacent.
+_identical paths are adjacent_. Reading the square in the left-right
+direction, it says that $p$ and $r$ are identical --- these are adjacent
+if you "fold up" the sequence `p q s r`. Similarly, reading top-down, it
+says that $q$ and $s$ are identical - these are directly adjacent.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -274,8 +306,8 @@ says that $q$ and $s$ are equal - these are directly adjacent.
 
 ## Symmetry
 
-The involution `~_`{.Agda} on the interval type gives a way of
-inverting paths --- a proof that equality is symmetric.
+The involution `~_`{.Agda} on the interval type gives a way of inverting
+paths --- a proof that identification is symmetric.
 
 ```agda
 sym : ∀ {ℓ₁} {A : Type ℓ₁} {x y : A}
@@ -304,17 +336,17 @@ module _ {ℓ} {A : Type ℓ} {x y : A} {p : x ≡ y} where
 # Paths
 
 While the basic structure of the path type is inherited from its nature
-as functions out of an internal De Morgan algebra, the _equality_
-structure induced by paths is more complicated. For starters, let's see
-how paths correspond to equality in that they witness the logical
-principle of "indiscernibility of identicals".
+as functions out of an internal De Morgan algebra, the structure of
+_identifications_ presented by paths is more complicated. For starters,
+let's see how paths correspond to identifications in that they witness
+the logical principle of "indiscernibility of identicals".
 
 ## Transport
 
-A basic principle of equality is that _equals may be substituted for
-equals_: if $x = y$ and $P(x)$ holds, then $P(y)$ also holds, for any
-choice of predicate $P$. In type theory, this is generalised, as $P$ can
-be not only a predicate, but any type family.
+A basic principle of identity is that _identicals are indiscernible_: if
+$x = y$ and $P(x)$ holds, then $P(y)$ also holds, for any choice of
+predicate $P$. In type theory, this is generalised, as $P$ can be not
+only a predicate, but any type family.
 
 The way this is incarnated is by an operation called `transport`{.Agda},
 which says that every path between `A` and `B` gives rise to a
@@ -374,8 +406,8 @@ because `transport`{.Agda} is defined to be `transp P i0`, and `transp P
 i1` is the identity function.
 
 In fact, this generalises to something called the _filler_ of
-`transport`{.Agda}: `transport p x` and `x` _are_ equal, but they're
-equal _over_ the given path:
+`transport`{.Agda}: `transport p x` and `x` _are_ identical, but they're
+identical _over_ the given path:
 
 ```agda
 transport-filler : ∀ {ℓ} {A B : Type ℓ}
@@ -516,8 +548,9 @@ The path induction principle, also known as "axiom J", essentially
 breaks down as the following two statements:
 
 - Identicals are indiscernible (`transport`{.Agda})
+
 - Singletons are contractible. The type `Singleton A x` is the "subtype
-of A of the elements equal to x":
+of A of the elements identical to x":
 
 ```agda
 Singleton : ∀ {ℓ} {A : Type ℓ} → A → Type _
@@ -575,7 +608,8 @@ inspect x = x , refl
 In HoTT, every function behaves like a funct**or**, in that it has an
 action on objects (the actual computational content of the function) and
 an action on _morphisms_ --- how that function acts on paths. Reading
-paths as equality, this is a proof that all functions preserve equality.
+paths as identity, this is a proof that functions take identical inputs
+to identical outputs.
 
 ```agda
 ap : ∀ {a b} {A : Type a} {B : A → Type b} (f : (x : A) → B x) {x y : A}
@@ -600,8 +634,9 @@ ap₂ : ∀ {a b c} {A : Type a} {B : A → Type b} {C : (x : A) → B x → Typ
 ap₂ f p q i = f (p i) (q i)
 ```
 
-This operation satisfies many equalities definitionally that are only
-propositional when `ap`{.Agda} is defined in terms of `J`{.Agda}. For instance:
+This operation satisfies many identities definitionally that are only
+propositional when `ap`{.Agda} is defined in terms of `J`{.Agda}. For
+instance:
 
 ```agda
 module _ {A B C : Type} {f : A → B} {g : B → C} where
@@ -1032,10 +1067,10 @@ fill A {φ = φ} u u0 i =
 
 Given the inputs to a composition --- a family of partial paths `u` and
 a base `u0` --- `hfill`{.Agda} connects the input of the composition
-(`u0`) and the output. The cubical shape of iterated equalities lead to
-a slight oddity: The only unbiased definition of path composition we can
-give is _double composition_, which corresponds to the missing face for
-the [square] at the start of this section.
+(`u0`) and the output. The cubical shape of iterated identifications
+causes a slight oddity: The only unbiased definition of path composition
+we can give is _double composition_, which corresponds to the missing
+face for the [square] at the start of this section.
 
 [square]: 1Lab.Path.html#composition
 
@@ -1194,8 +1229,8 @@ $k = \mathrm{i0}$ face, and the red face is the $k = \mathrm{i1}$ face.
 
 However, even though the diagram is very busy, most of the detail it
 contains can be ignored. Reading it in the left-right direction, it
-expresses an equality between `α-filler j k` and `β-filler j k`, lying
-over an equality `α = β`. This latter equality is what you get when you
+expresses an identification between `α-filler j k` and `β-filler j k`,
+lying over a homotopy `α = β`. That homotopy is what you get when you
 read the bottom square of the diagram in the left-right direction.
 Explicitly, here is that bottom square:
 
@@ -1232,10 +1267,10 @@ its filler), it is contractible:
 
 ## Syntax Sugar
 
-When constructing long chains of equalities, it's rather helpful to be
-able to visualise _what_ is being equated with more "priority" than
-_how_ it is being equated. For this, a handful of combinators with weird
-names are defined:
+When constructing long chains of identifications, it's rather helpful to
+be able to visualise _what_ is being identified with more "priority"
+than _how_ it is being identified. For this, a handful of combinators
+with weird names are defined:
 
 ```agda
 _≡⟨_⟩_ : ∀ {ℓ} {A : Type ℓ} (x : A) {y z : A} → x ≡ y → y ≡ z → x ≡ z
@@ -1297,18 +1332,19 @@ SquareP A p q s r = PathP (λ i → PathP (λ j → A i j) (p i) (r i)) q s
 
 # Dependent Paths
 
-Often, it is desirable to compare elements of types which are not
-definitionally equal, but are connected by a path. We call these
-"dependent paths", or "paths over paths". In the same way that a
+Surprisingly often, we want to compare inhabitants $a : A$ and $b : B$
+where the types $A$ and $B$ are not _definitionally_ equal, but only
+identified in some specified way. We call these "**paths** over
+**p**paths", or `PathP`{.Agda} for short. In the same way that a
 `Path`{.Agda} can be understood as a function `I → A` with specified
 endpoints, a `PathP`{.Agda} (*path* over *p*ath) can be understood as a
 _dependent_ function `(i : I) → A i`.
 
 In the Book, paths over paths are implemented in terms of the
 `transport`{.Agda} operation: A path `x ≡ y` over `p` is a path
-`transport p x ≡ y`, thus deriving dependent equality from the
-non-dependent version. Fortunately, a cubical argument shows us that
-these notions coincide:
+`transport p x ≡ y`, thus defining dependent identifications using
+non-dependent ones. Fortunately, a cubical argument shows us that these
+notions coincide:
 
 ```agda
 PathP≡Path : ∀ {ℓ} (P : I → Type ℓ) (p : P i0) (q : P i1)
@@ -1328,6 +1364,13 @@ for `transport-filler`{.Agda}.
 
 * When `i = i1`, we have `PathP (λ j → P i1) (transport P p) q`, again
 by the endpoint rule for `transport-filler`{.Agda}.
+
+The existence of paths over paths gives another "counterexample" to
+thinking of paths as _equality_. For instance, it's hard to imagine a
+world in which `true` and `false` can be equal in any interesting sense
+of the word _equal_ --- but over the identification $\mathrm{Bool}
+\equiv \mathrm{Bool}$ that switches the points around, `true` and
+`false` can be identified!
 
 ## Coercion
 
@@ -1522,9 +1565,8 @@ simple cases:
 
 ## Σ Types
 
-For `Σ`{.Agda} types, an equality between `(a , b) ≡ (x , y)` is a
-non-dependent equality `p : a ≡ x`, and a path between `b` and `y`
-laying over `p`.
+For `Σ`{.Agda} types, a path between `(a , b) ≡ (x , y)` consists of a
+path `p : a ≡ x`, and a path between `b` and `y` laying over `p`.
 
 ```agda
 Σ-PathP : ∀ {a b} {A : Type a} {B : A → Type b}
@@ -1565,7 +1607,7 @@ happly p x i = p i x
 
 With this, we have made definitional yet another principle which is
 propositional in the HoTT book: _function extensionality_. Functions are
-equal precisely if they assign the same outputs to every input.
+identical precisely if they assign the same outputs to every input.
 
 ```agda
 funext : ∀ {a b} {A : Type a} {B : A → Type b}
@@ -1628,8 +1670,8 @@ becomes an application of the [groupoid laws for types].
 ```
 
 Similar statements can be proven about substitution where we hold the
-right endpoint constant, in which case we get something provably equal
-to composing with the inverse of the adjustment:
+right endpoint constant, in which case we get something homotopic to
+composing with the inverse of the adjustment:
 
 ```agda
 subst-path-left : ∀ {ℓ} {A : Type ℓ} {x y z : A}

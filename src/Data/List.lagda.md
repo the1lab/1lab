@@ -53,7 +53,7 @@ tail (_ ∷ xs) = xs
 ```
 
 Similarly, it is possible to distinguish `_ ∷ _` from `[]`{.Agda}, so
-they are not equal:
+they are not identical:
 
 ```agda
 ∷≠[] : ∀ {x : A} {xs} → (x ∷ xs) ≡ [] → ⊥
@@ -65,8 +65,8 @@ they are not equal:
 
 Using these lemmas, we can characterise the path space of `List A` in
 terms of the path space of `A`. For this, we define by induction a type
-family `Code`{.Agda}, which represents equalities in `List A` by
-iterated products of equality in `A`.
+family `Code`{.Agda}, which represents paths in `List A` by
+iterated products of paths in `A`.
 
 ```agda
 module ListPath {A : Type ℓ} where
@@ -156,10 +156,11 @@ both left and right units:
 ## Lemmas
 
 Continuing with the useful lemmas, if the heads and tails of two lists
-are equal, then the lists themselves are equal:
+are identified, then the lists themselves are identified:
 
 ```agda
-ap-∷ : ∀ {x y : A} {xs ys : List A} → x ≡ y → xs ≡ ys
+ap-∷ : ∀ {x y : A} {xs ys : List A} 
+     → x ≡ y → xs ≡ ys
      → Path (List A) (x ∷ xs) (y ∷ ys)
 ap-∷ x≡y xs≡ys i = x≡y i ∷ xs≡ys i
 ```

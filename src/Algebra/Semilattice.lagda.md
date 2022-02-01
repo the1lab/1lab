@@ -220,9 +220,9 @@ Semilattice→isJoin {_∨_ = _∨_} semi {x} {y} = r where
 As is typical with algebraic structures, we define a semilattice
 homomorphism as being a map which commutes with the binary operator.
 Since being a semilattice is a _property_ of $(A, \land)$, we have
-a characterisation of equality of semilattices: Two semilattices are
-equal precisely when their underlying types are equivalent by some
-homomorphic equivalence.
+a characterisation of identifications of semilattices: Two semilattices
+are identified precisely when their underlying types are equivalent by
+some homomorphic equivalence.
 
 ```agda
 isProp-isSemilattice : ∀ {∧ : A → A → A} → isProp (isSemilattice ∧)
@@ -287,7 +287,7 @@ Semilattice≃ A B = Semilattice→ A B ∘ fst
 ```
 
 Using the automated machinery for deriving `isUnivalent`{.Agda} proofs,
-we get the promised characterisation of equality in the type of
+we get the promised characterisation of identifications in the type of
 semilattices.
 
 ```agda

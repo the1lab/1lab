@@ -88,9 +88,9 @@ isProp-isGroup {A = A} {_*_ = _*_} x y = path where
 ```
 
 We begin by constructing a line showing that the `underlying monoid
-structures`{.Agda ident=hasIsMonoid are equal -- but since these have
-different _types_, we must also show that `the units are the same`{.Agda
-ident=same-unit}.
+structures`{.Agda ident=hasIsMonoid are identical -- but since these
+have different _types_, we must also show that `the units are the
+same`{.Agda ident=same-unit}.
 
 ```agda
   same-unit : x .unit ≡ y .unit
@@ -112,10 +112,10 @@ $x$ and $y$ are the same.
       (x .hasIsMonoid) (y .hasIsMonoid)
 ```
 
-Since `inverses in monoids are unique`{.Agda
-ident=monoid-inverse-unique} (when they exist), it follows that `the
-inverse-assigning maps`{.Agda ident=inverse} are pointwise equal; By
-extensionality, they are the same map.
+Since `inverses in monoids are unique`{.Agda ident=monoid-inverse-unique} 
+(when they exist), it follows that `the inverse-assigning maps`{.Agda
+ident=inverse} are pointwise equal; By extensionality, they are the same
+map.
 
 ```agda
   same-inverses : (e : A) → x .inverse e ≡ y .inverse e
@@ -142,7 +142,7 @@ dependent! This gives us the equations between the `inverseˡ`{.Agda} and
 ```
 
 Putting all of this together lets us conclude that `x` and `y` are
-equal.
+identical.
 
 ```agda
   path : x ≡ y

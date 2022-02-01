@@ -288,9 +288,9 @@ $\pi : x_0 ≡ x_1$ and $p_0 ≡ p_1$ _`over`{.Agda ident=PathP}_ $\pi$.
 
 As an intermediate step in proving that $p_0 ≡ p_1$, we _must_ show that
 $x_0 ≡ x_1$ - without this, we can't even _state_ that $p_0$ and $p_1$
-are equal, since they live in different types!  To this end, we will
-build $\pi : p_0 ≡ p_1$, parts of which will be required to assemble the
-overall proof that $p_0 ≡ p_1$.
+are identified, since they live in different types!  To this end, we
+will build $\pi : p_0 ≡ p_1$, parts of which will be required to
+assemble the overall proof that $p_0 ≡ p_1$.
 
 We'll detail the construction of $\pi_0$; for $\pi_1$, the same method
 is used. We want to construct a _line_, which we can do by exhibiting
@@ -408,7 +408,7 @@ filler for the square above.
 
 Observe that we can coherently alter $\theta$ to get $\iota$ below,
 which expresses that $\mathrm{ap}\ g\ p_0$ and $\mathrm{ap}\ g\ p_1$ are
-equal.
+identified.
 
 ```agda
     ι : Square (ap (g ∘ f) π) (ap g p0) (ap g p1) refl

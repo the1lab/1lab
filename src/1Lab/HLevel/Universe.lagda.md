@@ -56,8 +56,8 @@ the canonical function sending $x$ to the `centre of contraction`{.Agda
 ident=centre} of $B$, which is an equivalence because it is a
 `map between contractible types`{.Agda ident=isContr→isEquiv}.
 
-By `the characterisation of equality in Σ`{.Agda ident=Σ-Path} and the
-fact that `being an equivalence is a proposition`{.Agda
+By `the characterisation of paths in Σ`{.Agda ident=Σ-Path} and the fact
+that `being an equivalence is a proposition`{.Agda
 ident=isProp-isEquiv}, we get the required family of paths deforming any
 $A \simeq B$ to our `f`.
 

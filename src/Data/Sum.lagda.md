@@ -65,10 +65,10 @@ given two functions `A → C` and `B → C`, we can construct a function
 [ f , g ] (inr x) = g x
 ```
 
-Furthermore, this function is "universal" in the following sense:
-if we have some function `h : A ⊎ B → C` that behaves like
-`f` when provided an `inl a`, and like `g` when provided `inr b`, then
-`h` _must_ be equal to `[ f , g ]`.
+Furthermore, this function is "universal" in the following sense: if we
+have some function `h : A ⊎ B → C` that behaves like `f` when provided
+an `inl a`, and like `g` when provided `inr b`, then `h` _must_ be
+identical to `[ f , g ]`.
 
 ```agda
 []-unique : ∀ {f : A → C} {g : B → C} {h} → f ≡ h ∘ inl → g ≡ h ∘ inr → [ f , g ] ≡ h
@@ -186,7 +186,7 @@ module ⊎Path where
 ```
 
 Given a `Code`{.Agda} for a path in `A ⊎ B`, we can turn it into a
-legitimate equality. Agda automatically lets us ignore the cases where
+legitimate path. Agda automatically lets us ignore the cases where
 the `Code`{.Agda} computes to `the empty type`{.Agda ident=⊥}.
 
 ```agda
@@ -195,8 +195,8 @@ the `Code`{.Agda} computes to `the empty type`{.Agda ident=⊥}.
   decode {x = inr x} {y = inr x₁} code = ap inr (Lift.lower code)
 ```
 
-In the inverse direction, we have a procedure for turning equalities
-into codes:
+In the inverse direction, we have a procedure for turning paths into
+codes:
 
 ```agda
   encode : {x y : A ⊎ B} → x ≡ y → Code x y
@@ -227,9 +227,9 @@ computes wonderfully to make the right-hand sides fillable by
   encode-decode {x = inr x} {y = inr y} p = refl
 ```
 
-Thus, we have an equivalence between codes for equalities in `A ⊎ B` and
-_actual_ equalities `A ⊎ B`. Since `Code`{.Agda} has a nice
-computational structure, we can establish its h-level by induction:
+Thus, we have an equivalence between _codes for_ paths in `A ⊎ B` and
+_actual_ paths `A ⊎ B`. Since `Code`{.Agda} has a nice computational
+structure, we can establish its h-level by induction:
 
 ```agda
   Code≃Path : {x y : A ⊎ B} → Code x y ≃ (x ≡ y)

@@ -24,14 +24,14 @@ axiom**.
 Precisely, the axiom as presented in the book consists of the following
 data (right under remark §2.10.4):
 
-* A map which turns equivalences into propositional equalities of type.
+* A map which turns equivalences into identifications of types.
 This map is called `ua`{.Agda}.
 
-* A rule for eliminating equalities of types, by turning them into
+* A rule for eliminating identifications of types, by turning them into
 equivalences: `pathToEquiv`{.Agda}
 
 * The propositional computation rule, stating that transport along
-`ua(f)` is equal to applying `f`: `uaβ`{.Agda}.
+`ua(f)` is identical to applying `f`: `uaβ`{.Agda}.
 
 In the book, there is an extra postulated datum asserting that
 `ua`{.Agda} is an inverse to `pathToEquiv`{.Agda}. This datum does not
@@ -417,7 +417,7 @@ pathToEquiv : {A B : Type ℓ} → A ≡ B → A ≃ B
 pathToEquiv p = line→equiv (λ i → p i)
 ```
 
-Since equality of equivalences is determined by equality of their
+Since identity of equivalences is determined by identity of their
 underlying functions, to show that `pathToEquiv`{.Agda} of `refl`{.Agda}
 is the identity equivalence, we use `coe1→i`{.Agda} to show that
 `transport`{.Agda} by `refl`{.Agda} is the identity.
@@ -502,7 +502,7 @@ univalence-lift {ℓ = ℓ} = isIso→isEquiv morp where
 
 One useful consequence of $(A \equiv B) \simeq (A \simeq B)$[^2] is that
 the type of _equivalences_ satisfies [the same induction principle] as
-the type of _equalities_. By analogy with how path induction can be
+the type of _identifications_. By analogy with how path induction can be
 characterised as contractibility of singletons and transport,
 “equivalence induction” can be characterised as transport and
 contractibility of _singletons up to equivalence_:

@@ -96,7 +96,7 @@ Poset r ℓ = Σ[ A ∈ Type ℓ ] (PosetOn {ℓ' = r} A)
 ```
 
 An **equivalence of prosets** is an equivalence whose underlying map
-preserves the ordering relation, up to equality. This is not the usual
+both preserves _and_ reflects the order relation. This is not the usual
 definition of an equivalence of prosets, which is an equivalence with
 monotone underlying map (and monotone inverse).
 

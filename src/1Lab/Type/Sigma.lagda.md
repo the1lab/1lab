@@ -148,8 +148,9 @@ they are included for completeness. </summary>
 ## Paths in subtypes
 
 When `P` is a family of propositions, it is sound to regard `Σ[ x ∈ A ]
-(P x)` as a _subtype_ of `A`. This is because equality in the subtype is
-characterised uniquely by equality of the first projections:
+(P x)` as a _subtype_ of `A`. This is because identification in the
+subtype is characterised uniquely by identification of the first
+projections:
 
 ```agda
 Σ≡Prop : {B : A → Type ℓ}

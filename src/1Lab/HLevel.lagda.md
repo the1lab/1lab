@@ -203,7 +203,7 @@ isProp→isSet h x y p q i j =
 ```
 
 The proof that any proposition is a set is slightly more complicated.
-Since the desired equality `p ≡ q` is a square, we need to describe a
+Since the desired homotopy `p ≡ q` is a square, we need to describe a
 _cube_ where the missing face is the square we need. I have
 painstakingly illustrated it here:
 
@@ -241,7 +241,7 @@ face is one of the sides of the composition. They're labelled with the
 terms in the `hcomp`{.Agda} for `isProp→isSet`{.Agda}: For example, the
 square you get when fixing `i = i0` is on top of the diagram. Since we
 have an open box, it has a lid --- which, in this case, is the back face
---- which expresses the equality we wanted: `p ≡ q`.
+--- which expresses the identification we wanted: `p ≡ q`.
 
 With these two base cases, we can prove the general case by recursion:
 
@@ -343,7 +343,7 @@ isProp-isContr {A = A} (contr c₁ h₁) (contr c₂ h₂) i =
 First, we prove that being contractible is a proposition. Next, we prove
 that being a proposition is a proposition. This follows from
 `isProp→isSet`{.Agda}, since what we want to prove is that `h₁` and `h₂`
-always give equal paths.
+always give homotopic paths.
 
 ```agda
 isProp-isProp : isProp (isProp A)

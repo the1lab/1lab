@@ -96,7 +96,8 @@ can conclude equality from a double-negated equality is a set:
   prop p q i x = absurd {A = p x ≡ q x} (p x) i
 ```
 
-From this we get **Hedberg's theorem**: Any type with decidable equality is a set.
+From this we get **Hedberg's theorem**: Any type with decidable equality
+is a set.
 
 ```agda
 Discrete→isSet : Discrete A → isSet A

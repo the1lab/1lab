@@ -8,11 +8,11 @@ A formalised, cross-linked reference resource for mathematics done in
 Homotopy Type Theory. Unlike the [HoTT book], the 1lab is not a "linear"
 resource: Concepts are presented as a directed graph, with links
 indicating _dependencies_. For instance, the statement of the univalence
-principle depends on [_universes_](agda://1Lab.Type), [_propositional
-equality_](agda://1Lab.Path) (paths) and [_equivalences_](agda://1Lab.Equiv). 
-In addition to the hyperlinked "web of concepts" provided by the Agda
-code, there is a short introduction to homotopy type theory: **[Start
-here](1Lab.intro.html)**.
+principle depends on [_universes_](agda://1Lab.Type),
+[_identifications_](agda://1Lab.Path) and
+[_equivalences_](agda://1Lab.Equiv).  In addition to the hyperlinked
+"web of concepts" provided by the Agda code, there is a short
+introduction to homotopy type theory: **[Start here](1Lab.intro.html)**.
 
 [HoTT book]: https://homotopytypetheory.org/book/
 
@@ -69,7 +69,7 @@ mathematics, and especially formalised mathematics done in Homotopy Type
 Theory, accessible to as wide as audience as possible. In addition to
 the hyperlinked "web of concepts" provided by the Agda code, there is a
 short introduction to homotopy type theory: **[Start
-here](1lab.intro.html)**.
+here](1Lab.intro.html)**.
 
 [open-source]: https://github.com/plt-amy/cubical-1lab
 
@@ -235,7 +235,7 @@ open import 1Lab.HLevel.Sets     -- K, Rijke's theorem, Hedberg's theorem
 open import 1Lab.HLevel.Retracts -- Closure of h-levels under retractions/isos
 open import 1Lab.HLevel.Universe -- The type of n-types is a (n+1)-type
 
-open import 1Lab.Univalence            -- Equivalence is equivalent to equality
+open import 1Lab.Univalence            -- Equivalence is equivalent to identification
 open import 1Lab.Univalence.SIP        -- Univalence + preservation of structure
 open import 1Lab.Univalence.SIP.Auto   -- Derive isUnivalent for families of types
 open import 1Lab.Univalence.SIP.Record -- Derive isUnivalent for record types
@@ -291,7 +291,8 @@ open import Relation.Order.Lexicographic -- Lexicographic orderings
 In the `Algebra` namespace, the theory of universal algebra is developed
 from a univalent perspective. Specifically, every definition of an
 algebraic structure comes with an associated proof that it is univalent
---- concretely, equality of groups is group isomorphism (for instance).
+--- concretely, identification of groups is group isomorphism (for
+instance).
 
 ```agda
 open import Algebra.Magma                      -- Binary operations 

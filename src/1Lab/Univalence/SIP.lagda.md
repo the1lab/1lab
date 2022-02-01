@@ -1,6 +1,6 @@
 ---
 description: |
-  The structure identity principle characterises equality in
+  The structure identity principle characterises identifications in
   "types-with-structure" as being exactly the equivalences that preserve
   that structure. In a sense, it augments univalence with the notion of
   preservation of structure.
@@ -107,8 +107,8 @@ private variable
 A structure is said to be **univalent** if a homomorphic equivalence of
 structures `A`, `B` induces a path of the structures, over the
 univalence axiom --- that is, if `is-hom`{.Agda} agrees with what it
-means for "S X" and "S Y" to be equal, where this equality is dependent
-on one induced by univalence.
+means for "S X" and "S Y" to be identified, where this identification is
+dependent on one induced by univalence.
 
 ```agda
 isUnivalent : Structure ℓ S → Type _
@@ -132,9 +132,10 @@ A ≃[ σ ] B =
 ## The principle
 
 The **structure identity principle** says that, if `S` is a `univalent
-structure`{.Agda ident=isUnivalent}, then the path space of `Σ S` is equivalent
-to the space of S-homomorphic equivalences of types. Again using groups
-as a grounding example: equality of groups is group isomorphism.
+structure`{.Agda ident=isUnivalent}, then the path space of `Σ S` is
+equivalent to the space of S-homomorphic equivalences of types. Again
+using groups as a grounding example: identification of groups is group
+isomorphism.
 
 ```agda
 SIP : {σ : Structure ℓ S} → isUnivalent σ → {X Y : Σ S} → (X ≃[ σ ] Y) ≃ (X ≡ Y)
@@ -301,7 +302,7 @@ the same as the standard notion:
 
 As an example, we equip the type of booleans with two ∞-magma
 structures, one given by conjunction, one by disjunction, and prove that
-`not`{.Agda} makes them equal as ∞-magmas:
+`not`{.Agda} identifies them, as ∞-magmas:
 
 <div class=mathpar>
 ```agda
@@ -597,9 +598,11 @@ witnessing that a) the type is a set; b) the operation is associative;
 and c) the point acts as a left- and right- identity for the operation.
 
 Fortunately, the SIP again applies here: If you augment a standard
-notion of structure with _axioms_, then equality of structures with
-axioms is still isomorphism of the underlying structures. For this, we
-require that the axioms be [valued in propositions](agda://1Lab.HLevel#isProp).
+notion of structure with _axioms_, then identification of structures
+with axioms is still isomorphism of the underlying structures. For this,
+we require that the axioms be [valued in propositions].
+
+[valued in propositions]: agda://1Lab.HLevel#isProp
 
 ```agda
 module _
