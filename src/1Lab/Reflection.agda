@@ -6,12 +6,16 @@ module 1Lab.Reflection where
 
 open import Agda.Builtin.List public
 open import Agda.Builtin.String public
+open import Agda.Builtin.Maybe public
 open import Agda.Builtin.Reflection
   renaming ( bindTC to _>>=_
            ; catchTC to infixl 8 _<|>_
            )
   hiding (Type)
   public
+
+_>>_ : ∀ {a b} {A : Type a} {B : Type b} → TC A → TC B → TC B
+f >> g = f >>= λ _ → g
 
 Fun : ∀ {ℓ ℓ'} → Type ℓ → Type ℓ' → Type (ℓ ⊔ ℓ')
 Fun A B = A → B
@@ -73,3 +77,11 @@ makeVarsFrom {suc n} k = var (n + k) [] ∷ (makeVarsFrom k)
 iter : ∀ {ℓ} {A : Type ℓ} → Nat → (A → A) → A → A
 iter zero f = id
 iter (suc n) f = f ∘ iter n f
+
+getName : Term → Maybe Name
+getName (def x _) = just x
+getName (con x _) = just x
+getName _ = nothing
+
+_name=?_ : Name → Name → Bool
+x name=? y = primQNameEquality x y
