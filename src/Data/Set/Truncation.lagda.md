@@ -12,15 +12,57 @@ module Data.Set.Truncation where
 
 Exactly analogously to the construction of [propositional truncations],
 we can construct the **set truncation** of a type, reflecting it onto
-the subcategory of sets.
+the subcategory of sets. Just like the propositional truncation is
+constructed by attaching enough lines to a type to hide away all
+information other than "is the type inhabited", the set truncation is
+constructed by attaching enough square to kill off all homotopy groups.
 
-⚠️ WIP ⚠️
+[propositional truncations]: 1Lab.HIT.Truncation.html
 
 ```agda
 data ∥_∥₀ {ℓ} (A : Type ℓ) : Type ℓ where
   inc    : A → ∥ A ∥₀
   squash : isSet ∥ A ∥₀
-   
+```
+
+We begin by defining the induction principle. The (family of) type(s) we
+map into must be a set, as required by the `squash`{.Agda} constructor.
+
+```agda
+∥-∥₀-elim : ∀ {ℓ ℓ'} {A : Type ℓ} {B : ∥ A ∥₀ → Type ℓ'}
+          → (∀ x → isSet (B x))
+          → (∀ x → B (inc x))
+          → ∀ x → B x
+∥-∥₀-elim Bset binc (inc x) = binc x
+∥-∥₀-elim Bset binc (squash x y p q i j) =
+  isSet→SquareP (λ i j → Bset (squash x y p q i j))
+    (λ _ → g x) (λ i → g (p i)) (λ i → g (q i)) (λ i → g y) i j
+  where g = ∥-∥₀-elim Bset binc
+```
+
+The most interesting result is that, since the sets form a reflective
+subcategory of types, it generates an idempotent monad. Indeed, as
+required, the counit `inc`{.Agda} is an equivalence:
+
+```agda
+∥-∥₀-idempotent : ∀ {ℓ} {A : Type ℓ} → isSet A
+                → isEquiv (inc {A = A})
+∥-∥₀-idempotent {A = A} aset = isIso→isEquiv (iso proj inc∘proj λ _ → refl)
+  where
+    proj : ∥ A ∥₀ → A
+    proj (inc x) = x
+    proj (squash x y p q i j) =
+      aset (proj x) (proj y) (λ i → proj (p i)) (λ i → proj (q i)) i j
+
+    inc∘proj : (x : ∥ A ∥₀) → inc (proj x) ≡ x
+    inc∘proj = ∥-∥₀-elim (λ _ → isProp→isSet (squash _ _)) λ _ → refl
+```
+
+The other definitions are entirely routine. We define functorial actions
+of `∥_∥₀`{.Agda} directly, rather than using the eliminator, to avoid
+using `isSet→SquareP`{.Agda}.
+
+```agda
 ∥-∥₀-map : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
         → (A → B) → ∥ A ∥₀ → ∥ B ∥₀
 ∥-∥₀-map f (inc x)        = inc (f x)
@@ -44,16 +86,6 @@ data ∥_∥₀ {ℓ} (A : Type ℓ) : Type ℓ where
          (λ i → ∥-∥₀-map₂ f a (q i))
          i j
 
-∥-∥₀-elim : ∀ {ℓ ℓ'} {A : Type ℓ} {B : ∥ A ∥₀ → Type ℓ'}
-          → (∀ x → isSet (B x))
-          → (∀ x → B (inc x))
-          → ∀ x → B x
-∥-∥₀-elim Bset binc (inc x) = binc x
-∥-∥₀-elim Bset binc (squash x y p q i j) =
-  isSet→SquareP (λ i j → Bset (squash x y p q i j))
-    (λ _ → g x) (λ i → g (p i)) (λ i → g (q i)) (λ i → g y) i j
-  where g = ∥-∥₀-elim Bset binc
-
 ∥-∥₀-elim₂ : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : ∥ A ∥₀ → ∥ B ∥₀ → Type ℓ''}
            → (∀ x y → isSet (C x y))
            → (∀ x y → C (inc x) (inc y))
@@ -68,16 +100,4 @@ data ∥_∥₀ {ℓ} (A : Type ℓ) : Type ℓ where
            → ∀ x y z → D x y z
 ∥-∥₀-elim₃ Bset f = ∥-∥₀-elim₂ (λ x y → isHLevelΠ 2 (Bset x y)) 
   λ x y → ∥-∥₀-elim (Bset (inc x) (inc y)) (f x y)
-  
-∥-∥₀-idempotent : ∀ {ℓ} {A : Type ℓ} → isSet A
-                → isEquiv (inc {A = A})
-∥-∥₀-idempotent {A = A} aset = isIso→isEquiv (iso proj inc∘proj λ _ → refl)
-  where
-    proj : ∥ A ∥₀ → A
-    proj (inc x) = x
-    proj (squash x y p q i j) =
-      aset (proj x) (proj y) (λ i → proj (p i)) (λ i → proj (q i)) i j
-
-    inc∘proj : (x : ∥ A ∥₀) → inc (proj x) ≡ x
-    inc∘proj = ∥-∥₀-elim (λ _ → isProp→isSet (squash _ _)) λ _ → refl
 ```
