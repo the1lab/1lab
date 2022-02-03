@@ -303,7 +303,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
       let args = ["-f", ".macros", "-t"] ++ ["-d" | display]
           stdin = LazyBS.fromStrict $ Text.encodeUtf8 tex
       Stdout out <- command [StdinBS stdin] "katex" args
-      pure $ Text.decodeUtf8 out
+      pure . Text.stripEnd . Text.decodeUtf8 $ out
 
     pure ()
 
