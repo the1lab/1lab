@@ -1,5 +1,6 @@
 ```agda
 open import 1Lab.HLevel.Retracts
+open import 1Lab.Type.Sigma
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -105,24 +106,6 @@ truncation extends to a functor:
 ∥-∥-map₂ f (inc x) (inc y)  = inc (f x y)
 ∥-∥-map₂ f (squash x y i) z = squash (∥-∥-map₂ f x z) (∥-∥-map₂ f y z) i
 ∥-∥-map₂ f x (squash y z i) = squash (∥-∥-map₂ f x y) (∥-∥-map₂ f x z) i
-
-∥-∥-recSet : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
-           → (f : A → B)
-           → (∀ x y → f x ≡ f y)
-           → isSet B
-           → ∥ A ∥ → B
-∥-∥-recSet {A = A} {B} f const b = go where
-  go : ∥ A ∥ → B
-  helper : ∀ x y → go x ≡ go y
-
-  go (inc x) = f x
-  go (squash x y i) = helper x y i
-
-  helper (inc x) (inc y) = const x y
-  helper (squash x y i) z =
-    isSet→SquareP (λ _ _ → b) (helper x y) (helper x z) (helper y z) refl i
-  helper x (squash y z i) =
-    isSet→SquareP (λ _ _ → b) refl (helper x y) (helper x z) (helper y z) i
 ```
 -->
 
@@ -157,4 +140,87 @@ isProp≃equiv∥-∥ {P = P} = propExt isProp-isProp eqv-prop isProp→equiv∥
   eqv-prop : isProp (P ≃ ∥ P ∥)
   eqv-prop x y = Σ-Path (λ i p → squash (x .fst p) (y .fst p) i)
                         (isProp-isEquiv _ _ _)
+```
+
+## Maps into Sets
+
+The elimination principle for $\| A \|$ says that we can only use the
+$A$ inside in a way that _doesn't matter_: the motive of elimination
+must be a family of propositions, so our use of $A$ must not matter in a
+very strong sense. Often, it's useful to relax this requirement
+slightly: Can we map out of $\| A \|$ using a _constant_ function?
+
+The answer is yes! However, the witness of  constancy we use must be
+very coherent indeed. In particular, we need enough coherence on top of
+a family of paths $(x\ y : A) \to f x \equiv_B f y$ to ensure that the
+image of $f$ is a proposition; Then we can map from $\| A \| \to
+\mathrm{im}(f) \to B$.
+
+From the discussion in [1Lab.Counterexamples.Sigma], we know the
+definition of image, or more properly of $(-1)$-image:
+
+[1Lab.Counterexamples.Sigma]: 1Lab.Counterexamples.Sigma.html
+
+```agda
+image : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → (A → B) → Type _
+image {A = A} {B = B} f = Σ[ b ∈ B ] ∃[ a ∈ A ] (f a ≡ b)
+```
+
+To see that the `image`{.Agda} indeed implements the concept of image,
+we define a way to factor any map through its image. By the definition
+of image, we have that the map `f-image`{.Agda} is always surjective,
+and since `∃` is a family of props, the first projection out of
+`image`{.Agda} is an embedding. Thus we factor a map $f$ as $A \epi
+\mathrm{image}(f) \mono B$.
+
+```agda
+f-image 
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → (f : A → B) → A → image f
+f-image f x = f x , inc (x , refl)
+```
+
+We now prove the theorem that will let us map out of a propositional
+truncation using a constant function into sets: if $B$ is a set, and $f
+: A \to B$ is a constant function, then $\mathrm{image}(f)$ is a
+proposition. 
+
+```agda
+isConstant→isProp-image 
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → isSet B
+  → (f : A → B) → (∀ x y → f x ≡ f y) → isProp (image f)
+```
+
+This is intuitively true (if the function is constant, then there is at
+most one thing in the image!), but formalising it turns out to be
+slightly tricky, and the requirement that $B$ be a set is perhaps
+unexpected.
+
+A sketch of the proof is as follows. Suppose that we have some $(a, x)$
+and $(b, y)$ in the image. We know, morally, that $x$ (respectively $y$) give us
+some $f^*(a) : A$ and $p : f(f^*a) = a$ (resp $q : f(f^*(b)) = b$) ---
+which would establish that $a \equiv b$, as we need, since we have $a =
+f(f^*(a)) = f(f^*(b)) = b$, where the middle equation is by constancy of
+$f$ --- but crucially, the 
+
+```agda
+isConstant→isProp-image bset f f-const (a , x) (b , y) = 
+  Σ≡Prop (λ _ → squash)
+    (∥-∥-elim₂ (λ _ _ → bset _ _) 
+      (λ { (f*a , p) (f*b , q) → sym p ·· f-const f*a f*b ·· q }) x y)
+```
+
+Using the image factorisation, we can project from a propositional
+truncation onto a set using a constant map.
+
+```agda
+∥-∥-recSet : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+           → (f : A → B)
+           → (∀ x y → f x ≡ f y)
+           → isSet B
+           → ∥ A ∥ → B
+∥-∥-recSet {A = A} {B} f f-const bset x = 
+  ∥-∥-elim {P = λ _ → image f} 
+    (λ _ → isConstant→isProp-image bset f f-const) (f-image f) x .fst
 ```

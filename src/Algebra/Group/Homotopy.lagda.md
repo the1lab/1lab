@@ -6,6 +6,8 @@ open import Algebra.Monoid
 open import Algebra.Group
 open import Algebra.Magma
 
+open import Data.Set.Truncation
+
 module Algebra.Group.Homotopy where
 ```
 
