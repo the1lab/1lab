@@ -114,11 +114,10 @@ We now prove the universal property of `FreeGrp`{.Agda}: It's the left
 adjoint to the inclusion $\mathrm{Grp} \hookrightarrow \set$. 
 
 ```agda
-FreeGrp-univ 
+Free⊣Forget
   : ∀ {ℓ} {A : Set ℓ} {G : Group ℓ}
-  → (Σ[ f ∈ (FreeGrp (A .fst) → G .fst) ] isGroupHom (Free (A .fst)) G f)
-  ≃ (A .fst → G .fst)
-FreeGrp-univ {A = A , Aset} {G = G , Ggrp} = Iso→Equiv isom where
+  → Group[ Free (A .fst) ⇒ G ] ≃ (A .fst → G .fst)
+Free⊣Forget {A = A , Aset} {G = G , Ggrp} = Iso→Equiv isom where
   open isIso
   module G = GroupOn Ggrp
   module FA = GroupOn (Free A .snd)
@@ -134,7 +133,7 @@ we're locked into this choice by the adjunction.
   fold : (A → G) → FreeGrp A → G
   fold f (inc x) = f x
   fold f (x ◆ y) = fold f x G.⋆ fold f y
-  fold f (FreeGrp.inv x) = G.inverse (fold f x)
+  fold f (FreeGrp.inv x) = fold f x G.⁻¹
   fold f nil = G.unit
 ```
 
@@ -180,9 +179,7 @@ assumption that $f$ is a group homomorphism.
 ```agda
   isom .snd .linv (f , f-hom) =
     Σ≡Prop 
-      (λ f a b i → record { 
-        pres-⋆ = λ x y → G.hasIsSet _ _ (a .pres-⋆ x y) (b .pres-⋆ x y) i 
-      }) 
+      (λ f → isProp-isGroupHom) 
       (funext (Free-elimProp _ (λ x → G.hasIsSet _ _) 
         (λ x → refl) 
         (λ x y p q → ap₂ G._⋆_ p q ∙ sym (f-hom .pres-⋆ x y)) 

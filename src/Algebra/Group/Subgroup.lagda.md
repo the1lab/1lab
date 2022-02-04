@@ -29,7 +29,7 @@ record isSubgroup (G : Group ℓ) (H : ℙ (G .fst)) : Type ℓ where
   field
     has-unit : unit ∈ H
     has-⋆    : ∀ {x y} → x ∈ H → y ∈ H → (x ⋆ y) ∈ H
-    has-inv  : ∀ {x} → x ∈ H → inverse x ∈ H
+    has-inv  : ∀ {x} → x ∈ H → x ⁻¹ ∈ H
 ```
 
 As the name implies, the subgroups of $(G, \star)$ are precisely those
@@ -43,7 +43,7 @@ isSubgroup→GroupOn {G = G} H sg =
     (isHLevelΣ 2 hasIsSet λ x → isProp→isSet (H x .snd))
     (unit , has-unit)
     (λ { (x , xin) (y , yin) → x ⋆ y , has-⋆ xin yin} )
-    (λ { (x , xin) → (inverse x , has-inv xin) })
+    (λ { (x , xin) → (x ⁻¹ , has-inv xin) })
     (λ x y z → Σ≡Prop (λ x → H x .snd) (sym associative))
     (λ x → Σ≡Prop (λ x → H x .snd) inverseˡ)
     (λ x → Σ≡Prop (λ x → H x .snd) inverseʳ)
@@ -63,18 +63,18 @@ record isNormal (G : Group ℓ) (N : ℙ (G .fst)) : Type ℓ where
 
   field
     has-subgroup : isSubgroup G N
-    has-conjugate : ∀ {x y} → y ∈ N → (x ⋆ (y ⋆ inverse x)) ∈ N
+    has-conjugate : ∀ {x y} → y ∈ N → (x ⋆ y ⋆ x ⁻¹) ∈ N
 
-  has-conjugateˡ : ∀ {x y} → y ∈ N → ((x ⋆ y) ⋆ inverse x) ∈ N
+  has-conjugateˡ : ∀ {x y} → y ∈ N → ((x ⋆ y) ⋆ x ⁻¹) ∈ N
   has-conjugateˡ yin = subst (_∈ N) associative (has-conjugate yin)
 
   has-comm : ∀ {x y} → (x ⋆ y) ∈ N → (y ⋆ x) ∈ N
   has-comm {x = x} {y} ∈ = subst (_∈ N) p (has-conjugate ∈)
     where
-      p = inverse x ⋆ ((x ⋆ y) ⋆ inverse (inverse x)) ≡⟨ ap₂ _⋆_ refl (sym associative) ∙ (λ i → inverse x ⋆ (x ⋆ (y ⋆ inv-inv {x = x} i))) ⟩ 
-          inverse x ⋆ (x ⋆ (y ⋆ x))                   ≡⟨ associative ⟩
-          (inverse x ⋆ x) ⋆ (y ⋆ x)                   ≡⟨ ap₂ _⋆_ inverseˡ refl ∙ idˡ ⟩
-          y ⋆ x                                       ∎
+      p = x ⁻¹ ⋆ (x ⋆ y) ⋆ x ⁻¹ ⁻¹ ≡⟨ ap₂ _⋆_ refl (sym associative) ∙ (λ i → x ⁻¹ ⋆ x ⋆ y ⋆ inv-inv {x = x} i) ⟩ 
+          x ⁻¹ ⋆ x ⋆ y ⋆ x         ≡⟨ associative ⟩
+          (x ⁻¹ ⋆ x) ⋆ y ⋆ x       ≡⟨ ap₂ _⋆_ inverseˡ refl ∙ idˡ ⟩
+          y ⋆ x                    ∎
   
   open isSubgroup has-subgroup public
 ```
@@ -85,18 +85,18 @@ conjugation by any element is always the identity: $xyx^{-1} = yxx^{-1}
 = y$.
 
 ```agda
-isCommutative→isNormal 
-  : {H : ℙ (G .fst)} → isCommutative G → isSubgroup G H → isNormal G H
-isCommutative→isNormal {G = G} {H = H} abelian sg = r where
+isAbelian→isNormal 
+  : {H : ℙ (G .fst)} → isAbelian G → isSubgroup G H → isNormal G H
+isAbelian→isNormal {G = G} {H = H} abelian sg = r where
   open GroupOn (G .snd)
   open isNormal
 
-  commute-conjugate : ∀ x y → (x ⋆ (y ⋆ inverse x)) ≡ y
+  commute-conjugate : ∀ x y → (x ⋆ y ⋆ x ⁻¹) ≡ y
   commute-conjugate x y =
-    x ⋆ (y ⋆ inverse x) ≡⟨ ap₂ _⋆_ refl (abelian _ _) ⟩
-    x ⋆ (inverse x ⋆ y) ≡⟨ associative ⟩
-    (x ⋆ inverse x) ⋆ y ≡⟨ ap₂ _⋆_ inverseʳ refl ∙ idˡ ⟩
-    y                   ∎
+    x ⋆ y ⋆ x ⁻¹   ≡⟨ ap₂ _⋆_ refl (abelian _ _) ⟩
+    x ⋆ x ⁻¹ ⋆ y   ≡⟨ associative ⟩
+    (x ⋆ x ⁻¹) ⋆ y ≡⟨ ap₂ _⋆_ inverseʳ refl ∙ idˡ ⟩
+    y              ∎
 
   r : isNormal _ _
   r .has-subgroup = sg
@@ -161,12 +161,12 @@ and cancel the remaining $f(x)f(x)^{-1}$.
   ker-normal : isNormal A inKernel
   ker-normal .has-subgroup = ker-subgroup
   ker-normal .has-conjugate {x = x} {y = y} fy=1 = 
-    f (x A.⋆ (y A.⋆ A.inverse x))        ≡⟨ h.pres-⋆ _ _ ⟩
-    f x B.⋆ f (y A.⋆ A.inverse x)        ≡⟨ ap₂ B._⋆_ refl (h.pres-⋆ _ _) ⟩
-    f x B.⋆ (f y B.⋆ f (A.inverse x))    ≡⟨ ap₂ B._⋆_ refl (ap₂ B._⋆_ fy=1 refl ∙ B.idˡ) ⟩
-    f x B.⋆ f (A.inverse x)              ≡⟨ ap₂ B._⋆_ refl (h.pres-inv x) ⟩
-    f x B.⋆ B.inverse (f x)              ≡⟨ B.inverseʳ ⟩
-    B.unit                               ∎
+    f (x A.⋆ y A.⋆ x A.⁻¹)        ≡⟨ h.pres-⋆ _ _ ⟩
+    f x B.⋆ f (y A.⋆ x A.⁻¹)      ≡⟨ ap₂ B._⋆_ refl (h.pres-⋆ _ _) ⟩
+    f x B.⋆ (f y B.⋆ f (x A.⁻¹))  ≡⟨ ap₂ B._⋆_ refl (ap₂ B._⋆_ fy=1 refl ∙ B.idˡ) ⟩
+    f x B.⋆ f (x A.⁻¹)            ≡⟨ ap₂ B._⋆_ refl (h.pres-inv x) ⟩
+    f x B.⋆ (f x) B.⁻¹            ≡⟨ B.inverseʳ ⟩
+    B.unit                        ∎
 
   ker : NormalSubgroup A
   ker = record { subgroup = inKernel ; hasIsNormal = ker-normal }
@@ -187,7 +187,7 @@ image if _there exists_ an $x : A$ such that $f(x)=y$.
   image-subgroup .has-⋆ {x} {y} = ∥-∥-map₂ λ where
     (f*x , p) (f*y , q) → (f*x A.⋆ f*y) , h.pres-⋆ _ _ ∙ ap₂ B._⋆_ p q
   image-subgroup .has-inv = ∥-∥-map λ where
-    (f*x , p) → A.inverse f*x , h.pres-inv _ ∙ ap B.inverse p
+    (f*x , p) → f*x A.⁻¹ , h.pres-inv _ ∙ ap B.inverse p
 
   im : Group ℓ
   im = _ , isSubgroup→GroupOn _ image-subgroup

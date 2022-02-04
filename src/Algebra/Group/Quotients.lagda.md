@@ -4,7 +4,7 @@ open import 1Lab.Prelude
 open import Algebra.Group.Subgroup
 open import Algebra.Group
 
-open import Data.Set.Quotient
+open import Data.Set.Coequaliser
 open import Data.Power
 
 module Algebra.Group.Quotients where
@@ -87,7 +87,7 @@ $(x - y) \in N$, we also have $(x^{-1} - y) \in N$.
 
 ```agda
     inverse : T → T
-    inverse = Quot-rec squash (inc ∘ inv) λ x y r → quot _ _ (p x y r)
+    inverse = Coeq-rec squash (inc ∘ inv) λ { (x , y , r) → quot _ _ (p x y r) }
       where abstract
         p : ∀ x y → (x ⋆ inv y) ∈ N? → (inv x ⋆ inv (inv y)) ∈ N?
         p x y r = has-comm (subst (_∈ N?) inv-comm (has-inv r))
@@ -101,11 +101,11 @@ rather directly:
 ```agda
     GroupOn-T : GroupOn T
     GroupOn-T = makeGroup squash (inc unit) op inverse
-      (Quot-elimProp₃ (λ _ _ _ → squash _ _) 
+      (Coeq-elimProp₃ (λ _ _ _ → squash _ _) 
         λ x y z i → inc (associative {x = x} {y} {z} (~ i)))
-      (Quot-elimProp (λ _ → squash _ _) λ x i → inc (inverseˡ {x = x} i))
-      (Quot-elimProp (λ _ → squash _ _) λ x i → inc (inverseʳ {x = x} i))
-      (Quot-elimProp (λ _ → squash _ _) λ x i → inc (idˡ {x = x} i))
+      (Coeq-elimProp (λ _ → squash _ _) λ x i → inc (inverseˡ {x = x} i))
+      (Coeq-elimProp (λ _ → squash _ _) λ x i → inc (inverseʳ {x = x} i))
+      (Coeq-elimProp (λ _ → squash _ _) λ x i → inc (idˡ {x = x} i))
   
   _/ᴳ_ : Group ℓ
   _/ᴳ_ = _ , GroupOn-T

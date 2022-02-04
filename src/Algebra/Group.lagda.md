@@ -169,6 +169,12 @@ record GroupOn {ℓ} (A : Type ℓ) : Type ℓ where
     _⋆_ : A → A → A
     hasIsGroup : isGroup _⋆_
 
+  infixr 20 _⋆_
+  infixl 30 _⁻¹
+
+  _⁻¹ : A → A
+  x ⁻¹ = inverse hasIsGroup x
+
   open isGroup hasIsGroup public
 
 open GroupOn
@@ -182,7 +188,7 @@ it `preserves the multiplication`{.Agda ident=pres-⋆}.
 
 ```agda
 record
-  isGroupHom {ℓ} (A B : Σ (GroupOn {ℓ = ℓ})) (e : A .fst → B .fst) : Type ℓ where
+  isGroupHom {ℓ} (A B : Group ℓ) (e : A .fst → B .fst) : Type ℓ where
   private
     module A = GroupOn (A .snd)
     module B = GroupOn (B .snd)
@@ -201,12 +207,12 @@ identity:
 
   pres-id : e 1A ≡ 1B
   pres-id =
-    e 1A                                 ≡⟨ sym B.idʳ ⟩ 
-    e 1A B.⋆ 1B                          ≡⟨ ap₂ B._⋆_ refl (sym B.inverseʳ) ⟩ 
-    e 1A B.⋆ (e 1A B.⋆ B.inverse (e 1A)) ≡⟨ B.associative ⟩ 
-    (e 1A B.⋆ e 1A) B.⋆ B.inverse (e 1A) ≡⟨ ap₂ B._⋆_ (sym (pres-⋆ _ _) ∙ ap e A.idˡ) refl ⟩ 
-    e 1A B.⋆ B.inverse (e 1A)            ≡⟨ B.inverseʳ ⟩ 
-    1B                                   ∎
+    e 1A                            ≡⟨ sym B.idʳ ⟩ 
+    e 1A B.⋆ 1B                     ≡⟨ ap₂ B._⋆_ refl (sym B.inverseʳ) ⟩ 
+    e 1A B.⋆ (e 1A B.⋆ (e 1A) B.⁻¹) ≡⟨ B.associative ⟩ 
+    (e 1A B.⋆ e 1A) B.⋆ (e 1A) B.⁻¹ ≡⟨ ap₂ B._⋆_ (sym (pres-⋆ _ _) ∙ ap e A.idˡ) refl ⟩ 
+    e 1A B.⋆ (e 1A) B.⁻¹            ≡⟨ B.inverseʳ ⟩ 
+    1B                              ∎
 
   pres-inv : ∀ x → e (A.inverse x) ≡ B.inverse (e x)
   pres-inv x = 
@@ -215,12 +221,23 @@ identity:
       B.inverseʳ
 ```
 
+<!--
+```agda
+isProp-isGroupHom : ∀ {ℓ} {G H : Group ℓ} {f} → isProp (isGroupHom G H f) 
+isProp-isGroupHom {H = _ , H} a b i .isGroupHom.pres-⋆ x y = 
+  GroupOn.hasIsSet H _ _ (a .isGroupHom.pres-⋆ x y) (b .isGroupHom.pres-⋆ x y) i 
+```
+-->
+
 An `equivalence`{.Agda ident=_≃_} is an equivalence of groups when its
 underlying map is a group homomorphism.
 
 ```agda
-Group≃ : ∀ {ℓ} (A B : Σ (GroupOn {ℓ = ℓ})) (e : A .fst ≃ B .fst) → Type ℓ
+Group≃ : ∀ {ℓ} (A B : Group ℓ) (e : A .fst ≃ B .fst) → Type ℓ
 Group≃ A B (f , _) = isGroupHom A B f
+
+Group[_⇒_] : ∀ {ℓ} (A B : Group ℓ) → Type ℓ
+Group[ A ⇒ B ] = Σ (isGroupHom A B)
 
 open isGroupHom
 ```
@@ -325,8 +342,8 @@ equivalence is both a section and a retraction.
 
 <!--
 ```agda
-isCommutative : ∀ {ℓ} (G : Group ℓ) → Type ℓ
-isCommutative (G , st) = ∀ (x y : G) → x G.⋆ y ≡ y G.⋆ x
+isAbelian : ∀ {ℓ} (G : Group ℓ) → Type ℓ
+isAbelian (G , st) = ∀ (x y : G) → x G.⋆ y ≡ y G.⋆ x
   where module G = GroupOn st
 ```
 -->

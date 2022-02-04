@@ -269,9 +269,9 @@ open import Data.Int  -- The integers
 open import Data.Sum  -- Coproduct types
 open import Data.Bool -- The booleans
 open import Data.List -- Finite lists
-open import Data.Power         -- Power sets
-open import Data.Power.Lattice -- Power sets form a lattice
-open import Data.Set.Quotient  -- Set quotients
+open import Data.Power           -- Power sets
+open import Data.Power.Lattice   -- Power sets form a lattice
+open import Data.Set.Coequaliser -- Set coequalisers
 ```
 
 <!--
@@ -303,9 +303,11 @@ open import Algebra.Semigroup   -- Semigroups (associative magmas)
 open import Algebra.Monoid      -- Monoids as unital semigroups
 
 open import Algebra.Group                   -- Groups as monoids with inverses
+open import Algebra.Group.Free              -- Free groups
 open import Algebra.Group.Cayley            -- Cayley's theorem
 open import Algebra.Group.Homotopy          -- Homotopy groups
 open import Algebra.Group.Subgroup          -- Subgroups; Images and kernels
 open import Algebra.Group.Quotients         -- Quotients by normal subgroups
+open import Algebra.Group.Ab.Free           -- Abelianisations
 open import Algebra.Group.Quotients.IsoThms -- Isomorphism theorems
 ```

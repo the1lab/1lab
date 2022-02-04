@@ -27,17 +27,17 @@ Cayley : G .fst → G .fst ≃ G .fst
 Cayley x = Iso→Equiv bij where
   bij : Iso _ _
   bij .fst y = x ⋆ y
-  bij .snd .isIso.inv y = inverse x ⋆ y
+  bij .snd .isIso.inv y = x ⁻¹ ⋆ y
   bij .snd .isIso.rinv y =
-    x ⋆ (inverse x ⋆ y) ≡⟨ associative ⟩
-    (x ⋆ inverse x) ⋆ y ≡⟨ ap₂ _⋆_ inverseʳ refl ⟩
-    unit ⋆ y            ≡⟨ idˡ ⟩
-    y                   ∎
+    x ⋆ (x ⁻¹ ⋆ y) ≡⟨ associative ⟩
+    (x ⋆ x ⁻¹) ⋆ y ≡⟨ ap₂ _⋆_ inverseʳ refl ⟩
+    unit ⋆ y       ≡⟨ idˡ ⟩
+    y              ∎
   bij .snd .isIso.linv y =
-    inverse x ⋆ (x ⋆ y) ≡⟨ associative ⟩
-    (inverse x ⋆ x) ⋆ y ≡⟨ ap₂ _⋆_ inverseˡ refl ⟩
-    unit ⋆ y            ≡⟨ idˡ ⟩
-    y                   ∎
+    x ⁻¹ ⋆ (x ⋆ y) ≡⟨ associative ⟩
+    (x ⁻¹ ⋆ x) ⋆ y ≡⟨ ap₂ _⋆_ inverseˡ refl ⟩
+    unit ⋆ y       ≡⟨ idˡ ⟩
+    y              ∎
 ```
 
 We then show that this map is a group homomorphism from $G$ to

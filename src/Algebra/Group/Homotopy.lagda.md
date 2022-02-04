@@ -72,10 +72,10 @@ that path concatenation is commutative for $\Omega^{n + 2} A$ is
 commutative, independent of $A$.
 
 ```agda
-isCommutative-Ωⁿ⁺² 
+isAbelian-Ωⁿ⁺² 
   : ∀ {ℓ} {A : Type∙ ℓ} (n : Nat) (p q : Ω^ (2 + n) A .fst) 
   → p ∙ q ≡ q ∙ p
-isCommutative-Ωⁿ⁺² n p q = 
+isAbelian-Ωⁿ⁺² n p q = 
   transport 
     (λ i → ap (λ x → ∙-id-r x i) p ∙ ap (λ x → ∙-id-l x i) q
          ≡ ap (λ x → ∙-id-l x i) q ∙ ap (λ x → ∙-id-r x i) p) 
@@ -87,11 +87,11 @@ Lifting this result through the set truncation establishes that
 $\pi_{n+2}$ is an Abelian group:
 
 ```agda
-isCommutative-πₙ₊₂ : ∀ {ℓ} {A : Type∙ ℓ} (n : Nat) 
-                   → isCommutative (πₙ₊₁ (1 + n) A)
-isCommutative-πₙ₊₂ {A = A} n = 
+isAbelian-πₙ₊₂ : ∀ {ℓ} {A : Type∙ ℓ} (n : Nat) 
+                   → isAbelian (πₙ₊₁ (1 + n) A)
+isAbelian-πₙ₊₂ {A = A} n = 
   ∥-∥₀-elim₂ (λ x y → isProp→isSet (squash _ _)) 
-             (λ x y i → inc (isCommutative-Ωⁿ⁺² n x y i))
+             (λ x y i → inc (isAbelian-Ωⁿ⁺² n x y i))
 ```
 
 ## Deloopings
@@ -238,7 +238,7 @@ $\mathrm{Aut}(G)$.
         open isIso
 
         p : isIso (_⋆ x)
-        p .inv = _⋆ (G.inverse x)
+        p .inv = _⋆ x ⁻¹
         p .rinv x = sym G.associative ·· ap₂ G._⋆_ refl G.inverseˡ ·· G.idʳ
         p .linv x = sym G.associative ·· ap₂ G._⋆_ refl G.inverseʳ ·· G.idʳ
 ```

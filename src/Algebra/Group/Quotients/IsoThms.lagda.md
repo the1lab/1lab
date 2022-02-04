@@ -5,7 +5,7 @@ open import Algebra.Group.Quotients
 open import Algebra.Group.Subgroup
 open import Algebra.Group
 
-open import Data.Set.Quotient
+open import Data.Set.Coequaliser
 open import Data.Power
 
 module Algebra.Group.Quotients.IsoThms where
@@ -97,9 +97,9 @@ properties of group homomorphisms.
 
 ```agda
     inv : A/kerφ .fst → imφ .fst
-    inv = Quot-rec (im φ h .snd .GroupOn.hasIsSet) 
+    inv = Coeq-rec (im φ h .snd .GroupOn.hasIsSet) 
       (λ x → φ x , inc (x , refl))
-      (λ x y p → Σ≡Prop (λ _ → squash) 
+      (λ (x , y , p) → Σ≡Prop (λ _ → squash) 
         (B.zero-diff→≡
           (subst (_≡ B.unit) (pres-⋆ _ _ ∙ ap₂ B._⋆_ refl (pres-inv _)) p)))
 
@@ -121,7 +121,7 @@ of) `inv(x)` computes to `f(y) , y , refl`, and `func (f(y) , y , refl)
 
 ```agda
     isom .rinv x =
-      Quot-elimProp {B = λ x → func (inv x) ≡ x} 
+      Coeq-elimProp {C = λ x → func (inv x) ≡ x} 
         (λ _ → squash _ _) (λ _ → refl) x
 ```
 
