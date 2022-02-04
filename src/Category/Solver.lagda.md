@@ -127,24 +127,27 @@ metaprogramming, it's not pretty, but I've written comments around it to
 hopefully explain things a bit.
 
 ```agda
-private
-  record CategoryNames : Type where
-    field
-      is-∘  : Name → Bool
-      is-id : Name → Bool
+record CategoryNames : Type where
+  field
+    is-∘  : Name → Bool
+    is-id : Name → Bool
 
-  buildMatcher : Name → Maybe Name → Name → Bool
-  buildMatcher n nothing  x = n name=? x
-  buildMatcher n (just m) x = or (n name=? x) (m name=? x)
+buildMatcher : Name → Maybe Name → Name → Bool
+buildMatcher n nothing  x = n name=? x
+buildMatcher n (just m) x = or (n name=? x) (m name=? x)
 
-  findCategoryNames : Term → TC CategoryNames
-  findCategoryNames mon = do
-    ∘-altName ← normalise (def (quote Precategory._∘_) (unknown h∷ unknown h∷ mon v∷ []))
-    ε-altName ← normalise (def (quote Precategory.id)  (unknown h∷ unknown h∷ mon v∷ []))
-    returnTC record
-      { is-∘  = buildMatcher (quote Precategory._∘_) (getName ∘-altName)
-      ; is-id = buildMatcher (quote Precategory.id)  (getName ε-altName)
-      }
+findGenericNames : Name → Name → Term → TC CategoryNames
+findGenericNames star id mon = do
+  ∘-altName ← normalise (def star (unknown h∷ unknown h∷ mon v∷ []))
+  ε-altName ← normalise (def id  (unknown h∷ unknown h∷ mon v∷ []))
+  -- typeError (termErr ∘-altName ∷ termErr ε-altName ∷ [])
+  returnTC record
+    { is-∘  = buildMatcher star (getName ∘-altName)
+    ; is-id = buildMatcher id  (getName ε-altName)
+    }
+
+findCategoryNames : Term → TC CategoryNames
+findCategoryNames = findGenericNames (quote Precategory._∘_) (quote Precategory.id)
 ```
 
 The trick above was stolen from the Agda standard library [monoid
@@ -162,6 +165,7 @@ an arrow!) given a `Term`{.Agda}. We do this with mutual recursion, to
 make stuff even more complicated.
 
 ```agda
+private
   module _ (names : CategoryNames) where
     open CategoryNames names
 
@@ -206,20 +210,22 @@ looking at a composition.
 Then you essentially slap all of that together into a little macro.
 
 ```agda
+solveGeneric : (Term → TC CategoryNames) → (Term → Term) → Term → Term → TC ⊤
+solveGeneric find mkcat category hole = do
+  goal ← inferType hole >>= normalise
+  names ← find category
+
+  just (lhs , rhs) ← getBoundary goal
+    where nothing → typeError (strErr "Can't solve: " ∷ termErr goal ∷ [])
+
+  let rep = build-expr names
+
+  unify hole (def (quote associate) 
+    (mkcat category v∷ rep lhs v∷ rep rhs v∷ def (quote refl) [] v∷ []))
+
 macro
   solve : Term → Term → TC ⊤
-  solve category hole = do
-    goal ← inferType hole >>= normalise
-    names ← findCategoryNames category
-
-    just (lhs , rhs) ← getBoundary goal
-      where nothing → typeError (strErr "Can't solve: " ∷ termErr goal ∷ [])
-
-    let rep = build-expr names
-
-    unify hole (def (quote associate) 
-      (category v∷ rep lhs v∷ rep rhs v∷ def (quote refl) [] v∷ []))
-
+  solve = solveGeneric findCategoryNames (λ x → x)
 ```
 
 ## Demo
