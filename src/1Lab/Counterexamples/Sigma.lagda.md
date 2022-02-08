@@ -6,7 +6,7 @@ open import 1Lab.Type
 module 1Lab.Counterexamples.Sigma where
 ```
 
-# $\Sigma$ can not be $\exists$
+# Σ is not ∃
 
 Defined normally, the _image_ of a function $f : X \to Y$ is the subset
 of $Y$ given by the elements $y : Y$ for which _there exists_ an element
