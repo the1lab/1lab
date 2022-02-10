@@ -96,7 +96,7 @@ fundamental, the proof we actually use is written with efficiency of
 computation in mind - hence, cubically. The proof here is intended to be
 more educational.
 
-First, we give an equivalent characterisation of equality in
+First, we give an equivalent characterisation of paths in
 `fibre`{.Agda}s, which will be used in proving that `half adjoint
 equivalences are equivalences`{.Agda ident=isHAE→isEquiv}.
 
@@ -138,7 +138,7 @@ fibre-paths {f = f} {y} {f1} {f2} =
 </details>
 
 Then, given an element $y : B$, we can construct a fibre of of $f$, and,
-using the above characterisation of equality, prove that this fibre is a
+using the above characterisation of paths, prove that this fibre is a
 centre of contraction:
 
 ```agda
@@ -149,8 +149,8 @@ isHAE→isEquiv {A = A} {B} {f} (g , η , ε , zig) .isEqv y = contr fib contrac
   fib = g y , ε y
 ```
 
-The fibre is given by $(g(y), ε(y))$, which we can prove equal to another
-$(x, p)$ using a very boring calculation:
+The fibre is given by $(g(y), ε(y))$, which we can prove identical to
+another $(x, p)$ using a very boring calculation:
 
 ```agda
   contract : (fib₂ : fibre f y) → fib ≡ fib₂

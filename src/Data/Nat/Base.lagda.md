@@ -169,7 +169,7 @@ ident=≤-antisym}.
 
 A simple inductive argument proves that `_≤_`{.Agda} always takes values
 in `propositions`{.Agda ident=isProp}, i.e. any "two" proofs that `x ≤
-y` are equal:
+y` are identical:
 
 ```agda
 ≤-prop : (x y : Nat) → isProp (x ≤ y)

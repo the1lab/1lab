@@ -65,8 +65,8 @@ open isMagma public
     
 Note that we do not generally benefit from the set truncation of
 arbitrary magmas - however, practically all structures built upon
-`isMagma`{.Agda} do, since they contain equality fields which would
-require complicated if not outright undefinable coherence conditions.
+`isMagma`{.Agda} do, since they contain paths which would require
+complicated, if not outright undefinable, coherence conditions.
 
 It also allows us to show that being a magma is a _property_:
 

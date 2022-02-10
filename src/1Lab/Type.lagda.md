@@ -116,5 +116,8 @@ instance
   Number-Nat : Number Nat
   Number-Nat .Number.Constraint _ = ⊤
   Number-Nat .Number.fromNat n = n
+
+Type∙ : ∀ ℓ → Type (lsuc ℓ)
+Type∙ _ = Σ id
 ```
 -->

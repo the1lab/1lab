@@ -1,4 +1,5 @@
 ```agda
+open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -23,14 +24,14 @@ axiom**.
 Precisely, the axiom as presented in the book consists of the following
 data (right under remark §2.10.4):
 
-* A map which turns equivalences into propositional equalities of type.
+* A map which turns equivalences into identifications of types.
 This map is called `ua`{.Agda}.
 
-* A rule for eliminating equalities of types, by turning them into
+* A rule for eliminating identifications of types, by turning them into
 equivalences: `pathToEquiv`{.Agda}
 
 * The propositional computation rule, stating that transport along
-`ua(f)` is equal to applying `f`: `uaβ`{.Agda}.
+`ua(f)` is identical to applying `f`: `uaβ`{.Agda}.
 
 In the book, there is an extra postulated datum asserting that
 `ua`{.Agda} is an inverse to `pathToEquiv`{.Agda}. This datum does not
@@ -416,7 +417,7 @@ pathToEquiv : {A B : Type ℓ} → A ≡ B → A ≃ B
 pathToEquiv p = line→equiv (λ i → p i)
 ```
 
-Since equality of equivalences is determined by equality of their
+Since identity of equivalences is determined by identity of their
 underlying functions, to show that `pathToEquiv`{.Agda} of `refl`{.Agda}
 is the identity equivalence, we use `coe1→i`{.Agda} to show that
 `transport`{.Agda} by `refl`{.Agda} is the identity.
@@ -501,7 +502,7 @@ univalence-lift {ℓ = ℓ} = isIso→isEquiv morp where
 
 One useful consequence of $(A \equiv B) \simeq (A \simeq B)$[^2] is that
 the type of _equivalences_ satisfies [the same induction principle] as
-the type of _equalities_. By analogy with how path induction can be
+the type of _identifications_. By analogy with how path induction can be
 characterised as contractibility of singletons and transport,
 “equivalence induction” can be characterised as transport and
 contractibility of _singletons up to equivalence_:
@@ -711,3 +712,32 @@ Map-classifier {ℓ = ℓ} {B = B} P =
   (Σ λ A → (x : B) → P (A x))                   ≃⟨ Σ-Π-distrib e⁻¹ ⟩
   (B → Σ P)                                     ≃∎
 ```
+
+<!--
+```agda
+ua∙ : ∀ {A B C : Type ℓ} {f : A ≃ B} {g : B ≃ C}
+    → ua (f ∙e g) ≡ ua f ∙ ua g
+ua∙ {C = C} {f = f} {g} = 
+  EquivJ 
+    (λ B eq → (g : B ≃ C) → ua (eq ∙e g) ≡ ua eq ∙ ua g)
+    (λ g → ap ua (Σ≡Prop isProp-isEquiv (refl {x = g .fst})) 
+        ·· sym (∙-id-l (ua g)) 
+        ·· ap₂ _∙_ (sym uaIdEquiv) refl)
+    f g
+
+ua→ : ∀ {ℓ ℓ'} {A₀ A₁ : Type ℓ} {e : A₀ ≃ A₁} {B : (i : I) → Type ℓ'}
+  {f₀ : A₀ → B i0} {f₁ : A₁ → B i1}
+  → ((a : A₀) → PathP B (f₀ a) (f₁ (e .fst a)))
+  → PathP (λ i → ua e i → B i) f₀ f₁
+ua→ {e = e} {f₀ = f₀} {f₁} h i a =
+  hcomp
+    (λ j → λ
+      { (i = i0) → f₀ a
+      ; (i = i1) → f₁ (lem a j)
+      })
+    (h (transp (λ j → ua e (~ j ∧ i)) (~ i) a) i)
+  where
+  lem : ∀ a₁ → e .fst (transport (sym (ua e)) a₁) ≡ a₁
+  lem a₁ = equiv→section (e .snd) _ ∙ transport-refl _
+```
+-->

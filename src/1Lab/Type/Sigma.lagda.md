@@ -148,8 +148,9 @@ they are included for completeness. </summary>
 ## Paths in subtypes
 
 When `P` is a family of propositions, it is sound to regard `Σ[ x ∈ A ]
-(P x)` as a _subtype_ of `A`. This is because equality in the subtype is
-characterised uniquely by equality of the first projections:
+(P x)` as a _subtype_ of `A`. This is because identification in the
+subtype is characterised uniquely by identification of the first
+projections:
 
 ```agda
 Σ≡Prop : {B : A → Type ℓ}
@@ -205,6 +206,17 @@ into an equivalence:
         → {x y : Σ B}
         → (x .fst ≡ y .fst) ≃ (x ≡ y)
 Σ≡Prop≃ bp = Σ≡Prop bp , isEquiv-Σ≡Prop bp
+
+Σ≡Prop-Sq : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} 
+          → {w x y z : Σ B} 
+          → (∀ x → isProp (B x))
+          → {p : x ≡ w} {q : x ≡ y} {s : w ≡ z} {r : y ≡ z}
+          → Square (ap fst p) (ap fst q) (ap fst s) (ap fst r)
+          → Square p q s r
+Σ≡Prop-Sq Bprop sq i j .fst = sq i j
+Σ≡Prop-Sq Bprop {p} {q} {s} {r} sq i j .snd = 
+  isProp→SquareP (λ i j → Bprop (sq i j)) 
+    (ap snd p) (ap snd q) (ap snd s) (ap snd r) i j
 ```
 
 ## Dependent sums of contractibles

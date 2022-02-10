@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="$lang$" xml:lang="$lang$" $if(dir)$ dir="$dir$" $endif$>
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,21 +13,24 @@
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="$pagetitle$ - 1Lab" />
-  <meta name="twitter:image" content="https://cubical.1lab.dev/static/cube-128x.png" />
+  <meta name="twitter:image" content="https://1lab.dev/static/cube-128x.png" />
 
   <meta name="og:title" content="$pagetitle$ - 1Lab" />
-  <meta name="og:image" content="https://cubical.1lab.dev/static/cube-128x.png" />
-  <meta name="og:site-name" content="The 1Lab" />
+  <meta name="og:image" content="https://1lab.dev/static/cube-128x.png" />
+  <meta name="og:site-name" content="1Lab" />
   <meta name="og:type" content="website" />
+
   $if(description)$
   <meta name="og:description" content="$description$" />
   <meta name="twitter:description" content="$description$" />
+  <meta name="description" content="$description$" />
   $else$
   <meta name="og:description" content="A formalised, explorable online resource for Homotopy Type Theory." />
   <meta name="twitter:description" content="A formalised, explorable online resource for Homotopy Type Theory." />
+  <meta name="description" content="A formalised, explorable online resource for Homotopy Type Theory." />
   $endif$
 
-  <script src="/equations.js" type="text/javascript"></script> 
+  <script src="/equations.js" type="text/javascript"></script>
   <script src="/highlight-hover.js" type="text/javascript"></script>
 
   <noscript>
@@ -64,9 +66,11 @@
       <!-- Cube logo -->
       <img alt="1Lab"
            src="/static/cube-72x.png"
-           style="display: block; margin-bottom: 1em; margin: auto; height: 32px;"
+           style="display: block; margin-bottom: 1em; margin: auto;"
+           width="32px"
+           height="32px"
         />
-      
+
       <!-- Actual table of contents (separated from the rest by
       horizontal rules) -->
       <hr />
@@ -98,6 +102,9 @@
       $endif$
         <a href="all-pages.html">view all pages</a> <br />
         <a href="https://github.com/plt-amy/cubical-1lab/blob/$source$">link to source</a> <br />
+        $if(authors)$
+        <hr /> <div class="author-list">Written by $authors$</div> <br />
+        $endif$
       </div>
     </div>
   </aside>

@@ -4,12 +4,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: pltamy/1lab:latest
+
+    env: 
+      mailmap: ${{ secrets.MAILMAP }}
+
     steps:
       - name: Checkout ⬇️
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Build 🛠️
         run: |
+          echo "$mailmap" > .mailmap
           1lab-shake all -j
           ./support/make-site.sh
 

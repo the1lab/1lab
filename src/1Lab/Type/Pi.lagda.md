@@ -71,9 +71,10 @@ function≃ dom rng = Iso→Equiv the-iso where
 
 ## Dependent Funext
 
-When the domain and codomain are simple types, equality of functions is
-characterised by `funext`{.Agda}. We can generalise this to `funextDep`,
-in which the domain and codomain are allowed to be lines of types:
+When the domain and codomain are simple types (rather than a higher
+shape), paths in function spaces are characterised by `funext`{.Agda}.
+We can generalise this to `funextDep`, in which the domain and codomain
+are allowed to be lines of types:
 
 ```agda
 funextDep

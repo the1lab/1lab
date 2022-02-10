@@ -120,7 +120,7 @@ Lattice≃ A B = Lattice→ A B ∘ fst
 ```
 
 Using the automated machinery for deriving `isUnivalent`{.Agda} proofs,
-we get that equality of lattices is the same thing as lattice
+we get that identification of lattices is the same thing as lattice
 isomorphism.
 
 ```agda

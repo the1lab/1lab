@@ -18,7 +18,7 @@ let
   our-ghc = ghc.withPackages (pkgs: with pkgs; [
     shake directory tagsoup
     text containers uri-encode
-    process aeson Agda
+    process aeson Agda pandoc SHA
   ]);
 
   our-texlive = texlive.combine {
@@ -61,7 +61,8 @@ let
   shakefile = stdenv.mkDerivation {
     name = "1lab-shake";
     src = filterSource (path: type: match ".*Shakefile.*" path != null) ./.;
-    buildInputs = [ our-ghc ];
+    nativeBuildInputs = [ our-ghc removeReferencesTo ];
+    buildInputs = [];
 
     buildPhase = ''
     ghc Shakefile.hs
@@ -70,7 +71,22 @@ let
     installPhase = ''
     mkdir -p $out/bin
     cp Shakefile $out/bin/1lab-shake
+    remove-references-to -t ${haskellPackages.pandoc-types} $out/bin/1lab-shake
+    remove-references-to -t ${haskellPackages.pandoc} $out/bin/1lab-shake
+    remove-references-to -t ${haskellPackages.Agda} $out/bin/1lab-shake
+    remove-references-to -t ${haskellPackages.shake} $out/bin/1lab-shake
+    remove-references-to -t ${haskellPackages.HTTP} $out/bin/1lab-shake
+    remove-references-to -t ${haskellPackages.js-flot} $out/bin/1lab-shake
+    remove-references-to -t ${haskellPackages.js-jquery} $out/bin/1lab-shake
+    remove-references-to -t ${haskellPackages.js-dgtable} $out/bin/1lab-shake
     '';
+
+    disallowedReferences = with haskellPackages; [
+      shake directory tagsoup
+      text containers uri-encode
+      process aeson Agda pandoc SHA pandoc-types HTTP
+      js-flot js-jquery js-dgtable
+    ];
   };
 in
   stdenv.mkDerivation rec {
@@ -87,7 +103,7 @@ in
       shakefile agda
 
       # For building the text and maths:
-      git sassc pandoc nodePackages.katex
+      git sassc nodePackages.katex
       agda-reference-filter agda-fold-equations
 
       # For building diagrams:
@@ -119,12 +135,6 @@ in
     install -Dm 644 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-regular.otf;
     install -Dm 644 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-italic.otf;
     install -Dm 644 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-bolditalic.otf;
-
-    # Copy Agda interface files
-    for f in src/**/*.agdai; do
-      install -Dm 644 $f $out/lib/''${f#$(dirname "$(dirname "$f")")}
-    done;
-    install -Dm 644 _build/all-pages.agdai $out/lib/all-pages.agdai
     '';
 
     passthru = {

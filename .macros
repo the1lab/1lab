@@ -6,3 +6,5 @@
 \igpd:\text{$\infty$-\textbf{Grpd}}
 \hra:\hookrightarrow
 \io:{(\infty,1)}
+\epi:\twoheadrightarrow
+\mono:\hookrightarrow

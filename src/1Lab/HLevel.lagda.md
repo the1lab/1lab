@@ -109,6 +109,13 @@ Set : (ℓ : Level) → Type (lsuc ℓ)
 Set ℓ = Σ (isSet {ℓ = ℓ})
 ```
 
+<!--
+```agda
+Prop : (ℓ : Level) → Type (lsuc ℓ)
+Prop ℓ = Σ (isProp {ℓ = ℓ})
+```
+-->
+
 Similarly, the types of h-level 3 are called **groupoids**.
 
 ```agda
@@ -141,7 +148,7 @@ isContr→isProp C x y i =
 ```
 
 <!--
-```
+```agda
 SingletonP : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → Type _
 SingletonP A a = Σ[ x ∈ A i1 ] PathP A a x
 
@@ -196,7 +203,7 @@ isProp→isSet h x y p q i j =
 ```
 
 The proof that any proposition is a set is slightly more complicated.
-Since the desired equality `p ≡ q` is a square, we need to describe a
+Since the desired homotopy `p ≡ q` is a square, we need to describe a
 _cube_ where the missing face is the square we need. I have
 painstakingly illustrated it here:
 
@@ -234,7 +241,7 @@ face is one of the sides of the composition. They're labelled with the
 terms in the `hcomp`{.Agda} for `isProp→isSet`{.Agda}: For example, the
 square you get when fixing `i = i0` is on top of the diagram. Since we
 have an open box, it has a lid --- which, in this case, is the back face
---- which expresses the equality we wanted: `p ≡ q`.
+--- which expresses the identification we wanted: `p ≡ q`.
 
 With these two base cases, we can prove the general case by recursion:
 
@@ -336,7 +343,7 @@ isProp-isContr {A = A} (contr c₁ h₁) (contr c₂ h₂) i =
 First, we prove that being contractible is a proposition. Next, we prove
 that being a proposition is a proposition. This follows from
 `isProp→isSet`{.Agda}, since what we want to prove is that `h₁` and `h₂`
-always give equal paths.
+always give homotopic paths.
 
 ```agda
 isProp-isProp : isProp (isProp A)
@@ -398,7 +405,7 @@ isHLevel→isHLevelDep {A = A} {B = B} (suc n) hl {a0} {a1} b0 b1 =
 ```
 
 <!--
-```
+```agda
 isProp→SquareP : ∀ {B : I → I → Type ℓ} → ((i j : I) → isProp (B i j))
              → {a : B i0 i0} {b : B i0 i1} {c : B i1 i0} {d : B i1 i1}
              → (p : PathP (λ j → B j i0) a c)

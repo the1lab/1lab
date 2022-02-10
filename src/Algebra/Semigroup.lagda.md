@@ -46,9 +46,10 @@ of the language of higher categories:
 - `⋆` is _associative_: there exists an invertible 2-morphism `α : A ⋆
 (B ⋆ C) ≡ (A ⋆ B) ⋆ C` (called the associator), satisfying
 
-- The _pentagon identity_, i.e. there is an equality `π` (the
-pentagonator) witnessing commutativity of the diagram below, where all
-the faces are `α`:
+- The _pentagon identity_, i.e. there is a path `π` (called, no joke,
+the "pentagonator") witnessing commutativity of the diagram below, where
+all the faces are `α`:
+
 ~~~{.quiver .tall-2}
 \[\begin{tikzcd}
   & {(a \star b) \star (c\star d)} \\

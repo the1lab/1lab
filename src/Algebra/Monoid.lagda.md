@@ -115,7 +115,7 @@ Monoid-univalent {ℓ = ℓ} =
 ```
 
 From this, we automatically get a specialisation of the `SIP`{.Agda} for
-`Monoid`{.Agda}s, which says that _equality of monoids is monoid
+`Monoid`{.Agda}s, which says that _identification of monoids is monoid
 isomorphism_.
 
 ```agda

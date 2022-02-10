@@ -49,10 +49,10 @@ to the problem of constructing a path in `N ≡ S`{.Agda} from
 ```
 
 The proof goes as follows: by the characterisation of transport in path
-types the LHS is propositionally equal to `refl ∙ merid x`{.Agda}. We get
-rid of the `refl`{.Agda} and then an equality between `merid x`{.Agda} and
-`merid N`{.Agda} can be obtained from applying `merid`{.Agda} to the
-recursive call `pathsS∞′ x`{.Agda}.
+types the LHS is identified with `refl ∙ merid x`{.Agda}. We get rid of
+the `refl`{.Agda} and then a a path between `merid x`{.Agda} and `merid
+N`{.Agda} can be obtained from applying `merid`{.Agda} to the recursive
+call `pathsS∞′ x`{.Agda}.
 
 ```agda
       (transport (λ j → N ≡ merid x j) refl ≡⟨ subst-path-right refl (merid x) ⟩
@@ -74,7 +74,7 @@ square in which two of the sides are `merid N` and `merid x`. We start with
 a square in which both of these sides are `merid N` (specifically
 `merid N (i ∧ j)`), and then construct a cube in which one of the faces morphs
 `merid N ` into `merid x`. This is something that we can easilly do since we
-have an equality `N ≡ x` wia the recursive call `pathsS∞ x`.
+have a path `N ≡ x` via the recursive call `pathsS∞ x`.
 
 ```agda
 private
