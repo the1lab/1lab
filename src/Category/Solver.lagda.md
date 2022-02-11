@@ -27,13 +27,20 @@ automatically solve equality goals of this form.
 With a precategory in hand, we by defining a language of composition.
 
 ```agda
-module _ (C : Precategory o h) where
-  open Precategory C
-
+module _ (Cat : Precategory o h) where
+  open Precategory Cat
+```
+<!--
+```agda
+  private variable
+    A B C : Ob
+```
+-->
+```agda
   data Expr : Ob → Ob → Type (o ⊔ h) where
-    `id  : {A : _}     → Expr A A
-    _`∘_ : {A B C : _} → Expr B C → Expr A B → Expr A C
-    _↑   : {A B : _}   → Hom A B → Expr A B
+    `id  : Expr A A
+    _`∘_ : Expr B C → Expr A B → Expr A C
+    _↑   : Hom A B → Expr A B
   
   infixr 40 _`∘_
   infix 50 _↑
@@ -48,7 +55,7 @@ composition of (the trees that represent) $f$ and $g$. We can now define
 The first is a straightforward `embed`{.Agda}ding:
 
 ```agda
-  embed : {A B : _} → Expr A B → Hom A B
+  embed : Expr A B → Hom A B
   embed `id      = id
   embed (f ↑)    = f
   embed (f `∘ g) = embed f ∘ embed g
@@ -61,7 +68,7 @@ $C$. In either case, the difference is that instead of computing a
 single morphism, we compute a _transformation of hom-spaces_:
 
 ```agda
-  eval : {A B C : _} → Expr B C → Hom A B → Hom A C
+  eval : Expr B C → Hom A B → Hom A C
   eval `id f      = f
   eval (f ↑) g    = f ∘ g
   eval (f `∘ g) h = eval f (eval g h)
@@ -75,7 +82,7 @@ by induction on the expression. Here are the two straightforward cases,
 and why they work:
 
 ```agda
-  eval-sound : {A B : _} (e : Expr A B) → eval e id ≡ embed e
+  eval-sound : (e : Expr A B) → eval e id ≡ embed e
   eval-sound `id   = refl  -- eval `id computes away
   eval-sound (x ↑) = idr _ -- must show f = f ∘ id
 ```
@@ -100,7 +107,7 @@ replace "precomposition with `eval ... id`" with an application of
 `eval`{.Agda}.
 
 ```agda
-      lemma : {A B C : _} (e : Expr B C) (f : Hom A B) → eval e id ∘ f ≡ eval e f
+      lemma : (e : Expr B C) (f : Hom A B) → eval e id ∘ f ≡ eval e f
       lemma `id f = idl _
       lemma (x ↑) f = ap (_∘ f) (idr x) 
       lemma (f `∘ g) h =
@@ -116,7 +123,7 @@ problems! If two expressions compute the same transformation of
 hom-sets, then they represent the same morphism.
 
 ```agda
-  associate : {A B : _} (f g : Expr A B) → eval f id ≡ eval g id → embed f ≡ embed g
+  associate : (f g : Expr A B) → eval f id ≡ eval g id → embed f ≡ embed g
   associate f g p = sym (eval-sound f) ·· p ·· eval-sound g
 ```
 
