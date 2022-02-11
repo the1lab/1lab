@@ -1279,6 +1279,9 @@ with weird names are defined:
 infixr 2 ≡⟨⟩-syntax
 syntax ≡⟨⟩-syntax x q p = x ≡⟨ p ⟩ q
 
+_≡˘⟨_⟩_ : ∀ {ℓ} {A : Type ℓ} (x : A) {y z : A} → y ≡ x → y ≡ z → x ≡ z
+x ≡˘⟨ p ⟩ q = (sym p) ∙ q
+
 _≡⟨⟩_ : ∀ {ℓ} {A : Type ℓ} (x : A) {y : A} → x ≡ y → x ≡ y
 x ≡⟨⟩ x≡y = x≡y
 
@@ -1286,7 +1289,7 @@ _∎ : ∀ {ℓ} {A : Type ℓ} (x : A) → x ≡ x
 x ∎ = refl
 
 infixr 30 _∙_
-infixr 2 _≡⟨⟩_
+infixr 2 _≡⟨⟩_ _≡˘⟨_⟩_
 infix  3 _∎
 ```
 
