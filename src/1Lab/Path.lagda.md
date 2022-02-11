@@ -1732,5 +1732,10 @@ Square≡·· : ∀ {ℓ} {A : Type ℓ}
 Square≡·· {p = p} {q} {s} {r} k = 
   PathP (λ i → p (i ∨ k) ≡ r (i ∨ k)) 
     (··-filler (sym p) q r k) s
+
+≡⟨⟩⟨⟩-syntax : ∀ {ℓ} {A : Type ℓ} (x y : A) {w z : A} → x ≡ y → y ≡ z → z ≡ w → x ≡ w
+≡⟨⟩⟨⟩-syntax x y p q r = p ·· q ·· r
+infixr 2.5 ≡⟨⟩⟨⟩-syntax
+syntax ≡⟨⟩⟨⟩-syntax x y B C = x ≡⟨ B ⟩≡ y ≡⟨ C ⟩≡
 ```
 -->
