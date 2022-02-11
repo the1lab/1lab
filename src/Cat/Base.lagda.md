@@ -7,7 +7,7 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type hiding (id ; _∘_)
 
-module Category.Base where
+module Cat.Base where
 ```
 
 # Precategories
@@ -489,7 +489,7 @@ the witnesses that $F$ and $G$ are functorial.
 <!--
 The identity function (twice) is a functor $C \to C$. These composition
 and identities assemble into a category, where the objects are
-categories: [Cat](agda://Category.Instances.Cat.Base#Cat). The
+categories: [Cat](agda://Cat.Instances.Cat.Base#Cat). The
 construction of Cat is not in this module for performance reasons.
 -->
 
@@ -508,7 +508,7 @@ can be considered the objects of a category. This is the case for
 functors, as well! The functors between $C$ and $D$ assemble into a
 category, notated $[C, D]$ - the [functor category] between $C$ and $D$.
 
-[functor category]: agda://Category.Instances.Functor
+[functor category]: agda://Cat.Instances.Functor
 
 ```agda
 record _=>_ {o₁ h₁ o₂ h₂}
@@ -560,13 +560,13 @@ _components_, where the component at $x$ is a map $F(x) \to G(x)$. The
 
 <!--
 Alternatively, natural transformations can be thought of as [homotopies
-between functors](agda://Category.Functor.NatTrans.Homotopy). That
+between functors](agda://Cat.Functor.NatTrans.Homotopy). That
 module contains a direct proof of the correspondence, but an argument by
 abstract nonsense is even simpler to write down: Since [Cat is cartesian
-closed](agda://Category.Instances.Cat.Closed#Cat-closed), there is [an
-isomorphism of Hom-sets](agda://Category.Functor.Adjoints) from the
+closed](agda://Cat.Instances.Cat.Closed#Cat-closed), there is [an
+isomorphism of Hom-sets](agda://Cat.Functor.Adjoints) from the
 [tensor-hom
-adjunction](agda://Category.Structure.CartesianClosed#Tensor⊣Hom)
+adjunction](agda://Cat.Structure.CartesianClosed#Tensor⊣Hom)
 
 $$
 \mathrm{Hom}_{\mathrm{Cat}}(C \times \left\{0 \le 1\right\}, D) \simeq
@@ -574,7 +574,7 @@ $$
 $$
 
 Since a functor from [the interval
-category](agda://Category.Instances.Interval) $\left\{0 \le 1\right\}$
+category](agda://Cat.Instances.Interval) $\left\{0 \le 1\right\}$
 amounts to a choice of morphism, we conclude that a functor $C \times
 \left\{0\le 1\right\} \to D$ is the same as a natural transformation $C
 \Rightarrow D$. There is more to this correspondence: the [geometric
@@ -687,6 +687,6 @@ is equivalently a natural transformation with a two-sided inverse.
 ```
 
 Natural isomorphisms are the `isomorphisms`{.Agda ident=is-Iso} in
-[functor categories](agda://Category.Instances.Functor), but this
+[functor categories](agda://Cat.Instances.Functor), but this
 explicit characterisation improves compilation time by untangling the
 dependency graph.

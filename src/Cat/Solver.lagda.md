@@ -2,11 +2,11 @@
 open import 1Lab.Reflection
 open import 1Lab.Prelude hiding (id ; _∘_)
 
-open import Category.Base
+open import Cat.Base
 
 open import Data.Bool
 
-module Category.Solver where
+module Cat.Solver where
 ```
 
 <!--
