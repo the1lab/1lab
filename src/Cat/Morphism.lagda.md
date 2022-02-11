@@ -8,7 +8,7 @@ module Cat.Morphism {o h} (C : Precategory o h) where
 ```agda
 open Precategory C
 private variable
-  a b c : Ob
+  a b c d : Ob
 ```
 -->
 
@@ -138,6 +138,17 @@ isSet-≅ x y p q = s where
       (λ i j → isProp-Inverses {f = Hom-set _ _ (x .to) (y .to) (ap to p) (ap to q) i j}
                                {g = Hom-set _ _ (x .from) (y .from) (ap from p) (ap from q) i j})
       (λ i → x .inverses) (λ i → p i .inverses) (λ i → q i .inverses) (λ i → y .inverses) i j
+
+≅-PathP : (p : a ≡ c) (q : b ≡ d)
+        → {f : a ≅ b} {g : c ≅ d}
+        → PathP (λ i → Hom (p i) (q i)) (f ._≅_.to) (g ._≅_.to)
+        → PathP (λ i → Hom (q i) (p i)) (f ._≅_.from) (g ._≅_.from)
+        → PathP (λ i → p i ≅ q i) f g
+≅-PathP p q r s i .to = r i
+≅-PathP p q r s i .from = s i
+≅-PathP p q {f} {g} r s i .inverses = 
+  isProp→PathP (λ j → isProp-Inverses {f = r j} {g = s j}) 
+    (f .inverses) (g .inverses) i
 ```
 -->
 

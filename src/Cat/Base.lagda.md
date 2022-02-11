@@ -436,17 +436,16 @@ module _ {o₁ h₁ o₂ h₂}
 
   isSet-Nat : isSet (F => G)
   isSet-Nat = isHLevel-retract 2 NT'→NT NT→NT' (λ x → refl) NT'-isSet where
+    NT' : Type _
+    NT' = Σ[ eta ∈ ((x : _) → D.Hom (F.₀ x) (G.₀ x)) ]
+            ((x y : _) (f : C.Hom x y) → eta y D.∘ F.₁ f ≡ G.₁ f D.∘ eta x)
+    
+    NT'→NT : NT' → F => G
+    NT'→NT (eta , is-n) .η = eta
+    NT'→NT (eta , is-n) .is-natural = is-n
 
-      NT' : Type _
-      NT' = Σ[ eta ∈ ((x : _) → D.Hom (F.₀ x) (G.₀ x)) ]
-              ((x y : _) (f : C.Hom x y) → eta y D.∘ F.₁ f ≡ G.₁ f D.∘ eta x)
-      
-      NT'→NT : NT' → F => G
-      NT'→NT (eta , is-n) .η = eta
-      NT'→NT (eta , is-n) .is-natural = is-n
-
-      NT→NT' : F => G → NT'
-      NT→NT' x = x .η , x .is-natural
+    NT→NT' : F => G → NT'
+    NT→NT' x = x .η , x .is-natural
 ```
 
 The type `NT'`{.Agda} is a literal restatement of the definition of
@@ -456,13 +455,13 @@ is that a record has semantic information (the names `η`{.Agda} and
 can be proven to be a set compositionally:
 
 ```agda
-      NT'-isSet : isSet NT'
-      NT'-isSet =
-        isHLevelΣ 2 (isHLevelΠ 2 λ x → D.Hom-set _ _)
-                    (λ _ → isHLevelΠ 2
-                     λ _ → isHLevelΠ 2
-                     λ _ → isHLevelΠ 2
-                     λ _ x y p q → isHLevel-suc 2 (D.Hom-set _ _) _ _ x y p q) 
+    NT'-isSet : isSet NT'
+    NT'-isSet =
+      isHLevelΣ 2 (isHLevelΠ 2 λ x → D.Hom-set _ _)
+                  (λ _ → isHLevelΠ 2
+                    λ _ → isHLevelΠ 2
+                    λ _ → isHLevelΠ 2
+                    λ _ x y p q → isHLevel-suc 2 (D.Hom-set _ _) _ _ x y p q) 
 ```
 
 Another fundamental lemma is that equality of natural transformations
@@ -470,12 +469,21 @@ depends only on equality of the family of morphisms, since being natural
 is a proposition:
 
 ```agda
+  Nat-PathP : {F' G' : Functor C D}
+            → (p : F ≡ F') (q : G ≡ G')
+            → {a : F => G} {b : F' => G'}
+            → (∀ x → PathP _ (a .η x) (b .η x))
+            → PathP (λ i → p i => q i) a b
+  Nat-PathP p q path i .η x = path x i
+  Nat-PathP p q {a} {b} path i .is-natural x y f =
+    isProp→PathP 
+      (λ i → D.Hom-set _ _ 
+        (path y i D.∘ Functor.F₁ (p i) f) (Functor.F₁ (q i) f D.∘ path x i))
+      (a .is-natural x y f)
+      (b .is-natural x y f) i
+
   Nat-path : {a b : F => G}
            → ((x : _) → a .η x ≡ b .η x)
            → a ≡ b
-  Nat-path path i .η x = path x i
-  Nat-path {a} {b} path i .is-natural x y f =
-    isProp→PathP (λ i → D.Hom-set _ _ (path y i D.∘ F.₁ f) (G.₁ f D.∘ path x i))
-                 (a .is-natural x y f)
-                 (b .is-natural x y f) i
+  Nat-path = Nat-PathP refl refl
 ```

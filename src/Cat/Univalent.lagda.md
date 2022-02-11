@@ -24,7 +24,7 @@ to construct `EquivJ`{.Agda}.
 
 ```agda
 isCategory : Type _
-isCategory = ∀ {A} → isContr (Σ[ B ∈ _ ] A ≅ B)
+isCategory = ∀ A → isContr (Σ[ B ∈ _ ] A ≅ B)
 ```
 
 This notion of univalent category corresponds to the usual notion ---
@@ -41,8 +41,7 @@ pathToIso {A = A} p = transport (λ i → A ≅ p i) idIso
 First we define, exactly as in the book, the canonical map `pathToIso`{.Agda}.
 
 ```agda
-isEquiv-pathToIso
-  : isCategory → ∀ {A B} → isEquiv (pathToIso {A = A} {B = B})
+isEquiv-pathToIso : isCategory → ∀ {A B} → isEquiv (pathToIso {A = A} {B = B})
 isEquiv-pathToIso iscat {A} {B} = total→equiv isEquiv-total where
   P Q : Precategory.Ob C → Type _
   P B = A ≡ B
@@ -60,7 +59,7 @@ problem of proving that it induces an equivalence of total spaces.
   isEquiv-total : isEquiv (total {P = P} {Q = Q} (λ A p → pathToIso p))
   isEquiv-total =
     isContr→isEquiv (contr (A , λ i → A) isContr-Singleton)
-                    iscat
+                    (iscat _)
 ```
 
 Since the total spaces are contractible (`Σ P` by `path induction`{.Agda
@@ -70,9 +69,9 @@ that we can turn categorical isomorphisms into paths of objects:
 
 ```agda
 isoToPath : isCategory
-                     → ∀ {A B}
-                     → A ≅ B
-                     → A ≡ B
+          → ∀ {A B}
+          → A ≅ B
+          → A ≡ B
 isoToPath cat =
   isEquiv→isIso (isEquiv-pathToIso cat) .isIso.inv
 ```
@@ -120,9 +119,9 @@ This lets us quickly turn paths between compositions into dependent
 paths in `Hom`{.Agda}-sets.
 
 ```agda
-toHomPathP : ∀ {A B C D} (p : A ≡ C) (q : B ≡ D) (h : Hom A B) (h' : Hom C D)
+toHomPathP : ∀ {A B C D} {p : A ≡ C} {q : B ≡ D} {h : Hom A B} {h' : Hom C D}
            → pathToIso q .to ∘ h ∘ pathToIso p .from ≡ h'
            → PathP (λ i → Hom (p i) (q i)) h h'
-toHomPathP p q h h' prf =
+toHomPathP {p = p} {q} {h} {h'} prf =
   toPathP _ _ _ (subst (_≡ h') (sym (Hom-transport p q h)) prf)
 ```
