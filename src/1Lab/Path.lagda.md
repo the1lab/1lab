@@ -1273,8 +1273,11 @@ than _how_ it is being identified. For this, a handful of combinators
 with weird names are defined:
 
 ```agda
-_≡⟨_⟩_ : ∀ {ℓ} {A : Type ℓ} (x : A) {y z : A} → x ≡ y → y ≡ z → x ≡ z
-x ≡⟨ p ⟩ q = p ∙ q
+≡⟨⟩-syntax : ∀ {ℓ} {A : Type ℓ} (x : A) {y z} → y ≡ z → x ≡ y → x ≡ z
+≡⟨⟩-syntax x q p = p ∙ q
+
+infixr 2 ≡⟨⟩-syntax
+syntax ≡⟨⟩-syntax x q p = x ≡⟨ p ⟩ q
 
 _≡⟨⟩_ : ∀ {ℓ} {A : Type ℓ} (x : A) {y : A} → x ≡ y → x ≡ y
 x ≡⟨⟩ x≡y = x≡y
@@ -1283,7 +1286,7 @@ _∎ : ∀ {ℓ} {A : Type ℓ} (x : A) → x ≡ x
 x ∎ = refl
 
 infixr 30 _∙_
-infixr 2 _≡⟨⟩_ _≡⟨_⟩_
+infixr 2 _≡⟨⟩_
 infix  3 _∎
 ```
 
