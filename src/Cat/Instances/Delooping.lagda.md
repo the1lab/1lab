@@ -2,11 +2,10 @@
 open import 1Lab.Prelude
 
 open import Algebra.Monoid
-open import Algebra.Group
 
-open import Category.Base
+open import Cat.Base
 
-module Category.Instances.Delooping where
+module Cat.Instances.Delooping where
 ```
 
 <!--
@@ -43,7 +42,7 @@ problems:
 
 <!--
 ```agda
-open import Category.Solver
+open import Cat.Solver
 open import 1Lab.Reflection
 
 findMonoidNames : Term → TC CategoryNames

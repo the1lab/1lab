@@ -3,13 +3,13 @@ open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type hiding (id ; _∘_)
 
-open import Category.Base
+open import Cat.Base
 
 open Precategory
 open Functor
 open _=>_
 
-module Category.Instances.Functor where
+module Cat.Instances.Functor where
 
 private variable
   o h : Level
