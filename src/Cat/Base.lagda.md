@@ -162,141 +162,7 @@ _ : ∀ {o₁ h₁} {C : Precategory o₁ h₁} → (C ^op) ^op ≡ C
 _ = refl
 ```
 
-# Categories
-
-In much the same way that a partial order is a preorder where $x \le y
-\and y \le x \to x = y$, a **category** is a precategory where
-isomorphic objects are identified. This is a generalisation of the
-univalence axiom to arbitrary categories, and, indeed, it's phrased in
-the same way: asking for a canonically defined map to be an equivalence.
-
-```agda
-_[_≅_] : ∀ {o h} (C : Precategory o h) (a b : Precategory.Ob C) → Type h
-```
-
-First, we have to define what it means for two objects in a category to
-be isomorphic. This is the same thing as an [isomorphism of sets], but
-with morphisms instead of functions: Morphisms in either direction, such
-that both ways of composing them are the identity.
-
-[isomorphism of sets]: agda://1Lab.Equiv#Iso
-
-```agda
-_[_≅_] C a b =
-  Σ[ fg ∈ C.Hom a b × C.Hom b a ]
-  Σ[ _ ∈ (fg .fst) C.∘ (fg .snd) ≡ C.id ]
-  (fg .snd C.∘ fg .fst ≡ C.id)
-  where module C = Precategory C
-
-idIso : ∀ {o h} {C : Precategory o h} {a : Precategory.Ob C}
-      → C [ a ≅ a ]
-idIso {C = C} = (C.id , C.id) , C.idl _ , C.idl _
-  where module C = Precategory C
-```
-
-A precategory is a category precisely when the type `(Σ[ B ∈ _ ] C [ A ≅
-B ])` is contractible. This implies that the type `A ≡ B` is equivalent
-to the type `C [ A ≃ B ]`, for any pair of objects `A`, `B` in the
-category. This is because `Σ[ B ∈ _ ] (A ≡ _)` is also contractible.
-Further, the type `C [ A ≃ B ]` satisfies J, by the same argument used
-to construct `EquivJ`{.Agda}.
-
-```agda
-isCategory : ∀ {o h} → Precategory o h → Type _
-isCategory C = ∀ {A} → isContr (Σ[ B ∈ _ ] C [ A ≅ B ])
-```
-
-This notion of univalent category corresponds to the usual notion ---
-which is having the canonical map from paths to isomorphisms be an
-equivalence --- by the following argument: Since the types `(Σ[ B ∈ _ ]
-C [ A ≅ B ])` and `Σ[ B ∈ _ ] A ≣ B`, the action of `pathToIso`{.Agda}
-on total spaces is an equivalence; Hence `pathToIso` is an equivalence.
-
-```agda
-pathToIso : ∀ {o h} {C : Precategory o h} {A : Precategory.Ob C} {B : Precategory.Ob C}
-          → A ≡ B → C [ A ≅ B ]
-pathToIso {C = C} {A = A} = J (λ B p → C [ A ≅ B ]) (idIso {C = C})
-```
-
-First we define, exactly as in the book, the canonical map `pathToIso`{.Agda}.
-
-```agda
-isCategory→isEquiv-pathToIso
-  : ∀ {o h} {C : Precategory o h}
-  → isCategory C → ∀ {A B}
-  → isEquiv (pathToIso {C = C} {A = A} {B = B})
-isCategory→isEquiv-pathToIso {C = C} iscat {A} {B} = total→equiv isEquiv-total where
-  P Q : Precategory.Ob C → Type _
-  P B = A ≡ B
-  Q B = C [ A ≅ B ]
-```
-
-We consider the map `pathToIso`{.Agda} as a [fibrewise equivalence]
-between the two families `A ≡ -` and `C [ A ≅ - ]`. This lets us reduce
-the problem of proving that `pathToIso`{.Agda} is an equivalence to the
-problem of proving that it induces an equivalence of total spaces.
-
-[fibrewise equivalence]: agda://1Lab.Equiv.Fibrewise
-
-```agda
-  isEquiv-total : isEquiv (total {P = P} {Q = Q} (λ A p → pathToIso {C = C} p))
-  isEquiv-total =
-    isContr→isEquiv (contr (A , λ i → A) isContr-Singleton)
-                    iscat
-```
-
-Since the total spaces are contractible (`Σ P` by `path induction`{.Agda
-ident=J}, `Σ Q` by the assumption that C is a category) [any map between
-them is an equivalence](agda://1Lab.Equiv#isContr→isEquiv). This implies
-that we can turn categorical isomorphisms into paths of objects:
-
-```agda
-isCategory→isoToPath : ∀ {o h} {C : Precategory o h}
-                     → isCategory C
-                     → ∀ {A B}
-                     → C [ A ≅ B ]
-                     → A ≡ B
-isCategory→isoToPath {C = C} cat =
-  isEquiv→isIso (isCategory→isEquiv-pathToIso {C = C} cat) .isIso.inv
-```
-
-Furthermore, we have that this function is an equivalence, and so the
-type of objects in a univalent category is at most a [groupoid]. We use
-the fact that [h-levels are closed under equivalences] and that
-[dependent sums preserve h-levels].
-
-[h-levels are closed under equivalences]: agda://1Lab.HLevel.Retracts#isHLevel-equiv
-[dependent sums preserve h-levels]: agda://1Lab.HLevel.Retracts#isHLevelΣ
-[groupoid]: agda://1Lab.HLevel#isGroupoid
-
-```agda
-isCategory→isGroupoid-Ob : ∀ {o h} {C : Precategory o h}
-                         → isCategory C
-                         → isGroupoid (C .Precategory.Ob)
-isCategory→isGroupoid-Ob {C = C} iscat x y =
-  isHLevel-equiv 2
-    (isCategory→isoToPath {C = C} iscat)
-    (((_ , isCategory→isEquiv-pathToIso {C = C} iscat) e⁻¹) .snd)
-```
-
-Since `an isomorphism`{.Agda ident=_[_≅_]} is a big dependent sum of
-[sets], we have that the paths `x ≡ y` are a set, and so `C` is a
-groupoid.
-
-[sets]: agda://1Lab.HLevel#isSet
-
-
-```agda
-    (isHLevelΣ 2
-      (isHLevelΣ 2
-        (C.Hom-set _ _) λ _ → C.Hom-set _ _)
-        λ { (f , g) →
-            isProp→isSet (isHLevelΣ 1 (C.Hom-set _ _ _ _)
-                                      λ _ → C.Hom-set _ _ _ _) })
-  where module C = Precategory C
-```
-
-## The category of Sets
+## The precategory of Sets
 
 Given a [universe level], we can consider the collection of [all sets]
 of that level. This assembles into a `precategory`{.Agda
@@ -319,51 +185,6 @@ module _ where
   Sets o .idl f = refl
   Sets o .idr f = refl
   Sets o .assoc f g h = refl
-```
-
-Furthermore, Sets is a univalent category, essentially by the same
-argument used to prove [EquivJ].
-
-[EquivJ]: agda://1Lab.Univalence#EquivJ
-
-```agda
-  Sets-category : ∀ {o} → isCategory (Sets o)
-  Sets-category {o = o} {A = a} .centre = a , idIso {C = Sets o} {a = a}
-```
-
-We take the centre of contraction to be the object itself, together with
-the identity isomorphism. Given any other object and isomorphism, we can
-use `ua`{.Agda} to get a path `a ≡ b`, and it's not too hard - but quite
-tedious - to prove that the other isomorphism is equal to the identity
-isomorphism [over] ua.
-
-[over]: 1Lab.Path.html#dependent-paths
-
-```agda
-  Sets-category {o = o} {A = a} .paths (b , isiso) =
-    Σ-Path
-      (Σ-Path (ua eqv) (isProp-isHLevel 2 _ _))
-      (Σ-Path (λ i → (λ x → transp (λ i → b .fst) i
-                              (isiso .fst .fst (transp (λ i → a .fst) i x)))
-                   , (λ x → transp (λ i → a .fst) i
-                              (isiso .fst .snd (transp (λ i → b .fst) i x))))
-```
-
-The functions that make up the isomorphism are equal essentially by a
-[transport filler], and the data that proves this is an isomorphism does
-not matter since `hom-sets are sets`{.Agda ident=Hom-set}.
-
-[transport filler]: agda://1Lab.Path#transport-filler
-
-```agda
-              (Σ-Path (isHLevelΠ 2 (λ _ → b .snd) _ _ _ _)
-                      (isHLevelΠ 2 (λ _ → a .snd) _ _ _ _)))
-    where
-      eqv : a .fst ≃ b .fst
-      eqv = Iso→Equiv ( isiso .fst .fst
-                      , iso (isiso .fst .snd)
-                          (happly (isiso .snd .fst))
-                          (happly (isiso .snd .snd)))
 ```
 
 # Functors
@@ -615,17 +436,16 @@ module _ {o₁ h₁ o₂ h₂}
 
   isSet-Nat : isSet (F => G)
   isSet-Nat = isHLevel-retract 2 NT'→NT NT→NT' (λ x → refl) NT'-isSet where
+    NT' : Type _
+    NT' = Σ[ eta ∈ ((x : _) → D.Hom (F.₀ x) (G.₀ x)) ]
+            ((x y : _) (f : C.Hom x y) → eta y D.∘ F.₁ f ≡ G.₁ f D.∘ eta x)
+    
+    NT'→NT : NT' → F => G
+    NT'→NT (eta , is-n) .η = eta
+    NT'→NT (eta , is-n) .is-natural = is-n
 
-      NT' : Type _
-      NT' = Σ[ eta ∈ ((x : _) → D.Hom (F.₀ x) (G.₀ x)) ]
-              ((x y : _) (f : C.Hom x y) → eta y D.∘ F.₁ f ≡ G.₁ f D.∘ eta x)
-      
-      NT'→NT : NT' → F => G
-      NT'→NT (eta , is-n) .η = eta
-      NT'→NT (eta , is-n) .is-natural = is-n
-
-      NT→NT' : F => G → NT'
-      NT→NT' x = x .η , x .is-natural
+    NT→NT' : F => G → NT'
+    NT→NT' x = x .η , x .is-natural
 ```
 
 The type `NT'`{.Agda} is a literal restatement of the definition of
@@ -635,13 +455,13 @@ is that a record has semantic information (the names `η`{.Agda} and
 can be proven to be a set compositionally:
 
 ```agda
-      NT'-isSet : isSet NT'
-      NT'-isSet =
-        isHLevelΣ 2 (isHLevelΠ 2 λ x → D.Hom-set _ _)
-                    (λ _ → isHLevelΠ 2
-                     λ _ → isHLevelΠ 2
-                     λ _ → isHLevelΠ 2
-                     λ _ x y p q → isHLevel-suc 2 (D.Hom-set _ _) _ _ x y p q) 
+    NT'-isSet : isSet NT'
+    NT'-isSet =
+      isHLevelΣ 2 (isHLevelΠ 2 λ x → D.Hom-set _ _)
+                  (λ _ → isHLevelΠ 2
+                    λ _ → isHLevelΠ 2
+                    λ _ → isHLevelΠ 2
+                    λ _ x y p q → isHLevel-suc 2 (D.Hom-set _ _) _ _ x y p q) 
 ```
 
 Another fundamental lemma is that equality of natural transformations
@@ -649,44 +469,21 @@ depends only on equality of the family of morphisms, since being natural
 is a proposition:
 
 ```agda
+  Nat-PathP : {F' G' : Functor C D}
+            → (p : F ≡ F') (q : G ≡ G')
+            → {a : F => G} {b : F' => G'}
+            → (∀ x → PathP _ (a .η x) (b .η x))
+            → PathP (λ i → p i => q i) a b
+  Nat-PathP p q path i .η x = path x i
+  Nat-PathP p q {a} {b} path i .is-natural x y f =
+    isProp→PathP 
+      (λ i → D.Hom-set _ _ 
+        (path y i D.∘ Functor.F₁ (p i) f) (Functor.F₁ (q i) f D.∘ path x i))
+      (a .is-natural x y f)
+      (b .is-natural x y f) i
+
   Nat-path : {a b : F => G}
            → ((x : _) → a .η x ≡ b .η x)
            → a ≡ b
-  Nat-path path i .η x = path x i
-  Nat-path {a} {b} path i .is-natural x y f =
-    isProp→PathP (λ i → D.Hom-set _ _ (path y i D.∘ F.₁ f) (G.₁ f D.∘ path x i))
-                 (a .is-natural x y f)
-                 (b .is-natural x y f) i
+  Nat-path = Nat-PathP refl refl
 ```
-
-## Natural Isomorphism
-
-```agda
-record
-  _≅_ {o₁ h₁ o₂ h₂} {C : Precategory o₁ h₁} {D : Precategory o₂ h₂}
-       (F G : Functor C D)
-  : Type (o₁ ⊔ h₁ ⊔ h₂)
-  where
-  private
-    module D = Precategory D
-  open _=>_
-```
-
-A natural transformation where all the `components`{.Agda ident=η} are
-isomorphisms is called a `natural isomorphism`{.Agda ident=_≅_}. This
-is equivalently a natural transformation with a two-sided inverse.
-  
-```
-  field
-    to   : F => G
-    from : G => F
-  
-  field
-    to-from : {x : Precategory.Ob C} → η from x D.∘ η to x ≡ D.id
-    from-to : {x : Precategory.Ob C} → η to x D.∘ η from x ≡ D.id
-```
-
-Natural isomorphisms are the `isomorphisms`{.Agda ident=is-Iso} in
-[functor categories](agda://Cat.Instances.Functor), but this
-explicit characterisation improves compilation time by untangling the
-dependency graph.

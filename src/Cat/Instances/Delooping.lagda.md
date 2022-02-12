@@ -1,9 +1,7 @@
 ```agda
-open import 1Lab.Prelude
-
 open import Algebra.Monoid
 
-open import Cat.Base
+open import Cat.Prelude
 
 module Cat.Instances.Delooping where
 ```
