@@ -162,17 +162,20 @@ Inverses-∘ {f = f} {f⁻¹} {g} {g⁻¹} finv ginv = record { invˡ = l ; inv�
   module finv = Inverses finv
   module ginv = Inverses ginv
 
-  l = (g ∘ f) ∘ f⁻¹ ∘ g⁻¹ ≡⟨ solve C ⟩
-      g ∘ (f ∘ f⁻¹) ∘ g⁻¹ ≡⟨ (λ i → g ∘ finv.invˡ i ∘ g⁻¹) ⟩
-      g ∘ id ∘ g⁻¹        ≡⟨ solve C ⟩
-      g ∘ g⁻¹             ≡⟨ ginv.invˡ ⟩
-      id                  ∎
-  
-  r = (f⁻¹ ∘ g⁻¹) ∘ g ∘ f ≡⟨ solve C ⟩
-      f⁻¹ ∘ (g⁻¹ ∘ g) ∘ f ≡⟨ (λ i → f⁻¹ ∘ ginv.invʳ i ∘ f) ⟩
-      f⁻¹ ∘ id ∘ f        ≡⟨ solve C ⟩
-      f⁻¹ ∘ f             ≡⟨ finv.invʳ ⟩
-      id                  ∎
+  abstract
+    l : (g ∘ f) ∘ f⁻¹ ∘ g⁻¹ ≡ id
+    l = (g ∘ f) ∘ f⁻¹ ∘ g⁻¹ ≡⟨ solve C ⟩
+        g ∘ (f ∘ f⁻¹) ∘ g⁻¹ ≡⟨ (λ i → g ∘ finv.invˡ i ∘ g⁻¹) ⟩
+        g ∘ id ∘ g⁻¹        ≡⟨ solve C ⟩
+        g ∘ g⁻¹             ≡⟨ ginv.invˡ ⟩
+        id                  ∎
+    
+    r : (f⁻¹ ∘ g⁻¹) ∘ g ∘ f ≡ id
+    r = (f⁻¹ ∘ g⁻¹) ∘ g ∘ f ≡⟨ solve C ⟩
+        f⁻¹ ∘ (g⁻¹ ∘ g) ∘ f ≡⟨ (λ i → f⁻¹ ∘ ginv.invʳ i ∘ f) ⟩
+        f⁻¹ ∘ id ∘ f        ≡⟨ solve C ⟩
+        f⁻¹ ∘ f             ≡⟨ finv.invʳ ⟩
+        id                  ∎
 
 _∘Iso_ : a ≅ b → b ≅ c → a ≅ c
 (f ∘Iso g) .to = g .to ∘ f .to
