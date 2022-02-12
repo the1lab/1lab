@@ -10,7 +10,7 @@ open Precategory
 open Functor
 private variable
   o₁ h₁ o₂ h₂ : Level
-  C D : Precategory o₁ h₁
+  C D E : Precategory o₁ h₁
 ```
 -->
 

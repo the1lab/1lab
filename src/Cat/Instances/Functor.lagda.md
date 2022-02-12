@@ -1,5 +1,6 @@
 ```agda
 open import Cat.Univalent using (isCategory)
+open import Cat.Constructions.Product
 open import Cat.Prelude
 
 open Precategory
@@ -10,7 +11,7 @@ module Cat.Instances.Functor where
 
 private variable
   o h o₁ h₁ o₂ h₂ : Level
-  C D : Precategory o h
+  C D E : Precategory o h
   F G : Functor C D
 ```
 
@@ -68,11 +69,11 @@ does not matter.
 module _ {o₁ h₁ o₂ h₂} (C : Precategory o₁ h₁) (D : Precategory o₂ h₂) where
   open Precategory
 
-  FunctorCat : Precategory (o₁ ⊔ o₂ ⊔ h₁ ⊔ h₂) (o₁ ⊔ h₁ ⊔ h₂)
-  FunctorCat .Ob = Functor C D
-  FunctorCat .Hom F G = F => G
-  FunctorCat .id = idnt
-  FunctorCat ._∘_ = _∘nt_
+  Cat[_,_] : Precategory (o₁ ⊔ o₂ ⊔ h₁ ⊔ h₂) (o₁ ⊔ h₁ ⊔ h₂)
+  Cat[_,_] .Ob = Functor C D
+  Cat[_,_] .Hom F G = F => G
+  Cat[_,_] .id = idnt
+  Cat[_,_] ._∘_ = _∘nt_
 ```
 
 All of the properties that make up a `Precategory`{.Agda} follow from
@@ -81,10 +82,10 @@ a set`{.Agda ident=isSet-Nat}, and equality of the components
 `determines`{.Agda ident=Nat-path} equality of the transformation.
 
 ```agda
-  FunctorCat .Hom-set F G = isSet-Nat
-  FunctorCat .idr f = Nat-path λ x → D .idr _
-  FunctorCat .idl f = Nat-path λ x → D .idl _
-  FunctorCat .assoc f g h = Nat-path λ x → D .assoc _ _ _
+  Cat[_,_] .Hom-set F G = isSet-Nat
+  Cat[_,_] .idr f = Nat-path λ x → D .idr _
+  Cat[_,_] .idl f = Nat-path λ x → D .idl _
+  Cat[_,_] .assoc f g h = Nat-path λ x → D .assoc _ _ _
 ```
 
 Before moving on, we prove the following lemma which characterises
@@ -128,7 +129,7 @@ natural inverse) are themselves isomorphisms in $D$.
 ```agda
 module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
   import Cat.Morphism D as D
-  import Cat.Morphism (FunctorCat C D) as [C,D]
+  import Cat.Morphism Cat[ C , D ] as [C,D]
 ```
 -->
 
@@ -149,7 +150,7 @@ have the canonical choice of $(F, id)$.
 <!--
 ```agda
 module _ {C : Precategory o₁ h₁} {D : Precategory o₂ h₂} (DisCat : isCategory D) where
-  import Cat.Morphism (FunctorCat C D) as [C,D]
+  import Cat.Morphism Cat[ C , D ] as [C,D]
   import Cat.Morphism D as Dm using (_≅_)
   open [C,D]
   open Cat.Univalent D hiding (isCategory)
@@ -158,7 +159,7 @@ module _ {C : Precategory o₁ h₁} {D : Precategory o₂ h₂} (DisCat : isCat
 -->
 
 ```agda
-  isCategory-Functor : isCategory (FunctorCat C D)
+  isCategory-Functor : isCategory Cat[ C , D ]
   isCategory-Functor F .centre = F , idIso
 ```
 
@@ -235,4 +236,28 @@ show is that $\eta{}_x \circ \mathrm{id} \circ \mathrm{id} = f$.
           (  ap₂ D._∘_ (transport-refl _) (D.idl _) 
           ·· D.idl _ 
           ·· ptoi-from _))
+```
+
+# Currying
+
+There is an equivalence between the spaces of bifunctors 
+$\ca{C} \times_\cat \ca{D} \to E$ and the space of functors 
+$\ca{C} \to [\ca{D},E]$. We refer to the image of a functor under this
+equivalence as its _exponential transpose_, and we refer to the map in
+the "forwards" direction (as in the text above) as _currying_:
+
+```agda
+Curry : Functor (C ×Cat D) E → Functor C Cat[ D , E ]
+Curry {C = C} {D = D} {E = E} F = curried where
+  open import Cat.Functor.Bifunctor {C = C} {D = D} {E = E} F
+
+  curried : Functor _ _
+  curried .F₀ = Right
+  curried .F₁ x→y = NT (λ f → first x→y) λ x y f → 
+       sym (F-∘ F _ _) 
+    ·· ap (F₁ F) (ap₂ _,_ (C .idr _ ∙ sym (C .idl _)) (D .idl _ ∙ sym (D .idr _))) 
+    ·· F-∘ F _ _
+  curried .F-id = Nat-path λ x → F-id F
+  curried .F-∘ f g = Nat-path λ x → 
+    ap (λ x → F₁ F (_ , x)) (sym (D .idl _)) ∙ F-∘ F _ _
 ```
