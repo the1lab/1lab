@@ -4,7 +4,8 @@ open import 1Lab.Prelude hiding (id; _∘_)
 open import Cat.Base
 open import Cat.Displayed
 
-module Cat.Displayed.Cartesian {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′) where
+module Cat.Displayed.Cartesian {o ℓ o′ ℓ′} {B : Precategory o ℓ}
+                               (E : Displayed B o′ ℓ′) where
 
 open Precategory B
 open Displayed E
@@ -13,11 +14,14 @@ open Displayed E
 # Cartesian Morphisms and Fibrations
 
 ```agda
-record Cartesian {a b x y} (f : Hom a b) (f′ : Hom[ f ] x y) : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
+record Cartesian {a b x y} (f : Hom a b)
+                 (f′ : Hom[ f ] x y) : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
   field
     universal : ∀ {u u′} (m : Hom u a) → (h′ : Hom[ f ∘ m ] u′ y) → Hom[ m ] u′ x
-    commutes  : ∀ {u u′} (m : Hom u a) → (h′ : Hom[ f ∘ m ] u′ y) → f′ ∘′ universal m h′ ≡ h′
-    unique    : ∀ {u u′} {m : Hom u a} → {h′ : Hom[ f ∘ m ] u′ y} → (m′ : Hom[ m ] u′ x) → f′ ∘′ m′ ≡ h′ → m′ ≡ universal m h′
+    commutes  : ∀ {u u′} (m : Hom u a) → (h′ : Hom[ f ∘ m ] u′ y)
+                → f′ ∘′ universal m h′ ≡ h′
+    unique    : ∀ {u u′} {m : Hom u a} → {h′ : Hom[ f ∘ m ] u′ y}
+                → (m′ : Hom[ m ] u′ x) → f′ ∘′ m′ ≡ h′ → m′ ≡ universal m h′
 ```
 
 ```agda
