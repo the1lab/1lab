@@ -60,12 +60,9 @@ Family ._∘′_ {a = A} {x = X} {Y} {Z} {F} {G} f g = NT (λ x → η f _ ∘ �
          → (f .η _ ∘ g .η y) ∘ F₁ X h 
          ≡ F₁ (Z F∘ liftDisc {A = A} _) h ∘ f .η _ ∘ g .η  _
     comm x y h =
-      (f .η _ ∘ g .η y) ∘ F₁ X h                            ≡⟨ sym (assoc _ _ _) ⟩
-      f .η _ ∘ (g .η y ∘ F₁ X h)                            ≡⟨ ap (_∘_ (f .η _)) (g .is-natural _ _ _) ⟩
-      f .η _ ∘ (F₁ (Y F∘ liftDisc {A = A} _) h ∘ g .η x)    ≡⟨ assoc _ _ _ ⟩
-      (f .η _ ∘ F₁ (Y F∘ liftDisc {A = A} _) h) ∘ (g .η x)  ≡⟨ ap (λ e → e ∘ (g .η x)) (f .is-natural _ _ _) ⟩
-      (F₁ (Z F∘ liftDisc {A = A} _) h ∘ f .η _) ∘ (g .η x)  ≡⟨ sym (assoc _ _ _) ⟩
-      F₁ (Z F∘ liftDisc {A = A} _) h ∘ f .η _ ∘ g .η  _     ∎
+      (f .η _ ∘ g .η y) ∘ F₁ X h                          ≡⟨ extendr (g .is-natural _ _ _) ⟩
+      (f .η _ ∘ F₁ (Y F∘ liftDisc {A = A} _) h) ∘ g .η x  ≡˘⟨ pulll (sym (f .is-natural _ _ _)) ⟩
+      F₁ (Z F∘ liftDisc {A = A} _) h ∘ f .η _ ∘ g .η  _   ∎
 
 Family .idr′ _ = Nat-path λ x → idr _
 Family .idl′ _ = Nat-path λ x → idl _
