@@ -31,7 +31,7 @@ name "family fibration".
 
 ```agda
 Family : ∀ {ℓ} → Displayed (Sets ℓ) _ _
-Ob[ Family ] S = Functor (Disc′ S) C
+Family .Ob[_] S = Functor (Disc′ S) C
 ```
 
 Given a map $f : A \to B$ in `Sets`{.Agda}, and functors $F : [A,C]$ and
@@ -42,9 +42,9 @@ between discrete categories. Since `natural transformations form a
 Set`{.Agda ident=isSet-Nat}, we're clear to take this as the definition.
 
 ```agda
-Hom[ Family ] {_ , aset} {_ , bset} f F G = 
+Family .Hom[_] {_ , aset} {_ , bset} f F G = 
   F => (G F∘ liftDisc f)
-Hom[ Family ]-set f x y = isSet-Nat
+Family .Hom[_]-set f x y = isSet-Nat
 ```
 
 The identity and composition operations are given by the identity and
