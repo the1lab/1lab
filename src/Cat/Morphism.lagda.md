@@ -173,4 +173,15 @@ Inverses-∘ {f = f} {f⁻¹} {g} {g⁻¹} finv ginv = record { invˡ = l ; inv�
       f⁻¹ ∘ id ∘ f        ≡⟨ solve C ⟩
       f⁻¹ ∘ f             ≡⟨ finv.invʳ ⟩
       id                  ∎
+
+_∘Iso_ : a ≅ b → b ≅ c → a ≅ c
+(f ∘Iso g) .to = g .to ∘ f .to
+(f ∘Iso g) .from = f .from ∘ g .from
+(f ∘Iso g) .inverses = Inverses-∘ (f .inverses) (g .inverses)
+
+_Iso⁻¹ : a ≅ b → b ≅ a
+(f Iso⁻¹) .to = f .from
+(f Iso⁻¹) .from = f .to
+(f Iso⁻¹) .inverses .invˡ = f .inverses .invʳ
+(f Iso⁻¹) .inverses .invʳ = f .inverses .invˡ
 ```
