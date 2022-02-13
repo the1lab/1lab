@@ -31,7 +31,7 @@ $G_0$ and $G^{ab}_0$ in the prose.
 
 ```agda
   G^ab : Type ℓ
-  G^ab = coeq {A = G × G × G} (λ (x , y , z) → x ⋆ y ⋆ z)
+  G^ab = Coeq {A = G × G × G} (λ (x , y , z) → x ⋆ y ⋆ z)
                               (λ (x , y , z) → x ⋆ z ⋆ y)
 
   inc^ab : G → G^ab

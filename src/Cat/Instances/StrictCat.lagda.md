@@ -51,7 +51,10 @@ isSet-Functor {o = o} {h} {C} {D} dobset =
     unpack (f , g , p , q) .F-∘ _ _ = q _ _ _ _ _
 
     linv : isLeftInverse unpack pack
-    linv x = refl
+    linv x i .F₀ = F₀ x
+    linv x i .F₁ = F₁ x
+    linv x i .F-id = F-id x
+    linv x i .F-∘ = F-∘ x
 
     hl : isSet T
     hl = isHLevelΣ 2 (isHLevel→ 2 dobset) λ F →

@@ -306,7 +306,7 @@ quotient.
 Π₀⊣Disc = adj where
   adj : _ ⊣ _
   adj .unit .η x = record 
-    { F₀   = inc            ; F₁ = quot _ _ 
+    { F₀   = inc            ; F₁ = quot
     ; F-id = squash _ _ _ _ ; F-∘ = λ _ _ → squash _ _ _ _ 
     }
   adj .unit .is-natural x y f = Functor≡ (λ x → refl) λ _ → squash _ _ _ _

@@ -4,8 +4,10 @@
 module Cat.Prelude where
 
 open import 1Lab.Prelude
-  hiding (_∘_ ; id)
-  renaming (_↪_ to _↣_)
+  renaming ( _↪_ to _↣_
+           ; _∘_ to _⊙_ -- \o.
+           )
+  hiding (id)
   public
 
 open import Data.Set.Truncation public

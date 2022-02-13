@@ -428,18 +428,19 @@ isProp→isContrPathP ap x y .centre = isProp→PathP ap x y
 isProp→isContrPathP ap x y .paths p =
   isProp→SquareP (λ i j → ap j) refl _ _ refl
 
-isSet→SquareP :
-  {A : I → I → Type ℓ}
-  (isSet : (i j : I) → isSet (A i j))
-  → {a : A i0 i0} {b : A i0 i1} {c : A i1 i0} {d : A i1 i1}
-  → (p : PathP (λ j → A j i0) a c)
-  → (q : PathP (λ j → A i0 j) a b)
-  → (s : PathP (λ j → A i1 j) c d)
-  → (r : PathP (λ j → A j i1) b d)
-  → SquareP A p q s r
-isSet→SquareP isset a₀₋ a₁₋ a₋₀ a₋₁ =
-  transport (sym (PathP≡Path _ _ _))
-            (isHLevelPathP' 1 (isset _ _) _ _ _ _)
+abstract
+  isSet→SquareP :
+    {A : I → I → Type ℓ}
+    (isSet : (i j : I) → isSet (A i j))
+    → {a : A i0 i0} {b : A i0 i1} {c : A i1 i0} {d : A i1 i1}
+    → (p : PathP (λ j → A j i0) a c)
+    → (q : PathP (λ j → A i0 j) a b)
+    → (s : PathP (λ j → A i1 j) c d)
+    → (r : PathP (λ j → A j i1) b d)
+    → SquareP A p q s r
+  isSet→SquareP isset a₀₋ a₁₋ a₋₀ a₋₁ =
+    transport (sym (PathP≡Path _ _ _))
+              (isHLevelPathP' 1 (isset _ _) _ _ _ _)
 
 -- Has to go through:
 _ : ∀ {A : Type} {a b c d : A} (p : a ≡ c) (q : a ≡ b) (s : c ≡ d) (r : b ≡ d)

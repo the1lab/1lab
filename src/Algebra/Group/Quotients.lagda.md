@@ -87,7 +87,8 @@ $(x - y) \in N$, we also have $(x^{-1} - y) \in N$.
 
 ```agda
     inverse : T → T
-    inverse = Coeq-rec squash (inc ∘ inv) λ { (x , y , r) → quot _ _ (p x y r) }
+    inverse =
+      Coeq-rec squash (λ x → inc (inv x)) λ { (x , y , r) → quot (p x y r) }
       where abstract
         p : ∀ x y → (x ⋆ inv y) ∈ N? → (inv x ⋆ inv (inv y)) ∈ N?
         p x y r = has-comm (subst (_∈ N?) inv-comm (has-inv r))

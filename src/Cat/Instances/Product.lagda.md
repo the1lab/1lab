@@ -63,6 +63,8 @@ C ×Cat D = prodcat where
   prodcat .idl (f , f') i = C.idl f i , D.idl f' i
   prodcat .assoc (f , f') (g , g') (h , h') i = 
     C.assoc f g h i , D.assoc f' g' h' i
+
+infixr 20 _×Cat_
 ```
 
 We define the two projection functors $\ca{C} \times_\cat \ca{D} \to

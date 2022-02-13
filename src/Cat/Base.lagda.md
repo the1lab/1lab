@@ -197,6 +197,7 @@ record
     (D : Precategory o₂ h₂)
   : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂)
   where
+  no-eta-equality
 
   private
     module C = Precategory C
@@ -293,18 +294,19 @@ To verify that the result is functorial, equational reasoning is employed, using
 the witnesses that $F$ and $G$ are functorial.
 
 ```agda
-    F-id : {x : C.Ob} → F₁ (C.id {x}) ≡ E.id {F₀ x}
-    F-id {x} =
-        F.F₁ (G.F₁ C.id) ≡⟨ ap F.F₁ G.F-id ⟩
-        F.F₁ D.id        ≡⟨ F.F-id ⟩
-        E.id             ∎
+    abstract
+      F-id : {x : C.Ob} → F₁ (C.id {x}) ≡ E.id {F₀ x}
+      F-id {x} =
+          F.F₁ (G.F₁ C.id) ≡⟨ ap F.F₁ G.F-id ⟩
+          F.F₁ D.id        ≡⟨ F.F-id ⟩
+          E.id             ∎
 
-    F-∘ : {x y z : C.Ob} (f : C.Hom y z) (g : C.Hom x y)
-        → F₁ (f C.∘ g) ≡ (F₁ f E.∘ F₁ g)
-    F-∘ f g =
-        F.F₁ (G.F₁ (f C.∘ g))     ≡⟨ ap F.F₁ (G.F-∘ f g) ⟩
-        F.F₁ (G.F₁ f D.∘ G.F₁ g)  ≡⟨ F.F-∘ _ _ ⟩
-        F₁ f E.∘ F₁ g             ∎
+      F-∘ : {x y z : C.Ob} (f : C.Hom y z) (g : C.Hom x y)
+          → F₁ (f C.∘ g) ≡ (F₁ f E.∘ F₁ g)
+      F-∘ f g =
+          F.F₁ (G.F₁ (f C.∘ g))     ≡⟨ ap F.F₁ (G.F-∘ f g) ⟩
+          F.F₁ (G.F₁ f D.∘ G.F₁ g)  ≡⟨ F.F-∘ _ _ ⟩
+          F₁ f E.∘ F₁ g             ∎
 ```
 
 <!--
@@ -338,6 +340,7 @@ record _=>_ {o₁ h₁ o₂ h₂}
             (F G : Functor C D)
       : Type (o₁ ⊔ h₁ ⊔ h₂)
   where
+  no-eta-equality
   constructor NT
 ```
 
@@ -435,7 +438,7 @@ module _ {o₁ h₁ o₂ h₂}
   open _=>_
 
   isSet-Nat : isSet (F => G)
-  isSet-Nat = isHLevel-retract 2 NT'→NT NT→NT' (λ x → refl) NT'-isSet where
+  isSet-Nat = isHLevel-retract 2 NT'→NT NT→NT' prf NT'-isSet where
     NT' : Type _
     NT' = Σ[ eta ∈ ((x : _) → D.Hom (F.₀ x) (G.₀ x)) ]
             ((x y : _) (f : C.Hom x y) → eta y D.∘ F.₁ f ≡ G.₁ f D.∘ eta x)
@@ -446,6 +449,10 @@ module _ {o₁ h₁ o₂ h₂}
 
     NT→NT' : F => G → NT'
     NT→NT' x = x .η , x .is-natural
+    
+    prf : isRightInverse NT→NT' NT'→NT
+    prf x i .η = x .η
+    prf x i .is-natural = x .is-natural
 ```
 
 The type `NT'`{.Agda} is a literal restatement of the definition of

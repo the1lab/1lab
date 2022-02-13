@@ -97,8 +97,10 @@ Since the following definitions are fundamental, they deserve a place in
 this module:
 
 ```agda
-_∘_ : ∀ {ℓ₁ ℓ₂ ℓ₃} {A : Type ℓ₁} {B : Type ℓ₂} {C : Type ℓ₃}
-    → (B → C) → (A → B) → A → C
+_∘_ : ∀ {ℓ₁ ℓ₂ ℓ₃} {A : Type ℓ₁} {B : A → Type ℓ₂} {C : (x : A) → B x → Type ℓ₃}
+    → (∀ {x} → (y : B x) → C x y)
+    → (f : ∀ x → B x) 
+    → ∀ x → C x (f x)
 f ∘ g = λ z → f (g z)
 
 infixr 40 _∘_

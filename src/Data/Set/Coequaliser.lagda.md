@@ -21,10 +21,10 @@ parallel maps $f, g : A \to B$, then the coequaliser $\mathrm{coeq}(f,g)$
 can be thought of as "$B$, with the images of $f$ and $g$ identified".
 
 ```agda
-data coeq (f g : A → B) : Type (level-of A ⊔ level-of B) where
-  inc    : B → coeq f g
+data Coeq (f g : A → B) : Type (level-of A ⊔ level-of B) where
+  inc    : B → Coeq f g
   glue   : ∀ x → inc (f x) ≡ inc (g x)
-  squash : isSet (coeq f g)
+  squash : isSet (Coeq f g)
 ```
 
 The universal property of coequalisers, being a type of colimit, is a
@@ -51,7 +51,7 @@ We refer to this unique factoring as `Coeq-rec`{.Agda}.
 ```
 Coeq-rec : ∀ {ℓ} {C : Type ℓ} {f g : A → B} 
       → isSet C → (h : B → C)
-      → (∀ x → h (f x) ≡ h (g x)) → coeq f g → C
+      → (∀ x → h (f x) ≡ h (g x)) → Coeq f g → C
 Coeq-rec cset h h-coeqs (inc x) = h x
 Coeq-rec cset h h-coeqs (glue x i) = h-coeqs x i
 Coeq-rec cset h h-coeqs (squash x y p q i j) = 
@@ -79,7 +79,7 @@ not yet been defined. It says that, to define a dependent function from
 acts on `inc`{.Agda}: The path constructions don't matter.
 
 ```agda
-Coeq-elimProp : ∀ {ℓ} {f g : A → B} {C : coeq f g → Type ℓ}
+Coeq-elimProp : ∀ {ℓ} {f g : A → B} {C : Coeq f g → Type ℓ}
               → (∀ x → isProp (C x))
               → (∀ x → C (inc x))
               → ∀ x → C x
@@ -121,13 +121,13 @@ Coequalising map".
 ```agda
 Coeq-univ : ∀ {ℓ} {C : Type ℓ} {f g : A → B}
           → isSet C
-          → isEquiv {A = coeq f g → C} {B = coeq-cone f g C} 
+          → isEquiv {A = Coeq f g → C} {B = coeq-cone f g C} 
             (λ h → h ∘ inc , λ i z → h (glue z i))
 Coeq-univ {C = C} {f = f} {g = g} cset = 
   isIso→isEquiv (iso cr' (λ x → refl) islinv) 
   where
     open isIso
-    cr' : coeq-cone f g C → coeq f g → C
+    cr' : coeq-cone f g C → Coeq f g → C
     cr' (f , f-coeqs) = Coeq-rec cset f (happly f-coeqs)
 
     islinv : isLeftInverse cr' (λ h → h ∘ inc , λ i z → h (glue z i))
@@ -146,7 +146,7 @@ C$. Now, we combine the two notions, and allow dependent elimination
 into families of sets:
 
 ```agda
-Coeq-elim : ∀ {ℓ} {f g : A → B} {C : coeq f g → Type ℓ}
+Coeq-elim : ∀ {ℓ} {f g : A → B} {C : Coeq f g → Type ℓ}
           → (∀ x → isSet (C x))
           → (ci : ∀ x → C (inc x))
           → (∀ x → PathP (λ i → C (glue x i)) (ci (f x)) (ci (g x)))
@@ -167,7 +167,7 @@ very enlightening --- you can mouse over these links to see their types:
 <!--
 ```agda
 Coeq-elimProp₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} 
-                  {C : coeq f g → coeq f' g' → Type ℓ}
+                  {C : Coeq f g → Coeq f' g' → Type ℓ}
                → (∀ x y → isProp (C x y))
                → (∀ x y → C (inc x) (inc y))
                → ∀ x y → C x y
@@ -176,7 +176,7 @@ Coeq-elimProp₂ cprop f =
     λ x → Coeq-elimProp (λ y → cprop _ _) (f x)
 
 Coeq-elimProp₃ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {f'' g'' : A'' → B''}
-                   {C : coeq f g → coeq f' g' → coeq f'' g'' → Type ℓ}
+                   {C : Coeq f g → Coeq f' g' → Coeq f'' g'' → Type ℓ}
                → (∀ x y z → isProp (C x y z))
                → (∀ x y z → C (inc x) (inc y) (inc z))
                → ∀ x y z → C x y z
@@ -185,7 +185,7 @@ Coeq-elimProp₃ cprop f =
     λ x y → Coeq-elimProp (λ y → cprop _ _ _) (f x y)
 
 Coeq-elim₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} 
-           → {C : coeq f g → coeq f' g' → Type ℓ}
+           → {C : Coeq f g → Coeq f' g' → Type ℓ}
            → (∀ x y → isSet (C x y))
            → (ci : ∀ x y → C (inc x) (inc y))
            → (∀ a x → PathP (λ i → C (glue x i) (inc a)) (ci (f x) a) (ci (g x) a))
@@ -215,7 +215,7 @@ Coeq-rec₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {C : Type ℓ}
           → (ci : B → B' → C)
           → (∀ a x → ci (f x) a ≡ ci (g x) a)
           → (∀ a x → ci a (f' x) ≡ ci a (g' x))
-          → coeq f g → coeq f' g' → C
+          → Coeq f g → Coeq f' g' → C
 Coeq-rec₂ cset = Coeq-elim₂ (λ _ _ → cset)
 ```
 -->
@@ -234,16 +234,16 @@ private
   tot : ∀ {ℓ} → (A → A → Type ℓ) → Type (level-of A ⊔ ℓ)
   tot {A = A} R = Σ[ x ∈ A ] Σ[ y ∈ A ] R x y 
 
-  p1 : ∀ {ℓ} {R : A → A → Type ℓ} → tot R → A
-  p1 (x , _ , _) = x
+  /-left : ∀ {ℓ} {R : A → A → Type ℓ} → tot R → A
+  /-left (x , _ , _) = x
 
-  p2 : ∀ {ℓ} {R : A → A → Type ℓ} → tot R → A
-  p2 (_ , x , _) = x
+  /-right : ∀ {ℓ} {R : A → A → Type ℓ} → tot R → A
+  /-right (_ , x , _) = x
 ```
 <!--
 ```agda
-  variable 
-    R S T : A → A → Type ℓ
+private variable 
+  R S T : A → A → Type ℓ
 ```
 -->
 
@@ -251,12 +251,12 @@ We form the quotient as the aforementioned coequaliser of the two
 projections from the total space of $R$:
 
 ```agda
-_/_ : ∀ {ℓ ℓ'} (A : Type ℓ) (R : A → A → Type ℓ') → Type _
-A / R = coeq (p1 {R = R}) p2
+_/_ : ∀ {ℓ ℓ'} (A : Type ℓ) (R : A → A → Type ℓ') → Type (ℓ ⊔ ℓ')
+A / R = Coeq (/-left {R = R}) /-right
 
-quot : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} (x y : A) → R x y 
-     → Path (A / R) (inc x) (inc y)
-quot x y r = glue (x , y , r)
+quot : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {x y : A} → R x y 
+    → Path (A / R) (inc x) (inc y)
+quot r = glue (_ , _ , r)
 ```
 
 Using `Coeq-elim`{.Agda}, we can recover the elimination principle for
@@ -266,7 +266,7 @@ quotients:
 Quot-elim : ∀ {ℓ} {B : A / R → Type ℓ}
           → (∀ x → isSet (B x))
           → (f : ∀ x → B (inc x))
-          → (∀ x y (r : R x y) → PathP (λ i → B (quot x y r i)) (f x) (f y))
+          → (∀ x y (r : R x y) → PathP (λ i → B (quot r i)) (f x) (f y))
           → ∀ x → B x
 Quot-elim bset f r = Coeq-elim bset f λ { (x , y , w) → r x y w }
 ```
@@ -320,7 +320,7 @@ assumption that $R$ is an equivalence relation (`{- 2 -}`{.Agda}).
     decode : ∀ x y (p : Code x y .fst) → inc x ≡ y
     decode x y p = 
       Coeq-elimProp {C = λ y → (p : Code x y .fst) → inc x ≡ y} 
-        (λ _ → isHLevelΠ 1 λ _ → squash _ _) (λ y r → quot _ _ r) y p
+        (λ _ → isHLevelΠ 1 λ _ → squash _ _) (λ y r → quot r) y p
 ```
 
 For `encode`{.Agda}, it suffices to transport the proof that $R$ is
@@ -331,7 +331,7 @@ constructor `quot`{.Agda} says. Putting this all together, we get a
 proof that equivalence relations are `effective`{.Agda}.
 
 ```agda
-  effective : ∀ {x y : A} → isEquiv (quot {R = R} x y)
+  effective : ∀ {x y : A} → isEquiv (quot {R = R})
   effective {x = x} {y} = 
     propExt (Rp x y) (squash _ _) (decode x (inc y)) (encode x (inc y)) .snd 
 ```
@@ -345,7 +345,7 @@ Quot-op₂ : ∀ {C : Type ℓ} {T : C → C → Type ℓ'}
          → A / R → B / S → C / T
 Quot-op₂ Rr Sr op resp = 
   Coeq-rec₂ squash (λ x y → inc (op x y)) 
-    (λ { z (x , y , r) → quot _ _ (resp x y z z r (Sr z)) }) 
-    λ { z (x , y , r) → quot _ _ (resp z z x y (Rr z) r) }
+    (λ { z (x , y , r) → quot (resp x y z z r (Sr z)) }) 
+    λ { z (x , y , r) → quot (resp z z x y (Rr z) r) }
 ```
 -->
