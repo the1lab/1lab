@@ -8,8 +8,8 @@ open import Cat.Base
 open import Cat.Displayed
 import Cat.Reasoning as CR
 
-module Cat.Displayed.Total {o ℓ o′ ℓ′} (B : Precategory o ℓ)
-                           (E : Displayed B o′ ℓ′) where
+module Cat.Displayed.Total {o ℓ o′ ℓ′} {B : Precategory o ℓ}
+                        (E : Displayed B o′ ℓ′) where
 
 open Precategory B
 open Displayed E
@@ -30,13 +30,12 @@ Constructing the total category does exactly this. The objects
 are pairs of an object from the base, an object from the displayed
 category that lives over it.
 
-```agda
-record Total : Type (o ⊔ o′) where
-  field
-    Carrier : Ob
-    structure : Ob[ Carrier ]
+Note that we use a sigma type here instead of a record for technical
+reasons: this makes it simpler to work with algebraic structures.
 
-open Total
+```agda
+Total : Type (o ⊔ o′)
+Total = Σ[ Carrier ∈ Ob ] Ob[ Carrier ]
 ```
 
 The situation is similar for morphisms: we bundle up a morphism from the
@@ -47,8 +46,8 @@ base category along with a morphism that lives above it.
 record TotalHom (X Y : Total) : Type (ℓ ⊔ ℓ′) where
   constructor total-hom
   field
-    hom       : Hom (X .Carrier) (Y .Carrier)
-    preserves : Hom[ hom ] (X .structure) (Y .structure)
+    hom       : Hom (X .fst) (Y .fst)
+    preserves : Hom[ hom ] (X .snd) (Y .snd)
 
 open TotalHom
 ```
@@ -63,8 +62,8 @@ total-hom-set X Y =
   isHLevel-retract 2 TotalHom-Refold TotalHom-Unfold (λ x → refl) TotalHom′-isSet
   where
     TotalHom′ : Type _
-    TotalHom′ = Σ[ hom ∈ Hom (X .Carrier) (Y .Carrier) ]
-                Hom[ hom ] (X .structure) (Y .structure)
+    TotalHom′ = Σ[ hom ∈ Hom (X .fst) (Y .fst) ]
+                Hom[ hom ] (X .snd) (Y .snd)
 
     TotalHom-Refold : TotalHom′ → TotalHom X Y 
     TotalHom-Refold (h , p) = total-hom h p
