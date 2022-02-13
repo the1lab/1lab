@@ -52,3 +52,17 @@ liftDisc f .F₁ = ap f
 liftDisc f .F-id = refl
 liftDisc f .F-∘ p q = ap-comp-path f q p
 ```
+
+<!--
+```agda
+Codisc′ : ∀ {ℓ'} → Type ℓ → Precategory ℓ ℓ'
+Codisc′ x .Ob = x
+Codisc′ x .Hom _ _ = Lift _ ⊤
+Codisc′ x .Hom-set _ _ = isProp→isSet (λ _ _ i → lift tt)
+Codisc′ x .id = lift tt
+Codisc′ x ._∘_ _ _ = lift tt
+Codisc′ x .idr _ = refl
+Codisc′ x .idl _ = refl
+Codisc′ x .assoc _ _ _ = refl
+```
+-->

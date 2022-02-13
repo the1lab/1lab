@@ -739,5 +739,17 @@ ua→ {e = e} {f₀ = f₀} {f₁} h i a =
   where
   lem : ∀ a₁ → e .fst (transport (sym (ua e)) a₁) ≡ a₁
   lem a₁ = equiv→section (e .snd) _ ∙ transport-refl _
+
+transport-∙ : ∀ {ℓ} {A B C : Type ℓ}
+            → (p : A ≡ B) (q : B ≡ C) (u : A)
+            → transport (p ∙ q) u ≡ transport q (transport p u)
+transport-∙ p q x i =
+  transport (∙-filler' p q (~ i)) (transport-fillerExt p i x)
+
+subst-∙ : ∀ {ℓ ℓ′} {A : Type ℓ} → (B : A → Type ℓ′)
+        → {x y z : A} (p : x ≡ y) (q : y ≡ z) (u : B x)
+        → subst B (p ∙ q) u ≡ subst B q (subst B p u)
+subst-∙ B p q Bx i =
+  transport (ap B (∙-filler' p q (~ i))) (transport-fillerExt (ap B p) i Bx)
 ```
 -->

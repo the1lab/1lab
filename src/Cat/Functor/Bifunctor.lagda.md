@@ -1,5 +1,5 @@
 ```agda
-open import Cat.Constructions.Product
+open import Cat.Instances.Product
 open import Cat.Prelude
 
 module Cat.Functor.Bifunctor

@@ -1,7 +1,7 @@
 ```agda
 open import Cat.Prelude
 
-module Cat.Constructions.Product where
+module Cat.Instances.Product where
 ```
 
 <!--
@@ -81,4 +81,12 @@ Snd .F₀ = snd
 Snd .F₁ = snd
 Snd .F-id = refl
 Snd .F-∘ _ _ = refl
+
+Cat⟨_,_⟩ : Functor E C → Functor E D → Functor E (C ×Cat D) 
+Cat⟨ F , G ⟩ = f where
+  f : Functor _ _
+  f .F₀ x = F₀ F x , F₀ G x
+  f .F₁ f = F₁ F f , F₁ G f
+  f .F-id i = F-id F i , F-id G i
+  f .F-∘ f g i = F-∘ F f g i , F-∘ G f g i
 ```

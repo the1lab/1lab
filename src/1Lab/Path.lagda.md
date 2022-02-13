@@ -1740,5 +1740,12 @@ Square≡·· {p = p} {q} {s} {r} k =
 ≡⟨⟩⟨⟩-syntax x y p q r = p ·· q ·· r
 infixr 2.5 ≡⟨⟩⟨⟩-syntax
 syntax ≡⟨⟩⟨⟩-syntax x y B C = x ≡⟨ B ⟩≡ y ≡⟨ C ⟩≡
+
+J′ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁}
+     (P : (x y : A) → x ≡ y → Type ℓ₂)
+   → (∀ x → P x x refl)
+   → {x y : A} (p : x ≡ y)
+   → P x y p
+J′ P prefl {x} p = transport (λ i → P x (p i) λ j → p (i ∧ j)) (prefl x)
 ```
 -->

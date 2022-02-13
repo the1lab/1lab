@@ -1,6 +1,6 @@
 ```agda
+open import Cat.Instances.Product
 open import Cat.Univalent using (isCategory)
-open import Cat.Constructions.Product
 open import Cat.Prelude
 
 open Precategory
