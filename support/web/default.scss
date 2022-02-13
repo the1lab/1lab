@@ -20,6 +20,7 @@ html {
 
 :root {
   --tg-pagella: "tgpagella", "TeX Gyre Pagella", "serif";
+  --font-size: 18.5pt;
 }
 
 body {
@@ -27,13 +28,14 @@ body {
 
   &.sans-serif {
     --tg-pagella: "";
+    --font-size: 16pt;
   }
 
   width: 100%;
 
   @include centered-contents;
 
-  font-size: $font-size * 1.1;
+  font-size: var(--font-size);
   overflow-x: clip;
 
   background-color: $text-bg;

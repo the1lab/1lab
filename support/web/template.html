@@ -53,7 +53,7 @@
   <!-- Table of contents (only if the page has a table of contents) -->
   $if(toc)$
   <aside id=toc>
-    <div id=toc-container style="min-width: 10em;">
+    <div id=toc-container style="min-width: 10em; font-size: 15pt;">
       <!-- Title for the page -->
       <h3 class="Agda" style="margin-top: 0; margin-bottom: 0; white-space: pre;">
         $if(customtitle)$
@@ -80,13 +80,13 @@
       <!-- Sidebar controls -->
       <div style="display: flex; gap: 0.25em; flex-flow: row wrap;">
         <!-- Sidebar equations control -->
-        <span class="equations" style="display: flex; gap: 0.25em; flex-wrap: nowrap;">
+        <span class="equations" style="display: flex; align-items: center; gap: 0.25em; flex-wrap: nowrap;">
           <input name=sidebar-eqns type="checkbox" class="equations" id=sidebar-eqns>
           <label for=sidebar-eqns>Equations</label>
         </span>
 
         <!-- Sidebar fonts control -->
-        <span style="display: flex; gap: 0.25em; flex-wrap: nowrap;">
+        <span style="display: flex; align-items: center; gap: 0.25em; flex-wrap: nowrap;">
           <input name=sidebar-font type="checkbox" id="toggle-fonts">
           <label for=toggle-fonts>Serif Font</label>
         </span>

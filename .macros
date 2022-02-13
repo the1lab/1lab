@@ -1,11 +1,16 @@
 \ty:\mathrm{Type}
 \set:\mathrm{Set}
+\sets:\mathrm{Sets}
 \cat:\mathrm{Cat}
 \grpd:\mathrm{Grpd}
 \ht:\mathbf{#1}
+\ca:\mathcal{#1}
 \igpd:\text{$\infty$-\textbf{Grpd}}
 \hra:\hookrightarrow
 \io:{(\infty,1)}
 \epi:\twoheadrightarrow
 \mono:\hookrightarrow
 \ot:\leftarrow
+\op:^{\mathrm{op}}
+\epsilon:\varepsilon
+\eps:\varepsilon
