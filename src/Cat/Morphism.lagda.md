@@ -6,7 +6,7 @@ module Cat.Morphism {o h} (C : Precategory o h) where
 
 <!--
 ```agda
-open Precategory C
+open Precategory C public
 private variable
   a b c d : Ob
 ```

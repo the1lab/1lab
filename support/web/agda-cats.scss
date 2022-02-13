@@ -14,8 +14,16 @@ div.diagram-container {
 
     overflow-x: auto;
 
+    &.short-05 {
+      height: 150px;
+    }
+
     &.short-1 {
       height: 105px;
+    }
+
+    &.short-15 {
+      height: 80px;
     }
 
     &.short-2 {

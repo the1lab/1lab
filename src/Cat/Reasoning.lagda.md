@@ -1,11 +1,11 @@
 ```agda
 open import 1Lab.Path
 
-open import Category.Base
+open import Cat.Base
 
-module Category.Reasoning {o ℓ} (C : Precategory o ℓ) where
+module Cat.Reasoning {o ℓ} (C : Precategory o ℓ) where
 
-open Precategory C
+open import Cat.Morphism C public
 ```
 
 # Reasoning Combinators for Categories

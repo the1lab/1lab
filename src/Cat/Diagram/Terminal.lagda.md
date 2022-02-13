@@ -8,8 +8,6 @@ module Cat.Diagram.Terminal {o h} (C : Precategory o h) where
 <!--
 ```agda
 open import Cat.Morphism C
-
-open Precategory C
 ```
 -->
 

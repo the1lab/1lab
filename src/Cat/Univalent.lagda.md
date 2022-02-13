@@ -3,7 +3,6 @@ open import Cat.Prelude
 
 module Cat.Univalent {o h} (C : Precategory o h) where
 
-open Precategory C
 open import Cat.Morphism C
 ```
 

@@ -6,7 +6,6 @@ module Cat.Diagram.Product {o h} (C : Precategory o h) where
 
 <!--
 ```agda
-open Precategory C
 open import Cat.Morphism C
 private variable
   A B : Ob
