@@ -1,16 +1,16 @@
 ```agda
-open import 1Lab.HLevel
 open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type hiding (id ; _∘_)
 
-open import Cat.Base
 open import Cat.Displayed
+open import Cat.Base
+
 import Cat.Reasoning as CR
 
 module Cat.Displayed.Slice {o ℓ} (B : Precategory o ℓ) where
 
-open Precategory B
 open Displayed
 open CR B
 ```

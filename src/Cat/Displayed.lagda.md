@@ -5,7 +5,6 @@ open import 1Lab.Type hiding (id ; _∘_)
 
 open import Cat.Base
 
-
 module Cat.Displayed where
 ```
 

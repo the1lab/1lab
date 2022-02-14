@@ -11,7 +11,6 @@ module Cat.Displayed.Family {o h} (C : Precategory o h) where
 <!--
 ```
 open import Cat.Reasoning C
-open Precategory C
 open Displayed
 open Functor
 open _=>_
