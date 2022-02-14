@@ -162,6 +162,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (F : Functor J 
     module F = Functor F
 
   record Cone : Type (o₁ ⊔ o₂ ⊔ h₁ ⊔ h₂) where
+    no-eta-equality
 ```
 
 A `Cone`{.Agda} over $F$ is given by an object (the `apex`{.agda})
@@ -220,6 +221,7 @@ category.
 
 ```agda
   record ConeHom (x y : Cone) : Type (o₁ ⊔ h₂) where
+    no-eta-equality
 ```
 
 A `Cone homomorphism`{.Agda ident="ConeHom"} is -- like the introduction
@@ -292,7 +294,8 @@ again preserve _all_ the commutativities.
         unpack r = r .ConeHom.hom , λ _ → r .ConeHom.commutes
 
         pack∘unpack : isLeftInverse pack unpack
-        pack∘unpack _ = refl
+        pack∘unpack x i .ConeHom.hom = x .ConeHom.hom
+        pack∘unpack x i .ConeHom.commutes = x .ConeHom.commutes
 
         hl : isSet T
         hl = isHLevelΣ 2 (C.Hom-set _ _) 

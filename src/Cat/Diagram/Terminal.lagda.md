@@ -23,7 +23,7 @@ isTerminal ob = ∀ x → isContr (Hom x ob)
 record Terminal : Type (o ⊔ h) where
   field
     top : Ob
-    hasIsTerminal : isTerminal top
+    has⊤ : isTerminal top
 ```
 
 We refer to the centre of contraction as `!`{.Agda}. Since it inhabits a
@@ -31,13 +31,13 @@ contractible type, it is unique.
 
 ```agda
   ! : ∀ {x} → Hom x top
-  ! = hasIsTerminal _ .centre
+  ! = has⊤ _ .centre
 
   !-unique : ∀ {x} (h : Hom x top) → ! ≡ h
-  !-unique = hasIsTerminal _ .paths
+  !-unique = has⊤ _ .paths
 
   !-unique₂ : ∀ {x} (f g : Hom x top) → f ≡ g
-  !-unique₂ = isContr→isProp (hasIsTerminal _)
+  !-unique₂ = isContr→isProp (has⊤ _)
 
 open Terminal
 ```
@@ -65,9 +65,9 @@ terminal objects:
 ⊤-contractible ccat x1 x2 i .top =
   isoToPath C ccat (⊤-unique x1 x2) i
 
-⊤-contractible ccat x1 x2 i .hasIsTerminal ob =
+⊤-contractible ccat x1 x2 i .has⊤ ob =
   isProp→PathP
     (λ i → isProp-isContr {A = Hom _
       (isoToPath C ccat (⊤-unique x1 x2) i)})
-    (x1 .hasIsTerminal ob) (x2 .hasIsTerminal ob) i
+    (x1 .has⊤ ob) (x2 .has⊤ ob) i
 ```
