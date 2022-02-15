@@ -88,7 +88,7 @@ isProp-isGroup {A = A} {_*_ = _*_} x y = path where
 ```
 
 We begin by constructing a line showing that the `underlying monoid
-structures`{.Agda ident=hasIsMonoid are identical -- but since these
+structures`{.Agda ident=hasIsMonoid} are identical -- but since these
 have different _types_, we must also show that `the units are the
 same`{.Agda ident=same-unit}.
 
