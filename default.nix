@@ -100,7 +100,7 @@ in
 
     buildInputs = [
       # For driving the compilation:
-      shakefile agda
+      our-ghc shakefile agda
 
       # For building the text and maths:
       git sassc nodePackages.katex

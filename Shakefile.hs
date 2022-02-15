@@ -203,9 +203,13 @@ buildMarkdown gitCommit gitAuthors moduleIds input output = do
     writeHtml5String options markdown
 
   tags <- traverse (parseAgdaLink moduleIds) (parseTags text)
-  liftIO $ Text.writeFile output (renderTags tags)
+  liftIO $ Text.writeFile output (renderHTML5 tags)
 
   command_ [] "agda-fold-equations" [output]
+
+renderHTML5 :: [Tag Text] -> Text
+renderHTML5 = renderTagsOptions renderOptions{ optMinimize = min } where
+  min = flip elem ["br", "meta", "link", "img", "hr"]
 
 main :: IO ()
 main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ do
@@ -257,7 +261,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     text <- liftIO $ Text.readFile input
     tags <- traverse (addLinkType fileIdMap fileTyMap) (parseTags text)
     traverse_ (checkMarkup (takeFileName out)) tags
-    liftIO $ Text.writeFile out (renderTags tags)
+    liftIO $ Text.writeFile out (renderHTML5 tags)
 
   "_build/html/*.svg" %> \out -> do
     let inp = "_build/diagrams" </> takeFileName out -<.> "tex"
