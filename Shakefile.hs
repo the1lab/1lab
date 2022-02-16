@@ -405,9 +405,23 @@ gitAuthors :: Action String -> FilePath -> Action [Text]
 gitAuthors commit path = do
   _commit <- commit -- We depend on the commit, but don't actually need it.
 
-  Stdout out <- command [] "git" ["log", "--format=%aN", "--", path]
   -- Sort authors list and make it unique.
-  pure . Set.toList . Set.fromList . Text.lines . Text.decodeUtf8 $ out
+  Stdout authors <- command [] "git" ["log", "--format=%aN", "--", path]
+  let authorSet = Set.fromList . Text.lines . Text.decodeUtf8 $ authors
+
+  Stdout coauthors <- 
+    command [] "git" ["log", "--format=%(trailers:key=Co-authored-by,valueonly)", "--", path]
+
+  let 
+    coauthorSet = Set.fromList 
+      . map dropEmail 
+      . filter (not . Text.null . Text.strip) 
+      . Text.lines 
+      . Text.decodeUtf8 $ coauthors
+
+    dropEmail = Text.unwords . init . Text.words
+
+  pure . Set.toList $ authorSet <> coauthorSet 
 
 --  Loads our type lookup table into memory
 parseFileTypes :: () -> Action (Map Text Text)
