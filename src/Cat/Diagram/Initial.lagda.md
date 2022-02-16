@@ -50,7 +50,7 @@ mapped _into_ any other object. For the category of `Sets`{.Agda}, this
 is the empty set; there is no required structure beyond "being a set",
 so the empty set sufficies.
 
-<--!
+<!--
 [TODO: Reed M, 15/02/2022] Link to the categories in question
 (once the exist!)
 -->
