@@ -5,12 +5,12 @@ open import 1Lab.Type hiding (id ; _∘_)
 
 open import Cat.Base
 
-module Cat.Displayed where
+module Cat.Displayed.Base where
 ```
 
 # Displayed Categories
 
-The core idea of a Displayed Category is that we want to capture the
+The core idea behind displayed categories is that we want to capture the
 idea of being able to place extra structure over some sort of "base"
 category. For instance, we can think of categories of algebraic objects
 (monoids, groups, rings, etc) as being extra structure placed atop the

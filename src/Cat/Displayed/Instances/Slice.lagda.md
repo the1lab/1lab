@@ -1,15 +1,10 @@
 ```agda
-open import 1Lab.HLevel.Retracts
-open import 1Lab.HLevel
-open import 1Lab.Path
-open import 1Lab.Type hiding (id ; _∘_)
-
-open import Cat.Displayed
-open import Cat.Base
+open import Cat.Displayed.Base
+open import Cat.Prelude
 
 import Cat.Reasoning as CR
 
-module Cat.Displayed.Slice {o ℓ} (B : Precategory o ℓ) where
+module Cat.Displayed.Instances.Slice {o ℓ} (B : Precategory o ℓ) where
 
 open Displayed
 open CR B

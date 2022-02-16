@@ -1,11 +1,9 @@
 ```agda
-open import 1Lab.Prelude hiding (id; _∘_)
+open import Cat.Displayed.Base
+open import Cat.Prelude
 
-open import Cat.Displayed
-open import Cat.Base
-
-module Cat.Displayed.Cartesian {o ℓ o′ ℓ′} {B : Precategory o ℓ}
-                               (E : Displayed B o′ ℓ′) where
+module Cat.Displayed.Cartesian 
+  {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′) where
 
 open Precategory B
 open Displayed E

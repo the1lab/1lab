@@ -2,10 +2,10 @@
 open import Cat.Displayed.Cartesian
 open import Cat.Instances.Discrete
 open import Cat.Instances.Functor
-open import Cat.Displayed
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
-module Cat.Displayed.Family {o h} (C : Precategory o h) where
+module Cat.Displayed.Instances.Family {o h} (C : Precategory o h) where
 ```
 
 <!--
@@ -68,7 +68,10 @@ Family .idl′ _ = Nat-path λ x → idl _
 Family .assoc′ _ _ _ = Nat-path λ x → assoc _ _ _
 ```
 
-⚠️ dunno what this bit means really I was just playing type tetris ⚠️
+The family fibration is `a Cartesian fibration`{.Agda}. This is because
+giving a Cartesian lift for a natural transformation $u \Rightarrow
+m*f*y'$ entails giving a natural transformation $u \Rightarrow (f\circ
+m)*y'$; But this is exactly the natural transformation we started with!
 
 ```agda
 open CartesianFibration
@@ -80,7 +83,7 @@ isCartesian-Family = iscart where
   cart : ∀ {x y : Set _} (f : x .fst → y .fst) 
            (y′ : Functor (Disc′ y) C)
        → Cartesian Family f idnt
-  cart f y′ .universal m nt = NT (λ x → η nt x) λ x y f → is-natural nt x y f
+  cart f y′ .universal m nt = NT (η nt) (is-natural nt)
   cart f y′ .commutes m h′ = Nat-path λ x → idl _
   cart f y′ .unique m′ p = Nat-path λ x → sym (idl _) ∙ ap (λ e → η e x) p
 
