@@ -16,8 +16,8 @@ open import Cat.Reasoning C
 
 # Zero Objects
 
-In some categories, `Initial`{.Agda} and `Terminal`{.Agda} objects coincide.
-When this occurs, such an object a **Zero** object.
+In some categories, `Initial`{.Agda} and `Terminal`{.Agda} objects
+coincide. When this occurs, we call the object a **zero object**.
 
 ```agda
 record isZero (ob : Ob) : Type (o ⊔ h) where
@@ -58,15 +58,15 @@ every hom set is inhabited!
 
 ## Intuition
 
-<--! [TODO: Reed M, 15/02/2022]  Link to the category of groups -->
-Most categories that have zero objects have enough structure to rule out
-*totally* trivial strucutres like the empty set, but not enough
-structure to cause the initial and terminal objects to "separate".
-The canonical example here is the category of groups: the
-unit rules out a completely trivial group, yet there's nothing
-else that would require the initial object to have any more structure.
+<!-- [TODO: Reed M, 15/02/2022]  Link to the category of groups -->
 
-Another point of interest is that any category with zero objects
-is canonically enriched in pointed sets: the `zero→`{.Agda} morphism
-from earlier acts as the designated basepoint for each of the
-hom sets.
+Most categories that have zero objects have enough structure to rule out
+*totally* trivial structures like the empty set, but not enough
+structure to cause the initial and terminal objects to "separate". The
+canonical example here is the category of groups: the unit rules out a
+completely trivial group, yet there's nothing else that would require
+the initial object to have any more structure.
+
+Another point of interest is that any category with zero objects is
+canonically enriched in pointed sets: the `zero→`{.Agda} morphism from
+earlier acts as the designated basepoint for each of the hom sets.

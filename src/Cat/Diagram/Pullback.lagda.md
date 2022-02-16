@@ -90,7 +90,7 @@ We provide a convenient packaging of the pullback and the projection
 maps:
 
 ```agda
-record Pullback (f : Hom X Z)  (g : Hom Y Z) : Type (ℓ ⊔ ℓ′) where
+record Pullback {X Y Z} (f : Hom X Z) (g : Hom Y Z) : Type (ℓ ⊔ ℓ′) where
   field
     {apex} : Ob
     p₁ : Hom apex X

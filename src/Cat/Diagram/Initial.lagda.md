@@ -44,11 +44,11 @@ open Initial
 
 ## Intuition
 
-The intuition here is that we ought to think about an initial object
-as having "the least amount of structure possible", insofar that
-it can be mapped _into_ any other object. For the category of
-`Sets`{.Agda}, this is the empty set; there is required structure
-beyond "being a set", so the empty set sufficies.
+The intuition here is that we ought to think about an initial object as
+having "the least amount of structure possible", insofar that it can be
+mapped _into_ any other object. For the category of `Sets`{.Agda}, this
+is the empty set; there is no required structure beyond "being a set",
+so the empty set sufficies.
 
 <--!
 [TODO: Reed M, 15/02/2022] Link to the categories in question
@@ -56,24 +56,25 @@ beyond "being a set", so the empty set sufficies.
 -->
 
 In more structured categories, the situation becomes a bit more
-interesting. Once our category has enough structure that we
-can't build maps from a totally trivial thing, the initial
-object begins to behave like a notion of **Syntax** for our category.
-The idea here is that we have a _unique_ means of interpreting
-our syntax into any other object, which is exhibited by the
-universal map `¡`{.Agda}
+interesting. Once our category has enough structure that we can't build
+maps from a totally trivial thing, the initial object begins to behave
+like a notion of **Syntax** for our category.  The idea here is that we
+have a _unique_ means of interpreting our syntax into any other object,
+which is exhibited by the universal map `¡`{.Agda}
 
 ## Uniqueness
 
 One important fact about initial objects is that they are **unique** up
 to isomorphism:
+
 ```agda
 ⊥-unique : (i i′ : Initial) → bot i ≅ bot i′
 ⊥-unique i i′ = makeIso (¡ i) (¡ i′) (¡-unique₂ i′ _ _) (¡-unique₂ i _ _)
 ```
 
-Additionally, if $C$ is a category, then the space of initial objects
-is a proposition:
+Additionally, if $C$ is a category, then the space of initial objects is
+a proposition:
+
 ```agda
 ⊤-contractible : isCategory C → isProp Initial
 ⊤-contractible ccat x1 x2 i .bot =
