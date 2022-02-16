@@ -6,6 +6,7 @@ let
     (fetchGit {
       url = "https://git.amelia.how/amelia/agda-fold-equations.git";
       rev = "509bc021200b0de7713a0fdb27c730eaff3be206";
+      ref = "main";
     }) {};
 
   agda-reference-filter = haskellPackages.callCabal2nix
@@ -13,6 +14,7 @@ let
     (fetchGit {
       url = "https://git.amelia.how/amelia/agda-reference-filter.git";
       rev = "082b5576e799fe8aa28e7d09cf415ac6c9e0596b";
+      ref = "main";
     }) {};
 
   our-ghc = ghc.withPackages (pkgs: with pkgs; [
