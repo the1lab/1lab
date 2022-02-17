@@ -25,7 +25,7 @@ We call a precategory **strict** if its space of objects is a
 `Set`{.Agda ident=isSet.}. While general precategories are too
 homotopically interesting to fit into a `Precategory`{.Agda} (because
 functor spaces will not, in general, be h-sets), the strict categories
-_do_ form a precategory, which we denote $\cat_{\mathrm{strict}}$.
+_do_ form a precategory, which we denote $\strcat$.
 
 <!--
 ```agda

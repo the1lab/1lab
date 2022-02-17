@@ -24,7 +24,7 @@ open _⊣_
 
 # StrictCat is "cohesive"
 
-We prove that the category $\cat_{\mathrm{strict}}$ admits an adjoint
+We prove that the category $\strcat$ admits an adjoint
 quadruple
 
 $$
@@ -155,9 +155,9 @@ Fortunately the triangle identities are straightforwardly checked.
 
 The _codiscrete_ category on a set $X$ is the strict category with
 object space $X$, and _all_ hom-spaces contractible. The assignment of
-codiscrete categories extends to a functor $\sets \to
-\cat_{\mathrm{strict}}$, where we lift functions to act on object parts
-and the action on morphisms is trivial.
+codiscrete categories extends to a functor $\sets \to \strcat$, where we
+lift functions to act on object parts and the action on morphisms is
+trivial.
 
 ```agda
 Codisc : Functor (Sets ℓ) (StrictCat ℓ ℓ)

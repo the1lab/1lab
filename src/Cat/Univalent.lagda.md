@@ -1,5 +1,7 @@
 ```
-open import Cat.Prelude
+open import 1Lab.Prelude hiding (_∘_ ; id)
+open import Cat.Solver
+open import Cat.Base
 
 module Cat.Univalent {o h} (C : Precategory o h) where
 
@@ -9,7 +11,7 @@ open import Cat.Morphism C
 # (Univalent) Categories
 
 In much the same way that a partial order is a preorder where $x \le y
-\and y \le x \to x = y$, a **category** is a precategory where
+\land y \le x \to x = y$, a **category** is a precategory where
 isomorphic objects are identified. This is a generalisation of the
 univalence axiom to arbitrary categories, and, indeed, it's phrased in
 the same way: asking for a canonically defined map to be an equivalence.
