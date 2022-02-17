@@ -1,4 +1,5 @@
 ```agda
+open import Cat.Instances.Terminal
 open import Cat.Instances.Functor
 open import Cat.Prelude
 
@@ -221,12 +222,6 @@ square.
 ```agda
 module _ {A : Precategory ao ah} {B : Precategory ao bh} where
   private module A = Precategory A
-
-  const! : Ob A → Functor B A
-  const! x .F₀ _ = x
-  const! x .F₁ _ = A.id
-  const! x .F-id = refl
-  const! x .F-∘ _ _ = sym (A.idl _)
 
   infix 4 _↙_ _↘_
   _↙_ : A.Ob → Functor B A → Precategory _ _
