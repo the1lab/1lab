@@ -15,7 +15,7 @@ private variable
 ```
 -->
 
-A **pullback** $X \times_Z Y$ of $f : X \to Z$ and $g : X \to Z$ is the
+A **pullback** $X \times_Z Y$ of $f : X \to Z$ and $g : Y \to Z$ is the
 [product] of $f$ and $g$ in the category $\ca{C}/Z$, the category of
 objects fibred over $Z$. We note that the fibre of $X \times_Z Y$ over
 some element $x$ of $Z$ is the product of the fibres of $f$ and $g$ over
