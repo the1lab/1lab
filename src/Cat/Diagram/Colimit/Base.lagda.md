@@ -4,7 +4,7 @@ open import Cat.Prelude
 
 import Cat.Morphism
 
-module Cat.Diagram.Limit.Colimit.Base where
+module Cat.Diagram.Colimit.Base where
 ```
 
 <!--
