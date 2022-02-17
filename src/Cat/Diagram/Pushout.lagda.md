@@ -38,12 +38,12 @@ following shape:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-	X & Z \\
-	Y & P
-	\arrow["f"', from=1-1, to=2-1]
-	\arrow["{i_1}", from=2-1, to=2-2]
-	\arrow["g", from=1-1, to=1-2]
-	\arrow["{i_2}"', from=1-2, to=2-2]
+  X & Z \\
+  Y & P
+  \arrow["f"', from=1-1, to=2-1]
+  \arrow["{i_1}", from=2-1, to=2-2]
+  \arrow["g", from=1-1, to=1-2]
+  \arrow["{i_2}"', from=1-2, to=2-2]
 \end{tikzcd}\]
 ~~~
 

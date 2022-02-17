@@ -22,13 +22,13 @@ and $g$.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-	A & B & E \\
-	&& F
-	\arrow["f", shift left=2, from=1-1, to=1-2]
-	\arrow["g"', shift right=2, from=1-1, to=1-2]
-	\arrow[from=1-2, to=1-3]
-	\arrow[from=1-2, to=2-3]
-	\arrow["{\exists!}", dashed, from=1-3, to=2-3]
+  A & B & E \\
+  && F
+  \arrow["f", shift left=2, from=1-1, to=1-2]
+  \arrow["g"', shift right=2, from=1-1, to=1-2]
+  \arrow[from=1-2, to=1-3]
+  \arrow[from=1-2, to=2-3]
+  \arrow["{\exists!}", dashed, from=1-3, to=2-3]
 \end{tikzcd}\]
 ~~~
 

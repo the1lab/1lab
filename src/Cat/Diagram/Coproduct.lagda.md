@@ -27,14 +27,14 @@ $Q$. This is best explained by a commutative diagram:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-	A & P & B \\
-	& Q \\
-	& {}
-	\arrow[from=1-1, to=1-2]
-	\arrow[from=1-3, to=1-2]
-	\arrow[from=1-1, to=2-2]
-	\arrow[from=1-3, to=2-2]
-	\arrow["{\exists!}"', dashed, from=1-2, to=2-2]
+  A & P & B \\
+  & Q \\
+  & {}
+  \arrow[from=1-1, to=1-2]
+  \arrow[from=1-3, to=1-2]
+  \arrow[from=1-1, to=2-2]
+  \arrow[from=1-3, to=2-2]
+  \arrow["{\exists!}"', dashed, from=1-2, to=2-2]
 \end{tikzcd}\]
 ~~~
 
