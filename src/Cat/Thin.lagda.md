@@ -339,7 +339,7 @@ Free⊣Forget .counit .is-natural x y f =
   Functor≡ (λ _ → refl) λ f → y .Proset.isThin _ _ _ _
 
 Free⊣Forget .zig = Functor≡ (λ _ → refl) λ _ → squash _ _
-Free⊣Forget .zag = Functor≡ (λ _ → refl) λ _ → squash _ _
+Free⊣Forget .zag = Functor≡ (λ _ → refl) λ _ → refl
 ```
 
 ## Poset completions

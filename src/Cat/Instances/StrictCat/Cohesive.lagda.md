@@ -326,13 +326,9 @@ the same set we started with.
 The triangle identities are again straightforwardly checked.
 
 ```agda
-  adj .zig {x} = 
-    funext (Coeq-elimProp (λ _ → squash _ _) 
-      (Coeq-elimProp (λ _ → squash _ _) λ x → refl))
+  adj .zig {x} = funext (Coeq-elimProp (λ _ → squash _ _) λ x → refl)
 
-  adj .zag = 
-    Functor≡ (Coeq-elimProp (λ _ → squash _ _) λ _ → refl) 
-      λ f → isSet→SquareP (λ _ _ → squash) _ _ _ _
+  adj .zag = Functor≡ (λ x → refl) λ f → refl
 ```
 
 Furthermore, we can prove that the connected components of a product

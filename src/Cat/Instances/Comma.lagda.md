@@ -99,8 +99,8 @@ component of a [naturality square].
       module b = ↓Obj b
 
     field
-      α : Hom A a.x b.x
-      β : Hom B a.y b.y
+      {α} : Hom A a.x b.x
+      {β} : Hom B a.y b.y
       sq : b.map C.∘ F₁ F α ≡ F₁ G β C.∘ a.map
 ```
 
@@ -220,7 +220,7 @@ square.
 
 <!--
 ```agda
-module _ {A : Precategory ao ah} {B : Precategory ao bh} where
+module _ {A : Precategory ao ah} {B : Precategory bo bh} where
   private module A = Precategory A
 
   infix 4 _↙_ _↘_
