@@ -57,7 +57,7 @@ familiar with some of the connections that HoTT has to other areas of
 mathematics, like higher category theory and topology, I recommend that
 you read the type theory section anyway!
 
-<details>
+<details class=text>
 <summary>
 **Aside**: A note on terminology.
 </summary>
@@ -517,7 +517,7 @@ call $\Omega$ a **subobject classifier**, following in the tradition of
 it means you can talk about logical propositions --- and, in the
 presence of functions, predicates --- as if they were points of a type.
 
-<details>
+<details class=text>
 <summary>
 **Aside**: More on general classifying objects.
 </summary>
@@ -583,7 +583,7 @@ one dimension higher: we'd have a classifier for "sets", but our other
 objects would look like "categories", and we wouldn't be able to
 classify those!
 
-<details>
+<details class=text>
 <summary> **Take a moment** to convince yourself that the interpretation
 of a discrete object classifier as a type of sets makes sense.</summary>
 
@@ -617,7 +617,7 @@ we would hope that an **object classifier** would classify the entire
 category $\mathrm{Core}(\mathscr{E}/x)$, keeping around _all_ of the
 maps into $x$, and keeping track of the isomorphisms between them.
 
-<details>
+<details class=text>
 <summary>**Aside**: Slice categories and cores, if you haven't heard of
 them</summary>
 
@@ -784,7 +784,7 @@ only one of the many possible interpretations of paths in those types.
 The ideas presented below are grouped in blue `<details>` elements, but
 not because they aren't important; You **should** read all of them.
 
-<details>
+<details class=text>
 <summary>
 **Idea #1**: Some types behave like sets, providing an embedding of
 "classical" equality behaviour into homotopy type theory. While these
@@ -830,7 +830,7 @@ sequences of natural numbers are not discrete, because an algorithm can
 not run forever. Any discrete type is a set, and assuming excluded
 middle, any set is discrete.
 
-<details>
+<details class=text>
 <summary>
 **Idea #2**: Some types are best understood as representing spaces, with
 intrinsic homotopic information, which we can investigate using
@@ -861,7 +861,7 @@ path in $X$ which "walks clockwise around the circle twice".
 
 </details>
 
-<details>
+<details class=text>
 <summary>
 **Idea #3**: HoTT provides a setting for doing category theory where all
 constructions are intrinsically isomorphism-invariant. Under this light,

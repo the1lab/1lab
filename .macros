@@ -1,9 +1,11 @@
 \ty:\mathrm{Type}
 \set:\mathrm{Set}
-\sets:\mathrm{Sets}
-\cat:\mathrm{Cat}
-\grpd:\mathrm{Grpd}
 \ht:\mathbf{#1}
+\prosets:\ht{Prosets}
+\sets:\ht{Sets}
+\cat:\ht{Cat}
+\strcat:\ht{Cat}_\mathrm{strict}
+\grpd:\ht{Grpd}
 \ca:\mathcal{#1}
 \igpd:\text{$\infty$-\textbf{Grpd}}
 \hra:\hookrightarrow

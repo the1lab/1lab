@@ -167,13 +167,13 @@ very enlightening --- you can mouse over these links to see their types:
 <!--
 ```agda
 Coeq-elimProp₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} 
-                  {C : Coeq f g → Coeq f' g' → Type ℓ}
+                   {C : Coeq f g → Coeq f' g' → Type ℓ}
                → (∀ x y → isProp (C x y))
                → (∀ x y → C (inc x) (inc y))
                → ∀ x y → C x y
-Coeq-elimProp₂ cprop f = 
-  Coeq-elimProp (λ x → isHLevelΠ 1 λ _ → cprop _ _) 
-    λ x → Coeq-elimProp (λ y → cprop _ _) (f x)
+Coeq-elimProp₂ prop f = 
+  Coeq-elimProp (λ x → isHLevelΠ 1 λ _ → prop _ _) 
+    λ x → Coeq-elimProp (prop (inc x)) (f x)
 
 Coeq-elimProp₃ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {f'' g'' : A'' → B''}
                    {C : Coeq f g → Coeq f' g' → Coeq f'' g'' → Type ℓ}
@@ -216,7 +216,44 @@ Coeq-rec₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {C : Type ℓ}
           → (∀ a x → ci (f x) a ≡ ci (g x) a)
           → (∀ a x → ci a (f' x) ≡ ci a (g' x))
           → Coeq f g → Coeq f' g' → C
-Coeq-rec₂ cset = Coeq-elim₂ (λ _ _ → cset)
+Coeq-rec₂ cset ci r1 r2 (inc x) (inc y) = ci x y
+Coeq-rec₂ cset ci r1 r2 (inc x) (glue y i) = r2 x y i
+Coeq-rec₂ cset ci r1 r2 (inc x) (squash y z p q i j) = cset 
+  (Coeq-rec₂ cset ci r1 r2 (inc x) y) 
+  (Coeq-rec₂ cset ci r1 r2 (inc x) z) 
+  (λ j → Coeq-rec₂ cset ci r1 r2 (inc x) (p j)) 
+  (λ j → Coeq-rec₂ cset ci r1 r2 (inc x) (q j)) 
+  i j
+
+Coeq-rec₂ cset ci r1 r2 (glue x i) (inc x₁) = r1 x₁ x i
+Coeq-rec₂ {f = f} {g} {f'} {g'} cset ci r1 r2 (glue x i) (glue y j) = 
+  isSet→SquareP (λ i j → cset)
+    (λ j → r1 (f' y) x j) 
+    (λ j → r2 (f x) y j) 
+    (λ j → r2 (g x) y j) 
+    (λ j → r1 (g' y) x j) 
+    i j
+
+Coeq-rec₂ {f = f} {g} {f'} {g'} cset ci r1 r2 (glue x i) (squash y z p q j k) = 
+  isHLevel-suc 2 cset 
+    (map (glue x i) y) (map (glue x i) z) 
+    (λ j → map (glue x i) (p j)) 
+    (λ j → map (glue x i) (q j)) 
+    (λ i j → exp i j) (λ i j → exp i j)
+    i j k 
+  where
+    map = Coeq-rec₂ cset ci r1 r2
+    exp : I → I → _
+    exp l m = cset 
+      (map (glue x i) y) (map (glue x i) z) 
+      (λ j → map (glue x i) (p j)) 
+      (λ j → map (glue x i) (q j)) 
+      l m
+
+Coeq-rec₂ cset ci r1 r2 (squash x y p q i j) z =
+  cset (map x z) (map y z) (λ j → map (p j) z) (λ j → map (q j) z) i j
+  where
+    map = Coeq-rec₂ cset ci r1 r2
 ```
 -->
 

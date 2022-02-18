@@ -1,5 +1,7 @@
 ```agda
-open import Cat.Prelude
+open import 1Lab.Prelude hiding (_∘_ ; id ; _↪_)
+open import Cat.Solver
+open import Cat.Base
 
 module Cat.Morphism {o h} (C : Precategory o h) where
 ```
