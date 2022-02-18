@@ -345,7 +345,7 @@ record _=>_ {o₁ h₁ o₂ h₂}
 ```
 
 The morphisms between functors are called **natural transformations**. A
-natural transformation $F \Rightarrow G$ can be thought of as a way of
+natural transformation $F \To G$ can be thought of as a way of
 turning $F(x)$s into $G(x)$s that doesn't involve any "arbitrary
 choices".
 
@@ -401,7 +401,7 @@ Since a functor from [the interval
 category](agda://Cat.Instances.Interval) $\left\{0 \le 1\right\}$
 amounts to a choice of morphism, we conclude that a functor $C \times
 \left\{0\le 1\right\} \to D$ is the same as a natural transformation $C
-\Rightarrow D$. There is more to this correspondence: the [geometric
+\To D$. There is more to this correspondence: the [geometric
 realisation] of a natural transformation is a [homotopy in the
 topological sense].
 
@@ -410,7 +410,7 @@ topological sense].
 -->
 
 Natural transformations also dualize. The opposite of $\eta : F
-\Rightarrow G$ is $\eta^{op} : G^{op} \Rightarrow F^{op}$.
+\To G$ is $\eta^{op} : G^{op} \To F^{op}$.
 
 ```agda
   op : Functor.op G => Functor.op F

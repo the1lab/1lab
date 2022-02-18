@@ -35,7 +35,7 @@ Family .Ob[_] S = Functor (Disc′ S) C
 
 Given a map $f : A \to B$ in `Sets`{.Agda}, and functors $F : [A,C]$ and
 $G : [B,C]$, we define the collection of displayed maps to be the set of
-all natural transformations $F \Rightarrow f*G$, where $f*G$ is the
+all natural transformations $F \To f*G$, where $f*G$ is the
 precomposition of $f$ `regarded as a functor`{.Agda ident=liftDisc}
 between discrete categories. Since `natural transformations form a
 Set`{.Agda ident=isSet-Nat}, we're clear to take this as the definition.
@@ -69,8 +69,8 @@ Family .assoc′ _ _ _ = Nat-path λ x → assoc _ _ _
 ```
 
 The family fibration is `a Cartesian fibration`{.Agda}. This is because
-giving a Cartesian lift for a natural transformation $u \Rightarrow
-m*f*y'$ entails giving a natural transformation $u \Rightarrow (f\circ
+giving a Cartesian lift for a natural transformation $u \To
+m*f*y'$ entails giving a natural transformation $u \To (f\circ
 m)*y'$; But this is exactly the natural transformation we started with!
 
 ```agda

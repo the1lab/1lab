@@ -26,10 +26,10 @@ idnt {C = C} {D = D} .η x = D .id
 idnt {C = C} {D = D} .is-natural x y f = D .idl _ ∙ sym (D .idr _)
 ```
 
-Given two natural transformations $\eta : F \Rightarrow G$ and $\theta :
-G \Rightarrow H$, we can show that the assignment $x \mapsto \eta_x
+Given two natural transformations $\eta : F \To G$ and $\theta :
+G \To H$, we can show that the assignment $x \mapsto \eta_x
 \circ \theta_x$ of "componentwise compositions" defines a natural
-transformation $F \Rightarrow H$, which serves as the _composite_ of
+transformation $F \To H$, which serves as the _composite_ of
 $\eta$ and $\theta$.
 
 ```agda
@@ -60,7 +60,7 @@ _∘nt_ {C = C} {D = D} {F} {G} {H} f g = nat where
 
 We can then show that these definitions assemble into a category where
 the objects are functors $F, G : C \to D$, and the morphisms are natural
-transformations $F \Rightarrow G$. This is because natural
+transformations $F \To G$. This is because natural
 transformations inherit the identity and associativity laws from the
 codomain category $D$, and since hom-sets are sets, `is-natural`{.Agda}
 does not matter.

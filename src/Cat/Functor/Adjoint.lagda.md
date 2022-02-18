@@ -1,6 +1,6 @@
 ```agda
-open import Cat.Instances.Comma
 open import Cat.Diagram.Initial
+open import Cat.Instances.Comma
 open import Cat.Prelude
 
 module Cat.Functor.Adjoint where
@@ -65,8 +65,8 @@ record _⊣_ (L : Functor C D) (R : Functor D C) : Type (adj-level L R) where
 Unfortunately, the data that we have here is not particularly coherent.
 The `unit`{.Agda} and `counit`{.Agda} let us introduce $R\circ L$ and
 eliminate $L\circ R$ in a composition, which gives us two ways of mapping
-$L \Rightarrow L$. One is the identity, and the other is going through
-the unit: $L \Rightarrow L\circ R\circ L \Rightarrow L$ (the situation
+$L \To L$. One is the identity, and the other is going through
+the unit: $L \To L\circ R\circ L \To L$ (the situation
 with $R$ is symmetric). We must impose further equations on the natural
 transformations to make sure these match:
 
@@ -272,8 +272,8 @@ it defines a left adjoint to the $R$ we started with.
 ## Building the adjunction
 
 We now prove that $L \dashv R$, which, recall, means giving natural
-transformations $\eta : \mathrm{Id} \Rightarrow (R F\circ L)$ (the
-_adjunction unit_) and $\eps : (L \circ R) \Rightarrow \mathrm{Id}$ (the
+transformations $\eta : \mathrm{Id} \To (R F\circ L)$ (the
+_adjunction unit_) and $\eps : (L \circ R) \To \mathrm{Id}$ (the
 _adjunction counit_). We begin with the counit, since that's more
 involved.
 
