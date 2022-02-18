@@ -1260,7 +1260,7 @@ $$
 
 The total space $\sum F$ of this family is the space of all paths in
 $A$, which will be written as $A^\mathbb{I}$ to emphasise its nature as
-a path space. Since it is the total sapce of a type family, it comes
+a path space. Since it is the total space of a type family, it comes
 equipped with a fibration $\mathrm{fst} : A^\mathbb{I} \to A \times A$.
 Given that a term in $A^\mathbb{I}$ can be seen to be a pair $((x, y),
 p)$ where $p : x \equiv y$, we see that this fibration projects both
