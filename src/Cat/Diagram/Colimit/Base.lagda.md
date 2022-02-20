@@ -202,9 +202,57 @@ it's the initial object! This leads to the following terse definition:
 A colimit over a diagram is an initial object in the category of
 cocones over that diagram.
 ```
+  IsColimit : Cocone → Type _
+  IsColimit K = isInitial Cocones K
+
   Colimit : Type _
   Colimit = Initial Cocones
 
   Colimit-apex : Colimit → C.Ob
   Colimit-apex x = coapex (Initial.bot x)
+```
+
+
+<!--
+```agda
+module _ {o₁ h₁ o₂ h₂ o₃ h₃ : _}
+         {J : Precategory o₁ h₁}
+         {C : Precategory o₂ h₂}
+         {D : Precategory o₃ h₃}
+         {Dia : Functor J C}
+         (F : Functor C D)
+  where
+
+  private
+    module D = Precategory D
+    module C = Precategory C
+    module J = Precategory J
+  
+  open Functor
+```
+-->
+
+# Preservation of Colimits
+
+Because a cocone is a commutative diagram, any given functor
+$F : \ca{C} \to \ca{D}$ takes cones $\ca{C}$ to cones in $\ca{D}$,
+as functors preserve commutative diagrams.
+
+```agda
+  F-map-Cocone : Cocone Dia → Cocone (F F∘ Dia)
+  F-map-Cocone x .Cocone.coapex = F .F₀ (Cocone.coapex x)
+  F-map-Cocone x .Cocone.ψ f = F .F₁ (Cocone.ψ x f)
+  F-map-Cocone x .Cocone.commutes {y = y} f =
+    F .F₁ (Cocone.ψ x y) D.∘ F .F₁ (F₁ Dia f) ≡˘⟨ F-∘ F _ _ ⟩
+    F .F₁ ((Cocone.ψ x y) C.∘ (F₁ Dia f)) ≡⟨ ap (F .F₁) (Cocone.commutes x _) ⟩
+    F .F₁ (Cocone.ψ x _) ∎
+```
+
+Though functors must take cones to cones, they may not necessarily take
+colimiting cocones to colimiting cocones! When a functor does, we say
+that it _preserves_ colimits.
+
+```agda
+  PreservesColimit : Colimit Dia → Type _
+  PreservesColimit o = isInitial (Cocones (F F∘ Dia)) (F-map-Cocone (Initial.bot o))
 ```

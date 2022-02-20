@@ -2,7 +2,10 @@
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Functor.Base
+open import Cat.Diagram.Colimit.Base
 open import Cat.Prelude
+
+import Cat.Instances.Elements as El
 
 module Cat.Functor.Hom {o h} (C : Precategory o h) where
 ```
@@ -17,7 +20,7 @@ the first coordinate is contravariant ($\ca{C}\op$).
 
 <!--
 ```agda
-open Precategory C
+open import Cat.Reasoning C
 open Functor
 open _=>_
 private variable
@@ -34,6 +37,16 @@ Hom[-,-] .F-∘ (f , h) (f' , h') = funext λ where
   g → (h ∘ h') ∘ g ∘ f' ∘ f ≡⟨ solve C ⟩
       h ∘ (h' ∘ g ∘ f') ∘ f ∎
 ```
+
+We also can define "partially applied" versions of the hom functor:
+```agda
+Hom[_,-] : Ob → Functor C (Sets h)
+Hom[ x ,-] .F₀ y = Hom x y , Hom-set x y
+Hom[ x ,-] .F₁ f g = f ∘ g
+Hom[ x ,-] .F-id = funext (λ f → idl f)
+Hom[ x ,-] .F-∘ f g = funext λ h → sym (assoc f g h)
+```
+
 
 ## The Yoneda embedding
 
@@ -64,6 +77,15 @@ $\hom(x,y) \to \hom(x,z)$ given by precomposition.
 よ₀ c .F₁ f    = _∘ f
 よ₀ c .F-id    = funext idr
 よ₀ c .F-∘ f g = funext λ h → assoc _ _ _
+
+```
+
+We also define a synonym for よ₀ to better line up with the covariant
+direction.
+
+```agda
+Hom[-,_] : Ob → Functor (C ^op) (Sets h)
+Hom[-,_] x = よ₀ x
 ```
 
 The morphism part takes a map $f$ to the transformation given by
@@ -102,3 +124,120 @@ embedding functor is fully faithful.
     happly (sym (nt .is-natural _ _ _)) _ ∙ ap (nt .η c) (idl g)
   isom .linv _ = idr _
 ```
+
+
+## The Coyoneda Lemma
+
+The Coyoneda lemma is, like it's dual, a statement about presheaves.
+It states that "every presheaf is a colimit of representables", which,
+in less abstract terms, means that every presheaf arises as some way
+of gluing together a bunch of (things isomorphic to) hom functors!
+
+```agda
+module _ (P : Functor (C ^op) (Sets h)) where
+  private
+    module P = Functor P
+
+  open El C P
+  open Element
+  open ElementHom
+```
+
+We start by fixing some presheaf $P$, and constructing a `Cocone`{.Agda}
+whose coapex is $P$. This involves a clever choice of diagram category:
+specifically, the [category of elements] of $P$. This may seem like
+a somewhat odd choice, but recall that the data contained in $\int P$
+is the _same_ data as $P$, just melted into a soup of points.
+The cocone we construct will then glue all those points back together
+into $P$.
+
+[category of elements] Cat.Instances.Elements.html
+
+This is done by projecting out of $\int P$ into $\ca{C}$ via the
+[canonical projection], and then embedding $\ca{C}$ into the category
+of presheaves over $\ca{C}$ via the yoneda embedding. Concretely, what
+this diagram gives us is a bunch of copies of the hom functor, one
+for each $px : P(X)$. Then, to construct the injection map, we
+can just use the (contravariant) functorial action of $P$ to take a
+$px : P(X)$ and a $f : Hom(A, X)$ to a $P(A)$. This map is natural
+by functoriality of $P$.
+
+[canonical projection] Cat.Instances.Elements.html#Projection
+
+
+```agda
+  Reassemble : Cocone (よ F∘ πₚ)
+  Reassemble .Cocone.coapex = P
+  Reassemble .Cocone.ψ x .η y f = P.F₁ f (x .section)
+  Reassemble .Cocone.ψ x .is-natural y z f =
+    funext (λ g → happly (P.F-∘ f g) (x .section))
+  Reassemble .Cocone.commutes {x = x} {y = y} f =
+    Nat-path λ z → funext λ g →
+    P.F₁ (f .hom ∘ g) (y .section)      ≡⟨ happly (P.F-∘ g (f .hom)) (y .section) ⟩
+    P.F₁ g (P.F₁ (f .hom) (y .section)) ≡⟨ ap (P.F₁ g) (f .commute) ⟩
+    P.F₁ g (x .section)                 ∎
+```
+
+Now that we've constructed a cocone, all that remains is to see that
+this is a _colimiting_ cocone. Intuitively, it makes sense that
+`Reassemble`{.Agda} should be colimiting: all we've done is taken
+all the data associated with $P$ and glued it back together.
+However, proving this does involve futzing about with various
+naturality + cocone commuting conditions.
+
+```agda
+  coyoneda : IsColimit (よ F∘ πₚ) Reassemble
+  coyoneda K = contr (cocone-hom universal factors) unique
+    where
+      module K = Cocone K
+      module ∫ = Precategory ∫
+      module Reassemble = Cocone Reassemble
+      open CoconeHom
+```
+
+We start by constructing the universal map from $P$ into the coapex
+of some other cocone $K$. The components of this natural transformation
+are obtained in a similar manner to the yoneda lemma; we bundle up
+the data to construct an object of $\int P$, and then apply the
+function we construct to the identity morphism. Naturality follows
+from the fact that $K$ is a cocone, and the components of $K$
+are natural.
+       
+```agda
+      universal : P => K.coapex 
+      universal .η x px = K.ψ (elem x px) .η x id
+      universal .is-natural x y f = funext λ px →
+        K.ψ (elem y (P.F₁ f px)) .η y id        ≡˘⟨ (λ i → K.commutes (induce f px) i .η y id) ⟩
+        K.ψ (elem x px) .η y (f ∘ id)           ≡⟨ ap (K.ψ (elem x px) .η y) id-comm ⟩
+        K.ψ (elem x px) .η y (id ∘ f)           ≡⟨ happly (K.ψ (elem x px) .is-natural x y f) id ⟩
+        F₁ K.coapex f (K.ψ (elem x px) .η x id) ∎
+```
+
+Next, we need to show that this morphism factors each of the components
+of $K$. The tricky bit of the proof here is that we need to use
+`induce`{.Agda} to regard `f` as a morphism in the category of elements.
+
+```agda
+      factors : ∀ {o} → universal ∘nt Reassemble.ψ o ≡ K.ψ o
+      factors {o} = Nat-path λ x → funext λ f →
+        K.ψ (elem x (P.F₁ f (o .section))) .η x id ≡˘⟨ (λ i → K.commutes (induce f (o .section)) i .η x id) ⟩
+        K.ψ o .η x (f ∘ id)                        ≡⟨ ap (K.ψ o .η x) (idr f) ⟩
+        K.ψ o .η x f ∎
+```
+
+Finally, uniqueness: This just follows by the commuting
+conditions on `\alpha`.
+
+```agda
+      unique : (α : CoconeHom (よ F∘ πₚ) Reassemble K)
+             → cocone-hom universal factors ≡ α
+      unique α = CoconeHom≡ (よ F∘ πₚ) $ Nat-path λ x → funext λ px →
+        K.ψ (elem x px) .η x id                        ≡˘⟨ (λ i → α .commutes {o = elem x px} i .η x id) ⟩
+        α .hom .η x (Reassemble.ψ (elem x px) .η x id) ≡⟨ ap (α .hom .η x) (happly (P.F-id) px) ⟩
+        α .hom .η x px ∎
+```
+
+And that's it! The important takeaway here is not the shuffling around
+of natural transformations required to prove this lemma, but rather
+the idea that, unlike Humpty Dumpty, if a presheaf falls off a wall,
+we _can_ put it back together again.
