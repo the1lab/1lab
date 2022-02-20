@@ -180,10 +180,12 @@ fold-pure [] = refl
 fold-pure (x ∷ xs) = ap (x ∷_) (fold-pure xs)
 
 Free⊣Forget : ∀ {ℓ} → Free {ℓ} ⊣ Forget
-Free⊣Forget .unit .η (A , _) = λ x → x ∷ []
+Free⊣Forget .unit .η _ x = x ∷ []
 Free⊣Forget .unit .is-natural x y f = refl
+
 Free⊣Forget .counit .η M = fold M , record { pres-id = refl ; pres-⋆ = fold-++ }
 Free⊣Forget .counit .is-natural x y (f , h) = 
+
   Σ≡Prop isProp-MonoidHom (funext (fold-natural {X = x} {y} f h))
 Free⊣Forget .zig {A = A} =
   Σ≡Prop isProp-MonoidHom (funext (fold-pure {X = A}))
