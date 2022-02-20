@@ -271,7 +271,7 @@ along the diagonal map:
         p1 : Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e′ ≡ Bb.π₁ ∘ ⟨f,g⟩ ∘ e′
         p1 = 
           Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e′   ≡⟨ assoc _ _ _ ⟩
-          (Bb.π₁ ∘ ⟨id,id⟩) ∘ f ∘ e′ ≡⟨ ap (_∘ _) Bb.π₁∘factor ⟩
+          (Bb.π₁ ∘ ⟨id,id⟩) ∘ f ∘ e′ ≡⟨ ap (_∘ (f ∘ e′)) Bb.π₁∘factor ⟩
           id ∘ f ∘ e′                ≡⟨ idl _ ⟩
           f ∘ e′                     ≡˘⟨ pulll Bb.π₁∘factor ⟩
           Bb.π₁ ∘ ⟨f,g⟩ ∘ e′         ∎
@@ -279,7 +279,7 @@ along the diagonal map:
         p2 : Bb.π₂ ∘ ⟨id,id⟩ ∘ f ∘ e′ ≡ Bb.π₂ ∘ ⟨f,g⟩ ∘ e′
         p2 =
           Bb.π₂ ∘ ⟨id,id⟩ ∘ f ∘ e′   ≡⟨ assoc _ _ _ ⟩
-          (Bb.π₂ ∘ ⟨id,id⟩) ∘ f ∘ e′ ≡⟨ ap (_∘ _) Bb.π₂∘factor ⟩
+          (Bb.π₂ ∘ ⟨id,id⟩) ∘ f ∘ e′ ≡⟨ ap (_∘ (f ∘ e′)) Bb.π₂∘factor ⟩
           id ∘ f ∘ e′                ≡⟨ idl _ ⟩
           f ∘ e′                     ≡⟨ p ⟩
           g ∘ e′                     ≡˘⟨ pulll Bb.π₂∘factor ⟩

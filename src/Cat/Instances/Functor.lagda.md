@@ -149,7 +149,8 @@ have the canonical choice of $(F, id)$.
 
 <!--
 ```agda
-module _ {C : Precategory o₁ h₁} {D : Precategory o₂ h₂} (DisCat : isCategory D) where
+module _ {C : Precategory o₁ h₁} {D : Precategory o₂ h₂} (DisCat : isCategory D) 
+  where
   import Cat.Morphism Cat[ C , D ] as [C,D]
   import Cat.Morphism D as Dm using (_≅_)
   open [C,D]
@@ -184,7 +185,8 @@ follow from `equivalences having sections`{.Agda ident=equiv→section}.
     ptoi-to x = ap (λ e → e .Dm._≅_.to) 
       (equiv→section (isEquiv-pathToIso DisCat) _)
 
-    ptoi-from : ∀ x → _ ≡ F≅G .from .η x
+    ptoi-from : ∀ x → pathToIso (isoToPath DisCat (NatIso→Iso F≅G _)) .Dm._≅_.from  
+              ≡ F≅G .from .η x
     ptoi-from x = ap (λ e → e .Dm._≅_.from) 
       (equiv→section (isEquiv-pathToIso DisCat) _)
 ```
@@ -203,16 +205,18 @@ $F \cong G$ does in fact turn $F_1(f)$ into $G_1(f)$; This is because $F
 so that the two halves of the isomorphism annihilate.
 
 ```agda
-    F₁≡G₁ : ∀ {x y} {f : C .Hom x y} → _
-    F₁≡G₁ {x = x} {y} {f} = 
-      _ D.∘ F .F₁ f D.∘ _                           ≡⟨ (λ i → ptoi-to _ i D.∘ F .F₁ f D.∘ ptoi-from _ i) ⟩
-      F≅G .to .η y D.∘ F .F₁ f D.∘ F≅G .from .η x   ≡⟨ ap₂ D._∘_ refl (sym (F≅G .from .is-natural _ _ _)) ∙ D.assoc _ _ _ ⟩
-      (F≅G .to .η y D.∘ F≅G .from .η y) D.∘ G .F₁ f ≡⟨ ap₂ D._∘_ (λ i → F≅G .invˡ i .η y) refl ⟩
-      D.id D.∘ G .F₁ f                              ≡⟨ solve D ⟩
-      G .F₁ f                                       ∎
+    abstract
+      F₁≡G₁ : ∀ {x y} {f : C .Hom x y} 
+            → PathP (λ i → D.Hom (F₀≡G₀ x i) (F₀≡G₀ y i)) (F₁ F f) (F₁ G f)
+      F₁≡G₁ {x = x} {y} {f} = toHomPathP (
+        _ D.∘ F .F₁ f D.∘ _                           ≡⟨ (λ i → ptoi-to _ i D.∘ F .F₁ f D.∘ ptoi-from _ i) ⟩
+        F≅G .to .η y D.∘ F .F₁ f D.∘ F≅G .from .η x   ≡⟨ ap₂ D._∘_ refl (sym (F≅G .from .is-natural _ _ _)) ∙ D.assoc _ _ _ ⟩
+        (F≅G .to .η y D.∘ F≅G .from .η y) D.∘ G .F₁ f ≡⟨ ap₂ D._∘_ (λ i → F≅G .invˡ i .η y) refl ⟩
+        D.id D.∘ G .F₁ f                              ≡⟨ solve D ⟩
+        G .F₁ f                                       ∎)
 
     F≡G : F ≡ G
-    F≡G = Functor≡ F₀≡G₀ λ f → toHomPathP F₁≡G₁
+    F≡G = Functor≡ F₀≡G₀ λ f → F₁≡G₁
 ```
 
 Putting these homotopies together defines a path `F≡G`{.Agda}. It

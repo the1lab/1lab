@@ -2,7 +2,7 @@
 open import Cat.FinitelyComplete
 open import Cat.Prelude
 
-module Cat.FinitelyComplete.Instances.Sets {ℓ} where
+module Cat.Instances.Sets.FinitelyComplete {ℓ} where
 ```
 
 <!--
