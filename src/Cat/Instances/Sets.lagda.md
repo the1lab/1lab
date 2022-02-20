@@ -20,7 +20,7 @@ is contractible. We first exhibit a contraction directly, using
 The direct proof is surprisingly straightforward, in particular because
 the heavy lifting is done by a plethora of existing lemmas:
 `Iso→Equiv`{.Agda} to turn an isomorphism into an equivalence,
-`Path→uaPathP`{.Agda} to reduce dependend paths over `ua`{.Agda} to
+`Path→uaPathP`{.Agda} to reduce dependent paths over `ua`{.Agda} to
 non-dependent paths, `≅-PathP`{.Agda} to characterise dependent paths in
 `_≅_`{.Agda}, etc.
 
