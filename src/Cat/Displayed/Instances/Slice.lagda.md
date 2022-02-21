@@ -75,7 +75,7 @@ morphisms, and paths between the "upper" morphisms.
   slice-pathp : (p : f ≡ g) → (f′ .to ≡ g′ .to) → PathP (λ i → SliceHom (p i) px py) f′ g′
   slice-pathp p p′ i .to = p′ i
   slice-pathp p p′ i .commute =
-    isProp→PathP (λ i → Hom-set _ _ (p i ∘ px .index) (py .index ∘ (p′ i)))
+    is-prop→PathP (λ i → Hom-set _ _ (p i ∘ px .index) (py .index ∘ (p′ i)))
                  (f′ .commute)
                  (g′ .commute)
                  i
@@ -84,9 +84,9 @@ morphisms, and paths between the "upper" morphisms.
 
 ```agda
 module _ {x y} (f : Hom x y) (px : Slice x) (py : Slice y) where
-  slice-set : isSet (SliceHom f px py)
+  slice-set : is-set (SliceHom f px py)
   slice-set =
-    isHLevel-retract 2  SliceHom-Refold SliceHom-Unfold (λ x → refl) SliceHom'-isSet
+    retract→is-hlevel 2  SliceHom-Refold SliceHom-Unfold (λ x → refl) SliceHom'-is-set
     where
       SliceHom' : Type _
       SliceHom' = Σ[ to ∈  Hom (px .over) (py .over) ]
@@ -98,10 +98,10 @@ module _ {x y} (f : Hom x y) (px : Slice x) (py : Slice y) where
       SliceHom-Unfold : SliceHom f px py → SliceHom'
       SliceHom-Unfold s = s .to , s .commute
 
-      SliceHom'-isSet : isSet SliceHom'
-      SliceHom'-isSet =
-        isHLevelΣ 2 (Hom-set _ _)
-                    (λ _ → λ f g p q → isHLevel-suc 2 (Hom-set _ _) _ _ f  g p q)
+      SliceHom'-is-set : is-set SliceHom'
+      SliceHom'-is-set =
+        Σ-is-hlevel 2 (Hom-set _ _)
+                    (λ _ → λ f g p q → is-hlevel-suc 2 (Hom-set _ _) _ _ f  g p q)
 ```
 
 ## Pulling it all together

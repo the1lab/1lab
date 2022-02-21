@@ -45,7 +45,7 @@ $\pi_1(A)$.
 πₙ₊₁ : Nat → Type∙ ℓ → Group ℓ
 πₙ₊₁ n t .fst = ∥ Ω^ (suc n) t .fst ∥₀
 πₙ₊₁ n t .snd = 
-  makeGroup squash 
+  make-group squash 
     (inc refl) 
     (∥-∥₀-map₂ _∙_) 
     (∥-∥₀-map sym) 
@@ -57,13 +57,13 @@ group operation is `path concatenation`{.Agda ident=_∙_}, and the
 inverses are given by `inverting paths`{.Agda ident=sym}.
 
 ```agda
-    (∥-∥₀-elim₃ (λ _ _ _ → isProp→isSet (squash _ _)) 
+    (∥-∥₀-elim₃ (λ _ _ _ → is-prop→is-set (squash _ _)) 
       λ x y z i → inc (∙-assoc x y z (~ i))) 
-    (∥-∥₀-elim (λ _ → isProp→isSet (squash _ _)) 
+    (∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) 
       λ x i → inc (∙-inv-l x i)) 
-    (∥-∥₀-elim (λ _ → isProp→isSet (squash _ _)) 
+    (∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) 
       λ x i → inc (∙-inv-r x i)) 
-    (∥-∥₀-elim (λ _ → isProp→isSet (squash _ _)) 
+    (∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) 
       λ x i → inc (∙-id-l x i)) 
 ```
 
@@ -72,10 +72,10 @@ that path concatenation is commutative for $\Omega^{n + 2} A$ is
 commutative, independent of $A$.
 
 ```agda
-isAbelian-Ωⁿ⁺² 
+Ωⁿ⁺²-is-abelian-group 
   : ∀ {ℓ} {A : Type∙ ℓ} (n : Nat) (p q : Ω^ (2 + n) A .fst) 
   → p ∙ q ≡ q ∙ p
-isAbelian-Ωⁿ⁺² n p q = 
+Ωⁿ⁺²-is-abelian-group n p q = 
   transport 
     (λ i → ap (λ x → ∙-id-r x i) p ∙ ap (λ x → ∙-id-l x i) q
          ≡ ap (λ x → ∙-id-l x i) q ∙ ap (λ x → ∙-id-r x i) p) 
@@ -87,11 +87,11 @@ Lifting this result through the set truncation establishes that
 $\pi_{n+2}$ is an Abelian group:
 
 ```agda
-isAbelian-πₙ₊₂ : ∀ {ℓ} {A : Type∙ ℓ} (n : Nat) 
-                   → isAbelian (πₙ₊₁ (1 + n) A)
-isAbelian-πₙ₊₂ {A = A} n = 
-  ∥-∥₀-elim₂ (λ x y → isProp→isSet (squash _ _)) 
-             (λ x y i → inc (isAbelian-Ωⁿ⁺² n x y i))
+πₙ₊₂-is-abelian-group : ∀ {ℓ} {A : Type∙ ℓ} (n : Nat) 
+                   → is-abelian-group (πₙ₊₁ (1 + n) A)
+πₙ₊₂-is-abelian-group {A = A} n = 
+  ∥-∥₀-elim₂ (λ x y → is-prop→is-set (squash _ _)) 
+             (λ x y i → inc (Ωⁿ⁺²-is-abelian-group n x y i))
 ```
 
 ## Deloopings
@@ -105,12 +105,12 @@ call $B(G)$ the **delooping** of $G$.
 
 ```agda
 module _ {ℓ} (G : Group ℓ) where
-  module G = GroupOn (G .snd)
+  module G = Group-on (G .snd)
   open G
 
   data Deloop : Type ℓ where
     base    : Deloop
-    squash  : isGroupoid Deloop
+    squash  : is-groupoid Deloop
     path    : G .fst → base ≡ base
     path-sq : (x y : G .fst) → Square refl (path x) (path (x ⋆ y)) (path y)
 ```
@@ -176,7 +176,7 @@ eliminator into propositions later, so we define that now.
 ```agda
   Deloop-elim 
     : ∀ {ℓ'} (P : Deloop → Type ℓ')
-    → (∀ x → isHLevel (P x) 3)
+    → (∀ x → is-hlevel (P x) 3)
     → (p : P base)
     → (ploop : ∀ x → PathP (λ i → P (path x i)) p p)
     → ( ∀ x y 
@@ -187,7 +187,7 @@ eliminator into propositions later, so we define that now.
   Deloop-elim P grpd pp ploop psq (path x i) = ploop x i
   Deloop-elim P grpd pp ploop psq (path-sq x y i j) = psq x y i j
   Deloop-elim P grpd pp ploop psq (squash a b p q r s i j k) =
-    isHLevel→isHLevelDep 2 grpd
+    fun-is-hlevelis-hlevel-dep 2 grpd
       (g a) (g b) (λ i → g (p i)) (λ i → g (q i)) 
       (λ i j → g (r i j)) (λ i j → g (s i j)) (squash a b p q r s) i j k
     where
@@ -195,14 +195,14 @@ eliminator into propositions later, so we define that now.
 
   Deloop-elimProp
     : ∀ {ℓ'} (P : Deloop → Type ℓ')
-    → (∀ x → isProp (P x))
+    → (∀ x → is-prop (P x))
     → P base
     → ∀ x → P x
   Deloop-elimProp P pprop p = 
     Deloop-elim P 
-      (λ x → isProp→isHLevel-suc {n = 2} (pprop x)) p 
-      (λ x → isProp→PathP (λ i → pprop (path x i)) p p)
-      (λ x y → isProp→SquareP (λ i j → pprop (path-sq x y i j)) _ _ _ _)
+      (λ x → is-prop→is-hlevel-suc {n = 2} (pprop x)) p 
+      (λ x → is-prop→PathP (λ i → pprop (path x i)) p p)
+      (λ x y → is-prop→SquareP (λ i j → pprop (path-sq x y i j)) _ _ _ _)
 ```
 
 We can then proceed to characterise the type `point ≡ x` by an
@@ -216,10 +216,11 @@ together to establish `G ≡ (base ≡ base)`. First, to define
   Code : Deloop → Set ℓ
   Code = 
     Deloop-elim _ 
-      (λ _ → isHLevel-nType 2) 
-      (G .fst , GroupOn.hasIsSet (G .snd))
-      (λ x → Σ≡Prop (λ _ → isProp-isHLevel 2) (ua (map x))) 
-      λ x y → Σ≡Prop-Sq (λ _ → isProp-isHLevel 2) (transport (sym Square≡··) (lemma x y))
+      (λ _ → n-Type-is-hlevel 2) 
+      (G .fst , Group-on.has-is-set (G .snd))
+      (λ x → Σ-prop-path (λ _ → is-hlevel-is-prop 2) (ua (map x))) 
+      λ x y → Σ-prop-square (λ _ → is-hlevel-is-prop 2) 
+                (transport (sym Square≡··) (lemma x y))
 ```
 
 Since we must map into a type which is known to be a groupoid, we map to
@@ -235,9 +236,9 @@ $\mathrm{Aut}(G)$.
     where
       map : ∀ x → G .fst ≃ G .fst
       map x = Iso→Equiv (_⋆ x , p) where
-        open isIso
+        open is-iso
 
-        p : isIso (_⋆ x)
+        p : is-iso (_⋆ x)
         p .inv = _⋆ x ⁻¹
         p .rinv x = sym G.associative ·· ap₂ G._⋆_ refl G.inverseˡ ·· G.idʳ
         p .linv x = sym G.associative ·· ap₂ G._⋆_ refl G.inverseʳ ·· G.idʳ
@@ -252,7 +253,7 @@ shown in the lemma below.
       lemma : ∀ x y → ua (map x) ∙ ua (map y) ≡ ua (map (x ⋆ y))
       lemma x y =
         ua (map x) ∙ ua (map y) ≡⟨ sym ua∙ ⟩
-        ua (map x ∙e map y)     ≡⟨ ap ua (Σ≡Prop isProp-isEquiv (funext λ z → sym (GroupOn.associative (G .snd)))) ⟩
+        ua (map x ∙e map y)     ≡⟨ ap ua (Σ-prop-path is-equiv-is-prop (funext λ z → sym (Group-on.associative (G .snd)))) ⟩
         ua (map (x ⋆ y))        ∎
 ```
 
@@ -267,7 +268,7 @@ to `Code`{.Agda}. For decoding, we do induction on `Deloop`{.Agda} with
 
   decode : ∀ x → Code x .fst → base ≡ x
   decode = Deloop-elim _ 
-    (λ _ → isHLevelΠ 3 λ _ → isHLevel-suc 2 (squash _ _)) 
+    (λ _ → Π-is-hlevel 3 λ _ → is-hlevel-suc 2 (squash _ _)) 
 ```
 
 With this motive, the type of what we must give for `base`{.Agda}
@@ -278,7 +279,7 @@ reduces to `G → base ≡ base`, for which `path`{.Agda} suffices; The
 ```agda
     path 
     (λ x → ua→ λ a → path-sq _ _) 
-    (λ x y → isSet→SquareP (λ i j → isHLevelΠ 2 λ _ → squash _ _) _ _ _ _)
+    (λ x y → is-set→SquareP (λ i j → Π-is-hlevel 2 λ _ → squash _ _) _ _ _ _)
 ```
 
 Proving that these are inverses finishes the proof. For one direction,
@@ -305,7 +306,7 @@ of the full `Deloop-elim`{.Agda}, which reduces the goal to proving $1
   decode→encode = 
     Deloop-elimProp 
       (λ x → (c : Code x .fst) → encode x (decode x c) ≡ c) 
-      (λ x → isHLevelΠ 1 λ _ → Code x .snd _ _) 
+      (λ x → Π-is-hlevel 1 λ _ → Code x .snd _ _) 
       λ c → transport-refl _ ∙ G.idˡ
 ```
 

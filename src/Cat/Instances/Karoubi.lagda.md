@@ -43,15 +43,15 @@ from the right: $\phi \circ f = \phi = g \circ \phi$.
 ```agda
 private
   KOb : Type (o ⊔ h)
-  KOb = Σ[ c ∈ C.Ob ] Σ[ f ∈ C.Hom c c ] (isIdempotent f)
+  KOb = Σ[ c ∈ C.Ob ] Σ[ f ∈ C.Hom c c ] (is-idempotent f)
 
   KHom : KOb → KOb → Type h
   KHom (c , f , _) (d , g , _) = Σ[ φ ∈ C.Hom c d ] ((φ C.∘ f ≡ φ) × (g C.∘ φ ≡ φ))
   
   KH≡ : ∀ {a b : C.Ob} {af : C.Hom a a} {bf : C.Hom b b}
-          {ai : isIdempotent af} {bi : isIdempotent bf}
+          {ai : is-idempotent af} {bi : is-idempotent bf}
           {f g : KHom (a , af , ai) (b , bf , bi)} → fst f ≡ fst g → f ≡ g
-  KH≡ = Σ≡Prop (λ _ → (isHLevel× 1 (C.Hom-set _ _ _ _) (C.Hom-set _ _ _ _)))
+  KH≡ = Σ-prop-path (λ _ → (×-is-hlevel 1 (C.Hom-set _ _ _ _) (C.Hom-set _ _ _ _)))
 ```
 
 We can see that these data assemble into a precategory. However, note
@@ -63,8 +63,8 @@ Karoubi : Precategory (o ⊔ h) h
 Karoubi .Ob = KOb
 Karoubi .Hom = KHom
 Karoubi .Hom-set _ _ = 
-  isHLevelΣ 2 (C.Hom-set _ _) λ _ → 
-    isProp→isSet (isHLevel× 1 (C.Hom-set _ _ _ _) (C.Hom-set _ _ _ _))
+  Σ-is-hlevel 2 (C.Hom-set _ _) λ _ → 
+    is-prop→is-set (×-is-hlevel 1 (C.Hom-set _ _ _ _) (C.Hom-set _ _ _ _))
 
 Karoubi .id {x = c , e , i} = e , i , i
 Karoubi ._∘_ (f , fp , fp') (g , gp , gp') = f C.∘ g , C.pullr gp , C.pulll fp'
@@ -90,13 +90,13 @@ Embed .F-∘ f g = KH≡ {ai = C.idl _} {bi = C.idl _} refl
 
 An elementary argument shows that the morphism part of `Embed`{.Agda}
 has an inverse given by projecting the first component of the pair;
-Hence, `Embed` is `fully faithful`{.Agda ident=isFf}.
+Hence, `Embed` is `fully faithful`{.Agda ident=is-fully-faithful}.
 
 ```agda
-Embed-ff : isFf Embed
-Embed-ff = isIso→isEquiv (iso fst (λ _ → Σ≡Prop p refl) λ _ → refl) where
+Embed-is-fully-faithful : is-fully-faithful Embed
+Embed-is-fully-faithful = is-iso→is-equiv (iso fst (λ _ → Σ-prop-path p refl) λ _ → refl) where
   p : (x : C.Hom _ _) → _
-  p _ = isHLevel× 1 (C.Hom-set _ _ _ _) (C.Hom-set _ _ _ _)
+  p _ = ×-is-hlevel 1 (C.Hom-set _ _ _ _) (C.Hom-set _ _ _ _)
 ```
 
 ## Idempotent-completeness
@@ -116,14 +116,14 @@ $\~\ca{C}$. In the other direction, we can _again_ take $f : A \to A$,
 which also satisfies $e \circ f = f$.
 
 ```agda
-isIdempotentComplete-Karoubi : CI.isIdempotentComplete Karoubi
-isIdempotentComplete-Karoubi {A = A , e , i} (f , p , q) idem = spl where
-  open CI.IsSplit
+is-idempotent-complete-Karoubi : CI.is-idempotent-complete Karoubi
+is-idempotent-complete-Karoubi {A = A , e , i} (f , p , q) idem = spl where
+  open CI.is-split
 
   f-idem : f C.∘ f ≡ f
   f-idem i = idem i .fst
 
-  spl : CI.IsSplit Karoubi (f , p , q)
+  spl : CI.is-split Karoubi (f , p , q)
   spl .F = A , f , f-idem
   spl .project = f , p , f-idem
   spl .inject = f , f-idem , q

@@ -1065,8 +1065,8 @@ module _ where private
 -->
 
 ```agda
-  PointedMagmaOn : Type → Type
-  PointedMagmaOn A = A × (A → A → A)
+  PointedMagma-on : Type → Type
+  PointedMagma-on A = A × (A → A → A)
 ```
 
 Taking the dependent sum of this family gives us the type of pointed
@@ -1079,7 +1079,7 @@ allow ourselves to omit the inner parentheses in this case.
 
 ```agda
   PointedMagma : Type₁
-  PointedMagma = Σ PointedMagmaOn
+  PointedMagma = Σ PointedMagma-on
 ```
 
 Note that, since we fixed the family to $\ty \to \ty$, and recalling

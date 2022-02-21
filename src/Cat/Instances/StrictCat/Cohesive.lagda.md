@@ -209,7 +209,7 @@ module _ {ℓ} where
 
   GlobalSections : Functor (StrictCat ℓ ℓ) (Sets ℓ)
   GlobalSections .F₀ C = 
-    Functor (Codisc′ (Lift _ ⊤)) (C .fst) , isSet-Functor (C .snd)
+    Functor (Codisc′ (Lift _ ⊤)) (C .fst) , Functor-is-set (C .snd)
   GlobalSections .F₁ G F = G F∘ F
   GlobalSections .F-id = funext λ _ → Functor≡ (λ _ → refl) λ _ → refl
   GlobalSections .F-∘ f g = funext λ _ → Functor≡ (λ _ → refl) λ _ → refl
@@ -220,7 +220,7 @@ acts on maps by composition. The functor identities hold definitionally.
 
 ```agda
   GlobalSections≅Γ : Γ {ℓ} Nt.≅ GlobalSections
-  GlobalSections≅Γ = Nt.makeIso f g f∘g g∘f where
+  GlobalSections≅Γ = Nt.make-iso f g f∘g g∘f where
     open Precategory
 ```
 
@@ -337,8 +337,8 @@ category are product sets of connected components.
 ```agda
 Π₀-preserve-prods
   : ∀ {C D : Precategory o h} → π₀ (C ×Cat D) .fst ≡ (π₀ C .fst × π₀ D .fst)
-Π₀-preserve-prods {C = C} {D = D} = Iso→path (f , isom) where
-  open isIso
+Π₀-preserve-prods {C = C} {D = D} = Iso→Path (f , isom) where
+  open is-iso
 ```
 
 We have a map splitting $\pi_0$ of the product category onto $\pi_0$ of
@@ -348,7 +348,7 @@ the morphisms.
 ```agda
   f : π₀ (C ×Cat D) .fst → π₀ C .fst × π₀ D .fst
   f = Quot-elim 
-    (λ _ → isHLevel× 2 squash squash) 
+    (λ _ → ×-is-hlevel 2 squash squash) 
     (λ (a , b) → inc a , inc b) 
     λ (x , x') (y , y') (f , g) i → 
       glue (x , y , f) i , glue (x' , y' , g) i
@@ -357,7 +357,7 @@ the morphisms.
 This map has an inverse given by joining up the pairs:
 
 ```agda
-  isom : isIso f
+  isom : is-iso f
   isom .inv (a , b) = Coeq-rec₂ squash (λ x y → inc (x , y)) 
     (λ a (x , y , r) i → glue ((x , a) , (y , a) , r , Precategory.id D) i) 
     (λ a (x , y , r) i → glue ((a , x) , (a , y) , Precategory.id C , r) i) 
@@ -365,7 +365,7 @@ This map has an inverse given by joining up the pairs:
 
   isom .rinv (a , b) = Coeq-elimProp₂ 
     {C = λ x y → f (isom .inv (x , y)) ≡ (x , y)} 
-    (λ _ _ → isHLevel× 2 squash squash _ _) 
+    (λ _ _ → ×-is-hlevel 2 squash squash _ _) 
     (λ _ _ → refl) 
     a b
 

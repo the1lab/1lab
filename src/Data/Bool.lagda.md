@@ -9,9 +9,9 @@ open import 1Lab.Type
 
 open import Agda.Builtin.Bool
 
-open isEquiv
-open isContr
-open isIso
+open is-equiv
+open is-contr
+open is-iso
 
 module Data.Bool where
 
@@ -223,8 +223,8 @@ Discrete-Bool false true = no (λ p → true≠false (sym p))
 Discrete-Bool true false = no true≠false
 Discrete-Bool true true = yes refl
 
-isSet-Bool : isSet Bool
-isSet-Bool = Discrete→isSet Discrete-Bool
+Bool-is-set : is-set Bool
+Bool-is-set = Discrete→is-set Discrete-Bool
 ```
 
 Furthermore, if we know we're not looking at true, then we must be
@@ -249,8 +249,8 @@ own inverse, so we need a proof that it's involutive, as is proven in
 equivalence:
 
 ```agda
-isEquiv-not : isEquiv not
-isEquiv-not = isIso→isEquiv (iso not not-involutive not-involutive)
+not-is-equiv : is-equiv not
+not-is-equiv = is-iso→is-equiv (iso not not-involutive not-involutive)
 ```
 
 ## Aut(Bool)
@@ -268,8 +268,8 @@ private
   idLemma : (p : Bool ≃ Bool)
           → p .fst true ≡ true
           → p .fst false ≡ false
-          → p ≡ (_ , idEquiv)
-  idLemma p p1 p2 = Σ-Path (funext lemma) (isProp-isEquiv _ _ _) where
+          → p ≡ (_ , id-equiv)
+  idLemma p p1 p2 = Σ-path (funext lemma) (is-equiv-is-prop _ _ _) where
     lemma : (x : Bool) → _
     lemma false = p2
     lemma true = p1
@@ -282,8 +282,8 @@ we're looking at the `not`{.Agda} equivalence.
   notLemma : (p : Bool ≃ Bool)
            → p .fst true ≡ false
            → p .fst false ≡ true
-           → p ≡ (not , isEquiv-not)
-  notLemma p p1 p2 = Σ-Path (funext lemma) (isProp-isEquiv _ _ _) where
+           → p ≡ (not , not-is-equiv)
+  notLemma p p1 p2 = Σ-path (funext lemma) (is-equiv-is-prop _ _ _) where
     lemma : (x : Bool) → _
     lemma false = p2
     lemma true = p1
@@ -294,8 +294,8 @@ With these two lemmas, we can proceed to classify the automorphisms of
 Bool` _doesn't_ map `f x ≡ x`, then it maps `f x ≡ not x`.
 
 ```agda
-AutBool≡2 : (Bool ≡ Bool) ≡ Lift _ Bool
-AutBool≡2 = Iso→path the-iso where
+Bool-aut≡2 : (Bool ≡ Bool) ≡ Lift _ Bool
+Bool-aut≡2 = Iso→Path the-iso where
   lemma : (f : Bool → Bool) {x : Bool} → (f x ≡ x → ⊥) → f x ≡ not x
   lemma f {false} x with Discrete-Bool (f false) true
   lemma f {false} x | yes p = p
@@ -324,43 +324,43 @@ Now we classify the isomorphism by looking at what it does to
 `not`{.Agda} to `true`{.Agda}.
 
 ```agda
-  the-iso .snd .isIso.inv (lift false) = refl
-  the-iso .snd .isIso.inv (lift true)  = ua (not , isEquiv-not)
+  the-iso .snd .is-iso.inv (lift false) = refl
+  the-iso .snd .is-iso.inv (lift true)  = ua (not , not-is-equiv)
 ```
 
 The inverse is determined by the same rule, but backwards. That's why
 it's an inverse! Everything computes in a way that lines up to this
-function being a `right inverse`{.Agda ident=isIso.rinv} on the nose.
+function being a `right inverse`{.Agda ident=is-iso.rinv} on the nose.
 
 ```agda
-  the-iso .snd .isIso.rinv (lift false) = refl
-  the-iso .snd .isIso.rinv (lift true) = refl
+  the-iso .snd .is-iso.rinv (lift false) = refl
+  the-iso .snd .is-iso.rinv (lift true) = refl
 ```
 
 The left inverse is a lot more complicated to prove. We examine how the
 path acts on both `true` and `false`. There are four cases:
 
 ```agda
-  the-iso .snd .isIso.linv path with Discrete-Bool (transport path true) true
+  the-iso .snd .is-iso.linv path with Discrete-Bool (transport path true) true
                                      | Discrete-Bool (transport path false) false
   ... | yes true→true | yes false→false =
-    refl                  ≡⟨ sym (univalence-Iso .snd .linv _) ⟩
-    ua (pathToEquiv refl) ≡⟨ ap ua pathToEquiv-refl ⟩
-    ua (_ , idEquiv)      ≡⟨ ap ua (sym (idLemma _ true→true false→false)) ⟩
-    ua (pathToEquiv path) ≡⟨ univalence-Iso .snd .linv _ ⟩
+    refl                  ≡⟨ sym (Path≃Equiv .snd .linv _) ⟩
+    ua (path→equiv refl) ≡⟨ ap ua path→equiv-refl ⟩
+    ua (_ , id-equiv)      ≡⟨ ap ua (sym (idLemma _ true→true false→false)) ⟩
+    ua (path→equiv path) ≡⟨ Path≃Equiv .snd .linv _ ⟩
     path                  ∎
 ```
 
 In the case where the path quacks like reflexivity, we use the
 univalence axiom to show that we must be looking at the reflexivity
-path. For this, we use `idLemma` to show that `pathToEquiv path` must be
+path. For this, we use `idLemma` to show that `path→equiv path` must be
 the identity equivalence.
 
 ```agda
   ... | yes true→true | no false→true' =
     let
       false→true = lemma (transport path) false→true'
-      fibres = isContr→isProp (pathToEquiv path .snd .isEqv true)
+      fibres = is-contr→is-prop (path→equiv path .snd .is-eqv true)
                               (true , true→true) (false , false→true)
     in absurd (true≠false (ap fst fibres))
 ```
@@ -374,7 +374,7 @@ equivalences have contractible fibres; Since we have two fibres over
   ... | no true→false' | yes false→false =
     let
       true→false = lemma (transport path) true→false'
-      fibres = isContr→isProp (pathToEquiv path .snd .isEqv false)
+      fibres = is-contr→is-prop (path→equiv path .snd .is-eqv false)
                               (true , true→false) (false , false→false)
     in absurd (true≠false (ap fst fibres))
 ```
@@ -383,11 +383,11 @@ The other case is analogous.
 
 ```agda
   ... | no true→false' | no false→true' =
-    ua (not , isEquiv-not) ≡⟨ ap ua (sym (notLemma _
+    ua (not , not-is-equiv) ≡⟨ ap ua (sym (notLemma _
                                             (lemma (transport path) true→false')
                                             (lemma (transport path) false→true')))
                             ⟩
-    ua (pathToEquiv path)  ≡⟨ univalence-Iso .snd .linv _ ⟩
+    ua (path→equiv path)  ≡⟨ Path≃Equiv .snd .linv _ ⟩
     path                   ∎
 ```
 

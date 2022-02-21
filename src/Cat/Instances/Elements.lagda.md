@@ -65,16 +65,16 @@ path space of `ElementHom`{.Agda}
 ElementHom≡ : {x y : Element} {f g : ElementHom x y} → f .hom ≡ g .hom → f ≡ g 
 ElementHom≡ p i .hom = p i
 ElementHom≡ {x = x} {y = y} {f = f} {g = g} p i .commute =
-  isProp→PathP (λ j → snd (P.₀ (x .ob)) (P.₁ (p j) (y .section)) (x .section))
+  is-prop→PathP (λ j → snd (P.₀ (x .ob)) (P.₁ (p j) (y .section)) (x .section))
     (f .commute)
     (g .commute) i
 ```
 
 <!--
 ```agda
-ElementHom-isSet : ∀ (x y : Element) → isSet (ElementHom x y)
-ElementHom-isSet x y =
-  isHLevel-retract 2 Refold Unfold retract T-isSet
+ElementHom-is-set : ∀ (x y : Element) → is-set (ElementHom x y)
+ElementHom-is-set x y =
+  retract→is-hlevel 2 Refold Unfold retract T-is-set
   where
     T : Type _
     T = Σ[ hom ∈ Hom (x .ob) (y .ob) ]
@@ -90,10 +90,10 @@ ElementHom-isSet x y =
     retract x i .hom = x .hom
     retract x i .commute = x .commute
 
-    T-isSet : isSet T
-    T-isSet =
-      isHLevelΣ 2 (Hom-set _ _)
-                  λ f → isHLevelPath 2 (snd $ P.₀ (x .ob))
+    T-is-set : is-set T
+    T-is-set =
+      Σ-is-hlevel 2 (Hom-set _ _)
+                  λ f → Path-is-hlevel 2 (snd $ P.₀ (x .ob))
 ```
 -->
 
@@ -113,7 +113,7 @@ $P$!
 ∫ : Precategory (o ⊔ s) (ℓ ⊔ s)
 ∫ .Precategory.Ob = Element
 ∫ .Precategory.Hom = ElementHom
-∫ .Precategory.Hom-set = ElementHom-isSet
+∫ .Precategory.Hom-set = ElementHom-is-set
 ∫ .Precategory.id {x = x} = elem-hom id  λ i → P.F-id i (x .section)
 ∫ .Precategory._∘_ {x = x} {y = y} {z = z} f g = elem-hom (f .hom ∘ g .hom) comm
   where

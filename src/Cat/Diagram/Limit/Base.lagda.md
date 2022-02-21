@@ -205,14 +205,14 @@ their $\psi$s to assign equal morphisms for every object in the shape
 category.
 
 ```agda
-  Cone≡ : {x y : Cone}
+  Cone-path : {x y : Cone}
         → (p : Cone.apex x ≡ Cone.apex y)
         → (∀ o → PathP (λ i → C.Hom (p i) (F.₀ o)) (Cone.ψ x o) (Cone.ψ y o))
         → x ≡ y
-  Cone≡ p q i .Cone.apex = p i
-  Cone≡ p q i .Cone.ψ o = q o i
-  Cone≡ {x = x} {y} p q i .Cone.commutes {x = a} {y = b} f = 
-    isProp→PathP (λ i → C.Hom-set _ _ (F.₁ f C.∘ q a i) (q b i)) 
+  Cone-path p q i .Cone.apex = p i
+  Cone-path p q i .Cone.ψ o = q o i
+  Cone-path {x = x} {y} p q i .Cone.commutes {x = a} {y = b} f = 
+    is-prop→PathP (λ i → C.Hom-set _ _ (F.₁ f C.∘ q a i) (q b i)) 
       (x .commutes f) (y .commutes f) i
     where open Cone
 ```
@@ -220,13 +220,13 @@ category.
 ## Cone maps
 
 ```agda
-  record ConeHom (x y : Cone) : Type (o₁ ⊔ h₂) where
+  record Cone-hom (x y : Cone) : Type (o₁ ⊔ h₂) where
     no-eta-equality
 ```
 
-A `Cone homomorphism`{.Agda ident="ConeHom"} is -- like the introduction
+A `Cone homomorphism`{.Agda ident="Cone-hom"} is -- like the introduction
 says -- a map `hom`{.Agda} in the ambient category between the apices,
-such that "everything in sight `commutes`{.Agda ident="ConeHom.commutes"}".  
+such that "everything in sight `commutes`{.Agda ident="Cone-hom.commutes"}".  
 Specifically, for any choice of object $o$ in the index category, the
 composition of `hom`{.Agda} with the domain cone's `ψ`{.Agda} (at that
 object) must be equal to the codomain's `ψ`{.Agda}.
@@ -240,11 +240,11 @@ object) must be equal to the codomain's `ψ`{.Agda}.
 
 <!--
 ```agda
-  ConeHom≡ : ∀ {x y} {f g : ConeHom x y} → ConeHom.hom f ≡ ConeHom.hom g → f ≡ g
-  ConeHom≡ p i .ConeHom.hom = p i
-  ConeHom≡ {x = x} {y} {f} {g} p i .ConeHom.commutes {o} j = 
-    isSet→SquareP (λ i j → C.Hom-set _ _)
-      (λ j → Cone.ψ y o C.∘ p j) (f .ConeHom.commutes) (g .ConeHom.commutes) refl i j
+  Cone-hom-path : ∀ {x y} {f g : Cone-hom x y} → Cone-hom.hom f ≡ Cone-hom.hom g → f ≡ g
+  Cone-hom-path p i .Cone-hom.hom = p i
+  Cone-hom-path {x = x} {y} {f} {g} p i .Cone-hom.commutes {o} j = 
+    is-set→SquareP (λ i j → C.Hom-set _ _)
+      (λ j → Cone.ψ y o C.∘ p j) (f .Cone-hom.commutes) (g .Cone-hom.commutes) refl i j
 ```
 -->
 
@@ -259,10 +259,10 @@ again preserve _all_ the commutativities.
   Cones = cat where
     open Precategory
 
-    compose : {x y z : _} → ConeHom y z → ConeHom x y → ConeHom x z
+    compose : {x y z : _} → Cone-hom y z → Cone-hom x y → Cone-hom x z
     compose {x} {y} {z} F G = r where
-      open ConeHom
-      r : ConeHom x z
+      open Cone-hom
+      r : Cone-hom x z
       r .hom = hom F C.∘ hom G
       r .commutes {o} =
         Cone.ψ z o C.∘ hom F C.∘ hom G ≡⟨ C.pulll (commutes F) ⟩
@@ -271,35 +271,35 @@ again preserve _all_ the commutativities.
 
     cat : Precategory _ _
     cat .Ob = Cone
-    cat .Hom = ConeHom
+    cat .Hom = Cone-hom
     cat .id = record { hom = C.id ; commutes = C.idr _ }
     cat ._∘_ = compose
-    cat .idr f = ConeHom≡ (C.idr _)
-    cat .idl f = ConeHom≡ (C.idl _)
-    cat .assoc f g h = ConeHom≡ (C.assoc _ _ _)
+    cat .idr f = Cone-hom-path (C.idr _)
+    cat .idl f = Cone-hom-path (C.idl _)
+    cat .assoc f g h = Cone-hom-path (C.assoc _ _ _)
 ```
 
 <!--
 ```agda
-    cat .Hom-set x y = isHLevel-retract 2 pack unpack pack∘unpack hl
+    cat .Hom-set x y = retract→is-hlevel 2 pack unpack pack∘unpack hl
       where abstract
         T : Type (o₁ ⊔ h₂)
         T = Σ[ hom ∈ C.Hom (Cone.apex x) (Cone.apex y) ] 
               (∀ o → Cone.ψ y o C.∘ hom ≡ Cone.ψ x o)
 
-        pack : T → ConeHom x y
+        pack : T → Cone-hom x y
         pack x = record { hom = x .fst ; commutes = x .snd _ }
 
-        unpack : ConeHom x y → T
-        unpack r = r .ConeHom.hom , λ _ → r .ConeHom.commutes
+        unpack : Cone-hom x y → T
+        unpack r = r .Cone-hom.hom , λ _ → r .Cone-hom.commutes
 
-        pack∘unpack : isLeftInverse pack unpack
-        pack∘unpack x i .ConeHom.hom = x .ConeHom.hom
-        pack∘unpack x i .ConeHom.commutes = x .ConeHom.commutes
+        pack∘unpack : is-left-inverse pack unpack
+        pack∘unpack x i .Cone-hom.hom = x .Cone-hom.hom
+        pack∘unpack x i .Cone-hom.commutes = x .Cone-hom.commutes
 
-        hl : isSet T
-        hl = isHLevelΣ 2 (C.Hom-set _ _) 
-              (λ _ → isHLevelΠ 2 λ _ → isProp→isSet (C.Hom-set _ _ _ _))
+        hl : is-set T
+        hl = Σ-is-hlevel 2 (C.Hom-set _ _) 
+              (λ _ → Π-is-hlevel 2 λ _ → is-prop→is-set (C.Hom-set _ _ _ _))
 ```
 -->
 
@@ -345,10 +345,10 @@ acts on a cone over $\mathrm{Dia}$ (in $\ca{C}$), sending it to a cone
 over $F \circ \mathrm{Dia}$ (in $\ca{D}$).
 
 ```agda
-  F-map-Cone : Cone Dia → Cone (F F∘ Dia)
-  Cone.apex (F-map-Cone x) = F₀ F (Cone.apex x)
-  Cone.ψ (F-map-Cone x) x₁ = F₁ F (Cone.ψ x x₁)
-  Cone.commutes (F-map-Cone x) {y = y} f =
+  F-map-cone : Cone Dia → Cone (F F∘ Dia)
+  Cone.apex (F-map-cone x) = F₀ F (Cone.apex x)
+  Cone.ψ (F-map-cone x) x₁ = F₁ F (Cone.ψ x x₁)
+  Cone.commutes (F-map-cone x) {y = y} f =
       F₁ F (F₁ Dia f) D.∘ F₁ F (Cone.ψ x _) ≡⟨ sym (F-∘ F _ _) ⟩
       F₁ F (F₁ Dia f C.∘ Cone.ψ x _)        ≡⟨ ap (F₁ F) (Cone.commutes x _) ⟩
       F₁ F (Cone.ψ x y)                     ∎
@@ -361,8 +361,8 @@ right above, is a terminal object in the category of cones over
 $F \circ \mathrm{Dia}$.
 
 ```
-  PreservesLimit : Limit Dia → Type _
-  PreservesLimit o = isTerminal (Cones (F F∘ Dia)) (F-map-Cone (Terminal.top o))
+  Preserves-limit : Limit Dia → Type _
+  Preserves-limit o = is-terminal (Cones (F F∘ Dia)) (F-map-cone (Terminal.top o))
 ```
 
 This definition is necessary because $\ca{D}$ will not, in general,
@@ -375,7 +375,7 @@ object! Any limit is as good as any other.
 ## Continuity
 
 ```agda
-Continuous 
+is-continuous 
   : ∀ {oshape hshape} 
       {C : Precategory o₁ h₁} 
       {D : Precategory o₂ h₂}
@@ -387,14 +387,14 @@ every diagram `diagram`{.Agda} of shape `J` in `C` --- preserves the
 limit for that diagram.
 
 ```agda
-Continuous {oshape = oshape} {hshape} {C = C} F = 
+is-continuous {oshape = oshape} {hshape} {C = C} F = 
   ∀ {J : Precategory oshape hshape} {diagram : Functor J C}
-  → (L : Limit diagram) → PreservesLimit F L
+  → (L : Limit diagram) → Preserves-limit F L
 ```
 
 <!--
 ```agda
-_ = ConeHom.commutes
+_ = Cone-hom.commutes
 ```
 -->
 
@@ -422,7 +422,7 @@ limiting cones for for $F$.
   Limiting-cone-unique 
     : (X Y : Limit F)
     → Terminal.top X Cones.≅ Terminal.top Y
-  Limiting-cone-unique X Y = Cones.makeIso f g f∘g≡id g∘f≡id where
+  Limiting-cone-unique X Y = Cones.make-iso f g f∘g≡id g∘f≡id where
     X-cone = Terminal.top X
     Y-cone = Terminal.top Y
 ```
@@ -468,9 +468,9 @@ functor and used the proof that it preserves isomorphisms.
               → X Cones.≅ Y
               → (Cone.apex X) C.≅ (Cone.apex Y)
   Cone≅→apex≅ c = 
-    C.makeIso (ConeHom.hom c.to) (ConeHom.hom c.from)
-      (ap ConeHom.hom c.invˡ)
-      (ap ConeHom.hom c.invʳ)
+    C.make-iso (Cone-hom.hom c.to) (Cone-hom.hom c.from)
+      (ap Cone-hom.hom c.invˡ)
+      (ap Cone-hom.hom c.invʳ)
     where module c = Cones._≅_ c
 
   Limit-unique 

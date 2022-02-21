@@ -209,12 +209,12 @@ object in $a \swarrow R$ (see `lift↓`{.Agda} below).
 
 ```agda
   private
-    toOb : ∀ {a b} → C.Hom a b → (a ↙ R) .Precategory.Ob
-    toOb {a} {b} h = record { map = L₀′ b C.∘ h }
+    to-ob : ∀ {a b} → C.Hom a b → (a ↙ R) .Precategory.Ob
+    to-ob {a} {b} h = record { map = L₀′ b C.∘ h }
 
     lift↓ : ∀ {x y} (g : C.Hom x y) 
-          → Precategory.Hom (x ↙ R) (universal-map-for x .bot) (toOb g)
-    lift↓ {x} {y} g = ¡ (universal-map-for x) {toOb g}
+          → Precategory.Hom (x ↙ R) (universal-map-for x .bot) (to-ob g)
+    lift↓ {x} {y} g = ¡ (universal-map-for x) {to-ob g}
 
   L₁ : ∀ {a b} → C.Hom a b → D.Hom (L₀ a) (L₀ b)
   L₁ {a} {b} x = lift↓ x .β
@@ -237,13 +237,13 @@ object.
 
     lemma : ∀ {x y z} (f : C.Hom y z) (g : C.Hom x y) 
           → R.₁ (L₁ f D.∘ L₁ g) C.∘ (L₀′ x)
-          ≡ toOb (f C.∘ g) .map C.∘ C.id
+          ≡ to-ob (f C.∘ g) .map C.∘ C.id
     lemma {x} {y} {z} f g = 
       R.₁ (lift↓ f .β D.∘ lift↓ g .β) C.∘ (L₀′ x)       ≡˘⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
       R.₁ (lift↓ f .β) C.∘ R.₁ (lift↓ g .β) C.∘ (L₀′ x) ≡⟨ ap (R.₁ (lift↓ f .β) C.∘_) (sym (lift↓ g .↓Hom.sq) ∙ C.idr _) ⟩
       R.₁ (lift↓ f .β) C.∘ L₀′ y C.∘ g                  ≡⟨ C.extendl (sym (lift↓ f .↓Hom.sq) ∙ C.idr _) ⟩
       L₀′ z C.∘ f C.∘ g                                 ≡˘⟨ C.idr _ ⟩
-      toOb (f C.∘ g) .map C.∘ C.id                      ∎
+      to-ob (f C.∘ g) .map C.∘ C.id                      ∎
 
     L-∘ : ∀ {x y z} (f : C.Hom y z) (g : C.Hom x y)
         → L₁ (f C.∘ g) ≡ L₁ f D.∘ L₁ g
@@ -255,11 +255,11 @@ That out of the way, we have our $L$ functor. We now have to show that
 it defines a left adjoint to the $R$ we started with.
 
 ```agda
-  universalMaps→L : Functor C D
-  universalMaps→L .F₀ = L₀
-  universalMaps→L .F₁ = L₁
-  universalMaps→L .F-id = L-id
-  universalMaps→L .F-∘ = L-∘
+  universal-maps→L : Functor C D
+  universal-maps→L .F₀ = L₀
+  universal-maps→L .F₁ = L₁
+  universal-maps→L .F-id = L-id
+  universal-maps→L .F-∘ = L-∘
 ```
 
 <!--
@@ -320,9 +320,9 @@ calculation shows that this assignment is natural, essentially because
 $\beta$ is unique.
 
 ```agda
-  universalMaps→L⊣R : universalMaps→L ⊣ R
-  universalMaps→L⊣R .counit .η x = ε x .↓Hom.β
-  universalMaps→L⊣R .counit .is-natural x y f = 
+  universal-maps→L⊣R : universal-maps→L ⊣ R
+  universal-maps→L⊣R .counit .η x = ε x .↓Hom.β
+  universal-maps→L⊣R .counit .is-natural x y f = 
     ap ↓Hom.β (
       ¡-unique₂ (universal-map-for (R.₀ x)) {record { map = R.₁ f }}
       (record { sq = 
@@ -345,8 +345,8 @@ It's so "by definition" that Agda can figure out the components by
 itself:
 
 ```agda
-  universalMaps→L⊣R .unit .η x              = _
-  universalMaps→L⊣R .unit .is-natural x y f = sym (C.idr _) ∙ lift↓ f .↓Hom.sq
+  universal-maps→L⊣R .unit .η x              = _
+  universal-maps→L⊣R .unit .is-natural x y f = sym (C.idr _) ∙ lift↓ f .↓Hom.sq
 ```
 
 If you think back to the adjunction counit, you'll recall that it
@@ -366,7 +366,7 @@ adjunction unit to be, so.. It's `zag`{.Agda}.
 ~~~
 
 ```agda
-  universalMaps→L⊣R .zag {x} = sym (ε x .↓Hom.sq) ∙ C.idr _
+  universal-maps→L⊣R .zag {x} = sym (ε x .↓Hom.sq) ∙ C.idr _
 ```
 
 The other triangle identity is slightly more annoying, but it works just
@@ -374,7 +374,7 @@ as well. It follows from the uniqueness of maps out of the initial
 object:
 
 ```agda
-  universalMaps→L⊣R .zig {x} = 
+  universal-maps→L⊣R .zig {x} = 
     ap ↓Hom.β (
       ¡-unique₂ (universal-map-for x) {record { map = α }}
         (record { sq = 
@@ -387,7 +387,7 @@ object:
         (record { sq = C.id-comm ∙ ap (C._∘ _) (sym R.F-id) })
     )
     where α = L₀′ x
-          L = universalMaps→L
+          L = universal-maps→L
 ```
 
 <!-- TODO [Amy 2022-02-17]

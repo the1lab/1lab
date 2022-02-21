@@ -30,10 +30,10 @@ have some pair of maps $p : X \to F$ (the "projector") and $i : F \to
 X$, with $r \circ i = \mathrm{id}$ and $i \circ r = e$.
 
 ```agda
-isIdempotent : Hom A A → Type _
-isIdempotent e = e ∘ e ≡ e
+is-idempotent : Hom A A → Type _
+is-idempotent e = e ∘ e ≡ e
 
-record IsSplit (e : Hom A A) : Type (o ⊔ h) where
+record is-split (e : Hom A A) : Type (o ⊔ h) where
   field
     {F}     : Ob
     project : Hom A F
@@ -42,13 +42,13 @@ record IsSplit (e : Hom A A) : Type (o ⊔ h) where
     p∘i : project ∘ inject ≡ id
     i∘p : inject ∘ project ≡ e
 
-isSplit→isIdempotent : IsSplit f → isIdempotent f
-isSplit→isIdempotent {f = f} spl =
+is-split→is-idempotent : is-split f → is-idempotent f
+is-split→is-idempotent {f = f} spl =
   f ∘ f             ≡˘⟨ ap₂ _∘_ i∘p i∘p ⟩
   (s ∘ r) ∘ (s ∘ r) ≡⟨ cancelInner p∘i ⟩
   s ∘ r             ≡⟨ i∘p ⟩
   f                 ∎
-  where open IsSplit spl renaming (inject to s ; project to r)
+  where open is-split spl renaming (inject to s ; project to r)
 ```
 
 It's not the case that idempotents are split in every category. Those
@@ -61,6 +61,6 @@ envelope] of $\ca{C}$.
 [Karoubi envelope]: Cat.Instances.Karoubi.html
 
 ```agda
-isIdempotentComplete : Type _
-isIdempotentComplete = ∀ {A} (f : Hom A A) → isIdempotent f → IsSplit f
+is-idempotent-complete : Type _
+is-idempotent-complete = ∀ {A} (f : Hom A A) → is-idempotent f → is-split f
 ```

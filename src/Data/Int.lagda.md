@@ -148,7 +148,7 @@ definition of the integers. Since this definition (which we call
 `Int'`{.Agda}) has decidable equality, it is a set.
 
 [discrete]: agda://1Lab.Type.Dec#Discrete
-[a set]: agda://1Lab.HLevel#isSet
+[a set]: agda://1Lab.HLevel#is-set
 
 ```agda
 module _ where
@@ -193,18 +193,18 @@ $(x, 0)$ and the negative numbers to $(0, x)$.
     fromToInt' (negsuc x) = refl
 
     Int'≡Int : Int' ≡ Int
-    Int'≡Int = Iso→path (fromInt' , iso toInt' toFromInt' fromToInt')
+    Int'≡Int = Iso→Path (fromInt' , iso toInt' toFromInt' fromToInt')
 ```
 
-With a quick appeal to `univalence`{.Agda ident=Iso→path}, we get that
+With a quick appeal to `univalence`{.Agda ident=Iso→Path}, we get that
 our desired type of integers is a set:
 
 ```agda
   Discrete-Int : Discrete Int
   Discrete-Int = subst Discrete Int'≡Int Discrete-Int'
 
-  isSet-Int : isSet Int
-  isSet-Int = Discrete→isSet Discrete-Int
+  Int-is-set : is-set Int
+  Int-is-set = Discrete→is-set Discrete-Int
 ```
 
 # Recursion
@@ -273,14 +273,14 @@ Int-rec₂ f p-l p-r sq (quot a b i) (quot x y j) = sq a b x y i j
 ```
 
 However, when the type $X$ we are mapping into `is a set`{.Agda
-ident=isSet}, as is the case for the integers themselves, the square is
+ident=is-set}, as is the case for the integers themselves, the square is
 automatically satisfied, so we can give a simplified recursion
 principle:
 
 ```agda
 Int-rec₂-set :
   ∀ {ℓ} {B : Type ℓ}
-  → isSet B
+  → is-set B
   → (f : Nat × Nat → Nat × Nat → B)
   → (pl     : (a b x y : _) → f (a , b) (x , y) ≡ f (suc a , suc b) (x , y))
   → (pr     : (a b x y : _) → f (a , b) (x , y) ≡ f (a , b) (suc x , suc y))
@@ -294,37 +294,37 @@ Int-rec₂-set iss-b f pl pr = Int-rec₂ f pl pr square where
               (iss-b _ _ _ _)
 ```
 
-Furthermore, when proving _`propositions`{.Agda ident=isProp}_ of the
+Furthermore, when proving _`propositions`{.Agda ident=is-prop}_ of the
 integers, the quotient is automatically respected, so it suffices to
 give the case for `diff`{.Agda}:
 
 ```agda
 Int-elim-prop : ∀ {ℓ} {P : Int → Type ℓ}
-              → ((x : Int) → isProp (P x))
+              → ((x : Int) → is-prop (P x))
               → (f : (a b : Nat) → P (diff a b))
               → (x : Int) → P x
 Int-elim-prop pprop f (diff a b) = f a b
 Int-elim-prop pprop f (quot m n i) =
-  isProp→PathP (λ i → pprop (quot m n i)) (f m n) (f (suc m) (suc n)) i
+  is-prop→PathP (λ i → pprop (quot m n i)) (f m n) (f (suc m) (suc n)) i
 ```
 
 <details>
 <summary>There are also variants for binary and ternary predicates.</summary>
 ```agda
 Int-elim₂-prop : ∀ {ℓ} {P : Int → Int → Type ℓ}
-               → ((x y : Int) → isProp (P x y))
+               → ((x y : Int) → is-prop (P x y))
                → (f : (a b x y : Nat) → P (diff a b) (diff x y))
                → (x : Int) (y : Int) → P x y
 Int-elim₂-prop pprop f =
-  Int-elim-prop (λ x → isHLevelΠ 1 (pprop x))
+  Int-elim-prop (λ x → Π-is-hlevel 1 (pprop x))
     λ a b int → Int-elim-prop (λ x → pprop (diff a b) x) (f a b) int
 
 Int-elim₃-prop : ∀ {ℓ} {P : Int → Int → Int → Type ℓ}
-               → ((x y z : Int) → isProp (P x y z))
+               → ((x y z : Int) → is-prop (P x y z))
                → (f : (a b c d e f : Nat) → P (diff a b) (diff c d) (diff e f))
                → (x : Int) (y : Int) (z : Int) → P x y z
 Int-elim₃-prop pprop f =
-  Int-elim₂-prop (λ x y → isHLevelΠ 1 (pprop x y))
+  Int-elim₂-prop (λ x y → Π-is-hlevel 1 (pprop x y))
     λ a b c d int → Int-elim-prop (λ x → pprop (diff a b) (diff c d) x)
                                   (f a b c d)
                                   int
@@ -358,19 +358,19 @@ have that predecessor and successor are inverses, since applying both
 (in either order) takes $(a, b)$ to $(1 + a, 1 + b)$.
 
 ```agda
-predSucℤ : (x : Int) → predℤ (sucℤ x) ≡ x
-predSucℤ (diff x y) = sym (quot x y)
-predSucℤ (quot m n i) j = quot-diamond m n i (~ j)
+pred-sucℤ : (x : Int) → predℤ (sucℤ x) ≡ x
+pred-sucℤ (diff x y) = sym (quot x y)
+pred-sucℤ (quot m n i) j = quot-diamond m n i (~ j)
 
-sucPredℤ : (x : Int) → sucℤ (predℤ x) ≡ x
-sucPredℤ (diff x y) = sym (quot x y)
-sucPredℤ (quot m n i) j = quot-diamond m n i (~ j)
+suc-predℤ : (x : Int) → sucℤ (predℤ x) ≡ x
+suc-predℤ (diff x y) = sym (quot x y)
+suc-predℤ (quot m n i) j = quot-diamond m n i (~ j)
 
-isEquiv-sucℤ : isEquiv sucℤ
-isEquiv-sucℤ = isIso→isEquiv (iso predℤ sucPredℤ predSucℤ)
+sucℤ-is-equiv : is-equiv sucℤ
+sucℤ-is-equiv = is-iso→is-equiv (iso predℤ suc-predℤ pred-sucℤ)
 
-isEquiv-predℤ : isEquiv predℤ
-isEquiv-predℤ = isIso→isEquiv (iso sucℤ predSucℤ sucPredℤ)
+predℤ-is-equiv : is-equiv predℤ
+predℤ-is-equiv = is-iso→is-equiv (iso sucℤ pred-sucℤ suc-predℤ)
 ```
 
 ## Addition
@@ -379,7 +379,7 @@ isEquiv-predℤ = isIso→isEquiv (iso sucℤ predSucℤ sucPredℤ)
 _+ℤ_ : Int → Int → Int
 _+ℤ_ =
   Int-rec₂-set
-    isSet-Int
+    Int-is-set
     (λ { (a , b) (c , d) → diff (a + c) (b + d)})
     (λ a b x y → quot _ _)
     (λ a b x y → quot _ _ ∙ ap₂ diff (sym (+-sucʳ _ _)) (sym (+-sucʳ _ _)))
@@ -389,25 +389,25 @@ Since addition of integers is (essentially!) addition of pairs of
 naturals, the algebraic properties of `+`{.Agda} on the natural numbers
 automatically lift to properties about `_+ℤ_`{.Agda}, using the
 recursion helpers for props (`Int-elim-prop`{.Agda}) and the fact that
-`equality of integers is a proposition`{.Agda ident=isSet-Int}.
+`equality of integers is a proposition`{.Agda ident=Int-is-set}.
 
 ```agda
 +ℤ-associative : (x y z : Int) → (x +ℤ y) +ℤ z ≡ x +ℤ (y +ℤ z)
 +ℤ-associative =
   Int-elim₃-prop
-    (λ x y z → isSet-Int _ _)
+    (λ x y z → Int-is-set _ _)
     (λ a b c d e f → ap₂ diff (+-associative a c e) (+-associative b d f))
 
 +ℤ-zeroˡ : (x : Int) → 0 +ℤ x ≡ x
-+ℤ-zeroˡ = Int-elim-prop (λ x → isSet-Int _ _) (λ a b → refl)
++ℤ-zeroˡ = Int-elim-prop (λ x → Int-is-set _ _) (λ a b → refl)
 
 +ℤ-zeroʳ : (x : Int) → x +ℤ 0 ≡ x
 +ℤ-zeroʳ =
-  Int-elim-prop (λ x → isSet-Int _ _) (λ a b → ap₂ diff (+-zeroʳ a) (+-zeroʳ b))
+  Int-elim-prop (λ x → Int-is-set _ _) (λ a b → ap₂ diff (+-zeroʳ a) (+-zeroʳ b))
 
 +ℤ-commutative : (x y : Int) → x +ℤ y ≡ y +ℤ x
 +ℤ-commutative =
-  Int-elim₂-prop (λ x y → isSet-Int _ _)
+  Int-elim₂-prop (λ x y → Int-is-set _ _)
     (λ a b c d → ap₂ diff (+-commutative a c) (+-commutative b d))
 ```
 
@@ -431,14 +431,14 @@ from commutativity of addition on natural numbers, and the fact that
 ```agda
 +ℤ-inverseʳ : (x : Int) → x +ℤ negate x ≡ 0
 +ℤ-inverseʳ =
-  Int-elim-prop (λ _ → isSet-Int _ _) λ where
+  Int-elim-prop (λ _ → Int-is-set _ _) λ where
     a b → diff (a + b) (b + a) ≡⟨ ap₂ diff refl (+-commutative b a) ⟩
           diff (a + b) (a + b) ≡⟨ sym (zeroes (a + b)) ⟩
           diff 0 0             ∎
           
 +ℤ-inverseˡ : (x : Int) → negate x +ℤ x ≡ 0
 +ℤ-inverseˡ =
-  Int-elim-prop (λ _ → isSet-Int _ _) λ where
+  Int-elim-prop (λ _ → Int-is-set _ _) λ where
     a b → diff (b + a) (a + b) ≡⟨ ap₂ diff (+-commutative b a) refl ⟩
           diff (a + b) (a + b) ≡⟨ sym (zeroes (a + b)) ⟩
           diff 0 0             ∎

@@ -44,18 +44,18 @@ sea of theory has risen to the point where our result is trivial:
 [setu]: Cat.Instances.Sets.html
 [funcu]: Cat.Instances.Functor.html#functor-categories
 [Yoneda lemma]: Cat.Functor.Hom.html#the-yoneda-embedding
-[full inclusion]: Cat.Functor.FullSubcategory.html#from-full-inclusions
-[fullu]: Cat.Functor.FullSubcategory.html#univalence
+[full inclusion]: Cat.Functor.Full-subcategory.html#from-full-inclusions
+[fullu]: Cat.Functor.Full-subcategory.html#univalence
 
 ```agda
 Rezk-completion : Precategory o h → Precategory (o ⊔ lsuc h) (o ⊔ h)
-Rezk-completion A = FullInclusion→FullSubcat {F = よ A} (よ-Ff A)
+Rezk-completion A = Full-inclusion→Full-subcat {F = よ A} (よ-is-fully-faithful A)
 
-isCategory-Rezk-completion 
-  : ∀ {A : Precategory o h} → isCategory (Rezk-completion A)
-isCategory-Rezk-completion {o} {h} {A} = 
-  isCategory-Restrict _ (λ _ → squash) 
-    (isCategory-Functor {D = Sets _} isCategory-Sets)
+Rezk-completion-is-category 
+  : ∀ {A : Precategory o h} → is-category (Rezk-completion A)
+Rezk-completion-is-category {o} {h} {A} = 
+  Restrict-is-category _ (λ _ → squash) 
+    (Functor-is-category {D = Sets _} Sets-is-category)
 ```
 
 <!--

@@ -3,7 +3,7 @@ open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type
 
-open isContr
+open is-contr
 
 module 1Lab.Equiv where
 ```
@@ -12,33 +12,33 @@ module 1Lab.Equiv where
 
 The big idea of homotopy type theory is that isomorphic types can be
 identified: the [univalence axiom]. However, the notion of
-`isomorphism`{.Agda ident=isIso}, is, in a sense, not "coherent" enough
+`isomorphism`{.Agda ident=is-iso}, is, in a sense, not "coherent" enough
 to be used in the definition. For that, we need a coherent definition of
 _equivalence_, where "being an equivalence" is [a
-proposition](agda://1Lab.HLevel#isProp).
+proposition](agda://1Lab.HLevel#is-prop).
 
 [univalence axiom]: 1Lab.Univalence.html
 
 To be more specific, what we need for a notion of equivalence
-$\mathrm{isEquiv}(f)$ to be "coherent" is:
+$\mathrm{is-equiv}(f)$ to be "coherent" is:
 
-- Being an `isomorphism`{.Agda ident=isIso} implies being an
-`equivalence`{.Agda ident=isEquiv} ($\mathrm{isIso}(f) \to
-\mathrm{isEquiv}(f)$)
+- Being an `isomorphism`{.Agda ident=is-iso} implies being an
+`equivalence`{.Agda ident=is-equiv} ($\mathrm{is-iso}(f) \to
+\mathrm{is-equiv}(f)$)
 
 - Being an equivalence implies being an isomorphism
-($\mathrm{isEquiv}(f) \to \mathrm{isIso}(f)$); Taken together with the
+($\mathrm{is-equiv}(f) \to \mathrm{is-iso}(f)$); Taken together with the
 first point we may summarise: "Being an equivalence and being an
 isomorphism are logically equivalent."
 
 - Most importantly, being an equivalence _must_ be a proposition.
 
 The notion we adopt is due to Voevodsky: An equivalence is one that has
-`contractible`{.Agda ident=isContr} `fibres`{.Agda ident=fibre}. Other
+`contractible`{.Agda ident=is-contr} `fibres`{.Agda ident=fibre}. Other
 definitions are possible (e.g.: [bi-inverible maps]) --- but
 contractible fibres are "privileged" in Cubical Agda because for
 [glueing] to work, we need a proof that `equivalences have contractible
-fibres`{.Agda ident=isEqv'} anyway.
+fibres`{.Agda ident=is-eqv'} anyway.
 
 [bi-inverible maps]: 1Lab.Equiv.Biinv.html
 [glueing]: 1Lab.Univalence.html#Glue
@@ -61,24 +61,26 @@ fibre f y = Σ λ x → f x ≡ y
 ```
 
 A function `f` is an equivalence if every one of its fibres is
-[contractible](agda://1Lab.HLevel#isContr) - that is, for any element
+[contractible](agda://1Lab.HLevel#is-contr) - that is, for any element
 `y` in the range, there is exactly one element in the domain which `f`
 maps to `y`. Using set-theoretic language, `f` is an equivalence if the
 preimage of every element of the codomain is a singleton.
 
 ```agda
-record isEquiv (f : A → B) : Type (level-of A ⊔ level-of B) where
+record is-equiv (f : A → B) : Type (level-of A ⊔ level-of B) where
   no-eta-equality
   field
-    isEqv : (y : B) → isContr (fibre f y)
+    is-eqv : (y : B) → is-contr (fibre f y)
 
-open isEquiv public
+open is-equiv public
 
 _≃_ : ∀ {ℓ₁ ℓ₂} → Type ℓ₁ → Type ℓ₂ → Type _
-_≃_ A B = Σ (isEquiv {A = A} {B = B})
+_≃_ A B = Σ (is-equiv {A = A} {B = B})
 
-idEquiv : isEquiv {A = A} (λ x → x)
-idEquiv .isEqv y = contr (y , λ i → y) λ { (y' , p) i → p (~ i) , λ j → p (~ i ∨ j) } 
+id-equiv : is-equiv {A = A} (λ x → x)
+id-equiv .is-eqv y = 
+  contr (y , λ i → y) 
+    λ { (y' , p) i → p (~ i) , λ j → p (~ i ∨ j) } 
 ```
 
 <!--
@@ -94,7 +96,7 @@ strict-fibres {f = f} g b .fst = (g b , refl)
 strict-fibres {f = f} g b .snd (a , p) i = (g (p (~ i)) , λ j → f (g (p (~ i ∨ j))))
 
 -- This is more efficient than using Iso→Equiv. When f (g x) is definitionally x,
--- the type reduces to essentially isContr (fibre f b).
+-- the type reduces to essentially is-contr (fibre f b).
 ```
 -->
 
@@ -109,42 +111,42 @@ and extensibility.
 {-# BUILTIN EQUIV _≃_ #-}
 {-# BUILTIN EQUIVFUN fst #-}
 
-isEqv' : ∀ {a b} (A : Type a) (B : Type b)
-       → (w : A ≃ B) (a : B)
-       → (ψ : I)
-       → Partial ψ (fibre (w .fst) a)
-       → fibre (w .fst) a
-isEqv' A B (f , isEquiv) a ψ u0 =
+is-eqv' : ∀ {a b} (A : Type a) (B : Type b)
+        → (w : A ≃ B) (a : B)
+        → (ψ : I)
+        → Partial ψ (fibre (w .fst) a)
+        → fibre (w .fst) a
+is-eqv' A B (f , is-equiv) a ψ u0 =
   hcomp (λ i → λ { (ψ = i0) → c .centre
                  ; (ψ = i1) → c .paths (u0 1=1) i
                  })
         (c .centre)
-  where c = isEquiv .isEqv a
+  where c = is-equiv .is-eqv a
 
-{-# BUILTIN EQUIVPROOF isEqv' #-}
+{-# BUILTIN EQUIVPROOF is-eqv' #-}
 ```
 
 <!--
 ```
 equiv-centre : (e : A ≃ B) (y : B) → fibre (e .fst) y
-equiv-centre e y = e .snd .isEqv y .centre
+equiv-centre e y = e .snd .is-eqv y .centre
 
 equiv-path : (e : A ≃ B) (y : B) →
   (v : fibre (e .fst) y) → Path _ (equiv-centre e y) v
-equiv-path e y = e .snd .isEqv y .paths
+equiv-path e y = e .snd .is-eqv y .paths
 ```
 -->
 
-## isEquiv is propositional
+## is-equiv is propositional
 
 A function can be an equivalence in at most one way. This follows from
-propositions being closed under dependent products, and `isContr`{.Agda}
+propositions being closed under dependent products, and `is-contr`{.Agda}
 being a proposition.
 
 ```agda
 module _ where private
-  isProp-isEquiv : (f : A → B) → isProp (isEquiv f)
-  isProp-isEquiv f x y i .isEqv p = isProp-isContr (x .isEqv p) (y .isEqv p) i
+  is-equiv-is-prop : (f : A → B) → is-prop (is-equiv f)
+  is-equiv-is-prop f x y i .is-eqv p = is-contr-is-prop (x .is-eqv p) (y .is-eqv p) i
 ```
 
 <details>
@@ -155,11 +157,11 @@ of the development for efficiency concerns.
 </summary>
 
 ```agda
-isProp-isEquiv : (f : A → B) → isProp (isEquiv f)
-isProp-isEquiv f p q i .isEqv y =
-  let p2 = p .isEqv y .paths
-      q2 = q .isEqv y .paths
-  in contr (p2 (q .isEqv y .centre) i)
+is-equiv-is-prop : (f : A → B) → is-prop (is-equiv f)
+is-equiv-is-prop f p q i .is-eqv y =
+  let p2 = p .is-eqv y .paths
+      q2 = q .is-eqv y .paths
+  in contr (p2 (q .is-eqv y .centre) i)
       λ w j → hcomp (λ k → λ { (i = i0) → p2 w j
                              ; (i = i1) → q2 w (j ∨ ~ k)
                              ; (j = i0) → p2 (q2 w (~ k)) i
@@ -176,11 +178,11 @@ We first define what it means for a function to invert another on the
 left and on the right:
 
 ```agda
-isLeftInverse : (B → A) → (A → B) → Type _
-isLeftInverse g f = (x : _) → g (f x) ≡ x
+is-left-inverse : (B → A) → (A → B) → Type _
+is-left-inverse g f = (x : _) → g (f x) ≡ x
 
-isRightInverse : (B → A) → (A → B) → Type _
-isRightInverse g f = (x : _) → f (g x) ≡ x
+is-right-inverse : (B → A) → (A → B) → Type _
+is-right-inverse g f = (x : _) → f (g x) ≡ x
 ```
 
 A proof that a function $f$ is an isomorphism consists of a function $g$
@@ -188,37 +190,39 @@ in the other direction, together with homotopies exhibiting $g$ as a
 left- and right- inverse to $f$.
 
 ```agda
-record isIso (f : A → B) : Type (level-of A ⊔ level-of B) where
+record is-iso (f : A → B) : Type (level-of A ⊔ level-of B) where
   no-eta-equality
   constructor iso
   field
     inv : B → A
-    rinv : isRightInverse inv f
-    linv : isLeftInverse inv f
+    rinv : is-right-inverse inv f
+    linv : is-left-inverse inv f
 
-  inverse : isIso inv
+  inverse : is-iso inv
   inv inverse = f
   rinv inverse = linv
   linv inverse = rinv
 
 Iso : ∀ {ℓ₁ ℓ₂} → Type ℓ₁ → Type ℓ₂ → Type _
-Iso A B = Σ (isIso {A = A} {B = B})
+Iso A B = Σ (is-iso {A = A} {B = B})
 ```
 
 Any function that is an equivalence is an isomorphism:
 
 ```agda
-equiv→inverse : {f : A → B} → isEquiv f → B → A
-equiv→inverse eqv y = eqv .isEqv y .centre .fst
+equiv→inverse : {f : A → B} → is-equiv f → B → A
+equiv→inverse eqv y = eqv .is-eqv y .centre .fst
 
-equiv→section : {f : A → B} (eqv : isEquiv f) → isRightInverse (equiv→inverse eqv) f
-equiv→section eqv y = eqv .isEqv y .centre .snd
+equiv→section 
+  : {f : A → B} (eqv : is-equiv f) → is-right-inverse (equiv→inverse eqv) f
+equiv→section eqv y = eqv .is-eqv y .centre .snd
 
-equiv→retraction : {f : A → B} (eqv : isEquiv f) → isLeftInverse (equiv→inverse eqv) f
-equiv→retraction {f = f} eqv x i = eqv .isEqv (f x) .paths (x , refl) i .fst
+equiv→retraction 
+  : {f : A → B} (eqv : is-equiv f) → is-left-inverse (equiv→inverse eqv) f
+equiv→retraction {f = f} eqv x i = eqv .is-eqv (f x) .paths (x , refl) i .fst
 
-isEquiv→isIso : {f : A → B} → isEquiv f → isIso f
-isIso.inv (isEquiv→isIso eqv) = equiv→inverse eqv
+is-equiv→is-iso : {f : A → B} → is-equiv f → is-iso f
+is-iso.inv (is-equiv→is-iso eqv) = equiv→inverse eqv
 ```
 
 We can get an element of `x` from the proof that `f` is an equivalence -
@@ -226,16 +230,16 @@ it's the point of `A` mapped to `y`, which we get from centre of
 contraction for the fibres of `f` over `y`.
 
 ```agda
-isIso.rinv (isEquiv→isIso eqv) y =
-  eqv .isEqv y .centre .snd
+is-iso.rinv (is-equiv→is-iso eqv) y =
+  eqv .is-eqv y .centre .snd
 ```
 
 Similarly, that one fibre gives us a proof that the function above is a
 right inverse to `f`.
 
 ```agda
-isIso.linv (isEquiv→isIso {f = f} eqv) x i =
-  eqv .isEqv (f x) .paths (x , refl) i .fst
+is-iso.linv (is-equiv→is-iso {f = f} eqv) x i =
+  eqv .is-eqv (f x) .paths (x , refl) i .fst
 ```
 
 The proof that the function is a _left_ inverse comes from the fibres of
@@ -248,7 +252,7 @@ Any isomorphism can be upgraded into an equivalence, in a way that
 preserves the function $f$, its inverse $g$, _and_ the proof $s$ that
 $g$ is a right inverse to $f$. We can not preserve _everything_, though,
 as is usual when making something "more coherent". Furthermore, if
-everything was preserved, `isIso`{.Agda} would be a proposition, and
+everything was preserved, `is-iso`{.Agda} would be a proposition, and
 this is [provably not the case].
 
 [provably not the case]: 1Lab.Counterexamples.IsIso.html
@@ -261,9 +265,9 @@ contractible fibres.
 [half-adjoint equivalence]: 1Lab.Equiv.HalfAdjoint.html
 
 ```agda
-module _ {f : A → B} (i : isIso f) where
+module _ {f : A → B} (i : is-iso f) where
 
-  open isIso i renaming ( inv to g
+  open is-iso i renaming ( inv to g
                         ; rinv to s
                         ; linv to t
                         )
@@ -507,19 +511,20 @@ consideration, this indeed says that the fibre over $y$ is a proposition
 for any choice of $y$.
 
 ```agda
-    isIso→propFibre : (x0 , p0) ≡ (x1 , p1)
-    isIso→propFibre i .fst = π i
-    isIso→propFibre i .snd = sq1 i
+    is-iso→fibre-is-prop : (x0 , p0) ≡ (x1 , p1)
+    is-iso→fibre-is-prop i .fst = π i
+    is-iso→fibre-is-prop i .snd = sq1 i
 ```
 
 Since the fibre over $y$ is inhabited by $(g\ y, s\ y)$, we get that any
 isomorphism has contractible fibres:
 
 ```agda
-  isIso→isEquiv : isEquiv f
-  isIso→isEquiv .isEqv y .centre .fst = g y
-  isIso→isEquiv .isEqv y .centre .snd = s y
-  isIso→isEquiv .isEqv y .paths z = isIso→propFibre y (g y) (fst z) (s y) (snd z)
+  is-iso→is-equiv : is-equiv f
+  is-iso→is-equiv .is-eqv y .centre .fst = g y
+  is-iso→is-equiv .is-eqv y .centre .snd = s y
+  is-iso→is-equiv .is-eqv y .paths z = 
+    is-iso→fibre-is-prop y (g y) (fst z) (s y) (snd z)
 ```
 
 Applying this to the `Iso`{.Agda} and `_≃_`{.Agda} pairs, we can turn
@@ -529,28 +534,28 @@ any isomorphism into a coherent equivalence.
 Iso→Equiv : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂}
           → Iso A B
           → A ≃ B
-Iso→Equiv (f , is-iso) = f , isIso→isEquiv is-iso
+Iso→Equiv (f , is-iso) = f , is-iso→is-equiv is-iso
 ```
 
 A helpful lemma: Any function between contractible types is an equivalence:
 
 ```agda
-isContr→isEquiv : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂}
-                → isContr A → isContr B → {f : A → B}
-                → isEquiv f
-isContr→isEquiv cA cB = isIso→isEquiv f-is-iso where
-  f-is-iso : isIso _
-  isIso.inv f-is-iso _ = cA .centre
-  isIso.rinv f-is-iso _ = isContr→isProp cB _ _
-  isIso.linv f-is-iso _ = isContr→isProp cA _ _
+is-contr→is-equiv : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂}
+                → is-contr A → is-contr B → {f : A → B}
+                → is-equiv f
+is-contr→is-equiv cA cB = is-iso→is-equiv f-is-iso where
+  f-is-iso : is-iso _
+  is-iso.inv f-is-iso _ = cA .centre
+  is-iso.rinv f-is-iso _ = is-contr→is-prop cB _ _
+  is-iso.linv f-is-iso _ = is-contr→is-prop cA _ _
 
-isContr→≃ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂}
-          → isContr A → isContr B → A ≃ B
-isContr→≃ cA cB = (λ _ → cB .centre) , isIso→isEquiv f-is-iso where
-  f-is-iso : isIso _
-  isIso.inv f-is-iso _ = cA .centre
-  isIso.rinv f-is-iso _ = isContr→isProp cB _ _
-  isIso.linv f-is-iso _ = isContr→isProp cA _ _
+is-contr→≃ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂}
+          → is-contr A → is-contr B → A ≃ B
+is-contr→≃ cA cB = (λ _ → cB .centre) , is-iso→is-equiv f-is-iso where
+  f-is-iso : is-iso _
+  is-iso.inv f-is-iso _ = cA .centre
+  is-iso.rinv f-is-iso _ = is-contr→is-prop cB _ _
+  is-iso.linv f-is-iso _ = is-contr→is-prop cA _ _
 ```
 
 # Equivalence Reasoning
@@ -573,36 +578,36 @@ _e⁻¹ eqv = Iso→Equiv ( equiv→inverse (eqv .snd)
 <!--
 ```
 _∙e_ (f , e) (g , e') = (λ x → g (f x)) , eqv where
-  g⁻¹ : isIso g
-  g⁻¹ = isEquiv→isIso e'
+  g⁻¹ : is-iso g
+  g⁻¹ = is-equiv→is-iso e'
 
-  f⁻¹ : isIso f
-  f⁻¹ = isEquiv→isIso e
+  f⁻¹ : is-iso f
+  f⁻¹ = is-equiv→is-iso e
 
   inv : _ → _
-  inv x = f⁻¹ .isIso.inv (g⁻¹ .isIso.inv x)
+  inv x = f⁻¹ .is-iso.inv (g⁻¹ .is-iso.inv x)
 
   abstract
-    right : isRightInverse inv (λ x → g (f x))
+    right : is-right-inverse inv (λ x → g (f x))
     right z =
-      g (f (f⁻¹ .isIso.inv (g⁻¹ .isIso.inv z))) ≡⟨ ap g (f⁻¹ .isIso.rinv _) ⟩
-      g (g⁻¹ .isIso.inv z)                      ≡⟨ g⁻¹ .isIso.rinv _ ⟩
-      z                                         ∎
+      g (f (f⁻¹ .is-iso.inv (g⁻¹ .is-iso.inv z))) ≡⟨ ap g (f⁻¹ .is-iso.rinv _) ⟩
+      g (g⁻¹ .is-iso.inv z)                       ≡⟨ g⁻¹ .is-iso.rinv _ ⟩
+      z                                           ∎
 
-    left : isLeftInverse inv (λ x → g (f x))
+    left : is-left-inverse inv (λ x → g (f x))
     left z =
-      f⁻¹ .isIso.inv (g⁻¹ .isIso.inv (g (f z))) ≡⟨ ap (f⁻¹ .isIso.inv) (g⁻¹ .isIso.linv _) ⟩
-      f⁻¹ .isIso.inv (f z)                      ≡⟨ f⁻¹ .isIso.linv _ ⟩
-      z                                         ∎
-    eqv : isEquiv (λ x → g (f x))
-    eqv = isIso→isEquiv (iso (λ x → f⁻¹ .isIso.inv (g⁻¹ .isIso.inv x)) right left)
+      f⁻¹ .is-iso.inv (g⁻¹ .is-iso.inv (g (f z))) ≡⟨ ap (f⁻¹ .is-iso.inv) (g⁻¹ .is-iso.linv _) ⟩
+      f⁻¹ .is-iso.inv (f z)                       ≡⟨ f⁻¹ .is-iso.linv _ ⟩
+      z                                           ∎
+    eqv : is-equiv (λ x → g (f x))
+    eqv = is-iso→is-equiv (iso (λ x → f⁻¹ .is-iso.inv (g⁻¹ .is-iso.inv x)) right left)
 
-∙-isEquiv : ∀ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
+∙-is-equiv : ∀ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
           → {f : A → B} {g : B → C}
-          → isEquiv f
-          → isEquiv g
-          → isEquiv (λ x → g (f x))
-∙-isEquiv {f = f} {g = g} e e' = ((f , e) ∙e (g , e')) .snd
+          → is-equiv f
+          → is-equiv g
+          → is-equiv (λ x → g (f x))
+∙-is-equiv {f = f} {g = g} e e' = ((f , e) ∙e (g , e')) .snd
 ```
 -->
 
@@ -618,7 +623,7 @@ _≃⟨⟩_ : ∀ {ℓ ℓ₁} (A : Type ℓ) {B : Type ℓ₁} → A ≃ B → 
 x ≃⟨⟩ x≡y = x≡y
 
 _≃∎ : ∀ {ℓ} (A : Type ℓ) → A ≃ A
-x ≃∎ = _ , idEquiv
+x ≃∎ = _ , id-equiv
 
 infixr 30 _∙e_
 infixr 2 _≃⟨⟩_ _≃⟨_⟩_
@@ -631,12 +636,12 @@ The following observation is not very complex, but it is incredibly
 useful: Equivalence of propositions is the same as biimplication.
 
 ```agda
-propExt : ∀ {ℓ ℓ'} {P : Type ℓ} {Q : Type ℓ'}
-        → isProp P → isProp Q
+prop-ext : ∀ {ℓ ℓ'} {P : Type ℓ} {Q : Type ℓ'}
+        → is-prop P → is-prop Q
         → (P → Q) → (Q → P)
         → P ≃ Q
-propExt pprop qprop p→q q→p .fst = p→q
-propExt pprop qprop p→q q→p .snd .isEqv y .centre = q→p y , qprop _ _
-propExt pprop qprop p→q q→p .snd .isEqv y .paths (p' , path) =
-  Σ-Path (pprop _ _) (isProp→isSet qprop _ _ _ _)
+prop-ext pprop qprop p→q q→p .fst = p→q
+prop-ext pprop qprop p→q q→p .snd .is-eqv y .centre = q→p y , qprop _ _
+prop-ext pprop qprop p→q q→p .snd .is-eqv y .paths (p' , path) =
+  Σ-path (pprop _ _) (is-prop→is-set qprop _ _ _ _)
 ```

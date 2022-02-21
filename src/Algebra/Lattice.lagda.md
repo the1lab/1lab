@@ -24,10 +24,10 @@ and $(A, \lor)$ which “fit together” with equations specifying that
 $\land$ and $\lor$ are duals, called _absorption laws_.
 
 ```agda
-record isLattice (_∧_ : A → A → A) (_∨_ : A → A → A) : Type (level-of A) where
+record is-lattice (_∧_ : A → A → A) (_∨_ : A → A → A) : Type (level-of A) where
   field
-    hasMeets : isSemilattice _∧_
-    hasJoins : isSemilattice _∨_
+    hasMeets : is-semilattice _∧_
+    hasJoins : is-semilattice _∨_
 ```
   
 <details>
@@ -38,18 +38,18 @@ hierarchy.
 </summary>
 
 ```agda
-  open isSemilattice hasMeets public
+  open is-semilattice hasMeets public
     renaming ( associative to ∧-associative
              ; commutative to ∧-commutative
              ; idempotent to ∧-idempotent
              )
-    hiding ( hasIsMagma ; hasIsSemigroup )
+    hiding ( has-is-magma ; has-is-semigroup )
 
-  open isSemilattice hasJoins public
+  open is-semilattice hasJoins public
     renaming ( associative to ∨-associative
              ; commutative to ∨-commutative
              ; idempotent to ∨-idempotent )
-    hiding ( underlying-set ; hasIsMagma ; hasIsSet )
+    hiding ( underlying-set ; has-is-magma ; has-is-set )
 ```
 </details>
 
@@ -65,17 +65,17 @@ lattice. Since being a semilattice includes being a set, this means that
 being a lattice is a _property_ of $(A, \land, \lor)$:
 
 ```agda
-isProp-isLattice : ∀ {_∧_ _∨_ : A → A → A} → isProp (isLattice _∧_ _∨_)
-isProp-isLattice x y i = p where
-  open isLattice
+is-lattice-is-prop : ∀ {_∧_ _∨_ : A → A → A} → is-prop (is-lattice _∧_ _∨_)
+is-lattice-is-prop x y i = p where
+  open is-lattice
 
-  p : isLattice _ _
-  p .hasMeets = isProp-isSemilattice (x .hasMeets) (y .hasMeets) i
-  p .hasJoins = isProp-isSemilattice (x .hasJoins) (y .hasJoins) i
-  p .∧-absorbs-∨ = hasIsSet x _ _ (x .∧-absorbs-∨) (y .∧-absorbs-∨) i
-  p .∨-absorbs-∧ = hasIsSet x _ _ (x .∨-absorbs-∧) (y .∨-absorbs-∧) i
+  p : is-lattice _ _
+  p .hasMeets = is-semilattice-is-prop (x .hasMeets) (y .hasMeets) i
+  p .hasJoins = is-semilattice-is-prop (x .hasJoins) (y .hasJoins) i
+  p .∧-absorbs-∨ = has-is-set x _ _ (x .∧-absorbs-∨) (y .∧-absorbs-∨) i
+  p .∨-absorbs-∧ = has-is-set x _ _ (x .∨-absorbs-∧) (y .∨-absorbs-∧) i
 
-record LatticeOn (A : Type ℓ) : Type ℓ where
+record Lattice-on (A : Type ℓ) : Type ℓ where
   field
     _L∧_ : A → A → A
     _L∨_ : A → A → A
@@ -84,20 +84,20 @@ record LatticeOn (A : Type ℓ) : Type ℓ where
   infixr 30 _L∨_
 
   field
-    hasIsLattice : isLattice _L∧_ _L∨_
+    has-is-lattice : is-lattice _L∧_ _L∨_
   
-  open isLattice hasIsLattice public
+  open is-lattice has-is-lattice public
 
-  LatticeOn→isMeetSemi : isSemilattice _L∧_
-  LatticeOn→isMeetSemi = hasMeets
+  Lattice-on→is-meet-semi : is-semilattice _L∧_
+  Lattice-on→is-meet-semi = hasMeets
 
-  LatticeOn→isJoinSemi : isSemilattice _L∨_
-  LatticeOn→isJoinSemi = hasJoins
+  Lattice-on→is-join-semi : is-semilattice _L∨_
+  Lattice-on→is-join-semi = hasJoins
 
-open LatticeOn using (LatticeOn→isMeetSemi ; LatticeOn→isJoinSemi) public
+open Lattice-on using (Lattice-on→is-meet-semi ; Lattice-on→is-join-semi) public
 
 Lattice : ∀ ℓ → Type (lsuc ℓ)
-Lattice ℓ = Σ (LatticeOn {ℓ = ℓ})
+Lattice ℓ = Σ (Lattice-on {ℓ = ℓ})
 ```
 
 Since the absorption laws are property, not structure, a lattice
@@ -108,8 +108,8 @@ joins.
 ```agda
 record Lattice→ (A B : Lattice ℓ) (f : A .fst → B .fst) : Type ℓ where
   private
-    module A = LatticeOn (A .snd)
-    module B = LatticeOn (B .snd)
+    module A = Lattice-on (A .snd)
+    module B = Lattice-on (B .snd)
 
   field
     pres-∧ : ∀ x y → f (x A.L∧ y) ≡ f x B.L∧ f y
@@ -119,18 +119,18 @@ Lattice≃ : (A B : Lattice ℓ) (f : A .fst ≃ B .fst) → Type ℓ
 Lattice≃ A B = Lattice→ A B ∘ fst
 ```
 
-Using the automated machinery for deriving `isUnivalent`{.Agda} proofs,
+Using the automated machinery for deriving `is-univalent`{.Agda} proofs,
 we get that identification of lattices is the same thing as lattice
 isomorphism.
 
 ```agda
-Lattice-univalent : ∀ {ℓ} → isUnivalent (HomT→Str (Lattice≃ {ℓ = ℓ}))
+Lattice-univalent : ∀ {ℓ} → is-univalent (HomT→Str (Lattice≃ {ℓ = ℓ}))
 Lattice-univalent {ℓ = ℓ} =
-  autoUnivalentRecord (autoRecord (LatticeOn {ℓ = ℓ}) Lattice≃
+  Derive-univalent-record (record-desc (Lattice-on {ℓ = ℓ}) Lattice≃
     (record:
-      field[ LatticeOn._L∧_ by Lattice→.pres-∧ ]
-      field[ LatticeOn._L∨_ by Lattice→.pres-∨ ]
-      axiom[ LatticeOn.hasIsLattice by (λ _ → isProp-isLattice) ]))
+      field[ Lattice-on._L∧_ by Lattice→.pres-∧ ]
+      field[ Lattice-on._L∨_ by Lattice→.pres-∨ ]
+      axiom[ Lattice-on.has-is-lattice by (λ _ → is-lattice-is-prop) ]))
 ```
 
 ## Order-theoretically
@@ -145,11 +145,11 @@ and "contravariant" orderings.
 [already know]: Algebra.Semilattice.html#order-theoretically
 
 ```agda
-Lattice→CovariantOn : LatticeOn A → PosetOn {ℓ' = level-of A} A
-Lattice→CovariantOn lat = SemilatticeOn→MeetOn (LatticeOn→isMeetSemi lat)
+Lattice→Covariant-on : Lattice-on A → PosetOn {ℓ' = level-of A} A
+Lattice→Covariant-on lat = Semilattice-on→MeetOn (Lattice-on→is-meet-semi lat)
 
-Lattice→ContravariantOn : LatticeOn A → PosetOn {ℓ' = level-of A} A
-Lattice→ContravariantOn lat = SemilatticeOn→JoinOn (LatticeOn→isMeetSemi lat)
+Lattice→Contravariant-on : Lattice-on A → PosetOn {ℓ' = level-of A} A
+Lattice→Contravariant-on lat = Semilattice-on→JoinOn (Lattice-on→is-meet-semi lat)
 ```
 
 Above, the “covariant order” is obtaining by considering the $(A,
@@ -160,12 +160,13 @@ absorption laws, these constructions give rise to the same poset; Even
 better, the path is induced by the identity function.
 
 ```agda
-covariantOrderUnique : (l : LatticeOn A)
-                     → Path (Poset ℓ ℓ)
-                       (A , SemilatticeOn→MeetOn (LatticeOn→isMeetSemi l))
-                       (A , SemilatticeOn→JoinOn (LatticeOn→isJoinSemi l))
-covariantOrderUnique {A = A} l = sip Poset-univalent ((id , idEquiv) , pres) where
-  open LatticeOn l
+covariant-order-unique 
+  : (l : Lattice-on A)
+  → Path (Poset ℓ ℓ)
+  (A , Semilattice-on→MeetOn (Lattice-on→is-meet-semi l))
+  (A , Semilattice-on→JoinOn (Lattice-on→is-join-semi l))
+covariant-order-unique {A = A} l = sip Poset-univalent ((id , id-equiv) , pres) where
+  open Lattice-on l
 ```
 
 To show that the identity equivalence is a homomorphic equivalent of
@@ -187,8 +188,8 @@ posets, it suffices to show that $x \le y$ in one order implies $y
     x L∧ (x L∨ y) ≡⟨ ap₂ _L∧_ refl (sym p) ⟩ 
     x L∧ y        ∎
 
-  pres : Poset≃ _ _ (id , idEquiv)
-  pres .Poset≃.pres-≤ x y = ua (propExt (hasIsSet _ _) (hasIsSet _ _) l1 l2)
+  pres : Poset≃ _ _ (id , id-equiv)
+  pres .Poset≃.pres-≤ x y = ua (prop-ext (has-is-set _ _) (has-is-set _ _) l1 l2)
 ```
 }
 The dual fact holds for the “contravariant order”, where the semilattice
@@ -202,29 +203,31 @@ above, I've put it in a `<details>` tag, in the interest of conciseness.
 </summary>
 
 ```agda
-contravariantOrderUnique
-  : (l : LatticeOn A)
+contravariant-order-unique
+  : (l : Lattice-on A)
   → Path (Poset ℓ ℓ)
-      (A , SemilatticeOn→JoinOn (LatticeOn→isMeetSemi l))
-      (A , SemilatticeOn→MeetOn (LatticeOn→isJoinSemi l))
-contravariantOrderUnique {A = A} l = sip Poset-univalent ((id , idEquiv) , pres) where
-  open LatticeOn l
+      (A , Semilattice-on→JoinOn (Lattice-on→is-meet-semi l))
+      (A , Semilattice-on→MeetOn (Lattice-on→is-join-semi l))
+contravariant-order-unique {A = A} l = 
+  sip Poset-univalent ((id , id-equiv) , pres) 
+  where
+    open Lattice-on l
 
-  l1 : ∀ {x y : A} → (y ≡ x L∧ y) → (x ≡ x L∨ y)
-  l1 {x} {y} p =
-    x             ≡⟨ sym ∨-absorbs-∧ ⟩
-    x L∨ (x L∧ y) ≡⟨ ap₂ _L∨_ refl (sym p) ⟩
-    x L∨ y        ∎
+    l1 : ∀ {x y : A} → (y ≡ x L∧ y) → (x ≡ x L∨ y)
+    l1 {x} {y} p =
+      x             ≡⟨ sym ∨-absorbs-∧ ⟩
+      x L∨ (x L∧ y) ≡⟨ ap₂ _L∨_ refl (sym p) ⟩
+      x L∨ y        ∎
 
-  l2 : ∀ {x y : A} → (x ≡ x L∨ y) → (y ≡ x L∧ y)
-  l2 {x} {y} p =
-    y             ≡⟨ sym ∧-absorbs-∨ ⟩
-    y L∧ (y L∨ x) ≡⟨ ap₂ _L∧_ refl ∨-commutative ⟩
-    y L∧ (x L∨ y) ≡⟨ ap₂ _L∧_ refl (sym p) ⟩
-    y L∧ x        ≡⟨ ∧-commutative ⟩
-    x L∧ y        ∎
+    l2 : ∀ {x y : A} → (x ≡ x L∨ y) → (y ≡ x L∧ y)
+    l2 {x} {y} p =
+      y             ≡⟨ sym ∧-absorbs-∨ ⟩
+      y L∧ (y L∨ x) ≡⟨ ap₂ _L∧_ refl ∨-commutative ⟩
+      y L∧ (x L∨ y) ≡⟨ ap₂ _L∧_ refl (sym p) ⟩
+      y L∧ x        ≡⟨ ∧-commutative ⟩
+      x L∧ y        ∎
 
-  pres : Poset≃ _ _ (id , idEquiv)
-  pres .Poset≃.pres-≤ x y = ua (propExt (hasIsSet _ _) (hasIsSet _ _) l1 l2)
+    pres : Poset≃ _ _ (id , id-equiv)
+    pres .Poset≃.pres-≤ x y = ua (prop-ext (has-is-set _ _) (has-is-set _ _) l1 l2)
 ```
 </details>

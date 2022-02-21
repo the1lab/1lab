@@ -16,5 +16,5 @@ open import Data.Set.Coequaliser public
 open import Cat.Base public
 open import Cat.Solver public
 open import Cat.Univalent
-  using ( isCategory )
+  using ( is-category )
   public

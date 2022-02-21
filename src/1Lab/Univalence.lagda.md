@@ -28,13 +28,13 @@ data (right under remark §2.10.4):
 This map is called `ua`{.Agda}.
 
 * A rule for eliminating identifications of types, by turning them into
-equivalences: `pathToEquiv`{.Agda}
+equivalences: `path→equiv`{.Agda}
 
 * The propositional computation rule, stating that transport along
 `ua(f)` is identical to applying `f`: `uaβ`{.Agda}.
 
 In the book, there is an extra postulated datum asserting that
-`ua`{.Agda} is an inverse to `pathToEquiv`{.Agda}. This datum does not
+`ua`{.Agda} is an inverse to `path→equiv`{.Agda}. This datum does not
 have a name in this development, because it's proved in-line in the
 construction of the term `univalence`{.Agda}.
 
@@ -63,7 +63,7 @@ path.
 
 [RedPRL school]: https://redprl.org/
 
-[_equivalences_]: 1Lab.Equiv.html#isEquiv
+[_equivalences_]: 1Lab.Equiv.html#is-equiv
 [open box]: 1Lab.Path.html#transitivity
 
 In [CCHM] --- and therefore Cubical Agda --- a different approach is
@@ -243,7 +243,7 @@ fills open boxes of types using equivalences, this path exists!
 ```agda
 ua : {A B : Type ℓ} → A ≃ B → A ≡ B
 ua {A = A} {B} eqv i = Glue B λ { (i = i0) → A , eqv
-                                ; (i = i1) → B , _ , idEquiv
+                                ; (i = i1) → B , _ , id-equiv
                                 }
 ```
 
@@ -302,13 +302,13 @@ uaβ {A = A} {B} f x i = coe1→i (λ _ → B) i (f .fst x)
 
 Since `ua`{.Agda} is a map that turns equivalences into paths, we can
 compose it with a function that turns [isomorphisms] into equivalences
-to get the map `Iso→path`{.Agda}.
+to get the map `Iso→Path`{.Agda}.
 
 [isomorphisms]: 1Lab.Equiv.html#Iso
 
 ```agda
-Iso→path : {A B : Type ℓ} → Iso A B → A ≡ B
-Iso→path (f , iiso) = ua (f , isIso→isEquiv iiso)
+Iso→Path : {A B : Type ℓ} → Iso A B → A ≡ B
+Iso→Path (f , iiso) = ua (f , is-iso→is-equiv iiso)
 ```
 
 ## Paths over ua
@@ -339,10 +339,10 @@ mentioning extensions: A path `x ≡ y` over `ua e` induces a path `e .fst
 x ≡ y`.
 
 ```agda
-uaPathP→Path : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
+ua-path-p→path : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
              → PathP (λ i → ua e i) x y
              → e .fst x ≡ y
-uaPathP→Path e p i = outS (ua-unglue e i (p i))
+ua-path-p→path e p i = outS (ua-unglue e i (p i))
 ```
 
 In the other direction, we have `ua-glue`{.Agda}, which expresses that a
@@ -372,10 +372,10 @@ equivalence $e$. Factoring in the type of the interval, we get the
 promised map between dependent paths over `ua`{.Agda} and paths in B.
 
 ```agda
-Path→uaPathP : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
+path→ua-path-p : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
              → e .fst x ≡ y
              → PathP (λ i → ua e i) x y
-Path→uaPathP e {x = x} p i = outS (ua-glue e i (λ { (i = i0) → x }) (inS (p i)))
+path→ua-path-p e {x = x} p i = outS (ua-glue e i (λ { (i = i0) → x }) (inS (p i)))
 ```
 
 The "pathp to path" versions of the above lemmas are definitionally
@@ -383,119 +383,119 @@ inverses, so they provide a characterisation of `PathP (ua f)` in terms
 of non-dependent paths.
 
 ```agda
-uaPathP≃Path : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
+ua-path-p≃path : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
              → (e .fst x ≡ y) ≃ (PathP (λ i → ua e i) x y)
-uaPathP≃Path eqv .fst = Path→uaPathP eqv
-uaPathP≃Path eqv .snd .isEqv y .centre = strict-fibres (uaPathP→Path eqv) y .fst
-uaPathP≃Path eqv .snd .isEqv y .paths = strict-fibres (uaPathP→Path eqv) y .snd
+ua-path-p≃path eqv .fst = path→ua-path-p eqv
+ua-path-p≃path eqv .snd .is-eqv y .centre = strict-fibres (ua-path-p→path eqv) y .fst
+ua-path-p≃path eqv .snd .is-eqv y .paths = strict-fibres (ua-path-p→path eqv) y .snd
 ```
 
 # The “axiom”
 
 The actual “univalence axiom”, as stated in the HoTT book, says that the
 canonical map `A ≡ B`, defined using `J`{.Agda}, is an equivalence. This
-map is `idToEquiv`{.Agda}, defined right above. In more intuitive terms,
+map is `id→equiv`{.Agda}, defined right above. In more intuitive terms,
 it's "casting" the identity equivalence `A ≃ A` along a proof that `A ≡
 B` to get an equivalence `A ≃ B`.
 
 ```agda
 module _ where private
-  idToEquiv : {A B : Type ℓ} → A ≡ B → A ≃ B
-  idToEquiv {A = A} {B} = J (λ x _ → A ≃ x) (_ , idEquiv)
+  id→equiv : {A B : Type ℓ} → A ≡ B → A ≃ B
+  id→equiv {A = A} {B} = J (λ x _ → A ≃ x) (_ , id-equiv)
 
-  idToEquiv-refl : {A : Type ℓ} → idToEquiv (λ i → A) ≡ (_ , idEquiv)
-  idToEquiv-refl {A = A} = JRefl (λ x _ → A ≃ x) (_ , idEquiv)
+  id→equiv-refl : {A : Type ℓ} → id→equiv (λ i → A) ≡ (_ , id-equiv)
+  id→equiv-refl {A = A} = J-refl (λ x _ → A ≃ x) (_ , id-equiv)
 ```
 
 However, because of efficiency concerns (Agda _is_ a programming
-language, after all), instead of using `idToEquiv`{.Agda} defined using
-J, we use `pathToEquiv`{.Agda}, which is [defined in an auxilliary
+language, after all), instead of using `id→equiv`{.Agda} defined using
+J, we use `path→equiv`{.Agda}, which is [defined in an auxilliary
 module](1Lab.Equiv.FromPath.html).
 
 ```agda
-pathToEquiv : {A B : Type ℓ} → A ≡ B → A ≃ B
-pathToEquiv p = line→equiv (λ i → p i)
+path→equiv : {A B : Type ℓ} → A ≡ B → A ≃ B
+path→equiv p = line→equiv (λ i → p i)
 ```
 
 Since identity of equivalences is determined by identity of their
-underlying functions, to show that `pathToEquiv`{.Agda} of `refl`{.Agda}
+underlying functions, to show that `path→equiv`{.Agda} of `refl`{.Agda}
 is the identity equivalence, we use `coe1→i`{.Agda} to show that
 `transport`{.Agda} by `refl`{.Agda} is the identity.
 
 ```agda
-pathToEquiv-refl : {A : Type ℓ} → pathToEquiv (refl {x = A}) ≡ (id , idEquiv)
-pathToEquiv-refl {A = A} =
-  Σ-Path (λ i x → coe1→i (λ i → A) i x)
-         (isProp→PathP (λ i → isProp-isEquiv _) _ _)
+path→equiv-refl : {A : Type ℓ} → path→equiv (refl {x = A}) ≡ (id , id-equiv)
+path→equiv-refl {A = A} =
+  Σ-path (λ i x → coe1→i (λ i → A) i x)
+         (is-prop→PathP (λ i → is-equiv-is-prop _) _ _)
 ```
 
 For the other direction, we must show that `ua`{.Agda} of
-`idEquiv`{.Agda} is `refl`{.Agda}. We can do this quite efficiently
+`id-equiv`{.Agda} is `refl`{.Agda}. We can do this quite efficiently
 using `Glue`{.Agda}. Since this is a path between paths, we have two
 interval variables.
 
 ```agda
-uaIdEquiv : {A : Type ℓ} → ua (_ , idEquiv {A = A}) ≡ refl
-uaIdEquiv {A = A} i j = Glue A {φ = i ∨ ~ j ∨ j} (λ _ → A , _ , idEquiv)
+ua-id-equiv : {A : Type ℓ} → ua (_ , id-equiv {A = A}) ≡ refl
+ua-id-equiv {A = A} i j = Glue A {φ = i ∨ ~ j ∨ j} (λ _ → A , _ , id-equiv)
 ```
 
-We can then prove that the map `pathToEquiv`{.Agda} is an isomorphism,
+We can then prove that the map `path→equiv`{.Agda} is an isomorphism,
 hence an equivalence. It's very useful to have explicit names for the
-proofs that `pathToEquiv`{.Agda} and `ua`{.Agda} are equivalences
-without referring to components of `univalence-Iso`{.Agda}, so we
+proofs that `path→equiv`{.Agda} and `ua`{.Agda} are equivalences
+without referring to components of `Path≃Equiv`{.Agda}, so we
 introduce names for them as well.
 
 ```agda
-univalence-Iso : {A B : Type ℓ} → Iso (A ≡ B) (A ≃ B)
-univalence     : {A B : Type ℓ} → isEquiv (pathToEquiv {A = A} {B})
-univalence⁻¹   : {A B : Type ℓ} → isEquiv (ua {A = A} {B})
+Path≃Equiv   : {A B : Type ℓ} → Iso (A ≡ B) (A ≃ B)
+univalence   : {A B : Type ℓ} → is-equiv (path→equiv {A = A} {B})
+univalence⁻¹ : {A B : Type ℓ} → is-equiv (ua {A = A} {B})
 
-univalence-Iso {A = A} {B = B} = pathToEquiv , iiso where
-  iiso : isIso pathToEquiv
-  isIso.inv iiso = ua
+Path≃Equiv {A = A} {B = B} = path→equiv , iiso where
+  iiso : is-iso path→equiv
+  is-iso.inv iiso = ua
 ```
 
-We show that `pathToEquiv` inverts `ua`{.Agda}, which means proving that
+We show that `path→equiv` inverts `ua`{.Agda}, which means proving that
 one can recover the original equivalence from the generated path.
 Because of the computational nature of Cubical Agda, all we have to do
 is apply `uaβ`{.Agda}:
 
 ```agda
-  isIso.rinv iiso (f , isEqv) =
-    Σ-Path (funext (uaβ (f , isEqv))) (isProp-isEquiv f _ _)
+  is-iso.rinv iiso (f , is-eqv) =
+    Σ-path (funext (uaβ (f , is-eqv))) (is-equiv-is-prop f _ _)
 ```
 
 For the other direction, we use [path induction] to reduce the problem
-from showing that `ua`{.Agda} inverts `pathToEquiv`{.Agda} for an
-arbitrary path (which is hard) to showing that `pathToEquiv`{.Agda}
+from showing that `ua`{.Agda} inverts `path→equiv`{.Agda} for an
+arbitrary path (which is hard) to showing that `path→equiv`{.Agda}
 takes `refl`{.Agda} to the identity equivalence
-(`pathToEquiv-refl`{.Agda}), and that `ua`{.Agda} takes the identity
-equivalence to `refl`{.Agda} (`uaIdEquiv`{.Agda}).
+(`path→equiv-refl`{.Agda}), and that `ua`{.Agda} takes the identity
+equivalence to `refl`{.Agda} (`ua-id-equiv`{.Agda}).
 
 [path induction]: 1Lab.Path.html#J
 
 ```agda
-  isIso.linv iiso = 
-    J (λ _ p → ua (pathToEquiv p) ≡ p)
-      (ap ua pathToEquiv-refl ∙ uaIdEquiv)
+  is-iso.linv iiso = 
+    J (λ _ p → ua (path→equiv p) ≡ p)
+      (ap ua path→equiv-refl ∙ ua-id-equiv)
 
-univalence {A = A} {B} = isIso→isEquiv (univalence-Iso .snd)
-univalence⁻¹ {A = A} {B} = isIso→isEquiv (isIso.inverse (univalence-Iso .snd))
+univalence {A = A} {B} = is-iso→is-equiv (Path≃Equiv .snd)
+univalence⁻¹ {A = A} {B} = is-iso→is-equiv (is-iso.inverse (Path≃Equiv .snd))
 ```
 
 In some situations, it is helpful to have a proof that
-`pathToEquiv`{.Agda} followed by `an adjustment of levels`{.Agda
+`path→equiv`{.Agda} followed by `an adjustment of levels`{.Agda
 ident=Lift} is still an equivalence:
 
 ```agda
-univalence-lift : {A B : Type ℓ} → isEquiv (λ e → lift (pathToEquiv {A = A} {B} e))
-univalence-lift {ℓ = ℓ} = isIso→isEquiv morp where
-  morp : isIso (λ e → lift {ℓ = lsuc ℓ} (pathToEquiv e))
-  morp .isIso.inv x = ua (x .Lift.lower)
-  morp .isIso.rinv x =
-    lift (pathToEquiv (ua (x .Lift.lower))) ≡⟨ ap lift (univalence-Iso .snd .isIso.rinv _) ⟩
-    x                                       ∎
-  morp .isIso.linv x = univalence-Iso .snd .isIso.linv _
+univalence-lift : {A B : Type ℓ} → is-equiv (λ e → lift (path→equiv {A = A} {B} e))
+univalence-lift {ℓ = ℓ} = is-iso→is-equiv morp where
+  morp : is-iso (λ e → lift {ℓ = lsuc ℓ} (path→equiv e))
+  morp .is-iso.inv x = ua (x .Lift.lower)
+  morp .is-iso.rinv x =
+    lift (path→equiv (ua (x .Lift.lower))) ≡⟨ ap lift (Path≃Equiv .snd .is-iso.rinv _) ⟩
+    x                                      ∎
+  morp .is-iso.linv x = Path≃Equiv .snd .is-iso.linv _
 ```
 
 ## Equivalence Induction
@@ -510,17 +510,17 @@ contractibility of _singletons up to equivalence_:
 [the same induction principle]: 1Lab.Path.html#J
 
 ```agda
-EquivContr : ∀ {ℓ} (A : Type ℓ) → isContr (Σ[ B ∈ Type ℓ ] A ≃ B)
-isContr.centre (EquivContr A)            = A , _ , idEquiv
-isContr.paths (EquivContr A) (B , A≃B) i = ua A≃B i , p i , q i where
+Equiv-is-contr : ∀ {ℓ} (A : Type ℓ) → is-contr (Σ[ B ∈ Type ℓ ] A ≃ B)
+is-contr.centre (Equiv-is-contr A)            = A , _ , id-equiv
+is-contr.paths (Equiv-is-contr A) (B , A≃B) i = ua A≃B i , p i , q i where
   p : PathP (λ i → A → ua A≃B i) id (A≃B .fst)
   p i x = outS (ua-glue A≃B i (λ { (i = i0) → x }) (inS (A≃B .fst x)))
 
-  q : PathP (λ i → isEquiv (p i)) idEquiv (A≃B .snd)
-  q = isProp→PathP (λ i → isProp-isEquiv (p i)) _ _
+  q : PathP (λ i → is-equiv (p i)) id-equiv (A≃B .snd)
+  q = is-prop→PathP (λ i → is-equiv-is-prop (p i)) _ _
 ```
 
-Combining `EquivContr`{.Agda} with `subst`{.Agda}, we get an induction
+Combining `Equiv-is-contr`{.Agda} with `subst`{.Agda}, we get an induction
 principle for the type of equivalences based at $A$: To prove $P(B,e)$
 for any $e : A \simeq B$, it suffices to consider the case where $B$ is
 $A$ and $e$ is the identity equivalence.
@@ -528,11 +528,11 @@ $A$ and $e$ is the identity equivalence.
 ```agda
 EquivJ : ∀ {ℓ ℓ'} {A : Type ℓ}
        → (P : (B : Type ℓ) → A ≃ B → Type ℓ')
-       → P A (_ , idEquiv)
+       → P A (_ , id-equiv)
        → {B : Type ℓ} (e : A ≃ B)
        → P B e
 EquivJ P pid eqv =
-  subst (λ e → P (e .fst) (e .snd)) (EquivContr _ .isContr.paths (_ , eqv)) pid
+  subst (λ e → P (e .fst) (e .snd)) (Equiv-is-contr _ .is-contr.paths (_ , eqv)) pid
 ```
 
 [^2]: Not the fundamental theorem of engineering!
@@ -542,17 +542,17 @@ equivalences. For example, if $f$ is an equivalence, then so is its
 `action on paths`{.Agda ident=ap} $\mathrm{ap}(f)$.
 
 ```agda
-isEquiv→isEmbedding : ∀ {ℓ} {A B : Type ℓ}
-                    → (f : A → B) → isEquiv f
-                    → {x y : A}
-                    → isEquiv (ap f {x = x} {y = y})
-isEquiv→isEmbedding f eqv =
-  EquivJ (λ B e → isEquiv (ap (e .fst))) idEquiv (f , eqv)
+is-equiv→is-embedding : ∀ {ℓ} {A B : Type ℓ}
+                      → (f : A → B) → is-equiv f
+                      → {x y : A}
+                      → is-equiv (ap f {x = x} {y = y})
+is-equiv→is-embedding f eqv =
+  EquivJ (λ B e → is-equiv (ap (e .fst))) id-equiv (f , eqv)
 ```
 
 The proof can be rendered in English roughly as follows:
 
-> Suppose $f : A \to B$ `is an equivalence`{.Agda ident=isEquiv}. We want to
+> Suppose $f : A \to B$ `is an equivalence`{.Agda ident=is-equiv}. We want to
 show that, for any choice of $x, y : A$, the map $\mathrm{ap}(f)_{x,y} :
 x \equiv y \to f(x) \equiv f(y)$ is an equivalence.
 >
@@ -561,7 +561,7 @@ where $B$ is $A$, and $f$ is the identity function.
 >
 > But then, we have that $\mathrm{ap}(\mathrm{id})$ is [definitionally
 equal](1Lab.Path.html#ap-id) to $\mathrm{id}$, which is known to be `an
-equivalence`{.Agda ident=idEquiv}. <span class=qed>$\blacksquare$</span>
+equivalence`{.Agda ident=id-equiv}. <span class=qed>$\blacksquare$</span>
 
 ## Object Classifiers
 
@@ -594,7 +594,7 @@ classifiers_].
 ```agda
 private variable
   A B E : Type ℓ
-open isIso
+open is-iso
 ```
 -->
 
@@ -665,15 +665,15 @@ of all of its fibres (or even _structure_ on all of its fibres!) has a
 classifying object --- the total space $\Sigma P$.
 
 For instance, if we take $P$ to be the property of `being a
-proposition`{.Agda ident=isProp}, this theorem tells us that `Σ isProp`
-classifies _subobjects_. With the slight caveat that `Σ isProp` is not
+proposition`{.Agda ident=is-prop}, this theorem tells us that `Σ is-prop`
+classifies _subobjects_. With the slight caveat that `Σ is-prop` is not
 closed under impredicative quantification, this corresponds exactly to
 the notion of subobject classifier in a $(1,1)$-topos, since the maps
 with propositional fibres are precisely the injective maps.
 
 <!--
 ```
-_ = isProp
+_ = is-prop
 ```
 -->
 
@@ -720,9 +720,9 @@ ua∙ : ∀ {A B C : Type ℓ} {f : A ≃ B} {g : B ≃ C}
 ua∙ {C = C} {f = f} {g} = 
   EquivJ 
     (λ B eq → (g : B ≃ C) → ua (eq ∙e g) ≡ ua eq ∙ ua g)
-    (λ g → ap ua (Σ≡Prop isProp-isEquiv (refl {x = g .fst})) 
+    (λ g → ap ua (Σ-prop-path is-equiv-is-prop (refl {x = g .fst})) 
         ·· sym (∙-id-l (ua g)) 
-        ·· ap₂ _∙_ (sym uaIdEquiv) refl)
+        ·· ap₂ _∙_ (sym ua-id-equiv) refl)
     f g
 
 ua→ : ∀ {ℓ ℓ'} {A₀ A₁ : Type ℓ} {e : A₀ ≃ A₁} {B : (i : I) → Type ℓ'}
@@ -752,12 +752,12 @@ transport-∙ : ∀ {ℓ} {A B C : Type ℓ}
             → (p : A ≡ B) (q : B ≡ C) (u : A)
             → transport (p ∙ q) u ≡ transport q (transport p u)
 transport-∙ p q x i =
-  transport (∙-filler' p q (~ i)) (transport-fillerExt p i x)
+  transport (∙-filler' p q (~ i)) (transport-filler-ext p i x)
 
 subst-∙ : ∀ {ℓ ℓ′} {A : Type ℓ} → (B : A → Type ℓ′)
         → {x y z : A} (p : x ≡ y) (q : y ≡ z) (u : B x)
         → subst B (p ∙ q) u ≡ subst B q (subst B p u)
 subst-∙ B p q Bx i =
-  transport (ap B (∙-filler' p q (~ i))) (transport-fillerExt (ap B p) i Bx)
+  transport (ap B (∙-filler' p q (~ i))) (transport-filler-ext (ap B p) i Bx)
 ```
 -->

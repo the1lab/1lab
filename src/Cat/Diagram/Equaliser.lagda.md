@@ -23,7 +23,7 @@ of the domain (i.e. what the variable ranges over) where the left- and
 right-hand-sides agree.
 
 ```agda
-record IsEqualiser {E} (f g : Hom A B) (equ : Hom E A) : Type (ℓ ⊔ ℓ′) where
+record is-equaliser {E} (f g : Hom A B) (equ : Hom E A) : Type (ℓ ⊔ ℓ′) where
   field
     equal     : f ∘ equ ≡ g ∘ equ
     limiting  : ∀ {F} {e′ : Hom F A} (p : f ∘ e′ ≡ g ∘ e′) → Hom F E
@@ -61,9 +61,9 @@ record Equaliser (f g : Hom A B) : Type (ℓ ⊔ ℓ′) where
   field
     {apex}  : Ob
     equ     : Hom apex A
-    hasIsEq : IsEqualiser f g equ
+    has-is-eq : is-equaliser f g equ
 
-  open IsEqualiser hasIsEq public   
+  open is-equaliser has-is-eq public   
 ```
 
 ## Equalisers are monic
@@ -74,13 +74,13 @@ always [monic]:
 [monic]: Cat.Morphism.html#monos
 
 ```agda
-IsEqualiser→isMonic 
+is-equaliser→is-monic 
   : ∀ {E} (equ : Hom E A)
-  → IsEqualiser f g equ
-  → isMonic equ
-IsEqualiser→isMonic equ equalises g h p = 
+  → is-equaliser f g equ
+  → is-monic equ
+is-equaliser→is-monic equ equalises g h p = 
   g                ≡⟨ unique (sym p) ⟩
   limiting equal-∘ ≡˘⟨ unique refl ⟩
   h ∎
-  where open IsEqualiser equalises
+  where open is-equaliser equalises
 ```

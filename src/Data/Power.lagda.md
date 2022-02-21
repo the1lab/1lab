@@ -17,19 +17,19 @@ private variable
 # Power Sets
 
 The **power set** of a type $X$ is the collection of all maps from $X$
-into the universe of `propositional types`{.Agda ident=nType}. Since
+into the universe of `propositional types`{.Agda ident=n-Type}. Since
 the universe of all $n$-types is a $(n+1)$-type (by
-`isHLevel-nType`{.Agda}), and function types have the same h-level as
-their codomain (by `isHLevel→`{.Agda}), the power set of a type $X$ is
-always `a set`{.Agda ident=isSet}. We denote the power set of $X$ by
+`n-Type-is-hlevel`{.Agda}), and function types have the same h-level as
+their codomain (by `fun-is-hlevel`{.Agda}), the power set of a type $X$ is
+always `a set`{.Agda ident=is-set}. We denote the power set of $X$ by
 $\mathbb{P}(X)$.
 
 ```agda
 ℙ : Type ℓ → Type (lsuc ℓ)
-ℙ X = X → nType _ 1
+ℙ X = X → n-Type _ 1
 
-isSet-ℙ : isSet (ℙ X)
-isSet-ℙ = isHLevel→ 2 (isHLevel-nType 1)
+ℙ-is-set : is-set (ℙ X)
+ℙ-is-set = fun-is-hlevel 2 (n-Type-is-hlevel 1)
 ```
 
 The **membership** relation is defined by applying the predicate and
@@ -57,7 +57,7 @@ propositions to each inhabitant of $X$.
 ℙ-ext : {A B : ℙ X}
       → A ⊆ B → B ⊆ A → A ≡ B
 ℙ-ext {A = A} {B = B} A⊆B B⊂A = funext λ x →
-  nType-ua {n = 1} (propExt (A x .snd) (B x .snd) (A⊆B x) (B⊂A x))
+  n-Type-ua {n = 1} (prop-ext (A x .snd) (B x .snd) (A⊆B x) (B⊂A x))
 ```
 
 ## Lattice Structure
@@ -75,7 +75,7 @@ minimal : ℙ X
 minimal _ = Lift _ ⊥ , λ x → absurd (Lift.lower x)
 
 _∩_ : ℙ X → ℙ X → ℙ X
-(A ∩ B) x = (A x .fst × B x .fst) , isHLevel× 1 (A x .snd) (B x .snd)
+(A ∩ B) x = (A x .fst × B x .fst) , ×-is-hlevel 1 (A x .snd) (B x .snd)
 ```
 
 Note that in the definition of `union`{.Agda ident=_∪_}, we must

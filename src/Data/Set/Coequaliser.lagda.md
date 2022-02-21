@@ -24,7 +24,7 @@ can be thought of as "$B$, with the images of $f$ and $g$ identified".
 data Coeq (f g : A → B) : Type (level-of A ⊔ level-of B) where
   inc    : B → Coeq f g
   glue   : ∀ x → inc (f x) ≡ inc (g x)
-  squash : isSet (Coeq f g)
+  squash : is-set (Coeq f g)
 ```
 
 The universal property of coequalisers, being a type of colimit, is a
@@ -50,7 +50,7 @@ We refer to this unique factoring as `Coeq-rec`{.Agda}.
 
 ```
 Coeq-rec : ∀ {ℓ} {C : Type ℓ} {f g : A → B} 
-      → isSet C → (h : B → C)
+      → is-set C → (h : B → C)
       → (∀ x → h (f x) ≡ h (g x)) → Coeq f g → C
 Coeq-rec cset h h-coeqs (inc x) = h x
 Coeq-rec cset h h-coeqs (glue x i) = h-coeqs x i
@@ -80,7 +80,7 @@ acts on `inc`{.Agda}: The path constructions don't matter.
 
 ```agda
 Coeq-elimProp : ∀ {ℓ} {f g : A → B} {C : Coeq f g → Type ℓ}
-              → (∀ x → isProp (C x))
+              → (∀ x → is-prop (C x))
               → (∀ x → C (inc x))
               → ∀ x → C x
 Coeq-elimProp cprop cinc (inc x) = cinc x
@@ -91,9 +91,9 @@ the necessary coherences for `glue`{.Agda} and `squash`{.Agda}.
 
 ```agda
 Coeq-elimProp {f = f} {g = g} cprop cinc (glue x i) = 
-  isProp→PathP (λ i → cprop (glue x i)) (cinc (f x)) (cinc (g x)) i
+  is-prop→PathP (λ i → cprop (glue x i)) (cinc (f x)) (cinc (g x)) i
 Coeq-elimProp cprop cinc (squash x y p q i j) = 
-  isProp→SquareP (λ i j → cprop (squash x y p q i j)) 
+  is-prop→SquareP (λ i j → cprop (squash x y p q i j)) 
     (λ i → g x) (λ i → g (p i)) (λ i → g (q i)) (λ i → g y) i j
   where g = Coeq-elimProp cprop cinc
 ```
@@ -120,17 +120,17 @@ Coequalising map".
 
 ```agda
 Coeq-univ : ∀ {ℓ} {C : Type ℓ} {f g : A → B}
-          → isSet C
-          → isEquiv {A = Coeq f g → C} {B = coeq-cone f g C} 
+          → is-set C
+          → is-equiv {A = Coeq f g → C} {B = coeq-cone f g C} 
             (λ h → h ∘ inc , λ i z → h (glue z i))
 Coeq-univ {C = C} {f = f} {g = g} cset = 
-  isIso→isEquiv (iso cr' (λ x → refl) islinv) 
+  is-iso→is-equiv (iso cr' (λ x → refl) islinv) 
   where
-    open isIso
+    open is-iso
     cr' : coeq-cone f g C → Coeq f g → C
     cr' (f , f-coeqs) = Coeq-rec cset f (happly f-coeqs)
 
-    islinv : isLeftInverse cr' (λ h → h ∘ inc , λ i z → h (glue z i))
+    islinv : is-left-inverse cr' (λ h → h ∘ inc , λ i z → h (glue z i))
     islinv f = funext (Coeq-elimProp (λ x → cset _ _) λ x → refl)
 ```
 
@@ -147,14 +147,14 @@ into families of sets:
 
 ```agda
 Coeq-elim : ∀ {ℓ} {f g : A → B} {C : Coeq f g → Type ℓ}
-          → (∀ x → isSet (C x))
+          → (∀ x → is-set (C x))
           → (ci : ∀ x → C (inc x))
           → (∀ x → PathP (λ i → C (glue x i)) (ci (f x)) (ci (g x)))
           → ∀ x → C x
 Coeq-elim cset ci cg (inc x) = ci x
 Coeq-elim cset ci cg (glue x i) = cg x i
 Coeq-elim cset ci cg (squash x y p q i j) = 
-  isSet→SquareP (λ i j → cset (squash x y p q i j)) 
+  is-set→SquareP (λ i j → cset (squash x y p q i j)) 
     (λ i → g x) (λ i → g (p i)) (λ i → g (q i)) (λ i → g y) i j
   where g = Coeq-elim cset ci cg
 ```
@@ -168,40 +168,40 @@ very enlightening --- you can mouse over these links to see their types:
 ```agda
 Coeq-elimProp₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} 
                    {C : Coeq f g → Coeq f' g' → Type ℓ}
-               → (∀ x y → isProp (C x y))
+               → (∀ x y → is-prop (C x y))
                → (∀ x y → C (inc x) (inc y))
                → ∀ x y → C x y
 Coeq-elimProp₂ prop f = 
-  Coeq-elimProp (λ x → isHLevelΠ 1 λ _ → prop _ _) 
+  Coeq-elimProp (λ x → Π-is-hlevel 1 λ _ → prop _ _) 
     λ x → Coeq-elimProp (prop (inc x)) (f x)
 
 Coeq-elimProp₃ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {f'' g'' : A'' → B''}
                    {C : Coeq f g → Coeq f' g' → Coeq f'' g'' → Type ℓ}
-               → (∀ x y z → isProp (C x y z))
+               → (∀ x y z → is-prop (C x y z))
                → (∀ x y z → C (inc x) (inc y) (inc z))
                → ∀ x y z → C x y z
 Coeq-elimProp₃ cprop f = 
-  Coeq-elimProp₂ (λ x y → isHLevelΠ 1 λ _ → cprop _ _ _) 
+  Coeq-elimProp₂ (λ x y → Π-is-hlevel 1 λ _ → cprop _ _ _) 
     λ x y → Coeq-elimProp (λ y → cprop _ _ _) (f x y)
 
 Coeq-elim₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} 
            → {C : Coeq f g → Coeq f' g' → Type ℓ}
-           → (∀ x y → isSet (C x y))
+           → (∀ x y → is-set (C x y))
            → (ci : ∀ x y → C (inc x) (inc y))
            → (∀ a x → PathP (λ i → C (glue x i) (inc a)) (ci (f x) a) (ci (g x) a))
            → (∀ a x → PathP (λ i → C (inc a) (glue x i)) (ci a (f' x)) (ci a (g' x)))
            → ∀ x y → C x y
 Coeq-elim₂ {f = f} {g = g} {C = C} cset ci r-r l-r =
-  Coeq-elim (λ x → isHLevelΠ 2 λ _ → cset _ _) 
+  Coeq-elim (λ x → Π-is-hlevel 2 λ _ → cset _ _) 
     (λ x → Coeq-elim (λ _ → cset _ _) (ci x) (l-r x)) 
-    λ x → funextDep λ {x₀} {x₁} → 
+    λ x → funext-dep λ {x₀} {x₁} → 
       Coeq-elimProp₂ 
         {C = λ x₀ x₁ → (p : x₀ ≡ x₁) 
            → PathP (λ i → C (glue x i) (p i)) 
                    (Coeq-elim (cset _) _ _ x₀) 
                    (Coeq-elim (cset _) _ _ x₁) } 
 
-        (λ _ _ → isHLevelΠ 1 λ _ → isHLevelPathP' 1 (cset _ _) _ _) 
+        (λ _ _ → Π-is-hlevel 1 λ _ → PathP-is-hlevel' 1 (cset _ _) _ _) 
 
         (λ x₀ _ p → 
           J (λ y p → PathP (λ i → C (glue x i) (p i)) 
@@ -211,7 +211,7 @@ Coeq-elim₂ {f = f} {g = g} {C = C} cset ci r-r l-r =
         x₀ x₁
 
 Coeq-rec₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {C : Type ℓ}
-          → isSet C
+          → is-set C
           → (ci : B → B' → C)
           → (∀ a x → ci (f x) a ≡ ci (g x) a)
           → (∀ a x → ci a (f' x) ≡ ci a (g' x))
@@ -227,7 +227,7 @@ Coeq-rec₂ cset ci r1 r2 (inc x) (squash y z p q i j) = cset
 
 Coeq-rec₂ cset ci r1 r2 (glue x i) (inc x₁) = r1 x₁ x i
 Coeq-rec₂ {f = f} {g} {f'} {g'} cset ci r1 r2 (glue x i) (glue y j) = 
-  isSet→SquareP (λ i j → cset)
+  is-set→SquareP (λ i j → cset)
     (λ j → r1 (f' y) x j) 
     (λ j → r2 (f x) y j) 
     (λ j → r2 (g x) y j) 
@@ -235,7 +235,7 @@ Coeq-rec₂ {f = f} {g} {f'} {g'} cset ci r1 r2 (glue x i) (glue y j) =
     i j
 
 Coeq-rec₂ {f = f} {g} {f'} {g'} cset ci r1 r2 (glue x i) (squash y z p q j k) = 
-  isHLevel-suc 2 cset 
+  is-hlevel-suc 2 cset 
     (map (glue x i) y) (map (glue x i) z) 
     (λ j → map (glue x i) (p j)) 
     (λ j → map (glue x i) (q j)) 
@@ -301,7 +301,7 @@ quotients:
 
 ```
 Quot-elim : ∀ {ℓ} {B : A / R → Type ℓ}
-          → (∀ x → isSet (B x))
+          → (∀ x → is-set (B x))
           → (f : ∀ x → B (inc x))
           → (∀ x y (r : R x y) → PathP (λ i → B (quot r i)) (f x) (f y))
           → ∀ x → B x
@@ -317,7 +317,7 @@ is **effective**: The map `quot`{.Agda} is an equivalence.
 
 ```agda
 module _ {A : Type ℓ} {R : A → A → Type ℓ'}
-         (Rp : ∀ x y → isProp (R x y))
+         (Rp : ∀ x y → is-prop (R x y))
          (rr : ∀ {x} → R x x)
          (rt : ∀ {x y z} → R x y → R y z → R x z)
          (rs : ∀ {x y} → R x y → R y x)
@@ -335,15 +335,15 @@ establish effectivity of the quotient.
   private
     Code : A → A / R → Prop ℓ'
     Code x = Quot-elim 
-      (λ x → isHLevel-nType 1) 
+      (λ x → n-Type-is-hlevel 1) 
       (λ y → {- 1 -} R x y , Rp x y)
       λ y z r → 
-        Σ≡Prop (λ _ → isProp-isProp) 
-          (ua {- 2 -} (propExt (Rp _ _) (Rp _ _) (λ z → rt z r) λ z → rt z (rs r)))
+        Σ-prop-path (λ _ → is-prop-is-prop) 
+          (ua {- 2 -} (prop-ext (Rp _ _) (Rp _ _) (λ z → rt z r) λ z → rt z (rs r)))
 ```
 
 We do quotient induction into the `type of propositions`{.Agda
-ident=Prop}, which by univalence `is a set`{.Agda ident=isHLevel-nType}.
+ident=Prop}, which by univalence `is a set`{.Agda ident=n-Type-is-hlevel}.
 Since the fibre over $\mathrm{inc}(y)$ must be $R(x, y)$, that's what we
 give for the `inc`{.Agda} constructor (`{- 1 -}`{.Agda}, above). For
 this to respect the quotient, it suffices to show that, given $R(y,z)$,
@@ -357,7 +357,7 @@ assumption that $R$ is an equivalence relation (`{- 2 -}`{.Agda}).
     decode : ∀ x y (p : Code x y .fst) → inc x ≡ y
     decode x y p = 
       Coeq-elimProp {C = λ y → (p : Code x y .fst) → inc x ≡ y} 
-        (λ _ → isHLevelΠ 1 λ _ → squash _ _) (λ y r → quot r) y p
+        (λ _ → Π-is-hlevel 1 λ _ → squash _ _) (λ y r → quot r) y p
 ```
 
 For `encode`{.Agda}, it suffices to transport the proof that $R$ is
@@ -368,9 +368,9 @@ constructor `quot`{.Agda} says. Putting this all together, we get a
 proof that equivalence relations are `effective`{.Agda}.
 
 ```agda
-  effective : ∀ {x y : A} → isEquiv (quot {R = R})
+  effective : ∀ {x y : A} → is-equiv (quot {R = R})
   effective {x = x} {y} = 
-    propExt (Rp x y) (squash _ _) (decode x (inc y)) (encode x (inc y)) .snd 
+    prop-ext (Rp x y) (squash _ _) (decode x (inc y)) (encode x (inc y)) .snd 
 ```
 
 <!--

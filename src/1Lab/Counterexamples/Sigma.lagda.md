@@ -21,7 +21,7 @@ perhaps using "subset" to mean "`Σ` for which the type family is
 (generalised) subset inclusion], so this translation is accurate **for
 subsets**.
 
-[propositional]: agda://1Lab.HLevel#isProp
+[propositional]: agda://1Lab.HLevel#is-prop
 [a (generalised) subset inclusion]: agda://1Lab.Equiv.Embedding#Subset-proj-embedding
 
 However, let's see what happens when we naïvely translate the definition
@@ -45,9 +45,9 @@ image≃domain : {f : A → B} → image f ≃ A
 image≃domain {f = f} = Iso→Equiv the-iso where
   the-iso : Iso _ _
   the-iso .fst (y , x , p) = x
-  the-iso .snd .isIso.inv x = f x , x , refl
-  the-iso .snd .isIso.rinv x = refl
-  the-iso .snd .isIso.linv (y , x , p) i = p i , x , λ j → p (i ∧ j)
+  the-iso .snd .is-iso.inv x = f x , x , refl
+  the-iso .snd .is-iso.rinv x = refl
+  the-iso .snd .is-iso.linv (y , x , p) i = p i , x , λ j → p (i ∧ j)
 ```
 
 This is a direct cubical interpretation of the following argument, which
@@ -74,4 +74,4 @@ woops = image≃domain
 `x, p i, λ j → p (i ∧ j)`, which is exactly how it is shown that
 [singletons are contractible].
 
-[singletons are contractible]: agda://1Lab.Path#isContr-Singleton
+[singletons are contractible]: agda://1Lab.Path#Singleton-is-contr

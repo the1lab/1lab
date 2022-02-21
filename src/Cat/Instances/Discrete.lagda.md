@@ -24,7 +24,7 @@ space of objects $A$ and a single morphism $x \to y$ whenever $x \equiv
 y$.
 
 ```agda
-Disc : (A : Type ℓ) → isGroupoid A → Precategory ℓ ℓ
+Disc : (A : Type ℓ) → is-groupoid A → Precategory ℓ ℓ
 Disc A A-grpd .Ob = A
 Disc A A-grpd .Hom = _≡_
 Disc A A-grpd .Hom-set = A-grpd
@@ -36,8 +36,8 @@ Disc A A-grpd .assoc _ _ _ = sym (∙-assoc _ _ _)
 
 Disc′ : Set ℓ → Precategory ℓ ℓ
 Disc′ (A , aset) = Disc A h where abstract
-  h : isGroupoid A
-  h = isHLevel-suc 2 aset
+  h : is-groupoid A
+  h = is-hlevel-suc 2 aset
 ```
 
 We can lift any function between the underlying types to a functor
@@ -60,7 +60,7 @@ liftDisc f .F-∘ p q = ap-comp-path f q p
 Codisc′ : ∀ {ℓ'} → Type ℓ → Precategory ℓ ℓ'
 Codisc′ x .Ob = x
 Codisc′ x .Hom _ _ = Lift _ ⊤
-Codisc′ x .Hom-set _ _ = isProp→isSet (λ _ _ i → lift tt)
+Codisc′ x .Hom-set _ _ = is-prop→is-set (λ _ _ i → lift tt)
 Codisc′ x .id = lift tt
 Codisc′ x ._∘_ _ _ = lift tt
 Codisc′ x .idr _ = refl
@@ -82,13 +82,13 @@ adjoint] to the `Ob`{.Agda} functor.
 
 ```agda
 Disc-diagram
-  : ∀ {iss : isSet X} (disc : Discrete X) 
+  : ∀ {iss : is-set X} (disc : Discrete X) 
   → (X → Ob C) 
   → Functor (Disc′ (X , iss)) C
 Disc-diagram {X = X} {C = C} disc f = F where
   module C = Precategory C
-  set : isSet X
-  set = Discrete→isSet disc
+  set : is-set X
+  set = Discrete→is-set disc
 
   P : X → X → Type _
   P x y = C.Hom (f x) (f y)
@@ -125,7 +125,7 @@ computations with equalities and a whole waterfall of absurd cases:
   ... | yes x=y | yes x=z | yes y=z =
     subst (P x) x=z C.id                          ≡⟨ ap (λ e → subst (P x) e C.id) (set _ _ _ _) ⟩
     subst (P x) (x=y ∙ y=z) C.id                  ≡⟨ subst-∙ (P x) _ _ _ ⟩
-    subst (P x) y=z (subst (P _) x=y C.id)        ≡⟨ fromPathP (toHomPathP C (ap₂ C._∘_ refl (ap₂ C._∘_ refl (transport-refl _) ∙ C.idr _))) ⟩ 
+    subst (P x) y=z (subst (P _) x=y C.id)        ≡⟨ from-path-p (Hom-path-p C (ap₂ C._∘_ refl (ap₂ C._∘_ refl (transport-refl _) ∙ C.idr _))) ⟩ 
     subst (P y) y=z C.id C.∘ subst (P x) x=y C.id ∎
 
   ... | yes x=y | yes x=z | no  y≠z = absurd (y≠z f)

@@ -16,17 +16,17 @@ private variable
 
 # Unital Magmas
 
-A **unital magma** is a `magma`{.Agda ident=isMagma} equipped with a
+A **unital magma** is a `magma`{.Agda ident=is-magma} equipped with a
 _two-sided identity element_, that is, an element $e$ such that
 $e \star x = x = x \star e$. For any given $\star$, such an element is
 exists as long as it is unique. This makes unitality a property of
 magmas rather then additional data, leading to the conclusion that the
-identity element should be part of the record `isUnitalMagma` instead
+identity element should be part of the record `is-unital-magma` instead
 of its type signature.
 
 However, since magma homomorphisms do not automatically preserve the
 identity element[^1], it is part of the type signature for
-`isUnitalMagma`{.Agda}, being considered _structure_ that a magma may be
+`is-unital-magma`{.Agda}, being considered _structure_ that a magma may be
 equipped with.
 
 [^1]: Counterexample: The map $f : (\mathbb{Z}, *) \to (\mathbb{Z}, *)$
@@ -34,17 +34,17 @@ which sends everything to zero is a magma homomorphism, but does not
 preserve the unit of $(\mathbb{Z}, *)$.
 
 ```agda
-record isUnitalMagma (identity : A) (_⋆_ : A → A → A) : Type (level-of A) where
+record is-unital-magma (identity : A) (_⋆_ : A → A → A) : Type (level-of A) where
   field
-    hasIsMagma : isMagma _⋆_
+    has-is-magma : is-magma _⋆_
 
-  open isMagma hasIsMagma public
+  open is-magma has-is-magma public
 
   field
     idˡ : {x : A} → identity ⋆ x ≡ x
     idʳ : {x : A} → x ⋆ identity ≡ x
 
-open isUnitalMagma public
+open is-unital-magma public
 ```
 
 Since `A` is a set, we do not have to worry about higher coherence
@@ -53,11 +53,11 @@ between the same endpoints in `A` are equal. This allows us to show that
 being a unital magma is a _property_ of the operator and the identity:
 
 ```agda
-isProp-isUnitalMagma : {e : A} → {_⋆_ : A → A → A} → isProp (isUnitalMagma e _⋆_)
-isProp-isUnitalMagma x y i .isUnitalMagma.hasIsMagma = isProp-isMagma
-  (x .hasIsMagma) (y .hasIsMagma) i
-isProp-isUnitalMagma x y i .isUnitalMagma.idˡ = x .hasIsSet _ _ (x .idˡ) (y .idˡ) i
-isProp-isUnitalMagma x y i .isUnitalMagma.idʳ = x .hasIsSet _ _ (x .idʳ) (y .idʳ) i
+is-unital-magma-is-prop : {e : A} → {_⋆_ : A → A → A} → is-prop (is-unital-magma e _⋆_)
+is-unital-magma-is-prop x y i .is-unital-magma.has-is-magma = is-magma-is-prop
+  (x .has-is-magma) (y .has-is-magma) i
+is-unital-magma-is-prop x y i .is-unital-magma.idˡ = x .has-is-set _ _ (x .idˡ) (y .idˡ) i
+is-unital-magma-is-prop x y i .is-unital-magma.idʳ = x .has-is-set _ _ (x .idʳ) (y .idʳ) i
 ```
 
 We can also show that two units of a magma are necessarily the same,
@@ -66,8 +66,8 @@ since the products of the identities has to be equal to either one:
 ```agda
 identities-equal 
   : (e e' : A) {_⋆_ : A → A → A} 
-  → isUnitalMagma e _⋆_
-  → isUnitalMagma e' _⋆_ 
+  → is-unital-magma e _⋆_
+  → is-unital-magma e' _⋆_ 
   → e ≡ e'
 identities-equal e e' {_⋆_ = _⋆_} unital unital' =
   e      ≡⟨ sym (idʳ unital') ⟩
@@ -80,13 +80,13 @@ meaning the type of elements combined with a proof that they make a
 given magma unital, is a proposition. This is because
 `left-right-identities-equal`{.Agda} shows the elements are equal,
 and the witnesses are equal because they are propositions, as can
-be derived from `isProp-isUnitalMagma`{.Agda}
+be derived from `is-unital-magma-is-prop`{.Agda}
 
 ```agda
-isProp-hasIdentity 
+is-prop-hasIdentity 
   : {⋆ : A → A → A} 
-  → isMagma ⋆ → isProp (Σ[ u ∈ A ] (isUnitalMagma u ⋆))
-isProp-hasIdentity mgm x y = Σ≡Prop (λ x → isProp-isUnitalMagma)
+  → is-magma ⋆ → is-prop (Σ[ u ∈ A ] (is-unital-magma u ⋆))
+is-prop-hasIdentity mgm x y = Σ-prop-path (λ x → is-unital-magma-is-prop)
  (identities-equal (x .fst) (y .fst) (x .snd) (y .snd))
 ```
 
@@ -96,24 +96,24 @@ that can be further used to define the type of unital magmas,
 as well as their underlying magma structures.
 
 ```agda
-record UnitalMagmaOn (A : Type ℓ) : Type ℓ where
+record Unital-magma-on (A : Type ℓ) : Type ℓ where
   field
     identity : A
     _⋆_ : A → A → A
 
-    hasIsUnitalMagma : isUnitalMagma identity _⋆_
+    has-is-unital-magma : is-unital-magma identity _⋆_
 
-  hasMagmaOn : MagmaOn A
-  hasMagmaOn .MagmaOn._⋆_ = _⋆_
-  hasMagmaOn .MagmaOn.hasIsMagma = hasIsUnitalMagma .hasIsMagma
+  hasMagma-on : Magma-on A
+  hasMagma-on .Magma-on._⋆_ = _⋆_
+  hasMagma-on .Magma-on.has-is-magma = has-is-unital-magma .has-is-magma
 
-  open isUnitalMagma hasIsUnitalMagma public
+  open is-unital-magma has-is-unital-magma public
 
-UnitalMagma : (ℓ : Level) → Type (lsuc ℓ)
-UnitalMagma ℓ = Σ UnitalMagmaOn
+Unital-magma : (ℓ : Level) → Type (lsuc ℓ)
+Unital-magma ℓ = Σ Unital-magma-on
 
-UnitalMagma→Magma : {ℓ : _} → UnitalMagma ℓ → Magma ℓ
-UnitalMagma→Magma (A , unital-mgm) = A , UnitalMagmaOn.hasMagmaOn unital-mgm
+Unital-magma→Magma : {ℓ : _} → Unital-magma ℓ → Magma ℓ
+Unital-magma→Magma (A , unital-mgm) = A , Unital-magma-on.hasMagma-on unital-mgm
 ```
 
 This allows us to define **equivalences of unital magmas** - two unital
@@ -123,19 +123,19 @@ homomorphism) and the identity element.
 
 ```agda
 record
-  UnitalMagma≃ (A B : UnitalMagma ℓ) (e : A .fst ≃ B .fst) : Type ℓ where
+  Unital-magma≃ (A B : Unital-magma ℓ) (e : A .fst ≃ B .fst) : Type ℓ where
   private
-    module A = UnitalMagmaOn (A .snd)
-    module B = UnitalMagmaOn (B .snd)
+    module A = Unital-magma-on (A .snd)
+    module B = Unital-magma-on (B .snd)
 
   field
     pres-⋆ : (x y : A .fst) → e .fst (x A.⋆ y) ≡ e .fst x B.⋆ e .fst y
     pres-identity : e .fst A.identity ≡ B.identity
     
-  hasMagma≃ : Magma≃ (UnitalMagma→Magma A) (UnitalMagma→Magma B) e
+  hasMagma≃ : Magma≃ (Unital-magma→Magma A) (Unital-magma→Magma B) e
   hasMagma≃ .Magma≃.pres-⋆ = pres-⋆
 
-open UnitalMagma≃
+open Unital-magma≃
 ```
 
 Similar to the `process for magmas`{.Agda ident=Magma≡}, we can see that
@@ -143,16 +143,16 @@ the identity type between two unital magmas is the same as the type of
 their equivalences.
 
 ```agda
-UnitalMagma-univalent : isUnivalent {ℓ = ℓ} (HomT→Str UnitalMagma≃)
-UnitalMagma-univalent {ℓ = ℓ} = autoUnivalentRecord
-  (autoRecord (UnitalMagmaOn {ℓ = ℓ}) UnitalMagma≃
+Unital-magma-univalent : is-univalent {ℓ = ℓ} (HomT→Str Unital-magma≃)
+Unital-magma-univalent {ℓ = ℓ} = Derive-univalent-record
+  (record-desc (Unital-magma-on {ℓ = ℓ}) Unital-magma≃
   (record:
-    field[ UnitalMagmaOn._⋆_ by pres-⋆ ]
-    field[ UnitalMagmaOn.identity by pres-identity ]
-    axiom[ UnitalMagmaOn.hasIsUnitalMagma by (λ _ → isProp-isUnitalMagma) ] ))
+    field[ Unital-magma-on._⋆_ by pres-⋆ ]
+    field[ Unital-magma-on.identity by pres-identity ]
+    axiom[ Unital-magma-on.has-is-unital-magma by (λ _ → is-unital-magma-is-prop) ] ))
 
-UnitalMagma≡ : {A B : UnitalMagma ℓ} → (A ≃[ HomT→Str UnitalMagma≃ ] B) ≃ (A ≡ B)
-UnitalMagma≡ = SIP UnitalMagma-univalent 
+Unital-magma≡ : {A B : Unital-magma ℓ} → (A ≃[ HomT→Str Unital-magma≃ ] B) ≃ (A ≡ B)
+Unital-magma≡ = SIP Unital-magma-univalent 
 ```
 
 * One-sided identities
@@ -161,11 +161,11 @@ Dropping either of the paths involved in a unital magma results in a
 right identity or a left identity.
 
 ```agda
-isLeftId : (⋆ : A → A → A) → A → Type _
-isLeftId _⋆_ l = ∀ y → l ⋆ y ≡ y
+is-left-id : (⋆ : A → A → A) → A → Type _
+is-left-id _⋆_ l = ∀ y → l ⋆ y ≡ y
 
-isRightId : (⋆ : A → A → A) → A → Type _
-isRightId _⋆_ r = ∀ y → y ⋆ r ≡ y
+is-right-id : (⋆ : A → A → A) → A → Type _
+is-right-id _⋆_ r = ∀ y → y ⋆ r ≡ y
 ```
 
 Perhaps surprisingly, the premises of the above theorem can be weakened:
@@ -174,7 +174,7 @@ If $l$ is a left identity and $r$ is a right identity, then $l = r$.
 ```agda
 left-right-identities-equal 
   : {⋆ : A → A → A} (l r : A) 
-  → isLeftId ⋆ l → isRightId ⋆ r → l ≡ r
+  → is-left-id ⋆ l → is-right-id ⋆ r → l ≡ r
 left-right-identities-equal {⋆ = _⋆_} l r lid rid =
   l     ≡⟨ sym (rid _) ⟩
   l ⋆ r ≡⟨ lid _ ⟩
@@ -186,12 +186,12 @@ right identity has to be unital - the identities are equal, which makes
 them both be left as well as right identities.
 
 ```agda
-left-right-identities-unital
+left-right-identity→unital
   : {_⋆_ : A → A → A} (l r : A)
-  → isLeftId _⋆_ l → isRightId _⋆_ r
-  → isMagma _⋆_ → isUnitalMagma l _⋆_
-left-right-identities-unital l r lid rid isMgm .hasIsMagma = isMgm
-left-right-identities-unital l r lid rid isMgm .idˡ = lid _
-left-right-identities-unital {_⋆_ = _⋆_} l r lid rid isMgm .idʳ {x = x} =
+  → is-left-id _⋆_ l → is-right-id _⋆_ r
+  → is-magma _⋆_ → is-unital-magma l _⋆_
+left-right-identity→unital l r lid rid isMgm .has-is-magma = isMgm
+left-right-identity→unital l r lid rid isMgm .idˡ = lid _
+left-right-identity→unital {_⋆_ = _⋆_} l r lid rid isMgm .idʳ {x = x} =
   subst (λ a → (x ⋆ a) ≡ x) (sym (left-right-identities-equal l r lid rid)) (rid _)
 ```

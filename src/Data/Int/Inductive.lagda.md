@@ -71,26 +71,26 @@ The integers are characterised as being the free type with an
 equivalence. This equivalence is the successor function:
 
 ```agda
-sucInt : Int → Int
-sucInt (pos n)          = pos (suc n)
-sucInt (negsuc zero)    = pos zero
-sucInt (negsuc (suc n)) = negsuc n
+suc-int : Int → Int
+suc-int (pos n)          = pos (suc n)
+suc-int (negsuc zero)    = pos zero
+suc-int (negsuc (suc n)) = negsuc n
 
-predInt : Int → Int
-predInt (pos zero)    = negsuc zero
-predInt (pos (suc n)) = pos n
-predInt (negsuc n)    = negsuc (suc n)
+pred-int : Int → Int
+pred-int (pos zero)    = negsuc zero
+pred-int (pos (suc n)) = pos n
+pred-int (negsuc n)    = negsuc (suc n)
 
-sucPred : (x : Int) → sucInt (predInt x) ≡ x
-sucPred (pos zero) = refl
-sucPred (pos (suc x)) = refl
-sucPred (negsuc x) = refl
+suc-pred : (x : Int) → suc-int (pred-int x) ≡ x
+suc-pred (pos zero) = refl
+suc-pred (pos (suc x)) = refl
+suc-pred (negsuc x) = refl
 
-predSuc : (x : Int) → predInt (sucInt x) ≡ x
-predSuc (pos x) = refl
-predSuc (negsuc zero) = refl
-predSuc (negsuc (suc x)) = refl
+pred-suc : (x : Int) → pred-int (suc-int x) ≡ x
+pred-suc (pos x) = refl
+pred-suc (negsuc zero) = refl
+pred-suc (negsuc (suc x)) = refl
 
-sucEquiv : Int ≃ Int
-sucEquiv = Iso→Equiv (sucInt , iso predInt sucPred predSuc)
+suc-equiv : Int ≃ Int
+suc-equiv = Iso→Equiv (suc-int , iso pred-int suc-pred pred-suc)
 ```

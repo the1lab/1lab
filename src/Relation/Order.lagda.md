@@ -44,7 +44,7 @@ record isPreorder {A : Type ℓ} (R : A → A → Type ℓ') : Type (ℓ ⊔ ℓ
   field
     reflexive     : isReflexive R
     transitive    : isTransitive R
-    propositional : {x y : A} → isProp (R x y)
+    propositional : {x y : A} → is-prop (R x y)
 ```
 
 ## Partial Orders
@@ -64,15 +64,15 @@ record isPartialOrder {A : Type ℓ} (R : A → A → Type ℓ') : Type (ℓ ⊔
 ```
 
 Any type with a choice of partial order is a set. This is because of
-`Rijke's theorem`{.Agda ident=Rijke-isSet}: Any type with a reflexive
+`Rijke's theorem`{.Agda ident=Rijke-is-set}: Any type with a reflexive
 relation implying equality is a set.
 
 ```agda
-hasPartialOrder→isSet : {A : Type ℓ} {R : A → A → Type ℓ'}
+hasPartialOrder→is-set : {A : Type ℓ} {R : A → A → Type ℓ'}
                       → isPartialOrder R
-                      → isSet A
-hasPartialOrder→isSet {A = A} {_≤_} ispo =
-  Rijke-isSet {R = R'} reflexive' (λ { (x , y) → antisym x y }) isProp'
+                      → is-set A
+hasPartialOrder→is-set {A = A} {_≤_} ispo =
+  Rijke-is-set {R = R'} reflexive' (λ { (x , y) → antisym x y }) is-prop'
   where
     open isPartialOrder ispo
 ```
@@ -88,27 +88,27 @@ products, this is a proposition.
     reflexive' : {x : A} → R' x x
     reflexive' = reflexive , reflexive
 
-    isProp' : {x y : A} → isProp (R' x y)
-    isProp' (a , b) (a' , b') i = propositional a a' i , propositional b b' i
+    is-prop' : {x y : A} → is-prop (R' x y)
+    is-prop' (a , b) (a' , b') i = propositional a a' i , propositional b b' i
 ```
 
 With this theorem, we can prove that being a partial order is a
 proposition. We do this by the characterisation of propositions as those
 types which are `contractible when inhabited`{.Agda
-ident=inhContr→isProp}, since then we're free to assume A is a set.
+ident=contractible-if-inhabited}, since then we're free to assume A is a set.
 
 ```agda
-isProp-isPartialOrder : {A : Type ℓ} {R : A → A → Type ℓ'}
-                      → isProp (isPartialOrder R)
-isProp-isPartialOrder {A = A} {R} = inhContr→isProp contract
+is-prop-isPartialOrder : {A : Type ℓ} {R : A → A → Type ℓ'}
+                      → is-prop (isPartialOrder R)
+is-prop-isPartialOrder {A = A} {R} = contractible-if-inhabited contract
   where
     open isPartialOrder
     open isPreorder
 
-    contract : isPartialOrder R → isContr (isPartialOrder R)
+    contract : isPartialOrder R → is-contr (isPartialOrder R)
     contract order = contr order deform where
-      A-set : isSet A
-      A-set = hasPartialOrder→isSet order
+      A-set : is-set A
+      A-set = hasPartialOrder→is-set order
 ```
 
 For the centre of contraction, we're free to use the given witness.
@@ -128,12 +128,12 @@ propositional`{.Agda ident=propositional}.
                          i
 ```
 
-To connect the propositionality witnesses, we use the fact that `isProp
-is a proposition`{.Agda ident=isProp-isProp}.
+To connect the propositionality witnesses, we use the fact that `is-prop
+is a proposition`{.Agda ident=is-prop-is-prop}.
 
 ```agda
       deform x i .preorder .propositional =
-        isProp-isProp (order .preorder .propositional)
+        is-prop-is-prop (order .preorder .propositional)
                       (x .preorder .propositional)
                       i
 ```

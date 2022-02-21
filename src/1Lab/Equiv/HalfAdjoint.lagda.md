@@ -28,8 +28,8 @@ equivalence - satisfying only _one_ of the triangle identities - as a
 [good notion of equivalence]: 1Lab.Equiv.html#equivalences
 
 ```agda
-isHAE : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} (f : A → B) → Type _
-isHAE {A = A} {B = B} f =
+is-half-adjoint-equiv : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} (f : A → B) → Type _
+is-half-adjoint-equiv {A = A} {B = B} f =
   Σ[ g ∈ (B → A) ]
   Σ[ η ∈ ((x : A) → g (f x) ≡ x) ]
   Σ[ ε ∈ ((y : B) → f (g y) ≡ y) ]
@@ -43,20 +43,23 @@ strong homotopy equivalence (Vogt's lemma). In HoTT, we show this
 synthetically for equivalences between $\infty$-groupoids.
 
 ```agda
-isIso→isHAE : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
-            → isIso f → isHAE f
-isIso→isHAE {A = A} {B} {f} iiso = g , η , ε' , λ x → sym (zig x) where
-  open isIso iiso renaming (inv to g ; linv to η ; rinv to ε)
+is-iso→is-half-adjoint-equiv 
+  : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
+  → is-iso f → is-half-adjoint-equiv f
+is-iso→is-half-adjoint-equiv {A = A} {B} {f} iiso = 
+  g , η , ε' , λ x → sym (zig x) 
+  where
+    open is-iso iiso renaming (inv to g ; linv to η ; rinv to ε)
 ```
 
-For $g$ and $\eta$, we can take the values provided by `isIso`{.Agda}.
+For $g$ and $\eta$, we can take the values provided by `is-iso`{.Agda}.
 However, if we want $(\eta, \varepsilon)$ to satisfy the triangle
 identities, we can not in general take $\varepsilon' = \varepsilon$.  We
 can, however, alter it like thus:
 
 ```agda
-  ε' : (y : B) → f (g y) ≡ y
-  ε' y = sym (ε (f (g y))) ∙ ap f (η (g y)) ∙ ε y
+    ε' : (y : B) → f (g y) ≡ y
+    ε' y = sym (ε (f (g y))) ∙ ap f (η (g y)) ∙ ε y
 ```
 
 Drawn as a diagram, the path above factors like:
@@ -80,16 +83,16 @@ paths to make the $\mathrm{sym}\ (\varepsilon ...)$ and $\varepsilon$
 cancel:
 
 ```agda
-  zig : (x : A) → ε' (f x) ≡ ap f (η x)
-  zig x =
-    ε' (f x)                                                    ≡⟨⟩
-    sym (ε (f (g (f x))))  ∙ ap f (η (g (f x)))   ∙ ε (f x)     ≡⟨ ap₂ _∙_ refl (ap₂ _∙_ (ap (ap f) (homotopy-invert η)) refl) ⟩
-    sym (ε (f (g (f x))))  ∙ ap (f ∘ g ∘ f) (η x) ∙ ε (f x)     ≡⟨ ap₂ _∙_ refl (sym (homotopy-natural ε _)) ⟩
-    sym (ε (f (g (f x))))  ∙ ε (f (g (f x)))      ∙ ap f (η x)  ≡⟨ ∙-cancel-l (ε (f (g (f x)))) (ap f (η x)) ⟩
-    ap f (η x)                                                  ∎
+    zig : (x : A) → ε' (f x) ≡ ap f (η x)
+    zig x =
+      ε' (f x)                                                    ≡⟨⟩
+      sym (ε (f (g (f x))))  ∙ ap f (η (g (f x)))   ∙ ε (f x)     ≡⟨ ap₂ _∙_ refl (ap₂ _∙_ (ap (ap f) (homotopy-invert η)) refl) ⟩
+      sym (ε (f (g (f x))))  ∙ ap (f ∘ g ∘ f) (η x) ∙ ε (f x)     ≡⟨ ap₂ _∙_ refl (sym (homotopy-natural ε _)) ⟩
+      sym (ε (f (g (f x))))  ∙ ε (f (g (f x)))      ∙ ap f (η x)  ≡⟨ ∙-cancel-l (ε (f (g (f x)))) (ap f (η x)) ⟩
+      ap f (η x)                                                  ∎
 ```
 
-The notion of `half-adjoint equivalence`{.Agda ident=isHAE} is a useful
+The notion of `half-adjoint equivalence`{.Agda ident=is-half-adjoint-equiv} is a useful
 stepping stone in writing a more comprehensible proof that `isomorphisms
 are equivalences`{.Agda ident=Iso→Equiv}. Since this result is
 fundamental, the proof we actually use is written with efficiency of
@@ -98,7 +101,7 @@ more educational.
 
 First, we give an equivalent characterisation of paths in
 `fibre`{.Agda}s, which will be used in proving that `half adjoint
-equivalences are equivalences`{.Agda ident=isHAE→isEquiv}.
+equivalences are equivalences`{.Agda ident=is-half-adjoint-equiv→is-equiv}.
 
 ```agda
 fibre-paths : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B} {y : B}
@@ -113,8 +116,8 @@ here (rather than being completely invisible) for
 completeness:</summary>
 ```
 fibre-paths {f = f} {y} {f1} {f2} =
-  Path (fibre f y) f1 f2                                                       ≃⟨ Iso→Equiv Σ-Path-iso e⁻¹ ⟩
-  (Σ[ γ ∈ f1 .fst ≡ f2 .fst ] (subst (λ x₁ → f x₁ ≡ _) γ (f1 .snd) ≡ f2 .snd)) ≃⟨ Σ-ap-snd (λ x → pathToEquiv (lemma x)) ⟩
+  Path (fibre f y) f1 f2                                                       ≃⟨ Iso→Equiv Σ-path-iso e⁻¹ ⟩
+  (Σ[ γ ∈ f1 .fst ≡ f2 .fst ] (subst (λ x₁ → f x₁ ≡ _) γ (f1 .snd) ≡ f2 .snd)) ≃⟨ Σ-ap-snd (λ x → path→equiv (lemma x)) ⟩
   (Σ[ γ ∈ f1 .fst ≡ f2 .fst ] (ap f γ ∙ f2 .snd ≡ f1 .snd))                    ≃∎
   where
     helper : (p' : f (f1 .fst) ≡ y)
@@ -122,7 +125,7 @@ fibre-paths {f = f} {y} {f1} {f2} =
            ≡ (ap f refl ∙ p' ≡ f1 .snd)
     helper p' =
       subst (λ x → f x ≡ y) refl (f1 .snd) ≡ p' ≡⟨ ap₂ _≡_ (transport-refl _) refl ⟩
-      (f1 .snd) ≡ p'                            ≡⟨ Iso→path (sym , iso sym (λ x → refl) (λ x → refl)) ⟩
+      (f1 .snd) ≡ p'                            ≡⟨ Iso→Path (sym , iso sym (λ x → refl) (λ x → refl)) ⟩
       p' ≡ f1 .snd                              ≡⟨ ap₂ _≡_ (sym (∙-id-l _)) refl ⟩
       refl ∙ p' ≡ f1 .snd                       ≡⟨⟩
       ap f refl ∙ p' ≡ f1 .snd                  ∎
@@ -142,9 +145,9 @@ using the above characterisation of paths, prove that this fibre is a
 centre of contraction:
 
 ```agda
-isHAE→isEquiv : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
-              → isHAE f → isEquiv f
-isHAE→isEquiv {A = A} {B} {f} (g , η , ε , zig) .isEqv y = contr fib contract where
+is-half-adjoint-equiv→is-equiv : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
+              → is-half-adjoint-equiv f → is-equiv f
+is-half-adjoint-equiv→is-equiv {A = A} {B} {f} (g , η , ε , zig) .is-eqv y = contr fib contract where
   fib : fibre f y
   fib = g y , ε y
 ```
@@ -180,27 +183,27 @@ $\varepsilon$ lets us "push it past $p$" to get something we can cancel:
 ```
 
 Putting these together, we get an alternative definition of
-`isIso→isEquiv`{.Agda}:
+`is-iso→is-equiv`{.Agda}:
 
 ```agda
-isIso→isEquiv' : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
-               → isIso f → isEquiv f
-isIso→isEquiv' = isHAE→isEquiv ∘ isIso→isHAE
+is-iso→is-equiv' : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
+               → is-iso f → is-equiv f
+is-iso→is-equiv' = is-half-adjoint-equiv→is-equiv ∘ is-iso→is-half-adjoint-equiv
 ```
 
 <!--
 ```agda
-_ = isIso→isEquiv
+_ = is-iso→is-equiv
 
 equiv→zig : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
-          → (eqv : isEquiv f) (a : A)
+          → (eqv : is-equiv f) (a : A)
           → ap f (equiv→retraction eqv a) ≡ equiv→section eqv (f a)
 equiv→zig {f = f} eqv = commPathIsEq where
   commSqIsEq : ∀ a → Square (sym (ap f (equiv→retraction eqv a)))
                             refl
                             (equiv→section eqv (f a))
                             refl
-  commSqIsEq a i = eqv .isEqv (f a) .paths (a , refl) (~ i) .snd
+  commSqIsEq a i = eqv .is-eqv (f a) .paths (a , refl) (~ i) .snd
 
   commPathIsEq : ∀ a → ap f (equiv→retraction eqv a) ≡ equiv→section eqv (f a)
   commPathIsEq a i j =
@@ -213,9 +216,10 @@ equiv→zig {f = f} eqv = commPathIsEq where
         })
       (commSqIsEq a i j)
 
-isEquiv→isHAE : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
-              → isEquiv f → isHAE f
-isEquiv→isHAE {f = f} eqv =
+is-equiv→is-half-adjoint-equiv 
+  : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
+  → is-equiv f → is-half-adjoint-equiv f
+is-equiv→is-half-adjoint-equiv {f = f} eqv =
     equiv→inverse eqv
   , equiv→retraction eqv
   , equiv→section eqv

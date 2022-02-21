@@ -38,12 +38,12 @@ $G : [B,C]$, we define the collection of displayed maps to be the set of
 all natural transformations $F \To f*G$, where $f*G$ is the
 precomposition of $f$ `regarded as a functor`{.Agda ident=liftDisc}
 between discrete categories. Since `natural transformations form a
-Set`{.Agda ident=isSet-Nat}, we're clear to take this as the definition.
+Set`{.Agda ident=Nat-is-set}, we're clear to take this as the definition.
 
 ```agda
 Family .Hom[_] {_ , aset} {_ , bset} f F G = 
   F => (G F∘ liftDisc f)
-Family .Hom[_]-set f x y = isSet-Nat
+Family .Hom[_]-set f x y = Nat-is-set
 ```
 
 The identity and composition operations are given by the identity and
@@ -74,12 +74,12 @@ m*f*y'$ entails giving a natural transformation $u \To (f\circ
 m)*y'$; But this is exactly the natural transformation we started with!
 
 ```agda
-open CartesianFibration
-open CartesianLift
+open Cartesian-fibration
+open Cartesian-lift
 open Cartesian
 
-isCartesian-Family : ∀ {ℓ} → CartesianFibration (Family {ℓ = ℓ})
-isCartesian-Family = iscart where
+Family-is-cartesian : ∀ {ℓ} → Cartesian-fibration (Family {ℓ = ℓ})
+Family-is-cartesian = iscart where
   cart : ∀ {x y : Set _} (f : x .fst → y .fst) 
            (y′ : Functor (Disc′ y) C)
        → Cartesian Family f idnt
@@ -87,7 +87,7 @@ isCartesian-Family = iscart where
   cart f y′ .commutes m h′ = Nat-path λ x → idl _
   cart f y′ .unique m′ p = Nat-path λ x → sym (idl _) ∙ ap (λ e → η e x) p
 
-  iscart : CartesianFibration Family
+  iscart : Cartesian-fibration Family
   iscart .has-lift f y′ .x′ = y′ F∘ liftDisc f
   iscart .has-lift f y′ .lifting = idnt
   iscart .has-lift {x = x} {y} f y′ .cartesian = cart {x = x} {y} f y′

@@ -33,7 +33,7 @@ and $g$.
 ~~~
 
 ```agda
-record IsCoequaliser {E} (f g : Hom A B) (coeq : Hom B E) : Type (o ⊔ ℓ) where
+record is-coequaliser {E} (f g : Hom A B) (coeq : Hom B E) : Type (o ⊔ ℓ) where
   field
     coequal    : coeq ∘ f ≡ coeq ∘ g
     coequalize : ∀ {F} {e′ : Hom B F} (p : e′ ∘ f ≡ e′ ∘ g) → Hom E F
@@ -59,9 +59,9 @@ record Coequaliser (f g : Hom A B) : Type (o ⊔ ℓ) where
   field
     {coapex}  : Ob
     coeq      : Hom B coapex
-    hasIsCoeq : IsCoequaliser f g coeq
+    has-is-coeq : is-coequaliser f g coeq
 
-  open IsCoequaliser hasIsCoeq public
+  open is-coequaliser has-is-coeq public
 ```
 
 

@@ -33,10 +33,10 @@ data T² : Type where
 The resulting HIT is equivalent to the product of two circles.
 
 ```agda
-open isIso
+open is-iso
 
 T²≃S¹×S¹ : T² ≡ ( S¹ × S¹ )
-T²≃S¹×S¹ = ua (T²→S¹×S¹ , isIso→isEquiv iso-pf) where
+T²≃S¹×S¹ = ua (T²→S¹×S¹ , is-iso→is-equiv iso-pf) where
   T²→S¹×S¹ : T² → S¹ × S¹
   T²→S¹×S¹ base = base , base 
   T²→S¹×S¹ (loopA i) = loop i , base 
@@ -49,7 +49,7 @@ T²≃S¹×S¹ = ua (T²→S¹×S¹ , isIso→isEquiv iso-pf) where
   S¹×S¹→T² (loop i , base) = loopA i 
   S¹×S¹→T² (loop i , loop j) = square i j
 
-  iso-pf : isIso T²→S¹×S¹  
+  iso-pf : is-iso T²→S¹×S¹  
   iso-pf .inv = S¹×S¹→T² 
   iso-pf .rinv (base , base) = refl 
   iso-pf .rinv (base , loop j) = refl 

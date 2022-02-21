@@ -48,10 +48,10 @@ private
 
     explicitUnivalentStr : (fwd : fwdShape) (bwd : bwdShape)
       → fwdBwdShape fwd bwd → bwdFwdShape fwd bwd
-      → isUnivalent' S ι
+      → is-univalent' S ι
     explicitUnivalentStr fwd bwd fwdBwd bwdFwd A B e = Iso→Equiv isom
       where
-      open isIso
+      open is-iso
       isom : Iso _ _
       isom .fst = fwd A B e
       isom .snd .inv = bwd A B e
@@ -70,10 +70,10 @@ private
 --      X : S X → R X
 --      P : IsHomT R
 --      Y : S X → Prop -- roughly
---      Q : isProp (Y _) -- roughly
+--      Q : is-prop (Y _) -- roughly
 --
 -- The isomorphism built has type
---   isUnivalent' R P → PropHelperType Y Q → isUnivalent' S H
+--   is-univalent' R P → PropHelperType Y Q → is-univalent' S H
 private module _ (spec : Spec Nat) where
   open Spec spec
 
@@ -287,19 +287,19 @@ private module _ (spec : Spec TypedTm) where
   closure-type : Term
   closure-type =
     foldr (λ ty cod → “ ty ↦ cod ”)
-          (def (quote isUnivalent') (spec .structure v∷ spec .homomorphism v∷ []))
+          (def (quote is-univalent') (spec .structure v∷ spec .homomorphism v∷ []))
           (map (TypedTm.type ∘ snd) actual-fields)
 
-  spec→isUnivalent : Term
-  spec→isUnivalent = def (quote idfun) (closure-type v∷ closure v∷ environment)
+  spec→is-univalent : Term
+  spec→is-univalent = def (quote idfun) (closure-type v∷ closure v∷ environment)
 
 macro
-  autoUnivalentRecord : Term → Term → TC ⊤
-  autoUnivalentRecord spec goal = do
+  Derive-univalent-record : Term → Term → TC ⊤
+  Derive-univalent-record spec goal = do
     spec ← parseSpec spec
     unify goal
-      (def (quote isUnivalent'→isUnivalent)
+      (def (quote is-univalent'→is-univalent)
         (  spec .Spec.structure
         v∷ spec .Spec.homomorphism
-        v∷ spec→isUnivalent spec
+        v∷ spec→is-univalent spec
         v∷ []))

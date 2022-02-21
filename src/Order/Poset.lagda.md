@@ -27,16 +27,16 @@ Using the language of enriched category theory, we can say that a poset
 is a univalent category enriched over propositions.
 
 [preorder relation]: Order.Proset.html#isPreorder
-[Rijke's theorem]: 1Lab.HLevel.Sets.html#Rijke-isSet
-[set]: 1Lab.HLevel.html#isSet
+[Rijke's theorem]: 1Lab.HLevel.Sets.html#Rijke-is-set
+[set]: 1Lab.HLevel.html#is-set
 
 ```agda
 record isPartialOrder (R : A → A → Type ℓ') : Type (level-of A ⊔ ℓ') where
   field
-    hasIsPreorder : isPreorder R
+    has-is-preorder : isPreorder R
     antisym : ∀ {x y} → R x y → R y x → x ≡ y
   
-  open isPreorder hasIsPreorder public
+  open isPreorder has-is-preorder public
 ```
 
 To prove that being a partial order is a property of an order relation,
@@ -44,9 +44,9 @@ we first establish the theorem claimed in the first paragraph: Any type
 $A$ that admits a partial order relation $R$ is a set.
 
 ```agda
-hasPartialOrder→isSet : ∀ {R : A → A → Type ℓ} → isPartialOrder R → isSet A
-hasPartialOrder→isSet {A = A} {R = _≤_} ispo =
-  Rijke-isSet {R = R'} reflexive' (λ { (x , y) → antisym x y }) isProp'
+hasPartialOrder→is-set : ∀ {R : A → A → Type ℓ} → isPartialOrder R → is-set A
+hasPartialOrder→is-set {A = A} {R = _≤_} ispo =
+  Rijke-is-set {R = R'} reflexive' (λ { (x , y) → antisym x y }) is-prop'
   where
     open isPartialOrder ispo
 ```
@@ -62,21 +62,21 @@ products, this is a proposition.
     reflexive' : {x : A} → R' x x
     reflexive' = reflexive , reflexive
 
-    isProp' : {x y : A} → isProp (R' x y)
-    isProp' (a , b) (a' , b') i = propositional a a' i , propositional b b' i
+    is-prop' : {x y : A} → is-prop (R' x y)
+    is-prop' (a , b) (a' , b') i = propositional a a' i , propositional b b' i
 ```
 
 This implies that the path component in `isPartialOrder`{.Agda} does not
 get in the way of it being a proposition:
 
 ```agda
-isProp-isPartialOrder : isProp (isPartialOrder R)
-isProp-isPartialOrder x y i = p where
+is-prop-isPartialOrder : is-prop (isPartialOrder R)
+is-prop-isPartialOrder x y i = p where
   open isPartialOrder
 
   p : isPartialOrder _
-  p .hasIsPreorder = isProp-isPreorder (x .hasIsPreorder) (y .hasIsPreorder) i
-  p .antisym p q = hasPartialOrder→isSet x _ _ (x .antisym p q) (y .antisym p q) i
+  p .has-is-preorder = is-prop-isPreorder (x .has-is-preorder) (y .has-is-preorder) i
+  p .antisym p q = hasPartialOrder→is-set x _ _ (x .antisym p q) (y .antisym p q) i
 ```
 
 A **poset** is a type equipped with a partial order relation. Since
@@ -87,9 +87,9 @@ to additionally require that the type be a set.
 record PosetOn {ℓ'} (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ') where
   field
     _≤_ : A → A → Type ℓ'
-    hasIsPartialOrder : isPartialOrder _≤_
+    has-is-partialOrder : isPartialOrder _≤_
 
-  open isPartialOrder hasIsPartialOrder public
+  open isPartialOrder has-is-partialOrder public
 
 Poset : ∀ (r ℓ : Level) → Type (lsuc (r ⊔ ℓ))
 Poset r ℓ = Σ[ A ∈ Type ℓ ] (PosetOn {ℓ' = r} A)
@@ -116,13 +116,13 @@ We can automatically prove that the type of posets is univalent, with
 the relation being poset equivalence.
 
 ```agda
-Poset-univalent : isUnivalent (HomT→Str (Poset≃ {ℓ = ℓ}))
+Poset-univalent : is-univalent (HomT→Str (Poset≃ {ℓ = ℓ}))
 Poset-univalent {ℓ = ℓ} = 
-  autoUnivalentRecord
-    (autoRecord (PosetOn {ℓ = ℓ} {ℓ' = ℓ}) (Poset≃ {ℓ = ℓ})
+  Derive-univalent-record
+    (record-desc (PosetOn {ℓ = ℓ} {ℓ' = ℓ}) (Poset≃ {ℓ = ℓ})
       (record:
         field[ _≤_ by pres-≤ ]
-        axiom[ hasIsPartialOrder by (λ x → isProp-isPartialOrder) ]))
+        axiom[ has-is-partialOrder by (λ x → is-prop-isPartialOrder) ]))
   where open PosetOn
 ```
 
@@ -158,7 +158,7 @@ _reflects_ the ordering.
       (λ i → equiv→retraction eqv x i A.≤ equiv→retraction eqv y i)
       (f⁻¹-mono (f x) (f y) q)
 
-  eq' = propExt A.propositional B.propositional (f-mono x y) (f-reflects x y)
+  eq' = prop-ext A.propositional B.propositional (f-mono x y) (f-reflects x y)
 ```
 
 A map is said to be **antitone** if it _inverts_ the ordering relation:
@@ -183,24 +183,24 @@ than $x$ and $y$. Diagramatically, we can draw a meet of $x$ and $y$ as
 below.
 
 ```agda
-  record isMeet (m x y : A .fst) : Type (ℓ' ⊔ ℓ) where
+  record is-meet (m x y : A .fst) : Type (ℓ' ⊔ ℓ) where
     field
       m≤x : m ≤ x
       m≤y : m ≤ y
       limiting : (a : A .fst) → a ≤ x → a ≤ y → a ≤ m
-  open isMeet
+  open is-meet
 ```
 
 Dually, the **join** of $x$ and $y$ is the least element which is
 greater than $x$ and $y$.
 
 ```agda
-  record isJoin (j x y : A .fst) : Type (ℓ' ⊔ ℓ) where
+  record is-join (j x y : A .fst) : Type (ℓ' ⊔ ℓ) where
     field
       x≤j : x ≤ j
       y≤j : y ≤ j
       colimiting : (a : A .fst) → x ≤ a → y ≤ a → j ≤ a
-  open isJoin
+  open is-join
 ```
 
 In a poset, because of antisymmetry, meets and joins are unique:
@@ -213,12 +213,12 @@ In a poset, because of antisymmetry, meets and joins are unique:
 -->
 
 ```agda
-  meet-unique : isMeet m x y → isMeet m' x y → m ≡ m'
+  meet-unique : is-meet m x y → is-meet m' x y → m ≡ m'
   meet-unique m1 m2 = antisym m'≤m m≤m' where
     m≤m' = m1 .limiting _ (m2 .m≤x) (m2 .m≤y)
     m'≤m = m2 .limiting _ (m1 .m≤x) (m1 .m≤y)
 
-  join-unique : isJoin j x y → isJoin j' x y → j ≡ j'
+  join-unique : is-join j x y → is-join j' x y → j ≡ j'
   join-unique m1 m2 = antisym j≤j' j'≤j where
     j≤j' = m1 .colimiting _ (m2 .x≤j) (m2 .y≤j)
     j'≤j = m2 .colimiting _ (m1 .x≤j) (m1 .y≤j)
@@ -231,16 +231,16 @@ element, not structure.
 </summary>
 
 ```agda
-  isProp-isMeet : isProp (isMeet m x y)
-  isProp-isMeet x y i .m≤x = propositional (x .m≤x) (y .m≤x) i
-  isProp-isMeet x y i .m≤y = propositional (x .m≤y) (y .m≤y) i
-  isProp-isMeet x y i .limiting a b c =
+  is-meet-is-prop : is-prop (is-meet m x y)
+  is-meet-is-prop x y i .m≤x = propositional (x .m≤x) (y .m≤x) i
+  is-meet-is-prop x y i .m≤y = propositional (x .m≤y) (y .m≤y) i
+  is-meet-is-prop x y i .limiting a b c =
     propositional (x .limiting a b c) (y .limiting a b c) i
 
-  isProp-isJoin : isProp (isJoin m x y)
-  isProp-isJoin x y i .x≤j = propositional (x .x≤j) (y .x≤j) i
-  isProp-isJoin x y i .y≤j = propositional (x .y≤j) (y .y≤j) i
-  isProp-isJoin x y i .colimiting a b c =
+  is-join-is-prop : is-prop (is-join m x y)
+  is-join-is-prop x y i .x≤j = propositional (x .x≤j) (y .x≤j) i
+  is-join-is-prop x y i .y≤j = propositional (x .y≤j) (y .y≤j) i
+  is-join-is-prop x y i .colimiting a b c =
     propositional (x .colimiting a b c) (y .colimiting a b c) i
 ```
 </details>
