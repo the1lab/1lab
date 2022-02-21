@@ -47,8 +47,8 @@ whenever it is a family of propositions, by providing a case for
 ∥-∥-elim pprop incc (inc x) = incc x
 ∥-∥-elim pprop incc (squash x y i) =
   is-prop→PathP (λ j → pprop (squash x y j)) (∥-∥-elim pprop incc x)
-                                            (∥-∥-elim pprop incc y)
-                                            i
+                                             (∥-∥-elim pprop incc y)
+                                             i
 ```
 
 <!--
@@ -63,7 +63,8 @@ whenever it is a family of propositions, by providing a case for
   go (inc x) (inc x₁) = work x x₁
   go (inc x) (squash y y₁ i) =
     is-prop→PathP (λ i → pprop (inc x) (squash y y₁ i))
-                 (go (inc x) y) (go (inc x) y₁) i
+                  (go (inc x) y) (go (inc x) y₁) i
+
   go (squash x x₁ i) z =
     is-prop→PathP (λ i → pprop (squash x x₁ i) z)
                   (go x z) (go x₁ z) i
@@ -133,13 +134,15 @@ equivalent to your own truncation":
 ```agda
 is-prop≃equiv∥-∥ : ∀ {ℓ} {P : Type ℓ}
                → is-prop P ≃ (P ≃ ∥ P ∥)
-is-prop≃equiv∥-∥ {P = P} = prop-ext is-prop-is-prop eqv-prop is-prop→equiv∥-∥ inv where
-  inv : (P ≃ ∥ P ∥) → is-prop P
-  inv eqv = equiv→is-hlevel 1 ((eqv e⁻¹) .fst) ((eqv e⁻¹) .snd) squash
+is-prop≃equiv∥-∥ {P = P} = 
+  prop-ext is-prop-is-prop eqv-prop is-prop→equiv∥-∥ inv 
+  where
+    inv : (P ≃ ∥ P ∥) → is-prop P
+    inv eqv = equiv→is-hlevel 1 ((eqv e⁻¹) .fst) ((eqv e⁻¹) .snd) squash
 
-  eqv-prop : is-prop (P ≃ ∥ P ∥)
-  eqv-prop x y = Σ-path (λ i p → squash (x .fst p) (y .fst p) i)
-                        (is-equiv-is-prop _ _ _)
+    eqv-prop : is-prop (P ≃ ∥ P ∥)
+    eqv-prop x y = Σ-path (λ i p → squash (x .fst p) (y .fst p) i)
+                          (is-equiv-is-prop _ _ _)
 ```
 
 ## Maps into Sets
@@ -216,10 +219,10 @@ truncation onto a set using a constant map.
 
 ```agda
 ∥-∥-rec-set : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
-           → (f : A → B)
-           → (∀ x y → f x ≡ f y)
-           → is-set B
-           → ∥ A ∥ → B
+            → (f : A → B)
+            → (∀ x y → f x ≡ f y)
+            → is-set B
+            → ∥ A ∥ → B
 ∥-∥-rec-set {A = A} {B} f f-const bset x = 
   ∥-∥-elim {P = λ _ → image f} 
     (λ _ → is-constant→image-is-prop bset f f-const) (f-image f) x .fst

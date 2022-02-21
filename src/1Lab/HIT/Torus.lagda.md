@@ -64,7 +64,6 @@ T²≃S¹×S¹ = ua (T²→S¹×S¹ , is-iso→is-equiv iso-pf) where
 
 Showing that the torus described as a HIT is equivalent to the product
 of two circles is Exercise 6.3 of the HoTT Book, but this exercise
-includes a warning that "the path algebra for this is rather
-difficult."  The brevity of the above proof -- straightforward
-invocations of `refl`{.Agda} -- is a testament to the strength of
-cubical methods.
+includes a warning that "the path algebra for this is rather difficult."
+The brevity of the above proof -- straightforward invocations of
+`refl`{.Agda} -- is a testament to the strength of cubical methods.
