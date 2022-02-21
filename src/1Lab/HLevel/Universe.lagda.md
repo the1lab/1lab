@@ -107,7 +107,7 @@ universe of all contractible types is a proposition.
 0-Type-is-prop : is-prop (n-Type ℓ 0)
 0-Type-is-prop (A , ac) (B , bc) =
   Σ-path-p (ua (f , f-eqv))
-          λ i → is-prop→PathP (λ i → is-contr-is-prop {A = ua (f , f-eqv) i}) ac bc i
+           λ i → is-prop→path-p (λ i → is-contr-is-prop {A = ua (f , f-eqv) i}) ac bc i
   where
     f : A → B
     f _ = bc .centre

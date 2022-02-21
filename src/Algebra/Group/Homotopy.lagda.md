@@ -201,7 +201,7 @@ eliminator into propositions later, so we define that now.
   Deloop-elim-prop P pprop p = 
     Deloop-elim P 
       (λ x → is-prop→is-hlevel-suc {n = 2} (pprop x)) p 
-      (λ x → is-prop→PathP (λ i → pprop (path x i)) p p)
+      (λ x → is-prop→path-p (λ i → pprop (path x i)) p p)
       (λ x y → is-prop→square-p (λ i j → pprop (path-sq x y i j)) _ _ _ _)
 ```
 

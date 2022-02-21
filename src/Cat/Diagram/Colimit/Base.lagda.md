@@ -108,7 +108,7 @@ of cones:
   Cocone-path p q i .coapex = p i
   Cocone-path p q i .ψ o = q o i
   Cocone-path {x = x} {y = y} p q i .commutes {x = a} {y = b} f =
-    is-prop→PathP (λ i → C.Hom-set _ _ (q b i C.∘ F.₁ f) (q a i))
+    is-prop→path-p (λ i → C.Hom-set _ _ (q b i C.∘ F.₁ f) (q a i))
       (x .commutes f) (y .commutes f) i
 ```
 

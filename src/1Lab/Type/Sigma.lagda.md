@@ -157,7 +157,7 @@ projections:
             → (∀ x → is-prop (B x))
             → {x y : Σ B}
             → (x .fst ≡ y .fst) → x ≡ y
-Σ-prop-path bp {x} {y} p i = p i , is-prop→PathP (λ i → bp (p i)) (x .snd) (y .snd) i
+Σ-prop-path bp {x} {y} p i = p i , is-prop→path-p (λ i → bp (p i)) (x .snd) (y .snd) i
 ```
 
 The proof that this is an equivalence uses a cubical argument, but the
@@ -185,7 +185,7 @@ aforementioned cubical argument:
 
 ```agda
   isom .is-iso.rinv p i j =
-    p j .fst , is-prop→PathP (λ k → Path-is-hlevel 1 (bp (p k .fst))
+    p j .fst , is-prop→path-p (λ k → Path-is-hlevel 1 (bp (p k .fst))
                                       {x = Σ-prop-path bp {x} {y} (ap fst p) k .snd}
                                       {y = p k .snd})
                              refl refl j i

@@ -66,7 +66,7 @@ terminal objects:
   iso→path C ccat (⊤-unique x1 x2) i
 
 ⊤-contractible ccat x1 x2 i .has⊤ ob =
-  is-prop→PathP
+  is-prop→path-p
     (λ i → is-contr-is-prop {A = Hom _
       (iso→path C ccat (⊤-unique x1 x2) i)})
     (x1 .has⊤ ob) (x2 .has⊤ ob) i

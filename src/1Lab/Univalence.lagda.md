@@ -426,7 +426,7 @@ is the identity equivalence, we use `coe1→i`{.Agda} to show that
 path→equiv-refl : {A : Type ℓ} → path→equiv (refl {x = A}) ≡ (id , id-equiv)
 path→equiv-refl {A = A} =
   Σ-path (λ i x → coe1→i (λ i → A) i x)
-         (is-prop→PathP (λ i → is-equiv-is-prop _) _ _)
+         (is-prop→path-p (λ i → is-equiv-is-prop _) _ _)
 ```
 
 For the other direction, we must show that `ua`{.Agda} of
@@ -517,7 +517,7 @@ is-contr.paths (Equiv-is-contr A) (B , A≃B) i = ua A≃B i , p i , q i where
   p i x = outS (ua-glue A≃B i (λ { (i = i0) → x }) (inS (A≃B .fst x)))
 
   q : PathP (λ i → is-equiv (p i)) id-equiv (A≃B .snd)
-  q = is-prop→PathP (λ i → is-equiv-is-prop (p i)) _ _
+  q = is-prop→path-p (λ i → is-equiv-is-prop (p i)) _ _
 ```
 
 Combining `Equiv-is-contr`{.Agda} with `subst`{.Agda}, we get an induction

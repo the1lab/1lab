@@ -46,9 +46,9 @@ whenever it is a family of propositions, by providing a case for
          → (x : ∥ A ∥) → P x
 ∥-∥-elim pprop incc (inc x) = incc x
 ∥-∥-elim pprop incc (squash x y i) =
-  is-prop→PathP (λ j → pprop (squash x y j)) (∥-∥-elim pprop incc x)
-                                             (∥-∥-elim pprop incc y)
-                                             i
+  is-prop→path-p (λ j → pprop (squash x y j)) (∥-∥-elim pprop incc x)
+                                              (∥-∥-elim pprop incc y)
+                                              i
 ```
 
 <!--
@@ -62,11 +62,11 @@ whenever it is a family of propositions, by providing a case for
   go : ∀ x y → P x y
   go (inc x) (inc x₁) = work x x₁
   go (inc x) (squash y y₁ i) =
-    is-prop→PathP (λ i → pprop (inc x) (squash y y₁ i))
+    is-prop→path-p (λ i → pprop (inc x) (squash y y₁ i))
                   (go (inc x) y) (go (inc x) y₁) i
 
   go (squash x x₁ i) z =
-    is-prop→PathP (λ i → pprop (squash x x₁ i) z)
+    is-prop→path-p (λ i → pprop (squash x x₁ i) z)
                   (go x z) (go x₁ z) i
 ```
 -->

@@ -116,8 +116,8 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
   ↓Hom-path p q i .↓Hom.α = p i
   ↓Hom-path p q i .↓Hom.β = q i
   ↓Hom-path {x} {y} {f} {g} p q i .↓Hom.sq = 
-    is-prop→PathP (λ i → C.Hom-set _ _ (↓Obj.map y C.∘ F₁ F (p i)) 
-                                      (F₁ G (q i) C.∘ ↓Obj.map x))
+    is-prop→path-p (λ i → C.Hom-set _ _ (↓Obj.map y C.∘ F₁ F (p i)) 
+                                        (F₁ G (q i) C.∘ ↓Obj.map x))
       (f .↓Hom.sq) (g .↓Hom.sq) i
 
   ↓Hom-set : ∀ x y → is-set (↓Hom x y)

@@ -115,7 +115,7 @@ is-invertible-is-prop {a = a} {b = b} {f = f} g h = p where
   p : g ≡ h
   p i .is-invertible.inv = g≡h i
   p i .is-invertible.inverses =
-    is-prop→PathP (λ i → Inverses-are-prop {g = g≡h i}) g.inverses h.inverses i
+    is-prop→path-p (λ i → Inverses-are-prop {g = g≡h i}) g.inverses h.inverses i
 ```
 
 We note that the identity morphism is always iso, and that isos compose:
@@ -150,7 +150,7 @@ make-iso f g p q ._≅_.inverses .Inverses.invʳ = q
 ≅-path-p p q r s i .to = r i
 ≅-path-p p q r s i .from = s i
 ≅-path-p p q {f} {g} r s i .inverses = 
-  is-prop→PathP (λ j → Inverses-are-prop {f = r j} {g = s j}) 
+  is-prop→path-p (λ j → Inverses-are-prop {f = r j} {g = s j}) 
     (f .inverses) (g .inverses) i
 ```
 -->

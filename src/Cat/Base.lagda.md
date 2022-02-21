@@ -465,10 +465,10 @@ can be proven to be a set compositionally:
     NT'-is-set : is-set NT'
     NT'-is-set =
       Σ-is-hlevel 2 (Π-is-hlevel 2 λ x → D.Hom-set _ _)
-                  (λ _ → Π-is-hlevel 2
-                    λ _ → Π-is-hlevel 2
-                    λ _ → Π-is-hlevel 2
-                    λ _ x y p q → is-hlevel-suc 2 (D.Hom-set _ _) _ _ x y p q) 
+                    (λ _ → Π-is-hlevel 2
+                     λ _ → Π-is-hlevel 2
+                     λ _ → Π-is-hlevel 2
+                     λ _ x y p q → is-hlevel-suc 2 (D.Hom-set _ _) _ _ x y p q) 
 ```
 
 Another fundamental lemma is that equality of natural transformations
@@ -483,7 +483,7 @@ is a proposition:
             → PathP (λ i → p i => q i) a b
   Nat-path-p p q path i .η x = path x i
   Nat-path-p p q {a} {b} path i .is-natural x y f =
-    is-prop→PathP 
+    is-prop→path-p 
       (λ i → D.Hom-set _ _ 
         (path y i D.∘ Functor.F₁ (p i) f) (Functor.F₁ (q i) f D.∘ path x i))
       (a .is-natural x y f)

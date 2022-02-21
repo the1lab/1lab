@@ -121,8 +121,8 @@ Algebra-hom-path : {M : Monad} {X Y : Algebra M} {F G : Algebra-hom M X Y}
                 → F ≡ G
 Algebra-hom-path x i .morphism = x i
 Algebra-hom-path {M = M} {X} {Y} {F} {G} x i .commutes = 
-  is-prop→PathP (λ i → C.Hom-set _ _ (x i C.∘ X .snd .Algebra-on.ν) 
-                                    (Y .snd .Algebra-on.ν C.∘ Monad.M₁ M (x i)))
+  is-prop→path-p (λ i → C.Hom-set _ _ (x i C.∘ X .snd .Algebra-on.ν) 
+                                      (Y .snd .Algebra-on.ν C.∘ Monad.M₁ M (x i)))
     (F .commutes) (G .commutes) i
 ```
 

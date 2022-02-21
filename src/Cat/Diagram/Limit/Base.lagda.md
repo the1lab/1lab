@@ -212,7 +212,7 @@ category.
   Cone-path p q i .Cone.apex = p i
   Cone-path p q i .Cone.ψ o = q o i
   Cone-path {x = x} {y} p q i .Cone.commutes {x = a} {y = b} f = 
-    is-prop→PathP (λ i → C.Hom-set _ _ (F.₁ f C.∘ q a i) (q b i)) 
+    is-prop→path-p (λ i → C.Hom-set _ _ (F.₁ f C.∘ q a i) (q b i)) 
       (x .commutes f) (y .commutes f) i
     where open Cone
 ```

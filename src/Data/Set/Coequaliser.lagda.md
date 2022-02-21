@@ -91,7 +91,7 @@ the necessary coherences for `glue`{.Agda} and `squash`{.Agda}.
 
 ```agda
 Coeq-elim-prop {f = f} {g = g} cprop cinc (glue x i) = 
-  is-prop→PathP (λ i → cprop (glue x i)) (cinc (f x)) (cinc (g x)) i
+  is-prop→path-p (λ i → cprop (glue x i)) (cinc (f x)) (cinc (g x)) i
 Coeq-elim-prop cprop cinc (squash x y p q i j) = 
   is-prop→square-p (λ i j → cprop (squash x y p q i j)) 
     (λ i → g x) (λ i → g (p i)) (λ i → g (q i)) (λ i → g y) i j

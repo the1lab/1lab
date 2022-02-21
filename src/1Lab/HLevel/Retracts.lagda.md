@@ -169,10 +169,10 @@ paths], shows that dependent sums are also closed under h-levels.
 Σ-is-hlevel 0 acontr bcontr =
   contr (acontr .centre , bcontr _ .centre)
     λ x → Σ-path-p (acontr .paths _)
-                  (is-prop→PathP (λ _ → is-contr→is-prop (bcontr _)) _ _)
+                   (is-prop→path-p (λ _ → is-contr→is-prop (bcontr _)) _ _)
 
 Σ-is-hlevel 1 aprop bprop (a , b) (a' , b') i =
-  (aprop a a' i) , (is-prop→PathP (λ i → bprop (aprop a a' i)) b b' i)
+  (aprop a a' i) , (is-prop→path-p (λ i → bprop (aprop a a' i)) b b' i)
 
 Σ-is-hlevel {B = B} (suc (suc n)) h1 h2 x y =
   iso→is-hlevel (suc n)

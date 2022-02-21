@@ -103,5 +103,5 @@ fibres-are-prop→is-embedding
   → is-embedding f
 fibres-are-prop→is-embedding f prop-fib {w} {x} .is-eqv y =
   subst is-contr (PathP≡ap-fibre y)
-    (is-prop→Path-p-is-contr (λ i → prop-fib (y i)) (w , refl) (x , refl))
+    (is-prop→path-p-is-contr (λ i → prop-fib (y i)) (w , refl) (x , refl))
 ```

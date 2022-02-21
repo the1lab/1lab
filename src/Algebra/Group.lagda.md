@@ -108,7 +108,7 @@ $x$ and $y$ are the same.
   same-monoid : PathP (λ i → is-monoid (same-unit i) _*_)
                       (x .has-is-monoid) (y .has-is-monoid)
   same-monoid = 
-    is-prop→PathP (λ i → is-monoid-is-prop {id = same-unit i})
+    is-prop→path-p (λ i → is-monoid-is-prop {id = same-unit i})
       (x .has-is-monoid) (y .has-is-monoid)
 ```
 

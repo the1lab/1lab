@@ -107,10 +107,10 @@ Functor-path p0 p1 i .F₁ f = p1 f i
 <!--
 ```agda
 Functor-path {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-id = 
-  is-prop→PathP (λ j → D .Hom-set _ _ (p1 (C .id) j) (D .id)) 
+  is-prop→path-p (λ j → D .Hom-set _ _ (p1 (C .id) j) (D .id)) 
     (F-id F) (F-id G) i
 Functor-path {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-∘ f g = 
-  is-prop→PathP (λ i → D .Hom-set _ _ (p1 (C ._∘_ f g) i) (D ._∘_ (p1 f i) (p1 g i)))
+  is-prop→path-p (λ i → D .Hom-set _ _ (p1 (C ._∘_ f g) i) (D ._∘_ (p1 f i) (p1 g i)))
     (F-∘ F f g) (F-∘ G f g) i
 ```
 -->

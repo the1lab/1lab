@@ -75,10 +75,10 @@ morphisms, and paths between the "upper" morphisms.
   Slice-path-p : (p : f ≡ g) → (f′ .to ≡ g′ .to) → PathP (λ i → Slice-hom (p i) px py) f′ g′
   Slice-path-p p p′ i .to = p′ i
   Slice-path-p p p′ i .commute =
-    is-prop→PathP (λ i → Hom-set _ _ (p i ∘ px .index) (py .index ∘ (p′ i)))
-                 (f′ .commute)
-                 (g′ .commute)
-                 i
+    is-prop→path-p (λ i → Hom-set _ _ (p i ∘ px .index) (py .index ∘ (p′ i)))
+                   (f′ .commute)
+                   (g′ .commute)
+                   i
 ```
 
 
