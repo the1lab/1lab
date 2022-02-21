@@ -268,9 +268,9 @@ contractible fibres.
 module _ {f : A → B} (i : is-iso f) where
 
   open is-iso i renaming ( inv to g
-                        ; rinv to s
-                        ; linv to t
-                        )
+                         ; rinv to s
+                         ; linv to t
+                         )
 ```
 
 Suppose, then, that $f : A \to B$ and $g : B \to A$, and we're given
