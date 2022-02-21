@@ -134,8 +134,8 @@ is a proposition`{.Agda ident=is-prop-is-prop}.
 ```agda
       deform x i .preorder .propositional =
         is-prop-is-prop (order .preorder .propositional)
-                      (x .preorder .propositional)
-                      i
+                        (x .preorder .propositional)
+                        i
 ```
 
 The construction is finished by relating the antisymmetry witnesses.
