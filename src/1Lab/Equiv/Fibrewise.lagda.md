@@ -73,8 +73,8 @@ total→equiv : {f : (x : A) → P x → Q x}
             → {x : A} → is-equiv (f x)
 total→equiv eqv {x} .is-eqv y =
   iso→is-hlevel 0 (total-fibres .snd .is-iso.inv)
-                 (is-iso.inverse (total-fibres .snd))
-                 (eqv .is-eqv (x , y))
+                  (is-iso.inverse (total-fibres .snd))
+                  (eqv .is-eqv (x , y))
 
 equiv→total : {f : (x : A) → P x → Q x}
             → ({x : A} → is-equiv (f x))
