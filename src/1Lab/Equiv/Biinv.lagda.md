@@ -179,7 +179,7 @@ is-biinv-is-prop {f = f} = contractible-if-inhabited contract where
   contract : is-biinv f → is-contr (is-biinv f)
   contract ibiinv =
     ×-is-hlevel 0 (is-iso→is-contr-linv iiso)
-                 (is-iso→is-contr-rinv iiso)
+                  (is-iso→is-contr-rinv iiso)
     where
       iiso = is-biinv→is-iso ibiinv
 ```
