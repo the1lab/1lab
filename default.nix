@@ -14,7 +14,7 @@ let
     (fetchGit {
       url = "https://git.amelia.how/amelia/agda-reference-filter.git";
       rev = "082b5576e799fe8aa28e7d09cf415ac6c9e0596b";
-      ref = "main";
+      ref = "master";
     }) {};
 
   our-ghc = ghc.withPackages (pkgs: with pkgs; [
