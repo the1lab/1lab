@@ -456,8 +456,8 @@ equational proof:
     lemma' =
       sym (
         subst S (ua (id , id-equiv)) s ≡⟨ ap (λ p → subst S p s) ua-id-equiv ⟩
-        transport refl s              ≡⟨ transport-refl _ ⟩
-        s                             ≡⟨ sym (pres-id s) ⟩ 
+        transport refl s               ≡⟨ transport-refl _ ⟩
+        s                              ≡⟨ sym (pres-id s) ⟩ 
         σ (id , id-equiv) .fst s       ∎
       )
 ```
