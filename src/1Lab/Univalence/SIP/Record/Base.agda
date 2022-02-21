@@ -112,9 +112,9 @@ module _ {ℓ ℓ₁ ℓ₁'} where
 
 data AutoRecord : Typeω where
   record-desc : ∀ {ℓ ℓ₁ ℓ₁'}
-             → (R : Type ℓ → Type ℓ₁) (ι : IsHomT ℓ₁' R)
-             → RecordFields R ι
-             → AutoRecord
+              → (R : Type ℓ → Type ℓ₁) (ι : IsHomT ℓ₁' R)
+              → RecordFields R ι
+              → AutoRecord
 
   -- ^ Package a record, notion of structure, and field descriptors onto
   -- an AutoRecord that the Derive-univalent-record macro can consume.

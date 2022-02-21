@@ -31,10 +31,10 @@ The type signatures make it clearer:
 
 ```agda
 Σ-path-p-iso : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
-              {x : Σ (B i0)} {y : Σ (B i1)}
-            → Iso (Σ[ p ∈ PathP A (x .fst) (y .fst) ]
-                    (PathP (λ i → B i (p i)) (x .snd) (y .snd)))
-                  (PathP (λ i → Σ (B i)) x y)
+               {x : Σ (B i0)} {y : Σ (B i1)}
+             → Iso (Σ[ p ∈ PathP A (x .fst) (y .fst) ]
+                     (PathP (λ i → B i (p i)) (x .snd) (y .snd)))
+                   (PathP (λ i → Σ (B i)) x y)
 
 Σ-path-iso : {x y : Σ B}
            → Iso (Σ[ p ∈ x .fst ≡ y .fst ] (subst B p (x .snd) ≡ y .snd))
@@ -188,7 +188,7 @@ aforementioned cubical argument:
     p j .fst , is-prop→PathP (λ k → Path-is-hlevel 1 (bp (p k .fst))
                                       {x = Σ-prop-path bp {x} {y} (ap fst p) k .snd}
                                       {y = p k .snd})
-                            refl refl j i
+                             refl refl j i
 ```
 
 Since `Σ-prop-path`{.Agda} is an equivalence, this implies that its inverse,
