@@ -1537,18 +1537,18 @@ defined in terms of `transp`{.Agda} and `PathP≡Path`{.Agda}, but this
 definition is more efficient.
 
 ```agda
-to-path-p : ∀ {ℓ} (A : I → Type ℓ) (x : A i0) (y : A i1)
-          → coe0→1 A x ≡ y
-          → PathP A x y
-to-path-p A x y p i =
+to-pathp : ∀ {ℓ} (A : I → Type ℓ) (x : A i0) (y : A i1)
+         → coe0→1 A x ≡ y
+         → PathP A x y
+to-pathp A x y p i =
   hcomp (λ j → λ { (i = i0) → x
                  ; (i = i1) → p j })
         (coe0→i A i x)
 
-from-path-p : ∀ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1}
-            → PathP A x y
-            → coe0→1 A x ≡ y
-from-path-p {A = A} p i = coei→1 A i (p i)
+from-pathp : ∀ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1}
+           → PathP A x y
+           → coe0→1 A x ≡ y
+from-pathp {A = A} p i = coei→1 A i (p i)
 ```
 
 These definitions illustrate how using the named squeezes and spreads
@@ -1576,12 +1576,12 @@ For `Σ`{.Agda} types, a path between `(a , b) ≡ (x , y)` consists of a
 path `p : a ≡ x`, and a path between `b` and `y` laying over `p`.
 
 ```agda
-Σ-path-p : ∀ {a b} {A : Type a} {B : A → Type b}
-         → {x y : Σ B}
-         → (p : x .fst ≡ y .fst)
-         → PathP (λ i → B (p i)) (x .snd) (y .snd)
-         → x ≡ y
-Σ-path-p p q i = p i , q i
+Σ-pathp : ∀ {a b} {A : Type a} {B : A → Type b}
+        → {x y : Σ B}
+        → (p : x .fst ≡ y .fst)
+        → PathP (λ i → B (p i)) (x .snd) (y .snd)
+        → x ≡ y
+Σ-pathp p q i = p i , q i
 ```
 
 We can also use the book characterisation of dependent paths, which is
@@ -1595,7 +1595,7 @@ simpler in the case where the `Σ`{.Agda} represents a subset --- i.e.,
        → subst B p (x .snd) ≡ (y .snd)
        → x ≡ y
 Σ-path {A = A} {B} {x} {y} p q =
-  Σ-path-p p (to-path-p _ _ _ q)
+  Σ-pathp p (to-pathp _ _ _ q)
 ```
 
 ## Π types

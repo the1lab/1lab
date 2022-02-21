@@ -476,14 +476,14 @@ depends only on equality of the family of morphisms, since being natural
 is a proposition:
 
 ```agda
-  Nat-path-p : {F' G' : Functor C D}
+  Nat-pathp : {F' G' : Functor C D}
             → (p : F ≡ F') (q : G ≡ G')
             → {a : F => G} {b : F' => G'}
             → (∀ x → PathP _ (a .η x) (b .η x))
             → PathP (λ i → p i => q i) a b
-  Nat-path-p p q path i .η x = path x i
-  Nat-path-p p q {a} {b} path i .is-natural x y f =
-    is-prop→path-p 
+  Nat-pathp p q path i .η x = path x i
+  Nat-pathp p q {a} {b} path i .is-natural x y f =
+    is-prop→pathp 
       (λ i → D.Hom-set _ _ 
         (path y i D.∘ Functor.F₁ (p i) f) (Functor.F₁ (q i) f D.∘ path x i))
       (a .is-natural x y f)
@@ -492,5 +492,5 @@ is a proposition:
   Nat-path : {a b : F => G}
            → ((x : _) → a .η x ≡ b .η x)
            → a ≡ b
-  Nat-path = Nat-path-p refl refl
+  Nat-path = Nat-pathp refl refl
 ```

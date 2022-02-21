@@ -72,13 +72,14 @@ Paths of slice morphisms are determined by paths between the base
 morphisms, and paths between the "upper" morphisms.
 
 ```agda
-  Slice-path-p : (p : f ≡ g) → (f′ .to ≡ g′ .to) → PathP (λ i → Slice-hom (p i) px py) f′ g′
-  Slice-path-p p p′ i .to = p′ i
-  Slice-path-p p p′ i .commute =
-    is-prop→path-p (λ i → Hom-set _ _ (p i ∘ px .index) (py .index ∘ (p′ i)))
-                   (f′ .commute)
-                   (g′ .commute)
-                   i
+  Slice-pathp : (p : f ≡ g) → (f′ .to ≡ g′ .to) → PathP (λ i → Slice-hom (p i) px py) f′ g′
+  Slice-pathp p p′ i .to = p′ i
+  Slice-pathp p p′ i .commute =
+    is-prop→pathp 
+      (λ i → Hom-set _ _ (p i ∘ px .index) (py .index ∘ (p′ i)))
+      (f′ .commute)
+      (g′ .commute)
+      i
 ```
 
 
@@ -124,9 +125,9 @@ Slices ._∘′_ {x = x} {y = y} {z = z} {f = f} {g = g} px py =
     (f ∘ g) ∘ x .index          ≡⟨ pullr (py .commute) ⟩
     f ∘ (index y ∘ py .to)      ≡⟨ extendl (px .commute) ⟩
     z .index ∘ (px .to ∘ py .to) ∎
-Slices .idr′ {f = f} f′ = Slice-path-p (idr f) (idr (f′ .to))
-Slices .idl′ {f = f} f′ = Slice-path-p (idl f) (idl (f′ .to))
+Slices .idr′ {f = f} f′ = Slice-pathp (idr f) (idr (f′ .to))
+Slices .idl′ {f = f} f′ = Slice-pathp (idl f) (idl (f′ .to))
 Slices .assoc′ {f = f} {g = g} {h = h} f′ g′ h′ =
-  Slice-path-p (assoc f g h) (assoc (f′ .to) (g′ .to) (h′ .to))
+  Slice-pathp (assoc f g h) (assoc (f′ .to) (g′ .to) (h′ .to))
 ```
 

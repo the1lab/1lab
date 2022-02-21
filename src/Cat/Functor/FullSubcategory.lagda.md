@@ -89,10 +89,10 @@ is $\ca{R}$.
       from ((B , _) , isom) = B , sub-iso→super-iso isom
 
       rinv : is-right-inverse from to
-      rinv (x , i) = Σ-path-p (Σ-prop-path pprop refl) (R.≅-path-p _ _ refl refl)
+      rinv (x , i) = Σ-pathp (Σ-prop-path pprop refl) (R.≅-pathp _ _ refl refl)
 
       linv : is-left-inverse from to
-      linv (x , i) = Σ-path-p refl (C.≅-path-p _ _ refl refl)
+      linv (x , i) = Σ-pathp refl (C.≅-pathp _ _ refl refl)
 
       equiv : (Σ[ B ∈ C.Ob ] A C.≅ B) ≃ (Σ[ B ∈ R.Ob ] (A , p) R.≅ B)
       equiv = to , is-iso→is-equiv (iso from rinv linv)

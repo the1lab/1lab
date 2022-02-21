@@ -212,7 +212,7 @@ category.
   Cone-path p q i .Cone.apex = p i
   Cone-path p q i .Cone.ψ o = q o i
   Cone-path {x = x} {y} p q i .Cone.commutes {x = a} {y = b} f = 
-    is-prop→path-p (λ i → C.Hom-set _ _ (F.₁ f C.∘ q a i) (q b i)) 
+    is-prop→pathp (λ i → C.Hom-set _ _ (F.₁ f C.∘ q a i) (q b i)) 
       (x .commutes f) (y .commutes f) i
     where open Cone
 ```
@@ -243,7 +243,7 @@ object) must be equal to the codomain's `ψ`{.Agda}.
   Cone-hom-path : ∀ {x y} {f g : Cone-hom x y} → Cone-hom.hom f ≡ Cone-hom.hom g → f ≡ g
   Cone-hom-path p i .Cone-hom.hom = p i
   Cone-hom-path {x = x} {y} {f} {g} p i .Cone-hom.commutes {o} j = 
-    is-set→square-p (λ i j → C.Hom-set _ _)
+    is-set→squarep (λ i j → C.Hom-set _ _)
       (λ j → Cone.ψ y o C.∘ p j) (f .Cone-hom.commutes) (g .Cone-hom.commutes) refl i j
 ```
 -->

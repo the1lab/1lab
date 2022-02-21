@@ -106,8 +106,8 @@ universe of all contractible types is a proposition.
 ```agda
 0-Type-is-prop : is-prop (n-Type ℓ 0)
 0-Type-is-prop (A , ac) (B , bc) =
-  Σ-path-p (ua (f , f-eqv))
-           λ i → is-prop→path-p (λ i → is-contr-is-prop {A = ua (f , f-eqv) i}) ac bc i
+  Σ-pathp (ua (f , f-eqv))
+          λ i → is-prop→pathp (λ i → is-contr-is-prop {A = ua (f , f-eqv) i}) ac bc i
   where
     f : A → B
     f _ = bc .centre

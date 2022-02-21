@@ -35,7 +35,7 @@ map into must be a set, as required by the `squash`{.Agda} constructor.
           → ∀ x → B x
 ∥-∥₀-elim Bset binc (inc x) = binc x
 ∥-∥₀-elim Bset binc (squash x y p q i j) =
-  is-set→square-p (λ i j → Bset (squash x y p q i j))
+  is-set→squarep (λ i j → Bset (squash x y p q i j))
     (λ _ → g x) (λ i → g (p i)) (λ i → g (q i)) (λ i → g y) i j
   where g = ∥-∥₀-elim Bset binc
 ```
@@ -60,7 +60,7 @@ required, the counit `inc`{.Agda} is an equivalence:
 
 The other definitions are entirely routine. We define functorial actions
 of `∥_∥₀`{.Agda} directly, rather than using the eliminator, to avoid
-using `is-set→square-p`{.Agda}.
+using `is-set→squarep`{.Agda}.
 
 ```agda
 ∥-∥₀-map : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}

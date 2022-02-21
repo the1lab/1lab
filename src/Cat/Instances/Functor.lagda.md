@@ -107,10 +107,10 @@ Functor-path p0 p1 i .F₁ f = p1 f i
 <!--
 ```agda
 Functor-path {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-id = 
-  is-prop→path-p (λ j → D .Hom-set _ _ (p1 (C .id) j) (D .id)) 
+  is-prop→pathp (λ j → D .Hom-set _ _ (p1 (C .id) j) (D .id)) 
     (F-id F) (F-id G) i
 Functor-path {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-∘ f g = 
-  is-prop→path-p (λ i → D .Hom-set _ _ (p1 (C ._∘_ f g) i) (D ._∘_ (p1 f i) (p1 g i)))
+  is-prop→pathp (λ i → D .Hom-set _ _ (p1 (C ._∘_ f g) i) (D ._∘_ (p1 f i) (p1 g i)))
     (F-∘ F f g) (F-∘ G f g) i
 ```
 -->
@@ -170,7 +170,7 @@ deformation $p : G \equiv F$, such that, over this $p$, the given
 isomorphism looks like the identity. 
 
 ```agda
-  Functor-is-category F .paths (G , F≅G) = Σ-path-p F≡G id≡F≅G where
+  Functor-is-category F .paths (G , F≅G) = Σ-pathp F≡G id≡F≅G where
 ```
 
 The first thing we must note is that we can recover the components of a
@@ -208,7 +208,7 @@ so that the two halves of the isomorphism annihilate.
     abstract
       F₁≡G₁ : ∀ {x y} {f : C .Hom x y} 
             → PathP (λ i → D.Hom (F₀≡G₀ x i) (F₀≡G₀ y i)) (F₁ F f) (F₁ G f)
-      F₁≡G₁ {x = x} {y} {f} = Hom-path-p (
+      F₁≡G₁ {x = x} {y} {f} = Hom-pathp (
         _ D.∘ F .F₁ f D.∘ _                           ≡⟨ (λ i → ptoi-to _ i D.∘ F .F₁ f D.∘ ptoi-from _ i) ⟩
         F≅G .to .η y D.∘ F .F₁ f D.∘ F≅G .from .η x   ≡⟨ ap₂ D._∘_ refl (sym (F≅G .from .is-natural _ _ _)) ∙ D.assoc _ _ _ ⟩
         (F≅G .to .η y D.∘ F≅G .from .η y) D.∘ G .F₁ f ≡⟨ ap₂ D._∘_ (λ i → F≅G .invˡ i .η y) refl ⟩
@@ -222,21 +222,21 @@ so that the two halves of the isomorphism annihilate.
 Putting these homotopies together defines a path `F≡G`{.Agda}. It
 remains to show that, over this path, the natural isomorphism we started
 with is homotopic to the identity; Equality of `isomorphisms`{.Agda
-ident=≅-path-p} and `natural transformations`{.Agda ident=Nat-pathP} are
+ident=≅-pathp} and `natural transformations`{.Agda ident=Nat-pathP} are
 both tested componentwise, so we can "push down" the relevant equalities
 to the level of families of morphisms; By computation, all we have to
 show is that $\eta{}_x \circ \mathrm{id} \circ \mathrm{id} = f$.
 
 ```agda
     id≡F≅G : PathP (λ i → F ≅ F≡G i) id-iso F≅G
-    id≡F≅G = ≅-path-p refl F≡G 
-      (Nat-path-p refl F≡G
-        λ x → Hom-path-p 
+    id≡F≅G = ≅-pathp refl F≡G 
+      (Nat-pathp refl F≡G
+        λ x → Hom-pathp 
           (  ap₂ D._∘_ (ptoi-to _) refl 
           ·· ap₂ D._∘_ refl (ap₂ D._∘_ refl (transport-refl _) ∙ D.idl _) 
           ·· D.idr _)) 
-      (Nat-path-p F≡G refl 
-        λ x → Hom-path-p 
+      (Nat-pathp F≡G refl 
+        λ x → Hom-pathp 
           (  ap₂ D._∘_ (transport-refl _) (D.idl _) 
           ·· D.idl _ 
           ·· ptoi-from _))

@@ -305,7 +305,7 @@ Int-elim-prop : ∀ {ℓ} {P : Int → Type ℓ}
               → (x : Int) → P x
 Int-elim-prop pprop f (diff a b) = f a b
 Int-elim-prop pprop f (quot m n i) =
-  is-prop→path-p (λ i → pprop (quot m n i)) (f m n) (f (suc m) (suc n)) i
+  is-prop→pathp (λ i → pprop (quot m n i)) (f m n) (f (suc m) (suc n)) i
 ```
 
 <details>

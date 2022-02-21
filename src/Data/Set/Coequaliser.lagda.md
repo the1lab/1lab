@@ -91,9 +91,9 @@ the necessary coherences for `glue`{.Agda} and `squash`{.Agda}.
 
 ```agda
 Coeq-elim-prop {f = f} {g = g} cprop cinc (glue x i) = 
-  is-prop→path-p (λ i → cprop (glue x i)) (cinc (f x)) (cinc (g x)) i
+  is-prop→pathp (λ i → cprop (glue x i)) (cinc (f x)) (cinc (g x)) i
 Coeq-elim-prop cprop cinc (squash x y p q i j) = 
-  is-prop→square-p (λ i j → cprop (squash x y p q i j)) 
+  is-prop→squarep (λ i j → cprop (squash x y p q i j)) 
     (λ i → g x) (λ i → g (p i)) (λ i → g (q i)) (λ i → g y) i j
   where g = Coeq-elim-prop cprop cinc
 ```
@@ -154,7 +154,7 @@ Coeq-elim : ∀ {ℓ} {f g : A → B} {C : Coeq f g → Type ℓ}
 Coeq-elim cset ci cg (inc x) = ci x
 Coeq-elim cset ci cg (glue x i) = cg x i
 Coeq-elim cset ci cg (squash x y p q i j) = 
-  is-set→square-p (λ i j → cset (squash x y p q i j)) 
+  is-set→squarep (λ i j → cset (squash x y p q i j)) 
     (λ i → g x) (λ i → g (p i)) (λ i → g (q i)) (λ i → g y) i j
   where g = Coeq-elim cset ci cg
 ```
@@ -227,7 +227,7 @@ Coeq-rec₂ cset ci r1 r2 (inc x) (squash y z p q i j) = cset
 
 Coeq-rec₂ cset ci r1 r2 (glue x i) (inc x₁) = r1 x₁ x i
 Coeq-rec₂ {f = f} {g} {f'} {g'} cset ci r1 r2 (glue x i) (glue y j) = 
-  is-set→square-p (λ i j → cset)
+  is-set→squarep (λ i j → cset)
     (λ j → r1 (f' y) x j) 
     (λ j → r2 (f x) y j) 
     (λ j → r2 (g x) y j) 

@@ -108,7 +108,7 @@ of cones:
   Cocone-path p q i .coapex = p i
   Cocone-path p q i .ψ o = q o i
   Cocone-path {x = x} {y = y} p q i .commutes {x = a} {y = b} f =
-    is-prop→path-p (λ i → C.Hom-set _ _ (q b i C.∘ F.₁ f) (q a i))
+    is-prop→pathp (λ i → C.Hom-set _ _ (q b i C.∘ F.₁ f) (q a i))
       (x .commutes f) (y .commutes f) i
 ```
 
@@ -139,7 +139,7 @@ of cocone morphisms.
   Cocone-hom-path : ∀ {x y} {f g : Cocone-hom x y} → f .hom ≡ g .hom → f ≡ g
   Cocone-hom-path p i .hom = p i
   Cocone-hom-path {x = x} {y = y} {f = f} {g = g} p i .commutes {o} j =
-    is-set→square-p (λ i j → C.Hom-set _ _)
+    is-set→squarep (λ i j → C.Hom-set _ _)
       (λ j → p j C.∘ x .ψ o) (f .commutes) (g .commutes) refl i j
 ```
 

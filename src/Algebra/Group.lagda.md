@@ -108,7 +108,7 @@ $x$ and $y$ are the same.
   same-monoid : PathP (λ i → is-monoid (same-unit i) _*_)
                       (x .has-is-monoid) (y .has-is-monoid)
   same-monoid = 
-    is-prop→path-p (λ i → is-monoid-is-prop {id = same-unit i})
+    is-prop→pathp (λ i → is-monoid-is-prop {id = same-unit i})
       (x .has-is-monoid) (y .has-is-monoid)
 ```
 
@@ -132,12 +132,12 @@ dependent! This gives us the equations between the `inverseˡ`{.Agda} and
 ```agda
   same-invˡ : (e : A) → Square _ _ _ _
   same-invˡ e =
-    is-set→square-p (λ _ _ → x .has-is-monoid .has-is-set)
+    is-set→squarep (λ _ _ → x .has-is-monoid .has-is-set)
       (ap₂ _*_ (same-inverses e) refl) (x .inverseˡ) (y .inverseˡ) same-unit 
 
   same-invʳ : (e : A) → Square _ _ _ _
   same-invʳ e =
-    is-set→square-p (λ _ _ → x .has-is-monoid .has-is-set)
+    is-set→squarep (λ _ _ → x .has-is-monoid .has-is-set)
       (ap₂ _*_ refl (same-inverses e)) (x .inverseʳ) (y .inverseʳ) same-unit 
 ```
 

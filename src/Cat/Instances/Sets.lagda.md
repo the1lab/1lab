@@ -20,8 +20,8 @@ is contractible. We first exhibit a contraction directly, using
 The direct proof is surprisingly straightforward, in particular because
 the heavy lifting is done by a plethora of existing lemmas:
 `Iso→Equiv`{.Agda} to turn an isomorphism into an equivalence,
-`path→ua-path-p`{.Agda} to reduce dependent paths over `ua`{.Agda} to
-non-dependent paths, `≅-path-p`{.Agda} to characterise dependent paths in
+`path→ua-pathp`{.Agda} to reduce dependent paths over `ua`{.Agda} to
+non-dependent paths, `≅-pathp`{.Agda} to characterise dependent paths in
 `_≅_`{.Agda}, etc.
 
 ```agda
@@ -55,14 +55,14 @@ is usual, we pick $A$ itself and the identity isomorphism.
 We must then show that, given some other set $B$ and an isomorphism $i :
 A \cong B$, we can continuously deform $A$ into $B$ and, in the process,
 deform $i$ into the identity. But this follows from `paths in sigma
-types`{.Agda ident=Σ-path-p}, the rearranging of isomorphisms defined
+types`{.Agda ident=Σ-pathp}, the rearranging of isomorphisms defined
 above, and `ua`{.Agda}.
 
 ```agda
     isc .paths (B , isom) = 
-      Σ-path-p (Σ-prop-path (λ _ → is-hlevel-is-prop 2) (ua A≃B))
-        (Sets.≅-path-p refl _ 
-          (λ i x → path→ua-path-p A≃B {x = x} {y = isom.to x} refl i) 
+      Σ-pathp (Σ-prop-path (λ _ → is-hlevel-is-prop 2) (ua A≃B))
+        (Sets.≅-pathp refl _ 
+          (λ i x → path→ua-pathp A≃B {x = x} {y = isom.to x} refl i) 
           (ua→ λ a → sym (happly isom.invʳ a)))
       where
         module isom = Sets._≅_ isom
@@ -91,7 +91,7 @@ the rearrangement `iso→equiv`{.Agda} is an equivalence:
       p x = Σ-prop-path is-equiv-is-prop refl
 
       q : is-left-inverse (equiv→iso {A} {B}) iso→equiv
-      q x = Sets.≅-path-p refl refl refl refl
+      q x = Sets.≅-pathp refl refl refl refl
 ```
 
 We then use [univalence for $n$-types] to directly establish that $(A

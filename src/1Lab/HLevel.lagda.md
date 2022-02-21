@@ -382,10 +382,10 @@ It's sufficient for a type family to be of an h-level everywhere for the
 whole family to be the same h-level.
 
 ```agda
-is-prop→path-p : ∀ {B : I → Type ℓ} → ((i : I) → is-prop (B i))
-               → (b0 : B i0) (b1 : B i1)
-               → PathP (λ i → B i) b0 b1
-is-prop→path-p {B = B} hB b0 b1 = to-path-p _ _ _ (hB _ _ _)
+is-prop→pathp : ∀ {B : I → Type ℓ} → ((i : I) → is-prop (B i))
+              → (b0 : B i0) (b1 : B i1)
+              → PathP (λ i → B i) b0 b1
+is-prop→pathp {B = B} hB b0 b1 = to-pathp _ _ _ (hB _ _ _)
 ```
 
 The base case is turning a proof that a type is a proposition uniformly
@@ -396,7 +396,7 @@ is-hlevel→is-hlevel-dep
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
   → (n : Nat) → ((x : A) → is-hlevel (B x) (suc n))
   → is-hlevel-dep B n
-is-hlevel→is-hlevel-dep zero hl α β p = is-prop→path-p (λ i → hl (p i)) α β
+is-hlevel→is-hlevel-dep zero hl α β p = is-prop→pathp (λ i → hl (p i)) α β
 is-hlevel→is-hlevel-dep {A = A} {B = B} (suc n) hl {a0} {a1} b0 b1 =
   is-hlevel→is-hlevel-dep n (λ p → helper a1 p b1)
   where
@@ -409,7 +409,7 @@ is-hlevel→is-hlevel-dep {A = A} {B = B} (suc n) hl {a0} {a1} b0 b1 =
 
 <!--
 ```agda
-is-prop→square-p 
+is-prop→squarep 
   : ∀ {B : I → I → Type ℓ} → ((i j : I) → is-prop (B i j))
   → {a : B i0 i0} {b : B i0 i1} {c : B i1 i0} {d : B i1 i1}
   → (p : PathP (λ j → B j i0) a c)
@@ -417,7 +417,7 @@ is-prop→square-p
   → (s : PathP (λ j → B i1 j) c d)
   → (r : PathP (λ j → B j i1) b d)
   → SquareP B p q s r
-is-prop→square-p {B = B} is-propB {a = a} p q s r i j =
+is-prop→squarep {B = B} is-propB {a = a} p q s r i j =
   hcomp (λ { k (j = i0) → is-propB i j (base i j) (p i) k
            ; k (j = i1) → is-propB i j (base i j) (r i) k
            ; k (i = i0) → is-propB i j (base i j) (q j) k
@@ -426,15 +426,15 @@ is-prop→square-p {B = B} is-propB {a = a} p q s r i j =
     base : (i j : I) → B i j
     base i j = transport (λ k → B (i ∧ k) (j ∧ k)) a
 
-is-prop→path-p-is-contr
+is-prop→pathp-is-contr
   : {A : I → Type ℓ} → ((i : I) → is-prop (A i))
   → (x : A i0) (y : A i1) → is-contr (PathP A x y)
-is-prop→path-p-is-contr ap x y .centre = is-prop→path-p ap x y
-is-prop→path-p-is-contr ap x y .paths p =
-  is-prop→square-p (λ i j → ap j) refl _ _ refl
+is-prop→pathp-is-contr ap x y .centre = is-prop→pathp ap x y
+is-prop→pathp-is-contr ap x y .paths p =
+  is-prop→squarep (λ i j → ap j) refl _ _ refl
 
 abstract
-  is-set→square-p :
+  is-set→squarep :
     {A : I → I → Type ℓ}
     (is-set : (i j : I) → is-set (A i j))
     → {a : A i0 i0} {b : A i0 i1} {c : A i1 i0} {d : A i1 i1}
@@ -443,7 +443,7 @@ abstract
     → (s : PathP (λ j → A i1 j) c d)
     → (r : PathP (λ j → A j i1) b d)
     → SquareP A p q s r
-  is-set→square-p isset a₀₋ a₁₋ a₋₀ a₋₁ =
+  is-set→squarep isset a₀₋ a₁₋ a₋₀ a₋₁ =
     transport (sym (PathP≡Path _ _ _))
               (Path-p-is-hlevel' 1 (isset _ _) _ _ _ _)
 

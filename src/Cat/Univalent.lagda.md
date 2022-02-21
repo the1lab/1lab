@@ -121,9 +121,9 @@ This lets us quickly turn paths between compositions into dependent
 paths in `Hom`{.Agda}-sets.
 
 ```agda
-Hom-path-p : ∀ {A B C D} {p : A ≡ C} {q : B ≡ D} {h : Hom A B} {h' : Hom C D}
-           → path→iso q .to ∘ h ∘ path→iso p .from ≡ h'
-           → PathP (λ i → Hom (p i) (q i)) h h'
-Hom-path-p {p = p} {q} {h} {h'} prf =
-  to-path-p _ _ _ (subst (_≡ h') (sym (Hom-transport p q h)) prf)
+Hom-pathp : ∀ {A B C D} {p : A ≡ C} {q : B ≡ D} {h : Hom A B} {h' : Hom C D}
+          → path→iso q .to ∘ h ∘ path→iso p .from ≡ h'
+          → PathP (λ i → Hom (p i) (q i)) h h'
+Hom-pathp {p = p} {q} {h} {h'} prf =
+  to-pathp _ _ _ (subst (_≡ h') (sym (Hom-transport p q h)) prf)
 ```

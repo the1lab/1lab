@@ -339,10 +339,10 @@ mentioning extensions: A path `x ≡ y` over `ua e` induces a path `e .fst
 x ≡ y`.
 
 ```agda
-ua-path-p→path : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
-             → PathP (λ i → ua e i) x y
-             → e .fst x ≡ y
-ua-path-p→path e p i = outS (ua-unglue e i (p i))
+ua-pathp→path : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
+              → PathP (λ i → ua e i) x y
+              → e .fst x ≡ y
+ua-pathp→path e p i = outS (ua-unglue e i (p i))
 ```
 
 In the other direction, we have `ua-glue`{.Agda}, which expresses that a
@@ -372,10 +372,10 @@ equivalence $e$. Factoring in the type of the interval, we get the
 promised map between dependent paths over `ua`{.Agda} and paths in B.
 
 ```agda
-path→ua-path-p : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
-             → e .fst x ≡ y
-             → PathP (λ i → ua e i) x y
-path→ua-path-p e {x = x} p i = outS (ua-glue e i (λ { (i = i0) → x }) (inS (p i)))
+path→ua-pathp : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
+              → e .fst x ≡ y
+              → PathP (λ i → ua e i) x y
+path→ua-pathp e {x = x} p i = outS (ua-glue e i (λ { (i = i0) → x }) (inS (p i)))
 ```
 
 The "pathp to path" versions of the above lemmas are definitionally
@@ -383,11 +383,11 @@ inverses, so they provide a characterisation of `PathP (ua f)` in terms
 of non-dependent paths.
 
 ```agda
-ua-path-p≃path : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
-             → (e .fst x ≡ y) ≃ (PathP (λ i → ua e i) x y)
-ua-path-p≃path eqv .fst = path→ua-path-p eqv
-ua-path-p≃path eqv .snd .is-eqv y .centre = strict-fibres (ua-path-p→path eqv) y .fst
-ua-path-p≃path eqv .snd .is-eqv y .paths = strict-fibres (ua-path-p→path eqv) y .snd
+ua-pathp≃path : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
+              → (e .fst x ≡ y) ≃ (PathP (λ i → ua e i) x y)
+ua-pathp≃path eqv .fst = path→ua-pathp eqv
+ua-pathp≃path eqv .snd .is-eqv y .centre = strict-fibres (ua-pathp→path eqv) y .fst
+ua-pathp≃path eqv .snd .is-eqv y .paths = strict-fibres (ua-pathp→path eqv) y .snd
 ```
 
 # The “axiom”
@@ -426,7 +426,7 @@ is the identity equivalence, we use `coe1→i`{.Agda} to show that
 path→equiv-refl : {A : Type ℓ} → path→equiv (refl {x = A}) ≡ (id , id-equiv)
 path→equiv-refl {A = A} =
   Σ-path (λ i x → coe1→i (λ i → A) i x)
-         (is-prop→path-p (λ i → is-equiv-is-prop _) _ _)
+         (is-prop→pathp (λ i → is-equiv-is-prop _) _ _)
 ```
 
 For the other direction, we must show that `ua`{.Agda} of
@@ -517,7 +517,7 @@ is-contr.paths (Equiv-is-contr A) (B , A≃B) i = ua A≃B i , p i , q i where
   p i x = outS (ua-glue A≃B i (λ { (i = i0) → x }) (inS (A≃B .fst x)))
 
   q : PathP (λ i → is-equiv (p i)) id-equiv (A≃B .snd)
-  q = is-prop→path-p (λ i → is-equiv-is-prop (p i)) _ _
+  q = is-prop→pathp (λ i → is-equiv-is-prop (p i)) _ _
 ```
 
 Combining `Equiv-is-contr`{.Agda} with `subst`{.Agda}, we get an induction

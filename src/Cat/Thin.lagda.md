@@ -229,7 +229,7 @@ finishes the job.
         isp ob x y i .to   = Rprop (x .to)   (y .to)   i
         isp ob x y i .from = Rprop (x .from) (y .from) i
         isp ob x y i .inverses = 
-          is-prop→path-p 
+          is-prop→pathp 
             (λ i → Inverses-are-prop {f = Rprop (x .to)   (y .to)   i} 
                                      {g = Rprop (x .from) (y .from) i})
             (x .inverses) (y .inverses) i

@@ -93,16 +93,16 @@ Free-elim-prop B bp bi bd binv bnil = go where
   go (inv x) = binv x (go x)
   go nil = bnil
   go (f-assoc x y z i) = 
-    is-prop→path-p (λ i → bp (f-assoc x y z i)) 
+    is-prop→pathp (λ i → bp (f-assoc x y z i)) 
       (bd (x ◆ y) z (bd x y (go x) (go y)) (go z))
       (bd x (y ◆ z) (go x) (bd y z (go y) (go z))) i
   go (f-invl x i) = 
-    is-prop→path-p (λ i → bp (f-invl x i)) (bd (inv x) x (binv x (go x)) (go x)) bnil i
+    is-prop→pathp (λ i → bp (f-invl x i)) (bd (inv x) x (binv x (go x)) (go x)) bnil i
   go (f-invr x i) =
-    is-prop→path-p (λ i → bp (f-invr x i)) (bd x (inv x) (go x) (binv x (go x))) bnil i
-  go (f-idl x i) = is-prop→path-p (λ i → bp (f-idl x i)) (bd nil x bnil (go x)) (go x) i
+    is-prop→pathp (λ i → bp (f-invr x i)) (bd x (inv x) (go x) (binv x (go x))) bnil i
+  go (f-idl x i) = is-prop→pathp (λ i → bp (f-idl x i)) (bd nil x bnil (go x)) (go x) i
   go (squash x y p q i j) = 
-    is-prop→square-p (λ i j → bp (squash x y p q i j)) 
+    is-prop→squarep (λ i j → bp (squash x y p q i j)) 
       (λ i → go x) (λ i → go (p i)) (λ i → go (q i)) (λ i → go y) i j
 ```
 

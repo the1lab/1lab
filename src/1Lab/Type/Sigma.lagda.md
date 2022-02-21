@@ -30,11 +30,11 @@ The first thing we prove is that _paths in sigmas are sigmas of paths_.
 The type signatures make it clearer:
 
 ```agda
-Σ-path-p-iso : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
-               {x : Σ (B i0)} {y : Σ (B i1)}
-             → Iso (Σ[ p ∈ PathP A (x .fst) (y .fst) ]
-                     (PathP (λ i → B i (p i)) (x .snd) (y .snd)))
-                   (PathP (λ i → Σ (B i)) x y)
+Σ-pathp-iso : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
+              {x : Σ (B i0)} {y : Σ (B i1)}
+            → Iso (Σ[ p ∈ PathP A (x .fst) (y .fst) ]
+                    (PathP (λ i → B i (p i)) (x .snd) (y .snd)))
+                  (PathP (λ i → Σ (B i)) x y)
 
 Σ-path-iso : {x y : Σ B}
            → Iso (Σ[ p ∈ x .fst ≡ y .fst ] (subst B p (x .snd) ≡ y .snd))
@@ -48,16 +48,16 @@ first, using the fact  that `PathPs and paths over a transport are the
 same`{.Agda ident=PathP≡Path}.
 
 ```agda
-fst Σ-path-p-iso (p , q) i = p i , q i
-is-iso.inv (snd Σ-path-p-iso) p = (λ i → p i .fst) , (λ i → p i .snd)
-is-iso.rinv (snd Σ-path-p-iso) x = refl
-is-iso.linv (snd Σ-path-p-iso) x = refl
+fst Σ-pathp-iso (p , q) i = p i , q i
+is-iso.inv (snd Σ-pathp-iso) p = (λ i → p i .fst) , (λ i → p i .snd)
+is-iso.rinv (snd Σ-pathp-iso) x = refl
+is-iso.linv (snd Σ-pathp-iso) x = refl
 
 Σ-path-iso {B = B} {x} {y} =
   transport (λ i → Iso (Σ[ p ∈ x .fst ≡ y .fst ]
                          (PathP≡Path (λ j → B (p j)) (x .snd) (y .snd) i))
                        (x ≡ y))
-            Σ-path-p-iso
+            Σ-pathp-iso
 ```
 
 ## Closure under equivalences
@@ -110,12 +110,12 @@ they are included for completeness. </summary>
     ctrP i = coe1→i (λ i → B (α i)) i b
 
     ctr : fibre intro x
-    ctr = (ctrA , ctrB) , Σ-path-p α ctrP
+    ctr = (ctrA , ctrB) , Σ-pathp α ctrP
 
     isCtr : ∀ y → ctr ≡ y
-    isCtr ((r , s) , p) = λ i → (a≡r i , b!≡s i) , Σ-path-p (α≡ρ i) (coh i) where
-      open Σ (Σ-path-p-iso .snd .is-iso.inv p) renaming (fst to ρ; snd to σ)
-      open Σ (Σ-path-p-iso .snd .is-iso.inv (e .snd .is-eqv a' .is-contr.paths (r , ρ))) renaming (fst to a≡r; snd to α≡ρ)
+    isCtr ((r , s) , p) = λ i → (a≡r i , b!≡s i) , Σ-pathp (α≡ρ i) (coh i) where
+      open Σ (Σ-pathp-iso .snd .is-iso.inv p) renaming (fst to ρ; snd to σ)
+      open Σ (Σ-pathp-iso .snd .is-iso.inv (e .snd .is-eqv a' .is-contr.paths (r , ρ))) renaming (fst to a≡r; snd to α≡ρ)
 
       b!≡s : PB (ap (e .fst) a≡r) ctrB s
       b!≡s i = comp (λ k → B (α≡ρ i (~ k))) (λ k → (λ
@@ -157,7 +157,7 @@ projections:
             → (∀ x → is-prop (B x))
             → {x y : Σ B}
             → (x .fst ≡ y .fst) → x ≡ y
-Σ-prop-path bp {x} {y} p i = p i , is-prop→path-p (λ i → bp (p i)) (x .snd) (y .snd) i
+Σ-prop-path bp {x} {y} p i = p i , is-prop→pathp (λ i → bp (p i)) (x .snd) (y .snd) i
 ```
 
 The proof that this is an equivalence uses a cubical argument, but the
@@ -185,7 +185,7 @@ aforementioned cubical argument:
 
 ```agda
   isom .is-iso.rinv p i j =
-    p j .fst , is-prop→path-p (λ k → Path-is-hlevel 1 (bp (p k .fst))
+    p j .fst , is-prop→pathp (λ k → Path-is-hlevel 1 (bp (p k .fst))
                                       {x = Σ-prop-path bp {x} {y} (ap fst p) k .snd}
                                       {y = p k .snd})
                              refl refl j i
@@ -216,7 +216,7 @@ into an equivalence:
   → Square p q s r
 Σ-prop-square Bprop sq i j .fst = sq i j
 Σ-prop-square Bprop {p} {q} {s} {r} sq i j .snd = 
-  is-prop→square-p (λ i j → Bprop (sq i j)) 
+  is-prop→squarep (λ i j → Bprop (sq i j)) 
     (ap snd p) (ap snd q) (ap snd s) (ap snd r) i j
 ```
 

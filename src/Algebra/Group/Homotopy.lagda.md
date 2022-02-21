@@ -201,8 +201,8 @@ eliminator into propositions later, so we define that now.
   Deloop-elim-prop P pprop p = 
     Deloop-elim P 
       (λ x → is-prop→is-hlevel-suc {n = 2} (pprop x)) p 
-      (λ x → is-prop→path-p (λ i → pprop (path x i)) p p)
-      (λ x y → is-prop→square-p (λ i j → pprop (path-sq x y i j)) _ _ _ _)
+      (λ x → is-prop→pathp (λ i → pprop (path x i)) p p)
+      (λ x y → is-prop→squarep (λ i j → pprop (path-sq x y i j)) _ _ _ _)
 ```
 
 We can then proceed to characterise the type `point ≡ x` by an
@@ -279,7 +279,7 @@ reduces to `G → base ≡ base`, for which `path`{.Agda} suffices; The
 ```agda
     path 
     (λ x → ua→ λ a → path-sq _ _) 
-    (λ x y → is-set→square-p (λ i j → Π-is-hlevel 2 λ _ → squash _ _) _ _ _ _)
+    (λ x y → is-set→squarep (λ i j → Π-is-hlevel 2 λ _ → squash _ _) _ _ _ _)
 ```
 
 Proving that these are inverses finishes the proof. For one direction,

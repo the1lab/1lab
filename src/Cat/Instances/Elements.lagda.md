@@ -65,7 +65,7 @@ path space of `Element-hom`{.Agda}
 Element-hom-path : {x y : Element} {f g : Element-hom x y} → f .hom ≡ g .hom → f ≡ g 
 Element-hom-path p i .hom = p i
 Element-hom-path {x = x} {y = y} {f = f} {g = g} p i .commute =
-  is-prop→path-p (λ j → snd (P.₀ (x .ob)) (P.₁ (p j) (y .section)) (x .section))
+  is-prop→pathp (λ j → snd (P.₀ (x .ob)) (P.₁ (p j) (y .section)) (x .section))
     (f .commute)
     (g .commute) i
 ```

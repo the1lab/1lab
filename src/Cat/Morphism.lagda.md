@@ -115,7 +115,7 @@ is-invertible-is-prop {a = a} {b = b} {f = f} g h = p where
   p : g ≡ h
   p i .is-invertible.inv = g≡h i
   p i .is-invertible.inverses =
-    is-prop→path-p (λ i → Inverses-are-prop {g = g≡h i}) g.inverses h.inverses i
+    is-prop→pathp (λ i → Inverses-are-prop {g = g≡h i}) g.inverses h.inverses i
 ```
 
 We note that the identity morphism is always iso, and that isos compose:
@@ -137,20 +137,20 @@ make-iso f g p q ._≅_.inverses .Inverses.invʳ = q
   s i j .to = Hom-set _ _ (x .to) (y .to) (ap to p) (ap to q) i j
   s i j .from = Hom-set _ _ (x .from) (y .from) (ap from p) (ap from q) i j
   s i j .inverses =
-    is-prop→square-p
+    is-prop→squarep
       (λ i j → Inverses-are-prop {f = Hom-set _ _ (x .to) (y .to) (ap to p) (ap to q) i j}
                                {g = Hom-set _ _ (x .from) (y .from) (ap from p) (ap from q) i j})
       (λ i → x .inverses) (λ i → p i .inverses) (λ i → q i .inverses) (λ i → y .inverses) i j
 
-≅-path-p : (p : a ≡ c) (q : b ≡ d)
+≅-pathp : (p : a ≡ c) (q : b ≡ d)
         → {f : a ≅ b} {g : c ≅ d}
         → PathP (λ i → Hom (p i) (q i)) (f ._≅_.to) (g ._≅_.to)
         → PathP (λ i → Hom (q i) (p i)) (f ._≅_.from) (g ._≅_.from)
         → PathP (λ i → p i ≅ q i) f g
-≅-path-p p q r s i .to = r i
-≅-path-p p q r s i .from = s i
-≅-path-p p q {f} {g} r s i .inverses = 
-  is-prop→path-p (λ j → Inverses-are-prop {f = r j} {g = s j}) 
+≅-pathp p q r s i .to = r i
+≅-pathp p q r s i .from = s i
+≅-pathp p q {f} {g} r s i .inverses = 
+  is-prop→pathp (λ j → Inverses-are-prop {f = r j} {g = s j}) 
     (f .inverses) (g .inverses) i
 ```
 -->

@@ -142,7 +142,7 @@ SIP : {σ : Structure ℓ S} → is-univalent σ → {X Y : Σ S} → (X ≃[ σ
 SIP {S = S} {σ = σ} is-univ {X} {Y} =
   X ≃[ σ ] Y                                                       ≃⟨⟩
   Σ[ e ∈ X .fst ≃ Y .fst ] (σ .is-hom X Y e)                       ≃⟨ Σ-ap (ua , univalence⁻¹) is-univ ⟩
-  Σ[ p ∈ X .fst ≡ Y .fst ] PathP (λ i → S (p i)) (X .snd) (Y .snd) ≃⟨ Iso→Equiv Σ-path-p-iso ⟩
+  Σ[ p ∈ X .fst ≡ Y .fst ] PathP (λ i → S (p i)) (X .snd) (Y .snd) ≃⟨ Iso→Equiv Σ-pathp-iso ⟩
   (X ≡ Y)                                                          ≃∎
 ```
 
@@ -151,7 +151,7 @@ The proof of the `SIP`{.Agda} follows essentially from
 respect equivalences`{.Agda ident=Σ-ap}. In one fell swoop, we convert
 from the type of homomorphic equivalences to a dependent pair of paths.
 By the characterisation of `path spaces of Σ types`{.Agda
-ident=Σ-path-p-iso}, this latter pair is equivalent to `X ≡ Y`.
+ident=Σ-pathp-iso}, this latter pair is equivalent to `X ≡ Y`.
 
 ```agda
 sip : {σ : Structure ℓ S} → is-univalent σ → {X Y : Σ S} → (X ≃[ σ ] Y) → (X ≡ Y)
@@ -196,12 +196,12 @@ Pointed-str : Structure ℓ (λ X → X)
 Pointed-str .is-hom (A , x) (B , y) f = f .fst x ≡ y
 ```
 
-This is univalent by `ua-path-p≃path`{.Agda}, which says `PathP (ua f) x
+This is univalent by `ua-pathp≃path`{.Agda}, which says `PathP (ua f) x
 y` is equivalent to `f .fst x ≡ y`.
 
 ```agda
 Pointed-str-univalent : is-univalent (Pointed-str {ℓ})
-Pointed-str-univalent f = ua-path-p≃path _
+Pointed-str-univalent f = ua-pathp≃path _
 ```
 
 If `S` and `T` are univalent structures, then so is their pointwise
@@ -218,7 +218,7 @@ Product-str-univalent : {σ : Structure ℓ₁ S} {τ : Structure ℓ₂ T}
                       → is-univalent (Product-str σ τ)
 Product-str-univalent {S = S} {T = T} {σ = σ} {τ} θ₁ θ₂ {X , x , y} {Y , x' , y'} f =
   (σ .is-hom (X , x) (Y , x') _ × τ .is-hom (X , y) (Y , y') _) ≃⟨ Σ-ap (θ₁ f) (λ _ → θ₂ f) ⟩
-  (PathP _ _ _ × PathP _ _ _)                                   ≃⟨ Iso→Equiv Σ-path-p-iso ⟩
+  (PathP _ _ _ × PathP _ _ _)                                   ≃⟨ Iso→Equiv Σ-pathp-iso ⟩
   PathP (λ i → S (ua f i) × T (ua f i)) (x , y) (x' , y')       ≃∎
 ```
 
@@ -575,7 +575,7 @@ Product-action-is-transport
   → is-transport-str α → is-transport-str β
   → is-transport-str (Product-action α β)
 Product-action-is-transport α-tr β-tr e s = 
-  Σ-path-p (α-tr e (s .fst)) (β-tr e (s .snd))
+  Σ-pathp (α-tr e (s .fst)) (β-tr e (s .snd))
 
 Function-action : Equiv-action S → Equiv-action T → Equiv-action (λ X → S X → T X)
 Function-action actx acty eqv = function≃ (actx eqv) (acty eqv)
@@ -643,7 +643,7 @@ reasoning concludes what we wanted: `Axiom-str`{.Agda} is univalent.
       PathP (λ i → S (ua f i)) s t 
         ≃⟨ Σ-contract (λ x → Path-p-is-hlevel 0 (contr b (axioms-prop b))) e⁻¹ ⟩
       Σ[ p ∈ PathP (λ i → S (ua f i)) s t ] PathP (λ i → axioms (ua f i) (p i)) a b
-        ≃⟨ Iso→Equiv Σ-path-p-iso ⟩
+        ≃⟨ Iso→Equiv Σ-pathp-iso ⟩
       _
         ≃∎
 ```
