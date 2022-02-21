@@ -36,18 +36,18 @@ and $g$.
 record is-coequaliser {E} (f g : Hom A B) (coeq : Hom B E) : Type (o ⊔ ℓ) where
   field
     coequal    : coeq ∘ f ≡ coeq ∘ g
-    coequalize : ∀ {F} {e′ : Hom B F} (p : e′ ∘ f ≡ e′ ∘ g) → Hom E F
-    universal  : ∀ {F} {e′ : Hom B F} (p : e′ ∘ f ≡ e′ ∘ g)
-                 → coequalize p ∘ coeq ≡ e′
+    coequalise : ∀ {F} {e′ : Hom B F} (p : e′ ∘ f ≡ e′ ∘ g) → Hom E F
+    universal  : ∀ {F} {e′ : Hom B F} {p : e′ ∘ f ≡ e′ ∘ g}
+                 → coequalise p ∘ coeq ≡ e′
     unique     : ∀ {F} {e′ : Hom B F} {p : e′ ∘ f ≡ e′ ∘ g} {colim : Hom E F}
                  → e′ ≡ colim ∘ coeq
-                 → colim ≡ coequalize p
+                 → colim ≡ coequalise p
 
-  unique₂ : (p q : h ∘ f ≡ h ∘ g) → coequalize p ≡ coequalize q
-  unique₂ p q = unique (sym (universal p))
+  unique₂ : (p q : h ∘ f ≡ h ∘ g) → coequalise p ≡ coequalise q
+  unique₂ p q = unique (sym universal)
 
-  id-coequalize : id ≡ coequalize coequal
-  id-coequalize = unique (sym (idl _))
+  id-coequalise : id ≡ coequalise coequal
+  id-coequalise = unique (sym (idl _))
 
 ```
 
@@ -63,5 +63,3 @@ record Coequaliser (f g : Hom A B) : Type (o ⊔ ℓ) where
 
   open is-coequaliser has-is-coeq public
 ```
-
-

@@ -6,7 +6,7 @@ open import Cat.Prelude
 open Functor
 open _=>_
 
-module Cat.Monad {o h : _} {C : Precategory o h} where
+module Cat.Diagram.Monad {o h : _} {C : Precategory o h} where
 
 import Cat.Reasoning C as C
 ```

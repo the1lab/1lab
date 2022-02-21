@@ -2,8 +2,8 @@
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Functor.Adjoint
+open import Cat.Diagram.Monad
 open import Cat.Prelude
-open import Cat.Monad
 
 open Functor
 open _=>_

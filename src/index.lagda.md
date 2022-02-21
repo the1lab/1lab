@@ -349,7 +349,7 @@ open import Cat.Functor.FullSubcategory -- Full subcategories
 About adjoint functors, and their associated monads:
 
 ```agda
-open import Cat.Monad -- Definition of monads
+open import Cat.Diagram.Monad   -- Definition of monads
 open import Cat.Functor.Adjoint -- Unit-counit adjunctions and universal arrows
 open import Cat.Functor.Adjoint.Monad -- Monad from an adjunction
 open import Cat.Functor.Adjoint.Monadic -- Monadic adjunctions

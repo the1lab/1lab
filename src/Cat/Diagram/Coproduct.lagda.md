@@ -107,4 +107,3 @@ for the [Product](agda://Cat.Diagram.Product#×-Unique).
         (pullr c1.in₁∘factor ∙ c2.in₁∘factor)
         id (idl _) (idl _)
 ```
-
