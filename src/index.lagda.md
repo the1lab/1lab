@@ -274,17 +274,150 @@ open import Data.Power.Lattice   -- Power sets form a lattice
 open import Data.Set.Coequaliser -- Set coequalisers
 ```
 
-<!--
-# Relation
+# Category Theory
 
-Here, we define often-used types of relations like partial orders as well as
-actual relations themselves, for example, lexicographic orderings on lists.
+In addition to providing a framework for the synthetic study of higher
+groupoids, HoTT also provides a natural place to develop constructive,
+predicative category theory, while still being compatible with
+classicality principles like the axiom of choice and/or the law of
+excluded middle. Here, we do not assume any classicality principles.
+
+## Basics
+
+The main modules in the `Cat` namespace provide the foundation for the
+rest of the development, defining basic constructions like precategories
+themselves, functors, natural transformations, etc.
 
 ```agda
-open import Relation.Order               -- Prop-valued ordering relations
-open import Relation.Order.Lexicographic -- Lexicographic orderings
+open import Cat.Base      -- Precategories, functors, natural transformations
+open import Cat.Solver    -- Automatic solver for associativity problems
+open import Cat.Morphism  -- Important classes of morphisms
+open import Cat.Reasoning -- Categorical reasoning combinators
 ```
--->
+
+### Diagrams
+
+For convenience, we define a plethora of "concrete" universal diagrams,
+unpacking their definitions as limits or colimits. These are simpler to
+work with since they provide the relevant data with fewer layers of
+indirection.
+
+```agda
+-- Limits:
+open import Cat.Diagram.Product
+open import Cat.Diagram.Terminal
+open import Cat.Diagram.Pullback
+open import Cat.Diagram.Equaliser
+
+-- Colimits:
+open import Cat.Diagram.Initial
+open import Cat.Diagram.Pushout
+open import Cat.Diagram.Coproduct
+open import Cat.Diagram.Coequaliser
+
+-- Absolute colimits:
+open import Cat.Diagram.Zero
+
+-- Misc.:
+open import Cat.Diagram.Idempotent
+```
+
+## Limits & Colimits
+
+Definitions of cones over and cocones under diagrams, the category of
+cones/cocones, and limiting/colimiting cones.
+
+```agda
+open import Cat.Diagram.Limit.Base
+open import Cat.Diagram.Limit.Product
+open import Cat.Diagram.Colimit.Base
+```
+
+## Functors
+
+This namespace has definitions of properties functors can have, utility
+modules for working with functors, the definition of full subcategories,
+and adjoint functors.
+
+```agda
+open import Cat.Functor.Hom       -- Hom functor, Yoneda embedding, Coyoneda lemma
+open import Cat.Functor.Base      -- Compendium of functor properties
+open import Cat.Functor.Bifunctor -- Functors out of product categories
+open import Cat.Functor.FullSubcategory -- Full subcategories
+```
+
+About adjoint functors, and their associated monads:
+
+```agda
+open import Cat.Monad -- Definition of monads
+open import Cat.Functor.Adjoint -- Unit-counit adjunctions and universal arrows
+open import Cat.Functor.Adjoint.Monad -- Monad from an adjunction
+open import Cat.Functor.Adjoint.Monadic -- Monadic adjunctions
+```
+
+## Univalent categories
+
+In HoTT/UF, the word "category" is reserved for the precategories (what
+the rest of the world refers to as just "category") in which isomorphic
+objects are indistinguishable, i.e. the categories which satisfy a
+version of the univalence axiom. Sometimes we also refer to these as
+"univalent categories" to make the distinction clear.
+
+```agda
+open import Cat.Univalent      -- Basic properties of categories
+open import Cat.Univalent.Rezk -- Free category on a precategory
+```
+
+## Category instances
+
+Here's where we actually build some categories and prove that they have
+desirable properties.
+
+```agda
+open import Cat.Instances.Sets                  -- The category of sets
+open import Cat.Instances.Sets.FinitelyComplete -- Sets has finite limits
+
+open import Cat.Instances.Comma     -- Comma precategory over a cospan of functors
+open import Cat.Instances.Functor   -- Functor (pre)categories
+open import Cat.Instances.Product   -- Product of precategories
+open import Cat.Instances.Monoids   -- Precategory of monoids
+open import Cat.Instances.Karoubi   -- Split-idempotent completion of a precategory
+open import Cat.Instances.Discrete  -- Discrete category on a groupoid or set
+open import Cat.Instances.Terminal  -- Category with one point
+open import Cat.Instances.Elements  -- Precategory of elements of a presheaf
+open import Cat.Instances.Delooping -- Delooping category of a monoid/group
+
+open import Cat.Instances.StrictCat          -- Precategory of strict precategories
+open import Cat.Instances.StrictCat.Cohesive -- Strict categories are "spatial"
+```
+
+## Thin categories
+
+Strict thin categories are a presentation of pre-ordered sets, i.e. sets
+equipped with a transitive and reflexive relation --- so we call them
+"prosets". When this relation is antisymmetric, we additionally have a
+_univalent_ thin strict category --- so we call these "posets".
+
+```agda
+open import Cat.Thin            -- Basics of thin categories
+open import Cat.Thin.Completion -- Free poset on a proset
+```
+
+## Displayed categories
+
+We also have a work-in-progress formalisation of [Foundations of
+Relative Category Theory][frct], in which the core idea is thinking of
+"categories over categories".
+
+[frct]: https://www.jonmsterling.com/math/lectures/categorical-foundations.html
+
+```agda
+open import Cat.Displayed.Base             -- Displayed categories
+open import Cat.Displayed.Total            -- Total category of a displayed category
+open import Cat.Displayed.Cartesian        -- Cartesian lifts, cartesian fibrations
+open import Cat.Displayed.Instances.Family -- Family fibration
+open import Cat.Displayed.Instances.Slice  -- Canonical self-indexing
+```
 
 # Algebra
 
