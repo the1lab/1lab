@@ -78,7 +78,7 @@ equality on $X$. We note that the decidable equality is _redundant_
 information: The construction `Disc′`{.Agda} above extends into a [left
 adjoint] to the `Ob`{.Agda} functor.
 
-[left adjoint]: Cat.Instances.Strict-Cat.Cohesive.html#disc-γ
+[left adjoint]: Cat.Instances.StrictCat.Cohesive.html#disc-γ
 
 ```agda
 Disc-diagram
