@@ -480,8 +480,8 @@ canonical equipment as a `Structure`{.Agda} is univalent:
 
 ```agda
 is-transport→is-univalent : {S : Type ℓ → Type ℓ₁} (a : Equiv-action S)
-                     → is-transport-str a
-                     → is-univalent (Action→Structure a)
+                          → is-transport-str a
+                          → is-univalent (Action→Structure a)
 is-transport→is-univalent {S = S} act is-tr {X , s} {Y , t} eqv =
   act eqv .fst s ≡ t              ≃⟨ path→equiv (ap (_≡ t) (is-tr eqv s)) ⟩
   subst S (ua eqv) s ≡ t          ≃⟨ path→equiv (sym (PathP≡Path (λ i → S (ua eqv i)) s t)) ⟩
@@ -560,7 +560,8 @@ structure is perfect to use in the definition of `SIP`{.Agda}.
 Constant-action : (A : Type ℓ) → Equiv-action {ℓ = ℓ₁} (λ X → A)
 Constant-action A eqv = _ , id-equiv
 
-Constant-action-is-transport : {A : Type ℓ} → is-transport-str {ℓ = ℓ₁} (Constant-action A)
+Constant-action-is-transport 
+  : {A : Type ℓ} → is-transport-str {ℓ = ℓ₁} (Constant-action A)
 Constant-action-is-transport f s = sym (transport-refl _)
 
 Id-action-is-transport : is-transport-str {ℓ = ℓ} {ℓ₁ = ℓ} id
@@ -681,9 +682,12 @@ both transport and univalent structures.
 ```agda
 data Str-term ℓ : (ℓ₁ : Level) → (Type ℓ → Type ℓ₁) → Typeω where
   s-const : ∀ {ℓ₁} (A : Type ℓ₁) → Str-term ℓ ℓ₁ (λ X → A)
-  s∙      : Str-term ℓ ℓ (λ X → X)
-  _s→_    : ∀ {ℓ₁ ℓ₂} {S} {T} → Str-term ℓ ℓ₁ S → Str-term ℓ ℓ₂ T → Str-term ℓ (ℓ₁ ⊔ ℓ₂) (λ X → S X → T X)
-  _s×_    : ∀ {ℓ₁ ℓ₂} {S} {T} → Str-term ℓ ℓ₁ S → Str-term ℓ ℓ₂ T → Str-term ℓ (ℓ₁ ⊔ ℓ₂) (λ X → S X × T X)
+  s∙ : Str-term ℓ ℓ (λ X → X)
+
+  _s→_ : ∀ {ℓ₁ ℓ₂} {S} {T} → Str-term ℓ ℓ₁ S → Str-term ℓ ℓ₂ T 
+       → Str-term ℓ (ℓ₁ ⊔ ℓ₂) (λ X → S X → T X)
+  _s×_ : ∀ {ℓ₁ ℓ₂} {S} {T} → Str-term ℓ ℓ₁ S → Str-term ℓ ℓ₂ T 
+       → Str-term ℓ (ℓ₁ ⊔ ℓ₂) (λ X → S X × T X)
 
 infixr 30 _s→_ _s×_
 ```
