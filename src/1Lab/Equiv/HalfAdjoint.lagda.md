@@ -145,8 +145,9 @@ using the above characterisation of paths, prove that this fibre is a
 centre of contraction:
 
 ```agda
-is-half-adjoint-equiv→is-equiv : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
-              → is-half-adjoint-equiv f → is-equiv f
+is-half-adjoint-equiv→is-equiv 
+  : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
+  → is-half-adjoint-equiv f → is-equiv f
 is-half-adjoint-equiv→is-equiv {A = A} {B} {f} (g , η , ε , zig) .is-eqv y = contr fib contract where
   fib : fibre f y
   fib = g y , ε y
@@ -186,8 +187,9 @@ Putting these together, we get an alternative definition of
 `is-iso→is-equiv`{.Agda}:
 
 ```agda
-is-iso→is-equiv' : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
-               → is-iso f → is-equiv f
+is-iso→is-equiv' 
+  : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
+  → is-iso f → is-equiv f
 is-iso→is-equiv' = is-half-adjoint-equiv→is-equiv ∘ is-iso→is-half-adjoint-equiv
 ```
 

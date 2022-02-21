@@ -19,7 +19,7 @@ x` would be contractible for any choice of `A`. Taking `A` to be
 
 ```agda
 module
-  _ (isoProp : ∀ {ℓ} {A B : Type ℓ} {f : A → B} → is-prop (is-iso f))
+  _ (iso-is-prop : ∀ {ℓ} {A B : Type ℓ} {f : A → B} → is-prop (is-iso f))
   where
 ```
 
@@ -38,7 +38,7 @@ i.e. the loop-assigning maps of `A`:
 
 By [equivalence induction], it suffices to cover the case where `f` is
 the identity function. In that case, we can construct an isomorphism
-quite readily, where the proof uses our assumption `isoProp`{.Agda} for
+quite readily, where the proof uses our assumption `iso-is-prop`{.Agda} for
 convenience.
 
 [equivalence induction]: 1Lab.Univalence.html#consequences
@@ -49,7 +49,7 @@ convenience.
         sym (iiso .is-iso.linv x) ∙ iiso .is-iso.rinv x
       helper .snd .is-iso.inv x = iso (λ x → x) x (λ _ → refl)
       helper .snd .is-iso.rinv p = funext λ x → ∙-id-l _
-      helper .snd .is-iso.linv x = isoProp _ _
+      helper .snd .is-iso.linv x = iso-is-prop _ _
 ```
 
 We thus have that `is-iso id ≃ ((x : A) → x ≡ x)` - since the former is a
@@ -57,7 +57,7 @@ prop (by assumption), then so is the latter:
 
 ```agda
   is-prop-loops : ∀ {ℓ} {A : Type ℓ} → is-prop ((x : A) → x ≡ x)
-  is-prop-loops {A = A} = equiv→is-hlevel 1 (helper .fst) (helper .snd) isoProp
+  is-prop-loops {A = A} = equiv→is-hlevel 1 (helper .fst) (helper .snd) iso-is-prop
     where helper = lemma {f = λ (x : A) → x}
                      (iso (λ x → x) (λ x → refl) (λ x → refl))
 ```
