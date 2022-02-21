@@ -42,12 +42,12 @@ module _ {ℓ ℓ₁ ℓ₁'} where
     → {X : Type ℓ} → R X → fields→prod fs X
 
   -- What it means for P to be a proposition over the fields fs
-  is-propProperty
+  is-prop-property
     : ∀ {ℓ₂} (R : Type ℓ → Type ℓ₁) (ι : IsHomT ℓ₁' R)
         (fs : RecordFields R ι)
         (P : (X : Type ℓ) → fields→prod fs X → Type ℓ₂)
     → Type (lsuc ℓ ⊔ ℓ₁ ⊔ ℓ₂)
-  is-propProperty R ι fs P =
+  is-prop-property R ι fs P =
     {X : Type ℓ} (r  : R X) → is-prop (P X (project-fields fs r))
 
   -- Now the actual definitions.
@@ -87,7 +87,7 @@ module _ {ℓ ℓ₁ ℓ₁'} where
       → (predicate : {X : Type ℓ} (r : R X) → P X (project-fields previous-fields r))
       -- ^ Extract a proof of the proposition from the record
 
-      → is-propProperty R ι previous-fields P
+      → is-prop-property R ι previous-fields P
       -- ^ "Preservation datum" (P must be a proposition)
 
       → RecordFields R ι
