@@ -239,9 +239,8 @@ along the diagonal map:
 \end{tikzcd}\]
 ~~~
 
-⚠️
-
-```
+<!--
+```agda
     module Bb = Product (mkprod B B)
     ⟨id,id⟩ : Hom B Bb.apex
     ⟨id,id⟩ = Bb.⟨ id , id ⟩
@@ -253,7 +252,21 @@ along the diagonal map:
 
     open is-equaliser
     open Equaliser
+```
+-->
 
+The actual equaliser map is the top, horizontal face (what the code
+calls `Pb.p₂`{.Agda}), so we must show that, composed with this map, $f$
+and $g$ become equal. Here's where we use the fact that pullback
+squares, well, commute: We know that $f$ is $\pi_1 \circ \langle f , g
+\rangle$, and that $\langle f , g \rangle \circ \mathrm{equ} = \langle
+\mathrm{id}, \mathrm{id} \rangle$ (since the square above is a pullback). 
+
+But both projections out of $\langle \mathrm{id}, \mathrm{id} \rangle$
+are equal, so we can apply commutativity of the square above _again_ to
+conclude that $f \circ \mathrm{equ} = g \circ \mathrm{equ}$.
+
+```agda
     eq : Equaliser f g
     eq .apex = Pb.apex
     eq .equ = Pb.p₂
@@ -264,23 +277,47 @@ along the diagonal map:
       Bb.π₂ ∘ ⟨id,id⟩ ∘ Pb.p₁ ≡⟨ ap (Bb.π₂ ∘_) Pb.square ⟩
       Bb.π₂ ∘ ⟨f,g⟩ ∘ Pb.p₂   ≡⟨ pulll Bb.π₂∘factor ⟩
       g ∘ Pb.p₂               ∎
+```
 
+We must now show that if $e'$ is another map which equalises $f$ and
+$g$, then it fits into a commutative diagram like the one below, so that
+we may conclude the dashed arrow $E' \to \mathrm{eq}(f,g)$ exists and is
+unique.
+
+~~~{.quiver .tall-2}
+\[\begin{tikzcd}
+  {E'} \\
+  & {\mathrm{eq}(f,g)} && A \\
+  \\
+  & B && {B \times B}
+  \arrow["{\mathrm{equ}}", from=2-2, to=2-4]
+  \arrow["{\langle f, g \rangle}", from=2-4, to=4-4]
+  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=2-2, to=4-4]
+  \arrow[from=2-2, to=4-2]
+  \arrow["{\langle \mathrm{id}, \mathrm{id} \rangle}"', from=4-2, to=4-4]
+  \arrow["{e'}", curve={height=-6pt}, from=1-1, to=2-4]
+  \arrow["{\exists!}"', dashed, from=1-1, to=2-2]
+\end{tikzcd}\]
+~~~
+
+A bit of boring limit-chasing lets us conclude that this diagram _does_
+commute, hence the dashed arrow _does_ exist (uniquely!), so that the
+top face $\mathrm{equ} : \mathrm{eq}(f,g) \to A$ in our pullback diagram
+is indeed the equaliser of $f$ and $g$.
+
+```agda
     eq .has-is-eq .limiting {e′ = e′} p = 
-      Pb.limiting (Bb.unique₂ _ refl refl _ (sym p1) (sym p2))
+      Pb.limiting (Bb.unique₂ _ refl refl (⟨f,g⟩ ∘ e′) (sym p1) (sym p2))
       where
         p1 : Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e′ ≡ Bb.π₁ ∘ ⟨f,g⟩ ∘ e′
         p1 = 
-          Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e′   ≡⟨ assoc _ _ _ ⟩
-          (Bb.π₁ ∘ ⟨id,id⟩) ∘ f ∘ e′ ≡⟨ ap (_∘ (f ∘ e′)) Bb.π₁∘factor ⟩
-          id ∘ f ∘ e′                ≡⟨ idl _ ⟩
+          Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e′   ≡⟨ cancell Bb.π₁∘factor ⟩
           f ∘ e′                     ≡˘⟨ pulll Bb.π₁∘factor ⟩
           Bb.π₁ ∘ ⟨f,g⟩ ∘ e′         ∎
         
         p2 : Bb.π₂ ∘ ⟨id,id⟩ ∘ f ∘ e′ ≡ Bb.π₂ ∘ ⟨f,g⟩ ∘ e′
         p2 =
-          Bb.π₂ ∘ ⟨id,id⟩ ∘ f ∘ e′   ≡⟨ assoc _ _ _ ⟩
-          (Bb.π₂ ∘ ⟨id,id⟩) ∘ f ∘ e′ ≡⟨ ap (_∘ (f ∘ e′)) Bb.π₂∘factor ⟩
-          id ∘ f ∘ e′                ≡⟨ idl _ ⟩
+          Bb.π₂ ∘ ⟨id,id⟩ ∘ f ∘ e′   ≡⟨ cancell Bb.π₂∘factor ⟩
           f ∘ e′                     ≡⟨ p ⟩
           g ∘ e′                     ≡˘⟨ pulll Bb.π₂∘factor ⟩
           Bb.π₂ ∘ ⟨f,g⟩ ∘ e′         ∎
