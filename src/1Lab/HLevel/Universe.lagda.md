@@ -64,7 +64,7 @@ $A \simeq B$ to our `f`.
 ```agda
   deform : (g : A ≃ B) → (f , f-eqv) ≡ g
   deform (g , g-eqv) = Σ-path (λ i x → Bhl .paths (g x) i)
-                             (is-equiv-is-prop _ _ _)
+                              (is-equiv-is-prop _ _ _)
 ```
 
 As mentioned before, the case for successors does not depend on the
@@ -73,8 +73,9 @@ proof that $A$ has the given h-level. This is because, for $n \ge 1$, $A
 
 ```agda
 is-hlevel-≃ (suc n) _ Bhl =
-  Σ-is-hlevel (suc n) (fun-is-hlevel (suc n) Bhl)
-                    λ f → is-prop→is-hlevel-suc (is-equiv-is-prop f)
+  Σ-is-hlevel (suc n) 
+    (fun-is-hlevel (suc n) Bhl)
+    λ f → is-prop→is-hlevel-suc (is-equiv-is-prop f)
 ```
 
 ## h-Levels of Paths
@@ -122,7 +123,7 @@ inhabited proposition:
 ```agda
 0-Type-is-contr : is-contr (n-Type ℓ 0)
 0-Type-is-contr {ℓ = ℓ} = contr (Lift ℓ ⊤ , contr (lift tt) λ x i → lift tt)
-                               (0-Type-is-prop _)
+                                (0-Type-is-prop _)
 ```
 
 One of the properties of `Σ`{.Agda} types is that, when `B` is a family
