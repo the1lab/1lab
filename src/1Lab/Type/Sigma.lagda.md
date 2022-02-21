@@ -154,9 +154,9 @@ projections:
 
 ```agda
 Σ-prop-path : {B : A → Type ℓ}
-       → (∀ x → is-prop (B x))
-       → {x y : Σ B}
-       → (x .fst ≡ y .fst) → x ≡ y
+            → (∀ x → is-prop (B x))
+            → {x y : Σ B}
+            → (x .fst ≡ y .fst) → x ≡ y
 Σ-prop-path bp {x} {y} p i = p i , is-prop→PathP (λ i → bp (p i)) (x .snd) (y .snd) i
 ```
 
