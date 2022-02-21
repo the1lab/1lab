@@ -1,7 +1,7 @@
 ```agda
 open import 1Lab.Prelude
 
-open import Order.Proset hiding (isMonotone)
+open import Order.Proset hiding (is-monotone)
 
 module Order.Poset where
 ```
@@ -44,8 +44,8 @@ we first establish the theorem claimed in the first paragraph: Any type
 $A$ that admits a partial order relation $R$ is a set.
 
 ```agda
-hasPartialOrder→is-set : ∀ {R : A → A → Type ℓ} → is-partial-order R → is-set A
-hasPartialOrder→is-set {A = A} {R = _≤_} ispo =
+has-partial-order→is-set : ∀ {R : A → A → Type ℓ} → is-partial-order R → is-set A
+has-partial-order→is-set {A = A} {R = _≤_} ispo =
   Rijke-is-set {R = R'} reflexive' (λ { (x , y) → antisym x y }) is-prop'
   where
     open is-partial-order ispo
@@ -76,7 +76,7 @@ is-partial-order-is-prop x y i = p where
 
   p : is-partial-order _
   p .has-is-preorder = is-preorder-is-prop (x .has-is-preorder) (y .has-is-preorder) i
-  p .antisym p q = hasPartialOrder→is-set x _ _ (x .antisym p q) (y .antisym p q) i
+  p .antisym p q = has-partial-order→is-set x _ _ (x .antisym p q) (y .antisym p q) i
 ```
 
 A **poset** is a type equipped with a partial order relation. Since
@@ -87,9 +87,9 @@ to additionally require that the type be a set.
 record PosetOn {ℓ'} (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ') where
   field
     _≤_ : A → A → Type ℓ'
-    has-is-partialOrder : is-partial-order _≤_
+    has-is-partial-order : is-partial-order _≤_
 
-  open is-partial-order has-is-partialOrder public
+  open is-partial-order has-is-partial-order public
 
 Poset : ∀ (r ℓ : Level) → Type (lsuc (r ⊔ ℓ))
 Poset r ℓ = Σ[ A ∈ Type ℓ ] (PosetOn {ℓ' = r} A)
@@ -122,27 +122,28 @@ Poset-univalent {ℓ = ℓ} =
     (record-desc (PosetOn {ℓ = ℓ} {ℓ' = ℓ}) (Poset≃ {ℓ = ℓ})
       (record:
         field[ _≤_ by pres-≤ ]
-        axiom[ has-is-partialOrder by (λ x → is-partial-order-is-prop) ]))
+        axiom[ has-is-partial-order by (λ x → is-partial-order-is-prop) ]))
   where open PosetOn
 ```
 
 A **monotone map** between posets is a function between the underlying
 types that preserves the ordering. It can be shown that if an
-equivalence `is monotone`{.Agda ident=isMonotone}, and has monotone
+equivalence `is monotone`{.Agda ident=is-monotone}, and has monotone
 `inverse map`{.Agda ident=equiv→inverse}, then it is an `equivalence of
 posets`{.Agda ident=Poset≃}.
 
 ```agda
-isMonotone : (A B : Poset ℓ' ℓ) (e : A .fst → B .fst) → Type _
-isMonotone (A , o) (B , o') f = (x y : A) → x ≤₁ y → f x ≤₂ f y
+is-monotone : (A B : Poset ℓ' ℓ) (e : A .fst → B .fst) → Type _
+is-monotone (A , o) (B , o') f = (x y : A) → x ≤₁ y → f x ≤₂ f y
   where open PosetOn o  renaming (_≤_ to _≤₁_)
         open PosetOn o' renaming (_≤_ to _≤₂_)
 
-monotoneEqv→Poset≃ : {A B : Poset ℓ' ℓ} (e : A .fst ≃ B .fst)
-                   → isMonotone A B (e .fst)
-                   → isMonotone B A (equiv→inverse (e .snd))
-                   → Poset≃ A B e
-monotoneEqv→Poset≃ {A = A} {B} (f , eqv) f-mono f⁻¹-mono .pres-≤ x y = ua eq' where
+monotone-equiv→Poset≃ : {A B : Poset ℓ' ℓ} (e : A .fst ≃ B .fst)
+                      → is-monotone A B (e .fst)
+                      → is-monotone B A (equiv→inverse (e .snd))
+                      → Poset≃ A B e
+monotone-equiv→Poset≃ {A = A} {B} (f , eqv) f-mono f⁻¹-mono .pres-≤ x y = 
+  ua eq' where
   module A = PosetOn (A .snd)
   module B = PosetOn (B .snd)
 ```
@@ -164,8 +165,8 @@ _reflects_ the ordering.
 A map is said to be **antitone** if it _inverts_ the ordering relation:
 
 ```agda
-isAntitone : (A B : Poset ℓ' ℓ) (e : A .fst → B .fst) → Type _
-isAntitone (A , o) (B , o') f = (x y : A) → x ≤₁ y → f y ≤₂ f x
+is-antitone : (A B : Poset ℓ' ℓ) (e : A .fst → B .fst) → Type _
+is-antitone (A , o) (B , o') f = (x y : A) → x ≤₁ y → f y ≤₂ f x
   where open PosetOn o  renaming (_≤_ to _≤₁_)
         open PosetOn o' renaming (_≤_ to _≤₂_)
 ```

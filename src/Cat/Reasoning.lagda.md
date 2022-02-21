@@ -121,6 +121,6 @@ module _ (inv : h ∘ i ≡ id) where
   insertr : f ≡ (f ∘ h) ∘ i
   insertr = sym cancelr
 
-  cancelInner : (f ∘ h) ∘ (i ∘ g) ≡ f ∘ g
-  cancelInner = pulll cancelr
+  cancel-inner : (f ∘ h) ∘ (i ∘ g) ≡ f ∘ g
+  cancel-inner = pulll cancelr
 ```

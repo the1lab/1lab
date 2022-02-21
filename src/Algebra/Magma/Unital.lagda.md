@@ -103,9 +103,9 @@ record Unital-magma-on (A : Type ℓ) : Type ℓ where
 
     has-is-unital-magma : is-unital-magma identity _⋆_
 
-  hasMagma-on : Magma-on A
-  hasMagma-on .Magma-on._⋆_ = _⋆_
-  hasMagma-on .Magma-on.has-is-magma = has-is-unital-magma .has-is-magma
+  has-Magma-on : Magma-on A
+  has-Magma-on .Magma-on._⋆_ = _⋆_
+  has-Magma-on .Magma-on.has-is-magma = has-is-unital-magma .has-is-magma
 
   open is-unital-magma has-is-unital-magma public
 
@@ -113,7 +113,7 @@ Unital-magma : (ℓ : Level) → Type (lsuc ℓ)
 Unital-magma ℓ = Σ Unital-magma-on
 
 Unital-magma→Magma : {ℓ : _} → Unital-magma ℓ → Magma ℓ
-Unital-magma→Magma (A , unital-mgm) = A , Unital-magma-on.hasMagma-on unital-mgm
+Unital-magma→Magma (A , unital-mgm) = A , Unital-magma-on.has-Magma-on unital-mgm
 ```
 
 This allows us to define **equivalences of unital magmas** - two unital
@@ -132,8 +132,8 @@ record
     pres-⋆ : (x y : A .fst) → e .fst (x A.⋆ y) ≡ e .fst x B.⋆ e .fst y
     pres-identity : e .fst A.identity ≡ B.identity
     
-  hasMagma≃ : Magma≃ (Unital-magma→Magma A) (Unital-magma→Magma B) e
-  hasMagma≃ .Magma≃.pres-⋆ = pres-⋆
+  has-magma≃ : Magma≃ (Unital-magma→Magma A) (Unital-magma→Magma B) e
+  has-magma≃ .Magma≃.pres-⋆ = pres-⋆
 
 open Unital-magma≃
 ```

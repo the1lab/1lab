@@ -193,12 +193,12 @@ eliminator into propositions later, so we define that now.
     where
       g = Deloop-elim P grpd pp ploop psq
 
-  Deloop-elimProp
+  Deloop-elim-prop
     : ∀ {ℓ'} (P : Deloop → Type ℓ')
     → (∀ x → is-prop (P x))
     → P base
     → ∀ x → P x
-  Deloop-elimProp P pprop p = 
+  Deloop-elim-prop P pprop p = 
     Deloop-elim P 
       (λ x → is-prop→is-hlevel-suc {n = 2} (pprop x)) p 
       (λ x → is-prop→PathP (λ i → pprop (path x i)) p p)
@@ -297,14 +297,14 @@ we have `path unit = refl`, as required.
 ```
 
 In the other direction, we do induction on deloopings; Since the motive
-is a family of propositions, we can use `Deloop-elimProp`{.Agda} instead
+is a family of propositions, we can use `Deloop-elim-prop`{.Agda} instead
 of the full `Deloop-elim`{.Agda}, which reduces the goal to proving $1
 \star 1 = 1$.
 
 ```agda
   decode→encode : ∀ x (c : Code x .fst) → encode x (decode x c) ≡ c
   decode→encode = 
-    Deloop-elimProp 
+    Deloop-elim-prop 
       (λ x → (c : Code x .fst) → encode x (decode x c) ≡ c) 
       (λ x → Π-is-hlevel 1 λ _ → Code x .snd _ _) 
       λ c → transport-refl _ ∙ G.idˡ

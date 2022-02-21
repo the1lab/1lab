@@ -39,11 +39,11 @@ extensionality for subsets`{.Agda ident=ℙ-ext}.
 
   st : PosetOn (ℙ A)
   st ._≤_ = _⊆_
-  st .has-is-partialOrder .has-is-preorder .reflexive _ x = x
-  st .has-is-partialOrder .has-is-preorder .transitive x⊆y y⊆z a a∈x = y⊆z a (x⊆y a a∈x)
-  st .has-is-partialOrder .has-is-preorder .propositional {y = y} =
+  st .has-is-partial-order .has-is-preorder .reflexive _ x = x
+  st .has-is-partial-order .has-is-preorder .transitive x⊆y y⊆z a a∈x = y⊆z a (x⊆y a a∈x)
+  st .has-is-partial-order .has-is-preorder .propositional {y = y} =
     Π-is-hlevel 1 λ x → fun-is-hlevel 1 (y x .snd)
-  st .has-is-partialOrder .antisym = ℙ-ext
+  st .has-is-partial-order .antisym = ℙ-ext
 ```
 
 Back on track, we equip intersection of subsets with the structure of a
@@ -155,8 +155,8 @@ open is-lattice
 Power : ∀ {ℓ} (X : Type ℓ) → Lattice-on (ℙ X)
 Power X ._L∧_ = _∩_
 Power X ._L∨_ = _∪_
-Power X .has-is-lattice .hasMeets = ∩-semilattice
-Power X .has-is-lattice .hasJoins = ∪-semilattice
+Power X .has-is-lattice .has-meets = ∩-semilattice
+Power X .has-is-lattice .has-joins = ∪-semilattice
 Power X .has-is-lattice .∧-absorbs-∨ {y = y} = ∩-absorbs-∪ {Y = y}
 Power X .has-is-lattice .∨-absorbs-∧ {y = y} = ∪-absorbs-∩ {Y = y}
 ```

@@ -26,26 +26,26 @@ $\land$ and $\lor$ are duals, called _absorption laws_.
 ```agda
 record is-lattice (_∧_ : A → A → A) (_∨_ : A → A → A) : Type (level-of A) where
   field
-    hasMeets : is-semilattice _∧_
-    hasJoins : is-semilattice _∨_
+    has-meets : is-semilattice _∧_
+    has-joins : is-semilattice _∨_
 ```
   
 <details>
 <summary>
-We rename the fields of `hasMeets`{.Agda} and `hasJoins`{.Agda} so they
+We rename the fields of `has-meets`{.Agda} and `has-joins`{.Agda} so they
 refer to the operator in their name, and hide anything extra from the
 hierarchy.
 </summary>
 
 ```agda
-  open is-semilattice hasMeets public
+  open is-semilattice has-meets public
     renaming ( associative to ∧-associative
              ; commutative to ∧-commutative
              ; idempotent to ∧-idempotent
              )
     hiding ( has-is-magma ; has-is-semigroup )
 
-  open is-semilattice hasJoins public
+  open is-semilattice has-joins public
     renaming ( associative to ∨-associative
              ; commutative to ∨-commutative
              ; idempotent to ∨-idempotent )
@@ -70,8 +70,8 @@ is-lattice-is-prop x y i = p where
   open is-lattice
 
   p : is-lattice _ _
-  p .hasMeets = is-semilattice-is-prop (x .hasMeets) (y .hasMeets) i
-  p .hasJoins = is-semilattice-is-prop (x .hasJoins) (y .hasJoins) i
+  p .has-meets = is-semilattice-is-prop (x .has-meets) (y .has-meets) i
+  p .has-joins = is-semilattice-is-prop (x .has-joins) (y .has-joins) i
   p .∧-absorbs-∨ = has-is-set x _ _ (x .∧-absorbs-∨) (y .∧-absorbs-∨) i
   p .∨-absorbs-∧ = has-is-set x _ _ (x .∨-absorbs-∧) (y .∨-absorbs-∧) i
 
@@ -89,10 +89,10 @@ record Lattice-on (A : Type ℓ) : Type ℓ where
   open is-lattice has-is-lattice public
 
   Lattice-on→is-meet-semi : is-semilattice _L∧_
-  Lattice-on→is-meet-semi = hasMeets
+  Lattice-on→is-meet-semi = has-meets
 
   Lattice-on→is-join-semi : is-semilattice _L∨_
-  Lattice-on→is-join-semi = hasJoins
+  Lattice-on→is-join-semi = has-joins
 
 open Lattice-on using (Lattice-on→is-meet-semi ; Lattice-on→is-join-semi) public
 
@@ -146,10 +146,10 @@ and "contravariant" orderings.
 
 ```agda
 Lattice→Covariant-on : Lattice-on A → PosetOn {ℓ' = level-of A} A
-Lattice→Covariant-on lat = Semilattice-on→MeetOn (Lattice-on→is-meet-semi lat)
+Lattice→Covariant-on lat = Semilattice-on→Meet-on (Lattice-on→is-meet-semi lat)
 
 Lattice→Contravariant-on : Lattice-on A → PosetOn {ℓ' = level-of A} A
-Lattice→Contravariant-on lat = Semilattice-on→JoinOn (Lattice-on→is-meet-semi lat)
+Lattice→Contravariant-on lat = Semilattice-on→Join-on (Lattice-on→is-meet-semi lat)
 ```
 
 Above, the “covariant order” is obtaining by considering the $(A,
@@ -163,8 +163,8 @@ better, the path is induced by the identity function.
 covariant-order-unique 
   : (l : Lattice-on A)
   → Path (Poset ℓ ℓ)
-  (A , Semilattice-on→MeetOn (Lattice-on→is-meet-semi l))
-  (A , Semilattice-on→JoinOn (Lattice-on→is-join-semi l))
+  (A , Semilattice-on→Meet-on (Lattice-on→is-meet-semi l))
+  (A , Semilattice-on→Join-on (Lattice-on→is-join-semi l))
 covariant-order-unique {A = A} l = sip Poset-univalent ((id , id-equiv) , pres) where
   open Lattice-on l
 ```
@@ -206,8 +206,8 @@ above, I've put it in a `<details>` tag, in the interest of conciseness.
 contravariant-order-unique
   : (l : Lattice-on A)
   → Path (Poset ℓ ℓ)
-      (A , Semilattice-on→JoinOn (Lattice-on→is-meet-semi l))
-      (A , Semilattice-on→MeetOn (Lattice-on→is-join-semi l))
+      (A , Semilattice-on→Join-on (Lattice-on→is-meet-semi l))
+      (A , Semilattice-on→Meet-on (Lattice-on→is-join-semi l))
 contravariant-order-unique {A = A} l = 
   sip Poset-univalent ((id , id-equiv) , pres) 
   where

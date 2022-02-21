@@ -215,12 +215,12 @@ Using the image factorisation, we can project from a propositional
 truncation onto a set using a constant map.
 
 ```agda
-∥-∥-recSet : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+∥-∥-rec-set : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
            → (f : A → B)
            → (∀ x y → f x ≡ f y)
            → is-set B
            → ∥ A ∥ → B
-∥-∥-recSet {A = A} {B} f f-const bset x = 
+∥-∥-rec-set {A = A} {B} f f-const bset x = 
   ∥-∥-elim {P = λ _ → image f} 
     (λ _ → is-constant→image-is-prop bset f f-const) (f-image f) x .fst
 ```

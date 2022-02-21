@@ -95,15 +95,15 @@ the map:
 
 ```agda
   id′ : ∀ x → Hom′ x x .fst
-  id′ = Coeq-elimProp (λ x → Hom′ x x .snd) (λ _ → C.id)
+  id′ = Coeq-elim-prop (λ x → Hom′ x x .snd) (λ _ → C.id)
 
   trans′ : ∀ x y z → Hom′ x y .fst → Hom′ y z .fst → Hom′ x z .fst
-  trans′ = Coeq-elimProp₃ 
+  trans′ = Coeq-elim-prop₃ 
     (λ x _ z → fun-is-hlevel 1 (fun-is-hlevel 1 (Hom′ x z .snd))) 
     (λ _ _ _ f g → g C.∘ f)
 
   antisym′ : ∀ x y → Hom′ x y .fst → Hom′ y x .fst → x ≡ y
-  antisym′ = Coeq-elimProp₂ 
+  antisym′ = Coeq-elim-prop₂ 
     (λ x y → fun-is-hlevel 1 (fun-is-hlevel 1 (squash _ _))) 
     (λ x y f g → quot (f , g))
 ```
@@ -185,13 +185,13 @@ move.
 
 ```agda
     F′₁ : (a b : X′.Ob) → X′.Hom a b → Y′.Hom (F′₀ a) (F′₀ b)
-    F′₁ = Coeq-elimProp₂ 
+    F′₁ = Coeq-elim-prop₂ 
       (λ a b → fun-is-hlevel 1 (Y′.Hom-is-prop (F′₀ a) (F′₀ b))) 
       (λ _ _ → F₁ F)
 
     abstract
       F′₁-id : ∀ (a : X′.Ob) → F′₁ a a (X′.id {a}) ≡ Y′.id {F′₀ a}
-      F′₁-id = Coeq-elimProp 
+      F′₁-id = Coeq-elim-prop 
         (λ a → Y′.Hom-set (F′₀ a) (F′₀ a) _ _) 
         (λ a → F-id F)
 
@@ -199,7 +199,7 @@ move.
             → F′₁ x z (X′._∘_ {x} {y} {z} f g) 
             ≡ Y′._∘_ {F′₀ x} {F′₀ y} {F′₀ z} (F′₁ y z f) (F′₁ x y g)
       F′₁-∘ = 
-        Coeq-elimProp₃ 
+        Coeq-elim-prop₃ 
           (λ x y z → 
             Π-is-hlevel 1 λ f → 
             Π-is-hlevel 1 λ g → 

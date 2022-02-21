@@ -46,7 +46,7 @@ proposition in general.
 ```agda
     func : imφ .fst → A/kerφ .fst
     func (f*x , x) = 
-      ∥-∥-recSet (λ x → inc (x .fst)) f-const squash x
+      ∥-∥-rec-set (λ x → inc (x .fst)) f-const squash x
       where abstract
 ```
 
@@ -121,7 +121,7 @@ of) `inv(x)` computes to `f(y) , y , refl`, and `func (f(y) , y , refl)
 
 ```agda
     isom .rinv x =
-      Coeq-elimProp {C = λ x → func (inv x) ≡ x} 
+      Coeq-elim-prop {C = λ x → func (inv x) ≡ x} 
         (λ _ → squash _ _) (λ _ → refl) x
 ```
 

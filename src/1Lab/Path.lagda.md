@@ -427,14 +427,14 @@ transport-filler-ext : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B)
                      → PathP (λ i → A → p i) (λ x → x) (transport p)
 transport-filler-ext p i x = transport-filler p x i
 
-transport⁻-fillerExt : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B)
+transport⁻-filler-ext : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B)
                      → PathP (λ i → p i → A) (λ x → x) (transport (sym p))
-transport⁻-fillerExt p i x = transp (λ j → p (i ∧ ~ j)) (~ i) x
+transport⁻-filler-ext p i x = transp (λ j → p (i ∧ ~ j)) (~ i) x
 
 transport⁻transport : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B) (a : A)
                     → transport (sym p) (transport p a) ≡ a
 transport⁻transport p a i = 
-  transport⁻-fillerExt p (~ i) (transport-filler-ext p (~ i) a)
+  transport⁻-filler-ext p (~ i) (transport-filler-ext p (~ i) a)
 ```
 </details>
 

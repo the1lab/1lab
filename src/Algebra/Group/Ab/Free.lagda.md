@@ -108,7 +108,7 @@ bit tedious, but it follows from `ab-comm`: $xy = 1xy = 1yx = yx$.
 
 ```agda
   ab*-comm : ∀ x y → x ab* y ≡ y ab* x
-  ab*-comm = Coeq-elimProp₂ (λ _ _ → squash _ _) l1
+  ab*-comm = Coeq-elim-prop₂ (λ _ _ → squash _ _) l1
     where abstract
       l1 : ∀ x y → inc^ab (x ⋆ y) ≡ inc^ab (y ⋆ x)
       l1 x y =
@@ -162,14 +162,14 @@ inherited from $G$!
 
 ```agda
   ab*-associative : ∀ x y z → (x ab* y) ab* z ≡ x ab* (y ab* z)
-  ab*-associative = Coeq-elimProp₃ (λ _ _ _ → squash _ _) 
+  ab*-associative = Coeq-elim-prop₃ (λ _ _ _ → squash _ _) 
     λ _ _ _ → ap inc^ab (sym associative)
 
   Group-on-G^ab : Group-on G^ab
   Group-on-G^ab = make-group squash abunit _ab*_ abinv ab*-associative 
-    (Coeq-elimProp (λ _ → squash _ _) (λ _ → ap inc^ab G.inverseˡ)) 
-    (Coeq-elimProp (λ _ → squash _ _) (λ _ → ap inc^ab G.inverseʳ)) 
-    (Coeq-elimProp (λ _ → squash _ _) (λ _ → ap inc^ab G.idˡ)) 
+    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.inverseˡ)) 
+    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.inverseʳ)) 
+    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.idˡ)) 
 
   Abelianise : Group ℓ
   Abelianise = _ , Group-on-G^ab
@@ -226,7 +226,7 @@ G^{ab}_0$, which is a group homomorphism on the nose.
     isom .fst (f , g) = fold f g , r
       where abstract
         r : Group-hom Abelianise G' (fold f g)
-        r .pres-⋆ = Coeq-elimProp₂ (λ _ _ → G'.has-is-set _ _) (g .pres-⋆)
+        r .pres-⋆ = Coeq-elim-prop₂ (λ _ _ → G'.has-is-set _ _) (g .pres-⋆)
 
     isom .snd .inv (f , g) = (f ∘ inc^ab) , r
       where abstract
@@ -235,6 +235,6 @@ G^{ab}_0$, which is a group homomorphism on the nose.
 
     isom .snd .rinv f = 
       Σ-prop-path (λ _ → Group-hom-is-prop) 
-        (funext (Coeq-elimProp (λ _ → G'.has-is-set _ _) λ _ → refl))
+        (funext (Coeq-elim-prop (λ _ → G'.has-is-set _ _) λ _ → refl))
     isom .snd .linv f = Σ-prop-path (λ _ → Group-hom-is-prop) refl
 ```

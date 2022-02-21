@@ -3,7 +3,7 @@ open import 1Lab.Prelude
 
 open import Algebra.Semigroup
 
-open import Order.Proset hiding (isMonotone)
+open import Order.Proset hiding (is-monotone)
 open import Order.Poset 
 
 module Algebra.Semilattice where
@@ -51,11 +51,11 @@ the construction of a meet semilattice, and leave the construction of a
 join semilattice in a `<details>` tag.
 
 ```agda
-Semilattice-on→MeetOn
+Semilattice-on→Meet-on
   : ∀ {∧ : A → A → A}
   → is-semilattice ∧
   → PosetOn {ℓ' = level-of A} A
-Semilattice-on→MeetOn {∧ = _∧_} semi = r where
+Semilattice-on→Meet-on {∧ = _∧_} semi = r where
   open PosetOn
   open is-partial-order
   open is-preorder
@@ -70,14 +70,14 @@ As mentioned, the order relation is induced by setting $(x \le y)
 ≡ (x ∧ x)$, which is guaranteed by the idempotence axiom:
 
 ```agda
-  r .has-is-partialOrder .has-is-preorder .reflexive = sym (idempotent semi)
+  r .has-is-partial-order .has-is-preorder .reflexive = sym (idempotent semi)
 ```
 
 The relation is transitive by a use of associativity, as can be seen in
 the equational computation below:
 
 ```agda
-  r .has-is-partialOrder .has-is-preorder .transitive {x} {y} {z} x≡x∧y y≡y∧z =
+  r .has-is-partial-order .has-is-preorder .transitive {x} {y} {z} x≡x∧y y≡y∧z =
     x             ≡⟨ x≡x∧y ⟩
     (x ∧ y)       ≡⟨ ap₂ _∧_ refl y≡y∧z ⟩ 
     (x ∧ (y ∧ z)) ≡⟨ associative semi ⟩ 
@@ -90,13 +90,13 @@ $A$ is assumed to be a set since $(A, \and)$ must be a semigroup, and
 semigroups must be sets.
 
 ```agda
-  r .has-is-partialOrder .has-is-preorder .propositional = has-is-set semi _ _
+  r .has-is-partial-order .has-is-preorder .propositional = has-is-set semi _ _
 ```
 
 The relation is antisymmetric by a use of commutativitiy:
 
 ```agda
-  r .has-is-partialOrder .antisym {x} {y} x≡x∧y y≡y∧x =
+  r .has-is-partial-order .antisym {x} {y} x≡x∧y y≡y∧x =
     x     ≡⟨ x≡x∧y ⟩
     x ∧ y ≡⟨ commutative semi ⟩ 
     y ∧ x ≡⟨ sym y≡y∧x ⟩
@@ -109,7 +109,7 @@ $m$ for which $m \le x$ and $m \le y$.
 
 ```agda
 Semilattice→is-meet : ∀ {_∧_ : A → A → A} (semi : is-semilattice _∧_)
-                   → ∀ {x y} → is-meet (A , Semilattice-on→MeetOn semi) (x ∧ y) x y
+                   → ∀ {x y} → is-meet (A , Semilattice-on→Meet-on semi) (x ∧ y) x y
 Semilattice→is-meet {_∧_ = _∧_} semi {x} {y} = r where
   open is-meet
   open is-semilattice
@@ -160,9 +160,9 @@ we leave it in this details tag in the interest of conciseness.
 </summary>
 
 ```agda
-Semilattice-on→JoinOn
+Semilattice-on→Join-on
   : ∀ {∨ : A → A → A} → is-semilattice ∨ → PosetOn {ℓ' = level-of A} A
-Semilattice-on→JoinOn {∨ = _∨_} semi = r where
+Semilattice-on→Join-on {∨ = _∨_} semi = r where
   open PosetOn
   open is-partial-order
   open is-preorder
@@ -170,15 +170,15 @@ Semilattice-on→JoinOn {∨ = _∨_} semi = r where
 
   r : PosetOn _
   r ._≤_ = λ x y → y ≡ x ∨ y
-  r .has-is-partialOrder .has-is-preorder .reflexive = sym (idempotent semi)
-  r .has-is-partialOrder .has-is-preorder .transitive {x} {y} {z} y=x∨y z=y∨z =
+  r .has-is-partial-order .has-is-preorder .reflexive = sym (idempotent semi)
+  r .has-is-partial-order .has-is-preorder .transitive {x} {y} {z} y=x∨y z=y∨z =
     z           ≡⟨ z=y∨z ⟩
     y ∨ z       ≡⟨ ap₂ _∨_ y=x∨y refl ⟩
     (x ∨ y) ∨ z ≡⟨ sym (associative semi) ⟩
     x ∨ (y ∨ z) ≡⟨ ap₂ _∨_ refl (sym z=y∨z) ⟩
     x ∨ z ∎
-  r .has-is-partialOrder .has-is-preorder .propositional = has-is-set semi _ _
-  r .has-is-partialOrder .antisym {x} {y} y=x∨y x=y∨x =
+  r .has-is-partial-order .has-is-preorder .propositional = has-is-set semi _ _
+  r .has-is-partial-order .antisym {x} {y} y=x∨y x=y∨x =
     x     ≡⟨ x=y∨x ⟩
     y ∨ x ≡⟨ commutative semi ⟩
     x ∨ y ≡⟨ sym y=x∨y ⟩
@@ -190,7 +190,7 @@ is the _join_ of the operands, as promised.
 
 ```agda
 Semilattice→is-join : ∀ {_∨_ : A → A → A} (semi : is-semilattice _∨_)
-                   → ∀ {x y} → is-join (A , Semilattice-on→JoinOn semi) (x ∨ y) x y
+                   → ∀ {x y} → is-join (A , Semilattice-on→Join-on semi) (x ∨ y) x y
 Semilattice→is-join {_∨_ = _∨_} semi {x} {y} = r where
   open is-join
   open is-semilattice
@@ -249,11 +249,11 @@ record Semilattice-on {ℓ} (A : Type ℓ) : Type ℓ where
 
   -- Considered as a meet-semilattice:
   →Meet : Poset ℓ ℓ
-  →Meet = A , Semilattice-on→MeetOn has-is-semilattice
+  →Meet = A , Semilattice-on→Meet-on has-is-semilattice
 
   -- Considered as a join-semilattice:
   →Join : Poset ℓ ℓ
-  →Join = A , Semilattice-on→JoinOn has-is-semilattice
+  →Join = A , Semilattice-on→Join-on has-is-semilattice
 
   ∨ : A → A → A
   ∨ = ∧ 
@@ -299,7 +299,7 @@ Semilattice-univalent {ℓ = ℓ} =
       axiom[ Semilattice-on.has-is-semilattice by (λ _ → is-semilattice-is-prop) ]))
 ```
 
-Any semilattice homomorphism is `monotone`{.Agda ident=isMonotone} when
+Any semilattice homomorphism is `monotone`{.Agda ident=is-monotone} when
 considered as a map between the posets induced by a semilattice,
 regardless of whether we consider it as a meet or as a join semilattice.
 
@@ -313,14 +313,16 @@ module _
 
     open Semilattice→ ishom
 
-    isSLatHom→isMonotoneMeet : isMonotone (→Meet (A .snd)) (→Meet (B .snd)) f
-    isSLatHom→isMonotoneMeet x y x=x∧y =
+    is-semilattice-hom→is-monotone-meet 
+      : is-monotone (→Meet (A .snd)) (→Meet (B .snd)) f
+    is-semilattice-hom→is-monotone-meet x y x=x∧y =
       f x             ≡⟨ ap f x=x∧y ⟩
       f (A.∧ x y)     ≡⟨ pres-∧ _ _ ⟩
       B.∧ (f x) (f y) ∎
 
-    isSLatHom→isMonotoneJoin : isMonotone (→Join (A .snd)) (→Join (B .snd)) f
-    isSLatHom→isMonotoneJoin x y y=x∨y =
+    is-semilattice-hom→is-monotone-join 
+      : is-monotone (→Join (A .snd)) (→Join (B .snd)) f
+    is-semilattice-hom→is-monotone-join x y y=x∨y =
       f y             ≡⟨ ap f y=x∨y ⟩
       f (A.∨ x y)     ≡⟨ pres-∨ _ _ ⟩
       B.∨ (f x) (f y) ∎

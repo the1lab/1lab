@@ -102,11 +102,11 @@ rather directly:
 ```agda
     Group-on-T : Group-on T
     Group-on-T = make-group squash (inc unit) op inverse
-      (Coeq-elimProp₃ (λ _ _ _ → squash _ _) 
+      (Coeq-elim-prop₃ (λ _ _ _ → squash _ _) 
         λ x y z i → inc (associative {x = x} {y} {z} (~ i)))
-      (Coeq-elimProp (λ _ → squash _ _) λ x i → inc (inverseˡ {x = x} i))
-      (Coeq-elimProp (λ _ → squash _ _) λ x i → inc (inverseʳ {x = x} i))
-      (Coeq-elimProp (λ _ → squash _ _) λ x i → inc (idˡ {x = x} i))
+      (Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inverseˡ {x = x} i))
+      (Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inverseʳ {x = x} i))
+      (Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (idˡ {x = x} i))
   
   _/ᴳ_ : Group ℓ
   _/ᴳ_ = _ , Group-on-T

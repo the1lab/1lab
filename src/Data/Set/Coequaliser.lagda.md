@@ -66,36 +66,36 @@ $\mathrm{coeq}(f,g) \to C$. In this sense, `inc`{.Agda} is the universal
 map which coequalises $f$ and $g$.
 
 <!--
-This is hella confusing, because we need coeq-elimProp to define
+This is hella confusing, because we need coeq-elim-prop to define
 `Coeq-univ`, but `Coeq-univ` comes first in the "didactic order"!
 -->
 
 <div style="display: flex; flex-flow: column-reverse nowrap;">
 <div>
 
-To construct the map above, we used `Coeq-elimProp`{.Agda}, which has
+To construct the map above, we used `Coeq-elim-prop`{.Agda}, which has
 not yet been defined. It says that, to define a dependent function from
 `Coeq`{.Agda} to a family of propositions, it suffices to define how it
 acts on `inc`{.Agda}: The path constructions don't matter.
 
 ```agda
-Coeq-elimProp : ∀ {ℓ} {f g : A → B} {C : Coeq f g → Type ℓ}
+Coeq-elim-prop : ∀ {ℓ} {f g : A → B} {C : Coeq f g → Type ℓ}
               → (∀ x → is-prop (C x))
               → (∀ x → C (inc x))
               → ∀ x → C x
-Coeq-elimProp cprop cinc (inc x) = cinc x
+Coeq-elim-prop cprop cinc (inc x) = cinc x
 ```
 
 Since C was assumed to be a family of propositions, we automatically get
 the necessary coherences for `glue`{.Agda} and `squash`{.Agda}.
 
 ```agda
-Coeq-elimProp {f = f} {g = g} cprop cinc (glue x i) = 
+Coeq-elim-prop {f = f} {g = g} cprop cinc (glue x i) = 
   is-prop→PathP (λ i → cprop (glue x i)) (cinc (f x)) (cinc (g x)) i
-Coeq-elimProp cprop cinc (squash x y p q i j) = 
+Coeq-elim-prop cprop cinc (squash x y p q i j) = 
   is-prop→square-p (λ i j → cprop (squash x y p q i j)) 
     (λ i → g x) (λ i → g (p i)) (λ i → g (q i)) (λ i → g y) i j
-  where g = Coeq-elimProp cprop cinc
+  where g = Coeq-elim-prop cprop cinc
 ```
 
 </div>
@@ -131,7 +131,7 @@ Coeq-univ {C = C} {f = f} {g = g} cset =
     cr' (f , f-coeqs) = Coeq-rec cset f (happly f-coeqs)
 
     islinv : is-left-inverse cr' (λ h → h ∘ inc , λ i z → h (glue z i))
-    islinv f = funext (Coeq-elimProp (λ x → cset _ _) λ x → refl)
+    islinv f = funext (Coeq-elim-prop (λ x → cset _ _) λ x → refl)
 ```
 
 </div>
@@ -161,28 +161,28 @@ Coeq-elim cset ci cg (squash x y p q i j) =
 
 There is a barrage of combined eliminators, whose definitions are not
 very enlightening --- you can mouse over these links to see their types:
-`Coeq-elimProp₂`{.Agda} `Coeq-elimProp₃`{.Agda} `Coeq-elim₂`{.Agda}
+`Coeq-elim-prop₂`{.Agda} `Coeq-elim-prop₃`{.Agda} `Coeq-elim₂`{.Agda}
 `Coeq-rec₂`{.Agda}.
 
 <!--
 ```agda
-Coeq-elimProp₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} 
+Coeq-elim-prop₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} 
                    {C : Coeq f g → Coeq f' g' → Type ℓ}
                → (∀ x y → is-prop (C x y))
                → (∀ x y → C (inc x) (inc y))
                → ∀ x y → C x y
-Coeq-elimProp₂ prop f = 
-  Coeq-elimProp (λ x → Π-is-hlevel 1 λ _ → prop _ _) 
-    λ x → Coeq-elimProp (prop (inc x)) (f x)
+Coeq-elim-prop₂ prop f = 
+  Coeq-elim-prop (λ x → Π-is-hlevel 1 λ _ → prop _ _) 
+    λ x → Coeq-elim-prop (prop (inc x)) (f x)
 
-Coeq-elimProp₃ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {f'' g'' : A'' → B''}
+Coeq-elim-prop₃ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {f'' g'' : A'' → B''}
                    {C : Coeq f g → Coeq f' g' → Coeq f'' g'' → Type ℓ}
                → (∀ x y z → is-prop (C x y z))
                → (∀ x y z → C (inc x) (inc y) (inc z))
                → ∀ x y z → C x y z
-Coeq-elimProp₃ cprop f = 
-  Coeq-elimProp₂ (λ x y → Π-is-hlevel 1 λ _ → cprop _ _ _) 
-    λ x y → Coeq-elimProp (λ y → cprop _ _ _) (f x y)
+Coeq-elim-prop₃ cprop f = 
+  Coeq-elim-prop₂ (λ x y → Π-is-hlevel 1 λ _ → cprop _ _ _) 
+    λ x y → Coeq-elim-prop (λ y → cprop _ _ _) (f x y)
 
 Coeq-elim₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} 
            → {C : Coeq f g → Coeq f' g' → Type ℓ}
@@ -195,7 +195,7 @@ Coeq-elim₂ {f = f} {g = g} {C = C} cset ci r-r l-r =
   Coeq-elim (λ x → Π-is-hlevel 2 λ _ → cset _ _) 
     (λ x → Coeq-elim (λ _ → cset _ _) (ci x) (l-r x)) 
     λ x → funext-dep λ {x₀} {x₁} → 
-      Coeq-elimProp₂ 
+      Coeq-elim-prop₂ 
         {C = λ x₀ x₁ → (p : x₀ ≡ x₁) 
            → PathP (λ i → C (glue x i) (p i)) 
                    (Coeq-elim (cset _) _ _ x₀) 
@@ -356,7 +356,7 @@ assumption that $R$ is an equivalence relation (`{- 2 -}`{.Agda}).
 
     decode : ∀ x y (p : Code x y .fst) → inc x ≡ y
     decode x y p = 
-      Coeq-elimProp {C = λ y → (p : Code x y .fst) → inc x ≡ y} 
+      Coeq-elim-prop {C = λ y → (p : Code x y .fst) → inc x ≡ y} 
         (λ _ → Π-is-hlevel 1 λ _ → squash _ _) (λ y r → quot r) y p
 ```
 

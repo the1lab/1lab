@@ -291,8 +291,8 @@ component, we must give a map $F_0(x) \to F_0(y)$, but this can be
 canonically chosen to be $F_1(r)$.
 
 ```agda
-Π₀ .F-id    = funext (Coeq-elimProp (λ _ → squash _ _) λ x → refl)
-Π₀ .F-∘ f g = funext (Coeq-elimProp (λ _ → squash _ _) λ x → refl)
+Π₀ .F-id    = funext (Coeq-elim-prop (λ _ → squash _ _) λ x → refl)
+Π₀ .F-∘ f g = funext (Coeq-elim-prop (λ _ → squash _ _) λ x → refl)
 ```
 
 The adjunction `unit`{.Agda} is a natural assignment of functors $\ca{X}
@@ -320,13 +320,13 @@ the same set we started with.
 ```agda
   adj .counit .η (X , s) = Quot-elim (λ _ → s) (λ x → x) λ x y r → r
   adj .counit .is-natural x (y , ys) f = 
-    funext (Coeq-elimProp (λ _ → ys _ _) λ _ → refl)
+    funext (Coeq-elim-prop (λ _ → ys _ _) λ _ → refl)
 ```
 
 The triangle identities are again straightforwardly checked.
 
 ```agda
-  adj .zig {x} = funext (Coeq-elimProp (λ _ → squash _ _) λ x → refl)
+  adj .zig {x} = funext (Coeq-elim-prop (λ _ → squash _ _) λ x → refl)
 
   adj .zag = Functor-path (λ x → refl) λ f → refl
 ```
@@ -363,13 +363,13 @@ This map has an inverse given by joining up the pairs:
     (λ a (x , y , r) i → glue ((a , x) , (a , y) , Precategory.id C , r) i) 
     a b
 
-  isom .rinv (a , b) = Coeq-elimProp₂ 
+  isom .rinv (a , b) = Coeq-elim-prop₂ 
     {C = λ x y → f (isom .inv (x , y)) ≡ (x , y)} 
     (λ _ _ → ×-is-hlevel 2 squash squash _ _) 
     (λ _ _ → refl) 
     a b
 
-  isom .linv = Coeq-elimProp (λ _ → squash _ _) λ _ → refl
+  isom .linv = Coeq-elim-prop (λ _ → squash _ _) λ _ → refl
 ```
 
 ## Pieces have points
@@ -384,5 +384,5 @@ Points→Pieces .η _ x = inc x
 Points→Pieces .is-natural x y f i o = inc (F₀ f o)
 
 pieces-have-points : ∀ {x} y → ∥ fibre (Points→Pieces {ℓ} .η x) y ∥
-pieces-have-points = Coeq-elimProp (λ _ → squash) λ x → inc (x , refl)
+pieces-have-points = Coeq-elim-prop (λ _ → squash) λ x → inc (x , refl)
 ```

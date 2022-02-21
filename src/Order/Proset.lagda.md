@@ -95,19 +95,19 @@ Proset-univalent {ℓ = ℓ} =
 
 A **monotone map** between prosets is a function between the underlying
 types that preserves the ordering. It can be shown that if an
-equivalence `is monotone`{.Agda ident=isMonotone}, and has monotone
+equivalence `is monotone`{.Agda ident=is-monotone}, and has monotone
 `inverse map`{.Agda ident=equiv→inverse}, then it is an `equivalence of
 prosets`{.Agda ident=Proset≃}.
 
 ```agda
-isMonotone : (A B : Proset ℓ) (e : A .fst → B .fst) → Type _
-isMonotone (A , o) (B , o') f = (x y : A) → x ≤₁ y → f x ≤₂ f y
+is-monotone : (A B : Proset ℓ) (e : A .fst → B .fst) → Type _
+is-monotone (A , o) (B , o') f = (x y : A) → x ≤₁ y → f x ≤₂ f y
   where open ProsetOn o renaming (_≤_ to _≤₁_)
         open ProsetOn o' renaming (_≤_ to _≤₂_)
 
 monotoneEqv→Proset≃ : {A B : Proset ℓ} (e : A .fst ≃ B .fst)
-                    → isMonotone A B (e .fst)
-                    → isMonotone B A (equiv→inverse (e .snd))
+                    → is-monotone A B (e .fst)
+                    → is-monotone B A (equiv→inverse (e .snd))
                     → Proset≃ A B e
 monotoneEqv→Proset≃ {A = A} {B} (f , eqv) f-mono f⁻¹-mono .pres-≤ x y = ua eq' where
   module A = ProsetOn (A .snd)

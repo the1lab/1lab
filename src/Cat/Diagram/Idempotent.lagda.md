@@ -45,7 +45,7 @@ record is-split (e : Hom A A) : Type (o ⊔ h) where
 is-split→is-idempotent : is-split f → is-idempotent f
 is-split→is-idempotent {f = f} spl =
   f ∘ f             ≡˘⟨ ap₂ _∘_ i∘p i∘p ⟩
-  (s ∘ r) ∘ (s ∘ r) ≡⟨ cancelInner p∘i ⟩
+  (s ∘ r) ∘ (s ∘ r) ≡⟨ cancel-inner p∘i ⟩
   s ∘ r             ≡⟨ i∘p ⟩
   f                 ∎
   where open is-split spl renaming (inject to s ; project to r)

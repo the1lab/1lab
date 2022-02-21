@@ -67,7 +67,7 @@ address the value constructors. This is because propositions
 automatically respect (higher) path constructors.
 
 ```agda
-Free-elimProp 
+Free-elim-prop 
   : ∀ {ℓ} (B : Free-group A → Type ℓ)
   → (∀ x → is-prop (B x))
   → (∀ x → B (inc x))
@@ -86,7 +86,7 @@ so I've put it in a `<details>`{.html} tag.
 </summary>
 
 ```agda
-Free-elimProp B bp bi bd binv bnil = go where
+Free-elim-prop B bp bi bd binv bnil = go where
   go : ∀ x → B x
   go (inc x) = bi x
   go (x ◆ y) = bd x y (go x) (go y)
@@ -173,14 +173,14 @@ that it's a higher-order function, so the inverse turns group
 homomorphisms into functions between their underlying sets. The
 construction of the inverse, and one of the homotopies, are very
 straightforward. The other direction is more complicated; We must use
-`Free-elimProp`{.Agda} to establish the result, which follows from the
+`Free-elim-prop`{.Agda} to establish the result, which follows from the
 assumption that $f$ is a group homomorphism.
 
 ```agda
   isom .snd .linv (f , f-hom) =
     Σ-prop-path 
       (λ f → Group-hom-is-prop) 
-      (funext (Free-elimProp _ (λ x → G.has-is-set _ _) 
+      (funext (Free-elim-prop _ (λ x → G.has-is-set _ _) 
         (λ x → refl) 
         (λ x y p q → ap₂ G._⋆_ p q ∙ sym (f-hom .pres-⋆ x y)) 
         (λ x p → ap G.inverse p ∙ sym (pres-inv f-hom x)) 
