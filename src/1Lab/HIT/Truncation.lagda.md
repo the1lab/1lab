@@ -63,11 +63,11 @@ whenever it is a family of propositions, by providing a case for
   go (inc x) (inc x₁) = work x x₁
   go (inc x) (squash y y₁ i) =
     is-prop→path-p (λ i → pprop (inc x) (squash y y₁ i))
-                  (go (inc x) y) (go (inc x) y₁) i
+                   (go (inc x) y) (go (inc x) y₁) i
 
   go (squash x x₁ i) z =
     is-prop→path-p (λ i → pprop (squash x x₁ i) z)
-                  (go x z) (go x₁ z) i
+                   (go x z) (go x₁ z) i
 ```
 -->
 
