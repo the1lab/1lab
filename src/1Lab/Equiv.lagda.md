@@ -541,8 +541,8 @@ A helpful lemma: Any function between contractible types is an equivalence:
 
 ```agda
 is-contr→is-equiv : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂}
-                → is-contr A → is-contr B → {f : A → B}
-                → is-equiv f
+                  → is-contr A → is-contr B → {f : A → B}
+                  → is-equiv f
 is-contr→is-equiv cA cB = is-iso→is-equiv f-is-iso where
   f-is-iso : is-iso _
   is-iso.inv f-is-iso _ = cA .centre
@@ -550,7 +550,7 @@ is-contr→is-equiv cA cB = is-iso→is-equiv f-is-iso where
   is-iso.linv f-is-iso _ = is-contr→is-prop cA _ _
 
 is-contr→≃ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂}
-          → is-contr A → is-contr B → A ≃ B
+           → is-contr A → is-contr B → A ≃ B
 is-contr→≃ cA cB = (λ _ → cB .centre) , is-iso→is-equiv f-is-iso where
   f-is-iso : is-iso _
   is-iso.inv f-is-iso _ = cA .centre
@@ -568,7 +568,7 @@ _∙e_ : ∀ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ�
      → A ≃ B → B ≃ C → A ≃ C
 
 _e⁻¹ : ∀ {ℓ ℓ₁} {A : Type ℓ} {B : Type ℓ₁}
-    → A ≃ B → B ≃ A
+     → A ≃ B → B ≃ A
 _e⁻¹ eqv = Iso→Equiv ( equiv→inverse (eqv .snd)
                      , record { inv  = eqv .fst
                               ; rinv = equiv→retraction (eqv .snd)
@@ -603,10 +603,10 @@ _∙e_ (f , e) (g , e') = (λ x → g (f x)) , eqv where
     eqv = is-iso→is-equiv (iso (λ x → f⁻¹ .is-iso.inv (g⁻¹ .is-iso.inv x)) right left)
 
 ∙-is-equiv : ∀ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
-          → {f : A → B} {g : B → C}
-          → is-equiv f
-          → is-equiv g
-          → is-equiv (λ x → g (f x))
+           → {f : A → B} {g : B → C}
+           → is-equiv f
+           → is-equiv g
+           → is-equiv (λ x → g (f x))
 ∙-is-equiv {f = f} {g = g} e e' = ((f , e) ∙e (g , e')) .snd
 ```
 -->
@@ -637,9 +637,9 @@ useful: Equivalence of propositions is the same as biimplication.
 
 ```agda
 prop-ext : ∀ {ℓ ℓ'} {P : Type ℓ} {Q : Type ℓ'}
-        → is-prop P → is-prop Q
-        → (P → Q) → (Q → P)
-        → P ≃ Q
+         → is-prop P → is-prop Q
+         → (P → Q) → (Q → P)
+         → P ≃ Q
 prop-ext pprop qprop p→q q→p .fst = p→q
 prop-ext pprop qprop p→q q→p .snd .is-eqv y .centre = q→p y , qprop _ _
 prop-ext pprop qprop p→q q→p .snd .is-eqv y .paths (p' , path) =
