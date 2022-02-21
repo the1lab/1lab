@@ -151,7 +151,7 @@ is the _same_ data as $P$, just melted into a soup of points.
 The cocone we construct will then glue all those points back together
 into $P$.
 
-[category of elements] Cat.Instances.Elements.html
+[category of elements]: Cat.Instances.Elements.html
 
 This is done by projecting out of $\int P$ into $\ca{C}$ via the
 [canonical projection], and then embedding $\ca{C}$ into the category
@@ -162,7 +162,7 @@ can just use the (contravariant) functorial action of $P$ to take a
 $px : P(X)$ and a $f : Hom(A, X)$ to a $P(A)$. This map is natural
 by functoriality of $P$.
 
-[canonical projection] Cat.Instances.Elements.html#Projection
+[canonical projection]: Cat.Instances.Elements.html#Projection
 
 
 ```agda
