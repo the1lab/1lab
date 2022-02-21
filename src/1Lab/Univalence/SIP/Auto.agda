@@ -37,5 +37,5 @@ makeAutoStr-term (suc n) t =
       unify t (con (quote s-const) (unknown v∷ []))
 
 macro
-  autoStr-term : Term → TC ⊤
-  autoStr-term = makeAutoStr-term 100
+  auto-str-term : Term → TC ⊤
+  auto-str-term = makeAutoStr-term 100
