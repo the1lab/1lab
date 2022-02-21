@@ -26,17 +26,17 @@ automatically a [set], since we can take $R(x, y) = (x \le y) \land (y
 Using the language of enriched category theory, we can say that a poset
 is a univalent category enriched over propositions.
 
-[preorder relation]: Order.Proset.html#isPreorder
+[preorder relation]: Order.Proset.html#is-preorder
 [Rijke's theorem]: 1Lab.HLevel.Sets.html#Rijke-is-set
 [set]: 1Lab.HLevel.html#is-set
 
 ```agda
-record isPartialOrder (R : A → A → Type ℓ') : Type (level-of A ⊔ ℓ') where
+record is-partial-order (R : A → A → Type ℓ') : Type (level-of A ⊔ ℓ') where
   field
-    has-is-preorder : isPreorder R
+    has-is-preorder : is-preorder R
     antisym : ∀ {x y} → R x y → R y x → x ≡ y
   
-  open isPreorder has-is-preorder public
+  open is-preorder has-is-preorder public
 ```
 
 To prove that being a partial order is a property of an order relation,
@@ -44,11 +44,11 @@ we first establish the theorem claimed in the first paragraph: Any type
 $A$ that admits a partial order relation $R$ is a set.
 
 ```agda
-hasPartialOrder→is-set : ∀ {R : A → A → Type ℓ} → isPartialOrder R → is-set A
+hasPartialOrder→is-set : ∀ {R : A → A → Type ℓ} → is-partial-order R → is-set A
 hasPartialOrder→is-set {A = A} {R = _≤_} ispo =
   Rijke-is-set {R = R'} reflexive' (λ { (x , y) → antisym x y }) is-prop'
   where
-    open isPartialOrder ispo
+    open is-partial-order ispo
 ```
 
 For the relation, we take $R(x, y) = (x \le y) \land (y \le x)$. By
@@ -66,16 +66,16 @@ products, this is a proposition.
     is-prop' (a , b) (a' , b') i = propositional a a' i , propositional b b' i
 ```
 
-This implies that the path component in `isPartialOrder`{.Agda} does not
+This implies that the path component in `is-partial-order`{.Agda} does not
 get in the way of it being a proposition:
 
 ```agda
-is-prop-isPartialOrder : is-prop (isPartialOrder R)
-is-prop-isPartialOrder x y i = p where
-  open isPartialOrder
+is-partial-order-is-prop : is-prop (is-partial-order R)
+is-partial-order-is-prop x y i = p where
+  open is-partial-order
 
-  p : isPartialOrder _
-  p .has-is-preorder = is-prop-isPreorder (x .has-is-preorder) (y .has-is-preorder) i
+  p : is-partial-order _
+  p .has-is-preorder = is-preorder-is-prop (x .has-is-preorder) (y .has-is-preorder) i
   p .antisym p q = hasPartialOrder→is-set x _ _ (x .antisym p q) (y .antisym p q) i
 ```
 
@@ -87,9 +87,9 @@ to additionally require that the type be a set.
 record PosetOn {ℓ'} (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ') where
   field
     _≤_ : A → A → Type ℓ'
-    has-is-partialOrder : isPartialOrder _≤_
+    has-is-partialOrder : is-partial-order _≤_
 
-  open isPartialOrder has-is-partialOrder public
+  open is-partial-order has-is-partialOrder public
 
 Poset : ∀ (r ℓ : Level) → Type (lsuc (r ⊔ ℓ))
 Poset r ℓ = Σ[ A ∈ Type ℓ ] (PosetOn {ℓ' = r} A)
@@ -122,7 +122,7 @@ Poset-univalent {ℓ = ℓ} =
     (record-desc (PosetOn {ℓ = ℓ} {ℓ' = ℓ}) (Poset≃ {ℓ = ℓ})
       (record:
         field[ _≤_ by pres-≤ ]
-        axiom[ has-is-partialOrder by (λ x → is-prop-isPartialOrder) ]))
+        axiom[ has-is-partialOrder by (λ x → is-partial-order-is-prop) ]))
   where open PosetOn
 ```
 

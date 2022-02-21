@@ -37,7 +37,7 @@ on total spaces is an equivalence; Hence `path→iso` is an equivalence.
 
 ```agda
 path→iso : ∀ {A B} → A ≡ B → A ≅ B
-path→iso {A = A} p = transport (λ i → A ≅ p i) idIso
+path→iso {A = A} p = transport (λ i → A ≅ p i) id-iso
 ```
 
 First we define, exactly as in the book, the canonical map `path→iso`{.Agda}.

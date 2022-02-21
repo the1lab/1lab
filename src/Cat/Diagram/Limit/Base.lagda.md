@@ -243,7 +243,7 @@ object) must be equal to the codomain's `ψ`{.Agda}.
   Cone-hom-path : ∀ {x y} {f g : Cone-hom x y} → Cone-hom.hom f ≡ Cone-hom.hom g → f ≡ g
   Cone-hom-path p i .Cone-hom.hom = p i
   Cone-hom-path {x = x} {y} {f} {g} p i .Cone-hom.commutes {o} j = 
-    is-set→SquareP (λ i j → C.Hom-set _ _)
+    is-set→square-p (λ i j → C.Hom-set _ _)
       (λ j → Cone.ψ y o C.∘ p j) (f .Cone-hom.commutes) (g .Cone-hom.commutes) refl i j
 ```
 -->

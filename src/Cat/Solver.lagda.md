@@ -143,8 +143,8 @@ buildMatcher : Name → Maybe Name → Name → Bool
 buildMatcher n nothing  x = n name=? x
 buildMatcher n (just m) x = or (n name=? x) (m name=? x)
 
-findGenericNames : Name → Name → Term → TC CategoryNames
-findGenericNames star id mon = do
+find-generic-names : Name → Name → Term → TC CategoryNames
+find-generic-names star id mon = do
   ∘-altName ← normalise (def star (unknown h∷ unknown h∷ mon v∷ []))
   ε-altName ← normalise (def id  (unknown h∷ unknown h∷ mon v∷ []))
   -- typeError (termErr ∘-altName ∷ termErr ε-altName ∷ [])
@@ -154,7 +154,7 @@ findGenericNames star id mon = do
     }
 
 findCategoryNames : Term → TC CategoryNames
-findCategoryNames = findGenericNames (quote Precategory._∘_) (quote Precategory.id)
+findCategoryNames = find-generic-names (quote Precategory._∘_) (quote Precategory.id)
 ```
 
 The trick above was stolen from the Agda standard library [monoid

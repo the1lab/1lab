@@ -44,8 +44,8 @@ sea of theory has risen to the point where our result is trivial:
 [setu]: Cat.Instances.Sets.html
 [funcu]: Cat.Instances.Functor.html#functor-categories
 [Yoneda lemma]: Cat.Functor.Hom.html#the-yoneda-embedding
-[full inclusion]: Cat.Functor.Full-subcategory.html#from-full-inclusions
-[fullu]: Cat.Functor.Full-subcategory.html#univalence
+[full inclusion]: Cat.Functor.FullSubcategory.html#from-full-inclusions
+[fullu]: Cat.Functor.FullSubcategory.html#univalence
 
 ```agda
 Rezk-completion : Precategory o h → Precategory (o ⊔ lsuc h) (o ⊔ h)

@@ -40,7 +40,7 @@ A **preorder** is a reflexive, transitive relation. Furthermore, we
 impose that a preorder take value in propositions.
 
 ```agda
-record isPreorder {A : Type ℓ} (R : A → A → Type ℓ') : Type (ℓ ⊔ ℓ') where
+record is-preorder {A : Type ℓ} (R : A → A → Type ℓ') : Type (ℓ ⊔ ℓ') where
   field
     reflexive     : isReflexive R
     transitive    : isTransitive R
@@ -55,12 +55,12 @@ A **partial order** is a preorder which, in addition, is antisymmetric:
 isAntiSymmetric : (R : A → A → Type ℓ) → Type _
 isAntiSymmetric R = {x y : _} → R x y → R y x → x ≡ y
 
-record isPartialOrder {A : Type ℓ} (R : A → A → Type ℓ') : Type (ℓ ⊔ ℓ') where
+record is-partial-order {A : Type ℓ} (R : A → A → Type ℓ') : Type (ℓ ⊔ ℓ') where
   field
-    preorder : isPreorder R
+    preorder : is-preorder R
     antisym : isAntiSymmetric R
 
-  open isPreorder preorder public
+  open is-preorder preorder public
 ```
 
 Any type with a choice of partial order is a set. This is because of
@@ -69,12 +69,12 @@ relation implying equality is a set.
 
 ```agda
 hasPartialOrder→is-set : {A : Type ℓ} {R : A → A → Type ℓ'}
-                      → isPartialOrder R
+                      → is-partial-order R
                       → is-set A
 hasPartialOrder→is-set {A = A} {_≤_} ispo =
   Rijke-is-set {R = R'} reflexive' (λ { (x , y) → antisym x y }) is-prop'
   where
-    open isPartialOrder ispo
+    open is-partial-order ispo
 ```
 
 For the relation, we take $R(x, y) = (x \le y) \land (y \le x)$. By
@@ -98,14 +98,14 @@ types which are `contractible when inhabited`{.Agda
 ident=contractible-if-inhabited}, since then we're free to assume A is a set.
 
 ```agda
-is-prop-isPartialOrder : {A : Type ℓ} {R : A → A → Type ℓ'}
-                      → is-prop (isPartialOrder R)
-is-prop-isPartialOrder {A = A} {R} = contractible-if-inhabited contract
+is-partial-order-is-prop : {A : Type ℓ} {R : A → A → Type ℓ'}
+                      → is-prop (is-partial-order R)
+is-partial-order-is-prop {A = A} {R} = contractible-if-inhabited contract
   where
-    open isPartialOrder
-    open isPreorder
+    open is-partial-order
+    open is-preorder
 
-    contract : isPartialOrder R → is-contr (isPartialOrder R)
+    contract : is-partial-order R → is-contr (is-partial-order R)
     contract order = contr order deform where
       A-set : is-set A
       A-set = hasPartialOrder→is-set order
@@ -117,7 +117,7 @@ construction follows directly from the fact that `preorders are
 propositional`{.Agda ident=propositional}.
 
 ```agda
-      deform : (x : isPartialOrder R) → order ≡ x
+      deform : (x : is-partial-order R) → order ≡ x
       deform x i .preorder .reflexive =
         x .propositional (order .preorder .reflexive)
                          (x .preorder .reflexive)

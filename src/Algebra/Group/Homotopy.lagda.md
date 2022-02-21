@@ -187,7 +187,7 @@ eliminator into propositions later, so we define that now.
   Deloop-elim P grpd pp ploop psq (path x i) = ploop x i
   Deloop-elim P grpd pp ploop psq (path-sq x y i j) = psq x y i j
   Deloop-elim P grpd pp ploop psq (squash a b p q r s i j k) =
-    fun-is-hlevelis-hlevel-dep 2 grpd
+    is-hlevel→is-hlevel-dep 2 grpd
       (g a) (g b) (λ i → g (p i)) (λ i → g (q i)) 
       (λ i j → g (r i j)) (λ i j → g (s i j)) (squash a b p q r s) i j k
     where
@@ -202,7 +202,7 @@ eliminator into propositions later, so we define that now.
     Deloop-elim P 
       (λ x → is-prop→is-hlevel-suc {n = 2} (pprop x)) p 
       (λ x → is-prop→PathP (λ i → pprop (path x i)) p p)
-      (λ x y → is-prop→SquareP (λ i j → pprop (path-sq x y i j)) _ _ _ _)
+      (λ x y → is-prop→square-p (λ i j → pprop (path-sq x y i j)) _ _ _ _)
 ```
 
 We can then proceed to characterise the type `point ≡ x` by an
@@ -279,7 +279,7 @@ reduces to `G → base ≡ base`, for which `path`{.Agda} suffices; The
 ```agda
     path 
     (λ x → ua→ λ a → path-sq _ _) 
-    (λ x y → is-set→SquareP (λ i j → Π-is-hlevel 2 λ _ → squash _ _) _ _ _ _)
+    (λ x y → is-set→square-p (λ i j → Π-is-hlevel 2 λ _ → squash _ _) _ _ _ _)
 ```
 
 Proving that these are inverses finishes the proof. For one direction,

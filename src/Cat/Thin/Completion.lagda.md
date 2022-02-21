@@ -112,7 +112,7 @@ The data above cleanly defines a `Poset`{.Agda}, so we're done!
 
 ```agda
   completed : Poset (o ⊔ h) h
-  completed = makePoset {A = Ob′} {R = λ x y → Hom′ x y .fst} 
+  completed = make-poset {A = Ob′} {R = λ x y → Hom′ x y .fst} 
       (λ {x} → id′ x) 
       (λ {x} {y} {z} → trans′ x y z) 
       (λ {x} {y} → antisym′ x y) 

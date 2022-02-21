@@ -43,17 +43,18 @@ problems:
 open import Cat.Solver
 open import 1Lab.Reflection
 
-findMonoidNames : Term → TC CategoryNames
-findMonoidNames = findGenericNames (quote Monoid-on._⋆_) (quote Monoid-on.identity)
+find-monoid-names : Term → TC CategoryNames
+find-monoid-names = 
+  find-generic-names (quote Monoid-on._⋆_) (quote Monoid-on.identity)
 
 macro
-  solveMonoid-on : Term → Term → TC ⊤
-  solveMonoid-on = solveGeneric findMonoidNames (λ x → def (quote B) (x v∷ []))
+  solve-monoid-on : Term → Term → TC ⊤
+  solve-monoid-on = solveGeneric find-monoid-names (λ x → def (quote B) (x v∷ []))
 
-  solveMonoid : ∀ {ℓ} (A : Monoid ℓ) → Term → TC ⊤
-  solveMonoid (_ , mm) goal = do
+  solve-monoid : ∀ {ℓ} (A : Monoid ℓ) → Term → TC ⊤
+  solve-monoid (_ , mm) goal = do
     tmm ← quoteTC mm
-    solveGeneric findMonoidNames (λ x → def (quote B) (x v∷ [])) tmm goal
+    solveGeneric find-monoid-names (λ x → def (quote B) (x v∷ [])) tmm goal
 ```
 -->
 
@@ -65,5 +66,5 @@ module _ (M : Monoid ℓ) where private
 
   test : ((a M.⋆ b) M.⋆ (c M.⋆ d))
        ≡ ((a M.⋆ (M.identity M.⋆ (b M.⋆ M.identity))) M.⋆ (c M.⋆ d))
-  test = solveMonoid M
+  test = solve-monoid M
 ```

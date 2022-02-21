@@ -50,12 +50,12 @@ is-fully-faithful F = ∀ {x y} → is-equiv (F₁ F {x = x} {y})
 full+faithful→ff 
   : (F : Functor C D) → is-full F → is-faithful F → is-fully-faithful F
 full+faithful→ff {C = C} {D = D} F surj inj .is-eqv = p where
-  is-prop-img : ∀ {x y} f → is-prop (fibre (F₁ F {x = x} {y}) f)
-  is-prop-img f (g , p) (h , q) = Σ-prop-path (λ _ → D .Hom-set _ _ _ _) (inj (p ∙ sym q))
+  img-is-prop : ∀ {x y} f → is-prop (fibre (F₁ F {x = x} {y}) f)
+  img-is-prop f (g , p) (h , q) = Σ-prop-path (λ _ → D .Hom-set _ _ _ _) (inj (p ∙ sym q))
 
   p : ∀ {x y} f → is-contr (fibre (F₁ F {x = x} {y}) f)
-  p f .centre = ∥-∥-elim (λ _ → is-prop-img f) (λ x → x) (surj f)
-  p f .paths = is-prop-img f _
+  p f .centre = ∥-∥-elim (λ _ → img-is-prop f) (λ x → x) (surj f)
+  p f .paths = img-is-prop f _
 ```
 
 A very important property of fully faithful functors (like $F$) is that

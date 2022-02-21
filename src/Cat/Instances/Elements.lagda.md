@@ -48,23 +48,23 @@ of $P(f)$ on each point of $P(Y)$, we have a bunch of tiny bits of data
 that only describe the action of $P(f)$ on a single point.
 
 ```agda
-record ElementHom (x y : Element) : Type (ℓ ⊔ s) where
+record Element-hom (x y : Element) : Type (ℓ ⊔ s) where
   constructor elem-hom
   no-eta-equality
   field
     hom : Hom (x .ob) (y .ob)
     commute : P.₁ hom (y .section) ≡ x .section
 
-open ElementHom
+open Element-hom
 ```
 
 As per usual, we need to prove some helper lemmas that describe the
-path space of `ElementHom`{.Agda}
+path space of `Element-hom`{.Agda}
 
 ```agda
-ElementHom≡ : {x y : Element} {f g : ElementHom x y} → f .hom ≡ g .hom → f ≡ g 
-ElementHom≡ p i .hom = p i
-ElementHom≡ {x = x} {y = y} {f = f} {g = g} p i .commute =
+Element-hom-path : {x y : Element} {f g : Element-hom x y} → f .hom ≡ g .hom → f ≡ g 
+Element-hom-path p i .hom = p i
+Element-hom-path {x = x} {y = y} {f = f} {g = g} p i .commute =
   is-prop→PathP (λ j → snd (P.₀ (x .ob)) (P.₁ (p j) (y .section)) (x .section))
     (f .commute)
     (g .commute) i
@@ -72,21 +72,21 @@ ElementHom≡ {x = x} {y = y} {f = f} {g = g} p i .commute =
 
 <!--
 ```agda
-ElementHom-is-set : ∀ (x y : Element) → is-set (ElementHom x y)
-ElementHom-is-set x y =
-  retract→is-hlevel 2 Refold Unfold retract T-is-set
+Element-hom-is-set : ∀ (x y : Element) → is-set (Element-hom x y)
+Element-hom-is-set x y =
+  retract→is-hlevel 2 refold unfold retract T-is-set
   where
     T : Type _
     T = Σ[ hom ∈ Hom (x .ob) (y .ob) ]
         (P.₁ hom (y .section) ≡ x .section)
 
-    Refold : T → ElementHom x y
-    Refold (h , p) = elem-hom h p
+    refold : T → Element-hom x y
+    refold (h , p) = elem-hom h p
 
-    Unfold : ElementHom x y → T
-    Unfold f = (f .hom , f .commute)
+    unfold : Element-hom x y → T
+    unfold f = (f .hom , f .commute)
 
-    retract : ∀ x → Refold (Unfold x) ≡ x
+    retract : ∀ x → refold (unfold x) ≡ x
     retract x i .hom = x .hom
     retract x i .commute = x .commute
 
@@ -102,7 +102,7 @@ morphisms in the category of elements for each $py : P(y)$.
 
 ```agda
 induce : ∀ {x y} → (f : Hom x y) → (py : P.₀ y .fst)
-         → ElementHom (elem x (P.₁ f py)) (elem y py)
+       → Element-hom (elem x (P.₁ f py)) (elem y py)
 induce f _ = elem-hom f refl
 ```
 
@@ -112,8 +112,8 @@ $P$!
 ```agda
 ∫ : Precategory (o ⊔ s) (ℓ ⊔ s)
 ∫ .Precategory.Ob = Element
-∫ .Precategory.Hom = ElementHom
-∫ .Precategory.Hom-set = ElementHom-is-set
+∫ .Precategory.Hom = Element-hom
+∫ .Precategory.Hom-set = Element-hom-is-set
 ∫ .Precategory.id {x = x} = elem-hom id  λ i → P.F-id i (x .section)
 ∫ .Precategory._∘_ {x = x} {y = y} {z = z} f g = elem-hom (f .hom ∘ g .hom) comm
   where
@@ -124,9 +124,9 @@ $P$!
         P.₁ (g .hom) (P.₁ (f .hom) (z .section)) ≡⟨ ap (P.F₁ (g .hom)) (f .commute)  ⟩
         P.₁ (g .hom) (y .section)                ≡⟨ g .commute ⟩
         x .section ∎
-∫ .Precategory.idr f = ElementHom≡ (idr (f .hom))
-∫ .Precategory.idl f = ElementHom≡ (idl (f .hom))
-∫ .Precategory.assoc f g h = ElementHom≡ (assoc (f .hom) (g .hom) (h .hom))
+∫ .Precategory.idr f = Element-hom-path (idr (f .hom))
+∫ .Precategory.idl f = Element-hom-path (idl (f .hom))
+∫ .Precategory.assoc f g h = Element-hom-path (assoc (f .hom) (g .hom) (h .hom))
 ```
 
 ## Projection

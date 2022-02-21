@@ -34,8 +34,8 @@ extensionality for subsets`{.Agda ident=ℙ-ext}.
 ℙ⊆ A .fst = ℙ A
 ℙ⊆ A .snd = st where
   open PosetOn
-  open isPartialOrder
-  open isPreorder
+  open is-partial-order
+  open is-preorder
 
   st : PosetOn (ℙ A)
   st ._≤_ = _⊆_

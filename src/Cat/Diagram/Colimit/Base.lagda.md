@@ -139,7 +139,7 @@ of cocone morphisms.
   Cocone-hom-path : ∀ {x y} {f g : Cocone-hom x y} → f .hom ≡ g .hom → f ≡ g
   Cocone-hom-path p i .hom = p i
   Cocone-hom-path {x = x} {y = y} {f = f} {g = g} p i .commutes {o} j =
-    is-set→SquareP (λ i j → C.Hom-set _ _)
+    is-set→square-p (λ i j → C.Hom-set _ _)
       (λ j → p j C.∘ x .ψ o) (f .commutes) (g .commutes) refl i j
 ```
 

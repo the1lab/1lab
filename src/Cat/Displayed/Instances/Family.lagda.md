@@ -36,13 +36,13 @@ Family .Ob[_] S = Functor (Disc′ S) C
 Given a map $f : A \to B$ in `Sets`{.Agda}, and functors $F : [A,C]$ and
 $G : [B,C]$, we define the collection of displayed maps to be the set of
 all natural transformations $F \To f*G$, where $f*G$ is the
-precomposition of $f$ `regarded as a functor`{.Agda ident=liftDisc}
+precomposition of $f$ `regarded as a functor`{.Agda ident=lift-disc}
 between discrete categories. Since `natural transformations form a
 Set`{.Agda ident=Nat-is-set}, we're clear to take this as the definition.
 
 ```agda
 Family .Hom[_] {_ , aset} {_ , bset} f F G = 
-  F => (G F∘ liftDisc f)
+  F => (G F∘ lift-disc f)
 Family .Hom[_]-set f x y = Nat-is-set
 ```
 
@@ -57,11 +57,11 @@ Family ._∘′_ {a = A} {x = X} {Y} {Z} {F} {G} f g = NT (λ x → η f _ ∘ �
   where abstract
     comm : ∀ x y (h : x ≡ y) 
          → (f .η _ ∘ g .η y) ∘ F₁ X h 
-         ≡ F₁ (Z F∘ liftDisc {A = A} _) h ∘ f .η _ ∘ g .η  _
+         ≡ F₁ (Z F∘ lift-disc {A = A} _) h ∘ f .η _ ∘ g .η  _
     comm x y h =
       (f .η _ ∘ g .η y) ∘ F₁ X h                          ≡⟨ extendr (g .is-natural _ _ _) ⟩
-      (f .η _ ∘ F₁ (Y F∘ liftDisc {A = A} _) h) ∘ g .η x  ≡˘⟨ pulll (sym (f .is-natural _ _ _)) ⟩
-      F₁ (Z F∘ liftDisc {A = A} _) h ∘ f .η _ ∘ g .η  _   ∎
+      (f .η _ ∘ F₁ (Y F∘ lift-disc {A = A} _) h) ∘ g .η x  ≡˘⟨ pulll (sym (f .is-natural _ _ _)) ⟩
+      F₁ (Z F∘ lift-disc {A = A} _) h ∘ f .η _ ∘ g .η  _   ∎
 
 Family .idr′ _ = Nat-path λ x → idr _
 Family .idl′ _ = Nat-path λ x → idl _
@@ -88,7 +88,7 @@ Family-is-cartesian = iscart where
   cart f y′ .unique m′ p = Nat-path λ x → sym (idl _) ∙ ap (λ e → η e x) p
 
   iscart : Cartesian-fibration Family
-  iscart .has-lift f y′ .x′ = y′ F∘ liftDisc f
+  iscart .has-lift f y′ .x′ = y′ F∘ lift-disc f
   iscart .has-lift f y′ .lifting = idnt
   iscart .has-lift {x = x} {y} f y′ .cartesian = cart {x = x} {y} f y′
 ```

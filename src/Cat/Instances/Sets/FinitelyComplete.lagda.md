@@ -84,7 +84,7 @@ Sets-pullbacks {A = A , As} {B = B , Bs} {C = C , Cs} f g = pb where
   pb .has-is-pb .p₂∘limiting = refl
   pb .has-is-pb .unique {p = p} {lim' = lim'} q r i x = 
     q i x , r i x , 
-    λ j → is-set→SquareP (λ i j → Cs) 
+    λ j → is-set→square-p (λ i j → Cs) 
       (λ j → f (q j x)) (λ j → lim' x .snd .snd j) (happly p x) (λ j → g (r j x)) i j
 ```
 

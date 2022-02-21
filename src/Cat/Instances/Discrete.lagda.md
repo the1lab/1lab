@@ -45,14 +45,14 @@ between discrete categories. This is because every function
 automatically respects equality in a functorial way.
 
 ```agda
-liftDisc 
+lift-disc 
   : ∀ {A : Set ℓ} {B : Set ℓ'}
   → (A .fst → B .fst)
   → Functor (Disc′ A) (Disc′ B)
-liftDisc f .F₀ = f
-liftDisc f .F₁ = ap f
-liftDisc f .F-id = refl
-liftDisc f .F-∘ p q = ap-comp-path f q p
+lift-disc f .F₀ = f
+lift-disc f .F₁ = ap f
+lift-disc f .F-id = refl
+lift-disc f .F-∘ p q = ap-comp-path f q p
 ```
 
 <!--
@@ -78,7 +78,7 @@ equality on $X$. We note that the decidable equality is _redundant_
 information: The construction `Disc′`{.Agda} above extends into a [left
 adjoint] to the `Ob`{.Agda} functor.
 
-[left adjoint]: Cat.Instances.StrictCat.Cohesive.html#disc-γ
+[left adjoint]: Cat.Instances.Strict-Cat.Cohesive.html#disc-γ
 
 ```agda
 Disc-diagram

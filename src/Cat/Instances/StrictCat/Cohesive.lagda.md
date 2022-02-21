@@ -22,7 +22,7 @@ open _⊣_
 ```
 -->
 
-# StrictCat is "cohesive"
+# Strict-Cat is "cohesive"
 
 We prove that the category $\strcat$ admits an adjoint
 quadruple
@@ -44,7 +44,7 @@ category. Two objects land in the same connected component if there is a
 path of morphisms connecting them, hence the name.
 
 **Note**: Generally, the term "cohesive" is applied to Grothendieck
-topoi, which `StrictCat`{.Agda} is _very far_ from being. We're using it
+topoi, which `Strict-Cat`{.Agda} is _very far_ from being. We're using it
 here by analogy: There's an adjoint quadruple, where the functor
 $\Gamma$ sends each category to its set of points: see [the last
 section]. Strictly speaking, the left adjoint to $\Gamma$ isn't defined
@@ -58,7 +58,7 @@ sending $S$ to the coproduct of $S$-many copies of the point category.
 We begin by defining the object set functor.
 
 ```agda
-Γ : Functor (StrictCat o h) (Sets o)
+Γ : Functor (Strict-Cat o h) (Sets o)
 Γ .F₀ (C , obset) = Ob C , obset
 Γ .F₁ = F₀
 Γ .F-id = refl
@@ -71,11 +71,11 @@ functor `Γ`{.Agda} we defined above. Then we define the adjunction
 `Disc⊣Γ`{.Agda}.
 
 ```agda
-Disc : Functor (Sets ℓ) (StrictCat ℓ ℓ)
+Disc : Functor (Sets ℓ) (Strict-Cat ℓ ℓ)
 Disc .F₀ S = Disc′ S , S .snd
-Disc .F₁ = liftDisc
-Disc .F-id = Functor≡ (λ x → refl) λ f → refl
-Disc .F-∘ _ _ = Functor≡ (λ x → refl) λ f → refl
+Disc .F₁ = lift-disc
+Disc .F-id = Functor-path (λ x → refl) λ f → refl
+Disc .F-∘ _ _ = Functor-path (λ x → refl) λ f → refl
 
 Disc⊣Γ : Disc {ℓ} ⊣ Γ
 Disc⊣Γ = adj where
@@ -84,7 +84,7 @@ Disc⊣Γ = adj where
 <!--
 ```agda
   abstract
-    lemma : ∀ {A : StrictCat ℓ ℓ .Precategory.Ob} 
+    lemma : ∀ {A : Strict-Cat ℓ ℓ .Precategory.Ob} 
               {x y z : A .fst .Precategory.Ob} (f : y ≡ z) (g : x ≡ y)
           → subst (A .fst .Precategory.Hom _) (g ∙ f) (A .fst .Precategory.id)
           ≡ A .fst .Precategory._∘_ 
@@ -117,7 +117,7 @@ identity map suffices.
 
 ```agda
   adj .counit = NT (λ x → F x) nat where
-    F : (x : Precategory.Ob (StrictCat ℓ ℓ)) 
+    F : (x : Precategory.Ob (Strict-Cat ℓ ℓ)) 
       → Functor (Disc′ (x .fst .Precategory.Ob , x .snd)) _
     F X .F₀ x = x
     F X .F₁ p = subst (X .fst .Hom _) p (X .fst .id) {- 1 -}
@@ -128,11 +128,11 @@ identity map suffices.
 <!--
 ```agda
     abstract
-      nat : (x y : Precategory.Ob (StrictCat ℓ ℓ)) 
-            (f : Precategory.Hom (StrictCat ℓ ℓ) x y)
+      nat : (x y : Precategory.Ob (Strict-Cat ℓ ℓ)) 
+            (f : Precategory.Hom (Strict-Cat ℓ ℓ) x y)
           → (F y F∘ F₁ (Disc F∘ Γ) f) ≡ (f F∘ F x)
       nat x y f = 
-        Functor≡ (λ x → refl) 
+        Functor-path (λ x → refl) 
            (J′ (λ x y p → subst (Y.Hom _) (ap (F₀ f) p) Y.id 
                         ≡ F₁ f (subst (X.Hom _) p X.id)) 
                λ _ → transport-refl _ 
@@ -147,7 +147,7 @@ identity map suffices.
 Fortunately the triangle identities are straightforwardly checked.
 
 ```agda
-  adj .zig {x} = Functor≡ (λ x i → x) λ f → x .snd _ _ _ _
+  adj .zig {x} = Functor-path (λ x i → x) λ f → x .snd _ _ _ _
   adj .zag = refl
 ```
 
@@ -160,7 +160,7 @@ lift functions to act on object parts and the action on morphisms is
 trivial.
 
 ```agda
-Codisc : Functor (Sets ℓ) (StrictCat ℓ ℓ)
+Codisc : Functor (Sets ℓ) (Strict-Cat ℓ ℓ)
 Codisc .F₀ (S , sset) = Codisc′ S , sset
 
 Codisc .F₁ f .F₀ = f
@@ -168,8 +168,8 @@ Codisc .F₁ f .F₁ = λ _ → lift tt
 Codisc .F₁ f .F-id = refl
 Codisc .F₁ f .F-∘ = λ _ _ → refl
 
-Codisc .F-id    = Functor≡ (λ x → refl) λ f → refl
-Codisc .F-∘ _ _ = Functor≡ (λ x → refl) λ f → refl
+Codisc .F-id    = Functor-path (λ x → refl) λ f → refl
+Codisc .F-∘ _ _ = Functor-path (λ x → refl) λ f → refl
 ```
 
 The codiscrete category functor is right adjoint to the object set
@@ -183,10 +183,10 @@ both directions:
   adj .unit = 
     NT (λ x → record { F₀ = λ x → x ; F₁ = λ _ → lift tt 
                      ; F-id = refl ; F-∘ = λ _ _ → refl }) 
-       λ x y f → Functor≡ (λ _ → refl) λ _ → refl
+       λ x y f → Functor-path (λ _ → refl) λ _ → refl
   adj .counit = NT (λ _ x → x) λ x y f i o → f o
   adj .zig = refl
-  adj .zag = Functor≡ (λ _ → refl) λ _ → refl
+  adj .zag = Functor-path (λ _ → refl) λ _ → refl
 ```
 
 ## Object set vs global sections
@@ -205,14 +205,14 @@ $\hom$-sets are definitionally contractible.
 
 ```agda
 module _ {ℓ} where
-  import Cat.Morphism Cat[ StrictCat ℓ ℓ , Sets ℓ ] as Nt
+  import Cat.Morphism Cat[ Strict-Cat ℓ ℓ , Sets ℓ ] as Nt
 
-  GlobalSections : Functor (StrictCat ℓ ℓ) (Sets ℓ)
+  GlobalSections : Functor (Strict-Cat ℓ ℓ) (Sets ℓ)
   GlobalSections .F₀ C = 
     Functor (Codisc′ (Lift _ ⊤)) (C .fst) , Functor-is-set (C .snd)
   GlobalSections .F₁ G F = G F∘ F
-  GlobalSections .F-id = funext λ _ → Functor≡ (λ _ → refl) λ _ → refl
-  GlobalSections .F-∘ f g = funext λ _ → Functor≡ (λ _ → refl) λ _ → refl
+  GlobalSections .F-id = funext λ _ → Functor-path (λ _ → refl) λ _ → refl
+  GlobalSections .F-∘ f g = funext λ _ → Functor-path (λ _ → refl) λ _ → refl
 ```
 
 Since `GlobalSections`{.Agda} is a section of the $\hom$ functor, it
@@ -235,14 +235,14 @@ essentially independent of the coordinate.
       record { F₀ = λ _ → ob ; F₁ = λ _ → x .fst .id 
              ; F-id = refl ; F-∘ = λ _ _ → sym (x .fst .idl _) 
              }
-    f .is-natural x y f = funext λ _ → Functor≡ (λ _ → refl) λ _ → sym (F-id f)
+    f .is-natural x y f = funext λ _ → Functor-path (λ _ → refl) λ _ → sym (F-id f)
 ```
 
 In the opposite direction, the natural transformation is defined by
 evaluating at the point. These natural transformations compose to the
 identity almost definitionally, but Agda does need some convincing,
 using our path helpers: `Nat-path`{.Agda}, `funext`{.Agda}, and
-`Functor≡`{.Agda}.
+`Functor-path`{.Agda}.
 
 ```agda
     g : GlobalSections => Γ
@@ -250,7 +250,7 @@ using our path helpers: `Nat-path`{.Agda}, `funext`{.Agda}, and
     g .is-natural x y f = refl
 
     f∘g : f ∘nt g ≡ idnt
-    f∘g = Nat-path λ c → funext λ x → Functor≡ (λ x → refl) λ f → sym (F-id x)
+    f∘g = Nat-path λ c → funext λ x → Functor-path (λ x → refl) λ f → sym (F-id x)
 
     g∘f : g ∘nt f ≡ idnt
     g∘f = Nat-path λ _ i x → x
@@ -270,13 +270,13 @@ connected. This is intentional!
 ```
 
 The `π₀`{.Agda} construction extends to a functor `Π₀`{.Agda} (capital
-pi for **P**ieces) from `StrictCat`{.Agda} back to `Sets`{.Agda}. We
+pi for **P**ieces) from `Strict-Cat`{.Agda} back to `Sets`{.Agda}. We
 send a functor $F$ to its object part, but postcomposing with the map
 `inc`{.Agda} which sends an object of $\ca{D}$ to the connected
 component it inhabits.
 
 ```agda
-Π₀ : Functor (StrictCat o h) (Sets (o ⊔ h))
+Π₀ : Functor (Strict-Cat o h) (Sets (o ⊔ h))
 Π₀ .F₀ (C , _) = π₀ C
 Π₀ .F₁ F = 
   Quot-elim (λ _ → squash) (λ x → inc (F₀ F x)) 
@@ -309,7 +309,7 @@ quotient.
     { F₀   = inc            ; F₁ = quot
     ; F-id = squash _ _ _ _ ; F-∘ = λ _ _ → squash _ _ _ _ 
     }
-  adj .unit .is-natural x y f = Functor≡ (λ x → refl) λ _ → squash _ _ _ _
+  adj .unit .is-natural x y f = Functor-path (λ x → refl) λ _ → squash _ _ _ _
 ```
 
 The adjunction `counit`{.Agda} is an assignment of functions
@@ -328,7 +328,7 @@ The triangle identities are again straightforwardly checked.
 ```agda
   adj .zig {x} = funext (Coeq-elimProp (λ _ → squash _ _) λ x → refl)
 
-  adj .zag = Functor≡ (λ x → refl) λ f → refl
+  adj .zag = Functor-path (λ x → refl) λ f → refl
 ```
 
 Furthermore, we can prove that the connected components of a product

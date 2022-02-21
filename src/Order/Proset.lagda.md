@@ -20,13 +20,13 @@ requirement for antisymmetry. A type equipped with a preorder is called a
 **protype**.
 
 ```agda
-record isPreorder (R : A → A → Type ℓ') : Type (level-of A ⊔ ℓ') where
+record is-preorder (R : A → A → Type ℓ') : Type (level-of A ⊔ ℓ') where
   field
     reflexive     : ∀ {x} → R x x
     transitive    : ∀ {x y z} → R x y → R y z → R x z
     propositional : ∀ {x y} → is-prop (R x y)
 
-open isPreorder
+open is-preorder
 ```
 
 A **proset structure** on a type equips the type with a choice of
@@ -39,9 +39,9 @@ record ProsetOn {ℓ'} (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ') where
   field
     _≤_           : A → A → Type ℓ'
     has-is-set      : is-set A
-    has-is-preorder : isPreorder _≤_
+    has-is-preorder : is-preorder _≤_
 
-  open isPreorder has-is-preorder public
+  open is-preorder has-is-preorder public
 
 open ProsetOn
 
@@ -53,12 +53,12 @@ Since the relation is required to be propositional, being a preorder is
 a property, not structure.
 
 ```agda
-is-prop-isPreorder : {R : A → A → Type ℓ'} → is-prop (isPreorder R)
-is-prop-isPreorder x y i .reflexive =
+is-preorder-is-prop : {R : A → A → Type ℓ'} → is-prop (is-preorder R)
+is-preorder-is-prop x y i .reflexive =
   y .propositional (x .reflexive) (y .reflexive) i
-is-prop-isPreorder x y i .transitive p q =
+is-preorder-is-prop x y i .transitive p q =
   y .propositional (x .transitive p q) (y .transitive p q) i
-is-prop-isPreorder x y i .propositional =
+is-preorder-is-prop x y i .propositional =
   is-prop-is-prop (x .propositional) (y .propositional) i
 ```
 
@@ -90,7 +90,7 @@ Proset-univalent {ℓ = ℓ} =
       (record:
         field[ _≤_ by pres-≤ ]
         axiom[ has-is-set by (λ x → is-hlevel-is-prop 2) ]
-        axiom[ has-is-preorder by (λ x → is-prop-isPreorder {R = x ._≤_}) ]))
+        axiom[ has-is-preorder by (λ x → is-preorder-is-prop {R = x ._≤_}) ]))
 ```
 
 A **monotone map** between prosets is a function between the underlying

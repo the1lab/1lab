@@ -34,8 +34,8 @@ raise the [h-level] of the Hom-sets.
 [h-level]: 1Lab.HLevel.html
 
 ```agda
-is-prop-Monoid-hom : ∀ {ℓ} {x y : Monoid ℓ} f → is-prop (Monoid-hom x y f)
-is-prop-Monoid-hom {y = _ , M} _ x y i = 
+Monoid-hom-is-prop : ∀ {ℓ} {x y : Monoid ℓ} f → is-prop (Monoid-hom x y f)
+Monoid-hom-is-prop {y = _ , M} _ x y i = 
   record { pres-id = M .has-is-set _ _ (x .pres-id) (y .pres-id) i 
          ; pres-⋆ = λ a b → M .has-is-set _ _ (x .pres-⋆ a b) (y .pres-⋆ a b) i 
          }
@@ -44,7 +44,7 @@ Monoids : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Monoids ℓ .Ob      = Monoid ℓ
 Monoids ℓ .Hom A B = Σ (Monoid-hom A B)
 Monoids ℓ .Hom-set _ (_ , M) = 
-  Σ-is-hlevel 2 (fun-is-hlevel 2 (M .has-is-set)) λ f → is-prop→is-set (is-prop-Monoid-hom f)
+  Σ-is-hlevel 2 (fun-is-hlevel 2 (M .has-is-set)) λ f → is-prop→is-set (Monoid-hom-is-prop f)
 ```
 
 It's routine to check that the identity is a monoid homomorphism and
@@ -57,9 +57,9 @@ Monoids ℓ ._∘_ (f , fh) (g , gh) = f ⊙ g , fogh where
   fogh .pres-id    = ap f (gh .pres-id)    ∙ fh .pres-id
   fogh .pres-⋆ x y = ap f (gh .pres-⋆ x y) ∙ fh .pres-⋆ _ _
 
-Monoids ℓ .idr f = Σ-prop-path is-prop-Monoid-hom refl
-Monoids ℓ .idl f = Σ-prop-path is-prop-Monoid-hom refl
-Monoids ℓ .assoc f g h = Σ-prop-path is-prop-Monoid-hom refl
+Monoids ℓ .idr f = Σ-prop-path Monoid-hom-is-prop refl
+Monoids ℓ .idl f = Σ-prop-path Monoid-hom-is-prop refl
+Monoids ℓ .assoc f g h = Σ-prop-path Monoid-hom-is-prop refl
 ```
 
 The category of monoids admits a faithful functor to the category of
@@ -81,15 +81,15 @@ that, if $A$ is a set, then $\mathrm{List}(A)$ is an object of
 element is the empty list.
 
 ```agda
-is-monoid-List : ∀ {ℓ} {A : Type ℓ} → is-set A
+List-is-monoid : ∀ {ℓ} {A : Type ℓ} → is-set A
               → Monoid-on (List A)
-is-monoid-List aset .identity = []
-is-monoid-List aset ._⋆_ = _++_
-is-monoid-List aset .has-is-monoid .idˡ = refl
-is-monoid-List aset .has-is-monoid .idʳ = ++-idʳ _
-is-monoid-List aset .has-is-monoid .has-is-semigroup .has-is-magma .has-is-set = 
+List-is-monoid aset .identity = []
+List-is-monoid aset ._⋆_ = _++_
+List-is-monoid aset .has-is-monoid .idˡ = refl
+List-is-monoid aset .has-is-monoid .idʳ = ++-idʳ _
+List-is-monoid aset .has-is-monoid .has-is-semigroup .has-is-magma .has-is-set = 
   ListPath.is-set→List-is-set aset
-is-monoid-List aset .has-is-monoid .has-is-semigroup .associative {x} {y} {z} = 
+List-is-monoid aset .has-is-monoid .has-is-semigroup .associative {x} {y} {z} = 
   sym (++-assoc x y z)
 ```
 
@@ -103,7 +103,7 @@ a `set`{.Agda ident=Set} into a monoid in the most efficient way.
 
 ```agda
 Free : ∀ {ℓ} → Functor (Sets ℓ) (Monoids ℓ)
-Free .F₀ (A , s) = List A , is-monoid-List s
+Free .F₀ (A , s) = List A , List-is-monoid s
 ```
 
 The action on morphisms is given by `map`{.Agda}, which preserves the
@@ -116,12 +116,12 @@ Free .F₁ f = map f , record { pres-id = refl ; pres-⋆  = map-++ f } where
   map-++ f [] ys = refl
   map-++ f (x ∷ xs) ys = ap (f x ∷_) (map-++ f xs ys)
 
-Free .F-id = Σ-prop-path is-prop-Monoid-hom (funext map-id) where
+Free .F-id = Σ-prop-path Monoid-hom-is-prop (funext map-id) where
   map-id : ∀ xs → map (λ x → x) xs ≡ xs
   map-id [] = refl
   map-id (x ∷ xs) = ap (x ∷_) (map-id xs)
 
-Free .F-∘ f g = Σ-prop-path is-prop-Monoid-hom (funext map-∘) where
+Free .F-∘ f g = Σ-prop-path Monoid-hom-is-prop (funext map-∘) where
   map-∘ : ∀ xs → map (λ x → f (g x)) xs ≡ map f (map g xs)
   map-∘ [] = refl
   map-∘ (x ∷ xs) = ap (f (g x) ∷_) (map-∘ xs)
@@ -174,7 +174,7 @@ lemma `fold-pure`{.Agda} below.
 
 ```agda
 fold-pure : ∀ {ℓ} {X : Set ℓ} (xs : List (X .fst))
-          → fold (List (X .fst) , is-monoid-List (X .snd)) (map (λ x → x ∷ []) xs) 
+          → fold (List (X .fst) , List-is-monoid (X .snd)) (map (λ x → x ∷ []) xs) 
           ≡ xs
 fold-pure [] = refl
 fold-pure (x ∷ xs) = ap (x ∷_) (fold-pure xs)
@@ -186,9 +186,9 @@ Free⊣Forget .unit .is-natural x y f = refl
 Free⊣Forget .counit .η M = fold M , record { pres-id = refl ; pres-⋆ = fold-++ }
 Free⊣Forget .counit .is-natural x y (f , h) = 
 
-  Σ-prop-path is-prop-Monoid-hom (funext (fold-natural {X = x} {y} f h))
+  Σ-prop-path Monoid-hom-is-prop (funext (fold-natural {X = x} {y} f h))
 Free⊣Forget .zig {A = A} =
-  Σ-prop-path is-prop-Monoid-hom (funext (fold-pure {X = A}))
+  Σ-prop-path Monoid-hom-is-prop (funext (fold-pure {X = A}))
 Free⊣Forget .zag {B = B} i x = B .snd .idʳ {x = x} i
 ```
 

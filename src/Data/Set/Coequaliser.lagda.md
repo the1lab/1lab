@@ -93,7 +93,7 @@ the necessary coherences for `glue`{.Agda} and `squash`{.Agda}.
 Coeq-elimProp {f = f} {g = g} cprop cinc (glue x i) = 
   is-prop→PathP (λ i → cprop (glue x i)) (cinc (f x)) (cinc (g x)) i
 Coeq-elimProp cprop cinc (squash x y p q i j) = 
-  is-prop→SquareP (λ i j → cprop (squash x y p q i j)) 
+  is-prop→square-p (λ i j → cprop (squash x y p q i j)) 
     (λ i → g x) (λ i → g (p i)) (λ i → g (q i)) (λ i → g y) i j
   where g = Coeq-elimProp cprop cinc
 ```
@@ -154,7 +154,7 @@ Coeq-elim : ∀ {ℓ} {f g : A → B} {C : Coeq f g → Type ℓ}
 Coeq-elim cset ci cg (inc x) = ci x
 Coeq-elim cset ci cg (glue x i) = cg x i
 Coeq-elim cset ci cg (squash x y p q i j) = 
-  is-set→SquareP (λ i j → cset (squash x y p q i j)) 
+  is-set→square-p (λ i j → cset (squash x y p q i j)) 
     (λ i → g x) (λ i → g (p i)) (λ i → g (q i)) (λ i → g y) i j
   where g = Coeq-elim cset ci cg
 ```
@@ -201,7 +201,7 @@ Coeq-elim₂ {f = f} {g = g} {C = C} cset ci r-r l-r =
                    (Coeq-elim (cset _) _ _ x₀) 
                    (Coeq-elim (cset _) _ _ x₁) } 
 
-        (λ _ _ → Π-is-hlevel 1 λ _ → PathP-is-hlevel' 1 (cset _ _) _ _) 
+        (λ _ _ → Π-is-hlevel 1 λ _ → Path-p-is-hlevel' 1 (cset _ _) _ _) 
 
         (λ x₀ _ p → 
           J (λ y p → PathP (λ i → C (glue x i) (p i)) 
@@ -227,7 +227,7 @@ Coeq-rec₂ cset ci r1 r2 (inc x) (squash y z p q i j) = cset
 
 Coeq-rec₂ cset ci r1 r2 (glue x i) (inc x₁) = r1 x₁ x i
 Coeq-rec₂ {f = f} {g} {f'} {g'} cset ci r1 r2 (glue x i) (glue y j) = 
-  is-set→SquareP (λ i j → cset)
+  is-set→square-p (λ i j → cset)
     (λ j → r1 (f' y) x j) 
     (λ j → r2 (f x) y j) 
     (λ j → r2 (g x) y j) 

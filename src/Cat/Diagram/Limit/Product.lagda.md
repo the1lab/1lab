@@ -101,7 +101,7 @@ defined above.
 canonical-functors
   : ∀ {iss} (F : Functor (Disc′ (Bool , iss)) C) 
   → F ≡ 2-object-diagram (F₀ F false) (F₀ F true)
-canonical-functors {iss = iss} F = Functor≡ p q where
+canonical-functors {iss = iss} F = Functor-path p q where
   p : ∀ x → _
   p false = refl
   p true  = refl

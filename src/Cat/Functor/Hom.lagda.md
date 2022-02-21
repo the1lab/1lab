@@ -140,7 +140,7 @@ module _ (P : Functor (C ^op) (Sets h)) where
 
   open El C P
   open Element
-  open ElementHom
+  open Element-hom
 ```
 
 We start by fixing some presheaf $P$, and constructing a `Cocone`{.Agda}

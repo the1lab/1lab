@@ -102,7 +102,7 @@ Free-elimProp B bp bi bd binv bnil = go where
     is-prop→PathP (λ i → bp (f-invr x i)) (bd x (inv x) (go x) (binv x (go x))) bnil i
   go (f-idl x i) = is-prop→PathP (λ i → bp (f-idl x i)) (bd nil x bnil (go x)) (go x) i
   go (squash x y p q i j) = 
-    is-prop→SquareP (λ i j → bp (squash x y p q i j)) 
+    is-prop→square-p (λ i j → bp (squash x y p q i j)) 
       (λ i → go x) (λ i → go (p i)) (λ i → go (q i)) (λ i → go y) i j
 ```
 

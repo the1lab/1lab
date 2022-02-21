@@ -83,10 +83,10 @@ and the witnesses are equal because they are propositions, as can
 be derived from `is-unital-magma-is-prop`{.Agda}
 
 ```agda
-is-prop-hasIdentity 
+has-identity-is-prop 
   : {⋆ : A → A → A} 
   → is-magma ⋆ → is-prop (Σ[ u ∈ A ] (is-unital-magma u ⋆))
-is-prop-hasIdentity mgm x y = Σ-prop-path (λ x → is-unital-magma-is-prop)
+has-identity-is-prop mgm x y = Σ-prop-path (λ x → is-unital-magma-is-prop)
  (identities-equal (x .fst) (y .fst) (x .snd) (y .snd))
 ```
 

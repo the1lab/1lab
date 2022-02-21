@@ -125,7 +125,7 @@ functor from $\ca{D}$. This functor is actually just $F$ again:
 
 ```agda
   Ff-domain→Full-subcat : Functor D Full-inclusion→Full-subcat
-  Ff-domain→Full-subcat .Functor.F₀ x = F₀ x , inc (x , C.idIso)
+  Ff-domain→Full-subcat .Functor.F₀ x = F₀ x , inc (x , C.id-iso)
   Ff-domain→Full-subcat .Functor.F₁ = F₁
   Ff-domain→Full-subcat .Functor.F-id = F-id
   Ff-domain→Full-subcat .Functor.F-∘ = F-∘

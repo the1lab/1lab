@@ -137,7 +137,7 @@ make-iso f g p q ._≅_.inverses .Inverses.invʳ = q
   s i j .to = Hom-set _ _ (x .to) (y .to) (ap to p) (ap to q) i j
   s i j .from = Hom-set _ _ (x .from) (y .from) (ap from p) (ap from q) i j
   s i j .inverses =
-    is-prop→SquareP
+    is-prop→square-p
       (λ i j → Inverses-are-prop {f = Hom-set _ _ (x .to) (y .to) (ap to p) (ap to q) i j}
                                {g = Hom-set _ _ (x .from) (y .from) (ap from p) (ap from q) i j})
       (λ i → x .inverses) (λ i → p i .inverses) (λ i → q i .inverses) (λ i → y .inverses) i j
@@ -156,8 +156,8 @@ make-iso f g p q ._≅_.inverses .Inverses.invʳ = q
 -->
 
 ```agda
-idIso : a ≅ a
-idIso = make-iso id id (idl _) (idl _)
+id-iso : a ≅ a
+id-iso = make-iso id id (idl _) (idl _)
 
 Inverses-∘ : {f : Hom a b} {f⁻¹ : Hom b a} {g : Hom b c} {g⁻¹ : Hom c b}
            → Inverses f f⁻¹ → Inverses g g⁻¹ → Inverses (g ∘ f) (f⁻¹ ∘ g⁻¹)

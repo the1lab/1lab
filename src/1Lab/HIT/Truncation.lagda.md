@@ -186,7 +186,7 @@ truncation using a constant function into sets: if $B$ is a set, and $f
 proposition. 
 
 ```agda
-isConstant→is-prop-image 
+is-constant→image-is-prop 
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → is-set B
   → (f : A → B) → (∀ x y → f x ≡ f y) → is-prop (image f)
@@ -205,7 +205,7 @@ f(f^*(a)) = f(f^*(b)) = b$, where the middle equation is by constancy of
 $f$ --- but crucially, the 
 
 ```agda
-isConstant→is-prop-image bset f f-const (a , x) (b , y) = 
+is-constant→image-is-prop bset f f-const (a , x) (b , y) = 
   Σ-prop-path (λ _ → squash)
     (∥-∥-elim₂ (λ _ _ → bset _ _) 
       (λ { (f*a , p) (f*b , q) → sym p ·· f-const f*a f*b ·· q }) x y)
@@ -222,5 +222,5 @@ truncation onto a set using a constant map.
            → ∥ A ∥ → B
 ∥-∥-recSet {A = A} {B} f f-const bset x = 
   ∥-∥-elim {P = λ _ → image f} 
-    (λ _ → isConstant→is-prop-image bset f f-const) (f-image f) x .fst
+    (λ _ → is-constant→image-is-prop bset f f-const) (f-image f) x .fst
 ```

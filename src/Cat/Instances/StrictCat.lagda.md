@@ -70,14 +70,14 @@ Functor-is-set {o = o} {h} {C} {D} dobset =
 -->
 
 ```agda
-StrictCat : ∀ o h → Precategory _ _
-StrictCat o h .Ob = Σ[ C ∈ Precategory o h ] (is-set (Ob C))
-StrictCat o h .Hom (C , _) (D , _) = Functor C D
-StrictCat o h .id  = Id
-StrictCat o h ._∘_ = _F∘_
-StrictCat o h .idr _       = Functor≡ (λ _ → refl) λ _ → refl
-StrictCat o h .idl _       = Functor≡ (λ _ → refl) λ _ → refl
-StrictCat o h .assoc _ _ _ = Functor≡ (λ _ → refl) λ _ → refl
+Strict-Cat : ∀ o h → Precategory _ _
+Strict-Cat o h .Ob = Σ[ C ∈ Precategory o h ] (is-set (Ob C))
+Strict-Cat o h .Hom (C , _) (D , _) = Functor C D
+Strict-Cat o h .id  = Id
+Strict-Cat o h ._∘_ = _F∘_
+Strict-Cat o h .idr _       = Functor-path (λ _ → refl) λ _ → refl
+Strict-Cat o h .idl _       = Functor-path (λ _ → refl) λ _ → refl
+Strict-Cat o h .assoc _ _ _ = Functor-path (λ _ → refl) λ _ → refl
 ```
 
 This assembles into a `Precategory`{.Agda} because the only bit of a
@@ -86,28 +86,28 @@ mapping; By asking that `D`{.Agda} be a strict category, this fixes the
 functors to be sets.
 
 ```agda
-StrictCat o h .Hom-set _ (D , dset) = Functor-is-set dset
+Strict-Cat o h .Hom-set _ (D , dset) = Functor-is-set dset
 ```
 
 ## Products
 
-We prove that `StrictCat`{.Agda} has products. This is because 
+We prove that `Strict-Cat`{.Agda} has products. This is because 
 $(\ca{C} \times_\cat \ca{D})_0$ is $\ca{C}_0 \times \ca{D}_0$,
 and h-levels are closed under products.
 
 ```agda
-StrictCat-Product 
+Strict-Cat-Product 
   : {C D : Precategory o h}
   → (cob : is-set (Ob C)) (dob : is-set (Ob D))
-  → Product (StrictCat o h) (C , cob) (D , dob)
-StrictCat-Product {C = C} {D = D} cob dob = prod where
-  prod : Product (StrictCat _ _) (C , cob) (D , dob)
+  → Product (Strict-Cat o h) (C , cob) (D , dob)
+Strict-Cat-Product {C = C} {D = D} cob dob = prod where
+  prod : Product (Strict-Cat _ _) (C , cob) (D , dob)
   prod .apex = C ×Cat D , ×-is-hlevel 2 cob dob
   prod .π₁ = Fst {C = C} {D = D}
   prod .π₂ = Snd {C = C} {D = D}
   prod .has-is-product .⟨_,_⟩ p q = Cat⟨ p , q ⟩
-  prod .has-is-product .π₁∘factor = Functor≡ (λ _ → refl) λ _ → refl
-  prod .has-is-product .π₂∘factor = Functor≡ (λ _ → refl) λ _ → refl
+  prod .has-is-product .π₁∘factor = Functor-path (λ _ → refl) λ _ → refl
+  prod .has-is-product .π₂∘factor = Functor-path (λ _ → refl) λ _ → refl
   prod .has-is-product .unique other p q = 
-    Functor≡ (λ x i → F₀ (p i) x , F₀ (q i) x) λ f i → F₁ (p i) f , F₁ (q i) f
+    Functor-path (λ x i → F₀ (p i) x , F₀ (q i) x) λ f i → F₁ (p i) f , F₁ (q i) f
 ```

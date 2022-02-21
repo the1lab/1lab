@@ -216,7 +216,7 @@ into an equivalence:
   → Square p q s r
 Σ-prop-square Bprop sq i j .fst = sq i j
 Σ-prop-square Bprop {p} {q} {s} {r} sq i j .snd = 
-  is-prop→SquareP (λ i j → Bprop (sq i j)) 
+  is-prop→square-p (λ i j → Bprop (sq i j)) 
     (ap snd p) (ap snd q) (ap snd s) (ap snd r) i j
 ```
 

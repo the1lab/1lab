@@ -38,7 +38,7 @@ be something that you keep in the back of your head.
 Now, the morphisms:
 
 ```agda
-record SliceHom {x y} (f : Hom x y)
+record Slice-hom {x y} (f : Hom x y)
                 (px : Slice x) (py : Slice y) : Type (o ⊔ ℓ) where
   constructor slice-hom
   private
@@ -48,7 +48,7 @@ record SliceHom {x y} (f : Hom x y)
     to     : Hom px.over py.over
     commute : f ∘ px.index ≡ py.index ∘ to
 
-open SliceHom
+open Slice-hom
 ```
 
 Going back to our intuition of "slices as a means of indexing", a
@@ -65,16 +65,16 @@ free to skip these (and probably ought to!).
 
 ```agda
 module _ {x y} {f g : Hom x y} {px : Slice x} {py : Slice y}
-         {f′ : SliceHom f px py} {g′ : SliceHom g px py} where
+         {f′ : Slice-hom f px py} {g′ : Slice-hom g px py} where
 ```
 
 Paths of slice morphisms are determined by paths between the base
 morphisms, and paths between the "upper" morphisms.
 
 ```agda
-  slice-pathp : (p : f ≡ g) → (f′ .to ≡ g′ .to) → PathP (λ i → SliceHom (p i) px py) f′ g′
-  slice-pathp p p′ i .to = p′ i
-  slice-pathp p p′ i .commute =
+  Slice-path-p : (p : f ≡ g) → (f′ .to ≡ g′ .to) → PathP (λ i → Slice-hom (p i) px py) f′ g′
+  Slice-path-p p p′ i .to = p′ i
+  Slice-path-p p p′ i .commute =
     is-prop→PathP (λ i → Hom-set _ _ (p i ∘ px .index) (py .index ∘ (p′ i)))
                  (f′ .commute)
                  (g′ .commute)
@@ -84,22 +84,23 @@ morphisms, and paths between the "upper" morphisms.
 
 ```agda
 module _ {x y} (f : Hom x y) (px : Slice x) (py : Slice y) where
-  slice-set : is-set (SliceHom f px py)
-  slice-set =
-    retract→is-hlevel 2  SliceHom-Refold SliceHom-Unfold (λ x → refl) SliceHom'-is-set
+  Slice-is-set : is-set (Slice-hom f px py)
+  Slice-is-set =
+    retract→is-hlevel 2 
+      Slice-hom-refold Slice-hom-unfold (λ x → refl) Slice-hom'-is-set
     where
-      SliceHom' : Type _
-      SliceHom' = Σ[ to ∈  Hom (px .over) (py .over) ]
+      Slice-hom' : Type _
+      Slice-hom' = Σ[ to ∈  Hom (px .over) (py .over) ]
                    (f ∘ px .index ≡ py .index ∘ to)
 
-      SliceHom-Refold : SliceHom' → SliceHom f px py
-      SliceHom-Refold s = slice-hom (s .fst) (s .snd)
+      Slice-hom-refold : Slice-hom' → Slice-hom f px py
+      Slice-hom-refold s = slice-hom (s .fst) (s .snd)
 
-      SliceHom-Unfold : SliceHom f px py → SliceHom'
-      SliceHom-Unfold s = s .to , s .commute
+      Slice-hom-unfold : Slice-hom f px py → Slice-hom'
+      Slice-hom-unfold s = s .to , s .commute
 
-      SliceHom'-is-set : is-set SliceHom'
-      SliceHom'-is-set =
+      Slice-hom'-is-set : is-set Slice-hom'
+      Slice-hom'-is-set =
         Σ-is-hlevel 2 (Hom-set _ _)
                     (λ _ → λ f g p q → is-hlevel-suc 2 (Hom-set _ _) _ _ f  g p q)
 ```
@@ -115,17 +116,17 @@ object `x` as "structures on `x`", and then commuting squares as
 ```agda
 Slices : Displayed B (o ⊔ ℓ) (o ⊔ ℓ)
 Slices .Ob[_] = Slice
-Slices .Hom[_] = SliceHom
-Slices .Hom[_]-set = slice-set
+Slices .Hom[_] = Slice-hom
+Slices .Hom[_]-set = Slice-is-set
 Slices .id′ = slice-hom id id-comm-sym
 Slices ._∘′_ {x = x} {y = y} {z = z} {f = f} {g = g} px py =
   slice-hom (px .to ∘ py .to) $
     (f ∘ g) ∘ x .index          ≡⟨ pullr (py .commute) ⟩
     f ∘ (index y ∘ py .to)      ≡⟨ extendl (px .commute) ⟩
     z .index ∘ (px .to ∘ py .to) ∎
-Slices .idr′ {f = f} f′ = slice-pathp (idr f) (idr (f′ .to))
-Slices .idl′ {f = f} f′ = slice-pathp (idl f) (idl (f′ .to))
+Slices .idr′ {f = f} f′ = Slice-path-p (idr f) (idr (f′ .to))
+Slices .idl′ {f = f} f′ = Slice-path-p (idl f) (idl (f′ .to))
 Slices .assoc′ {f = f} {g = g} {h = h} f′ g′ h′ =
-  slice-pathp (assoc f g h) (assoc (f′ .to) (g′ .to) (h′ .to))
+  Slice-path-p (assoc f g h) (assoc (f′ .to) (g′ .to) (h′ .to))
 ```
 

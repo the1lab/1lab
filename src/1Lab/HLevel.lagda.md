@@ -284,32 +284,28 @@ Path-is-hlevel zero ahl =
         λ x → is-prop→is-set (is-contr→is-prop ahl) _ _ _ x
 Path-is-hlevel (suc n) ahl = is-hlevel-suc (suc n) ahl _ _
 
-PathP-is-hlevel : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
-                → is-hlevel (A i1) n
-                → {x : A i0} {y : A i1}
-                → is-hlevel (PathP A x y) n
-PathP-is-hlevel {A = A} n ahl {x} {y} =
-  subst (λ e → is-hlevel e n)
-        (sym (PathP≡Path A x y))
-        (Path-is-hlevel n ahl)
+Path-p-is-hlevel : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
+                 → is-hlevel (A i1) n
+                 → {x : A i0} {y : A i1}
+                 → is-hlevel (PathP A x y) n
+Path-p-is-hlevel {A = A} n ahl {x} {y} =
+  subst (λ e → is-hlevel e n) (sym (PathP≡Path A x y)) (Path-is-hlevel n ahl)
 ```
 
 <!--
 ```
 Path-is-hlevel' : (n : Nat) → is-hlevel A (suc n) → (x y : A) → is-hlevel (x ≡ y) n
 Path-is-hlevel' 0 ahl x y =
-  contr (ahl x y)
-        λ x → is-prop→is-set ahl _ _ _ x
+  contr (ahl x y) λ x → is-prop→is-set ahl _ _ _ x
+
 Path-is-hlevel' (suc n) h x y = h x y
 
-PathP-is-hlevel' : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
+Path-p-is-hlevel' : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
                  → is-hlevel (A i1) (suc n)
                  → (x : A i0) (y : A i1)
                  → is-hlevel (PathP A x y) n
-PathP-is-hlevel' {A = A} n ahl x y =
-  subst (λ e → is-hlevel e n)
-        (sym (PathP≡Path A x y))
-        (Path-is-hlevel' n ahl _ _)
+Path-p-is-hlevel' {A = A} n ahl x y =
+  subst (λ e → is-hlevel e n) (sym (PathP≡Path A x y)) (Path-is-hlevel' n ahl _ _)
 ```
 -->
 
@@ -372,8 +368,11 @@ is offset by one to start at the propositions.
 
 ```agda
 is-hlevel-dep : ∀ {ℓ ℓ'} {A : Type ℓ} → (A → Type ℓ') → Nat → Type _
-is-hlevel-dep B zero = ∀ {x y} (α : B x) (β : B y) (p : x ≡ y)
-                   → PathP (λ i → B (p i)) α β
+
+is-hlevel-dep B zero = 
+  ∀ {x y} (α : B x) (β : B y) (p : x ≡ y)
+  → PathP (λ i → B (p i)) α β
+
 is-hlevel-dep B (suc n) =
    ∀ {a0 a1} (b0 : B a0) (b1 : B a1)
    → is-hlevel-dep {A = a0 ≡ a1} (λ p → PathP (λ i → B (p i)) b0 b1) n
@@ -393,13 +392,13 @@ The base case is turning a proof that a type is a proposition uniformly
 over the interval to a filler for any PathP.
 
 ```agda
-fun-is-hlevelis-hlevel-dep 
+is-hlevel→is-hlevel-dep 
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
   → (n : Nat) → ((x : A) → is-hlevel (B x) (suc n))
   → is-hlevel-dep B n
-fun-is-hlevelis-hlevel-dep zero hl α β p = is-prop→PathP (λ i → hl (p i)) α β
-fun-is-hlevelis-hlevel-dep {A = A} {B = B} (suc n) hl {a0} {a1} b0 b1 =
-  fun-is-hlevelis-hlevel-dep n (λ p → helper a1 p b1)
+is-hlevel→is-hlevel-dep zero hl α β p = is-prop→PathP (λ i → hl (p i)) α β
+is-hlevel→is-hlevel-dep {A = A} {B = B} (suc n) hl {a0} {a1} b0 b1 =
+  is-hlevel→is-hlevel-dep n (λ p → helper a1 p b1)
   where
     helper : (a1 : A) (p : a0 ≡ a1) (b1 : B a1)
            → is-hlevel (PathP (λ i → B (p i)) b0 b1) (suc n)
@@ -410,14 +409,15 @@ fun-is-hlevelis-hlevel-dep {A = A} {B = B} (suc n) hl {a0} {a1} b0 b1 =
 
 <!--
 ```agda
-is-prop→SquareP : ∀ {B : I → I → Type ℓ} → ((i j : I) → is-prop (B i j))
-             → {a : B i0 i0} {b : B i0 i1} {c : B i1 i0} {d : B i1 i1}
-             → (p : PathP (λ j → B j i0) a c)
-             → (q : PathP (λ j → B i0 j) a b)
-             → (s : PathP (λ j → B i1 j) c d)
-             → (r : PathP (λ j → B j i1) b d)
-             → SquareP B p q s r
-is-prop→SquareP {B = B} is-propB {a = a} p q s r i j =
+is-prop→square-p 
+  : ∀ {B : I → I → Type ℓ} → ((i j : I) → is-prop (B i j))
+  → {a : B i0 i0} {b : B i0 i1} {c : B i1 i0} {d : B i1 i1}
+  → (p : PathP (λ j → B j i0) a c)
+  → (q : PathP (λ j → B i0 j) a b)
+  → (s : PathP (λ j → B i1 j) c d)
+  → (r : PathP (λ j → B j i1) b d)
+  → SquareP B p q s r
+is-prop→square-p {B = B} is-propB {a = a} p q s r i j =
   hcomp (λ { k (j = i0) → is-propB i j (base i j) (p i) k
            ; k (j = i1) → is-propB i j (base i j) (r i) k
            ; k (i = i0) → is-propB i j (base i j) (q j) k
@@ -426,15 +426,15 @@ is-prop→SquareP {B = B} is-propB {a = a} p q s r i j =
     base : (i j : I) → B i j
     base i j = transport (λ k → B (i ∧ k) (j ∧ k)) a
 
-is-prop→PathP-is-contr
+is-prop→Path-p-is-contr
   : {A : I → Type ℓ} → ((i : I) → is-prop (A i))
   → (x : A i0) (y : A i1) → is-contr (PathP A x y)
-is-prop→PathP-is-contr ap x y .centre = is-prop→PathP ap x y
-is-prop→PathP-is-contr ap x y .paths p =
-  is-prop→SquareP (λ i j → ap j) refl _ _ refl
+is-prop→Path-p-is-contr ap x y .centre = is-prop→PathP ap x y
+is-prop→Path-p-is-contr ap x y .paths p =
+  is-prop→square-p (λ i j → ap j) refl _ _ refl
 
 abstract
-  is-set→SquareP :
+  is-set→square-p :
     {A : I → I → Type ℓ}
     (is-set : (i j : I) → is-set (A i j))
     → {a : A i0 i0} {b : A i0 i1} {c : A i1 i0} {d : A i1 i1}
@@ -443,9 +443,9 @@ abstract
     → (s : PathP (λ j → A i1 j) c d)
     → (r : PathP (λ j → A j i1) b d)
     → SquareP A p q s r
-  is-set→SquareP isset a₀₋ a₁₋ a₋₀ a₋₁ =
+  is-set→square-p isset a₀₋ a₁₋ a₋₀ a₋₁ =
     transport (sym (PathP≡Path _ _ _))
-              (PathP-is-hlevel' 1 (isset _ _) _ _ _ _)
+              (Path-p-is-hlevel' 1 (isset _ _) _ _ _ _)
 
 -- Has to go through:
 _ : ∀ {A : Type} {a b c d : A} (p : a ≡ c) (q : a ≡ b) (s : c ≡ d) (r : b ≡ d)

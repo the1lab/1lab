@@ -57,8 +57,8 @@ Semilattice-on→MeetOn
   → PosetOn {ℓ' = level-of A} A
 Semilattice-on→MeetOn {∧ = _∧_} semi = r where
   open PosetOn
-  open isPartialOrder
-  open isPreorder
+  open is-partial-order
+  open is-preorder
   open is-semilattice
 
   r : PosetOn _
@@ -164,8 +164,8 @@ Semilattice-on→JoinOn
   : ∀ {∨ : A → A → A} → is-semilattice ∨ → PosetOn {ℓ' = level-of A} A
 Semilattice-on→JoinOn {∨ = _∨_} semi = r where
   open PosetOn
-  open isPartialOrder
-  open isPreorder
+  open is-partial-order
+  open is-preorder
   open is-semilattice
 
   r : PosetOn _

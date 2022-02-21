@@ -54,17 +54,17 @@ the paths between morphisms.
 ```agda
 total-hom-is-set : ∀ (X Y : Total) → is-set (Total-hom X Y)
 total-hom-is-set X Y =
-  retract→is-hlevel 2 Total-hom-Refold Total-hom-Unfold (λ x → refl) Total-hom′-is-set
+  retract→is-hlevel 2 Total-hom-refold Total-hom-unfold (λ x → refl) Total-hom′-is-set
   where
     Total-hom′ : Type _
     Total-hom′ = Σ[ hom ∈ Hom (X .fst) (Y .fst) ]
                 Hom[ hom ] (X .snd) (Y .snd)
 
-    Total-hom-Refold : Total-hom′ → Total-hom X Y 
-    Total-hom-Refold (h , p) = total-hom h p
+    Total-hom-refold : Total-hom′ → Total-hom X Y 
+    Total-hom-refold (h , p) = total-hom h p
 
-    Total-hom-Unfold : Total-hom X Y → Total-hom′
-    Total-hom-Unfold t = t .hom , t .preserves
+    Total-hom-unfold : Total-hom X Y → Total-hom′
+    Total-hom-unfold t = t .hom , t .preserves
 
     Total-hom′-is-set : is-set Total-hom′
     Total-hom′-is-set =

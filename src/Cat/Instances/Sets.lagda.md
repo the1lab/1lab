@@ -49,7 +49,7 @@ is usual, we pick $A$ itself and the identity isomorphism.
   Sets-is-category : is-category (Sets ℓ)
   Sets-is-category A = isc where
     isc : is-contr (Σ[ B ∈ Set ℓ ] (A Sets.≅ B))
-    isc .centre = A , Sets.idIso
+    isc .centre = A , Sets.id-iso
 ```
 
 We must then show that, given some other set $B$ and an isomorphism $i :

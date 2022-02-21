@@ -95,21 +95,21 @@ mappings, and an identification of morphism parts that lies over $p$, we
 can identify the functors $F \equiv G$.
 
 ```agda
-Functor≡ : {F G : Functor C D}
+Functor-path : {F G : Functor C D}
          → (p0 : ∀ x → F₀ F x ≡ F₀ G x)
          → (p1 : ∀ {x y} (f : C .Hom x y) 
                → PathP (λ i → D .Hom (p0 x i) (p0 y i)) (F₁ F f) (F₁ G f))
          → F ≡ G
-Functor≡ p0 p1 i .F₀ x = p0 x i
-Functor≡ p0 p1 i .F₁ f = p1 f i
+Functor-path p0 p1 i .F₀ x = p0 x i
+Functor-path p0 p1 i .F₁ f = p1 f i
 ```
 
 <!--
 ```agda
-Functor≡ {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-id = 
+Functor-path {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-id = 
   is-prop→PathP (λ j → D .Hom-set _ _ (p1 (C .id) j) (D .id)) 
     (F-id F) (F-id G) i
-Functor≡ {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-∘ f g = 
+Functor-path {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-∘ f g = 
   is-prop→PathP (λ i → D .Hom-set _ _ (p1 (C ._∘_ f g) i) (D ._∘_ (p1 f i) (p1 g i)))
     (F-∘ F f g) (F-∘ G f g) i
 ```
@@ -134,8 +134,8 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
 -->
 
 ```agda
-  NatIso→Iso : F [C,D].≅ G → ∀ x → F₀ F x D.≅ F₀ G x
-  NatIso→Iso natiso x = 
+  Nat-iso→Iso : F [C,D].≅ G → ∀ x → F₀ F x D.≅ F₀ G x
+  Nat-iso→Iso natiso x = 
     D.make-iso (to .η x) (from .η x) 
       (λ i → invˡ i .η x) (λ i → invʳ i .η x)
     where open [C,D]._≅_ natiso
@@ -161,7 +161,7 @@ module _ {C : Precategory o₁ h₁} {D : Precategory o₂ h₂} (DisCat : is-ca
 
 ```agda
   Functor-is-category : is-category Cat[ C , D ]
-  Functor-is-category F .centre = F , idIso
+  Functor-is-category F .centre = F , id-iso
 ```
 
 The hard part is showing that, given some other functor $G : C \to D$
@@ -180,12 +180,12 @@ follow from `equivalences having sections`{.Agda ident=equiv→section}.
 
 ```agda
     ptoi-to 
-      : ∀ x → path→iso (iso→path DisCat (NatIso→Iso F≅G _)) .Dm._≅_.to 
+      : ∀ x → path→iso (iso→path DisCat (Nat-iso→Iso F≅G _)) .Dm._≅_.to 
             ≡ F≅G .to .η x
     ptoi-to x = ap (λ e → e .Dm._≅_.to) 
       (equiv→section (path→iso-is-equiv DisCat) _)
 
-    ptoi-from : ∀ x → path→iso (iso→path DisCat (NatIso→Iso F≅G _)) .Dm._≅_.from  
+    ptoi-from : ∀ x → path→iso (iso→path DisCat (Nat-iso→Iso F≅G _)) .Dm._≅_.from  
               ≡ F≅G .from .η x
     ptoi-from x = ap (λ e → e .Dm._≅_.from) 
       (equiv→section (path→iso-is-equiv DisCat) _)
@@ -196,7 +196,7 @@ homotopy between the object parts of $F$ and $G$:
 
 ```agda
     F₀≡G₀ : ∀ x → F₀ F x ≡ F₀ G x
-    F₀≡G₀ x = iso→path DisCat (NatIso→Iso F≅G x) 
+    F₀≡G₀ x = iso→path DisCat (Nat-iso→Iso F≅G x) 
 ```
 
 A slightly annoying calculation tells us that pre/post composition with
@@ -216,7 +216,7 @@ so that the two halves of the isomorphism annihilate.
         G .F₁ f                                       ∎)
 
     F≡G : F ≡ G
-    F≡G = Functor≡ F₀≡G₀ λ f → F₁≡G₁
+    F≡G = Functor-path F₀≡G₀ λ f → F₁≡G₁
 ```
 
 Putting these homotopies together defines a path `F≡G`{.Agda}. It
@@ -228,7 +228,7 @@ to the level of families of morphisms; By computation, all we have to
 show is that $\eta{}_x \circ \mathrm{id} \circ \mathrm{id} = f$.
 
 ```agda
-    id≡F≅G : PathP (λ i → F ≅ F≡G i) idIso F≅G
+    id≡F≅G : PathP (λ i → F ≅ F≡G i) id-iso F≅G
     id≡F≅G = ≅-path-p refl F≡G 
       (Nat-path-p refl F≡G
         λ x → Hom-path-p 
