@@ -129,7 +129,7 @@ category into a proset.
 
 [ff]: Cat.Functor.Base.html#ff-functors
 [prosets]: Cat.Thin.html#prosets
-[strict precategories]: Cat.Instances.Strict-Cat.html#strict-precategories
+[strict precategories]: Cat.Instances.StrictCat.html#strict-precategories
 
 While we can't directly consider maps from precategories to proset, we
 _can_ consider maps from precategories to the inclusion of a proset; Let

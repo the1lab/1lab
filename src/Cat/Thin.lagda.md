@@ -28,7 +28,7 @@ space of objects be a set; In other words, a thin category is
 necessarily [strict].
 
 [_propositions_]: 1Lab.HLevel.html#is-prop
-[strict]: Cat.Instances.Strict-Cat.html
+[strict]: Cat.Instances.StrictCat.html
 
 ```agda
 record is-thin (C : Precategory o h) : Type (o ⊔ h) where
