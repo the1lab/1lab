@@ -30,7 +30,7 @@ different ways.
 ## The Book HoTT Approach
 
 ```agda
-open isContr
+open is-contr
 
 private
   pathsS∞′ : (x : S∞) → N ≡ x
@@ -45,7 +45,7 @@ to the problem of constructing a path in `N ≡ S`{.Agda} from
 `transport (λ j → N ≡ merid x j) refl`{.Agda} to `merid N`{.Agda}.
 
 ```agda
-    toPathP (λ j → N ≡ merid x j) refl (merid N)
+    to-pathp (λ j → N ≡ merid x j) refl (merid N)
 ```
 
 The proof goes as follows: by the characterisation of transport in path
@@ -60,9 +60,9 @@ call `pathsS∞′ x`{.Agda}.
       merid x                               ≡⟨ ap merid (sym (pathsS∞′ x)) ⟩
       merid N                               ∎) i
 
-isContrS∞′ : isContr S∞
-isContrS∞′ .centre = N
-isContrS∞′ .paths = pathsS∞′
+is-contrS∞′ : is-contr S∞
+is-contrS∞′ .centre = N
+is-contrS∞′ .paths = pathsS∞′
 ```
 
 ## The Cubical Approach
@@ -89,7 +89,7 @@ private
                ; (j = i1) → merid (pathsS∞ x k) i})
       (merid N (i ∧ j))
 
-isContrS∞ : isContr S∞
-isContrS∞ .centre = N
-isContrS∞ .paths = pathsS∞
+is-contrS∞ : is-contr S∞
+is-contrS∞ .centre = N
+is-contrS∞ .paths = pathsS∞
 ```

@@ -19,7 +19,7 @@ private variable
 
 ```agda
 module _ (Grp@(G , gst) : Group ℓ) where
-  private module G = GroupOn gst
+  private module G = Group-on gst
   open G
 ```
 
@@ -108,7 +108,7 @@ bit tedious, but it follows from `ab-comm`: $xy = 1xy = 1yx = yx$.
 
 ```agda
   ab*-comm : ∀ x y → x ab* y ≡ y ab* x
-  ab*-comm = Coeq-elimProp₂ (λ _ _ → squash _ _) l1
+  ab*-comm = Coeq-elim-prop₂ (λ _ _ → squash _ _) l1
     where abstract
       l1 : ∀ x y → inc^ab (x ⋆ y) ≡ inc^ab (y ⋆ x)
       l1 x y =
@@ -162,39 +162,39 @@ inherited from $G$!
 
 ```agda
   ab*-associative : ∀ x y z → (x ab* y) ab* z ≡ x ab* (y ab* z)
-  ab*-associative = Coeq-elimProp₃ (λ _ _ _ → squash _ _) 
+  ab*-associative = Coeq-elim-prop₃ (λ _ _ _ → squash _ _) 
     λ _ _ _ → ap inc^ab (sym associative)
 
-  GroupOn-G^ab : GroupOn G^ab
-  GroupOn-G^ab = makeGroup squash abunit _ab*_ abinv ab*-associative 
-    (Coeq-elimProp (λ _ → squash _ _) (λ _ → ap inc^ab G.inverseˡ)) 
-    (Coeq-elimProp (λ _ → squash _ _) (λ _ → ap inc^ab G.inverseʳ)) 
-    (Coeq-elimProp (λ _ → squash _ _) (λ _ → ap inc^ab G.idˡ)) 
+  Group-on-G^ab : Group-on G^ab
+  Group-on-G^ab = make-group squash abunit _ab*_ abinv ab*-associative 
+    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.inverseˡ)) 
+    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.inverseʳ)) 
+    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.idˡ)) 
 
-  makeAbelian : Group ℓ
-  makeAbelian = _ , GroupOn-G^ab
+  Abelianise : Group ℓ
+  Abelianise = _ , Group-on-G^ab
 
-  isAbelian-makeAbelian : isAbelian makeAbelian
-  isAbelian-makeAbelian = ab*-comm
+  Abelianise-is-abelian-group : is-abelian-group Abelianise
+  Abelianise-is-abelian-group = ab*-comm
 ```
 
 ## Universal property
 
 This finishes the construction of _an_ abelian group from a group. To
 show that this construction is correct, we'll show that it satisfies a
-universal property: `makeAbelian`{.Agda} is left adjoint to the
+universal property: `Abelianise`{.Agda} is left adjoint to the
 inclusion from abelian groups to groups. In essence, this means that any
 map from $G$ to an abelian group $G'$ factors in a unique way through
 the canonical map $G \to G^{ab}$.
 
 ```agda
-  makeAbelian⊣Forget 
-    : (G' : Group ℓ) → isAbelian G'
-    → Group[ Grp ⇒ G' ] ≃ Group[ makeAbelian ⇒ G' ]
-  makeAbelian⊣Forget G' G'-ab = Iso→Equiv isom where
-    module G' = GroupOn (G' .snd)
-    open isGroupHom
-    open isIso
+  Abelianise⊣Forget 
+    : (G' : Group ℓ) → is-abelian-group G'
+    → Group[ Grp ⇒ G' ] ≃ Group[ Abelianise ⇒ G' ]
+  Abelianise⊣Forget G' G'-ab = Iso→Equiv isom where
+    module G' = Group-on (G' .snd)
+    open Group-hom
+    open is-iso
 ```
 
 We'll factor a given group homomorphism $G \to G'$ through $G^{ab}$
@@ -204,8 +204,8 @@ homomorphism into an abelian group! So we have $f(xyz) = f(x)f(y)f(z) =
 f(x)f(z)f(y) = f(xzy)$.
 
 ```agda
-    fold : (f : G → G' .fst) → isGroupHom Grp G' f → G^ab → G' .fst
-    fold f gh = Coeq-rec G'.hasIsSet f l1 
+    fold : (f : G → G' .fst) → Group-hom Grp G' f → G^ab → G' .fst
+    fold f gh = Coeq-rec G'.has-is-set f l1 
       where abstract
         l1 : ((x , y , z) : G × G × G) → f (x ⋆ y ⋆ z) ≡ f (x ⋆ z ⋆ y)
         l1 (x , y , z) = 
@@ -225,16 +225,16 @@ G^{ab}_0$, which is a group homomorphism on the nose.
     isom : Iso _ _
     isom .fst (f , g) = fold f g , r
       where abstract
-        r : isGroupHom makeAbelian G' (fold f g)
-        r .pres-⋆ = Coeq-elimProp₂ (λ _ _ → G'.hasIsSet _ _) (g .pres-⋆)
+        r : Group-hom Abelianise G' (fold f g)
+        r .pres-⋆ = Coeq-elim-prop₂ (λ _ _ → G'.has-is-set _ _) (g .pres-⋆)
 
     isom .snd .inv (f , g) = (f ∘ inc^ab) , r
       where abstract
-        r : isGroupHom (G , gst) G' (f ∘ inc^ab)
+        r : Group-hom (G , gst) G' (f ∘ inc^ab)
         r .pres-⋆ x y = g .pres-⋆ _ _
 
     isom .snd .rinv f = 
-      Σ≡Prop (λ _ → isProp-isGroupHom) 
-        (funext (Coeq-elimProp (λ _ → G'.hasIsSet _ _) λ _ → refl))
-    isom .snd .linv f = Σ≡Prop (λ _ → isProp-isGroupHom) refl
+      Σ-prop-path (λ _ → Group-hom-is-prop) 
+        (funext (Coeq-elim-prop (λ _ → G'.has-is-set _ _) λ _ → refl))
+    isom .snd .linv f = Σ-prop-path (λ _ → Group-hom-is-prop) refl
 ```

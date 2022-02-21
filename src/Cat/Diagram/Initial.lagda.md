@@ -17,13 +17,13 @@ An object $\bot$ of a category $\mathcal{C}$ is said to be **initial**
 if there exists a _unique_ map to any other object:
 
 ```agda
-isInitial : Ob → Type _
-isInitial ob = ∀ x → isContr (Hom ob x)
+is-initial : Ob → Type _
+is-initial ob = ∀ x → is-contr (Hom ob x)
 
 record Initial : Type (o ⊔ h) where
   field
     bot  : Ob
-    has⊥ : isInitial bot
+    has⊥ : is-initial bot
 ```
 
 We refer to the centre of contraction as `¡`{.Agda}. Since it inhabits a
@@ -37,7 +37,7 @@ contractible type, it is unique.
   ¡-unique = has⊥ _ .paths
 
   ¡-unique₂ : ∀ {x} (f g : Hom bot x) → f ≡ g
-  ¡-unique₂ = isContr→isProp (has⊥ _)
+  ¡-unique₂ = is-contr→is-prop (has⊥ _)
 
 open Initial
 ```
@@ -69,20 +69,20 @@ to isomorphism:
 
 ```agda
 ⊥-unique : (i i′ : Initial) → bot i ≅ bot i′
-⊥-unique i i′ = makeIso (¡ i) (¡ i′) (¡-unique₂ i′ _ _) (¡-unique₂ i _ _)
+⊥-unique i i′ = make-iso (¡ i) (¡ i′) (¡-unique₂ i′ _ _) (¡-unique₂ i _ _)
 ```
 
 Additionally, if $C$ is a category, then the space of initial objects is
 a proposition:
 
 ```agda
-⊤-contractible : isCategory C → isProp Initial
-⊤-contractible ccat x1 x2 i .bot =
-  isoToPath C ccat (⊥-unique x1 x2) i
+⊥-contractible : is-category C → is-prop Initial
+⊥-contractible ccat x1 x2 i .bot =
+  iso→path C ccat (⊥-unique x1 x2) i
 
-⊤-contractible ccat x1 x2 i .has⊥ ob =
-  isProp→PathP
-    (λ i → isProp-isContr
-      {A = Hom (isoToPath C ccat (⊥-unique x1 x2) i) _})
+⊥-contractible ccat x1 x2 i .has⊥ ob =
+  is-prop→pathp
+    (λ i → is-contr-is-prop
+      {A = Hom (iso→path C ccat (⊥-unique x1 x2) i) _})
     (x1 .has⊥ ob) (x2 .has⊥ ob) i
 ```

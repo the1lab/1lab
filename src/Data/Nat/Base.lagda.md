@@ -74,12 +74,12 @@ Discrete-Nat (suc x) (suc y) with Discrete-Nat x y
 [Hedberg's theorem] implies that `Nat`{.Agda} is a [set], i.e., it only
 has trivial paths.
 
-[Hedberg's theorem]: agda://1Lab.HLevel.Sets#Discrete→isSet
-[set]: agda://1Lab.HLevel#isSet
+[Hedberg's theorem]: agda://1Lab.HLevel.Sets#Discrete→is-set
+[set]: agda://1Lab.HLevel#is-set
 
 ```agda
-isSet-Nat : isSet Nat
-isSet-Nat = Discrete→isSet Discrete-Nat
+Nat-is-set : is-set Nat
+Nat-is-set = Discrete→is-set Discrete-Nat
 ```
 
 ## Arithmetic
@@ -168,11 +168,11 @@ ident=≤-antisym}.
 ```
 
 A simple inductive argument proves that `_≤_`{.Agda} always takes values
-in `propositions`{.Agda ident=isProp}, i.e. any "two" proofs that `x ≤
+in `propositions`{.Agda ident=is-prop}, i.e. any "two" proofs that `x ≤
 y` are identical:
 
 ```agda
-≤-prop : (x y : Nat) → isProp (x ≤ y)
+≤-prop : (x y : Nat) → is-prop (x ≤ y)
 ≤-prop zero zero p q = refl
 ≤-prop zero (suc y) p q = refl
 ≤-prop (suc x) (suc y) p q = ≤-prop x y p q

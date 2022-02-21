@@ -27,14 +27,14 @@ open import 1Lab.HLevel
 -->
 
 ```agda
-_ : ∀ {ℓ} {A B : Type ℓ} → isEquiv (pathToEquiv {A = A} {B})
+_ : ∀ {ℓ} {A B : Type ℓ} → is-equiv (path→equiv {A = A} {B})
 _ = univalence
 ```
 
 If you don't know what those concepts refer to, it could be challenging
 to figure out what the definition above is even saying - or how it's
 proven. Fortunately, every single text element there is a link! Try
-clicking on the word `isEquiv`{.Agda} - either here in the text, or
+clicking on the word `is-equiv`{.Agda} - either here in the text, or
 there in the code. It'll take you to the definition, which will be
 highlighted in orange to draw your attention.
 
@@ -44,20 +44,20 @@ _pages_; Links rendered in one of the syntax highlighting colours and
 `monospace`{.agda ident=Category} link to a _definition_. Specifically,
 the following colours are used:
 
-* Blue for records and functions: `isEquiv`{.Agda}, `sym`{.agda}
+* Blue for records and functions: `is-equiv`{.Agda}, `sym`{.agda}
 
 * Green for inductive constructors, coinductive constructors, and the
 endpoints of the interval: `i0`{.agda}
 
 * Maroon for modules: `1Lab.Type`{.Agda}
 
-* Purple for record selectors: `isEqv`{.agda ident="isEquiv.isEqv"}
+* Purple for record selectors: `is-eqv`{.agda ident="is-equiv.is-eqv"}
 
 <!--
 ```agda
 _ = i0
-_ = isEquiv
-_ = isEquiv.isEqv
+_ = is-equiv
+_ = is-equiv.is-eqv
 _ = sym
 ```
 -->
@@ -237,8 +237,8 @@ open import 1Lab.HLevel.Universe -- The type of n-types is a (n+1)-type
 
 open import 1Lab.Univalence            -- Equivalence is equivalent to identification
 open import 1Lab.Univalence.SIP        -- Univalence + preservation of structure
-open import 1Lab.Univalence.SIP.Auto   -- Derive isUnivalent for families of types
-open import 1Lab.Univalence.SIP.Record -- Derive isUnivalent for record types
+open import 1Lab.Univalence.SIP.Auto   -- Derive is-univalent for families of types
+open import 1Lab.Univalence.SIP.Record -- Derive is-univalent for record types
 
 open import 1Lab.Type.Dec   -- Decidable types, discrete types
 open import 1Lab.Type.Pi    -- Properties of dependent products
@@ -251,7 +251,7 @@ open import 1Lab.HIT.Sinfty     -- The infinity-dimensional sphere
 open import 1Lab.HIT.Suspension -- The suspension operation
 open import 1Lab.HIT.Truncation -- Propositional truncation
 
-open import 1Lab.Counterexamples.IsIso   -- Counterexample: isIso is not a prop
+open import 1Lab.Counterexamples.IsIso   -- Counterexample: is-iso is not a prop
 open import 1Lab.Counterexamples.Russell -- Counterexample: Russell's paradox
 open import 1Lab.Counterexamples.Sigma   -- Counterexample: Sigma is not prop
 ```

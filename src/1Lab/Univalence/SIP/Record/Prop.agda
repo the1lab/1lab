@@ -46,8 +46,8 @@ module 1Lab.Univalence.SIP.Record.Prop where
     PropHelperType =
       Σ[ X ∈ PropHelperCenterType ] (PropHelperContractType X)
 
-    derivePropHelper : isPropProperty R ι fs P → PropHelperType
+    derivePropHelper : is-prop-property R ι fs P → PropHelperType
     derivePropHelper propP .fst A B e p =
-      isHLevelPathP' 0 (propP _) (f (A .snd)) (f (B .snd)) .centre
+      Path-p-is-hlevel' 0 (propP _) (f (A .snd)) (f (B .snd)) .centre
     derivePropHelper propP .snd A B e q p =
-      isHLevelPathP' 0 (isHLevelPathP 1 (propP _)) _ _ .centre
+      Path-p-is-hlevel' 0 (Path-p-is-hlevel 1 (propP _)) _ _ .centre

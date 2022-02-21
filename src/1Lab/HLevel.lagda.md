@@ -38,13 +38,13 @@ _contractible types_.
 [truncated]: https://ncatlab.org/nlab/show/truncated+object
 
 ```agda
-record isContr {ℓ} (A : Type ℓ) : Type ℓ where
+record is-contr {ℓ} (A : Type ℓ) : Type ℓ where
   constructor contr
   field
     centre : A
     paths : (x : A) → centre ≡ x
 
-open isContr public
+open is-contr public
 ```
 
 A contractible type is one for which the unique map `X → ⊤` is an
@@ -66,7 +66,7 @@ another name for `⊤` is the unit interval, defined as a higher inductive
 type.
 
 ```agda
-  interval-contractible : isContr [0,1]
+  interval-contractible : is-contr [0,1]
   interval-contractible .centre = ii0
   interval-contractible .paths ii0 i = ii0
   interval-contractible .paths ii1 i = seg i
@@ -80,47 +80,47 @@ An **h-proposition**, or **proposition** for short, is a type where any
 two elements are connected by a path.
 
 ```agda
-isProp : ∀ {ℓ} → Type ℓ → Type _
-isProp A = (x y : A) → x ≡ y
+is-prop : ∀ {ℓ} → Type ℓ → Type _
+is-prop A = (x y : A) → x ≡ y
 ```
 
-With this, we can define the `isHLevel`{.Agda} predicate. For h-levels
+With this, we can define the `is-hlevel`{.Agda} predicate. For h-levels
 greater than zero, this definition results in much simpler types!
 
 ```agda
-isHLevel : ∀ {ℓ} → Type ℓ → Nat → Type _
-isHLevel A 0 = isContr A
-isHLevel A 1 = isProp A
-isHLevel A (suc n) = (x y : A) → isHLevel (Path A x y) n
+is-hlevel : ∀ {ℓ} → Type ℓ → Nat → Type _
+is-hlevel A 0 = is-contr A
+is-hlevel A 1 = is-prop A
+is-hlevel A (suc n) = (x y : A) → is-hlevel (Path A x y) n
 ```
 
 Since types of h-level 2 are very common, they get a special name:
 **h-sets**, or just **sets** for short. This is justified because we can
 think of classical sets as being equipped with an equality _proposition_
 $x = y$ - having propositional paths is exactly the definition of
-`isSet`{.Agda}.  The universe of all types that are sets, is,
+`is-set`{.Agda}.  The universe of all types that are sets, is,
 correspondingly, called **Set**.
 
 ```agda
-isSet : ∀ {ℓ} → Type ℓ → Type ℓ
-isSet A = isHLevel A 2
+is-set : ∀ {ℓ} → Type ℓ → Type ℓ
+is-set A = is-hlevel A 2
 
 Set : (ℓ : Level) → Type (lsuc ℓ)
-Set ℓ = Σ (isSet {ℓ = ℓ})
+Set ℓ = Σ (is-set {ℓ = ℓ})
 ```
 
 <!--
 ```agda
 Prop : (ℓ : Level) → Type (lsuc ℓ)
-Prop ℓ = Σ (isProp {ℓ = ℓ})
+Prop ℓ = Σ (is-prop {ℓ = ℓ})
 ```
 -->
 
 Similarly, the types of h-level 3 are called **groupoids**.
 
 ```agda
-isGroupoid : ∀ {ℓ} → Type ℓ → Type ℓ
-isGroupoid A = isHLevel A 3
+is-groupoid : ∀ {ℓ} → Type ℓ → Type ℓ
+is-groupoid A = is-hlevel A 3
 ```
 
 ---
@@ -139,8 +139,8 @@ for any $k$. We first prove a couple of common cases that deserve their
 own names:
 
 ```agda
-isContr→isProp : isContr A → isProp A
-isContr→isProp C x y i =
+is-contr→is-prop : is-contr A → is-prop A
+is-contr→is-prop C x y i =
   hcomp (λ j → λ { (i = i0) → C .paths x j
                  ; (i = i1) → C .paths y j
                  } )
@@ -152,13 +152,13 @@ isContr→isProp C x y i =
 SingletonP : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → Type _
 SingletonP A a = Σ[ x ∈ A i1 ] PathP A a x
 
-isContrSinglP : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → isContr (SingletonP A a)
-isContrSinglP A a .centre = _ , transport-filler (λ i → A i) a
-isContrSinglP A a .paths (x , p) i =
+SinglP-is-contr : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → is-contr (SingletonP A a)
+SinglP-is-contr A a .centre = _ , transport-filler (λ i → A i) a
+SinglP-is-contr A a .paths (x , p) i =
   _ , λ j → fill A (λ j → λ {(i = i0) → transport-filler (λ i → A i) a j; (i = i1) → p j}) (inS a) j
 
-isPropSinglP : ∀ {ℓ} {A : I → Type ℓ} {a : A i0} → isProp (SingletonP A a)
-isPropSinglP = isContr→isProp (isContrSinglP _ _)
+SinglP-is-prop : ∀ {ℓ} {A : I → Type ℓ} {a : A i0} → is-prop (SingletonP A a)
+SinglP-is-prop = is-contr→is-prop (SinglP-is-contr _ _)
 ```
 -->
 
@@ -167,8 +167,8 @@ which is that the propositions are precisely the types which are
 contractible when they are inhabited:
 
 ```agda
-inhContr→isProp : ∀ {ℓ} {A : Type ℓ} → (A → isContr A) → isProp A
-inhContr→isProp cont x y = isContr→isProp (cont x) x y
+contractible-if-inhabited : ∀ {ℓ} {A : Type ℓ} → (A → is-contr A) → is-prop A
+contractible-if-inhabited cont x y = is-contr→is-prop (cont x) x y
 ```
 
 The proof that any contractible type is a proposition is not too
@@ -192,8 +192,8 @@ a path $x \to y$ which factors through the `centre`{.Agda}. The direct
 cubical description is, however, slightly more efficient.
 
 ```agda
-isProp→isSet : isProp A → isSet A
-isProp→isSet h x y p q i j =
+is-prop→is-set : is-prop A → is-set A
+is-prop→is-set h x y p q i j =
   hcomp (λ k → λ { (i = i0) → h x (p j) k
                  ; (i = i1) → h x (q j) k
                  ; (j = i0) → h x x k
@@ -238,7 +238,7 @@ To set your perspective: You are looking at a cube that has a
 transparent front face. The front face has four `x` corners, and four `λ
 i → x` edges. Each double arrow pointing from the front face to the back
 face is one of the sides of the composition. They're labelled with the
-terms in the `hcomp`{.Agda} for `isProp→isSet`{.Agda}: For example, the
+terms in the `hcomp`{.Agda} for `is-prop→is-set`{.Agda}: For example, the
 square you get when fixing `i = i0` is on top of the diagram. Since we
 have an open box, it has a lid --- which, in this case, is the back face
 --- which expresses the identification we wanted: `p ≡ q`.
@@ -246,78 +246,75 @@ have an open box, it has a lid --- which, in this case, is the back face
 With these two base cases, we can prove the general case by recursion:
 
 ```agda
-isHLevel-suc : ∀ {ℓ} {A : Type ℓ} (n : Nat) → isHLevel A n → isHLevel A (suc n)
-isHLevel-suc 0 x = isContr→isProp x
-isHLevel-suc 1 x = isProp→isSet x
-isHLevel-suc (suc (suc n)) h x y = isHLevel-suc (suc n) (h x y)
+is-hlevel-suc : ∀ {ℓ} {A : Type ℓ} (n : Nat) → is-hlevel A n → is-hlevel A (suc n)
+is-hlevel-suc 0 x = is-contr→is-prop x
+is-hlevel-suc 1 x = is-prop→is-set x
+is-hlevel-suc (suc (suc n)) h x y = is-hlevel-suc (suc n) (h x y)
 ```
 
 By another inductive argument, we can prove that any offset works:
 
 ```agda
-isHLevel-+ : ∀ {ℓ} {A : Type ℓ} (n k : Nat) → isHLevel A n → isHLevel A (k + n)
-isHLevel-+ n zero x    = x
-isHLevel-+ n (suc k) x = isHLevel-suc _ (isHLevel-+ n k x)
+is-hlevel-+ : ∀ {ℓ} {A : Type ℓ} (n k : Nat) → is-hlevel A n → is-hlevel A (k + n)
+is-hlevel-+ n zero x    = x
+is-hlevel-+ n (suc k) x = is-hlevel-suc _ (is-hlevel-+ n k x)
 ```
 
 A very convenient specialisation of the argument above is that if $A$ is
 a proposition, then it has any non-zero h-level:
 
 ```agda
-isProp→isHLevel-suc : ∀ {ℓ} {A : Type ℓ} {n : Nat} → isProp A → isHLevel A (suc n)
-isProp→isHLevel-suc {n = zero} aprop = aprop
-isProp→isHLevel-suc {n = suc n} aprop =
-  isHLevel-suc (suc n) (isProp→isHLevel-suc aprop)
+is-prop→is-hlevel-suc 
+  : ∀ {ℓ} {A : Type ℓ} {n : Nat} → is-prop A → is-hlevel A (suc n)
+is-prop→is-hlevel-suc {n = zero} aprop = aprop
+is-prop→is-hlevel-suc {n = suc n} aprop =
+  is-hlevel-suc (suc n) (is-prop→is-hlevel-suc aprop)
 ```
 
 Furthermore, by the upwards closure of h-levels, we have that if $A$ is
 an n-type, then paths in $A$ are also $n$-types. This is because, by
 definition, the paths in a $n$-type are "$(n-1)$-types", which
-`isHLevel-suc`{.Agda} extends into $n$-types.
+`is-hlevel-suc`{.Agda} extends into $n$-types.
 
 ```agda
-isHLevelPath : ∀ {ℓ} {A : Type ℓ} (n : Nat) → isHLevel A n → {x y : A}
-             → isHLevel (x ≡ y) n
-isHLevelPath zero ahl =
-  contr (isContr→isProp ahl _ _)
-        λ x → isProp→isSet (isContr→isProp ahl) _ _ _ x
-isHLevelPath (suc n) ahl = isHLevel-suc (suc n) ahl _ _
+Path-is-hlevel : ∀ {ℓ} {A : Type ℓ} (n : Nat) → is-hlevel A n → {x y : A}
+               → is-hlevel (x ≡ y) n
+Path-is-hlevel zero ahl =
+  contr (is-contr→is-prop ahl _ _)
+        λ x → is-prop→is-set (is-contr→is-prop ahl) _ _ _ x
+Path-is-hlevel (suc n) ahl = is-hlevel-suc (suc n) ahl _ _
 
-isHLevelPathP : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
-              → isHLevel (A i1) n
-              → {x : A i0} {y : A i1}
-              → isHLevel (PathP A x y) n
-isHLevelPathP {A = A} n ahl {x} {y} =
-  subst (λ e → isHLevel e n)
-        (sym (PathP≡Path A x y))
-        (isHLevelPath n ahl)
+Path-p-is-hlevel : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
+                 → is-hlevel (A i1) n
+                 → {x : A i0} {y : A i1}
+                 → is-hlevel (PathP A x y) n
+Path-p-is-hlevel {A = A} n ahl {x} {y} =
+  subst (λ e → is-hlevel e n) (sym (PathP≡Path A x y)) (Path-is-hlevel n ahl)
 ```
 
 <!--
 ```
-isHLevelPath' : (n : Nat) → isHLevel A (suc n) → (x y : A) → isHLevel (x ≡ y) n
-isHLevelPath' 0 ahl x y =
-  contr (ahl x y)
-        λ x → isProp→isSet ahl _ _ _ x
-isHLevelPath' (suc n) h x y = h x y
+Path-is-hlevel' : (n : Nat) → is-hlevel A (suc n) → (x y : A) → is-hlevel (x ≡ y) n
+Path-is-hlevel' 0 ahl x y =
+  contr (ahl x y) λ x → is-prop→is-set ahl _ _ _ x
 
-isHLevelPathP' : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
-               → isHLevel (A i1) (suc n)
-               → (x : A i0) (y : A i1)
-               → isHLevel (PathP A x y) n
-isHLevelPathP' {A = A} n ahl x y =
-  subst (λ e → isHLevel e n)
-        (sym (PathP≡Path A x y))
-        (isHLevelPath' n ahl _ _)
+Path-is-hlevel' (suc n) h x y = h x y
+
+Path-p-is-hlevel' : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
+                  → is-hlevel (A i1) (suc n)
+                  → (x : A i0) (y : A i1)
+                  → is-hlevel (PathP A x y) n
+Path-p-is-hlevel' {A = A} n ahl x y =
+  subst (λ e → is-hlevel e n) (sym (PathP≡Path A x y)) (Path-is-hlevel' n ahl _ _)
 ```
 -->
 
-# isHLevel is a proposition
+# is-hlevel is a proposition
 
 Perhaps surprisingly, "being of h-level n" is a proposition, for any n!
 To get an intuitive feel for why this might be true before we go prove
 it, I'd like to suggest an alternative interpretation of the proposition
-`isHLevel A n`: The type `A` admits _unique_ fillers for any `n`-cube.
+`is-hlevel A n`: The type `A` admits _unique_ fillers for any `n`-cube.
 
 A contractible type is one that has a unique point: It has a unique
 filler for the 0-cube, which is a point. A proposition is a type
@@ -329,8 +326,8 @@ Since these fillers are _unique_, if a type has them, it has them in at
 most one way!
 
 ```agda
-isProp-isContr : isProp (isContr A)
-isProp-isContr {A = A} (contr c₁ h₁) (contr c₂ h₂) i =
+is-contr-is-prop : is-prop (is-contr A)
+is-contr-is-prop {A = A} (contr c₁ h₁) (contr c₂ h₂) i =
   record { centre = h₁ c₂ i
          ; paths = λ x j → hcomp (λ k → λ { (i = i0) → h₁ (h₁ x j) k 
                                           ; (i = i1) → h₁ (h₂ x j) k
@@ -342,22 +339,23 @@ isProp-isContr {A = A} (contr c₁ h₁) (contr c₂ h₂) i =
 
 First, we prove that being contractible is a proposition. Next, we prove
 that being a proposition is a proposition. This follows from
-`isProp→isSet`{.Agda}, since what we want to prove is that `h₁` and `h₂`
+`is-prop→is-set`{.Agda}, since what we want to prove is that `h₁` and `h₂`
 always give homotopic paths.
 
 ```agda
-isProp-isProp : isProp (isProp A)
-isProp-isProp {A = A} h₁ h₂ i x y = isProp→isSet h₁ x y (h₁ x y) (h₂ x y) i
+is-prop-is-prop : is-prop (is-prop A)
+is-prop-is-prop {A = A} h₁ h₂ i x y = is-prop→is-set h₁ x y (h₁ x y) (h₂ x y) i
 ```
 
 Now we can prove the general case by the same inductive argument we used
 to prove h-levels can be raised:
 
 ```agda
-isProp-isHLevel : ∀ {ℓ} {A : Type ℓ} (n : Nat) → isProp (isHLevel A n)
-isProp-isHLevel 0 = isProp-isContr
-isProp-isHLevel 1 = isProp-isProp
-isProp-isHLevel (suc (suc n)) x y i a b = isProp-isHLevel (suc n) (x a b) (y a b) i
+is-hlevel-is-prop : ∀ {ℓ} {A : Type ℓ} (n : Nat) → is-prop (is-hlevel A n)
+is-hlevel-is-prop 0 = is-contr-is-prop
+is-hlevel-is-prop 1 = is-prop-is-prop
+is-hlevel-is-prop (suc (suc n)) x y i a b = 
+  is-hlevel-is-prop (suc n) (x a b) (y a b) i
 ```
 
 # Dependent h-Levels
@@ -369,78 +367,85 @@ dependent contractibility doesn't make a lot of sense, this definition
 is offset by one to start at the propositions.
 
 ```agda
-isHLevelDep : ∀ {ℓ ℓ'} {A : Type ℓ} → (A → Type ℓ') → Nat → Type _
-isHLevelDep B zero = ∀ {x y} (α : B x) (β : B y) (p : x ≡ y)
-                   → PathP (λ i → B (p i)) α β
-isHLevelDep B (suc n) =
-   ∀ {a0 a1} (b0 : B a0) (b1 : B a1)
-   → isHLevelDep {A = a0 ≡ a1} (λ p → PathP (λ i → B (p i)) b0 b1) n
+is-hlevel-dep : ∀ {ℓ ℓ'} {A : Type ℓ} → (A → Type ℓ') → Nat → Type _
+
+is-hlevel-dep B zero = 
+  ∀ {x y} (α : B x) (β : B y) (p : x ≡ y)
+  → PathP (λ i → B (p i)) α β
+
+is-hlevel-dep B (suc n) =
+  ∀ {a0 a1} (b0 : B a0) (b1 : B a1)
+  → is-hlevel-dep {A = a0 ≡ a1} (λ p → PathP (λ i → B (p i)) b0 b1) n
 ```
 
 It's sufficient for a type family to be of an h-level everywhere for the
 whole family to be the same h-level.
 
 ```agda
-isProp→PathP : ∀ {B : I → Type ℓ} → ((i : I) → isProp (B i))
-             → (b0 : B i0) (b1 : B i1)
-             → PathP (λ i → B i) b0 b1
-isProp→PathP {B = B} hB b0 b1 = toPathP _ _ _ (hB _ _ _)
+is-prop→pathp : ∀ {B : I → Type ℓ} → ((i : I) → is-prop (B i))
+              → (b0 : B i0) (b1 : B i1)
+              → PathP (λ i → B i) b0 b1
+is-prop→pathp {B = B} hB b0 b1 = to-pathp _ _ _ (hB _ _ _)
 ```
 
 The base case is turning a proof that a type is a proposition uniformly
 over the interval to a filler for any PathP.
 
 ```agda
-isHLevel→isHLevelDep : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
-                     → (n : Nat) → ((x : A) → isHLevel (B x) (suc n))
-                     → isHLevelDep B n
-isHLevel→isHLevelDep zero hl α β p = isProp→PathP (λ i → hl (p i)) α β
-isHLevel→isHLevelDep {A = A} {B = B} (suc n) hl {a0} {a1} b0 b1 =
-  isHLevel→isHLevelDep n (λ p → helper a1 p b1)
+is-hlevel→is-hlevel-dep 
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
+  → (n : Nat) → ((x : A) → is-hlevel (B x) (suc n))
+  → is-hlevel-dep B n
+is-hlevel→is-hlevel-dep zero hl α β p = is-prop→pathp (λ i → hl (p i)) α β
+is-hlevel→is-hlevel-dep {A = A} {B = B} (suc n) hl {a0} {a1} b0 b1 =
+  is-hlevel→is-hlevel-dep n (λ p → helper a1 p b1)
   where
     helper : (a1 : A) (p : a0 ≡ a1) (b1 : B a1)
-           → isHLevel (PathP (λ i → B (p i)) b0 b1) (suc n)
-    helper a1 p b1 = J (λ a1 p → ∀ b1 → isHLevel (PathP (λ i → B (p i)) b0 b1) (suc n))
-                      (λ _ → hl _ _ _) p b1
+           → is-hlevel (PathP (λ i → B (p i)) b0 b1) (suc n)
+    helper a1 p b1 = 
+      J (λ a1 p → ∀ b1 → is-hlevel (PathP (λ i → B (p i)) b0 b1) (suc n))
+        (λ _ → hl _ _ _) p b1
 ```
 
 <!--
 ```agda
-isProp→SquareP : ∀ {B : I → I → Type ℓ} → ((i j : I) → isProp (B i j))
-             → {a : B i0 i0} {b : B i0 i1} {c : B i1 i0} {d : B i1 i1}
-             → (p : PathP (λ j → B j i0) a c)
-             → (q : PathP (λ j → B i0 j) a b)
-             → (s : PathP (λ j → B i1 j) c d)
-             → (r : PathP (λ j → B j i1) b d)
-             → SquareP B p q s r
-isProp→SquareP {B = B} isPropB {a = a} p q s r i j =
-  hcomp (λ { k (j = i0) → isPropB i j (base i j) (p i) k
-           ; k (j = i1) → isPropB i j (base i j) (r i) k
-           ; k (i = i0) → isPropB i j (base i j) (q j) k
-           ; k (i = i1) → isPropB i j (base i j) (s j) k
+is-prop→squarep 
+  : ∀ {B : I → I → Type ℓ} → ((i j : I) → is-prop (B i j))
+  → {a : B i0 i0} {b : B i0 i1} {c : B i1 i0} {d : B i1 i1}
+  → (p : PathP (λ j → B j i0) a c)
+  → (q : PathP (λ j → B i0 j) a b)
+  → (s : PathP (λ j → B i1 j) c d)
+  → (r : PathP (λ j → B j i1) b d)
+  → SquareP B p q s r
+is-prop→squarep {B = B} is-propB {a = a} p q s r i j =
+  hcomp (λ { k (j = i0) → is-propB i j (base i j) (p i) k
+           ; k (j = i1) → is-propB i j (base i j) (r i) k
+           ; k (i = i0) → is-propB i j (base i j) (q j) k
+           ; k (i = i1) → is-propB i j (base i j) (s j) k
         }) (base i j) where
     base : (i j : I) → B i j
     base i j = transport (λ k → B (i ∧ k) (j ∧ k)) a
 
-isProp→isContrPathP : {A : I → Type ℓ} → ((i : I) → isProp (A i))
-                    → (x : A i0) (y : A i1) → isContr (PathP A x y)
-isProp→isContrPathP ap x y .centre = isProp→PathP ap x y
-isProp→isContrPathP ap x y .paths p =
-  isProp→SquareP (λ i j → ap j) refl _ _ refl
+is-prop→pathp-is-contr
+  : {A : I → Type ℓ} → ((i : I) → is-prop (A i))
+  → (x : A i0) (y : A i1) → is-contr (PathP A x y)
+is-prop→pathp-is-contr ap x y .centre = is-prop→pathp ap x y
+is-prop→pathp-is-contr ap x y .paths p =
+  is-prop→squarep (λ i j → ap j) refl _ _ refl
 
 abstract
-  isSet→SquareP :
+  is-set→squarep :
     {A : I → I → Type ℓ}
-    (isSet : (i j : I) → isSet (A i j))
+    (is-set : (i j : I) → is-set (A i j))
     → {a : A i0 i0} {b : A i0 i1} {c : A i1 i0} {d : A i1 i1}
     → (p : PathP (λ j → A j i0) a c)
     → (q : PathP (λ j → A i0 j) a b)
     → (s : PathP (λ j → A i1 j) c d)
     → (r : PathP (λ j → A j i1) b d)
     → SquareP A p q s r
-  isSet→SquareP isset a₀₋ a₁₋ a₋₀ a₋₁ =
+  is-set→squarep isset a₀₋ a₁₋ a₋₀ a₋₁ =
     transport (sym (PathP≡Path _ _ _))
-              (isHLevelPathP' 1 (isset _ _) _ _ _ _)
+              (Path-p-is-hlevel' 1 (isset _ _) _ _ _ _)
 
 -- Has to go through:
 _ : ∀ {A : Type} {a b c d : A} (p : a ≡ c) (q : a ≡ b) (s : c ≡ d) (r : b ≡ d)

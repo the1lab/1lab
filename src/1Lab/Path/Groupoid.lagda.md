@@ -55,17 +55,17 @@ path - `refl`{.Agda} - acts as an identity for path composition.
   ∙-id-r : (p : x ≡ y) → p ∙ refl ≡ p
   ∙-id-r {x = x} {y = y} p =
     J (λ _ p → p ∙ refl ≡ p)
-      (happly (JRefl (λ y _ → y ≡ y → x ≡ y) (λ x → x)) _)
+      (happly (J-refl (λ y _ → y ≡ y → x ≡ y) (λ x → x)) _)
       p
 ```
 
 This isn't as straightforward as it would be in "Book HoTT" because -
 remember - J doesn't compute definitionally, only up to the path
-`JRefl`{.Agda}.  Now the other identity law:
+`J-refl`{.Agda}.  Now the other identity law:
 
 ```agda
   ∙-id-l : (p : y ≡ z) → refl ∙ p ≡ p
-  ∙-id-l {y = y} {z = z} p = happly (JRefl (λ y _ → y ≡ z → y ≡ z) (λ x → x)) p
+  ∙-id-l {y = y} {z = z} p = happly (J-refl (λ y _ → y ≡ z → y ≡ z) (λ x → x)) p
 ```
 
 This case we get for less since it's essentially the computation rule for `J`{.Agda}.
@@ -106,7 +106,7 @@ from two computations.
   inv-inv : (p : x ≡ y) → inv (inv p) ≡ p
   inv-inv {x = x} =
     J (λ y p → inv (inv p) ≡ p)
-      (ap inv (JRefl (λ y _ → y ≡ x) refl) ∙ JRefl (λ y _ → y ≡ x) refl)
+      (ap inv (J-refl (λ y _ → y ≡ x) refl) ∙ J-refl (λ y _ → y ≡ x) refl)
 ```
 
 And we have to prove that composing with an inverse gives the reflexivity path.
@@ -114,11 +114,11 @@ And we have to prove that composing with an inverse gives the reflexivity path.
 ```agda
   ∙-inv-l : (p : x ≡ y) → p ∙ inv p ≡ refl
   ∙-inv-l {x = x} = J (λ y p → p ∙ inv p ≡ refl)
-                      (∙-id-l (inv refl) ∙ JRefl (λ y _ → y ≡ x) refl)
+                      (∙-id-l (inv refl) ∙ J-refl (λ y _ → y ≡ x) refl)
 
   ∙-inv-r : (p : x ≡ y) → inv p ∙ p ≡ refl
   ∙-inv-r {x = x} = J (λ y p → inv p ∙ p ≡ refl)
-                      (∙-id-r (inv refl) ∙ JRefl (λ y _ → y ≡ x) refl)
+                      (∙-id-r (inv refl) ∙ J-refl (λ y _ → y ≡ x) refl)
 ```
 
 ## Cubically

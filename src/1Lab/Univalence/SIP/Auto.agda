@@ -14,9 +14,9 @@ open import Agda.Builtin.Reflection
            )
   hiding (Type)
 
-makeAutoStrTm : Nat → Term → TC ⊤
-makeAutoStrTm zero t = typeError (strErr "autoDesc ran out of fuel" ∷ [])
-makeAutoStrTm (suc n) t =
+makeAutoStr-term : Nat → Term → TC ⊤
+makeAutoStr-term zero t = typeError (strErr "autoDesc ran out of fuel" ∷ [])
+makeAutoStr-term (suc n) t =
   tryPoint
     <|> tryBin (quote _s→_)
     <|> tryBin (quote _s×_)
@@ -30,12 +30,12 @@ makeAutoStrTm (suc n) t =
       h1 ← newMeta unknown
       h2 ← newMeta unknown
       tt ← unify (con namen (h1 v∷ h2 v∷ [])) t
-      tt ← makeAutoStrTm n h1
-      makeAutoStrTm n h2
+      tt ← makeAutoStr-term n h1
+      makeAutoStr-term n h2
 
     useConst = do
       unify t (con (quote s-const) (unknown v∷ []))
 
 macro
-  autoStrTm : Term → TC ⊤
-  autoStrTm = makeAutoStrTm 100
+  auto-str-term : Term → TC ⊤
+  auto-str-term = makeAutoStr-term 100

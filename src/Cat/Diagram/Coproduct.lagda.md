@@ -39,7 +39,7 @@ $Q$. This is best explained by a commutative diagram:
 ~~~
 
 ```agda
-record IsCoproduct {A B P} (in₀ : Hom A P) (in₁ : Hom B P) : Type (o ⊔ h) where
+record is-coproduct {A B P} (in₀ : Hom A P) (in₁ : Hom B P) : Type (o ⊔ h) where
   field
     [_,_]      : ∀ {Q} (inj0 : Hom A Q) (inj1 : Hom B Q) → Hom P Q
     in₀∘factor : ∀ {Q} {inj0 : Hom A Q} {inj1} → [ inj0 , inj1 ] ∘ in₀ ≡ inj0
@@ -66,9 +66,9 @@ record Coproduct (A B : Ob) : Type (o ⊔ h) where
     coapex : Ob
     in₀ : Hom A coapex
     in₁ : Hom A coapex
-    hasIsCoproduct : IsCoproduct in₀ in₁
+    has-is-coproduct : is-coproduct in₀ in₁
 
-  open IsCoproduct hasIsCoproduct public
+  open is-coproduct has-is-coproduct public
 
 open Coproduct
 ```
@@ -80,7 +80,7 @@ for the [Product](agda://Cat.Diagram.Product#×-Unique).
 
 ```agda
 +-Unique : (c1 c2 : Coproduct A B) → coapex c1 ≅ coapex c2
-+-Unique c1 c2 = makeIso c1→c2 c2→c1 c1→c2→c1 c2→c1→c2
++-Unique c1 c2 = make-iso c1→c2 c2→c1 c1→c2→c1 c2→c1→c2
   where
     module c1 = Coproduct c1
     module c2 = Coproduct c2

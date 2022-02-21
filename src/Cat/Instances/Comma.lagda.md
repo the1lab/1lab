@@ -116,11 +116,11 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
   ↓Hom-path p q i .↓Hom.α = p i
   ↓Hom-path p q i .↓Hom.β = q i
   ↓Hom-path {x} {y} {f} {g} p q i .↓Hom.sq = 
-    isProp→PathP (λ i → C.Hom-set _ _ (↓Obj.map y C.∘ F₁ F (p i)) 
-                                      (F₁ G (q i) C.∘ ↓Obj.map x))
+    is-prop→pathp (λ i → C.Hom-set _ _ (↓Obj.map y C.∘ F₁ F (p i)) 
+                                       (F₁ G (q i) C.∘ ↓Obj.map x))
       (f .↓Hom.sq) (g .↓Hom.sq) i
 
-  ↓Hom-set : ∀ x y → isSet (↓Hom x y)
+  ↓Hom-set : ∀ x y → is-set (↓Hom x y)
   ↓Hom-set a b = hl' where abstract
     module a = ↓Obj a
     module b = ↓Obj b
@@ -139,18 +139,18 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
     decode : ↓Hom a b → T
     decode r = r .↓Hom.α , r .↓Hom.β , r .↓Hom.sq
 
-    hl : isSet T
-    hl = isHLevelΣ 2 (A.Hom-set _ _) λ _ → 
-         isHLevelΣ 2 (B.Hom-set _ _) λ _ →
-         isProp→isSet (C.Hom-set _ _ _ _)
+    hl : is-set T
+    hl = Σ-is-hlevel 2 (A.Hom-set _ _) λ _ → 
+         Σ-is-hlevel 2 (B.Hom-set _ _) λ _ →
+         is-prop→is-set (C.Hom-set _ _ _ _)
 
-    encode∘decode : isLeftInverse encode decode
+    encode∘decode : is-left-inverse encode decode
     encode∘decode x i .↓Hom.α  = x .↓Hom.α
     encode∘decode x i .↓Hom.β  = x .↓Hom.β
     encode∘decode x i .↓Hom.sq = x .↓Hom.sq
 
-    hl' : isSet (↓Hom a b)
-    hl' = isHLevel-retract 2 encode decode encode∘decode hl
+    hl' : is-set (↓Hom a b)
+    hl' = retract→is-hlevel 2 encode decode encode∘decode hl
 ```
 -->
 

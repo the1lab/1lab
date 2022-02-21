@@ -40,7 +40,7 @@ subsets suffices:
 * A terminal object and binary pullbacks.
 
 ```agda
-record FinitelyComplete : Type (ℓ ⊔ ℓ') where
+record Finitely-complete : Type (ℓ ⊔ ℓ') where
   field
     terminal   : Terminal
     products   : ∀ A B → Product A B
@@ -56,7 +56,7 @@ record FinitelyComplete : Type (ℓ ⊔ ℓ') where
   Pb : ∀ {A B C} (f : Hom A C) (g : Hom B C) → Ob
   Pb f g = pullbacks f g .Pullback.apex
 
-open FinitelyComplete
+open Finitely-complete
 ```
 
 ## With equalisers
@@ -66,14 +66,14 @@ pullbacks; Thus a terminal object, binary products and binary equalisers
 suffice for finite completeness.
 
 ```agda
-withEqualisers 
+with-equalisers 
   : Terminal 
   → (∀ A B → Product A B)
   → (∀ {A B} (f g : Hom A B) → Equaliser f g)
-  → FinitelyComplete
-withEqualisers top prod equ .terminal   = top
-withEqualisers top prod equ .products   = prod
-withEqualisers top prod equ .equalisers = equ
+  → Finitely-complete
+with-equalisers top prod equ .terminal   = top
+with-equalisers top prod equ .products   = prod
+with-equalisers top prod equ .equalisers = equ
 ```
 
 We'll build the pullback of $f : X \to Z$, $g : Y \to Z$ by carving out
@@ -91,7 +91,7 @@ diagram below.
 ~~~
 
 ```agda
-withEqualisers top prod equ .pullbacks {A} {B} {C} f g = pb where
+with-equalisers top prod equ .pullbacks {A} {B} {C} f g = pb where
   module Prod = Product (prod A B)
 
   p1 : Hom Prod.apex C
@@ -102,14 +102,14 @@ withEqualisers top prod equ .pullbacks {A} {B} {C} f g = pb where
 
   module Equ = Equaliser (equ p1 p2)
 
-  open IsPullback
+  open is-pullback
   open Pullback
 
   pb : Pullback f g
   pb .apex = Equ.apex
   pb .p₁ = Prod.π₁ ∘ Equ.equ
   pb .p₂ = Prod.π₂ ∘ Equ.equ
-  pb .hasIsPb .square = 
+  pb .has-is-pb .square = 
     f ∘ Prod.π₁ ∘ Equ.equ ≡⟨ (assoc _ _ _ ·· Equ.equal ·· sym (assoc _ _ _)) ⟩
     g ∘ Prod.π₂ ∘ Equ.equ ∎
 ```
@@ -132,16 +132,16 @@ equalisers to factor _that_ as a unique arrow $P' \to X \times_Z Y$.
 ~~~
 
 ```agda
-  pb .hasIsPb .limiting {p₁' = p₁'} {p₂' = p₂'} p = 
+  pb .has-is-pb .limiting {p₁' = p₁'} {p₂' = p₂'} p = 
     Equ.limiting {e′ = Prod.⟨ p₁' , p₂' ⟩} (
       (f ∘ Prod.π₁) ∘ Prod.⟨ p₁' , p₂' ⟩ ≡⟨ pullr Prod.π₁∘factor ⟩
       f ∘ p₁'                            ≡⟨ p ⟩
       g ∘ p₂'                            ≡˘⟨ pullr Prod.π₂∘factor ⟩
       (g ∘ Prod.π₂) ∘ Prod.⟨ p₁' , p₂' ⟩ ∎
     )
-  pb .hasIsPb .p₁∘limiting = pullr Equ.universal ∙ Prod.π₁∘factor
-  pb .hasIsPb .p₂∘limiting = pullr Equ.universal ∙ Prod.π₂∘factor
-  pb .hasIsPb .unique p q = 
+  pb .has-is-pb .p₁∘limiting = pullr Equ.universal ∙ Prod.π₁∘factor
+  pb .has-is-pb .p₂∘limiting = pullr Equ.universal ∙ Prod.π₂∘factor
+  pb .has-is-pb .unique p q = 
     Equ.unique (sym (Prod.unique _ (assoc _ _ _ ∙ p) (assoc _ _ _ ∙ q)))
 ```
 
@@ -151,11 +151,11 @@ We'll now prove the converse: That a terminal object and pullbacks
 implies having all products, and all equalisers. 
 
 ```agda
-withPullbacks 
+with-pullbacks 
   : Terminal 
   → (∀ {A B C} (f : Hom A C) (g : Hom B C) → Pullback f g)
-  → FinitelyComplete
-withPullbacks top pb = fc where
+  → Finitely-complete
+with-pullbacks top pb = fc where
   module top = Terminal top
   mkprod : ∀ A B → Product A B
 ```
@@ -201,18 +201,18 @@ the terminal object $*$.
 ```agda
   mkprod A B = prod where
     module Pb = Pullback (pb (top.! {x = A}) (top.! {x = B}))
-    open IsProduct
+    open is-product
     open Product
 
     prod : Product A B
     prod .apex = Pb.apex
     prod .π₁ = Pb.p₁
     prod .π₂ = Pb.p₂
-    prod .hasIsProduct .IsProduct.⟨_,_⟩ p1' p2' = 
+    prod .has-is-product .is-product.⟨_,_⟩ p1' p2' = 
       Pb.limiting {p₁' = p1'} {p₂' = p2'} (top.!-unique₂ _ _)
-    prod .hasIsProduct .IsProduct.π₁∘factor = Pb.p₁∘limiting
-    prod .hasIsProduct .IsProduct.π₂∘factor = Pb.p₂∘limiting
-    prod .hasIsProduct .unique other p q = Pb.unique p q
+    prod .has-is-product .is-product.π₁∘factor = Pb.p₁∘limiting
+    prod .has-is-product .is-product.π₂∘factor = Pb.p₂∘limiting
+    prod .has-is-product .unique other p q = Pb.unique p q
 
   mkeq : ∀ {A B} (f g : Hom A B) → Equaliser f g
   mkeq {A = A} {B} f g = eq where
@@ -251,13 +251,13 @@ along the diagonal map:
 
     module Pb = Pullback (pb ⟨id,id⟩ ⟨f,g⟩)
 
-    open IsEqualiser
+    open is-equaliser
     open Equaliser
 
     eq : Equaliser f g
     eq .apex = Pb.apex
     eq .equ = Pb.p₂
-    eq .hasIsEq .equal = 
+    eq .has-is-eq .equal = 
       f ∘ Pb.p₂               ≡˘⟨ pulll Bb.π₁∘factor ⟩
       Bb.π₁ ∘ ⟨f,g⟩ ∘ Pb.p₂   ≡⟨ ap (Bb.π₁ ∘_) (sym Pb.square) ⟩
       Bb.π₁ ∘ ⟨id,id⟩ ∘ Pb.p₁ ≡⟨ pulll Bb.π₁∘factor ∙ sym (pulll Bb.π₂∘factor) ⟩
@@ -265,7 +265,7 @@ along the diagonal map:
       Bb.π₂ ∘ ⟨f,g⟩ ∘ Pb.p₂   ≡⟨ pulll Bb.π₂∘factor ⟩
       g ∘ Pb.p₂               ∎
 
-    eq .hasIsEq .limiting {e′ = e′} p = 
+    eq .has-is-eq .limiting {e′ = e′} p = 
       Pb.limiting (Bb.unique₂ _ refl refl _ (sym p1) (sym p2))
       where
         p1 : Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e′ ≡ Bb.π₁ ∘ ⟨f,g⟩ ∘ e′
@@ -285,8 +285,8 @@ along the diagonal map:
           g ∘ e′                     ≡˘⟨ pulll Bb.π₂∘factor ⟩
           Bb.π₂ ∘ ⟨f,g⟩ ∘ e′         ∎
 
-    eq .hasIsEq .universal = Pb.p₂∘limiting
-    eq .hasIsEq .unique {F} {e′ = e′} {lim' = lim'} e′=p₂∘l = 
+    eq .has-is-eq .universal = Pb.p₂∘limiting
+    eq .has-is-eq .unique {F} {e′ = e′} {lim' = lim'} e′=p₂∘l = 
       Pb.unique path (sym e′=p₂∘l) 
       where
         path : Pb.p₁ ∘ lim' ≡ f ∘ e′
@@ -301,7 +301,7 @@ along the diagonal map:
 Putting it all together into a record we get our proof of finite completeness:
 
 ```agda
-  fc : FinitelyComplete
+  fc : Finitely-complete
   fc .terminal = top
   fc .products = mkprod
   fc .equalisers = mkeq

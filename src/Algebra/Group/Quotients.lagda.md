@@ -26,9 +26,9 @@ of $G$, but we define it directly by `quotienting`{.Agda ident=/} the
 underlying set of $G$.
 
 ```agda
-module _ (Grp : Group ℓ) (N : NormalSubgroup Grp) where
-  open NormalSubgroup N renaming (subgroup to N?)
-  open GroupOn (Grp .snd) renaming (inverse to inv)
+module _ (Grp : Group ℓ) (N : Normal-subgroup Grp) where
+  open Normal-subgroup N renaming (subgroup to N?)
+  open Group-on (Grp .snd) renaming (inverse to inv)
   private G = Grp .fst
 
   private
@@ -100,16 +100,16 @@ in a group is a proposition, these follow from the group axioms on $G$
 rather directly:
 
 ```agda
-    GroupOn-T : GroupOn T
-    GroupOn-T = makeGroup squash (inc unit) op inverse
-      (Coeq-elimProp₃ (λ _ _ _ → squash _ _) 
+    Group-on-T : Group-on T
+    Group-on-T = make-group squash (inc unit) op inverse
+      (Coeq-elim-prop₃ (λ _ _ _ → squash _ _) 
         λ x y z i → inc (associative {x = x} {y} {z} (~ i)))
-      (Coeq-elimProp (λ _ → squash _ _) λ x i → inc (inverseˡ {x = x} i))
-      (Coeq-elimProp (λ _ → squash _ _) λ x i → inc (inverseʳ {x = x} i))
-      (Coeq-elimProp (λ _ → squash _ _) λ x i → inc (idˡ {x = x} i))
+      (Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inverseˡ {x = x} i))
+      (Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inverseʳ {x = x} i))
+      (Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (idˡ {x = x} i))
   
   _/ᴳ_ : Group ℓ
-  _/ᴳ_ = _ , GroupOn-T
+  _/ᴳ_ = _ , Group-on-T
 ```
 
 We package together the underlying type `T`{.Agda} (which is not

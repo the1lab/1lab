@@ -24,13 +24,13 @@ parseFields s h (con (quote _field[_by_]) (ℓ h∷ ℓ₁ h∷ ℓ₁' h∷ R h
        struct-field ← findName sfieldTerm 
        pres-field ← findName efieldTerm
 
-       desc ← newMeta (def (quote StrTm) (ℓ v∷ ℓ₂' v∷ S v∷ []))
-       tt ← makeAutoStrTm 100 desc
+       desc ← newMeta (def (quote Str-term) (ℓ v∷ ℓ₂' v∷ S v∷ []))
+       tt ← makeAutoStr-term 100 desc
 
        let f : InternalField × TypedTm
            f = (structureField struct-field pres-field)
-             , record { type = def (quote tm→⌜isUnivalent⌝) (desc v∷ [])
-                      ; term = def (quote tm→isUnivalent') (desc v∷ [])
+             , record { type = def (quote tm→⌜is-univalent⌝) (desc v∷ [])
+                      ; term = def (quote tm→is-univalent') (desc v∷ [])
                       }
        rest <- parseFields s h fs
        returnTC (f ∷ rest)
@@ -51,7 +51,7 @@ parseFields strTerm homTerm (con (quote _axiom[_by_])
 parseFields _ _ tm = typeError (termErr tm ∷ strErr " ← This is not a field descriptor!" ∷ [])
 
 parseSpec : Term → TC (Spec TypedTm)
-parseSpec (con (quote autoRecord) (ℓ h∷ ℓ₁ h∷ ℓ₁' h∷ strTerm v∷ homTerm v∷ fs v∷ [])) =
+parseSpec (con (quote record-desc) (ℓ h∷ ℓ₁ h∷ ℓ₁' h∷ strTerm v∷ homTerm v∷ fs v∷ [])) =
   do fs' ← parseFields strTerm homTerm fs
      returnTC λ { .Spec.structure → strTerm
                 ; .Spec.homomorphism → homTerm

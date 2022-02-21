@@ -34,30 +34,30 @@ extensionality for subsets`{.Agda ident=ℙ-ext}.
 ℙ⊆ A .fst = ℙ A
 ℙ⊆ A .snd = st where
   open PosetOn
-  open isPartialOrder
-  open isPreorder
+  open is-partial-order
+  open is-preorder
 
   st : PosetOn (ℙ A)
   st ._≤_ = _⊆_
-  st .hasIsPartialOrder .hasIsPreorder .reflexive _ x = x
-  st .hasIsPartialOrder .hasIsPreorder .transitive x⊆y y⊆z a a∈x = y⊆z a (x⊆y a a∈x)
-  st .hasIsPartialOrder .hasIsPreorder .propositional {y = y} =
-    isHLevelΠ 1 λ x → isHLevel→ 1 (y x .snd)
-  st .hasIsPartialOrder .antisym = ℙ-ext
+  st .has-is-partial-order .has-is-preorder .reflexive _ x = x
+  st .has-is-partial-order .has-is-preorder .transitive x⊆y y⊆z a a∈x = y⊆z a (x⊆y a a∈x)
+  st .has-is-partial-order .has-is-preorder .propositional {y = y} =
+    Π-is-hlevel 1 λ x → fun-is-hlevel 1 (y x .snd)
+  st .has-is-partial-order .antisym = ℙ-ext
 ```
 
 Back on track, we equip intersection of subsets with the structure of a
 semilattice:
 
 ```agda
-∩-semilattice : ∀ {ℓ} {X : Type ℓ} → isSemilattice (_∩_ {X = X})
+∩-semilattice : ∀ {ℓ} {X : Type ℓ} → is-semilattice (_∩_ {X = X})
 ∩-semilattice = r where
-  open isSemilattice
-  open isSemigroup
+  open is-semilattice
+  open is-semigroup
 
-  r : isSemilattice _
-  r .hasIsSemigroup .hasIsMagma .hasIsSet = isSet-ℙ
-  r .hasIsSemigroup .associative =
+  r : is-semilattice _
+  r .has-is-semigroup .has-is-magma .has-is-set = ℙ-is-set
+  r .has-is-semigroup .associative =
     ℙ-ext (λ { x (a , b , c) → (a , b) , c })
           (λ { x ((a , b) , c) → a , b , c })
 
@@ -73,10 +73,10 @@ direction of the proof is a lot more annoying because of the truncation
 in `_∪_`{.Agda}, but it is essentially shuffling sums around:
 
 ```agda
-∪-semilattice : ∀ {ℓ} {X : Type ℓ} → isSemilattice (_∪_ {X = X})
+∪-semilattice : ∀ {ℓ} {X : Type ℓ} → is-semilattice (_∪_ {X = X})
 ∪-semilattice = r where
-  open isSemilattice
-  open isSemigroup
+  open is-semilattice
+  open is-semigroup
 ```
 
 To show that subset union is associative, we must "shuffle" coproducts
@@ -88,9 +88,9 @@ underlying coproduct, even though all of `P`, `Q`, and `R` are
 propositions.
 
 ```agda
-  r : isSemilattice _
-  r .hasIsSemigroup .hasIsMagma .hasIsSet = isSet-ℙ
-  r .hasIsSemigroup .associative =
+  r : is-semilattice _
+  r .has-is-semigroup .has-is-magma .has-is-set = ℙ-is-set
+  r .has-is-semigroup .associative =
     ℙ-ext (λ _ → ∥-∥-elim (λ _ → squash)
                  λ { (inl x) → inc (inl (inc (inl x)))
                    ; (inr x) → ∥-∥-elim (λ _ → squash)
@@ -149,16 +149,16 @@ This means that $\mathbb{P}(X), \cap, \cup$ assemble into a lattice,
 which we call `Power`{.Agda}:
 
 ```agda
-open LatticeOn
-open isLattice
+open Lattice-on
+open is-lattice
 
-Power : ∀ {ℓ} (X : Type ℓ) → LatticeOn (ℙ X)
+Power : ∀ {ℓ} (X : Type ℓ) → Lattice-on (ℙ X)
 Power X ._L∧_ = _∩_
 Power X ._L∨_ = _∪_
-Power X .hasIsLattice .hasMeets = ∩-semilattice
-Power X .hasIsLattice .hasJoins = ∪-semilattice
-Power X .hasIsLattice .∧-absorbs-∨ {y = y} = ∩-absorbs-∪ {Y = y}
-Power X .hasIsLattice .∨-absorbs-∧ {y = y} = ∪-absorbs-∩ {Y = y}
+Power X .has-is-lattice .has-meets = ∩-semilattice
+Power X .has-is-lattice .has-joins = ∪-semilattice
+Power X .has-is-lattice .∧-absorbs-∨ {y = y} = ∩-absorbs-∪ {Y = y}
+Power X .has-is-lattice .∨-absorbs-∧ {y = y} = ∪-absorbs-∩ {Y = y}
 ```
 
 It remains to show that the covariant ordering induced by the
@@ -168,7 +168,7 @@ $(x ⊆ y) \leftrightarrow (x ≡ (x ∩ y))$.
 ```agda
 subset-∩ : ∀ {ℓ} {A : Type ℓ} {X Y : ℙ A} → (X ⊆ Y) ≃ (X ≡ (X ∩ Y))
 subset-∩ {X = X} {Y = Y} =
-  propExt (isHLevelΠ 1 λ x → isHLevel→ 1 (Y x .snd)) (isSet-ℙ _ _) to from where
+  prop-ext (Π-is-hlevel 1 λ x → fun-is-hlevel 1 (Y x .snd)) (ℙ-is-set _ _) to from where
 ```
 
 In the "if" direction, suppose that $X \subseteq Y$. We show that $X ∩

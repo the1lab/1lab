@@ -18,15 +18,15 @@ A \to B$, we have an isomorphism between $\mathrm{im}(f)$ and
 $A/\mathrm{ker}(f)$.
 
 ```agda
-module _ {ℓ} {A B : Group ℓ} (φ : A .fst → B .fst) (h : isGroupHom A B φ) where
+module _ {ℓ} {A B : Group ℓ} (φ : A .fst → B .fst) (h : Group-hom A B φ) where
   private
     imφ = im φ h
     A/kerφ = A /ᴳ ker φ h
 
-    module A = GroupOn (A .snd)
-    module B = GroupOn (B .snd)
+    module A = Group-on (A .snd)
+    module B = Group-on (B .snd)
       
-    open isGroupHom h
+    open Group-hom h
 ```
 
 We first define a map from the image group $\mathrm{im}(f)$ to the
@@ -46,7 +46,7 @@ proposition in general.
 ```agda
     func : imφ .fst → A/kerφ .fst
     func (f*x , x) = 
-      ∥-∥-recSet (λ x → inc (x .fst)) f-const squash x
+      ∥-∥-rec-set (λ x → inc (x .fst)) f-const squash x
       where abstract
 ```
 
@@ -66,8 +66,8 @@ kernel of $f$; But this follows by $f(a_1 - a_2) = f(a_1) - f(a_2)
           ·· ap₂ B._⋆_ refl (pres-inv _) 
           ·· (ap₂ B._⋆_ p (ap B.inverse q) ∙ B.inverseʳ))
 
-    im* = imφ .snd .GroupOn._⋆_
-    ak* = A/kerφ .snd .GroupOn._⋆_
+    im* = imφ .snd .Group-on._⋆_
+    ak* = A/kerφ .snd .Group-on._⋆_
 ```
 
 The map `func`{.Agda} we have defined is evidently a group homomorphism,
@@ -76,8 +76,8 @@ truncations out of the way.
 
 ```agda
     abstract
-      func-hom : isGroupHom imφ A/kerφ func
-      func-hom .isGroupHom.pres-⋆ (f*x , p) (f*y , q) = 
+      func-hom : Group-hom imφ A/kerφ func
+      func-hom .Group-hom.pres-⋆ (f*x , p) (f*y , q) = 
         ∥-∥-elim₂
           {P = λ p q → func (im* (f*x , p) (f*y , q)) 
                      ≡ ak* (func (f*x , p)) (func (f*y , q))} 
@@ -97,21 +97,21 @@ properties of group homomorphisms.
 
 ```agda
     inv : A/kerφ .fst → imφ .fst
-    inv = Coeq-rec (im φ h .snd .GroupOn.hasIsSet) 
+    inv = Coeq-rec (im φ h .snd .Group-on.has-is-set) 
       (λ x → φ x , inc (x , refl))
-      (λ (x , y , p) → Σ≡Prop (λ _ → squash) 
+      (λ (x , y , p) → Σ-prop-path (λ _ → squash) 
         (B.zero-diff→≡
           (subst (_≡ B.unit) (pres-⋆ _ _ ∙ ap₂ B._⋆_ refl (pres-inv _)) p)))
 
-    open isIso hiding (inv)
+    open is-iso hiding (inv)
 ```
 
 We now turn to showing that `func`{.Agda} and `inv`{.Agda} are indeed
 inverses. 
 
 ```agda
-    isom : isIso func
-    isom .isIso.inv = inv
+    isom : is-iso func
+    isom .is-iso.inv = inv
 ```
 
 For the direction `func(inv(x)) = x`, it suffices to cover the case
@@ -121,7 +121,7 @@ of) `inv(x)` computes to `f(y) , y , refl`, and `func (f(y) , y , refl)
 
 ```agda
     isom .rinv x =
-      Coeq-elimProp {C = λ x → func (inv x) ≡ x} 
+      Coeq-elim-prop {C = λ x → func (inv x) ≡ x} 
         (λ _ → squash _ _) (λ _ → refl) x
 ```
 
@@ -136,8 +136,8 @@ but the first component of $\mathrm{inv}(\mathrm{func}(x, p))$ is $f(y)$
 ```agda
     isom .linv (x , p) =
       ∥-∥-elim {P = λ p → inv (func (x , p)) ≡ (x , p) } 
-        (λ _ → imφ .snd .GroupOn.hasIsSet _ _) 
-        (λ { (y , hx) → Σ≡Prop (λ _ → squash) hx }) 
+        (λ _ → imφ .snd .Group-on.has-is-set _ _) 
+        (λ { (y , hx) → Σ-prop-path (λ _ → squash) hx }) 
         p
 ```
 
@@ -148,5 +148,5 @@ identity principle`{.Agda}, this gives an identification $\mathrm{im}(f)
 
 ```agda
   1st-Iso-Theorem : imφ ≡ A/kerφ
-  1st-Iso-Theorem = sip Group-univalent ((func , isIso→isEquiv isom) , func-hom)
+  1st-Iso-Theorem = sip Group-univalent ((func , is-iso→is-equiv isom) , func-hom)
 ```

@@ -27,18 +27,18 @@ A category is called **thin** if all of its hom-sets are
 space of objects be a set; In other words, a thin category is
 necessarily [strict].
 
-[_propositions_]: 1Lab.HLevel.html#isProp
+[_propositions_]: 1Lab.HLevel.html#is-prop
 [strict]: Cat.Instances.StrictCat.html
 
 ```agda
-record isThinCat (C : Precategory o h) : Type (o ⊔ h) where
+record is-thin (C : Precategory o h) : Type (o ⊔ h) where
   open Precategory C
   field
-    isStrict : isSet Ob
-    isThin : ∀ A B → isProp (Hom A B)
+    Ob-is-set : is-set Ob
+    Hom-is-prop : ∀ A B → is-prop (Hom A B)
 ```
 
-To avoid Agda record weirdness, we package `isThinCat`{.Agda} into a
+To avoid Agda record weirdness, we package `is-thin`{.Agda} into a
 convenient packaged record together with the underlying category.
 
 ```agda
@@ -46,14 +46,14 @@ record Proset (o h : Level) : Type (lsuc (o ⊔ h)) where
   no-eta-equality
   field
     {underlying} : Precategory o h
-    hasIsThin    : isThinCat underlying
+    has-is-thin    : is-thin underlying
 
   open Precategory underlying public
-  open isThinCat hasIsThin public
+  open is-thin has-is-thin public
 ```
 
 The collection of all thin categories assembles into a subcategory of
-`StrictCat`{.Agda}, which we call `Proset`{.Agda}.
+`Strict-Cat`{.Agda}, which we call `Proset`{.Agda}.
 
 ```agda
 Prosets : ∀ o h → Precategory (lsuc (o ⊔ h)) (o ⊔ h)
@@ -64,12 +64,12 @@ Prosets o h = proset where
   proset : Precategory _ _
   proset .Ob = Proset o h
   proset .Hom C D = Functor (C .underlying) (D .underlying)
-  proset .Hom-set _ D = isSet-Functor (D .isStrict)
+  proset .Hom-set _ D = Functor-is-set (D .Ob-is-set)
   proset .id = Id
   proset ._∘_ = _F∘_
-  proset .idr f = Functor≡ (λ _ → refl) λ _ → refl
-  proset .idl f = Functor≡ (λ _ → refl) λ _ → refl
-  proset .assoc f g h = Functor≡ (λ _ → refl) λ _ → refl
+  proset .idr f = Functor-path (λ _ → refl) λ _ → refl
+  proset .idl f = Functor-path (λ _ → refl) λ _ → refl
+  proset .assoc f g h = Functor-path (λ _ → refl) λ _ → refl
 ```
 
 We also have a convenience function for making any set with a preorder
@@ -79,36 +79,36 @@ into a `ThinCat`{.Agda}.
 module _ where
   open Proset
 
-  makeProset : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'}
-             → isSet A
+  make-proset : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'}
+             → is-set A
              → (∀ {x} → R x x)
              → (∀ {x y z} → R x y → R y z → R x z)
-             → (∀ {x y} → isProp (R x y))
+             → (∀ {x y} → is-prop (R x y))
              → Proset ℓ ℓ'
-  makeProset {A = A} {R} Aset Rrefl Rtrans Rprop = tc where
+  make-proset {A = A} {R} Aset Rrefl Rtrans Rprop = tc where
     open Precategory
 
     tc : Proset _ _
     tc .underlying .Ob          = A
     tc .underlying .Hom         = R
-    tc .underlying .Hom-set _ _ = isProp→isSet Rprop
+    tc .underlying .Hom-set _ _ = is-prop→is-set Rprop
     tc .underlying .id          = Rrefl
     tc .underlying ._∘_ f g     = Rtrans g f
     tc .underlying .idr f       = Rprop _ _
     tc .underlying .idl f       = Rprop _ _
     tc .underlying .assoc f g h = Rprop _ _
 
-    tc .hasIsThin .isThinCat.isStrict = Aset
-    tc .hasIsThin .isThinCat.isThin A B x y = Rprop x y
+    tc .has-is-thin .is-thin.Ob-is-set = Aset
+    tc .has-is-thin .is-thin.Hom-is-prop A B x y = Rprop x y
 ```
 
 # Posets
 
-We refer to a [univalent] `thin`{.Agda ident=isThinCat} category as a
+We refer to a [univalent] `thin`{.Agda ident=is-thin} category as a
 **poset**, short for partially-ordered set. Recall that a category
 $\ca{C}$ is _univalent_ when the type $\sum_{(B : \ca{C})} A \cong B$ is
 contractible for any fixed $A : \ca{C}$ or (more useful here) we have a
-function $\mathrm{isoToPath} : A \cong B \to A \equiv B$ sending the
+function $\mathrm{iso→path} : A \cong B \to A \equiv B$ sending the
 identity isomorphism to `refl`{.Agda}. 
 
 In a thin category, any pair of maps $(A \to B) \times (B \ot A)$ is an
@@ -121,11 +121,11 @@ record Poset (o h : Level) : Type (lsuc (o ⊔ h)) where
   no-eta-equality
   field
     {underlying}   : Precategory o h
-    hasIsThin      : isThinCat underlying
-    hasIsUnivalent : isCategory underlying
+    has-is-thin      : is-thin underlying
+    has-is-univalent : is-category underlying
     
   open Precategory underlying public
-  open isThinCat hasIsThin public
+  open is-thin has-is-thin public
 
   open import Cat.Univalent underlying
 ```
@@ -152,12 +152,12 @@ g) : A \le A$, then it must be equal to `reflexive`{.Agda} above.
 
 ```agda
   antisym : ∀ {x y} → x ≤ y → y ≤ x → x ≡ y
-  antisym f g = isoToPath hasIsUnivalent 
+  antisym f g = iso→path has-is-univalent 
     (record 
       { to = f 
       ; from = g 
       ; inverses = record 
-        { invˡ = isThin _ _ _ _ ; invʳ = isThin _ _ _ _ } })
+        { invˡ = Hom-is-prop _ _ _ _ ; invʳ = Hom-is-prop _ _ _ _ } })
 ```
 
 Forgetting the univalence datum lets us turn a `Poset`{.Agda} into a
@@ -166,7 +166,7 @@ Forgetting the univalence datum lets us turn a `Poset`{.Agda} into a
 ```agda
   →Proset : Proset o h
   →Proset .Proset.underlying = underlying
-  →Proset .Proset.hasIsThin  = hasIsThin
+  →Proset .Proset.has-is-thin  = has-is-thin
 ```
 
 ## Making posets
@@ -183,11 +183,11 @@ by antisymmetry, implies $x \equiv y$.
 module _ where
   open Poset
 
-  makePoset : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'}
+  make-poset : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'}
             → (∀ {x} → R x x)
             → (∀ {x y z} → R x y → R y z → R x z)
             → (∀ {x y} → R x y → R y x → x ≡ y)
-            → (∀ {x y} → isProp (R x y))
+            → (∀ {x y} → is-prop (R x y))
             → Poset ℓ ℓ'
 ```
 
@@ -197,20 +197,20 @@ antisymmetry. We derive that $A$ is a set using Rijke's theorem as
 described above, and prove that any antisymmetric proset is univalent.
 
 ```agda
-  makePoset {A = A} {R} Rrefl Rtrans Rantisym Rprop = tc where
-    Aset : isSet A
-    Aset = Rijke-isSet {R = λ x y → R x y × R y x} 
+  make-poset {A = A} {R} Rrefl Rtrans Rantisym Rprop = tc where
+    Aset : is-set A
+    Aset = Rijke-is-set {R = λ x y → R x y × R y x} 
       (Rrefl , Rrefl) 
       (λ (f , g) → Rantisym f g)
       λ x y i → Rprop (x .fst) (y .fst) i , Rprop (x .snd) (y .snd) i
 
-    open Proset (makeProset Aset Rrefl Rtrans Rprop)
-      renaming ( underlying to cat ; hasIsThin to ist )
+    open Proset (make-proset Aset Rrefl Rtrans Rprop)
+      renaming ( underlying to cat ; has-is-thin to ist )
     open import Cat.Reasoning cat
 
     tc : Poset _ _
     tc .underlying = cat
-    tc .hasIsThin  = ist
+    tc .has-is-thin  = ist
 ```
 
 For the centre of contraction, we take $A$ and the identity isomorphism.
@@ -221,17 +221,17 @@ from the iso we have $(A \le B) \land (B \le A)$, and antisymmetry
 finishes the job.
 
 ```agda
-    tc .hasIsUnivalent A .centre        = A , idIso
-    tc .hasIsUnivalent A .paths (B , i) = Σ≡Prop isp (Rantisym i.to i.from) where 
+    tc .has-is-univalent A .centre        = A , id-iso
+    tc .has-is-univalent A .paths (B , i) = Σ-prop-path isp (Rantisym i.to i.from) where 
       module i = _≅_ i
       abstract
-        isp : ∀ x → isProp (A ≅ x)
+        isp : ∀ x → is-prop (A ≅ x)
         isp ob x y i .to   = Rprop (x .to)   (y .to)   i
         isp ob x y i .from = Rprop (x .from) (y .from) i
         isp ob x y i .inverses = 
-          isProp→PathP 
-            (λ i → isProp-Inverses {f = Rprop (x .to)   (y .to)   i} 
-                                   {g = Rprop (x .from) (y .from) i})
+          is-prop→pathp 
+            (λ i → Inverses-are-prop {f = Rprop (x .to)   (y .to)   i} 
+                                     {g = Rprop (x .from) (y .from) i})
             (x .inverses) (y .inverses) i
 ```
 
@@ -251,20 +251,20 @@ module _ where
            → Functor (C .underlying) (D .underlying)
   Monotone f ord .Functor.F₀ = f
   Monotone f ord .Functor.F₁ = ord _ _
-  Monotone {D = D} f ord .Functor.F-id = D .isThin _ _ _ _
-  Monotone {D = D} f ord .Functor.F-∘ _ _ = D .isThin _ _ _ _
+  Monotone {D = D} f ord .Functor.F-id = D .Hom-is-prop _ _ _ _
+  Monotone {D = D} f ord .Functor.F-∘ _ _ = D .Hom-is-prop _ _ _ _
 
   open Precategory
 
   Posets : ∀ o h → Precategory (lsuc (o ⊔ h)) (o ⊔ h)
   Posets o h .Ob = Poset o h
   Posets _ _ .Hom x y = Functor (x .underlying) (y .underlying)
-  Posets _ _ .Hom-set _ d = isSet-Functor (d .isStrict)
+  Posets _ _ .Hom-set _ d = Functor-is-set (d .Ob-is-set)
   Posets _ _ .id = Id
   Posets _ _ ._∘_ = _F∘_
-  Posets _ _ .idr f = Functor≡ (λ _ → refl) λ _ → refl
-  Posets _ _ .idl f = Functor≡ (λ _ → refl) λ _ → refl
-  Posets _ _ .assoc f g h = Functor≡ (λ _ → refl) λ _ → refl
+  Posets _ _ .idr f = Functor-path (λ _ → refl) λ _ → refl
+  Posets _ _ .idl f = Functor-path (λ _ → refl) λ _ → refl
+  Posets _ _ .assoc f g h = Functor-path (λ _ → refl) λ _ → refl
 ```
 
 # Prosetal reflection
@@ -275,8 +275,8 @@ prosets are functors between strict categories: it acts on morphisms
 literally by the identity function.
 
 ```agda
-Forget : ∀ {o h} → Functor (Prosets o h) (StrictCat o h)
-Forget .F₀ C = Proset.underlying C , Proset.isStrict C
+Forget : ∀ {o h} → Functor (Prosets o h) (Strict-Cat o h)
+Forget .F₀ C = Proset.underlying C , Proset.Ob-is-set C
 Forget .F₁ f = f
 Forget .F-id = refl
 Forget .F-∘ _ _ = refl
@@ -290,12 +290,12 @@ categories into prosets.
 [propositionally truncate]: 1Lab.HIT.Truncation.html
 
 ```agda
-Free : ∀ {o h} → Functor (StrictCat o h) (Prosets o h)
+Free : ∀ {o h} → Functor (Strict-Cat o h) (Prosets o h)
 Free .F₀ C = pro where
   open Precategory
 
   pro : Proset _ _
-  pro = makeProset {R = λ x y → ∥ C .fst .Hom x y ∥} (C .snd) 
+  pro = make-proset {R = λ x y → ∥ C .fst .Hom x y ∥} (C .snd) 
     (inc (C .fst .id)) 
     (∥-∥-elim₂ (λ _ _ → squash) λ f g → inc (C .fst ._∘_ g f)) 
     squash
@@ -312,13 +312,13 @@ Free .F₁ F .F₀      = F₀ F
 Free .F₁ F .F₁      = ∥-∥-map (F₁ F)
 Free .F₁ F .F-id i  = inc (F-id F i)
 Free .F₁ F .F-∘ _ _ = squash _ _
-Free .F-id    = Functor≡ (λ _ → refl) λ f → squash _ _
-Free .F-∘ f g = Functor≡ (λ _ → refl) λ f → squash _ _
+Free .F-id    = Functor-path (λ _ → refl) λ f → squash _ _
+Free .F-∘ f g = Functor-path (λ _ → refl) λ f → squash _ _
 ```
 
 This `Free`{.Agda} functor is a [left adjoint] to the `Forget`{.Agda}
 functor defined above, so in particular we conclude that it induces an
-idempotent monad on `StrictCat`{.Agda}: The "thinning" of a
+idempotent monad on `Strict-Cat`{.Agda}: The "thinning" of a
 `Proset`{.Agda} is the same proset we started with.
 
 [left adjoint]: Cat.Functor.Adjoint.html
@@ -329,17 +329,17 @@ Free⊣Forget .unit .η _ .F₀ x = x
 Free⊣Forget .unit .η _ .F₁ = inc
 Free⊣Forget .unit .η _ .F-id = refl
 Free⊣Forget .unit .η _ .F-∘ f g = refl
-Free⊣Forget .unit .is-natural x y f = Functor≡ (λ x → refl) λ _ → refl
+Free⊣Forget .unit .is-natural x y f = Functor-path (λ x → refl) λ _ → refl
 
 Free⊣Forget .counit .η pro .F₀ x = x
-Free⊣Forget .counit .η pro .F₁ = ∥-∥-elim (λ _ → pro .Proset.isThin _ _) λ x → x
+Free⊣Forget .counit .η pro .F₁ = ∥-∥-elim (λ _ → pro .Proset.Hom-is-prop _ _) λ x → x
 Free⊣Forget .counit .η pro .F-id = refl
-Free⊣Forget .counit .η pro .F-∘ f g = pro .Proset.isThin _ _ _ _
+Free⊣Forget .counit .η pro .F-∘ f g = pro .Proset.Hom-is-prop _ _ _ _
 Free⊣Forget .counit .is-natural x y f = 
-  Functor≡ (λ _ → refl) λ f → y .Proset.isThin _ _ _ _
+  Functor-path (λ _ → refl) λ f → y .Proset.Hom-is-prop _ _ _ _
 
-Free⊣Forget .zig = Functor≡ (λ _ → refl) λ _ → squash _ _
-Free⊣Forget .zag = Functor≡ (λ _ → refl) λ _ → refl
+Free⊣Forget .zig = Functor-path (λ _ → refl) λ _ → squash _ _
+Free⊣Forget .zag = Functor-path (λ _ → refl) λ _ → refl
 ```
 
 ## Poset completions

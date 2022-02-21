@@ -28,14 +28,14 @@ private variable
 Recall the three conditions that make up the notion of [equivalence].
 
 > To be more specific, what we need for a notion of equivalence
-$\mathrm{isEquiv}(f)$ to be "coherent" is:
+$\mathrm{is-equiv}(f)$ to be "coherent" is:
 >
-> - Being an `isomorphism`{.Agda ident=isIso} implies being an
-`equivalence`{.Agda ident=isEquiv} ($\mathrm{isIso}(f) \to
-\mathrm{isEquiv}(f)$)
+> - Being an `isomorphism`{.Agda ident=is-iso} implies being an
+`equivalence`{.Agda ident=is-equiv} ($\mathrm{is-iso}(f) \to
+\mathrm{is-equiv}(f)$)
 >
 > - Being an equivalence implies being an isomorphism
-($\mathrm{isEquiv}(f) \to \mathrm{isIso}(f)$); Taken together with the
+($\mathrm{is-equiv}(f) \to \mathrm{is-iso}(f)$); Taken together with the
 first point we may summarise: "Being an equivalence and being an
 isomorphism are logically equivalent."
 >
@@ -47,10 +47,10 @@ The "blessed" definition of equivalence is that of a map with
 [contractible fibres]. However, this definition is highly abstract, so
 it begs the question: Is it possible to describe a simpler notion of
 equivalence that still satisfies the three conditions? The answer is
-yes! Paradoxically, adding _more_ data to `isIso`{.Agda} leaves us with
+yes! Paradoxically, adding _more_ data to `is-iso`{.Agda} leaves us with
 a good notion of equivalence.
 
-[contractible fibres]: agda://1Lab.Equiv#isEquiv
+[contractible fibres]: agda://1Lab.Equiv#is-equiv
 
 A **left inverse** to a function $f : A \to B$ is a function $g : B \to
 A$ equipped with a [homotopy] $g \circ f \sim \mathrm{id}$. Symmetrically,
@@ -68,14 +68,14 @@ rinv f = Σ[ h ∈ (_ → _) ] (f ∘ h ≡ id)
 ```
 
 A map $f$ equipped with a choice of left- and right- inverse is said to
-be **biinvertible**. Perhaps surprisingly, `isBiinv`{.Agda} is a [good
+be **biinvertible**. Perhaps surprisingly, `is-biinv`{.Agda} is a [good
 notion of equivalence].
 
 [good notion of equivalence]: 1Lab.Equiv.html#equivalences
 
 ```agda
-isBiinv : (A → B) → Type _
-isBiinv f = linv f × rinv f
+is-biinv : (A → B) → Type _
+is-biinv f = linv f × rinv f
 ```
 
 If $f$ is an equivalence, then so are pre- and post- composition with
@@ -90,37 +90,37 @@ then $(f^{-1} \circ -)$ and $(- \circ f^{-1})$ are inverses to $(f \circ
 -)$ and $(- \circ f)$.
 
 ```agda
-isEquiv→isEquiv-precomp  : {f : A → B} → isEquiv f → isEquiv {A = C → A} (f ∘_)
-isEquiv→isEquiv-postcomp : {f : A → B} → isEquiv f → isEquiv {A = B → C} (_∘ f)
+is-equiv→pre-is-equiv  : {f : A → B} → is-equiv f → is-equiv {A = C → A} (f ∘_)
+is-equiv→post-is-equiv : {f : A → B} → is-equiv f → is-equiv {A = B → C} (_∘ f)
 ```
 
 <details>
-<summary> The proof is by `isEquiv→isIso`{.Agda} and
-`isIso→isEquiv`{.Agda}. Nothing too clever. </summary>
+<summary> The proof is by `is-equiv→is-iso`{.Agda} and
+`is-iso→is-equiv`{.Agda}. Nothing too clever. </summary>
 ```
-isEquiv→isEquiv-precomp {f = f} f-eqv = isIso→isEquiv isiso where
-  f-iso : isIso f
-  f-iso = isEquiv→isIso f-eqv
+is-equiv→pre-is-equiv {f = f} f-eqv = is-iso→is-equiv isiso where
+  f-iso : is-iso f
+  f-iso = is-equiv→is-iso f-eqv
 
   f⁻¹ : _
-  f⁻¹ = f-iso .isIso.inv
+  f⁻¹ = f-iso .is-iso.inv
 
-  isiso : isIso (_∘_ f)
-  isiso .isIso.inv f x = f⁻¹ (f x)
-  isiso .isIso.rinv f = funext λ x → f-iso .isIso.rinv _
-  isiso .isIso.linv f = funext λ x → f-iso .isIso.linv _
+  isiso : is-iso (_∘_ f)
+  isiso .is-iso.inv f x = f⁻¹ (f x)
+  isiso .is-iso.rinv f = funext λ x → f-iso .is-iso.rinv _
+  isiso .is-iso.linv f = funext λ x → f-iso .is-iso.linv _
 
-isEquiv→isEquiv-postcomp {f = f} f-eqv = isIso→isEquiv isiso where
-  f-iso : isIso f
-  f-iso = isEquiv→isIso f-eqv
+is-equiv→post-is-equiv {f = f} f-eqv = is-iso→is-equiv isiso where
+  f-iso : is-iso f
+  f-iso = is-equiv→is-iso f-eqv
 
   f⁻¹ : _
-  f⁻¹ = f-iso .isIso.inv
+  f⁻¹ = f-iso .is-iso.inv
 
-  isiso : isIso _
-  isiso .isIso.inv f x = f (f⁻¹ x)
-  isiso .isIso.rinv f = funext λ x → ap f (f-iso .isIso.linv _)
-  isiso .isIso.linv f = funext λ x → ap f (f-iso .isIso.rinv _)
+  isiso : is-iso _
+  isiso .is-iso.inv f x = f (f⁻¹ x)
+  isiso .is-iso.rinv f = funext λ x → ap f (f-iso .is-iso.linv _)
+  isiso .is-iso.linv f = funext λ x → ap f (f-iso .is-iso.rinv _)
 ```
 </details>
 
@@ -129,13 +129,13 @@ With this lemma, it can be shown that if $f$ is an isomorphism, then
 contractible.
 
 ```agda
-isIso→isContr-linv : {f : A → B} → isIso f → isContr (linv f)
-isIso→isContr-linv isiso =
-  isEquiv→isEquiv-postcomp (isIso→isEquiv isiso) .isEqv id
+is-iso→is-contr-linv : {f : A → B} → is-iso f → is-contr (linv f)
+is-iso→is-contr-linv isiso =
+  is-equiv→post-is-equiv (is-iso→is-equiv isiso) .is-eqv id
 
-isIso→isContr-rinv : {f : A → B} → isIso f → isContr (rinv f)
-isIso→isContr-rinv isiso =
-  isEquiv→isEquiv-precomp (isIso→isEquiv isiso) .isEqv id
+is-iso→is-contr-rinv : {f : A → B} → is-iso f → is-contr (rinv f)
+is-iso→is-contr-rinv isiso =
+  is-equiv→pre-is-equiv (is-iso→is-equiv isiso) .is-eqv id
 ```
 
 This is because `linv(f)`{.Agda} is the fibre of $(- \circ f)$ over
@@ -154,8 +154,8 @@ We show that if a map is biinvertible, then it is invertible. This is
 because if a function has two inverses, they coincide:
 
 ```agda
-isBiinv→isIso : {f : A → B} → isBiinv f → isIso f
-isBiinv→isIso {f = f} ((g , g∘f≡id) , h , h∘f≡id) = iso h (happly h∘f≡id) beta
+is-biinv→is-iso : {f : A → B} → is-biinv f → is-iso f
+is-biinv→is-iso {f = f} ((g , g∘f≡id) , h , h∘f≡id) = iso h (happly h∘f≡id) beta
   where
     beta : (x : _) → h (f x) ≡ x
     beta x = 
@@ -167,29 +167,30 @@ isBiinv→isIso {f = f} ((g , g∘f≡id) , h , h∘f≡id) = iso h (happly h∘
 
 Finally, we can show that being biinvertible is [a proposition]. Since
 propositions are those types which are [contractible if inhabited]
-suffices to show that `isBiinv` is contractible when it is inhabited:
+suffices to show that `is-biinv`{.Agda} is contractible when it is
+inhabited:
 
-[a proposition]: agda://1Lab.HLevel#isProp
-[contractible if inhabited]: agda://1Lab.HLevel#inhContr→isProp
+[a proposition]: agda://1Lab.HLevel#is-prop
+[contractible if inhabited]: agda://1Lab.HLevel#contractible-if-inhabited
 
 ```agda
-isProp-isBiinv : {f : A → B} → isProp (isBiinv f)
-isProp-isBiinv {f = f} = inhContr→isProp contract where
-  contract : isBiinv f → isContr (isBiinv f)
+is-biinv-is-prop : {f : A → B} → is-prop (is-biinv f)
+is-biinv-is-prop {f = f} = contractible-if-inhabited contract where
+  contract : is-biinv f → is-contr (is-biinv f)
   contract ibiinv =
-    isHLevel× 0 (isIso→isContr-linv iiso)
-                (isIso→isContr-rinv iiso)
+    ×-is-hlevel 0 (is-iso→is-contr-linv iiso)
+                  (is-iso→is-contr-rinv iiso)
     where
-      iiso = isBiinv→isIso ibiinv
+      iiso = is-biinv→is-iso ibiinv
 ```
 
-Since `isBiinv`{.Agda} is a product of contractibles whenever it is
+Since `is-biinv`{.Agda} is a product of contractibles whenever it is
 inhabited, then it is contractible. Finally, we have that
-$\mathrm{isIso}(f) \to \mathrm{isBiinv}(f)$: pick the given inverse as
+$\mathrm{is-iso}(f) \to \mathrm{is-biinv}(f)$: pick the given inverse as
 both a left- and right- inverse.
 
 ```agda
-isIso→isBiinv : {f : A → B} → isIso f → isBiinv f
-isIso→isBiinv iiso .fst = iiso .isIso.inv , funext (iiso .isIso.linv)
-isIso→isBiinv iiso .snd = iiso .isIso.inv , funext (iiso .isIso.rinv)
+is-iso→is-biinv : {f : A → B} → is-iso f → is-biinv f
+is-iso→is-biinv iiso .fst = iiso .is-iso.inv , funext (iiso .is-iso.linv)
+is-iso→is-biinv iiso .snd = iiso .is-iso.inv , funext (iiso .is-iso.rinv)
 ```

@@ -90,11 +90,11 @@ suspiciously like the identity function:
 
 ```agda
 private
-  toPath : ∀ {ℓ} {A : Type ℓ} → (f : I → A) → Path A (f i0) (f i1)
-  toPath f i = f i
+  to-path : ∀ {ℓ} {A : Type ℓ} → (f : I → A) → Path A (f i0) (f i1)
+  to-path f i = f i
 
 refl : ∀ {ℓ} {A : Type ℓ} {x : A} → x ≡ x
-refl {x = x} = toPath (λ i → x)
+refl {x = x} = to-path (λ i → x)
 ```
 
 The type `Path A x y` is also written `x ≡ y`, when `A` is not important
@@ -368,7 +368,7 @@ exactly two inhabitants ([see here]), which is something like saying
 nonsensical, which is why "there are two paths Bool → Bool" is
 preferred: it's not nonsense.
 
-[see here]: Data.Bool.html#AutBool≡2
+[see here]: Data.Bool.html#Bool-aut≡2
 
 In Cubical Agda, `transport`{.Agda} is a derived notion, with the actual
 primitive being `transp`{.Agda}. Unlike `transport`{.Agda}, which has
@@ -423,18 +423,18 @@ very convenient when working with iterated transports.
 </summary>
 
 ```agda
-transport-fillerExt : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B)
-                    → PathP (λ i → A → p i) (λ x → x) (transport p)
-transport-fillerExt p i x = transport-filler p x i
+transport-filler-ext : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B)
+                     → PathP (λ i → A → p i) (λ x → x) (transport p)
+transport-filler-ext p i x = transport-filler p x i
 
-transport⁻-fillerExt : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B)
+transport⁻-filler-ext : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B)
                      → PathP (λ i → p i → A) (λ x → x) (transport (sym p))
-transport⁻-fillerExt p i x = transp (λ j → p (i ∧ ~ j)) (~ i) x
+transport⁻-filler-ext p i x = transp (λ j → p (i ∧ ~ j)) (~ i) x
 
-transport⁻Transport : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B) (a : A)
+transport⁻transport : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B) (a : A)
                     → transport (sym p) (transport p a) ≡ a
-transport⁻Transport p a i = 
-  transport⁻-fillerExt p (~ i) (transport-fillerExt p (~ i) a)
+transport⁻transport p a i = 
+  transport⁻-filler-ext p (~ i) (transport-filler-ext p (~ i) a)
 ```
 </details>
 
@@ -507,7 +507,8 @@ i → Type ℓ`. Let's characterise `transport`{.Agda} in the lines `(λ i →
 (x : A i) → B i x)`. A first attempt would be to repeat the
 non-dependent construction: Given an `f : (x : A i0) → B i0 x` and an
 argument `x : A i1`, we first get `x' : A i0` by transporting along `λ i
-→ A (~ i)`, compute `f x' : B i0 x`, then transport along `(λ i → B i x')` to g- Wait.
+→ A (~ i)`, compute `f x' : B i0 x`, then transport along `(λ i → B i
+x')` to g- Wait.
 
 ```agda
   _ : {f : (x : A i0) → B i0 x}
@@ -562,15 +563,15 @@ say that `singletons`{.Agda ident=singleton} are contractible is to say
 that every other inhabitant has a path to `(x, refl)`:
 
 ```agda
-isContr-Singleton : ∀ {ℓ} {A : Type ℓ} {x : A} (y : Singleton x)
-                  → Path (Singleton x) (x , refl) y
-isContr-Singleton {x = x} (y , path) i = path i , square i where
+Singleton-is-contr : ∀ {ℓ} {A : Type ℓ} {x : A} (y : Singleton x)
+                   → Path (Singleton x) (x , refl) y
+Singleton-is-contr {x = x} (y , path) i = path i , square i where
   square : Square refl refl path path
   square i j = path (i ∧ j)
 ```
 
 Thus, the definition of `J`{.Agda}: `transport`{.Agda} +
-`isContr-Singleton`{.Agda}.
+`Singleton-is-contr`{.Agda}.
 
 ```agda
 J : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {x : A}
@@ -580,7 +581,7 @@ J : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {x : A}
   → P y p
 J {x = x} P prefl {y} p = transport (λ i → P (path i .fst) (path i .snd)) prefl where
   path : (x , refl) ≡ (y , p)
-  path = isContr-Singleton (y , p)
+  path = Singleton-is-contr (y , p)
 ```
 
 This eliminator _doesn't_ definitionally compute to `prefl` when `p` is
@@ -589,11 +590,11 @@ identity.  However, since it _is_ a transport, we can use the
 `transport-filler`{.Agda} to get a path expressing the computation rule.
 
 ```agda
-JRefl : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {x : A}
-        (P : (y : A) → x ≡ y → Type ℓ₂)
-      → (pxr : P x refl)
-      → J P pxr refl ≡ pxr
-JRefl {x = x} P prefl i = transport-filler (λ i → P _ (λ j → x)) prefl (~ i)
+J-refl : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {x : A}
+           (P : (y : A) → x ≡ y → Type ℓ₂)
+       → (pxr : P x refl)
+       → J P pxr refl ≡ pxr
+J-refl {x = x} P prefl i = transport-filler (λ i → P _ (λ j → x)) prefl (~ i)
 ```
 
 <!--
@@ -666,7 +667,7 @@ it's in [a different module].
 
 In "Book HoTT", the primitive operation from which the
 higher-dimensional structure of types is derived is the `J`{.Agda}
-eliminator, with `JRefl`{.Agda} as a _definitional_ computation rule.
+eliminator, with `J-refl`{.Agda} as a _definitional_ computation rule.
 This has the benefit of being very elegant: This one elimination rule
 generates an infinite amount of coherent data. However, it's very hard
 to make compute in the presence of higher inductive types and
@@ -742,9 +743,9 @@ not $1$ --- like 0.5.
 
 ```agda
 private
-  notAPath : (i : I) → Partial (~ i ∨ i) Bool
-  notAPath i (i = i0) = true
-  notAPath i (i = i1) = false
+  not-a-path : (i : I) → Partial (~ i ∨ i) Bool
+  not-a-path i (i = i0) = true
+  not-a-path i (i = i1) = false
 ```
 
 This represents the following shape: Two disconnected points, with
@@ -763,7 +764,7 @@ a `Partial`{.Agda} to an argument of type `IsOne`{.Agda} to get a value
 of the underlying type.
 
 ```agda
-  _ : notAPath i0 1=1 ≡ true
+  _ : not-a-path i0 1=1 ≡ true
   _ = refl
 ```
 
@@ -869,8 +870,8 @@ a contradiction.[^truenotfalse]
 _this_ module, see [Data.Bool](Data.Bool.html) for that construction.
 
 ```agda
-  notExtensible : ((i : I) → Bool [ (~ i ∨ i) ↦ notAPath i ]) → true ≡ false
-  notExtensible ext i = outS (ext i)
+  not-extensible : ((i : I) → Bool [ (~ i ∨ i) ↦ not-a-path i ]) → true ≡ false
+  not-extensible ext i = outS (ext i)
 ```
 
 This counterexample demonstrates the eliminator for `_[_↦_]`{.Agda},
@@ -1536,18 +1537,18 @@ defined in terms of `transp`{.Agda} and `PathP≡Path`{.Agda}, but this
 definition is more efficient.
 
 ```agda
-toPathP : ∀ {ℓ} (A : I → Type ℓ) (x : A i0) (y : A i1)
-        → coe0→1 A x ≡ y
-        → PathP A x y
-toPathP A x y p i =
+to-pathp : ∀ {ℓ} (A : I → Type ℓ) (x : A i0) (y : A i1)
+         → coe0→1 A x ≡ y
+         → PathP A x y
+to-pathp A x y p i =
   hcomp (λ j → λ { (i = i0) → x
                  ; (i = i1) → p j })
         (coe0→i A i x)
 
-fromPathP : ∀ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1}
-          → PathP A x y
-          → coe0→1 A x ≡ y
-fromPathP {A = A} p i = coei→1 A i (p i)
+from-pathp : ∀ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1}
+           → PathP A x y
+           → coe0→1 A x ≡ y
+from-pathp {A = A} p i = coei→1 A i (p i)
 ```
 
 These definitions illustrate how using the named squeezes and spreads
@@ -1575,12 +1576,12 @@ For `Σ`{.Agda} types, a path between `(a , b) ≡ (x , y)` consists of a
 path `p : a ≡ x`, and a path between `b` and `y` laying over `p`.
 
 ```agda
-Σ-PathP : ∀ {a b} {A : Type a} {B : A → Type b}
+Σ-pathp : ∀ {a b} {A : Type a} {B : A → Type b}
         → {x y : Σ B}
         → (p : x .fst ≡ y .fst)
         → PathP (λ i → B (p i)) (x .snd) (y .snd)
         → x ≡ y
-Σ-PathP p q i = p i , q i
+Σ-pathp p q i = p i , q i
 ```
 
 We can also use the book characterisation of dependent paths, which is
@@ -1588,13 +1589,13 @@ simpler in the case where the `Σ`{.Agda} represents a subset --- i.e.,
 `B` is a family of propositions.
 
 ```agda
-Σ-Path : ∀ {a b} {A : Type a} {B : A → Type b}
+Σ-path : ∀ {a b} {A : Type a} {B : A → Type b}
        → {x y : Σ B}
        → (p : x .fst ≡ y .fst)
        → subst B p (x .snd) ≡ (y .snd)
        → x ≡ y
-Σ-Path {A = A} {B} {x} {y} p q =
-  Σ-PathP p (toPathP _ _ _ q)
+Σ-path {A = A} {B} {x} {y} p q =
+  Σ-pathp p (to-pathp _ _ _ q)
 ```
 
 ## Π types

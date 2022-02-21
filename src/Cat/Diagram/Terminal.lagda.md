@@ -17,13 +17,13 @@ An object $\top$ of a category $\mathcal{C}$ is said to be **terminal**
 if it admits a _unique_ map from any other object:
 
 ```agda
-isTerminal : Ob → Type _
-isTerminal ob = ∀ x → isContr (Hom x ob)
+is-terminal : Ob → Type _
+is-terminal ob = ∀ x → is-contr (Hom x ob)
 
 record Terminal : Type (o ⊔ h) where
   field
     top : Ob
-    has⊤ : isTerminal top
+    has⊤ : is-terminal top
 ```
 
 We refer to the centre of contraction as `!`{.Agda}. Since it inhabits a
@@ -37,7 +37,7 @@ contractible type, it is unique.
   !-unique = has⊤ _ .paths
 
   !-unique₂ : ∀ {x} (f g : Hom x top) → f ≡ g
-  !-unique₂ = isContr→isProp (has⊤ _)
+  !-unique₂ = is-contr→is-prop (has⊤ _)
 
 open Terminal
 ```
@@ -54,20 +54,20 @@ they are equal.
 
 ```agda
 ⊤-unique : (t1 t2 : Terminal) → top t1 ≅ top t2
-⊤-unique t1 t2 = makeIso (! t2) (! t1) (!-unique₂ t2 _ _) (!-unique₂ t1 _ _)
+⊤-unique t1 t2 = make-iso (! t2) (! t1) (!-unique₂ t2 _ _) (!-unique₂ t1 _ _)
 ```
 
 Hence, if $C$ is additionally a category, it has a propositional space of
 terminal objects:
 
 ```agda
-⊤-contractible : isCategory C → isProp Terminal
+⊤-contractible : is-category C → is-prop Terminal
 ⊤-contractible ccat x1 x2 i .top =
-  isoToPath C ccat (⊤-unique x1 x2) i
+  iso→path C ccat (⊤-unique x1 x2) i
 
 ⊤-contractible ccat x1 x2 i .has⊤ ob =
-  isProp→PathP
-    (λ i → isProp-isContr {A = Hom _
-      (isoToPath C ccat (⊤-unique x1 x2) i)})
+  is-prop→pathp
+    (λ i → is-contr-is-prop {A = Hom _
+      (iso→path C ccat (⊤-unique x1 x2) i)})
     (x1 .has⊤ ob) (x2 .has⊤ ob) i
 ```

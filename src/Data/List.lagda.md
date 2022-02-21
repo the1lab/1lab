@@ -115,16 +115,16 @@ We use this to prove that lists preserve h-levels for $n \ge 2$, i.e. if
 `A` is a set (or more) then `List A` is a type of the same h-level.
 
 ```agda
-  isHLevel-List : (n : Nat) → isHLevel A (2 + n) → isHLevel (List A) (2 + n)
-  isHLevel-List n ahl x y = isHLevel≃ (suc n) Code≃Path isHLevel-Code where
-    isHLevel-Code : {x y : List A} → isHLevel (Code x y) (suc n)
-    isHLevel-Code {[]} {[]}         = isProp→isHLevel-suc λ x y → refl
-    isHLevel-Code {[]} {x ∷ y}      = isProp→isHLevel-suc λ x → absurd (Lift.lower x)
-    isHLevel-Code {x ∷ x₁} {[]}     = isProp→isHLevel-suc λ x → absurd (Lift.lower x)
-    isHLevel-Code {x ∷ x₁} {x₂ ∷ y} = isHLevel× (suc n) (ahl _ _) isHLevel-Code
+  List-is-hlevel : (n : Nat) → is-hlevel A (2 + n) → is-hlevel (List A) (2 + n)
+  List-is-hlevel n ahl x y = is-hlevel≃ (suc n) Code≃Path Code-is-hlevel where
+    Code-is-hlevel : {x y : List A} → is-hlevel (Code x y) (suc n)
+    Code-is-hlevel {[]} {[]}         = is-prop→is-hlevel-suc λ x y → refl
+    Code-is-hlevel {[]} {x ∷ y}      = is-prop→is-hlevel-suc λ x → absurd (Lift.lower x)
+    Code-is-hlevel {x ∷ x₁} {[]}     = is-prop→is-hlevel-suc λ x → absurd (Lift.lower x)
+    Code-is-hlevel {x ∷ x₁} {x₂ ∷ y} = ×-is-hlevel (suc n) (ahl _ _) Code-is-hlevel
 
-  isSet→isSet-List : isSet A → isSet (List A)
-  isSet→isSet-List = isHLevel-List zero
+  is-set→List-is-set : is-set A → is-set (List A)
+  is-set→List-is-set = List-is-hlevel zero
 ```
 
 We can define concatenation of lists by recursion:

@@ -25,26 +25,26 @@ private variable
 A relation is _reflexive_ if we have `R x x`, for any `x`:
 
 ```agda
-isReflexive : (R : A → A → Type ℓ) → Type _
-isReflexive R = {x : _} → R x x
+is-reflexive : (R : A → A → Type ℓ) → Type _
+is-reflexive R = {x : _} → R x x
 ```
 
 A relation is _transitive_ if `R x y` and `R y z` implies `R x z`.
 
 ```agda
-isTransitive : (R : A → A → Type ℓ) → Type _
-isTransitive R = {x y z : _} → R x y → R y z → R x z
+is-transitive : (R : A → A → Type ℓ) → Type _
+is-transitive R = {x y z : _} → R x y → R y z → R x z
 ```
 
 A **preorder** is a reflexive, transitive relation. Furthermore, we
 impose that a preorder take value in propositions.
 
 ```agda
-record isPreorder {A : Type ℓ} (R : A → A → Type ℓ') : Type (ℓ ⊔ ℓ') where
+record is-preorder {A : Type ℓ} (R : A → A → Type ℓ') : Type (ℓ ⊔ ℓ') where
   field
-    reflexive     : isReflexive R
-    transitive    : isTransitive R
-    propositional : {x y : A} → isProp (R x y)
+    reflexive     : is-reflexive R
+    transitive    : is-transitive R
+    propositional : {x y : A} → is-prop (R x y)
 ```
 
 ## Partial Orders
@@ -52,29 +52,29 @@ record isPreorder {A : Type ℓ} (R : A → A → Type ℓ') : Type (ℓ ⊔ ℓ
 A **partial order** is a preorder which, in addition, is antisymmetric:
 
 ```agda
-isAntiSymmetric : (R : A → A → Type ℓ) → Type _
-isAntiSymmetric R = {x y : _} → R x y → R y x → x ≡ y
+is-anti-symmetric : (R : A → A → Type ℓ) → Type _
+is-anti-symmetric R = {x y : _} → R x y → R y x → x ≡ y
 
-record isPartialOrder {A : Type ℓ} (R : A → A → Type ℓ') : Type (ℓ ⊔ ℓ') where
+record is-partial-order {A : Type ℓ} (R : A → A → Type ℓ') : Type (ℓ ⊔ ℓ') where
   field
-    preorder : isPreorder R
-    antisym : isAntiSymmetric R
+    preorder : is-preorder R
+    antisym : is-anti-symmetric R
 
-  open isPreorder preorder public
+  open is-preorder preorder public
 ```
 
 Any type with a choice of partial order is a set. This is because of
-`Rijke's theorem`{.Agda ident=Rijke-isSet}: Any type with a reflexive
+`Rijke's theorem`{.Agda ident=Rijke-is-set}: Any type with a reflexive
 relation implying equality is a set.
 
 ```agda
-hasPartialOrder→isSet : {A : Type ℓ} {R : A → A → Type ℓ'}
-                      → isPartialOrder R
-                      → isSet A
-hasPartialOrder→isSet {A = A} {_≤_} ispo =
-  Rijke-isSet {R = R'} reflexive' (λ { (x , y) → antisym x y }) isProp'
+has-partial-order→is-set : {A : Type ℓ} {R : A → A → Type ℓ'}
+                      → is-partial-order R
+                      → is-set A
+has-partial-order→is-set {A = A} {_≤_} ispo =
+  Rijke-is-set {R = R'} reflexive' (λ { (x , y) → antisym x y }) is-prop'
   where
-    open isPartialOrder ispo
+    open is-partial-order ispo
 ```
 
 For the relation, we take $R(x, y) = (x \le y) \land (y \le x)$. By
@@ -88,27 +88,27 @@ products, this is a proposition.
     reflexive' : {x : A} → R' x x
     reflexive' = reflexive , reflexive
 
-    isProp' : {x y : A} → isProp (R' x y)
-    isProp' (a , b) (a' , b') i = propositional a a' i , propositional b b' i
+    is-prop' : {x y : A} → is-prop (R' x y)
+    is-prop' (a , b) (a' , b') i = propositional a a' i , propositional b b' i
 ```
 
 With this theorem, we can prove that being a partial order is a
 proposition. We do this by the characterisation of propositions as those
 types which are `contractible when inhabited`{.Agda
-ident=inhContr→isProp}, since then we're free to assume A is a set.
+ident=contractible-if-inhabited}, since then we're free to assume A is a set.
 
 ```agda
-isProp-isPartialOrder : {A : Type ℓ} {R : A → A → Type ℓ'}
-                      → isProp (isPartialOrder R)
-isProp-isPartialOrder {A = A} {R} = inhContr→isProp contract
+is-partial-order-is-prop : {A : Type ℓ} {R : A → A → Type ℓ'}
+                      → is-prop (is-partial-order R)
+is-partial-order-is-prop {A = A} {R} = contractible-if-inhabited contract
   where
-    open isPartialOrder
-    open isPreorder
+    open is-partial-order
+    open is-preorder
 
-    contract : isPartialOrder R → isContr (isPartialOrder R)
+    contract : is-partial-order R → is-contr (is-partial-order R)
     contract order = contr order deform where
-      A-set : isSet A
-      A-set = hasPartialOrder→isSet order
+      A-set : is-set A
+      A-set = has-partial-order→is-set order
 ```
 
 For the centre of contraction, we're free to use the given witness.
@@ -117,7 +117,7 @@ construction follows directly from the fact that `preorders are
 propositional`{.Agda ident=propositional}.
 
 ```agda
-      deform : (x : isPartialOrder R) → order ≡ x
+      deform : (x : is-partial-order R) → order ≡ x
       deform x i .preorder .reflexive =
         x .propositional (order .preorder .reflexive)
                          (x .preorder .reflexive)
@@ -128,14 +128,14 @@ propositional`{.Agda ident=propositional}.
                          i
 ```
 
-To connect the propositionality witnesses, we use the fact that `isProp
-is a proposition`{.Agda ident=isProp-isProp}.
+To connect the propositionality witnesses, we use the fact that `is-prop
+is a proposition`{.Agda ident=is-prop-is-prop}.
 
 ```agda
       deform x i .preorder .propositional =
-        isProp-isProp (order .preorder .propositional)
-                      (x .preorder .propositional)
-                      i
+        is-prop-is-prop (order .preorder .propositional)
+                        (x .preorder .propositional)
+                        i
 ```
 
 The construction is finished by relating the antisymmetry witnesses.
@@ -159,8 +159,8 @@ data Tri {A : Type ℓ} (R : A → A → Type ℓ') (x y : A) : Type (ℓ ⊔ �
   eq : (R x y → ⊥) → x ≡ y       → (R y x → ⊥) → Tri R x y
   gt : (R x y → ⊥) → (x ≡ y → ⊥) → R y x       → Tri R x y
 
-isTrichotomous : {A : Type ℓ} → (R : A → A → Type ℓ') → Type (ℓ ⊔ ℓ')
-isTrichotomous R = ∀ x y → Tri R x y
+is-trichotomous : {A : Type ℓ} → (R : A → A → Type ℓ') → Type (ℓ ⊔ ℓ')
+is-trichotomous R = ∀ x y → Tri R x y
 ```
 
 Trichotomy is a very powerful property, and we can derive a lot of useful
@@ -170,7 +170,7 @@ To start, trichotomy immediately implies discreteness:
 
 ```agda
 trichotomous-discrete : ∀ {A : Type ℓ} {R : A → A → Type ℓ'}
-                      → isTrichotomous R → Discrete A
+                      → is-trichotomous R → Discrete A
 trichotomous-discrete compare x y with compare x y
 ... | lt _ ¬x≡y _ = no ¬x≡y
 ... | eq _  x≡y _ = yes x≡y

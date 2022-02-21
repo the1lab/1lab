@@ -23,7 +23,7 @@ record Cartesian {a b x y} (f : Hom a b)
 ```
 
 ```agda
-record CartesianLift {x y} (f : Hom x y) (y′ : Ob[ y ]) : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where 
+record Cartesian-lift {x y} (f : Hom x y) (y′ : Ob[ y ]) : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where 
   field
     {x′}       : Ob[ x ] 
     lifting   : Hom[ f ] x′ y′
@@ -31,7 +31,7 @@ record CartesianLift {x y} (f : Hom x y) (y′ : Ob[ y ]) : Type (o ⊔ ℓ ⊔ 
 ```
 
 ```agda
-record CartesianFibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
+record Cartesian-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
   field
-    has-lift : ∀ {x y} (f : Hom x y) → (y′ : Ob[ y ]) → CartesianLift f y′
+    has-lift : ∀ {x y} (f : Hom x y) → (y′ : Ob[ y ]) → Cartesian-lift f y′
 ```

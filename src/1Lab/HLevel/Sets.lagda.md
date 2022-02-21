@@ -35,12 +35,12 @@ hasK A = ∀ {ℓ} {x : A} (P : x ≡ x → Type ℓ) → P refl → (p : x ≡ 
 A type is a Set if, and only if, it satisfies K:
 
 ```agda
-K→isSet : hasK A → isSet A
-K→isSet K x y =
+K→is-set : hasK A → is-set A
+K→is-set K x y =
   J (λ y p → (q : x ≡ y) → p ≡ q) (λ q → K (λ q → refl ≡ q) refl q)
 
-isSet→K : isSet A → hasK A
-isSet→K Aset {x = x} P prefl p = transport (λ i → P (Aset _ _ refl p i)) prefl
+is-set→K : is-set A → hasK A
+is-set→K Aset {x = x} P prefl p = transport (λ i → P (Aset _ _ refl p i)) prefl
 ```
 
 ## Rijke's Theorem
@@ -55,12 +55,12 @@ closure of h-levels under equivalences, `A` is a set.
 Rijke-equivalence : {R : A → A → Type ℓ}
                   → (refl : {x : A} → R x x)
                   → (toid : {x y : A} → R x y → x ≡ y)
-                  → (isProp : {x y : A} → isProp (R x y))
-                  → {x y : A} → isEquiv (toid {x} {y})
+                  → (is-prop : {x y : A} → is-prop (R x y))
+                  → {x y : A} → is-equiv (toid {x} {y})
 Rijke-equivalence {A = A} {R = R} refl toid isprop = total→equiv equiv where
-  equiv : {x : A} → isEquiv (total {P = R x} {Q = x ≡_} (λ y → toid {x} {y}))
-  equiv {x} = isContr→isEquiv
-    (contr (x , refl) λ { (x , q) → Σ-Path (toid q) (isprop _ _) })
+  equiv : {x : A} → is-equiv (total {P = R x} {Q = x ≡_} (λ y → toid {x} {y}))
+  equiv {x} = is-contr→is-equiv
+    (contr (x , refl) λ { (x , q) → Σ-path (toid q) (isprop _ _) })
     (contr (x , λ i → x) λ { (x , q) i → q i , λ j → q (i ∧ j) })
 ```
 
@@ -73,13 +73,13 @@ refl)`.
 [fibrewise equivalences]: agda://1Lab.Equiv.Fibrewise
 
 ```agda
-Rijke-isSet : {R : A → A → Type ℓ}
+Rijke-is-set : {R : A → A → Type ℓ}
             → (refl : {x : A} → R x x)
             → (toid : {x y : A} → R x y → x ≡ y)
-            → (isProp : {x y : A} → isProp (R x y))
-            → isSet A
-Rijke-isSet refl toid isprop x y =
-  isHLevel-equiv 1
+            → (is-prop : {x y : A} → is-prop (R x y))
+            → is-set A
+Rijke-is-set refl toid isprop x y =
+  equiv→is-hlevel 1
     toid (Rijke-equivalence refl toid isprop) isprop
 ```
 
@@ -89,10 +89,10 @@ As a consequence of Rijke's theorem, we get that any type for which we
 can conclude equality from a double-negated equality is a set:
 
 ```agda
-¬¬-separated→isSet : ({x y : A} → ((x ≡ y → ⊥) → ⊥) → x ≡ y)
-                   → isSet A
-¬¬-separated→isSet stable = Rijke-isSet (λ x → x refl) stable prop where
-  prop : {x y : A} → isProp ((x ≡ y → ⊥) → ⊥)
+¬¬-separated→is-set : ({x y : A} → ((x ≡ y → ⊥) → ⊥) → x ≡ y)
+                    → is-set A
+¬¬-separated→is-set stable = Rijke-is-set (λ x → x refl) stable prop where
+  prop : {x y : A} → is-prop ((x ≡ y → ⊥) → ⊥)
   prop p q i x = absurd {A = p x ≡ q x} (p x) i
 ```
 
@@ -100,8 +100,8 @@ From this we get **Hedberg's theorem**: Any type with decidable equality
 is a set.
 
 ```agda
-Discrete→isSet : Discrete A → isSet A
-Discrete→isSet {A = A} dec = ¬¬-separated→isSet sep where
+Discrete→is-set : Discrete A → is-set A
+Discrete→is-set {A = A} dec = ¬¬-separated→is-set sep where
   sep : {x y : A} → ((x ≡ y → ⊥) → ⊥) → x ≡ y
   sep {x = x} {y = y} ¬¬p with dec x y
   ... | yes p = p

@@ -49,13 +49,13 @@ sea of theory has risen to the point where our result is trivial:
 
 ```agda
 Rezk-completion : Precategory o h → Precategory (o ⊔ lsuc h) (o ⊔ h)
-Rezk-completion A = FullInclusion→FullSubcat {F = よ A} (よ-Ff A)
+Rezk-completion A = Full-inclusion→Full-subcat {F = よ A} (よ-is-fully-faithful A)
 
-isCategory-Rezk-completion 
-  : ∀ {A : Precategory o h} → isCategory (Rezk-completion A)
-isCategory-Rezk-completion {o} {h} {A} = 
-  isCategory-Restrict _ (λ _ → squash) 
-    (isCategory-Functor {D = Sets _} isCategory-Sets)
+Rezk-completion-is-category 
+  : ∀ {A : Precategory o h} → is-category (Rezk-completion A)
+Rezk-completion-is-category {o} {h} {A} = 
+  Restrict-is-category _ (λ _ → squash) 
+    (Functor-is-category {D = Sets _} Sets-is-category)
 ```
 
 <!--

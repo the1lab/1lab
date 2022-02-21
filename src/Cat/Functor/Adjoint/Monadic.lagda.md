@@ -72,8 +72,8 @@ F₁ Comparison x =
       R.₁ (adj.counit.ε _ D.∘ L.₁ (R.₁ x))  ≡⟨ R.F-∘ _ _ ⟩
       R.₁ (adj.counit.ε _) C.∘ M₁ (R.₁ x)   ∎
     }
-F-id Comparison = AlgebraHom-path R.F-id
-F-∘ Comparison f g = AlgebraHom-path (R.F-∘ _ _)
+F-id Comparison = Algebra-hom-path R.F-id
+F-∘ Comparison f g = Algebra-hom-path (R.F-∘ _ _)
 ```
 </details>
 

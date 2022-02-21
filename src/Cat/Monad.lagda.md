@@ -67,7 +67,7 @@ and a morphism $\nu : M(A) \to A$.
 [free group]: Algebra.Group.Free.html
 
 ```agda
-record AlgebraOn (M : Monad) (ob : C.Ob) : Type (o ⊔ h) where
+record Algebra-on (M : Monad) (ob : C.Ob) : Type (o ⊔ h) where
   no-eta-equality
   open Monad M
 
@@ -86,7 +86,7 @@ doesn't matter whether you first join then evaluate, or evaluate twice.
     ν-mult : ν C.∘ M₁ ν ≡ ν C.∘ mult.η ob
 
 Algebra : Monad → Type (o ⊔ h)
-Algebra M = Σ (AlgebraOn M)
+Algebra M = Σ (Algebra-on M)
 ```
 
 # Eilenberg-Moore Category
@@ -96,11 +96,11 @@ of the underlying objects of each algebra which commutes with the
 evaluation operation.
 
 ```agda
-record AlgebraHom (M : Monad) (X Y : Algebra M) : Type (o ⊔ h) where
+record Algebra-hom (M : Monad) (X Y : Algebra M) : Type (o ⊔ h) where
   no-eta-equality
   private
-    module X = AlgebraOn (X .snd)
-    module Y = AlgebraOn (Y .snd)
+    module X = Algebra-on (X .snd)
+    module Y = Algebra-on (Y .snd)
 
   open Monad M
 
@@ -108,7 +108,7 @@ record AlgebraHom (M : Monad) (X Y : Algebra M) : Type (o ⊔ h) where
     morphism : C.Hom (X .fst) (Y .fst)
     commutes : morphism C.∘ X.ν ≡ Y.ν C.∘ M₁ morphism
 
-open AlgebraHom
+open Algebra-hom
 ```
 
 Since `commutes`{.Agda} is an inhabitant of a proposition, it suffices
@@ -116,13 +116,13 @@ to test equality of the underlying morphisms to conclude that two
 algebra homomorphisms are equal.
 
 ```
-AlgebraHom-path : {M : Monad} {X Y : Algebra M} {F G : AlgebraHom M X Y}
+Algebra-hom-path : {M : Monad} {X Y : Algebra M} {F G : Algebra-hom M X Y}
                 → morphism F ≡ morphism G
                 → F ≡ G
-AlgebraHom-path x i .morphism = x i
-AlgebraHom-path {M = M} {X} {Y} {F} {G} x i .commutes = 
-  isProp→PathP (λ i → C.Hom-set _ _ (x i C.∘ X .snd .AlgebraOn.ν) 
-                                    (Y .snd .AlgebraOn.ν C.∘ Monad.M₁ M (x i)))
+Algebra-hom-path x i .morphism = x i
+Algebra-hom-path {M = M} {X} {Y} {F} {G} x i .commutes = 
+  is-prop→pathp (λ i → C.Hom-set _ _ (x i C.∘ X .snd .Algebra-on.ν) 
+                                     (Y .snd .Algebra-on.ν C.∘ Monad.M₁ M (x i)))
     (F .commutes) (G .commutes) i
 ```
 
@@ -135,11 +135,11 @@ module _ (M : Monad) where
     module M = Monad M
   open M hiding (M)
   open Precategory
-  open AlgebraOn
+  open Algebra-on
 
   Eilenberg-Moore : Precategory _ _
   Eilenberg-Moore .Ob = Algebra M
-  Eilenberg-Moore .Hom X Y = AlgebraHom M X Y
+  Eilenberg-Moore .Hom X Y = Algebra-hom M X Y
 
   Eilenberg-Moore .id {o , x} =
     record
@@ -158,30 +158,30 @@ module _ (M : Monad) where
                    ν z C.∘ M₁ (morphism F C.∘ morphism G)         ∎
       }
 
-  Eilenberg-Moore .idr f = AlgebraHom-path (C.idr (morphism f))
-  Eilenberg-Moore .idl f = AlgebraHom-path (C.idl (morphism f))
-  Eilenberg-Moore .assoc f g h = AlgebraHom-path (C.assoc _ _ _)
+  Eilenberg-Moore .idr f = Algebra-hom-path (C.idr (morphism f))
+  Eilenberg-Moore .idl f = Algebra-hom-path (C.idl (morphism f))
+  Eilenberg-Moore .assoc f g h = Algebra-hom-path (C.assoc _ _ _)
   Eilenberg-Moore .Hom-set X Y = hl where abstract
-    module X = AlgebraOn (X .snd)
-    module Y = AlgebraOn (Y .snd)
+    module X = Algebra-on (X .snd)
+    module Y = Algebra-on (Y .snd)
 
     T : Type h
     T = Σ[ h ∈ _ ] (h C.∘ X.ν ≡ Y.ν C.∘ M₁ h)
 
-    unpack : T → AlgebraHom M X Y
+    unpack : T → Algebra-hom M X Y
     unpack (h , x) .morphism = h
     unpack (h , x) .commutes = x
 
-    pack : AlgebraHom M X Y → T
+    pack : Algebra-hom M X Y → T
     pack x = x .morphism , x .commutes
 
-    unpack∘pack : isLeftInverse unpack pack
+    unpack∘pack : is-left-inverse unpack pack
     unpack∘pack x i .morphism = x .morphism
     unpack∘pack x i .commutes = x .commutes
 
-    hl : isSet (AlgebraHom M X Y)
-    hl = isHLevel-retract 2 unpack pack unpack∘pack 
-      (isHLevelΣ 2 (C.Hom-set _ _) λ _ → isProp→isSet (C.Hom-set _ _ _ _))
+    hl : is-set (Algebra-hom M X Y)
+    hl = retract→is-hlevel 2 unpack pack unpack∘pack 
+      (Σ-is-hlevel 2 (C.Hom-set _ _) λ _ → is-prop→is-set (C.Hom-set _ _ _ _))
 ```
 
 There is an evident functor from $C^M$ back into C.
@@ -189,7 +189,7 @@ There is an evident functor from $C^M$ back into C.
 ```
   Forget : Functor Eilenberg-Moore C
   Forget .F₀ = fst
-  Forget .F₁ = AlgebraHom.morphism
+  Forget .F₁ = Algebra-hom.morphism
   Forget .F-id = refl
   Forget .F-∘ f g = refl
 ```
@@ -198,8 +198,8 @@ This functor is faithful exactly by our characterisation of equality of
 algebra homomorphisms.
 
 ```
-  Forget-faithful : isFaithful Forget
-  Forget-faithful proof = AlgebraHom-path proof
+  Forget-is-faithful : is-faithful Forget
+  Forget-is-faithful proof = Algebra-hom-path proof
 ```
 
 ## Free Algebras
@@ -227,8 +227,8 @@ multiplication is a natural transformation.
       { morphism = M₁ f
       ; commutes = sym (mult.is-natural _ _ _)
       }
-  Free .F-id = AlgebraHom-path M-id
-  Free .F-∘ f g = AlgebraHom-path (M-∘ f g)
+  Free .F-id = Algebra-hom-path M-id
+  Free .F-∘ f g = Algebra-hom-path (M-∘ f g)
 ```
 
 This is a free construction in the precise sense of the word: it's left
@@ -243,7 +243,7 @@ adjoint to a forgetful functor.
     record { morphism = x .snd .ν
            ; commutes = sym (x .snd .ν-mult)
            }
-  Free⊣Forget .counit .is-natural x y f = AlgebraHom-path (sym (commutes f)) 
-  Free⊣Forget .zig = AlgebraHom-path left-ident
+  Free⊣Forget .counit .is-natural x y f = Algebra-hom-path (sym (commutes f)) 
+  Free⊣Forget .zig = Algebra-hom-path left-ident
   Free⊣Forget .zag {x} = x .snd .ν-unit
 ```

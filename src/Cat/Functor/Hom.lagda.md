@@ -1,8 +1,8 @@
 ```agda
+open import Cat.Diagram.Colimit.Base
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Functor.Base
-open import Cat.Diagram.Colimit.Base
 open import Cat.Prelude
 
 import Cat.Instances.Elements as El
@@ -114,11 +114,11 @@ natural transformation with the identity map; Hence, the Yoneda
 embedding functor is fully faithful.
 
 ```agda
-よ-Ff : isFf よ
-よ-Ff = isIso→isEquiv isom where
-  open isIso
+よ-is-fully-faithful : is-fully-faithful よ
+よ-is-fully-faithful = is-iso→is-equiv isom where
+  open is-iso
 
-  isom : isIso よ₁
+  isom : is-iso よ₁
   isom .inv nt = nt .η _ id
   isom .rinv nt = Nat-path λ c → funext λ g → 
     happly (sym (nt .is-natural _ _ _)) _ ∙ ap (nt .η c) (idl g)
@@ -140,7 +140,7 @@ module _ (P : Functor (C ^op) (Sets h)) where
 
   open El C P
   open Element
-  open ElementHom
+  open Element-hom
 ```
 
 We start by fixing some presheaf $P$, and constructing a `Cocone`{.Agda}
@@ -186,13 +186,13 @@ However, proving this does involve futzing about with various
 naturality + cocone commuting conditions.
 
 ```agda
-  coyoneda : IsColimit (よ F∘ πₚ) Reassemble
+  coyoneda : is-colimit (よ F∘ πₚ) Reassemble
   coyoneda K = contr (cocone-hom universal factors) unique
     where
       module K = Cocone K
       module ∫ = Precategory ∫
       module Reassemble = Cocone Reassemble
-      open CoconeHom
+      open Cocone-hom
 ```
 
 We start by constructing the universal map from $P$ into the coapex
@@ -229,9 +229,9 @@ Finally, uniqueness: This just follows by the commuting
 conditions on `\alpha`.
 
 ```agda
-      unique : (α : CoconeHom (よ F∘ πₚ) Reassemble K)
+      unique : (α : Cocone-hom (よ F∘ πₚ) Reassemble K)
              → cocone-hom universal factors ≡ α
-      unique α = CoconeHom≡ (よ F∘ πₚ) $ Nat-path λ x → funext λ px →
+      unique α = Cocone-hom-path (よ F∘ πₚ) $ Nat-path λ x → funext λ px →
         K.ψ (elem x px) .η x id                        ≡˘⟨ (λ i → α .commutes {o = elem x px} i .η x id) ⟩
         α .hom .η x (Reassemble.ψ (elem x px) .η x id) ≡⟨ ap (α .hom .η x) (happly (P.F-id) px) ⟩
         α .hom .η x px ∎

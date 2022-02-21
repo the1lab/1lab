@@ -84,7 +84,7 @@ comparing each element as we go. Most of the code here is to convince
 Agda that various situations are impossible.
 
 ```agda
-lex-trichotomous : isTrichotomous _≺_ → isTrichotomous (Lex _≺_)
+lex-trichotomous : is-trichotomous _≺_ → is-trichotomous (Lex _≺_)
 lex-trichotomous tri []      []      = eq (λ ()) refl (λ ())
 lex-trichotomous tri []      (x ∷ ys) = lt done (∷≠[] ∘ sym) (λ ())
 lex-trichotomous tri (x ∷ xs) []      = gt (λ ()) ∷≠[] done

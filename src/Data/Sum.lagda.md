@@ -113,12 +113,12 @@ Similarly, given a pair of functions, we can do a case split on the
 coproduct to decide which function to apply:
 
 ```agda
-  the-iso .snd .isIso.inv (f , g) (inl x) = f x
-  the-iso .snd .isIso.inv (f , g) (inr x) = g x
+  the-iso .snd .is-iso.inv (f , g) (inl x) = f x
+  the-iso .snd .is-iso.inv (f , g) (inr x) = g x
 
-  the-iso .snd .isIso.rinv x = refl
-  the-iso .snd .isIso.linv f i (inl x) = f (inl x)
-  the-iso .snd .isIso.linv f i (inr x) = f (inr x)
+  the-iso .snd .is-iso.rinv x = refl
+  the-iso .snd .is-iso.linv f i (inl x) = f (inl x)
+  the-iso .snd .is-iso.linv f i (inr x) = f (inr x)
 ```
 
 ## Transformations
@@ -158,8 +158,8 @@ The proof that these functions are inverses is automatic by computation,
 and thus it can be shown they are equivalences:
 
 ```agda
-isEquiv-from-dec : {A : Type a} → isEquiv (from-dec {A = A})
-isEquiv-from-dec = isIso→isEquiv (iso to-dec p q) where
+from-dec-is-equiv : {A : Type a} → is-equiv (from-dec {A = A})
+from-dec-is-equiv = is-iso→is-equiv (iso to-dec p q) where
   p : _
   p (inl x) = refl
   p (inr x) = refl
@@ -239,37 +239,37 @@ structure, we can establish its h-level by induction:
 ```agda
 open ⊎Path
 
-isHLevel-Code : {x y : A ⊎ B} {n : Nat}
-            → isHLevel A (suc (suc n))
-            → isHLevel B (suc (suc n))
-            → isHLevel (Code x y) (suc n)
-isHLevel-Code {x = inl x} {inl y} {n} ahl bhl =
-  isHLevel-Lift (suc n) (ahl x y)
-isHLevel-Code {x = inr x} {inr y} {n} ahl bhl =
-  isHLevel-Lift (suc n) (bhl x y)
+Code-is-hlevel : {x y : A ⊎ B} {n : Nat}
+            → is-hlevel A (suc (suc n))
+            → is-hlevel B (suc (suc n))
+            → is-hlevel (Code x y) (suc n)
+Code-is-hlevel {x = inl x} {inl y} {n} ahl bhl =
+  Lift-is-hlevel (suc n) (ahl x y)
+Code-is-hlevel {x = inr x} {inr y} {n} ahl bhl =
+  Lift-is-hlevel (suc n) (bhl x y)
 ```
 
 In the two cases where `x` and `y` match, we can use the fact that `Lift
-preserves h-levels`{.Agda ident=isHLevel-Lift} and the assumption that
+preserves h-levels`{.Agda ident=Lift-is-hlevel} and the assumption that
 `A` (or `B`) have the given h-level.
 
 ```agda
-isHLevel-Code {x = inl x} {inr y} {n} ahl bhl =
-  isHLevel-Lift (suc n) (isProp→isHLevel-suc λ x → absurd x)
-isHLevel-Code {x = inr x} {inl y} {n} ahl bhl = 
-  isHLevel-Lift (suc n) (isProp→isHLevel-suc λ x → absurd x)
+Code-is-hlevel {x = inl x} {inr y} {n} ahl bhl =
+  Lift-is-hlevel (suc n) (is-prop→is-hlevel-suc λ x → absurd x)
+Code-is-hlevel {x = inr x} {inl y} {n} ahl bhl = 
+  Lift-is-hlevel (suc n) (is-prop→is-hlevel-suc λ x → absurd x)
 ```
 
 In the mismatched cases, we use the fact that `propositions have any
-successor h-level`{.Agda ident=isProp→isHLevel-suc} to prove that `⊥` is
+successor h-level`{.Agda ident=is-prop→is-hlevel-suc} to prove that `⊥` is
 also at the same h-level as `A` and `B`. Thus, we have:
 
 ```agda
-isHLevel-⊎ : (n : Nat)
-           → isHLevel A (2 + n)
-           → isHLevel B (2 + n)
-           → isHLevel (A ⊎ B) (2 + n)
-isHLevel-⊎ n ahl bhl x y = isHLevel≃ (1 + n) Code≃Path (isHLevel-Code ahl bhl)
+is-hlevel-⊎ : (n : Nat)
+           → is-hlevel A (2 + n)
+           → is-hlevel B (2 + n)
+           → is-hlevel (A ⊎ B) (2 + n)
+is-hlevel-⊎ n ahl bhl x y = is-hlevel≃ (1 + n) Code≃Path (Code-is-hlevel ahl bhl)
 ```
 
 Note that, in general, [being a proposition] and [being contractible]
@@ -278,16 +278,17 @@ are not preserved under coproducts. Consider the case where `(A, a)` and
 their coproduct has two distinct points, `in­l a` and `inr b`. However,
 the coproduct of _disjoint_ propositions is a proposition:
 
-[being a proposition]: agda://1Lab.HLevel#isProp
-[being contractible]: agda://1Lab.HLevel#isContr
+[being a proposition]: agda://1Lab.HLevel#is-prop
+[being contractible]: agda://1Lab.HLevel#is-contr
 
 ```agda
-isProp-disjoint-⊎ : isProp A → isProp B → (A × B → ⊥)
-                  → isProp (A ⊎ B)
-isProp-disjoint-⊎ Ap Bp notab (inl x) (inl y) = ap inl (Ap x y)
-isProp-disjoint-⊎ Ap Bp notab (inl x) (inr y) = absurd (notab (x , y))
-isProp-disjoint-⊎ Ap Bp notab (inr x) (inl y) = absurd (notab (y , x))
-isProp-disjoint-⊎ Ap Bp notab (inr x) (inr y) = ap inr (Bp x y)
+disjoint-⊎-is-prop 
+  : is-prop A → is-prop B → (A × B → ⊥)
+  → is-prop (A ⊎ B)
+disjoint-⊎-is-prop Ap Bp notab (inl x) (inl y) = ap inl (Ap x y)
+disjoint-⊎-is-prop Ap Bp notab (inl x) (inr y) = absurd (notab (x , y))
+disjoint-⊎-is-prop Ap Bp notab (inr x) (inl y) = absurd (notab (y , x))
+disjoint-⊎-is-prop Ap Bp notab (inr x) (inr y) = ap inr (Bp x y)
 ```
 
 ## Closure under equivalences
@@ -302,27 +303,27 @@ equivalences in both arguments, across levels.
 ```agda
 ⊎-ap : A ≃ B → C ≃ D → (A ⊎ C) ≃ (B ⊎ D)
 ⊎-ap (f , f-eqv) (g , g-eqv) = Iso→Equiv cong where
-  f-iso = isEquiv→isIso f-eqv
-  g-iso = isEquiv→isIso g-eqv
+  f-iso = is-equiv→is-iso f-eqv
+  g-iso = is-equiv→is-iso g-eqv
 
   cong : Iso _ _
   cong .fst (inl x) = inl (f x)
   cong .fst (inr x) = inr (g x)
 
-  cong .snd .isIso.inv (inl x) = inl (f-iso .isIso.inv x)
-  cong .snd .isIso.inv (inr x) = inr (g-iso .isIso.inv x)
+  cong .snd .is-iso.inv (inl x) = inl (f-iso .is-iso.inv x)
+  cong .snd .is-iso.inv (inr x) = inr (g-iso .is-iso.inv x)
 
-  cong .snd .isIso.rinv (inl x) = ap inl (f-iso .isIso.rinv x)
-  cong .snd .isIso.rinv (inr x) = ap inr (g-iso .isIso.rinv x)
+  cong .snd .is-iso.rinv (inl x) = ap inl (f-iso .is-iso.rinv x)
+  cong .snd .is-iso.rinv (inr x) = ap inr (g-iso .is-iso.rinv x)
 
-  cong .snd .isIso.linv (inl x) = ap inl (f-iso .isIso.linv x)
-  cong .snd .isIso.linv (inr x) = ap inr (g-iso .isIso.linv x)
+  cong .snd .is-iso.linv (inl x) = ap inl (f-iso .is-iso.linv x)
+  cong .snd .is-iso.linv (inr x) = ap inr (g-iso .is-iso.linv x)
 
 ⊎-apˡ : A ≃ B → (A ⊎ C) ≃ (B ⊎ C)
-⊎-apˡ f = ⊎-ap f (id , idEquiv)
+⊎-apˡ f = ⊎-ap f (id , id-equiv)
 
 ⊎-apʳ : B ≃ C → (A ⊎ B) ≃ (A ⊎ C)
-⊎-apʳ f = ⊎-ap (id , idEquiv) f
+⊎-apʳ f = ⊎-ap (id , id-equiv) f
 ```
 
 ## Algebraic properties
@@ -338,13 +339,13 @@ to finite types, the coproduct is exactly the same as addition.
   i .fst (inl x) = inr x
   i .fst (inr x) = inl x
 
-  i .snd .isIso.inv (inl x) = inr x
-  i .snd .isIso.inv (inr x) = inl x
+  i .snd .is-iso.inv (inl x) = inr x
+  i .snd .is-iso.inv (inr x) = inl x
 
-  i .snd .isIso.rinv (inl x) = refl
-  i .snd .isIso.rinv (inr x) = refl
-  i .snd .isIso.linv (inl x) = refl
-  i .snd .isIso.linv (inr x) = refl
+  i .snd .is-iso.rinv (inl x) = refl
+  i .snd .is-iso.rinv (inr x) = refl
+  i .snd .is-iso.linv (inl x) = refl
+  i .snd .is-iso.linv (inr x) = refl
 
 ⊎-assoc : ((A ⊎ B) ⊎ C) ≃ (A ⊎ (B ⊎ C))
 ⊎-assoc = Iso→Equiv i where
@@ -353,25 +354,25 @@ to finite types, the coproduct is exactly the same as addition.
   i .fst (inl (inr x)) = inr (inl x)
   i .fst (inr x)       = inr (inr x)
 
-  i .snd .isIso.inv (inl x)       = inl (inl x)
-  i .snd .isIso.inv (inr (inl x)) = inl (inr x)
-  i .snd .isIso.inv (inr (inr x)) = inr x
+  i .snd .is-iso.inv (inl x)       = inl (inl x)
+  i .snd .is-iso.inv (inr (inl x)) = inl (inr x)
+  i .snd .is-iso.inv (inr (inr x)) = inr x
 
-  i .snd .isIso.rinv (inl x) = refl
-  i .snd .isIso.rinv (inr (inl x)) = refl
-  i .snd .isIso.rinv (inr (inr x)) = refl
+  i .snd .is-iso.rinv (inl x) = refl
+  i .snd .is-iso.rinv (inr (inl x)) = refl
+  i .snd .is-iso.rinv (inr (inr x)) = refl
 
-  i .snd .isIso.linv (inl (inl x)) = refl
-  i .snd .isIso.linv (inl (inr x)) = refl
-  i .snd .isIso.linv (inr x) = refl
+  i .snd .is-iso.linv (inl (inl x)) = refl
+  i .snd .is-iso.linv (inl (inr x)) = refl
+  i .snd .is-iso.linv (inr x) = refl
 
 ⊎-zeroʳ : (A ⊎ ⊥) ≃ A
 ⊎-zeroʳ .fst (inl x) = x
-⊎-zeroʳ .snd .isEqv y .centre = inl y , refl
-⊎-zeroʳ .snd .isEqv y .paths (inl x , p) i = inl (p (~ i)) , λ j → p (~ i ∨ j)
+⊎-zeroʳ .snd .is-eqv y .centre = inl y , refl
+⊎-zeroʳ .snd .is-eqv y .paths (inl x , p) i = inl (p (~ i)) , λ j → p (~ i ∨ j)
 
 ⊎-zeroˡ : (⊥ ⊎ A) ≃ A
 ⊎-zeroˡ .fst (inr x) = x
-⊎-zeroˡ .snd .isEqv y .centre = inr y , refl
-⊎-zeroˡ .snd .isEqv y .paths (inr x , p) i = inr (p (~ i)) , λ j → p (~ i ∨ j)
+⊎-zeroˡ .snd .is-eqv y .centre = inr y , refl
+⊎-zeroˡ .snd .is-eqv y .paths (inr x , p) i = inr (p (~ i)) , λ j → p (~ i ∨ j)
 ```

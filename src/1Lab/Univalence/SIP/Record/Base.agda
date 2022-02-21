@@ -42,13 +42,13 @@ module _ {ℓ ℓ₁ ℓ₁'} where
     → {X : Type ℓ} → R X → fields→prod fs X
 
   -- What it means for P to be a proposition over the fields fs
-  isPropProperty
+  is-prop-property
     : ∀ {ℓ₂} (R : Type ℓ → Type ℓ₁) (ι : IsHomT ℓ₁' R)
         (fs : RecordFields R ι)
         (P : (X : Type ℓ) → fields→prod fs X → Type ℓ₂)
     → Type (lsuc ℓ ⊔ ℓ₁ ⊔ ℓ₂)
-  isPropProperty R ι fs P =
-    {X : Type ℓ} (r  : R X) → isProp (P X (project-fields fs r))
+  is-prop-property R ι fs P =
+    {X : Type ℓ} (r  : R X) → is-prop (P X (project-fields fs r))
 
   -- Now the actual definitions.
   data RecordFields R ι where
@@ -87,7 +87,7 @@ module _ {ℓ ℓ₁ ℓ₁'} where
       → (predicate : {X : Type ℓ} (r : R X) → P X (project-fields previous-fields r))
       -- ^ Extract a proof of the proposition from the record
 
-      → isPropProperty R ι previous-fields P
+      → is-prop-property R ι previous-fields P
       -- ^ "Preservation datum" (P must be a proposition)
 
       → RecordFields R ι
@@ -111,35 +111,35 @@ module _ {ℓ ℓ₁ ℓ₁'} where
     (project-fields x x₁) , x₂ x₁
 
 data AutoRecord : Typeω where
-  autoRecord : ∀ {ℓ ℓ₁ ℓ₁'}
-             → (R : Type ℓ → Type ℓ₁) (ι : IsHomT ℓ₁' R)
-             → RecordFields R ι
-             → AutoRecord
+  record-desc : ∀ {ℓ ℓ₁ ℓ₁'}
+              → (R : Type ℓ → Type ℓ₁) (ι : IsHomT ℓ₁' R)
+              → RecordFields R ι
+              → AutoRecord
 
   -- ^ Package a record, notion of structure, and field descriptors onto
-  -- an AutoRecord that the autoUnivalentRecord macro can consume.
+  -- an AutoRecord that the Derive-univalent-record macro can consume.
 
-isUnivalent' : ∀ {ℓ ℓ₁ ℓ₂} (S : Type ℓ → Type ℓ₁) → IsHomT ℓ₂ S → Type _
-isUnivalent' S ι =
+is-univalent' : ∀ {ℓ ℓ₁ ℓ₂} (S : Type ℓ → Type ℓ₁) → IsHomT ℓ₂ S → Type _
+is-univalent' S ι =
   ∀ (X Y : _)
   → (f : X .fst ≃ Y .fst)
   → ι X Y f ≃ PathP (λ i → S (ua f i)) (X .snd) (Y .snd)
 
-tm→isHomT : ∀ {ℓ ℓ₁} {S} (tm : StrTm ℓ ℓ₁ S) → IsHomT ℓ₁ S
-tm→isHomT tm = tm→Structure tm .is-hom
+tm→isHomT : ∀ {ℓ ℓ₁} {S} (tm : Str-term ℓ ℓ₁ S) → IsHomT ℓ₁ S
+tm→isHomT tm = Term→structure tm .is-hom
 
-tm→⌜isUnivalent⌝ : ∀ {ℓ ℓ₁} {S} (tm : StrTm ℓ ℓ₁ S) → Type _
-tm→⌜isUnivalent⌝ tm = isUnivalent' _ (tm→isHomT tm)
+tm→⌜is-univalent⌝ : ∀ {ℓ ℓ₁} {S} (tm : Str-term ℓ ℓ₁ S) → Type _
+tm→⌜is-univalent⌝ tm = is-univalent' _ (tm→isHomT tm)
 
-tm→isUnivalent' : ∀ {ℓ ℓ₁} {S} (tm : StrTm ℓ ℓ₁ S) → isUnivalent' S (tm→isHomT tm)
-tm→isUnivalent' tm X Y f = tm→Structure-univalent tm f
+tm→is-univalent' : ∀ {ℓ ℓ₁} {S} (tm : Str-term ℓ ℓ₁ S) → is-univalent' S (tm→isHomT tm)
+tm→is-univalent' tm X Y f = Term→structure-univalent tm f
 
-isUnivalent'→isUnivalent
+is-univalent'→is-univalent
   : ∀ {ℓ ℓ₁ ℓ₂ : Level} (S : Type ℓ → Type ℓ₁)
   → (ι : IsHomT ℓ₂ S)
-  → isUnivalent' S ι
-  → isUnivalent {ℓ = ℓ₂} {S = S} (HomT→Str ι)
-isUnivalent'→isUnivalent S ι ua {X} {Y} = ua X Y
+  → is-univalent' S ι
+  → is-univalent {ℓ = ℓ₂} {S = S} (HomT→Str ι)
+is-univalent'→is-univalent S ι ua {X} {Y} = ua X Y
 
 record TypedTm : Type where
   field type : Term

@@ -20,23 +20,23 @@ In some categories, `Initial`{.Agda} and `Terminal`{.Agda} objects
 coincide. When this occurs, we call the object a **zero object**.
 
 ```agda
-record isZero (ob : Ob) : Type (o ⊔ h) where
+record is-zero (ob : Ob) : Type (o ⊔ h) where
   field
-    is-initial  : isInitial ob
-    is-terminal : isTerminal ob
+    has-is-initial  : is-initial ob
+    has-is-terminal : is-terminal ob
 
 record Zero : Type (o ⊔ h) where
   field
     ∅       : Ob
-    is-zero : isZero ∅
+    has-is-zero : is-zero ∅
 
-  open isZero is-zero public
+  open is-zero has-is-zero public
 
   terminal : Terminal
-  terminal = record { top = ∅ ; has⊤ = is-terminal }
+  terminal = record { top = ∅ ; has⊤ = has-is-terminal }
 
   initial : Initial
-  initial = record { bot = ∅ ; has⊥ = is-initial }
+  initial = record { bot = ∅ ; has⊥ = has-is-initial }
 
   open Terminal terminal public hiding (top)
   open Initial initial public hiding (bot)

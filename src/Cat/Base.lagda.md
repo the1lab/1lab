@@ -50,7 +50,7 @@ well-behaved, we do actually mean _set_: A type of
 
 ```agda
   field
-    Hom-set : (x y : Ob) → isSet (Hom x y)
+    Hom-set : (x y : Ob) → is-set (Hom x y)
 ```
 
 If you are already familiar with the definition of precategory there are
@@ -437,8 +437,8 @@ module _ {o₁ h₁ o₂ h₂}
 
   open _=>_
 
-  isSet-Nat : isSet (F => G)
-  isSet-Nat = isHLevel-retract 2 NT'→NT NT→NT' prf NT'-isSet where
+  Nat-is-set : is-set (F => G)
+  Nat-is-set = retract→is-hlevel 2 NT'→NT NT→NT' prf NT'-is-set where
     NT' : Type _
     NT' = Σ[ eta ∈ ((x : _) → D.Hom (F.₀ x) (G.₀ x)) ]
             ((x y : _) (f : C.Hom x y) → eta y D.∘ F.₁ f ≡ G.₁ f D.∘ eta x)
@@ -450,7 +450,7 @@ module _ {o₁ h₁ o₂ h₂}
     NT→NT' : F => G → NT'
     NT→NT' x = x .η , x .is-natural
     
-    prf : isRightInverse NT→NT' NT'→NT
+    prf : is-right-inverse NT→NT' NT'→NT
     prf x i .η = x .η
     prf x i .is-natural = x .is-natural
 ```
@@ -462,13 +462,13 @@ is that a record has semantic information (the names `η`{.Agda} and
 can be proven to be a set compositionally:
 
 ```agda
-    NT'-isSet : isSet NT'
-    NT'-isSet =
-      isHLevelΣ 2 (isHLevelΠ 2 λ x → D.Hom-set _ _)
-                  (λ _ → isHLevelΠ 2
-                    λ _ → isHLevelΠ 2
-                    λ _ → isHLevelΠ 2
-                    λ _ x y p q → isHLevel-suc 2 (D.Hom-set _ _) _ _ x y p q) 
+    NT'-is-set : is-set NT'
+    NT'-is-set =
+      Σ-is-hlevel 2 (Π-is-hlevel 2 λ x → D.Hom-set _ _)
+                    (λ _ → Π-is-hlevel 2
+                     λ _ → Π-is-hlevel 2
+                     λ _ → Π-is-hlevel 2
+                     λ _ x y p q → is-hlevel-suc 2 (D.Hom-set _ _) _ _ x y p q) 
 ```
 
 Another fundamental lemma is that equality of natural transformations
@@ -476,14 +476,14 @@ depends only on equality of the family of morphisms, since being natural
 is a proposition:
 
 ```agda
-  Nat-PathP : {F' G' : Functor C D}
+  Nat-pathp : {F' G' : Functor C D}
             → (p : F ≡ F') (q : G ≡ G')
             → {a : F => G} {b : F' => G'}
             → (∀ x → PathP _ (a .η x) (b .η x))
             → PathP (λ i → p i => q i) a b
-  Nat-PathP p q path i .η x = path x i
-  Nat-PathP p q {a} {b} path i .is-natural x y f =
-    isProp→PathP 
+  Nat-pathp p q path i .η x = path x i
+  Nat-pathp p q {a} {b} path i .is-natural x y f =
+    is-prop→pathp 
       (λ i → D.Hom-set _ _ 
         (path y i D.∘ Functor.F₁ (p i) f) (Functor.F₁ (q i) f D.∘ path x i))
       (a .is-natural x y f)
@@ -492,5 +492,5 @@ is a proposition:
   Nat-path : {a b : F => G}
            → ((x : _) → a .η x ≡ b .η x)
            → a ≡ b
-  Nat-path = Nat-PathP refl refl
+  Nat-path = Nat-pathp refl refl
 ```

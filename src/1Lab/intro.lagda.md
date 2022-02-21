@@ -1065,8 +1065,8 @@ module _ where private
 -->
 
 ```agda
-  PointedMagmaOn : Type → Type
-  PointedMagmaOn A = A × (A → A → A)
+  Pointed-magma-on : Type → Type
+  Pointed-magma-on A = A × (A → A → A)
 ```
 
 Taking the dependent sum of this family gives us the type of pointed
@@ -1078,8 +1078,8 @@ the most common of nested pairs is with the nesting on the right, we
 allow ourselves to omit the inner parentheses in this case.
 
 ```agda
-  PointedMagma : Type₁
-  PointedMagma = Σ PointedMagmaOn
+  Pointed-magma : Type₁
+  Pointed-magma = Σ Pointed-magma-on
 ```
 
 Note that, since we fixed the family to $\ty \to \ty$, and recalling

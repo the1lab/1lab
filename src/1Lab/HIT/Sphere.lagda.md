@@ -33,10 +33,10 @@ the case for this constructor does not need to be written, this makes
 the proof look rather tautologous.
 
 ```agda
-open isIso
+open is-iso
 
 SuspS⁻¹≃S⁰ : Susp S⁻¹ ≡ S⁰
-SuspS⁻¹≃S⁰ = ua (SuspS⁻¹→S⁰ , isIso→isEquiv iso-pf) where
+SuspS⁻¹≃S⁰ = ua (SuspS⁻¹→S⁰ , is-iso→is-equiv iso-pf) where
   SuspS⁻¹→S⁰ : Susp S⁻¹ → S⁰
   SuspS⁻¹→S⁰ N = true
   SuspS⁻¹→S⁰ S = false
@@ -45,7 +45,7 @@ SuspS⁻¹≃S⁰ = ua (SuspS⁻¹→S⁰ , isIso→isEquiv iso-pf) where
   S⁰→SuspS⁻¹ true = N
   S⁰→SuspS⁻¹ false = S
 
-  iso-pf : isIso SuspS⁻¹→S⁰
+  iso-pf : is-iso SuspS⁻¹→S⁰
   iso-pf .inv = S⁰→SuspS⁻¹
   iso-pf .rinv false = refl
   iso-pf .rinv true = refl
@@ -74,7 +74,7 @@ that `Sⁿ⁻¹ 2` is equivalent to our previous definition of `S¹`:
 
 ```agda
 SuspS⁰≃S¹ : Sⁿ⁻¹ 2 ≡ S¹
-SuspS⁰≃S¹ = ua (SuspS⁰→S¹ , isIso→isEquiv iso-pf) where
+SuspS⁰≃S¹ = ua (SuspS⁰→S¹ , is-iso→is-equiv iso-pf) where
 ```
 
 In `Sⁿ⁻¹ 2`, we have two point constructors joined by two paths, while in
@@ -108,7 +108,7 @@ avoided by working with transports instead of dependent paths, and then by
 using lemmas on transport in pathspaces. </summary>
 
 ```agda
-  iso-pf : isIso SuspS⁰→S¹
+  iso-pf : is-iso SuspS⁰→S¹
   iso-pf .inv = S¹→SuspS⁰
   iso-pf .rinv base = refl
   iso-pf .rinv (loop i) =

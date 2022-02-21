@@ -23,8 +23,8 @@ contains the group zero, and is closed under taking inverses and the
 group multiplication.
 
 ```agda
-record isSubgroup (G : Group ℓ) (H : ℙ (G .fst)) : Type ℓ where
-  open GroupOn (G .snd)
+record is-subgroup (G : Group ℓ) (H : ℙ (G .fst)) : Type ℓ where
+  open Group-on (G .snd)
 
   field
     has-unit : unit ∈ H
@@ -36,20 +36,20 @@ As the name implies, the subgroups of $(G, \star)$ are precisely those
 subsets of $G$ which form a group under (the restriction of) $\star$.
 
 ```agda
-isSubgroup→GroupOn 
-  : (H : ℙ (G .fst)) → isSubgroup G H → GroupOn (Σ[ x ∈ G .fst ] x ∈ H)
-isSubgroup→GroupOn {G = G} H sg = 
-  makeGroup
-    (isHLevelΣ 2 hasIsSet λ x → isProp→isSet (H x .snd))
+is-subgroup→Group-on 
+  : (H : ℙ (G .fst)) → is-subgroup G H → Group-on (Σ[ x ∈ G .fst ] x ∈ H)
+is-subgroup→Group-on {G = G} H sg = 
+  make-group
+    (Σ-is-hlevel 2 has-is-set λ x → is-prop→is-set (H x .snd))
     (unit , has-unit)
     (λ { (x , xin) (y , yin) → x ⋆ y , has-⋆ xin yin} )
     (λ { (x , xin) → (x ⁻¹ , has-inv xin) })
-    (λ x y z → Σ≡Prop (λ x → H x .snd) (sym associative))
-    (λ x → Σ≡Prop (λ x → H x .snd) inverseˡ)
-    (λ x → Σ≡Prop (λ x → H x .snd) inverseʳ)
-    (λ x → Σ≡Prop (λ x → H x .snd) idˡ)
-  where open GroupOn (G .snd)
-        open isSubgroup sg
+    (λ x y z → Σ-prop-path (λ x → H x .snd) (sym associative))
+    (λ x → Σ-prop-path (λ x → H x .snd) inverseˡ)
+    (λ x → Σ-prop-path (λ x → H x .snd) inverseʳ)
+    (λ x → Σ-prop-path (λ x → H x .snd) idˡ)
+  where open Group-on (G .snd)
+        open is-subgroup sg
 ```
 
 ## Normal Subgroups
@@ -58,11 +58,11 @@ We say that a subset $N$ is a **normal subgroup** of $G$ if it is, in
 addition to a subgroup, closed under conjugation by elements of $G$.
 
 ```agda
-record isNormal (G : Group ℓ) (N : ℙ (G .fst)) : Type ℓ where
-  open GroupOn (G .snd)
+record is-normal (G : Group ℓ) (N : ℙ (G .fst)) : Type ℓ where
+  open Group-on (G .snd)
 
   field
-    has-subgroup : isSubgroup G N
+    has-subgroup : is-subgroup G N
     has-conjugate : ∀ {x y} → y ∈ N → (x ⋆ y ⋆ x ⁻¹) ∈ N
 
   has-conjugateˡ : ∀ {x y} → y ∈ N → ((x ⋆ y) ⋆ x ⁻¹) ∈ N
@@ -76,7 +76,7 @@ record isNormal (G : Group ℓ) (N : ℙ (G .fst)) : Type ℓ where
           (x ⁻¹ ⋆ x) ⋆ y ⋆ x       ≡⟨ ap₂ _⋆_ inverseˡ refl ∙ idˡ ⟩
           y ⋆ x                    ∎
   
-  open isSubgroup has-subgroup public
+  open is-subgroup has-subgroup public
 ```
 
 We note in passing that if a group $G$ is commutative, then every
@@ -85,11 +85,11 @@ conjugation by any element is always the identity: $xyx^{-1} = yxx^{-1}
 = y$.
 
 ```agda
-isAbelian→isNormal 
-  : {H : ℙ (G .fst)} → isAbelian G → isSubgroup G H → isNormal G H
-isAbelian→isNormal {G = G} {H = H} abelian sg = r where
-  open GroupOn (G .snd)
-  open isNormal
+is-abelian-group→is-normal 
+  : {H : ℙ (G .fst)} → is-abelian-group G → is-subgroup G H → is-normal G H
+is-abelian-group→is-normal {G = G} {H = H} abelian sg = r where
+  open Group-on (G .snd)
+  open is-normal
 
   commute-conjugate : ∀ x y → (x ⋆ y ⋆ x ⁻¹) ≡ y
   commute-conjugate x y =
@@ -98,7 +98,7 @@ isAbelian→isNormal {G = G} {H = H} abelian sg = r where
     (x ⋆ x ⁻¹) ⋆ y ≡⟨ ap₂ _⋆_ inverseʳ refl ∙ idˡ ⟩
     y              ∎
 
-  r : isNormal _ _
+  r : is-normal _ _
   r .has-subgroup = sg
   r .has-conjugate x = subst (_∈ H) (sym (commute-conjugate _ _)) x
 ```
@@ -106,12 +106,12 @@ isAbelian→isNormal {G = G} {H = H} abelian sg = r where
 We have a convenient packaging of normal subgroups as a record:
 
 ```agda
-record NormalSubgroup (G : Group ℓ) : Type (lsuc ℓ) where
+record Normal-subgroup (G : Group ℓ) : Type (lsuc ℓ) where
   field
     subgroup    : ℙ (G .fst)
-    hasIsNormal : isNormal G subgroup
+    has-is-normal : is-normal G subgroup
 
-  open isNormal hasIsNormal public
+  open is-normal has-is-normal public
 ```
 
 # Kernels and Images
@@ -123,16 +123,16 @@ and the **image** $\mathrm{im}(f)$ is the subgroup of $B$ which $f$ can
 "reach". We start with the kernel:
 
 ```agda
-module _ {A B : Group ℓ} (f : A .fst → B .fst) (h : isGroupHom A B f) where
+module _ {A B : Group ℓ} (f : A .fst → B .fst) (h : Group-hom A B f) where
   private
-    module A = GroupOn (A .snd)
-    module B = GroupOn (B .snd)
-    module h = isGroupHom h
+    module A = Group-on (A .snd)
+    module B = Group-on (B .snd)
+    module h = Group-hom h
 
-  open isSubgroup
+  open is-subgroup
 
-  inKernel : ℙ (A .fst)
-  inKernel x = (f x ≡ B.unit) , B.hasIsSet _ _
+  in-kernel : ℙ (A .fst)
+  in-kernel x = (f x ≡ B.unit) , B.has-is-set _ _
 ```
 
 That the kernel is a subgroup follows from the properties of a group
@@ -140,7 +140,7 @@ homomorphism: They preserve multiplication, the group identity, and
 inverses.
 
 ```agda
-  ker-subgroup : isSubgroup A inKernel
+  ker-subgroup : is-subgroup A in-kernel
   ker-subgroup .has-unit = h.pres-id
   ker-subgroup .has-⋆ {x = x} {y = y} fx=1 fy=1 = 
     f (x A.⋆ y)       ≡⟨ h.pres-⋆ x y ⟩
@@ -149,7 +149,7 @@ inverses.
     B.unit            ∎
   ker-subgroup .has-inv fx=1 = h.pres-inv _ ·· ap B.inverse fx=1 ·· B.inv-unit≡unit
 
-  open isNormal
+  open is-normal
 ```
 
 Normality follows from a slightly annoying calculation: We must show
@@ -158,7 +158,7 @@ turn that into $f(x)f(y)f(x)^{-1}$, remove the $f(y)$ from the middle,
 and cancel the remaining $f(x)f(x)^{-1}$.
 
 ```agda
-  ker-normal : isNormal A inKernel
+  ker-normal : is-normal A in-kernel
   ker-normal .has-subgroup = ker-subgroup
   ker-normal .has-conjugate {x = x} {y = y} fy=1 = 
     f (x A.⋆ y A.⋆ x A.⁻¹)        ≡⟨ h.pres-⋆ _ _ ⟩
@@ -168,21 +168,21 @@ and cancel the remaining $f(x)f(x)^{-1}$.
     f x B.⋆ (f x) B.⁻¹            ≡⟨ B.inverseʳ ⟩
     B.unit                        ∎
 
-  ker : NormalSubgroup A
-  ker = record { subgroup = inKernel ; hasIsNormal = ker-normal }
+  ker : Normal-subgroup A
+  ker = record { subgroup = in-kernel ; has-is-normal = ker-normal }
 
   kerᴳ : Group ℓ
-  kerᴳ = _ , isSubgroup→GroupOn _ ker-subgroup
+  kerᴳ = _ , is-subgroup→Group-on _ ker-subgroup
 ```
 
 Now we turn to the image, $\mathrm{im}(f)$. An element $y : B$ is in the
 image if _there exists_ an $x : A$ such that $f(x)=y$.
 
 ```agda
-  inImage : ℙ (B .fst)
-  inImage y = (∃[ x ∈ A .fst ] (f x ≡ y)) , squash
+  in-image : ℙ (B .fst)
+  in-image y = (∃[ x ∈ A .fst ] (f x ≡ y)) , squash
 
-  image-subgroup : isSubgroup B inImage
+  image-subgroup : is-subgroup B in-image
   image-subgroup .has-unit = inc (A.unit , h.pres-id)
   image-subgroup .has-⋆ {x} {y} = ∥-∥-map₂ λ where
     (f*x , p) (f*y , q) → (f*x A.⋆ f*y) , h.pres-⋆ _ _ ∙ ap₂ B._⋆_ p q
@@ -190,5 +190,5 @@ image if _there exists_ an $x : A$ such that $f(x)=y$.
     (f*x , p) → f*x A.⁻¹ , h.pres-inv _ ∙ ap B.inverse p
 
   im : Group ℓ
-  im = _ , isSubgroup→GroupOn _ image-subgroup
+  im = _ , is-subgroup→Group-on _ image-subgroup
 ```

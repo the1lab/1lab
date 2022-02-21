@@ -28,7 +28,7 @@ record Displayed {o ℓ} (B : Precategory o ℓ)
 
 For each object of the base category, we associate a type of objects.
 Going back to our original example of algebraic structures + Set, this
-would be something like `MonoidOn : Set → Type`. This highlights an
+would be something like `Monoid-on : Set → Type`. This highlights an
 important point for intuition: we should think of the objects of the
 displayed category as _structures_ over the objects of the base.
 
@@ -40,15 +40,15 @@ displayed category as _structures_ over the objects of the base.
 We do a similar thing for morphisms: For each morphism `f : Hom x y`
 in the base category, there is a **set** of morphisms between objects
 in the displayed category. Keeping with our running example, given a
-function `f : X → Y` and monoid structures `M : MonoidOn X`,
-`N : MonoidOn Y`, then `Hom[ f ] M N` is the proposition that "f is a
+function `f : X → Y` and monoid structures `M : Monoid-on X`,
+`N : Monoid-on Y`, then `Hom[ f ] M N` is the proposition that "f is a
 monoid homomorphism". Again, we should best think of these as
 _structures_ over morphisms.
 
 ```agda
     Hom[_] : ∀ {x y} → Hom x y → Ob[ x ] → Ob[ y ] → Type ℓ′
     Hom[_]-set : ∀ {a b} (f : Hom a b)
-                 → (x : Ob[ a ]) → (y : Ob[ b ]) → isSet (Hom[ f ] x y)
+                 → (x : Ob[ a ]) → (y : Ob[ b ]) → is-set (Hom[ f ] x y)
 ```
 
 We also have identity and composition of displayed morphisms, but this

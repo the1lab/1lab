@@ -53,7 +53,7 @@ pairing $\langle f, g \rangle$ is a global element of the product $A
 [terminal object]: Cat.Diagram.Terminal.html
 
 ```agda
-record IsProduct {A B P} (π₁ : Hom P A) (π₂ : Hom P B) : Type (o ⊔ h) where
+record is-product {A B P} (π₁ : Hom P A) (π₂ : Hom P B) : Type (o ⊔ h) where
   field
     ⟨_,_⟩     : ∀ {Q} (p1 : Hom Q A) (p2 : Hom Q B) → Hom Q P
     π₁∘factor : ∀ {Q} {p1 : Hom Q _} {p2} → π₁ ∘ ⟨ p1 , p2 ⟩ ≡ p1
@@ -80,9 +80,9 @@ record Product (A B : Ob) : Type (o ⊔ h) where
     apex : Ob
     π₁ : Hom apex A
     π₂ : Hom apex B
-    hasIsProduct : IsProduct π₁ π₂
+    has-is-product : is-product π₁ π₂
 
-  open IsProduct hasIsProduct public
+  open is-product has-is-product public
 
 open Product
 ```
@@ -129,7 +129,7 @@ $P$, and symmetrically for $P' \to P$.
 
 ```agda
 ×-Unique : (p1 p2 : Product A B) → apex p1 ≅ apex p2
-×-Unique p1 p2 = makeIso p1→p2 p2→p1 p1→p2→p1 p2→p1→p2
+×-Unique p1 p2 = make-iso p1→p2 p2→p1 p1→p2→p1 p2→p1→p2
   where
     module p1 = Product p1
     module p2 = Product p2

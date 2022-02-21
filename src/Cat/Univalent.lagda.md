@@ -25,57 +25,57 @@ Further, the type `C [ A ≃ B ]` satisfies J, by the same argument used
 to construct `EquivJ`{.Agda}.
 
 ```agda
-isCategory : Type _
-isCategory = ∀ A → isContr (Σ[ B ∈ _ ] A ≅ B)
+is-category : Type _
+is-category = ∀ A → is-contr (Σ[ B ∈ _ ] A ≅ B)
 ```
 
 This notion of univalent category corresponds to the usual notion ---
 which is having the canonical map from paths to isomorphisms be an
 equivalence --- by the following argument: Since the types `(Σ[ B ∈ _ ]
-C [ A ≅ B ])` and `Σ[ B ∈ _ ] A ≣ B`, the action of `pathToIso`{.Agda}
-on total spaces is an equivalence; Hence `pathToIso` is an equivalence.
+C [ A ≅ B ])` and `Σ[ B ∈ _ ] A ≣ B`, the action of `path→iso`{.Agda}
+on total spaces is an equivalence; Hence `path→iso` is an equivalence.
 
 ```agda
-pathToIso : ∀ {A B} → A ≡ B → A ≅ B
-pathToIso {A = A} p = transport (λ i → A ≅ p i) idIso
+path→iso : ∀ {A B} → A ≡ B → A ≅ B
+path→iso {A = A} p = transport (λ i → A ≅ p i) id-iso
 ```
 
-First we define, exactly as in the book, the canonical map `pathToIso`{.Agda}.
+First we define, exactly as in the book, the canonical map `path→iso`{.Agda}.
 
 ```agda
-isEquiv-pathToIso : isCategory → ∀ {A B} → isEquiv (pathToIso {A = A} {B = B})
-isEquiv-pathToIso iscat {A} {B} = total→equiv isEquiv-total where
+path→iso-is-equiv : is-category → ∀ {A B} → is-equiv (path→iso {A = A} {B = B})
+path→iso-is-equiv iscat {A} {B} = total→equiv is-equiv-total where
   P Q : Precategory.Ob C → Type _
   P B = A ≡ B
   Q B = A ≅ B
 ```
 
-We consider the map `pathToIso`{.Agda} as a [fibrewise equivalence]
+We consider the map `path→iso`{.Agda} as a [fibrewise equivalence]
 between the two families `A ≡ -` and `C [ A ≅ - ]`. This lets us reduce
-the problem of proving that `pathToIso`{.Agda} is an equivalence to the
+the problem of proving that `path→iso`{.Agda} is an equivalence to the
 problem of proving that it induces an equivalence of total spaces.
 
 [fibrewise equivalence]: agda://1Lab.Equiv.Fibrewise
 
 ```agda
-  isEquiv-total : isEquiv (total {P = P} {Q = Q} (λ A p → pathToIso p))
-  isEquiv-total =
-    isContr→isEquiv (contr (A , λ i → A) isContr-Singleton)
+  is-equiv-total : is-equiv (total {P = P} {Q = Q} (λ A p → path→iso p))
+  is-equiv-total =
+    is-contr→is-equiv (contr (A , λ i → A) Singleton-is-contr)
                     (iscat _)
 ```
 
 Since the total spaces are contractible (`Σ P` by `path induction`{.Agda
 ident=J}, `Σ Q` by the assumption that C is a category) [any map between
-them is an equivalence](agda://1Lab.Equiv#isContr→isEquiv). This implies
+them is an equivalence](agda://1Lab.Equiv#is-contr→is-equiv). This implies
 that we can turn categorical isomorphisms into paths of objects:
 
 ```agda
-isoToPath : isCategory
+iso→path : is-category
           → ∀ {A B}
           → A ≅ B
           → A ≡ B
-isoToPath cat =
-  isEquiv→isIso (isEquiv-pathToIso cat) .isIso.inv
+iso→path cat =
+  is-equiv→is-iso (path→iso-is-equiv cat) .is-iso.inv
 ```
 
 Furthermore, we have that this function is an equivalence, and so the
@@ -83,33 +83,33 @@ type of objects in a univalent category is at most a [groupoid]. We use
 the fact that [h-levels are closed under equivalences] and that
 [dependent sums preserve h-levels].
 
-[h-levels are closed under equivalences]: agda://1Lab.HLevel.Retracts#isHLevel-equiv
-[dependent sums preserve h-levels]: agda://1Lab.HLevel.Retracts#isHLevelΣ
-[groupoid]: agda://1Lab.HLevel#isGroupoid
+[h-levels are closed under equivalences]: agda://1Lab.HLevel.Retracts#equiv→is-hlevel
+[dependent sums preserve h-levels]: agda://1Lab.HLevel.Retracts#Σ-is-hlevel
+[groupoid]: agda://1Lab.HLevel#is-groupoid
 
 ```agda
-isGroupoid-Ob : isCategory → isGroupoid (C .Precategory.Ob)
-isGroupoid-Ob iscat x y =
-  isHLevel-equiv 2
-    (isoToPath iscat)
-    (((_ , isEquiv-pathToIso iscat) e⁻¹) .snd)
-    isSet-≅
+Ob-is-groupoid : is-category → is-groupoid (C .Precategory.Ob)
+Ob-is-groupoid iscat x y =
+  equiv→is-hlevel 2
+    (iso→path iscat)
+    (((_ , path→iso-is-equiv iscat) e⁻¹) .snd)
+    ≅-is-set
 ```
 
 We can characterise transport in the Hom-sets of categories using the
-`pathToIso`{.Agda} equivalence. Transporting in $\hom(p\ i, q\ i)$ is
+`path→iso`{.Agda} equivalence. Transporting in $\hom(p\ i, q\ i)$ is
 equivalent to turning the paths into isomorphisms and
 pre/post-composing:
 
 ```agda
 Hom-transport : ∀ {A B C D} (p : A ≡ C) (q : B ≡ D) (h : Hom A B)
               → transport (λ i → Hom (p i) (q i)) h
-              ≡ pathToIso q .to ∘ h ∘ pathToIso p .from
+              ≡ path→iso q .to ∘ h ∘ path→iso p .from
 Hom-transport {A = A} {B} {D = D} =
   J (λ _ p → (q : B ≡ D) (h : Hom A B) →  transport (λ i → Hom (p i) (q i)) h
-           ≡ pathToIso q .to ∘ h ∘ pathToIso p .from)
+           ≡ path→iso q .to ∘ h ∘ path→iso p .from)
     (J (λ _ q → (h : Hom A B) → transport (λ i → Hom _ (q i)) h
-              ≡ pathToIso q .to ∘ h ∘ pathToIso refl .from)
+              ≡ path→iso q .to ∘ h ∘ path→iso refl .from)
       λ h →
         transport refl h                          ≡⟨ transport-refl _ ⟩
         h                                         ≡⟨ solve C ⟩
@@ -121,9 +121,9 @@ This lets us quickly turn paths between compositions into dependent
 paths in `Hom`{.Agda}-sets.
 
 ```agda
-toHomPathP : ∀ {A B C D} {p : A ≡ C} {q : B ≡ D} {h : Hom A B} {h' : Hom C D}
-           → pathToIso q .to ∘ h ∘ pathToIso p .from ≡ h'
-           → PathP (λ i → Hom (p i) (q i)) h h'
-toHomPathP {p = p} {q} {h} {h'} prf =
-  toPathP _ _ _ (subst (_≡ h') (sym (Hom-transport p q h)) prf)
+Hom-pathp : ∀ {A B C D} {p : A ≡ C} {q : B ≡ D} {h : Hom A B} {h' : Hom C D}
+          → path→iso q .to ∘ h ∘ path→iso p .from ≡ h'
+          → PathP (λ i → Hom (p i) (q i)) h h'
+Hom-pathp {p = p} {q} {h} {h'} prf =
+  to-pathp _ _ _ (subst (_≡ h') (sym (Hom-transport p q h)) prf)
 ```

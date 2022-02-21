@@ -18,10 +18,10 @@ path:
 ```agda
 private
   badPathToEquiv : P i0 ≃ P i1
-  badPathToEquiv = transport (λ i → P i0 ≃ P i) (id , idEquiv)
+  badPathToEquiv = transport (λ i → P i0 ≃ P i) (id , id-equiv)
 ```
 
-While `isEquiv`{.Agda} is a proposition -- and thus the particular proof
+While `is-equiv`{.Agda} is a proposition -- and thus the particular proof
 does not matter propositionally -- Agda is still a programming language,
 so we still need to _evaluate_ the proof. Cohen et. al.'s construction
 gives a much shorter normal form for `line→equiv`{.Agda}.
@@ -67,7 +67,7 @@ we can define _fillers_ `u`{.Agda} and `v`{.Agda} connecting `f`{.Agda}
 To prove that `f`{.Agda} is an equivalence, by definition, it must have
 _contractible `fibres`{.Agda ident=fibre}_. It suffices to show that the
 `fibre`{.Agda} over y is inhabited, and that the fibre over y `is a
-proposition`{.Agda ident=isProp}.
+proposition`{.Agda ident=is-prop}.
 
 To prove that the `fibre`{.Agda} over `y` is inhabited, we take `g y` to
 be the preimage, and prove that there is a path `f (g y) ≡ y`, as we are
@@ -101,7 +101,7 @@ dependent, and thus none of the path operations (especially
 to construct:
 
 ```agda
-  fibProp : (y : B) → isProp (fibre f y)
+  fibProp : (y : B) → is-prop (fibre f y)
   fibProp y (x₀ , β₀) (x₁ , β₁) k = ω k , λ j → δ k (~ j) where
     ω : x₀ ≡ x₁
     δ : Square refl (sym β₀) (sym β₁) (ap f ω)
@@ -261,9 +261,9 @@ of propositionality`{.Agda ident=fibProp}, we get the desired:
 `f`{.Agda} is an equivalence.
 
 ```agda
-lineToisEquiv : isEquiv f
-lineToisEquiv .isEqv y .centre = hasFib y
-lineToisEquiv .isEqv y .paths = fibProp y _
+lineToisEquiv : is-equiv f
+lineToisEquiv .is-eqv y .centre = hasFib y
+lineToisEquiv .is-eqv y .paths = fibProp y _
 
 line→equiv : A ≃ B
 line→equiv .fst = f

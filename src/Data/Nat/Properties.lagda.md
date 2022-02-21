@@ -151,14 +151,14 @@ numbers]. Since they're mostly simple inductive arguments written in
 The ordering relation on the natural numbers is a partial order:
 
 ```agda
-≤-Preorder : isPreorder _≤_
-≤-Preorder .isPreorder.reflexive {x} = ≤-refl x
-≤-Preorder .isPreorder.transitive {x} {y} {z} = ≤-trans x y z
-≤-Preorder .isPreorder.propositional {x} {y} = ≤-prop x y
+≤-is-preorder : is-preorder _≤_
+≤-is-preorder .is-preorder.reflexive {x} = ≤-refl x
+≤-is-preorder .is-preorder.transitive {x} {y} {z} = ≤-trans x y z
+≤-is-preorder .is-preorder.propositional {x} {y} = ≤-prop x y
 
-≤-PartialOrder : isPartialOrder _≤_
-≤-PartialOrder .isPartialOrder.preorder = ≤-Preorder
-≤-PartialOrder .isPartialOrder.antisym {x} {y} = ≤-antisym x y
+≤-is-partial-order : is-partial-order _≤_
+≤-is-partial-order .is-partial-order.preorder = ≤-is-preorder
+≤-is-partial-order .is-partial-order.antisym {x} {y} = ≤-antisym x y
 ```
 
 We also have that a successor is never smaller than the number it

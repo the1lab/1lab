@@ -31,20 +31,20 @@ codomain of a dependent function by an equivalence across universe levels:
 ```agda
 Π-cod≃ : ((x : A) → P x ≃ Q x) → ((x : A) → P x) ≃ ((x : A) → Q x)
 Π-cod≃ k .fst f x = k x .fst (f x)
-Π-cod≃ k .snd .isEqv f .centre .fst x   = equiv-centre (k x) (f x) .fst
-Π-cod≃ k .snd .isEqv f .centre .snd i x = equiv-centre (k x) (f x) .snd i
-Π-cod≃ k .snd .isEqv f .paths (g , p) i .fst x =
+Π-cod≃ k .snd .is-eqv f .centre .fst x   = equiv-centre (k x) (f x) .fst
+Π-cod≃ k .snd .is-eqv f .centre .snd i x = equiv-centre (k x) (f x) .snd i
+Π-cod≃ k .snd .is-eqv f .paths (g , p) i .fst x =
   equiv-path (k x) (f x) (g x , λ j → p j x) i .fst
-Π-cod≃ k .snd .isEqv f .paths (g , p) i .snd j x =
+Π-cod≃ k .snd .is-eqv f .paths (g , p) i .snd j x =
   equiv-path (k x) (f x) (g x , λ k → p k x) i .snd j
 
 Π-impl-cod≃ : ((x : A) → P x ≃ Q x) → ({x : A} → P x) ≃ ({x : A} → Q x)
 Π-impl-cod≃ k .fst f {x} = k x .fst (f {x})
-Π-impl-cod≃ k .snd .isEqv f .centre .fst {x}   = equiv-centre (k x) (f {x}) .fst
-Π-impl-cod≃ k .snd .isEqv f .centre .snd i {x} = equiv-centre (k x) (f {x}) .snd i
-Π-impl-cod≃ k .snd .isEqv f .paths (g , p) i .fst {x} =
+Π-impl-cod≃ k .snd .is-eqv f .centre .fst {x}   = equiv-centre (k x) (f {x}) .fst
+Π-impl-cod≃ k .snd .is-eqv f .centre .snd i {x} = equiv-centre (k x) (f {x}) .snd i
+Π-impl-cod≃ k .snd .is-eqv f .paths (g , p) i .fst {x} =
   equiv-path (k x) (f {x}) (g {x} , λ j → p j {x}) i .fst
-Π-impl-cod≃ k .snd .isEqv f .paths (g , p) i .snd j {x} =
+Π-impl-cod≃ k .snd .is-eqv f .paths (g , p) i .snd j {x} =
   equiv-path (k x) (f {x}) (g {x} , λ k → p k {x}) i .snd j
 ```
 
@@ -54,18 +54,18 @@ codomain:
 ```agda
 function≃ : (A ≃ B) → (C ≃ D) → (A → C) ≃ (B → D)
 function≃ dom rng = Iso→Equiv the-iso where
-  rng-iso = isEquiv→isIso (rng .snd)
-  dom-iso = isEquiv→isIso (dom .snd)
+  rng-iso = is-equiv→is-iso (rng .snd)
+  dom-iso = is-equiv→is-iso (dom .snd)
 
   the-iso : Iso _ _
-  the-iso .fst f x = rng .fst (f (dom-iso .isIso.inv x))
-  the-iso .snd .isIso.inv f x = rng-iso .isIso.inv (f (dom .fst x))
-  the-iso .snd .isIso.rinv f =
-    funext λ x → rng-iso .isIso.rinv _
-               ∙ ap f (dom-iso .isIso.rinv _)
-  the-iso .snd .isIso.linv f =
-    funext λ x → rng-iso .isIso.linv _
-               ∙ ap f (dom-iso .isIso.linv _)
+  the-iso .fst f x = rng .fst (f (dom-iso .is-iso.inv x))
+  the-iso .snd .is-iso.inv f x = rng-iso .is-iso.inv (f (dom .fst x))
+  the-iso .snd .is-iso.rinv f =
+    funext λ x → rng-iso .is-iso.rinv _
+               ∙ ap f (dom-iso .is-iso.rinv _)
+  the-iso .snd .is-iso.linv f =
+    funext λ x → rng-iso .is-iso.linv _
+               ∙ ap f (dom-iso .is-iso.linv _)
 ```
 
 
@@ -73,11 +73,11 @@ function≃ dom rng = Iso→Equiv the-iso where
 
 When the domain and codomain are simple types (rather than a higher
 shape), paths in function spaces are characterised by `funext`{.Agda}.
-We can generalise this to `funextDep`, in which the domain and codomain
+We can generalise this to `funext-dep`, in which the domain and codomain
 are allowed to be lines of types:
 
 ```agda
-funextDep
+funext-dep
   : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
     {f : (x : A i0) → B i0 x} {g : (x : A i1) → B i1 x}
   → ( {x₀ : A i0} {x₁ : A i1}
@@ -85,7 +85,7 @@ funextDep
     → PathP (λ i → B i (p i)) (f x₀) (g x₁) )
   → PathP (λ i → (x : A i) → B i x) f g
 
-funextDep {A = A} {B} {f} {g} h i x =
+funext-dep {A = A} {B} {f} {g} h i x =
   comp
     (λ k → B i (coei→i A i x k))
     (λ k → λ
@@ -98,7 +98,7 @@ funextDep {A = A} {B} {f} {g} h i x =
 A very ugly cubical argument shows that this function is an equivalence:
 
 ```agda
-funextDep≃
+funext-dep≃
   : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
     {f : (x : A i0) → B i0 x} {g : (x : A i1) → B i1 x}
 
@@ -107,11 +107,11 @@ funextDep≃
     )
   ≃ PathP (λ i → (x : A i) → B i x) f g
 
-funextDep≃ {A = A} {B} {f} {g} = Iso→Equiv isom where
-  open isIso
+funext-dep≃ {A = A} {B} {f} {g} = Iso→Equiv isom where
+  open is-iso
   isom : Iso _ _
-  isom .fst = funextDep
-  isom .snd .isIso.inv q p i = q i (p i)
+  isom .fst = funext-dep
+  isom .snd .is-iso.inv q p i = q i (p i)
 
   isom .snd .rinv q m i x =
     comp
@@ -142,30 +142,30 @@ funextDep≃ {A = A} {B} {f} {g} = Iso→Equiv isom where
       sym (coei→i (λ k → coe A i k (p i) ≡ p k) i (coei→i A i (p i)))
       ◁ λ m k → lemi→j i (m ∨ k)
 
-heteroHomotopy≃Homotopy
+hetero-homotopy≃homotopy
   : {A : I → Type ℓ} {B : (i : I) → Type ℓ₁}
     {f : A i0 → B i0} {g : A i1 → B i1}
 
   → ({x₀ : A i0} {x₁ : A i1} → PathP A x₀ x₁ → PathP B (f x₀) (g x₁))
   ≃ ((x₀ : A i0) → PathP B (f x₀) (g (coe0→1 A x₀)))
 
-heteroHomotopy≃Homotopy {A = A} {B} {f} {g} = Iso→Equiv isom where
-  open isIso
+hetero-homotopy≃homotopy {A = A} {B} {f} {g} = Iso→Equiv isom where
+  open is-iso
   isom : Iso _ _
-  isom .fst h x₀ = h (isContrSinglP A x₀ .centre .snd)
+  isom .fst h x₀ = h (SinglP-is-contr A x₀ .centre .snd)
   isom .snd .inv k {x₀} {x₁} p =
-    subst (λ fib → PathP B (f x₀) (g (fib .fst))) (isContrSinglP A x₀ .paths (x₁ , p)) (k x₀)
+    subst (λ fib → PathP B (f x₀) (g (fib .fst))) (SinglP-is-contr A x₀ .paths (x₁ , p)) (k x₀)
 
   isom .snd .rinv k = funext λ x₀ →
     ap (λ α → subst (λ fib → PathP B (f x₀) (g (fib .fst))) α (k x₀))
-      (isProp→isSet isPropSinglP (isContrSinglP A x₀ .centre) _
-        (isContrSinglP A x₀ .paths (isContrSinglP A x₀ .centre))
+      (is-prop→is-set SinglP-is-prop (SinglP-is-contr A x₀ .centre) _
+        (SinglP-is-contr A x₀ .paths (SinglP-is-contr A x₀ .centre))
         refl)
     ∙ transport-refl (k x₀)
 
   isom .snd .linv h j {x₀} {x₁} p =
     transp
-      (λ i → PathP B (f x₀) (g (isContrSinglP A x₀ .paths (x₁ , p) (i ∨ j) .fst)))
+      (λ i → PathP B (f x₀) (g (SinglP-is-contr A x₀ .paths (x₁ , p) (i ∨ j) .fst)))
       j
-      (h (isContrSinglP A x₀ .paths (x₁ , p) j .snd))
+      (h (SinglP-is-contr A x₀ .paths (x₁ , p) j .snd))
 ```

@@ -24,7 +24,7 @@ $x$; Hence the pullback is also called the **fibred product**.
 [product]: Cat.Diagram.Product.html
 
 ```agda
-record IsPullback {P} (p₁ : Hom P X) (f : Hom X Z) (p₂ : Hom P Y) (g : Hom Y Z)
+record is-pullback {P} (p₁ : Hom P X) (f : Hom X Z) (p₂ : Hom P Y) (g : Hom Y Z)
   : Type (ℓ ⊔ ℓ′) where
 
   field
@@ -95,7 +95,7 @@ record Pullback {X Y Z} (f : Hom X Z) (g : Hom Y Z) : Type (ℓ ⊔ ℓ′) wher
     {apex} : Ob
     p₁ : Hom apex X
     p₂ : Hom apex Y
-    hasIsPb : IsPullback p₁ f p₂ g
+    has-is-pb : is-pullback p₁ f p₂ g
 
-  open IsPullback hasIsPb public
+  open is-pullback has-is-pb public
 ```
