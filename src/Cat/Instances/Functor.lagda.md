@@ -135,7 +135,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
 
 ```agda
   Nat-iso→Iso : F [C,D].≅ G → ∀ x → F₀ F x D.≅ F₀ G x
-  Nat-iso→Iso natiso x = 
+  Nat-iso→Iso natiso x =
     D.make-iso (to .η x) (from .η x) 
       (λ i → invˡ i .η x) (λ i → invʳ i .η x)
     where open [C,D]._≅_ natiso
@@ -149,19 +149,17 @@ have the canonical choice of $(F, id)$.
 
 <!--
 ```agda
-module _ {C : Precategory o₁ h₁} {D : Precategory o₂ h₂} (DisCat : is-category D) 
-  where
-  import Cat.Morphism Cat[ C , D ] as [C,D]
-  import Cat.Morphism D as Dm using (_≅_)
+module _ {C : Precategory o₁ h₁} {D : Precategory o₂ h₂} where
+  import Cat.Reasoning Cat[ C , D ] as [C,D]
+  import Cat.Reasoning D as D
   open [C,D]
   open Cat.Univalent D hiding (is-category)
-  private module D = Precategory D
 ```
 -->
 
 ```agda
-  Functor-is-category : is-category Cat[ C , D ]
-  Functor-is-category F .centre = F , id-iso
+  Functor-is-category : is-category D → is-category Cat[ C , D ]
+  Functor-is-category _ F .centre = F , id-iso
 ```
 
 The hard part is showing that, given some other functor $G : C \to D$
@@ -170,7 +168,7 @@ deformation $p : G \equiv F$, such that, over this $p$, the given
 isomorphism looks like the identity. 
 
 ```agda
-  Functor-is-category F .paths (G , F≅G) = Σ-pathp F≡G id≡F≅G where
+  Functor-is-category DisCat F .paths (G , F≅G) = Σ-pathp F≡G id≡F≅G where
 ```
 
 The first thing we must note is that we can recover the components of a
@@ -180,14 +178,14 @@ follow from `equivalences having sections`{.Agda ident=equiv→section}.
 
 ```agda
     ptoi-to 
-      : ∀ x → path→iso (iso→path DisCat (Nat-iso→Iso F≅G _)) .Dm._≅_.to 
+      : ∀ x → path→iso (iso→path DisCat (Nat-iso→Iso F≅G _)) .D._≅_.to 
             ≡ F≅G .to .η x
-    ptoi-to x = ap (λ e → e .Dm._≅_.to) 
+    ptoi-to x = ap (λ e → e .D._≅_.to) 
       (equiv→section (path→iso-is-equiv DisCat) _)
 
-    ptoi-from : ∀ x → path→iso (iso→path DisCat (Nat-iso→Iso F≅G _)) .Dm._≅_.from  
+    ptoi-from : ∀ x → path→iso (iso→path DisCat (Nat-iso→Iso F≅G _)) .D._≅_.from  
               ≡ F≅G .from .η x
-    ptoi-from x = ap (λ e → e .Dm._≅_.from) 
+    ptoi-from x = ap (λ e → e .D._≅_.from) 
       (equiv→section (path→iso-is-equiv DisCat) _)
 ```
 
@@ -240,6 +238,48 @@ show is that $\eta{}_x \circ \mathrm{id} \circ \mathrm{id} = f$.
           (  ap₂ D._∘_ (transport-refl _) (D.idl _) 
           ·· D.idl _ 
           ·· ptoi-from _))
+```
+
+A useful lemma is that if you have a natural transformation where each
+component is an isomorphism, the evident inverse transformation is
+natural too, thus defining an inverse to `Nat-iso→Iso`{.Agda} defined
+above.
+
+```agda
+module _ {C : Precategory o h} {D : Precategory o₁ h₁} {F G : Functor C D} where
+  import Cat.Reasoning D as D
+  import Cat.Reasoning Cat[ C , D ] as [C,D]
+  private
+    module F = Functor F
+    module G = Functor G
+
+  open D.is-invertible
+
+  componentwise-invertible→invertible
+    : (eta : F => G)
+    → (∀ x → D.is-invertible (eta .η x))
+    → [C,D].is-invertible eta
+  componentwise-invertible→invertible eta invs = are-invs where
+    module eta = _=>_ eta
+
+    eps : G => F
+    eps .η x = invs x .inv
+    eps .is-natural x y f = 
+      invs y .inv D.∘ G.₁ f                             ≡⟨ ap₂ D._∘_ refl (sym (D.idr _) ∙ ap (G.₁ f D.∘_) (sym (invs x .invˡ))) ⟩
+      invs y .inv D.∘ G.₁ f D.∘ eta.η x D.∘ invs x .inv ≡⟨ ap₂ D._∘_ refl (D.extendl (sym (eta.is-natural _ _ _))) ⟩
+      invs y .inv D.∘ eta.η y D.∘ F.₁ f D.∘ invs x .inv ≡⟨ D.cancell (invs y .invʳ) ⟩
+      F.₁ f D.∘ invs x .inv ∎
+
+    are-invs : [C,D].is-invertible eta
+    are-invs = 
+      record 
+        { inv      = eps 
+        ; inverses = 
+          record 
+            { invˡ = Nat-path λ x → invs x .invˡ
+            ; invʳ = Nat-path λ x → invs x .invʳ
+            } 
+        }
 ```
 
 # Currying

@@ -12,6 +12,8 @@ module Cat.Univalent.Rezk where
 ```agda
 private variable
   o h o' h' : Level
+open Precategory
+open Functor
 ```
 -->
 

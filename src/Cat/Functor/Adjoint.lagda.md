@@ -14,8 +14,8 @@ private variable
 
 open Functor
 
-adj-level : ∀ {o₁ h₁ o₂ h₂} {C : Precategory o₁ h₁} {D : Precategory o₂ h₂}
-          → Functor C D → Functor D C → Level
+adj-level : ∀ {o₁ h₁ o₂ h₂} (C : Precategory o₁ h₁) (D : Precategory o₂ h₂)
+          → Level
 adj-level {o₁ = o₁} {h₁} {o₂} {h₂} _ _ = o₁ ⊔ o₂ ⊔ h₁ ⊔ h₂
 ```
 -->
@@ -49,7 +49,7 @@ isomorphisms to natural _transformations_. The data of an **adjunction**
 starts as such:
 
 ```agda
-record _⊣_ (L : Functor C D) (R : Functor D C) : Type (adj-level L R) where
+record _⊣_ (L : Functor C D) (R : Functor D C) : Type (adj-level C D) where
   private
     module C = Precategory C
     module D = Precategory D

@@ -128,6 +128,14 @@ make-iso f g p q ._≅_.from = g
 make-iso f g p q ._≅_.inverses .Inverses.invˡ = p
 make-iso f g p q ._≅_.inverses .Inverses.invʳ = q
 
+invertible→iso : (f : Hom a b) → is-invertible f → a ≅ b
+invertible→iso f x = 
+  record 
+    { to       = f 
+    ; from     = x .is-invertible.inv 
+    ; inverses = x .is-invertible.inverses 
+    }
+
 ≅-is-set : is-set (a ≅ b)
 ≅-is-set x y p q = s where
   open _≅_

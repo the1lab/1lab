@@ -47,6 +47,13 @@ prove the conjunction as a theorem.
 is-fully-faithful : Functor C D → Type _
 is-fully-faithful F = ∀ {x y} → is-equiv (F₁ F {x = x} {y})
 
+fully-faithful→faithful : {F : Functor C D} → is-fully-faithful F → is-faithful F
+fully-faithful→faithful {F = F} ff {_} {_} {x} {y} p = 
+  x                         ≡⟨ sym (equiv→retraction ff x) ⟩
+  equiv→inverse ff (F₁ F x) ≡⟨ ap (equiv→inverse ff) p ⟩
+  equiv→inverse ff (F₁ F y) ≡⟨ equiv→retraction ff y ⟩
+  y                         ∎
+
 full+faithful→ff 
   : (F : Functor C D) → is-full F → is-faithful F → is-fully-faithful F
 full+faithful→ff {C = C} {D = D} F surj inj .is-eqv = p where
