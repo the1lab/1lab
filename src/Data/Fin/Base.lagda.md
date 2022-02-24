@@ -40,7 +40,7 @@ to-nat (fsuc i) = suc (to-nat i)
 A note of caution: because of some ✨technical reasons✨ cubical
 agda cannot handle transports over indexed inductive types very well.
 Instead, we define a function `cast`{.Agda} that computes on
-the indicies of `Fin`{.Agda}, rather than on the path.
+the indices of `Fin`{.Agda}, rather than on the path.
 
 ```agda
 cast : ∀ {m n} → m ≡ n → Fin m → Fin n
@@ -128,15 +128,15 @@ Discrete-Fin (fsuc i) (fsuc j) with Discrete-Fin i j
 ... | no ¬i≡j = no λ suci≡sucj → ¬i≡j (fsuc-inj suci≡sucj)
 ```
 
-[Hedberg's theorem] implies that `Fin{.Agda} is a [set], i.e., it only
+[Hedberg's theorem] implies that `Fin`{.Agda} is a [set], i.e., it only
 has trivial paths.
 
 [Hedberg's theorem]: agda://1Lab.HLevel.Sets#Discrete→is-set
 [set]: agda://1Lab.HLevel#is-set
 
 ```agda
-Nat-is-set : ∀ {n} → is-set (Fin n)
-Nat-is-set = Discrete→is-set Discrete-Fin
+Fin-is-set : ∀ {n} → is-set (Fin n)
+Fin-is-set = Discrete→is-set Discrete-Fin
 ```
 
 ## Ordering
@@ -162,7 +162,7 @@ infix 3 _<_
 Next, we define a pair of functions `squish{.Agda} and `skip`{.Agda},
 which are the building blocks for _all_ monotone functions between
 `Fin`{.Agda}. `squish i` takes a `j : Fin (suc n)` to a `Fin n`
-by mapping both `i` and `i+1` to `i`. It's counterpart `skip i`
+by mapping both `i` and `i+1` to `i`. Its counterpart `skip i`
 takes some `j : Fin n` to a `Fin (suc n)` by skipping over `i` instead.
 
 ```agda

@@ -20,7 +20,7 @@ we can re-use all the proofs about the ordering on `Nat`{.Agda}.
 
 However, there are still quite a few interesting things one can say about
 `skip`{.Agda} and `squish`{.Agda}. In particular, we can prove the 
-*Simplicial Identities*, which characterize the interactions between
+*simplicial identities*, which characterize the interactions between
 these two functions.
 
 These lemmas might seem somewhat arbitrary and complicated, which
@@ -34,13 +34,13 @@ of a mess!
 
 ```agda
 skip-comm : ∀ {n} (i j : Fin (suc n)) → i ≤ j
-            → ∀ x → skip (weaken i) (skip j x) ≡ skip (fsuc j) (skip i x)
+          → ∀ x → skip (weaken i) (skip j x) ≡ skip (fsuc j) (skip i x)
 skip-comm fzero    j        le x        = refl
 skip-comm (fsuc i) (fsuc j) le fzero    = refl
 skip-comm (fsuc i) (fsuc j) le (fsuc x) = ap fsuc (skip-comm i j le x)
 
 drop-comm : ∀ {n} (i j : Fin n) → i ≤ j
-            → ∀ x → squish j (squish (weaken i) x) ≡ squish i (squish (fsuc j) x)
+          → ∀ x → squish j (squish (weaken i) x) ≡ squish i (squish (fsuc j) x)
 drop-comm fzero    fzero    le fzero = refl
 drop-comm fzero    fzero    le (fsuc x) = refl
 drop-comm fzero    (fsuc j) le fzero = refl
@@ -49,13 +49,13 @@ drop-comm (fsuc i) (fsuc j) le fzero = refl
 drop-comm (fsuc i) (fsuc j) le (fsuc x) = ap fsuc (drop-comm i j le x)
 
 squish-skip-comm : ∀ {n} (i : Fin (suc n)) (j : Fin n) → i < fsuc j
-                   → ∀ x → squish (fsuc j) (skip (weaken i) x) ≡ skip i (squish j x)
+                 → ∀ x → squish (fsuc j) (skip (weaken i) x) ≡ skip i (squish j x)
 squish-skip-comm fzero j le x = refl
 squish-skip-comm (fsuc i) (fsuc j) le fzero = refl
 squish-skip-comm (fsuc i) (fsuc j) le (fsuc x) = ap fsuc (squish-skip-comm i j le x)
 
 squish-skip : ∀ {n} (i j : Fin n) → i ≡ j
-              → ∀ x → squish j (skip (weaken j) x) ≡ x
+            → ∀ x → squish j (skip (weaken j) x) ≡ x
 squish-skip fzero fzero p x = refl
 squish-skip fzero (fsuc j) p x = absurd (fzero≠fsuc p)
 squish-skip (fsuc i) fzero p x = refl
