@@ -6,10 +6,9 @@ module 1Lab.Type where
 
 A **universe** is a type whose inhabitants are types. In Agda, there is
 a family of universes, which, by default, is called `Set`. Rather
-recently, Agda gained [a flag] to make `Set` not act like a keyword, and
+recently, Agda gained a flag to make `Set` not act like a keyword, and
 allow renaming it in an import declaration from the `Agda.Primitive`
 module.
-
 
 ```agda
 open import Agda.Primitive
