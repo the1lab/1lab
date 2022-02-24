@@ -1,6 +1,6 @@
 ```agda
 open import Cat.Functor.Adjoint.Monad
-open import Cat.Functor.Adjoint.Monad
+open import Cat.Functor.Equivalence
 open import Cat.Functor.Adjoint
 open import Cat.Diagram.Monad
 open import Cat.Prelude
@@ -77,8 +77,15 @@ F-∘ Comparison f g = Algebra-hom-path (R.F-∘ _ _)
 ```
 </details>
 
-An adjunction is _monadic_ if `Comparison`{.Agda} is an `equivalence of
-categories`{.Agda ident="is-Equiv"}.
+An adjunction is _monadic_ if `Comparison`{.Agda} is an [equivalence of
+categories], thus exhibiting $C$ as the category of $R\circ L$-algebras:
+
+[equivalence of categories]: Cat.Functor.Equivalence.html
+
+```agda
+is-monadic : Type _
+is-monadic = is-equivalence Comparison
+```
 
 <!--
 ```agda

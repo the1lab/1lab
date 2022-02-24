@@ -2,6 +2,7 @@
 open import Cat.Instances.Functor
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
+open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -333,4 +334,42 @@ needs an appeal to faithfulness (two, actually):
       open ∑ (eso (F₀ F x)) renaming (fst to f*x ; snd to f*x-iso)
       ffx = f*x-iso .di.from
       ftx = f*x-iso .di.to
+```
+
+## Isomorphisms
+
+Another, more direct way of proving that a functor is an equivalence of
+precategories is proving that it is an **isomorphism of precategories**:
+It's fully faithful, thus a typal equivalence of morphisms, and in
+addition its action on objects is an equivalence of types.
+
+```agda
+record is-precat-iso (F : Functor C D) : Type (adj-level C D) where
+  field
+    has-is-ff  : is-fully-faithful F
+    has-is-iso : is-equiv (F₀ F)
+```
+
+Such a functor is (immediately) fully faithful, and the inverse
+`has-is-iso`{.Agda} means that it is split essentially surjective; For
+given $y : D$, the inverse of $F_0$ gives us an object $F^{-1}(y)$; We must
+then provide an isomorphism $F(F^{-1}(y)) \cong y$, but those are
+identical, hence isomorphic.
+
+```agda
+module _ {F : Functor C D} (p : is-precat-iso F) where
+  open is-precat-iso p
+
+  is-precat-iso→is-split-eso : is-split-eso F
+  is-precat-iso→is-split-eso ob = equiv→inverse has-is-iso ob , isom
+    where isom = path→iso D (equiv→section has-is-iso _)
+```
+
+Thus, by the theorem above, $F$ is an adjoint equivalence of
+precategories.
+
+```agda
+  is-precat-iso→is-equivalence : is-equivalence F
+  is-precat-iso→is-equivalence = 
+    ff+split-eso→is-equivalence has-is-ff is-precat-iso→is-split-eso
 ```

@@ -3,7 +3,11 @@ open import Algebra.Semigroup
 open import Algebra.Monoid
 open import Algebra.Magma
 
+open import Cat.Functor.Adjoint.Monadic
+open import Cat.Instances.Delooping
+open import Cat.Functor.Equivalence
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 open import Data.List
@@ -102,6 +106,14 @@ a `set`{.Agda ident=Set} into a monoid in the most efficient way.
 
 
 ```agda
+map-id : ∀ {ℓ} {A : Type ℓ} (xs : List A) → map (λ x → x) xs ≡ xs
+map-id [] = refl
+map-id (x ∷ xs) = ap (x ∷_) (map-id xs)
+
+map-++ : ∀ {ℓ} {x y : Type ℓ} (f : x → y) xs ys → map f (xs ++ ys) ≡ map f xs ++ map f ys
+map-++ f [] ys = refl
+map-++ f (x ∷ xs) ys = ap (f x ∷_) (map-++ f xs ys)
+
 Free : ∀ {ℓ} → Functor (Sets ℓ) (Monoids ℓ)
 Free .F₀ (A , s) = List A , List-is-monoid s
 ```
@@ -111,16 +123,8 @@ monoid identity definitionally; We must prove that it preserves
 concatenation, identity and composition by induction on the list.
 
 ```agda
-Free .F₁ f = map f , record { pres-id = refl ; pres-⋆  = map-++ f } where
-  map-++ : ∀ {x y} (f : x → y) xs ys → map f (xs ++ ys) ≡ map f xs ++ map f ys
-  map-++ f [] ys = refl
-  map-++ f (x ∷ xs) ys = ap (f x ∷_) (map-++ f xs ys)
-
-Free .F-id = Σ-prop-path Monoid-hom-is-prop (funext map-id) where
-  map-id : ∀ xs → map (λ x → x) xs ≡ xs
-  map-id [] = refl
-  map-id (x ∷ xs) = ap (x ∷_) (map-id xs)
-
+Free .F₁ f = map f , record { pres-id = refl ; pres-⋆  = map-++ f }
+Free .F-id = Σ-prop-path Monoid-hom-is-prop (funext map-id)
 Free .F-∘ f g = Σ-prop-path Monoid-hom-is-prop (funext map-∘) where
   map-∘ : ∀ xs → map (λ x → f (g x)) xs ≡ map f (map g xs)
   map-∘ [] = refl
@@ -182,14 +186,146 @@ fold-pure (x ∷ xs) = ap (x ∷_) (fold-pure xs)
 Free⊣Forget : ∀ {ℓ} → Free {ℓ} ⊣ Forget
 Free⊣Forget .unit .η _ x = x ∷ []
 Free⊣Forget .unit .is-natural x y f = refl
-
 Free⊣Forget .counit .η M = fold M , record { pres-id = refl ; pres-⋆ = fold-++ }
 Free⊣Forget .counit .is-natural x y (f , h) = 
-
   Σ-prop-path Monoid-hom-is-prop (funext (fold-natural {X = x} {y} f h))
 Free⊣Forget .zig {A = A} =
   Σ-prop-path Monoid-hom-is-prop (funext (fold-pure {X = A}))
 Free⊣Forget .zag {B = B} i x = B .snd .idʳ {x = x} i
 ```
 
-This concludes the proof that `Monoids`{.Agda} has free objects.
+This concludes the proof that `Monoids`{.Agda} has free objects. We now
+prove that monoids are equivalently algebras for the `List`{.Agda}
+monad, i.e. that the `Free⊣Forget`{.Agda} adjunction is [monadic]. More
+specifically, we show that the canonically-defined `comparison`{.Agda
+ident=Comparison} functor is [fully faithful][ff] (list algebra homomoprhisms
+are equivalent to monoid homomorphisms) and that it is [split
+essentially surjective][eso].
+
+[monadic]: Cat.Functor.Adjoint.Monadic.html
+[ff]: Cat.Functor.Base.html#ff-functors
+[eso]: Cat.Functor.Base.html#essential-fibres
+
+```agda
+Monoid-is-monadic : ∀ {ℓ} → is-monadic (Free⊣Forget {ℓ})
+Monoid-is-monadic {ℓ} = ff+split-eso→is-equivalence it's-ff it's-eso where
+  open import Cat.Diagram.Monad hiding (Free⊣Forget)
+
+  comparison = Comparison (Free⊣Forget {ℓ})
+  module comparison = Functor comparison
+
+  it's-ff : is-fully-faithful comparison
+  it's-ff {x} {y} = is-iso→is-equiv (iso from from∘to to∘from) where
+    module x = Monoid-on (x .snd)
+    module y = Monoid-on (y .snd)
+```
+
+First, for full-faithfulness, it suffices to prove that the morphism
+part of `comparison`{.Agda} is an `isomorphism`{.Agda ident=iso}. Hence,
+define an inverse; It suffices to show that the underlying map of the
+algebra homomorphism is a monoid homomorphism, which follows from the
+properties of monoids:
+
+```agda
+    from : Algebra-hom _ (comparison.₀ x) (comparison.₀ y) → Monoids ℓ .Hom x y
+    from alg .fst = alg .Algebra-hom.morphism
+    from alg .snd .pres-id = happly (alg .Algebra-hom.commutes) []
+    from alg .snd .pres-⋆ a b = 
+      f (a x.⋆ b)                  ≡˘⟨ ap f (ap (a x.⋆_) x.idʳ) ⟩
+      f (a x.⋆ (b x.⋆ x.identity)) ≡⟨ (λ i → alg .Algebra-hom.commutes i (a ∷ b ∷ [])) ⟩
+      f a y.⋆ (f b y.⋆ y.identity) ≡⟨ ap (f a y.⋆_) y.idʳ ⟩
+      f a y.⋆ f b                  ∎
+      where f = alg .Algebra-hom.morphism
+```
+
+The proofs that this is a quasi-inverse is immediate, since both "being
+an algebra homomorphism" and "being a monoid homomorphism" are
+properties of the underlying map.
+
+```agda
+    from∘to : is-right-inverse from comparison.₁
+    from∘to x = Algebra-hom-path refl
+
+    to∘from : is-left-inverse from comparison.₁
+    to∘from x = Σ-prop-path Monoid-hom-is-prop refl
+```
+
+Showing that the functor is essentially surjective is significantly more
+complicated. We must show that we can recover a monoid from a List
+algebra (a "fold"): We take the unit element to be the fold of the empty
+list, and the binary operation $x \star y$ to be the fold of the list
+$[x,y]$.
+
+```agda
+  it's-eso : is-split-eso comparison
+  it's-eso ((A , aset) , alg) = monoid , the-iso where
+    open Algebra-on
+    import Cat.Reasoning (Eilenberg-Moore (L∘R (Free⊣Forget {ℓ}))) as R
+
+    monoid : Monoids ℓ .Ob
+    monoid .fst = A
+    monoid .snd .identity = alg .ν []
+    monoid .snd ._⋆_ a b = alg .ν (a ∷ b ∷ [])
+```
+
+It suffices, through _incredibly_ tedious calculations, to show that
+this data assembles into a monoid:
+
+
+```agda
+    monoid .snd .has-is-monoid = has-is-m where abstract
+      has-is-m : is-monoid (alg .ν []) (monoid .snd ._⋆_)
+      has-is-m .has-is-semigroup = record 
+        { has-is-magma = record { has-is-set = aset }
+        ; associative  = λ {x} {y} {z} →
+          alg .ν (x ∷ alg .ν (y ∷ z ∷ []) ∷ [])                ≡˘⟨ ap (λ x → alg .ν (x ∷ _)) (happly (alg .ν-unit) x) ⟩
+          alg .ν (alg .ν (x ∷ []) ∷ alg .ν (y ∷ z ∷ []) ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
+          alg .ν (x ∷ y ∷ z ∷ [])                              ≡˘⟨ happly (alg .ν-mult) _ ⟩
+          alg .ν (alg .ν (x ∷ y ∷ []) ∷ alg .ν (z ∷ []) ∷ [])  ≡⟨ ap (λ x → alg .ν (_ ∷ x ∷ [])) (happly (alg .ν-unit) z) ⟩
+          alg .ν (alg .ν (x ∷ y ∷ []) ∷ z ∷ [])                ∎
+        }
+      has-is-m .idˡ {x} = 
+        alg .ν (alg .ν [] ∷ x ∷ [])                ≡˘⟨ ap (λ x → alg .ν (alg .ν [] ∷ x ∷ [])) (happly (alg .ν-unit) x) ⟩
+        alg .ν (alg .ν [] ∷ alg .ν (x ∷ []) ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
+        alg .ν (x ∷ [])                            ≡⟨ happly (alg .ν-unit) x ⟩
+        x                                          ∎
+      has-is-m .idʳ {x} = 
+        alg .ν (x ∷ alg .ν [] ∷ [])                ≡˘⟨ ap (λ x → alg .ν (x ∷ _)) (happly (alg .ν-unit) x) ⟩
+        alg .ν (alg .ν (x ∷ []) ∷ alg .ν [] ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
+        alg .ν (x ∷ [])                            ≡⟨ happly (alg .ν-unit) x ⟩
+        x                                          ∎
+```
+
+The most important lemma is that `folding`{.Agda ident=fold} a list
+using this monoid recovers the original algebra multiplication, which we
+can show by induction on the list:
+
+```agda
+    recover : ∀ x → fold monoid x ≡ alg .ν x
+    recover []       = refl
+    recover (x ∷ xs) = 
+      alg .ν (x ∷ fold monoid xs ∷ [])           ≡⟨ ap₂ (λ e f → alg .ν (e ∷ f ∷ [])) (sym (happly (alg .ν-unit) x)) (recover xs) ⟩
+      alg .ν (alg .ν (x ∷ []) ∷ alg .ν xs ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
+      alg .ν (x ∷ xs ++ [])                      ≡⟨ ap (alg .ν) (++-idʳ _) ⟩
+      alg .ν (x ∷ xs)                            ∎
+```
+
+We must then show that the image of this monoid under 
+`Comparison`{.Agda} is isomorphic to the original algebra. Fortunately,
+this follows from the `recover`{.Agda} lemma above; The isomorphism
+itself is given by the identity function in both directions, since the
+recovered monoid has the same underlying type as the List-algebra!
+
+```agda
+    into : Algebra-hom _ (comparison.₀ monoid) ((A , aset) , alg)
+    into .Algebra-hom.morphism = λ x → x
+    into .Algebra-hom.commutes = funext (λ x → recover x ∙ ap (alg .ν) (sym (map-id x)))
+
+    from : Algebra-hom _ ((A , aset) , alg) (comparison.₀ monoid)
+    from .Algebra-hom.morphism = λ x → x
+    from .Algebra-hom.commutes = 
+      funext (λ x → sym (recover x) ∙ ap (fold monoid) (sym (map-id x)))
+  
+    the-iso : comparison.₀ monoid R.≅ ((A , aset) , alg)
+    the-iso = R.make-iso into from (Algebra-hom-path refl) (Algebra-hom-path refl)
+```
