@@ -1,6 +1,8 @@
 ```agda
 open import 1Lab.Prelude
+
 open import Data.Sum
+
 import Data.Nat as Nat
 
 module Data.Fin.Base where

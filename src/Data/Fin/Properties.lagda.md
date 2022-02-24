@@ -1,5 +1,6 @@
 ```agda
 open import 1Lab.Prelude
+
 open import Data.Fin.Base
 
 import Data.Nat as Nat
