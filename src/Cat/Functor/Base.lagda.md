@@ -79,11 +79,11 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
   import Cat.Morphism C as Cm
   import Cat.Morphism D as Dm
 
-  is-fully-faithful→is-conservative 
+  is-ff→is-conservative 
     : {F : Functor C D} → is-fully-faithful F 
     → ∀ {X Y} (f : C.Hom X Y)  → Dm.is-invertible (F₁ F f)
     → Cm.is-invertible f
-  is-fully-faithful→is-conservative {F = F} ff f isinv = i where
+  is-ff→is-conservative {F = F} ff f isinv = i where
     open Cm.is-invertible
     open Cm.Inverses
 ```
@@ -118,18 +118,18 @@ the domain category to serve as an inverse for $f$:
       equiv→inverse ff (F₁ F C.id)      ≡⟨ equiv→retraction ff _ ⟩
       C.id                              ∎
 
-  is-fully-faithful→essentially-injective  
+  is-ff→essentially-injective  
     : {F : Functor C D} → is-fully-faithful F 
     → ∀ {X Y} → F₀ F X Dm.≅ F₀ F Y
     → X Cm.≅ Y
-  is-fully-faithful→essentially-injective {F = F} ff 
+  is-ff→essentially-injective {F = F} ff 
     record { to = to ; from = from ; inverses = inverses } = 
     Cm.make-iso (equiv→inverse ff to) inv invˡ invʳ
     where 
       D-inv : Dm.is-invertible to
       D-inv = record { inv = from ; inverses = inverses }
       open Cm.is-invertible 
-        (is-fully-faithful→is-conservative {F = F} ff 
+        (is-ff→is-conservative {F = F} ff 
           (equiv→inverse ff to) 
           (subst Dm.is-invertible (sym (equiv→section ff _)) D-inv))
 ```
@@ -158,3 +158,47 @@ is-split-eso F = ∀ y → Essential-fibre F y
 is-eso : Functor C D → Type _
 is-eso F = ∀ y → ∥ Essential-fibre F y ∥
 ```
+
+<!--
+```agda
+module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
+  import Cat.Reasoning C as C
+  import Cat.Reasoning D as D
+
+  F-map-iso : ∀ {x y} (F : Functor C D) → x C.≅ y → F₀ F x D.≅ F₀ F y
+  F-map-iso F x = 
+    D.make-iso (F₁ F x.to) (F₁ F x.from) 
+      (sym (F-∘ F _ _) ·· ap (F₁ F) x.invˡ ·· F-id F) 
+      (sym (F-∘ F _ _) ·· ap (F₁ F) x.invʳ ·· F-id F)
+    where module x = C._≅_ x
+  
+  open import Cat.Univalent
+
+  F-map-path : ∀ {x y} (F : Functor C D) (i : x C.≅ y)
+             → (ccat : is-category C)
+             → (dcat : is-category D)
+             → ap (F₀ F) (iso→path C ccat i) ≡ iso→path D dcat (F-map-iso F i)
+  F-map-path F i ccat dcat = 
+    J-iso C ccat 
+      (λ B p → ap (F₀ F) (iso→path C ccat p) ≡ iso→path D dcat (F-map-iso F p)) 
+      idc 
+      i
+    where abstract
+      idc : ∀ {x} → ap (F₀ F) (iso→path C ccat (C.id-iso {x}) )
+          ≡ iso→path D dcat (F-map-iso F C.id-iso)
+      idc = 
+        ap (F₀ F) (iso→path C ccat C.id-iso)   ≡⟨ ap (ap (F₀ F)) (iso→path-id C ccat) ⟩
+        ap (F₀ F) refl                         ≡˘⟨ equiv→retraction (path→iso-is-equiv D dcat) _ ⟩
+        iso→path D dcat (path→iso D refl)      ≡⟨ ap (iso→path D dcat) (D.≅-pathp refl refl (transport-refl _ ∙ sym (F-id F)) (transport-refl _ ∙ sym (F-id F))) ⟩
+        iso→path D dcat (F-map-iso F C.id-iso) ∎
+
+  is-ff→F-map-iso-is-equiv
+    : {F : Functor C D} → is-fully-faithful F 
+    → ∀ {X Y} → is-equiv (F-map-iso {X} {Y} F)
+  is-ff→F-map-iso-is-equiv {F = F} ff = is-iso→is-equiv isom where
+    isom : is-iso _
+    isom .is-iso.inv = is-ff→essentially-injective {F = F} ff
+    isom .is-iso.rinv x = D.≅-pathp refl refl (equiv→section ff _) (equiv→section ff _ ∙  transport-refl _)
+    isom .is-iso.linv x = C.≅-pathp refl refl (equiv→retraction ff _) (ap (equiv→inverse ff) (transport-refl _) ∙ equiv→retraction ff _)
+```
+-->

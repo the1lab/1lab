@@ -336,6 +336,127 @@ needs an appeal to faithfulness (two, actually):
       ftx = f*x-iso .di.to
 ```
 
+### Between categories
+
+Above, we made an equivalence out of any fully faithful and _split_
+essentially surjective functor. In set-theoretic mathematics (and indeed
+between [strict categories]), the splitting condition can not be lifted
+constructively: the statement "every (ff, eso) functor between strict
+categories is an equivalence" is equivalent to the axiom of choice.
+
+[univalent categories]: Cat.Univalent.html
+[strict categories]: Cat.Instances.StrictCat.html
+
+However, between [univalent categories], the situation is different: Any
+essentially surjective functor splits. In particular, any functor
+between univalent categories has propositional [essential fibres], so a
+"mere" essential surjection is automatically split. However, note that
+_both_ the domain _and_ codomain have to be categories for the argument
+to go through.
+
+[essential fibres]: Cat.Functor.Base.html#essential-fibres
+
+```agda
+module 
+  _ (F : Functor C D) (ccat : is-category C) (dcat : is-category D)
+    (ff : is-fully-faithful F)
+  where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+```
+
+So, suppose we have categories $\ca{C}$ and $\ca{D}$, together with a
+fully faithful functor $F : \ca{C} \to \ca{D}$. For any $y : \ca{D}$,
+we're given an inhabitant of $\| \sum_{x : \ca{C}} F(x) \cong y \|$,
+which we want to "get out" from under the truncation. For this, we'll
+show that the type being truncated is a proposition, so that we may
+"untruncate" it.
+
+```agda
+  Essential-fibre-between-cats-is-prop : ∀ y → is-prop (Essential-fibre F y)
+  Essential-fibre-between-cats-is-prop z (x , i) (y , j) = they're-equal where
+```
+
+For this magic trick, assume we're given a $z : \ca{D}$, together with
+objects $x, y : \ca{C}$ and isomorphisms $i : F(x) \cong z$ and $j :
+F(y) \cong z$. We must show that $x \equiv y$, and that over this path,
+$i = j$. Since $F$ is fully faithful, we can `find an isomorphism`{.Agda
+ident=is-ff→essentially-injective} $x \cong y$ in $\ca{C}$, which $F$
+sends back to $i \circ j^{-1}$.
+
+```agda
+    Fx≅Fy : F₀ F x D.≅ F₀ F y
+    Fx≅Fy = i D.∘Iso (j D.Iso⁻¹)
+
+    x≅y : x C.≅ y
+    x≅y = is-ff→essentially-injective {F = F} ff Fx≅Fy
+```
+
+Furthermore, since we're working with categories, these isomorphisms
+restrict to _paths_ $x \equiv y$ and $F(x) \equiv F(y)$. We're
+half-done: we've shown that some $p : x \equiv y$ exists, and it remains to
+show that over this path we have $i \equiv j$. More specifically, we
+must give a path $i \equiv j$ laying over $\mathrm{ap}(F)(p)$.
+
+```agda
+    x≡y : x ≡ y
+    x≡y = iso→path C ccat x≅y
+
+    Fx≡Fy : F₀ F x ≡ F₀ F y
+    Fx≡Fy = iso→path D dcat Fx≅Fy
+```
+
+Rather than showing it over $p : x\equiv y$ directly, we'll show it over
+the path $F(x) \equiv F(y)$ we constructed independently. This is
+because we can use the helper `Hom-pathp-reflʳ-iso`{.Agda} to establish
+the result with far less computation:
+
+```agda
+    over′ : PathP (λ i → Fx≡Fy i D.≅ z) i j
+    over′ = D.≅-pathp Fx≡Fy refl 
+      (Hom-pathp-reflˡ-iso D dcat (D.cancell (i .D._≅_.invˡ))) 
+      (Hom-pathp-reflʳ-iso D dcat (D.cancelr (i .D._≅_.invˡ)))
+```
+
+We must then connect $\mathrm{ap}(F)(p)$ with this path $F(x) \cong
+F(y)$. But since we originally got $p$ by full faithfulness of $F$, they
+_are_ indeed the same path:
+
+```agda
+    abstract
+      square : ap (F₀ F) x≡y ≡ Fx≡Fy
+      square = 
+        ap (F₀ F) x≡y                       ≡⟨ F-map-path F x≅y ccat dcat ⟩
+        iso→path D dcat (F-map-iso F x≅y)   ≡⟨ ap (iso→path D dcat) (equiv→section (is-ff→F-map-iso-is-equiv {F = F} ff) _)  ⟩
+        iso→path D dcat Fx≅Fy               ∎
+
+    over : PathP (λ i → F₀ F (x≡y i) D.≅ z) i j
+    over = transport (λ l → PathP (λ m → square (~ l) m D.≅ z) i j) over′
+```
+
+Hence --- blink and you'll miss it --- the essential fibres of $F$ over
+any $z : \ca{D}$ are propositions, so it suffices for them to be merely
+inhabited for the functor to be split eso. With tongue firmly in cheek
+we call this result the _theorem of choice_.
+
+```agda
+    they're-equal = Σ-pathp x≡y over
+
+  Theorem-of-choice : is-eso F → is-split-eso F
+  Theorem-of-choice eso y = 
+    ∥-∥-elim (λ _ → Essential-fibre-between-cats-is-prop y) 
+      (λ x → x) (eso y)
+```
+
+This theorem implies that any fully faithful, "merely" essentially
+surjective functor between categories is an equivalence:
+
+```agda
+  ff+eso→is-equivalence : is-eso F → is-equivalence F
+  ff+eso→is-equivalence eso = ff+split-eso→is-equivalence ff (Theorem-of-choice eso)
+```
+
 ## Isomorphisms
 
 Another, more direct way of proving that a functor is an equivalence of
