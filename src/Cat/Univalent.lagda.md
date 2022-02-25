@@ -146,7 +146,7 @@ Hom-pathp {p = p} {q} {h} {h'} prf =
   to-pathp _ _ _ (subst (_≡ h') (sym (Hom-transport p q h)) prf)
 ```
 
-<--
+<!--
 ```agda
 Hom-pathp-reflˡ : 
   ∀ {A B C} {p : A ≡ C} {h : Hom A B} {h' : Hom C B}

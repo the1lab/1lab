@@ -452,6 +452,8 @@ we call this result the _theorem of choice_.
 This theorem implies that any fully faithful, "merely" essentially
 surjective functor between categories is an equivalence:
 
+This implies that any functor between categories automatically splits
+
 ```agda
   ff+eso→is-equivalence : is-eso F → is-equivalence F
   ff+eso→is-equivalence eso = ff+split-eso→is-equivalence ff (Theorem-of-choice eso)
