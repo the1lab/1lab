@@ -375,4 +375,16 @@ to finite types, the coproduct is exactly the same as addition.
 ⊎-zeroˡ .fst (inr x) = x
 ⊎-zeroˡ .snd .is-eqv y .centre = inr y , refl
 ⊎-zeroˡ .snd .is-eqv y .paths (inr x , p) i = inr (p (~ i)) , λ j → p (~ i ∨ j)
+
+⊎-×-distribute : ((A ⊎ B) × C) ≃ ((A × C) ⊎ (B × C))
+⊎-×-distribute = Iso→Equiv i where
+  i : Iso _ _
+  i .fst (inl x , y) = inl (x , y)
+  i .fst (inr x , y) = inr (x , y)
+  i .snd .is-iso.inv (inl (x , y)) = inl x , y
+  i .snd .is-iso.inv (inr (x , y)) = inr x , y
+  i .snd .is-iso.rinv (inl x) = refl
+  i .snd .is-iso.rinv (inr x) = refl
+  i .snd .is-iso.linv (inl x , _) = refl
+  i .snd .is-iso.linv (inr x , _) = refl
 ```

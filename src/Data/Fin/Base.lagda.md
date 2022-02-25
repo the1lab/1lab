@@ -50,6 +50,22 @@ cast {suc m} {zero} p (fsuc i) = absurd (Nat.zero≠suc (sym p))
 cast {suc m} {suc n} p (fsuc i) = fsuc (cast (Nat.suc-inj p) i)
 ```
 
+<!--
+```agda
+cast-is-equiv : ∀ {m n} (p : m ≡ n) → is-equiv (cast p)
+cast-is-equiv = 
+  J (λ _ p → is-equiv (cast p)) cast-refl-is-equiv 
+  where
+    id≡cast-refl : ∀ {n} → id ≡ cast (λ _ → n)
+    id≡cast-refl {zero} i ()
+    id≡cast-refl {suc n} i fzero = fzero
+    id≡cast-refl {suc n} i (fsuc x) = fsuc (id≡cast-refl {n} i x)
+
+    cast-refl-is-equiv : ∀ {n} → is-equiv (cast (λ i → n))
+    cast-refl-is-equiv = subst is-equiv id≡cast-refl id-equiv
+```
+-->
+
 Next, we move on to one of the most useful functions for `Fin`{.Agda}:
 `strength`. This allows us to (possibly) strengthen the upper bound
 on some `Fin n`.
