@@ -71,9 +71,9 @@ that we can turn categorical isomorphisms into paths of objects:
 
 ```agda
 iso→path : is-category
-          → ∀ {A B}
-          → A ≅ B
-          → A ≡ B
+         → ∀ {A B}
+         → A ≅ B
+         → A ≡ B
 iso→path cat =
   is-equiv→is-iso (path→iso-is-equiv cat) .is-iso.inv
 ```
@@ -123,16 +123,21 @@ pre/post-composing:
 Hom-transport : ∀ {A B C D} (p : A ≡ C) (q : B ≡ D) (h : Hom A B)
               → transport (λ i → Hom (p i) (q i)) h
               ≡ path→iso q .to ∘ h ∘ path→iso p .from
-Hom-transport {A = A} {B} {D = D} =
-  J (λ _ p → (q : B ≡ D) (h : Hom A B) →  transport (λ i → Hom (p i) (q i)) h
-           ≡ path→iso q .to ∘ h ∘ path→iso p .from)
-    (J (λ _ q → (h : Hom A B) → transport (λ i → Hom _ (q i)) h
-              ≡ path→iso q .to ∘ h ∘ path→iso refl .from)
-      λ h →
-        transport refl h                          ≡⟨ transport-refl _ ⟩
-        h                                         ≡⟨ solve C ⟩
-        id ∘ h ∘ id                               ≡⟨ (λ i → transport-refl id (~ i) ∘ h ∘ transport-refl id (~ i)) ⟩
-        transport refl id ∘ h ∘ transport refl id ∎)
+Hom-transport {A = A} {B} {D = D} p q h i =
+  comp (λ j → Hom (p (i ∨ j)) (q (i ∨ j)))
+       (λ { j (i = i0) → coe0→i (λ k → Hom (p (j ∧ k)) (q (j ∧ k))) j h
+          ; j (i = i1) → path→iso q .to ∘ h ∘ path→iso p .from
+          })
+       (hcomp (λ { j (i = i0) → idl (idr h j) j
+                 ; j (i = i1) → q′ i1 ∘ h ∘ p′ i1
+                 }) 
+              (q′ i ∘ h ∘ p′ i))
+  where
+    p′ : PathP _ id (path→iso p .from)
+    p′ i = coe0→i (λ j → Hom (p (i ∧ j)) A) i id
+
+    q′ : PathP _ id (path→iso q .to)
+    q′ i = coe0→i (λ j → Hom B (q (i ∧ j))) i id
 ```
 
 This lets us quickly turn paths between compositions into dependent
@@ -143,7 +148,7 @@ Hom-pathp : ∀ {A B C D} {p : A ≡ C} {q : B ≡ D} {h : Hom A B} {h' : Hom C 
           → path→iso q .to ∘ h ∘ path→iso p .from ≡ h'
           → PathP (λ i → Hom (p i) (q i)) h h'
 Hom-pathp {p = p} {q} {h} {h'} prf =
-  to-pathp _ _ _ (subst (_≡ h') (sym (Hom-transport p q h)) prf)
+  to-pathp (subst (_≡ h') (sym (Hom-transport p q h)) prf)
 ```
 
 <!--
@@ -183,5 +188,15 @@ Hom-pathp-reflʳ-iso isc prf =
   Hom-pathp-reflʳ (
     ap₂ _∘_ (ap to (equiv→section (path→iso-is-equiv isc) _)) refl 
     ∙ prf)
+
+Hom-pathp-iso 
+  : ∀ {A B C D} {p : A ≅ C} {q : B ≅ D} {h : Hom A B} {h' : Hom C D}
+  → (isc : is-category)
+  → q .to ∘ h ∘ p .from ≡ h'
+  → PathP (λ i → Hom (iso→path isc p i) (iso→path isc q i)) h h'
+Hom-pathp-iso {p = p} {q} {h} {h'} isc prf = 
+  Hom-pathp (ap₂ _∘_ (ap to (equiv→section (path→iso-is-equiv isc) _)) 
+                     (ap₂ _∘_ refl (ap from (equiv→section (path→iso-is-equiv isc) _))) 
+            ∙ prf)
 ```
 -->

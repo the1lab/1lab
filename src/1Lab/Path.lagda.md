@@ -1537,10 +1537,10 @@ defined in terms of `transp`{.Agda} and `PathP≡Path`{.Agda}, but this
 definition is more efficient.
 
 ```agda
-to-pathp : ∀ {ℓ} (A : I → Type ℓ) (x : A i0) (y : A i1)
+to-pathp : ∀ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1}
          → coe0→1 A x ≡ y
          → PathP A x y
-to-pathp A x y p i =
+to-pathp {A = A} {x} p i =
   hcomp (λ j → λ { (i = i0) → x
                  ; (i = i1) → p j })
         (coe0→i A i x)
@@ -1594,8 +1594,7 @@ simpler in the case where the `Σ`{.Agda} represents a subset --- i.e.,
        → (p : x .fst ≡ y .fst)
        → subst B p (x .snd) ≡ (y .snd)
        → x ≡ y
-Σ-path {A = A} {B} {x} {y} p q =
-  Σ-pathp p (to-pathp _ _ _ q)
+Σ-path {A = A} {B} {x} {y} p q = Σ-pathp p (to-pathp q)
 ```
 
 ## Π types

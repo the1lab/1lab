@@ -89,6 +89,24 @@ Algebra : Monad → Type (o ⊔ h)
 Algebra M = Σ (Algebra-on M)
 ```
 
+<!--
+```agda
+Algebra-on-pathp 
+  : ∀ {M} {X Y} (p : X ≡ Y) {A : Algebra-on M X} {B : Algebra-on M Y}
+  → PathP (λ i → C.Hom (Monad.M₀ M (p i)) (p i)) (A .Algebra-on.ν) (B .Algebra-on.ν)
+  → PathP (λ i → Algebra-on M (p i)) A B
+Algebra-on-pathp over mults i .Algebra-on.ν = mults i
+Algebra-on-pathp {M} over {A} {B} mults i .Algebra-on.ν-unit = 
+  is-prop→pathp (λ i → C.Hom-set _ _ (mults i C.∘ M.unit.η _) (C.id {x = over i})) 
+    (A .Algebra-on.ν-unit) (B .Algebra-on.ν-unit) i
+  where module M = Monad M
+Algebra-on-pathp {M} over {A} {B} mults i .Algebra-on.ν-mult = 
+  is-prop→pathp (λ i → C.Hom-set _ _ (mults i C.∘ M.M₁ (mults i)) (mults i C.∘ M.mult.η _)) 
+    (A .Algebra-on.ν-mult) (B .Algebra-on.ν-mult) i
+  where module M = Monad M
+```
+-->
+
 # Eilenberg-Moore Category
 
 There is a natural definition of $M$-algebra homomorphism: It is a map
@@ -116,15 +134,34 @@ to test equality of the underlying morphisms to conclude that two
 algebra homomorphisms are equal.
 
 ```
-Algebra-hom-path : {M : Monad} {X Y : Algebra M} {F G : Algebra-hom M X Y}
-                → morphism F ≡ morphism G
-                → F ≡ G
+Algebra-hom-path 
+  : {M : Monad} {X Y : Algebra M} {F G : Algebra-hom M X Y}
+  → morphism F ≡ morphism G
+  → F ≡ G
 Algebra-hom-path x i .morphism = x i
 Algebra-hom-path {M = M} {X} {Y} {F} {G} x i .commutes = 
   is-prop→pathp (λ i → C.Hom-set _ _ (x i C.∘ X .snd .Algebra-on.ν) 
                                      (Y .snd .Algebra-on.ν C.∘ Monad.M₁ M (x i)))
     (F .commutes) (G .commutes) i
 ```
+
+<!--
+```agda
+Algebra-hom-pathp
+  : {M : Monad} {W X Y Z : Algebra M} 
+    {F : Algebra-hom M W X}
+    {G : Algebra-hom M Y Z}
+    (p : W ≡ Y)
+    (q : X ≡ Z)
+  → PathP _ (morphism F) (morphism G)
+  → PathP (λ i → Algebra-hom M (p i) (q i)) F G
+Algebra-hom-pathp p q r i .morphism = r i
+Algebra-hom-pathp {M = M} {W} {X} {Y} {Z} {F} {G} p q r i .commutes = 
+  is-prop→pathp (λ i → C.Hom-set _ _ (r i C.∘ p i .snd .Algebra-on.ν) 
+                                     (q i .snd .Algebra-on.ν C.∘ Monad.M₁ M (r i)))
+    (F .commutes) (G .commutes) i
+```
+-->
 
 These naturally assemble into a category, the `Eilenberg-Moore`{.Agda}
 category of $M$, denoted $C^M$.

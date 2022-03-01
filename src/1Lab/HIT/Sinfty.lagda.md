@@ -45,7 +45,7 @@ to the problem of constructing a path in `N ≡ S`{.Agda} from
 `transport (λ j → N ≡ merid x j) refl`{.Agda} to `merid N`{.Agda}.
 
 ```agda
-    to-pathp (λ j → N ≡ merid x j) refl (merid N)
+    to-pathp {A = λ j → N ≡ merid x j}
 ```
 
 The proof goes as follows: by the characterisation of transport in path

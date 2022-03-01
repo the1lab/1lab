@@ -385,7 +385,7 @@ whole family to be the same h-level.
 is-prop→pathp : ∀ {B : I → Type ℓ} → ((i : I) → is-prop (B i))
               → (b0 : B i0) (b1 : B i1)
               → PathP (λ i → B i) b0 b1
-is-prop→pathp {B = B} hB b0 b1 = to-pathp _ _ _ (hB _ _ _)
+is-prop→pathp {B = B} hB b0 b1 = to-pathp (hB _ _ _)
 ```
 
 The base case is turning a proof that a type is a proposition uniformly
