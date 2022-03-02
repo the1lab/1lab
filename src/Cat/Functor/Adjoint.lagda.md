@@ -390,6 +390,118 @@ object:
           L = universal-maps→L
 ```
 
-<!-- TODO [Amy 2022-02-17]
-Show that L⊣R implies x↙R has an initial object
+## From an adjunction
+
+To finish the correspondence, we show that any (left) adjoint functor $L
+\dashv R$ defines a system of universal arrows $- \swarrow R$; This
+means that, not only does a "universal way of solving $R$" _give_ a left
+adjoint to $R$, it _is_ a left adjoint to $R$.
+
+<!--
+```agda
+module _
+  {L : Functor C D} {R : Functor D C}
+  (adj : L ⊣ R)
+  where
+
+  private
+    module L = Functor L
+    module R = Functor R
+    import Cat.Reasoning C as C
+    import Cat.Reasoning D as D
+    module adj = _⊣_ adj
+```
+-->
+
+So, given an object $x \in \ca{C}$, we must find an object $y$ and a
+universal map $x \to R(y)$. Recall that, in the previous section, we
+constructed the left adjoint $L$'s action on objects by using our system
+of universal arrows; Symetrically, in this section, we take the codomain
+to be $y = L(x)$. We must then find an arrow $x \to RLx$, but this is
+exactly the adjunction unit $\eta$!
+
+```agda
+  L⊣R→map-to-R : ∀ x → Precategory.Ob (x ↙ R)
+  L⊣R→map-to-R x .↓Obj.x = tt
+  L⊣R→map-to-R x .↓Obj.y = L.₀ x
+  L⊣R→map-to-R x .↓Obj.map = adj.unit.η _
+```
+
+We must now show that the unit $\eta$ is universal among the pairs $(y,
+f)$, with $f$ a map $x \to R(y)$. Recall that for our object $(Lx,
+\eta)$ to be [initial], we must find an arrow $(y, f) \to (Lx, \eta)$,
+and prove that this is the only possible such arrow; And that morphisms
+in the comma category $x \swarrow R$ break down as maps $g : Lx \to y$ such
+that the triangle below commutes:
+
+[initial]: Cat.Diagram.Initial.html
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  x && RLx \\
+  \\
+  && Ry
+  \arrow["f"', from=1-1, to=3-3]
+  \arrow["\eta", from=1-1, to=1-3]
+  \arrow["Rg", from=1-3, to=3-3]
+\end{tikzcd}\]
+~~~
+
+We can actually read off the map $g$ pretty directly from the diagram:
+It must be a map $Lx \to y$, but we've been given a map $LRx \to x$ (the
+adjunction counit) and a map $x \to Ry$; We may then take our $g$ to be
+the composite
+
+$$
+Lx \to LRy \to y
+$$
+
+```agda
+  L⊣R→map-to-R-is-initial 
+    : ∀ x → is-initial (x ↙ R) (L⊣R→map-to-R x)
+  L⊣R→map-to-R-is-initial x other-map .centre .↓Hom.α = tt
+  L⊣R→map-to-R-is-initial x other-map .centre .↓Hom.β =
+    adj.counit.ε _ D.∘ L.₁ (other-map .↓Obj.map)
+  L⊣R→map-to-R-is-initial x other-map .centre .↓Hom.sq =
+    sym (
+      R.₁ (adj.counit.ε _ D.∘ L.₁ om.map) C.∘ adj.unit.η _       ≡⟨ ap₂ C._∘_ (R.F-∘ _ _) refl ∙ sym (C.assoc _ _ _) ⟩
+      R.₁ (adj.counit.ε _) C.∘ R.₁ (L.₁ om.map) C.∘ adj.unit.η _ ≡⟨ ap (R.₁ (adj.counit.ε _) C.∘_) (sym (adj.unit.is-natural _ _ _)) ⟩
+      (R.₁ (adj.counit.ε _) C.∘ adj.unit.η _ C.∘ om.map)         ≡⟨ C.cancell adj.zag ⟩
+      om.map                                                     ≡⟨ sym (C.idr _) ⟩
+      om.map C.∘ C.id                                            ∎
+    )
+    where module om = ↓Obj other-map
+```
+
+Checking that the triangle above commutes is a routine application of
+naturality and the triangle identities; The same is true for proving
+that the map $g$ above is unique.
+
+```agda
+  L⊣R→map-to-R-is-initial x other-map .paths y = 
+    ↓Hom-path _ _ refl (
+      adj.counit.ε _ D.∘ L.₁ om.map                            ≡⟨ ap ((adj.counit.ε _ D.∘_) ⊙ L.₁) (sym (C.idr _) ∙ y.sq) ⟩
+      adj.counit.ε _ D.∘ L.₁ (R.₁ y.β C.∘ adj.unit.η _)        ≡⟨ ap (adj.counit.ε _ D.∘_) (L.F-∘ _ _) ⟩
+      adj.counit.ε _ D.∘ L.₁ (R.₁ y.β) D.∘ L.₁ (adj.unit.η _)  ≡⟨ D.pulll (adj.counit.is-natural _ _ _) ⟩ -- nvmd
+      (y.β D.∘ adj.counit.ε _) D.∘ L.₁ (adj.unit.η _)          ≡⟨ D.cancelr adj.zig ⟩
+      y.β                                                      ∎
+    )
+    where 
+      module om = ↓Obj other-map
+      module y = ↓Hom y
+```
+
+Hence, we can safely say that having a functor $L$ and an adjunction $L
+\dashv R$ is the same thing as having a functor $R$ and a system of
+universal arrows into $R$:
+
+```
+  L⊣R→universal-maps : ∀ x → Universal-morphism x R
+  L⊣R→universal-maps x .Initial.bot = L⊣R→map-to-R x
+  L⊣R→universal-maps x .Initial.has⊥ = L⊣R→map-to-R-is-initial x
+```
+
+<!-- TODO [Amy 2022-03-02]
+prove that we recover L by going L⊣R → universal maps → L⊣R. this is
+straightforward but I'm tired
 -->
