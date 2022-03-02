@@ -109,9 +109,12 @@ Algebra-on-pathp {M} over {A} {B} mults i .Algebra-on.ν-mult =
 
 # Eilenberg-Moore Category
 
-There is a natural definition of $M$-algebra homomorphism: It is a map
-of the underlying objects of each algebra which commutes with the
-evaluation operation.
+If we take a monad $M$ as the signature of an (algebraic) theory, and
+$M$-algebras as giving _models_ of that theory, then we can ask (like
+with everything in category theory): Are there maps between
+interpretations? The answer (as always!) is yes: An `algebra
+homomorphism`{.Agda ident=Algebra-hom} is a map of the underlying
+objects which "commutes with the algebras".
 
 ```agda
 record Algebra-hom (M : Monad) (X Y : Algebra M) : Type (o ⊔ h) where
@@ -129,9 +132,26 @@ record Algebra-hom (M : Monad) (X Y : Algebra M) : Type (o ⊔ h) where
 open Algebra-hom
 ```
 
-Since `commutes`{.Agda} is an inhabitant of a proposition, it suffices
-to test equality of the underlying morphisms to conclude that two
-algebra homomorphisms are equal.
+We can be more specific about "commuting with the algebras" by drawing a
+square: A map $m : X \to Y$ in the ambient category is a homomorphism of
+$M$-algebras when the square below commutes.
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {M(X)} && {M(Y)} \\
+  \\
+  {X} && {Y}
+  \arrow["{M_1(m)}", from=1-1, to=1-3]
+  \arrow["{\nu}"', from=1-1, to=3-1]
+  \arrow["{\nu\prime}", from=1-3, to=3-3]
+  \arrow["m"', from=3-1, to=3-3]
+\end{tikzcd}\]
+~~~
+
+Since `commutes`{.Agda} is an identification between morphisms, it
+inhabits a proposition (because `Hom-sets are sets`{.Agda
+ident=C.Hom-set}), equality of algebra homomorphisms only depends on an
+equality of their underlying morphisms.
 
 ```
 Algebra-hom-path 
@@ -163,8 +183,10 @@ Algebra-hom-pathp {M = M} {W} {X} {Y} {Z} {F} {G} p q r i .commutes =
 ```
 -->
 
-These naturally assemble into a category, the `Eilenberg-Moore`{.Agda}
-category of $M$, denoted $C^M$.
+Since the square we drew above commutes for the identity morphism, and
+we can show that the composite of two algebra homomorphisms is an
+algebra homomorphism, they assemble into a category: The
+**Eilenberg-Moore** category of $M$.
 
 ```agda
 module _ (M : Monad) where
@@ -177,24 +199,36 @@ module _ (M : Monad) where
   Eilenberg-Moore : Precategory _ _
   Eilenberg-Moore .Ob = Algebra M
   Eilenberg-Moore .Hom X Y = Algebra-hom M X Y
+```
 
-  Eilenberg-Moore .id {o , x} =
-    record
-      { morphism = C.id
-      ; commutes = C.id C.∘ ν x     ≡⟨ C.id-comm-sym ⟩
-                   ν x C.∘ C.id     ≡⟨ ap (C._∘_ _) (sym M-id) ⟩
-                   ν x C.∘ M₁ C.id  ∎
-      }
+Defining the identity and composition maps is mostly an exercise in
+categorical yoga:
 
-  Eilenberg-Moore ._∘_ {_ , x} {_ , y} {_ , z} F G =
-    record 
-      { morphism = morphism F C.∘ morphism G
-      ; commutes = (morphism F C.∘ morphism G) C.∘ ν x            ≡⟨ C.extendr (commutes G) ⟩
-                   (morphism F C.∘ ν y) C.∘ M₁ (morphism G)       ≡⟨ ap₂ C._∘_ (commutes F) refl ⟩
-                   (ν z C.∘ M₁ (morphism F)) C.∘ M₁ (morphism G)  ≡⟨ C.pullr (sym (M-∘ _ _)) ⟩
-                   ν z C.∘ M₁ (morphism F C.∘ morphism G)         ∎
-      }
+```agda
+  Eilenberg-Moore .id {o , x} = record
+    { morphism = C.id
+    ; commutes = C.id C.∘ ν x     ≡⟨ C.id-comm-sym ⟩
+                 ν x C.∘ C.id     ≡⟨ ap (C._∘_ _) (sym M-id) ⟩
+                 ν x C.∘ M₁ C.id  ∎
+    }
 
+  Eilenberg-Moore ._∘_ {_ , x} {_ , y} {_ , z} F G = record 
+    { morphism = morphism F C.∘ morphism G
+    ; commutes = (morphism F C.∘ morphism G) C.∘ ν x            ≡⟨ C.extendr (commutes G) ⟩
+                  (morphism F C.∘ ν y) C.∘ M₁ (morphism G)       ≡⟨ ap₂ C._∘_ (commutes F) refl ⟩
+                  (ν z C.∘ M₁ (morphism F)) C.∘ M₁ (morphism G)  ≡⟨ C.pullr (sym (M-∘ _ _)) ⟩
+                  ν z C.∘ M₁ (morphism F C.∘ morphism G)         ∎
+    }
+```
+
+<details>
+<summary>
+Because we have characterised equality of algebra homomorphisms as
+equality of their underlying maps, the Eilenberg-Moore category inherits
+the identity and associativity laws from its underlying category.
+</summary>
+
+```agda
   Eilenberg-Moore .idr f = Algebra-hom-path (C.idr (morphism f))
   Eilenberg-Moore .idl f = Algebra-hom-path (C.idl (morphism f))
   Eilenberg-Moore .assoc f g h = Algebra-hom-path (C.assoc _ _ _)
@@ -221,9 +255,13 @@ module _ (M : Monad) where
       (Σ-is-hlevel 2 (C.Hom-set _ _) λ _ → is-prop→is-set (C.Hom-set _ _ _ _))
 ```
 
-There is an evident functor from $C^M$ back into C.
+</details>
 
-```
+By projecting the underlying object of the algebras, and the underlying
+morphisms of the homomorphisms between them, we can define a functor
+from `Eilenberg-Moore`{.Agda} back to the underlying category:
+
+```agda
   Forget : Functor Eilenberg-Moore C
   Forget .F₀ = fst
   Forget .F₁ = Algebra-hom.morphism
@@ -231,20 +269,32 @@ There is an evident functor from $C^M$ back into C.
   Forget .F-∘ f g = refl
 ```
 
-This functor is faithful exactly by our characterisation of equality of
-algebra homomorphisms.
+The lemma `Algebra-hom-path`{.Agda} says exactly that this functor is
+faithful.
 
-```
+```agda
   Forget-is-faithful : is-faithful Forget
-  Forget-is-faithful proof = Algebra-hom-path proof
+  Forget-is-faithful = Algebra-hom-path
 ```
 
 ## Free Algebras
 
-For every object $A$, there is a _free_ $M$-algebra, where the
-underlying object is $M(A)$ and the action is multiplication.
+In exactly the same way that we may construct a _[free group]_ by taking
+the inhabitants of some set $X$ as generating the "words" of a group, we
+can, given an object $A$ of the underlying category, build a **free
+$M$-algebra** on $A$. Keeping with our interpretation of monads as
+logical signatures, this is the _syntactic model_ of $M$, with a set of
+"neutrals" chosen from the object $A$.
 
-```
+[free group]: Algebra.Group.Free.html
+
+This construction is a lot simpler to do in generality than in any
+specific case: We can always turn $A$ into an $M$-algebra by taking the
+underlying object to be $M(A)$, and the algebra map to be the monadic
+multiplication; The associativity and unit laws of the monad _itself_
+become those of the $M$-action.
+
+```agda
   Free : Functor C Eilenberg-Moore
   Free .F₀ A = M₀ A ,
     record
@@ -254,33 +304,52 @@ underlying object is $M(A)$ and the action is multiplication.
       }
 ```
 
-The functorial action of the free $M$-algebra construction is given by
-the action of $M$, which commutes with the action since $M$'s
-multiplication is a natural transformation.
+The construction of free $M$-algebras is furthermore functorial on the
+underlying objects; Since the monadic multiplication is a natural
+transformation $M\circ M \To M$, the naturality condition (drawn below)
+doubles as showing that the functorial action of $M$ can be taken as an
+algebraic action:
 
-```
-  Free .F₁ f =
-    record
-      { morphism = M₁ f
-      ; commutes = sym (mult.is-natural _ _ _)
-      }
+~~~{.quiver}
+\[\begin{tikzcd}
+  MMA && MMB \\
+  \\
+  MA && MB
+  \arrow["MMf", from=1-1, to=1-3]
+  \arrow["Mf"', from=3-1, to=3-3]
+  \arrow["{\mu_A}"', from=1-1, to=3-1]
+  \arrow["{\mu_B}", from=1-3, to=3-3]
+\end{tikzcd}\]
+~~~
+
+```agda
+  Free .F₁ f = record
+    { morphism = M₁ f
+    ; commutes = sym (mult.is-natural _ _ _)
+    }
   Free .F-id = Algebra-hom-path M-id
   Free .F-∘ f g = Algebra-hom-path (M-∘ f g)
 ```
 
-This is a free construction in the precise sense of the word: it's left
-adjoint to a forgetful functor.
+This is a free construction in the precise sense of the word: it's the
+[left adjoint] to the functor `Forget`{.Agda}, so in particular it
+provides a systematic, [universal] way of mapping from $\ca{C}$ to
+$\ca{C}^M$.
 
-```
+[left adjoint]: Cat.Functor.Adjoint.html
+[universal]: Cat.Functor.Adjoint.html#universal-morphisms
+
+```agda
   open _⊣_
 
   Free⊣Forget : Free ⊣ Forget
-  Free⊣Forget .unit = NT (λ x → M.unit.η x) λ x y f → M.unit.is-natural _ _ _
+  Free⊣Forget .unit = NT M.unit.η M.unit.is-natural
   Free⊣Forget .counit .η x =
     record { morphism = x .snd .ν
            ; commutes = sym (x .snd .ν-mult)
            }
-  Free⊣Forget .counit .is-natural x y f = Algebra-hom-path (sym (commutes f)) 
+  Free⊣Forget .counit .is-natural x y f = 
+    Algebra-hom-path (sym (commutes f)) 
   Free⊣Forget .zig = Algebra-hom-path left-ident
   Free⊣Forget .zag {x} = x .snd .ν-unit
 ```

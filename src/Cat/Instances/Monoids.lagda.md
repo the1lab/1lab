@@ -4,8 +4,8 @@ open import Algebra.Monoid
 open import Algebra.Magma
 
 open import Cat.Functor.Adjoint.Monadic
-open import Cat.Instances.Delooping
 open import Cat.Functor.Equivalence
+open import Cat.Instances.Delooping
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
 open import Cat.Prelude

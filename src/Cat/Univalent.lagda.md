@@ -194,7 +194,7 @@ Hom-pathp-iso
   → (isc : is-category)
   → q .to ∘ h ∘ p .from ≡ h'
   → PathP (λ i → Hom (iso→path isc p i) (iso→path isc q i)) h h'
-Hom-pathp-iso {p = p} {q} {h} {h'} isc prf = 
+Hom-pathp-iso {p = p} {q} {h} {h'} isc prf =
   Hom-pathp (ap₂ _∘_ (ap to (equiv→section (path→iso-is-equiv isc) _)) 
                      (ap₂ _∘_ refl (ap from (equiv→section (path→iso-is-equiv isc) _))) 
             ∙ prf)
