@@ -120,7 +120,7 @@ _univalent_ thin category is a partially ordered set.
 record Poset (o h : Level) : Type (lsuc (o ⊔ h)) where
   no-eta-equality
   field
-    {underlying}   : Precategory o h
+    {underlying}     : Precategory o h
     has-is-thin      : is-thin underlying
     has-is-univalent : is-category underlying
     
@@ -245,20 +245,24 @@ proposition, the functor identities are automatically satisfied:
 module _ where
   open Poset
 
-  Monotone : {C : Poset o h} {D : Poset o′ h′}
-           → (f : C .Ob → D .Ob)
-           → (∀ x y → Hom C x y → Hom D (f x) (f y))
-           → Functor (C .underlying) (D .underlying)
-  Monotone f ord .Functor.F₀ = f
-  Monotone f ord .Functor.F₁ = ord _ _
-  Monotone {D = D} f ord .Functor.F-id = D .Hom-is-prop _ _ _ _
-  Monotone {D = D} f ord .Functor.F-∘ _ _ = D .Hom-is-prop _ _ _ _
+  Monotone-map : Poset o h → Poset o′ h′ → Type _
+  Monotone-map C D = Functor (C .underlying) (D .underlying)
+
+  make-monotone-map
+    : (C : Poset o h) (D : Poset o′ h′)
+    → (f : C .Ob → D .Ob)
+    → (∀ x y → Hom C x y → Hom D (f x) (f y))
+    → Monotone-map C D
+  make-monotone-map C D f ord .Functor.F₀ = f
+  make-monotone-map C D f ord .Functor.F₁ = ord _ _
+  make-monotone-map C D f ord .Functor.F-id = D .Hom-is-prop _ _ _ _
+  make-monotone-map C D f ord .Functor.F-∘ _ _ = D .Hom-is-prop _ _ _ _
 
   open Precategory
 
   Posets : ∀ o h → Precategory (lsuc (o ⊔ h)) (o ⊔ h)
   Posets o h .Ob = Poset o h
-  Posets _ _ .Hom x y = Functor (x .underlying) (y .underlying)
+  Posets _ _ .Hom = Monotone-map
   Posets _ _ .Hom-set _ d = Functor-is-set (d .Ob-is-set)
   Posets _ _ .id = Id
   Posets _ _ ._∘_ = _F∘_

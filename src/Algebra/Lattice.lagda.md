@@ -3,8 +3,10 @@ open import 1Lab.Prelude
 
 open import Algebra.Semilattice
 
-open import Order.Proset
-open import Order.Poset
+open import Cat.Functor.Equivalence
+open import Cat.Functor.Base
+open import Cat.Prelude
+open import Cat.Thin
 
 module Algebra.Lattice where
 ```
@@ -14,6 +16,7 @@ module Algebra.Lattice where
 private variable
   ℓ : Level
   A : Type ℓ
+open Functor
 ```
 -->
 
@@ -145,89 +148,80 @@ and "contravariant" orderings.
 [already know]: Algebra.Semilattice.html#order-theoretically
 
 ```agda
-Lattice→Covariant-on : Lattice-on A → PosetOn {ℓ' = level-of A} A
-Lattice→Covariant-on lat = Semilattice-on→Meet-on (Lattice-on→is-meet-semi lat)
+Lattice→covariant-on : Lattice-on A → Poset (level-of A) (level-of A)
+Lattice→covariant-on lat = Semilattice-on→Meet-on (Lattice-on→is-meet-semi lat)
 
-Lattice→Contravariant-on : Lattice-on A → PosetOn {ℓ' = level-of A} A
-Lattice→Contravariant-on lat = Semilattice-on→Join-on (Lattice-on→is-meet-semi lat)
+Lattice→contravariant-on : Lattice-on A → Poset (level-of A) (level-of A)
+Lattice→contravariant-on lat = Semilattice-on→Join-on (Lattice-on→is-meet-semi lat)
 ```
 
 Above, the “covariant order” is obtaining by considering the $(A,
 \land)$ semilattice as inducing _meets_ on the poset (hence the operator
 being called $\land$). It can also be obtained in a dual way, by
 considering that $(A, \lor)$ induces _joins_ on the poset. By the
-absorption laws, these constructions give rise to the same poset; Even
-better, the path is induced by the identity function.
+absorption laws, these constructions give rise to the same poset; We
+start by defining a `monotone map`{.Agda ident=Monotone-map} (that is, a
+`Functor`{.Agda}) between the two possibilities:
 
 ```agda
-covariant-order-unique 
+covariant-order-map 
   : (l : Lattice-on A)
-  → Path (Poset ℓ ℓ)
-  (A , Semilattice-on→Meet-on (Lattice-on→is-meet-semi l))
-  (A , Semilattice-on→Join-on (Lattice-on→is-join-semi l))
-covariant-order-unique {A = A} l = sip Poset-univalent ((id , id-equiv) , pres) where
+  → Monotone-map
+      (Semilattice-on→Meet-on (Lattice-on→is-meet-semi l))
+      (Semilattice-on→Join-on (Lattice-on→is-join-semi l))
+covariant-order-map {A = A} l = F where
   open Lattice-on l
-```
+    hiding (Lattice-on→is-join-semi ; Lattice-on→is-meet-semi)
 
-To show that the identity equivalence is a homomorphic equivalent of
-posets, it suffices to show that $x \le y$ in one order implies $y
-\le\prime x$ in the other. We show these by calculations:
-
-```agda
-  l1 : ∀ {x y : A} → (x ≡ x L∧ y) → (y ≡ x L∨ y)
-  l1 {x} {y} p =
-    y             ≡⟨ sym ∨-absorbs-∧ ⟩
-    y L∨ (y L∧ x) ≡⟨ ap₂ _L∨_ refl ∧-commutative ⟩
-    y L∨ (x L∧ y) ≡⟨ ap₂ _L∨_ refl (sym p) ⟩
-    y L∨ x        ≡⟨ ∨-commutative ⟩
-    x L∨ y        ∎
-
-  l2 : ∀ {x y : A} → (y ≡ x L∨ y) → (x ≡ x L∧ y)
-  l2 {x} {y} p =
-    x             ≡⟨ sym ∧-absorbs-∨ ⟩
-    x L∧ (x L∨ y) ≡⟨ ap₂ _L∧_ refl (sym p) ⟩ 
-    x L∧ y        ∎
-
-  pres : Poset≃ _ _ (id , id-equiv)
-  pres .Poset≃.pres-≤ x y = ua (prop-ext (has-is-set _ _) (has-is-set _ _) l1 l2)
-```
-}
-The dual fact holds for the “contravariant order”, where the semilattice
-$(A, \land)$ is taken to induce _joins_ instead of meets on the
-poset.
-
-<details>
-<summary>
-Since the proof is obtained by swapping $\land$ and $\lor$ in the proof
-above, I've put it in a `<details>` tag, in the interest of conciseness.
-</summary>
-
-```agda
-contravariant-order-unique
-  : (l : Lattice-on A)
-  → Path (Poset ℓ ℓ)
-      (A , Semilattice-on→Join-on (Lattice-on→is-meet-semi l))
-      (A , Semilattice-on→Meet-on (Lattice-on→is-join-semi l))
-contravariant-order-unique {A = A} l = 
-  sip Poset-univalent ((id , id-equiv) , pres) 
-  where
-    open Lattice-on l
-
-    l1 : ∀ {x y : A} → (y ≡ x L∧ y) → (x ≡ x L∨ y)
-    l1 {x} {y} p =
-      x             ≡⟨ sym ∨-absorbs-∧ ⟩
-      x L∨ (x L∧ y) ≡⟨ ap₂ _L∨_ refl (sym p) ⟩
+  F : Monotone-map (Semilattice-on→Meet-on (Lattice-on→is-meet-semi l))
+                   (Semilattice-on→Join-on (Lattice-on→is-join-semi l))
+  F .F₀ = id
+  F .F₁ {x} {y} p = q where abstract
+    q : y ≡ x L∨ y
+    q = 
+      y             ≡⟨ sym ∨-absorbs-∧ ⟩
+      y L∨ (y L∧ x) ≡⟨ ap₂ _L∨_ refl ∧-commutative ⟩
+      y L∨ (x L∧ y) ≡⟨ ap₂ _L∨_ refl (sym p) ⟩
+      y L∨ x        ≡⟨ ∨-commutative ⟩
       x L∨ y        ∎
-
-    l2 : ∀ {x y : A} → (x ≡ x L∨ y) → (y ≡ x L∧ y)
-    l2 {x} {y} p =
-      y             ≡⟨ sym ∧-absorbs-∨ ⟩
-      y L∧ (y L∨ x) ≡⟨ ap₂ _L∧_ refl ∨-commutative ⟩
-      y L∧ (x L∨ y) ≡⟨ ap₂ _L∧_ refl (sym p) ⟩
-      y L∧ x        ≡⟨ ∧-commutative ⟩
-      x L∧ y        ∎
-
-    pres : Poset≃ _ _ (id , id-equiv)
-    pres .Poset≃.pres-≤ x y = ua (prop-ext (has-is-set _ _) (has-is-set _ _) l1 l2)
+  F .F-id = has-is-set _ _ _ _
+  F .F-∘ _ _ = has-is-set _ _ _ _
 ```
-</details>
+
+We now show that this functor is an equivalence: It is fully faithful
+and split essentially surjective.
+
+```agda
+covariant-order-map-is-equivalence
+  : (l : Lattice-on A) → is-equivalence (covariant-order-map l)
+covariant-order-map-is-equivalence l =
+  ff+split-eso→is-equivalence ff eso
+  where
+    open Lattice-on l hiding (Lattice-on→is-join-semi)
+    import
+      Cat.Reasoning
+        (Semilattice-on→Join-on (Lattice-on→is-join-semi l) .Poset.underlying)
+      as D
+```
+
+A tiny calculation shows that this functor is fully faithful, and
+essential surjectivity is immediate:
+
+```agda
+    ff : is-fully-faithful (covariant-order-map l)
+    ff {x} {y} .is-eqv p .centre .fst =
+      x             ≡⟨ sym ∧-absorbs-∨ ⟩
+      x L∧ (x L∨ y) ≡⟨ ap₂ _L∧_ refl (sym p) ⟩ 
+      x L∧ y        ∎
+    ff .is-eqv y .centre .snd = has-is-set _ _ _ _
+    ff .is-eqv y .paths x =
+      Σ-path (has-is-set _ _ _ _)
+             (is-prop→is-set (has-is-set _ _) _ _ _ _)
+            
+    eso : is-split-eso (covariant-order-map l)
+    eso y .fst = y
+    eso y .snd =
+      D.make-iso (sym ∨-idempotent) (sym ∨-idempotent)
+        (has-is-set _ _ _ _)
+        (has-is-set _ _ _ _)
+```

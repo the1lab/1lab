@@ -6,11 +6,11 @@ open import Algebra.Semigroup
 open import Algebra.Lattice
 open import Algebra.Magma
 
+open import Cat.Thin
+open import Cat.Thin
+
 open import Data.Power
 open import Data.Sum
-
-open import Order.Proset
-open import Order.Poset
 
 module Data.Power.Lattice where
 ```
@@ -30,20 +30,13 @@ Antisymmetry for this relation is exactly the `principle of
 extensionality for subsets`{.Agda ident=ℙ-ext}.
 
 ```agda
-ℙ⊆ : ∀ {ℓ} → Type ℓ → Poset ℓ (lsuc ℓ)
-ℙ⊆ A .fst = ℙ A
-ℙ⊆ A .snd = st where
-  open PosetOn
-  open is-partial-order
-  open is-preorder
-
-  st : PosetOn (ℙ A)
-  st ._≤_ = _⊆_
-  st .has-is-partial-order .has-is-preorder .reflexive _ x = x
-  st .has-is-partial-order .has-is-preorder .transitive x⊆y y⊆z a a∈x = y⊆z a (x⊆y a a∈x)
-  st .has-is-partial-order .has-is-preorder .propositional {y = y} =
-    Π-is-hlevel 1 λ x → fun-is-hlevel 1 (y x .snd)
-  st .has-is-partial-order .antisym = ℙ-ext
+ℙ⊆ : ∀ {ℓ} → Type ℓ → Poset _ _
+ℙ⊆ A =
+  make-poset {A = ℙ A} {R = _⊆_}
+    (λ _ x → x)
+    (λ x⊆y y⊆z a a∈x → y⊆z a (x⊆y a a∈x))
+    ℙ-ext
+    λ {x} {y} → Π-is-hlevel 1 λ x → fun-is-hlevel 1 (y x .snd)
 ```
 
 Back on track, we equip intersection of subsets with the structure of a
@@ -168,7 +161,11 @@ $(x ⊆ y) \leftrightarrow (x ≡ (x ∩ y))$.
 ```agda
 subset-∩ : ∀ {ℓ} {A : Type ℓ} {X Y : ℙ A} → (X ⊆ Y) ≃ (X ≡ (X ∩ Y))
 subset-∩ {X = X} {Y = Y} =
-  prop-ext (Π-is-hlevel 1 λ x → fun-is-hlevel 1 (Y x .snd)) (ℙ-is-set _ _) to from where
+  prop-ext
+    (Π-is-hlevel 1 λ x → fun-is-hlevel 1 (Y x .snd))
+    (ℙ-is-set _ _)
+    to from
+  where
 ```
 
 In the "if" direction, suppose that $X \subseteq Y$. We show that $X ∩
