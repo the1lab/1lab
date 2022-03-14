@@ -143,6 +143,16 @@ suc x ≤ suc y = x ≤ y
 infix 3 _≤_
 ```
 
+We define the strict ordering on `Nat`{.Agda} as well,
+re-using the definition of `_≤_`{.Agda}.
+
+```agda
+_<_ : Nat → Nat → Type
+m < n = suc m ≤ n
+infix 3 _<_
+```
+
+
 Then we can prove it is `reflexive`{.Agda ident=≤-refl},
 `transitive`{.Agda ident=≤-trans} and `antisymmetric`{.Agda
 ident=≤-antisym}.

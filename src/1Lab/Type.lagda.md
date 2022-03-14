@@ -43,7 +43,7 @@ Agda comes with built-in definitions for a bunch of types:
 open import Agda.Builtin.Sigma hiding (Σ) public
 open import Agda.Builtin.Unit public
 open import Agda.Builtin.Bool public
-open import Agda.Builtin.Nat public
+open import Agda.Builtin.Nat hiding (_<_) public
 ```
 
 It does not, however, come with a built-in definition of the empty type:
