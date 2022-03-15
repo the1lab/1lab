@@ -15,11 +15,12 @@ private variable
 
 # Idempotents
 
-An **idempotent** is the categorical generation of projections, in the
-sense of linear algebra. Formally, an idempotent $e : A \to A$ is a map
-with $e \circ e = e$. Keeping in line with the view that an idempotent
-is like a projection, we can ask _what_ it projects onto: We would then
-have some subobject $F$ of fixed elements, and a decomposition of $e$ as
+**Idempotents** are the categorical generalisation of projections, in
+the sense of linear algebra. Formally, an idempotent $e : A \to A$ is a
+map with $e \circ e = e$. Keeping in line with the view that an
+idempotent is like a projection, we can ask _what_ it projects onto: We
+would then have some subobject $F$ of fixed elements, and a
+decomposition of $e$ as
 
 $$
 X \to F \mono X
