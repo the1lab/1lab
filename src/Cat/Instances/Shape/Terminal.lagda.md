@@ -3,7 +3,7 @@ open import 1Lab.Prelude
 
 open import Cat.Base
 
-module Cat.Instances.Terminal where
+module Cat.Instances.Shape.Terminal where
 ```
 
 <!--

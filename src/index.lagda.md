@@ -383,12 +383,13 @@ open import Cat.Instances.Product   -- Product of precategories
 open import Cat.Instances.Monoids   -- Precategory of monoids
 open import Cat.Instances.Karoubi   -- Split-idempotent completion of a precategory
 open import Cat.Instances.Discrete  -- Discrete category on a groupoid or set
-open import Cat.Instances.Terminal  -- Category with one point
 open import Cat.Instances.Elements  -- Precategory of elements of a presheaf
 open import Cat.Instances.Delooping -- Delooping category of a monoid/group
 
 open import Cat.Instances.StrictCat          -- Precategory of strict precategories
 open import Cat.Instances.StrictCat.Cohesive -- Strict categories are "spatial"
+
+open import Cat.Instances.Shape.Terminal  -- Category with one point
 ```
 
 ## Thin categories

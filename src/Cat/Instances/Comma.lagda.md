@@ -1,5 +1,5 @@
 ```agda
-open import Cat.Instances.Terminal
+open import Cat.Instances.Shape.Terminal
 open import Cat.Instances.Functor
 open import Cat.Prelude
 

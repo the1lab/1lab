@@ -29,6 +29,7 @@ In particular, for a binary operator to be a group operator, it has to
 
 ```agda
 record is-group {ℓ} {A : Type ℓ} (_*_ : A → A → A) : Type ℓ where
+  no-eta-equality
   field
     unit : A
     has-is-monoid : is-monoid unit _*_
