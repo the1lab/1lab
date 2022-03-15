@@ -15,8 +15,8 @@ module Cat.Functor.Equivalence where
 private variable
   o h : Level
   C D : Precategory o h
-open Functor
-open _=>_
+open Functor hiding (op)
+open _=>_ hiding (op)
 ```
 -->
 
@@ -58,11 +58,14 @@ morphisms gives isomorphisms in the respective functor categories:
   F∘F⁻¹≅Id = 
     [D,D].invertible→iso counit 
       (componentwise-invertible→invertible _ counit-iso)
-
+    
   Id≅F⁻¹∘F : Id [C,C].≅ (F⁻¹ F∘ F)
   Id≅F⁻¹∘F = 
     [C,C].invertible→iso unit
       (componentwise-invertible→invertible _ unit-iso)
+    
+  unit⁻¹ = [C,C]._≅_.from Id≅F⁻¹∘F
+  counit⁻¹ = [D,D]._≅_.from F∘F⁻¹≅Id
 ```
 
 We chose, for definiteness, the above definition of equivalence of
@@ -450,9 +453,7 @@ we call this result the _theorem of choice_.
 ```
 
 This theorem implies that any fully faithful, "merely" essentially
-surjective functor between categories is an equivalence:
-
-This implies that any functor between categories automatically splits
+surjective functor between categories is an equivalence: 
 
 ```agda
   ff+eso→is-equivalence : is-eso F → is-equivalence F

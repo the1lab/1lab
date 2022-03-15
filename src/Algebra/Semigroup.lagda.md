@@ -14,8 +14,6 @@ private variable
 ```
 -->
 
-
-
 # Semigroups
 
 ```agda

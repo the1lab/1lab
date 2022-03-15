@@ -42,38 +42,37 @@ open Monad L∘R
 ```
 
 The composition of `R.₁`{.Agda} with the `adjunction counit`{.Agda
-ident="adj.counit.η"} natural transformation gives `R`{.Agda} a
-`Algebra`{.Agda ident="Algebra"} structure, thus extending `R` to a
-functor $D \to C^{L \circ R}$.
+ident="adj.counit.η"} natural transformation gives `R`{.Agda} an
+`Algebra`{.Agda} structure, thus extending `R` to a functor $D \to C^{L
+\circ R}$.
 
 ```
 Comparison : Functor D (Eilenberg-Moore L∘R)
-F₀ Comparison x = R.₀ x ,
-  record
-    { ν      = R.₁ (adj.counit.ε _)
-    ; ν-mult =
-      R.₁ (adj.counit.ε _) C.∘ M₁ (R.₁ (adj.counit.ε _))        ≡⟨ sym (R.F-∘ _ _) ⟩
-      R.₁ (adj.counit.ε _ D.∘ L.₁ (R.₁ (adj.counit.ε _)))       ≡⟨ ap R.₁ (adj.counit.is-natural _ _ _) ⟩
-      R.₁ (adj.counit.ε x D.∘ adj.counit.ε (L.₀ (R.₀ x)))       ≡⟨ R.F-∘ _ _ ⟩
-      R.₁ (adj.counit.ε x) C.∘ R.₁ (adj.counit.ε (L.₀ (R.₀ x))) ∎
-    ; ν-unit = adj.zag
-    }
+Comparison .F₀ x = R.₀ x , alg where
+  alg : Algebra-on L∘R (R.₀ x)
+  alg .Algebra-on.ν = R.₁ (adj.counit.ε _)
+  alg .Algebra-on.ν-unit = adj.zag
+  alg .Algebra-on.ν-mult =
+    R.₁ (adj.counit.ε _) C.∘ M₁ (R.₁ (adj.counit.ε _))        ≡⟨ sym (R.F-∘ _ _) ⟩
+    R.₁ (adj.counit.ε _ D.∘ L.₁ (R.₁ (adj.counit.ε _)))       ≡⟨ ap R.₁ (adj.counit.is-natural _ _ _) ⟩
+    R.₁ (adj.counit.ε x D.∘ adj.counit.ε (L.₀ (R.₀ x)))       ≡⟨ R.F-∘ _ _ ⟩
+    R.₁ (adj.counit.ε x) C.∘ R.₁ (adj.counit.ε (L.₀ (R.₀ x))) ∎
 ```
 
 <details>
 <summary> Construction of the functorial action of `Comparison`{.Agda} </summary>
 ```
-F₁ Comparison x =
-  record
-    { morphism = R.₁ x
-    ; commutes =
-      R.₁ x C.∘ R.₁ (adj.counit.ε _)        ≡⟨ sym (R.F-∘ _ _) ⟩
-      R.₁ (x D.∘ adj.counit.ε _)            ≡⟨ ap R.₁ (sym (adj.counit.is-natural _ _ _)) ⟩
-      R.₁ (adj.counit.ε _ D.∘ L.₁ (R.₁ x))  ≡⟨ R.F-∘ _ _ ⟩
-      R.₁ (adj.counit.ε _) C.∘ M₁ (R.₁ x)   ∎
-    }
-F-id Comparison = Algebra-hom-path R.F-id
-F-∘ Comparison f g = Algebra-hom-path (R.F-∘ _ _)
+Comparison .F₁ x = hom where
+  open Algebra-hom
+  hom : Algebra-hom _ _ _
+  hom .morphism = R.₁ x
+  hom .commutes =
+    R.₁ x C.∘ R.₁ (adj.counit.ε _)        ≡⟨ sym (R.F-∘ _ _) ⟩
+    R.₁ (x D.∘ adj.counit.ε _)            ≡⟨ ap R.₁ (sym (adj.counit.is-natural _ _ _)) ⟩
+    R.₁ (adj.counit.ε _ D.∘ L.₁ (R.₁ x))  ≡⟨ R.F-∘ _ _ ⟩
+    R.₁ (adj.counit.ε _) C.∘ M₁ (R.₁ x)   ∎
+Comparison .F-id    = Algebra-hom-path R.F-id
+Comparison .F-∘ f g = Algebra-hom-path (R.F-∘ _ _)
 ```
 </details>
 
