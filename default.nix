@@ -67,7 +67,7 @@ let
     buildInputs = [];
 
     buildPhase = ''
-    ghc Shakefile.hs
+    ghc Shakefile.hs -threaded -rtsopts
     '';
 
     installPhase = ''

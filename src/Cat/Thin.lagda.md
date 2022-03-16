@@ -32,6 +32,7 @@ necessarily [strict].
 
 ```agda
 record is-thin (C : Precategory o h) : Type (o ⊔ h) where
+  no-eta-equality
   open Precategory C
   field
     Ob-is-set : is-set Ob
@@ -184,11 +185,11 @@ module _ where
   open Poset
 
   make-poset : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'}
-            → (∀ {x} → R x x)
-            → (∀ {x y z} → R x y → R y z → R x z)
-            → (∀ {x y} → R x y → R y x → x ≡ y)
-            → (∀ {x y} → is-prop (R x y))
-            → Poset ℓ ℓ'
+             → (∀ {x} → R x x)
+             → (∀ {x y z} → R x y → R y z → R x z)
+             → (∀ {x y} → R x y → R y x → x ≡ y)
+             → (∀ {x y} → is-prop (R x y))
+             → Poset ℓ ℓ'
 ```
 
 Thus, to make a poset, it suffices to have a type $A$ (any old type!), a
@@ -198,11 +199,12 @@ described above, and prove that any antisymmetric proset is univalent.
 
 ```agda
   make-poset {A = A} {R} Rrefl Rtrans Rantisym Rprop = tc where
-    Aset : is-set A
-    Aset = Rijke-is-set {R = λ x y → R x y × R y x} 
-      (Rrefl , Rrefl) 
-      (λ (f , g) → Rantisym f g)
-      λ x y i → Rprop (x .fst) (y .fst) i , Rprop (x .snd) (y .snd) i
+    abstract
+      Aset : is-set A
+      Aset = Rijke-is-set {R = λ x y → R x y × R y x} 
+        (Rrefl , Rrefl) 
+        (λ (f , g) → Rantisym f g)
+        λ x y i → Rprop (x .fst) (y .fst) i , Rprop (x .snd) (y .snd) i
 
     open Proset (make-proset Aset Rrefl Rtrans Rprop)
       renaming ( underlying to cat ; has-is-thin to ist )
