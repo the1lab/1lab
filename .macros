@@ -18,3 +18,4 @@
 \eps:\varepsilon
 \To:\Rightarrow
 \intcat:\{0 \le 1 \}
+\Arr:\mathrm{Arr}(#1)
