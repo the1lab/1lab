@@ -1,27 +1,14 @@
 with builtins;
-with import <nixpkgs> {};
+with import ./support/nix/nixpkgs.nix;
 let
-  agda-fold-equations = haskellPackages.callCabal2nix
-    "agda-fold-equations"
-    (fetchGit {
-      url = "https://git.amelia.how/amelia/agda-fold-equations.git";
-      rev = "509bc021200b0de7713a0fdb27c730eaff3be206";
-      ref = "main";
-    }) {};
-
-  agda-reference-filter = haskellPackages.callCabal2nix
-    "agda-fold-equations"
-    (fetchGit {
-      url = "https://git.amelia.how/amelia/agda-reference-filter.git";
-      rev = "082b5576e799fe8aa28e7d09cf415ac6c9e0596b";
-      ref = "master";
-    }) {};
-
-  our-ghc = ghc.withPackages (pkgs: with pkgs; [
+  haskellPackages = import ./support/nix/haskell-packages.nix;
+  our-ghc = haskellPackages.ghcWithPackages (pkgs: with pkgs; [
     shake directory tagsoup
     text containers uri-encode
     process aeson Agda pandoc SHA
   ]);
+
+  static-agda = import ./support/nix/static-agda.nix;
 
   our-texlive = texlive.combine {
     inherit (texlive)
@@ -74,13 +61,13 @@ let
     mkdir -p $out/bin
     cp Shakefile $out/bin/1lab-shake
     remove-references-to -t ${haskellPackages.pandoc-types} $out/bin/1lab-shake
-    remove-references-to -t ${haskellPackages.pandoc} $out/bin/1lab-shake
-    remove-references-to -t ${haskellPackages.Agda} $out/bin/1lab-shake
-    remove-references-to -t ${haskellPackages.shake} $out/bin/1lab-shake
-    remove-references-to -t ${haskellPackages.HTTP} $out/bin/1lab-shake
-    remove-references-to -t ${haskellPackages.js-flot} $out/bin/1lab-shake
-    remove-references-to -t ${haskellPackages.js-jquery} $out/bin/1lab-shake
-    remove-references-to -t ${haskellPackages.js-dgtable} $out/bin/1lab-shake
+    remove-references-to -t ${haskellPackages.pandoc}       $out/bin/1lab-shake
+    remove-references-to -t ${haskellPackages.Agda}         $out/bin/1lab-shake
+    remove-references-to -t ${haskellPackages.shake}        $out/bin/1lab-shake
+    remove-references-to -t ${haskellPackages.HTTP}         $out/bin/1lab-shake
+    remove-references-to -t ${haskellPackages.js-flot}      $out/bin/1lab-shake
+    remove-references-to -t ${haskellPackages.js-jquery}    $out/bin/1lab-shake
+    remove-references-to -t ${haskellPackages.js-dgtable}   $out/bin/1lab-shake
     '';
 
     disallowedReferences = with haskellPackages; [
@@ -102,11 +89,12 @@ in
 
     buildInputs = [
       # For driving the compilation:
-      our-ghc shakefile agda
+      our-ghc shakefile static-agda
 
       # For building the text and maths:
       git sassc nodePackages.katex
-      agda-reference-filter agda-fold-equations
+      haskellPackages.agda-reference-filter 
+      haskellPackages.agda-fold-equations
 
       # For building diagrams:
       poppler_utils rubber our-texlive
@@ -145,7 +133,8 @@ in
 
         # For building the text and maths:
         git sassc pandoc nodePackages.katex
-        agda-reference-filter agda-fold-equations
+        haskellPackages.agda-reference-filter 
+        haskellPackages.agda-fold-equations
         python
 
         # For building diagrams:
@@ -153,6 +142,7 @@ in
       ];
 
       texlive = our-texlive;
+      ghc = our-ghc;
       fonts = fonts;
     };
   }

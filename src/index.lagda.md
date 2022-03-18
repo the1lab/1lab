@@ -380,7 +380,6 @@ open import Cat.Instances.Sets.FinitelyComplete -- Sets has finite limits
 open import Cat.Instances.Comma     -- Comma precategory over a cospan of functors
 open import Cat.Instances.Functor   -- Functor (pre)categories
 open import Cat.Instances.Product   -- Product of precategories
-open import Cat.Instances.Monoids   -- Precategory of monoids
 open import Cat.Instances.Karoubi   -- Split-idempotent completion of a precategory
 open import Cat.Instances.Discrete  -- Discrete category on a groupoid or set
 open import Cat.Instances.Elements  -- Precategory of elements of a presheaf

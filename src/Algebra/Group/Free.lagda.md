@@ -1,7 +1,11 @@
 ```agda
-open import 1Lab.Prelude
-
+open import Algebra.Group.Category
 open import Algebra.Group
+
+open import Cat.Diagram.Initial
+open import Cat.Functor.Adjoint
+open import Cat.Instances.Comma
+open import Cat.Prelude
 
 module Algebra.Group.Free where
 ```
@@ -11,6 +15,11 @@ module Algebra.Group.Free where
 private variable
   ℓ : Level
   A : Type ℓ
+open Group-hom
+open Group-on
+open Initial
+open ↓Obj
+open ↓Hom
 ```
 -->
 
@@ -56,9 +65,9 @@ underlying set `Free-group`{.Agda}. See what was meant by "precisely the
 data needed by `make-group`{.Agda}"?
 
 ```agda
-Free : Type ℓ → Group ℓ
-Free A .fst = Free-group A
-Free A .snd = make-group squash nil _◆_ inv f-assoc f-invl f-invr f-idl
+Free-Group : Type ℓ → Group ℓ
+Free-Group A .fst = Free-group A
+Free-Group A .snd = make-group squash nil _◆_ inv f-assoc f-invl f-invr f-idl
 ```
 
 This lemma will be very useful later. It says that whenever you want to
@@ -79,10 +88,8 @@ Free-elim-prop
 
 <details>
 <summary>
-
 The proof of it is a direct (by which I mean repetitive) case analysis,
 so I've put it in a `<details>`{.html} tag.
-
 </summary>
 
 ```agda
@@ -110,79 +117,121 @@ Free-elim-prop B bp bi bd binv bnil = go where
 
 ## Universal Property
 
-We now prove the universal property of `Free-group`{.Agda}: It's the left
-adjoint to the inclusion $\mathrm{Grp} \hookrightarrow \set$. 
+We now prove the universal property of `Free-group`{.Agda}, or, more
+specifically, of the map `inc`{.Agda}: It gives a [universal way of
+mapping] from the category of sets to an object in the category of
+groups, in that any map from a set to (the underlying set of) a group
+factors uniquely through `inc`{.Agda}. To establish this result, we
+first implement a helper function, `fold-free-group`{.Agda}, which,
+given the data of where to send the generators of a free group,
+determines a group homomorphism.
+
+[universal way of mapping]: Cat.Functor.Adjoint.html#universal-morphisms
 
 ```agda
-Free⊣Forget
-  : ∀ {ℓ} {A : Set ℓ} {G : Group ℓ}
-  → Group[ Free (A .fst) ⇒ G ] ≃ (A .fst → G .fst)
-Free⊣Forget {A = A , Aset} {G = G , Ggrp} = Iso→Equiv isom where
-  open is-iso
-  module G = Group-on Ggrp
-  module FA = Group-on (Free A .snd)
+fold-free-group 
+  : {A : Type ℓ} {G : Group ℓ} 
+  → (A → G .fst) → Groups.Hom (Free-Group A) G
+fold-free-group {A = A} {G = G , ggrp} map = go , go-hom where
+  module G = Group-on ggrp
 ```
 
-We start by defining, given a $f : A \to G$, the group homorphism $F(A)
-\to G$, which we call `fold`{.Agda}. The fold applies f to the
-generators `inc`{.Agda}, and acts homomorphically on the group
-operations of `Free`{.Agda}. In addition to being a canonical choice,
-we're locked into this choice by the adjunction.
+While it might seem that there are many cases to consider when defining
+the function `go`{.Agda}, for most of them, our hand is forced: For
+example, we must take multiplication in the free group (the `_◆_`{.Agda}
+constructor) to multiplication in the codomain.
 
 ```agda
-  fold : (A → G) → Free-group A → G
-  fold f (inc x) = f x
-  fold f (x ◆ y) = fold f x G.⋆ fold f y
-  fold f (Free-group.inv x) = fold f x G.⁻¹
-  fold f nil = G.unit
+  go : Free-group A → G
+  go (inc x) = map x
+  go (x ◆ y) = go x G.⋆ go y
+  go (inv x) = go x G.⁻¹
+  go nil = G.unit
 ```
 
-Since `fold`{.Agda} maps the group operations of `Free`{.Agda} to those
-of $G$, it must also map the group _identifications_ from `Free`{.Agda}
-to those of $G$.
+Since `_◆_`{.Agda} is interpreted as multiplication in $G$, it's $G$'s
+associativity, identity and inverse laws that provide the cases for
+`Free-group`{.Agda}'s higher constructors.
 
 ```agda
-  fold f (f-assoc x y z i) = 
-    G.associative {x = fold f x} {y = fold f y} {z = fold f z} (~ i)
-  fold f (f-invl x i) = G.inverseˡ {x = fold f x} i
-  fold f (f-invr x i) = G.inverseʳ {x = fold f x} i
-  fold f (f-idl x i) = G.idˡ {x = fold f x} i
-
-  fold f (squash x y p q i j) = 
-    G.has-is-set (fold f x) (fold f y) (λ i → fold f (p i)) (λ i → fold f (q i)) i j
+  go (f-assoc x y z i) = 
+    G.associative {x = go x} {y = go y} {z = go z} (~ i)
+  go (f-invl x i) = G.inverseˡ {x = go x} i
+  go (f-invr x i) = G.inverseʳ {x = go x} i
+  go (f-idl x i) = G.idˡ {x = go x} i
+  go (squash x y p q i j) = 
+    G.has-is-set (go x) (go y) (λ i → go (p i)) (λ i → go (q i)) i j
 
   open Group-hom
+
+  go-hom : Group-hom _ _ go
+  go-hom .pres-⋆ x y = refl
 ```
 
-By construction, the fold is a group homomorphism. It must map $x
-\diamond y$ to $\mathrm{fold}(x) \star \mathrm{fold}(y)$, but it does
-this by definition.
+Now, given a set $S$, we must come up with a group $G$, with a map 
+$\eta : S \to U(G)$ (in $\sets$, where $U$ is the [underlying set functor]),
+such that, for any other group $H$, any map $S \to U(H)$ can be factored
+uniquely as $S \xrightarrow{\eta} U(G) \to U(H)$. As hinted above, we
+pick $G = \mathrm{Free}(S)$, the free group with $S$ as its set of
+generators, and the universal map $\eta$ is in fact `inc`{.Agda}.
+
+[underlying set functor]: Algebra.Group.Category.html#the-underlying-set
 
 ```agda
-  fold-isGH : ∀ f → Group-hom (Free A) (G , Ggrp) (fold f)
-  fold-isGH f .pres-⋆ x y = refl
-
-  isom : Iso _ _
-  isom .fst (f , f-gh) x = f (inc x)
-  isom .snd .is-iso.inv f = fold f , fold-isGH f
-  isom .snd .rinv f = refl
+Free-universal-maps : ∀ s → Universal-morphism s (Forget {ℓ})
+Free-universal-maps (S , S-set) = um where
+  it : ↓Obj _ Forget
+  it .x   = tt
+  it .y   = Free-Group S
+  it .map = inc
 ```
 
-We can now turn to showing that `fold`{.Agda} has an inverse --- recall
-that it's a higher-order function, so the inverse turns group
-homomorphisms into functions between their underlying sets. The
-construction of the inverse, and one of the homotopies, are very
-straightforward. The other direction is more complicated; We must use
-`Free-elim-prop`{.Agda} to establish the result, which follows from the
-assumption that $f$ is a group homomorphism.
+To prove that this map is unique, suppose we have a group $H$ together
+with a map $g : S \to U(H)$. We can insert $\mathrm{Free}(S)$ in the
+middle by breaking this map down as
+
+$$
+S \xrightarrow{\mathrm{inc}} U(\mathrm{Free}(S) \xrightarrow{\mathrm{fold}(g)} H)
+$$
 
 ```agda
-  isom .snd .linv (f , f-hom) =
-    Σ-prop-path 
-      (λ f → Group-hom-is-prop) 
-      (funext (Free-elim-prop _ (λ x → G.has-is-set _ _) 
-        (λ x → refl) 
-        (λ x y p q → ap₂ G._⋆_ p q ∙ sym (f-hom .pres-⋆ x y)) 
-        (λ x p → ap G.inverse p ∙ sym (pres-inv f-hom x)) 
-        (sym (pres-id f-hom))))
+  um : Initial _
+  um .bot        = it
+  um .has⊥ other = contr factor unique where
+    g : S → other .y .fst
+    g = other .map
+
+    factor : ↓Hom _ _ it other
+    factor .α  = tt
+    factor .β  = fold-free-group g
+    factor .sq = refl
+```
+
+To show that this factorisation is unique, suppose we had some other
+group homomorphism $g' : \mathrm{Free}(S) \to H$, which also has the
+property that $U(g') \circ \mathrm{inc} = g$; We must show that it is
+equal to $\mathrm{fold}(g)$, which we can do `pointwise`{.Agda
+ident=funext}, so assume we have a $x : \mathrm{Free}(S)$. 
+
+By `induction`{.Agda ident=Free-elim-prop} on $x$, it suffices to
+consider the cases where $x$ is a `generator`{.Agda ident=inc}, or one
+of the group operations (`inverses`{.Agda ident=inv},
+`multiplication`{.Agda ident=_◆_}, or the `identity`{.Agda ident=nil}).
+The case for generators is the most interesting: We have some $y : S$,
+and must show that $g(y) = U(g')(\mathrm{inc}(y))$; but this is
+immediate, by assumption. The other cases all follow from the induction
+hypotheses and $g'$ being a group homomorphism.
+
+```agda
+    unique : ∀ x → factor ≡ x
+    unique factoring = ↓Hom-path _ _ refl path where abstract
+      path : factor .β ≡ factoring .β
+      path = Σ-prop-path (λ _ → Group-hom-is-prop) 
+        (funext (Free-elim-prop _ (λ _ → y other .snd .has-is-set _ _) 
+          (λ x → happly (factoring .sq) _)
+          (λ _ _ p q → ap₂ (other .y .snd ._⋆_) p q 
+                     ∙ sym (factoring .β .snd .pres-⋆ _ _)) 
+          (λ _ p → ap (other .y .snd .inverse) p 
+                 ∙ sym (pres-inv (factoring .β .snd) _)) 
+          (sym (pres-id (factoring .β .snd)))))
 ```

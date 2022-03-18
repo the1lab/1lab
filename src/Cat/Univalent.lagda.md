@@ -74,8 +74,20 @@ iso→path : is-category
          → ∀ {A B}
          → A ≅ B
          → A ≡ B
-iso→path cat =
-  is-equiv→is-iso (path→iso-is-equiv cat) .is-iso.inv
+iso→path cat = is-equiv→is-iso (path→iso-is-equiv cat) .is-iso.inv
+```
+
+Not only is it necessary for the map `iso→path` to be an equivalence for
+a precategory to be univalent, having spaces of isomorphisms equivalent
+to spaces of identifications is also a _sufficient_ condition:
+
+```agda
+iso≃path→is-category : (∀ {A B} → (A ≡ B) ≃ (A ≅ B)) → is-category
+iso≃path→is-category iso≃path A = 
+  equiv→is-hlevel 0 
+    (total λ x → iso≃path .fst) 
+    (equiv→total λ {x} → iso≃path .snd) 
+    (contr (A , λ i → A) Singleton-is-contr)
 ```
 
 <!--

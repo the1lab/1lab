@@ -12,7 +12,7 @@ open import Cat.Prelude
 
 open import Data.List
 
-module Cat.Instances.Monoids where
+module Algebra.Monoid.Category where
 ```
 
 <!--
@@ -55,7 +55,7 @@ It's routine to check that the identity is a monoid homomorphism and
 that composites of homomorphisms are again homomorphisms.
 
 ```agda
-Monoids ℓ .id  = (λ x → x) , (record { pres-id = refl ; pres-⋆ = λ _ _ → refl })
+Monoids ℓ .id  = (λ x → x) , record { pres-id = refl ; pres-⋆ = λ _ _ → refl }
 Monoids ℓ ._∘_ (f , fh) (g , gh) = f ⊙ g , fogh where
   fogh : Monoid-hom _ _ (f ⊙ g)
   fogh .pres-id    = ap f (gh .pres-id)    ∙ fh .pres-id
@@ -260,6 +260,7 @@ $[x,y]$.
   it's-eso : is-split-eso comparison
   it's-eso ((A , aset) , alg) = monoid , the-iso where
     open Algebra-on
+    open Algebra-hom
     import Cat.Reasoning (Eilenberg-Moore (L∘R (Free⊣Forget {ℓ}))) as R
 
     monoid : Monoids ℓ .Ob
@@ -269,8 +270,7 @@ $[x,y]$.
 ```
 
 It suffices, through _incredibly_ tedious calculations, to show that
-this data assembles into a monoid:
-
+these data assembles into a monoid:
 
 ```agda
     monoid .snd .has-is-monoid = has-is-m where abstract
@@ -318,12 +318,12 @@ recovered monoid has the same underlying type as the List-algebra!
 
 ```agda
     into : Algebra-hom _ (comparison.₀ monoid) ((A , aset) , alg)
-    into .Algebra-hom.morphism = λ x → x
-    into .Algebra-hom.commutes = funext (λ x → recover x ∙ ap (alg .ν) (sym (map-id x)))
+    into .morphism = λ x → x
+    into .commutes = funext (λ x → recover x ∙ ap (alg .ν) (sym (map-id x)))
 
     from : Algebra-hom _ ((A , aset) , alg) (comparison.₀ monoid)
-    from .Algebra-hom.morphism = λ x → x
-    from .Algebra-hom.commutes = 
+    from .morphism = λ x → x
+    from .commutes = 
       funext (λ x → sym (recover x) ∙ ap (fold monoid) (sym (map-id x)))
   
     the-iso : comparison.₀ monoid R.≅ ((A , aset) , alg)
