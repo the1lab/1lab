@@ -24,10 +24,10 @@ algebra for the [list monad].
 [univalent category]: Cat.Univalent.html
 [monad]: Cat.Diagram.Monad.html
 [Eilenberg-Moore category]: Cat.Diagram.Monad.html#eilenberg-moore-category
-[category of monoids]: Cat.Instances.Monoids.html
+[category of monoids]: Algebra.Monoid.Category.html
 [monoid]: Algebra.Monoid.html
 [sets]: Category.Instances.Sets.html
-[list monad]: Cat.Instances.Monoids.html#free-objects
+[list monad]: Algebra.Monoid.Category.html#free-objects
 
 Given that "hand-rolled" categories of this sort tend to be
 well-behaved, in particular when it comes to identifications (see
