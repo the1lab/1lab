@@ -44,7 +44,7 @@ constructions that have computational behaviour. Let's see how this is
 done.
 
 ## Glue
- 
+
 To even _state_ univalence, we first have to make sure that the concept
 of “paths between types” makes sense in the first place. In “Book HoTT”,
 paths between types are a well-formed concept because the path type is
@@ -475,7 +475,7 @@ equivalence to `refl`{.Agda} (`ua-id-equiv`{.Agda}).
 [path induction]: 1Lab.Path.html#J
 
 ```agda
-  is-iso.linv iiso = 
+  is-iso.linv iiso =
     J (λ _ p → ua (path→equiv p) ≡ p)
       (ap ua path→equiv-refl ∙ ua-id-equiv)
 
@@ -717,11 +717,11 @@ Map-classifier {ℓ = ℓ} {B = B} P =
 ```agda
 ua∙ : ∀ {A B C : Type ℓ} {f : A ≃ B} {g : B ≃ C}
     → ua (f ∙e g) ≡ ua f ∙ ua g
-ua∙ {C = C} {f = f} {g} = 
-  EquivJ 
+ua∙ {C = C} {f = f} {g} =
+  EquivJ
     (λ B eq → (g : B ≃ C) → ua (eq ∙e g) ≡ ua eq ∙ ua g)
-    (λ g → ap ua (Σ-prop-path is-equiv-is-prop (refl {x = g .fst})) 
-        ·· sym (∙-id-l (ua g)) 
+    (λ g → ap ua (Σ-prop-path is-equiv-is-prop (refl {x = g .fst}))
+        ·· sym (∙-id-l (ua g))
         ·· ap₂ _∙_ (sym ua-id-equiv) refl)
     f g
 

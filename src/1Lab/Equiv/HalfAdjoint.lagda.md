@@ -43,11 +43,11 @@ strong homotopy equivalence (Vogt's lemma). In HoTT, we show this
 synthetically for equivalences between $\infty$-groupoids.
 
 ```agda
-is-iso→is-half-adjoint-equiv 
+is-iso→is-half-adjoint-equiv
   : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
   → is-iso f → is-half-adjoint-equiv f
-is-iso→is-half-adjoint-equiv {A = A} {B} {f} iiso = 
-  g , η , ε' , λ x → sym (zig x) 
+is-iso→is-half-adjoint-equiv {A = A} {B} {f} iiso =
+  g , η , ε' , λ x → sym (zig x)
   where
     open is-iso iiso renaming (inv to g ; linv to η ; rinv to ε)
 ```
@@ -145,7 +145,7 @@ using the above characterisation of paths, prove that this fibre is a
 centre of contraction:
 
 ```agda
-is-half-adjoint-equiv→is-equiv 
+is-half-adjoint-equiv→is-equiv
   : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
   → is-half-adjoint-equiv f → is-equiv f
 is-half-adjoint-equiv→is-equiv {A = A} {B} {f} (g , η , ε , zig) .is-eqv y = contr fib contract where
@@ -187,7 +187,7 @@ Putting these together, we get an alternative definition of
 `is-iso→is-equiv`{.Agda}:
 
 ```agda
-is-iso→is-equiv' 
+is-iso→is-equiv'
   : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
   → is-iso f → is-equiv f
 is-iso→is-equiv' = is-half-adjoint-equiv→is-equiv ∘ is-iso→is-half-adjoint-equiv
@@ -218,7 +218,7 @@ equiv→zig {f = f} eqv = commPathIsEq where
         })
       (commSqIsEq a i j)
 
-is-equiv→is-half-adjoint-equiv 
+is-equiv→is-half-adjoint-equiv
   : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
   → is-equiv f → is-half-adjoint-equiv f
 is-equiv→is-half-adjoint-equiv {f = f} eqv =

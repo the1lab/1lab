@@ -14,7 +14,7 @@ has two _poles_ denoted `N` and `S` and an `A`-indexed family of paths `N ≡ S`
 data Susp {ℓ} (A : Type ℓ) : Type ℓ where
   N S   : Susp A
   merid : A → N ≡ S
-  
+
 ```
 
 *TODO*: Draw a picture and explain!

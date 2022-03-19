@@ -28,7 +28,7 @@ We prove that the category $\strcat$ admits an adjoint
 quadruple
 
 $$
-\Pi_0 \dashv \mathrm{Disc} \dashv \Gamma \dashv \mathrm{Codisc} 
+\Pi_0 \dashv \mathrm{Disc} \dashv \Gamma \dashv \mathrm{Codisc}
 $$
 
 where the "central" adjoint $\Gamma$ is the functor which sends a strict
@@ -84,15 +84,15 @@ Disc⊣Γ = adj where
 <!--
 ```agda
   abstract
-    lemma : ∀ {A : Strict-Cat ℓ ℓ .Precategory.Ob} 
+    lemma : ∀ {A : Strict-Cat ℓ ℓ .Precategory.Ob}
               {x y z : A .fst .Precategory.Ob} (f : y ≡ z) (g : x ≡ y)
           → subst (A .fst .Precategory.Hom _) (g ∙ f) (A .fst .Precategory.id)
-          ≡ A .fst .Precategory._∘_ 
+          ≡ A .fst .Precategory._∘_
             (subst (A .fst .Precategory.Hom _) f (A .fst .Precategory.id))
             (subst (A .fst .Precategory.Hom _) g (A .fst .Precategory.id))
-    lemma {A = A} {x = x} = 
-      J′ (λ y z f → (g : x ≡ y) → subst (X.Hom _) (g ∙ f) X.id 
-                  ≡ subst (X.Hom _) f X.id X.∘ subst (X.Hom _) g X.id) 
+    lemma {A = A} {x = x} =
+      J′ (λ y z f → (g : x ≡ y) → subst (X.Hom _) (g ∙ f) X.id
+                  ≡ subst (X.Hom _) f X.id X.∘ subst (X.Hom _) g X.id)
         λ x g → (subst-∙ (X.Hom _) g refl _ ·· transport-refl _ ·· sym (X.idl _))
               ∙ ap₂ X._∘_ (sym (transport-refl _)) refl
       where module X = Precategory (A .fst)
@@ -117,7 +117,7 @@ identity map suffices.
 
 ```agda
   adj .counit = NT (λ x → F x) nat where
-    F : (x : Precategory.Ob (Strict-Cat ℓ ℓ)) 
+    F : (x : Precategory.Ob (Strict-Cat ℓ ℓ))
       → Functor (Disc′ (x .fst .Precategory.Ob , x .snd)) _
     F X .F₀ x = x
     F X .F₁ p = subst (X .fst .Hom _) p (X .fst .id) {- 1 -}
@@ -128,15 +128,15 @@ identity map suffices.
 <!--
 ```agda
     abstract
-      nat : (x y : Precategory.Ob (Strict-Cat ℓ ℓ)) 
+      nat : (x y : Precategory.Ob (Strict-Cat ℓ ℓ))
             (f : Precategory.Hom (Strict-Cat ℓ ℓ) x y)
           → (F y F∘ F₁ (Disc F∘ Γ) f) ≡ (f F∘ F x)
-      nat x y f = 
-        Functor-path (λ x → refl) 
-           (J′ (λ x y p → subst (Y.Hom _) (ap (F₀ f) p) Y.id 
-                        ≡ F₁ f (subst (X.Hom _) p X.id)) 
-               λ _ → transport-refl _ 
-                  ·· sym (F-id f) 
+      nat x y f =
+        Functor-path (λ x → refl)
+           (J′ (λ x y p → subst (Y.Hom _) (ap (F₀ f) p) Y.id
+                        ≡ F₁ f (subst (X.Hom _) p X.id))
+               λ _ → transport-refl _
+                  ·· sym (F-id f)
                   ·· ap (F₁ f) (sym (transport-refl _)))
          where
            module X = Precategory (x .fst)
@@ -180,9 +180,9 @@ both directions:
 Γ⊣Codisc : Γ ⊣ Codisc {ℓ}
 Γ⊣Codisc = adj where
   adj : _ ⊣ _
-  adj .unit = 
-    NT (λ x → record { F₀ = λ x → x ; F₁ = λ _ → lift tt 
-                     ; F-id = refl ; F-∘ = λ _ _ → refl }) 
+  adj .unit =
+    NT (λ x → record { F₀ = λ x → x ; F₁ = λ _ → lift tt
+                     ; F-id = refl ; F-∘ = λ _ _ → refl })
        λ x y f → Functor-path (λ _ → refl) λ _ → refl
   adj .counit = NT (λ _ x → x) λ x y f i o → f o
   adj .zig = refl
@@ -208,7 +208,7 @@ module _ {ℓ} where
   import Cat.Morphism Cat[ Strict-Cat ℓ ℓ , Sets ℓ ] as Nt
 
   GlobalSections : Functor (Strict-Cat ℓ ℓ) (Sets ℓ)
-  GlobalSections .F₀ C = 
+  GlobalSections .F₀ C =
     Functor (Codisc′ (Lift _ ⊤)) (C .fst) , Functor-is-set (C .snd)
   GlobalSections .F₁ G F = G F∘ F
   GlobalSections .F-id = funext λ _ → Functor-path (λ _ → refl) λ _ → refl
@@ -231,9 +231,9 @@ essentially independent of the coordinate.
 
 ```agda
     f : Γ => GlobalSections
-    f .η x ob = 
-      record { F₀ = λ _ → ob ; F₁ = λ _ → x .fst .id 
-             ; F-id = refl ; F-∘ = λ _ _ → sym (x .fst .idl _) 
+    f .η x ob =
+      record { F₀ = λ _ → ob ; F₁ = λ _ → x .fst .id
+             ; F-id = refl ; F-∘ = λ _ _ → sym (x .fst .idl _)
              }
     f .is-natural x y f = funext λ _ → Functor-path (λ _ → refl) λ _ → sym (F-id f)
 ```
@@ -278,8 +278,8 @@ component it inhabits.
 ```agda
 Π₀ : Functor (Strict-Cat o h) (Sets (o ⊔ h))
 Π₀ .F₀ (C , _) = π₀ C
-Π₀ .F₁ F = 
-  Quot-elim (λ _ → squash) (λ x → inc (F₀ F x)) 
+Π₀ .F₁ F =
+  Quot-elim (λ _ → squash) (λ x → inc (F₀ F x))
     λ x y r → glue (_ , _ , F₁ F r)
 ```
 
@@ -305,9 +305,9 @@ quotient.
 Π₀⊣Disc : Π₀ ⊣ Disc {ℓ}
 Π₀⊣Disc = adj where
   adj : _ ⊣ _
-  adj .unit .η x = record 
+  adj .unit .η x = record
     { F₀   = inc            ; F₁ = quot
-    ; F-id = squash _ _ _ _ ; F-∘ = λ _ _ → squash _ _ _ _ 
+    ; F-id = squash _ _ _ _ ; F-∘ = λ _ _ → squash _ _ _ _
     }
   adj .unit .is-natural x y f = Functor-path (λ x → refl) λ _ → squash _ _ _ _
 ```
@@ -319,7 +319,7 @@ the same set we started with.
 
 ```agda
   adj .counit .η (X , s) = Quot-elim (λ _ → s) (λ x → x) λ x y r → r
-  adj .counit .is-natural x (y , ys) f = 
+  adj .counit .is-natural x (y , ys) f =
     funext (Coeq-elim-prop (λ _ → ys _ _) λ _ → refl)
 ```
 
@@ -347,10 +347,10 @@ the morphisms.
 
 ```agda
   f : π₀ (C ×Cat D) .fst → π₀ C .fst × π₀ D .fst
-  f = Quot-elim 
-    (λ _ → ×-is-hlevel 2 squash squash) 
-    (λ (a , b) → inc a , inc b) 
-    λ (x , x') (y , y') (f , g) i → 
+  f = Quot-elim
+    (λ _ → ×-is-hlevel 2 squash squash)
+    (λ (a , b) → inc a , inc b)
+    λ (x , x') (y , y') (f , g) i →
       glue (x , y , f) i , glue (x' , y' , g) i
 ```
 
@@ -358,15 +358,15 @@ This map has an inverse given by joining up the pairs:
 
 ```agda
   isom : is-iso f
-  isom .inv (a , b) = Coeq-rec₂ squash (λ x y → inc (x , y)) 
-    (λ a (x , y , r) i → glue ((x , a) , (y , a) , r , Precategory.id D) i) 
-    (λ a (x , y , r) i → glue ((a , x) , (a , y) , Precategory.id C , r) i) 
+  isom .inv (a , b) = Coeq-rec₂ squash (λ x y → inc (x , y))
+    (λ a (x , y , r) i → glue ((x , a) , (y , a) , r , Precategory.id D) i)
+    (λ a (x , y , r) i → glue ((a , x) , (a , y) , Precategory.id C , r) i)
     a b
 
-  isom .rinv (a , b) = Coeq-elim-prop₂ 
-    {C = λ x y → f (isom .inv (x , y)) ≡ (x , y)} 
-    (λ _ _ → ×-is-hlevel 2 squash squash _ _) 
-    (λ _ _ → refl) 
+  isom .rinv (a , b) = Coeq-elim-prop₂
+    {C = λ x y → f (isom .inv (x , y)) ≡ (x , y)}
+    (λ _ _ → ×-is-hlevel 2 squash squash _ _)
+    (λ _ _ → refl)
     a b
 
   isom .linv = Coeq-elim-prop (λ _ → squash _ _) λ _ → refl

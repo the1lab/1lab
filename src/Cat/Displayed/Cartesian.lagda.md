@@ -2,7 +2,7 @@
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
-module Cat.Displayed.Cartesian 
+module Cat.Displayed.Cartesian
   {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′) where
 
 open Precategory B
@@ -23,9 +23,9 @@ record Cartesian {a b x y} (f : Hom a b)
 ```
 
 ```agda
-record Cartesian-lift {x y} (f : Hom x y) (y′ : Ob[ y ]) : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where 
+record Cartesian-lift {x y} (f : Hom x y) (y′ : Ob[ y ]) : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
   field
-    {x′}       : Ob[ x ] 
+    {x′}       : Ob[ x ]
     lifting   : Hom[ f ] x′ y′
     cartesian : Cartesian f lifting
 ```

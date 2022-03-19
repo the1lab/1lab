@@ -50,7 +50,7 @@ total-fibres {A = A} {P = P} {Q = Q} {f = f} {x = x} {v = v} = the-iso where
     J (λ { (x , v) _ → fibre (f x) v } )
       (v , refl)
       p
-  
+
   the-iso : {x : A} {v : Q x} → Iso (fibre (f x) v) (fibre (total f) (x , v))
   the-iso .fst = to
   the-iso .snd .is-iso.inv = from
@@ -80,7 +80,7 @@ equiv→total : {f : (x : A) → P x → Q x}
             → ({x : A} → is-equiv (f x))
             → is-equiv (total f)
 equiv→total always-eqv .is-eqv y =
-  iso→is-hlevel 0 
+  iso→is-hlevel 0
     (total-fibres .fst)
     (total-fibres .snd)
     (always-eqv .is-eqv (y .snd))

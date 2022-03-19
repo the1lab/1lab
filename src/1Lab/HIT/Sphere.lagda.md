@@ -115,7 +115,7 @@ using lemmas on transport in pathspaces. </summary>
     ap (λ p → p i)
       (ap SuspS⁰→S¹ (merid N ∙ sym (merid S))  ≡⟨ ap-comp-path SuspS⁰→S¹ (merid N) (sym (merid S))⟩
       loop ∙ refl                              ≡⟨ ∙-id-r loop ⟩
-      loop                                     ∎) 
+      loop                                     ∎)
   iso-pf .linv N = refl
   iso-pf .linv S = merid S
   iso-pf .linv (merid N i) j =

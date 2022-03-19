@@ -16,7 +16,7 @@ They play a dual role to the [product type](agda://1Lab.Type#_×_);
 if products allow us to state that we have elements of two types simultaneously,
 sum types allow us to state that we have an element of _one_ of two types.
 
-We use the notation `A ⊎ B` to hint at this type's set-theoretic analog: 
+We use the notation `A ⊎ B` to hint at this type's set-theoretic analog:
 the disjoint union.
 
 ```agda
@@ -256,7 +256,7 @@ preserves h-levels`{.Agda ident=Lift-is-hlevel} and the assumption that
 ```agda
 Code-is-hlevel {x = inl x} {inr y} {n} ahl bhl =
   Lift-is-hlevel (suc n) (is-prop→is-hlevel-suc λ x → absurd x)
-Code-is-hlevel {x = inr x} {inl y} {n} ahl bhl = 
+Code-is-hlevel {x = inr x} {inl y} {n} ahl bhl =
   Lift-is-hlevel (suc n) (is-prop→is-hlevel-suc λ x → absurd x)
 ```
 
@@ -282,7 +282,7 @@ the coproduct of _disjoint_ propositions is a proposition:
 [being contractible]: agda://1Lab.HLevel#is-contr
 
 ```agda
-disjoint-⊎-is-prop 
+disjoint-⊎-is-prop
   : is-prop A → is-prop B → (A × B → ⊥)
   → is-prop (A ⊎ B)
 disjoint-⊎-is-prop Ap Bp notab (inl x) (inl y) = ap inl (Ap x y)

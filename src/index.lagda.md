@@ -428,7 +428,7 @@ algebraic structure comes with an associated proof that it is univalent
 instance).
 
 ```agda
-open import Algebra.Magma                      -- Binary operations 
+open import Algebra.Magma                      -- Binary operations
 open import Algebra.Magma.Unital               -- Operations with two-sided units
 open import Algebra.Magma.Unital.EckmannHilton -- The Eckmann-Hilton argument
 

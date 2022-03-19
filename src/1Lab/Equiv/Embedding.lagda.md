@@ -98,7 +98,7 @@ PathP≡ap-fibre p
 -->
 
 ```agda
-fibres-are-prop→is-embedding 
+fibres-are-prop→is-embedding
   : (f : A → B) → ((x : B) → is-prop (fibre f x))
   → is-embedding f
 fibres-are-prop→is-embedding f prop-fib {w} {x} .is-eqv y =

@@ -165,7 +165,7 @@ have to do this once!
                    ; (j = i1) → p (~ l ∧ ~ i)
                    ; (i = i1) → x
                    })
-          (p (j ∧ ~ i)) 
+          (p (j ∧ ~ i))
 ```
 
 For the other direction, we use the fact that `p` is definitionally
@@ -223,7 +223,7 @@ more than a handful of intermediate steps:
     (sym p ∙ p) ∙ q ≡⟨ ap₂ _∙_ (∙-inv-l p) refl ⟩
     refl ∙ q        ≡⟨ ∙-id-l q ⟩
     q               ∎
-  
+
   ∙-cancel'-l : {x y z : A} (p : x ≡ y) (q r : y ≡ z)
               → p ∙ q ≡ p ∙ r → q ≡ r
   ∙-cancel'-l = J (λ y p → (q r : y ≡ _) → p ∙ q ≡ p ∙ r → q ≡ r)

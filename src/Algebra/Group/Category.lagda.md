@@ -33,8 +33,8 @@ Groups ℓ = c where
   c : Precategory _ _
   c .Ob = Group ℓ
   c .Hom A B = Group[ A ⇒ B ]
-  c .Hom-set _ (B , bg) = 
-    Σ-is-hlevel 2 (fun-is-hlevel 2 (bg .has-is-set)) 
+  c .Hom-set _ (B , bg) =
+    Σ-is-hlevel 2 (fun-is-hlevel 2 (bg .has-is-set))
                   λ _ → is-prop→is-set Group-hom-is-prop
 ```
 
@@ -89,11 +89,11 @@ same thing as homomorphic equivalences of the groups' underlying types.
 [univalent]: Cat.Univalent.html
 
 ```agda
-Group-equiv≃Groups-iso 
+Group-equiv≃Groups-iso
   : ∀ {A B : Group ℓ} → (Σ (Group≃ A B)) ≃ (A Groups.≅ B)
-Group-equiv≃Groups-iso {A = A} {B = B} .fst ((f , eqv) , grh) = 
-  Groups.make-iso (f , grh) (equiv→inverse eqv , inv-group-hom) 
-    (Forget-is-faithful (funext (equiv→section eqv))) 
+Group-equiv≃Groups-iso {A = A} {B = B} .fst ((f , eqv) , grh) =
+  Groups.make-iso (f , grh) (equiv→inverse eqv , inv-group-hom)
+    (Forget-is-faithful (funext (equiv→section eqv)))
     (Forget-is-faithful (funext (equiv→retraction eqv)))
 ```
 
@@ -115,7 +115,7 @@ equivalence is also homomorphic:
 
     abstract
       inv-group-hom : Group-hom B A g
-      inv-group-hom .pres-⋆ x y = 
+      inv-group-hom .pres-⋆ x y =
         g (x B.⋆ y)             ≡˘⟨ ap₂ (λ x y → g (x B.⋆ y)) (equiv→section eqv _) (equiv→section eqv _) ⟩
         g (f (g x) B.⋆ f (g y)) ≡˘⟨ ap g (grh .pres-⋆ _ _) ⟩
         g (f (g x A.⋆ g y))     ≡⟨ equiv→retraction eqv _ ⟩
@@ -129,18 +129,18 @@ Group-equiv≃Groups-iso .snd = is-iso→is-equiv isic where
   open Groups._≅_
 
   isic : is-iso _
-  isic .is-iso.inv x = 
-    ( x .to .fst 
-    , is-iso→is-equiv (iso 
-        (x .from .fst) 
-        (happly (ap fst (x .invˡ))) 
+  isic .is-iso.inv x =
+    ( x .to .fst
+    , is-iso→is-equiv (iso
+        (x .from .fst)
+        (happly (ap fst (x .invˡ)))
         (happly (ap fst (x .invʳ))))
-    ) 
+    )
     , x .to .snd
-  isic .is-iso.rinv x = 
+  isic .is-iso.rinv x =
     Groups.≅-pathp refl refl refl (Forget-is-faithful refl)
-  isic .is-iso.linv x = 
-    Σ-prop-path (λ _ → Group-hom-is-prop) 
+  isic .is-iso.linv x =
+    Σ-prop-path (λ _ → Group-hom-is-prop)
       (Σ-prop-path is-equiv-is-prop refl)
 ```
 -->

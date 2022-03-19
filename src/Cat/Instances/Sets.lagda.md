@@ -59,10 +59,10 @@ types`{.Agda ident=Σ-pathp}, the rearranging of isomorphisms defined
 above, and `ua`{.Agda}.
 
 ```agda
-    isc .paths (B , isom) = 
+    isc .paths (B , isom) =
       Σ-pathp (Σ-prop-path (λ _ → is-hlevel-is-prop 2) (ua A≃B))
-        (Sets.≅-pathp refl _ 
-          (λ i x → path→ua-pathp A≃B {x = x} {y = isom.to x} refl i) 
+        (Sets.≅-pathp refl _
+          (λ i x → path→ua-pathp A≃B {x = x} {y = isom.to x} refl i)
           (ua→ λ a → sym (happly isom.invʳ a)))
       where
         module isom = Sets._≅_ isom
@@ -79,9 +79,9 @@ the rearrangement `iso→equiv`{.Agda} is an equivalence:
 
 ```agda
   equiv→iso : {A B : Set ℓ} → A .fst ≃ B .fst → A Sets.≅ B
-  equiv→iso (f , f-eqv) = 
-    Sets.make-iso f (equiv→inverse f-eqv) 
-      (funext (equiv→section f-eqv)) 
+  equiv→iso (f , f-eqv) =
+    Sets.make-iso f (equiv→inverse f-eqv)
+      (funext (equiv→section f-eqv))
       (funext (equiv→retraction f-eqv))
 
   equiv≃iso : {A B : Set ℓ} → (A Sets.≅ B) ≃ (A .fst ≃ B .fst)
@@ -99,7 +99,7 @@ We then use [univalence for $n$-types] to directly establish that $(A
 
 ```
   is-category′-Sets : ∀ {A B : Set ℓ} → (A ≡ B) ≃ (A Sets.≅ B)
-  is-category′-Sets {A} {B} = 
+  is-category′-Sets {A} {B} =
     (A ≡ B)           ≃⟨ n-Type-univalence {n = 2} ⟩
     (A .fst ≃ B .fst) ≃⟨ equiv≃iso e⁻¹ ⟩
     (A Sets.≅ B)      ≃∎

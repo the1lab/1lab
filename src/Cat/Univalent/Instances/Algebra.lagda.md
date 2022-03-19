@@ -4,8 +4,8 @@ open import Cat.Functor.Base
 open import Cat.Univalent
 open import Cat.Prelude
 
-module 
-  Cat.Univalent.Instances.Algebra 
+module
+  Cat.Univalent.Instances.Algebra
     {o ℓ} {C : Precategory o ℓ}
     (isc : is-category C)
     (M : Monad {C = C})
@@ -63,7 +63,7 @@ map.
 ```agda
 Eilenberg-Moore-is-category : is-category EM
 Eilenberg-Moore-is-category A .centre = A , EM.id-iso
-Eilenberg-Moore-is-category (A , Am) .paths ((X , Xm) , A≅X) = 
+Eilenberg-Moore-is-category (A , Am) .paths ((X , Xm) , A≅X) =
   Σ-pathp A≡M triv where
 ```
 
@@ -111,7 +111,7 @@ between the underlying objects in $\ca{C}$:
 
 ```agda
     A₀≅X₀ : A C.≅ X
-    A₀≅X₀ = C.make-iso 
+    A₀≅X₀ = C.make-iso
       (map A≅X.to) (map A≅X.from) (ap map A≅X.invˡ) (ap map A≅X.invʳ)
 ```
 
@@ -153,11 +153,11 @@ calculation then shows that the square above commutes.
 ```agda
     Am≡Xm : PathP (λ i → Algebra-on M (A₀≡X₀ i)) Am Xm
     Am≡Xm = Algebra-on-pathp A₀≡X₀ same-mults′ where
-      same-mults 
-        : PathP 
+      same-mults
+        : PathP
           (λ i → C.Hom (iso→path C isc (F-map-iso (Monad.M M) A₀≅X₀) i) (A₀≡X₀ i))
           (Am .ν) (Xm .ν)
-      same-mults = 
+      same-mults =
         Hom-pathp-iso C isc (
           map A≅X.to C.∘ Am .ν C.∘ Monad.M₁ M (map A≅X.from)                 ≡⟨ C.pulll (sq A≅X.to) ⟩
           (Xm .ν C.∘ Monad.M₁ M (A≅X.to .map)) C.∘ Monad.M₁ M (map A≅X.from) ≡⟨ C.cancelr (sym (Monad.M-∘ M _ _) ·· ap (Monad.M₁ M) (ap map A≅X.invˡ) ·· Monad.M-id M) ⟩
@@ -175,13 +175,13 @@ Or take a path in the domain category, and then use the canonical
 ident=F-map-path}, and we can correct the source:
 
 ```agda
-      same-mults′ : PathP (λ i → C.Hom (Monad.M₀ M (A₀≡X₀ i)) (A₀≡X₀ i)) 
+      same-mults′ : PathP (λ i → C.Hom (Monad.M₀ M (A₀≡X₀ i)) (A₀≡X₀ i))
                       (Am .ν) (Xm .ν)
-      same-mults′ = 
-        transport 
-          (λ j → PathP 
-            (λ i → C.Hom (F-map-path (Monad.M M) A₀≅X₀ isc isc (~ j) i) (A₀≡X₀ i)) 
-            (Am .ν) (Xm .ν)) 
+      same-mults′ =
+        transport
+          (λ j → PathP
+            (λ i → C.Hom (F-map-path (Monad.M M) A₀≅X₀ isc isc (~ j) i) (A₀≡X₀ i))
+            (Am .ν) (Xm .ν))
           same-mults
 
     A≡M : Path (Algebra M) (A , Am) (X , Xm)
@@ -196,7 +196,7 @@ ident=Hom-pathp}.
 
 ```agda
     triv : PathP (λ i → (A , Am) EM.≅ A≡M i) EM.id-iso A≅X
-    triv = EM.≅-pathp refl _ 
-      (Algebra-hom-pathp _ _ (Hom-pathp-reflʳ-iso C isc (C.idr _))) 
+    triv = EM.≅-pathp refl _
+      (Algebra-hom-pathp _ _ (Hom-pathp-reflʳ-iso C isc (C.idr _)))
       (Algebra-hom-pathp _ _ (Hom-pathp-reflˡ-iso C isc (C.idl _)))
 ```

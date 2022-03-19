@@ -30,10 +30,10 @@ record Monad : Type (o ⊔ h) where
     M    : Functor C C
     unit : Id => M
     mult : (M F∘ M) => M
-  
+
   module unit = _=>_ unit
   module mult = _=>_ mult
-  
+
   M₀ = F₀ M
   M₁ = F₁ M
   M-id = F-id M
@@ -47,7 +47,7 @@ associativity laws exactly analogous to those of a monoid.
   field
     left-ident  : ∀ {x} → mult.η x C.∘ M₁ (unit.η x) ≡ C.id
     right-ident : ∀ {x} → mult.η x C.∘ unit.η (M₀ x) ≡ C.id
-  
+
   field
     mult-assoc : ∀ {x} → mult.η x C.∘ M₁ (mult.η x) ≡ mult.η x C.∘ mult.η (M₀ x)
 ```
@@ -55,9 +55,9 @@ associativity laws exactly analogous to those of a monoid.
 # Algebras over a monad
 
 One way of interpreting a monad $M$ is as giving a _signature_ for an
-algebraic theory. For instance, the free monoid monad describes the 
+algebraic theory. For instance, the free monoid monad describes the
 signature for the theory of monoids, and the [free group] monad
-describes the theory of groups. 
+describes the theory of groups.
 
 Under this light, an **algebra over a monad** is a way of _evaluating_
 the abstract operations given by a monadic expression to a concrete
@@ -91,17 +91,17 @@ Algebra M = Σ (Algebra-on M)
 
 <!--
 ```agda
-Algebra-on-pathp 
+Algebra-on-pathp
   : ∀ {M} {X Y} (p : X ≡ Y) {A : Algebra-on M X} {B : Algebra-on M Y}
   → PathP (λ i → C.Hom (Monad.M₀ M (p i)) (p i)) (A .Algebra-on.ν) (B .Algebra-on.ν)
   → PathP (λ i → Algebra-on M (p i)) A B
 Algebra-on-pathp over mults i .Algebra-on.ν = mults i
-Algebra-on-pathp {M} over {A} {B} mults i .Algebra-on.ν-unit = 
-  is-prop→pathp (λ i → C.Hom-set _ _ (mults i C.∘ M.unit.η _) (C.id {x = over i})) 
+Algebra-on-pathp {M} over {A} {B} mults i .Algebra-on.ν-unit =
+  is-prop→pathp (λ i → C.Hom-set _ _ (mults i C.∘ M.unit.η _) (C.id {x = over i}))
     (A .Algebra-on.ν-unit) (B .Algebra-on.ν-unit) i
   where module M = Monad M
-Algebra-on-pathp {M} over {A} {B} mults i .Algebra-on.ν-mult = 
-  is-prop→pathp (λ i → C.Hom-set _ _ (mults i C.∘ M.M₁ (mults i)) (mults i C.∘ M.mult.η _)) 
+Algebra-on-pathp {M} over {A} {B} mults i .Algebra-on.ν-mult =
+  is-prop→pathp (λ i → C.Hom-set _ _ (mults i C.∘ M.M₁ (mults i)) (mults i C.∘ M.mult.η _))
     (A .Algebra-on.ν-mult) (B .Algebra-on.ν-mult) i
   where module M = Monad M
 ```
@@ -154,13 +154,13 @@ ident=C.Hom-set}), equality of algebra homomorphisms only depends on an
 equality of their underlying morphisms.
 
 ```
-Algebra-hom-path 
+Algebra-hom-path
   : {M : Monad} {X Y : Algebra M} {F G : Algebra-hom M X Y}
   → morphism F ≡ morphism G
   → F ≡ G
 Algebra-hom-path x i .morphism = x i
-Algebra-hom-path {M = M} {X} {Y} {F} {G} x i .commutes = 
-  is-prop→pathp (λ i → C.Hom-set _ _ (x i C.∘ X .snd .Algebra-on.ν) 
+Algebra-hom-path {M = M} {X} {Y} {F} {G} x i .commutes =
+  is-prop→pathp (λ i → C.Hom-set _ _ (x i C.∘ X .snd .Algebra-on.ν)
                                      (Y .snd .Algebra-on.ν C.∘ Monad.M₁ M (x i)))
     (F .commutes) (G .commutes) i
 ```
@@ -168,7 +168,7 @@ Algebra-hom-path {M = M} {X} {Y} {F} {G} x i .commutes =
 <!--
 ```agda
 Algebra-hom-pathp
-  : {M : Monad} {W X Y Z : Algebra M} 
+  : {M : Monad} {W X Y Z : Algebra M}
     {F : Algebra-hom M W X}
     {G : Algebra-hom M Y Z}
     (p : W ≡ Y)
@@ -176,8 +176,8 @@ Algebra-hom-pathp
   → PathP _ (morphism F) (morphism G)
   → PathP (λ i → Algebra-hom M (p i) (q i)) F G
 Algebra-hom-pathp p q r i .morphism = r i
-Algebra-hom-pathp {M = M} {W} {X} {Y} {Z} {F} {G} p q r i .commutes = 
-  is-prop→pathp (λ i → C.Hom-set _ _ (r i C.∘ p i .snd .Algebra-on.ν) 
+Algebra-hom-pathp {M = M} {W} {X} {Y} {Z} {F} {G} p q r i .commutes =
+  is-prop→pathp (λ i → C.Hom-set _ _ (r i C.∘ p i .snd .Algebra-on.ν)
                                      (q i .snd .Algebra-on.ν C.∘ Monad.M₁ M (r i)))
     (F .commutes) (G .commutes) i
 ```
@@ -212,7 +212,7 @@ categorical yoga:
                  ν x C.∘ M₁ C.id  ∎
     }
 
-  Eilenberg-Moore ._∘_ {_ , x} {_ , y} {_ , z} F G = record 
+  Eilenberg-Moore ._∘_ {_ , x} {_ , y} {_ , z} F G = record
     { morphism = morphism F C.∘ morphism G
     ; commutes = (morphism F C.∘ morphism G) C.∘ ν x            ≡⟨ C.extendr (commutes G) ⟩
                   (morphism F C.∘ ν y) C.∘ M₁ (morphism G)       ≡⟨ ap₂ C._∘_ (commutes F) refl ⟩
@@ -251,7 +251,7 @@ the identity and associativity laws from its underlying category.
     unpack∘pack x i .commutes = x .commutes
 
     hl : is-set (Algebra-hom M X Y)
-    hl = retract→is-hlevel 2 unpack pack unpack∘pack 
+    hl = retract→is-hlevel 2 unpack pack unpack∘pack
       (Σ-is-hlevel 2 (C.Hom-set _ _) λ _ → is-prop→is-set (C.Hom-set _ _ _ _))
 ```
 
@@ -348,8 +348,8 @@ $\ca{C}^M$.
     record { morphism = x .snd .ν
            ; commutes = sym (x .snd .ν-mult)
            }
-  Free⊣Forget .counit .is-natural x y f = 
-    Algebra-hom-path (sym (commutes f)) 
+  Free⊣Forget .counit .is-natural x y f =
+    Algebra-hom-path (sym (commutes f))
   Free⊣Forget .zig = Algebra-hom-path left-ident
   Free⊣Forget .zag {x} = x .snd .ν-unit
 ```

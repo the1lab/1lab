@@ -159,7 +159,7 @@ Continuing with the useful lemmas, if the heads and tails of two lists
 are identified, then the lists themselves are identified:
 
 ```agda
-ap-∷ : ∀ {x y : A} {xs ys : List A} 
+ap-∷ : ∀ {x y : A} {xs ys : List A}
      → x ≡ y → xs ≡ ys
      → Path (List A) (x ∷ xs) (y ∷ ys)
 ap-∷ x≡y xs≡ys i = x≡y i ∷ xs≡ys i

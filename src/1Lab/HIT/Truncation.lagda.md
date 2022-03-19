@@ -95,7 +95,7 @@ truncation extends to a functor:
 
 ```agda
 ∥-∥-map : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
-        → (A → B) → ∥ A ∥ → ∥ B ∥ 
+        → (A → B) → ∥ A ∥ → ∥ B ∥
 ∥-∥-map f (inc x)        = inc (f x)
 ∥-∥-map f (squash x y i) = squash (∥-∥-map f x) (∥-∥-map f y) i
 ```
@@ -134,8 +134,8 @@ equivalent to your own truncation":
 ```agda
 is-prop≃equiv∥-∥ : ∀ {ℓ} {P : Type ℓ}
                → is-prop P ≃ (P ≃ ∥ P ∥)
-is-prop≃equiv∥-∥ {P = P} = 
-  prop-ext is-prop-is-prop eqv-prop is-prop→equiv∥-∥ inv 
+is-prop≃equiv∥-∥ {P = P} =
+  prop-ext is-prop-is-prop eqv-prop is-prop→equiv∥-∥ inv
   where
     inv : (P ≃ ∥ P ∥) → is-prop P
     inv eqv = equiv→is-hlevel 1 ((eqv e⁻¹) .fst) ((eqv e⁻¹) .snd) squash
@@ -177,7 +177,7 @@ and since `∃` is a family of props, the first projection out of
 \mathrm{image}(f) \mono B$.
 
 ```agda
-f-image 
+f-image
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → (f : A → B) → A → image f
 f-image f x = f x , inc (x , refl)
@@ -186,10 +186,10 @@ f-image f x = f x , inc (x , refl)
 We now prove the theorem that will let us map out of a propositional
 truncation using a constant function into sets: if $B$ is a set, and $f
 : A \to B$ is a constant function, then $\mathrm{image}(f)$ is a
-proposition. 
+proposition.
 
 ```agda
-is-constant→image-is-prop 
+is-constant→image-is-prop
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → is-set B
   → (f : A → B) → (∀ x y → f x ≡ f y) → is-prop (image f)
@@ -205,12 +205,12 @@ and $(b, y)$ in the image. We know, morally, that $x$ (respectively $y$) give us
 some $f^*(a) : A$ and $p : f(f^*a) = a$ (resp $q : f(f^*(b)) = b$) ---
 which would establish that $a \equiv b$, as we need, since we have $a =
 f(f^*(a)) = f(f^*(b)) = b$, where the middle equation is by constancy of
-$f$ --- but crucially, the 
+$f$ --- but crucially, the
 
 ```agda
-is-constant→image-is-prop bset f f-const (a , x) (b , y) = 
+is-constant→image-is-prop bset f f-const (a , x) (b , y) =
   Σ-prop-path (λ _ → squash)
-    (∥-∥-elim₂ (λ _ _ → bset _ _) 
+    (∥-∥-elim₂ (λ _ _ → bset _ _)
       (λ { (f*a , p) (f*b , q) → sym p ·· f-const f*a f*b ·· q }) x y)
 ```
 
@@ -223,7 +223,7 @@ truncation onto a set using a constant map.
             → (∀ x y → f x ≡ f y)
             → is-set B
             → ∥ A ∥ → B
-∥-∥-rec-set {A = A} {B} f f-const bset x = 
-  ∥-∥-elim {P = λ _ → image f} 
+∥-∥-rec-set {A = A} {B} f f-const bset x =
+  ∥-∥-elim {P = λ _ → image f}
     (λ _ → is-constant→image-is-prop bset f f-const) (f-image f) x .fst
 ```

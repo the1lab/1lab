@@ -56,7 +56,7 @@ quotient, thus equipping `T`{.Agda} with a group structure.
 
 ```agda
     op : T → T → T
-    op = Quot-op₂ rel-refl rel-refl _⋆_ (λ w x y z a b → rem₃ y z w x b a) where 
+    op = Quot-op₂ rel-refl rel-refl _⋆_ (λ w x y z a b → rem₃ y z w x b a) where
 ```
 
 To prove that the group operation `_⋆_`{.Agda} descends to the quotient,
@@ -68,8 +68,8 @@ a tedious but straightforward calculation:
 
 ```agda
       module
-        _ (w x y z : G) 
-          (w-x∈ : (w ⋆ inv x) ∈ N?) 
+        _ (w x y z : G)
+          (w-x∈ : (w ⋆ inv x) ∈ N?)
           (y-z∈ : (y ⋆ inv z) ∈ N?) where abstract
         rem₁ : ((w ⋆ inv x) ⋆ (inv z ⋆ y)) ∈ N?
         rem₁ = has-⋆ w-x∈ (has-comm y-z∈)
@@ -78,7 +78,7 @@ a tedious but straightforward calculation:
         rem₂ = subst (_∈ N?) (associative ∙ ap (_⋆ y) (sym associative)) rem₁
 
         rem₃ : ((y ⋆ w) ⋆ inv (z ⋆ x)) ∈ N?
-        rem₃ = subst (_∈ N?) (associative ∙ ap₂ _⋆_ refl (sym inv-comm)) 
+        rem₃ = subst (_∈ N?) (associative ∙ ap₂ _⋆_ refl (sym inv-comm))
           (has-comm rem₂)
 ```
 
@@ -102,12 +102,12 @@ rather directly:
 ```agda
     Group-on-T : Group-on T
     Group-on-T = make-group squash (inc unit) op inverse
-      (Coeq-elim-prop₃ (λ _ _ _ → squash _ _) 
+      (Coeq-elim-prop₃ (λ _ _ _ → squash _ _)
         λ x y z i → inc (associative {x = x} {y} {z} (~ i)))
       (Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inverseˡ {x = x} i))
       (Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inverseʳ {x = x} i))
       (Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (idˡ {x = x} i))
-  
+
   _/ᴳ_ : Group ℓ
   _/ᴳ_ = _ , Group-on-T
 ```

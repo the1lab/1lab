@@ -44,7 +44,7 @@ open import Cat.Solver
 open import 1Lab.Reflection
 
 find-monoid-names : Term → TC CategoryNames
-find-monoid-names = 
+find-monoid-names =
   find-generic-names (quote Monoid-on._⋆_) (quote Monoid-on.identity)
 
 macro

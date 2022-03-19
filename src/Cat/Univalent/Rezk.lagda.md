@@ -53,10 +53,10 @@ sea of theory has risen to the point where our result is trivial:
 Rezk-completion : Precategory o h → Precategory (o ⊔ lsuc h) (o ⊔ h)
 Rezk-completion A = Full-inclusion→Full-subcat {F = よ A} (よ-is-fully-faithful A)
 
-Rezk-completion-is-category 
+Rezk-completion-is-category
   : ∀ {A : Precategory o h} → is-category (Rezk-completion A)
-Rezk-completion-is-category {o} {h} {A} = 
-  Restrict-is-category _ (λ _ → squash) 
+Rezk-completion-is-category {o} {h} {A} =
+  Restrict-is-category _ (λ _ → squash)
     (Functor-is-category {D = Sets _} Sets-is-category)
 ```
 

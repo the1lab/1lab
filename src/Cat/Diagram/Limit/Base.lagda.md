@@ -63,7 +63,7 @@ was the set $\mathbb{R}$. Then the following is a cone over it:
 \end{tikzcd}\]
 ~~~
 
-Abstracting again, there is a canonical definition of _cone homomorphism_ - 
+Abstracting again, there is a canonical definition of _cone homomorphism_ -
 A map between the apices that makes everything in sight commute. If $P'$
 and $P$ were both apices for our original discrete diagram, we would
 draw a cone homomorphism $f : P' \to P$ as the dashed arrow in following
@@ -118,7 +118,7 @@ poset $(\mathbb{R} \setminus {0}, \le)$ of real numbers except zero,
 with the usual ordering. Then the product indexed by $\{ x \in
 \mathbb{R} : x > 0 \}$ - which is normally $0$ - does not exist. Not
 every category has every limit. Some categories have no limits at all!
-If a category has every limit, it's called _complete_. 
+If a category has every limit, it's called _complete_.
 
 ## Terminal objects
 
@@ -211,8 +211,8 @@ category.
         → x ≡ y
   Cone-path p q i .Cone.apex = p i
   Cone-path p q i .Cone.ψ o = q o i
-  Cone-path {x = x} {y} p q i .Cone.commutes {x = a} {y = b} f = 
-    is-prop→pathp (λ i → C.Hom-set _ _ (F.₁ f C.∘ q a i) (q b i)) 
+  Cone-path {x = x} {y} p q i .Cone.commutes {x = a} {y = b} f =
+    is-prop→pathp (λ i → C.Hom-set _ _ (F.₁ f C.∘ q a i) (q b i))
       (x .commutes f) (y .commutes f) i
     where open Cone
 ```
@@ -226,7 +226,7 @@ category.
 
 A `Cone homomorphism`{.Agda ident="Cone-hom"} is -- like the introduction
 says -- a map `hom`{.Agda} in the ambient category between the apices,
-such that "everything in sight `commutes`{.Agda ident="Cone-hom.commutes"}".  
+such that "everything in sight `commutes`{.Agda ident="Cone-hom.commutes"}".
 Specifically, for any choice of object $o$ in the index category, the
 composition of `hom`{.Agda} with the domain cone's `ψ`{.Agda} (at that
 object) must be equal to the codomain's `ψ`{.Agda}.
@@ -242,7 +242,7 @@ object) must be equal to the codomain's `ψ`{.Agda}.
 ```agda
   Cone-hom-path : ∀ {x y} {f g : Cone-hom x y} → Cone-hom.hom f ≡ Cone-hom.hom g → f ≡ g
   Cone-hom-path p i .Cone-hom.hom = p i
-  Cone-hom-path {x = x} {y} {f} {g} p i .Cone-hom.commutes {o} j = 
+  Cone-hom-path {x = x} {y} {f} {g} p i .Cone-hom.commutes {o} j =
     is-set→squarep (λ i j → C.Hom-set _ _)
       (λ j → Cone.ψ y o C.∘ p j) (f .Cone-hom.commutes) (g .Cone-hom.commutes) refl i j
 ```
@@ -252,7 +252,7 @@ Since cone homomorphisms are morphisms in the underlying category with
 extra properties, we can lift the laws from the underlying category to
 the category of `Cones`{.Agda}. The definition of `compose`{.Agda} is the
 enlightening part, since we have to prove that two cone homomorphisms
-again preserve _all_ the commutativities. 
+again preserve _all_ the commutativities.
 
 ```agda
   Cones : Precategory _ _
@@ -284,7 +284,7 @@ again preserve _all_ the commutativities.
     cat .Hom-set x y = retract→is-hlevel 2 pack unpack pack∘unpack hl
       where abstract
         T : Type (o₁ ⊔ h₂)
-        T = Σ[ hom ∈ C.Hom (Cone.apex x) (Cone.apex y) ] 
+        T = Σ[ hom ∈ C.Hom (Cone.apex x) (Cone.apex y) ]
               (∀ o → Cone.ψ y o C.∘ hom ≡ Cone.ψ x o)
 
         pack : T → Cone-hom x y
@@ -298,7 +298,7 @@ again preserve _all_ the commutativities.
         pack∘unpack x i .Cone-hom.commutes = x .Cone-hom.commutes
 
         hl : is-set T
-        hl = Σ-is-hlevel 2 (C.Hom-set _ _) 
+        hl = Σ-is-hlevel 2 (C.Hom-set _ _)
               (λ _ → Π-is-hlevel 2 λ _ → is-prop→is-set (C.Hom-set _ _ _ _))
 ```
 -->
@@ -332,7 +332,7 @@ module _ {o₁ h₁ o₂ h₂ o₃ h₃ : _}
     module D = Precategory D
     module C = Precategory C
     module J = Precategory J
-  
+
   open Functor
 ```
 -->
@@ -340,7 +340,7 @@ module _ {o₁ h₁ o₂ h₂ o₃ h₃ : _}
 # Preservation of limits
 
 Since a cone is, in particular, a commutative diagram, and every functor
-preserves commutativity of diagrams, a functor $F : \ca{C} \to \ca{D}$ 
+preserves commutativity of diagrams, a functor $F : \ca{C} \to \ca{D}$
 acts on a cone over $\mathrm{Dia}$ (in $\ca{C}$), sending it to a cone
 over $F \circ \mathrm{Dia}$ (in $\ca{D}$).
 
@@ -357,7 +357,7 @@ over $F \circ \mathrm{Dia}$ (in $\ca{D}$).
 Suppose you have a limit $L$ of $\mathrm{Dia}$ --- which is, to
 reiterate, a terminal object in the category of cones over
 $\mathrm{Dia}$. We say that $F$ *preserves $L$* if $F(L)$, as defined
-right above, is a terminal object in the category of cones over 
+right above, is a terminal object in the category of cones over
 $F \circ \mathrm{Dia}$.
 
 ```
@@ -375,9 +375,9 @@ object! Any limit is as good as any other.
 ## Continuity
 
 ```agda
-is-continuous 
-  : ∀ {oshape hshape} 
-      {C : Precategory o₁ h₁} 
+is-continuous
+  : ∀ {oshape hshape}
+      {C : Precategory o₁ h₁}
       {D : Precategory o₂ h₂}
   → Functor C D → Type _
 ```
@@ -387,7 +387,7 @@ every diagram `diagram`{.Agda} of shape `J` in `C` --- preserves the
 limit for that diagram.
 
 ```agda
-is-continuous {oshape = oshape} {hshape} {C = C} F = 
+is-continuous {oshape = oshape} {hshape} {C = C} F =
   ∀ {J : Precategory oshape hshape} {diagram : Functor J C}
   → (L : Limit diagram) → Preserves-limit F L
 ```
@@ -419,7 +419,7 @@ is as follows: Fixing a diagram $F$, suppose that $X$ and $Y$ are both
 limiting cones for for $F$.
 
 ```agda
-  Limiting-cone-unique 
+  Limiting-cone-unique
     : (X Y : Limit F)
     → Terminal.top X Cones.≅ Terminal.top Y
   Limiting-cone-unique X Y = Cones.make-iso f g f∘g≡id g∘f≡id where
@@ -467,13 +467,13 @@ functor and used the proof that it preserves isomorphisms.
   Cone≅→apex≅ : {X Y : Cone F}
               → X Cones.≅ Y
               → (Cone.apex X) C.≅ (Cone.apex Y)
-  Cone≅→apex≅ c = 
+  Cone≅→apex≅ c =
     C.make-iso (Cone-hom.hom c.to) (Cone-hom.hom c.from)
       (ap Cone-hom.hom c.invˡ)
       (ap Cone-hom.hom c.invʳ)
     where module c = Cones._≅_ c
 
-  Limit-unique 
+  Limit-unique
     : {X Y : Limit F}
     → Cone.apex (Terminal.top X) C.≅ Cone.apex (Terminal.top Y)
   Limit-unique {X} {Y} = Cone≅→apex≅ (Limiting-cone-unique X Y)

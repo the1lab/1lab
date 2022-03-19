@@ -158,7 +158,7 @@ is-biinv→is-iso : {f : A → B} → is-biinv f → is-iso f
 is-biinv→is-iso {f = f} ((g , g∘f≡id) , h , h∘f≡id) = iso h (happly h∘f≡id) beta
   where
     beta : (x : _) → h (f x) ≡ x
-    beta x = 
+    beta x =
       h (f x)         ≡⟨ happly (sym g∘f≡id) _ ⟩
       g (f (h (f x))) ≡⟨ ap g (happly h∘f≡id _) ⟩
       g (f x)         ≡⟨ happly g∘f≡id _ ⟩

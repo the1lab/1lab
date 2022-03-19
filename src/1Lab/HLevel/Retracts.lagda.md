@@ -90,7 +90,7 @@ retract→is-hlevel (suc (suc n)) f g h hlevel x y =
 
 The left inverse is constructed out of `ap`{.Agda} and the given
 homotopy.
-  
+
 ```
     inv : is-left-inverse sect (ap g)
     inv path =

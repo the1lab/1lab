@@ -439,8 +439,8 @@ is `X` and `e` is the identity equivalence. This case is by the
 assumption that `σ preserves id`{.Agda ident=preserves-id}.
 
 ```agda
-preserves-id→is-transport-str 
-  : (σ : Equiv-action S) 
+preserves-id→is-transport-str
+  : (σ : Equiv-action S)
   → preserves-id σ → is-transport-str σ
 preserves-id→is-transport-str {S = S} σ pres-id e s =
   EquivJ (λ _ e → σ e .fst s ≡ subst S (ua e) s) lemma' e
@@ -457,7 +457,7 @@ equational proof:
       sym (
         subst S (ua (id , id-equiv)) s ≡⟨ ap (λ p → subst S p s) ua-id-equiv ⟩
         transport refl s               ≡⟨ transport-refl _ ⟩
-        s                              ≡⟨ sym (pres-id s) ⟩ 
+        s                              ≡⟨ sym (pres-id s) ⟩
         σ (id , id-equiv) .fst s       ∎
       )
 ```
@@ -502,7 +502,7 @@ This alternative definition of structure is univalent when `T` is a
 univalent structure and `S` is a transport structure:
 
 ```agda
-Function-str-univalent 
+Function-str-univalent
   : (α : Equiv-action S) → is-transport-str α
   → (τ : Structure ℓ T) → is-univalent τ
   → is-univalent (Function-str α τ)
@@ -560,7 +560,7 @@ structure is perfect to use in the definition of `SIP`{.Agda}.
 Constant-action : (A : Type ℓ) → Equiv-action {ℓ = ℓ₁} (λ X → A)
 Constant-action A eqv = _ , id-equiv
 
-Constant-action-is-transport 
+Constant-action-is-transport
   : {A : Type ℓ} → is-transport-str {ℓ = ℓ₁} (Constant-action A)
 Constant-action-is-transport f s = sym (transport-refl _)
 
@@ -570,17 +570,17 @@ Id-action-is-transport f s = sym (transport-refl _)
 Product-action : Equiv-action S → Equiv-action T → Equiv-action (λ X → S X × T X)
 Product-action actx acty eqv = Σ-ap (actx eqv) λ x → acty eqv
 
-Product-action-is-transport 
+Product-action-is-transport
   : {α : Equiv-action S} {β : Equiv-action T}
   → is-transport-str α → is-transport-str β
   → is-transport-str (Product-action α β)
-Product-action-is-transport α-tr β-tr e s = 
+Product-action-is-transport α-tr β-tr e s =
   Σ-pathp (α-tr e (s .fst)) (β-tr e (s .snd))
 
 Function-action : Equiv-action S → Equiv-action T → Equiv-action (λ X → S X → T X)
 Function-action actx acty eqv = function≃ (actx eqv) (acty eqv)
 
-Function-action-is-transport 
+Function-action-is-transport
   : {α : Equiv-action S} {β : Equiv-action T}
   → is-transport-str α → is-transport-str β
   → is-transport-str (Function-action α β)
@@ -640,7 +640,7 @@ reasoning concludes what we wanted: `Axiom-str`{.Agda} is univalent.
     Axiom-str-univalent {X = A , s , a} {Y = B , t , b} f =
       σ .is-hom (A , s) (B , t) f
         ≃⟨ univ f ⟩
-      PathP (λ i → S (ua f i)) s t 
+      PathP (λ i → S (ua f i)) s t
         ≃⟨ Σ-contract (λ x → Path-p-is-hlevel 0 (contr b (axioms-prop b))) e⁻¹ ⟩
       Σ[ p ∈ PathP (λ i → S (ua f i)) s t ] PathP (λ i → axioms (ua f i) (p i)) a b
         ≃⟨ Iso→Equiv Σ-pathp-iso ⟩
@@ -662,7 +662,7 @@ or as binary numbers. If you prove that `Nat`{.Agda} is a monoid, and
 structure.
 
 ```agda
-transfer-axioms 
+transfer-axioms
   : {σ : Structure ℓ S} {univ : is-univalent σ}
     {axioms : (X : _) → S X → Type ℓ₃}
   → (A : Type-with (Axiom-str σ axioms)) (B : Type-with σ)
@@ -684,9 +684,9 @@ data Str-term ℓ : (ℓ₁ : Level) → (Type ℓ → Type ℓ₁) → Typeω w
   s-const : ∀ {ℓ₁} (A : Type ℓ₁) → Str-term ℓ ℓ₁ (λ X → A)
   s∙ : Str-term ℓ ℓ (λ X → X)
 
-  _s→_ : ∀ {ℓ₁ ℓ₂} {S} {T} → Str-term ℓ ℓ₁ S → Str-term ℓ ℓ₂ T 
+  _s→_ : ∀ {ℓ₁ ℓ₂} {S} {T} → Str-term ℓ ℓ₁ S → Str-term ℓ ℓ₂ T
        → Str-term ℓ (ℓ₁ ⊔ ℓ₂) (λ X → S X → T X)
-  _s×_ : ∀ {ℓ₁ ℓ₂} {S} {T} → Str-term ℓ ℓ₁ S → Str-term ℓ ℓ₂ T 
+  _s×_ : ∀ {ℓ₁ ℓ₂} {S} {T} → Str-term ℓ ℓ₁ S → Str-term ℓ ℓ₂ T
        → Str-term ℓ (ℓ₁ ⊔ ℓ₂) (λ X → S X × T X)
 
 infixr 30 _s→_ _s×_

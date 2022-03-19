@@ -110,7 +110,7 @@ We refer to a [univalent] `thin`{.Agda ident=is-thin} category as a
 $\ca{C}$ is _univalent_ when the type $\sum_{(B : \ca{C})} A \cong B$ is
 contractible for any fixed $A : \ca{C}$ or (more useful here) we have a
 function $\mathrm{iso→path} : A \cong B \to A \equiv B$ sending the
-identity isomorphism to `refl`{.Agda}. 
+identity isomorphism to `refl`{.Agda}.
 
 In a thin category, any pair of maps $(A \to B) \times (B \ot A)$ is an
 isomorphism, so in effect we have a map $(A \to B) \times (B \to A) \to
@@ -124,7 +124,7 @@ record Poset (o h : Level) : Type (lsuc (o ⊔ h)) where
     {underlying}     : Precategory o h
     has-is-thin      : is-thin underlying
     has-is-univalent : is-category underlying
-    
+
   open Precategory underlying public
   open is-thin has-is-thin public
 
@@ -139,7 +139,7 @@ order-theoretic names.
 ```agda
   _≤_ : Ob → Ob → Type h
   _≤_ = Hom
-  
+
   reflexive : ∀ {x} → x ≤ x
   reflexive = id
 
@@ -153,11 +153,11 @@ g) : A \le A$, then it must be equal to `reflexive`{.Agda} above.
 
 ```agda
   antisym : ∀ {x y} → x ≤ y → y ≤ x → x ≡ y
-  antisym f g = iso→path has-is-univalent 
-    (record 
-      { to = f 
-      ; from = g 
-      ; inverses = record 
+  antisym f g = iso→path has-is-univalent
+    (record
+      { to = f
+      ; from = g
+      ; inverses = record
         { invˡ = Hom-is-prop _ _ _ _ ; invʳ = Hom-is-prop _ _ _ _ } })
 ```
 
@@ -201,8 +201,8 @@ described above, and prove that any antisymmetric proset is univalent.
   make-poset {A = A} {R} Rrefl Rtrans Rantisym Rprop = tc where
     abstract
       Aset : is-set A
-      Aset = Rijke-is-set {R = λ x y → R x y × R y x} 
-        (Rrefl , Rrefl) 
+      Aset = Rijke-is-set {R = λ x y → R x y × R y x}
+        (Rrefl , Rrefl)
         (λ (f , g) → Rantisym f g)
         λ x y i → Rprop (x .fst) (y .fst) i , Rprop (x .snd) (y .snd) i
 
@@ -224,15 +224,15 @@ finishes the job.
 
 ```agda
     tc .has-is-univalent A .centre        = A , id-iso
-    tc .has-is-univalent A .paths (B , i) = Σ-prop-path isp (Rantisym i.to i.from) where 
+    tc .has-is-univalent A .paths (B , i) = Σ-prop-path isp (Rantisym i.to i.from) where
       module i = _≅_ i
       abstract
         isp : ∀ x → is-prop (A ≅ x)
         isp ob x y i .to   = Rprop (x .to)   (y .to)   i
         isp ob x y i .from = Rprop (x .from) (y .from) i
-        isp ob x y i .inverses = 
-          is-prop→pathp 
-            (λ i → Inverses-are-prop {f = Rprop (x .to)   (y .to)   i} 
+        isp ob x y i .inverses =
+          is-prop→pathp
+            (λ i → Inverses-are-prop {f = Rprop (x .to)   (y .to)   i}
                                      {g = Rprop (x .from) (y .from) i})
             (x .inverses) (y .inverses) i
 ```
@@ -301,9 +301,9 @@ Free .F₀ C = pro where
   open Precategory
 
   pro : Proset _ _
-  pro = make-proset {R = λ x y → ∥ C .fst .Hom x y ∥} (C .snd) 
-    (inc (C .fst .id)) 
-    (∥-∥-elim₂ (λ _ _ → squash) λ f g → inc (C .fst ._∘_ g f)) 
+  pro = make-proset {R = λ x y → ∥ C .fst .Hom x y ∥} (C .snd)
+    (inc (C .fst .id))
+    (∥-∥-elim₂ (λ _ _ → squash) λ f g → inc (C .fst ._∘_ g f))
     squash
 ```
 
@@ -341,7 +341,7 @@ Free⊣Forget .counit .η pro .F₀ x = x
 Free⊣Forget .counit .η pro .F₁ = ∥-∥-elim (λ _ → pro .Proset.Hom-is-prop _ _) λ x → x
 Free⊣Forget .counit .η pro .F-id = refl
 Free⊣Forget .counit .η pro .F-∘ f g = pro .Proset.Hom-is-prop _ _ _ _
-Free⊣Forget .counit .is-natural x y f = 
+Free⊣Forget .counit .is-natural x y f =
   Functor-path (λ _ → refl) λ f → y .Proset.Hom-is-prop _ _ _ _
 
 Free⊣Forget .zig = Functor-path (λ _ → refl) λ _ → squash _ _

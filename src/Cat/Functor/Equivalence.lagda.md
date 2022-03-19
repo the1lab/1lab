@@ -55,15 +55,15 @@ morphisms gives isomorphisms in the respective functor categories:
 
 ```agda
   F∘F⁻¹≅Id : (F F∘ F⁻¹) [D,D].≅ Id
-  F∘F⁻¹≅Id = 
-    [D,D].invertible→iso counit 
+  F∘F⁻¹≅Id =
+    [D,D].invertible→iso counit
       (componentwise-invertible→invertible _ counit-iso)
-    
+
   Id≅F⁻¹∘F : Id [C,C].≅ (F⁻¹ F∘ F)
-  Id≅F⁻¹∘F = 
+  Id≅F⁻¹∘F =
     [C,C].invertible→iso unit
       (componentwise-invertible→invertible _ unit-iso)
-    
+
   unit⁻¹ = [C,C]._≅_.from Id≅F⁻¹∘F
   counit⁻¹ = [D,D]._≅_.from F∘F⁻¹≅Id
 ```
@@ -107,9 +107,9 @@ F^*(y)$; Fullness then completes the construction.
 ```agda
   ff+split-eso→inverse : Functor D C
   ff+split-eso→inverse .F₀ x         = eso x .fst
-  ff+split-eso→inverse .F₁ {x} {y} f = 
+  ff+split-eso→inverse .F₁ {x} {y} f =
     ff⁻¹ (f*y-iso .D._≅_.from D.∘ f D.∘ f*x-iso .D._≅_.to)
-    where 
+    where
       open ∑ (eso x) renaming (fst to f*x ; snd to f*x-iso)
       open ∑ (eso y) renaming (fst to f*y ; snd to f*y-iso)
 ```
@@ -123,7 +123,7 @@ by faithfulness.
 </summary>
 
 ```agda
-  ff+split-eso→inverse .F-id {x} = 
+  ff+split-eso→inverse .F-id {x} =
     ff⁻¹ (f*x-iso .di.from D.∘ D.id D.∘ f*x-iso .di.to) ≡⟨ ap ff⁻¹ (ap₂ D._∘_ refl (D.idl _)) ⟩
     ff⁻¹ (f*x-iso .di.from D.∘ f*x-iso .di.to)          ≡⟨ ap ff⁻¹ (f*x-iso .di.invʳ) ⟩
     ff⁻¹ D.id                                           ≡˘⟨ ap ff⁻¹ (F-id F) ⟩
@@ -131,7 +131,7 @@ by faithfulness.
     C.id ∎
     where open ∑ (eso x) renaming (fst to f*x ; snd to f*x-iso)
 
-  ff+split-eso→inverse .F-∘ {x} {y} {z} f g = 
+  ff+split-eso→inverse .F-∘ {x} {y} {z} f g =
     fully-faithful→faithful {F = F} ff (
       F₁ F (ff⁻¹ (ffz D.∘ (f D.∘ g) D.∘ ftx))      ≡⟨ equiv→section ff _ ⟩
       ffz D.∘ (f D.∘ g) D.∘ ftx                    ≡⟨ solve D ⟩
@@ -186,7 +186,7 @@ essential fibre $F^*F(x)$ comes equipped with an isomorphism $FF^*F(x)
 <summary> Naturality of `ff+split-eso→unit`{.Agda}. </summary>
 
 ```agda
-  ff+split-eso→unit .is-natural x y f = 
+  ff+split-eso→unit .is-natural x y f =
     fully-faithful→faithful {F = F} ff (
       F₁ F (ff⁻¹ ffy C.∘ f)                                    ≡⟨ F-∘ F _ _ ⟩
       F₁ F (ff⁻¹ ffy) D.∘ F₁ F f                               ≡⟨ ap₂ D._∘_ (equiv→section ff _) refl ⟩
@@ -194,10 +194,10 @@ essential fibre $F^*F(x)$ comes equipped with an isomorphism $FF^*F(x)
       ffy D.∘ F₁ F f D.∘ ftx D.∘ ffx                           ≡⟨ solve D ⟩
       (ffy D.∘ F₁ F f D.∘ ftx) D.∘ ffx                         ≡˘⟨ ap₂ D._∘_ (equiv→section ff _) (equiv→section ff _) ⟩
       F₁ F (ff⁻¹ (ffy D.∘ F₁ F f D.∘ ftx)) D.∘ F₁ F (ff⁻¹ ffx) ≡˘⟨ F-∘ F _ _ ⟩
-      F₁ F (ff⁻¹ (ffy D.∘ F₁ F f D.∘ ftx) C.∘ ff⁻¹ ffx)        ≡⟨⟩ 
+      F₁ F (ff⁻¹ (ffy D.∘ F₁ F f D.∘ ftx) C.∘ ff⁻¹ ffx)        ≡⟨⟩
       F₁ F (F₁ (G F∘ F) f C.∘ x→f*x)                           ∎
     )
-    where 
+    where
       open ∑ (eso (F₀ F x)) renaming (fst to f*x ; snd to f*x-iso)
       open ∑ (eso (F₀ F y)) renaming (fst to f*y ; snd to f*y-iso)
 
@@ -228,11 +228,11 @@ again pick the given isomorphism.
 <summary> Naturality of `ff+split-eso→counit`{.Agda} </summary>
 
 ```agda
-  ff+split-eso→counit .is-natural x y f = 
+  ff+split-eso→counit .is-natural x y f =
     fty D.∘ F₁ F (ff⁻¹ (ffy D.∘ f D.∘ ftx)) ≡⟨ ap (fty D.∘_) (equiv→section ff _) ⟩
     fty D.∘ ffy D.∘ f D.∘ ftx               ≡⟨ D.cancell (f*y-iso .di.invˡ) ⟩
     f D.∘ ftx                               ∎
-    where 
+    where
       open ∑ (eso x) renaming (fst to f*x ; snd to f*x-iso)
       open ∑ (eso y) renaming (fst to f*y ; snd to f*y-iso)
 
@@ -249,18 +249,18 @@ calculations without commentary:
 
 ```agda
   open _⊣_
-  
+
   ff+split-eso→F⊣inverse : F ⊣ G
   ff+split-eso→F⊣inverse .unit    = ff+split-eso→unit
   ff+split-eso→F⊣inverse .counit  = ff+split-eso→counit
-  ff+split-eso→F⊣inverse .zig {x} = 
+  ff+split-eso→F⊣inverse .zig {x} =
     ftx D.∘ F₁ F (ff⁻¹ ffx) ≡⟨ ap (ftx D.∘_) (equiv→section ff _) ⟩
     ftx D.∘ ffx             ≡⟨ f*x-iso .di.invˡ ⟩
     D.id                    ∎
 ```
 <!--
 ```agda
-    where 
+    where
       open ∑ (eso (F₀ F x)) renaming (fst to f*x ; snd to f*x-iso)
 
       ffx = f*x-iso .di.from
@@ -271,7 +271,7 @@ calculations without commentary:
 The `zag`{.Agda} identity needs an appeal to faithfulness:
 
 ```agda
-  ff+split-eso→F⊣inverse .zag {x} = 
+  ff+split-eso→F⊣inverse .zag {x} =
     fully-faithful→faithful {F = F} ff (
       F₁ F (ff⁻¹ (ffx D.∘ ftx D.∘ fftx) C.∘ ff⁻¹ fffx)        ≡⟨ F-∘ F _ _ ⟩
       F₁ F (ff⁻¹ (ffx D.∘ ftx D.∘ fftx)) D.∘ F₁ F (ff⁻¹ fffx) ≡⟨ ap₂ D._∘_ (equiv→section ff _) (equiv→section ff _) ⟩
@@ -286,7 +286,7 @@ Now to show they are componentwise invertible:
 
 <!--
 ```agda
-    where 
+    where
       open ∑ (eso x) renaming (fst to f*x ; snd to f*x-iso)
       open ∑ (eso (F₀ F f*x)) renaming (fst to f*f*x ; snd to f*f*x-iso)
 
@@ -303,11 +303,11 @@ Now to show they are componentwise invertible:
   ff+split-eso→is-equivalence : is-equivalence F
   ff+split-eso→is-equivalence .F⁻¹ = G
   ff+split-eso→is-equivalence .F⊣F⁻¹ = ff+split-eso→F⊣inverse
-  ff+split-eso→is-equivalence .counit-iso x = record 
-    { inv      = f*x-iso .di.from 
-    ; inverses = record 
-      { invˡ = f*x-iso .di.invˡ 
-      ; invʳ = f*x-iso .di.invʳ } 
+  ff+split-eso→is-equivalence .counit-iso x = record
+    { inv      = f*x-iso .di.from
+    ; inverses = record
+      { invˡ = f*x-iso .di.invˡ
+      ; invʳ = f*x-iso .di.invʳ }
     }
     where open ∑ (eso x) renaming (fst to f*x ; snd to f*x-iso)
 ```
@@ -316,9 +316,9 @@ Since the unit is defined in terms of fullness, showing it is invertible
 needs an appeal to faithfulness (two, actually):
 
 ```agda
-  ff+split-eso→is-equivalence .unit-iso x = record 
-    { inv      = ff⁻¹ (f*x-iso .di.to) 
-    ; inverses = record 
+  ff+split-eso→is-equivalence .unit-iso x = record
+    { inv      = ff⁻¹ (f*x-iso .di.to)
+    ; inverses = record
       { invˡ = fully-faithful→faithful {F = F} ff (
           F₁ F (ff⁻¹ ffx C.∘ ff⁻¹ ftx)        ≡⟨ F-∘ F _ _ ⟩
           F₁ F (ff⁻¹ ffx) D.∘ F₁ F (ff⁻¹ ftx) ≡⟨ ap₂ D._∘_ (equiv→section ff _) (equiv→section ff _) ⟩
@@ -330,10 +330,10 @@ needs an appeal to faithfulness (two, actually):
           F₁ F (ff⁻¹ ftx) D.∘ F₁ F (ff⁻¹ ffx) ≡⟨ ap₂ D._∘_ (equiv→section ff _) (equiv→section ff _) ⟩
           ftx D.∘ ffx                         ≡⟨ f*x-iso .di.invˡ ⟩
           D.id                                ≡˘⟨ F-id F ⟩
-          F₁ F C.id                           ∎) 
-      } 
+          F₁ F C.id                           ∎)
+      }
     }
-    where 
+    where
       open ∑ (eso (F₀ F x)) renaming (fst to f*x ; snd to f*x-iso)
       ffx = f*x-iso .di.from
       ftx = f*x-iso .di.to
@@ -360,7 +360,7 @@ to go through.
 [essential fibres]: Cat.Functor.Base.html#essential-fibres
 
 ```agda
-module 
+module
   _ (F : Functor C D) (ccat : is-category C) (dcat : is-category D)
     (ff : is-fully-faithful F)
   where
@@ -417,8 +417,8 @@ the result with far less computation:
 
 ```agda
     over′ : PathP (λ i → Fx≡Fy i D.≅ z) i j
-    over′ = D.≅-pathp Fx≡Fy refl 
-      (Hom-pathp-reflˡ-iso D dcat (D.cancell (i .D._≅_.invˡ))) 
+    over′ = D.≅-pathp Fx≡Fy refl
+      (Hom-pathp-reflˡ-iso D dcat (D.cancell (i .D._≅_.invˡ)))
       (Hom-pathp-reflʳ-iso D dcat (D.cancelr (i .D._≅_.invˡ)))
 ```
 
@@ -429,7 +429,7 @@ _are_ indeed the same path:
 ```agda
     abstract
       square : ap (F₀ F) x≡y ≡ Fx≡Fy
-      square = 
+      square =
         ap (F₀ F) x≡y                       ≡⟨ F-map-path F x≅y ccat dcat ⟩
         iso→path D dcat (F-map-iso F x≅y)   ≡⟨ ap (iso→path D dcat) (equiv→section (is-ff→F-map-iso-is-equiv {F = F} ff) _)  ⟩
         iso→path D dcat Fx≅Fy               ∎
@@ -447,13 +447,13 @@ we call this result the _theorem of choice_.
     they're-equal = Σ-pathp x≡y over
 
   Theorem-of-choice : is-eso F → is-split-eso F
-  Theorem-of-choice eso y = 
-    ∥-∥-elim (λ _ → Essential-fibre-between-cats-is-prop y) 
+  Theorem-of-choice eso y =
+    ∥-∥-elim (λ _ → Essential-fibre-between-cats-is-prop y)
       (λ x → x) (eso y)
 ```
 
 This theorem implies that any fully faithful, "merely" essentially
-surjective functor between categories is an equivalence: 
+surjective functor between categories is an equivalence:
 
 ```agda
   ff+eso→is-equivalence : is-eso F → is-equivalence F
@@ -494,6 +494,6 @@ precategories.
 
 ```agda
   is-precat-iso→is-equivalence : is-equivalence F
-  is-precat-iso→is-equivalence = 
+  is-precat-iso→is-equivalence =
     ff+split-eso→is-equivalence has-is-ff is-precat-iso→is-split-eso
 ```

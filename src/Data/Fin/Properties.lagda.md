@@ -19,7 +19,7 @@ we can re-use all the proofs about the ordering on `Nat`{.Agda}.
 [`Data.Fin.Base`]: Data.Fin.Base.html
 
 However, there are still quite a few interesting things one can say about
-`skip`{.Agda} and `squish`{.Agda}. In particular, we can prove the 
+`skip`{.Agda} and `squish`{.Agda}. In particular, we can prove the
 *simplicial identities*, which characterize the interactions between
 these two functions.
 

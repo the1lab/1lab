@@ -75,12 +75,12 @@ Showing these two conditions isn't _hard_, but it does involve a lot of
 very tedious algebra. See for yourself:
 
 ```agda
-      l1 : ∀ a ((x , y , z) : G × G × G) 
+      l1 : ∀ a ((x , y , z) : G × G × G)
          → inc^ab (a ⋆ x ⋆ y ⋆ z) ≡ inc^ab (a ⋆ x ⋆ z ⋆ y)
       l1 a (x , y , z) =
-        inc^ab (a ⋆ x ⋆ y ⋆ z)           ≡⟨ ap inc^ab associative ⟩ 
-        inc^ab ((a ⋆ x) ⋆ y ⋆ z) {- 1 -} ≡⟨ ab-comm _ _ _ ⟩ 
-        inc^ab ((a ⋆ x) ⋆ z ⋆ y)         ≡⟨ ap inc^ab (sym associative) ⟩ 
+        inc^ab (a ⋆ x ⋆ y ⋆ z)           ≡⟨ ap inc^ab associative ⟩
+        inc^ab ((a ⋆ x) ⋆ y ⋆ z) {- 1 -} ≡⟨ ab-comm _ _ _ ⟩
+        inc^ab ((a ⋆ x) ⋆ z ⋆ y)         ≡⟨ ap inc^ab (sym associative) ⟩
         inc^ab (a ⋆ x ⋆ z ⋆ y)           ∎
 ```
 
@@ -91,7 +91,7 @@ tedious but straightforward algebra to define the second coequaliser
 condition:
 
 ```agda
-      l2 : ∀ a ((x , y , z) : G × G × G) 
+      l2 : ∀ a ((x , y , z) : G × G × G)
          → inc^ab ((x ⋆ y ⋆ z) ⋆ a) ≡ inc^ab ((x ⋆ z ⋆ y) ⋆ a)
       l2 a (x , y , z) =
         inc^ab ((x ⋆ y ⋆ z) ⋆ a) ≡⟨ ap inc^ab (sym associative) ⟩
@@ -112,9 +112,9 @@ bit tedious, but it follows from `ab-comm`: $xy = 1xy = 1yx = yx$.
     where abstract
       l1 : ∀ x y → inc^ab (x ⋆ y) ≡ inc^ab (y ⋆ x)
       l1 x y =
-        inc^ab (x ⋆ y)        ≡⟨ ap inc^ab (ap₂ _⋆_ (sym G.idˡ) refl ∙ sym G.associative) ⟩ 
-        inc^ab (unit ⋆ x ⋆ y) ≡⟨ ab-comm _ _ _ ⟩ 
-        inc^ab (unit ⋆ y ⋆ x) ≡⟨ ap inc^ab (G.associative ∙ ap₂ _⋆_ G.idˡ refl) ⟩ 
+        inc^ab (x ⋆ y)        ≡⟨ ap inc^ab (ap₂ _⋆_ (sym G.idˡ) refl ∙ sym G.associative) ⟩
+        inc^ab (unit ⋆ x ⋆ y) ≡⟨ ab-comm _ _ _ ⟩
+        inc^ab (unit ⋆ y ⋆ x) ≡⟨ ap inc^ab (G.associative ∙ ap₂ _⋆_ G.idˡ refl) ⟩
         inc^ab (y ⋆ x)        ∎
 ```
 
@@ -130,12 +130,12 @@ tedious algebra:
   abinv = Coeq-rec squash (λ x → inc^ab (x ⁻¹)) l1
     where abstract
       -- TODO: Explain the trick here
-      l1 : ((x , y , z) : G × G × G) 
+      l1 : ((x , y , z) : G × G × G)
          → inc^ab ((x ⋆ y ⋆ z) ⁻¹) ≡ inc^ab ((x ⋆ z ⋆ y) ⁻¹)
       l1 (x , y , z) =
-        inc^ab ((x ⋆ y ⋆ z) ⁻¹)                             ≡⟨ ap inc^ab G.inv-comm ⟩ 
-        inc^ab ((y ⋆ z) ⁻¹ ⋆ x ⁻¹)                          ≡⟨ ap inc^ab (ap₂ _⋆_ G.inv-comm refl) ⟩ 
-        inc^ab ((z ⁻¹ ⋆ y ⁻¹) ⋆ x ⁻¹)                       ≡⟨⟩ 
+        inc^ab ((x ⋆ y ⋆ z) ⁻¹)                             ≡⟨ ap inc^ab G.inv-comm ⟩
+        inc^ab ((y ⋆ z) ⁻¹ ⋆ x ⁻¹)                          ≡⟨ ap inc^ab (ap₂ _⋆_ G.inv-comm refl) ⟩
+        inc^ab ((z ⁻¹ ⋆ y ⁻¹) ⋆ x ⁻¹)                       ≡⟨⟩
 ```
 
 We get to something that is definitionally equal to our `_ab*_`{.Agda}
@@ -143,7 +143,7 @@ multiplication, which _we know is commutative_, so we can swap $y^{-1}$
 and $z^{-1}$ around!
 
 ```agda
-        (inc^ab (z ⁻¹) ab* inc^ab (y ⁻¹)) ab* inc^ab (x ⁻¹) ≡⟨ ap₂ _ab*_ (ab*-comm (inc^ab (z ⁻¹)) (inc^ab (y ⁻¹))) (λ i → inc^ab (x ⁻¹)) ⟩ 
+        (inc^ab (z ⁻¹) ab* inc^ab (y ⁻¹)) ab* inc^ab (x ⁻¹) ≡⟨ ap₂ _ab*_ (ab*-comm (inc^ab (z ⁻¹)) (inc^ab (y ⁻¹))) (λ i → inc^ab (x ⁻¹)) ⟩
         (inc^ab (y ⁻¹) ab* inc^ab (z ⁻¹)) ab* inc^ab (x ⁻¹) ≡⟨⟩
 ```
 
@@ -152,7 +152,7 @@ finish the proof:
 
 ```agda
         inc^ab ((y ⁻¹ ⋆ z ⁻¹) ⋆ x ⁻¹)                       ≡⟨ ap inc^ab (ap₂ _⋆_ (sym G.inv-comm) refl ) ⟩
-        inc^ab ((z ⋆ y) ⁻¹ ⋆ x ⁻¹)                          ≡⟨ ap inc^ab (sym G.inv-comm) ⟩ 
+        inc^ab ((z ⋆ y) ⁻¹ ⋆ x ⁻¹)                          ≡⟨ ap inc^ab (sym G.inv-comm) ⟩
         inc^ab ((x ⋆ z ⋆ y) ⁻¹)                             ∎
 ```
 
@@ -162,14 +162,14 @@ inherited from $G$!
 
 ```agda
   ab*-associative : ∀ x y z → (x ab* y) ab* z ≡ x ab* (y ab* z)
-  ab*-associative = Coeq-elim-prop₃ (λ _ _ _ → squash _ _) 
+  ab*-associative = Coeq-elim-prop₃ (λ _ _ _ → squash _ _)
     λ _ _ _ → ap inc^ab (sym associative)
 
   Group-on-G^ab : Group-on G^ab
-  Group-on-G^ab = make-group squash abunit _ab*_ abinv ab*-associative 
-    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.inverseˡ)) 
-    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.inverseʳ)) 
-    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.idˡ)) 
+  Group-on-G^ab = make-group squash abunit _ab*_ abinv ab*-associative
+    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.inverseˡ))
+    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.inverseʳ))
+    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.idˡ))
 
   Abelianise : Group ℓ
   Abelianise = _ , Group-on-G^ab
@@ -188,7 +188,7 @@ map from $G$ to an abelian group $G'$ factors in a unique way through
 the canonical map $G \to G^{ab}$.
 
 ```agda
-  Abelianise⊣Forget 
+  Abelianise⊣Forget
     : (G' : Group ℓ) → is-abelian-group G'
     → Group[ Grp ⇒ G' ] ≃ Group[ Abelianise ⇒ G' ]
   Abelianise⊣Forget G' G'-ab = Iso→Equiv isom where
@@ -205,15 +205,15 @@ f(x)f(z)f(y) = f(xzy)$.
 
 ```agda
     fold : (f : G → G' .fst) → Group-hom Grp G' f → G^ab → G' .fst
-    fold f gh = Coeq-rec G'.has-is-set f l1 
+    fold f gh = Coeq-rec G'.has-is-set f l1
       where abstract
         l1 : ((x , y , z) : G × G × G) → f (x ⋆ y ⋆ z) ≡ f (x ⋆ z ⋆ y)
-        l1 (x , y , z) = 
-          f (x ⋆ y ⋆ z)         ≡⟨ gh .pres-⋆ _ _ ⟩ 
-          f x G'.⋆ f (y ⋆ z)    ≡⟨ ap₂ G'._⋆_ refl (gh .pres-⋆ _ _ ) ⟩ 
-          f x G'.⋆ f y G'.⋆ f z ≡⟨ ap₂ G'._⋆_ refl (G'-ab _ _) ⟩ 
-          f x G'.⋆ f z G'.⋆ f y ≡⟨ ap₂ G'._⋆_ refl (sym (gh .pres-⋆ _ _ )) ⟩ 
-          f x G'.⋆ f (z ⋆ y)    ≡⟨ sym (gh .pres-⋆ _ _) ⟩ 
+        l1 (x , y , z) =
+          f (x ⋆ y ⋆ z)         ≡⟨ gh .pres-⋆ _ _ ⟩
+          f x G'.⋆ f (y ⋆ z)    ≡⟨ ap₂ G'._⋆_ refl (gh .pres-⋆ _ _ ) ⟩
+          f x G'.⋆ f y G'.⋆ f z ≡⟨ ap₂ G'._⋆_ refl (G'-ab _ _) ⟩
+          f x G'.⋆ f z G'.⋆ f y ≡⟨ ap₂ G'._⋆_ refl (sym (gh .pres-⋆ _ _ )) ⟩
+          f x G'.⋆ f (z ⋆ y)    ≡⟨ sym (gh .pres-⋆ _ _) ⟩
           f (x ⋆ z ⋆ y)         ∎
 ```
 
@@ -233,8 +233,8 @@ G^{ab}_0$, which is a group homomorphism on the nose.
         r : Group-hom (G , gst) G' (f ∘ inc^ab)
         r .pres-⋆ x y = g .pres-⋆ _ _
 
-    isom .snd .rinv f = 
-      Σ-prop-path (λ _ → Group-hom-is-prop) 
+    isom .snd .rinv f =
+      Σ-prop-path (λ _ → Group-hom-is-prop)
         (funext (Coeq-elim-prop (λ _ → G'.has-is-set _ _) λ _ → refl))
     isom .snd .linv f = Σ-prop-path (λ _ → Group-hom-is-prop) refl
 ```

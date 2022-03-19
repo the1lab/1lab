@@ -85,7 +85,7 @@ structure on the category of cubical sets, referred to as a
 **Warning**: The text below is subject to change! It's still very much a
 document in flux. In particular, the type theory section doesn't talk
 about induction, which is something that will be expanded on in the
-future. 
+future.
 </div>
 
 Type theory is a foundational system for mathematics which, in contrast
@@ -158,7 +158,7 @@ in.
 * A handful of **elimination rules**, which say how inhabitants of that
 type can be manipulated. Keeping with the running example, the product
 type has elimination rules corresponding to projecting either the first
-or second component of a pair. 
+or second component of a pair.
 
   Furthermore, each elimination rule comes with specified behaviour for
   when it "interacts" with the introduction rules, a process which we
@@ -499,7 +499,7 @@ $(i, p) \mapsto i$ has subsingleton fibres. This is because an element
 of $\pi^*_1(y)$ is described as a pair $(i , q)$, and since it's in the
 fibre over $y$, we have $i = y$; Since $\chi$ (by assumption) takes
 values in subsingletons, concluding that $i = y$ is enough to establish
-that any two $(i, q)$ and $(i',q') \in \pi_1^*(y)$ must be equal. 
+that any two $(i, q)$ and $(i',q') \in \pi_1^*(y)$ must be equal.
 
 The point of the entire preceding discussion is that the notions of
 "injections into $B$" and "maps $B \to \Omega$" are equivalent, and,
@@ -533,7 +533,7 @@ To find another example in category theory, we pass to higher category
 theory, i.e. $n$-category theory for high values of $n$, such as $n =
 2$. As a 1-dimensional structure, we can consider the data of a category
 $E$ _lying over_ another category $B$ to be a functor $E \to B$ which
-has certain lifting properties - some sort of categorical _fibration_. 
+has certain lifting properties - some sort of categorical _fibration_.
 
 One would like to find a correspondence between these "categories over
 categories" and some data that we already know how to conceptualise; It
@@ -556,7 +556,7 @@ B(\text{data})$ corresponds to data over ("pointing towards") $X$.
 
 - The kind of classifying objects that we care about here are ubiquitous
 in all levels of $n$-category theory, but especially in $(n,1)$-category
-theory, they behave like universes of truncated types. 
+theory, they behave like universes of truncated types.
 
 - Since the objects in a $n$-category act like $(n-1)$-categories, the
 "most complex" classifier that a $n$-topos can have is for the
@@ -564,7 +564,7 @@ $(n-1)$-category of $(n-2)$-categories, and this all works better in the
 case where we're actually talking about $(n,1)$-topoi.
 
 </details>
- 
+
 [^subobjclass]: Let me make this more precise. In any (univalent)
 category with finite limits $\mathscr{E}$, we have a functor
 $\mathrm{Sub} : \mathscr{E}^{op} \to \set$, which takes $c$ to
@@ -681,7 +681,7 @@ contain types, which we call **universes**. Every type is contained in
 some universe, but it is not the case that there is a universe
 containing all types; In fact, if we did have some magical universe
 $\ty_\infty : \ty_\infty$, we could reproduce Russell's paradox, as is
-done [here]. 
+done [here].
 
 [here]: 1Lab.Counterexamples.Russell.html
 
@@ -850,7 +850,7 @@ paths quack like topological paths.
 Indeed, any type in homotopy type theory has an associated sequence of
 homotopy groups, and these behave precisely like the homotopy groups
 of classical algebraic topology --- with the difference that the way
-we compute them in HoTT has a distinctly more "typey" flavour. 
+we compute them in HoTT has a distinctly more "typey" flavour.
 
 This interpretation of types as spaces leads us to look at the
 statement "there is a type $X$ with $\pi_1(X) \cong \mathbb{Z}$" and
@@ -875,14 +875,14 @@ collection of objects in $C$ has two _different_ notions of sameness:
 The set-theoretic equality $a = b$, with behaviour given by the axiom of
 extensionality and divorced from the categorical structure, and the
 class of _isomorphisms_ of $C$, $a \cong b$, which naturally has to do
-with the categorical structure. 
+with the categorical structure.
 
 A big part of doing category theory in set-theoretic foundations is
 learning in which situations we should talk about the set-theoretic
 equality of objects, and when we should talk about isomorphism ---
 what you end up discovering is that constructions that talk about
 equality of objects should be done very sparingly, so much so that
-they're colloquially called "evil". 
+they're colloquially called "evil".
 
 Conversely, the possibility of talking about equality of objects at
 all means that we have to spend effort verifying that constructions
@@ -898,7 +898,7 @@ preserve univalence! For instance:
 
 * If $A$ and $B$ are univalent categories, then so is the product $A
 \times B$ and the disjoint union $A \uplus B$; The initial and terminal
-categories are trivially univalent. 
+categories are trivially univalent.
 
 * If $C$ is a univalent category, then so is the slice $C/c$ and the
 coslice $c/C$.
@@ -906,7 +906,7 @@ coslice $c/C$.
 * If $C$ is a univalent category, then for any $D$, so is the functor
 category $[D,C]$; This implies that a very large class of categories is
 univalent, e.g. the models of any Lawvere theory in a univalent
-category. 
+category.
 
   Further, since $\set$ is a univalent category, the Yoneda lemma
   implies that every $C$ can be embedded into a univalent category - the
@@ -1001,7 +1001,7 @@ that, see the section _[Paths, in detail]_ later on.
 
 # Sums
 
-Recall that in the construction of a map into $B$ from a predicate 
+Recall that in the construction of a map into $B$ from a predicate
 $\chi : B \to \Omega$, we interpreted $\chi$ as a family of sets with at
 most one element, and then took the disjoint union of that family,
 written $\sum_{(x : B)} \chi(x)$, which admits a _projection_ onto $B$.
@@ -1159,10 +1159,10 @@ $\mathrm{graph}(f) : A \to A \times B$ to be the function $\lambda x.\
 where the first coordinate is the input, and the second coordinate is
 the output of $f$ _at that input_. The graph of a function is special
 because of its interaction with the projection map $\mathrm{fst} : A
-\times B \to A$. In particular, we can see that $\lambda x.\ 
+\times B \to A$. In particular, we can see that $\lambda x.\
 \mathrm{graph}(f)\mathrm{.fst}$ is the identity function! This property
 turns out to precisely characterise the functions $A \to A \times B$
-which are the graphs of functions $A \to B$. 
+which are the graphs of functions $A \to B$.
 
 By rewriting the equality we noticed above in terms of function
 composition, we obtain $\mathrm{.fst} \circ \mathrm{graph}(f) =
@@ -1221,7 +1221,7 @@ module _ where private
   project-first : (A : Type) (B : A → Type) → Σ B → A
   project-first A B x = x .fst
 
-  project-second : (A : Type) (B : A → Type) 
+  project-second : (A : Type) (B : A → Type)
                  → (p : Σ B) → B (project-first A B p)
   project-second A B x = x .snd
 ```
@@ -1238,7 +1238,7 @@ _topological_ interpretation!
 <summary>
 **Worked example**: Interpreting dependent sums as fibrations and
 dependent products as sections lets us derive topological
-interpretations for types.  
+interpretations for types.
 
 We show how to do this for the type $(x\ y : A) \to x \equiv y$, and
 show that a space $A$ admitting an inhabitant of this type has the
@@ -1247,7 +1247,7 @@ property of being "contractible if inhabited".
 
 First, we'll shuffle the type so that we can phrase it in terms of a
 single dependent product, and a single type family. We define a type $A$
-to be a _subsingleton_ if there is a term 
+to be a _subsingleton_ if there is a term
 
 $$f : (xy : A \times A) \to (xy\mathrm{.fst} \equiv xy\mathrm{.snd})$$
 

@@ -76,7 +76,7 @@ address the value constructors. This is because propositions
 automatically respect (higher) path constructors.
 
 ```agda
-Free-elim-prop 
+Free-elim-prop
   : ∀ {ℓ} (B : Free-group A → Type ℓ)
   → (∀ x → is-prop (B x))
   → (∀ x → B (inc x))
@@ -99,17 +99,17 @@ Free-elim-prop B bp bi bd binv bnil = go where
   go (x ◆ y) = bd x y (go x) (go y)
   go (inv x) = binv x (go x)
   go nil = bnil
-  go (f-assoc x y z i) = 
-    is-prop→pathp (λ i → bp (f-assoc x y z i)) 
+  go (f-assoc x y z i) =
+    is-prop→pathp (λ i → bp (f-assoc x y z i))
       (bd (x ◆ y) z (bd x y (go x) (go y)) (go z))
       (bd x (y ◆ z) (go x) (bd y z (go y) (go z))) i
-  go (f-invl x i) = 
+  go (f-invl x i) =
     is-prop→pathp (λ i → bp (f-invl x i)) (bd (inv x) x (binv x (go x)) (go x)) bnil i
   go (f-invr x i) =
     is-prop→pathp (λ i → bp (f-invr x i)) (bd x (inv x) (go x) (binv x (go x))) bnil i
   go (f-idl x i) = is-prop→pathp (λ i → bp (f-idl x i)) (bd nil x bnil (go x)) (go x) i
-  go (squash x y p q i j) = 
-    is-prop→squarep (λ i j → bp (squash x y p q i j)) 
+  go (squash x y p q i j) =
+    is-prop→squarep (λ i j → bp (squash x y p q i j))
       (λ i → go x) (λ i → go (p i)) (λ i → go (q i)) (λ i → go y) i j
 ```
 
@@ -129,8 +129,8 @@ determines a group homomorphism.
 [universal way of mapping]: Cat.Functor.Adjoint.html#universal-morphisms
 
 ```agda
-fold-free-group 
-  : {A : Type ℓ} {G : Group ℓ} 
+fold-free-group
+  : {A : Type ℓ} {G : Group ℓ}
   → (A → G .fst) → Groups.Hom (Free-Group A) G
 fold-free-group {A = A} {G = G , ggrp} map = go , go-hom where
   module G = Group-on ggrp
@@ -154,12 +154,12 @@ associativity, identity and inverse laws that provide the cases for
 `Free-group`{.Agda}'s higher constructors.
 
 ```agda
-  go (f-assoc x y z i) = 
+  go (f-assoc x y z i) =
     G.associative {x = go x} {y = go y} {z = go z} (~ i)
   go (f-invl x i) = G.inverseˡ {x = go x} i
   go (f-invr x i) = G.inverseʳ {x = go x} i
   go (f-idl x i) = G.idˡ {x = go x} i
-  go (squash x y p q i j) = 
+  go (squash x y p q i j) =
     G.has-is-set (go x) (go y) (λ i → go (p i)) (λ i → go (q i)) i j
 
   open Group-hom
@@ -168,7 +168,7 @@ associativity, identity and inverse laws that provide the cases for
   go-hom .pres-⋆ x y = refl
 ```
 
-Now, given a set $S$, we must come up with a group $G$, with a map 
+Now, given a set $S$, we must come up with a group $G$, with a map
 $\eta : S \to U(G)$ (in $\sets$, where $U$ is the [underlying set functor]),
 such that, for any other group $H$, any map $S \to U(H)$ can be factored
 uniquely as $S \xrightarrow{\eta} U(G) \to U(H)$. As hinted above, we
@@ -211,7 +211,7 @@ To show that this factorisation is unique, suppose we had some other
 group homomorphism $g' : \mathrm{Free}(S) \to H$, which also has the
 property that $U(g') \circ \mathrm{inc} = g$; We must show that it is
 equal to $\mathrm{fold}(g)$, which we can do `pointwise`{.Agda
-ident=funext}, so assume we have a $x : \mathrm{Free}(S)$. 
+ident=funext}, so assume we have a $x : \mathrm{Free}(S)$.
 
 By `induction`{.Agda ident=Free-elim-prop} on $x$, it suffices to
 consider the cases where $x$ is a `generator`{.Agda ident=inc}, or one
@@ -226,12 +226,12 @@ hypotheses and $g'$ being a group homomorphism.
     unique : ∀ x → factor ≡ x
     unique factoring = ↓Hom-path _ _ refl path where abstract
       path : factor .β ≡ factoring .β
-      path = Σ-prop-path (λ _ → Group-hom-is-prop) 
-        (funext (Free-elim-prop _ (λ _ → y other .snd .has-is-set _ _) 
+      path = Σ-prop-path (λ _ → Group-hom-is-prop)
+        (funext (Free-elim-prop _ (λ _ → y other .snd .has-is-set _ _)
           (λ x → happly (factoring .sq) _)
-          (λ _ _ p q → ap₂ (other .y .snd ._⋆_) p q 
-                     ∙ sym (factoring .β .snd .pres-⋆ _ _)) 
-          (λ _ p → ap (other .y .snd .inverse) p 
-                 ∙ sym (pres-inv (factoring .β .snd) _)) 
+          (λ _ _ p q → ap₂ (other .y .snd ._⋆_) p q
+                     ∙ sym (factoring .β .snd .pres-⋆ _ _))
+          (λ _ p → ap (other .y .snd .inverse) p
+                 ∙ sym (pres-inv (factoring .β .snd) _))
           (sym (pres-id (factoring .β .snd)))))
 ```

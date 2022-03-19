@@ -38,7 +38,7 @@ record is-semilattice (_∧_ : A → A → A) : Type (level-of A) where
     has-is-semigroup : is-semigroup _∧_
     commutative    : ∀ {x y} → x ∧ y ≡ y ∧ x
     idempotent     : ∀ {x} → x ∧ x ≡ x
-  
+
   open is-semigroup has-is-semigroup public
 ```
 
@@ -83,9 +83,9 @@ the equational computation below:
   rel-transitive : ∀ {x y z} → rel x y → rel y z → rel x z
   rel-transitive {x} {y} {z} x≡x∧y y≡y∧z =
     x             ≡⟨ x≡x∧y ⟩
-    (x ∧ y)       ≡⟨ ap₂ _∧_ refl y≡y∧z ⟩ 
-    (x ∧ (y ∧ z)) ≡⟨ associative semi ⟩ 
-    ((x ∧ y) ∧ z) ≡⟨ ap₂ _∧_ (sym x≡x∧y) refl ⟩ 
+    (x ∧ y)       ≡⟨ ap₂ _∧_ refl y≡y∧z ⟩
+    (x ∧ (y ∧ z)) ≡⟨ associative semi ⟩
+    ((x ∧ y) ∧ z) ≡⟨ ap₂ _∧_ (sym x≡x∧y) refl ⟩
     x ∧ z         ∎
 ```
 
@@ -104,7 +104,7 @@ The relation is antisymmetric by a use of commutativitiy:
   rel-antisym : ∀ {x y} → rel x y → rel y x → x ≡ y
   rel-antisym {x} {y} x≡x∧y y≡y∧x =
     x     ≡⟨ x≡x∧y ⟩
-    x ∧ y ≡⟨ commutative semi ⟩ 
+    x ∧ y ≡⟨ commutative semi ⟩
     y ∧ x ≡⟨ sym y≡y∧x ⟩
     y     ∎
 ```
@@ -136,7 +136,7 @@ module _ {_∧_ : A → A → A} (semi : is-semilattice _∧_) where
     x ∧ y       ∎)
 
   ∧-less-thanʳ : ∀ {x y} → (x ∧ y) ≤ y
-  ∧-less-thanʳ {x} {y} = 
+  ∧-less-thanʳ {x} {y} =
     x ∧ y       ≡˘⟨ ap (_ ∧_) idempotent ⟩
     x ∧ (y ∧ y) ≡⟨ associative semi ⟩
     (x ∧ y) ∧ y ∎
@@ -284,7 +284,7 @@ record Semilattice-on {ℓ} (A : Type ℓ) : Type ℓ where
   →Join = Semilattice-on→Join-on has-is-semilattice
 
   ∨ : A → A → A
-  ∨ = ∧ 
+  ∨ = ∧
 
 open Semilattice-on using (→Meet ; →Join)
 

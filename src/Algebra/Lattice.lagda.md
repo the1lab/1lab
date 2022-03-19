@@ -32,7 +32,7 @@ record is-lattice (_∧_ : A → A → A) (_∨_ : A → A → A) : Type (level-
     has-meets : is-semilattice _∧_
     has-joins : is-semilattice _∨_
 ```
-  
+
 <details>
 <summary>
 We rename the fields of `has-meets`{.Agda} and `has-joins`{.Agda} so they
@@ -82,13 +82,13 @@ record Lattice-on (A : Type ℓ) : Type ℓ where
   field
     _L∧_ : A → A → A
     _L∨_ : A → A → A
-  
+
   infixr 40 _L∧_
   infixr 30 _L∨_
 
   field
     has-is-lattice : is-lattice _L∧_ _L∨_
-  
+
   open is-lattice has-is-lattice public
 
   Lattice-on→is-meet-semi : is-semilattice _L∧_
@@ -164,7 +164,7 @@ start by defining a `monotone map`{.Agda ident=Monotone-map} (that is, a
 `Functor`{.Agda}) between the two possibilities:
 
 ```agda
-covariant-order-map 
+covariant-order-map
   : (l : Lattice-on A)
   → Monotone-map
       (Semilattice-on→Meet-on (Lattice-on→is-meet-semi l))
@@ -178,7 +178,7 @@ covariant-order-map {A = A} l = F where
   F .F₀ = id
   F .F₁ {x} {y} p = q where abstract
     q : y ≡ x L∨ y
-    q = 
+    q =
       y             ≡⟨ sym ∨-absorbs-∧ ⟩
       y L∨ (y L∧ x) ≡⟨ ap₂ _L∨_ refl ∧-commutative ⟩
       y L∨ (x L∧ y) ≡⟨ ap₂ _L∨_ refl (sym p) ⟩
@@ -211,13 +211,13 @@ essential surjectivity is immediate:
     ff : is-fully-faithful (covariant-order-map l)
     ff {x} {y} .is-eqv p .centre .fst =
       x             ≡⟨ sym ∧-absorbs-∨ ⟩
-      x L∧ (x L∨ y) ≡⟨ ap₂ _L∧_ refl (sym p) ⟩ 
+      x L∧ (x L∨ y) ≡⟨ ap₂ _L∧_ refl (sym p) ⟩
       x L∧ y        ∎
     ff .is-eqv y .centre .snd = has-is-set _ _ _ _
     ff .is-eqv y .paths x =
       Σ-path (has-is-set _ _ _ _)
              (is-prop→is-set (has-is-set _ _) _ _ _ _)
-            
+
     eso : is-split-eso (covariant-order-map l)
     eso y .fst = y
     eso y .snd =

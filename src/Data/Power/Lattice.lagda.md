@@ -135,7 +135,7 @@ absorb intersections.
   ℙ-ext (λ _ → ∥-∥-elim (λ x → X _ .snd)
                (λ { (inl x∈X) → x∈X
                   ; (inr (x∈X , x∈Y)) → x∈X }))
-        λ _ x∈X → inc (inl x∈X) 
+        λ _ x∈X → inc (inl x∈X)
 ```
 
 This means that $\mathbb{P}(X), \cap, \cup$ assemble into a lattice,

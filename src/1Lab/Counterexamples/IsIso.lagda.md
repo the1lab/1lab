@@ -29,7 +29,7 @@ i.e. the loop-assigning maps of `A`:
 
 ```agda
   lemma : ∀ {ℓ} {A B : Type ℓ} {f : A → B} → is-iso f → is-iso f ≃ ((x : A) → x ≡ x)
-  lemma {A = A} {B} {f} iiso = 
+  lemma {A = A} {B} {f} iiso =
     EquivJ (λ _ f → is-iso (f .fst) ≃ ((x : A) → x ≡ x))
            (Iso→Equiv helper)
            (f , is-iso→is-equiv iiso)

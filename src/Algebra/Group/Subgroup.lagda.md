@@ -36,9 +36,9 @@ As the name implies, the subgroups of $(G, \star)$ are precisely those
 subsets of $G$ which form a group under (the restriction of) $\star$.
 
 ```agda
-is-subgroup→Group-on 
+is-subgroup→Group-on
   : (H : ℙ (G .fst)) → is-subgroup G H → Group-on (Σ[ x ∈ G .fst ] x ∈ H)
-is-subgroup→Group-on {G = G} H sg = 
+is-subgroup→Group-on {G = G} H sg =
   make-group
     (Σ-is-hlevel 2 has-is-set λ x → is-prop→is-set (H x .snd))
     (unit , has-unit)
@@ -71,11 +71,11 @@ record is-normal (G : Group ℓ) (N : ℙ (G .fst)) : Type ℓ where
   has-comm : ∀ {x y} → (x ⋆ y) ∈ N → (y ⋆ x) ∈ N
   has-comm {x = x} {y} ∈ = subst (_∈ N) p (has-conjugate ∈)
     where
-      p = x ⁻¹ ⋆ (x ⋆ y) ⋆ x ⁻¹ ⁻¹ ≡⟨ ap₂ _⋆_ refl (sym associative) ∙ (λ i → x ⁻¹ ⋆ x ⋆ y ⋆ inv-inv {x = x} i) ⟩ 
+      p = x ⁻¹ ⋆ (x ⋆ y) ⋆ x ⁻¹ ⁻¹ ≡⟨ ap₂ _⋆_ refl (sym associative) ∙ (λ i → x ⁻¹ ⋆ x ⋆ y ⋆ inv-inv {x = x} i) ⟩
           x ⁻¹ ⋆ x ⋆ y ⋆ x         ≡⟨ associative ⟩
           (x ⁻¹ ⋆ x) ⋆ y ⋆ x       ≡⟨ ap₂ _⋆_ inverseˡ refl ∙ idˡ ⟩
           y ⋆ x                    ∎
-  
+
   open is-subgroup has-subgroup public
 ```
 
@@ -85,7 +85,7 @@ conjugation by any element is always the identity: $xyx^{-1} = yxx^{-1}
 = y$.
 
 ```agda
-is-abelian-group→is-normal 
+is-abelian-group→is-normal
   : {H : ℙ (G .fst)} → is-abelian-group G → is-subgroup G H → is-normal G H
 is-abelian-group→is-normal {G = G} {H = H} abelian sg = r where
   open Group-on (G .snd)
@@ -142,10 +142,10 @@ inverses.
 ```agda
   ker-subgroup : is-subgroup A in-kernel
   ker-subgroup .has-unit = h.pres-id
-  ker-subgroup .has-⋆ {x = x} {y = y} fx=1 fy=1 = 
+  ker-subgroup .has-⋆ {x = x} {y = y} fx=1 fy=1 =
     f (x A.⋆ y)       ≡⟨ h.pres-⋆ x y ⟩
     f x B.⋆ f y       ≡⟨ ap₂ B._⋆_ fx=1 fy=1 ⟩
-    B.unit B.⋆ B.unit ≡⟨ B.idˡ ⟩ 
+    B.unit B.⋆ B.unit ≡⟨ B.idˡ ⟩
     B.unit            ∎
   ker-subgroup .has-inv fx=1 = h.pres-inv _ ·· ap B.inverse fx=1 ·· B.inv-unit≡unit
 
@@ -160,7 +160,7 @@ and cancel the remaining $f(x)f(x)^{-1}$.
 ```agda
   ker-normal : is-normal A in-kernel
   ker-normal .has-subgroup = ker-subgroup
-  ker-normal .has-conjugate {x = x} {y = y} fy=1 = 
+  ker-normal .has-conjugate {x = x} {y = y} fy=1 =
     f (x A.⋆ y A.⋆ x A.⁻¹)        ≡⟨ h.pres-⋆ _ _ ⟩
     f x B.⋆ f (y A.⋆ x A.⁻¹)      ≡⟨ ap₂ B._⋆_ refl (h.pres-⋆ _ _) ⟩
     f x B.⋆ (f y B.⋆ f (x A.⁻¹))  ≡⟨ ap₂ B._⋆_ refl (ap₂ B._⋆_ fy=1 refl ∙ B.idˡ) ⟩

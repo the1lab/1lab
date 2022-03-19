@@ -61,7 +61,7 @@ C ×Cat D = prodcat where
   prodcat ._∘_ (f , f') (g , g') = f C.∘ g , f' D.∘ g'
   prodcat .idr (f , f') i = C.idr f i , D.idr f' i
   prodcat .idl (f , f') i = C.idl f i , D.idl f' i
-  prodcat .assoc (f , f') (g , g') (h , h') i = 
+  prodcat .assoc (f , f') (g , g') (h , h') i =
     C.assoc f g h i , D.assoc f' g' h' i
 
 infixr 20 _×Cat_
@@ -84,7 +84,7 @@ Snd .F₁ = snd
 Snd .F-id = refl
 Snd .F-∘ _ _ = refl
 
-Cat⟨_,_⟩ : Functor E C → Functor E D → Functor E (C ×Cat D) 
+Cat⟨_,_⟩ : Functor E C → Functor E D → Functor E (C ×Cat D)
 Cat⟨ F , G ⟩ = f where
   f : Functor _ _
   f .F₀ x = F₀ F x , F₀ G x

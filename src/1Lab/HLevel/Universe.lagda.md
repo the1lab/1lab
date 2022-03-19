@@ -73,7 +73,7 @@ proof that $A$ has the given h-level. This is because, for $n \ge 1$, $A
 
 ```agda
 is-hlevel-≃ (suc n) _ Bhl =
-  Σ-is-hlevel (suc n) 
+  Σ-is-hlevel (suc n)
     (fun-is-hlevel (suc n) Bhl)
     λ f → is-prop→is-hlevel-suc (is-equiv-is-prop f)
 ```

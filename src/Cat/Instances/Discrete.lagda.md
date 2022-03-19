@@ -11,7 +11,7 @@ private variable
   ℓ ℓ' : Level
   X : Type ℓ
   C : Precategory ℓ ℓ'
-  
+
 open Precategory
 open Functor
 ```
@@ -45,7 +45,7 @@ between discrete categories. This is because every function
 automatically respects equality in a functorial way.
 
 ```agda
-lift-disc 
+lift-disc
   : ∀ {A : Set ℓ} {B : Set ℓ'}
   → (A .fst → B .fst)
   → Functor (Disc′ A) (Disc′ B)
@@ -82,8 +82,8 @@ adjoint] to the `Ob`{.Agda} functor.
 
 ```agda
 Disc-diagram
-  : ∀ {iss : is-set X} (disc : Discrete X) 
-  → (X → Ob C) 
+  : ∀ {iss : is-set X} (disc : Discrete X)
+  → (X → Ob C)
   → Functor (Disc′ (X , iss)) C
 Disc-diagram {X = X} {C = C} disc f = F where
   module C = Precategory C
@@ -115,7 +115,7 @@ computations with equalities and a whole waterfall of absurd cases:
 
 ```agda
   F .F-id {x} with disc x x
-  ... | yes p = 
+  ... | yes p =
     subst (P x) p C.id    ≡⟨ ap (λ e → subst (P x) e C.id) (set _ _ p refl) ⟩
     subst (P x) refl C.id ≡⟨ transport-refl _ ⟩
     C.id                  ∎
@@ -125,7 +125,7 @@ computations with equalities and a whole waterfall of absurd cases:
   ... | yes x=y | yes x=z | yes y=z =
     subst (P x) x=z C.id                          ≡⟨ ap (λ e → subst (P x) e C.id) (set _ _ _ _) ⟩
     subst (P x) (x=y ∙ y=z) C.id                  ≡⟨ subst-∙ (P x) _ _ _ ⟩
-    subst (P x) y=z (subst (P _) x=y C.id)        ≡⟨ from-pathp (Hom-pathp C (ap₂ C._∘_ refl (ap₂ C._∘_ refl (transport-refl _) ∙ C.idr _))) ⟩ 
+    subst (P x) y=z (subst (P _) x=y C.id)        ≡⟨ from-pathp (Hom-pathp C (ap₂ C._∘_ refl (ap₂ C._∘_ refl (transport-refl _) ∙ C.idr _))) ⟩
     subst (P y) y=z C.id C.∘ subst (P x) x=y C.id ∎
 
   ... | yes x=y | yes x=z | no  y≠z = absurd (y≠z f)

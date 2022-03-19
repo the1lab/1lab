@@ -22,7 +22,7 @@ It is dual to the [product].
 
 We witness this notion of "smallest object" with a universal property;
 Given any other $Q$ that also admits injection maps from $A$ and $B$,
-we must have a *unique* map $P \to Q$ that factors the injections into 
+we must have a *unique* map $P \to Q$ that factors the injections into
 $Q$. This is best explained by a commutative diagram:
 
 ~~~{.quiver}

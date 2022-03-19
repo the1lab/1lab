@@ -51,7 +51,7 @@ record is-magma {A : Type ℓ} (_⋆_ : A → A → A) : Type ℓ where
 ```
 
 A **magma** is a `set`{.Agda ident=is-set} equipped with an arbitrary
-binary operation `⋆`, on which no further laws are imposed. 
+binary operation `⋆`, on which no further laws are imposed.
 
 ```agda
   field
@@ -59,10 +59,10 @@ binary operation `⋆`, on which no further laws are imposed.
 
   underlying-set : Set ℓ
   underlying-set = _ , has-is-set
-    
+
 open is-magma public
 ```
-    
+
 Note that we do not generally benefit from the set truncation of
 arbitrary magmas - however, practically all structures built upon
 `is-magma`{.Agda} do, since they contain paths which would require
@@ -72,7 +72,7 @@ It also allows us to show that being a magma is a _property_:
 
 ```agda
 is-magma-is-prop : {_⋆_ : A → A → A} → is-prop (is-magma _⋆_)
-is-magma-is-prop x y i .has-is-set = 
+is-magma-is-prop x y i .has-is-set =
   is-hlevel-is-prop 2 (x .has-is-set) (y .has-is-set) i
 ```
 
@@ -86,7 +86,7 @@ record Magma-on (A : Type ℓ) : Type ℓ where
     _⋆_ : A → A → A
 
     has-is-magma : is-magma _⋆_
-    
+
   open is-magma has-is-magma public
 
 Magma : (ℓ : Level) → Type (lsuc ℓ)
@@ -138,10 +138,10 @@ open import Data.Bool
 To give a somewhat natural example for a magma that is neither
 associative, commutative, nor has a two-sided identity element,
 consider `boolean implication`{.Agda imp}. Since the booleans form a
-set, this obviously defines a magma: 
+set, this obviously defines a magma:
 
 ```agda
-private 
+private
   is-magma-imp : is-magma imp
   is-magma-imp .has-is-set = Bool-is-set
 ```
@@ -156,11 +156,11 @@ We show it is not commutative or associative by giving counterexamples:
   imp-not-associative associative = true≠false (sym (associative false false false))
 ```
 
-It also has no two-sided unit, as can be shown by case-splitting 
+It also has no two-sided unit, as can be shown by case-splitting
 on the candidates:
 
 ```agda
-  imp-not-unital 
+  imp-not-unital
     : (x : Bool) → ((y : Bool) → imp x y ≡ y) → ((y : Bool) → imp y x ≡ y) → ⊥
   imp-not-unital false left-unital right-unital = true≠false (right-unital false)
   imp-not-unital true left-unital right-unital = true≠false (right-unital false)

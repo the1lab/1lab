@@ -60,16 +60,16 @@ the assumed inequalities:
 
 ```agda
   private abstract
-    p1 : (a : C.Ob) ((x , y , r) : Σ[ x ∈ C.Ob ] Σ[ y ∈ C.Ob ] x ~ y) 
+    p1 : (a : C.Ob) ((x , y , r) : Σ[ x ∈ C.Ob ] Σ[ y ∈ C.Ob ] x ~ y)
       → Path (Prop h) (C.Hom x a , C.Hom-is-prop x a) (C.Hom y a , C.Hom-is-prop y a)
-    p1 a (x , y , f , g) = 
-      Σ-prop-path (λ _ → is-prop-is-prop) 
+    p1 a (x , y , f , g) =
+      Σ-prop-path (λ _ → is-prop-is-prop)
         (ua (prop-ext (C.Hom-is-prop _ _) (C.Hom-is-prop _ _) (λ h → h C.∘ g) (λ h → h C.∘ f)))
 
-    p2 : (a : C.Ob) ((x , y , r) : Σ[ x ∈ C.Ob ] Σ[ y ∈ C.Ob ] x ~ y) 
+    p2 : (a : C.Ob) ((x , y , r) : Σ[ x ∈ C.Ob ] Σ[ y ∈ C.Ob ] x ~ y)
       → Path (Prop h) (C.Hom a x , C.Hom-is-prop a x) (C.Hom a y , C.Hom-is-prop a y)
-    p2 a (x , y , f , g) = 
-      Σ-prop-path (λ _ → is-prop-is-prop) 
+    p2 a (x , y , f , g) =
+      Σ-prop-path (λ _ → is-prop-is-prop)
         (ua (prop-ext (C.Hom-is-prop _ _) (C.Hom-is-prop _ _) (λ h → f C.∘ h) (λ h → g C.∘ h)))
 ```
 
@@ -98,13 +98,13 @@ the map:
   id′ = Coeq-elim-prop (λ x → Hom′ x x .snd) (λ _ → C.id)
 
   trans′ : ∀ x y z → Hom′ x y .fst → Hom′ y z .fst → Hom′ x z .fst
-  trans′ = Coeq-elim-prop₃ 
-    (λ x _ z → fun-is-hlevel 1 (fun-is-hlevel 1 (Hom′ x z .snd))) 
+  trans′ = Coeq-elim-prop₃
+    (λ x _ z → fun-is-hlevel 1 (fun-is-hlevel 1 (Hom′ x z .snd)))
     (λ _ _ _ f g → g C.∘ f)
 
   antisym′ : ∀ x y → Hom′ x y .fst → Hom′ y x .fst → x ≡ y
-  antisym′ = Coeq-elim-prop₂ 
-    (λ x y → fun-is-hlevel 1 (fun-is-hlevel 1 (squash _ _))) 
+  antisym′ = Coeq-elim-prop₂
+    (λ x y → fun-is-hlevel 1 (fun-is-hlevel 1 (squash _ _)))
     (λ x y f g → quot (f , g))
 ```
 
@@ -112,13 +112,13 @@ The data above cleanly defines a `Poset`{.Agda}, so we're done!
 
 ```agda
   completed : Poset (o ⊔ h) h
-  completed = make-poset {A = Ob′} {R = λ x y → Hom′ x y .fst} 
-      (λ {x} → id′ x) 
-      (λ {x} {y} {z} → trans′ x y z) 
-      (λ {x} {y} → antisym′ x y) 
+  completed = make-poset {A = Ob′} {R = λ x y → Hom′ x y .fst}
+      (λ {x} → id′ x)
+      (λ {x} {y} {z} → trans′ x y z)
+      (λ {x} {y} → antisym′ x y)
       (λ {x} {y} → Hom′ x y .snd)
 
-open Poset-completion 
+open Poset-completion
   renaming (completed to Poset-completion)
   hiding (Ob′ ; Hom′ ; Hom′-prop ; trans′ ; antisym′ ; id′)
 ```
@@ -130,7 +130,7 @@ and the underlying category of its completion $\widehat{\ca{C}}$, with
 object part given by the quotient map `inc`{.Agda}.
 
 ```agda
-Complete : ∀ {o h} {X : Proset o h} 
+Complete : ∀ {o h} {X : Proset o h}
          → Functor (X .underlying) (Poset-completion X .underlying)
 Complete .F₀ = inc
 Complete .F₁ x = x
@@ -143,7 +143,7 @@ fully faithful. It exhibits $\ca{C}$ as a full subproset of
 $\widehat{\ca{C}}$.
 
 ```agda
-Complete-is-fully-faithful 
+Complete-is-fully-faithful
   : ∀ {o h} {X : Proset o h} → is-fully-faithful (Complete {X = X})
 Complete-is-fully-faithful = id-equiv
 ```
@@ -157,9 +157,9 @@ showing that $F_0$, i.e. the action of $F$ on the objects of $\ca{X}$,
 respects the quotient which defines $\widehat{\ca{X}}$.
 
 ```agda
-module _ 
-  {o h} (X Y : Proset o h) 
-  (F : Functor (X .underlying) (Y .underlying)) 
+module _
+  {o h} (X Y : Proset o h)
+  (F : Functor (X .underlying) (Y .underlying))
   where
 
   private
@@ -173,8 +173,8 @@ immediate by monotonicity of $F$.
 
 ```agda
     F′₀ : X′.Ob → Y′.Ob
-    F′₀ = Coeq-rec Y′.Ob-is-set 
-      (λ x → inc (F₀ F x)) 
+    F′₀ = Coeq-rec Y′.Ob-is-set
+      (λ x → inc (F₀ F x))
       (λ (_ , _ , f , g) → quot (F₁ F f , F₁ F g))
 ```
 
@@ -185,25 +185,25 @@ move.
 
 ```agda
     F′₁ : (a b : X′.Ob) → X′.Hom a b → Y′.Hom (F′₀ a) (F′₀ b)
-    F′₁ = Coeq-elim-prop₂ 
-      (λ a b → fun-is-hlevel 1 (Y′.Hom-is-prop (F′₀ a) (F′₀ b))) 
+    F′₁ = Coeq-elim-prop₂
+      (λ a b → fun-is-hlevel 1 (Y′.Hom-is-prop (F′₀ a) (F′₀ b)))
       (λ _ _ → F₁ F)
 
     abstract
       F′₁-id : ∀ (a : X′.Ob) → F′₁ a a (X′.id {a}) ≡ Y′.id {F′₀ a}
-      F′₁-id = Coeq-elim-prop 
-        (λ a → Y′.Hom-set (F′₀ a) (F′₀ a) _ _) 
+      F′₁-id = Coeq-elim-prop
+        (λ a → Y′.Hom-set (F′₀ a) (F′₀ a) _ _)
         (λ a → F-id F)
 
       F′₁-∘ : ∀ (x y z : X′.Ob) (f : X′.Hom y z) (g : X′.Hom x y)
-            → F′₁ x z (X′._∘_ {x} {y} {z} f g) 
+            → F′₁ x z (X′._∘_ {x} {y} {z} f g)
             ≡ Y′._∘_ {F′₀ x} {F′₀ y} {F′₀ z} (F′₁ y z f) (F′₁ x y g)
-      F′₁-∘ = 
-        Coeq-elim-prop₃ 
-          (λ x y z → 
-            Π-is-hlevel 1 λ f → 
-            Π-is-hlevel 1 λ g → 
-            Y′.Hom-set (F′₀ x) (F′₀ z) _ _) 
+      F′₁-∘ =
+        Coeq-elim-prop₃
+          (λ x y z →
+            Π-is-hlevel 1 λ f →
+            Π-is-hlevel 1 λ g →
+            Y′.Hom-set (F′₀ x) (F′₀ z) _ _)
           λ x y z f g → F-∘ F f g
 ```
 

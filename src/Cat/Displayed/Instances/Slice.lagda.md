@@ -75,7 +75,7 @@ morphisms, and paths between the "upper" morphisms.
   Slice-pathp : (p : f ≡ g) → (f′ .to ≡ g′ .to) → PathP (λ i → Slice-hom (p i) px py) f′ g′
   Slice-pathp p p′ i .to = p′ i
   Slice-pathp p p′ i .commute =
-    is-prop→pathp 
+    is-prop→pathp
       (λ i → Hom-set _ _ (p i ∘ px .index) (py .index ∘ (p′ i)))
       (f′ .commute)
       (g′ .commute)
@@ -87,7 +87,7 @@ morphisms, and paths between the "upper" morphisms.
 module _ {x y} (f : Hom x y) (px : Slice x) (py : Slice y) where
   Slice-is-set : is-set (Slice-hom f px py)
   Slice-is-set =
-    retract→is-hlevel 2 
+    retract→is-hlevel 2
       Slice-hom-refold Slice-hom-unfold (λ x → refl) Slice-hom'-is-set
     where
       Slice-hom' : Type _

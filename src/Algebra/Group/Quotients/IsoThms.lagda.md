@@ -25,7 +25,7 @@ module _ {ℓ} {A B : Group ℓ} (φ : A .fst → B .fst) (h : Group-hom A B φ)
 
     module A = Group-on (A .snd)
     module B = Group-on (B .snd)
-      
+
     open Group-hom h
 ```
 
@@ -35,17 +35,17 @@ suffices (by `inc`{.Agda}) to give an element of the underlying group,
 in this case $A$; Recall also that an element of $\mathrm{im}(f)$ is
 given by an $b : B$ such that [_there exists_] an $a : A$ such that
 $f(a) = b$ --- and hence the elements of the image look like $(y,w)$
-where $w$ is a witness of that existential statement. 
+where $w$ is a witness of that existential statement.
 
 Since the $a : A$ is propositionally truncated, we can not directly
 project it from the proof, since $A/\mathrm{ker}(f)$ is not a
-proposition in general.  
+proposition in general.
 
 [_there exists_]: 1Lab.HIT.Truncation.html
 
 ```agda
     func : imφ .fst → A/kerφ .fst
-    func (f*x , x) = 
+    func (f*x , x) =
       ∥-∥-rec-set (λ x → inc (x .fst)) f-const squash x
       where abstract
 ```
@@ -59,11 +59,11 @@ kernel of $f$; But this follows by $f(a_1 - a_2) = f(a_1) - f(a_2)
 = y - y = 0$.
 
 ```agda
-        f-const : ∀ (x y : Σ[ x ∈ A .fst ] (φ x ≡ f*x)) 
+        f-const : ∀ (x y : Σ[ x ∈ A .fst ] (φ x ≡ f*x))
                 → Path (A/kerφ .fst) (inc (x .fst)) (inc (y .fst))
         f-const (x , p) (z , q) = quot (
-            pres-⋆ _ _ 
-          ·· ap₂ B._⋆_ refl (pres-inv _) 
+            pres-⋆ _ _
+          ·· ap₂ B._⋆_ refl (pres-inv _)
           ·· (ap₂ B._⋆_ p (ap B.inverse q) ∙ B.inverseʳ))
 
     im* = imφ .snd .Group-on._⋆_
@@ -77,11 +77,11 @@ truncations out of the way.
 ```agda
     abstract
       func-hom : Group-hom imφ A/kerφ func
-      func-hom .Group-hom.pres-⋆ (f*x , p) (f*y , q) = 
+      func-hom .Group-hom.pres-⋆ (f*x , p) (f*y , q) =
         ∥-∥-elim₂
-          {P = λ p q → func (im* (f*x , p) (f*y , q)) 
-                     ≡ ak* (func (f*x , p)) (func (f*y , q))} 
-          (λ _ _ → squash _ _) 
+          {P = λ p q → func (im* (f*x , p) (f*y , q))
+                     ≡ ak* (func (f*x , p)) (func (f*y , q))}
+          (λ _ _ → squash _ _)
           (λ _ _ → refl) p q
 ```
 
@@ -97,9 +97,9 @@ properties of group homomorphisms.
 
 ```agda
     inv : A/kerφ .fst → imφ .fst
-    inv = Coeq-rec (im φ h .snd .Group-on.has-is-set) 
+    inv = Coeq-rec (im φ h .snd .Group-on.has-is-set)
       (λ x → φ x , inc (x , refl))
-      (λ (x , y , p) → Σ-prop-path (λ _ → squash) 
+      (λ (x , y , p) → Σ-prop-path (λ _ → squash)
         (B.zero-diff→≡
           (subst (_≡ B.unit) (pres-⋆ _ _ ∙ ap₂ B._⋆_ refl (pres-inv _)) p)))
 
@@ -107,7 +107,7 @@ properties of group homomorphisms.
 ```
 
 We now turn to showing that `func`{.Agda} and `inv`{.Agda} are indeed
-inverses. 
+inverses.
 
 ```agda
     isom : is-iso func
@@ -121,7 +121,7 @@ of) `inv(x)` computes to `f(y) , y , refl`, and `func (f(y) , y , refl)
 
 ```agda
     isom .rinv x =
-      Coeq-elim-prop {C = λ x → func (inv x) ≡ x} 
+      Coeq-elim-prop {C = λ x → func (inv x) ≡ x}
         (λ _ → squash _ _) (λ _ → refl) x
 ```
 
@@ -135,9 +135,9 @@ but the first component of $\mathrm{inv}(\mathrm{func}(x, p))$ is $f(y)$
 
 ```agda
     isom .linv (x , p) =
-      ∥-∥-elim {P = λ p → inv (func (x , p)) ≡ (x , p) } 
-        (λ _ → imφ .snd .Group-on.has-is-set _ _) 
-        (λ { (y , hx) → Σ-prop-path (λ _ → squash) hx }) 
+      ∥-∥-elim {P = λ p → inv (func (x , p)) ≡ (x , p) }
+        (λ _ → imφ .snd .Group-on.has-is-set _ _)
+        (λ { (y , hx) → Σ-prop-path (λ _ → squash) hx })
         p
 ```
 

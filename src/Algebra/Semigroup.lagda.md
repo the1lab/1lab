@@ -76,7 +76,7 @@ operator is a _property_ of the operator:
 
 ```agda
 is-semigroup-is-prop : {_⋆_ : A → A → A} → is-prop (is-semigroup _⋆_)
-is-semigroup-is-prop x y i .has-is-magma = 
+is-semigroup-is-prop x y i .has-is-magma =
   is-magma-is-prop (x .has-is-magma) (y .has-is-magma) i
 is-semigroup-is-prop {_⋆_ = _⋆_} x y i .associative {a} {b} {c} =
   x .has-is-set (a ⋆ (b ⋆ c)) ((a ⋆ b) ⋆ c) (x .associative) (y .associative) i

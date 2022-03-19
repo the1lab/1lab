@@ -31,14 +31,14 @@ _do_ form a precategory, which we denote $\strcat$.
 ```agda
 Functor-is-set : ∀ {o h} {C D : Precategory o h} → is-set (Ob D)
               → is-set (Functor C D)
-Functor-is-set {o = o} {h} {C} {D} dobset = 
-  retract→is-hlevel 2 unpack pack linv hl 
+Functor-is-set {o = o} {h} {C} {D} dobset =
+  retract→is-hlevel 2 unpack pack linv hl
   where abstract
     T : Type (o ⊔ h)
-    T = Σ[ F₀ ∈ (Ob C → Ob D) ] 
+    T = Σ[ F₀ ∈ (Ob C → Ob D) ]
         Σ[ F₁ ∈ (∀ x y (f : Hom C x y) → Hom D (F₀ x) (F₀ y)) ]
         ((∀ x → F₁ x x (id C) ≡ id D) ×
-         (∀ w x y (f : Hom C w x) (g : Hom C x y) 
+         (∀ w x y (f : Hom C w x) (g : Hom C x y)
            → F₁ _ _ (_∘_ C g f) ≡ _∘_ D (F₁ _ _ g) (F₁ _ _ f)))
 
     pack : Functor C D → T
@@ -58,13 +58,13 @@ Functor-is-set {o = o} {h} {C} {D} dobset =
 
     hl : is-set T
     hl = Σ-is-hlevel 2 (fun-is-hlevel 2 dobset) λ F →
-         Σ-is-hlevel 2 (Π-is-hlevel 2 λ _ → 
-                      Π-is-hlevel 2 λ _ → fun-is-hlevel 2 (D .Hom-set _ _)) λ F₁ → 
-         is-prop→is-set (×-is-hlevel 1 (Π-is-hlevel 1 λ _ → D .Hom-set _ _ _ _) 
-                                   (Π-is-hlevel 1 λ _ → 
-                                    Π-is-hlevel 1 λ _ → 
-                                    Π-is-hlevel 1 λ _ → 
-                                    Π-is-hlevel 1 λ _ → 
+         Σ-is-hlevel 2 (Π-is-hlevel 2 λ _ →
+                      Π-is-hlevel 2 λ _ → fun-is-hlevel 2 (D .Hom-set _ _)) λ F₁ →
+         is-prop→is-set (×-is-hlevel 1 (Π-is-hlevel 1 λ _ → D .Hom-set _ _ _ _)
+                                   (Π-is-hlevel 1 λ _ →
+                                    Π-is-hlevel 1 λ _ →
+                                    Π-is-hlevel 1 λ _ →
+                                    Π-is-hlevel 1 λ _ →
                                     Π-is-hlevel 1 λ _ → D .Hom-set _ _ _ _))
 ```
 -->
@@ -91,12 +91,12 @@ Strict-Cat o h .Hom-set _ (D , dset) = Functor-is-set dset
 
 ## Products
 
-We prove that `Strict-Cat`{.Agda} has products. This is because 
+We prove that `Strict-Cat`{.Agda} has products. This is because
 $(\ca{C} \times_\cat \ca{D})_0$ is $\ca{C}_0 \times \ca{D}_0$,
 and h-levels are closed under products.
 
 ```agda
-Strict-Cat-Product 
+Strict-Cat-Product
   : {C D : Precategory o h}
   → (cob : is-set (Ob C)) (dob : is-set (Ob D))
   → Product (Strict-Cat o h) (C , cob) (D , dob)
@@ -108,6 +108,6 @@ Strict-Cat-Product {C = C} {D = D} cob dob = prod where
   prod .has-is-product .⟨_,_⟩ p q = Cat⟨ p , q ⟩
   prod .has-is-product .π₁∘factor = Functor-path (λ _ → refl) λ _ → refl
   prod .has-is-product .π₂∘factor = Functor-path (λ _ → refl) λ _ → refl
-  prod .has-is-product .unique other p q = 
+  prod .has-is-product .unique other p q =
     Functor-path (λ x i → F₀ (p i) x , F₀ (q i) x) λ f i → F₁ (p i) f , F₁ (q i) f
 ```

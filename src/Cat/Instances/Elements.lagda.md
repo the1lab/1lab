@@ -62,7 +62,7 @@ As per usual, we need to prove some helper lemmas that describe the
 path space of `Element-hom`{.Agda}
 
 ```agda
-Element-hom-path : {x y : Element} {f g : Element-hom x y} → f .hom ≡ g .hom → f ≡ g 
+Element-hom-path : {x y : Element} {f g : Element-hom x y} → f .hom ≡ g .hom → f ≡ g
 Element-hom-path p i .hom = p i
 Element-hom-path {x = x} {y = y} {f = f} {g = g} p i .commute =
   is-prop→pathp (λ j → snd (P.₀ (x .ob)) (P.₁ (p j) (y .section)) (x .section))
@@ -119,7 +119,7 @@ $P$!
   where
     abstract
       comm : P.₁ (f .hom ∘ g .hom) (z .section) ≡ x .section
-      comm = 
+      comm =
         P.₁ (f .hom ∘ g .hom) (z .section)       ≡⟨ happly (P.F-∘ (g .hom) (f .hom)) (z .section) ⟩
         P.₁ (g .hom) (P.₁ (f .hom) (z .section)) ≡⟨ ap (P.F₁ (g .hom)) (f .commute)  ⟩
         P.₁ (g .hom) (y .section)                ≡⟨ g .commute ⟩

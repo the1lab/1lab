@@ -207,16 +207,16 @@ into an equivalence:
              → (x .fst ≡ y .fst) ≃ (x ≡ y)
 Σ-prop-path≃ bp = Σ-prop-path bp , Σ-prop-path-is-equiv bp
 
-Σ-prop-square 
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} 
-  → {w x y z : Σ B} 
+Σ-prop-square
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
+  → {w x y z : Σ B}
   → (∀ x → is-prop (B x))
   → {p : x ≡ w} {q : x ≡ y} {s : w ≡ z} {r : y ≡ z}
   → Square (ap fst p) (ap fst q) (ap fst s) (ap fst r)
   → Square p q s r
 Σ-prop-square Bprop sq i j .fst = sq i j
-Σ-prop-square Bprop {p} {q} {s} {r} sq i j .snd = 
-  is-prop→squarep (λ i j → Bprop (sq i j)) 
+Σ-prop-square Bprop {p} {q} {s} {r} sq i j .snd =
+  is-prop→squarep (λ i j → Bprop (sq i j))
     (ap snd p) (ap snd q) (ap snd s) (ap snd r) i j
 ```
 

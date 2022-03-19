@@ -264,7 +264,7 @@ A very convenient specialisation of the argument above is that if $A$ is
 a proposition, then it has any non-zero h-level:
 
 ```agda
-is-prop→is-hlevel-suc 
+is-prop→is-hlevel-suc
   : ∀ {ℓ} {A : Type ℓ} {n : Nat} → is-prop A → is-hlevel A (suc n)
 is-prop→is-hlevel-suc {n = zero} aprop = aprop
 is-prop→is-hlevel-suc {n = suc n} aprop =
@@ -329,7 +329,7 @@ most one way!
 is-contr-is-prop : is-prop (is-contr A)
 is-contr-is-prop {A = A} (contr c₁ h₁) (contr c₂ h₂) i =
   record { centre = h₁ c₂ i
-         ; paths = λ x j → hcomp (λ k → λ { (i = i0) → h₁ (h₁ x j) k 
+         ; paths = λ x j → hcomp (λ k → λ { (i = i0) → h₁ (h₁ x j) k
                                           ; (i = i1) → h₁ (h₂ x j) k
                                           ; (j = i0) → h₁ (h₁ c₂ i) k
                                           ; (j = i1) → h₁ x k })
@@ -354,7 +354,7 @@ to prove h-levels can be raised:
 is-hlevel-is-prop : ∀ {ℓ} {A : Type ℓ} (n : Nat) → is-prop (is-hlevel A n)
 is-hlevel-is-prop 0 = is-contr-is-prop
 is-hlevel-is-prop 1 = is-prop-is-prop
-is-hlevel-is-prop (suc (suc n)) x y i a b = 
+is-hlevel-is-prop (suc (suc n)) x y i a b =
   is-hlevel-is-prop (suc n) (x a b) (y a b) i
 ```
 
@@ -369,7 +369,7 @@ is offset by one to start at the propositions.
 ```agda
 is-hlevel-dep : ∀ {ℓ ℓ'} {A : Type ℓ} → (A → Type ℓ') → Nat → Type _
 
-is-hlevel-dep B zero = 
+is-hlevel-dep B zero =
   ∀ {x y} (α : B x) (β : B y) (p : x ≡ y)
   → PathP (λ i → B (p i)) α β
 
@@ -392,7 +392,7 @@ The base case is turning a proof that a type is a proposition uniformly
 over the interval to a filler for any PathP.
 
 ```agda
-is-hlevel→is-hlevel-dep 
+is-hlevel→is-hlevel-dep
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
   → (n : Nat) → ((x : A) → is-hlevel (B x) (suc n))
   → is-hlevel-dep B n
@@ -402,14 +402,14 @@ is-hlevel→is-hlevel-dep {A = A} {B = B} (suc n) hl {a0} {a1} b0 b1 =
   where
     helper : (a1 : A) (p : a0 ≡ a1) (b1 : B a1)
            → is-hlevel (PathP (λ i → B (p i)) b0 b1) (suc n)
-    helper a1 p b1 = 
+    helper a1 p b1 =
       J (λ a1 p → ∀ b1 → is-hlevel (PathP (λ i → B (p i)) b0 b1) (suc n))
         (λ _ → hl _ _ _) p b1
 ```
 
 <!--
 ```agda
-is-prop→squarep 
+is-prop→squarep
   : ∀ {B : I → I → Type ℓ} → ((i j : I) → is-prop (B i j))
   → {a : B i0 i0} {b : B i0 i1} {c : B i1 i0} {d : B i1 i1}
   → (p : PathP (λ j → B j i0) a c)

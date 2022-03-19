@@ -103,7 +103,7 @@ says that the map $h$ "respects reindexing", or less obliquely
 
   /-Hom-pathp : ∀ {c a a′ b b′} (p : a ≡ a′) (q : b ≡ b′)
                 {x : /-Hom {c = c} a b} {y : /-Hom a′ b′}
-              → PathP (λ i → C.Hom (p i ./-Obj.domain) (q i ./-Obj.domain)) 
+              → PathP (λ i → C.Hom (p i ./-Obj.domain) (q i ./-Obj.domain))
                         (x ./-Hom.map) (y ./-Hom.map)
               → PathP (λ i → /-Hom (p i) (q i)) x y
   /-Hom-pathp p q {x} {y} r = path where
@@ -111,10 +111,10 @@ says that the map $h$ "respects reindexing", or less obliquely
 
     path : PathP (λ i → /-Hom (p i) (q i))  x y
     path i .map = r i
-    path i .commutes = 
-      is-prop→pathp 
-        (λ i → C.Hom-set (p i ./-Obj.domain) _ 
-                         (q i ./-Obj.map C.∘ r i) (p i ./-Obj.map)) 
+    path i .commutes =
+      is-prop→pathp
+        (λ i → C.Hom-set (p i ./-Obj.domain) _
+                         (q i ./-Obj.map C.∘ r i) (p i ./-Obj.map))
         (x .commutes) (y .commutes) i
 
   /-Hom-path : ∀ {c a b} {x y : /-Hom {c = c} a b}
@@ -123,8 +123,8 @@ says that the map $h$ "respects reindexing", or less obliquely
   /-Hom-path = /-Hom-pathp refl refl
 
   /-Hom-is-set : ∀ {c a b} → is-set (/-Hom {c = c} a b)
-  /-Hom-is-set {a = a} {b} = 
-    retract→is-hlevel 2 pack unpack inv T-is-set 
+  /-Hom-is-set {a = a} {b} =
+    retract→is-hlevel 2 pack unpack inv T-is-set
     where abstract
       module a = /-Obj a
       module b = /-Obj b
@@ -133,7 +133,7 @@ says that the map $h$ "respects reindexing", or less obliquely
       T = Σ[ map ∈ C.Hom a.domain b.domain ] (b.map C.∘ map ≡ a.map)
 
       T-is-set : is-set T
-      T-is-set = Σ-is-hlevel 2 (C.Hom-set _ _) 
+      T-is-set = Σ-is-hlevel 2 (C.Hom-set _ _)
                                (λ _ → is-prop→is-set (C.Hom-set _ _ _ _))
 
       pack : T → /-Hom a b
@@ -192,7 +192,7 @@ commutativity for $g \circ f$).
     module g = /-Hom g
     fog : /-Hom _ _
     fog .map = f.map C.∘ g.map
-    fog .commutes = 
+    fog .commutes =
       z .map C.∘ f.map C.∘ g.map ≡⟨ C.pulll f.commutes ⟩
       y .map C.∘ g.map           ≡⟨ g.commutes ⟩
       x .map                     ∎
@@ -217,7 +217,7 @@ module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
   Slice-terminal-object : is-terminal (Slice C c) (cut C.id)
   Slice-terminal-object obj .centre .map = obj .map
   Slice-terminal-object obj .centre .commutes = C.idl _
-  Slice-terminal-object obj .paths other = 
+  Slice-terminal-object obj .paths other =
     /-Hom-path (sym (other .commutes) ∙ C.idl _)
 ```
 
@@ -242,7 +242,7 @@ module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
 Suppose we have a pullback diagram like the one below, i.e., a limit of
 the diagram $a \xrightarrow{f} c \xleftarrow{g} b$, in the category
 $\ca{C}$. We'll show that it's also a limit of the (discrete) diagram
-consisting of $f$ and $g$, but now in the slice category $\ca{C}/c$. 
+consisting of $f$ and $g$, but now in the slice category $\ca{C}/c$.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -306,7 +306,7 @@ we see that it is exactly the data of the pullback of $f$ and $g$ in
 $\ca{C}$, as below:
 
 ```agda
-    is-pullback→is-fibre-product 
+    is-pullback→is-fibre-product
       : is-product (Slice C c) is-pullback→π₁ is-pullback→π₂
     is-pullback→is-fibre-product .⟨_,_⟩ {Q} /f /g = factor
       where
@@ -315,23 +315,23 @@ $\ca{C}$, as below:
 
         factor : C/c.Hom Q _
         factor .map = pb.limiting (f.commutes ∙ sym g.commutes)
-        factor .commutes = 
+        factor .commutes =
           (f C.∘ π₁) C.∘ pb.limiting _ ≡⟨ C.pullr pb.p₁∘limiting ⟩
           f C.∘ f.map                  ≡⟨ f.commutes ⟩
           Q .map                       ∎
 
     is-pullback→is-fibre-product .π₁∘factor = /-Hom-path pb.p₁∘limiting
     is-pullback→is-fibre-product .π₂∘factor = /-Hom-path pb.p₂∘limiting
-    is-pullback→is-fibre-product .unique other p q = 
+    is-pullback→is-fibre-product .unique other p q =
       /-Hom-path (pb.unique (ap map p) (ap map q))
 
-  Pullback→Fibre-product 
+  Pullback→Fibre-product
     : ∀ {f : C.Hom a c} {g : C.Hom b c}
     → Pullback C f g → Product (Slice C c) (cut f) (cut g)
   Pullback→Fibre-product pb .Product.apex = _
   Pullback→Fibre-product pb .Product.π₁ = _
   Pullback→Fibre-product pb .Product.π₂ = _
-  Pullback→Fibre-product pb .Product.has-is-product = 
+  Pullback→Fibre-product pb .Product.has-is-product =
     is-pullback→is-fibre-product (pb .Pullback.has-is-pb)
 ```
 
@@ -349,14 +349,14 @@ module _ {I : Set ℓ} where
 ```
 
 We shall prove that the functor `Total-space`{.Agda}, defined below, is
-an equivalence of categories, i.e. that it is fully faithful and 
+an equivalence of categories, i.e. that it is fully faithful and
 essentially surjective. But first, we must define the functor! Like its
 name implies, it maps the functor $F : I → \sets$ to the first
 projection map $\mathrm{fst} : \sum F \to I$.
 
 ```agda
   Total-space : Functor Cat[ Disc′ I , Sets ℓ ] (Slice (Sets ℓ) I)
-  Total-space .F₀ F .domain = Σ (fst ⊙ F₀ F) 
+  Total-space .F₀ F .domain = Σ (fst ⊙ F₀ F)
                             , Σ-is-hlevel 2 (I .snd) (snd ⊙ F₀ F)
   Total-space .F₀ F .map = fst
 
@@ -376,13 +376,13 @@ naturality, where we use path induction.
 
 ```agda
   Total-space-is-ff : is-fully-faithful Total-space
-  Total-space-is-ff {f1} {f2} = is-iso→is-equiv 
-    (iso from linv (λ x → Nat-path (λ x → funext (λ _ → transport-refl _)))) 
+  Total-space-is-ff {f1} {f2} = is-iso→is-equiv
+    (iso from linv (λ x → Nat-path (λ x → funext (λ _ → transport-refl _))))
     where
       from : /-Hom (Total-space .F₀ f1) (Total-space .F₀ f2) → f1 => f2
       from mp = nt where
         eta : ∀ i → F₀ f1 i .fst → F₀ f2 i .fst
-        eta i j = 
+        eta i j =
           subst (fst ⊙ F₀ f2) (happly (mp .commutes) _) (mp .map (i , j) .snd)
 
         nt : f1 => f2
@@ -396,9 +396,9 @@ naturality, where we use path induction.
 <!--
 ```agda
       linv : is-left-inverse (F₁ Total-space) from
-      linv x = 
-        /-Hom-path (funext (λ y → 
-          Σ-path (sym (happly (x .commutes) _)) 
+      linv x =
+        /-Hom-path (funext (λ y →
+          Σ-path (sym (happly (x .commutes) _))
             ( sym (transport-∙ (ap (fst ⊙ F₀ f2) (happly (x .commutes) y))
                           (sym (ap (fst ⊙ F₀ f2) (happly (x .commutes) y)))
                           _)
@@ -421,15 +421,15 @@ an isomorphism directly, though it does involve an appeal to univalence.
   Total-space-is-eso fam = functor , path→iso _ path
     where
       functor : Functor _ _
-      functor .F₀ i = fibre (fam .map) i 
-                    , Σ-is-hlevel 2 (fam .domain .snd) 
+      functor .F₀ i = fibre (fam .map) i
+                    , Σ-is-hlevel 2 (fam .domain .snd)
                                     λ _ → is-prop→is-set (I .snd _ _)
       functor .F₁ p = subst (fibre (fam .map)) p
       functor .F-id = funext transport-refl
       functor .F-∘ f g = funext (subst-∙ (fibre (fam .map)) _ _)
 
       path : F₀ Total-space functor ≡ fam
-      path = /-Obj-path 
-        (Σ-prop-path (λ _ → is-hlevel-is-prop 2) (ua (Total-equiv _  e⁻¹))) 
-        (ua→ λ a → sym (a .snd .snd)) 
+      path = /-Obj-path
+        (Σ-prop-path (λ _ → is-hlevel-is-prop 2) (ua (Total-equiv _  e⁻¹)))
+        (ua→ λ a → sym (a .snd .snd))
 ```

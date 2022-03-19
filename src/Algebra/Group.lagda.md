@@ -49,7 +49,7 @@ give the unit, both on the left and on the right:
 
   abstract
     inv-unit≡unit : inverse unit ≡ unit
-    inv-unit≡unit = monoid-inverse-unique 
+    inv-unit≡unit = monoid-inverse-unique
       has-is-monoid unit _ _ inverseˡ (idˡ has-is-monoid)
 
     inv-inv : ∀ {x} → inverse (inverse x) ≡ x
@@ -57,16 +57,16 @@ give the unit, both on the left and on the right:
       has-is-monoid _ _ _ inverseˡ inverseˡ
 
     inv-comm : ∀ {x y} → inverse (x * y) ≡ inverse y * inverse x
-    inv-comm {x = x} {y} = 
+    inv-comm {x = x} {y} =
       monoid-inverse-unique has-is-monoid _ _ _ inverseˡ p
       where
         p : (x * y) * (inverse y * inverse x) ≡ unit
-        p = associative has-is-monoid 
-         ·· ap₂ _*_ 
-              (  sym (associative has-is-monoid) 
-              ·· ap₂ _*_ refl inverseʳ 
-              ·· idʳ has-is-monoid) 
-              refl 
+        p = associative has-is-monoid
+         ·· ap₂ _*_
+              (  sym (associative has-is-monoid)
+              ·· ap₂ _*_ refl inverseʳ
+              ·· idʳ has-is-monoid)
+              refl
          ·· inverseʳ
 
     zero-diff→≡ : ∀ {x y} → x * inverse y ≡ unit → x ≡ y
@@ -108,12 +108,12 @@ $x$ and $y$ are the same.
 ```agda
   same-monoid : PathP (λ i → is-monoid (same-unit i) _*_)
                       (x .has-is-monoid) (y .has-is-monoid)
-  same-monoid = 
+  same-monoid =
     is-prop→pathp (λ i → is-monoid-is-prop {id = same-unit i})
       (x .has-is-monoid) (y .has-is-monoid)
 ```
 
-Since `inverses in monoids are unique`{.Agda ident=monoid-inverse-unique} 
+Since `inverses in monoids are unique`{.Agda ident=monoid-inverse-unique}
 (when they exist), it follows that `the inverse-assigning maps`{.Agda
 ident=inverse} are pointwise equal; By extensionality, they are the same
 map.
@@ -134,12 +134,12 @@ dependent! This gives us the equations between the `inverseˡ`{.Agda} and
   same-invˡ : (e : A) → Square _ _ _ _
   same-invˡ e =
     is-set→squarep (λ _ _ → x .has-is-monoid .has-is-set)
-      (ap₂ _*_ (same-inverses e) refl) (x .inverseˡ) (y .inverseˡ) same-unit 
+      (ap₂ _*_ (same-inverses e) refl) (x .inverseˡ) (y .inverseˡ) same-unit
 
   same-invʳ : (e : A) → Square _ _ _ _
   same-invʳ e =
     is-set→squarep (λ _ _ → x .has-is-monoid .has-is-set)
-      (ap₂ _*_ refl (same-inverses e)) (x .inverseʳ) (y .inverseʳ) same-unit 
+      (ap₂ _*_ refl (same-inverses e)) (x .inverseʳ) (y .inverseʳ) same-unit
 ```
 
 Putting all of this together lets us conclude that `x` and `y` are
@@ -208,25 +208,25 @@ identity:
 
   pres-id : e 1A ≡ 1B
   pres-id =
-    e 1A                            ≡⟨ sym B.idʳ ⟩ 
-    e 1A B.⋆ 1B                     ≡⟨ ap₂ B._⋆_ refl (sym B.inverseʳ) ⟩ 
-    e 1A B.⋆ (e 1A B.⋆ (e 1A) B.⁻¹) ≡⟨ B.associative ⟩ 
-    (e 1A B.⋆ e 1A) B.⋆ (e 1A) B.⁻¹ ≡⟨ ap₂ B._⋆_ (sym (pres-⋆ _ _) ∙ ap e A.idˡ) refl ⟩ 
-    e 1A B.⋆ (e 1A) B.⁻¹            ≡⟨ B.inverseʳ ⟩ 
+    e 1A                            ≡⟨ sym B.idʳ ⟩
+    e 1A B.⋆ 1B                     ≡⟨ ap₂ B._⋆_ refl (sym B.inverseʳ) ⟩
+    e 1A B.⋆ (e 1A B.⋆ (e 1A) B.⁻¹) ≡⟨ B.associative ⟩
+    (e 1A B.⋆ e 1A) B.⋆ (e 1A) B.⁻¹ ≡⟨ ap₂ B._⋆_ (sym (pres-⋆ _ _) ∙ ap e A.idˡ) refl ⟩
+    e 1A B.⋆ (e 1A) B.⁻¹            ≡⟨ B.inverseʳ ⟩
     1B                              ∎
 
   pres-inv : ∀ x → e (A.inverse x) ≡ B.inverse (e x)
-  pres-inv x = 
-    monoid-inverse-unique B.has-is-monoid (e x) _ _ 
-      (sym (pres-⋆ _ _) ·· ap e A.inverseˡ ·· pres-id) 
+  pres-inv x =
+    monoid-inverse-unique B.has-is-monoid (e x) _ _
+      (sym (pres-⋆ _ _) ·· ap e A.inverseˡ ·· pres-id)
       B.inverseʳ
 ```
 
 <!--
 ```agda
-Group-hom-is-prop : ∀ {ℓ} {G H : Group ℓ} {f} → is-prop (Group-hom G H f) 
-Group-hom-is-prop {H = _ , H} a b i .Group-hom.pres-⋆ x y = 
-  Group-on.has-is-set H _ _ (a .Group-hom.pres-⋆ x y) (b .Group-hom.pres-⋆ x y) i 
+Group-hom-is-prop : ∀ {ℓ} {G H : Group ℓ} {f} → is-prop (Group-hom G H f)
+Group-hom-is-prop {H = _ , H} a b i .Group-hom.pres-⋆ x y =
+  Group-on.has-is-set H _ _ (a .Group-hom.pres-⋆ x y) (b .Group-hom.pres-⋆ x y) i
 ```
 -->
 
@@ -263,7 +263,7 @@ introduce a helper function for arranging the data of a group into a
 record.
 
 ```agda
-make-group 
+make-group
   : ∀ {ℓ} {G : Type ℓ}
   → is-set G
   → (unit : G) (_⋆_ : G → G → G) (inv : G → G)
@@ -273,14 +273,14 @@ make-group
   → Group-on G
 make-group gset id star inv assoc invl invr idl = r where
   open is-group
-  
+
   r : Group-on _
   r ._⋆_ = star
   r .has-is-group .unit = id
   r .has-is-group .has-is-monoid .has-is-semigroup .has-is-magma .has-is-set = gset
   r .has-is-group .has-is-monoid .has-is-semigroup .associative = sym (assoc _ _ _)
   r .has-is-group .has-is-monoid .idˡ = idl _
-  r .has-is-group .has-is-monoid .idʳ {x = x} = 
+  r .has-is-group .has-is-monoid .idʳ {x = x} =
     star x id               ≡⟨ ap₂ star refl (sym (invl x)) ⟩
     star x (star (inv x) x) ≡⟨ sym (assoc _ _ _) ⟩
     star (star x (inv x)) x ≡⟨ ap₂ star (invr x) refl ⟩

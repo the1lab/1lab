@@ -149,7 +149,7 @@ module _ {id : A} {_⋆_ : A → A → A} where
 direction, namely, that every unital semigroup is a monoid.
 
 ```agda
-  is-unital-magma→is-semigroup→is-monoid 
+  is-unital-magma→is-semigroup→is-monoid
     : is-unital-magma id _⋆_ → is-semigroup _⋆_ → is-monoid id _⋆_
   is-unital-magma→is-semigroup→is-monoid uni sem .has-is-semigroup = sem
   is-unital-magma→is-semigroup→is-monoid uni sem .idˡ = uni .idˡ
@@ -181,9 +181,9 @@ $y$:
 ```agda
 monoid-inverse-unique {1M = 1M} {_⋆_} m e x y li1 ri2 =
   x             ≡⟨ sym (m .idʳ) ⟩
-  x ⋆ 1M        ≡⟨ ap₂ _⋆_ refl (sym ri2) ⟩ 
+  x ⋆ 1M        ≡⟨ ap₂ _⋆_ refl (sym ri2) ⟩
   x ⋆ (e ⋆ y)   ≡⟨ m .associative ⟩
-  (x ⋆ e) ⋆ y   ≡⟨ ap₂ _⋆_ li1 refl ⟩ 
+  (x ⋆ e) ⋆ y   ≡⟨ ap₂ _⋆_ li1 refl ⟩
   1M ⋆ y        ≡⟨ m .idˡ ⟩
   y             ∎
 ```

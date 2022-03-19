@@ -107,7 +107,7 @@ commutative diagrams:
 
 <!--
 ```agda
-module _ 
+module _
   {o h o' h'}
   {C : Precategory o h}
   {D : Precategory o' h'}
@@ -164,7 +164,7 @@ of adjunction, we show that this assignment extends to a functor $L : C
 
 <!--
 ```agda
-module _ 
+module _
   {o h o' h'}
   {C : Precategory o h}
   {D : Precategory o' h'}
@@ -212,7 +212,7 @@ object in $a \swarrow R$ (see `lift↓`{.Agda} below).
     to-ob : ∀ {a b} → C.Hom a b → (a ↙ R) .Precategory.Ob
     to-ob {a} {b} h = record { map = L₀′ b C.∘ h }
 
-    lift↓ : ∀ {x y} (g : C.Hom x y) 
+    lift↓ : ∀ {x y} (g : C.Hom x y)
           → Precategory.Hom (x ↙ R) (universal-map-for x .bot) (to-ob g)
     lift↓ {x} {y} g = ¡ (universal-map-for x) {to-ob g}
 
@@ -230,15 +230,15 @@ object.
 ```agda
   private abstract
     L-id : ∀ {a} → L₁ (C.id {a}) ≡ D.id {L₀ a}
-    L-id {a} = ap β (¡-unique (universal-map-for a) 
-                      (record { sq = C.elimr refl 
-                                  ·· C.elimr refl 
+    L-id {a} = ap β (¡-unique (universal-map-for a)
+                      (record { sq = C.elimr refl
+                                  ·· C.elimr refl
                                   ·· sym (C.eliml R.F-id) }))
 
-    lemma : ∀ {x y z} (f : C.Hom y z) (g : C.Hom x y) 
+    lemma : ∀ {x y z} (f : C.Hom y z) (g : C.Hom x y)
           → R.₁ (L₁ f D.∘ L₁ g) C.∘ (L₀′ x)
           ≡ to-ob (f C.∘ g) .map C.∘ C.id
-    lemma {x} {y} {z} f g = 
+    lemma {x} {y} {z} f g =
       R.₁ (lift↓ f .β D.∘ lift↓ g .β) C.∘ (L₀′ x)       ≡˘⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
       R.₁ (lift↓ f .β) C.∘ R.₁ (lift↓ g .β) C.∘ (L₀′ x) ≡⟨ ap (R.₁ (lift↓ f .β) C.∘_) (sym (lift↓ g .↓Hom.sq) ∙ C.idr _) ⟩
       R.₁ (lift↓ f .β) C.∘ L₀′ y C.∘ g                  ≡⟨ C.extendl (sym (lift↓ f .↓Hom.sq) ∙ C.idr _) ⟩
@@ -264,7 +264,7 @@ it defines a left adjoint to the $R$ we started with.
 
 <!--
 ```agda
-  open _⊣_ 
+  open _⊣_
   open _=>_
 ```
 -->
@@ -322,16 +322,16 @@ $\beta$ is unique.
 ```agda
   universal-maps→L⊣R : universal-maps→L ⊣ R
   universal-maps→L⊣R .counit .η x = ε x .↓Hom.β
-  universal-maps→L⊣R .counit .is-natural x y f = 
+  universal-maps→L⊣R .counit .is-natural x y f =
     ap ↓Hom.β (
       ¡-unique₂ (universal-map-for (R.₀ x)) {record { map = R.₁ f }}
-      (record { sq = 
+      (record { sq =
         R.₁ f C.∘ C.id                                          ≡⟨ C.idr _ ⟩
         R.₁ f                                                   ≡˘⟨ C.cancell (sym (ε y .↓Hom.sq) ∙ C.idr _) ⟩
         R.₁ (ε y .β) C.∘ _ C.∘ R.₁ f                            ≡˘⟨ ap₂ C._∘_ refl (sym (lift↓ (R.₁ f) .↓Hom.sq) ∙ C.idr _) ⟩
         R.₁ (ε y .β) C.∘ R.₁ (L₁ (R.₁ f)) C.∘ mapd (R.₀ x) .map ≡⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
-        R.₁ (ε y .β D.∘ L₁ (R.₁ f)) C.∘ mapd (R.₀ x) .map       ∎ }) 
-      (record { sq = 
+        R.₁ (ε y .β D.∘ L₁ (R.₁ f)) C.∘ mapd (R.₀ x) .map       ∎ })
+      (record { sq =
         R.₁ f C.∘ C.id                               ≡˘⟨ ap (R.₁ f C.∘_) (sym (ε x .↓Hom.sq) ∙ C.idr _) ⟩
         R.₁ f C.∘ R.₁ (ε x .β) C.∘ mapd (R.₀ x) .map ≡⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
         R.₁ (f D.∘ ε x .β) C.∘ mapd (R.₀ x) .map     ∎ }))
@@ -374,16 +374,16 @@ as well. It follows from the uniqueness of maps out of the initial
 object:
 
 ```agda
-  universal-maps→L⊣R .zig {x} = 
+  universal-maps→L⊣R .zig {x} =
     ap ↓Hom.β (
       ¡-unique₂ (universal-map-for x) {record { map = α }}
-        (record { sq = 
+        (record { sq =
           α C.∘ C.id                     ≡⟨ C.idr _ ⟩
           α                              ≡˘⟨ C.cancell (sym (ε (L₀ x) .↓Hom.sq) ∙ C.idr _) ⟩
           R.₁ _ C.∘ _ C.∘ α              ≡˘⟨ C.pullr (sym (lift↓ α .↓Hom.sq) ∙ C.idr _) ⟩
           (R.₁ _ C.∘ R.₁ (F₁ L α)) C.∘ α ≡˘⟨ ap (C._∘ α) (R.F-∘ _ _) ⟩
           R.₁ (_ D.∘ F₁ L α) C.∘ α       ∎
-        }) 
+        })
         (record { sq = C.id-comm ∙ ap (C._∘ _) (sym R.F-id) })
     )
     where α = L₀′ x
@@ -457,7 +457,7 @@ Lx \to LRy \to y
 $$
 
 ```agda
-  L⊣R→map-to-R-is-initial 
+  L⊣R→map-to-R-is-initial
     : ∀ x → is-initial (x ↙ R) (L⊣R→map-to-R x)
   L⊣R→map-to-R-is-initial x other-map .centre .↓Hom.α = tt
   L⊣R→map-to-R-is-initial x other-map .centre .↓Hom.β =
@@ -478,7 +478,7 @@ naturality and the triangle identities; The same is true for proving
 that the map $g$ above is unique.
 
 ```agda
-  L⊣R→map-to-R-is-initial x other-map .paths y = 
+  L⊣R→map-to-R-is-initial x other-map .paths y =
     ↓Hom-path _ _ refl (
       adj.counit.ε _ D.∘ L.₁ om.map                            ≡⟨ ap ((adj.counit.ε _ D.∘_) ⊙ L.₁) (sym (C.idr _) ∙ y.sq) ⟩
       adj.counit.ε _ D.∘ L.₁ (R.₁ y.β C.∘ adj.unit.η _)        ≡⟨ ap (adj.counit.ε _ D.∘_) (L.F-∘ _ _) ⟩
@@ -486,7 +486,7 @@ that the map $g$ above is unique.
       (y.β D.∘ adj.counit.ε _) D.∘ L.₁ (adj.unit.η _)          ≡⟨ D.cancelr adj.zig ⟩
       y.β                                                      ∎
     )
-    where 
+    where
       module om = ↓Obj other-map
       module y = ↓Hom y
 ```

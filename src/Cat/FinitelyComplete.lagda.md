@@ -73,8 +73,8 @@ pullbacks; Thus a terminal object, binary products and binary equalisers
 suffice for finite completeness.
 
 ```agda
-with-equalisers 
-  : Terminal 
+with-equalisers
+  : Terminal
   → (∀ A B → Product A B)
   → (∀ {A B} (f g : Hom A B) → Equaliser f g)
   → Finitely-complete
@@ -116,7 +116,7 @@ with-equalisers top prod equ .pullbacks {A} {B} {C} f g = pb where
   pb .apex = Equ.apex
   pb .p₁ = Prod.π₁ ∘ Equ.equ
   pb .p₂ = Prod.π₂ ∘ Equ.equ
-  pb .has-is-pb .square = 
+  pb .has-is-pb .square =
     f ∘ Prod.π₁ ∘ Equ.equ ≡⟨ (assoc _ _ _ ·· Equ.equal ·· sym (assoc _ _ _)) ⟩
     g ∘ Prod.π₂ ∘ Equ.equ ∎
 ```
@@ -139,7 +139,7 @@ equalisers to factor _that_ as a unique arrow $P' \to X \times_Z Y$.
 ~~~
 
 ```agda
-  pb .has-is-pb .limiting {p₁' = p₁'} {p₂' = p₂'} p = 
+  pb .has-is-pb .limiting {p₁' = p₁'} {p₂' = p₂'} p =
     Equ.limiting {e′ = Prod.⟨ p₁' , p₂' ⟩} (
       (f ∘ Prod.π₁) ∘ Prod.⟨ p₁' , p₂' ⟩ ≡⟨ pullr Prod.π₁∘factor ⟩
       f ∘ p₁'                            ≡⟨ p ⟩
@@ -148,18 +148,18 @@ equalisers to factor _that_ as a unique arrow $P' \to X \times_Z Y$.
     )
   pb .has-is-pb .p₁∘limiting = pullr Equ.universal ∙ Prod.π₁∘factor
   pb .has-is-pb .p₂∘limiting = pullr Equ.universal ∙ Prod.π₂∘factor
-  pb .has-is-pb .unique p q = 
+  pb .has-is-pb .unique p q =
     Equ.unique (sym (Prod.unique _ (assoc _ _ _ ∙ p) (assoc _ _ _ ∙ q)))
 ```
 
 ## With pullbacks
 
 We'll now prove the converse: That a terminal object and pullbacks
-implies having all products, and all equalisers. 
+implies having all products, and all equalisers.
 
 ```agda
-with-pullbacks 
-  : Terminal 
+with-pullbacks
+  : Terminal
   → (∀ {A B C} (f : Hom A C) (g : Hom B C) → Pullback f g)
   → Finitely-complete
 with-pullbacks top pb = fc where
@@ -170,7 +170,7 @@ with-pullbacks top pb = fc where
 We'll start with the products, since those are simpler. Observe that we
 can complete a product diagram (like the one on the left) to a pullback
 diagram (like the one on the right) by adding in the unique arrows into
-the terminal object $*$. 
+the terminal object $*$.
 
 <div class=mathpar>
 
@@ -215,7 +215,7 @@ the terminal object $*$.
     prod .apex = Pb.apex
     prod .π₁ = Pb.p₁
     prod .π₂ = Pb.p₂
-    prod .has-is-product .is-product.⟨_,_⟩ p1' p2' = 
+    prod .has-is-product .is-product.⟨_,_⟩ p1' p2' =
       Pb.limiting {p₁' = p1'} {p₂' = p2'} (top.!-unique₂ _ _)
     prod .has-is-product .is-product.π₁∘factor = Pb.p₁∘limiting
     prod .has-is-product .is-product.π₂∘factor = Pb.p₂∘limiting
@@ -267,7 +267,7 @@ calls `Pb.p₂`{.Agda}), so we must show that, composed with this map, $f$
 and $g$ become equal. Here's where we use the fact that pullback
 squares, well, commute: We know that $f$ is $\pi_1 \circ \langle f , g
 \rangle$, and that $\langle f , g \rangle \circ \mathrm{equ} = \langle
-\mathrm{id}, \mathrm{id} \rangle$ (since the square above is a pullback). 
+\mathrm{id}, \mathrm{id} \rangle$ (since the square above is a pullback).
 
 But both projections out of $\langle \mathrm{id}, \mathrm{id} \rangle$
 are equal, so we can apply commutativity of the square above _again_ to
@@ -277,7 +277,7 @@ conclude that $f \circ \mathrm{equ} = g \circ \mathrm{equ}$.
     eq : Equaliser f g
     eq .apex = Pb.apex
     eq .equ = Pb.p₂
-    eq .has-is-eq .equal = 
+    eq .has-is-eq .equal =
       f ∘ Pb.p₂               ≡˘⟨ pulll Bb.π₁∘factor ⟩
       Bb.π₁ ∘ ⟨f,g⟩ ∘ Pb.p₂   ≡⟨ ap (Bb.π₁ ∘_) (sym Pb.square) ⟩
       Bb.π₁ ∘ ⟨id,id⟩ ∘ Pb.p₁ ≡⟨ pulll Bb.π₁∘factor ∙ sym (pulll Bb.π₂∘factor) ⟩
@@ -313,15 +313,15 @@ top face $\mathrm{equ} : \mathrm{eq}(f,g) \to A$ in our pullback diagram
 is indeed the equaliser of $f$ and $g$.
 
 ```agda
-    eq .has-is-eq .limiting {e′ = e′} p = 
+    eq .has-is-eq .limiting {e′ = e′} p =
       Pb.limiting (Bb.unique₂ _ refl refl (⟨f,g⟩ ∘ e′) (sym p1) (sym p2))
       where
         p1 : Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e′ ≡ Bb.π₁ ∘ ⟨f,g⟩ ∘ e′
-        p1 = 
+        p1 =
           Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e′   ≡⟨ cancell Bb.π₁∘factor ⟩
           f ∘ e′                     ≡˘⟨ pulll Bb.π₁∘factor ⟩
           Bb.π₁ ∘ ⟨f,g⟩ ∘ e′         ∎
-        
+
         p2 : Bb.π₂ ∘ ⟨id,id⟩ ∘ f ∘ e′ ≡ Bb.π₂ ∘ ⟨f,g⟩ ∘ e′
         p2 =
           Bb.π₂ ∘ ⟨id,id⟩ ∘ f ∘ e′   ≡⟨ cancell Bb.π₂∘factor ⟩
@@ -330,11 +330,11 @@ is indeed the equaliser of $f$ and $g$.
           Bb.π₂ ∘ ⟨f,g⟩ ∘ e′         ∎
 
     eq .has-is-eq .universal = Pb.p₂∘limiting
-    eq .has-is-eq .unique {F} {e′ = e′} {lim' = lim'} e′=p₂∘l = 
-      Pb.unique path (sym e′=p₂∘l) 
+    eq .has-is-eq .unique {F} {e′ = e′} {lim' = lim'} e′=p₂∘l =
+      Pb.unique path (sym e′=p₂∘l)
       where
         path : Pb.p₁ ∘ lim' ≡ f ∘ e′
-        path = 
+        path =
           Pb.p₁ ∘ lim'                   ≡⟨ insertl Bb.π₁∘factor ⟩
           Bb.π₁ ∘ ⟨id,id⟩ ∘ Pb.p₁ ∘ lim' ≡⟨ ap (Bb.π₁ ∘_) (extendl Pb.square) ⟩
           Bb.π₁ ∘ ⟨f,g⟩ ∘ Pb.p₂ ∘ lim'   ≡⟨ ap (Bb.π₁ ∘_) (ap (⟨f,g⟩ ∘_) (sym e′=p₂∘l)) ⟩

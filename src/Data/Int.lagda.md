@@ -85,7 +85,7 @@ same-difference {zero} {b} {c} {d} path =
   sym ( diff c d       ≡⟨ ap₂ diff refl path ⟩
         diff c (b + c) ≡⟨ ap₂ diff refl (+-commutative b c) ⟩
         diff c (c + b) ≡⟨ offset-negative _ _ ⟩
-        diff 0 b       ∎ 
+        diff 0 b       ∎
       )
 same-difference {suc a} {zero} {c} {d} path =
   sym ( diff c d             ≡⟨ ap₂ diff (sym path) refl ⟩
@@ -435,7 +435,7 @@ from commutativity of addition on natural numbers, and the fact that
     a b → diff (a + b) (b + a) ≡⟨ ap₂ diff refl (+-commutative b a) ⟩
           diff (a + b) (a + b) ≡⟨ sym (zeroes (a + b)) ⟩
           diff 0 0             ∎
-          
+
 +ℤ-inverseˡ : (x : Int) → negate x +ℤ x ≡ 0
 +ℤ-inverseˡ =
   Int-elim-prop (λ _ → Int-is-set _ _) λ where

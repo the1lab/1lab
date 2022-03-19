@@ -90,7 +90,7 @@ are, respectively, the `identity morphisms`{.Agda} and `composition of
 morphisms`{.Agda ident="_∘_"}. Unlike in the proof-irrelevant case, in
 which an inhabitant of $x \le y$ merely witnesses that two things are
 related, these operations _matter_, and thus must satisfy laws:
-  
+
 ```
   field
     idr : ∀ {x y} (f : Hom x y) → f ∘ id ≡ f
@@ -102,7 +102,7 @@ elements for the composition operation, both on the left and on the
 right. The "two" associativity laws (below) say that both ways of writing
 parentheses around a composition of three morphisms is equal: $(f \circ
 g) \circ h = f \circ (g \circ h)$.
-    
+
 ```
     assoc : ∀ {w x y z} (f : Hom y z) (g : Hom x y) (h : Hom w x)
           → f ∘ (g ∘ h) ≡ (f ∘ g) ∘ h
@@ -336,7 +336,7 @@ category, notated $[C, D]$ - the [functor category] between $C$ and $D$.
 ```agda
 record _=>_ {o₁ h₁ o₂ h₂}
             {C : Precategory o₁ h₁}
-            {D : Precategory o₂ h₂} 
+            {D : Precategory o₂ h₂}
             (F G : Functor C D)
       : Type (o₁ ⊔ h₁ ⊔ h₂)
   where
@@ -427,7 +427,7 @@ closure properties of h-levels.
 ```agda
 module _ {o₁ h₁ o₂ h₂}
          {C : Precategory o₁ h₁}
-         {D : Precategory o₂ h₂} 
+         {D : Precategory o₂ h₂}
          {F G : Functor C D} where
   private
     module F = Functor F
@@ -442,14 +442,14 @@ module _ {o₁ h₁ o₂ h₂}
     NT' : Type _
     NT' = Σ[ eta ∈ ((x : _) → D.Hom (F.₀ x) (G.₀ x)) ]
             ((x y : _) (f : C.Hom x y) → eta y D.∘ F.₁ f ≡ G.₁ f D.∘ eta x)
-    
+
     NT'→NT : NT' → F => G
     NT'→NT (eta , is-n) .η = eta
     NT'→NT (eta , is-n) .is-natural = is-n
 
     NT→NT' : F => G → NT'
     NT→NT' x = x .η , x .is-natural
-    
+
     prf : is-right-inverse NT→NT' NT'→NT
     prf x i .η = x .η
     prf x i .is-natural = x .is-natural
@@ -468,7 +468,7 @@ can be proven to be a set compositionally:
                     (λ _ → Π-is-hlevel 2
                      λ _ → Π-is-hlevel 2
                      λ _ → Π-is-hlevel 2
-                     λ _ x y p q → is-hlevel-suc 2 (D.Hom-set _ _) _ _ x y p q) 
+                     λ _ x y p q → is-hlevel-suc 2 (D.Hom-set _ _) _ _ x y p q)
 ```
 
 Another fundamental lemma is that equality of natural transformations
@@ -483,8 +483,8 @@ is a proposition:
             → PathP (λ i → p i => q i) a b
   Nat-pathp p q path i .η x = path x i
   Nat-pathp p q {a} {b} path i .is-natural x y f =
-    is-prop→pathp 
-      (λ i → D.Hom-set _ _ 
+    is-prop→pathp
+      (λ i → D.Hom-set _ _
         (path y i D.∘ Functor.F₁ (p i) f) (Functor.F₁ (q i) f D.∘ path x i))
       (a .is-natural x y f)
       (b .is-natural x y f) i

@@ -63,14 +63,14 @@ Sets-equalisers {A = A , As} {B = B , Bs} f g = eq where
   eq .has-is-eq .equal = funext snd
   eq .has-is-eq .limiting {e′ = e′} p x = e′ x , happly p x
   eq .has-is-eq .universal = refl
-  eq .has-is-eq .unique {p = p} q = 
+  eq .has-is-eq .unique {p = p} q =
     funext λ x → Σ-prop-path (λ _ → Bs _ _) (happly (sym q) x)
 ```
 
 Pullbacks are the same, but carving out a subset of $A \times B$.
 
 ```agda
-Sets-pullbacks : ∀ {A B C} (f : Hom A C) (g : Hom B C) 
+Sets-pullbacks : ∀ {A B C} (f : Hom A C) (g : Hom B C)
                → Pullback {X = A} {Y = B} {Z = C} f g
 Sets-pullbacks {A = A , As} {B = B , Bs} {C = C , Cs} f g = pb where
   pb : Pullback f g
@@ -82,9 +82,9 @@ Sets-pullbacks {A = A , As} {B = B , Bs} {C = C , Cs} f g = pb where
   pb .has-is-pb .limiting {p₁' = p₁'} {p₂'} p a = p₁' a , p₂' a , happly p a
   pb .has-is-pb .p₁∘limiting = refl
   pb .has-is-pb .p₂∘limiting = refl
-  pb .has-is-pb .unique {p = p} {lim' = lim'} q r i x = 
-    q i x , r i x , 
-    λ j → is-set→squarep (λ i j → Cs) 
+  pb .has-is-pb .unique {p = p} {lim' = lim'} q r i x =
+    q i x , r i x ,
+    λ j → is-set→squarep (λ i j → Cs)
       (λ j → f (q j x)) (λ j → lim' x .snd .snd j) (happly p x) (λ j → g (r j x)) i j
 ```
 

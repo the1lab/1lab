@@ -64,10 +64,10 @@ We can also show that two units of a magma are necessarily the same,
 since the products of the identities has to be equal to either one:
 
 ```agda
-identities-equal 
-  : (e e' : A) {_⋆_ : A → A → A} 
+identities-equal
+  : (e e' : A) {_⋆_ : A → A → A}
   → is-unital-magma e _⋆_
-  → is-unital-magma e' _⋆_ 
+  → is-unital-magma e' _⋆_
   → e ≡ e'
 identities-equal e e' {_⋆_ = _⋆_} unital unital' =
   e      ≡⟨ sym (idʳ unital') ⟩
@@ -83,8 +83,8 @@ and the witnesses are equal because they are propositions, as can
 be derived from `is-unital-magma-is-prop`{.Agda}
 
 ```agda
-has-identity-is-prop 
-  : {⋆ : A → A → A} 
+has-identity-is-prop
+  : {⋆ : A → A → A}
   → is-magma ⋆ → is-prop (Σ[ u ∈ A ] (is-unital-magma u ⋆))
 has-identity-is-prop mgm x y = Σ-prop-path (λ x → is-unital-magma-is-prop)
  (identities-equal (x .fst) (y .fst) (x .snd) (y .snd))
@@ -131,7 +131,7 @@ record
   field
     pres-⋆ : (x y : A .fst) → e .fst (x A.⋆ y) ≡ e .fst x B.⋆ e .fst y
     pres-identity : e .fst A.identity ≡ B.identity
-    
+
   has-magma≃ : Magma≃ (Unital-magma→Magma A) (Unital-magma→Magma B) e
   has-magma≃ .Magma≃.pres-⋆ = pres-⋆
 
@@ -152,7 +152,7 @@ Unital-magma-univalent {ℓ = ℓ} = Derive-univalent-record
     axiom[ Unital-magma-on.has-is-unital-magma by (λ _ → is-unital-magma-is-prop) ] ))
 
 Unital-magma≡ : {A B : Unital-magma ℓ} → (A ≃[ HomT→Str Unital-magma≃ ] B) ≃ (A ≡ B)
-Unital-magma≡ = SIP Unital-magma-univalent 
+Unital-magma≡ = SIP Unital-magma-univalent
 ```
 
 * One-sided identities
@@ -172,8 +172,8 @@ Perhaps surprisingly, the premises of the above theorem can be weakened:
 If $l$ is a left identity and $r$ is a right identity, then $l = r$.
 
 ```agda
-left-right-identities-equal 
-  : {⋆ : A → A → A} (l r : A) 
+left-right-identities-equal
+  : {⋆ : A → A → A} (l r : A)
   → is-left-id ⋆ l → is-right-id ⋆ r → l ≡ r
 left-right-identities-equal {⋆ = _⋆_} l r lid rid =
   l     ≡⟨ sym (rid _) ⟩

@@ -47,13 +47,13 @@ the square commutes, we have a natural transformation $\theta$.
 
 <!--
 ```agda
-module 
-  _ {A : Precategory ao ah} 
-    {B : Precategory bo bh} 
-    {C : Precategory o h} 
+module
+  _ {A : Precategory ao ah}
+    {B : Precategory bo bh}
+    {C : Precategory o h}
     (F : Functor A C) (G : Functor B C) where
-  
-  private 
+
+  private
     module A = Precategory A
     module B = Precategory B
     import Cat.Reasoning C as C
@@ -115,8 +115,8 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
             → f ≡ g
   ↓Hom-path p q i .↓Hom.α = p i
   ↓Hom-path p q i .↓Hom.β = q i
-  ↓Hom-path {x} {y} {f} {g} p q i .↓Hom.sq = 
-    is-prop→pathp (λ i → C.Hom-set _ _ (↓Obj.map y C.∘ F₁ F (p i)) 
+  ↓Hom-path {x} {y} {f} {g} p q i .↓Hom.sq =
+    is-prop→pathp (λ i → C.Hom-set _ _ (↓Obj.map y C.∘ F₁ F (p i))
                                        (F₁ G (q i) C.∘ ↓Obj.map x))
       (f .↓Hom.sq) (g .↓Hom.sq) i
 
@@ -126,9 +126,9 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
     module b = ↓Obj b
 
     T : Type (h ⊔ bh ⊔ ah)
-    T = 
-      Σ[ α ∈ Hom A a.x b.x ] 
-      Σ[ β ∈ Hom B a.y b.y ] 
+    T =
+      Σ[ α ∈ Hom A a.x b.x ]
+      Σ[ β ∈ Hom B a.y b.y ]
       (b.map C.∘ F₁ F α ≡ F₁ G β C.∘ a.map)
 
     encode : T → ↓Hom a b
@@ -140,7 +140,7 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
     decode r = r .↓Hom.α , r .↓Hom.β , r .↓Hom.sq
 
     hl : is-set T
-    hl = Σ-is-hlevel 2 (A.Hom-set _ _) λ _ → 
+    hl = Σ-is-hlevel 2 (A.Hom-set _ _) λ _ →
          Σ-is-hlevel 2 (B.Hom-set _ _) λ _ →
          is-prop→is-set (C.Hom-set _ _ _ _)
 
@@ -175,7 +175,7 @@ Identities and compositions are given componentwise:
     composite : ↓Hom a c
     composite .α = g.α A.∘ f.α
     composite .β = g.β B.∘ f.β
-    composite .sq = 
+    composite .sq =
       c.map C.∘ F₁ F (g.α A.∘ f.α)    ≡⟨ ap (_ C.∘_) (F-∘ F _ _) ⟩
       c.map C.∘ F₁ F g.α C.∘ F₁ F f.α ≡⟨ C.extendl g.sq ⟩
       F₁ G g.β C.∘ b.map C.∘ F₁ F f.α ≡⟨ ap (_ C.∘_) f.sq ⟩

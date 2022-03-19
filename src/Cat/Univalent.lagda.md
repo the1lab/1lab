@@ -83,10 +83,10 @@ to spaces of identifications is also a _sufficient_ condition:
 
 ```agda
 iso≃path→is-category : (∀ {A B} → (A ≡ B) ≃ (A ≅ B)) → is-category
-iso≃path→is-category iso≃path A = 
-  equiv→is-hlevel 0 
-    (total λ x → iso≃path .fst) 
-    (equiv→total λ {x} → iso≃path .snd) 
+iso≃path→is-category iso≃path A =
+  equiv→is-hlevel 0
+    (total λ x → iso≃path .fst)
+    (equiv→total λ {x} → iso≃path .snd)
     (contr (A , λ i → A) Singleton-is-contr)
 ```
 
@@ -96,12 +96,12 @@ J-iso : ∀ {ℓ} → is-category
       → ∀ {A} (P : ∀ B → A ≅ B → Type ℓ)
       → P A id-iso
       → ∀ {B} (p : A ≅ B) → P B p
-J-iso isc {A} P pid {B} p = 
+J-iso isc {A} P pid {B} p =
   transport (λ i → P (q (B , p) i .fst) (q (B , p) i .snd)) pid
   where q = is-contr→is-prop (isc A) (A , id-iso)
 
 iso→path-id : ∀ (isc : is-category) {A} → iso→path isc (id-iso {A}) ≡ refl
-iso→path-id isc = 
+iso→path-id isc =
   iso→path isc id-iso          ≡˘⟨ ap (iso→path isc) (≅-pathp refl refl (transport-refl _) (transport-refl _)) ⟩
   iso→path isc (path→iso refl) ≡⟨ equiv→retraction (path→iso-is-equiv isc) _ ⟩
   refl                         ∎
@@ -142,7 +142,7 @@ Hom-transport {A = A} {B} {D = D} p q h i =
           })
        (hcomp (λ { j (i = i0) → idl (idr h j) j
                  ; j (i = i1) → q′ i1 ∘ h ∘ p′ i1
-                 }) 
+                 })
               (q′ i ∘ h ∘ p′ i))
   where
     p′ : PathP _ id (path→iso p .from)
@@ -165,30 +165,30 @@ Hom-pathp {p = p} {q} {h} {h'} prf =
 
 <!--
 ```agda
-Hom-pathp-reflˡ : 
+Hom-pathp-reflˡ :
   ∀ {A B C} {p : A ≡ C} {h : Hom A B} {h' : Hom C B}
   → h ∘ path→iso p .from ≡ h'
   → PathP (λ i → Hom (p i) B) h h'
-Hom-pathp-reflˡ prf = 
+Hom-pathp-reflˡ prf =
   Hom-pathp (ap₂ _∘_ (transport-refl id) refl ·· idl _ ·· prf)
 
-Hom-pathp-reflˡ-iso : 
+Hom-pathp-reflˡ-iso :
   ∀ {A B C} {p : A ≅ C} {h : Hom A B} {h' : Hom C B}
   → (isc : is-category)
   → h ∘ p .from ≡ h'
   → PathP (λ i → Hom (iso→path isc p i) B) h h'
-Hom-pathp-reflˡ-iso isc prf = 
-  Hom-pathp-reflˡ ( 
-    ap₂ _∘_ refl (ap from (equiv→section (path→iso-is-equiv isc) _)) 
+Hom-pathp-reflˡ-iso isc prf =
+  Hom-pathp-reflˡ (
+    ap₂ _∘_ refl (ap from (equiv→section (path→iso-is-equiv isc) _))
     ∙ prf)
 
-Hom-pathp-reflʳ 
+Hom-pathp-reflʳ
   : ∀ {A B D} {q : B ≡ D} {h : Hom A B} {h' : Hom A D}
   → path→iso q .to ∘ h ≡ h'
   → PathP (λ i → Hom A (q i)) h h'
-Hom-pathp-reflʳ {q = q} prf = 
-  Hom-pathp (ap (path→iso q .to ∘_) (ap₂ _∘_ refl (transport-refl _)) 
-          ·· ap₂ _∘_ refl (idr _) 
+Hom-pathp-reflʳ {q = q} prf =
+  Hom-pathp (ap (path→iso q .to ∘_) (ap₂ _∘_ refl (transport-refl _))
+          ·· ap₂ _∘_ refl (idr _)
           ·· prf)
 
 Hom-pathp-reflʳ-iso
@@ -196,19 +196,19 @@ Hom-pathp-reflʳ-iso
   → (isc : is-category)
   → q .to ∘ h ≡ h'
   → PathP (λ i → Hom A (iso→path isc q i)) h h'
-Hom-pathp-reflʳ-iso isc prf = 
+Hom-pathp-reflʳ-iso isc prf =
   Hom-pathp-reflʳ (
-    ap₂ _∘_ (ap to (equiv→section (path→iso-is-equiv isc) _)) refl 
+    ap₂ _∘_ (ap to (equiv→section (path→iso-is-equiv isc) _)) refl
     ∙ prf)
 
-Hom-pathp-iso 
+Hom-pathp-iso
   : ∀ {A B C D} {p : A ≅ C} {q : B ≅ D} {h : Hom A B} {h' : Hom C D}
   → (isc : is-category)
   → q .to ∘ h ∘ p .from ≡ h'
   → PathP (λ i → Hom (iso→path isc p i) (iso→path isc q i)) h h'
 Hom-pathp-iso {p = p} {q} {h} {h'} isc prf =
-  Hom-pathp (ap₂ _∘_ (ap to (equiv→section (path→iso-is-equiv isc) _)) 
-                     (ap₂ _∘_ refl (ap from (equiv→section (path→iso-is-equiv isc) _))) 
+  Hom-pathp (ap₂ _∘_ (ap to (equiv→section (path→iso-is-equiv isc) _))
+                     (ap₂ _∘_ refl (ap from (equiv→section (path→iso-is-equiv isc) _)))
             ∙ prf)
 ```
 -->

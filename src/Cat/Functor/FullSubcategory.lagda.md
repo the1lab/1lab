@@ -53,7 +53,7 @@ morphisms in the full subcategory coincide with those of $\ca{C}$, any
 iso in the subcategory is an iso in $\ca{C}$, thus a path!
 
 ```agda
-module _ (P : C.Ob → Type ℓ) (pprop : ∀ x → is-prop (P x)) 
+module _ (P : C.Ob → Type ℓ) (pprop : ∀ x → is-prop (P x))
   where
   import Cat.Reasoning (Restrict P pprop) as R
 ```
@@ -67,7 +67,7 @@ reassembling:
   sub-iso→super-iso x = C.make-iso x.to x.from x.invˡ x.invʳ
     where module x = R._≅_ x
 
-  super-iso→sub-iso : ∀ {A B : Σ P} → (A .fst C.≅ B .fst) → (A R.≅ B) 
+  super-iso→sub-iso : ∀ {A B : Σ P} → (A .fst C.≅ B .fst) → (A R.≅ B)
   super-iso→sub-iso y = R.make-iso y.to y.from y.invˡ y.invʳ
     where module y = C._≅_ y
 ```
@@ -113,7 +113,7 @@ module _ {o' h'} {D : Precategory o' h'} {F : Functor D C} (ff : is-fully-faithf
   open Functor F
 
   Full-inclusion→Full-subcat : Precategory _ _
-  Full-inclusion→Full-subcat = 
+  Full-inclusion→Full-subcat =
     Restrict (λ x → ∃[ d ∈ Ob D ] (F₀ d C.≅ x)) λ _ → squash
 ```
 
@@ -134,7 +134,7 @@ functor from $\ca{D}$. This functor is actually just $F$ again:
   is-fully-faithful-domain→Full-subcat = ff
 
   is-eso-domain→Full-subcat : is-eso Ff-domain→Full-subcat
-  is-eso-domain→Full-subcat (y , o) = 
+  is-eso-domain→Full-subcat (y , o) =
     ∥-∥-map (λ (preimg , isom) → preimg , super-iso→sub-iso _ (λ _ → squash) isom) o
 ```
 

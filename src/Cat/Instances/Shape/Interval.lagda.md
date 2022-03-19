@@ -138,16 +138,16 @@ to establish commutativity and uniqueness.
 </details>
 
 ```agda
-0≤1-products A B .has-is-product .π₁∘factor = 
+0≤1-products A B .has-is-product .π₁∘factor =
   Bool-poset .Poset.Hom-is-prop _ _ _ _
-0≤1-products A B .has-is-product .π₂∘factor = 
+0≤1-products A B .has-is-product .π₂∘factor =
   Bool-poset .Poset.Hom-is-prop _ _ _ _
-0≤1-products A B .has-is-product .unique _ _ _ = 
+0≤1-products A B .has-is-product .unique _ _ _ =
   Bool-poset .Poset.Hom-is-prop _ _ _ _
 
 0≤1-finitely-complete : Finitely-complete 0≤1
-0≤1-finitely-complete = 
-  with-top-and-meets 0≤1 (Bool-poset .Poset.has-is-thin) 
+0≤1-finitely-complete =
+  with-top-and-meets 0≤1 (Bool-poset .Poset.has-is-thin)
   0≤1-top 0≤1-products
 ```
 
@@ -233,9 +233,9 @@ it must preserve identity arrows. The converse direction (going functor
   arrow≃functor : is-equiv arrow→functor
   arrow≃functor = is-iso→is-equiv (iso functor→arrow rinv linv) where
     rinv : is-right-inverse functor→arrow arrow→functor
-    rinv F = 
-      Functor-path 
-        (λ { true → refl ; false → refl }) 
+    rinv F =
+      Functor-path
+        (λ { true → refl ; false → refl })
         (λ { {false} {false} tt → sym (F-id F)
            ; {false} {true}  tt → refl
            ; {true}  {false} ()

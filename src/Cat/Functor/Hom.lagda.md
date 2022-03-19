@@ -62,8 +62,8 @@ computational efficiency we build up the functor explicitly.
 ```agda
 module _ where private
   よ : Functor C (Cat[ C ^op , Sets h ])
-  よ = Curry Flip where 
-    open import 
+  よ = Curry Flip where
+    open import
       Cat.Functor.Bifunctor {C = C ^op} {D = C} {E = Sets h} Hom[-,-]
 ```
 
@@ -120,7 +120,7 @@ embedding functor is fully faithful.
 
   isom : is-iso よ₁
   isom .inv nt = nt .η _ id
-  isom .rinv nt = Nat-path λ c → funext λ g → 
+  isom .rinv nt = Nat-path λ c → funext λ g →
     happly (sym (nt .is-natural _ _ _)) _ ∙ ap (nt .η c) (idl g)
   isom .linv _ = idr _
 ```
@@ -202,9 +202,9 @@ the data to construct an object of $\int P$, and then apply the
 function we construct to the identity morphism. Naturality follows
 from the fact that $K$ is a cocone, and the components of $K$
 are natural.
-       
+
 ```agda
-      universal : P => K.coapex 
+      universal : P => K.coapex
       universal .η x px = K.ψ (elem x px) .η x id
       universal .is-natural x y f = funext λ px →
         K.ψ (elem y (P.F₁ f px)) .η y id        ≡˘⟨ (λ i → K.commutes (induce f px) i .η y id) ⟩

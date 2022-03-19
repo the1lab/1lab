@@ -39,15 +39,15 @@ raise the [h-level] of the Hom-sets.
 
 ```agda
 Monoid-hom-is-prop : ∀ {ℓ} {x y : Monoid ℓ} f → is-prop (Monoid-hom x y f)
-Monoid-hom-is-prop {y = _ , M} _ x y i = 
-  record { pres-id = M .has-is-set _ _ (x .pres-id) (y .pres-id) i 
-         ; pres-⋆ = λ a b → M .has-is-set _ _ (x .pres-⋆ a b) (y .pres-⋆ a b) i 
+Monoid-hom-is-prop {y = _ , M} _ x y i =
+  record { pres-id = M .has-is-set _ _ (x .pres-id) (y .pres-id) i
+         ; pres-⋆ = λ a b → M .has-is-set _ _ (x .pres-⋆ a b) (y .pres-⋆ a b) i
          }
 
 Monoids : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Monoids ℓ .Ob      = Monoid ℓ
 Monoids ℓ .Hom A B = Σ (Monoid-hom A B)
-Monoids ℓ .Hom-set _ (_ , M) = 
+Monoids ℓ .Hom-set _ (_ , M) =
   Σ-is-hlevel 2 (fun-is-hlevel 2 (M .has-is-set)) λ f → is-prop→is-set (Monoid-hom-is-prop f)
 ```
 
@@ -91,9 +91,9 @@ List-is-monoid aset .identity = []
 List-is-monoid aset ._⋆_ = _++_
 List-is-monoid aset .has-is-monoid .idˡ = refl
 List-is-monoid aset .has-is-monoid .idʳ = ++-idʳ _
-List-is-monoid aset .has-is-monoid .has-is-semigroup .has-is-magma .has-is-set = 
+List-is-monoid aset .has-is-monoid .has-is-semigroup .has-is-magma .has-is-set =
   ListPath.is-set→List-is-set aset
-List-is-monoid aset .has-is-monoid .has-is-semigroup .associative {x} {y} {z} = 
+List-is-monoid aset .has-is-monoid .has-is-semigroup .associative {x} {y} {z} =
   sym (++-assoc x y z)
 ```
 
@@ -155,7 +155,7 @@ fold-++ {X = X} = go where
   module M = Monoid-on (X .snd)
   go : ∀ xs ys → _
   go [] ys = sym M.idˡ
-  go (x ∷ xs) ys = 
+  go (x ∷ xs) ys =
     fold X (x ∷ xs ++ ys)            ≡⟨⟩
     x M.⋆ fold X (xs ++ ys)          ≡⟨ ap (_ M.⋆_) (go xs ys) ⟩
     x M.⋆ (fold X xs M.⋆ fold X ys)  ≡⟨ M.associative ⟩
@@ -164,9 +164,9 @@ fold-++ {X = X} = go where
 fold-natural : ∀ {ℓ} {X Y : Monoid ℓ} f → Monoid-hom X Y f
              → ∀ xs → fold Y (map f xs) ≡ f (fold X xs)
 fold-natural f mh [] = sym (mh .pres-id)
-fold-natural {X = X} {Y} f mh (x ∷ xs) = 
+fold-natural {X = X} {Y} f mh (x ∷ xs) =
   f x Y.⋆ fold Y (map f xs) ≡⟨ ap (_ Y.⋆_) (fold-natural f mh xs) ⟩
-  f x Y.⋆ f (fold X xs)     ≡⟨ sym (mh .pres-⋆ _ _) ⟩ 
+  f x Y.⋆ f (fold X xs)     ≡⟨ sym (mh .pres-⋆ _ _) ⟩
   f (x X.⋆ fold X xs)       ∎
   where
     module X = Monoid-on (X .snd)
@@ -178,7 +178,7 @@ lemma `fold-pure`{.Agda} below.
 
 ```agda
 fold-pure : ∀ {ℓ} {X : Set ℓ} (xs : List (X .fst))
-          → fold (List (X .fst) , List-is-monoid (X .snd)) (map (λ x → x ∷ []) xs) 
+          → fold (List (X .fst) , List-is-monoid (X .snd)) (map (λ x → x ∷ []) xs)
           ≡ xs
 fold-pure [] = refl
 fold-pure (x ∷ xs) = ap (x ∷_) (fold-pure xs)
@@ -187,7 +187,7 @@ Free⊣Forget : ∀ {ℓ} → Free {ℓ} ⊣ Forget
 Free⊣Forget .unit .η _ x = x ∷ []
 Free⊣Forget .unit .is-natural x y f = refl
 Free⊣Forget .counit .η M = fold M , record { pres-id = refl ; pres-⋆ = fold-++ }
-Free⊣Forget .counit .is-natural x y (f , h) = 
+Free⊣Forget .counit .is-natural x y (f , h) =
   Σ-prop-path Monoid-hom-is-prop (funext (fold-natural {X = x} {y} f h))
 Free⊣Forget .zig {A = A} =
   Σ-prop-path Monoid-hom-is-prop (funext (fold-pure {X = A}))
@@ -230,7 +230,7 @@ properties of monoids:
     from : Algebra-hom _ (comparison.₀ x) (comparison.₀ y) → Monoids ℓ .Hom x y
     from alg .fst = alg .Algebra-hom.morphism
     from alg .snd .pres-id = happly (alg .Algebra-hom.commutes) []
-    from alg .snd .pres-⋆ a b = 
+    from alg .snd .pres-⋆ a b =
       f (a x.⋆ b)                  ≡˘⟨ ap f (ap (a x.⋆_) x.idʳ) ⟩
       f (a x.⋆ (b x.⋆ x.identity)) ≡⟨ (λ i → alg .Algebra-hom.commutes i (a ∷ b ∷ [])) ⟩
       f a y.⋆ (f b y.⋆ y.identity) ≡⟨ ap (f a y.⋆_) y.idʳ ⟩
@@ -275,7 +275,7 @@ these data assembles into a monoid:
 ```agda
     monoid .snd .has-is-monoid = has-is-m where abstract
       has-is-m : is-monoid (alg .ν []) (monoid .snd ._⋆_)
-      has-is-m .has-is-semigroup = record 
+      has-is-m .has-is-semigroup = record
         { has-is-magma = record { has-is-set = aset }
         ; associative  = λ {x} {y} {z} →
           alg .ν (x ∷ alg .ν (y ∷ z ∷ []) ∷ [])                ≡˘⟨ ap (λ x → alg .ν (x ∷ _)) (happly (alg .ν-unit) x) ⟩
@@ -284,12 +284,12 @@ these data assembles into a monoid:
           alg .ν (alg .ν (x ∷ y ∷ []) ∷ alg .ν (z ∷ []) ∷ [])  ≡⟨ ap (λ x → alg .ν (_ ∷ x ∷ [])) (happly (alg .ν-unit) z) ⟩
           alg .ν (alg .ν (x ∷ y ∷ []) ∷ z ∷ [])                ∎
         }
-      has-is-m .idˡ {x} = 
+      has-is-m .idˡ {x} =
         alg .ν (alg .ν [] ∷ x ∷ [])                ≡˘⟨ ap (λ x → alg .ν (alg .ν [] ∷ x ∷ [])) (happly (alg .ν-unit) x) ⟩
         alg .ν (alg .ν [] ∷ alg .ν (x ∷ []) ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
         alg .ν (x ∷ [])                            ≡⟨ happly (alg .ν-unit) x ⟩
         x                                          ∎
-      has-is-m .idʳ {x} = 
+      has-is-m .idʳ {x} =
         alg .ν (x ∷ alg .ν [] ∷ [])                ≡˘⟨ ap (λ x → alg .ν (x ∷ _)) (happly (alg .ν-unit) x) ⟩
         alg .ν (alg .ν (x ∷ []) ∷ alg .ν [] ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
         alg .ν (x ∷ [])                            ≡⟨ happly (alg .ν-unit) x ⟩
@@ -303,14 +303,14 @@ can show by induction on the list:
 ```agda
     recover : ∀ x → fold monoid x ≡ alg .ν x
     recover []       = refl
-    recover (x ∷ xs) = 
+    recover (x ∷ xs) =
       alg .ν (x ∷ fold monoid xs ∷ [])           ≡⟨ ap₂ (λ e f → alg .ν (e ∷ f ∷ [])) (sym (happly (alg .ν-unit) x)) (recover xs) ⟩
       alg .ν (alg .ν (x ∷ []) ∷ alg .ν xs ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
       alg .ν (x ∷ xs ++ [])                      ≡⟨ ap (alg .ν) (++-idʳ _) ⟩
       alg .ν (x ∷ xs)                            ∎
 ```
 
-We must then show that the image of this monoid under 
+We must then show that the image of this monoid under
 `Comparison`{.Agda} is isomorphic to the original algebra. Fortunately,
 this follows from the `recover`{.Agda} lemma above; The isomorphism
 itself is given by the identity function in both directions, since the
@@ -323,9 +323,9 @@ recovered monoid has the same underlying type as the List-algebra!
 
     from : Algebra-hom _ ((A , aset) , alg) (comparison.₀ monoid)
     from .morphism = λ x → x
-    from .commutes = 
+    from .commutes =
       funext (λ x → sym (recover x) ∙ ap (fold monoid) (sym (map-id x)))
-  
+
     the-iso : comparison.₀ monoid R.≅ ((A , aset) , alg)
     the-iso = R.make-iso into from (Algebra-hom-path refl) (Algebra-hom-path refl)
 ```

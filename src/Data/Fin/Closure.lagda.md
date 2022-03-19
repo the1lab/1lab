@@ -56,7 +56,7 @@ Finite-successor {n} = Iso→Equiv (f , iso g rinv linv) where
   g : ⊤ ⊎ Fin n → Fin (suc n)
   g (inr x) = fsuc x
   g (inl _) = fzero
-  
+
   rinv : is-right-inverse g f
   rinv (inr _) = refl
   rinv (inl _) = refl
@@ -73,11 +73,11 @@ steps, to make the proof clearer:
 
 ```agda
 Finite-coproduct : (Fin n ⊎ Fin m) ≃ Fin (n + m)
-Finite-coproduct {zero} {m}  = 
+Finite-coproduct {zero} {m}  =
   (Fin 0 ⊎ Fin m) ≃⟨ ⊎-apˡ Finite-zero-is-initial ⟩
   (⊥ ⊎ Fin m)     ≃⟨ ⊎-zeroˡ ⟩
   Fin m           ≃∎
-Finite-coproduct {suc n} {m} = 
+Finite-coproduct {suc n} {m} =
   (Fin (suc n) ⊎ Fin m) ≃⟨ ⊎-apˡ Finite-successor ⟩
   ((⊤ ⊎ Fin n) ⊎ Fin m) ≃⟨ ⊎-assoc ⟩
   (⊤ ⊎ (Fin n ⊎ Fin m)) ≃⟨ ⊎-apʳ (Finite-coproduct {n} {m}) ⟩
@@ -104,9 +104,9 @@ In this case, the isomorphism is constructed directly:
 Finite-sum : (B : Fin n → Nat) → Σ (Fin ∘ B) ≃ Fin (sum n B)
 Finite-sum {zero} B .fst ()
 Finite-sum {zero} B .snd .is-eqv ()
-Finite-sum {suc n} B = 
-  Finite-coproduct .fst ∘ f , 
-  ∙-is-equiv (is-iso→is-equiv f-iso) (Finite-coproduct .snd) 
+Finite-sum {suc n} B =
+  Finite-coproduct .fst ∘ f ,
+  ∙-is-equiv (is-iso→is-equiv f-iso) (Finite-coproduct .snd)
     where
       rec = Finite-sum (B ∘ fsuc)
 
@@ -123,9 +123,9 @@ Finite-sum {suc n} B =
       f-iso .is-iso.rinv (inr x) = ap inr (equiv→section (rec .snd) _)
 
       f-iso .is-iso.linv (fzero , x) = refl
-      f-iso .is-iso.linv (fsuc x , y) = 
-        Σ-pathp 
-          (ap (fsuc ∘ fst) (equiv→retraction (rec .snd) _)) 
+      f-iso .is-iso.linv (fsuc x , y) =
+        Σ-pathp
+          (ap (fsuc ∘ fst) (equiv→retraction (rec .snd) _))
           (ap snd (equiv→retraction (rec .snd) _))
 ```
 
@@ -140,7 +140,7 @@ binary products:
 Finite-product : (Fin n × Fin m) ≃ Fin (n * m)
 Finite-product {n} {m} =
   (Fin n × Fin m)       ≃⟨ Finite-sum (λ _ → m) ⟩
-  Fin (sum n (λ _ → m)) ≃⟨ cast (sum≡* n m) , cast-is-equiv _ ⟩ 
+  Fin (sum n (λ _ → m)) ≃⟨ cast (sum≡* n m) , cast-is-equiv _ ⟩
   Fin (n * m)           ≃∎
   where
     sum≡* : ∀ n m → sum n (λ _ → m) ≡ n * m

@@ -49,12 +49,12 @@ the diagram below.
 We refer to this unique factoring as `Coeq-rec`{.Agda}.
 
 ```
-Coeq-rec : ∀ {ℓ} {C : Type ℓ} {f g : A → B} 
+Coeq-rec : ∀ {ℓ} {C : Type ℓ} {f g : A → B}
       → is-set C → (h : B → C)
       → (∀ x → h (f x) ≡ h (g x)) → Coeq f g → C
 Coeq-rec cset h h-coeqs (inc x) = h x
 Coeq-rec cset h h-coeqs (glue x i) = h-coeqs x i
-Coeq-rec cset h h-coeqs (squash x y p q i j) = 
+Coeq-rec cset h h-coeqs (squash x y p q i j) =
   cset (g x) (g y) (λ i → g (p i)) (λ i → g (q i)) i j
   where g = Coeq-rec cset h h-coeqs
 ```
@@ -90,10 +90,10 @@ Since C was assumed to be a family of propositions, we automatically get
 the necessary coherences for `glue`{.Agda} and `squash`{.Agda}.
 
 ```agda
-Coeq-elim-prop {f = f} {g = g} cprop cinc (glue x i) = 
+Coeq-elim-prop {f = f} {g = g} cprop cinc (glue x i) =
   is-prop→pathp (λ i → cprop (glue x i)) (cinc (f x)) (cinc (g x)) i
-Coeq-elim-prop cprop cinc (squash x y p q i j) = 
-  is-prop→squarep (λ i j → cprop (squash x y p q i j)) 
+Coeq-elim-prop cprop cinc (squash x y p q i j) =
+  is-prop→squarep (λ i j → cprop (squash x y p q i j))
     (λ i → g x) (λ i → g (p i)) (λ i → g (q i)) (λ i → g y) i j
   where g = Coeq-elim-prop cprop cinc
 ```
@@ -121,10 +121,10 @@ Coequalising map".
 ```agda
 Coeq-univ : ∀ {ℓ} {C : Type ℓ} {f g : A → B}
           → is-set C
-          → is-equiv {A = Coeq f g → C} {B = coeq-cone f g C} 
+          → is-equiv {A = Coeq f g → C} {B = coeq-cone f g C}
             (λ h → h ∘ inc , λ i z → h (glue z i))
-Coeq-univ {C = C} {f = f} {g = g} cset = 
-  is-iso→is-equiv (iso cr' (λ x → refl) islinv) 
+Coeq-univ {C = C} {f = f} {g = g} cset =
+  is-iso→is-equiv (iso cr' (λ x → refl) islinv)
   where
     open is-iso
     cr' : coeq-cone f g C → Coeq f g → C
@@ -153,8 +153,8 @@ Coeq-elim : ∀ {ℓ} {f g : A → B} {C : Coeq f g → Type ℓ}
           → ∀ x → C x
 Coeq-elim cset ci cg (inc x) = ci x
 Coeq-elim cset ci cg (glue x i) = cg x i
-Coeq-elim cset ci cg (squash x y p q i j) = 
-  is-set→squarep (λ i j → cset (squash x y p q i j)) 
+Coeq-elim cset ci cg (squash x y p q i j) =
+  is-set→squarep (λ i j → cset (squash x y p q i j))
     (λ i → g x) (λ i → g (p i)) (λ i → g (q i)) (λ i → g y) i j
   where g = Coeq-elim cset ci cg
 ```
@@ -166,13 +166,13 @@ very enlightening --- you can mouse over these links to see their types:
 
 <!--
 ```agda
-Coeq-elim-prop₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} 
+Coeq-elim-prop₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'}
                    {C : Coeq f g → Coeq f' g' → Type ℓ}
                → (∀ x y → is-prop (C x y))
                → (∀ x y → C (inc x) (inc y))
                → ∀ x y → C x y
-Coeq-elim-prop₂ prop f = 
-  Coeq-elim-prop (λ x → Π-is-hlevel 1 λ _ → prop _ _) 
+Coeq-elim-prop₂ prop f =
+  Coeq-elim-prop (λ x → Π-is-hlevel 1 λ _ → prop _ _)
     λ x → Coeq-elim-prop (prop (inc x)) (f x)
 
 Coeq-elim-prop₃ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {f'' g'' : A'' → B''}
@@ -180,11 +180,11 @@ Coeq-elim-prop₃ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {f'' g'' : A''
                → (∀ x y z → is-prop (C x y z))
                → (∀ x y z → C (inc x) (inc y) (inc z))
                → ∀ x y z → C x y z
-Coeq-elim-prop₃ cprop f = 
-  Coeq-elim-prop₂ (λ x y → Π-is-hlevel 1 λ _ → cprop _ _ _) 
+Coeq-elim-prop₃ cprop f =
+  Coeq-elim-prop₂ (λ x y → Π-is-hlevel 1 λ _ → cprop _ _ _)
     λ x y → Coeq-elim-prop (λ y → cprop _ _ _) (f x y)
 
-Coeq-elim₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} 
+Coeq-elim₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'}
            → {C : Coeq f g → Coeq f' g' → Type ℓ}
            → (∀ x y → is-set (C x y))
            → (ci : ∀ x y → C (inc x) (inc y))
@@ -192,22 +192,22 @@ Coeq-elim₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'}
            → (∀ a x → PathP (λ i → C (inc a) (glue x i)) (ci a (f' x)) (ci a (g' x)))
            → ∀ x y → C x y
 Coeq-elim₂ {f = f} {g = g} {C = C} cset ci r-r l-r =
-  Coeq-elim (λ x → Π-is-hlevel 2 λ _ → cset _ _) 
-    (λ x → Coeq-elim (λ _ → cset _ _) (ci x) (l-r x)) 
-    λ x → funext-dep λ {x₀} {x₁} → 
-      Coeq-elim-prop₂ 
-        {C = λ x₀ x₁ → (p : x₀ ≡ x₁) 
-           → PathP (λ i → C (glue x i) (p i)) 
-                   (Coeq-elim (cset _) _ _ x₀) 
-                   (Coeq-elim (cset _) _ _ x₁) } 
+  Coeq-elim (λ x → Π-is-hlevel 2 λ _ → cset _ _)
+    (λ x → Coeq-elim (λ _ → cset _ _) (ci x) (l-r x))
+    λ x → funext-dep λ {x₀} {x₁} →
+      Coeq-elim-prop₂
+        {C = λ x₀ x₁ → (p : x₀ ≡ x₁)
+           → PathP (λ i → C (glue x i) (p i))
+                   (Coeq-elim (cset _) _ _ x₀)
+                   (Coeq-elim (cset _) _ _ x₁) }
 
-        (λ _ _ → Π-is-hlevel 1 λ _ → Path-p-is-hlevel' 1 (cset _ _) _ _) 
+        (λ _ _ → Π-is-hlevel 1 λ _ → Path-p-is-hlevel' 1 (cset _ _) _ _)
 
-        (λ x₀ _ p → 
-          J (λ y p → PathP (λ i → C (glue x i) (p i)) 
-                      (Coeq-elim (cset _) (ci (f x)) (l-r (f x)) (inc x₀)) 
-                      (Coeq-elim (cset _) (ci (g x)) (l-r (g x)) y)) 
-            (r-r x₀ x) p) 
+        (λ x₀ _ p →
+          J (λ y p → PathP (λ i → C (glue x i) (p i))
+                      (Coeq-elim (cset _) (ci (f x)) (l-r (f x)) (inc x₀))
+                      (Coeq-elim (cset _) (ci (g x)) (l-r (g x)) y))
+            (r-r x₀ x) p)
         x₀ x₁
 
 Coeq-rec₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {C : Type ℓ}
@@ -218,36 +218,36 @@ Coeq-rec₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {C : Type ℓ}
           → Coeq f g → Coeq f' g' → C
 Coeq-rec₂ cset ci r1 r2 (inc x) (inc y) = ci x y
 Coeq-rec₂ cset ci r1 r2 (inc x) (glue y i) = r2 x y i
-Coeq-rec₂ cset ci r1 r2 (inc x) (squash y z p q i j) = cset 
-  (Coeq-rec₂ cset ci r1 r2 (inc x) y) 
-  (Coeq-rec₂ cset ci r1 r2 (inc x) z) 
-  (λ j → Coeq-rec₂ cset ci r1 r2 (inc x) (p j)) 
-  (λ j → Coeq-rec₂ cset ci r1 r2 (inc x) (q j)) 
+Coeq-rec₂ cset ci r1 r2 (inc x) (squash y z p q i j) = cset
+  (Coeq-rec₂ cset ci r1 r2 (inc x) y)
+  (Coeq-rec₂ cset ci r1 r2 (inc x) z)
+  (λ j → Coeq-rec₂ cset ci r1 r2 (inc x) (p j))
+  (λ j → Coeq-rec₂ cset ci r1 r2 (inc x) (q j))
   i j
 
 Coeq-rec₂ cset ci r1 r2 (glue x i) (inc x₁) = r1 x₁ x i
-Coeq-rec₂ {f = f} {g} {f'} {g'} cset ci r1 r2 (glue x i) (glue y j) = 
+Coeq-rec₂ {f = f} {g} {f'} {g'} cset ci r1 r2 (glue x i) (glue y j) =
   is-set→squarep (λ i j → cset)
-    (λ j → r1 (f' y) x j) 
-    (λ j → r2 (f x) y j) 
-    (λ j → r2 (g x) y j) 
-    (λ j → r1 (g' y) x j) 
+    (λ j → r1 (f' y) x j)
+    (λ j → r2 (f x) y j)
+    (λ j → r2 (g x) y j)
+    (λ j → r1 (g' y) x j)
     i j
 
-Coeq-rec₂ {f = f} {g} {f'} {g'} cset ci r1 r2 (glue x i) (squash y z p q j k) = 
-  is-hlevel-suc 2 cset 
-    (map (glue x i) y) (map (glue x i) z) 
-    (λ j → map (glue x i) (p j)) 
-    (λ j → map (glue x i) (q j)) 
+Coeq-rec₂ {f = f} {g} {f'} {g'} cset ci r1 r2 (glue x i) (squash y z p q j k) =
+  is-hlevel-suc 2 cset
+    (map (glue x i) y) (map (glue x i) z)
+    (λ j → map (glue x i) (p j))
+    (λ j → map (glue x i) (q j))
     (λ i j → exp i j) (λ i j → exp i j)
-    i j k 
+    i j k
   where
     map = Coeq-rec₂ cset ci r1 r2
     exp : I → I → _
-    exp l m = cset 
-      (map (glue x i) y) (map (glue x i) z) 
-      (λ j → map (glue x i) (p j)) 
-      (λ j → map (glue x i) (q j)) 
+    exp l m = cset
+      (map (glue x i) y) (map (glue x i) z)
+      (λ j → map (glue x i) (p j))
+      (λ j → map (glue x i) (q j))
       l m
 
 Coeq-rec₂ cset ci r1 r2 (squash x y p q i j) z =
@@ -269,7 +269,7 @@ The **quotient** $A/R$.
 ```agda
 private
   tot : ∀ {ℓ} → (A → A → Type ℓ) → Type (level-of A ⊔ ℓ)
-  tot {A = A} R = Σ[ x ∈ A ] Σ[ y ∈ A ] R x y 
+  tot {A = A} R = Σ[ x ∈ A ] Σ[ y ∈ A ] R x y
 
   /-left : ∀ {ℓ} {R : A → A → Type ℓ} → tot R → A
   /-left (x , _ , _) = x
@@ -279,7 +279,7 @@ private
 ```
 <!--
 ```agda
-private variable 
+private variable
   R S T : A → A → Type ℓ
 ```
 -->
@@ -291,7 +291,7 @@ projections from the total space of $R$:
 _/_ : ∀ {ℓ ℓ'} (A : Type ℓ) (R : A → A → Type ℓ') → Type (ℓ ⊔ ℓ')
 A / R = Coeq (/-left {R = R}) /-right
 
-quot : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {x y : A} → R x y 
+quot : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {x y : A} → R x y
     → Path (A / R) (inc x) (inc y)
 quot r = glue (_ , _ , r)
 ```
@@ -334,11 +334,11 @@ establish effectivity of the quotient.
 ```agda
   private
     Code : A → A / R → Prop ℓ'
-    Code x = Quot-elim 
-      (λ x → n-Type-is-hlevel 1) 
+    Code x = Quot-elim
+      (λ x → n-Type-is-hlevel 1)
       (λ y → {- 1 -} R x y , Rp x y)
-      λ y z r → 
-        Σ-prop-path (λ _ → is-prop-is-prop) 
+      λ y z r →
+        Σ-prop-path (λ _ → is-prop-is-prop)
           (ua {- 2 -} (prop-ext (Rp _ _) (Rp _ _) (λ z → rt z r) λ z → rt z (rs r)))
 ```
 
@@ -355,8 +355,8 @@ assumption that $R$ is an equivalence relation (`{- 2 -}`{.Agda}).
     encode x y p = subst (λ y → Code x y .fst) p rr
 
     decode : ∀ x y (p : Code x y .fst) → inc x ≡ y
-    decode x y p = 
-      Coeq-elim-prop {C = λ y → (p : Code x y .fst) → inc x ≡ y} 
+    decode x y p =
+      Coeq-elim-prop {C = λ y → (p : Code x y .fst) → inc x ≡ y}
         (λ _ → Π-is-hlevel 1 λ _ → squash _ _) (λ y r → quot r) y p
 ```
 
@@ -369,20 +369,20 @@ proof that equivalence relations are `effective`{.Agda}.
 
 ```agda
   effective : ∀ {x y : A} → is-equiv (quot {R = R})
-  effective {x = x} {y} = 
-    prop-ext (Rp x y) (squash _ _) (decode x (inc y)) (encode x (inc y)) .snd 
+  effective {x = x} {y} =
+    prop-ext (Rp x y) (squash _ _) (decode x (inc y)) (encode x (inc y)) .snd
 ```
 
 <!--
 ```agda
-Quot-op₂ : ∀ {C : Type ℓ} {T : C → C → Type ℓ'} 
+Quot-op₂ : ∀ {C : Type ℓ} {T : C → C → Type ℓ'}
          → (∀ x → R x x) → (∀ y → S y y)
          → (_⋆_ : A → B → C)
          → ((a b : A) (x y : B) → R a b → S x y → T (a ⋆ x) (b ⋆ y))
          → A / R → B / S → C / T
-Quot-op₂ Rr Sr op resp = 
-  Coeq-rec₂ squash (λ x y → inc (op x y)) 
-    (λ { z (x , y , r) → quot (resp x y z z r (Sr z)) }) 
+Quot-op₂ Rr Sr op resp =
+  Coeq-rec₂ squash (λ x y → inc (op x y))
+    (λ { z (x , y , r) → quot (resp x y z z r (Sr z)) })
     λ { z (x , y , r) → quot (resp z z x y (Rr z) r) }
 ```
 -->

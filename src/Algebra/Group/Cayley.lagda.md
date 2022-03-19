@@ -57,7 +57,7 @@ subgroup of $\mathrm{Sym}(G)$ (the image of `Cayley`{.Agda}).
 Cayley-injective : injective Cayley
 Cayley-injective {x} {y} eqvs-equal =
   x                   ≡⟨ sym idʳ ⟩
-  x ⋆ unit            ≡⟨⟩ 
+  x ⋆ unit            ≡⟨⟩
   Cayley x .fst unit  ≡⟨ happly (ap fst eqvs-equal) unit ⟩
   Cayley y .fst unit  ≡⟨⟩
   y ⋆ unit            ≡⟨ idʳ ⟩

@@ -35,14 +35,14 @@ $P$:
 ~~~
 
 In the sense that (univalent) categories generalise posets, the product
-of $A$ and $B$ --- if it exists --- generalises the binary meet 
+of $A$ and $B$ --- if it exists --- generalises the binary meet
 $A \wedge B$. Since products are [unique](#uniqueness) when they exist,
 we may safely denote any product of $A$ and $B$ by $A \times B$.
 
 For a diagram $A \ot A \times B \to B$ to be a product diagram, it must
 be able to cough up an arrow $Q \to P$ given the data of another span $A
 \ot Q \to B$, which must not only fit into the diagram above but be
-unique among the arrows that do so. 
+unique among the arrows that do so.
 
 This factoring is called the **pairing** of the arrows $f : Q \to A$ and
 $g : Q \to B$, since in the special case where $Q$ is the [terminal
@@ -146,16 +146,16 @@ the projections.
 
 ```agda
     p1→p2→p1 : p1→p2 ∘ p2→p1 ≡ id
-    p1→p2→p1 = 
-      p2.unique₂ _ 
-        (assoc _ _ _ ·· ap (_∘ _) p2.π₁∘factor ·· p1.π₁∘factor) 
-        (assoc _ _ _ ·· ap (_∘ _) p2.π₂∘factor ·· p1.π₂∘factor) 
+    p1→p2→p1 =
+      p2.unique₂ _
+        (assoc _ _ _ ·· ap (_∘ _) p2.π₁∘factor ·· p1.π₁∘factor)
+        (assoc _ _ _ ·· ap (_∘ _) p2.π₂∘factor ·· p1.π₂∘factor)
         id (idr _) (idr _)
 
     p2→p1→p2 : p2→p1 ∘ p1→p2 ≡ id
-    p2→p1→p2 = 
-      p1.unique₂ _ 
-        (assoc _ _ _ ·· ap (_∘ _) p1.π₁∘factor ·· p2.π₁∘factor) 
-        (assoc _ _ _ ·· ap (_∘ _) p1.π₂∘factor ·· p2.π₂∘factor) 
+    p2→p1→p2 =
+      p1.unique₂ _
+        (assoc _ _ _ ·· ap (_∘ _) p1.π₁∘factor ·· p2.π₁∘factor)
+        (assoc _ _ _ ·· ap (_∘ _) p1.π₂∘factor ·· p2.π₂∘factor)
         id (idr _) (idr _)
 ```

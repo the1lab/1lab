@@ -271,7 +271,7 @@ These correspond to the following two squares:
 
 Since iterated paths are used _a lot_ in homotopy type theory, we
 introduce a shorthand for 2D non-dependent paths. A `Square`{.Agda} in a
-type is exactly what it says on the tin: a square. 
+type is exactly what it says on the tin: a square.
 
 ```
 Square : ∀ {ℓ} {A : Type ℓ} {a00 a01 a10 a11 : A}
@@ -433,7 +433,7 @@ transport⁻-filler-ext p i x = transp (λ j → p (i ∧ ~ j)) (~ i) x
 
 transport⁻transport : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B) (a : A)
                     → transport (sym p) (transport p a) ≡ a
-transport⁻transport p a i = 
+transport⁻transport p a i =
   transport⁻-filler-ext p (~ i) (transport-filler-ext p (~ i) a)
 ```
 </details>
@@ -653,7 +653,7 @@ module _ {A B C : Type} {f : A → B} {g : B → C} where
           → sym (ap f p) ≡ ap f (sym p)
   ap-sym = refl
 
-  ap-refl : {x : A} → ap f (λ i → x) ≡ (λ i → f x) 
+  ap-refl : {x : A} → ap f (λ i → x) ≡ (λ i → f x)
   ap-refl = refl
 ```
 
@@ -1185,7 +1185,7 @@ Note that the proof of this involves filling a cube in a context that
                      ; (k = i1) → r l
                      })
             (inS (q k)) j
-    
+
     square : α ≡ β
     square i j = cube i i1 j
 ```
@@ -1732,11 +1732,11 @@ _▷_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ : A i0} {a₁ a₁' : A i1}
   hcomp (λ j → λ {(i = i0) → p i0; (i = i1) → q j}) (p i)
 
 Square≡·· : ∀ {ℓ} {A : Type ℓ}
-          → {w x y z : A} 
+          → {w x y z : A}
           → {p : x ≡ w} {q : x ≡ y} {s : w ≡ z} {r : y ≡ z}
           → Square p q s r ≡ (sym p ·· q ·· r ≡ s)
-Square≡·· {p = p} {q} {s} {r} k = 
-  PathP (λ i → p (i ∨ k) ≡ r (i ∨ k)) 
+Square≡·· {p = p} {q} {s} {r} k =
+  PathP (λ i → p (i ∨ k) ≡ r (i ∨ k))
     (··-filler (sym p) q r k) s
 
 ≡⟨⟩⟨⟩-syntax : ∀ {ℓ} {A : Type ℓ} (x y : A) {w z : A} → x ≡ y → y ≡ z → z ≡ w → x ≡ w

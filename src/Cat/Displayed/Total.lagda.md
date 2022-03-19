@@ -60,7 +60,7 @@ total-hom-is-set X Y =
     Total-hom′ = Σ[ hom ∈ Hom (X .fst) (Y .fst) ]
                 Hom[ hom ] (X .snd) (Y .snd)
 
-    Total-hom-refold : Total-hom′ → Total-hom X Y 
+    Total-hom-refold : Total-hom′ → Total-hom X Y
     Total-hom-refold (h , p) = total-hom h p
 
     Total-hom-unfold : Total-hom X Y → Total-hom′

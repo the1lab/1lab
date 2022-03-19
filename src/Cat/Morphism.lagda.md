@@ -66,14 +66,14 @@ record Inverses (f : Hom a b) (g : Hom b a) : Type h where
   field
     invˡ : f ∘ g ≡ id
     invʳ : g ∘ f ≡ id
-  
+
 open Inverses
 
 record is-invertible (f : Hom a b) : Type (o ⊔ h) where
   field
     inv : Hom b a
     inverses : Inverses f inv
-  
+
   open Inverses inverses public
 
   op : is-invertible inv
@@ -86,7 +86,7 @@ record _≅_ (a b : Ob) : Type (o ⊔ h) where
     to       : Hom a b
     from     : Hom b a
     inverses : Inverses to from
-  
+
   open Inverses inverses public
 
 open _≅_ public
@@ -107,11 +107,11 @@ is-invertible-is-prop {a = a} {b = b} {f = f} g h = p where
   module h = is-invertible h
 
   g≡h : g.inv ≡ h.inv
-  g≡h = 
+  g≡h =
     g.inv             ≡⟨ sym (idr _) ∙ ap₂ _∘_ refl (sym h.invˡ) ⟩
-    g.inv ∘ f ∘ h.inv ≡⟨ assoc _ _ _ ·· ap₂ _∘_ g.invʳ refl ·· idl _ ⟩ 
+    g.inv ∘ f ∘ h.inv ≡⟨ assoc _ _ _ ·· ap₂ _∘_ g.invʳ refl ·· idl _ ⟩
     h.inv             ∎
-  
+
   p : g ≡ h
   p i .is-invertible.inv = g≡h i
   p i .is-invertible.inverses =
@@ -129,11 +129,11 @@ make-iso f g p q ._≅_.inverses .Inverses.invˡ = p
 make-iso f g p q ._≅_.inverses .Inverses.invʳ = q
 
 invertible→iso : (f : Hom a b) → is-invertible f → a ≅ b
-invertible→iso f x = 
-  record 
-    { to       = f 
-    ; from     = x .is-invertible.inv 
-    ; inverses = x .is-invertible.inverses 
+invertible→iso f x =
+  record
+    { to       = f
+    ; from     = x .is-invertible.inv
+    ; inverses = x .is-invertible.inverses
     }
 
 ≅-is-set : is-set (a ≅ b)
@@ -157,8 +157,8 @@ invertible→iso f x =
         → PathP (λ i → p i ≅ q i) f g
 ≅-pathp p q r s i .to = r i
 ≅-pathp p q r s i .from = s i
-≅-pathp p q {f} {g} r s i .inverses = 
-  is-prop→pathp (λ j → Inverses-are-prop {f = r j} {g = s j}) 
+≅-pathp p q {f} {g} r s i .inverses =
+  is-prop→pathp (λ j → Inverses-are-prop {f = r j} {g = s j})
     (f .inverses) (g .inverses) i
 ```
 -->
@@ -180,7 +180,7 @@ Inverses-∘ {f = f} {f⁻¹} {g} {g⁻¹} finv ginv = record { invˡ = l ; inv�
         g ∘ id ∘ g⁻¹        ≡⟨ solve C ⟩
         g ∘ g⁻¹             ≡⟨ ginv.invˡ ⟩
         id                  ∎
-    
+
     r : (f⁻¹ ∘ g⁻¹) ∘ g ∘ f ≡ id
     r = (f⁻¹ ∘ g⁻¹) ∘ g ∘ f ≡⟨ solve C ⟩
         f⁻¹ ∘ (g⁻¹ ∘ g) ∘ f ≡⟨ (λ i → f⁻¹ ∘ ginv.invʳ i ∘ f) ⟩

@@ -50,7 +50,7 @@ _∘nt_ {C = C} {D = D} {F} {G} {H} f g = nat where
     (f .η y D.∘ G.₁ h) D.∘ (g .η x)  ≡⟨ ap (λ e → e D.∘ (g .η x)) (f .is-natural _ _ _) ⟩
     (H.₁ h D.∘ f .η x) D.∘ (g .η x)  ≡⟨ sym (D.assoc _ _ _) ⟩
     H.₁ h D.∘  f .η _ D.∘ g .η  _    ∎
-    where 
+    where
       module C = Precategory C
       module F = Functor F
       module G = Functor G
@@ -97,7 +97,7 @@ can identify the functors $F \equiv G$.
 ```agda
 Functor-path : {F G : Functor C D}
          → (p0 : ∀ x → F₀ F x ≡ F₀ G x)
-         → (p1 : ∀ {x y} (f : C .Hom x y) 
+         → (p1 : ∀ {x y} (f : C .Hom x y)
                → PathP (λ i → D .Hom (p0 x i) (p0 y i)) (F₁ F f) (F₁ G f))
          → F ≡ G
 Functor-path p0 p1 i .F₀ x = p0 x i
@@ -106,10 +106,10 @@ Functor-path p0 p1 i .F₁ f = p1 f i
 
 <!--
 ```agda
-Functor-path {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-id = 
-  is-prop→pathp (λ j → D .Hom-set _ _ (p1 (C .id) j) (D .id)) 
+Functor-path {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-id =
+  is-prop→pathp (λ j → D .Hom-set _ _ (p1 (C .id) j) (D .id))
     (F-id F) (F-id G) i
-Functor-path {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-∘ f g = 
+Functor-path {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-∘ f g =
   is-prop→pathp (λ i → D .Hom-set _ _ (p1 (C ._∘_ f g) i) (D ._∘_ (p1 f i) (p1 g i)))
     (F-∘ F f g) (F-∘ G f g) i
 ```
@@ -136,7 +136,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
 ```agda
   Nat-iso→Iso : F [C,D].≅ G → ∀ x → F₀ F x D.≅ F₀ G x
   Nat-iso→Iso natiso x =
-    D.make-iso (to .η x) (from .η x) 
+    D.make-iso (to .η x) (from .η x)
       (λ i → invˡ i .η x) (λ i → invʳ i .η x)
     where open [C,D]._≅_ natiso
 ```
@@ -165,7 +165,7 @@ module _ {C : Precategory o₁ h₁} {D : Precategory o₂ h₂} where
 The hard part is showing that, given some other functor $G : C \to D$
 with a natural isomorphism $F \cong G$, we can give a continuous
 deformation $p : G \equiv F$, such that, over this $p$, the given
-isomorphism looks like the identity. 
+isomorphism looks like the identity.
 
 ```agda
   Functor-is-category DisCat F .paths (G , F≅G) = Σ-pathp F≡G id≡F≅G where
@@ -177,15 +177,15 @@ category, `path→iso`{.Agda} is an equivalence; The lemmas we need then
 follow from `equivalences having sections`{.Agda ident=equiv→section}.
 
 ```agda
-    ptoi-to 
-      : ∀ x → path→iso (iso→path DisCat (Nat-iso→Iso F≅G _)) .D._≅_.to 
+    ptoi-to
+      : ∀ x → path→iso (iso→path DisCat (Nat-iso→Iso F≅G _)) .D._≅_.to
             ≡ F≅G .to .η x
-    ptoi-to x = ap (λ e → e .D._≅_.to) 
+    ptoi-to x = ap (λ e → e .D._≅_.to)
       (equiv→section (path→iso-is-equiv DisCat) _)
 
-    ptoi-from : ∀ x → path→iso (iso→path DisCat (Nat-iso→Iso F≅G _)) .D._≅_.from  
+    ptoi-from : ∀ x → path→iso (iso→path DisCat (Nat-iso→Iso F≅G _)) .D._≅_.from
               ≡ F≅G .from .η x
-    ptoi-from x = ap (λ e → e .D._≅_.from) 
+    ptoi-from x = ap (λ e → e .D._≅_.from)
       (equiv→section (path→iso-is-equiv DisCat) _)
 ```
 
@@ -194,7 +194,7 @@ homotopy between the object parts of $F$ and $G$:
 
 ```agda
     F₀≡G₀ : ∀ x → F₀ F x ≡ F₀ G x
-    F₀≡G₀ x = iso→path DisCat (Nat-iso→Iso F≅G x) 
+    F₀≡G₀ x = iso→path DisCat (Nat-iso→Iso F≅G x)
 ```
 
 A slightly annoying calculation tells us that pre/post composition with
@@ -204,7 +204,7 @@ so that the two halves of the isomorphism annihilate.
 
 ```agda
     abstract
-      F₁≡G₁ : ∀ {x y} {f : C .Hom x y} 
+      F₁≡G₁ : ∀ {x y} {f : C .Hom x y}
             → PathP (λ i → D.Hom (F₀≡G₀ x i) (F₀≡G₀ y i)) (F₁ F f) (F₁ G f)
       F₁≡G₁ {x = x} {y} {f} = Hom-pathp (
         _ D.∘ F .F₁ f D.∘ _                           ≡⟨ (λ i → ptoi-to _ i D.∘ F .F₁ f D.∘ ptoi-from _ i) ⟩
@@ -227,16 +227,16 @@ show is that $\eta{}_x \circ \mathrm{id} \circ \mathrm{id} = f$.
 
 ```agda
     id≡F≅G : PathP (λ i → F ≅ F≡G i) id-iso F≅G
-    id≡F≅G = ≅-pathp refl F≡G 
+    id≡F≅G = ≅-pathp refl F≡G
       (Nat-pathp refl F≡G
-        λ x → Hom-pathp 
+        λ x → Hom-pathp
           (  ap₂ D._∘_ (ptoi-to _) refl 
-          ·· ap₂ D._∘_ refl (ap₂ D._∘_ refl (transport-refl _) ∙ D.idl _) 
-          ·· D.idr _)) 
-      (Nat-pathp F≡G refl 
-        λ x → Hom-pathp 
-          (  ap₂ D._∘_ (transport-refl _) (D.idl _) 
-          ·· D.idl _ 
+          ·· ap₂ D._∘_ refl (ap₂ D._∘_ refl (transport-refl _) ∙ D.idl _)
+          ·· D.idr _))
+      (Nat-pathp F≡G refl
+        λ x → Hom-pathp
+          (  ap₂ D._∘_ (transport-refl _) (D.idl _)
+          ·· D.idl _
           ·· ptoi-from _))
 ```
 
@@ -264,28 +264,28 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} {F G : Functor C D} w
 
     eps : G => F
     eps .η x = invs x .inv
-    eps .is-natural x y f = 
+    eps .is-natural x y f =
       invs y .inv D.∘ G.₁ f                             ≡⟨ ap₂ D._∘_ refl (sym (D.idr _) ∙ ap (G.₁ f D.∘_) (sym (invs x .invˡ))) ⟩
       invs y .inv D.∘ G.₁ f D.∘ eta.η x D.∘ invs x .inv ≡⟨ ap₂ D._∘_ refl (D.extendl (sym (eta.is-natural _ _ _))) ⟩
       invs y .inv D.∘ eta.η y D.∘ F.₁ f D.∘ invs x .inv ≡⟨ D.cancell (invs y .invʳ) ⟩
       F.₁ f D.∘ invs x .inv ∎
 
     are-invs : [C,D].is-invertible eta
-    are-invs = 
-      record 
-        { inv      = eps 
-        ; inverses = 
-          record 
+    are-invs =
+      record
+        { inv      = eps
+        ; inverses =
+          record
             { invˡ = Nat-path λ x → invs x .invˡ
             ; invʳ = Nat-path λ x → invs x .invʳ
-            } 
+            }
         }
 ```
 
 # Currying
 
-There is an equivalence between the spaces of bifunctors 
-$\ca{C} \times_\cat \ca{D} \to E$ and the space of functors 
+There is an equivalence between the spaces of bifunctors
+$\ca{C} \times_\cat \ca{D} \to E$ and the space of functors
 $\ca{C} \to [\ca{D},E]$. We refer to the image of a functor under this
 equivalence as its _exponential transpose_, and we refer to the map in
 the "forwards" direction (as in the text above) as _currying_:
@@ -297,11 +297,11 @@ Curry {C = C} {D = D} {E = E} F = curried where
 
   curried : Functor _ _
   curried .F₀ = Right
-  curried .F₁ x→y = NT (λ f → first x→y) λ x y f → 
-       sym (F-∘ F _ _) 
-    ·· ap (F₁ F) (ap₂ _,_ (C .idr _ ∙ sym (C .idl _)) (D .idl _ ∙ sym (D .idr _))) 
+  curried .F₁ x→y = NT (λ f → first x→y) λ x y f →
+       sym (F-∘ F _ _)
+    ·· ap (F₁ F) (ap₂ _,_ (C .idr _ ∙ sym (C .idl _)) (D .idl _ ∙ sym (D .idr _)))
     ·· F-∘ F _ _
   curried .F-id = Nat-path λ x → F-id F
-  curried .F-∘ f g = Nat-path λ x → 
+  curried .F-∘ f g = Nat-path λ x →
     ap (λ x → F₁ F (_ , x)) (sym (D .idl _)) ∙ F-∘ F _ _
 ```

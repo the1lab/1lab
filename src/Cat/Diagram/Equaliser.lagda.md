@@ -28,7 +28,7 @@ record is-equaliser {E} (f g : Hom A B) (equ : Hom E A) : Type (ℓ ⊔ ℓ′) 
     equal     : f ∘ equ ≡ g ∘ equ
     limiting  : ∀ {F} {e′ : Hom F A} (p : f ∘ e′ ≡ g ∘ e′) → Hom F E
     universal : ∀ {F} {e′ : Hom F A} {p : f ∘ e′ ≡ g ∘ e′} → equ ∘ limiting p ≡ e′
-    unique 
+    unique
       : ∀ {F} {e′ : Hom F A} {p : f ∘ e′ ≡ g ∘ e′} {lim' : Hom F E}
       → e′ ≡ equ ∘ lim'
       → lim' ≡ limiting p
@@ -63,7 +63,7 @@ record Equaliser (f g : Hom A B) : Type (ℓ ⊔ ℓ′) where
     equ     : Hom apex A
     has-is-eq : is-equaliser f g equ
 
-  open is-equaliser has-is-eq public   
+  open is-equaliser has-is-eq public
 ```
 
 ## Equalisers are monic
@@ -74,11 +74,11 @@ always [monic]:
 [monic]: Cat.Morphism.html#monos
 
 ```agda
-is-equaliser→is-monic 
+is-equaliser→is-monic
   : ∀ {E} (equ : Hom E A)
   → is-equaliser f g equ
   → is-monic equ
-is-equaliser→is-monic equ equalises g h p = 
+is-equaliser→is-monic equ equalises g h p =
   g                ≡⟨ unique (sym p) ⟩
   limiting equal-∘ ≡˘⟨ unique refl ⟩
   h ∎

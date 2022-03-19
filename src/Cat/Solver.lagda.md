@@ -41,7 +41,7 @@ module _ (Cat : Precategory o h) where
     `id  : Expr A A
     _`∘_ : Expr B C → Expr A B → Expr A C
     _↑   : Hom A B → Expr A B
-  
+
   infixr 40 _`∘_
   infix 50 _↑
 ```
@@ -109,7 +109,7 @@ replace "precomposition with `eval ... id`" with an application of
 ```agda
       lemma : (e : Expr B C) (f : Hom A B) → eval e id ∘ f ≡ eval e f
       lemma `id f = idl _
-      lemma (x ↑) f = ap (_∘ f) (idr x) 
+      lemma (x ↑) f = ap (_∘ f) (idr x)
       lemma (f `∘ g) h =
         eval f (eval g id) ∘ h      ≡⟨ ap (_∘ h) (sym (lemma f (eval g id))) ⟩
         (eval f id ∘ eval g id) ∘ h ≡⟨ sym (assoc _ _ _) ⟩
@@ -202,7 +202,7 @@ looking at a composition.
 
     build-expr x = con (quote _↑) (x v∷ [])
 
-    build-∘ (x v∷ y v∷ []) = con (quote _`∘_) 
+    build-∘ (x v∷ y v∷ []) = con (quote _`∘_)
       (build-expr x v∷ build-expr y v∷ [])
     build-∘ (_ ∷ xs) = build-∘ xs
     build-∘ _ = unknown
@@ -227,7 +227,7 @@ solveGeneric find mkcat category hole = do
 
   let rep = build-expr names
 
-  unify hole (def (quote associate) 
+  unify hole (def (quote associate)
     (mkcat category v∷ rep lhs v∷ rep rhs v∷ def (quote refl) [] v∷ []))
 
 macro
@@ -247,7 +247,7 @@ module _ (C : Precategory o h) where private
     A B : C.Ob
     a b c d : C.Hom A B
 
-  test : a C.∘ (b C.∘ (c C.∘ C.id) C.∘ C.id C.∘ (d C.∘ C.id)) 
+  test : a C.∘ (b C.∘ (c C.∘ C.id) C.∘ C.id C.∘ (d C.∘ C.id))
        ≡ a C.∘ b C.∘ c C.∘ d
   test = solve C
 ```

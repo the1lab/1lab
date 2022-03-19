@@ -8,7 +8,7 @@ open import 1Lab.Type
 module 1Lab.HIT.Torus where
 ```
 
-# The Torus 
+# The Torus
 
 In classical topology, the two-dimensional torus $T^2$ may be defined
 as the product of circles, i.e., $T^2$ may be defined as $S^1 \times
@@ -24,7 +24,7 @@ left and right edge attachd to the other.
 
 ```agda
 data T² : Type where
-  base : T² 
+  base : T²
   loopA : base ≡ base
   loopB : base ≡ base
   square : Square loopA loopB loopB loopA
@@ -38,28 +38,28 @@ open is-iso
 T²≃S¹×S¹ : T² ≡ ( S¹ × S¹ )
 T²≃S¹×S¹ = ua (T²→S¹×S¹ , is-iso→is-equiv iso-pf) where
   T²→S¹×S¹ : T² → S¹ × S¹
-  T²→S¹×S¹ base = base , base 
-  T²→S¹×S¹ (loopA i) = loop i , base 
-  T²→S¹×S¹ (loopB j) = base , loop j 
-  T²→S¹×S¹ (square i j) = loop i , loop j 
+  T²→S¹×S¹ base = base , base
+  T²→S¹×S¹ (loopA i) = loop i , base
+  T²→S¹×S¹ (loopB j) = base , loop j
+  T²→S¹×S¹ (square i j) = loop i , loop j
 
   S¹×S¹→T² : S¹ × S¹ → T²
   S¹×S¹→T² (base , base) =  base
-  S¹×S¹→T² (base , loop j) = loopB j 
-  S¹×S¹→T² (loop i , base) = loopA i 
+  S¹×S¹→T² (base , loop j) = loopB j
+  S¹×S¹→T² (loop i , base) = loopA i
   S¹×S¹→T² (loop i , loop j) = square i j
 
-  iso-pf : is-iso T²→S¹×S¹  
-  iso-pf .inv = S¹×S¹→T² 
-  iso-pf .rinv (base , base) = refl 
-  iso-pf .rinv (base , loop j) = refl 
-  iso-pf .rinv (loop i , base) = refl 
-  iso-pf .rinv (loop i , loop j) = refl 
+  iso-pf : is-iso T²→S¹×S¹
+  iso-pf .inv = S¹×S¹→T²
+  iso-pf .rinv (base , base) = refl
+  iso-pf .rinv (base , loop j) = refl
+  iso-pf .rinv (loop i , base) = refl
+  iso-pf .rinv (loop i , loop j) = refl
 
-  iso-pf .linv base = refl 
+  iso-pf .linv base = refl
   iso-pf .linv (loopA i) = refl
-  iso-pf .linv (loopB j) = refl 
-  iso-pf .linv (square i j) = refl 
+  iso-pf .linv (loopB j) = refl
+  iso-pf .linv (square i j) = refl
 ```
 
 Showing that the torus described as a HIT is equivalent to the product

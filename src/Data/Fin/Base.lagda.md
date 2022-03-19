@@ -53,8 +53,8 @@ cast {suc m} {suc n} p (fsuc i) = fsuc (cast (Nat.suc-inj p) i)
 <!--
 ```agda
 cast-is-equiv : ∀ {m n} (p : m ≡ n) → is-equiv (cast p)
-cast-is-equiv = 
-  J (λ _ p → is-equiv (cast p)) cast-refl-is-equiv 
+cast-is-equiv =
+  J (λ _ p → is-equiv (cast p)) cast-refl-is-equiv
   where
     id≡cast-refl : ∀ {n} → id ≡ cast (λ _ → n)
     id≡cast-refl {zero} i ()
@@ -78,11 +78,11 @@ strengthen {n = suc n} (fsuc i) = ⊎-map fsuc fsuc (strengthen i)
 ```
 
 On the other hand, `weaken`{.Agda} does the opposite: it relaxes
-the upper bound on some `Fin n`, allowing us to regard it as a 
+the upper bound on some `Fin n`, allowing us to regard it as a
 `Fin (suc n)`.
 
 ```agda
-weaken : ∀ {n} → Fin n → Fin (suc n) 
+weaken : ∀ {n} → Fin n → Fin (suc n)
 weaken fzero = fzero
 weaken (fsuc i) = fsuc (weaken i)
 ```

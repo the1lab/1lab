@@ -47,7 +47,7 @@ private
 
   KHom : KOb → KOb → Type h
   KHom (c , f , _) (d , g , _) = Σ[ φ ∈ C.Hom c d ] ((φ C.∘ f ≡ φ) × (g C.∘ φ ≡ φ))
-  
+
   KH≡ : ∀ {a b : C.Ob} {af : C.Hom a a} {bf : C.Hom b b}
           {ai : is-idempotent af} {bi : is-idempotent bf}
           {f g : KHom (a , af , ai) (b , bf , bi)} → fst f ≡ fst g → f ≡ g
@@ -62,8 +62,8 @@ it's the chosen idempotent $e$!
 Karoubi : Precategory (o ⊔ h) h
 Karoubi .Ob = KOb
 Karoubi .Hom = KHom
-Karoubi .Hom-set _ _ = 
-  Σ-is-hlevel 2 (C.Hom-set _ _) λ _ → 
+Karoubi .Hom-set _ _ =
+  Σ-is-hlevel 2 (C.Hom-set _ _) λ _ →
     is-prop→is-set (×-is-hlevel 1 (C.Hom-set _ _ _ _) (C.Hom-set _ _ _ _))
 
 Karoubi .id {x = c , e , i} = e , i , i
@@ -71,7 +71,7 @@ Karoubi ._∘_ (f , fp , fp') (g , gp , gp') = f C.∘ g , C.pullr gp , C.pulll 
 
 Karoubi .idr {x = _ , _ , i} {_ , _ , j} (f , p , q) = KH≡ {ai = i} {bi = j} p
 Karoubi .idl {x = _ , _ , i} {_ , _ , j} (f , p , q) = KH≡ {ai = i} {bi = j} q
-Karoubi .assoc {w = _ , _ , i} {z = _ , _ , j} _ _ _ = 
+Karoubi .assoc {w = _ , _ , i} {z = _ , _ , j} _ _ _ =
   KH≡ {ai = i} {bi = j} (C.assoc _ _ _)
 ```
 

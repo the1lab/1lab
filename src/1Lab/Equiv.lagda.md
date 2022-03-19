@@ -78,9 +78,9 @@ _≃_ : ∀ {ℓ₁ ℓ₂} → Type ℓ₁ → Type ℓ₂ → Type _
 _≃_ A B = Σ (is-equiv {A = A} {B = B})
 
 id-equiv : is-equiv {A = A} (λ x → x)
-id-equiv .is-eqv y = 
-  contr (y , λ i → y) 
-    λ { (y' , p) i → p (~ i) , λ j → p (~ i ∨ j) } 
+id-equiv .is-eqv y =
+  contr (y , λ i → y)
+    λ { (y' , p) i → p (~ i) , λ j → p (~ i ∨ j) }
 ```
 
 <!--
@@ -213,11 +213,11 @@ Any function that is an equivalence is an isomorphism:
 equiv→inverse : {f : A → B} → is-equiv f → B → A
 equiv→inverse eqv y = eqv .is-eqv y .centre .fst
 
-equiv→section 
+equiv→section
   : {f : A → B} (eqv : is-equiv f) → is-right-inverse (equiv→inverse eqv) f
 equiv→section eqv y = eqv .is-eqv y .centre .snd
 
-equiv→retraction 
+equiv→retraction
   : {f : A → B} (eqv : is-equiv f) → is-left-inverse (equiv→inverse eqv) f
 equiv→retraction {f = f} eqv x i = eqv .is-eqv (f x) .paths (x , refl) i .fst
 
@@ -523,7 +523,7 @@ isomorphism has contractible fibres:
   is-iso→is-equiv : is-equiv f
   is-iso→is-equiv .is-eqv y .centre .fst = g y
   is-iso→is-equiv .is-eqv y .centre .snd = s y
-  is-iso→is-equiv .is-eqv y .paths z = 
+  is-iso→is-equiv .is-eqv y .paths z =
     is-iso→fibre-is-prop y (g y) (fst z) (s y) (snd z)
 ```
 

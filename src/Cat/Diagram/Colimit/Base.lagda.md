@@ -187,7 +187,7 @@ Now, we can define the category of cocones over a given diagram:
         pack∘unpack x i .commutes = x .commutes
 
         hl : is-set T
-        hl = Σ-is-hlevel 2 (C.Hom-set _ _) 
+        hl = Σ-is-hlevel 2 (C.Hom-set _ _)
               (λ _ → Π-is-hlevel 2 λ _ → is-prop→is-set (C.Hom-set _ _ _ _))
 ```
 -->
@@ -227,7 +227,7 @@ module _ {o₁ h₁ o₂ h₂ o₃ h₃ : _}
     module D = Precategory D
     module C = Precategory C
     module J = Precategory J
-  
+
   open Functor
 ```
 -->
