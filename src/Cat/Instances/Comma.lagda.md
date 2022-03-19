@@ -19,18 +19,17 @@ open Functor
 # Comma categories
 
 The **comma category** of two functors $F : \ca{A} \to \ca{C}$ and $G :
-\ca{B} \to \ca{C}$ with common domain, written $F \downarrow G$, is the
-directed, bicategorical analogue of a [pullback] square. It consists of
-maps in $\ca{C}$ which all have their domain in the image of $F$, and
+\ca{B} \to \ca{C}$ with common codomain, written $F \downarrow G$, is
+the directed, bicategorical analogue of a [pullback] square. It consists
+of maps in $\ca{C}$ which all have their domain in the image of $F$, and
 codomain in the image of $G$.
 
 [pullback]: Cat.Diagram.Pullback.html
 
 The comma category is the universal way of completing a cospan of
-functors $A \to C \ot B$ to a homotopy commutative square like the one
-below. Note the similarity with a pullback square; However, since this
-is a bicategorical limit, rather than having an _equality_ witnessing
-the square commutes, we have a natural transformation $\theta$.
+functors $A \to C \ot B$ to a square, like the one below, which commutes
+_up to a natural transformation_ $\theta$. Note the similarity with a
+[pullback] square.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
