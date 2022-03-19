@@ -1,9 +1,13 @@
 ```agda
 open import Cat.Prelude
 
+open import Cat.Instances.Discrete
+open import Cat.Instances.Functor
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
+open import Cat.Functor.Base
+open import Cat.Univalent
 
 module Cat.Instances.Slice where
 ```
@@ -12,6 +16,8 @@ module Cat.Instances.Slice where
 ```agda
 private variable
   o ℓ : Level
+open Functor
+open _=>_
 
 module _ {o ℓ} {C : Precategory o ℓ} where
   import Cat.Reasoning C as C
@@ -39,7 +45,7 @@ indexed by $I$, then, would consist of an object $A$ and a morphism $t :
 A \to I$, where $A$ is considered as the "total space" object and $t$
 assigns gives the "tag" of each object. By analysing how $t$ [pulls
 back] along maps $B \to I$, we recover a notion of "fibres": the
-collection with index $i$ can be recovered as the pullback $t*i$.
+collection with index $i$ can be recovered as the pullback $t^*i$.
 
 [pulls back]: Cat.Diagram.Pullback.html
 
@@ -88,6 +94,13 @@ says that the map $h$ "respects reindexing", or less obliquely
 
 <!--
 ```agda
+  /-Obj-path : ∀ {c} {x y : /-Obj c}
+             → (p : x ./-Obj.domain ≡ y ./-Obj.domain)
+             → PathP (λ i → C.Hom (p i) c) (x ./-Obj.map) (y ./-Obj.map)
+             → x ≡ y
+  /-Obj-path p q i ./-Obj.domain = p i
+  /-Obj-path p q i ./-Obj.map = q i
+
   /-Hom-pathp : ∀ {c a a′ b b′} (p : a ≡ a′) (q : b ≡ b′)
                 {x : /-Hom {c = c} a b} {y : /-Hom a′ b′}
               → PathP (λ i → C.Hom (p i ./-Obj.domain) (q i ./-Obj.domain)) 
@@ -320,4 +333,103 @@ $\ca{C}$, as below:
   Pullback→Fibre-product pb .Product.π₂ = _
   Pullback→Fibre-product pb .Product.has-is-product = 
     is-pullback→is-fibre-product (pb .Pullback.has-is-pb)
+```
+
+# Slices of Sets
+
+We now prove the correspondence between slices of $\sets$ and functor
+categories into sets, i.e. the corresponding between indexing and
+slicing mentioned in the first paragraph.
+
+```agda
+
+module _ {I : Set ℓ} where
+  open /-Obj
+  open /-Hom
+```
+
+We shall prove that the functor `Total-space`{.Agda}, defined below, is
+an equivalence of categories, i.e. that it is fully faithful and 
+essentially surjective. But first, we must define the functor! Like its
+name implies, it maps the functor $F : I → \sets$ to the first
+projection map $\mathrm{fst} : \sum F \to I$.
+
+```agda
+  Total-space : Functor Cat[ Disc′ I , Sets ℓ ] (Slice (Sets ℓ) I)
+  Total-space .F₀ F .domain = Σ (fst ⊙ F₀ F) 
+                            , Σ-is-hlevel 2 (I .snd) (snd ⊙ F₀ F)
+  Total-space .F₀ F .map = fst
+
+  Total-space .F₁ nt .map (i , x) = i , nt .η _ x
+  Total-space .F₁ nt .commutes    = refl
+
+  Total-space .F-id    = /-Hom-path refl
+  Total-space .F-∘ _ _ = /-Hom-path refl
+```
+
+To prove that the `Total-space`{.Agda} functor is `fully faithful`{.Agda
+ident=is-fully-faithful}, we will exhibit a quasi-inverse to its action
+on morphisms. Given a fibre-preserving map between $\mathrm{fst} : \sum
+F \to I$ and $\mathrm{fst} : \sum G \to I$, we recover a natural
+transformation between $F$ and $G$. The hardest part is showing
+naturality, where we use path induction.
+
+```agda
+  Total-space-is-ff : is-fully-faithful Total-space
+  Total-space-is-ff {f1} {f2} = is-iso→is-equiv 
+    (iso from linv (λ x → Nat-path (λ x → funext (λ _ → transport-refl _)))) 
+    where
+      from : /-Hom (Total-space .F₀ f1) (Total-space .F₀ f2) → f1 => f2
+      from mp = nt where
+        eta : ∀ i → F₀ f1 i .fst → F₀ f2 i .fst
+        eta i j = 
+          subst (fst ⊙ F₀ f2) (happly (mp .commutes) _) (mp .map (i , j) .snd)
+
+        nt : f1 => f2
+        nt .η = eta
+        nt .is-natural _ _ f =
+          J (λ _ p → eta _ ⊙ F₁ f1 p ≡ F₁ f2 p ⊙ eta _)
+            (ap (eta _ ⊙_) (F-id f1) ∙ sym (ap (_⊙ eta _) (F-id f2)))
+            f
+```
+
+<!--
+```agda
+      linv : is-left-inverse (F₁ Total-space) from
+      linv x = 
+        /-Hom-path (funext (λ y → 
+          Σ-path (sym (happly (x .commutes) _)) 
+            ( sym (transport-∙ (ap (fst ⊙ F₀ f2) (happly (x .commutes) y))
+                          (sym (ap (fst ⊙ F₀ f2) (happly (x .commutes) y)))
+                          _)
+            ·· ap₂ transport (∙-inv-r (ap (fst ⊙ F₀ f2) (happly (x .commutes) y)))
+                             refl
+            ·· transport-refl _)))
+```
+-->
+
+For essential surjectivity, given a map $f : X \to I$, we recover a
+family of sets $(f^*i)_{i \in I}$ by taking the `fibre`{.Agda} of $f$
+over each point, which cleanly extends to a functor. To show that the
+`Total-space`{.Agda} of this functor is isomorphic to the map we started
+with, we use one of the auxilliary lemmas used in the construction of an
+object classifier: `Total-equiv`{.Agda}. This is cleaner than exhibiting
+an isomorphism directly, though it does involve an appeal to univalence.
+
+```agda
+  Total-space-is-eso : is-split-eso Total-space
+  Total-space-is-eso fam = functor , path→iso _ path
+    where
+      functor : Functor _ _
+      functor .F₀ i = fibre (fam .map) i 
+                    , Σ-is-hlevel 2 (fam .domain .snd) 
+                                    λ _ → is-prop→is-set (I .snd _ _)
+      functor .F₁ p = subst (fibre (fam .map)) p
+      functor .F-id = funext transport-refl
+      functor .F-∘ f g = funext (subst-∙ (fibre (fam .map)) _ _)
+
+      path : F₀ Total-space functor ≡ fam
+      path = /-Obj-path 
+        (Σ-prop-path (λ _ → is-hlevel-is-prop 2) (ua (Total-equiv _  e⁻¹))) 
+        (ua→ λ a → sym (a .snd .snd)) 
 ```
