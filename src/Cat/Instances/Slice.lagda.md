@@ -338,7 +338,7 @@ $\ca{C}$, as below:
 # Slices of Sets
 
 We now prove the correspondence between slices of $\sets$ and functor
-categories into sets, i.e. the corresponding between indexing and
+categories into $\sets$, i.e. the corresponding between indexing and
 slicing mentioned in the first paragraph.
 
 ```agda

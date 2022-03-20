@@ -85,7 +85,7 @@ Lim→Prod x .has-is-product .⟨_,_⟩ p1 p2 = x .has⊤ (Pair→Cone p1 p2) .c
 Lim→Prod x .has-is-product .π₁∘factor = x .has⊤ (Pair→Cone _ _) .centre .commutes
 Lim→Prod x .has-is-product .π₂∘factor = x .has⊤ (Pair→Cone _ _) .centre .commutes
 Lim→Prod x .has-is-product .unique f p q =
-  sym (ap (λ e → e .hom) (x .has⊤ (Pair→Cone _ _) .paths other))
+  sym (ap hom (x .has⊤ (Pair→Cone _ _) .paths other))
   where
     other : Cone-hom (2-object-diagram _ _) _ _
     other .hom = f
