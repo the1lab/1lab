@@ -9,10 +9,13 @@ module Cat.Instances.Shape.Cospan where
 A _cospan_ in a category $\ca{C}$ is a pair of morphisms $a \xto{f} c
 \xot{g} b$ with a common codomain. A [limit] over a diagram with cospan
 shape is called a [pullback]. Correspondingly, to encode such diagrams,
-we have a "cospan category" $\bull \to \bull \ot \bull$.
+we have a "cospan category" $\bull \to \bull \ot \bull$. The dual of
+this category, which looks like $\bull \ot \bull \to \bull$, is the
+"span" category. Colimits over a span are called [pushouts].
 
 [limit]: Cat.Diagram.Limit.Base.html
 [pullback]: Cat.Diagram.Pullback.html
+[pushouts]: Cat.Diagram.Pushout.html
 
 ```agda
 data Cospan-ob : Type where
@@ -29,7 +32,7 @@ Cospan-hom cs-c cs-a = ⊥ -- no maps c → a
 Cospan-hom cs-c cs-b = ⊥ -- no maps c → b
 Cospan-hom cs-c cs-c = ⊤ -- identity on c
 
-·→·←· : Precategory lzero lzero
+·→·←· ·←·→· : Precategory lzero lzero
 ```
 
 <!--
@@ -77,6 +80,8 @@ Cospan-hom cs-c cs-c = ⊤ -- identity on c
   precat .assoc {cs-b} {cs-b} {cs-c} {cs-c} tt tt tt i = tt
   precat .assoc {cs-b} {cs-c} {cs-c} {cs-c} tt tt tt i = tt
   precat .assoc {cs-c} {cs-c} {cs-c} {cs-c} tt tt tt i = tt
+
+·←·→· = ·→·←· ^op
 ```
 -->
 
@@ -113,5 +118,27 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     funct .F-∘ {cs-b} {cs-b} {cs-c} _ _ i = idr g (~ i)
     funct .F-∘ {cs-b} {cs-c} {cs-c} _ _ i = idl g (~ i)
     funct .F-∘ {cs-c} {cs-c} {cs-c} _ _ i = idl id (~ i)
+
+  span→span-diagram : ∀ {a b c} → Hom a b → Hom a c → Functor ·←·→· C
+  span→span-diagram {a} {b} {c} f g = funct where
+    funct : Functor _ _
+    funct .F₀ cs-a = _
+    funct .F₀ cs-b = _
+    funct .F₀ cs-c = _
+    funct .F₁ {cs-a} {cs-a} _ = id
+    funct .F₁ {cs-b} {cs-b} _ = id
+    funct .F₁ {cs-c} {cs-a} _ = g
+    funct .F₁ {cs-c} {cs-b} _ = f
+    funct .F₁ {cs-c} {cs-c} _ = id
+    funct .F-id {cs-a} = refl
+    funct .F-id {cs-b} = refl
+    funct .F-id {cs-c} = refl
+    funct .F-∘ {cs-a} {cs-a} {cs-a} tt tt i = idl id (~ i)
+    funct .F-∘ {cs-b} {cs-b} {cs-b} tt tt i = idl id (~ i)
+    funct .F-∘ {cs-c} {cs-a} {cs-a} tt tt i = idl g (~ i)
+    funct .F-∘ {cs-c} {cs-b} {cs-b} tt tt i = idl f (~ i)
+    funct .F-∘ {cs-c} {cs-c} {cs-a} tt tt i = idr g (~ i)
+    funct .F-∘ {cs-c} {cs-c} {cs-b} tt tt i = idr f (~ i)
+    funct .F-∘ {cs-c} {cs-c} {cs-c} tt tt i = idr id (~ i)
 ```
 -->
