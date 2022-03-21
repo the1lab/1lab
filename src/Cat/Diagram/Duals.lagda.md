@@ -136,6 +136,49 @@ is-pushout→is-co-pullback po =
   where module po = Push.is-pushout po
 ```
 
+## Co/cones
+
+```agda
+open import Cat.Diagram.Colimit.Base
+open import Cat.Diagram.Limit.Base
+open import Cat.Diagram.Terminal
+open import Cat.Diagram.Initial
+
+module _ {o ℓ} {J : Precategory o ℓ} {F : Functor J C} where
+  open Functor F renaming (op to F^op)
+
+  open Cocone-hom
+  open Cone-hom
+  open Terminal
+  open Initial
+  open Cocone
+  open Cone
+
+  Co-cone→Cocone : Cone F^op → Cocone F
+  Co-cone→Cocone cone .coapex = cone .apex
+  Co-cone→Cocone cone .ψ = cone .ψ
+  Co-cone→Cocone cone .commutes = cone .commutes
+
+  Co-cone-hom→Cocone-hom
+    : ∀ {x y}
+    → Cone-hom F^op y x
+    → Cocone-hom F (Co-cone→Cocone x) (Co-cone→Cocone y)
+  Co-cone-hom→Cocone-hom ch .hom = ch .hom
+  Co-cone-hom→Cocone-hom ch .commutes = ch .commutes
+
+  Cocone→Co-cone : Cocone F → Cone F^op
+  Cocone→Co-cone cone .apex     = cone .coapex
+  Cocone→Co-cone cone .ψ        = cone .ψ
+  Cocone→Co-cone cone .commutes = cone .commutes
+
+  Cocone-hom→Co-cone-hom
+    : ∀ {x y}
+    → Cocone-hom F x y
+    → Cone-hom F^op (Cocone→Co-cone y) (Cocone→Co-cone x)
+  Cocone-hom→Co-cone-hom ch .hom = ch .hom
+  Cocone-hom→Co-cone-hom ch .commutes = ch .commutes
+```
+
 <!-- TODO [Amy 2022-02-21]
 co/cones
 co/limits

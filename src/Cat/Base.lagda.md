@@ -274,7 +274,7 @@ similarly for the morphism mapping. Alternatively, composition of
 functors is a categorification of the fact that monotone maps compose.
 
 ```agda
-_F∘_ {C = C} {D} {E} F G = record { F₀ = F₀ ; F₁ = F₁ ; F-id = F-id ; F-∘ = F-∘ }
+_F∘_ {C = C} {D} {E} F G = comps
   where
     module C = Precategory C
     module D = Precategory D
@@ -307,6 +307,12 @@ the witnesses that $F$ and $G$ are functorial.
           F.F₁ (G.F₁ (f C.∘ g))     ≡⟨ ap F.F₁ (G.F-∘ f g) ⟩
           F.F₁ (G.F₁ f D.∘ G.F₁ g)  ≡⟨ F.F-∘ _ _ ⟩
           F₁ f E.∘ F₁ g             ∎
+
+    comps : Functor _ _
+    comps .Functor.F₀ = F₀
+    comps .Functor.F₁ = F₁
+    comps .Functor.F-id = F-id
+    comps .Functor.F-∘ = F-∘
 ```
 
 <!--

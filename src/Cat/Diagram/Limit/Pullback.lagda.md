@@ -47,11 +47,10 @@ Square→Cone p1 p2 f g square .commutes {cs-b} {cs-c} tt = sym square
 Square→Cone p1 p2 f g square .commutes {cs-c} {cs-c} tt = idl _
 
 Pullback→Limit
-  : ∀ {A B C}
-  → (f : Hom A C) (g : Hom B C)
+  : ∀ {A B C} {f : Hom A C} {g : Hom B C}
   → Pullback Cat f g
   → Limit (cospan→cospan-diagram {C = Cat} f g)
-Pullback→Limit f g pb = lim where
+Pullback→Limit {f = f} {g} pb = lim where
   module pb = Pullback pb
   lim : Limit _
   lim .top = Square→Cone _ _ _ _ pb.square
@@ -63,10 +62,10 @@ Pullback→Limit f g pb = lim where
 
 Limit→Pullback
   : ∀ {A B C}
-  → (f : Hom A C) (g : Hom B C)
+  → {f : Hom A C} {g : Hom B C}
   → Limit (cospan→cospan-diagram {C = Cat} f g)
   → Pullback Cat f g
-Limit→Pullback f g lim = pb where
+Limit→Pullback {f = f} {g} lim = pb where
   module lim = Terminal lim
   pb : Pullback Cat _ _
   pb .apex = lim.top .apex
