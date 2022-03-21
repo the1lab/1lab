@@ -5,7 +5,7 @@ open import Cat.Functor.Base
 open import Cat.Univalent
 open import Cat.Prelude
 
-module Algebra.Group.Category where
+module Algebra.Group.Cat.Base where
 ```
 
 <!--

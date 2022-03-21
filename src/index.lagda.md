@@ -435,12 +435,15 @@ open import Algebra.Magma.Unital.EckmannHilton -- The Eckmann-Hilton argument
 open import Algebra.Semigroup   -- Semigroups (associative magmas)
 open import Algebra.Monoid      -- Monoids as unital semigroups
 
-open import Algebra.Group                   -- Groups as monoids with inverses
-open import Algebra.Group.Free              -- Free groups
-open import Algebra.Group.Cayley            -- Cayley's theorem
-open import Algebra.Group.Homotopy          -- Homotopy groups
-open import Algebra.Group.Subgroup          -- Subgroups; Images and kernels
-open import Algebra.Group.Quotients         -- Quotients by normal subgroups
-open import Algebra.Group.Ab.Free           -- Abelianisations
-open import Algebra.Group.Quotients.IsoThms -- Isomorphism theorems
+open import Algebra.Group                      -- Groups as monoids with inverses
+open import Algebra.Group.Free                 -- Free groups
+open import Algebra.Group.Cayley               -- Cayley's theorem
+open import Algebra.Group.Cat.Base             -- Category of groups
+open import Algebra.Group.Cat.FinitelyComplete -- Limits in the category Groups
+open import Algebra.Group.Homotopy             -- Homotopy groups
+open import Algebra.Group.Subgroup             -- Subgroups, images and kernels
+open import Algebra.Group.Quotients            -- Quotients by normal subgroups
+open import Algebra.Group.Quotients.IsoThms    -- Isomorphism theorems
+
+open import Algebra.Group.Ab.Free              -- Abelianisations
 ```

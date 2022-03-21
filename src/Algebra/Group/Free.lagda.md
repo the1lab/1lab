@@ -1,5 +1,5 @@
 ```agda
-open import Algebra.Group.Category
+open import Algebra.Group.Cat.Base
 open import Algebra.Group
 
 open import Cat.Diagram.Initial
@@ -175,7 +175,7 @@ uniquely as $S \xrightarrow{\eta} U(G) \to U(H)$. As hinted above, we
 pick $G = \mathrm{Free}(S)$, the free group with $S$ as its set of
 generators, and the universal map $\eta$ is in fact `inc`{.Agda}.
 
-[underlying set functor]: Algebra.Group.Category.html#the-underlying-set
+[underlying set functor]: Algebra.Group.Cat.Base.html#the-underlying-set
 
 ```agda
 Free-universal-maps : ∀ s → Universal-morphism s (Forget {ℓ})
