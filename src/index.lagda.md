@@ -375,7 +375,9 @@ desirable properties.
 
 ```agda
 open import Cat.Instances.Sets                  -- The category of sets
-open import Cat.Instances.Sets.FinitelyComplete -- Sets has finite limits
+open import Cat.Instances.Sets.Complete         -- Sets is complete
+open import Cat.Instances.Sets.FinitelyComplete
+  -- More explicit constructions of commonly-used finite limits in Sets
 
 open import Cat.Instances.Comma     -- Comma precategory over a cospan of functors
 open import Cat.Instances.Functor   -- Functor (pre)categories
@@ -439,7 +441,7 @@ open import Algebra.Group                      -- Groups as monoids with inverse
 open import Algebra.Group.Free                 -- Free groups
 open import Algebra.Group.Cayley               -- Cayley's theorem
 open import Algebra.Group.Cat.Base             -- Category of groups
-open import Algebra.Group.Cat.FinitelyComplete -- Limits in the category Groups
+open import Algebra.Group.Cat.FinitelyComplete -- Finite limits in Groups
 open import Algebra.Group.Homotopy             -- Homotopy groups
 open import Algebra.Group.Subgroup             -- Subgroups, images and kernels
 open import Algebra.Group.Quotients            -- Quotients by normal subgroups

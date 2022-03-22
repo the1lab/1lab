@@ -21,3 +21,4 @@
 \Arr:\mathrm{Arr}(#1)
 \xto:\xrightarrow
 \xot:\xleftarrow
+\colim:\operatorname*{colim}

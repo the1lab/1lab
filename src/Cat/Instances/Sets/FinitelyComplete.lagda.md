@@ -1,5 +1,5 @@
 ```agda
-open import Cat.FinitelyComplete
+open import Cat.Diagram.Limit.Finite
 open import Cat.Prelude
 
 module Cat.Instances.Sets.FinitelyComplete {ℓ} where

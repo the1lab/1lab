@@ -28,7 +28,7 @@ functor) drives us in computing limits of groups as limits of sets,
 and equipping those with a group structure: we are _forced_ to do this
 since [right adjoints preserve limits].
 
-[finite limits]: Cat.FinitelyComplete.html
+[finite limits]: Cat.Diagram.Limit.Finite.html
 [terminal]: Cat.Diagram.Terminal.html
 [initial]: Cat.Diagram.Initial.html
 [zero object]: Cat.Diagram.Zero.html
@@ -248,7 +248,7 @@ Putting all of these constructions together, we get the proof that
 equalisers.
 
 ```agda
-open import Cat.FinitelyComplete
+open import Cat.Diagram.Limit.Finite
 
 Groups-finitely-complete : Finitely-complete (Groups ℓ)
 Groups-finitely-complete = with-equalisers (Groups ℓ) top prod Groups-equalisers

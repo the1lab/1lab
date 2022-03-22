@@ -2,7 +2,7 @@
 open import Cat.Prelude
 open import Cat.Thin
 
-module Cat.FinitelyComplete {ℓ ℓ'} (C : Precategory ℓ ℓ') where
+module Cat.Diagram.Limit.Finite {ℓ ℓ'} (C : Precategory ℓ ℓ') where
 ```
 
 <!--

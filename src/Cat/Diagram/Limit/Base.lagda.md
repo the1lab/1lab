@@ -478,3 +478,20 @@ functor and used the proof that it preserves isomorphisms.
     → Cone.apex (Terminal.top X) C.≅ Cone.apex (Terminal.top Y)
   Limit-unique {X} {Y} = Cone≅→apex≅ (Limiting-cone-unique X Y)
 ```
+
+## Completeness
+
+A category is **complete** if it admits all limits. However, due to a
+classical (literally - you need excluded middle for it to go through),
+non-[posetal] categories do not generally have _all_ limits. Rather, a
+category is complete _with respect to_ some upper bound on the size of
+the diagrams indexing the limits. A category is **$(o,\ell)$-complete**
+if it admits limits for all diagrams indexed by $(o,\ell)$-small
+precategories.
+
+[posetal]: Cat.Thin.html
+
+```agda
+is-complete : ∀ {oc ℓc} o ℓ → Precategory oc ℓc → Type _
+is-complete o ℓ C = ∀ {D : Precategory o ℓ} (F : Functor D C) → Limit F
+```
