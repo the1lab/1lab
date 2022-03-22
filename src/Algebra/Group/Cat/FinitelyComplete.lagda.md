@@ -188,13 +188,13 @@ follows from $f$ and $g$ being group homomorphisms:
 
 ```agda
   Equaliser-group : Group ℓ
-  Equaliser-group = seq.apex .fst , equ-group where
-    equ-⋆ : seq.apex .fst → seq.apex .fst → seq.apex .fst
+  Equaliser-group = _ , equ-group where
+    equ-⋆ : ∣ seq.apex ∣ → ∣ seq.apex ∣ → ∣ seq.apex ∣
     equ-⋆ (a , p) (b , q) = (a G.⋆ b) , r where abstract
       r : f .fst (G .snd ._⋆_ a b) ≡ g .fst (G .snd ._⋆_ a b)
       r = f.pres-⋆ a b ·· ap₂ H._⋆_ p q ·· sym (g.pres-⋆ _ _)
 
-    equ-inv : seq.apex .fst → seq.apex .fst
+    equ-inv : ∣ seq.apex ∣ → ∣ seq.apex ∣
     equ-inv (x , p) = x G.⁻¹ , q where abstract
       q : f .fst (G.inverse x) ≡ g .fst (G.inverse x)
       q = f.pres-inv x ·· ap H._⁻¹ p ·· sym (g.pres-inv x)
@@ -207,9 +207,9 @@ follows from $f$ and $g$ being group homomorphisms:
 Similar yoga must be done for the inverse maps and the group unit.
 
 ```agda
-    equ-group : Group-on (seq.apex .fst)
+    equ-group : Group-on ∣ seq.apex ∣
     equ-group = make-group
-      (seq.apex .snd)
+      (seq.apex .is-tr)
       (G.unit , invs) equ-⋆ equ-inv
       (λ x y z → Σ-prop-path (λ _ → H.has-is-set _ _) (sym G.associative))
       (λ x → Σ-prop-path (λ _ → H.has-is-set _ _) G.inverseˡ)

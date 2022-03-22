@@ -104,17 +104,7 @@ correspondingly, called **Set**.
 ```agda
 is-set : ∀ {ℓ} → Type ℓ → Type ℓ
 is-set A = is-hlevel A 2
-
-Set : (ℓ : Level) → Type (lsuc ℓ)
-Set ℓ = Σ (is-set {ℓ = ℓ})
 ```
-
-<!--
-```agda
-Prop : (ℓ : Level) → Type (lsuc ℓ)
-Prop ℓ = Σ (is-prop {ℓ = ℓ})
-```
--->
 
 Similarly, the types of h-level 3 are called **groupoids**.
 

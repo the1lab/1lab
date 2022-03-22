@@ -295,11 +295,11 @@ Curry : Functor (C ×Cat D) E → Functor C Cat[ D , E ]
 Curry {C = C} {D = D} {E = E} F = curried where
   open import Cat.Functor.Bifunctor {C = C} {D = D} {E = E} F
 
-  curried : Functor _ _
+  curried : Functor C Cat[ D , E ]
   curried .F₀ = Right
   curried .F₁ x→y = NT (λ f → first x→y) λ x y f →
        sym (F-∘ F _ _)
-    ·· ap (F₁ F) (ap₂ _,_ (C .idr _ ∙ sym (C .idl _)) (D .idl _ ∙ sym (D .idr _)))
+    ·· ap (F₁ F) (Σ-pathp (C .idr _ ∙ sym (C .idl _)) (D .idl _ ∙ sym (D .idr _)))
     ·· F-∘ F _ _
   curried .F-id = Nat-path λ x → F-id F
   curried .F-∘ f g = Nat-path λ x →

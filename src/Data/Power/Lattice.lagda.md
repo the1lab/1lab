@@ -36,7 +36,7 @@ extensionality for subsets`{.Agda ident=ℙ-ext}.
     (λ _ x → x)
     (λ x⊆y y⊆z a a∈x → y⊆z a (x⊆y a a∈x))
     ℙ-ext
-    λ {x} {y} → Π-is-hlevel 1 λ x → fun-is-hlevel 1 (y x .snd)
+    λ {x} {y} → Π-is-hlevel 1 λ x → fun-is-hlevel 1 (y x .is-tr)
 ```
 
 Back on track, we equip intersection of subsets with the structure of a
@@ -117,7 +117,7 @@ direction, we inject it into the left summand for definiteness.
 
 ```agda
   r .idempotent {x = X} =
-    ℙ-ext (λ _ → ∥-∥-elim (λ _ → X _ .snd)
+    ℙ-ext (λ _ → ∥-∥-elim (λ _ → X _ .is-tr)
                  (λ { (inl x) → x
                     ; (inr x) → x }))
           λ _ x → inc (inl x)
@@ -132,7 +132,7 @@ absorb intersections.
 
 ∪-absorbs-∩ : ∀ {ℓ} {A : Type ℓ} {X Y : ℙ A} → X ∪ (X ∩ Y) ≡ X
 ∪-absorbs-∩ {X = X} {Y = Y} =
-  ℙ-ext (λ _ → ∥-∥-elim (λ x → X _ .snd)
+  ℙ-ext (λ _ → ∥-∥-elim (λ x → X _ .is-tr)
                (λ { (inl x∈X) → x∈X
                   ; (inr (x∈X , x∈Y)) → x∈X }))
         λ _ x∈X → inc (inl x∈X)
@@ -162,7 +162,7 @@ $(x ⊆ y) \leftrightarrow (x ≡ (x ∩ y))$.
 subset-∩ : ∀ {ℓ} {A : Type ℓ} {X Y : ℙ A} → (X ⊆ Y) ≃ (X ≡ (X ∩ Y))
 subset-∩ {X = X} {Y = Y} =
   prop-ext
-    (Π-is-hlevel 1 λ x → fun-is-hlevel 1 (Y x .snd))
+    (Π-is-hlevel 1 λ x → fun-is-hlevel 1 (Y x .is-tr))
     (ℙ-is-set _ _)
     to from
   where
@@ -185,5 +185,5 @@ $X \subseteq Y$, so we are done.
 
 ```agda
     from : (X ≡ (X ∩ Y)) → X ⊆ Y
-    from path x x∈X = transport (ap fst (happly path x)) x∈X .snd
+    from path x x∈X = transport (ap ∣_∣ (happly path x)) x∈X .snd
 ```

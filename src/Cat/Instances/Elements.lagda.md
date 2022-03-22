@@ -26,7 +26,7 @@ record Element : Type (o ⊔ s) where
   constructor elem
   field
     ob : Ob
-    section : fst $ P.₀ ob
+    section : ∣ P.₀ ob ∣
 
 open Element
 ```
@@ -65,7 +65,7 @@ path space of `Element-hom`{.Agda}
 Element-hom-path : {x y : Element} {f g : Element-hom x y} → f .hom ≡ g .hom → f ≡ g
 Element-hom-path p i .hom = p i
 Element-hom-path {x = x} {y = y} {f = f} {g = g} p i .commute =
-  is-prop→pathp (λ j → snd (P.₀ (x .ob)) (P.₁ (p j) (y .section)) (x .section))
+  is-prop→pathp (λ j → P.₀ (x .ob) .is-tr (P.₁ (p j) (y .section)) (x .section))
     (f .commute)
     (g .commute) i
 ```
@@ -93,7 +93,7 @@ Element-hom-is-set x y =
     T-is-set : is-set T
     T-is-set =
       Σ-is-hlevel 2 (Hom-set _ _)
-                  λ f → Path-is-hlevel 2 (snd $ P.₀ (x .ob))
+                  λ f → Path-is-hlevel 2 (P.₀ (x .ob) .is-tr)
 ```
 -->
 
@@ -101,7 +101,7 @@ One interesting fact is that morphisms $f : X \to Y$ in $C$ induce
 morphisms in the category of elements for each $py : P(y)$.
 
 ```agda
-induce : ∀ {x y} → (f : Hom x y) → (py : P.₀ y .fst)
+induce : ∀ {x y} (f : Hom x y) (py : ∣ P.₀ y ∣)
        → Element-hom (elem x (P.₁ f py)) (elem y py)
 induce f _ = elem-hom f refl
 ```

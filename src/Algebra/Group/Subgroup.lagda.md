@@ -40,14 +40,14 @@ is-subgroup→Group-on
   : (H : ℙ (G .fst)) → is-subgroup G H → Group-on (Σ[ x ∈ G .fst ] x ∈ H)
 is-subgroup→Group-on {G = G} H sg =
   make-group
-    (Σ-is-hlevel 2 has-is-set λ x → is-prop→is-set (H x .snd))
+    (Σ-is-hlevel 2 has-is-set λ x → is-prop→is-set (H x .is-tr))
     (unit , has-unit)
     (λ { (x , xin) (y , yin) → x ⋆ y , has-⋆ xin yin} )
     (λ { (x , xin) → (x ⁻¹ , has-inv xin) })
-    (λ x y z → Σ-prop-path (λ x → H x .snd) (sym associative))
-    (λ x → Σ-prop-path (λ x → H x .snd) inverseˡ)
-    (λ x → Σ-prop-path (λ x → H x .snd) inverseʳ)
-    (λ x → Σ-prop-path (λ x → H x .snd) idˡ)
+    (λ x y z → Σ-prop-path (λ x → H x .is-tr) (sym associative))
+    (λ x → Σ-prop-path (λ x → H x .is-tr) inverseˡ)
+    (λ x → Σ-prop-path (λ x → H x .is-tr) inverseʳ)
+    (λ x → Σ-prop-path (λ x → H x .is-tr) idˡ)
   where open Group-on (G .snd)
         open is-subgroup sg
 ```

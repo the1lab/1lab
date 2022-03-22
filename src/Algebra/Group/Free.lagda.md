@@ -179,10 +179,10 @@ generators, and the universal map $\eta$ is in fact `inc`{.Agda}.
 
 ```agda
 Free-universal-maps : ∀ s → Universal-morphism s (Forget {ℓ})
-Free-universal-maps (S , S-set) = um where
+Free-universal-maps S = um where
   it : ↓Obj _ Forget
   it .x   = tt
-  it .y   = Free-Group S
+  it .y   = Free-Group ∣ S ∣
   it .map = inc
 ```
 
@@ -198,7 +198,7 @@ $$
   um : Initial _
   um .bot        = it
   um .has⊥ other = contr factor unique where
-    g : S → other .y .fst
+    g : ∣ S ∣ → other .y .fst
     g = other .map
 
     factor : ↓Hom _ _ it other

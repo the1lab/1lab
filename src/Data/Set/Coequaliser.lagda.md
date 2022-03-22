@@ -338,8 +338,7 @@ establish effectivity of the quotient.
       (λ x → n-Type-is-hlevel 1)
       (λ y → {- 1 -} R x y , Rp x y)
       λ y z r →
-        Σ-prop-path (λ _ → is-prop-is-prop)
-          (ua {- 2 -} (prop-ext (Rp _ _) (Rp _ _) (λ z → rt z r) λ z → rt z (rs r)))
+        n-ua (prop-ext (Rp _ _) (Rp _ _) (λ z → rt z r) λ z → rt z (rs r))
 ```
 
 We do quotient induction into the `type of propositions`{.Agda
@@ -351,12 +350,12 @@ we have $R(x,y) \Leftrightarrow R(x,z)$, which follows from the
 assumption that $R$ is an equivalence relation (`{- 2 -}`{.Agda}).
 
 ```agda
-    encode : ∀ x y (p : inc x ≡ y) → Code x y .fst
-    encode x y p = subst (λ y → Code x y .fst) p rr
+    encode : ∀ x y (p : inc x ≡ y) → ∣ Code x y ∣
+    encode x y p = subst (λ y → ∣ Code x y ∣) p rr
 
-    decode : ∀ x y (p : Code x y .fst) → inc x ≡ y
+    decode : ∀ x y (p : ∣ Code x y ∣) → inc x ≡ y
     decode x y p =
-      Coeq-elim-prop {C = λ y → (p : Code x y .fst) → inc x ≡ y}
+      Coeq-elim-prop {C = λ y → (p : ∣ Code x y ∣) → inc x ≡ y}
         (λ _ → Π-is-hlevel 1 λ _ → squash _ _) (λ y r → quot r) y p
 ```
 

@@ -41,7 +41,7 @@ between discrete categories. Since `natural transformations form a
 Set`{.Agda ident=Nat-is-set}, we're clear to take this as the definition.
 
 ```agda
-Family .Hom[_] {_ , aset} {_ , bset} f F G =
+Family .Hom[_] {A} {B} f F G =
   F => (G F∘ lift-disc f)
 Family .Hom[_]-set f x y = Nat-is-set
 ```
@@ -59,7 +59,7 @@ Family ._∘′_ {a = A} {x = X} {Y} {Z} {F} {G} f g = NT (λ x → η f _ ∘ �
          → (f .η _ ∘ g .η y) ∘ F₁ X h
          ≡ F₁ (Z F∘ lift-disc {A = A} _) h ∘ f .η _ ∘ g .η  _
     comm x y h =
-      (f .η _ ∘ g .η y) ∘ F₁ X h                          ≡⟨ extendr (g .is-natural _ _ _) ⟩
+      (f .η _ ∘ g .η y) ∘ F₁ X h                           ≡⟨ extendr (g .is-natural _ _ _) ⟩
       (f .η _ ∘ F₁ (Y F∘ lift-disc {A = A} _) h) ∘ g .η x  ≡˘⟨ pulll (sym (f .is-natural _ _ _)) ⟩
       F₁ (Z F∘ lift-disc {A = A} _) h ∘ f .η _ ∘ g .η  _   ∎
 
@@ -80,7 +80,7 @@ open Cartesian
 
 Family-is-cartesian : ∀ {ℓ} → Cartesian-fibration (Family {ℓ = ℓ})
 Family-is-cartesian = iscart where
-  cart : ∀ {x y : Set _} (f : x .fst → y .fst)
+  cart : ∀ {x y : Set _} (f : ∣ x ∣ → ∣ y ∣)
            (y′ : Functor (Disc′ y) C)
        → Cartesian Family f idnt
   cart f y′ .universal m nt = NT (η nt) (is-natural nt)

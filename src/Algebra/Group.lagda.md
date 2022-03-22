@@ -298,9 +298,9 @@ set, and it forms the carrier for a group: The _symmetric group_ on $X$.
 
 ```agda
 Sym : ∀ {ℓ} → Set ℓ → Group ℓ
-Sym (X , X-set) .fst = X ≃ X
-Sym (X , X-set) .snd = group-str where
-  group-str : Group-on (X ≃ X)
+Sym X .fst = ∣ X ∣ ≃ ∣ X ∣
+Sym X .snd = group-str where
+  group-str : Group-on (∣ X ∣ ≃ ∣ X ∣)
   group-str ._⋆_ g f = f ∙e g
 ```
 
@@ -317,7 +317,8 @@ ident=is-equiv-is-prop}.
 
 ```agda
   group-str .has-is-group .has-is-monoid .has-is-semigroup .has-is-magma .has-is-set =
-    Σ-is-hlevel 2 (fun-is-hlevel 2 X-set) (λ f → is-prop→is-set (is-equiv-is-prop f))
+    Σ-is-hlevel 2 (fun-is-hlevel 2 (X .is-tr))
+      (λ f → is-prop→is-set (is-equiv-is-prop f))
 ```
 
 The associativity and identity laws hold definitionally.

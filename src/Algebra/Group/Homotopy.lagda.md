@@ -218,9 +218,8 @@ together to establish `G ≡ (base ≡ base)`. First, to define
     Deloop-elim _
       (λ _ → n-Type-is-hlevel 2)
       (G .fst , Group-on.has-is-set (G .snd))
-      (λ x → Σ-prop-path (λ _ → is-hlevel-is-prop 2) (ua (map x)))
-      λ x y → Σ-prop-square (λ _ → is-hlevel-is-prop 2)
-                (transport (sym Square≡··) (lemma x y))
+      (λ x → n-ua (map x))
+      λ x y → n-Type-square (transport (sym Square≡··) (lemma x y))
 ```
 
 Since we must map into a type which is known to be a groupoid, we map to
@@ -263,10 +262,10 @@ to `Code`{.Agda}. For decoding, we do induction on `Deloop`{.Agda} with
 `Code x .fst → base ≡ x` as the motive.
 
 ```agda
-  encode : ∀ x → base ≡ x → Code x .fst
-  encode x p = subst (λ x → Code x .fst) p unit
+  encode : ∀ x → base ≡ x → ∣ Code x ∣
+  encode x p = subst (λ x → ∣ Code x ∣) p unit
 
-  decode : ∀ x → Code x .fst → base ≡ x
+  decode : ∀ x → ∣ Code x ∣ → base ≡ x
   decode = Deloop-elim _
     (λ _ → Π-is-hlevel 3 λ _ → is-hlevel-suc 2 (squash _ _))
 ```
@@ -302,11 +301,11 @@ of the full `Deloop-elim`{.Agda}, which reduces the goal to proving $1
 \star 1 = 1$.
 
 ```agda
-  decode→encode : ∀ x (c : Code x .fst) → encode x (decode x c) ≡ c
+  decode→encode : ∀ x (c : ∣ Code x ∣) → encode x (decode x c) ≡ c
   decode→encode =
     Deloop-elim-prop
-      (λ x → (c : Code x .fst) → encode x (decode x c) ≡ c)
-      (λ x → Π-is-hlevel 1 λ _ → Code x .snd _ _)
+      (λ x → (c : ∣ Code x ∣) → encode x (decode x c) ≡ c)
+      (λ x → Π-is-hlevel 1 λ _ → Code x .is-tr _ _)
       λ c → transport-refl _ ∙ G.idˡ
 ```
 

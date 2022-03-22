@@ -250,7 +250,7 @@ HoTT, we can relax this even further: An $\infty$-magma is a
 operation.
 
 [magma]: https://ncatlab.org/nlab/show/magma
-[Set]: agda://1Lab.HLevel#Set
+[Set]: agda://1Lab.HLevel.Universe#Set
 
 ```agda
 private

@@ -36,7 +36,7 @@ only difference between these types can be patched by
 `happly`{.Agda}/`funext`{.Agda}.
 
 ```agda
-  iso→equiv : {A B : Set ℓ} → A Sets.≅ B → A .fst ≃ B .fst
+  iso→equiv : {A B : Set ℓ} → A Sets.≅ B → ∣ A ∣ ≃ ∣ B ∣
   iso→equiv x = Iso→Equiv (x.to , iso x.from (happly x.invˡ) (happly x.invʳ))
     where module x = Sets._≅_ x
 ```
@@ -56,18 +56,18 @@ We must then show that, given some other set $B$ and an isomorphism $i :
 A \cong B$, we can continuously deform $A$ into $B$ and, in the process,
 deform $i$ into the identity. But this follows from `paths in sigma
 types`{.Agda ident=Σ-pathp}, the rearranging of isomorphisms defined
-above, and `ua`{.Agda}.
+above, and `n-ua`{.Agda}.
 
 ```agda
     isc .paths (B , isom) =
-      Σ-pathp (Σ-prop-path (λ _ → is-hlevel-is-prop 2) (ua A≃B))
+      Σ-pathp (n-ua A≃B)
         (Sets.≅-pathp refl _
           (λ i x → path→ua-pathp A≃B {x = x} {y = isom.to x} refl i)
           (ua→ λ a → sym (happly isom.invʳ a)))
       where
         module isom = Sets._≅_ isom
 
-        A≃B : A .fst ≃ B .fst
+        A≃B : ∣ A ∣ ≃ ∣ B ∣
         A≃B = iso→equiv isom
 ```
 
@@ -78,13 +78,13 @@ formulation, which might be more intuitive. Let's start by showing that
 the rearrangement `iso→equiv`{.Agda} is an equivalence:
 
 ```agda
-  equiv→iso : {A B : Set ℓ} → A .fst ≃ B .fst → A Sets.≅ B
+  equiv→iso : {A B : Set ℓ} → ∣ A ∣ ≃ ∣ B ∣ → A Sets.≅ B
   equiv→iso (f , f-eqv) =
     Sets.make-iso f (equiv→inverse f-eqv)
       (funext (equiv→section f-eqv))
       (funext (equiv→retraction f-eqv))
 
-  equiv≃iso : {A B : Set ℓ} → (A Sets.≅ B) ≃ (A .fst ≃ B .fst)
+  equiv≃iso : {A B : Set ℓ} → (A Sets.≅ B) ≃ (∣ A ∣ ≃ ∣ B ∣)
   equiv≃iso {A} {B} = Iso→Equiv (iso→equiv , iso equiv→iso p q)
     where
       p : is-right-inverse (equiv→iso {A} {B}) iso→equiv
@@ -100,7 +100,7 @@ We then use [univalence for $n$-types] to directly establish that $(A
 ```
   is-category′-Sets : ∀ {A B : Set ℓ} → (A ≡ B) ≃ (A Sets.≅ B)
   is-category′-Sets {A} {B} =
-    (A ≡ B)           ≃⟨ n-Type-univalence {n = 2} ⟩
-    (A .fst ≃ B .fst) ≃⟨ equiv≃iso e⁻¹ ⟩
-    (A Sets.≅ B)      ≃∎
+    (A ≡ B)         ≃⟨ n-univalence e⁻¹ ⟩
+    (∣ A ∣ ≃ ∣ B ∣) ≃⟨ equiv≃iso e⁻¹ ⟩
+    (A Sets.≅ B)    ≃∎
 ```

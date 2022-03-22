@@ -115,7 +115,7 @@ map-++ f [] ys = refl
 map-++ f (x ∷ xs) ys = ap (f x ∷_) (map-++ f xs ys)
 
 Free : ∀ {ℓ} → Functor (Sets ℓ) (Monoids ℓ)
-Free .F₀ (A , s) = List A , List-is-monoid s
+Free .F₀ A = List ∣ A ∣ , List-is-monoid (A .is-tr)
 ```
 
 The action on morphisms is given by `map`{.Agda}, which preserves the
@@ -177,11 +177,11 @@ Proving that it satisfies the `zig`{.Agda} triangle identity is the
 lemma `fold-pure`{.Agda} below.
 
 ```agda
-fold-pure : ∀ {ℓ} {X : Set ℓ} (xs : List (X .fst))
-          → fold (List (X .fst) , List-is-monoid (X .snd)) (map (λ x → x ∷ []) xs)
+fold-pure : ∀ {ℓ} {X : Set ℓ} (xs : List ∣ X ∣)
+          → fold (List ∣ X ∣ , List-is-monoid (X .is-tr)) (map (λ x → x ∷ []) xs)
           ≡ xs
 fold-pure [] = refl
-fold-pure (x ∷ xs) = ap (x ∷_) (fold-pure xs)
+fold-pure {X = X} (x ∷ xs) = ap (x ∷_) (fold-pure {X = X} xs)
 
 Free⊣Forget : ∀ {ℓ} → Free {ℓ} ⊣ Forget
 Free⊣Forget .unit .η _ x = x ∷ []
@@ -258,13 +258,13 @@ $[x,y]$.
 
 ```agda
   it's-eso : is-split-eso comparison
-  it's-eso ((A , aset) , alg) = monoid , the-iso where
+  it's-eso (A , alg) = monoid , the-iso where
     open Algebra-on
     open Algebra-hom
     import Cat.Reasoning (Eilenberg-Moore (L∘R (Free⊣Forget {ℓ}))) as R
 
     monoid : Monoids ℓ .Ob
-    monoid .fst = A
+    monoid .fst = ∣ A ∣
     monoid .snd .identity = alg .ν []
     monoid .snd ._⋆_ a b = alg .ν (a ∷ b ∷ [])
 ```
@@ -276,7 +276,7 @@ these data assembles into a monoid:
     monoid .snd .has-is-monoid = has-is-m where abstract
       has-is-m : is-monoid (alg .ν []) (monoid .snd ._⋆_)
       has-is-m .has-is-semigroup = record
-        { has-is-magma = record { has-is-set = aset }
+        { has-is-magma = record { has-is-set = A .is-tr }
         ; associative  = λ {x} {y} {z} →
           alg .ν (x ∷ alg .ν (y ∷ z ∷ []) ∷ [])                ≡˘⟨ ap (λ x → alg .ν (x ∷ _)) (happly (alg .ν-unit) x) ⟩
           alg .ν (alg .ν (x ∷ []) ∷ alg .ν (y ∷ z ∷ []) ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
@@ -317,15 +317,15 @@ itself is given by the identity function in both directions, since the
 recovered monoid has the same underlying type as the List-algebra!
 
 ```agda
-    into : Algebra-hom _ (comparison.₀ monoid) ((A , aset) , alg)
+    into : Algebra-hom _ (comparison.₀ monoid) (A , alg)
     into .morphism = λ x → x
     into .commutes = funext (λ x → recover x ∙ ap (alg .ν) (sym (map-id x)))
 
-    from : Algebra-hom _ ((A , aset) , alg) (comparison.₀ monoid)
+    from : Algebra-hom _ (A , alg) (comparison.₀ monoid)
     from .morphism = λ x → x
     from .commutes =
       funext (λ x → sym (recover x) ∙ ap (fold monoid) (sym (map-id x)))
 
-    the-iso : comparison.₀ monoid R.≅ ((A , aset) , alg)
+    the-iso : comparison.₀ monoid R.≅ (A , alg)
     the-iso = R.make-iso into from (Algebra-hom-path refl) (Algebra-hom-path refl)
 ```

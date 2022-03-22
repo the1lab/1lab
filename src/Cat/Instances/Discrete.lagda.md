@@ -35,9 +35,9 @@ Disc A A-grpd .idl _ = ∙-id-r _
 Disc A A-grpd .assoc _ _ _ = sym (∙-assoc _ _ _)
 
 Disc′ : Set ℓ → Precategory ℓ ℓ
-Disc′ (A , aset) = Disc A h where abstract
-  h : is-groupoid A
-  h = is-hlevel-suc 2 aset
+Disc′ A = Disc ∣ A ∣ h where abstract
+  h : is-groupoid ∣ A ∣
+  h = is-hlevel-suc 2 (A .is-tr)
 ```
 
 We can lift any function between the underlying types to a functor
@@ -47,7 +47,7 @@ automatically respects equality in a functorial way.
 ```agda
 lift-disc
   : ∀ {A : Set ℓ} {B : Set ℓ'}
-  → (A .fst → B .fst)
+  → (∣ A ∣ → ∣ B ∣)
   → Functor (Disc′ A) (Disc′ B)
 lift-disc f .F₀ = f
 lift-disc f .F₁ = ap f

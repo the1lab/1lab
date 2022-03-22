@@ -63,14 +63,12 @@ the assumed inequalities:
     p1 : (a : C.Ob) ((x , y , r) : Σ[ x ∈ C.Ob ] Σ[ y ∈ C.Ob ] x ~ y)
       → Path (Prop h) (C.Hom x a , C.Hom-is-prop x a) (C.Hom y a , C.Hom-is-prop y a)
     p1 a (x , y , f , g) =
-      Σ-prop-path (λ _ → is-prop-is-prop)
-        (ua (prop-ext (C.Hom-is-prop _ _) (C.Hom-is-prop _ _) (λ h → h C.∘ g) (λ h → h C.∘ f)))
+      n-ua (prop-ext (C.Hom-is-prop _ _) (C.Hom-is-prop _ _) (λ h → h C.∘ g) (λ h → h C.∘ f))
 
     p2 : (a : C.Ob) ((x , y , r) : Σ[ x ∈ C.Ob ] Σ[ y ∈ C.Ob ] x ~ y)
       → Path (Prop h) (C.Hom a x , C.Hom-is-prop a x) (C.Hom a y , C.Hom-is-prop a y)
     p2 a (x , y , f , g) =
-      Σ-prop-path (λ _ → is-prop-is-prop)
-        (ua (prop-ext (C.Hom-is-prop _ _) (C.Hom-is-prop _ _) (λ h → f C.∘ h) (λ h → g C.∘ h)))
+      n-ua (prop-ext (C.Hom-is-prop _ _) (C.Hom-is-prop _ _) (λ h → f C.∘ h) (λ h → g C.∘ h))
 ```
 
 We can then eliminate from our quotient to the `type of
@@ -84,8 +82,8 @@ quotient, hence `Hom′`{.Agda} below exists:
   Hom′ : Ob′ → Ob′ → Prop _
   Hom′ = Coeq-rec₂ (n-Type-is-hlevel 1) (λ x y → C.Hom x y , C.Hom-is-prop x y) p1 p2
 
-  Hom′-prop : ∀ (x y : Ob′) (f g : Hom′ x y .fst) → f ≡ g
-  Hom′-prop x y f g = Hom′ x y .snd f g
+  Hom′-prop : ∀ (x y : Ob′) (f g : ∣ Hom′ x y ∣) → f ≡ g
+  Hom′-prop x y f g = Hom′ x y .is-tr f g
 ```
 
 We can now prove that `Hom′`{.Agda} is `reflexive`{.Agda ident=id′},
@@ -94,15 +92,15 @@ ident=antisym′}. We get these by elimination on the domains/codomains of
 the map:
 
 ```agda
-  id′ : ∀ x → Hom′ x x .fst
-  id′ = Coeq-elim-prop (λ x → Hom′ x x .snd) (λ _ → C.id)
+  id′ : ∀ x → ∣ Hom′ x x ∣
+  id′ = Coeq-elim-prop (λ x → Hom′ x x .is-tr) (λ _ → C.id)
 
-  trans′ : ∀ x y z → Hom′ x y .fst → Hom′ y z .fst → Hom′ x z .fst
+  trans′ : ∀ x y z → ∣ Hom′ x y ∣ → ∣ Hom′ y z ∣ → ∣ Hom′ x z ∣
   trans′ = Coeq-elim-prop₃
-    (λ x _ z → fun-is-hlevel 1 (fun-is-hlevel 1 (Hom′ x z .snd)))
+    (λ x _ z → fun-is-hlevel 1 (fun-is-hlevel 1 (Hom′ x z .is-tr)))
     (λ _ _ _ f g → g C.∘ f)
 
-  antisym′ : ∀ x y → Hom′ x y .fst → Hom′ y x .fst → x ≡ y
+  antisym′ : ∀ x y → ∣ Hom′ x y ∣ → ∣ Hom′ y x ∣ → x ≡ y
   antisym′ = Coeq-elim-prop₂
     (λ x y → fun-is-hlevel 1 (fun-is-hlevel 1 (squash _ _)))
     (λ x y f g → quot (f , g))
@@ -112,11 +110,11 @@ The data above cleanly defines a `Poset`{.Agda}, so we're done!
 
 ```agda
   completed : Poset (o ⊔ h) h
-  completed = make-poset {A = Ob′} {R = λ x y → Hom′ x y .fst}
+  completed = make-poset {A = Ob′} {R = λ x y → ∣ Hom′ x y ∣}
       (λ {x} → id′ x)
       (λ {x} {y} {z} → trans′ x y z)
       (λ {x} {y} → antisym′ x y)
-      (λ {x} {y} → Hom′ x y .snd)
+      (λ {x} {y} → Hom′ x y .is-tr)
 
 open Poset-completion
   renaming (completed to Poset-completion)

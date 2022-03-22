@@ -356,8 +356,8 @@ projection map $\mathrm{fst} : \sum F \to I$.
 
 ```agda
   Total-space : Functor Cat[ Disc′ I , Sets ℓ ] (Slice (Sets ℓ) I)
-  Total-space .F₀ F .domain = Σ (fst ⊙ F₀ F)
-                            , Σ-is-hlevel 2 (I .snd) (snd ⊙ F₀ F)
+  Total-space .F₀ F .domain = Σ (∣_∣ ⊙ F₀ F)
+                            , Σ-is-hlevel 2 (I .is-tr) (is-tr ⊙ F₀ F)
   Total-space .F₀ F .map = fst
 
   Total-space .F₁ nt .map (i , x) = i , nt .η _ x
@@ -381,9 +381,9 @@ naturality, where we use path induction.
     where
       from : /-Hom (Total-space .F₀ f1) (Total-space .F₀ f2) → f1 => f2
       from mp = nt where
-        eta : ∀ i → F₀ f1 i .fst → F₀ f2 i .fst
+        eta : ∀ i → ∣ F₀ f1 i ∣ → ∣ F₀ f2 i ∣
         eta i j =
-          subst (fst ⊙ F₀ f2) (happly (mp .commutes) _) (mp .map (i , j) .snd)
+          subst (∣_∣ ⊙ F₀ f2) (happly (mp .commutes) _) (mp .map (i , j) .snd)
 
         nt : f1 => f2
         nt .η = eta
@@ -399,10 +399,10 @@ naturality, where we use path induction.
       linv x =
         /-Hom-path (funext (λ y →
           Σ-path (sym (happly (x .commutes) _))
-            ( sym (transport-∙ (ap (fst ⊙ F₀ f2) (happly (x .commutes) y))
-                          (sym (ap (fst ⊙ F₀ f2) (happly (x .commutes) y)))
+            ( sym (transport-∙ (ap (∣_∣ ⊙ F₀ f2) (happly (x .commutes) y))
+                          (sym (ap (∣_∣ ⊙ F₀ f2) (happly (x .commutes) y)))
                           _)
-            ·· ap₂ transport (∙-inv-r (ap (fst ⊙ F₀ f2) (happly (x .commutes) y)))
+            ·· ap₂ transport (∙-inv-r (ap (∣_∣ ⊙ F₀ f2) (happly (x .commutes) y)))
                              refl
             ·· transport-refl _)))
 ```
@@ -422,14 +422,12 @@ an isomorphism directly, though it does involve an appeal to univalence.
     where
       functor : Functor _ _
       functor .F₀ i = fibre (fam .map) i
-                    , Σ-is-hlevel 2 (fam .domain .snd)
-                                    λ _ → is-prop→is-set (I .snd _ _)
+                    , Σ-is-hlevel 2 (fam .domain .is-tr)
+                                    λ _ → is-prop→is-set (I .is-tr _ _)
       functor .F₁ p = subst (fibre (fam .map)) p
       functor .F-id = funext transport-refl
       functor .F-∘ f g = funext (subst-∙ (fibre (fam .map)) _ _)
 
       path : F₀ Total-space functor ≡ fam
-      path = /-Obj-path
-        (Σ-prop-path (λ _ → is-hlevel-is-prop 2) (ua (Total-equiv _  e⁻¹)))
-        (ua→ λ a → sym (a .snd .snd))
+      path = /-Obj-path (n-ua (Total-equiv _  e⁻¹)) (ua→ λ a → sym (a .snd .snd))
 ```

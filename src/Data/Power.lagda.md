@@ -38,7 +38,7 @@ element of $P$ if $P(x)$ is inhabited.
 
 ```agda
 _∈_ : X → ℙ X → Type _
-x ∈ P = fst (P x)
+x ∈ P = ∣ P x ∣
 ```
 
 The **subset** relation is defined as is done traditionally: If $x \in
@@ -57,7 +57,7 @@ propositions to each inhabitant of $X$.
 ℙ-ext : {A B : ℙ X}
       → A ⊆ B → B ⊆ A → A ≡ B
 ℙ-ext {A = A} {B = B} A⊆B B⊂A = funext λ x →
-  n-Type-ua {n = 1} (prop-ext (A x .snd) (B x .snd) (A⊆B x) (B⊂A x))
+  n-ua {n = 1} (prop-ext (A x .is-tr) (B x .is-tr) (A⊆B x) (B⊂A x))
 ```
 
 ## Lattice Structure
@@ -75,7 +75,7 @@ minimal : ℙ X
 minimal _ = Lift _ ⊥ , λ x → absurd (Lift.lower x)
 
 _∩_ : ℙ X → ℙ X → ℙ X
-(A ∩ B) x = (A x .fst × B x .fst) , ×-is-hlevel 1 (A x .snd) (B x .snd)
+(A ∩ B) x = (∣ A x ∣ × ∣ B x ∣) , ×-is-hlevel 1 (A x .is-tr) (B x .is-tr)
 ```
 
 Note that in the definition of `union`{.Agda ident=_∪_}, we must
@@ -84,5 +84,5 @@ is nothing which guarantees that A and B are disjoint subsets.
 
 ```agda
 _∪_ : ℙ X → ℙ X → ℙ X
-(A ∪ B) x = ∥ A x .fst ⊎ B x .fst ∥ , squash
+(A ∪ B) x = ∥ ∣ A x ∣ ⊎ ∣ B x ∣ ∥ , squash
 ```

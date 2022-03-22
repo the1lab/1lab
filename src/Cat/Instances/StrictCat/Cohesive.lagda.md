@@ -72,7 +72,7 @@ functor `Γ`{.Agda} we defined above. Then we define the adjunction
 
 ```agda
 Disc : Functor (Sets ℓ) (Strict-Cat ℓ ℓ)
-Disc .F₀ S = Disc′ S , S .snd
+Disc .F₀ S = Disc′ S , S .is-tr
 Disc .F₁ = lift-disc
 Disc .F-id = Functor-path (λ x → refl) λ f → refl
 Disc .F-∘ _ _ = Functor-path (λ x → refl) λ f → refl
@@ -105,7 +105,7 @@ transformation from the identity functor to $\Gamma \circ
 $X$, the identity map suffices:
 
 ```agda
-  adj : _ ⊣ _
+  adj : Disc {ℓ} ⊣ Γ
   adj .unit   = NT (λ _ x → x) λ x y f i o → f o
 ```
 
@@ -147,7 +147,7 @@ identity map suffices.
 Fortunately the triangle identities are straightforwardly checked.
 
 ```agda
-  adj .zig {x} = Functor-path (λ x i → x) λ f → x .snd _ _ _ _
+  adj .zig {x} = Functor-path (λ x i → x) λ f → x .is-tr _ _ _ _
   adj .zag = refl
 ```
 
@@ -161,7 +161,7 @@ trivial.
 
 ```agda
 Codisc : Functor (Sets ℓ) (Strict-Cat ℓ ℓ)
-Codisc .F₀ (S , sset) = Codisc′ S , sset
+Codisc .F₀ S = Codisc′ ∣ S ∣ , S .is-tr
 
 Codisc .F₁ f .F₀ = f
 Codisc .F₁ f .F₁ = λ _ → lift tt
@@ -318,9 +318,9 @@ isomorphism: the set of connected components of a discrete category is
 the same set we started with.
 
 ```agda
-  adj .counit .η (X , s) = Quot-elim (λ _ → s) (λ x → x) λ x y r → r
-  adj .counit .is-natural x (y , ys) f =
-    funext (Coeq-elim-prop (λ _ → ys _ _) λ _ → refl)
+  adj .counit .η X = Quot-elim (λ _ → X .is-tr) (λ x → x) λ x y r → r
+  adj .counit .is-natural x y f =
+    funext (Coeq-elim-prop (λ _ → y .is-tr _ _) λ _ → refl)
 ```
 
 The triangle identities are again straightforwardly checked.
@@ -336,7 +336,7 @@ category are product sets of connected components.
 
 ```agda
 Π₀-preserve-prods
-  : ∀ {C D : Precategory o h} → π₀ (C ×Cat D) .fst ≡ (π₀ C .fst × π₀ D .fst)
+  : ∀ {C D : Precategory o h} → ∣ π₀ (C ×Cat D) ∣ ≡ (∣ π₀ C ∣ × ∣ π₀ D ∣)
 Π₀-preserve-prods {C = C} {D = D} = Iso→Path (f , isom) where
   open is-iso
 ```
@@ -346,7 +346,7 @@ each factor. This maps respect the quotient because we can also split
 the morphisms.
 
 ```agda
-  f : π₀ (C ×Cat D) .fst → π₀ C .fst × π₀ D .fst
+  f : ∣ π₀ (C ×Cat D) ∣ → ∣ π₀ C ∣ × ∣ π₀ D ∣
   f = Quot-elim
     (λ _ → ×-is-hlevel 2 squash squash)
     (λ (a , b) → inc a , inc b)

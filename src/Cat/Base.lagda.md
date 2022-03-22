@@ -1,6 +1,7 @@
 ```agda
 open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Universe
 open import 1Lab.Univalence
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -169,7 +170,7 @@ of that level. This assembles into a `precategory`{.Agda
 ident=Precategory} quite nicely, since functions preserve h-levels.
 
 [universe level]: agda://1Lab.Type
-[all sets]: agda://1Lab.HLevel#Set
+[all sets]: agda://1Lab.HLevel.Universe#Set
 
 ```agda
 module _ where
@@ -177,9 +178,9 @@ module _ where
 
   Sets : (o : _) → Precategory (lsuc o) o
   Sets o .Ob = Set o
-  Sets o .Hom A B = A .fst → B .fst
-  Sets o .Hom-set _ (B , bset) f g p q i j a =
-    bset (f a) (g a) (happly p a) (happly q a) i j
+  Sets o .Hom A B = ∣ A ∣ → ∣ B ∣
+  Sets o .Hom-set _ B f g p q i j a =
+    B .is-tr (f a) (g a) (happly p a) (happly q a) i j
   Sets o .id x = x
   Sets o ._∘_ f g x = f (g x)
   Sets o .idl f = refl
