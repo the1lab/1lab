@@ -24,7 +24,7 @@ displayed over `Sets`{.Agda}, regardless of the size of the object- and
 Hom-spaces of $\mathcal{C}$.
 
 The collection of displayed object over $S$ is given by the space of
-functors $[\mathrm{Disc}(S),C]$, regarding $S$ as a discrete category.
+functors $[\id{Disc}(S),C]$, regarding $S$ as a discrete category.
 This is essentially an $S$-indexed family of objects of $C$, hence the
 name "family fibration".
 
@@ -48,7 +48,7 @@ Family .Hom[_]-set f x y = Nat-is-set
 
 The identity and composition operations are given by the identity and
 composite natural transformations; However, we can not reuse the
-existing implementations because $\mathrm{id}*F$ is not the same term as
+existing implementations because $\id{id}*F$ is not the same term as
 $F$.
 
 ```agda

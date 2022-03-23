@@ -236,7 +236,7 @@ Int-rec₂ : ∀ {ℓ} {B : Type ℓ}
 
 In addition, we must have that these two _paths_ `pl` and `pr` are
 _coherent_. There are two ways of obtaining an equality $f(a, b, x, y) =
-f(\mathrm{S}a,\mathrm{S}b,\mathrm{S}x,\mathrm{S}y)$ (`pl` after `pr` and
+f(\id{S}a,\id{S}b,\id{S}x,\id{S}y)$ (`pl` after `pr` and
 `pr` after `pl`, respectively) and these _must_ be homotopic:
 
 ```agda
@@ -251,17 +251,17 @@ The type of `square` says that we need the following square of paths to
 commute, which says exactly that `pl ∙ pr` and `pr ∙ pl` are homotopic
 and imposes no further structure on $X$[^1]:
 
-[^1]: In the diagram, we write $\mathrm{S}x$ for `suc x`.
+[^1]: In the diagram, we write $\id{S}x$ for `suc x`.
 
 ~~~{.quiver .tall-1}
 \[\begin{tikzcd}
-  {f(a,b,x,y)} && {f(a,b,\mathrm{S}x,\mathrm{S}y)} \\
+  {f(a,b,x,y)} && {f(a,b,\id{S}x,\id{S}y)} \\
   \\
-  {f(\mathrm{S}a,\mathrm{S}b, x, y)} && {f(\mathrm{S}a,\mathrm{S}b,\mathrm{S}x,\mathrm{S}y)}
+  {f(\id{S}a,\id{S}b, x, y)} && {f(\id{S}a,\id{S}b,\id{S}x,\id{S}y)}
   \arrow["{pl(a,b,x,y)}", from=1-1, to=3-1]
   \arrow["{pr(a,b,x,y)}", from=1-1, to=1-3]
-  \arrow["{pl(a,b,\mathrm{S}x,\mathrm{S}y)}"', from=1-3, to=3-3]
-  \arrow["{pr(\mathrm{S}a,\mathrm{S}b,x,y)}"', from=3-1, to=3-3]
+  \arrow["{pl(a,b,\id{S}x,\id{S}y)}"', from=1-3, to=3-3]
+  \arrow["{pr(\id{S}a,\id{S}b,x,y)}"', from=3-1, to=3-3]
 \end{tikzcd}\]
 ~~~
 

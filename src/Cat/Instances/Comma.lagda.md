@@ -38,8 +38,8 @@ _up to a natural transformation_ $\theta$. Note the similarity with a
   \mathcal{B}     && \mathcal{C}
   \arrow["F", from=1-3, to=3-3]
   \arrow["G"', from=3-1, to=3-3]
-  \arrow["{\mathrm{dom}}", from=1-1, to=1-3]
-  \arrow["{\mathrm{cod}}"', from=1-1, to=3-1]
+  \arrow["{\id{dom}}", from=1-1, to=1-3]
+  \arrow["{\id{cod}}"', from=1-1, to=3-1]
   \arrow["\theta"{description}, Rightarrow, from=1-1, to=3-3]
 \end{tikzcd}\]
 ~~~

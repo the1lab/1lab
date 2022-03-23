@@ -157,7 +157,7 @@ The answer is yes! However, the witness of  constancy we use must be
 very coherent indeed. In particular, we need enough coherence on top of
 a family of paths $(x\ y : A) \to f x \equiv_B f y$ to ensure that the
 image of $f$ is a proposition; Then we can map from $\| A \| \to
-\mathrm{im}(f) \to B$.
+\id{im}(f) \to B$.
 
 From the discussion in [1Lab.Counterexamples.Sigma], we know the
 definition of image, or more properly of $(-1)$-image:
@@ -174,7 +174,7 @@ we define a way to factor any map through its image. By the definition
 of image, we have that the map `f-image`{.Agda} is always surjective,
 and since `∃` is a family of props, the first projection out of
 `image`{.Agda} is an embedding. Thus we factor a map $f$ as $A \epi
-\mathrm{image}(f) \mono B$.
+\id{image}(f) \mono B$.
 
 ```agda
 f-image
@@ -185,7 +185,7 @@ f-image f x = f x , inc (x , refl)
 
 We now prove the theorem that will let us map out of a propositional
 truncation using a constant function into sets: if $B$ is a set, and $f
-: A \to B$ is a constant function, then $\mathrm{image}(f)$ is a
+: A \to B$ is a constant function, then $\id{image}(f)$ is a
 proposition.
 
 ```agda

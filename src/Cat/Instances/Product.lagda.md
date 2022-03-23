@@ -19,7 +19,7 @@ private variable
 Given two categories $\ca{C}$ and $\ca{D}$, we construct their product
 $\ca{C} \times_\cat \ca{D}$. The objects of the product are
 pairs $(x,y)$ where $x \in \ca{C}$ and $y \in \ca{D}$; The product
-admits projection functors $\ca{C} \times_\mathrm{Cat} \ca{D} \to
+admits projection functors $\ca{C} \times_\id{Cat} \ca{D} \to
 \ca{C}$ (onto both factors, not just the first), and given a diagram of
 categories as below, there is a unique (in the bicategorical sense)
 functor $\mathcal{A} \to \ca{C} \times_\cat \ca{D}$ making the
@@ -28,7 +28,7 @@ diagram commute.
 ~~~{.quiver}
 \[\begin{tikzcd}
   & {\mathcal{A}} \\
-  {\mathcal{C}} & {\mathcal{C} \times_\mathrm{Cat} \mathcal{D}} & {\mathcal{D}}
+  {\mathcal{C}} & {\mathcal{C} \times_\id{Cat} \mathcal{D}} & {\mathcal{D}}
   \arrow["{\exists!}", dashed, from=1-2, to=2-2]
   \arrow[from=1-2, to=2-1]
   \arrow[from=1-2, to=2-3]

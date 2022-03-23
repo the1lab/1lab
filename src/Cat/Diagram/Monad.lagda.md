@@ -18,7 +18,7 @@ concept of [monoid]. Specifically, rather than living in a monoidal
 category, a monad lives in a bicategory. Here, we concern ourselves with
 the case of monads in the bicategory of categories, so that we may say:
 A monad is an endofunctor $M$, equipped with a `unit`{.Agda} natural
-transformation $\mathrm{Id} \To M$, and a `multiplication`{.Agda
+transformation $\id{Id} \To M$, and a `multiplication`{.Agda
 ident=mult} $(M \circ M) \To M$.
 
 [monoid]: Algebra.Monoid.html

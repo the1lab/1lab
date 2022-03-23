@@ -235,14 +235,14 @@ along the diagonal map:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  {\mathrm{eq}(f,g)} && A \\
+  {\id{eq}(f,g)} && A \\
   \\
   B && {B \times B}
-  \arrow["{\mathrm{equ}}", from=1-1, to=1-3]
+  \arrow["{\id{equ}}", from=1-1, to=1-3]
   \arrow[from=1-1, to=3-1]
   \arrow["{\langle f,g\rangle}", from=1-3, to=3-3]
   \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=3-3]
-  \arrow["{\langle \mathrm{id}, \mathrm{id}\rangle}"', from=3-1, to=3-3]
+  \arrow["{\langle \id{id}, \id{id}\rangle}"', from=3-1, to=3-3]
 \end{tikzcd}\]
 ~~~
 
@@ -266,12 +266,12 @@ The actual equaliser map is the top, horizontal face (what the code
 calls `Pb.p₂`{.Agda}), so we must show that, composed with this map, $f$
 and $g$ become equal. Here's where we use the fact that pullback
 squares, well, commute: We know that $f$ is $\pi_1 \circ \langle f , g
-\rangle$, and that $\langle f , g \rangle \circ \mathrm{equ} = \langle
-\mathrm{id}, \mathrm{id} \rangle$ (since the square above is a pullback).
+\rangle$, and that $\langle f , g \rangle \circ \id{equ} = \langle
+\id{id}, \id{id} \rangle$ (since the square above is a pullback).
 
-But both projections out of $\langle \mathrm{id}, \mathrm{id} \rangle$
+But both projections out of $\langle \id{id}, \id{id} \rangle$
 are equal, so we can apply commutativity of the square above _again_ to
-conclude that $f \circ \mathrm{equ} = g \circ \mathrm{equ}$.
+conclude that $f \circ \id{equ} = g \circ \id{equ}$.
 
 ```agda
     eq : Equaliser f g
@@ -288,20 +288,20 @@ conclude that $f \circ \mathrm{equ} = g \circ \mathrm{equ}$.
 
 We must now show that if $e'$ is another map which equalises $f$ and
 $g$, then it fits into a commutative diagram like the one below, so that
-we may conclude the dashed arrow $E' \to \mathrm{eq}(f,g)$ exists and is
+we may conclude the dashed arrow $E' \to \id{eq}(f,g)$ exists and is
 unique.
 
 ~~~{.quiver .tall-2}
 \[\begin{tikzcd}
   {E'} \\
-  & {\mathrm{eq}(f,g)} && A \\
+  & {\id{eq}(f,g)} && A \\
   \\
   & B && {B \times B}
-  \arrow["{\mathrm{equ}}", from=2-2, to=2-4]
+  \arrow["{\id{equ}}", from=2-2, to=2-4]
   \arrow["{\langle f, g \rangle}", from=2-4, to=4-4]
   \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=2-2, to=4-4]
   \arrow[from=2-2, to=4-2]
-  \arrow["{\langle \mathrm{id}, \mathrm{id} \rangle}"', from=4-2, to=4-4]
+  \arrow["{\langle \id{id}, \id{id} \rangle}"', from=4-2, to=4-4]
   \arrow["{e'}", curve={height=-6pt}, from=1-1, to=2-4]
   \arrow["{\exists!}"', dashed, from=1-1, to=2-2]
 \end{tikzcd}\]
@@ -309,7 +309,7 @@ unique.
 
 A bit of boring limit-chasing lets us conclude that this diagram _does_
 commute, hence the dashed arrow _does_ exist (uniquely!), so that the
-top face $\mathrm{equ} : \mathrm{eq}(f,g) \to A$ in our pullback diagram
+top face $\id{equ} : \id{eq}(f,g) \to A$ in our pullback diagram
 is indeed the equaliser of $f$ and $g$.
 
 ```agda
@@ -377,7 +377,7 @@ with-top-and-meets thin top meets = fc where
 For equalisers, note that since any pair of parallel arrows $f, g : A
 \to B$ was assumed to be equal (since the category is thin), we can take
 the domain of the equaliser to be $A$ and the equalising arrow to be
-$\mathrm{id}$.
+$\id{id}$.
 
 ```agda
   fc .equalisers {A} {B} f g = equalise where

@@ -41,7 +41,7 @@ Cayley x = Iso→Equiv bij where
 ```
 
 We then show that this map is a group homomorphism from $G$ to
-$\mathrm{Sym}(G)$:
+$\id{Sym}(G)$:
 
 ```agda
 Cayley-is-hom : Group-hom G (Sym G-set) Cayley
@@ -51,7 +51,7 @@ Cayley-is-hom .Group-hom.pres-⋆ x y = Σ-prop-path is-equiv-is-prop (funext le
 ```
 
 Finally, we show that this map is injective; Thus, $G$ embeds as a
-subgroup of $\mathrm{Sym}(G)$ (the image of `Cayley`{.Agda}).
+subgroup of $\id{Sym}(G)$ (the image of `Cayley`{.Agda}).
 
 ```agda
 Cayley-injective : injective Cayley

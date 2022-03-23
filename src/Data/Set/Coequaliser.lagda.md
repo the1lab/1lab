@@ -17,7 +17,7 @@ private variable
 In their most general form, colimits can be pictured as taking disjoint
 unions and then "gluing together" some parts. The "gluing together" part
 of that definition is where **coequalisers** come in: If you have
-parallel maps $f, g : A \to B$, then the coequaliser $\mathrm{coeq}(f,g)$
+parallel maps $f, g : A \to B$, then the coequaliser $\id{coeq}(f,g)$
 can be thought of as "$B$, with the images of $f$ and $g$ identified".
 
 ```agda
@@ -28,7 +28,7 @@ data Coeq (f g : A → B) : Type (level-of A ⊔ level-of B) where
 ```
 
 The universal property of coequalisers, being a type of colimit, is a
-_mapping-out_ property: Maps _from_ $\mathrm{coeq}(f,g)$ are maps out of
+_mapping-out_ property: Maps _from_ $\id{coeq}(f,g)$ are maps out of
 $B$, satisfying a certain property. Specifically, for a map $h : B \to
 C$, if we have $h \circ f = h \circ g$, then the map $f$ factors
 (uniquely) through `inc`{.Agda}. The situation can be summarised with
@@ -36,11 +36,11 @@ the diagram below.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  A & B & {\mathrm{coeq}(f,g)} \\
+  A & B & {\id{coeq}(f,g)} \\
   && C
   \arrow["f", shift left=1, from=1-1, to=1-2]
   \arrow["g"', shift right=1, from=1-1, to=1-2]
-  \arrow["{\mathrm{inc}}", from=1-2, to=1-3]
+  \arrow["{\id{inc}}", from=1-2, to=1-3]
   \arrow["h"', from=1-2, to=2-3]
   \arrow["{\exists!}", dashed, from=1-3, to=2-3]
 \end{tikzcd}\]
@@ -62,7 +62,7 @@ Coeq-rec cset h h-coeqs (squash x y p q i j) =
 An alternative phrasing of the desired universal property is
 precomposition with `inc`{.Agda} induces an equivalence between the
 "space of maps $B \to C$ which coequalise $f$ and $g$" and the maps
-$\mathrm{coeq}(f,g) \to C$. In this sense, `inc`{.Agda} is the universal
+$\id{coeq}(f,g) \to C$. In this sense, `inc`{.Agda} is the universal
 map which coequalises $f$ and $g$.
 
 <!--
@@ -114,7 +114,7 @@ private
 ```
 
 The universal property of `Coeq`{.Agda} then says that
-`Coeq-cone`{.Agda} is equivalent to the maps $\mathrm{coeq}(f,g) \to C$,
+`Coeq-cone`{.Agda} is equivalent to the maps $\id{coeq}(f,g) \to C$,
 and this equivalence is given by `inc`{.Agda}, the "universal
 Coequalising map".
 
@@ -140,8 +140,8 @@ Coeq-univ {C = C} {f = f} {g = g} cset =
 # Elimination
 
 Above, we defined what it means to define a dependent function $(x :
-\mathrm{coeq}(f,g)) \to C\ x$ when $C$ is a family of propositions, and
-what it means to define a non-dependent function $\mathrm{coeq}(f,g) \to
+\id{coeq}(f,g)) \to C\ x$ when $C$ is a family of propositions, and
+what it means to define a non-dependent function $\id{coeq}(f,g) \to
 C$. Now, we combine the two notions, and allow dependent elimination
 into families of sets:
 
@@ -325,10 +325,10 @@ module _ {A : Type ℓ} {R : A → A → Type ℓ'}
 ```
 
 We will show this using an encode-decode method. For each $x : A$, we
-define a type family $\mathrm{Code}_x(p)$, which represents an equality
-$\mathrm{inc}(x) = y$. Importantly, the fibre over $\mathrm{inc}(y)$
+define a type family $\id{Code}_x(p)$, which represents an equality
+$\id{inc}(x) = y$. Importantly, the fibre over $\id{inc}(y)$
 will be $R(x, y)$, so that the existence of functions converting between
-$\mathrm{Code}_x(y)$ and paths $\mathrm{inc}(x) = y$ is enough to
+$\id{Code}_x(y)$ and paths $\id{inc}(x) = y$ is enough to
 establish effectivity of the quotient.
 
 ```agda
@@ -343,7 +343,7 @@ establish effectivity of the quotient.
 
 We do quotient induction into the `type of propositions`{.Agda
 ident=Prop}, which by univalence `is a set`{.Agda ident=n-Type-is-hlevel}.
-Since the fibre over $\mathrm{inc}(y)$ must be $R(x, y)$, that's what we
+Since the fibre over $\id{inc}(y)$ must be $R(x, y)$, that's what we
 give for the `inc`{.Agda} constructor (`{- 1 -}`{.Agda}, above). For
 this to respect the quotient, it suffices to show that, given $R(y,z)$,
 we have $R(x,y) \Leftrightarrow R(x,z)$, which follows from the
@@ -362,7 +362,7 @@ assumption that $R$ is an equivalence relation (`{- 2 -}`{.Agda}).
 For `encode`{.Agda}, it suffices to transport the proof that $R$ is
 reflexive along the given proof, and for decoding, we eliminate from the
 quotient to a proposition. It boils down to establishing that $R(x,y)
-\to \mathrm{inc}(x) \equiv \mathrm{inc}(y)$, which is what the
+\to \id{inc}(x) \equiv \id{inc}(y)$, which is what the
 constructor `quot`{.Agda} says. Putting this all together, we get a
 proof that equivalence relations are `effective`{.Agda}.
 

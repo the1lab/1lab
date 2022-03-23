@@ -20,16 +20,16 @@ proposition](agda://1Lab.HLevel#is-prop).
 [univalence axiom]: 1Lab.Univalence.html
 
 To be more specific, what we need for a notion of equivalence
-$\mathrm{is-equiv}(f)$ to be "coherent" is:
+$\id{is-equiv}(f)$ to be "coherent" is:
 
 - Being an `isomorphism`{.Agda ident=is-iso} implies being an
-`equivalence`{.Agda ident=is-equiv} ($\mathrm{is-iso}(f) \to
-\mathrm{is-equiv}(f)$)
+`equivalence`{.Agda ident=is-equiv} ($\id{is-iso}(f) \to
+\id{is-equiv}(f)$)
 
-- Being an equivalence implies being an isomorphism
-($\mathrm{is-equiv}(f) \to \mathrm{is-iso}(f)$); Taken together with the
-first point we may summarise: "Being an equivalence and being an
-isomorphism are logically equivalent."
+- Being an equivalence implies being an isomorphism ($\id{is-equiv}(f)
+\to \id{is-iso}(f)$); Taken together with the first point we may
+summarise: "Being an equivalence and being an isomorphism are logically
+equivalent."
 
 - Most importantly, being an equivalence _must_ be a proposition.
 
@@ -411,7 +411,7 @@ filler for the square above.
 ```
 
 Observe that we can coherently alter $\theta$ to get $\iota$ below,
-which expresses that $\mathrm{ap}\ g\ p_0$ and $\mathrm{ap}\ g\ p_1$ are
+which expresses that $\id{ap}\ g\ p_0$ and $\id{ap}\ g\ p_1$ are
 identified.
 
 ```agda
@@ -426,9 +426,9 @@ identified.
 
 This composition can be visualised as the _red_ (front) face in the
 diagram below. The back face is $\theta\ i\ (\neg\ j)$, i.e. `(θ i (~
-j))` in the code. Similarly, the $j = \mathrm{i1}$ (bottom) face is `g
-y`, the $j = \mathrm{i0}$ (top) face is `t (π i) (~ k)`, and similarly
-for $i = \mathrm{i0}$ (left) and $i = \mathrm{i1}$ (right).
+j))` in the code. Similarly, the $j = \id{i1}$ (bottom) face is `g y`,
+the $j = \id{i0}$ (top) face is `t (π i) (~ k)`, and similarly for $i =
+\id{i0}$ (left) and $i = \id{i1}$ (right).
 
 ~~~{.quiver .tall-2}
 \[\begin{tikzcd}
@@ -442,11 +442,11 @@ for $i = \mathrm{i0}$ (left) and $i = \mathrm{i1}$ (right).
   \arrow[""{name=2, anchor=center, inner sep=0}, "{\pi_0}", color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=4-2]
   \arrow[""{name=3, anchor=center, inner sep=0}, "{\pi_1}"', color={rgb,255:red,92;green,92;blue,214}, from=2-4, to=4-4]
   \arrow[from=4-4, to=5-5]
-  \arrow[""{name=4, anchor=center, inner sep=0}, "{\mathrm{ap}\ (g \circ f)\ \pi}", color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-5]
+  \arrow[""{name=4, anchor=center, inner sep=0}, "{\id{ap}\ (g \circ f)\ \pi}", color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-5]
   \arrow[""{name=5, anchor=center, inner sep=0}, "{g\ y}"', color={rgb,255:red,214;green,92;blue,92}, from=5-1, to=5-5]
   \arrow[from=2-4, to=1-5]
-  \arrow[""{name=6, anchor=center, inner sep=0}, "{\mathrm{ap}\ g\ p_1}", color={rgb,255:red,214;green,92;blue,92}, from=1-5, to=5-5]
-  \arrow[""{name=7, anchor=center, inner sep=0}, "{\mathrm{ap}\ g\ p_0}"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=5-1]
+  \arrow[""{name=6, anchor=center, inner sep=0}, "{\id{ap}\ g\ p_1}", color={rgb,255:red,214;green,92;blue,92}, from=1-5, to=5-5]
+  \arrow[""{name=7, anchor=center, inner sep=0}, "{\id{ap}\ g\ p_0}"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=5-1]
   \arrow[from=2-2, to=1-1]
   \arrow[from=4-2, to=5-1]
   \arrow["{\theta\ i\ (\neg\ j)}"{description}, color={rgb,255:red,92;green,92;blue,214}, Rightarrow, draw=none, from=1, to=0]
@@ -475,8 +475,8 @@ above to get what we wanted: $p_0 ≡ p_1$.
 ```
 
 The composition above can be visualised as the front (red) face in the
-cubical diagram below. Once more, left is $i = \mathrm{i0}$, right is $i
-= \mathrm{i1}$, up is $j = \mathrm{i0}$, and down is $j = \mathrm{i1}$.
+cubical diagram below. Once more, left is $i = \id{i0}$, right is $i =
+\id{i1}$, up is $j = \id{i0}$, and down is $j = \id{i1}$.
 
 ~~~{.quiver .tall-2}
 \small
@@ -487,13 +487,13 @@ cubical diagram below. Once more, left is $i = \mathrm{i0}$, right is $i
   & \textcolor{rgb,255:red,92;green,92;blue,214}{f\ (g\ y)} && \textcolor{rgb,255:red,92;green,92;blue,214}{f\ (g\ y)} \\
   \textcolor{rgb,255:red,214;green,92;blue,92}{y} &&&& \textcolor{rgb,255:red,214;green,92;blue,92}{y}
   \arrow[""{name=0, anchor=center, inner sep=0}, "{p_1}", from=1-5, to=5-5]
-  \arrow[""{name=1, anchor=center, inner sep=0}, "{\mathrm{ap}\ f\ \pi}", color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-5]
+  \arrow[""{name=1, anchor=center, inner sep=0}, "{\id{ap}\ f\ \pi}", color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-5]
   \arrow[""{name=2, anchor=center, inner sep=0}, "{p_0}"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=5-1]
   \arrow[""{name=3, anchor=center, inner sep=0}, "y"', color={rgb,255:red,214;green,92;blue,92}, from=5-1, to=5-5]
-  \arrow[""{name=4, anchor=center, inner sep=0}, "{\mathrm{ap}\ (f \circ g\circ f)\ \pi}"', color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=2-4]
+  \arrow[""{name=4, anchor=center, inner sep=0}, "{\id{ap}\ (f \circ g\circ f)\ \pi}"', color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=2-4]
   \arrow[""{name=5, anchor=center, inner sep=0}, "{f(g\ y)}", color={rgb,255:red,92;green,92;blue,214}, from=4-2, to=4-4]
-  \arrow[""{name=6, anchor=center, inner sep=0}, "{\mathrm{ap}\ f\ p_1}"', color={rgb,255:red,92;green,92;blue,214}, from=2-4, to=4-4]
-  \arrow[""{name=7, anchor=center, inner sep=0}, "{\mathrm{ap}\ f\ p_0}", color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=4-2]
+  \arrow[""{name=6, anchor=center, inner sep=0}, "{\id{ap}\ f\ p_1}"', color={rgb,255:red,92;green,92;blue,214}, from=2-4, to=4-4]
+  \arrow[""{name=7, anchor=center, inner sep=0}, "{\id{ap}\ f\ p_0}", color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=4-2]
   \arrow[from=2-2, to=1-1]
   \arrow[from=2-4, to=1-5]
   \arrow[from=4-4, to=5-5]

@@ -109,7 +109,7 @@ We refer to a [univalent] `thin`{.Agda ident=is-thin} category as a
 **poset**, short for partially-ordered set. Recall that a category
 $\ca{C}$ is _univalent_ when the type $\sum_{(B : \ca{C})} A \cong B$ is
 contractible for any fixed $A : \ca{C}$ or (more useful here) we have a
-function $\mathrm{iso→path} : A \cong B \to A \equiv B$ sending the
+function $\id{iso→path} : A \cong B \to A \equiv B$ sending the
 identity isomorphism to `refl`{.Agda}.
 
 In a thin category, any pair of maps $(A \to B) \times (B \ot A)$ is an

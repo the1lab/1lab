@@ -82,9 +82,9 @@ varies in the other category.
 
 ```agda
 Left : D.Ob → Functor C E
-Functor.F₀ (Left y) x = F₀ (x , y)
-Functor.F₁ (Left y) f = first f
-Functor.F-id (Left y) = F-id
+Functor.F₀ (Left y) x    = F₀ (x , y)
+Functor.F₁ (Left y) f    = first f
+Functor.F-id (Left y)    = F-id
 Functor.F-∘ (Left y) f g = first∘first
 
 Right : C.Ob → Functor D E
@@ -93,7 +93,7 @@ Functor.F₁ (Right x) f = second f
 Functor.F-id (Right x) = F-id
 Functor.F-∘ (Right x) f g = second∘second
 
-Flip : Functor (D ×Cat C) E
+Flip : Functor (D ×Cat C) E
 Functor.F₀ Flip (fst , snd) = F₀ (snd , fst)
 Functor.F₁ Flip (fst , snd) = F₁ (snd , fst)
 Functor.F-id Flip    = F-id

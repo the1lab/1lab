@@ -23,7 +23,7 @@ private variable
 
 Given a `pointed type`{.Agda ident=Type∙} $(A, a)$ we refer to the type
 $a = a$ as the **loop space of $A$**, and refer to it in short as
-$\Omega A$. Since we always have $\mathrm{refl} : a = a$, $\Omega A$ is
+$\Omega A$. Since we always have $\id{refl} : a = a$, $\Omega A$ is
 _itself_ a pointed type, the construction can be iterated, a process
 which we denote $\Omega^n A$.
 
@@ -130,10 +130,10 @@ that `path`{.Agda} is a group homomorphism. More specifically,
   \bullet && \bullet \\
   \\
   \bullet && \bullet
-  \arrow["{\mathrm{refl}}"', from=1-1, to=3-1]
-  \arrow["{\mathrm{path}(x)}", from=1-1, to=1-3]
-  \arrow["{\mathrm{path}(y)}", from=1-3, to=3-3]
-  \arrow["{\mathrm{path}(x \star y)}"', from=3-1, to=3-3]
+  \arrow["{\id{refl}}"', from=1-1, to=3-1]
+  \arrow["{\id{path}(x)}", from=1-1, to=1-3]
+  \arrow["{\id{path}(y)}", from=1-3, to=3-3]
+  \arrow["{\id{path}(x \star y)}"', from=3-1, to=3-3]
 \end{tikzcd}\]
 ~~~
 
@@ -229,7 +229,7 @@ $(n+1)$-type, this is a groupoid. To arrange that the fibre over
 the elimination. This locks us into giving a family of automorphisms
 `map : G → G ≡ G` for the `path`{.Agda} constructor; The constructor
 `path-sq`{.Agda} then requires that `map` be a homomorphism from $G$ to
-$\mathrm{Aut}(G)$.
+$\id{Aut}(G)$.
 
 ```agda
     where

@@ -400,7 +400,7 @@ Furthermore, since we're working with categories, these isomorphisms
 restrict to _paths_ $x \equiv y$ and $F(x) \equiv F(y)$. We're
 half-done: we've shown that some $p : x \equiv y$ exists, and it remains to
 show that over this path we have $i \equiv j$. More specifically, we
-must give a path $i \equiv j$ laying over $\mathrm{ap}(F)(p)$.
+must give a path $i \equiv j$ laying over $\id{ap}(F)(p)$.
 
 ```agda
     x≡y : x ≡ y
@@ -422,7 +422,7 @@ the result with far less computation:
       (Hom-pathp-reflʳ-iso D dcat (D.cancelr (i .D._≅_.invˡ)))
 ```
 
-We must then connect $\mathrm{ap}(F)(p)$ with this path $F(x) \cong
+We must then connect $\id{ap}(F)(p)$ with this path $F(x) \cong
 F(y)$. But since we originally got $p$ by full faithfulness of $F$, they
 _are_ indeed the same path:
 

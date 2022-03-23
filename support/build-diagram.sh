@@ -14,6 +14,7 @@ cat <<EOF
 \usepackage{mathpazo}
 \usepackage[T1]{fontenc}
 
+\newcommand{\id}[1]{\mathrm{#1}}
 \usetikzlibrary{calc}
 \usetikzlibrary{decorations.pathmorphing}
 \definecolor{eee}{HTML}{EEEEEE}

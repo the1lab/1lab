@@ -60,7 +60,7 @@ module Groups {ℓ} = CR (Groups ℓ)
 ## The underlying set
 
 The category of groups admits a `faithful`{.Agda ident=is-faithful}
-functor into the category of sets, written $U : \mathrm{Groups} \to
+functor into the category of sets, written $U : \id{Groups} \to
 \sets$, which projects out the underlying set of the group. Faithfulness
 of this functor says, in more specific words, that equality of group
 homomorphisms can be tested by comparing the underlying morphisms of

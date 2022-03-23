@@ -169,11 +169,11 @@ the square below:
 \[\begin{tikzcd}
   x && y \\
   \\
-  {C \mathrm{.centre}} && {C .\mathrm{centre}}
+  {C \id{.centre}} && {C .\id{centre}}
   \arrow[dashed, from=1-1, to=1-3]
-  \arrow["{C \mathrm{.paths}\ x\ j}", from=3-1, to=1-1]
-  \arrow["{C \mathrm{.paths}\ y\ j}"', from=3-3, to=1-3]
-  \arrow["{C \mathrm{.centre}}"', from=3-1, to=3-3]
+  \arrow["{C \id{.paths}\ x\ j}", from=3-1, to=1-1]
+  \arrow["{C \id{.paths}\ y\ j}"', from=3-3, to=1-3]
+  \arrow["{C \id{.centre}}"', from=3-1, to=3-3]
 \end{tikzcd}\]
 ~~~
 

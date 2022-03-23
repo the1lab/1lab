@@ -133,11 +133,10 @@ internally as a `Path`{.Agda} because `I`{.Agda} is not in
 “fibrant universe” `Type`{.Agda}. Instead it lives in `SSet`, or, in
 Agda 2.6.3, its own universe -- `IUniv`.
 
-- $x \land \mathrm{i0} = \mathrm{i0}$, $x \land \mathrm{i1} = x$
-- $x \lor \mathrm{i0} = x$, $x \lor \mathrm{i1} = \mathrm{i1}$
+- $x \land \id{i0} = \id{i0}$, $x \land \id{i1} = x$
+- $x \lor \id{i0} = x$, $x \lor \id{i1} = \id{i1}$
 - $\neg(x \land y) = \neg x \lor \neg y$
-- $\neg\mathrm{i0} = \mathrm{i1}$, $\neg\mathrm{i1} = \mathrm{i0}$,
-$\neg\neg x = x$
+- $\neg\id{i0} = \id{i1}$, $\neg\id{i1} = \id{i0}$, $\neg\neg x = x$
 - $\land$ and $\lor$ are both associative, commutative and idempotent,
 and distribute over eachother.
 
@@ -208,8 +207,8 @@ faces.
   a && b
   \arrow["p", from=1-1, to=1-3]
   \arrow["p"', from=3-1, to=3-3]
-  \arrow["{\mathrm{refl}}"{description}, from=1-1, to=3-1]
-  \arrow["{\mathrm{refl}}"{description}, from=1-3, to=3-3]
+  \arrow["{\id{refl}}"{description}, from=1-1, to=3-1]
+  \arrow["{\id{refl}}"{description}, from=1-3, to=3-3]
 \end{tikzcd}\]
 ~~~
 
@@ -218,8 +217,8 @@ faces.
   a && a \\
   \\
   b && b
-  \arrow["{\mathrm{refl}}", from=1-1, to=1-3]
-  \arrow["{\mathrm{refl}}"', from=3-1, to=3-3]
+  \arrow["{\id{refl}}", from=1-1, to=1-3]
+  \arrow["{\id{refl}}"', from=3-1, to=3-3]
   \arrow["p"{description}, from=1-1, to=3-1]
   \arrow["p"{description}, from=1-3, to=3-3]
 \end{tikzcd}\]
@@ -248,9 +247,9 @@ These correspond to the following two squares:
   a && a \\
   \\
   a && b
-  \arrow["{\mathrm{refl}}", from=1-1, to=1-3]
+  \arrow["{\id{refl}}", from=1-1, to=1-3]
   \arrow["p"', from=3-1, to=3-3]
-  \arrow["{\mathrm{refl}}"{description}, from=1-1, to=3-1]
+  \arrow["{\id{refl}}"{description}, from=1-1, to=3-1]
   \arrow["{p}"{description}, from=1-3, to=3-3]
 \end{tikzcd}\]
 ~~~
@@ -261,9 +260,9 @@ These correspond to the following two squares:
   \\
   b && b
   \arrow["{p}", from=1-1, to=1-3]
-  \arrow["{\mathrm{refl}}"', from=3-1, to=3-3]
+  \arrow["{\id{refl}}"', from=3-1, to=3-3]
   \arrow["p"{description}, from=1-1, to=3-1]
-  \arrow["{\mathrm{refl}}"{description}, from=1-3, to=3-3]
+  \arrow["{\id{refl}}"{description}, from=1-3, to=3-3]
 \end{tikzcd}\]
 ~~~
 
@@ -702,7 +701,7 @@ their common endpoints:
   x && y \\
   \\
   w && z
-  \arrow["{\mathrm{sym}\ p}"', from=1-1, to=3-1]
+  \arrow["{\id{sym}\ p}"', from=1-1, to=3-1]
   \arrow["q", from=1-1, to=1-3]
   \arrow["r", from=1-3, to=3-3]
 \end{tikzcd}\]
@@ -727,7 +726,7 @@ is by using the `Partial`{.Agda} type former.
 
 The `Partial`{.Agda} type former takes two arguments: A _formula_
 $\varphi$, and a _type_ $A$. The idea is that a term of type
-$\mathrm{Partial}\ \varphi\ A$ in a context with $n$ `I`{.Agda}-typed
+$\id{Partial}\ \varphi\ A$ in a context with $n$ `I`{.Agda}-typed
 variables is a $n$-cube that is only defined when $\varphi$ "is true". In
 Agda, formulas are represented using the De Morgan structure of the
 interval, and they are "true" when they are equal to 1. The predicate
@@ -753,7 +752,7 @@ completely unrelated values at each endpoint of the interval.
 
 ~~~{.quiver .short-2}
 \[\begin{tikzcd}
-  {\mathrm{true}} && {\mathrm{false}}
+  {\id{true}} && {\id{false}}
 \end{tikzcd}\]
 ~~~
 
@@ -786,8 +785,8 @@ to a honest-to-god _element_ of $A$, which agrees with $e$ where it is
 defined?
 
 Specifically, when this is the case, we say that $x : A$ _extends_ $e :
-\mathrm{Partial}\ \varphi\ A$. We could represent this very generically as
-a _lifting problem_, i.e. trying to find a map $\square^n$ which agrees
+\id{Partial}\ \varphi\ A$. We could represent this very generically as a
+_lifting problem_, i.e. trying to find a map $\square^n$ which agrees
 with $e$ when restricted to $\varphi$, but I believe a specific example
 will be more helpful.
 
@@ -801,8 +800,8 @@ the interval (in fact, it is `true`{.Agda} everywhere), so we say that
 
 ~~~{.quiver .short-1}
 \[\begin{tikzcd}
-  \textcolor{rgb,255:red,214;green,92;blue,92}{\mathrm{true}} && {\mathrm{true}}
-  \arrow["{\mathrm{refl}}", from=1-1, to=1-3]
+  \textcolor{rgb,255:red,214;green,92;blue,92}{\id{true}} && {\id{true}}
+  \arrow["{\id{refl}}", from=1-1, to=1-3]
 \end{tikzcd}\]
 ~~~
 
@@ -907,7 +906,7 @@ left-right direction) path going in the top-down direction.
   x && y \\
   \\
   w && z
-  \arrow["{\mathrm{sym}\ p\ j}", from=1-1, to=3-1]
+  \arrow["{\id{sym}\ p\ j}", from=1-1, to=3-1]
   \arrow["q\ i", from=1-1, to=1-3]
   \arrow["r\ j"', from=1-3, to=3-3]
 \end{tikzcd}\]
@@ -923,7 +922,7 @@ The complete “open box”.
   x && y \\
   \\
   w && z
-  \arrow["{\mathrm{sym}\ p\ j}", from=1-1, to=3-1]
+  \arrow["{\id{sym}\ p\ j}", from=1-1, to=3-1]
   \arrow["r\ j"', from=1-3, to=3-3]
 \end{tikzcd}\]
 ~~~
@@ -953,10 +952,10 @@ module _ {A : Type} {w x y z : A} {p : w ≡ x} {q : x ≡ y} {r : y ≡ z} wher
 ```
 
 When given `i0`{.Agda} as `j`, `double-comp-tube`{.Agda} has boundary
-$p\ \mathrm{i1} \to r\ \mathrm{i0}$, which computes to $x \to y$. This
-means that for this path to be extensible at `i0`{.Agda}, we need a path
-with that boundary. By assumption, `q` extends `double-comp-tube`{.Agda}
-at `i0`{.Agda}.
+$p\ \id{i1} \to r\ \id{i0}$, which computes to $x \to y$. This means
+that for this path to be extensible at `i0`{.Agda}, we need a path with
+that boundary. By assumption, `q` extends `double-comp-tube`{.Agda} at
+`i0`{.Agda}.
 
 ```agda
   extensible-at-i0 : (i : I) → A [ (i ∨ ~ i) ↦ double-comp-tube i i0 ]
@@ -973,7 +972,7 @@ totally-defined cube.
   \textcolor{rgb,255:red,214;green,92;blue,92}{x} && \textcolor{rgb,255:red,214;green,92;blue,92}{y} \\
   \\
   \textcolor{rgb,255:red,214;green,92;blue,92}{w} && \textcolor{rgb,255:red,214;green,92;blue,92}{z}
-  \arrow["{\mathrm{sym}\ p\ j}"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=3-1]
+  \arrow["{\id{sym}\ p\ j}"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=3-1]
   \arrow["{r\ j}", color={rgb,255:red,214;green,92;blue,92}, from=1-3, to=3-3]
   \arrow["{q\ i}", from=1-1, to=1-3]
 \end{tikzcd}\]
@@ -1110,7 +1109,7 @@ be reflexivity. For definiteness, we chose the left face:
   \\
   x && z
   \arrow["{p}", from=1-1, to=1-3]
-  \arrow["{\mathrm{refl}}"', from=1-1, to=3-1]
+  \arrow["{\id{refl}}"', from=1-1, to=3-1]
   \arrow["{q}", from=1-3, to=3-3]
   \arrow["{p \bullet q}"', from=3-1, to=3-3, dashed]
 \end{tikzcd}\]
@@ -1216,7 +1215,7 @@ denote it by `hcomp...` in the diagram.
   \arrow["{\beta\ k}", from=5-5, to=4-4]
   \arrow["{\alpha\text{-filler}\ j\ k}"{description}, shorten >=6pt, Rightarrow, from=5, to=3]
   \arrow["{\beta\text{-filler}\ j\ k}"{description}, Rightarrow, draw=none, from=4, to=1]
-  \arrow[""{name=8, anchor=center, inner sep=0}, "{\mathrm{hcomp}\dots}"{description}, Rightarrow, draw=none, from=6, to=0]
+  \arrow[""{name=8, anchor=center, inner sep=0}, "{\id{hcomp}\dots}"{description}, Rightarrow, draw=none, from=6, to=0]
   \arrow["{r\ j}"{description}, color={rgb,255:red,214;green,92;blue,92}, Rightarrow, draw=none, from=0, to=2]
   \arrow["{q\ k}"{description}, Rightarrow, draw=none, from=2, to=7]
   \arrow["{p\ \neg j}"{description}, shift left=2, color={rgb,255:red,153;green,92;blue,214}, Rightarrow, draw=none, from=8, to=7]
@@ -1226,7 +1225,7 @@ denote it by `hcomp...` in the diagram.
 This diagram is quite busy because it is a 3D commutative diagram, but
 it could be busier: all of the unimportant edges were not annotated. By
 the way, the lavender face (including the lavender $p\ \neg j$) is the
-$k = \mathrm{i0}$ face, and the red face is the $k = \mathrm{i1}$ face.
+$k = \id{i0}$ face, and the red face is the $k = \id{i1}$ face.
 
 However, even though the diagram is very busy, most of the detail it
 contains can be ignored. Reading it in the left-right direction, it
@@ -1244,7 +1243,7 @@ Explicitly, here is that bottom square:
   \arrow["\beta"', from=3-3, to=1-3]
   \arrow[""{name=0, anchor=center, inner sep=0}, "w", color={rgb,255:red,153;green,92;blue,214}, from=3-1, to=3-3]
   \arrow[""{name=1, anchor=center, inner sep=0}, "z"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-3]
-  \arrow["{\mathrm{hcomp}\dots}"{description}, Rightarrow, draw=none, from=0, to=1]
+  \arrow["{\id{hcomp}\dots}"{description}, Rightarrow, draw=none, from=0, to=1]
 \end{tikzcd}\]
 ~~~
 
@@ -1375,9 +1374,9 @@ by the endpoint rule for `transport-filler`{.Agda}.
 The existence of paths over paths gives another "counterexample" to
 thinking of paths as _equality_. For instance, it's hard to imagine a
 world in which `true` and `false` can be equal in any interesting sense
-of the word _equal_ --- but over the identification $\mathrm{Bool}
-\equiv \mathrm{Bool}$ that switches the points around, `true` and
-`false` can be identified!
+of the word _equal_ --- but over the identification $\id{Bool} \equiv
+\id{Bool}$ that switches the points around, `true` and `false` can be
+identified!
 
 ## Coercion
 
@@ -1390,11 +1389,11 @@ variables, swapping variables, etc). This is a different cubical type
 theory, called _Cartesian cubical type theory_.
 
 In Cartesian cubical type theory, instead of having a `transp`{.Agda}
-operation which takes $A(\mathrm{i0}) \to A(\mathrm{i1})$, there is a
-“more powerful” _coercion_ operation, written $\mathrm{coe}^A_{i \to
-j}$, which takes $A(i) \to A(j)$, as in the subscript. However, despite
-the seeming added power, the coercion operation can be implemented in
-Cubical Agda: First, we introduce alternative names for several uses of
+operation which takes $A(\id{i0}) \to A(\id{i1})$, there is a “more
+powerful” _coercion_ operation, written $\id{coe}^A_{i \to j}$, which
+takes $A(i) \to A(j)$, as in the subscript. However, despite the seeming
+added power, the coercion operation can be implemented in Cubical Agda:
+First, we introduce alternative names for several uses of
 `transp`{.Agda}.
 
 ```agda
@@ -1437,14 +1436,14 @@ corners, and the dashed line is `coe A i i1`.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  {a} && {\mathrm{coe}^A_{1\to0}(a)} \\
+  {a} && {\id{coe}^A_{1\to0}(a)} \\
   \\
-  {\mathrm{coe}^A_{0\to1}(a)} && {a}
-  \arrow["{\mathrm{coe}^A_{0\to j}(a)}"', from=1-1, to=3-1]
-  \arrow["{\mathrm{coe}^A_{1\to j}(a)}", from=1-3, to=3-3]
-  \arrow[""{name=0, anchor=center, inner sep=0}, "{\mathrm{coe}^A_{i\to0}(a)}", from=1-1, to=1-3]
-  \arrow[""{name=1, anchor=center, inner sep=0}, "{\mathrm{coe}^A_{i\to1}(a)}"', dashed, from=3-1, to=3-3]
-  \arrow["{\mathrm{coe}^A_{i\to j}(a)}"{description}, Rightarrow, draw=none, from=0, to=1]
+  {\id{coe}^A_{0\to1}(a)} && {a}
+  \arrow["{\id{coe}^A_{0\to j}(a)}"', from=1-1, to=3-1]
+  \arrow["{\id{coe}^A_{1\to j}(a)}", from=1-3, to=3-3]
+  \arrow[""{name=0, anchor=center, inner sep=0}, "{\id{coe}^A_{i\to0}(a)}", from=1-1, to=1-3]
+  \arrow[""{name=1, anchor=center, inner sep=0}, "{\id{coe}^A_{i\to1}(a)}"', dashed, from=3-1, to=3-3]
+  \arrow["{\id{coe}^A_{i\to j}(a)}"{description}, Rightarrow, draw=none, from=0, to=1]
 \end{tikzcd}\]
 ~~~
 
@@ -1482,7 +1481,7 @@ private
 ```
 
 This operation satisfies, _definitionally_, a whole host of equations.
-For starters, we have that the $\mathrm{coe}^A_{i\to1}$ (resp $i \to 0$)
+For starters, we have that the $\id{coe}^A_{i\to1}$ (resp $i \to 0$)
 specialises to transport when $i = 0$ (resp. $i = 1$), and to the
 identity when $i = 1$ (resp. $i = 0$):
 
@@ -1750,5 +1749,36 @@ J′ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁}
    → {x y : A} (p : x ≡ y)
    → P x y p
 J′ P prefl {x} p = transport (λ i → P x (p i) λ j → p (i ∧ j)) (prefl x)
+
+··≡twice∙
+  : ∀ {ℓ} {A : Type ℓ}
+  → {x y z w : A}
+  → (p : x ≡ y) (q : y ≡ z) (r : z ≡ w)
+  → p ·· q ·· r ≡ p ∙ q ∙ r
+··≡twice∙ p q r i j =
+  hcomp (λ k → λ { (i = i1) → ∙-filler' p (q ∙ r) k j
+                 ; (j = i0) → p (~ k)
+                 ; (j = i1) → r (i ∨ k)})
+        (∙-filler q r i j)
+
+invert-sides : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : x ≡ z)
+             → Square q p (sym q) (sym p)
+invert-sides {x = x} p q i j =
+  hcomp (λ k → λ { (i = i0) → p (k ∧ j)
+                 ; (i = i1) → q (~ j ∧ k)
+                 ; (j = i0) → q (i ∧ k)
+                 ; (j = i1) → p (~ i ∧ k)})
+        x
+
+sym-∙-filler : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : y ≡ z) → I → I → I → A
+sym-∙-filler {A = A} {z = z} p q i j k =
+  hfill (λ k → λ { (i = i0) → q (k ∨ j)
+                 ; (i = i1) → p (~ k ∧ j) })
+       (inS (invert-sides q (sym p) i j))
+       k
+
+sym-∙ : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : y ≡ z) → sym (p ∙ q) ≡ sym q ∙ sym p
+sym-∙ p q i j = sym-∙-filler p q j i i1
+
 ```
 -->

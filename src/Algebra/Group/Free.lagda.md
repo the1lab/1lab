@@ -172,7 +172,7 @@ Now, given a set $S$, we must come up with a group $G$, with a map
 $\eta : S \to U(G)$ (in $\sets$, where $U$ is the [underlying set functor]),
 such that, for any other group $H$, any map $S \to U(H)$ can be factored
 uniquely as $S \xrightarrow{\eta} U(G) \to U(H)$. As hinted above, we
-pick $G = \mathrm{Free}(S)$, the free group with $S$ as its set of
+pick $G = \id{Free}(S)$, the free group with $S$ as its set of
 generators, and the universal map $\eta$ is in fact `inc`{.Agda}.
 
 [underlying set functor]: Algebra.Group.Cat.Base.html#the-underlying-set
@@ -187,11 +187,11 @@ Free-universal-maps S = um where
 ```
 
 To prove that this map is unique, suppose we have a group $H$ together
-with a map $g : S \to U(H)$. We can insert $\mathrm{Free}(S)$ in the
+with a map $g : S \to U(H)$. We can insert $\id{Free}(S)$ in the
 middle by breaking this map down as
 
 $$
-S \xrightarrow{\mathrm{inc}} U(\mathrm{Free}(S) \xrightarrow{\mathrm{fold}(g)} H)
+S \xrightarrow{\id{inc}} U(\id{Free}(S) \xrightarrow{\id{fold}(g)} H)
 $$
 
 ```agda
@@ -208,17 +208,17 @@ $$
 ```
 
 To show that this factorisation is unique, suppose we had some other
-group homomorphism $g' : \mathrm{Free}(S) \to H$, which also has the
-property that $U(g') \circ \mathrm{inc} = g$; We must show that it is
-equal to $\mathrm{fold}(g)$, which we can do `pointwise`{.Agda
-ident=funext}, so assume we have a $x : \mathrm{Free}(S)$.
+group homomorphism $g' : \id{Free}(S) \to H$, which also has the
+property that $U(g') \circ \id{inc} = g$; We must show that it is
+equal to $\id{fold}(g)$, which we can do `pointwise`{.Agda
+ident=funext}, so assume we have a $x : \id{Free}(S)$.
 
 By `induction`{.Agda ident=Free-elim-prop} on $x$, it suffices to
 consider the cases where $x$ is a `generator`{.Agda ident=inc}, or one
 of the group operations (`inverses`{.Agda ident=inv},
 `multiplication`{.Agda ident=_◆_}, or the `identity`{.Agda ident=nil}).
 The case for generators is the most interesting: We have some $y : S$,
-and must show that $g(y) = U(g')(\mathrm{inc}(y))$; but this is
+and must show that $g(y) = U(g')(\id{inc}(y))$; but this is
 immediate, by assumption. The other cases all follow from the induction
 hypotheses and $g'$ being a group homomorphism.
 

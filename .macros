@@ -1,10 +1,11 @@
-\ty:\mathrm{Type}
-\set:\mathrm{Set}
+\id:\mathrm{#1}
+\ty:\id{Type}
+\set:\id{Set}
 \ht:\mathbf{#1}
 \prosets:\ht{Prosets}
 \sets:\ht{Sets}
 \cat:\ht{Cat}
-\strcat:\ht{Cat}_\mathrm{strict}
+\strcat:\ht{Cat}_\id{strict}
 \grpd:\ht{Grpd}
 \ca:\mathcal{#1}
 \igpd:\text{$\infty$-\textbf{Grpd}}
@@ -13,12 +14,12 @@
 \epi:\twoheadrightarrow
 \mono:\hookrightarrow
 \ot:\leftarrow
-\op:^{\mathrm{op}}
+\op:^{\id{op}}
 \epsilon:\varepsilon
 \eps:\varepsilon
 \To:\Rightarrow
 \intcat:\{0 \le 1 \}
-\Arr:\mathrm{Arr}(#1)
+\Arr:\id{Arr}(#1)
 \xto:\xrightarrow
 \xot:\xleftarrow
 \colim:\operatorname*{colim}

@@ -28,16 +28,16 @@ private variable
 Recall the three conditions that make up the notion of [equivalence].
 
 > To be more specific, what we need for a notion of equivalence
-$\mathrm{is-equiv}(f)$ to be "coherent" is:
+$\id{is-equiv}(f)$ to be "coherent" is:
 >
 > - Being an `isomorphism`{.Agda ident=is-iso} implies being an
-`equivalence`{.Agda ident=is-equiv} ($\mathrm{is-iso}(f) \to
-\mathrm{is-equiv}(f)$)
+`equivalence`{.Agda ident=is-equiv} ($\id{is-iso}(f) \to
+\id{is-equiv}(f)$)
 >
-> - Being an equivalence implies being an isomorphism
-($\mathrm{is-equiv}(f) \to \mathrm{is-iso}(f)$); Taken together with the
-first point we may summarise: "Being an equivalence and being an
-isomorphism are logically equivalent."
+> - Being an equivalence implies being an isomorphism ($\id{is-equiv}(f)
+\to \id{is-iso}(f)$); Taken together with the first point we may
+summarise: "Being an equivalence and being an isomorphism are logically
+equivalent."
 >
 > - Most importantly, being an equivalence _must_ be a proposition.
 
@@ -53,9 +53,9 @@ a good notion of equivalence.
 [contractible fibres]: agda://1Lab.Equiv#is-equiv
 
 A **left inverse** to a function $f : A \to B$ is a function $g : B \to
-A$ equipped with a [homotopy] $g \circ f \sim \mathrm{id}$. Symmetrically,
-a **right inverse** to $f$ is a function $h : B \to A$ equipped with a
-homotopy $f \circ h \sim \mathrm{id}$.
+A$ equipped with a [homotopy] $g \circ f \sim \id{id}$. Symmetrically, a
+**right inverse** to $f$ is a function $h : B \to A$ equipped with a
+homotopy $f \circ h \sim \id{id}$.
 
 [homotopy]: agda://1Lab.Path#funext
 
@@ -186,8 +186,8 @@ is-biinv-is-prop {f = f} = contractible-if-inhabited contract where
 
 Since `is-biinv`{.Agda} is a product of contractibles whenever it is
 inhabited, then it is contractible. Finally, we have that
-$\mathrm{is-iso}(f) \to \mathrm{is-biinv}(f)$: pick the given inverse as
-both a left- and right- inverse.
+$\id{is-iso}(f) \to \id{is-biinv}(f)$: pick the given inverse as both a
+left- and right- inverse.
 
 ```agda
 is-iso→is-biinv : {f : A → B} → is-iso f → is-biinv f

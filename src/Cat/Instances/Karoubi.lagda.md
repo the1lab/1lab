@@ -76,9 +76,9 @@ Karoubi .assoc {w = _ , _ , i} {z = _ , _ , j} _ _ _ =
 ```
 
 We can now define the embedding functor from C to its `Karoubi`{.Agda}
-envelope. It has object part $x \mapsto (x, \mathrm{id})$; The morphism
+envelope. It has object part $x \mapsto (x, \id{id})$; The morphism
 part of the functor has to send $f : x \to y$ to some $f' : x \to y$
-which absorbs $\mathrm{id}$ on either side; But this is just $f$ again.
+which absorbs $\id{id}$ on either side; But this is just $f$ again.
 
 ```agda
 Embed : Functor C Karoubi
@@ -131,7 +131,7 @@ is-idempotent-complete-Karoubi {A = A , e , i} (f , p , q) idem = spl where
 
 For this to be a splitting of $f$, we must show that $f \circ f = f$ as
 a map $(A, e) \to (A, e)$, which we have by assumption; And we must show
-that $f \circ f = \mathrm{id}$ as a map $(A, f) \to (A, f)$. But recall
+that $f \circ f = \id{id}$ as a map $(A, f) \to (A, f)$. But recall
 that the identity on $(A, f)$ is $f$, so we _also_ have this by
 assumption!
 

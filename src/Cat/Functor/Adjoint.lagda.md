@@ -41,8 +41,8 @@ of categories, where "directing" an equivalence gives us the concept of
 
 An _equivalence of categories_ between $\ca{C}$ and $\ca{D}$ is given by
 a pair of functors $L : \ca{C} \leftrightarrows \ca{D} : R$, equipped
-with natural _isomorphisms_ $\eta : \mathrm{Id} \cong (R \circ L)$ (the
-"unit") and $\eps : (L \circ R) \cong \mathrm{Id}$ (the "counit"). We
+with natural _isomorphisms_ $\eta : \id{Id} \cong (R \circ L)$ (the
+"unit") and $\eps : (L \circ R) \cong \id{Id}$ (the "counit"). We
 still want the correspondence to be bidirectional, so we can't change
 the types of $R$, $L$; What we _can_ do is weaken the natural
 isomorphisms to natural _transformations_. The data of an **adjunction**
@@ -272,8 +272,8 @@ it defines a left adjoint to the $R$ we started with.
 ## Building the adjunction
 
 We now prove that $L \dashv R$, which, recall, means giving natural
-transformations $\eta : \mathrm{Id} \To (R F\circ L)$ (the
-_adjunction unit_) and $\eps : (L \circ R) \To \mathrm{Id}$ (the
+transformations $\eta : \id{Id} \To (R F\circ L)$ (the
+_adjunction unit_) and $\eps : (L \circ R) \To \id{Id}$ (the
 _adjunction counit_). We begin with the counit, since that's more
 involved.
 
@@ -295,7 +295,7 @@ object as $(L(R(x)), !)$ --- recall that here, $! : R(x) \to RLR(x)$.
 
 This means, in particular, that for any other object $(y, f)$ (with $y
 \in \ca{D}$ and $f : R(x) \to R(y)$ in $\ca{C}$), there is a unique map
-$\mathrm{mapd}(x) \to (y, f)$, which breaks down as a map $\beta :
+$\id{mapd}(x) \to (y, f)$, which breaks down as a map $\beta :
 L(R(x)) \to y$ such that the square below commutes.
 
 ~~~{.quiver}
@@ -313,7 +313,7 @@ L(R(x)) \to y$ such that the square below commutes.
     ε x = Initial.¡ (universal-map-for (R.₀ x)) {x = record { y = x ; map = C.id }}
 ```
 
-The magic trick is that, if we pick $(x, \mathrm{id})$ as the object of
+The magic trick is that, if we pick $(x, \id{id})$ as the object of
 $R(x)\swarrow R$ to map into, then $\beta$ in the diagram above must be
 $LR(x) \to x$! We choose this map as our adjunction counit. A tedious
 calculation shows that this assignment is natural, essentially because
@@ -359,7 +359,7 @@ adjunction unit to be, so.. It's `zag`{.Agda}.
   {R(x)} && {RLR(x)} \\
   \\
   && R(x)
-  \arrow["{\mathrm{id}}"', from=1-1, to=3-3]
+  \arrow["{\id{id}}"', from=1-1, to=3-3]
   \arrow["{!}", from=1-1, to=1-3]
   \arrow["{R(\beta)}", from=1-3, to=3-3]
 \end{tikzcd}\]

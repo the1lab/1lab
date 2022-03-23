@@ -28,7 +28,7 @@ $$
 
 When this is the case, we say that $e$ is a **split idempotent**: We
 have some pair of maps $p : X \to F$ (the "projector") and $i : F \to
-X$, with $r \circ i = \mathrm{id}$ and $i \circ r = e$.
+X$, with $r \circ i = \id{id}$ and $i \circ r = e$.
 
 ```agda
 is-idempotent : Hom A A → Type _

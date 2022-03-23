@@ -14,8 +14,8 @@ module Algebra.Group.Quotients.IsoThms where
 # First Isomorphism Theorem
 
 The first isomorphism theorem states that, for a group homomorphism $f :
-A \to B$, we have an isomorphism between $\mathrm{im}(f)$ and
-$A/\mathrm{ker}(f)$.
+A \to B$, we have an isomorphism between $\id{im}(f)$ and
+$A/\ker(f)$.
 
 ```agda
 module _ {ℓ} {A B : Group ℓ} (φ : A .fst → B .fst) (h : Group-hom A B φ) where
@@ -29,16 +29,16 @@ module _ {ℓ} {A B : Group ℓ} (φ : A .fst → B .fst) (h : Group-hom A B φ)
     open Group-hom h
 ```
 
-We first define a map from the image group $\mathrm{im}(f)$ to the
+We first define a map from the image group $\id{im}(f)$ to the
 quotient. Recall that to construct an element of the quotient, it
 suffices (by `inc`{.Agda}) to give an element of the underlying group,
-in this case $A$; Recall also that an element of $\mathrm{im}(f)$ is
+in this case $A$; Recall also that an element of $\id{im}(f)$ is
 given by an $b : B$ such that [_there exists_] an $a : A$ such that
 $f(a) = b$ --- and hence the elements of the image look like $(y,w)$
 where $w$ is a witness of that existential statement.
 
 Since the $a : A$ is propositionally truncated, we can not directly
-project it from the proof, since $A/\mathrm{ker}(f)$ is not a
+project it from the proof, since $A/\ker(f)$ is not a
 proposition in general.
 
 [_there exists_]: 1Lab.HIT.Truncation.html
@@ -53,7 +53,7 @@ proposition in general.
 However, we _can_ project it, as long as the map we're defining is
 constant. To prove that it's constant, we have to show that for a fixed
 $b$, for _any_ $a_1, a_2 : A$ with $f(a_i) = b$, the inclusions
-$\mathrm{inc}(a_i) : A/\mathrm{ker}(f)$ coincide. Since the latter type
+$\id{inc}(a_i) : A/\ker(f)$ coincide. Since the latter type
 is a quotient, it suffices to show that $f(a_1 - a_2)$ is in the
 kernel of $f$; But this follows by $f(a_1 - a_2) = f(a_1) - f(a_2)
 = y - y = 0$.
@@ -115,7 +115,7 @@ inverses.
 ```
 
 For the direction `func(inv(x)) = x`, it suffices to cover the case
-where $x = \mathrm{inc}(y)$, where $y : A$; But then (the relevant part
+where $x = \id{inc}(y)$, where $y : A$; But then (the relevant part
 of) `inv(x)` computes to `f(y) , y , refl`, and `func (f(y) , y , refl)
 = inc y`, so this direction follows essentially by `refl`{.Agda}.
 
@@ -125,13 +125,13 @@ of) `inv(x)` computes to `f(y) , y , refl`, and `func (f(y) , y , refl)
         (λ _ → squash _ _) (λ _ → refl) x
 ```
 
-For the other direction, suppose we have some $(x, p)$ in
-$\mathrm{im}(f)$. We wish to show that $\mathrm{inv}(\mathrm{func}(x,
-p)) = (x, p)$. Since we're proving a proposition, we can assume that $p$
-is a literal pair $(y, h_x)$, with $h_x : f(y) = x$. Since $p$ is a
-proposition, it suffices to show that the first components are equal,
-but the first component of $\mathrm{inv}(\mathrm{func}(x, p))$ is $f(y)$
---- and we already have that $f(y) = x$, by $h_x$, so we are done!
+For the other direction, suppose we have some $(x, p)$ in $\id{im}(f)$.
+We wish to show that $\id{inv}(\id{func}(x, p)) = (x, p)$. Since we're
+proving a proposition, we can assume that $p$ is a literal pair $(y,
+h_x)$, with $h_x : f(y) = x$. Since $p$ is a proposition, it suffices to
+show that the first components are equal, but the first component of
+$\id{inv}(\id{func}(x, p))$ is $f(y)$ --- and we already have that $f(y)
+= x$, by $h_x$, so we are done!
 
 ```agda
     isom .linv (x , p) =
@@ -141,10 +141,10 @@ but the first component of $\mathrm{inv}(\mathrm{func}(x, p))$ is $f(y)$
         p
 ```
 
-We thus have an equivalence $\mathrm{im}(f) \simeq A/\mathrm{ker}(f)$,
-with an underlying map that is a group homomorphism; By the `structure
-identity principle`{.Agda}, this gives an identification $\mathrm{im}(f)
-\equiv A/\mathrm{ker}(f)$.
+We thus have an equivalence $\id{im}(f) \simeq A/\ker(f)$, with an
+underlying map that is a group homomorphism; By the `structure identity
+principle`{.Agda}, this gives an identification $\id{im}(f) \equiv
+A/\ker(f)$.
 
 ```agda
   1st-Iso-Theorem : imφ ≡ A/kerφ

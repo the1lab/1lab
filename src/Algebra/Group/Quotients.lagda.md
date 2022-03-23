@@ -39,7 +39,7 @@ module _ (Grp : Group ℓ) (N : Normal-subgroup Grp) where
     rel-refl x = subst (_∈ N?) (sym inverseʳ) has-unit
 ```
 
-We define a relation $\mathrm{rel}(x, y)$ on the underlying set of $G$
+We define a relation $\id{rel}(x, y)$ on the underlying set of $G$
 by $(x - y) \in N$, where $N$ is the normal subgroup we're quotienting
 by. This relation is reflexive because $x - x$ is $0$, which is included
 in every subgroup.

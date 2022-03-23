@@ -10,8 +10,8 @@ module 1Lab.Counterexamples.Sigma where
 
 Defined normally, the _image_ of a function $f : X \to Y$ is the subset
 of $Y$ given by the elements $y : Y$ for which _there exists_ an element
-$x : X$ with $f(x) = y$. In set theoretical notation: $\mathrm{im}(f) =
-\{ y \in Y | \exists x \in X, f(x) = y \}$.
+$x : X$ with $f(x) = y$. In set theoretical notation: $\id{im}(f) = \{ y
+\in Y | \exists x \in X, f(x) = y \}$.
 
 It is a commonly held misunderstanding that when translating such a
 definition into type theory, both subsets and existential quantifiers
@@ -37,8 +37,8 @@ image {A = A} {B = B} f = Σ[ y ∈ B ] Σ[ x ∈ A ] (f x ≡ y)
 ```
 
 The definition above, which could be called "Curry-Howard image", does
-not accurately represent the image of a function: $\mathrm{image}(f)
-\simeq A$, independent of $f$:
+not accurately represent the image of a function: $\id{image}(f) \simeq
+A$, independent of $f$:
 
 ```agda
 image≃domain : {f : A → B} → image f ≃ A

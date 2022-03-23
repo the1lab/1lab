@@ -223,7 +223,7 @@ with is homotopic to the identity; Equality of `isomorphisms`{.Agda
 ident=≅-pathp} and `natural transformations`{.Agda ident=Nat-pathP} are
 both tested componentwise, so we can "push down" the relevant equalities
 to the level of families of morphisms; By computation, all we have to
-show is that $\eta{}_x \circ \mathrm{id} \circ \mathrm{id} = f$.
+show is that $\eta{}_x \circ \id{id} \circ \id{id} = f$.
 
 ```agda
     id≡F≅G : PathP (λ i → F ≅ F≡G i) id-iso F≅G

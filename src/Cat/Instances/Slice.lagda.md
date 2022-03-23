@@ -30,10 +30,10 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 
 When working in $\sets$, there is an evident notion of _family indexed
 by a set_: a family of sets $(F_i)_{i \in I}$ is equivalently a functor
-$[\mathrm{Disc}(I), \sets]$, where we have equipped the set $I$ with the
+$[\id{Disc}(I), \sets]$, where we have equipped the set $I$ with the
 [discrete category] structure. This works essentially because of the
 [discrete category-global sections][coh] adjunction, but in general this
-can not be applied to other categories, like $\mathrm{Groups}$. How,
+can not be applied to other categories, like $\id{Groups}$. How,
 then, should we work with "indexed families" in general categories?
 
 [discrete category]: Cat.Instances.Discrete.html
@@ -205,7 +205,7 @@ commutativity for $g \circ f$).
 
 We discuss some limits in the slice of $\ca{C}$ over $c$. First, every
 slice category has a terminal object, given by the identity map
-$\mathrm{id} : c \to c$.
+$\id{id} : c \to c$.
 
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
@@ -352,7 +352,7 @@ We shall prove that the functor `Total-space`{.Agda}, defined below, is
 an equivalence of categories, i.e. that it is fully faithful and
 essentially surjective. But first, we must define the functor! Like its
 name implies, it maps the functor $F : I → \sets$ to the first
-projection map $\mathrm{fst} : \sum F \to I$.
+projection map $\id{fst} : \sum F \to I$.
 
 ```agda
   Total-space : Functor Cat[ Disc′ I , Sets ℓ ] (Slice (Sets ℓ) I)
@@ -369,8 +369,8 @@ projection map $\mathrm{fst} : \sum F \to I$.
 
 To prove that the `Total-space`{.Agda} functor is `fully faithful`{.Agda
 ident=is-fully-faithful}, we will exhibit a quasi-inverse to its action
-on morphisms. Given a fibre-preserving map between $\mathrm{fst} : \sum
-F \to I$ and $\mathrm{fst} : \sum G \to I$, we recover a natural
+on morphisms. Given a fibre-preserving map between $\id{fst} : \sum
+F \to I$ and $\id{fst} : \sum G \to I$, we recover a natural
 transformation between $F$ and $G$. The hardest part is showing
 naturality, where we use path induction.
 

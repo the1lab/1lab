@@ -186,7 +186,7 @@ everything in sight:
 The hard part, then, is showing that this is a natural transformation.
 We'll do this in a roundabout way: We'll show that both composites in
 the naturality square inhabit the same _contractible_ space of cone
-homomorphisms, namely that of $\mathrm{Lift-cone}(K,f) \to \lim F(-,y)$,
+homomorphisms, namely that of $\id{Lift-cone}(K,f) \to \lim F(-,y)$,
 and thus conclude that they are unique. This isn't too hard, but it is
 quite tedious:
 

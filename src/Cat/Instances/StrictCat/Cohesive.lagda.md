@@ -28,17 +28,17 @@ We prove that the category $\strcat$ admits an adjoint
 quadruple
 
 $$
-\Pi_0 \dashv \mathrm{Disc} \dashv \Gamma \dashv \mathrm{Codisc}
+\Pi_0 \dashv \id{Disc} \dashv \Gamma \dashv \id{Codisc}
 $$
 
 where the "central" adjoint $\Gamma$ is the functor which sends a strict
 category to its underlying set of objects. This lets us treat categories
-as giving a kind of "spatial" structure over $\mathrm{Sets}$.  The left-
-and right- adjoints to $\mathrm{Ob}$ equip sets with the "discrete" and
+as giving a kind of "spatial" structure over $\id{Sets}$.  The left-
+and right- adjoints to $\id{Ob}$ equip sets with the "discrete" and
 "codiscrete" spatial structures, where nothing is stuck together, or
 everything is stuck together.
 
-The extra right adjoint to $\mathrm{Ob}$ assigns a category to its set
+The extra right adjoint to $\id{Ob}$ assigns a category to its set
 of connected components, which can be thought of as the "pieces" of the
 category. Two objects land in the same connected component if there is a
 path of morphisms connecting them, hence the name.
@@ -101,7 +101,7 @@ Disc⊣Γ = adj where
 
 For the adjunction `unit`{.Agda}, we're asked to provide a natural
 transformation from the identity functor to $\Gamma \circ
-\mathrm{Disc}$; Since the object set of $\mathrm{Disc}(X)$ is simply
+\id{Disc}$; Since the object set of $\id{Disc}(X)$ is simply
 $X$, the identity map suffices:
 
 ```agda
@@ -110,7 +110,7 @@ $X$, the identity map suffices:
 ```
 
 The adjunction counit is slightly more complicated, as we have to give a
-functor $\mathrm{Disc}(\Gamma(X)) \to X$, naturally in $X$. Since
+functor $\id{Disc}(\Gamma(X)) \to X$, naturally in $X$. Since
 morphisms in discrete categories are paths, for a map $x \equiv y$ (in
 `{- 1 -}`{.Agda}), it suffices to assume $y$ really is $x$, and so the
 identity map suffices.
@@ -296,7 +296,7 @@ canonically chosen to be $F_1(r)$.
 ```
 
 The adjunction `unit`{.Agda} is a natural assignment of functors $\ca{X}
-\to \mathrm{Disc}(\Pi_0(\ca{X}))$. We send $x$ to its connected
+\to \id{Disc}(\Pi_0(\ca{X}))$. We send $x$ to its connected
 component, and we must send a map $r : x \to y$ to an equality between
 the connected components of $x$ and $y$; But we get this from the
 quotient.
@@ -313,7 +313,7 @@ quotient.
 ```
 
 The adjunction `counit`{.Agda} is an assignment of functions
-$\Pi_0(\mathrm{Disc}(X)) \to X$. This is essentially a natural
+$\Pi_0(\id{Disc}(X)) \to X$. This is essentially a natural
 isomorphism: the set of connected components of a discrete category is
 the same set we started with.
 

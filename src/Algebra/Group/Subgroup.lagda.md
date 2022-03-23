@@ -117,10 +117,10 @@ record Normal-subgroup (G : Group ℓ) : Type (lsuc ℓ) where
 # Kernels and Images
 
 We can canonically associate to any group homomorphism $f : A \to B$ two
-subgroups, one of $B$ and one of $A$: The **kernel** $\mathrm{ker}(f)$
-is the (normal) subgroup of $A$ which $f$ maps to the identity of $B$,
-and the **image** $\mathrm{im}(f)$ is the subgroup of $B$ which $f$ can
-"reach". We start with the kernel:
+subgroups, one of $B$ and one of $A$: The **kernel** $\ker(f)$ is
+the (normal) subgroup of $A$ which $f$ maps to the identity of $B$, and
+the **image** $\id{im}(f)$ is the subgroup of $B$ which $f$ can "reach".
+We start with the kernel:
 
 ```agda
 module _ {A B : Group ℓ} (f : A .fst → B .fst) (h : Group-hom A B f) where
@@ -175,7 +175,7 @@ and cancel the remaining $f(x)f(x)^{-1}$.
   kerᴳ = _ , is-subgroup→Group-on _ ker-subgroup
 ```
 
-Now we turn to the image, $\mathrm{im}(f)$. An element $y : B$ is in the
+Now we turn to the image, $\id{im}(f)$. An element $y : B$ is in the
 image if _there exists_ an $x : A$ such that $f(x)=y$.
 
 ```agda
