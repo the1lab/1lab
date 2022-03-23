@@ -49,8 +49,11 @@ record Proset (o h : Level) : Type (lsuc (o ⊔ h)) where
     {underlying} : Precategory o h
     has-is-thin    : is-thin underlying
 
-  open Precategory underlying public
+  open import Cat.Reasoning underlying public
   open is-thin has-is-thin public
+
+  _≤_ : Ob → Ob → Type h
+  _≤_ = Hom
 ```
 
 The collection of all thin categories assembles into a subcategory of
@@ -208,7 +211,6 @@ described above, and prove that any antisymmetric proset is univalent.
 
     open Proset (make-proset Aset Rrefl Rtrans Rprop)
       renaming ( underlying to cat ; has-is-thin to ist )
-    open import Cat.Reasoning cat
 
     tc : Poset _ _
     tc .underlying = cat

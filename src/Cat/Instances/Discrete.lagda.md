@@ -136,3 +136,26 @@ computations with equalities and a whole waterfall of absurd cases:
   ... | no x≠y  | no  x≠z | yes y=z = absurd (x≠z (g ∙ f))
   ... | no x≠y  | no  x≠z | no  y≠z = absurd (x≠z (g ∙ f))
 ```
+
+<!--
+```
+Disc-adjunct
+  : ∀ {iss : is-groupoid X}
+  → (X → Ob C)
+  → Functor (Disc X iss) C
+Disc-adjunct {C = C} F .F₀ = F
+Disc-adjunct {C = C} F .F₁ p = subst (C .Hom (F _) ⊙ F) p (C .id)
+Disc-adjunct {C = C} F .F-id = transport-refl _
+Disc-adjunct {C = C} {iss = iss} F .F-∘ {x} {y} {z} f g = path where
+  import Cat.Reasoning C as C
+  go = Disc-adjunct {C = C} {iss} F .F₁
+  abstract
+    path : go (g ∙ f) ≡ C ._∘_ (go f) (go g)
+    path =
+      J′ (λ y z f → ∀ {x} (g : x ≡ y) → go (g ∙ f) ≡ go f C.∘ go g)
+        (λ x g → subst-∙ (C .Hom (F _) ⊙ F) _ _ _
+              ·· transport-refl _
+              ·· C.introl (transport-refl _))
+        f {x} g
+```
+-->

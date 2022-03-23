@@ -308,6 +308,7 @@ open import Cat.Diagram.Product
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Equaliser
+open import Cat.Diagram.Product.Indexed
 
 -- Colimits:
 open import Cat.Diagram.Initial
@@ -329,7 +330,11 @@ cones/cocones, and limiting/colimiting cones.
 
 ```agda
 open import Cat.Diagram.Limit.Base
+open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Limit.Product
+open import Cat.Diagram.Limit.Pullback
+open import Cat.Diagram.Limit.Equaliser
+
 open import Cat.Diagram.Colimit.Base
 ```
 
@@ -343,6 +348,7 @@ and adjoint functors.
 open import Cat.Functor.Hom       -- Hom functor, Yoneda embedding, Coyoneda lemma
 open import Cat.Functor.Base      -- Compendium of functor properties
 open import Cat.Functor.Bifunctor -- Functors out of product categories
+open import Cat.Functor.Equivalence -- Equivalences of (pre)categories
 open import Cat.Functor.FullSubcategory -- Full subcategories
 ```
 
@@ -353,6 +359,7 @@ open import Cat.Diagram.Monad   -- Definition of monads
 open import Cat.Functor.Adjoint -- Unit-counit adjunctions and universal arrows
 open import Cat.Functor.Adjoint.Monad -- Monad from an adjunction
 open import Cat.Functor.Adjoint.Monadic -- Monadic adjunctions
+open import Cat.Functor.Adjoint.Continuous -- Right adjoints preserve limits
 ```
 
 ## Univalent categories
@@ -366,6 +373,8 @@ version of the univalence axiom. Sometimes we also refer to these as
 ```agda
 open import Cat.Univalent      -- Basic properties of categories
 open import Cat.Univalent.Rezk -- Free category on a precategory
+open import Cat.Univalent.Instances.Algebra
+  -- Eilenberg-Moore categories preserve univalence
 ```
 
 ## Category instances
@@ -379,8 +388,10 @@ open import Cat.Instances.Sets.Complete         -- Sets is complete
 open import Cat.Instances.Sets.FinitelyComplete
   -- More explicit constructions of commonly-used finite limits in Sets
 
+open import Cat.Instances.Functor         -- Functor (pre)categories
+open import Cat.Instances.Functor.Limits  -- Limits in functor categories
+
 open import Cat.Instances.Comma     -- Comma precategory over a cospan of functors
-open import Cat.Instances.Functor   -- Functor (pre)categories
 open import Cat.Instances.Product   -- Product of precategories
 open import Cat.Instances.Karoubi   -- Split-idempotent completion of a precategory
 open import Cat.Instances.Discrete  -- Discrete category on a groupoid or set
@@ -402,6 +413,7 @@ _univalent_ thin strict category --- so we call these "posets".
 
 ```agda
 open import Cat.Thin            -- Basics of thin categories
+open import Cat.Thin.Limits     -- Limits in thin categories
 open import Cat.Thin.Completion -- Free poset on a proset
 ```
 
