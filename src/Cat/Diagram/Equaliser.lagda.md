@@ -37,6 +37,13 @@ record is-equaliser {E} (f g : Hom A B) (equ : Hom E A) : Type (ℓ ⊔ ℓ′) 
   equal-∘ {h = h} =
     f ∘ equ ∘ h ≡⟨ extendl equal ⟩
     g ∘ equ ∘ h ∎
+
+  unique₂
+    : ∀ {F} {e′ : Hom F A} {p : f ∘ e′ ≡ g ∘ e′} {lim' lim'' : Hom F E}
+    → e′ ≡ equ ∘ lim'
+    → e′ ≡ equ ∘ lim''
+    → lim' ≡ lim''
+  unique₂ {p = p} q r = unique {p = p} q ∙ sym (unique r)
 ```
 
 We can visualise the situation using the commutative diagram below:
