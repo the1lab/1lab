@@ -304,4 +304,33 @@ Curry {C = C} {D = D} {E = E} F = curried where
   curried .F-id = Nat-path λ x → F-id F
   curried .F-∘ f g = Nat-path λ x →
     ap (λ x → F₁ F (_ , x)) (sym (D .idl _)) ∙ F-∘ F _ _
+
+Uncurry : Functor C Cat[ D , E ] → Functor (C ×Cat D) E
+Uncurry {C = C} {D = D} {E = E} F = uncurried where
+  import Cat.Reasoning C as C
+  import Cat.Reasoning D as D
+  import Cat.Reasoning E as E
+  module F = Functor F
+
+  uncurried : Functor (C ×Cat D) E
+  uncurried .F₀ (c , d) = F₀ (F.₀ c) d
+  uncurried .F₁ (f , g) = F.₁ f .η _ E.∘ F₁ (F.₀ _) g
+
+  uncurried .F-id {x = x , y} = path where abstract
+    path : E ._∘_ (F.₁ (C .id) .η y) (F₁ (F.₀ x) (D .id)) ≡ E .id
+    path =
+      F.₁ C.id .η y E.∘ F₁ (F.₀ x) D.id ≡⟨ E.elimr (F-id (F.₀ x)) ⟩
+      F.₁ C.id .η y                     ≡⟨ (λ i → F.F-id i .η y) ⟩
+      E.id                              ∎
+
+  uncurried .F-∘ (f , g) (f′ , g′) = path where abstract
+    path : uncurried .F₁ (f C.∘ f′ , g D.∘ g′)
+         ≡ uncurried .F₁ (f , g) E.∘ uncurried .F₁ (f′ , g′)
+    path =
+      F.₁ (f C.∘ f′) .η _ E.∘ F₁ (F.₀ _) (g D.∘ g′)                       ≡˘⟨ E.pulll (λ i → F.F-∘ f f′ (~ i) .η _) ⟩
+      F.₁ f .η _ E.∘ F.₁ f′ .η _ E.∘ F₁ (F.₀ _) (g D.∘ g′)                ≡⟨ (λ i → F.₁ f .η _ E.∘ F.₁ f′ .η _ E.∘ F-∘ (F.₀ _) g g′ i) ⟩
+      F.₁ f .η _ E.∘ F.₁ f′ .η _ E.∘ F₁ (F.₀ _) g E.∘ F₁ (F.₀ _) g′       ≡⟨ solve E ⟩
+      F.₁ f .η _ E.∘ (F.₁ f′ .η _ E.∘ F₁ (F.₀ _) g) E.∘ F₁ (F.₀ _) g′     ≡⟨ ap (λ e → _ E.∘ e E.∘ _) (F.₁ f′ .is-natural _ _ _) ⟩
+      F.₁ f .η _ E.∘ (F₁ (F.₀ _) g E.∘ F.₁ f′ .η _) E.∘ F₁ (F.₀ _) g′     ≡⟨ solve E ⟩
+      ((F.₁ f .η _ E.∘ F₁ (F.₀ _) g) E.∘ (F.₁ f′ .η _ E.∘ F₁ (F.₀ _) g′)) ∎
 ```
