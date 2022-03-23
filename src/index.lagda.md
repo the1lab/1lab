@@ -309,6 +309,8 @@ open import Cat.Diagram.Terminal
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Equaliser
 open import Cat.Diagram.Product.Indexed
+open import Cat.Diagram.Equaliser.Kernel
+open import Cat.Diagram.Pullback.Properties
 
 -- Colimits:
 open import Cat.Diagram.Initial
@@ -346,6 +348,7 @@ and adjoint functors.
 
 ```agda
 open import Cat.Functor.Hom       -- Hom functor, Yoneda embedding, Coyoneda lemma
+open import Cat.Functor.Pullback  -- Base change, dependent sum, Σf ⊣ f*
 open import Cat.Functor.Base      -- Compendium of functor properties
 open import Cat.Functor.Bifunctor -- Functors out of product categories
 open import Cat.Functor.Equivalence -- Equivalences of (pre)categories
