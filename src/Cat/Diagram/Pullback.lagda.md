@@ -61,6 +61,13 @@ overall square has to commute.
            → p₁ ∘ lim' ≡ p₁'
            → p₂ ∘ lim' ≡ p₂'
            → lim' ≡ limiting p
+
+  unique₂
+    : {p : f ∘ p₁' ≡ g ∘ p₂'} {lim' lim'' : Hom P′ P}
+    → p₁ ∘ lim' ≡ p₁' → p₂ ∘ lim' ≡ p₂'
+    → p₁ ∘ lim'' ≡ p₁' → p₂ ∘ lim'' ≡ p₂'
+    → lim' ≡ lim''
+  unique₂ {p = o} p q r s = unique {p = o} p q ∙ sym (unique r s)
 ```
 
 By universal, we mean that any other "square" (here the second "square"
