@@ -6,7 +6,8 @@ open import Algebra.Semigroup
 open import Algebra.Lattice
 open import Algebra.Magma
 
-open import Cat.Thin
+open import Cat.Diagram.Product.Indexed
+open import Cat.Thin.Limits
 open import Cat.Thin
 
 open import Data.Power
@@ -186,4 +187,30 @@ $X \subseteq Y$, so we are done.
 ```agda
     from : (X ≡ (X ∩ Y)) → X ⊆ Y
     from path x x∈X = transport (ap ∣_∣ (happly path x)) x∈X .snd
+```
+
+## Completeness
+
+The lattice of powersets of a type is [complete], in that it admits
+[arbitrary meets]. The meet of a family $F : I \to \mathbb{P}$ is the
+subset represented by $\{ i : (\forall x)\ i \in F(x) \}$, i.e., the set
+of elements present in _all_ the subsets in the family.
+
+[complete]: Cat.Diagram.Limit.Base.html#completeness
+[arbitrary meets]: Cat.Thin.Limits.html
+
+```agda
+module _ {ℓ} {X : Type ℓ} where
+  private module ℙ = Poset (ℙ⊆ X)
+  open Indexed-product
+
+  ℙ-indexed-meet
+    : ∀ {I : Type ℓ} (F : I → ℙ X)
+    → Indexed-product ℙ.underlying F
+  ℙ-indexed-meet F = ip where
+    ip : Indexed-product _ _
+    ip .ΠF i = (∀ x → i ∈ F x) , Π-is-hlevel 1 λ x → F x i .is-tr
+    ip .π i x f = f i
+    ip .has-is-ip = indexed-meet→indexed-product {P = ℙ.→Proset} _
+      λ f x b i → f i x b
 ```
