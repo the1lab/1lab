@@ -6,7 +6,10 @@ open import Algebra.Semigroup
 open import Algebra.Lattice
 open import Algebra.Magma
 
+open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Diagram.Product.Indexed
+open import Cat.Diagram.Colimit.Base
+open import Cat.Diagram.Limit.Base
 open import Cat.Thin.Limits
 open import Cat.Thin
 
@@ -191,7 +194,7 @@ $X \subseteq Y$, so we are done.
 
 ## Completeness
 
-The lattice of powersets of a type is [complete], in that it admits
+The lattice of powersets of a type is [complete], since it admits
 [arbitrary meets]. The meet of a family $F : I \to \mathbb{P}$ is the
 subset represented by $\{ i : (\forall x)\ i \in F(x) \}$, i.e., the set
 of elements present in _all_ the subsets in the family.
@@ -209,8 +212,36 @@ module _ {ℓ} {X : Type ℓ} where
     → Indexed-product ℙ.underlying F
   ℙ-indexed-meet F = ip where
     ip : Indexed-product _ _
-    ip .ΠF i = (∀ x → i ∈ F x) , Π-is-hlevel 1 λ x → F x i .is-tr
-    ip .π i x f = f i
+    ip .ΠF i      = (∀ x → i ∈ F x) , Π-is-hlevel 1 λ x → F x i .is-tr
+    ip .π i x f   = f i
     ip .has-is-ip = indexed-meet→indexed-product {P = ℙ.→Proset} _
       λ f x b i → f i x b
+
+  ℙ-complete : is-complete ℓ ℓ ℙ.underlying
+  ℙ-complete = has-indexed-products→proset-is-complete {P = ℙ.→Proset} ℙ-indexed-meet
+```
+
+It is also [cocomplete], since it admits arbitrary indexed joins.  These
+are given, assuming $F$ is like above, by the subset $\{ i : (\exists
+x)\ i \in F(x) \}$. Note the use of $\exists$, rather than $\sum$: we
+need a proposition.
+
+[cocomplete]: Cat.Diagram.Colimit.Base.html#cocompleteness
+
+```agda
+  open Indexed-coproduct
+
+  ℙ-indexed-join
+    : ∀ {I : Type ℓ} (F : I → ℙ X)
+    → Indexed-coproduct ℙ.underlying F
+  ℙ-indexed-join F = ic where
+    ic : Indexed-coproduct _ _
+    ic .ΣF i      = (∃[ x ∈ _ ] (i ∈ F x)) , squash
+    ic .ι i x f   = inc (i , f)
+    ic .has-is-ic = indexed-join→indexed-coproduct {P = ℙ.→Proset} _
+      λ {B = B} f x → ∥-∥-elim (λ _ → B x .is-tr) (λ { (i , y) → f i x y })
+
+  ℙ-cocomplete : is-cocomplete ℓ ℓ ℙ.underlying
+  ℙ-cocomplete = has-indexed-coproducts→proset-is-cocomplete {P = ℙ.→Proset}
+    ℙ-indexed-join
 ```

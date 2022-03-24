@@ -481,15 +481,18 @@ functor and used the proof that it preserves isomorphisms.
 
 ## Completeness
 
-A category is **complete** if it admits all limits. However, due to a
-classical (literally - you need excluded middle for it to go through),
-non-[posetal] categories do not generally have _all_ limits. Rather, a
-category is complete _with respect to_ some upper bound on the size of
-the diagrams indexing the limits. A category is **$(o,\ell)$-complete**
-if it admits limits for all diagrams indexed by $(o,\ell)$-small
-precategories.
+A category is **complete** if admits for limits of arbitrary shape.
+However, in the presence of excluded middle, if a category admits
+products indexed by its class of morphisms, then it is automatically
+[thin]. Since excluded middle is independent of type theory, we can not
+prove that any non-thin categories have arbitrary limits.
 
-[posetal]: Cat.Thin.html
+Instead, categories are complete _with respect to_ a pair of universes:
+A category is **$(o, \ell)$-complete** if it has limits for any diagram
+indexed by a precategory with objects in $\ty\ o$ and morphisms in $\ty\
+\ell$.
+
+[thin]: Cat.Thin.html
 
 ```agda
 is-complete : ∀ {oc ℓc} o ℓ → Precategory oc ℓc → Type _
