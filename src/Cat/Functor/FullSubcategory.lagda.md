@@ -32,16 +32,16 @@ subgraphs" of the categorical world: Keep only some of the vertices
 (objects), but all of the arrows (arrows) between them.
 
 ```agda
-Restrict : (P : C.Ob → Type ℓ) → (∀ x → is-prop (P x))
+Restrict : (P : C.Ob → Type ℓ)
          → Precategory (o ⊔ ℓ) h
-Restrict P pprop .Ob = Σ[ c ∈ C.Ob ] (P c)
-Restrict P pprop .Hom (A , _) (B , _) = C.Hom A B
-Restrict P pprop .Hom-set _ _ = C.Hom-set _ _
-Restrict P pprop .id    = C.id
-Restrict P pprop ._∘_   = C._∘_
-Restrict P pprop .idr   = C.idr
-Restrict P pprop .idl   = C.idl
-Restrict P pprop .assoc = C.assoc
+Restrict P .Ob = Σ[ c ∈ C.Ob ] (P c)
+Restrict P .Hom (A , _) (B , _) = C.Hom A B
+Restrict P .Hom-set _ _ = C.Hom-set _ _
+Restrict P .id    = C.id
+Restrict P ._∘_   = C._∘_
+Restrict P .idr   = C.idr
+Restrict P .idl   = C.idl
+Restrict P .assoc = C.assoc
 ```
 
 A very important property of full subcategories (`Restrict`{.Agda}ions)
@@ -55,7 +55,7 @@ iso in the subcategory is an iso in $\ca{C}$, thus a path!
 ```agda
 module _ (P : C.Ob → Type ℓ) (pprop : ∀ x → is-prop (P x))
   where
-  import Cat.Reasoning (Restrict P pprop) as R
+  import Cat.Reasoning (Restrict P) as R
 ```
 
 We begin by translating between isomorphisms in the subcategory (called
@@ -78,7 +78,7 @@ the supercategory; Hence, since $\ca{C}$ is by assumption univalent, so
 is $\ca{R}$.
 
 ```agda
-  Restrict-is-category : is-category C → is-category (Restrict P pprop)
+  Restrict-is-category : is-category C → is-category (Restrict P)
   Restrict-is-category univ (A , p) = is-hlevel≃ 0 equiv (univ A)
     where
       to : (Σ[ B ∈ C.Ob ] A C.≅ B) → (Σ[ B ∈ R.Ob ] (A , p) R.≅ B)
@@ -114,7 +114,7 @@ module _ {o' h'} {D : Precategory o' h'} {F : Functor D C} (ff : is-fully-faithf
 
   Full-inclusion→Full-subcat : Precategory _ _
   Full-inclusion→Full-subcat =
-    Restrict (λ x → ∃[ d ∈ Ob D ] (F₀ d C.≅ x)) λ _ → squash
+    Restrict (λ x → ∃[ d ∈ Ob D ] (F₀ d C.≅ x))
 ```
 
 This canonical full subcategory is weakly equivalent to $\ca{D}$,
@@ -144,8 +144,8 @@ inclusion, given on objects by projecting the first component and on
 morphisms by the identity function.
 
 ```agda
-module _ {P : C.Ob → Type ℓ} {pprop : ∀ x → is-prop (P x)} where
-  Forget-full-subcat : Functor (Restrict P pprop) C
+module _ {P : C.Ob → Type ℓ} where
+  Forget-full-subcat : Functor (Restrict P) C
   Forget-full-subcat .Functor.F₀ = fst
   Forget-full-subcat .Functor.F₁ f = f
   Forget-full-subcat .Functor.F-id = refl

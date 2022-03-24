@@ -58,8 +58,8 @@ indexed product of $F$.
 record Indexed-product (F : Idx → C.Ob) : Type (o ⊔ ℓ ⊔ level-of Idx) where
   no-eta-equality
   field
-    {ΠF} : C.Ob
-    π : ∀ i → C.Hom ΠF (F i)
+    {ΠF}      : C.Ob
+    π         : ∀ i → C.Hom ΠF (F i)
     has-is-ip : is-indexed-product F π
   open is-indexed-product has-is-ip public
 
@@ -72,7 +72,9 @@ has-indexed-products ℓ = ∀ {I : Type ℓ} (F : I → C.Ob) → Indexed-produ
 In the particular case where $I$ is a groupoid, e.g. because it arises
 as the space of objects of a univalent category, an indexed product for
 $F : I \to \ca{C}$ is the same thing as a limit over $F$, considered as
-a functor $\disc{I} \to \ca{C}$.
+a functor $\disc{I} \to \ca{C}$. We can not lift this restriction: If
+$I$ is not a groupoid, then its path spaces $x = y$ are not necessarily
+sets, and so the `Disc`{.Agda} construction does not apply to it.
 
 ```agda
 module _ {I : Type ℓ'} (i-is-grpd : is-groupoid I) (F : I → C.Ob) where
@@ -97,7 +99,7 @@ module _ {I : Type ℓ'} (i-is-grpd : is-groupoid I) (F : I → C.Ob) where
     lim .has⊤ x .centre .commutes = IP.commute
     lim .has⊤ x .paths h = Cone-hom-path _ (sym (IP.unique _ λ i → h .commutes))
 
-module _ {I : Set ℓ'} (F : Functor (Disc′ I) C) where
+module _ {I : Type ℓ'} (isg : is-groupoid I) (F : Functor (Disc I isg) C) where
   private module F = Functor F
   open is-indexed-product
   open Indexed-product

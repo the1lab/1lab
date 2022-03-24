@@ -48,7 +48,6 @@ record is-coequaliser {E} (f g : Hom A B) (coeq : Hom B E) : Type (o ⊔ ℓ) wh
 
   id-coequalise : id ≡ coequalise coequal
   id-coequalise = unique (sym (idl _))
-
 ```
 
 There is also a convenient bundling of an coequalising arrow together with
@@ -62,4 +61,23 @@ record Coequaliser (f g : Hom A B) : Type (o ⊔ ℓ) where
     has-is-coeq : is-coequaliser f g coeq
 
   open is-coequaliser has-is-coeq public
+```
+
+## Coequalisers are epic
+
+Dually to the situation with [equalisers], coequaliser arrows are always
+[epic]:
+
+[epic]: Cat.Morphism.html#epis
+
+```agda
+is-coequaliser→is-epic
+  : ∀ {E} (coequ : Hom A E)
+  → is-coequaliser f g coequ
+  → is-epic coequ
+is-coequaliser→is-epic {f = f} {g = g} equ equalises h i p =
+  h                            ≡⟨ unique (sym p) ⟩
+  coequalise (extendr coequal) ≡˘⟨ unique refl ⟩
+  i                            ∎
+  where open is-coequaliser equalises
 ```
