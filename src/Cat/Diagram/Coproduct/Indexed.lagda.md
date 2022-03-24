@@ -1,6 +1,7 @@
 ```agda
 open import Cat.Diagram.Colimit.Base
 open import Cat.Instances.Discrete
+open import Cat.Diagram.Pullback
 open import Cat.Diagram.Initial
 open import Cat.Prelude
 
@@ -113,4 +114,65 @@ module _ {I : Type ℓ'} (isg : is-groupoid I) (F : Functor (Disc I isg) C) wher
         h′ : Cocone-hom _ _ _
         h′ .hom = h
         h′ .commutes = p _
+```
+
+# Disjoint coproducts
+
+An indexed coproduct $\sum F$ is said to be **disjoint** if every one of
+its inclusions $F_i \to \sum F$ is [monic], and, for unequal $i \ne j$,
+the square below is a pullback with initial apex. Since the maps $F_i
+\to \sum F \ot F_j$ are monic, the pullback below computes the
+_intersection_ of $F_i$ and $F_j$ as subobjects of $\sum F$, hence the
+name _disjoint coproduct_: If $\bot$ is an initial object, then $F_i
+\cap F_j = \emptyset$.
+
+[monic]: Cat.Morphism.html#monos
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  \bot && {F_i} \\
+  \\
+  {F_j} && {\sum F}
+  \arrow[from=1-1, to=1-3]
+  \arrow[from=1-3, to=3-3]
+  \arrow[from=3-1, to=3-3]
+  \arrow[from=1-1, to=3-1]
+\end{tikzcd}\]
+~~~
+
+```agda
+record is-disjoint-coproduct (F : Idx → C.Ob) (ι : ∀ i → C.Hom (F i) S)
+  : Type (o ⊔ ℓ ⊔ level-of Idx) where
+  field
+    is-coproduct         : is-indexed-coproduct F ι
+    injections-are-monic : ∀ i → C.is-monic (ι i)
+    summands-intersect   : ∀ i j → Pullback C (ι i) (ι j)
+    different-images-are-disjoint
+      : ∀ i j → (i ≡ j → ⊥) → is-initial C (summands-intersect i j .Pullback.apex)
+```
+
+## Initial objects are disjoint
+
+We prove that if $\bot$ is an initial object, then it is also an indexed
+coproduct --- for any family $\bot \to \ca{C}$ --- and furthermore, it
+is a disjoint coproduct.
+
+```agda
+is-initial→is-disjoint-coproduct
+  : ∀ {∅} {F : ⊥ → C.Ob} {i : ∀ i → C.Hom (F i) ∅}
+  → is-initial C ∅
+  → is-disjoint-coproduct F i
+is-initial→is-disjoint-coproduct {F = F} {i = i} init = is-disjoint where
+  open is-indexed-coproduct
+  is-coprod : is-indexed-coproduct F i
+  is-coprod .match _ = init _ .centre
+  is-coprod .commute {i = i} = absurd i
+  is-coprod .unique {h = h} f p i = init _ .paths h (~ i)
+
+  open is-disjoint-coproduct
+  is-disjoint : is-disjoint-coproduct F i
+  is-disjoint .is-coproduct = is-coprod
+  is-disjoint .injections-are-monic i = absurd i
+  is-disjoint .summands-intersect i j = absurd i
+  is-disjoint .different-images-are-disjoint i j p = absurd i
 ```

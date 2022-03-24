@@ -2,7 +2,7 @@
 open import Algebra.Group.Cat.Base
 open import Algebra.Group
 
-open import Cat.Instances.Sets.FinitelyComplete as SL
+open import Cat.Instances.Sets.Complete as SL
 open import Cat.Prelude
 
 module Algebra.Group.Cat.FinitelyComplete {ℓ} where

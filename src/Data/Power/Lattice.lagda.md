@@ -173,8 +173,8 @@ subset-∩ {X = X} {Y = Y} =
 ```
 
 In the "if" direction, suppose that $X \subseteq Y$. We show that $X ∩
-Y$ intersect to $X$ by extensionality of power sets: If $x \in X$ and $X
-\subseteq Y$ then $x \in Y$, so $x \in (X \cap Y)$. Conversely, if $x
+Y$ intersects to $X$ by extensionality of power sets: If $x \in X$ and
+$X \subseteq Y$ then $x \in Y$, so $x \in (X \cap Y)$. Conversely, if $x
 \in (X \cap Y)$, then $x \in X$, so we are done.
 
 ```agda

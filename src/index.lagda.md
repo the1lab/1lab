@@ -388,8 +388,6 @@ desirable properties.
 ```agda
 open import Cat.Instances.Sets                  -- The category of sets
 open import Cat.Instances.Sets.Complete         -- Sets is complete
-open import Cat.Instances.Sets.FinitelyComplete
-  -- More explicit constructions of commonly-used finite limits in Sets
 
 open import Cat.Instances.Functor         -- Functor (pre)categories
 open import Cat.Instances.Functor.Limits  -- Limits in functor categories
