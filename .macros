@@ -22,4 +22,7 @@
 \Arr:\id{Arr}(#1)
 \xto:\xrightarrow
 \xot:\xleftarrow
+\xepi:\xtwoheadrightarrow
+\xmono:\xhookrightarrow
 \colim:\operatorname*{colim}
+\im:\operatorname{im}

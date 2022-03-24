@@ -1,9 +1,9 @@
 ```agda
 open import Cat.Instances.Shape.Parallel
 open import Cat.Diagram.Limit.Base
+open import Cat.Diagram.Equaliser
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
-open import Cat.Diagram.Equaliser
 open import Cat.Prelude
 
 open import Data.Bool

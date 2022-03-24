@@ -1,7 +1,7 @@
 ```agda
+open import Cat.Diagram.Limit.Finite
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
-open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Product
 open import Cat.Prelude
 open import Cat.Thin

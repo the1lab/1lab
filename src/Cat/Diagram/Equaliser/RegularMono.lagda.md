@@ -1,9 +1,9 @@
 ```agda
 open import Cat.Diagram.Equaliser
-open import Cat.Instances.Comma
-open import Cat.Instances.Slice
 open import Cat.Diagram.Initial
 open import Cat.Diagram.Pushout
+open import Cat.Instances.Comma
+open import Cat.Instances.Slice
 open import Cat.Diagram.Image
 open import Cat.Prelude
 

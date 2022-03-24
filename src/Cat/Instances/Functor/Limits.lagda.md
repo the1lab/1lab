@@ -1,10 +1,10 @@
 ```agda
 open import Cat.Diagram.Limit.Base
-open import Cat.Instances.Product
-open import Cat.Instances.Functor
 open import Cat.Diagram.Equaliser
-open import Cat.Diagram.Terminal
+open import Cat.Instances.Functor
+open import Cat.Instances.Product
 open import Cat.Diagram.Pullback
+open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Prelude
 

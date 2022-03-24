@@ -2,8 +2,8 @@
 open import Cat.Instances.Shape.Cospan
 open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Functor
-open import Cat.Diagram.Terminal
 open import Cat.Diagram.Pullback
+open import Cat.Diagram.Terminal
 open import Cat.Prelude
 
 open import Data.Bool

@@ -2,8 +2,8 @@
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
-open import Cat.Instances.Slice
 open import Cat.Instances.Comma
+open import Cat.Instances.Slice
 open import Cat.Prelude
 
 import Cat.Reasoning
