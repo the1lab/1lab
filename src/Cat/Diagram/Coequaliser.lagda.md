@@ -38,13 +38,18 @@ record is-coequaliser {E} (f g : Hom A B) (coeq : Hom B E) : Type (o ⊔ ℓ) wh
     coequal    : coeq ∘ f ≡ coeq ∘ g
     coequalise : ∀ {F} {e′ : Hom B F} (p : e′ ∘ f ≡ e′ ∘ g) → Hom E F
     universal  : ∀ {F} {e′ : Hom B F} {p : e′ ∘ f ≡ e′ ∘ g}
-                 → coequalise p ∘ coeq ≡ e′
-    unique     : ∀ {F} {e′ : Hom B F} {p : e′ ∘ f ≡ e′ ∘ g} {colim : Hom E F}
-                 → e′ ≡ colim ∘ coeq
-                 → colim ≡ coequalise p
+               → coequalise p ∘ coeq ≡ e′
 
-  unique₂ : (p q : h ∘ f ≡ h ∘ g) → coequalise p ≡ coequalise q
-  unique₂ p q = unique (sym universal)
+    unique     : ∀ {F} {e′ : Hom B F} {p : e′ ∘ f ≡ e′ ∘ g} {colim : Hom E F}
+               → e′ ≡ colim ∘ coeq
+               → colim ≡ coequalise p
+
+  unique₂
+    : ∀ {F} {e′ : Hom B F} {p : e′ ∘ f ≡ e′ ∘ g} {colim' colim'' : Hom E F}
+    → e′ ≡ colim' ∘ coeq
+    → e′ ≡ colim'' ∘ coeq
+    → colim' ≡ colim''
+  unique₂ {p = p} q r = unique {p = p} q ∙ sym (unique r)
 
   id-coequalise : id ≡ coequalise coequal
   id-coequalise = unique (sym (idl _))

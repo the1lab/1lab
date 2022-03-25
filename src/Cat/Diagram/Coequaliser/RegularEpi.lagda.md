@@ -36,10 +36,11 @@ arrows $R \rightrightarrows a$.
 ```agda
 record is-regular-epi (f : Hom a b) : Type (o ⊔ ℓ) where
   no-eta-equality
+  constructor reg-epi
   field
-    {r}         : Ob
-    arr₁ arr₂   : Hom r a
-    has-is-coeq : is-coequaliser C arr₁ arr₂ f
+    {r}           : Ob
+    {arr₁} {arr₂} : Hom r a
+    has-is-coeq   : is-coequaliser C arr₁ arr₂ f
 
   open is-coequaliser has-is-coeq public
 ```

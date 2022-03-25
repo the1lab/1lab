@@ -99,6 +99,14 @@ M-image {a = a} {b} M f = Universal-morphism (cut f)
     {P = (λ o → M .fst (o .map))})
 ```
 
+**The** image is the $M$-image for $M$ = the class of all monomorphisms.
+
+```agda
+Image : ∀ {a b} → Hom a b → Type _
+Image {b = b} f = Universal-morphism (cut f)
+  (Forget-full-subcat {C = Slice C b} {P = is-monic ⊙ map})
+```
+
 ## Friendly interface
 
 Since this definition is incredibly abstract and indirect, we provide a
