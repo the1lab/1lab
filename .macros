@@ -1,6 +1,7 @@
 \id:\mathrm{#1}
 \ty:\id{Type}
 \set:\id{Set}
+\prop:\id{Prop}
 \ht:\mathbf{#1}
 \prosets:\ht{Prosets}
 \sets:\ht{Sets}

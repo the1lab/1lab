@@ -599,8 +599,8 @@ _∙e_ (f , e) (g , e') = (λ x → g (f x)) , eqv where
       f⁻¹ .is-iso.inv (g⁻¹ .is-iso.inv (g (f z))) ≡⟨ ap (f⁻¹ .is-iso.inv) (g⁻¹ .is-iso.linv _) ⟩
       f⁻¹ .is-iso.inv (f z)                       ≡⟨ f⁻¹ .is-iso.linv _ ⟩
       z                                           ∎
-    eqv : is-equiv (λ x → g (f x))
-    eqv = is-iso→is-equiv (iso (λ x → f⁻¹ .is-iso.inv (g⁻¹ .is-iso.inv x)) right left)
+  eqv : is-equiv (λ x → g (f x))
+  eqv = is-iso→is-equiv (iso (λ x → f⁻¹ .is-iso.inv (g⁻¹ .is-iso.inv x)) right left)
 
 ∙-is-equiv : ∀ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
            → {f : A → B} {g : B → C}

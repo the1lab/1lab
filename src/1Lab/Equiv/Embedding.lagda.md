@@ -135,9 +135,9 @@ correspond to the families of propositional types over $B$.
 
 ```agda
 subtype-classifier
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
-  → (Σ[ A ∈ Type ℓ' ] (A ↪ B)) ≃ (B → Σ[ T ∈ Type ℓ' ] (is-prop T))
-subtype-classifier {ℓ} {ℓ'} = Map-classifier {ℓ = ℓ'} is-prop
+  : ∀ {ℓ} {B : Type ℓ}
+  → (Σ[ A ∈ Type ℓ ] (A ↪ B)) ≃ (B → Σ[ T ∈ Type ℓ ] (is-prop T))
+subtype-classifier {ℓ} = Map-classifier {ℓ = ℓ} is-prop
 ```
 
 A canonical source of embedding, then, are the first projections from

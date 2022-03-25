@@ -314,7 +314,7 @@ is indeed the equaliser of $f$ and $g$.
 
 ```agda
     eq .has-is-eq .limiting {e′ = e′} p =
-      Pb.limiting (Bb.unique₂ _ refl refl (⟨f,g⟩ ∘ e′) (sym p1) (sym p2))
+      Pb.limiting (Bb.unique₂ refl refl (sym p1) (sym p2))
       where
         p1 : Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e′ ≡ Bb.π₁ ∘ ⟨f,g⟩ ∘ e′
         p1 =

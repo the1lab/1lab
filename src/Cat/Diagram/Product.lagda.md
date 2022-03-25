@@ -6,7 +6,7 @@ module Cat.Diagram.Product {o h} (C : Precategory o h) where
 
 <!--
 ```agda
-open import Cat.Morphism C
+open import Cat.Reasoning C
 private variable
   A B : Ob
 ```
@@ -66,16 +66,21 @@ record is-product {A B P} (π₁ : Hom P A) (π₂ : Hom P B) : Type (o ⊔ h) w
            → other ≡ ⟨ p1 , p2 ⟩
 
   unique₂ : ∀ {Q} {pr1 : Hom Q A} {pr2}
-          → ∀ o1 (p1 : π₁ ∘ o1 ≡ pr1) (q1 : π₂ ∘ o1 ≡ pr2)
-          → ∀ o2 (p2 : π₁ ∘ o2 ≡ pr1) (q2 : π₂ ∘ o2 ≡ pr2)
+          → ∀ {o1} (p1 : π₁ ∘ o1 ≡ pr1) (q1 : π₂ ∘ o1 ≡ pr2)
+          → ∀ {o2} (p2 : π₁ ∘ o2 ≡ pr1) (q2 : π₂ ∘ o2 ≡ pr2)
           → o1 ≡ o2
-  unique₂ o1 p1 q1 o2 p2 q2 = unique o1 p1 q1 ∙ sym (unique o2 p2 q2)
+  unique₂ p1 q1 p2 q2 = unique _ p1 q1 ∙ sym (unique _ p2 q2)
+
+  ⟨⟩∘ : ∀ {Q R} {p1 : Hom Q A} {p2 : Hom Q B} (f : Hom R Q)
+      → ⟨ p1 , p2 ⟩ ∘ f ≡ ⟨ p1 ∘ f , p2 ∘ f ⟩
+  ⟨⟩∘ f = unique _ (pulll π₁∘factor) (pulll π₂∘factor)
 ```
 
 A product of $A$ and $B$ is an explicit choice of product diagram:
 
 ```agda
 record Product (A B : Ob) : Type (o ⊔ h) where
+  no-eta-equality
   field
     apex : Ob
     π₁ : Hom apex A
@@ -147,15 +152,15 @@ the projections.
 ```agda
     p1→p2→p1 : p1→p2 ∘ p2→p1 ≡ id
     p1→p2→p1 =
-      p2.unique₂ _
+      p2.unique₂
         (assoc _ _ _ ·· ap (_∘ _) p2.π₁∘factor ·· p1.π₁∘factor)
         (assoc _ _ _ ·· ap (_∘ _) p2.π₂∘factor ·· p1.π₂∘factor)
-        id (idr _) (idr _)
+        (idr _) (idr _)
 
     p2→p1→p2 : p2→p1 ∘ p1→p2 ≡ id
     p2→p1→p2 =
-      p1.unique₂ _
+      p1.unique₂
         (assoc _ _ _ ·· ap (_∘ _) p1.π₁∘factor ·· p2.π₁∘factor)
         (assoc _ _ _ ·· ap (_∘ _) p1.π₂∘factor ·· p2.π₂∘factor)
-        id (idr _) (idr _)
+        (idr _) (idr _)
 ```
