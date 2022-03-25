@@ -96,7 +96,7 @@ equalises the inclusions of its cokernel pair.
 ```
 
 If $f$ has a cokernel pair, and it is a regular monomorphism, then it is
-also effective:
+also effective --- it is the equaliser of its cokernel pair.
 
 ```agda
 is-regular-mono→is-effective-mono

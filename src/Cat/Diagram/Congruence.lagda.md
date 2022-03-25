@@ -1,4 +1,5 @@
 ```agda
+open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Pullback
@@ -153,6 +154,7 @@ private
 
 ```agda
 record is-congruence {A R} (m : Hom R (A ⊗ A)) : Type (o ⊔ ℓ) where
+  no-eta-equality
 ```
 
 Here's the data of a congruence. Get ready, because there's a lot of it:
@@ -192,6 +194,7 @@ Here's the data of a congruence. Get ready, because there's a lot of it:
     trans-factors : source-target ≡ m ∘ has-trans
 
 record Congruence-on A : Type (o ⊔ ℓ) where
+  no-eta-equality
   field
     {domain}    : Ob
     inclusion   : Hom domain (A ⊗ A)
@@ -342,40 +345,104 @@ Understanding the transitivity map is left as an exercise to the reader.
 
 </details>
 
-A congruence given by the kernel pair of some morphism is called
-**effective**. We formalise this property in the following way: A
-congruence $R \xmono{m} (a \times a)$ is effective if there exists a map
-$f : a \to b$, such that $R$ --- the domain of the congruence --- serves
-as a pullback of $a \xto{f} b \xot{f} a$.
+# Quotient objects
+
+Let $m : R \mono A \times A$ be a congruence on $A$. If $\ca{C}$ has a
+coequaliser $q : A \epi A/R$ for the composites $R \mono A \times A \to
+A$, then we call $q$ the **quotient map**, and we call $A/R$ the
+**quotient** of $R$.
+
+~~~{.quiver .short-2}
+\[\begin{tikzcd}
+  R & {A \times A} & A & {A/R}
+  \arrow["m", hook, from=1-1, to=1-2]
+  \arrow[shift left=1, from=1-2, to=1-3]
+  \arrow[shift right=1, from=1-2, to=1-3]
+  \arrow["q", two heads, from=1-3, to=1-4]
+\end{tikzcd}\]
+~~~
+
+```agda
+is-quotient-of : ∀ {A A/R} (R : Congruence-on A) → Hom A A/R → Type _
+is-quotient-of R = is-coequaliser C R.rel₁ R.rel₂
+  where module R = Congruence-on R
+```
+
+Since $q$ coequalises the two projections, by definition, we have
+$q\pi_1m = q\pi_2m$; Calculating in the category of sets where equality
+of morphisms is computed pointwise, we can say that "the images of
+$R$-related elements under the quotient map $q$ are equal". By
+definition, the quotient for a congruence is a [regular epimorphism].
+
+[regular epimorphism]: Cat.Diagram.Coequaliser.RegularEpi.html
+
+```agda
+open is-regular-epi
+
+quotient-regular-epi
+  : ∀ {A A/R} {R : Congruence-on A} {f : Hom A A/R}
+  → is-quotient-of R f → is-regular-epi C f
+quotient-regular-epi quot .r = _
+quotient-regular-epi quot .arr₁ = _
+quotient-regular-epi quot .arr₂ = _
+quotient-regular-epi quot .has-is-coeq = quot
+```
+
+If $R \hookrightarrow A \times A$ has a quotient $q : A \to A/R$, and
+$R$ is additionally the pullback of $q$ along itself, then $R$ is called
+an **effective congruence**, and $q$ is an **effective coequaliser**.
+Since, as mentioned above, the kernel pair of a morphism is "the
+congruence of equal images", this says that an effective quotient
+identifies _exactly those_ objects related by $R$, and no more.
 
 ```agda
 record is-effective-congruence {A} (R : Congruence-on A) : Type (o ⊔ ℓ) where
   private module R = Congruence-on R
   field
-    {B} : Ob
-    the-map : Hom A B
-    has-is-pullback : is-pullback C R.rel₁ the-map R.rel₂ the-map
+    {A/R}          : Ob
+    quotient       : Hom A A/R
+    has-quotient   : is-quotient-of R quotient
+    is-kernel-pair : is-pullback C R.rel₁ quotient R.rel₂ quotient
 ```
 
-The congruence _given by_ the kernel pair of a map $f$ is effective,
-since the pullback of $f$ and $f$ _is_ the pullback of $f$ and $f$.
-However, that pullback's projections are not definitionally the same as
-the relation's projections, so we must adjust it by a couple of paths:
+If $f$ is the coequaliser of its kernel pair --- that is, it is an
+[effective epimorphism] --- then it is an effective congruence, and
+vice-versa.
+
+[effective epimorphism]: Cat.Diagram.Coequaliser.RegularEpi.html
 
 ```agda
 kernel-pair-is-effective
   : ∀ {a b} {f : Hom a b}
+  → is-quotient-of (Kernel-pair f) f
   → is-effective-congruence (Kernel-pair f)
-kernel-pair-is-effective {a = a} {b} {f} = eff where
-  open is-effective-congruence
+kernel-pair-is-effective {a = a} {b} {f} quot = eff where
+  open is-effective-congruence hiding (A/R)
   module a×a = Product (fc.products a a)
   module pb = Pullback (fc.pullbacks f f)
+
+  open is-coequaliser
   eff : is-effective-congruence _
-  eff .B = _
-  eff .the-map = f
-  eff .has-is-pullback =
+  eff .is-effective-congruence.A/R = b
+  eff .quotient = f
+  eff .has-quotient = quot
+  eff .is-kernel-pair =
     transport
       (λ i → is-pullback C (a×a.π₁∘factor {p1 = pb.p₁} {p2 = pb.p₂} (~ i)) f
                            (a×a.π₂∘factor {p1 = pb.p₁} {p2 = pb.p₂} (~ i)) f)
-      (pb.has-is-pb)
+      pb.has-is-pb
+
+kp-effective-congruence→effective-epi
+  : ∀ {a b} {f : Hom a b}
+  → (eff : is-effective-congruence (Kernel-pair f))
+  → is-effective-epi C (eff .is-effective-congruence.quotient)
+kp-effective-congruence→effective-epi {f = f} cong = epi where
+  module cong = is-effective-congruence cong
+  open is-effective-epi
+  epi : is-effective-epi C _
+  epi .kernel = Kernel-pair _ .Congruence-on.domain
+  epi .p₁ = _
+  epi .p₂ = _
+  epi .is-kernel-pair = cong.is-kernel-pair
+  epi .has-is-coeq = cong.has-quotient
 ```
