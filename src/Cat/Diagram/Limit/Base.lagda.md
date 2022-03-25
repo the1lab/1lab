@@ -341,8 +341,8 @@ module _ {o₁ h₁ o₂ h₂ o₃ h₃ : _}
 
 Since a cone is, in particular, a commutative diagram, and every functor
 preserves commutativity of diagrams, a functor $F : \ca{C} \to \ca{D}$
-acts on a cone over $\id{Dia}$ (in $\ca{C}$), sending it to a cone
-over $F \circ \id{Dia}$ (in $\ca{D}$).
+acts on a cone over $\id{Dia}$ (in $\ca{C}$), sending it to a cone over
+$F \circ \id{Dia}$ (in $\ca{D}$).
 
 ```agda
   F-map-cone : Cone Dia → Cone (F F∘ Dia)
@@ -354,11 +354,10 @@ over $F \circ \id{Dia}$ (in $\ca{D}$).
       F₁ F (Cone.ψ x y)                     ∎
 ```
 
-Suppose you have a limit $L$ of $\id{Dia}$ --- which is, to
-reiterate, a terminal object in the category of cones over
-$\id{Dia}$. We say that $F$ *preserves $L$* if $F(L)$, as defined
-right above, is a terminal object in the category of cones over
-$F \circ \id{Dia}$.
+Suppose you have a limit $L$ of $\id{Dia}$ --- which is, to reiterate, a
+terminal object in the category of cones over $\id{Dia}$. We say that
+$F$ *preserves $L$* if $F(L)$, as defined right above, is a terminal
+object in the category of cones over $F \circ \id{Dia}$.
 
 ```
   Preserves-limit : Limit Dia → Type _

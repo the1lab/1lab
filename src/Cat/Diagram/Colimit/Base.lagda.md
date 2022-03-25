@@ -234,9 +234,9 @@ module _ {o₁ h₁ o₂ h₂ o₃ h₃ : _}
 
 # Preservation of Colimits
 
-Because a cocone is a commutative diagram, any given functor
-$F : \ca{C} \to \ca{D}$ takes cones $\ca{C}$ to cones in $\ca{D}$,
-as functors preserve commutative diagrams.
+Because a cocone is a commutative diagram, any given functor $F : \ca{C}
+\to \ca{D}$ takes cocones in $\ca{C}$ to cocones in $\ca{D}$, as
+functors preserve commutative diagrams.
 
 ```agda
   F-map-cocone : Cocone Dia → Cocone (F F∘ Dia)
@@ -248,16 +248,16 @@ as functors preserve commutative diagrams.
     F .F₁ (Cocone.ψ x _) ∎
 ```
 
-Though functors must take cones to cones, they may not necessarily take
-colimiting cocones to colimiting cocones! When a functor does, we say
-that it _preserves_ colimits.
+Though functors must take cocones to cocones, they may not necessarily
+take colimiting cocones to colimiting cocones! When a functor does, we
+say that it _preserves_ colimits.
 
 ```agda
   Preserves-colimit : Colimit Dia → Type _
   Preserves-colimit o = is-initial (Cocones (F F∘ Dia)) (F-map-cocone (Initial.bot o))
 ```
 
-## Completeness
+## Cocompleteness
 
 A category is **cocomplete** if admits for limits of arbitrary shape.
 However, in the presence of excluded middle, if a category admits
