@@ -1,16 +1,23 @@
 ```agda
+open import Cat.Diagram.Limit.Equaliser
+open import Cat.Diagram.Limit.Pullback
+open import Cat.Diagram.Limit.Product
+open import Cat.Diagram.Limit.Base
+open import Cat.Instances.Discrete
 open import Cat.Prelude
 open import Cat.Thin
+
+open import Data.Bool
 
 module Cat.Diagram.Limit.Finite {ℓ ℓ'} (C : Precategory ℓ ℓ') where
 ```
 
 <!--
 ```agda
-open import Cat.Diagram.Equaliser C
-open import Cat.Diagram.Terminal C
-open import Cat.Diagram.Pullback C
-open import Cat.Diagram.Product C
+open import Cat.Diagram.Equaliser
+open import Cat.Diagram.Terminal
+open import Cat.Diagram.Pullback
+open import Cat.Diagram.Product
 open import Cat.Reasoning C
 ```
 -->
@@ -49,10 +56,10 @@ to give a terminal object and binary products.
 ```agda
 record Finitely-complete : Type (ℓ ⊔ ℓ') where
   field
-    terminal   : Terminal
-    products   : ∀ A B → Product A B
-    equalisers : ∀ {A B} (f g : Hom A B) → Equaliser f g
-    pullbacks  : ∀ {A B C} (f : Hom A C) (g : Hom B C) → Pullback f g
+    terminal   : Terminal C
+    products   : ∀ A B → Product C A B
+    equalisers : ∀ {A B} (f g : Hom A B) → Equaliser C f g
+    pullbacks  : ∀ {A B X} (f : Hom A X) (g : Hom B X) → Pullback C f g
 
   _⊗_ : Ob → Ob → Ob
   A ⊗ B = products A B .Product.apex
@@ -74,9 +81,9 @@ suffice for finite completeness.
 
 ```agda
 with-equalisers
-  : Terminal
-  → (∀ A B → Product A B)
-  → (∀ {A B} (f g : Hom A B) → Equaliser f g)
+  : Terminal C
+  → (∀ A B → Product C A B)
+  → (∀ {A B} (f g : Hom A B) → Equaliser C f g)
   → Finitely-complete
 with-equalisers top prod equ .terminal   = top
 with-equalisers top prod equ .products   = prod
@@ -98,13 +105,13 @@ diagram below.
 ~~~
 
 ```agda
-with-equalisers top prod equ .pullbacks {A} {B} {C} f g = pb where
+with-equalisers top prod equ .pullbacks {A} {B} {X} f g = pb where
   module Prod = Product (prod A B)
 
-  p1 : Hom Prod.apex C
+  p1 : Hom Prod.apex X
   p1 = f ∘ Prod.π₁
 
-  p2 : Hom Prod.apex C
+  p2 : Hom Prod.apex X
   p2 = g ∘ Prod.π₂
 
   module Equ = Equaliser (equ p1 p2)
@@ -112,7 +119,7 @@ with-equalisers top prod equ .pullbacks {A} {B} {C} f g = pb where
   open is-pullback
   open Pullback
 
-  pb : Pullback f g
+  pb : Pullback C f g
   pb .apex = Equ.apex
   pb .p₁ = Prod.π₁ ∘ Equ.equ
   pb .p₂ = Prod.π₂ ∘ Equ.equ
@@ -159,12 +166,12 @@ implies having all products, and all equalisers.
 
 ```agda
 with-pullbacks
-  : Terminal
-  → (∀ {A B C} (f : Hom A C) (g : Hom B C) → Pullback f g)
+  : Terminal C
+  → (∀ {A B X} (f : Hom A X) (g : Hom B X) → Pullback C f g)
   → Finitely-complete
 with-pullbacks top pb = fc where
   module top = Terminal top
-  mkprod : ∀ A B → Product A B
+  mkprod : ∀ A B → Product C A B
 ```
 
 We'll start with the products, since those are simpler. Observe that we
@@ -211,7 +218,7 @@ the terminal object $*$.
     open is-product
     open Product
 
-    prod : Product A B
+    prod : Product C A B
     prod .apex = Pb.apex
     prod .π₁ = Pb.p₁
     prod .π₂ = Pb.p₂
@@ -221,7 +228,7 @@ the terminal object $*$.
     prod .has-is-product .is-product.π₂∘factor = Pb.p₂∘limiting
     prod .has-is-product .unique other p q = Pb.unique p q
 
-  mkeq : ∀ {A B} (f g : Hom A B) → Equaliser f g
+  mkeq : ∀ {A B} (f g : Hom A B) → Equaliser C f g
   mkeq {A = A} {B} f g = eq where
 ```
 
@@ -274,7 +281,7 @@ are equal, so we can apply commutativity of the square above _again_ to
 conclude that $f \circ \id{equ} = g \circ \id{equ}$.
 
 ```agda
-    eq : Equaliser f g
+    eq : Equaliser C f g
     eq .apex = Pb.apex
     eq .equ = Pb.p₂
     eq .has-is-eq .equal =
@@ -362,8 +369,8 @@ bounded meet semilattices.
 ```agda
 with-top-and-meets
   : is-thin C
-  → Terminal
-  → (∀ A B → Product A B)
+  → Terminal C
+  → (∀ A B → Product C A B)
   → Finitely-complete
 with-top-and-meets thin top meets = fc where
   open Pullback
@@ -383,7 +390,7 @@ $\id{id}$.
   fc .equalisers {A} {B} f g = equalise where
     open Equaliser
     open is-equaliser
-    equalise : Equaliser _ _
+    equalise : Equaliser C _ _
     equalise .apex = A
     equalise .equ = id
     equalise .has-is-eq .equal = Thin.Hom-is-prop _ _ _ _
@@ -399,11 +406,11 @@ category is thin. Therefore, we can simply take $(A \times_C B) = (A
 \times B)$ as the definition of pullback.
 
 ```agda
-  fc .pullbacks {A} {B} {C} f g = pb where
+  fc .pullbacks {A} {B} f g = pb where
     open Pullback
     open is-pullback
     module P = Product (meets A B)
-    pb : Pullback _ _
+    pb : Pullback C _ _
     pb .apex = P.apex
     pb .p₁ = P.π₁
     pb .p₂ = P.π₂

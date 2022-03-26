@@ -394,3 +394,11 @@ The other case is analogous.
 The last case is when the path quacks like `ua (not, _)` - in that case,
 we use the `notLemma`{.Agda} to show it _must_ be `ua (not, _)`, and the
 univalence axiom finishes the job.
+
+<!--
+```agda
+if : ∀ {ℓ} {A : Type ℓ} → A → A → Bool → A
+if x y false = y
+if x y true = x
+```
+-->

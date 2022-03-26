@@ -26,10 +26,12 @@ codomain in the image of $G$.
 
 [pullback]: Cat.Diagram.Pullback.html
 
-The comma category is the universal way of completing a cospan of
+The comma category is the universal way of completing a [cospan] of
 functors $A \to C \ot B$ to a square, like the one below, which commutes
 _up to a natural transformation_ $\theta$. Note the similarity with a
 [pullback] square.
+
+[cospan]: Cat.Instances.Shape.Cospan.html
 
 ~~~{.quiver}
 \[\begin{tikzcd}

@@ -89,7 +89,9 @@ p_2 : d \to A$ have a common left inverse $r : A \to d$.
 
 **Transitivity**. This one's a doozy. Since $\sets$ has finite limits,
 we have an object of "composable pairs" of $d$, namely the pullback
-under the cospan $R \xto{p_1} X \xot{p_2} R$.
+under the [cospan] $R \xto{p_1} X \xot{p_2} R$.
+
+[cospan]: Cat.Instances.Shape.Cospan.html
 
 ~~~{.quiver}
 \[\begin{tikzcd}

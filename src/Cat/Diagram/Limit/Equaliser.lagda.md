@@ -26,7 +26,9 @@ open Cone
 -->
 
 We establish the correspondence between `Equaliser`{.Agda} and the
-`Limit`{.Agda} of a cospan diagram.
+`Limit`{.Agda} of a [parallel arrows] diagram.
+
+[parallel arrows]: Cat.Instances.Shape.Parallel.html
 
 ```agda
 Fork→Cone
