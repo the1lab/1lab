@@ -265,11 +265,11 @@ successor h-level`{.Agda ident=is-prop→is-hlevel-suc} to prove that `⊥` is
 also at the same h-level as `A` and `B`. Thus, we have:
 
 ```agda
-is-hlevel-⊎ : (n : Nat)
-           → is-hlevel A (2 + n)
-           → is-hlevel B (2 + n)
-           → is-hlevel (A ⊎ B) (2 + n)
-is-hlevel-⊎ n ahl bhl x y = is-hlevel≃ (1 + n) Code≃Path (Code-is-hlevel ahl bhl)
+⊎-is-hlevel : (n : Nat)
+            → is-hlevel A (2 + n)
+            → is-hlevel B (2 + n)
+            → is-hlevel (A ⊎ B) (2 + n)
+⊎-is-hlevel n ahl bhl x y = is-hlevel≃ (1 + n) Code≃Path (Code-is-hlevel ahl bhl)
 ```
 
 Note that, in general, [being a proposition] and [being contractible]

@@ -1,6 +1,9 @@
 ```agda
+open import Cat.Instances.Shape.Terminal
+open import Cat.Instances.Shape.Join
 open import Cat.Instances.Discrete
 open import Cat.Instances.Functor
+open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
@@ -8,20 +11,24 @@ open import Cat.Functor.Base
 open import Cat.Univalent
 open import Cat.Prelude
 
+open import Data.Sum
+
+import Cat.Reasoning
+
 module Cat.Instances.Slice where
 ```
 
 <!--
 ```agda
 private variable
-  o ℓ : Level
+  o ℓ o′ ℓ′ : Level
 open Functor
 open _=>_
 
 module _ {o ℓ} {C : Precategory o ℓ} where
-  import Cat.Reasoning C as C
-  private variable
-    a b c : C.Ob
+  private
+    module C = Cat.Reasoning C
+    variable a b c : C.Ob
 ```
 -->
 
@@ -121,29 +128,30 @@ says that the map $h$ "respects reindexing", or less obliquely
              → x ≡ y
   /-Hom-path = /-Hom-pathp refl refl
 
-  /-Hom-is-set : ∀ {c a b} → is-set (/-Hom {c = c} a b)
-  /-Hom-is-set {a = a} {b} =
-    retract→is-hlevel 2 pack unpack inv T-is-set
-    where abstract
-      module a = /-Obj a
-      module b = /-Obj b
+  abstract
+    /-Hom-is-set : ∀ {c a b} → is-set (/-Hom {c = c} a b)
+    /-Hom-is-set {a = a} {b} =
+      retract→is-hlevel 2 pack unpack inv T-is-set
+      where
+        module a = /-Obj a
+        module b = /-Obj b
 
-      T : Type ℓ
-      T = Σ[ map ∈ C.Hom a.domain b.domain ] (b.map C.∘ map ≡ a.map)
+        T : Type ℓ
+        T = Σ[ map ∈ C.Hom a.domain b.domain ] (b.map C.∘ map ≡ a.map)
 
-      T-is-set : is-set T
-      T-is-set = Σ-is-hlevel 2 (C.Hom-set _ _)
-                               (λ _ → is-prop→is-set (C.Hom-set _ _ _ _))
+        T-is-set : is-set T
+        T-is-set = Σ-is-hlevel 2 (C.Hom-set _ _)
+                                (λ _ → is-prop→is-set (C.Hom-set _ _ _ _))
 
-      pack : T → /-Hom a b
-      pack (f , g) ./-Hom.map = f
-      pack (f , g) ./-Hom.commutes = g
+        pack : T → /-Hom a b
+        pack (f , g) ./-Hom.map = f
+        pack (f , g) ./-Hom.commutes = g
 
-      unpack : /-Hom a b → T
-      unpack x = x ./-Hom.map , x ./-Hom.commutes
+        unpack : /-Hom a b → T
+        unpack x = x ./-Hom.map , x ./-Hom.commutes
 
-      inv : is-left-inverse pack unpack
-      inv x = /-Hom-path refl
+        inv : is-left-inverse pack unpack
+        inv x = /-Hom-path refl
 ```
 -->
 
@@ -261,11 +269,16 @@ maps $a \times_c b \to c$, but since the square above commutes, either
 one will do. For definiteness, we go with the composite $f \circ \pi_1$.
 
 ```agda
-  module _ {f : C.Hom a c} {g : C.Hom b c} (pb : is-pullback C π₁ f π₂ g) where
+  module
+    _ {f g : /-Obj c} {Pb : C.Ob} {π₁ : C.Hom Pb (f .domain)}
+                                  {π₂ : C.Hom Pb (g .domain)}
+      (pb : is-pullback C {X = f .domain} {Z = c} {Y = g .domain} {P = Pb}
+        π₁ (map {_} {_} {C} {c} f) π₂ (map {_} {_} {C} {c} g))
+    where
     private module pb = is-pullback pb
 
     is-pullback→product-over : C/c.Ob
-    is-pullback→product-over = cut (f C.∘ π₁)
+    is-pullback→product-over = cut (f .map C.∘ π₁)
 ```
 
 Now, by commutativity of the square, the maps $\pi_1$ and $\pi_2$ in the
@@ -288,13 +301,13 @@ the induced subdivisions.
 ~~~
 
 ```agda
-    is-pullback→π₁ : C/c.Hom is-pullback→product-over (cut f)
+    is-pullback→π₁ : C/c.Hom is-pullback→product-over f
     is-pullback→π₁ .map      = π₁
-    is-pullback→π₁ .commutes = refl
+    is-pullback→π₁ .commutes i = f .map C.∘ π₁
 
-    is-pullback→π₂ : C/c.Hom is-pullback→product-over (cut g)
-    is-pullback→π₂ .map      = π₂
-    is-pullback→π₂ .commutes = sym pb.square
+    is-pullback→π₂ : C/c.Hom is-pullback→product-over g
+    is-pullback→π₂ .map        = π₂
+    is-pullback→π₂ .commutes i = pb.square (~ i)
 
     open is-product
 ```
@@ -315,9 +328,9 @@ $\ca{C}$, as below:
         factor : C/c.Hom Q _
         factor .map = pb.limiting (f.commutes ∙ sym g.commutes)
         factor .commutes =
-          (f C.∘ π₁) C.∘ pb.limiting _ ≡⟨ C.pullr pb.p₁∘limiting ⟩
-          f C.∘ f.map                  ≡⟨ f.commutes ⟩
-          Q .map                       ∎
+          (f .map C.∘ π₁) C.∘ pb.limiting _ ≡⟨ C.pullr pb.p₁∘limiting ⟩
+          f .map C.∘ f.map                  ≡⟨ f.commutes ⟩
+          Q .map                            ∎
 
     is-pullback→is-fibre-product .π₁∘factor = /-Hom-path pb.p₁∘limiting
     is-pullback→is-fibre-product .π₂∘factor = /-Hom-path pb.p₂∘limiting
@@ -325,8 +338,8 @@ $\ca{C}$, as below:
       /-Hom-path (pb.unique (ap map p) (ap map q))
 
   Pullback→Fibre-product
-    : ∀ {f : C.Hom a c} {g : C.Hom b c}
-    → Pullback C f g → Product (Slice C c) (cut f) (cut g)
+    : ∀ {f g : /-Obj c}
+    → Pullback C (f .map) (g .map) → Product (Slice C c) f g
   Pullback→Fibre-product pb .Product.apex = _
   Pullback→Fibre-product pb .Product.π₁ = _
   Pullback→Fibre-product pb .Product.π₂ = _
@@ -429,4 +442,177 @@ an isomorphism directly, though it does involve an appeal to univalence.
 
       path : F₀ Total-space functor ≡ fam
       path = /-Obj-path (n-ua (Total-equiv _  e⁻¹)) (ua→ λ a → sym (a .snd .snd))
+```
+
+# Slices preserve univalence
+
+An important property of slice categories is that they preserve
+[univalence]. This can be seen intuitively: If $\ca{C}$ is a univalent
+category, then let $a, b, c$ be some objects, with the pairs $(a, f)$
+and $(b, g)$ objects in the slice $\ca{C}/c$. An isomorphism $h : (a, f)
+\cong (b, g)$ induces an identification $a \equiv b$, which extends to
+an identification $(a, f) \equiv (b, g)$ since $h \circ g = f$.
+
+[univalence]: Cat.Univalent.html
+
+```agda
+module _ {C : Precategory o ℓ} {o : Precategory.Ob C} (isc : is-category C) where
+  private
+    module C   = Cat.Reasoning C
+    module C/o = Cat.Reasoning (Slice C o)
+    module Cu  = Cat.Univalent C
+
+    open /-Obj
+    open /-Hom
+    open C/o._≅_
+    open C._≅_
+
+  slice-is-category : is-category (Slice C o)
+  slice-is-category A .centre = A , C/o.id-iso
+  slice-is-category A .paths (B , isom) = Σ-pathp A≡B eql where
+    Ad≡Bd : A .domain ≡ B .domain
+    Ad≡Bd = Cu.iso→path isc
+      (C.make-iso (isom .to .map) (isom .from .map)
+        (ap map (C/o._≅_.invˡ isom)) (ap map (C/o._≅_.invʳ isom)))
+
+    Af≡Bf : PathP (λ i → C.Hom (Ad≡Bd i) o) (A .map) (B .map)
+    Af≡Bf = Cu.Hom-pathp-reflˡ-iso isc (isom .from .commutes)
+
+    A≡B = /-Obj-path Ad≡Bd Af≡Bf
+
+    eql : PathP (λ i → A C/o.≅ A≡B i) C/o.id-iso isom
+    eql = C/o.≅-pathp refl A≡B
+      (/-Hom-pathp _ _ (Cu.Hom-pathp-reflʳ-iso isc (C.idr _)))
+      (/-Hom-pathp _ _ (Cu.Hom-pathp-reflˡ-iso isc (C.idl _)))
+```
+
+# Arbitrary limits in slices
+
+Suppose we have some really weird diagram $F : \ca{J} \to \ca{C}/c$,
+like the one below.  Well, alright, it's not that weird, but it's not a
+pullback or a terminal object, so we don't _a priori_ know how to
+compute it.
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  & {(b,g)} && {(d,i)} \\
+  {(a,f)} && {(c,h)}
+  \arrow["x"', from=1-2, to=2-1]
+  \arrow["y", from=1-2, to=2-3]
+  \arrow["z"', from=1-4, to=2-3]
+\end{tikzcd}\]
+~~~
+
+The observation that will let us compute a limit for this diagram is
+inspecting the computation of products in slice categories, above. To
+compute the product of $(a, f)$ and $(b, g)$, we had to pass to a
+_pullback_ of $a \xto{f} c \xot{b}$ in $\ca{C}$ --- which we had assumed
+exists. But! Take a look at what that diagram _looks like_:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  a && b \\
+  \\
+  & c
+  \arrow["f"', from=1-1, to=3-2]
+  \arrow["g", from=1-3, to=3-2]
+\end{tikzcd}\]
+~~~
+
+We "exploded" a diagram of shape $\bullet \quad \bullet$ to one of shape
+$\bullet \to \bullet \ot \bullet$. This process can be described in a
+way easier to generalise: We "exploded" our diagram $F : \{*,*\} \to
+\ca{C}/c$ to one indexed by a category which contains $\{*,*\}$,
+contains an extra point, and has a unique map between each object of
+$\{*,*\}$ --- the [_join_] of these categories.
+
+[_join_]: Cat.Instances.Shape.Join.html
+
+<!--
+```agda
+module
+  _ {C : Precategory o ℓ}
+    {J : Precategory o′ ℓ′}
+    {o : Precategory.Ob C}
+    (F : Functor J (Slice C o))
+    where
+
+  open Terminal
+  open Cone-hom
+  open Cone
+  open /-Obj
+  open /-Hom
+
+  private
+    module C   = Cat.Reasoning C
+    module C/o = Cat.Reasoning (Slice C o)
+    module F = Functor F
+```
+-->
+
+Generically, if we have a diagram $F : J \to \ca{C}/c$, we can "explode"
+this into a diagram $F' : (J \star \{*\}) \to \ca{C}$, compute the limit
+in $\ca{C}$, then pass back to the slice category.
+
+```agda
+    F′ : Functor (J ⋆ ⊤Cat) C
+    F′ .F₀ (inl x) = F.₀ x .domain
+    F′ .F₀ (inr x) = o
+    F′ .F₁ {inl x} {inl y} (lift f) = F.₁ f .map
+    F′ .F₁ {inl x} {inr y} _ = F.₀ x .map
+    F′ .F₁ {inr x} {inr y} (lift h) = C.id
+    F′ .F-id {inl x} = ap map F.F-id
+    F′ .F-id {inr x} = refl
+    F′ .F-∘ {inl x} {inl y} {inl z} (lift f) (lift g) = ap map (F.F-∘ f g)
+    F′ .F-∘ {inl x} {inl y} {inr z} (lift f) (lift g) = sym (F.F₁ g .commutes)
+    F′ .F-∘ {inl x} {inr y} {inr z} (lift f) (lift g) = C.introl refl
+    F′ .F-∘ {inr x} {inr y} {inr z} (lift f) (lift g) = C.introl refl
+
+  limit-above→limit-in-slice : Limit F′ → Limit F
+  limit-above→limit-in-slice lims = lim where
+    module lim = Terminal lims
+    module limob = Cone lim.top
+
+    nadir : Cone F
+    nadir .apex .domain = limob.apex
+    nadir .apex .map = limob.ψ (inr tt)
+    nadir .ψ x .map = limob.ψ (inl x)
+    nadir .ψ x .commutes = limob.commutes (lift tt)
+    nadir .commutes f = /-Hom-path (limob.commutes (lift f))
+
+    lim : Limit F
+    lim .top = nadir
+    lim .has⊤ other = contr ch cont where
+      other′ : Cone F′
+      other′ .apex = other .apex .domain
+      other′ .ψ (inl x) = other .ψ x .map
+      other′ .ψ (inr tt) = other .apex .map
+      other′ .commutes {inl x} {inl y} (lift f) = ap map (other .commutes f)
+      other′ .commutes {inl x} {inr y} (lift f) = other .ψ x .commutes
+      other′ .commutes {inr x} {inr y} (lift f) = C.idl _
+
+      module cont = is-contr (lim.has⊤ other′)
+      ch : Cone-hom F other nadir
+      ch .hom .map = cont.centre .hom
+      ch .hom .commutes = cont.centre .commutes {o = inr tt}
+      ch .commutes {o} = /-Hom-path (cont.centre .commutes {o = inl o})
+
+      cont : ∀ c → ch ≡ c
+      cont c = Cone-hom-path _ (/-Hom-path (ap hom uniq)) where
+        c′ : Cone-hom F′ other′ lim.top
+        c′ .hom = c .hom .map
+        c′ .commutes {inl x} = ap map (c .commutes {o = x})
+        c′ .commutes {inr tt} = c .hom .commutes
+
+        uniq = cont.paths c′
+```
+
+In particular, if a category $\ca{C}$ is complete, then so are its slices:
+
+```agda
+is-complete→slice-is-complete
+  : ∀ {ℓ o ℓ′} {C : Precategory o ℓ} {c : Precategory.Ob C}
+  → is-complete o′ ℓ′ C
+  → is-complete o′ ℓ′ (Slice C c)
+is-complete→slice-is-complete lims F = limit-above→limit-in-slice F (lims _)
 ```

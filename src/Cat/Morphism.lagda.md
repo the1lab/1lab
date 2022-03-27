@@ -31,6 +31,9 @@ morphism.
 is-monic : Hom a b → Type _
 is-monic {a = a} f = ∀ {c} → (g h : Hom c a) → f ∘ g ≡ f ∘ h → g ≡ h
 
+is-monic-is-prop : ∀ {a b} (f : Hom a b) → is-prop (is-monic f)
+is-monic-is-prop f x y i {c} g h p = Hom-set _ _ _ _ (x g h p) (y g h p) i
+
 record _↪_ (a b : Ob) : Type (o ⊔ h) where
   field
     mor   : Hom a b
@@ -46,6 +49,9 @@ B$, is an epic morphism.
 ```agda
 is-epic : Hom a b → Type _
 is-epic {b = b} f = ∀ {c} → (g h : Hom b c) → g ∘ f ≡ h ∘ f → g ≡ h
+
+is-epic-is-prop : ∀ {a b} (f : Hom a b) → is-prop (is-epic f)
+is-epic-is-prop f x y i {c} g h p = Hom-set _ _ _ _ (x g h p) (y g h p) i
 
 record _↠_ (a b : Ob) : Type (o ⊔ h) where
   field

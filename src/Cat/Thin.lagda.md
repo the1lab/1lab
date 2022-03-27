@@ -6,6 +6,9 @@ open import Cat.Prelude
 
 open import Data.Set.Coequaliser
 
+import Cat.Reasoning
+import Cat.Univalent
+
 module Cat.Thin where
 ```
 
@@ -47,7 +50,7 @@ record Proset (o h : Level) : Type (lsuc (o ⊔ h)) where
   no-eta-equality
   field
     {underlying} : Precategory o h
-    has-is-thin    : is-thin underlying
+    has-is-thin  : is-thin underlying
 
   open import Cat.Reasoning underlying public
   open is-thin has-is-thin public
@@ -238,6 +241,27 @@ finishes the job.
                                      {g = Rprop (x .from) (y .from) i})
             (x .inverses) (y .inverses) i
 ```
+
+<!--
+```agda
+univalent-thin-precat→Poset
+  : ∀ {o ℓ} (C : Precategory o ℓ)
+  → (∀ A B → is-prop (Precategory.Hom C A B))
+  → is-category C
+  → Poset o ℓ
+univalent-thin-precat→Poset C hprop cat = pos where
+  module C = Cat.Reasoning C
+  module cu = Cat.Univalent C
+  ob-set : is-set C.Ob
+  ob-set x y = is-hlevel≃ 1 ((cu.path→iso , cu.path→iso-is-equiv cat) e⁻¹)
+    λ f g → C.≅-pathp refl refl (hprop _ _ _ _) (hprop _ _ _ _)
+  pos : Poset _ _
+  pos .Poset.underlying = C
+  pos .Poset.has-is-thin .is-thin.Ob-is-set = ob-set
+  pos .Poset.has-is-thin .is-thin.Hom-is-prop = hprop
+  pos .Poset.has-is-univalent = cat
+```
+-->
 
 ## Monotone maps
 

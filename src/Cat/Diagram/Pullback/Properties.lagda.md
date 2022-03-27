@@ -195,3 +195,42 @@ module _ {a b} {f : Hom a b} where
   is-pullback→is-monic : is-pullback id f id f → is-monic f
   is-pullback→is-monic pb f g p = sym (pb .p₁∘limiting {p = p}) ∙ pb .p₂∘limiting
 ```
+
+Pullbacks additionally preserve monomorphisms, as shown below:
+
+```agda
+is-monic→pullback-is-monic
+  : ∀ {x y z} {f : Hom x z} {g : Hom y z} {p} {p1 : Hom p x} {p2 : Hom p y}
+  → is-monic f
+  → is-pullback p1 f p2 g
+  → is-monic p2
+is-monic→pullback-is-monic {f = f} {g} {p1 = p1} {p2} mono pb h j p = eq
+  where
+    module pb = is-pullback pb
+    q : f ∘ p1 ∘ h ≡ f ∘ p1 ∘ j
+    q =
+      f ∘ p1 ∘ h ≡⟨ extendl pb.square ⟩
+      g ∘ p2 ∘ h ≡⟨ ap (g ∘_) p ⟩
+      g ∘ p2 ∘ j ≡˘⟨ extendl pb.square ⟩
+      f ∘ p1 ∘ j ∎
+
+    r : p1 ∘ h ≡ p1 ∘ j
+    r = mono _ _ q
+
+    eq : h ≡ j
+    eq = pb.unique₂ {p = extendl pb.square} r p refl refl
+```
+
+<!--
+```agda
+rotate-pullback
+  : ∀ {x y z} {f : Hom x z} {g : Hom y z} {p} {p1 : Hom p x} {p2 : Hom p y}
+  → is-pullback p1 f p2 g
+  → is-pullback p2 g p1 f
+rotate-pullback pb .square = sym (pb .square)
+rotate-pullback pb .limiting p = pb .limiting (sym p)
+rotate-pullback pb .p₁∘limiting = pb .p₂∘limiting
+rotate-pullback pb .p₂∘limiting = pb .p₁∘limiting
+rotate-pullback pb .unique p q = pb .unique q p
+```
+-->
