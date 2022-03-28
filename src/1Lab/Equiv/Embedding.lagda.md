@@ -153,3 +153,23 @@ Subset-proj-embedding
   → is-embedding {A = Σ B} fst
 Subset-proj-embedding {B = B} Bprop x = is-hlevel≃ 1 (Fibre-equiv B x e⁻¹) (Bprop _)
 ```
+
+!--
+```agda
+embedding→monic
+  : ∀ {ℓ ℓ′ ℓ′′} {A : Type ℓ} {B : Type ℓ′} {f : A → B}
+  → is-embedding f
+  → ∀ {C : Type ℓ′′} (g h : C → A) → f ∘ g ≡ f ∘ h → g ≡ h
+embedding→monic {f = f} emb g h p =
+  funext λ x → ap fst (emb _ (g x , refl) (h x , happly (sym p) x))
+
+monic-between-sets→is-embedding
+  : ∀ {ℓ ℓ′ ℓ′′} {A : Type ℓ} {B : Type ℓ′} {f : A → B}
+  → is-set B
+  → (∀ {C : Set ℓ′′} (g h : ∣ C ∣ → A) → f ∘ g ≡ f ∘ h → g ≡ h)
+  → is-embedding f
+monic-between-sets→is-embedding {f = f} bset monic =
+  injective-between-sets→has-prop-fibres bset _ λ {x} {y} p →
+    happly (monic {C = Lift _ ⊤ , λ _ _ _ _ i j → lift tt} (λ _ → x) (λ _ → y) (funext (λ _ → p))) _
+```
+--

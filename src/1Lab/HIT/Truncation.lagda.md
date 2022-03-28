@@ -68,6 +68,12 @@ whenever it is a family of propositions, by providing a case for
   go (squash x x₁ i) z =
     is-prop→pathp (λ i → pprop (squash x x₁ i) z)
                   (go x z) (go x₁ z) i
+
+∥-∥-rec : ∀ {ℓ ℓ'} {A : Type ℓ} {P : Type ℓ'}
+         → is-prop P
+         → (A → P)
+         → (x : ∥ A ∥) → P
+∥-∥-rec pprop = ∥-∥-elim (λ _ → pprop)
 ```
 -->
 

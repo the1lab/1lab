@@ -13,7 +13,7 @@ open import Cat.Base
 import Cat.Reasoning
 import Cat.Univalent
 
-module Cat.Thin.Instances.Sub {o ℓ} {C : Precategory o ℓ} where
+module Cat.Thin.Instances.Sub {o ℓ} (C : Precategory o ℓ) where
 ```
 
 # Preorders of Subobjects
@@ -68,8 +68,8 @@ category $\ca{C}$ is univalent: The **poset of subobjects** of $\ca{C}$.
 
 ```agda
 Subobj-is-thin : ∀ {O} {A B : Ob (Subobj O)} → is-prop (Hom (Subobj O) A B)
-Subobj-is-thin {A = A , mono} {B , mono′} x y = p where
-  p = /-Hom-path (mono′ _ _ (x .commutes ∙ sym (y .commutes)))
+Subobj-is-thin {B = amono} x y = p where
+  p = /-Hom-path (amono .witness _ _ (x .commutes ∙ sym (y .commutes)))
 
 Subobj-is-category : ∀ {O} → is-category C → is-category (Subobj O)
 Subobj-is-category ccat =
@@ -104,7 +104,7 @@ monic, but this is immediate.
 ```agda
   ⊤-subobj : Terminal (Subobj o)
   ⊤-subobj .top = cut C.id , λ g h p → C.introl refl ·· p ·· C.eliml refl
-  ⊤-subobj .has⊤ (x , _) = Slice-terminal-object x
+  ⊤-subobj .has⊤ x = Slice-terminal-object (x .object)
 ```
 
 If the ambient category $\ca{C}$ has (binary) [pullbacks], then the
@@ -117,21 +117,21 @@ to (binary) subobject intersections.
 
 ```agda
   subobj-products
-    : ∀ {A B} → Pullback C (A .fst .map) (B .fst .map)
+    : ∀ {A B} → Pullback C (A .object .map) (B .object .map)
     → Product (Subobj o) A B
-  subobj-products {A = A , Am} {B = B , Bm} pb = prod′ where
-    prod : Product (Slice C o) A B
+  subobj-products {A = Am} {B = Bm} pb = prod′ where
+    prod : Product (Slice C o) (Am .object) (Bm .object)
     prod = Pullback→Fibre-product pb
 
     module prod = Product prod
     open Product
     open is-product
-    prod′ : Product (Subobj o) (A , Am) (B , Bm)
+    prod′ : Product (Subobj o) Am Bm
     prod′ .apex = prod.apex , mono where abstract
-      mono : C.is-monic (A .map C.∘ pb .p₁)
+      mono : C.is-monic (Am .object .map C.∘ pb .p₁)
       mono g h p =
-        is-monic→pullback-is-monic Bm (rotate-pullback (pb .has-is-pb))
-          _ _ (Am _ _ (C.assoc _ _ _ ∙ p ∙ sym (C.assoc _ _ _)))
+        is-monic→pullback-is-monic (Bm .witness) (rotate-pullback (pb .has-is-pb))
+          _ _ (Am .witness _ _ (C.assoc _ _ _ ∙ p ∙ sym (C.assoc _ _ _)))
     prod′ .π₁ = prod.π₁
     prod′ .π₂ = prod.π₂
     prod′ .has-is-product .⟨_,_⟩     = prod.⟨_,_⟩
@@ -184,11 +184,11 @@ $F$, then $F$ also has a limit in $\Sub(o)$.
       g′ .hom .map = g
       g′ .hom .commutes = p
       g′ .commutes {o} = /-Hom-path (
-        F.₀ o .snd _ _ (
-          F.₀ o .fst .map C.∘ limob.ψ o .map C.∘ g ≡⟨ C.pulll (limob.ψ o .commutes) ⟩
-          limob.apex .map C.∘ g                    ≡⟨ p ⟩
-          limob.apex .map C.∘ h                    ≡˘⟨ C.pulll (limob.ψ o .commutes) ⟩
-          F.₀ o .fst .map C.∘ limob.ψ o .map C.∘ h ∎
+        F.₀ o .witness _ _ (
+          F.₀ o .object .map C.∘ limob.ψ o .map C.∘ g ≡⟨ C.pulll (limob.ψ o .commutes) ⟩
+          limob.apex .map C.∘ g                       ≡⟨ p ⟩
+          limob.apex .map C.∘ h                       ≡˘⟨ C.pulll (limob.ψ o .commutes) ⟩
+          F.₀ o .object .map C.∘ limob.ψ o .map C.∘ h ∎
           ))
       h′ : Cone-hom F′ _ _
       h′ .hom .map = h
@@ -204,7 +204,7 @@ $F$, then $F$ also has a limit in $\Sub(o)$.
     lim .top = cone
     lim .has⊤ other = contr ch unique where
       other′ : Cone F′
-      other′ .apex = other .apex .fst
+      other′ .apex = other .apex .object
       other′ .ψ = other .ψ
       other′ .commutes = other .commutes
 

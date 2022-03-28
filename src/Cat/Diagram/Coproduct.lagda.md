@@ -65,7 +65,7 @@ record Coproduct (A B : Ob) : Type (o ⊔ h) where
   field
     coapex : Ob
     in₀ : Hom A coapex
-    in₁ : Hom A coapex
+    in₁ : Hom B coapex
     has-is-coproduct : is-coproduct in₀ in₁
 
   open is-coproduct has-is-coproduct public

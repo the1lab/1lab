@@ -1,4 +1,5 @@
 ```agda
+open import Cat.Functor.FullSubcategory
 open import Cat.Diagram.Equaliser
 open import Cat.Diagram.Initial
 open import Cat.Diagram.Pushout
@@ -188,11 +189,11 @@ the code below demonstrates.
 [image]: Cat.Diagram.Image.html
 
 ```agda
-is-effective-epi→image
+is-effective-mono→image
   : ∀ {a b} {f : Hom a b}
   → is-effective-mono f
   → M-image C (is-regular-mono , is-regular-mono→is-mono) f
-is-effective-epi→image {f = f} eff = im where
+is-effective-mono→image {f = f} eff = im where
   module eff = is-effective-mono eff
 
   itself : ↓Obj _ _

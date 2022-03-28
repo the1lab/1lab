@@ -32,10 +32,19 @@ subgraphs" of the categorical world: Keep only some of the vertices
 (objects), but all of the arrows (arrows) between them.
 
 ```agda
+record Restrict-ob (P : C.Ob → Type ℓ) : Type (o ⊔ ℓ) where
+  no-eta-equality
+  constructor _,_
+  field
+    object : C.Ob
+    witness : P object
+
+open Restrict-ob public
+
 Restrict : (P : C.Ob → Type ℓ)
          → Precategory (o ⊔ ℓ) h
-Restrict P .Ob = Σ[ c ∈ C.Ob ] (P c)
-Restrict P .Hom (A , _) (B , _) = C.Hom A B
+Restrict P .Ob = Restrict-ob P
+Restrict P .Hom A B = C.Hom (A .object) (B .object)
 Restrict P .Hom-set _ _ = C.Hom-set _ _
 Restrict P .id    = C.id
 Restrict P ._∘_   = C._∘_
@@ -63,11 +72,11 @@ $\ca{R}$ here) and in $\ca{C}$, which can be done by destructuring and
 reassembling:
 
 ```agda
-  sub-iso→super-iso : ∀ {A B : Σ P} → (A R.≅ B) → (A .fst C.≅ B .fst)
+  sub-iso→super-iso : ∀ {A B : Restrict-ob P} → (A R.≅ B) → (A .object C.≅ B .object)
   sub-iso→super-iso x = C.make-iso x.to x.from x.invˡ x.invʳ
     where module x = R._≅_ x
 
-  super-iso→sub-iso : ∀ {A B : Σ P} → (A .fst C.≅ B .fst) → (A R.≅ B)
+  super-iso→sub-iso : ∀ {A B : Restrict-ob P} → (A .object C.≅ B .object) → (A R.≅ B)
   super-iso→sub-iso y = R.make-iso y.to y.from y.invˡ y.invʳ
     where module y = C._≅_ y
 ```
@@ -79,22 +88,29 @@ is $\ca{R}$.
 
 ```agda
   Restrict-is-category : is-category C → is-category (Restrict P)
-  Restrict-is-category univ (A , p) = is-hlevel≃ 0 equiv (univ A)
+  Restrict-is-category univ pb = is-hlevel≃ 0 equiv (univ A)
     where
-      to : (Σ[ B ∈ C.Ob ] A C.≅ B) → (Σ[ B ∈ R.Ob ] (A , p) R.≅ B)
+      A = pb .object
+      p = pb .witness
+
+      to : (Σ[ B ∈ C.Ob ] A C.≅ B) → (Σ[ B ∈ R.Ob ] pb R.≅ B)
       to (B , isom) = (B , subst P A≡B p) , super-iso→sub-iso isom
         where A≡B = iso→path C univ isom
 
-      from : (Σ[ B ∈ R.Ob ] (A , p) R.≅ B) → (Σ[ B ∈ C.Ob ] A C.≅ B)
-      from ((B , _) , isom) = B , sub-iso→super-iso isom
+      from : (Σ[ B ∈ R.Ob ] pb R.≅ B) → (Σ[ B ∈ C.Ob ] A C.≅ B)
+      from (B , isom) = B .object , sub-iso→super-iso isom
 
       rinv : is-right-inverse from to
-      rinv (x , i) = Σ-pathp (Σ-prop-path pprop refl) (R.≅-pathp _ _ refl refl)
+      rinv pb = Σ-pathp path (R.≅-pathp _ _ refl refl) where
+        path : to (from pb) .fst ≡ pb .fst
+        path i .object = pb .fst .object
+        path i .witness = is-prop→pathp (λ _ → pprop (pb .fst .object))
+          (to (from pb) .fst .witness) (pb .fst .witness) i
 
       linv : is-left-inverse from to
       linv (x , i) = Σ-pathp refl (C.≅-pathp _ _ refl refl)
 
-      equiv : (Σ[ B ∈ C.Ob ] A C.≅ B) ≃ (Σ[ B ∈ R.Ob ] (A , p) R.≅ B)
+      equiv : (Σ[ B ∈ C.Ob ] A C.≅ B) ≃ (Σ[ B ∈ R.Ob ] pb R.≅ B)
       equiv = to , is-iso→is-equiv (iso from rinv linv)
 ```
 
@@ -134,8 +150,9 @@ functor from $\ca{D}$. This functor is actually just $F$ again:
   is-fully-faithful-domain→Full-subcat = ff
 
   is-eso-domain→Full-subcat : is-eso Ff-domain→Full-subcat
-  is-eso-domain→Full-subcat (y , o) =
-    ∥-∥-map (λ (preimg , isom) → preimg , super-iso→sub-iso _ (λ _ → squash) isom) o
+  is-eso-domain→Full-subcat yo =
+    ∥-∥-map (λ (preimg , isom) → preimg , super-iso→sub-iso _ (λ _ → squash) isom)
+      (yo .witness)
 ```
 
 Up to weak equivalence, admitting a full inclusion is equivalent to
@@ -146,7 +163,7 @@ morphisms by the identity function.
 ```agda
 module _ {P : C.Ob → Type ℓ} where
   Forget-full-subcat : Functor (Restrict P) C
-  Forget-full-subcat .Functor.F₀ = fst
+  Forget-full-subcat .Functor.F₀ = object
   Forget-full-subcat .Functor.F₁ f = f
   Forget-full-subcat .Functor.F-id = refl
   Forget-full-subcat .Functor.F-∘ f g i = f C.∘ g

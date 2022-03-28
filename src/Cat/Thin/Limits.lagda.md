@@ -13,7 +13,7 @@ module Cat.Thin.Limits {o ℓ} {P : Proset o ℓ} where
 
 <!--
 ```agda
-module P = Proset P
+private module P = Proset P
 open Cocone-hom
 open Cone-hom
 open Terminal
