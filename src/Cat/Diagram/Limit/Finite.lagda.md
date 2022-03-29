@@ -61,14 +61,14 @@ record Finitely-complete : Type (ℓ ⊔ ℓ') where
     equalisers : ∀ {A B} (f g : Hom A B) → Equaliser C f g
     pullbacks  : ∀ {A B X} (f : Hom A X) (g : Hom B X) → Pullback C f g
 
-  _⊗_ : Ob → Ob → Ob
-  A ⊗ B = products A B .Product.apex
-
   Eq : ∀ {A B} (f g : Hom A B) → Ob
   Eq f g = equalisers f g .Equaliser.apex
 
   Pb : ∀ {A B C} (f : Hom A C) (g : Hom B C) → Ob
   Pb f g = pullbacks f g .Pullback.apex
+
+  module Cart = Cartesian C products
+  open Cart using (_⊗_) public
 
 open Finitely-complete
 ```

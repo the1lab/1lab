@@ -1,4 +1,5 @@
 ```agda
+open import Cat.Instances.Product
 open import Cat.Prelude
 
 module Cat.Diagram.Product {o h} (C : Precategory o h) where
@@ -8,7 +9,7 @@ module Cat.Diagram.Product {o h} (C : Precategory o h) where
 ```agda
 open import Cat.Reasoning C
 private variable
-  A B : Ob
+  A B a b c d : Ob
 ```
 -->
 
@@ -89,7 +90,7 @@ record Product (A B : Ob) : Type (o ⊔ h) where
 
   open is-product has-is-product public
 
-open Product
+open Product hiding (⟨_,_⟩ ; π₁ ; π₂ ; ⟨⟩∘)
 ```
 
 ## Uniqueness
@@ -163,4 +164,73 @@ the projections.
         (assoc _ _ _ ·· ap (_∘ _) p1.π₁∘factor ·· p2.π₁∘factor)
         (assoc _ _ _ ·· ap (_∘ _) p1.π₂∘factor ·· p2.π₂∘factor)
         (idr _) (idr _)
+```
+
+# The product functor
+
+If $\ca{C}$ admits products of all pairs of objects, then the assignment
+$(A, B) \mapsto (A \times B)$ extends to a [bifunctor] $(\ca{C} \times
+\ca{C}) \to \ca{C}$.
+
+[bifunctor]: Cat.Functor.Bifunctor.html
+
+```agda
+module Cartesian (hasprods : ∀ A B → Product A B) where
+  open Functor
+
+  ×-functor : Functor (C ×Cat C) C
+  ×-functor .F₀ (A , B) = hasprods A B .apex
+  ×-functor .F₁ {a , x} {b , y} (f , g) =
+    hasprods b y .has-is-product .is-product.⟨_,_⟩
+      (f ∘ hasprods a x .Product.π₁) (g ∘ hasprods a x .Product.π₂)
+
+  ×-functor .F-id {a , b} =
+    unique₂ (hasprods a b)
+      (hasprods a b .π₁∘factor)
+      (hasprods a b .π₂∘factor)
+      id-comm id-comm
+
+  ×-functor .F-∘ {a , b} {c , d} {e , f} x y =
+    unique₂ (hasprods e f)
+      (hasprods e f .π₁∘factor)
+      (hasprods e f .π₂∘factor)
+      (  pulll (hasprods e f .π₁∘factor)
+      ·· pullr (hasprods c d .π₁∘factor)
+      ·· assoc _ _ _)
+      (  pulll (hasprods e f .π₂∘factor)
+      ·· pullr (hasprods c d .π₂∘factor)
+      ·· assoc _ _ _)
+```
+
+We refer to a category admitting all binary products as **cartesian**.
+When working with products, a Cartesian category is the place to be,
+since we can work with the "canonical" product operations --- rather
+than requiring different product data for any pair of objects we need a
+product for.
+
+Here we extract the data of the "global" product-assigning operation to
+separate top-level definitions:
+
+```agda
+  _⊗_ : Ob → Ob → Ob
+  A ⊗ B = F₀ ×-functor (A , B)
+
+  ⟨_,_⟩ : Hom a b → Hom a c → Hom a (b ⊗ c)
+  ⟨ f , g ⟩ = hasprods _ _ .has-is-product .is-product.⟨_,_⟩ f g
+
+  π₁ : Hom (a ⊗ b) a
+  π₁ = hasprods _ _ .Product.π₁
+
+  π₂ : Hom (a ⊗ b) b
+  π₂ = hasprods _ _ .Product.π₂
+
+  π₁∘⟨⟩ : {f : Hom a b} {g : Hom a c} → π₁ ∘ ⟨ f , g ⟩ ≡ f
+  π₁∘⟨⟩ = hasprods _ _ .has-is-product .is-product.π₁∘factor
+
+  π₂∘⟨⟩ : {f : Hom a b} {g : Hom a c} → π₂ ∘ ⟨ f , g ⟩ ≡ g
+  π₂∘⟨⟩ = hasprods _ _ .has-is-product .is-product.π₂∘factor
+
+  ⟨⟩∘ : ∀ {Q R} {p1 : Hom Q a} {p2 : Hom Q b} (f : Hom R Q)
+      → ⟨ p1 , p2 ⟩ ∘ f ≡ ⟨ p1 ∘ f , p2 ∘ f ⟩
+  ⟨⟩∘ f = is-product.⟨⟩∘ (hasprods _ _ .has-is-product) f
 ```
