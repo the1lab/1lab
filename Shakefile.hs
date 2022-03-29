@@ -409,19 +409,19 @@ gitAuthors commit path = do
   Stdout authors <- command [] "git" ["log", "--format=%aN", "--", path]
   let authorSet = Set.fromList . Text.lines . Text.decodeUtf8 $ authors
 
-  Stdout coauthors <- 
+  Stdout coauthors <-
     command [] "git" ["log", "--format=%(trailers:key=Co-authored-by,valueonly)", "--", path]
 
-  let 
-    coauthorSet = Set.fromList 
-      . map dropEmail 
-      . filter (not . Text.null . Text.strip) 
-      . Text.lines 
+  let
+    coauthorSet = Set.fromList
+      . map dropEmail
+      . filter (not . Text.null . Text.strip)
+      . Text.lines
       . Text.decodeUtf8 $ coauthors
 
     dropEmail = Text.unwords . init . Text.words
 
-  pure . Set.toList $ authorSet <> coauthorSet 
+  pure . Set.toList $ authorSet <> coauthorSet
 
 --  Loads our type lookup table into memory
 parseFileTypes :: () -> Action (Map Text Text)
