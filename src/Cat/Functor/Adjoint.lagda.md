@@ -3,6 +3,8 @@ open import Cat.Diagram.Initial
 open import Cat.Instances.Comma
 open import Cat.Prelude
 
+import Cat.Reasoning
+
 module Cat.Functor.Adjoint where
 ```
 
@@ -505,3 +507,60 @@ universal arrows into $R$:
 prove that we recover L by going L⊣R → universal maps → L⊣R. this is
 straightforward but I'm tired
 -->
+
+# Adjuncts
+
+Another view on adjunctions, one which is productive when thinking about
+adjoint *endo*functors $L \dashv R$, is the concept of _adjuncts_. Any
+pair of natural transformations _typed like_ a unit and counit allow you
+to pass between the Hom-sets $\hom(La,b)$ and $\hom(a,Rb)$, by composing
+the functorial action of $L$ (resp $R$) with the natural
+transformations:
+
+<!--
+```agda
+module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
+  private
+    module L = Functor L
+    module R = Functor R
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module adj = _⊣_ adj
+```
+-->
+
+```agda
+  L-adjunct : ∀ {a b} → D.Hom (L.₀ a) b → C.Hom a (R.₀ b)
+  L-adjunct f = R.₁ f C.∘ adj.unit.η _
+
+  R-adjunct : ∀ {a b} → C.Hom a (R.₀ b) → D.Hom (L.₀ a) b
+  R-adjunct f = adj.counit.ε _ D.∘ L.₁ f
+```
+
+The important part that the actual data of an adjunction gets you is
+these functions are inverse _equivalences_ between the hom-sets
+$\hom(La,b) \cong \hom(a,Rb)$.
+
+```agda
+  L-R-adjunct : ∀ {a b} → is-right-inverse (R-adjunct {a} {b}) L-adjunct
+  L-R-adjunct f =
+    R.₁ (adj.counit.ε _ D.∘ L.₁ f) C.∘ adj.unit.η _        ≡˘⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
+    R.₁ (adj.counit.ε _) C.∘ R.₁ (L.₁ f) C.∘ adj.unit.η _  ≡˘⟨ ap (R.₁ _ C.∘_) (adj.unit.is-natural _ _ _) ⟩
+    R.₁ (adj.counit.ε _) C.∘ adj.unit.η _ C.∘ f            ≡⟨ C.cancell adj.zag ⟩
+    f                                                      ∎
+
+  R-L-adjunct : ∀ {a b} → is-left-inverse (R-adjunct {a} {b}) L-adjunct
+  R-L-adjunct f =
+    adj.counit.ε _ D.∘ L.₁ (R.₁ f C.∘ adj.unit.η _)       ≡⟨ ap (_ D.∘_) (L.F-∘ _ _) ⟩
+    adj.counit.ε _ D.∘ L.₁ (R.₁ f) D.∘ L.₁ (adj.unit.η _) ≡⟨ D.extendl (adj.counit.is-natural _ _ _) ⟩
+    f D.∘ adj.counit.ε _ D.∘ L.₁ (adj.unit.η _)           ≡⟨ D.elimr adj.zig ⟩
+    f                                                     ∎
+
+  L-adjunct-is-equiv : ∀ {a b} → is-equiv (L-adjunct {a} {b})
+  L-adjunct-is-equiv = is-iso→is-equiv
+    (iso R-adjunct L-R-adjunct R-L-adjunct)
+
+  R-adjunct-is-equiv : ∀ {a b} → is-equiv (R-adjunct {a} {b})
+  R-adjunct-is-equiv = is-iso→is-equiv
+    (iso L-adjunct R-L-adjunct L-R-adjunct)
+```
