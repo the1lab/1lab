@@ -76,6 +76,8 @@ transformations to make sure these match:
   field
     zig : ∀ {A} → counit.ε (F₀ L A) D.∘ F₁ L (unit.η A) ≡ D.id
     zag : ∀ {B} → F₁ R (counit.ε B) C.∘ unit.η (F₀ R B) ≡ C.id
+
+infixr 15 _⊣_
 ```
 
 These are called "triangle identities" because of the shape they have as

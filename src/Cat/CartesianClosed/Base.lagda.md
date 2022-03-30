@@ -51,7 +51,7 @@ record is-cc {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
   field
     cartesian : ∀ A B → Product C A B
 
-  open Cat.Reasoning C public
+  open Cat.Reasoning C
   open Cartesian C cartesian public
 
   private
@@ -73,6 +73,7 @@ We now make the structure of a ccc more explicit.
 
 ```agda
 module CartesianClosed {o ℓ} {C : Precategory o ℓ} (cc : is-cc C) where
+  open Cat.Reasoning C
   open Functor
   open is-cc cc public
   private variable X Y Z : Ob
