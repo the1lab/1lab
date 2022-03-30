@@ -238,3 +238,15 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
 Σ-map₂ : ({x : A} → P x → Q x) → Σ P → Σ Q
 Σ-map₂ f (x , y) = (x , f y)
 ```
+
+<!--
+```agda
+Σ-pathp-dep
+  : ∀ {ℓ ℓ′} {A : I → Type ℓ} {B : ∀ i → A i → Type ℓ′}
+  → {x : Σ (B i0)} {y : Σ (B i1)}
+  → (p : PathP A (x .fst) (y .fst))
+  → PathP (λ i → B i (p i)) (x .snd) (y .snd)
+  → PathP (λ i → Σ (B i)) x y
+Σ-pathp-dep p q i = p i , q i
+```
+-->
