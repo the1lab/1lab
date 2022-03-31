@@ -190,7 +190,7 @@ Here's the data of a congruence. Get ready, because there's a lot of it:
     has-trans : Hom R×R.apex R
 
   source-target : Hom R×R.apex A×A.apex
-  source-target = A×A.⟨ rel₁ ∘ R×R.p₁ , rel₂ ∘ R×R.p₂ ⟩
+  source-target = A×A.⟨ rel₁ ∘ R×R.p₂ , rel₂ ∘ R×R.p₁ ⟩
 
   field
     trans-factors : source-target ≡ m ∘ has-trans
@@ -251,8 +251,8 @@ diagonal-congruence {A} = cong where
   cong .has-trans = Pb.p₁
   cong .trans-factors = A×A.unique₂
     (A×A.π₁∘factor ∙ eliml A×A.π₁∘factor) (A×A.π₂∘factor ∙ eliml A×A.π₂∘factor)
-    (pulll A×A.π₁∘factor ∙ idl _)
-    (pulll (A×A.π₂∘factor ∙ sym A×A.π₁∘factor) ∙ Pb.square ∙ eliml A×A.π₂∘factor)
+    (assoc _ _ _ ∙ Pb.square ∙ eliml A×A.π₂∘factor)
+    (cancell A×A.π₂∘factor)
 ```
 
 # Effective congruences
@@ -321,22 +321,23 @@ Understanding the transitivity map is left as an exercise to the reader.
 
 ```agda
     cg .has-trans =
-      Kp.limiting {p₁' = Kp.p₁ ∘ rel.p₁} {p₂' = Kp.p₂ ∘ rel.p₂} (ap (f ∘_) path)
+      Kp.limiting {p₁' = Kp.p₁ ∘ rel.p₂} {p₂' = Kp.p₂ ∘ rel.p₁} path
       where abstract
-        path : Kp.p₁ ∘ rel.p₁ ≡ Kp.p₂ ∘ rel.p₂
+        path : f ∘ Kp.p₁ ∘ rel.p₂ ≡ f ∘ Kp.p₂ ∘ rel.p₁
         path =
-          Kp.p₁ ∘ rel.p₁                  ≡˘⟨ ap (_∘ rel.p₁) a×a.π₁∘factor ⟩
-          (a×a.π₁ ∘ kernel-pair) ∘ rel.p₁ ≡⟨ rel.square ⟩
-          (a×a.π₂ ∘ kernel-pair) ∘ rel.p₂ ≡⟨ ap (_∘ rel.p₂) a×a.π₂∘factor ⟩
-          Kp.p₂ ∘ rel.p₂                  ∎
+          f ∘ Kp.p₁ ∘ rel.p₂                  ≡⟨ extendl (Kp.square ∙ ap (f ∘_) (sym a×a.π₂∘factor)) ⟩
+          f ∘ (a×a.π₂ ∘ kernel-pair) ∘ rel.p₂ ≡⟨ ap (f ∘_) (sym rel.square) ⟩
+          f ∘ (a×a.π₁ ∘ kernel-pair) ∘ rel.p₁ ≡⟨ extendl (ap (f ∘_) a×a.π₁∘factor ∙ Kp.square) ⟩
+          f ∘ Kp.p₂ ∘ rel.p₁                  ∎
 
-    cg .trans-factors = sym (
+    cg .trans-factors =
+      sym (
         kernel-pair ∘ Kp.limiting _
       ≡⟨ a×a.⟨⟩∘ _ ⟩
         a×a.⟨ Kp.p₁ ∘ Kp.limiting _ , Kp.p₂ ∘ Kp.limiting _ ⟩
-      ≡⟨ ap₂ a×a.⟨_,_⟩ (Kp.p₁∘limiting ∙ sym (ap₂ _∘_ a×a.π₁∘factor refl))
-                         (Kp.p₂∘limiting ∙ sym (ap₂ _∘_ a×a.π₂∘factor refl)) ⟩
-        a×a.⟨ (a×a.π₁ ∘ kernel-pair) ∘ rel.p₁ , (a×a.π₂ ∘ kernel-pair) ∘ rel.p₂ ⟩
+      ≡⟨ ap₂ a×a.⟨_,_⟩ (Kp.p₁∘limiting ∙ ap₂ _∘_ (sym a×a.π₁∘factor) refl)
+                       (Kp.p₂∘limiting ∙ ap₂ _∘_ (sym a×a.π₂∘factor) refl) ⟩
+        a×a.⟨ (a×a.π₁ ∘ kernel-pair) ∘ rel.p₂ , (a×a.π₂ ∘ kernel-pair) ∘ rel.p₁ ⟩
       ∎)
 
   Kernel-pair : Congruence-on a

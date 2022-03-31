@@ -99,8 +99,8 @@ module _ {I : Type ℓ'} (isg : is-groupoid I) (F : Functor (Disc I isg) C) wher
   Inj→Cocone f .ψ = f
   Inj→Cocone f .commutes {x} = J (λ y p → f y C.∘ F.₁ p ≡ f x) (C.elimr F.F-id)
 
-  Coimit→IC : Colimit {C = C} F → Indexed-coproduct F.₀
-  Coimit→IC colim = the-ic where
+  Colimit→IC : Colimit {C = C} F → Indexed-coproduct F.₀
+  Colimit→IC colim = the-ic where
     module colim = Cocone (colim .bot)
 
     the-ic : Indexed-coproduct _

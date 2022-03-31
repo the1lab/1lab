@@ -104,7 +104,7 @@ For a map $f : x \to a$, the internal hom functor $[f,-]$ in $\ca{C}/a$
 is given by the composite
 
 $$
-\ca{C}/a \xto{f*} \ca{C}/x \xto {\prod_f} \ca{C}/a
+\ca{C}/a \xto{f^*} \ca{C}/x \xto {\prod_f} \ca{C}/a
 $$
 
 ```agda
@@ -116,11 +116,11 @@ and re-express the Cartesian product functor in $\ca{C}/a$ as the
 composite
 
 $$
-\ca{C}/a \xto{f*} \ca{C}/x \xto {\sum_f} \ca{C}/a
+\ca{C}/a \xto{f^*} \ca{C}/x \xto {\sum_f} \ca{C}/a
 $$
 
-We then have, since $\sum_f \dashv f*$ and $f* \dashv \prod_f$, the
-adjunction $(\sum_f f*) \dashv (\prod_f f*)$.
+We then have, since $\sum_f \dashv f^*$ and $f^* \dashv \prod_f$, the
+adjunction $(\sum_f f^*) \dashv (\prod_f f^*)$.
 
 [adjunctions compose]: Cat.Functor.Adjoint.Compose.html
 
