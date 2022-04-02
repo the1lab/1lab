@@ -22,9 +22,9 @@ Most of these helpers were taken from `agda-categories`.
 <!--
 ```agda
 private variable
-    x y : Ob
-    a a′ a″ b b′ b″ c c′ c″ : Hom x y
-    f g h i : Hom x y
+  x y : Ob
+  a a′ a″ b b′ b″ c c′ c″ : Hom x y
+  f g h i : Hom x y
 ```
 -->
 
@@ -97,8 +97,8 @@ module _ (p : f ∘ h ≡ g ∘ i) where
 
 ## Cancellation
 
-These lemmas do 2 things at once: rearrange parenthesis, and
-also remove things that are equal to `id`.
+These lemmas do 2 things at once: rearrange parenthesis, and also remove
+things that are equal to `id`.
 
 ```agda
 module _ (inv : h ∘ i ≡ id) where
@@ -123,4 +123,47 @@ module _ (inv : h ∘ i ≡ id) where
 
   cancel-inner : (f ∘ h) ∘ (i ∘ g) ≡ f ∘ g
   cancel-inner = pulll cancelr
+```
+
+## Isomorphisms
+
+These lemmas are useful for proving that partial inverses to an
+isomorphism are unique. There's a helper for proving uniqueness of left
+inverses, of right inverses, and for proving that any left inverse must
+match any right inverse.
+
+```agda
+module _ {y z} (f : y ≅ z) where
+  open _≅_
+
+  left-inv-unique
+    : ∀ {g h}
+    → g ∘ f .to ≡ id → h ∘ f .to ≡ id
+    → g ≡ h
+  left-inv-unique {g = g} {h = h} p q =
+    g                   ≡⟨ intror (f .invl) ⟩
+    g ∘ f .to ∘ f .from ≡⟨ extendl (p ∙ sym q) ⟩
+    h ∘ f .to ∘ f .from ≡⟨ elimr (f .invl) ⟩
+    h                   ∎
+
+  left-right-inv-unique
+    : ∀ {g h}
+    → g ∘ f .to ≡ id → f .to ∘ h ≡ id
+    → g ≡ h
+  left-right-inv-unique {g = g} {h = h} p q =
+    g                    ≡⟨ intror (f .invl) ⟩
+    g ∘ f .to ∘ f .from  ≡⟨ cancell p ⟩
+    f .from              ≡⟨ intror q ⟩
+    f .from ∘ f .to ∘ h  ≡⟨ cancell (f .invr) ⟩
+    h                    ∎
+
+  right-inv-unique
+    : ∀ {g h}
+    → f .to ∘ g ≡ id → f .to ∘ h ≡ id
+    → g ≡ h
+  right-inv-unique {g = g} {h} p q =
+    g                     ≡⟨ introl (f .invr) ⟩
+    (f .from ∘ f .to) ∘ g ≡⟨ pullr (p ∙ sym q) ⟩
+    f .from ∘ f .to ∘ h   ≡⟨ cancell (f .invr) ⟩
+    h                     ∎
 ```
