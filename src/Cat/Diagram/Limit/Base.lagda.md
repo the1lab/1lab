@@ -345,9 +345,9 @@ terminal object in the category of cones over $\id{Dia}$. We say that
 $F$ *preserves $L$* if $F(L)$, as defined right above, is a terminal
 object in the category of cones over $F \circ \id{Dia}$.
 
-```
-  Preserves-limit : Limit Dia → Type _
-  Preserves-limit o = is-terminal (Cones (F F∘ Dia)) (F-map-cone (Terminal.top o))
+```agda
+  Preserves-limit : Cone Dia → Type _
+  Preserves-limit K = is-limit Dia K → is-limit (F F∘ Dia) (F-map-cone K)
 ```
 
 This definition is necessary because $\ca{D}$ will not, in general,
@@ -374,7 +374,7 @@ limit for that diagram.
 ```agda
 is-continuous {oshape = oshape} {hshape} {C = C} F =
   ∀ {J : Precategory oshape hshape} {diagram : Functor J C}
-  → (L : Limit diagram) → Preserves-limit F L
+  → (K : Cone diagram) → Preserves-limit F K
 ```
 
 <!--
