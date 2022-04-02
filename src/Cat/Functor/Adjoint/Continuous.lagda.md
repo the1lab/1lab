@@ -137,7 +137,7 @@ We then have the promised theorem: right adjoints preserve limits.
 ```agda
   right-adjoint-is-continuous
     : ∀ {os ℓs} → is-continuous {oshape = os} {hshape = ℓs} R
-  right-adjoint-is-continuous L x = right-adjoint-limit L .Terminal.has⊤ x
+  right-adjoint-is-continuous L x = Terminal.has⊤ (right-adjoint-limit (record { top = L ; has⊤ = x }))
 ```
 
 ## Concrete limits
