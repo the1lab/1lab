@@ -1,7 +1,7 @@
 ```agda
 open import Cat.Diagram.Terminal
-open import Cat.Functor.Adjoint
 open import Cat.Diagram.Product
+open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bifunctor
