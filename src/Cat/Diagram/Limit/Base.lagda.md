@@ -1,8 +1,9 @@
 ```agda
+open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
 open import Cat.Prelude
 
-import Cat.Morphism
+import Cat.Reasoning
 
 module Cat.Diagram.Limit.Base where
 ```
@@ -406,9 +407,9 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
        where
   private
     module J = Precategory J
-    module C = Cat.Morphism C
+    module C = Cat.Reasoning C
     module F = Functor F
-    module Cones = Cat.Morphism (Cones F)
+    module Cones = Cat.Reasoning (Cones F)
 ```
 -->
 
@@ -497,3 +498,65 @@ indexed by a precategory with objects in $\ty\ o$ and morphisms in $\ty\
 is-complete : ∀ {oc ℓc} o ℓ → Precategory oc ℓc → Type _
 is-complete o ℓ C = ∀ {D : Precategory o ℓ} (F : Functor D C) → Limit F
 ```
+
+<!--
+```agda
+module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} where
+  private
+    module [J,C] = Cat.Reasoning (Cat[ J , C ])
+    module C = Cat.Reasoning C
+
+  open Terminal
+  open Cone-hom
+  open Cone
+  open _=>_
+
+  module _ {F G} (morp : F [J,C].≅ G) where
+    private
+      module morp = [J,C]._≅_ morp
+      module F = Functor F
+      module G = Functor G
+
+    Cone-ap-iso : Cone F → Cone G
+    Cone-ap-iso K = K′ where
+      module K = Cone K
+      K′ : Cone G
+      K′ .apex = K.apex
+      K′ .ψ x = morp.to .η _ C.∘ K.ψ x
+      K′ .commutes f =
+        G.₁ f C.∘ morp.to .η _ C.∘ K.ψ _ ≡⟨ C.extendl (sym (morp.to .is-natural _ _ _)) ⟩
+        morp.to .η _ C.∘ F.₁ f C.∘ K.ψ _ ≡⟨ ap (_ C.∘_) (K.commutes f) ⟩
+        morp.to .η _ C.∘ K.ψ _           ∎
+
+  Limit-ap-iso : ∀ {F G} → F [J,C].≅ G → Limit F → Limit G
+  Limit-ap-iso {F} {G} morp f-lim = g-lim where
+    module morp = [J,C]._≅_ morp
+    module F = Functor F
+    module G = Functor G
+
+    g-lim : Limit G
+    g-lim .top = Cone-ap-iso morp (f-lim .top)
+    g-lim .has⊤ K = contr K=>lim′ uniq where
+      K′ : Cone F
+      K′ = Cone-ap-iso (morp [J,C].Iso⁻¹) K
+
+      K′=>lim : is-contr (Cone-hom F K′ (f-lim .top))
+      K′=>lim = f-lim .has⊤ K′
+
+      K=>lim′ : Cone-hom G K (g-lim .top)
+      K=>lim′ .hom = K′=>lim .centre .hom
+      K=>lim′ .commutes {o} =
+        (morp.to .η o C.∘ f-lim .top .ψ o) C.∘ K=>lim′ .hom ≡⟨ C.pullr (K′=>lim .centre .commutes) ⟩
+        morp.to .η o C.∘ ψ K′ o                             ≡⟨ C.cancell (ap (λ e → η e o) morp.invl) ⟩
+        K .ψ o                                              ∎
+
+      uniq : ∀ x → K=>lim′ ≡ x
+      uniq x = Cone-hom-path G (ap hom (K′=>lim .paths x′)) where
+        x′ : Cone-hom F K′ (f-lim .top)
+        x′ .hom = x .hom
+        x′ .commutes {o} =
+          f-lim .top .ψ o C.∘ x .hom                                       ≡⟨ C.introl (ap (λ e → η e o) morp.invr) ⟩
+          (morp.from .η o C.∘ morp.to .η o) C.∘ f-lim .top .ψ o C.∘ x .hom ≡⟨ C.pullr (C.assoc _ _ _ ∙ x .commutes) ⟩
+          morp.from .η o C.∘ K .ψ o ∎
+```
+-->

@@ -2,9 +2,12 @@
 \ty:\id{Type}
 \set:\id{Set}
 \prop:\id{Prop}
+\psh:\id{PSh}
 \ht:\mathbf{#1}
 \prosets:\ht{Prosets}
 \sets:\ht{Sets}
+\props:\ht{Props}
+\top:\mathfrak{Top}
 \cat:\ht{Cat}
 \strcat:\ht{Cat}_\id{strict}
 \grpd:\ht{Grpd}
@@ -21,6 +24,7 @@
 \To:\Rightarrow
 \intcat:\{0 \le 1 \}
 \Arr:\id{Arr}(#1)
+\xadj:\xrightleftarrows[#2]{#1}
 \xto:\xrightarrow
 \xot:\xleftarrow
 \xepi:\xtwoheadrightarrow
