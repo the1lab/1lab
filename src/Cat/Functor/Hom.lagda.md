@@ -128,10 +128,10 @@ embedding functor is fully faithful.
 
 ## The Coyoneda Lemma
 
-The Coyoneda lemma is, like it's dual, a statement about presheaves.
-It states that "every presheaf is a colimit of representables", which,
-in less abstract terms, means that every presheaf arises as some way
-of gluing together a bunch of (things isomorphic to) hom functors!
+The Coyoneda lemma is, like its dual, a statement about presheaves.  It
+states that "every presheaf is a colimit of representables", which, in
+less abstract terms, means that every presheaf arises as some way of
+gluing together a bunch of (things isomorphic to) hom functors!
 
 ```agda
 module _ (P : Functor (C ^op) (Sets h)) where
@@ -145,22 +145,20 @@ module _ (P : Functor (C ^op) (Sets h)) where
 
 We start by fixing some presheaf $P$, and constructing a `Cocone`{.Agda}
 whose coapex is $P$. This involves a clever choice of diagram category:
-specifically, the [category of elements] of $P$. This may seem like
-a somewhat odd choice, but recall that the data contained in $\int P$
-is the _same_ data as $P$, just melted into a soup of points.
-The cocone we construct will then glue all those points back together
-into $P$.
+specifically, the [category of elements] of $P$. This may seem like a
+somewhat odd choice, but recall that the data contained in $\int P$ is
+the _same_ data as $P$, just melted into a soup of points.  The cocone
+we construct will then glue all those points back together into $P$.
 
 [category of elements]: Cat.Instances.Elements.html
 
 This is done by projecting out of $\int P$ into $\ca{C}$ via the
-[canonical projection], and then embedding $\ca{C}$ into the category
-of presheaves over $\ca{C}$ via the yoneda embedding. Concretely, what
-this diagram gives us is a bunch of copies of the hom functor, one
-for each $px : P(X)$. Then, to construct the injection map, we
-can just use the (contravariant) functorial action of $P$ to take a
-$px : P(X)$ and a $f : Hom(A, X)$ to a $P(A)$. This map is natural
-by functoriality of $P$.
+[canonical projection], and then embedding $\ca{C}$ into the category of
+presheaves over $\ca{C}$ via the yoneda embedding. Concretely, what this
+diagram gives us is a bunch of copies of the hom functor, one for each
+$px : P(X)$. Then, to construct the injection map, we can just use the
+(contravariant) functorial action of $P$ to take a $px : P(X)$ and a $f
+: Hom(A, X)$ to a $P(A)$. This map is natural by functoriality of $P$.
 
 [canonical projection]: Cat.Instances.Elements.html#Projection
 
@@ -180,10 +178,10 @@ by functoriality of $P$.
 
 Now that we've constructed a cocone, all that remains is to see that
 this is a _colimiting_ cocone. Intuitively, it makes sense that
-`Reassemble`{.Agda} should be colimiting: all we've done is taken
-all the data associated with $P$ and glued it back together.
-However, proving this does involve futzing about with various
-naturality + cocone commuting conditions.
+`Reassemble`{.Agda} should be colimiting: all we've done is taken all
+the data associated with $P$ and glued it back together.  However,
+proving this does involve futzing about with various naturality + cocone
+commuting conditions.
 
 ```agda
   coyoneda : is-colimit (よ F∘ πₚ) Reassemble
@@ -195,13 +193,12 @@ naturality + cocone commuting conditions.
       open Cocone-hom
 ```
 
-We start by constructing the universal map from $P$ into the coapex
-of some other cocone $K$. The components of this natural transformation
-are obtained in a similar manner to the yoneda lemma; we bundle up
-the data to construct an object of $\int P$, and then apply the
-function we construct to the identity morphism. Naturality follows
-from the fact that $K$ is a cocone, and the components of $K$
-are natural.
+We start by constructing the universal map from $P$ into the coapex of
+some other cocone $K$. The components of this natural transformation are
+obtained in a similar manner to the yoneda lemma; we bundle up the data
+to construct an object of $\int P$, and then apply the function we
+construct to the identity morphism. Naturality follows from the fact
+that $K$ is a cocone, and the components of $K$ are natural.
 
 ```agda
       universal : P => K.coapex
@@ -225,8 +222,8 @@ of $K$. The tricky bit of the proof here is that we need to use
         K.ψ o .η x f ∎
 ```
 
-Finally, uniqueness: This just follows by the commuting
-conditions on `\alpha`.
+Finally, uniqueness: This just follows by the commuting conditions on
+`α`.
 
 ```agda
       unique : (α : Cocone-hom (よ F∘ πₚ) Reassemble K)
@@ -238,6 +235,6 @@ conditions on `\alpha`.
 ```
 
 And that's it! The important takeaway here is not the shuffling around
-of natural transformations required to prove this lemma, but rather
-the idea that, unlike Humpty Dumpty, if a presheaf falls off a wall,
-we _can_ put it back together again.
+of natural transformations required to prove this lemma, but rather the
+idea that, unlike Humpty Dumpty, if a presheaf falls off a wall, we
+_can_ put it back together again.

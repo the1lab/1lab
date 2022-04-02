@@ -261,11 +261,11 @@ of propositionality`{.Agda ident=fibProp}, we get the desired:
 `f`{.Agda} is an equivalence.
 
 ```agda
-lineToisEquiv : is-equiv f
-lineToisEquiv .is-eqv y .centre = hasFib y
-lineToisEquiv .is-eqv y .paths = fibProp y _
+line→is-equiv : is-equiv f
+line→is-equiv .is-eqv y .centre = hasFib y
+line→is-equiv .is-eqv y .paths = fibProp y _
 
 line→equiv : A ≃ B
 line→equiv .fst = f
-line→equiv .snd = lineToisEquiv
+line→equiv .snd = line→is-equiv
 ```

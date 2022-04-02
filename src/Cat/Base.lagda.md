@@ -21,6 +21,7 @@ has an extra condition: Isomorphic objects must be identified.
 
 ```agda
 record Precategory (o h : Level) : Type (lsuc (o ⊔ h)) where
+  no-eta-equality
 ```
 
 A _precategory_ is a "proof-relevant preorder". In a preordered set $(A,
@@ -153,15 +154,6 @@ opposite precategory $C^{op}$. What we have to show is - by the type of
 `assoc₁`{.Agda} - $f \circ_{op} (g \circ_{op} h) = (f \circ_{op} g)
 \circ_{op} h$. This computes into $(h \circ g) \circ f = h \circ (g
 \circ f)$ - which is exactly what `sym (assoc C h g f)` shows!
-
-Taking opposite categories is an involution. Since `sym (sym p) = p` by
-definition, taking opposite categories is also definitionally
-involutive.
-
-```agda
-_ : ∀ {o₁ h₁} {C : Precategory o₁ h₁} → (C ^op) ^op ≡ C
-_ = refl
-```
 
 ## The precategory of Sets
 

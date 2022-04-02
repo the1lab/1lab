@@ -1053,11 +1053,11 @@ private
                → A i1 [ φ ↦ u i1 ]
   comp-verbose A u u0 = inS (comp A u (outS u0))
 
-fill : ∀ {ℓ} (A : ∀ i → Type ℓ)
+fill : ∀ {ℓ : I → Level} (A : ∀ i → Type (ℓ i))
        {φ : I}
      → (u : ∀ i → Partial φ (A i))
      → (u0 : A i0 [ φ ↦ u i0 ])
-     → PathP A (outS u0) (comp A u (outS u0))
+     → ∀ i → A i
 fill A {φ = φ} u u0 i =
   comp (λ j → A (i ∧ j))
        (λ j → λ { (φ = i1) → u (i ∧ j) 1=1
@@ -1411,10 +1411,10 @@ the endpoints to a path which can vary over the interval. These
 generalise the `transport-filler`{.Agda} operation.
 
 ```agda
-coe0→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i0 → A i
+coe0→i : ∀ {ℓ : I → Level} (A : ∀ i → Type (ℓ i)) (i : I) → A i0 → A i
 coe0→i A i a = transp (λ j → A (i ∧ j)) (~ i) a
 
-coe1→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i1 → A i
+coe1→i : ∀ {ℓ : I → Level} (A : ∀ i → Type (ℓ i)) (i : I) → A i1 → A i
 coe1→i A i a = transp (λ j → A (i ∨ ~ j)) i a
 ```
 
@@ -1425,7 +1425,7 @@ or 1, respectively) and "spread it" to a line varying over the variable
 over `i` to one of the endpoints:
 
 ```
-coei→0 : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i → A i0
+coei→0 : ∀ {ℓ : I → Level} (A : ∀ i → Type (ℓ i)) (i : I) → A i → A i0
 coei→0 A i a = transp (λ j → A (i ∧ ~ j)) (~ i) a
 ```
 
@@ -1448,7 +1448,7 @@ corners, and the dashed line is `coe A i i1`.
 ~~~
 
 ```agda
-coe : ∀ {ℓ} (A : I → Type ℓ) (i j : I) → A i → A j
+coe : ∀ {ℓ : I → Level} (A : ∀ i → Type (ℓ i)) (i j : I) → A i → A j
 coe A i j a =
   fill A (λ j → λ { (i = i0) → coe0→i A j a
                   ; (i = i1) → coe1→i A j a
@@ -1460,7 +1460,7 @@ As the square implies, when `j = i1`, we have the squeeze operation
 opposite to `coei→0`{.Agda}, which we call `coei→1`{.Agda}.
 
 ```
-coei→1 : ∀ {ℓ} (A : I → Type ℓ) (i : I) → A i → A i1
+coei→1 : ∀ {ℓ : I → Level} (A : ∀ i → Type (ℓ i)) (i : I) → A i → A i1
 coei→1 A i a = coe A i i1 a
 ```
 

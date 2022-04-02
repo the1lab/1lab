@@ -334,3 +334,10 @@ Uncurry {C = C} {D = D} {E = E} F = uncurried where
       F.₁ f .η _ E.∘ (F₁ (F.₀ _) g E.∘ F.₁ f′ .η _) E.∘ F₁ (F.₀ _) g′     ≡⟨ solve E ⟩
       ((F.₁ f .η _ E.∘ F₁ (F.₀ _) g) E.∘ (F.₁ f′ .η _ E.∘ F₁ (F.₀ _) g′)) ∎
 ```
+
+<!--
+```agda
+PSh : ∀ κ {o ℓ} → Precategory o ℓ → Precategory _ _
+PSh κ C = Cat[ C ^op , Sets κ ]
+```
+-->
