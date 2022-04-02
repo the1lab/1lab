@@ -165,39 +165,39 @@ Hom-pathp {p = p} {q} {h} {h'} prf =
 
 <!--
 ```agda
-Hom-pathp-reflˡ :
+Hom-pathp-refll :
   ∀ {A B C} {p : A ≡ C} {h : Hom A B} {h' : Hom C B}
   → h ∘ path→iso p .from ≡ h'
   → PathP (λ i → Hom (p i) B) h h'
-Hom-pathp-reflˡ prf =
+Hom-pathp-refll prf =
   Hom-pathp (ap₂ _∘_ (transport-refl id) refl ·· idl _ ·· prf)
 
-Hom-pathp-reflˡ-iso :
+Hom-pathp-refll-iso :
   ∀ {A B C} {p : A ≅ C} {h : Hom A B} {h' : Hom C B}
   → (isc : is-category)
   → h ∘ p .from ≡ h'
   → PathP (λ i → Hom (iso→path isc p i) B) h h'
-Hom-pathp-reflˡ-iso isc prf =
-  Hom-pathp-reflˡ (
+Hom-pathp-refll-iso isc prf =
+  Hom-pathp-refll (
     ap₂ _∘_ refl (ap from (equiv→section (path→iso-is-equiv isc) _))
     ∙ prf)
 
-Hom-pathp-reflʳ
+Hom-pathp-reflr
   : ∀ {A B D} {q : B ≡ D} {h : Hom A B} {h' : Hom A D}
   → path→iso q .to ∘ h ≡ h'
   → PathP (λ i → Hom A (q i)) h h'
-Hom-pathp-reflʳ {q = q} prf =
+Hom-pathp-reflr {q = q} prf =
   Hom-pathp (ap (path→iso q .to ∘_) (ap₂ _∘_ refl (transport-refl _))
           ·· ap₂ _∘_ refl (idr _)
           ·· prf)
 
-Hom-pathp-reflʳ-iso
+Hom-pathp-reflr-iso
   : ∀ {A B D} {q : B ≅ D} {h : Hom A B} {h' : Hom A D}
   → (isc : is-category)
   → q .to ∘ h ≡ h'
   → PathP (λ i → Hom A (iso→path isc q i)) h h'
-Hom-pathp-reflʳ-iso isc prf =
-  Hom-pathp-reflʳ (
+Hom-pathp-reflr-iso isc prf =
+  Hom-pathp-reflr (
     ap₂ _∘_ (ap to (equiv→section (path→iso-is-equiv isc) _)) refl
     ∙ prf)
 

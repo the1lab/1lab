@@ -112,7 +112,7 @@ between the underlying objects in $\ca{C}$:
 ```agda
     A₀≅X₀ : A C.≅ X
     A₀≅X₀ = C.make-iso
-      (map A≅X.to) (map A≅X.from) (ap map A≅X.invˡ) (ap map A≅X.invʳ)
+      (map A≅X.to) (map A≅X.from) (ap map A≅X.invl) (ap map A≅X.invr)
 ```
 
 Since we assumed $\ca{C}$ to be univalent, this isomorphism can be `made
@@ -160,7 +160,7 @@ calculation then shows that the square above commutes.
       same-mults =
         Hom-pathp-iso C isc (
           map A≅X.to C.∘ Am .ν C.∘ Monad.M₁ M (map A≅X.from)                 ≡⟨ C.pulll (sq A≅X.to) ⟩
-          (Xm .ν C.∘ Monad.M₁ M (A≅X.to .map)) C.∘ Monad.M₁ M (map A≅X.from) ≡⟨ C.cancelr (sym (Monad.M-∘ M _ _) ·· ap (Monad.M₁ M) (ap map A≅X.invˡ) ·· Monad.M-id M) ⟩
+          (Xm .ν C.∘ Monad.M₁ M (A≅X.to .map)) C.∘ Monad.M₁ M (map A≅X.from) ≡⟨ C.cancelr (sym (Monad.M-∘ M _ _) ·· ap (Monad.M₁ M) (ap map A≅X.invl) ·· Monad.M-id M) ⟩
           Xm .ν                                                              ∎
         )
 ```
@@ -197,6 +197,6 @@ ident=Hom-pathp}.
 ```agda
     triv : PathP (λ i → (A , Am) EM.≅ A≡M i) EM.id-iso A≅X
     triv = EM.≅-pathp refl _
-      (Algebra-hom-pathp _ _ (Hom-pathp-reflʳ-iso C isc (C.idr _)))
-      (Algebra-hom-pathp _ _ (Hom-pathp-reflˡ-iso C isc (C.idl _)))
+      (Algebra-hom-pathp _ _ (Hom-pathp-reflr-iso C isc (C.idr _)))
+      (Algebra-hom-pathp _ _ (Hom-pathp-refll-iso C isc (C.idl _)))
 ```

@@ -163,7 +163,7 @@ homomorphism, preserves the group identity.
       path unit                               ≡⟨ sym (∙-id-r _) ⟩
       path unit ∙ refl                        ≡⟨ ap₂ _∙_ refl (sym (∙-inv-r _))  ⟩
       path unit ∙ path unit ∙ sym (path unit) ≡⟨ ∙-assoc _ _ _ ∙ ap₂ _∙_ (sym (path-∙ _ _)) refl ⟩
-      path (unit ⋆ unit) ∙ sym (path unit)    ≡⟨ ap₂ _∙_ (ap path G.idʳ) refl ⟩
+      path (unit ⋆ unit) ∙ sym (path unit)    ≡⟨ ap₂ _∙_ (ap path G.idr) refl ⟩
       path unit ∙ sym (path unit)             ≡⟨ ∙-inv-r _  ⟩
       refl                                    ∎
 ```
@@ -239,8 +239,8 @@ $\id{Aut}(G)$.
 
         p : is-iso (_⋆ x)
         p .inv = _⋆ x ⁻¹
-        p .rinv x = sym G.associative ·· ap₂ G._⋆_ refl G.inverseˡ ·· G.idʳ
-        p .linv x = sym G.associative ·· ap₂ G._⋆_ refl G.inverseʳ ·· G.idʳ
+        p .rinv x = sym G.associative ·· ap₂ G._⋆_ refl G.inversel ·· G.idr
+        p .linv x = sym G.associative ·· ap₂ G._⋆_ refl G.inverser ·· G.idr
 ```
 
 We take $y \mapsto y \star x$ as the definition of the map, which is an
@@ -306,7 +306,7 @@ of the full `Deloop-elim`{.Agda}, which reduces the goal to proving $1
     Deloop-elim-prop
       (λ x → (c : ∣ Code x ∣) → encode x (decode x c) ≡ c)
       (λ x → Π-is-hlevel 1 λ _ → Code x .is-tr _ _)
-      λ c → transport-refl _ ∙ G.idˡ
+      λ c → transport-refl _ ∙ G.idl
 ```
 
 This completes the proof, and lets us establish that the fundamental

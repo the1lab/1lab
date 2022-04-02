@@ -156,9 +156,9 @@ associativity, identity and inverse laws that provide the cases for
 ```agda
   go (f-assoc x y z i) =
     G.associative {x = go x} {y = go y} {z = go z} (~ i)
-  go (f-invl x i) = G.inverseˡ {x = go x} i
-  go (f-invr x i) = G.inverseʳ {x = go x} i
-  go (f-idl x i) = G.idˡ {x = go x} i
+  go (f-invl x i) = G.inversel {x = go x} i
+  go (f-invr x i) = G.inverser {x = go x} i
+  go (f-idl x i) = G.idl {x = go x} i
   go (squash x y p q i j) =
     G.has-is-set (go x) (go y) (λ i → go (p i)) (λ i → go (q i)) i j
 

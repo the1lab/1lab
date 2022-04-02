@@ -42,36 +42,36 @@ give the unit, both on the left and on the right:
 ```agda
     inverse : A → A
 
-    inverseˡ : {x : A} → inverse x * x ≡ unit
-    inverseʳ : {x : A} → x * inverse x ≡ unit
+    inversel : {x : A} → inverse x * x ≡ unit
+    inverser : {x : A} → x * inverse x ≡ unit
 
   open is-monoid has-is-monoid public
 
   abstract
     inv-unit≡unit : inverse unit ≡ unit
     inv-unit≡unit = monoid-inverse-unique
-      has-is-monoid unit _ _ inverseˡ (idˡ has-is-monoid)
+      has-is-monoid unit _ _ inversel (idl has-is-monoid)
 
     inv-inv : ∀ {x} → inverse (inverse x) ≡ x
     inv-inv = monoid-inverse-unique
-      has-is-monoid _ _ _ inverseˡ inverseˡ
+      has-is-monoid _ _ _ inversel inversel
 
     inv-comm : ∀ {x y} → inverse (x * y) ≡ inverse y * inverse x
     inv-comm {x = x} {y} =
-      monoid-inverse-unique has-is-monoid _ _ _ inverseˡ p
+      monoid-inverse-unique has-is-monoid _ _ _ inversel p
       where
         p : (x * y) * (inverse y * inverse x) ≡ unit
         p = associative has-is-monoid
          ·· ap₂ _*_
               (  sym (associative has-is-monoid)
-              ·· ap₂ _*_ refl inverseʳ
-              ·· idʳ has-is-monoid)
+              ·· ap₂ _*_ refl inverser
+              ·· idr has-is-monoid)
               refl
-         ·· inverseʳ
+         ·· inverser
 
     zero-diff→≡ : ∀ {x y} → x * inverse y ≡ unit → x ≡ y
     zero-diff→≡ {x = x} {y = y} p =
-      monoid-inverse-unique has-is-monoid _ _ _ p inverseˡ
+      monoid-inverse-unique has-is-monoid _ _ _ p inversel
 
 open is-group
 ```
@@ -122,24 +122,24 @@ map.
   same-inverses : (e : A) → x .inverse e ≡ y .inverse e
   same-inverses e =
     monoid-inverse-unique (y .has-is-monoid) _ _ _
-      (x .inverseˡ ∙ same-unit) (y .inverseʳ)
+      (x .inversel ∙ same-unit) (y .inverser)
 ```
 
 Since the underlying type of a group `is a set`{.Agda ident=has-is-set},
 we have that any parallel paths are equal - even when the paths are
-dependent! This gives us the equations between the `inverseˡ`{.Agda} and
-`inverseʳ`{.Agda} fields of `x` and `y`.
+dependent! This gives us the equations between the `inversel`{.Agda} and
+`inverser`{.Agda} fields of `x` and `y`.
 
 ```agda
-  same-invˡ : (e : A) → Square _ _ _ _
-  same-invˡ e =
+  same-invl : (e : A) → Square _ _ _ _
+  same-invl e =
     is-set→squarep (λ _ _ → x .has-is-monoid .has-is-set)
-      (ap₂ _*_ (same-inverses e) refl) (x .inverseˡ) (y .inverseˡ) same-unit
+      (ap₂ _*_ (same-inverses e) refl) (x .inversel) (y .inversel) same-unit
 
-  same-invʳ : (e : A) → Square _ _ _ _
-  same-invʳ e =
+  same-invr : (e : A) → Square _ _ _ _
+  same-invr e =
     is-set→squarep (λ _ _ → x .has-is-monoid .has-is-set)
-      (ap₂ _*_ refl (same-inverses e)) (x .inverseʳ) (y .inverseʳ) same-unit
+      (ap₂ _*_ refl (same-inverses e)) (x .inverser) (y .inverser) same-unit
 ```
 
 Putting all of this together lets us conclude that `x` and `y` are
@@ -150,8 +150,8 @@ identical.
   path i .unit         = same-unit i
   path i .has-is-monoid  = same-monoid i
   path i .inverse e    = same-inverses e i
-  path i .inverseˡ {e} = same-invˡ e i
-  path i .inverseʳ {e} = same-invʳ e i
+  path i .inversel {e} = same-invl e i
+  path i .inverser {e} = same-invr e i
 ```
 
 # Group Homomorphisms
@@ -208,18 +208,18 @@ identity:
 
   pres-id : e 1A ≡ 1B
   pres-id =
-    e 1A                            ≡⟨ sym B.idʳ ⟩
-    e 1A B.⋆ 1B                     ≡⟨ ap₂ B._⋆_ refl (sym B.inverseʳ) ⟩
+    e 1A                            ≡⟨ sym B.idr ⟩
+    e 1A B.⋆ 1B                     ≡⟨ ap₂ B._⋆_ refl (sym B.inverser) ⟩
     e 1A B.⋆ (e 1A B.⋆ (e 1A) B.⁻¹) ≡⟨ B.associative ⟩
-    (e 1A B.⋆ e 1A) B.⋆ (e 1A) B.⁻¹ ≡⟨ ap₂ B._⋆_ (sym (pres-⋆ _ _) ∙ ap e A.idˡ) refl ⟩
-    e 1A B.⋆ (e 1A) B.⁻¹            ≡⟨ B.inverseʳ ⟩
+    (e 1A B.⋆ e 1A) B.⋆ (e 1A) B.⁻¹ ≡⟨ ap₂ B._⋆_ (sym (pres-⋆ _ _) ∙ ap e A.idl) refl ⟩
+    e 1A B.⋆ (e 1A) B.⁻¹            ≡⟨ B.inverser ⟩
     1B                              ∎
 
   pres-inv : ∀ x → e (A.inverse x) ≡ B.inverse (e x)
   pres-inv x =
     monoid-inverse-unique B.has-is-monoid (e x) _ _
-      (sym (pres-⋆ _ _) ·· ap e A.inverseˡ ·· pres-id)
-      B.inverseʳ
+      (sym (pres-⋆ _ _) ·· ap e A.inversel ·· pres-id)
+      B.inverser
 ```
 
 <!--
@@ -271,7 +271,7 @@ make-group
   → (∀ x → inv x ⋆ x ≡ unit) → (∀ x → x ⋆ inv x ≡ unit)
   → (∀ x → unit ⋆ x ≡ x)
   → Group-on G
-make-group gset id star inv assoc invl invr idl = r where
+make-group gset id star inv assoc invl invr g-idl = r where
   open is-group
 
   r : Group-on _
@@ -279,16 +279,16 @@ make-group gset id star inv assoc invl invr idl = r where
   r .has-is-group .unit = id
   r .has-is-group .has-is-monoid .has-is-semigroup .has-is-magma .has-is-set = gset
   r .has-is-group .has-is-monoid .has-is-semigroup .associative = sym (assoc _ _ _)
-  r .has-is-group .has-is-monoid .idˡ = idl _
-  r .has-is-group .has-is-monoid .idʳ {x = x} =
+  r .has-is-group .has-is-monoid .idl = g-idl _
+  r .has-is-group .has-is-monoid .idr {x = x} =
     star x id               ≡⟨ ap₂ star refl (sym (invl x)) ⟩
     star x (star (inv x) x) ≡⟨ sym (assoc _ _ _) ⟩
     star (star x (inv x)) x ≡⟨ ap₂ star (invr x) refl ⟩
-    star id x               ≡⟨ idl x ⟩
+    star id x               ≡⟨ g-idl x ⟩
     x                       ∎
   r .has-is-group .inverse = inv
-  r .has-is-group .inverseˡ = invl _
-  r .has-is-group .inverseʳ = invr _
+  r .has-is-group .inversel = invl _
+  r .has-is-group .inverser = invr _
 ```
 
 # Symmetric Groups
@@ -326,8 +326,8 @@ The associativity and identity laws hold definitionally.
 ```agda
   group-str .has-is-group .has-is-monoid .has-is-semigroup .associative =
     Σ-prop-path is-equiv-is-prop refl
-  group-str .has-is-group .has-is-monoid .idˡ = Σ-prop-path is-equiv-is-prop refl
-  group-str .has-is-group .has-is-monoid .idʳ = Σ-prop-path is-equiv-is-prop refl
+  group-str .has-is-group .has-is-monoid .idl = Σ-prop-path is-equiv-is-prop refl
+  group-str .has-is-group .has-is-monoid .idr = Σ-prop-path is-equiv-is-prop refl
 ```
 
 The inverse is given by `the inverse equivalence`{.Agda ident=_e⁻¹}, and
@@ -336,9 +336,9 @@ equivalence is both a section and a retraction.
 
 ```agda
   group-str .has-is-group .inverse = _e⁻¹
-  group-str .has-is-group .inverseˡ {x = f , eqv} =
+  group-str .has-is-group .inversel {x = f , eqv} =
     Σ-prop-path is-equiv-is-prop (funext (equiv→retraction eqv))
-  group-str .has-is-group .inverseʳ {x = f , eqv} =
+  group-str .has-is-group .inverser {x = f , eqv} =
     Σ-prop-path is-equiv-is-prop (funext (equiv→section eqv))
 ```
 

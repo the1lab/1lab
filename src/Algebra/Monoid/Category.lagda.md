@@ -89,8 +89,8 @@ List-is-monoid : ∀ {ℓ} {A : Type ℓ} → is-set A
               → Monoid-on (List A)
 List-is-monoid aset .identity = []
 List-is-monoid aset ._⋆_ = _++_
-List-is-monoid aset .has-is-monoid .idˡ = refl
-List-is-monoid aset .has-is-monoid .idʳ = ++-idʳ _
+List-is-monoid aset .has-is-monoid .idl = refl
+List-is-monoid aset .has-is-monoid .idr = ++-idr _
 List-is-monoid aset .has-is-monoid .has-is-semigroup .has-is-magma .has-is-set =
   ListPath.is-set→List-is-set aset
 List-is-monoid aset .has-is-monoid .has-is-semigroup .associative {x} {y} {z} =
@@ -154,7 +154,7 @@ fold-++ : ∀ {ℓ} {X : Monoid ℓ} (xs ys : List (X .fst))
 fold-++ {X = X} = go where
   module M = Monoid-on (X .snd)
   go : ∀ xs ys → _
-  go [] ys = sym M.idˡ
+  go [] ys = sym M.idl
   go (x ∷ xs) ys =
     fold X (x ∷ xs ++ ys)            ≡⟨⟩
     x M.⋆ fold X (xs ++ ys)          ≡⟨ ap (_ M.⋆_) (go xs ys) ⟩
@@ -191,7 +191,7 @@ Free⊣Forget .counit .is-natural x y (f , h) =
   Σ-prop-path Monoid-hom-is-prop (funext (fold-natural {X = x} {y} f h))
 Free⊣Forget .zig {A = A} =
   Σ-prop-path Monoid-hom-is-prop (funext (fold-pure {X = A}))
-Free⊣Forget .zag {B = B} i x = B .snd .idʳ {x = x} i
+Free⊣Forget .zag {B = B} i x = B .snd .idr {x = x} i
 ```
 
 This concludes the proof that `Monoids`{.Agda} has free objects. We now
@@ -231,9 +231,9 @@ properties of monoids:
     from alg .fst = alg .Algebra-hom.morphism
     from alg .snd .pres-id = happly (alg .Algebra-hom.commutes) []
     from alg .snd .pres-⋆ a b =
-      f (a x.⋆ b)                  ≡˘⟨ ap f (ap (a x.⋆_) x.idʳ) ⟩
+      f (a x.⋆ b)                  ≡˘⟨ ap f (ap (a x.⋆_) x.idr) ⟩
       f (a x.⋆ (b x.⋆ x.identity)) ≡⟨ (λ i → alg .Algebra-hom.commutes i (a ∷ b ∷ [])) ⟩
-      f a y.⋆ (f b y.⋆ y.identity) ≡⟨ ap (f a y.⋆_) y.idʳ ⟩
+      f a y.⋆ (f b y.⋆ y.identity) ≡⟨ ap (f a y.⋆_) y.idr ⟩
       f a y.⋆ f b                  ∎
       where f = alg .Algebra-hom.morphism
 ```
@@ -284,12 +284,12 @@ these data assembles into a monoid:
           alg .ν (alg .ν (x ∷ y ∷ []) ∷ alg .ν (z ∷ []) ∷ [])  ≡⟨ ap (λ x → alg .ν (_ ∷ x ∷ [])) (happly (alg .ν-unit) z) ⟩
           alg .ν (alg .ν (x ∷ y ∷ []) ∷ z ∷ [])                ∎
         }
-      has-is-m .idˡ {x} =
+      has-is-m .idl {x} =
         alg .ν (alg .ν [] ∷ x ∷ [])                ≡˘⟨ ap (λ x → alg .ν (alg .ν [] ∷ x ∷ [])) (happly (alg .ν-unit) x) ⟩
         alg .ν (alg .ν [] ∷ alg .ν (x ∷ []) ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
         alg .ν (x ∷ [])                            ≡⟨ happly (alg .ν-unit) x ⟩
         x                                          ∎
-      has-is-m .idʳ {x} =
+      has-is-m .idr {x} =
         alg .ν (x ∷ alg .ν [] ∷ [])                ≡˘⟨ ap (λ x → alg .ν (x ∷ _)) (happly (alg .ν-unit) x) ⟩
         alg .ν (alg .ν (x ∷ []) ∷ alg .ν [] ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
         alg .ν (x ∷ [])                            ≡⟨ happly (alg .ν-unit) x ⟩
@@ -306,7 +306,7 @@ can show by induction on the list:
     recover (x ∷ xs) =
       alg .ν (x ∷ fold monoid xs ∷ [])           ≡⟨ ap₂ (λ e f → alg .ν (e ∷ f ∷ [])) (sym (happly (alg .ν-unit) x)) (recover xs) ⟩
       alg .ν (alg .ν (x ∷ []) ∷ alg .ν xs ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
-      alg .ν (x ∷ xs ++ [])                      ≡⟨ ap (alg .ν) (++-idʳ _) ⟩
+      alg .ν (x ∷ xs ++ [])                      ≡⟨ ap (alg .ν) (++-idr _) ⟩
       alg .ν (x ∷ xs)                            ∎
 ```
 

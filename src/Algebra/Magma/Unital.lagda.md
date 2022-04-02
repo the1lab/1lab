@@ -41,14 +41,14 @@ record is-unital-magma (identity : A) (_⋆_ : A → A → A) : Type (level-of A
   open is-magma has-is-magma public
 
   field
-    idˡ : {x : A} → identity ⋆ x ≡ x
-    idʳ : {x : A} → x ⋆ identity ≡ x
+    idl : {x : A} → identity ⋆ x ≡ x
+    idr : {x : A} → x ⋆ identity ≡ x
 
 open is-unital-magma public
 ```
 
 Since `A` is a set, we do not have to worry about higher coherence
-conditions when it comes to `idˡ`{.Agda} or `idʳ`{.Agda} - all paths
+conditions when it comes to `idl`{.Agda} or `idr`{.Agda} - all paths
 between the same endpoints in `A` are equal. This allows us to show that
 being a unital magma is a _property_ of the operator and the identity:
 
@@ -56,8 +56,8 @@ being a unital magma is a _property_ of the operator and the identity:
 is-unital-magma-is-prop : {e : A} → {_⋆_ : A → A → A} → is-prop (is-unital-magma e _⋆_)
 is-unital-magma-is-prop x y i .is-unital-magma.has-is-magma = is-magma-is-prop
   (x .has-is-magma) (y .has-is-magma) i
-is-unital-magma-is-prop x y i .is-unital-magma.idˡ = x .has-is-set _ _ (x .idˡ) (y .idˡ) i
-is-unital-magma-is-prop x y i .is-unital-magma.idʳ = x .has-is-set _ _ (x .idʳ) (y .idʳ) i
+is-unital-magma-is-prop x y i .is-unital-magma.idl = x .has-is-set _ _ (x .idl) (y .idl) i
+is-unital-magma-is-prop x y i .is-unital-magma.idr = x .has-is-set _ _ (x .idr) (y .idr) i
 ```
 
 We can also show that two units of a magma are necessarily the same,
@@ -70,8 +70,8 @@ identities-equal
   → is-unital-magma e' _⋆_
   → e ≡ e'
 identities-equal e e' {_⋆_ = _⋆_} unital unital' =
-  e      ≡⟨ sym (idʳ unital') ⟩
-  e ⋆ e' ≡⟨ idˡ unital ⟩
+  e      ≡⟨ sym (idr unital') ⟩
+  e ⋆ e' ≡⟨ idl unital ⟩
   e' ∎
 ```
 
@@ -191,7 +191,7 @@ left-right-identity→unital
   → is-left-id _⋆_ l → is-right-id _⋆_ r
   → is-magma _⋆_ → is-unital-magma l _⋆_
 left-right-identity→unital l r lid rid isMgm .has-is-magma = isMgm
-left-right-identity→unital l r lid rid isMgm .idˡ = lid _
-left-right-identity→unital {_⋆_ = _⋆_} l r lid rid isMgm .idʳ {x = x} =
+left-right-identity→unital l r lid rid isMgm .idl = lid _
+left-right-identity→unital {_⋆_ = _⋆_} l r lid rid isMgm .idr {x = x} =
   subst (λ a → (x ⋆ a) ≡ x) (sym (left-right-identities-equal l r lid rid)) (rid _)
 ```

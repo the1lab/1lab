@@ -39,8 +39,8 @@ record is-monoid (id : A) (_⋆_ : A → A → A) : Type (level-of A) where
   open is-semigroup has-is-semigroup public
 
   field
-    idˡ : {x : A} → id ⋆ x ≡ x
-    idʳ : {x : A} → x ⋆ id ≡ x
+    idl : {x : A} → id ⋆ x ≡ x
+    idr : {x : A} → x ⋆ id ≡ x
 
 open is-monoid public
 ```
@@ -54,8 +54,8 @@ is-monoid-is-prop : {id : A} {_⋆_ : A → A → A}
                 → is-prop (is-monoid id _⋆_)
 is-monoid-is-prop x y i .has-is-semigroup =
   is-semigroup-is-prop (x .has-is-semigroup) (y .has-is-semigroup) i
-is-monoid-is-prop x y i .idˡ = x .has-is-set _ _ (x .idˡ) (y .idˡ) i
-is-monoid-is-prop x y i .idʳ = x .has-is-set _ _ (x .idʳ) (y .idʳ) i
+is-monoid-is-prop x y i .idl = x .has-is-set _ _ (x .idl) (y .idl) i
+is-monoid-is-prop x y i .idr = x .has-is-set _ _ (x .idr) (y .idr) i
 ```
 
 A `monoid structure on`{.Agda ident=Monoid-on} a type is given by the
@@ -141,8 +141,8 @@ First, we show that every monoid is a unital magma:
 module _ {id : A} {_⋆_ : A → A → A} where
   is-monoid→is-unital-magma : is-monoid id _⋆_ → is-unital-magma id _⋆_
   is-monoid→is-unital-magma mon .has-is-magma = mon .has-is-semigroup .has-is-magma
-  is-monoid→is-unital-magma mon .idˡ = mon .idˡ
-  is-monoid→is-unital-magma mon .idʳ = mon .idʳ
+  is-monoid→is-unital-magma mon .idl = mon .idl
+  is-monoid→is-unital-magma mon .idr = mon .idr
 ```
 
 "Reshuffling" the record fields also allows us to show the reverse
@@ -152,8 +152,8 @@ direction, namely, that every unital semigroup is a monoid.
   is-unital-magma→is-semigroup→is-monoid
     : is-unital-magma id _⋆_ → is-semigroup _⋆_ → is-monoid id _⋆_
   is-unital-magma→is-semigroup→is-monoid uni sem .has-is-semigroup = sem
-  is-unital-magma→is-semigroup→is-monoid uni sem .idˡ = uni .idˡ
-  is-unital-magma→is-semigroup→is-monoid uni sem .idʳ = uni .idʳ
+  is-unital-magma→is-semigroup→is-monoid uni sem .idl = uni .idl
+  is-unital-magma→is-semigroup→is-monoid uni sem .idr = uni .idr
 ```
 
 # Inverses
@@ -180,10 +180,10 @@ $y$:
 
 ```agda
 monoid-inverse-unique {1M = 1M} {_⋆_} m e x y li1 ri2 =
-  x             ≡⟨ sym (m .idʳ) ⟩
+  x             ≡⟨ sym (m .idr) ⟩
   x ⋆ 1M        ≡⟨ ap₂ _⋆_ refl (sym ri2) ⟩
   x ⋆ (e ⋆ y)   ≡⟨ m .associative ⟩
   (x ⋆ e) ⋆ y   ≡⟨ ap₂ _⋆_ li1 refl ⟩
-  1M ⋆ y        ≡⟨ m .idˡ ⟩
+  1M ⋆ y        ≡⟨ m .idl ⟩
   y             ∎
 ```

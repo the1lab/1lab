@@ -60,7 +60,7 @@ Zero-group-is-initial (_ , G) .centre = (λ x → G.unit) , gh where
   module G = Group-on G
   gh : Group-hom _ _ (λ x → G.unit)
   gh .pres-⋆ x y =
-    G.unit            ≡˘⟨ G.idˡ ⟩
+    G.unit            ≡˘⟨ G.idl ⟩
     G.unit G.⋆ G.unit ∎
 Zero-group-is-initial (_ , G) .paths x =
   Forget-is-faithful (funext λ _ → sym (Group-hom.pres-id (x .snd)))
@@ -103,9 +103,9 @@ Direct-product (G , Gg) (H , Hg) = (G × H) , G×Hg where
     (λ { (a , b) (x , y) → a G.⋆ x , b H.⋆ y })
     (λ { (a , b) → a G.⁻¹ , b H.⁻¹ })
     (λ { x y z → ap₂ _,_ (sym G.associative) (sym H.associative) })
-    (λ x → ap₂ _,_ G.inverseˡ H.inverseˡ)
-    (λ x → ap₂ _,_ G.inverseʳ H.inverseʳ)
-    (λ x → ap₂ _,_ G.idˡ H.idˡ)
+    (λ x → ap₂ _,_ G.inversel H.inversel)
+    (λ x → ap₂ _,_ G.inverser H.inverser)
+    (λ x → ap₂ _,_ G.idl H.idl)
 ```
 
 The projection maps and universal factoring are all given exactly as for
@@ -144,12 +144,12 @@ a coproduct.
 ```agda
 inj₁ : G Groups.↪ Direct-product G H
 inj₁ {G} {H} .mor .fst x = x , H .snd .unit
-inj₁ {G} {H} .mor .snd .pres-⋆ x y = ap (_ ,_) (sym (H .snd .idˡ))
+inj₁ {G} {H} .mor .snd .pres-⋆ x y = ap (_ ,_) (sym (H .snd .idl))
 inj₁ {G} {H} .monic g h x = Forget-is-faithful (funext λ e i → x i .fst e .fst)
 
 inj₂ : H Groups.↪ Direct-product G H
 inj₂ {H} {G} .mor .fst x = G .snd .unit , x
-inj₂ {H} {G} .mor .snd .pres-⋆ x y = ap (_, _) (sym (G .snd .idˡ))
+inj₂ {H} {G} .mor .snd .pres-⋆ x y = ap (_, _) (sym (G .snd .idl))
 inj₂ {H} {G} .monic g h x = Forget-is-faithful (funext λ e i → x i .fst e .snd)
 ```
 
@@ -212,9 +212,9 @@ Similar yoga must be done for the inverse maps and the group unit.
       (seq.apex .is-tr)
       (G.unit , invs) equ-⋆ equ-inv
       (λ x y z → Σ-prop-path (λ _ → H.has-is-set _ _) (sym G.associative))
-      (λ x → Σ-prop-path (λ _ → H.has-is-set _ _) G.inverseˡ)
-      (λ x → Σ-prop-path (λ _ → H.has-is-set _ _) G.inverseʳ)
-      λ x → Σ-prop-path (λ _ → H.has-is-set _ _) G.idˡ
+      (λ x → Σ-prop-path (λ _ → H.has-is-set _ _) G.inversel)
+      (λ x → Σ-prop-path (λ _ → H.has-is-set _ _) G.inverser)
+      λ x → Σ-prop-path (λ _ → H.has-is-set _ _) G.idl
 
   open is-equaliser
   open Equaliser

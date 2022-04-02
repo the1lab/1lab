@@ -97,22 +97,22 @@ the domain category to serve as an inverse for $f$:
 
     Ffog =
       F₁ F (f C.∘ g)    ≡⟨ F-∘ F _ _ ⟩
-      F₁ F f D.∘ F₁ F g ≡⟨ ap₂ D._∘_ refl (equiv→section ff _) ∙ isinv .Dm.is-invertible.invˡ ⟩
+      F₁ F f D.∘ F₁ F g ≡⟨ ap₂ D._∘_ refl (equiv→section ff _) ∙ isinv .Dm.is-invertible.invl ⟩
       D.id              ∎
 
     Fgof =
       F₁ F (g C.∘ f)    ≡⟨ F-∘ F _ _ ⟩
-      F₁ F g D.∘ F₁ F f ≡⟨ ap₂ D._∘_ (equiv→section ff _) refl ∙ isinv .Dm.is-invertible.invʳ ⟩
+      F₁ F g D.∘ F₁ F f ≡⟨ ap₂ D._∘_ (equiv→section ff _) refl ∙ isinv .Dm.is-invertible.invr ⟩
       D.id              ∎
 
     i : Cm.is-invertible _
     i .inv = g
-    i .inverses .invˡ =
+    i .inverses .invl =
       f C.∘ g                           ≡⟨ sym (equiv→retraction ff _) ⟩
       equiv→inverse ff (F₁ F (f C.∘ g)) ≡⟨ ap (equiv→inverse ff) (Ffog ∙ sym (F-id F)) ⟩
       equiv→inverse ff (F₁ F C.id)      ≡⟨ equiv→retraction ff _ ⟩
       C.id                              ∎
-    i .inverses .invʳ =
+    i .inverses .invr =
       g C.∘ f                           ≡⟨ sym (equiv→retraction ff _) ⟩
       equiv→inverse ff (F₁ F (g C.∘ f)) ≡⟨ ap (equiv→inverse ff) (Fgof ∙ sym (F-id F)) ⟩
       equiv→inverse ff (F₁ F C.id)      ≡⟨ equiv→retraction ff _ ⟩
@@ -124,7 +124,7 @@ the domain category to serve as an inverse for $f$:
     → X Cm.≅ Y
   is-ff→essentially-injective {F = F} ff
     record { to = to ; from = from ; inverses = inverses } =
-    Cm.make-iso (equiv→inverse ff to) inv invˡ invʳ
+    Cm.make-iso (equiv→inverse ff to) inv invl invr
     where
       D-inv : Dm.is-invertible to
       D-inv = record { inv = from ; inverses = inverses }
@@ -168,8 +168,8 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
   F-map-iso : ∀ {x y} (F : Functor C D) → x C.≅ y → F₀ F x D.≅ F₀ F y
   F-map-iso F x =
     D.make-iso (F₁ F x.to) (F₁ F x.from)
-      (sym (F-∘ F _ _) ·· ap (F₁ F) x.invˡ ·· F-id F)
-      (sym (F-∘ F _ _) ·· ap (F₁ F) x.invʳ ·· F-id F)
+      (sym (F-∘ F _ _) ·· ap (F₁ F) x.invl ·· F-id F)
+      (sym (F-∘ F _ _) ·· ap (F₁ F) x.invr ·· F-id F)
     where module x = C._≅_ x
 
   open import Cat.Univalent

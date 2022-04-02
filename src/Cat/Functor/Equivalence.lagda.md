@@ -125,7 +125,7 @@ by faithfulness.
 ```agda
   ff+split-eso→inverse .F-id {x} =
     ff⁻¹ (f*x-iso .di.from D.∘ D.id D.∘ f*x-iso .di.to) ≡⟨ ap ff⁻¹ (ap₂ D._∘_ refl (D.idl _)) ⟩
-    ff⁻¹ (f*x-iso .di.from D.∘ f*x-iso .di.to)          ≡⟨ ap ff⁻¹ (f*x-iso .di.invʳ) ⟩
+    ff⁻¹ (f*x-iso .di.from D.∘ f*x-iso .di.to)          ≡⟨ ap ff⁻¹ (f*x-iso .di.invr) ⟩
     ff⁻¹ D.id                                           ≡˘⟨ ap ff⁻¹ (F-id F) ⟩
     ff⁻¹ (F₁ F C.id)                                    ≡⟨ equiv→retraction ff _ ⟩
     C.id ∎
@@ -135,7 +135,7 @@ by faithfulness.
     fully-faithful→faithful {F = F} ff (
       F₁ F (ff⁻¹ (ffz D.∘ (f D.∘ g) D.∘ ftx))      ≡⟨ equiv→section ff _ ⟩
       ffz D.∘ (f D.∘ g) D.∘ ftx                    ≡⟨ solve D ⟩
-      ffz D.∘ f D.∘ D.id D.∘ g D.∘ ftx             ≡˘⟨ ap (λ x → ffz D.∘ (f D.∘ (x D.∘ (g D.∘ ftx)))) (f*y-iso .di.invˡ) ⟩
+      ffz D.∘ f D.∘ D.id D.∘ g D.∘ ftx             ≡˘⟨ ap (λ x → ffz D.∘ (f D.∘ (x D.∘ (g D.∘ ftx)))) (f*y-iso .di.invl) ⟩
       ffz D.∘ f D.∘ (fty D.∘ ffy) D.∘ g D.∘ ftx    ≡⟨ solve D ⟩
       (ffz D.∘ f D.∘ fty) D.∘ (ffy D.∘ g D.∘ ftx)  ≡˘⟨ ap₂ D._∘_ (equiv→section ff _) (equiv→section ff _) ⟩
       F₁ F (ff⁻¹ _) D.∘ F₁ F (ff⁻¹ _)              ≡˘⟨ F-∘ F _ _ ⟩
@@ -190,7 +190,7 @@ essential fibre $F^*F(x)$ comes equipped with an isomorphism $FF^*F(x)
     fully-faithful→faithful {F = F} ff (
       F₁ F (ff⁻¹ ffy C.∘ f)                                    ≡⟨ F-∘ F _ _ ⟩
       F₁ F (ff⁻¹ ffy) D.∘ F₁ F f                               ≡⟨ ap₂ D._∘_ (equiv→section ff _) refl ⟩
-      ffy D.∘ F₁ F f                                           ≡⟨ ap₂ D._∘_ refl (sym (D.idr _) ∙ ap (F₁ F f D.∘_) (sym (f*x-iso .di.invˡ))) ⟩
+      ffy D.∘ F₁ F f                                           ≡⟨ ap₂ D._∘_ refl (sym (D.idr _) ∙ ap (F₁ F f D.∘_) (sym (f*x-iso .di.invl))) ⟩
       ffy D.∘ F₁ F f D.∘ ftx D.∘ ffx                           ≡⟨ solve D ⟩
       (ffy D.∘ F₁ F f D.∘ ftx) D.∘ ffx                         ≡˘⟨ ap₂ D._∘_ (equiv→section ff _) (equiv→section ff _) ⟩
       F₁ F (ff⁻¹ (ffy D.∘ F₁ F f D.∘ ftx)) D.∘ F₁ F (ff⁻¹ ffx) ≡˘⟨ F-∘ F _ _ ⟩
@@ -230,7 +230,7 @@ again pick the given isomorphism.
 ```agda
   ff+split-eso→counit .is-natural x y f =
     fty D.∘ F₁ F (ff⁻¹ (ffy D.∘ f D.∘ ftx)) ≡⟨ ap (fty D.∘_) (equiv→section ff _) ⟩
-    fty D.∘ ffy D.∘ f D.∘ ftx               ≡⟨ D.cancell (f*y-iso .di.invˡ) ⟩
+    fty D.∘ ffy D.∘ f D.∘ ftx               ≡⟨ D.cancell (f*y-iso .di.invl) ⟩
     f D.∘ ftx                               ∎
     where
       open ∑ (eso x) renaming (fst to f*x ; snd to f*x-iso)
@@ -255,7 +255,7 @@ calculations without commentary:
   ff+split-eso→F⊣inverse .counit  = ff+split-eso→counit
   ff+split-eso→F⊣inverse .zig {x} =
     ftx D.∘ F₁ F (ff⁻¹ ffx) ≡⟨ ap (ftx D.∘_) (equiv→section ff _) ⟩
-    ftx D.∘ ffx             ≡⟨ f*x-iso .di.invˡ ⟩
+    ftx D.∘ ffx             ≡⟨ f*x-iso .di.invl ⟩
     D.id                    ∎
 ```
 <!--
@@ -276,7 +276,7 @@ The `zag`{.Agda} identity needs an appeal to faithfulness:
       F₁ F (ff⁻¹ (ffx D.∘ ftx D.∘ fftx) C.∘ ff⁻¹ fffx)        ≡⟨ F-∘ F _ _ ⟩
       F₁ F (ff⁻¹ (ffx D.∘ ftx D.∘ fftx)) D.∘ F₁ F (ff⁻¹ fffx) ≡⟨ ap₂ D._∘_ (equiv→section ff _) (equiv→section ff _) ⟩
       (ffx D.∘ ftx D.∘ fftx) D.∘ fffx                         ≡⟨ solve D ⟩
-      (ffx D.∘ ftx) D.∘ (fftx D.∘ fffx)                       ≡⟨ ap₂ D._∘_ (f*x-iso .di.invʳ) (f*f*x-iso .di.invˡ) ⟩
+      (ffx D.∘ ftx) D.∘ (fftx D.∘ fffx)                       ≡⟨ ap₂ D._∘_ (f*x-iso .di.invr) (f*f*x-iso .di.invl) ⟩
       D.id D.∘ D.id                                           ≡⟨ D.idl _ ∙ sym (F-id F) ⟩
       F₁ F C.id                                               ∎
     )
@@ -306,8 +306,8 @@ Now to show they are componentwise invertible:
   ff+split-eso→is-equivalence .counit-iso x = record
     { inv      = f*x-iso .di.from
     ; inverses = record
-      { invˡ = f*x-iso .di.invˡ
-      ; invʳ = f*x-iso .di.invʳ }
+      { invl = f*x-iso .di.invl
+      ; invr = f*x-iso .di.invr }
     }
     where open ∑ (eso x) renaming (fst to f*x ; snd to f*x-iso)
 ```
@@ -319,16 +319,16 @@ needs an appeal to faithfulness (two, actually):
   ff+split-eso→is-equivalence .unit-iso x = record
     { inv      = ff⁻¹ (f*x-iso .di.to)
     ; inverses = record
-      { invˡ = fully-faithful→faithful {F = F} ff (
+      { invl = fully-faithful→faithful {F = F} ff (
           F₁ F (ff⁻¹ ffx C.∘ ff⁻¹ ftx)        ≡⟨ F-∘ F _ _ ⟩
           F₁ F (ff⁻¹ ffx) D.∘ F₁ F (ff⁻¹ ftx) ≡⟨ ap₂ D._∘_ (equiv→section ff _) (equiv→section ff _) ⟩
-          ffx D.∘ ftx                         ≡⟨ f*x-iso .di.invʳ ⟩
+          ffx D.∘ ftx                         ≡⟨ f*x-iso .di.invr ⟩
           D.id                                ≡˘⟨ F-id F ⟩
           F₁ F C.id                           ∎)
-      ; invʳ = fully-faithful→faithful {F = F} ff (
+      ; invr = fully-faithful→faithful {F = F} ff (
           F₁ F (ff⁻¹ ftx C.∘ ff⁻¹ ffx)        ≡⟨ F-∘ F _ _ ⟩
           F₁ F (ff⁻¹ ftx) D.∘ F₁ F (ff⁻¹ ffx) ≡⟨ ap₂ D._∘_ (equiv→section ff _) (equiv→section ff _) ⟩
-          ftx D.∘ ffx                         ≡⟨ f*x-iso .di.invˡ ⟩
+          ftx D.∘ ffx                         ≡⟨ f*x-iso .di.invl ⟩
           D.id                                ≡˘⟨ F-id F ⟩
           F₁ F C.id                           ∎)
       }
@@ -412,14 +412,14 @@ must give a path $i \equiv j$ laying over $\id{ap}(F)(p)$.
 
 Rather than showing it over $p : x\equiv y$ directly, we'll show it over
 the path $F(x) \equiv F(y)$ we constructed independently. This is
-because we can use the helper `Hom-pathp-reflʳ-iso`{.Agda} to establish
+because we can use the helper `Hom-pathp-reflr-iso`{.Agda} to establish
 the result with far less computation:
 
 ```agda
     over′ : PathP (λ i → Fx≡Fy i D.≅ z) i j
     over′ = D.≅-pathp Fx≡Fy refl
-      (Hom-pathp-reflˡ-iso D dcat (D.cancell (i .D._≅_.invˡ)))
-      (Hom-pathp-reflʳ-iso D dcat (D.cancelr (i .D._≅_.invˡ)))
+      (Hom-pathp-refll-iso D dcat (D.cancell (i .D._≅_.invl)))
+      (Hom-pathp-reflr-iso D dcat (D.cancelr (i .D._≅_.invl)))
 ```
 
 We must then connect $\id{ap}(F)(p)$ with this path $F(x) \cong

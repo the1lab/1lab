@@ -164,7 +164,7 @@ g) : A \le A$, then it must be equal to `reflexive`{.Agda} above.
       { to = f
       ; from = g
       ; inverses = record
-        { invˡ = Hom-is-prop _ _ _ _ ; invʳ = Hom-is-prop _ _ _ _ } })
+        { invl = Hom-is-prop _ _ _ _ ; invr = Hom-is-prop _ _ _ _ } })
 ```
 
 Forgetting the univalence datum lets us turn a `Poset`{.Agda} into a

@@ -27,39 +27,39 @@ numbers]. Since they're mostly simple inductive arguments written in
   suc ((x + y) + z) ≡⟨ ap suc (+-associative x y z) ⟩
   suc (x + (y + z)) ∎
 
-+-zeroʳ : (x : Nat) → x + 0 ≡ x
-+-zeroʳ zero = refl
-+-zeroʳ (suc x) =
-  suc (x + 0) ≡⟨ ap suc (+-zeroʳ x) ⟩
++-zeror : (x : Nat) → x + 0 ≡ x
++-zeror zero = refl
++-zeror (suc x) =
+  suc (x + 0) ≡⟨ ap suc (+-zeror x) ⟩
   suc x       ∎
 
-+-sucʳ : (x y : Nat) → x + suc y ≡ suc (x + y)
-+-sucʳ zero y = refl
-+-sucʳ (suc x) y = ap suc (+-sucʳ x y)
++-sucr : (x y : Nat) → x + suc y ≡ suc (x + y)
++-sucr zero y = refl
++-sucr (suc x) y = ap suc (+-sucr x y)
 
 +-commutative : (x y : Nat) → x + y ≡ y + x
-+-commutative zero y = sym (+-zeroʳ y)
++-commutative zero y = sym (+-zeror y)
 +-commutative (suc x) y =
   suc (x + y) ≡⟨ ap suc (+-commutative x y) ⟩
-  suc (y + x) ≡⟨ sym (+-sucʳ y x) ⟩
+  suc (y + x) ≡⟨ sym (+-sucr y x) ⟩
   y + suc x   ∎
 ```
 
 ## Multiplication
 
 ```agda
-*-distrib-+ʳ : (x y z : Nat) → (x + y) * z ≡ x * z + y * z
-*-distrib-+ʳ zero y z = refl
-*-distrib-+ʳ (suc x) y z =
-  z + (x + y) * z     ≡⟨ ap₂ _+_ refl (*-distrib-+ʳ x y z) ⟩
+*-distrib-+r : (x y z : Nat) → (x + y) * z ≡ x * z + y * z
+*-distrib-+r zero y z = refl
+*-distrib-+r (suc x) y z =
+  z + (x + y) * z     ≡⟨ ap₂ _+_ refl (*-distrib-+r x y z) ⟩
   z + (x * z + y * z) ≡⟨ sym (+-associative z (x * z) (y * z)) ⟩
   z + x * z + y * z   ∎
 
-*-sucʳ : (m n : Nat) → m * suc n ≡ m + m * n
-*-sucʳ zero    n = refl
-*-sucʳ (suc m) n =
+*-sucr : (m n : Nat) → m * suc n ≡ m + m * n
+*-sucr zero    n = refl
+*-sucr (suc m) n =
   suc m * suc n         ≡⟨⟩
-  suc n + m * suc n     ≡⟨ ap₂ _+_ refl (*-sucʳ m n) ⟩
+  suc n + m * suc n     ≡⟨ ap₂ _+_ refl (*-sucr m n) ⟩
   suc n + (m + m * n)   ≡⟨⟩
   suc (n + (m + m * n)) ≡⟨ ap suc (sym (+-associative n m (m * n))) ⟩
   suc (n + m + m * n)   ≡⟨ ap (λ x → suc (x + m * n)) (+-commutative n m) ⟩
@@ -67,34 +67,34 @@ numbers]. Since they're mostly simple inductive arguments written in
   suc (m + (n + m * n)) ≡⟨⟩
   suc m + suc m * n     ∎
 
-*-oneʳ : (x : Nat) → x * 1 ≡ x
-*-oneʳ zero = refl
-*-oneʳ (suc x) =
-  suc (x * 1) ≡⟨ ap suc (*-oneʳ x) ⟩
+*-oner : (x : Nat) → x * 1 ≡ x
+*-oner zero = refl
+*-oner (suc x) =
+  suc (x * 1) ≡⟨ ap suc (*-oner x) ⟩
   suc x       ∎
 
-*-zeroʳ : (x : Nat) → x * 0 ≡ 0
-*-zeroʳ zero = refl
-*-zeroʳ (suc x) = *-zeroʳ x
+*-zeror : (x : Nat) → x * 0 ≡ 0
+*-zeror zero = refl
+*-zeror (suc x) = *-zeror x
 
 *-commutative : (x y : Nat) → x * y ≡ y * x
-*-commutative zero y    = sym (*-zeroʳ y)
+*-commutative zero y    = sym (*-zeror y)
 *-commutative (suc x) y =
   y + x * y ≡⟨ ap₂ _+_ refl (*-commutative x y) ⟩
-  y + y * x ≡⟨ sym (*-sucʳ y x) ⟩
+  y + y * x ≡⟨ sym (*-sucr y x) ⟩
   y * suc x ∎
 
-*-distrib-+ˡ : (x y z : Nat) → z * (x + y) ≡ z * x + z * y
-*-distrib-+ˡ x y z =
+*-distrib-+l : (x y z : Nat) → z * (x + y) ≡ z * x + z * y
+*-distrib-+l x y z =
   z * (x + y)   ≡⟨ *-commutative z (x + y) ⟩
-  (x + y) * z   ≡⟨ *-distrib-+ʳ x y z ⟩
+  (x + y) * z   ≡⟨ *-distrib-+r x y z ⟩
   x * z + y * z ≡⟨ ap₂ _+_ (*-commutative x z) (*-commutative y z) ⟩
   z * x + z * y ∎
 
 *-associative : (x y z : Nat) → (x * y) * z ≡ x * (y * z)
 *-associative zero y z = refl
 *-associative (suc x) y z =
-  (y + x * y) * z     ≡⟨ *-distrib-+ʳ y (x * y) z ⟩
+  (y + x * y) * z     ≡⟨ *-distrib-+r y (x * y) z ⟩
   y * z + (x * y) * z ≡⟨ ap₂ _+_ refl (*-associative x y z) ⟩
   y * z + x * (y * z) ∎
 ```
@@ -102,27 +102,27 @@ numbers]. Since they're mostly simple inductive arguments written in
 ## Exponentiation
 
 ```agda
-^-oneʳ : (x : Nat) → x ^ 1 ≡ x
-^-oneʳ x = *-oneʳ x
+^-oner : (x : Nat) → x ^ 1 ≡ x
+^-oner x = *-oner x
 
-^-oneˡ : (x : Nat) → 1 ^ x ≡ 1
-^-oneˡ zero = refl
-^-oneˡ (suc x) =
-  (1 ^ x) + 0 ≡⟨ +-zeroʳ (1 ^ x) ⟩
-  (1 ^ x)     ≡⟨ ^-oneˡ x ⟩
+^-onel : (x : Nat) → 1 ^ x ≡ 1
+^-onel zero = refl
+^-onel (suc x) =
+  (1 ^ x) + 0 ≡⟨ +-zeror (1 ^ x) ⟩
+  (1 ^ x)     ≡⟨ ^-onel x ⟩
   1 ∎
 
-^-+-hom-*ʳ : (x y z : Nat) → x ^ (y + z) ≡ (x ^ y) * (x ^ z)
-^-+-hom-*ʳ x zero z = sym (+-zeroʳ (x ^ z))
-^-+-hom-*ʳ x (suc y) z =
-  x * x ^ (y + z)     ≡⟨ ap (x *_) (^-+-hom-*ʳ x y z) ⟩
+^-+-hom-*r : (x y z : Nat) → x ^ (y + z) ≡ (x ^ y) * (x ^ z)
+^-+-hom-*r x zero z = sym (+-zeror (x ^ z))
+^-+-hom-*r x (suc y) z =
+  x * x ^ (y + z)     ≡⟨ ap (x *_) (^-+-hom-*r x y z) ⟩
   x * (x ^ y * x ^ z) ≡⟨ sym (*-associative x (x ^ y) (x ^ z)) ⟩
   x * x ^ y * x ^ z ∎
 
-^-distrib-*ʳ : (x y z : Nat) → (x * y) ^ z ≡ x ^ z * y ^ z
-^-distrib-*ʳ x y zero = refl
-^-distrib-*ʳ x y (suc z) =
-  x * y * (x * y) ^ z     ≡⟨ ap (λ a → x * y * a) (^-distrib-*ʳ x y z) ⟩
+^-distrib-*r : (x y z : Nat) → (x * y) ^ z ≡ x ^ z * y ^ z
+^-distrib-*r x y zero = refl
+^-distrib-*r x y (suc z) =
+  x * y * (x * y) ^ z     ≡⟨ ap (λ a → x * y * a) (^-distrib-*r x y z) ⟩
   x * y * (x ^ z * y ^ z) ≡⟨ sym (*-associative (x * y) (x ^ z) (y ^ z)) ⟩
   x * y * x ^ z * y ^ z   ≡⟨ ap (_* y ^ z) (*-associative x y (x ^ z)) ⟩
   x * (y * x ^ z) * y ^ z ≡⟨ ap (λ a → x * a * y ^ z) (*-commutative y (x ^ z)) ⟩
@@ -131,18 +131,18 @@ numbers]. Since they're mostly simple inductive arguments written in
   x * x ^ z * (y * y ^ z) ∎
 
 ^-*-adjunct : (x y z : Nat) → (x ^ y) ^ z ≡ x ^ (y * z)
-^-*-adjunct x zero z = ^-oneˡ z
+^-*-adjunct x zero z = ^-onel z
 ^-*-adjunct x (suc y) zero = ^-*-adjunct x y zero
 ^-*-adjunct x (suc y) (suc z) =
-  x * x ^ y * (x * x ^ y) ^ z       ≡⟨ ap (λ a → x * x ^ y * a) (^-distrib-*ʳ x (x ^ y) z) ⟩
+  x * x ^ y * (x * x ^ y) ^ z       ≡⟨ ap (λ a → x * x ^ y * a) (^-distrib-*r x (x ^ y) z) ⟩
   x * x ^ y * (x ^ z * (x ^ y) ^ z) ≡⟨ ap (λ a → x * x ^ y * (x ^ z * a)) (^-*-adjunct x y z) ⟩
-  x * x ^ y * (x ^ z * x ^ (y * z)) ≡⟨ ap (λ a → x * x ^ y * a) (sym (^-+-hom-*ʳ x z (y * z))) ⟩
+  x * x ^ y * (x ^ z * x ^ (y * z)) ≡⟨ ap (λ a → x * x ^ y * a) (sym (^-+-hom-*r x z (y * z))) ⟩
   x * x ^ y * (x ^ (z + (y * z)))   ≡⟨ *-associative x (x ^ y) (x ^ (z + y * z)) ⟩
-  x * (x ^ y * (x ^ (z + (y * z)))) ≡⟨ ap (x *_) (sym (^-+-hom-*ʳ x y (z + y * z))) ⟩
+  x * (x ^ y * (x ^ (z + (y * z)))) ≡⟨ ap (x *_) (sym (^-+-hom-*r x y (z + y * z))) ⟩
   x * x ^ (y + (z + y * z))         ≡⟨ ap (λ a → x * x ^ a) (sym (+-associative y z (y * z))) ⟩
   x * x ^ (y + z + y * z)           ≡⟨ ap (λ a → x * x ^ (a + y * z)) (+-commutative y z) ⟩
   x * x ^ (z + y + y * z)           ≡⟨ ap (λ a → x * x ^ a) (+-associative z y (y * z)) ⟩
-  x * x ^ (z + (y + y * z))         ≡⟨ ap (λ a → x * x ^ (z + a)) (sym (*-sucʳ y z))  ⟩
+  x * x ^ (z + (y + y * z))         ≡⟨ ap (λ a → x * x ^ (z + a)) (sym (*-sucr y z))  ⟩
   x * x ^ (z + y * suc z) ∎
 ```
 
@@ -175,38 +175,38 @@ The order relation on the natural numbers is also compatible with the
 arithmetic operators:
 
 ```agda
-+-preserves-≤ˡ : (x y z : Nat) → x ≤ y → z + x ≤ z + y
-+-preserves-≤ˡ x y zero prf = prf
-+-preserves-≤ˡ x y (suc z) prf = +-preserves-≤ˡ x y z prf
++-preserves-≤l : (x y z : Nat) → x ≤ y → z + x ≤ z + y
++-preserves-≤l x y zero prf = prf
++-preserves-≤l x y (suc z) prf = +-preserves-≤l x y z prf
 
-+-preserves-≤ʳ : (x y z : Nat) → x ≤ y → x + z ≤ y + z
-+-preserves-≤ʳ x y z prf = subst (λ a → a ≤ y + z) (+-commutative z x)
-  (subst (λ a → z + x ≤ a) (+-commutative z y) (+-preserves-≤ˡ x y z prf))
++-preserves-≤r : (x y z : Nat) → x ≤ y → x + z ≤ y + z
++-preserves-≤r x y z prf = subst (λ a → a ≤ y + z) (+-commutative z x)
+  (subst (λ a → z + x ≤ a) (+-commutative z y) (+-preserves-≤l x y z prf))
 
 +-preserves-≤ : (x y x' y' : Nat) → x ≤ y → x' ≤ y' → x + x' ≤ y + y'
 +-preserves-≤ x y x' y' prf prf' = ≤-trans (x + x') (y + x') (y + y')
-  (+-preserves-≤ʳ x y x' prf) (+-preserves-≤ˡ x' y' y prf')
+  (+-preserves-≤r x y x' prf) (+-preserves-≤l x' y' y prf')
 
-*-preserves-≤ˡ : (x y z : Nat) → x ≤ y → z * x ≤ z * y
-*-preserves-≤ˡ x y zero prf = tt
-*-preserves-≤ˡ x y (suc z) prf = +-preserves-≤ x y (z * x) (z * y) prf
-  (*-preserves-≤ˡ x y z prf)
+*-preserves-≤l : (x y z : Nat) → x ≤ y → z * x ≤ z * y
+*-preserves-≤l x y zero prf = tt
+*-preserves-≤l x y (suc z) prf = +-preserves-≤ x y (z * x) (z * y) prf
+  (*-preserves-≤l x y z prf)
 
-*-preserves-≤ʳ : (x y z : Nat) → x ≤ y → x * z ≤ y * z
-*-preserves-≤ʳ x y z prf = subst (λ a → a ≤ y * z) (*-commutative z x)
-  (subst (λ a → z * x ≤ a) (*-commutative z y) (*-preserves-≤ˡ x y z prf))
+*-preserves-≤r : (x y z : Nat) → x ≤ y → x * z ≤ y * z
+*-preserves-≤r x y z prf = subst (λ a → a ≤ y * z) (*-commutative z x)
+  (subst (λ a → z * x ≤ a) (*-commutative z y) (*-preserves-≤l x y z prf))
 
 *-preserves-≤ : (x y x' y' : Nat) → x ≤ y → x' ≤ y' → x * x' ≤ y * y'
 *-preserves-≤ x y x' y' prf prf' = ≤-trans (x * x') (y * x') (y * y')
-  (*-preserves-≤ʳ x y x' prf) (*-preserves-≤ˡ x' y' y prf')
+  (*-preserves-≤r x y x' prf) (*-preserves-≤l x' y' y prf')
 
-+-reflects-≤ˡ : (x y z : Nat) → z + x ≤ z + y → x ≤ y
-+-reflects-≤ˡ x y zero prf = prf
-+-reflects-≤ˡ x y (suc z) prf = +-reflects-≤ˡ x y z prf
++-reflects-≤l : (x y z : Nat) → z + x ≤ z + y → x ≤ y
++-reflects-≤l x y zero prf = prf
++-reflects-≤l x y (suc z) prf = +-reflects-≤l x y z prf
 
-+-reflects-≤ʳ : (x y z : Nat) → x + z ≤ y + z → x ≤ y
-+-reflects-≤ʳ x y z prf =
-  +-reflects-≤ˡ x y z
++-reflects-≤r : (x y z : Nat) → x + z ≤ y + z → x ≤ y
++-reflects-≤r x y z prf =
+  +-reflects-≤l x y z
     (subst (_≤ z + y) (+-commutative x z)
     (subst (x + z ≤_) (+-commutative y z) prf))
 ```
@@ -224,17 +224,17 @@ max-assoc (suc x) zero (suc z) = refl
 max-assoc (suc x) (suc y) zero = refl
 max-assoc (suc x) (suc y) (suc z) = ap suc (max-assoc x y z)
 
-max-≤ˡ : (x y : Nat) → x ≤ max x y
-max-≤ˡ zero zero = tt
-max-≤ˡ zero (suc y) = tt
-max-≤ˡ (suc x) zero = ≤-refl (suc x)
-max-≤ˡ (suc x) (suc y) = max-≤ˡ x y
+max-≤l : (x y : Nat) → x ≤ max x y
+max-≤l zero zero = tt
+max-≤l zero (suc y) = tt
+max-≤l (suc x) zero = ≤-refl (suc x)
+max-≤l (suc x) (suc y) = max-≤l x y
 
-max-≤ʳ : (x y : Nat) → y ≤ max x y
-max-≤ʳ zero zero = tt
-max-≤ʳ zero (suc y) = ≤-refl (suc y)
-max-≤ʳ (suc x) zero = tt
-max-≤ʳ (suc x) (suc y) = max-≤ʳ x y
+max-≤r : (x y : Nat) → y ≤ max x y
+max-≤r zero zero = tt
+max-≤r zero (suc y) = ≤-refl (suc y)
+max-≤r (suc x) zero = tt
+max-≤r (suc x) (suc y) = max-≤r x y
 ```
 
 ### Minimum
@@ -250,15 +250,15 @@ min-assoc (suc x) zero (suc z) = refl
 min-assoc (suc x) (suc y) zero = refl
 min-assoc (suc x) (suc y) (suc z) = ap suc (min-assoc x y z)
 
-min-≤ˡ : (x y : Nat) → min x y ≤ x
-min-≤ˡ zero zero = tt
-min-≤ˡ zero (suc y) = tt
-min-≤ˡ (suc x) zero = tt
-min-≤ˡ (suc x) (suc y) = min-≤ˡ x y
+min-≤l : (x y : Nat) → min x y ≤ x
+min-≤l zero zero = tt
+min-≤l zero (suc y) = tt
+min-≤l (suc x) zero = tt
+min-≤l (suc x) (suc y) = min-≤l x y
 
-min-≤ʳ : (x y : Nat) → min x y ≤ y
-min-≤ʳ zero zero = tt
-min-≤ʳ zero (suc y) = tt
-min-≤ʳ (suc x) zero = tt
-min-≤ʳ (suc x) (suc y) = min-≤ʳ x y
+min-≤r : (x y : Nat) → min x y ≤ y
+min-≤r zero zero = tt
+min-≤r zero (suc y) = tt
+min-≤r (suc x) zero = tt
+min-≤r (suc x) (suc y) = min-≤r x y
 ```

@@ -145,12 +145,12 @@ both left and right units:
 ++-assoc [] ys zs = refl
 ++-assoc (x ∷ xs) ys zs i = x ∷ ++-assoc xs ys zs i
 
-++-idˡ : ∀ {ℓ} {A : Type ℓ} (xs : List A) → [] ++ xs ≡ xs
-++-idˡ xs i = xs
+++-idl : ∀ {ℓ} {A : Type ℓ} (xs : List A) → [] ++ xs ≡ xs
+++-idl xs i = xs
 
-++-idʳ : ∀ {ℓ} {A : Type ℓ} (xs : List A) → xs ++ [] ≡ xs
-++-idʳ [] i = []
-++-idʳ (x ∷ xs) i = x ∷ ++-idʳ xs i
+++-idr : ∀ {ℓ} {A : Type ℓ} (xs : List A) → xs ++ [] ≡ xs
+++-idr [] i = []
+++-idr (x ∷ xs) i = x ∷ ++-idr xs i
 ```
 
 ## Lemmas
@@ -195,7 +195,7 @@ reverse = go [] where
   go acc [] = acc
   go acc (x ∷ xs) = go (x ∷ acc) xs
 
-_∷ʳ_ : List A → A → List A
-xs ∷ʳ x = xs ++ (x ∷ [])
+_∷r_ : List A → A → List A
+xs ∷r x = xs ++ (x ∷ [])
 ```
 -->

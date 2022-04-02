@@ -128,15 +128,15 @@ module _ {_∧_ : A → A → A} (semi : is-semilattice _∧_) where
   open Poset Po
   open is-semilattice semi
 
-  ∧-less-thanˡ : ∀ {x y} → (x ∧ y) ≤ x
-  ∧-less-thanˡ {x} {y} = sym (
+  ∧-less-thanl : ∀ {x y} → (x ∧ y) ≤ x
+  ∧-less-thanl {x} {y} = sym (
     (x ∧ y) ∧ x ≡⟨ commutative ⟩
     x ∧ (x ∧ y) ≡⟨ associative semi ⟩
     (x ∧ x) ∧ y ≡⟨ ap (_∧ _) idempotent ⟩
     x ∧ y       ∎)
 
-  ∧-less-thanʳ : ∀ {x y} → (x ∧ y) ≤ y
-  ∧-less-thanʳ {x} {y} =
+  ∧-less-thanr : ∀ {x y} → (x ∧ y) ≤ y
+  ∧-less-thanr {x} {y} =
     x ∧ y       ≡˘⟨ ap (_ ∧_) idempotent ⟩
     x ∧ (y ∧ y) ≡⟨ associative semi ⟩
     (x ∧ y) ∧ y ∎
@@ -151,7 +151,7 @@ $q \le (x \land y)$.
 
 ```agda
   Semilattice→is-product
-    : ∀ {x y} → is-product underlying {P = x ∧ y} ∧-less-thanˡ ∧-less-thanʳ
+    : ∀ {x y} → is-product underlying {P = x ∧ y} ∧-less-thanl ∧-less-thanr
   Semilattice→is-product {x} {y} = r where
     open is-product
 
@@ -212,14 +212,14 @@ module _ {_∨_ : A → A → A} (semi : is-semilattice _∨_) where
   open Poset Po
   open is-semilattice semi
 
-  ∨-greater-thanˡ : ∀ {x y} → x ≤ (x ∨ y)
-  ∨-greater-thanˡ {x} {y} =
+  ∨-greater-thanl : ∀ {x y} → x ≤ (x ∨ y)
+  ∨-greater-thanl {x} {y} =
     x ∨ y       ≡˘⟨ ap (_∨ _) idempotent ⟩
     (x ∨ x) ∨ y ≡˘⟨ associative semi ⟩
     x ∨ (x ∨ y) ∎
 
-  ∨-greater-thanʳ : ∀ {x y} → y ≤ (x ∨ y)
-  ∨-greater-thanʳ {x} {y} =
+  ∨-greater-thanr : ∀ {x y} → y ≤ (x ∨ y)
+  ∨-greater-thanr {x} {y} =
     x ∨ y       ≡˘⟨ ap (_ ∨_) idempotent ⟩
     x ∨ (y ∨ y) ≡⟨ associative semi ⟩
     (x ∨ y) ∨ y ≡˘⟨ ap (_∨ _) commutative ⟩
@@ -227,7 +227,7 @@ module _ {_∨_ : A → A → A} (semi : is-semilattice _∨_) where
     y ∨ (x ∨ y) ∎
 
   Semilattice→is-coproduct
-    : ∀ {x y} → is-coproduct underlying {P = x ∨ y} ∨-greater-thanˡ ∨-greater-thanʳ
+    : ∀ {x y} → is-coproduct underlying {P = x ∨ y} ∨-greater-thanl ∨-greater-thanr
   Semilattice→is-coproduct {x} {y} = c where
     open is-coproduct
     c : is-coproduct _ _ _

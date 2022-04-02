@@ -473,17 +473,17 @@ module _ {C : Precategory o ℓ} {o : Precategory.Ob C} (isc : is-category C) wh
     Ad≡Bd : A .domain ≡ B .domain
     Ad≡Bd = Cu.iso→path isc
       (C.make-iso (isom .to .map) (isom .from .map)
-        (ap map (C/o._≅_.invˡ isom)) (ap map (C/o._≅_.invʳ isom)))
+        (ap map (C/o._≅_.invl isom)) (ap map (C/o._≅_.invr isom)))
 
     Af≡Bf : PathP (λ i → C.Hom (Ad≡Bd i) o) (A .map) (B .map)
-    Af≡Bf = Cu.Hom-pathp-reflˡ-iso isc (isom .from .commutes)
+    Af≡Bf = Cu.Hom-pathp-refll-iso isc (isom .from .commutes)
 
     A≡B = /-Obj-path Ad≡Bd Af≡Bf
 
     eql : PathP (λ i → A C/o.≅ A≡B i) C/o.id-iso isom
     eql = C/o.≅-pathp refl A≡B
-      (/-Hom-pathp _ _ (Cu.Hom-pathp-reflʳ-iso isc (C.idr _)))
-      (/-Hom-pathp _ _ (Cu.Hom-pathp-reflˡ-iso isc (C.idl _)))
+      (/-Hom-pathp _ _ (Cu.Hom-pathp-reflr-iso isc (C.idr _)))
+      (/-Hom-pathp _ _ (Cu.Hom-pathp-refll-iso isc (C.idl _)))
 ```
 
 # Arbitrary limits in slices
