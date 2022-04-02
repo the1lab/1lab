@@ -302,6 +302,9 @@ object] in this category.*
 
   Limit-apex : Limit → C.Ob
   Limit-apex x = Cone.apex (Terminal.top x)
+
+  is-limit : Cone → Type _
+  is-limit K = is-terminal Cones K
 ```
 
 <!--
@@ -356,6 +359,37 @@ there might not be a "canonical limit" of $F\circ\id{Dia}$ we could
 compare $F(L)$ to. However, since limits are described by a universal
 property (in particular, being terminal), we don't _need_ such an
 object! Any limit is as good as any other.
+
+In more concise terms, we say a functor preserves limits if it takes
+limiting cones "upstairs" to limiting cones "downstairs".
+
+## Reflection of limits
+
+Using our analogy from before, we say a functor _reflects_ limits
+if it takes limiting cones "downstairs" to limiting cones "upstairs".
+
+More concretely, if we have some limiting cone in
+$\ca{D}$ of $F \circ \id{Dia}$ with apex $F(a)$, then $a$ was
+_already the limit_ of $\id{Dia}$!
+
+```agda
+  Reflects-limit : Cone Dia → Type _
+  Reflects-limit K = is-limit (F F∘ Dia) (F-map-cone K) → is-limit Dia K
+```
+
+## Creation of limits
+
+Finally, we say a functor _creates_ limits of shape $\id{Dia}$ if it
+both preserves _and_ reflects those limits. Intuitively, this means that
+the limits of shape $\id{Dia}$ in $\ca{C}$ are in a 1-1 correspondence
+with the limits $F \circ id{Dia}$ in $\ca{D}$.
+
+```agda
+  record Creates-limit (K : Cone Dia) : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
+    field
+      preserves-limit : Preserves-limit K
+      reflects-limit : Reflects-limit K
+```
 
 ## Continuity
 
