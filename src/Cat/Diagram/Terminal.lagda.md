@@ -53,9 +53,13 @@ inhabit a contractible space, namely the space of maps into $t_2$, so
 they are equal.
 
 ```agda
+!-invertible : (t1 t2 : Terminal) → is-invertible (! t1 {top t2})
+!-invertible t1 t2 = make-invertable (! t2) (!-unique₂ t1 _ _) (!-unique₂ t2 _ _)
+
 ⊤-unique : (t1 t2 : Terminal) → top t1 ≅ top t2
-⊤-unique t1 t2 = make-iso (! t2) (! t1) (!-unique₂ t2 _ _) (!-unique₂ t1 _ _)
+⊤-unique t1 t2 = invertible→iso (! t2) (!-invertible t2 t1)
 ```
+
 
 Hence, if $C$ is additionally a category, it has a propositional space of
 terminal objects:
