@@ -303,6 +303,9 @@ object] in this category.*
   Limit-apex : Limit → C.Ob
   Limit-apex x = Cone.apex (Terminal.top x)
 
+  Limit-universal : (L : Limit) → (K : Cone) → C.Hom (Cone.apex K) (Limit-apex L)
+  Limit-universal L K = Cone-hom.hom (Terminal.! L {K})
+
   is-limit : Cone → Type _
   is-limit K = is-terminal Cones K
 ```
@@ -341,6 +344,27 @@ $F \circ \id{Dia}$ (in $\ca{D}$).
       F₁ F (F₁ Dia f) D.∘ F₁ F (Cone.ψ x _) ≡⟨ sym (F-∘ F _ _) ⟩
       F₁ F (F₁ Dia f C.∘ Cone.ψ x _)        ≡⟨ ap (F₁ F) (Cone.commutes x _) ⟩
       F₁ F (Cone.ψ x y)                     ∎
+
+```
+
+Note that this also lets us map morphisms between cones into $\ca{D}$.
+
+```agda
+  F-map-cone-hom : {X Y : Cone Dia}
+                 → Cone-hom Dia X Y
+                 → Cone-hom (F F∘ Dia) (F-map-cone X) (F-map-cone Y)
+  F-map-cone-hom {X = X} {Y = Y} f = cone-hom
+    where
+      module X = Cone X
+      module Y = Cone Y
+      module f = Cone-hom f
+
+      cone-hom : Cone-hom (F F∘ Dia) (F-map-cone X) (F-map-cone Y)
+      cone-hom .Cone-hom.hom = F .F₁ f.hom
+      cone-hom .Cone-hom.commutes =
+        (F .F₁ (Y.ψ _)) D.∘ (F .F₁ f.hom) ≡˘⟨ F .F-∘ (Y.ψ _) f.hom ⟩
+        F .F₁ (Y.ψ _ C.∘ f.hom) ≡⟨ ap (F .F₁) f.commutes ⟩
+        F .F₁ (X.ψ _) ∎
 ```
 
 Suppose you have a limit $L$ of $\id{Dia}$ --- which is, to reiterate, a
@@ -492,10 +516,49 @@ functor and used the proof that it preserves isomorphisms.
       (ap Cone-hom.hom c.invr)
     where module c = Cones._≅_ c
 
+  Cone-invertible→apex-invertible : {X Y : Cone F} {f : Cones.Hom X Y}
+                                  → Cones.is-invertible f
+                                  → C.is-invertible (Cone-hom.hom f)
+  Cone-invertible→apex-invertible {f = f} f-invert =
+    C.make-invertable (Cone-hom.hom inv) (ap Cone-hom.hom invl) (ap Cone-hom.hom invr)
+    where
+      open Cones.is-invertible f-invert
+      
+
   Limit-unique
     : {X Y : Limit F}
     → Cone.apex (Terminal.top X) C.≅ Cone.apex (Terminal.top Y)
   Limit-unique {X} {Y} = Cone≅→apex≅ (Limiting-cone-unique X Y)
+```
+
+If the universal map $K \to L$ between apexes of some limit
+is invertible, then that means that $K$ is also a limiting cone.
+
+```agda
+  apex-iso→is-limit
+    : (K : Cone F)
+      (L : Limit F)
+      → C.is-invertible (Limit-universal F L K)
+      → is-limit F K
+  apex-iso→is-limit K L invert K′ = limits
+    where
+      module K = Cone K
+      module K′ = Cone K′
+      module L = Cone (Terminal.top L)
+      module universal {K} = Cone-hom (Terminal.! L {K})
+      open C.is-invertible invert
+
+      limits : is-contr (Cones.Hom K′ K) 
+      limits .centre .Cone-hom.hom = inv C.∘ Limit-universal F L K′
+      limits .centre .Cone-hom.commutes =
+        (K.ψ _) C.∘ (inv C.∘ universal.hom)                   ≡˘⟨ ap ( C._∘ (inv C.∘ universal.hom)) universal.commutes ⟩
+        (L.ψ _ C.∘ universal.hom) C.∘ (inv C.∘ universal.hom) ≡⟨ C.cancel-inner invl ⟩
+        L.ψ _ C.∘ universal.hom                               ≡⟨ universal.commutes ⟩
+        K′.ψ _                                                ∎
+      limits .paths f = Cone-hom-path F $ C.invertible→monic invert _ _ $
+        universal.hom C.∘ (inv C.∘ universal.hom) ≡⟨ C.cancell invl ⟩
+        universal.hom                             ≡⟨ ap Cone-hom.hom (Terminal.!-unique L (Terminal.! L Cones.∘ f)) ⟩
+        universal.hom C.∘ Cone-hom.hom f          ∎
 ```
 
 ## Completeness
