@@ -151,7 +151,7 @@ private
   min-no-id x id =
     let
       sucx≤x : suc x ≤ x
-      sucx≤x = subst (λ e → e ≤ x) (id (suc x)) (min-≤ˡ x (suc x))
+      sucx≤x = subst (λ e → e ≤ x) (id (suc x)) (min-≤l x (suc x))
     in ¬sucx≤x x sucx≤x
 ```
 

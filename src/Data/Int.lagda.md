@@ -382,7 +382,7 @@ _+ℤ_ =
     Int-is-set
     (λ { (a , b) (c , d) → diff (a + c) (b + d)})
     (λ a b x y → quot _ _)
-    (λ a b x y → quot _ _ ∙ ap₂ diff (sym (+-sucʳ _ _)) (sym (+-sucʳ _ _)))
+    (λ a b x y → quot _ _ ∙ ap₂ diff (sym (+-sucr _ _)) (sym (+-sucr _ _)))
 ```
 
 Since addition of integers is (essentially!) addition of pairs of
@@ -398,12 +398,12 @@ recursion helpers for props (`Int-elim-prop`{.Agda}) and the fact that
     (λ x y z → Int-is-set _ _)
     (λ a b c d e f → ap₂ diff (+-associative a c e) (+-associative b d f))
 
-+ℤ-zeroˡ : (x : Int) → 0 +ℤ x ≡ x
-+ℤ-zeroˡ = Int-elim-prop (λ x → Int-is-set _ _) (λ a b → refl)
++ℤ-zerol : (x : Int) → 0 +ℤ x ≡ x
++ℤ-zerol = Int-elim-prop (λ x → Int-is-set _ _) (λ a b → refl)
 
-+ℤ-zeroʳ : (x : Int) → x +ℤ 0 ≡ x
-+ℤ-zeroʳ =
-  Int-elim-prop (λ x → Int-is-set _ _) (λ a b → ap₂ diff (+-zeroʳ a) (+-zeroʳ b))
++ℤ-zeror : (x : Int) → x +ℤ 0 ≡ x
++ℤ-zeror =
+  Int-elim-prop (λ x → Int-is-set _ _) (λ a b → ap₂ diff (+-zeror a) (+-zeror b))
 
 +ℤ-commutative : (x y : Int) → x +ℤ y ≡ y +ℤ x
 +ℤ-commutative =
@@ -429,15 +429,15 @@ from commutativity of addition on natural numbers, and the fact that
 `all zeroes are identified`{.Agda ident=zeroes}.
 
 ```agda
-+ℤ-inverseʳ : (x : Int) → x +ℤ negate x ≡ 0
-+ℤ-inverseʳ =
++ℤ-inverser : (x : Int) → x +ℤ negate x ≡ 0
++ℤ-inverser =
   Int-elim-prop (λ _ → Int-is-set _ _) λ where
     a b → diff (a + b) (b + a) ≡⟨ ap₂ diff refl (+-commutative b a) ⟩
           diff (a + b) (a + b) ≡⟨ sym (zeroes (a + b)) ⟩
           diff 0 0             ∎
 
-+ℤ-inverseˡ : (x : Int) → negate x +ℤ x ≡ 0
-+ℤ-inverseˡ =
++ℤ-inversel : (x : Int) → negate x +ℤ x ≡ 0
++ℤ-inversel =
   Int-elim-prop (λ _ → Int-is-set _ _) λ where
     a b → diff (b + a) (a + b) ≡⟨ ap₂ diff (+-commutative b a) refl ⟩
           diff (a + b) (a + b) ≡⟨ sym (zeroes (a + b)) ⟩

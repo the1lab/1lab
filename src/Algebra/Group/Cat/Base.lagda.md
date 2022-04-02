@@ -133,8 +133,8 @@ Group-equiv≃Groups-iso .snd = is-iso→is-equiv isic where
     ( x .to .fst
     , is-iso→is-equiv (iso
         (x .from .fst)
-        (happly (ap fst (x .invˡ)))
-        (happly (ap fst (x .invʳ))))
+        (happly (ap fst (x .invl)))
+        (happly (ap fst (x .invr))))
     )
     , x .to .snd
   isic .is-iso.rinv x =

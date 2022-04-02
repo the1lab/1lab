@@ -30,13 +30,13 @@ Cayley x = Iso→Equiv bij where
   bij .snd .is-iso.inv y = x ⁻¹ ⋆ y
   bij .snd .is-iso.rinv y =
     x ⋆ (x ⁻¹ ⋆ y) ≡⟨ associative ⟩
-    (x ⋆ x ⁻¹) ⋆ y ≡⟨ ap₂ _⋆_ inverseʳ refl ⟩
-    unit ⋆ y       ≡⟨ idˡ ⟩
+    (x ⋆ x ⁻¹) ⋆ y ≡⟨ ap₂ _⋆_ inverser refl ⟩
+    unit ⋆ y       ≡⟨ idl ⟩
     y              ∎
   bij .snd .is-iso.linv y =
     x ⁻¹ ⋆ (x ⋆ y) ≡⟨ associative ⟩
-    (x ⁻¹ ⋆ x) ⋆ y ≡⟨ ap₂ _⋆_ inverseˡ refl ⟩
-    unit ⋆ y       ≡⟨ idˡ ⟩
+    (x ⁻¹ ⋆ x) ⋆ y ≡⟨ ap₂ _⋆_ inversel refl ⟩
+    unit ⋆ y       ≡⟨ idl ⟩
     y              ∎
 ```
 
@@ -56,10 +56,10 @@ subgroup of $\id{Sym}(G)$ (the image of `Cayley`{.Agda}).
 ```agda
 Cayley-injective : injective Cayley
 Cayley-injective {x} {y} eqvs-equal =
-  x                   ≡⟨ sym idʳ ⟩
+  x                   ≡⟨ sym idr ⟩
   x ⋆ unit            ≡⟨⟩
   Cayley x .fst unit  ≡⟨ happly (ap fst eqvs-equal) unit ⟩
   Cayley y .fst unit  ≡⟨⟩
-  y ⋆ unit            ≡⟨ idʳ ⟩
+  y ⋆ unit            ≡⟨ idr ⟩
   y                   ∎
 ```

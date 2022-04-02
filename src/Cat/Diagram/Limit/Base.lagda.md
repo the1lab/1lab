@@ -468,8 +468,8 @@ functor and used the proof that it preserves isomorphisms.
               → (Cone.apex X) C.≅ (Cone.apex Y)
   Cone≅→apex≅ c =
     C.make-iso (Cone-hom.hom c.to) (Cone-hom.hom c.from)
-      (ap Cone-hom.hom c.invˡ)
-      (ap Cone-hom.hom c.invʳ)
+      (ap Cone-hom.hom c.invl)
+      (ap Cone-hom.hom c.invr)
     where module c = Cones._≅_ c
 
   Limit-unique

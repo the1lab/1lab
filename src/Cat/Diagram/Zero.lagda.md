@@ -49,11 +49,11 @@ every hom set is inhabited!
   zero→ : ∀ {x y} → Hom x y
   zero→ = ¡ ∘ !
 
-  zero-∘ˡ : ∀ {x y z} → (f : Hom y z) → f ∘ zero→ {x} {y} ≡ zero→
-  zero-∘ˡ f = pulll (sym (¡-unique (f ∘ ¡)))
+  zero-∘l : ∀ {x y z} → (f : Hom y z) → f ∘ zero→ {x} {y} ≡ zero→
+  zero-∘l f = pulll (sym (¡-unique (f ∘ ¡)))
 
-  zero-∘ʳ : ∀ {x y z} → (f : Hom x y) → zero→ {y} {z} ∘ f ≡ zero→
-  zero-∘ʳ f = pullr (sym (!-unique (! ∘ f)))
+  zero-∘r : ∀ {x y z} → (f : Hom x y) → zero→ {y} {z} ∘ f ≡ zero→
+  zero-∘r f = pullr (sym (!-unique (! ∘ f)))
 ```
 
 ## Intuition

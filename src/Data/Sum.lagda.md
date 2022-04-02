@@ -319,11 +319,11 @@ equivalences in both arguments, across levels.
   cong .snd .is-iso.linv (inl x) = ap inl (f-iso .is-iso.linv x)
   cong .snd .is-iso.linv (inr x) = ap inr (g-iso .is-iso.linv x)
 
-⊎-apˡ : A ≃ B → (A ⊎ C) ≃ (B ⊎ C)
-⊎-apˡ f = ⊎-ap f (id , id-equiv)
+⊎-apl : A ≃ B → (A ⊎ C) ≃ (B ⊎ C)
+⊎-apl f = ⊎-ap f (id , id-equiv)
 
-⊎-apʳ : B ≃ C → (A ⊎ B) ≃ (A ⊎ C)
-⊎-apʳ f = ⊎-ap (id , id-equiv) f
+⊎-apr : B ≃ C → (A ⊎ B) ≃ (A ⊎ C)
+⊎-apr f = ⊎-ap (id , id-equiv) f
 ```
 
 ## Algebraic properties
@@ -366,15 +366,15 @@ to finite types, the coproduct is exactly the same as addition.
   i .snd .is-iso.linv (inl (inr x)) = refl
   i .snd .is-iso.linv (inr x) = refl
 
-⊎-zeroʳ : (A ⊎ ⊥) ≃ A
-⊎-zeroʳ .fst (inl x) = x
-⊎-zeroʳ .snd .is-eqv y .centre = inl y , refl
-⊎-zeroʳ .snd .is-eqv y .paths (inl x , p) i = inl (p (~ i)) , λ j → p (~ i ∨ j)
+⊎-zeror : (A ⊎ ⊥) ≃ A
+⊎-zeror .fst (inl x) = x
+⊎-zeror .snd .is-eqv y .centre = inl y , refl
+⊎-zeror .snd .is-eqv y .paths (inl x , p) i = inl (p (~ i)) , λ j → p (~ i ∨ j)
 
-⊎-zeroˡ : (⊥ ⊎ A) ≃ A
-⊎-zeroˡ .fst (inr x) = x
-⊎-zeroˡ .snd .is-eqv y .centre = inr y , refl
-⊎-zeroˡ .snd .is-eqv y .paths (inr x , p) i = inr (p (~ i)) , λ j → p (~ i ∨ j)
+⊎-zerol : (⊥ ⊎ A) ≃ A
+⊎-zerol .fst (inr x) = x
+⊎-zerol .snd .is-eqv y .centre = inr y , refl
+⊎-zerol .snd .is-eqv y .paths (inr x , p) i = inr (p (~ i)) , λ j → p (~ i ∨ j)
 
 ⊎-×-distribute : ((A ⊎ B) × C) ≃ ((A × C) ⊎ (B × C))
 ⊎-×-distribute = Iso→Equiv i where

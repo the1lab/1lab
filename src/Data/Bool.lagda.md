@@ -83,43 +83,43 @@ or-commutative false true = refl
 or-commutative true false = refl
 or-commutative true true = refl
 
-and-trueʳ : (x : Bool) → and x true ≡ x
-and-trueʳ false = refl
-and-trueʳ true = refl
+and-truer : (x : Bool) → and x true ≡ x
+and-truer false = refl
+and-truer true = refl
 
-and-falseʳ : (x : Bool) → and x false ≡ false
-and-falseʳ false = refl
-and-falseʳ true = refl
+and-falser : (x : Bool) → and x false ≡ false
+and-falser false = refl
+and-falser true = refl
 
-and-trueˡ : (x : Bool) → and true x ≡ x
-and-trueˡ x = refl
+and-truel : (x : Bool) → and true x ≡ x
+and-truel x = refl
 
-or-falseʳ : (x : Bool) → or x false ≡ x
-or-falseʳ false = refl
-or-falseʳ true = refl
+or-falser : (x : Bool) → or x false ≡ x
+or-falser false = refl
+or-falser true = refl
 
-or-trueʳ : (x : Bool) → or x true ≡ true
-or-trueʳ false = refl
-or-trueʳ true = refl
+or-truer : (x : Bool) → or x true ≡ true
+or-truer false = refl
+or-truer true = refl
 
-or-falseˡ : (x : Bool) → or false x ≡ x
-or-falseˡ x = refl
+or-falsel : (x : Bool) → or false x ≡ x
+or-falsel x = refl
 
-and-absorbs-orʳ : (x y : Bool) → and x (or x y) ≡ x
-and-absorbs-orʳ false y = refl
-and-absorbs-orʳ true y = refl
+and-absorbs-orr : (x y : Bool) → and x (or x y) ≡ x
+and-absorbs-orr false y = refl
+and-absorbs-orr true y = refl
 
-or-absorbs-andʳ : (x y : Bool) → or x (and x y) ≡ x
-or-absorbs-andʳ false y = refl
-or-absorbs-andʳ true y = refl
+or-absorbs-andr : (x y : Bool) → or x (and x y) ≡ x
+or-absorbs-andr false y = refl
+or-absorbs-andr true y = refl
 
-and-distrib-orˡ : (x y z : Bool) → and x (or y z) ≡ or (and x y) (and x z)
-and-distrib-orˡ false y z = refl
-and-distrib-orˡ true y z = refl
+and-distrib-orl : (x y z : Bool) → and x (or y z) ≡ or (and x y) (and x z)
+and-distrib-orl false y z = refl
+and-distrib-orl true y z = refl
 
-or-distrib-andˡ : (x y z : Bool) → or x (and y z) ≡ and (or x y) (or x z)
-or-distrib-andˡ false y z = refl
-or-distrib-andˡ true y z = refl
+or-distrib-andl : (x y z : Bool) → or x (and y z) ≡ and (or x y) (or x z)
+or-distrib-andl false y z = refl
+or-distrib-andl true y z = refl
 
 and-idempotent : (x : Bool) → and x x ≡ x
 and-idempotent false = refl
@@ -147,13 +147,13 @@ not-or≡and-not : (x y : Bool) → not (or x y) ≡ and (not x) (not y)
 not-or≡and-not false y = refl
 not-or≡and-not true y = refl
 
-or-complementˡ : (x : Bool) → or (not x) x ≡ true
-or-complementˡ false = refl
-or-complementˡ true = refl
+or-complementl : (x : Bool) → or (not x) x ≡ true
+or-complementl false = refl
+or-complementl true = refl
 
-and-complementˡ : (x : Bool) → and (not x) x ≡ false
-and-complementˡ false = refl
-and-complementˡ true = refl
+and-complementl : (x : Bool) → and (not x) x ≡ false
+and-complementl false = refl
+and-complementl true = refl
 ```
 
 [1]: <https://en.wikipedia.org/wiki/Boolean_algebra_(structure)> "Boolean algebra"
@@ -179,22 +179,22 @@ xor-commutative false true = refl
 xor-commutative true false = refl
 xor-commutative true true = refl
 
-xor-falseʳ : (x : Bool) → xor x false ≡ x
-xor-falseʳ false = refl
-xor-falseʳ true = refl
+xor-falser : (x : Bool) → xor x false ≡ x
+xor-falser false = refl
+xor-falser true = refl
 
-xor-trueʳ : (x : Bool) → xor x true ≡ not x
-xor-trueʳ false = refl
-xor-trueʳ true = refl
+xor-truer : (x : Bool) → xor x true ≡ not x
+xor-truer false = refl
+xor-truer true = refl
 
 xor-inverse-self : (x : Bool) → xor x x ≡ false
 xor-inverse-self false = refl
 xor-inverse-self true = refl
 
-and-distrib-xorʳ : (x y z : Bool) → and (xor x y) z ≡ xor (and x z) (and y z)
-and-distrib-xorʳ false y z = refl
-and-distrib-xorʳ true y false = and-falseʳ (not y) ∙ sym (and-falseʳ y)
-and-distrib-xorʳ true y true = (and-trueʳ (not y)) ∙ ap not (sym (and-trueʳ y))
+and-distrib-xorr : (x y z : Bool) → and (xor x y) z ≡ xor (and x z) (and y z)
+and-distrib-xorr false y z = refl
+and-distrib-xorr true y false = and-falser (not y) ∙ sym (and-falser y)
+and-distrib-xorr true y true = (and-truer (not y)) ∙ ap not (sym (and-truer y))
 ```
 
 Material implication between booleans also interacts nicely with many of the other operations:
@@ -204,9 +204,9 @@ imp : Bool → Bool → Bool
 imp false y = true
 imp true y = y
 
-imp-trueʳ : (x : Bool) → imp x true ≡ true
-imp-trueʳ false = refl
-imp-trueʳ true = refl
+imp-truer : (x : Bool) → imp x true ≡ true
+imp-truer false = refl
+imp-truer true = refl
 ```
 
 

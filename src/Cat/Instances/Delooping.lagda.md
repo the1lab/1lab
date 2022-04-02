@@ -28,8 +28,8 @@ B {M = M} mm = r where
   r .Hom-set _ _ = mm.has-is-set
   r .Precategory.id = mm.identity
   r .Precategory._∘_ = mm._⋆_
-  r .idr _ = mm.idʳ
-  r .idl _ = mm.idˡ
+  r .idr _ = mm.idr
+  r .idl _ = mm.idl
   r .assoc _ _ _ = mm.associative
 ```
 

@@ -45,9 +45,9 @@ is-subgroup→Group-on {G = G} H sg =
     (λ { (x , xin) (y , yin) → x ⋆ y , has-⋆ xin yin} )
     (λ { (x , xin) → (x ⁻¹ , has-inv xin) })
     (λ x y z → Σ-prop-path (λ x → H x .is-tr) (sym associative))
-    (λ x → Σ-prop-path (λ x → H x .is-tr) inverseˡ)
-    (λ x → Σ-prop-path (λ x → H x .is-tr) inverseʳ)
-    (λ x → Σ-prop-path (λ x → H x .is-tr) idˡ)
+    (λ x → Σ-prop-path (λ x → H x .is-tr) inversel)
+    (λ x → Σ-prop-path (λ x → H x .is-tr) inverser)
+    (λ x → Σ-prop-path (λ x → H x .is-tr) idl)
   where open Group-on (G .snd)
         open is-subgroup sg
 ```
@@ -65,15 +65,15 @@ record is-normal (G : Group ℓ) (N : ℙ (G .fst)) : Type ℓ where
     has-subgroup : is-subgroup G N
     has-conjugate : ∀ {x y} → y ∈ N → (x ⋆ y ⋆ x ⁻¹) ∈ N
 
-  has-conjugateˡ : ∀ {x y} → y ∈ N → ((x ⋆ y) ⋆ x ⁻¹) ∈ N
-  has-conjugateˡ yin = subst (_∈ N) associative (has-conjugate yin)
+  has-conjugatel : ∀ {x y} → y ∈ N → ((x ⋆ y) ⋆ x ⁻¹) ∈ N
+  has-conjugatel yin = subst (_∈ N) associative (has-conjugate yin)
 
   has-comm : ∀ {x y} → (x ⋆ y) ∈ N → (y ⋆ x) ∈ N
   has-comm {x = x} {y} ∈ = subst (_∈ N) p (has-conjugate ∈)
     where
       p = x ⁻¹ ⋆ (x ⋆ y) ⋆ x ⁻¹ ⁻¹ ≡⟨ ap₂ _⋆_ refl (sym associative) ∙ (λ i → x ⁻¹ ⋆ x ⋆ y ⋆ inv-inv {x = x} i) ⟩
           x ⁻¹ ⋆ x ⋆ y ⋆ x         ≡⟨ associative ⟩
-          (x ⁻¹ ⋆ x) ⋆ y ⋆ x       ≡⟨ ap₂ _⋆_ inverseˡ refl ∙ idˡ ⟩
+          (x ⁻¹ ⋆ x) ⋆ y ⋆ x       ≡⟨ ap₂ _⋆_ inversel refl ∙ idl ⟩
           y ⋆ x                    ∎
 
   open is-subgroup has-subgroup public
@@ -95,7 +95,7 @@ is-abelian-group→is-normal {G = G} {H = H} abelian sg = r where
   commute-conjugate x y =
     x ⋆ y ⋆ x ⁻¹   ≡⟨ ap₂ _⋆_ refl (abelian _ _) ⟩
     x ⋆ x ⁻¹ ⋆ y   ≡⟨ associative ⟩
-    (x ⋆ x ⁻¹) ⋆ y ≡⟨ ap₂ _⋆_ inverseʳ refl ∙ idˡ ⟩
+    (x ⋆ x ⁻¹) ⋆ y ≡⟨ ap₂ _⋆_ inverser refl ∙ idl ⟩
     y              ∎
 
   r : is-normal _ _
@@ -145,7 +145,7 @@ inverses.
   ker-subgroup .has-⋆ {x = x} {y = y} fx=1 fy=1 =
     f (x A.⋆ y)       ≡⟨ h.pres-⋆ x y ⟩
     f x B.⋆ f y       ≡⟨ ap₂ B._⋆_ fx=1 fy=1 ⟩
-    B.unit B.⋆ B.unit ≡⟨ B.idˡ ⟩
+    B.unit B.⋆ B.unit ≡⟨ B.idl ⟩
     B.unit            ∎
   ker-subgroup .has-inv fx=1 = h.pres-inv _ ·· ap B.inverse fx=1 ·· B.inv-unit≡unit
 
@@ -163,9 +163,9 @@ and cancel the remaining $f(x)f(x)^{-1}$.
   ker-normal .has-conjugate {x = x} {y = y} fy=1 =
     f (x A.⋆ y A.⋆ x A.⁻¹)        ≡⟨ h.pres-⋆ _ _ ⟩
     f x B.⋆ f (y A.⋆ x A.⁻¹)      ≡⟨ ap₂ B._⋆_ refl (h.pres-⋆ _ _) ⟩
-    f x B.⋆ (f y B.⋆ f (x A.⁻¹))  ≡⟨ ap₂ B._⋆_ refl (ap₂ B._⋆_ fy=1 refl ∙ B.idˡ) ⟩
+    f x B.⋆ (f y B.⋆ f (x A.⁻¹))  ≡⟨ ap₂ B._⋆_ refl (ap₂ B._⋆_ fy=1 refl ∙ B.idl) ⟩
     f x B.⋆ f (x A.⁻¹)            ≡⟨ ap₂ B._⋆_ refl (h.pres-inv x) ⟩
-    f x B.⋆ (f x) B.⁻¹            ≡⟨ B.inverseʳ ⟩
+    f x B.⋆ (f x) B.⁻¹            ≡⟨ B.inverser ⟩
     B.unit                        ∎
 
   ker : Normal-subgroup A

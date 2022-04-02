@@ -64,7 +64,7 @@ kernel of $f$; But this follows by $f(a_1 - a_2) = f(a_1) - f(a_2)
         f-const (x , p) (z , q) = quot (
             pres-⋆ _ _
           ·· ap₂ B._⋆_ refl (pres-inv _)
-          ·· (ap₂ B._⋆_ p (ap B.inverse q) ∙ B.inverseʳ))
+          ·· (ap₂ B._⋆_ p (ap B.inverse q) ∙ B.inverser))
 
     im* = imφ .snd .Group-on._⋆_
     ak* = A/kerφ .snd .Group-on._⋆_

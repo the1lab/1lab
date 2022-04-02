@@ -37,7 +37,7 @@ only difference between these types can be patched by
 
 ```agda
   iso→equiv : {A B : Set ℓ} → A Sets.≅ B → ∣ A ∣ ≃ ∣ B ∣
-  iso→equiv x = Iso→Equiv (x.to , iso x.from (happly x.invˡ) (happly x.invʳ))
+  iso→equiv x = Iso→Equiv (x.to , iso x.from (happly x.invl) (happly x.invr))
     where module x = Sets._≅_ x
 ```
 
@@ -63,7 +63,7 @@ above, and `n-ua`{.Agda}.
       Σ-pathp (n-ua A≃B)
         (Sets.≅-pathp refl _
           (λ i x → path→ua-pathp A≃B {x = x} {y = isom.to x} refl i)
-          (ua→ λ a → sym (happly isom.invʳ a)))
+          (ua→ λ a → sym (happly isom.invr a)))
       where
         module isom = Sets._≅_ isom
 

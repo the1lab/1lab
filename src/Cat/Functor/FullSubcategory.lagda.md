@@ -73,11 +73,11 @@ reassembling:
 
 ```agda
   sub-iso→super-iso : ∀ {A B : Restrict-ob P} → (A R.≅ B) → (A .object C.≅ B .object)
-  sub-iso→super-iso x = C.make-iso x.to x.from x.invˡ x.invʳ
+  sub-iso→super-iso x = C.make-iso x.to x.from x.invl x.invr
     where module x = R._≅_ x
 
   super-iso→sub-iso : ∀ {A B : Restrict-ob P} → (A .object C.≅ B .object) → (A R.≅ B)
-  super-iso→sub-iso y = R.make-iso y.to y.from y.invˡ y.invʳ
+  super-iso→sub-iso y = R.make-iso y.to y.from y.invl y.invr
     where module y = C._≅_ y
 ```
 

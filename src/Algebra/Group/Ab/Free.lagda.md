@@ -112,9 +112,9 @@ bit tedious, but it follows from `ab-comm`: $xy = 1xy = 1yx = yx$.
     where abstract
       l1 : ∀ x y → inc^ab (x ⋆ y) ≡ inc^ab (y ⋆ x)
       l1 x y =
-        inc^ab (x ⋆ y)        ≡⟨ ap inc^ab (ap₂ _⋆_ (sym G.idˡ) refl ∙ sym G.associative) ⟩
+        inc^ab (x ⋆ y)        ≡⟨ ap inc^ab (ap₂ _⋆_ (sym G.idl) refl ∙ sym G.associative) ⟩
         inc^ab (unit ⋆ x ⋆ y) ≡⟨ ab-comm _ _ _ ⟩
-        inc^ab (unit ⋆ y ⋆ x) ≡⟨ ap inc^ab (G.associative ∙ ap₂ _⋆_ G.idˡ refl) ⟩
+        inc^ab (unit ⋆ y ⋆ x) ≡⟨ ap inc^ab (G.associative ∙ ap₂ _⋆_ G.idl refl) ⟩
         inc^ab (y ⋆ x)        ∎
 ```
 
@@ -167,9 +167,9 @@ inherited from $G$!
 
   Group-on-G^ab : Group-on G^ab
   Group-on-G^ab = make-group squash abunit _ab*_ abinv ab*-associative
-    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.inverseˡ))
-    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.inverseʳ))
-    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.idˡ))
+    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.inversel))
+    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.inverser))
+    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.idl))
 
   Abelianise : Group ℓ
   Abelianise = _ , Group-on-G^ab

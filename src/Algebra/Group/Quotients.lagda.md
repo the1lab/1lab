@@ -36,7 +36,7 @@ module _ (Grp : Group ℓ) (N : Normal-subgroup Grp) where
     rel x y = (x ⋆ inv y) ∈ N?
 
     rel-refl : ∀ x → rel x x
-    rel-refl x = subst (_∈ N?) (sym inverseʳ) has-unit
+    rel-refl x = subst (_∈ N?) (sym inverser) has-unit
 ```
 
 We define a relation $\id{rel}(x, y)$ on the underlying set of $G$
@@ -104,9 +104,9 @@ rather directly:
     Group-on-T = make-group squash (inc unit) op inverse
       (Coeq-elim-prop₃ (λ _ _ _ → squash _ _)
         λ x y z i → inc (associative {x = x} {y} {z} (~ i)))
-      (Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inverseˡ {x = x} i))
-      (Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inverseʳ {x = x} i))
-      (Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (idˡ {x = x} i))
+      (Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inversel {x = x} i))
+      (Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inverser {x = x} i))
+      (Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (idl {x = x} i))
 
   _/ᴳ_ : Group ℓ
   _/ᴳ_ = _ , Group-on-T

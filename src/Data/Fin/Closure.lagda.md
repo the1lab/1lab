@@ -74,13 +74,13 @@ steps, to make the proof clearer:
 ```agda
 Finite-coproduct : (Fin n ⊎ Fin m) ≃ Fin (n + m)
 Finite-coproduct {zero} {m}  =
-  (Fin 0 ⊎ Fin m) ≃⟨ ⊎-apˡ Finite-zero-is-initial ⟩
-  (⊥ ⊎ Fin m)     ≃⟨ ⊎-zeroˡ ⟩
+  (Fin 0 ⊎ Fin m) ≃⟨ ⊎-apl Finite-zero-is-initial ⟩
+  (⊥ ⊎ Fin m)     ≃⟨ ⊎-zerol ⟩
   Fin m           ≃∎
 Finite-coproduct {suc n} {m} =
-  (Fin (suc n) ⊎ Fin m) ≃⟨ ⊎-apˡ Finite-successor ⟩
+  (Fin (suc n) ⊎ Fin m) ≃⟨ ⊎-apl Finite-successor ⟩
   ((⊤ ⊎ Fin n) ⊎ Fin m) ≃⟨ ⊎-assoc ⟩
-  (⊤ ⊎ (Fin n ⊎ Fin m)) ≃⟨ ⊎-apʳ (Finite-coproduct {n} {m}) ⟩
+  (⊤ ⊎ (Fin n ⊎ Fin m)) ≃⟨ ⊎-apr (Finite-coproduct {n} {m}) ⟩
   (⊤ ⊎ Fin (n + m))     ≃⟨ Finite-successor e⁻¹ ⟩
   Fin (suc (n + m))     ≃∎
 ```

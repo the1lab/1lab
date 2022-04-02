@@ -137,7 +137,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
   Nat-iso→Iso : F [C,D].≅ G → ∀ x → F₀ F x D.≅ F₀ G x
   Nat-iso→Iso natiso x =
     D.make-iso (to .η x) (from .η x)
-      (λ i → invˡ i .η x) (λ i → invʳ i .η x)
+      (λ i → invl i .η x) (λ i → invr i .η x)
     where open [C,D]._≅_ natiso
 ```
 
@@ -209,7 +209,7 @@ so that the two halves of the isomorphism annihilate.
       F₁≡G₁ {x = x} {y} {f} = Hom-pathp (
         _ D.∘ F .F₁ f D.∘ _                           ≡⟨ (λ i → ptoi-to _ i D.∘ F .F₁ f D.∘ ptoi-from _ i) ⟩
         F≅G .to .η y D.∘ F .F₁ f D.∘ F≅G .from .η x   ≡⟨ ap₂ D._∘_ refl (sym (F≅G .from .is-natural _ _ _)) ∙ D.assoc _ _ _ ⟩
-        (F≅G .to .η y D.∘ F≅G .from .η y) D.∘ G .F₁ f ≡⟨ ap₂ D._∘_ (λ i → F≅G .invˡ i .η y) refl ⟩
+        (F≅G .to .η y D.∘ F≅G .from .η y) D.∘ G .F₁ f ≡⟨ ap₂ D._∘_ (λ i → F≅G .invl i .η y) refl ⟩
         D.id D.∘ G .F₁ f                              ≡⟨ solve D ⟩
         G .F₁ f                                       ∎)
 
@@ -265,9 +265,9 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} {F G : Functor C D} w
     eps : G => F
     eps .η x = invs x .inv
     eps .is-natural x y f =
-      invs y .inv D.∘ G.₁ f                             ≡⟨ ap₂ D._∘_ refl (sym (D.idr _) ∙ ap (G.₁ f D.∘_) (sym (invs x .invˡ))) ⟩
+      invs y .inv D.∘ G.₁ f                             ≡⟨ ap₂ D._∘_ refl (sym (D.idr _) ∙ ap (G.₁ f D.∘_) (sym (invs x .invl))) ⟩
       invs y .inv D.∘ G.₁ f D.∘ eta.η x D.∘ invs x .inv ≡⟨ ap₂ D._∘_ refl (D.extendl (sym (eta.is-natural _ _ _))) ⟩
-      invs y .inv D.∘ eta.η y D.∘ F.₁ f D.∘ invs x .inv ≡⟨ D.cancell (invs y .invʳ) ⟩
+      invs y .inv D.∘ eta.η y D.∘ F.₁ f D.∘ invs x .inv ≡⟨ D.cancell (invs y .invr) ⟩
       F.₁ f D.∘ invs x .inv ∎
 
     are-invs : [C,D].is-invertible eta
@@ -276,8 +276,8 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} {F G : Functor C D} w
         { inv      = eps
         ; inverses =
           record
-            { invˡ = Nat-path λ x → invs x .invˡ
-            ; invʳ = Nat-path λ x → invs x .invʳ
+            { invl = Nat-path λ x → invs x .invl
+            ; invr = Nat-path λ x → invs x .invr
             }
         }
 ```

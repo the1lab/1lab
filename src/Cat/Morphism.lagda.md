@@ -70,8 +70,8 @@ choice of map $A \to B$, together with a specified inverse.
 ```agda
 record Inverses (f : Hom a b) (g : Hom b a) : Type h where
   field
-    invˡ : f ∘ g ≡ id
-    invʳ : g ∘ f ≡ id
+    invl : f ∘ g ≡ id
+    invr : g ∘ f ≡ id
 
 open Inverses
 
@@ -84,8 +84,8 @@ record is-invertible (f : Hom a b) : Type (o ⊔ h) where
 
   op : is-invertible inv
   op .inv = f
-  op .inverses .Inverses.invˡ = invʳ inverses
-  op .inverses .Inverses.invʳ = invˡ inverses
+  op .inverses .Inverses.invl = invr inverses
+  op .inverses .Inverses.invr = invl inverses
 
 record _≅_ (a b : Ob) : Type (o ⊔ h) where
   field
@@ -104,8 +104,8 @@ $g = h$ equal, but the witnesses of these equalities are irrelevant.
 
 ```agda
 Inverses-are-prop : ∀ {f : Hom a b} {g : Hom b a} → is-prop (Inverses f g)
-Inverses-are-prop x y i .Inverses.invˡ = Hom-set _ _ _ _ (x .invˡ) (y .invˡ) i
-Inverses-are-prop x y i .Inverses.invʳ = Hom-set _ _ _ _ (x .invʳ) (y .invʳ) i
+Inverses-are-prop x y i .Inverses.invl = Hom-set _ _ _ _ (x .invl) (y .invl) i
+Inverses-are-prop x y i .Inverses.invr = Hom-set _ _ _ _ (x .invr) (y .invr) i
 
 is-invertible-is-prop : ∀ {f : Hom a b} → is-prop (is-invertible f)
 is-invertible-is-prop {a = a} {b = b} {f = f} g h = p where
@@ -114,8 +114,8 @@ is-invertible-is-prop {a = a} {b = b} {f = f} g h = p where
 
   g≡h : g.inv ≡ h.inv
   g≡h =
-    g.inv             ≡⟨ sym (idr _) ∙ ap₂ _∘_ refl (sym h.invˡ) ⟩
-    g.inv ∘ f ∘ h.inv ≡⟨ assoc _ _ _ ·· ap₂ _∘_ g.invʳ refl ·· idl _ ⟩
+    g.inv             ≡⟨ sym (idr _) ∙ ap₂ _∘_ refl (sym h.invl) ⟩
+    g.inv ∘ f ∘ h.inv ≡⟨ assoc _ _ _ ·· ap₂ _∘_ g.invr refl ·· idl _ ⟩
     h.inv             ∎
 
   p : g ≡ h
@@ -131,8 +131,8 @@ We note that the identity morphism is always iso, and that isos compose:
 make-iso : (f : Hom a b) (g : Hom b a) → f ∘ g ≡ id → g ∘ f ≡ id → a ≅ b
 make-iso f g p q ._≅_.to = f
 make-iso f g p q ._≅_.from = g
-make-iso f g p q ._≅_.inverses .Inverses.invˡ = p
-make-iso f g p q ._≅_.inverses .Inverses.invʳ = q
+make-iso f g p q ._≅_.inverses .Inverses.invl = p
+make-iso f g p q ._≅_.inverses .Inverses.invr = q
 
 invertible→iso : (f : Hom a b) → is-invertible f → a ≅ b
 invertible→iso f x =
@@ -175,23 +175,23 @@ id-iso = make-iso id id (idl _) (idl _)
 
 Inverses-∘ : {f : Hom a b} {f⁻¹ : Hom b a} {g : Hom b c} {g⁻¹ : Hom c b}
            → Inverses f f⁻¹ → Inverses g g⁻¹ → Inverses (g ∘ f) (f⁻¹ ∘ g⁻¹)
-Inverses-∘ {f = f} {f⁻¹} {g} {g⁻¹} finv ginv = record { invˡ = l ; invʳ = r } where
+Inverses-∘ {f = f} {f⁻¹} {g} {g⁻¹} finv ginv = record { invl = l ; invr = r } where
   module finv = Inverses finv
   module ginv = Inverses ginv
 
   abstract
     l : (g ∘ f) ∘ f⁻¹ ∘ g⁻¹ ≡ id
     l = (g ∘ f) ∘ f⁻¹ ∘ g⁻¹ ≡⟨ solve C ⟩
-        g ∘ (f ∘ f⁻¹) ∘ g⁻¹ ≡⟨ (λ i → g ∘ finv.invˡ i ∘ g⁻¹) ⟩
+        g ∘ (f ∘ f⁻¹) ∘ g⁻¹ ≡⟨ (λ i → g ∘ finv.invl i ∘ g⁻¹) ⟩
         g ∘ id ∘ g⁻¹        ≡⟨ solve C ⟩
-        g ∘ g⁻¹             ≡⟨ ginv.invˡ ⟩
+        g ∘ g⁻¹             ≡⟨ ginv.invl ⟩
         id                  ∎
 
     r : (f⁻¹ ∘ g⁻¹) ∘ g ∘ f ≡ id
     r = (f⁻¹ ∘ g⁻¹) ∘ g ∘ f ≡⟨ solve C ⟩
-        f⁻¹ ∘ (g⁻¹ ∘ g) ∘ f ≡⟨ (λ i → f⁻¹ ∘ ginv.invʳ i ∘ f) ⟩
+        f⁻¹ ∘ (g⁻¹ ∘ g) ∘ f ≡⟨ (λ i → f⁻¹ ∘ ginv.invr i ∘ f) ⟩
         f⁻¹ ∘ id ∘ f        ≡⟨ solve C ⟩
-        f⁻¹ ∘ f             ≡⟨ finv.invʳ ⟩
+        f⁻¹ ∘ f             ≡⟨ finv.invr ⟩
         id                  ∎
 
 _∘Iso_ : a ≅ b → b ≅ c → a ≅ c
@@ -202,6 +202,6 @@ _∘Iso_ : a ≅ b → b ≅ c → a ≅ c
 _Iso⁻¹ : a ≅ b → b ≅ a
 (f Iso⁻¹) .to = f .from
 (f Iso⁻¹) .from = f .to
-(f Iso⁻¹) .inverses .invˡ = f .inverses .invʳ
-(f Iso⁻¹) .inverses .invʳ = f .inverses .invˡ
+(f Iso⁻¹) .inverses .invl = f .inverses .invr
+(f Iso⁻¹) .inverses .invr = f .inverses .invl
 ```
