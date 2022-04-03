@@ -7,8 +7,8 @@ open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Instances.Slice
 open import Cat.Prelude
-open import Cat.Thin
 open import Cat.Base
+open import Cat.Thin
 
 import Cat.Reasoning
 import Cat.Univalent

@@ -68,6 +68,41 @@ morphisms gives isomorphisms in the respective functor categories:
   counit⁻¹ = [D,D]._≅_.from F∘F⁻¹≅Id
 ```
 
+<!--
+```agda
+  F⁻¹⊣F : F⁻¹ ⊣ F
+  F⁻¹⊣F = adj′ where
+    module adj = _⊣_ F⊣F⁻¹
+    open _⊣_
+    adj′ : F⁻¹ ⊣ F
+    adj′ .unit   = counit⁻¹
+    adj′ .counit = unit⁻¹
+    adj′ .zig {a} = zig′ where abstract
+      p : η unit⁻¹ (F₀ F⁻¹ a) ≡ F₁ F⁻¹ (adj.counit.ε _)
+      p =
+        η unit⁻¹ (F₀ F⁻¹ a)                                                ≡⟨ C.introl adj.zag ⟩
+        (F₁ F⁻¹ (adj.counit.ε _) C.∘ adj.unit.η _) C.∘ η unit⁻¹ (F₀ F⁻¹ a) ≡⟨ C.cancelr (unit-iso _ .C.is-invertible.invl) ⟩
+        F₁ F⁻¹ (adj.counit.ε _)                                            ∎
+
+      zig′ : η unit⁻¹ (F₀ F⁻¹ a) C.∘ F⁻¹ .F₁ (counit⁻¹ .η a) ≡ C.id
+      zig′ = ap₂ C._∘_ p refl
+        ·· sym (F-∘ F⁻¹ _ _)
+        ·· ap (F₁ F⁻¹) (counit-iso _ .D.is-invertible.invl) ∙ F-id F⁻¹
+
+    adj′ .zag {b} = zag′ where abstract
+      p : counit⁻¹ .η (F₀ F b) ≡ F .F₁ (adj.unit.η b)
+      p =
+        counit⁻¹ .η _                                                     ≡⟨ D.intror adj.zig ⟩
+        counit⁻¹ .η _ D.∘ adj.counit.ε (F₀ F b) D.∘ (F₁ F (adj.unit.η b)) ≡⟨ D.cancell (counit-iso _ .D.is-invertible.invr) ⟩
+        F .F₁ (adj.unit.η b)                                              ∎
+
+      zag′ : F .F₁ (unit⁻¹ .η b) D.∘ counit⁻¹ .η (F₀ F b) ≡ D.id
+      zag′ = ap₂ D._∘_ refl p
+        ·· sym (F .F-∘ _ _)
+        ·· (ap (F .F₁) (unit-iso _ .C.is-invertible.invr) ∙ F .F-id)
+```
+-->
+
 We chose, for definiteness, the above definition of equivalence of
 categories, since it provides convenient access to the most useful data:
 The induced natural isomorphisms, the adjunction unit/counit, and the
