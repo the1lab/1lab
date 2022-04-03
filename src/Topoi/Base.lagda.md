@@ -11,9 +11,11 @@ open import Cat.Instances.Sets.Complete
 open import Cat.Instances.Functor
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
+open import Cat.Functor.Hom
 open import Cat.Prelude
 open import Cat.Thin
 
+import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning
 
 module Topoi.Base where
@@ -140,10 +142,69 @@ this seems circular ("a topos is a sub-topos of..."), the notion of
 subtopos --- or rather, of **geometric embedding** --- makes no mention
 of actual topoi, and makes sense for any pair of categories.
 
-<!-- TODO [Amy 2022-04-02]
 ## As categories of spaces
--->
 
+Another perspective on topoi is that they are _categories of_ spaces,
+rather than spaces themselves. We start by looking at presheaf topoi,
+$[\ca{C}^op,\sets]$. The [coyoneda lemma] tells us that every presheaf
+is a colimit of representables, which can be restated in less abstract
+terms by saying that _presheaves are instructions for gluing together
+objects of $\ca{C}$._ The objects of $\ca{C}$ are then interpreted as
+"primitive shapes", and the maps in $\ca{C}$ are interpreted as "maps to
+glue against".
+
+[coyoneda lemma]: Cat.Functor.Hom.html#the-coyoneda-lemma
+
+Let's make this more concrete by considering an example: Take $\ca{C} =
+\bull \rightrightarrows \bull$, the category with two points --- let's
+call them $V$ and $E$ --- and two arrows $s, t : V \to E$. A presheaf
+$F$ on this category is given by a set $F_0(V)$, a set $F_0(E)$, and two
+functions $F_1(s), F_1(t) : F_0(E) \to F_0(V)$. We call $F_0(V)$ the
+vertex set, and $F_0(E)$ the edge set. Indeed, a presheaf on this
+category is a _directed multigraph_, and maps between presheaves
+_preserve adjacency_.
+
+Our statement about "gluing primitive shapes" now becomes the rather
+pedestrian statement "graphs are made up of vertices and edges". For
+instance, the graph $\bull \to \bull \to \bull$ can be considered as a
+disjoint union of two edges, which is then glued together in a way such
+that the target of the first is the source of the first. The maps $s, t
+: V \to E$ exhibit the two ways that a vertex can be considered "part
+of" an edge.
+
+## As "logically nice" categories
+
+The definition of topos implies that any topos $\ca{T}$ enjoys many of
+the same categorical properties of the category $\sets$ (see
+[below](#properties)). Topoi are [complete] and [cocomplete], [cartesian
+closed] (even [locally so]) --- colimits are stable under pullback,
+coproducts are [disjoint], and [equivalence relations are effective].
+
+[complete]: Cat.Diagram.Limit.Base.html#completeness
+[cocomplete]: Cat.Diagram.Colimit.Base.html#cocompleteness
+[cartesian closed]: Cat.CartesianClosed.Base.html
+[locally so]: Cat.CartesianClosed.Locally.html
+[disjoint]: Cat.Diagram.Coproduct.Indexed.html#disjoint-coproducts
+[equivalence relations are effective]: Cat.Diagram.Congruence.html#effective-congruences
+
+These properties, but _especially_ local cartesian closure, imply that
+the internal logic of a topos is an incredibly nice form of type theory.
+Dependent sums and products exist, there is an object of natural
+numbers, the [poset of subobjects] is a complete [lattice] (even a
+Heyting algebra), including existential and universal quantification.
+Effectivity of congruences means that two points in a quotient are
+identified if, and only if, they are related by the congruence.
+
+[lattice]: Algebra.Lattice.html
+[poset of subobjects]: Cat.Thin.Instances.Sub.html
+
+In fact, this is essentially the _definition of_ a topos. The actual
+definition, as a lex [reflective subcategory] of a presheaf category,
+essentially ensures that the category $\ca{T}$ inherits the nice logical
+properties of $\sets$ (through the presheaf category, which is _also_
+very nice logically).
+
+[reflective subcategory]: Cat.Functor.Adjoint.Reflective.html
 
 **Terminology**: As was implicitly mentioned above, for a topos $L :
 \ca{T} \xadj{}{} \psh(\ca{C})$, we call the category $\ca{C}$ the **site
@@ -155,7 +216,7 @@ $\top$, following Johnstone. When $\psh(\ca{C})$ is regarded as a topos
 unto itself, rather than an indirection in the definition of a sheaf
 topos, we call it the **topos of $\ca{C}$-sets**.
 
-## Examples
+# Examples
 
 The "trivial" example of topoi is the category $\sets$, which is
 equivalently the category $[*\op,\sets]$ of presheaves on the [terminal
@@ -354,7 +415,7 @@ talk about geometric logic?
 -->
 
 
-## Properties
+# Properties of topoi
 
 The defining property of a topos $\ca{T}$ is that it admits a
 geometric embedding into a presheaf category, meaning the adjunction
