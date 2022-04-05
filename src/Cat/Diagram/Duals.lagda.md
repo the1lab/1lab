@@ -159,17 +159,27 @@ module _ {o ℓ} {J : Precategory o ℓ} {F : Functor J C} where
   Co-cone→Cocone cone .ψ = cone .ψ
   Co-cone→Cocone cone .commutes = cone .commutes
 
+  Cocone→Co-cone : Cocone F → Cone F^op
+  Cocone→Co-cone cone .apex     = cone .coapex
+  Cocone→Co-cone cone .ψ        = cone .ψ
+  Cocone→Co-cone cone .commutes = cone .commutes
+
+  Cocone→Co-cone→Cocone : ∀ K → Co-cone→Cocone (Cocone→Co-cone K) ≡ K
+  Cocone→Co-cone→Cocone K i .coapex = K .coapex
+  Cocone→Co-cone→Cocone K i .ψ = K .ψ
+  Cocone→Co-cone→Cocone K i .commutes = K .commutes
+
+  Co-cone→Cocone→Co-cone : ∀ K → Cocone→Co-cone (Co-cone→Cocone K) ≡ K
+  Co-cone→Cocone→Co-cone K i .apex = K .apex
+  Co-cone→Cocone→Co-cone K i .ψ = K .ψ
+  Co-cone→Cocone→Co-cone K i .commutes = K .commutes
+
   Co-cone-hom→Cocone-hom
     : ∀ {x y}
     → Cone-hom F^op y x
     → Cocone-hom F (Co-cone→Cocone x) (Co-cone→Cocone y)
   Co-cone-hom→Cocone-hom ch .hom = ch .hom
   Co-cone-hom→Cocone-hom ch .commutes = ch .commutes
-
-  Cocone→Co-cone : Cocone F → Cone F^op
-  Cocone→Co-cone cone .apex     = cone .coapex
-  Cocone→Co-cone cone .ψ        = cone .ψ
-  Cocone→Co-cone cone .commutes = cone .commutes
 
   Cocone-hom→Co-cone-hom
     : ∀ {x y}
@@ -179,7 +189,50 @@ module _ {o ℓ} {J : Precategory o ℓ} {F : Functor J C} where
   Cocone-hom→Co-cone-hom ch .commutes = ch .commutes
 ```
 
-<!-- TODO [Amy 2022-02-21]
-co/cones
-co/limits
--->
+## Co/limits
+
+```agda
+  Colimit→Co-limit
+    : Colimit F → Limit F^op
+  Colimit→Co-limit colim = lim where
+    lim : Limit F^op
+    lim .top = Cocone→Co-cone (colim .bot)
+    lim .has⊤ co-cone =
+      retract→is-contr f g fg
+        (colim .has⊥ (Co-cone→Cocone co-cone))
+      where
+        f : _ → _
+        f x = subst (λ e → Cone-hom F^op e _)
+          (Co-cone→Cocone→Co-cone _)
+          (Cocone-hom→Co-cone-hom x)
+
+        g : _ → _
+        g x = subst (λ e → Cocone-hom F e _)
+          (Cocone→Co-cone→Cocone _)
+          (Co-cone-hom→Cocone-hom x)
+
+        fg : is-left-inverse f g
+        fg x = Cone-hom-path _ (transport-refl _ ∙ transport-refl _)
+
+  Co-limit→Colimit
+    : Limit F^op → Colimit F
+  Co-limit→Colimit lim = colim where
+    colim : Colimit F
+    colim .bot = Co-cone→Cocone (lim .top)
+    colim .has⊥ cocon =
+      retract→is-contr f g fg
+        (lim .has⊤ (Cocone→Co-cone cocon))
+      where
+        f : _ → _
+        f x = subst (λ e → Cocone-hom F _ e)
+          (Cocone→Co-cone→Cocone _)
+          (Co-cone-hom→Cocone-hom x)
+
+        g : _ → _
+        g x = subst (λ e → Cone-hom F^op _ e)
+          (Co-cone→Cocone→Co-cone _)
+          (Cocone-hom→Co-cone-hom x)
+
+        fg : is-left-inverse f g
+        fg x = Cocone-hom-path _ (transport-refl _ ∙ transport-refl _)
+```
