@@ -3,6 +3,7 @@ open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
 open import 1Lab.Univalence
+open import 1Lab.Rewrite
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -155,6 +156,30 @@ opposite precategory $C^{op}$. What we have to show is - by the type of
 \circ_{op} h$. This computes into $(h \circ g) \circ f = h \circ (g
 \circ f)$ - which is exactly what `sym (assoc C h g f)` shows!
 
+```agda
+C^op^op≡C : ∀ {o ℓ} {C : Precategory o ℓ} → C ^op ^op ≡ C
+C^op^op≡C {C = C} i = precat i where
+  open Precategory
+  precat : C ^op ^op ≡ C
+  precat i .Ob = C .Ob
+  precat i .Hom = C .Hom
+  precat i .Hom-set = C .Hom-set
+  precat i .id = C .id
+  precat i ._∘_ = C ._∘_
+  precat i .idr = C .idr
+  precat i .idl = C .idl
+  precat i .assoc = C .assoc
+```
+
+<!--
+```agda
+private
+  precategory-double-dual : ∀ {o ℓ} {C : Precategory o ℓ} → C ^op ^op ≡rw C
+  precategory-double-dual = make-rewrite C^op^op≡C
+{-# REWRITE precategory-double-dual #-}
+```
+-->
+
 ## The precategory of Sets
 
 Given a [universe level], we can consider the collection of [all sets]
@@ -252,6 +277,24 @@ C^{op} \to D^{op}$.
   F-id op    = F-id
   F-∘ op f g = F-∘ g f
 ```
+
+<!--
+```agda
+F^op^op≡F : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {F : Functor C D}
+          → Functor.op (Functor.op F) ≡ F
+F^op^op≡F {F = F} i .Functor.F₀ = F .Functor.F₀
+F^op^op≡F {F = F} i .Functor.F₁ = F .Functor.F₁
+F^op^op≡F {F = F} i .Functor.F-id = F .Functor.F-id
+F^op^op≡F {F = F} i .Functor.F-∘ = F .Functor.F-∘
+
+private
+  functor-double-dual
+    : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {F : Functor C D}
+    → Functor.op (Functor.op F) ≡rw F
+  functor-double-dual = make-rewrite F^op^op≡F
+{-# REWRITE functor-double-dual #-}
+```
+-->
 
 ## Composition
 

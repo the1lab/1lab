@@ -1,11 +1,13 @@
 ```agda
 open import Cat.Diagram.Limit.Base
+open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Equaliser
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
+open import Cat.Diagram.Duals
 open import Cat.Prelude
 
 module Cat.Instances.Functor.Limits where
@@ -240,3 +242,25 @@ Functor-cat-is-complete :
   → is-complete o ℓ D → is-complete o ℓ Cat[ C , D ]
 Functor-cat-is-complete D-complete = functor-limit D-complete
 ```
+
+<!--
+```agda
+module _
+  {o₁ ℓ₁} {C : Precategory o₁ ℓ₁}
+  {o₂ ℓ₂} {D : Precategory o₂ ℓ₂}
+  {o₃ ℓ₃} {E : Precategory o₃ ℓ₃}
+  (has-D-colims : ∀ (F : Functor D (C ^op)) → Colimit F)
+  (F : Functor D (Cat[ E , C ] ^op))
+  where
+
+  functor-colimit : Colimit F
+  functor-colimit =
+    let
+      lim′ : Limit (Functor.op F)
+      lim′ = functor-limit
+        (λ f → subst Limit F^op^op≡F (Colimit→Co-limit _ (has-D-colims (Functor.op f))))
+        --                 ^^^^^^^^^ this got added as a rewrite rule so idk what giveth
+        (Functor.op F)
+    in Co-limit→Colimit _ lim′
+```
+-->
