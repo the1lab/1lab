@@ -17,9 +17,9 @@ private
 
 # The Category of Elements
 
-The category of elements over some presheaf $P : C^{op} \to Set$ is a
-means of unpacking the data of the presheaf. It's objects are pairs
-of an object $x$, and a section $s : P x$.
+The category of elements of a presheaf $P : C^{op} \to \sets$ is a means
+of unpacking the data of the presheaf. Its objects are pairs of an
+object $x$, and a section $s : P x$.
 
 ```agda
 record Element : Type (o ⊔ s) where
@@ -31,21 +31,21 @@ record Element : Type (o ⊔ s) where
 open Element
 ```
 
-We can think of this as taking an eraser to the data of $P$. If
-$P(x) = \{x_0, x_1, x_2\}$, then the category of elements of $P$
-will have three objects in place of the one: $(x, x_0)$, $(x, x_1)$,
-and $(x, x_2)$. We've erased all the boundaries of each of the sets
-associated with $P$, and are left with a big soup of points.
+We can think of this as taking an eraser to the data of $P$. If $P(x) =
+\{x_0, x_1, x_2\}$, then the category of elements of $P$ will have three
+objects in place of the one: $(x, x_0)$, $(x, x_1)$, and $(x, x_2)$.
+We've erased all the boundaries of each of the sets associated with $P$,
+and are left with a big soup of points.
 
-We do something similar for morphisms, and turn function
-$P(f) : P(Y) \to P(X)$ into a huge collection of morphisms between
-points. We do this by defining a morphism $(x, x_0) \to (y, y_0)$
-as a morphism $f : X \to Y$ in $\ca{C}$, as well as a proof that
-$P(f)(y_0) = x_0$ This too can be seen as erasing boundaries, just
-this time with the data associated with a function. Instead of
-having a bunch of data bundled together that describes the action
-of $P(f)$ on each point of $P(Y)$, we have a bunch of tiny bits of data
-that only describe the action of $P(f)$ on a single point.
+We do something similar for morphisms, and turn functions $P(f) : P(Y)
+\to P(X)$ into a huge collection of morphisms between points. We do this
+by defining a morphism $(x, x_0) \to (y, y_0)$ to be a morphism $f : X
+\to Y$ in $\ca{C}$, as well as a proof that $P(f)(y_0) = x_0$ This too
+can be seen as erasing boundaries, just this time with the data
+associated with a function. Instead of having a bunch of data bundled
+together that describes the action of $P(f)$ on each point of $P(Y)$, we
+have a bunch of tiny bits of data that only describe the action of
+$P(f)$ on a single point.
 
 ```agda
 record Element-hom (x y : Element) : Type (ℓ ⊔ s) where
@@ -58,8 +58,8 @@ record Element-hom (x y : Element) : Type (ℓ ⊔ s) where
 open Element-hom
 ```
 
-As per usual, we need to prove some helper lemmas that describe the
-path space of `Element-hom`{.Agda}
+As per usual, we need to prove some helper lemmas that describe the path
+space of `Element-hom`{.Agda}
 
 ```agda
 Element-hom-path : {x y : Element} {f g : Element-hom x y} → f .hom ≡ g .hom → f ≡ g
@@ -143,6 +143,6 @@ morphism actions.
 πₚ .F-∘ f g = refl
 ```
 
-This functor makes it clear that we ought to think of the category
-of elements as something defined _over_ $\ca{C}$. For instance, if we
-look at the fibre over each $X : \ca{C}$, we get back the set $P(X)$!
+This functor makes it clear that we ought to think of the category of
+elements as something defined _over_ $\ca{C}$. For instance, if we look
+at the fibre over each $X : \ca{C}$, we get back the set $P(X)$!
