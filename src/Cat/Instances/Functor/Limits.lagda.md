@@ -1,8 +1,11 @@
 ```agda
-open import Cat.Diagram.Limit.Base
+open import Cat.Functor.Adjoint.Continuous
+open import Cat.Instances.Functor.Duality
 open import Cat.Diagram.Colimit.Base
+open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Equaliser
 open import Cat.Instances.Functor
+open import Cat.Functor.Equivalence
 open import Cat.Instances.Product
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
@@ -243,24 +246,38 @@ Functor-cat-is-complete :
 Functor-cat-is-complete D-complete = functor-limit D-complete
 ```
 
-<!--
+!--
 ```agda
 module _
   {o₁ ℓ₁} {C : Precategory o₁ ℓ₁}
   {o₂ ℓ₂} {D : Precategory o₂ ℓ₂}
   {o₃ ℓ₃} {E : Precategory o₃ ℓ₃}
-  (has-D-colims : ∀ (F : Functor D (C ^op)) → Colimit F)
-  (F : Functor D (Cat[ E , C ] ^op))
+  (has-D-colims : ∀ (F : Functor D C) → Colimit F)
+  (F : Functor D Cat[ E , C ])
   where
 
   functor-colimit : Colimit F
-  functor-colimit =
-    let
-      lim′ : Limit (Functor.op F)
-      lim′ = functor-limit
-        (λ f → subst Limit F^op^op≡F (Colimit→Co-limit _ (has-D-colims (Functor.op f))))
-        --                 ^^^^^^^^^ this got added as a rewrite rule so idk what giveth
-        (Functor.op F)
-    in Co-limit→Colimit _ lim′
+  functor-colimit = colim where
+    F′ : Functor (D ^op) Cat[ E ^op , C ^op ]
+    F′ = op-functor→ F∘ Functor.op F
+
+    F′-lim : Limit F′
+    F′-lim = functor-limit
+      (λ f → subst Limit F^op^op≡F (Colimit→Co-limit _ (has-D-colims (Functor.op f))))
+      F′
+
+    LF′′ : Limit (op-functor← {C = E} {D = C} F∘ (op-functor→ F∘ Functor.op F))
+    LF′′ = right-adjoint-limit (is-equivalence.F⊣F⁻¹ op-functor-is-equiv) F′-lim
+
+    LFop : Limit (Functor.op F)
+    LFop = subst Limit (F∘-assoc ∙ ap (_F∘ Functor.op F) op-functor←→ ∙ F∘-idl) LF′′
+
+    colim : Colimit F
+    colim = Co-limit→Colimit _ LFop
+
+Functor-cat-is-cocomplete :
+  ∀ {o ℓ} {o₁ ℓ₁} {C : Precategory o₁ ℓ₁} {o₂ ℓ₂} {D : Precategory o₂ ℓ₂}
+  → is-cocomplete o ℓ D → is-cocomplete o ℓ Cat[ C , D ]
+Functor-cat-is-cocomplete D-cocomplete = functor-colimit D-cocomplete
 ```
--->
+--

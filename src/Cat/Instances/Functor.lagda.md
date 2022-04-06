@@ -339,5 +339,19 @@ Uncurry {C = C} {D = D} {E = E} F = uncurried where
 ```agda
 PSh : ∀ κ {o ℓ} → Precategory o ℓ → Precategory _ _
 PSh κ C = Cat[ C ^op , Sets κ ]
+
+F∘-assoc
+  : ∀ {o ℓ o′ ℓ′ o′′ ℓ′′ o₃ ℓ₃}
+      {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {E : Precategory o′′ ℓ′′} {F : Precategory o₃ ℓ₃}
+      {F : Functor E F} {G : Functor D E} {H : Functor C D}
+  → F F∘ (G F∘ H) ≡ (F F∘ G) F∘ H
+F∘-assoc = Functor-path (λ x → refl) λ x → refl
+
+F∘-idl
+  : ∀ {o′′ ℓ′′ o₃ ℓ₃}
+      {E : Precategory o′′ ℓ′′} {F : Precategory o₃ ℓ₃}
+      {F : Functor E F}
+  → Id F∘ F ≡ F
+F∘-idl = Functor-path (λ x → refl) λ x → refl
 ```
 -->
