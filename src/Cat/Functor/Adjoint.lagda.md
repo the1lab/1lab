@@ -14,7 +14,7 @@ private variable
   o h : Level
   C D : Precategory o h
 
-open Functor
+open Functor hiding (op)
 
 adj-level : ∀ {o₁ h₁ o₂ h₂} (C : Precategory o₁ h₁) (D : Precategory o₂ h₂)
           → Level
@@ -566,3 +566,26 @@ $\hom(La,b) \cong \hom(a,Rb)$.
   R-adjunct-is-equiv = is-iso→is-equiv
     (iso L-adjunct R-L-adjunct L-R-adjunct)
 ```
+
+<!--
+```agda
+module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
+  private
+    module L = Functor L
+    module R = Functor R
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module adj = _⊣_ adj
+
+  open _⊣_
+  open _=>_
+
+  opposite-adjunction : R.op ⊣ L.op
+  opposite-adjunction .unit .η _ = adj.counit.ε _
+  opposite-adjunction .unit .is-natural x y f = sym (adj.counit.is-natural _ _ _)
+  opposite-adjunction .counit .η _ = adj.unit.η _
+  opposite-adjunction .counit .is-natural x y f = sym (adj.unit.is-natural _ _ _)
+  opposite-adjunction .zig = adj.zag
+  opposite-adjunction .zag = adj.zig
+```
+-->
