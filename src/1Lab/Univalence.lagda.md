@@ -759,5 +759,9 @@ subst-∙ : ∀ {ℓ ℓ′} {A : Type ℓ} → (B : A → Type ℓ′)
         → subst B (p ∙ q) u ≡ subst B q (subst B p u)
 subst-∙ B p q Bx i =
   transport (ap B (∙-filler' p q (~ i))) (transport-filler-ext (ap B p) i Bx)
+
+sym-ua : ∀ {ℓ} {A B : Type ℓ} (e : A ≃ B) → sym (ua e) ≡ ua (e e⁻¹)
+sym-ua = EquivJ (λ B e → sym (ua e) ≡ ua (e e⁻¹))
+  (ap sym ua-id-equiv ∙ sym (ap ua (Σ-prop-path is-equiv-is-prop refl) ∙ ua-id-equiv))
 ```
 -->
