@@ -7,6 +7,7 @@ open import Cat.Instances.Slice public
 open import Cat.Functor.Base public
 open import Cat.Univalent public
 open import Cat.Prelude public
+open import Cat.Thin using (Poset ; Proset) public
 
 import Cat.Diagram.Coequaliser
 import Cat.Diagram.Coproduct

@@ -48,8 +48,8 @@ give the unit, both on the left and on the right:
   open is-monoid has-is-monoid public
 
   abstract
-    inv-unit≡unit : inverse unit ≡ unit
-    inv-unit≡unit = monoid-inverse-unique
+    inv-unit : inverse unit ≡ unit
+    inv-unit = monoid-inverse-unique
       has-is-monoid unit _ _ inversel (idl has-is-monoid)
 
     inv-inv : ∀ {x} → inverse (inverse x) ≡ x
