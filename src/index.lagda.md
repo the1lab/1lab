@@ -457,8 +457,6 @@ open import Algebra.Group.Cat.Base             -- Category of groups
 open import Algebra.Group.Cat.FinitelyComplete -- Finite limits in Groups
 open import Algebra.Group.Homotopy             -- Homotopy groups
 open import Algebra.Group.Subgroup             -- Subgroups, images and kernels
-open import Algebra.Group.Quotients            -- Quotients by normal subgroups
-open import Algebra.Group.Quotients.IsoThms    -- Isomorphism theorems
 
 open import Algebra.Group.Ab.Free              -- Abelianisations
 ```

@@ -58,7 +58,8 @@ category has a choice of zero object and a choice of equaliser for any
 pair of morphisms, then it has canonically-defined choices of kernels:
 
 ```agda
-module _ (zero : Zero) (eqs : ∀ {a b} (f g : Hom a b) → Equaliser f g) where
+module Canonical-kernels
+  (zero : Zero) (eqs : ∀ {a b} (f g : Hom a b) → Equaliser f g) where
   open Zero zero
   open Kernel
 

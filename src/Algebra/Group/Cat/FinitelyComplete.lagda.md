@@ -75,6 +75,10 @@ Zero-group-is-zero = record
   { has-is-initial = Zero-group-is-initial
   ; has-is-terminal = Zero-group-is-terminal
   }
+
+∅ᴳ : Zero
+∅ᴳ .Zero.∅ = Zero-group
+∅ᴳ .Zero.has-is-zero = Zero-group-is-zero
 ```
 
 ## Direct products

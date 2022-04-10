@@ -1,8 +1,7 @@
 ```agda
 open import Algebra.Group
+open import Algebra.Prelude
 
-open import Cat.Functor.Base
-open import Cat.Univalent
 open import Cat.Prelude
 
 module Algebra.Group.Cat.Base where
@@ -54,7 +53,7 @@ properties of equality:
   c .idl f       = Σ-prop-path (λ _ → Group-hom-is-prop) refl
   c .assoc f g h = Σ-prop-path (λ _ → Group-hom-is-prop) refl
 
-module Groups {ℓ} = CR (Groups ℓ)
+module Groups {ℓ} = Cat (Groups ℓ)
 ```
 
 ## The underlying set
@@ -159,3 +158,17 @@ Groups-is-category = iso≃path→is-category _ eqv where
     Σ (Group≃ A B) ≃⟨ Group-equiv≃Groups-iso ⟩
     (A Groups.≅ B) ≃∎
 ```
+
+<!--
+```agda
+injective-group-hom
+  : ∀ {A B : Group ℓ} (f : Groups.Hom A B)
+  → injective (f .fst)
+  → Groups.is-monic f
+injective-group-hom {A = A} {B} f inj g h p =
+  Forget-is-faithful (fm (fst g) (fst h) (ap fst p)) where
+  open Group-on
+  fm = embedding→monic
+    (injective-between-sets→has-prop-fibres (B .snd .has-is-set) (f .fst) inj)
+```
+-->
