@@ -6,6 +6,10 @@ open import Algebra.Semigroup
 open import Algebra.Monoid
 open import Algebra.Magma
 
+open import Cat.Instances.Delooping
+
+import Cat.Reasoning
+
 module Algebra.Group where
 ```
 
@@ -50,6 +54,9 @@ give the unit, both on the left and on the right:
 
 <!--
 ```agda
+  _—_ : A → A → A
+  x — y = x * inverse y
+
   abstract
     inv-unit : inverse unit ≡ unit
     inv-unit = monoid-inverse-unique
@@ -59,11 +66,11 @@ give the unit, both on the left and on the right:
     inv-inv = monoid-inverse-unique
       has-is-monoid _ _ _ inversel inversel
 
-    inv-comm : ∀ {x y} → inverse (x * y) ≡ inverse y * inverse x
+    inv-comm : ∀ {x y} → inverse (x * y) ≡ inverse y — x
     inv-comm {x = x} {y} =
       monoid-inverse-unique has-is-monoid _ _ _ inversel p
       where
-        p : (x * y) * (inverse y * inverse x) ≡ unit
+        p : (x * y) * (inverse y — x) ≡ unit
         p = associative has-is-monoid
          ·· ap₂ _*_
               (  sym (associative has-is-monoid)
@@ -72,13 +79,17 @@ give the unit, both on the left and on the right:
               refl
          ·· inverser
 
-    zero-diff : ∀ {x y} → x * inverse y ≡ unit → x ≡ y
+    zero-diff : ∀ {x y} → x — y ≡ unit → x ≡ y
     zero-diff {x = x} {y = y} p =
       monoid-inverse-unique has-is-monoid _ _ _ p inversel
 
   underlying-monoid : Monoid ℓ
   underlying-monoid = A , record
     { identity = unit ; _⋆_ = _*_ ; has-is-monoid = has-is-monoid }
+
+  open Cat.Reasoning (B (underlying-monoid .snd))
+    hiding (id ; assoc ; idl ; idr ; invr ; invl ; to ; from ; inverses ; _∘_)
+    public
 
 open is-group
 ```
@@ -92,7 +103,7 @@ straightforward, but tedious. Suppose that $x, y$ are both witnesses of
 
 ```agda
 is-group-is-prop : ∀ {ℓ} {A : Type ℓ} {_*_ : A → A → A}
-               → is-prop (is-group _*_)
+                 → is-prop (is-group _*_)
 is-group-is-prop {A = A} {_*_ = _*_} x y = path where
 ```
 
@@ -216,18 +227,24 @@ identity:
 
   pres-id : e 1A ≡ 1B
   pres-id =
-    e 1A                            ≡⟨ sym B.idr ⟩
-    e 1A B.⋆ 1B                     ≡⟨ ap₂ B._⋆_ refl (sym B.inverser) ⟩
-    e 1A B.⋆ (e 1A B.⋆ (e 1A) B.⁻¹) ≡⟨ B.associative ⟩
-    (e 1A B.⋆ e 1A) B.⋆ (e 1A) B.⁻¹ ≡⟨ ap₂ B._⋆_ (sym (pres-⋆ _ _) ∙ ap e A.idl) refl ⟩
-    e 1A B.⋆ (e 1A) B.⁻¹            ≡⟨ B.inverser ⟩
-    1B                              ∎
+    e 1A                     ≡⟨ sym B.idr ⟩
+    e 1A B.⋆ 1B              ≡⟨ ap₂ B._⋆_ refl (sym B.inverser) ⟩
+    e 1A B.⋆ (e 1A B.— e 1A) ≡⟨ B.associative ⟩
+    (e 1A B.⋆ e 1A) B.— e 1A ≡⟨ ap₂ B._⋆_ (sym (pres-⋆ _ _) ∙ ap e A.idl) refl ⟩
+    e 1A B.— e 1A            ≡⟨ B.inverser ⟩
+    1B                       ∎
 
-  pres-inv : ∀ x → e (A.inverse x) ≡ B.inverse (e x)
-  pres-inv x =
+  pres-inv : ∀ {x} → e (A.inverse x) ≡ B.inverse (e x)
+  pres-inv {x} =
     monoid-inverse-unique B.has-is-monoid (e x) _ _
       (sym (pres-⋆ _ _) ·· ap e A.inversel ·· pres-id)
       B.inverser
+
+  pres-diff : ∀ {x y} → e (x A.— y) ≡ e x B.— e y
+  pres-diff {x} {y} =
+    e (x A.— y)             ≡⟨ pres-⋆ _ _ ⟩
+    e x B.⋆ e (A.inverse y) ≡⟨ ap (_ B.⋆_) pres-inv ⟩
+    e x B.— e y             ∎
 ```
 
 <!--

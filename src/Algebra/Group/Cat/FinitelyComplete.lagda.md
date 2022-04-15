@@ -201,7 +201,7 @@ follows from $f$ and $g$ being group homomorphisms:
     equ-inv : ∣ seq.apex ∣ → ∣ seq.apex ∣
     equ-inv (x , p) = x G.⁻¹ , q where abstract
       q : f .fst (G.inverse x) ≡ g .fst (G.inverse x)
-      q = f.pres-inv x ·· ap H._⁻¹ p ·· sym (g.pres-inv x)
+      q = f.pres-inv ·· ap H._⁻¹ p ·· sym g.pres-inv
 
     abstract
       invs : f .fst G.unit ≡ g .fst G.unit

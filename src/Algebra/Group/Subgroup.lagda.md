@@ -158,7 +158,7 @@ reader.</summary>
 
     inv : T → T
     inv (x , p) = x B.⁻¹ ,
-      ∥-∥-map (λ { (y , p) → y A.⁻¹ , f.pres-inv _ ∙ ap B._⁻¹ p }) p
+      ∥-∥-map (λ { (y , p) → y A.⁻¹ , f.pres-inv ∙ ap B._⁻¹ p }) p
 
     mul : T → T → T
     mul (x , xp) (y , yp) = x B.⋆ y ,
@@ -269,13 +269,12 @@ homomorphisms + the assumed identity $0 = e' \circ \ker f$;
 
 ```agda
       const′ : ∀ (x y : fibre (f .fst) x)
-             → e' (x .fst) F.⋆ e' (y .fst) F.⁻¹ ≡ F.unit
+             → e' (x .fst) F.— e' (y .fst) ≡ F.unit
       const′ (y , q) (z , r) =
-        e' y F.⋆ (e' z) F.⁻¹ ≡˘⟨ ap (e' y F.⋆_) (e'.pres-inv _) ⟩
-        e' y F.⋆ e' (z A.⁻¹) ≡˘⟨ e'.pres-⋆ _ _ ⟩
-        e' (y A.⋆ z A.⁻¹)    ≡⟨ happly (sym (ap fst p)) (y A.⋆ z A.⁻¹ , aux) ⟩
-        e' A.unit            ≡⟨ e'.pres-id ⟩
-        F.unit               ∎
+        e' y F.— e' z  ≡˘⟨ e'.pres-diff ⟩
+        e' (y A.— z)   ≡⟨ happly (sym (ap fst p)) (y A.— z , aux) ⟩
+        e' A.unit      ≡⟨ e'.pres-id ⟩
+        F.unit         ∎
         where
 ```
 
@@ -284,13 +283,12 @@ specific subset" to "show that $f(y - z) = 0$ when $f(y) = f(z) = x$";
 But that's just algebra, hence uninteresting:
 
 ```agda
-          aux : f .fst (y A.⋆ z A.⁻¹) ≡ B.unit
+          aux : f .fst (y A.— z) ≡ B.unit
           aux =
-            f .fst (y A.⋆ z A.⁻¹)        ≡⟨ f.pres-⋆ _ _ ⟩
-            f .fst y B.⋆ f .fst (z A.⁻¹) ≡⟨ ap (_ B.⋆_) (f.pres-inv _) ⟩
-            f .fst y B.⋆ (f .fst z) B.⁻¹ ≡⟨ ap₂ B._⋆_ q (ap B.inverse r) ⟩
-            x B.⋆ x B.⁻¹                 ≡⟨ B.inverser ⟩
-            B.unit                       ∎
+            f .fst (y A.— z)        ≡⟨ f.pres-diff ⟩
+            f .fst y B.— f .fst z   ≡⟨ ap₂ B._—_ q r ⟩
+            x B.— x                 ≡⟨ B.inverser ⟩
+            B.unit                  ∎
 
       const : ∀ (x y : fibre (f .fst) x) → (e' (x .fst)) ≡ (e' (y .fst))
       const a b = F.zero-diff (const′ a b)
@@ -381,13 +379,13 @@ f(yy^{-1}) = f(1) = 1$$.
   has-conjugate : ∀ {x y} → fibre kerf x → fibre kerf (y A.⋆ x A.⋆ y A.⁻¹)
   has-conjugate {x} {y} ((a , p) , q) = (_ , path) , refl where
     path =
-      f .fst (y A.⋆ x A.⋆ y A.⁻¹)                 ≡⟨ ap (f .fst) A.associative ⟩
-      f .fst ((y A.⋆ x) A.⋆ y A.⁻¹)               ≡⟨ f.pres-⋆ _ _ ⟩
-      f .fst (y A.⋆ x) B.⋆ f .fst (y A.⁻¹)        ≡⟨ ap (B._⋆ _) (f.pres-⋆ y x) ⟩
-      (f .fst y B.⋆ f .fst x) B.⋆ f .fst (y A.⁻¹) ≡⟨ ap (B._⋆ _) (ap (_ B.⋆_) (ap (f .fst) (sym q) ∙ p) ∙ B.idr) ⟩
-      f .fst y B.⋆ f .fst (y A.⁻¹)                ≡˘⟨ f.pres-⋆ _ _ ⟩
-      f .fst (y A.⋆ y A.⁻¹)                       ≡⟨ ap (f .fst) A.inverser ∙ f.pres-id ⟩
-      B.unit                                      ∎
+      f .fst (y A.⋆ (x A.— y))             ≡⟨ ap (f .fst) A.associative ⟩
+      f .fst ((y A.⋆ x) A.— y)             ≡⟨ f.pres-diff ⟩
+      f .fst (y A.⋆ x) B.— f .fst y        ≡⟨ ap (B._⋆ _) (f.pres-⋆ y x) ⟩
+      (f .fst y B.⋆ f .fst x) B.— f .fst y ≡⟨ ap (B._⋆ _) (ap (_ B.⋆_) (ap (f .fst) (sym q) ∙ p) ∙ B.idr) ⟩
+      f .fst y B.— f .fst y                ≡˘⟨ f.pres-diff ⟩
+      f .fst (y A.— y)                     ≡⟨ ap (f .fst) A.inverser ∙ f.pres-id ⟩
+      B.unit                               ∎
 ```
 
 It turns out that this last property is enough to pick out exactly the
@@ -461,13 +459,13 @@ a tedious but straightforward calculation:
         _ (w x y z : G0)
           (w-x∈ : (w ⋆ inv x) ∈ H)
           (y-z∈ : (y ⋆ inv z) ∈ H) where abstract
-        rem₁ : ((w ⋆ inv x) ⋆ (inv z ⋆ y)) ∈ H
+        rem₁ : ((w — x) ⋆ (inv z ⋆ y)) ∈ H
         rem₁ = has-⋆ w-x∈ (has-comm y-z∈)
 
-        rem₂ : ((w ⋆ (inv x ⋆ inv z)) ⋆ y) ∈ H
+        rem₂ : ((w ⋆ (inv x — z)) ⋆ y) ∈ H
         rem₂ = subst (_∈ H) (associative ∙ ap (_⋆ y) (sym associative)) rem₁
 
-        rem₃ : ((y ⋆ w) ⋆ inv (z ⋆ x)) ∈ H
+        rem₃ : ((y ⋆ w) — (z ⋆ x)) ∈ H
         rem₃ = subst (_∈ H) (associative ∙ ap₂ _⋆_ refl (sym inv-comm))
           (has-comm rem₂)
 ```
@@ -480,7 +478,7 @@ $(x - y) \in H$, we also have $(x^{-1} - y) \in H$.
     inverse =
       Coeq-rec squash (λ x → inc (inv x)) λ { (x , y , r) → quot (p x y r) }
       where abstract
-        p : ∀ x y → (x ⋆ inv y) ∈ H → (inv x ⋆ inv (inv y)) ∈ H
+        p : ∀ x y → (x — y) ∈ H → (inv x — inv y) ∈ H
         p x y r = has-comm (subst (_∈ H) inv-comm (has-inv r))
 ```
 
@@ -522,10 +520,10 @@ that, if $\id{inc}(x) = \id{inc}(y)$, then $(x - y) \in H$.
 
     rel-trans : ∀ {x y z} → rel x y → rel y z → rel x z
     rel-trans {x} {y} {z} h g = subst (_∈ H) p (has-⋆ h g) where
-      p = (x ⋆ y ⁻¹) ⋆ (y ⋆ z ⁻¹) ≡˘⟨ associative ⟩
-          x ⋆ (y ⁻¹ ⋆ (y ⋆ z ⁻¹)) ≡⟨ ap (x ⋆_) associative ⟩
-          x ⋆ ((y ⁻¹ ⋆ y) ⋆ z ⁻¹) ≡⟨ ap (x ⋆_) (ap (_⋆ _) inversel ∙ idl) ⟩
-          x ⋆ z ⁻¹                ∎
+      p = (x — y) ⋆ (y — z)    ≡˘⟨ associative ⟩
+          x ⋆ (y ⁻¹ ⋆ (y — z)) ≡⟨ ap (x ⋆_) associative ⟩
+          x ⋆ ((y ⁻¹ ⋆ y) — z) ≡⟨ ap (x ⋆_) (ap (_⋆ _) inversel ∙ idl) ⟩
+          x — z                ∎
 
   /ᴳ-effective : ∀ {x y} → Path G/H (inc x) (inc y) → rel x y
   /ᴳ-effective = equiv→inverse

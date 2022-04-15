@@ -129,13 +129,12 @@ tedious algebra:
   abinv : G^ab → G^ab
   abinv = Coeq-rec squash (λ x → inc^ab (x ⁻¹)) l1
     where abstract
-      -- TODO: Explain the trick here
       l1 : ((x , y , z) : G × G × G)
          → inc^ab ((x ⋆ y ⋆ z) ⁻¹) ≡ inc^ab ((x ⋆ z ⋆ y) ⁻¹)
       l1 (x , y , z) =
         inc^ab ((x ⋆ y ⋆ z) ⁻¹)                             ≡⟨ ap inc^ab G.inv-comm ⟩
-        inc^ab ((y ⋆ z) ⁻¹ ⋆ x ⁻¹)                          ≡⟨ ap inc^ab (ap₂ _⋆_ G.inv-comm refl) ⟩
-        inc^ab ((z ⁻¹ ⋆ y ⁻¹) ⋆ x ⁻¹)                       ≡⟨⟩
+        inc^ab ((y ⋆ z) ⁻¹ — x)                             ≡⟨ ap inc^ab (ap₂ _⋆_ G.inv-comm refl) ⟩
+        inc^ab ((z ⁻¹ — y) — x)                             ≡⟨⟩
 ```
 
 We get to something that is definitionally equal to our `_ab*_`{.Agda}
@@ -151,8 +150,8 @@ That's a neat trick, isn't it. We still need some Tedious Algebra to
 finish the proof:
 
 ```agda
-        inc^ab ((y ⁻¹ ⋆ z ⁻¹) ⋆ x ⁻¹)                       ≡⟨ ap inc^ab (ap₂ _⋆_ (sym G.inv-comm) refl ) ⟩
-        inc^ab ((z ⋆ y) ⁻¹ ⋆ x ⁻¹)                          ≡⟨ ap inc^ab (sym G.inv-comm) ⟩
+        inc^ab ((y ⁻¹ — z) — x)                             ≡⟨ ap inc^ab (ap₂ _⋆_ (sym G.inv-comm) refl ) ⟩
+        inc^ab ((z ⋆ y) ⁻¹ — x)                             ≡⟨ ap inc^ab (sym G.inv-comm) ⟩
         inc^ab ((x ⋆ z ⋆ y) ⁻¹)                             ∎
 ```
 

@@ -232,6 +232,6 @@ hypotheses and $g'$ being a group homomorphism.
           (λ _ _ p q → ap₂ (other .y .snd ._⋆_) p q
                      ∙ sym (factoring .β .snd .pres-⋆ _ _))
           (λ _ p → ap (other .y .snd .inverse) p
-                 ∙ sym (pres-inv (factoring .β .snd) _))
+                 ∙ sym (pres-inv (factoring .β .snd)))
           (sym (pres-id (factoring .β .snd)))))
 ```

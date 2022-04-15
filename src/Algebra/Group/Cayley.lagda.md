@@ -29,14 +29,10 @@ Cayley x = Iso→Equiv bij where
   bij .fst y = x ⋆ y
   bij .snd .is-iso.inv y = x ⁻¹ ⋆ y
   bij .snd .is-iso.rinv y =
-    x ⋆ (x ⁻¹ ⋆ y) ≡⟨ associative ⟩
-    (x ⋆ x ⁻¹) ⋆ y ≡⟨ ap₂ _⋆_ inverser refl ⟩
-    unit ⋆ y       ≡⟨ idl ⟩
+    x ⋆ (x ⁻¹ ⋆ y) ≡⟨ cancell inverser ⟩
     y              ∎
   bij .snd .is-iso.linv y =
-    x ⁻¹ ⋆ (x ⋆ y) ≡⟨ associative ⟩
-    (x ⁻¹ ⋆ x) ⋆ y ≡⟨ ap₂ _⋆_ inversel refl ⟩
-    unit ⋆ y       ≡⟨ idl ⟩
+    x ⁻¹ ⋆ (x ⋆ y) ≡⟨ cancell inversel ⟩
     y              ∎
 ```
 

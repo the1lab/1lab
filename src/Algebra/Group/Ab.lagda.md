@@ -62,8 +62,6 @@ module AbGrp {ℓ} (G : AbGroup ℓ) where
 
   commutative : ∀ {x y : ₀} → x ⋆ y ≡ y ⋆ x
   commutative = G .witness _ _
-
-  open Cat.Reasoning (B (underlying-monoid .snd)) hiding (idl ; idr) public
 ```
 -->
 
@@ -146,10 +144,10 @@ homomorphism, as is done in the calculation below.
     inv-map : T → T
     inv-map (f , fh) .fst x = f x B.⁻¹
     inv-map (f , fh) .snd .p x y =
-      f (x A.⋆ y) ⁻¹          ≡⟨ ap B.inverse (fh .p _ _) ⟩
-      (f x B.⋆ f y) ⁻¹        ≡⟨ ap B.inverse B.commutative ⟩
-      (f y B.⋆ f x) ⁻¹        ≡⟨ B.inv-comm ⟩
-      (f x ⁻¹) B.⋆ (f y ⁻¹) ∎
+      f (x A.⋆ y) ⁻¹   ≡⟨ ap B.inverse (fh .p _ _) ⟩
+      (f x B.⋆ f y) ⁻¹ ≡⟨ ap B.inverse B.commutative ⟩
+      (f y B.⋆ f x) ⁻¹ ≡⟨ B.inv-comm ⟩
+      (f x ⁻¹) B.— f y ∎
 
     grp : Group-on T
     grp = make-group (Ab.Hom-set A B)
@@ -377,7 +375,7 @@ this extends to an equivalence of $\hom$-sets $\hom(A \otimes B, C)
     invl f = Forget-is-faithful $ funext $
       Tensor-elim-prop _ _ (λ x → C.has-is-set _ _) (λ x y → refl)
         (λ p q → sym (f .snd .pres-⋆ _ _ ∙ ap₂ C._⋆_ (sym p) (sym q)))
-        (λ p → sym (pres-inv (f .snd) _ ∙ ap C.inverse (sym p)))
+        (λ p → sym (pres-inv (f .snd) ∙ ap C.inverse (sym p)))
         (sym (pres-id (f .snd)))
 ```
 
@@ -409,7 +407,7 @@ $\ht{Ab}$ is a univalent category, an _identification_ of $\hom$-groups.
         (λ {x} {y} p q → ap₂ C._⋆_ p q ∙ path x y)
         (λ {x} p → ap C.inverse p
                 ·· C.inv-comm
-                ·· sym (ap₂ C._⋆_ (pres-inv (g′ .snd) x) (pres-inv (f′ .snd) x))
+                ·· sym (ap₂ C._⋆_ (pres-inv (g′ .snd) {x = x}) (pres-inv (f′ .snd) {x = x}))
                 ∙ C.commutative)
         (sym ( ap₂ C._⋆_ (pres-id (f′ .snd))
                          (pres-id (f′ .snd))
