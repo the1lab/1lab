@@ -60,10 +60,10 @@ in `Algebra.Group.Ab.Free`:
 
 ```agda
     fold : (f : G → G' .fst) → Group-hom Grp G' f → G^ab → G' .fst
-    fold f gh = Coeq-rec G'.has-is-set f l1 
+    fold f gh = Coeq-rec G'.has-is-set f l1
       where abstract
         l1 : ((x , y , z) : G × G × G) → f (x ⋆ y ⋆ z) ≡ f (x ⋆ z ⋆ y)
-        l1 (x , y , z) = 
+        l1 (x , y , z) =
 ```
 
 **Everything should be literate**. Do not submit PRs with plain Agda

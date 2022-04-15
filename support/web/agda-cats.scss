@@ -29,7 +29,7 @@ div.diagram-container {
     &.short-2 {
       height: 55px;
     }
-    
+
     &.tall-1 {
       height: 250px;
     }
@@ -163,10 +163,10 @@ a[href].hover-highlight {
     animation: highlight 2.5s;
   }
 
-
   // background-color: $code-bg;
   font-family: 'iosevka', 'Iosevka', 'Fantasque Sans Mono', 'Roboto Mono', monospace;
   font-weight: 400;
+  font-size: var(--code-font-size);
 }
 
 @font-face {

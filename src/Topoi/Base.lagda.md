@@ -212,7 +212,7 @@ of definition**. Objects in $\ca{T}$ are called **sheaves**, and the
 functor $L$ is called **sheafification**. Maps between topoi are called
 **geometric morphisms**, and will be defined below. We denote the
 2-category of topoi, geometric morphisms and natural transformations by
-$\top$, following Johnstone. When $\psh(\ca{C})$ is regarded as a topos
+$\topos$, following Johnstone. When $\psh(\ca{C})$ is regarded as a topos
 unto itself, rather than an indirection in the definition of a sheaf
 topos, we call it the **topos of $\ca{C}$-sets**.
 
@@ -220,9 +220,9 @@ topos, we call it the **topos of $\ca{C}$-sets**.
 
 The "trivial" example of topoi is the category $\sets$, which is
 equivalently the category $[*\op,\sets]$ of presheaves on the [terminal
-category]. This is, in fact, the [terminal object] in the 2-category $\top$ of
-topoi (morphisms are described [below](#geometric-morphisms)), so we
-denote it by `𝟙`.
+category]. This is, in fact, the [terminal object] in the 2-category
+$\topos$ of topoi (morphisms are described
+[below](#geometric-morphisms)), so we denote it by `𝟙`.
 
 [terminal category]: Cat.Instances.Shape.Terminal.html
 [terminal object]: Cat.Diagram.Terminal.html
@@ -384,7 +384,7 @@ us to look for a categorification of "continuous map" to functors
 between topoi. In the same way that a continuous function $f : X \to Y$
 may be seen as a homomorphism of frames $f^* : O(Y) \to O(X)$, with
 defining feature the preservation of finite meets and arbitrary joins,
-we shall define a **geometric morphism** $\top(X,Y)$ to be a functor
+we shall define a **geometric morphism** $\topos(X,Y)$ to be a functor
 $f^* : Y \to X$ which is left exact and admits a right adjoint.
 
 <!--

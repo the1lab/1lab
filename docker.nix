@@ -17,7 +17,7 @@ in
     tag = "latest";
     fromImage = texlive-layer;
 
-    contents = the-lab.deps ++ [ 
+    contents = the-lab.deps ++ [
       pkgs.pkgsStatic.busybox # Need a shell, so go with static busybox
       static-agda
 
@@ -30,7 +30,7 @@ in
       Env = [
         "LANG=C.UTF-8" # Needed for GHC to set the correct encoding on handles
         "PATH=/lib/node_modules/.bin/:/bin/"
-        
+
         # Needed for Github Actions:
         "LD_LIBRARY_PATH=${lib.makeLibraryPath [ pkgs.stdenv.cc.cc ]}"
         "GIT_SSL_CAINFO=${cacert}/etc/ssl/certs/ca-bundle.crt"
@@ -44,9 +44,6 @@ in
     cp ./bin/env ./usr/bin/
 
     ${the-lab.fonts { prefix = "./root/"; }}
-
-    mkdir -p ./root/static/otf
-    cp ${gyre-fonts}/share/fonts/truetype/texgyrepagella*.otf ./root/static/otf -rv
 
     # Needed for Github Actions
     ln -s ${pkgs.glibc}/lib/ld-linux-x86-64.so.2 ./lib64/ld-linux-x86-64.so.2

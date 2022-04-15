@@ -7,7 +7,7 @@
 \prosets:\ht{Prosets}
 \sets:\ht{Sets}
 \props:\ht{Props}
-\top:\mathfrak{Top}
+\topos:\mathfrak{Top}
 \cat:\ht{Cat}
 \strcat:\ht{Cat}_\id{strict}
 \grpd:\ht{Grpd}

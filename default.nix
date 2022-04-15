@@ -93,14 +93,11 @@ in
 
       # For building the text and maths:
       git sassc nodePackages.katex
-      haskellPackages.agda-reference-filter 
+      haskellPackages.agda-reference-filter
       haskellPackages.agda-fold-equations
 
       # For building diagrams:
       poppler_utils rubber our-texlive
-
-      # Static fonts:
-      gyre-fonts
     ];
 
     buildPhase = ''
@@ -119,12 +116,6 @@ in
 
     # Copy bits of Iosevka
     ${fonts {}}
-
-    # Copy bits of TeX Gyre
-    install -Dm 644 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-bold.otf;
-    install -Dm 644 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-regular.otf;
-    install -Dm 644 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-italic.otf;
-    install -Dm 644 {${gyre-fonts}/share/fonts/truetype/,$out/static/otf/}texgyrepagella-bolditalic.otf;
     '';
 
     passthru = {
@@ -133,7 +124,7 @@ in
 
         # For building the text and maths:
         git sassc pandoc nodePackages.katex
-        haskellPackages.agda-reference-filter 
+        haskellPackages.agda-reference-filter
         haskellPackages.agda-fold-equations
         python
 
