@@ -293,7 +293,7 @@ But that's just algebra, hence uninteresting:
             B.unit                       ∎
 
       const : ∀ (x y : fibre (f .fst) x) → (e' (x .fst)) ≡ (e' (y .fst))
-      const a b = F.zero-diff→≡ (const′ a b)
+      const a b = F.zero-diff (const′ a b)
 ```
 
 The rest of the construction is almost tautological: By _definition_, if

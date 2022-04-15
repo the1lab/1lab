@@ -46,7 +46,10 @@ give the unit, both on the left and on the right:
     inverser : {x : A} → x * inverse x ≡ unit
 
   open is-monoid has-is-monoid public
+```
 
+<!--
+```agda
   abstract
     inv-unit : inverse unit ≡ unit
     inv-unit = monoid-inverse-unique
@@ -69,12 +72,17 @@ give the unit, both on the left and on the right:
               refl
          ·· inverser
 
-    zero-diff→≡ : ∀ {x y} → x * inverse y ≡ unit → x ≡ y
-    zero-diff→≡ {x = x} {y = y} p =
+    zero-diff : ∀ {x y} → x * inverse y ≡ unit → x ≡ y
+    zero-diff {x = x} {y = y} p =
       monoid-inverse-unique has-is-monoid _ _ _ p inversel
+
+  underlying-monoid : Monoid ℓ
+  underlying-monoid = A , record
+    { identity = unit ; _⋆_ = _*_ ; has-is-monoid = has-is-monoid }
 
 open is-group
 ```
+-->
 
 ## is-group is propositional
 

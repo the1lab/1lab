@@ -4,6 +4,7 @@ open import Cat.Functor.FullSubcategory public
 open import Cat.Thin.Instances.Sub public
 open import Cat.Instances.Comma public
 open import Cat.Instances.Slice public
+open import Cat.Instances.Product public
 open import Cat.Functor.Base public
 open import Cat.Univalent public
 open import Cat.Prelude public
