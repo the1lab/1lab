@@ -175,11 +175,11 @@ i < j = (to-nat i) Nat.< (to-nat j)
 infix 3 _<_
 ```
 
-Next, we define a pair of functions `squish{.Agda} and `skip`{.Agda},
+Next, we define a pair of functions `squish`{.Agda} and `skip`{.Agda},
 which are the building blocks for _all_ monotone functions between
-`Fin`{.Agda}. `squish i` takes a `j : Fin (suc n)` to a `Fin n`
-by mapping both `i` and `i+1` to `i`. Its counterpart `skip i`
-takes some `j : Fin n` to a `Fin (suc n)` by skipping over `i` instead.
+`Fin`{.Agda}. `squish i` takes a `j : Fin (suc n)` to a `Fin n` by
+mapping both `i` and `i+1` to `i`. Its counterpart `skip i` takes some
+`j : Fin n` to a `Fin (suc n)` by skipping over `i` instead.
 
 ```agda
 squish : ∀ {n} → Fin n → Fin (suc n) → Fin n
@@ -194,3 +194,39 @@ skip (fsuc i) fzero = fzero
 skip (fsuc i) (fsuc j) = fsuc (skip i j)
 ```
 
+## As a subset
+
+While `Fin`{.Agda} is very conveniently defined as an indexed family of
+types, it can also be defined as a subset of the natural numbers:
+Namely, the finite ordinal $[n]$ is the same type as as $\{ x : x < n
+\}$. This makes sense! Any set with $n$ elements is equivalent to any
+other set with $n$ elements, and a very canonical choice is the first
+$n$ values of $\mathbb{N}$.
+
+```agda
+ℕ< : Nat → Type
+ℕ< x = Σ[ n ∈ Nat ] (n Nat.< x)
+
+from-ℕ< : ∀ {n} → ℕ< n → Fin n
+from-ℕ< {n = suc n} (zero , q) = fzero
+from-ℕ< {n = suc n} (suc p , q) = fsuc (from-ℕ< (p , q))
+
+to-ℕ< : ∀ {n} → Fin n → ℕ< n
+to-ℕ< x = to-nat x , p x where
+  p : ∀ {n} (x : Fin n) → suc (to-nat x) Nat.≤ n
+  p {n = suc n} fzero = Nat.0≤x n
+  p {n = suc n} (fsuc x) = p x
+
+to-from-ℕ< : ∀ {n} (x : ℕ< n) → to-ℕ< {n = n} (from-ℕ< x) ≡ x
+to-from-ℕ< {n = suc n} x = Σ-prop-path (λ k → Nat.≤-prop k n) (to-from-ℕ _) where
+  to-from-ℕ : ∀ {n} x → to-nat {n = n} (from-ℕ< x) ≡ x .fst
+  to-from-ℕ {n = suc n} (zero , p) = refl
+  to-from-ℕ {n = suc n} (suc x , p) = ap suc (to-from-ℕ (x , p))
+
+from-to-ℕ< : ∀ {n} (x : Fin n) → from-ℕ< (to-ℕ< x) ≡ x
+from-to-ℕ< fzero = refl
+from-to-ℕ< (fsuc x) = ap fsuc (from-to-ℕ< x)
+
+Fin≃ℕ< : ∀ {n} → Fin n ≃ ℕ< n
+Fin≃ℕ< = to-ℕ< , is-iso→is-equiv (iso from-ℕ< to-from-ℕ< from-to-ℕ<)
+```
