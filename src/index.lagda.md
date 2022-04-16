@@ -4,17 +4,19 @@ module index where
 
 # 1lab {style="margin-top: 0;"}
 
-A formalised, cross-linked reference resource for mathematics done in
+A formalised, cross-linked reference resource for cubical methods in
 Homotopy Type Theory. Unlike the [HoTT book], the 1lab is not a "linear"
 resource: Concepts are presented as a directed graph, with links
 indicating _dependencies_. For instance, the statement of the univalence
-principle depends on [_universes_](agda://1Lab.Type),
-[_identifications_](agda://1Lab.Path) and
-[_equivalences_](agda://1Lab.Equiv).  In addition to the hyperlinked
-"web of concepts" provided by the Agda code, there is a short
-introduction to homotopy type theory: **[Start here](1Lab.intro.html)**.
+principle depends on [universes], [identifications] and [equivalences].
+In addition to the hyperlinked "web of concepts" provided by the Agda
+code, there is a short introduction to homotopy type theory: **[Start
+here](1Lab.intro.html)**.
 
 [HoTT book]: https://homotopytypetheory.org/book/
+[universes]: agda://1Lab.Type
+[identifications]: agda://1Lab.Path
+[equivalences]: agda://1Lab.Equiv
 
 <!--
 ```agda
@@ -31,69 +33,37 @@ _ : ∀ {ℓ} {A B : Type ℓ} → is-equiv (path→equiv {A = A} {B})
 _ = univalence
 ```
 
-If you don't know what those concepts refer to, it could be challenging
-to figure out what the definition above is even saying - or how it's
-proven. Fortunately, every single text element there is a link! Try
-clicking on the word `is-equiv`{.Agda} - either here in the text, or
-there in the code. It'll take you to the definition, which will be
-highlighted in orange to draw your attention.
+The purpose of the "web of concepts" approach is to let each reader
+approach the 1lab at their own pace: If you already know what all of the
+code above means, you can click on `univalence`{.Agda} to be taken
+directly to the construction of the equivalence --- but if you _don't_,
+you can click on other definitions like `is-equiv`{.Agda} and
+`path→equiv`{.Agda}, and in turn explore the dependencies of _those_
+concepts, and so on.
 
-Links are colour-coded to indicate what they point to. In body text,
-links rendered in [blue (or purple) sans-serif font](index.html) link to
-_pages_; Links rendered in one of the syntax highlighting colours and
-`monospace`{.agda ident=Category} link to a _definition_. Specifically,
-the following colours are used:
+The 1lab is a community project: we use [GitHub] for source control and
+talk on [Discord]. Our purpose is to make cubical methods in homotopy
+type theory accessible to, and inclusive of, everyone who is interested,
+regardless of cultural background, age, ability, ethnicity, gender
+identity, or expression. Correspondingly, interactions in those forums
+are governed by the [Contributor Covenant Code of Conduct][cccc]. **We
+believe HoTT is for everyone, and are committed to fostering a kind,
+inclusive environment.**
 
-* Blue for records and functions: `is-equiv`{.Agda}, `sym`{.agda}
+[GitHub]: https://github.com/plt-amy/1lab
+[Discord]: https://discord.gg/NvXkUVYcxV
+[cccc]: https://github.com/plt-amy/1lab/blob/main/CODE_OF_CONDUCT.md
 
-* Green for inductive constructors, coinductive constructors, and the
-endpoints of the interval: `i0`{.agda}
+Mathematics is, fundamentally, a social activity. Correspondingly, we
+have a page dedicated to letting authors introduce and talk abit
+themselves and their other work:
 
-* Maroon for modules: `1Lab.Type`{.Agda}
-
-* Purple for record selectors: `is-eqv`{.agda ident="is-equiv.is-eqv"}
-
-<!--
-```agda
-_ = i0
-_ = is-equiv
-_ = is-equiv.is-eqv
-_ = sym
-```
--->
-
-## About
-
-The 1lab is an [open-source] project with the goal of making formalised
-mathematics, and especially formalised mathematics done in Homotopy Type
-Theory, accessible to as wide as audience as possible. In addition to
-the hyperlinked "web of concepts" provided by the Agda code, there is a
-short introduction to homotopy type theory: **[Start
-here](1Lab.intro.html)**.
-
-[open-source]: https://github.com/plt-amy/cubical-1lab
-
-Contributions are, of course, welcome! If you need help getting set up,
-want to discuss a contribution, or just ask a question, [join our
-Discord server]! If you don't feel like your contribution merits a pull
-request (i.e.: it's just fixing a typo), it's fine to just mention it on
-the server and I'll see that it gets addressed as soon as possible.
-
-[join our Discord server]: https://discord.gg/NvXkUVYcxV
-
-Since this website is about mathematics, and mathematics is done by
-people, there is a page where contributors can write short profiles
-about themselves: Keeping with the theme, it's an Agda module:
-`Authors`{.Agda} (there isn't any code there, though!)
-
-<!--
 ```agda
 open import Authors
 ```
--->
 
-It'd be very unfair of me not to mention other resources that could be
-helpful for learning about Homotopy Type Theory:
+Similarly, we maintain this list of related resources which serve as an
+introduction to HoTT in general:
 
 * The “canonical” reference is [the HoTT Book], written by a
 variety of mathematicians at the IAS Special Year for Univalent
@@ -127,55 +97,37 @@ Mathematics with Agda].
 
 [Introduction to Univalent Foundations of Mathematics with Agda]: https://www.cs.bham.ac.uk/~mhe/HoTT-UF-in-Agda-Lecture-Notes/HoTT-UF-Agda.html
 
-With those two references in mind, the 1lab aims to:
+* Prof. Favonia has kindly uploaded the outline, videos and lecture
+notes for their 2020 course on higher-dimensional type theory, which
+also serves as an introduction to cubical methods in homotopy type
+theory, aimed at graduate students. You can find the course page
+[here](https://favonia.org/courses/hdtt2020/), the videos [here on their
+YouTube](https://www.youtube.com/playlist?list=PL0OBHndHAAZrGQEkOZGyJu7S7KudAJ8M9),
+and the notes [here](https://github.com/favonia/hdtt2020-notes/) (though
+heed the warning in the README).
 
-* Provide a comprehensibly documented example of mathematics done in
-HoTT, formalised entirely in safe[^1] Cubical Agda, for other students
-of homotopy type theory to consult. This doesn't bring anything new to
-the table for HoTT: Many, if not most, of the theorems in the book were
-already formalised in Coq.
+* Another comprehensive, formalised Agda resource is the [agda-unimath]
+project, though unlike us (and like prof. Escardó's lecture notes) they
+make use of _axiomatic_ HoTT: Univalence is a postulate, and thus does
+not have computational content.
 
-[^1]: The 1lab is not compiled with `--safe` because some modules
-explicitly assume inconsistent principles with the goal of providing
-_counterexamples_. For instance, to formalise how [type-in-type leads to
-Russell's paradox], we need to enable type-in-type!
+  Regardless, they have formalised a great deal of "ordinary"
+  mathematics in the univalent context: elementary number theory, group
+  theory and combinatorics being the most prominent projects.
 
-[type-in-type leads to Russell's paradox]: 1Lab.Counterexamples.Russell.html
-
-* Provide an introduction to HoTT as it's done in Cubical Type Theory to
-those who are already familiar with "Book HoTT". There are significant
-differences, including, but very much not limited to, univalence having
-computational content!
-
-* Do both of these in a _discoverable_ manner:
-
-  * All Agda identifiers are
-  cross-linked (this is an Agda feature and requires no effort on my
-  part);
-
-  * Concepts are linked to the first time they are used in a
-  page[^2];
-
-  * Diagrams are employed where appropriate, and there is
-  infrastructure in place to make this easy to do;
-
-  * Definitions are done in multiple ways, when appropriate, so it is
-  possible to compare different approaches.
-
-[^2]: If you encounter a case where this isn't true, please do not
-hesitate to contribute!
-
-Again, I want to stress that _the 1lab is free and open-source
-software_. If you feel like _any_ of the goals above are not being
-achieved, [submit a merge request]!
-
-[submit a merge request]: https://github.com/plt-amy/cubical-1lab/pulls
+[agda-unimath]: https://unimath.github.io/agda-unimath/
 
 ## Technology
 
 The 1Lab uses [Iosevka](https://typeof.net/Iosevka/) as its monospace
 typeface. Iosevka is licensed under the SIL Open Font License, v1.1, a
-copy of which can be found [here](/static/licenses/LICENSE.Iosevka).
+copy of which can be found [here](/static/licenses/LICENSE.Iosevka). As
+the sans-serif typeface, we use the [Inria Sans] webfont, and as a serif
+typeface, [EB Garamond]. These fonts are both open-source, though rather
+than rehosting them, we use them from Google Fonts.
+
+[Inria Sans]: https://fonts.google.com/specimen/Inria+Sans
+[EB Garamond]: https://fonts.google.com/specimen/EB+Garamond
 
 Mathematics is rendered using [KaTeX](https://katex.org), and as so, the
 1Lab redistributes KaTeX's fonts and stylesheets, even though the
@@ -458,5 +410,6 @@ open import Algebra.Group.Cat.FinitelyComplete -- Finite limits in Groups
 open import Algebra.Group.Homotopy             -- Homotopy groups
 open import Algebra.Group.Subgroup             -- Subgroups, images and kernels
 
-open import Algebra.Group.Ab.Free              -- Abelianisations
+open import Algebra.Group.Ab -- Abelian groups, and the category Ab
+open import Algebra.Group.Ab.Free -- The free abelian group on a group
 ```
