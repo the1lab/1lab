@@ -60,6 +60,7 @@ article {
   padding-bottom: 2em;
   margin-top: 0 !important;
   width: 85ch;
+  max-width: 100%;
 
   > :nth-child(1), > pre.Agda:first-of-type {
     margin-top: 0;
