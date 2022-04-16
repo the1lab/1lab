@@ -96,8 +96,8 @@ module _ {I : Type ℓ'} (i-is-grpd : is-groupoid I) (F : I → C.Ob) where
     lim : Limit _
     lim .top = thelim
     lim .has⊤ x .centre .hom = IP.⟨ x .ψ ⟩
-    lim .has⊤ x .centre .commutes = IP.commute
-    lim .has⊤ x .paths h = Cone-hom-path _ (sym (IP.unique _ λ i → h .commutes))
+    lim .has⊤ x .centre .commutes o = IP.commute
+    lim .has⊤ x .paths h = Cone-hom-path _ (sym (IP.unique _ λ i → h .commutes _))
 
 module _ {I : Type ℓ'} (isg : is-groupoid I) (F : Functor (Disc I isg) C) where
   private module F = Functor F
@@ -121,11 +121,11 @@ module _ {I : Type ℓ'} (isg : is-groupoid I) (F : Functor (Disc I isg) C) wher
     the-ip .ΠF = lim.apex
     the-ip .π = lim.ψ
     the-ip .has-is-ip .⟨_⟩ f = lim .has⊤ (Proj→Cone f) .centre .hom
-    the-ip .has-is-ip .commute = lim .has⊤ (Proj→Cone _) .centre .commutes
+    the-ip .has-is-ip .commute = lim .has⊤ (Proj→Cone _) .centre .commutes _
     the-ip .has-is-ip .unique {h = h} f p i =
       lim .has⊤ (Proj→Cone f) .paths other (~ i) .hom
       where
         other : Cone-hom _ _ _
         other .hom = h
-        other .commutes {i} = p i
+        other .commutes i = p i
 ```

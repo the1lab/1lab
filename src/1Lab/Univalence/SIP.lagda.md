@@ -655,7 +655,7 @@ imposing further structure on the axioms themselves, it is not clear how
 to add axioms to a _transport_ structure.
 
 Regardless, a very useful consequence of the SIP is that axioms can be
-lifted from equivalent underlying structures. For instance: $\mathbb{N}$
+lifted from equivalent underlying structures. For instance: $\bb{N}$
 can be defined as both unary numbers (the construction of `Nat`{.Agda}),
 or as binary numbers. If you prove that `Nat`{.Agda} is a monoid, and
 `Nat ≃ Bin` as pointed ∞-magmas, then `Bin` inherits the monoid

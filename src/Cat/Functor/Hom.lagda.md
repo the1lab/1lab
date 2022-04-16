@@ -215,8 +215,8 @@ of $K$. The tricky bit of the proof here is that we need to use
 `induce`{.Agda} to regard `f` as a morphism in the category of elements.
 
 ```agda
-      factors : ∀ {o} → universal ∘nt Reassemble.ψ o ≡ K.ψ o
-      factors {o} = Nat-path λ x → funext λ f →
+      factors : ∀ o → universal ∘nt Reassemble.ψ o ≡ K.ψ o
+      factors o = Nat-path λ x → funext λ f →
         K.ψ (elem x (P.F₁ f (o .section))) .η x id ≡˘⟨ (λ i → K.commutes (induce f (o .section)) i .η x id) ⟩
         K.ψ o .η x (f ∘ id)                        ≡⟨ ap (K.ψ o .η x) (idr f) ⟩
         K.ψ o .η x f ∎
@@ -229,7 +229,7 @@ Finally, uniqueness: This just follows by the commuting conditions on
       unique : (α : Cocone-hom (よ F∘ πₚ) Reassemble K)
              → cocone-hom universal factors ≡ α
       unique α = Cocone-hom-path (よ F∘ πₚ) $ Nat-path λ x → funext λ px →
-        K.ψ (elem x px) .η x id                        ≡˘⟨ (λ i → α .commutes {o = elem x px} i .η x id) ⟩
+        K.ψ (elem x px) .η x id                        ≡˘⟨ (λ i → α .commutes (elem x px) i .η x id) ⟩
         α .hom .η x (Reassemble.ψ (elem x px) .η x id) ≡⟨ ap (α .hom .η x) (happly (P.F-id) px) ⟩
         α .hom .η x px ∎
 ```

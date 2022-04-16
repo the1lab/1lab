@@ -142,7 +142,7 @@ absorb intersections.
         λ _ x∈X → inc (inl x∈X)
 ```
 
-This means that $\mathbb{P}(X), \cap, \cup$ assemble into a lattice,
+This means that $\bb{P}(X), \cap, \cup$ assemble into a lattice,
 which we call `Power`{.Agda}:
 
 ```agda
@@ -195,7 +195,7 @@ $X \subseteq Y$, so we are done.
 ## Completeness
 
 The lattice of powersets of a type is [complete], since it admits
-[arbitrary meets]. The meet of a family $F : I \to \mathbb{P}$ is the
+[arbitrary meets]. The meet of a family $F : I \to \bb{P}$ is the
 subset represented by $\{ i : (\forall x)\ i \in F(x) \}$, i.e., the set
 of elements present in _all_ the subsets in the family.
 

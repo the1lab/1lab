@@ -137,14 +137,14 @@ must map $\lim F(-, x) \to \lim F(-, y)$, but the space of maps $X \to
     the-apex .F-id = ap hom (!-for-unique map) where
       map : Cone-hom _ _ _
       map .hom = C.id
-      map .commutes = C.idr _ ∙ C.introl F′.second-id
+      map .commutes _ = C.idr _ ∙ C.introl F′.second-id
     the-apex .F-∘ {x} {y} {z} f g = ap hom (!-for-unique map)
       where
         map : Cone-hom _ _ _
         map .hom = the-apex .F₁ f C.∘ the-apex .F₁ g
-        map .commutes {o} =
-          (lim-for z .ψ o C.∘ _ C.∘ _)                               ≡⟨ C.extendl (!-for (map-cone f) .commutes) ⟩
-          (F′.second f C.∘ lim-for y .ψ o C.∘ _)                     ≡⟨ ap (F′.second f C.∘_) (!-for (map-cone g) .commutes) ⟩
+        map .commutes o =
+          (lim-for z .ψ o C.∘ _ C.∘ _)                               ≡⟨ C.extendl (!-for (map-cone f) .commutes _) ⟩
+          (F′.second f C.∘ lim-for y .ψ o C.∘ _)                     ≡⟨ ap (F′.second f C.∘_) (!-for (map-cone g) .commutes _) ⟩
           (F′.second f C.∘ F′.second g C.∘ lim-for x .ψ o)           ≡⟨ C.pulll (sym F′.second∘second) ⟩
           (F′.second (f E.∘ g) C.∘ has-D-lims (F′.Left x) .top .ψ o) ∎
 ```
@@ -161,7 +161,7 @@ commutes since each limiting cone $\lim F(-,x)$ is indeed a cone.
 ```agda
   functor-cone .ψ x .η y              = lim-for y .ψ x
   functor-cone .ψ x .is-natural y z f =
-    !-for (map-cone f) .commutes ∙ ap₂ C._∘_ (C.eliml (λ i → F.F-id i .η z)) refl
+    !-for (map-cone f) .commutes _ ∙ ap₂ C._∘_ (C.eliml (λ i → F.F-id i .η z)) refl
   functor-cone .commutes f = Nat-path λ x →
       ap₂ C._∘_ (C.intror (F-id (F.₀ _))) refl ∙ lim-for _ .commutes f
 ```
@@ -185,7 +185,7 @@ everything in sight:
 
     ch : Cone-hom F K functor-cone
     ch .hom .η x = map _ .hom
-    ch .commutes = Nat-path λ x → map _ .commutes ∙ C.eliml F′.second-id
+    ch .commutes _ = Nat-path λ x → map _ .commutes _ ∙ C.eliml F′.second-id
 ```
 
 The hard part, then, is showing that this is a natural transformation.
@@ -202,17 +202,17 @@ quite tedious:
       where
         h1 : Cone-hom (F′.Left y) (Lift-cone K f) (lim-for y)
         h1 .hom = map y .hom C.∘ K .apex .F₁ f
-        h1 .commutes {o} =
-          lim-for y .ψ o C.∘ map y .hom C.∘ K .apex .F₁ f  ≡⟨ C.pulll (map y .commutes ∙ C.eliml F′.second-id) ⟩
+        h1 .commutes o =
+          lim-for y .ψ o C.∘ map y .hom C.∘ K .apex .F₁ f  ≡⟨ C.pulll (map y .commutes _ ∙ C.eliml F′.second-id) ⟩
           K .ψ _ .η _ C.∘ K .apex .F₁ f                    ≡⟨ K .ψ _ .is-natural _ _ _ ⟩
           F₁ (F.₀ o) f C.∘ K .ψ o .η x                     ≡⟨ ap (C._∘ K .ψ o .η x) (C.introl (ap (λ e → e .η y) (F-id F))) ⟩
           F′.second f C.∘ K .ψ o .η x                      ∎
 
         h2 : Cone-hom (F′.Left y) (Lift-cone K f) (lim-for y)
         h2 .hom = has-D-lims (F′.Left y) .has⊤ (map-cone f) .centre .hom C.∘ map x .hom
-        h2 .commutes {o} =
-          lim-for y .ψ o C.∘ !-for (map-cone f) .hom C.∘ map x .hom  ≡⟨ C.pulll (has-D-lims (F′.Left y) .has⊤ (map-cone f) .centre .commutes) ⟩
-          (F′.second f C.∘ lim-for x .ψ o) C.∘ map x .hom            ≡⟨ C.pullr (map x .commutes ∙ C.eliml F′.second-id) ⟩
+        h2 .commutes o =
+          lim-for y .ψ o C.∘ !-for (map-cone f) .hom C.∘ map x .hom  ≡⟨ C.pulll (has-D-lims (F′.Left y) .has⊤ (map-cone f) .centre .commutes _) ⟩
+          (F′.second f C.∘ lim-for x .ψ o) C.∘ map x .hom            ≡⟨ C.pullr (map x .commutes _ ∙ C.eliml F′.second-id) ⟩
           F′.second f C.∘ K .ψ o .η x                                ∎
 ```
 
@@ -228,7 +228,7 @@ limit $\lim F$.
     where
       hom' : ∀ {x} → Cone-hom (F′.Left x) _ _
       hom' {x} .hom = h .hom .η x
-      hom' {x} .commutes = ap (λ e → e .η _) (h .commutes) ∙ C.introl F′.second-id
+      hom' {x} .commutes o = ap (λ e → e .η _) (h .commutes o) ∙ C.introl F′.second-id
 
   functor-limit : Limit F
   functor-limit .top            = functor-cone

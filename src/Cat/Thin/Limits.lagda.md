@@ -55,7 +55,7 @@ limit at all:
   lim .top .ψ = Π.π
   lim .top .commutes _ = P.Hom-is-prop _ _ _ _
   lim .has⊤ x .centre .hom = Π.⟨ x .ψ ⟩
-  lim .has⊤ x .centre .commutes = P.Hom-is-prop _ _ _ _
+  lim .has⊤ x .centre .commutes o = P.Hom-is-prop _ _ _ _
   lim .has⊤ x .paths _ = Cone-hom-path _ (P.Hom-is-prop _ _ _ _)
 ```
 
@@ -103,7 +103,7 @@ has-indexed-coproducts→proset-is-cocomplete has-ips {D} F = colim where
   colim .bot .ψ = ι
   colim .bot .commutes _ = P.Hom-is-prop _ _ _ _
   colim .has⊥ x .centre .hom = match (x .ψ)
-  colim .has⊥ x .centre .commutes = P.Hom-is-prop _ _ _ _
+  colim .has⊥ x .centre .commutes o = P.Hom-is-prop _ _ _ _
   colim .has⊥ x .paths _ = Cocone-hom-path _ (P.Hom-is-prop _ _ _ _)
 
 indexed-join→indexed-coproduct

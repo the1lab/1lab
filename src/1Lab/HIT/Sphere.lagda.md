@@ -13,9 +13,9 @@ module 1Lab.HIT.Sphere where
 # The -1 and 0 Spheres
 
 In classical topology, the _topological space_ $S^n$ is typically
-defined as the subspace of $\mathbb{R}^{n+1}$ consisting of all points
+defined as the subspace of $\bb{R}^{n+1}$ consisting of all points
 at unit distance from the origin. We see from this definition that the
-$0$-sphere is the discrete two point space $\{-1, 1\} \subset \mathbb{R}$,
+$0$-sphere is the discrete two point space $\{-1, 1\} \subset \bb{R}$,
 and that the $-1$ sphere is the empty subspace $\varnothing \subset \{0\}$.
 We will recycle existing types and define:
 

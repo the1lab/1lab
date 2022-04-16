@@ -236,22 +236,8 @@ the identity and associativity laws from its underlying category.
     module X = Algebra-on (X .snd)
     module Y = Algebra-on (Y .snd)
 
-    T : Type h
-    T = Σ[ h ∈ _ ] (h C.∘ X.ν ≡ Y.ν C.∘ M₁ h)
-
-    unpack : T → Algebra-hom M X Y
-    unpack (h , x) .morphism = h
-    unpack (h , x) .commutes = x
-
-    pack : Algebra-hom M X Y → T
-    pack x = x .morphism , x .commutes
-
-    unpack∘pack : is-left-inverse unpack pack
-    unpack∘pack x i .morphism = x .morphism
-    unpack∘pack x i .commutes = x .commutes
-
     hl : is-set (Algebra-hom M X Y)
-    hl = retract→is-hlevel 2 unpack pack unpack∘pack
+    hl = is-hlevel≃ 2 (sigma≃record (Algebra-hom M X Y))
       (Σ-is-hlevel 2 (C.Hom-set _ _) λ _ → is-prop→is-set (C.Hom-set _ _ _ _))
 ```
 

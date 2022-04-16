@@ -83,8 +83,8 @@ module _ {I : Type ℓ'} (i-is-grpd : is-groupoid I) (F : I → C.Ob) where
     colim : Colimit _
     colim .bot = thecolim
     colim .has⊥ x .centre .hom = IC.match (x .ψ)
-    colim .has⊥ x .centre .commutes = IC.commute
-    colim .has⊥ x .paths h = Cocone-hom-path _ (sym (IC.unique _ λ i → h .commutes))
+    colim .has⊥ x .centre .commutes o = IC.commute
+    colim .has⊥ x .paths h = Cocone-hom-path _ (sym (IC.unique _ λ i → h .commutes _))
 
 module _ {I : Type ℓ'} (isg : is-groupoid I) (F : Functor (Disc I isg) C) where
   private module F = Functor F
@@ -107,13 +107,13 @@ module _ {I : Type ℓ'} (isg : is-groupoid I) (F : Functor (Disc I isg) C) wher
     the-ic .ΣF = colim.coapex
     the-ic .ι  = colim.ψ
     the-ic .has-is-ic .match f = colim .has⊥ (Inj→Cocone f) .centre .hom
-    the-ic .has-is-ic .commute = colim .has⊥ _ .centre .commutes
+    the-ic .has-is-ic .commute = colim .has⊥ _ .centre .commutes _
     the-ic .has-is-ic .unique {h = h} f p i =
       colim .has⊥ (Inj→Cocone f) .paths h′ (~ i) .hom
       where
         h′ : Cocone-hom _ _ _
         h′ .hom = h
-        h′ .commutes = p _
+        h′ .commutes o = p _
 ```
 
 # Disjoint coproducts

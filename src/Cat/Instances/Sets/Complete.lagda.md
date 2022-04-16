@@ -74,11 +74,11 @@ out by $\lim F$ since $K$ is a cone, hence $F(f) \circ \psi(x) =
     open Cone-hom
     map : Cone-hom F K cone
     map .hom x = (λ j → K.ψ j x) , λ x y f → happly (K.commutes f) _
-    map .commutes = refl
+    map .commutes _ = refl
 
     map-unique : ∀ m → map ≡ m
     map-unique m = Cone-hom-path _ (funext λ x →
-      Σ-prop-path comm-prop (funext (λ j i → m .commutes (~ i) x)))
+      Σ-prop-path comm-prop (funext λ y i → m .commutes y (~ i) x))
 ```
 
 <!--

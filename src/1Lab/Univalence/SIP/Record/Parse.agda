@@ -12,16 +12,11 @@ open import Data.List
 
 module 1Lab.Univalence.SIP.Record.Parse where
 
-findName : Term → TC Name
-findName (def nm _) = returnTC nm
-findName (lam hidden (abs _ t)) = findName t
-findName t = typeError (strErr "The projections in a field descriptor must be record selectors: " ∷ termErr t ∷ [])
-
 parseFields : Term → Term → Term → TC (List (InternalField × TypedTm))
 parseFields _ _ (con (quote record:) _) = returnTC []
 parseFields s h (con (quote _field[_by_]) (ℓ h∷ ℓ₁ h∷ ℓ₁' h∷ R h∷ ι h∷ fs v∷ ℓ₂ h∷ ℓ₂' h∷ S h∷ ι' h∷ sfieldTerm v∷ efieldTerm v∷ []))
   = do ℓ ← reduce ℓ
-       struct-field ← findName sfieldTerm 
+       struct-field ← findName sfieldTerm
        pres-field ← findName efieldTerm
 
        desc ← newMeta (def (quote Str-term) (ℓ v∷ ℓ₂' v∷ S v∷ []))
@@ -37,7 +32,7 @@ parseFields s h (con (quote _field[_by_]) (ℓ h∷ ℓ₁ h∷ ℓ₁' h∷ R h
 
 parseFields strTerm homTerm (con (quote _axiom[_by_])
             (ℓ h∷ ℓ₁ h∷ ℓ₁' h∷ R h∷ ι h∷ fs v∷ ℓ₂ h∷ P h∷ fieldTerm v∷ is-prop v∷ []))
-  = do struct-field ← findName fieldTerm 
+  = do struct-field ← findName fieldTerm
        let f : InternalField × TypedTm
            f = propertyField struct-field
              , record { type = def (quote PropHelperType)

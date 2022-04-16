@@ -130,28 +130,15 @@ says that the map $h$ "respects reindexing", or less obliquely
 
   abstract
     /-Hom-is-set : ∀ {c a b} → is-set (/-Hom {c = c} a b)
-    /-Hom-is-set {a = a} {b} =
-      retract→is-hlevel 2 pack unpack inv T-is-set
+    /-Hom-is-set {a = a} {b} = hl
       where
         module a = /-Obj a
         module b = /-Obj b
 
-        T : Type ℓ
-        T = Σ[ map ∈ C.Hom a.domain b.domain ] (b.map C.∘ map ≡ a.map)
-
-        T-is-set : is-set T
-        T-is-set = Σ-is-hlevel 2 (C.Hom-set _ _)
-                                (λ _ → is-prop→is-set (C.Hom-set _ _ _ _))
-
-        pack : T → /-Hom a b
-        pack (f , g) ./-Hom.map = f
-        pack (f , g) ./-Hom.commutes = g
-
-        unpack : /-Hom a b → T
-        unpack x = x ./-Hom.map , x ./-Hom.commutes
-
-        inv : is-left-inverse pack unpack
-        inv x = /-Hom-path refl
+        hl : is-set (/-Hom a b)
+        hl = is-hlevel≃ 2 (sigma≃record (/-Hom a b)) $
+          Σ-is-hlevel 2 (C.Hom-set _ _)
+            (λ _ → is-prop→is-set (C.Hom-set _ _ _ _))
 ```
 -->
 
@@ -594,15 +581,15 @@ in $\ca{C}$, then pass back to the slice category.
       module cont = is-contr (lim.has⊤ other′)
       ch : Cone-hom F other nadir
       ch .hom .map = cont.centre .hom
-      ch .hom .commutes = cont.centre .commutes {o = inr tt}
-      ch .commutes {o} = /-Hom-path (cont.centre .commutes {o = inl o})
+      ch .hom .commutes = cont.centre .commutes (inr tt)
+      ch .commutes o = /-Hom-path (cont.centre .commutes (inl o))
 
       cont : ∀ c → ch ≡ c
       cont c = Cone-hom-path _ (/-Hom-path (ap hom uniq)) where
         c′ : Cone-hom F′ other′ lim.top
         c′ .hom = c .hom .map
-        c′ .commutes {inl x} = ap map (c .commutes {o = x})
-        c′ .commutes {inr tt} = c .hom .commutes
+        c′ .commutes (inl x) = ap map (c .commutes x)
+        c′ .commutes (inr tt) = c .hom .commutes
 
         uniq = cont.paths c′
 ```

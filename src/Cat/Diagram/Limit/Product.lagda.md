@@ -72,25 +72,25 @@ simple enough to establish by appropriately shuffling the data.
 Prod→Lim : ∀ {iss} {A B} → Product C A B → Limit (2-object-diagram {iss = iss} A B)
 Prod→Lim prod .top = Pair→Cone (prod .π₁) (prod .π₂)
 Prod→Lim prod .has⊤ x .centre .hom = prod .⟨_,_⟩ (x .ψ false) (x .ψ true)
-Prod→Lim prod .has⊤ x .centre .commutes {false} = prod .π₁∘factor
-Prod→Lim prod .has⊤ x .centre .commutes {true}  = prod .π₂∘factor
+Prod→Lim prod .has⊤ x .centre .commutes false = prod .π₁∘factor
+Prod→Lim prod .has⊤ x .centre .commutes true  = prod .π₂∘factor
 Prod→Lim prod .has⊤ x .paths y = Cone-hom-path (2-object-diagram _ _)
-  (sym (prod .unique (y .hom) (y .commutes) (y .commutes)))
+  (sym (prod .unique (y .hom) (y .commutes _) (y .commutes _)))
 
 Lim→Prod : ∀ {iss} {A B} → Limit (2-object-diagram {iss = iss} A B) → Product C A B
 Lim→Prod x .apex = x .top .apex
 Lim→Prod x .π₁   = x .top .ψ false
 Lim→Prod x .π₂   = x .top .ψ true
 Lim→Prod x .has-is-product .⟨_,_⟩ p1 p2 = x .has⊤ (Pair→Cone p1 p2) .centre .hom
-Lim→Prod x .has-is-product .π₁∘factor = x .has⊤ (Pair→Cone _ _) .centre .commutes
-Lim→Prod x .has-is-product .π₂∘factor = x .has⊤ (Pair→Cone _ _) .centre .commutes
+Lim→Prod x .has-is-product .π₁∘factor = x .has⊤ (Pair→Cone _ _) .centre .commutes _
+Lim→Prod x .has-is-product .π₂∘factor = x .has⊤ (Pair→Cone _ _) .centre .commutes _
 Lim→Prod x .has-is-product .unique f p q =
   sym (ap hom (x .has⊤ (Pair→Cone _ _) .paths other))
   where
     other : Cone-hom (2-object-diagram _ _) _ _
     other .hom = f
-    other .commutes {false} = p
-    other .commutes {true}  = q
+    other .commutes false = p
+    other .commutes true  = q
 ```
 
 We note that _any_ functor $F : \id{Disc}(\{0,1\}) \to \ca{C}$ is

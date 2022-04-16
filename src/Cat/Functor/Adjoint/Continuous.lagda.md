@@ -91,9 +91,9 @@ The key fact is that we can also pass _homomorphisms_ along, both ways!
       → Cone-hom F (right-adjoint-cone K) K′
       → Cone-hom (R F∘ F) K (cone-right-adjoint K′)
     cone-hom-right-adjoint map .hom = R.₁ (map .hom) C.∘ adj.unit.η _
-    cone-hom-right-adjoint {K = K} {K′ = K′} map .commutes {o} =
+    cone-hom-right-adjoint {K = K} {K′ = K′} map .commutes o =
       R.₁ (K′ .ψ o) C.∘ R.₁ (map .hom) C.∘ adj.unit.η _                 ≡⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
-      R.₁ (K′ .ψ o D.∘ map .hom) C.∘ adj.unit.η _                       ≡⟨ ap (λ e → R.₁ e C.∘ _) (map .commutes) ⟩
+      R.₁ (K′ .ψ o D.∘ map .hom) C.∘ adj.unit.η _                       ≡⟨ ap (λ e → R.₁ e C.∘ _) (map .commutes _) ⟩
       R.₁ (adj.counit.ε _ D.∘ L.₁ (Cone.ψ K o)) C.∘ adj.unit.η _        ≡˘⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
       R.₁ (adj.counit.ε _) C.∘ R.₁ (L.₁ (Cone.ψ K o)) C.∘ adj.unit.η _  ≡˘⟨ C.pullr (adj.unit.is-natural _ _ _) ⟩
       (R.F₁ (adj.counit.ε _) C.∘ adj.unit.η _) C.∘ Cone.ψ K o           ≡⟨ ap (λ e → e C.∘ Cone.ψ K _) adj.zag ⟩
@@ -105,10 +105,10 @@ The key fact is that we can also pass _homomorphisms_ along, both ways!
       → Cone-hom (R F∘ F) K (cone-right-adjoint K′)
       → Cone-hom F (right-adjoint-cone K) K′
     right-adjoint-cone-hom map .hom = adj.counit.ε _ D.∘ L.₁ (map .hom)
-    right-adjoint-cone-hom {K = K} {K′ = K′} map .commutes {o} =
+    right-adjoint-cone-hom {K = K} {K′ = K′} map .commutes o =
       K′ .ψ o D.∘ adj.counit.ε _ D.∘ L.₁ (map .hom)               ≡⟨ D.extendl (sym (adj.counit.is-natural _ _ _)) ⟩
       adj.counit.ε _ D.∘ (L.₁ (R.₁ (K′ .ψ o)) D.∘ L.₁ (map .hom)) ≡⟨ ap (λ e → _ D.∘ e) (sym (L.F-∘ _ _)) ⟩
-      adj.counit.ε _ D.∘ (L.₁ (R.₁ (K′ .ψ o) C.∘ map .hom))       ≡⟨ ap (λ e → _ D.∘ L.₁ e) (map .commutes) ⟩
+      adj.counit.ε _ D.∘ (L.₁ (R.₁ (K′ .ψ o) C.∘ map .hom))       ≡⟨ ap (λ e → _ D.∘ L.₁ e) (map .commutes _) ⟩
       adj.counit.ε _ D.∘ L.₁ (K .ψ o)                             ∎
 ```
 

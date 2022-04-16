@@ -127,7 +127,7 @@ injection maps commute.
     constructor cocone-hom
     field
       hom : C.Hom (x .coapex) (y .coapex)
-      commutes : ∀ {o} → hom C.∘ x .ψ o ≡ y .ψ o
+      commutes : ∀ o → hom C.∘ x .ψ o ≡ y .ψ o
 ```
 
 We define yet another helper lemma that describes the path space
@@ -138,9 +138,9 @@ of cocone morphisms.
 
   Cocone-hom-path : ∀ {x y} {f g : Cocone-hom x y} → f .hom ≡ g .hom → f ≡ g
   Cocone-hom-path p i .hom = p i
-  Cocone-hom-path {x = x} {y = y} {f = f} {g = g} p i .commutes {o} j =
+  Cocone-hom-path {x = x} {y = y} {f = f} {g = g} p i .commutes o j =
     is-set→squarep (λ i j → C.Hom-set _ _)
-      (λ j → p j C.∘ x .ψ o) (f .commutes) (g .commutes) refl i j
+      (λ j → p j C.∘ x .ψ o) (f .commutes o) (g .commutes o) refl i j
 ```
 
 Now, we can define the category of cocones over a given diagram:
@@ -152,15 +152,15 @@ Now, we can define the category of cocones over a given diagram:
 
     compose : ∀ {x y z} → Cocone-hom y z → Cocone-hom x y → Cocone-hom x z
     compose K L .hom = K .hom C.∘ L .hom
-    compose {x = x} {y = y} {z = z} K L .commutes {o} =
-      (K .hom C.∘ L .hom) C.∘ x .ψ o ≡⟨ C.pullr (L .commutes) ⟩
-      K .hom C.∘ y .ψ o              ≡⟨ K .commutes ⟩
+    compose {x = x} {y = y} {z = z} K L .commutes o =
+      (K .hom C.∘ L .hom) C.∘ x .ψ o ≡⟨ C.pullr (L .commutes o) ⟩
+      K .hom C.∘ y .ψ o              ≡⟨ K .commutes o ⟩
       z .ψ o                         ∎
 
     cat : Precategory _ _
     cat .Ob = Cocone
     cat .Hom = Cocone-hom
-    cat .id = cocone-hom C.id (C.idl _)
+    cat .id = cocone-hom C.id (λ _ → C.idl _)
     cat ._∘_ = compose
     cat .idr f = Cocone-hom-path (C.idr (f .hom))
     cat .idl f = Cocone-hom-path (C.idl (f .hom))
@@ -170,21 +170,14 @@ Now, we can define the category of cocones over a given diagram:
 
 <!--
 ```agda
-    cat .Hom-set x y = retract→is-hlevel 2 pack unpack pack∘unpack hl
+    cat .Hom-set x y = is-hlevel≃ 2 eqv hl
       where abstract
         T : Type (o ⊔ ℓ′)
         T = Σ[ hom ∈ C.Hom (x .coapex) (y .coapex) ]
             (∀ o → hom C.∘ x .ψ o ≡ y .ψ o)
 
-        pack : T → Cocone-hom x y
-        pack x = cocone-hom (x .fst) (x .snd _)
-
-        unpack : Cocone-hom x y → T
-        unpack r = r .hom , λ _ → r .commutes
-
-        pack∘unpack : is-left-inverse pack unpack
-        pack∘unpack x i .hom = x .hom
-        pack∘unpack x i .commutes = x .commutes
+        eqv : T ≃ Cocone-hom x y
+        eqv = sigma≃record (Cocone-hom x y)
 
         hl : is-set T
         hl = Σ-is-hlevel 2 (C.Hom-set _ _)

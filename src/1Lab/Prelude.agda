@@ -12,6 +12,9 @@ open import 1Lab.HLevel public
 open import 1Lab.HLevel.Sets public
 open import 1Lab.HLevel.Retracts public
 open import 1Lab.HLevel.Universe public
+open import 1Lab.HLevel.Auto
+  using ( record≃sigma ; sigma≃record ; auto-hlevel )
+  public
 
 open import 1Lab.Equiv public
 open import 1Lab.Equiv.FromPath public

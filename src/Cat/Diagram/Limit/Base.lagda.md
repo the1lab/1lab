@@ -52,8 +52,8 @@ It'll be helpful to think of the maps as projections - which is why
 they're labelled with the greek letter $\pi$, for **p**rojection.
 However, for an arbitrary cone, the maps are.. well, arbitrary.  To
 consider a concrete example, we can pretend our diagram was in
-$\id{Set}$ all along, and that $A$ was the set $\mathbb{Q}$ and $B$
-was the set $\mathbb{R}$. Then the following is a cone over it:
+$\id{Set}$ all along, and that $A$ was the set $\bb{Q}$ and $B$
+was the set $\bb{R}$. Then the following is a cone over it:
 
 ~~~{.quiver .short-1}
 \[\begin{tikzcd}
@@ -115,9 +115,9 @@ there exists a map $a \to b$ whenever $a \le b$.
 
 This last example also demonstrates that, while we can always _describe_
 the limit over a diagram, it does not necessarily exist. Consider the
-poset $(\mathbb{R} \setminus {0}, \le)$ of real numbers except zero,
+poset $(\bb{R} \setminus {0}, \le)$ of real numbers except zero,
 with the usual ordering. Then the product indexed by $\{ x \in
-\mathbb{R} : x > 0 \}$ - which is normally $0$ - does not exist. Not
+\bb{R} : x > 0 \}$ - which is normally $0$ - does not exist. Not
 every category has every limit. Some categories have no limits at all!
 If a category has every limit, it's called _complete_.
 
@@ -236,16 +236,16 @@ object) must be equal to the codomain's `ψ`{.Agda}.
 ```agda
     field
       hom      : C.Hom (Cone.apex x) (Cone.apex y)
-      commutes : ∀ {o} → Cone.ψ y o C.∘ hom ≡ Cone.ψ x o
+      commutes : ∀ o → Cone.ψ y o C.∘ hom ≡ Cone.ψ x o
 ```
 
 <!--
 ```agda
   Cone-hom-path : ∀ {x y} {f g : Cone-hom x y} → Cone-hom.hom f ≡ Cone-hom.hom g → f ≡ g
   Cone-hom-path p i .Cone-hom.hom = p i
-  Cone-hom-path {x = x} {y} {f} {g} p i .Cone-hom.commutes {o} j =
+  Cone-hom-path {x = x} {y} {f} {g} p i .Cone-hom.commutes o j =
     is-set→squarep (λ i j → C.Hom-set _ _)
-      (λ j → Cone.ψ y o C.∘ p j) (f .Cone-hom.commutes) (g .Cone-hom.commutes) refl i j
+      (λ j → Cone.ψ y o C.∘ p j) (f .Cone-hom.commutes o) (g .Cone-hom.commutes o) refl i j
 ```
 -->
 
@@ -265,15 +265,15 @@ again preserve _all_ the commutativities.
       open Cone-hom
       r : Cone-hom x z
       r .hom = hom F C.∘ hom G
-      r .commutes {o} =
-        Cone.ψ z o C.∘ hom F C.∘ hom G ≡⟨ C.pulll (commutes F) ⟩
-        Cone.ψ y o C.∘ hom G           ≡⟨ commutes G ⟩
+      r .commutes o =
+        Cone.ψ z o C.∘ hom F C.∘ hom G ≡⟨ C.pulll (commutes F o) ⟩
+        Cone.ψ y o C.∘ hom G           ≡⟨ commutes G o ⟩
         Cone.ψ x o                     ∎
 
     cat : Precategory _ _
     cat .Ob = Cone
     cat .Hom = Cone-hom
-    cat .id = record { hom = C.id ; commutes = C.idr _ }
+    cat .id = record { hom = C.id ; commutes = λ _ → C.idr _ }
     cat ._∘_ = compose
     cat .idr f = Cone-hom-path (C.idr _)
     cat .idl f = Cone-hom-path (C.idl _)
@@ -282,25 +282,12 @@ again preserve _all_ the commutativities.
 
 <!--
 ```agda
-    cat .Hom-set x y = retract→is-hlevel 2 pack unpack pack∘unpack hl
+    cat .Hom-set x y = hl
       where abstract
-        T : Type (o₁ ⊔ h₂)
-        T = Σ[ hom ∈ C.Hom (Cone.apex x) (Cone.apex y) ]
-              (∀ o → Cone.ψ y o C.∘ hom ≡ Cone.ψ x o)
-
-        pack : T → Cone-hom x y
-        pack x = record { hom = x .fst ; commutes = x .snd _ }
-
-        unpack : Cone-hom x y → T
-        unpack r = r .Cone-hom.hom , λ _ → r .Cone-hom.commutes
-
-        pack∘unpack : is-left-inverse pack unpack
-        pack∘unpack x i .Cone-hom.hom = x .Cone-hom.hom
-        pack∘unpack x i .Cone-hom.commutes = x .Cone-hom.commutes
-
-        hl : is-set T
-        hl = Σ-is-hlevel 2 (C.Hom-set _ _)
-              (λ _ → Π-is-hlevel 2 λ _ → is-prop→is-set (C.Hom-set _ _ _ _))
+        hl : is-set (Cone-hom x y)
+        hl = is-hlevel≃ 2 (sigma≃record (Cone-hom x y)) $
+          Σ-is-hlevel 2 (C.Hom-set _ _)
+            (λ _ → Π-is-hlevel 2 λ _ → is-prop→is-set (C.Hom-set _ _ _ _))
 ```
 -->
 
@@ -545,8 +532,8 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 
       K=>lim′ : Cone-hom G K (g-lim .top)
       K=>lim′ .hom = K′=>lim .centre .hom
-      K=>lim′ .commutes {o} =
-        (morp.to .η o C.∘ f-lim .top .ψ o) C.∘ K=>lim′ .hom ≡⟨ C.pullr (K′=>lim .centre .commutes) ⟩
+      K=>lim′ .commutes o =
+        (morp.to .η o C.∘ f-lim .top .ψ o) C.∘ K=>lim′ .hom ≡⟨ C.pullr (K′=>lim .centre .commutes o) ⟩
         morp.to .η o C.∘ ψ K′ o                             ≡⟨ C.cancell (ap (λ e → η e o) morp.invl) ⟩
         K .ψ o                                              ∎
 
@@ -554,9 +541,9 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
       uniq x = Cone-hom-path G (ap hom (K′=>lim .paths x′)) where
         x′ : Cone-hom F K′ (f-lim .top)
         x′ .hom = x .hom
-        x′ .commutes {o} =
+        x′ .commutes o =
           f-lim .top .ψ o C.∘ x .hom                                       ≡⟨ C.introl (ap (λ e → η e o) morp.invr) ⟩
-          (morp.from .η o C.∘ morp.to .η o) C.∘ f-lim .top .ψ o C.∘ x .hom ≡⟨ C.pullr (C.assoc _ _ _ ∙ x .commutes) ⟩
+          (morp.from .η o C.∘ morp.to .η o) C.∘ f-lim .top .ψ o C.∘ x .hom ≡⟨ C.pullr (C.assoc _ _ _ ∙ x .commutes o) ⟩
           morp.from .η o C.∘ K .ψ o ∎
 ```
 -->

@@ -179,7 +179,7 @@ module _ {o ℓ} {J : Precategory o ℓ} {F : Functor J C} where
     → Cone-hom F^op y x
     → Cocone-hom F (Co-cone→Cocone x) (Co-cone→Cocone y)
   Co-cone-hom→Cocone-hom ch .hom = ch .hom
-  Co-cone-hom→Cocone-hom ch .commutes = ch .commutes
+  Co-cone-hom→Cocone-hom ch .commutes o = ch .commutes o
 
   Cocone-hom→Co-cone-hom
     : ∀ {x y}

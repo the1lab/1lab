@@ -125,12 +125,12 @@ definition.
                   λ { ((X , x) , (Y , y) , f , p) →
                       sym (happly (other .commutes f) x) ∙ ap (other .ψ Y) p
                     }
-    map .commutes = refl
+    map .commutes o = refl
 
     unique : ∀ x → map ≡ x
     unique hom′ = Cocone-hom-path _
       (funext (Coeq-elim-prop (λ x → other .coapex .is-tr _ _)
-                λ y → sym (happly (hom′ .commutes) _)))
+                λ y → sym (happly (hom′ .commutes _) _)))
 ```
 
 # Coproducts are disjoint

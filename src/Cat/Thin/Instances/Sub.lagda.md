@@ -183,7 +183,7 @@ $F$, then $F$ also has a limit in $\Sub(o)$.
       g′ : Cone-hom F′ _ _
       g′ .hom .map = g
       g′ .hom .commutes = p
-      g′ .commutes {o} = /-Hom-path (
+      g′ .commutes o = /-Hom-path (
         F.₀ o .witness _ _ (
           F.₀ o .object .map C.∘ limob.ψ o .map C.∘ g ≡⟨ C.pulll (limob.ψ o .commutes) ⟩
           limob.apex .map C.∘ g                       ≡⟨ p ⟩
@@ -193,7 +193,7 @@ $F$, then $F$ also has a limit in $\Sub(o)$.
       h′ : Cone-hom F′ _ _
       h′ .hom .map = h
       h′ .hom .commutes = refl
-      h′ .commutes = /-Hom-path refl
+      h′ .commutes _ = /-Hom-path refl
 
     cone : Cone F
     cone .apex = limob.apex , mono

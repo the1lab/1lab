@@ -49,7 +49,7 @@ vlam nam body = lam visible (abs nam body)
 pattern _v∷_ t xs = arg (arg-info visible (modality relevant quantity-ω)) t ∷ xs
 pattern _h∷_ t xs = arg (arg-info hidden (modality relevant quantity-ω)) t ∷ xs
 
-infixr 30 _v∷_ _h∷_ 
+infixr 30 _v∷_ _h∷_
 
 “_↦_” : Term → Term → Term
 “_↦_” x y = def (quote Fun) (x v∷ y v∷ [])
@@ -85,3 +85,9 @@ getName _ = nothing
 
 _name=?_ : Name → Name → Bool
 x name=? y = primQNameEquality x y
+
+findName : Term → TC Name
+findName (def nm _) = returnTC nm
+findName (lam hidden (abs _ t)) = findName t
+findName (meta m _) = blockOnMeta m
+findName t = typeError (strErr "The projections in a field descriptor must be record selectors: " ∷ termErr t ∷ [])

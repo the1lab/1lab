@@ -126,32 +126,11 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
     module a = ↓Obj a
     module b = ↓Obj b
 
-    T : Type (h ⊔ bh ⊔ ah)
-    T =
-      Σ[ α ∈ Hom A a.x b.x ]
-      Σ[ β ∈ Hom B a.y b.y ]
-      (b.map C.∘ F₁ F α ≡ F₁ G β C.∘ a.map)
-
-    encode : T → ↓Hom a b
-    encode (α , β , sq) .↓Hom.α = α
-    encode (α , β , sq) .↓Hom.β = β
-    encode (α , β , sq) .↓Hom.sq = sq
-
-    decode : ↓Hom a b → T
-    decode r = r .↓Hom.α , r .↓Hom.β , r .↓Hom.sq
-
-    hl : is-set T
-    hl = Σ-is-hlevel 2 (A.Hom-set _ _) λ _ →
-         Σ-is-hlevel 2 (B.Hom-set _ _) λ _ →
-         is-prop→is-set (C.Hom-set _ _ _ _)
-
-    encode∘decode : is-left-inverse encode decode
-    encode∘decode x i .↓Hom.α  = x .↓Hom.α
-    encode∘decode x i .↓Hom.β  = x .↓Hom.β
-    encode∘decode x i .↓Hom.sq = x .↓Hom.sq
-
     hl' : is-set (↓Hom a b)
-    hl' = retract→is-hlevel 2 encode decode encode∘decode hl
+    hl' = is-hlevel≃ 2 (sigma≃record (↓Hom a b))
+      (Σ-is-hlevel 2 (A.Hom-set _ _) λ _ →
+         Σ-is-hlevel 2 (B.Hom-set _ _) λ _ →
+         is-prop→is-set (C.Hom-set _ _ _ _))
 ```
 -->
 

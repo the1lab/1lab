@@ -201,7 +201,7 @@ types, it can also be defined as a subset of the natural numbers:
 Namely, the finite ordinal $[n]$ is the same type as as $\{ x : x < n
 \}$. This makes sense! Any set with $n$ elements is equivalent to any
 other set with $n$ elements, and a very canonical choice is the first
-$n$ values of $\mathbb{N}$.
+$n$ values of $\bb{N}$.
 
 ```agda
 ℕ< : Nat → Type

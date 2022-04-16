@@ -47,8 +47,8 @@ $$
 
 While these are indeed two necessary properties of an _image_, they fail
 to accurately represent the set-theoretic construction: Observe that,
-e.g. for $f(x) = 2x$, we could take $\im f = \mathbb{N}$, taking $e = f$
-itself and $m = \mathbb{N} \xmono{\id{id}} \mathbb{N}$. This factoring
+e.g. for $f(x) = 2x$, we could take $\im f = \bb{N}$, taking $e = f$
+itself and $m = \bb{N} \xmono{\id{id}} \bb{N}$. This factoring
 clearly recovers $f$, as $\id{id} \circ f = f$. But by taking this as
 the image, we've lost the information that $f$ lands in the evens!
 

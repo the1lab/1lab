@@ -120,8 +120,8 @@ a type, but two is not. Formally, a type is specified by giving:
 
 * A **formation rule**, which tells us which expressions denote valid
 types at all. For instance, the formation rule for product types tells
-us that $\mathbb{N} \times \mathbb{N}$ denotes a well-formed type, but
-"$\mathbb{N} \times \to$" does not. The formation rules also have the
+us that $\bb{N} \times \bb{N}$ denotes a well-formed type, but
+"$\bb{N} \times \to$" does not. The formation rules also have the
 duty of preventing us from running into _size issues_ like Russell's
 paradox, by constraining the use of [universes](#universes).
 
@@ -141,10 +141,10 @@ ordered pair $(a, b)$.
 
   The notation for stating inhabitation agrees with mathematical parlance
   in when both make sense. For example, a function from the reals to the
-  reals is commonly introduced with the notation $f : \mathbb{R} \to
-  \mathbb{R}$. In type theory, this is made formal as a typing
-  declaration: $f$ is a point of the type of functions $\mathbb{R} \to
-  \mathbb{R}$, hence we know that the rules of function types can be
+  reals is commonly introduced with the notation $f : \bb{R} \to
+  \bb{R}$. In type theory, this is made formal as a typing
+  declaration: $f$ is a point of the type of functions $\bb{R} \to
+  \bb{R}$, hence we know that the rules of function types can be
   used with $f$. However, when introducing a more complex object, we're
   forced to break into informality and conventional shorthand: "Let G be
   a group". In HoTT, we can directly write $G : \id{Group}$[^allgroups],
@@ -201,7 +201,7 @@ specific _set_, or as denoting a specific _space_.
 | $A \to B$             | $A \to B$              | function set                    | mapping space             |
 | $\prod_{(x : A)}B(x)$ | $\forall{(x : A)}B(x)$ | n-ary product                   | space of sections         |
 | $\sum_{(x : A)}B(x)$  | $\exists{(x : A)}B(x)$ | n-ary disjoint union            | total space               |
-| $x \equiv_A y$        | equality $x = y$       | diagonal $\{ (x,x) : x \in A\}$ | path space $A^\mathbb{I}$ |
+| $x \equiv_A y$        | equality $x = y$       | diagonal $\{ (x,x) : x \in A\}$ | path space $A^\bb{I}$ |
 </div>
 
 This segues nicely into another difference between type theory and set
@@ -410,7 +410,7 @@ salvage it.
   \hookrightarrow T$. Note that the emphasis is on the _function_ and
   not on the index set $S$, since we can have many distinct injective
   functions with the same domains and codomains (**exercise**: give two
-  distinct subsets of $\mathbb{N}$ with the same domain[^points]).
+  distinct subsets of $\bb{N}$ with the same domain[^points]).
 
   To see that this definition is a generalisation of the material
   definition in terms of $\in$, we note that any injective function $f :
@@ -424,8 +424,8 @@ salvage it.
 [^points]: **Solution**: Recall what it means for a map to be injective
 - that $f(a) = f(b) \to a = b$. If the domain of a function is a set
 with a single point, then the consequent is automatically satisfied!
-Since the maps $* \to \mathbb{N}$ are in 1-to-1 correspondence with
-the elements of $\mathbb{N}$, we can consider _any two numbers_ to be
+Since the maps $* \to \bb{N}$ are in 1-to-1 correspondence with
+the elements of $\bb{N}$, we can consider _any two numbers_ to be
 distinct subsets with the same domain.
 
 * Alternatively, we can think of a subset as being a _predicate_ on the
@@ -739,7 +739,7 @@ To represent a collection of types varying over an value of $A$, we use
 a function type into a universe, called a **type family** for
 convenience: A type family over $A$ is a function $A \to \ty_i$, for
 some choice of level $i$. An example of a type family are the _finite
-types_, regarded as a family $\id{Fin} : \mathbb{N} \to \ty$ --- where
+types_, regarded as a family $\id{Fin} : \bb{N} \to \ty$ --- where
 $\id{Fin}(n)$ is a type with $n$ elements. Type families are also used
 to model **type constructors**, which are familiar to programmers as
 being the _generic types_. And finally, if we have a type $B : \ty_i$,
@@ -852,9 +852,9 @@ of classical algebraic topology --- with the difference that the way
 we compute them in HoTT has a distinctly more "typey" flavour.
 
 This interpretation of types as spaces leads us to look at the
-statement "there is a type $X$ with $\pi_1(X) \cong \mathbb{Z}$" and
+statement "there is a type $X$ with $\pi_1(X) \cong \bb{Z}$" and
 rightly call $X$ "the circle", even though a topologist might object
-that our circle is not any subset of $\mathbb{R}^2$. Similarly, we
+that our circle is not any subset of $\bb{R}^2$. Similarly, we
 might take the integer $2$ and apply the isomorphism above, to get a
 path in $X$ which "walks clockwise around the circle twice".
 
@@ -960,21 +960,21 @@ inclusions**, with domain the one-point space. Those are the properties
 that characterise it (for defining paths), so those are the properties
 we keep!
 
-The **interval type**, $\mathbb{I}$, has two introduction rules --- but
+The **interval type**, $\bb{I}$, has two introduction rules --- but
 they are so simple that we refer to them as "closed inhabitants"
 instead. These are written $\id{i0}$ and $\id{i1}$, and they denote the
 left- and right- hand side of the unit interval. A classic result in the
 interpretation of constructive mathematics says that any function
 defined inside type theory is automatically continuous, and so, we
 define the type $x \equiv_A y$ to be the type of functions $f :
-\mathbb{I} \to A$, restricted to thse where $f(\id{i0}) = x$ and
+\bb{I} \to A$, restricted to thse where $f(\id{i0}) = x$ and
 $f(\id{i1}) = y$ _definitionally_.
 
-The introduction rule for paths says that if $e : \mathbb{I} \to A$,
+The introduction rule for paths says that if $e : \bb{I} \to A$,
 with $e(\id{i0}) = x$ and $e(\id{i1}) = y$ (those are _definitional_
 equalities), then we can treat it as a path $x \equiv_A y$. Conversely,
 if we have a term $p : x \equiv_A y$, then we can apply it to an
-argument $i : \mathbb{I}$ to get a term $p(i)$ of type $A$. The type of
+argument $i : \bb{I}$ to get a term $p(i)$ of type $A$. The type of
 paths satisfies the same reduction rule ($\beta$-reduction) as function
 types, but with an additional rule that says $p(\id{i0})$ is
 definitionally equal to $x$ (resp. $\id{i1}$ and $y$), even if $p$ has
@@ -1256,27 +1256,27 @@ F(x,y) \mapsto (x \equiv y)
 $$
 
 The total space $\sum F$ of this family is the space of all paths in
-$A$, which will be written as $A^\mathbb{I}$ to emphasise its nature as
+$A$, which will be written as $A^\bb{I}$ to emphasise its nature as
 a path space. Since it is the total space of a type family, it comes
-equipped with a fibration $\id{fst} : A^\mathbb{I} \to A \times A$.
-Given that a term in $A^\mathbb{I}$ can be seen to be a pair $((x, y),
+equipped with a fibration $\id{fst} : A^\bb{I} \to A \times A$.
+Given that a term in $A^\bb{I}$ can be seen to be a pair $((x, y),
 p)$ where $p : x \equiv y$, we see that this fibration projects both
-endpoints of a path --- so we will write it $(d_0,d_1) : A^\mathbb{I}
+endpoints of a path --- so we will write it $(d_0,d_1) : A^\bb{I}
 \to A \times A$, since it is the pairing of the maps which evaluate a
 path at the left and right endpoints of the interval.
 
 As a very quick aside, there is a map $r : \lambda x.\ (x, x,
 \id{refl})$, we get a diagram like the one below, expressing that
 the diagonal $A \to A \times A$ can be factored as a weak equivalence
-follwed by a fibration, exhibiting $A^\mathbb{I}$ as a path space object
+follwed by a fibration, exhibiting $A^\bb{I}$ as a path space object
 for $A$.
 
 $$
-A \xrightarrow{\~r} A^\mathbb{I} \xrightarrow{(d0,d1)} \to A \times A
+A \xrightarrow{\~r} A^\bb{I} \xrightarrow{(d0,d1)} \to A \times A
 $$
 
 A section of this fibration --- that is, a dependent function like $f$
---- is then a _continuous_ function $A \times A \to A^\mathbb{I}$, with
+--- is then a _continuous_ function $A \times A \to A^\bb{I}$, with
 the property that $(d_0,d_1) \circ f = \id{id}$. Now assume that our
 space $A$ is pointed, say with a point $y_0 : A$, and that we have a
 section $f$. We can then define the homotopy $ (x,t) \mapsto f(x,y_0,t)
@@ -1310,7 +1310,7 @@ The module `1Lab.Path`{.Agda} develops the theory of path types, filling
 in the details that were missing in _[Interlude - Basics of
 paths](#interlude-just-enough-about-paths)_ above. In particular, the
 Path module talks about the structure of the **interval type**
-$\mathbb{I}$, the definition of **dependent paths**, **squares**, and
+$\bb{I}$, the definition of **dependent paths**, **squares**, and
 the symmetry involution on paths. It then introduce the **transport**
 operation, turns a path between types into an equivalence of types.
 

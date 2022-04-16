@@ -2,6 +2,7 @@
 open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
+open import 1Lab.HLevel.Auto using (sigma≃record)
 open import 1Lab.Univalence
 open import 1Lab.Rewrite
 open import 1Lab.HLevel
@@ -480,21 +481,10 @@ module _ {o₁ h₁ o₂ h₂}
   open _=>_
 
   Nat-is-set : is-set (F => G)
-  Nat-is-set = retract→is-hlevel 2 NT'→NT NT→NT' prf NT'-is-set where
+  Nat-is-set = is-hlevel≃ 2 (sigma≃record (F => G)) NT'-is-set where
     NT' : Type _
     NT' = Σ[ eta ∈ ((x : _) → D.Hom (F.₀ x) (G.₀ x)) ]
             ((x y : _) (f : C.Hom x y) → eta y D.∘ F.₁ f ≡ G.₁ f D.∘ eta x)
-
-    NT'→NT : NT' → F => G
-    NT'→NT (eta , is-n) .η = eta
-    NT'→NT (eta , is-n) .is-natural = is-n
-
-    NT→NT' : F => G → NT'
-    NT→NT' x = x .η , x .is-natural
-
-    prf : is-right-inverse NT→NT' NT'→NT
-    prf x i .η = x .η
-    prf x i .is-natural = x .is-natural
 ```
 
 The type `NT'`{.Agda} is a literal restatement of the definition of

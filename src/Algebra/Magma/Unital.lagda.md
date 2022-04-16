@@ -29,9 +29,9 @@ identity element[^1], it is part of the type signature for
 `is-unital-magma`{.Agda}, being considered _structure_ that a magma may be
 equipped with.
 
-[^1]: Counterexample: The map $f : (\mathbb{Z}, *) \to (\mathbb{Z}, *)$
+[^1]: Counterexample: The map $f : (\bb{Z}, *) \to (\bb{Z}, *)$
 which sends everything to zero is a magma homomorphism, but does not
-preserve the unit of $(\mathbb{Z}, *)$.
+preserve the unit of $(\bb{Z}, *)$.
 
 ```agda
 record is-unital-magma (identity : A) (_⋆_ : A → A → A) : Type (level-of A) where

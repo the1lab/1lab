@@ -74,23 +74,9 @@ Element-hom-path {x = x} {y = y} {f = f} {g = g} p i .commute =
 ```agda
 Element-hom-is-set : ∀ (x y : Element) → is-set (Element-hom x y)
 Element-hom-is-set x y =
-  retract→is-hlevel 2 refold unfold retract T-is-set
+  is-hlevel≃ 2 (sigma≃record (Element-hom x y)) T-is-set
   where
-    T : Type _
-    T = Σ[ hom ∈ Hom (x .ob) (y .ob) ]
-        (P.₁ hom (y .section) ≡ x .section)
-
-    refold : T → Element-hom x y
-    refold (h , p) = elem-hom h p
-
-    unfold : Element-hom x y → T
-    unfold f = (f .hom , f .commute)
-
-    retract : ∀ x → refold (unfold x) ≡ x
-    retract x i .hom = x .hom
-    retract x i .commute = x .commute
-
-    T-is-set : is-set T
+    T-is-set : is-set _
     T-is-set =
       Σ-is-hlevel 2 (Hom-set _ _)
                   λ f → Path-is-hlevel 2 (P.₀ (x .ob) .is-tr)

@@ -7,7 +7,8 @@ open import Cat.Instances.Slice public
 open import Cat.Instances.Product public
 open import Cat.Functor.Base public
 open import Cat.Univalent public
-open import Cat.Prelude public
+open import Cat.Prelude
+  hiding (_+_ ; _-_ ; _*_) public
 open import Cat.Thin using (Poset ; Proset) public
 
 import Cat.Diagram.Coequaliser

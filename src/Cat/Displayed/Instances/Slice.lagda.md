@@ -87,8 +87,7 @@ morphisms, and paths between the "upper" morphisms.
 module _ {x y} (f : Hom x y) (px : Slice x) (py : Slice y) where
   Slice-is-set : is-set (Slice-hom f px py)
   Slice-is-set =
-    retract→is-hlevel 2
-      Slice-hom-refold Slice-hom-unfold (λ x → refl) Slice-hom'-is-set
+    is-hlevel≃ 2 (sigma≃record (Slice-hom f px py)) Slice-hom'-is-set
     where
       Slice-hom' : Type _
       Slice-hom' = Σ[ to ∈  Hom (px .over) (py .over) ]

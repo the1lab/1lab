@@ -55,10 +55,10 @@ Pullback→Limit {f = f} {g} pb = lim where
   lim : Limit _
   lim .top = Square→Cone _ _ _ _ pb.square
   lim .has⊤ cone .centre .hom      = pb.limiting (cone .commutes tt ∙ sym (cone .commutes {cs-b} {cs-c} tt))
-  lim .has⊤ cone .centre .commutes {cs-a} = pb.p₁∘limiting
-  lim .has⊤ cone .centre .commutes {cs-b} = pb.p₂∘limiting
-  lim .has⊤ cone .centre .commutes {cs-c} = pullr pb.p₁∘limiting ∙ cone .commutes tt
-  lim .has⊤ cone .paths otherhom = Cone-hom-path _ (sym (pb.unique (otherhom .commutes) (otherhom .commutes)))
+  lim .has⊤ cone .centre .commutes cs-a = pb.p₁∘limiting
+  lim .has⊤ cone .centre .commutes cs-b = pb.p₂∘limiting
+  lim .has⊤ cone .centre .commutes cs-c = pullr pb.p₁∘limiting ∙ cone .commutes tt
+  lim .has⊤ cone .paths otherhom = Cone-hom-path _ (sym (pb.unique (otherhom .commutes _) (otherhom .commutes _)))
 
 Limit→Pullback
   : ∀ {A B C}
@@ -73,16 +73,16 @@ Limit→Pullback {f = f} {g} lim = pb where
   pb .p₂ = lim.top .ψ cs-b
   pb .has-is-pb .square = lim.top .commutes tt ∙ sym (lim.top .commutes {cs-b} {cs-c} tt)
   pb .has-is-pb .limiting x = lim.has⊤ (Square→Cone _ _ _ _ x) .centre .hom
-  pb .has-is-pb .p₁∘limiting {p = p} = lim.has⊤ (Square→Cone _ _ _ _ p) .centre .commutes {cs-a}
-  pb .has-is-pb .p₂∘limiting {p = p} = lim.has⊤ (Square→Cone _ _ _ _ p) .centre .commutes {cs-b}
+  pb .has-is-pb .p₁∘limiting {p = p} = lim.has⊤ (Square→Cone _ _ _ _ p) .centre .commutes cs-a
+  pb .has-is-pb .p₂∘limiting {p = p} = lim.has⊤ (Square→Cone _ _ _ _ p) .centre .commutes cs-b
   pb .has-is-pb .unique {p₁' = p₁'} {p₂'} {p} {lim'} a b =
     sym (ap hom (lim.has⊤ (Square→Cone _ _ _ _ p) .paths other))
     where
       other : Cone-hom _ _ _
       other .hom = _
-      other .commutes {cs-a} = a
-      other .commutes {cs-b} = b
-      other .commutes {cs-c} =
+      other .commutes cs-a = a
+      other .commutes cs-b = b
+      other .commutes cs-c =
         lim.top .ψ cs-c ∘ lim'     ≡˘⟨ pulll (lim.top .commutes tt) ⟩
         f ∘ lim.top .ψ cs-a ∘ lim' ≡⟨ ap (f ∘_) a ⟩
         f ∘ p₁'                    ∎

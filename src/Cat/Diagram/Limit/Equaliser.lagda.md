@@ -54,11 +54,11 @@ Equaliser→Limit {f = f} {g = g} eq = lim where
   lim .top = Fork→Cone eq.equ f g eq.equal
   lim .has⊤ cone .centre .hom      =
     eq.limiting (cone .commutes {false} {true} false ∙ sym (cone .commutes true))
-  lim .has⊤ cone .centre .commutes {false} = eq.universal
-  lim .has⊤ cone .centre .commutes {true} = pullr eq.universal ∙ cone .commutes {false} {true} false
+  lim .has⊤ cone .centre .commutes false = eq.universal
+  lim .has⊤ cone .centre .commutes true = pullr eq.universal ∙ cone .commutes {false} {true} false
   lim .has⊤ cone .paths other = Cone-hom-path _ (sym (eq.unique p)) where
     p : cone .ψ false ≡ eq .equ ∘ other .hom
-    p = sym (other .commutes)
+    p = sym (other .commutes _)
 
 Limit→Equaliser
   : ∀ {A B} {f g : Hom A B}
@@ -73,14 +73,14 @@ Limit→Equaliser {f = f} {g} lim = eq where
     lim.top .commutes {false} {true} false ∙ sym (lim.top .commutes true)
   eq .has-is-eq .limiting p = lim.has⊤ (Fork→Cone _ _ _ p) .centre .hom
   eq .has-is-eq .universal {p = p} =
-    lim.has⊤ (Fork→Cone _ _ _ p) .centre .commutes {false}
+    lim.has⊤ (Fork→Cone _ _ _ p) .centre .commutes false
   eq .has-is-eq .unique {e′ = e'} {p = p} {lim' = lim'} x =
     sym (ap hom (lim.has⊤ (Fork→Cone _ _ _ p) .paths other))
     where
       other : Cone-hom _ _ _
       other .hom = _
-      other .commutes {false} = sym x
-      other .commutes {true} = sym (
+      other .commutes false = sym x
+      other .commutes true = sym (
         f ∘ e'                      ≡⟨ ap (f ∘_) x ⟩
         f ∘ lim.top .ψ false ∘ lim' ≡⟨ pulll (lim.top .commutes false) ⟩
         lim.top .ψ true ∘ lim'      ∎
