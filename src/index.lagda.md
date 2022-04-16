@@ -55,7 +55,7 @@ inclusive environment.**
 [cccc]: https://github.com/plt-amy/1lab/blob/main/CODE_OF_CONDUCT.md
 
 Mathematics is, fundamentally, a social activity. Correspondingly, we
-have a page dedicated to letting authors introduce and talk abit
+have a page dedicated to letting authors introduce and talk a bit
 themselves and their other work:
 
 ```agda
