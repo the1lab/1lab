@@ -437,8 +437,8 @@ transport⁻transport p a i =
 ```
 </details>
 
-The path is constant when `i = i1` because `(λ j → p (i1 ∧ j))` is
-`(λ j → p i1)` (by the reduction rules for `_∧_`{.Agda}). It has the
+The path is constant when `i = i0` because `(λ j → p (i0 ∧ j))` is
+`(λ j → p i0)` (by the reduction rules for `_∧_`{.Agda}). It has the
 stated endpoints, again, because `transp P i1` is the identity function.
 
 By altering a path `p` using a predicate `P`, we get the promised
