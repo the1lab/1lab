@@ -113,6 +113,10 @@ module _ {ℓ} (G : Group ℓ) where
     squash  : is-groupoid Deloop
     path    : G .fst → base ≡ base
     path-sq : (x y : G .fst) → Square refl (path x) (path (x ⋆ y)) (path y)
+
+  instance
+    H-Level-Deloop : ∀ {n} → H-Level Deloop (3 + n)
+    H-Level-Deloop = basic-instance 3 squash
 ```
 
 The delooping is constructed as a higher inductive type. We have a
@@ -216,7 +220,7 @@ together to establish `G ≡ (base ≡ base)`. First, to define
   Code : Deloop → Set ℓ
   Code =
     Deloop-elim _
-      (λ _ → n-Type-is-hlevel 2)
+      (λ _ → hlevel 3)
       (G .fst , Group-on.has-is-set (G .snd))
       (λ x → n-ua (map x))
       λ x y → n-Type-square (transport (sym Square≡··) (lemma x y))
@@ -267,7 +271,7 @@ to `Code`{.Agda}. For decoding, we do induction on `Deloop`{.Agda} with
 
   decode : ∀ x → ∣ Code x ∣ → base ≡ x
   decode = Deloop-elim _
-    (λ _ → Π-is-hlevel 3 λ _ → is-hlevel-suc 2 (squash _ _))
+    (λ _ → hlevel 3)
 ```
 
 With this motive, the type of what we must give for `base`{.Agda}
@@ -278,7 +282,7 @@ reduces to `G → base ≡ base`, for which `path`{.Agda} suffices; The
 ```agda
     path
     (λ x → ua→ λ a → path-sq _ _)
-    (λ x y → is-set→squarep (λ i j → Π-is-hlevel 2 λ _ → squash _ _) _ _ _ _)
+    (λ x y → is-set→squarep (λ i j → hlevel 2) _ _ _ _)
 ```
 
 Proving that these are inverses finishes the proof. For one direction,

@@ -254,6 +254,10 @@ Coeq-rec₂ cset ci r1 r2 (squash x y p q i j) z =
   cset (map x z) (map y z) (λ j → map (p j) z) (λ j → map (q j) z) i j
   where
     map = Coeq-rec₂ cset ci r1 r2
+
+instance
+  H-Level-coeq : ∀ {f g : A → B} {n} → H-Level (Coeq f g) (2 + n)
+  H-Level-coeq = basic-instance 2 squash
 ```
 -->
 

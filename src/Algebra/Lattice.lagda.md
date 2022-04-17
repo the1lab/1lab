@@ -51,8 +51,9 @@ hierarchy.
   open is-semilattice has-joins public
     renaming ( associative to ∨-associative
              ; commutative to ∨-commutative
-             ; idempotent to ∨-idempotent )
-    hiding ( underlying-set ; has-is-magma ; has-is-set )
+             ; idempotent to ∨-idempotent
+             )
+    hiding ( underlying-set ; has-is-magma ; has-is-set ; magma-hlevel )
 ```
 </details>
 
@@ -68,15 +69,12 @@ lattice. Since being a semilattice includes being a set, this means that
 being a lattice is a _property_ of $(A, \land, \lor)$:
 
 ```agda
-is-lattice-is-prop : ∀ {_∧_ _∨_ : A → A → A} → is-prop (is-lattice _∧_ _∨_)
-is-lattice-is-prop x y i = p where
-  open is-lattice
+private unquoteDecl eqv = declare-record-iso eqv (quote is-lattice)
 
-  p : is-lattice _ _
-  p .has-meets = is-semilattice-is-prop (x .has-meets) (y .has-meets) i
-  p .has-joins = is-semilattice-is-prop (x .has-joins) (y .has-joins) i
-  p .∧-absorbs-∨ = has-is-set x _ _ (x .∧-absorbs-∨) (y .∧-absorbs-∨) i
-  p .∨-absorbs-∧ = has-is-set x _ _ (x .∨-absorbs-∧) (y .∨-absorbs-∧) i
+instance
+  H-Level-is-lattice : ∀ {M J : A → A → A} {n} → H-Level (is-lattice M J) (suc n)
+  H-Level-is-lattice = prop-instance λ x →
+    let open is-lattice x in is-hlevel≃ 1 (Iso→Equiv eqv e⁻¹) (hlevel 1) x
 
 record Lattice-on (A : Type ℓ) : Type ℓ where
   field
@@ -133,7 +131,7 @@ Lattice-univalent {ℓ = ℓ} =
     (record:
       field[ Lattice-on._L∧_ by Lattice→.pres-∧ ]
       field[ Lattice-on._L∨_ by Lattice→.pres-∨ ]
-      axiom[ Lattice-on.has-is-lattice by (λ _ → is-lattice-is-prop) ]))
+      axiom[ Lattice-on.has-is-lattice by (λ _ → hlevel 1) ]))
 ```
 
 ## Order-theoretically

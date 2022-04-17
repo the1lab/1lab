@@ -36,9 +36,9 @@ the retraction (the left inverse). The proof is a calculation:
 
 ```agda
 retract→is-contr : (f : A → B) (g : B → A)
-                → is-left-inverse f g
-                → is-contr A
-                → is-contr B
+                 → is-left-inverse f g
+                 → is-contr A
+                 → is-contr B
 retract→is-contr f g h isC .centre = f (isC .centre)
 retract→is-contr f g h isC .paths x =
   f (isC .centre) ≡⟨ ap f (isC .paths _) ⟩
@@ -50,9 +50,9 @@ We must also show that retracts of _propositions_ are propositions:
 
 ```agda
 retract→is-prop : (f : A → B) (g : B → A)
-               → is-left-inverse f g
-               → is-prop A
-               → is-prop B
+                → is-left-inverse f g
+                → is-prop A
+                → is-prop B
 retract→is-prop f g h propA x y =
   x       ≡⟨ sym (h _) ⟩
   f (g x) ≡⟨ ap f (propA _ _) ⟩
@@ -135,8 +135,8 @@ homotopy n-type is itself a homotopy n-type.
 
 ```agda
 Π-is-hlevel : ∀ {a b} {A : Type a} {B : A → Type b}
-          → (n : Nat) (Bhl : (x : A) → is-hlevel (B x) n)
-          → is-hlevel ((x : A) → B x) n
+            → (n : Nat) (Bhl : (x : A) → is-hlevel (B x) n)
+            → is-hlevel ((x : A) → B x) n
 Π-is-hlevel 0 bhl = contr (λ x → bhl _ .centre) λ x i a → bhl _ .paths (x a) i
 Π-is-hlevel 1 bhl f g i a = bhl a (f a) (g a) i
 Π-is-hlevel (suc (suc n)) bhl f g =
@@ -144,13 +144,26 @@ homotopy n-type is itself a homotopy n-type.
     (Π-is-hlevel (suc n) λ x → bhl x (f x) (g x))
 ```
 
+<!--
+```agda
+Π-is-hlevel′
+  : ∀ {a b} {A : Type a} {B : A → Type b}
+  → (n : Nat) (Bhl : (x : A) → is-hlevel (B x) n)
+  → is-hlevel ({x : A} → B x) n
+Π-is-hlevel′ n bhl = retract→is-hlevel n
+  (λ f {x} → f x) (λ f x → f) (λ _ → refl)
+  (Π-is-hlevel n bhl)
+```
+-->
+
 By taking `B` to be a type rather than a family, we get that `A → B`
 also inherits the h-level of B.
 
 ```agda
-fun-is-hlevel : ∀ {a b} {A : Type a} {B : Type b}
-          → (n : Nat) → is-hlevel B n
-          → is-hlevel (A → B) n
+fun-is-hlevel
+  : ∀ {a b} {A : Type a} {B : Type b}
+  → (n : Nat) → is-hlevel B n
+  → is-hlevel (A → B) n
 fun-is-hlevel n hl = Π-is-hlevel n (λ _ → hl)
 ```
 
@@ -187,9 +200,9 @@ version of `Σ-is-hlevel`{.Agda} that expresses closure of h-levels under
 
 ```agda
 ×-is-hlevel : ∀ {a b} {A : Type a} {B : Type b}
-          → (n : Nat)
-          → is-hlevel A n → is-hlevel B n
-          → is-hlevel (A × B) n
+            → (n : Nat)
+            → is-hlevel A n → is-hlevel B n
+            → is-hlevel (A × B) n
 ×-is-hlevel n ahl bhl = Σ-is-hlevel n ahl (λ _ → bhl)
 ```
 
@@ -199,8 +212,104 @@ successor universe:
 
 ```agda
 Lift-is-hlevel : ∀ {a b} {A : Type a}
-              → (n : Nat)
-              → is-hlevel A n
-              → is-hlevel (Lift b A) n
+               → (n : Nat)
+               → is-hlevel A n
+               → is-hlevel (Lift b A) n
 Lift-is-hlevel n a-hl = retract→is-hlevel n lift Lift.lower (λ _ → refl) a-hl
+```
+
+# Automation
+
+For the common case of proving that a composite type built out of pieces
+with a known h-level has that same h-level, we can apply the helpers
+above very uniformly. So uniformly, in fact, that Agda's instance
+resolution mechanism can do it for us. However, since `is-hlevel`{.Agda}
+is a _recursive_ definition which unfolds depending on the level, we
+must introduce a record wrapper around this type which prevents
+recursion. Otherwise we could not expect Agda to find instances in
+scope.
+
+```agda
+record H-Level {ℓ} (T : Type ℓ) (n : Nat) : Type ℓ where
+  constructor hlevel-instance
+  field
+    has-hlevel : is-hlevel T n
+```
+
+The canonical entry point for the search is `hlevel`{.Agda}, which turns
+an instance argument of `H-Level`{.Agda} to an actual usable witness.
+Note that the parameter $n$ is explicit: We can not expect Agda to
+recover $n$ from the expected type of the application.
+
+```agda
+hlevel : ∀ {ℓ} {T : Type ℓ} n ⦃ x : H-Level T n ⦄ → is-hlevel T n
+hlevel _ ⦃ x ⦄ = H-Level.has-hlevel x
+
+private variable
+  ℓ′ : Level
+  S T : Type ℓ
+
+module _ where
+  open H-Level
+  H-Level-is-prop : ∀ {n} → is-prop (H-Level T n)
+  H-Level-is-prop {n = n} x y i .has-hlevel =
+    is-hlevel-is-prop n (x .has-hlevel) (y .has-hlevel) i
+```
+
+Because of the way we set up our search, the "leaves" in the instance
+search must support _offsetting_ the index by any positive number:
+Rather than defining an instance saying that e.g. $\bb{N}$ has h-level
+2, we define an instance saying it has h-level $2+k$, for any choice of
+$k$. This is done using the `basic-instance`{.Agda} helper:
+
+```agda
+basic-instance : ∀ {ℓ} {T : Type ℓ} n → is-hlevel T n → ∀ {k} → H-Level T (n + k)
+basic-instance {T = T} n hl {k} =
+  subst (H-Level T) (+-comm n k) (hlevel-instance (is-hlevel-+ n k hl))
+  where
+    +-comm : ∀ n k → k + n ≡ n + k
+    +-comm zero k = go k where
+      go : ∀ k → k + 0 ≡ k
+      go zero = refl
+      go (suc x) = ap suc (go x)
+    +-comm (suc n) k = go n k ∙ ap suc (+-comm n k) where
+      go : ∀ n k → k + suc n ≡ suc (k + n)
+      go n zero = refl
+      go n (suc k) = ap suc (go n k)
+
+prop-instance : ∀ {ℓ} {T : Type ℓ} → is-prop T → ∀ {k} → H-Level T (suc k)
+prop-instance {T = T} hl = hlevel-instance (is-prop→is-hlevel-suc hl)
+```
+
+We then have a family of instances for solving compound types, e.g.
+function types, $\Sigma$-types, path types, lifts, etc.
+
+```agda
+instance
+  H-Level-pi
+    : ∀ {n} {S : T → Type ℓ}
+    → ⦃ ∀ {x} → H-Level (S x) n ⦄
+    → H-Level (∀ x → S x) n
+  H-Level-pi {n = n} .H-Level.has-hlevel = Π-is-hlevel n λ _ → hlevel n
+
+  H-Level-pi′
+    : ∀ {n} {S : T → Type ℓ}
+    → ⦃ ∀ {x} → H-Level (S x) n ⦄
+    → H-Level (∀ {x} → S x) n
+  H-Level-pi′ {n = n} .H-Level.has-hlevel = Π-is-hlevel′ n λ _ → hlevel n
+
+  H-Level-sigma
+    : ∀ {n} {S : T → Type ℓ}
+    → ⦃ H-Level T n ⦄ → ⦃ ∀ {x} → H-Level (S x) n ⦄
+    → H-Level (Σ S) n
+  H-Level-sigma {n = n} .H-Level.has-hlevel =
+    Σ-is-hlevel n (hlevel n) λ _ → hlevel n
+
+  H-Level-path′
+    : ∀ {n} ⦃ s : H-Level S (suc n) ⦄ {x y} → H-Level (Path S x y) n
+  H-Level-path′ {n = n} .H-Level.has-hlevel = Path-is-hlevel' n (hlevel (suc n)) _ _
+
+  H-Level-Lift
+    : ∀ {n} ⦃ s : H-Level T n ⦄ → H-Level (Lift ℓ T) n
+  H-Level-Lift {n = n} .H-Level.has-hlevel = Lift-is-hlevel n (hlevel n)
 ```

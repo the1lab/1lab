@@ -1,4 +1,5 @@
 ```agda
+open import 1Lab.Reflection.Record
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Diagram.Product
@@ -29,43 +30,17 @@ _do_ form a precategory, which we denote $\strcat$.
 
 <!--
 ```agda
+private unquoteDecl eqv = declare-record-iso eqv (quote Functor)
+
 Functor-is-set : ∀ {o h} {C D : Precategory o h} → is-set (Ob D)
-              → is-set (Functor C D)
+               → is-set (Functor C D)
 Functor-is-set {o = o} {h} {C} {D} dobset =
-  retract→is-hlevel 2 unpack pack linv hl
-  where abstract
-    T : Type (o ⊔ h)
-    T = Σ[ F₀ ∈ (Ob C → Ob D) ]
-        Σ[ F₁ ∈ (∀ x y (f : Hom C x y) → Hom D (F₀ x) (F₀ y)) ]
-        ((∀ x → F₁ x x (id C) ≡ id D) ×
-         (∀ w x y (f : Hom C w x) (g : Hom C x y)
-           → F₁ _ _ (_∘_ C g f) ≡ _∘_ D (F₁ _ _ g) (F₁ _ _ f)))
-
-    pack : Functor C D → T
-    pack x = F₀ x , (λ _ _ → F₁ x) , (λ _ → F-id x) , λ _ _ _ g f → F-∘ x f g
-
-    unpack : T → Functor C D
-    unpack (f , g , p , q) .F₀ = f
-    unpack (f , g , p , q) .F₁ = g _ _
-    unpack (f , g , p , q) .F-id = p _
-    unpack (f , g , p , q) .F-∘ _ _ = q _ _ _ _ _
-
-    linv : is-left-inverse unpack pack
-    linv x i .F₀ = F₀ x
-    linv x i .F₁ = F₁ x
-    linv x i .F-id = F-id x
-    linv x i .F-∘ = F-∘ x
-
-    hl : is-set T
-    hl = Σ-is-hlevel 2 (fun-is-hlevel 2 dobset) λ F →
-         Σ-is-hlevel 2 (Π-is-hlevel 2 λ _ →
-                      Π-is-hlevel 2 λ _ → fun-is-hlevel 2 (D .Hom-set _ _)) λ F₁ →
-         is-prop→is-set (×-is-hlevel 1 (Π-is-hlevel 1 λ _ → D .Hom-set _ _ _ _)
-                                   (Π-is-hlevel 1 λ _ →
-                                    Π-is-hlevel 1 λ _ →
-                                    Π-is-hlevel 1 λ _ →
-                                    Π-is-hlevel 1 λ _ →
-                                    Π-is-hlevel 1 λ _ → D .Hom-set _ _ _ _))
+  is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2)
+  where
+    open Precategory.HLevel-instance D
+    instance
+      Dob : H-Level (Ob D) 2
+      Dob = basic-instance 2 dobset
 ```
 -->
 

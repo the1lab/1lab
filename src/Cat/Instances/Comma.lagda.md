@@ -58,6 +58,10 @@ module
     module A = Precategory A
     module B = Precategory B
     import Cat.Reasoning C as C
+
+  open A.HLevel-instance
+  open B.HLevel-instance
+  open C.HLevel-instance
 ```
 -->
 
@@ -121,16 +125,12 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
                                        (F₁ G (q i) C.∘ ↓Obj.map x))
       (f .↓Hom.sq) (g .↓Hom.sq) i
 
+  private unquoteDecl eqv = declare-record-iso eqv (quote ↓Hom)
+
   ↓Hom-set : ∀ x y → is-set (↓Hom x y)
   ↓Hom-set a b = hl' where abstract
-    module a = ↓Obj a
-    module b = ↓Obj b
-
     hl' : is-set (↓Hom a b)
-    hl' = is-hlevel≃ 2 (sigma≃record (↓Hom a b))
-      (Σ-is-hlevel 2 (A.Hom-set _ _) λ _ →
-         Σ-is-hlevel 2 (B.Hom-set _ _) λ _ →
-         is-prop→is-set (C.Hom-set _ _ _ _))
+    hl' = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2)
 ```
 -->
 

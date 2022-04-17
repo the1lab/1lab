@@ -240,9 +240,9 @@ structure, we can establish its h-level by induction:
 open ⊎Path
 
 Code-is-hlevel : {x y : A ⊎ B} {n : Nat}
-            → is-hlevel A (suc (suc n))
-            → is-hlevel B (suc (suc n))
-            → is-hlevel (Code x y) (suc n)
+               → is-hlevel A (2 + n)
+               → is-hlevel B (2 + n)
+               → is-hlevel (Code x y) (suc n)
 Code-is-hlevel {x = inl x} {inl y} {n} ahl bhl =
   Lift-is-hlevel (suc n) (ahl x y)
 Code-is-hlevel {x = inr x} {inr y} {n} ahl bhl =

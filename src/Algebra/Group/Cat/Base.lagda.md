@@ -32,9 +32,7 @@ Groups ℓ = c where
   c : Precategory _ _
   c .Ob = Group ℓ
   c .Hom A B = Group[ A ⇒ B ]
-  c .Hom-set _ (B , bg) =
-    Σ-is-hlevel 2 (fun-is-hlevel 2 (bg .has-is-set))
-                  λ _ → is-prop→is-set Group-hom-is-prop
+  c .Hom-set _ (B , bg) = hlevel 2 where open Group-on bg
 ```
 
 We must show that the identity is a group homomorphisms, and group homs

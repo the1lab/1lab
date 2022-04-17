@@ -51,6 +51,12 @@ record Slice-hom {x y} (f : Hom x y)
 open Slice-hom
 ```
 
+<!--
+```agda
+private unquoteDecl eqv = declare-record-iso eqv (quote Slice-hom)
+```
+-->
+
 Going back to our intuition of "slices as a means of indexing", a
 morphism of slices performs a sort of reindexing operation. The morphism
 in the base performs our re-indexing, and then we ensure that we have
@@ -82,27 +88,11 @@ morphisms, and paths between the "upper" morphisms.
       i
 ```
 
-
 ```agda
 module _ {x y} (f : Hom x y) (px : Slice x) (py : Slice y) where
   Slice-is-set : is-set (Slice-hom f px py)
-  Slice-is-set =
-    is-hlevel≃ 2 (sigma≃record (Slice-hom f px py)) Slice-hom'-is-set
-    where
-      Slice-hom' : Type _
-      Slice-hom' = Σ[ to ∈  Hom (px .over) (py .over) ]
-                   (f ∘ px .index ≡ py .index ∘ to)
-
-      Slice-hom-refold : Slice-hom' → Slice-hom f px py
-      Slice-hom-refold s = slice-hom (s .fst) (s .snd)
-
-      Slice-hom-unfold : Slice-hom f px py → Slice-hom'
-      Slice-hom-unfold s = s .to , s .commute
-
-      Slice-hom'-is-set : is-set Slice-hom'
-      Slice-hom'-is-set =
-        Σ-is-hlevel 2 (Hom-set _ _)
-                    (λ _ → λ f g p q → is-hlevel-suc 2 (Hom-set _ _) _ _ f  g p q)
+  Slice-is-set = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2)
+    where open HLevel-instance
 ```
 
 ## Pulling it all together

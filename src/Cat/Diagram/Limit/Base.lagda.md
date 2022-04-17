@@ -241,6 +241,8 @@ object) must be equal to the codomain's `ψ`{.Agda}.
 
 <!--
 ```agda
+  private unquoteDecl eqv = declare-record-iso eqv (quote Cone-hom)
+
   Cone-hom-path : ∀ {x y} {f g : Cone-hom x y} → Cone-hom.hom f ≡ Cone-hom.hom g → f ≡ g
   Cone-hom-path p i .Cone-hom.hom = p i
   Cone-hom-path {x = x} {y} {f} {g} p i .Cone-hom.commutes o j =
@@ -282,12 +284,8 @@ again preserve _all_ the commutativities.
 
 <!--
 ```agda
-    cat .Hom-set x y = hl
-      where abstract
-        hl : is-set (Cone-hom x y)
-        hl = is-hlevel≃ 2 (sigma≃record (Cone-hom x y)) $
-          Σ-is-hlevel 2 (C.Hom-set _ _)
-            (λ _ → Π-is-hlevel 2 λ _ → is-prop→is-set (C.Hom-set _ _ _ _))
+    cat .Hom-set x y = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2)
+      where open C.HLevel-instance
 ```
 -->
 

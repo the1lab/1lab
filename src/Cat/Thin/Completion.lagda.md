@@ -102,7 +102,7 @@ the map:
 
   antisym′ : ∀ x y → ∣ Hom′ x y ∣ → ∣ Hom′ y x ∣ → x ≡ y
   antisym′ = Coeq-elim-prop₂
-    (λ x y → fun-is-hlevel 1 (fun-is-hlevel 1 (squash _ _)))
+    (λ x y → hlevel 1)
     (λ x y f g → quot (f , g))
 ```
 

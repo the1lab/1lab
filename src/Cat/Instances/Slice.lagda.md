@@ -128,17 +128,15 @@ says that the map $h$ "respects reindexing", or less obliquely
              → x ≡ y
   /-Hom-path = /-Hom-pathp refl refl
 
+  private unquoteDecl eqv = declare-record-iso eqv (quote /-Hom)
+
   abstract
     /-Hom-is-set : ∀ {c a b} → is-set (/-Hom {c = c} a b)
-    /-Hom-is-set {a = a} {b} = hl
-      where
-        module a = /-Obj a
-        module b = /-Obj b
+    /-Hom-is-set {a = a} {b} = hl where abstract
+      open C.HLevel-instance
 
-        hl : is-set (/-Hom a b)
-        hl = is-hlevel≃ 2 (sigma≃record (/-Hom a b)) $
-          Σ-is-hlevel 2 (C.Hom-set _ _)
-            (λ _ → is-prop→is-set (C.Hom-set _ _ _ _))
+      hl : is-set (/-Hom a b)
+      hl = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2)
 ```
 -->
 

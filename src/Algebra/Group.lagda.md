@@ -128,7 +128,7 @@ $x$ and $y$ are the same.
   same-monoid : PathP (λ i → is-monoid (same-unit i) _*_)
                       (x .has-is-monoid) (y .has-is-monoid)
   same-monoid =
-    is-prop→pathp (λ i → is-monoid-is-prop {id = same-unit i})
+    is-prop→pathp (λ i → hlevel {T = is-monoid (same-unit i) _*_} 1)
       (x .has-is-monoid) (y .has-is-monoid)
 ```
 
@@ -252,6 +252,11 @@ identity:
 Group-hom-is-prop : ∀ {ℓ} {G H : Group ℓ} {f} → is-prop (Group-hom G H f)
 Group-hom-is-prop {H = _ , H} a b i .Group-hom.pres-⋆ x y =
   Group-on.has-is-set H _ _ (a .Group-hom.pres-⋆ x y) (b .Group-hom.pres-⋆ x y) i
+
+instance
+  H-Level-group-hom : ∀ {n} {ℓ} {G H : Group ℓ} {f}
+                    → H-Level (Group-hom G H f) (suc n)
+  H-Level-group-hom = prop-instance Group-hom-is-prop
 ```
 -->
 
@@ -325,6 +330,7 @@ set, and it forms the carrier for a group: The _symmetric group_ on $X$.
 Sym : ∀ {ℓ} → Set ℓ → Group ℓ
 Sym X .fst = ∣ X ∣ ≃ ∣ X ∣
 Sym X .snd = group-str where
+  open n-Type X using (H-Level-n-type)
   group-str : Group-on (∣ X ∣ ≃ ∣ X ∣)
   group-str ._⋆_ g f = f ∙e g
 ```
@@ -342,8 +348,7 @@ ident=is-equiv-is-prop}.
 
 ```agda
   group-str .has-is-group .has-is-monoid .has-is-semigroup .has-is-magma .has-is-set =
-    Σ-is-hlevel 2 (fun-is-hlevel 2 (X .is-tr))
-      (λ f → is-prop→is-set (is-equiv-is-prop f))
+    hlevel 2
 ```
 
 The associativity and identity laws hold definitionally.

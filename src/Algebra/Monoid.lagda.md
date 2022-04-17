@@ -50,12 +50,13 @@ that we may safely decompose monoids as the _structure_ $(0, \star)$,
 which has to satisfy the _property_ of being a monoid.
 
 ```agda
-is-monoid-is-prop : {id : A} {_⋆_ : A → A → A}
-                → is-prop (is-monoid id _⋆_)
-is-monoid-is-prop x y i .has-is-semigroup =
-  is-semigroup-is-prop (x .has-is-semigroup) (y .has-is-semigroup) i
-is-monoid-is-prop x y i .idl = x .has-is-set _ _ (x .idl) (y .idl) i
-is-monoid-is-prop x y i .idr = x .has-is-set _ _ (x .idr) (y .idr) i
+private unquoteDecl eqv = declare-record-iso eqv (quote is-monoid)
+
+instance
+  H-Level-is-monoid : ∀ {id : A} {_⋆_ : A → A → A} {n}
+                    → H-Level (is-monoid id _⋆_) (suc n)
+  H-Level-is-monoid = prop-instance λ x →
+    let open is-monoid x in is-hlevel≃ 1 (Iso→Equiv eqv e⁻¹) (hlevel 1) x
 ```
 
 A `monoid structure on`{.Agda ident=Monoid-on} a type is given by the
@@ -111,7 +112,7 @@ Monoid-univalent {ℓ = ℓ} =
     (record:
       field[ identity    by pres-id ]
       field[ _⋆_         by pres-⋆ ]
-      axiom[ has-is-monoid by (λ _ → is-monoid-is-prop) ]))
+      axiom[ has-is-monoid by (λ _ → hlevel 1) ]))
 ```
 
 From this, we automatically get a specialisation of the `SIP`{.Agda} for

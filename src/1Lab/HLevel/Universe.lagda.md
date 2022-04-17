@@ -102,8 +102,11 @@ record n-Type ℓ n : Type (lsuc ℓ) where
     ∣_∣   : Type ℓ
     is-tr : is-hlevel ∣_∣ n
   infix 100 ∣_∣
+  instance
+    H-Level-n-type : ∀ {k} → H-Level ∣_∣ (n + k)
+    H-Level-n-type = basic-instance n is-tr
 
-open n-Type public
+open n-Type using (∣_∣ ; is-tr) public
 ```
 
 Like mentioned in the introduction, the main theorem of this section is
@@ -178,5 +181,14 @@ n-Type-square sq i j .∣_∣ = sq i j
 n-Type-square {p = p} {q} {s} {r} sq i j .is-tr =
   is-prop→squarep (λ i j → is-hlevel-is-prop {A = sq i j} _)
     (ap is-tr p) (ap is-tr q) (ap is-tr s) (ap is-tr r) i j
+
+instance
+  H-Level-nType : ∀ {n k} → H-Level (n-Type ℓ k) (1 + k + n)
+  H-Level-nType {k = k} = basic-instance (1 + k) (n-Type-is-hlevel k)
+
+  H-Level-is-equiv
+    : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} {f : A → B} {n}
+    → H-Level (is-equiv f) (suc n)
+  H-Level-is-equiv = prop-instance (is-equiv-is-prop _)
 ```
 -->

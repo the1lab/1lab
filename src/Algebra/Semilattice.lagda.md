@@ -252,15 +252,12 @@ are identified precisely when their underlying types are equivalent by
 some homomorphic equivalence.
 
 ```agda
-is-semilattice-is-prop : ∀ {∧ : A → A → A} → is-prop (is-semilattice ∧)
-is-semilattice-is-prop x y i = p where
-  open is-semilattice
+private unquoteDecl eqv = declare-record-iso eqv (quote is-semilattice)
 
-  p : is-semilattice _
-  p .has-is-semigroup =
-    is-semigroup-is-prop (x .has-is-semigroup) (y .has-is-semigroup) i
-  p .commutative = x .has-is-set _ _ (x .commutative) (y .commutative) i
-  p .idempotent = x .has-is-set _ _ (x .idempotent) (y .idempotent) i
+instance
+  H-Level-is-semilattice : ∀ {M : A → A → A} {n} → H-Level (is-semilattice M) (suc n)
+  H-Level-is-semilattice = prop-instance λ x →
+    let open is-semilattice x in is-hlevel≃ 1 (Iso→Equiv eqv e⁻¹) (hlevel 1) x
 ```
 
 A **semilattice structure** on a type $A$ equips the type with an
@@ -325,7 +322,7 @@ Semilattice-univalent {ℓ = ℓ} =
   Derive-univalent-record (record-desc (Semilattice-on {ℓ = ℓ}) Semilattice≃
     (record:
       field[ Semilattice-on.∧ by is-semilattice-hom.pres-∧ ]
-      axiom[ Semilattice-on.has-is-semilattice by (λ _ → is-semilattice-is-prop) ]))
+      axiom[ Semilattice-on.has-is-semilattice by (λ _ → hlevel 1) ]))
 ```
 
 Any semilattice homomorphism is `monotone`{.Agda ident=is-monotone} when

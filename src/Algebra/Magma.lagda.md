@@ -60,6 +60,10 @@ binary operation `⋆`, on which no further laws are imposed.
   underlying-set : Set ℓ
   underlying-set = _ , has-is-set
 
+  instance
+    magma-hlevel : ∀ {n} → H-Level A (2 + n)
+    magma-hlevel = basic-instance 2 has-is-set
+
 open is-magma public
 ```
 

@@ -11,6 +11,7 @@ module Cat.Instances.Karoubi {o h} (C : Precategory o h) where
 ```agda
 open CI C
 import Cat.Reasoning C as C
+open C.HLevel-instance
 open Precategory
 open Functor
 ```
@@ -51,7 +52,7 @@ private
   KH≡ : ∀ {a b : C.Ob} {af : C.Hom a a} {bf : C.Hom b b}
           {ai : is-idempotent af} {bi : is-idempotent bf}
           {f g : KHom (a , af , ai) (b , bf , bi)} → fst f ≡ fst g → f ≡ g
-  KH≡ = Σ-prop-path (λ _ → (×-is-hlevel 1 (C.Hom-set _ _ _ _) (C.Hom-set _ _ _ _)))
+  KH≡ = Σ-prop-path (λ _ → hlevel 1)
 ```
 
 We can see that these data assemble into a precategory. However, note
@@ -62,9 +63,7 @@ it's the chosen idempotent $e$!
 Karoubi : Precategory (o ⊔ h) h
 Karoubi .Ob = KOb
 Karoubi .Hom = KHom
-Karoubi .Hom-set _ _ =
-  Σ-is-hlevel 2 (C.Hom-set _ _) λ _ →
-    is-prop→is-set (×-is-hlevel 1 (C.Hom-set _ _ _ _) (C.Hom-set _ _ _ _))
+Karoubi .Hom-set _ _ = hlevel 2
 
 Karoubi .id {x = c , e , i} = e , i , i
 Karoubi ._∘_ (f , fp , fp') (g , gp , gp') = f C.∘ g , C.pullr gp , C.pulll fp'
@@ -94,9 +93,8 @@ Hence, `Embed` is `fully faithful`{.Agda ident=is-fully-faithful}.
 
 ```agda
 Embed-is-fully-faithful : is-fully-faithful Embed
-Embed-is-fully-faithful = is-iso→is-equiv (iso fst (λ _ → Σ-prop-path p refl) λ _ → refl) where
-  p : (x : C.Hom _ _) → _
-  p _ = ×-is-hlevel 1 (C.Hom-set _ _ _ _) (C.Hom-set _ _ _ _)
+Embed-is-fully-faithful = is-iso→is-equiv $
+  iso fst (λ _ → Σ-prop-path (λ _ → hlevel 1) refl) λ _ → refl
 ```
 
 ## Idempotent-completeness

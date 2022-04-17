@@ -29,7 +29,7 @@ $\bb{P}(X)$.
 ℙ X = X → n-Type _ 1
 
 ℙ-is-set : is-set (ℙ X)
-ℙ-is-set = fun-is-hlevel 2 (n-Type-is-hlevel 1)
+ℙ-is-set = hlevel 2
 ```
 
 The **membership** relation is defined by applying the predicate and

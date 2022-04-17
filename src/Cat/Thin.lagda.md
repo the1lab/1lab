@@ -131,10 +131,15 @@ record Poset (o h : Level) : Type (lsuc (o ⊔ h)) where
     has-is-thin      : is-thin underlying
     has-is-univalent : is-category underlying
 
-  open Precategory underlying public
+  open Precategory underlying
+    using ( Ob ; Hom ; Hom-set ; id ; _∘_ ; idl ; idr ; assoc ) public
   open is-thin has-is-thin public
 
   open import Cat.Univalent underlying
+  module HLevel-instance where
+    instance
+      H-Level-Hom : ∀ {x y} {n} → H-Level (Hom x y) (suc n)
+      H-Level-Hom = prop-instance (Hom-is-prop _ _)
 ```
 
 Sincce posets are most commonly considered in the context of order

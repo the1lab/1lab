@@ -38,17 +38,18 @@ raise the [h-level] of the Hom-sets.
 [h-level]: 1Lab.HLevel.html
 
 ```agda
-Monoid-hom-is-prop : ∀ {ℓ} {x y : Monoid ℓ} f → is-prop (Monoid-hom x y f)
-Monoid-hom-is-prop {y = _ , M} _ x y i =
-  record { pres-id = M .has-is-set _ _ (x .pres-id) (y .pres-id) i
-         ; pres-⋆ = λ a b → M .has-is-set _ _ (x .pres-⋆ a b) (y .pres-⋆ a b) i
-         }
+instance
+  H-Level-Monoid-hom : ∀ {ℓ} {x y : Monoid ℓ} {f} {n} → H-Level (Monoid-hom x y f) (suc n)
+  H-Level-Monoid-hom {y = _ , M} = prop-instance λ x y i →
+    record { pres-id = M .has-is-set _ _ (x .pres-id) (y .pres-id) i
+          ; pres-⋆ = λ a b → M .has-is-set _ _ (x .pres-⋆ a b) (y .pres-⋆ a b) i
+          }
 
 Monoids : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Monoids ℓ .Ob      = Monoid ℓ
 Monoids ℓ .Hom A B = Σ (Monoid-hom A B)
-Monoids ℓ .Hom-set _ (_ , M) =
-  Σ-is-hlevel 2 (fun-is-hlevel 2 (M .has-is-set)) λ f → is-prop→is-set (Monoid-hom-is-prop f)
+Monoids ℓ .Hom-set _ (_ , M) = hlevel 2
+  where open Monoid-on M
 ```
 
 It's routine to check that the identity is a monoid homomorphism and
@@ -61,9 +62,9 @@ Monoids ℓ ._∘_ (f , fh) (g , gh) = f ⊙ g , fogh where
   fogh .pres-id    = ap f (gh .pres-id)    ∙ fh .pres-id
   fogh .pres-⋆ x y = ap f (gh .pres-⋆ x y) ∙ fh .pres-⋆ _ _
 
-Monoids ℓ .idr f = Σ-prop-path Monoid-hom-is-prop refl
-Monoids ℓ .idl f = Σ-prop-path Monoid-hom-is-prop refl
-Monoids ℓ .assoc f g h = Σ-prop-path Monoid-hom-is-prop refl
+Monoids ℓ .idr f = Σ-prop-path (λ _ → hlevel 1) refl
+Monoids ℓ .idl f = Σ-prop-path (λ _ → hlevel 1) refl
+Monoids ℓ .assoc f g h = Σ-prop-path (λ _ → hlevel 1) refl
 ```
 
 The category of monoids admits a faithful functor to the category of
@@ -124,8 +125,8 @@ concatenation, identity and composition by induction on the list.
 
 ```agda
 Free .F₁ f = map f , record { pres-id = refl ; pres-⋆  = map-++ f }
-Free .F-id = Σ-prop-path Monoid-hom-is-prop (funext map-id)
-Free .F-∘ f g = Σ-prop-path Monoid-hom-is-prop (funext map-∘) where
+Free .F-id = Σ-prop-path (λ _ → hlevel 1) (funext map-id)
+Free .F-∘ f g = Σ-prop-path (λ _ → hlevel 1) (funext map-∘) where
   map-∘ : ∀ xs → map (λ x → f (g x)) xs ≡ map f (map g xs)
   map-∘ [] = refl
   map-∘ (x ∷ xs) = ap (f (g x) ∷_) (map-∘ xs)
@@ -188,9 +189,9 @@ Free⊣Forget .unit .η _ x = x ∷ []
 Free⊣Forget .unit .is-natural x y f = refl
 Free⊣Forget .counit .η M = fold M , record { pres-id = refl ; pres-⋆ = fold-++ }
 Free⊣Forget .counit .is-natural x y (f , h) =
-  Σ-prop-path Monoid-hom-is-prop (funext (fold-natural {X = x} {y} f h))
+  Σ-prop-path (λ _ → hlevel 1) (funext (fold-natural {X = x} {y} f h))
 Free⊣Forget .zig {A = A} =
-  Σ-prop-path Monoid-hom-is-prop (funext (fold-pure {X = A}))
+  Σ-prop-path (λ _ → hlevel 1) (funext (fold-pure {X = A}))
 Free⊣Forget .zag {B = B} i x = B .snd .idr {x = x} i
 ```
 
@@ -247,7 +248,7 @@ properties of the underlying map.
     from∘to x = Algebra-hom-path refl
 
     to∘from : is-left-inverse from comparison.₁
-    to∘from x = Σ-prop-path Monoid-hom-is-prop refl
+    to∘from x = Σ-prop-path (λ _ → hlevel 1) refl
 ```
 
 Showing that the functor is essentially surjective is significantly more

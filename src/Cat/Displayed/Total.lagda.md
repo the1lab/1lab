@@ -47,6 +47,12 @@ record Total-hom (X Y : Total) : Type (ℓ ⊔ ℓ′) where
 open Total-hom
 ```
 
+<!--
+```agda
+private unquoteDecl eqv = declare-record-iso eqv (quote Total-hom)
+```
+-->
+
 As is tradition, we need to prove some silly lemmas showing that
 the bundled morphisms form an hset, and another characterizing
 the paths between morphisms.
@@ -54,7 +60,7 @@ the paths between morphisms.
 ```agda
 total-hom-is-set : ∀ (X Y : Total) → is-set (Total-hom X Y)
 total-hom-is-set X Y =
-  is-hlevel≃ 2 (sigma≃record (Total-hom X Y)) Total-hom′-is-set
+  is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) Total-hom′-is-set
   where
     Total-hom′-is-set : is-set _
     Total-hom′-is-set = Σ-is-hlevel 2 (Hom-set _ _) λ f → Hom[ f ]-set _ _

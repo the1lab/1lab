@@ -110,12 +110,12 @@ module _ {ℓ} where
 [equaliser]: Cat.Diagram.Equaliser.html
 
 Every group homomorphism $f : A \to B$ has an _image_ $\im f$, defined
-by equipping the `image`{.Agda} with a group structure inherited from
-$B$. More concretely, we can describe the elements of $\im f$ as the
-"mere fibres" of $f$: They consist of a point $y : B$, together with
-(the truncation of) a fibre of $f$ over $y$. We multiply $x$ (in the
-fibre over $a$) with $y$ (in the fibre over $b$), giving the element
-$xy$ in the fibre over $ab$.
+by equipping its set-theoretic `image`{.Agda} with a group structure
+inherited from $B$. More concretely, we can describe the elements of
+$\im f$ as the "mere fibres" of $f$: They consist of a point $y : B$,
+together with (the truncation of) a fibre of $f$ over $y$. We multiply
+$x$ (in the fibre over $a$) with $y$ (in the fibre over $b$), giving the
+element $xy$ in the fibre over $ab$.
 
 [image]: Cat.Diagram.Image.html
 
@@ -127,15 +127,12 @@ module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where
     module B = Group-on (B .snd)
     module f = Group-hom (f .snd)
 
-    T : Type ℓ
-    T = image (f .fst)
-
-    Tpath : {x y : T} → x .fst ≡ y .fst → x ≡ y
+    Tpath : {x y : image (f .fst)} → x .fst ≡ y .fst → x ≡ y
     Tpath {x} {y} p = Σ-prop-path (λ _ → squash) p
 
     abstract
-      Tset : is-set T
-      Tset = Σ-is-hlevel 2 B.has-is-set (λ _ → is-prop→is-set squash)
+      Tset : is-set (image (f .fst))
+      Tset = hlevel 2
 
     module Kerf = Kernel (Ker f)
 ```
@@ -151,6 +148,9 @@ unsurprising, so we leave it in this `<details>` tag for the curious
 reader.</summary>
 
 ```agda
+    T : Type ℓ
+    T = image (f .fst)
+
   A/ker[_] : Group ℓ
   A/ker[_] = T , grp where
     unit : T

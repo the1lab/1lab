@@ -167,6 +167,7 @@ Algebra-hom-path {M = M} {X} {Y} {F} {G} x i .commutes =
 
 <!--
 ```agda
+private unquoteDecl eqv = declare-record-iso eqv (quote Algebra-hom)
 Algebra-hom-pathp
   : {M : Monad} {W X Y Z : Algebra M}
     {F : Algebra-hom M W X}
@@ -232,13 +233,8 @@ the identity and associativity laws from its underlying category.
   Eilenberg-Moore .idr f = Algebra-hom-path (C.idr (morphism f))
   Eilenberg-Moore .idl f = Algebra-hom-path (C.idl (morphism f))
   Eilenberg-Moore .assoc f g h = Algebra-hom-path (C.assoc _ _ _)
-  Eilenberg-Moore .Hom-set X Y = hl where abstract
-    module X = Algebra-on (X .snd)
-    module Y = Algebra-on (Y .snd)
-
-    hl : is-set (Algebra-hom M X Y)
-    hl = is-hlevel≃ 2 (sigma≃record (Algebra-hom M X Y))
-      (Σ-is-hlevel 2 (C.Hom-set _ _) λ _ → is-prop→is-set (C.Hom-set _ _ _ _))
+  Eilenberg-Moore .Hom-set X Y = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2)
+    where open C.HLevel-instance
 ```
 
 </details>

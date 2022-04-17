@@ -34,6 +34,14 @@ is-prop-∥-∥ : ∀ {ℓ} {A : Type ℓ} → is-prop ∥ A ∥
 is-prop-∥-∥ = squash
 ```
 
+<!--
+```agda
+instance
+  H-Level-truncation : ∀ {n} {ℓ} {A : Type ℓ} → H-Level ∥ A ∥ (suc n)
+  H-Level-truncation = hlevel-instance (is-prop→is-hlevel-suc squash)
+```
+-->
+
 The eliminator for `∥_∥`{.Agda} says that you can eliminate onto $P$
 whenever it is a family of propositions, by providing a case for
 `inc`{.Agda}.

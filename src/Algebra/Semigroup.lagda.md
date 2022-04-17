@@ -80,6 +80,10 @@ is-semigroup-is-prop x y i .has-is-magma =
   is-magma-is-prop (x .has-is-magma) (y .has-is-magma) i
 is-semigroup-is-prop {_⋆_ = _⋆_} x y i .associative {a} {b} {c} =
   x .has-is-set (a ⋆ (b ⋆ c)) ((a ⋆ b) ⋆ c) (x .associative) (y .associative) i
+
+instance
+  H-Level-is-semigroup : ∀ {_*_ : A → A → A} {n} → H-Level (is-semigroup _*_) (suc n)
+  H-Level-is-semigroup = prop-instance is-semigroup-is-prop
 ```
 
 A **semigroup structure on** a type packages up the binary operation and

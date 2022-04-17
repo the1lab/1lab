@@ -130,6 +130,12 @@ injection maps commute.
       commutes : ∀ o → hom C.∘ x .ψ o ≡ y .ψ o
 ```
 
+<!--
+```agda
+  private unquoteDecl eqv = declare-record-iso eqv (quote Cocone-hom)
+```
+-->
+
 We define yet another helper lemma that describes the path space
 of cocone morphisms.
 
@@ -170,18 +176,8 @@ Now, we can define the category of cocones over a given diagram:
 
 <!--
 ```agda
-    cat .Hom-set x y = is-hlevel≃ 2 eqv hl
-      where abstract
-        T : Type (o ⊔ ℓ′)
-        T = Σ[ hom ∈ C.Hom (x .coapex) (y .coapex) ]
-            (∀ o → hom C.∘ x .ψ o ≡ y .ψ o)
-
-        eqv : T ≃ Cocone-hom x y
-        eqv = sigma≃record (Cocone-hom x y)
-
-        hl : is-set T
-        hl = Σ-is-hlevel 2 (C.Hom-set _ _)
-              (λ _ → Π-is-hlevel 2 λ _ → is-prop→is-set (C.Hom-set _ _ _ _))
+    cat .Hom-set x y = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2)
+      where open C.HLevel-instance
 ```
 -->
 

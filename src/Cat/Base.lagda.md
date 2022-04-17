@@ -1,8 +1,8 @@
 ```agda
+open import 1Lab.Reflection.Record
 open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
-open import 1Lab.HLevel.Auto using (sigma≃record)
 open import 1Lab.Univalence
 open import 1Lab.Rewrite
 open import 1Lab.HLevel
@@ -112,6 +112,15 @@ g) \circ h = f \circ (g \circ h)$.
           → f ∘ (g ∘ h) ≡ (f ∘ g) ∘ h
 ```
 
+<!--
+```agda
+  module HLevel-instance where
+    instance
+      H-Level-Hom : ∀ {x y} {k} → H-Level (Hom x y) (2 + k)
+      H-Level-Hom = basic-instance 2 (Hom-set _ _)
+```
+-->
+
 ## Opposites
 
 A common theme throughout precategory theory is that of _duality_: The dual
@@ -208,6 +217,7 @@ module _ where
 
 # Functors
 
+<!--
 ```agda
 record
   Functor
@@ -222,6 +232,7 @@ record
     module C = Precategory C
     module D = Precategory D
 ```
+-->
 
 Since a category is an algebraic structure, there is a natural
 definition of _homomorphism of categories_ defined in the same fashion
@@ -301,8 +312,9 @@ private
 
 ```agda
 _F∘_ : ∀ {o₁ h₁ o₂ h₂ o₃ h₃}
-       {C : Precategory o₁ h₁} {D : Precategory o₂ h₂} {E : Precategory o₃ h₃}
+         {C : Precategory o₁ h₁} {D : Precategory o₂ h₂} {E : Precategory o₃ h₃}
      → Functor D E → Functor C D → Functor C E
+_F∘_ {C = C} {D} {E} F G = comps
 ```
 
 Functors, being made up of functions, can themselves be composed. The
@@ -310,8 +322,8 @@ object mapping of $(F \circ G)$ is given by $F_0 \circ G_0$, and
 similarly for the morphism mapping. Alternatively, composition of
 functors is a categorification of the fact that monotone maps compose.
 
+<!--
 ```agda
-_F∘_ {C = C} {D} {E} F G = comps
   where
     module C = Precategory C
     module D = Precategory D
@@ -319,7 +331,10 @@ _F∘_ {C = C} {D} {E} F G = comps
 
     module F = Functor F
     module G = Functor G
+```
+-->
 
+```agda
     F₀ : C.Ob → E.Ob
     F₀ x = F.F₀ (G.F₀ x)
 
@@ -352,12 +367,15 @@ the witnesses that $F$ and $G$ are functorial.
     comps .Functor.F-∘ = F-∘
 ```
 
-<!--
-The identity function (twice) is a functor $C \to C$. These composition
-and identities assemble into a category, where the objects are
-categories: [Cat](agda://Cat.Instances.Cat.Base#Cat). The
-construction of Cat is not in this module for performance reasons.
--->
+The identity functor can be defined using the identity funct_ion_ for
+both its object and morphism mappings. That functors have an identity
+and compose would seem to imply that categories form a category:
+However, since there is no upper bound on the h-level of `Ob`{.Agda}, we
+can not form a "category of categories". If we _do_ impose a bound,
+however, we can obtain a category of [strict categories], those which
+have a set of objects.
+
+[strict categories]: Cat.Instances.StrictCat.html
 
 ```agda
 Id : ∀ {o₁ h₁} {C : Precategory o₁ h₁} → Functor C C
@@ -425,33 +443,6 @@ _components_, where the component at $x$ is a map $F(x) \to G(x)$. The
                → η y D.∘ F.₁ f ≡ G.₁ f D.∘ η x
 ```
 
-<!--
-Alternatively, natural transformations can be thought of as [homotopies
-between functors](agda://Cat.Functor.NatTrans.Homotopy). That
-module contains a direct proof of the correspondence, but an argument by
-abstract nonsense is even simpler to write down: Since [Cat is cartesian
-closed](agda://Cat.Instances.Cat.Closed#Cat-closed), there is [an
-isomorphism of Hom-sets](agda://Cat.Functor.Adjoints) from the
-[tensor-hom
-adjunction](agda://Cat.Structure.CartesianClosed#Tensor⊣Hom)
-
-$$
-\id{Hom}_{\id{Cat}}(C \times \left\{0 \le 1\right\}, D) \simeq
-\id{Hom}_{\id{Cat}}(\left\{0 \le 1\right\}, [C, D])
-$$
-
-Since a functor from [the interval
-category](agda://Cat.Instances.Interval) $\left\{0 \le 1\right\}$
-amounts to a choice of morphism, we conclude that a functor $C \times
-\left\{0\le 1\right\} \to D$ is the same as a natural transformation $C
-\To D$. There is more to this correspondence: the [geometric
-realisation] of a natural transformation is a [homotopy in the
-topological sense].
-
-[geometric realisation]: https://ncatlab.org/nlab/show/geometric+realization+of+categories
-[homotopy in the topological sense]: https://ncatlab.org/nlab/show/homotopy
--->
-
 Natural transformations also dualize. The opposite of $\eta : F
 \To G$ is $\eta^{op} : G^{op} \To F^{op}$.
 
@@ -463,10 +454,7 @@ Natural transformations also dualize. The opposite of $\eta : F
     }
 ```
 
-We verify that natural transformations are [sets] by showing that `F =>
-G` is equivalent to a Σ-type which can be shown to be a set by the
-closure properties of h-levels.
-
+<!--
 ```agda
 module _ {o₁ h₁ o₂ h₂}
          {C : Precategory o₁ h₁}
@@ -479,28 +467,22 @@ module _ {o₁ h₁ o₂ h₂}
     module C = Precategory C
 
   open _=>_
-
-  Nat-is-set : is-set (F => G)
-  Nat-is-set = is-hlevel≃ 2 (sigma≃record (F => G)) NT'-is-set where
-    NT' : Type _
-    NT' = Σ[ eta ∈ ((x : _) → D.Hom (F.₀ x) (G.₀ x)) ]
-            ((x y : _) (f : C.Hom x y) → eta y D.∘ F.₁ f ≡ G.₁ f D.∘ eta x)
 ```
+-->
 
-The type `NT'`{.Agda} is a literal restatement of the definition of
-`_=>_`{.Agda} using `Σ`{.Agda} rather than an Agda record. The trade-off
-is that a record has semantic information (the names `η`{.Agda} and
-`is-natural`{.Agda} mean more than `fst` and `snd`), but a `Σ`{.Agda}
-can be proven to be a set compositionally:
+Since the type of natural transformations is defined as a record, we can
+not _a priori_ reason about its h-level in a convenient way. However,
+using Agda's metaprogramming facilities (both reflection _and_ instance
+search), we can automatically derive an equivalence between the type of
+natural transformations and a certain $\Sigma$ type; This type can then
+be shown to be a set using the standard `hlevel`{.Agda} machinery.
 
 ```agda
-    NT'-is-set : is-set NT'
-    NT'-is-set =
-      Σ-is-hlevel 2 (Π-is-hlevel 2 λ x → D.Hom-set _ _)
-                    (λ _ → Π-is-hlevel 2
-                     λ _ → Π-is-hlevel 2
-                     λ _ → Π-is-hlevel 2
-                     λ _ x y p q → is-hlevel-suc 2 (D.Hom-set _ _) _ _ x y p q)
+  private unquoteDecl eqv = declare-record-iso eqv (quote _=>_)
+  Nat-is-set : is-set (F => G)
+  Nat-is-set = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2) where
+    open C.HLevel-instance
+    open D.HLevel-instance
 ```
 
 Another fundamental lemma is that equality of natural transformations

@@ -94,7 +94,7 @@ the two arrows we assume commutative.
 
 To appeal to the universal property of the outer pullback, we must
 somehow extend our red cone over $b \to e \ot d$ to one over $c \to f
-\ot e$. Can we do this? Yes! By assumption,the square on the right
+\ot e$. Can we do this? Yes! By assumption, the square on the right
 commutes, which lets us apply commutativity of the red diagram (the
 assumption $p$ in the code). Check out the calculation below:
 

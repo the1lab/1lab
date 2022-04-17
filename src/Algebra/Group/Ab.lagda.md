@@ -51,7 +51,7 @@ AbGroup _ = Ab.Ob
 ```agda
 Ab-is-category : ∀ {ℓ} → is-category (Ab ℓ)
 Ab-is-category = Restrict-is-category is-abelian-group
-  (λ x → Π-is-hlevel 1 (λ _ → Π-is-hlevel 1 λ _ → x .snd .Group-on.has-is-set _ _))
+  (λ (_ , g) → let open Group-on g in hlevel 1)
   Groups-is-category
 
 module AbGrp {ℓ} (G : AbGroup ℓ) where
@@ -74,19 +74,19 @@ G$:
 
 ```agda
 module _ {ℓ ℓ′} (X : Type ℓ) (G : Group ℓ′) where private
-  private module G = Group-on (G .snd)
+  open Group-on (G .snd)
 
   Map-group : Group (ℓ ⊔ ℓ′)
   Map-group = _ , grp where
     grp : Group-on (X → G .fst)
-    grp = make-group (fun-is-hlevel 2 G.has-is-set)
-      (λ _ → G.unit)
-      (λ f g x → f x G.⋆ g x)
-      (λ f x → G.inverse (f x))
-      (λ f g h i x → G.associative {x = f x} {y = g x} {z = h x} (~ i))
-      (λ f i x → G.inversel {x = f x} i)
-      (λ f i x → G.inverser {x = f x} i)
-      (λ f i x → G.idl {x = f x} i)
+    grp = make-group (hlevel 2)
+      (λ _ → unit)
+      (λ f g x → f x ⋆ g x)
+      (λ f x → inverse (f x))
+      (λ f g h i x → associative {x = f x} {y = g x} {z = h x} (~ i))
+      (λ f i x → inversel {x = f x} i)
+      (λ f i x → inverser {x = f x} i)
+      (λ f i x → idl {x = f x} i)
 ```
 
 This definition works fine for groups and maps _of sets_ into a group,

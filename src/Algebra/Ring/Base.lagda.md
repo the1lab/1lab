@@ -235,6 +235,7 @@ Ring-hom-path {R = R} {S} {f} {g} fg = f≡g where
     is-prop→pathp (λ i → S.has-is-set (fg i (x R.+ y)) (fg i x S.+ fg i y)) (f .pres-+ _ _) (g .pres-+ _ _) i
   f≡g i .Ring-hom.pres-1 =
     is-prop→pathp (λ i → S.has-is-set (fg i R.1R) S.1R) (f .pres-1) (g .pres-1) i
+private unquoteDecl eqv = declare-record-iso eqv (quote Ring-hom)
 ```
 -->
 
@@ -258,10 +259,7 @@ Rings ℓ = precat where
     module b = Ring b
 
     goal : is-set (Ring-hom a b)
-    goal = is-hlevel≃ 2 (sigma≃record (Ring-hom a b)) $
-      Σ-is-hlevel 2 (fun-is-hlevel 2 b.has-is-set) λ f →
-        auto-hlevel 2
-          ((λ _ _ → b.has-is-set) , (λ _ _ → b.has-is-set) , b.has-is-set)
+    goal = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2)
 
   precat .id = rh where
     rh : Ring-hom _ _
