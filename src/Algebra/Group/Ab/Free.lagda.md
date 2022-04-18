@@ -1,6 +1,7 @@
 ```agda
-open import 1Lab.Prelude
-
+open import Algebra.Group.Cat.Base
+open import Algebra.Group.Ab
+open import Algebra.Prelude
 open import Algebra.Group
 
 open import Data.Set.Coequaliser
@@ -181,59 +182,85 @@ inherited from $G$!
 
 This finishes the construction of _an_ abelian group from a group. To
 show that this construction is correct, we'll show that it satisfies a
-universal property: `Abelianise`{.Agda} is left adjoint to the
-inclusion from abelian groups to groups. In essence, this means that any
-map from $G$ to an abelian group $G'$ factors in a unique way through
-the canonical map $G \to G^{ab}$.
+universal property: The map `inc^ab`{.Agda}, which we write as being
+from $G \to G^{ab}$, is a group homomorphism, and furthermore, it
+provides a _universal_ way of mapping from $G$ to an abelian group, in
+that if $H$ is an abelian group, then a map $f : G \to H$ factors
+through `inc^ab`{.Agda} in a unique way.
 
 ```agda
-  Abelianise⊣Forget
-    : (G' : Group ℓ) → is-abelian-group G'
-    → Group[ Grp ⇒ G' ] ≃ Group[ Abelianise ⇒ G' ]
-  Abelianise⊣Forget G' G'-ab = Iso→Equiv isom where
-    module G' = Group-on (G' .snd)
-    open Group-hom
-    open is-iso
+Abelianise-universal
+  : ∀ {G : Group ℓ} → Universal-morphism G Ab→Grp
+Abelianise-universal {ℓ = ℓ} {G = G} = m where
+  open Cat (const! {A = Groups ℓ} G ↓ Ab→Grp)
+  open Initial
+  module G = Group-on (G .snd)
 ```
 
-We'll factor a given group homomorphism $G \to G'$ through $G^{ab}$
-using the `fold`{.agda} function below. To map out of the
-abelianisation, we must show that $f(xyz) = f(xzy)$. But $f$ is a
-homomorphism into an abelian group! So we have $f(xyz) = f(x)f(y)f(z) =
-f(x)f(z)f(y) = f(xzy)$.
+Our choice of initial object was already stated in the paragraph above
+--- it's the epimorphism $q : G \to G^{ab}$, i.e., the map which we
+call `inc^ab`{.Agda}.
 
 ```agda
-    fold : (f : G → G' .fst) → Group-hom Grp G' f → G^ab → G' .fst
-    fold f gh = Coeq-rec G'.has-is-set f l1
-      where abstract
-        l1 : ((x , y , z) : G × G × G) → f (x ⋆ y ⋆ z) ≡ f (x ⋆ z ⋆ y)
-        l1 (x , y , z) =
-          f (x ⋆ y ⋆ z)         ≡⟨ gh .pres-⋆ _ _ ⟩
-          f x G'.⋆ f (y ⋆ z)    ≡⟨ ap₂ G'._⋆_ refl (gh .pres-⋆ _ _ ) ⟩
-          f x G'.⋆ f y G'.⋆ f z ≡⟨ ap₂ G'._⋆_ refl (G'-ab _ _) ⟩
-          f x G'.⋆ f z G'.⋆ f y ≡⟨ ap₂ G'._⋆_ refl (sym (gh .pres-⋆ _ _ )) ⟩
-          f x G'.⋆ f (z ⋆ y)    ≡⟨ sym (gh .pres-⋆ _ _) ⟩
-          f (x ⋆ z ⋆ y)         ∎
+  init : Ob
+  init .↓Obj.x = tt
+  init .↓Obj.y = Abelianise G , Abelianise-is-abelian-group G
+  init .↓Obj.map .fst = inc^ab G
+  init .↓Obj.map .snd .Group-hom.pres-⋆ x y = refl
+
+  m : Initial
+  m .bot = init
+  m .has⊥ other = contr factor unique where
 ```
 
-Now it suffices to show that `fold`{.Agda} has an inverse --- I can tell
-you it has one: precomposition with the universal map $G_0 \to
-G^{ab}_0$, which is a group homomorphism on the nose.
+<!--
+```agda
+    module other = ↓Obj other
+    module H = AbGrp other.y
+    open Σ other.map renaming (fst to f ; snd to gh)
+    open Group-hom gh
+```
+-->
+
+Now suppose we have an abelian group $H$ and a map $f : G \to H$. We
+factor it through $G^{ab}$ as follows: Since $f$ is a homomorphism into
+an abelian group, it "respects commutativity", by which I mean that
+$f(ab) = f(a)f(b) = f(b)f(a) = f(ba)$, meaning in particular that it
+satisfies the requirements for mapping out of `Abelianise`{.Agda} at the
+level of sets.
 
 ```agda
-    isom : Iso _ _
-    isom .fst (f , g) = fold f g , r
+    factor : Hom _ other
+    factor .↓Hom.α = tt
+    factor .↓Hom.β .fst = Coeq-elim (λ _ → H.has-is-set) f (λ (a , b , c) → resp a b c)
       where abstract
-        r : Group-hom Abelianise G' (fold f g)
-        r .pres-⋆ = Coeq-elim-prop₂ (λ _ _ → G'.has-is-set _ _) (g .pres-⋆)
+      resp : ∀ a b c → f (a G.⋆ (b G.⋆ c)) ≡ f (a G.⋆ (c G.⋆ b))
+      resp a b c =
+        f (a G.⋆ (b G.⋆ c))   ≡⟨ pres-⋆ _ _ ⟩
+        f a H.⋆ f (b G.⋆ c)   ≡⟨ ap (f a H.⋆_) (pres-⋆ _ _) ⟩
+        f a H.⋆ (f b H.⋆ f c) ≡⟨ ap (f a H.⋆_) H.commutative ⟩
+        f a H.⋆ (f c H.⋆ f b) ≡˘⟨ ap (f a H.⋆_) (pres-⋆ _ _) ⟩
+        f a H.⋆ f (c G.⋆ b)   ≡˘⟨ pres-⋆ _ _ ⟩
+        f (a G.⋆ (c G.⋆ b))   ∎
+```
 
-    isom .snd .inv (f , g) = (f ∘ inc^ab) , r
-      where abstract
-        r : Group-hom (G , gst) G' (f ∘ inc^ab)
-        r .pres-⋆ x y = g .pres-⋆ _ _
+To show that the map $h : G^{ab} \to H$ induced by $f$ is a group
+homomorphism, it suffices to assume that we have two honest-to-god
+elements $x, y : G$, and since $h$ is exactly $f$ on generators, the
+required identification $f(xy) = f(x)f(y)$ follows from $f$ being a
+group homomorphism.
 
-    isom .snd .rinv f =
-      Σ-prop-path (λ _ → Group-hom-is-prop)
-        (funext (Coeq-elim-prop (λ _ → G'.has-is-set _ _) λ _ → refl))
-    isom .snd .linv f = Σ-prop-path (λ _ → Group-hom-is-prop) refl
+```agda
+    factor .↓Hom.β .snd .Group-hom.pres-⋆ =
+      Coeq-elim-prop₂ (λ _ _ → H.has-is-set _ _) λ x y → pres-⋆ _ _
+    factor .↓Hom.sq = Forget-is-faithful refl
+```
+
+Now if $h'$ is any other map which factors $G \xepi{q} G^{ab} \xto{h'}
+H$, since $G \to G^{ab}$ is an epimorphism, we must have $h = h'$.
+
+```agda
+    unique : ∀ h → factor ≡ h
+    unique x = ↓Hom-path _ _ refl $ Forget-is-faithful $ funext $
+      Coeq-elim-prop (λ _ → H.has-is-set _ _) λ y i → x .↓Hom.sq i .fst y
 ```

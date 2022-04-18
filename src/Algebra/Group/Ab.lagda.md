@@ -54,6 +54,9 @@ Ab-is-category = Restrict-is-category is-abelian-group
   (λ (_ , g) → let open Group-on g in hlevel 1)
   Groups-is-category
 
+Ab→Grp : ∀ {ℓ} → Functor (Ab ℓ) (Groups ℓ)
+Ab→Grp = Forget-full-subcat
+
 module AbGrp {ℓ} (G : AbGroup ℓ) where
   ₀ : Type ℓ
   ₀ = G .object .fst
