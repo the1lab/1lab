@@ -114,16 +114,23 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
 
 <!--
 ```agda
+  ↓Hom-pathp : ∀ {x x′ y y′} {p : x ≡ x′} {q : y ≡ y′}
+            → {f : ↓Hom x y} {g : ↓Hom x′ y′}
+            → (PathP _ (f .↓Hom.α) (g .↓Hom.α))
+            → (PathP _ (f .↓Hom.β) (g .↓Hom.β))
+            → PathP (λ i → ↓Hom (p i) (q i)) f g
+  ↓Hom-pathp p q i .↓Hom.α = p i
+  ↓Hom-pathp p q i .↓Hom.β = q i
+  ↓Hom-pathp {p = p} {q} {f} {g} r s i .↓Hom.sq =
+    is-prop→pathp (λ i → C.Hom-set _ _ (↓Obj.map (q i) C.∘ F₁ F (r i))
+                                       (F₁ G (s i) C.∘ ↓Obj.map (p i)))
+      (f .↓Hom.sq) (g .↓Hom.sq) i
+
   ↓Hom-path : ∀ {x y} {f g : ↓Hom x y}
             → (f .↓Hom.α ≡ g .↓Hom.α)
             → (f .↓Hom.β ≡ g .↓Hom.β)
             → f ≡ g
-  ↓Hom-path p q i .↓Hom.α = p i
-  ↓Hom-path p q i .↓Hom.β = q i
-  ↓Hom-path {x} {y} {f} {g} p q i .↓Hom.sq =
-    is-prop→pathp (λ i → C.Hom-set _ _ (↓Obj.map y C.∘ F₁ F (p i))
-                                       (F₁ G (q i) C.∘ ↓Obj.map x))
-      (f .↓Hom.sq) (g .↓Hom.sq) i
+  ↓Hom-path = ↓Hom-pathp
 
   private unquoteDecl eqv = declare-record-iso eqv (quote ↓Hom)
 

@@ -232,7 +232,7 @@ show is that $\eta{}_x \circ \id{id} \circ \id{id} = f$.
     id≡F≅G = ≅-pathp refl F≡G
       (Nat-pathp refl F≡G
         λ x → Hom-pathp
-          (  ap₂ D._∘_ (ptoi-to _) refl 
+          (  ap₂ D._∘_ (ptoi-to _) refl
           ·· ap₂ D._∘_ refl (ap₂ D._∘_ refl (transport-refl _) ∙ D.idl _)
           ·· D.idr _))
       (Nat-pathp F≡G refl
