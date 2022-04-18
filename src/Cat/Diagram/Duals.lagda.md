@@ -1,5 +1,9 @@
 ```agda
+open import Cat.Instances.Functor.Duality
+open import Cat.Instances.Functor
 open import Cat.Prelude
+
+import Cat.Reasoning
 
 module Cat.Diagram.Duals {o h} (C : Precategory o h) where
 ```
@@ -235,4 +239,11 @@ module _ {o ℓ} {J : Precategory o ℓ} {F : Functor J C} where
 
         fg : is-left-inverse f g
         fg x = Cocone-hom-path _ (transport-refl _ ∙ transport-refl _)
+
+module _ {o ℓ} {J : Precategory o ℓ} {F F′ : Functor J C} where
+  private module JC = Cat.Reasoning Cat[ J , C ]
+
+  Colimit-ap-iso : F JC.≅ F′ → Colimit F → Colimit F′
+  Colimit-ap-iso f cl =
+    Co-limit→Colimit (Limit-ap-iso (op-natural-iso f) (Colimit→Co-limit cl))
 ```

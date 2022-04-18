@@ -79,4 +79,15 @@ op-functor←→ {C = C} {D = D} = Functor-path (λ x → refl) λ {X} {Y} f →
                    ; j (i = i1) → transport-filler (λ j → D.Hom (F₀ Y x) (F₀ Y x)) D.id (~ j)
                    })
           (coe0→i (λ j → D.Hom (F₀ Y (transp (λ j → C.Ob) (i ∨ j) x)) (F₀ Y (transp (λ j → C.Ob) (i ∨ j) x))) i D.id)
+
+module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {F G : Functor C D} where
+  private
+    module CD = Cat.Reasoning Cat[ C , D ]
+    module CopDop = Cat.Reasoning Cat[ C ^op , D ^op ]
+
+  op-natural-iso : F CD.≅ G → (Functor.op F) CopDop.≅ (Functor.op G)
+  op-natural-iso isom = CopDop.make-iso (_=>_.op isom.from) (_=>_.op isom.to)
+    (Nat-path (λ x → ap (λ e → e .η x) isom.invl))
+    (Nat-path λ x → ap (λ e → e .η x) isom.invr)
+    where module isom = CD._≅_ isom
 ```

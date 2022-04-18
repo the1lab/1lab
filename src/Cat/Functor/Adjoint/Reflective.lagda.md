@@ -1,6 +1,7 @@
 ```agda
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Equivalence
+open import Cat.Instances.Functor
 open import Cat.Functor.Adjoint
 open import Cat.Diagram.Monad
 open import Cat.Functor.Base
@@ -89,6 +90,17 @@ is-reflective→counit-is-iso {C = C} {D} {F} {G} adj g-ff {o} = morp where
       counit.ε _ D.∘ F.₁ (G.₁ (equiv→inverse g-ff _)) ≡⟨ ap (counit.ε _ D.∘_) (ap F.₁ (equiv→section g-ff _)) ⟩
       counit.ε _ D.∘ F.₁ (unit.η _)                   ≡⟨ zig ⟩
       D.id                                            ∎))
+
+is-reflective→counit-iso
+  : {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {F : Functor C D} {G : Functor D C}
+  → (adj : F ⊣ G) → is-reflective adj
+  → Cat.Reasoning._≅_ Cat[ D , D ] (F F∘ G) Id
+is-reflective→counit-iso {C = C} {D} adj ff = DD.invertible→iso counit invs where
+  module DD = Cat.Reasoning Cat[ D , D ]
+  module D = Cat.Reasoning D
+  open _⊣_ adj
+  invs = componentwise-invertible→invertible counit λ x →
+    D.iso→invertible (is-reflective→counit-is-iso adj ff {o = x})
 ```
 
 We can now prove that the adjunction $L \dashv \iota$ is monadic.

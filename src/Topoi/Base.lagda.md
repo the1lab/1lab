@@ -1,19 +1,10 @@
 ```agda
-open import Cat.Instances.Shape.Terminal
-open import Cat.Instances.Shape.Cospan
+open import Algebra.Prelude
+
+open import Cat.Instances.Sets.Cocomplete
 open import Cat.Instances.Functor.Limits
-open import Cat.Diagram.Limit.Finite
-open import Cat.Diagram.Limit.Base
-open import Cat.Diagram.Limit.Pullback
-open import Cat.Diagram.Pullback
-open import Cat.Diagram.Terminal
-open import Cat.Instances.Sets.Complete
-open import Cat.Instances.Functor
-open import Cat.Functor.Adjoint
-open import Cat.Functor.Base
-open import Cat.Functor.Hom
-open import Cat.Prelude
-open import Cat.Thin
+open import Cat.Diagram.Everything
+open import Cat.Functor.Everything
 
 import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning
@@ -426,6 +417,17 @@ a (lex, idempotent) monad: the "sheafification monad". This gives us
 completeness in $\ca{T}$ for "free" (really, it's because presheaf
 categories are complete, and those are complete because $\sets$ is.)
 
+```agda
+module _ {o ℓ} {𝓣 : Precategory o ℓ} {o′ ℓ′ κ} (T : Topos 𝓣 o′ ℓ′ κ) where
+  open Topos T
+
+  Sheafify : Monad {C = PSh κ site}
+  Sheafify = Adjunction→Monad L⊣ι
+
+  Sheafify-monadic : is-monadic L⊣ι
+  Sheafify-monadic = is-reflective→is-monadic L⊣ι has-ff
+```
+
 [monadic]: Cat.Functor.Adjoint.Monadic.html
 [algebras]: Cat.Diagram.Monad.html#algebras-over-a-monad
 
@@ -436,6 +438,21 @@ $\sets$ is cocomplete --- then apply $L$ to get a colimiting cocone for
 $L \iota F$. But the counit of the adjunction $\eps : L \iota \To
 \id{Id}$ is a natural isomorphism, so we have a colimiting cocone for
 $F$.
+
+```agda
+  Topos-is-cocomplete : is-cocomplete κ κ 𝓣
+  Topos-is-cocomplete F =
+    Colimit-ap-iso _
+      (F∘-iso-id-l (is-reflective→counit-iso L⊣ι has-ff))
+      sheafified
+      where
+      psh-colim : Colimit (ι F∘ F)
+      psh-colim = Functor-cat-is-cocomplete (Sets-is-cocomplete {ι = κ} {κ} {κ}) _
+
+      sheafified : Colimit ((L F∘ ι) F∘ F)
+      sheafified = subst Colimit F∘-assoc $
+        left-adjoint-colimit L⊣ι psh-colim
+```
 
 Since the reflector is left exact, and thus in particular preserves
 finite products, a theorem of Johnstone (Elephant A4.3.1) implies the

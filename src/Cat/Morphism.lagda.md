@@ -142,6 +142,9 @@ invertible→iso f x =
     ; inverses = x .is-invertible.inverses
     }
 
+iso→invertible : (i : a ≅ b) → is-invertible (i ._≅_.to)
+iso→invertible i = record { inv = i ._≅_.from ; inverses = i ._≅_.inverses }
+
 ≅-is-set : is-set (a ≅ b)
 ≅-is-set x y p q = s where
   open _≅_

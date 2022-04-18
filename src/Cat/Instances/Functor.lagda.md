@@ -3,6 +3,8 @@ open import Cat.Instances.Product
 open import Cat.Univalent using (is-category)
 open import Cat.Prelude
 
+import Cat.Reasoning
+
 open Precategory
 open Functor
 open _=>_
@@ -353,5 +355,42 @@ F∘-idl
       {F : Functor E F}
   → Id F∘ F ≡ F
 F∘-idl = Functor-path (λ x → refl) λ x → refl
+
+module
+  _ {o ℓ o′ ℓ′ o′′ ℓ′′}
+    {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {E : Precategory o′′ ℓ′′}
+  where
+    private
+      module DE = Cat.Reasoning Cat[ D , E ]
+      module CE = Cat.Reasoning Cat[ C , E ]
+
+    F∘-iso-l : {F F′ : Functor D E} {G : Functor C D}
+             → F DE.≅ F′ → (F F∘ G) CE.≅ (F′ F∘ G)
+    F∘-iso-l {F} {F′} {G} isom =
+      CE.make-iso to from
+        (Nat-path λ x → ap (λ e → e .η _) isom.invl)
+        (Nat-path λ x → ap (λ e → e .η _) isom.invr)
+      where
+        module isom = DE._≅_ isom
+        to : (F F∘ G) => (F′ F∘ G)
+        to .η _ = isom.to .η _
+        to .is-natural _ _ _ = isom.to .is-natural _ _ _
+
+        from : (F′ F∘ G) => (F F∘ G)
+        from .η _ = isom.from .η _
+        from .is-natural _ _ _ = isom.from .is-natural _ _ _
+
+module
+  _ {o ℓ o′ ℓ′}
+    {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  where
+    private
+      module DD = Cat.Reasoning Cat[ D , D ]
+      module CD = Cat.Reasoning Cat[ C , D ]
+
+    F∘-iso-id-l
+      : {F : Functor D D} {G : Functor C D}
+      → F DD.≅ Id → (F F∘ G) CD.≅ G
+    F∘-iso-id-l {F} {G} isom = subst ((F F∘ G) CD.≅_) F∘-idl (F∘-iso-l isom)
 ```
 -->
