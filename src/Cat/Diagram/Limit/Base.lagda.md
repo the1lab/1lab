@@ -361,9 +361,9 @@ Note that this also lets us map morphisms between cones into $\ca{D}$.
 
       cone-hom : Cone-hom (F F∘ Dia) (F-map-cone X) (F-map-cone Y)
       cone-hom .Cone-hom.hom = F .F₁ f.hom
-      cone-hom .Cone-hom.commutes =
+      cone-hom .Cone-hom.commutes _ =
         (F .F₁ (Y.ψ _)) D.∘ (F .F₁ f.hom) ≡˘⟨ F .F-∘ (Y.ψ _) f.hom ⟩
-        F .F₁ (Y.ψ _ C.∘ f.hom) ≡⟨ ap (F .F₁) f.commutes ⟩
+        F .F₁ (Y.ψ _ C.∘ f.hom) ≡⟨ ap (F .F₁) (f.commutes _) ⟩
         F .F₁ (X.ψ _) ∎
 ```
 
@@ -521,9 +521,7 @@ functor and used the proof that it preserves isomorphisms.
                                   → C.is-invertible (Cone-hom.hom f)
   Cone-invertible→apex-invertible {f = f} f-invert =
     C.make-invertable (Cone-hom.hom inv) (ap Cone-hom.hom invl) (ap Cone-hom.hom invr)
-    where
-      open Cones.is-invertible f-invert
-      
+    where open Cones.is-invertible f-invert
 
   Limit-unique
     : {X Y : Limit F}
@@ -548,12 +546,12 @@ is invertible, then that means that $K$ is also a limiting cone.
       module universal {K} = Cone-hom (Terminal.! L {K})
       open C.is-invertible invert
 
-      limits : is-contr (Cones.Hom K′ K) 
+      limits : is-contr (Cones.Hom K′ K)
       limits .centre .Cone-hom.hom = inv C.∘ Limit-universal F L K′
-      limits .centre .Cone-hom.commutes =
-        (K.ψ _) C.∘ (inv C.∘ universal.hom)                   ≡˘⟨ ap ( C._∘ (inv C.∘ universal.hom)) universal.commutes ⟩
+      limits .centre .Cone-hom.commutes _ =
+        (K.ψ _) C.∘ (inv C.∘ universal.hom)                   ≡˘⟨ ap ( C._∘ (inv C.∘ universal.hom)) (universal.commutes _) ⟩
         (L.ψ _ C.∘ universal.hom) C.∘ (inv C.∘ universal.hom) ≡⟨ C.cancel-inner invl ⟩
-        L.ψ _ C.∘ universal.hom                               ≡⟨ universal.commutes ⟩
+        L.ψ _ C.∘ universal.hom                               ≡⟨ universal.commutes _ ⟩
         K′.ψ _                                                ∎
       limits .paths f = Cone-hom-path F $ C.invertible→monic invert _ _ $
         universal.hom C.∘ (inv C.∘ universal.hom) ≡⟨ C.cancell invl ⟩
