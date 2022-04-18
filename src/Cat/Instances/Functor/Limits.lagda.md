@@ -2,10 +2,10 @@
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Instances.Functor.Duality
 open import Cat.Diagram.Colimit.Base
+open import Cat.Functor.Equivalence
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Equaliser
 open import Cat.Instances.Functor
-open import Cat.Functor.Equivalence
 open import Cat.Instances.Product
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal

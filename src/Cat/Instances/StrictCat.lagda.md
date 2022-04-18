@@ -1,5 +1,6 @@
 ```agda
 open import 1Lab.Reflection.Record
+
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Diagram.Product

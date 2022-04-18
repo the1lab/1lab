@@ -368,44 +368,6 @@ Presheaf {κ} C = psh where
     adj .zag = Nat-path λ _ → refl
 ```
 
-# Geometric morphisms
-
-The definition of a topos as a generalisation of topological space leads
-us to look for a categorification of "continuous map" to functors
-between topoi. In the same way that a continuous function $f : X \to Y$
-may be seen as a homomorphism of frames $f^* : O(Y) \to O(X)$, with
-defining feature the preservation of finite meets and arbitrary joins,
-we shall define a **geometric morphism** $\topos(X,Y)$ to be a functor
-$f^* : Y \to X$ which is left exact and admits a right adjoint.
-
-<!--
-```agda
-module _ where
-  private
-    variable
-      o ℓ o′ ℓ′ κ κ′ : Level
-      E F : Precategory o ℓ
-    lvl : ∀ {o ℓ o′ ℓ′} → Precategory o ℓ → Precategory o′ ℓ′ → Level
-    lvl {o} {ℓ} {o′} {ℓ′} _ _ = o ⊔ ℓ ⊔ ℓ′ ⊔ o′
-```
--->
-
-```agda
-  record Top[_,_] (_ : Topos E o ℓ κ) (_ : Topos F o′ ℓ′ κ′) : Type (lvl E F) where
-    field
-      Inv[_]  : Functor F E
-      Inv-lex : is-lex Inv[_]
-      Dir[_]  : Functor E F
-      Inv⊣Dir : Inv[_] ⊣ Dir[_]
-
-  open Top[_,_]
-```
-
-<!-- TODO [Amy 2022-04-02]
-talk about geometric logic?
--->
-
-
 # Properties of topoi
 
 The defining property of a topos $\ca{T}$ is that it admits a
@@ -464,4 +426,41 @@ sheaf: topoi are [cartesian closed].
 
 <!-- TODO [Amy 2022-04-02]
 prove all of the above lmao
+-->
+
+# Geometric morphisms
+
+The definition of a topos as a generalisation of topological space leads
+us to look for a categorification of "continuous map" to functors
+between topoi. In the same way that a continuous function $f : X \to Y$
+may be seen as a homomorphism of frames $f^* : O(Y) \to O(X)$, with
+defining feature the preservation of finite meets and arbitrary joins,
+we shall define a **geometric morphism** $\topos(X,Y)$ to be a functor
+$f^* : Y \to X$ which is left exact and admits a right adjoint.
+
+<!--
+```agda
+module _ where
+  private
+    variable
+      o ℓ o′ ℓ′ κ κ′ : Level
+      E F : Precategory o ℓ
+    lvl : ∀ {o ℓ o′ ℓ′} → Precategory o ℓ → Precategory o′ ℓ′ → Level
+    lvl {o} {ℓ} {o′} {ℓ′} _ _ = o ⊔ ℓ ⊔ ℓ′ ⊔ o′
+```
+-->
+
+```agda
+  record Top[_,_] (_ : Topos E o ℓ κ) (_ : Topos F o′ ℓ′ κ′) : Type (lvl E F) where
+    field
+      Inv[_]  : Functor F E
+      Inv-lex : is-lex Inv[_]
+      Dir[_]  : Functor E F
+      Inv⊣Dir : Inv[_] ⊣ Dir[_]
+
+  open Top[_,_]
+```
+
+<!-- TODO [Amy 2022-04-02]
+talk about geometric logic?
 -->

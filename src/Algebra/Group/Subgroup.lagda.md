@@ -1,10 +1,10 @@
 ```agda
-open import Cat.Diagram.Equaliser.Kernel
-
 open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
 open import Algebra.Prelude
 open import Algebra.Group
+
+open import Cat.Diagram.Equaliser.Kernel
 
 open import Data.Power
 

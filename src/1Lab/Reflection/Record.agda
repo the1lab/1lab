@@ -4,10 +4,10 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
+open import Data.List
+
 import Agda.Builtin.Sigma as S
 import Agda.Builtin.Nat as N
-
-open import Data.List
 
 module 1Lab.Reflection.Record where
 

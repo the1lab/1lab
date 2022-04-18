@@ -3,11 +3,11 @@ open import Cat.Diagram.Limit.Equaliser
 open import Cat.Diagram.Limit.Pullback
 open import Cat.Diagram.Limit.Product
 open import Cat.Diagram.Limit.Base
-open import Cat.Diagram.Equaliser
-open import Cat.Diagram.Terminal
-open import Cat.Diagram.Pullback
-open import Cat.Diagram.Product
 open import Cat.Instances.Discrete
+open import Cat.Diagram.Equaliser
+open import Cat.Diagram.Pullback
+open import Cat.Diagram.Terminal
+open import Cat.Diagram.Product
 open import Cat.Prelude
 open import Cat.Thin
 
