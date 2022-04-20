@@ -7,6 +7,8 @@ open import Cat.Functor.Adjoint.Monad public
 open import Cat.Functor.Adjoint.Reflective public
 open import Cat.Functor.Base public
 open import Cat.Functor.Bifunctor public
+open import Cat.Functor.Conservative public
+open import Cat.Functor.Equivalence.Complete public
 open import Cat.Functor.Equivalence public
 open import Cat.Functor.FullSubcategory public
 open import Cat.Functor.Hom public

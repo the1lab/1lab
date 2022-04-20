@@ -7,8 +7,7 @@ open import Cat.Prelude
 import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning
 
-module Cat.CartesianClosed.Base
-  where
+module Cat.CartesianClosed.Base where
 ```
 
 # Cartesian closed categories
@@ -50,6 +49,7 @@ $$
 record is-cc {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
   field
     cartesian : ∀ A B → Product C A B
+    terminal  : Terminal C
 
   open Cat.Reasoning C
   open Cartesian C cartesian public
@@ -60,7 +60,6 @@ record is-cc {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
   field
     [_,-]      : Ob  → Functor C C
     tensor⊣hom : ∀ A → ×-Bifunctor.Left A ⊣ ([ A ,-])
-    terminal   : Terminal C
 
   module [-,-] (a : Ob) = Functor [ a ,-]
   module T⊣H {a : Ob} = _⊣_ (tensor⊣hom a)

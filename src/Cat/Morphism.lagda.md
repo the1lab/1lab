@@ -129,10 +129,10 @@ We note that the identity morphism is always iso, and that isos compose:
 
 <!--
 ```agda
-make-invertable : {f : Hom a b} → (g : Hom b a) → f ∘ g ≡ id → g ∘ f ≡ id → is-invertible f
-make-invertable g p q .is-invertible.inv = g
-make-invertable g p q .is-invertible.inverses .invl = p
-make-invertable g p q .is-invertible.inverses .invr = q
+make-invertible : {f : Hom a b} → (g : Hom b a) → f ∘ g ≡ id → g ∘ f ≡ id → is-invertible f
+make-invertible g p q .is-invertible.inv = g
+make-invertible g p q .is-invertible.inverses .invl = p
+make-invertible g p q .is-invertible.inverses .invr = q
 
 make-iso : (f : Hom a b) (g : Hom b a) → f ∘ g ≡ id → g ∘ f ≡ id → a ≅ b
 make-iso f g p q ._≅_.to = f
@@ -147,6 +147,12 @@ invertible→iso f x =
     ; from     = x .is-invertible.inv
     ; inverses = x .is-invertible.inverses
     }
+
+is-invertible-inverse
+  : {f : Hom a b} (g : is-invertible f) → is-invertible (g .is-invertible.inv)
+is-invertible-inverse g =
+  record { inv = _ ; inverses = record { invl = invr g ; invr = invl g } }
+  where open Inverses (g .is-invertible.inverses)
 
 iso→invertible : (i : a ≅ b) → is-invertible (i ._≅_.to)
 iso→invertible i = record { inv = i ._≅_.from ; inverses = i ._≅_.inverses }
@@ -216,6 +222,7 @@ _Iso⁻¹ : a ≅ b → b ≅ a
 ```
 
 We also note that invertible morphisms are both epic and monic.
+
 ```agda
 invertible→monic : is-invertible f → is-monic f
 invertible→monic {f = f} invert g h p =

@@ -520,7 +520,7 @@ functor and used the proof that it preserves isomorphisms.
                                   → Cones.is-invertible f
                                   → C.is-invertible (Cone-hom.hom f)
   Cone-invertible→apex-invertible {f = f} f-invert =
-    C.make-invertable (Cone-hom.hom inv) (ap Cone-hom.hom invl) (ap Cone-hom.hom invr)
+    C.make-invertible (Cone-hom.hom inv) (ap Cone-hom.hom invl) (ap Cone-hom.hom invr)
     where open Cones.is-invertible f-invert
 
   Limit-unique

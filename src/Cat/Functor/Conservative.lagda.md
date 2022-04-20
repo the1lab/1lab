@@ -46,8 +46,8 @@ in $C$ as well (see `apex-iso→is-limit`{.Agda}).
 ```agda
 module _ {F : Functor C D} (conservative : is-conservative F) where
   conservative-reflects-limits : ∀ {Dia : Functor J C} → (L : Limit Dia)
-                                 → (∀ (K : Cone Dia) → Preserves-limit F K)
-                                 → (∀ (K : Cone Dia) → Reflects-limit F K)
+                               → (∀ (K : Cone Dia) → Preserves-limit F K)
+                               → (∀ (K : Cone Dia) → Reflects-limit F K)
   conservative-reflects-limits {Dia = Dia} L-lim preserves K limits =
     apex-iso→is-limit Dia K L-lim
       $ conservative
@@ -63,8 +63,8 @@ module _ {F : Functor C D} (conservative : is-conservative F) where
       K-lim .Terminal.top = F-map-cone F K
       K-lim .Terminal.has⊤ = limits
 
-      module L-lim = Terminal L-lim     
-      module F∘L-lim = Terminal F∘L-lim     
+      module L-lim = Terminal L-lim
+      module F∘L-lim = Terminal F∘L-lim
       open Cone-hom
 
       F-preserves-universal

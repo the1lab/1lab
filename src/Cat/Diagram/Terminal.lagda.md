@@ -54,7 +54,7 @@ they are equal.
 
 ```agda
 !-invertible : (t1 t2 : Terminal) → is-invertible (! t1 {top t2})
-!-invertible t1 t2 = make-invertable (! t2) (!-unique₂ t1 _ _) (!-unique₂ t2 _ _)
+!-invertible t1 t2 = make-invertible (! t2) (!-unique₂ t1 _ _) (!-unique₂ t2 _ _)
 
 ⊤-unique : (t1 t2 : Terminal) → top t1 ≅ top t2
 ⊤-unique t1 t2 = invertible→iso (! t2) (!-invertible t2 t1)

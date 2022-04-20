@@ -174,17 +174,18 @@ of shape categories are entirely determined by the "introduction forms"
   right-adjoint→pullback {f = f} {g} pb =
     Limit→Pullback C (subst Limit path (right-adjoint-limit (Pullback→Limit D pb)))
     where
-      path : R F∘ cospan→cospan-diagram f g ≡ cospan→cospan-diagram (R.₁ f) (R.₁ g)
+      path : R F∘ cospan→cospan-diagram lzero lzero f g
+           ≡ cospan→cospan-diagram lzero lzero (R.₁ f) (R.₁ g)
       path = Functor-path
         (λ { cs-a → refl
           ; cs-b → refl
           ; cs-c → refl })
         λ where
-          {cs-a} {cs-a} tt → R.F-id
-          {cs-a} {cs-c} tt → refl
-          {cs-b} {cs-b} tt → R.F-id
-          {cs-b} {cs-c} tt → refl
-          {cs-c} {cs-c} tt → R.F-id
+          {cs-a} {cs-a} _ → R.F-id
+          {cs-a} {cs-c} _ → refl
+          {cs-b} {cs-b} _ → R.F-id
+          {cs-b} {cs-c} _ → refl
+          {cs-c} {cs-c} _ → R.F-id
 
   right-adjoint→equaliser
     : ∀ {A B} {f g : D.Hom A B}

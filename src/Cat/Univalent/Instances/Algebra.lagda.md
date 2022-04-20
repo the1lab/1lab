@@ -8,7 +8,7 @@ module
   Cat.Univalent.Instances.Algebra
     {o ℓ} {C : Precategory o ℓ}
     (isc : is-category C)
-    (M : Monad {C = C})
+    (M : Monad C)
   where
 ```
 
@@ -44,7 +44,7 @@ Fixing a monad $M$ on a univalent category $\ca{C}$, we abbreviate its
 Eilenberg-Moore category $\ca{C}^M$ as `EM`{.Agda}.
 
 ```agda
-EM = Eilenberg-Moore M
+private EM = Eilenberg-Moore C M
 
 import Cat.Reasoning EM as EM
 import Cat.Reasoning C as C
@@ -151,8 +151,8 @@ in adjacent faces and swap $A_m$ for $X_m$; A straightforward
 calculation then shows that the square above commutes.
 
 ```agda
-    Am≡Xm : PathP (λ i → Algebra-on M (A₀≡X₀ i)) Am Xm
-    Am≡Xm = Algebra-on-pathp A₀≡X₀ same-mults′ where
+    Am≡Xm : PathP (λ i → Algebra-on C M (A₀≡X₀ i)) Am Xm
+    Am≡Xm = Algebra-on-pathp _ A₀≡X₀ same-mults′ where
       same-mults
         : PathP
           (λ i → C.Hom (iso→path C isc (F-map-iso (Monad.M M) A₀≅X₀) i) (A₀≡X₀ i))
@@ -184,7 +184,7 @@ ident=F-map-path}, and we can correct the source:
             (Am .ν) (Xm .ν))
           same-mults
 
-    A≡M : Path (Algebra M) (A , Am) (X , Xm)
+    A≡M : Path (Algebra _ M) (A , Am) (X , Xm)
     A≡M i = A₀≡X₀ i , Am≡Xm i
 ```
 
@@ -197,6 +197,6 @@ ident=Hom-pathp}.
 ```agda
     triv : PathP (λ i → (A , Am) EM.≅ A≡M i) EM.id-iso A≅X
     triv = EM.≅-pathp refl _
-      (Algebra-hom-pathp _ _ (Hom-pathp-reflr-iso C isc (C.idr _)))
-      (Algebra-hom-pathp _ _ (Hom-pathp-refll-iso C isc (C.idl _)))
+      (Algebra-hom-pathp _ _ _ (Hom-pathp-reflr-iso C isc (C.idr _)))
+      (Algebra-hom-pathp _ _ _ (Hom-pathp-refll-iso C isc (C.idl _)))
 ```

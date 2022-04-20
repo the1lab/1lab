@@ -3,6 +3,7 @@ open import Algebra.Prelude
 
 open import Cat.Instances.Sets.Cocomplete
 open import Cat.Instances.Functor.Limits
+open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Everything
 open import Cat.Functor.Everything
 
@@ -70,10 +71,10 @@ is **five levels**.
 [universes]: 1Lab.Type.html
 
 ```agda
-record Topos {o ℓ} (𝓣 : Precategory o ℓ) o′ ℓ′ κ
-  : Type (lsuc (o ⊔ ℓ ⊔ o′ ⊔ ℓ′ ⊔ κ)) where
+record Topos {o ℓ} (𝓣 : Precategory o ℓ) s κ
+  : Type (lsuc (o ⊔ ℓ ⊔ s ⊔ κ)) where
   field
-    site : Precategory o′ ℓ′
+    site : Precategory s s
 
     ι : Functor 𝓣 (PSh κ site)
     has-ff : is-fully-faithful ι
@@ -219,7 +220,7 @@ $\topos$ of topoi (morphisms are described
 [terminal object]: Cat.Diagram.Terminal.html
 
 ```agda
-𝟙 : ∀ {κ} → Topos (Sets κ) lzero lzero κ
+𝟙 : ∀ {κ} → Topos (Sets κ) lzero κ
 𝟙 {κ} = sets where
   open Topos
   open Functor
@@ -243,7 +244,7 @@ value $X$.
   incl .F-id    = Nat-path λ _ → refl
   incl .F-∘ f g = Nat-path λ _ → refl
 
-  sets : Topos _ _ _ _
+  sets : Topos _ _ _
   sets .site = ⊤Cat
 
   sets .ι = incl
@@ -348,11 +349,11 @@ modelling homotopy _type_ theory; Another example of a presheaf topos is
 the category of _quivers_ (directed multigraphs).
 
 ```agda
-Presheaf : ∀ {κ o ℓ} (C : Precategory o ℓ) → Topos (PSh κ C) _ _ κ
+Presheaf : ∀ {κ s} (C : Precategory s s) → Topos (PSh κ C) s κ
 Presheaf {κ} C = psh where
   open Functor
   open Topos
-  psh : Topos _ _ _ _
+  psh : Topos _ _ _
   psh .site = C
   psh .ι = Id
   psh .has-ff = id-equiv
@@ -380,14 +381,20 @@ completeness in $\ca{T}$ for "free" (really, it's because presheaf
 categories are complete, and those are complete because $\sets$ is.)
 
 ```agda
-module _ {o ℓ} {𝓣 : Precategory o ℓ} {o′ ℓ′ κ} (T : Topos 𝓣 o′ ℓ′ κ) where
+module _ {o ℓ} {𝓣 : Precategory o ℓ} {s κ} (T : Topos 𝓣 s κ) where
   open Topos T
 
-  Sheafify : Monad {C = PSh κ site}
+  Sheafify : Monad (PSh κ site)
   Sheafify = Adjunction→Monad L⊣ι
 
   Sheafify-monadic : is-monadic L⊣ι
   Sheafify-monadic = is-reflective→is-monadic L⊣ι has-ff
+
+  Topos-is-complete : is-complete κ κ 𝓣
+  Topos-is-complete = equivalence→complete
+    (is-equivalence.inverse-equivalence Sheafify-monadic)
+    (Eilenberg-Moore-is-complete
+      (Functor-cat-is-complete (Sets-is-complete {ι = κ} {κ} {κ})))
 ```
 
 [monadic]: Cat.Functor.Adjoint.Monadic.html
@@ -443,7 +450,7 @@ $f^* : Y \to X$ which is left exact and admits a right adjoint.
 module _ where
   private
     variable
-      o ℓ o′ ℓ′ κ κ′ : Level
+      o ℓ o′ ℓ′ κ κ′ s s′ : Level
       E F : Precategory o ℓ
     lvl : ∀ {o ℓ o′ ℓ′} → Precategory o ℓ → Precategory o′ ℓ′ → Level
     lvl {o} {ℓ} {o′} {ℓ′} _ _ = o ⊔ ℓ ⊔ ℓ′ ⊔ o′
@@ -451,7 +458,7 @@ module _ where
 -->
 
 ```agda
-  record Top[_,_] (_ : Topos E o ℓ κ) (_ : Topos F o′ ℓ′ κ′) : Type (lvl E F) where
+  record Top[_,_] (_ : Topos E s κ) (_ : Topos F s′ κ′) : Type (lvl E F) where
     field
       Inv[_]  : Functor F E
       Inv-lex : is-lex Inv[_]

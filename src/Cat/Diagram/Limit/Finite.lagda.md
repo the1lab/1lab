@@ -8,6 +8,7 @@ open import Cat.Diagram.Equaliser
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
+open import Cat.Instances.Lift
 open import Cat.Prelude
 open import Cat.Thin
 
@@ -421,6 +422,41 @@ category is thin. Therefore, we can simply take $(A \times_C B) = (A
       pb .has-is-pb .p₂∘limiting = P.π₂∘factor
       pb .has-is-pb .unique _ _ = Thin.Hom-is-prop _ _ _ _
 ```
+
+<!--
+```agda
+  is-complete→finitely
+    : ∀ {a b} → is-complete a b C → Finitely-complete
+  is-complete→finitely {a} {b} compl = with-pullbacks term′ pb
+    where
+      pb : ∀ {x y z} (f : Hom x z) (g : Hom y z) → Pullback C f g
+      pb f g = Limit→Pullback C (compl _)
+
+      idx : Precategory a b
+      idx = Lift-cat a b (Disc ⊥ λ x → absurd x)
+
+      F : Functor idx C
+      F .Functor.F₀ ()
+      F .Functor.F₁ {()}
+      F .Functor.F-id {()}
+      F .Functor.F-∘ {()}
+
+      limF : Limit F
+      limF = compl F
+      open Terminal
+      open Cone-hom
+      open Cone
+
+      term′ : Terminal C
+      term′ = record { top = limF .top .apex ; has⊤ = limiting } where
+        limiting : ∀ x → is-contr _
+        limiting x =
+          contr (limF .has⊤ (h′ x) .centre .hom) λ h →
+            ap hom (limF .has⊤ (h′ x) .paths (record { hom = h ; commutes = λ { () } }))
+          where h′ : ∀ x → Cone _
+                h′ x = record { apex = x ; ψ = λ { () } ; commutes = λ { {()} } }
+```
+-->
 
 # Lex functors
 
