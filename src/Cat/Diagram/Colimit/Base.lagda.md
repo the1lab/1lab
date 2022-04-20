@@ -242,8 +242,8 @@ take colimiting cocones to colimiting cocones! When a functor does, we
 say that it _preserves_ colimits.
 
 ```agda
-  Preserves-colimit : Colimit Dia → Type _
-  Preserves-colimit o = is-initial (Cocones (F F∘ Dia)) (F-map-cocone (Initial.bot o))
+  Preserves-colimit : Cocone Dia → Type _
+  Preserves-colimit K = is-colimit Dia K → is-colimit (F F∘ Dia) (F-map-cocone K)
 ```
 
 ## Cocompleteness

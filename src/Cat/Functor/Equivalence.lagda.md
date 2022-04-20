@@ -100,6 +100,13 @@ morphisms gives isomorphisms in the respective functor categories:
       zag′ = ap₂ D._∘_ refl p
         ·· sym (F .F-∘ _ _)
         ·· (ap (F .F₁) (unit-iso _ .C.is-invertible.invr) ∙ F .F-id)
+
+  inverse-equivalence : is-equivalence F⁻¹
+  inverse-equivalence =
+    record { F⁻¹ = F ; F⊣F⁻¹ = F⁻¹⊣F
+           ; unit-iso   = λ x → D.is-invertible-inverse (counit-iso _)
+           ; counit-iso = λ x → C.is-invertible-inverse (unit-iso _)
+           }
 ```
 -->
 

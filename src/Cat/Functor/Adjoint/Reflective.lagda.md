@@ -114,7 +114,7 @@ is-reflective→is-monadic {C = C} {D = D} {F = F} {G} adj g-ff = eqv where
 
 <!--
 ```agda
-  module EM = Cat.Reasoning (Eilenberg-Moore (L∘R adj))
+  module EM = Cat.Reasoning (Eilenberg-Moore C (L∘R adj))
   module C = Cat.Reasoning C
   module D = Cat.Reasoning D
   module F = Functor F
@@ -123,7 +123,7 @@ is-reflective→is-monadic {C = C} {D = D} {F = F} {G} adj g-ff = eqv where
   open Algebra-on
   open _⊣_ adj
 
-  Comp : Functor D (Eilenberg-Moore (L∘R adj))
+  Comp : Functor D (Eilenberg-Moore C (L∘R adj))
   Comp = Comparison adj
   module Comp = Functor Comp
 ```
@@ -140,7 +140,7 @@ assumption that $G$ is ff.
     open is-iso
     isom : is-iso _
     isom .inv alg = equiv→inverse g-ff (alg .morphism)
-    isom .rinv x = Algebra-hom-path (equiv→section g-ff _)
+    isom .rinv x = Algebra-hom-path _ (equiv→section g-ff _)
     isom .linv x = equiv→retraction g-ff _
 
   Tunit≡unitT : ∀ {x} → unit.η (G.₀ (F.₀ x)) ≡ G.₁ (F.₁ (unit.η x))
@@ -166,11 +166,11 @@ is.
 ```agda
   comp-seso : is-split-eso Comp
   comp-seso (ob , alg) = F.₀ ob , isom where
-    Fo→o : Algebra-hom (L∘R adj) (Comp.₀ (F.₀ ob)) (ob , alg)
+    Fo→o : Algebra-hom _ (L∘R adj) (Comp.₀ (F.₀ ob)) (ob , alg)
     Fo→o .morphism = alg .ν
     Fo→o .commutes = sym (alg .ν-mult)
 
-    o→Fo : Algebra-hom (L∘R adj) (ob , alg) (Comp.₀ (F.₀ ob))
+    o→Fo : Algebra-hom _ (L∘R adj) (ob , alg) (Comp.₀ (F.₀ ob))
     o→Fo .morphism = unit.η _
     o→Fo .commutes =
         unit.is-natural _ _ _
@@ -181,8 +181,8 @@ is.
 
     isom : Comp.₀ (F.₀ ob) EM.≅ (ob , alg)
     isom = EM.make-iso Fo→o o→Fo
-      (Algebra-hom-path (alg .ν-unit))
-      (Algebra-hom-path (
+      (Algebra-hom-path _ (alg .ν-unit))
+      (Algebra-hom-path _ (
           unit.is-natural _ _ _
         ·· ap₂ C._∘_ refl Tunit≡unitT
         ·· sym (G.F-∘ _ _)

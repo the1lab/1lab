@@ -228,7 +228,7 @@ algebra homomorphism is a monoid homomorphism, which follows from the
 properties of monoids:
 
 ```agda
-    from : Algebra-hom _ (comparison.₀ x) (comparison.₀ y) → Monoids ℓ .Hom x y
+    from : Algebra-hom _ _ (comparison.₀ x) (comparison.₀ y) → Monoids ℓ .Hom x y
     from alg .fst = alg .Algebra-hom.morphism
     from alg .snd .pres-id = happly (alg .Algebra-hom.commutes) []
     from alg .snd .pres-⋆ a b =
@@ -245,7 +245,7 @@ properties of the underlying map.
 
 ```agda
     from∘to : is-right-inverse from comparison.₁
-    from∘to x = Algebra-hom-path refl
+    from∘to x = Algebra-hom-path _ refl
 
     to∘from : is-left-inverse from comparison.₁
     to∘from x = Σ-prop-path (λ _ → hlevel 1) refl
@@ -262,7 +262,7 @@ $[x,y]$.
   it's-eso (A , alg) = monoid , the-iso where
     open Algebra-on
     open Algebra-hom
-    import Cat.Reasoning (Eilenberg-Moore (L∘R (Free⊣Forget {ℓ}))) as R
+    import Cat.Reasoning (Eilenberg-Moore _ (L∘R (Free⊣Forget {ℓ}))) as R
 
     monoid : Monoids ℓ .Ob
     monoid .fst = ∣ A ∣
@@ -318,15 +318,15 @@ itself is given by the identity function in both directions, since the
 recovered monoid has the same underlying type as the List-algebra!
 
 ```agda
-    into : Algebra-hom _ (comparison.₀ monoid) (A , alg)
+    into : Algebra-hom _ _ (comparison.₀ monoid) (A , alg)
     into .morphism = λ x → x
     into .commutes = funext (λ x → recover x ∙ ap (alg .ν) (sym (map-id x)))
 
-    from : Algebra-hom _ (A , alg) (comparison.₀ monoid)
+    from : Algebra-hom _ _ (A , alg) (comparison.₀ monoid)
     from .morphism = λ x → x
     from .commutes =
       funext (λ x → sym (recover x) ∙ ap (fold monoid) (sym (map-id x)))
 
     the-iso : comparison.₀ monoid R.≅ (A , alg)
-    the-iso = R.make-iso into from (Algebra-hom-path refl) (Algebra-hom-path refl)
+    the-iso = R.make-iso into from (Algebra-hom-path _ refl) (Algebra-hom-path _ refl)
 ```

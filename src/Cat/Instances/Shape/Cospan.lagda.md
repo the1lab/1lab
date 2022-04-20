@@ -18,21 +18,21 @@ this category, which looks like $\bull \ot \bull \to \bull$, is the
 [pushouts]: Cat.Diagram.Pushout.html
 
 ```agda
-data Cospan-ob : Type where
-  cs-a cs-b cs-c : Cospan-ob
+data Cospan-ob ℓ : Type ℓ where
+  cs-a cs-b cs-c : Cospan-ob ℓ
 
-Cospan-hom : Cospan-ob → Cospan-ob → Type
-Cospan-hom cs-a cs-a = ⊤ -- identity on a
-Cospan-hom cs-a cs-b = ⊥ -- no maps a → b
-Cospan-hom cs-a cs-c = ⊤ -- one map a → c
-Cospan-hom cs-b cs-a = ⊥ -- no maps b → a
-Cospan-hom cs-b cs-b = ⊤ -- identity on b
-Cospan-hom cs-b cs-c = ⊤ -- one map b → c
-Cospan-hom cs-c cs-a = ⊥ -- no maps c → a
-Cospan-hom cs-c cs-b = ⊥ -- no maps c → b
-Cospan-hom cs-c cs-c = ⊤ -- identity on c
+Cospan-hom : ∀ {ℓ ℓ′} → Cospan-ob ℓ → Cospan-ob ℓ → Type ℓ′
+Cospan-hom cs-a cs-a = Lift _ ⊤ -- identity on a
+Cospan-hom cs-a cs-b = Lift _ ⊥ -- no maps a → b
+Cospan-hom cs-a cs-c = Lift _ ⊤ -- one map a → c
+Cospan-hom cs-b cs-a = Lift _ ⊥ -- no maps b → a
+Cospan-hom cs-b cs-b = Lift _ ⊤ -- identity on b
+Cospan-hom cs-b cs-c = Lift _ ⊤ -- one map b → c
+Cospan-hom cs-c cs-a = Lift _ ⊥ -- no maps c → a
+Cospan-hom cs-c cs-b = Lift _ ⊥ -- no maps c → b
+Cospan-hom cs-c cs-c = Lift _ ⊤ -- identity on c
 
-·→·←· ·←·→· : Precategory lzero lzero
+·→·←· ·←·→· : ∀ {a b} → Precategory a b
 ```
 
 <!--
@@ -41,45 +41,45 @@ Cospan-hom cs-c cs-c = ⊤ -- identity on c
   open Precategory
 
   compose : ∀ {a b c} → Cospan-hom b c → Cospan-hom a b → Cospan-hom a c
-  compose {cs-a} {cs-a} {cs-a} tt tt = tt
-  compose {cs-a} {cs-a} {cs-c} tt tt = tt
-  compose {cs-a} {cs-c} {cs-c} tt tt = tt
-  compose {cs-b} {cs-b} {cs-b} tt tt = tt
-  compose {cs-b} {cs-b} {cs-c} tt tt = tt
-  compose {cs-b} {cs-c} {cs-c} tt tt = tt
-  compose {cs-c} {cs-c} {cs-c} tt tt = tt
+  compose {cs-a} {cs-a} {cs-a} (lift tt) (lift tt) = lift tt
+  compose {cs-a} {cs-a} {cs-c} (lift tt) (lift tt) = lift tt
+  compose {cs-a} {cs-c} {cs-c} (lift tt) (lift tt) = lift tt
+  compose {cs-b} {cs-b} {cs-b} (lift tt) (lift tt) = lift tt
+  compose {cs-b} {cs-b} {cs-c} (lift tt) (lift tt) = lift tt
+  compose {cs-b} {cs-c} {cs-c} (lift tt) (lift tt) = lift tt
+  compose {cs-c} {cs-c} {cs-c} (lift tt) (lift tt) = lift tt
 
   precat : Precategory _ _
-  precat .Ob = Cospan-ob
+  precat .Ob = Cospan-ob _
   precat .Hom = Cospan-hom
-  precat .Hom-set cs-a cs-a tt tt p q i j = tt
-  precat .Hom-set cs-a cs-c tt tt p q i j = tt
-  precat .Hom-set cs-b cs-b tt tt p q i j = tt
-  precat .Hom-set cs-b cs-c tt tt p q i j = tt
-  precat .Hom-set cs-c cs-c tt tt p q i j = tt
-  precat .id {cs-a} = tt
-  precat .id {cs-b} = tt
-  precat .id {cs-c} = tt
+  precat .Hom-set cs-a cs-a _ _ p q i j = lift tt
+  precat .Hom-set cs-a cs-c _ _ p q i j = lift tt
+  precat .Hom-set cs-b cs-b _ _ p q i j = lift tt
+  precat .Hom-set cs-b cs-c _ _ p q i j = lift tt
+  precat .Hom-set cs-c cs-c _ _ p q i j = lift tt
+  precat .id {cs-a} = lift tt
+  precat .id {cs-b} = lift tt
+  precat .id {cs-c} = lift tt
   precat ._∘_ = compose
-  precat .idr {cs-a} {cs-a} tt i = tt
-  precat .idr {cs-a} {cs-c} tt i = tt
-  precat .idr {cs-b} {cs-b} tt i = tt
-  precat .idr {cs-b} {cs-c} tt i = tt
-  precat .idr {cs-c} {cs-c} tt i = tt
-  precat .idl {cs-a} {cs-a} tt i = tt
-  precat .idl {cs-a} {cs-c} tt i = tt
-  precat .idl {cs-b} {cs-b} tt i = tt
-  precat .idl {cs-b} {cs-c} tt i = tt
-  precat .idl {cs-c} {cs-c} tt i = tt
-  precat .assoc {cs-a} {cs-a} {cs-a} {cs-a} tt tt tt i = tt
-  precat .assoc {cs-a} {cs-a} {cs-a} {cs-c} tt tt tt i = tt
-  precat .assoc {cs-a} {cs-a} {cs-c} {cs-c} tt tt tt i = tt
-  precat .assoc {cs-a} {cs-c} {cs-c} {cs-c} tt tt tt i = tt
-  precat .assoc {cs-b} {cs-b} {cs-b} {cs-b} tt tt tt i = tt
-  precat .assoc {cs-b} {cs-b} {cs-b} {cs-c} tt tt tt i = tt
-  precat .assoc {cs-b} {cs-b} {cs-c} {cs-c} tt tt tt i = tt
-  precat .assoc {cs-b} {cs-c} {cs-c} {cs-c} tt tt tt i = tt
-  precat .assoc {cs-c} {cs-c} {cs-c} {cs-c} tt tt tt i = tt
+  precat .idr {cs-a} {cs-a} _ i = lift tt
+  precat .idr {cs-a} {cs-c} _ i = lift tt
+  precat .idr {cs-b} {cs-b} _ i = lift tt
+  precat .idr {cs-b} {cs-c} _ i = lift tt
+  precat .idr {cs-c} {cs-c} _ i = lift tt
+  precat .idl {cs-a} {cs-a} _ i = lift tt
+  precat .idl {cs-a} {cs-c} _ i = lift tt
+  precat .idl {cs-b} {cs-b} _ i = lift tt
+  precat .idl {cs-b} {cs-c} _ i = lift tt
+  precat .idl {cs-c} {cs-c} _ i = lift tt
+  precat .assoc {cs-a} {cs-a} {cs-a} {cs-a} _ _ _ i = lift tt
+  precat .assoc {cs-a} {cs-a} {cs-a} {cs-c} _ _ _ i = lift tt
+  precat .assoc {cs-a} {cs-a} {cs-c} {cs-c} _ _ _ i = lift tt
+  precat .assoc {cs-a} {cs-c} {cs-c} {cs-c} _ _ _ i = lift tt
+  precat .assoc {cs-b} {cs-b} {cs-b} {cs-b} _ _ _ i = lift tt
+  precat .assoc {cs-b} {cs-b} {cs-b} {cs-c} _ _ _ i = lift tt
+  precat .assoc {cs-b} {cs-b} {cs-c} {cs-c} _ _ _ i = lift tt
+  precat .assoc {cs-b} {cs-c} {cs-c} {cs-c} _ _ _ i = lift tt
+  precat .assoc {cs-c} {cs-c} {cs-c} {cs-c} _ _ _ i = lift tt
 
 ·←·→· = ·→·←· ^op
 ```
@@ -89,11 +89,11 @@ Converting a pair of morphisms with common codomain to a cospan-shaped
 diagram is straightforward:
 
 ```agda
-module _ {o ℓ} {C : Precategory o ℓ} where
+module _ x y {o ℓ} {C : Precategory o ℓ} where
   open Precategory C
   open Functor
 
-  cospan→cospan-diagram : ∀ {a b c} → Hom a c → Hom b c → Functor ·→·←· C
+  cospan→cospan-diagram : ∀ {a b c} → Hom a c → Hom b c → Functor (·→·←· {x} {y}) C
   cospan→cospan-diagram f g = funct where
     funct : Functor _ _
     funct .F₀ cs-a = _
@@ -119,7 +119,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     funct .F-∘ {cs-b} {cs-c} {cs-c} _ _ i = idl g (~ i)
     funct .F-∘ {cs-c} {cs-c} {cs-c} _ _ i = idl id (~ i)
 
-  span→span-diagram : ∀ {a b c} → Hom a b → Hom a c → Functor ·←·→· C
+  span→span-diagram : ∀ {a b c} → Hom a b → Hom a c → Functor (·←·→· {x} {y}) C
   span→span-diagram {a} {b} {c} f g = funct where
     funct : Functor _ _
     funct .F₀ cs-a = _
@@ -133,12 +133,12 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     funct .F-id {cs-a} = refl
     funct .F-id {cs-b} = refl
     funct .F-id {cs-c} = refl
-    funct .F-∘ {cs-a} {cs-a} {cs-a} tt tt i = idl id (~ i)
-    funct .F-∘ {cs-b} {cs-b} {cs-b} tt tt i = idl id (~ i)
-    funct .F-∘ {cs-c} {cs-a} {cs-a} tt tt i = idl g (~ i)
-    funct .F-∘ {cs-c} {cs-b} {cs-b} tt tt i = idl f (~ i)
-    funct .F-∘ {cs-c} {cs-c} {cs-a} tt tt i = idr g (~ i)
-    funct .F-∘ {cs-c} {cs-c} {cs-b} tt tt i = idr f (~ i)
-    funct .F-∘ {cs-c} {cs-c} {cs-c} tt tt i = idr id (~ i)
+    funct .F-∘ {cs-a} {cs-a} {cs-a} _ _ i = idl id (~ i)
+    funct .F-∘ {cs-b} {cs-b} {cs-b} _ _ i = idl id (~ i)
+    funct .F-∘ {cs-c} {cs-a} {cs-a} _ _ i = idl g (~ i)
+    funct .F-∘ {cs-c} {cs-b} {cs-b} _ _ i = idl f (~ i)
+    funct .F-∘ {cs-c} {cs-c} {cs-a} _ _ i = idr g (~ i)
+    funct .F-∘ {cs-c} {cs-c} {cs-b} _ _ i = idr f (~ i)
+    funct .F-∘ {cs-c} {cs-c} {cs-c} _ _ i = idr id (~ i)
 ```
 -->

@@ -35,7 +35,7 @@ private
   module R = Functor R
   module adj = _⊣_ L⊣R
 
-L∘R : Monad
+L∘R : Monad C
 L∘R = Adjunction→Monad L⊣R
 
 open Monad L∘R
@@ -47,9 +47,9 @@ ident="adj.counit.η"} natural transformation gives `R`{.Agda} an
 \circ R}$.
 
 ```
-Comparison : Functor D (Eilenberg-Moore L∘R)
+Comparison : Functor D (Eilenberg-Moore C L∘R)
 Comparison .F₀ x = R.₀ x , alg where
-  alg : Algebra-on L∘R (R.₀ x)
+  alg : Algebra-on C L∘R (R.₀ x)
   alg .Algebra-on.ν = R.₁ (adj.counit.ε _)
   alg .Algebra-on.ν-unit = adj.zag
   alg .Algebra-on.ν-mult =
@@ -64,15 +64,15 @@ Comparison .F₀ x = R.₀ x , alg where
 ```
 Comparison .F₁ x = hom where
   open Algebra-hom
-  hom : Algebra-hom _ _ _
+  hom : Algebra-hom C _ _ _
   hom .morphism = R.₁ x
   hom .commutes =
     R.₁ x C.∘ R.₁ (adj.counit.ε _)        ≡⟨ sym (R.F-∘ _ _) ⟩
     R.₁ (x D.∘ adj.counit.ε _)            ≡⟨ ap R.₁ (sym (adj.counit.is-natural _ _ _)) ⟩
     R.₁ (adj.counit.ε _ D.∘ L.₁ (R.₁ x))  ≡⟨ R.F-∘ _ _ ⟩
     R.₁ (adj.counit.ε _) C.∘ M₁ (R.₁ x)   ∎
-Comparison .F-id    = Algebra-hom-path R.F-id
-Comparison .F-∘ f g = Algebra-hom-path (R.F-∘ _ _)
+Comparison .F-id    = Algebra-hom-path _ R.F-id
+Comparison .F-∘ f g = Algebra-hom-path _ (R.F-∘ _ _)
 ```
 </details>
 

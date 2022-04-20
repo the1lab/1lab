@@ -18,6 +18,7 @@ open import Cat.Diagram.Limit.Finite public
 open import Cat.Diagram.Limit.Product public
 open import Cat.Diagram.Limit.Pullback public
 open import Cat.Diagram.Monad public
+open import Cat.Diagram.Monad.Limits public
 open import Cat.Diagram.Product.Indexed public
 open import Cat.Diagram.Product public
 open import Cat.Diagram.Pullback public

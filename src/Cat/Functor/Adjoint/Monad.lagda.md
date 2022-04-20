@@ -32,7 +32,7 @@ Every adjunction $L \dashv R$ gives rise to a monad, where the
 underlying functor is $R \circ L$.
 
 ```
-Adjunction→Monad : Monad
+Adjunction→Monad : Monad C
 Adjunction→Monad .M = R F∘ L
 ```
 

@@ -302,6 +302,12 @@ object] in this category.*
 
   Limit-apex : Limit → C.Ob
   Limit-apex x = Cone.apex (Terminal.top x)
+
+  Limit-universal : (L : Limit) → (K : Cone) → C.Hom (Cone.apex K) (Limit-apex L)
+  Limit-universal L K = Cone-hom.hom (Terminal.! L {K})
+
+  is-limit : Cone → Type _
+  is-limit K = is-terminal Cones K
 ```
 
 <!--
@@ -338,6 +344,27 @@ $F \circ \id{Dia}$ (in $\ca{D}$).
       F₁ F (F₁ Dia f) D.∘ F₁ F (Cone.ψ x _) ≡⟨ sym (F-∘ F _ _) ⟩
       F₁ F (F₁ Dia f C.∘ Cone.ψ x _)        ≡⟨ ap (F₁ F) (Cone.commutes x _) ⟩
       F₁ F (Cone.ψ x y)                     ∎
+
+```
+
+Note that this also lets us map morphisms between cones into $\ca{D}$.
+
+```agda
+  F-map-cone-hom : {X Y : Cone Dia}
+                 → Cone-hom Dia X Y
+                 → Cone-hom (F F∘ Dia) (F-map-cone X) (F-map-cone Y)
+  F-map-cone-hom {X = X} {Y = Y} f = cone-hom
+    where
+      module X = Cone X
+      module Y = Cone Y
+      module f = Cone-hom f
+
+      cone-hom : Cone-hom (F F∘ Dia) (F-map-cone X) (F-map-cone Y)
+      cone-hom .Cone-hom.hom = F .F₁ f.hom
+      cone-hom .Cone-hom.commutes _ =
+        (F .F₁ (Y.ψ _)) D.∘ (F .F₁ f.hom) ≡˘⟨ F .F-∘ (Y.ψ _) f.hom ⟩
+        F .F₁ (Y.ψ _ C.∘ f.hom) ≡⟨ ap (F .F₁) (f.commutes _) ⟩
+        F .F₁ (X.ψ _) ∎
 ```
 
 Suppose you have a limit $L$ of $\id{Dia}$ --- which is, to reiterate, a
@@ -345,9 +372,9 @@ terminal object in the category of cones over $\id{Dia}$. We say that
 $F$ *preserves $L$* if $F(L)$, as defined right above, is a terminal
 object in the category of cones over $F \circ \id{Dia}$.
 
-```
-  Preserves-limit : Limit Dia → Type _
-  Preserves-limit o = is-terminal (Cones (F F∘ Dia)) (F-map-cone (Terminal.top o))
+```agda
+  Preserves-limit : Cone Dia → Type _
+  Preserves-limit K = is-limit Dia K → is-limit (F F∘ Dia) (F-map-cone K)
 ```
 
 This definition is necessary because $\ca{D}$ will not, in general,
@@ -356,6 +383,37 @@ there might not be a "canonical limit" of $F\circ\id{Dia}$ we could
 compare $F(L)$ to. However, since limits are described by a universal
 property (in particular, being terminal), we don't _need_ such an
 object! Any limit is as good as any other.
+
+In more concise terms, we say a functor preserves limits if it takes
+limiting cones "upstairs" to limiting cones "downstairs".
+
+## Reflection of limits
+
+Using our analogy from before, we say a functor _reflects_ limits
+if it takes limiting cones "downstairs" to limiting cones "upstairs".
+
+More concretely, if we have some limiting cone in
+$\ca{D}$ of $F \circ \id{Dia}$ with apex $F(a)$, then $a$ was
+_already the limit_ of $\id{Dia}$!
+
+```agda
+  Reflects-limit : Cone Dia → Type _
+  Reflects-limit K = is-limit (F F∘ Dia) (F-map-cone K) → is-limit Dia K
+```
+
+## Creation of limits
+
+Finally, we say a functor _creates_ limits of shape $\id{Dia}$ if it
+both preserves _and_ reflects those limits. Intuitively, this means that
+the limits of shape $\id{Dia}$ in $\ca{C}$ are in a 1-1 correspondence
+with the limits $F \circ id{Dia}$ in $\ca{D}$.
+
+```agda
+  record Creates-limit (K : Cone Dia) : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
+    field
+      preserves-limit : Preserves-limit K
+      reflects-limit : Reflects-limit K
+```
 
 ## Continuity
 
@@ -374,7 +432,7 @@ limit for that diagram.
 ```agda
 is-continuous {oshape = oshape} {hshape} {C = C} F =
   ∀ {J : Precategory oshape hshape} {diagram : Functor J C}
-  → (L : Limit diagram) → Preserves-limit F L
+  → (K : Cone diagram) → Preserves-limit F K
 ```
 
 <!--
@@ -458,10 +516,47 @@ functor and used the proof that it preserves isomorphisms.
       (ap Cone-hom.hom c.invr)
     where module c = Cones._≅_ c
 
+  Cone-invertible→apex-invertible : {X Y : Cone F} {f : Cones.Hom X Y}
+                                  → Cones.is-invertible f
+                                  → C.is-invertible (Cone-hom.hom f)
+  Cone-invertible→apex-invertible {f = f} f-invert =
+    C.make-invertible (Cone-hom.hom inv) (ap Cone-hom.hom invl) (ap Cone-hom.hom invr)
+    where open Cones.is-invertible f-invert
+
   Limit-unique
     : {X Y : Limit F}
     → Cone.apex (Terminal.top X) C.≅ Cone.apex (Terminal.top Y)
   Limit-unique {X} {Y} = Cone≅→apex≅ (Limiting-cone-unique X Y)
+```
+
+If the universal map $K \to L$ between apexes of some limit
+is invertible, then that means that $K$ is also a limiting cone.
+
+```agda
+  apex-iso→is-limit
+    : (K : Cone F)
+      (L : Limit F)
+      → C.is-invertible (Limit-universal F L K)
+      → is-limit F K
+  apex-iso→is-limit K L invert K′ = limits
+    where
+      module K = Cone K
+      module K′ = Cone K′
+      module L = Cone (Terminal.top L)
+      module universal {K} = Cone-hom (Terminal.! L {K})
+      open C.is-invertible invert
+
+      limits : is-contr (Cones.Hom K′ K)
+      limits .centre .Cone-hom.hom = inv C.∘ Limit-universal F L K′
+      limits .centre .Cone-hom.commutes _ =
+        (K.ψ _) C.∘ (inv C.∘ universal.hom)                   ≡˘⟨ ap ( C._∘ (inv C.∘ universal.hom)) (universal.commutes _) ⟩
+        (L.ψ _ C.∘ universal.hom) C.∘ (inv C.∘ universal.hom) ≡⟨ C.cancel-inner invl ⟩
+        L.ψ _ C.∘ universal.hom                               ≡⟨ universal.commutes _ ⟩
+        K′.ψ _                                                ∎
+      limits .paths f = Cone-hom-path F $ C.invertible→monic invert _ _ $
+        universal.hom C.∘ (inv C.∘ universal.hom) ≡⟨ C.cancell invl ⟩
+        universal.hom                             ≡⟨ ap Cone-hom.hom (Terminal.!-unique L (Terminal.! L Cones.∘ f)) ⟩
+        universal.hom C.∘ Cone-hom.hom f          ∎
 ```
 
 ## Completeness

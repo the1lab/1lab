@@ -12,6 +12,7 @@ module Cat.Morphism {o h} (C : Precategory o h) where
 open Precategory C public
 private variable
   a b c d : Ob
+  f : Hom a b
 ```
 -->
 
@@ -128,6 +129,11 @@ We note that the identity morphism is always iso, and that isos compose:
 
 <!--
 ```agda
+make-invertible : {f : Hom a b} → (g : Hom b a) → f ∘ g ≡ id → g ∘ f ≡ id → is-invertible f
+make-invertible g p q .is-invertible.inv = g
+make-invertible g p q .is-invertible.inverses .invl = p
+make-invertible g p q .is-invertible.inverses .invr = q
+
 make-iso : (f : Hom a b) (g : Hom b a) → f ∘ g ≡ id → g ∘ f ≡ id → a ≅ b
 make-iso f g p q ._≅_.to = f
 make-iso f g p q ._≅_.from = g
@@ -141,6 +147,12 @@ invertible→iso f x =
     ; from     = x .is-invertible.inv
     ; inverses = x .is-invertible.inverses
     }
+
+is-invertible-inverse
+  : {f : Hom a b} (g : is-invertible f) → is-invertible (g .is-invertible.inv)
+is-invertible-inverse g =
+  record { inv = _ ; inverses = record { invl = invr g ; invr = invl g } }
+  where open Inverses (g .is-invertible.inverses)
 
 iso→invertible : (i : a ≅ b) → is-invertible (i ._≅_.to)
 iso→invertible i = record { inv = i ._≅_.from ; inverses = i ._≅_.inverses }
@@ -208,3 +220,34 @@ _Iso⁻¹ : a ≅ b → b ≅ a
 (f Iso⁻¹) .inverses .invl = f .inverses .invr
 (f Iso⁻¹) .inverses .invr = f .inverses .invl
 ```
+
+We also note that invertible morphisms are both epic and monic.
+
+```agda
+invertible→monic : is-invertible f → is-monic f
+invertible→monic {f = f} invert g h p =
+  g             ≡˘⟨ idl g ⟩
+  id ∘ g        ≡˘⟨ ap (_∘ g) (is-invertible.invr invert) ⟩
+  (inv ∘ f) ∘ g ≡˘⟨ assoc inv f g ⟩
+  inv ∘ (f ∘ g) ≡⟨ ap (inv ∘_) p ⟩
+  inv ∘ (f ∘ h) ≡⟨ assoc inv f h ⟩
+  (inv ∘ f) ∘ h ≡⟨ ap (_∘ h) (is-invertible.invr invert) ⟩
+  id ∘ h        ≡⟨ idl h ⟩
+  h ∎
+  where
+    open is-invertible invert
+
+invertible→epic : is-invertible f → is-epic f
+invertible→epic {f = f} invert g h p =
+  g             ≡˘⟨ idr g ⟩
+  g ∘ id        ≡˘⟨ ap (g ∘_) (is-invertible.invl invert) ⟩
+  g ∘ (f ∘ inv) ≡⟨ assoc g f inv ⟩
+  (g ∘ f) ∘ inv ≡⟨ ap (_∘ inv) p ⟩
+  (h ∘ f) ∘ inv ≡˘⟨ assoc h f inv ⟩
+  h ∘ (f ∘ inv) ≡⟨ ap (h  ∘_) (is-invertible.invl invert) ⟩
+  h ∘ id        ≡⟨ idr h ⟩
+  h ∎
+  where
+    open is-invertible invert
+```
+
