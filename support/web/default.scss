@@ -352,6 +352,10 @@ table {
           gap: 0.5em;
           width: 100%;
 
+          a[href]#logo.hover-highlight {
+            background-color: unset;
+          }
+
           > hr {
             margin-top: 0.25em;
             margin-bottom: 0.25em;
