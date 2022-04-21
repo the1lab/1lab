@@ -6,6 +6,7 @@ open import Cat.Instances.Functor.Limits
 open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Everything
 open import Cat.Functor.Everything
+open import Cat.Instances.Lift
 
 import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning
@@ -63,18 +64,19 @@ preserving".
 
 In type theory, we must take care about the specific [universes] in
 which everything lives. Let us make them explicit: An $(o,\ell)$-topos
-$\ca{T}$ has a **site of definition**, which is an
-$(o',\ell')$-precategory $\ca{C}$, and it arises as a reflective
-subcategory of $[\ca{C}\op,\sets_\kappa]$ for some level $\kappa$.  That
-is **five levels**.
+$\ca{T}$ has a **site of definition**, which is an $(\kappa,
+\kappa)$-precategory $\ca{C}$, and it arises as a reflective subcategory
+of $[\ca{C}\op,\sets_\kappa]$ for some level $\kappa$. That is three
+levels: two for the category $\ca{T}$ itself, and one for the category
+of sets it's a topos relative to.
 
 [universes]: 1Lab.Type.html
 
 ```agda
-record Topos {o ℓ} (𝓣 : Precategory o ℓ) s κ
-  : Type (lsuc (o ⊔ ℓ ⊔ s ⊔ κ)) where
+record Topos {o ℓ} (𝓣 : Precategory o ℓ) κ
+  : Type (lsuc (o ⊔ ℓ ⊔ κ)) where
   field
-    site : Precategory s s
+    site : Precategory κ κ
 
     ι : Functor 𝓣 (PSh κ site)
     has-ff : is-fully-faithful ι
@@ -220,7 +222,7 @@ $\topos$ of topoi (morphisms are described
 [terminal object]: Cat.Diagram.Terminal.html
 
 ```agda
-𝟙 : ∀ {κ} → Topos (Sets κ) lzero κ
+𝟙 : ∀ {κ} → Topos (Sets κ) κ
 𝟙 {κ} = sets where
   open Topos
   open Functor
@@ -233,7 +235,7 @@ presheaf" functor, which sends each set $X$ to the constant functor with
 value $X$.
 
 ```agda
-  incl : Functor (Sets κ) (PSh κ ⊤Cat)
+  incl : Functor (Sets κ) (PSh κ (Lift-cat κ κ ⊤Cat))
   incl .F₀ x .F₀ _    = x
   incl .F₀ x .F₁ _ f  = f
   incl .F₀ x .F-id    = refl
@@ -244,8 +246,8 @@ value $X$.
   incl .F-id    = Nat-path λ _ → refl
   incl .F-∘ f g = Nat-path λ _ → refl
 
-  sets : Topos _ _ _
-  sets .site = ⊤Cat
+  sets : Topos (Sets κ) κ
+  sets .site = Lift-cat κ κ ⊤Cat
 
   sets .ι = incl
 ```
@@ -260,11 +262,11 @@ sufficient (and necessary) to conclude fully-faithfulness.
   sets .has-ff {x} {y} = is-iso→is-equiv isic where
     open is-iso
     isic : is-iso (incl .F₁ {x} {y})
-    isic .inv nt         = η nt tt
+    isic .inv nt         = η nt _
 
-    isic .rinv nt i .η _ = η nt tt
+    isic .rinv nt i .η _ = η nt _
     isic .rinv nt i .is-natural _ _ f j x =
-      y .is-tr _ _ (λ j → nt .η tt x) (λ j → nt .is-natural tt tt f j x) i j
+      y .is-tr _ _ (λ j → nt .η _ x) (λ j → nt .is-natural _ _ f j x) i j
 
     isic .linv x i = x
 ```
@@ -275,8 +277,8 @@ transformation $\eta : F \To G$ at its one component $\eta_* : F(*) \to
 G(*)$.
 
 ```agda
-  sets .L .F₀ F    = F₀ F tt
-  sets .L .F₁ nt   = η nt tt
+  sets .L .F₀ F    = F₀ F _
+  sets .L .F₁ nt   = η nt _
   sets .L .F-id    = refl
   sets .L .F-∘ f g = refl
 ```
@@ -291,11 +293,11 @@ limits directly for efficiency concerns. </summary>
 [adjoint equivalence]: Cat.Functor.Equivalence.html
 
 ```agda
-  sets .L-lex .pres-⊤ {T} psh-terminal set = contr (cent .η tt) uniq where
+  sets .L-lex .pres-⊤ {T} psh-terminal set = contr (cent .η _) uniq where
     func = incl .F₀ set
     cent = psh-terminal func .centre
-    uniq : ∀ f → cent .η tt ≡ f
-    uniq f = ap (λ e → e .η tt) (psh-terminal func .paths f′) where
+    uniq : ∀ f → cent .η _ ≡ f
+    uniq f = ap (λ e → e .η _) (psh-terminal func .paths f′) where
       f′ : _ => _
       f′ .η _ = f
       f′ .is-natural _ _ _ = funext λ x → happly (sym (F-id T)) _
@@ -303,10 +305,10 @@ limits directly for efficiency concerns. </summary>
   sets .L-lex .pres-pullback {P} {X} {Y} {Z} pb = pb′ where
     open is-pullback
     pb′ : is-pullback (Sets κ) _ _ _ _
-    pb′ .square = ap (λ e → η e tt) (pb .square)
+    pb′ .square = ap (λ e → η e _) (pb .square)
     pb′ .limiting {P'} {p₁' = p₁'} {p₂' = p₂'} p =
       η (pb .limiting {P′ = incl .F₀ P'} {p₁' = p1'} {p₂' = p2'}
-          (Nat-path λ _ → p)) tt
+          (Nat-path λ _ → p)) _
       where
         p1' : _ => _
         p1' .η _ = p₁'
@@ -314,10 +316,10 @@ limits directly for efficiency concerns. </summary>
         p2' : _ => _
         p2' .η _ = p₂'
         p2' .is-natural x y f i o = F-id Y (~ i) (p₂' o)
-    pb′ .p₁∘limiting = ap (λ e → η e tt) (pb .p₁∘limiting)
-    pb′ .p₂∘limiting = ap (λ e → η e tt) (pb .p₂∘limiting)
+    pb′ .p₁∘limiting = ap (λ e → η e _) (pb .p₁∘limiting)
+    pb′ .p₂∘limiting = ap (λ e → η e _) (pb .p₂∘limiting)
     pb′ .unique {P′} {lim' = lim'} p1 p2 =
-      ap (λ e → η e tt) (pb .unique {lim' = l′}
+      ap (λ e → η e _) (pb .unique {lim' = l′}
         (Nat-path λ _ → p1) (Nat-path λ _ → p2))
       where
         l′ : incl .F₀ P′ => P
@@ -349,11 +351,11 @@ modelling homotopy _type_ theory; Another example of a presheaf topos is
 the category of _quivers_ (directed multigraphs).
 
 ```agda
-Presheaf : ∀ {κ s} (C : Precategory s s) → Topos (PSh κ C) s κ
+Presheaf : ∀ {κ} (C : Precategory κ κ) → Topos (PSh κ C) κ
 Presheaf {κ} C = psh where
   open Functor
   open Topos
-  psh : Topos _ _ _
+  psh : Topos _ _
   psh .site = C
   psh .ι = Id
   psh .has-ff = id-equiv
@@ -381,7 +383,7 @@ completeness in $\ca{T}$ for "free" (really, it's because presheaf
 categories are complete, and those are complete because $\sets$ is.)
 
 ```agda
-module _ {o ℓ} {𝓣 : Precategory o ℓ} {s κ} (T : Topos 𝓣 s κ) where
+module _ {o ℓ} {𝓣 : Precategory o ℓ} {κ} (T : Topos 𝓣 κ) where
   open Topos T
 
   Sheafify : Monad (PSh κ site)
@@ -447,25 +449,110 @@ $f^* : Y \to X$ which is left exact and admits a right adjoint.
 
 <!--
 ```agda
-module _ where
-  private
-    variable
-      o ℓ o′ ℓ′ κ κ′ s s′ : Level
-      E F : Precategory o ℓ
-    lvl : ∀ {o ℓ o′ ℓ′} → Precategory o ℓ → Precategory o′ ℓ′ → Level
-    lvl {o} {ℓ} {o′} {ℓ′} _ _ = o ⊔ ℓ ⊔ ℓ′ ⊔ o′
+private
+  variable
+    o ℓ o′ ℓ′ κ κ′ κ′′ s s′ : Level
+    E F G : Precategory o ℓ
+  lvl : ∀ {o ℓ o′ ℓ′} → Precategory o ℓ → Precategory o′ ℓ′ → Level
+  lvl {o} {ℓ} {o′} {ℓ′} _ _ = o ⊔ ℓ ⊔ ℓ′ ⊔ o′
 ```
 -->
 
 ```agda
-  record Top[_,_] (_ : Topos E s κ) (_ : Topos F s′ κ′) : Type (lvl E F) where
-    field
-      Inv[_]  : Functor F E
-      Inv-lex : is-lex Inv[_]
-      Dir[_]  : Functor E F
-      Inv⊣Dir : Inv[_] ⊣ Dir[_]
+record Geom[_,_] (E : Precategory o ℓ) (F : Precategory o′ ℓ′) : Type (lvl E F) where
+  no-eta-equality
+  field
+    Inv[_]  : Functor F E
+    Dir[_]  : Functor E F
+    Inv-lex : is-lex Inv[_]
+    Inv⊣Dir : Inv[_] ⊣ Dir[_]
 
-  open Top[_,_]
+open Geom[_,_] public
+```
+
+Computation establishes that the identity functor is left exact, and
+self adjoint, so it is in particular both the direct and inverse image
+parts of a geometric morphism $\ca{T} \to \ca{T}$.
+
+```agda
+Idg : Geom[ E , E ]
+Idg {E = E} = record { Inv[_] = Id ; Dir[_] = Id
+                      ; Inv-lex = lex ; Inv⊣Dir = adj }
+```
+
+<!--
+```
+  where
+    module E = Cat.Reasoning E
+
+    lex : is-lex Id
+    lex .is-lex.pres-⊤ f = f
+    lex .is-lex.pres-pullback p = p
+
+    adj : Id ⊣ Id
+    adj ._⊣_.unit .η _ = E.id
+    adj ._⊣_.unit .is-natural x y f = sym E.id-comm
+    adj ._⊣_.counit .η _ = E.id
+    adj ._⊣_.counit .is-natural x y f = sym E.id-comm
+    adj ._⊣_.zig = E.idl _
+    adj ._⊣_.zag = E.idl _
+```
+-->
+
+Since [adjunctions compose], geometric morphisms do, too. Observe that
+the composite of inverse images and the composite of direct images go in
+different directions! Fortunately, this matches the convention for
+composing adjunctions, where the functors "swap sides": $LF \dashv GR$.
+
+```agda
+_G∘_ : Geom[ F , G ] → Geom[ E , F ] → Geom[ E , G ]
+f G∘ g = mk where
+  module f = Geom[_,_] f
+  module g = Geom[_,_] g
+  open is-lex
+
+  mk : Geom[ _ , _ ]
+  Inv[ mk ] = Inv[ g ] F∘ Inv[ f ]
+  Dir[ mk ] = Dir[ f ] F∘ Dir[ g ]
+  mk .Inv⊣Dir = LF⊣GR f.Inv⊣Dir g.Inv⊣Dir
+```
+
+The composition of two left-exact functors is again left-exact, so
+there's no impediment to composition there, either.
+
+```agda
+  mk .Inv-lex .pres-⊤ term ob = g.Inv-lex .pres-⊤ (f.Inv-lex .pres-⊤ term) _
+  mk .Inv-lex .pres-pullback pb = g.Inv-lex .pres-pullback (f.Inv-lex .pres-pullback pb)
+```
+
+An important class of geometric morphism is the **geometric embedding**,
+which we've already met as the very definition of `Topos`{.Agda}. These
+are the geometric morphisms with fully faithful direct image. These are
+_again_ closed under composition, so if we want to exhibit that a
+certain category $\ca{C}$ is a topos, it suffices to give a geometric
+embedding $\ca{C} \to \ca{T}$, where $\ca{T}$ is some topos which is
+convenient for this application.
+
+```agda
+record Geom[_↪_] (E : Precategory o ℓ) (F : Precategory o′ ℓ′) : Type (lvl E F) where
+  field
+    morphism : Geom[ E , F ]
+    has-ff : is-fully-faithful Dir[ morphism ]
+
+Geometric-embeddings-compose : Geom[ F ↪ G ] → Geom[ E ↪ F ] → Geom[ E ↪ G ]
+Geometric-embeddings-compose f g =
+  record { morphism = f .morphism G∘ g .morphism
+         ; has-ff = ∙-is-equiv (g .has-ff) (f .has-ff) }
+  where open Geom[_↪_]
+
+Topos→geometric-embedding : (T : Topos E κ) → Geom[ E ↪ PSh κ (T .Topos.site) ]
+Topos→geometric-embedding T = emb where
+  emb : Geom[ _ ↪ _ ]
+  Inv[ emb .Geom[_↪_].morphism ] = T .Topos.L
+  Dir[ emb .Geom[_↪_].morphism ] = T .Topos.ι
+  emb .Geom[_↪_].morphism .Inv-lex = T .Topos.L-lex
+  emb .Geom[_↪_].morphism .Inv⊣Dir = T .Topos.L⊣ι
+  emb .Geom[_↪_].has-ff = T .Topos.has-ff
 ```
 
 <!-- TODO [Amy 2022-04-02]

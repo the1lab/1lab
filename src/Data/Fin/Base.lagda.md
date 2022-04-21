@@ -153,6 +153,10 @@ has trivial paths.
 ```agda
 Fin-is-set : ∀ {n} → is-set (Fin n)
 Fin-is-set = Discrete→is-set Discrete-Fin
+
+instance
+  H-Level-Fin : ∀ {n k} → H-Level (Fin n) (2 + k)
+  H-Level-Fin = basic-instance 2 Fin-is-set
 ```
 
 ## Ordering
