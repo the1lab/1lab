@@ -99,10 +99,6 @@ main {
 
   box-sizing: border-box;
 
-  div#title h2 {
-    display: none;
-  }
-
   div#post-toc-container {
     aside#toc {
       display: none;
@@ -318,9 +314,6 @@ table {
       flex-direction: row;
       justify-content: center;
     }
-    nav {
-      display: none;
-    }
   }
 }
 
@@ -331,23 +324,6 @@ table {
 
   main {
     max-width: 100%;
-    > div#title {
-      font-size: 15pt;
-      h1, h2 {
-        margin: 0;
-      }
-
-      h2 {
-        font-style: italic;
-        font-weight: normal;
-        display: block;
-        z-index: 1;
-      }
-
-      margin-top: 0.5em;
-      margin-bottom: 1em;
-      @include centered-contents;
-    }
 
     div#post-toc-container {
       display: grid;
@@ -375,6 +351,10 @@ table {
           flex-direction: column;
           gap: 0.5em;
           width: 100%;
+
+          a[href]#logo.hover-highlight {
+            background-color: unset;
+          }
 
           > hr {
             margin-top: 0.25em;

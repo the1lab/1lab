@@ -69,12 +69,14 @@
       </h3>
 
       <!-- Cube logo -->
-      <img alt="1Lab"
-           src="/static/cube-72x.png"
-           style="display: block; margin-bottom: 1em; margin: auto;"
-           width="32px"
-           height="32px"
-        />
+      <a id=logo href="/">
+        <img alt="1Lab"
+            src="/static/cube-72x.png"
+            style="display: block; margin-bottom: 1em; margin: auto;"
+            width="32px"
+            height="32px"
+          />
+      </a>
 
       <!-- Actual table of contents (separated from the rest by
       horizontal rules) -->
@@ -103,7 +105,7 @@
       <div id=return style="white-space: nowrap;">
       $if(is-index)$
       $else$
-        <a href="index.html">️back to index</a> <br />
+        <a href="/">back to index</a> <br />
       $endif$
         <a href="all-pages.html">view all pages</a> <br />
         <a href="https://github.com/plt-amy/cubical-1lab/blob/$source$">link to source</a> <br />
@@ -122,7 +124,7 @@
       $if(is-index)$
       $else$
       <div id=return>
-        <a href="index.html">️back to index</a>
+        <a href="/">back to index</a>
       </div>
       $endif$
 
