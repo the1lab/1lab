@@ -2,9 +2,8 @@
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Terminal
 open import Cat.Functor.Base
-
-open import Cat.Prelude hiding (J)
 open import Cat.Morphism
+open import Cat.Prelude hiding (J)
 
 module Cat.Functor.Conservative where
 ```

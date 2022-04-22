@@ -1,7 +1,7 @@
 ```agda
 open import Cat.Diagram.Limit.Equaliser
-open import Cat.Instances.Shape.Cospan
 open import Cat.Diagram.Limit.Pullback
+open import Cat.Instances.Shape.Cospan
 open import Cat.Diagram.Limit.Product
 open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Discrete
