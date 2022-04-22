@@ -7,7 +7,7 @@ module Cat.Diagram.Terminal {o h} (C : Precategory o h) where
 
 <!--
 ```agda
-open import Cat.Morphism C
+open import Cat.Reasoning C
 ```
 -->
 
@@ -60,7 +60,6 @@ they are equal.
 ⊤-unique t1 t2 = invertible→iso (! t2) (!-invertible t2 t1)
 ```
 
-
 Hence, if $C$ is additionally a category, it has a propositional space of
 terminal objects:
 
@@ -74,4 +73,10 @@ terminal objects:
     (λ i → is-contr-is-prop {A = Hom _
       (iso→path C ccat (⊤-unique x1 x2) i)})
     (x1 .has⊤ ob) (x2 .has⊤ ob) i
+
+is-terminal-iso : ∀ {A B} → A ≅ B → is-terminal A → is-terminal B
+is-terminal-iso isom term x = contr (isom .to ∘ term x .centre) λ h →
+  isom .to ∘ term x .centre ≡⟨ ap (isom .to ∘_) (term x .paths _) ⟩
+  isom .to ∘ isom .from ∘ h ≡⟨ cancell (isom .invl) ⟩
+  h                         ∎
 ```

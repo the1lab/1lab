@@ -10,7 +10,6 @@ import Cat.Reasoning
 
 module Cat.Functor.Pullback
   {o ℓ} {C : Precategory o ℓ}
-  (pullbacks : ∀ {X Y Z} f g → Pullback C {X} {Y} {Z} f g)
   where
 ```
 
@@ -55,7 +54,7 @@ functor gives is the vertical arrow $Y \times_X K \to Y$.
 ~~~
 
 ```agda
-module _ {X Y : Ob} (f : Hom Y X) where
+module _ (pullbacks : ∀ {X Y Z} f g → Pullback C {X} {Y} {Z} f g) {X Y : Ob} (f : Hom Y X) where
   Base-change : Functor (Slice C X) (Slice C Y)
   Base-change .F₀ x = ob where
     ob : /-Obj Y
@@ -139,7 +138,11 @@ Explain this better
 -->
 
 ```agda
-  Σf⊣f* : Σf ⊣ Base-change f
+module _ (pullbacks : ∀ {X Y Z} f g → Pullback C {X} {Y} {Z} f g) {X Y : Ob} (f : Hom Y X) where
+  open _⊣_
+  open _=>_
+
+  Σf⊣f* : Σf f ⊣ Base-change pullbacks f
   Σf⊣f* .unit .η obj = dh where
     module pb = Pullback (pullbacks (f ∘ obj .map) f)
     dh : /-Hom _ _

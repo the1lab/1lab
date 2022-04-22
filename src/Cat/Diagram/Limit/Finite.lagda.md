@@ -1,5 +1,6 @@
 ```agda
 open import Cat.Diagram.Limit.Equaliser
+open import Cat.Instances.Shape.Cospan
 open import Cat.Diagram.Limit.Pullback
 open import Cat.Diagram.Limit.Product
 open import Cat.Diagram.Limit.Base
@@ -81,21 +82,31 @@ We now prove that having products and equalisers suffices to have all
 pullbacks; Thus a terminal object, binary products and binary equalisers
 suffice for finite completeness.
 
-```agda
-  with-equalisers
-    : Terminal C
-    → (∀ A B → Product C A B)
-    → (∀ {A B} (f g : Hom A B) → Equaliser C f g)
-    → Finitely-complete
-  with-equalisers top prod equ .terminal   = top
-  with-equalisers top prod equ .products   = prod
-  with-equalisers top prod equ .equalisers = equ
-```
+The main result is as follows: Let $P$ be a (the) product of $X$ and
+$Y$, with its projections called $p_1$ and $p_2$. Letting $X \xto{f} Z
+\xot{g} Y$ be a cospan, if the composites $fp_1$ and $gp_2$ have an
+equaliser $e : E \to P$, then the square
 
-We'll build the pullback of $f : X \to Z$, $g : Y \to Z$ by carving out
-the subobject of $X \times Y$ where $f$ and $g$ agree. In particular,
-the pullback we want is the object $X \times_Z Y$ in the commutative
-diagram below.
+~~~{.quiver}
+\[\begin{tikzcd}
+  E && X \\
+  \\
+  Y && Z
+  \arrow["{fp_1}", from=1-1, to=1-3]
+  \arrow["{fp_2}"', from=1-1, to=3-1]
+  \arrow["g"', from=3-1, to=3-3]
+  \arrow["f", from=1-3, to=3-3]
+  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=3-3]
+\end{tikzcd}\]
+~~~
+
+is a pullback. Now, that description is almost entirely
+abstract-nonsensical, because (for generality) we do not use any
+"canonical" products $X \times Y$ or equalisers $\mathrm{equ}(f,g)$. If
+we work slightly more concretely, then this can be read as building the
+pullback $X \times_Z Y$ as the largest subobject of $X \times Y$ where
+$f, g$ agree. In particular, the pullback we want is the object $X
+\times_Z Y$ in the commutative diagram below.
 
 ~~~{.quiver .short-15}
 \[\begin{tikzcd}
@@ -107,27 +118,19 @@ diagram below.
 ~~~
 
 ```agda
-  with-equalisers top prod equ .pullbacks {A} {B} {X} f g = pb where
-    module Prod = Product (prod A B)
-
-    p1 : Hom Prod.apex X
-    p1 = f ∘ Prod.π₁
-
-    p2 : Hom Prod.apex X
-    p2 = g ∘ Prod.π₂
-
-    module Equ = Equaliser (equ p1 p2)
-
+  product-equaliser→pullback
+    : ∀ {E P X Y Z} {p1 : Hom P X} {p2 : Hom P Y} {f : Hom X Z}
+        {g : Hom Y Z} {e : Hom E P}
+    → is-product C p1 p2
+    → is-equaliser C (f ∘ p1) (g ∘ p2) e
+    → is-pullback C (p1 ∘ e) f (p2 ∘ e) g
+  product-equaliser→pullback {p1 = p1} {p2} {f} {g} {e} prod eq = pb where
     open is-pullback
-    open Pullback
+    module eq = is-equaliser eq
+    module pr = is-product prod
 
-    pb : Pullback C f g
-    pb .apex = Equ.apex
-    pb .p₁ = Prod.π₁ ∘ Equ.equ
-    pb .p₂ = Prod.π₂ ∘ Equ.equ
-    pb .has-is-pb .square =
-      f ∘ Prod.π₁ ∘ Equ.equ ≡⟨ (assoc _ _ _ ·· Equ.equal ·· sym (assoc _ _ _)) ⟩
-      g ∘ Prod.π₂ ∘ Equ.equ ∎
+    pb : is-pullback C _ _ _ _
+    pb .square = assoc _ _ _ ∙ eq.equal ∙ sym (assoc _ _ _)
 ```
 
 To show that this object really _is_ a pullback of $f$ and $g$, note
@@ -148,38 +151,54 @@ equalisers to factor _that_ as a unique arrow $P' \to X \times_Z Y$.
 ~~~
 
 ```agda
-    pb .has-is-pb .limiting {p₁' = p₁'} {p₂' = p₂'} p =
-      Equ.limiting {e′ = Prod.⟨ p₁' , p₂' ⟩} (
-        (f ∘ Prod.π₁) ∘ Prod.⟨ p₁' , p₂' ⟩ ≡⟨ pullr Prod.π₁∘factor ⟩
-        f ∘ p₁'                            ≡⟨ p ⟩
-        g ∘ p₂'                            ≡˘⟨ pullr Prod.π₂∘factor ⟩
-        (g ∘ Prod.π₂) ∘ Prod.⟨ p₁' , p₂' ⟩ ∎
+    pb .limiting {p₁' = p₁'} {p₂' = p₂'} p =
+      eq.limiting {e′ = pr.⟨ p₁' , p₂' ⟩} (
+        (f ∘ p1) ∘ pr.⟨ p₁' , p₂' ⟩ ≡⟨ pullr pr.π₁∘factor ⟩
+        f ∘ p₁'                     ≡⟨ p ⟩
+        g ∘ p₂'                     ≡˘⟨ pullr pr.π₂∘factor ⟩
+        (g ∘ p2) ∘ pr.⟨ p₁' , p₂' ⟩ ∎
       )
-    pb .has-is-pb .p₁∘limiting = pullr Equ.universal ∙ Prod.π₁∘factor
-    pb .has-is-pb .p₂∘limiting = pullr Equ.universal ∙ Prod.π₂∘factor
-    pb .has-is-pb .unique p q =
-      Equ.unique (sym (Prod.unique _ (assoc _ _ _ ∙ p) (assoc _ _ _ ∙ q)))
+    pb .p₁∘limiting = pullr eq.universal ∙ pr.π₁∘factor
+    pb .p₂∘limiting = pullr eq.universal ∙ pr.π₂∘factor
+    pb .unique p q =
+      eq.unique (sym (pr.unique _ (assoc _ _ _ ∙ p) (assoc _ _ _ ∙ q)))
 ```
+
+Hence, assuming that a category has a terminal object, binary products
+and binary equalisers means it also admits pullbacks.
+
+```agda
+  with-equalisers
+    : Terminal C
+    → (∀ A B → Product C A B)
+    → (∀ {A B} (f g : Hom A B) → Equaliser C f g)
+    → Finitely-complete
+  with-equalisers top prod equ .terminal   = top
+  with-equalisers top prod equ .products   = prod
+  with-equalisers top prod equ .equalisers = equ
+  with-equalisers top prod equ .pullbacks {A} {B} {X} f g =
+    record { has-is-pb = product-equaliser→pullback Prod.has-is-product Equ.has-is-eq }
+    where
+      module Prod = Product (prod A B)
+      module Equ = Equaliser (equ (f ∘ Prod.π₁) (g ∘ Prod.π₂))
+```
+
 
 ## With pullbacks
 
 We'll now prove the converse: That a terminal object and pullbacks
-implies having all products, and all equalisers.
+implies having all products, and all equalisers.  We'll start with the
+products, since those are simpler. Observe that we can complete a
+product diagram (like the one on the left) to a pullback diagram (like
+the one on the right) by adding in the unique arrows into the terminal
+object $*$.
 
 ```agda
-  with-pullbacks
-    : Terminal C
-    → (∀ {A B X} (f : Hom A X) (g : Hom B X) → Pullback C f g)
-    → Finitely-complete
-  with-pullbacks top pb = fc where
-    module top = Terminal top
-    mkprod : ∀ A B → Product C A B
+  terminal-pullback→product
+    : ∀ {P X Y T} {p1 : Hom P X} {p2 : Hom P Y} {f : Hom X T} {g : Hom Y T}
+    → is-terminal C T → is-pullback C p1 f p2 g → is-product C p1 p2
+  terminal-pullback→product {p1 = p1} {p2} {f} {g} term pb = prod where
 ```
-
-We'll start with the products, since those are simpler. Observe that we
-can complete a product diagram (like the one on the left) to a pullback
-diagram (like the one on the right) by adding in the unique arrows into
-the terminal object $*$.
 
 <div class=mathpar>
 
@@ -214,21 +233,26 @@ the terminal object $*$.
 ~~~
 
 </div>
-```agda
-    mkprod A B = prod where
-      module Pb = Pullback (pb (top.! {x = A}) (top.! {x = B}))
-      open is-product
-      open Product
 
-      prod : Product C A B
-      prod .apex = Pb.apex
-      prod .π₁ = Pb.p₁
-      prod .π₂ = Pb.p₂
-      prod .has-is-product .is-product.⟨_,_⟩ p1' p2' =
-        Pb.limiting {p₁' = p1'} {p₂' = p2'} (top.!-unique₂ _ _)
-      prod .has-is-product .is-product.π₁∘factor = Pb.p₁∘limiting
-      prod .has-is-product .is-product.π₂∘factor = Pb.p₂∘limiting
-      prod .has-is-product .unique other p q = Pb.unique p q
+```agda
+    module Pb = is-pullback pb
+
+    prod : is-product C p1 p2
+    prod .is-product.⟨_,_⟩ p1' p2' =
+      Pb.limiting {p₁' = p1'} {p₂' = p2'} (is-contr→is-prop (term _) _ _)
+    prod .is-product.π₁∘factor = Pb.p₁∘limiting
+    prod .is-product.π₂∘factor = Pb.p₂∘limiting
+    prod .is-product.unique other p q = Pb.unique p q
+
+  with-pullbacks
+    : Terminal C
+    → (∀ {A B X} (f : Hom A X) (g : Hom B X) → Pullback C f g)
+    → Finitely-complete
+  with-pullbacks top pb = fc where
+    module top = Terminal top
+    mkprod : ∀ A B → Product C A B
+    mkprod A B = record { has-is-product = terminal-pullback→product top.has⊤ pb′ }
+      where pb′ = pb (top.has⊤ A .centre) (top.has⊤ B .centre) .Pullback.has-is-pb
 
     mkeq : ∀ {A B} (f g : Hom A B) → Equaliser C f g
     mkeq {A = A} {B} f g = eq where
@@ -361,6 +385,22 @@ Putting it all together into a record we get our proof of finite completeness:
     fc .pullbacks = pb
 ```
 
+<!--
+```agda
+  product→terminal-pullback
+    : ∀ {P X Y T} {p1 : Hom P X} {p2 : Hom P Y} {f : Hom X T} {g : Hom Y T}
+    → is-terminal C T → is-product C p1 p2 → is-pullback C p1 f p2 g
+  product→terminal-pullback t r = pb where
+    open is-pullback
+    pb : is-pullback C _ _ _ _
+    pb .square = is-contr→is-prop (t _) _ _
+    pb .limiting _ = r .is-product.⟨_,_⟩ _ _
+    pb .p₁∘limiting = r .is-product.π₁∘factor
+    pb .p₂∘limiting = r .is-product.π₂∘factor
+    pb .unique p q = r .is-product.unique _ p q
+```
+-->
+
 ## Thinly
 
 Assuming that $\ca{C}$ is a thin category, it suffices to give
@@ -430,7 +470,7 @@ category is thin. Therefore, we can simply take $(A \times_C B) = (A
   is-complete→finitely {a} {b} compl = with-pullbacks term′ pb
     where
       pb : ∀ {x y z} (f : Hom x z) (g : Hom y z) → Pullback C f g
-      pb f g = Limit→Pullback C (compl _)
+      pb f g = Limit→Pullback C (compl (cospan→cospan-diagram _ _ f g))
 
       idx : Precategory a b
       idx = Lift-cat a b (Disc ⊥ λ x → absurd x)
@@ -480,14 +520,38 @@ module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ�
     field
       pres-⊤ : ∀ {T} → is-terminal C T → is-terminal D (F.₀ T)
       pres-pullback
-        : ∀ {P} {X} {Y} {Z} {p1 : C.Hom P X} {p2 : C.Hom P Y}
+        : ∀ {P X Y Z} {p1 : C.Hom P X} {p2 : C.Hom P Y}
             {f : C.Hom X Z} {g : C.Hom Y Z}
         → is-pullback C p1 f p2 g
         → is-pullback D (F.₁ p1) (F.₁ f) (F.₁ p2) (F.₁ g)
 ```
 
-<!-- TODO [Amy 2022-04-02]
-refactor proof that pullbacks over a→*←b are the same thing as products
-a×b, implicit in the proofs above, so that we can prove lex functors
-preserve products.
+Since (if a terminal object exists), products $A \times B$ can be
+identified with pullbacks $A \times_\top B$, if $\ca{C}$ has a terminal
+object, then a lex functor $F : \ca{C} \to \ca{D}$ also preserves
+products.
+
+```agda
+    pres-product
+      : ∀ {P A B T} {p1 : C.Hom P A} {p2 : C.Hom P B}
+      → is-terminal C T
+      → is-product C p1 p2
+      → is-product D (F.₁ p1) (F.₁ p2)
+    pres-product term pr = terminal-pullback→product D (pres-⊤ term)
+      (pres-pullback {f = term _ .centre} {g = term _ .centre}
+        (product→terminal-pullback C term pr))
+```
+
+<!--
+```agda
+module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} where
+  open is-lex
+
+  F∘-is-lex
+    : ∀ {o′′ ℓ′′} {E : Precategory o′′ ℓ′′}
+        {F : Functor D E} {G : Functor C D}
+    → is-lex F → is-lex G → is-lex (F F∘ G)
+  F∘-is-lex f g .pres-⊤ = f .pres-⊤ ⊙ g .pres-⊤
+  F∘-is-lex f g .pres-pullback = f .pres-pullback ⊙ g .pres-pullback
+```
 -->

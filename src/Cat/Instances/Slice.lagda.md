@@ -332,6 +332,70 @@ $\ca{C}$, as below:
     is-pullback→is-fibre-product (pb .Pullback.has-is-pb)
 ```
 
+While products and terminal objects in $\ca{C}/X$ do not correspond to
+those in $\ca{C}$, _pullbacks_ (and equalisers) are precisely
+equivalent. A square is a pullback in $\ca{C}/X$ iff. the square
+consisting of their underlying objects and maps is a square in $\ca{C}$.
+
+The "if" direction (what is `pullback-above→pullback-below`{.Agda}) in
+the code is essentially an immediate consequence of the fact that
+equality of morphisms in $\ca{C}/X$ may be tested in $\ca{C}$, but we do
+have to take some care when extending the "limiting" morphism back down
+to the slice category (see the calculation marked `{- * -}`{.Agda}).
+
+```agda
+module _ where
+  open /-Obj
+  open /-Hom
+
+  pullback-above→pullback-below
+    : ∀ {o ℓ} {C : Precategory o ℓ} {X : Precategory.Ob C}
+    → ∀ {P A B c} {p1 f p2 g}
+    → is-pullback C (p1 .map) (f .map) (p2 .map) (g .map)
+    → is-pullback (Slice C X) {P} {A} {B} {c} p1 f p2 g
+  pullback-above→pullback-below {C = C} {P = P} {a} {b} {c} {p1} {f} {p2} {g} pb
+    = pb′ where
+      open is-pullback
+      open Cat.Reasoning C
+
+      pb′ : is-pullback (Slice _ _) _ _ _ _
+      pb′ .square = /-Hom-path (pb .square)
+      pb′ .limiting p .map = pb .limiting (ap map p)
+      pb′ .limiting {P'} {p₁' = p₁'} p .commutes =
+        (c .map ∘ pb .limiting (ap map p))           ≡˘⟨ (pulll (p1 .commutes)) ⟩
+        (P .map ∘ p1 .map ∘ pb .limiting (ap map p)) ≡⟨ ap (_ ∘_) (pb .p₁∘limiting) ⟩
+        (P .map ∘ p₁' .map)                          ≡⟨ p₁' .commutes ⟩
+        P' .map                                      ∎ {- * -}
+      pb′ .p₁∘limiting = /-Hom-path (pb .p₁∘limiting)
+      pb′ .p₂∘limiting = /-Hom-path (pb .p₂∘limiting)
+      pb′ .unique p q = /-Hom-path (pb .unique (ap map p) (ap map q))
+
+  pullback-below→pullback-above
+    : ∀ {o ℓ} {C : Precategory o ℓ} {X : Precategory.Ob C}
+    → ∀ {P A B c} {p1 f p2 g}
+    → is-pullback (Slice C X) {P} {A} {B} {c} p1 f p2 g
+    → is-pullback C (p1 .map) (f .map) (p2 .map) (g .map)
+  pullback-below→pullback-above {C = C} {P = P} {p1 = p1} {f} {p2} {g} pb = pb′ where
+    open Cat.Reasoning C
+    open is-pullback
+    pb′ : is-pullback _ _ _ _ _
+    pb′ .square = ap map (pb .square)
+    pb′ .limiting {P′ = P'} {p₁'} {p₂'} p =
+      pb .limiting {P′ = cut (P .map ∘ p₁')}
+        {p₁' = record { map = p₁' ; commutes = refl }}
+        {p₂' = record { map = p₂' ; commutes = sym (pulll (g .commutes))
+                                             ∙ sym (ap (_ ∘_) p)
+                                             ∙ pulll (f .commutes)
+                      }}
+        (/-Hom-path p)
+        .map
+    pb′ .p₁∘limiting = ap map $ pb .p₁∘limiting
+    pb′ .p₂∘limiting = ap map $ pb .p₂∘limiting
+    pb′ .unique p q = ap map $ pb .unique
+      {lim' = record { map = _ ; commutes = sym (pulll (p1 .commutes)) ∙ ap (_ ∘_) p }}
+      (/-Hom-path p) (/-Hom-path q)
+```
+
 # Slices of Sets
 
 We now prove the correspondence between slices of $\sets$ and functor

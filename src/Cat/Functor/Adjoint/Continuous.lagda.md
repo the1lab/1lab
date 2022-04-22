@@ -1,5 +1,6 @@
 ```agda
 open import Cat.Diagram.Colimit.Base
+open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
@@ -172,20 +173,8 @@ of shape categories are entirely determined by the "introduction forms"
     : ∀ {A B c} {f : D.Hom A c} {g : D.Hom B c}
     → Pullback D f g → Pullback C (R.₁ f) (R.₁ g)
   right-adjoint→pullback {f = f} {g} pb =
-    Limit→Pullback C (subst Limit path (right-adjoint-limit (Pullback→Limit D pb)))
-    where
-      path : R F∘ cospan→cospan-diagram lzero lzero f g
-           ≡ cospan→cospan-diagram lzero lzero (R.₁ f) (R.₁ g)
-      path = Functor-path
-        (λ { cs-a → refl
-          ; cs-b → refl
-          ; cs-c → refl })
-        λ where
-          {cs-a} {cs-a} _ → R.F-id
-          {cs-a} {cs-c} _ → refl
-          {cs-b} {cs-b} _ → R.F-id
-          {cs-b} {cs-c} _ → refl
-          {cs-c} {cs-c} _ → R.F-id
+    Limit→Pullback C {x = lzero} {y = lzero}
+      (right-adjoint-limit (Pullback→Limit D pb))
 
   right-adjoint→equaliser
     : ∀ {A B} {f g : D.Hom A B}
@@ -199,6 +188,20 @@ of shape categories are entirely determined by the "introduction forms"
         {false} {true}  false → refl
         {false} {true}  true  → refl
         {true}  {true}  tt    → R.F-id
+
+  right-adjoint→terminal
+    : ∀ {X} → is-terminal D X → is-terminal C (R.₀ X)
+  right-adjoint→terminal term x = contr fin uniq where
+    fin = L-adjunct L⊣R (term (L.₀ x) .centre)
+    uniq : ∀ x → fin ≡ x
+    uniq x = ap fst $ is-contr→is-prop (R-adjunct-is-equiv L⊣R .is-eqv _)
+      (_ , equiv→section (R-adjunct-is-equiv L⊣R) _)
+      (x , is-contr→is-prop (term _) _ _)
+
+  right-adjoint→lex : is-lex R
+  right-adjoint→lex .is-lex.pres-⊤ = right-adjoint→terminal
+  right-adjoint→lex .is-lex.pres-pullback {f = f} {g = g} pb =
+    right-adjoint→pullback (record { p₁ = _ ; p₂ = _ ; has-is-pb = pb }) .Pullback.has-is-pb
 ```
 
 <!--

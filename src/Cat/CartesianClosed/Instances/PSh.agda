@@ -1,4 +1,3 @@
-```agda
 open import Cat.Instances.Functor.Limits
 open import Cat.Instances.Sets.Complete
 open import Cat.CartesianClosed.Base
@@ -14,22 +13,14 @@ open import Cat.Prelude
 import Cat.Reasoning
 
 module Cat.CartesianClosed.Instances.PSh {ℓ} (C : Precategory ℓ ℓ) where
-```
 
-<!--
-```agda
 private
   module C = Cat.Reasoning C
   module PSh {κ} = Cat.Reasoning (PSh κ C)
 open Functor
 open _=>_
 open _⊣_
-```
--->
 
-# Cartesian closed structure on presheaves
-
-```agda
 PSh-is-complete : ∀ {o ℓ} → is-complete o ℓ (PSh (o ⊔ ℓ) C)
 PSh-is-complete {o} {ℓ} = Functor-cat-is-complete (Sets-is-complete {o} {ℓ} {lzero})
 

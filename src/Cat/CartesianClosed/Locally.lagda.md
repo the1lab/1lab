@@ -130,7 +130,7 @@ adjunction $(\sum_f f^*) \dashv (\prod_f f^*)$.
 
     -- The "good" cartesian product functor. The one we can piece
     -- together.
-    tensor = Σf pullbacks f.map F∘ base-change f.map
+    tensor = Σf f.map F∘ base-change f.map
     tensor⊣hom′ : tensor ⊣ hom f
     tensor⊣hom′ = LF⊣GR (f*⊣Πf _) (Σf⊣f* pullbacks f.map)
 

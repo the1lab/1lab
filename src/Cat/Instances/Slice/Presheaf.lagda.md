@@ -201,5 +201,8 @@ algebra, so we omit the proof.
   -- downgrade to an equivalence for continuity/cocontinuity
   slice→total-is-equiv : is-equivalence slice→total
   slice→total-is-equiv = is-precat-iso→is-equivalence slice→total-is-iso
+
+  total→slice : Functor Cat[ (∫ C P) ^op , Sets κ ] (Slice Cat[ C ^op , Sets κ ] P)
+  total→slice = slice→total-is-equiv .is-equivalence.F⁻¹
 ```
 -->
