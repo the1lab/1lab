@@ -456,6 +456,17 @@ Natural transformations also dualize. The opposite of $\eta : F
 
 <!--
 ```agda
+module _ where
+  open Precategory
+  open Functor
+
+  Const : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+        → Ob D → Functor C D
+  Const {D = D} x .F₀ _ = x
+  Const {D = D} x .F₁ _ = id D
+  Const {D = D} x .F-id = refl
+  Const {D = D} x .F-∘ _ _ = sym (idr D _)
+
 module _ {o₁ h₁ o₂ h₂}
          {C : Precategory o₁ h₁}
          {D : Precategory o₂ h₂}

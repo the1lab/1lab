@@ -31,8 +31,5 @@ module _ {o h} {A : Precategory o h} where
   open Functor
 
   const! : Ob A → Functor ⊤Cat A
-  const! x .F₀ _ = x
-  const! x .F₁ _ = A.id
-  const! x .F-id = refl
-  const! x .F-∘ _ _ = sym (A.idl _)
+  const! = Const
 ```
