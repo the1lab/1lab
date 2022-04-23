@@ -334,12 +334,24 @@ the functor $\yo(-)$ is fully faithful, two maps in $\ca{C}$ are equal
 iff. they agree on all generalised elements:
 
 ```agda
+private module _ where private
+  よ-cancelr
+    : ∀ {X Y : Ob} {f g : Hom X Y}
+    → (∀ {Z} (h : Hom Z X) → f ∘ h ≡ g ∘ h)
+    → f ≡ g
+  よ-cancelr sep =
+    fully-faithful→faithful {F = よ} よ-is-fully-faithful $
+      Representables-generate-presheaf λ h → Nat-path λ x → funext λ a →
+        sep (h .η x a)
+```
+
+However note that we have eliminated a mosquito using a low-orbit ion
+cannon:
+
+```agda
 よ-cancelr
   : ∀ {X Y : Ob} {f g : Hom X Y}
   → (∀ {Z} (h : Hom Z X) → f ∘ h ≡ g ∘ h)
   → f ≡ g
-よ-cancelr sep =
-  fully-faithful→faithful {F = よ} よ-is-fully-faithful $
-    Representables-generate-presheaf λ h → Nat-path λ x → funext λ a →
-      sep (h .η x a)
+よ-cancelr sep = sym (idr _) ∙ sep id ∙ idr _
 ```
