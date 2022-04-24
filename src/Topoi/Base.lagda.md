@@ -4,8 +4,11 @@ open import Algebra.Prelude
 open import Cat.Instances.Sets.Cocomplete
 open import Cat.Instances.Functor.Limits
 open import Cat.Instances.Sets.Complete
+open import Cat.Instances.Slice.Presheaf
+open import Cat.Instances.Elements
 open import Cat.Diagram.Everything
 open import Cat.Functor.Everything
+open import Cat.Instances.Slice
 open import Cat.Instances.Lift
 
 import Cat.Functor.Bifunctor as Bifunctor
@@ -63,18 +66,29 @@ preserving".
 [finite limits]: Cat.Diagram.Limit.Finite.html
 
 In type theory, we must take care about the specific [universes] in
-which everything lives. Let us make them explicit: An $(o,\ell)$-topos
-$\ca{T}$ has a **site of definition**, which is an $(\kappa,
-\kappa)$-precategory $\ca{C}$, and it arises as a reflective subcategory
-of $[\ca{C}\op,\sets_\kappa]$ for some level $\kappa$. That is three
-levels: two for the category $\ca{T}$ itself, and one for the category
-of sets it's a topos relative to.
+which everything lives. Now, much of Grothendieck topos theory
+generalises to arbitrary "base" topoi, via the use of bounded geometric
+morphisms, but the "main" definition talks about $\sets$-topoi. In
+particular, every universe $\kappa$ generates a theory of
+$\sets\kappa$-topoi, the categories of $\kappa$-small sheaves on
+$\kappa$-small sites.
+
+Fix a universe level $\kappa$, and consider the category $\sets_\kappa$:
+A topos $\ca{T}$ might be a large category (i.e. it might have a space
+of objects $o$ with $o > \kappa$), but it is _essentially locally
+small_, since it admits a fully-faithful functor into
+$[\ca{C}\op,\sets_\kappa]$, which have homs at level $\kappa$. Hence,
+even if we allowed the category $\ca{T}$ to have $\hom$s at a level
+$\ell$, we would have no more information there than fits in $\kappa$.
+
+For this reason, a topos $\ca{C}$ only has two levels: The level $o$ of
+its objects, and the level $\kappa$ of the category of Sets relative to
+which $\ca{C}$ is a topos.
 
 [universes]: 1Lab.Type.html
 
 ```agda
-record Topos {o ℓ} (𝓣 : Precategory o ℓ) κ
-  : Type (lsuc (o ⊔ ℓ ⊔ κ)) where
+record Topos {o} κ (𝓣 : Precategory o κ) : Type (lsuc (o ⊔ κ)) where
   field
     site : Precategory κ κ
 
@@ -222,7 +236,7 @@ $\topos$ of topoi (morphisms are described
 [terminal object]: Cat.Diagram.Terminal.html
 
 ```agda
-𝟙 : ∀ {κ} → Topos (Sets κ) κ
+𝟙 : ∀ {κ} → Topos κ (Sets κ)
 𝟙 {κ} = sets where
   open Topos
   open Functor
@@ -246,7 +260,7 @@ value $X$.
   incl .F-id    = Nat-path λ _ → refl
   incl .F-∘ f g = Nat-path λ _ → refl
 
-  sets : Topos (Sets κ) κ
+  sets : Topos κ (Sets κ)
   sets .site = Lift-cat κ κ ⊤Cat
 
   sets .ι = incl
@@ -351,7 +365,7 @@ modelling homotopy _type_ theory; Another example of a presheaf topos is
 the category of _quivers_ (directed multigraphs).
 
 ```agda
-Presheaf : ∀ {κ} (C : Precategory κ κ) → Topos (PSh κ C) κ
+Presheaf : ∀ {κ} (C : Precategory κ κ) → Topos κ (PSh κ C)
 Presheaf {κ} C = psh where
   open Functor
   open Topos
@@ -383,7 +397,7 @@ completeness in $\ca{T}$ for "free" (really, it's because presheaf
 categories are complete, and those are complete because $\sets$ is.)
 
 ```agda
-module _ {o ℓ} {𝓣 : Precategory o ℓ} {κ} (T : Topos 𝓣 κ) where
+module _ {o κ} {𝓣 : Precategory o κ} (T : Topos κ 𝓣) where
   open Topos T
 
   Sheafify : Monad (PSh κ site)
@@ -437,6 +451,138 @@ sheaf: topoi are [cartesian closed].
 prove all of the above lmao
 -->
 
+Since topoi are defined as embedding faithfully into a category of
+presheaves, it follows that they have a small **generating set**, in the
+same sense that representables generate presheaves: In fact, the
+generating set of a Grothendieck topos is exactly the set of
+representables of its site!
+
+Elaborating, letting $\ca{T}$ be a topos, two maps $f, g : X \to Y \in
+\ca{T}$ are equal if and only if they are equal under $\iota$, i.e. as
+maps of presheaves. But it follows from the [coyoneda lemma] that maps
+of presheaves are equal if and only if they are equal on all
+representables. Consequently, two maps in a $\ca{T}$ are equal if and
+only if they agree on all generalised elements with domain the
+sheafification of a representable:
+
+[coyoneda lemma]: Cat.Functor.Hom.html#the-coyoneda-lemma
+
+<!--
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} (ct : Topos ℓ C) where
+  private
+    module C = Cat.Reasoning C
+    module ct = Topos ct
+    module Site = Cat.Reasoning (ct.site)
+    module PSh = Cat.Reasoning (PSh ℓ ct.site)
+    module ι = Functor (ct.ι)
+    module L = Functor (ct.L)
+    open _⊣_ (ct.L⊣ι)
+
+  open Functor
+  open _=>_
+```
+-->
+
+```agda
+  Representables-generate
+    : ∀ {X Y} {f g : C.Hom X Y}
+    → ( ∀ {A} (h : C.Hom (L.₀ (よ₀ ct.site A)) X)
+      → f C.∘ h ≡ g C.∘ h )
+    → f ≡ g
+  Representables-generate {f = f} {g} sep =
+    fully-faithful→faithful {F = ct.ι} ct.has-ff $
+      Representables-generate-presheaf ct.site λ h →
+        ι.₁ f PSh.∘ h                                    ≡⟨ mangle ⟩
+        ι.₁ (f C.∘ counit.ε _ C.∘ L.₁ h) PSh.∘ unit.η _  ≡⟨ ap (PSh._∘ _) (ap ι.₁ (sep _)) ⟩
+        ι.₁ (g C.∘ counit.ε _ C.∘ L.₁ h) PSh.∘ unit.η _  ≡˘⟨ mangle ⟩
+        ι.₁ g PSh.∘ h                                    ∎
+```
+
+<!--
+```agda
+    where
+      mangle
+        : ∀ {X Y} {f : C.Hom X Y} {Z} {h : PSh.Hom Z _}
+        → ι.₁ f PSh.∘ h ≡ ι.₁ (f C.∘ counit.ε _ C.∘ L.₁ h) PSh.∘ unit.η _
+      mangle {f = f} {h = h} =
+        ι.₁ f PSh.∘ h                                                              ≡⟨ PSh.insertl zag ⟩
+        ι.₁ (counit.ε _) PSh.∘ unit.η _ PSh.∘ ι.₁ f PSh.∘ h                        ≡⟨ ap₂ PSh._∘_ refl (PSh.extendl (unit.is-natural _ _ _)) ⟩
+        ι.₁ (counit.ε _) PSh.∘ ι.₁ (L.₁ (ι.₁ f)) PSh.∘ unit.η _ PSh.∘ h            ≡⟨ ap₂ PSh._∘_ refl (ap (ι.₁ (L.₁ (ι.₁ f)) PSh.∘_) (unit.is-natural _ _ _)) ⟩
+        ι.₁ (counit.ε _) PSh.∘ ι.₁ (L.₁ (ι.₁ f)) PSh.∘ ι.₁ (L.₁ h) PSh.∘ unit.η _  ≡⟨ ap (ι.₁ (counit.ε _) PSh.∘_) (PSh.pulll (sym (ι.F-∘ _ _))) ⟩
+        ι.₁ (counit.ε _) PSh.∘ ι.₁ (L.₁ (ι.₁ f) C.∘ L.₁ h) PSh.∘ unit.η _          ≡⟨ PSh.pulll (sym (ι.F-∘ _ _)) ⟩
+        ι.₁ (counit.ε _ C.∘ L.₁ (ι.₁ f) C.∘ L.₁ h) PSh.∘ unit.η _                  ≡⟨ ap (PSh._∘ _) (ap ι.₁ (C.extendl (counit.is-natural _ _ _))) ⟩
+        ι.₁ (f C.∘ counit.ε _ C.∘ L.₁ h) PSh.∘ unit.η _                            ∎
+```
+-->
+
+Finally, the property of "being a topos" is invariant under slicing.
+More specifically, since a given topos can be presented by different
+sites, a presentation $\ca{T} \xadj{}{} \psh(\ca{C})$ can be sliced
+under an object $X \in \ca{T}$ to present $\ca{T}/X$ as a sheaf topos,
+with site of definition $\psh(\int \iota(X))$. This follows from a
+wealth of pre-existing theorems:
+
+- A pair $L \dashv R$ of adjoint functors can be [sliced] under an
+object $X$, giving an adjunction $\Sigma \epsilon L/R(X) \dashv R/X$; Slicing a
+functor preserves full-faithfulness and left exactness, hence slicing a
+geometric embedding gives a geometric embedding.
+
+[sliced]: Cat.Functor.Slice.html
+
+- The category $\psh(\ca{C})/\iota(X)$ [is equivalent to] the category
+$\psh(\int \iota(X))$, hence "being a presheaf topos is stable under
+slicing". Furthermore, this equivalence is part of an ambidextrous
+adjunction, hence both functors preserve limits.
+
+[is equivalent to]: Cat.Instances.Slice.Presheaf.html
+
+- Dependent sum $\Sigma f$ along an isomorphism is an equivalence of
+categories; But since a topos is presented by a _reflective_ subcategory
+inclusion, the counit is an isomorphism.
+
+<!--
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} (T : Topos ℓ C) (X : Precategory.Ob C) where
+  private
+    module C = Cat.Reasoning C
+    module Co = Cat.Reasoning (Slice C X)
+    module T = Topos T
+
+  open Topos
+  open Functor
+```
+-->
+
+We build the geometric embedding presenting $\ca{T}/X$ as a topos by
+composing the adjunctions $\epsilon_!(L/\iota(X)) \dashv \iota/X$
+and $F \dashv F^{-1}$ --- where $F$ is the equivalence $\psh(\ca{C})/X
+\to \psh(\int X)$. The right adjoint is fully faithful because it
+composes two fully faithful functors (a slice of $\iota$ and an
+equivalence), the left adjoint preserves finite limits because it is a
+composite of two equivalences (hence two right adjoints) and a lex
+functor.
+
+```agda
+  Slice-topos : Topos ℓ (Slice C X)
+  Slice-topos .site = ∫ T.site (T.ι.F₀ X)
+  Slice-topos .ι = slice→total F∘ Sliced (T.ι) X
+  Slice-topos .has-ff = ∙-is-equiv (Sliced-ff {F = T.ι} (T.has-ff)) slice→total-is-ff
+  Slice-topos .L = (Σf (T .L⊣ι.counit.ε _) F∘ Sliced (T.L) (T.ι.F₀ X)) F∘ total→slice
+
+  Slice-topos .L-lex = F∘-is-lex
+    (F∘-is-lex
+      (right-adjoint→lex
+        (is-equivalence.F⁻¹⊣F
+          (Σ-iso-equiv (C.iso→invertible
+            (is-reflective→counit-is-iso T.L⊣ι T.has-ff)))))
+      (Sliced-lex T.L-lex))
+    (right-adjoint→lex (slice→total-is-equiv .is-equivalence.F⊣F⁻¹))
+
+  Slice-topos .L⊣ι = LF⊣GR (is-equivalence.F⁻¹⊣F slice→total-is-equiv)
+                           (Sliced-adjoints T.L⊣ι)
+```
+
 # Geometric morphisms
 
 The definition of a topos as a generalisation of topological space leads
@@ -446,6 +592,13 @@ may be seen as a homomorphism of frames $f^* : O(Y) \to O(X)$, with
 defining feature the preservation of finite meets and arbitrary joins,
 we shall define a **geometric morphism** $\topos(X,Y)$ to be a functor
 $f^* : Y \to X$ which is left exact and admits a right adjoint.
+
+Why the right adjoint? Well, [right adjoints preserve limits], but by
+duality, _left adjoints preserve colimits_. This embodies the "arbitrary
+joins" part of a map of frames, whereas the "finite meets" come from
+left exactness.
+
+[right adjoints preserve limits]: Cat.Functor.Adjoint.Continuous.html
 
 <!--
 ```agda
@@ -477,7 +630,7 @@ parts of a geometric morphism $\ca{T} \to \ca{T}$.
 ```agda
 Idg : Geom[ E , E ]
 Idg {E = E} = record { Inv[_] = Id ; Dir[_] = Id
-                      ; Inv-lex = lex ; Inv⊣Dir = adj }
+                     ; Inv-lex = lex ; Inv⊣Dir = adj }
 ```
 
 <!--
@@ -503,6 +656,8 @@ Since [adjunctions compose], geometric morphisms do, too. Observe that
 the composite of inverse images and the composite of direct images go in
 different directions! Fortunately, this matches the convention for
 composing adjunctions, where the functors "swap sides": $LF \dashv GR$.
+
+[adjunctions compose]: Cat.Functor.Adjoint.Compose.html
 
 ```agda
 _G∘_ : Geom[ F , G ] → Geom[ E , F ] → Geom[ E , G ]
@@ -545,7 +700,7 @@ Geometric-embeddings-compose f g =
          ; has-ff = ∙-is-equiv (g .has-ff) (f .has-ff) }
   where open Geom[_↪_]
 
-Topos→geometric-embedding : (T : Topos E κ) → Geom[ E ↪ PSh κ (T .Topos.site) ]
+Topos→geometric-embedding : (T : Topos κ E) → Geom[ E ↪ PSh κ (T .Topos.site) ]
 Topos→geometric-embedding T = emb where
   emb : Geom[ _ ↪ _ ]
   Inv[ emb .Geom[_↪_].morphism ] = T .Topos.L

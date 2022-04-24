@@ -1,9 +1,11 @@
 ```agda
+open import Cat.Functor.Equivalence
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Comma
 open import Cat.Instances.Slice
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -129,6 +131,37 @@ module _ {X Y : Ob} (f : Hom Y X) where
   open _⊣_
   open _=>_
 ```
+
+<!--
+```agda
+Σ-iso-equiv
+  : {X Y : Ob} {f : Hom Y X}
+  → Cat.Reasoning.is-invertible C f
+  → is-equivalence (Σf f)
+Σ-iso-equiv {X} {f = f} isom = ff+split-eso→is-equivalence Σ-ff Σ-seso where
+  module Sl = Cat.Reasoning (Slice C X)
+  module isom = is-invertible isom
+
+  func = Σf f
+  Σ-ff : ∀ {x y} → is-equiv (func .F₁ {x} {y})
+  Σ-ff = is-iso→is-equiv (iso ∘inv (λ x → /-Hom-path refl) λ x →  /-Hom-path refl) where
+    ∘inv : /-Hom _ _ → /-Hom _ _
+    ∘inv o .map = o .map
+    ∘inv o .commutes = invertible→monic isom _ _ (assoc _ _ _ ∙ o .commutes)
+
+  Σ-seso : is-split-eso func
+  Σ-seso y = cut (isom.inv ∘ y .map)
+           , Sl.make-iso into from′ (/-Hom-path (eliml refl)) (/-Hom-path (eliml refl))
+    where
+    into : /-Hom _ _
+    into .map = id
+    into .commutes = id-comm ∙ sym (pulll isom.invl)
+
+    from′ : /-Hom _ _
+    from′ .map = id
+    from′ .commutes = elimr refl ∙ cancell isom.invl
+```
+-->
 
 The adjunction unit and counit are given by the universal properties of
 pullbacks. ⚠️ WIP ⚠️
