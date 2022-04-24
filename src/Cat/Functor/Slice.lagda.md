@@ -161,7 +161,7 @@ slice categories, which we can compute:
 
 ```agda
   adj′ .unit .η x .commutes =
-    R.₁ (adj.counit.ε _ D.∘ L.₁ (x .map)) C.∘ adj.unit.η _         ≡˘⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
+    R.₁ (adj.counit.ε _ D.∘ L.₁ (x .map)) C.∘ adj.unit.η _         ≡⟨ C.pushl (R.F-∘ _ _) ⟩
     R.₁ (adj.counit.ε _) C.∘ R.₁ (L.₁ (x .map)) C.∘ adj.unit.η _   ≡˘⟨ ap (R.₁ _ C.∘_) (adj.unit.is-natural _ _ _) ⟩
     R.₁ (adj.counit.ε _) C.∘ adj.unit.η _ C.∘ x .map               ≡⟨ C.cancell adj.zag ⟩
     x .map                                                         ∎

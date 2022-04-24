@@ -60,7 +60,7 @@ Family ._∘′_ {a = A} {x = X} {Y} {Z} {F} {G} f g = NT (λ x → η f _ ∘ �
          ≡ F₁ (Z F∘ lift-disc {A = A} _) h ∘ f .η _ ∘ g .η  _
     comm x y h =
       (f .η _ ∘ g .η y) ∘ F₁ X h                           ≡⟨ extendr (g .is-natural _ _ _) ⟩
-      (f .η _ ∘ F₁ (Y F∘ lift-disc {A = A} _) h) ∘ g .η x  ≡˘⟨ pulll (sym (f .is-natural _ _ _)) ⟩
+      (f .η _ ∘ F₁ (Y F∘ lift-disc {A = A} _) h) ∘ g .η x  ≡⟨ pushl (f .is-natural _ _ _) ⟩
       F₁ (Z F∘ lift-disc {A = A} _) h ∘ f .η _ ∘ g .η  _   ∎
 
 Family .idr′ _ = Nat-path λ x → idr _

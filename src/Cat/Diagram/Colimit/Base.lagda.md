@@ -2,6 +2,7 @@
 open import Cat.Diagram.Initial
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning as Func
 import Cat.Morphism
 
 module Cat.Diagram.Colimit.Base where
@@ -216,6 +217,7 @@ module _ {o₁ h₁ o₂ h₂ o₃ h₃ : _}
     module D = Precategory D
     module C = Precategory C
     module J = Precategory J
+    module F = Func F
 
   open Functor
 ```
@@ -229,12 +231,11 @@ functors preserve commutative diagrams.
 
 ```agda
   F-map-cocone : Cocone Dia → Cocone (F F∘ Dia)
-  F-map-cocone x .Cocone.coapex = F .F₀ (Cocone.coapex x)
-  F-map-cocone x .Cocone.ψ f = F .F₁ (Cocone.ψ x f)
+  F-map-cocone x .Cocone.coapex = F.₀ (Cocone.coapex x)
+  F-map-cocone x .Cocone.ψ f = F.₁ (Cocone.ψ x f)
   F-map-cocone x .Cocone.commutes {y = y} f =
-    F .F₁ (Cocone.ψ x y) D.∘ F .F₁ (F₁ Dia f) ≡˘⟨ F-∘ F _ _ ⟩
-    F .F₁ ((Cocone.ψ x y) C.∘ (F₁ Dia f)) ≡⟨ ap (F .F₁) (Cocone.commutes x _) ⟩
-    F .F₁ (Cocone.ψ x _) ∎
+    F.₁ (Cocone.ψ x y) D.∘ F .F₁ _ ≡⟨ F.collapse (Cocone.commutes x _) ⟩
+    F.₁ (Cocone.ψ x _)             ∎
 ```
 
 Though functors must take cocones to cocones, they may not necessarily

@@ -3,6 +3,7 @@ open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
 
 module Cat.Diagram.Limit.Base where
@@ -324,6 +325,7 @@ module _ {o₁ h₁ o₂ h₂ o₃ h₃ : _}
     module D = Precategory D
     module C = Precategory C
     module J = Precategory J
+    module F = Func F
 
   open Functor
 ```
@@ -341,18 +343,18 @@ $F \circ \id{Dia}$ (in $\ca{D}$).
   Cone.apex (F-map-cone x) = F₀ F (Cone.apex x)
   Cone.ψ (F-map-cone x) x₁ = F₁ F (Cone.ψ x x₁)
   Cone.commutes (F-map-cone x) {y = y} f =
-      F₁ F (F₁ Dia f) D.∘ F₁ F (Cone.ψ x _) ≡⟨ sym (F-∘ F _ _) ⟩
-      F₁ F (F₁ Dia f C.∘ Cone.ψ x _)        ≡⟨ ap (F₁ F) (Cone.commutes x _) ⟩
-      F₁ F (Cone.ψ x y)                     ∎
+    F.₁ (F₁ Dia f) D.∘ F.₁ (Cone.ψ x _)  ≡⟨ F.collapse (Cone.commutes x _) ⟩
+    F.₁ (Cone.ψ x y)                     ∎
 
 ```
 
 Note that this also lets us map morphisms between cones into $\ca{D}$.
 
 ```agda
-  F-map-cone-hom : {X Y : Cone Dia}
-                 → Cone-hom Dia X Y
-                 → Cone-hom (F F∘ Dia) (F-map-cone X) (F-map-cone Y)
+  F-map-cone-hom
+    : {X Y : Cone Dia}
+    → Cone-hom Dia X Y
+    → Cone-hom (F F∘ Dia) (F-map-cone X) (F-map-cone Y)
   F-map-cone-hom {X = X} {Y = Y} f = cone-hom
     where
       module X = Cone X
@@ -362,9 +364,8 @@ Note that this also lets us map morphisms between cones into $\ca{D}$.
       cone-hom : Cone-hom (F F∘ Dia) (F-map-cone X) (F-map-cone Y)
       cone-hom .Cone-hom.hom = F .F₁ f.hom
       cone-hom .Cone-hom.commutes _ =
-        (F .F₁ (Y.ψ _)) D.∘ (F .F₁ f.hom) ≡˘⟨ F .F-∘ (Y.ψ _) f.hom ⟩
-        F .F₁ (Y.ψ _ C.∘ f.hom) ≡⟨ ap (F .F₁) (f.commutes _) ⟩
-        F .F₁ (X.ψ _) ∎
+        F .F₁ (Y.ψ _) D.∘ (F .F₁ f.hom) ≡⟨ F.collapse (f .Cone-hom.commutes _) ⟩
+        F .F₁ (X.ψ _)                   ∎
 ```
 
 Suppose you have a limit $L$ of $\id{Dia}$ --- which is, to reiterate, a

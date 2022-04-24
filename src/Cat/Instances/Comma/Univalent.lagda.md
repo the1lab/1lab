@@ -4,6 +4,7 @@ open import Cat.Functor.Base
 open import Cat.Univalent
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
 
 module
@@ -23,8 +24,8 @@ private
   module X = Cat.Reasoning X
   module Y = Cat.Reasoning Y
   module Z = Cat.Reasoning Z
-  module F = Functor F
-  module G = Functor G
+  module F = Func F
+  module G = Func G
   module F↓G = Cat.Reasoning (F ↓ G)
 
 open ↓Obj
@@ -96,7 +97,7 @@ an identification $o \equiv o'$.
                    (ob .map) (ob′ .map)) $
       Hom-pathp-iso X xuniv $
         X.pulll   (sym (isom.to .sq)) ∙
-        X.cancelr (sym (F.F-∘ _ _) ·· ap F.₁ (ap α isom.invl) ·· F.F-id)
+        X.cancelr (F.annihilate (ap α isom.invl))
 ```
 
 It still remains to show that, over this identification, the isomorphism

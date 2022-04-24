@@ -95,7 +95,7 @@ The key fact is that we can also pass _homomorphisms_ along, both ways!
     cone-hom-right-adjoint {K = K} {K′ = K′} map .commutes o =
       R.₁ (K′ .ψ o) C.∘ R.₁ (map .hom) C.∘ adj.unit.η _                 ≡⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
       R.₁ (K′ .ψ o D.∘ map .hom) C.∘ adj.unit.η _                       ≡⟨ ap (λ e → R.₁ e C.∘ _) (map .commutes _) ⟩
-      R.₁ (adj.counit.ε _ D.∘ L.₁ (Cone.ψ K o)) C.∘ adj.unit.η _        ≡˘⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
+      R.₁ (adj.counit.ε _ D.∘ L.₁ (Cone.ψ K o)) C.∘ adj.unit.η _        ≡⟨ C.pushl (R.F-∘ _ _) ⟩
       R.₁ (adj.counit.ε _) C.∘ R.₁ (L.₁ (Cone.ψ K o)) C.∘ adj.unit.η _  ≡˘⟨ C.pullr (adj.unit.is-natural _ _ _) ⟩
       (R.F₁ (adj.counit.ε _) C.∘ adj.unit.η _) C.∘ Cone.ψ K o           ≡⟨ ap (λ e → e C.∘ Cone.ψ K _) adj.zag ⟩
       C.id C.∘ Cone.ψ K o                                               ≡⟨ C.idl _ ⟩

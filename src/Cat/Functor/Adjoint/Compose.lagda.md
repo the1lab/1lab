@@ -60,7 +60,7 @@ LF⊣GR .unit .is-natural x y f = path where abstract
     (G.₁ (lr.unit.η _) A.∘ fg.unit.η _) A.∘ f                ≡⟨ A.pullr (fg.unit.is-natural _ _ _) ⟩
     G.₁ (lr.unit.η _) A.∘ G.₁ (F.₁ f) A.∘ fg.unit.η _        ≡⟨ A.pulll (sym (G.F-∘ _ _)) ⟩
     G.₁ (lr.unit.η _ B.∘ F.₁ f) A.∘ fg.unit.η _              ≡⟨ ap₂ A._∘_ (ap G.₁ (lr.unit.is-natural _ _ _)) refl ⟩
-    G.₁ (R.₁ (L.₁ (F.₁ f)) B.∘ lr.unit .η _) A.∘ fg.unit.η _ ≡⟨ sym (A.pulll (sym (G.F-∘ _ _))) ⟩
+    G.₁ (R.₁ (L.₁ (F.₁ f)) B.∘ lr.unit .η _) A.∘ fg.unit.η _ ≡⟨ A.pushl (G.F-∘ _ _) ⟩
     GR.₁ (LF.₁ f) A.∘ G.₁ (lr.unit.η _) A.∘ (fg.unit.η _)    ∎
 
 LF⊣GR .counit .is-natural x y f = path where abstract

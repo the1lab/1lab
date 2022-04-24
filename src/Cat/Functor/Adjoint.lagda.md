@@ -3,6 +3,7 @@ open import Cat.Diagram.Initial
 open import Cat.Instances.Comma
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
 
 module Cat.Functor.Adjoint where
@@ -243,11 +244,11 @@ object.
           → R.₁ (L₁ f D.∘ L₁ g) C.∘ (L₀′ x)
           ≡ to-ob (f C.∘ g) .map C.∘ C.id
     lemma {x} {y} {z} f g =
-      R.₁ (lift↓ f .β D.∘ lift↓ g .β) C.∘ (L₀′ x)       ≡˘⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
+      R.₁ (lift↓ f .β D.∘ lift↓ g .β) C.∘ (L₀′ x)       ≡⟨ C.pushl (R.F-∘ _ _) ⟩
       R.₁ (lift↓ f .β) C.∘ R.₁ (lift↓ g .β) C.∘ (L₀′ x) ≡⟨ ap (R.₁ (lift↓ f .β) C.∘_) (sym (lift↓ g .↓Hom.sq) ∙ C.idr _) ⟩
       R.₁ (lift↓ f .β) C.∘ L₀′ y C.∘ g                  ≡⟨ C.extendl (sym (lift↓ f .↓Hom.sq) ∙ C.idr _) ⟩
       L₀′ z C.∘ f C.∘ g                                 ≡˘⟨ C.idr _ ⟩
-      to-ob (f C.∘ g) .map C.∘ C.id                      ∎
+      to-ob (f C.∘ g) .map C.∘ C.id                     ∎
 
     L-∘ : ∀ {x y z} (f : C.Hom y z) (g : C.Hom x y)
         → L₁ (f C.∘ g) ≡ L₁ f D.∘ L₁ g
@@ -409,8 +410,8 @@ module _
   where
 
   private
-    module L = Functor L
-    module R = Functor R
+    import Cat.Functor.Reasoning L as L
+    import Cat.Functor.Reasoning R as R
     import Cat.Reasoning C as C
     import Cat.Reasoning D as D
     module adj = _⊣_ adj
@@ -469,7 +470,7 @@ $$
   L⊣R→map-to-R-is-initial x other-map .centre .↓Hom.sq =
     sym (
       R.₁ (adj.counit.ε _ D.∘ L.₁ om.map) C.∘ adj.unit.η _       ≡⟨ ap₂ C._∘_ (R.F-∘ _ _) refl ∙ sym (C.assoc _ _ _) ⟩
-      R.₁ (adj.counit.ε _) C.∘ R.₁ (L.₁ om.map) C.∘ adj.unit.η _ ≡⟨ ap (R.₁ (adj.counit.ε _) C.∘_) (sym (adj.unit.is-natural _ _ _)) ⟩
+      R.₁ (adj.counit.ε _) C.∘ R.₁ (L.₁ om.map) C.∘ adj.unit.η _ ≡˘⟨ C.refl⟩∘⟨ adj.unit.is-natural _ _ _ ⟩
       (R.₁ (adj.counit.ε _) C.∘ adj.unit.η _ C.∘ om.map)         ≡⟨ C.cancell adj.zag ⟩
       om.map                                                     ≡⟨ sym (C.idr _) ⟩
       om.map C.∘ C.id                                            ∎
@@ -484,8 +485,7 @@ that the map $g$ above is unique.
 ```agda
   L⊣R→map-to-R-is-initial x other-map .paths y =
     ↓Hom-path _ _ refl (
-      adj.counit.ε _ D.∘ L.₁ om.map                            ≡⟨ ap ((adj.counit.ε _ D.∘_) ⊙ L.₁) (sym (C.idr _) ∙ y.sq) ⟩
-      adj.counit.ε _ D.∘ L.₁ (R.₁ y.β C.∘ adj.unit.η _)        ≡⟨ ap (adj.counit.ε _ D.∘_) (L.F-∘ _ _) ⟩
+      adj.counit.ε _ D.∘ L.₁ om.map                            ≡⟨ D.refl⟩∘⟨ L.expand (sym (C.idr _) ∙ y .↓Hom.sq) ⟩
       adj.counit.ε _ D.∘ L.₁ (R.₁ y.β) D.∘ L.₁ (adj.unit.η _)  ≡⟨ D.pulll (adj.counit.is-natural _ _ _) ⟩ -- nvmd
       (y.β D.∘ adj.counit.ε _) D.∘ L.₁ (adj.unit.η _)          ≡⟨ D.cancelr adj.zig ⟩
       y.β                                                      ∎
@@ -523,8 +523,8 @@ transformations:
 ```agda
 module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
   private
-    module L = Functor L
-    module R = Functor R
+    module L = Func L
+    module R = Func R
     module C = Cat.Reasoning C
     module D = Cat.Reasoning D
     module adj = _⊣_ adj
@@ -546,14 +546,14 @@ $\hom(La,b) \cong \hom(a,Rb)$.
 ```agda
   L-R-adjunct : ∀ {a b} → is-right-inverse (R-adjunct {a} {b}) L-adjunct
   L-R-adjunct f =
-    R.₁ (adj.counit.ε _ D.∘ L.₁ f) C.∘ adj.unit.η _        ≡˘⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
-    R.₁ (adj.counit.ε _) C.∘ R.₁ (L.₁ f) C.∘ adj.unit.η _  ≡˘⟨ ap (R.₁ _ C.∘_) (adj.unit.is-natural _ _ _) ⟩
+    R.₁ (adj.counit.ε _ D.∘ L.₁ f) C.∘ adj.unit.η _        ≡⟨ R.pushl refl ⟩
+    R.₁ (adj.counit.ε _) C.∘ R.₁ (L.₁ f) C.∘ adj.unit.η _  ≡˘⟨ C.refl⟩∘⟨ adj.unit.is-natural _ _ _ ⟩
     R.₁ (adj.counit.ε _) C.∘ adj.unit.η _ C.∘ f            ≡⟨ C.cancell adj.zag ⟩
     f                                                      ∎
 
   R-L-adjunct : ∀ {a b} → is-left-inverse (R-adjunct {a} {b}) L-adjunct
   R-L-adjunct f =
-    adj.counit.ε _ D.∘ L.₁ (R.₁ f C.∘ adj.unit.η _)       ≡⟨ ap (_ D.∘_) (L.F-∘ _ _) ⟩
+    adj.counit.ε _ D.∘ L.₁ (R.₁ f C.∘ adj.unit.η _)       ≡⟨ D.refl⟩∘⟨ L.F-∘ _ _ ⟩
     adj.counit.ε _ D.∘ L.₁ (R.₁ f) D.∘ L.₁ (adj.unit.η _) ≡⟨ D.extendl (adj.counit.is-natural _ _ _) ⟩
     f D.∘ adj.counit.ε _ D.∘ L.₁ (adj.unit.η _)           ≡⟨ D.elimr adj.zig ⟩
     f                                                     ∎

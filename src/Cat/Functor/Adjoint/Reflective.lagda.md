@@ -7,6 +7,7 @@ open import Cat.Diagram.Monad
 open import Cat.Functor.Base
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
 
 module Cat.Functor.Adjoint.Reflective where
@@ -70,8 +71,8 @@ is-reflective→counit-is-iso
 is-reflective→counit-is-iso {C = C} {D} {F} {G} adj g-ff {o} = morp where
   module C = Cat.Reasoning C
   module D = Cat.Reasoning D
-  module F = Functor F
-  module G = Functor G
+  module F = Func F
+  module G = Func G
   open _⊣_ adj
 
   morp : F.₀ (G.₀ o) D.≅ o
@@ -80,14 +81,14 @@ is-reflective→counit-is-iso {C = C} {D} {F} {G} adj g-ff {o} = morp where
     invl : counit.ε o D.∘ equiv→inverse g-ff (unit.η (G.₀ o)) ≡ D.id
     invl = fully-faithful→faithful {F = G} g-ff (
       G.₁ (counit.ε o D.∘ _)                          ≡⟨ G.F-∘ _ _ ⟩
-      G.₁ (counit.ε o) C.∘ G.₁ (equiv→inverse g-ff _) ≡⟨ ap (G.₁ (counit.ε _) C.∘_) (equiv→section g-ff _) ⟩
+      G.₁ (counit.ε o) C.∘ G.₁ (equiv→inverse g-ff _) ≡⟨ C.refl⟩∘⟨ equiv→section g-ff _ ⟩
       G.₁ (counit.ε o) C.∘ unit.η (G.₀ o)             ≡⟨ zag ∙ sym G.F-id ⟩
       G.₁ D.id                                        ∎)
 
     invr : equiv→inverse g-ff (unit.η (G.₀ o)) D.∘ counit.ε o ≡ D.id
     invr = fully-faithful→faithful {F = G} g-ff (ap G.₁ (
       equiv→inverse g-ff _ D.∘ counit.ε _             ≡˘⟨ counit.is-natural _ _ _ ⟩
-      counit.ε _ D.∘ F.₁ (G.₁ (equiv→inverse g-ff _)) ≡⟨ ap (counit.ε _ D.∘_) (ap F.₁ (equiv→section g-ff _)) ⟩
+      counit.ε _ D.∘ F.₁ (G.₁ (equiv→inverse g-ff _)) ≡⟨ D.refl⟩∘⟨ F.⟨ equiv→section g-ff _ ⟩ ⟩
       counit.ε _ D.∘ F.₁ (unit.η _)                   ≡⟨ zig ⟩
       D.id                                            ∎))
 
