@@ -79,6 +79,14 @@ module _ (ab≡c : a ∘ b ≡ c) where
     f ∘ (a ∘ b) ≡⟨ ap (f ∘_) ab≡c ⟩
     f ∘ c ∎
 
+module _ (c≡ab : c ≡ a ∘ b) where
+
+  pushl : c ∘ f ≡ a ∘ (b ∘ f)
+  pushl = sym (pulll (sym c≡ab))
+
+  pushr : f ∘ c ≡ (f ∘ a) ∘ b
+  pushr = sym (pullr (sym c≡ab))
+
 module _ (p : f ∘ h ≡ g ∘ i) where
   extendl : f ∘ (h ∘ b) ≡ g ∘ (i ∘ b)
   extendl {b = b} =
@@ -93,6 +101,9 @@ module _ (p : f ∘ h ≡ g ∘ i) where
     a ∘ (f ∘ h) ≡⟨ ap (a ∘_) p ⟩
     a ∘ (g ∘ i) ≡⟨ assoc a g i ⟩
     (a ∘ g) ∘ i ∎
+
+  extend-inner : a ∘ f ∘ h ∘ b ≡ a ∘ g ∘ i ∘ b
+  extend-inner {a = a} = ap (a ∘_) extendl
 ```
 
 ## Cancellation
@@ -167,3 +178,22 @@ module _ {y z} (f : y ≅ z) where
     f .from ∘ f .to ∘ h   ≡⟨ cancell (f .invr) ⟩
     h                     ∎
 ```
+
+## Notation
+
+When doing equational reasoning, it's often somewhat clumsy to have to write
+`ap (f ∘_) p` when proving that `f ∘ g ≡ f ∘ h`. To fix this, we define steal
+some cute mixfix notation from `agda-categories` which allows us to write
+`≡⟨ refl⟩∘⟨ p ⟩` instead, which is much more aesthetically pleasing!
+
+```agda
+_⟩∘⟨_ : f ≡ h → g ≡ i → f ∘ g ≡ h ∘ i
+_⟩∘⟨_ = ap₂ _∘_
+
+refl⟩∘⟨_ : g ≡ h → f ∘ g ≡ f ∘ h
+refl⟩∘⟨_ {f = f} p = ap (f ∘_) p
+
+_⟩∘⟨refl : f ≡ h → f ∘ g ≡ h ∘ g
+_⟩∘⟨refl {g = g} p = ap (_∘ g) p
+```
+
