@@ -115,3 +115,14 @@ module _ (inv : a 𝒞.∘ b ≡ 𝒞.id) where
   cancel-inner : (f 𝒟.∘ F₁ a) 𝒟.∘ (F₁ b 𝒟.∘ g) ≡ f 𝒟.∘ g
   cancel-inner = 𝒟.cancel-inner annihilate
 ```
+
+## Notation
+
+Writing `ap F₁ p` is somewhat clunky, so we define a bit of notation
+to make it somewhat cleaner.
+
+```agda
+⟨_⟩ : a ≡ b → F₁ a ≡ F₁ b
+⟨_⟩ = ap F₁
+```
+
