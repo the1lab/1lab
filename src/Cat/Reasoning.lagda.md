@@ -79,6 +79,14 @@ module _ (ab≡c : a ∘ b ≡ c) where
     f ∘ (a ∘ b) ≡⟨ ap (f ∘_) ab≡c ⟩
     f ∘ c ∎
 
+module _ (c≡ab : c ≡ a ∘ b) where
+
+  pushl : c ∘ f ≡ a ∘ (b ∘ f)
+  pushl = sym (pulll (sym c≡ab))
+
+  pushr : f ∘ c ≡ (f ∘ a) ∘ b
+  pushr = sym (pullr (sym c≡ab))
+
 module _ (p : f ∘ h ≡ g ∘ i) where
   extendl : f ∘ (h ∘ b) ≡ g ∘ (i ∘ b)
   extendl {b = b} =
