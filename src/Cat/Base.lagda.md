@@ -467,6 +467,9 @@ module _ where
   Const {D = D} x .F-id = refl
   Const {D = D} x .F-∘ _ _ = sym (idr D _)
 
+infixr 30 _F∘_
+infix 20 _=>_
+
 module _ {o₁ h₁ o₂ h₂}
          {C : Precategory o₁ h₁}
          {D : Precategory o₂ h₂}

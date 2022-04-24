@@ -11,5 +11,7 @@ open import Cat.Functor.Equivalence.Complete public
 open import Cat.Functor.Equivalence public
 open import Cat.Functor.FullSubcategory public
 open import Cat.Functor.Hom public
+open import Cat.Functor.Kan public
+open import Cat.Functor.Kan.Nerve public
 open import Cat.Functor.Pullback public
 open import Cat.Functor.Slice public

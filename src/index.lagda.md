@@ -255,41 +255,40 @@ work with since they provide the relevant data with fewer layers of
 indirection.
 
 ```agda
--- Limits:
-open import Cat.Diagram.Product
-open import Cat.Diagram.Terminal
-open import Cat.Diagram.Pullback
-open import Cat.Diagram.Equaliser
-open import Cat.Diagram.Product.Indexed
-open import Cat.Diagram.Equaliser.Kernel
-open import Cat.Diagram.Pullback.Properties
+open import Cat.Diagram.Congruence -- Internal equivalence relations
 
 -- Colimits:
-open import Cat.Diagram.Initial
-open import Cat.Diagram.Pushout
-open import Cat.Diagram.Coproduct
-open import Cat.Diagram.Coequaliser
+open import Cat.Diagram.Initial                -- Initial objects
+open import Cat.Diagram.Pushout                -- Pushouts
+open import Cat.Diagram.Coproduct              -- Binary coproducts
+open import Cat.Diagram.Coequaliser            -- Coequalisers
+open import Cat.Diagram.Colimit.Base           -- Conical colimits
+open import Cat.Diagram.Coproduct.Indexed      -- Indexed coproducts
+open import Cat.Diagram.Coequaliser.RegularEpi -- Regular epimorphisms
 
--- Absolute colimits:
-open import Cat.Diagram.Zero
+open import Cat.Diagram.Duals -- Dualisation of co/limits
+open import Cat.Diagram.Image -- Image factorisations
+open import Cat.Diagram.Idempotent -- Idempotent morphisms
 
--- Misc.:
-open import Cat.Diagram.Idempotent
-```
-
-## Limits & Colimits
-
-Definitions of cones over and cocones under diagrams, the category of
-cones/cocones, and limiting/colimiting cones.
-
-```agda
-open import Cat.Diagram.Limit.Base
+-- Limits
+open import Cat.Diagram.Product                -- Binary products
+open import Cat.Diagram.Pullback               -- Fibred products
+open import Cat.Diagram.Terminal               -- Terminal objects
+open import Cat.Diagram.Equaliser              -- Equalisers
+open import Cat.Diagram.Limit.Base             -- Conical limits
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Limit.Product
 open import Cat.Diagram.Limit.Pullback
 open import Cat.Diagram.Limit.Equaliser
+open import Cat.Diagram.Product.Indexed
+open import Cat.Diagram.Equaliser.Kernel       -- Kernels
+open import Cat.Diagram.Pullback.Properties    -- Properties of fibred products
+open import Cat.Diagram.Equaliser.RegularMono  -- Regular monomorphisms
 
-open import Cat.Diagram.Colimit.Base
+open import Cat.Diagram.Monad        -- Monads
+open import Cat.Diagram.Monad.Limits -- Limits in Eilenberg-Moore categories
+
+open import Cat.Diagram.Zero -- Zero objects
 ```
 
 ## Functors
@@ -299,12 +298,14 @@ modules for working with functors, the definition of full subcategories,
 and adjoint functors.
 
 ```agda
-open import Cat.Functor.Hom       -- Hom functor, Yoneda embedding, Coyoneda lemma
-open import Cat.Functor.Pullback  -- Base change, dependent sum, Σf ⊣ f*
-open import Cat.Functor.Base      -- Compendium of functor properties
+open import Cat.Functor.Hom -- Hom functor, Yoneda embedding, Coyoneda lemma
+open import Cat.Functor.Base -- Compendium of functor properties
+open import Cat.Functor.Pullback -- Base change, dependent sum, Σf ⊣ f*
 open import Cat.Functor.Bifunctor -- Functors out of product categories
 open import Cat.Functor.Equivalence -- Equivalences of (pre)categories
+open import Cat.Functor.Conservative -- Functors which reflect isomorphisms
 open import Cat.Functor.FullSubcategory -- Full subcategories
+open import Cat.Functor.Equivalence.Complete -- Completeness respects equivalence
 ```
 
 About adjoint functors, and their associated monads:
@@ -314,7 +315,16 @@ open import Cat.Diagram.Monad   -- Definition of monads
 open import Cat.Functor.Adjoint -- Unit-counit adjunctions and universal arrows
 open import Cat.Functor.Adjoint.Monad -- Monad from an adjunction
 open import Cat.Functor.Adjoint.Monadic -- Monadic adjunctions
+open import Cat.Functor.Adjoint.Compose -- Adjunctions compose
 open import Cat.Functor.Adjoint.Continuous -- Right adjoints preserve limits
+open import Cat.Functor.Adjoint.Reflective -- Reflective subcategories
+```
+
+About Kan extensions:
+
+```agda
+open import Cat.Functor.Kan -- Kan extensions
+open import Cat.Functor.Kan.Nerve -- The nerve/realisation adjunction (Lan along よ)
 ```
 
 ## Univalent categories
@@ -338,23 +348,47 @@ Here's where we actually build some categories and prove that they have
 desirable properties.
 
 ```agda
-open import Cat.Instances.Sets                  -- The category of sets
-open import Cat.Instances.Sets.Complete         -- Sets is complete
+-- Comma categories:
+open import Cat.Instances.Comma
+open import Cat.Instances.Comma.Univalent
 
-open import Cat.Instances.Functor         -- Functor (pre)categories
-open import Cat.Instances.Functor.Limits  -- Limits in functor categories
+open import Cat.Instances.Delooping -- Delooping a monoid to give a category
+open import Cat.Instances.Discrete -- Discrete categories
+open import Cat.Instances.Elements -- Category of elements of a presheaf
 
-open import Cat.Instances.Comma     -- Comma precategory over a cospan of functors
-open import Cat.Instances.Product   -- Product of precategories
-open import Cat.Instances.Karoubi   -- Split-idempotent completion of a precategory
-open import Cat.Instances.Discrete  -- Discrete category on a groupoid or set
-open import Cat.Instances.Elements  -- Precategory of elements of a presheaf
-open import Cat.Instances.Delooping -- Delooping category of a monoid/group
+-- Functor categories:
+open import Cat.Instances.Functor
+open import Cat.Instances.Functor.Limits -- Co/limits in functor categories
+open import Cat.Instances.Functor.Duality -- 2-cell duality in Cat
 
-open import Cat.Instances.StrictCat          -- Precategory of strict precategories
-open import Cat.Instances.StrictCat.Cohesive -- Strict categories are "spatial"
+-- Completion of a category under splitting idempotents
+open import Cat.Instances.Karoubi
 
-open import Cat.Instances.Shape.Terminal  -- Category with one point
+open import Cat.Instances.Lift -- Lifting a category to higher universes
+open import Cat.Instances.Product -- Product categories
+
+-- The category of sets
+open import Cat.Instances.Sets -- is univalent
+open import Cat.Instances.Sets.Complete -- is complete
+open import Cat.Instances.Sets.Cocomplete -- is cocomplete, with disjoint coproducts
+open import Cat.Instances.Sets.Congruences -- has effective congruences
+open import Cat.Instances.Sets.CartesianClosed -- and is locally cartesian closed
+
+-- Diagram shapes:
+open import Cat.Instances.Shape.Join
+open import Cat.Instances.Shape.Cospan
+open import Cat.Instances.Shape.Interval
+open import Cat.Instances.Shape.Parallel
+open import Cat.Instances.Shape.Terminal
+
+-- Slice categories:
+open import Cat.Instances.Slice
+open import Cat.Instances.Slice.Presheaf -- PSh(C)/X ≅ PSh(∫ X)
+
+-- Strict categories
+open import Cat.Instances.StrictCat
+open import Cat.Instances.StrictCat.Cohesive
+  -- ^ Strict category structure is a sort of "spatial" structure on a category
 ```
 
 ## Thin categories
@@ -384,6 +418,16 @@ open import Cat.Displayed.Total            -- Total category of a displayed cate
 open import Cat.Displayed.Cartesian        -- Cartesian lifts, cartesian fibrations
 open import Cat.Displayed.Instances.Family -- Family fibration
 open import Cat.Displayed.Instances.Slice  -- Canonical self-indexing
+```
+
+# Topos theory
+
+Grothendieck topos theory developed constructively and predicatively.
+
+```agda
+open import Topoi.Base       -- Topoi, properties of topoi, geometric morphisms
+open import Topoi.Classifying.Diaconescu
+-- ^ Presheaf topoi classify flat functors on their site
 ```
 
 # Algebra

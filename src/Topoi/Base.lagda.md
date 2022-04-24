@@ -3,11 +3,11 @@ open import Algebra.Prelude
 
 open import Cat.Instances.Sets.Cocomplete
 open import Cat.Instances.Functor.Limits
-open import Cat.Instances.Sets.Complete
 open import Cat.Instances.Slice.Presheaf
-open import Cat.Instances.Elements
+open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Everything
 open import Cat.Functor.Everything
+open import Cat.Instances.Elements
 open import Cat.Instances.Slice
 open import Cat.Instances.Lift
 
@@ -70,7 +70,7 @@ which everything lives. Now, much of Grothendieck topos theory
 generalises to arbitrary "base" topoi, via the use of bounded geometric
 morphisms, but the "main" definition talks about $\sets$-topoi. In
 particular, every universe $\kappa$ generates a theory of
-$\sets\kappa$-topoi, the categories of $\kappa$-small sheaves on
+$\sets_\kappa$-topoi, the categories of $\kappa$-small sheaves on
 $\kappa$-small sites.
 
 Fix a universe level $\kappa$, and consider the category $\sets_\kappa$:

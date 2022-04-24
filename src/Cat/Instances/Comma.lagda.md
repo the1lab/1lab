@@ -115,10 +115,10 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
 <!--
 ```agda
   ↓Hom-pathp : ∀ {x x′ y y′} {p : x ≡ x′} {q : y ≡ y′}
-            → {f : ↓Hom x y} {g : ↓Hom x′ y′}
-            → (PathP _ (f .↓Hom.α) (g .↓Hom.α))
-            → (PathP _ (f .↓Hom.β) (g .↓Hom.β))
-            → PathP (λ i → ↓Hom (p i) (q i)) f g
+             → {f : ↓Hom x y} {g : ↓Hom x′ y′}
+             → (PathP _ (f .↓Hom.α) (g .↓Hom.α))
+             → (PathP _ (f .↓Hom.β) (g .↓Hom.β))
+             → PathP (λ i → ↓Hom (p i) (q i)) f g
   ↓Hom-pathp p q i .↓Hom.α = p i
   ↓Hom-pathp p q i .↓Hom.β = q i
   ↓Hom-pathp {p = p} {q} {f} {g} r s i .↓Hom.sq =
@@ -131,6 +131,14 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
             → (f .↓Hom.β ≡ g .↓Hom.β)
             → f ≡ g
   ↓Hom-path = ↓Hom-pathp
+
+  ↓Obj-path : {a b : ↓Obj}
+            → (p : a .↓Obj.x ≡ b .↓Obj.x) (q : a .↓Obj.y ≡ b .↓Obj.y)
+            → PathP (λ i → Hom C (F₀ F (p i)) (F₀ G (q i))) (a .↓Obj.map) (b .↓Obj.map)
+            → a ≡ b
+  ↓Obj-path p q r i .↓Obj.x = p i
+  ↓Obj-path p q r i .↓Obj.y = q i
+  ↓Obj-path p q r i .↓Obj.map = r i
 
   private unquoteDecl eqv = declare-record-iso eqv (quote ↓Hom)
 

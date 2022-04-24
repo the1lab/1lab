@@ -2,6 +2,7 @@
 open import 1Lab.Path
 
 open import Cat.Base
+
 import Cat.Reasoning
 
 module Cat.Functor.Reasoning

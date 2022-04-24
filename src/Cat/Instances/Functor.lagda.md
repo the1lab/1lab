@@ -392,5 +392,14 @@ module
       : {F : Functor D D} {G : Functor C D}
       → F DD.≅ Id → (F F∘ G) CD.≅ G
     F∘-iso-id-l {F} {G} isom = subst ((F F∘ G) CD.≅_) F∘-idl (F∘-iso-l isom)
+
+open _=>_
+
+whiskerl : ∀ {o ℓ o′ ℓ′ o′′ ℓ′′}
+           {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {E : Precategory o′′ ℓ′′}
+         → {F G : Functor D E} {H : Functor C D}
+         → F => G → F F∘ H => G F∘ H
+whiskerl {F} {G} nt .η x = nt .η _
+whiskerl {F} {G} nt .is-natural x y f = nt .is-natural _ _ _
 ```
 -->
