@@ -87,6 +87,10 @@ module _ (p : a 𝒞.∘ c ≡ b 𝒞.∘ d) where
 
   extendr : (f 𝒟.∘ F₁ a) 𝒟.∘ F₁ c ≡ (f 𝒟.∘ F₁ b) 𝒟.∘ F₁ d
   extendr = 𝒟.extendr weave
+
+  extend-inner :
+    f 𝒟.∘ F₁ a 𝒟.∘ F₁ c 𝒟.∘ g ≡ f 𝒟.∘ F₁ b 𝒟.∘ F₁ d 𝒟.∘ g
+  extend-inner = 𝒟.extend-inner weave
 ```
 
 ## Cancellation

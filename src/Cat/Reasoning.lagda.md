@@ -101,6 +101,9 @@ module _ (p : f ∘ h ≡ g ∘ i) where
     a ∘ (f ∘ h) ≡⟨ ap (a ∘_) p ⟩
     a ∘ (g ∘ i) ≡⟨ assoc a g i ⟩
     (a ∘ g) ∘ i ∎
+
+  extend-inner : a ∘ f ∘ h ∘ b ≡ a ∘ g ∘ i ∘ b
+  extend-inner {a = a} = ap (a ∘_) extendl
 ```
 
 ## Cancellation
