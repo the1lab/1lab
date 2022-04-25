@@ -118,7 +118,7 @@ contractible for any fixed $A : \ca{C}$ or (more useful here) we have a
 function $\id{iso→path} : A \cong B \to A \equiv B$ sending the
 identity isomorphism to `refl`{.Agda}.
 
-In a thin category, any pair of maps $(A \to B) \times (B \ot A)$ is an
+In a thin category, any pair of maps $(A \to B) \times (B \to A)$ is an
 isomorphism, so in effect we have a map $(A \to B) \times (B \to A) \to
 (A \equiv B)$: If a thin category is a preordered set, then a
 _univalent_ thin category is a partially ordered set.
@@ -142,7 +142,7 @@ record Poset (o h : Level) : Type (lsuc (o ⊔ h)) where
       H-Level-Hom = prop-instance (Hom-is-prop _ _)
 ```
 
-Sincce posets are most commonly considered in the context of order
+Since posets are most commonly considered in the context of order
 theory, we abbreviate their $\hom$-props by $(a \le b)$. Similarly, we
 rename the identity, composition and univalence operations to
 order-theoretic names.

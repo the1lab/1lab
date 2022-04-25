@@ -47,7 +47,7 @@ defining the notion of site, we will leave it implicitly, and define a
 A **topos** $\ca{T}$ is a [full subcategory] of a [presheaf category]
 $[\ca{C}\op,\sets]$ (the category $\ca{C}$ is part of the definition)
 such that the inclusion functor $\iota : \ca{T} \mono [\ca{C}\op,\sets]$
-admits a [right adjoint], and this right adjoint preserves [finite
+admits a [left adjoint], and this left adjoint preserves [finite
 limits]. We summarise this situation in the diagram below, where "lex"
 (standing for "**l**eft **ex**act") is old-timey speak for "finite limit
 preserving".
@@ -62,7 +62,7 @@ preserving".
 
 [full subcategory]: Cat.Functor.FullSubcategory.html
 [presheaf category]: Cat.Functor.Hom.html#the-yoneda-embedding
-[right adjoint]: Cat.Functor.Adjoint.html
+[left adjoint]: Cat.Functor.Adjoint.html
 [finite limits]: Cat.Diagram.Limit.Finite.html
 
 In type theory, we must take care about the specific [universes] in
@@ -133,7 +133,7 @@ adjoint $f_* : A \to B$[^aft].
 
 [^aft]: By the adjoint functor theorem, any map between posets which
 preserves arbitrary joins has a right adjoint; Conversely, every map
-which has a left adjoint preserves arbitrary joins.
+which has a right adjoint preserves arbitrary joins.
 
 [powerset]: Data.Power.html
 [lattice]: Algebra.Lattice.html
@@ -176,7 +176,7 @@ Our statement about "gluing primitive shapes" now becomes the rather
 pedestrian statement "graphs are made up of vertices and edges". For
 instance, the graph $\bull \to \bull \to \bull$ can be considered as a
 disjoint union of two edges, which is then glued together in a way such
-that the target of the first is the source of the first. The maps $s, t
+that the target of the first is the source of the second. The maps $s, t
 : V \to E$ exhibit the two ways that a vertex can be considered "part
 of" an edge.
 
