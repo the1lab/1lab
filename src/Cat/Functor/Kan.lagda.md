@@ -252,7 +252,7 @@ each point. Agda's goal-and-context display guides you the whole way.
     approx = lan-approximate
 ```
 
-Our extension will associate each object $d$ to the colimit of
+Our extension will associate to each object $d$ the colimit of
 
 $$
 (K \searrow d) \xto{\id{Dom}} C \xto{F} E\text{,}
@@ -263,10 +263,7 @@ object of $K \searrow d$. Now, we must also associate _arrows_ $f : d
 \to e \in \ca{D}$ to arrows between the respective colimits of $d$ and
 $e$. What we note is that any arrow $f : d \to e$ displays (the colimit
 associated with) $e$ as a cocone under $d$, as can be seen in the
-computation of `approx`{.Agda} below.
-
-```agda
-```
+computation of `approx`{.Agda} above.
 
 Our functor can then take an arrow $f : d \to e$ to the uniqueness arrow
 from $\colim(d) \to \colim(e)$ (punning $d$ and $e$ for their respective
