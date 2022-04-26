@@ -486,7 +486,7 @@ are discussing --- "subsingleton" is literally taken as the _definition_
 of "proposition", so this translation isn't merely ommitted, it's not
 necessary at all.
 
-Conversely, if we have an such an assignment $\chi : B \to \Omega$, we
+Conversely, if we have such an assignment $\chi : B \to \Omega$, we
 can make a map into $B$ with subsingleton fibres by carefully choosing
 the domain. We take the domain to be the disjoint union of the family
 $\chi$, that is, the set $\sum_{(x : B)} \chi(x)$. The elements of this
