@@ -11,19 +11,11 @@ if (window.localStorage.getItem(sfItem) === "displayed") {
 }
 
 const saveEqnDisplay = () => {
-  if (equations_displayed) {
-    window.localStorage.setItem(lsItem, "displayed");
-  } else {
-    window.localStorage.setItem(lsItem, "hidden");
-  }
+  window.localStorage.setItem(lsItem, equations_displayed ? "displayed" : "hidden");
 }
 
 const saveFontDisplay = () => {
-  if (serif_font) {
-    window.localStorage.setItem(sfItem, "displayed");
-  } else {
-    window.localStorage.setItem(sfItem, "hidden");
-  }
+  window.localStorage.setItem(sfItem, equations_displayed ? "displayed" : "hidden");
 }
 
 window.addEventListener('DOMContentLoaded', () => {

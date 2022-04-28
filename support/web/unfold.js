@@ -11,13 +11,18 @@ const createReturn = () => {
   return ret;
 }
 
+const fiItem = "1lab.footnote_inline";
 let unfold_footnotes = false;
+if (window.localStorage.getItem(fiItem) === "displayed") {
+  unfold_footnotes = true;
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   let footnotes = false;
   document.querySelectorAll("a.footnote-ref").forEach(elem => {
     const referent = document.querySelector("li" + elem.hash);
     const saved = elem.cloneNode(true);
+    elem.draggable = false;
     console.log(referent.childElementCount);
     if (referent.childElementCount > 1 || referent.childNodes[0].nodeName !== "P") {
       return;
@@ -64,9 +69,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const fnctl = document.getElementById("footnote-control");
     fnctl.style.display = "flex";
     const selected = document.querySelector("span#footnote-control > input");
+
+    selected.checked = unfold_footnotes;
     selected.onchange = () => {
       unfold_footnotes = selected.checked;
+      window.localStorage.setItem(fiItem, selected.checked ? "displayed" : "hidden");
     };
-    unfold_footnotes = selected.checked;
   }
 });
