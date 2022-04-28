@@ -4,8 +4,8 @@ open import Algebra.Prelude
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
 open import Cat.Functor.Everything
-open import Cat.Instances.Comma
 open import Cat.Diagram.Initial
+open import Cat.Instances.Comma
 
 open import Topoi.Base
 

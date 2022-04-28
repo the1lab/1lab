@@ -4,8 +4,8 @@ open import Cat.CartesianClosed.Base
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Functor
-open import Cat.Diagram.Terminal
 open import Cat.Diagram.Pullback
+open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Sets
