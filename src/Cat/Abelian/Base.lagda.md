@@ -162,6 +162,9 @@ record is-additive {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
   ∅ .Zero.has-is-zero = id-zero→zero has-ab $
     is-contr→is-prop (has-terminal .Terminal.has⊤ _) _ _
   module ∅ = Zero ∅
+
+  0m-unique : ∀ {A B} → ∅.zero→ {A} {B} ≡ 0m
+  0m-unique = ap₂ _∘_ (∅.has⊥ _ .paths _) refl ∙ ∘-zero-l
 ```
 
 Coincidence of finite products and finite coproducts leads to an object
@@ -331,4 +334,100 @@ record is-abelian {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
   field
     coker-ker≃ker-coker
       : ∀ {A B} (f : Hom A B) → is-invertible (decompose f .fst)
+```
+
+This implies in particular that any monomorphism is a kernel, and every
+epimorphism is a cokernel. Let's investigate the case for "every mono is
+a kernel" first: Suppose that $f : A \mono B$ is some monomorphism;
+We'll show that it's isomorphic to $\ker (\coker f)$ in the slice
+category $\ca{A}/B$.
+
+```agda
+  module _ {A B} (f : Hom A B) (monic : is-monic f) where
+    private
+      module m = Cat (Slice C B)
+```
+
+The map $A \to \ker (\coker f)$ is obtained as the composite
+
+$$
+A \xepi{p} \coker (\ker f) \cong \ker (\coker f)\times{,}
+$$
+
+where the isomorphism is our canonical map from before.
+
+```agda
+      f→kercoker : m.Hom (cut f) (cut (Ker.kernel (Coker.coeq f)))
+      f→kercoker ./-Hom.map = decompose f .fst ∘ Coker.coeq (Ker.kernel f)
+      f→kercoker ./-Hom.commutes = sym (decompose f .snd)
+```
+
+Conversely, map $\ker (\coker f) \to A$ is the composite
+
+$$
+\ker (\coker f) \cong \coker (\ker f) \to A\times{,}
+$$
+
+where the second map arises from the universal property of the cokernel:
+We can map out of it with the map $\ker f \mono A$, since (using that
+$f$ is mono), we have $0 = \ker f$ from $f0 = f\ker f$.
+
+```agda
+      kercoker→f : m.Hom (cut (Ker.kernel (Coker.coeq f))) (cut f)
+      kercoker→f ./-Hom.map =
+        Coker.coequalise (Ker.kernel f) {e′ = id} (monic _ _ path) ∘
+          coker-ker≃ker-coker f .is-invertible.inv
+        where abstract
+          path : f ∘ id ∘ 0m ≡ f ∘ id ∘ Ker.kernel f
+          path =
+            f ∘ id ∘ 0m              ≡⟨ ap (f ∘_) (eliml refl) ∙ ∘-zero-r ⟩
+            0m                       ≡˘⟨ ∅.zero-∘r _ ∙ 0m-unique ⟩
+            (∅.zero→ ∘ Ker.kernel f) ≡˘⟨ Ker.equal f ⟩
+            f ∘ Ker.kernel f         ≡⟨ ap (f ∘_) (introl refl) ⟩
+            f ∘ id ∘ Ker.kernel f    ∎
+```
+
+This is indeed a map in the slice using that both isomorphisms and
+coequalisers are epic to make progress.
+
+```agda
+      kercoker→f ./-Hom.commutes = path where
+        lemma =
+          is-coequaliser→is-epic (Coker.coeq _) (Coker.has-is-coeq _) _ _ $
+               pullr (Coker.universal _)
+            ·· elimr refl
+            ·· (decompose f .snd ∙ assoc _ _ _)
+
+        path =
+          invertible→epic (coker-ker≃ker-coker _) _ _ $
+            (f ∘ Coker.coequalise _ _ ∘ _) ∘ decompose f .fst   ≡⟨ ap₂ _∘_ (assoc _ _ _) refl ⟩
+            ((f ∘ Coker.coequalise _ _) ∘ _) ∘ decompose f .fst ≡⟨ cancelr (coker-ker≃ker-coker _ .is-invertible.invr) ⟩
+            f ∘ Coker.coequalise _ _                            ≡⟨ lemma ⟩
+            Ker.kernel _ ∘ decompose f .fst                     ∎
+```
+
+Using the universal property of the cokernel (both uniqueness and
+universality), we establish that the maps defined above are inverses in
+$\ca{A}$, thus assemble into an isomorphism in the slice.
+
+```agda
+    mono→kernel : cut f m.≅ cut (Ker.kernel (Coker.coeq f))
+    mono→kernel = m.make-iso f→kercoker kercoker→f f→kc→f kc→f→kc where
+      f→kc→f : f→kercoker m.∘ kercoker→f ≡ m.id
+      f→kc→f = /-Hom-path $
+        (decompose f .fst ∘ Coker.coeq _) ∘ Coker.coequalise _ _ ∘ _ ≡⟨ cancel-inner lemma ⟩
+        decompose f .fst ∘ _                                         ≡⟨ coker-ker≃ker-coker f .is-invertible.invl ⟩
+        id                                                           ∎
+        where
+          lemma = Coker.unique₂ _
+            {e′ = Coker.coeq (Ker.kernel f)}
+            {p = ∘-zero-r ∙ sym (sym (Coker.coequal _) ∙ ∘-zero-r)}
+            (sym (pullr (Coker.universal (Ker.kernel f)) ∙ elimr refl))
+            (introl refl)
+
+      kc→f→kc : kercoker→f m.∘ f→kercoker ≡ m.id
+      kc→f→kc = /-Hom-path $
+        (Coker.coequalise _ _ ∘ _) ∘ decompose f .fst ∘ Coker.coeq _ ≡⟨ cancel-inner (coker-ker≃ker-coker f .is-invertible.invr) ⟩
+        Coker.coequalise _ _ ∘ Coker.coeq _                          ≡⟨ Coker.universal _ ⟩
+        id                                                           ∎
 ```
