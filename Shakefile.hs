@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
-{- stack --resolver lts-18.18 script
+{- stack --resolver lts-19.5 script
          --package aeson
          --package Agda
          --package bytestring
@@ -56,7 +56,6 @@ import qualified System.Directory as Dir
 import System.IO.Unsafe
 import System.Console.GetOpt
 import System.Process (callCommand)
-import System.IO
 
 import Text.HTML.TagSoup
 import Text.DocTemplates
