@@ -22,7 +22,7 @@ that they are reflective subcategories of presheaf categories, and
 _those_ categories enjoy many of the exactness properties of $\sets$ by
 virtue of being functor categories.
 
-[overture on topos theory]: Topoi.Reasoning.html.html
+[overture on topos theory]: Topoi.Base.html
 
 This module provides a companion to the overture which makes it more
 convenient to reason about a _particular_ sheaf topos by computing
@@ -68,7 +68,7 @@ is fully faithful (thus the adjunction counit is an isomorphism, c.f.
 `Lι-iso`{.Agda}), we can compute limits directly in the presheaf
 category and sheafify. Unfolding the result of this procedure, rather
 than appealing to the equivalence $\mathcal{C} \cong
-[S\op,\Sets]^{L\iota}$, yields much better computational properties. We
+[S\op,\sets]^{L\iota}$, yields much better computational properties. We
 do it by hand for the terminal object, binary products, and binary
 pullbacks.
 
