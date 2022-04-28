@@ -29,5 +29,5 @@ main point), consider adding it to the counterexamples folder.
 
 - [ ] If a proof can be done in both "cubical style", and "book HoTT
 style", and you have the energy to do both, consider doing both!
-However, it is **completely file** to only do one! For instance, I
+However, it is **completely fine** to only do one! For instance, I
 (Amélia) am much better at writing proofs "book-style".
