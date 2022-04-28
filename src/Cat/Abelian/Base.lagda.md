@@ -351,7 +351,7 @@ category $\ca{A}/B$.
 The map $A \to \ker (\coker f)$ is obtained as the composite
 
 $$
-A \xepi{p} \coker (\ker f) \cong \ker (\coker f)\times{,}
+A \xepi{p} \coker (\ker f) \cong \ker (\coker f)\text{,}
 $$
 
 where the isomorphism is our canonical map from before.
@@ -365,7 +365,7 @@ where the isomorphism is our canonical map from before.
 Conversely, map $\ker (\coker f) \to A$ is the composite
 
 $$
-\ker (\coker f) \cong \coker (\ker f) \to A\times{,}
+\ker (\coker f) \cong \coker (\ker f) \to A\text{,}
 $$
 
 where the second map arises from the universal property of the cokernel:
