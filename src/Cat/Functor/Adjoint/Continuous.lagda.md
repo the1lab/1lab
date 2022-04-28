@@ -180,14 +180,8 @@ of shape categories are entirely determined by the "introduction forms"
     : ∀ {A B} {f g : D.Hom A B}
     → Equaliser D f g → Equaliser C (R.₁ f) (R.₁ g)
   right-adjoint→equaliser {f = f} {g} eq =
-    Limit→Equaliser C (subst Limit path (right-adjoint-limit (Equaliser→Limit D eq)))
-    where
-      path : R F∘ par-arrows→par-diagram f g ≡ par-arrows→par-diagram (R.₁ f) (R.₁ g)
-      path = Functor-path (λ { false → refl ; true → refl }) λ where
-        {false} {false} tt    → R.F-id
-        {false} {true}  false → refl
-        {false} {true}  true  → refl
-        {true}  {true}  tt    → R.F-id
+    Limit→Equaliser C (right-adjoint-limit
+      (Equaliser→Limit D {F = par-arrows→par-diagram f g} eq))
 
   right-adjoint→terminal
     : ∀ {X} → is-terminal D X → is-terminal C (R.₀ X)

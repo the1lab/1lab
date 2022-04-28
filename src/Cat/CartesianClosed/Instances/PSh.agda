@@ -4,6 +4,8 @@ open import Cat.CartesianClosed.Base
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Functor
+open import Cat.Diagram.Terminal
+open import Cat.Diagram.Pullback
 open import Cat.Diagram.Product
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Sets
@@ -27,6 +29,68 @@ PSh-is-complete {o} {ℓ} = Functor-cat-is-complete (Sets-is-complete {o} {ℓ} 
 PSh-finitely-complete : ∀ {ℓ} → Finitely-complete (PSh ℓ C)
 PSh-finitely-complete {ℓ} =
   is-complete→finitely (PSh ℓ C) (PSh-is-complete {lzero} {ℓ})
+
+PSh-terminal : ∀ {ℓ} → Terminal (PSh ℓ C)
+PSh-terminal {ℓ} = record { top = top ; has⊤ = uniq } where
+  top : Functor (C ^op) (Sets ℓ)
+  top .F₀ x = Lift ℓ ⊤ , λ _ _ _ _ _ _ → lift tt
+  top .F₁ _ _ = lift tt
+  top .F-id = refl
+  top .F-∘ _ _ = refl
+
+  uniq : is-terminal (PSh ℓ C) top
+  uniq x .centre .η _ _ = lift tt
+  uniq x .centre .is-natural _ _ _ = refl
+  uniq x .paths f = Nat-path λ _ → refl
+
+PSh-pullbacks
+  : ∀ {ℓ} {X Y Z} (f : PSh.Hom X Z) (g : PSh.Hom Y Z)
+  → Pullback (PSh ℓ C) f g
+PSh-pullbacks {ℓ} {X} {Y} {Z} f g = pb where
+  module X = Functor X
+  module Y = Functor Y
+  module Z = Functor Z
+  module f = _=>_ f
+  module g = _=>_ g
+  open Pullback
+  open is-pullback
+
+  pb-path
+    : ∀ {i} {x y : Σ[ x ∈ ∣ X.₀ i ∣ ] Σ[ y ∈ ∣ Y.₀ i ∣ ] (f.η i x ≡ g.η i y)}
+    → x .fst ≡ y .fst
+    → x .snd .fst ≡ y .snd .fst
+    → x ≡ y
+  pb-path p q i .fst = p i
+  pb-path p q i .snd .fst = q i
+  pb-path {idx} {x} {y} p q i .snd .snd j =
+    is-set→squarep (λ _ _ → Z.₀ idx .is-tr)
+      (ap (f .η idx) p) (x .snd .snd) (y .snd .snd) (ap (g .η idx) q)
+      i j
+
+  pb : Pullback (PSh ℓ C) f g
+  pb .apex .F₀ i =
+      (Σ[ x ∈ ∣ X.₀ i ∣ ] Σ[ y ∈ ∣ Y.₀ i ∣ ] (f.η i x ≡ g.η i y))
+    , Σ-is-hlevel 2 (X.₀ i .is-tr) λ _ → Σ-is-hlevel 2 (Y.₀ i .is-tr)
+      λ _ → is-prop→is-set (Z.₀ i .is-tr _ _)
+  pb .apex .F₁ {x} {y} h (a , b , p) = X.₁ h a , Y.₁ h b , path where abstract
+    path : f.η y (X.₁ h a) ≡ g.η y (Y.₁ h b)
+    path = happly (f.is-natural _ _ _) _
+        ·· (λ i → Z.₁ h (p i))
+        ·· sym (happly (g.is-natural _ _ _) _)
+  pb .apex .F-id = funext λ (a , b , _) → pb-path (happly X.F-id a) (happly Y.F-id b)
+  pb .apex .F-∘ f g = funext λ (a , b , _) → pb-path (happly (X.F-∘ f g) a) (happly (Y.F-∘ f g) b)
+  pb .p₁ .η idx (a , b , _) = a
+  pb .p₁ .is-natural _ _ _ = refl
+  pb .p₂ .η x (a , b , _) = b
+  pb .p₂ .is-natural _ _ _ = refl
+  pb .has-is-pb .square = Nat-path λ _ → funext λ (_ , _ , p) → p
+  pb .has-is-pb .limiting path .η idx arg = _ , _ , ap (λ e → e .η idx arg) path
+  pb .has-is-pb .limiting {p₁' = p₁'} {p₂'} path .is-natural x y f =
+    funext λ x → pb-path (happly (p₁' .is-natural _ _ _) _) (happly (p₂' .is-natural _ _ _) _)
+  pb .has-is-pb .p₁∘limiting = Nat-path λ _ → refl
+  pb .has-is-pb .p₂∘limiting = Nat-path λ _ → refl
+  pb .has-is-pb .unique p q = Nat-path λ _ → funext λ _ →
+    pb-path (ap (λ e → e .η _ _) p) (ap (λ e → e .η _ _) q)
 
 PSh-products : ∀ {ℓ} (A B : PSh.Ob) → Product (PSh ℓ C) A B
 PSh-products A B = prod where

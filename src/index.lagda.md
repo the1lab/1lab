@@ -426,6 +426,7 @@ Grothendieck topos theory developed constructively and predicatively.
 
 ```agda
 open import Topoi.Base       -- Topoi, properties of topoi, geometric morphisms
+open import Topoi.Reasoning  -- Exactness properties of topoi (cont'd), reasoning
 open import Topoi.Classifying.Diaconescu
 -- ^ Presheaf topoi classify flat functors on their site
 ```

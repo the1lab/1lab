@@ -6,6 +6,8 @@
 \ht:\mathbf{#1}
 \prosets:\ht{Prosets}
 \sets:\ht{Sets}
+\Ab:\ht{Ab}
+\finsets:\ht{FinSets}
 \props:\ht{Props}
 \topos:\mathfrak{Top}
 \cat:\ht{Cat}
@@ -15,6 +17,7 @@
 \igpd:\text{$\infty$-\textbf{Grpd}}
 \hra:\hookrightarrow
 \io:{(\infty,1)}
+\coker:\operatorname{coker}
 \epi:\twoheadrightarrow
 \mono:\hookrightarrow
 \ot:\leftarrow
