@@ -39,7 +39,7 @@ construction does not depend on any specificities of $f$, we conclude
 that every map in an abelian category factors as a [regular epi] followed
 by a [regular mono].
 
-[abelian category]: Cat.Abelian.Base.html
+[abelian category]: Cat.Abelian.Base.html#pre-abelian-abelian-categories
 [regular epi]: Cat.Diagram.Coequaliser.RegularEpi.html
 [regular mono]: Cat.Diagram.Equaliser.RegularMono.html
 [monic]: Cat.Morphism.html#monos

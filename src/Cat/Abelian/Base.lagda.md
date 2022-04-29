@@ -80,8 +80,11 @@ record Ab-category {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
     public
 ```
 
-Note that from multilinearity of composition, it follows that $0f = f0 =
-0$:
+<details>
+<summary> Note that from multilinearity of composition, it follows that
+the addition of $\hom$-groups and composition^["multiplication"]
+operations satisfy familiar algebraic identities, e.g. $0f = f0 = 0$,
+$-ab = (-a)b = a(-b)$, etc.</summary>
 
 ```agda
   ∘-zero-r : ∀ {A B C} {f : Hom B C} → f ∘ 0m {A} {B} ≡ 0m
@@ -101,7 +104,39 @@ Note that from multilinearity of composition, it follows that $0f = f0 =
     Hom.inverse (0m ∘ f) + ((0m + 0m) ∘ f)   ≡⟨ ap ((Hom.inverse (0m ∘ f) +_) ⊙ (_∘ f)) Hom.idl ⟩
     Hom.inverse (0m ∘ f) + (0m ∘ f)          ≡⟨ Hom.inversel ⟩
     0m                                       ∎
+
+  neg-∘-l
+    : ∀ {A B C} {g : Hom B C} {h : Hom A B}
+    → Hom.inverse (g ∘ h) ≡ Hom.inverse g ∘ h
+  neg-∘-l {g = g} {h} = monoid-inverse-unique Hom.has-is-monoid (g ∘ h) _ _
+    Hom.inversel
+    (∘-linear-l _ _ _ ∙ ap (_∘ h) Hom.inverser ∙ ∘-zero-l)
+
+  neg-∘-r
+    : ∀ {A B C} {g : Hom B C} {h : Hom A B}
+    → Hom.inverse (g ∘ h) ≡ g ∘ Hom.inverse h
+  neg-∘-r {g = g} {h} = monoid-inverse-unique Hom.has-is-monoid (g ∘ h) _ _
+    Hom.inversel
+    (∘-linear-r _ _ _ ∙ ap (g ∘_) Hom.inverser ∙ ∘-zero-r)
+
+  ∘-minus-l
+    : ∀ {A B C} (f g : Hom B C) (h : Hom A B)
+    → (f ∘ h) - (g ∘ h) ≡ (f - g) ∘ h
+  ∘-minus-l f g h =
+    f ∘ h - g ∘ h               ≡⟨ ap (f ∘ h +_) neg-∘-l ⟩
+    f ∘ h + (Hom.inverse g ∘ h) ≡⟨ ∘-linear-l _ _ _ ⟩
+    (f - g) ∘ h                 ∎
+
+  ∘-minus-r
+    : ∀ {A B C} (f : Hom B C) (g h : Hom A B)
+    → (f ∘ g) - (f ∘ h) ≡ f ∘ (g - h)
+  ∘-minus-r f g h =
+    f ∘ g - f ∘ h               ≡⟨ ap (f ∘ g +_) neg-∘-r ⟩
+    f ∘ g + (f ∘ Hom.inverse h) ≡⟨ ∘-linear-r _ _ _ ⟩
+    f ∘ (g - h)                 ∎
 ```
+
+</details>
 
 Before moving on, we note the following property of $\Ab$-categories: If
 $A$ is an object s.t. $\id{id}_{A} = 0$, then $A$ is a zero object.
@@ -431,3 +466,4 @@ $\ca{A}$, thus assemble into an isomorphism in the slice.
         Coker.coequalise _ _ ∘ Coker.coeq _                          ≡⟨ Coker.universal _ ⟩
         id                                                           ∎
 ```
+
