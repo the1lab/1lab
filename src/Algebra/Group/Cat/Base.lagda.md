@@ -135,7 +135,7 @@ Group-equiv≃Groups-iso .snd = is-iso→is-equiv isic where
     )
     , x .to .snd
   isic .is-iso.rinv x =
-    Groups.≅-pathp refl refl refl (Forget-is-faithful refl)
+    Groups.≅-pathp refl refl refl
   isic .is-iso.linv x =
     Σ-prop-path (λ _ → Group-hom-is-prop)
       (Σ-prop-path is-equiv-is-prop refl)

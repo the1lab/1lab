@@ -109,6 +109,4 @@ pushing the identifications down to reach the "leaf" morphisms.
   maps = F↓G.≅-pathp _ _
     (↓Hom-pathp _ _ (Hom-pathp-reflr-iso Y yuniv (Y.idr _))
                     (Hom-pathp-reflr-iso Z zuniv (Z.idr _)))
-    (↓Hom-pathp _ _ (Hom-pathp-refll-iso Y yuniv (Y.idl _))
-                    (Hom-pathp-refll-iso Z zuniv (Z.idl _)))
 ```

@@ -235,11 +235,6 @@ show is that $\eta{}_x \circ \id{id} \circ \id{id} = f$.
           (  ap₂ D._∘_ (ptoi-to _) refl
           ·· ap₂ D._∘_ refl (ap₂ D._∘_ refl (transport-refl _) ∙ D.idl _)
           ·· D.idr _))
-      (Nat-pathp F≡G refl
-        λ x → Hom-pathp
-          (  ap₂ D._∘_ (transport-refl _) (D.idl _)
-          ·· D.idl _
-          ·· ptoi-from _))
 ```
 
 A useful lemma is that if you have a natural transformation where each

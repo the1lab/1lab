@@ -75,13 +75,13 @@ pullbacks.
 ```agda
   open Terminal
   terminal-sheaf : Terminal 𝒯
-  terminal-sheaf .top = L.₀ (PSh-terminal site .top)
-  terminal-sheaf .has⊤ = L-lex.pres-⊤ (PSh-terminal site .has⊤)
+  terminal-sheaf .top = L.₀ (PSh-terminal {C = site} .top)
+  terminal-sheaf .has⊤ = L-lex.pres-⊤ (PSh-terminal {C = site} .has⊤)
 
   product-sheaf : ∀ A B → Product 𝒯 A B
   product-sheaf A B = product′ where
     product-presheaf : Product (PSh ℓ site) (ι.₀ A) (ι.₀ B)
-    product-presheaf = PSh-products site _ _
+    product-presheaf = PSh-products {C = site} _ _
 
     open Product
     product′ : Product 𝒯 A B
@@ -92,7 +92,7 @@ pullbacks.
       let
         prod =
           L-lex.pres-product
-            (PSh-terminal site .has⊤)
+            (PSh-terminal {C = site} .has⊤)
             (product-presheaf .has-is-product)
       in is-product-iso 𝒯 (Lι-iso _) (Lι-iso _) prod
 
@@ -108,7 +108,7 @@ bit more involved, but not by much:
     → Pullback 𝒯 f g
   pullback-sheaf f g = pullback′ where
     pullback-presheaf : Pullback (PSh ℓ site) (ι.₁ f) (ι.₁ g)
-    pullback-presheaf = PSh-pullbacks site _ _
+    pullback-presheaf = PSh-pullbacks {C = site} _ _
 
     open Pullback
     open is-pullback

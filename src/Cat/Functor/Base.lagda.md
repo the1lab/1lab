@@ -189,7 +189,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
       idc =
         ap (F₀ F) (iso→path C ccat C.id-iso)   ≡⟨ ap (ap (F₀ F)) (iso→path-id C ccat) ⟩
         ap (F₀ F) refl                         ≡˘⟨ equiv→retraction (path→iso-is-equiv D dcat) _ ⟩
-        iso→path D dcat (path→iso D refl)      ≡⟨ ap (iso→path D dcat) (D.≅-pathp refl refl (transport-refl _ ∙ sym (F-id F)) (transport-refl _ ∙ sym (F-id F))) ⟩
+        iso→path D dcat (path→iso D refl)      ≡⟨ ap (iso→path D dcat) (D.≅-pathp refl refl (transport-refl _ ∙ sym (F-id F))) ⟩
         iso→path D dcat (F-map-iso F C.id-iso) ∎
 
   is-ff→F-map-iso-is-equiv
@@ -198,7 +198,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
   is-ff→F-map-iso-is-equiv {F = F} ff = is-iso→is-equiv isom where
     isom : is-iso _
     isom .is-iso.inv = is-ff→essentially-injective {F = F} ff
-    isom .is-iso.rinv x = D.≅-pathp refl refl (equiv→section ff _) (equiv→section ff _ ∙  transport-refl _)
-    isom .is-iso.linv x = C.≅-pathp refl refl (equiv→retraction ff _) (ap (equiv→inverse ff) (transport-refl _) ∙ equiv→retraction ff _)
+    isom .is-iso.rinv x = D.≅-pathp refl refl (equiv→section ff _)
+    isom .is-iso.linv x = C.≅-pathp refl refl (equiv→retraction ff _)
 ```
 -->

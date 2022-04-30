@@ -168,19 +168,45 @@ iso→invertible i = record { inv = i ._≅_.from ; inverses = i ._≅_.inverses
   s i j .inverses =
     is-prop→squarep
       (λ i j → Inverses-are-prop {f = Hom-set _ _ (x .to) (y .to) (ap to p) (ap to q) i j}
-                               {g = Hom-set _ _ (x .from) (y .from) (ap from p) (ap from q) i j})
+                                 {g = Hom-set _ _ (x .from) (y .from) (ap from p) (ap from q) i j})
       (λ i → x .inverses) (λ i → p i .inverses) (λ i → q i .inverses) (λ i → y .inverses) i j
 
-≅-pathp : (p : a ≡ c) (q : b ≡ d)
-        → {f : a ≅ b} {g : c ≅ d}
-        → PathP (λ i → Hom (p i) (q i)) (f ._≅_.to) (g ._≅_.to)
-        → PathP (λ i → Hom (q i) (p i)) (f ._≅_.from) (g ._≅_.from)
-        → PathP (λ i → p i ≅ q i) f g
-≅-pathp p q r s i .to = r i
-≅-pathp p q r s i .from = s i
-≅-pathp p q {f} {g} r s i .inverses =
-  is-prop→pathp (λ j → Inverses-are-prop {f = r j} {g = s j})
-    (f .inverses) (g .inverses) i
+private
+  ≅-pathp-internal
+    : (p : a ≡ c) (q : b ≡ d)
+    → {f : a ≅ b} {g : c ≅ d}
+    → PathP (λ i → Hom (p i) (q i)) (f ._≅_.to) (g ._≅_.to)
+    → PathP (λ i → Hom (q i) (p i)) (f ._≅_.from) (g ._≅_.from)
+    → PathP (λ i → p i ≅ q i) f g
+  ≅-pathp-internal p q r s i .to = r i
+  ≅-pathp-internal p q r s i .from = s i
+  ≅-pathp-internal p q {f} {g} r s i .inverses =
+    is-prop→pathp (λ j → Inverses-are-prop {f = r j} {g = s j})
+      (f .inverses) (g .inverses) i
+
+abstract
+  inverse-unique
+    : {x y : Ob} (p : x ≡ y) {b d : Ob} (q : b ≡ d) {f : x ≅ b} {g : y ≅ d}
+    → PathP (λ i → Hom (p i) (q i)) (f .to) (g .to)
+    → PathP (λ i → Hom (q i) (p i)) (f .from) (g .from)
+  inverse-unique =
+    J′ (λ a c p → ∀ {b d} (q : b ≡ d) {f : a ≅ b} {g : c ≅ d}
+      → PathP (λ i → Hom (p i) (q i)) (f .to) (g .to)
+      → PathP (λ i → Hom (q i) (p i)) (f .from) (g .from))
+      λ x → J′ (λ b d q → {f : x ≅ b} {g : x ≅ d}
+                → PathP (λ i → Hom x (q i)) (f .to) (g .to)
+                → PathP (λ i → Hom (q i) x) (f .from) (g .from))
+            λ y {f} {g} p →
+              f .from                     ≡˘⟨ ap (f .from ∘_) (g .invl) ∙ idr _ ⟩
+              f .from ∘ g .to ∘ g .from   ≡⟨ assoc _ _ _ ⟩
+              (f .from ∘ g .to) ∘ g .from ≡⟨ ap (_∘ g .from) (ap (f .from ∘_) (sym p) ∙ f .invr) ∙ idl _ ⟩
+              g .from                     ∎
+
+≅-pathp
+  : (p : a ≡ c) (q : b ≡ d) {f : a ≅ b} {g : c ≅ d}
+  → PathP (λ i → Hom (p i) (q i)) (f ._≅_.to) (g ._≅_.to)
+  → PathP (λ i → p i ≅ q i) f g
+≅-pathp p q {f = f} {g = g} r = ≅-pathp-internal p q r (inverse-unique p q {f = f} {g = g} r)
 ```
 -->
 

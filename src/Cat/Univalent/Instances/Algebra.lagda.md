@@ -198,5 +198,4 @@ ident=Hom-pathp}.
     triv : PathP (λ i → (A , Am) EM.≅ A≡M i) EM.id-iso A≅X
     triv = EM.≅-pathp refl _
       (Algebra-hom-pathp _ _ _ (Hom-pathp-reflr-iso C isc (C.idr _)))
-      (Algebra-hom-pathp _ _ _ (Hom-pathp-refll-iso C isc (C.idl _)))
 ```

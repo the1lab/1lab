@@ -62,8 +62,7 @@ above, and `n-ua`{.Agda}.
     isc .paths (B , isom) =
       Σ-pathp (n-ua A≃B)
         (Sets.≅-pathp refl _
-          (λ i x → path→ua-pathp A≃B {x = x} {y = isom.to x} refl i)
-          (ua→ λ a → sym (happly isom.invr a)))
+          (λ i x → path→ua-pathp A≃B {x = x} {y = isom.to x} refl i))
       where
         module isom = Sets._≅_ isom
 
@@ -91,7 +90,7 @@ the rearrangement `iso→equiv`{.Agda} is an equivalence:
       p x = Σ-prop-path is-equiv-is-prop refl
 
       q : is-left-inverse (equiv→iso {A} {B}) iso→equiv
-      q x = Sets.≅-pathp refl refl refl refl
+      q x = Sets.≅-pathp refl refl refl
 ```
 
 We then use [univalence for $n$-types] to directly establish that $(A

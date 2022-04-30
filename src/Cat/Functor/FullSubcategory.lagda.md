@@ -101,14 +101,14 @@ is $\ca{R}$.
       from (B , isom) = B .object , sub-iso→super-iso isom
 
       rinv : is-right-inverse from to
-      rinv pb = Σ-pathp path (R.≅-pathp _ _ refl refl) where
+      rinv pb = Σ-pathp path (R.≅-pathp _ _ refl) where
         path : to (from pb) .fst ≡ pb .fst
         path i .object = pb .fst .object
         path i .witness = is-prop→pathp (λ _ → pprop (pb .fst .object))
           (to (from pb) .fst .witness) (pb .fst .witness) i
 
       linv : is-left-inverse from to
-      linv (x , i) = Σ-pathp refl (C.≅-pathp _ _ refl refl)
+      linv (x , i) = Σ-pathp refl (C.≅-pathp _ _ refl)
 
       equiv : (Σ[ B ∈ C.Ob ] A C.≅ B) ≃ (Σ[ B ∈ R.Ob ] pb R.≅ B)
       equiv = to , is-iso→is-equiv (iso from rinv linv)

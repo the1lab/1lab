@@ -532,7 +532,6 @@ module _ {C : Precategory o ℓ} {o : Precategory.Ob C} (isc : is-category C) wh
     eql : PathP (λ i → A C/o.≅ A≡B i) C/o.id-iso isom
     eql = C/o.≅-pathp refl A≡B
       (/-Hom-pathp _ _ (Cu.Hom-pathp-reflr-iso isc (C.idr _)))
-      (/-Hom-pathp _ _ (Cu.Hom-pathp-refll-iso isc (C.idl _)))
 ```
 
 # Arbitrary limits in slices

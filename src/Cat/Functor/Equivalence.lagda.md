@@ -461,7 +461,6 @@ the result with far less computation:
     over′ : PathP (λ i → Fx≡Fy i D.≅ z) i j
     over′ = D.≅-pathp Fx≡Fy refl
       (Hom-pathp-refll-iso D dcat (D.cancell (i .D._≅_.invl)))
-      (Hom-pathp-reflr-iso D dcat (D.cancelr (i .D._≅_.invl)))
 ```
 
 We must then connect $\id{ap}(F)(p)$ with this path $F(x) \cong

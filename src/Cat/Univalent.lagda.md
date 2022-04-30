@@ -102,7 +102,7 @@ J-iso isc {A} P pid {B} p =
 
 iso→path-id : ∀ (isc : is-category) {A} → iso→path isc (id-iso {A}) ≡ refl
 iso→path-id isc =
-  iso→path isc id-iso          ≡˘⟨ ap (iso→path isc) (≅-pathp refl refl (transport-refl _) (transport-refl _)) ⟩
+  iso→path isc id-iso          ≡˘⟨ ap (iso→path isc) (≅-pathp refl refl (transport-refl _)) ⟩
   iso→path isc (path→iso refl) ≡⟨ equiv→retraction (path→iso-is-equiv isc) _ ⟩
   refl                         ∎
 ```
@@ -210,5 +210,41 @@ Hom-pathp-iso {p = p} {q} {h} {h'} isc prf =
   Hom-pathp (ap₂ _∘_ (ap to (equiv→section (path→iso-is-equiv isc) _))
                      (ap₂ _∘_ refl (ap from (equiv→section (path→iso-is-equiv isc) _)))
             ∙ prf)
+
+path→to-∙
+  : ∀ {A B C} (p : A ≡ B) (q : B ≡ C)
+  → path→iso (p ∙ q) .to ≡ path→iso q .to ∘ path→iso p .to
+path→to-∙ {A = A} p q =
+  J (λ B p → ∀ {C} (q : B ≡ C) → path→iso (p ∙ q) .to ≡ path→iso q .to ∘ path→iso p .to)
+    (λ q → subst-∙ (λ e → Hom A e) refl q _
+         ∙ ap (subst (λ e → Hom A e) q) (transport-refl id)
+         ∙ sym (idr _) ∙ ap₂ _∘_ refl (sym (transport-refl id))
+    )
+    p q
+
+path→from-∙
+  : ∀ {A B C} (p : A ≡ B) (q : B ≡ C)
+  → path→iso (p ∙ q) .from ≡ path→iso p .from ∘ path→iso q .from
+path→from-∙ {A = A} p q =
+  J (λ B p → ∀ {C} (q : B ≡ C) → path→iso (p ∙ q) .from ≡ path→iso p .from ∘ path→iso q .from)
+    (λ q → subst-∙ (λ e → Hom e _) refl q _
+         ∙ ap (subst (λ e → Hom e _) q) (transport-refl id)
+         ∙ sym (idl _) ∙ ap₂ _∘_ (sym (transport-refl id)) refl
+    )
+    p q
+
+path→to-sym : ∀ {A B} (p : A ≡ B) → path→iso p .from ≡ path→iso (sym p) .to
+path→to-sym = J (λ B p → path→iso p .from ≡ path→iso (sym p) .to) refl
+
+Hom-pathp-id
+  : ∀ {A B C} {p : B ≡ A} {q : B ≡ C} {h' : Hom A C}
+  → PathP (λ i → Hom (p i) (q i)) (id {B}) h'
+  → path→iso q .to ∘ path→iso p .from ≡ h'
+Hom-pathp-id {p = p} {q} {h} prf =
+  J′ (λ B A p → ∀ {C} (q : B ≡ C) {h' : Hom A C}
+              → PathP (λ i → Hom (p i) (q i)) (id {B}) h'
+              → path→iso q .to ∘ path→iso p .from ≡ h')
+     (λ x q prf → ap₂ _∘_ refl (transport-refl _) ·· idr _ ·· from-pathp prf)
+     p q prf
 ```
 -->

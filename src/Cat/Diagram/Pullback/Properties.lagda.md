@@ -232,5 +232,40 @@ rotate-pullback pb .limiting p = pb .limiting (sym p)
 rotate-pullback pb .p₁∘limiting = pb .p₂∘limiting
 rotate-pullback pb .p₂∘limiting = pb .p₁∘limiting
 rotate-pullback pb .unique p q = pb .unique q p
+
+is-pullback-iso
+  : ∀ {p p′ x y z} {f : Hom x z} {g : Hom y z} {p1 : Hom p x} {p2 : Hom p y}
+  → (i : p ≅ p′)
+  → is-pullback p1 f p2 g
+  → is-pullback (p1 ∘ _≅_.from i) f (p2 ∘ _≅_.from i) g
+is-pullback-iso {f = f} {g} {p1} {p2} i pb = pb′ where
+  module i = _≅_ i
+  pb′ : is-pullback _ _ _ _
+  pb′ .square = extendl (pb .square)
+  pb′ .limiting p = i.to ∘ pb .limiting p
+  pb′ .p₁∘limiting = cancel-inner i.invr ∙ pb .p₁∘limiting
+  pb′ .p₂∘limiting = cancel-inner i.invr ∙ pb .p₂∘limiting
+  pb′ .unique p q = invertible→monic (iso→invertible (i Iso⁻¹)) _ _ $ sym $
+    cancell i.invr ∙ sym (pb .unique (assoc _ _ _ ∙ p) (assoc _ _ _ ∙ q))
+
+pullback-unique
+  : ∀ {p p′ x y z} {f : Hom x z} {g : Hom y z} {p1 : Hom p x} {p2 : Hom p y}
+      {p1′ : Hom p′ x} {p2′ : Hom p′ y}
+  → is-pullback p1 f p2 g
+  → is-pullback p1′ f p2′ g
+  → p ≅ p′
+pullback-unique {f = f} {g} {p1} {p2} {p1′} {p2′} pb pb′
+  = make-iso pb→pb′ pb′→pb il ir
+  where
+    pb→pb′ = pb′ .limiting (pb .square)
+    pb′→pb = pb .limiting (pb′ .square)
+    il = unique₂ pb′ {p = pb′ .square}
+      (pulll (pb′ .p₁∘limiting) ∙ pb .p₁∘limiting)
+      (pulll (pb′ .p₂∘limiting) ∙ pb .p₂∘limiting)
+      (idr _) (idr _)
+    ir = unique₂ pb {p = pb .square}
+      (pulll (pb .p₁∘limiting) ∙ pb′ .p₁∘limiting)
+      (pulll (pb .p₂∘limiting) ∙ pb′ .p₂∘limiting)
+      (idr _) (idr _)
 ```
 -->

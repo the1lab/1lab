@@ -15,13 +15,15 @@ open import Cat.Thin
 
 open import Data.Bool
 
+import Cat.Reasoning as Cat
+
 module Cat.Diagram.Limit.Finite where
 ```
 
 <!--
 ```agda
 module _ {ℓ ℓ'} (C : Precategory ℓ ℓ') where
-  open import Cat.Reasoning C
+  open Cat C
 ```
 -->
 
