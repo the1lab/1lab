@@ -17,13 +17,13 @@
          --package text
          --package uri-encode
 -}
-{-# LANGUAGE BlockArguments, OverloadedStrings #-}
+{-# LANGUAGE BlockArguments, OverloadedStrings, RankNTypes #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving, TypeFamilies, FlexibleContexts #-}
 {-# LANGUAGE ViewPatterns #-}
 module Main (main) where
 
-import Control.Monad.IO.Class
 import Control.Monad.Error.Class
+import Control.Monad.IO.Class
 import Control.Monad.Writer
 import Control.Concurrent
 import Control.Monad
@@ -64,6 +64,7 @@ import Text.DocTemplates
 import Text.Pandoc.Filter
 import Text.Pandoc.Walk
 import Text.Pandoc
+import Text.Printf
 
 import Agda.Syntax.Translation.AbstractToConcrete (abstractToConcrete_)
 import Agda.Interaction.FindFile (SourceFile(..), rootNameModule)
@@ -259,9 +260,24 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     need [input]
 
     text <- liftIO $ Text.readFile input
-    tags <- traverse (addLinkType fileIdMap fileTyMap) (parseTags text)
+    tags <- pure (parseTags text) -- traverse (addLinkType fileIdMap fileTyMap) (parseTags text)
     traverse_ (checkMarkup (takeFileName out)) tags
     liftIO $ Text.writeFile out (renderHTML5 tags)
+
+  "_build/html/static/links.json" %> \out -> do
+    need ["_build/html1/all-pages.html"]
+    (start, act) <- runWriterT $ findLinks (tell . Set.singleton) . parseTags
+      =<< liftIO (readFile "_build/html1/all-pages.html")
+    need (Set.toList act)
+    liftIO . withFile out WriteMode $ \h -> do
+      hPutStrLn h "["
+      crawlLinks
+        (\x o -> liftIO $ hPrintf h "[%s, %s],"
+          (show (dropExtension x))
+          (show (dropExtension o)))
+        (const (pure ()))
+        start
+      hPutStrLn h "null]"
 
   "_build/html/*.svg" %> \out -> do
     let inp = "_build/diagrams" </> takeFileName out -<.> "tex"
@@ -303,7 +319,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
       pure ["_build/html/static" </> f | f <- files]
     f4 <- getDirectoryFiles "_build/html0" ["Agda.*.html"] >>= \files ->
       pure ["_build/html/" </> f | f <- files]
-    need $ "_build/html/favicon.ico":(f1 ++ f2 ++ f3 ++ f4)
+    need $ [ "_build/html/favicon.ico", "_build/html/static/links.json" ] ++ f1 ++ f2 ++ f3 ++ f4
 
   phony "clean" do
     removeFilesAfter "_build" ["html0/*", "html/*", "diagrams/*", "*.agda", "*.md", "*.html"]
@@ -540,3 +556,32 @@ builtinModules =
   , "Agda.Primitive.Cubical"
   , "Agda.Primitive"
   ]
+
+findLinks :: MonadIO m => (String -> m ()) -> [Tag String] -> m [String]
+findLinks cb (TagOpen "a" attrs:xs)
+  | Just href <- lookup "href" attrs = do
+    t <- liftIO $ Dir.doesFileExist ("_build/html1" </> href)
+    cb ("_build/html1" </> href)
+    if (t && Set.notMember href ignoreLinks)
+      then (href:) <$> findLinks cb xs
+      else findLinks cb xs
+findLinks k (_:xs) = findLinks k xs
+findLinks _ [] = pure []
+
+ignoreLinks :: Set.Set String
+ignoreLinks = Set.fromList [ "all-pages.html", "index.html" ]
+
+crawlLinks
+  :: MonadIO m'
+  => (forall m. MonadIO m => String -> String -> m ())
+  -> (String -> m' ())
+  -> [String]
+  -> m' ()
+crawlLinks link need = go mempty where
+  go visited [] = pure ()
+  go visited (x:xs)
+    | x `Set.member` visited = go visited xs
+    | otherwise = do
+      links <- findLinks need =<< fmap parseTags (liftIO (readFile ("_build/html1" </> x)))
+      for links $ \other -> link x other
+      go (Set.insert x visited) (links ++ xs)
