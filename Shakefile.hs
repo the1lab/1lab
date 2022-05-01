@@ -260,7 +260,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     need [input]
 
     text <- liftIO $ Text.readFile input
-    tags <- pure (parseTags text) -- traverse (addLinkType fileIdMap fileTyMap) (parseTags text)
+    tags <- traverse (addLinkType fileIdMap fileTyMap) (parseTags text)
     traverse_ (checkMarkup (takeFileName out)) tags
     liftIO $ Text.writeFile out (renderHTML5 tags)
 
