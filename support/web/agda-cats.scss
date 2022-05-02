@@ -1,4 +1,5 @@
 @import "vars.scss";
+@import "mixins.scss";
 
 div.diagram-container {
   width: 100%;
@@ -87,6 +88,37 @@ hr {
   color: #ABB2BF;
   margin-top: 1em;
   margin-bottom: 1em;
+}
+
+code, pre, .sourceCode {
+  font-family: 'Iosevka', 'Fantasque Sans Mono', Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+  font-weight: 500;
+}
+
+div.sourceCode, pre {
+  background-color: $code-bg;
+  color: $code-fg;
+  flex-grow: 0;
+
+  @include material;
+
+  overflow-x: auto;
+  line-height: 1.2;
+
+  code {
+    display: block;
+  }
+
+  > pre {
+    padding: unset;
+    margin-top: unset;
+    margin-bottom: unset;
+    box-shadow: unset;
+
+    margin: 0;
+
+    overflow-y: clip;
+  }
 }
 
 pre.Agda {
@@ -180,4 +212,13 @@ a[href].hover-highlight {
 
 span.qed {
   float: right;
+}
+
+.typeTooltip {
+  position: absolute;
+  z-index: 100;
+
+  font-size: 0.8em;
+  color: $code-fg;
+  background: $code-bg;
 }
