@@ -12,6 +12,7 @@ module HTML.Base
   , MonadLogHtml(logHtml)
   , LogHtmlT
   , runLogHtmlWith
+  , modToFile, highlightedFileExt
   ) where
 
 import Prelude hiding ((!!), concatMap)

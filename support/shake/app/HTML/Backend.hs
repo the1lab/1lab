@@ -33,7 +33,7 @@ import qualified Agda.Syntax.Concrete as Con
 import Agda.Syntax.Abstract.Views
 import Agda.Compiler.Backend
 import Agda.Syntax.Abstract
-import Agda.Compiler.Common (curIF)
+import Agda.Compiler.Common
 import Agda.Syntax.Position
 import Agda.Utils.FileName
 import Agda.Syntax.Common
@@ -91,15 +91,38 @@ preCompileHtml (pn, opts) = do
   runLogHtmlWithMonadDebug $ pure $ HtmlCompileEnv opts ref pn
 
 preModuleHtml
-  :: MonadIO m
+  :: (MonadIO m, ReadTCState m)
   => HtmlCompileEnv
   -> IsMain
   -> ModuleName
   -> Maybe FilePath
   -> m (Recompile HtmlModuleEnv HtmlModule)
-preModuleHtml cenv _isMain modName _ifacePath = do
-  liftIO . putStrLn $ "Entering module " <> render (pretty modName)
-  pure $ Recompile (HtmlModuleEnv cenv modName)
+preModuleHtml cenv _isMain modName _ifacePath
+  | htmlOptGenTypes (htmlCompileEnvOpts cenv) = do
+    liftIO . putStrLn $ "Entering module " <> render (pretty modName)
+    pure $ Recompile (HtmlModuleEnv cenv modName)
+-- When types are being skipped we can safely only re-render modules
+-- whose interface file have changed:
+preModuleHtml cenv _ modName mifile =
+  do
+    ft <- iFileType <$> curIF
+    let
+      topl = toTopLevelModuleName modName
+      ext = highlightedFileExt (htmlOptHighlight (htmlCompileEnvOpts cenv)) ft
+      path = htmlOptDir (htmlCompileEnvOpts cenv) </> modToFile topl ext
+
+    liftIO $ do
+      uptd <- uptodate path
+      if uptd
+        then do
+          putStrLn $ "HTML for module " <> render (pretty modName) <> " is up-to-date"
+          pure $ Skip HtmlModule
+        else pure $ Recompile (HtmlModuleEnv cenv modName)
+
+  where
+    uptodate of_ = case mifile of
+      Nothing -> pure False
+      Just ifile -> isNewerThan of_ ifile
 
 compileDefHtml
   :: HtmlCompileEnv
