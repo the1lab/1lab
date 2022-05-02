@@ -57,10 +57,5 @@ Rezk-completion-is-category
   : ∀ {A : Precategory o h} → is-category (Rezk-completion A)
 Rezk-completion-is-category {o} {h} {A} =
   Restrict-is-category _ (λ _ → squash)
-    (Functor-is-category {D = Sets _} Sets-is-category)
+    (Functor-is-category Sets-is-category)
 ```
-
-<!--
-NOTE: Do _not_ under any circumstances remove the `{D = Sets _}`
-annotation above or Agda _will_ spin forever
--->

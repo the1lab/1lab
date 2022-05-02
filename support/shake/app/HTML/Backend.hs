@@ -107,6 +107,8 @@ compileDefHtml
   -> IsMain
   -> Definition
   -> TCM (Maybe (Text, String))
+compileDefHtml env _ _ _
+  | not (htmlOptGenTypes (htmlCompileEnvOpts env)) = pure Nothing
 compileDefHtml env _menv _isMain def = do
   liftIO $ do
      putStr $ "\027[2K\rRendering type for " ++ render (pretty (defName def))

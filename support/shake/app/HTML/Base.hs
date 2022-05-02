@@ -101,6 +101,7 @@ data HtmlOptions = HtmlOptions
   { htmlOptDir        :: FilePath
   , htmlOptHighlight  :: HtmlHighlight
   , htmlOptCssUrl     :: FilePath
+  , htmlOptGenTypes   :: Bool
   } deriving (Eq, Show, Generic, NFData)
 
 defaultHtmlOptions :: HtmlOptions
@@ -108,6 +109,7 @@ defaultHtmlOptions = HtmlOptions
   { htmlOptDir       = "_build/html0"
   , htmlOptHighlight = HighlightAuto
   , htmlOptCssUrl    = "/css/agda-cats.css"
+  , htmlOptGenTypes  = True
   }
 
 -- | Internal type bundling the information related to a module source file

@@ -46,7 +46,9 @@ import Agda.Interaction.Imports
 import Agda.Compiler.Backend
 import Agda.Utils.FileName
 
+import qualified System.Environment as Env
 import HTML.Backend
+import HTML.Base
 import System.IO
 import Agda
 
@@ -452,9 +454,11 @@ checkMarkup _ _ = pure ()
 
 compileAgda :: FilePath -> String -> TCMT IO ()
 compileAgda path basepn = do
+  skipTypes <- liftIO . fmap isJust . Env.lookupEnv $ "SKIP_TYPES"
   source <- parseSource . SourceFile =<< liftIO (absolute path)
   cr <- typeCheckMain TypeCheck source
-  modifyTCLens stBackends (htmlBackend basepn defaultHtmlOptions:)
+  modifyTCLens stBackends
+    (htmlBackend basepn defaultHtmlOptions{htmlOptGenTypes = not skipTypes}:)
   callBackend "HTML" IsMain cr
 
 --------------------------------------------------------------------------------
