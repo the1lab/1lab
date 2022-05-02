@@ -1,7 +1,6 @@
 {-# LANGUAGE BlockArguments, OverloadedStrings, RankNTypes #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving, TypeFamilies, FlexibleContexts #-}
 {-# LANGUAGE ViewPatterns #-}
-{-# OPTIONS_GHC -Wall -Wextra -Wno-name-shadowing #-}
 module Main (main) where
 
 import Control.Monad.Error.Class
@@ -39,7 +38,6 @@ import Text.Pandoc
 import Text.Printf
 
 import Agda.Interaction.FindFile (SourceFile(..))
-import Agda.TypeChecking.Monad.Options
 import Agda.TypeChecking.Monad.Base
 import Agda.Interaction.Options
 import Agda.Interaction.Imports
@@ -49,7 +47,7 @@ import Agda.Utils.FileName
 import qualified System.Environment as Env
 import HTML.Backend
 import HTML.Base
-import System.IO
+import System.IO hiding (readFile')
 import Agda
 
 {-

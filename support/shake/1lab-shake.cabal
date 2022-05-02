@@ -1,5 +1,5 @@
 cabal-version:      2.4
-name:               shake
+name:               1lab-shake
 version:            0.1.0.0
 author:             Amélia Liao
 maintainer:         me@amelia.how
@@ -12,40 +12,55 @@ extra-source-files: CHANGELOG.md
 executable shake
     main-is:          Main.hs
     build-depends:
-      base ^>=4.14.3.0,
+      base >=4.14.3.0,
       aeson,
       Agda,
+      blaze-html,
       bytestring,
       containers,
+      deepseq,
       directory,
       doctemplates,
+      filepath,
       mtl,
       pandoc,
       pandoc-types,
       process,
       SHA,
       shake,
+      split,
       syb,
       tagsoup,
       text,
+      transformers,
+      unordered-containers,
       uri-encode
     hs-source-dirs:   app
-    other-modules: HTML.Backend, HTML.Base
+    other-modules: Agda HTML.Backend, HTML.Base
     default-language: Haskell2010
+    ghc-options: -Wextra -Wall -Wno-name-shadowing -Wno-implicit-prelude
 
 executable agda-typed-html
     main-is:          Wrapper.hs
     build-depends:
-      base ^>=4.14.3.0,
+      base >=4.14.3.0,
       aeson,
       Agda,
+      blaze-html,
       bytestring,
       containers,
+      deepseq,
       directory,
+      filepath,
       mtl,
       SHA,
+      split,
+      syb,
       text,
+      transformers,
+      unordered-containers,
       uri-encode
     hs-source-dirs:   app
-    other-modules: HTML.Backend, HTML.Base
+    other-modules: Agda HTML.Backend, HTML.Base
     default-language: Haskell2010
+    ghc-options: -Wextra -Wall -Wno-name-shadowing -Wno-implicit-prelude

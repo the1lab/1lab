@@ -1,6 +1,5 @@
 -- | Backend for generating highlighted, hyperlinked HTML from Agda sources.
 {-# LANGUAGE DeriveGeneric, FlexibleContexts, ViewPatterns #-}
-{-# OPTIONS_GHC -Wall -Wextra -Wno-name-shadowing #-}
 module HTML.Backend
   ( htmlBackend
   , builtinModules

@@ -4,7 +4,6 @@ import Agda.Interaction.Options
 import Agda.TypeChecking.Monad
 import Control.Monad.IO.Class
 import Agda.Utils.FileName
-import Control.Monad
 
 import System.FilePath
 

@@ -40,7 +40,6 @@ import GHC.Exts (fromString)
 import qualified Network.URI.Encode
 
 import System.FilePath
-import System.Directory
 
 import Text.Blaze.Html5
     ( preEscapedToHtml
