@@ -246,7 +246,7 @@ Functor-cat-is-complete :
 Functor-cat-is-complete D-complete = functor-limit D-complete
 ```
 
-!--
+<!--
 ```agda
 module _
   {o₁ ℓ₁} {C : Precategory o₁ ℓ₁}
@@ -280,4 +280,4 @@ Functor-cat-is-cocomplete :
   → is-cocomplete o ℓ D → is-cocomplete o ℓ Cat[ C , D ]
 Functor-cat-is-cocomplete D-cocomplete = functor-colimit D-cocomplete
 ```
---
+-->
