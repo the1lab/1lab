@@ -1,16 +1,14 @@
 open import Cat.Instances.Functor.Limits
 open import Cat.Instances.Sets.Complete
 open import Cat.CartesianClosed.Base
-open import Cat.Diagram.Limit.Finite
-open import Cat.Diagram.Limit.Base
+open import Cat.Diagram.Everything
 open import Cat.Instances.Functor
-open import Cat.Diagram.Pullback
-open import Cat.Diagram.Terminal
-open import Cat.Diagram.Product
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Sets
 open import Cat.Functor.Hom
 open import Cat.Prelude
+
+open import Data.Sum
 
 import Cat.Reasoning
 
@@ -19,6 +17,9 @@ module Cat.CartesianClosed.Instances.PSh where
 open Functor
 open _=>_
 open _⊣_
+
+-- This module has explicit computational representations of a bunch of
+-- stuff we know exists by abstract nonsense.
 
 module _ {o ℓ κ} {C : Precategory o ℓ} where
   private
@@ -107,6 +108,73 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     prod .has-is-product .π₁∘factor = Nat-path λ x → refl
     prod .has-is-product .π₂∘factor = Nat-path λ x → refl
     prod .has-is-product .unique h p q = Nat-path (λ i j y → p j .η i y , q j .η i y)
+
+  {-# TERMINATING #-}
+  PSh-coproducts : (A B : PSh.Ob) → Coproduct (PSh κ C) A B
+  PSh-coproducts A B = coprod where
+    open Coproduct
+    open is-coproduct
+    module A = Functor A
+    module B = Functor B
+
+    coprod : Coproduct (PSh _ C) A B
+    coprod .coapex .F₀ i = (∣ A.₀ i ∣ ⊎ ∣ B.₀ i ∣) , ⊎-is-hlevel 0 (A.₀ i .is-tr) (B.₀ i .is-tr)
+    coprod .coapex .F₁ h (inl x) = inl (A.₁ h x)
+    coprod .coapex .F₁ h (inr x) = inr (B.₁ h x)
+    coprod .coapex .F-id = funext λ where
+      (inl x) → ap inl (happly A.F-id x)
+      (inr x) → ap inr (happly B.F-id x)
+    coprod .coapex .F-∘ f g = funext λ where
+      (inl x) → ap inl (happly (A.F-∘ f g) x)
+      (inr x) → ap inr (happly (B.F-∘ f g) x)
+    coprod .in₀ .η _ x = inl x
+    coprod .in₀ .is-natural x y f i a = inl (A.₁ f a)
+    coprod .in₁ .η _ x = inr x
+    coprod .in₁ .is-natural x y f i b = inr (B.₁ f b)
+    is-coproduct.[ coprod .has-is-coproduct , f ] g .η _ (inl x) = f .η _ x
+    is-coproduct.[ coprod .has-is-coproduct , f ] g .η _ (inr x) = g .η _ x
+    is-coproduct.[ coprod .has-is-coproduct , f ] g .is-natural x y h = funext λ where
+      (inl x) → happly (f .is-natural _ _ _) _
+      (inr x) → happly (g .is-natural _ _ _) _
+    coprod .has-is-coproduct .in₀∘factor = Nat-path λ _ → refl
+    coprod .has-is-coproduct .in₁∘factor = Nat-path λ _ → refl
+    coprod .has-is-coproduct .unique other p q = Nat-path λ a → funext λ where
+      (inl x) → ap (λ e → e .η a x) p
+      (inr x) → ap (λ e → e .η a x) q
+
+  PSh-coequaliser
+    : ∀ {X Y} (f g : PSh.Hom X Y)
+    → Coequaliser (PSh κ C) f g
+  PSh-coequaliser {X = X} {Y = Y} f g = coequ where
+    open Coequaliser
+    open is-coequaliser
+    module X = Functor X
+    module Y = Functor Y
+
+    incq : ∀ {i} → _ → Coeq (f .η i) (g .η i)
+    incq = inc
+
+    coequ : Coequaliser (PSh _ C) f g
+    coequ .coapex .F₀ i = Coeq (f .η i) (g .η i) , squash
+    coequ .coapex .F₁ h = Coeq-rec squash (λ g → inc (Y.₁ h g)) λ x →
+      inc (Y.₁ h (f .η _ x)) ≡˘⟨ ap incq (happly (f .is-natural _ _ h) x) ⟩
+      inc (f .η _ _)         ≡⟨ glue (X.₁ h x) ⟩
+      inc (g .η _ _)         ≡⟨ ap incq (happly (g .is-natural _ _ h) x) ⟩
+      inc (Y.₁ h (g .η _ x)) ∎
+    coequ .coapex .F-id = funext $ Coeq-elim-prop (λ _ → squash _ _) λ _ →
+      ap incq (happly Y.F-id _)
+    coequ .coapex .F-∘ f g = funext $ Coeq-elim-prop (λ _ → squash _ _) λ _ →
+      ap incq (happly (Y.F-∘ f g) _)
+    coequ .coeq .η i = incq
+    coequ .coeq .is-natural x y f = refl
+    coequ .has-is-coeq .coequal = Nat-path λ _ → funext λ x → glue x
+    coequ .has-is-coeq .coequalise {F = F} {e′ = e′} p .η x =
+      Coeq-rec (F .F₀  x .is-tr) (e′ .η x) λ x → ap (λ e → e .η _ x) p
+    coequ .has-is-coeq .coequalise {F = F} {e′ = e′} p .is-natural x y f = funext $
+      Coeq-elim-prop (λ _ → F .F₀ _ .is-tr _ _) λ _ → happly (e′ .is-natural _ _ _) _
+    coequ .has-is-coeq .universal = Nat-path λ _ → refl
+    coequ .has-is-coeq .unique {F = F} p = Nat-path λ i → funext $
+      Coeq-elim-prop (λ _ → F .F₀ _ .is-tr _ _) λ x → ap (λ e → e .η i x) (sym p)
 
 module _ {κ} {C : Precategory κ κ} where
   private

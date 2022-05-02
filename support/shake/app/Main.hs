@@ -1,22 +1,3 @@
-#!/usr/bin/env stack
-{- stack --resolver lts-19.5 script
-         --package aeson
-         --package Agda
-         --package bytestring
-         --package containers
-         --package directory
-         --package doctemplates
-         --package mtl
-         --package pandoc
-         --package pandoc-types
-         --package process
-         --package SHA
-         --package shake
-         --package syb
-         --package tagsoup
-         --package text
-         --package uri-encode
--}
 {-# LANGUAGE BlockArguments, OverloadedStrings, RankNTypes #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving, TypeFamilies, FlexibleContexts #-}
 {-# LANGUAGE ViewPatterns #-}
@@ -33,8 +14,6 @@ import qualified Data.Text.IO as Text
 import qualified Data.Map.Lazy as Map
 import qualified Data.Text as Text
 import qualified Data.Set as Set
-import Data.List.NonEmpty (NonEmpty((:|)))
-import Data.Traversable
 import Data.Digest.Pure.SHA
 import Data.Map.Lazy (Map)
 import Data.Generics
@@ -59,25 +38,17 @@ import Text.Pandoc.Walk
 import Text.Pandoc
 import Text.Printf
 
-import Agda.Syntax.Translation.AbstractToConcrete (abstractToConcrete_)
 import Agda.Interaction.FindFile (SourceFile(..))
-import Agda.Syntax.Translation.InternalToAbstract ( Reify(reify) )
-import Agda.Syntax.Internal (Type, Dom, domName)
-import qualified Agda.Utils.Maybe.Strict as S
-import qualified Agda.Syntax.Concrete as Con
 import Agda.TypeChecking.Monad.Options
 import Agda.TypeChecking.Monad.Base
-import Agda.Syntax.Abstract.Views
 import Agda.Interaction.Options
 import Agda.Interaction.Imports
-import Agda.TypeChecking.Monad
-import Agda.Syntax.Scope.Base
-import Agda.Syntax.Abstract
-import Agda.Syntax.Position
+import Agda.Compiler.Backend
 import Agda.Utils.FileName
-import Agda.Syntax.Common
-import Agda.Utils.Pretty
-import Agda.Syntax.Info
+
+import HTML.Backend
+import System.IO
+import Agda
 
 {-
   Welcome to the Horror That Is 1Lab's Build Script.
@@ -87,7 +58,6 @@ import Agda.Syntax.Info
 main :: IO ()
 main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ do
   fileIdMap <- newCache parseFileIdents
-  fileTyMap <- newCache parseFileTypes
   gitCommit <- newCache gitCommit
   gitAuthors <- newCache (gitAuthors (gitCommit ()))
 
@@ -111,15 +81,10 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
                        : ["open import " ++ toOut x | x <- files]
                       ++ ["import " ++ x ++ " -- (builtin)" | x <- builtinModules]
 
-    command [] "agda"
-      [ "--html"
-      , "--html-dir=_build/html0"
-      , "--html-highlight=auto"
-      , "--highlight-occurrences" -- We don't use the script, but it loads in highlight-hover.js for us.
-      , "--local-interfaces"
-      , "--css=/css/agda-cats.css"
-      , out
-      ]
+    liftIO $ Dir.createDirectoryIfMissing True "_build/html0"
+    traced "agda" $
+      runAgda defaultOptions{optInputFile = Just "_build/all-pages.agda"} $
+      compileAgda out
 
   {-
     For each 1Lab module, read the emitted file from @_build/html0@. If its
@@ -149,8 +114,6 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     'just' need to do some additional post-processing before copying them into
     our final @_build/html@ output folder.
 
-     - Try to determine the type for each Agda identifier and annotate the HTML
-       with those types ('addLinkType').
      - Replace @agda://xyz@ links with a link to the actual definition
        ('parseAgdaLink').
      - Check the markup for raw <!-- or -->, which indicates a misplaced
@@ -161,7 +124,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     need [input]
 
     text <- liftIO $ Text.readFile input
-    tags <- traverse (addLinkType fileTyMap <=< parseAgdaLink fileIdMap) (parseTags text)
+    tags <- traverse (parseAgdaLink fileIdMap) (parseTags text)
     traverse_ (checkMarkup (takeFileName out)) tags
     liftIO $ Text.writeFile out (renderHTML5 tags)
 
@@ -239,10 +202,6 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     removeFilesAfter "_build" ["**/*.agdai", "*.lua"]
 
   -- Profit!
-
--- | Determine the name of a module from a file like @1Lab/HIT/Torus@.
-moduleName :: FilePath -> String
-moduleName = intercalate "." . splitDirectories
 
 -- | Write a HTML file, correctly handling the closing of some tags.
 renderHTML5 :: [Tag Text] -> Text
@@ -479,19 +438,6 @@ emplace :: Eq a => [(a, b)] -> [(a, b)] -> [(a, b)]
 emplace ((p, x):xs) ys = (p, x):emplace xs (filter ((/= p) . fst) ys)
 emplace [] ys = ys
 
--- | Lookup an identifier given a module name and ID within that module,
--- returning its type.
-addLinkType :: (() -> Action (Map Text Text)) -- ^ Lookup a type from a module name and ident
-            -> Tag Text -> Action (Tag Text)
-addLinkType fileTys tag@(TagOpen "a" attrs)
-  | Just href <- lookup "href" attrs
-  , Text.any (=='#') href = do
-    ty <- Map.lookup href <$> fileTys ()
-    pure case ty of
-      Nothing -> tag
-      Just ty -> TagOpen "a" (emplace [("data-type", ty)] attrs)
-addLinkType _ x = pure x
-
 -- | Check HTML markup is well-formed.
 checkMarkup :: FilePath -> Tag Text -> Action ()
 checkMarkup file (TagText txt)
@@ -504,123 +450,12 @@ checkMarkup _ _ = pure ()
 -- Loading types from .agdai files
 --------------------------------------------------------------------------------
 
---  Loads our type lookup table into memory
-parseFileTypes :: () -> Action (Map Text Text)
-parseFileTypes () = do
-  need ["_build/all-pages.agda"]
-  traced "loading types from iface" . runAgda $
-    tcAndLoadPublicNames "_build/all-pages.agda"
-
-runAgda :: (String -> TCMT IO a) -> IO a
-runAgda k = do
-  e <- runTCMTop $ do
-    p <- setupTCM
-    k p
-  case e of
-    Left s -> error (show s)
-    Right x -> pure x
-
-setupTCM :: TCMT IO String
-setupTCM = do
-  absp <- liftIO $ absolute "./src"
-  setCommandLineOptions' absp defaultOptions{optLocalInterfaces = True}
-  pure (filePath absp)
-
-killDomainNames :: Type -> Type
-killDomainNames = everywhere (mkT unDomName) where
-  unDomName :: Dom Type -> Dom Type
-  unDomName m = m{ domName = Nothing }
-
-killQual :: Con.Expr -> Con.Expr
-killQual = everywhere (mkT unQual) where
-  unQual :: Con.QName -> Con.QName
-  unQual (Con.Qual _ x) = unQual x
-  unQual x = x
-
-tcAndLoadPublicNames :: FilePath -> String -> TCMT IO (Map Text Text)
-tcAndLoadPublicNames path basepn = do
+compileAgda :: FilePath -> String -> TCMT IO ()
+compileAgda path basepn = do
   source <- parseSource . SourceFile =<< liftIO (absolute path)
   cr <- typeCheckMain TypeCheck source
-
-  let iface = crInterface cr
-
-  setScope (iInsideScope iface)
-  scope <- getScope
-
-  li <- fmap catMaybes . for (toList (_scopeInScope scope)) $ \name -> do
-    t <- getConstInfo' name
-    case t of
-      Left _ -> pure Nothing
-      Right d -> do
-        expr <- reify . killDomainNames $ defType d
-        t <- fmap (render . pretty . killQual) .
-          abstractToConcrete_ . removeImpls $ expr
-
-        case rangeFile (nameBindingSite (qnameName name)) of
-          S.Just (filePath -> f)
-            | ("Agda/Builtin" `isInfixOf` f) || ("Agda/Primitive" `isInfixOf` f) ->
-              pure $ do
-                fp <- fakePath name
-                pure (name, fp, t)
-            | otherwise -> do
-              let
-                f' = moduleName $ dropExtensions (makeRelative basepn f)
-                modMatches = f' `isPrefixOf` render (pretty name)
-
-              pure $ do
-                unless modMatches Nothing
-                pure (name, f' <.> "html", t)
-          S.Nothing -> pure Nothing
-
-  let
-    f (name, modn, ty) =
-      case rStart (nameBindingSite (qnameName name)) of
-        Just pn -> pure (Text.pack (modn <> "#" <> show (posPos pn)), Text.pack ty)
-        Nothing -> Nothing
-
-  pure (Map.fromList (mapMaybe f li))
-
-fakePath :: QName -> Maybe FilePath
-fakePath (QName (MName xs) _) =
-  listToMaybe
-    [ l <.> "html"
-    | l <- map (intercalate ".") (inits (map (render . pretty . nameConcrete) xs))
-    , l `elem` builtinModules
-    ]
-
-removeImpls :: Expr -> Expr
-removeImpls (Pi _ (x :| xs) e) =
-  makePi (map (mapExpr removeImpls) $ filter ((/= Hidden) . getHiding) (x:xs)) (removeImpls e)
-removeImpls (Fun span arg ret) =
-  Fun span (removeImpls <$> arg) (removeImpls ret)
-removeImpls e = e
-
-makePi :: [TypedBinding] -> Expr -> Expr
-makePi [] = id
-makePi (b:bs) = Pi exprNoRange (b :| bs)
-
-builtinModules :: [String]
-builtinModules =
-  [ "Agda.Builtin.Bool"
-  , "Agda.Builtin.Char"
-  , "Agda.Builtin.Cubical.HCompU"
-  , "Agda.Builtin.Cubical.Path"
-  , "Agda.Builtin.Cubical.Sub"
-  , "Agda.Builtin.Float"
-  , "Agda.Builtin.FromNat"
-  , "Agda.Builtin.FromNeg"
-  , "Agda.Builtin.Int"
-  , "Agda.Builtin.List"
-  , "Agda.Builtin.Maybe"
-  , "Agda.Builtin.Nat"
-  , "Agda.Builtin.Reflection"
-  , "Agda.Builtin.Sigma"
-  , "Agda.Builtin.String"
-  , "Agda.Builtin.Unit"
-  , "Agda.Builtin.Word"
-  , "Agda.Primitive.Cubical"
-  , "Agda.Primitive"
-  ]
+  modifyTCLens stBackends (htmlBackend basepn defaultHtmlOptions:)
+  callBackend "HTML" IsMain cr
 
 --------------------------------------------------------------------------------
 -- Generate all edges between pages
@@ -647,10 +482,10 @@ crawlLinks
   -> [String]
   -> m' ()
 crawlLinks link need = go mempty where
-  go visited [] = pure ()
+  go _visitd [] = pure ()
   go visited (x:xs)
     | x `Set.member` visited = go visited xs
     | otherwise = do
       links <- findLinks need =<< fmap parseTags (liftIO (readFile ("_build/html1" </> x)))
-      for links $ \other -> link x other
+      for_ links $ \other -> link x other
       go (Set.insert x visited) (links ++ xs)
