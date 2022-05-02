@@ -1,7 +1,7 @@
+-- Copyright (c) 2005-2021 remains with the Agda authors. See /support/shake/LICENSE.agda
 
 -- | Function for generating highlighted, hyperlinked HTML from Agda
 -- sources.
-
 {-# LANGUAGE FlexibleInstances, DeriveGeneric, OverloadedStrings, DeriveAnyClass #-}
 module HTML.Base
   ( HtmlOptions(..)

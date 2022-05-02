@@ -1,3 +1,5 @@
+-- Copyright (c) 2005-2021 remains with the Agda authors. See /support/shake/LICENSE.agda
+
 {-# LANGUAGE FlexibleContexts #-}
 module Main (main) where
 

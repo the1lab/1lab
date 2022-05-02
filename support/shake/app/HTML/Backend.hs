@@ -1,3 +1,5 @@
+-- Copyright (c) 2005-2021 remains with the Agda authors. See /support/shake/LICENSE.agda
+
 -- | Backend for generating highlighted, hyperlinked HTML from Agda sources.
 {-# LANGUAGE DeriveGeneric, FlexibleContexts, ViewPatterns #-}
 module HTML.Backend
