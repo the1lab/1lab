@@ -181,7 +181,7 @@ module _ {κ} {C : Precategory κ κ} where
     module C = Cat.Reasoning C
     module PSh = Cat.Reasoning (PSh κ C)
 
-  PSh-closed : is-cc (PSh κ C)
+  PSh-closed : is-cc (PSh κ C) (PSh-products {C = C})
   PSh-closed = cc where
     cat = PSh κ C
 
@@ -228,8 +228,7 @@ module _ {κ} {C : Precategory κ κ} where
       adj .zag {A} = Nat-path λ f → funext λ x → Nat-path λ g → funext λ y →
         ap (x .η _) (Σ-pathp (C.idr _) refl)
 
-    cc : is-cc _
-    cc .is-cc.cartesian = PSh-products {C = C}
+    cc : is-cc _ (PSh-products {C = C})
     cc .is-cc.terminal = PSh-terminal {C = C}
     cc .is-cc.[_,-] = func
     cc .is-cc.tensor⊣hom = adj

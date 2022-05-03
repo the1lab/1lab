@@ -93,9 +93,9 @@ module _ {o ℓ} {C : Precategory o ℓ} (lcc : is-lcc C) where
     hom f = Πf (f .map) F∘ base-change (f .map)
 
   is-lcc→slice-is-cc
-    : ∀ {a : Ob} → is-cc (Slice C a)
-  is-lcc→slice-is-cc .cartesian =
-    λ A B → Pullback→Fibre-product (pullbacks (A .map) (B .map))
+    : ∀ {a : Ob}
+    → is-cc (Slice C a)
+        (λ A B → Pullback→Fibre-product (pullbacks (A .map) (B .map)))
   is-lcc→slice-is-cc .terminal = record
     { top  = cut (C .Precategory.id) ; has⊤ = Slice-terminal-object }
 ```
@@ -135,7 +135,7 @@ adjunction $(\sum_f f^*) \dashv (\prod_f f^*)$.
     tensor⊣hom′ = LF⊣GR (f*⊣Πf _) (Σf⊣f* pullbacks f.map)
 
     -- The product functor we have to give an adjoint to...
-    product = Cartesian.×-functor (Slice C a) (is-lcc→slice-is-cc .cartesian)
+    product = Cartesian.×-functor (Slice C a) (λ A B → Pullback→Fibre-product (pullbacks (A .map) (B .map)))
     a×- = Left product f
 
     -- ... is the same that we already proved is left adjoint to hom!

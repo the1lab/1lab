@@ -46,9 +46,8 @@ $$
 $$
 
 ```agda
-record is-cc {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
+record is-cc {o ℓ} (C : Precategory o ℓ) (cartesian : ∀ A B → Product C A B) : Type (o ⊔ ℓ) where
   field
-    cartesian : ∀ A B → Product C A B
     terminal  : Terminal C
 
   open Cat.Reasoning C
@@ -71,7 +70,7 @@ record is-cc {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
 We now make the structure of a ccc more explicit.
 
 ```agda
-module CartesianClosed {o ℓ} {C : Precategory o ℓ} (cc : is-cc C) where
+module CartesianClosed {o ℓ} {C : Precategory o ℓ} {cart : ∀ A B → Product C A B} (cc : is-cc C cart) where
   open Cat.Reasoning C
   open Functor
   open is-cc cc public
