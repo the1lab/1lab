@@ -76,7 +76,7 @@ record Inverses (f : Hom a b) (g : Hom b a) : Type h where
 
 open Inverses
 
-record is-invertible (f : Hom a b) : Type (o ⊔ h) where
+record is-invertible (f : Hom a b) : Type h where
   field
     inv : Hom b a
     inverses : Inverses f inv
@@ -88,7 +88,7 @@ record is-invertible (f : Hom a b) : Type (o ⊔ h) where
   op .inverses .Inverses.invl = invr inverses
   op .inverses .Inverses.invr = invl inverses
 
-record _≅_ (a b : Ob) : Type (o ⊔ h) where
+record _≅_ (a b : Ob) : Type h where
   field
     to       : Hom a b
     from     : Hom b a
