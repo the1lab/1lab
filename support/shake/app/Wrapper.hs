@@ -1,3 +1,5 @@
+-- Copyright (c) 2005-2021 remains with the Agda authors. See /support/shake/LICENSE.agda
+
 {-# LANGUAGE FlexibleContexts #-}
 module Main (main) where
 
@@ -5,11 +7,9 @@ import Agda.Interaction.FindFile
 import Agda.Interaction.Options
 import Agda.Interaction.Imports
 import Agda.Compiler.Backend hiding (options)
-import System.Console.GetOpt
 import Control.Monad.Except
 import Agda.Utils.FileName
 import System.Environment
-import Control.Monad
 import HTML.Backend
 import System.Exit
 import HTML.Base

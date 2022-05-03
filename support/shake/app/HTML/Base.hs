@@ -1,7 +1,7 @@
+-- Copyright (c) 2005-2021 remains with the Agda authors. See /support/shake/LICENSE.agda
 
 -- | Function for generating highlighted, hyperlinked HTML from Agda
 -- sources.
-
 {-# LANGUAGE FlexibleInstances, DeriveGeneric, OverloadedStrings, DeriveAnyClass #-}
 module HTML.Base
   ( HtmlOptions(..)
@@ -40,7 +40,6 @@ import GHC.Exts (fromString)
 import qualified Network.URI.Encode
 
 import System.FilePath
-import System.Directory
 
 import Text.Blaze.Html5
     ( preEscapedToHtml
@@ -101,6 +100,7 @@ highlightedFileExt hh ft
 data HtmlOptions = HtmlOptions
   { htmlOptDir        :: FilePath
   , htmlOptHighlight  :: HtmlHighlight
+  , htmlOptHighlightOccurrences :: Bool
   , htmlOptCssUrl     :: FilePath
   , htmlOptGenTypes   :: Bool
   } deriving (Eq, Show, Generic, NFData)
@@ -109,6 +109,7 @@ defaultHtmlOptions :: HtmlOptions
 defaultHtmlOptions = HtmlOptions
   { htmlOptDir       = "_build/html0"
   , htmlOptHighlight = HighlightAuto
+  , htmlOptHighlightOccurrences = True
   , htmlOptCssUrl    = "/css/agda-cats.css"
   , htmlOptGenTypes  = True
   }
@@ -215,6 +216,12 @@ page opts htmlHighlight modName pageContent =
       , Html5.link !! [ Attr.rel "stylesheet"
                       , Attr.href $ stringValue (htmlOptCssUrl opts)
                       ]
+      , if htmlOptHighlightOccurrences opts
+        then Html5.script mempty !!
+          [ Attr.type_ "text/javascript"
+          , Attr.src $ stringValue "highlight-hover.js"
+          ]
+        else mempty
       ]
 
     rest = Html5.body $ (Html5.pre ! Attr.class_ "Agda") pageContent
@@ -251,7 +258,7 @@ code
   -> FileType -- ^ Source file type
   -> [TokenInfo]
   -> Html
-code types onlyCode fileType = mconcat . map mkMd . chunksOf 2 . splitByMarkup
+code types _onlyCode _fileType = mconcat . map mkMd . chunksOf 2 . splitByMarkup
   where
   trd (_, _, a) = a
 
