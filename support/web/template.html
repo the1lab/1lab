@@ -35,7 +35,7 @@
   <script src="/highlight-hover.js"></script>
 
   <script defer src="https://d3js.org/d3.v7.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.0"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/elasticlunr@0.9.5/elasticlunr.min.js"></script>
   <script defer src="/depgraph.js"></script>
   <script defer src="/search.js"></script>
 
@@ -114,7 +114,11 @@
       <hr />
 
       <!-- Navbar navigation (lol) -->
-      <div id=return style="white-space: nowrap;">
+      <div id="return" style="white-space: nowrap;">
+        <div class="search-form search-form-proxy" role="form">
+          <input id="search-box-proxy" type_="text" placeholder="Search..." autocomplete="off" tabindex="0" />
+        </div>
+
       $if(is-index)$
       $else$
         <a href="/">back to index</a> <br />
@@ -149,6 +153,13 @@
 
 $body$
   </article>
+</div>
+
+<div id="search-wrapper" class="modal">
+  <div class="modal-contents search-form" role="form">
+    <input id="search-box" type_="text" placeholder="Search..." autocomplete="off" tabindex="0" />
+    <div id="search-results"></div>
+  </div>
 </div>
 
 </main>

@@ -189,13 +189,13 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
            | file <- files
            ]
 
-    f1 <- getDirectoryFiles "support" ["**/*.scss"] >>= \files -> pure ["_build/html/css/" </> takeFileName f -<.> "css" | f <- files]
-    f2 <- getDirectoryFiles "support" ["**/*.js"] >>= \files -> pure ["_build/html/" </> takeFileName f | f <- files]
-    f3 <- getDirectoryFiles "support/static/" ["**/*"] >>= \files ->
+    let css = ["_build/html/css/" </> takeFileName f -<.> "css" | f <- ["agda-cats.scss", "default.scss"]]
+    js <- getDirectoryFiles "support/web" ["*.js"] >>= \files -> pure ["_build/html/" </> takeFileName f | f <- files]
+    static <- getDirectoryFiles "support/static/" ["**/*"] >>= \files ->
       pure ["_build/html/static" </> f | f <- files]
-    f4 <- getDirectoryFiles "_build/html0" ["Agda.*.html"] >>= \files ->
+    agda <- getDirectoryFiles "_build/html0" ["Agda.*.html"] >>= \files ->
       pure ["_build/html/" </> f | f <- files]
-    need $ [ "_build/html/favicon.ico", "_build/html/static/links.json", "_build/html/static/search.json" ] ++ f1 ++ f2 ++ f3 ++ f4
+    need $ [ "_build/html/favicon.ico", "_build/html/static/links.json", "_build/html/static/search.json" ] ++ css ++ js ++ static ++ agda
 
   -- ???
 

@@ -604,3 +604,69 @@ article a[href].unfolded-footnote:hover {
     }
   }
 }
+
+.search-form > input {
+  box-sizing: border-box;
+  font-size: initial;
+  padding: 0.5em;
+  margin: 0 0 1em 0;
+  width: 100%;
+}
+
+#search-wrapper > .modal-contents {
+  align-items: stretch;
+  text-align: left;
+}
+
+#search-results {
+  flex-grow: 1;
+  overflow-y: auto;
+
+  & > ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+a.search-result {
+  padding: 0.5em;
+  display: block;
+  text-decoration: none;
+
+  &, &:focus, &:visited, &:active {
+    font-weight: inherit;
+    color: inherit;
+  }
+
+  &:hover, &:focus {
+    background-color: $bluegray-400;
+  }
+
+  li.active > & {
+    background-color: $bluegray-300;
+  }
+
+  & h3 {
+    margin: 0;
+    font-weight: normal;
+  }
+
+  & .search-module {
+    font-size: 0.8em;
+    color: $bluegray-800;
+  }
+
+  & .search-type {
+    font-size: 0.8em;
+  }
+
+  & .search-match { font-weight: bold; }
+}
+
+.search-error {
+  padding: 0.5em;
+
+  color: $red-900;
+  background: $red-300;
+}
