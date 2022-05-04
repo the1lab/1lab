@@ -49,7 +49,7 @@ const highlight = (self: HTMLAnchorElement, on: boolean) => () => {
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
-  links = Array(...document.getElementsByTagName("a"));
+  links = Array.from(document.getElementsByTagName("a"));
   links.forEach(link => {
     if (link.hasAttribute("href")) {
       link.onmouseover = highlight(link, true);
@@ -57,3 +57,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 });
+
+export {};

@@ -3,7 +3,7 @@
     "module": "esNext",
     "moduleResolution": "node",
     "target": "es6",
-    "lib": ["es2015", "dom" ],
+    "lib": ["es2015", "dom"],
     "newLine": "LF",
 
     // Additional compile options
@@ -20,8 +20,10 @@
     "isolatedModules": true,
 
     "forceConsistentCasingInFileNames": true,
+    "jsx": "react",
+    "jsxFactory": "JSX.createElement",
   },
   "include": [
-    "support/web/script",
-   ]
+    "support/web/js/**/*.ts", "support/web/js/**/*.tsx"
+  ]
 }

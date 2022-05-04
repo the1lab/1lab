@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (link.classList.contains("unfolded-footnote") && ev.target === ret) {
         ev.preventDefault();
-        link.replaceChildren(...Array(...saved.childNodes).map(x => x.cloneNode(true)));
+        link.replaceChildren(...Array.from(saved.childNodes).map(x => x.cloneNode(true)));
         link.classList.remove("unfolded-footnote");
         if (link.classList.contains("hover-highlight")) {
           link.classList.remove("hover-highlight");
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!link.classList.contains("unfolded-footnote")) {
         ev.preventDefault();
-        link.replaceChildren(...Array(...insides.childNodes)
+        link.replaceChildren(...Array.from(insides.childNodes)
           .map(x => x.cloneNode(true))
           .slice(0, -1));
         link.prepend(" (");
@@ -76,3 +76,5 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 });
+
+export {};

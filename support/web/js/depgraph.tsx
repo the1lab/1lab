@@ -1,24 +1,58 @@
 import * as d3 from "d3";
+import { JSX } from './lib/jsx';
 
-const neighbourCache = {};
+type Node = {
+  // The identifier for this node
+  id: string,
+  // The "section" for this node (determines the colour and the gravity)
+  section?: string,
+  // The radius of this node
+  radius: number,
+  colour?: string,
+  saved?: string,
+  fx?: number,
+  fy?: number,
+  x?: number,
+  y?: number,
+  hover?: boolean
+}
 
-const neighbours = (node, links) => {
-  if (neighbourCache[node.id]) {
-    return neighbourCache[node.id];
+type Edge = {
+  source: Node,
+  target: Node,
+  isGravity?: boolean,
+  primary?: boolean,
+};
+
+const neighbourCache: Record<string, any> = {};
+
+function neighbours<NodeT extends Node | string>(node: NodeT, links: (NodeT extends string ? string : Edge)[]): Set<NodeT extends string ? string : Node> {
+  const cacheKey: string = typeof node === 'string' ? node : node.id;
+  if (neighbourCache[cacheKey]) {
+    return neighbourCache[cacheKey];
   }
-  const nbh = new Set();
-  for (const link of links) {
-    if (link[0] === node) {
-      nbh.add(link[1]);
-    } else if (link[1] === node) {
-      nbh.add(link[0]);
-    } else if (link.source === node && !link.isGravity) {
-      nbh.add(link.target);
-    } else if (link.target === node && !link.isGravity) {
-      nbh.add(link.source);
+
+  // Cursed ass function tbh. The type inference works at the use sites
+  // but not really here.
+  const nbh = new Set<NodeT extends string ? string : Node>();
+  for (let l0 of links) {
+    if (typeof node === 'string') {
+      const link: string[] = l0 as unknown as string[];
+      if (link[0] === node) {
+        nbh.add(link[1] as (NodeT extends string ? string : Node));
+      } else if (link[1] === node) {
+        nbh.add(link[0] as (NodeT extends string ? string : Node));
+      }
+    } else {
+      const link: Edge = l0 as unknown as Edge;
+      if (link.source === node) {
+        nbh.add(link.target as (NodeT extends string ? string : Node));
+      } else if (link.target === node) {
+        nbh.add(link.source as (NodeT extends string ? string : Node));
+      }
     }
   }
-  neighbourCache[node.id] = nbh;
+  neighbourCache[cacheKey] = nbh;
   return nbh;
 }
 
@@ -30,33 +64,41 @@ const page = (() => {
   }
 })();
 
-const nbhoodSubgraph = (node, links) => {
+function nbhoodSubgraph(node: string, links: [string]): { nodes: Node[], edges: Edge[] } {
   const nodes = neighbours(node, links);
   const edges = [];
+  const nodeMap: Record<string, Node> = {};
+
+  const nodeEls = Array(...nodes).map(x => ({
+      id: x,
+      radius: x === page ? 15 : 10,
+    }))
+
+  for (const node of nodeEls) {
+    nodeMap[node.id] = node;
+  }
 
   for (const link of links) {
-    if (nodes.has(link[0]) && nodes.has(link[1])) {
+    const source = nodeMap[link[0]];
+    const target = nodeMap[link[1]];
+    if (source !== undefined && target !== undefined) {
       edges.push({
-        source: link[0],
-        target: link[1],
+        source: source,
+        target: target,
         primary: (link[0] === node || link[1] === node)
       });
     }
   }
 
   return {
-    nodes: Array(...nodes).map(x => ({
-      id: x,
-      radius: x === page ? 15 : 10,
-    })),
+    nodes: nodeEls,
     edges: edges
   };
 }
 
 // Compute a hue based on the string's SHA-2 hash. Overkill? Yeah,
 // maybe.
-const encoder = new TextEncoder();
-const stringHue = (message) => {
+const stringHue = (message: string) => {
   let i = 0;
   for (const c of message) {
     i += i * 31 + c.charCodeAt(0)
@@ -64,13 +106,13 @@ const stringHue = (message) => {
   return i % 359;
 }
 
-const hsvToCss = (h, s, v) => {
-  const f = (n, k = (n + h / 60) % 6) => v - v * s * Math.max(Math.min(k, 4 - k, 1), 0);
+const hsvToCss = (h: number, s : number, v : number) => {
+  const f = (n : number, k = (n + h / 60) % 6) => v - v * s * Math.max(Math.min(k, 4 - k, 1), 0);
   const col = [f(5), f(3), f(1)].map(x => x * 255 | 0).join(', ')
   return "rgb(" + col + ")";
 }
 
-const makeColours = (arr) => {
+const makeColours = (arr: Node[]) => {
   // Populate the section and colour for each node.
   for (const x of arr) {
     const sections = x.id.split('.')
@@ -81,61 +123,66 @@ const makeColours = (arr) => {
   }
 }
 
-const render = (nodes, lines, labels) => () => {
-  // Re-position the nodes
-  nodes
-    .attr('cx', d => d.x)
-    .attr('cy', d => d.y)
-    .attr('fill', d => d.colour);
+function render(nodes: d3.Selection<SVGCircleElement | d3.BaseType, Node, any, any>,
+  lines: d3.Selection<SVGLineElement | d3.BaseType, Edge, any, any>,
+  labels: d3.Selection<SVGGElement | d3.BaseType, Node, any, any>): () => void {
+  return () => {
+    // Re-position the nodes
+    nodes
+      .attr('cx', d => d.x as number)
+      .attr('cy', d => d.y as number)
+      .attr('fill', d => d.colour as string);
 
-  lines
-    // Re-position the edges
-    .attr("x1", d => d.source.x)
-    .attr("y1", d => d.source.y)
-    .attr("x2", d => d.target.x)
-    .attr("y2", d => d.target.y)
-    // Control edge visibility:
-    .attr("visibility", d => {
-      if (d.isGravity) return 'hidden'; // Gravity is never shown
+    lines
+      // Re-position the edges
+      .attr("x1", d => d.source.x as number)
+      .attr("y1", d => d.source.y as number)
+      .attr("x2", d => d.target.x as number)
+      .attr("y2", d => d.target.y as number)
+      // Control edge visibility:
+      .attr("visibility", d => {
+        if (d.isGravity) return 'hidden'; // Gravity is never shown
 
-      // Show edges to/from a hovered node, and always show primary
-      // edges
-      if (d.primary || d.source.hover || d.target.hover) {
-        return '';
-      }
-      return 'hidden';
-    })
-    .attr("stroke", d => {
-      // Change edge colour depending on the endpoints being hovered or
-      // not.
-      if (d.source.hover) { return d.source.colour; }
-      if (d.target.hover) { return d.target.colour; }
-      return '#ddd';
-    });
+        // Show edges to/from a hovered node, and always show primary
+        // edges
+        if (d.primary || d.source.hover || d.target.hover) {
+          return '';
+        }
+        return 'hidden';
+      })
+      .attr("stroke", (d) => {
+        // Change edge colour depending on the endpoints being hovered or
+        // not.
+        if (d.source.hover) { return d.source.colour as string; }
+        if (d.target.hover) { return d.target.colour as string; }
+        return '#ddd';
+      });
 
-  labels
-    .attr('transform', d => `translate(${d.x + d.radius}, ${d.y - 5})`)
-    .attr('visibility', d => {
-      if (d.id === page || d.hover) {
-        return '';
-      }
-      return 'hidden';
-    });
+    labels
+      .attr('transform', d => d === undefined ? "" : `translate(${d.x as number + d.radius}, ${d.y as number - 5})`)
+      .attr('visibility', d => {
+        if (d.id === page || d.hover) {
+          return '';
+        }
+        return 'hidden';
+      });
+  }
 };
 
-const clamp = (x, lo, hi) =>
+const clamp = (x: number, lo: number, hi: number) =>
   x < lo ? lo : x > hi ? hi : x;
 
-const resize = (sim) => {
-  let last_width;
+const resize = (sim: d3.Simulation<Node, Edge>) => {
+  let last_width: number;
   const gravity = d3.forceCenter();
   sim.force('center', gravity);
   const svgEl = document.querySelector("aside#toc svg");
+  if (!svgEl) return;
 
   // This observer watches for changes in the SVG size box and
   // re-computes the coordinates of the centering force.
   return new ResizeObserver(entries => {
-    for (const entry of entries) {
+    for (const _entry of entries) {
       const box = svgEl.getBoundingClientRect();
       const width = box.width, height = box.height;
 
@@ -143,46 +190,39 @@ const resize = (sim) => {
       last_width = width;
 
       gravity.x(width / 2).y(height / 2);
-      sim.width = width;
-      sim.height = height;
+      (sim as any)['width'] = width;
+      (sim as any)['height'] = height;
       sim.alpha(1).restart();
     }
   });
 };
 
-const navigateTo = (ev, d) => {
+function navigateTo<T>(_ev: T, d: Node) {
   window.location.pathname = `/${d.id}.html`;
 };
 
 const modal = (close = () => { }) => {
-  if (Array(...document.querySelectorAll("div.modal.open")).length >= 1) {
+  if (Array.from(document.querySelectorAll("div.modal.open")).length >= 1) {
     return;
   }
 
+  const svg = document.querySelector("aside#toc svg");
+  if (!svg) return;
+
   // Create the open modal dialog box. This is just the backing
   // background!
-  const dialog = document.createElement("div");
-  dialog.classList.add("modal", "open");
-  document.body.appendChild(dialog);
-
-  // Create the container to hold the header and network
-  const inside = document.createElement("div");
-  inside.classList.add("modal-contents")
-  dialog.appendChild(inside);
-
-  // Header
-  const header = document.createElement("h3");
-  header.innerText = `Module dependency graph for ${page}`;
-  inside.appendChild(header);
-
-  // Instructions
-  inside.appendChild(document.createTextNode("(Click outside the dialog to dismiss, double click on a node to navigate there)"));
-
-  // Steal the SVG from the sidebar
-  const svg = document.querySelector("aside#toc svg");
-  inside.appendChild(svg);
+  const dialog = <div class="modal open">
+    <div class="modal-contents">
+      <h3>Module dependency graph for {page}</h3>
+      (Click outside the dialog to dismiss, double click on a node to navigate there)
+      { // This element is stolen from the sidebar.
+        svg
+      }
+    </div>
+  </div>;
 
   const parent = document.querySelector("aside#toc > div#toc-container");
+  if (!parent) return;
 
   dialog.addEventListener("click", (ev) => {
     // On close, re-parent the SVG to the sidebar
@@ -192,6 +232,8 @@ const modal = (close = () => { }) => {
       close();
     }
   });
+
+  document.body.appendChild(dialog);
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -219,16 +261,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  const nodesById = {};
+  const nodesById: Record<string, Node> = {};
 
   // Force rendering simulation.
-  const sim = d3.forceSimulation(nodes)
+  const sim = d3.forceSimulation<Node>(nodes)
     // Repellent force. Nodes in the simulation VERY STRONGLY repel
     // eachother.
-    .force('charge', d3.forceManyBody().strength(d => d.id === page ? -500 : -200))
+    .force('charge', d3.forceManyBody<Node>().strength(d => d.id === page ? -500 : -200))
     // Link force. Links are edges from the graph /or/ the "gravity"
     // edges we added above.
-    .force('link', d3.forceLink(edges)
+    .force('link', d3.forceLink<Node, Edge>(edges)
       .id(d => {
         // We take this opportunity to populate the nodesById map since
         // d3js calls this function for every node, exactly once, with
@@ -248,12 +290,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (d.source.section === d.target.section) return 30;
         return 80;
       }))
-    .force('collision', d3.forceCollide().radius(d => d.radius));
+    .force('collision', d3.forceCollide<Node>().radius(d => d.radius));
 
   // Allocate new zoom behaviour
-  const zoom = d3.zoom();
+  const zoom = d3.zoom<SVGSVGElement, unknown>();
 
   const container = document.querySelector("aside#toc > div#toc-container");
+  if (!container) return;
   const ruler = container.appendChild(document.createElement("hr"));
 
   // Create the SVG element and add a <g>roup for the zoom
@@ -276,11 +319,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Draw the circles representing the nodes. At this point, we have
   // already populated each nodes' colour, section and radius.
-  const circles = svg.selectAll('circle')
-    .data(nodes)
-    .join('circle')
-    .attr('r', d => d.radius)
-    .attr('fill', d => d.colour);
+  const circles: d3.Selection<SVGCircleElement | d3.BaseType, Node, any, any> =
+    svg.selectAll('circle')
+      .data(nodes)
+      .join('circle')
+      .attr('r', d => d.radius)
+      .attr('fill', d => d.colour ?? "#fff");
 
   // Draw the label containers (this is a group that gets translated
   // into place). This is what is actually controlled by the render
@@ -301,26 +345,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     .attr('stroke-width', 2);
 
   const renderCallback = render(circles, lines, labels);
-  window.renderCallback = renderCallback;
-  window.edges = edges;
+  (window as any)['renderCallback'] = renderCallback;
+  (window as any)['edges'] = edges;
   sim.on('tick', renderCallback);
 
   // Create the resize observer to automatically change the centering
   // force when the SVG size changes (e.g. when the window is resized or
   // the modal is maximised).
-  resize(sim).observe(document.querySelector("aside#toc svg"));
+  const observer = resize(sim)
+  if (observer)
+    observer.observe(document.querySelector("aside#toc svg")!);
 
-  const drag = d3.drag().on("start", (event, d) => {
+  const drag = d3.drag<any, Node>().on("start", (_, d) => {
     d.fx = d.x;
     d.fy = d.y;
   }).on("drag", (event, d) => {
-    d.fx = clamp(event.x, 0, sim.width);
-    d.fy = clamp(event.y, 0, sim.height);
+    d.fx = clamp(event.x, 0, (sim as any)['width']);
+    d.fy = clamp(event.y, 0, (sim as any)['height']);
     sim.alpha(1).restart();
   });
   circles.call(drag);
 
-  const hoverEnter = (d) => {
+  const hoverEnter = (d: Node) => {
     d.hover = true;
     if (d.id !== page) {
       for (const n of neighbours(d, edges)) {
@@ -331,7 +377,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderCallback();
   }
 
-  const hoverLeave = (d) => {
+  const hoverLeave = (d: Node) => {
     d.hover = false;
     for (const n of neighbours(d, edges)) {
       if (n.saved !== undefined) {
@@ -344,26 +390,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Toggle visibility of the label on hover.
   circles
-    .on('mouseenter', (ev, d) => hoverEnter(d))
-    .on('mouseleave', (ev, d) => hoverLeave(d));
+    .on('mouseenter', (_, d) => hoverEnter(d))
+    .on('mouseleave', (_, d) => hoverLeave(d));
 
   // Make sure that hovering on the label keeps it shown, otherwise
   // hovering your cursor between the circle and the label causes the
   // label to flash rapidly
   labels
-    .on('mouseenter', (ev, d) => hoverEnter(d))
-    .on('mouseleave', (ev, d) => hoverLeave(d));
+    .on('mouseenter', (_, d) => hoverEnter(d))
+    .on('mouseleave', (_, d) => hoverLeave(d));
 
   // Install hover handlers for activating nodes on hovering their
   // corresponding links in the body text
-  Array(...document.querySelectorAll("a[href]")).forEach(x => {
+  document.querySelectorAll("a[href]").forEach(x => {
     x.addEventListener("mouseenter", (ev) => {
+      if (!(ev.target instanceof HTMLAnchorElement)) return;
       const id = ev.target.pathname.slice(1).replace(".html", "");
       if (nodesById[id]) {
         hoverEnter(nodesById[id])
       }
     });
     x.addEventListener("mouseleave", (ev) => {
+      if (!(ev.target instanceof HTMLAnchorElement)) return;
       const id = ev.target.pathname.slice(1).replace(".html", "");
       if (nodesById[id]) {
         hoverLeave(nodesById[id])
@@ -375,25 +423,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   circles.on("dblclick", navigateTo);
   labels.on("dblclick", navigateTo);
 
-  let addExpand;
+  let addExpand: () => void;
   const reset = () => {
     // Reset zoom level
-    svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+    svg.transition().duration(750).call(zoom.transform as any, d3.zoomIdentity);
     // Clear all forced coordinates
     for (const n of nodes) {
-      n.fx = null;
-      n.fy = null;
+      n.fx = undefined;
+      n.fy = undefined;
     }
     // Re-center
     sim.alpha(1).restart();
   }
 
   addExpand = () => {
-    const expand = document.createElement("button");
-
     ruler.style.display = "block";
-    expand.innerText = "Maximise network"
-    expand.style.display = 'inline-block';
+
+    const expand = <button style="display: inline-block">
+      Maximise network
+    </button>
 
     expand.addEventListener("click", () => {
       ruler.style.display = "none";

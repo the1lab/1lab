@@ -1,4 +1,5 @@
 import { Searcher, MatchData } from "fast-fuzzy";
+import { JSX } from './lib/jsx';
 
 type SearchItem = {
   idIdent: string,
@@ -61,23 +62,19 @@ document.addEventListener('DOMContentLoaded', () => {
       searchResults.scrollTo(0, 0);
       searchResults.innerHTML = "";
 
-      let i = 0;
-      const list = document.createElement("ul");
-      for (const match of results) {
-        if (++i > 20) break; // Limit our results to 20.
-
-        const link = document.createElement("a");
-        link.classList.add("search-result");
-        link.href = `/${match.item.idAnchor}`;
-
-        link.appendChild(createElem("h3", ["sourceCode"], highlight(match)));
-        link.appendChild(createElem("p", ["search-type", "sourceCode"], match.item.idType));
-        link.appendChild(createElem("p", ["search-module"], `Defined in ${match.item.idAnchor.replace(/#[0-9]+$/, "")}`));
-
-        const elem = document.createElement("li");
-        elem.appendChild(link);
-        list.appendChild(elem);
-      }
+      const list = <ul>
+        {results.slice(0,20).map(match => {
+          return <li>
+              <a class="search-result" href={`/${match.item.idAnchor}`}>
+              <h3 class="sourceCode">{ highlight(match) }</h3>
+              <p class="search-type sourceCode">{match.item.idType}</p>
+              <p class="search-module">
+                Defined in {match.item.idAnchor.replace(/#[0-9]+$/, "")}
+              </p>
+            </a>
+          </li>;
+        })}
+      </ul>
 
       searchResults.appendChild(list);
     } else if (searchInput.value.length === 0) {

@@ -80,3 +80,5 @@ window.addEventListener('DOMContentLoaded', () => {
     saveFontDisplay();
   }
 });
+
+export {};
