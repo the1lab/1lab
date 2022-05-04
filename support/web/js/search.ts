@@ -1,16 +1,48 @@
+import { Searcher, MatchData } from "fast-fuzzy";
+
+type SearchItem = {
+  idIdent: string,
+  idType: string,
+  idAnchor: string,
+}
+
+const createElem = (tag: string, classes: Array<string>, contents: string | Array<Node> | Node) => {
+  const elem = document.createElement(tag);
+  if (typeof contents === "string") {
+    elem.innerText = contents;
+  } else if (contents instanceof Array) {
+    for (const child of contents) elem.appendChild(child);
+  } else {
+    elem.appendChild(contents);
+  }
+  for (const cls of classes) elem.classList.add(cls);
+  return elem;
+};
+
+const highlight = ({ match, original }: MatchData<SearchItem>): Node | Array<Node> => {
+  if (match.length == 0) return document.createTextNode(original);
+
+  if (match.index == 0 && match.length == original.length) return createElem("span", ["search-match"], original);
+
+  const out: Array<Node> = [];
+  if (match.index > 0) out.push(document.createTextNode(original.substring(0, match.index)));
+  out.push(createElem("span", ["search-match"], original.substring(match.index, match.index + match.length)));
+  out.push(document.createTextNode(original.substring(match.index + match.length)));
+  return out;
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-  "use strict";
 
-  const searchInputProxy = document.getElementById("search-box-proxy");
+  const searchInputProxy = document.getElementById("search-box-proxy") as HTMLInputElement;
 
-  const searchWrapper = document.getElementById("search-wrapper");
-  const searchInput = document.getElementById("search-box");
-  const searchResults = document.getElementById("search-results");
+  const searchWrapper = document.getElementById("search-wrapper") as HTMLDivElement;
+  const searchInput = document.getElementById("search-box") as HTMLInputElement;
+  const searchResults = document.getElementById("search-results") as HTMLDivElement;
 
   let loadingIndex = false;
-  let index;
+  let index: Searcher<SearchItem, { returnMatchData: true }> | null;
 
-  const setError = (contents) => {
+  const setError = (contents: string) => {
     searchResults.innerHTML = "";
 
     const child = document.createElement("div");
@@ -20,61 +52,27 @@ document.addEventListener('DOMContentLoaded', () => {
     searchResults.appendChild(child);
   };
 
-  const createElem = (tag, classes, contents) => {
-    const elem = document.createElement(tag);
-    if (typeof contents === "string") {
-      elem.innerText = contents;
-    } else if (contents instanceof Array) {
-      for (const child of contents) elem.appendChild(child);
-    } else {
-      elem.appendChild(contents);
-    }
-    for (const cls of classes) elem.classList.add(cls);
-    return elem;
-  };
-
-  const highlight = (match, field) => {
-    const ourMatch = match.matches.find((x) => x.key === field);
-    if (!ourMatch) return match.item[field];
-
-    const { value, indices } = ourMatch;
-
-    const out = [];
-    let lastIdx = 0;
-    for (const [start, end] of indices) {
-      if (lastIdx < start) out.push(document.createTextNode(value.substring(lastIdx, start)));
-      out.push(createElem("span", ["search-match"], value.substring(start, end + 1)));
-      lastIdx = end + 1;
-    }
-    if (lastIdx < value.length) {
-      out.push(document.createTextNode(value.substring(lastIdx, value.length)));
-    }
-
-    return out;
-  };
-
   const doSearch = () => {
     if (!index) return;
 
-    const results = index.search(searchInput.value, { expand: true });
+    const results = index.search(searchInput.value);
+
     if (results.length > 0) {
       searchResults.scrollTo(0, 0);
       searchResults.innerHTML = "";
 
       let i = 0;
       const list = document.createElement("ul");
-      for (const result of results) {
+      for (const match of results) {
         if (++i > 20) break; // Limit our results to 20.
-
-        const entry = index.documentStore.getDoc(result.ref);
 
         const link = document.createElement("a");
         link.classList.add("search-result");
-        link.href = `/${entry.idAnchor}`;
+        link.href = `/${match.item.idAnchor}`;
 
-        link.appendChild(createElem("h3", ["sourceCode"], entry.idIdent));
-        link.appendChild(createElem("p", ["search-type", "sourceCode"], entry.idType));
-        link.appendChild(createElem("p", ["search-module"], `Defined in ${entry.idAnchor.replace(/#[0-9]+$/, "")}`));
+        link.appendChild(createElem("h3", ["sourceCode"], highlight(match)));
+        link.appendChild(createElem("p", ["search-type", "sourceCode"], match.item.idType));
+        link.appendChild(createElem("p", ["search-module"], `Defined in ${match.item.idAnchor.replace(/#[0-9]+$/, "")}`));
 
         const elem = document.createElement("li");
         elem.appendChild(link);
@@ -108,15 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
       fetch("/static/search.json")
         .then((r) => r.json())
         .then((entries) => {
-          index = elasticlunr(function () {
-            this.addField('idIdent');
+          index = new Searcher(entries, {
+            returnMatchData: true,
+            keySelector: (x: SearchItem) => x.idIdent,
           });
-
-          for (let i = 0; i < entries.length; i++) {
-            const entry = entries[i];
-            entry.id = i;
-            index.addDoc(entry);
-          }
 
           doSearch();
         })
@@ -136,17 +129,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Allow pressing Ctrl+K to focus the input box.
     if (e.key == "k" && e.ctrlKey && !e.altKey) {
       e.preventDefault();
-      searchInputProxy.focus();
+      startSearch();
     }
   });
 
-  const removeActive = (elem) => {
+  const removeActive = (elem: Element) => {
     elem.classList.remove("active");
-    elem.ariaSelected = false;
+    elem.ariaSelected = "false";
   };
-  const addActive = (elem) => {
+  const addActive = (elem: Element) => {
     elem.classList.add("active");
-    elem.ariaSelected = true;
+    elem.ariaSelected = "true";
     elem.scrollIntoView({
       block: "nearest",
     });
@@ -157,17 +150,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!active) {
       const elem = searchResults.querySelector("li");
       if (elem) addActive(elem);
-    } else if (active.nextSibling) {
+    } else if (active.nextElementSibling) {
       removeActive(active);
-      addActive(active.nextSibling);
+      addActive(active.nextElementSibling);
     }
   }
 
   const movePrevious = () => {
     const active = searchResults.querySelector("li.active");
-    if (active && active.previousSibling) {
+    if (active && active.previousElementSibling) {
       removeActive(active);
-      addActive(active.previousSibling);
+      addActive(active.previousElementSibling);
     }
   }
 
@@ -193,9 +186,10 @@ document.addEventListener('DOMContentLoaded', () => {
       case "Enter": {
         e.preventDefault();
 
-        const link =
+        const link: HTMLAnchorElement | null =
           searchResults.querySelector("li.active > a") || searchResults.querySelector("li > a");
         if (link) link.click();
+        break;
       }
 
       case "Escape": {

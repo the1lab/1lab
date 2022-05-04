@@ -19,8 +19,8 @@ const saveFontDisplay = () => {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const buttons = document.querySelectorAll("input.equations");
-  const body = document.querySelector("body");
+  const buttons: NodeListOf<HTMLInputElement> = document.querySelectorAll("input.equations");
+  const body = document.body;
 
   if (equations_displayed) {
     body.classList.add("show-equations");
@@ -36,7 +36,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   buttons.forEach((button) => {
     if (!button.classList.contains("narrow-only")) {
-      button.style = "display: block;";
+      button.style.display = "block";
     }
 
     if (button.checked !== undefined)
@@ -66,11 +66,10 @@ window.addEventListener('DOMContentLoaded', () => {
     };
   });
 
-  const toggleFont = document.getElementById("toggle-fonts");
+  const toggleFont = document.getElementById("toggle-fonts") as HTMLInputElement;
   toggleFont.checked = serif_font;
   toggleFont.onclick = () => {
     serif_font = toggleFont.checked;
-    console.log(serif_font);
 
     if (serif_font) {
       body.classList.remove("sans-serif");

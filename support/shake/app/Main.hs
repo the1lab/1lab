@@ -173,9 +173,16 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     traced "copying" $ Dir.copyFile inp out
 
   "_build/html/*.js" %> \out -> do
-    let inp = "support/web" </> takeFileName out
-    need [inp]
-    traced "copying" $ Dir.copyFile inp out
+    getDirectoryFiles "support/web/js" ["*.ts"] >>= \files -> need ["support/web/js" </> f | f <- files]
+
+    let inp = "support/web/js" </> takeFileName out -<.> "ts"
+    command_ [] "node_modules/.bin/esbuild"
+      [ "--bundle", inp
+      , "--outfile=" ++ out
+      , "--target=es2017"
+      , "--minify"
+      , "--sourcemap"
+      ]
 
   {-
     The final build step. This basically just finds all the files we actually
@@ -190,12 +197,16 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
            ]
 
     let css = ["_build/html/css/" </> takeFileName f -<.> "css" | f <- ["agda-cats.scss", "default.scss"]]
-    js <- getDirectoryFiles "support/web" ["*.js"] >>= \files -> pure ["_build/html/" </> takeFileName f | f <- files]
     static <- getDirectoryFiles "support/static/" ["**/*"] >>= \files ->
       pure ["_build/html/static" </> f | f <- files]
     agda <- getDirectoryFiles "_build/html0" ["Agda.*.html"] >>= \files ->
       pure ["_build/html/" </> f | f <- files]
-    need $ [ "_build/html/favicon.ico", "_build/html/static/links.json", "_build/html/static/search.json" ] ++ css ++ js ++ static ++ agda
+    need $ [ "_build/html/favicon.ico"
+           , "_build/html/static/links.json"
+           , "_build/html/static/search.json"
+           , "_build/html/main.js"
+           , "_build/html/highlight-hover.js"
+           ] ++ css ++ static ++ agda
 
   -- ???
 
@@ -205,6 +216,10 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
   phony "really-clean" do
     need ["clean"]
     removeFilesAfter "_build" ["**/*.agdai", "*.lua"]
+
+  phony "typecheck-ts" do
+    getDirectoryFiles "support/web/js" ["*.ts"] >>= \files -> need ["support/web/js" </> f | f <- files]
+    command_ [] "node_modules/.bin/tsc" ["--noEmit", "-p", "tsconfig.json"]
 
   -- Profit!
 
@@ -472,7 +487,7 @@ compileAgda path _ = do
 findLinks :: MonadIO m => (String -> m ()) -> [Tag String] -> m (Set.Set String)
 findLinks cb (TagOpen "a" attrs:xs)
   | Just href' <- lookup "href" attrs
-  , (href, anchor) <- span (/= '#') href'
+  , (_, anchor) <- span (/= '#') href'
   , all (not . isDigit) anchor
   = do
     let href = takeWhile (/= '#') href'

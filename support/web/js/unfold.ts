@@ -20,10 +20,11 @@ if (window.localStorage.getItem(fiItem) === "displayed") {
 document.addEventListener("DOMContentLoaded", () => {
   let footnotes = false;
   document.querySelectorAll("a.footnote-ref").forEach(elem => {
-    const referent = document.querySelector("li" + elem.hash);
-    const saved = elem.cloneNode(true);
-    elem.draggable = false;
-    console.log(referent.childElementCount);
+    const link = elem as HTMLAnchorElement;
+
+    const referent = document.querySelector("li" + link.hash)!;
+    const saved = link.cloneNode(true);
+    link.draggable = false;
     if (referent.childElementCount > 1 || referent.childNodes[0].nodeName !== "P") {
       return;
     }
@@ -32,43 +33,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const insides = referent.childNodes[0].cloneNode(true);
     const ret = createReturn();
-    console.log(insides);
 
-    elem.onclick = (ev) => {
+    link.onclick = (ev) => {
       if (!unfold_footnotes) { return; }
 
-      if (ev.target === elem || ev.target.nodeName !== "A") {
-        console.log(ev.target);
+      if (ev.target === link || (ev.target as Node).nodeName !== "A") {
         ev.preventDefault();
       }
 
-      if (elem.classList.contains("unfolded-footnote") && ev.target === ret) {
+      if (link.classList.contains("unfolded-footnote") && ev.target === ret) {
         ev.preventDefault();
-        elem.replaceChildren(...Array(...saved.childNodes).map(x => x.cloneNode(true)));
-        elem.classList.remove("unfolded-footnote");
-        if (elem.classList.contains("hover-highlight")) {
-          elem.classList.remove("hover-highlight");
+        link.replaceChildren(...Array(...saved.childNodes).map(x => x.cloneNode(true)));
+        link.classList.remove("unfolded-footnote");
+        if (link.classList.contains("hover-highlight")) {
+          link.classList.remove("hover-highlight");
         }
         return;
       }
 
-      if (!elem.classList.contains("unfolded-footnote")) {
+      if (!link.classList.contains("unfolded-footnote")) {
         ev.preventDefault();
-        elem.replaceChildren(...Array(...insides.childNodes)
+        link.replaceChildren(...Array(...insides.childNodes)
           .map(x => x.cloneNode(true))
           .slice(0, -1));
-        elem.prepend(" (");
-        elem.prepend(ret);
-        elem.classList.add("unfolded-footnote");
-        elem.append(")");
+        link.prepend(" (");
+        link.prepend(ret);
+        link.classList.add("unfolded-footnote");
+        link.append(")");
       }
     };
   });
 
   if (footnotes) {
-    const fnctl = document.getElementById("footnote-control");
+    const fnctl = document.getElementById("footnote-control")!;
     fnctl.style.display = "flex";
-    const selected = document.querySelector("span#footnote-control > input");
+    const selected = document.querySelector("span#footnote-control > input") as HTMLInputElement;
 
     selected.checked = unfold_footnotes;
     selected.onchange = () => {

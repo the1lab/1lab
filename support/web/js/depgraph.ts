@@ -1,3 +1,5 @@
+import * as d3 from "d3";
+
 const neighbourCache = {};
 
 const neighbours = (node, links) => {
@@ -54,27 +56,27 @@ const nbhoodSubgraph = (node, links) => {
 // Compute a hue based on the string's SHA-2 hash. Overkill? Yeah,
 // maybe.
 const encoder = new TextEncoder();
-const stringHue = async (message) => {
+const stringHue = (message) => {
   let i = 0;
   for (const c of message) {
-    i += i*31 + c.charCodeAt(0)
+    i += i * 31 + c.charCodeAt(0)
   }
   return i % 359;
 }
 
-const hsvToCss = (h,s,v) => {
-  const f = (n,k=(n+h/60)%6) => v - v*s*Math.max( Math.min(k,4-k,1), 0);
-  const col = [f(5),f(3),f(1)].map(x=>x*255|0).join(', ')
+const hsvToCss = (h, s, v) => {
+  const f = (n, k = (n + h / 60) % 6) => v - v * s * Math.max(Math.min(k, 4 - k, 1), 0);
+  const col = [f(5), f(3), f(1)].map(x => x * 255 | 0).join(', ')
   return "rgb(" + col + ")";
 }
 
-const makeColours = async (arr) => {
+const makeColours = (arr) => {
   // Populate the section and colour for each node.
   for (const x of arr) {
     const sections = x.id.split('.')
-    x.section = sections.slice(0,2).join(',');
+    x.section = sections.slice(0, 2).join(',');
 
-    const hue = await stringHue(x.section);
+    const hue = stringHue(x.section);
     x.colour = hsvToCss(hue, 0.5, 0.83);
   }
 }
@@ -112,7 +114,7 @@ const render = (nodes, lines, labels) => () => {
     });
 
   labels
-    .attr('transform', d => `translate(${d.x+d.radius}, ${d.y-5})`)
+    .attr('transform', d => `translate(${d.x + d.radius}, ${d.y - 5})`)
     .attr('visibility', d => {
       if (d.id === page || d.hover) {
         return '';
@@ -152,7 +154,7 @@ const navigateTo = (ev, d) => {
   window.location.pathname = `/${d.id}.html`;
 };
 
-const modal = (close = ()=>{}) => {
+const modal = (close = () => { }) => {
   if (Array(...document.querySelectorAll("div.modal.open")).length >= 1) {
     return;
   }
@@ -195,7 +197,7 @@ const modal = (close = ()=>{}) => {
 document.addEventListener('DOMContentLoaded', async () => {
   const data = (await fetch("/static/links.json").then(r => r.json())).slice(0, -1);
   const { nodes, edges } = nbhoodSubgraph(page, data);
-  await makeColours(nodes);
+  makeColours(nodes);
 
   // If there's no graph for this page, we don't append a SVG or
   // anything.
@@ -262,7 +264,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     .call(zoom)
     .append('g');
 
-  zoom.on('zoom', ({transform: tr}) => {
+  zoom.on('zoom', ({ transform: tr }) => {
     svg.attr("transform", `translate(${tr.x}, ${tr.y}) scale(${tr.k})`);
   });
 

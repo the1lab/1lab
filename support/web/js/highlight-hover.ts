@@ -2,11 +2,11 @@
 // https://github.com/haskell/haddock/blob/ghc-8.8/LICENSE
 // Slightly modified by Tesla Ice Zhang
 
-let links = [];
+let links: Array<HTMLAnchorElement> = [];
 
-let currentHover = null;
+let currentHover: HTMLDivElement | null = null;
 
-const highlight = (self, on) => () => {
+const highlight = (self: HTMLAnchorElement, on: boolean) => () => {
   const type = self.getAttribute("data-type");
   if (type) {
     if (currentHover) {
