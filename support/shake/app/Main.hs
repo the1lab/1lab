@@ -19,6 +19,7 @@ import Data.Generics
 import Data.Foldable
 import Data.Maybe
 import Data.Text (Text)
+import Data.Char (isDigit)
 import Data.List
 
 import Development.Shake.FilePath
@@ -133,15 +134,19 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     (start, act) <- runWriterT $ findLinks (tell . Set.singleton) . parseTags
       =<< liftIO (readFile "_build/html1/all-pages.html")
     need (Set.toList act)
-    liftIO . withFile out WriteMode $ \h -> do
+    traced "crawling links" . withFile out WriteMode $ \h -> do
       hPutStrLn h "["
       crawlLinks
         (\x o -> liftIO $ hPrintf h "[%s, %s],"
           (show (dropExtension x))
           (show (dropExtension o)))
         (const (pure ()))
-        start
+        (Set.toList start)
       hPutStrLn h "null]"
+
+  "_build/html/static/search.json" %> \out -> do
+    need ["_build/html1/all-pages.html"]
+    copyFile' "_build/all-types.json" out
 
   -- Compile Quiver to SVG. This is used by 'buildMarkdown'.
   "_build/html/*.svg" %> \out -> do
@@ -190,7 +195,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
       pure ["_build/html/static" </> f | f <- files]
     f4 <- getDirectoryFiles "_build/html0" ["Agda.*.html"] >>= \files ->
       pure ["_build/html/" </> f | f <- files]
-    need $ [ "_build/html/favicon.ico", "_build/html/static/links.json" ] ++ f1 ++ f2 ++ f3 ++ f4
+    need $ [ "_build/html/favicon.ico", "_build/html/static/links.json", "_build/html/static/search.json" ] ++ f1 ++ f2 ++ f3 ++ f4
 
   -- ???
 
@@ -378,7 +383,7 @@ buildMarkdown gitCommit gitAuthors input output = do
 
   liftIO $ Text.writeFile output text
 
-  command_ [] "agda-fold-equations" [output]
+  -- command_ [] "agda-fold-equations" [output]
 
 -- | Find the original Agda file from a 1Lab module name.
 findModule :: MonadIO m => String -> m FilePath
@@ -451,28 +456,33 @@ checkMarkup _ _ = pure ()
 --------------------------------------------------------------------------------
 
 compileAgda :: FilePath -> String -> TCMT IO ()
-compileAgda path basepn = do
+compileAgda path _ = do
   skipTypes <- liftIO . fmap isJust . Env.lookupEnv $ "SKIP_TYPES"
   source <- parseSource . SourceFile =<< liftIO (absolute path)
+  basepn <- liftIO $ absolute "src/"
   cr <- typeCheckMain TypeCheck source
   modifyTCLens stBackends
-    (htmlBackend basepn defaultHtmlOptions{htmlOptGenTypes = not skipTypes}:)
+    (htmlBackend (filePath basepn) defaultHtmlOptions{htmlOptGenTypes = not skipTypes}:)
   callBackend "HTML" IsMain cr
 
 --------------------------------------------------------------------------------
 -- Generate all edges between pages
 --------------------------------------------------------------------------------
 
-findLinks :: MonadIO m => (String -> m ()) -> [Tag String] -> m [String]
+findLinks :: MonadIO m => (String -> m ()) -> [Tag String] -> m (Set.Set String)
 findLinks cb (TagOpen "a" attrs:xs)
-  | Just href <- lookup "href" attrs = do
+  | Just href' <- lookup "href" attrs
+  , (href, anchor) <- span (/= '#') href'
+  , all (not . isDigit) anchor
+  = do
+    let href = takeWhile (/= '#') href'
     t <- liftIO $ Dir.doesFileExist ("_build/html1" </> href)
     cb ("_build/html1" </> href)
     if (t && Set.notMember href ignoreLinks)
-      then (href:) <$> findLinks cb xs
+      then Set.insert href <$> findLinks cb xs
       else findLinks cb xs
 findLinks k (_:xs) = findLinks k xs
-findLinks _ [] = pure []
+findLinks _ [] = pure mempty
 
 ignoreLinks :: Set.Set String
 ignoreLinks = Set.fromList [ "all-pages.html", "index.html" ]
@@ -490,4 +500,4 @@ crawlLinks link need = go mempty where
     | otherwise = do
       links <- findLinks need =<< fmap parseTags (liftIO (readFile ("_build/html1" </> x)))
       for_ links $ \other -> link x other
-      go (Set.insert x visited) (links ++ xs)
+      go (Set.insert x visited) (Set.toList links ++ xs)

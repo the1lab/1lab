@@ -196,7 +196,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const data = (await fetch("/static/links.json").then(r => r.json())).slice(0, -1);
   const { nodes, edges } = nbhoodSubgraph(page, data);
   await makeColours(nodes);
-  window.nodes = nodes;
 
   // If there's no graph for this page, we don't append a SVG or
   // anything.
@@ -218,6 +217,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  const nodesById = {};
+
   // Force rendering simulation.
   const sim = d3.forceSimulation(nodes)
     // Repellent force. Nodes in the simulation VERY STRONGLY repel
@@ -226,7 +227,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Link force. Links are edges from the graph /or/ the "gravity"
     // edges we added above.
     .force('link', d3.forceLink(edges)
-      .id(d => d.id)
+      .id(d => {
+        // We take this opportunity to populate the nodesById map since
+        // d3js calls this function for every node, exactly once, with
+        // the right reference (so we can use the nodesById map to
+        // modify the graph in-memory).
+        nodesById[d.id] = d;
+        return d.id;
+      })
       .strength(d => {
         // Gravity links are stronger than other types of links. This
         // makes nodes with the same colour "cluster up".
@@ -310,8 +318,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   circles.call(drag);
 
-  // Toggle visibility of the label on hover.
-  circles.on('mouseenter', (ev, d) => {
+  const hoverEnter = (d) => {
     d.hover = true;
     if (d.id !== page) {
       for (const n of neighbours(d, edges)) {
@@ -320,7 +327,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
     renderCallback();
-  }).on('mouseleave', (ev, d) => {
+  }
+
+  const hoverLeave = (d) => {
     d.hover = false;
     for (const n of neighbours(d, edges)) {
       if (n.saved !== undefined) {
@@ -329,29 +338,35 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
     renderCallback();
-  });
+  }
+
+  // Toggle visibility of the label on hover.
+  circles
+    .on('mouseenter', (ev, d) => hoverEnter(d))
+    .on('mouseleave', (ev, d) => hoverLeave(d));
 
   // Make sure that hovering on the label keeps it shown, otherwise
   // hovering your cursor between the circle and the label causes the
   // label to flash rapidly
-  labels.on('mouseenter', (ev, d) => {
-    d.hover = true;
-    if (d.id !== page) {
-      for (const n of neighbours(d, edges)) {
-        n.saved = n.colour;
-        n.colour = d.colour;
+  labels
+    .on('mouseenter', (ev, d) => hoverEnter(d))
+    .on('mouseleave', (ev, d) => hoverLeave(d));
+
+  // Install hover handlers for activating nodes on hovering their
+  // corresponding links in the body text
+  Array(...document.querySelectorAll("a[href]")).forEach(x => {
+    x.addEventListener("mouseenter", (ev) => {
+      const id = ev.target.pathname.slice(1).replace(".html", "");
+      if (nodesById[id]) {
+        hoverEnter(nodesById[id])
       }
-    }
-    renderCallback();
-  }).on('mouseleave', (ev, d) => {
-    d.hover = false;
-    for (const n of neighbours(d, edges)) {
-      if (n.saved !== undefined) {
-        n.colour = n.saved;
-        delete n.saved;
+    });
+    x.addEventListener("mouseleave", (ev) => {
+      const id = ev.target.pathname.slice(1).replace(".html", "");
+      if (nodesById[id]) {
+        hoverLeave(nodesById[id])
       }
-    }
-    renderCallback();
+    });
   });
 
   // Navigate to on double click
