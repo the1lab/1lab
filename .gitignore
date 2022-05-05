@@ -1,5 +1,6 @@
 /html
 /_build/
+/node_modules
 config.mk
 /.vscode
 /rubtmp*

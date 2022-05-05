@@ -1,7 +1,7 @@
 -- Copyright (c) 2005-2021 remains with the Agda authors. See /support/shake/LICENSE.agda
 
 -- | Backend for generating highlighted, hyperlinked HTML from Agda sources.
-{-# LANGUAGE DeriveGeneric, FlexibleContexts, ViewPatterns #-}
+{-# LANGUAGE DeriveGeneric, DeriveAnyClass, FlexibleContexts, ViewPatterns #-}
 module HTML.Backend
   ( htmlBackend
   , builtinModules
@@ -18,11 +18,13 @@ import qualified Data.HashMap.Strict as Hm
 import qualified Data.Text as Text
 import Data.HashMap.Strict (HashMap)
 import Data.List.NonEmpty (NonEmpty((:|)))
+import Data.Aeson
 import Data.IORef
 import Data.Maybe
 import Data.Text (Text)
 import Data.List
 import Data.Map (Map)
+import qualified Data.Map as Map
 
 import Data.Generics (everywhere, mkT)
 
@@ -42,12 +44,13 @@ import Agda.Utils.Pretty
 import Agda.Syntax.Info
 
 import System.FilePath
-import System.IO
 
 data HtmlCompileEnv = HtmlCompileEnv
-  { htmlCompileEnvOpts  :: HtmlOptions
-  , htmlCompileTypes    :: IORef (HashMap Text String)
-  , htmlCompileBasePath :: FilePath
+  { htmlCompileEnvOpts     :: HtmlOptions
+  , htmlCompileTypes       :: IORef (HashMap Text Identifier)
+    -- ^ Hashmap from anchor→identifier for finding types while emitting
+    -- HTML, and for search after
+  , htmlCompileBasePath    :: FilePath
   }
 
 data HtmlModuleEnv = HtmlModuleEnv
@@ -55,7 +58,7 @@ data HtmlModuleEnv = HtmlModuleEnv
   , htmlModEnvName       :: ModuleName
   }
 
-data HtmlModule = HtmlModule
+newtype HtmlModule = HtmlModule { getHtmlModule :: HashMap Text Identifier }
 
 htmlBackend :: FilePath -> HtmlOptions -> Backend
 htmlBackend = (Backend .) . htmlBackend'
@@ -63,8 +66,12 @@ htmlBackend = (Backend .) . htmlBackend'
 htmlBackend'
   :: FilePath
   -> HtmlOptions
-  -> Backend' (FilePath, HtmlOptions) HtmlCompileEnv HtmlModuleEnv HtmlModule
-      (Maybe (Text, String))
+  -> Backend'
+      (FilePath, HtmlOptions)
+      HtmlCompileEnv
+      HtmlModuleEnv
+      HtmlModule
+      (Maybe (Text, Identifier))
 htmlBackend' basepn opts = Backend'
   { backendName = "HTML"
   , backendVersion = Nothing
@@ -88,8 +95,8 @@ preCompileHtml
   => (FilePath, HtmlOptions)
   -> m HtmlCompileEnv
 preCompileHtml (pn, opts) = do
-  ref <- liftIO (newIORef mempty)
-  runLogHtmlWithMonadDebug $ pure $ HtmlCompileEnv opts ref pn
+  types <- liftIO (newIORef mempty)
+  runLogHtmlWithMonadDebug $ pure $ HtmlCompileEnv opts types pn
 
 preModuleHtml
   :: (MonadIO m, ReadTCState m)
@@ -117,7 +124,7 @@ preModuleHtml cenv _ modName mifile =
       if uptd
         then do
           putStrLn $ "HTML for module " <> render (pretty modName) <> " is up-to-date"
-          pure $ Skip HtmlModule
+          pure $ Skip (HtmlModule mempty)
         else pure $ Recompile (HtmlModuleEnv cenv modName)
 
   where
@@ -130,18 +137,22 @@ compileDefHtml
   -> HtmlModuleEnv
   -> IsMain
   -> Definition
-  -> TCM (Maybe (Text, String))
+  -> TCM (Maybe (Text, Identifier))
 compileDefHtml env _ _ _
   | not (htmlOptGenTypes (htmlCompileEnvOpts env)) = pure Nothing
 compileDefHtml env _menv _isMain def = do
-  liftIO $ do
-     putStr $ "\027[2K\rRendering type for " ++ render (pretty (defName def))
-     hFlush stdout
   case definitionAnchor env def of
     Just mn -> do
       ty <- typeToText def
-      pure (Just (mn, ty))
-    Nothing -> pure Nothing
+      let
+        ident = Identifier
+          { idAnchor = mn
+          , idIdent = Text.pack (render (pretty (qnameName (defName def))))
+          , idType = ty
+          }
+      pure (Just (mn, ident))
+    Nothing -> do
+      pure Nothing
 
 postModuleHtml
   :: (MonadIO m, MonadDebug m, ReadTCState m)
@@ -149,12 +160,11 @@ postModuleHtml
   -> HtmlModuleEnv
   -> IsMain
   -> ModuleName
-  -> [Maybe (Text, String)]
+  -> [Maybe (Text, Identifier)]
   -> m HtmlModule
 postModuleHtml env menv _isMain _modName _defs = do
-  liftIO $ putStrLn ""
   let
-    ins Nothing = id
+    ins Nothing       = id
     ins (Just (a, b)) = Hm.insert a b
 
   types <- liftIO $ atomicModifyIORef' (htmlCompileTypes env) $
@@ -168,15 +178,18 @@ postModuleHtml env menv _isMain _modName _defs = do
       $ menv
   htmlSrc <- srcFileOfInterface (toTopLevelModuleName . htmlModEnvName $ menv) <$> curIF
   runLogHtmlWithMonadDebug $ generatePage htmlSrc
-  return HtmlModule
+  pure $ HtmlModule $ foldr ins mempty _defs
 
 postCompileHtml
-  :: Applicative m
+  :: MonadIO m
   => HtmlCompileEnv
   -> IsMain
   -> Map ModuleName HtmlModule
   -> m ()
-postCompileHtml _cenv _isMain _modulesByName = pure ()
+postCompileHtml cenv _isMain _modulesByName = liftIO $ do
+  case htmlOptDumpIdents (htmlCompileEnvOpts cenv) of
+    Just fp -> encodeFile fp (Map.elems _modulesByName >>= Hm.elems . getHtmlModule)
+    Nothing -> pure ()
 
 killDomainNames :: Type -> Type
 killDomainNames = everywhere (mkT unDomName) where
@@ -218,11 +231,7 @@ definitionAnchor htmlenv def = f =<< go where
         | ("Agda/Builtin" `isInfixOf` f) || ("Agda/Primitive" `isInfixOf` f) ->
           fakePath name
         | otherwise -> do
-          let
-            f' = moduleName $ dropExtensions (makeRelative basepn f)
-            modMatches = f' `isPrefixOf` render (pretty name)
-
-          unless modMatches Nothing
+          let f' = moduleName $ dropExtensions (makeRelative basepn f)
           pure (f' <.> "html")
       S.Nothing -> Nothing
   f modn =

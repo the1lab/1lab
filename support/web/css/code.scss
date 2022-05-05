@@ -1,93 +1,16 @@
+// Styling for source code, both Agda-specific and generic
+
 @import "vars.scss";
 @import "mixins.scss";
 
-div.diagram-container {
-  width: 100%;
-  overflow-x: auto;
 
-  margin-top: 1em;
-  margin-bottom: 1em;
-
-  img.diagram {
-    height: 200px;
-    margin: auto;
-    display: block;
-
-    overflow-x: auto;
-
-    &.short-05 {
-      height: 150px;
-    }
-
-    &.short-1 {
-      height: 105px;
-    }
-
-    &.short-15 {
-      height: 80px;
-    }
-
-    &.short-2 {
-      height: 55px;
-    }
-
-    &.tall-1 {
-      height: 250px;
-    }
-
-    &.tall-2 {
-      height: 350px;
-    }
-  }
-}
-
-article a[href], div#return > a[href], div#top > a[href], aside#toc > div#toc-container ul a[href] {
-  color: $code-blue;
-  text-decoration: none;
-  &:hover {
-    text-decoration: 2px currentColor underline !important;
-  }
-  &:visited {
-    color: $code-purple;
-  }
-}
-
-div#return {
-  text-align: center;
-}
-
-article {
-  padding-top: 2em;
-  padding-bottom: 2em;
-  margin-top: 0 !important;
-  max-width: 100%;
-
-  > :nth-child(1), > pre.Agda:first-of-type {
-    margin-top: 0;
-    padding-top: 0;
-  }
-
-  #article-nav {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  > p {
-    width: 100%;
-  }
-
-  > figure > figcaption {
-    text-align: center;
-    font-style: italic;
-  }
-}
-
-hr {
-  color: #ABB2BF;
-  margin-top: 1em;
-  margin-bottom: 1em;
+@font-face {
+  font-family: 'iosevka';
+  font-display: swap;
+  font-weight: 400;
+  font-stretch: normal;
+  font-style: normal;
+  src: url('/static/woff2/iosevk-abbie-regular.woff2') format('woff2'), url('/static/ttf/iosevk-abbie-regular.ttf') format('truetype');
 }
 
 code, pre, .sourceCode {
@@ -198,21 +121,39 @@ a[href].hover-highlight {
   // background-color: $code-bg;
   font-family: 'iosevka', 'Iosevka', 'Fantasque Sans Mono', 'Roboto Mono', monospace;
   font-weight: 400;
-  font-size: var(--code-font-size);
+
+  font-size: initial;
+  body.text-page & {
+    font-size: var(--code-font-size);
+  }
 }
 
-@font-face {
-  font-family: 'iosevka';
-  font-display: swap;
-  font-weight: 400;
-  font-stretch: normal;
-  font-style: normal;
-  src: url('/static/woff2/iosevk-abbie-regular.woff2') format('woff2'), url('/static/ttf/iosevk-abbie-regular.ttf') format('truetype');
-}
-
-span.qed {
-  float: right;
-}
+// Styles for code
+code.kw, span.kw { color: $code-pink; } /* Keyword */
+code.dt, span.dt { color: $code-blue; } /* DataType */
+code.dv, span.dv { color: $code-orange; } /* DecVal */
+code.bn, span.bn { color: $code-orange; } /* BaseN */
+code.fl, span.fl { color: $code-orange; } /* Float */
+code.ch, span.ch { color: $code-green; } /* Char */
+code.st, span.st { color: $code-green; } /* String */
+code.co, span.co { color: $code-grey; } /* Comment */
+code.ot, span.ot { color: $code-green; } /* Other */
+code.al, span.al { color: #ff0000; } /* Alert */
+code.fu, span.fu { color: $code-fg; } /* Function */
+code.er, span.er { color: #ff0000; } /* Error */
+code.wa, span.wa { color: #60a0b0; } /* Warning */
+code.cn, span.cn { color: $code-orange; } /* Constant */
+code.sc, span.sc { color: $code-yellow; } /* SpecialChar */
+code.vs, span.vs { color: $code-blue; } /* VerbatimString */
+code.ss, span.ss { color: $code-green; } /* SpecialString */
+code.va, span.va { color: $code-fg; } /* Variable */
+code.cf, span.cf { color: $code-pink; } /* ControlFlow */
+code.op, span.op { color: $code-green; } /* Operator */
+code.pp, span.pp { color: $code-orange; } /* Preprocessor */
+code.at, span.at { color: $code-green; } /* Attribute */
+code.do, span.do { color: $code-red; } /* Documentation */
+code.an, span.an { color: $code-red; } /* Annotation */
+code.cv, span.cv { color: $code-red; } /* CommentVar */
 
 .typeTooltip {
   position: absolute;

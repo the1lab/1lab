@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     container: pltamy/1lab:latest
 
-    env: 
+    env:
       mailmap: ${{ secrets.MAILMAP }}
 
     steps:
@@ -17,6 +17,7 @@ jobs:
       - name: Build 🛠️
         run: |
           echo "$mailmap" > .mailmap
+          ln -sf $NODE_DEPS_PATH .
           1lab-shake all -j
           ./support/make-site.sh
 

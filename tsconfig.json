@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "module": "esNext",
+    "moduleResolution": "node",
+    "target": "es6",
+    "lib": ["es2015", "dom"],
+    "newLine": "LF",
+
+    // Additional compile options
+    // Ideally we'd set noEmitOnError, but this aborts the rolup build.
+    "preserveWatchOutput": true,
+
+    // Strict Type-Checking Options
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "importsNotUsedAsValues": "error",
+    "isolatedModules": true,
+
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react",
+    "jsxFactory": "JSX.createElement",
+  },
+  "include": [
+    "support/web/js/**/*.ts", "support/web/js/**/*.tsx"
+  ]
+}

@@ -11,6 +11,17 @@ let
     tag = "latest";
     contents = [ the-lab.texlive ];
   };
+
+  nodeEnv = import ./support/nix/node/node-env.nix {
+    inherit (pkgs) stdenv lib python2 runCommand writeTextFile writeShellScript;
+    inherit pkgs nodejs;
+    libtool = if pkgs.stdenv.isDarwin then pkgs.darwin.cctools else null;
+  };
+
+  deps = (import ./support/nix/node/node-dependencies.nix {
+    inherit (pkgs) fetchurl nix-gitignore stdenv lib fetchgit;
+    inherit nodeEnv;
+  }).nodeDependencies;
 in
   dockerTools.streamLayeredImage {
     name = "pltamy/1lab";
@@ -23,6 +34,7 @@ in
 
       # Needed for Github Actions:
       rsync
+      deps
     ];
 
     config = {
@@ -35,6 +47,8 @@ in
         "LD_LIBRARY_PATH=${lib.makeLibraryPath [ pkgs.stdenv.cc.cc ]}"
         "GIT_SSL_CAINFO=${cacert}/etc/ssl/certs/ca-bundle.crt"
         "SSL_CERT_FILE=${cacert}/etc/ssl/certs/ca-bundle.crt"
+
+        "NODE_DEPS_PATH=${deps}/lib/node_modules"
       ];
     };
 
