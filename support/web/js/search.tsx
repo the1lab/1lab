@@ -46,12 +46,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const list = <ul>
         {results.slice(0, 20).map(match => <li>
           <a class="search-result" href={`/${match.item.idAnchor}`}>
-            <h3 class="sourceCode">{highlight(match)}</h3>
+            <h3 class="sourceCode search-header">
+              <span>
+                {highlight(match)}
+              </span>
+              <span class="search-module">{match.item.idAnchor.replace(/#[0-9]+$/, "").slice(0,-".html".length)}</span>
+            </h3>
             <p class="search-type sourceCode">{match.item.idType}</p>
-            <p class="search-module">Defined in {match.item.idAnchor.replace(/#[0-9]+$/, "")}</p>
           </a>
         </li>)}
       </ul>;
+
 
       searchResults.appendChild(list);
     } else if (searchInput.value.length === 0) {

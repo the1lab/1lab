@@ -607,7 +607,7 @@ article a[href].unfolded-footnote:hover {
 
 .search-form > input {
   box-sizing: border-box;
-  font-size: initial;
+  font-size: 0.55em;
   padding: 0.5em;
   margin: 0 0 1em 0;
   width: 100%;
@@ -626,11 +626,15 @@ article a[href].unfolded-footnote:hover {
     list-style-type: none;
     margin: 0;
     padding: 0;
+    li {
+      margin: 0;
+    }
   }
 }
 
 a.search-result {
   padding: 0.5em;
+  padding-right: 0.75em;
   display: block;
   text-decoration: none;
 
@@ -640,28 +644,40 @@ a.search-result {
   }
 
   &:hover, &:focus {
-    background-color: $bluegray-400;
+    background-color: $bluegray-200;
   }
 
   li.active > & {
-    background-color: $bluegray-300;
+    border-left: 5px solid $bluegray-600;
   }
 
   & h3 {
     margin: 0;
     font-weight: normal;
+    font-size: 1em;
   }
 
-  & .search-module {
-    font-size: 0.8em;
-    color: $bluegray-800;
+  > .search-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    .search-module {
+      margin-left: 0.5em;
+      font-size: 0.7em;
+      color: $bluegray-800;
+      font-style: italic;
+    }
   }
 
   & .search-type {
-    font-size: 0.8em;
+    font-size: 0.65em;
   }
 
-  & .search-match { font-weight: bold; }
+  & .search-match {
+    text-decoration: 2px $code-blue underline;
+  }
 }
 
 .search-error {
