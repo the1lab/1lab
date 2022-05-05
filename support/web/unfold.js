@@ -66,9 +66,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   if (footnotes) {
-    const fnctls = document.querySelectorAll("span.footnote-control");
+    const fnctls = document.querySelectorAll("span.inline-footnotes");
     fnctl.forEach(fnctl => fnctl.style.display = "flex");
-    const selecteds = document.querySelectorAll("input.footnote-control");
+    const selecteds = document.querySelectorAll("input.inline-footnotes");
 
     selecteds.forEach(selected => {
       selected.checked = unfold_footnotes;
