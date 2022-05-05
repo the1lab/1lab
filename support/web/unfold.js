@@ -66,14 +66,20 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   if (footnotes) {
-    const fnctl = document.getElementById("footnote-control");
-    fnctl.style.display = "flex";
-    const selected = document.querySelector("span#footnote-control > input");
+    const fnctls = document.querySelectorAll("span.inline-footnotes");
+    fnctls.forEach(fnctl => fnctl.style.display = "flex");
+    const selecteds = document.querySelectorAll("input.inline-footnotes");
 
-    selected.checked = unfold_footnotes;
-    selected.onchange = () => {
-      unfold_footnotes = selected.checked;
-      window.localStorage.setItem(fiItem, selected.checked ? "displayed" : "hidden");
-    };
+    selecteds.forEach(selected => {
+      selected.checked = unfold_footnotes;
+      selected.onchange = () => {
+        unfold_footnotes = selected.checked;
+        window.localStorage.setItem(fiItem, selected.checked ? "displayed" : "hidden");
+        selecteds.forEach(selected => {
+          if (selected.checked !== undefined)
+            selected.checked = unfold_footnotes;
+        });
+      };
+    });
   }
 });

@@ -102,8 +102,8 @@
         </span>
 
         <!-- Sidebar footnotes control -->
-        <span id="footnote-control" style="display: none; align-items: center; gap: 0.25em; flex-wrap: nowrap;">
-          <input name=sidebar-fns type="checkbox" id=sidebar-fns>
+        <span class="inline-footnotes" style="display: none; align-items: center; gap: 0.25em; flex-wrap: nowrap;">
+          <input name=sidebar-fns type="checkbox" class="inline-footnotes" id=sidebar-fns>
           <label for=sidebar-fns>Inline Footnotes</label>
         </span>
       </div>
@@ -137,10 +137,16 @@
       </div>
       $endif$
 
-      <!-- Font toggle checkbox -->
+      <!-- Navbar equations control -->
       <span class="equations" style="display: flex; gap: 0.25em; flex-wrap: nowrap;">
         <input name=navbar-eqns type="checkbox" class="equations" id=navbar-eqns>
         <label for=navbar-eqns>Equations</label>
+      </span>
+
+      <!-- Navbar footnotes control -->
+      <span class="inline-footnotes" style="display: none; gap: 0.25em; flex-wrap: nowrap;">
+        <input name=navbar-fns type="checkbox" class="inline-footnotes" id=navbar-fns>
+        <label for=navbar-fns>Inline Footnotes</label>
       </span>
     </div>
 
