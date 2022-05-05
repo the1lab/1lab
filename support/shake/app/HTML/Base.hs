@@ -13,6 +13,7 @@ module HTML.Base
   , LogHtmlT
   , runLogHtmlWith
   , modToFile, highlightedFileExt
+  , Identifier(..)
   ) where
 
 import Prelude hiding ((!!), concatMap)
@@ -25,6 +26,7 @@ import Control.Monad.Trans.Reader ( ReaderT(runReaderT), ask )
 import Data.Function ( on )
 import Data.Foldable (toList, concatMap)
 import Data.Maybe
+import Data.Aeson
 import qualified Data.IntMap as IntMap
 import qualified Data.List   as List
 import Data.List.Split (splitWhen, chunksOf)
@@ -79,12 +81,20 @@ data HtmlHighlight = HighlightAll | HighlightCode | HighlightAuto
 
 instance NFData HtmlHighlight
 
+-- | Data about an identifier
+data Identifier = Identifier
+  { idIdent  :: Ts.Text
+  , idAnchor :: Ts.Text
+  , idType   :: String
+  }
+  deriving (Eq, Show, Ord, Generic, ToJSON)
+
+
 highlightOnlyCode :: HtmlHighlight -> FileType -> Bool
 highlightOnlyCode HighlightAll  _ = False
 highlightOnlyCode HighlightCode _ = True
 highlightOnlyCode HighlightAuto AgdaFileType = False
 highlightOnlyCode HighlightAuto MdFileType   = True
-
 
 -- | Determine the generated file extension
 
@@ -100,18 +110,20 @@ highlightedFileExt hh ft
 data HtmlOptions = HtmlOptions
   { htmlOptDir        :: FilePath
   , htmlOptHighlight  :: HtmlHighlight
-  , htmlOptHighlightOccurrences :: Bool
+  , htmlOptJsUrl      :: Maybe FilePath
   , htmlOptCssUrl     :: FilePath
   , htmlOptGenTypes   :: Bool
+  , htmlOptDumpIdents :: Maybe FilePath
   } deriving (Eq, Show, Generic, NFData)
 
 defaultHtmlOptions :: HtmlOptions
 defaultHtmlOptions = HtmlOptions
   { htmlOptDir       = "_build/html0"
   , htmlOptHighlight = HighlightAuto
-  , htmlOptHighlightOccurrences = True
-  , htmlOptCssUrl    = "/css/agda-cats.css"
+  , htmlOptJsUrl     = Just "code-only.js"
+  , htmlOptCssUrl    = "/css/default.css"
   , htmlOptGenTypes  = True
+  , htmlOptDumpIdents = Just "_build/all-types.json"
   }
 
 -- | Internal type bundling the information related to a module source file
@@ -151,7 +163,7 @@ runLogHtmlWith :: Monad m => HtmlLogAction m -> LogHtmlT m a -> m a
 runLogHtmlWith = flip runReaderT
 
 renderSourceFile
-  :: HashMap Ts.Text String
+  :: HashMap Ts.Text Identifier
   -> HtmlOptions
   -> HtmlInputSourceFile
   -> Text
@@ -166,7 +178,7 @@ renderSourceFile types opts = renderSourcePage where
 
 defaultPageGen
   :: (MonadIO m, MonadLogHtml m)
-  => HashMap Ts.Text String
+  => HashMap Ts.Text Identifier
   -> HtmlOptions
   -> HtmlInputSourceFile -> m ()
 defaultPageGen types opts srcFile@(HtmlInputSourceFile moduleName ft _ _) = do
@@ -216,12 +228,13 @@ page opts htmlHighlight modName pageContent =
       , Html5.link !! [ Attr.rel "stylesheet"
                       , Attr.href $ stringValue (htmlOptCssUrl opts)
                       ]
-      , if htmlOptHighlightOccurrences opts
-        then Html5.script mempty !!
-          [ Attr.type_ "text/javascript"
-          , Attr.src $ stringValue "highlight-hover.js"
-          ]
-        else mempty
+      , case htmlOptJsUrl opts of
+          Nothing -> mempty
+          Just script ->
+            Html5.script mempty !!
+            [ Attr.type_ "text/javascript"
+            , Attr.src $ stringValue script
+            ]
       ]
 
     rest = Html5.body $ (Html5.pre ! Attr.class_ "Agda") pageContent
@@ -253,7 +266,7 @@ tokenStream contents info =
 -- | Constructs the HTML displaying the code.
 
 code
-  :: HashMap Ts.Text String
+  :: HashMap Ts.Text Identifier
   -> Bool     -- ^ Whether to generate non-code contents as-is
   -> FileType -- ^ Source file type
   -> [TokenInfo]
@@ -355,4 +368,4 @@ code types _onlyCode _fileType = mconcat . map mkMd . chunksOf 2 . splitByMarkup
             (++ "#" ++ Network.URI.Encode.encode (show defPos))
             (Network.URI.Encode.encode $ modToFile m "html")
         type_ :: Maybe String
-        type_ = Hm.lookup (Ts.pack anchor) types
+        type_ = idType <$> Hm.lookup (Ts.pack anchor) types

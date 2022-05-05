@@ -12,15 +12,15 @@ if (window.localStorage.getItem(sfItem) === "displayed") {
 
 const saveEqnDisplay = () => {
   window.localStorage.setItem(lsItem, equations_displayed ? "displayed" : "hidden");
-}
+};
 
 const saveFontDisplay = () => {
-  window.localStorage.setItem(sfItem, equations_displayed ? "displayed" : "hidden");
-}
+  window.localStorage.setItem(sfItem, serif_font ? "displayed" : "hidden");
+};
 
-window.addEventListener('DOMContentLoaded', () => {
-  const buttons = document.querySelectorAll("input.equations");
-  const body = document.querySelector("body");
+window.addEventListener("DOMContentLoaded", () => {
+  const buttons: NodeListOf<HTMLInputElement> = document.querySelectorAll("input.equations");
+  const body = document.body;
 
   if (equations_displayed) {
     body.classList.add("show-equations");
@@ -34,13 +34,12 @@ window.addEventListener('DOMContentLoaded', () => {
     body.classList.add("sans-serif");
   }
 
-  buttons.forEach((button) => {
+  buttons.forEach(button => {
     if (!button.classList.contains("narrow-only")) {
-      button.style = "display: block;";
+      button.style.display = "block";
     }
 
-    if (button.checked !== undefined)
-      button.checked = equations_displayed;
+    if (button.checked !== undefined) button.checked = equations_displayed;
 
     button.onclick = () => {
       equations_displayed = !equations_displayed;
@@ -53,31 +52,33 @@ window.addEventListener('DOMContentLoaded', () => {
 
       saveEqnDisplay();
 
-      buttons.forEach(button => {
-        if (button.checked !== undefined)
-          button.checked = equations_displayed;
+      buttons.forEach((button) => {
+        if (button.checked !== undefined) button.checked = equations_displayed;
 
         if (equations_displayed) {
           button.innerText = "Hide equations";
         } else {
           button.innerText = "Show equations";
         }
-      })
+      });
     };
   });
 
-  const toggleFont = document.getElementById("toggle-fonts");
-  toggleFont.checked = serif_font;
-  toggleFont.onclick = () => {
-    serif_font = toggleFont.checked;
-    console.log(serif_font);
+  const toggleFont = document.getElementById("toggle-fonts") as HTMLInputElement | null;
+  if (toggleFont) {
+    toggleFont.checked = serif_font;
+    toggleFont.onclick = () => {
+      serif_font = toggleFont.checked;
 
-    if (serif_font) {
-      body.classList.remove("sans-serif");
-    } else {
-      body.classList.add("sans-serif");
-    }
+      if (serif_font) {
+        body.classList.remove("sans-serif");
+      } else {
+        body.classList.add("sans-serif");
+      }
 
-    saveFontDisplay();
+      saveFontDisplay();
+    };
   }
 });
+
+export { };

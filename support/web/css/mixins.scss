@@ -8,3 +8,9 @@
 
   border-radius: 10px;
 }
+
+@mixin centered-contents {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
