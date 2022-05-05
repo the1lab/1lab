@@ -108,20 +108,20 @@ highlightedFileExt hh ft
 -- | Options for HTML generation
 
 data HtmlOptions = HtmlOptions
-  { htmlOptDir                  :: FilePath
-  , htmlOptHighlight            :: HtmlHighlight
-  , htmlOptHighlightOccurrences :: Bool
-  , htmlOptCssUrl               :: FilePath
-  , htmlOptGenTypes             :: Bool
-  , htmlOptDumpIdents           :: Maybe FilePath
+  { htmlOptDir        :: FilePath
+  , htmlOptHighlight  :: HtmlHighlight
+  , htmlOptJsUrl      :: Maybe FilePath
+  , htmlOptCssUrl     :: FilePath
+  , htmlOptGenTypes   :: Bool
+  , htmlOptDumpIdents :: Maybe FilePath
   } deriving (Eq, Show, Generic, NFData)
 
 defaultHtmlOptions :: HtmlOptions
 defaultHtmlOptions = HtmlOptions
   { htmlOptDir       = "_build/html0"
   , htmlOptHighlight = HighlightAuto
-  , htmlOptHighlightOccurrences = True
-  , htmlOptCssUrl    = "/css/agda-cats.css"
+  , htmlOptJsUrl     = Just "code-only.js"
+  , htmlOptCssUrl    = "/css/default.css"
   , htmlOptGenTypes  = True
   , htmlOptDumpIdents = Just "_build/all-types.json"
   }
@@ -228,12 +228,13 @@ page opts htmlHighlight modName pageContent =
       , Html5.link !! [ Attr.rel "stylesheet"
                       , Attr.href $ stringValue (htmlOptCssUrl opts)
                       ]
-      , if htmlOptHighlightOccurrences opts
-        then Html5.script mempty !!
-          [ Attr.type_ "text/javascript"
-          , Attr.src $ stringValue "code-only.js"
-          ]
-        else mempty
+      , case htmlOptJsUrl opts of
+          Nothing -> mempty
+          Just script ->
+            Html5.script mempty !!
+            [ Attr.type_ "text/javascript"
+            , Attr.src $ stringValue script
+            ]
       ]
 
     rest = Html5.body $ (Html5.pre ! Attr.class_ "Agda") pageContent

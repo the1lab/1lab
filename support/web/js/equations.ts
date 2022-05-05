@@ -15,7 +15,7 @@ const saveEqnDisplay = () => {
 };
 
 const saveFontDisplay = () => {
-  window.localStorage.setItem(sfItem, equations_displayed ? "displayed" : "hidden");
+  window.localStorage.setItem(sfItem, serif_font ? "displayed" : "hidden");
 };
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -64,19 +64,21 @@ window.addEventListener("DOMContentLoaded", () => {
     };
   });
 
-  const toggleFont = document.getElementById("toggle-fonts") as HTMLInputElement;
-  toggleFont.checked = serif_font;
-  toggleFont.onclick = () => {
-    serif_font = toggleFont.checked;
+  const toggleFont = document.getElementById("toggle-fonts") as HTMLInputElement | null;
+  if (toggleFont) {
+    toggleFont.checked = serif_font;
+    toggleFont.onclick = () => {
+      serif_font = toggleFont.checked;
 
-    if (serif_font) {
-      body.classList.remove("sans-serif");
-    } else {
-      body.classList.add("sans-serif");
-    }
+      if (serif_font) {
+        body.classList.remove("sans-serif");
+      } else {
+        body.classList.add("sans-serif");
+      }
 
-    saveFontDisplay();
-  };
+      saveFontDisplay();
+    };
+  }
 });
 
-export {};
+export { };

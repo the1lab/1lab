@@ -159,8 +159,8 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
   latexRules
 
   "_build/html/css/*.css" %> \out -> do
-    let inp = "support/web/" </> takeFileName out -<.> "scss"
-    need [inp, "support/web/vars.scss", "support/web/mixins.scss"]
+    let inp = "support/web/css/" </> takeFileName out -<.> "scss"
+    getDirectoryFiles "support/web/css" ["**/*.scss"] >>= \files -> need ["support/web/css" </> f | f <- files]
     command_ [] "sassc" [inp, out]
 
   "_build/html/favicon.ico" %> \out -> do
@@ -196,7 +196,6 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
            | file <- files
            ]
 
-    let css = ["_build/html/css/" </> takeFileName f -<.> "css" | f <- ["agda-cats.scss", "default.scss"]]
     static <- getDirectoryFiles "support/static/" ["**/*"] >>= \files ->
       pure ["_build/html/static" </> f | f <- files]
     agda <- getDirectoryFiles "_build/html0" ["Agda.*.html"] >>= \files ->
@@ -204,9 +203,10 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     need $ [ "_build/html/favicon.ico"
            , "_build/html/static/links.json"
            , "_build/html/static/search.json"
+           , "_build/html/css/default.css"
            , "_build/html/main.js"
            , "_build/html/code-only.js"
-           ] ++ css ++ static ++ agda
+           ] ++ static ++ agda
 
   -- ???
 

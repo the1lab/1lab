@@ -1,0 +1,21 @@
+.unfolded-footnote {
+  &.hover-highlight {
+    background-color: unset !important;
+  }
+
+  color: #7f8c8d !important;
+  font-style: italic;
+  cursor: text;
+
+  * {
+    pointer-events: initial;
+  }
+
+  em {
+    font-style: normal;
+  }
+}
+
+article a[href].unfolded-footnote:hover {
+  text-decoration: none !important;
+}
