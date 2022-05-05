@@ -231,7 +231,7 @@ page opts htmlHighlight modName pageContent =
       , if htmlOptHighlightOccurrences opts
         then Html5.script mempty !!
           [ Attr.type_ "text/javascript"
-          , Attr.src $ stringValue "highlight-hover.js"
+          , Attr.src $ stringValue "code-only.js"
           ]
         else mempty
       ]

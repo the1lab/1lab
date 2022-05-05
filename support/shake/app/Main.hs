@@ -173,7 +173,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     traced "copying" $ Dir.copyFile inp out
 
   "_build/html/*.js" %> \out -> do
-    getDirectoryFiles "support/web/js" ["*.ts"] >>= \files -> need ["support/web/js" </> f | f <- files]
+    getDirectoryFiles "support/web/js" ["**/*.ts", "**/*.tsx"] >>= \files -> need ["support/web/js" </> f | f <- files]
 
     let inp = "support/web/js" </> takeFileName out -<.> "ts"
     command_ [] "node_modules/.bin/esbuild"
@@ -205,7 +205,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
            , "_build/html/static/links.json"
            , "_build/html/static/search.json"
            , "_build/html/main.js"
-           , "_build/html/highlight-hover.js"
+           , "_build/html/code-only.js"
            ] ++ css ++ static ++ agda
 
   -- ???
@@ -218,7 +218,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     removeFilesAfter "_build" ["**/*.agdai", "*.lua"]
 
   phony "typecheck-ts" do
-    getDirectoryFiles "support/web/js" ["*.ts"] >>= \files -> need ["support/web/js" </> f | f <- files]
+    getDirectoryFiles "support/web/js" ["**/*.ts", "**/*.tsx"] >>= \files -> need ["support/web/js" </> f | f <- files]
     command_ [] "node_modules/.bin/tsc" ["--noEmit", "-p", "tsconfig.json"]
 
   -- Profit!

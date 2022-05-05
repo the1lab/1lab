@@ -19,15 +19,20 @@ const highlight = ({ match, original }: MatchData<SearchItem>): Content => {
   return out;
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-  const searchInputProxy = document.getElementById("search-box-proxy") as HTMLInputElement;
+let loadingIndex = false;
+let index: Searcher<SearchItem, { returnMatchData: true }> | null;
 
-  const searchWrapper = document.getElementById("search-wrapper") as HTMLDivElement;
-  const searchInput = document.getElementById("search-box") as HTMLInputElement;
-  const searchResults = document.getElementById("search-results") as HTMLDivElement;
+const startSearch = (mirrorInput: HTMLInputElement | null) => {
+  if (document.getElementById("search-wrapper")) return;
 
-  let loadingIndex = false;
-  let index: Searcher<SearchItem, { returnMatchData: true }> | null;
+  const searchInput = <input id="search-box" type="text" placeholder="Search..." autocomplete="off" tabindex="0" /> as HTMLInputElement;
+  const searchResults = <div id="search-results"></div>;
+  const searchWrapper = <div id="search-wrapper" class="modal open">
+    <div class="modal-contents search-form" role="form">
+      {searchInput}
+      {searchResults}
+    </div>
+  </div>;
 
   const setError = (contents: string) => {
     searchResults.innerHTML = "";
@@ -66,51 +71,31 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  // Input handlers
+
+  searchInput.addEventListener("input", () => {
+    if (mirrorInput) mirrorInput.value = searchInput.value;
+    doSearch();
+  });
+
+  // While searchInputProxy should never be focused for long, let's process those events anyway.
+  const syncMirrorInput = () => {
+    if (mirrorInput) searchInput.value = mirrorInput.value;
+    searchInput.focus();
+    doSearch();
+  };
+  if (mirrorInput) mirrorInput.addEventListener("input", syncMirrorInput);
+
   const closeSearch = () => {
-    searchWrapper.classList.remove("open");
-    searchInput.blur();
+    searchWrapper.remove()
+    if (mirrorInput) mirrorInput.removeEventListener("input", syncMirrorInput);
   };
 
   searchWrapper.addEventListener("click", e => {
     if (e.target !== searchInput) closeSearch();
   });
 
-  const startSearch = () => {
-    searchWrapper.classList.add("open");
-    // Because the element isn't visible, we need to focus it later. I know, it's gross.
-    setTimeout(() => searchInput.focus(), 100);
-
-    if (!loadingIndex) {
-      loadingIndex = true;
-      fetch("/static/search.json")
-        .then(r => r.json())
-        .then(entries => {
-          index = new Searcher(entries, {
-            returnMatchData: true,
-            keySelector: (x: SearchItem) => x.idIdent,
-          });
-
-          doSearch();
-        })
-        .catch(e => {
-          console.error("Failed to load search index", e);
-          loadingIndex = false;
-          setError("Failed to load search index");
-        });
-    }
-
-    doSearch();
-  };
-
-  searchInputProxy.addEventListener("focus", startSearch);
-
-  document.addEventListener("keydown", e => {
-    // Allow pressing Ctrl+K to focus the input box.
-    if (e.key == "k" && e.ctrlKey && !e.altKey) {
-      e.preventDefault();
-      startSearch();
-    }
-  });
+  // Keyboard navigation through search items
 
   const removeActive = (elem: Element) => {
     elem.classList.remove("active");
@@ -179,15 +164,44 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  searchInput.addEventListener("input", () => {
-    searchInputProxy.value = searchInput.value;
-    doSearch();
-  });
+  document.body.appendChild(searchWrapper);
+  searchInput.focus();
 
-  // While searchInputProxy should never be focused for long, let's process those events anyway.
-  searchInputProxy.addEventListener("input", () => {
-    searchInput.value = searchInputProxy.value;
-    searchInput.focus();
-    doSearch();
+  // Fetch the search index if not available and start searching
+  if (!loadingIndex) {
+    loadingIndex = true;
+    fetch("/static/search.json")
+      .then(r => r.json())
+      .then(entries => {
+        index = new Searcher(entries, {
+          returnMatchData: true,
+          keySelector: (x: SearchItem) => x.idIdent,
+        });
+
+        doSearch();
+      })
+      .catch(e => {
+        console.error("Failed to load search index", e);
+        loadingIndex = false;
+        setError("Failed to load search index");
+      });
+  }
+
+  doSearch();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Default pages have a "search" box which, when clicked, opens the main search box.
+  const searchInputProxy = document.getElementById("search-box-proxy") as HTMLInputElement | null;
+  if (searchInputProxy) {
+    searchInputProxy.addEventListener("focus", () => startSearch(searchInputProxy));
+  }
+
+  // Allow pressing Ctrl+K to search anywhere.
+  document.addEventListener("keydown", e => {
+    if (e.key == "k" && e.ctrlKey && !e.altKey) {
+      e.preventDefault();
+      startSearch(searchInputProxy);
+    }
   });
 });

@@ -15,7 +15,6 @@ import Prelude hiding ((!!), concatMap)
 import Control.Monad.Except
 
 import qualified Data.HashMap.Strict as Hm
-import qualified Data.Sequence as Seq
 import qualified Data.Text as Text
 import Data.HashMap.Strict (HashMap)
 import Data.List.NonEmpty (NonEmpty((:|)))
@@ -28,7 +27,6 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 
 import Data.Generics (everywhere, mkT)
-import GHC.Generics (Generic)
 
 import Agda.Syntax.Translation.AbstractToConcrete (abstractToConcrete_)
 import Agda.Syntax.Translation.InternalToAbstract ( Reify(reify) )
@@ -46,9 +44,6 @@ import Agda.Utils.Pretty
 import Agda.Syntax.Info
 
 import System.FilePath
-import System.IO
-
-import Debug.Trace
 
 data HtmlCompileEnv = HtmlCompileEnv
   { htmlCompileEnvOpts     :: HtmlOptions
