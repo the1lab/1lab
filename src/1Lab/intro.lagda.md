@@ -1279,8 +1279,8 @@ A section of this fibration --- that is, a dependent function like $f$
 --- is then a _continuous_ function $A \times A \to A^\bb{I}$, with
 the property that $(d_0,d_1) \circ f = \id{id}$. Now assume that our
 space $A$ is pointed, say with a point $y_0 : A$, and that we have a
-section $f$. We can then define the homotopy $ (x,t) \mapsto f(x,y_0,t)
-$, mapping between the identity function on $A$ and the constant
+section $f$. We can then define the homotopy $(x,t) \mapsto f(x,y_0,t)$,
+mapping between the identity function on $A$ and the constant
 function at $y_0$, exhbiting the space $A$ as contractible.
 
 If you assume the law of excluded middle, every space is either pointed
