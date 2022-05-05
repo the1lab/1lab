@@ -6,10 +6,10 @@ const createReturn = () => {
   ret.style.verticalAlign = "super";
   ret.style.fontStyle = "normal";
   ret.style.fontSize = "10pt";
-  ret.href = '';
+  ret.href = "";
   ret.title = "Collapse this footnote";
   return ret;
-}
+};
 
 const fiItem = "1lab.footnote_inline";
 let unfold_footnotes = false;
@@ -35,7 +35,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const ret = createReturn();
 
     link.onclick = (ev) => {
-      if (!unfold_footnotes) { return; }
+      if (!unfold_footnotes) {
+        return;
+      }
 
       if (ev.target === link || (ev.target as Node).nodeName !== "A") {
         ev.preventDefault();
@@ -53,9 +55,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!link.classList.contains("unfolded-footnote")) {
         ev.preventDefault();
-        link.replaceChildren(...Array.from(insides.childNodes)
-          .map(x => x.cloneNode(true))
-          .slice(0, -1));
+        link.replaceChildren(
+          ...Array.from(insides.childNodes)
+            .map(x => x.cloneNode(true))
+            .slice(0, -1)
+        );
         link.prepend(" (");
         link.prepend(ret);
         link.classList.add("unfolded-footnote");

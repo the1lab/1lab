@@ -1,39 +1,25 @@
 import { Searcher, MatchData } from "fast-fuzzy";
-import { JSX } from './lib/jsx';
+import { JSX, Content } from "./lib/jsx";
 
 type SearchItem = {
   idIdent: string,
   idType: string,
   idAnchor: string,
-}
-
-const createElem = (tag: string, classes: Array<string>, contents: string | Array<Node> | Node) => {
-  const elem = document.createElement(tag);
-  if (typeof contents === "string") {
-    elem.innerText = contents;
-  } else if (contents instanceof Array) {
-    for (const child of contents) elem.appendChild(child);
-  } else {
-    elem.appendChild(contents);
-  }
-  for (const cls of classes) elem.classList.add(cls);
-  return elem;
 };
 
-const highlight = ({ match, original }: MatchData<SearchItem>): Node | Array<Node> => {
-  if (match.length == 0) return document.createTextNode(original);
+const highlight = ({ match, original }: MatchData<SearchItem>): Content => {
+  if (match.length == 0) return original;
 
-  if (match.index == 0 && match.length == original.length) return createElem("span", ["search-match"], original);
+  if (match.index == 0 && match.length == original.length) return <span class="search-match">{original}</span>;
 
-  const out: Array<Node> = [];
-  if (match.index > 0) out.push(document.createTextNode(original.substring(0, match.index)));
-  out.push(createElem("span", ["search-match"], original.substring(match.index, match.index + match.length)));
-  out.push(document.createTextNode(original.substring(match.index + match.length)));
+  const out: Array<Content> = [];
+  if (match.index > 0) out.push(original.substring(0, match.index));
+  out.push(<span class="search-match">{original.substring(match.index, match.index + match.length)}</span>);
+  out.push(original.substring(match.index + match.length));
   return out;
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-
+document.addEventListener("DOMContentLoaded", () => {
   const searchInputProxy = document.getElementById("search-box-proxy") as HTMLInputElement;
 
   const searchWrapper = document.getElementById("search-wrapper") as HTMLDivElement;
@@ -45,12 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const setError = (contents: string) => {
     searchResults.innerHTML = "";
-
-    const child = document.createElement("div");
-    child.classList.add("search-error");
-    child.innerText = contents;
-
-    searchResults.appendChild(child);
+    searchResults.appendChild(<span class="search-error">{contents}</span>);
   };
 
   const doSearch = () => {
@@ -63,18 +44,14 @@ document.addEventListener('DOMContentLoaded', () => {
       searchResults.innerHTML = "";
 
       const list = <ul>
-        {results.slice(0,20).map(match => {
-          return <li>
-              <a class="search-result" href={`/${match.item.idAnchor}`}>
-              <h3 class="sourceCode">{ highlight(match) }</h3>
-              <p class="search-type sourceCode">{match.item.idType}</p>
-              <p class="search-module">
-                Defined in {match.item.idAnchor.replace(/#[0-9]+$/, "")}
-              </p>
-            </a>
-          </li>;
-        })}
-      </ul>
+        {results.slice(0, 20).map(match => <li>
+          <a class="search-result" href={`/${match.item.idAnchor}`}>
+            <h3 class="sourceCode">{highlight(match)}</h3>
+            <p class="search-type sourceCode">{match.item.idType}</p>
+            <p class="search-module">Defined in {match.item.idAnchor.replace(/#[0-9]+$/, "")}</p>
+          </a>
+        </li>)}
+      </ul>;
 
       searchResults.appendChild(list);
     } else if (searchInput.value.length === 0) {
@@ -87,9 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeSearch = () => {
     searchWrapper.classList.remove("open");
     searchInput.blur();
-  }
+  };
 
-  searchWrapper.addEventListener("click", (e) => {
+  searchWrapper.addEventListener("click", e => {
     if (e.target !== searchInput) closeSearch();
   });
 
@@ -101,8 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!loadingIndex) {
       loadingIndex = true;
       fetch("/static/search.json")
-        .then((r) => r.json())
-        .then((entries) => {
+        .then(r => r.json())
+        .then(entries => {
           index = new Searcher(entries, {
             returnMatchData: true,
             keySelector: (x: SearchItem) => x.idIdent,
@@ -110,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           doSearch();
         })
-        .catch((e) => {
+        .catch(e => {
           console.error("Failed to load search index", e);
           loadingIndex = false;
           setError("Failed to load search index");
@@ -151,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
       removeActive(active);
       addActive(active.nextElementSibling);
     }
-  }
+  };
 
   const movePrevious = () => {
     const active = searchResults.querySelector("li.active");
@@ -159,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
       removeActive(active);
       addActive(active.previousElementSibling);
     }
-  }
+  };
 
   searchInput.addEventListener("keydown", (e) => {
     switch (e.key) {
@@ -207,5 +184,5 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.value = searchInputProxy.value;
     searchInput.focus();
     doSearch();
-  })
+  });
 });

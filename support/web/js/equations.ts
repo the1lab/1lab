@@ -12,13 +12,13 @@ if (window.localStorage.getItem(sfItem) === "displayed") {
 
 const saveEqnDisplay = () => {
   window.localStorage.setItem(lsItem, equations_displayed ? "displayed" : "hidden");
-}
+};
 
 const saveFontDisplay = () => {
   window.localStorage.setItem(sfItem, equations_displayed ? "displayed" : "hidden");
-}
+};
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener("DOMContentLoaded", () => {
   const buttons: NodeListOf<HTMLInputElement> = document.querySelectorAll("input.equations");
   const body = document.body;
 
@@ -34,13 +34,12 @@ window.addEventListener('DOMContentLoaded', () => {
     body.classList.add("sans-serif");
   }
 
-  buttons.forEach((button) => {
+  buttons.forEach(button => {
     if (!button.classList.contains("narrow-only")) {
       button.style.display = "block";
     }
 
-    if (button.checked !== undefined)
-      button.checked = equations_displayed;
+    if (button.checked !== undefined) button.checked = equations_displayed;
 
     button.onclick = () => {
       equations_displayed = !equations_displayed;
@@ -53,16 +52,15 @@ window.addEventListener('DOMContentLoaded', () => {
 
       saveEqnDisplay();
 
-      buttons.forEach(button => {
-        if (button.checked !== undefined)
-          button.checked = equations_displayed;
+      buttons.forEach((button) => {
+        if (button.checked !== undefined) button.checked = equations_displayed;
 
         if (equations_displayed) {
           button.innerText = "Hide equations";
         } else {
           button.innerText = "Show equations";
         }
-      })
+      });
     };
   });
 
@@ -78,7 +76,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     saveFontDisplay();
-  }
+  };
 });
 
 export {};

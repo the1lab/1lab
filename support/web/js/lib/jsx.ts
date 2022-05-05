@@ -1,8 +1,8 @@
-type Content = HTMLElement | string | Content[] | undefined;
+export type Content = HTMLElement | string | Content[] | undefined;
 
 const add = (element: HTMLElement, child: Content) => {
-  if (typeof child === 'string') {
-    element.appendChild(document.createTextNode(child.toString()))
+  if (typeof child === "string") {
+    element.appendChild(document.createTextNode(child.toString()));
   } else if (child instanceof Array) {
     child.forEach((x) => add(element, x));
   } else if (child === undefined) {
@@ -13,7 +13,7 @@ const add = (element: HTMLElement, child: Content) => {
 };
 
 type JSXName<T> = string | ((props: T) => Node);
-type ElemProps = { [id: string]: string | boolean }
+type ElemProps = { [id: string]: string | boolean };
 
 export class JSX {
   static createTextNode(t: string): Node {
@@ -22,8 +22,12 @@ export class JSX {
 
   static createElement<T>(fn: (props: T) => Node, props: T, ...content: Content[]): Node;
   static createElement(name: string, props: ElemProps, ...content: Content[]): Node;
-  static createElement<P, T extends JSXName<P>>(name: T, arg: T extends 'string' ? ElemProps : P, ...content: Content[]): Node {
-    if (typeof name !== 'string') {
+  static createElement<P, T extends JSXName<P>>(
+    name: T,
+    arg: T extends "string" ? ElemProps : P,
+    ...content: Content[]
+  ): Node {
+    if (typeof name !== "string") {
       return name(arg);
     } else {
       const element = document.createElement(name);
@@ -46,6 +50,6 @@ export class JSX {
       return element;
     }
   }
-};
+}
 
 export default JSX;
