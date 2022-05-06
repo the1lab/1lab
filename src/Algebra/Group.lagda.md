@@ -171,6 +171,12 @@ identical.
   path i .inverse e    = same-inverses e i
   path i .inversel {e} = same-invl e i
   path i .inverser {e} = same-invr e i
+
+instance
+  H-Level-is-group
+    : ∀ {ℓ} {G : Type ℓ} {_+_ : G → G → G} {n}
+    → H-Level (is-group _+_) (suc n)
+  H-Level-is-group = prop-instance is-group-is-prop
 ```
 
 # Group Homomorphisms
