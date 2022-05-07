@@ -1,15 +1,9 @@
 ```agda
-open import 1Lab.HLevel.Retracts
-open import 1Lab.Path.Groupoid
-open import 1Lab.HLevel.Sets
-open import 1Lab.Univalence
-open import 1Lab.Type.Dec
-open import 1Lab.HLevel
-open import 1Lab.Equiv
-open import 1Lab.Path
-open import 1Lab.Type
+open import 1Lab.Prelude
 
+open import Data.Nat.Solver
 open import Data.Nat
+open import Data.Sum
 
 module Data.Int where
 ```
@@ -199,64 +193,162 @@ instance
   Negative-Int .Negative.fromNeg n = diff 0 n
 ```
 
-## h-level
+## Canonical representatives
 
-To prove that `Int`{.Agda} is [a set], we prove that it is equivalent to
-an inductive (rather than _higher_-inductive) representation of the
-integers.  Since this latter representation (which we call
-`Int'`{.Agda}) has decidable equality, it is a set.
-
-[a set]: agda://1Lab.HLevel#is-set
+Initially, we note that the type of integers admits a surjection from
+the type $\bb{N} \to \bb{N}$, given by sending each pair of naturals to
+their `difference`{.Agda}.
 
 ```agda
-module _ where
-  open import Data.Int.Inductive
-    renaming ( Int to Int'
-             ; Discrete-Int to Discrete-Int'
-             )
+private
+  difference-surjection : ∀ x → ∃[ (a , b) ∈ Nat × Nat ] (diff a b ≡ x)
+  difference-surjection (diff x y) = inc ((x , y) , refl)
+  difference-surjection (quot m n i) =
+    is-prop→pathp
+      (λ i → ∥_∥.squash {A = Σ[ (a , b) ∈ Nat × Nat ] (diff a b ≡ quot m n i)})
+      (inc ((m , n) , refl))
+      (inc ((suc m , suc n) , refl))
+      i
 ```
 
-There is a canonical map which takes pairs of naturals to their
-difference as an `Int'`{.Agda}, which is `ℕ-`{.Agda}; It can be shown
-that this map extends to a function from `Int`{.Agda}, since it respects
-the generating equation `quot`{.Agda} definitionally:
+What we'll show is that this surjection actually _splits_: Given an
+integer, we can find out what natural numbers it came from. Well, not
+quite: We can find a reduced representation of that difference. Namely,
+suppose we're given the integer $a-b$. We split by cases:
+
+- If $a < b$, then this is the same integer as $0 - (b - a)$;
+- If $a > b$, then this is the same integer as $(a - b) - 0$;
+- If $a = b$, then this is the same integer as $0 - 0$.
+
+A "canonical form" for an integer is a pair of natural numbers that
+represent (under `diff`{.Agda}) the same integer we started with. The
+canonicalisation procedure does the split we described above, appealing
+to a battery of three lemmas to prove the equality.
 
 ```agda
-  private
-    to-inductive : Int → Int'
-    to-inductive (diff x y) = x ℕ- y
-    to-inductive (quot m n i) = m ℕ- n
+Canonical : Int → Type
+Canonical n = Σ[ x ∈ Nat ] Σ[ y ∈ Nat ] (diff x y ≡ n)
 
-    from-inductive : Int' → Int
-    from-inductive (pos x) = diff x 0
-    from-inductive (negsuc x) = diff 0 (1 + x)
+canonicalise : (n : Int) → Canonical n
+canonicalise = go where
+  lemma₁ : ∀ x y → x < y → diff 0 (y - x) ≡ diff x y
+  lemma₂ : ∀ x y → y < x → diff (x - y) 0 ≡ diff x y
+  lemma₃ : ∀ x y → x ≡ y → diff 0 0       ≡ diff x y
+
+  work : ∀ x y → Canonical (diff x y)
+  work x y with ≤-split x y
+  ... | inl p       = 0     , y - x , lemma₁ x y p
+  ... | inr (inl p) = x - y , 0     , lemma₂ x y p
+  ... | inr (inr p) = 0     , 0     , lemma₃ x y p
 ```
 
-Mapping from `Int'`{.Agda} to `Int`{.Agda} sends the positive numbers to
-$(x, 0)$ and the negative numbers to $(0, x)$. Note that the left
-summand (the "negative numbers") in the inductive definition of
-`Int'`{.Agda} are offset by one; Hence, the mapping out of
-`negsuc`{.Agda} sends $x$ (which really represents the number $-(1+x)$)
-to... well, $-(1 + x)$.
+It remains to show that the procedure `work`{.Agda} respects the
+quotient. This is a truly gargantuan amount of work, and so it's omitted
+from this page. You can unfold it below if you dare:
 
-Using the helpers `quot-triangle`{.Agda} and `quot-diamond`{.Agda}, we
-construct an inductive proof that the integers are a retract of Agda's
-built-in `Int'`{.Agda} type; Since the latter is a set, then so is ours!
+<details>
+<summary>No, really, it's quite ugly.</summary>
 
 ```agda
-    to-from-inductive : (x : Int) → from-inductive (to-inductive x) ≡ x
-    to-from-inductive (diff x zero)            = refl
-    to-from-inductive (diff zero (suc y))      = refl
-    to-from-inductive (diff (suc x) (suc y))   = to-from-inductive (diff x y) ∙ quot _ _
+  -- I commend your bravery in unfolding this <details>! These three
+  -- lemmas are inductively defined on the natural numbers in a way that
+  -- lets us prove that the paths they return respect the Int quotient
+  -- without using that Int is a set (because we don't know that yet!)
 
-    to-from-inductive (quot m zero i)          = quot-triangle _ _ i
-    to-from-inductive (quot zero (suc n) i)    = quot-triangle _ _ i
-    to-from-inductive (quot (suc m) (suc n) i) =
-      to-from-inductive (quot _ _ i) ∙ quot-diamond _ _ i
+  lemma₁ zero (suc y) p    = refl
+  lemma₁ (suc x) (suc y) p = lemma₁ x y p ∙ Int.quot x y
 
-  Int-is-set : is-set Int
-  Int-is-set = retract→is-hlevel 2 from-inductive to-inductive to-from-inductive
-    (Discrete→is-set Discrete-Int')
+  lemma₂ (suc x) zero p    = refl
+  lemma₂ (suc x) (suc y) p = lemma₂ x y p ∙ Int.quot x y
+
+  lemma₃ zero zero p       = refl
+  lemma₃ zero (suc y) p    = absurd (zero≠suc p)
+  lemma₃ (suc x) zero p    = absurd (zero≠suc (sym p))
+  lemma₃ (suc x) (suc y) p = lemma₃ x y (suc-inj p) ∙ Int.quot x y
+
+  abstract
+    work-respects-quot
+      : ∀ x y → PathP (λ i → Canonical (Int.quot x y i))
+        (work x y)
+        (work (suc x) (suc y))
+    -- We split on (x, y) but also (1+x,1+y). This is obviously
+    -- redundant to a human, but to Agda, we must do this: there is no
+    -- link between these two splits.
+
+    -- These first three cases basically mirror the definition of
+    -- lemma₁, lemma₂, and lemma₃. They show that
+    --    lemma₁₂₃ (suc x) (suc y) p ≡ lemma₁₂₃ (suc x) (suc y) p' ∙ Int.quot x y
+    -- but mediating between SquareP, ··, and ∙.
+    work-respects-quot x y with ≤-split x y | ≤-split (suc x) (suc y)
+    ... | inl x<y | inl x<y' =
+      Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡··) $
+          ··≡twice∙ refl _ _
+        ·· ∙-id-l _
+        ·· ap (λ e → lemma₁ x y e ∙ Int.quot x y) (≤-prop (suc x) y x<y x<y')
+    ... | inr (inl x>y) | inr (inl x>y') =
+      Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡··) $
+          ··≡twice∙ refl _ _
+        ·· ∙-id-l _
+        ·· ap (λ e → lemma₂ x y e ∙ Int.quot x y) (≤-prop (suc y) x x>y x>y')
+    ... | inr (inr x≡y) | inr (inr x≡y') =
+      Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡··) $
+          ··≡twice∙ refl _ _
+        ·· ∙-id-l _
+        ·· ap (λ e → lemma₃ x y e ∙ Int.quot x y) (Nat-is-set _ _ _ _)
+
+    -- This *barrage* of cases is to handle the cases where e.g. (x < y)
+    -- but (1 + x > 1 + y), which is "obviously" impossible. But Agda
+    -- doesn't care about what humans think is obvious.
+    ... | inl x<y | inr (inl x>y) = absurd (go x y x<y x>y) where
+      go : ∀ x y → x < y → y < x → ⊥
+      go (suc x) (suc y) p q = go x y p q
+    ... | inl x<y | inr (inr x≡y) = absurd (go x y x<y (suc-inj x≡y)) where
+      go : ∀ x y → x < y → x ≡ y → ⊥
+      go zero (suc y) p q = absurd (zero≠suc q)
+      go (suc x) (suc y) p q = go x y p (suc-inj q)
+    ... | inr (inl x>y) | inl x<y = absurd (go x y x>y x<y) where
+      go : ∀ x y → y < x → x < y → ⊥
+      go (suc x) (suc y) p q = go x y p q
+    ... | inr (inr x≡y) | inl x<y = absurd (go x y x<y x≡y) where
+      go : ∀ x y → x < y → x ≡ y → ⊥
+      go zero (suc y) p q = absurd (zero≠suc q)
+      go (suc x) (suc y) p q = go x y p (suc-inj q)
+    ... | inr (inl x>y) | inr (inr x≡y) = absurd (go x y x>y (suc-inj x≡y)) where
+      go : ∀ x y → y < x → x ≡ y → ⊥
+      go (suc x) zero p q = absurd (zero≠suc (sym q))
+      go (suc x) (suc y) p q = go x y p (suc-inj q)
+    ... | inr (inr x≡y) | inr (inl x>y) = absurd (go x y x≡y x>y) where
+      go : ∀ x y → x ≡ y → y < x → ⊥
+      go (suc x) zero p q = absurd (zero≠suc (sym p))
+      go (suc x) (suc y) p q = go x y (suc-inj p) q
+
+  go : ∀ n → Canonical n
+  go (diff x y) = work x y
+  go (Int.quot x y i) = work-respects-quot x y i
+```
+
+</details>
+
+This _immediately_ implies that the type of integers is a set, because
+it's a retract of a set --- namely $\bb{N} \times \bb{N}$!
+
+```agda
+instance abstract
+  H-Level-Int : ∀ {n} → H-Level Int (2 + n)
+  H-Level-Int =
+    basic-instance 2 $
+      retract→is-hlevel 2 into from linv (hlevel 2)
+    where
+      into : (Nat × Nat) → Int
+      into (x , y) = diff x y
+
+      from : Int → Nat × Nat
+      from x with canonicalise x
+      ... | a , b , p = a , b
+
+      linv : ∀ x → into (from x) ≡ x
+      linv x with canonicalise x
+      ... | a , b , p = p
 ```
 
 # Recursion
@@ -331,15 +423,17 @@ principle:
 
 ```agda
 Int-rec₂-set :
-  ∀ {ℓ} {B : Type ℓ}
-  → is-set B
+  ∀ {ℓ} {B : Type ℓ} ⦃ iss-b : H-Level B 2 ⦄
   → (f : Nat × Nat → Nat × Nat → B)
   → (pl     : (a b x y : _) → f (a , b) (x , y) ≡ f (suc a , suc b) (x , y))
   → (pr     : (a b x y : _) → f (a , b) (x , y) ≡ f (a , b) (suc x , suc y))
   → Int → Int → B
-Int-rec₂-set iss-b f pl pr = Int-rec₂ f pl pr square where
-  square : (a b x y : _) → _
-  square a b x y = is-set→squarep (λ i j → iss-b) _ _ _ _
+Int-rec₂-set ⦃ iss-b ⦄ f pl pr = Int-rec₂ f pl pr square where abstract
+  square
+    : (a b x y : Nat)
+    → PathP (λ i → pl a b x y i ≡ pl a b (suc x) (suc y) i)
+            (pr a b x y) (pr (suc a) (suc b) x y)
+  square a b x y = is-set→squarep (λ i j → hlevel 2) _ _ _ _
 ```
 
 Furthermore, when proving _`propositions`{.Agda ident=is-prop}_ of the
@@ -427,7 +521,6 @@ predℤ-is-equiv = is-iso→is-equiv (iso sucℤ pred-sucℤ suc-predℤ)
 _+ℤ_ : Int → Int → Int
 _+ℤ_ =
   Int-rec₂-set
-    Int-is-set
     (λ { (a , b) (c , d) → diff (a + c) (b + d)})
     (λ a b x y → quot _ _)
     (λ a b x y → quot _ _ ∙ ap₂ diff (sym (+-sucr _ _)) (sym (+-sucr _ _)))
@@ -441,23 +534,28 @@ recursion helpers for props (`Int-elim-prop`{.Agda}) and the fact that
 
 ```agda
 +ℤ-associative : (x y z : Int) → (x +ℤ y) +ℤ z ≡ x +ℤ (y +ℤ z)
++ℤ-zerol       : (x : Int)     → 0 +ℤ x ≡ x
++ℤ-zeror       : (x : Int)     → x +ℤ 0 ≡ x
++ℤ-commutative : (x y : Int)   → x +ℤ y ≡ y +ℤ x
+```
+
+<details>
+<summary>See the proofs here</summary>
+
+```agda
 +ℤ-associative =
   Int-elim₃-prop
-    (λ x y z → Int-is-set _ _)
+    (λ x y z → hlevel 1)
     (λ a b c d e f → ap₂ diff (+-associative a c e) (+-associative b d f))
-
-+ℤ-zerol : (x : Int) → 0 +ℤ x ≡ x
-+ℤ-zerol = Int-elim-prop (λ x → Int-is-set _ _) (λ a b → refl)
-
-+ℤ-zeror : (x : Int) → x +ℤ 0 ≡ x
++ℤ-zerol = Int-elim-prop (λ x → hlevel 1) (λ a b → refl)
 +ℤ-zeror =
-  Int-elim-prop (λ x → Int-is-set _ _) (λ a b → ap₂ diff (+-zeror a) (+-zeror b))
-
-+ℤ-commutative : (x y : Int) → x +ℤ y ≡ y +ℤ x
+  Int-elim-prop (λ x → hlevel 1) (λ a b → ap₂ diff (+-zeror a) (+-zeror b))
 +ℤ-commutative =
-  Int-elim₂-prop (λ x y → Int-is-set _ _)
+  Int-elim₂-prop (λ x y → hlevel 1)
     (λ a b c d → ap₂ diff (+-commutative a c) (+-commutative b d))
 ```
+
+</details>
 
 ## Inverses
 
@@ -479,14 +577,14 @@ from commutativity of addition on natural numbers, and the fact that
 ```agda
 +ℤ-inverser : (x : Int) → x +ℤ negate x ≡ 0
 +ℤ-inverser =
-  Int-elim-prop (λ _ → Int-is-set _ _) λ where
+  Int-elim-prop (λ _ → hlevel 1) λ where
     a b → diff (a + b) (b + a) ≡⟨ ap₂ diff refl (+-commutative b a) ⟩
           diff (a + b) (a + b) ≡⟨ sym (zeroes (a + b)) ⟩
           diff 0 0             ∎
 
 +ℤ-inversel : (x : Int) → negate x +ℤ x ≡ 0
 +ℤ-inversel =
-  Int-elim-prop (λ _ → Int-is-set _ _) λ where
+  Int-elim-prop (λ _ → hlevel 1) λ where
     a b → diff (b + a) (a + b) ≡⟨ ap₂ diff (+-commutative b a) refl ⟩
           diff (a + b) (a + b) ≡⟨ sym (zeroes (a + b)) ⟩
           diff 0 0             ∎
@@ -502,3 +600,96 @@ defined as addition with the inverse, rather than directly on `diff`{.Agda}:
 _-ℤ_ : Int → Int → Int
 x -ℤ y = x +ℤ negate y
 ```
+
+## Multiplication
+
+We now prove that the integers are a _ring_, i.e. that there is a
+multiplication operation $x*y$ with 1 as a left/right identity, which is
+associative, and additionally distributes over addition on both the left
+and the right. It's also commutative --- so $\bb{Z}$ is a _commutative_
+ring.
+
+The definition of multiplication is slightly tricky: We use the binomial
+theorem. Pretend that $xy$ is really $(a-b)(c-d)$, and expand that to
+$(ac+bd) - (ad+bc)$: that's our product. It remains to show that this
+respects the defining equation `quot`{.Agda}, which involves some nasty
+equations (you can see them in the types of `l₁`{.Agda} and `l₂`{.Agda}
+below) --- but this can be done with [the semiring solver].
+
+[the semiring solver]: Data.Nat.Solver.html
+
+
+```agda
+_*ℤ_ : Int → Int → Int
+_*ℤ_ = Int-rec₂-set
+  (λ { (a , b) (c , d) → diff (a * c + b * d) (a * d + b * c) })
+  (λ a b x y → same-difference (l₁ a b x y))
+  (λ a b x y → same-difference (l₂ a b x y))
+  where abstract
+    l₁
+      : ∀ a b x y
+      → a * x + b * y + (suc a * y + suc b * x)
+      ≡ a * y + b * x + (suc a * x + suc b * y)
+    l₁ a b x y = solve!
+
+    l₂
+      : ∀ a b x y
+      → a * x + b * y + (a * suc y + b * suc x)
+      ≡ a * y + b * x + (a * suc x + b * suc y)
+    l₂ a b x y = solve!
+```
+
+We omit the proofs of the arithmetic identities below since they are
+essentially induction + calling the semiring solver.
+
+```agda
+abstract
+  *ℤ-associative : ∀ x y z → (x *ℤ y) *ℤ z ≡ x *ℤ (y *ℤ z)
+  *ℤ-commutative : ∀ x y → x *ℤ y ≡ y *ℤ x
+  *ℤ-idl : ∀ x → 1 *ℤ x ≡ x
+  *ℤ-idr : ∀ x → x *ℤ 1 ≡ x
+  *ℤ-distrib-+ℤ-l : ∀ x y z → x *ℤ (y +ℤ z) ≡ (x *ℤ y) +ℤ (x *ℤ z)
+  *ℤ-distrib-+ℤ-r : ∀ x y z → (y +ℤ z) *ℤ x ≡ (y *ℤ x) +ℤ (z *ℤ x)
+```
+
+<!--
+```agda
+  *ℤ-associative =
+    Int-elim₃-prop (λ _ _ _ → hlevel 1)
+      λ a b c d e f → same-difference (lemma a b c d e f)
+    where abstract
+      lemma
+        : ∀ a b c d e f
+        → (a * c + b * d) * e + (a * d + b * c) * f + (a * (c * f + d * e) + b * (c * e + d * f))
+        ≡ (a * c + b * d) * f + (a * d + b * c) * e + (a * (c * e + d * f) + b * (c * f + d * e))
+      lemma a b c d e f = solve!
+
+  *ℤ-commutative =
+    Int-elim₂-prop (λ _ _ → hlevel 1) λ a b x y → same-difference (lemma a b x y)
+    where abstract
+      lemma : ∀ a b x y → a * x + b * y + (x * b + y * a) ≡ a * y + b * x + (x * a + y * b)
+      lemma a b x y = solve!
+
+  *ℤ-idl = Int-elim-prop (λ _ → hlevel 1) (λ a b → same-difference (lemma a b))
+    where abstract
+      lemma : ∀ a b → (a + 0 + 0 + b) ≡ (b + 0 + 0 + a)
+      lemma a b = solve!
+
+  *ℤ-idr = Int-elim-prop (λ _ → hlevel 1) (λ a b → same-difference (lemma a b))
+    where abstract
+      lemma : ∀ a b → a * 1 + b * 0 + b ≡ a * 0 + b * 1 + a
+      lemma a b = solve!
+
+  *ℤ-distrib-+ℤ-l = Int-elim₃-prop (λ _ _ _ → hlevel 1)
+    λ a b c d e f → same-difference (lemma a b c d e f)
+    where abstract
+      lemma : ∀ a b c d e f → a * (c + e) + b * (d + f) + (a * d + b * c + (a * f + b * e)) ≡ a * (d + f) + b * (c + e) + (a * c + b * d + (a * e + b * f))
+      lemma a b c d e f = solve!
+
+  *ℤ-distrib-+ℤ-r = Int-elim₃-prop (λ _ _ _ → hlevel 1)
+    λ a b c d e f → same-difference (lemma a b c d e f)
+    where
+      lemma : ∀ a b c d e f → (c + e) * a + (d + f) * b + (c * b + d * a + (e * b + f * a)) ≡ (c + e) * b + (d + f) * a + (c * a + d * b + (e * a + f * b))
+      lemma a b c d e f = solve!
+```
+-->

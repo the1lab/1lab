@@ -1,8 +1,10 @@
 ```agda
+open import 1Lab.Type.Dec
 open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Nat.Base
+open import Data.Sum
 
 open import Relation.Order
 
@@ -170,6 +172,25 @@ succeeds:
 ```agda
 ¬sucx≤x : (x : Nat) → suc x ≤ x → ⊥
 ¬sucx≤x (suc x) ord = ¬sucx≤x x ord
+```
+
+We can do proofs on pairs of natural numbers by splitting into cases of
+their stric tordering:
+
+```agda
+≤-split : ∀ (x y : Nat) → (x < y) ⊎ (y < x) ⊎ (x ≡ y)
+≤-split x y with ≤-dec (suc x) y
+≤-split x y | yes x<y = inl x<y
+≤-split x y | no x≥y with ≤-dec (suc y) x
+≤-split x y | no x≥y | yes y<x = inr (inl y<x)
+≤-split x y | no x≥y | no y≥x  = inr (inr (go x y x≥y y≥x)) where
+  go : ∀ x y → (suc x ≤ y → ⊥) → (suc y ≤ x → ⊥) → x ≡ y
+  go zero zero p q          = refl
+  go zero (suc zero) p q    = absurd (p tt)
+  go zero (suc (suc y)) p q = absurd (p tt)
+  go (suc zero) zero p q    = absurd (q tt)
+  go (suc (suc x)) zero p q = absurd (q tt)
+  go (suc x) (suc y) p q    = ap suc (go x y p q)
 ```
 
 ### Compatibility

@@ -1,4 +1,5 @@
 ```
+open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Sets
 open import 1Lab.Type.Dec
 open import 1Lab.HLevel
@@ -80,6 +81,9 @@ has trivial paths.
 ```agda
 Nat-is-set : is-set Nat
 Nat-is-set = Discrete→is-set Discrete-Nat
+instance
+  H-Level-Nat : ∀ {n} → H-Level Nat (2 + n)
+  H-Level-Nat = basic-instance 2 Nat-is-set
 ```
 
 ## Arithmetic
