@@ -473,11 +473,16 @@ defining some pattern synonyms for expressions we want to reflect into our
 
 ```agda
 private  
-  pattern nat-lit n = def (quote Number.fromNat) (_ h∷ _ h∷ _ v∷ (lit (nat n)) v∷ _)
-  pattern ″zero″ = con (quote zero) []
-  pattern ″suc″ x = con (quote suc) (x v∷ [])
-  pattern _″+″_ x y = def (quote _+_) (x v∷ y v∷ _)
-  pattern _″*″_ x y = def (quote _*_) (x v∷ y v∷ _)
+  pattern nat-lit n =
+    def (quote Number.fromNat) (_ h∷ _ h∷ _ v∷ (lit (nat n)) v∷ _)
+  pattern ″zero″ =
+    con (quote zero) []
+  pattern ″suc″ x =
+    con (quote suc) (x v∷ [])
+  pattern _″+″_ x y =
+    def (quote _+_) (x v∷ y v∷ _)
+  pattern _″*″_ x y =
+    def (quote _*_) (x v∷ y v∷ _)
 ```
 
 Next, we construct quoted a `Expr`{.Agda} from a term, replacing any unknown
@@ -532,7 +537,8 @@ private
   
   ″solve″ : Term → Term → Term → Term
   ″solve″ lhs rhs env =
-    def (quote solve) (unknown h∷ lhs v∷ rhs v∷ env v∷ def (quote refl) [] v∷ [])
+    def (quote solve)
+        (unknown h∷ lhs v∷ rhs v∷ env v∷ def (quote refl) [] v∷ [])
 ```
 
 ### The Actual Macros
@@ -561,10 +567,14 @@ repr-macro n hole =
   e , vs ← build-expr empty-vars tm
   size , env ← environment vs
   repr ← normalise $ def (quote ↓_) (size h∷ e v∷ [])
-  typeError $ strErr "The expression\n  " ∷ termErr tm ∷
-              strErr "\nIs represented by the expression\n  " ∷ termErr e ∷
-              strErr "\nAnd the polynomial\n  " ∷ termErr repr ∷
-              strErr "\nThe environment is\n  " ∷ termErr env ∷ []
+  typeError $ strErr "The expression\n  " ∷
+                termErr tm ∷
+              strErr "\nIs represented by the expression\n  " ∷
+                termErr e ∷
+              strErr "\nAnd the polynomial\n  " ∷
+                termErr repr ∷
+              strErr "\nThe environment is\n  " ∷
+                termErr env ∷ []
 macro
   repr! : Nat → Term → TC ⊤
   repr! n = repr-macro n
@@ -602,16 +612,20 @@ solve-macro hole =
   goal ← inferType hole >>= reduce
 
   just (lhs , rhs) ← getBoundary goal
-    where nothing → typeError (strErr "Can't determine boundary: " ∷ termErr goal ∷ [])
+    where nothing → typeError $ strErr "Can't determine boundary: " ∷
+                                termErr goal ∷ []
   elhs , vs ← build-expr empty-vars lhs
   erhs , vs ← build-expr vs rhs
   size , env ← environment vs
   (noConstraints $ unify hole (″solve″ elhs erhs env)) <|> do
     nf-lhs ← normalise (″expand″ elhs env)
     nf-rhs ← normalise (″expand″ erhs env)
-    typeError (strErr "Could not solve the following goal:\n  " ∷ termErr lhs ∷ strErr " ≡ " ∷ termErr rhs ∷
-               strErr "\nComputed normal forms:\n  LHS: " ∷ termErr nf-lhs ∷
-               strErr "\n  RHS: " ∷ termErr nf-rhs ∷ [])
+    typeError (strErr "Could not solve the following goal:\n  " ∷
+                 termErr lhs ∷ strErr " ≡ " ∷ termErr rhs ∷
+               strErr "\nComputed normal forms:\n  LHS: " ∷
+                 termErr nf-lhs ∷
+               strErr "\n  RHS: " ∷
+                 termErr nf-rhs ∷ [])
 
 macro
   solve! : Term → TC ⊤
@@ -625,7 +639,8 @@ for a moment.
 
 ```agda
 private
-  wow-good-job : ∀ x y z → (x + 5 + suc y) * z ≡ z * 5 + x * z + z + z * y 
+  wow-good-job : ∀ x y z
+                 → (x + 5 + suc y) * z ≡ z * 5 + x * z + z + z * y 
   wow-good-job x y z = solve!
 ```
 
