@@ -29,8 +29,8 @@ open import 1Lab.Reflection
 -- 
 -- Once the syntax trees have been completed, we can grab an
 -- environment using the aptly named 'environment' function.
--- This returns a (already quoted) environment function
--- 'Fin n → A', which allows us to easily build up quoted
+-- This returns a (already quoted) environment 'Vec A n',
+-- which allows us to easily build up quoted
 -- calls to our normalization functions rather easily.
 
 -- We 🛐 the wisdom that reversing a list/vector is a type
@@ -46,12 +46,12 @@ record Variables {a} (A : Type a) : Type a where
     -- We store the bindings in reverse order so that it's
     -- cheap to add a new one.
     bound : Env A nvars
-    variables : Term → Maybe (Fin nvars)
+    variables : Term → Maybe Term
 
 open Variables
 
 private variable
-  a : Level
+  a b : Level
   A : Type
   n : Nat
 
@@ -59,35 +59,44 @@ empty-vars : Variables A
 empty-vars = mk-variables [] (λ _ → nothing)
 
 private
-  bind : Term → (Term → Maybe (Fin n)) → Term → Maybe (Fin (suc n))
-  bind {n = n} tm lookup tm′ with lookup tm′ | tm term=? tm′
-  ... | just ‵var | _ = just (weaken ‵var)
-  ... | nothing   | true = just (from-nat n)
-  ... | nothing   | false = nothing
+  bind : Term → Term → (Term → Maybe Term) → Term → Maybe Term
+  bind tm tm-var lookup tm′ with lookup tm′ | tm term=? tm′
+  ... | just tm′-var | _ = just tm′-var
+  ... | nothing      | true = just tm-var
+  ... | nothing      | false = nothing
 
   fin-term : Nat → Term
   fin-term zero = con (quote fzero) (unknown h∷ [])
   fin-term (suc n) = con (quote fsuc) (unknown h∷ fin-term n v∷ [])
+
+  env-rec : (Mot : Nat → Type b) →
+          (∀ {n} → Mot n → A → Mot (suc n)) →
+          Mot zero →
+          Env A n → Mot n
+  env-rec Mot _▷*_ []* []       = []*
+  env-rec Mot _▷*_ []* (xs ▷ x) = env-rec (Mot ∘ suc) _▷*_ ([]* ▷* x) xs
+
+  reverse : Env A n → Vec A n
+  reverse {A = A} env = env-rec (Vec A) (λ xs x → x ∷ xs) [] env
+
+
 
 -- Get the variable associated with a term, binding a new
 -- one as need be. Note that this returns the variable
 -- as a quoted term!
 bind-var : Variables A → Term → TC (Term × Variables A)
 bind-var vs tm with variables vs tm
-... | just lvl = do
-  v ← quoteTC lvl
+... | just v = do
   returnTC (v , vs)
 ... | nothing = do
   a ← unquoteTC tm
   let v = fin-term (nvars vs)
   let vs′ = mk-variables (bound vs ▷ a)
-                         (bind tm (variables vs))
+                         (bind tm v (variables vs))
   returnTC (v , vs′) 
 
-lookup : Env A n → Fin n → A
-lookup (env ▷ x) fzero = x
-lookup (env ▷ x) (fsuc i) = lookup env i
-
-environment : Variables A → TC Term
-environment vs =
-  quoteTC (lookup (bound vs) ∘ opposite)
+environment : Variables A → TC (Term × Term)
+environment vs = do
+  env ← quoteTC (reverse (bound vs))
+  size ← quoteTC (nvars vs)
+  returnTC (size , env)
