@@ -175,7 +175,7 @@ succeeds:
 ```
 
 We can do proofs on pairs of natural numbers by splitting into cases of
-their stric tordering:
+their strict ordering:
 
 ```agda
 ≤-split : ∀ (x y : Nat) → (x < y) ⊎ (y < x) ⊎ (x ≡ y)
