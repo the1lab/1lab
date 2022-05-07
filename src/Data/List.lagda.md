@@ -4,6 +4,7 @@ open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+open import Data.Bool
 
 module Data.List where
 
@@ -202,5 +203,11 @@ reverse = go [] where
 
 _∷r_ : List A → A → List A
 xs ∷r x = xs ++ (x ∷ [])
+
+all=? : (A → A → Bool) → List A → List A → Bool
+all=? eq=? [] [] = true
+all=? eq=? [] (x ∷ ys) = false
+all=? eq=? (x ∷ xs) [] = false
+all=? eq=? (x ∷ xs) (y ∷ ys) = and (eq=? x y) (all=? eq=? xs ys)
 ```
 -->

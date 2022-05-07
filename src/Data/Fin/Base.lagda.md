@@ -234,3 +234,19 @@ from-to-ℕ< (fsuc x) = ap fsuc (from-to-ℕ< x)
 Fin≃ℕ< : ∀ {n} → Fin n ≃ ℕ< n
 Fin≃ℕ< = to-ℕ< , is-iso→is-equiv (iso from-ℕ< to-from-ℕ< from-to-ℕ<)
 ```
+
+## Arithmetic
+
+```agda
+weaken-≤ : ∀ {m n} → m Nat.≤ n → Fin m → Fin n
+weaken-≤ {suc m} {suc n} m≤n fzero = fzero
+weaken-≤ {suc m} {suc n} m≤n (fsuc i) = fsuc (weaken-≤ m≤n i)
+
+fshift : ∀ {n} (m : Nat) → Fin n → Fin (m + n)
+fshift zero i = i
+fshift (suc m) i = fsuc (fshift m i)
+
+opposite : ∀ {n} → Fin n → Fin n
+opposite {n = suc n} fzero = from-nat n
+opposite {n = suc n} (fsuc i) = weaken (opposite i)
+```

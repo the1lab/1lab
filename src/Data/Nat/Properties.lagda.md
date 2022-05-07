@@ -67,6 +67,9 @@ numbers]. Since they're mostly simple inductive arguments written in
   suc (m + (n + m * n)) ≡⟨⟩
   suc m + suc m * n     ∎
 
+*-onel : (x : Nat) → 1 * x ≡ x
+*-onel x = +-zeror x
+
 *-oner : (x : Nat) → x * 1 ≡ x
 *-oner zero = refl
 *-oner (suc x) =

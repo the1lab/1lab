@@ -1,6 +1,8 @@
 open import 1Lab.Type.Sigma
 open import 1Lab.Equiv
 open import 1Lab.Type
+open import Data.Bool
+open import Data.List
 
 module 1Lab.Reflection where
 
@@ -91,3 +93,41 @@ findName (def nm _) = returnTC nm
 findName (lam hidden (abs _ t)) = findName t
 findName (meta m _) = blockOnMeta m
 findName t = typeError (strErr "The projections in a field descriptor must be record selectors: " ∷ termErr t ∷ [])
+
+_visibility=?_ : Visibility → Visibility → Bool
+visible visibility=? visible = true
+hidden visibility=? hidden = true
+instance′ visibility=? instance′ = true
+_ visibility=? _ = false
+
+-- [TODO: Reed M, 06/05/2022] We don't actually use any fancy modalities
+-- anywhere AFAICT, so let's ignore those.
+_arginfo=?_ : ArgInfo → ArgInfo → Bool
+arg-info v₁ m₁ arginfo=? arg-info v₂ m₂ = (v₁ visibility=? v₂)
+
+arg=? : ∀ {a} {A : Type a} → (A → A → Bool) → Arg A → Arg A → Bool
+arg=? eq=? (arg i₁ x) (arg i₂ y) = and (i₁ arginfo=? i₂) (eq=? x y)
+
+-- We want to compare terms up to α-equivalence, so we ignore binder
+-- names.
+abs=? : ∀ {a} {A : Type a} → (A → A → Bool) → Abs A → Abs A → Bool
+abs=? eq=? (abs _ x) (abs _ y) = eq=? x y 
+
+{-# TERMINATING #-}
+-- [TODO: Reed M, 06/05/2022] Finish this
+
+_term=?_ : Term → Term → Bool
+var nm₁ args₁ term=? var nm₂ args₂ = and (nm₁ == nm₂) (all=? (arg=? _term=?_) args₁ args₂)
+con c₁ args₁ term=? con c₂ args₂ = and (c₁ name=? c₂) (all=? (arg=? _term=?_) args₁ args₂)
+def f₁ args₁ term=? def f₂ args₂ = and (f₁ name=? f₂) (all=? (arg=? _term=?_) args₁ args₂)
+lam v₁ t₁ term=? lam v₂ t₂ = and (v₁ visibility=? v₂) (abs=? _term=?_ t₁ t₂)
+pat-lam cs₁ args₁ term=? pat-lam cs₂ args₂ = false
+pi a₁ b₁ term=? pi a₂ b₂ = and (arg=? _term=?_ a₁ a₂) (abs=? _term=?_ b₁ b₂)
+agda-sort s term=? t₂ = false
+lit l term=? t₂ = false
+meta x x₁ term=? t₂ = false
+unknown term=? t₂ = false
+_ term=? _ = false
+
+debug! : ∀ {ℓ} {A : Type ℓ} → Term → TC A
+debug! tm = typeError (strErr "[DEBUG]: " ∷ termErr tm ∷ [])
