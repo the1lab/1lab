@@ -222,7 +222,7 @@ $$
 & (f\pi_1+g\pi_2)(\id{id}\times 0) \\
 =& f\pi_1(\id{id}\times 0) + g\pi_2(\id{id}\times 0) \\
 =& f\id{id} + g0 \\
-=& f\times{,}
+=& f\text{,}
 \end{align*}
 $$
 
@@ -466,4 +466,3 @@ $\ca{A}$, thus assemble into an isomorphism in the slice.
         Coker.coequalise _ _ ∘ Coker.coeq _                          ≡⟨ Coker.universal _ ⟩
         id                                                           ∎
 ```
-
