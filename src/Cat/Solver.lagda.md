@@ -72,6 +72,16 @@ single morphism, we compute a _transformation of hom-spaces_:
   eval `id f      = f
   eval (f ↑) g    = f ∘ g
   eval (f `∘ g) h = eval f (eval g h)
+
+  eval-sound-k : (e : Expr B C) (f : Hom A B) → eval e id ∘ f ≡ eval e f
+  eval-sound-k `id f = idl _
+  eval-sound-k (x ↑) f = ap (_∘ f) (idr x)
+  eval-sound-k (f `∘ g) h =
+    eval f (eval g id) ∘ h      ≡⟨ ap (_∘ h) (sym (eval-sound-k f (eval g id))) ⟩
+    (eval f id ∘ eval g id) ∘ h ≡⟨ sym (assoc _ _ _) ⟩
+    eval f id ∘ eval g id ∘ h   ≡⟨ ap (_ ∘_) (eval-sound-k g h) ⟩
+    eval f id ∘ eval g h        ≡⟨ eval-sound-k f _ ⟩
+    eval (f `∘ g) h             ∎
 ```
 
 Working this out in a back-of-the-envelope calculation, one sees that
@@ -95,27 +105,9 @@ hypothesis, getting us to our goal.
 
 ```agda
   eval-sound (f `∘ g) =
-    eval f (eval g id)    ≡⟨ sym (lemma f (eval g id)) ⟩
+    eval f (eval g id)    ≡⟨ sym (eval-sound-k f (eval g id)) ⟩
     eval f id ∘ eval g id ≡⟨ ap₂ _∘_ (eval-sound f) (eval-sound g) ⟩
     embed (f `∘ g)        ∎
-    where
-```
-
-The helper lemma is a bit more general than I had promised, but it's
-also an argument by induction on expressions. It shows that we can
-replace "precomposition with `eval ... id`" with an application of
-`eval`{.Agda}.
-
-```agda
-      lemma : (e : Expr B C) (f : Hom A B) → eval e id ∘ f ≡ eval e f
-      lemma `id f = idl _
-      lemma (x ↑) f = ap (_∘ f) (idr x)
-      lemma (f `∘ g) h =
-        eval f (eval g id) ∘ h      ≡⟨ ap (_∘ h) (sym (lemma f (eval g id))) ⟩
-        (eval f id ∘ eval g id) ∘ h ≡⟨ sym (assoc _ _ _) ⟩
-        eval f id ∘ eval g id ∘ h   ≡⟨ ap (_ ∘_) (lemma g h) ⟩
-        eval f id ∘ eval g h        ≡⟨ lemma f (eval g h) ⟩
-        eval (f `∘ g) h             ∎
 ```
 
 We now have a general theorem for solving associativity and identity

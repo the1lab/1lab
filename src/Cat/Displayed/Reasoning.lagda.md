@@ -153,4 +153,14 @@ hom[]-weave
 hom[]-weave p p′ q s =
     hom[]-reindex p (p′ ∙ q)
   ∙ hom[]-kill₁ p′ q s
+
+hom[]-split
+  : ∀ {a b c} {f f' : B.Hom b c} {g g' : B.Hom a b} {a′ b′ c′}
+      {f′ : E.Hom[ f ] b′ c′} {g′ : E.Hom[ g ] a′ b′}
+      (p : f ≡ f') (q : g ≡ g')
+  → hom[ ap₂ B._∘_ p q ] (f′ E.∘′ g′) ≡ hom[ p ] f′ E.∘′ hom[ q ] g′
+hom[]-split p q =
+     hom[]-reindex _ (ap₂ B._∘_ p refl ∙ ap₂ B._∘_ refl q)
+  ·· sym (hom[]-∙ _ _)
+  ·· ap hom[ _ ] (sym (hom[]-whisker-l p)) ∙ sym (hom[]-whisker-r q)
 ```
