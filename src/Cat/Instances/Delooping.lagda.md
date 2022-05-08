@@ -49,12 +49,12 @@ find-monoid-names =
 
 macro
   solve-monoid-on : Term → Term → TC ⊤
-  solve-monoid-on = solveGeneric find-monoid-names (λ x → def (quote B) (x v∷ []))
+  solve-monoid-on = solve-generic find-monoid-names (λ x → def (quote B) (x v∷ []))
 
   solve-monoid : ∀ {ℓ} (A : Monoid ℓ) → Term → TC ⊤
   solve-monoid (_ , mm) goal = do
     tmm ← quoteTC mm
-    solveGeneric find-monoid-names (λ x → def (quote B) (x v∷ [])) tmm goal
+    solve-generic find-monoid-names (λ x → def (quote B) (x v∷ [])) tmm goal
 ```
 -->
 
