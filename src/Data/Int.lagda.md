@@ -473,6 +473,64 @@ Int-elim₃-prop pprop f =
 ```
 </details>
 
+A third possibility for elimination is granted to us by the
+canonicalisation procedure: By canonicalising and looking at the
+resulting minuend and subtrahend^[keeping in mind that the image of
+`canonicalise`{.Agda} is restricted to pairs of the form $(0,1+x)$,
+$(1+x,0)$, or $(0,0)$], we can split on an integer based on its sign:
+
+<!--
+```agda
+abstract
+  canonicalise-not-both-suc
+    : ∀ x {k n}
+    → (p : canonicalise x .fst      ≡ suc k)
+    → (q : canonicalise x .snd .fst ≡ suc n)
+    → ⊥
+  canonicalise-not-both-suc =
+    Int-elim-prop {P = λ x → ∀ {k n}
+                           → (p : canonicalise x .fst      ≡ suc k)
+                             (q : canonicalise x .snd .fst ≡ suc n)
+                           → ⊥ }
+      (λ p → hlevel 1)
+      go
+    where
+      go : ∀ a b {k n}
+           (p : canonicalise (diff a b) .fst      ≡ suc k)
+           (q : canonicalise (diff a b) .snd .fst ≡ suc n)
+         → ⊥
+      go a b p q with ≤-split a b
+      ... | inl x       = absurd (zero≠suc p)
+      ... | inr (inl x) = absurd (zero≠suc q)
+      ... | inr (inr x) = absurd (zero≠suc q)
+```
+-->
+
+```agda
+Int-elim-by-sign
+  : (P : Int → Type)
+  → (pos : ∀ x → P (diff x 0))
+  → (neg : ∀ x → P (diff 0 x))
+  → P (diff 0 0)
+  → ∀ x → P x
+Int-elim-by-sign P pos neg zer x with inspect (canonicalise x)
+... | (zero  , zero  , p) , q = subst P p zer
+... | (zero  , suc b , p) , q = subst P p (neg (suc b))
+... | (suc a , zero  , p) , q = subst P p (pos (suc a))
+... | (suc a , suc b , p) , q =
+  absurd (canonicalise-not-both-suc x (ap fst q) (ap (fst ∘ snd) q))
+```
+
+This procedure is useful, for instance, for computing absolute values:
+
+```agda
+abs : Int → Nat
+abs = Int-elim-by-sign _ (λ x → x) (λ x → x) zero
+
+_ : abs -10 ≡ 10
+_ = refl
+```
+
 # Algebra
 
 With these recursion and elimination helpers, it becomes routine to lift
@@ -486,11 +544,11 @@ type with an equivalence - that equivalence being "successor".
 
 ```agda
 sucℤ : Int → Int
-sucℤ (diff x y) = diff (suc x) y
+sucℤ (diff x y)   = diff (suc x) y
 sucℤ (quot m n i) = quot (suc m) n i
 
 predℤ : Int → Int
-predℤ (diff x y) = diff x (suc y)
+predℤ (diff x y)   = diff x (suc y)
 predℤ (quot m n i) = quot m (suc n) i
 ```
 
@@ -501,11 +559,11 @@ have that predecessor and successor are inverses, since applying both
 
 ```agda
 pred-sucℤ : (x : Int) → predℤ (sucℤ x) ≡ x
-pred-sucℤ (diff x y) = sym (quot x y)
+pred-sucℤ (diff x y)     = sym (quot x y)
 pred-sucℤ (quot m n i) j = quot-diamond m n i (~ j)
 
 suc-predℤ : (x : Int) → sucℤ (predℤ x) ≡ x
-suc-predℤ (diff x y) = sym (quot x y)
+suc-predℤ (diff x y)     = sym (quot x y)
 suc-predℤ (quot m n i) j = quot-diamond m n i (~ j)
 
 sucℤ-is-equiv : is-equiv sucℤ
@@ -691,5 +749,6 @@ abstract
     where
       lemma : ∀ a b c d e f → (c + e) * a + (d + f) * b + (c * b + d * a + (e * b + f * a)) ≡ (c + e) * b + (d + f) * a + (c * a + d * b + (e * a + f * b))
       lemma a b c d e f = solve!
+
 ```
 -->

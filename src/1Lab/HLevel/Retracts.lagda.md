@@ -292,6 +292,13 @@ instance
     → H-Level (∀ x → S x) n
   H-Level-pi {n = n} .H-Level.has-hlevel = Π-is-hlevel n λ _ → hlevel n
 
+  H-Level-⊤ : ∀ {n} → H-Level ⊤ n
+  H-Level-⊤ {n = zero} = hlevel-instance (contr tt (λ x i → tt))
+  H-Level-⊤ {n = suc n} = prop-instance λ x y i → tt
+
+  H-Level-⊥ : ∀ {n} → H-Level ⊥ (suc n)
+  H-Level-⊥ {n = n} = prop-instance λ x y → absurd x
+
   H-Level-pi′
     : ∀ {n} {S : T → Type ℓ}
     → ⦃ ∀ {x} → H-Level (S x) n ⦄
