@@ -750,5 +750,21 @@ abstract
       lemma : ∀ a b c d e f → (c + e) * a + (d + f) * b + (c * b + d * a + (e * b + f * a)) ≡ (c + e) * b + (d + f) * a + (c * a + d * b + (e * a + f * b))
       lemma a b c d e f = solve!
 
+canonicalise-injective
+  : ∀ x y
+  → canonicalise x .fst      ≡ canonicalise y .fst
+  → canonicalise x .snd .fst ≡ canonicalise y .snd .fst
+  → x ≡ y
+canonicalise-injective = Int-elim₂-prop (λ _ _ → hlevel 1) λ a b x y p q →
+     sym (canonicalise (diff a b) .snd .snd)
+  ·· ap₂ diff p q
+  ·· canonicalise (diff x y) .snd .snd
+
+Discrete-Int : Discrete Int
+Discrete-Int = Int-elim₂-prop (λ _ _ → hlevel 1) λ a b x y →
+  case (λ _ → Dec (diff a b ≡ diff x y))
+    (yes ∘ same-difference)
+    (λ ¬sd → no λ sd → ¬sd (ℤ-Path.encode a b (diff x y) sd))
+    (Discrete-Nat (a + y) (b + x))
 ```
 -->
