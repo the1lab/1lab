@@ -150,6 +150,17 @@
     </div>
 
 $body$
+$if(reference)$
+<hr />
+<section id="refs" role="doc-bibliography">
+<h2>References</h2>
+<ul>
+$for(reference)$
+<li id="$reference.id$" role="doc-biblioentry">$reference.body$</li>
+$endfor$
+</ul>
+</section>
+$endif$
   </article>
 </div>
 </main>

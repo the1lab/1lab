@@ -23,7 +23,7 @@ import Data.Char (isDigit)
 import Data.List
 
 import Development.Shake.FilePath
-import Development.Shake.Classes
+import Development.Shake.Classes (Hashable, Binary, NFData)
 import Development.Shake
 
 import Network.URI.Encode (decodeText)
@@ -33,10 +33,12 @@ import qualified System.Directory as Dir
 import Text.HTML.TagSoup
 import Text.DocTemplates
 
+import Text.Pandoc.Citeproc
 import Text.Pandoc.Filter
 import Text.Pandoc.Walk
 import Text.Pandoc
 import Text.Printf
+import qualified Citeproc as Cite
 
 import Agda.Interaction.FindFile (SourceFile(..))
 import Agda.TypeChecking.Monad.Base
@@ -48,7 +50,7 @@ import Agda.Utils.FileName
 import qualified System.Environment as Env
 import HTML.Backend
 import HTML.Base
-import System.IO hiding (readFile')
+import System.IO (IOMode(..), hPutStrLn, withFile)
 import Agda
 
 {-
@@ -60,7 +62,8 @@ main :: IO ()
 main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ do
   fileIdMap <- newCache parseFileIdents
   gitCommit <- newCache gitCommit
-  gitAuthors <- newCache (gitAuthors (gitCommit ()))
+  gitAuthors' <- addOracleCache (gitAuthors (gitCommit ()))
+  let gitAuthors = gitAuthors' . GitAuthors
 
   {-
     Write @_build/all-pages.agda@. This imports every module in the source tree
@@ -264,9 +267,14 @@ gitCommit () = do
   Stdout t <- command [] "git" ["rev-parse", "--verify", "HEAD"]
   pure (head (lines t))
 
+newtype GitAuthors = GitAuthors FilePath
+  deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
+
+type instance RuleResult GitAuthors = [Text]
+
 -- | Get the authors for a particular commit.
-gitAuthors :: Action String -> FilePath -> Action [Text]
-gitAuthors commit path = do
+gitAuthors :: Action String -> GitAuthors -> Action [Text]
+gitAuthors commit (GitAuthors path) = do
   _commit <- commit -- We depend on the commit, but don't actually need it.
 
   -- Sort authors list and make it unique.
@@ -291,6 +299,18 @@ gitAuthors commit path = do
 -- Markdown Compilation
 --------------------------------------------------------------------------------
 
+data MarkdownState = MarkdownState
+  { mdReferences :: [Val Text]
+  , mdDependencies :: [String]
+  }
+
+instance Semigroup MarkdownState where
+  (MarkdownState r s) <> (MarkdownState r' s') = MarkdownState (r <> r') (s <> s')
+
+instance Monoid MarkdownState where
+  mempty = MarkdownState mempty mempty
+
+
 {-| Convert a markdown file to templated HTML.
 
 After parsing the markdown, we perform the following post-processing steps:
@@ -302,6 +322,8 @@ After parsing the markdown, we perform the following post-processing steps:
     which runs @support/build-diagram.sh@ to build the SVG.
   - For each equation, invoke katex to compile them to HTML. This is cached
     between runs (search for 'LatexEquation' in 'main').
+  - Extract the references block (if present), passing it through to the
+    template instead. Also add the paper's title to all reference links.
   - Fetch all git authors for this file and add it to the template info.
 
 Finally, we emit the markdown to HTML using the @support/web/template.html@
@@ -314,9 +336,10 @@ buildMarkdown :: String
 buildMarkdown gitCommit gitAuthors input output = do
   let
     templateName = "support/web/template.html"
+    bibliographyName = "src/bibliography.bibtex"
     modname = dropDirectory1 (dropDirectory1 (dropExtension input))
 
-  need [templateName, input]
+  need [templateName, bibliographyName, input]
 
   modulePath <- findModule modname
   authors <- gitAuthors modulePath
@@ -327,14 +350,27 @@ buildMarkdown gitCommit gitAuthors input output = do
       | length modname > 24 = '…':reverse (take 24 (reverse modname))
       | otherwise = modname
 
-  Pandoc meta markdown <- liftIO do
+    mStr = MetaString . Text.pack
+    patchMeta
+      = Meta
+      . Map.insert "title" (mStr title)
+      . Map.insert "source" (mStr permalink)
+      . Map.insert "bibliography" (mStr bibliographyName)
+      . Map.insert "link-citations" (MetaBool True)
+      . unMeta
+
+  (markdown, references) <- liftIO do
     contents <- Text.readFile input
     either (fail . show) pure =<< runIO do
-      md <- readMarkdown def { readerExtensions = getDefaultExtensions "markdown" } [(input, contents)]
-      applyFilters def [JSONFilter "agda-reference-filter"] ["html"] md
+      markdown <- readMarkdown def { readerExtensions = getDefaultExtensions "markdown" } [(input, contents)]
+      Pandoc meta markdown <- applyFilters def [JSONFilter "agda-reference-filter"] ["html"] markdown
+      let pandoc = Pandoc (patchMeta meta) markdown
+      (,) <$> processCitations pandoc <*> getReferences Nothing pandoc
 
   let
     htmlInl = RawInline (Format "html")
+
+    refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
 
     -- | Replace any expression $foo$-bar with <span ...>$foo$-bar</span>, so that
     -- the equation is not split when word wrapping.
@@ -356,30 +392,57 @@ buildMarkdown gitCommit gitAuthors input output = do
         digest = showDigest . sha1 . LazyBS.fromStrict $ Text.encodeUtf8 contents
         title = fromMaybe "commutative diagram" (lookup "title" attrs)
       liftIO $ Text.writeFile ("_build/diagrams" </> digest <.> "tex") contents
-      tell ["_build/html" </> digest <.> "svg"]
+      tell mempty { mdDependencies = ["_build/html" </> digest <.> "svg"] }
 
       pure $ Div ("", ["diagram-container"], [])
         [ Plain [ Image (id, "diagram":classes, attrs) [] (Text.pack (digest <.> "svg"), title) ]
         ]
+    -- Find the references block, parse the references, and remove it. We write
+    -- the references as part of our template instead.
+    patchBlock (Div ("refs", _, _) body) = do
+      for_ body \ref -> case ref of
+        (Div (id, _, _) body) -> do
+          -- If our citation is a single paragraph, don't wrap it in <p>.
+          let body' = case body of
+                [Para p] -> [Plain p]
+                body -> body
+          -- Now render it the citation itself to HTML and add it to our template
+          -- context.
+          body <- either (fail . show) pure . runPure $
+            writeHtml5String def { writerExtensions = getDefaultExtensions "html" } (Pandoc mempty body')
+          let ref = Context $ Map.fromList
+                    [ ("id", toVal id)
+                    , ("body", toVal body)
+                    ]
+          tell mempty { mdReferences = [ MapVal ref ]}
+
+        _ -> fail ("Unknown reference node " ++ show ref)
+      pure Null
+
     patchBlock h = pure h
 
+    -- Pre-render latex equations.
     patchInline (Math DisplayMath contents) = htmlInl <$> askOracle (LatexEquation (True, contents))
     patchInline (Math InlineMath contents) = htmlInl <$> askOracle (LatexEquation (False, contents))
+    -- Add the title to reference links.
+    patchInline (Link attrs contents (target, ""))
+      | Just citation <- Text.stripPrefix "#ref-" target
+      , Just ref <- Map.lookup citation refMap
+      , Just title <- Cite.valToText =<< Cite.lookupVariable "title" ref
+      = pure $ Link attrs contents (target, title)
     patchInline h = pure h
-
-    mStr = MetaString . Text.pack
-    patchMeta = Meta . Map.insert "title" (mStr title) . Map.insert "source" (mStr permalink) . unMeta
 
   liftIO $ Dir.createDirectoryIfMissing False "_build/diagrams"
 
-  markdown <- pure . walk patchInlines . Pandoc (patchMeta meta) $ markdown
+  markdown <- pure $ walk patchInlines markdown
   markdown <- walkM patchInline markdown
-  (markdown, dependencies) <- runWriterT $ walkM patchBlock markdown
+  (markdown, MarkdownState references dependencies) <- runWriterT (walkM patchBlock markdown)
   need dependencies
 
   text <- liftIO $ either (fail . show) pure =<< runIO do
     template <- getTemplate templateName >>= runWithPartials . compileTemplate templateName
                 >>= either (throwError . PandocTemplateError . Text.pack) pure
+
     let
       authors' = case authors of
         [] -> "Nobody"
@@ -389,6 +452,7 @@ buildMarkdown gitCommit gitAuthors input output = do
       context = Context $ Map.fromList
                 [ (Text.pack "is-index", toVal (modname == "index"))
                 , (Text.pack "authors", toVal authors')
+                , (Text.pack "reference", toVal references)
                 ]
       options = def { writerTemplate = Just template
                     , writerTableOfContents = True
