@@ -6,7 +6,6 @@ module Main (main) where
 import Control.Monad.Error.Class
 import Control.Monad.IO.Class
 import Control.Monad.Writer
-import Control.Monad.RWS
 
 import qualified Data.ByteString.Lazy as LazyBS
 import qualified Data.Text.Encoding as Text
@@ -39,7 +38,7 @@ import Text.Pandoc.Filter
 import Text.Pandoc.Walk
 import Text.Pandoc
 import Text.Printf
-import qualified Citeproc as C
+import qualified Citeproc as Cite
 
 import Agda.Interaction.FindFile (SourceFile(..))
 import Agda.TypeChecking.Monad.Base
@@ -300,6 +299,18 @@ gitAuthors commit (GitAuthors path) = do
 -- Markdown Compilation
 --------------------------------------------------------------------------------
 
+data MarkdownState = MarkdownState
+  { mdReferences :: [Val Text]
+  , mdDependencies :: [String]
+  }
+
+instance Semigroup MarkdownState where
+  (MarkdownState r s) <> (MarkdownState r' s') = MarkdownState (r <> r') (s <> s')
+
+instance Monoid MarkdownState where
+  mempty = MarkdownState mempty mempty
+
+
 {-| Convert a markdown file to templated HTML.
 
 After parsing the markdown, we perform the following post-processing steps:
@@ -359,8 +370,7 @@ buildMarkdown gitCommit gitAuthors input output = do
   let
     htmlInl = RawInline (Format "html")
 
-    -- refMap :: Map Text (C.Reference [Inline])
-    refMap = Map.fromList $ map (\x -> (C.unItemId . C.referenceId $ x, x)) references
+    refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
 
     -- | Replace any expression $foo$-bar with <span ...>$foo$-bar</span>, so that
     -- the equation is not split when word wrapping.
@@ -382,15 +392,33 @@ buildMarkdown gitCommit gitAuthors input output = do
         digest = showDigest . sha1 . LazyBS.fromStrict $ Text.encodeUtf8 contents
         title = fromMaybe "commutative diagram" (lookup "title" attrs)
       liftIO $ Text.writeFile ("_build/diagrams" </> digest <.> "tex") contents
-      tell ["_build/html" </> digest <.> "svg"]
+      tell mempty { mdDependencies = ["_build/html" </> digest <.> "svg"] }
 
       pure $ Div ("", ["diagram-container"], [])
         [ Plain [ Image (id, "diagram":classes, attrs) [] (Text.pack (digest <.> "svg"), title) ]
         ]
-    -- Find the references block and remove it. We patch it in later when emitting.
-    patchBlock div@(Div ("refs", _, _) _) = do
-      put (Just div)
+    -- Find the references block, parse the references, and remove it. We write
+    -- the references as part of our template instead.
+    patchBlock (Div ("refs", _, _) body) = do
+      for_ body \ref -> case ref of
+        (Div (id, _, _) body) -> do
+          -- If our citation is a single paragraph, don't wrap it in <p>.
+          let body' = case body of
+                [Para p] -> [Plain p]
+                body -> body
+          -- Now render it the citation itself to HTML and add it to our template
+          -- context.
+          body <- either (fail . show) pure . runPure $
+            writeHtml5String def { writerExtensions = getDefaultExtensions "html" } (Pandoc mempty body')
+          let ref = Context $ Map.fromList
+                    [ ("id", toVal id)
+                    , ("body", toVal body)
+                    ]
+          tell mempty { mdReferences = [ MapVal ref ]}
+
+        _ -> fail ("Unknown reference node " ++ show ref)
       pure Null
+
     patchBlock h = pure h
 
     -- Pre-render latex equations.
@@ -400,7 +428,7 @@ buildMarkdown gitCommit gitAuthors input output = do
     patchInline (Link attrs contents (target, ""))
       | Just citation <- Text.stripPrefix "#ref-" target
       , Just ref <- Map.lookup citation refMap
-      , Just title <- C.valToText =<< C.lookupVariable "title" ref
+      , Just title <- Cite.valToText =<< Cite.lookupVariable "title" ref
       = pure $ Link attrs contents (target, title)
     patchInline h = pure h
 
@@ -408,17 +436,12 @@ buildMarkdown gitCommit gitAuthors input output = do
 
   markdown <- pure $ walk patchInlines markdown
   markdown <- walkM patchInline markdown
-  (markdown, references, dependencies) <- runRWST (walkM patchBlock markdown) () Nothing
+  (markdown, MarkdownState references dependencies) <- runWriterT (walkM patchBlock markdown)
   need dependencies
 
   text <- liftIO $ either (fail . show) pure =<< runIO do
     template <- getTemplate templateName >>= runWithPartials . compileTemplate templateName
                 >>= either (throwError . PandocTemplateError . Text.pack) pure
-
-    -- Render the reference block if present, and pass it off to the template.
-    references <- case references of
-      Nothing -> pure ""
-      Just ref -> writeHtml5String def { writerExtensions = getDefaultExtensions "html" } (Pandoc mempty [ref])
 
     let
       authors' = case authors of
@@ -429,7 +452,7 @@ buildMarkdown gitCommit gitAuthors input output = do
       context = Context $ Map.fromList
                 [ (Text.pack "is-index", toVal (modname == "index"))
                 , (Text.pack "authors", toVal authors')
-                , (Text.pack "references", toVal references)
+                , (Text.pack "reference", toVal references)
                 ]
       options = def { writerTemplate = Just template
                     , writerTableOfContents = True

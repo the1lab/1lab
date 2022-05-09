@@ -347,9 +347,9 @@ _$\beta$-reducible expression_, but since we're not really interested in
 the theory of programming languages here, this terminology will not come
 up.
 
-[^newoldlang]: A survey paper of POPL proceedings by Guy L. Steele [@Steele2017]
-identified **twenty-eight** different notations for substitution, so the
-word "typical" is.. questionable, at best.
+[^newoldlang]: A survey paper of POPL proceedings by Guy L. Steele
+[@Steele2017] identified **twenty-eight** different notations for
+substitution, so the word "typical" is.. questionable, at best.
 
 In addition, function types enjoy a definitional _uniqueness_ rule,
 which says "any function is a $\lambda$ expression". Symbolically, this
@@ -1296,7 +1296,7 @@ is not organised like this. It's meant to be an _explorable_
 presentation of HoTT, where concepts can be accessed in any order, and
 everything is hyperlinked together. However, we can highlight the
 following modules as being the "spine" of the development, since
-everything depends on them, and they're roughly linearly ordered.
+everything depends on them, and they're roughly linearly ordered.\\\
 
 ## Paths, in detail
 
