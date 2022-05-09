@@ -17,6 +17,7 @@ executable shake
       Agda,
       blaze-html,
       bytestring,
+      citeproc,
       containers,
       deepseq,
       directory,

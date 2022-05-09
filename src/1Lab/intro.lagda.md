@@ -347,11 +347,9 @@ _$\beta$-reducible expression_, but since we're not really interested in
 the theory of programming languages here, this terminology will not come
 up.
 
-[^newoldlang]: A [survey paper] of POPL proceedings by Guy L. Steele
+[^newoldlang]: A survey paper of POPL proceedings by Guy L. Steele [@Steele2017]
 identified **twenty-eight** different notations for substitution, so the
 word "typical" is.. questionable, at best.
-
-[survey paper]: https://dl.acm.org/doi/abs/10.1145/3155284.3018773
 
 In addition, function types enjoy a definitional _uniqueness_ rule,
 which says "any function is a $\lambda$ expression". Symbolically, this
