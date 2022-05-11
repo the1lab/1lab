@@ -14,6 +14,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Get Shakefile version
+        run: sha256sum /bin/1lab-shake | cut -d' ' -f1 > .shake-version
+
+      - name: Cache _build
+        id: cache-build
+        uses: actions/cache@v3
+        with:
+          path: _build
+          key: shake-${{ hashFiles('.shake-version' )}}
+
       - name: Build 🛠️
         run: |
           echo "$mailmap" > .mailmap
