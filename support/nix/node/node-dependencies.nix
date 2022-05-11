@@ -301,6 +301,15 @@ let
         sha512 = "QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==";
       };
     };
+    "commander-8.3.0" = {
+      name = "commander";
+      packageName = "commander";
+      version = "8.3.0";
+      src = fetchurl {
+        url = "https://registry.npmjs.org/commander/-/commander-8.3.0.tgz";
+        sha512 = "OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==";
+      };
+    };
     "d3-7.4.4" = {
       name = "d3";
       packageName = "d3";
@@ -823,6 +832,15 @@ let
         sha512 = "NnRs6dsyqUXejqk/yv2aiXlAvOs56sLkX6nUdeaNezI5LFFLlsZjOThmwnrcwh5ZZRwZlCMnVAY3CvhIhoVEKQ==";
       };
     };
+    "katex-0.15.3" = {
+      name = "katex";
+      packageName = "katex";
+      version = "0.15.3";
+      src = fetchurl {
+        url = "https://registry.npmjs.org/katex/-/katex-0.15.3.tgz";
+        sha512 = "Al6V7RJsmjklT9QItyHWGaQCt+NYTle1bZwB1e9MR/tLoIT1MXaHy9UpfGSB7eaqDgjjqqRxQOaQGrALCrEyBQ==";
+      };
+    };
     "pako-0.2.9" = {
       name = "pako";
       packageName = "pako";
@@ -984,6 +1002,11 @@ let
       sources."iconv-lite-0.6.3"
       sources."internmap-2.0.3"
       sources."js-base64-3.7.2"
+      (sources."katex-0.15.3" // {
+        dependencies = [
+          sources."commander-8.3.0"
+        ];
+      })
       sources."pako-0.2.9"
       sources."robust-predicates-3.0.1"
       sources."rw-1.3.3"

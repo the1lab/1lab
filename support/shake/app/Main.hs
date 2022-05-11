@@ -489,7 +489,7 @@ latexRules = versioned 1 do
 
     let args = ["-f", ".macros", "-t"] ++ ["-d" | display]
         stdin = LazyBS.fromStrict $ Text.encodeUtf8 tex
-    Stdout out <- command [StdinBS stdin] "katex" args
+    Stdout out <- command [StdinBS stdin] "node" ("node_modules/.bin/katex":args)
     pure . Text.stripEnd . Text.decodeUtf8 $ out
 
   pure ()

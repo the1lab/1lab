@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/plt-amy/cubical-1lab.git"
   },
-  "author": "Amélia Liao et al",
+  "author": "Amélia Liao et. al.",
   "license": "AGPL-3.0",
   "bugs": {
     "url": "https://github.com/plt-amy/cubical-1lab/issues"
@@ -20,7 +20,8 @@
     "@types/d3": "^7.1.0",
     "d3": "^7.4.4",
     "esbuild": "^0.14.38",
-    "typescript": "^4.6.4"
+    "typescript": "^4.6.4",
+    "katex": "^0.15.3"
   },
   "dependencies": {
     "fast-fuzzy": "^1.11.1"

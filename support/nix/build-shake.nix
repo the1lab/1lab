@@ -1,19 +1,26 @@
-{ our-ghc, removeReferencesTo, haskellPackages, stdenv
+{ our-ghc
+, removeReferencesTo
+, haskellPackages
+, stdenv
+, upx
+, lua5_3
 , name
 , main
 }:
 stdenv.mkDerivation {
   inherit name;
   src = ../shake;
-  nativeBuildInputs = [ our-ghc removeReferencesTo ];
-  buildInputs = [];
+  nativeBuildInputs = [ our-ghc removeReferencesTo upx ];
+  propagatedBuildInputs = [ lua5_3 ];
 
   buildPhase = ''
-  ghc -o ${main} app/${main} -threaded -rtsopts -iapp -O2
+  ghc -o ${main} app/${main} -threaded -rtsopts -iapp -O2 -split-sections
   '';
 
   installPhase = ''
   mkdir -p $out/bin
+  strip ${main}
+  upx ${main}
   cp ${main} $out/bin/${name}
   remove-references-to -t ${haskellPackages.pandoc-types} $out/bin/${name}
   remove-references-to -t ${haskellPackages.pandoc}       $out/bin/${name}
