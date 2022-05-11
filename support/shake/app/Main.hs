@@ -462,7 +462,7 @@ buildMarkdown gitCommit gitAuthors input output = do
 
   liftIO $ Text.writeFile output text
 
-  -- command_ [] "agda-fold-equations" [output]
+  command_ [] "agda-fold-equations" [output]
 
 -- | Find the original Agda file from a 1Lab module name.
 findModule :: MonadIO m => String -> m FilePath
