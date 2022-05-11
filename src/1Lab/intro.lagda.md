@@ -755,6 +755,84 @@ to be taken to the page where it is defined and explained.
   _ = Fibration-equiv
 ```
 
+## Universes and size issues
+
+Perhaps one of the most famous paradoxes in the history of formal logic,
+[Russell's paradox] reminds us that, for most reasonable kinds of
+"collection" --- be they sets, types, or [categories] --- considering
+_the collection of all collections that do not contain themselves_ is a
+road that leads to madness. The standard way of getting around these
+issues, at least in set-theoretic foundations as applied to category
+theory, is to refer to such problematic collections as "[classes]", and to
+only axiomatise the _sets_ which are not too big.
+
+[classes]: https://ncatlab.org/nlab/show/proper+class
+
+In the branches of mathematics that Alexander Grothendieck influenced, a
+more common approach is to work instead with _Grothendieck universes_: A
+Grothendieck universe is a set $\ca{U}$ which is closed under taking
+unions $\ca{U}$-indexed (and, in impredicative foundations, power sets).
+Some set theoretic nonsense implies that any grothendieck universe is
+equivalent to the stage of the [von Neumann universe] $\bf{V}_\kappa$
+indexed by an uncountable regular cardinal $\kappa$.
+
+[von Neumann universe]: https://en.wikipedia.org/wiki/Von_Neumann_universe
+
+[Russell's paradox]: 1Lab.Counterexamples.Russell.html
+[categories]: Cat.Base.html
+
+In Agda, our approach is similar, though slightly more abstract: The
+collection of object classifiers --- the universes we were talking about
+above --- are indexed by a type `Level`{.Agda}, which contains $0$ and
+is closed under taking successors and binary maxima. In keeping with
+standard mathematical convention, when addressing size issues in prose,
+we tend to use the Greek letters $\kappa$ and $\lambda$ to denote
+variables of type `Level`{.Agda}.
+
+We refer to structured type (e.g. a category, or a group) as
+**$\kappa$-small** when its underlying type inhabits the $\kappa$th
+universe; For the specific case of categories, we also use the
+terminology **locally $\kappa$-small** to refer to the universe in which
+the family $\hom(-,-)$ lands. We use subscript Greek letters in prose to
+index our structures by their universe level. For example,
+$\sets_\kappa$ is the ($(1+\kappa)$-small, locally $\kappa$-small)
+category of $\kappa$-small sets.
+
+<details class=text>
+<summary>**Aside**: Small (hah!) note on small categories</summary>
+
+For those familiar with the notions of _internal_ and _enriched_
+categories, we might rephrase the _classical_ definitions of
+$\kappa$-small and locally $\kappa$-small categories as follows:
+
+- A category $\ca{C}$ is $\kappa$-small if it is an internal category in
+$\sets_\kappa$;
+
+- A category $\ca{C}$ is locally $\kappa$-small if it is enriched over
+the Cartesian monoidal category $\sets_\kappa$.
+
+Because every type is contained in some universe, we note that _every_
+category that appears in our development is locally $\kappa$-small for
+_some_ universe level $\kappa$. In particular, we have no "type of
+categories", but instead a type of "$\kappa$-small, locally
+$\lambda$-small categories".
+
+</details>
+
+**Warning**: Note that our use of the term "$\kappa-small" is _slightly_
+nonstandard. In set-theoretic practice, this means that both the space
+of all objects of $\ca{C}$ _and_ each $\hom$-set of $\ca{C}$ both fit
+in $\sets_\kappa$, but in the 1Lab, it simply means that the space of
+objects of $\ca{C}$ inhabits $\ty_\kappa$. Note that, in general, the
+space of objects of a category will not be a set.
+
+<!--
+```agda
+_ : Type
+_ = Level
+```
+-->
+
 # Interlude: Basics of Paths
 
 Since the treatment of paths is the most important aspect of homotopy

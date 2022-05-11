@@ -44,10 +44,12 @@ open Sieve
 
 The `maximal`{.agda} sieve on an object is the collection of _all_ maps
 $a \to c$; It represents the identity map $\yo(c) \to \yo(c)$ as a
-subfunctor. A $\kappa$-small family of sieves can be intersected (the
+subfunctor. A [$\kappa$-small] family of sieves can be intersected (the
 underlying predicate is the "$\kappa$-ary conjunction" $\Pi$ --- the
 universal quantifier), and this represents a wide pullback of
 subobjects.
+
+[$\kappa$-small]: 1Lab.intro.html#universes-and-size-issues
 
 ```agda
 maximal′ : Sieve

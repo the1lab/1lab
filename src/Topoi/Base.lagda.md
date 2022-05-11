@@ -70,8 +70,10 @@ which everything lives. Now, much of Grothendieck topos theory
 generalises to arbitrary "base" topoi, via the use of bounded geometric
 morphisms, but the "main" definition talks about $\sets$-topoi. In
 particular, every universe $\kappa$ generates a theory of
-$\sets_\kappa$-topoi, the categories of $\kappa$-small sheaves on
+$\sets_\kappa$-topoi, the categories of [$\kappa$-small] sheaves on
 $\kappa$-small sites.
+
+[$\kappa$-small]: 1Lab.intro.html#universes-and-size-issues
 
 Fix a universe level $\kappa$, and consider the category $\sets_\kappa$:
 A topos $\ca{T}$ might be a large category (i.e. it might have a space
