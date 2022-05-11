@@ -36,7 +36,7 @@ get away with only the following common shapes of limits:
 
 * A [terminal object] (limit over the empty diagram)
 * Binary [products] (limits over diagrams of the form $\bullet\quad\bullet$, that is, two points)
-* Binary [equalisers] (limits over diagrams of the form $\bullet\rightrightarrows\bullet$)
+* Binary [equalisers] (limits over diagrams of the form $\bullet\tto\bullet$)
 * Binary [pullbacks] (limits over diagrams of the form $\bullet\to\bullet\ot\bullet$)
 
 [terminal object]: Cat.Diagram.Terminal.html

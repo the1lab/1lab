@@ -106,7 +106,7 @@ under the [cospan] $R \xto{p_1} X \xot{p_2} R$.
 ~~~
 
 Transitivity, then, means that the two projection maps $p_1q_1, p_2q_2 :
-(d \times_A d) \rightrightarrows (A \times A)$ --- which take a
+(d \times_A d) \tto (A \times A)$ --- which take a
 "composable pair" to the "first map's source" and "second map's target",
 respectively --- factor _through_ $R$, somehow, i.e. we have a $t : (d
 \times_A d) \to d$ fitting in the diagram below

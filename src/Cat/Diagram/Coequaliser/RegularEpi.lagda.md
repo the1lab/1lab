@@ -29,7 +29,7 @@ together".
 
 The definition is also precisely dual: A map $f : a \to b$ is a
 **regular epimorphism** if it is the [coequaliser] of some pair of
-arrows $R \rightrightarrows a$.
+arrows $R \tto a$.
 
 [coequaliser]: Cat.Diagram.Coequaliser.html
 
