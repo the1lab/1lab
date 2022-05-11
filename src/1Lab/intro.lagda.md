@@ -819,12 +819,12 @@ $\lambda$-small categories".
 
 </details>
 
-**Warning**: Note that our use of the term "$\kappa-small" is _slightly_
-nonstandard. In set-theoretic practice, this means that both the space
-of all objects of $\ca{C}$ _and_ each $\hom$-set of $\ca{C}$ both fit
-in $\sets_\kappa$, but in the 1Lab, it simply means that the space of
-objects of $\ca{C}$ inhabits $\ty_\kappa$. Note that, in general, the
-space of objects of a category will not be a set.
+**Warning**: Note that our use of the term "$\kappa$-small" is
+_slightly_ nonstandard. In set-theoretic practice, this means that both
+the space of all objects of $\ca{C}$ _and_ each $\hom$-set of $\ca{C}$
+both fit in $\sets_\kappa$, but in the 1Lab, it simply means that the
+space of objects of $\ca{C}$ inhabits $\ty_\kappa$. Note that, in
+general, the space of objects of a category will not be a set.
 
 <!--
 ```agda
