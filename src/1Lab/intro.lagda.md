@@ -770,24 +770,29 @@ only axiomatise the _sets_ which are not too big.
 
 In the branches of mathematics that Alexander Grothendieck influenced, a
 more common approach is to work instead with _Grothendieck universes_: A
-Grothendieck universe is a set $\ca{U}$ which is closed under taking
-unions $\ca{U}$-indexed (and, in impredicative foundations, power sets).
-Some set theoretic nonsense implies that any grothendieck universe is
-equivalent to the stage of the [von Neumann universe] $\bf{V}_\kappa$
-indexed by an uncountable regular cardinal $\kappa$.
+Grothendieck universe is a set $\ca{U}$ that forms a transitive model of
+ZF, closed under $\ca{U}$-small indexed products.  The classification of
+models of ZF implies that any Grothendieck universe $\ca{U}$ is
+equivalent to a segment of the [von Neumann universe] $\bf{V}_\kappa$,
+where $\kappa$ is a strongly inaccessible cardinal --- essentially, an
+upper bound on the size of the sets in $\ca{U}$.
 
 [von Neumann universe]: https://en.wikipedia.org/wiki/Von_Neumann_universe
 
 [Russell's paradox]: 1Lab.Counterexamples.Russell.html
 [categories]: Cat.Base.html
 
-In Agda, our approach is similar, though slightly more abstract: The
-collection of object classifiers --- the universes we were talking about
-above --- are indexed by a type `Level`{.Agda}, which contains $0$ and
-is closed under taking successors and binary maxima. In keeping with
-standard mathematical convention, when addressing size issues in prose,
-we tend to use the Greek letters $\kappa$ and $\lambda$ to denote
-variables of type `Level`{.Agda}.
+In traditional mathematical writing, it is common to entirely ignore
+size issues, save perhaps for an offhand mention of Grothendieck
+universes (or strongly inaccessible cardinals) within the first few
+sections. Working in a proof assistant forces us to be honest about the
+size of our constructions: Correspondingly, we try to be precise in our
+prose as well. As mentioned above, Agda universes are stratified into a
+pair of hierarchies $\ty_\kappa$ and $\ty_{\omega+n}$, where we're using
+$\kappa$ to stand for a variable of `Level`{.Agda} type. The
+`Level`{.Agda} is a built-in type which contains a constant representing
+$0$, is closed under taking successors, and is closed under taking
+binary maxima.
 
 We refer to structured type (e.g. a category, or a group) as
 **$\kappa$-small** when its underlying type inhabits the $\kappa$th
@@ -820,11 +825,17 @@ $\lambda$-small categories".
 </details>
 
 **Warning**: Note that our use of the term "$\kappa$-small" is
-_slightly_ nonstandard. In set-theoretic practice, this means that both
-the space of all objects of $\ca{C}$ _and_ each $\hom$-set of $\ca{C}$
-both fit in $\sets_\kappa$, but in the 1Lab, it simply means that the
-space of objects of $\ca{C}$ inhabits $\ty_\kappa$. Note that, in
-general, the space of objects of a category will not be a set.
+nonstandard. In set-theoretic foundations, where the only objects are
+sets anyway, this means "category internal to $\sets_\kappa", as
+mentioned in the infobox above. In the 1Lab, the objects we manipulate
+are _higher groupoids_ rather than sets, and so very few categories will
+be internal to a category of sets. Instead, when we describe a category
+$\ca{C}$ is $\kappa$-small, we mean that the type of objects of $\ca{C}$
+is an inhabitant of the universe $\ty_\kappa$, and that the
+$\hom_\ca{C}(-,-)$ family is valued in $\sets_\kappa$. Our shorthand for
+the traditional notion is a "**[strict] $\kappa$-small**" category.
+
+[strict]: Cat.Instances.StrictCat.html
 
 <!--
 ```agda
@@ -832,6 +843,14 @@ _ : Type
 _ = Level
 ```
 -->
+
+Our policy is to keep the use of universes "as precise as possible":
+Definitions are polymorphic over as many levels as they can possibly be,
+and they are always placed in the smallest universe in which they fit.
+This is, however, an iterative process: For example, our definition of
+"sheaf topos" was originally parametrised over 5 levels, but after
+formalising more desirable properties of topoi, we have found that the
+definition only really mentions two levels.
 
 # Interlude: Basics of Paths
 
