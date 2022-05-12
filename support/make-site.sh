@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 
+rm -rf _build/site
 cp _build/html _build/site -rv
 mkdir -p _build/site/static/ _build/site/css
 cp /root/static/* _build/site/static/ -rv
