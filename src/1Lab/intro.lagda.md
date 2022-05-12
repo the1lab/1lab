@@ -826,7 +826,7 @@ $\lambda$-small categories".
 
 **Warning**: Note that our use of the term "$\kappa$-small" is
 nonstandard. In set-theoretic foundations, where the only objects are
-sets anyway, this means "category internal to $\sets_\kappa", as
+sets anyway, this means "category internal to $\sets_\kappa$", as
 mentioned in the infobox above. In the 1Lab, the objects we manipulate
 are _higher groupoids_ rather than sets, and so very few categories will
 be internal to a category of sets. Instead, when we describe a category
