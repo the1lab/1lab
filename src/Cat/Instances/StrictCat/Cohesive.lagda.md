@@ -336,7 +336,7 @@ category are product sets of connected components.
 
 ```agda
 Π₀-preserve-prods
-  : ∀ {C D : Precategory o h} → ∣ π₀ (C ×Cat D) ∣ ≡ (∣ π₀ C ∣ × ∣ π₀ D ∣)
+  : ∀ {C D : Precategory o h} → ∣ π₀ (C ×ᶜ D) ∣ ≡ (∣ π₀ C ∣ × ∣ π₀ D ∣)
 Π₀-preserve-prods {C = C} {D = D} = Iso→Path (f , isom) where
   open is-iso
 ```
@@ -346,7 +346,7 @@ each factor. This maps respect the quotient because we can also split
 the morphisms.
 
 ```agda
-  f : ∣ π₀ (C ×Cat D) ∣ → ∣ π₀ C ∣ × ∣ π₀ D ∣
+  f : ∣ π₀ (C ×ᶜ D) ∣ → ∣ π₀ C ∣ × ∣ π₀ D ∣
   f = Quot-elim
     (λ _ → ×-is-hlevel 2 squash squash)
     (λ (a , b) → inc a , inc b)

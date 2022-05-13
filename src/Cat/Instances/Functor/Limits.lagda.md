@@ -59,7 +59,7 @@ $\ca{D}$-shaped diagrams in $\ca{C}$, which, by assumption, all have
 limits.
 
 ```agda
-    F-uncurried : Functor (D ×Cat E) C
+    F-uncurried : Functor (D ×ᶜ E) C
     F-uncurried = Uncurry {C = D} {D = E} {E = C} F
 
     import Cat.Functor.Bifunctor {C = D} {D = E} {E = C} F-uncurried as F′

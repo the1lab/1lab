@@ -172,7 +172,7 @@ abelian group**.
 module _ {ℓ} where
   open Functor
 
-  Ab-hom : Functor (Ab ℓ ^op ×Cat Ab ℓ) (Ab ℓ)
+  Ab-hom : Functor (Ab ℓ ^op ×ᶜ Ab ℓ) (Ab ℓ)
   Ab-hom .F₀ (A , B) = Hom-group A B
   Ab-hom .F₁ {x , y} {x′ , y′} (fh , gh) = f′ where
     module g = Group-hom (gh .snd)

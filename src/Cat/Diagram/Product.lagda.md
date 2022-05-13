@@ -198,7 +198,7 @@ $(A, B) \mapsto (A \times B)$ extends to a [bifunctor] $(\ca{C} \times
 module Cartesian (hasprods : ∀ A B → Product A B) where
   open Functor
 
-  ×-functor : Functor (C ×Cat C) C
+  ×-functor : Functor (C ×ᶜ C) C
   ×-functor .F₀ (A , B) = hasprods A B .apex
   ×-functor .F₁ {a , x} {b , y} (f , g) =
     hasprods b y .has-is-product .is-product.⟨_,_⟩

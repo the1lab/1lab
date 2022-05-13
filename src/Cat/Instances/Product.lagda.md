@@ -1,5 +1,9 @@
 ```agda
+open import Cat.Functor.Base
+open import Cat.Univalent
 open import Cat.Prelude
+
+import Cat.Reasoning
 
 module Cat.Instances.Product where
 ```
@@ -16,19 +20,29 @@ private variable
 
 # Product categories
 
-Given two categories $\ca{C}$ and $\ca{D}$, we construct their product
-$\ca{C} \times_\cat \ca{D}$. The objects of the product are
-pairs $(x,y)$ where $x \in \ca{C}$ and $y \in \ca{D}$; The product
-admits projection functors $\ca{C} \times_\id{Cat} \ca{D} \to
-\ca{C}$ (onto both factors, not just the first), and given a diagram of
-categories as below, there is a unique (in the bicategorical sense)
-functor $\mathcal{A} \to \ca{C} \times_\cat \ca{D}$ making the
-diagram commute.
+Let $\ca{C}$ and $\ca{D}$ be two precategories; we put no restrictions
+on their relative sizes. Their _product category_ $\ca{C} \times^c
+\ca{D}$ is the category having as object _pairs_ $(x, y)$ of an object
+$x : \ca{C}$ and $y : \ca{D}$, and the morphisms are pairs $(f, g)$ of a
+morphism in $\ca{C}$ and a morphism in $\ca{D}$. The product category
+admits two projection functors
+
+$$
+\ca{C} \xot{\pi_1} (\ca{C} \times^c \ca{D}) \xto{\pi_2} \ca{D}\text{,}
+$$
+
+satisfying a universal property analogous to those of [product diagrams]
+_in_ categories. Namely, given a setup like in the diagram below, there
+is a unique^[When $\ca{C}$ and $\ca{D}$ are precategories, this functor
+is only unique up to a natural isomorphism] functor which fits into the
+dashed line and makes the whole diagram commute.
+
+[product diagrams]: Cat.Diagram.Product.html
 
 ~~~{.quiver}
 \[\begin{tikzcd}
   & {\mathcal{A}} \\
-  {\mathcal{C}} & {\mathcal{C} \times_\id{Cat} \mathcal{D}} & {\mathcal{D}}
+  {\mathcal{C}} & {\mathcal{C} \times^c \mathcal{D}} & {\mathcal{D}}
   \arrow["{\exists!}", dashed, from=1-2, to=2-2]
   \arrow[from=1-2, to=2-1]
   \arrow[from=1-2, to=2-3]
@@ -37,19 +51,12 @@ diagram commute.
 \end{tikzcd}\]
 ~~~
 
-This would suggest that $\ca{C} \times_\cat \ca{D}$ is the
-[categorical product] of $\ca{C}$ and $\ca{D}$ in a metaphorical
-"category of categories", but homotopical considerations prevent such a
-category from existing: The space of `functors`{.Agda ident=Functor}
-$[\ca{C},\ca{D}]$ is a _groupoid_ (since the component with highest
-h-level is the object mapping $\ca{C}_0 \to \ca{D}_0$), but the
-hom-spaces in a precategory `must be sets`{.Agda ident=Hom-set}
-
-[categorical product]: Cat.Diagram.Product.html
+Formulating this universal property properly would take us further
+afield into 2-category theory than is appropriate here.
 
 ```agda
-_×Cat_ : Precategory o₁ h₁ → Precategory o₂ h₂ → Precategory _ _
-C ×Cat D = prodcat where
+_×ᶜ_ : Precategory o₁ h₁ → Precategory o₂ h₂ → Precategory _ _
+C ×ᶜ D = prodcat where
   module C = Precategory C
   module D = Precategory D
 
@@ -64,31 +71,68 @@ C ×Cat D = prodcat where
   prodcat .assoc (f , f') (g , g') (h , h') i =
     C.assoc f g h i , D.assoc f' g' h' i
 
-infixr 20 _×Cat_
+infixr 20 _×ᶜ_
 ```
 
 We define the two projection functors $\ca{C} \times_\cat \ca{D} \to
 \ca{C}$ (resp $\to \ca{D}$) as the evident liftings of the `fst`{.Agda}
-and `snd`{.Agda} operations on the product type.
+and `snd`{.Agda} operations from the product _type_. Functoriality is
+automatic because composites (and identities) are defined componentwise
+in the product category.
 
 ```agda
-Fst : Functor (C ×Cat D) C
+Fst : Functor (C ×ᶜ D) C
 Fst .F₀ = fst
 Fst .F₁ = fst
 Fst .F-id = refl
 Fst .F-∘ _ _ = refl
 
-Snd : Functor (C ×Cat D) D
+Snd : Functor (C ×ᶜ D) D
 Snd .F₀ = snd
 Snd .F₁ = snd
 Snd .F-id = refl
 Snd .F-∘ _ _ = refl
 
-Cat⟨_,_⟩ : Functor E C → Functor E D → Functor E (C ×Cat D)
+Cat⟨_,_⟩ : Functor E C → Functor E D → Functor E (C ×ᶜ D)
 Cat⟨ F , G ⟩ = f where
   f : Functor _ _
   f .F₀ x = F₀ F x , F₀ G x
   f .F₁ f = F₁ F f , F₁ G f
   f .F-id i = F-id F i , F-id G i
   f .F-∘ f g i = F-∘ F f g i , F-∘ G f g i
+```
+
+## Univalence
+
+Isomorphisms in functor categories admit a short description, too: They
+are maps which are componentwise isomorphisms. It follows, since paths
+in product types are products of paths in the component types, that the
+product of univalent categories is itself a univalent category.
+
+<!--
+```agda
+module
+  _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+    (c-cat : is-category C) (d-cat : is-category D) where
+    private
+      module C   = Cat.Reasoning C
+      module D   = Cat.Reasoning D
+      module C*D = Cat.Reasoning (C ×ᶜ D)
+```
+-->
+
+```agda
+    ×ᶜ-is-category : is-category (C ×ᶜ D)
+    ×ᶜ-is-category A .centre = _ , C*D.id-iso
+    ×ᶜ-is-category (A₀ , A₁) .paths ((B₀ , B₁) , isom) i = (Ap i , Bp i) , ip i where
+      Ap : A₀ ≡ B₀
+      Ap = iso→path C c-cat (F-map-iso Fst isom)
+
+      Bp : A₁ ≡ B₁
+      Bp = iso→path D d-cat (F-map-iso Snd isom)
+
+      ip : PathP (λ i → (A₀ , A₁) C*D.≅ (Ap i , Bp i)) C*D.id-iso isom
+      ip = C*D.≅-pathp _ _ $
+        Σ-pathp-dep (Hom-pathp-reflr-iso C c-cat (C.idr _))
+                    (Hom-pathp-reflr-iso D d-cat (D.idr _))
 ```

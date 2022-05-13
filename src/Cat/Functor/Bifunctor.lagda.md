@@ -7,7 +7,7 @@ module Cat.Functor.Bifunctor
   {C : Precategory o₁ h₁}
   {D : Precategory o₂ h₂}
   {E : Precategory o₃ h₃}
-  (F : Functor (C ×Cat D) E)
+  (F : Functor (C ×ᶜ D) E)
   where
 ```
 
@@ -93,7 +93,7 @@ Functor.F₁ (Right x) f = second f
 Functor.F-id (Right x) = F-id
 Functor.F-∘ (Right x) f g = second∘second
 
-Flip : Functor (D ×Cat C) E
+Flip : Functor (D ×ᶜ C) E
 Functor.F₀ Flip (fst , snd) = F₀ (snd , fst)
 Functor.F₁ Flip (fst , snd) = F₁ (snd , fst)
 Functor.F-id Flip    = F-id

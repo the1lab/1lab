@@ -31,7 +31,7 @@ private variable
 -->
 
 ```agda
-Hom[-,-] : Functor ((C ^op) ×Cat C) (Sets h)
+Hom[-,-] : Functor ((C ^op) ×ᶜ C) (Sets h)
 Hom[-,-] .F₀ (a , b) = Hom a b , Hom-set a b
 Hom[-,-] .F₁ (f , h) g = h ∘ g ∘ f
 Hom[-,-] .F-id = funext λ x → ap (_ ∘_) (idr _) ∙ idl _

@@ -62,7 +62,7 @@ underlying object by a morphism $g : A \to B$. This is functorial by the
 uniqueness properties of colimiting maps.
 
 ```agda
-  Copowering : Functor (Sets ℓ ×Cat C) C
+  Copowering : Functor (Sets ℓ ×ᶜ C) C
   Copowering .F₀ (X , A) = X ⊗ A
   Copowering .F₁ {X , A} {Y , B} (idx , obj) =
     coprods X (λ _ → A) .match λ i → coprods Y (λ _ → B) .ι (idx i) ∘ obj

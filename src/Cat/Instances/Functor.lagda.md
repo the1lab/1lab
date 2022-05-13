@@ -288,7 +288,7 @@ equivalence as its _exponential transpose_, and we refer to the map in
 the "forwards" direction (as in the text above) as _currying_:
 
 ```agda
-Curry : Functor (C ×Cat D) E → Functor C Cat[ D , E ]
+Curry : Functor (C ×ᶜ D) E → Functor C Cat[ D , E ]
 Curry {C = C} {D = D} {E = E} F = curried where
   open import Cat.Functor.Bifunctor {C = C} {D = D} {E = E} F
 
@@ -302,14 +302,14 @@ Curry {C = C} {D = D} {E = E} F = curried where
   curried .F-∘ f g = Nat-path λ x →
     ap (λ x → F₁ F (_ , x)) (sym (D .idl _)) ∙ F-∘ F _ _
 
-Uncurry : Functor C Cat[ D , E ] → Functor (C ×Cat D) E
+Uncurry : Functor C Cat[ D , E ] → Functor (C ×ᶜ D) E
 Uncurry {C = C} {D = D} {E = E} F = uncurried where
   import Cat.Reasoning C as C
   import Cat.Reasoning D as D
   import Cat.Reasoning E as E
   module F = Functor F
 
-  uncurried : Functor (C ×Cat D) E
+  uncurried : Functor (C ×ᶜ D) E
   uncurried .F₀ (c , d) = F₀ (F.₀ c) d
   uncurried .F₁ (f , g) = F.₁ f .η _ E.∘ F₁ (F.₀ _) g
 

@@ -107,7 +107,7 @@ record is-ring-hom {ℓ} (A B : Ring ℓ) (f : A .fst → B .fst) : Type ℓ whe
 
 <!--
 ```agda
-unquoteDecl eqv = declare-record-iso eqv (quote is-ring-hom)
+private unquoteDecl eqv = declare-record-iso eqv (quote is-ring-hom)
 
 module _ {ℓ} {A B : Ring ℓ} where
   open Ring-on (A .snd) using (magma-hlevel)

@@ -78,7 +78,7 @@ Strict-Cat-Product
   → Product (Strict-Cat o h) (C , cob) (D , dob)
 Strict-Cat-Product {C = C} {D = D} cob dob = prod where
   prod : Product (Strict-Cat _ _) (C , cob) (D , dob)
-  prod .apex = C ×Cat D , ×-is-hlevel 2 cob dob
+  prod .apex = C ×ᶜ D , ×-is-hlevel 2 cob dob
   prod .π₁ = Fst {C = C} {D = D}
   prod .π₂ = Snd {C = C} {D = D}
   prod .has-is-product .⟨_,_⟩ p q = Cat⟨ p , q ⟩

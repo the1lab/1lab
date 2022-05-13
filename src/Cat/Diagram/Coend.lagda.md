@@ -16,7 +16,7 @@ private
     C D : Precategory o′ ℓ′
   coend-level
     : {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
-    → Functor (C ^op ×Cat C) D
+    → Functor (C ^op ×ᶜ C) D
     → Level
   coend-level {o = o} {ℓ} {o′} {ℓ′} _ = o ⊔ o′ ⊔ ℓ ⊔ ℓ′
 ```
@@ -79,7 +79,7 @@ unpack the definition here and talk about **cowedges** instead.
 ## Formalisation
 
 ```agda
-record Cowedge (F : Functor (C ^op ×Cat C) D) : Type (coend-level F) where
+record Cowedge (F : Functor (C ^op ×ᶜ C) D) : Type (coend-level F) where
 ```
 
 A **cowedge** under a functor $F$ is given by an object $w : \ca{D}$
@@ -134,7 +134,7 @@ $(w',\psi)$ under $F$, we can factor $w$ through $w'$ by a unique map $e
 meaning explicitly that $e\psi_a = \psi'_a$.
 
 ```agda
-record Coend (F : Functor (C ^op ×Cat C) D) : Type (coend-level F) where
+record Coend (F : Functor (C ^op ×ᶜ C) D) : Type (coend-level F) where
 ```
 
 <!--
@@ -173,3 +173,9 @@ properties of colimiting maps for every other colimit.
       → (∀ {a} → g D.∘ cowedge.ψ a ≡ W .ψ a)
       → g ≡ factor W
 ```
+
+# Computing coends
+
+Letting $\ca{C}$ stand for a [$\kappa$-small] category, fix a functor
+$F : \ca{C}\op \times \ca{C} \to \ca{D}$, and suppose that $\ca{D}$ has all
+$\kappa$-indexed [colimits]. We show that in this case, we can compute the
