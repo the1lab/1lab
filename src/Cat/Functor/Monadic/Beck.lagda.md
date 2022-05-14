@@ -12,7 +12,7 @@ import Cat.Reasoning as C-r
 module
   Cat.Functor.Monadic.Beck
   {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
-  (F : Functor C D) (G : Functor D C)
+  {F : Functor C D} {G : Functor D C}
   (F⊣G : F ⊣ G)
   where
 ```

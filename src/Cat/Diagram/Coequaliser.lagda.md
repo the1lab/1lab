@@ -85,4 +85,17 @@ is-coequaliser→is-epic {f = f} {g = g} equ equalises h i p =
   coequalise (extendr coequal) ≡˘⟨ unique refl ⟩
   i                            ∎
   where open is-coequaliser equalises
+
+coequaliser-unique
+  : ∀ {E E′} {c1 : Hom A E} {c2 : Hom A E′}
+  → is-coequaliser f g c1
+  → is-coequaliser f g c2
+  → E ≅ E′
+coequaliser-unique {c1 = c1} {c2} co1 co2 =
+  make-iso
+    (co1 .coequalise {e′ = c2} (co2 .coequal))
+    (co2 .coequalise {e′ = c1} (co1 .coequal))
+    (unique₂ co2 {p = co2 .coequal} (sym (pullr (co2 .universal) ∙ co1 .universal)) (introl refl))
+    (unique₂ co1 {p = co1 .coequal} (sym (pullr (co1 .universal) ∙ co2 .universal)) (introl refl))
+  where open is-coequaliser
 ```
