@@ -1,3 +1,6 @@
+---
+description: We compute the composite of two adjunctions.
+---
 ```agda
 open import Cat.Functor.Adjoint
 open import Cat.Prelude

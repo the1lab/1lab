@@ -1,3 +1,10 @@
+---
+description: |
+  We present two definitions of adjoint functors, one which is
+  computationally convenient (units and counits), and one which is
+  conceptually clean (adjoints as "optimal solutions" --- initial
+  objects in certain comma categories).
+---
 ```agda
 open import Cat.Diagram.Initial
 open import Cat.Instances.Comma

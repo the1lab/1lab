@@ -1,3 +1,9 @@
+---
+description: |
+  We establish the theory of monadic adjunctions, and define the
+  comparison functor into the Eilenberg-Moore category for the induced
+  monad.
+---
 ```agda
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Functor.Equivalence

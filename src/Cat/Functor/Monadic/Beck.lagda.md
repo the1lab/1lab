@@ -1,3 +1,8 @@
+---
+description: |
+  We define Beck's coequalisers, and establish their role in the crude
+  monadicity theorem.
+---
 ```agda
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Adjoint.Monad

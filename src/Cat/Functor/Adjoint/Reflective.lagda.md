@@ -1,3 +1,11 @@
+---
+description: |
+  We characterise the *reflective subcategory* inclusions: the fully
+  faithful functors which have a left adjoint, equivalently which induce
+  an idempotent monad. We show that every reflective subcategory
+  inclusion is a monadic functor.
+---
+
 ```agda
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Equivalence

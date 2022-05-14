@@ -1,3 +1,10 @@
+---
+description: |
+  We use the calculation of left Kan extensions as certain colimits to
+  associate a "nerve" (restricted Yoneda embedding) and "realization"
+  (left Kan extension along よ) adjunction given any functor.
+---
+
 ```agda
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base

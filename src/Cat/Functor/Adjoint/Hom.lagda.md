@@ -1,3 +1,9 @@
+---
+description: |
+  We establish a correspondence between adjoint functors in terms of
+  units and counits and in terms of satisfying a certain natural
+  isomorphism of Hom-sets.
+---
 ```agda
 open import Cat.Functor.Adjoint
 open import Cat.Prelude

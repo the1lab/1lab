@@ -1,3 +1,6 @@
+---
+description: We establish that right adjoints preserve limits.
+---
 ```agda
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite

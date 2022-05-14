@@ -1,3 +1,8 @@
+---
+description: |
+  We establish the theory of amnestic functors, those which reflect
+  univalence of categories.
+---
 ```agda
 open import Cat.Functor.Base
 open import Cat.Prelude

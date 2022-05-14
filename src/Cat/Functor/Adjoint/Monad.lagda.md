@@ -1,3 +1,6 @@
+---
+description: We define the monad associated to an adjunction.
+---
 ```agda
 open import Cat.Functor.Adjoint
 open import Cat.Diagram.Monad

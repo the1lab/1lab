@@ -1,3 +1,8 @@
+---
+description: |
+  We establish the crude monadicity theorem, which establishes
+  sufficient conditions for an adjunction to be monadic.
+---
 ```agda
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Adjoint.Monad
