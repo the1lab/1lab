@@ -36,6 +36,7 @@ import Agda.Utils.FileName
 import qualified System.Environment as Env
 import HTML.Backend
 import HTML.Base
+import HTML.Emit
 import System.IO (IOMode(..), hPutStrLn, withFile)
 import Agda
 
@@ -217,10 +218,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
 
   -- Profit!
 
--- | Write a HTML file, correctly handling the closing of some tags.
-renderHTML5 :: [Tag Text] -> Text
-renderHTML5 = renderTagsOptions renderOptions{ optMinimize = min } where
-  min = flip elem ["br", "meta", "link", "img", "hr"]
+
 
 --------------------------------------------------------------------------------
 -- Various oracles

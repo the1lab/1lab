@@ -41,9 +41,11 @@ executable shake
         Agda
       , HTML.Backend
       , HTML.Base
+      , HTML.Emit
       , Shake.Git
       , Shake.KaTeX
       , Shake.LinkGraph
+      , Shake.LinkReferences
       , Shake.Markdown
     default-language: Haskell2010
     ghc-options: -Wextra -Wall -Wno-name-shadowing -Wno-implicit-prelude

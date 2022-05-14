@@ -1,27 +1,13 @@
 {-# LANGUAGE BlockArguments, OverloadedStrings, FlexibleContexts #-}
 
-{-| Convert a markdown file to templated HTML.
-
-After parsing the markdown, we perform the following post-processing steps:
-  - Run @agda-reference-filter@ on the parsed Markdown.
-  - Put inline equations (@$...$@) in a special @<span>@ to avoid word wrapping.
-  - Add header links to each header.
-  - For each quiver diagram, write its contents to @_build/diagrams/DIGEST.tex@
-    and depend on @_build/html/DIGEST.svg@. This kicks off another build step
-    which runs @support/build-diagram.sh@ to build the SVG.
-  - For each equation, invoke katex to compile them to HTML. This is cached
-    between runs (search for 'LatexEquation' in 'main').
-  - Extract the references block (if present), passing it through to the
-    template instead. Also add the paper's title to all reference links.
-  - Fetch all git authors for this file and add it to the template info.
+{-| Convert a markdown file to templated HTML, applying several
+post-processing steps.
 
 Finally, we emit the markdown to HTML using the @support/web/template.html@
 template, pipe the output of that through @agda-fold-equations@, and write
 the file.
 -}
-module Shake.Markdown
-  ( buildMarkdown
-  ) where
+module Shake.Markdown (buildMarkdown) where
 
 import Control.Monad.Error.Class
 import Control.Monad.IO.Class
@@ -44,14 +30,16 @@ import Development.Shake
 
 import qualified Citeproc as Cite
 import Text.DocTemplates
+import Text.HTML.TagSoup
 
 import Text.Pandoc.Builder (Inlines)
 import Text.Pandoc.Citeproc
-import Text.Pandoc.Filter
 import Text.Pandoc.Walk
 import Text.Pandoc
 
+import Shake.LinkReferences
 import Shake.KaTeX
+import HTML.Emit
 
 buildMarkdown :: String -- ^ The current git commit.
               -> (FilePath -> Action [Text]) -- ^ Lookup function to get the authors for a file.
@@ -84,21 +72,20 @@ buildMarkdown gitCommit gitAuthors input output = do
   (markdown, references) <- liftIO do
     contents <- Text.readFile input
     either (fail . show) pure =<< runIO do
-      markdown <- readMarkdown def { readerExtensions = getDefaultExtensions "markdown" } [(input, contents)]
-      Pandoc meta markdown <- applyFilters def [JSONFilter "agda-reference-filter"] ["html"] markdown
+      Pandoc meta markdown <- readMarkdown def { readerExtensions = getDefaultExtensions "markdown" } [(input, contents)]
       let pandoc = Pandoc (patchMeta meta) markdown
       (,) <$> processCitations pandoc <*> getReferences Nothing pandoc
 
   liftIO $ Dir.createDirectoryIfMissing False "_build/diagrams"
 
   let refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
-  markdown <- walkM (patchInline refMap) . walk patchInlines $ markdown
+  markdown <- walkM (patchInline refMap) . walk patchInlines . linkReferences $ markdown
   (markdown, MarkdownState references dependencies) <- runWriterT (walkM patchBlock markdown)
   need dependencies
 
   text <- liftIO $ either (fail . show) pure =<< runIO (renderMarkdown authors references modname markdown)
 
-  liftIO $ Text.writeFile output text
+  liftIO . Text.writeFile output . overHTML (foldEquations False) $ text
 
   command_ [] "agda-fold-equations" [output]
 
@@ -224,6 +211,35 @@ renderMarkdown authors references modname markdown = do
                   , writerVariables = context
                   , writerExtensions = getDefaultExtensions "html" }
   writeHtml5String options markdown
+
+
+-- | Removes the RHS of equation reasoning steps?? IDK, ask Amelia.
+foldEquations :: Bool -> [Tag Text] -> [Tag Text]
+foldEquations _ (to@(TagOpen "a" attrs):tt@(TagText t):tc@(TagClose "a"):rest)
+  | Text.length t >= 1, Text.last t == '⟨', Just href <- lookup "href" attrs =
+  [ TagOpen "span" [("class", "reasoning-step")]
+  , TagOpen "span" [("class", "as-written " <> fromMaybe "" (lookup "class" attrs))]
+  , to, tt, tc ] ++ go href rest
+  where
+    alternate = Text.init t
+    go href (to@(TagOpen "a" attrs):tt@(TagText t):tc@(TagClose "a"):cs)
+      | Text.length t >= 1
+      , Text.head t == '⟩'
+      , Just href' <- lookup "href" attrs
+      , href' == href
+      = [ to, tt, tc, TagClose "span"
+      , TagOpen "span" [("class", "alternate " <> fromMaybe "" (lookup "class" attrs))]
+      , TagText alternate
+      , TagClose "span"
+      , TagClose "span"
+      ] ++ foldEquations True cs
+    go href (c:cs) = c:go href cs
+    go _ [] = []
+foldEquations False (TagClose "html":cs) =
+ [TagOpen "style" [], TagText ".equations { display: none !important; }", TagClose "style", TagClose "html"]
+ ++ foldEquations True cs
+foldEquations has_eqn (c:cs) = c:foldEquations has_eqn cs
+foldEquations _ [] = []
 
 
 htmlInl :: Text -> Inline
