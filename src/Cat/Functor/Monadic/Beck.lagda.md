@@ -61,13 +61,14 @@ Suppose that we are given a $T$-algebra $(A, \nu)$. Note that $(TA,
 $A$. Let us illustrate this with a concrete example: Suppose we have the
 cyclic group $\bb{Z}/n\bb{Z}$, for some natural number $n$, which we
 regard as a subgroup of $\bb{Z}$. The corresponding algebra $(TA, \mu)$
-would be the [free group] on one generator --- the group of integers
----, whence we conclude that, in general, this $(TA, \mu)$ algebra
+would be the [free group] on one generator^[the group of integers]
+whence^[I was feeling pretentious when I wrote this sentence] we
+conclude that, in general, this "free-on-underlying" $(TA, \mu)$ algebra
 is very far from being the $(A, \nu)$ algebra we started with.
 
 [free group]: Algebra.Group.Free.html
 
-Still thinking about our $\bb{Z}/n\bb{Z}$ example, it feels like we
+Still, motivated by our $\bb{Z}/n\bb{Z}$ example, it feels like we
 should be able to [quotient] the algebra $(TA, \mu)$ by some set of
 _relations_ and get back the algebra $(A, \nu)$ we started with. This is
 absolutely true, and it's true even when the category of $T$-algebras is
@@ -79,17 +80,21 @@ lacking in quotients! In particular, we have the following theorem:
 
 [coequaliser]: Cat.Diagram.Coequaliser.html
 
-~~~{.quiver .short-1}
+~~~{.quiver .short-15}
 \[\begin{tikzcd}
-  {(T^2A,\mu)} & {(TA,\mu)} & {(A,\nu)}
+  {T^2A} & {TA} & {A,}
   \arrow["\mu", shift left=1, from=1-1, to=1-2]
   \arrow["T\nu"', shift right=1, from=1-1, to=1-2]
-  \arrow[from=1-2, to=1-3]
+  \arrow["\nu", from=1-2, to=1-3]
 \end{tikzcd}\]
 ~~~
 
-Furthermore, the arrows $\mu$ and $T\nu$ have a common left inverse, so
-this is a reflexive coequaliser, called the **Beck coequaliser**.
+called the **Beck coequaliser** (of $A$). Furthermore, this coequaliser
+is _reflexive_ in $\ca{C}^T$, meaning that the arrows $\mu$ and $T\nu$
+have a common right inverse. Elaborating a bit, this theorem lets us
+decompose any $T$-algebra $(A, \nu)$ into a canonical presentation of
+$A$ by generators and relations, as a quotient of a free algebra by a
+relation (induced by) the fold $\nu$.
 
 <!--
 ```agda
@@ -116,9 +121,12 @@ module _ (Aalg : Algebra C T) where
 ```
 -->
 
-The calculation is just.. well, calculation, so we present it without
-much further commentary. Observe that $\nu$ coequalises $\mu$ and $T\nu$
-essentially by the definition of being an algebra map.
+**Proof**. The proof is by calculation, applying the monad laws where
+applicable, so we present it without much further commentary. Observe
+that $\nu$ coequalises $\mu$ and $T\nu$ essentially by the definition of
+being an algebra map. Note that we do not make use of the fact that the
+monad $T$ was given by a _specified_ adjunction $F \dashv U$ in the
+proof, and any adjunction presenting $T$ will do.
 
 ```agda
   open is-coequaliser

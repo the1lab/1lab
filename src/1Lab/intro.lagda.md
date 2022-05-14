@@ -1327,13 +1327,11 @@ However, an inhabitant of this type has a much more interesting
 _topological_ interpretation!
 
 <details open>
-<summary>**Worked example**: Interpreting dependent sums as fibrations and
-dependent products as sections lets us derive topological
-interpretations for types.
-
-We show how to do this for the type $(x\ y : A) \to x \equiv y$, and
-show that a space $A$ admitting an inhabitant of this type has the
-property of being "contractible if inhabited".
+<summary>**Worked example**: Interpreting dependent sums as fibrations
+and dependent products as sections lets us derive topological
+interpretations for types. We show how to do this for the type $(x\ y :
+A) \to x \equiv y$, and show that a space $A$ admitting an inhabitant of
+this type has the property of "being contractible if it is inhabited".
 </summary>
 
 First, we'll shuffle the type so that we can phrase it in terms of a
@@ -1359,11 +1357,12 @@ endpoints of a path --- so we will write it $(d_0,d_1) : A^\bb{I}
 \to A \times A$, since it is the pairing of the maps which evaluate a
 path at the left and right endpoints of the interval.
 
-As a very quick aside, there is a map $r : \lambda x.\ (x, x,
-\id{refl})$, we get a diagram like the one below, expressing that
-the diagonal $A \to A \times A$ can be factored as a weak equivalence
-follwed by a fibration, exhibiting $A^\bb{I}$ as a path space object
-for $A$.
+As a very quick aside, there is a map $r : \lambda x.\ (x, x, \id{refl}$
+making the diagram below commute. This diagram expresses that the
+diagonal $A \to A \times A$ can be factored as a weak equivalence
+follwed by a fibration through $A^\bb{I}$, which is the defining
+property of a _path space object_.
+$A$.
 
 $$
 A \xrightarrow{\~r} A^\bb{I} \xrightarrow{(d0,d1)} \to A \times A
