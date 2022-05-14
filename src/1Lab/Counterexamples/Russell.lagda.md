@@ -1,3 +1,8 @@
+---
+description: |
+  We formalise Russell's paradox: It is impossible for the collection of
+  all types to be a type.
+---
 ```agda
 {-# OPTIONS --type-in-type #-}
 open import 1Lab.Path

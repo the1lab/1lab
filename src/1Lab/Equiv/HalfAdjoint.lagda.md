@@ -1,3 +1,10 @@
+---
+description: |
+  We formalise the theory of _half-adjoint equivalences_, another
+  well-behaved alternative to the notion of isomorphism. Then, we use
+  half-adjoint equivalences as a stepping stone to show that
+  isomorphisms are equivalences.
+---
 ```agda
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Path.Groupoid

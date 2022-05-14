@@ -1,3 +1,8 @@
+---
+description: |
+  We construct the torus in components as a cell complex, and establish
+  the equivalence between that definition and a product of circles.
+---
 ```agda
 open import 1Lab.Univalence
 open import 1Lab.HIT.S1

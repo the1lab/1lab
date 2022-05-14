@@ -1,3 +1,10 @@
+---
+description: |
+  We make precise the difference between dependent sum types and
+  existential quantifiers. In particular, we show that the "image" of a
+  function, but defined with Σ rather than ∃, fails to be different from
+  the domain of the function.
+---
 ```
 open import 1Lab.Equiv
 open import 1Lab.Path

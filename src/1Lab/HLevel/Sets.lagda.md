@@ -1,3 +1,8 @@
+---
+description: |
+  We characterise alternative definitions of the types with h-level 2,
+  the sets.
+---
 ```agda
 open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Retracts

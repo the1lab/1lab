@@ -1,3 +1,8 @@
+---
+description: |
+  We establish a correspondence between "fibrewise equivalences" and
+  equivalences of total spaces (Σ-types).
+---
 ```agda
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Equiv

@@ -1,3 +1,8 @@
+---
+definition: |
+  We construct propositional truncations, the reflections of a type into
+  the universe of propositions.
+---
 ```agda
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Type.Sigma

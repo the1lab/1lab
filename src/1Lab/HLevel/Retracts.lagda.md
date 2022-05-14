@@ -1,3 +1,10 @@
+---
+description: |
+  We establish that h-levels are closed under retractions, and use this
+  to establish many closure properties of h-levels. Then we table
+  these closure properties using Agda's instance resolution mechanism,
+  automating "boring" h-level obligations.
+---
 ```agda
 open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma

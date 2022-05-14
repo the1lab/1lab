@@ -1,3 +1,8 @@
+---
+description: |
+  We make explicit the higher groupoid structure of type formers, which
+  is derived from their Kan operations.
+---
 ```agda
 open import 1Lab.Equiv
 open import 1Lab.Path hiding (_∙_)

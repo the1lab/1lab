@@ -1,3 +1,10 @@
+---
+description: |
+  We formalise _embeddings_, a homotopically well-behaved generalisation
+  of injective functions. It's immediate from our definition that every
+  injective function between sets is an embedding, and that every
+  equivalence is an embedding.
+---
 ```agda
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe

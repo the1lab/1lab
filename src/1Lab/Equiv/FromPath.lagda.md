@@ -1,3 +1,8 @@
+---
+description: |
+  We show how to turn a path into an equivalence, in a computationally
+  efficient manner, using cubical methods.
+---
 ```
 open import 1Lab.HLevel
 open import 1Lab.Equiv
