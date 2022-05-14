@@ -206,20 +206,19 @@ Defining the identity and composition maps is mostly an exercise in
 categorical yoga:
 
 ```agda
-  Eilenberg-Moore .id {o , x} = record
-    { morphism = C.id
-    ; commutes = C.id C.∘ ν x     ≡⟨ C.id-comm-sym ⟩
-                 ν x C.∘ C.id     ≡⟨ ap (C._∘_ _) (sym M-id) ⟩
-                 ν x C.∘ M₁ C.id  ∎
-    }
+  Eilenberg-Moore .id {o , x} .morphism = C.id
+  Eilenberg-Moore .id {o , x} .commutes =
+    C.id C.∘ ν x     ≡⟨ C.id-comm-sym ⟩
+    ν x C.∘ C.id     ≡⟨ ap (C._∘_ _) (sym M-id) ⟩
+    ν x C.∘ M₁ C.id  ∎
 
-  Eilenberg-Moore ._∘_ {_ , x} {_ , y} {_ , z} F G = record
-    { morphism = morphism F C.∘ morphism G
-    ; commutes = (morphism F C.∘ morphism G) C.∘ ν x            ≡⟨ C.extendr (commutes G) ⟩
-                  (morphism F C.∘ ν y) C.∘ M₁ (morphism G)       ≡⟨ ap₂ C._∘_ (commutes F) refl ⟩
-                  (ν z C.∘ M₁ (morphism F)) C.∘ M₁ (morphism G)  ≡⟨ C.pullr (sym (M-∘ _ _)) ⟩
-                  ν z C.∘ M₁ (morphism F C.∘ morphism G)         ∎
-    }
+  Eilenberg-Moore ._∘_ {_ , x} {_ , y} {_ , z} F G .morphism =
+    morphism F C.∘ morphism G
+  Eilenberg-Moore ._∘_ {_ , x} {_ , y} {_ , z} F G .commutes =
+    (morphism F C.∘ morphism G) C.∘ ν x            ≡⟨ C.extendr (commutes G) ⟩
+    (morphism F C.∘ ν y) C.∘ M₁ (morphism G)       ≡⟨ ap₂ C._∘_ (commutes F) refl ⟩
+    (ν z C.∘ M₁ (morphism F)) C.∘ M₁ (morphism G)  ≡⟨ C.pullr (sym (M-∘ _ _)) ⟩
+    ν z C.∘ M₁ (morphism F C.∘ morphism G)         ∎
 ```
 
 <details>
@@ -278,12 +277,10 @@ become those of the $M$-action.
 
 ```agda
   Free : Functor C Eilenberg-Moore
-  Free .F₀ A = M₀ A ,
-    record
-      { ν      = mult.η A
-      ; ν-mult = mult-assoc
-      ; ν-unit = right-ident
-      }
+  Free .F₀ A .fst = M₀ A
+  Free .F₀ A .snd .ν = mult .η A
+  Free .F₀ A .snd .ν-mult = mult-assoc
+  Free .F₀ A .snd .ν-unit = right-ident
 ```
 
 The construction of free $M$-algebras is furthermore functorial on the
@@ -305,10 +302,8 @@ algebraic action:
 ~~~
 
 ```agda
-  Free .F₁ f = record
-    { morphism = M₁ f
-    ; commutes = sym (mult.is-natural _ _ _)
-    }
+  Free .F₁ f .morphism = M₁ f
+  Free .F₁ f .commutes = sym $ mult.is-natural _ _ _
   Free .F-id = Algebra-hom-path M-id
   Free .F-∘ f g = Algebra-hom-path (M-∘ f g)
 ```
