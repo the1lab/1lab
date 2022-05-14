@@ -1327,8 +1327,7 @@ However, an inhabitant of this type has a much more interesting
 _topological_ interpretation!
 
 <details open>
-<summary>
-**Worked example**: Interpreting dependent sums as fibrations and
+<summary>**Worked example**: Interpreting dependent sums as fibrations and
 dependent products as sections lets us derive topological
 interpretations for types.
 

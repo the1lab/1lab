@@ -40,18 +40,18 @@ open Algebra-on
 
 # Beck's coequaliser
 
-Let $(F \dashv U) : \ca{C} \leftrightarrows \ca{D}$ be a pair of
-[adjoint functors]. Recall that every such adjunction [induces] a
-[monad] $T$ (which we will abbreviate by $T$) on the category $\ca{C}$,
-and a "[comparison]" functor $K : \ca{C} \to \ca{C}^{T}$ into the
-[Eilenberg-Moore category] of $T$. In this module we will lay out a
-sufficient condition for the functor $K to have a left adjoint, which we
-denote $K^{-1}$. Let us first establish a result about the presentation
-of $T$-[algebras] by "generators and relations".
+Let $F : \ca{C} \to \ca{D}$ be a functor admitting a [right adjoint]
+$U : \ca{D} \to \ca{C}$. Recall that every adjunction [induces] a
+[monad] $UF$ (which we will call $T$ for short) on the category
+$\ca{C}$, and a "[comparison]" functor $K : \ca{D} \to \ca{C}^{T}$ into
+the [Eilenberg-Moore category] of $T$. In this module we will lay out a
+sufficient condition for the functor $K$ to have a left adjoint, which
+we call $K^{-1}$ (`Comparison⁻¹`). Let us first establish a result about
+the presentation of $T$-[algebras] by "generators and relations".
 
 [monad]: Cat.Diagram.Monad.html
 [induces]: Cat.Functor.Adjoint.Monad.html
-[adjoint functors]: Cat.Functor.Adjoint.html
+[right adjoint]: Cat.Functor.Adjoint.html
 [comparison]: Cat.Functor.Adjoint.Monadic.html
 [algebras]: Cat.Diagram.Monad.html#algebras-over-a-monad
 [Eilenberg-Moore category]: Cat.Diagram.Monad.html#eilenberg-moore-category
