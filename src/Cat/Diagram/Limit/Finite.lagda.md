@@ -72,8 +72,8 @@ to give a terminal object and binary products.
     Pb : ∀ {A B C} (f : Hom A C) (g : Hom B C) → Ob
     Pb f g = pullbacks f g .Pullback.apex
 
-    module Cart = Cartesian C products
-    open Cart using (_⊗_) public
+    module Cart = Cartesian C products hiding (_⊗_)
+    open Cartesian C products using (_⊗_) public
 
   open Finitely-complete
 ```
