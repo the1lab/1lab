@@ -154,6 +154,7 @@ of shape categories are entirely determined by the "introduction forms"
 `cospan→cospan-diagram`{.Agda} and `par-arrows→par-diagram`{.Agda}.
 
 ```agda
+  open import Cat.Instances.Shape.Pair
   open import Cat.Instances.Shape.Parallel
   open import Cat.Instances.Shape.Cospan
   open import Cat.Diagram.Limit.Equaliser
@@ -166,11 +167,8 @@ of shape categories are entirely determined by the "introduction forms"
   right-adjoint→product
     : ∀ {A B} → Product D A B → Product C (R.₀ A) (R.₀ B)
   right-adjoint→product {A = A} {B} prod =
-    Lim→Prod C (fixup (right-adjoint-limit (Prod→Lim D prod)))
-    where
-      fixup : Limit (R F∘ 2-object-diagram D {iss = Bool-is-set} A B)
-            → Limit (2-object-diagram C {iss = Bool-is-set} (R.₀ A) (R.₀ B))
-      fixup = subst Limit (canonical-functors _ _)
+    Lim→Prod C (right-adjoint-limit
+      (Prod→Lim D {F = 2-objects→pair-diagram A B} prod))
 
   right-adjoint→pullback
     : ∀ {A B c} {f : D.Hom A c} {g : D.Hom B c}
