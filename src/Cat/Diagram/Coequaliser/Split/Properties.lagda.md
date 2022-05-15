@@ -22,7 +22,7 @@ This module proves some general properties of [split coequalisers].
 
 The property of being a split coequaliser is a purely diagrammatic one, which has
 the lovely property of being preserved by _all_ functors. We call such colimits
-absolute.
+**absolute**.
 
 ```agda
 module _ {o o′ ℓ ℓ′}
