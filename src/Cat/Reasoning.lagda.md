@@ -37,6 +37,9 @@ id-comm {f = f} = idr f ∙ sym (idl f)
 id-comm-sym : ∀ {a b} {f : Hom a b} → id ∘ f ≡ f ∘ id
 id-comm-sym {f = f} = idl f ∙ sym (idr f)
 
+id₂ : ∀ {a} → id ∘ id ≡ id {a}
+id₂ = idl id
+
 module _ (a≡id : a ≡ id) where
 
   eliml : a ∘ f ≡ f
