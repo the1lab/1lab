@@ -36,7 +36,7 @@ to consider is the quotient $B/R$, which gives us the following diagram:
 Now, when one has a quotient, it's useful to have a means of picking representatives
 for each equivalence class. This is essentially what normalization algorithms do,
 which we can both agree are very useful indeed. This ends up defining a map
-$s : B/R \to B$ that is a section of $q$ (IE: $q \circ s = id$).
+$s : B/R \to B$ that is a section of $q$ (i.e: $q \circ s = id$).
 
 This gives us the following diagram (We've omited the injection of $R$ into
 $B \times B$ for clarity).
@@ -51,7 +51,7 @@ $B \times B$ for clarity).
 ~~~
 
 This lets us define yet another map $r : B \to R$, which will witness the fact that
-any $b : B$ is related to it's representative $s(q(b))$. We can define this map explicitly
+any $b : B$ is related to its representative $s(q(b))$. We can define this map explicitly
 as so:
 $$
   r(b) = (b, s(q(b)))
@@ -73,7 +73,7 @@ a quotient by an equivalence relation, along with a means of picking representat
 \end{tikzcd}\]
 ~~~
 
-Such a situation is called a *Split Coequaliser*.
+Such a situation is called a **split coequaliser**.
 
 ```agda
 record is-split-coequaliser (f g : Hom A B) (e : Hom B E)
@@ -85,7 +85,8 @@ record is-split-coequaliser (f g : Hom A B) (e : Hom B E)
     commute : s ∘ e ≡ g ∘ t
 ```
 
-Now, let's show that this thing actually deserves the name Coequaliser. ```agda
+Now, let's show that this thing actually deserves the name Coequaliser.
+```agda
 is-split-coequaliser→is-coequalizer :
   is-split-coequaliser f g e s t → is-coequaliser f g e
 is-split-coequaliser→is-coequalizer
