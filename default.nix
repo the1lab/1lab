@@ -50,7 +50,7 @@ let
   shakefile = import ./support/nix/build-shake.nix
     {
       inherit our-ghc haskellPackages;
-      inherit (pkgs) removeReferencesTo stdenv upx lua5_3;
+      inherit (pkgs) removeReferencesTo stdenv upx lua5_3 gmp;
       name = "1lab-shake";
       main = "Main.hs";
     };
@@ -70,8 +70,6 @@ in
 
       # For building the text and maths:
       gitMinimal sassc
-      haskellPackages.agda-reference-filter
-      haskellPackages.agda-fold-equations
 
       # For building diagrams:
       poppler_utils rubber our-texlive
@@ -101,8 +99,6 @@ in
 
         # For building the text and maths:
         gitMinimal sassc
-        haskellPackages.agda-reference-filter
-        haskellPackages.agda-fold-equations
 
         # For building diagrams:
         poppler_utils rubber
@@ -114,7 +110,7 @@ in
       agda-typed-html = import ./support/nix/build-shake.nix
         {
           inherit our-ghc haskellPackages;
-          inherit (pkgs) removeReferencesTo stdenv upx lua5_3;
+          inherit (pkgs) removeReferencesTo stdenv upx lua5_3 gmp;
           main = "Wrapper.hs";
           name = "agda-typed-html";
         };

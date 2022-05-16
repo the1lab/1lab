@@ -1,29 +1,21 @@
 {-# LANGUAGE BlockArguments, OverloadedStrings, RankNTypes #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving, TypeFamilies, FlexibleContexts #-}
-{-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE TypeFamilies, FlexibleContexts #-}
 module Main (main) where
 
-import Control.Monad.Error.Class
 import Control.Monad.IO.Class
 import Control.Monad.Writer
 
-import qualified Data.ByteString.Lazy as LazyBS
-import qualified Data.Text.Encoding as Text
 import qualified Data.Text.IO as Text
 import qualified Data.Map.Lazy as Map
 import qualified Data.Text as Text
 import qualified Data.Set as Set
-import Data.Digest.Pure.SHA
 import Data.Map.Lazy (Map)
-import Data.Generics
 import Data.Foldable
 import Data.Maybe
 import Data.Text (Text)
-import Data.Char (isDigit)
 import Data.List
 
 import Development.Shake.FilePath
-import Development.Shake.Classes (Hashable, Binary, NFData)
 import Development.Shake
 
 import Network.URI.Encode (decodeText)
@@ -31,14 +23,8 @@ import Network.URI.Encode (decodeText)
 import qualified System.Directory as Dir
 
 import Text.HTML.TagSoup
-import Text.DocTemplates
 
-import Text.Pandoc.Citeproc
-import Text.Pandoc.Filter
-import Text.Pandoc.Walk
-import Text.Pandoc
 import Text.Printf
-import qualified Citeproc as Cite
 
 import Agda.Interaction.FindFile (SourceFile(..))
 import Agda.TypeChecking.Monad.Base
@@ -50,8 +36,14 @@ import Agda.Utils.FileName
 import qualified System.Environment as Env
 import HTML.Backend
 import HTML.Base
+import HTML.Emit
 import System.IO (IOMode(..), hPutStrLn, withFile)
 import Agda
+
+import Shake.Markdown
+import Shake.KaTeX
+import Shake.LinkGraph
+import Shake.Git
 
 {-
   Welcome to the Horror That Is 1Lab's Build Script.
@@ -61,9 +53,8 @@ import Agda
 main :: IO ()
 main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ do
   fileIdMap <- newCache parseFileIdents
-  gitCommit <- newCache gitCommit
-  gitAuthors' <- addOracleCache (gitAuthors (gitCommit ()))
-  let gitAuthors = gitAuthors' . GitAuthors
+  gitRules
+  katexRules
 
   {-
     Write @_build/all-pages.agda@. This imports every module in the source tree
@@ -107,10 +98,8 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
 
     ismd <- liftIO $ Dir.doesFileExist (input <.> ".md")
 
-    gitCommit <- gitCommit ()
-
     if ismd
-      then buildMarkdown gitCommit gitAuthors (input <.> ".md") out
+      then buildMarkdown (input <.> ".md") out
       else liftIO $ Dir.copyFile (input <.> ".html") out
 
   {-
@@ -158,8 +147,6 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     command_ [Traced "build-diagram"] "sh"
       ["support/build-diagram.sh", out, inp]
     removeFilesAfter "." ["rubtmp*"]
-
-  latexRules
 
   "_build/html/css/*.css" %> \out -> do
     let inp = "support/web/css/" </> takeFileName out -<.> "scss"
@@ -226,10 +213,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
 
   -- Profit!
 
--- | Write a HTML file, correctly handling the closing of some tags.
-renderHTML5 :: [Tag Text] -> Text
-renderHTML5 = renderTagsOptions renderOptions{ optMinimize = min } where
-  min = flip elem ["br", "meta", "link", "img", "hr"]
+
 
 --------------------------------------------------------------------------------
 -- Various oracles
@@ -259,240 +243,6 @@ parseFileIdents mod =
            (Map.insert href name rev) xs
     go fwd rev (_:xs) = go fwd rev xs
     go fwd rev [] = (fwd, rev)
-
-
--- | Get the current git commit.
-gitCommit :: () -> Action String
-gitCommit () = do
-  Stdout t <- command [] "git" ["rev-parse", "--verify", "HEAD"]
-  pure (head (lines t))
-
-newtype GitAuthors = GitAuthors FilePath
-  deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
-
-type instance RuleResult GitAuthors = [Text]
-
--- | Get the authors for a particular commit.
-gitAuthors :: Action String -> GitAuthors -> Action [Text]
-gitAuthors commit (GitAuthors path) = do
-  _commit <- commit -- We depend on the commit, but don't actually need it.
-
-  -- Sort authors list and make it unique.
-  Stdout authors <- command [] "git" ["log", "--format=%aN", "--", path]
-  let authorSet = Set.fromList . Text.lines . Text.decodeUtf8 $ authors
-
-  Stdout coauthors <-
-    command [] "git" ["log", "--format=%(trailers:key=Co-authored-by,valueonly)", "--", path]
-
-  let
-    coauthorSet = Set.fromList
-      . map dropEmail
-      . filter (not . Text.null . Text.strip)
-      . Text.lines
-      . Text.decodeUtf8 $ coauthors
-
-    dropEmail = Text.unwords . init . Text.words
-
-  pure . Set.toList $ authorSet <> coauthorSet
-
---------------------------------------------------------------------------------
--- Markdown Compilation
---------------------------------------------------------------------------------
-
-data MarkdownState = MarkdownState
-  { mdReferences :: [Val Text]
-  , mdDependencies :: [String]
-  }
-
-instance Semigroup MarkdownState where
-  (MarkdownState r s) <> (MarkdownState r' s') = MarkdownState (r <> r') (s <> s')
-
-instance Monoid MarkdownState where
-  mempty = MarkdownState mempty mempty
-
-
-{-| Convert a markdown file to templated HTML.
-
-After parsing the markdown, we perform the following post-processing steps:
-  - Run @agda-reference-filter@ on the parsed Markdown.
-  - Put inline equations (@$...$@) in a special @<span>@ to avoid word wrapping.
-  - Add header links to each header.
-  - For each quiver diagram, write its contents to @_build/diagrams/DIGEST.tex@
-    and depend on @_build/html/DIGEST.svg@. This kicks off another build step
-    which runs @support/build-diagram.sh@ to build the SVG.
-  - For each equation, invoke katex to compile them to HTML. This is cached
-    between runs (search for 'LatexEquation' in 'main').
-  - Extract the references block (if present), passing it through to the
-    template instead. Also add the paper's title to all reference links.
-  - Fetch all git authors for this file and add it to the template info.
-
-Finally, we emit the markdown to HTML using the @support/web/template.html@
-template, pipe the output of that through @agda-fold-equations@, and write
-the file.
--}
-buildMarkdown :: String
-              -> (FilePath -> Action [Text])
-              -> FilePath -> FilePath -> Action ()
-buildMarkdown gitCommit gitAuthors input output = do
-  let
-    templateName = "support/web/template.html"
-    bibliographyName = "src/bibliography.bibtex"
-    modname = dropDirectory1 (dropDirectory1 (dropExtension input))
-
-  need [templateName, bibliographyName, input]
-
-  modulePath <- findModule modname
-  authors <- gitAuthors modulePath
-  let
-    permalink = gitCommit </> modulePath
-
-    title
-      | length modname > 24 = '…':reverse (take 24 (reverse modname))
-      | otherwise = modname
-
-    mStr = MetaString . Text.pack
-    patchMeta
-      = Meta
-      . Map.insert "title" (mStr title)
-      . Map.insert "source" (mStr permalink)
-      . Map.insert "bibliography" (mStr bibliographyName)
-      . Map.insert "link-citations" (MetaBool True)
-      . unMeta
-
-  (markdown, references) <- liftIO do
-    contents <- Text.readFile input
-    either (fail . show) pure =<< runIO do
-      markdown <- readMarkdown def { readerExtensions = getDefaultExtensions "markdown" } [(input, contents)]
-      Pandoc meta markdown <- applyFilters def [JSONFilter "agda-reference-filter"] ["html"] markdown
-      let pandoc = Pandoc (patchMeta meta) markdown
-      (,) <$> processCitations pandoc <*> getReferences Nothing pandoc
-
-  let
-    htmlInl = RawInline (Format "html")
-
-    refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
-
-    -- | Replace any expression $foo$-bar with <span ...>$foo$-bar</span>, so that
-    -- the equation is not split when word wrapping.
-    patchInlines (m@Math{}:s@(Str txt):xs)
-      | not (Text.isPrefixOf " " txt)
-      = htmlInl "<span style=\"white-space: nowrap;\">" : m : s : htmlInl "</span>"
-      : patchInlines xs
-    patchInlines (x:xs) = x:patchInlines xs
-    patchInlines [] = []
-
-    -- Make all headers links, and add an anchor emoji.
-    patchBlock (Header i a@(ident, _, _) inl) = pure $ Header i a
-      $ htmlInl (Text.concat ["<a href=\"#", ident, "\" class=\"header-link\">"])
-      : inl
-      ++ [htmlInl "<span class=\"header-link-emoji\">🔗</span></a>"]
-    -- Replace quiver code blocks with a link to an SVG file, and depend on the SVG file.
-    patchBlock (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes = do
-      let
-        digest = showDigest . sha1 . LazyBS.fromStrict $ Text.encodeUtf8 contents
-        title = fromMaybe "commutative diagram" (lookup "title" attrs)
-      liftIO $ Text.writeFile ("_build/diagrams" </> digest <.> "tex") contents
-      tell mempty { mdDependencies = ["_build/html" </> digest <.> "svg"] }
-
-      pure $ Div ("", ["diagram-container"], [])
-        [ Plain [ Image (id, "diagram":classes, attrs) [] (Text.pack (digest <.> "svg"), title) ]
-        ]
-    -- Find the references block, parse the references, and remove it. We write
-    -- the references as part of our template instead.
-    patchBlock (Div ("refs", _, _) body) = do
-      for_ body \ref -> case ref of
-        (Div (id, _, _) body) -> do
-          -- If our citation is a single paragraph, don't wrap it in <p>.
-          let body' = case body of
-                [Para p] -> [Plain p]
-                body -> body
-          -- Now render it the citation itself to HTML and add it to our template
-          -- context.
-          body <- either (fail . show) pure . runPure $
-            writeHtml5String def { writerExtensions = getDefaultExtensions "html" } (Pandoc mempty body')
-          let ref = Context $ Map.fromList
-                    [ ("id", toVal id)
-                    , ("body", toVal body)
-                    ]
-          tell mempty { mdReferences = [ MapVal ref ]}
-
-        _ -> fail ("Unknown reference node " ++ show ref)
-      pure Null
-
-    patchBlock h = pure h
-
-    -- Pre-render latex equations.
-    patchInline (Math DisplayMath contents) = htmlInl <$> askOracle (LatexEquation (True, contents))
-    patchInline (Math InlineMath contents) = htmlInl <$> askOracle (LatexEquation (False, contents))
-    -- Add the title to reference links.
-    patchInline (Link attrs contents (target, ""))
-      | Just citation <- Text.stripPrefix "#ref-" target
-      , Just ref <- Map.lookup citation refMap
-      , Just title <- Cite.valToText =<< Cite.lookupVariable "title" ref
-      = pure $ Link attrs contents (target, title)
-    patchInline h = pure h
-
-  liftIO $ Dir.createDirectoryIfMissing False "_build/diagrams"
-
-  markdown <- pure $ walk patchInlines markdown
-  markdown <- walkM patchInline markdown
-  (markdown, MarkdownState references dependencies) <- runWriterT (walkM patchBlock markdown)
-  need dependencies
-
-  text <- liftIO $ either (fail . show) pure =<< runIO do
-    template <- getTemplate templateName >>= runWithPartials . compileTemplate templateName
-                >>= either (throwError . PandocTemplateError . Text.pack) pure
-
-    let
-      authors' = case authors of
-        [] -> "Nobody"
-        [x] -> x
-        _ -> Text.intercalate ", " (init authors) `Text.append` " and " `Text.append` last authors
-
-      context = Context $ Map.fromList
-                [ (Text.pack "is-index", toVal (modname == "index"))
-                , (Text.pack "authors", toVal authors')
-                , (Text.pack "reference", toVal references)
-                ]
-      options = def { writerTemplate = Just template
-                    , writerTableOfContents = True
-                    , writerVariables = context
-                    , writerExtensions = getDefaultExtensions "html" }
-    writeHtml5String options markdown
-
-  liftIO $ Text.writeFile output text
-
-  command_ [] "agda-fold-equations" [output]
-
--- | Find the original Agda file from a 1Lab module name.
-findModule :: MonadIO m => String -> m FilePath
-findModule modname = do
-  let toPath '.' = '/'
-      toPath c = c
-  let modfile = "src" </> map toPath modname
-
-  exists <- liftIO $ Dir.doesFileExist (modfile <.> "lagda.md")
-  pure $ if exists
-    then modfile <.> "lagda.md"
-    else modfile <.> "agda"
-
-newtype LatexEquation = LatexEquation (Bool, Text) -- TODO: Less lazy instance
-  deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
-
-type instance RuleResult LatexEquation = Text
-
--- | Compile a latex equation to a HTML string.
-latexRules :: Rules ()
-latexRules = versioned 1 do
-  _ <- addOracleCache \(LatexEquation (display, tex)) -> do
-    need [".macros"]
-
-    let args = ["-f", ".macros", "-t"] ++ ["-d" | display]
-        stdin = LazyBS.fromStrict $ Text.encodeUtf8 tex
-    Stdout out <- command [StdinBS stdin] "node" ("node_modules/.bin/katex":args)
-    pure . Text.stripEnd . Text.decodeUtf8 $ out
-
-  pure ()
 
 --------------------------------------------------------------------------------
 -- Additional HTML post-processing
@@ -544,39 +294,3 @@ compileAgda path _ = do
     (htmlBackend (filePath basepn) defaultHtmlOptions{htmlOptGenTypes = not skipTypes}:)
   callBackend "HTML" IsMain cr
 
---------------------------------------------------------------------------------
--- Generate all edges between pages
---------------------------------------------------------------------------------
-
-findLinks :: MonadIO m => (String -> m ()) -> [Tag String] -> m (Set.Set String)
-findLinks cb (TagOpen "a" attrs:xs)
-  | Just href' <- lookup "href" attrs
-  , (_, anchor) <- span (/= '#') href'
-  , all (not . isDigit) anchor
-  = do
-    let href = takeWhile (/= '#') href'
-    t <- liftIO $ Dir.doesFileExist ("_build/html1" </> href)
-    cb ("_build/html1" </> href)
-    if (t && Set.notMember href ignoreLinks)
-      then Set.insert href <$> findLinks cb xs
-      else findLinks cb xs
-findLinks k (_:xs) = findLinks k xs
-findLinks _ [] = pure mempty
-
-ignoreLinks :: Set.Set String
-ignoreLinks = Set.fromList [ "all-pages.html", "index.html" ]
-
-crawlLinks
-  :: MonadIO m'
-  => (forall m. MonadIO m => String -> String -> m ())
-  -> (String -> m' ())
-  -> [String]
-  -> m' ()
-crawlLinks link need = go mempty where
-  go _visitd [] = pure ()
-  go visited (x:xs)
-    | x `Set.member` visited = go visited xs
-    | otherwise = do
-      links <- findLinks need =<< fmap parseTags (liftIO (readFile ("_build/html1" </> x)))
-      for_ links $ \other -> link x other
-      go (Set.insert x visited) (Set.toList links ++ xs)

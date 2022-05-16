@@ -5,13 +5,14 @@
 , upx
 , lua5_3
 , name
+, gmp
 , main
 }:
 stdenv.mkDerivation {
   inherit name;
   src = ../shake;
   nativeBuildInputs = [ our-ghc removeReferencesTo upx ];
-  propagatedBuildInputs = [ lua5_3 ];
+  propagatedBuildInputs = [ lua5_3 gmp ];
 
   buildPhase = ''
   ghc -o ${main} app/${main} -threaded -rtsopts -iapp -O2 -split-sections
