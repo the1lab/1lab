@@ -58,11 +58,7 @@ module _ {F : Functor C D} (conservative : is-conservative F) where
     → (∀ (K : Cone Dia) → Preserves-limit F K)
     → (∀ (K : Cone Dia) → Reflects-limit F K)
   conservative-reflects-limits {Dia = Dia} L-lim preserves K limits =
-    apex-iso→is-limit Dia K L-lim
-      $ conservative
-      $ subst (λ ϕ → is-invertible D ϕ) F-preserves-universal
-      $ Cone-invertible→apex-invertible (F F∘ Dia)
-      $ !-invertible (Cones (F F∘ Dia)) F∘L-lim K-lim
+    apex-iso→is-limit Dia K L-lim $ conservative invert
     where
       F∘L-lim : Limit (F F∘ Dia)
       F∘L-lim .Terminal.top = F-map-cone F (Terminal.top L-lim)
@@ -77,11 +73,26 @@ module _ {F : Functor C D} (conservative : is-conservative F) where
       open Cone-hom
 
       F-preserves-universal
-        : hom F∘L-lim.! ≡ F .F₁ (hom {x = K} L-lim.!)
+        : F∘L-lim.! .hom ≡ F .F₁ (L-lim.! {x = K} .hom)
       F-preserves-universal =
-        hom F∘L-lim.! ≡⟨ ap hom (F∘L-lim.!-unique (F-map-cone-hom F L-lim.!)) ⟩
-        hom (F-map-cone-hom F (Terminal.! L-lim)) ≡⟨⟩
-        F .F₁ (hom L-lim.!) ∎
+        F∘L-lim.! .hom                           ≡⟨ ap hom (F∘L-lim.!-unique (F-map-cone-hom F L-lim.!)) ⟩
+        F-map-cone-hom F (Terminal.! L-lim) .hom ≡⟨⟩
+        F .F₁ (L-lim.! .hom)                     ∎
+
+      open is-invertible
+      open Inverses
+      inverse = !-invertible (Cones (F F∘ Dia)) F∘L-lim K-lim
+
+      invert : D.is-invertible (F .F₁ (L-lim.! .hom))
+      invert .inv = inverse .inv .hom
+      invert .inverses .invl =
+        F .F₁ (L-lim.! .hom) D.∘ invert .inv ≡˘⟨ F-preserves-universal D.⟩∘⟨refl ⟩
+        F∘L-lim.! .hom D.∘ invert .inv       ≡⟨ ap hom (inverse .inverses .invl) ⟩
+        D.id                                 ∎
+      invert .inverses .invr =
+        invert .inv D.∘ F .F₁ (L-lim.! .hom) ≡˘⟨ D.refl⟩∘⟨ F-preserves-universal ⟩
+        invert .inv D.∘ F∘L-lim.! .hom       ≡⟨ ap hom (inverse .inverses .invr) ⟩
+        D.id                                 ∎
 ```
 
 We also have a dual theorem for colimits.
