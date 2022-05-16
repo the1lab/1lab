@@ -3,7 +3,7 @@ open import Cat.Diagram.Initial
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
-import Cat.Morphism
+import Cat.Reasoning
 
 module Cat.Diagram.Colimit.Base where
 ```
@@ -64,8 +64,8 @@ We this pair of category and functor a _diagram_ in $C$.
 ```agda
 module _ {J : Precategory o ℓ} {C : Precategory o′ ℓ′} (F : Functor J C) where
   private
-    import Cat.Reasoning J as J
-    import Cat.Reasoning C as C
+    module J = Cat.Reasoning J
+    module C = Cat.Reasoning C
     module F = Functor F
 
   record Cocone : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
@@ -200,6 +200,9 @@ cocones over that diagram.
 
   Colimit-apex : Colimit → C.Ob
   Colimit-apex x = coapex (Initial.bot x)
+
+  Colimit-universal : (L : Colimit) → (K : Cocone) → C.Hom (Colimit-apex L) (coapex K) 
+  Colimit-universal L K = hom (Initial.¡ L {K})
 ```
 
 
@@ -246,6 +249,67 @@ say that it _preserves_ colimits.
   Preserves-colimit : Cocone Dia → Type _
   Preserves-colimit K = is-colimit Dia K → is-colimit (F F∘ Dia) (F-map-cocone K)
 ```
+
+## Reflection of colimits
+
+We say a functor __reflects__ colimits if the existence of a colimiting
+cocone "downstairs" implies that we must have a limiting cocone "upstairs".
+
+More concretely, if the image of a cocone $F \circ K$ in $\ca{D}$
+is a colimiting cocone, then $K$ must have already been a
+colimiting cocone in $\ca{C}$
+
+```agda
+  Reflects-colimit : Cocone Dia → Type _
+  Reflects-colimit K = is-colimit (F F∘ Dia) (F-map-cocone K) → is-colimit Dia K
+```
+
+# Uniqueness
+
+<!--
+```agda
+module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+         (F : Functor J C)
+       where
+  private
+    module J = Precategory J
+    module C = Cat.Reasoning C
+    module F = Functor F
+    module Cocones = Cat.Reasoning (Cocones F)
+```
+-->
+
+If the universal map $L \to K$ between coapexes of some colimit is
+invertible, that means that $K$ is also a colimiting cocone.
+
+```agda
+  coapex-iso→is-colimit
+    : (K : Cocone F)
+      (L : Colimit F)
+      → C.is-invertible (Colimit-universal F L K)
+      → is-colimit F K
+  coapex-iso→is-colimit K L invert K′ = colimits where
+    module K = Cocone K
+    module K′ = Cocone K′
+    module L = Cocone (Initial.bot L)
+    module universal K = Cocone-hom (Initial.¡ L {K})
+    open C.is-invertible invert
+
+    colimits : is-contr (Cocones.Hom K K′)
+    colimits .centre .Cocone-hom.hom = universal.hom K′ C.∘ inv 
+    colimits .centre .Cocone-hom.commutes _ =
+      (universal.hom K′ C.∘ inv) C.∘ K.ψ _                       ≡˘⟨ ap ((universal.hom K′ C.∘ inv) C.∘_) (universal.commutes K _) ⟩
+      (universal.hom K′ C.∘ inv) C.∘ (universal.hom K C.∘ L.ψ _) ≡⟨ C.cancel-inner invr ⟩
+      universal.hom K′ C.∘ L.ψ _                                 ≡⟨ universal.commutes K′ _ ⟩
+      K′.ψ _                                                     ∎
+    colimits .paths f =
+      let module f = Cocone-hom f in
+      Cocone-hom-path F $ C.invertible→epic invert _ _ $
+      (universal.hom K′ C.∘ inv) C.∘ universal.hom K ≡⟨ C.cancelr invr ⟩
+      universal.hom K′                               ≡⟨ ap Cocone-hom.hom (Initial.¡-unique L (f Cocones.∘ Initial.¡ L)) ⟩
+      f.hom C.∘ universal.hom K                      ∎
+```
+
 
 ## Cocompleteness
 
