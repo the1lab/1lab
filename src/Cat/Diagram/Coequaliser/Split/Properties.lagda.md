@@ -61,6 +61,116 @@ of symbol shuffling.
       F-split-coeq .commute = weave commute
 ```
 
+## Split Epis and Kernel Pairs
+
+We've already seen one way to construct a split coequalizer from a split epimorphism,
+via `is-split-epic→is-split-coequalizer`{.Agda}. However, this is not the only way!
+A somewhat more intuitive construction can be used which involves taking the kernel
+pair of some split epimorphism $e : B \to C$.
+
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} where
+  open Cat.Reasoning C
+  open Cat.Diagram.Pullback C
+  open SplitCoeq C
+```
+
+First, some preliminaries. We can construct a morphism from $B$ into the kernel
+pair of $e$ by like so:
+
+~~~{.quiver}
+\[\begin{tikzcd}
+	B \\
+	& A & B \\
+	& B & C
+	\arrow[from=2-2, to=3-2]
+	\arrow[from=2-2, to=2-3]
+	\arrow["e"', from=2-3, to=3-3]
+	\arrow["e", from=3-2, to=3-3]
+	\arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=2-2, to=3-3]
+	\arrow[color={rgb,255:red,214;green,92;blue,92}, dashed, from=1-1, to=2-2]
+	\arrow["id"', curve={height=12pt}, from=1-1, to=3-2]
+	\arrow["{s \circ e}", curve={height=-12pt}, from=1-1, to=2-3]
+\end{tikzcd}\]
+~~~
+
+Using our intuition of split coequalisers as quotients with representatives,
+this map will pair up an element of $b$ with it's representative.
+
+```agda
+  private
+    represent
+      : ∀ {A B C} {p₁ p₂ : Hom A B} {e : Hom B C} {s : Hom C B}
+      → (kp : is-pullback p₁ e p₂ e)
+      → (section : s is-section-of e)
+      → Hom B A
+    represent {e = e} {s = s} kp section = limiting commutes where
+        open is-pullback kp
+        abstract
+          commutes : e ∘ id ≡ e ∘ s ∘ e
+          commutes = 
+            e ∘ id    ≡⟨ id-comm ⟩
+            id ∘ e    ≡⟨ pushl (sym section) ⟩
+            e ∘ s ∘ e ∎
+```
+
+This map lets us construct the following split coequaliser:
+~~~{.quiver}
+\[\begin{tikzcd}
+	A & B & C
+	\arrow["{p_1}", shift left=3, from=1-1, to=1-2]
+	\arrow["{p_2}"', shift right=3, from=1-1, to=1-2]
+	\arrow["r"{description}, from=1-2, to=1-1]
+	\arrow["e", shift left=2, from=1-2, to=1-3]
+	\arrow["s", shift left=2, from=1-3, to=1-2]
+\end{tikzcd}\]
+~~~
+
+All of the required commuting squares exist due to our clever choice
+of map into the kernel pair.
+
+```agda
+  is-split-epic→is-split-coequalizer-of-kernel-pair
+    : ∀ {A B C} {p₁ p₂ : Hom A B} {e : Hom B C} {s : Hom C B}
+    → (kp : is-pullback p₁ e p₂ e)
+    → (section : s is-section-of e)
+    → is-split-coequaliser p₁ p₂ e s (represent kp section)
+  is-split-epic→is-split-coequalizer-of-kernel-pair
+    {p₁ = p₁} {p₂ = p₂} {e = e} {s = s} kp section = split-coeq where
+      open is-pullback kp
+      open is-split-coequaliser
+
+      split-coeq : is-split-coequaliser _ _ _ _ _
+      split-coeq .coequal = square
+      split-coeq .rep-section = section
+      split-coeq .witness-section = p₁∘limiting
+      split-coeq .commute = sym p₂∘limiting
+```
+
+We also provide a bundled form of this lemma.
+
+```agda
+  split-epic→split-coequalizer-of-kernel-pair
+    : ∀ {B C} {e : Hom B C}
+    → (kp : Pullback e e)
+    → is-split-epic e
+    → Split-coequaliser (Pullback.p₁ kp) (Pullback.p₂ kp)
+  split-epic→split-coequalizer-of-kernel-pair
+    {e = e} kp split-epic = split-coeq where
+      open Pullback kp
+      open is-split-epic split-epic
+      open Split-coequaliser
+   
+      split-coeq : Split-coequaliser _ _
+      split-coeq .coapex = _
+      split-coeq .coeq = e
+      split-coeq .rep = split
+      split-coeq .witness = represent has-is-pb section
+      split-coeq .has-is-split-coeq =
+        is-split-epic→is-split-coequalizer-of-kernel-pair has-is-pb section
+```
+
+
 ## Congruences and Quotients
 
 When motivating split coequalisers, we discussed how they arise naturally from
