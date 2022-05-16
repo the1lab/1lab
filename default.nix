@@ -70,8 +70,6 @@ in
 
       # For building the text and maths:
       gitMinimal sassc
-      haskellPackages.agda-reference-filter
-      haskellPackages.agda-fold-equations
 
       # For building diagrams:
       poppler_utils rubber our-texlive
@@ -101,8 +99,6 @@ in
 
         # For building the text and maths:
         gitMinimal sassc
-        haskellPackages.agda-reference-filter
-        haskellPackages.agda-fold-equations
 
         # For building diagrams:
         poppler_utils rubber

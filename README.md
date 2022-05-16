@@ -85,24 +85,15 @@ environments above. You will need:
 - [Rubber] (for `rubber`);
 - [Poppler] (for `pdftocairo`);
 - [`libsass`] (for `sassc`);
-- The [KaTeX] executable `katex` in your `$PATH`;
-- The tools [agda-fold-equations] and [agda-reference-filter], which are
-Cabal packages and can be installed however you prefer
+- [Node] + required Node modules. Run `npm ci` to install those.
 
 - If you're using Stack, that's all. If using cabal-install, you're
-going to need the following Haskell packages:
-  + Agda
-  + pandoc
-  + shake
-  + tagsoup
-  + uri-encode
+going to need the packages list `support/shake/1lab-shake.cabal`.
 
 [Rubber]: https://github.com/petrhosek/rubber
 [Poppler]: https://poppler.freedesktop.org/
-[KaTeX]: https://katex.org
-[agda-fold-equations]: https://git.amelia.how/amelia/agda-fold-equations.git
-[agda-reference-filter]: https://git.amelia.how/amelia/agda-reference-filter.git
-[`libsass`]: https://www.google.com/search?client=firefox-b-d&q=sassc
+[Node]: https://nodejs.org/en/
+[`libsass`]: https://github.com/sass/sassc
 
 If everything is set up properly, the following command should work to
 produce the compiled HTML, SVG and CSS files in `_build/html`. You can
