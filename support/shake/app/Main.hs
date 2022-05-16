@@ -53,9 +53,8 @@ import Shake.Git
 main :: IO ()
 main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ do
   fileIdMap <- newCache parseFileIdents
-  gitCommit <- newCache gitCommit
-  gitAuthors' <- addOracleCache (gitAuthors (gitCommit ()))
-  let gitAuthors = gitAuthors' . GitAuthors
+  gitRules
+  katexRules
 
   {-
     Write @_build/all-pages.agda@. This imports every module in the source tree
@@ -99,10 +98,8 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
 
     ismd <- liftIO $ Dir.doesFileExist (input <.> ".md")
 
-    gitCommit <- gitCommit ()
-
     if ismd
-      then buildMarkdown gitCommit gitAuthors (input <.> ".md") out
+      then buildMarkdown (input <.> ".md") out
       else liftIO $ Dir.copyFile (input <.> ".html") out
 
   {-
@@ -150,8 +147,6 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     command_ [Traced "build-diagram"] "sh"
       ["support/build-diagram.sh", out, inp]
     removeFilesAfter "." ["rubtmp*"]
-
-  katexRules
 
   "_build/html/css/*.css" %> \out -> do
     let inp = "support/web/css/" </> takeFileName out -<.> "scss"

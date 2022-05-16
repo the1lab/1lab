@@ -1,11 +1,8 @@
 {-# LANGUAGE BlockArguments, OverloadedStrings, FlexibleContexts #-}
 
 {-| Convert a markdown file to templated HTML, applying several
-post-processing steps.
-
-Finally, we emit the markdown to HTML using the @support/web/template.html@
-template, pipe the output of that through @agda-fold-equations@, and write
-the file.
+post-processing steps and rendered to HTML using the
+@support/web/template.html@ template.
 -}
 module Shake.Markdown (buildMarkdown) where
 
@@ -39,14 +36,15 @@ import Text.Pandoc
 
 import Shake.LinkReferences
 import Shake.KaTeX
+import Shake.Git
+
 import HTML.Emit
 
-buildMarkdown :: String -- ^ The current git commit.
-              -> (FilePath -> Action [Text]) -- ^ Lookup function to get the authors for a file.
-              -> FilePath -- ^ Input markdown file, produced by the Agda compiler.
+buildMarkdown :: FilePath -- ^ Input markdown file, produced by the Agda compiler.
               -> FilePath -- ^ Output HTML file.
               -> Action ()
-buildMarkdown gitCommit gitAuthors input output = do
+buildMarkdown input output = do
+  gitCommit <- gitCommit
   let modname = dropDirectory1 (dropDirectory1 (dropExtension input))
 
   need [templateName, bibliographyName, input]
@@ -86,8 +84,6 @@ buildMarkdown gitCommit gitAuthors input output = do
   text <- liftIO $ either (fail . show) pure =<< runIO (renderMarkdown authors references modname markdown)
 
   liftIO . Text.writeFile output . overHTML (foldEquations False) $ text
-
-  command_ [] "agda-fold-equations" [output]
 
 -- | Find the original Agda file from a 1Lab module name.
 findModule :: MonadIO m => String -> m FilePath

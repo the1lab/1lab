@@ -1,9 +1,9 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving, TypeFamilies #-}
+{-# LANGUAGE BlockArguments, GeneralizedNewtypeDeriving, TypeFamilies #-}
 
 module Shake.Git
   ( gitCommit
   , gitAuthors
-  , GitAuthors(..)
+  , gitRules
   ) where
 
 import qualified Data.Text.Encoding as Text
@@ -15,11 +15,14 @@ import Data.Generics
 import Development.Shake.Classes (Hashable, Binary, NFData)
 import Development.Shake
 
+newtype GitCommit = GitCommit ()
+  deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
+
+type instance RuleResult GitCommit = String
+
 -- | Get the current git commit.
-gitCommit :: () -> Action String
-gitCommit () = do
-  Stdout t <- command [] "git" ["rev-parse", "--verify", "HEAD"]
-  pure (head (lines t))
+gitCommit :: Action String
+gitCommit = askOracle (GitCommit ())
 
 newtype GitAuthors = GitAuthors FilePath
   deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
@@ -27,9 +30,12 @@ newtype GitAuthors = GitAuthors FilePath
 type instance RuleResult GitAuthors = [Text]
 
 -- | Get the authors for a particular commit.
-gitAuthors :: Action String -> GitAuthors -> Action [Text]
-gitAuthors commit (GitAuthors path) = do
-  _commit <- commit -- We depend on the commit, but don't actually need it.
+gitAuthors :: FilePath -> Action [Text]
+gitAuthors = askOracle . GitAuthors
+
+doGitAuthors :: GitAuthors -> Action [Text]
+doGitAuthors (GitAuthors path) = do
+  _commit <- gitCommit -- We depend on the commit, but don't actually need it.
 
   -- Sort authors list and make it unique.
   Stdout authors <- command [] "git" ["log", "--format=%aN", "--", path]
@@ -48,3 +54,14 @@ gitAuthors commit (GitAuthors path) = do
     dropEmail = Text.unwords . init . Text.words
 
   pure . Set.toList $ authorSet <> coauthorSet
+
+-- | Shake rules required for reading Git information.
+gitRules :: Rules()
+gitRules = versioned 1 do
+  _ <- addOracle \(GitCommit ()) -> do
+    Stdout t <- command [] "git" ["rev-parse", "--verify", "HEAD"]
+    pure (head (lines t))
+
+  _ <- addOracleCache doGitAuthors
+
+  pure ()

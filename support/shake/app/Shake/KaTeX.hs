@@ -29,7 +29,7 @@ getDisplayMath contents = askOracle (LatexEquation (True, contents))
 getInlineMath :: Text -> Action Text
 getInlineMath contents = askOracle (LatexEquation (False, contents))
 
--- | Compile a LaTeX equation to a HTML string.
+-- | Shake rules required for compiling KaTeX equations.
 katexRules :: Rules ()
 katexRules = versioned 1 do
   _ <- addOracleCache \(LatexEquation (display, tex)) -> do
