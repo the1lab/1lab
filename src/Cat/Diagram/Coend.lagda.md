@@ -124,7 +124,7 @@ and contravariant in the other.
 ```agda
     extranatural
       : ∀ {c c′} (f : C.Hom c c′)
-      → ψ c D.∘ F.first f ≡ ψ c′ D.∘ F.second f
+      → ψ c′ D.∘ F.second f ≡ ψ c D.∘ F.first f
 ```
 
 A coend, then, is a universal cowedge. In particular, we say that
@@ -173,9 +173,3 @@ properties of colimiting maps for every other colimit.
       → (∀ {a} → g D.∘ cowedge.ψ a ≡ W .ψ a)
       → g ≡ factor W
 ```
-
-# Computing coends
-
-Letting $\ca{C}$ stand for a [$\kappa$-small] category, fix a functor
-$F : \ca{C}\op \times \ca{C} \to \ca{D}$, and suppose that $\ca{D}$ has all
-$\kappa$-indexed [colimits]. We show that in this case, we can compute the

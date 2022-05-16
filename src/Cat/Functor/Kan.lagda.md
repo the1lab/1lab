@@ -187,14 +187,14 @@ where uniqueness and commutativity follows from the triangle identities
 In the cases where $\ca{C}, \ca{D}$ are "small enough" and $\ca{E}$ is
 "cocomplete enough", the left Kan extension of _any_ functor $F : \ca{C}
 \to \ca{E}$ along _any_ functor $K : \ca{C} \to \ca{D}$ exists, and is
-computed as a colimit in $\ca{E}$. The size concerns here is
+computed as a colimit in $\ca{E}$. The size concerns here are
 unavoidable, so let's be explicit about them: Suppose that $\ca{E}$
 admits colimits of [$\kappa$-small diagrams], e.g. because it is
 $\sets_\kappa$. Then the category $\ca{C}$ must be $\kappa$-small, and
 $\ca{D}$ must be locally $\kappa$-small, i.e. its Hom-sets must live in
 the $\kappa$th universe.
 
-[$\kappa$-small]: 1Lab.intro.html#universes-and-size-issues
+[$\kappa$-small diagrams]: 1Lab.intro.html#universes-and-size-issues
 
 <!--
 ```agda

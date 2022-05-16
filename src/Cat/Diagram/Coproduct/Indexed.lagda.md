@@ -69,8 +69,8 @@ module _ {I : Type ℓ'} (i-is-grpd : is-groupoid I) (F : I → C.Ob) where
   open Initial
   open Cocone
 
-  IC→Limit : Indexed-coproduct F → Colimit {C = C} (Disc-adjunct {iss = i-is-grpd} F)
-  IC→Limit IC = colim where
+  IC→Colimit : Indexed-coproduct F → Colimit {C = C} (Disc-adjunct {iss = i-is-grpd} F)
+  IC→Colimit IC = colim where
     module IC = Indexed-coproduct IC
 
     thecolim : Cocone _

@@ -1,5 +1,7 @@
 ```agda
 open import Cat.Diagram.Coproduct.Indexed
+open import Cat.Diagram.Colimit.Base
+open import Cat.Instances.Discrete
 open import Cat.Instances.Product
 open import Cat.Prelude
 
@@ -71,4 +73,10 @@ uniqueness properties of colimiting maps.
   Copowering .F-∘ {X , A} f g = sym $
     coprods X (λ _ → A) .unique _ λ i →
       pullr (coprods _ _ .commute) ∙ extendl (coprods _ _ .commute)
+
+cocomplete→copowering
+  : ∀ {o ℓ} {C : Precategory o ℓ}
+  → is-cocomplete ℓ ℓ C → Functor (Sets ℓ ×ᶜ C) C
+cocomplete→copowering colim = Copowering λ S F →
+  Colimit→IC _ (is-hlevel-suc 2 (S .is-tr)) (Disc-adjunct F) (colim _)
 ```
