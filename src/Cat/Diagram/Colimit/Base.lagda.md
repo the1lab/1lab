@@ -198,8 +198,12 @@ cocones over that diagram.
   Colimit : Type _
   Colimit = Initial Cocones
 
+  Colimit-cocone : Colimit → Cocone
+  Colimit-cocone = Initial.bot
+
   Colimit-apex : Colimit → C.Ob
-  Colimit-apex x = coapex (Initial.bot x)
+  Colimit-apex x = coapex (Colimit-cocone x)
+
 
   Colimit-universal : (L : Colimit) → (K : Cocone) → C.Hom (Colimit-apex L) (coapex K) 
   Colimit-universal L K = hom (Initial.¡ L {K})
@@ -241,6 +245,22 @@ functors preserve commutative diagrams.
     F.₁ (Cocone.ψ x _)             ∎
 ```
 
+Note that this also lets us map morphisms between cocones into $\ca{D}$.
+
+```agda
+  F-map-cocone-hom
+    : {X Y : Cocone Dia} 
+    → Cocone-hom Dia X Y
+    → Cocone-hom (F F∘ Dia) (F-map-cocone X) (F-map-cocone Y)
+  F-map-cocone-hom {X = X} {Y = Y} f = hom where
+    module f = Cocone-hom f
+
+    hom : Cocone-hom (F F∘ Dia) (F-map-cocone X) (F-map-cocone Y)
+    hom .Cocone-hom.hom = F .F₁ f.hom
+    hom .Cocone-hom.commutes _ = F.collapse (f.commutes _)
+```
+
+
 Though functors must take cocones to cocones, they may not necessarily
 take colimiting cocones to colimiting cocones! When a functor does, we
 say that it _preserves_ colimits.
@@ -249,6 +269,13 @@ say that it _preserves_ colimits.
   Preserves-colimit : Cocone Dia → Type _
   Preserves-colimit K = is-colimit Dia K → is-colimit (F F∘ Dia) (F-map-cocone K)
 ```
+
+```agda
+  F-map-colimit : (L : Colimit Dia) → Preserves-colimit (Colimit-cocone Dia L) → Colimit (F F∘ Dia)
+  F-map-colimit L preserves .Initial.bot = F-map-cocone (Initial.bot L)
+  F-map-colimit L preserves .Initial.has⊥ = preserves (Initial.has⊥ L)
+```
+
 
 ## Reflection of colimits
 
