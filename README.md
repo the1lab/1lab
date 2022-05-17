@@ -82,7 +82,6 @@ environments above. You will need:
 `tikz-cd` (depends on `pgf`), `mathpazo`, `xcolor`, `preview`, and
 `standalone` (depends on `varwidth` and `xkeyval`);
 
-- [Rubber] (for `rubber`);
 - [Poppler] (for `pdftocairo`);
 - [`libsass`] (for `sassc`);
 - [Node] + required Node modules. Run `npm ci` to install those.
@@ -90,7 +89,6 @@ environments above. You will need:
 - If you're using Stack, that's all. If using cabal-install, you're
 going to need the packages list `support/shake/1lab-shake.cabal`.
 
-[Rubber]: https://github.com/petrhosek/rubber
 [Poppler]: https://poppler.freedesktop.org/
 [Node]: https://nodejs.org/en/
 [`libsass`]: https://github.com/sass/sassc

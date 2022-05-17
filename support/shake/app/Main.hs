@@ -1,24 +1,15 @@
-{-# LANGUAGE BlockArguments, OverloadedStrings, RankNTypes #-}
-{-# LANGUAGE TypeFamilies, FlexibleContexts #-}
+{-# LANGUAGE BlockArguments, OverloadedStrings, FlexibleContexts #-}
 module Main (main) where
 
 import Control.Monad.IO.Class
 import Control.Monad.Writer
 
-import qualified Data.Text.IO as Text
-import qualified Data.Map.Lazy as Map
-import qualified Data.Text as Text
 import qualified Data.Set as Set
-import Data.Map.Lazy (Map)
-import Data.Foldable
 import Data.Maybe
-import Data.Text (Text)
 import Data.List
 
 import Development.Shake.FilePath
 import Development.Shake
-
-import Network.URI.Encode (decodeText)
 
 import qualified System.Directory as Dir
 
@@ -36,13 +27,14 @@ import Agda.Utils.FileName
 import qualified System.Environment as Env
 import HTML.Backend
 import HTML.Base
-import HTML.Emit
 import System.IO (IOMode(..), hPutStrLn, withFile)
 import Agda
 
-import Shake.Markdown
-import Shake.KaTeX
+import Shake.AgdaRefs (getAgdaRefs)
 import Shake.LinkGraph
+import Shake.Markdown
+import Shake.Diagram
+import Shake.KaTeX
 import Shake.Git
 
 {-
@@ -52,7 +44,7 @@ import Shake.Git
 -}
 main :: IO ()
 main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ do
-  fileIdMap <- newCache parseFileIdents
+  agdaRefs <- getAgdaRefs
   gitRules
   katexRules
 
@@ -83,13 +75,10 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
 
   {-
     For each 1Lab module, read the emitted file from @_build/html0@. If its
-    HTML, we just copy it to @_build/html1@. Otherwise we compile the markdown
+    HTML, we just copy it to @_build/html@. Otherwise we compile the markdown
     to HTML with some additional post-processing steps (see 'buildMarkdown')
-
-    Finally we emit the HTML using the @support/web/template.html@ template
-    and run @agda-fold_equations@ on the output.
   -}
-  "_build/html1/*.html" %> \out -> do
+  "_build/html/*.html" %> \out -> do
     need ["_build/all-pages.agda"]
 
     let
@@ -99,32 +88,15 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     ismd <- liftIO $ Dir.doesFileExist (input <.> ".md")
 
     if ismd
-      then buildMarkdown (input <.> ".md") out
-      else liftIO $ Dir.copyFile (input <.> ".html") out
-
-  {-
-    @_build/html1@ now contains all processed 1Lab modules in HTML form. We now
-    'just' need to do some additional post-processing before copying them into
-    our final @_build/html@ output folder.
-
-     - Replace @agda://xyz@ links with a link to the actual definition
-       ('parseAgdaLink').
-     - Check the markup for raw <!-- or -->, which indicates a misplaced
-       comment ('checkMarkup').
-  -}
-  "_build/html/*.html" %> \out -> do
-    let input = "_build/html1" </> takeFileName out
-    need [input]
-
-    text <- liftIO $ Text.readFile input
-    tags <- traverse (parseAgdaLink fileIdMap) (parseTags text)
-    traverse_ (checkMarkup (takeFileName out)) tags
-    liftIO $ Text.writeFile out (renderHTML5 tags)
+      then do
+        agdaRefs <- agdaRefs
+        buildMarkdown agdaRefs (input <.> ".md") out
+      else copyFile' (input <.> ".html") out
 
   "_build/html/static/links.json" %> \out -> do
-    need ["_build/html1/all-pages.html"]
+    need ["_build/html/all-pages.html"]
     (start, act) <- runWriterT $ findLinks (tell . Set.singleton) . parseTags
-      =<< liftIO (readFile "_build/html1/all-pages.html")
+      =<< liftIO (readFile "_build/html/all-pages.html")
     need (Set.toList act)
     traced "crawling links" . withFile out WriteMode $ \h -> do
       hPutStrLn h "["
@@ -137,16 +109,13 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
       hPutStrLn h "null]"
 
   "_build/html/static/search.json" %> \out -> do
-    need ["_build/html1/all-pages.html"]
+    need ["_build/html/all-pages.html"]
     copyFile' "_build/all-types.json" out
 
   -- Compile Quiver to SVG. This is used by 'buildMarkdown'.
   "_build/html/*.svg" %> \out -> do
     let inp = "_build/diagrams" </> takeFileName out -<.> "tex"
-    need [inp]
-    command_ [Traced "build-diagram"] "sh"
-      ["support/build-diagram.sh", out, inp]
-    removeFilesAfter "." ["rubtmp*"]
+    buildDiagram inp out
 
   "_build/html/css/*.css" %> \out -> do
     let inp = "support/web/css/" </> takeFileName out -<.> "scss"
@@ -212,77 +181,6 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     command_ [] "node_modules/.bin/tsc" ["--noEmit", "-p", "tsconfig.json"]
 
   -- Profit!
-
-
-
---------------------------------------------------------------------------------
--- Various oracles
---------------------------------------------------------------------------------
-
--- | A link to an identifier in an emitted Agda file of the form @1Lab.Module#1234@.
-newtype Reference = Reference Text deriving (Eq, Show)
-
--- | Parse an Agda module in @_build/html1@ and build a map of all its definitions
--- to their link.
-parseFileIdents :: Text -> Action (Map Text Reference, Map Text Text)
-parseFileIdents mod =
-  do
-    let path = "_build/html1" </> Text.unpack mod <.> "html"
-    need [ path ]
-    traced ("parsing " ++ Text.unpack mod) do
-      go mempty mempty . parseTags <$> Text.readFile path
-  where
-    go fwd rev (TagOpen "a" attrs:TagText name:TagClose "a":xs)
-      | Just id <- lookup "id" attrs, Just href <- lookup "href" attrs
-      , mod `Text.isPrefixOf` href, id `Text.isSuffixOf` href
-      = go (Map.insert name (Reference href) fwd)
-           (Map.insert href name rev) xs
-      | Just classes <- lookup "class" attrs, Just href <- lookup "href" attrs
-      , "Module" `elem` Text.words classes, mod `Text.isPrefixOf` href
-      = go (Map.insert name (Reference href) fwd)
-           (Map.insert href name rev) xs
-    go fwd rev (_:xs) = go fwd rev xs
-    go fwd rev [] = (fwd, rev)
-
---------------------------------------------------------------------------------
--- Additional HTML post-processing
---------------------------------------------------------------------------------
-
--- | Possibly interpret an <a href="agda://"> link to be a honest-to-god
--- link to the definition.
-parseAgdaLink :: (Text -> Action (Map Text Reference, Map Text Text))
-              -> Tag Text -> Action (Tag Text)
-parseAgdaLink fileIds (TagOpen "a" attrs)
-  | Just href <- lookup "href" attrs, Text.pack "agda://" `Text.isPrefixOf` href = do
-    href <- pure $ Text.splitOn "#" (Text.drop (Text.length "agda://") href)
-    let
-      cont mod ident = do
-        (idMap, _) <- fileIds mod
-        case Map.lookup ident idMap of
-          Just (Reference href) -> do
-            pure (TagOpen "a" (emplace [("href", href)] attrs))
-          _ -> error $ "Could not compile Agda link: " ++ show href
-    case href of
-      [mod] -> cont mod mod
-      [mod, ident] -> cont mod (decodeText ident)
-      _ -> error $ "Could not parse Agda link: " ++ show href
-parseAgdaLink _ x = pure x
-
-emplace :: Eq a => [(a, b)] -> [(a, b)] -> [(a, b)]
-emplace ((p, x):xs) ys = (p, x):emplace xs (filter ((/= p) . fst) ys)
-emplace [] ys = ys
-
--- | Check HTML markup is well-formed.
-checkMarkup :: FilePath -> Tag Text -> Action ()
-checkMarkup file (TagText txt)
-  |  "<!--" `Text.isInfixOf` txt || "<!–" `Text.isInfixOf` txt
-  || "-->" `Text.isInfixOf` txt  || "–>" `Text.isInfixOf` txt
-  = fail $ "[WARN] " ++ file ++ " contains misplaced <!-- or -->"
-checkMarkup _ _ = pure ()
-
---------------------------------------------------------------------------------
--- Loading types from .agdai files
---------------------------------------------------------------------------------
 
 compileAgda :: FilePath -> String -> TCMT IO ()
 compileAgda path _ = do

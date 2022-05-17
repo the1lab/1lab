@@ -25,8 +25,8 @@ findLinks cb (TagOpen "a" attrs:xs)
   , not (any isDigit anchor)
   = do
     let href = takeWhile (/= '#') href'
-    t <- liftIO $ Dir.doesFileExist ("_build/html1" </> href)
-    cb ("_build/html1" </> href)
+    t <- liftIO $ Dir.doesFileExist ("_build/html" </> href)
+    cb ("_build/html" </> href)
     if t && Set.notMember href ignoreLinks
       then Set.insert href <$> findLinks cb xs
       else findLinks cb xs
@@ -47,6 +47,6 @@ crawlLinks link need = go mempty where
   go visited (x:xs)
     | x `Set.member` visited = go visited xs
     | otherwise = do
-      links <- findLinks need . parseTags =<< liftIO (readFile ("_build/html1" </> x))
+      links <- findLinks need . parseTags =<< liftIO (readFile ("_build/html" </> x))
       for_ links $ \other -> link x other
       go (Set.insert x visited) (Set.toList links ++ xs)

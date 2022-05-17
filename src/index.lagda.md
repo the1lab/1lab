@@ -142,7 +142,7 @@ can be found [here](/static/licenses/LICENSE.Noto).
 
 Commutative diagrams appearing in body text are created using
 [quiver](https://q.uiver.app), and rendered to SVG using a combination of
-[rubber-pipe](https://github.com/petrhosek/rubber) and
+[LaTeX](https://tug.org/texlive/) and
 [pdftocairo](https://poppler.freedesktop.org/), part of the Poppler
 project. No part of these projects is redistributed.
 
