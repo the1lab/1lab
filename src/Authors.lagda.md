@@ -31,7 +31,7 @@ pronouns.
 <img alt="Amélia's profile picture" src="/static/pfps/amelia.png" />
 <span class="profile-name">Amélia</span>
 <span class="profile-pronouns">they/them</span>
-<span><a href="https://twitter.com/plt_amy">@plt_amy</a></span>
+<span><a href="https://twitter.com/plt_amy">\@plt_amy</a></span>
 </div>
 
 <div class="profile-profile">
@@ -62,7 +62,7 @@ about type theory and the implementation of programming languages, and
 <img alt="Astra's profile picture" src="/static/pfps/astra.png" />
 <span class="profile-name">Astra</span>
 <span class="profile-pronouns">she/her</span>
-<span><a href="https://twitter.com/astradiol">@astradiol</a></span>
+<span><a href="https://twitter.com/astradiol">\@astradiol</a></span>
 </div>
 
 <div class="profile-profile">
@@ -82,7 +82,7 @@ A cool project that I recently completed was formalising a
 <div class="profile-pfp">
 <span class="profile-name">Reed</span>
 <span class="profile-pronouns">he/him</span>
-<span><a href="https://twitter.com/totbwf">@totbwf</a></span>
+<span><a href="https://twitter.com/totbwf">\@totbwf</a></span>
 <span><a href="https://github.com/totbwf">totbwf</a></span>
 </div>
 
