@@ -87,7 +87,7 @@ data Identifier = Identifier
   , idAnchor :: Ts.Text
   , idType   :: String
   }
-  deriving (Eq, Show, Ord, Generic, ToJSON)
+  deriving (Eq, Show, Ord, Generic, ToJSON, FromJSON)
 
 
 highlightOnlyCode :: HtmlHighlight -> FileType -> Bool

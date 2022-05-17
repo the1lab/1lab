@@ -35,15 +35,17 @@ import Text.Pandoc.Walk
 import Text.Pandoc
 
 import Shake.LinkReferences
+import Shake.AgdaRefs
 import Shake.KaTeX
 import Shake.Git
 
 import HTML.Emit
 
-buildMarkdown :: FilePath -- ^ Input markdown file, produced by the Agda compiler.
+buildMarkdown :: AgdaRefs -- ^ All Agda identifiers in the codebase.
+              -> FilePath -- ^ Input markdown file, produced by the Agda compiler.
               -> FilePath -- ^ Output HTML file.
               -> Action ()
-buildMarkdown input output = do
+buildMarkdown refs input output = do
   gitCommit <- gitCommit
   let modname = dropDirectory1 (dropDirectory1 (dropExtension input))
 
@@ -83,7 +85,9 @@ buildMarkdown input output = do
 
   text <- liftIO $ either (fail . show) pure =<< runIO (renderMarkdown authors references modname markdown)
 
-  liftIO . Text.writeFile output . overHTML (foldEquations False) $ text
+  let tags = map (parseAgdaLink refs) . foldEquations False $ parseTags text
+  traverse_ (checkMarkup input) tags
+  liftIO . Text.writeFile output $ renderHTML5 tags
 
 -- | Find the original Agda file from a 1Lab module name.
 findModule :: MonadIO m => String -> m FilePath
