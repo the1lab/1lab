@@ -1,5 +1,4 @@
-{-# LANGUAGE BlockArguments, GeneralizedNewtypeDeriving, TypeFamilies #-}
-{-# LANGUAGE OverloadedStrings, ScopedTypeVariables #-}
+{-# LANGUAGE BlockArguments, OverloadedStrings, ScopedTypeVariables #-}
 module Shake.AgdaRefs
   ( AgdaRefs
   , getAgdaRefs

@@ -1,5 +1,4 @@
-{-# LANGUAGE BlockArguments, OverloadedStrings, RankNTypes #-}
-{-# LANGUAGE TypeFamilies, FlexibleContexts #-}
+{-# LANGUAGE BlockArguments, OverloadedStrings, FlexibleContexts #-}
 module Main (main) where
 
 import Control.Monad.IO.Class
