@@ -40,9 +40,10 @@ import HTML.Emit
 import System.IO (IOMode(..), hPutStrLn, withFile)
 import Agda
 
-import Shake.Markdown
-import Shake.KaTeX
 import Shake.LinkGraph
+import Shake.Markdown
+import Shake.Diagram
+import Shake.KaTeX
 import Shake.Git
 
 {-
@@ -143,10 +144,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
   -- Compile Quiver to SVG. This is used by 'buildMarkdown'.
   "_build/html/*.svg" %> \out -> do
     let inp = "_build/diagrams" </> takeFileName out -<.> "tex"
-    need [inp]
-    command_ [Traced "build-diagram"] "sh"
-      ["support/build-diagram.sh", out, inp]
-    removeFilesAfter "." ["rubtmp*"]
+    buildDiagram inp out
 
   "_build/html/css/*.css" %> \out -> do
     let inp = "support/web/css/" </> takeFileName out -<.> "scss"

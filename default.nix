@@ -72,7 +72,7 @@ in
       gitMinimal sassc
 
       # For building diagrams:
-      poppler_utils rubber our-texlive
+      poppler_utils our-texlive
     ];
 
     buildPhase = ''
@@ -101,7 +101,7 @@ in
         gitMinimal sassc
 
         # For building diagrams:
-        poppler_utils rubber
+        poppler_utils
       ];
 
       texlive = our-texlive;

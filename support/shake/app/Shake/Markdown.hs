@@ -198,9 +198,9 @@ renderMarkdown authors references modname markdown = do
       _ -> Text.intercalate ", " (init authors) `Text.append` " and " `Text.append` last authors
 
     context = Context $ Map.fromList
-              [ (Text.pack "is-index", toVal (modname == "index"))
-              , (Text.pack "authors", toVal authors')
-              , (Text.pack "reference", toVal references)
+              [ ("is-index", toVal (modname == "index"))
+              , ("authors", toVal authors')
+              , ("reference", toVal references)
               ]
     options = def { writerTemplate = Just template
                   , writerTableOfContents = True

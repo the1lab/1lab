@@ -1,10 +1,3 @@
-#/usr/bin/env bash
-
-target="${1}"
-source="${2}"
-
-latex () {
-cat <<EOF
 \documentclass[varwidth,multi=page,12pt]{standalone}
 \usepackage{xcolor}
 \usepackage{tikz-cd}
@@ -19,8 +12,8 @@ cat <<EOF
 \usetikzlibrary{decorations.pathmorphing}
 \definecolor{eee}{HTML}{EEEEEE}
 \tikzset{curve/.style={settings={#1},to path={(\tikztostart)
-    .. controls (\$(\tikztostart)!\pv{pos}!(\tikztotarget)!\pv{height}!270:(\tikztotarget)$)
-    and (\$(\tikztostart)!1-\pv{pos}!(\tikztotarget)!\pv{height}!270:(\tikztotarget)$)
+    .. controls ($(\tikztostart)!\pv{pos}!(\tikztotarget)!\pv{height}!270:(\tikztotarget)$)
+    and ($(\tikztostart)!1-\pv{pos}!(\tikztotarget)!\pv{height}!270:(\tikztotarget)$)
     .. (\tikztotarget)\tikztonodes}},
     settings/.code={\tikzset{quiver/.cd,#1}
         \def\pv##1{\pgfkeysvalueof{/tikz/quiver/##1}}},
@@ -31,17 +24,8 @@ cat <<EOF
 \tikzset{2tail reversed/.code={\pgfsetarrowsstart{Implies}}}
 \begin{document}
 \begin{page}
-EOF
 
-cat ${source}
+__BODY__
 
-cat <<EOF
 \end{page}
 \end{document}
-EOF
-}
-
-latex \
-  | rubber-pipe --pdf \
-  | pdftocairo -svg - - \
-  > ${target}

@@ -42,6 +42,7 @@ executable shake
       , HTML.Backend
       , HTML.Base
       , HTML.Emit
+      , Shake.Diagram
       , Shake.Git
       , Shake.KaTeX
       , Shake.LinkGraph
