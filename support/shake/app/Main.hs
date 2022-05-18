@@ -72,6 +72,10 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     traced "agda" $
       runAgda defaultOptions{optInputFile = Just "_build/all-pages.agda"} $
       compileAgda out
+  -- Add additional rules for the above.
+  "_build/all-types.json" %> \_ -> need ["_build/all-pages.agda"]
+  "_build/html0/*.html" %> \_ -> need ["_build/all-pages.agda"]
+  "_build/html0/*.md" %> \_ -> need ["_build/all-pages.agda"]
 
   {-
     For each 1Lab module, read the emitted file from @_build/html0@. If its
@@ -79,8 +83,6 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     to HTML with some additional post-processing steps (see 'buildMarkdown')
   -}
   "_build/html/*.html" %> \out -> do
-    need ["_build/all-pages.agda"]
-
     let
       modname = dropExtension (takeFileName out)
       input = "_build/html0" </> modname
@@ -108,8 +110,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
         (Set.toList start)
       hPutStrLn h "null]"
 
-  "_build/html/static/search.json" %> \out -> do
-    need ["_build/html/all-pages.html"]
+  "_build/html/static/search.json" %> \out ->
     copyFile' "_build/all-types.json" out
 
   -- Compile Quiver to SVG. This is used by 'buildMarkdown'.
@@ -148,8 +149,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     need and kicks off the above job to build them.
   -}
   phony "all" do
-    need ["_build/all-pages.agda"]
-    files <- filter ("open import" `isPrefixOf`) . lines <$> readFile' "_build/all-pages.agda"
+    files <- filter ("open import" `isPrefixOf`) <$> readFileLines "_build/all-pages.agda"
     need $ "_build/html/all-pages.html"
          : [ "_build/html" </> (words file !! 2) <.> "html"
            | file <- files

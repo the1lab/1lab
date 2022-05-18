@@ -22,7 +22,6 @@ newtype AgdaRefs = AgdaRefs { unAgdaRefs :: HM.HashMap Text Text }
 getAgdaRefs :: Rules (Action AgdaRefs)
 getAgdaRefs = versioned 1 do
   rule <- newCache \() -> do
-    need ["_build/all-pages.agda"]
     need ["_build/all-types.json"]
 
     types :: Either String [Identifier] <- liftIO $ eitherDecodeFileStrict' "_build/all-types.json"
