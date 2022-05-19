@@ -31,6 +31,7 @@ import System.IO (IOMode(..), hPutStrLn, withFile)
 import Agda
 
 import Shake.AgdaRefs (getAgdaRefs)
+import Shake.SearchData
 import Shake.LinkGraph
 import Shake.Markdown
 import Shake.Diagram
@@ -94,6 +95,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
         agdaRefs <- agdaRefs
         buildMarkdown agdaRefs (input <.> ".md") out
       else copyFile' (input <.> ".html") out
+  "_build/search/*.json" %> \out -> need ["_build/html/" </> takeFileName out -<.> "html" ]
 
   "_build/html/static/links.json" %> \out -> do
     need ["_build/html/all-pages.html"]
@@ -110,8 +112,11 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
         (Set.toList start)
       hPutStrLn h "null]"
 
-  "_build/html/static/search.json" %> \out ->
-    copyFile' "_build/all-types.json" out
+  "_build/html/static/search.json" %> \out -> do
+    modules <- sort <$> getDirectoryFiles "src" ["**/*.lagda.md"]
+    let searchFiles = "_build/all-types.json":map (\x -> "_build/search" </> moduleName (dropExtensions x) <.> "json") modules
+    searchData <- traverse readSearchData searchFiles
+    writeSearchData out (concat searchData)
 
   -- Compile Quiver to SVG. This is used by 'buildMarkdown'.
   "_build/html/*.svg" %> \out -> do

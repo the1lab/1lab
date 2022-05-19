@@ -35,6 +35,7 @@ import Text.Pandoc.Walk
 import Text.Pandoc
 
 import Shake.LinkReferences
+import Shake.SearchData
 import Shake.AgdaRefs
 import Shake.KaTeX
 import Shake.Git
@@ -88,6 +89,8 @@ buildMarkdown refs input output = do
   let tags = map (parseAgdaLink refs) . foldEquations False $ parseTags text
   traverse_ (checkMarkup input) tags
   liftIO . Text.writeFile output $ renderHTML5 tags
+
+  writeSearchData ("_build/search" </> modname <.> "json") (query (getHeaders (Text.pack modname)) markdown)
 
 -- | Find the original Agda file from a 1Lab module name.
 findModule :: MonadIO m => String -> m FilePath
@@ -241,6 +244,28 @@ foldEquations False (TagClose "html":cs) =
 foldEquations has_eqn (c:cs) = c:foldEquations has_eqn cs
 foldEquations _ [] = []
 
+-- | Get all headers in the document, suitable for being searched through.
+getHeaders :: Text -> [Block] -> [SearchTerm]
+getHeaders _ [] = []
+getHeaders module' (Header _ (hId, _, _) hText:xs)
+  | hId /= ""
+  = SearchTerm
+    { idIdent  = renderPlain hText
+    , idAnchor = module' <> ".html#" <> hId
+    , idType   = Nothing
+    , idDesc   = getDesc xs
+    } : getHeaders module' xs
+
+  where
+      renderPlain inlines = either (error . show) id . runPure . writePlain def $ Pandoc mempty [Plain inlines]
+
+      -- | Attempt to find the "description" of a heading. Effectively, if a header
+      -- is followed by a paragraph, use its contents.
+      getDesc (Para x:_) = Just (renderPlain x)
+      getDesc (Plain x:_) = Just (renderPlain x)
+      getDesc _ = Nothing
+
+getHeaders module' (_:xs) = getHeaders module' xs
 
 htmlInl :: Text -> Inline
 htmlInl = RawInline (Format "html")
