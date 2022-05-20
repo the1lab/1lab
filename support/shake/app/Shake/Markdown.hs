@@ -9,6 +9,7 @@ module Shake.Markdown (buildMarkdown) where
 import Control.Monad.Error.Class
 import Control.Monad.IO.Class
 import Control.Monad.Writer
+import Control.Monad.State
 
 import qualified Data.ByteString.Lazy as LazyBS
 import qualified Data.Text.Encoding as Text
@@ -244,28 +245,37 @@ foldEquations False (TagClose "html":cs) =
 foldEquations has_eqn (c:cs) = c:foldEquations has_eqn cs
 foldEquations _ [] = []
 
--- | Get all headers in the document, suitable for being searched through.
-getHeaders :: Text -> [Block] -> [SearchTerm]
-getHeaders _ [] = []
-getHeaders module' (Header _ (hId, _, _) hText:xs)
-  | hId /= ""
-  = SearchTerm
-    { idIdent  = renderPlain hText
-    , idAnchor = module' <> ".html#" <> hId
-    , idType   = Nothing
-    , idDesc   = getDesc xs
-    } : getHeaders module' xs
+-- | Get all headers in the document, building a list of definitions for our
+-- search index.
+getHeaders :: Text -> Pandoc -> [SearchTerm]
+getHeaders module' = flip evalState [] . getAp . query (Ap . go) where
+  -- The state stores a path of headers in the document of the form (level,
+  -- header), which is updated as we walk down the document.
+  go :: [Block] -> State [(Int, Text)] [SearchTerm]
+  go [] = pure []
+  go (Header level (hId, _, _) hText:xs) = do
+    path <- get
+    let title = renderPlain hText
+    let path' = (level, title):dropWhile (\(l, _) -> l >= level) path
+    put path'
 
-  where
-      renderPlain inlines = either (error . show) id . runPure . writePlain def $ Pandoc mempty [Plain inlines]
+    if hId == "" then go xs
+    else
+      (:) SearchTerm
+      { idIdent  = Text.intercalate " > " . reverse $ map snd path'
+      , idAnchor = module' <> ".html#" <> hId
+      , idType   = Nothing
+      , idDesc   = getDesc xs
+      } <$> go xs
+  go (_:xs) = go xs
 
-      -- | Attempt to find the "description" of a heading. Effectively, if a header
-      -- is followed by a paragraph, use its contents.
-      getDesc (Para x:_) = Just (renderPlain x)
-      getDesc (Plain x:_) = Just (renderPlain x)
-      getDesc _ = Nothing
+  renderPlain inlines = either (error . show) id . runPure . writePlain def $ Pandoc mempty [Plain inlines]
 
-getHeaders module' (_:xs) = getHeaders module' xs
+  -- | Attempt to find the "description" of a heading. Effectively, if a header
+  -- is followed by a paragraph, use its contents.
+  getDesc (Para x:_) = Just (renderPlain x)
+  getDesc (Plain x:_) = Just (renderPlain x)
+  getDesc _ = Nothing
 
 htmlInl :: Text -> Inline
 htmlInl = RawInline (Format "html")
