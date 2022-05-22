@@ -98,3 +98,39 @@ $\id{base} \equiv \id{base}$ is equivalent to $\id{Sym}(X)$.
   Ω¹BAut = Iso→Equiv
     (encode base , iso (decode base) (encode∘decode base) (decode∘encode base))
 ```
+
+We can also characterise the h-level of these connected components.
+Intuitively the h-level should be one more than that of the type we're
+delooping, because `BAut`{.Agda} "only has one point" (it's connected),
+and as we established right above, the space of loops of that point is
+the automorphism group we delooped. The trouble here is that
+`BAut`{.Agda} has many points, and while we can pick paths between any
+two of them, we can not do so _continuously_ (otherwise `BAut`{.Agda}
+would be a proposition).
+
+This turns out not to matter! Since "being of h-level $n$" is a
+proposition, our discontinuous (i.e.: truncated) method of picking paths
+is just excellent. In the case when $T$ is contractible, we can directly
+get at the underlying equivalences, but for the higher h-levels, we
+proceed exactly by using connectedness.
+
+```agda
+  BAut-is-hlevel : ∀ n → is-hlevel T n → is-hlevel BAut (1 + n)
+  BAut-is-hlevel zero hl (x , f) (y , g) =
+    Σ-prop-path (λ _ → squash) (sym (ua f′) ∙ ua g′)
+    where
+      extract : ∀ {X} → is-prop (T ≃ X)
+      extract f g = Σ-prop-path is-equiv-is-prop $ funext λ x →
+        ap fst (is-contr→is-prop ((f e⁻¹) .snd .is-eqv (hl .centre))
+          (f .fst x , is-contr→is-prop hl _ _)
+          (g .fst x , is-contr→is-prop hl _ _))
+
+      f′ = ∥-∥-rec extract (λ x → x) f
+      g′ = ∥-∥-rec extract (λ x → x) g
+  BAut-is-hlevel (suc n) hl x y =
+    ∥-∥-elim₂ {P = λ _ _ → is-hlevel (x ≡ y) (1 + n)}
+      (λ _ _ → is-hlevel-is-prop _)
+      (λ p q → transport (ap₂ (λ a b → is-hlevel (a ≡ b) (1 + n)) (sym p) (sym q))
+        (is-hlevel≃ (1 + n) (Ω¹BAut e⁻¹) (≃-is-hlevel (1 + n) hl hl)))
+      (connected x) (connected y)
+```
