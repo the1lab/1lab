@@ -14,8 +14,8 @@ html {
 
   overflow-x: clip;
 
-  background-color: #fff;
-  color:            $code-fg;
+  background-color: var(--text-bg);
+  color:            var(--text-fg);
 }
 
 :root {
@@ -37,9 +37,6 @@ body {
 
   font-size: var(--font-size);
   overflow-x: clip;
-
-  background-color: $text-bg;
-  color: $text-fg;
 
   &.text-page {
     @include centered-contents;
@@ -103,7 +100,7 @@ main {
       line-height: 1.2;
 
       a[href].header-link {
-        color: black;
+        color: var(--text-fg);
         cursor: default;
 
         display: flex;
@@ -112,14 +109,14 @@ main {
 
         &:hover {
           text-decoration: none !important;
-          background-color: white !important;
+          background-color: var(--text-bg) !important;
           span {
             display: inline-block;
           }
         }
 
         &.hover-highlight {
-          background-color: white !important;
+          background-color: var(--text-bg) !important;
         }
 
         span {
@@ -143,7 +140,7 @@ main {
 
 div.warning {
   @include material;
-  background-color: $yellow-200;
+  background-color: var(--warning-bg);
 }
 
 div.asides {
@@ -407,7 +404,7 @@ details.text {
       content: 'read more';
       font-style: italic;
       margin-left: 0.223em;
-      color: black;
+      color: var(--text-fg);
     }
 
     > :nth-child(1) {
@@ -553,13 +550,13 @@ div.diagram-container {
 }
 
 article a[href], div#return > a[href], div#top > a[href], aside#toc > div#toc-container ul a[href] {
-  color: $code-blue;
+  color: var(--primary);
   text-decoration: none;
   &:hover {
     text-decoration: 2px currentColor underline !important;
   }
   &:visited {
-    color: $code-purple;
+    color: var(--secondary);
   }
 }
 

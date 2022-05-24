@@ -69,7 +69,7 @@ a.search-result {
   }
 
   & .search-match {
-    text-decoration: 2px $code-blue underline;
+    text-decoration: 2px var(--primary) underline;
   }
 }
 

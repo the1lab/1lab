@@ -54,11 +54,6 @@ $cyan-900: #006064;
 
 $nav-height: 48px;
 
-$code-bg:     #fff;
-$code-fg:     #222;
-$text-bg:     #fff;
-$text-fg:     #222;
-
 $code-red:    #d52753;
 $code-red-br: #AE3B36;
 $code-green:  #207B1D;
@@ -71,4 +66,34 @@ $code-violet: #7A82DA;
 $code-cyan:   #48A8B5;
 $code-white:  #ABB2BF;
 $code-grey:   #7F848E;
-$link-ul:       $code-blue;
+
+:root {
+  --text-bg: #fff;
+  --text-fg: #222;
+  --shadow: #000;
+
+  --primary: #{$code-blue};
+  --secondary: #{$code-purple};
+
+  --modal-bg: #ccccccaa;
+
+  --warning-bg: #{$yellow-200};
+
+  --code-bg: var(--text-bg);
+  --code-fg: var(--text-fg);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-bg: #1f1f1f;
+    --text-fg: #bfbfbf;
+    --shadow: #{$bluegray-600};
+
+    --primary: #99b4e6;
+    --secondary: #cd99e6;
+
+    --modal-bg: #474747aa;
+
+    --warning-bg: #{$yellow-900};
+  }
+}

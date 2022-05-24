@@ -19,8 +19,8 @@ code, pre, .sourceCode {
 }
 
 div.sourceCode, pre {
-  background-color: $code-bg;
-  color: $code-fg;
+  background-color: var(--code-bg);
+  color:            var(--code-fg);
   flex-grow: 0;
 
   @include material;
@@ -54,8 +54,8 @@ pre.Agda {
   padding-top:      0.25em;
   padding-bottom:   0.25em;
 
-  background-color: $code-bg;
-  color:            $code-fg;
+  background-color: var(--code-bg);
+  color:            var(--code-fg);
 }
 
 @keyframes highlight {
@@ -63,7 +63,7 @@ pre.Agda {
     background-color: #F5DEB3;
   }
   100% {
-    background-color: $code-bg;
+    background-color: var(--code-bg);
   }
 }
 
@@ -73,37 +73,37 @@ a[href].hover-highlight {
 
 /* Aspects. */
 .Agda {
-  .Comment       { color: $code-fg; font-style: italic; }
-  .Background    { background-color: $code-bg; }
-  .Markup        { color: $code-fg; }
+  .Comment       { color: var(--code-fg); font-style: italic; }
+  .Background    { background-color: var(--code-bg); }
+  .Markup        { color: var(--code-fg); }
   .Keyword       { color: $code-orange; }
   .String        { color: $code-red; }
   .Number        { color: $code-pink; }
-  .Symbol        { color: $code-fg; }
-  .PrimitiveType { color: $code-blue; }
-  .Pragma        { color: $code-fg; }
+  .Symbol        { color: var(--code-fg); }
+  .PrimitiveType { color: var(--primary); }
+  .Pragma        { color: var(--code-fg); }
 
 /* NameKinds. */
-  .Bound                  { color: $code-fg !important;      }
-  .Generalizable          { color: $code-fg !important;      }
+  .Bound                  { color: var(--code-fg) !important;      }
+  .Generalizable          { color: var(--code-fg) !important;      }
   .InductiveConstructor   { color: $code-green !important;   }
   .CoinductiveConstructor { color: $code-green !important;   }
-  .Datatype               { color: $code-blue !important;    }
+  .Datatype               { color: var(--primary) !important;    }
   .Field                  { color: $code-purple !important;  }
-  .Function               { color: $code-blue !important;    }
+  .Function               { color: var(--primary) !important;    }
   .Module                 { color: $code-pink !important;    }
-  .Postulate              { color: $code-blue !important;    }
-  .Primitive              { color: $code-blue !important;    }
-  .Record                 { color: $code-blue !important;    }
+  .Postulate              { color: var(--primary) !important;    }
+  .Primitive              { color: var(--primary) !important;    }
+  .Record                 { color: var(--primary) !important;    }
 
 /* OtherAspects. */
-  .UnsolvedMeta         { color: $code-fg; background: yellow         }
-  .UnsolvedConstraint   { color: $code-fg; background: yellow         }
-  .TerminationProblem   { color: $code-fg; background: #FFA07A        }
-  .IncompletePattern    { color: $code-fg; background: #F5DEB3        }
+  .UnsolvedMeta         { color: var(--code-fg); background: yellow         }
+  .UnsolvedConstraint   { color: var(--code-fg); background: yellow         }
+  .TerminationProblem   { color: var(--code-fg); background: #FFA07A        }
+  .IncompletePattern    { color: var(--code-fg); background: #F5DEB3        }
   .Error                { color: red;   text-decoration: underline }
-  .TypeChecks           { color: $code-fg; background: #ADD8E6        }
-  .ShadowingInTelescope { color: $code-fg; background: #808080        }
+  .TypeChecks           { color: var(--code-fg); background: #ADD8E6        }
+  .ShadowingInTelescope { color: var(--code-fg); background: #808080        }
   .Deadcode             {
     color: $code-orange;
     font-weight: bold;
@@ -112,7 +112,7 @@ a[href].hover-highlight {
   /* Standard attributes. */
   a { text-decoration: none }
   a[href]:hover {
-    text-decoration: 2px $link-ul underline;
+    text-decoration: 2px var(--primary) underline;
   }
   a[href]:target {
     animation: highlight 2.5s;
@@ -130,7 +130,7 @@ a[href].hover-highlight {
 
 // Styles for code
 code.kw, span.kw { color: $code-pink; } /* Keyword */
-code.dt, span.dt { color: $code-blue; } /* DataType */
+code.dt, span.dt { color: var(--primary); } /* DataType */
 code.dv, span.dv { color: $code-orange; } /* DecVal */
 code.bn, span.bn { color: $code-orange; } /* BaseN */
 code.fl, span.fl { color: $code-orange; } /* Float */
@@ -139,14 +139,14 @@ code.st, span.st { color: $code-green; } /* String */
 code.co, span.co { color: $code-grey; } /* Comment */
 code.ot, span.ot { color: $code-green; } /* Other */
 code.al, span.al { color: #ff0000; } /* Alert */
-code.fu, span.fu { color: $code-fg; } /* Function */
+code.fu, span.fu { color: var(--code-fg); } /* Function */
 code.er, span.er { color: #ff0000; } /* Error */
 code.wa, span.wa { color: #60a0b0; } /* Warning */
 code.cn, span.cn { color: $code-orange; } /* Constant */
 code.sc, span.sc { color: $code-yellow; } /* SpecialChar */
-code.vs, span.vs { color: $code-blue; } /* VerbatimString */
+code.vs, span.vs { color: var(--primary); } /* VerbatimString */
 code.ss, span.ss { color: $code-green; } /* SpecialString */
-code.va, span.va { color: $code-fg; } /* Variable */
+code.va, span.va { color: var(--code-fg); } /* Variable */
 code.cf, span.cf { color: $code-pink; } /* ControlFlow */
 code.op, span.op { color: $code-green; } /* Operator */
 code.pp, span.pp { color: $code-orange; } /* Preprocessor */
@@ -160,6 +160,6 @@ code.cv, span.cv { color: $code-red; } /* CommentVar */
   z-index: 100;
 
   font-size: 0.8em;
-  color: $code-fg;
-  background: $code-bg;
+  color: var(--code-fg);
+  background: var(--code-bg);
 }
