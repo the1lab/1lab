@@ -3,8 +3,9 @@ import { JSX, Content } from "./lib/jsx";
 
 type SearchItem = {
   idIdent: string,
-  idType: string,
   idAnchor: string,
+  idType: string | null,
+  idDesc: string | null,
 };
 
 const highlight = ({ match, original }: MatchData<SearchItem>): Content => {
@@ -55,9 +56,10 @@ const startSearch = (mirrorInput: HTMLInputElement | null) => {
               <span>
                 {highlight(match)}
               </span>
-              <span class="search-module">{match.item.idAnchor.replace(/#[0-9]+$/, "").slice(0,-".html".length)}</span>
+              <span class="search-module">{match.item.idAnchor.replace(/.html(#.+)?$/, "")}</span>
             </h3>
-            <p class="search-type sourceCode">{match.item.idType}</p>
+            {match.item.idType && <p class="search-type sourceCode">{match.item.idType}</p>}
+            {match.item.idDesc && <p class="search-desc">{match.item.idDesc}</p>}
           </a>
         </li>)}
       </ul>;

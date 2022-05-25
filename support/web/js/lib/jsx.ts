@@ -5,7 +5,7 @@ const add = (element: HTMLElement, child: Content) => {
     element.appendChild(document.createTextNode(child.toString()));
   } else if (child instanceof Array) {
     child.forEach((x) => add(element, x));
-  } else if (child === undefined) {
+  } else if (child === undefined || child === null) {
     return;
   } else {
     element.appendChild(child);

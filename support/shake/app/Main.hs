@@ -31,6 +31,7 @@ import System.IO (IOMode(..), hPutStrLn, withFile)
 import Agda
 
 import Shake.AgdaRefs (getAgdaRefs)
+import Shake.SearchData
 import Shake.LinkGraph
 import Shake.Markdown
 import Shake.Diagram
@@ -72,6 +73,10 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     traced "agda" $
       runAgda defaultOptions{optInputFile = Just "_build/all-pages.agda"} $
       compileAgda out
+  -- Add additional rules for the above.
+  "_build/all-types.json" %> \_ -> need ["_build/all-pages.agda"]
+  "_build/html0/*.html" %> \_ -> need ["_build/all-pages.agda"]
+  "_build/html0/*.md" %> \_ -> need ["_build/all-pages.agda"]
 
   {-
     For each 1Lab module, read the emitted file from @_build/html0@. If its
@@ -79,8 +84,6 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     to HTML with some additional post-processing steps (see 'buildMarkdown')
   -}
   "_build/html/*.html" %> \out -> do
-    need ["_build/all-pages.agda"]
-
     let
       modname = dropExtension (takeFileName out)
       input = "_build/html0" </> modname
@@ -92,6 +95,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
         agdaRefs <- agdaRefs
         buildMarkdown agdaRefs (input <.> ".md") out
       else copyFile' (input <.> ".html") out
+  "_build/search/*.json" %> \out -> need ["_build/html/" </> takeFileName out -<.> "html" ]
 
   "_build/html/static/links.json" %> \out -> do
     need ["_build/html/all-pages.html"]
@@ -109,8 +113,11 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
       hPutStrLn h "null]"
 
   "_build/html/static/search.json" %> \out -> do
-    need ["_build/html/all-pages.html"]
-    copyFile' "_build/all-types.json" out
+    modules <- sort <$> getDirectoryFiles "src" ["**/*.lagda.md"]
+    let searchFiles = "_build/all-types.json":map (\x -> "_build/search" </> moduleName (dropExtensions x) <.> "json") modules
+    need searchFiles
+    searchData <- traverse readSearchData searchFiles
+    writeSearchData out (concat searchData)
 
   -- Compile Quiver to SVG. This is used by 'buildMarkdown'.
   "_build/html/*.svg" %> \out -> do
@@ -148,8 +155,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     need and kicks off the above job to build them.
   -}
   phony "all" do
-    need ["_build/all-pages.agda"]
-    files <- filter ("open import" `isPrefixOf`) . lines <$> readFile' "_build/all-pages.agda"
+    files <- filter ("open import" `isPrefixOf`) <$> readFileLines "_build/all-pages.agda"
     need $ "_build/html/all-pages.html"
          : [ "_build/html" </> (words file !! 2) <.> "html"
            | file <- files
@@ -159,13 +165,15 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
       pure ["_build/html/static" </> f | f <- files]
     agda <- getDirectoryFiles "_build/html0" ["Agda.*.html"] >>= \files ->
       pure ["_build/html/" </> f | f <- files]
-    need $ [ "_build/html/favicon.ico"
-           , "_build/html/static/links.json"
-           , "_build/html/static/search.json"
-           , "_build/html/css/default.css"
-           , "_build/html/main.js"
-           , "_build/html/code-only.js"
-           ] ++ static ++ agda
+    need $
+      static ++ agda ++
+        [ "_build/html/favicon.ico"
+        , "_build/html/static/links.json"
+        , "_build/html/static/search.json"
+        , "_build/html/css/default.css"
+        , "_build/html/main.js"
+        , "_build/html/code-only.js"
+        ]
 
   -- ???
 

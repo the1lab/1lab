@@ -49,6 +49,7 @@ executable shake
       , Shake.LinkGraph
       , Shake.LinkReferences
       , Shake.Markdown
+      , Shake.SearchData
     default-language: Haskell2010
     ghc-options: -Wextra -Wall -Wno-name-shadowing -Wno-implicit-prelude
 
