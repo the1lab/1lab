@@ -60,6 +60,13 @@ record Ran (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
     σ-uniq : {M : Functor C′ D} {β : M F∘ p => F} {σ′ : M => Ext}
            → β ≡ eps ∘nt whiskerl σ′
            → σ β ≡ σ′
+
+  σ-uniq₂
+    : {M : Functor C′ D} (β : M F∘ p => F) {σ₁′ σ₂′ : M => Ext}
+    → β ≡ eps ∘nt whiskerl σ₁′
+    → β ≡ eps ∘nt whiskerl σ₂′
+    → σ₁′ ≡ σ₂′
+  σ-uniq₂ β p q = sym (σ-uniq p) ∙ σ-uniq q
 ```
 
 The first thing we'll verify is that this construction is indeed dual to
