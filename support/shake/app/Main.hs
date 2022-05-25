@@ -115,6 +115,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
   "_build/html/static/search.json" %> \out -> do
     modules <- sort <$> getDirectoryFiles "src" ["**/*.lagda.md"]
     let searchFiles = "_build/all-types.json":map (\x -> "_build/search" </> moduleName (dropExtensions x) <.> "json") modules
+    need searchFiles
     searchData <- traverse readSearchData searchFiles
     writeSearchData out (concat searchData)
 
@@ -164,13 +165,15 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
       pure ["_build/html/static" </> f | f <- files]
     agda <- getDirectoryFiles "_build/html0" ["Agda.*.html"] >>= \files ->
       pure ["_build/html/" </> f | f <- files]
-    need $ [ "_build/html/favicon.ico"
-           , "_build/html/static/links.json"
-           , "_build/html/static/search.json"
-           , "_build/html/css/default.css"
-           , "_build/html/main.js"
-           , "_build/html/code-only.js"
-           ] ++ static ++ agda
+    need $
+      static ++ agda ++
+        [ "_build/html/favicon.ico"
+        , "_build/html/static/links.json"
+        , "_build/html/static/search.json"
+        , "_build/html/css/default.css"
+        , "_build/html/main.js"
+        , "_build/html/code-only.js"
+        ]
 
   -- ???
 
