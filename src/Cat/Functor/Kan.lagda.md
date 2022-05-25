@@ -201,8 +201,8 @@ the $\kappa$th universe.
 module _
   {o o′ ℓ κ} {C : Precategory κ κ} {D : Precategory o′ κ} {E : Precategory o ℓ}
   (colim : is-cocomplete κ κ E)
-  (F : Functor C E)
   (K : Functor C D)
+  (F : Functor C E)
   where
   private
     module C = Cat C

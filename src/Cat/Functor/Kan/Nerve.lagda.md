@@ -110,7 +110,7 @@ module _ {C : Precategory o κ} (cocompl : is-cocomplete κ κ C) where
 
 ```agda
   Realisation : {D : Precategory κ κ} → Functor D C → Functor (PSh κ D) C
-  Realisation {D} F = cocomplete→lan cocompl F (よ D) .Lan.Ext
+  Realisation {D} F = cocomplete→lan cocompl (よ D) F .Lan.Ext
 
   Realisation⊣Nerve
     : {D : Precategory κ κ} (F : Functor D C)
