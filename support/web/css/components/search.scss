@@ -37,7 +37,7 @@ a.search-result {
   }
 
   &:hover, &:focus {
-    background-color: $bluegray-200;
+    background-color: var(--search-selected);
   }
 
   li.active > & {

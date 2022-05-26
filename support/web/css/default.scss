@@ -380,14 +380,14 @@ details:not(.text) {
 }
 
 details.text {
-  border: 3px solid $cyan-100;
+  border: 3px solid var(--details-summary);
   transition: border 0.3s ease-in-out;
 
   > summary {
     list-style-type: none;
-    background-color: $cyan-100;
+    background-color: var(--details-summary);
 
-    border-left: 1em solid $cyan-100;
+    border-left: 1em solid var(--details-summary);
     padding-top: 0.25em;
     padding-bottom: 0.25em;
     padding-right: 1em;
@@ -413,10 +413,10 @@ details.text {
   }
 
   &[open] {
-    border: 3px solid $cyan-200;
+    border: 3px solid var(--details-open);
     summary {
-      border-left: 1em solid $cyan-200;
-      background-color: $cyan-200;
+      border-left: 1em solid var(--details-open);
+      background-color: var(--details-open);
       &::after {
         content: 'read less';
       }
@@ -425,11 +425,11 @@ details.text {
 
   &:not([open]) {
     &:hover {
-      border: 3px solid $cyan-200;
+      border: 3px solid var(--details-open);
     }
     summary:hover {
-      border-left: 1em solid $cyan-200;
-      background-color: $cyan-200;
+      border-left: 1em solid var(--details-open);
+      background-color: var(--details-open);
 
       &::after {
         text-decoration: underline;

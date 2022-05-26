@@ -9,6 +9,17 @@ $purple-700: #7e22ce;
 $purple-800: #6b21a8;
 $purple-900: #581c87;
 
+$violet-50:  #f5f3ff;
+$violet-100: #ede9fe;
+$violet-200: #ddd6fe;
+$violet-300: #c4b5fd;
+$violet-400: #a78bfa;
+$violet-500: #8b5cf6;
+$violet-600: #7c3aed;
+$violet-700: #6d28d9;
+$violet-800: #5b21b6;
+$violet-900: #4c1d95;
+
 $yellow-50:  #fefce8;
 $yellow-100: #fef9c3;
 $yellow-200: #fef08a;
@@ -54,26 +65,34 @@ $cyan-900: #006064;
 
 $nav-height: 48px;
 
-$code-red:    #d52753;
-$code-red-br: #AE3B36;
-$code-green:  #207B1D;
-$code-yellow: #DEB468;
-$code-orange: #BB3B13;
-$code-blue:   #0054F4;
-$code-pink:   #8A1060;
-$code-purple: #9C1BD6;
-$code-violet: #7A82DA;
-$code-cyan:   #48A8B5;
-$code-white:  #ABB2BF;
-$code-grey:   #7F848E;
+$light-code-red:    #d52753;
+$light-code-red-br: #AE3B36;
+$light-code-green:  #207B1D;
+$light-code-yellow: #DEB468;
+$light-code-orange: #BB3B13;
+$light-code-blue:   #0054F4;
+$light-code-pink:   #8A1060;
+$light-code-purple: #9C1BD6;
+$light-code-violet: #7A82DA;
+$light-code-cyan:   #48A8B5;
+$light-code-white:  #ABB2BF;
+$light-code-grey:   #7F848E;
+
+$dark-code-red:    #E06C75;
+$dark-code-green:  #98C379;
+$dark-code-yellow: #E5C07B;
+$dark-code-blue:   #61AFEF;
+$dark-code-pink:   #C878DD;
+$dark-code-purple: #992eb4;
+$dark-code-cyan:   #56B6C2;
 
 :root {
   --text-bg: #fff;
   --text-fg: #222;
   --shadow: #000;
 
-  --primary: #{$code-blue};
-  --secondary: #{$code-purple};
+  --primary: #{$light-code-blue};
+  --secondary: #{$light-code-purple};
 
   --modal-bg: #ccccccaa;
 
@@ -81,19 +100,66 @@ $code-grey:   #7F848E;
 
   --code-bg: var(--text-bg);
   --code-fg: var(--text-fg);
+
+  --code-keyword: #{$light-code-orange};
+  --code-string:  #{$light-code-red};
+  --code-number:  #{$light-code-pink};
+  --code-module:  #{$light-code-pink};
+  --code-field:   #{$light-code-purple};
+  --code-constructor: #{$light-code-green};
+  --code-highlight: #F5DEB3;
+
+  --search-selected: #{$bluegray-200};
+
+  --details-summary: #{$cyan-100};
+  --details-open:    #{$cyan-200};
+
+  --depgraph-edge: #eee;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --text-bg: #1f1f1f;
+    --text-bg: #282C34;
     --text-fg: #bfbfbf;
     --shadow: #{$bluegray-600};
 
-    --primary: #99b4e6;
-    --secondary: #cd99e6;
+    --primary: #{$dark-code-blue};
+    --secondary: #{$dark-code-pink};
 
-    --modal-bg: #474747aa;
+    --modal-bg: #282C34aa;
 
-    --warning-bg: #{$yellow-900};
+    --warning-bg: #{$red-800};
+
+    --code-keyword:     #{$dark-code-yellow};
+    --code-string:      #{$dark-code-red};
+    --code-number:      #{$dark-code-green};
+    --code-module:      #{$dark-code-cyan};
+    --code-field:       #{$dark-code-pink};
+    --code-constructor: #{$dark-code-green};
+    --code-highlight: #ef444499;
+
+    --search-selected: #474e5e;
+
+    --details-summary: #{$violet-800};
+    --details-open:    #{$violet-900};
+
+    --depgraph-edge: #474e5e;
+  }
+
+  div.warning {
+    --shadow: #{$red-900}
+  }
+
+  input {
+    background-color: $bluegray-700;
+    border: 1px solid $bluegray-600;
+    color: var(--text-fg);
+  }
+
+  * {
+    scrollbar-color: #3b4454 #2b2e33;
+
+    transition-property: color;
+    transition-property: background-color;
   }
 }

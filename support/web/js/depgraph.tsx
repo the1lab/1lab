@@ -155,7 +155,7 @@ function render(nodes: d3.Selection<SVGCircleElement | d3.BaseType, Node, any, a
         // not.
         if (d.source.hover) { return d.source.colour as string; }
         if (d.target.hover) { return d.target.colour as string; }
-        return '#ddd';
+        return 'var(--depgraph-edge)';
       });
 
     labels
@@ -315,7 +315,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const lines = svg.selectAll('line')
     .data(edges)
     .join('line')
-    .attr('stroke', '#ccc');
+    .attr('stroke', 'var(--depgraph-edge)');
 
   // Draw the circles representing the nodes. At this point, we have
   // already populated each nodes' colour, section and radius.
@@ -339,9 +339,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   labels
     .append('text')
     .text(d => d.id)
+    .attr('fill', 'var(--text-fg)')
     .clone(true).lower()
-    .attr('fill', 'none')
-    .attr('stroke', 'white')
+    .attr('fill', 'var(--text-fg)')
+    .attr('stroke', 'var(--text-bg)')
     .attr('stroke-width', 2);
 
   const renderCallback = render(circles, lines, labels);
