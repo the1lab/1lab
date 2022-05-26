@@ -22,7 +22,7 @@ subobject of the [product], the pushout is a quotient object of the
 [coproduct]. The maps $f$ and $g$ tell us which parts of the [coproduct]
 to identify.
 
-[pullback]: Cat.Diagram.Product.html
+[pullback]: Cat.Diagram.Pullback.html
 [product]: Cat.Diagram.Product.html
 [coproduct]: Cat.Diagram.Coproduct.html
 
@@ -80,5 +80,3 @@ record Pushout (f : Hom X Y) (g : Hom X Z) : Type (o ⊔ ℓ) where
 
   open is-pushout has-is-po public
 ```
-
-
