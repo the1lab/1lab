@@ -115,6 +115,7 @@ $dark-code-cyan:   #56B6C2;
   --details-open:    #{$cyan-200};
 
   --depgraph-edge: #eee;
+  --blockquote-bg: #{$purple-300};
 }
 
 .diagram-dark {
@@ -148,6 +149,7 @@ $dark-code-cyan:   #56B6C2;
     --details-open:    #{$violet-900};
 
     --depgraph-edge: #474e5e;
+    --blockquote-bg: #{$bluegray-600};
   }
 
   div.warning {

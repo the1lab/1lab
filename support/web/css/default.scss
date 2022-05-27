@@ -243,7 +243,7 @@ p > code {
 blockquote, details.blockquote {
   @include material;
 
-  background-color: $purple-100;
+  background-color: var(--blockquote-bg);
 
   margin-left: 0;
   margin-right: 0;
