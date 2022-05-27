@@ -48,7 +48,7 @@ parseAgdaLink fileIds (TagOpen "a" attrs)
   , Just ident <- Text.stripPrefix "agda://" href = do
     case HM.lookup ident (unAgdaRefs fileIds) of
       Just href -> TagOpen "a" (emplace [("href", href)] attrs)
-      _ -> error $ "Could not find Agda link: " ++ show ident
+      _ -> TagOpen "a" attrs -- error $ "Could not find Agda link: " ++ show ident
 parseAgdaLink _ x = x
 
 emplace :: Eq a => [(a, b)] -> [(a, b)] -> [(a, b)]
