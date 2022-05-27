@@ -117,6 +117,10 @@ $dark-code-cyan:   #56B6C2;
   --depgraph-edge: #eee;
 }
 
+.diagram-dark {
+  display: none !important;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --text-bg: #282C34;
@@ -156,10 +160,14 @@ $dark-code-cyan:   #56B6C2;
     color: var(--text-fg);
   }
 
-  * {
+  body {
     scrollbar-color: #3b4454 #2b2e33;
+  }
 
-    transition-property: color;
-    transition-property: background-color;
+  .diagram-dark {
+    display: block !important;
+  }
+  .diagram-light {
+    display: none !important;
   }
 }

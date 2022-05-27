@@ -160,10 +160,16 @@ patchBlock (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes =
     digest = showDigest . sha1 . LazyBS.fromStrict $ Text.encodeUtf8 contents
     title = fromMaybe "commutative diagram" (lookup "title" attrs)
   liftIO $ Text.writeFile ("_build/diagrams" </> digest <.> "tex") contents
-  tell mempty { mdDependencies = ["_build/html" </> digest <.> "svg"] }
+  tell mempty {
+    mdDependencies =
+      [ "_build/html/light-" <> digest <.> "svg"
+      , "_build/html/dark-" <> digest <.> "svg"
+      ]
+    }
 
   pure $ Div ("", ["diagram-container"], [])
-    [ Plain [ Image (id, "diagram":classes, attrs) [] (Text.pack (digest <.> "svg"), title) ]
+    [ Plain [ Image (id, "diagram diagram-light":classes, attrs) [] (Text.pack ("light-" <> digest <.> "svg"), title) ]
+    , Plain [ Image (id, "diagram diagram-dark":classes, attrs) [] (Text.pack ("dark-" <> digest <.> "svg"), title) ]
     ]
 -- Find the references block, parse the references, and remove it. We write
 -- the references as part of our template instead.

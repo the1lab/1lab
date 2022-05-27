@@ -120,9 +120,13 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     writeSearchData out (concat searchData)
 
   -- Compile Quiver to SVG. This is used by 'buildMarkdown'.
-  "_build/html/*.svg" %> \out -> do
-    let inp = "_build/diagrams" </> takeFileName out -<.> "tex"
-    buildDiagram inp out
+  "_build/html/light-*.svg" %> \out -> do
+    let inp = "_build/diagrams" </> drop (length ("light-" :: String)) (takeFileName out) -<.> "tex"
+    buildDiagram inp out False
+
+  "_build/html/dark-*.svg" %> \out -> do
+    let inp = "_build/diagrams" </> drop (length ("dark-" :: String)) (takeFileName out) -<.> "tex"
+    buildDiagram inp out True
 
   "_build/html/css/*.css" %> \out -> do
     let inp = "support/web/css/" </> takeFileName out -<.> "scss"
