@@ -66,10 +66,23 @@ total-hom-is-set X Y =
     Total-hom′-is-set = Σ-is-hlevel 2 (Hom-set _ _) λ f → Hom[ f ]-set _ _
 
 total-hom-path : ∀ {X Y : Total} {f g : Total-hom X Y}
-                 → (p : f .hom ≡ g .hom) → f .preserves ≡[ p ] g .preserves → f ≡ g
+               → (p : f .hom ≡ g .hom) → f .preserves ≡[ p ] g .preserves → f ≡ g
 total-hom-path p p′ i .hom = p i
 total-hom-path {f = f} {g = g} p p′ i .preserves = p′ i
 ```
+
+<!--
+```agda
+total-hom-pathp
+  : ∀ {X X′ Y Y′ : Total} {f : Total-hom X Y} {g : Total-hom X′ Y′}
+  → (p : X ≡ X′) (q : Y ≡ Y′)
+  → (r : PathP (λ z → Hom (p z .fst) (q z .fst)) (f .hom) (g .hom))
+  → PathP (λ z → Hom[ r z ] (p z .snd) (q z .snd)) (f .preserves) (g .preserves)
+  → PathP (λ i → Total-hom (p i) (q i)) f g
+total-hom-pathp p q r s i .hom = r i
+total-hom-pathp p q r s i .preserves = s i
+```
+-->
 
 With all that in place, we can construct the total category!
 
