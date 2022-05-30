@@ -1,52 +1,76 @@
 ```agda
+open import Cat.Functor.Equivalence
+open import Cat.Displayed.Cartesian
+open import Cat.Diagram.Pullback
+open import Cat.Displayed.Fibre
+open import Cat.Instances.Slice
 open import Cat.Displayed.Base
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning as CR
 
 module Cat.Displayed.Instances.Slice {o ℓ} (B : Precategory o ℓ) where
+```
 
+<!--
+```agda
+open Cartesian-fibration
+open Cartesian-lift
 open Displayed
+open Cartesian
+open Functor
 open CR B
+open /-Obj
 ```
+-->
 
-# Slices as a Displayed Category
+# The canonical self-indexing
 
-There is a canonical way of viewing any category as displayed over
-itself. Recall that the best way to think about displayed categories is
-adding extra structure over each of the objects of the base. Here, we
-only really have one natural choice of extra structure for objects:
-morphisms into that object!
+There is a canonical way of viewing any category $\ca{B}$ as displayed
+over _itself_, given [fibrewise] by taking [slice categories]. Following
+[@relativect], we refer to this construction as the **canonical-self
+indexing** of $\ca{B}$ and denote it $\underline{\ca{B}}$. Recall that
+the objects in the slice over $y$ are pairs consisting of an object $x$
+and a map $f : x \to y$. The core idea is that _any morphism_ lets us
+view an object $x$ as being "structure over" an object $y$; the
+collection of all possible such structures, then, is the set of
+morphisms $x \to y$, with domain allowed to vary.
+
+[fibrewise]: Cat.Displayed.Fibre.html
+[slice categories]: Cat.Instances.Slice.html
+
+Contrary to the maps in the slice category, the maps in the canonical
+self-indexing have an extra "adjustment" by a morphism $f : x \to y$ of
+the base category. Where maps in the ordinary slice are given by
+commuting triangles, maps in the canonical self-indexing are given by
+commuting _squares_, of the form
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  x' && y' \\
+  \\
+  x && {y\text{,}}
+  \arrow["{p_x}"', dashed, from=1-1, to=3-1]
+  \arrow["{p_y}"', dashed, from=1-3, to=3-3]
+  \arrow["f'", dashed, from=1-1, to=1-3]
+  \arrow["f"', from=3-1, to=3-3]
+\end{tikzcd}\]
+~~~
+
+where the primed objects and dotted arrows are displayed.
 
 ```agda
-record Slice (x : Ob) : Type (o ⊔ ℓ) where
-  constructor slice
-  field
-    over  : Ob
-    index : Hom over x
-
-open Slice
-```
-
-As a point of intuition: the name `Slice` should evoke the feeling of
-"slicing up" `over`. If we restrict ourselves to Set, we can view a map
-`over → x` as a partition of `over` into `x` different fibres. In other
-words, this provides an x-indexed collection of sets. This view of
-viewing slices as means of indexing is a very fruitful one, and should
-be something that you keep in the back of your head.
-
-Now, the morphisms:
-
-```agda
-record Slice-hom {x y} (f : Hom x y)
-                (px : Slice x) (py : Slice y) : Type (o ⊔ ℓ) where
+record
+  Slice-hom
+    {x y} (f : Hom x y)
+    (px : /-Obj {C = B} x) (py : /-Obj {C = B} y)
+    : Type (o ⊔ ℓ)
+  where
   constructor slice-hom
-  private
-    module px = Slice px
-    module py = Slice py
   field
-    to     : Hom px.over py.over
-    commute : f ∘ px.index ≡ py.index ∘ to
+    to      : Hom (px .domain) (py .domain)
+    commute : f ∘ px .map ≡ py .map ∘ to
 
 open Slice-hom
 ```
@@ -57,66 +81,157 @@ private unquoteDecl eqv = declare-record-iso eqv (quote Slice-hom)
 ```
 -->
 
-Going back to our intuition of "slices as a means of indexing", a
-morphism of slices performs a sort of reindexing operation. The morphism
-in the base performs our re-indexing, and then we ensure that we have
-some morphism between the indexed collections that preserves indexing,
-relative to the re-indexing operation.
+The intuitive idea for the canonical self-indexing is possibly best
+obtained by considering the canonical self-indexing of $\sets_\kappa$.
+First, recall that an object $f : \sets/X$ is equivalently a $X$-indexed
+family of sets, with the value of the family at each point $x : X$ being
+the fibre $f^*(x)$. A function $X \to Y$ of sets then corresponds to a
+_reindexing_, which takes an $X$-family of sets to a $Y$-family of sets
+([in a functorial way]). A morphism $X' \to Y'$ in the canonical
+self-indexing of $\sets$ lying over a map $f : X \to Y$ is then a
+function between the families $X' \to Y'$ which commutes with the
+reindexing given by $f$.
 
-## Slice Lemmas
+[in a functorial way]: Cat.Instances.Slice.html#slices-of-sets
 
-Before we show this thing is a displayed category, we need to prove some
-lemmas.  These are extremely unenlightening, so the reader should feel
-free to skip these (and probably ought to!).
-
+<!--
 ```agda
-module _ {x y} {f g : Hom x y} {px : Slice x} {py : Slice y}
+module _ {x y} {f g : Hom x y} {px : /-Obj x} {py : /-Obj y}
          {f′ : Slice-hom f px py} {g′ : Slice-hom g px py} where
-```
 
-Paths of slice morphisms are determined by paths between the base
-morphisms, and paths between the "upper" morphisms.
-
-```agda
   Slice-pathp : (p : f ≡ g) → (f′ .to ≡ g′ .to) → PathP (λ i → Slice-hom (p i) px py) f′ g′
   Slice-pathp p p′ i .to = p′ i
   Slice-pathp p p′ i .commute =
     is-prop→pathp
-      (λ i → Hom-set _ _ (p i ∘ px .index) (py .index ∘ (p′ i)))
+      (λ i → Hom-set _ _ (p i ∘ px .map) (py .map ∘ (p′ i)))
       (f′ .commute)
       (g′ .commute)
       i
-```
 
-```agda
-module _ {x y} (f : Hom x y) (px : Slice x) (py : Slice y) where
+module _ {x y} (f : Hom x y) (px : /-Obj x) (py : /-Obj y) where
   Slice-is-set : is-set (Slice-hom f px py)
   Slice-is-set = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2)
     where open HLevel-instance
 ```
+-->
 
-## Pulling it all together
-
-Now that we have all the ingredients, the proof that this is all a
-displayed category follows rather easily. It's useful to reinforce what
-we've actually done here though!  We can think of morphisms into some
-object `x` as "structures on `x`", and then commuting squares as
-"structures over morphisms".
+It's straightforward to piece together the objects of the (ordinary)
+slice category and our displayed maps `Slice-hom`{.Agda} into a category
+displayed over $\ca{B}$.
 
 ```agda
 Slices : Displayed B (o ⊔ ℓ) (o ⊔ ℓ)
-Slices .Ob[_] = Slice
+Slices .Ob[_] = /-Obj {C = B}
 Slices .Hom[_] = Slice-hom
 Slices .Hom[_]-set = Slice-is-set
 Slices .id′ = slice-hom id id-comm-sym
 Slices ._∘′_ {x = x} {y = y} {z = z} {f = f} {g = g} px py =
   slice-hom (px .to ∘ py .to) $
-    (f ∘ g) ∘ x .index          ≡⟨ pullr (py .commute) ⟩
-    f ∘ (index y ∘ py .to)      ≡⟨ extendl (px .commute) ⟩
-    z .index ∘ (px .to ∘ py .to) ∎
+    (f ∘ g) ∘ x .map           ≡⟨ pullr (py .commute) ⟩
+    f ∘ (y .map ∘ py .to)      ≡⟨ extendl (px .commute) ⟩
+    z .map ∘ (px .to ∘ py .to) ∎
 Slices .idr′ {f = f} f′ = Slice-pathp (idr f) (idr (f′ .to))
 Slices .idl′ {f = f} f′ = Slice-pathp (idl f) (idl (f′ .to))
 Slices .assoc′ {f = f} {g = g} {h = h} f′ g′ h′ =
   Slice-pathp (assoc f g h) (assoc (f′ .to) (g′ .to) (h′ .to))
 ```
 
+It's only slightly more annoying to show that a vertical map in the
+canonical self-indexing is a map in the ordinary slice category which,
+since the objects displayed over $x$ are _defined_ to be those of the
+slice category $\ca{B}/x$, gives an equivalence of categories between
+the fibre $\underline{\ca{B}}^*(x)$ and the slice $\ca{B}/x$.
+
+```agda
+Fibre→slice : ∀ {x} → Functor (Fibre Slices x) (Slice B x)
+Fibre→slice .F₀ x = x
+Fibre→slice .F₁ f ./-Hom.map = f .to
+Fibre→slice .F₁ f ./-Hom.commutes = sym (f .commute) ∙ eliml refl
+Fibre→slice .F-id = /-Hom-path refl
+Fibre→slice .F-∘ f g = /-Hom-path (transport-refl _)
+
+Fibre→slice-is-ff : ∀ {x} → is-fully-faithful (Fibre→slice {x = x})
+Fibre→slice-is-ff {_} {x} {y} = is-iso→is-equiv isom where
+  isom : is-iso (Fibre→slice .F₁)
+  isom .is-iso.inv hom =
+    slice-hom (hom ./-Hom.map) (eliml refl ∙ sym (hom ./-Hom.commutes))
+  isom .is-iso.rinv x = /-Hom-path refl
+  isom .is-iso.linv x = Slice-pathp refl refl
+
+Fibre→slice-is-equiv : ∀ {x} → is-equivalence (Fibre→slice {x})
+Fibre→slice-is-equiv = is-precat-iso→is-equivalence $
+  record { has-is-ff = Fibre→slice-is-ff
+         ; has-is-iso = id-equiv
+         }
+```
+
+## As a fibration
+
+If (and only if) $\ca{B}$ has all [pullbacks], then the self-indexing
+$\ca{B}$ is a [Cartesian fibration]. This is almost by definition, and
+is in fact where the "Cartesian" in "Cartesian fibration" (recall that
+another term for "pullback square" is "cartesian square"). Since the
+total space $\int \underline{\ca{B}}$ is equivalently the arrow category
+of $\ca{B}$, with the projection functor $\pi : \int \underline{\ca{B}}
+\to \ca{B}$ corresponding under this equivalence to the codomain
+functor, we refer to $\underline{ca{B}}$ regarded as a Cartesian
+fibration as the **codomain fibration**.
+
+```agda
+Codomain-fibration
+  : (∀ {x y z} (f : Hom x y) (g : Hom z y) → Pullback B f g)
+  → Cartesian-fibration Slices
+Codomain-fibration pullbacks .has-lift f y′ = lift-f where
+  open Pullback (pullbacks f (y′ .map))
+
+  lift-f : Cartesian-lift Slices f y′
+  lift-f .x′ = cut p₁
+  lift-f .lifting .to = p₂
+  lift-f .lifting .commute = square
+  lift-f .cartesian .universal m h′ .to = limiting (assoc _ _ _ ∙ h′ .commute)
+  lift-f .cartesian .universal m h′ .commute = sym p₁∘limiting
+  lift-f .cartesian .commutes m h′ = Slice-pathp refl p₂∘limiting
+  lift-f .cartesian .unique m′ x = Slice-pathp refl $
+    Pullback.unique (pullbacks f (y′ .map)) (sym (m′ .commute)) (ap to x)
+```
+
+[pullbacks]: Cat.Diagram.Pullback.html
+[Cartesian fibration]: Cat.Displayed.Cartesian.html
+
+Since the proof that `Slices`{.Agda} is a cartesian fibration is given
+by essentially rearranging the data of pullbacks in $\ca{B}$, we also
+have the converse implication: If $\underline{\ca{B}}$ is a Cartesian
+fibration, then $\ca{B}$ has all pullbacks.
+
+```agda
+Codomain-fibration→pullbacks
+  : ∀ {x y z} (f : Hom x y) (g : Hom z y)
+  → Cartesian-fibration Slices
+  → Pullback B f g
+Codomain-fibration→pullbacks f g lifts = pb where
+  open Pullback
+  open is-pullback
+  the-lift = lifts .has-lift f (cut g)
+
+  pb : Pullback B f g
+  pb .apex = the-lift .x′ .domain
+  pb .p₁ = the-lift .x′ .map
+  pb .p₂ = the-lift .lifting .to
+  pb .has-is-pb .square = the-lift .lifting .commute
+  pb .has-is-pb .limiting {p₁' = p₁'} {p₂'} p =
+    the-lift .cartesian .universal {u′ = cut id}
+      p₁' (slice-hom p₂' (pullr (idr _) ∙ p)) .to
+  pb .has-is-pb .p₁∘limiting =
+    sym (the-lift .cartesian .universal _ _ .commute) ∙ idr _
+  pb .has-is-pb .p₂∘limiting = ap to (the-lift .cartesian .commutes _ _)
+  pb .has-is-pb .unique p q = ap to $ the-lift .cartesian .unique
+    (slice-hom _ (idr _ ∙ sym p)) (Slice-pathp refl q)
+```
+
+Since the fibres of the codomain fibration are given by slice
+categories, then the interpretation of Cartesian fibrations as
+"displayed categories whose fibres vary functorially" leads us to
+reinterpret the above results as, essentially, giving the [pullback
+functors] between slice categories.
+
+[pullback functors]: Cat.Functor.Pullback.html

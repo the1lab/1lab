@@ -14,6 +14,7 @@ open Displayed E
 ```agda
 record Cartesian {a b x y} (f : Hom a b)
                  (f′ : Hom[ f ] x y) : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
+  no-eta-equality
   field
     universal : ∀ {u u′} (m : Hom u a) → (h′ : Hom[ f ∘ m ] u′ y) → Hom[ m ] u′ x
     commutes  : ∀ {u u′} (m : Hom u a) → (h′ : Hom[ f ∘ m ] u′ y)
@@ -24,14 +25,16 @@ record Cartesian {a b x y} (f : Hom a b)
 
 ```agda
 record Cartesian-lift {x y} (f : Hom x y) (y′ : Ob[ y ]) : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
+  no-eta-equality
   field
-    {x′}       : Ob[ x ]
+    {x′}      : Ob[ x ]
     lifting   : Hom[ f ] x′ y′
     cartesian : Cartesian f lifting
 ```
 
 ```agda
 record Cartesian-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
+  no-eta-equality
   field
     has-lift : ∀ {x y} (f : Hom x y) → (y′ : Ob[ y ]) → Cartesian-lift f y′
 ```

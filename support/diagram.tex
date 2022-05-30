@@ -9,8 +9,11 @@
 
 \newcommand{\id}[1]{\mathrm{#1}}
 \usetikzlibrary{calc}
+\usetikzlibrary{fit}
 \usetikzlibrary{decorations.pathmorphing}
-\definecolor{eee}{HTML}{EEEEEE}
+
+\definecolor{diagrambg}{HTML}{ffffff}
+
 \tikzset{curve/.style={settings={#1},to path={(\tikztostart)
     .. controls ($(\tikztostart)!\pv{pos}!(\tikztotarget)!\pv{height}!270:(\tikztotarget)$)
     and ($(\tikztostart)!1-\pv{pos}!(\tikztotarget)!\pv{height}!270:(\tikztotarget)$)

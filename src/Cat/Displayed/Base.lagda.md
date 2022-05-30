@@ -16,7 +16,7 @@ category. For instance, we can think of categories of algebraic objects
 (monoids, groups, rings, etc) as being extra structure placed atop the
 objects of Set, and extra conditions placed atop the morphisms of Set.
 
-We start by defining a displayed category over some sort of "base",
+We start by defining a displayed category over a base category $\ca{B}$
 which will act as the category we add the extra structure to.
 
 ```agda
@@ -27,9 +27,9 @@ record Displayed {o ℓ} (B : Precategory o ℓ)
 ```
 
 For each object of the base category, we associate a type of objects.
-Going back to our original example of algebraic structures + Set, this
-would be something like `Monoid-on : Set → Type`. This highlights an
-important point for intuition: we should think of the objects of the
+Going back to our original example of algebraic structures over $\sets$,
+this would be something like `Monoid-on : Set → Type`. This highlights
+an important point for intuition: we should think of the objects of the
 displayed category as _structures_ over the objects of the base.
 
 ```agda
@@ -47,8 +47,8 @@ _structures_ over morphisms.
 
 ```agda
     Hom[_] : ∀ {x y} → Hom x y → Ob[ x ] → Ob[ y ] → Type ℓ′
-    Hom[_]-set : ∀ {a b} (f : Hom a b)
-                 → (x : Ob[ a ]) → (y : Ob[ b ]) → is-set (Hom[ f ] x y)
+    Hom[_]-set : ∀ {a b} (f : Hom a b) (x : Ob[ a ]) (y : Ob[ b ])
+               → is-set (Hom[ f ] x y)
 ```
 
 We also have identity and composition of displayed morphisms, but this
@@ -61,7 +61,7 @@ indeed a homomorphism.
 ```agda
     id′ : ∀ {a} {x : Ob[ a ]} → Hom[ id ] x x
     _∘′_ : ∀ {a b c x y z} {f : Hom b c} {g : Hom a b}
-           → Hom[ f ] y z → Hom[ g ] x y → Hom[ f ∘ g ] x z
+         → Hom[ f ] y z → Hom[ g ] x y → Hom[ f ∘ g ] x z
 ```
 
 Now, for the difficult part of displayed category theory: equalities.
@@ -89,6 +89,6 @@ over the equalities in the base.
     idr′ : ∀ {a b x y} {f : Hom a b} → (f′ : Hom[ f ] x y) → (f′ ∘′ id′) ≡[ idr f ] f′
     idl′ : ∀ {a b x y} {f : Hom a b} → (f′ : Hom[ f ] x y) → (id′ ∘′ f′) ≡[ idl f ] f′
     assoc′ : ∀ {a b c d w x y z} {f : Hom c d} {g : Hom b c} {h : Hom a b}
-             → (f′ : Hom[ f ] y z) → (g′ : Hom[ g ] x y) → (h′ : Hom[ h ] w x)
-             → f′ ∘′ (g′ ∘′ h′) ≡[ assoc f g h ] ((f′ ∘′ g′) ∘′ h′)
+           → (f′ : Hom[ f ] y z) → (g′ : Hom[ g ] x y) → (h′ : Hom[ h ] w x)
+           → f′ ∘′ (g′ ∘′ h′) ≡[ assoc f g h ] ((f′ ∘′ g′) ∘′ h′)
 ```
