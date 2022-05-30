@@ -28,6 +28,7 @@ jobs:
         run: |
           echo "$mailmap" > .mailmap
           ln -sf $NODE_DEPS_PATH .
+          git config --global --add safe.directory /__w/1lab/1lab
           1lab-shake all -j
           ./support/make-site.sh
 
