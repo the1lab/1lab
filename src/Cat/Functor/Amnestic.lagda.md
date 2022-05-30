@@ -5,8 +5,8 @@ description: |
 ---
 ```agda
 open import Cat.Functor.Base
-open import Cat.Prelude
 open import Cat.Univalent
+open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning as Cat

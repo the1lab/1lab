@@ -1,6 +1,7 @@
 open import 1Lab.Type.Sigma
 open import 1Lab.Equiv
 open import 1Lab.Type
+
 open import Data.Bool
 open import Data.List
 

@@ -1,8 +1,8 @@
 <!--
 ```agda
 open import Cat.Diagram.Limit.Finite
-open import Cat.Prelude hiding (_-_)
 open import Cat.Abelian.Base
+open import Cat.Prelude hiding (_-_)
 ```
 -->
 

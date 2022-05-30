@@ -1,9 +1,9 @@
 ```agda
+open import Algebra.Semigroup
 open import Algebra.Group.Ab
 open import Algebra.Prelude
 open import Algebra.Monoid
 open import Algebra.Group
-open import Algebra.Semigroup
 
 module Algebra.Ring where
 ```

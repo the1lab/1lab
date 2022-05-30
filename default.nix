@@ -66,7 +66,7 @@ in
 
     buildInputs = [
       # For driving the compilation:
-      our-ghc shakefile static-agda
+      our-ghc shakefile
 
       # For building the text and maths:
       gitMinimal sassc

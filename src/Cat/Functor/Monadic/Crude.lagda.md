@@ -6,10 +6,10 @@ description: |
 ```agda
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Adjoint.Monad
-open import Cat.Functor.Monadic.Beck
 open import Cat.Functor.Conservative
-open import Cat.Functor.Equivalence
+open import Cat.Functor.Monadic.Beck
 open import Cat.Diagram.Coequaliser
+open import Cat.Functor.Equivalence
 open import Cat.Functor.Adjoint
 open import Cat.Diagram.Monad
 open import Cat.Prelude
