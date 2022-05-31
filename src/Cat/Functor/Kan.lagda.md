@@ -375,7 +375,6 @@ extension along a fully-faithful functor does actually _extend_.
   open _=>_
 
   ff-lan-ext : is-fully-faithful K → cocomplete→lan .Ext F∘ K Fn.≅ F
-
   ff-lan-ext ff = Fn._Iso⁻¹ (Fn.invertible→iso (cocomplete→lan .eta) inv) where
     inv′ : ∀ x → E.is-invertible (cocomplete→lan .eta .η x)
     inv′ x = E.make-invertible to invl invr where
