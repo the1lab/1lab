@@ -60,7 +60,7 @@ well-behaved, we do actually mean _set_: A type of
 If you are already familiar with the definition of precategory there are
 two things to note here:
 
-First is that out formalization has a _family_ of `Hom`{.Agda}-sets
+First is that our formalization has a _family_ of `Hom`{.Agda}-sets
 rather than a single `Hom`{.Agda}-set and source/target maps. This
 formulation is not unique to precategory theory done internally to type
 theory, but it is the most reasonable way to formulate things in this
