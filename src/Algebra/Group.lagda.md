@@ -214,7 +214,7 @@ it `preserves the multiplication`{.Agda ident=pres-⋆}.
 
 ```agda
 record
-  Group-hom {ℓ} (A B : Group ℓ) (e : A .fst → B .fst) : Type ℓ where
+  Group-hom {ℓ ℓ′} (A : Group ℓ) (B : Group ℓ′) (e : A .fst → B .fst) : Type (ℓ ⊔ ℓ′) where
   private
     module A = Group-on (A .snd)
     module B = Group-on (B .snd)

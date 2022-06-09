@@ -568,7 +568,7 @@ category with finite limits $\mathscr{E}$, we have a functor $\id{Sub} :
 \mathscr{E}^{op} \to \set$, which takes $c$ to the full subcategory of
 $\mathscr{E}/c$ on the injections. We say that $\Omega \in \mathscr{E}$
 is a **subobject classifier** if there is a natural isomorphism
-$\id{Sub} \cong \id{hom}(-,\Omega)$, i.e., if $\Omega$ is a representing
+$\id{Sub} \cong \hom(-,\Omega)$, i.e., if $\Omega$ is a representing
 object for the subobject functor. Since the Yoneda lemma implies that
 representing objects are unique, this characterises $\Omega$.
 
