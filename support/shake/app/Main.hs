@@ -98,19 +98,20 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
   "_build/search/*.json" %> \out -> need ["_build/html/" </> takeFileName out -<.> "html" ]
 
   "_build/html/static/links.json" %> \out -> do
-    need ["_build/html/all-pages.html"]
-    (start, act) <- runWriterT $ findLinks (tell . Set.singleton) . parseTags
-      =<< liftIO (readFile "_build/html/all-pages.html")
-    need (Set.toList act)
-    traced "crawling links" . withFile out WriteMode $ \h -> do
-      hPutStrLn h "["
-      crawlLinks
-        (\x o -> liftIO $ hPrintf h "[%s, %s],"
-          (show (dropExtension x))
-          (show (dropExtension o)))
-        (const (pure ()))
-        (Set.toList start)
-      hPutStrLn h "null]"
+    liftIO $ writeFile out "[null]"
+    -- need ["_build/html/all-pages.html"]
+    -- (start, act) <- runWriterT $ findLinks (tell . Set.singleton) . parseTags
+    --   =<< liftIO (readFile "_build/html/all-pages.html")
+    -- need (Set.toList act)
+    -- traced "crawling links" . withFile out WriteMode $ \h -> do
+    --   hPutStrLn h "["
+    --   crawlLinks
+    --     (\x o -> liftIO $ hPrintf h "[%s, %s],"
+    --       (show (dropExtension x))
+    --       (show (dropExtension o)))
+    --     (const (pure ()))
+    --     (Set.toList start)
+    --   hPutStrLn h "null]"
 
   "_build/html/static/search.json" %> \out -> do
     modules <- sort <$> getDirectoryFiles "src" ["**/*.lagda.md"]

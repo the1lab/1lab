@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -46,123 +47,130 @@
   <!-- Google font embeds -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap"
+    rel="stylesheet">
 </head>
 
 <body class="text-page">
-<main>
-<div id="post-toc-container" style="padding-left: 1em; padding-right: 1em;">
+  <main>
+    <div id="post-toc-container" style="padding-left: 1em; padding-right: 1em;">
 
-  <!-- Table of contents (only if the page has a table of contents) -->
-  $if(toc)$
-  <aside id=toc>
-    <div id=toc-container style="min-width: 10em; font-size: 15pt;">
-      <!-- Title for the page -->
-      <h3 class="Agda" style="margin-top: 0; margin-bottom: 0; white-space: pre;">
-        $if(customtitle)$
-        <a class="Module">$customtitle$</a>
-        $else$
-        <a class="Module">$title$</a>
-        $endif$
-      </h3>
+      <!-- Table of contents (only if the page has a table of contents) -->
+      $if(toc)$
+      <aside id=toc>
+        <div id=toc-container style="min-width: 10em; font-size: 15pt;">
+          <!-- Title for the page -->
+          <h3 class="Agda" style="margin-top: 0; margin-bottom: 0; white-space: pre;">
+            $if(customtitle)$
+            <a class="Module">$customtitle$</a>
+            $else$
+            <a class="Module">$title$</a>
+            $endif$
+          </h3>
 
-      <!-- Cube logo -->
-      <a id=logo href="/">
-        <img alt="1Lab"
-            src="/static/cube-72x.png"
-            style="display: block; margin-bottom: 1em; margin: auto;"
-            width="32px"
-            height="32px"
-          />
-      </a>
+          <!-- Cube logo -->
+          <a id=logo href="/">
+            <img alt="1Lab" src="/static/cube-72x.png" style="display: block; margin-bottom: 1em; margin: auto;"
+              width="32px" height="32px" />
+          </a>
 
-      <!-- Actual table of contents (separated from the rest by
-      horizontal rules) -->
-      <hr />
-      $table-of-contents$
-      <hr />
+          <!-- Actual table of contents (separated from the rest by
+          horizontal rules) -->
+          <hr />
+          $table-of-contents$
+          <hr />
 
-      <!-- Sidebar controls -->
-      <div style="display: flex; gap: 0.25em; flex-flow: row wrap;">
-        <!-- Sidebar equations control -->
-        <span class="equations" style="display: flex; align-items: center; gap: 0.25em; flex-wrap: nowrap;">
-          <input name=sidebar-eqns type="checkbox" class="equations" id=sidebar-eqns>
-          <label for=sidebar-eqns>Equations</label>
-        </span>
+          <!-- Sidebar controls -->
+          <div style="display: flex; gap: 0.25em; flex-flow: row wrap;">
+            <!-- Sidebar equations control -->
+            <span class="equations" style="display: flex; align-items: center; gap: 0.25em; flex-wrap: nowrap;">
+              <input name=sidebar-eqns type="checkbox" class="equations" id=sidebar-eqns>
+              <label for=sidebar-eqns>Equations</label>
+            </span>
 
-        <!-- Sidebar fonts control -->
-        <span style="display: flex; align-items: center; gap: 0.25em; flex-wrap: nowrap;">
-          <input name=sidebar-font type="checkbox" id="toggle-fonts">
-          <label for=toggle-fonts>Serif Font</label>
-        </span>
+            <!-- Sidebar fonts control -->
+            <span style="display: flex; align-items: center; gap: 0.25em; flex-wrap: nowrap;">
+              <input name=sidebar-font type="checkbox" id="toggle-fonts">
+              <label for=toggle-fonts>Serif Font</label>
+            </span>
 
-        <!-- Sidebar footnotes control -->
-        <span class="inline-footnotes" style="display: none; align-items: center; gap: 0.25em; flex-wrap: nowrap;">
-          <input name=sidebar-fns type="checkbox" class="inline-footnotes" id=sidebar-fns>
-          <label for=sidebar-fns>Inline Footnotes</label>
-        </span>
-      </div>
+            <!-- Sidebar footnotes control -->
+            <span class="inline-footnotes" style="display: none; align-items: center; gap: 0.25em; flex-wrap: nowrap;">
+              <input name=sidebar-fns type="checkbox" class="inline-footnotes" id=sidebar-fns>
+              <label for=sidebar-fns>Inline Footnotes</label>
+            </span>
+          </div>
 
-      <hr />
+          <hr />
 
-      <!-- Navbar navigation (lol) -->
-      <div id="return" style="white-space: nowrap;">
-        <div class="search-form search-form-proxy" role="form">
-          <input id="search-box-proxy" type_="text" placeholder="Search..." autocomplete="off" tabindex="0" />
+          <!-- Navbar navigation (lol) -->
+          <div id="return" style="white-space: nowrap;">
+            <div class="search-form search-form-proxy" role="form">
+              <input id="search-box-proxy" type_="text" placeholder="Search..." autocomplete="off" tabindex="0" />
+            </div>
+
+            $if(is-index)$
+            $else$
+            <a href="/">back to index</a> <br />
+            $endif$
+            <a href="all-pages.html">view all pages</a> <br />
+            <a href="https://github.com/plt-amy/cubical-1lab/blob/$source$">link to source</a> <br />
+            $if(authors)$
+            <hr />
+            <div class="author-list">Written by $authors$</div> <br />
+            $endif$
+          </div>
         </div>
-
-      $if(is-index)$
-      $else$
-        <a href="/">back to index</a> <br />
-      $endif$
-        <a href="all-pages.html">view all pages</a> <br />
-        <a href="https://github.com/plt-amy/cubical-1lab/blob/$source$">link to source</a> <br />
-        $if(authors)$
-        <hr /> <div class="author-list">Written by $authors$</div> <br />
-        $endif$
-      </div>
-    </div>
-  </aside>
-  $endif$
-
-  <article>
-    <!-- Article navigation (narrow screens only) -->
-    <div class="narrow-only" id="article-nav">
-      <!-- Index return anchor (only if the page is not the index) -->
-      $if(is-index)$
-      $else$
-      <div id=return>
-        <a href="/">back to index</a>
-      </div>
+      </aside>
       $endif$
 
-      <!-- Navbar equations control -->
-      <span class="equations" style="display: flex; gap: 0.25em; flex-wrap: nowrap;">
-        <input name=navbar-eqns type="checkbox" class="equations" id=navbar-eqns>
-        <label for=navbar-eqns>Equations</label>
-      </span>
-
-      <!-- Navbar footnotes control -->
-      <span class="inline-footnotes" style="display: none; gap: 0.25em; flex-wrap: nowrap;">
-        <input name=navbar-fns type="checkbox" class="inline-footnotes" id=navbar-fns>
-        <label for=navbar-fns>Inline Footnotes</label>
-      </span>
-    </div>
-
+      <article>
 $body$
-$if(reference)$
-<hr />
-<section id="refs" role="doc-bibliography">
-<h2>References</h2>
-<ul>
-$for(reference)$
-<li id="$reference.id$" role="doc-biblioentry">$reference.body$</li>
-$endfor$
-</ul>
-</section>
-$endif$
-  </article>
-</div>
-</main>
+
+        $if(reference)$
+        <hr />
+        <section id="refs" role="doc-bibliography">
+          <h2>References</h2>
+          <ul>
+            $for(reference)$
+            <li id="$reference.id$" role="doc-biblioentry">$reference.body$</li>
+            $endfor$
+          </ul>
+        </section>
+        $endif$
+      </article>
+    </div>
+  </main>
+
+  <!-- Article navigation (narrow screens only) -->
+  <div class="narrow-only" id="article-nav">
+    <div id="article-view-controls" class="font-sans-serif">
+      <div id="article-font-sel">
+        <div class="font-sel" id="toggle-sans-serif">
+          <span class="font-sans-serif">Aa</span>
+          Sans
+        </div>
+        <div class="font-sel" id="toggle-serif">
+          <span class="font-serif">Aa</span>
+          Serif
+        </div>
+      </div>
+      <div id="article-controls">
+      </div>
+    </div>
+    <div id="article-navbar">
+      <!-- Index return anchor (only if the page is not the index) -->
+      <div id=return>
+        <a id="article-nav-link" href="/">
+          <img alt="1Lab" src="/static/cube-72x.png" />
+        </a>
+      </div>
+      <span class="Agda">
+        <code class="Module"> $pagetitle$ </code>
+      </span>
+    </div>
+  </div>
 </body>
+
 </html>

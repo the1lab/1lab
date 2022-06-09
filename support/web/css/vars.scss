@@ -116,6 +116,8 @@ $dark-code-cyan:   #56B6C2;
 
   --depgraph-edge: #eee;
   --blockquote-bg: #{$purple-300};
+  --mobile-nav-bg: #{$bluegray-200};
+  --mobile-nav-hover-bg: #{$bluegray-300};
 }
 
 .diagram-dark {
@@ -150,6 +152,9 @@ $dark-code-cyan:   #56B6C2;
 
     --depgraph-edge: #474e5e;
     --blockquote-bg: #{$bluegray-600};
+
+    --mobile-nav-bg:       #474e5e;
+    --mobile-nav-hover-bg: #4a5670;
   }
 
   div.warning {

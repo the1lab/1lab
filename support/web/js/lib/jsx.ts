@@ -13,7 +13,7 @@ const add = (element: HTMLElement, child: Content) => {
 };
 
 type JSXName<T> = string | ((props: T) => Node);
-type ElemProps = { [id: string]: string | boolean };
+type ElemProps = { [id: string]: string | (() => void) | boolean };
 
 export class JSX {
   static createTextNode(t: string): Node {
@@ -30,13 +30,23 @@ export class JSX {
     if (typeof name !== "string") {
       return name(arg);
     } else {
-      const element = document.createElement(name);
       const props = (arg as { [id: string]: string | boolean }) || {};
+      let element;
+      if (typeof props['xmlns'] === 'string') {
+        element = document.createElementNS(props['xmlns'], name);
+        console.log(element);
+      } else {
+        element = document.createElement(name);
+      }
 
       for (let name in props) {
         if (name && props.hasOwnProperty(name)) {
           let value = props[name];
-          if (value === true) {
+          if (typeof(value) === 'function') {
+            const id: string = (Math.random() + 1).toString(36);
+            (window as any)[id] = value;
+            element.setAttribute(name, `window['${id}']()`);
+          } else if (value === true) {
             element.setAttribute(name, name);
           } else if (value !== false && value != null) {
             element.setAttribute(name, value.toString());
