@@ -379,14 +379,29 @@ module
   _ {o ℓ o′ ℓ′}
     {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
   where
-    private
-      module DD = Cat.Reasoning Cat[ D , D ]
-      module CD = Cat.Reasoning Cat[ C , D ]
 
-    F∘-iso-id-l
-      : {F : Functor D D} {G : Functor C D}
-      → F DD.≅ Id → (F F∘ G) CD.≅ G
-    F∘-iso-id-l {F} {G} isom = subst ((F F∘ G) CD.≅_) F∘-idl (F∘-iso-l isom)
+  private
+    module DD = Cat.Reasoning Cat[ D , D ]
+    module CD = Cat.Reasoning Cat[ C , D ]
+    module D = Cat.Reasoning D
+    module C = Cat.Reasoning C
+
+  F∘-iso-id-l
+    : {F : Functor D D} {G : Functor C D}
+    → F DD.≅ Id → (F F∘ G) CD.≅ G
+  F∘-iso-id-l {F} {G} isom = subst ((F F∘ G) CD.≅_) F∘-idl (F∘-iso-l isom)
+
+
+  make-natural-iso
+    : {F G : Functor C D}
+    → (eta : ∀ x → D.Hom (F .F₀ x) (G .F₀ x))
+    → (∀ x → D.is-invertible (eta x))
+    → (∀ x y f → G .F₁ f D.∘ eta x ≡ eta y D.∘ F .F₁ f)
+    → F CD.≅ G
+  make-natural-iso eta inv nat =
+    CD.invertible→iso
+      (NT eta (λ x y f → sym (nat x y f)))
+      (componentwise-invertible→invertible (NT eta _) inv)
 
 open _=>_
 
