@@ -14,10 +14,10 @@ module Cat.Bi.Base where
 
 <!--
 ```agda
-open Functor
 open _=>_
 
-private
+private module _ where
+  open Functor
   compose-assocˡ
     : ∀ {o ℓ ℓ′} {O : Type o} {H : O → O → Precategory ℓ ℓ′}
     → (C : ∀ {A B C} → Functor (H B C ×ᶜ H A B) (H A C))
@@ -37,6 +37,8 @@ private
   compose-assocʳ C .F₁ (f , g , h) = C .F₁ (f , C .F₁ (g , h))
   compose-assocʳ C .F-id = ap (C .F₁) (Σ-pathp refl (C .F-id)) ∙ C .F-id
   compose-assocʳ C .F-∘ f g = ap (C .F₁) (Σ-pathp refl (C .F-∘ _ _)) ∙ C .F-∘ _ _
+
+private variable o ℓ ℓ′ o₁ ℓ₁ ℓ₁′ : Level
 ```
 -->
 
@@ -126,7 +128,7 @@ whence the name **horizontal composition**.
 
   -- 1-cell composition
   _∘_ : ∀ {A B C} (f : B ↦ C) (g : A ↦ B) → A ↦ C
-  f ∘ g = compose .F₀ (f , g)
+  f ∘ g = compose .Functor.F₀ (f , g)
 
   -- vertical 2-cell composition
   _⊗_ : ∀ {A B} {f g h : A ↦ B} → g ⇒ h → f ⇒ g → f ⇒ h
@@ -135,18 +137,18 @@ whence the name **horizontal composition**.
   -- horizontal 2-cell composition
   _◆_ : ∀ {A B C} {f₁ f₂ : B ↦ C} (β : f₁ ⇒ f₂) {g₁ g₂ : A ↦ B} (α : g₁ ⇒ g₂)
       → (f₁ ∘ g₁) ⇒ (f₂ ∘ g₂)
-  _◆_ β α = compose .F₁ (β , α)
+  _◆_ β α = compose .Functor.F₁ (β , α)
 
   infixr 30 _∘_
   infixr 25 _⊗_
 
   -- whiskering on the right
   _▶_ : ∀ {A B C} (f : B ↦ C) {a b : A ↦ B} (g : a ⇒ b) → f ∘ a ⇒ f ∘ b
-  _▶_ {A} {B} {C} f g = compose .F₁ (Cr.id (Hom B C) , g)
+  _▶_ {A} {B} {C} f g = compose .Functor.F₁ (Cr.id (Hom B C) , g)
 
   -- whiskering on the left
   _◀_ : ∀ {A B C} {a b : B ↦ C} (g : a ⇒ b) (f : A ↦ B) → a ∘ f ⇒ b ∘ f
-  _◀_ {A} {B} {C} g f = compose .F₁ (g , Cr.id (Hom A B))
+  _◀_ {A} {B} {C} g f = compose .Functor.F₁ (g , Cr.id (Hom A B))
 ```
 
 We now move onto the invertible 2-cells witnessing that the chosen
@@ -228,7 +230,7 @@ witnesses commutativity of the diagram
       ≡ α← (f ∘ g) h i ⊗ α← f g (h ∘ i)
 ```
 
-# The bicategory of categories
+## The bicategory of categories
 
 Just like the prototypal example of categories is the category of sets,
 the prototypal example of bicategory is the bicategory of categories. We
@@ -242,6 +244,7 @@ level does _not_ form a category, but it _does_ form a bicategory.
 Cat : ∀ o ℓ → Prebicategory (lsuc o ⊔ lsuc ℓ) (o ⊔ ℓ) (o ⊔ ℓ)
 Cat o ℓ = pb where
   open Prebicategory
+  open Functor
 
   pb : Prebicategory _ _ _
   pb .Ob = Precategory o ℓ
@@ -301,13 +304,119 @@ directly:
     make-natural-iso (λ x → NT (λ _ → D.id) λ _ _ f → D.id-comm-sym)
       (λ x → componentwise-invertible→invertible _
               (λ _ → D.make-invertible D.id (D.idl _) (D.idl _)))
-      λ x y f → Nat-path λ _ → D.idr _ ∙ D.pushl (y .fst .F-∘ _ _) ∙ D.introl refl
+      λ x y f → Nat-path λ _ → D.idr _ ·· D.pushl (y .fst .F-∘ _ _) ·· D.introl refl
     where module D = Cr D
 
   pb .triangle {C = C} f g = Nat-path (λ _ → Cr.idr C _)
   pb .pentagon {E = E} f g h i =
     Nat-path λ _ → ap₂ E._∘_
-      (E.eliml (ap (f .F₁) (ap (g .F₁) (h .F-id)) ∙ ap (f .F₁) (g .F-id) ∙ f .F-id))
+      (E.eliml (ap (f .F₁) (ap (g .F₁) (h .F-id)) ·· ap (f .F₁) (g .F-id) ·· f .F-id))
       (E.elimr (E.eliml (f .F-id)))
     where module E = Cr E
+```
+
+# Pseudofunctors
+
+In the same way that the definition of bicategory is obtained by
+starting with the definition of category and replacing the $\hom$-sets
+by $\hom$-categories (and adding coherence data to make sure the
+resulting structure is well-behaved), one can start with the definition
+of functor and replace the _function_ between $\hom$-sets by _functors_
+between $\hom$-categories. The resulting object is called a
+**pseudofunctor** from $\bf{B}$ to $\bf{C}$. Analogously to the triangle
+and pentagon identities, weakening the functoriality axioms to specified
+_functoriality invertible 2-cells_ means that we have to put in some
+coherence axioms for those 2-cells.
+
+```agda
+record
+  Pseudofunctor (B : Prebicategory o ℓ ℓ′) (C : Prebicategory o₁ ℓ₁ ℓ₁′)
+    : Type (o ⊔ o₁ ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ′ ⊔ ℓ₁′) where
+
+  private
+    module B = Prebicategory B
+    module C = Prebicategory C
+
+  field
+    P₀ : B.Ob → C.Ob
+    P₁ : ∀ {A B} → Functor (B.Hom A B) (C.Hom (P₀ A) (P₀ B))
+```
+
+Functoriality is witnessed by the `compositor`{.Agda} and
+`unitor`{.Agda} natural isomorphisms, which (in components) say that
+$F_1(f)F_1(g) \cong F_1(fg)$ and $F_1(\id{id}) \cong \id{id}$.
+
+```agda
+    compositor : ∀ {A B C} →
+      Cr._≅_ Cat[ B.Hom B C ×ᶜ B.Hom A B , C.Hom (P₀ A) (P₀ C) ]
+        (C.compose F∘ Cat⟨ P₁ F∘ Fst , P₁ F∘ Snd ⟩)
+        (P₁ F∘ B.compose)
+
+    unitor : ∀ {A} →
+      Cr._≅_ Cat[ C.Hom (P₀ A) (P₀ A) , C.Hom (P₀ A) (P₀ A) ]
+        Id (P₁ F∘ Const B.id)
+```
+
+<!--
+```agda
+  module P₁ {A} {B} = Functor (P₁ {A} {B})
+
+  F₁ : ∀ {a b} → a B.↦ b → P₀ a C.↦ P₀ b
+  F₁ = P₁.F₀
+
+  F₂ : ∀ {a b} {f g : a B.↦ b} → f B.⇒ g → F₁ f C.⇒ F₁ g
+  F₂ = P₁.F₁
+
+  γ→ : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
+     → F₁ f C.∘ F₁ g C.⇒ F₁ (f B.∘ g)
+  γ→ f g = compositor .Cr._≅_.to .η (f , g)
+
+  γ← : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
+     → F₁ (f B.∘ g) C.⇒ F₁ f C.∘ F₁ g
+  γ← f g = compositor .Cr._≅_.from .η (f , g)
+
+  ι→ : ∀ {a} → C.id C.⇒ F₁ B.id
+  ι→ {a} = unitor .Cr._≅_.to .η (C.id {P₀ a})
+
+  ι← : ∀ {a} → F₁ B.id C.⇒ C.id
+  ι← {a} = unitor .Cr._≅_.from .η (C.id {P₀ a})
+```
+-->
+
+These are required to satisfy the following three coherence diagrams,
+relating the compositor to the associators, and the three unitors
+between themselves. We sketch the diagram which `hexagon`{.Agda}
+witnesses commutativity for, but leave the `right-unit`{.Agda} and
+`left-unit`{.Agda} diagrams unwritten.
+
+~~~{.quiver .tall-2}
+\[\begin{tikzcd}
+  & {F(hg)Ff} && {F((hg)f)} \\
+  \\
+  {(FhFg)Ff} &&&& {F(h(gf))} \\
+  \\
+  & {Fh(FgFf)} && {FhF(gf)}
+  \arrow["\alpha", from=3-1, to=5-2]
+  \arrow["{\gamma \blacktriangleleft Ff}"', from=3-1, to=1-2]
+  \arrow["\gamma"', from=1-2, to=1-4]
+  \arrow["F\alpha"', from=1-4, to=3-5]
+  \arrow["Fh\blacktriangleright\gamma", from=5-2, to=5-4]
+  \arrow["\gamma", from=5-4, to=3-5]
+\end{tikzcd}\]
+~~~
+
+```agda
+  field
+    hexagon
+      : ∀ {a b c d} (f : c B.↦ d) (g : b B.↦ c) (h : a B.↦ b)
+      → F₂ (B.α→ f g h) C.⊗ γ→ (f B.∘ g) h C.⊗ (γ→ f g C.◀ F₁ h)
+      ≡ γ→ f (g B.∘ h) C.⊗ (F₁ f C.▶ γ→ g h) C.⊗ C.α→ (F₁ f) (F₁ g) (F₁ h)
+
+    right-unit
+      : ∀ {a b} (f : a B.↦ b)
+      → F₂ (B.ρ← f) C.⊗ γ→ f B.id C.⊗ (F₁ f C.▶ ι→) ≡ C.ρ← (F₁ f)
+
+    left-unit
+      : ∀ {a b} (f : a B.↦ b)
+      → F₂ (B.λ← f) C.⊗ γ→ B.id f C.⊗ (ι→ C.◀ F₁ f) ≡ C.λ← (F₁ f)
 ```
