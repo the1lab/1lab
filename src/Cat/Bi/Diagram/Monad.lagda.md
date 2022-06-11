@@ -3,7 +3,6 @@ open import Cat.Bi.Base
 open import Cat.Prelude
 
 import Cat.Diagram.Monad as Cat
-import Cat.Bi.Reasoning as Br
 import Cat.Reasoning as Cr
 
 module Cat.Bi.Diagram.Monad  where
@@ -14,7 +13,7 @@ module Cat.Bi.Diagram.Monad  where
 open _=>_
 
 module _ {o ℓ ℓ′} (B : Prebicategory o ℓ ℓ′) where
-  private module B = Br B
+  private module B = Prebicategory B
 ```
 -->
 
