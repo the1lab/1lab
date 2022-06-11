@@ -1,6 +1,7 @@
 ```agda
 open import Cat.Instances.Product
 open import Cat.Instances.Functor
+open import Cat.Functor.Hom
 open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bi
@@ -84,6 +85,8 @@ record Prebicategory o ℓ ℓ′ : Type (lsuc (o ⊔ ℓ ⊔ ℓ′)) where
   field
     Ob  : Type o
     Hom : Ob → Ob → Precategory ℓ ℓ′
+
+  module Hom {A} {B} = Cr (Hom A B)
 ```
 
 Zooming out to consider the whole bicategory, we see that each object
@@ -97,6 +100,8 @@ sets for maps of precategories, i.e., functors.
   field
     id      : ∀ {A} → Precategory.Ob (Hom A A)
     compose : ∀ {A B C} → Functor (Hom B C ×ᶜ Hom A B) (Hom A C)
+
+  module compose {a} {b} {c} = Functor (compose {a} {b} {c})
 ```
 
 Before moving on to the isomorphisms witnessing identity and
@@ -124,7 +129,7 @@ whence the name **horizontal composition**.
   A ↦ B = Precategory.Ob (Hom A B)
 
   _⇒_ : ∀ {A B} (f g : A ↦ B) → Type ℓ′
-  _⇒_ {A} {B} f g = Precategory.Hom (Hom A B) f g
+  _⇒_ {A} {B} f g = Hom.Hom f g
 
   -- 1-cell composition
   _∘_ : ∀ {A B C} (f : B ↦ C) (g : A ↦ B) → A ↦ C
@@ -132,7 +137,7 @@ whence the name **horizontal composition**.
 
   -- vertical 2-cell composition
   _⊗_ : ∀ {A B} {f g h : A ↦ B} → g ⇒ h → f ⇒ g → f ⇒ h
-  _⊗_ {A} {B} = Cr._∘_ (Hom A B)
+  _⊗_ {A} {B} = Hom._∘_
 
   -- horizontal 2-cell composition
   _◆_ : ∀ {A B C} {f₁ f₂ : B ↦ C} (β : f₁ ⇒ f₂) {g₁ g₂ : A ↦ B} (α : g₁ ⇒ g₂)
@@ -144,11 +149,11 @@ whence the name **horizontal composition**.
 
   -- whiskering on the right
   _▶_ : ∀ {A B C} (f : B ↦ C) {a b : A ↦ B} (g : a ⇒ b) → f ∘ a ⇒ f ∘ b
-  _▶_ {A} {B} {C} f g = compose .Functor.F₁ (Cr.id (Hom B C) , g)
+  _▶_ {A} {B} {C} f g = compose .Functor.F₁ (Hom.id , g)
 
   -- whiskering on the left
   _◀_ : ∀ {A B C} {a b : B ↦ C} (g : a ⇒ b) (f : A ↦ B) → a ∘ f ⇒ b ∘ f
-  _◀_ {A} {B} {C} g f = compose .Functor.F₁ (g , Cr.id (Hom A B))
+  _◀_ {A} {B} {C} g f = compose .Functor.F₁ (g , Hom.id)
 ```
 
 We now move onto the invertible 2-cells witnessing that the chosen
@@ -229,6 +234,39 @@ witnesses commutativity of the diagram
       → (α← f g h ◀ i) ⊗ α← f (g ∘ h) i ⊗ (f ▶ α← g h i)
       ≡ α← (f ∘ g) h i ⊗ α← f g (h ∘ i)
 ```
+
+Our coherence diagrams for bicategorical data are taken from
+[@basicbicats], which contains all the diagrams we have omitted.
+However, we do not adopt their (dated) terminology of "homomorphism" and
+"strict homomorphism". In contrast with _our_ convention for
+1-categories, we refer to bicategories using bold capital letters:
+$\bf{B}$, $\bf{C}$.
+
+<!--
+```agda
+module _ (B : Prebicategory o ℓ ℓ′) where
+  open Prebicategory B
+  open Functor
+
+  postaction : ∀ {a b c} (f : a ↦ b) → Functor (Hom c a) (Hom c b)
+  postaction f .F₀ g = f ∘ g
+  postaction f .F₁ g = f ▶ g
+  postaction f .F-id = compose.F-id
+  postaction f .F-∘ g h =
+    f ▶ (g ⊗ h)                 ≡˘⟨ ap (_◆ g ⊗ h) (Hom.idl Hom.id) ⟩
+    (Hom.id ⊗ Hom.id) ◆ (g ⊗ h) ≡⟨ compose.F-∘ _ _ ⟩
+    (f ▶ g) ⊗ (f ▶ h)           ∎
+
+  preaction : ∀ {a b c} (f : a ↦ b) → Functor (Hom b c) (Hom a c)
+  preaction f .F₀ g = g ∘ f
+  preaction f .F₁ g = g ◀ f
+  preaction f .F-id = compose.F-id
+  preaction f .F-∘ g h =
+    (g ⊗ h) ◀ f                 ≡˘⟨ ap (g ⊗ h ◆_) (Hom.idl Hom.id) ⟩
+    (g ⊗ h) ◆ (Hom.id ⊗ Hom.id) ≡⟨ compose.F-∘ _ _ ⟩
+    (g ◀ f) ⊗ (h ◀ f)           ∎
+```
+-->
 
 ## The bicategory of categories
 
@@ -315,22 +353,26 @@ directly:
     where module E = Cr E
 ```
 
-# Pseudofunctors
+# Lax functors
 
 In the same way that the definition of bicategory is obtained by
 starting with the definition of category and replacing the $\hom$-sets
 by $\hom$-categories (and adding coherence data to make sure the
 resulting structure is well-behaved), one can start with the definition
 of functor and replace the _function_ between $\hom$-sets by _functors_
-between $\hom$-categories. The resulting object is called a
-**pseudofunctor** from $\bf{B}$ to $\bf{C}$. Analogously to the triangle
-and pentagon identities, weakening the functoriality axioms to specified
-_functoriality invertible 2-cells_ means that we have to put in some
-coherence axioms for those 2-cells.
+between $\hom$-categories.
+
+However, when talking about general bicategories, we are faced with a
+choice: We could generalise the functoriality axioms to natural
+isomorphisms, keeping with the fact that equations are invertible, but
+we could also drop this invertibility requirement, and work only with
+natural _transformations_ $P(\id{id}_A) \to \id{id}_{PA}$. When these
+are not invertible, the resulting structure is called a **lax functor**;
+When they _are_, we talk about **pseudofunctors** instead.
 
 ```agda
 record
-  Pseudofunctor (B : Prebicategory o ℓ ℓ′) (C : Prebicategory o₁ ℓ₁ ℓ₁′)
+  Lax-functor (B : Prebicategory o ℓ ℓ′) (C : Prebicategory o₁ ℓ₁ ℓ₁′)
     : Type (o ⊔ o₁ ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ′ ⊔ ℓ₁′) where
 
   private
@@ -342,52 +384,47 @@ record
     P₁ : ∀ {A B} → Functor (B.Hom A B) (C.Hom (P₀ A) (P₀ B))
 ```
 
-Functoriality is witnessed by the `compositor`{.Agda} and
-`unitor`{.Agda} natural isomorphisms, which (in components) say that
-$F_1(f)F_1(g) \cong F_1(fg)$ and $F_1(\id{id}) \cong \id{id}$.
+The resulting structure has "directed functoriality", witnessed by the
+`compositor`{.Agda} and `unitor`{.Agda} natural transformations, which
+have components $F_1(f)F_1(g) \To F_1(fg)$ and $F_1(\id{id}) \To
+\id{id}$.
 
 ```agda
-    compositor : ∀ {A B C} →
-      Cr._≅_ Cat[ B.Hom B C ×ᶜ B.Hom A B , C.Hom (P₀ A) (P₀ C) ]
-        (C.compose F∘ Cat⟨ P₁ F∘ Fst , P₁ F∘ Snd ⟩)
-        (P₁ F∘ B.compose)
+    compositor
+      : ∀ {A B C}
+      → C.compose F∘ Cat⟨ P₁ {B} {C} F∘ Fst , P₁ {A} {B} F∘ Snd ⟩ => P₁ F∘ B.compose
 
-    unitor : ∀ {A} →
-      Cr._≅_ Cat[ C.Hom (P₀ A) (P₀ A) , C.Hom (P₀ A) (P₀ A) ]
-        Id (P₁ F∘ Const B.id)
+    unitor : ∀ {A} → Id => P₁ {A} {A} F∘ Const B.id
 ```
 
 <!--
 ```agda
   module P₁ {A} {B} = Functor (P₁ {A} {B})
 
-  F₁ : ∀ {a b} → a B.↦ b → P₀ a C.↦ P₀ b
-  F₁ = P₁.F₀
+  ₀ : B.Ob → C.Ob
+  ₀ = P₀
 
-  F₂ : ∀ {a b} {f g : a B.↦ b} → f B.⇒ g → F₁ f C.⇒ F₁ g
-  F₂ = P₁.F₁
+  ₁ : ∀ {a b} → a B.↦ b → P₀ a C.↦ P₀ b
+  ₁ = P₁.F₀
+
+  ₂ : ∀ {a b} {f g : a B.↦ b} → f B.⇒ g → ₁ f C.⇒ ₁ g
+  ₂ = P₁.F₁
 
   γ→ : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
-     → F₁ f C.∘ F₁ g C.⇒ F₁ (f B.∘ g)
-  γ→ f g = compositor .Cr._≅_.to .η (f , g)
+     → ₁ f C.∘ ₁ g C.⇒ ₁ (f B.∘ g)
+  γ→ f g = compositor .η (f , g)
 
-  γ← : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
-     → F₁ (f B.∘ g) C.⇒ F₁ f C.∘ F₁ g
-  γ← f g = compositor .Cr._≅_.from .η (f , g)
-
-  ι→ : ∀ {a} → C.id C.⇒ F₁ B.id
-  ι→ {a} = unitor .Cr._≅_.to .η (C.id {P₀ a})
-
-  ι← : ∀ {a} → F₁ B.id C.⇒ C.id
-  ι← {a} = unitor .Cr._≅_.from .η (C.id {P₀ a})
+  υ→ : ∀ {a} → C.id C.⇒ ₁ B.id
+  υ→ {a} = unitor .η (C.id {P₀ a})
 ```
 -->
 
-These are required to satisfy the following three coherence diagrams,
-relating the compositor to the associators, and the three unitors
+Additionally, we require the following three equations to hold, relating
+the compositor transformation to the associators, and the three unitors
 between themselves. We sketch the diagram which `hexagon`{.Agda}
 witnesses commutativity for, but leave the `right-unit`{.Agda} and
-`left-unit`{.Agda} diagrams unwritten.
+`left-unit`{.Agda} diagrams undrawn (they're boring commutative
+squares).
 
 ~~~{.quiver .tall-2}
 \[\begin{tikzcd}
@@ -409,14 +446,227 @@ witnesses commutativity for, but leave the `right-unit`{.Agda} and
   field
     hexagon
       : ∀ {a b c d} (f : c B.↦ d) (g : b B.↦ c) (h : a B.↦ b)
-      → F₂ (B.α→ f g h) C.⊗ γ→ (f B.∘ g) h C.⊗ (γ→ f g C.◀ F₁ h)
-      ≡ γ→ f (g B.∘ h) C.⊗ (F₁ f C.▶ γ→ g h) C.⊗ C.α→ (F₁ f) (F₁ g) (F₁ h)
+      → ₂ (B.α→ f g h) C.⊗ γ→ (f B.∘ g) h C.⊗ (γ→ f g C.◀ ₁ h)
+      ≡ γ→ f (g B.∘ h) C.⊗ (₁ f C.▶ γ→ g h) C.⊗ C.α→ (₁ f) (₁ g) (₁ h)
 
     right-unit
       : ∀ {a b} (f : a B.↦ b)
-      → F₂ (B.ρ← f) C.⊗ γ→ f B.id C.⊗ (F₁ f C.▶ ι→) ≡ C.ρ← (F₁ f)
+      → ₂ (B.ρ← f) C.⊗ γ→ f B.id C.⊗ (₁ f C.▶ υ→) ≡ C.ρ← (₁ f)
 
     left-unit
       : ∀ {a b} (f : a B.↦ b)
-      → F₂ (B.λ← f) C.⊗ γ→ B.id f C.⊗ (ι→ C.◀ F₁ f) ≡ C.λ← (F₁ f)
+      → ₂ (B.λ← f) C.⊗ γ→ B.id f C.⊗ (υ→ C.◀ ₁ f) ≡ C.λ← (₁ f)
 ```
+
+## Pseudofunctors
+
+As mentioned above, a lax functor with invertible unitors and compositor
+is called a **pseudofunctor**. Every pseudofunctor has an underlying
+`lax`{.Agda} functor. Since invertibility is a _property_ of 2-cells
+(rather than structure on 2-cells), "being pseudo" is a property of lax
+functors, not additional structure on lax functors.
+
+```agda
+record
+  Pseudofunctor (B : Prebicategory o ℓ ℓ′) (C : Prebicategory o₁ ℓ₁ ℓ₁′)
+    : Type (o ⊔ o₁ ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ′ ⊔ ℓ₁′) where
+
+  private
+    module B = Prebicategory B
+    module C = Prebicategory C
+
+  field
+    lax : Lax-functor B C
+
+  open Lax-functor lax public
+
+  field
+    unitor-inv
+      : ∀ {a} → C.Hom.is-invertible (υ→ {a})
+    compositor-inv
+      : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b) → C.Hom.is-invertible (γ→ f g)
+
+  γ← : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
+    → ₁ (f B.∘ g) C.⇒ ₁ f C.∘ ₁ g
+  γ← f g = compositor-inv f g .Cr.is-invertible.inv
+
+  υ← : ∀ {a} → ₁ B.id C.⇒ C.id
+  υ← {a} = unitor-inv {a = a} .Cr.is-invertible.inv
+```
+
+# Lax transformations
+
+By dropping the invertibility requirement when generalising natural
+transformations to lax functors, we obtain the type of **lax
+transformations** between lax functors. If every 2-cell component of the
+lax transformation is invertible, we refer to it as a **pseudonatural
+transformation**. We omit the word "natural" in "lax natural
+transformation" for brevity.
+
+<!--
+```agda
+module
+  _ {B : Prebicategory o ℓ ℓ′} {C : Prebicategory o₁ ℓ₁ ℓ₁′}
+    (F : Lax-functor B C) (G : Lax-functor B C)
+  where
+  private
+    module B = Prebicategory B
+    module C = Prebicategory C
+    module F = Lax-functor F
+    module G = Lax-functor G
+```
+-->
+
+The transformation which witnesses directed naturality for a lax
+transformation is called the `naturator`{.Agda}. In components, it
+witnesses commutativity of the diagram
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {\mathbf{B}(A,B)} && {\mathbf{C}(FA,FB)} \\
+  \\
+  {\mathbf{C}(GA,GB)} && {\mathbf{C}(FA,GB)\text{,}}
+  \arrow["F", from=1-1, to=1-3]
+  \arrow["G"', from=1-1, to=3-1]
+  \arrow["{\sigma^*}"', from=3-1, to=3-3]
+  \arrow["{\sigma_*}", from=1-3, to=3-3]
+  \arrow["\nu"{description}, Rightarrow, from=1-1, to=3-3]
+\end{tikzcd}\]
+~~~
+
+and thus consists of a natural family of 2-cells $G(f)\sigma_a \To
+\sigma_bF(f)$.
+
+```agda
+  record Lax-transfor : Type (o ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ′ ⊔ ℓ₁′) where
+    field
+      σ : ∀ A → F.₀ A C.↦ G.₀ A
+      naturator
+        : ∀ {a b}
+        → preaction C (σ b) F∘ G.P₁ => postaction C (σ a) F∘ F.P₁
+
+    ν→ : ∀ {a b} (f : a B.↦ b) → G.₁ f C.∘ σ a C.⇒ σ b C.∘ F.₁ f
+    ν→ = naturator .η
+```
+
+The naturator $\nu$ is required to be compatible with the compositor and
+unitor natural transformations of its source and target functors, which
+boil down to commutativity of the nightmarish diagrams in [@basicbicats,
+§1.2].
+
+```agda
+    field
+      ν-compositor
+        : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
+        → ν→ (f B.∘ g) C.⊗ (G.γ→ f g C.◀ σ a)
+        ≡   (σ c C.▶ F.γ→ f g)
+        C.⊗ C.α→ (σ c) (F.₁ f) (F.₁ g)
+        C.⊗ (ν→ f C.◀ F.₁ g)
+        C.⊗ C.α← (G.₁ f) (σ b) (F.₁ g)
+        C.⊗ (G.₁ f C.▶ ν→ g)
+        C.⊗ C.α→ (G.₁ f) (G.₁ g) (σ a)
+
+      ν-unitor
+        : ∀ {a}
+        → ν→ (B.id {a}) C.⊗ (G.υ→ C.◀ σ a)
+        ≡ (σ a C.▶ F.υ→) C.⊗ C.ρ→ (σ a) C.⊗ C.λ← (σ a)
+```
+
+A lax transformation with invertible naturator is called a
+**pseudonatural transformation**.
+
+```agda
+  record Pseudonatural : Type (o ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ′ ⊔ ℓ₁′) where
+    field
+      lax : Lax-transfor
+
+    open Lax-transfor lax public
+
+    field
+      naturator-inv : ∀ {a b} (f : a B.↦ b) → C.Hom.is-invertible (ν→ f)
+
+    ν← : ∀ {a b} (f : a B.↦ b) → σ b C.∘ F.₁ f C.⇒ G.₁ f C.∘ σ a
+    ν← f = naturator-inv f .Cr.is-invertible.inv
+```
+
+We abbreviate the types of lax- and pseudonatural transformations by
+`_=>ₗ_`{.Agda} and `_=>ₚ_`{.Agda}, respectively.
+
+```agda
+  _=>ₗ_ = Lax-transfor
+  _=>ₚ_ = Pseudonatural
+```
+
+# Modifications
+
+When dealing with 1-categorical data (categories, functors, and natural
+transformations), the commutativity in 2-cells is witnessed by equations
+in a set, which are trivial. When talking about _bicategorical_ data,
+however, the naturality of a lax transformation is witnessed by a family
+of non-trivial 2-cells. Therefore, it is fruitful to consider
+transformations which affect _this_ data: a natural family of 2-cells.
+This is called a **modification** between lax (or pseudo)
+transformations. Since we are directly dealing with sets (the sets of
+2-cells), modifications are the simplest bicategorical widget to define.
+
+<!--
+```agda
+module
+  _ {B : Prebicategory o ℓ ℓ′} {C : Prebicategory o₁ ℓ₁ ℓ₁′}
+    {F : Lax-functor B C} {G : Lax-functor B C}
+    (σ σ′ : F =>ₗ G)
+  where
+
+  private
+    module B = Prebicategory B
+    module C = Prebicategory C
+    module F = Lax-functor F
+    module G = Lax-functor G
+    module σ = Lax-transfor σ
+    module σ′ = Lax-transfor σ′
+```
+-->
+
+```agda
+  record Modification : Type (o ⊔ ℓ ⊔ ℓ₁′) where
+    field
+      Γ : ∀ a → σ.σ a C.⇒ σ′.σ a
+
+      is-natural
+        : ∀ {a b} {f : a B.↦ b}
+        → σ′.ν→ f C.⊗ (G.₁ f C.▶ Γ a)
+        ≡ (Γ b C.◀ F.₁ f) C.⊗ σ.ν→ f
+```
+
+In a diagram, we display a modification as a 3-cell, i.e., a morphism
+(modification) between morphisms (lax transformations) between morphisms
+(lax functors) between objects (bicategories), and accordingly draw them
+with super-heavy arrows, as in the diagram below.  Fortunately we will
+not often stumble onto diagrams **of** bicategories, rather studying
+diagrams **in** bicategories, which are (mercifully) limited to 2-cells.
+
+~~~{.quiver}
+\begin{tikzpicture}
+\node (B) at (-1.25, 0) {$\mathbf{B}$};
+\node (C) at (1.25, 0) {$\mathbf{C}$};
+
+\draw[->] (B) .. controls(-0.5,1.25) and (0.5, 1.25) .. (C)
+  node[midway, preaction={fill, diagrambg}, inner sep=0.3mm] (F) {$F$};
+
+\draw[->] (B) .. controls(-0.5,-1.25) and (0.5, -1.25) .. (C)
+  node[midway, preaction={fill, diagrambg}, inner sep=0.3mm] (G) {$G$};
+
+\draw[2cell] (F) .. controls (-0.625, 0.25) and (-0.625, -0.25) .. (G)
+  node[midway] (t1) {}
+  node[midway, left, outer sep=-0.35mm] {\scriptsize{$\sigma$}}
+  ;
+
+\draw[2cell] (F) .. controls (0.625, 0.25) and (0.625, -0.25) .. (G)
+  node[midway] (t2) {}
+  node[midway, right, outer sep=-0.35mm] {\scriptsize{$\sigma'$}}
+  ;
+
+\draw[3cell] (t1) -- (t2) node[midway, above] {\footnotesize{$\Gamma$}};
+
+\end{tikzpicture}
+~~~
