@@ -32,7 +32,7 @@ record→iso namen unfolded =
   where
   go : List ArgInfo → Term → TC Term
   go acc (pi argu@(arg i argTy) (abs s ty)) = do
-    r ← extendContext argu $ go (i ∷ acc) ty
+    r ← extendContext "arg" argu $ go (i ∷ acc) ty
     returnTC $ pi (arg i' argTy) (abs s r)
     where
     i' = arg-info hidden (modality relevant quantity-ω)

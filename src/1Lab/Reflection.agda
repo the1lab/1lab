@@ -112,7 +112,7 @@ arg=? eq=? (arg i₁ x) (arg i₂ y) = and (i₁ arginfo=? i₂) (eq=? x y)
 -- We want to compare terms up to α-equivalence, so we ignore binder
 -- names.
 abs=? : ∀ {a} {A : Type a} → (A → A → Bool) → Abs A → Abs A → Bool
-abs=? eq=? (abs _ x) (abs _ y) = eq=? x y 
+abs=? eq=? (abs _ x) (abs _ y) = eq=? x y
 
 {-# TERMINATING #-}
 -- [TODO: Reed M, 06/05/2022] Finish this

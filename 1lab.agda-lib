@@ -10,3 +10,5 @@ flags:
   --postfix-projections
   --rewriting
   --guardedness
+  --two-level
+  -W noNoEquivWhenSplitting

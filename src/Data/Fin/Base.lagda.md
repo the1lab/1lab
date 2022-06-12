@@ -222,17 +222,17 @@ to-ℕ< x = to-nat x , p x where
   p {n = suc n} (fsuc x) = p x
 
 to-from-ℕ< : ∀ {n} (x : ℕ< n) → to-ℕ< {n = n} (from-ℕ< x) ≡ x
-to-from-ℕ< {n = suc n} x = Σ-prop-path (λ k → Nat.≤-prop k n) (to-from-ℕ _) where
+to-from-ℕ< {n = suc n} x = Σ-prop-path (λ k → Nat.≤-prop k n) (to-from-ℕ {n = suc n} x) where
   to-from-ℕ : ∀ {n} x → to-nat {n = n} (from-ℕ< x) ≡ x .fst
   to-from-ℕ {n = suc n} (zero , p) = refl
-  to-from-ℕ {n = suc n} (suc x , p) = ap suc (to-from-ℕ (x , p))
+  to-from-ℕ {n = suc n} (suc x , p) = ap suc (to-from-ℕ {n = n} (x , p))
 
 from-to-ℕ< : ∀ {n} (x : Fin n) → from-ℕ< (to-ℕ< x) ≡ x
 from-to-ℕ< fzero = refl
 from-to-ℕ< (fsuc x) = ap fsuc (from-to-ℕ< x)
 
 Fin≃ℕ< : ∀ {n} → Fin n ≃ ℕ< n
-Fin≃ℕ< = to-ℕ< , is-iso→is-equiv (iso from-ℕ< to-from-ℕ< from-to-ℕ<)
+Fin≃ℕ< {n} = to-ℕ< , is-iso→is-equiv (iso from-ℕ< (to-from-ℕ< {n}) from-to-ℕ<)
 ```
 
 ## Arithmetic

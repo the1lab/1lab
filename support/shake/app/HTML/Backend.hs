@@ -35,7 +35,7 @@ import qualified Agda.Utils.Maybe.Strict as S
 import qualified Agda.Syntax.Concrete as Con
 import Agda.Syntax.Abstract.Views
 import Agda.Compiler.Backend
-import Agda.Syntax.Abstract
+import Agda.Syntax.Abstract hiding (Type)
 import Agda.Compiler.Common
 import Agda.Syntax.Position
 import Agda.Utils.FileName

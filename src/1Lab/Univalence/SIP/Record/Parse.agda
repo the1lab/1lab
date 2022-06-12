@@ -14,7 +14,10 @@ module 1Lab.Univalence.SIP.Record.Parse where
 
 parseFields : Term → Term → Term → TC (List (InternalField × TypedTm))
 parseFields _ _ (con (quote record:) _) = returnTC []
-parseFields s h (con (quote _field[_by_]) (ℓ h∷ ℓ₁ h∷ ℓ₁' h∷ R h∷ ι h∷ fs v∷ ℓ₂ h∷ ℓ₂' h∷ S h∷ ι' h∷ sfieldTerm v∷ efieldTerm v∷ []))
+parseFields s h (con (quote _field[_by_])
+  ( arg _ ℓ ∷ arg _ ℓ₁ ∷ arg _ ℓ₁' ∷ arg _ R ∷ arg _ ι
+  ∷ arg _ fs ∷ arg _ ℓ₂ ∷ arg _ ℓ₂' ∷ arg _ S ∷ arg _ ι'
+  ∷ arg _ sfieldTerm ∷ arg _ efieldTerm ∷ []))
   = do ℓ ← reduce ℓ
        struct-field ← findName sfieldTerm
        pres-field ← findName efieldTerm
@@ -31,7 +34,8 @@ parseFields s h (con (quote _field[_by_]) (ℓ h∷ ℓ₁ h∷ ℓ₁' h∷ R h
        returnTC (f ∷ rest)
 
 parseFields strTerm homTerm (con (quote _axiom[_by_])
-            (ℓ h∷ ℓ₁ h∷ ℓ₁' h∷ R h∷ ι h∷ fs v∷ ℓ₂ h∷ P h∷ fieldTerm v∷ is-prop v∷ []))
+  ( arg _ ℓ ∷ arg _ ℓ₁ ∷ arg _ ℓ₁' ∷ arg _ R ∷ arg _ ι
+  ∷ arg _ fs ∷ arg _ ℓ₂ ∷ arg _ P ∷ arg _ fieldTerm ∷ arg _ is-prop ∷ []))
   = do struct-field ← findName fieldTerm
        let f : InternalField × TypedTm
            f = propertyField struct-field
@@ -43,7 +47,8 @@ parseFields strTerm homTerm (con (quote _axiom[_by_])
        rest <- parseFields strTerm homTerm fs
        returnTC (f ∷ rest)
 
-parseFields _ _ tm = typeError (termErr tm ∷ strErr " ← This is not a field descriptor!" ∷ [])
+parseFields _ _ tm = do
+  typeError (termErr tm ∷ strErr " ← This is not a field descriptor!" ∷ [])
 
 parseSpec : Term → TC (Spec TypedTm)
 parseSpec (con (quote record-desc) (ℓ h∷ ℓ₁ h∷ ℓ₁' h∷ strTerm v∷ homTerm v∷ fs v∷ [])) =
