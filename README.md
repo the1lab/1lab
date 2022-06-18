@@ -100,6 +100,6 @@ then follow either the `support/make-site.sh` script or the
 rest of the static assets.
 
 ```bash
-$ ./Shakefile.hs all -j        # (using stack)
+$ stack run -- shake -j all    # (using stack)
 $ runghc ./Shakefile.hs all -j # (using cabal-install)
 ```
