@@ -674,7 +674,7 @@ univalence, so much so that, in the book, univalence and HITs only
 compute up to paths.
 
 In Cubical Agda, types are interpreted as objects called _cubical Kan
-complexes_[^blogpost], which are a _geometric_ description description of
+complexes_[^blogpost], which are a _geometric_ description of
 spaces as "sets we can probe by cubes". In Agda, this "probing" is
 reflected by mapping the interval into a type: A "probe" of $A$ by an
 $n$-cube is a term of type $A$ in a context with $n$ variables of type
