@@ -277,3 +277,102 @@ invertible→epic {f = f} invert g h p =
     open is-invertible invert
 ```
 
+## Sections and Retractions
+
+Given 2 maps $e : A \to B$ and $s : B \to A$, we say that $s$ is a section of
+$e$ if $e \circ s = id$. The intuition behind the name is that $s$ we can think of
+$e$ as taking some sort of quotient, and $s$ as picking out representatives
+for each equivalence class formed by $e$.
+In other words, $s$ picks out a cross-*section*.
+
+```agda
+_is-section-of_ : (s : Hom b a) → (e : Hom a b) → Type _
+_is-section-of_ s e = e ∘ s ≡ id
+```
+
+Furthermore, we also that $e$ is a retraction of $s$ when $e \circ s = id$.
+The intuition here is that the act of picking representatives of equivalence
+classes induces an idempotent map $s \circ e : A \to A$, which *retracts* each
+element of $A$ to the representative of the equivalence class formed by $e$.
+
+```agda
+_is-retract-of_ : (e : Hom a b) → (s : Hom b a) → Type _
+_is-retract-of_ e s = e ∘ s ≡ id
+```
+
+It's worth showing that a retraction does indeed induce an idempotent morphism on
+$A$.
+
+```agda
+retract-idempotent : ∀ {e : Hom a b} {s : Hom b a}
+                     → e is-retract-of s → (s ∘ e) ∘ (s ∘ e) ≡ s ∘ e
+retract-idempotent {e = e} {s = s} retract =
+  (s ∘ e) ∘ s ∘ e ≡˘⟨ assoc s e (s ∘ e) ⟩
+  s ∘ (e ∘ s ∘ e) ≡⟨ ap (s ∘_) (assoc e s e) ⟩
+  s ∘ (e ∘ s) ∘ e ≡⟨ ap (λ ϕ → s ∘ ϕ ∘ e) retract ⟩
+  s ∘ id ∘ e      ≡⟨ ap (s ∘_) (idl e) ⟩
+  s ∘ e ∎
+```
+
+Earlier, I claimed that we ought to think of $e$ as taking some sort of quotient.
+This is made precise by the fact that if $e$ has some section $s$, then $e$ must
+be an epimorphism.
+
+```agda
+section→is-epic : ∀ {e : Hom a b} {s : Hom b a}
+                  → s is-section-of e → is-epic e
+section→is-epic {e = e} {s = s} section g h p =
+  g           ≡˘⟨ idr g ⟩
+  g ∘ id      ≡˘⟨ ap (g ∘_) section ⟩
+  g ∘ e ∘ s   ≡⟨ assoc g e s ⟩
+  (g ∘ e) ∘ s ≡⟨ ap (_∘ s) p ⟩
+  (h ∘ e) ∘ s ≡˘⟨ assoc h e s ⟩
+  h ∘ e ∘ s   ≡⟨ ap (h ∘_) section ⟩
+  h ∘ id      ≡⟨ idr h ⟩
+  h ∎
+```
+
+Dually, if $e$ is a retraction of $s$, then $s$ must be a monomorphism.
+```agda
+retract→is-monic : ∀ {e : Hom a b} {s : Hom b a}
+                  → e is-retract-of s → is-monic s
+retract→is-monic {e = e} {s = s} retract g h p =
+  g           ≡˘⟨ idl g ⟩
+  id ∘ g      ≡˘⟨ ap (_∘ g) retract ⟩
+  (e ∘ s) ∘ g ≡˘⟨ assoc e s g ⟩
+  e ∘ s ∘ g   ≡⟨ ap (e ∘_) p ⟩
+  e ∘ s ∘ h   ≡⟨ assoc e s h ⟩
+  (e ∘ s) ∘ h ≡⟨ ap (_∘ h) retract ⟩
+  id ∘ h      ≡⟨ idl h ⟩
+  h ∎
+```
+
+## Split Epi and Monomorphisms
+
+The fact that the existence of a section of $f$ implies that $f$ is epic gives rise
+to the notion of a split epimorphism. We can think of this
+as some sort of quotient equipped with a choice of representatives.
+
+```agda
+record is-split-epic (f : Hom a b) : Type (o ⊔ h) where
+  field
+    split : Hom b a
+    section : split is-section-of f
+
+is-split-epic→is-epic : is-split-epic f → is-epic f
+is-split-epic→is-epic split-epic = section→is-epic section
+  where
+    open is-split-epic split-epic
+```
+
+Again by duality, we also have the notion of a split monomorphism. We can think
+of these as some embedding along with some classifying map. Alternatively, we
+can view a split monomorphisms as some means of selecting normal forms, along
+with an evaluation map.
+
+```agda
+record is-split-monic (f : Hom a b) : Type (o ⊔ h) where
+  field
+    split : Hom b a
+    retract : split is-retract-of f
+```
