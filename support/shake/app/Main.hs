@@ -38,13 +38,15 @@ import Shake.Diagram
 import Shake.KaTeX
 import Shake.Git
 
+import Timer
+
 {-
   Welcome to the Horror That Is 1Lab's Build Script.
 
   Building 1Lab comprises of (roughly) the following steps:
 -}
-main :: IO ()
-main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ do
+rules :: Rules ()
+rules = do
   agdaRefs <- getAgdaRefs
   gitRules
   katexRules
@@ -204,3 +206,8 @@ compileAgda path _ = do
     (htmlBackend (filePath basepn) defaultHtmlOptions{htmlOptGenTypes = not skipTypes}:)
   callBackend "HTML" IsMain cr
 
+
+main :: IO ()
+main = do
+  shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} rules
+  reportTimes
