@@ -42,6 +42,7 @@ executable shake
       , HTML.Backend
       , HTML.Base
       , HTML.Emit
+      , Shake.AgdaCompile
       , Shake.AgdaRefs
       , Shake.Diagram
       , Shake.Git
@@ -49,6 +50,7 @@ executable shake
       , Shake.LinkGraph
       , Shake.LinkReferences
       , Shake.Markdown
+      , Shake.Modules
       , Shake.SearchData
       , Timer
     default-language: Haskell2010

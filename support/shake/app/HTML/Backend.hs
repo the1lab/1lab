@@ -4,6 +4,7 @@
 {-# LANGUAGE FlexibleContexts, ViewPatterns #-}
 module HTML.Backend
   ( htmlBackend
+  , compileOneModule
   , builtinModules
   , moduleName
   , defaultHtmlOptions
@@ -31,6 +32,7 @@ import Data.Generics (everywhere, mkT)
 import Agda.Syntax.Translation.AbstractToConcrete (abstractToConcrete_)
 import Agda.Syntax.Translation.InternalToAbstract ( Reify(reify) )
 import Agda.Syntax.Internal (Type, Dom, domName)
+import Agda.TypeChecking.Reduce (instantiateFull)
 import qualified Agda.Utils.Maybe.Strict as S
 import qualified Agda.Syntax.Concrete as Con
 import Agda.Syntax.Abstract.Views
@@ -148,7 +150,7 @@ compileDefHtml env _menv _isMain def = do
         ident = Identifier
           { idAnchor = mn
           , idIdent = Text.pack (render (pretty (qnameName (defName def))))
-          , idType = ty
+          , idType = Text.pack ty
           }
       pure (Just (mn, ident))
     Nothing -> do
@@ -190,6 +192,29 @@ postCompileHtml cenv _isMain _modulesByName = liftIO $ do
   case htmlOptDumpIdents (htmlCompileEnvOpts cenv) of
     Just fp -> encodeFile fp (Map.elems _modulesByName >>= Hm.elems . getHtmlModule)
     Nothing -> pure ()
+
+-- | Compile a single module, given an existing set of types.
+compileOneModule
+  :: FilePath -> HtmlOptions
+  -> HashMap Text Identifier -- ^ Existing map of identifiers to their types.
+  -> Interface -- ^ The interface to compile.
+  -> TCM ()
+compileOneModule pn opts types iface = do
+  types <- liftIO (newIORef types)
+  let cEnv = HtmlCompileEnv opts types pn
+      mEnv = HtmlModuleEnv cEnv (iModuleName iface)
+
+  setInterface iface
+
+  defs <- map snd . sortDefs <$> curDefs
+  res  <- mapM (compDef cEnv mEnv <=< instantiateFull) defs
+  _ <- postModuleHtml cEnv mEnv NotMain (iModuleName iface) res
+  pure ()
+
+  where
+    compDef env menv def = setCurrentRange (defName def) $
+      compileDefHtml env menv NotMain def
+
 
 killDomainNames :: Type -> Type
 killDomainNames = everywhere (mkT unDomName) where
