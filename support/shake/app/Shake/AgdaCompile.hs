@@ -10,13 +10,16 @@ import qualified Data.HashMap.Strict as Hm
 import qualified Data.Map as Map
 import qualified Data.Text as T
 import Data.Aeson (eitherDecodeFileStrict', encodeFile)
+import Data.Foldable
 import Data.Maybe
+import Data.IORef
 
 import Development.Shake.Classes
 import Development.Shake
 
+import Shake.Options (getSkipTypes, getWatching)
+
 import Agda.Compiler.Backend hiding (getEnv)
-import Agda.Compiler.Common
 import Agda.Interaction.FindFile (SourceFile(..))
 import Agda.Interaction.Imports
 import Agda.Interaction.Options
@@ -38,7 +41,6 @@ import HTML.Base
 -- | A non-serialisable compile "answer".
 data CompileA = CompileA
   { _cState  :: TCState
-  , _cResult :: CheckResult
   , cHash   :: Hash
   }
   deriving Typeable
@@ -76,16 +78,17 @@ type instance RuleResult ModuleCompileQ = CompileA
 agdaRules :: Rules ()
 agdaRules = do
   -- Add an oracle to compile Agda
-  _ <- addOracleHash \(MainCompileQ ()) -> compileAgda
+  ref <- liftIO $ newIORef Nothing
+  _ <- addOracleHash \(MainCompileQ ()) -> compileAgda ref
 
   -- Add a 'projection' oracle which compiles Agda and then uses the per-module
   -- hash instead. This ensures we only rebuild HTML/types when the module
   -- changes.
   _ <- addOracleHash \(ModuleCompileQ m) -> do
-    (CompileA state result _) <- askOracle (MainCompileQ ())
+    (CompileA state _) <- askOracle (MainCompileQ ())
 
     let hash = iFullHash . getInterface state $ toTopLevel m
-    pure (CompileA state result hash)
+    pure (CompileA state hash)
 
   -- Create a cache for the per-module type information.
   getTypes <- newCache \modName -> do
@@ -114,27 +117,48 @@ agdaRules = do
     liftIO $ encodeFile file (Hm.elems types)
 
 -- | Compile the top-level Agda file.
-compileAgda :: Action CompileA
-compileAgda = do
+compileAgda :: IORef (Maybe TCState) -> Action CompileA
+compileAgda stateVar = do
   files <- map ("src" </>) <$> getDirectoryFiles "src" ["**/*.agda", "**/*.lagda.md"]
-  need $ "_build/all-pages.agda":files
+  changed <- needHasChanged $ "_build/all-pages.agda":files
+
+  watching <- getWatching
 
   traced "agda" do
     baseDir <- absolute "_build"
-    absPath <- absolute "_build/all-pages.agda"
 
-    (result, state) <- runTCM initEnv initState do
+    -- Reuse the old TC state so we don't reload interfaces each time.
+    oldState <- readIORef stateVar
+
+    -- On the initial build, always build everything. Otherwise try to only
+    -- rebuild the files which have changed.
+    let (target, state) = case oldState of
+          Nothing -> (["_build/all-pages.agda"], initState)
+          Just state -> (if watching then changed else ["_build/all-pages.agda"], state)
+
+    ((), state) <- runTCM initEnv state do
+      -- We preserve the old modules and restore them at the end, as otherwise
+      -- we forget them, and will fail if we need to rebuild other HTML pages.
+      oldVisited <- useTC stVisitedModules
+
+      resetState
+
       -- Force Cubical even if we've not got a --cubical header.
       stPragmaOptions `modifyTCLens` \ o -> o { optCubical = Just CFull }
       setCommandLineOptions' baseDir defaultOptions
 
-      source <- parseSource (SourceFile absPath)
-      typeCheckMain TypeCheck source
+      for_ target \source -> do
+        absPath <- liftIO $ absolute source
+        source <- parseSource (SourceFile absPath)
+        typeCheckMain TypeCheck source
+
+      modifyTCLens stVisitedModules (`Map.union` oldVisited)
+
+    writeIORef stateVar (Just state)
 
     -- TODO: Catch errors and pretty-print failures
 
-    let hash = iFullHash . miInterface . crModuleInfo $ result
-    pure (CompileA state result hash)
+    pure (CompileA state 0)
 
 
 -- | Emit an Agda file as HTML or Markdown.
@@ -142,7 +166,7 @@ emitAgda
   :: CompileA
   -> (String -> Action (Hm.HashMap T.Text Identifier))
   -> String -> Action ()
-emitAgda (CompileA tcState checkResult _) getTypes modName = do
+emitAgda (CompileA tcState _) getTypes modName = do
   liftIO $ Dir.createDirectoryIfMissing True "_build/html0"
 
   basepn <- filePath <$> liftIO (absolute "src/")
@@ -152,10 +176,9 @@ emitAgda (CompileA tcState checkResult _) getTypes modName = do
 
   types <- parallel . map (getTypes . render . pretty . toTopLevelModuleName . fst) $ iImportedModules iface
 
-  skipTypes <- fmap isJust . getEnv $ "SKIP_TYPES"
+  skipTypes <- getSkipTypes
   ((), _) <- quietly . traced "agda html"
     . runTCM initEnv tcState
-    . inCompilerEnv checkResult
     . locallyTC eActiveBackendName (const $ Just "HTML") $ do
       compileOneModule basepn defaultHtmlOptions { htmlOptGenTypes = not skipTypes }
         (mconcat types)

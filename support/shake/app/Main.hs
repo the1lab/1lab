@@ -1,16 +1,28 @@
-{-# LANGUAGE BlockArguments, OverloadedStrings, FlexibleContexts #-}
+{-# LANGUAGE BlockArguments, OverloadedStrings, FlexibleContexts, ScopedTypeVariables #-}
 module Main (main) where
 
+import Control.Concurrent.STM
 import Control.Monad.IO.Class
 import Control.Monad.Writer
+import Control.Exception
 
 import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
+import Data.Bifunctor
+import Data.Foldable
+import Data.Either
+import Data.List
 
 import Development.Shake.FilePath
-import Development.Shake
+import Development.Shake.Database
+import Development.Shake hiding (getEnv)
 
 import qualified System.Directory as Dir
+import qualified System.FSNotify as Watch
+import System.Console.GetOpt
+import System.Environment
+import System.Time.Extra
+import System.Exit
 
 import Text.HTML.TagSoup
 
@@ -20,6 +32,7 @@ import System.IO (IOMode(..), hPutStrLn, withFile)
 
 import HTML.Backend (builtinModules)
 
+import Shake.Options
 import Shake.AgdaCompile
 import Shake.AgdaRefs (getAgdaRefs)
 import Shake.SearchData
@@ -175,5 +188,103 @@ rules = do
 
 main :: IO ()
 main = do
-  shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} rules
+  args <- getArgs
+  when ("--help" `elem` args || "-h" `elem` args) do
+    putStrLn $ usageInfo "shake" optDescrs
+    exitFailure
+
+  let (opts, extra, errs) = getOpt Permute optDescrs args
+      (shakeOpts, ourOpts) = partitionEithers opts
+      (errs', shakeOpts') = first (++errs) $ partitionEithers shakeOpts
+      rules' = setOptions ourOpts >> rules
+
+      shakeOptions' = foldl' (flip ($)) shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} shakeOpts'
+      (shakeRules, wanted) = case extra of
+        [] -> (rules', [])
+        files -> (withoutActions rules', [need files])
+
+  unless (null errs') do
+    for_ errs' $ putStrLn . ("1lab-shake: " ++)
+    exitFailure
+
+  let watching = Watching `elem` ourOpts
+
+  (ok, after) <- shakeWithDatabase shakeOptions' shakeRules \db -> do
+    case watching of
+      False -> buildOnce db wanted
+      True -> buildMany db wanted
+  shakeRunAfter shakeOptions' after
+
   reportTimes
+
+  unless ok exitFailure
+
+  where
+    optDescrs :: [OptDescr (Either (Either String (ShakeOptions -> ShakeOptions)) Option)]
+    optDescrs = map (fmap Left) shakeOptDescrs ++ map (fmap Right) ourOptsDescrs
+
+    ourOptsDescrs =
+      [ Option "w" ["watch"] (NoArg Watching)
+          "Start 1lab-shake in watch mode. Starts a persistent process which runs a subset of build tasks for interactive editing. Implies --skip-types."
+      , Option [] ["skip-types"] (NoArg SkipTypes)
+          "Skip generating type tooltips when compiling Agda to HTML."
+      ]
+
+    buildOnce :: ShakeDatabase -> [Action ()] -> IO (Bool, [IO ()])
+    buildOnce db wanted = do
+      start <- offsetTime
+
+      res :: Either SomeException x <- try $ shakeRunDatabase db wanted
+
+      tot <- start
+      case res of
+        Left err -> do
+          putStrLn $ "❌ Build failed in " ++ showDuration tot
+          print err
+          pure (False, [])
+        Right (_, actions) -> do
+          putStrLn $ "✅ Build succeeded in " ++ showDuration tot
+          pure (True, actions)
+
+    buildMany :: ShakeDatabase -> [Action ()] -> IO (Bool, [IO ()])
+    buildMany db wanted = Watch.withManager \mgr -> do
+      (_, clean) <- buildOnce db wanted
+
+      toRebuild <- atomically $ newTVar Set.empty
+      _ <- Watch.watchTree mgr "src" (not . Watch.eventIsDirectory) (logEvent toRebuild)
+      _ <- Watch.watchTree mgr "support" (not . Watch.eventIsDirectory) (logEvent toRebuild)
+
+      root <- Dir.canonicalizePath "."
+
+      let
+        loop clean = do
+          changes <- atomically do
+            changes <- swapTVar toRebuild Set.empty
+            when (Set.null changes) retry
+            pure changes
+
+          let
+            changes' = map (makeRelative root) (Set.toList changes)
+
+            -- If all our changed files are Agda modules, try to emit just those
+            -- HTML files, rather than everything.
+            (targets, targetName) = case traverse toModule changes' of
+              Nothing -> (wanted, "everything")
+              Just [] -> (wanted, "everything")
+              Just xs ->
+                let targets = map (\x -> "_build/html" </> x <.> "html") xs
+                in ([need targets], intercalate ", " targets)
+
+          putStrLn $ "🔨 " ++ intercalate ", " changes' ++ " has changed. Rebuilding " ++ targetName ++ "."
+
+          (_, clean') <- buildOnce db targets
+          loop (clean' ++ clean)
+
+      loop clean
+
+    logEvent toRebuild event = atomically $ modifyTVar' toRebuild (Set.insert (Watch.eventPath event))
+
+    toModule path
+      | ("src":rest) <- splitDirectories path
+      = Just . intercalate "." $ init rest ++ [dropExtensions (last rest)]
+      | otherwise = Nothing

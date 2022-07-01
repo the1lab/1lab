@@ -22,7 +22,9 @@ executable shake
       deepseq,
       directory,
       doctemplates,
+      extra,
       filepath,
+      fsnotify,
       mtl,
       pandoc,
       pandoc-types,
@@ -30,6 +32,7 @@ executable shake
       SHA,
       shake,
       split,
+      stm,
       syb,
       tagsoup,
       text,
@@ -51,6 +54,7 @@ executable shake
       , Shake.LinkReferences
       , Shake.Markdown
       , Shake.Modules
+      , Shake.Options
       , Shake.SearchData
       , Timer
     default-language: Haskell2010
