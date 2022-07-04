@@ -31,14 +31,14 @@ private variable
 ## Identity Morphisms
 
 ```agda
-id-comm : ∀ {a b} {f : Hom a b} → f ∘ id ≡ id ∘ f
-id-comm {f = f} = idr f ∙ sym (idl f)
+abstract
+  id-comm : ∀ {a b} {f : Hom a b} → f ∘ id ≡ id ∘ f
+  id-comm {f = f} = idr f ∙ sym (idl f)
 
-id-comm-sym : ∀ {a b} {f : Hom a b} → id ∘ f ≡ f ∘ id
-id-comm-sym {f = f} = idl f ∙ sym (idr f)
+  id-comm-sym : ∀ {a b} {f : Hom a b} → id ∘ f ≡ f ∘ id
+  id-comm-sym {f = f} = idl f ∙ sym (idr f)
 
-module _ (a≡id : a ≡ id) where
-
+module _ (a≡id : a ≡ id) where abstract
   eliml : a ∘ f ≡ f
   eliml {f = f} =
     a ∘ f ≡⟨ ap (_∘ f) a≡id ⟩
@@ -65,8 +65,7 @@ involving the composition of 2 morphisms, but the association
 is a bit off. These combinators aim to address that situation.
 
 ```agda
-module _ (ab≡c : a ∘ b ≡ c) where
-
+module _ (ab≡c : a ∘ b ≡ c) where abstract
   pulll : a ∘ (b ∘ f) ≡ c ∘ f
   pulll {f = f} =
     a ∘ b ∘ f   ≡⟨ assoc a b f ⟩
@@ -79,15 +78,14 @@ module _ (ab≡c : a ∘ b ≡ c) where
     f ∘ (a ∘ b) ≡⟨ ap (f ∘_) ab≡c ⟩
     f ∘ c ∎
 
-module _ (c≡ab : c ≡ a ∘ b) where
-
+module _ (c≡ab : c ≡ a ∘ b) where abstract
   pushl : c ∘ f ≡ a ∘ (b ∘ f)
   pushl = sym (pulll (sym c≡ab))
 
   pushr : f ∘ c ≡ (f ∘ a) ∘ b
   pushr = sym (pullr (sym c≡ab))
 
-module _ (p : f ∘ h ≡ g ∘ i) where
+module _ (p : f ∘ h ≡ g ∘ i) where abstract
   extendl : f ∘ (h ∘ b) ≡ g ∘ (i ∘ b)
   extendl {b = b} =
     f ∘ (h ∘ b) ≡⟨ assoc f h b ⟩
@@ -112,8 +110,7 @@ These lemmas do 2 things at once: rearrange parenthesis, and also remove
 things that are equal to `id`.
 
 ```agda
-module _ (inv : h ∘ i ≡ id) where
-
+module _ (inv : h ∘ i ≡ id) where abstract
   cancell : h ∘ (i ∘ f) ≡ f
   cancell {f = f} =
     h ∘ (i ∘ f) ≡⟨ pulll inv ⟩
@@ -144,7 +141,7 @@ inverses, of right inverses, and for proving that any left inverse must
 match any right inverse.
 
 ```agda
-module _ {y z} (f : y ≅ z) where
+module _ {y z} (f : y ≅ z) where abstract
   open _≅_
 
   left-inv-unique
@@ -196,4 +193,3 @@ refl⟩∘⟨_ {f = f} p = ap (f ∘_) p
 _⟩∘⟨refl : f ≡ h → f ∘ g ≡ h ∘ g
 _⟩∘⟨refl {g = g} p = ap (_∘ g) p
 ```
-
