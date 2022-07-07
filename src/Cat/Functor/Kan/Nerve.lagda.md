@@ -55,7 +55,7 @@ below, where $|-| \dashv \bf{N}$. In general, the left adjoint is called
 An example to keep in mind is the inclusion $F : \Delta \mono \strcat$
 from the simplex category to [strict categories], which sends the
 $n$-simplex to the finite [poset] $[n]$. In this case, the left adjoint
-is the ordinary realisation of a simplicial set $[\Delta^op,\sets]$ as a
+is the ordinary realisation of a simplicial set $[\Delta^{op},\sets]$ as a
 strict category, and the right adjoint gives the simplicial nerve of a
 strict category.
 
