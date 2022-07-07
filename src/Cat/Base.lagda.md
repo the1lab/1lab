@@ -126,8 +126,8 @@ g) \circ h = f \circ (g \circ h)$.
 A common theme throughout precategory theory is that of _duality_: The dual
 of a categorical concept is same concept, with "all the arrows
 inverted". To make this formal, we introduce the idea of _opposite
-categories_: The opposite of $C$, written $C^{op}$, has the same
-`objects`{.Agda}, but with $\id{Hom}_{C^{op}}(x, y) =
+categories_: The opposite of $C$, written $C\op$, has the same
+`objects`{.Agda}, but with $\id{Hom}_{C\op}(x, y) =
 \id{Hom}_{C}(y, x)$.
 
 ```agda
@@ -140,7 +140,7 @@ _^op : ∀ {o₁ h₁} → Precategory o₁ h₁ → Precategory o₁ h₁
 (C ^op) .Precategory._∘_ f g = Precategory._∘_ C g f
 ```
 
-Composition in the opposite precategory $C^{op}$ is "backwards" with
+Composition in the opposite precategory $C\op$ is "backwards" with
 respect to $C$: $f \circ_{op} g = g \circ f$. This inversion, applied
 twice, ends up equal to what we started with by the nature of
 computation - An equality that arises like this, automatically from what
@@ -161,7 +161,7 @@ opposite precategory: For `idr`{.Agda} one has to show $f \circ_{op}
 ```
 
 For associativity, consider the case of `assoc`{.Agda} for the
-opposite precategory $C^{op}$. What we have to show is - by the type of
+opposite precategory $C\op$. What we have to show is - by the type of
 `assoc₁`{.Agda} - $f \circ_{op} (g \circ_{op} h) = (f \circ_{op} g)
 \circ_{op} h$. This computes into $(h \circ g) \circ f = h \circ (g
 \circ f)$ - which is exactly what `sym (assoc C h g f)` shows!
@@ -279,8 +279,8 @@ compositions are taken to compositions (`F-∘`{.Agda}).
 ```
 -->
 
-Functors also have duals: The opposite of $F : C \to D$ is $F^{op} :
-C^{op} \to D^{op}$.
+Functors also have duals: The opposite of $F : C \to D$ is $F\op :
+C\op \to D\op$.
 
 ```agda
   op : Functor (C ^op) (D ^op)
@@ -444,7 +444,7 @@ _components_, where the component at $x$ is a map $F(x) \to G(x)$. The
 ```
 
 Natural transformations also dualize. The opposite of $\eta : F
-\To G$ is $\eta^{op} : G^{op} \To F^{op}$.
+\To G$ is $\eta\op : G\op \To F\op$.
 
 ```agda
   op : Functor.op G => Functor.op F
