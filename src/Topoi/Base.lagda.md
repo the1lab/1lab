@@ -156,7 +156,7 @@ of actual topoi, and makes sense for any pair of categories.
 
 Another perspective on topoi is that they are _categories of_ spaces,
 rather than spaces themselves. We start by looking at presheaf topoi,
-$[\ca{C}^{op},\sets]$. The [coyoneda lemma] tells us that every presheaf
+$[\ca{C}\op,\sets]$. The [coyoneda lemma] tells us that every presheaf
 is a colimit of representables, which can be restated in less abstract
 terms by saying that _presheaves are instructions for gluing together
 objects of $\ca{C}$._ The objects of $\ca{C}$ are then interpreted as

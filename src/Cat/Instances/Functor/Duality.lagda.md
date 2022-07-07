@@ -13,7 +13,7 @@ module Cat.Instances.Functor.Duality where
 
 The duality involution $\ca{C}\op$ on categories extends to a "duality
 involution" $F\op$ on _functors_. However, since this changes the type
-of the functor --- the dual of $F : \ca{C} \to \ca{D}$ is $F^{op} : \ca{C}
+of the functor --- the dual of $F : \ca{C} \to \ca{D}$ is $F\op : \ca{C}
 \to \ca{D}$ --- it does not represent an involution on functor
 categories; Rather, it is an equivalence $(-)\op : [\ca{C},\ca{D}]\op
 \cong [\ca{C}\op,\ca{D}\op]$.

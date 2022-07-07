@@ -17,7 +17,7 @@ private
 
 # The Category of Elements
 
-The category of elements of a presheaf $P : C^{op} \to \sets$ is a means
+The category of elements of a presheaf $P : C\op \to \sets$ is a means
 of unpacking the data of the presheaf. Its objects are pairs of an
 object $x$, and a section $s : P x$.
 

@@ -565,7 +565,7 @@ case where we're actually talking about $(n,1)$-topoi.
 
 [^subobjclass]: Let me make this more precise. In any (univalent)
 category with finite limits $\mathscr{E}$, we have a functor $\id{Sub} :
-\mathscr{E}^{op} \to \set$, which takes $c$ to the full subcategory of
+\mathscr{E}\op \to \set$, which takes $c$ to the full subcategory of
 $\mathscr{E}/c$ on the injections. We say that $\Omega \in \mathscr{E}$
 is a **subobject classifier** if there is a natural isomorphism
 $\id{Sub} \cong \hom(-,\Omega)$, i.e., if $\Omega$ is a representing
@@ -607,7 +607,7 @@ maps $B \to \ty$ correspond to _arbitrary_ maps $A \to B$. Let's specify
 this notion better using the language of higher category theory:
 
 A **subobject classifier** is a [representing object] for the functor
-$\id{Sub} : \mathscr{E}^{op} \to \set$ which takes an object to its
+$\id{Sub} : \mathscr{E}\op \to \set$ which takes an object to its
 poset of subobjects. Since the subobjects of $x$ can be described as
 (isomorphism classes of) objects of a subcategory of $\mathscr{E}/x$, we
 would hope that an **object classifier** would classify the entire
@@ -661,7 +661,7 @@ dimension 1 is invertible.
 
 Using the proper higher-categorical jargon, we can define an object
 classifier $\ty$ to be a $\io$-category $\ht{H}$ is a representing
-object for the $\io$-presheaf $\id{Core}(\ht{H}/-) : \ht{H}^{op} \to
+object for the $\io$-presheaf $\id{Core}(\ht{H}/-) : \ht{H}\op \to
 \igpd$.
 
 Again, the importance of object classifiers is that they let us talk
@@ -1004,7 +1004,7 @@ category.
 
   Further, since $\set$ is a univalent category, the Yoneda lemma
   implies that every $C$ can be embedded into a univalent category - the
-  functor category $[C^{op},\set]$. If we restrict to the subcategory of
+  functor category $[C\op,\set]$. If we restrict to the subcategory of
   representable presheaves, we have that every $C$ admits a full,
   faithful and essentially surjective functor into a univalent category,
   called the Rezk completion of $C$; If $C$ was already univalent, this
