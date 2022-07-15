@@ -1,53 +1,62 @@
-{-# LANGUAGE BlockArguments, OverloadedStrings, FlexibleContexts #-}
+{-# LANGUAGE BlockArguments, OverloadedStrings, FlexibleContexts, ScopedTypeVariables #-}
 module Main (main) where
 
+import Control.Concurrent.STM
 import Control.Monad.IO.Class
 import Control.Monad.Writer
+import Control.Exception
 
+import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
-import Data.Maybe
+import Data.Bifunctor
+import Data.Foldable
+import Data.Either
 import Data.List
 
 import Development.Shake.FilePath
-import Development.Shake
+import Development.Shake.Database
+import Development.Shake hiding (getEnv)
 
 import qualified System.Directory as Dir
+import qualified System.FSNotify as Watch
+import System.Console.GetOpt
+import System.Environment
+import System.Time.Extra
+import System.Exit
 
 import Text.HTML.TagSoup
 
 import Text.Printf
 
-import Agda.Interaction.FindFile (SourceFile(..))
-import Agda.TypeChecking.Monad.Base
-import Agda.Interaction.Options
-import Agda.Interaction.Imports
-import Agda.Compiler.Backend
-import Agda.Utils.FileName
-
-import qualified System.Environment as Env
-import HTML.Backend
-import HTML.Base
 import System.IO (IOMode(..), hPutStrLn, withFile)
-import Agda
 
+import HTML.Backend (builtinModules)
+
+import Shake.Options
+import Shake.AgdaCompile
 import Shake.AgdaRefs (getAgdaRefs)
 import Shake.SearchData
 import Shake.LinkGraph
 import Shake.Markdown
+import Shake.Modules
 import Shake.Diagram
 import Shake.KaTeX
 import Shake.Git
+
+import Timer
 
 {-
   Welcome to the Horror That Is 1Lab's Build Script.
 
   Building 1Lab comprises of (roughly) the following steps:
 -}
-main :: IO ()
-main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ do
+rules :: Rules ()
+rules = do
+  agdaRules
   agdaRefs <- getAgdaRefs
   gitRules
   katexRules
+  (getOurModules, getAllModules) <- moduleRules
 
   {-
     Write @_build/all-pages.agda@. This imports every module in the source tree
@@ -58,25 +67,14 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     @.agda@) and markdown (for @.lagda.md@) files to @_build/html0@.
   -}
   "_build/all-pages.agda" %> \out -> do
-    files <- sort <$> getDirectoryFiles "src" ["**/*.agda", "**/*.lagda.md"]
-    need (map ("src" </>) files)
+    modules <- Map.toList <$> getOurModules
     let
-      toOut x | takeExtensions x == ".lagda.md"
-              = moduleName (dropExtensions x) ++ " -- (text page)"
-      toOut x = moduleName (dropExtensions x) ++ " -- (code only)"
+      toOut (x, WithText) = x ++ " -- (text page)"
+      toOut (x, CodeOnly) = x ++ " -- (code only)"
 
     writeFileLines out $ "{-# OPTIONS --cubical #-}"
-                       : ["open import " ++ toOut x | x <- files]
+                       : ["open import " ++ toOut x | x <- modules]
                       ++ ["import " ++ x ++ " -- (builtin)" | x <- builtinModules]
-
-    liftIO $ Dir.createDirectoryIfMissing True "_build/html0"
-    traced "agda" $
-      runAgda defaultOptions{optInputFile = Just "_build/all-pages.agda"} $
-      compileAgda out
-  -- Add additional rules for the above.
-  "_build/all-types.json" %> \_ -> need ["_build/all-pages.agda"]
-  "_build/html0/*.html" %> \_ -> need ["_build/all-pages.agda"]
-  "_build/html0/*.md" %> \_ -> need ["_build/all-pages.agda"]
 
   {-
     For each 1Lab module, read the emitted file from @_build/html0@. If its
@@ -85,16 +83,16 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
   -}
   "_build/html/*.html" %> \out -> do
     let
-      modname = dropExtension (takeFileName out)
-      input = "_build/html0" </> modname
+      modName = dropExtension (takeFileName out)
+      input = "_build/html0" </> modName
 
-    ismd <- liftIO $ Dir.doesFileExist (input <.> ".md")
+    modKind <- Map.lookup modName <$> getOurModules
 
-    if ismd
-      then do
+    case modKind of
+      Just WithText -> do
         agdaRefs <- agdaRefs
         buildMarkdown agdaRefs (input <.> ".md") out
-      else copyFile' (input <.> ".html") out
+      _ -> copyFile' (input <.> ".html") out
   "_build/search/*.json" %> \out -> need ["_build/html/" </> takeFileName out -<.> "html" ]
 
   "_build/html/static/links.json" %> \out -> do
@@ -113,8 +111,8 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
       hPutStrLn h "null]"
 
   "_build/html/static/search.json" %> \out -> do
-    modules <- sort <$> getDirectoryFiles "src" ["**/*.lagda.md"]
-    let searchFiles = "_build/all-types.json":map (\x -> "_build/search" </> moduleName (dropExtensions x) <.> "json") modules
+    modules <- filter ((==) WithText . snd) . Map.toList <$> getOurModules
+    let searchFiles = "_build/all-types.json":map (\(x, _) -> "_build/search" </> x <.> "json") modules
     need searchFiles
     searchData <- traverse readSearchData searchFiles
     writeSearchData out (concat searchData)
@@ -159,16 +157,10 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
     need and kicks off the above job to build them.
   -}
   phony "all" do
-    files <- filter ("open import" `isPrefixOf`) <$> readFileLines "_build/all-pages.agda"
-    need $ "_build/html/all-pages.html"
-         : [ "_build/html" </> (words file !! 2) <.> "html"
-           | file <- files
-           ]
-
+    agda <- getAllModules >>= \modules ->
+      pure ["_build/html" </> f <.> "html" | (f, _) <- Map.toList modules]
     static <- getDirectoryFiles "support/static/" ["**/*"] >>= \files ->
       pure ["_build/html/static" </> f | f <- files]
-    agda <- getDirectoryFiles "_build/html0" ["Agda.*.html"] >>= \files ->
-      pure ["_build/html/" </> f | f <- files]
     need $
       static ++ agda ++
         [ "_build/html/favicon.ico"
@@ -194,13 +186,105 @@ main = shakeArgs shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} $ d
 
   -- Profit!
 
-compileAgda :: FilePath -> String -> TCMT IO ()
-compileAgda path _ = do
-  skipTypes <- liftIO . fmap isJust . Env.lookupEnv $ "SKIP_TYPES"
-  source <- parseSource . SourceFile =<< liftIO (absolute path)
-  basepn <- liftIO $ absolute "src/"
-  cr <- typeCheckMain TypeCheck source
-  modifyTCLens stBackends
-    (htmlBackend (filePath basepn) defaultHtmlOptions{htmlOptGenTypes = not skipTypes}:)
-  callBackend "HTML" IsMain cr
+main :: IO ()
+main = do
+  args <- getArgs
+  when ("--help" `elem` args || "-h" `elem` args) do
+    putStrLn $ usageInfo "shake" optDescrs
+    exitFailure
 
+  let (opts, extra, errs) = getOpt Permute optDescrs args
+      (shakeOpts, ourOpts) = partitionEithers opts
+      (errs', shakeOpts') = first (++errs) $ partitionEithers shakeOpts
+      rules' = setOptions ourOpts >> rules
+
+      shakeOptions' = foldl' (flip ($)) shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} shakeOpts'
+      (shakeRules, wanted) = case extra of
+        [] -> (rules', [])
+        files -> (withoutActions rules', [need files])
+
+  unless (null errs') do
+    for_ errs' $ putStrLn . ("1lab-shake: " ++)
+    exitFailure
+
+  let watching = Watching `elem` ourOpts
+
+  (ok, after) <- shakeWithDatabase shakeOptions' shakeRules \db -> do
+    case watching of
+      False -> buildOnce db wanted
+      True -> buildMany db wanted
+  shakeRunAfter shakeOptions' after
+
+  reportTimes
+
+  unless ok exitFailure
+
+  where
+    optDescrs :: [OptDescr (Either (Either String (ShakeOptions -> ShakeOptions)) Option)]
+    optDescrs = map (fmap Left) shakeOptDescrs ++ map (fmap Right) ourOptsDescrs
+
+    ourOptsDescrs =
+      [ Option "w" ["watch"] (NoArg Watching)
+          "Start 1lab-shake in watch mode. Starts a persistent process which runs a subset of build tasks for interactive editing. Implies --skip-types."
+      , Option [] ["skip-types"] (NoArg SkipTypes)
+          "Skip generating type tooltips when compiling Agda to HTML."
+      ]
+
+    buildOnce :: ShakeDatabase -> [Action ()] -> IO (Bool, [IO ()])
+    buildOnce db wanted = do
+      start <- offsetTime
+
+      res :: Either SomeException x <- try $ shakeRunDatabase db wanted
+
+      tot <- start
+      case res of
+        Left err -> do
+          putStrLn $ "❌ Build failed in " ++ showDuration tot
+          print err
+          pure (False, [])
+        Right (_, actions) -> do
+          putStrLn $ "✅ Build succeeded in " ++ showDuration tot
+          pure (True, actions)
+
+    buildMany :: ShakeDatabase -> [Action ()] -> IO (Bool, [IO ()])
+    buildMany db wanted = Watch.withManager \mgr -> do
+      (_, clean) <- buildOnce db wanted
+
+      toRebuild <- atomically $ newTVar Set.empty
+      _ <- Watch.watchTree mgr "src" (not . Watch.eventIsDirectory) (logEvent toRebuild)
+      _ <- Watch.watchTree mgr "support" (not . Watch.eventIsDirectory) (logEvent toRebuild)
+
+      root <- Dir.canonicalizePath "."
+
+      let
+        loop clean = do
+          changes <- atomically do
+            changes <- swapTVar toRebuild Set.empty
+            when (Set.null changes) retry
+            pure changes
+
+          let
+            changes' = map (makeRelative root) (Set.toList changes)
+
+            -- If all our changed files are Agda modules, try to emit just those
+            -- HTML files, rather than everything.
+            (targets, targetName) = case traverse toModule changes' of
+              Nothing -> (wanted, "everything")
+              Just [] -> (wanted, "everything")
+              Just xs ->
+                let targets = map (\x -> "_build/html" </> x <.> "html") xs
+                in ([need targets], intercalate ", " targets)
+
+          putStrLn $ "🔨 " ++ intercalate ", " changes' ++ " has changed. Rebuilding " ++ targetName ++ "."
+
+          (_, clean') <- buildOnce db targets
+          loop (clean' ++ clean)
+
+      loop clean
+
+    logEvent toRebuild event = atomically $ modifyTVar' toRebuild (Set.insert (Watch.eventPath event))
+
+    toModule path
+      | ("src":rest) <- splitDirectories path
+      = Just . intercalate "." $ init rest ++ [dropExtensions (last rest)]
+      | otherwise = Nothing

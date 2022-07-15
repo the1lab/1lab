@@ -6,6 +6,7 @@ let
     shake directory tagsoup
     text containers uri-encode
     process aeson Agda pandoc SHA
+    fsnotify
   ]);
 
   static-agda = import ./support/nix/static-agda.nix;

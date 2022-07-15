@@ -1,0 +1,198 @@
+{-# LANGUAGE BlockArguments, ScopedTypeVariables, TupleSections #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, TypeFamilies #-}
+module Shake.AgdaCompile (agdaRules) where
+
+import qualified System.Directory as Dir
+import System.FilePath
+
+import qualified Data.List.NonEmpty as List1
+import qualified Data.HashMap.Strict as Hm
+import qualified Data.Map as Map
+import qualified Data.Text as T
+import Data.Aeson (eitherDecodeFileStrict', encodeFile)
+import Data.Foldable
+import Data.Maybe
+import Data.IORef
+
+import Development.Shake.Classes
+import Development.Shake
+
+import Shake.Options (getSkipTypes, getWatching)
+
+import Agda.Compiler.Backend hiding (getEnv)
+import Agda.Interaction.FindFile (SourceFile(..))
+import Agda.Interaction.Imports
+import Agda.Interaction.Options
+import Agda.Syntax.Common (Cubical(CFull))
+import Agda.Syntax.Concrete.Name (TopLevelModuleName(..))
+import Agda.Syntax.Position (noRange)
+import Agda.Utils.FileName
+import Agda.Utils.Hash (Hash)
+import Agda.Utils.Pretty
+import Agda.Utils.Lens ((^.))
+
+import HTML.Backend
+import HTML.Base
+
+------------------------------------------------------------------------
+-- Oracles
+------------------------------------------------------------------------
+
+-- | A non-serialisable compile "answer".
+data CompileA = CompileA
+  { _cState  :: TCState
+  , cHash   :: Hash
+  }
+  deriving Typeable
+
+instance Show CompileA where
+  show CompileA{} = "CompileA"
+
+instance Eq CompileA where
+  a == b = cHash a == cHash b
+
+instance Hashable CompileA where
+  hashWithSalt salt x = hashWithSalt salt (cHash x)
+
+instance Binary CompileA where
+  put _ = error "Cannot encode CompileA"
+  get = fail "Cannot decode CompileA"
+
+instance NFData CompileA where
+  rnf x = cHash x `seq` ()
+
+newtype MainCompileQ = MainCompileQ ()
+  deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
+
+type instance RuleResult MainCompileQ = CompileA
+
+newtype ModuleCompileQ = ModuleCompileQ String
+  deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
+
+type instance RuleResult ModuleCompileQ = CompileA
+
+------------------------------------------------------------------------
+-- Rules and actual compilation
+------------------------------------------------------------------------
+
+agdaRules :: Rules ()
+agdaRules = do
+  -- Add an oracle to compile Agda
+  ref <- liftIO $ newIORef Nothing
+  _ <- addOracleHash \(MainCompileQ ()) -> compileAgda ref
+
+  -- Add a 'projection' oracle which compiles Agda and then uses the per-module
+  -- hash instead. This ensures we only rebuild HTML/types when the module
+  -- changes.
+  _ <- addOracleHash \(ModuleCompileQ m) -> do
+    (CompileA state _) <- askOracle (MainCompileQ ())
+
+    let hash = iFullHash . getInterface state $ toTopLevel m
+    pure (CompileA state hash)
+
+  -- Create a cache for the per-module type information.
+  getTypes <- newCache \modName -> do
+    let path = "_build/html0" </> modName <.> ".json"
+    need [path]
+
+    result :: Either String (Hm.HashMap T.Text Identifier) <-
+      quietly . traced "read types" $ eitherDecodeFileStrict' path
+    either fail pure result
+
+  -- In order to write the JSON, we first compile the required module (which
+  -- gives us the TC environment) and then emit the HTML/Markdown and type JSON.
+  "_build/html0/*.json" %> \file -> do
+    let modName = dropExtension (takeFileName file)
+    compileResult <- askOracle (ModuleCompileQ modName)
+    emitAgda compileResult getTypes modName
+
+  -- Add a couple of forwarding rules for emitting the actual HTML/MD
+  "_build/html0/*.html" %> \file -> need [file -<.> "json"]
+  "_build/html0/*.md" %> \file -> need [file -<.> "json"]
+
+  -- We generate the all-types JSON from the all-pages types JSON - it's just a
+  -- schema change.
+  "_build/all-types.json" %> \file -> do
+    types <- getTypes "all-pages"
+    liftIO $ encodeFile file (Hm.elems types)
+
+-- | Compile the top-level Agda file.
+compileAgda :: IORef (Maybe TCState) -> Action CompileA
+compileAgda stateVar = do
+  files <- map ("src" </>) <$> getDirectoryFiles "src" ["**/*.agda", "**/*.lagda.md"]
+  changed <- needHasChanged $ "_build/all-pages.agda":files
+
+  watching <- getWatching
+
+  traced "agda" do
+    baseDir <- absolute "_build"
+
+    -- Reuse the old TC state so we don't reload interfaces each time.
+    oldState <- readIORef stateVar
+
+    -- On the initial build, always build everything. Otherwise try to only
+    -- rebuild the files which have changed.
+    let (target, state) = case oldState of
+          Nothing -> (["_build/all-pages.agda"], initState)
+          Just state -> (if watching then changed else ["_build/all-pages.agda"], state)
+
+    ((), state) <- runTCM initEnv state do
+      -- We preserve the old modules and restore them at the end, as otherwise
+      -- we forget them, and will fail if we need to rebuild other HTML pages.
+      oldVisited <- useTC stVisitedModules
+
+      resetState
+
+      -- Force Cubical even if we've not got a --cubical header.
+      stPragmaOptions `modifyTCLens` \ o -> o { optCubical = Just CFull }
+      setCommandLineOptions' baseDir defaultOptions
+
+      for_ target \source -> do
+        absPath <- liftIO $ absolute source
+        source <- parseSource (SourceFile absPath)
+        typeCheckMain TypeCheck source
+
+      modifyTCLens stVisitedModules (`Map.union` oldVisited)
+
+    writeIORef stateVar (Just state)
+
+    -- TODO: Catch errors and pretty-print failures
+
+    pure (CompileA state 0)
+
+
+-- | Emit an Agda file as HTML or Markdown.
+emitAgda
+  :: CompileA
+  -> (String -> Action (Hm.HashMap T.Text Identifier))
+  -> String -> Action ()
+emitAgda (CompileA tcState _) getTypes modName = do
+  liftIO $ Dir.createDirectoryIfMissing True "_build/html0"
+
+  basepn <- filePath <$> liftIO (absolute "src/")
+
+  let tlModName = toTopLevel modName
+      iface = getInterface tcState tlModName
+
+  types <- parallel . map (getTypes . render . pretty . toTopLevelModuleName . fst) $ iImportedModules iface
+
+  skipTypes <- getSkipTypes
+  ((), _) <- quietly . traced "agda html"
+    . runTCM initEnv tcState
+    . locallyTC eActiveBackendName (const $ Just "HTML") $ do
+      compileOneModule basepn defaultHtmlOptions { htmlOptGenTypes = not skipTypes }
+        (mconcat types)
+        iface
+
+  pure ()
+
+toTopLevel :: String -> TopLevelModuleName
+toTopLevel = TopLevelModuleName noRange . List1.fromList . split where
+  split "" = []
+  split ('.':xs) = split xs
+  split xs =
+    let (here, there) = span (/= '.') xs in
+    here:split there
+
+getInterface :: TCState -> TopLevelModuleName -> Interface
+getInterface tcState name = miInterface . fromJust . Map.lookup name $ tcState ^. stVisitedModules

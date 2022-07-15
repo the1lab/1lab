@@ -37,7 +37,6 @@ import Data.HashMap.Strict (HashMap)
 import qualified Data.HashMap.Strict as Hm
 
 import GHC.Generics (Generic)
-import GHC.Exts (fromString)
 
 import qualified Network.URI.Encode
 
@@ -50,6 +49,7 @@ import Text.Blaze.Html5
     , Html
     , (!)
     , Attribute
+    , textValue
     )
 import qualified Text.Blaze.Html5 as Html5
 import qualified Text.Blaze.Html5.Attributes as Attr
@@ -85,7 +85,7 @@ instance NFData HtmlHighlight
 data Identifier = Identifier
   { idIdent  :: Ts.Text
   , idAnchor :: Ts.Text
-  , idType   :: String
+  , idType   :: Ts.Text
   }
   deriving (Eq, Show, Ord, Generic, ToJSON, FromJSON)
 
@@ -184,9 +184,11 @@ defaultPageGen
 defaultPageGen types opts srcFile@(HtmlInputSourceFile moduleName ft _ _) = do
   logHtml $ render $ "Generating HTML for" <+> pretty moduleName
   writeRenderedHtml html target
+  liftIO $ encodeFile typeTarget types
   where
     ext = highlightedFileExt (htmlOptHighlight opts) ft
     target = htmlOptDir opts </> modToFile moduleName ext
+    typeTarget = htmlOptDir opts </> modToFile moduleName "json"
     html = renderSourceFile types opts srcFile
 
 -- | Converts module names to the corresponding HTML file names.
@@ -360,12 +362,12 @@ code types _onlyCode _fileType = mconcat . map mkMd . chunksOf 2 . splitByMarkup
     link :: DefinitionSite -> [Attribute]
     link (DefinitionSite m defPos _here _aName) =
       [ Attr.href $ stringValue $ anchor ]
-      ++ maybeToList (Html5.dataAttribute "type" . fromString <$> type_)
+      ++ maybeToList (Html5.dataAttribute "type" . textValue . idType <$> ident_)
       where
         anchor :: String
         anchor =
           applyUnless (defPos <= 1)
             (++ "#" ++ Network.URI.Encode.encode (show defPos))
             (Network.URI.Encode.encode $ modToFile m "html")
-        type_ :: Maybe String
-        type_ = idType <$> Hm.lookup (Ts.pack anchor) types
+        ident_ :: Maybe Identifier
+        ident_ = Hm.lookup (Ts.pack anchor) types
