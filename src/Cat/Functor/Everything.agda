@@ -6,6 +6,8 @@ open import Cat.Functor.Adjoint public
 open import Cat.Functor.Adjoint.Monadic public
 open import Cat.Functor.Adjoint.Monad public
 open import Cat.Functor.Adjoint.Reflective public
+open import Cat.Functor.Monadic.Beck public
+open import Cat.Functor.Monadic.Crude public
 open import Cat.Functor.Amnestic public
 open import Cat.Functor.Base public
 open import Cat.Functor.Conservative public
@@ -13,7 +15,10 @@ open import Cat.Functor.Equivalence.Complete public
 open import Cat.Functor.Equivalence public
 open import Cat.Functor.FullSubcategory public
 open import Cat.Functor.Hom public
+open import Cat.Functor.Hom.Cocompletion public
+open import Cat.Functor.Hom.Representable public
 open import Cat.Functor.Kan public
+open import Cat.Functor.Kan.Right public
 open import Cat.Functor.Kan.Nerve public
 open import Cat.Functor.Pullback public
 open import Cat.Functor.Slice public

@@ -320,11 +320,19 @@ open import Cat.Functor.Adjoint.Continuous -- Right adjoints preserve limits
 open import Cat.Functor.Adjoint.Reflective -- Reflective subcategories
 ```
 
+Monadicity theorems:
+
+```agda
+open import Cat.Functor.Monadic.Beck  -- Beck's coequalisers
+open import Cat.Functor.Monadic.Crude -- The crude monadicity theorem
+```
+
 About Kan extensions:
 
 ```agda
-open import Cat.Functor.Kan -- Kan extensions
-open import Cat.Functor.Kan.Nerve -- The nerve/realisation adjunction (Lan along よ)
+open import Cat.Functor.Kan       -- Left Kan extensions
+open import Cat.Functor.Kan.Right -- Right Kan extensions
+open import Cat.Functor.Kan.Nerve -- The nerve/realisation adjunction
 ```
 
 ## Univalent categories
@@ -413,11 +421,52 @@ Relative Category Theory][frct], in which the core idea is thinking of
 [frct]: https://www.jonmsterling.com/math/lectures/categorical-foundations.html
 
 ```agda
-open import Cat.Displayed.Base             -- Displayed categories
-open import Cat.Displayed.Total            -- Total category of a displayed category
-open import Cat.Displayed.Cartesian        -- Cartesian lifts, cartesian fibrations
-open import Cat.Displayed.Instances.Family -- Family fibration
-open import Cat.Displayed.Instances.Slice  -- Canonical self-indexing
+open import Cat.Displayed.Base       -- Displayed categories
+open import Cat.Displayed.Total      -- Total category of a displayed category
+open import Cat.Displayed.Fibre      -- Fibre categories of a displayed category
+open import Cat.Displayed.Cartesian  -- Cartesian lifts, cartesian fibrations
+open import Cat.Displayed.Univalence -- Univalence for displayed categories
+
+open import Cat.Displayed.Reasoning
+  -- Reasoning combinators for displayed categories
+
+open import Cat.Displayed.Instances.Slice    -- Canonical self-indexing
+open import Cat.Displayed.Instances.Family   -- Family fibration
+open import Cat.Displayed.Instances.Pullback
+  -- Pullback of a displayed category by a functor
+```
+
+## Bicategories
+
+The modules under `Cat.Bi` are very much work-in-progress.
+
+```agda
+open import Cat.Bi.Base
+  -- Prebicategories, lax functors, pseudofunctors, lax transformations,
+  -- pseudonatural transformations, modifications, and the bicategory of
+  -- categories.
+open import Cat.Bi.Instances.Spans
+  -- The prebicategory of spans in a precategory with pullbacks
+open import Cat.Bi.Instances.Discrete
+  -- The locally discrete prebicategory associated to a precategory
+```
+
+### Diagrams in bicategories
+
+```agda
+open import Cat.Bi.Diagram.Monad
+open import Cat.Bi.Diagram.Adjunction
+```
+
+## Homological algebra
+
+The theory of abelian categories.
+
+```agda
+open import Cat.Abelian.Base
+open import Cat.Abelian.Images
+open import Cat.Abelian.Limits
+open import Cat.Abelian.Functors
 ```
 
 # Topos theory
@@ -445,16 +494,29 @@ open import Algebra.Magma.Unital               -- Operations with two-sided unit
 open import Algebra.Magma.Unital.EckmannHilton -- The Eckmann-Hilton argument
 
 open import Algebra.Semigroup   -- Semigroups (associative magmas)
-open import Algebra.Monoid      -- Monoids as unital semigroups
+
+open import Algebra.Monoid          -- Monoids as unital semigroups
+open import Algebra.Monoid.Category -- The category of monoids
+
+open import Algebra.Lattice     -- Lattices
+open import Algebra.Semilattice -- Semilattices
+
+open import Algebra.Ring -- Rings
 
 open import Algebra.Group                      -- Groups as monoids with inverses
 open import Algebra.Group.Free                 -- Free groups
+open import Algebra.Group.Action               -- Group actions
 open import Algebra.Group.Cayley               -- Cayley's theorem
-open import Algebra.Group.Cat.Base             -- Category of groups
+open import Algebra.Group.Cat.Base             -- The category of groups
+open import Algebra.Group.Cat.Monadic          -- ... is monadic over Sets
 open import Algebra.Group.Cat.FinitelyComplete -- Finite limits in Groups
-open import Algebra.Group.Homotopy             -- Homotopy groups
 open import Algebra.Group.Subgroup             -- Subgroups, images and kernels
 
-open import Algebra.Group.Ab -- Abelian groups, and the category Ab
+open import Algebra.Group.Homotopy -- Homotopy groups
+open import Algebra.Group.Homotopy.BAut
+  -- Delooping groupoids of automorphism groups
+
+open import Algebra.Group.Ab      -- Abelian groups, and the category Ab
+open import Algebra.Group.Ab.Sum  -- Direct sum abelian groups
 open import Algebra.Group.Ab.Free -- The free abelian group on a group
 ```
