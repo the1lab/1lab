@@ -37,7 +37,6 @@ The situation is similar for morphisms: we bundle up a morphism from the
 base category along with a morphism that lives above it.
 
 ```agda
-
 record Total-hom (X Y : Total) : Type (ℓ ⊔ ℓ′) where
   constructor total-hom
   field
