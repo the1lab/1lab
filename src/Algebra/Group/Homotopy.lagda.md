@@ -28,9 +28,9 @@ _itself_ a pointed type, the construction can be iterated, a process
 which we denote $\Omega^n A$.
 
 ```agda
-Ω^ : Nat → Type∙ ℓ → Type∙ ℓ
-Ω^ zero A    = A
-Ω^ (suc n) (A , x) with Ω^ n (A , x)
+Ωⁿ : Nat → Type∙ ℓ → Type∙ ℓ
+Ωⁿ zero A    = A
+Ωⁿ (suc n) (A , x) with Ωⁿ n (A , x)
 ... | (T , x) = Path T x x , refl
 ```
 
@@ -43,7 +43,7 @@ $\pi_1(A)$.
 
 ```agda
 πₙ₊₁ : Nat → Type∙ ℓ → Group ℓ
-πₙ₊₁ n t .fst = ∥ Ω^ (suc n) t .fst ∥₀
+πₙ₊₁ n t .fst = ∥ Ωⁿ (suc n) t .fst ∥₀
 πₙ₊₁ n t .snd =
   make-group squash
     (inc refl)
@@ -73,7 +73,7 @@ commutative, independent of $A$.
 
 ```agda
 Ωⁿ⁺²-is-abelian-group
-  : ∀ {ℓ} {A : Type∙ ℓ} (n : Nat) (p q : Ω^ (2 + n) A .fst)
+  : ∀ {ℓ} {A : Type∙ ℓ} (n : Nat) (p q : Ωⁿ (2 + n) A .fst)
   → p ∙ q ≡ q ∙ p
 Ωⁿ⁺²-is-abelian-group n p q =
   transport
