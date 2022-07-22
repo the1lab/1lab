@@ -101,8 +101,8 @@ because these are almost definitionally the same thing.
     lemma : ∀ (f : Σ∙ A →∙ B) x → Square
       (sym (f .snd) ∙ ap (f .fst) (merid x))
       (sym (f .snd)) refl (ap (f .fst) (merid x))
-    lemma f x = transport (sym Square≡··) $
-      sym (sym (f .snd) ∙ ap (f .fst) (merid x)) ·· sym (f .snd) ·· ap (f .fst) (merid x) ≡⟨ ··≡twice∙ (sym _) _ _ ⟩
+    lemma f x = transport (sym Square≡double-composite-path) $
+      sym (sym (f .snd) ∙ ap (f .fst) (merid x)) ·· sym (f .snd) ·· ap (f .fst) (merid x) ≡⟨ double-composite (sym _) _ _ ⟩
       sym (sym (f .snd) ∙ ap (f .fst) (merid x)) ∙ sym (f .snd) ∙ ap (f .fst) (merid x)   ≡⟨ ap₂ _∙_ (sym-∙ (sym _) _) refl ⟩
       (ap (f .fst) (sym (merid x)) ∙ (f .snd)) ∙ sym (f .snd) ∙ ap (f .fst) (merid x)     ≡˘⟨ ∙-assoc _ _ _ ⟩
       ap (f .fst) (sym (merid x)) ∙ ((f .snd) ∙ sym (f .snd) ∙ ap (f .fst) (merid x))     ≡⟨ ap₂ _∙_ refl (∙-cancel-l (sym (f .snd)) _) ⟩

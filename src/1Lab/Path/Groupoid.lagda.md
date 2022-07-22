@@ -238,6 +238,14 @@ more than a handful of intermediate steps:
               → q ∙ p ≡ r ∙ p → q ≡ r
   ∙-cancel'-r = J (λ y p → (q r : _ ≡ _) → q ∙ p ≡ r ∙ p → q ≡ r)
                   (λ q r proof → sym (∙-id-r q) ·· proof ·· ∙-id-r r)
+
+  composite-path→square
+    : {p : w ≡ x} {q : w ≡ y} {s : x ≡ z} {r : y ≡ z}
+    → p ∙ s ≡ q ∙ r
+    → Square p q s r
+  composite-path→square {p = p} {q} {s} {r} fill =
+    transport (sym Square≡double-composite-path) $
+      double-composite (sym p) q r ·· ap (sym p ∙_) (sym fill) ·· ∙-cancel-l p s
 ```
 
 # Groupoid structure of types (cont.)

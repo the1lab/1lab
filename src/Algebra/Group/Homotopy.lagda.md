@@ -223,7 +223,7 @@ together to establish `G ≡ (base ≡ base)`. First, to define
       (λ _ → hlevel 3)
       (G .fst , Group-on.has-is-set (G .snd))
       (λ x → n-ua (map x))
-      λ x y → n-Type-square (transport (sym Square≡··) (lemma x y))
+      λ x y → n-Type-square (transport (sym Square≡double-composite-path) (lemma x y))
 ```
 
 Since we must map into a type which is known to be a groupoid, we map to

@@ -1730,11 +1730,11 @@ _▷_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ : A i0} {a₁ a₁' : A i1}
 (p ▷ q) i =
   hcomp (λ j → λ {(i = i0) → p i0; (i = i1) → q j}) (p i)
 
-Square≡·· : ∀ {ℓ} {A : Type ℓ}
+Square≡double-composite-path : ∀ {ℓ} {A : Type ℓ}
           → {w x y z : A}
           → {p : x ≡ w} {q : x ≡ y} {s : w ≡ z} {r : y ≡ z}
           → Square p q s r ≡ (sym p ·· q ·· r ≡ s)
-Square≡·· {p = p} {q} {s} {r} k =
+Square≡double-composite-path {p = p} {q} {s} {r} k =
   PathP (λ i → p (i ∨ k) ≡ r (i ∨ k))
     (··-filler (sym p) q r k) s
 
@@ -1750,12 +1750,12 @@ J′ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁}
    → P x y p
 J′ P prefl {x} p = transport (λ i → P x (p i) λ j → p (i ∧ j)) (prefl x)
 
-··≡twice∙
+double-composite
   : ∀ {ℓ} {A : Type ℓ}
   → {x y z w : A}
   → (p : x ≡ y) (q : y ≡ z) (r : z ≡ w)
   → p ·· q ·· r ≡ p ∙ q ∙ r
-··≡twice∙ p q r i j =
+double-composite p q r i j =
   hcomp (λ k → λ { (i = i1) → ∙-filler' p (q ∙ r) k j
                  ; (j = i0) → p (~ k)
                  ; (j = i1) → r (i ∨ k)})

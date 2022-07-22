@@ -281,18 +281,18 @@ from this page. You can unfold it below if you dare:
     -- but mediating between SquareP, ··, and ∙.
     work-respects-quot x y with ≤-split x y | ≤-split (suc x) (suc y)
     ... | inl x<y | inl x<y' =
-      Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡··) $
-          ··≡twice∙ refl _ _
+      Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡double-composite-path) $
+          double-composite refl _ _
         ·· ∙-id-l _
         ·· ap (λ e → lemma₁ x y e ∙ Int.quot x y) (≤-prop (suc x) y x<y x<y')
     ... | inr (inl x>y) | inr (inl x>y') =
-      Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡··) $
-          ··≡twice∙ refl _ _
+      Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡double-composite-path) $
+          double-composite refl _ _
         ·· ∙-id-l _
         ·· ap (λ e → lemma₂ x y e ∙ Int.quot x y) (≤-prop (suc y) x x>y x>y')
     ... | inr (inr x≡y) | inr (inr x≡y') =
-      Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡··) $
-          ··≡twice∙ refl _ _
+      Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡double-composite-path) $
+          double-composite refl _ _
         ·· ∙-id-l _
         ·· ap (λ e → lemma₃ x y e ∙ Int.quot x y) (Nat-is-set _ _ _ _)
 
