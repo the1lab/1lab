@@ -3,6 +3,7 @@ open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning as DR
+import Cat.Displayed.Solver as SR
 import Cat.Reasoning as CR
 
 module Cat.Displayed.Fibre
@@ -11,6 +12,7 @@ module Cat.Displayed.Fibre
   where
 
 open Displayed E
+open SR E
 open DR E
 open CR B
 ```
@@ -84,11 +86,10 @@ Fibre x .Precategory.idr f =
   hom[ idr id ] (f ∘′ id′) ≡⟨ from-pathp (idr′ f) ⟩
   f                        ∎
 Fibre x .Precategory.idl f = from-pathp (idl′ f)
-Fibre x .Precategory.assoc f g h =
-  hom[ idl id ] (f ∘′ hom[ idl id ] (g ∘′ h))                     ≡⟨ ap hom[] (whisker-r (idl id)) ∙ hom[]-∙ _ _ ⟩
-  hom[ ap (id ∘_) (idl id) ∙ idl id ] (f ∘′ g ∘′ h)               ≡⟨ reindex _ _ ⟩
-  hom[ assoc _ _ _ ∙ ap (_∘ id) (idl id) ∙ idl id ] (f ∘′ g ∘′ h) ≡˘⟨ hom[]-∙ _ _ ⟩
-  hom[ ap (_∘ id) (idl id) ∙ idl id ] (hom[] (f ∘′ g ∘′ h))       ≡⟨ ap hom[] (from-pathp (assoc′ _ _ _)) ⟩
-  hom[ ap (_∘ id) (idl id) ∙ idl id ] ((f ∘′ g) ∘′ h)             ≡˘⟨ ap hom[] (whisker-l (idl id)) ∙ hom[]-∙ _ _ ⟩
-  hom[ idl id ] (hom[ idl id ] (f ∘′ g) ∘′ h)                     ∎
+Fibre x .Precategory.assoc f g h = r ∙ reindex _ _ ∙ sym s where
+  r : PathP _ (hom[ B.idl B.id ] (f ∘′ hom[ B.idl B.id ] (g ∘′ h))) _
+  r = symP $ eval′-sound `id (`hom[_]_ {f = `id `∘ `id} (B.idl B.id) (f ↑ `∘ `hom[_]_ {f = `id `∘ `id} (B.idl B.id) (g ↑ `∘ h ↑)))
+
+  s : PathP _ (hom[ B.idl B.id ] (hom[ B.idl B.id ] (f ∘′ g) ∘′ h)) _
+  s = symP $ eval′-sound `id (`hom[_]_ {f = `id `∘ `id} (B.idl B.id) (`hom[_]_ {f = `id `∘ `id} (B.idl B.id) (f ↑ `∘ g ↑) `∘ h ↑))
 ```
