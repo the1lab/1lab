@@ -252,7 +252,7 @@ The full cube is right after the definition:
   \arrow["{\theta_1\ j\ \neg i}"{marking}, Rightarrow, draw=none, from=2, to=5]
   \arrow["{\theta_0\ j\ \neg i}"{marking}, Rightarrow, draw=none, from=1, to=4]
   \arrow["{v\ i\ y}"{description}, Rightarrow, draw=none, from=3, to=7]
-  \arrow["{u\ i\ (\omega\ i)}"{description}, Rightarrow, draw=none, from=0, to=6]
+  \arrow["{u\ i\ (\omega\ k)}"{description}, Rightarrow, draw=none, from=0, to=6]
   \arrow["\theta"{description}, color={rgb,255:red,92;green,92;blue,214}, Rightarrow, draw=none, from=3, to=0]
 \end{tikzcd}\]
 ~~~
