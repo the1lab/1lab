@@ -11,7 +11,6 @@ import qualified Data.Map as Map
 import qualified Data.Text as T
 import Data.Aeson (eitherDecodeFileStrict', encodeFile)
 import Data.Foldable
-import Data.Maybe
 import Data.IORef
 
 import Development.Shake.Classes
@@ -195,4 +194,8 @@ toTopLevel = TopLevelModuleName noRange . List1.fromList . split where
     here:split there
 
 getInterface :: TCState -> TopLevelModuleName -> Interface
-getInterface tcState name = miInterface . fromJust . Map.lookup name $ tcState ^. stVisitedModules
+getInterface tcState name =
+  let modules = tcState ^. stVisitedModules in
+  case Map.lookup name modules of
+    Just iface -> miInterface iface
+    Nothing -> error $ "Cannot find inferface for module " ++ prettyShow name

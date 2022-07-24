@@ -246,8 +246,12 @@ main = do
           putStrLn $ "✅ Build succeeded in " ++ showDuration tot
           pure (True, actions)
 
+    -- | Watch config with 10ms (0.01 / 1e-12)
+    watchConfig :: Watch.WatchConfig
+    watchConfig = Watch.defaultConfig { Watch.confDebounce = Watch.Debounce 1e-10 }
+
     buildMany :: ShakeDatabase -> [Action ()] -> IO (Bool, [IO ()])
-    buildMany db wanted = Watch.withManager \mgr -> do
+    buildMany db wanted = Watch.withManagerConf watchConfig \mgr -> do
       (_, clean) <- buildOnce db wanted
 
       toRebuild <- atomically $ newTVar Set.empty
@@ -263,28 +267,34 @@ main = do
             when (Set.null changes) retry
             pure changes
 
-          let
-            changes' = map (makeRelative root) (Set.toList changes)
+          -- Some editors write temporary, non-module files in this dir while saving, which triggers
+          -- a full rebuild. Prune our set of changes to files which still exist.
+          changes' <- map (makeRelative root) <$> filterM Dir.doesFileExist (Set.toList changes)
 
-            -- If all our changed files are Agda modules, try to emit just those
-            -- HTML files, rather than everything.
-            (targets, targetName) = case traverse toModule changes' of
-              Nothing -> (wanted, "everything")
-              Just [] -> (wanted, "everything")
-              Just xs ->
-                let targets = map (\x -> "_build/html" </> x <.> "html") xs
-                in ([need targets], intercalate ", " targets)
+          if null changes' then loop clean else do
+            let
+              -- If all our changed files are Agda modules, try to emit just those
+              -- HTML files, rather than everything.
+              (targets, targetName) = case traverse toModule changes' of
+                Nothing -> (wanted, "everything")
+                Just [] -> (wanted, "everything")
+                Just xs ->
+                  let targets = map (\x -> "_build/html" </> x <.> "html") xs
+                  in ([need targets], intercalate ", " targets)
 
-          putStrLn $ "🔨 " ++ intercalate ", " changes' ++ " has changed. Rebuilding " ++ targetName ++ "."
+            putStrLn $ "🔨 " ++ intercalate ", " changes' ++ " has changed. Rebuilding " ++ targetName ++ "."
 
-          (_, clean') <- buildOnce db targets
-          loop (clean' ++ clean)
+            (_, clean') <- buildOnce db targets
+            loop (clean' ++ clean)
 
       loop clean
 
     logEvent toRebuild event = atomically $ modifyTVar' toRebuild (Set.insert (Watch.eventPath event))
 
+    toModule :: FilePath -> Maybe String
     toModule path
-      | ("src":rest) <- splitDirectories path
-      = Just . intercalate "." $ init rest ++ [dropExtensions (last rest)]
+      | (path, ext) <- splitExtensions path
+      , ext == ".lagda.md" || ext == ".agda"
+      , ("src":rest) <- splitDirectories path
+      = Just $ intercalate "." rest
       | otherwise = Nothing
