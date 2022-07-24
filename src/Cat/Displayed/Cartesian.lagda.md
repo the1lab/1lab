@@ -111,6 +111,7 @@ record
     {x′}      : Ob[ x ]
     lifting   : Hom[ f ] x′ y′
     cartesian : Cartesian f lifting
+  open Cartesian cartesian public
 ```
 
 We note that the classical literature often differentiates between

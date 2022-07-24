@@ -3,6 +3,8 @@ open import Cat.Instances.Functor
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
+import Cat.Reasoning
+
 module
   Cat.Displayed.Reasoning
     {o′ ℓ′ o′′ ℓ′′}
@@ -17,7 +19,7 @@ module
 ```agda
 private
   module E = Displayed E
-  module B = Precategory B
+  module B = Cat.Reasoning B
   _ = Displayed.Hom[_] -- anchor for the reference below
 ```
 -->
@@ -208,4 +210,19 @@ infixl 4 split⟩⟨_ hom[]⟩⟨_
 
 hom[] : ∀ {a b x y} {f g : B.Hom a b} {p : f ≡ g} → E.Hom[ f ] x y → E.Hom[ g ] x y
 hom[] {p = p} f′ = subst (λ h → E.Hom[ h ] _ _) p f′
+
+pulll-indexr
+  : ∀ {a b c d} {f : B.Hom c d} {g : B.Hom b c} {h : B.Hom a b} {ac : B.Hom a c}
+      {a′ : E.Ob[ a ]} {b′ : E.Ob[ b ]} {c′ : E.Ob[ c ]} {d′ : E.Ob[ d ]}
+      {f′ : E.Hom[ f ] c′ d′}
+      {g′ : E.Hom[ g ] b′ c′}
+      {h′ : E.Hom[ h ] a′ b′}
+      {fg′ : E.Hom[ f B.∘ g ] b′ d′}
+  → (p : g B.∘ h ≡ ac)
+  → (f′ E.∘′ g′ ≡ fg′)
+  → f′ E.∘′ hom[ p ] (g′ E.∘′ h′) ≡ hom[ B.pullr p ] (fg′ E.∘′ h′)
+pulll-indexr p q = whisker-r _ ∙
+  sym ( reindex _ (sym (B.assoc _ _ _) ∙ ap (_ B.∘_) p) ·· sym (hom[]-∙ _ _)
+    ·· ap hom[] ( ap hom[] (ap (E._∘′ _) (sym q))
+                ∙ from-pathp (symP (E.assoc′ _ _ _))))
 ```
