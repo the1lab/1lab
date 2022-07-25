@@ -77,11 +77,46 @@ commutative, independent of $A$.
   → p ∙ q ≡ q ∙ p
 Ωⁿ⁺²-is-abelian-group n p q =
   transport
-    (λ i → ap (λ x → ∙-id-r x i) p ∙ ap (λ x → ∙-id-l x i) q
-         ≡ ap (λ x → ∙-id-l x i) q ∙ ap (λ x → ∙-id-r x i) p)
+    (λ k → ap (λ x → ∙-id-r x k) p ∙ ap (λ x → ∙-id-l x k) q
+         ≡ ap (λ x → ∙-id-l x k) q ∙ ap (λ x → ∙-id-r x k) p)
     (λ i → (λ j → p (j ∧ ~ i) ∙ q (j ∧ i))
          ∙ (λ j → p (~ i ∨ j) ∙ q (i ∨ j)))
 ```
+
+~~~{.quiver .tall-2}
+\[\begin{tikzcd}
+	{\id{refl}} &&& {\id{refl}} &&& {\id{refl}} \\
+	& {\id{refl} \cdot \id{refl}} && {\id{refl} \cdot \id{refl}} && {\id{refl} \cdot \id{refl}} \\
+	\\
+	& {\id{refl} \cdot \id{refl}} && {\id{refl} \cdot \id{refl}} && {\id{refl} \cdot \id{refl}} \\
+	{\id{refl}} &&& {\id{refl}} &&& {\id{refl}}
+	\arrow[from=2-2, to=4-2]
+	\arrow["{p\ \neg i \cdot q\ i}"{description}, color={rgb,255:red,214;green,92;blue,214}, from=2-4, to=4-4]
+	\arrow[from=2-6, to=4-6]
+	\arrow[from=1-1, to=5-1]
+	\arrow[from=1-7, to=5-7]
+	\arrow[""{name=0, anchor=center, inner sep=0}, "{p\ j \cdot \id{refl}}"', color={rgb,255:red,214;green,92;blue,92}, from=2-2, to=2-4]
+	\arrow[""{name=1, anchor=center, inner sep=0}, "{\id{refl} \cdot q\ j}"', color={rgb,255:red,153;green,92;blue,214}, from=2-4, to=2-6]
+	\arrow[""{name=2, anchor=center, inner sep=0}, "{\id{refl} \cdot q\ j}", color={rgb,255:red,153;green,92;blue,214}, from=4-2, to=4-4]
+	\arrow[""{name=3, anchor=center, inner sep=0}, "{p\ j \cdot \id{refl}}", color={rgb,255:red,214;green,92;blue,92}, from=4-4, to=4-6]
+	\arrow[""{name=4, anchor=center, inner sep=0}, "{p\ j}", color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-4]
+	\arrow[""{name=5, anchor=center, inner sep=0}, "{q\ j}", color={rgb,255:red,153;green,92;blue,214}, from=1-4, to=1-7]
+	\arrow[""{name=6, anchor=center, inner sep=0}, "{q\ j}"', color={rgb,255:red,153;green,92;blue,214}, from=5-1, to=5-4]
+	\arrow[""{name=7, anchor=center, inner sep=0}, "{p\ j}"', color={rgb,255:red,214;green,92;blue,92}, from=5-4, to=5-7]
+	\arrow[from=2-2, to=1-1]
+	\arrow[from=4-2, to=5-1]
+	\arrow[from=2-4, to=1-4]
+	\arrow[from=4-4, to=5-4]
+	\arrow[from=2-6, to=1-7]
+	\arrow[from=4-6, to=5-7]
+	\arrow["{p\ (j \land \neg i) \cdot q\ (j \land i)}"{description}, color={rgb,255:red,214;green,92;blue,214}, draw=none, from=0, to=2]
+	\arrow["{p\ (\neg i \lor j) \cdot q\ (i \lor j)}"{description}, color={rgb,255:red,214;green,92;blue,214}, draw=none, from=1, to=3]
+	\arrow["{\id{\cdot\text{-id-r}}\ (p\ j)\ k}"{description}, color={rgb,255:red,214;green,92;blue,92}, draw=none, from=0, to=4]
+	\arrow["{\id{\cdot\text{-id-l}}\ (q\ j)\ k}"{description}, color={rgb,255:red,153;green,92;blue,214}, draw=none, from=1, to=5]
+	\arrow["{\id{\cdot\text{-id-l}}\ (q\ j)\ k}"{description}, color={rgb,255:red,153;green,92;blue,214}, draw=none, from=2, to=6]
+	\arrow["{\id{\cdot\text{-id-r}}\ (p\ j)\ k}"{description}, color={rgb,255:red,214;green,92;blue,92}, draw=none, from=3, to=7]
+\end{tikzcd}\]
+~~~
 
 Lifting this result through the set truncation establishes that
 $\pi_{n+2}$ is an Abelian group:
