@@ -243,7 +243,7 @@ each point. Agda's goal-and-context display guides you the whole way.
       path : (f D.∘ y .map) D.∘ K.₁ (h .α) ≡ D.id D.∘ (f D.∘ x .map)
       path =
         (f D.∘ y .map) D.∘ K.₁ (h .α) ≡⟨ D.pullr (h .sq) ⟩
-        f D.∘ D.id D.∘ x .map         ≡⟨ solve D ⟩
+        f D.∘ D.id D.∘ x .map         ≡⟨ solve! D ⟩
         D.id D.∘ (f D.∘ x .map)       ∎
 
   cocomplete→lan : Lan K F

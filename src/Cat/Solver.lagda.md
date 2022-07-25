@@ -183,7 +183,7 @@ module Reflection where
   solve-macro cat hole =
     withNormalisation false $
     dontReduceDefs dont-reduce $ do
-    goal ← inferType hole >>= reduce
+    goal ← inferType hole >>= normalise
     just (lhs , rhs) ← get-boundary goal
       where nothing → typeError $ strErr "Can't determine boundary: " ∷
                                   termErr goal ∷ []

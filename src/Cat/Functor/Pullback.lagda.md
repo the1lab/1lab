@@ -183,7 +183,7 @@ module _ (pullbacks : ∀ {X Y Z} f g → Pullback C {X} {Y} {Z} f g) {X Y : Ob}
     dh .commutes = pb.p₂∘limiting
   Σf⊣f* .unit .is-natural x y g =
     /-Hom-path (pb.unique₂
-      {p = (f ∘ y .map) ∘ id ∘ g .map ≡⟨ solve C ⟩ f ∘ y .map ∘ g .map ∎}
+      {p = (f ∘ y .map) ∘ id ∘ g .map ≡⟨ solve! C ⟩ f ∘ y .map ∘ g .map ∎}
       (pulll pb.p₁∘limiting)
       (pulll pb.p₂∘limiting)
       (pulll pb.p₁∘limiting ∙ pullr pb′.p₁∘limiting ∙ id-comm)

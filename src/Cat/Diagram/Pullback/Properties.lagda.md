@@ -105,7 +105,7 @@ assumption $p$ in the code). Check out the calculation below:
       path {_} {P→b} {P→d} p =
         c→f ∘ b→c ∘ P→b   ≡⟨ extendl right.square ⟩
         e→f ∘ b→e ∘ P→b   ≡⟨ ap (e→f ∘_) p ⟩
-        e→f ∘ d→e ∘ P→d   ≡⟨ solve C ⟩
+        e→f ∘ d→e ∘ P→d   ≡⟨ solve! C ⟩
         (e→f ∘ d→e) ∘ P→d ∎
 
     pb : is-pullback _ _ _ _

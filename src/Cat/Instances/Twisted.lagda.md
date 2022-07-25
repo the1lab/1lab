@@ -76,7 +76,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 <!--
 ```agda
   Twisted .Precategory._∘_ {_ , f} {_ , g} {_ , h} t1 t2 .Twist.commutes =
-    (t1.a ∘ t2.a) ∘ f ∘ t2.b ∘ t1.b ≡⟨ solve C ⟩
+    (t1.a ∘ t2.a) ∘ f ∘ t2.b ∘ t1.b ≡⟨ solve! C ⟩
     t1.a ∘ (t2.a ∘ f ∘ t2.b) ∘ t1.b ≡⟨ (λ i → t1.a ∘ t2.commutes i ∘ t1.b) ⟩
     t1.a ∘ g ∘ t1.b                 ≡⟨ t1.commutes ⟩
     h                               ∎
