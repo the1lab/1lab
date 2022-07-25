@@ -548,6 +548,14 @@ _ term=? _ = false
 debug! : ∀ {ℓ} {A : Type ℓ} → Term → TC A
 debug! tm = typeError (strErr "[DEBUG]: " ∷ termErr tm ∷ [])
 
+quote-repr-macro : ∀ {ℓ} {A : Type ℓ} → A → Term →  TC ⊤
+quote-repr-macro a hole = do
+  tm ← quoteTC a
+  repr ← quoteTC tm
+  typeError $ strErr "The term\n  " ∷
+                termErr tm ∷
+              strErr"\nHas quoted representation\n  " ∷
+                termErr repr ∷ []
 
 get-boundary : Term → TC (Maybe (Term × Term))
 get-boundary tm@(def (quote _≡_) (_ h∷ T h∷ x v∷ y v∷ [])) = do

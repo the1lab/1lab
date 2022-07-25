@@ -74,6 +74,9 @@ single morphism, we compute a _transformation of hom-spaces_:
   eval (f ↑) g    = f ∘ g
   eval (f `∘ g) h = eval f (eval g h)
 
+  nf : Expr A B → Hom A B
+  nf e = eval e id
+
   eval-sound-k : (e : Expr B C) (f : Hom A B) → eval e id ∘ f ≡ eval e f
   eval-sound-k `id f = idl _
   eval-sound-k (x ↑) f = ap (_∘ f) (idr x)
@@ -117,111 +120,97 @@ hom-sets, then they represent the same morphism.
 
 ```agda
   abstract
-    associate : (f g : Expr A B) → eval f id ≡ eval g id → embed f ≡ embed g
-    associate f g p = sym (eval-sound f) ·· p ·· eval-sound g
+    solve : (f g : Expr A B) → eval f id ≡ eval g id → embed f ≡ embed g
+    solve f g p = sym (eval-sound f) ·· p ·· (eval-sound g)
+
+    solve-filler : (f g : Expr A B) → (p : eval f id ≡ eval g id) → Square (eval-sound f) p (solve f g p) (eval-sound g)
+    solve-filler f g p j i = ··-filler (sym (eval-sound f)) p (eval-sound g) j i
 ```
 
 # The cursed part
 
-Now we hook up `associate`{.Agda} to an Agda macro. Like all
-metaprogramming, it's not pretty, but I've written comments around it to
-hopefully explain things a bit.
-
 ```agda
-record CategoryNames : Type where
-  field
-    is-∘  : Name → Bool
-    is-id : Name → Bool
+module Reflection where
 
-build-matcher : Name → Maybe Name → Name → Bool
-build-matcher n nothing  x = n name=? x
-build-matcher n (just m) x = or (n name=? x) (m name=? x)
+  pattern category-args xs =
+    _ h0∷ _ h0∷ _ v∷ xs
 
-find-generic-names : Name → Name → Term → TC CategoryNames
-find-generic-names star id mon = do
-  ∘-altName ← normalise (def star (unknown h∷ unknown h∷ mon v∷ []))
-  ε-altName ← normalise (def id  (unknown h∷ unknown h∷ mon v∷ []))
-  -- typeError (termErr ∘-altName ∷ termErr ε-altName ∷ [])
-  returnTC record
-    { is-∘  = build-matcher star (getName ∘-altName)
-    ; is-id = build-matcher id  (getName ε-altName)
-    }
+  pattern “id” =
+    def (quote Precategory.id) (category-args (_ h∷ []))
 
-find-category-names : Term → TC CategoryNames
-find-category-names = find-generic-names (quote Precategory._∘_) (quote Precategory.id)
-```
+  pattern “∘” f g =
+    def (quote Precategory._∘_) (category-args (_ h∷ _ h∷ _ h∷ f v∷ g v∷ []))
 
-The trick above was stolen from the Agda standard library [monoid
-solver]. Given the term representing the category, we _evaluate_ the
-projections (that's the `-altNames`) in case they compute away to
-something else. This lets us not miss solutions when working with a
-concrete category, that might have names other than
-`Precategory._∘_`{.Agda} and `Precategory.id`{.Agda}.
+  mk-category-args : Term → List (Arg Term) → List (Arg Term)
+  mk-category-args cat xs = unknown h∷ unknown h∷ cat v∷ xs
 
-[monoid solver]: https://github.com/agda/agda-stdlib/blob/master/src/Tactic/MonoidSolver.agda
+  “solve” : Term → Term → Term → Term
+  “solve” cat lhs rhs = def (quote solve) (mk-category-args cat $ infer-hidden 2 $ lhs v∷ rhs v∷ def (quote refl) [] v∷ [])
 
-Now we can turn to building an `Expr`{.Agda} (well, a `Term`{.Agda}
-representing an `Expr`{.Agda}: a representation of a representation of
-an arrow!) given a `Term`{.Agda}. We do this with mutual recursion, to
-make stuff even more complicated.
+  “nf” : Term → Term → Term
+  “nf” cat e = def (quote nf) (mk-category-args cat $ infer-hidden 2 $ e v∷ [])
 
-```agda
-private
-  module _ (names : CategoryNames) where
-    open CategoryNames names
+  build-expr : Term → Term
+  build-expr “id” = con (quote `id) []
+  build-expr (“∘” f g) = con (quote _`∘_) (build-expr f v∷ build-expr g v∷ [] )
+  build-expr f = con (quote _↑) (f v∷ [])
 
-    build-expr : Term → Term
-    build-∘ : List (Arg Term) → Term
+  dont-reduce : List Name
+  dont-reduce = quote Precategory.id ∷ quote Precategory._∘_ ∷ []
 
-    ``id : Term -- Constant representation of `id
-    ``id = con (quote `id) []
+  repr-macro : Term → Term → Term → TC ⊤
+  repr-macro cat f hole =
+    withNormalisation false $
+    dontReduceDefs dont-reduce $ do
+      let e = build-expr f
+      nf ← normalise $ “nf” cat e
+      typeError $ strErr "The expression\n  " ∷
+                    termErr f ∷
+                  strErr "\nIs represented by the expression\n  " ∷
+                    termErr e ∷
+                  strErr "\nAnd has normal form\n  " ∷
+                    termErr nf ∷ []
 
-    build-expr (def x as) with is-∘ x | is-id x
-    ... | false | false = con (quote _↑) (def x as v∷ [])
-    ... | false | true = ``id
-    ... | true  | q = build-∘ as
-```
+  simplify-macro : Term → Term → Term → TC ⊤
+  simplify-macro cat f hole =
+    withNormalisation false $
+    dontReduceDefs dont-reduce $ do
+      let e = build-expr f
+      nf ← normalise (“nf” cat e)
+      unify hole nf
 
-If we're looking at a `def`{.Agda} (an applied defined function) or a
-`con`{.Agda} (an applied co/inductive constructor). If we're looking at
-some random old term, then we lift it (with `_↑`{.Agda}). If it's the
-identity map, then we use our constant repr. of id, otherwise we're
-looking at a composition.
+  solve-macro : Term → Term → TC ⊤
+  solve-macro cat hole =
+    withNormalisation false $
+    dontReduceDefs dont-reduce $ do
+    goal ← inferType hole >>= reduce
+    just (lhs , rhs) ← get-boundary goal
+      where nothing → typeError $ strErr "Can't determine boundary: " ∷
+                                  termErr goal ∷ []
+    let elhs = build-expr lhs
+    let erhs = build-expr rhs
+    (noConstraints $ unify hole (“solve” cat elhs erhs)) <|> do
+      nf-lhs ← normalise (“nf” cat elhs)
+      nf-rhs ← normalise (“nf” cat erhs)
+      typeError (strErr "Could not solve the following goal:\n  " ∷
+                   termErr lhs ∷ strErr " ≡ " ∷ termErr rhs ∷
+                 strErr "\nComputed normal forms:\n  LHS: " ∷
+                   termErr nf-lhs ∷
+                 strErr "\n  RHS: " ∷
+                   termErr nf-rhs ∷ [])
 
-```agda
-    build-expr (con x as) with is-∘ x | is-id x
-    ... | false | false = con (quote _↑) (def x as v∷ [])
-    ... | false | true = ``id
-    ... | true  | q = build-∘ as
-
-    build-expr x = con (quote _↑) (x v∷ [])
-
-    build-∘ (x v∷ y v∷ []) = con (quote _`∘_)
-      (build-expr x v∷ build-expr y v∷ [])
-    build-∘ (_ ∷ xs) = build-∘ xs
-    build-∘ _ = unknown
-```
-
-Then you essentially slap all of that together into a little macro.
-
-```agda
-solve-generic : (Term → TC CategoryNames) → (Term → Term) → Term → Term → TC ⊤
-solve-generic find mkcat category hole = do
-  goal ← inferType hole >>= normalise
-  names ← find category
-
-  just (lhs , rhs) ← get-boundary goal
-    where nothing → typeError (strErr "Can't solve: " ∷ termErr goal ∷ [])
-
-  let rep = build-expr names
-
-  unify hole (def (quote associate)
-    (mkcat category v∷ rep lhs v∷ rep rhs v∷ def (quote refl) [] v∷ []))
 
 macro
-  solve : Term → Term → TC ⊤
-  solve = solve-generic find-category-names (λ x → x)
+  repr! : Term → Term → Term → TC ⊤
+  repr! cat f = Reflection.repr-macro cat f
+
+  simplify! : Term → Term → Term → TC ⊤
+  simplify! cat f = Reflection.simplify-macro cat f
+
+  solve! : Term → Term → TC ⊤
+  solve! = Reflection.solve-macro
 ```
+
 
 ## Demo
 
@@ -237,5 +226,5 @@ module _ (C : Precategory o h) where private
 
   test : a C.∘ (b C.∘ (c C.∘ C.id) C.∘ C.id C.∘ (d C.∘ C.id))
        ≡ a C.∘ b C.∘ c C.∘ d
-  test = solve C
+  test = solve! C
 ```

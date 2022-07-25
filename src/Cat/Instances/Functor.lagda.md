@@ -212,7 +212,7 @@ so that the two halves of the isomorphism annihilate.
         _ D.∘ F .F₁ f D.∘ _                           ≡⟨ (λ i → ptoi-to _ i D.∘ F .F₁ f D.∘ ptoi-from _ i) ⟩
         F≅G .to .η y D.∘ F .F₁ f D.∘ F≅G .from .η x   ≡⟨ ap₂ D._∘_ refl (sym (F≅G .from .is-natural _ _ _)) ∙ D.assoc _ _ _ ⟩
         (F≅G .to .η y D.∘ F≅G .from .η y) D.∘ G .F₁ f ≡⟨ ap₂ D._∘_ (λ i → F≅G .invl i .η y) refl ⟩
-        D.id D.∘ G .F₁ f                              ≡⟨ solve D ⟩
+        D.id D.∘ G .F₁ f                              ≡⟨ solve! D ⟩
         G .F₁ f                                       ∎)
 
     F≡G : F ≡ G
@@ -326,9 +326,9 @@ Uncurry {C = C} {D = D} {E = E} F = uncurried where
     path =
       F.₁ (f C.∘ f′) .η _ E.∘ F₁ (F.₀ _) (g D.∘ g′)                       ≡˘⟨ E.pulll (λ i → F.F-∘ f f′ (~ i) .η _) ⟩
       F.₁ f .η _ E.∘ F.₁ f′ .η _ E.∘ ⌜ F₁ (F.₀ _) (g D.∘ g′) ⌝            ≡⟨ ap! (F-∘ (F.₀ _) _ _) ⟩
-      F.₁ f .η _ E.∘ F.₁ f′ .η _ E.∘ F₁ (F.₀ _) g E.∘ F₁ (F.₀ _) g′       ≡⟨ solve E ⟩
+      F.₁ f .η _ E.∘ F.₁ f′ .η _ E.∘ F₁ (F.₀ _) g E.∘ F₁ (F.₀ _) g′       ≡⟨ solve! E ⟩
       F.₁ f .η _ E.∘ ⌜ F.₁ f′ .η _ E.∘ F₁ (F.₀ _) g ⌝ E.∘ F₁ (F.₀ _) g′   ≡⟨ ap! (F.₁ f′ .is-natural _ _ _) ⟩
-      F.₁ f .η _ E.∘ (F₁ (F.₀ _) g E.∘ F.₁ f′ .η _) E.∘ F₁ (F.₀ _) g′     ≡⟨ solve E ⟩
+      F.₁ f .η _ E.∘ (F₁ (F.₀ _) g E.∘ F.₁ f′ .η _) E.∘ F₁ (F.₀ _) g′     ≡⟨ solve! E ⟩
       ((F.₁ f .η _ E.∘ F₁ (F.₀ _) g) E.∘ (F.₁ f′ .η _ E.∘ F₁ (F.₀ _) g′)) ∎
 ```
 
