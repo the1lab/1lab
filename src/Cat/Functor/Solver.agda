@@ -136,8 +136,7 @@ module NbE {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h�
 
 module Reflection where
 
-  pattern category-args xs =
-    _ h0∷ _ h0∷ _ v∷ xs
+  pattern category-args xs = _ h0∷ _ h0∷ _ v∷ xs
 
   pattern functor-args xs =
     _ h0∷ _ h0∷ _ h0∷ _ h0∷ _ h0∷ _ h0∷ _ v∷ xs
@@ -201,5 +200,5 @@ private module Test {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory
     x y z : 𝒟.Hom X Y
     
 
-  test : (x 𝒟.∘ F₁ (𝒞.id 𝒞.∘ 𝒞.id)) 𝒟.∘ F₁ a 𝒟.∘ F₁ (𝒞.id 𝒞.∘ b) ≡ 𝒟.id 𝒟.∘ x 𝒟.∘ F₁ (a 𝒞.∘ b)
-  test = functor! F
+  -- test : (x 𝒟.∘ F₁ (𝒞.id 𝒞.∘ 𝒞.id)) 𝒟.∘ F₁ a 𝒟.∘ F₁ (𝒞.id 𝒞.∘ b) ≡ 𝒟.id 𝒟.∘ x 𝒟.∘ F₁ (a 𝒞.∘ b)
+  -- test = functor! F

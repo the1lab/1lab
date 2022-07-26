@@ -199,12 +199,6 @@ looking at a composition.
       (build-expr x v∷ build-expr y v∷ [])
     build-∘ (_ ∷ xs) = build-∘ xs
     build-∘ _ = unknown
-
-  get-boundary : Term → TC (Maybe (Term × Term))
-  get-boundary tm@(def (quote PathP) (_ h∷ T v∷ x v∷ y v∷ [])) = do
-    unify tm (def (quote _≡_) (x v∷ y v∷ []))
-    returnTC (just (x , y))
-  get-boundary _ = returnTC nothing
 ```
 
 Then you essentially slap all of that together into a little macro.

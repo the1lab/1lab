@@ -544,18 +544,6 @@ private
     returnTC $ con (quote ‵_) (v v∷ []) , vs′
 ```
 
-Next, a quick helper for getting the endpoints of an equality.
-
-```agda
-private
-  get-boundary : Term → TC (Maybe (Term × Term))
-  get-boundary tm@(def (quote PathP) (_ h∷ T v∷ x v∷ y v∷ [])) = do
-    unify tm (def (quote _≡_) (x v∷ y v∷ []))
-    returnTC (just (x , y))
-  get-boundary (meta m _) = blockOnMeta m
-  get-boundary _ = returnTC nothing
-```
-
 Next, let's define the quoted forms of some terms that we will use to
 interface with the solver.
 

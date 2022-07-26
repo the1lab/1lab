@@ -1,6 +1,7 @@
 open import 1Lab.Type.Sigma
 open import 1Lab.Equiv
 open import 1Lab.Type
+open import 1Lab.Path
 
 open import Data.Bool
 open import Data.List
@@ -51,8 +52,13 @@ vlam nam body = lam visible (abs nam body)
 
 pattern _v∷_ t xs = arg (arg-info visible (modality relevant quantity-ω)) t ∷ xs
 pattern _h∷_ t xs = arg (arg-info hidden (modality relevant quantity-ω)) t ∷ xs
+pattern _h0∷_ t xs = arg (arg-info hidden (modality relevant quantity-0)) t ∷ xs
 
-infixr 30 _v∷_ _h∷_
+infixr 30 _v∷_ _h∷_ _h0∷_
+
+infer-hidden : Nat → List (Arg Term) → List (Arg Term)
+infer-hidden zero xs = xs
+infer-hidden (suc n) xs = unknown h∷ infer-hidden n xs
 
 “_↦_” : Term → Term → Term
 “_↦_” x y = def (quote Fun) (x v∷ y v∷ [])
@@ -132,3 +138,11 @@ _ term=? _ = false
 
 debug! : ∀ {ℓ} {A : Type ℓ} → Term → TC A
 debug! tm = typeError (strErr "[DEBUG]: " ∷ termErr tm ∷ [])
+
+
+get-boundary : Term → TC (Maybe (Term × Term))
+get-boundary tm@(def (quote PathP) (_ h∷ T v∷ x v∷ y v∷ [])) = do
+  unify tm (def (quote _≡_) (x v∷ y v∷ []))
+  returnTC (just (x , y))
+get-boundary (meta m _) = blockOnMeta m
+get-boundary _ = returnTC nothing
