@@ -55,7 +55,7 @@ numbers]. Since they're mostly simple inductive arguments written in
 *-distrib-+r (suc x) y z =
   z + (x + y) * z     ≡⟨ ap₂ _+_ refl (*-distrib-+r x y z) ⟩
   z + (x * z + y * z) ≡⟨ sym (+-associative z (x * z) (y * z)) ⟩
-  z + x * z + y * z   ∎
+  z + x * z + y * z   ∎
 
 *-sucr : (m n : Nat) → m * suc n ≡ m + m * n
 *-sucr zero    n = refl

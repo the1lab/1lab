@@ -218,7 +218,7 @@ Product-str-univalent : {σ : Structure ℓ₁ S} {τ : Structure ℓ₂ T}
                       → is-univalent (Product-str σ τ)
 Product-str-univalent {S = S} {T = T} {σ = σ} {τ} θ₁ θ₂ {X , x , y} {Y , x' , y'} f =
   (σ .is-hom (X , x) (Y , x') _ × τ .is-hom (X , y) (Y , y') _) ≃⟨ Σ-ap (θ₁ f) (λ _ → θ₂ f) ⟩
-  (PathP _ _ _ × PathP _ _ _)                                   ≃⟨ Iso→Equiv Σ-pathp-iso ⟩
+  (PathP _ _ _ × PathP _ _ _)                                   ≃⟨ Iso→Equiv Σ-pathp-iso ⟩
   PathP (λ i → S (ua f i) × T (ua f i)) (x , y) (x' , y')       ≃∎
 ```
 
@@ -471,7 +471,7 @@ sym-transport-str :
 sym-transport-str {S = S} α τ e t =
      sym (transport⁻transport (ap S (ua e)) (equiv→inverse (α e .snd) t))
   ·· sym (ap (subst S (sym (ua e))) (τ e (equiv→inverse (α e .snd) t)))
-  ·· ap (subst S (sym (ua e))) (equiv→section (α e .snd) t)
+  ·· ap (subst S (sym (ua e))) (equiv→counit (α e .snd) t)
 ```
 -->
 
@@ -583,7 +583,7 @@ Function-action actx acty eqv = function≃ (actx eqv) (acty eqv)
 Function-action-is-transport
   : {α : Equiv-action S} {β : Equiv-action T}
   → is-transport-str α → is-transport-str β
-  → is-transport-str (Function-action α β)
+  → is-transport-str (Function-action α β)
 Function-action-is-transport {S = S} {α = α} {β = β} α-tr β-tr eqv f =
   funext λ x → ap (β eqv .fst ∘ f) (sym-transport-str α α-tr eqv x)
              ∙ β-tr eqv (f (subst S (sym (ua eqv)) x))

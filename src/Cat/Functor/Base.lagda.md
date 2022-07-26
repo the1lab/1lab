@@ -49,9 +49,9 @@ is-fully-faithful F = ∀ {x y} → is-equiv (F₁ F {x = x} {y})
 
 fully-faithful→faithful : {F : Functor C D} → is-fully-faithful F → is-faithful F
 fully-faithful→faithful {F = F} ff {_} {_} {x} {y} p =
-  x                         ≡⟨ sym (equiv→retraction ff x) ⟩
+  x                         ≡⟨ sym (equiv→unit ff x) ⟩
   equiv→inverse ff (F₁ F x) ≡⟨ ap (equiv→inverse ff) p ⟩
-  equiv→inverse ff (F₁ F y) ≡⟨ equiv→retraction ff y ⟩
+  equiv→inverse ff (F₁ F y) ≡⟨ equiv→unit ff y ⟩
   y                         ∎
 
 full+faithful→ff
@@ -97,25 +97,25 @@ the domain category to serve as an inverse for $f$:
 
     Ffog =
       F₁ F (f C.∘ g)    ≡⟨ F-∘ F _ _ ⟩
-      F₁ F f D.∘ F₁ F g ≡⟨ ap₂ D._∘_ refl (equiv→section ff _) ∙ isinv .Dm.is-invertible.invl ⟩
+      F₁ F f D.∘ F₁ F g ≡⟨ ap₂ D._∘_ refl (equiv→counit ff _) ∙ isinv .Dm.is-invertible.invl ⟩
       D.id              ∎
 
     Fgof =
       F₁ F (g C.∘ f)    ≡⟨ F-∘ F _ _ ⟩
-      F₁ F g D.∘ F₁ F f ≡⟨ ap₂ D._∘_ (equiv→section ff _) refl ∙ isinv .Dm.is-invertible.invr ⟩
+      F₁ F g D.∘ F₁ F f ≡⟨ ap₂ D._∘_ (equiv→counit ff _) refl ∙ isinv .Dm.is-invertible.invr ⟩
       D.id              ∎
 
     i : Cm.is-invertible _
     i .inv = g
     i .inverses .invl =
-      f C.∘ g                           ≡⟨ sym (equiv→retraction ff _) ⟩
+      f C.∘ g                           ≡⟨ sym (equiv→unit ff _) ⟩
       equiv→inverse ff (F₁ F (f C.∘ g)) ≡⟨ ap (equiv→inverse ff) (Ffog ∙ sym (F-id F)) ⟩
-      equiv→inverse ff (F₁ F C.id)      ≡⟨ equiv→retraction ff _ ⟩
+      equiv→inverse ff (F₁ F C.id)      ≡⟨ equiv→unit ff _ ⟩
       C.id                              ∎
     i .inverses .invr =
-      g C.∘ f                           ≡⟨ sym (equiv→retraction ff _) ⟩
+      g C.∘ f                           ≡⟨ sym (equiv→unit ff _) ⟩
       equiv→inverse ff (F₁ F (g C.∘ f)) ≡⟨ ap (equiv→inverse ff) (Fgof ∙ sym (F-id F)) ⟩
-      equiv→inverse ff (F₁ F C.id)      ≡⟨ equiv→retraction ff _ ⟩
+      equiv→inverse ff (F₁ F C.id)      ≡⟨ equiv→unit ff _ ⟩
       C.id                              ∎
 
   is-ff→essentially-injective
@@ -131,7 +131,7 @@ the domain category to serve as an inverse for $f$:
       open Cm.is-invertible
         (is-ff→is-conservative {F = F} ff
           (equiv→inverse ff to)
-          (subst Dm.is-invertible (sym (equiv→section ff _)) D-inv))
+          (subst Dm.is-invertible (sym (equiv→counit ff _)) D-inv))
 ```
 
 ## Essential Fibres
@@ -188,7 +188,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
           ≡ iso→path D dcat (F-map-iso F C.id-iso)
       idc =
         ap (F₀ F) (iso→path C ccat C.id-iso)   ≡⟨ ap (ap (F₀ F)) (iso→path-id C ccat) ⟩
-        ap (F₀ F) refl                         ≡˘⟨ equiv→retraction (path→iso-is-equiv D dcat) _ ⟩
+        ap (F₀ F) refl                         ≡˘⟨ equiv→unit (path→iso-is-equiv D dcat) _ ⟩
         iso→path D dcat (path→iso D refl)      ≡⟨ ap (iso→path D dcat) (D.≅-pathp refl refl (transport-refl _ ∙ sym (F-id F))) ⟩
         iso→path D dcat (F-map-iso F C.id-iso) ∎
 
@@ -198,7 +198,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
   is-ff→F-map-iso-is-equiv {F = F} ff = is-iso→is-equiv isom where
     isom : is-iso _
     isom .is-iso.inv = is-ff→essentially-injective {F = F} ff
-    isom .is-iso.rinv x = D.≅-pathp refl refl (equiv→section ff _)
-    isom .is-iso.linv x = C.≅-pathp refl refl (equiv→retraction ff _)
+    isom .is-iso.rinv x = D.≅-pathp refl refl (equiv→counit ff _)
+    isom .is-iso.linv x = C.≅-pathp refl refl (equiv→unit ff _)
 ```
 -->

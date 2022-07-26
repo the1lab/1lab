@@ -389,8 +389,8 @@ $\ht{Ab}$ is a univalent category, an _identification_ of $\hom$-groups.
   Tensor⊣Hom : Hom-group (A ⊗ B) C ≡ Hom-group A (Hom-group B C)
   Tensor⊣Hom = iso→path (Ab _) Ab-is-category $
     Ab.make-iso (to-ab-hom , to′) (from-ab-hom , from′)
-      (Forget-is-faithful $ funext (equiv→section (tensor⊣hom .snd)))
-      (Forget-is-faithful $ funext (equiv→retraction (tensor⊣hom .snd)))
+      (Forget-is-faithful $ funext (equiv→counit (tensor⊣hom .snd)))
+      (Forget-is-faithful $ funext (equiv→unit (tensor⊣hom .snd)))
 ```
 
 <details>

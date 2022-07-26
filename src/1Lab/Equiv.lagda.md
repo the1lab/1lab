@@ -213,13 +213,24 @@ Any function that is an equivalence is an isomorphism:
 equiv→inverse : {f : A → B} → is-equiv f → B → A
 equiv→inverse eqv y = eqv .is-eqv y .centre .fst
 
-equiv→section
-  : {f : A → B} (eqv : is-equiv f) → is-right-inverse (equiv→inverse eqv) f
-equiv→section eqv y = eqv .is-eqv y .centre .snd
+equiv→counit
+  : ∀ {f : A → B} (eqv : is-equiv f) x → f (equiv→inverse eqv x) ≡ x
+equiv→counit eqv y = eqv .is-eqv y .centre .snd
 
-equiv→retraction
-  : {f : A → B} (eqv : is-equiv f) → is-left-inverse (equiv→inverse eqv) f
-equiv→retraction {f = f} eqv x i = eqv .is-eqv (f x) .paths (x , refl) i .fst
+equiv→unit
+  : ∀ {f : A → B} (eqv : is-equiv f) x → equiv→inverse eqv (f x) ≡ x
+equiv→unit {f = f} eqv x i = eqv .is-eqv (f x) .paths (x , refl) i .fst
+
+equiv→zig
+  : ∀ {f : A → B} (eqv : is-equiv f) x
+  → ap f (equiv→unit eqv x) ≡ equiv→counit eqv (f x)
+equiv→zig {f = f} eqv x i j = hcomp
+  (λ { k (i = i0) → f (equiv→unit eqv x j)
+     ; k (i = i1) → equiv→counit eqv (f x) (j ∨ ~ k)
+     ; k (j = i0) → equiv→counit eqv (f x) (i ∧ ~ k)
+     ; k (j = i1) → f x
+     })
+  (eqv .is-eqv (f x) .paths (x , refl) j .snd i)
 
 is-equiv→is-iso : {f : A → B} → is-equiv f → is-iso f
 is-iso.inv (is-equiv→is-iso eqv) = equiv→inverse eqv
@@ -571,8 +582,8 @@ _e⁻¹ : ∀ {ℓ ℓ₁} {A : Type ℓ} {B : Type ℓ₁}
      → A ≃ B → B ≃ A
 _e⁻¹ eqv = Iso→Equiv ( equiv→inverse (eqv .snd)
                      , record { inv  = eqv .fst
-                              ; rinv = equiv→retraction (eqv .snd)
-                              ; linv = equiv→section (eqv .snd)
+                              ; rinv = equiv→unit (eqv .snd)
+                              ; linv = equiv→counit (eqv .snd)
                               })
 ```
 <!--

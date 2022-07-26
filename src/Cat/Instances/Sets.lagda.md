@@ -80,8 +80,8 @@ the rearrangement `iso→equiv`{.Agda} is an equivalence:
   equiv→iso : {A B : Set ℓ} → ∣ A ∣ ≃ ∣ B ∣ → A Sets.≅ B
   equiv→iso (f , f-eqv) =
     Sets.make-iso f (equiv→inverse f-eqv)
-      (funext (equiv→section f-eqv))
-      (funext (equiv→retraction f-eqv))
+      (funext (equiv→counit f-eqv))
+      (funext (equiv→unit f-eqv))
 
   equiv≃iso : {A B : Set ℓ} → (A Sets.≅ B) ≃ (∣ A ∣ ≃ ∣ B ∣)
   equiv≃iso {A} {B} = Iso→Equiv (iso→equiv , iso equiv→iso p q)

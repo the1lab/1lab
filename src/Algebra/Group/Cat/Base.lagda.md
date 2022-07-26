@@ -90,8 +90,8 @@ Group-equiv≃Groups-iso
   : ∀ {A B : Group ℓ} → (Σ (Group≃ A B)) ≃ (A Groups.≅ B)
 Group-equiv≃Groups-iso {A = A} {B = B} .fst ((f , eqv) , grh) =
   Groups.make-iso (f , grh) (equiv→inverse eqv , inv-group-hom)
-    (Forget-is-faithful (funext (equiv→section eqv)))
-    (Forget-is-faithful (funext (equiv→retraction eqv)))
+    (Forget-is-faithful (funext (equiv→counit eqv)))
+    (Forget-is-faithful (funext (equiv→unit eqv)))
 ```
 
 To build an isomorphism given a homomorphic equivalence, we use
@@ -113,9 +113,9 @@ equivalence is also homomorphic:
     abstract
       inv-group-hom : Group-hom B A g
       inv-group-hom .pres-⋆ x y =
-        g (x B.⋆ y)             ≡˘⟨ ap₂ (λ x y → g (x B.⋆ y)) (equiv→section eqv _) (equiv→section eqv _) ⟩
+        g (x B.⋆ y)             ≡˘⟨ ap₂ (λ x y → g (x B.⋆ y)) (equiv→counit eqv _) (equiv→counit eqv _) ⟩
         g (f (g x) B.⋆ f (g y)) ≡˘⟨ ap g (grh .pres-⋆ _ _) ⟩
-        g (f (g x A.⋆ g y))     ≡⟨ equiv→retraction eqv _ ⟩
+        g (f (g x A.⋆ g y))     ≡⟨ equiv→unit eqv _ ⟩
         g x A.⋆ g y             ∎
 ```
 

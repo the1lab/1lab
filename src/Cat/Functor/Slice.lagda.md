@@ -74,10 +74,10 @@ faithful.
     isom .is-iso.inv sh = record
       { map = equiv→inverse eqv (sh .map)
       ; commutes = ap fst $ is-contr→is-prop (eqv .is-eqv _)
-        (_ , F .F-∘ _ _ ∙ ap₂ D._∘_ refl (equiv→section eqv _) ∙ sh .commutes) (_ , refl)
+        (_ , F .F-∘ _ _ ∙ ap₂ D._∘_ refl (equiv→counit eqv _) ∙ sh .commutes) (_ , refl)
       }
-    isom .is-iso.rinv x = /-Hom-path (equiv→section eqv _)
-    isom .is-iso.linv x = /-Hom-path (equiv→retraction eqv _)
+    isom .is-iso.rinv x = /-Hom-path (equiv→counit eqv _)
+    isom .is-iso.linv x = /-Hom-path (equiv→unit eqv _)
 ```
 
 # Left exactness

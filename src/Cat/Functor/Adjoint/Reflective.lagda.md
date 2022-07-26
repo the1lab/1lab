@@ -89,14 +89,14 @@ is-reflective→counit-is-iso {C = C} {D} {F} {G} adj g-ff {o} = morp where
     invl : counit.ε o D.∘ equiv→inverse g-ff (unit.η (G.₀ o)) ≡ D.id
     invl = fully-faithful→faithful {F = G} g-ff (
       G.₁ (counit.ε o D.∘ _)                          ≡⟨ G.F-∘ _ _ ⟩
-      G.₁ (counit.ε o) C.∘ G.₁ (equiv→inverse g-ff _) ≡⟨ C.refl⟩∘⟨ equiv→section g-ff _ ⟩
+      G.₁ (counit.ε o) C.∘ G.₁ (equiv→inverse g-ff _) ≡⟨ C.refl⟩∘⟨ equiv→counit g-ff _ ⟩
       G.₁ (counit.ε o) C.∘ unit.η (G.₀ o)             ≡⟨ zag ∙ sym G.F-id ⟩
       G.₁ D.id                                        ∎)
 
     invr : equiv→inverse g-ff (unit.η (G.₀ o)) D.∘ counit.ε o ≡ D.id
     invr = fully-faithful→faithful {F = G} g-ff (ap G.₁ (
       equiv→inverse g-ff _ D.∘ counit.ε _             ≡˘⟨ counit.is-natural _ _ _ ⟩
-      counit.ε _ D.∘ F.₁ (G.₁ (equiv→inverse g-ff _)) ≡⟨ D.refl⟩∘⟨ F.⟨ equiv→section g-ff _ ⟩ ⟩
+      counit.ε _ D.∘ F.₁ (G.₁ (equiv→inverse g-ff _)) ≡⟨ D.refl⟩∘⟨ F.⟨ equiv→counit g-ff _ ⟩ ⟩
       counit.ε _ D.∘ F.₁ (unit.η _)                   ≡⟨ zig ⟩
       D.id                                            ∎))
 
@@ -149,8 +149,8 @@ assumption that $G$ is ff.
     open is-iso
     isom : is-iso _
     isom .inv alg = equiv→inverse g-ff (alg .morphism)
-    isom .rinv x = Algebra-hom-path _ (equiv→section g-ff _)
-    isom .linv x = equiv→retraction g-ff _
+    isom .rinv x = Algebra-hom-path _ (equiv→counit g-ff _)
+    isom .linv x = equiv→unit g-ff _
 
   Tunit≡unitT : ∀ {x} → unit.η (G.₀ (F.₀ x)) ≡ G.₁ (F.₁ (unit.η x))
   Tunit≡unitT {x} = C.right-inv-unique

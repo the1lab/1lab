@@ -103,7 +103,7 @@ J-iso isc {A} P pid {B} p =
 iso→path-id : ∀ (isc : is-category) {A} → iso→path isc (id-iso {A}) ≡ refl
 iso→path-id isc =
   iso→path isc id-iso          ≡˘⟨ ap (iso→path isc) (≅-pathp refl refl (transport-refl _)) ⟩
-  iso→path isc (path→iso refl) ≡⟨ equiv→retraction (path→iso-is-equiv isc) _ ⟩
+  iso→path isc (path→iso refl) ≡⟨ equiv→unit (path→iso-is-equiv isc) _ ⟩
   refl                         ∎
 ```
 -->
@@ -179,7 +179,7 @@ Hom-pathp-refll-iso :
   → PathP (λ i → Hom (iso→path isc p i) B) h h'
 Hom-pathp-refll-iso isc prf =
   Hom-pathp-refll (
-    ap₂ _∘_ refl (ap from (equiv→section (path→iso-is-equiv isc) _))
+    ap₂ _∘_ refl (ap from (equiv→counit (path→iso-is-equiv isc) _))
     ∙ prf)
 
 Hom-pathp-reflr
@@ -198,7 +198,7 @@ Hom-pathp-reflr-iso
   → PathP (λ i → Hom A (iso→path isc q i)) h h'
 Hom-pathp-reflr-iso isc prf =
   Hom-pathp-reflr (
-    ap₂ _∘_ (ap to (equiv→section (path→iso-is-equiv isc) _)) refl
+    ap₂ _∘_ (ap to (equiv→counit (path→iso-is-equiv isc) _)) refl
     ∙ prf)
 
 Hom-pathp-iso
@@ -207,8 +207,8 @@ Hom-pathp-iso
   → q .to ∘ h ∘ p .from ≡ h'
   → PathP (λ i → Hom (iso→path isc p i) (iso→path isc q i)) h h'
 Hom-pathp-iso {p = p} {q} {h} {h'} isc prf =
-  Hom-pathp (ap₂ _∘_ (ap to (equiv→section (path→iso-is-equiv isc) _))
-                     (ap₂ _∘_ refl (ap from (equiv→section (path→iso-is-equiv isc) _)))
+  Hom-pathp (ap₂ _∘_ (ap to (equiv→counit (path→iso-is-equiv isc) _))
+                     (ap₂ _∘_ refl (ap from (equiv→counit (path→iso-is-equiv isc) _)))
             ∙ prf)
 
 path→to-∙

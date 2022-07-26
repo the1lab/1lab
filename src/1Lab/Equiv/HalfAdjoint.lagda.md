@@ -171,7 +171,7 @@ another $(x, p)$ using a very boring calculation:
     path : ap f (ap g (sym p) ∙ η x) ∙ p ≡ ε y
     path =
       ap f (ap g (sym p) ∙ η x) ∙ p               ≡⟨ ap₂ _∙_ (ap-comp-path f (ap g (sym p)) (η x)) refl ∙ sym (∙-assoc _ _ _) ⟩
-      ap (f ∘ g) (sym p) ∙ ap f (η x) ∙ p         ≡⟨ ap₂ _∙_ refl (ap₂ _∙_ (zig _) refl) ⟩ -- by the triangle identity
+      ap (f ∘ g) (sym p) ∙ ap f (η x) ∙ p         ≡⟨ ap₂ _∙_ refl (ap₂ _∙_ (zig _) refl) ⟩ -- by the triangle identity
       ap (f ∘ g) (sym p) ∙ ε (f x)    ∙ p         ≡⟨ ap₂ _∙_ refl (homotopy-natural ε p)  ⟩ -- by naturality of ε
 ```
 
@@ -203,35 +203,13 @@ is-iso→is-equiv' = is-half-adjoint-equiv→is-equiv ∘ is-iso→is-half-adjoi
 <!--
 ```agda
 _ = is-iso→is-equiv
-
-equiv→zig : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
-          → (eqv : is-equiv f) (a : A)
-          → ap f (equiv→retraction eqv a) ≡ equiv→section eqv (f a)
-equiv→zig {f = f} eqv = commPathIsEq where
-  commSqIsEq : ∀ a → Square (sym (ap f (equiv→retraction eqv a)))
-                            refl
-                            (equiv→section eqv (f a))
-                            refl
-  commSqIsEq a i = eqv .is-eqv (f a) .paths (a , refl) (~ i) .snd
-
-  commPathIsEq : ∀ a → ap f (equiv→retraction eqv a) ≡ equiv→section eqv (f a)
-  commPathIsEq a i j =
-    hcomp
-      (λ k → λ
-        { (i = i1) → equiv→section eqv (f a) j
-        ; (i = i0) → f (equiv→retraction eqv a (j ∨ ~ k))
-        ; (j = i0) → f (equiv→retraction eqv a (~ i ∧ ~ k))
-        ; (j = i1) → f a
-        })
-      (commSqIsEq a i j)
-
 is-equiv→is-half-adjoint-equiv
   : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A → B}
   → is-equiv f → is-half-adjoint-equiv f
 is-equiv→is-half-adjoint-equiv {f = f} eqv =
     equiv→inverse eqv
-  , equiv→retraction eqv
-  , equiv→section eqv
+  , equiv→unit eqv
+  , equiv→counit eqv
   , equiv→zig eqv
 ```
 -->

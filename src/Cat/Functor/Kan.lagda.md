@@ -384,10 +384,10 @@ extension along a fully-faithful functor does actually _extend_.
       cocone′ .commutes {x = y} {z} f =
         F.collapse (fully-faithful→faithful {F = K} ff
           ( K .Functor.F-∘  _ _
-          ∙ ap₂ D._∘_ (equiv→section ff _) refl
+          ∙ ap₂ D._∘_ (equiv→counit ff _) refl
           ∙ f .sq
           ∙ D.idl _
-          ∙ sym (equiv→section ff _)))
+          ∙ sym (equiv→counit ff _)))
 
       to : E.Hom _ (F.₀ x)
       to = colim _ .has⊥ cocone′ .centre .hom
@@ -398,13 +398,13 @@ extension along a fully-faithful functor does actually _extend_.
         (cocone-hom _ λ o →
             E.pullr (colim _ .has⊥ cocone′ .centre .commutes _)
           ∙ colim _ .bot .commutes
-              (record { sq = ap (D.id D.∘_) (equiv→section ff _) }))
+              (record { sq = ap (D.id D.∘_) (equiv→counit ff _) }))
         (cocone-hom _ λ o → E.idl _)
 
       invr : to E.∘ cocomplete→lan .eta .η x ≡ E.id
       invr = colim _ .has⊥ cocone′ .centre .commutes _
            ∙ F.elim (fully-faithful→faithful {F = K} ff
-                      (equiv→section ff _ ∙ sym K.F-id))
+                      (equiv→counit ff _ ∙ sym K.F-id))
 
     inv : Fn.is-invertible (cocomplete→lan .eta)
     inv = componentwise-invertible→invertible (cocomplete→lan .eta) inv′

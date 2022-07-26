@@ -147,7 +147,7 @@ traditional sense:
 
 ```agda
   abstract
-    path-∙ : ∀ x y → path (x ⋆ y) ≡ path x ∙ path y
+    path-∙ : ∀ x y → path (x ⋆ y) ≡ path x ∙ path y
     path-∙ x y i j =
       ··-unique refl (path x) (path y)
         (path (x ⋆ y)    , path-sq x y)

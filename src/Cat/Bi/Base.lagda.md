@@ -394,7 +394,7 @@ have components $F_1(f)F_1(g) \To F_1(fg)$ and $F_1(\id{id}) \To
       : ∀ {A B C}
       → C.compose F∘ Cat⟨ P₁ {B} {C} F∘ Fst , P₁ {A} {B} F∘ Snd ⟩ => P₁ F∘ B.compose
 
-    unitor : ∀ {A} → Id => P₁ {A} {A} F∘ Const B.id
+    unitor : ∀ {A} → C.id C.⇒ P₁ .Functor.F₀ (B.id {A = A})
 ```
 
 <!--
@@ -413,9 +413,6 @@ have components $F_1(f)F_1(g) \To F_1(fg)$ and $F_1(\id{id}) \To
   γ→ : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
      → ₁ f C.∘ ₁ g C.⇒ ₁ (f B.∘ g)
   γ→ f g = compositor .η (f , g)
-
-  υ→ : ∀ {a} → C.id C.⇒ ₁ B.id
-  υ→ {a} = unitor .η (C.id {P₀ a})
 ```
 -->
 
@@ -451,11 +448,11 @@ squares).
 
     right-unit
       : ∀ {a b} (f : a B.↦ b)
-      → ₂ (B.ρ← f) C.⊗ γ→ f B.id C.⊗ (₁ f C.▶ υ→) ≡ C.ρ← (₁ f)
+      → ₂ (B.ρ← f) C.⊗ γ→ f B.id C.⊗ (₁ f C.▶ unitor) ≡ C.ρ← (₁ f)
 
     left-unit
       : ∀ {a b} (f : a B.↦ b)
-      → ₂ (B.λ← f) C.⊗ γ→ B.id f C.⊗ (υ→ C.◀ ₁ f) ≡ C.λ← (₁ f)
+      → ₂ (B.λ← f) C.⊗ γ→ B.id f C.⊗ (unitor C.◀ ₁ f) ≡ C.λ← (₁ f)
 ```
 
 ## Pseudofunctors
@@ -482,7 +479,7 @@ record
 
   field
     unitor-inv
-      : ∀ {a} → C.Hom.is-invertible (υ→ {a})
+      : ∀ {a} → C.Hom.is-invertible (unitor {a})
     compositor-inv
       : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b) → C.Hom.is-invertible (γ→ f g)
 
@@ -568,8 +565,8 @@ boil down to commutativity of the nightmarish diagrams in [@basicbicats,
 
       ν-unitor
         : ∀ {a}
-        → ν→ (B.id {a}) C.⊗ (G.υ→ C.◀ σ a)
-        ≡ (σ a C.▶ F.υ→) C.⊗ C.ρ→ (σ a) C.⊗ C.λ← (σ a)
+        → ν→ (B.id {a}) C.⊗ (G.unitor C.◀ σ a)
+        ≡ (σ a C.▶ F.unitor) C.⊗ C.ρ→ (σ a) C.⊗ C.λ← (σ a)
 ```
 
 A lax transformation with invertible naturator is called a

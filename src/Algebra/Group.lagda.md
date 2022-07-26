@@ -373,9 +373,9 @@ equivalence is both a section and a retraction.
 ```agda
   group-str .has-is-group .inverse = _e⁻¹
   group-str .has-is-group .inversel {x = f , eqv} =
-    Σ-prop-path is-equiv-is-prop (funext (equiv→retraction eqv))
+    Σ-prop-path is-equiv-is-prop (funext (equiv→unit eqv))
   group-str .has-is-group .inverser {x = f , eqv} =
-    Σ-prop-path is-equiv-is-prop (funext (equiv→section eqv))
+    Σ-prop-path is-equiv-is-prop (funext (equiv→counit eqv))
 ```
 
 <!--

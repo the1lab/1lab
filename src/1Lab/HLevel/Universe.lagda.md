@@ -54,7 +54,7 @@ successor, this only depends on the h-level of $B$.
 ```
 
 For the `zero`{.Agda} case, we're asked to give a proof of
-`contractibility`{.Agda ident=is-contr} of `A ≃ B`. As the centre we pick
+`contractibility`{.Agda ident=is-contr} of `A ≃ B`. As the centre we pick
 the canonical function sending $x$ to the `centre of contraction`{.Agda
 ident=centre} of $B$, which is an equivalence because it is a
 `map between contractible types`{.Agda ident=is-contr→is-equiv}.
@@ -83,7 +83,7 @@ proof that $A$ has the given h-level. This is because, for $n \ge 1$, $A
 
 ## h-Levels of Paths
 
-Univalence states that the type $X ≡ Y$ is equivalent to $X \simeq Y$.
+Univalence states that the type $X ≡ Y$ is equivalent to $X \simeq Y$.
 Since the latter is of h-level $n$ when $X$ and $Y$ are $n$-types, then
 so is the former:
 
@@ -137,10 +137,10 @@ n-univalence {n = n} {X} {Y} = n-ua , is-iso→is-equiv isic where
   rinv : ∀ {Y} → is-right-inverse (inv {Y}) n-ua
   rinv = J (λ y p → n-ua (inv p) ≡ p) path where
     path : n-ua (inv {X} refl) ≡ refl
-    path i j .∣_∣ = equiv→retraction (univalence {A = ∣ X ∣}) refl i j
+    path i j .∣_∣ = equiv→unit (univalence {A = ∣ X ∣}) refl i j
     path i j .is-tr = is-prop→squarep
       (λ i j → is-hlevel-is-prop
-        {A = equiv→retraction (univalence {A = ∣ X ∣}) refl i j} n)
+        {A = equiv→unit (univalence {A = ∣ X ∣}) refl i j} n)
       (λ j → X .is-tr) (λ j → n-ua {X = X} {Y = X} (path→equiv refl) j .is-tr)
       (λ j → X .is-tr) (λ j → X .is-tr)
       i j

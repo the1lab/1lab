@@ -34,11 +34,11 @@ equivInv (f , e) = equiv→inverse e
 
 equivSec : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (e : A ≃ B)
          → _
-equivSec (f , e) = equiv→section e
+equivSec (f , e) = equiv→counit e
 
 equivRet : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (e : A ≃ B)
          → _
-equivRet (f , e) = equiv→retraction e
+equivRet (f , e) = equiv→unit e
 
 newMeta : Term → TC Term
 newMeta = checkType unknown

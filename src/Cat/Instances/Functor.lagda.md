@@ -176,19 +176,19 @@ isomorphism looks like the identity.
 The first thing we must note is that we can recover the components of a
 natural isomorphism while passing to/from paths in $D$. Since $D$ is a
 category, `path→iso`{.Agda} is an equivalence; The lemmas we need then
-follow from `equivalences having sections`{.Agda ident=equiv→section}.
+follow from `equivalences having sections`{.Agda ident=equiv→counit}.
 
 ```agda
     ptoi-to
       : ∀ x → path→iso (iso→path DisCat (Nat-iso→Iso F≅G _)) .D._≅_.to
             ≡ F≅G .to .η x
     ptoi-to x = ap (λ e → e .D._≅_.to)
-      (equiv→section (path→iso-is-equiv DisCat) _)
+      (equiv→counit (path→iso-is-equiv DisCat) _)
 
     ptoi-from : ∀ x → path→iso (iso→path DisCat (Nat-iso→Iso F≅G _)) .D._≅_.from
               ≡ F≅G .from .η x
     ptoi-from x = ap (λ e → e .D._≅_.from)
-      (equiv→section (path→iso-is-equiv DisCat) _)
+      (equiv→counit (path→iso-is-equiv DisCat) _)
 ```
 
 We can then show that the natural isomorphism $F \cong G$ induces a

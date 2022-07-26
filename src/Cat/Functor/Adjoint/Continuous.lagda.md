@@ -192,7 +192,7 @@ of shape categories are entirely determined by the "introduction forms"
     fin = L-adjunct L⊣R (term (L.₀ x) .centre)
     uniq : ∀ x → fin ≡ x
     uniq x = ap fst $ is-contr→is-prop (R-adjunct-is-equiv L⊣R .is-eqv _)
-      (_ , equiv→section (R-adjunct-is-equiv L⊣R) _)
+      (_ , equiv→counit (R-adjunct-is-equiv L⊣R) _)
       (x , is-contr→is-prop (term _) _ _)
 
   right-adjoint→lex : is-lex R

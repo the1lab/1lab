@@ -120,13 +120,13 @@ Finite-sum {suc n} B =
       ... | x , y = fsuc x , y
 
       f-iso .is-iso.rinv (inl x) = refl
-      f-iso .is-iso.rinv (inr x) = ap inr (equiv→section (rec .snd) _)
+      f-iso .is-iso.rinv (inr x) = ap inr (equiv→counit (rec .snd) _)
 
       f-iso .is-iso.linv (fzero , x) = refl
       f-iso .is-iso.linv (fsuc x , y) =
         Σ-pathp
-          (ap (fsuc ∘ fst) (equiv→retraction (rec .snd) _))
-          (ap snd (equiv→retraction (rec .snd) _))
+          (ap (fsuc ∘ fst) (equiv→unit (rec .snd) _))
+          (ap snd (equiv→unit (rec .snd) _))
 ```
 
 ## Multiplication

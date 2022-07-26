@@ -93,7 +93,6 @@ private
     prim^unglue : {A : Type ℓ} {φ : I}
                 → {T : Partial φ (Type ℓ')} → {e : PartialP φ (λ o → T o ≃ A)}
                 → primGlue A T e → A
-
 open import Agda.Builtin.Cubical.HCompU
 open import 1Lab.Equiv.FromPath
 ```
@@ -139,6 +138,15 @@ Glue A Te = primGlue A (λ x → Te x .fst) (λ x → Te x .snd)
 unglue : {A : Type ℓ} (φ : I) {T : Partial φ (Type ℓ')}
          {e : PartialP φ (λ o → T o ≃ A)} → primGlue A T e → A
 unglue φ = prim^unglue {φ = φ}
+
+glue-inc
+  : {A : Type ℓ} (φ : I)
+  → {Tf : Partial φ (Σ[ B ∈ Type ℓ' ] B ≃ A)}
+  → (p : PartialP φ (λ { (φ = i1) → Tf 1=1 .fst }))
+  → A [ φ ↦ (λ { (φ = i1) → Tf 1=1 .snd .fst (p 1=1) }) ]
+  → Glue A Tf
+glue-inc φ p x = prim^glue {φ = φ} p (outS x)
+
 ```
 -->
 
@@ -738,7 +746,7 @@ ua→ {e = e} {f₀ = f₀} {f₁} h i a =
     (h (transp (λ j → ua e (~ j ∧ i)) (~ i) a) i)
   where
   lem : ∀ a₁ → e .fst (transport (sym (ua e)) a₁) ≡ a₁
-  lem a₁ = equiv→section (e .snd) _ ∙ transport-refl _
+  lem a₁ = equiv→counit (e .snd) _ ∙ transport-refl _
 
 ua→2 : ∀ {ℓ ℓ' ℓ''} {A₀ A₁ : Type ℓ} {e₁ : A₀ ≃ A₁}
   {B₀ B₁ : Type ℓ'} {e₂ : B₀ ≃ B₁}

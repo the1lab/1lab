@@ -61,10 +61,10 @@ homotopy $f \circ h \sim \id{id}$.
 
 ```agda
 linv : (A → B) → Type _
-linv f = Σ[ g ∈ (_ → _) ] (g ∘ f ≡ id)
+linv f = Σ[ g ∈ (_ → _) ] (g ∘ f ≡ id)
 
 rinv : (A → B) → Type _
-rinv f = Σ[ h ∈ (_ → _) ] (f ∘ h ≡ id)
+rinv f = Σ[ h ∈ (_ → _) ] (f ∘ h ≡ id)
 ```
 
 A map $f$ equipped with a choice of left- and right- inverse is said to

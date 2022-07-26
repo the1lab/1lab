@@ -75,9 +75,9 @@ hom-iso→adjoints f f-equiv natural = adj′ where
     (f⁻¹ (R.₁ g D.∘ x D.∘ h) , refl)
     ( g C.∘ f⁻¹ x C.∘ L.₁ h
     , natural _ _ _
-    ∙ sym (equiv→section f-equiv _)
+    ∙ sym (equiv→counit f-equiv _)
     ∙ ap (f ⊙ f⁻¹)
-         (D.extendl (ap (R.₁ g D.∘_) (equiv→section f-equiv _))))
+         (D.extendl (ap (R.₁ g D.∘_) (equiv→counit f-equiv _))))
 ```
 
 We do not require an explicit naturality witness for the inverse of $f$,
@@ -108,11 +108,11 @@ of adjunction units and co-units.
     f⁻¹ D.id C.∘ L.₁ (f C.id)          ≡⟨ C.introl refl ⟩
     C.id C.∘ f⁻¹ D.id C.∘ L.₁ (f C.id) ≡˘⟨ inv-natural _ _ _ ⟩
     f⁻¹ (R.₁ C.id D.∘ D.id D.∘ f C.id) ≡⟨ ap f⁻¹ (D.cancell (D.idr _ ∙ R.F-id)) ⟩
-    f⁻¹ (f C.id)                       ≡⟨ equiv→retraction f-equiv _ ⟩
+    f⁻¹ (f C.id)                       ≡⟨ equiv→unit f-equiv _ ⟩
     C.id                               ∎
   adj′ .zag =
     R.₁ (f⁻¹ D.id) D.∘ f C.id          ≡⟨ D.refl⟩∘⟨ D.intror refl ⟩
     R.₁ (f⁻¹ D.id) D.∘ f C.id D.∘ D.id ≡˘⟨ natural _ _ _ ⟩
     f (f⁻¹ D.id C.∘ C.id C.∘ L.₁ D.id) ≡⟨ ap f (C.elimr (C.idl _ ∙ L.F-id)) ⟩
-    f (f⁻¹ D.id)                       ≡⟨ equiv→section f-equiv _ ⟩
+    f (f⁻¹ D.id)                       ≡⟨ equiv→counit f-equiv _ ⟩
     D.id                               ∎
