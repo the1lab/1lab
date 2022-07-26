@@ -5,6 +5,8 @@ module Shake.AgdaCompile (agdaRules) where
 import qualified System.Directory as Dir
 import System.FilePath
 
+import Control.Monad.Except
+
 import qualified Data.List.NonEmpty as List1
 import qualified Data.HashMap.Strict as Hm
 import qualified Data.Map as Map
@@ -20,6 +22,8 @@ import Shake.Options (getSkipTypes, getWatching)
 
 import Agda.Compiler.Backend hiding (getEnv)
 import Agda.Interaction.FindFile (SourceFile(..))
+import Agda.TypeChecking.Pretty.Warning
+import Agda.TypeChecking.Errors
 import Agda.Interaction.Imports
 import Agda.Interaction.Options
 import Agda.Syntax.Common (Cubical(CFull))
@@ -135,7 +139,7 @@ compileAgda stateVar = do
           Nothing -> (["_build/all-pages.agda"], initState)
           Just state -> (if watching then changed else ["_build/all-pages.agda"], state)
 
-    ((), state) <- runTCM initEnv state do
+    ((), state) <- runTCMPrettyErrors initEnv state do
       -- We preserve the old modules and restore them at the end, as otherwise
       -- we forget them, and will fail if we need to rebuild other HTML pages.
       oldVisited <- useTC stVisitedModules
@@ -199,3 +203,16 @@ getInterface tcState name =
   case Map.lookup name modules of
     Just iface -> miInterface iface
     Nothing -> error $ "Cannot find inferface for module " ++ prettyShow name
+
+runTCMPrettyErrors :: TCEnv -> TCState -> TCM a -> IO (a, TCState)
+runTCMPrettyErrors env state tcm = do
+  (r, state) <- runTCM env state $ (Just <$> tcm) `catchError` \err -> do
+    warnings <- prettyTCWarnings' =<< getAllWarningsOfTCErr err
+    errors  <- prettyError err
+    let everything = filter (not . null) $ warnings ++ [errors]
+    unless (null errors) . liftIO . putStr $ unlines everything
+    pure Nothing
+
+  case r of
+    Just r -> pure (r, state)
+    Nothing -> fail "Agda compilation failed"
