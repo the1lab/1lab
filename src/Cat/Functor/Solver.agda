@@ -1,11 +1,11 @@
 module Cat.Functor.Solver where
 
 open import 1Lab.Prelude
+open import 1Lab.Reflection
 
 open import Cat.Base
 import Cat.Reasoning as Cat
 
-open import 1Lab.Reflection
 
 module NbE {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′} (F : Functor 𝒞 𝒟) where
   private
