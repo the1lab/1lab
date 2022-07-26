@@ -5,16 +5,16 @@
 
 
 @font-face {
-  font-family: 'iosevka';
+  font-family: 'Julia Mono';
   font-display: swap;
   font-weight: 400;
   font-stretch: normal;
   font-style: normal;
-  src: url('/static/woff2/iosevk-abbie-regular.woff2') format('woff2'), url('/static/ttf/iosevk-abbie-regular.ttf') format('truetype');
+  src: url('/static/ttf/julia-mono.ttf') format('truetype');
 }
 
 code, pre, .sourceCode {
-  font-family: 'Iosevka', 'Fantasque Sans Mono', Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+  font-family: 'Julia Mono';
   font-weight: 500;
 }
 
@@ -120,7 +120,7 @@ a[href].hover-highlight {
   }
 
   // background-color: $code-bg;
-  font-family: 'iosevka', 'Iosevka', 'Fantasque Sans Mono', 'Roboto Mono', monospace;
+  font-family: 'Julia Mono', 'Iosevka', 'Fantasque Sans Mono', 'Roboto Mono', monospace;
   font-weight: 400;
 
   font-size: initial;

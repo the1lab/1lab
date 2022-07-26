@@ -119,12 +119,13 @@ not have computational content.
 
 ## Technology
 
-The 1Lab uses [Iosevka](https://typeof.net/Iosevka/) as its monospace
-typeface. Iosevka is licensed under the SIL Open Font License, v1.1, a
-copy of which can be found [here](/static/licenses/LICENSE.Iosevka). As
-the sans-serif typeface, we use the [Inria Sans] webfont, and as a serif
-typeface, [EB Garamond]. These fonts are both open-source, though rather
-than rehosting them, we use them from Google Fonts.
+The 1Lab uses [Julia Mono](https://juliamono.netlify.app/) as its
+monospace typeface. Julia Mono is licensed under the SIL Open Font
+License, v1.1, a copy of which can be found
+[here](/static/licenses/LICENSE.JuliaMono). As the sans-serif typeface, we
+use the [Inria Sans] webfont, and as a serif typeface, [EB Garamond].
+These fonts are both open-source, though rather than rehosting them, we
+use them from Google Fonts.
 
 [Inria Sans]: https://fonts.google.com/specimen/Inria+Sans
 [EB Garamond]: https://fonts.google.com/specimen/EB+Garamond

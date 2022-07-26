@@ -22,32 +22,6 @@ let
       varwidth xkeyval standalone;
   };
 
-  make-font = { type, family, hash, prefix ? "$out" }:
-    let
-      p = fetchurl {
-        url = "https://cubical.1lab.dev/static/${type}/${family}.${type}";
-        sha256 = hash;
-      };
-    in ''
-      mkdir -p ${prefix}/static/${type};
-      install -Dm 644 ${p} ${prefix}/static/${type}/${family}.${type};
-    '';
-
-  fonts = { prefix ? "$out" }: concatStringsSep "\n" (map make-font [
-    {
-      type = "woff2";
-      family = "iosevk-abbie-regular";
-      hash = "1zpn3qam0xywvmzz5mjjh23asx9ysnp6ali1agr770qimlxi5zmc";
-      inherit prefix;
-    }
-    {
-      type = "ttf";
-      family = "iosevk-abbie-regular";
-      hash = "0x9nbpm3jf18wlpd7ysbgzl31lwr6qiip5496ma8l72pn812k39g";
-      inherit prefix;
-    }
-  ]);
-
   shakefile = import ./support/nix/build-shake.nix
     {
       inherit our-ghc haskellPackages;
@@ -89,9 +63,8 @@ in
 
     # Copy KaTeX CSS and fonts
     cp -Lrv --no-preserve=mode ${nodePackages.katex}/lib/node_modules/katex/dist/{katex.min.css,fonts} $out/css/;
-
-    # Copy bits of Iosevka
-    ${fonts {}}
+    mkdir -p $out/static/ttf/
+    cp -Lrv --no-preserve=mode ${pkgs.julia-mono}/share/fonts/truetype/JuliaMono-Regular.ttf $out/static/ttf/julia-mono.ttf
     '';
 
     passthru = {

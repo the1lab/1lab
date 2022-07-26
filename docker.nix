@@ -63,7 +63,8 @@ in
     echo "ID=nixos" > ./etc/os-release
     cp ./bin/env ./usr/bin/
 
-    ${the-lab.fonts { prefix = "./root/"; }}
+    mkdir -p ./root/static/ttf/
+    cp -Lrv --no-preserve=mode ${pkgs.julia-mono}/share/fonts/truetype/JuliaMono-Regular.ttf ./root/static/ttf/julia-mono.ttf
 
     # Needed for Github Actions
     ln -s ${pkgs.glibc}/lib/ld-linux-x86-64.so.2 ./lib64/ld-linux-x86-64.so.2
