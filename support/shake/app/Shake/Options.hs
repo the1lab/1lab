@@ -17,7 +17,7 @@ import GHC.Generics (Generic)
 data Option
   = SkipTypes -- ^ Skip generating types when emitting HTML.
   | Watching -- ^ Launch in watch mode. Prevents some build tasks running.
-  deriving (Show, Typeable, Eq, Generic)
+  deriving (Eq, Show, Typeable, Generic)
 
 instance Hashable Option where
 instance Binary Option where
