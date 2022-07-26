@@ -2,6 +2,7 @@
 open import Algebra.Group.Cat.Base
 open import Algebra.Prelude
 open import Algebra.Group
+open import Algebra.Group.Solver
 
 open import Cat.Instances.Delooping
 
@@ -135,13 +136,15 @@ module _ {ℓ} (A B : AbGroup ℓ) where
 -->
 
 ```agda
+
+    open import 1Lab.Reflection
     add-map : T → T → T
     add-map (f , fh) (g , gh) .fst x = f x B.⋆ g x
     add-map (f , fh) (g , gh) .snd .p x y =
       f (x A.⋆ y) B.⋆ g (x A.⋆ y)     ≡⟨ ap₂ B._⋆_ (fh .p x y) (gh .p x y) ⟩
-      (f x B.⋆ f y) B.⋆ (g x B.⋆ g y) ≡⟨ solve-monoid B.underlying-monoid  ⟩
+      (f x B.⋆ f y) B.⋆ (g x B.⋆ g y) ≡⟨ solve-group! (object B) ⟩
       f x B.⋆ (f y B.⋆ g x) B.⋆ g y   ≡⟨ (λ i → f x B.⋆ B.commutative {x = f y} {y = g x} i B.⋆ g y) ⟩
-      f x B.⋆ (g x B.⋆ f y) B.⋆ g y   ≡⟨ solve-monoid B.underlying-monoid ⟩
+      f x B.⋆ (g x B.⋆ f y) B.⋆ g y   ≡⟨ solve-group! (object B) ⟩
       (f x B.⋆ g x) B.⋆ (f y B.⋆ g y) ∎
 ```
 
@@ -434,9 +437,9 @@ $\ht{Ab}$ is a univalent category, an _identification_ of $\hom$-groups.
         path : ∀ x y → (f′ .fst x C.⋆ g′ .fst x) C.⋆ (f′ .fst y C.⋆ g′ .fst y)
                      ≡ f′ .fst (x :+ y) C.⋆ g′ .fst (x :+ y)
         path x y =
-          (f′ .fst x C.⋆ g′ .fst x) C.⋆ (f′ .fst y C.⋆ g′ .fst y) ≡⟨ solve-monoid C.underlying-monoid ⟩
+          (f′ .fst x C.⋆ g′ .fst x) C.⋆ (f′ .fst y C.⋆ g′ .fst y) ≡⟨ solve-group! (object C) ⟩
           f′ .fst x C.⋆ (g′ .fst x C.⋆ f′ .fst y) C.⋆ g′ .fst y   ≡⟨ (λ i → f′ .fst x C.⋆ C.commutative {x = g′ .fst x} {y = f′ .fst y} i C.⋆ g′ .fst y) ⟩
-          f′ .fst x C.⋆ (f′ .fst y C.⋆ g′ .fst x) C.⋆ g′ .fst y   ≡⟨ solve-monoid C.underlying-monoid ⟩
+          f′ .fst x C.⋆ (f′ .fst y C.⋆ g′ .fst x) C.⋆ g′ .fst y   ≡⟨ solve-group! (object C) ⟩
           (f′ .fst x C.⋆ f′ .fst y) C.⋆ (g′ .fst x C.⋆ g′ .fst y) ≡˘⟨ ap₂ C._⋆_ (f′ .snd .pres-⋆ x y) (g′ .snd .pres-⋆ x y) ⟩
           f′ .fst (x :+ y) C.⋆ g′ .fst (x :+ y)                   ∎
 ```

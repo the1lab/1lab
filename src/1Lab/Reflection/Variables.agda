@@ -54,7 +54,7 @@ open Variables
 
 private variable
   a b : Level
-  A : Type
+  A : Type a
   n : Nat
 
 empty-vars : Variables A
