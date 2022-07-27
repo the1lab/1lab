@@ -138,8 +138,8 @@ module Reflection where
 
   pattern category-args xs = _ h0∷ _ h0∷ _ v∷ xs
 
-  pattern functor-args xs =
-    _ h0∷ _ h0∷ _ h0∷ _ h0∷ _ h0∷ _ h0∷ _ v∷ xs
+  pattern functor-args functor xs =
+    _ h0∷ _ h0∷ _ h0∷ _ h0∷ _ h0∷ _ h0∷ functor v∷ xs
 
   pattern “id” =
     def (quote Precategory.id) (category-args (_ h∷ []))
@@ -147,8 +147,8 @@ module Reflection where
   pattern “∘” f g =
     def (quote Precategory._∘_) (category-args (_ h∷ _ h∷ _ h∷ f v∷ g v∷ []))
 
-  pattern “F₁” f =
-    def (quote Functor.F₁) (functor-args (_ h∷ _ h∷ f v∷ []))
+  pattern “F₁” functor f =
+    def (quote Functor.F₁) (functor-args functor (_ h∷ _ h∷ f v∷ []))
 
   mk-functor-args : Term → List (Arg Term) → List (Arg Term)
   mk-functor-args functor args = unknown h0∷ unknown h0∷ unknown h0∷ unknown h0∷ unknown h0∷ unknown h0∷ functor v∷ args
@@ -162,11 +162,18 @@ module Reflection where
   build-cexpr (“∘” f g) = con (quote NbE.CExpr._‶∘‶_) (build-cexpr f v∷ build-cexpr g v∷ [])
   build-cexpr f = con (quote NbE.CExpr._↑) (f v∷ [])
 
-  build-dexpr : Term → Term
-  build-dexpr “id” = con (quote NbE.DExpr.‶id‶) []
-  build-dexpr (“∘” f g) = con (quote NbE.DExpr._‶∘‶_) (build-dexpr f v∷ build-dexpr g v∷ [])
-  build-dexpr (“F₁” f) = con (quote NbE.DExpr.‶F₁‶) (build-cexpr f v∷ [])
-  build-dexpr f = con (quote NbE.DExpr._↑) (f v∷ [])
+  build-dexpr : Term → Term → TC Term
+  build-dexpr functor “id” =
+    returnTC $ con (quote NbE.DExpr.‶id‶) []
+  build-dexpr functor (“∘” f g) = do
+    f ← build-dexpr functor f
+    g ← build-dexpr functor g
+    returnTC $ con (quote NbE.DExpr._‶∘‶_) (f v∷ g v∷ [])
+  build-dexpr functor (“F₁” functor' f) = do
+    unify functor functor'
+    returnTC $ con (quote NbE.DExpr.‶F₁‶) (build-cexpr f v∷ [])
+  build-dexpr functor f =
+    returnTC $ con (quote NbE.DExpr._↑) (f v∷ [])
 
   dont-reduce : List Name
   dont-reduce = quote Precategory.id ∷ quote Precategory._∘_ ∷ quote Functor.F₁ ∷ []
@@ -180,8 +187,8 @@ module Reflection where
      just (lhs , rhs) ← get-boundary goal
        where nothing → typeError $ strErr "Can't determine boundary: " ∷
                                    termErr goal ∷ []
-     let elhs = build-dexpr lhs
-     let erhs = build-dexpr rhs
+     elhs ← build-dexpr functor-tm lhs
+     erhs ← build-dexpr functor-tm rhs
      noConstraints $ unify hole (“solve” functor-tm elhs erhs)
 
 macro
@@ -200,5 +207,5 @@ private module Test {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory
     x y z : 𝒟.Hom X Y
     
 
-  -- test : (x 𝒟.∘ F₁ (𝒞.id 𝒞.∘ 𝒞.id)) 𝒟.∘ F₁ a 𝒟.∘ F₁ (𝒞.id 𝒞.∘ b) ≡ 𝒟.id 𝒟.∘ x 𝒟.∘ F₁ (a 𝒞.∘ b)
-  -- test = functor! F
+  test : (x 𝒟.∘ F₁ (𝒞.id 𝒞.∘ 𝒞.id)) 𝒟.∘ F₁ a 𝒟.∘ F₁ (𝒞.id 𝒞.∘ b) ≡ 𝒟.id 𝒟.∘ x 𝒟.∘ F₁ (a 𝒞.∘ b)
+  test = functor! F
