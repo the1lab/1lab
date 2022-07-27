@@ -30,7 +30,7 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
   ⟦ ‶M₀‶ X ⟧ₒ = M₀ ⟦ X ⟧ₒ
 
   private variable
-    X Y Z : ‶Ob‶
+    W X Y Z : ‶Ob‶
 
   data ‶Hom‶ : ‶Ob‶ → ‶Ob‶ → Type (o ⊔ h) where
     ‶M₁‶  : ‶Hom‶ X Y → ‶Hom‶ (‶M₀‶ X) (‶M₀‶ Y)
@@ -58,8 +58,10 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
     kmult : (X : ‶Ob‶) → Frame (‶M₀‶ (‶M₀‶ X)) (‶M₀‶ X)
 
   data Value : ‶Ob‶ → ‶Ob‶ → Type (o ⊔ h) where
-    vid : Value X X
-    vcomp : Frame Y Z → Value X Y → Value X Z
+    [] : Value X X
+    _∷_ : Frame Y Z → Value X Y → Value X Z
+
+  infixr 5 _∷_
 
   ⟦_⟧ₖ : Frame X Y → Hom ⟦ X ⟧ₒ ⟦ Y ⟧ₒ
   ⟦ khom f ⟧ₖ = f
@@ -68,8 +70,8 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
   ⟦ kmult X ⟧ₖ = mult.η ⟦ X ⟧ₒ
 
   ⟦_⟧ᵥ : Value X Y → Hom ⟦ X ⟧ₒ ⟦ Y ⟧ₒ
-  ⟦ vid ⟧ᵥ = id
-  ⟦ vcomp k v ⟧ᵥ = ⟦ k ⟧ₖ ∘ ⟦ v ⟧ᵥ
+  ⟦ [] ⟧ᵥ = id
+  ⟦ k ∷ v ⟧ᵥ = ⟦ k ⟧ₖ ∘ ⟦ v ⟧ᵥ
 
   --------------------------------------------------------------------------------
   -- Evaluation
@@ -85,87 +87,108 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
   -- of the stack. This makes it easier to enact the equations in question, as
   -- we don't have to dig nearly as far.
 
+  -- Concatenate 2 values together, performing no simplification.
+  _++_ : Value Y Z → Value X Y → Value X Z
+  [] ++ v2 = v2
+  (k ∷ v1) ++ v2 = k ∷ (v1 ++ v2)
+
+  -- Apply M₁ to a value.
   do-vmap : Value X Y → Value (‶M₀‶ X) (‶M₀‶ Y)
-  do-vmap vid = vid
-  do-vmap (vcomp f v) = vcomp (kmap f) (do-vmap v)
+  do-vmap [] = []
+  do-vmap (f ∷ v) = kmap f ∷ do-vmap v
 
-  push-unit : Value X Y → Value X (‶M₀‶ Y)
-  push-unit vid = vcomp (kunit _) vid
-  push-unit (vcomp k v) = vcomp (kmap k) (push-unit v)
-
-  push-kmap : Frame Y Z → Value X (‶M₀‶ Y) → Value X (‶M₀‶ Z)
-  push-kmult : Value X (‶M₀‶ (‶M₀‶ Y)) → Value X (‶M₀‶ Y)
+  enact-laws : Frame Y Z → Frame X Y → Value W X → Value W Z
   push-frm : Frame Y Z → Value X Y → Value X Z
 
-  push-kmap k vid = vcomp (kmap k) vid
-  push-kmap k (vcomp (kmap k') v) = vcomp (kmap k) (vcomp (kmap k') v)
-  push-kmap k (vcomp (kunit _) v) = vcomp (kunit _) (push-frm k v)
-  push-kmap k (vcomp (kmult _) v) = vcomp (kmult _) (push-kmap (kmap k) v)
+  -- The meat of the solver! This is responsible for enacting the
+  -- monad equations (hence the name).
+  -- There are 2 important phases to this function: 'kunit' and 'kmult'
+  -- floating, and the subsequent elimination of those frames.
+  --
+  -- When we push a 'kmap' frame, we check to see if the head of the stack
+  -- is a 'kunit' or 'kmult'; if so, we float those outwards so that they
+  -- always remain at the top of the stack.
+  --
+  -- Subsequently, when pushing a 'kmult' frame, we need to enact
+  -- equations. As the relevant frames are /always/ on the top of the stack,
+  -- we can simply apply the relevant equations, and potentially keep pushing
+  -- frames down.
+  enact-laws (khom f) k' v = khom f ∷ k' ∷ v
+  enact-laws (kmap k) (kmap k') v = do-vmap (enact-laws k k' []) ++ v
+  enact-laws (kmap k) (kunit _) v = kunit _ ∷ push-frm k v
+  enact-laws (kmap k) (kmult _) v = kmult _ ∷ push-frm (kmap (kmap k)) v
+  enact-laws (kunit _) k' v = kunit _ ∷ k' ∷ v
+  enact-laws (kmult _) (kmap (kmap k')) v = kmult _ ∷ kmap (kmap k') ∷ v
+  enact-laws (kmult _) (kmap (kunit _)) v = v
+  enact-laws (kmult _) (kmap (kmult _)) v = kmult _ ∷ push-frm (kmult _) v
+  enact-laws (kmult _) (kunit _) v = v
+  enact-laws (kmult _) (kmult _) v = kmult _ ∷ kmult _ ∷ v
 
-  push-kmult vid = vcomp (kmult _) vid
-  push-kmult (vcomp (kmap (kmap k)) v) = vcomp (kmult _) (vcomp (kmap (kmap k)) v)
-  push-kmult (vcomp (kmap (kunit _)) v) = v
-  push-kmult (vcomp (kmap (kmult _)) v) = vcomp (kmult _) (vcomp (kmult _) v)
-  push-kmult (vcomp (kunit _) v) = v
-  push-kmult (vcomp (kmult _) v) = vcomp (kmult _) (vcomp (kmult _) v)
+  -- Small shim, used to enact a law against a potentially empty stack.
+  push-frm k [] = k ∷ []
+  push-frm k (k' ∷ v) = enact-laws k k' v
 
-  push-frm (khom f) v = vcomp (khom f) v
-  push-frm (kmap k) v = push-kmap k v
-  push-frm (kunit _) v = vcomp (kunit _) v
-  push-frm (kmult _) v = push-kmult v
-
+  -- Concatenate 2 stacks together, performing simplification via 'enact-laws'.
   do-vcomp : Value Y Z → Value X Y → Value X Z
-  do-vcomp vid v2 = v2
-  do-vcomp (vcomp k v1) v2 = push-frm k (do-vcomp v1 v2)
+  do-vcomp [] v2 = v2
+  do-vcomp (k ∷ v1) v2 = push-frm k (do-vcomp v1 v2)
 
   eval : ‶Hom‶ X Y → Value X Y
   eval (‶M₁‶ e) = do-vmap (eval e)
-  eval (‶η‶ X) = vcomp (kunit X) vid
-  eval (‶μ‶ X) = vcomp (kmult X) vid
+  eval (‶η‶ X) = kunit X ∷ []
+  eval (‶μ‶ X) = kmult X ∷ []
   eval (e1 ‶∘‶ e2) = do-vcomp (eval e1) (eval e2)
-  eval ‶id‶ = vid
-  eval (f ↑) = vcomp (khom f) vid
+  eval ‶id‶ = []
+  eval (f ↑) = khom f ∷ []
 
   --------------------------------------------------------------------------------
   -- Soundness
 
   vmap-sound : ∀ (v : Value X Y) → ⟦ do-vmap v ⟧ᵥ ≡ M₁ ⟦ v ⟧ᵥ
-  vmap-sound vid = sym M-id
-  vmap-sound (vcomp k v) =
+  vmap-sound [] = sym M-id
+  vmap-sound (k ∷ v) =
     M₁ ⟦ k ⟧ₖ ∘ ⟦ do-vmap v ⟧ᵥ ≡⟨ refl⟩∘⟨ vmap-sound v ⟩
     M₁ ⟦ k ⟧ₖ M.𝒟.∘ M₁ ⟦ v ⟧ᵥ  ≡˘⟨ M-∘ ⟦ k ⟧ₖ ⟦ v ⟧ᵥ ⟩
     M₁ (⟦ k ⟧ₖ ∘ ⟦ v ⟧ᵥ) ∎
 
-  push-kmap-sound  : ∀ (k : Frame Y Z) → (v : Value X (‶M₀‶ Y)) → ⟦ push-kmap k v ⟧ᵥ ≡ M₁ ⟦ k ⟧ₖ ∘ ⟦ v ⟧ᵥ
-  push-kmult-sound : (v : Value X (‶M₀‶ (‶M₀‶ Y))) → ⟦ push-kmult v ⟧ᵥ ≡ mult.η ⟦ Y ⟧ₒ ∘ ⟦ v ⟧ᵥ
+  vconcat-sound : ∀ (v1 : Value Y Z) → (v2 : Value X Y) → ⟦ v1 ++ v2 ⟧ᵥ ≡ ⟦ v1 ⟧ᵥ ∘ ⟦ v2 ⟧ᵥ
+  vconcat-sound [] v2 = sym (idl ⟦ v2 ⟧ᵥ)
+  vconcat-sound (k ∷ v1) v2 = pushr (vconcat-sound v1 v2)
+
+  enact-laws-sound : ∀ (k1 : Frame Y Z) → (k2 : Frame X Y) → (v : Value W X) → ⟦ enact-laws k1 k2 v ⟧ᵥ ≡ ⟦ k1 ⟧ₖ ∘ ⟦ k2 ⟧ₖ ∘ ⟦ v ⟧ᵥ
   push-frm-sound   : ∀ (k : Frame Y Z) → (v : Value X Y) → ⟦ push-frm k v ⟧ᵥ ≡ ⟦ k ⟧ₖ ∘ ⟦ v ⟧ᵥ
 
-  push-kmap-sound k vid = refl
-  push-kmap-sound k (vcomp (kmap k') v) = refl
-  push-kmap-sound {Y = Y} {Z = Z} {X = X} k (vcomp (kunit Y) v) =
-    unit.η ⟦ Z ⟧ₒ ∘ ⟦ push-frm k v ⟧ᵥ      ≡⟨ refl⟩∘⟨ push-frm-sound k v ⟩
-    unit.η ⟦ Z ⟧ₒ  ∘ ⟦ k ⟧ₖ ∘ ⟦ v ⟧ᵥ       ≡⟨ extendl (unit.is-natural ⟦ Y ⟧ₒ ⟦ Z ⟧ₒ ⟦ k ⟧ₖ) ⟩
-    M₁ ⟦ k ⟧ₖ ∘ unit.η ⟦ Y ⟧ₒ ∘ ⟦ v ⟧ᵥ     ∎
-  push-kmap-sound {Y = Y} {Z = Z} {X = X} k (vcomp (kmult Y) v) =
-    mult.η ⟦ Z ⟧ₒ ∘ ⟦ push-kmap (kmap k) v ⟧ᵥ ≡⟨ refl⟩∘⟨ push-kmap-sound (kmap k) v ⟩
-    mult.η ⟦ Z ⟧ₒ ∘ M₁ (M₁ ⟦ k ⟧ₖ) ∘ ⟦ v ⟧ᵥ   ≡⟨ extendl (mult.is-natural ⟦ Y ⟧ₒ ⟦ Z ⟧ₒ ⟦ k ⟧ₖ) ⟩
-    M₁ ⟦ k ⟧ₖ ∘ mult.η ⟦ Y ⟧ₒ ∘ ⟦ v ⟧ᵥ        ∎
+  enact-laws-sound (khom x) k2 v = refl
+  enact-laws-sound (kmap k1) (kmap k2) v =
+    ⟦ do-vmap (enact-laws k1 k2 []) ++ v ⟧ᵥ     ≡⟨ vconcat-sound (do-vmap (enact-laws k1 k2 [])) v ⟩
+    ⟦ do-vmap (enact-laws k1 k2 []) ⟧ᵥ ∘ ⟦ v ⟧ᵥ ≡⟨ vmap-sound (enact-laws k1 k2 []) ⟩∘⟨refl ⟩
+    M₁ ⟦ enact-laws k1 k2 [] ⟧ᵥ M.𝒟.∘ ⟦ v ⟧ᵥ    ≡⟨ M.pushl (enact-laws-sound k1 k2 []) ⟩
+    M₁ ⟦ k1 ⟧ₖ ∘ M₁ (⟦ k2 ⟧ₖ ∘ id) ∘ ⟦ v ⟧ᵥ     ≡⟨ refl⟩∘⟨ (M.⟨ idr ⟦ k2 ⟧ₖ ⟩ ⟩∘⟨refl) ⟩
+    M₁ ⟦ k1 ⟧ₖ ∘ M₁ ⟦ k2 ⟧ₖ ∘ ⟦ v ⟧ᵥ            ∎
+  enact-laws-sound (kmap {Y = Y} k1) (kunit X) v =
+    unit.η ⟦ Y ⟧ₒ ∘ ⟦ push-frm k1 v ⟧ᵥ    ≡⟨ refl⟩∘⟨ push-frm-sound k1 v ⟩
+    unit.η ⟦ Y ⟧ₒ ∘ ⟦ k1 ⟧ₖ ∘ ⟦ v ⟧ᵥ      ≡⟨ extendl (unit.is-natural ⟦ X ⟧ₒ ⟦ Y ⟧ₒ ⟦ k1 ⟧ₖ) ⟩
+    M.F₁ ⟦ k1 ⟧ₖ ∘ unit.η ⟦ X ⟧ₒ ∘ ⟦ v ⟧ᵥ ∎
+  enact-laws-sound (kmap {Y = Y} k1) (kmult X) v =
+    mult.η ⟦ Y ⟧ₒ ∘ ⟦ push-frm (kmap (kmap k1)) v ⟧ᵥ ≡⟨ refl⟩∘⟨ push-frm-sound (kmap (kmap k1)) v ⟩
+    mult.η ⟦ Y ⟧ₒ ∘ M₁ (M₁ ⟦ k1 ⟧ₖ) ∘ ⟦ v ⟧ᵥ         ≡⟨ extendl (mult.is-natural ⟦ X ⟧ₒ ⟦ Y ⟧ₒ ⟦ k1 ⟧ₖ) ⟩
+    M.F₁ ⟦ k1 ⟧ₖ ∘ mult.η ⟦ X ⟧ₒ ∘ ⟦ v ⟧ᵥ            ∎
+  enact-laws-sound (kunit X) k2 v = refl
+  enact-laws-sound (kmult X) (kmap (kmap k2)) v = refl
+  enact-laws-sound (kmult X) (kmap (kunit .X)) v = insertl left-ident
+  enact-laws-sound (kmult X) (kmap (kmult .X)) v =
+    mult.η ⟦ X ⟧ₒ ∘ ⟦ push-frm (kmult (‶M₀‶ X)) v ⟧ᵥ ≡⟨ refl⟩∘⟨ push-frm-sound (kmult (‶M₀‶ X)) v ⟩
+    mult.η ⟦ X ⟧ₒ ∘ mult.η (M₀ ⟦ X ⟧ₒ) ∘ ⟦ v ⟧ᵥ      ≡⟨ extendl (sym mult-assoc) ⟩
+    mult.η ⟦ X ⟧ₒ ∘ M₁ (mult.η ⟦ X ⟧ₒ) ∘ ⟦ v ⟧ᵥ ∎
+  enact-laws-sound (kmult X) (kunit _) v = insertl right-ident
+  enact-laws-sound (kmult X) (kmult _) v = refl
 
-  push-kmult-sound vid = refl
-  push-kmult-sound (vcomp (kmap (kmap k)) v) = refl
-  push-kmult-sound (vcomp (kmap (kunit _)) v) = insertl left-ident
-  push-kmult-sound (vcomp (kmap (kmult _)) v) = extendl (sym mult-assoc)
-  push-kmult-sound (vcomp (kunit _) v) = insertl right-ident
-  push-kmult-sound (vcomp (kmult _) v) = refl
-
-  push-frm-sound (khom f) v = refl
-  push-frm-sound (kmap k) v = push-kmap-sound k v
-  push-frm-sound (kunit X) v = refl
-  push-frm-sound (kmult X) v = push-kmult-sound v
+  push-frm-sound k [] = refl
+  push-frm-sound k (k' ∷ v) = enact-laws-sound k k' v
 
   vcomp-sound : ∀ (v1 : Value Y Z) → (v2 : Value X Y) → ⟦ do-vcomp v1 v2 ⟧ᵥ ≡ ⟦ v1 ⟧ᵥ ∘ ⟦ v2 ⟧ᵥ
-  vcomp-sound vid v2 = sym (idl ⟦ v2 ⟧ᵥ)
-  vcomp-sound (vcomp k v1) v2 =
+  vcomp-sound [] v2 = sym (idl ⟦ v2 ⟧ᵥ)
+  vcomp-sound (k ∷ v1) v2 =
     ⟦ push-frm k (do-vcomp v1 v2) ⟧ᵥ ≡⟨ push-frm-sound k (do-vcomp v1 v2) ⟩
     ⟦ k ⟧ₖ ∘ ⟦ do-vcomp v1 v2 ⟧ᵥ ≡⟨ pushr (vcomp-sound v1 v2) ⟩
     (⟦ k ⟧ₖ ∘ ⟦ v1 ⟧ᵥ) ∘ ⟦ v2 ⟧ᵥ ∎
@@ -305,3 +328,5 @@ private module Test {o h} {𝒞 : Precategory o h} (monad : Monad 𝒞) where
   test-nested : ∀ X → M₁ (mult.η X ∘ unit.η (M₀ X)) ≡ id
   test-nested _ = monad! monad
      
+  test-separate : ∀ X → M₁ (mult.η X) ∘ M₁ (unit.η (M₀ X)) ≡ id
+  test-separate _ = monad! monad
