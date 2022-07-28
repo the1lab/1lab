@@ -1643,77 +1643,78 @@ homotopy-natural {f = f} {g = g} H p =
 The groupoid structure of _paths_ is also interesting. While the
 characterisation of `Path (Path A x y) p q` is fundamentally tied to the
 characterisation of `A`, there are general theorems that can be proven
-about _transport_ in path spaces. For example, substituting on both
+about _transport_ in path spaces. For example, transporting both
 endpoints of a path is equivalent to a ternary composition:
 
 ```agda
-subst-path-both : ∀ {ℓ} {A : Type ℓ} {x y : A}
-                → (loop : x ≡ x)
-                → (adj : x ≡ y)
-                → subst (λ x → x ≡ x) adj loop ≡ sym adj ∙ loop ∙ adj
-subst-path-both loop adj =
-  J (λ _ adj → subst (λ x → x ≡ x) adj loop ≡ sym adj ∙ loop ∙ adj)
-    (sym lemma)
-    adj
-  where
+transport-path : ∀ {ℓ} {A : Type ℓ} {x y x' y' : A}
+                → (p : x ≡ y)
+                → (left : x ≡ x') → (right : y ≡ y')
+                → transport (λ i → left i ≡ right i) p ≡ sym left ∙ p ∙ right
+transport-path {x = x} {y = y} p left right =
+  J (λ _ left → transport (λ i → left i ≡ right i) p ≡ sym left ∙ p ∙ right)
+    (J (λ _ right → transport (λ i → x ≡ right i) p ≡ sym refl ∙ p ∙ right)
+       (sym lemma)
+       right)
+    left
 ```
 
-The proof is by induction on the path `adj` (for `adjustment`): It
-suffices to consider the case where it is `refl`. In that case, it
+The proof is by induction on the `left` and `right` "adjustment" paths: It
+suffices to consider the case where they are both `refl`. In that case, it
 becomes an application of the [groupoid laws for types].
 
 [groupoid laws for types]: 1Lab.Path.Groupoid.html
 
 ```agda
-    lemma : sym refl ∙ loop ∙ refl ≡ subst (λ x → x ≡ x) refl loop
+  where
+    lemma : sym refl ∙ p ∙ refl ≡ transport (λ i → x ≡ y) p
     lemma =
-      sym refl ∙ loop ∙ refl    ≡⟨⟩
-      refl ∙ loop ∙ refl        ≡⟨ sym (∙-filler' refl _) ⟩
-      loop ∙ refl               ≡⟨ sym (∙-filler _ refl) ⟩
-      loop                      ≡⟨ sym (transport-refl _) ⟩
-      subst (λ x → x) refl loop ∎
+      sym refl ∙ p ∙ refl       ≡⟨⟩
+      refl ∙ p ∙ refl           ≡⟨ sym (∙-filler' _ _) ⟩
+      p ∙ refl                  ≡⟨ sym (∙-filler _ _) ⟩
+      p                         ≡⟨ sym (transport-refl _) ⟩
+      transport (λ i → x ≡ y) p ∎
 ```
 
-Similar statements can be proven about substitution where we hold the
-right endpoint constant, in which case we get something homotopic to
-composing with the inverse of the adjustment:
+Special cases can be proven about substitution. For example, if we hold
+the right endpoint constant, we get something homotopic to
+composing with the inverse of the adjustment path:
 
 ```agda
-subst-path-left : ∀ {ℓ} {A : Type ℓ} {x y z : A}
-                → (loop : x ≡ z)
-                → (adj : x ≡ y)
-                → subst (λ e → e ≡ z) adj loop ≡ sym adj ∙ loop
-subst-path-left {x = x} {y} {z} loop adj =
-  J (λ _ adj → subst (λ e → e ≡ z) adj loop ≡ sym adj ∙ loop)
-    (sym lemma)
-    adj
-  where
-    lemma : sym refl ∙ loop ≡ subst (λ e → e ≡ z) refl loop
-    lemma =
-      sym refl ∙ loop           ≡⟨⟩
-      refl ∙ loop               ≡⟨ sym (∙-filler' refl _) ⟩
-      loop                      ≡⟨ sym (transport-refl _) ⟩
-      subst (λ x → x) refl loop ∎
+subst-path-left : ∀ {ℓ} {A : Type ℓ} {x y x' : A}
+                → (p : x ≡ y)
+                → (left : x ≡ x')
+                → subst (λ e → e ≡ y) left p ≡ sym left ∙ p
+subst-path-left {y = y} p left =
+  subst (λ e → e ≡ y) left p     ≡⟨⟩
+  transport (λ i → left i ≡ y) p ≡⟨ transport-path p left refl ⟩
+  sym left ∙ p ∙ refl            ≡⟨ ap (sym left ∙_) (sym (∙-filler _ _)) ⟩
+  sym left ∙ p                   ∎
 ```
 
-And for the case where we hold the left endpoint constant, in which case
-we get a respelling of composition:
+If we hold the left endpoint constant instead, we get a respelling of composition:
 
 ```agda
-subst-path-right : ∀ {ℓ} {A : Type ℓ} {x y z : A}
-                 → (loop : x ≡ z)
-                 → (adj : z ≡ y)
-                 → subst (λ e → x ≡ e) adj loop ≡ loop ∙ adj
-subst-path-right {x = x} loop adj =
-  J (λ _ adj → subst (λ e → x ≡ e) adj loop ≡ loop ∙ adj)
-    (sym lemma)
-    adj
-  where
-    lemma : loop ∙ refl ≡ subst (λ e → x ≡ e) refl loop
-    lemma =
-      loop ∙ refl               ≡⟨ sym (∙-filler _ refl) ⟩
-      loop                      ≡⟨ sym (transport-refl _) ⟩
-      subst (λ x → x) refl loop ∎
+subst-path-right : ∀ {ℓ} {A : Type ℓ} {x y y' : A}
+                 → (p : x ≡ y)
+                 → (right : y ≡ y')
+                 → subst (λ e → x ≡ e) right p ≡ p ∙ right
+subst-path-right {x = x} p right =
+  subst (λ e → x ≡ e) right p     ≡⟨⟩
+  transport (λ i → x ≡ right i) p ≡⟨ transport-path p refl right ⟩
+  sym refl ∙ p ∙ right            ≡⟨⟩
+  refl ∙ p ∙ right                ≡⟨ sym (∙-filler' _ _) ⟩
+  p ∙ right                       ∎
+```
+
+Finally, we can apply the same path to both endpoints:
+
+```agda
+subst-path-both : ∀ {ℓ} {A : Type ℓ} {x x' : A}
+                → (p : x ≡ x)
+                → (adj : x ≡ x')
+                → subst (λ x → x ≡ x) adj p ≡ sym adj ∙ p ∙ adj
+subst-path-both p adj = transport-path p adj adj
 ```
 
 <!--
