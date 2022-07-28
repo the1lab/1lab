@@ -4,8 +4,8 @@ haskellPackages.override {
     Agda = (self.callCabal2nix "Agda" (pkgs.fetchFromGitHub {
       owner = "agda";
       repo = "agda";
-      rev = "41b2f45dbe83acda7e28d4e150ca8548f04b92fb";
-      sha256 = "sha256-jBvyp5jlwNAEtwe+n7kJp3cRib+n7r1vsBlTlJolhRs=";
+      rev = "5d2d77abbc0c97f5b23d7089797c3ef8796508dc";
+      sha256 = "sha256-Bo0vJ+en2ajs4RLJk0EQ4rDFFR/xlZvQxz5TdRrL16s=";
     }) {}).overrideAttrs (old: { doCheck = false; });
 
     vector-hashtables = haskell.lib.dontCheck super.vector-hashtables;

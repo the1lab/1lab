@@ -32,9 +32,35 @@ jobs:
           1lab-shake all -j
           ./support/make-site.sh
 
-      - name: Deploy 🚀
-        if: ${{ github.ref_name == 'main' }}
-        uses: JamesIves/github-pages-deploy-action@4.1.7
+      - name: Archive site 📦
+        run: |
+          tar \
+            --dereference --hard-dereference \
+            --directory _build/html \
+            -cvf archive.tar \
+            .
+
+      - name: Upload site ⬆️
+        uses: actions/upload-artifact@v3
         with:
-          branch: gh-pages
-          folder: _build/site
+          name: github-pages
+          path: archive.tar
+          retention-days: 1
+
+  deploy:
+    needs: build
+    if: ${{ github.ref_name == 'main' }}
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy 🚀
+        id: deployment
+        uses: actions/deploy-pages@v1
