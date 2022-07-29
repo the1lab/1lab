@@ -837,7 +837,7 @@ The constructor `inS` expresses that _any_ totally-defined cube $u$ can
 be seen as a partial cube, one that agrees with $u$ for any choice of
 formula $\varphi$. This might be a bit abstract, so let's diagram the case
 where we have some square $a$, and the partial element has formula $i
-\land j$. This extension can be drawn as in the diagram below: The red
+\lor j$. This extension can be drawn as in the diagram below: The red
 "backwards L" shape is the partial element, which is "extended by" the
 black lines to make a complete square.
 
