@@ -1,5 +1,3 @@
--- Copyright (c) 2005-2021 remains with the Agda authors. See /support/shake/LICENSE.agda
-
 {-# LANGUAGE FlexibleContexts #-}
 module Main (main) where
 
@@ -21,7 +19,7 @@ main = do
   args <- getArgs
   let
     parse = getOptSimple args options $ \file (x,opts) ->
-      pure (x,opts{ optInputFile = Just file })
+      pure (x, opts{ optInputFile = Just file })
   parsed <- runOptM $ parse (defaultHtmlOptions, defaultOptions)
   case parsed of
     Left e -> error e

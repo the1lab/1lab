@@ -5,14 +5,14 @@ open import Cat.Prelude
 import Cat.Diagram.Monad as Cat
 import Cat.Reasoning as Cr
 
-module Cat.Bi.Diagram.Adjunction  where
+module Cat.Bi.Diagram.Adjunction
 ```
 
 <!--
 ```agda
-open _=>_
+  {o ℓ ℓ′} (B : Prebicategory o ℓ ℓ′) where
 
-module _ {o ℓ ℓ′} (B : Prebicategory o ℓ ℓ′) where
+  open _=>_
   private module B = Prebicategory B
 ```
 -->
@@ -90,3 +90,29 @@ commutative altars):
   \arrow["{\varepsilon \blacktriangleleft f}", from=1-4, to=3-5]
 \end{tikzcd}\]
 ~~~
+
+<!--
+```agda
+  open _⊣_
+
+  adjunction-pathp
+    : {a b : B.Ob} {f f' : a B.↦ b} {g g' : b B.↦ a}
+      (p : f ≡ f') (q : g ≡ g')
+    → {x : f ⊣ g} {y : f' ⊣ g'}
+    → PathP (λ i → B.id B.⇒ (q i B.∘ p i)) (x .η) (y .η)
+    → PathP (λ i → (p i B.∘ q i) B.⇒ B.id) (x .ε) (y .ε)
+    → PathP (λ i → p i ⊣ q i) x y
+  adjunction-pathp p q {x = x} {y = y} r s i .η = r i
+  adjunction-pathp p q {x = x} {y = y} r s i .ε = s i
+  adjunction-pathp p q {x = x} {y = y} r s i .zig j =
+    is-set→squarep (λ i j → B.Hom.Hom-set (p i) (p i))
+      (λ i → B.Hom.id) (λ i → x .zig i) (λ i → y .zig i)
+      (λ i → B.λ← (p i) B.⊗ (s i B.◀ p i) B.⊗ B.α← (p i) (q i) (p i) B.⊗ (p i B.▶ r i) B.⊗ B.ρ→ (p i))
+      i j
+  adjunction-pathp p q {x = x} {y = y} r s i .zag j =
+    is-set→squarep (λ i j → B.Hom.Hom-set (q i) (q i))
+      (λ i → B.Hom.id) (λ i → x .zag i) (λ i → y .zag i)
+      (λ i → B.ρ← (q i) B.⊗ (q i B.▶ s i) B.⊗ B.α→ (q i) (p i) (q i) B.⊗ (r i B.◀ q i) B.⊗ B.λ→ (q i))
+      i j
+```
+-->

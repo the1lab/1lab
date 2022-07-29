@@ -92,8 +92,8 @@ $-ab = (-a)b = a(-b)$, etc.</summary>
     f ∘ 0m                     ≡⟨ Hom.intror Hom.inverser ⟩
     f ∘ 0m + (f ∘ 0m - f ∘ 0m) ≡⟨ Hom.associative ⟩
     (f ∘ 0m + f ∘ 0m) - f ∘ 0m ≡⟨ ap (_- f ∘ 0m) (∘-linear-r _ _ _) ⟩
-    (f ∘ (0m + 0m)) - f ∘ 0m   ≡⟨ ap ((_- f ∘ 0m) ⊙ (f ∘_)) Hom.idl ⟩
-    (f ∘ 0m) - f ∘ 0m          ≡⟨ Hom.inverser ⟩
+    f ∘ (0m + 0m) - f ∘ 0m     ≡⟨ ap ((_- f ∘ 0m) ⊙ (f ∘_)) Hom.idl ⟩
+    f ∘ 0m - f ∘ 0m            ≡⟨ Hom.inverser ⟩
     0m                         ∎
 
   ∘-zero-l : ∀ {A B C} {f : Hom A B} → 0m ∘ f ≡ 0m {A} {C}

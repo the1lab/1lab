@@ -1391,7 +1391,7 @@ is not organised like this. It's meant to be an _explorable_
 presentation of HoTT, where concepts can be accessed in any order, and
 everything is hyperlinked together. However, we can highlight the
 following modules as being the "spine" of the development, since
-everything depends on them, and they're roughly linearly ordered.
+everything depends on them, and they're roughly linearly ordered.\\\
 
 ## Paths, in detail
 

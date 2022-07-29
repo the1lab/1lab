@@ -81,12 +81,17 @@ in
       texlive = our-texlive;
       ghc = our-ghc;
       inherit fonts shakefile;
-      agda-typed-html = import ./support/nix/build-shake.nix
-        {
-          inherit our-ghc haskellPackages;
-          inherit (pkgs) removeReferencesTo stdenv upx lua5_3 gmp;
-          main = "Wrapper.hs";
-          name = "agda-typed-html";
-        };
+      agda-typed-html = import ./support/nix/build-shake.nix {
+        inherit our-ghc haskellPackages;
+        inherit (pkgs) removeReferencesTo stdenv upx lua5_3 gmp;
+        main = "Wrapper.hs";
+        name = "agda-typed-html";
+      };
+      discover = import ./support/nix/build-shake.nix {
+        inherit our-ghc haskellPackages;
+        inherit (pkgs) removeReferencesTo stdenv upx lua5_3 gmp;
+        name = "build-agda-index";
+        main = "Discover.hs";
+      };
     };
   }

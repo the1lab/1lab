@@ -7,6 +7,7 @@ open import 1Lab.Type public
 
 open import 1Lab.Path public
 open import 1Lab.Path.Groupoid public
+open import 1Lab.Path.Reasoning public
 
 open import 1Lab.HLevel public
 open import 1Lab.HLevel.Sets public

@@ -202,6 +202,38 @@ abbreviations here too:
   α← f g h = associator .Cr._≅_.from .η (f , g , h)
 ```
 
+<!--
+```agda
+  λ←nat : ∀ {A B} {f g : A ↦ B} {α : g ⇒ f}
+        → λ← f ⊗ (id ▶ α) ≡ α ⊗ λ← g
+  λ←nat = unitor-l .Cr._≅_.from .is-natural _ _ _
+
+  λ→nat : ∀ {A B} {f g : A ↦ B} {α : g ⇒ f}
+        → λ→ f ⊗ α ≡ (id ▶ α) ⊗ λ→ g
+  λ→nat = unitor-l .Cr._≅_.to .is-natural _ _ _
+
+  ρ←nat : ∀ {A B} {f g : A ↦ B} {α : f ⇒ g}
+        → ρ← g ⊗ (α ◀ id) ≡ α ⊗ ρ← f
+  ρ←nat {A} {B} {f} {g} {α} = unitor-r .Cr._≅_.from .is-natural f g α
+
+  ρ→nat : ∀ {A B} {f g : A ↦ B} {α : f ⇒ g}
+        → ρ→ g ⊗ α ≡ (α ◀ id) ⊗ ρ→ f
+  ρ→nat {A} {B} {f} {g} {α} = unitor-r .Cr._≅_.to .is-natural f g α
+
+  α←nat
+    : ∀ {A B C D} {f f' : C ↦ D} {g g' : B ↦ C} {h h' : A ↦ B}
+        {α : f' ⇒ f} {β : g' ⇒ g} {γ : h' ⇒ h}
+    → α← f g h ⊗ (α ◆ (β ◆ γ)) ≡ ((α ◆ β) ◆ γ) ⊗ α← f' g' h'
+  α←nat = associator .Cr._≅_.from .is-natural _ _ _
+
+  α→nat
+    : ∀ {A B C D} {f f' : C ↦ D} {g g' : B ↦ C} {h h' : A ↦ B}
+        {α : f' ⇒ f} {β : g' ⇒ g} {γ : h' ⇒ h}
+    → α→ f g h ⊗ ((α ◆ β) ◆ γ) ≡ (α ◆ (β ◆ γ)) ⊗ α→ f' g' h'
+  α→nat = associator .Cr._≅_.to .is-natural _ _ _
+```
+-->
+
 The final data we need are coherences relating the left and right
 unitors (the **triangle identity**, nothing to do with adjunctions), and
 one for reducing sequences of associators, the **pentagon identity**. As

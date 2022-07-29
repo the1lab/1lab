@@ -503,7 +503,7 @@ into our `Expr`{.Agda} type.
 ```agda
 private
   pattern nat-lit n =
-    def (quote Number.fromNat) (_ ∷ _ ∷ _ ∷ (lit (nat n)) v∷ _)
+    def (quote Number.fromNat) (_ h∷ _ h∷ _ v∷ (lit (nat n)) v∷ _)
   pattern ″zero″ =
     con (quote zero) []
   pattern ″suc″ x =

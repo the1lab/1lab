@@ -58,6 +58,7 @@ data HtmlCompileEnv = HtmlCompileEnv
 data HtmlModuleEnv = HtmlModuleEnv
   { htmlModEnvCompileEnv :: HtmlCompileEnv
   , htmlModEnvName       :: ModuleName
+  , htmlModAnchorBase    :: FilePath
   }
 
 newtype HtmlModule = HtmlModule { getHtmlModule :: HashMap Text Identifier }
@@ -110,7 +111,10 @@ preModuleHtml
 preModuleHtml cenv _isMain modName _ifacePath
   | htmlOptGenTypes (htmlCompileEnvOpts cenv) = do
     liftIO . putStrLn $ "Entering module " <> render (pretty modName)
-    pure $ Recompile (HtmlModuleEnv cenv modName)
+    let
+      topl = toTopLevelModuleName modName
+      file = render (pretty topl) <.> "html"
+    pure $ Recompile (HtmlModuleEnv cenv modName file)
 -- When types are being skipped we can safely only re-render modules
 -- whose interface file have changed:
 preModuleHtml cenv _ modName mifile =
@@ -118,7 +122,8 @@ preModuleHtml cenv _ modName mifile =
     ft <- iFileType <$> curIF
     let
       topl = toTopLevelModuleName modName
-      ext = highlightedFileExt (htmlOptHighlight (htmlCompileEnvOpts cenv)) ft
+      file = render (pretty topl) <.> "html"
+      ext  = highlightedFileExt (htmlOptHighlight (htmlCompileEnvOpts cenv)) ft
       path = htmlOptDir (htmlCompileEnvOpts cenv) </> modToFile topl ext
 
     liftIO $ do
@@ -127,7 +132,7 @@ preModuleHtml cenv _ modName mifile =
         then do
           putStrLn $ "HTML for module " <> render (pretty modName) <> " is up-to-date"
           pure $ Skip (HtmlModule mempty)
-        else pure $ Recompile (HtmlModuleEnv cenv modName)
+        else pure $ Recompile (HtmlModuleEnv cenv modName path)
 
   where
     uptodate of_ = case mifile of
@@ -142,8 +147,8 @@ compileDefHtml
   -> TCM (Maybe (Text, Identifier))
 compileDefHtml env _ _ _
   | not (htmlOptGenTypes (htmlCompileEnvOpts env)) = pure Nothing
-compileDefHtml env _menv _isMain def = do
-  case definitionAnchor env def of
+compileDefHtml env menv _isMain def = do
+  case definitionAnchor menv def of
     Just mn -> do
       ty <- typeToText def
       let
@@ -152,8 +157,10 @@ compileDefHtml env _menv _isMain def = do
           , idIdent = Text.pack (render (pretty (qnameName (defName def))))
           , idType = Text.pack ty
           }
+      liftIO $ putStrLn $ "Generated type for definition " ++ show mn
       pure (Just (mn, ident))
     Nothing -> do
+      liftIO $ putStrLn $ "Skipped definition " ++ (render (pretty (qnameName (defName def))))
       pure Nothing
 
 postModuleHtml
@@ -201,8 +208,14 @@ compileOneModule
   -> TCM ()
 compileOneModule pn opts types iface = do
   types <- liftIO (newIORef types)
-  let cEnv = HtmlCompileEnv opts types pn
-      mEnv = HtmlModuleEnv cEnv (iModuleName iface)
+  let
+    ft = iFileType iface
+    topl = toTopLevelModuleName (iModuleName iface)
+    file = render (pretty topl) <.> "html"
+    ext  = highlightedFileExt (htmlOptHighlight opts) ft
+    path = htmlOptDir opts </> modToFile topl ext
+    cEnv = HtmlCompileEnv opts types pn
+    mEnv = HtmlModuleEnv cEnv (iModuleName iface) path
 
   setInterface iface
 
@@ -244,25 +257,12 @@ makePi :: [TypedBinding] -> Expr -> Expr
 makePi [] = id
 makePi (b:bs) = Pi exprNoRange (b :| bs)
 
-definitionAnchor :: HtmlCompileEnv -> Definition -> Maybe Text
+definitionAnchor :: HtmlModuleEnv -> Definition -> Maybe Text
 definitionAnchor _ def | defCopy def = Nothing
-definitionAnchor htmlenv def = f =<< go where
-  basepn = htmlCompileBasePath htmlenv
-  go :: Maybe FilePath
-  go = do
-    let name = defName def
-    case rangeFile (nameBindingSite (qnameName name)) of
-      S.Just (filePath -> f)
-        | ("Agda/Builtin" `isInfixOf` f) || ("Agda/Primitive" `isInfixOf` f) ->
-          fakePath name
-        | otherwise -> do
-          let f' = moduleName $ dropExtensions (makeRelative basepn f)
-          pure (f' <.> "html")
-      S.Nothing -> Nothing
-  f modn =
-    case rStart (nameBindingSite (qnameName (defName def))) of
-      Just pn -> pure $ Text.pack (modn <> "#" <> show (posPos pn))
-      Nothing -> Nothing
+definitionAnchor htmlenv def =
+  case rStart (nameBindingSite (qnameName (defName def))) of
+    Just pn -> pure $ Text.pack (htmlModAnchorBase htmlenv <> "#" <> show (posPos pn))
+    Nothing -> Nothing
 
 fakePath :: QName -> Maybe FilePath
 fakePath (QName (MName xs) _) =

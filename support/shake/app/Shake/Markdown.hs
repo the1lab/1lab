@@ -4,7 +4,7 @@
 post-processing steps and rendered to HTML using the
 @support/web/template.html@ template.
 -}
-module Shake.Markdown (buildMarkdown) where
+module Shake.Markdown (buildMarkdown, renderMarkdown) where
 
 import Control.Monad.Error.Class
 import Control.Monad.IO.Class
@@ -196,14 +196,17 @@ patchBlock h = pure h
 
 
 -- | Render our Pandoc document using the given template variables.
-renderMarkdown :: PandocMonad m
-               => [Text] -- ^ List of authors
-               -> [Val Text] -- ^ List of references
-               -> String -- ^ Name of the current module
-               -> Pandoc -> m Text
+renderMarkdown
+  :: PandocMonad m
+  => [Text]     -- ^ List of authors
+  -> [Val Text] -- ^ List of references
+  -> String     -- ^ Name of the current module
+  -> Pandoc
+  -> m Text
 renderMarkdown authors references modname markdown = do
-  template <- getTemplate templateName >>= runWithPartials . compileTemplate templateName
-                >>= either (throwError . PandocTemplateError . Text.pack) pure
+  template <-
+    getTemplate templateName >>= runWithPartials . compileTemplate templateName
+      >>= either (throwError . PandocTemplateError . Text.pack) pure
 
   let
     authors' = case authors of

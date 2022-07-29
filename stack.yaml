@@ -1,8 +1,0 @@
-resolver: lts-18.28
-packages:
-- support/shake
-
-extra-deps:
-  - url: https://github.com/agda/agda/archive/5d2d77abbc0c97f5b23d7089797c3ef8796508dc.tar.gz
-    sha256: f36802907c1e2ae68aabd5a3f009f8ce1dc6b14de2830b06a06a61320826ccf3
-  - vector-hashtables-0.1.1.1@sha256:cb4ba4af6b83b6956278bbfe8d0f779a40928728e82977e566c0103fe8d6c867,2725

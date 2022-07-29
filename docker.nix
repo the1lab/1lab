@@ -41,6 +41,7 @@ in
       gnutar
       rsync
       deps
+      the-lab.discover
     ];
 
     config = {
