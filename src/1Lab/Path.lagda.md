@@ -33,7 +33,7 @@ In this module, we refer to the type `A ≡ B` as either (the type of)
 _paths from A to B_ or (the type of) _identifications between A and B_,
 but **never** as "equalities between A and B". In particular, the HoTT
 book comments that we may say "$a$ and $b$ are equal" when the type $a
-\equiv b$ is inhabited, but in this development we refer this
+\equiv b$ is inhabited, but in this development we reserve this
 terminology for the case where $a$ and $b$ inhabit a [set].
 
 [set]: 1Lab.HLevel.html
