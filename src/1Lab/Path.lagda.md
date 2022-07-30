@@ -891,7 +891,7 @@ extensible at `i1`{.Agda}_. Let's unpack that a bit:
 A _partial path_ is anything of type `I → Partial φ A` -- let's say we
 have an `f` in that type. It takes a value at `i0`{.Agda} (that's `f
 i0`), and a value at `i1`{.Agda}. The Kan condition expresses that, if
-there exists an `A [ φ → f i0 ]`, then we also have an `A [ φ → f i1 ]`.
+there exists an `A [ φ ↦ f i0 ]`, then we also have an `A [ φ ↦ f i1 ]`.
 In other words: Extensibility is preserved by paths.
 
 Recall the open box we drew by gluing paths together at the start of the
