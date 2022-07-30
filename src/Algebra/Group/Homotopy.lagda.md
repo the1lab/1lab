@@ -83,6 +83,15 @@ commutative, independent of $A$.
          ∙ (λ j → p (~ i ∨ j) ∙ q (i ∨ j)))
 ```
 
+The proof can be visualized with the following diagram, where the
+vertices are in $\Omega^{n + 1} A$. The outer rectangle shows `p ∙ q ≡
+q ∙ p`, which is filled by transporting the two inner squares using
+`∙-id-r`{.Agda} on `p j` and `∙-id-l`{.Agda} on `q j`. Note that
+`∙-id-r refl` and `∙-id-l refl` are definitionally equal.  In the two
+inner squares, `p j` and `q j` are on different sides of the path
+composition, so we can use the De Morgan structure on the interval to
+have `p` and `q` slip by each other.
+
 ~~~{.quiver .tall-2}
 \[\begin{tikzcd}
 	{\id{refl}} &&& {\id{refl}} &&& {\id{refl}} \\
@@ -109,8 +118,8 @@ commutative, independent of $A$.
 	\arrow[from=4-4, to=5-4]
 	\arrow[from=2-6, to=1-7]
 	\arrow[from=4-6, to=5-7]
-	\arrow["{p\ (j \land \neg i) \cdot q\ (j \land i)}"{description}, color={rgb,255:red,214;green,92;blue,214}, draw=none, from=0, to=2]
-	\arrow["{p\ (\neg i \lor j) \cdot q\ (i \lor j)}"{description}, color={rgb,255:red,214;green,92;blue,214}, draw=none, from=1, to=3]
+	\arrow["{p (j \land \neg i) \cdot q (j \land i)}"{description}, color={rgb,255:red,214;green,92;blue,214}, draw=none, from=0, to=2]
+	\arrow["{p (\neg i \lor j) \cdot q (i \lor j)}"{description}, color={rgb,255:red,214;green,92;blue,214}, draw=none, from=1, to=3]
 	\arrow["{\id{\cdot\text{-id-r}}\ (p\ j)\ k}"{description}, color={rgb,255:red,214;green,92;blue,92}, draw=none, from=0, to=4]
 	\arrow["{\id{\cdot\text{-id-l}}\ (q\ j)\ k}"{description}, color={rgb,255:red,153;green,92;blue,214}, draw=none, from=1, to=5]
 	\arrow["{\id{\cdot\text{-id-l}}\ (q\ j)\ k}"{description}, color={rgb,255:red,153;green,92;blue,214}, draw=none, from=2, to=6]
