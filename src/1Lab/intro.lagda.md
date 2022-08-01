@@ -611,7 +611,7 @@ $\id{Sub} : \mathscr{E}\op \to \set$ which takes an object to its
 poset of subobjects. Since the subobjects of $x$ can be described as
 (isomorphism classes of) objects of a subcategory of $\mathscr{E}/x$, we
 would hope that an **object classifier** would classify the entire
-category $\id{Core}(\mathscr{E}/x)$, keeping around _all_ of the maps
+groupoid $\id{Core}(\mathscr{E}/x)$, keeping around _all_ of the maps
 into $x$, and keeping track of the isomorphisms between them.
 
 <details class=text>
@@ -646,8 +646,9 @@ $C$ that makes the following triangle (in $C$) commute:
 
 [representing object]: https://ncatlab.org/nlab/show/representable+functor#idea
 
-But for us to be able to take the core of $\mathscr{E}/x$, we need that
-the hom-space $\id{Hom}_{\mathscr{E}}(A, x)$ must be a category,
+But for us to be able to represent $\id{Core}(\mathscr{E}/-) : \mathscr{E}\op
+\to \grpd$ as an object $\mathcal{U}$ of $\mathscr{E}$, we need
+the hom-space $\id{Hom}_{\mathscr{E}}(x, \mathcal{U})$ to be a groupoid,
 instead of just a set; Thus $\mathscr{E}$ was actually a 2-category!
 We're not in the clear though, since a slice of a n-category is another
 n-category, we now have a 2-category $\mathscr{E}/x$, so the core of
@@ -660,12 +661,12 @@ this to a $\io$-category: a $\infty$-category where every map above
 dimension 1 is invertible.
 
 Using the proper higher-categorical jargon, we can define an object
-classifier $\ty$ to be a $\io$-category $\ht{H}$ is a representing
+classifier $\ty$ in an $\io$-category $\ht{H}$ to be a representing
 object for the $\io$-presheaf $\id{Core}(\ht{H}/-) : \ht{H}\op \to
 \igpd$.
 
 Again, the importance of object classifiers is that they let us talk
-about arbitrary objects if they were points of an object $\ty$.
+about arbitrary objects as if they were points of an object $\ty$.
 Specifically, any object $B$ has a _name_, a map $\ulcorner B \urcorner
 : * \to \ty$, which represents the unique map $B \to *$. To make this
 connection clearer, let's pass back to a syntactic presentation of type
