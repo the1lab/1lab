@@ -7,6 +7,7 @@ import Agda.Interaction.FindFile
 import Agda.Interaction.Options
 import Agda.Interaction.Imports
 import Agda.Compiler.Backend hiding (options)
+import qualified Agda.TypeChecking.Monad.Benchmark as Bench
 import Control.Monad.Except
 import Agda.Utils.FileName
 import System.Environment
@@ -37,6 +38,10 @@ main = do
         cr <- typeCheckMain TypeCheck source
         modifyTCLens stBackends (htmlBackend basepn htmlopt:)
         callBackend "HTML" IsMain cr
+
+        -- Print accumulated statistics.
+        Bench.print
+        printStatistics Nothing =<< useTC lensAccumStatistics
 
 options :: [OptDescr (Flag (HtmlOptions, CommandLineOptions))]
 options = fmap (fmap modfst) htmlOpts ++ fmap (fmap modsnd) standardOptions
