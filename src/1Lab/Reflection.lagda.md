@@ -545,6 +545,21 @@ meta x x₁ term=? t₂ = false
 unknown term=? t₂ = false
 _ term=? _ = false
 
+get-boundary : Term → TC (Maybe (Term × Term))
+get-boundary tm@(def (quote _≡_) (_ h∷ T h∷ x v∷ y v∷ [])) = do
+  returnTC (just (x , y))
+get-boundary tm@(def (quote Path) (_ h∷ T v∷ x v∷ y v∷ [])) = do
+  returnTC (just (x , y))
+get-boundary tm@(def (quote PathP) (_ h∷ T v∷ x v∷ y v∷ [])) = do
+  unify tm (def (quote _≡_) (x v∷ y v∷ []))
+  returnTC (just (x , y))
+get-boundary (meta m _) = blockOnMeta m
+get-boundary _ = returnTC nothing
+```
+
+## Debugging Tools
+
+```agda
 debug! : ∀ {ℓ} {A : Type ℓ} → Term → TC A
 debug! tm = typeError (strErr "[DEBUG]: " ∷ termErr tm ∷ [])
 
@@ -557,14 +572,9 @@ quote-repr-macro a hole = do
               strErr"\nHas quoted representation\n  " ∷
                 termErr repr ∷ []
 
-get-boundary : Term → TC (Maybe (Term × Term))
-get-boundary tm@(def (quote _≡_) (_ h∷ T h∷ x v∷ y v∷ [])) = do
-  returnTC (just (x , y))
-get-boundary tm@(def (quote Path) (_ h∷ T v∷ x v∷ y v∷ [])) = do
-  returnTC (just (x , y))
-get-boundary tm@(def (quote PathP) (_ h∷ T v∷ x v∷ y v∷ [])) = do
-  unify tm (def (quote _≡_) (x v∷ y v∷ []))
-  returnTC (just (x , y))
-get-boundary (meta m _) = blockOnMeta m
-get-boundary _ = returnTC nothing
+macro
+  quote-repr! : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → A → Term → TC ⊤
+  quote-repr! a = quote-repr-macro a
+
 ```
+
