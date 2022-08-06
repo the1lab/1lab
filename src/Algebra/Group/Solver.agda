@@ -7,6 +7,7 @@ open import Data.Nat
 open import Algebra.Group
 
 open import 1Lab.Reflection
+open import 1Lab.Reflection.Solver
 open import 1Lab.Reflection.Variables
 
 module _ {ℓ} {A : Type ℓ} (G : Group-on A) where
@@ -192,7 +193,7 @@ module Reflection where
 
   pattern “unit” = def (quote is-group.unit) (is-group-args [])
   pattern “⋆” x y = def (quote Group-on._⋆_) (group-args (x v∷ y v∷ []))
-  pattern “inverse” x = def (quote Group-on.inverse) (is-group-args (x v∷ []))
+  pattern “inverse” x = def (quote is-group.inverse) (is-group-args (x v∷ []))
 
   mk-group-args : Term → List (Arg Term) → List (Arg Term)
   mk-group-args grp args = unknown h∷ unknown h∷ grp v∷ args
@@ -220,51 +221,25 @@ module Reflection where
   dont-reduce : List Name
   dont-reduce = quote is-group.unit ∷ quote Group-on._⋆_ ∷ quote is-group.inverse ∷ []
 
-  repr-macro : ∀ {ℓ} {A : Type ℓ} → Group-on A → Term → Term → TC ⊤
-  repr-macro {A = A} grp tm hole =
-    withNormalisation false $
-    dontReduceDefs dont-reduce $ do
+  group-solver : ∀ {ℓ} {A : Type ℓ} → Group-on A → TC (VariableSolver A)
+  group-solver {A = A} grp = do
     grp-tm ← quoteTC grp
-    e , vs ← reduce tm >>= build-expr {A = A} empty-vars
-    size , env ← environment vs
-    typeError $ strErr "The expression\n  " ∷
-                  termErr tm ∷
-                strErr "\nIs represented by the expression\n  " ∷
-                  termErr e ∷
-                strErr "\nIn the environment\n  " ∷
-                  termErr env ∷ []
+    returnTC (var-solver {A = A} dont-reduce build-expr (“solve” grp-tm) (“expand” grp-tm))
+
+  repr-macro : ∀ {ℓ} {A : Type ℓ} → Group-on A → Term → Term → TC ⊤
+  repr-macro {A = A} grp tm hole = do
+    solver ← group-solver grp
+    mk-var-repr solver tm 
 
   expand-macro : ∀ {ℓ} {A : Type ℓ} → Group-on A → Term → Term → TC ⊤
-  expand-macro {A = A} grp tm hole =
-    withNormalisation false $
-    dontReduceDefs dont-reduce $ do
-    grp-tm ← quoteTC grp
-    e , vs ← reduce tm >>= build-expr {A = A} empty-vars
-    size , env ← environment vs
-    unify hole (“expand” grp-tm e env)
+  expand-macro {A = A} grp tm hole = do
+    solver ← group-solver grp
+    mk-var-normalise solver tm hole
 
   solve-macro : ∀ {ℓ} {A : Type ℓ} → Group-on A → Term → TC ⊤
-  solve-macro {A = A} grp hole =
-    withNormalisation false $
-    dontReduceDefs dont-reduce $ do
-    grp-tm ← quoteTC grp
-    goal ← inferType hole >>= reduce
-
-    just (lhs , rhs) ← get-boundary goal
-      where nothing → typeError $ strErr "Can't determine boundary: " ∷
-                                  termErr goal ∷ []
-    elhs , vs ← reduce lhs >>= build-expr {A = A} empty-vars
-    erhs , vs ← reduce rhs >>= build-expr {A = A} vs
-    size , env ← environment vs
-    (noConstraints $ unify hole (“solve” grp-tm elhs erhs env)) <|> do
-      nf-lhs ← normalise (“expand” grp-tm elhs env)
-      nf-rhs ← normalise (“expand” grp-tm erhs env)
-      typeError (strErr "Could not solve the following goal:\n  " ∷
-                   termErr lhs ∷ strErr " ≡ " ∷ termErr rhs ∷
-                 strErr "\nComputed normal forms:\n  LHS: " ∷
-                   termErr nf-lhs ∷
-                 strErr "\n  RHS: " ∷
-                   termErr nf-rhs ∷ [])
+  solve-macro {A = A} grp hole = do
+    solver ← group-solver grp
+    mk-var-solver solver hole
 
 macro
   repr-group! : ∀ {ℓ} → Group ℓ → Term → Term → TC ⊤
@@ -273,8 +248,23 @@ macro
   expand-group! : ∀ {ℓ} → Group ℓ → Term → Term → TC ⊤
   expand-group! (_ , grp) tm = Reflection.expand-macro grp tm
 
-  solve-group-on! : ∀ {ℓ} {A : Type ℓ} → Group-on A → Term → TC ⊤
-  solve-group-on! grp = Reflection.solve-macro grp
+  group-on! : ∀ {ℓ} {A : Type ℓ} → Group-on A → Term → TC ⊤
+  group-on! grp = Reflection.solve-macro grp
 
-  solve-group! : ∀ {ℓ} → Group ℓ → Term → TC ⊤
-  solve-group! (_ , grp) = Reflection.solve-macro grp
+  group! : ∀ {ℓ} → Group ℓ → Term → TC ⊤
+  group! (_ , grp) = Reflection.solve-macro grp
+
+private module TestGroup-on {ℓ} {A : Type ℓ} (grp : Group-on A) where
+  open Group-on grp
+
+  test : ∀ (x y : A) → (x ⋆ inverse y) ⋆ y ⋆ y ≡ x ⋆ (unit ⋆ y)
+  test x y = group-on! grp
+
+private module TestGroup {ℓ} (grp : Group ℓ) where
+  A : Type ℓ
+  A = fst grp
+
+  open Group-on (snd grp)
+
+  test : ∀ (x y : A) → (x ⋆ inverse y) ⋆ y ⋆ y ≡ x ⋆ (unit ⋆ y)
+  test x y = group! grp
