@@ -4,6 +4,8 @@ open import 1Lab.Prelude
 open import 1Lab.Reflection
 open import 1Lab.Reflection.Variables
 
+open import Data.List
+
 private variable
   ℓ : Level
   A : Type ℓ

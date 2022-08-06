@@ -245,8 +245,8 @@ macro
   repr-group! : ∀ {ℓ} → Group ℓ → Term → Term → TC ⊤
   repr-group! (_ , grp) tm = Reflection.repr-macro grp tm
 
-  expand-group! : ∀ {ℓ} → Group ℓ → Term → Term → TC ⊤
-  expand-group! (_ , grp) tm = Reflection.expand-macro grp tm
+  simpl-group! : ∀ {ℓ} → Group ℓ → Term → Term → TC ⊤
+  simpl-group! (_ , grp) tm = Reflection.expand-macro grp tm
 
   group-on! : ∀ {ℓ} {A : Type ℓ} → Group-on A → Term → TC ⊤
   group-on! grp = Reflection.solve-macro grp

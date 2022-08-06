@@ -177,9 +177,9 @@ by faithfulness.
   ff+split-eso→inverse .F-∘ {x} {y} {z} f g =
     fully-faithful→faithful {F = F} ff (
       F₁ F (ff⁻¹ (ffz D.∘ (f D.∘ g) D.∘ ftx))      ≡⟨ ff.ε _ ⟩
-      ffz D.∘ (f D.∘ g) D.∘ ftx                    ≡⟨ solve! D ⟩
+      ffz D.∘ (f D.∘ g) D.∘ ftx                    ≡⟨ cat! D ⟩
       ffz D.∘ f D.∘ ⌜ D.id ⌝ D.∘ g D.∘ ftx         ≡˘⟨ ap¡ (f*y-iso .di.invl) ⟩
-      ffz D.∘ f D.∘ (fty D.∘ ffy) D.∘ g D.∘ ftx    ≡⟨ solve! D ⟩
+      ffz D.∘ f D.∘ (fty D.∘ ffy) D.∘ g D.∘ ftx    ≡⟨ cat! D ⟩
       (ffz D.∘ f D.∘ fty) D.∘ (ffy D.∘ g D.∘ ftx)  ≡˘⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
       F₁ F (ff⁻¹ _) D.∘ F₁ F (ff⁻¹ _)              ≡˘⟨ F-∘ F _ _ ⟩
       F₁ F (ff⁻¹ _ C.∘ ff⁻¹ _)                     ∎
@@ -234,7 +234,7 @@ essential fibre $F^*F(x)$ comes equipped with an isomorphism $FF^*F(x)
       F₁ F (ff⁻¹ ffy C.∘ f)                                    ≡⟨ F-∘ F _ _ ⟩
       ⌜ F₁ F (ff⁻¹ ffy) ⌝ D.∘ F₁ F f                           ≡⟨ ap! (ff.ε _) ⟩
       ffy D.∘ ⌜ F₁ F f ⌝                                       ≡⟨ ap! (sym (D.idr _) ∙ ap (F₁ F f D.∘_) (sym (f*x-iso .di.invl))) ⟩
-      ffy D.∘ F₁ F f D.∘ ftx D.∘ ffx                           ≡⟨ solve! D ⟩
+      ffy D.∘ F₁ F f D.∘ ftx D.∘ ffx                           ≡⟨ cat! D ⟩
       (ffy D.∘ F₁ F f D.∘ ftx) D.∘ ffx                         ≡˘⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
       F₁ F (ff⁻¹ (ffy D.∘ F₁ F f D.∘ ftx)) D.∘ F₁ F (ff⁻¹ ffx) ≡˘⟨ F-∘ F _ _ ⟩
       F₁ F (ff⁻¹ (ffy D.∘ F₁ F f D.∘ ftx) C.∘ ff⁻¹ ffx)        ≡⟨⟩
@@ -318,7 +318,7 @@ The `zag`{.Agda} identity needs an appeal to faithfulness:
     fully-faithful→faithful {F = F} ff (
       F₁ F (ff⁻¹ (ffx D.∘ ftx D.∘ fftx) C.∘ ff⁻¹ fffx)        ≡⟨ F-∘ F _ _ ⟩
       F₁ F (ff⁻¹ (ffx D.∘ ftx D.∘ fftx)) D.∘ F₁ F (ff⁻¹ fffx) ≡⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
-      (ffx D.∘ ftx D.∘ fftx) D.∘ fffx                         ≡⟨ solve! D ⟩
+      (ffx D.∘ ftx D.∘ fftx) D.∘ fffx                         ≡⟨ cat! D ⟩
       (ffx D.∘ ftx) D.∘ (fftx D.∘ fffx)                       ≡⟨ ap₂ D._∘_ (f*x-iso .di.invr) (f*f*x-iso .di.invl) ⟩
       D.id D.∘ D.id                                           ≡⟨ D.idl _ ∙ sym (F-id F) ⟩
       F₁ F C.id                                               ∎

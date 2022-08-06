@@ -619,7 +619,7 @@ macro
   expand! n = expand-macro n
 ```
 
-Now, finally, we have reached the summit. The `solve!` macro allows us
+Now, finally, we have reached the summit. The `cat!` macro allows us
 to automatically solve equations involving natural numbers.
 
 ```agda
@@ -646,8 +646,8 @@ solve-macro hole =
                  termErr nf-rhs ∷ [])
 
 macro
-  solve! : Term → TC ⊤
-  solve! = solve-macro
+  cat! : Term → TC ⊤
+  cat! = solve-macro
 ```
 
 # Examples
@@ -659,7 +659,7 @@ work for a moment.
 private
   wow-good-job : ∀ x y z
                → (x + 5 + suc y) * z ≡ z * 5 + x * z + z + z * y
-  wow-good-job x y z = solve!
+  wow-good-job x y z = cat!
 ```
 
 Thus concludes our journey. There is still room for improvement,

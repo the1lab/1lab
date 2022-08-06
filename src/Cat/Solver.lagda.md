@@ -1,5 +1,6 @@
 ```agda
 open import 1Lab.Reflection
+open import 1Lab.Reflection.Solver
 open import 1Lab.Prelude hiding (id ; _∘_)
 
 open import Cat.Base
@@ -158,57 +159,33 @@ module Reflection where
   dont-reduce : List Name
   dont-reduce = quote Precategory.id ∷ quote Precategory._∘_ ∷ []
 
+  cat-solver : Term → SimpleSolver
+  cat-solver cat .SimpleSolver.dont-reduce = dont-reduce
+  cat-solver cat .SimpleSolver.build-expr tm = returnTC $ build-expr tm
+  cat-solver cat .SimpleSolver.invoke-solver = “solve” cat
+  cat-solver cat .SimpleSolver.invoke-normalisier = “nf” cat
+
   repr-macro : Term → Term → Term → TC ⊤
-  repr-macro cat f hole =
-    withNormalisation false $
-    dontReduceDefs dont-reduce $ do
-      let e = build-expr f
-      nf ← normalise $ “nf” cat e
-      typeError $ strErr "The expression\n  " ∷
-                    termErr f ∷
-                  strErr "\nIs represented by the expression\n  " ∷
-                    termErr e ∷
-                  strErr "\nAnd has normal form\n  " ∷
-                    termErr nf ∷ []
+  repr-macro cat f _ =
+    mk-simple-repr (cat-solver cat) f
 
   simplify-macro : Term → Term → Term → TC ⊤
   simplify-macro cat f hole =
-    withNormalisation false $
-    dontReduceDefs dont-reduce $ do
-      let e = build-expr f
-      nf ← normalise (“nf” cat e)
-      unify hole nf
+    mk-simple-normalise (cat-solver cat) f hole
 
   solve-macro : Term → Term → TC ⊤
   solve-macro cat hole =
-    withNormalisation false $
-    dontReduceDefs dont-reduce $ do
-    goal ← inferType hole >>= normalise
-    just (lhs , rhs) ← get-boundary goal
-      where nothing → typeError $ strErr "Can't determine boundary: " ∷
-                                  termErr goal ∷ []
-    let elhs = build-expr lhs
-    let erhs = build-expr rhs
-    (noConstraints $ unify hole (“solve” cat elhs erhs)) <|> do
-      nf-lhs ← normalise (“nf” cat elhs)
-      nf-rhs ← normalise (“nf” cat erhs)
-      typeError (strErr "Could not solve the following goal:\n  " ∷
-                   termErr lhs ∷ strErr " ≡ " ∷ termErr rhs ∷
-                 strErr "\nComputed normal forms:\n  LHS: " ∷
-                   termErr nf-lhs ∷
-                 strErr "\n  RHS: " ∷
-                   termErr nf-rhs ∷ [])
-
+    mk-simple-solver (cat-solver cat) hole
 
 macro
-  repr! : Term → Term → Term → TC ⊤
-  repr! cat f = Reflection.repr-macro cat f
+  repr-cat! : Term → Term → Term → TC ⊤
+  repr-cat! cat f = Reflection.repr-macro cat f
 
-  simplify! : Term → Term → Term → TC ⊤
-  simplify! cat f = Reflection.simplify-macro cat f
+  simpl-cat! : Term → Term → Term → TC ⊤
+  simpl-cat! cat f = Reflection.simplify-macro cat f
 
-  solve! : Term → Term → TC ⊤
-  solve! = Reflection.solve-macro
+  cat! : Term → Term → TC ⊤
+  cat! = Reflection.solve-macro
 ```
 
 
@@ -226,5 +203,5 @@ module _ (C : Precategory o h) where private
 
   test : a C.∘ (b C.∘ (c C.∘ C.id) C.∘ C.id C.∘ (d C.∘ C.id))
        ≡ a C.∘ b C.∘ c C.∘ d
-  test = solve! C
+  test = cat! C
 ```

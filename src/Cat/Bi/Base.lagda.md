@@ -313,7 +313,7 @@ annoying but straightforward.
   pb .compose {C = C} .F-∘ {x} {y} {z} f g = Nat-path λ _ →
     z .fst .F₁ _ C.∘ f .fst .η _ C.∘ g .fst .η _                      ≡⟨ C.pushl (z .fst .F-∘ _ _) ⟩
     z .fst .F₁ _ C.∘ z .fst .F₁ _ C.∘ f .fst .η _ C.∘ g .fst .η _     ≡⟨ C.extend-inner (sym (f .fst .is-natural _ _ _)) ⟩
-    z .fst .F₁ _ C.∘ f .fst .η _ C.∘ y .fst .F₁ _ C.∘ g .fst .η _     ≡⟨ solve! C ⟩
+    z .fst .F₁ _ C.∘ f .fst .η _ C.∘ y .fst .F₁ _ C.∘ g .fst .η _     ≡⟨ cat! C ⟩
     (z .fst .F₁ _ C.∘ f .fst .η _) C.∘ (y .fst .F₁ _ C.∘ g .fst .η _) ∎
     where module C = Cr C
 ```
