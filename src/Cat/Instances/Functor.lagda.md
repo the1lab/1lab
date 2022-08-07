@@ -262,9 +262,9 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} {F G : Functor C D} w
     eps : G => F
     eps .η x = invs x .inv
     eps .is-natural x y f =
-      invs y .inv D.∘ G.₁ f                             ≡⟨ ap₂ D._∘_ refl (sym (D.idr _) ∙ ap (G.₁ f D.∘_) (sym (invs x .invl))) ⟩
-      invs y .inv D.∘ G.₁ f D.∘ eta.η x D.∘ invs x .inv ≡⟨ ap₂ D._∘_ refl (D.extendl (sym (eta.is-natural _ _ _))) ⟩
-      invs y .inv D.∘ eta.η y D.∘ F.₁ f D.∘ invs x .inv ≡⟨ D.cancell (invs y .invr) ⟩
+      invs y .inv D.∘ ⌜ G.₁ f ⌝                             ≡⟨ ap! (sym (D.idr _) ∙ ap (G.₁ f D.∘_) (sym (invs x .invl))) ⟩
+      invs y .inv D.∘ ⌜ G.₁ f D.∘ eta.η x D.∘ invs x .inv ⌝ ≡⟨ ap! (D.extendl (sym (eta.is-natural _ _ _))) ⟩
+      invs y .inv D.∘ eta.η y D.∘ F.₁ f D.∘ invs x .inv     ≡⟨ D.cancell (invs y .invr) ⟩
       F.₁ f D.∘ invs x .inv ∎
 
     are-invs : [C,D].is-invertible eta
@@ -325,9 +325,9 @@ Uncurry {C = C} {D = D} {E = E} F = uncurried where
          ≡ uncurried .F₁ (f , g) E.∘ uncurried .F₁ (f′ , g′)
     path =
       F.₁ (f C.∘ f′) .η _ E.∘ F₁ (F.₀ _) (g D.∘ g′)                       ≡˘⟨ E.pulll (λ i → F.F-∘ f f′ (~ i) .η _) ⟩
-      F.₁ f .η _ E.∘ F.₁ f′ .η _ E.∘ F₁ (F.₀ _) (g D.∘ g′)                ≡⟨ (λ i → F.₁ f .η _ E.∘ F.₁ f′ .η _ E.∘ F-∘ (F.₀ _) g g′ i) ⟩
+      F.₁ f .η _ E.∘ F.₁ f′ .η _ E.∘ ⌜ F₁ (F.₀ _) (g D.∘ g′) ⌝            ≡⟨ ap! (F-∘ (F.₀ _) _ _) ⟩
       F.₁ f .η _ E.∘ F.₁ f′ .η _ E.∘ F₁ (F.₀ _) g E.∘ F₁ (F.₀ _) g′       ≡⟨ solve E ⟩
-      F.₁ f .η _ E.∘ (F.₁ f′ .η _ E.∘ F₁ (F.₀ _) g) E.∘ F₁ (F.₀ _) g′     ≡⟨ ap (λ e → _ E.∘ e E.∘ _) (F.₁ f′ .is-natural _ _ _) ⟩
+      F.₁ f .η _ E.∘ ⌜ F.₁ f′ .η _ E.∘ F₁ (F.₀ _) g ⌝ E.∘ F₁ (F.₀ _) g′   ≡⟨ ap! (F.₁ f′ .is-natural _ _ _) ⟩
       F.₁ f .η _ E.∘ (F₁ (F.₀ _) g E.∘ F.₁ f′ .η _) E.∘ F₁ (F.₀ _) g′     ≡⟨ solve E ⟩
       ((F.₁ f .η _ E.∘ F₁ (F.₀ _) g) E.∘ (F.₁ f′ .η _ E.∘ F₁ (F.₀ _) g′)) ∎
 ```

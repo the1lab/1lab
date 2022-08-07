@@ -411,10 +411,11 @@ record normal-subgroup (G : Group ℓ) (H : ℙ (G .fst)) : Type ℓ where
 
   has-comm : ∀ {x y} → (x ⋆ y) ∈ H → (y ⋆ x) ∈ H
   has-comm {x = x} {y} ∈ = subst (_∈ H) p (has-conjugate ∈) where
-    p = x ⁻¹ ⋆ (x ⋆ y) ⋆ x ⁻¹ ⁻¹ ≡⟨ ap₂ _⋆_ refl (sym associative) ∙ (λ i → x ⁻¹ ⋆ x ⋆ y ⋆ inv-inv {x = x} i) ⟩
-        x ⁻¹ ⋆ x ⋆ y ⋆ x         ≡⟨ associative ⟩
-        (x ⁻¹ ⋆ x) ⋆ y ⋆ x       ≡⟨ ap₂ _⋆_ inversel refl ∙ idl ⟩
-        y ⋆ x                    ∎
+    p = x ⁻¹ ⋆ ⌜ (x ⋆ y) ⋆ x ⁻¹ ⁻¹ ⌝ ≡˘⟨ ap¡ associative ⟩
+        x ⁻¹ ⋆ x ⋆ y ⋆ ⌜ x ⁻¹ ⁻¹ ⌝   ≡⟨ ap! inv-inv ⟩
+        x ⁻¹ ⋆ x ⋆ y ⋆ x             ≡⟨ associative ⟩
+        (x ⁻¹ ⋆ x) ⋆ y ⋆ x           ≡⟨ ap₂ _⋆_ inversel refl ∙ idl ⟩
+        y ⋆ x                        ∎
 
   open represents-subgroup has-rep public
 ```
@@ -520,10 +521,10 @@ that, if $\id{inc}(x) = \id{inc}(y)$, then $(x - y) \in H$.
 
     rel-trans : ∀ {x y z} → rel x y → rel y z → rel x z
     rel-trans {x} {y} {z} h g = subst (_∈ H) p (has-⋆ h g) where
-      p = (x — y) ⋆ (y — z)    ≡˘⟨ associative ⟩
-          x ⋆ (y ⁻¹ ⋆ (y — z)) ≡⟨ ap (x ⋆_) associative ⟩
-          x ⋆ ((y ⁻¹ ⋆ y) — z) ≡⟨ ap (x ⋆_) (ap (_⋆ _) inversel ∙ idl) ⟩
-          x — z                ∎
+      p = (x — y) ⋆ (y — z)      ≡˘⟨ associative ⟩
+          x ⋆ ⌜ y ⁻¹ ⋆ (y — z) ⌝ ≡⟨ ap! associative ⟩
+          x ⋆ ⌜ (y ⁻¹ ⋆ y) — z ⌝ ≡⟨ ap! (ap (_⋆ _) inversel ∙ idl) ⟩
+          x — z                  ∎
 
   /ᴳ-effective : ∀ {x y} → Path G/H (inc x) (inc y) → rel x y
   /ᴳ-effective = equiv→inverse

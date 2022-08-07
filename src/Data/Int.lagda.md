@@ -85,20 +85,19 @@ everything together with a bow on the top.
 
 ```agda
 same-difference : {a b c d : Nat} → a + d ≡ b + c → diff a b ≡ diff c d
-same-difference {zero} {b} {c} {d} path =
-  sym ( diff c d       ≡⟨ ap₂ diff refl path ⟩
-        diff c (b + c) ≡⟨ ap₂ diff refl (+-commutative b c) ⟩
-        diff c (c + b) ≡⟨ offset-negative _ _ ⟩
-        diff 0 b       ∎
-      )
+same-difference {zero} {b} {c} {d} path = sym $
+  diff c ⌜ d ⌝     ≡⟨ ap! path ⟩
+  diff c ⌜ b + c ⌝ ≡⟨ ap! (+-commutative b c) ⟩
+  diff c (c + b)   ≡⟨ offset-negative _ _ ⟩
+  diff 0 b         ∎
 same-difference {suc a} {zero} {c} {d} path =
-  sym ( diff c d             ≡⟨ ap₂ diff (sym path) refl ⟩
-        diff (suc a + d) d   ≡⟨ ap₂ diff (+-commutative (suc a) d) refl ⟩
+  sym ( diff ⌜ c ⌝ d         ≡⟨ ap! (sym path) ⟩
+        diff ⌜ suc a + d ⌝ d ≡⟨ ap! (+-commutative (suc a) d) ⟩
         diff (d + suc a) d   ≡⟨ offset-positive _ _ ⟩
         diff (suc a) 0       ∎
       )
 same-difference {suc a} {suc b} {c} {d} path =
-  diff (suc a) (suc b) ≡⟨ sym (quot _ _) ⟩
+  diff (suc a) (suc b) ≡˘⟨ quot _ _ ⟩
   diff a b             ≡⟨ same-difference (suc-inj path) ⟩
   diff c d             ∎
 ```
@@ -636,16 +635,16 @@ from commutativity of addition on natural numbers, and the fact that
 +ℤ-inverser : (x : Int) → x +ℤ negate x ≡ 0
 +ℤ-inverser =
   Int-elim-prop (λ _ → hlevel 1) λ where
-    a b → diff (a + b) (b + a) ≡⟨ ap₂ diff refl (+-commutative b a) ⟩
-          diff (a + b) (a + b) ≡⟨ sym (zeroes (a + b)) ⟩
-          diff 0 0             ∎
+    a b → diff (a + b) ⌜ b + a ⌝ ≡⟨ ap! (+-commutative b a) ⟩
+          diff (a + b) (a + b)   ≡⟨ sym (zeroes (a + b)) ⟩
+          diff 0 0               ∎
 
 +ℤ-inversel : (x : Int) → negate x +ℤ x ≡ 0
 +ℤ-inversel =
   Int-elim-prop (λ _ → hlevel 1) λ where
-    a b → diff (b + a) (a + b) ≡⟨ ap₂ diff (+-commutative b a) refl ⟩
-          diff (a + b) (a + b) ≡⟨ sym (zeroes (a + b)) ⟩
-          diff 0 0             ∎
+    a b → diff ⌜ b + a ⌝ (a + b) ≡⟨ ap! (+-commutative b a) ⟩
+          diff (a + b) (a + b)   ≡⟨ sym (zeroes (a + b)) ⟩
+          diff 0 0               ∎
 ```
 
 Since `negate`{.Agda} is precisely what's missing for `Nat`{.Agda} to be

@@ -108,15 +108,15 @@ the domain category to serve as an inverse for $f$:
     i : Cm.is-invertible _
     i .inv = g
     i .inverses .invl =
-      f C.∘ g                           ≡⟨ sym (equiv→unit ff _) ⟩
-      equiv→inverse ff (F₁ F (f C.∘ g)) ≡⟨ ap (equiv→inverse ff) (Ffog ∙ sym (F-id F)) ⟩
-      equiv→inverse ff (F₁ F C.id)      ≡⟨ equiv→unit ff _ ⟩
-      C.id                              ∎
+      f C.∘ g                             ≡⟨ sym (equiv→unit ff _) ⟩
+      equiv→inverse ff ⌜ F₁ F (f C.∘ g) ⌝ ≡⟨ ap! (Ffog ∙ sym (F-id F)) ⟩
+      equiv→inverse ff (F₁ F C.id)        ≡⟨ equiv→unit ff _ ⟩
+      C.id                                ∎
     i .inverses .invr =
-      g C.∘ f                           ≡⟨ sym (equiv→unit ff _) ⟩
-      equiv→inverse ff (F₁ F (g C.∘ f)) ≡⟨ ap (equiv→inverse ff) (Fgof ∙ sym (F-id F)) ⟩
-      equiv→inverse ff (F₁ F C.id)      ≡⟨ equiv→unit ff _ ⟩
-      C.id                              ∎
+      g C.∘ f                             ≡⟨ sym (equiv→unit ff _) ⟩
+      equiv→inverse ff ⌜ F₁ F (g C.∘ f) ⌝ ≡⟨ ap! (Fgof ∙ sym (F-id F)) ⟩
+      equiv→inverse ff (F₁ F C.id)        ≡⟨ equiv→unit ff _ ⟩
+      C.id                                ∎
 
   is-ff→essentially-injective
     : {F : Functor C D} → is-fully-faithful F
@@ -187,9 +187,9 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
       idc : ∀ {x} → ap (F₀ F) (iso→path C ccat (C.id-iso {x}) )
           ≡ iso→path D dcat (F-map-iso F C.id-iso)
       idc =
-        ap (F₀ F) (iso→path C ccat C.id-iso)   ≡⟨ ap (ap (F₀ F)) (iso→path-id C ccat) ⟩
+        ap (F₀ F) ⌜ iso→path C ccat C.id-iso ⌝ ≡⟨ ap! (iso→path-id C ccat) ⟩
         ap (F₀ F) refl                         ≡˘⟨ equiv→unit (path→iso-is-equiv D dcat) _ ⟩
-        iso→path D dcat (path→iso D refl)      ≡⟨ ap (iso→path D dcat) (D.≅-pathp refl refl (transport-refl _ ∙ sym (F-id F))) ⟩
+        iso→path D dcat ⌜ path→iso D refl ⌝    ≡⟨ ap! (D.≅-pathp refl refl (transport-refl _ ∙ sym (F-id F))) ⟩
         iso→path D dcat (F-map-iso F C.id-iso) ∎
 
   is-ff→F-map-iso-is-equiv

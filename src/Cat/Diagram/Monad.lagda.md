@@ -216,7 +216,7 @@ categorical yoga:
     morphism F C.∘ morphism G
   Eilenberg-Moore ._∘_ {_ , x} {_ , y} {_ , z} F G .commutes =
     (morphism F C.∘ morphism G) C.∘ ν x            ≡⟨ C.extendr (commutes G) ⟩
-    (morphism F C.∘ ν y) C.∘ M₁ (morphism G)       ≡⟨ ap₂ C._∘_ (commutes F) refl ⟩
+    ⌜ morphism F C.∘ ν y ⌝ C.∘ M₁ (morphism G)     ≡⟨ ap! (commutes F) ⟩
     (ν z C.∘ M₁ (morphism F)) C.∘ M₁ (morphism G)  ≡⟨ C.pullr (sym (M-∘ _ _)) ⟩
     ν z C.∘ M₁ (morphism F C.∘ morphism G)         ∎
 ```

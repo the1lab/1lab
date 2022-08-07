@@ -495,10 +495,10 @@ module _ {o ℓ} {C : Precategory o ℓ} (ct : Topos ℓ C) where
   Representables-generate {f = f} {g} sep =
     fully-faithful→faithful {F = ct.ι} ct.has-ff $
       Representables-generate-presheaf ct.site λ h →
-        ι.₁ f PSh.∘ h                                    ≡⟨ mangle ⟩
-        ι.₁ (f C.∘ counit.ε _ C.∘ L.₁ h) PSh.∘ unit.η _  ≡⟨ ap (PSh._∘ _) (ap ι.₁ (sep _)) ⟩
-        ι.₁ (g C.∘ counit.ε _ C.∘ L.₁ h) PSh.∘ unit.η _  ≡˘⟨ mangle ⟩
-        ι.₁ g PSh.∘ h                                    ∎
+        ι.₁ f PSh.∘ h                                     ≡⟨ mangle ⟩
+        ι.₁ ⌜ f C.∘ counit.ε _ C.∘ L.₁ h ⌝ PSh.∘ unit.η _ ≡⟨ ap! (sep _) ⟩
+        ι.₁ (g C.∘ counit.ε _ C.∘ L.₁ h) PSh.∘ unit.η _   ≡˘⟨ mangle ⟩
+        ι.₁ g PSh.∘ h                                     ∎
 ```
 
 <!--
@@ -508,13 +508,13 @@ module _ {o ℓ} {C : Precategory o ℓ} (ct : Topos ℓ C) where
         : ∀ {X Y} {f : C.Hom X Y} {Z} {h : PSh.Hom Z _}
         → ι.₁ f PSh.∘ h ≡ ι.₁ (f C.∘ counit.ε _ C.∘ L.₁ h) PSh.∘ unit.η _
       mangle {f = f} {h = h} =
-        ι.₁ f PSh.∘ h                                                              ≡⟨ PSh.insertl zag ⟩
-        ι.₁ (counit.ε _) PSh.∘ unit.η _ PSh.∘ ι.₁ f PSh.∘ h                        ≡⟨ ap₂ PSh._∘_ refl (PSh.extendl (unit.is-natural _ _ _)) ⟩
-        ι.₁ (counit.ε _) PSh.∘ ι.₁ (L.₁ (ι.₁ f)) PSh.∘ unit.η _ PSh.∘ h            ≡⟨ ap₂ PSh._∘_ refl (ap (ι.₁ (L.₁ (ι.₁ f)) PSh.∘_) (unit.is-natural _ _ _)) ⟩
-        ι.₁ (counit.ε _) PSh.∘ ι.₁ (L.₁ (ι.₁ f)) PSh.∘ ι.₁ (L.₁ h) PSh.∘ unit.η _  ≡⟨ ap (ι.₁ (counit.ε _) PSh.∘_) (PSh.pulll (sym (ι.F-∘ _ _))) ⟩
-        ι.₁ (counit.ε _) PSh.∘ ι.₁ (L.₁ (ι.₁ f) C.∘ L.₁ h) PSh.∘ unit.η _          ≡⟨ PSh.pulll (sym (ι.F-∘ _ _)) ⟩
-        ι.₁ (counit.ε _ C.∘ L.₁ (ι.₁ f) C.∘ L.₁ h) PSh.∘ unit.η _                  ≡⟨ ap (PSh._∘ _) (ap ι.₁ (C.extendl (counit.is-natural _ _ _))) ⟩
-        ι.₁ (f C.∘ counit.ε _ C.∘ L.₁ h) PSh.∘ unit.η _                            ∎
+        ι.₁ f PSh.∘ h                                                                  ≡⟨ PSh.insertl zag ⟩
+        ι.₁ (counit.ε _) PSh.∘ ⌜ unit.η _ PSh.∘ ι.₁ f PSh.∘ h ⌝                        ≡⟨ ap! (PSh.extendl (unit.is-natural _ _ _)) ⟩
+        ι.₁ (counit.ε _) PSh.∘ ι.₁ (L.₁ (ι.₁ f)) PSh.∘ ⌜ unit.η _ PSh.∘ h ⌝            ≡⟨ ap! (unit.is-natural _ _ _) ⟩
+        ι.₁ (counit.ε _) PSh.∘ ⌜ ι.₁ (L.₁ (ι.₁ f)) PSh.∘ ι.₁ (L.₁ h) PSh.∘ unit.η _ ⌝  ≡⟨ ap! (PSh.pulll (sym (ι.F-∘ _ _))) ⟩
+        ι.₁ (counit.ε _) PSh.∘ ι.₁ (L.₁ (ι.₁ f) C.∘ L.₁ h) PSh.∘ unit.η _              ≡⟨ PSh.pulll (sym (ι.F-∘ _ _)) ⟩
+        ι.₁ ⌜ counit.ε _ C.∘ L.₁ (ι.₁ f) C.∘ L.₁ h ⌝ PSh.∘ unit.η _                    ≡⟨ ap! (C.extendl (counit.is-natural _ _ _)) ⟩
+        ι.₁ (f C.∘ counit.ε _ C.∘ L.₁ h) PSh.∘ unit.η _                                ∎
 ```
 -->
 

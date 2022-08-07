@@ -35,6 +35,6 @@ open import 1Lab.Type.Sigma public
 
 open import 1Lab.HIT.Truncation public
 
-open import 1Lab.Reflection.Marker
+open import 1Lab.Reflection.Marker public
 open import 1Lab.Reflection.Record
   using ( declare-record-iso ) public

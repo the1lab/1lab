@@ -177,11 +177,11 @@ covariant-order-map {A = A} l = F where
   F .F₁ {x} {y} p = q where abstract
     q : y ≡ x L∨ y
     q =
-      y             ≡⟨ sym ∨-absorbs-∧ ⟩
-      y L∨ (y L∧ x) ≡⟨ ap₂ _L∨_ refl ∧-commutative ⟩
-      y L∨ (x L∧ y) ≡⟨ ap₂ _L∨_ refl (sym p) ⟩
-      y L∨ x        ≡⟨ ∨-commutative ⟩
-      x L∨ y        ∎
+      y               ≡⟨ sym ∨-absorbs-∧ ⟩
+      y L∨ ⌜ y L∧ x ⌝ ≡⟨ ap! ∧-commutative ⟩
+      y L∨ ⌜ x L∧ y ⌝ ≡˘⟨ ap¡ p ⟩
+      y L∨ x          ≡⟨ ∨-commutative ⟩
+      x L∨ y          ∎
   F .F-id = has-is-set _ _ _ _
   F .F-∘ _ _ = has-is-set _ _ _ _
 ```
@@ -208,9 +208,9 @@ essential surjectivity is immediate:
 ```agda
     ff : is-fully-faithful (covariant-order-map l)
     ff {x} {y} .is-eqv p .centre .fst =
-      x             ≡⟨ sym ∧-absorbs-∨ ⟩
-      x L∧ (x L∨ y) ≡⟨ ap₂ _L∧_ refl (sym p) ⟩
-      x L∧ y        ∎
+      x               ≡⟨ sym ∧-absorbs-∨ ⟩
+      x L∧ ⌜ x L∨ y ⌝ ≡˘⟨ ap¡ p ⟩
+      x L∧ y          ∎
     ff .is-eqv y .centre .snd = has-is-set _ _ _ _
     ff .is-eqv y .paths x =
       Σ-path (has-is-set _ _ _ _)

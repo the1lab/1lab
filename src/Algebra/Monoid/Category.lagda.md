@@ -279,19 +279,19 @@ these data assembles into a monoid:
       has-is-m .has-is-semigroup = record
         { has-is-magma = record { has-is-set = A .is-tr }
         ; associative  = λ {x} {y} {z} →
-          alg .ν (x ∷ alg .ν (y ∷ z ∷ []) ∷ [])                ≡˘⟨ ap (λ x → alg .ν (x ∷ _)) (happly (alg .ν-unit) x) ⟩
-          alg .ν (alg .ν (x ∷ []) ∷ alg .ν (y ∷ z ∷ []) ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
-          alg .ν (x ∷ y ∷ z ∷ [])                              ≡˘⟨ happly (alg .ν-mult) _ ⟩
-          alg .ν (alg .ν (x ∷ y ∷ []) ∷ alg .ν (z ∷ []) ∷ [])  ≡⟨ ap (λ x → alg .ν (_ ∷ x ∷ [])) (happly (alg .ν-unit) z) ⟩
-          alg .ν (alg .ν (x ∷ y ∷ []) ∷ z ∷ [])                ∎
+          alg .ν (⌜ x ⌝ ∷ alg .ν (y ∷ z ∷ []) ∷ [])               ≡˘⟨ ap¡ (happly (alg .ν-unit) x) ⟩
+          alg .ν (alg .ν (x ∷ []) ∷ alg .ν (y ∷ z ∷ []) ∷ [])     ≡⟨ happly (alg .ν-mult) _ ⟩
+          alg .ν (x ∷ y ∷ z ∷ [])                                 ≡˘⟨ happly (alg .ν-mult) _ ⟩
+          alg .ν (alg .ν (x ∷ y ∷ []) ∷ ⌜ alg .ν (z ∷ []) ⌝ ∷ []) ≡⟨ ap! (happly (alg .ν-unit) z) ⟩
+          alg .ν (alg .ν (x ∷ y ∷ []) ∷ z ∷ [])                   ∎
         }
       has-is-m .idl {x} =
-        alg .ν (alg .ν [] ∷ x ∷ [])                ≡˘⟨ ap (λ x → alg .ν (alg .ν [] ∷ x ∷ [])) (happly (alg .ν-unit) x) ⟩
+        alg .ν (alg .ν [] ∷ ⌜ x ⌝ ∷ [])            ≡˘⟨ ap¡ (happly (alg .ν-unit) x) ⟩
         alg .ν (alg .ν [] ∷ alg .ν (x ∷ []) ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
         alg .ν (x ∷ [])                            ≡⟨ happly (alg .ν-unit) x ⟩
         x                                          ∎
       has-is-m .idr {x} =
-        alg .ν (x ∷ alg .ν [] ∷ [])                ≡˘⟨ ap (λ x → alg .ν (x ∷ _)) (happly (alg .ν-unit) x) ⟩
+        alg .ν (⌜ x ⌝ ∷ alg .ν [] ∷ [])            ≡˘⟨ ap¡ (happly (alg .ν-unit) x) ⟩
         alg .ν (alg .ν (x ∷ []) ∷ alg .ν [] ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
         alg .ν (x ∷ [])                            ≡⟨ happly (alg .ν-unit) x ⟩
         x                                          ∎

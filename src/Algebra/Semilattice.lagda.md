@@ -83,9 +83,9 @@ the equational computation below:
   rel-transitive : ∀ {x y z} → rel x y → rel y z → rel x z
   rel-transitive {x} {y} {z} x≡x∧y y≡y∧z =
     x             ≡⟨ x≡x∧y ⟩
-    (x ∧ y)       ≡⟨ ap₂ _∧_ refl y≡y∧z ⟩
-    (x ∧ (y ∧ z)) ≡⟨ associative semi ⟩
-    ((x ∧ y) ∧ z) ≡⟨ ap₂ _∧_ (sym x≡x∧y) refl ⟩
+    x ∧ ⌜ y ⌝     ≡⟨ ap! y≡y∧z ⟩
+    x ∧ (y ∧ z)   ≡⟨ associative semi ⟩
+    ⌜ x ∧ y ⌝ ∧ z ≡˘⟨ ap¡ x≡x∧y ⟩
     x ∧ z         ∎
 ```
 
@@ -129,15 +129,15 @@ module _ {_∧_ : A → A → A} (semi : is-semilattice _∧_) where
   open is-semilattice semi
 
   ∧-less-thanl : ∀ {x y} → (x ∧ y) ≤ x
-  ∧-less-thanl {x} {y} = sym (
-    (x ∧ y) ∧ x ≡⟨ commutative ⟩
-    x ∧ (x ∧ y) ≡⟨ associative semi ⟩
-    (x ∧ x) ∧ y ≡⟨ ap (_∧ _) idempotent ⟩
-    x ∧ y       ∎)
+  ∧-less-thanl {x} {y} = sym $
+    (x ∧ y) ∧ x   ≡⟨ commutative ⟩
+    x ∧ (x ∧ y)   ≡⟨ associative semi ⟩
+    ⌜ x ∧ x ⌝ ∧ y ≡⟨ ap! idempotent ⟩
+    x ∧ y         ∎
 
   ∧-less-thanr : ∀ {x y} → (x ∧ y) ≤ y
   ∧-less-thanr {x} {y} =
-    x ∧ y       ≡˘⟨ ap (_ ∧_) idempotent ⟩
+    x ∧ ⌜ y ⌝   ≡˘⟨ ap¡ idempotent ⟩
     x ∧ (y ∧ y) ≡⟨ associative semi ⟩
     (x ∧ y) ∧ y ∎
 ```
@@ -184,11 +184,11 @@ Semilattice-on→Join-on {∨ = _∨_} semi = r where
 
   transitive : ∀ {x y z} → y ≡ x ∨ y → z ≡ y ∨ z → _
   transitive {x} {y} {z} y=x∨y z=y∨z =
-    z           ≡⟨ z=y∨z ⟩
-    y ∨ z       ≡⟨ ap₂ _∨_ y=x∨y refl ⟩
-    (x ∨ y) ∨ z ≡⟨ sym (associative semi) ⟩
-    x ∨ (y ∨ z) ≡⟨ ap₂ _∨_ refl (sym z=y∨z) ⟩
-    x ∨ z ∎
+    z             ≡⟨ z=y∨z ⟩
+    ⌜ y ⌝ ∨ z     ≡⟨ ap! y=x∨y ⟩
+    (x ∨ y) ∨ z   ≡⟨ sym (associative semi) ⟩
+    x ∨ ⌜ y ∨ z ⌝ ≡˘⟨ ap¡ z=y∨z ⟩
+    x ∨ z         ∎
 
   antisym : ∀ {x y} → _ → _ → _
   antisym {x} {y} y=x∨y x=y∨x =
@@ -214,17 +214,17 @@ module _ {_∨_ : A → A → A} (semi : is-semilattice _∨_) where
 
   ∨-greater-thanl : ∀ {x y} → x ≤ (x ∨ y)
   ∨-greater-thanl {x} {y} =
-    x ∨ y       ≡˘⟨ ap (_∨ _) idempotent ⟩
+    ⌜ x ⌝ ∨ y   ≡˘⟨ ap¡ idempotent ⟩
     (x ∨ x) ∨ y ≡˘⟨ associative semi ⟩
     x ∨ (x ∨ y) ∎
 
   ∨-greater-thanr : ∀ {x y} → y ≤ (x ∨ y)
   ∨-greater-thanr {x} {y} =
-    x ∨ y       ≡˘⟨ ap (_ ∨_) idempotent ⟩
-    x ∨ (y ∨ y) ≡⟨ associative semi ⟩
-    (x ∨ y) ∨ y ≡˘⟨ ap (_∨ _) commutative ⟩
-    (y ∨ x) ∨ y ≡˘⟨ associative semi ⟩
-    y ∨ (x ∨ y) ∎
+    x ∨ ⌜ y ⌝     ≡˘⟨ ap¡ idempotent ⟩
+    x ∨ (y ∨ y)   ≡⟨ associative semi ⟩
+    ⌜ x ∨ y ⌝ ∨ y ≡˘⟨ ap¡ commutative ⟩
+    (y ∨ x) ∨ y   ≡˘⟨ associative semi ⟩
+    y ∨ (x ∨ y)   ∎
 
   Semilattice→is-coproduct
     : ∀ {x y} → is-coproduct underlying {P = x ∨ y} ∨-greater-thanl ∨-greater-thanr

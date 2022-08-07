@@ -69,7 +69,7 @@ module _ {F : Functor C D} (conservative : is-conservative F) where
       F-preserves-universal
         : hom F∘L-lim.! ≡ F .F₁ (hom {x = K} L-lim.!)
       F-preserves-universal =
-        hom F∘L-lim.! ≡⟨ ap hom (F∘L-lim.!-unique (F-map-cone-hom F L-lim.!)) ⟩
+        hom F∘L-lim.!                             ≡⟨ ap hom (F∘L-lim.!-unique (F-map-cone-hom F L-lim.!)) ⟩
         hom (F-map-cone-hom F (Terminal.! L-lim)) ≡⟨⟩
-        F .F₁ (hom L-lim.!) ∎
+        F .F₁ (hom L-lim.!)                       ∎
 ```

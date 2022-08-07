@@ -102,12 +102,12 @@ because these are almost definitionally the same thing.
       (sym (f .snd) ∙ ap (f .fst) (merid x))
       (sym (f .snd)) refl (ap (f .fst) (merid x))
     lemma f x = transport (sym Square≡double-composite-path) $
-      sym (sym (f .snd) ∙ ap (f .fst) (merid x)) ·· sym (f .snd) ·· ap (f .fst) (merid x) ≡⟨ double-composite (sym _) _ _ ⟩
-      sym (sym (f .snd) ∙ ap (f .fst) (merid x)) ∙ sym (f .snd) ∙ ap (f .fst) (merid x)   ≡⟨ ap₂ _∙_ (sym-∙ (sym _) _) refl ⟩
-      (ap (f .fst) (sym (merid x)) ∙ (f .snd)) ∙ sym (f .snd) ∙ ap (f .fst) (merid x)     ≡˘⟨ ∙-assoc _ _ _ ⟩
-      ap (f .fst) (sym (merid x)) ∙ ((f .snd) ∙ sym (f .snd) ∙ ap (f .fst) (merid x))     ≡⟨ ap₂ _∙_ refl (∙-cancel-l (sym (f .snd)) _) ⟩
-      ap (f .fst) (sym (merid x)) ∙ ap (f .fst) (merid x)                                 ≡⟨ ∙-inv-l _ ⟩
-      refl                                                                                ∎
+      sym (sym (f .snd) ∙ ap (f .fst) (merid x)) ·· sym (f .snd) ·· ap (f .fst) (merid x)    ≡⟨ double-composite (sym _) _ _ ⟩
+      ⌜ sym (sym (f .snd) ∙ ap (f .fst) (merid x)) ⌝ ∙ sym (f .snd) ∙ ap (f .fst) (merid x)  ≡⟨ ap! (sym-∙ (sym _) _) ⟩
+      (ap (f .fst) (sym (merid x)) ∙ (f .snd)) ∙ sym (f .snd) ∙ ap (f .fst) (merid x)        ≡˘⟨ ∙-assoc _ _ _ ⟩
+      ap (f .fst) (sym (merid x)) ∙ ⌜ (f .snd) ∙ sym (f .snd) ∙ ap (f .fst) (merid x) ⌝      ≡⟨ ap! (∙-cancel-l (sym (f .snd)) _) ⟩
+      ap (f .fst) (sym (merid x)) ∙ ap (f .fst) (merid x)                                    ≡⟨ ∙-inv-l _ ⟩
+      refl                                                                                   ∎
 
     invl : is-left-inverse loops→Σ-map∙ Σ-map∙→loops
     invl f = Σ-pathp (funext (λ { N → sym (f .snd)
@@ -129,11 +129,11 @@ because these are almost definitionally the same thing.
       (to-pathp (subst-path-left _ _ ∙ lemma))
       where
         lemma =
-          sym (ap₂ _∙_ refl (ap sym x) ∙ ∙-id-r (b (A .snd))) ∙ ∙-inv-r (b (A .snd))               ≡⟨ ap₂ _∙_ (sym-∙ (sym _) _) refl ⟩
-          (sym (∙-id-r (b (A .snd))) ∙ ap (b (A .snd) ∙_) (ap sym (sym x))) ∙ ∙-inv-r (b (A .snd)) ≡⟨ sym (∙-assoc _ _ _) ⟩
-          sym (∙-id-r (b (A .snd))) ∙ ap (λ p → b (A .snd) ∙ sym p) (sym x) ∙ ∙-inv-r (b (A .snd)) ≡⟨ ap₂ _∙_ refl (lemma′ (b (A .snd)) (sym x)) ⟩
-          sym (∙-id-r (b (A .snd))) ∙ ∙-id-r (b (A .snd)) ∙ x                                      ≡⟨ ∙-cancel-l _ _ ⟩
-          x                                                                                        ∎
+          ⌜ sym (ap₂ _∙_ refl (ap sym x) ∙ ∙-id-r (b (A .snd))) ⌝ ∙ ∙-inv-r (b (A .snd))               ≡⟨ ap! (sym-∙ (sym _) _) ⟩
+          (sym (∙-id-r (b (A .snd))) ∙ ap (b (A .snd) ∙_) (ap sym (sym x))) ∙ ∙-inv-r (b (A .snd))     ≡⟨ sym (∙-assoc _ _ _) ⟩
+          sym (∙-id-r (b (A .snd))) ∙ ⌜ ap (λ p → b (A .snd) ∙ sym p) (sym x) ∙ ∙-inv-r (b (A .snd)) ⌝ ≡⟨ ap! (lemma′ (b (A .snd)) (sym x)) ⟩
+          sym (∙-id-r (b (A .snd))) ∙ ∙-id-r (b (A .snd)) ∙ x                                          ≡⟨ ∙-cancel-l _ _ ⟩
+          x                                                                                            ∎
 
     invl : is-left-inverse map∙-Ω→loops loops→map∙-Ω
     invl (f , p) = Σ-pathp (p (A .snd)) $ to-pathp $ funext $ λ x →

@@ -182,9 +182,9 @@ $y$:
 ```agda
 monoid-inverse-unique {1M = 1M} {_⋆_} m e x y li1 ri2 =
   x             ≡⟨ sym (m .idr) ⟩
-  x ⋆ 1M        ≡⟨ ap₂ _⋆_ refl (sym ri2) ⟩
+  x ⋆ ⌜ 1M ⌝    ≡˘⟨ ap¡ ri2 ⟩
   x ⋆ (e ⋆ y)   ≡⟨ m .associative ⟩
-  (x ⋆ e) ⋆ y   ≡⟨ ap₂ _⋆_ li1 refl ⟩
+  ⌜ x ⋆ e ⌝ ⋆ y ≡⟨ ap! li1 ⟩
   1M ⋆ y        ≡⟨ m .idl ⟩
   y             ∎
 ```

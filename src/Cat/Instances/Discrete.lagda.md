@@ -130,7 +130,7 @@ computations with equalities and a whole waterfall of absurd cases:
   F .F-∘ {x} {y} {z} f g with inspect (disc x y) | inspect (disc x z) | inspect (disc y z)
   ... | yes x=y , p1 | yes x=z , p2 | yes y=z , p3 =
     map (g ∙ f) (disc x z)                 ≡⟨ ap (map (g ∙ f)) p2 ⟩
-    map (g ∙ f) (yes x=z)                  ≡⟨ ap (map (g ∙ f) ⊙ yes) (set _ _ _ _) ⟩
+    map (g ∙ f) (yes ⌜ x=z ⌝)              ≡⟨ ap! (set _ _ _ _) ⟩
     map (g ∙ f) (yes (x=y ∙ y=z))          ≡⟨⟩
     subst (P x) (x=y ∙ y=z) C.id           ≡⟨ subst-∙ (P x) _ _ _ ⟩
     subst (P x) y=z (subst (P _) x=y C.id) ≡⟨ from-pathp ((Hom-pathp C (ap₂ C._∘_ refl (ap₂ C._∘_ refl (transport-refl _) ∙ C.idr _)))) ⟩

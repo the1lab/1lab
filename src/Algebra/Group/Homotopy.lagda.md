@@ -209,9 +209,9 @@ homomorphism, preserves the group identity.
     path-unit : path unit ≡ refl
     path-unit =
       path unit                               ≡⟨ sym (∙-id-r _) ⟩
-      path unit ∙ refl                        ≡⟨ ap₂ _∙_ refl (sym (∙-inv-r _))  ⟩
+      path unit ∙ ⌜ refl ⌝                    ≡˘⟨ ap¡ (∙-inv-r _)  ⟩
       path unit ∙ path unit ∙ sym (path unit) ≡⟨ ∙-assoc _ _ _ ∙ ap₂ _∙_ (sym (path-∙ _ _)) refl ⟩
-      path (unit ⋆ unit) ∙ sym (path unit)    ≡⟨ ap₂ _∙_ (ap path G.idr) refl ⟩
+      path ⌜ unit ⋆ unit ⌝ ∙ sym (path unit)  ≡⟨ ap! G.idr ⟩
       path unit ∙ sym (path unit)             ≡⟨ ∙-inv-r _  ⟩
       refl                                    ∎
 ```

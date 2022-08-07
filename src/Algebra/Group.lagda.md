@@ -233,12 +233,12 @@ identity:
 
   pres-id : e 1A ≡ 1B
   pres-id =
-    e 1A                     ≡⟨ sym B.idr ⟩
-    e 1A B.⋆ 1B              ≡⟨ ap₂ B._⋆_ refl (sym B.inverser) ⟩
-    e 1A B.⋆ (e 1A B.— e 1A) ≡⟨ B.associative ⟩
-    (e 1A B.⋆ e 1A) B.— e 1A ≡⟨ ap₂ B._⋆_ (sym (pres-⋆ _ _) ∙ ap e A.idl) refl ⟩
-    e 1A B.— e 1A            ≡⟨ B.inverser ⟩
-    1B                       ∎
+    e 1A                       ≡⟨ sym B.idr ⟩
+    e 1A B.⋆ ⌜ 1B ⌝            ≡˘⟨ ap¡ B.inverser ⟩
+    e 1A B.⋆ (e 1A B.— e 1A)   ≡⟨ B.associative ⟩
+    ⌜ e 1A B.⋆ e 1A ⌝ B.— e 1A ≡⟨ ap! (sym (pres-⋆ _ _) ∙ ap e A.idl) ⟩
+    e 1A B.— e 1A              ≡⟨ B.inverser ⟩
+    1B                         ∎
 
   pres-inv : ∀ {x} → e (A.inverse x) ≡ B.inverse (e x)
   pres-inv {x} =
@@ -248,9 +248,9 @@ identity:
 
   pres-diff : ∀ {x y} → e (x A.— y) ≡ e x B.— e y
   pres-diff {x} {y} =
-    e (x A.— y)             ≡⟨ pres-⋆ _ _ ⟩
-    e x B.⋆ e (A.inverse y) ≡⟨ ap (_ B.⋆_) pres-inv ⟩
-    e x B.— e y             ∎
+    e (x A.— y)                 ≡⟨ pres-⋆ _ _ ⟩
+    e x B.⋆ ⌜ e (A.inverse y) ⌝ ≡⟨ ap! pres-inv ⟩
+    e x B.— e y                 ∎
 ```
 
 <!--
@@ -317,11 +317,11 @@ make-group gset id star inv assoc invl invr g-idl = r where
   r .has-is-group .has-is-monoid .has-is-semigroup .associative = sym (assoc _ _ _)
   r .has-is-group .has-is-monoid .idl = g-idl _
   r .has-is-group .has-is-monoid .idr {x = x} =
-    star x id               ≡⟨ ap₂ star refl (sym (invl x)) ⟩
-    star x (star (inv x) x) ≡⟨ sym (assoc _ _ _) ⟩
-    star (star x (inv x)) x ≡⟨ ap₂ star (invr x) refl ⟩
-    star id x               ≡⟨ g-idl x ⟩
-    x                       ∎
+    star x ⌜ id ⌝             ≡˘⟨ ap¡ (invl x) ⟩
+    star x (star (inv x) x)   ≡⟨ sym (assoc _ _ _) ⟩
+    star ⌜ star x (inv x) ⌝ x ≡⟨ ap! (invr x) ⟩
+    star id x                 ≡⟨ g-idl x ⟩
+    x                         ∎
   r .has-is-group .inverse = inv
   r .has-is-group .inversel = invl _
   r .has-is-group .inverser = invr _
