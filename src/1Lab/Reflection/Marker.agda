@@ -3,6 +3,7 @@ module 1Lab.Reflection.Marker where
 open import 1Lab.Reflection
 open import 1Lab.Type
 open import 1Lab.Path
+open import Agda.Builtin.Nat
 
 -- The marker. The marker is literally just the identity function, but
 -- written surrounding rather than prefix. Unlike literally the identity
@@ -24,7 +25,12 @@ abstract-marker = go 0 where
   go : Nat → Term → TC Term
   go* : Nat → List (Arg Term) → TC (List (Arg Term))
 
-  go k (var j args) = go* k args >>= returnTC ∘ var (suc (k + j))
+  go k (var j args) = go* k args >>= returnTC ∘ var j'
+    where
+      j' : Nat
+      j' with j < k
+      ... | false = suc j
+      ... | true = j
   go k (con c args) = go* k args >>= returnTC ∘ con c
   go k (def f args) with f
   ... | quote ⌜_⌝ = returnTC (var k [])
@@ -34,7 +40,11 @@ abstract-marker = go 0 where
   -- binders, we must increment this, since the marked term gets farther
   -- and farther away in the context.
   ... | x = go* k args >>= returnTC ∘ def f
-  go k (lam v (abs x t)) = go (suc k) t >>= returnTC ∘ lam v ∘ abs x
+  go k (lam v (abs x t)) = do
+    debugPrint "1lab.marked-ap" 10 $ strErr "entering lambda " ∷ termErr (lam v (abs x t)) ∷ []
+    res ← go (suc k) t >>= returnTC ∘ lam v ∘ abs x
+    debugPrint "1lab.marked-ap" 10 $ strErr "result " ∷ termErr res ∷ []
+    returnTC res
   go k (pat-lam cs args) =
     typeError (strErr "Can not abstract over marker in term containing pattern lambdas" ∷ [])
   go k (pi (arg i a) (abs x t)) = do
@@ -70,8 +80,11 @@ macro
                                  termErr goalt ∷
                                  strErr " is not a path type" ∷ [])
     l′ ← abstract-marker l
+    let dm = lam visible (abs "x" l′)
     path′ ← quoteTC path
-    unify goal (def (quote ap) (lam visible (abs "x" l′) v∷ path′ v∷ []))
+    debugPrint "1lab.marked-ap" 10 $ strErr "original term " ∷ termErr l ∷ []
+    debugPrint "1lab.marked-ap" 10 $ strErr "abstracted term " ∷ termErr dm ∷ []
+    unify goal (def (quote ap) (dm v∷ path′ v∷ []))
 
   -- Generalised ap. Automatically generates the function to apply to by
   -- abstracting over any markers in the RIGHT ENDPOINT of the path. Use

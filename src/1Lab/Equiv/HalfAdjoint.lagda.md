@@ -6,6 +6,7 @@ description: |
   isomorphisms are equivalences.
 ---
 ```agda
+open import 1Lab.Reflection.Marker
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Path.Groupoid
 open import 1Lab.Equiv.Biinv
@@ -93,8 +94,8 @@ cancel:
     zig : (x : A) → ε' (f x) ≡ ap f (η x)
     zig x =
       ε' (f x)                                                    ≡⟨⟩
-      sym (ε (f (g (f x))))  ∙ ap f (η (g (f x)))   ∙ ε (f x)     ≡⟨ ap₂ _∙_ refl (ap₂ _∙_ (ap (ap f) (homotopy-invert η)) refl) ⟩
-      sym (ε (f (g (f x))))  ∙ ap (f ∘ g ∘ f) (η x) ∙ ε (f x)     ≡⟨ ap₂ _∙_ refl (sym (homotopy-natural ε _)) ⟩
+      sym (ε (f (g (f x))))  ∙ ap f ⌜ (η (g (f x))) ⌝ ∙ ε (f x)   ≡⟨ ap! (homotopy-invert η) ⟩
+      sym (ε (f (g (f x))))  ∙ ⌜ ap (f ∘ g ∘ f) (η x) ∙ ε (f x) ⌝ ≡˘⟨ ap¡ (homotopy-natural ε _) ⟩
       sym (ε (f (g (f x))))  ∙ ε (f (g (f x)))      ∙ ap f (η x)  ≡⟨ ∙-cancel-l (ε (f (g (f x)))) (ap f (η x)) ⟩
       ap f (η x)                                                  ∎
 ```
@@ -133,7 +134,7 @@ fibre-paths {f = f} {y} {f1} {f2} =
     helper p' =
       subst (λ x → f x ≡ y) refl (f1 .snd) ≡ p' ≡⟨ ap₂ _≡_ (transport-refl _) refl ⟩
       (f1 .snd) ≡ p'                            ≡⟨ Iso→Path (sym , iso sym (λ x → refl) (λ x → refl)) ⟩
-      p' ≡ f1 .snd                              ≡⟨ ap₂ _≡_ (sym (∙-id-l _)) refl ⟩
+      ⌜ p' ⌝ ≡ f1 .snd                          ≡˘⟨ ap¡ (∙-id-l _) ⟩
       refl ∙ p' ≡ f1 .snd                       ≡⟨⟩
       ap f refl ∙ p' ≡ f1 .snd                  ∎
 
@@ -170,9 +171,9 @@ another $(x, p)$ using a very boring calculation:
 
     path : ap f (ap g (sym p) ∙ η x) ∙ p ≡ ε y
     path =
-      ap f (ap g (sym p) ∙ η x) ∙ p               ≡⟨ ap₂ _∙_ (ap-comp-path f (ap g (sym p)) (η x)) refl ∙ sym (∙-assoc _ _ _) ⟩
-      ap (f ∘ g) (sym p) ∙ ap f (η x) ∙ p         ≡⟨ ap₂ _∙_ refl (ap₂ _∙_ (zig _) refl) ⟩ -- by the triangle identity
-      ap (f ∘ g) (sym p) ∙ ε (f x)    ∙ p         ≡⟨ ap₂ _∙_ refl (homotopy-natural ε p)  ⟩ -- by naturality of ε
+      ap f (ap g (sym p) ∙ η x) ∙ p                   ≡⟨ ap₂ _∙_ (ap-comp-path f (ap g (sym p)) (η x)) refl ∙ sym (∙-assoc _ _ _) ⟩
+      ap (λ x → f (g x)) (sym p) ∙ ⌜ ap f (η x) ⌝ ∙ p ≡⟨ ap! (zig _) ⟩ -- by the triangle identity
+      ap (f ∘ g) (sym p) ∙ ⌜ ε (f x) ∙ p ⌝            ≡⟨ ap! (homotopy-natural ε p)  ⟩ -- by naturality of ε
 ```
 
 The calculation of `path`{.Agda} factors as a bunch of boring
@@ -183,8 +184,8 @@ $\varepsilon$ lets us "push it past $p$" to get something we can cancel:
 
 ```agda
       ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p ∙ ε y     ≡⟨ ∙-assoc _ _ _ ⟩
-      (ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p) ∙ ε y   ≡⟨ ap₂ _∙_ (sym (ap-comp-path (f ∘ g) (sym p) p)) refl ⟩
-      ap (f ∘ g) (sym p ∙ p) ∙ ε y                ≡⟨ ap₂ _∙_ (ap (ap (f ∘ g)) (∙-inv-r _)) refl ⟩
+      ⌜ ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p ⌝ ∙ ε y ≡˘⟨ ap¡ (ap-comp-path (f ∘ g) (sym p) p) ⟩
+      ap (f ∘ g) ⌜ sym p ∙ p ⌝ ∙ ε y              ≡⟨ ap! (∙-inv-r _) ⟩
       ap (f ∘ g) refl ∙ ε y                       ≡⟨⟩
       refl ∙ ε y                                  ≡⟨ ∙-id-l (ε y) ⟩
       ε y                                         ∎
