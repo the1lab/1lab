@@ -117,12 +117,12 @@ from two computations.
 And we have to prove that composing with an inverse gives the reflexivity path.
 
 ```agda
-  ∙-inv-l : (p : x ≡ y) → p ∙ inv p ≡ refl
-  ∙-inv-l {x = x} = J (λ y p → p ∙ inv p ≡ refl)
+  ∙-inv-r : (p : x ≡ y) → p ∙ inv p ≡ refl
+  ∙-inv-r {x = x} = J (λ y p → p ∙ inv p ≡ refl)
                       (∙-id-l (inv refl) ∙ J-refl (λ y _ → y ≡ x) refl)
 
-  ∙-inv-r : (p : x ≡ y) → inv p ∙ p ≡ refl
-  ∙-inv-r {x = x} = J (λ y p → inv p ∙ p ≡ refl)
+  ∙-inv-l : (p : x ≡ y) → inv p ∙ p ≡ refl
+  ∙-inv-l {x = x} = J (λ y p → inv p ∙ p ≡ refl)
                       (∙-id-r (inv refl) ∙ J-refl (λ y _ → y ≡ x) refl)
 ```
 
