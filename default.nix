@@ -1,16 +1,17 @@
-with builtins;
-with import ./support/nix/nixpkgs.nix;
+{ interactive ? true }:
 let
-  haskellPackages = import ./support/nix/haskell-packages.nix;
-  our-ghc = haskellPackages.ghcWithPackages (pkgs: with pkgs; [
+  pkgs = import ./support/nix/nixpkgs.nix;
+  inherit (pkgs) lib;
+
+  our-ghc = pkgs.haskellPackages.ghcWithPackages (ps: with ps; [
     shake directory tagsoup
     text containers uri-encode
     process aeson Agda pandoc SHA
     fsnotify
   ]);
 
-  our-texlive = texlive.combine {
-    inherit (texlive)
+  our-texlive = pkgs.texlive.combine {
+    inherit (pkgs.texlive)
       collection-basic
       collection-latex
       xcolor
@@ -20,69 +21,64 @@ let
       varwidth xkeyval standalone;
   };
 
-  shakefile = callPackage ./support/nix/build-shake.nix
-    {
-      inherit our-ghc haskellPackages;
-      name = "1lab-shake";
-      main = "Main.hs";
-    };
+  shakefile = pkgs.callPackage ./support/nix/build-shake.nix {
+    inherit our-ghc;
+    name = "1lab-shake";
+    main = "Main.hs";
+  };
+  agda-typed-html = pkgs.callPackage ./support/nix/build-shake.nix {
+    inherit our-ghc;
+    name = "agda-typed-html";
+    main = "Wrapper.hs";
+  };
+
+  deps = with pkgs; [
+    # For driving the compilation:
+    shakefile
+
+    # For building the text and maths:
+    gitMinimal sassc
+
+    # For building diagrams:
+    poppler_utils our-texlive
+  ] ++ (if interactive then [
+    our-ghc
+  ] else [
+    haskellPackages.Agda.data
+    haskellPackages.pandoc.data
+  ]);
 in
-  stdenv.mkDerivation rec {
+  pkgs.stdenv.mkDerivation rec {
     name = "cubical-1lab";
-    src =
-      filterSource
-        (path: type:
-          match ".+\\.agdai$" path == null &&
-          match "^_build/.*$" path == null)
-        ./.;
 
-    buildInputs = [
-      # For driving the compilation:
-      our-ghc shakefile
+    src = with pkgs.nix-gitignore; gitignoreFilterSourcePure (_: _: true) [
+      # Keep .git around for extracting page authors
+      (compileRecursiveGitignore ./.)
+      ".github"
+    ] ./.;
 
-      # For building the text and maths:
-      gitMinimal sassc
+    nativeBuildInputs = deps;
 
-      # For building diagrams:
-      poppler_utils our-texlive
-    ];
-
+    LANG = "C.UTF-8";
     buildPhase = ''
-    export LANG=C.UTF-8;
-    1lab-shake all -j
+      1lab-shake all -j
     '';
 
     installPhase = ''
-    mkdir -p $out{,/css/}
+      # Copy our build artifacts
+      mkdir -p $out
+      cp -Lrvf _build/html/* $out
 
-    # Copy our build artifacts
-    cp -Lrvf _build/html/* $out
-
-    # Copy KaTeX CSS and fonts
-    cp -Lrvf --no-preserve=mode ${nodePackages.katex}/lib/node_modules/katex/dist/{katex.min.css,fonts} $out/css/
-    mkdir -p $out/static/ttf/
-    cp -Lrvf --no-preserve=mode ${pkgs.julia-mono}/share/fonts/truetype/JuliaMono-Regular.ttf $out/static/ttf/julia-mono.ttf
+      # Copy KaTeX CSS and fonts
+      mkdir -p $out/css
+      cp -Lrvf --no-preserve=mode ${pkgs.nodePackages.katex}/lib/node_modules/katex/dist/{katex.min.css,fonts} $out/css/
+      mkdir -p $out/static/ttf
+      cp -Lrvf --no-preserve=mode ${pkgs.julia-mono}/share/fonts/truetype/JuliaMono-Regular.ttf $out/static/ttf/julia-mono.ttf
     '';
 
     passthru = {
-      deps = [
-        shakefile
-
-        # For building the text and maths:
-        gitMinimal sassc
-
-        # For building diagrams:
-        poppler_utils
-      ];
-
+      inherit deps shakefile agda-typed-html;
       texlive = our-texlive;
       ghc = our-ghc;
-      inherit fonts shakefile;
-      agda-typed-html = callPackage ./support/nix/build-shake.nix
-        {
-          inherit our-ghc haskellPackages;
-          main = "Wrapper.hs";
-          name = "agda-typed-html";
-        };
     };
   }

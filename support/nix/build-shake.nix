@@ -6,8 +6,8 @@
 , stdenv
 , upx
 , lua5_3
-, name
 , gmp
+, name
 , main
 }:
 let

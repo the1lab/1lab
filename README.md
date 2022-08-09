@@ -14,15 +14,15 @@ Here's how you can build --- and work on --- the web parts of the 1lab.
 
 ## Using Docker
 
-An Arch Linux-based Docker container is provided which contains all the
+A Docker container is provided which contains all the
 dependencies necessary for building the 1lab, including the font files
 required for a complete deployment. Since this container is on the
 registry, we can do a one-line build of the 1Lab as follows:
 
 ```bash
 % docker run -it -v $PWD:/workspace docker.io/pltamy/1lab:latest /bin/sh -i
-$ 1lab-shake all -j       # build everything
-$ sh support/make-site.sh # copy everything into place
+$ 1lab-shake all -j    # build everything
+$ support/make-site.sh # copy everything into place
 ```
 
 After this, the directory `_build/site` will have everything in place
@@ -53,10 +53,9 @@ $ nix-build
 $ python -m http.server --directory result
 ```
 
-For interactive development, keep in mind that the `buildInputs` to
-`default.nix` _don't_ include Stack or `ghc`. However, just like the
-Docker container, a pre-built version of the Shakefile is included as
-`1lab-shake`:
+For interactive development, `nix-shell` will give you a shell with
+everything you need to hack on the 1Lab, including Agda and the pre-built
+Shakefile as `1lab-shake`:
 
 ```bash
 $ 1lab-shake all -j
@@ -68,7 +67,8 @@ into place:
 
 ```bash
 $ export out=_build/site
-$ echo "${installPhase}" | bash
+$ eval "${installPhase}"
+$ python -m http.server --directory "$out"
 ```
 
 ## Directly

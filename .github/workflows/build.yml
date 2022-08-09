@@ -3,7 +3,6 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: pltamy/1lab:latest
 
     env:
       mailmap: ${{ secrets.MAILMAP }}
@@ -14,36 +13,44 @@ jobs:
         with:
           fetch-depth: 0 # we need the commit history for authors
 
-      - name: Get Shakefile version
-        run: sha256sum /bin/1lab-shake | cut -d' ' -f1 > .shake-version
+      - name: Install Nix ❄️
+        uses: cachix/install-nix-action@v17
 
-      - name: Cache _build
-        id: cache-build
+      - name: Set up Cachix ♻️
+        uses: cachix/cachix-action@v10
+        with:
+          name: 1lab
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+      - name: Build the Shakefile 🧰
+        run: |
+          hash=$(nix-build -A shakefile --no-out-link)
+          hash=${hash#/nix/store/} hash=${hash%%-*}
+          echo "shake_version=$hash" >> "$GITHUB_ENV"
+
+      - name: Cache _build ♻️
         uses: actions/cache@v3
         with:
           path: _build
-          key: shake-${{ hashFiles('.shake-version' )}}-${{ github.run_id }}
-          restore-keys: shake-${{ hashFiles('.shake-version' )}}-
+          key: shake-${{ env.shake_version }}-${{ github.run_id }}
+          restore-keys: shake-${{ env.shake_version }}-
 
       - name: Build 🛠️
         run: |
           echo "$mailmap" > .mailmap
-          1lab-shake all -j
-          ./support/make-site.sh
-
-      - name: Archive site 📦
-        run: |
-          tar \
-            --dereference --hard-dereference \
-            --directory _build/site \
-            -cvf archive.tar \
-            .
+          nix-shell --arg interactive false --run "$build_command"
+        env:
+          NIX_BUILD_SHELL: bash
+          build_command: |
+            set -eu
+            1lab-shake -j all
+            export out=_build/site
+            eval "$installPhase"
 
       - name: Upload site ⬆️
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-pages-artifact@v1
         with:
-          name: github-pages
-          path: archive.tar
+          path: _build/site
           retention-days: 1
 
   deploy:
