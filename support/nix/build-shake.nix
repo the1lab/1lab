@@ -1,4 +1,6 @@
-{ our-ghc
+{ pkgs
+, our-ghc
+, makeWrapper
 , removeReferencesTo
 , haskellPackages
 , stdenv
@@ -8,10 +10,29 @@
 , gmp
 , main
 }:
+let
+  nodeEnv = import ./node/node-env.nix {
+    inherit (pkgs) stdenv lib python2 runCommand writeTextFile writeShellScript nodejs;
+    inherit pkgs;
+    libtool = if pkgs.stdenv.isDarwin then pkgs.darwin.cctools else null;
+  };
+
+  # To cut down on the image size we maim all references to Python and bash here.
+  nodeDependencies = (import ./node/node-dependencies.nix {
+    inherit (pkgs) fetchurl nix-gitignore stdenv lib fetchgit;
+    inherit nodeEnv;
+  }).nodeDependencies.overrideDerivation (old: {
+    installPhase = ''
+    ${old.installPhase}
+    find $out -print0 | xargs -0 ${pkgs.removeReferencesTo}/bin/remove-references-to -t ${pkgs.python3}
+    find $out -print0 | xargs -0 ${pkgs.removeReferencesTo}/bin/remove-references-to -t ${pkgs.bash}
+    '';
+  });
+in
 stdenv.mkDerivation {
   inherit name;
   src = ../shake;
-  nativeBuildInputs = [ our-ghc removeReferencesTo upx ];
+  nativeBuildInputs = [ our-ghc makeWrapper removeReferencesTo upx ];
   propagatedBuildInputs = [ lua5_3 gmp ];
 
   buildPhase = ''
@@ -31,6 +52,9 @@ stdenv.mkDerivation {
   remove-references-to -t ${haskellPackages.js-flot}      $out/bin/${name}
   remove-references-to -t ${haskellPackages.js-jquery}    $out/bin/${name}
   remove-references-to -t ${haskellPackages.js-dgtable}   $out/bin/${name}
+  wrapProgram $out/bin/${name} \
+    --prefix PATH : ${nodeDependencies}/bin \
+    --prefix NODE_PATH : ${nodeDependencies}/lib/node_modules
   '';
 
   disallowedReferences = with haskellPackages; [

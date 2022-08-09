@@ -140,7 +140,7 @@ rules = do
     getDirectoryFiles "support/web/js" ["**/*.ts", "**/*.tsx"] >>= \files -> need ["support/web/js" </> f | f <- files]
 
     let inp = "support/web/js" </> takeFileName out -<.> "ts"
-    command_ [] "node_modules/.bin/esbuild"
+    command_ [] "esbuild"
       [ "--bundle", inp
       , "--outfile=" ++ out
       , "--target=es2017"
@@ -178,7 +178,7 @@ rules = do
 
   phony "typecheck-ts" do
     getDirectoryFiles "support/web/js" ["**/*.ts", "**/*.tsx"] >>= \files -> need ["support/web/js" </> f | f <- files]
-    command_ [] "node_modules/.bin/tsc" ["--noEmit", "-p", "tsconfig.json"]
+    command_ [] "tsc" ["--noEmit", "-p", "tsconfig.json"]
 
   -- Profit!
 

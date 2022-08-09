@@ -3,26 +3,6 @@ with haskell.lib;
 let
   the-lab = import ./default.nix;
   haskellPackages = import ./support/nix/haskell-packages.nix;
-
-  nodeEnv = import ./support/nix/node/node-env.nix {
-    inherit (pkgs) stdenv lib python2 runCommand writeTextFile writeShellScript;
-    inherit pkgs nodejs;
-    libtool = if pkgs.stdenv.isDarwin then pkgs.darwin.cctools else null;
-  };
-
-  # To cut down on the image size we maim all references to nodejs,
-  # Python and bash here. The result is basically a big blob of data.
-  deps = (import ./support/nix/node/node-dependencies.nix {
-    inherit (pkgs) fetchurl nix-gitignore stdenv lib fetchgit;
-    inherit nodeEnv;
-  }).nodeDependencies.overrideDerivation (old: {
-    installPhase = ''
-    ${old.installPhase}
-    find $out -print0 | xargs -0 ${pkgs.removeReferencesTo}/bin/remove-references-to -t ${pkgs.nodejs}
-    find $out -print0 | xargs -0 ${pkgs.removeReferencesTo}/bin/remove-references-to -t ${pkgs.python3}
-    find $out -print0 | xargs -0 ${pkgs.removeReferencesTo}/bin/remove-references-to -t ${pkgs.bash}
-    '';
-  });
 in
   dockerTools.streamLayeredImage {
     name = "pltamy/1lab";
@@ -40,21 +20,17 @@ in
       # Needed for Github Actions:
       gnutar
       rsync
-      deps
     ];
 
     config = {
       WorkingDir = "/workspace";
       Env = [
         "LANG=C.UTF-8" # Needed for GHC to set the correct encoding on handles
-        "PATH=/lib/node_modules/.bin/:/bin/"
 
         # Needed for Github Actions:
         "LD_LIBRARY_PATH=${lib.makeLibraryPath [ pkgs.stdenv.cc.cc ]}"
         "GIT_SSL_CAINFO=${cacert}/etc/ssl/certs/ca-bundle.crt"
         "SSL_CERT_FILE=${cacert}/etc/ssl/certs/ca-bundle.crt"
-
-        "NODE_DEPS_PATH=${deps}/lib/node_modules"
       ];
     };
 
@@ -63,7 +39,9 @@ in
     echo "ID=nixos" > ./etc/os-release
     cp ./bin/env ./usr/bin/
 
-    mkdir -p ./root/static/ttf/
+    # Copy static assets to /root so that make-site.sh can find them
+    mkdir -p ./root/static/ttf/ ./root/css/
+    cp -Lrv --no-preserve=mode ${nodePackages.katex}/lib/node_modules/katex/dist/{katex.min.css,fonts} ./root/css/;
     cp -Lrv --no-preserve=mode ${pkgs.julia-mono}/share/fonts/truetype/JuliaMono-Regular.ttf ./root/static/ttf/julia-mono.ttf
 
     # Needed for Github Actions

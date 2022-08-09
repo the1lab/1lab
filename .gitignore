@@ -11,3 +11,6 @@ src/wip/
 *.agdai
 /result
 .shake
+/.envrc
+/.direnv
+/dist-newstyle
