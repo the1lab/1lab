@@ -57,7 +57,7 @@ reindex p q {f′} = ap (λ e → hom[ e ] f′) (B.Hom-set _ _ _ _ p q)
 ```
 
 Next come the most important lemmas: Moving substitution in and out of
-composite morphisms. The `hom[]-whisker-r`{.Agda} combinator says that
+composite morphisms. The `whisker-r`{.Agda} combinator says that
 substituting on the right of a composition is the same thing as
 composing first, then adjusting by a path which leaves the "left"
 composite unchanged.
