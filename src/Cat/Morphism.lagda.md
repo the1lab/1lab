@@ -212,7 +212,10 @@ abstract
 
 ```agda
 id-iso : a ≅ a
-id-iso = make-iso id id (idl _) (idl _)
+id-iso .to = id
+id-iso .from = id
+id-iso .inverses .invl = idl id
+id-iso .inverses .invr = idl id
 
 Inverses-∘ : {f : Hom a b} {f⁻¹ : Hom b a} {g : Hom b c} {g⁻¹ : Hom c b}
            → Inverses f f⁻¹ → Inverses g g⁻¹ → Inverses (g ∘ f) (f⁻¹ ∘ g⁻¹)

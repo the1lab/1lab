@@ -22,7 +22,7 @@ which will act as the category we add the extra structure to.
 ```agda
 record Displayed {o ℓ} (B : Precategory o ℓ)
                  (o′ ℓ′ : Level) : Type (o ⊔ ℓ ⊔ lsuc o′ ⊔ lsuc ℓ′) where
-
+  no-eta-equality
   open Precategory B
 ```
 

@@ -1,10 +1,11 @@
-open import 1Lab.Prelude
 open import 1Lab.Reflection
+open import 1Lab.Prelude
 
 open import Cat.Base
-import Cat.Reasoning as Cat
 
 open import Data.List
+
+import Cat.Reasoning as Cat
 
 module Cat.Functor.Solver where
 

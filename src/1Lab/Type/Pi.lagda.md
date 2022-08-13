@@ -77,6 +77,13 @@ We can generalise this to `funext-dep`, in which the domain and codomain
 are allowed to be lines of types:
 
 ```agda
+funextP
+  : ∀ {A : Type ℓ} {B : A → I → Type ℓ₁}
+  → {f : ∀ a → B a i0} {g : ∀ a → B a i1}
+  → (∀ a → PathP (B a) (f a) (g a))
+  → PathP (λ i → ∀ a → B a i) f g
+funextP p i x = p x i
+
 funext-dep
   : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
     {f : (x : A i0) → B i0 x} {g : (x : A i1) → B i1 x}

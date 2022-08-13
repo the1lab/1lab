@@ -467,7 +467,7 @@ The theory of abelian categories.
 open import Cat.Abelian.Base
 open import Cat.Abelian.Images
 open import Cat.Abelian.Limits
-open import Cat.Abelian.Functors
+open import Cat.Abelian.Functor
 ```
 
 # Topos theory
