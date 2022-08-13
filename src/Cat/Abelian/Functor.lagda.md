@@ -6,7 +6,7 @@ open import Cat.Abelian.Base
 open import Cat.Diagram.Zero
 open import Cat.Prelude
 
-module Cat.Abelian.Functors where
+module Cat.Abelian.Functor where
 ```
 
 # Ab-enriched Functors
