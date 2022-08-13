@@ -51,7 +51,7 @@ believe HoTT is for everyone, and are committed to fostering a kind,
 inclusive environment.**
 
 [GitHub]: https://github.com/plt-amy/1lab
-[Discord]: https://discord.gg/NvXkUVYcxV
+[Discord]: https://discord.gg/2TvDH7jz
 [cccc]: https://github.com/plt-amy/1lab/blob/main/CODE_OF_CONDUCT.md
 
 Mathematics is, fundamentally, a social activity. Correspondingly, we

@@ -1,4 +1,4 @@
-[![Discord](https://img.shields.io/discord/914172963157323776?label=Discord&logo=discord)](https://discord.gg/NvXkUVYcxV)
+[![Discord](https://img.shields.io/discord/954089080197611551?label=Discord&logo=discord)](https://discord.gg/2TvDH7jz)
 [![Build 1Lab](https://github.com/plt-amy/cubical-1lab/actions/workflows/build.yml/badge.svg)](https://github.com/plt-amy/cubical-1lab/actions/workflows/build.yml)
 
 # [1Lab](https://cubical.1lab.dev)
