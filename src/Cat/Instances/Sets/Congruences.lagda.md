@@ -16,7 +16,7 @@ module Cat.Instances.Sets.Congruences {ℓ} where
 open Cat.Diagram.Congruence (Sets-finitely-complete {ℓ = ℓ})
 private
   unit : Set ℓ
-  unit = Lift ℓ ⊤ , λ x y p q i j → lift tt
+  unit = el (Lift ℓ ⊤) λ x y p q i j → lift tt
 ```
 -->
 
@@ -69,7 +69,7 @@ Sets-effective-congruences {A = A} R = eff where
   open is-pullback
 
   eff : is-effective-congruence R
-  eff .A/R            = ∣ A ∣ / rel , squash
+  eff .A/R            = el (∣ A ∣ / rel) squash
   eff .quotient       = inc
 
   eff .has-quotient .coequal = funext λ { x → quot (x , refl) }

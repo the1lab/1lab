@@ -75,7 +75,7 @@ record Monoid-on (A : Type ℓ) : Type ℓ where
   open is-monoid has-is-monoid public
 
 Monoid : (ℓ : Level) → Type (lsuc ℓ)
-Monoid ℓ = Σ (Monoid-on {ℓ = ℓ})
+Monoid ℓ = Σ (Type ℓ) Monoid-on
 
 open Monoid-on
 ```
@@ -86,7 +86,7 @@ commute with the multiplication:
 
 ```agda
 record
-  Monoid-hom (A B : Σ (Monoid-on {ℓ = ℓ})) (e : A .fst → B .fst) : Type ℓ where
+  Monoid-hom (A B : Monoid ℓ) (e : A .fst → B .fst) : Type ℓ where
   private
     module A = Monoid-on (A .snd)
     module B = Monoid-on (B .snd)
@@ -97,7 +97,7 @@ record
 
 open Monoid-hom
 
-Monoid≃ : (A B : Σ (Monoid-on {ℓ = ℓ})) (e : A .fst ≃ B .fst) → Type _
+Monoid≃ : (A B : Monoid ℓ) (e : A .fst ≃ B .fst) → Type _
 Monoid≃ A B (e , _) = Monoid-hom A B e
 ```
 

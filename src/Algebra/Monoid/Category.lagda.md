@@ -47,7 +47,7 @@ instance
 
 Monoids : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Monoids ℓ .Ob      = Monoid ℓ
-Monoids ℓ .Hom A B = Σ (Monoid-hom A B)
+Monoids ℓ .Hom A B = Σ _ (Monoid-hom A B)
 Monoids ℓ .Hom-set _ (_ , M) = hlevel 2
   where open Monoid-on M
 ```
@@ -72,7 +72,7 @@ sets: `Forget`{.Agda}.
 
 ```agda
 Forget : ∀ {ℓ} → Functor (Monoids ℓ) (Sets ℓ)
-Forget .F₀ (A , m) = A , m .has-is-set
+Forget .F₀ (A , m) = el _ $ m .has-is-set
 Forget .F₁ = fst
 Forget .F-id = refl
 Forget .F-∘ _ _ = refl

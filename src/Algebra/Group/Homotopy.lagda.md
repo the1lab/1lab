@@ -265,7 +265,7 @@ together to establish `G ≡ (base ≡ base)`. First, to define
   Code =
     Deloop-elim _
       (λ _ → hlevel 3)
-      (G .fst , Group-on.has-is-set (G .snd))
+      (el (G .fst) (Group-on.has-is-set (G .snd)))
       (λ x → n-ua (map x))
       λ x y → n-Type-square (transport (sym Square≡double-composite-path) (lemma x y))
 ```

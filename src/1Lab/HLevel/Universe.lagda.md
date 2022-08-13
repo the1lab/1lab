@@ -100,7 +100,7 @@ ident=is-hlevel} as `n-Type`:
 ```agda
 record n-Type ℓ n : Type (lsuc ℓ) where
   no-eta-equality
-  constructor _,_
+  constructor el
   field
     ∣_∣   : Type ℓ
     is-tr : is-hlevel ∣_∣ n

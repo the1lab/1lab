@@ -117,7 +117,7 @@ the identity (vertical) isomorphism.
 ```agda
     contract-vertical-iso
       : ∀ {x} {A : Ob[ x ]} (B : Ob[ x ]) (f : A ≅↓ B)
-      → Path (Σ ((x , A) ∫E.≅_)) ((x , A) , ∫E.id-iso)
+      → Path (Σ _ ((x , A) ∫E.≅_)) ((x , A) , ∫E.id-iso)
           ((x , B) , piece-together B.id-iso f)
     contract-vertical-iso {x} {A} B f =
       Σ-pathp (λ i → x , pair i .fst)
@@ -140,7 +140,7 @@ the isomorphism of first components coming from the isomorphism in $\int E$.
   is-category-total A .paths (B , isom) = wrapper _ _ _ _ where
     wrapper
       : ∀ {x y} (p : x B.≅ y) (A : Ob[ x ]) (B : Ob[ y ]) (f : A ≅[ p ] B)
-      → Path (Σ ((x , A) ∫E.≅_)) _ _
+      → Path (Σ _ ((x , A) ∫E.≅_)) _ _
     wrapper p A =
       J-iso _ base-c
         (λ y p → (B : Ob[ y ]) (f : A ≅[ p ] B)

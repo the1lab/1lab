@@ -78,7 +78,7 @@ means for `eqv` to take the `x`-structure on `A` to the `y`-structure on
 `B`.
 
 ```agda
-   is-hom : (A B : Σ S) → (A .fst ≃ B .fst) → Type ℓ₃
+   is-hom : (A B : Σ _ S) → (A .fst ≃ B .fst) → Type ℓ₃
 ```
 
 As a grounding example, consider equipping types with group structure:
@@ -92,7 +92,7 @@ homomorphism.
 open Structure public
 
 Type-with : ∀ {ℓ ℓ₁ ℓ₂} {S : Type ℓ → Type ℓ₁} → Structure ℓ₂ S → Type _
-Type-with {S = S} _ = Σ S
+Type-with {S = S} _ = Σ _ S
 ```
 
 <!--
@@ -123,7 +123,7 @@ The notation `A ≃[ σ ] B`{.Agda ident=_≃[_]_} stands for the type of
 underlying `A` and `B` that σ identifies as being homomorphic.
 
 ```agda
-_≃[_]_ : Σ S → Structure ℓ S → Σ S → Type _
+_≃[_]_ : Σ _ S → Structure ℓ S → Σ _ S → Type _
 A ≃[ σ ] B =
   Σ[ f ∈ A .fst ≃ B .fst ]
    (σ .is-hom A B f)
@@ -138,7 +138,7 @@ using groups as a grounding example: identification of groups is group
 isomorphism.
 
 ```agda
-SIP : {σ : Structure ℓ S} → is-univalent σ → {X Y : Σ S} → (X ≃[ σ ] Y) ≃ (X ≡ Y)
+SIP : {σ : Structure ℓ S} → is-univalent σ → {X Y : Σ _ S} → (X ≃[ σ ] Y) ≃ (X ≡ Y)
 SIP {S = S} {σ = σ} is-univ {X} {Y} =
   X ≃[ σ ] Y                                                       ≃⟨⟩
   Σ[ e ∈ X .fst ≃ Y .fst ] (σ .is-hom X Y e)                       ≃⟨ Σ-ap (ua , univalence⁻¹) is-univ ⟩
@@ -154,7 +154,7 @@ By the characterisation of `path spaces of Σ types`{.Agda
 ident=Σ-pathp-iso}, this latter pair is equivalent to `X ≡ Y`.
 
 ```agda
-sip : {σ : Structure ℓ S} → is-univalent σ → {X Y : Σ S} → (X ≃[ σ ] Y) → (X ≡ Y)
+sip : {σ : Structure ℓ S} → is-univalent σ → {X Y : Σ _ S} → (X ≃[ σ ] Y) → (X ≡ Y)
 sip σ = SIP σ .fst
 ```
 

@@ -113,7 +113,7 @@ of sets of _any_ level $\ell$ admits them.
 
 ```agda
   Sets-terminal : Terminal (Sets ℓ)
-  Sets-terminal .top = Lift _  ⊤ , is-prop→is-set (λ _ _ → refl)
+  Sets-terminal .top = el (Lift _  ⊤) (is-prop→is-set (λ _ _ → refl))
   Sets-terminal .has⊤ _ = fun-is-hlevel 0 (contr (lift tt) λ x i → lift tt)
 ```
 
@@ -121,7 +121,7 @@ Products are given by product sets:
 
 ```agda
   Sets-products : (A B : Set ℓ) → Product A B
-  Sets-products A B .apex = (∣ A ∣ × ∣ B ∣) , ×-is-hlevel 2 (A .is-tr) (B .is-tr)
+  Sets-products A B .apex = el (∣ A ∣ × ∣ B ∣) (×-is-hlevel 2 (A .is-tr) (B .is-tr))
   Sets-products A B .π₁ = fst
   Sets-products A B .π₂ = snd
   Sets-products A B .has-is-product .⟨_,_⟩ f g x = f x , g x
@@ -137,8 +137,8 @@ using $\Sigma$:
   Sets-equalisers : (f g : Hom A B) → Equaliser {A = A} {B = B} f g
   Sets-equalisers {A = A} {B = B} f g = eq where
     eq : Equaliser f g
-    eq .apex = Σ[ x ∈ ∣ A ∣ ] (f x ≡ g x)
-             , Σ-is-hlevel 2 (A .is-tr) λ _ → is-prop→is-set (B .is-tr _ _)
+    eq .apex = el (Σ[ x ∈ ∣ A ∣ ] (f x ≡ g x))
+                  (Σ-is-hlevel 2 (A .is-tr) λ _ → is-prop→is-set (B .is-tr _ _))
     eq .equ = fst
     eq .has-is-eq .equal = funext snd
     eq .has-is-eq .limiting {e′ = e′} p x = e′ x , happly p x

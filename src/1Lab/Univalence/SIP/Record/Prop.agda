@@ -9,8 +9,6 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
-open import Agda.Builtin.List
-
 open import Data.List
 
 module 1Lab.Univalence.SIP.Record.Prop where
@@ -28,13 +26,13 @@ module 1Lab.Univalence.SIP.Record.Prop where
 
     PropHelperCenterType : Type _
     PropHelperCenterType =
-      (A B : Σ R) (e : A .fst ≃ B .fst)
+      (A B : Σ _ R) (e : A .fst ≃ B .fst)
       (p : PathP (λ i → Prev (ua e i)) (prev (A .snd)) (prev (B .snd)))
       → PathP (λ i → P (ua e i) (p i)) (f (A .snd)) (f (B .snd))
 
     PropHelperContractType : PropHelperCenterType → Type _
     PropHelperContractType c =
-      (A B : Σ R) (e : A .fst ≃ B .fst)
+      (A B : Σ _ R) (e : A .fst ≃ B .fst)
       {p₀ : PathP (λ i → Prev (ua e i)) (prev (A .snd)) (prev (B .snd))}
       (q : PathP (λ i → R (ua e i)) (A .snd) (B .snd))
       (p : p₀ ≡ (λ i → prev (q i)))

@@ -82,7 +82,7 @@ instance
     where open is-ring
 
 Ring : ∀ ℓ → Type (lsuc ℓ)
-Ring _ = Σ Ring-on
+Ring _ = Σ (Type _) Ring-on
 ```
 -->
 

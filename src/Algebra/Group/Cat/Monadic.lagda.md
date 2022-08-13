@@ -171,7 +171,7 @@ but the other direction is by induction on "words".
     (_ , id-equiv) , record { pres-⋆ = λ x y → refl }
   isom .is-iso.rinv x = Σ-pathp ext (Algebra-on-pathp _ _ go) where
     open n-Type (x .fst) hiding (∣_∣)
-    ext : (∣ x .fst ∣ , x .fst .is-tr) ≡ x .fst
+    ext : el (∣ x .fst ∣) (x .fst .is-tr) ≡ x .fst
     ext i .∣_∣ = ∣ x .fst ∣
     ext i .is-tr = x .fst .is-tr
 

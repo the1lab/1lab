@@ -32,7 +32,7 @@ private variable
 
 ```agda
 Hom[-,-] : Functor ((C ^op) ×ᶜ C) (Sets h)
-Hom[-,-] .F₀ (a , b) = Hom a b , Hom-set a b
+Hom[-,-] .F₀ (a , b) = el (Hom a b) (Hom-set a b)
 Hom[-,-] .F₁ (f , h) g = h ∘ g ∘ f
 Hom[-,-] .F-id = funext λ x → ap (_ ∘_) (idr _) ∙ idl _
 Hom[-,-] .F-∘ (f , h) (f' , h') = funext λ where
@@ -43,7 +43,7 @@ Hom[-,-] .F-∘ (f , h) (f' , h') = funext λ where
 We also can define "partially applied" versions of the hom functor:
 ```agda
 Hom[_,-] : Ob → Functor C (Sets h)
-Hom[ x ,-] .F₀ y = Hom x y , Hom-set x y
+Hom[ x ,-] .F₀ y = el (Hom x y) (Hom-set x y)
 Hom[ x ,-] .F₁ f g = f ∘ g
 Hom[ x ,-] .F-id = funext (λ f → idl f)
 Hom[ x ,-] .F-∘ f g = funext λ h → sym (assoc f g h)
@@ -75,7 +75,7 @@ $\hom(x,y) \to \hom(x,z)$ given by precomposition.
 
 ```agda
 よ₀ : Ob → Functor (C ^op) (Sets h)
-よ₀ c .F₀ x    = Hom x c , Hom-set _ _
+よ₀ c .F₀ x    = el (Hom x c) (Hom-set _ _)
 よ₀ c .F₁ f    = _∘ f
 よ₀ c .F-id    = funext idr
 よ₀ c .F-∘ f g = funext λ h → assoc _ _ _

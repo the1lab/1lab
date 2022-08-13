@@ -57,7 +57,7 @@ shortest and most aesthetic: `fibre`{.Agda}.
 
 ```agda
 fibre : (A → B) → B → Type _
-fibre f y = Σ λ x → f x ≡ y
+fibre f y = Σ _ λ x → f x ≡ y
 ```
 
 A function `f` is an equivalence if every one of its fibres is
@@ -75,7 +75,7 @@ record is-equiv (f : A → B) : Type (level-of A ⊔ level-of B) where
 open is-equiv public
 
 _≃_ : ∀ {ℓ₁ ℓ₂} → Type ℓ₁ → Type ℓ₂ → Type _
-_≃_ A B = Σ (is-equiv {A = A} {B = B})
+_≃_ A B = Σ (A → B) is-equiv
 
 id-equiv : is-equiv {A = A} (λ x → x)
 id-equiv .is-eqv y =
@@ -204,7 +204,7 @@ record is-iso (f : A → B) : Type (level-of A ⊔ level-of B) where
   linv inverse = rinv
 
 Iso : ∀ {ℓ₁ ℓ₂} → Type ℓ₁ → Type ℓ₂ → Type _
-Iso A B = Σ (is-iso {A = A} {B = B})
+Iso A B = Σ (A → B) is-iso
 ```
 
 Any function that is an equivalence is an isomorphism:

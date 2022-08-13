@@ -7,15 +7,13 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
-open import Agda.Builtin.Bool
-
 open is-equiv
 open is-contr
 open is-iso
 
 module Data.Bool where
 
-open Agda.Builtin.Bool public
+open import 1Lab.Prim.Data.Bool public
 ```
 
 # The Booleans

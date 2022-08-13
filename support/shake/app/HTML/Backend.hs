@@ -5,7 +5,6 @@
 module HTML.Backend
   ( htmlBackend
   , compileOneModule
-  , builtinModules
   , moduleName
   , defaultHtmlOptions
   ) where
@@ -252,48 +251,14 @@ definitionAnchor htmlenv def = f =<< go where
   go = do
     let name = defName def
     case rangeFile (nameBindingSite (qnameName name)) of
-      S.Just (filePath -> f)
-        | ("Agda/Builtin" `isInfixOf` f) || ("Agda/Primitive" `isInfixOf` f) ->
-          fakePath name
-        | otherwise -> do
-          let f' = moduleName $ dropExtensions (makeRelative basepn f)
-          pure (f' <.> "html")
+      S.Just (filePath -> f) -> do
+        let f' = moduleName $ dropExtensions (makeRelative basepn f)
+        pure (f' <.> "html")
       S.Nothing -> Nothing
   f modn =
     case rStart (nameBindingSite (qnameName (defName def))) of
       Just pn -> pure $ Text.pack (modn <> "#" <> show (posPos pn))
       Nothing -> Nothing
-
-fakePath :: QName -> Maybe FilePath
-fakePath (QName (MName xs) _) =
-  listToMaybe
-    [ l <.> "html"
-    | l <- map (intercalate ".") (inits (map (render . pretty . nameConcrete) xs))
-    , l `elem` builtinModules
-    ]
-
-builtinModules :: [String]
-builtinModules =
-  [ "Agda.Builtin.Bool"
-  , "Agda.Builtin.Char"
-  , "Agda.Builtin.Cubical.HCompU"
-  , "Agda.Builtin.Cubical.Path"
-  , "Agda.Builtin.Cubical.Sub"
-  , "Agda.Builtin.Float"
-  , "Agda.Builtin.FromNat"
-  , "Agda.Builtin.FromNeg"
-  , "Agda.Builtin.Int"
-  , "Agda.Builtin.List"
-  , "Agda.Builtin.Maybe"
-  , "Agda.Builtin.Nat"
-  , "Agda.Builtin.Reflection"
-  , "Agda.Builtin.Sigma"
-  , "Agda.Builtin.String"
-  , "Agda.Builtin.Unit"
-  , "Agda.Builtin.Word"
-  , "Agda.Primitive.Cubical"
-  , "Agda.Primitive"
-  ]
 
 -- | Determine the name of a module from a file like @1Lab/HIT/Torus@.
 moduleName :: FilePath -> String

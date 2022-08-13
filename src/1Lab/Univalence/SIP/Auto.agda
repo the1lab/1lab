@@ -6,13 +6,9 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
-module 1Lab.Univalence.SIP.Auto where
+open import Data.List
 
-open import Agda.Builtin.Reflection
-  renaming ( bindTC to _>>=_
-           ; catchTC to infixr 8 _<|>_
-           )
-  hiding (Type)
+module 1Lab.Univalence.SIP.Auto where
 
 makeAutoStr-term : Nat → Term → TC ⊤
 makeAutoStr-term zero t = typeError (strErr "autoDesc ran out of fuel" ∷ [])

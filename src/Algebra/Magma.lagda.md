@@ -59,7 +59,7 @@ binary operation `⋆`, on which no further laws are imposed.
     has-is-set : is-set A
 
   underlying-set : Set ℓ
-  underlying-set = _ , has-is-set
+  underlying-set = el _ has-is-set
 
   instance
     magma-hlevel : ∀ {n} → H-Level A (2 + n)
@@ -95,7 +95,7 @@ record Magma-on (A : Type ℓ) : Type ℓ where
   open is-magma has-is-magma public
 
 Magma : (ℓ : Level) → Type (lsuc ℓ)
-Magma ℓ = Σ Magma-on
+Magma ℓ = Σ (Type ℓ) Magma-on
 ```
 
 We then define what it means for an equivalence between the carrier

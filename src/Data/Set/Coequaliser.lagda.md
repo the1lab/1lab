@@ -340,7 +340,7 @@ establish effectivity of the quotient.
     Code : A → A / R → Prop ℓ'
     Code x = Quot-elim
       (λ x → n-Type-is-hlevel 1)
-      (λ y → {- 1 -} R x y , Rp x y)
+      (λ y → el (R x y) (Rp x y) {- 1 -})
       λ y z r →
         n-ua (prop-ext (Rp _ _) (Rp _ _) (λ z → rt z r) λ z → rt z (rs r))
 ```

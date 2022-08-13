@@ -286,7 +286,7 @@ record Semilattice-on {ℓ} (A : Type ℓ) : Type ℓ where
 open Semilattice-on using (→Meet ; →Join)
 
 Semilattice : ∀ ℓ → Type (lsuc ℓ)
-Semilattice ℓ = Σ (Semilattice-on {ℓ = ℓ})
+Semilattice ℓ = Σ _ (Semilattice-on {ℓ = ℓ})
 ```
 
 The property `is-semilattice-hom`{.Agda} follows the trend of naming the

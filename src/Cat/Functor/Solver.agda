@@ -1,10 +1,12 @@
-module Cat.Functor.Solver where
-
 open import 1Lab.Prelude
 open import 1Lab.Reflection
 
 open import Cat.Base
 import Cat.Reasoning as Cat
+
+open import Data.List
+
+module Cat.Functor.Solver where
 
 
 module NbE {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′} (F : Functor 𝒞 𝒟) where
@@ -179,7 +181,7 @@ module Reflection where
   dont-reduce = quote Precategory.id ∷ quote Precategory._∘_ ∷ quote Functor.F₁ ∷ []
 
   solve-macro : ∀ {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′} → Functor 𝒞 𝒟 → Term → TC ⊤
-  solve-macro functor hole = 
+  solve-macro functor hole =
    withNormalisation false $
    dontReduceDefs dont-reduce $ do
      functor-tm ← quoteTC functor
@@ -205,7 +207,7 @@ private module Test {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory
     X Y : 𝒟.Ob
     a b c : 𝒞.Hom A B
     x y z : 𝒟.Hom X Y
-    
+
 
   test : (x 𝒟.∘ F₁ (𝒞.id 𝒞.∘ 𝒞.id)) 𝒟.∘ F₁ a 𝒟.∘ F₁ (𝒞.id 𝒞.∘ b) ≡ 𝒟.id 𝒟.∘ x 𝒟.∘ F₁ (a 𝒞.∘ b)
   test = functor! F

@@ -83,7 +83,7 @@ module _ {κ o} {C : Precategory o κ} where
 
 ```agda
   Nerve : {D : Precategory κ κ} → Functor D C → Functor C (PSh κ D)
-  Nerve F .F₀ x .F₀ y    = C.Hom (F .F₀ y) x , C.Hom-set _ _
+  Nerve F .F₀ x .F₀ y    = el (C.Hom (F .F₀ y) x) (C.Hom-set _ _)
   Nerve F .F₀ x .F₁ f g  = g C.∘ F .F₁ f
   Nerve F .F₀ x .F-id    = funext λ x → C.elimr (F .F-id)
   Nerve F .F₀ x .F-∘ f g = funext λ x → C.pushr (F .F-∘ _ _)

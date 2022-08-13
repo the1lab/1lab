@@ -71,8 +71,8 @@ rep-subgroup→group-on {G = G} H sg =
         open represents-subgroup sg
 
 predicate→subgroup : (H : ℙ (G .fst)) → represents-subgroup G H → Subgroup G
-predicate→subgroup {G = G} H p = cut map , ism where
-  map : Groups.Hom (Σ (∣_∣ ⊙ H) , rep-subgroup→group-on H p) G
+predicate→subgroup {G = G} H p = restrict (cut map) ism where
+  map : Groups.Hom (Σ _ (∣_∣ ⊙ H) , rep-subgroup→group-on H p) G
   map .fst = fst
   map .snd .Group-hom.pres-⋆ x y = refl
 
@@ -101,7 +101,7 @@ module _ {ℓ} where
   open Canonical-kernels (Groups ℓ) ∅ᴳ Groups-equalisers public
 
   Ker-subgroup : ∀ {A B : Group ℓ} → Groups.Hom A B → Subgroup A
-  Ker-subgroup f = cut kernel , Groups.is-equaliser→is-monic _ has-is-kernel where
+  Ker-subgroup f = restrict (cut kernel) (Groups.is-equaliser→is-monic _ has-is-kernel) where
     open Kernel (Ker f)
 ```
 
@@ -198,7 +198,7 @@ $\im f$.
 
 ```agda
   Im[_] : Subgroup B
-  Im[_] = cut im→B , im↪B where
+  Im[_] = restrict (cut im→B) im↪B where
     im↪B : Groups.is-monic im→B
     im↪B = injective-group-hom im→B Tpath
 ```

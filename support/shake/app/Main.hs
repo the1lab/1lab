@@ -30,8 +30,6 @@ import Text.Printf
 
 import System.IO (IOMode(..), hPutStrLn, withFile)
 
-import HTML.Backend (builtinModules)
-
 import Shake.Options
 import Shake.AgdaCompile
 import Shake.AgdaRefs (getAgdaRefs)
@@ -72,9 +70,7 @@ rules = do
       toOut (x, WithText) = x ++ " -- (text page)"
       toOut (x, CodeOnly) = x ++ " -- (code only)"
 
-    writeFileLines out $ "{-# OPTIONS --cubical #-}"
-                       : ["open import " ++ toOut x | x <- modules]
-                      ++ ["import " ++ x ++ " -- (builtin)" | x <- builtinModules]
+    writeFileLines out $ ["open import " ++ toOut x | x <- modules]
 
   {-
     For each 1Lab module, read the emitted file from @_build/html0@. If its

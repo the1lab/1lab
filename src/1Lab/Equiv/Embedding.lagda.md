@@ -157,7 +157,7 @@ Since $B(x)$ was assumed to be a prop., then so are the fibres of
 ```agda
 Subset-proj-embedding
   : ∀ {B : A → Type ℓ} → (∀ x → is-prop (B x))
-  → is-embedding {A = Σ B} fst
+  → is-embedding {A = Σ A B} fst
 Subset-proj-embedding {B = B} Bprop x = is-hlevel≃ 1 (Fibre-equiv B x e⁻¹) (Bprop _)
 ```
 
@@ -177,6 +177,6 @@ monic-between-sets→is-embedding
   → is-embedding f
 monic-between-sets→is-embedding {f = f} bset monic =
   injective-between-sets→has-prop-fibres bset _ λ {x} {y} p →
-    happly (monic {C = Lift _ ⊤ , λ _ _ _ _ i j → lift tt} (λ _ → x) (λ _ → y) (funext (λ _ → p))) _
+    happly (monic {C = el (Lift _ ⊤) (λ _ _ _ _ i j → lift tt)} (λ _ → x) (λ _ → y) (funext (λ _ → p))) _
 ```
 --

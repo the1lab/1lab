@@ -68,10 +68,10 @@ prop-ua {A} {B} (f , g) i = prop where
   -- can't use the standard methods here (is-prop-is-prop, etc) because
   -- you can't form PathPs over types with dependent levels.
   postulate
-    trs : (i : I) → Sub (is-prop (path-of-types i)) (i ∨ ~ i)
-      λ { (i = i0) → A .is-tr
-        ; (i = i1) → B .is-tr
-        }
+    trs : (i : I) → is-prop (path-of-types i) [ (i ∨ ~ i) ↦
+      (λ { (i = i0) → A .is-tr
+         ; (i = i1) → B .is-tr
+         }) ]
 
   prop : Prop*
   prop .Prop*.ℓ = levels i

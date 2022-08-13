@@ -3,6 +3,8 @@ open import Algebra.Monoid
 
 open import Cat.Prelude
 
+open import Data.List
+
 module Cat.Instances.Delooping where
 ```
 

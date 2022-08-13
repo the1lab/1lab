@@ -40,7 +40,7 @@ to $A$ and $1$ to $B$. We begin by defining the functor (reusing
 existing infrastructure):
 
 ```agda
-2-object-diagram : ∀ {iss} → Ob → Ob → Functor (Disc′ (Bool , iss)) C
+2-object-diagram : ∀ {iss} → Ob → Ob → Functor (Disc′ (el Bool iss)) C
 2-object-diagram A B = Disc-diagram Discrete-Bool λ where
   false → A
   true  → B
@@ -99,7 +99,7 @@ defined above.
 
 ```agda
 canonical-functors
-  : ∀ {iss} (F : Functor (Disc′ (Bool , iss)) C)
+  : ∀ {iss} (F : Functor (Disc′ (el Bool iss)) C)
   → F ≡ 2-object-diagram (F₀ F false) (F₀ F true)
 canonical-functors {iss = iss} F = Functor-path p q where
   p : ∀ x → _

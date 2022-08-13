@@ -86,7 +86,7 @@ doesn't matter whether you first join then evaluate, or evaluate twice.
     ν-mult : ν C.∘ M₁ ν ≡ ν C.∘ mult.η ob
 
 Algebra : Monad → Type (o ⊔ h)
-Algebra M = Σ (Algebra-on M)
+Algebra M = Σ _ (Algebra-on M)
 ```
 
 <!--

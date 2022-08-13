@@ -1,9 +1,10 @@
-module 1Lab.Reflection.Variables where
-
 open import 1Lab.Type
 open import Data.Nat.Base
 open import Data.Fin.Base
+open import Data.List hiding (reverse)
 open import 1Lab.Reflection
+
+module 1Lab.Reflection.Variables where
 
 --------------------------------------------------------------------------------
 -- Variable Binding for Terms
@@ -26,7 +27,7 @@ open import 1Lab.Reflection
 -- source of variable expressions. This allows us to produce fresh
 -- (already quoted) variables of type 'Fin', which can be inserted
 -- into the syntax tree while it's being constructed.
--- 
+--
 -- Once the syntax trees have been completed, we can grab an
 -- environment using the aptly named 'environment' function.
 -- This returns a (already quoted) environment 'Vec A n',
@@ -93,7 +94,7 @@ bind-var vs tm with variables vs tm
   let v = fin-term (nvars vs)
   let vs′ = mk-variables (bound vs ▷ a)
                          (bind tm v (variables vs))
-  returnTC (v , vs′) 
+  returnTC (v , vs′)
 
 environment : Variables A → TC (Term × Term)
 environment vs = do

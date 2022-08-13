@@ -29,7 +29,7 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
   PSh-terminal : Terminal (PSh κ C)
   PSh-terminal = record { top = top ; has⊤ = uniq } where
     top : Functor (C ^op) (Sets κ)
-    top .F₀ x = Lift κ ⊤ , λ _ _ _ _ _ _ → lift tt
+    top .F₀ x = el (Lift κ ⊤) λ _ _ _ _ _ _ → lift tt
     top .F₁ _ _ = lift tt
     top .F-id = refl
     top .F-∘ _ _ = refl
@@ -65,8 +65,8 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
 
     pb : Pullback (PSh κ C) f g
     pb .apex .F₀ i =
-        (Σ[ x ∈ ∣ X.₀ i ∣ ] Σ[ y ∈ ∣ Y.₀ i ∣ ] (f.η i x ≡ g.η i y))
-      , Σ-is-hlevel 2 (X.₀ i .is-tr) λ _ → Σ-is-hlevel 2 (Y.₀ i .is-tr)
+      el (Σ[ x ∈ ∣ X.₀ i ∣ ] Σ[ y ∈ ∣ Y.₀ i ∣ ] (f.η i x ≡ g.η i y))
+      $ Σ-is-hlevel 2 (X.₀ i .is-tr) λ _ → Σ-is-hlevel 2 (Y.₀ i .is-tr)
         λ _ → is-prop→is-set (Z.₀ i .is-tr _ _)
     pb .apex .F₁ {x} {y} h (a , b , p) = X.₁ h a , Y.₁ h b , path where abstract
       path : f.η y (X.₁ h a) ≡ g.η y (Y.₁ h b)
@@ -96,7 +96,8 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     module B = Functor B
 
     prod : Product (PSh _ C) A B
-    prod .apex .F₀ x = (∣ A.₀ x ∣ × ∣ B.₀ x ∣) , ×-is-hlevel 2 (A.₀ x .is-tr) (B.₀ x .is-tr)
+    prod .apex .F₀ x = el (∣ A.₀ x ∣ × ∣ B.₀ x ∣) $
+      ×-is-hlevel 2 (A.₀ x .is-tr) (B.₀ x .is-tr)
     prod .apex .F₁ f (x , y) = A.₁ f x , B.₁ f y
     prod .apex .F-id i (x , y) = A.F-id i x , B.F-id i y
     prod .apex .F-∘ f g i (x , y) = A.F-∘ f g i x , B.F-∘ f g i y
@@ -118,7 +119,7 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     module B = Functor B
 
     coprod : Coproduct (PSh _ C) A B
-    coprod .coapex .F₀ i = (∣ A.₀ i ∣ ⊎ ∣ B.₀ i ∣) , ⊎-is-hlevel 0 (A.₀ i .is-tr) (B.₀ i .is-tr)
+    coprod .coapex .F₀ i = el (∣ A.₀ i ∣ ⊎ ∣ B.₀ i ∣) $ ⊎-is-hlevel 0 (A.₀ i .is-tr) (B.₀ i .is-tr)
     coprod .coapex .F₁ h (inl x) = inl (A.₁ h x)
     coprod .coapex .F₁ h (inr x) = inr (B.₁ h x)
     coprod .coapex .F-id = funext λ where
@@ -155,7 +156,7 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     incq = inc
 
     coequ : Coequaliser (PSh _ C) f g
-    coequ .coapex .F₀ i = Coeq (f .η i) (g .η i) , squash
+    coequ .coapex .F₀ i = el (Coeq (f .η i) (g .η i)) squash
     coequ .coapex .F₁ h = Coeq-rec squash (λ g → inc (Y.₁ h g)) λ x →
       inc (Y.₁ h (f .η _ x)) ≡˘⟨ ap incq (happly (f .is-natural _ _ h) x) ⟩
       inc (f .η _ _)         ≡⟨ glue (X.₁ h x) ⟩
@@ -194,7 +195,7 @@ module _ {κ} {C : Precategory κ κ} where
       hom₀ B = F where
         module B = Functor B
         F : PSh.Ob
-        F .F₀ c = (よ₀ C c ⊗ A) => B , Nat-is-set
+        F .F₀ c = el ((よ₀ C c ⊗ A) => B) Nat-is-set
         F .F₁ f nt .η i (g , x) = nt .η i (f C.∘ g , x)
         F .F₁ f nt .is-natural x y g = funext λ o →
           ap (nt .η y) (Σ-pathp (C.assoc _ _ _) refl) ∙ happly (nt .is-natural _ _ _) _

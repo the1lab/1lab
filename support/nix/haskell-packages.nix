@@ -2,10 +2,10 @@ with import ./nixpkgs.nix;
 haskellPackages.override {
   overrides = self: super: {
     Agda = (self.callCabal2nix "Agda" (pkgs.fetchFromGitHub {
-      owner = "agda";
+      owner = "plt-amy";
       repo = "agda";
-      rev = "5d2d77abbc0c97f5b23d7089797c3ef8796508dc";
-      sha256 = "sha256-Bo0vJ+en2ajs4RLJk0EQ4rDFFR/xlZvQxz5TdRrL16s=";
+      rev = "a52fc3ca191b58e552626988b663bf76c6e8cc42";
+      sha256 = "sha256-pkaefBrZDr/1cP7G+uoCtyPDFprFCA6sixJdFNIvuqw=";
     }) {}).overrideAttrs (old: { doCheck = false; });
 
     vector-hashtables = haskell.lib.dontCheck super.vector-hashtables;

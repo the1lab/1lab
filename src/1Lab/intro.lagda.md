@@ -1173,7 +1173,7 @@ allow ourselves to omit the inner parentheses in this case.
 
 ```agda
   Pointed-magma : Type₁
-  Pointed-magma = Σ Pointed-magma-on
+  Pointed-magma = Σ Type Pointed-magma-on
 ```
 
 Note that, since we fixed the family to $\ty \to \ty$, and recalling
@@ -1311,11 +1311,11 @@ module _ where private
 -->
 
 ```agda
-  project-first : (A : Type) (B : A → Type) → Σ B → A
+  project-first : (A : Type) (B : A → Type) → Σ A B → A
   project-first A B x = x .fst
 
   project-second : (A : Type) (B : A → Type)
-                 → (p : Σ B) → B (project-first A B p)
+                 → (p : Σ A B) → B (project-first A B p)
   project-second A B x = x .snd
 ```
 

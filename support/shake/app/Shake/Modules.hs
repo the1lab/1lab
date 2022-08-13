@@ -16,7 +16,7 @@ import Development.Shake
 
 import GHC.Generics (Generic)
 
-import HTML.Backend (moduleName, builtinModules)
+import HTML.Backend (moduleName)
 
 type ModName = String
 
@@ -68,7 +68,6 @@ moduleRules = do
     getAllModules = do
       our <- getOurModules
       pure $ Map.singleton "all-pages" CodeOnly
-          <> Map.fromList [(x, CodeOnly) | x <- builtinModules]
           <> our
 
   pure (getOurModules, getAllModules)

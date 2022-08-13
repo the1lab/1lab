@@ -417,8 +417,9 @@ projection map $\id{fst} : \sum F \to I$.
 
 ```agda
   Total-space : Functor Cat[ Disc′ I , Sets ℓ ] (Slice (Sets ℓ) I)
-  Total-space .F₀ F .domain = Σ (∣_∣ ⊙ F₀ F)
-                            , Σ-is-hlevel 2 (I .is-tr) (is-tr ⊙ F₀ F)
+  Total-space .F₀ F .domain =
+    el (Σ _ (∣_∣ ⊙ F₀ F))
+       (Σ-is-hlevel 2 (I .is-tr) (is-tr ⊙ F₀ F))
   Total-space .F₀ F .map = fst
 
   Total-space .F₁ nt .map (i , x) = i , nt .η _ x
@@ -482,9 +483,10 @@ an isomorphism directly, though it does involve an appeal to univalence.
   Total-space-is-eso fam = functor , path→iso _ path
     where
       functor : Functor _ _
-      functor .F₀ i = fibre (fam .map) i
-                    , Σ-is-hlevel 2 (fam .domain .is-tr)
-                                    λ _ → is-prop→is-set (I .is-tr _ _)
+      functor .F₀ i = el
+        (fibre (fam .map) i)
+        (Σ-is-hlevel 2 (fam .domain .is-tr)
+                       λ _ → is-prop→is-set (I .is-tr _ _))
       functor .F₁ p = subst (fibre (fam .map)) p
       functor .F-id = funext transport-refl
       functor .F-∘ f g = funext (subst-∙ (fibre (fam .map)) _ _)

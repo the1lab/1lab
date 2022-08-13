@@ -198,7 +198,7 @@ is-effective-mono→image {f = f} eff = im where
 
   itself : ↓Obj _ _
   itself .x = tt
-  itself .y = cut f , eff.is-effective-mono→is-regular-mono
+  itself .y = restrict (cut f) eff.is-effective-mono→is-regular-mono
   itself .map = record { map = id ; commutes = idr _ }
 
   im : Initial _

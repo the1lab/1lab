@@ -6,8 +6,8 @@ open import 1Lab.Type
 
 open import Data.List
 
-import Agda.Builtin.Sigma as S
-import Agda.Builtin.Nat as N
+import 1Lab.Prim.Data.Sigma as S
+import 1Lab.Prim.Data.Nat as N
 
 module 1Lab.Reflection.Record where
 
@@ -35,7 +35,7 @@ record→iso namen unfolded =
     r ← extendContext "arg" argu $ go (i ∷ acc) ty
     returnTC $ pi (arg i' argTy) (abs s r)
     where
-    i' = arg-info hidden (modality relevant quantity-ω)
+    i' = arginfo hidden (modality relevant quantity-ω)
   go acc (agda-sort _) = do
     let rec = def namen (makeArgs 0 [] acc)
     unfolded ← unfolded (implicitArgs 0 [] acc)

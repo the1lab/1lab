@@ -212,7 +212,7 @@ module _ {ℓ} {X : Type ℓ} where
     → Indexed-product ℙ.underlying F
   ℙ-indexed-meet F = ip where
     ip : Indexed-product _ _
-    ip .ΠF i      = (∀ x → i ∈ F x) , Π-is-hlevel 1 λ x → F x i .is-tr
+    ip .ΠF i      = el (∀ x → i ∈ F x) $ Π-is-hlevel 1 λ x → F x i .is-tr
     ip .π i x f   = f i
     ip .has-is-ip = indexed-meet→indexed-product {P = ℙ.→Proset} _
       λ f x b i → f i x b
@@ -236,7 +236,7 @@ need a proposition.
     → Indexed-coproduct ℙ.underlying F
   ℙ-indexed-join F = ic where
     ic : Indexed-coproduct _ _
-    ic .ΣF i      = (∃[ x ∈ _ ] (i ∈ F x)) , squash
+    ic .ΣF i      = el (∃[ x ∈ _ ] (i ∈ F x)) squash
     ic .ι i x f   = inc (i , f)
     ic .has-is-ic = indexed-join→indexed-coproduct {P = ℙ.→Proset} _
       λ {B = B} f x → ∥-∥-elim (λ _ → B x .is-tr) (λ { (i , y) → f i x y })

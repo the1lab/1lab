@@ -103,7 +103,7 @@ monic, but this is immediate.
 
 ```agda
   ⊤-subobj : Terminal (Subobj o)
-  ⊤-subobj .top = cut C.id , λ g h p → C.introl refl ·· p ·· C.eliml refl
+  ⊤-subobj .top = restrict (cut C.id) λ g h p → C.introl refl ·· p ·· C.eliml refl
   ⊤-subobj .has⊤ x = Slice-terminal-object (x .object)
 ```
 
@@ -127,7 +127,7 @@ to (binary) subobject intersections.
     open Product
     open is-product
     prod′ : Product (Subobj o) Am Bm
-    prod′ .apex = prod.apex , mono where abstract
+    prod′ .apex = restrict (prod.apex) mono where abstract
       mono : C.is-monic (Am .object .map C.∘ pb .p₁)
       mono g h p =
         is-monic→pullback-is-monic (Bm .witness) (rotate-pullback (pb .has-is-pb))
@@ -196,7 +196,7 @@ $F$, then $F$ also has a limit in $\Sub(o)$.
       h′ .commutes _ = /-Hom-path refl
 
     cone : Cone F
-    cone .apex = limob.apex , mono
+    cone .apex = restrict limob.apex mono
     cone .ψ = limob.ψ
     cone .commutes = limob.commutes
 

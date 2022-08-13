@@ -29,7 +29,7 @@ the Hom-sets of $\ca{C}$.
 ```agda
 Locally-discrete : Prebicategory o ℓ ℓ
 Locally-discrete .Ob = C.Ob
-Locally-discrete .Hom x y = Disc′ (C.Hom x y , C.Hom-set x y)
+Locally-discrete .Hom x y = Disc′ (el (C.Hom x y) (C.Hom-set x y))
 Locally-discrete .id = C.id
 Locally-discrete .compose .F₀ (f , g) = f C.∘ g
 Locally-discrete .compose .F₁ (p , q) = ap₂ C._∘_ p q

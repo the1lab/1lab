@@ -111,7 +111,7 @@ module _ {ℓ} (A B : AbGroup ℓ) where
 
 ```agda
   Hom-group : AbGroup ℓ
-  Hom-group = (T , grp) , abel where
+  Hom-group = restrict (T , grp) abel where
     T = Ab.Hom A B
 ```
 
@@ -255,13 +255,13 @@ These constructors all conspire to make an abelian group $A \otimes B$.
 ```agda
   _⊗_ : AbGroup ℓ
   _⊗_ =
-    ( Tensor
-    , make-group t-squash :0 _:+_ :inv
-        (λ _ _ _ → t-assoc)
-        (λ _ → t-invl)
-        (λ _ → t-invr)
-        (λ _ → t-idl))
-    , λ x y → t-comm
+    restrict ( Tensor
+             , make-group t-squash :0 _:+_ :inv
+                (λ _ _ _ → t-assoc)
+                (λ _ → t-invl)
+                (λ _ → t-invr)
+                (λ _ → t-idl))
+    λ x y → t-comm
 ```
 
 <!--

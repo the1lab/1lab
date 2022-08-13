@@ -1,15 +1,16 @@
 ```agda
-module Data.Nat.Solver where
-
 open import 1Lab.Type
 open import 1Lab.Path
 open import Data.Nat.Base
 open import Data.Nat.Properties
 open import Data.Fin.Base
 open import Data.Bool
+open import Data.List
 
 open import 1Lab.Reflection
 open import 1Lab.Reflection.Variables
+
+module Data.Nat.Solver where
 ```
 
 # The Nat Solver

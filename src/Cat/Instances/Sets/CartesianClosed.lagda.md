@@ -35,8 +35,8 @@ functor $f^* : \sets/B \to \sets/A$.
 module _ {A B : Set ℓ} (func : ∣ A ∣ → ∣ B ∣) where
   Sets-Π : Functor (Slice (Sets ℓ) A) (Slice (Sets ℓ) B)
   Sets-Π .F₀ ob .domain =
-      (Σ[ y ∈ ∣ B ∣ ] ((f : fibre func y) → fibre (ob .map) (f .fst)))
-    , Σ-is-hlevel 2 (B .is-tr) λ _ →
+    el (Σ[ y ∈ ∣ B ∣ ] ((f : fibre func y) → fibre (ob .map) (f .fst)))
+    $ Σ-is-hlevel 2 (B .is-tr) λ _ →
       Π-is-hlevel 2 λ _ →
       Σ-is-hlevel 2 (ob .domain .is-tr) λ _ → is-prop→is-set (A .is-tr _ _)
 

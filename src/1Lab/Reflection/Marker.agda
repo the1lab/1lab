@@ -1,9 +1,10 @@
-module 1Lab.Reflection.Marker where
-
 open import 1Lab.Reflection
 open import 1Lab.Type
 open import 1Lab.Path
-open import Agda.Builtin.Nat
+open import 1Lab.Prim.Data.Nat
+open import Data.List
+
+module 1Lab.Reflection.Marker where
 
 -- The marker. The marker is literally just the identity function, but
 -- written surrounding rather than prefix. Unlike literally the identity
@@ -25,24 +26,24 @@ abstract-marker = go 0 where
   go : Nat → Term → TC Term
   go* : Nat → List (Arg Term) → TC (List (Arg Term))
 
-  go k (var j args) = go* k args >>= returnTC ∘ var j'
+  go k (var j args) = var j' <$> go* k args
     where
       j' : Nat
       j' with j < k
       ... | false = suc j
       ... | true = j
-  go k (con c args) = go* k args >>= returnTC ∘ con c
+  go k (con c args) = con c <$> go* k args
   go k (def f args) with f
-  ... | quote ⌜_⌝ = returnTC (var k [])
+  ... | quote ⌜_⌝ = pure (var k [])
   -- ^ This is the one interesting case. Any application of the marker
   -- gets replaced with the 'k'th variable. Initially k = 0, so this is
   -- the variable bound by the lambda. But as we encounter further
   -- binders, we must increment this, since the marked term gets farther
   -- and farther away in the context.
-  ... | x = go* k args >>= returnTC ∘ def f
+  ... | x = def f <$> go* k args
   go k (lam v (abs x t)) = do
     debugPrint "1lab.marked-ap" 10 $ strErr "entering lambda " ∷ termErr (lam v (abs x t)) ∷ []
-    res ← go (suc k) t >>= returnTC ∘ lam v ∘ abs x
+    res ← lam v ∘ abs x <$> go (suc k) t
     debugPrint "1lab.marked-ap" 10 $ strErr "result " ∷ termErr res ∷ []
     returnTC res
   go k (pat-lam cs args) =
@@ -52,15 +53,15 @@ abstract-marker = go 0 where
     a ← go k a
     returnTC (pi (arg i a) (abs x t))
   go k (agda-sort s) with s
-  ... | set t = go k t >>= returnTC ∘ agda-sort ∘ set
-  ... | lit n = returnTC (agda-sort (lit n))
-  ... | prop t = go k t >>= returnTC ∘ agda-sort ∘ prop
-  ... | propLit n = returnTC (agda-sort (propLit n))
-  ... | inf n = returnTC (agda-sort (inf n))
-  ... | unknown = returnTC (agda-sort unknown)
-  go k (lit l) = returnTC (lit l)
-  go k (meta m args) = go* k args >>= returnTC ∘ meta m
-  go k unknown = returnTC unknown
+  ... | set t = agda-sort ∘ set <$> go k t
+  ... | lit n = pure (agda-sort (lit n))
+  ... | prop t = agda-sort ∘ prop <$> go k t
+  ... | propLit n = pure (agda-sort (propLit n))
+  ... | inf n = pure (agda-sort (inf n))
+  ... | unknown = pure (agda-sort unknown)
+  go k (lit l) = pure (lit l)
+  go k (meta m args) = meta m <$> go* k args
+  go k unknown = pure unknown
 
   go* k [] = returnTC []
   go* k (arg i x ∷ xs) = do

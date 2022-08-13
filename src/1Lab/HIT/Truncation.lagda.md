@@ -5,6 +5,7 @@ definition: |
 ---
 ```agda
 open import 1Lab.HLevel.Retracts
+open import 1Lab.Prim.Monad
 open import 1Lab.Type.Sigma
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -134,7 +135,7 @@ quantifier** as a truncated `Σ`{.Agda}.
 
 ```agda
 ∃ : ∀ {a b} (A : Type a) (B : A → Type b) → Type _
-∃ A B = ∥ Σ B ∥
+∃ A B = ∥ Σ A B ∥
 
 syntax ∃ A (λ x → B) = ∃[ x ∈ A ] B
 ```
@@ -246,3 +247,31 @@ truncation onto a set using a constant map.
   ∥-∥-elim {P = λ _ → image f}
     (λ _ → is-constant→image-is-prop bset f f-const) (f-image f) x .fst
 ```
+
+<!--
+```agda
+instance
+  Do-∥∥ : Do-syntax ∥_∥
+  Do-∥∥ .Do-syntax._>>=_ {A = A} {B = B} = go where
+    go : ∥ A ∥ → (A → ∥ B ∥) → ∥ B ∥
+    go (inc x) f = f x
+    go (squash x y i) f = squash (go x f) (go y f) i
+
+  {-# TERMINATING #-}
+  Idiom-∥∥ : Idiom-syntax ∥_∥
+  Idiom-∥∥ .Idiom-syntax.pure = inc
+  Idiom-∥∥ .Idiom-syntax._<*>_ {A = A} {B = B} = go where
+    go : ∥ (A → B) ∥ → ∥ A ∥ → ∥ B ∥
+    go (inc f) (inc x) = inc (f x)
+    go (inc f) (squash x y i) = squash (go (inc f) x) (go (inc f) y) i
+    go (squash f g i) (inc y) = squash (go f (inc y)) (go g (inc y)) i
+    go (squash f g i) (squash x y j) =
+      hcomp
+        (λ { k (i = i0) → squash (go f x) (go f (squash x y j)) k
+           ; k (i = i1) → squash (go f x) (go g (squash x y j)) k
+           ; k (j = i0) → squash (go f x) (go (squash f g i) x) k
+           ; k (j = i1) → squash (go f x) (go (squash f g i) y) k
+           })
+        (go f x)
+```
+-->

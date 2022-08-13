@@ -34,7 +34,7 @@ subgraphs" of the categorical world: Keep only some of the vertices
 ```agda
 record Restrict-ob (P : C.Ob → Type ℓ) : Type (o ⊔ ℓ) where
   no-eta-equality
-  constructor _,_
+  constructor restrict
   field
     object : C.Ob
     witness : P object
@@ -94,7 +94,7 @@ is $\ca{R}$.
       p = pb .witness
 
       to : (Σ[ B ∈ C.Ob ] A C.≅ B) → (Σ[ B ∈ R.Ob ] pb R.≅ B)
-      to (B , isom) = (B , subst P A≡B p) , super-iso→sub-iso isom
+      to (B , isom) = (restrict B (subst P A≡B p)) , super-iso→sub-iso isom
         where A≡B = iso→path C univ isom
 
       from : (Σ[ B ∈ R.Ob ] pb R.≅ B) → (Σ[ B ∈ C.Ob ] A C.≅ B)
@@ -141,7 +141,7 @@ functor from $\ca{D}$. This functor is actually just $F$ again:
 
 ```agda
   Ff-domain→Full-subcat : Functor D Full-inclusion→Full-subcat
-  Ff-domain→Full-subcat .Functor.F₀ x = F₀ x , inc (x , C.id-iso)
+  Ff-domain→Full-subcat .Functor.F₀ x = restrict (F₀ x) (inc (x , C.id-iso))
   Ff-domain→Full-subcat .Functor.F₁ = F₁
   Ff-domain→Full-subcat .Functor.F-id = F-id
   Ff-domain→Full-subcat .Functor.F-∘ = F-∘

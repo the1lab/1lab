@@ -107,8 +107,8 @@ of $G$ on the object $F(\bull)$!
   Functor→action
     : {G : Group ℓ} (F : Functor (B (Group-on.underlying-monoid (G .snd) .snd)) C)
     → Action G (F .F₀ tt)
-  Functor→action {G = G} F .fst el =
-    C.make-iso (F .F₁ el) (F .F₁ (el ⁻¹))
+  Functor→action {G = G} F .fst it =
+    C.make-iso (F .F₁ it) (F .F₁ (it ⁻¹))
                (F.annihilate inverser)
                (F.annihilate inversel)
     where

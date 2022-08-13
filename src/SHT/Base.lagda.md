@@ -63,11 +63,11 @@ algebra.
 
 ```agda
 module _ {ℓ ℓ′} {A : Type∙ ℓ} {B : Type∙ ℓ′} where
-  Σ-map∙→loops : (Σ∙ A →∙ B) → (Σ λ bs → A .fst → B .snd ≡ bs)
+  Σ-map∙→loops : (Σ∙ A →∙ B) → (Σ _ λ bs → A .fst → B .snd ≡ bs)
   Σ-map∙→loops f .fst = f .fst S
   Σ-map∙→loops f .snd a = sym (f .snd) ∙ ap (f .fst) (merid a)
 
-  loops→Σ-map∙ : (Σ λ bs → A .fst → B .snd ≡ bs) → (Σ∙ A →∙ B)
+  loops→Σ-map∙ : (Σ _ λ bs → A .fst → B .snd ≡ bs) → (Σ∙ A →∙ B)
   loops→Σ-map∙ pair .fst N           = B .snd
   loops→Σ-map∙ pair .fst S           = pair .fst
   loops→Σ-map∙ pair .fst (merid x i) = pair .snd x i
@@ -79,11 +79,11 @@ basepoint-preserving map into $\Omega B$ is even simpler, perhaps
 because these are almost definitionally the same thing.
 
 ```agda
-  loops→map∙-Ω : (Σ λ bs → A .fst → B .snd ≡ bs) → (A →∙ Ω∙ B)
+  loops→map∙-Ω : (Σ _ λ bs → A .fst → B .snd ≡ bs) → (A →∙ Ω∙ B)
   loops→map∙-Ω (b , x) .fst a = x a ∙ sym (x (A .snd))
   loops→map∙-Ω (b , x) .snd   = ∙-inv-r (x (A .snd))
 
-  map∙-Ω→loops : (A →∙ Ω∙ B) → (Σ λ bs → A .fst → B .snd ≡ bs)
+  map∙-Ω→loops : (A →∙ Ω∙ B) → (Σ _ λ bs → A .fst → B .snd ≡ bs)
   map∙-Ω→loops pair .fst = B .snd
   map∙-Ω→loops pair .snd = pair .fst
 ```
@@ -92,7 +92,7 @@ because these are almost definitionally the same thing.
 <summary>The path algebra for showing these are both pairs of inverse equivalences is not very interesting, so I've kept it hidden.</summary>
 
 ```agda
-  Σ-map∙≃loops : (Σ∙ A →∙ B) ≃ (Σ λ b → A .fst → B .snd ≡ b)
+  Σ-map∙≃loops : (Σ∙ A →∙ B) ≃ (Σ _ λ b → A .fst → B .snd ≡ b)
   Σ-map∙≃loops = Iso→Equiv (Σ-map∙→loops , iso loops→Σ-map∙ invr invl) where
     invr : is-right-inverse loops→Σ-map∙ Σ-map∙→loops
     invr (p , q) = Σ-pathp refl
@@ -115,7 +115,7 @@ because these are almost definitionally the same thing.
                                 ; (merid x i) → λ j → lemma f x i j }))
                       (to-pathp (subst-path-left _ _ ∙ ∙-id-r _ ∙ refl))
 
-  loops≃map∙-Ω : (Σ λ bs → A .fst → B .snd ≡ bs) ≃ (A →∙ Ω∙ B)
+  loops≃map∙-Ω : (Σ _ λ bs → A .fst → B .snd ≡ bs) ≃ (A →∙ Ω∙ B)
   loops≃map∙-Ω = Iso→Equiv (loops→map∙-Ω , iso map∙-Ω→loops invr invl) where
     lemma′ : ∀ {ℓ} {A : Type ℓ} {x : A} (q : x ≡ x) (r : refl ≡ q)
            → ap (λ p → q ∙ sym p) r ∙ ∙-inv-r q ≡ ∙-id-r q ∙ sym r
@@ -247,9 +247,9 @@ hlevel→hubs-and-spokes {A = A} (suc n) h =
   helper λ x y → hlevel→hubs-and-spokes n (h x y)
   where
   helper
-    : ((a b : A) → (sph : Sⁿ⁻¹ (1 + n) → a ≡ b) → Σ λ hub → ∀ x → sph x ≡ hub)
+    : ((a b : A) → (sph : Sⁿ⁻¹ (1 + n) → a ≡ b) → Σ _ λ hub → ∀ x → sph x ≡ hub)
     → (sph : Sⁿ⁻¹ (2 + n) → A)
-    → Σ λ hub → ∀ x → sph x ≡ hub
+    → Σ _ λ hub → ∀ x → sph x ≡ hub
   helper h f = f N , sym ∘ r where
     r : (x : Sⁿ⁻¹ (2 + n)) → f N ≡ f x
     r N = refl
@@ -270,10 +270,10 @@ hubs-and-spokes→hlevel {A = A} zero spheres x y
 hubs-and-spokes→hlevel {A = A} (suc n) spheres x y =
   hubs-and-spokes→hlevel n $ helper spheres x y where
   helper
-    : ((sph : Sⁿ⁻¹ (2 + n) → A) → Σ λ hub → ∀ x → sph x ≡ hub)
+    : ((sph : Sⁿ⁻¹ (2 + n) → A) → Σ _ λ hub → ∀ x → sph x ≡ hub)
     → ∀ a b
     → (sph : Sⁿ⁻¹ (1 + n) → a ≡ b)
-    → Σ λ hub → ∀ x → sph x ≡ hub
+    → Σ _ λ hub → ∀ x → sph x ≡ hub
   helper h x y f = _ , r  where
     f' : Sⁿ⁻¹ (2 + n) → A
     f' N = x
@@ -390,7 +390,7 @@ $(2+n)$-type.
     n-Tr-elim
       (λ y′ → n-Type _ (suc n))
       (λ y′ → n-Type-is-hlevel (suc n))
-      (λ y′ → n-Tr (Path A x y′) (suc n) , n-Tr-is-hlevel n)
+      (λ y′ → el (n-Tr (Path A x y′) (suc n)) (n-Tr-is-hlevel n))
 ```
 
 The rest of the proof boils down to applications of `path

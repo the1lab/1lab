@@ -65,7 +65,7 @@ sets.
 
 ```agda
 Forget : Functor (Groups ℓ) (Sets ℓ)
-Forget .F₀ (G , ggroup) = G , ggroup .Group-on.has-is-set
+Forget .F₀ (G , ggroup) = el _ (ggroup .Group-on.has-is-set)
 Forget .F₁ = fst
 Forget .F-id = refl
 Forget .F-∘ _ _ = refl
@@ -87,7 +87,7 @@ same thing as homomorphic equivalences of the groups' underlying types.
 
 ```agda
 Group-equiv≃Groups-iso
-  : ∀ {A B : Group ℓ} → (Σ (Group≃ A B)) ≃ (A Groups.≅ B)
+  : ∀ {A B : Group ℓ} → (Σ _ (Group≃ A B)) ≃ (A Groups.≅ B)
 Group-equiv≃Groups-iso {A = A} {B = B} .fst ((f , eqv) , grh) =
   Groups.make-iso (f , grh) (equiv→inverse eqv , inv-group-hom)
     (Forget-is-faithful (funext (equiv→counit eqv)))
@@ -152,9 +152,9 @@ Groups-is-category = iso≃path→is-category _ eqv where
 
   eqv : ∀ {A B} → (A ≡ B) ≃ (A Groups.≅ B)
   eqv {A} {B} =
-    (A ≡ B)        ≃⟨ SIP Group-univalent e⁻¹ ⟩
-    Σ (Group≃ A B) ≃⟨ Group-equiv≃Groups-iso ⟩
-    (A Groups.≅ B) ≃∎
+    (A ≡ B)          ≃⟨ SIP Group-univalent e⁻¹ ⟩
+    Σ _ (Group≃ A B) ≃⟨ Group-equiv≃Groups-iso ⟩
+    (A Groups.≅ B)   ≃∎
 ```
 
 <!--

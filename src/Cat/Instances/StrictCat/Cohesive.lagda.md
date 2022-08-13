@@ -59,7 +59,7 @@ We begin by defining the object set functor.
 
 ```agda
 Γ : Functor (Strict-Cat o h) (Sets o)
-Γ .F₀ (C , obset) = Ob C , obset
+Γ .F₀ (C , obset) = el (Ob C) obset
 Γ .F₁ = F₀
 Γ .F-id = refl
 Γ .F-∘ _ _ = refl
@@ -118,7 +118,7 @@ identity map suffices.
 ```agda
   adj .counit = NT (λ x → F x) nat where
     F : (x : Precategory.Ob (Strict-Cat ℓ ℓ))
-      → Functor (Disc′ (x .fst .Precategory.Ob , x .snd)) _
+      → Functor (Disc′ (el _ (x .snd))) _
     F X .F₀ x = x
     F X .F₁ p = subst (X .fst .Hom _) p (X .fst .id) {- 1 -}
     F X .F-id = transport-refl _
@@ -209,7 +209,7 @@ module _ {ℓ} where
 
   GlobalSections : Functor (Strict-Cat ℓ ℓ) (Sets ℓ)
   GlobalSections .F₀ C =
-    Functor (Codisc′ (Lift _ ⊤)) (C .fst) , Functor-is-set (C .snd)
+    el (Functor (Codisc′ (Lift _ ⊤)) (C .fst)) (Functor-is-set (C .snd))
   GlobalSections .F₁ G F = G F∘ F
   GlobalSections .F-id = funext λ _ → Functor-path (λ _ → refl) λ _ → refl
   GlobalSections .F-∘ f g = funext λ _ → Functor-path (λ _ → refl) λ _ → refl
@@ -266,7 +266,7 @@ connected. This is intentional!
 
 ```agda
 π₀ : Precategory o h → Set (o ⊔ h)
-π₀ C = Ob C / Hom C , squash
+π₀ C = el (Ob C / Hom C) squash
 ```
 
 The `π₀`{.Agda} construction extends to a functor `Π₀`{.Agda} (capital

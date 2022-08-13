@@ -34,7 +34,7 @@ private variable
 
 ```agda
 total : ((x : A) → P x → Q x)
-      → Σ P → Σ Q
+      → Σ A P → Σ A Q
 total f (x , y) = x , f x y
 ```
 
@@ -61,11 +61,11 @@ total-fibres {A = A} {P = P} {Q = Q} {f = f} {x = x} {v = v} = the-iso where
   the-iso .snd .is-iso.inv = from
   the-iso .snd .is-iso.rinv ((x , v) , p) =
     J (λ { _ p → to (from ((x , v) , p)) ≡ ((x , v) , p) })
-      (ap to (J-refl {A = Σ Q} (λ { (x , v) _ → fibre (f x) v } ) (v , refl)))
+      (ap to (J-refl {A = Σ A Q} (λ { (x , v) _ → fibre (f x) v } ) (v , refl)))
       p
   the-iso .snd .is-iso.linv (v , p) =
     J (λ { _ p → from (to (v , p)) ≡ (v , p) })
-      (J-refl {A = Σ Q} (λ { (x , v) _ → fibre (f x) v } ) (v , refl))
+      (J-refl {A = Σ A Q} (λ { (x , v) _ → fibre (f x) v } ) (v , refl))
       p
 ```
 

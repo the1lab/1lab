@@ -206,7 +206,7 @@ record Group-on {ℓ} (A : Type ℓ) : Type ℓ where
 open Group-on
 
 Group : (ℓ : Level) → Type (lsuc ℓ)
-Group ℓ = Σ Group-on
+Group ℓ = Σ (Type ℓ) Group-on
 ```
 
 We have that a map `is a group homomorphism`{.Agda ident=Group-hom} if
@@ -274,7 +274,7 @@ Group≃ : ∀ {ℓ} (A B : Group ℓ) (e : A .fst ≃ B .fst) → Type ℓ
 Group≃ A B (f , _) = Group-hom A B f
 
 Group[_⇒_] : ∀ {ℓ} (A B : Group ℓ) → Type ℓ
-Group[ A ⇒ B ] = Σ (Group-hom A B)
+Group[ A ⇒ B ] = Σ (A .fst → B .fst) (Group-hom A B)
 
 open Group-hom
 ```

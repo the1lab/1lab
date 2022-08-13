@@ -84,7 +84,7 @@ adjoint] to the `Ob`{.Agda} functor.
 Disc-diagram
   : ∀ {iss : is-set X} (disc : Discrete X)
   → (X → Ob C)
-  → Functor (Disc′ (X , iss)) C
+  → Functor (Disc′ (el X iss)) C
 Disc-diagram {X = X} {C = C} disc f = F where
   module C = Precategory C
   set : is-set X

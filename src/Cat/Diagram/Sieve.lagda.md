@@ -53,13 +53,13 @@ subobjects.
 
 ```agda
 maximal′ : Sieve
-maximal′ .arrows x = Lift _ ⊤ , λ _ _ _ → lift tt
+maximal′ .arrows x = el (Lift _ ⊤) λ _ _ _ → lift tt
 maximal′ .closed g x = lift tt
 
 intersect : ∀ {I : Type κ} (F : I → Sieve) → Sieve
-intersect {I = I} F .arrows h =
-    ((x : I) → h ∈ F x .arrows)
-  , Π-is-hlevel 1 λ _ → F _ .arrows _ .is-tr
+intersect {I = I} F .arrows h = el
+  (((x : I) → h ∈ F x .arrows))
+  (Π-is-hlevel 1 λ _ → F _ .arrows _ .is-tr)
 intersect {I = I} F .closed g x i = F i .closed g (x i)
 ```
 
@@ -74,8 +74,8 @@ action is given by composition, as with the $\hom$ functor.
 ```agda
 to-presheaf : Sieve → PSh.Ob
 to-presheaf sieve .F₀ d =
-    Σ[ f ∈ C.Hom d c ] (f ∈ sieve .arrows)
-  , Σ-is-hlevel 2 (C.Hom-set _ _) λ _ → is-prop→is-set (sieve .arrows _ .is-tr)
+    el (Σ[ f ∈ C.Hom d c ] (f ∈ sieve .arrows))
+    (Σ-is-hlevel 2 (C.Hom-set _ _) λ _ → is-prop→is-set (sieve .arrows _ .is-tr))
 to-presheaf sieve .F₁ f (g , s) = g C.∘ f , sieve .closed _ s
 ```
 

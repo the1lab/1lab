@@ -59,7 +59,7 @@ your paths scream.
   open Indexed-coproduct
   open is-indexed-coproduct
   coprod : Indexed-coproduct (Sets _) F
-  coprod .ΣF = ∥ sum ∥₀ , squash
+  coprod .ΣF = el ∥ sum ∥₀ squash
   coprod .ι i x = inc (i , x)
   coprod .has-is-ic .match {Y = Y} f =
     ∥-∥₀-elim (λ _ → Y .is-tr) λ { (i , x) → f i x } {- 1 -}
@@ -106,7 +106,7 @@ that $F(f)(x) = y$.
 
 ```agda
   apex : Cocone F
-  apex .coapex = (sum / rel) , squash
+  apex .coapex = el (sum / rel) squash
   apex .ψ x p = inc (x , p)
   apex .commutes f = funext (λ i → sym (quot (f , refl)))
 ```
@@ -171,8 +171,8 @@ coproduct.
 
 ```agda
     coprod .injections-are-monic _ g h path = funext go where abstract
-      path′ : Path (∀ c → Σ (λ x → ∣ F x ∣)) (λ c → _ , g c) (λ c → _ , h c)
-      path′ i c = ∥-∥₀-elim {B = λ _ → Σ (∣_∣ ⊙ F)}
+      path′ : Path (∀ c → Σ _ (λ x → ∣ F x ∣)) (λ c → _ , g c) (λ c → _ , h c)
+      path′ i c = ∥-∥₀-elim {B = λ _ → Σ _ (∣_∣ ⊙ F)}
         (λ x → Σ-is-hlevel 2 (I .is-tr) (λ x → F x .is-tr))
         (λ x → x) (path i c)
 
@@ -191,7 +191,7 @@ truncation --- to prove $\bot$ using the assumption that $i ≠ j$.
 
 ```agda
     coprod .different-images-are-disjoint i j i≠j os = contr map uniq where
-      map : Σ[ i ∈ ∣ F i ∣ ] Σ (λ x → _) → ∣ os ∣
+      map : Σ[ i ∈ ∣ F i ∣ ] Σ _ (λ x → _) → ∣ os ∣
       map (i , j , p) = absurd (i≠j (ap (∥-∥₀-elim (λ _ → I .is-tr) fst) p))
 
       uniq : ∀ x → map ≡ x

@@ -93,7 +93,8 @@ private
     prim^unglue : {A : Type ℓ} {φ : I}
                 → {T : Partial φ (Type ℓ')} → {e : PartialP φ (λ o → T o ≃ A)}
                 → primGlue A T e → A
-open import Agda.Builtin.Cubical.HCompU
+
+open import 1Lab.Prim.HCompU
 open import 1Lab.Equiv.FromPath
 ```
 -->
@@ -135,8 +136,10 @@ defined type, we get a type which [extends] $T$.
 ```agda
 Glue A Te = primGlue A (λ x → Te x .fst) (λ x → Te x .snd)
 
-unglue : {A : Type ℓ} (φ : I) {T : Partial φ (Type ℓ')}
-         {e : PartialP φ (λ o → T o ≃ A)} → primGlue A T e → A
+unglue
+  : {A : Type ℓ} (φ : I) {T : Partial φ (Type ℓ')}
+    {e : PartialP φ (λ o → T o ≃ A)}
+  → primGlue A T e → A
 unglue φ = prim^unglue {φ = φ}
 
 glue-inc
@@ -633,9 +636,9 @@ equivalent to the dependent sum of the fibres. The theorems
 to `Σ`{.Agda} the "total space" of a type family.
 
 ```agda
-Total-equiv : (p : E → B) → E ≃ Σ (fibre p)
+Total-equiv : (p : E → B) → E ≃ Σ B (fibre p)
 Total-equiv p = Iso→Equiv isom where
-  isom : Iso _ (Σ (fibre p))
+  isom : Iso _ (Σ _ (fibre p))
   isom .fst x                   = p x , x , refl
   isom .snd .inv (_ , x , _)    = x
   isom .snd .rinv (b , x , q) i = q i , x , λ j → q (i ∧ j)
@@ -659,7 +662,7 @@ Fibration-equiv : ∀ {ℓ ℓ'} {B : Type ℓ}
 Fibration-equiv {B = B} = Iso→Equiv isom where
   isom : Iso (Σ[ E ∈ Type _ ] (E → B)) (B → Type _)
   isom .fst (E , p)       = fibre p
-  isom .snd .inv p⁻¹      = Σ p⁻¹ , fst
+  isom .snd .inv p⁻¹      = Σ _ p⁻¹ , fst
   isom .snd .rinv prep i x = ua (Fibre-equiv prep x) i
   isom .snd .linv (E , p) i
     = ua e (~ i) , λ x → fst (outS (ua-unglue e (~ i) x))
@@ -697,8 +700,8 @@ the fibres of $f$.
 ```agda
 _/[_]_ : ∀ {ℓ' ℓ''} (ℓ : Level) → (Type (ℓ ⊔ ℓ') → Type ℓ'') → Type ℓ' → Type _
 _/[_]_ {ℓ} ℓ' P B =
-  Σ λ (A : Type (ℓ ⊔ ℓ')) →
-  Σ λ (f : A → B) →
+  Σ (Type (ℓ ⊔ ℓ')) λ A →
+  Σ (A → B) λ f →
   (x : B) → P (fibre f x)
 ```
 
@@ -713,12 +716,12 @@ which we can apply `Fibration-equiv`{.Agda}.
 ```agda
 Map-classifier
   : ∀ {ℓ ℓ' ℓ''} {B : Type ℓ'} (P : Type (ℓ ⊔ ℓ') → Type ℓ'')
-  → (ℓ /[ P ] B) ≃ (B → Σ P)
+  → (ℓ /[ P ] B) ≃ (B → Σ _ P)
 Map-classifier {ℓ = ℓ} {B = B} P =
-  (Σ λ A → Σ λ f → (x : B) → P (fibre f x))     ≃⟨ Σ-assoc ⟩
-  (Σ λ { (x , f) → (x : B) → P (fibre f x) })   ≃⟨ Σ-ap-fst (Fibration-equiv {ℓ' = ℓ}) ⟩
-  (Σ λ A → (x : B) → P (A x))                   ≃⟨ Σ-Π-distrib e⁻¹ ⟩
-  (B → Σ P)                                     ≃∎
+  (Σ _ λ A → Σ _ λ f → (x : B) → P (fibre f x))     ≃⟨ Σ-assoc ⟩
+  (Σ _ λ { (x , f) → (x : B) → P (fibre f x) })   ≃⟨ Σ-ap-fst (Fibration-equiv {ℓ' = ℓ}) ⟩
+  (Σ _ λ A → (x : B) → P (A x))                   ≃⟨ Σ-Π-distrib e⁻¹ ⟩
+  (B → Σ _ P)                                     ≃∎
 ```
 
 <!--

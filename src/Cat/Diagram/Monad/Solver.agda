@@ -9,6 +9,8 @@ open import Cat.Diagram.Monad
 import Cat.Functor.Reasoning as FR
 import Cat.Reasoning as CR
 
+open import Data.List hiding (_++_)
+
 module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
   open CR 𝒞
   module M = FR (Monad.M M)
@@ -61,7 +63,7 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
     [] : Value X X
     _∷_ : Frame Y Z → Value X Y → Value X Z
 
-  infixr 5 _∷_
+  infixr 20 _∷_
 
   ⟦_⟧ₖ : Frame X Y → Hom ⟦ X ⟧ₒ ⟦ Y ⟧ₒ
   ⟦ khom f ⟧ₖ = f
@@ -224,7 +226,7 @@ module Reflection where
     _ h0∷ _ h0∷
     _ h0∷ _ h0∷
     nt v∷ args
-   
+
 
   pattern monad-args monad xs =
     _ h0∷ _ h0∷ _ h0∷ monad v∷ xs
@@ -327,6 +329,6 @@ private module Test {o h} {𝒞 : Precategory o h} (monad : Monad 𝒞) where
 
   test-nested : ∀ X → M₁ (mult.η X ∘ unit.η (M₀ X)) ≡ id
   test-nested _ = monad! monad
-     
+
   test-separate : ∀ X → M₁ (mult.η X) ∘ M₁ (unit.η (M₀ X)) ≡ id
   test-separate _ = monad! monad

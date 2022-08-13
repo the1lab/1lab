@@ -8,8 +8,6 @@ open import 1Lab.Type
 open import Data.Bool
 
 module Data.List where
-
-open import Agda.Builtin.List public
 ```
 
 # Lists
@@ -27,10 +25,12 @@ private variable
 -->
 
 ```agda
-module _ where private
-  data List' {ℓ} (A : Type ℓ) : Type ℓ where
-    [] : List' A
-    _∷_ : A → List' A → List' A
+data List {ℓ} (A : Type ℓ) : Type ℓ where
+  [] : List A
+  _∷_ : A → List A → List A
+
+infixr 20 _∷_
+{-# BUILTIN LIST List #-}
 ```
 
 ## Path Space

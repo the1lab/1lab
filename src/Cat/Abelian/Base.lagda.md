@@ -55,7 +55,7 @@ record Ab-category {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
     Hom-grp-ab : ∀ A B (f g : Hom A B) → f + g ≡ g + f
 
   Hom-grp : ∀ A B → AbGroup ℓ
-  Hom-grp A B = (Hom A B , Group-on-hom A B) , Hom-grp-ab A B
+  Hom-grp A B = restrict (Hom A B , Group-on-hom A B) (Hom-grp-ab A B)
 
   field
     -- Composition is multilinear:

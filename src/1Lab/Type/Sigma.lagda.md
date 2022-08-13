@@ -13,9 +13,6 @@ private variable
   ℓ ℓ₁ : Level
   A A' : Type ℓ
   B P Q : A → Type ℓ
-
-open import Agda.Builtin.Sigma renaming (Σ to ∑) public
--- ^ for Agda display
 ```
 -->
 
@@ -31,12 +28,12 @@ The type signatures make it clearer:
 
 ```agda
 Σ-pathp-iso : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
-              {x : Σ (B i0)} {y : Σ (B i1)}
+              {x : Σ (A i0) (B i0)} {y : Σ (A i1) (B i1)}
             → Iso (Σ[ p ∈ PathP A (x .fst) (y .fst) ]
                     (PathP (λ i → B i (p i)) (x .snd) (y .snd)))
-                  (PathP (λ i → Σ (B i)) x y)
+                  (PathP (λ i → Σ (A i) (B i)) x y)
 
-Σ-path-iso : {x y : Σ B}
+Σ-path-iso : {x y : Σ A B}
            → Iso (Σ[ p ∈ x .fst ≡ y .fst ] (subst B p (x .snd) ≡ y .snd))
                  (x ≡ y)
 ```
@@ -69,10 +66,10 @@ types _in the same universe_. Thus, we provide `Σ-ap-fst`{.Agda},
 `Σ`{.Agda} by equivalences across levels:
 
 ```agda
-Σ-ap-snd : ((x : A) → P x ≃ Q x) → Σ P ≃ Σ Q
-Σ-ap-fst : (e : A ≃ A') → Σ (B ∘ e .fst) ≃ Σ B
+Σ-ap-snd : ((x : A) → P x ≃ Q x) → Σ A P ≃ Σ A Q
+Σ-ap-fst : (e : A ≃ A') → Σ A (B ∘ e .fst) ≃ Σ A' B
 
-Σ-ap : (e : A ≃ A') → ((x : A) → P x ≃ Q (e .fst x)) → Σ P ≃ Σ Q
+Σ-ap : (e : A ≃ A') → ((x : A) → P x ≃ Q (e .fst x)) → Σ A P ≃ Σ A' Q
 Σ-ap e e' = Σ-ap-snd e' ∙e Σ-ap-fst e
 ```
 
@@ -84,7 +81,7 @@ they are included for completeness. </summary>
   pwise : (x : A) → Iso (P x) (Q x)
   pwise x = _ , is-equiv→is-iso (pointwise x .snd)
 
-  morp : Iso (Σ P) (Σ Q)
+  morp : Iso (Σ _ P) (Σ _ Q)
   fst morp (i , x) = i , pointwise i .fst x
   is-iso.inv (snd morp) (i , x) = i , pwise i .snd .is-iso.inv x
   is-iso.rinv (snd morp) (i , x) = ap₂ _,_ refl (pwise i .snd .is-iso.rinv _)
@@ -92,7 +89,7 @@ they are included for completeness. </summary>
 
 Σ-ap-fst {A = A} {A' = A'} {B = B} e = intro , isEqIntro
  where
-  intro : Σ (B ∘ e .fst) → Σ B
+  intro : Σ _ (B ∘ e .fst) → Σ _ B
   intro (a , b) = e .fst a , b
 
   isEqIntro : is-equiv intro
@@ -130,7 +127,7 @@ they are included for completeness. </summary>
         })) (inS b) (~ j)
 
 Σ-assoc : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : (x : A) → B x → Type ℓ''}
-        → (Σ[ x ∈ A ] Σ[ y ∈ B x ] C x y) ≃ (Σ[ x ∈ Σ B ] (C (x .fst) (x .snd)))
+        → (Σ[ x ∈ A ] Σ[ y ∈ B x ] C x y) ≃ (Σ[ x ∈ Σ _ B ] (C (x .fst) (x .snd)))
 Σ-assoc .fst (x , y , z) = (x , y) , z
 Σ-assoc .snd .is-eqv y .centre = strict-fibres (λ { ((x , y) , z) → x , y , z}) y .fst
 Σ-assoc .snd .is-eqv y .paths = strict-fibres (λ { ((x , y) , z) → x , y , z}) y .snd
@@ -155,7 +152,7 @@ projections:
 ```agda
 Σ-prop-path : {B : A → Type ℓ}
             → (∀ x → is-prop (B x))
-            → {x y : Σ B}
+            → {x y : Σ _ B}
             → (x .fst ≡ y .fst) → x ≡ y
 Σ-prop-path bp {x} {y} p i = p i , is-prop→pathp (λ i → bp (p i)) (x .snd) (y .snd) i
 ```
@@ -169,7 +166,7 @@ from the input, or from `Σ≡Path`{.Agda}.
 Σ-prop-path-is-equiv
   : {B : A → Type ℓ}
   → (bp : ∀ x → is-prop (B x))
-  → {x y : Σ B}
+  → {x y : Σ _ B}
   → is-equiv (Σ-prop-path bp {x} {y})
 Σ-prop-path-is-equiv bp {x} {y} = is-iso→is-equiv isom where
   isom : is-iso _
@@ -203,13 +200,13 @@ into an equivalence:
 ```agda
 Σ-prop-path≃ : {B : A → Type ℓ}
              → (∀ x → is-prop (B x))
-             → {x y : Σ B}
+             → {x y : Σ _ B}
              → (x .fst ≡ y .fst) ≃ (x ≡ y)
 Σ-prop-path≃ bp = Σ-prop-path bp , Σ-prop-path-is-equiv bp
 
 Σ-prop-square
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
-  → {w x y z : Σ B}
+  → {w x y z : Σ _ B}
   → (∀ x → is-prop (B x))
   → {p : x ≡ w} {q : x ≡ y} {s : w ≡ z} {r : y ≡ z}
   → Square (ap fst p) (ap fst q) (ap fst s) (ap fst r)
@@ -225,7 +222,7 @@ into an equivalence:
 If `B` is a family of contractible types, then `Σ B ≃ A`:
 
 ```agda
-Σ-contract : {B : A → Type ℓ} → (∀ x → is-contr (B x)) → Σ B ≃ A
+Σ-contract : {B : A → Type ℓ} → (∀ x → is-contr (B x)) → Σ _ B ≃ A
 Σ-contract bcontr = Iso→Equiv the-iso where
   the-iso : Iso _ _
   the-iso .fst (a , b) = a
@@ -235,7 +232,7 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
 ```
 
 ```agda
-Σ-map₂ : ({x : A} → P x → Q x) → Σ P → Σ Q
+Σ-map₂ : ({x : A} → P x → Q x) → Σ _ P → Σ _ Q
 Σ-map₂ f (x , y) = (x , f y)
 ```
 
@@ -243,10 +240,10 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
 ```agda
 Σ-pathp-dep
   : ∀ {ℓ ℓ′} {A : I → Type ℓ} {B : ∀ i → A i → Type ℓ′}
-  → {x : Σ (B i0)} {y : Σ (B i1)}
+  → {x : Σ _ (B i0)} {y : Σ _ (B i1)}
   → (p : PathP A (x .fst) (y .fst))
   → PathP (λ i → B i (p i)) (x .snd) (y .snd)
-  → PathP (λ i → Σ (B i)) x y
+  → PathP (λ i → Σ (A i) (B i)) x y
 Σ-pathp-dep p q i = p i , q i
 ```
 -->

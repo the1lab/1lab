@@ -98,7 +98,7 @@ record Lattice-on (A : Type ℓ) : Type ℓ where
 open Lattice-on using (Lattice-on→is-meet-semi ; Lattice-on→is-join-semi) public
 
 Lattice : ∀ ℓ → Type (lsuc ℓ)
-Lattice ℓ = Σ (Lattice-on {ℓ = ℓ})
+Lattice ℓ = Σ _ (Lattice-on {ℓ = ℓ})
 ```
 
 Since the absorption laws are property, not structure, a lattice

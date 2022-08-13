@@ -40,7 +40,7 @@ of product in $\Ab$ is the [tensor product of abelian groups][tensor].
 
 ```agda
   _⊕_ : AbGroup ℓ
-  _⊕_ = ((G.₀ × H.₀) , grp) , ab where
+  _⊕_ = restrict ((G.₀ × H.₀) , grp) ab where
     grp : Group-on (G.₀ × H.₀)
     grp = make-group (hlevel 2) (G.unit , H.unit)
       (λ { (a , x) (b , y) → a G.⋆ b , x H.⋆ y })

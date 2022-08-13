@@ -40,7 +40,7 @@ using the [path type] `_≡_`{.Agda}:
 
 ```agda
 _∈_ : V → V → Type
-x ∈ set A f = Σ λ i → f i ≡ x
+x ∈ set A f = Σ A λ i → f i ≡ x
 ```
 
 A set `x` is an element of some other set if there exists an element of
@@ -61,7 +61,7 @@ that do not contain themselves_:
 
 ```agda
 R : V
-R = set (Σ λ x → x ∈ x → ⊥) fst
+R = set (Σ _ λ x → x ∈ x → ⊥) fst
 ```
 
 If `X` is an element of `R`, then it does not contain itself:

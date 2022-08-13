@@ -11,8 +11,6 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
-open import Agda.Builtin.List
-
 open import Data.List
 
 module 1Lab.Univalence.SIP.Record where
@@ -30,21 +28,21 @@ private
     private
       fwdShape : Type _
       fwdShape =
-          (A B : Σ S) (e : A .fst ≃ B .fst)
+          (A B : Σ _ S) (e : A .fst ≃ B .fst)
         → ι A B e → PathP (λ i → S (ua e i)) (A .snd) (B .snd)
 
       bwdShape : Type _
       bwdShape =
-          (A B : Σ S) (e : A .fst ≃ B .fst)
+          (A B : Σ _ S) (e : A .fst ≃ B .fst)
         → PathP (λ i → S (ua e i)) (A .snd) (B .snd) → ι A B e
 
       fwdBwdShape : fwdShape → bwdShape → Type _
       fwdBwdShape fwd bwd =
-        (A B : Σ S) (e : A .fst ≃ B .fst) → ∀ p → fwd A B e (bwd A B e p) ≡ p
+        (A B : Σ _ S) (e : A .fst ≃ B .fst) → ∀ p → fwd A B e (bwd A B e p) ≡ p
 
       bwdFwdShape : fwdShape → bwdShape → Type _
       bwdFwdShape fwd bwd =
-        (A B : Σ S) (e : A .fst ≃ B .fst) → ∀ r → bwd A B e (fwd A B e r) ≡ r
+        (A B : Σ _ S) (e : A .fst ≃ B .fst) → ∀ r → bwd A B e (fwd A B e r) ≡ r
 
     explicitUnivalentStr : (fwd : fwdShape) (bwd : bwdShape)
       → fwdBwdShape fwd bwd → bwdFwdShape fwd bwd

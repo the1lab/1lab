@@ -141,7 +141,7 @@ terminal object. It turns out the
 
 ```agda
 representable-unit→terminal
-  : Representation (Const (Lift _ ⊤ , hlevel 2)) → Terminal C
+  : Representation (Const (el (Lift _ ⊤) (hlevel 2))) → Terminal C
 representable-unit→terminal repr .Terminal.top = repr .rep
 representable-unit→terminal repr .Terminal.has⊤ ob = retract→is-contr
   (repr .represents .C^.to .η ob) (λ _ → lift tt)

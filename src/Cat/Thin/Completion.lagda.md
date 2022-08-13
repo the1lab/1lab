@@ -61,12 +61,12 @@ the assumed inequalities:
 ```agda
   private abstract
     p1 : (a : C.Ob) ((x , y , r) : Σ[ x ∈ C.Ob ] Σ[ y ∈ C.Ob ] x ~ y)
-      → Path (Prop h) (C.Hom x a , C.Hom-is-prop x a) (C.Hom y a , C.Hom-is-prop y a)
+      → Path (Prop h) (el (C.Hom x a) (C.Hom-is-prop x a)) (el (C.Hom y a) (C.Hom-is-prop y a))
     p1 a (x , y , f , g) =
       n-ua (prop-ext (C.Hom-is-prop _ _) (C.Hom-is-prop _ _) (λ h → h C.∘ g) (λ h → h C.∘ f))
 
     p2 : (a : C.Ob) ((x , y , r) : Σ[ x ∈ C.Ob ] Σ[ y ∈ C.Ob ] x ~ y)
-      → Path (Prop h) (C.Hom a x , C.Hom-is-prop a x) (C.Hom a y , C.Hom-is-prop a y)
+      → Path (Prop h) (el (C.Hom a x) (C.Hom-is-prop a x)) (el (C.Hom a y) (C.Hom-is-prop a y))
     p2 a (x , y , f , g) =
       n-ua (prop-ext (C.Hom-is-prop _ _) (C.Hom-is-prop _ _) (λ h → f C.∘ h) (λ h → g C.∘ h))
 ```
@@ -80,7 +80,8 @@ quotient, hence `Hom′`{.Agda} below exists:
 
 ```agda
   Hom′ : Ob′ → Ob′ → Prop _
-  Hom′ = Coeq-rec₂ (n-Type-is-hlevel 1) (λ x y → C.Hom x y , C.Hom-is-prop x y) p1 p2
+  Hom′ = Coeq-rec₂ (n-Type-is-hlevel 1)
+    (λ x y → el (C.Hom x y) (C.Hom-is-prop x y)) p1 p2
 
   Hom′-prop : ∀ (x y : Ob′) (f g : ∣ Hom′ x y ∣) → f ≡ g
   Hom′-prop x y f g = Hom′ x y .is-tr f g

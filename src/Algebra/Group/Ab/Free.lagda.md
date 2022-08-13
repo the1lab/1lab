@@ -204,7 +204,7 @@ call `inc^ab`{.Agda}.
 ```agda
   init : Ob
   init .↓Obj.x = tt
-  init .↓Obj.y = Abelianise G , Abelianise-is-abelian-group G
+  init .↓Obj.y = restrict (Abelianise G) $ Abelianise-is-abelian-group G
   init .↓Obj.map .fst = inc^ab G
   init .↓Obj.map .snd .Group-hom.pres-⋆ x y = refl
 

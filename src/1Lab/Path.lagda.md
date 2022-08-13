@@ -47,28 +47,10 @@ when they're connected by a path-of-paths, and types are said to be
 
 </details>
 
-<!--
 ```agda
-open import Agda.Builtin.Cubical.Path public
-open import Agda.Builtin.Cubical.Sub public
-  renaming ( inc to inS
-           ; primSubOut to outS
-           )
-open import Agda.Primitive.Cubical public
-  renaming ( primIMin       to _∧_
-           ; primIMax       to _∨_
-           ; primINeg       to ~_
-           ; isOneEmpty     to empty
-           ; primComp       to comp
-           ; primHComp      to hcomp
-           ; primTransp     to transp
-           ; itIsOne        to 1=1 )
-```
--->
-
-```agda
-Path : ∀ {ℓ} (A : Type ℓ) → A → A → Type ℓ
-Path A = PathP (λ i → A)
+open import 1Lab.Prim.Extension public
+open import 1Lab.Prim.Interval public
+open import 1Lab.Prim.Kan public
 ```
 
 The type `I`{.Agda} is meant to represent the (real, closed) unit
@@ -807,18 +789,11 @@ the interval (in fact, it is `true`{.Agda} everywhere), so we say that
 
 In the diagram, we draw the specific partial element being extended in
 red, and the total path extending it in black. In Agda, extensions are
-represented by the type former `Sub`{.Agda}, which we abbreviate by
-`_[_↦_]`{.Agda}. Fully applied, that operator looks like `A [ φ → u
-]`.[^extensionkind]
+represented by the type former `_[_↦_]`{.Agda}.[^extensionkind]
 
 [^extensionkind]: `Sub`{.Agda} lives in the universe `SSetω`, which we
 do not have a binding for, so we can not name the type of
 `_[_↦_]`{.Agda}.
-
-```agda
-_[_↦_] : ∀ {ℓ} (A : Type ℓ) (φ : I) (u : Partial φ A) → _
-A [ φ ↦ u ] = Sub A φ u
-```
 
 We can formalise the red-black extensibility diagram above by defining
 the partial element `left-true`{.Agda} and giving `refl`{.Agda} to
@@ -1576,7 +1551,7 @@ path `p : a ≡ x`, and a path between `b` and `y` laying over `p`.
 
 ```agda
 Σ-pathp : ∀ {a b} {A : Type a} {B : A → Type b}
-        → {x y : Σ B}
+        → {x y : Σ A B}
         → (p : x .fst ≡ y .fst)
         → PathP (λ i → B (p i)) (x .snd) (y .snd)
         → x ≡ y
@@ -1589,7 +1564,7 @@ simpler in the case where the `Σ`{.Agda} represents a subset --- i.e.,
 
 ```agda
 Σ-path : ∀ {a b} {A : Type a} {B : A → Type b}
-       → {x y : Σ B}
+       → {x y : Σ A B}
        → (p : x .fst ≡ y .fst)
        → subst B p (x .snd) ≡ (y .snd)
        → x ≡ y

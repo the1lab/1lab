@@ -12,7 +12,7 @@ open import Data.List
 module 1Lab.Univalence.SIP.Record.Base where
 
 IsHomT : ∀ {ℓ ℓ₁} (l : Level) → (Type ℓ → Type ℓ₁) → Type _
-IsHomT l S = (A B : Σ S) → (A .fst ≃ B .fst) → Type l
+IsHomT l S = (A B : Σ _ S) → (A .fst ≃ B .fst) → Type l
 
 -- We declare, inductively-recursively(!), a syntax for describing how
 -- to project the fields _and_ their corresponding presentation
@@ -27,7 +27,7 @@ module _ {ℓ ℓ₁ ℓ₁'} where
     : {R : Type ℓ → Type ℓ₁} {ι : IsHomT ℓ₁' R}
     → RecordFields R ι
     → Level
-  
+
   -- Computes a nested product type of the fields described
   fields→prod
     : {R : Type ℓ → Type ℓ₁} {ι : IsHomT ℓ₁' R}
@@ -68,7 +68,7 @@ module _ {ℓ ℓ₁ ℓ₁'} where
       → (project : {X : Type ℓ} → R X → S X)
       -- ^ Projection from the record to the notion of structure
 
-      → (project-preservation : {A B : Σ R} {e : A .fst ≃ B .fst}
+      → (project-preservation : {A B : Σ _ R} {e : A .fst ≃ B .fst}
                               → ι A B e
                               → ι' (Σ-map₂ project A) (Σ-map₂ project B) e)
       -- ^ Corresponding preservation datum for the field

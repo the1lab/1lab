@@ -1,7 +1,7 @@
 ```agda
 open import 1Lab.Prelude
 
-open import Agda.Builtin.Maybe
+open import 1Lab.Prim.Data.Maybe
 
 open import Data.Fin.Base
 open import Data.Sum
@@ -101,7 +101,7 @@ sum (suc n) f = f fzero + sum n (f ∘ fsuc)
 In this case, the isomorphism is constructed directly:
 
 ```agda
-Finite-sum : (B : Fin n → Nat) → Σ (Fin ∘ B) ≃ Fin (sum n B)
+Finite-sum : (B : Fin n → Nat) → Σ (Fin _) (Fin ∘ B) ≃ Fin (sum n B)
 Finite-sum {zero} B .fst ()
 Finite-sum {zero} B .snd .is-eqv ()
 Finite-sum {suc n} B =
@@ -110,7 +110,7 @@ Finite-sum {suc n} B =
     where
       rec = Finite-sum (B ∘ fsuc)
 
-      f : Σ (Fin ∘ B) → Fin (B fzero) ⊎ Fin (sum n (B ∘ fsuc))
+      f : Σ _ (Fin ∘ B) → Fin (B fzero) ⊎ Fin (sum n (B ∘ fsuc))
       f (fzero , x) = inl x
       f (fsuc x , y) = inr (rec .fst (x , y))
 

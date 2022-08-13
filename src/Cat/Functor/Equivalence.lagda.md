@@ -152,8 +152,8 @@ F^*(y)$; Fullness then completes the construction.
   ff+split-eso→inverse .F₁ {x} {y} f =
     ff⁻¹ (f*y-iso .D._≅_.from D.∘ f D.∘ f*x-iso .D._≅_.to)
     where
-      open ∑ (eso x) renaming (fst to f*x ; snd to f*x-iso)
-      open ∑ (eso y) renaming (fst to f*y ; snd to f*y-iso)
+      open Σ (eso x) renaming (fst to f*x ; snd to f*x-iso)
+      open Σ (eso y) renaming (fst to f*y ; snd to f*y-iso)
 ```
 
 <details>
@@ -171,7 +171,7 @@ by faithfulness.
     ff⁻¹ D.id                                               ≡˘⟨ ap ff⁻¹ (F-id F) ⟩
     ff⁻¹ (F₁ F C.id)                                        ≡⟨ equiv→unit ff _ ⟩
     C.id                                                    ∎
-    where open ∑ (eso x) renaming (fst to f*x ; snd to f*x-iso)
+    where open Σ (eso x) renaming (fst to f*x ; snd to f*x-iso)
 
   ff+split-eso→inverse .F-∘ {x} {y} {z} f g =
     fully-faithful→faithful {F = F} ff (
@@ -184,9 +184,9 @@ by faithfulness.
       F₁ F (ff⁻¹ _ C.∘ ff⁻¹ _)                     ∎
     )
     where
-      open ∑ (eso x) renaming (fst to f*x ; snd to f*x-iso)
-      open ∑ (eso y) renaming (fst to f*y ; snd to f*y-iso)
-      open ∑ (eso z) renaming (fst to f*z ; snd to f*z-iso)
+      open Σ (eso x) renaming (fst to f*x ; snd to f*x-iso)
+      open Σ (eso y) renaming (fst to f*y ; snd to f*y-iso)
+      open Σ (eso z) renaming (fst to f*z ; snd to f*z-iso)
 
       ffz = f*z-iso .di.from
       ftz = f*z-iso .di.to
@@ -221,7 +221,7 @@ essential fibre $F^*F(x)$ comes equipped with an isomorphism $FF^*F(x)
 ```agda
   ff+split-eso→unit : Id => (G F∘ F)
   ff+split-eso→unit .η x = ff⁻¹ (f*x-iso .di.from)
-    where open ∑ (eso (F₀ F x)) renaming (fst to f*x ; snd to f*x-iso)
+    where open Σ (eso (F₀ F x)) renaming (fst to f*x ; snd to f*x-iso)
 ```
 
 <details>
@@ -240,8 +240,8 @@ essential fibre $F^*F(x)$ comes equipped with an isomorphism $FF^*F(x)
       F₁ F (F₁ (G F∘ F) f C.∘ x→f*x)                           ∎
     )
     where
-      open ∑ (eso (F₀ F x)) renaming (fst to f*x ; snd to f*x-iso)
-      open ∑ (eso (F₀ F y)) renaming (fst to f*y ; snd to f*y-iso)
+      open Σ (eso (F₀ F x)) renaming (fst to f*x ; snd to f*x-iso)
+      open Σ (eso (F₀ F y)) renaming (fst to f*y ; snd to f*y-iso)
 
       ffy = f*y-iso .di.from
       fty = f*y-iso .di.to
@@ -263,7 +263,7 @@ again pick the given isomorphism.
 ```agda
   ff+split-eso→counit : (F F∘ G) => Id
   ff+split-eso→counit .η x = f*x-iso .di.to
-    where open ∑ (eso x) renaming (fst to f*x ; snd to f*x-iso)
+    where open Σ (eso x) renaming (fst to f*x ; snd to f*x-iso)
 ```
 
 <details>
@@ -275,8 +275,8 @@ again pick the given isomorphism.
     fty D.∘ ffy D.∘ f D.∘ ftx                   ≡⟨ D.cancell (f*y-iso .di.invl) ⟩
     f D.∘ ftx                                   ∎
     where
-      open ∑ (eso x) renaming (fst to f*x ; snd to f*x-iso)
-      open ∑ (eso y) renaming (fst to f*y ; snd to f*y-iso)
+      open Σ (eso x) renaming (fst to f*x ; snd to f*x-iso)
+      open Σ (eso y) renaming (fst to f*y ; snd to f*y-iso)
 
       ffy = f*y-iso .di.from
       fty = f*y-iso .di.to
@@ -303,7 +303,7 @@ calculations without commentary:
 <!--
 ```agda
     where
-      open ∑ (eso (F₀ F x)) renaming (fst to f*x ; snd to f*x-iso)
+      open Σ (eso (F₀ F x)) renaming (fst to f*x ; snd to f*x-iso)
 
       ffx = f*x-iso .di.from
       ftx = f*x-iso .di.to
@@ -329,8 +329,8 @@ Now to show they are componentwise invertible:
 <!--
 ```agda
     where
-      open ∑ (eso x) renaming (fst to f*x ; snd to f*x-iso)
-      open ∑ (eso (F₀ F f*x)) renaming (fst to f*f*x ; snd to f*f*x-iso)
+      open Σ (eso x) renaming (fst to f*x ; snd to f*x-iso)
+      open Σ (eso (F₀ F f*x)) renaming (fst to f*f*x ; snd to f*f*x-iso)
 
       ffx = f*x-iso .di.from
       ftx = f*x-iso .di.to
@@ -351,7 +351,7 @@ Now to show they are componentwise invertible:
       { invl = f*x-iso .di.invl
       ; invr = f*x-iso .di.invr }
     }
-    where open ∑ (eso x) renaming (fst to f*x ; snd to f*x-iso)
+    where open Σ (eso x) renaming (fst to f*x ; snd to f*x-iso)
 ```
 
 Since the unit is defined in terms of fullness, showing it is invertible
@@ -376,7 +376,7 @@ needs an appeal to faithfulness (two, actually):
       }
     }
     where
-      open ∑ (eso (F₀ F x)) renaming (fst to f*x ; snd to f*x-iso)
+      open Σ (eso (F₀ F x)) renaming (fst to f*x ; snd to f*x-iso)
       ffx = f*x-iso .di.from
       ftx = f*x-iso .di.to
 ```

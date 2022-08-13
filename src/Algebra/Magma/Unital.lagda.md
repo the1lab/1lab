@@ -110,7 +110,7 @@ record Unital-magma-on (A : Type ℓ) : Type ℓ where
   open is-unital-magma has-is-unital-magma public
 
 Unital-magma : (ℓ : Level) → Type (lsuc ℓ)
-Unital-magma ℓ = Σ Unital-magma-on
+Unital-magma ℓ = Σ (Type ℓ) Unital-magma-on
 
 Unital-magma→Magma : {ℓ : _} → Unital-magma ℓ → Magma ℓ
 Unital-magma→Magma (A , unital-mgm) = A , Unital-magma-on.has-Magma-on unital-mgm

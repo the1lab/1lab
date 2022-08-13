@@ -11,10 +11,7 @@ allow renaming it in an import declaration from the `Agda.Primitive`
 module.
 
 ```agda
-open import Agda.Primitive
-  renaming (Set to Type ; Setω to Typeω)
-  hiding (Prop)
-  public
+open import 1Lab.Prim.Type hiding (Prop) public
 ```
 
 `Type`{.Agda} is a type itself, so it's a natural question to ask: does
@@ -37,36 +34,21 @@ level-of {ℓ} _ = ℓ
 
 ## Built-in Types
 
-Agda comes with built-in definitions for a bunch of types:
+We re-export the following very important types:
 
 ```agda
-open import Agda.Builtin.Sigma hiding (Σ) public
-open import Agda.Builtin.Unit public
-open import Agda.Builtin.Bool public
-open import Agda.Builtin.Nat hiding (_<_) public
+open import 1Lab.Prim.Data.Sigma public
+open import 1Lab.Prim.Data.Bool public
+open import 1Lab.Prim.Data.Nat hiding (_<_) public
 ```
 
-It does not, however, come with a built-in definition of the empty type:
+Additionally, we define the empty type:
 
 ```agda
 data ⊥ : Type where
 
 absurd : ∀ {ℓ} {A : Type ℓ} → ⊥ → A
 absurd ()
-```
-
-The dependent sum of a family of types is notated by `Σ`{.Agda}. The
-domain of the family is left implicit. We use a notation for when it
-must be made explicit.
-
-```agda
-Σ : ∀ {a b} {A : Type a} (B : A → Type b) → Type _
-Σ = Agda.Builtin.Sigma.Σ _
-
-module Σ = Agda.Builtin.Sigma.Σ
-
-syntax Σ {A = A} (λ x → B) = Σ[ x ∈ A ] B
-infix 5 Σ
 ```
 
 The non-dependent product type `_×_`{.Agda} can be defined in terms of
@@ -116,15 +98,9 @@ f $ x = f x
 
 <!--
 ```
-open import Agda.Builtin.FromNat public
-open import Agda.Builtin.FromNeg public
-
-instance
-  Number-Nat : Number Nat
-  Number-Nat .Number.Constraint _ = ⊤
-  Number-Nat .Number.fromNat n = n
+open import 1Lab.Prim.Numerals public
 
 Type∙ : ∀ ℓ → Type (lsuc ℓ)
-Type∙ _ = Σ id
+Type∙ _ = Σ _ id
 ```
 -->

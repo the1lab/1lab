@@ -174,7 +174,7 @@ through $k$:
   im≤other-image m M i p = im .has⊥ obj .centre .β .map where
     obj : ↓Obj _ _
     obj .x = tt
-    obj .y = cut m , M
+    obj .y = restrict (cut m) M
     obj .map = record { map = i ; commutes = p }
 
   im≤other-image-factors

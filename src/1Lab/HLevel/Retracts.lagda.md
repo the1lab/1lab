@@ -98,7 +98,7 @@ retract→is-hlevel (suc (suc n)) f g h hlevel x y =
 The left inverse is constructed out of `ap`{.Agda} and the given
 homotopy.
 
-```
+```agda
     inv : is-left-inverse sect (ap g)
     inv path =
       sym (h x) ∙ ap f (ap g path) ∙ h y ∙ refl ≡⟨ ap (λ e → sym (h _) ∙ _ ∙ e) (∙-id-r (h _)) ⟩
@@ -185,7 +185,7 @@ paths], shows that dependent sums are also closed under h-levels.
 Σ-is-hlevel : {A : Type ℓ} {B : A → Type ℓ'} (n : Nat)
             → is-hlevel A n
             → ((x : A) → is-hlevel (B x) n)
-            → is-hlevel (Σ B) n
+            → is-hlevel (Σ A B) n
 Σ-is-hlevel 0 acontr bcontr =
   contr (acontr .centre , bcontr _ .centre)
     λ x → Σ-pathp (acontr .paths _)
@@ -315,7 +315,7 @@ instance
   H-Level-sigma
     : ∀ {n} {S : T → Type ℓ}
     → ⦃ H-Level T n ⦄ → ⦃ ∀ {x} → H-Level (S x) n ⦄
-    → H-Level (Σ S) n
+    → H-Level (Σ T S) n
   H-Level-sigma {n = n} .H-Level.has-hlevel =
     Σ-is-hlevel n (hlevel n) λ _ → hlevel n
 

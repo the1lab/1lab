@@ -4,6 +4,7 @@ open import 1Lab.Prelude hiding (id ; _∘_)
 
 open import Cat.Base
 
+open import Data.List
 open import Data.Bool
 
 module Cat.Solver where

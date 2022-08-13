@@ -91,7 +91,7 @@ the axiom in a way equivalent to a `structure`{.Agda ident=Structure}.
 
 ```agda
 Semigroup-on : Type ℓ → Type ℓ
-Semigroup-on X = Σ (is-semigroup {A = X})
+Semigroup-on X = Σ (X → X → X) is-semigroup
 ```
 
 `Semigroup-on`{.Agda} is a univalent structure, because it is equivalent
@@ -158,4 +158,3 @@ private
       sucx≤x = subst (λ e → e ≤ x) (id (suc x)) (min-≤l x (suc x))
     in ¬sucx≤x x sucx≤x
 ```
-
