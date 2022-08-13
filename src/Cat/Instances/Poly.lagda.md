@@ -23,8 +23,8 @@ module Cat.Instances.Poly where
 The category of _polynomial functors_ is the free coproduct completion
 of $\sets$. Equivalently, it is the [total space] of the [family
 fibration] of $\sets\op$. More concretely, an object of $\ht{Poly}$ is
-given by a set $I$ and a family of sets $I \to \sets$. The idea is that
-this data corresponds to the polynomial (set-valued, with set
+given by a set $I$ and a family of sets $A : I \to \sets$. The idea is that
+these data corresponds to the polynomial (set-valued, with set
 coefficients) given by
 
 $$
