@@ -5,7 +5,7 @@ Thanks for taking the time to contribute!
 
 This file holds the conventions we use around the codebase, but they're
 guidelines, and not strict rules: If you're unsure of something, hop on
-[the Discord](https://discord.gg/NvXkUVYcxV) and ask there, or open [a
+[the Discord](https://discord.gg/Zp2e8hYsuX) and ask there, or open [a
 discussion thread](https://github.com/plt-amy/cubical-1lab/discussions)
 if that's more your style.
 
