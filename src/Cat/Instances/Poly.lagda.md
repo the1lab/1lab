@@ -12,19 +12,24 @@ open import Cat.Displayed.Base
 open import Cat.Instances.Sets
 open import Cat.Prelude
 
-
 import Cat.Reasoning
 
 module Cat.Instances.Poly where
 ```
 
+<!--
+```agda
+open Functor
+```
+-->
+
 # Polynomial functors and lenses
 
 The category of _polynomial functors_ is the free coproduct completion
-of $\sets$. Equivalently, it is the [total space] of the [family
+of $\sets\op$. Equivalently, it is the [total space] of the [family
 fibration] of $\sets\op$. More concretely, an object of $\ht{Poly}$ is
-given by a set $I$ and a family of sets $A : I \to \sets$. The idea is that
-these data corresponds to the polynomial (set-valued, with set
+given by a set $I$ and a family of sets $A : I \to \sets$. The idea is
+that these data corresponds to the polynomial (set-valued, with set
 coefficients) given by
 
 $$
@@ -64,3 +69,50 @@ poly-maps : ∀ {ℓ} {A B} → Iso
   (Σ[ f ∈ (∣ A .fst ∣ → ∣ B .fst ∣) ] ∀ x → ∣ B .snd (f x) ∣ → ∣ A .snd x ∣)
 unquoteDef poly-maps = define-record-iso poly-maps (quote Total-hom)
 ```
+
+## Polynomials as functors
+
+We commented above that polynomials, i.e. terms of the type
+`Poly`{.Agda}, should correspond to particular $\sets$-valued
+polynomials. In particular, given a polynomial $(I, A)$, it should be
+possible to evaluate it at a set $X$ and get back a set. We take the
+interpretation above _literally_:
+
+```agda
+Polynomial-functor : ∀ {ℓ} → Poly.Ob {ℓ} → Functor (Sets ℓ) (Sets ℓ)
+Polynomial-functor (I , A) .F₀ X =
+  el (Σ[ i ∈ ∣ I ∣ ] (∣ A i ∣ → ∣ X ∣)) $
+    Σ-is-hlevel 2 (I .is-tr) λ _ → fun-is-hlevel 2 (X .is-tr)
+Polynomial-functor (I , A) .F₁ f (a , g) = a , λ z → f (g z)
+Polynomial-functor (I , A) .F-id = refl
+Polynomial-functor (I , A) .F-∘ f g = refl
+```
+
+Correspondingly, we refer to a polynomial whose family is $x \mapsto 1$
+as _linear_, since these are those of the form $\sum_{i : I} y^1$, i.e.
+$Iy^1$. If the family is constant at some _other_ set, e.g. $B$, we
+refer to the corresponding polynomial as a _monomial_, since it can be
+written $Iy^B$.
+
+## Lenses
+
+We call the maps in $\ht{Poly}$ _dependent lenses_, or simply _lenses_,
+because in the case of maps between monomials $Si^T \to Ay^B$, we
+recover the usual definition of the Haskell type `Lens s t a b`:
+
+```agda
+Lens : ∀ {ℓ} (S T A B : Set ℓ) → Type ℓ
+Lens S T A B = Poly.Hom (S , λ _ → T) (A , λ _ → B)
+
+_ : ∀ {ℓ} {S T A B : Set ℓ} → Iso
+  (Lens S T A B)
+  ((∣ S ∣ → ∣ A ∣) × (∣ S ∣ → ∣ B ∣ → ∣ T ∣))
+_ = poly-maps
+```
+
+We have a _view_ function $S \to A$ together with an _update_ function
+$S \to B \to T$. The view and update functions are allowed to change the
+type of the container: the idea is that a lens represents a "label" or
+"pointer" from which one can read off an $A$ value given an $S$, but
+upon writing a $B$ to the same pointer, our $S$ changes to a $T$
+instead.
