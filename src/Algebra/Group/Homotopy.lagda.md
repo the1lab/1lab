@@ -44,11 +44,12 @@ $\pi_1(A)$.
 ```agda
 πₙ₊₁ : Nat → Type∙ ℓ → Group ℓ
 πₙ₊₁ n t .fst = ∥ Ωⁿ (suc n) t .fst ∥₀
-πₙ₊₁ n t .snd =
-  make-group squash
-    (inc refl)
-    (∥-∥₀-map₂ _∙_)
-    (∥-∥₀-map sym)
+πₙ₊₁ n t .snd = to-group-on omega where
+  omega : make-group ∥ Ωⁿ (suc n) t .fst ∥₀
+  omega .make-group.group-is-set = squash
+  omega .make-group.unit = inc refl
+  omega .make-group.mul = ∥-∥₀-map₂ _∙_
+  omega .make-group.inv = ∥-∥₀-map sym
 ```
 
 As mentioned above, the group structure is given entirely by the
@@ -57,14 +58,15 @@ group operation is `path concatenation`{.Agda ident=_∙_}, and the
 inverses are given by `inverting paths`{.Agda ident=sym}.
 
 ```agda
-    (∥-∥₀-elim₃ (λ _ _ _ → is-prop→is-set (squash _ _))
-      λ x y z i → inc (∙-assoc x y z (~ i)))
-    (∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _))
-      λ x i → inc (∙-inv-l x i))
-    (∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _))
-      λ x i → inc (∙-inv-r x i))
-    (∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _))
-      λ x i → inc (∙-id-l x i))
+  omega .make-group.assoc =
+    ∥-∥₀-elim₃ (λ _ _ _ → is-prop→is-set (squash _ _))
+      λ x y z i → inc (∙-assoc x y z (~ i))
+  omega .make-group.invl =
+    ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ x i → inc (∙-inv-l x i)
+  omega .make-group.invr =
+    ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ x i → inc (∙-inv-r x i)
+  omega .make-group.idl =
+    ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ x i → inc (∙-id-l x i)
 ```
 
 A direct cubical transcription of the Eckmann-Hilton argument tells us

@@ -120,13 +120,16 @@ is indeed a group structure, which is an incredibly boring calculation.
 
   grp : Group-on ∣ G ∣
   grp .Group-on._⋆_ = mult
-  grp .Group-on.has-is-group =
-    make-group (G .is-tr)
-      (ν nil) mult (λ x → ν (inv (inc x)))
-      assoc
-      invl
-      invr
-      idl′ .Group-on.has-is-group
+  grp .Group-on.has-is-group = to-group-on fg .Group-on.has-is-group where
+    fg : make-group ∣ G ∣
+    fg .make-group.group-is-set = G .is-tr
+    fg .make-group.unit = ν nil
+    fg .make-group.mul = mult
+    fg .make-group.inv x = ν (inv (inc x))
+    fg .make-group.assoc = assoc
+    fg .make-group.invl = invl
+    fg .make-group.invr = invr
+    fg .make-group.idl = idl′
 ```
 </details>
 

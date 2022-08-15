@@ -1,4 +1,5 @@
 ```agda
+open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Sets
 open import 1Lab.Univalence
 open import 1Lab.Type.Dec
@@ -223,6 +224,10 @@ Discrete-Bool true true = yes refl
 
 Bool-is-set : is-set Bool
 Bool-is-set = Discrete→is-set Discrete-Bool
+
+instance
+  H-Level-Bool : ∀ {n} → H-Level Bool (2 + n)
+  H-Level-Bool = basic-instance 2 Bool-is-set
 ```
 
 Furthermore, if we know we're not looking at true, then we must be

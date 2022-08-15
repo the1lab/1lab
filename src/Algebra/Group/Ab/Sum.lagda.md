@@ -1,4 +1,5 @@
 ```agda
+open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Ab
 open import Algebra.Prelude
@@ -40,17 +41,8 @@ of product in $\Ab$ is the [tensor product of abelian groups][tensor].
 
 ```agda
   _⊕_ : AbGroup ℓ
-  _⊕_ = restrict ((G.₀ × H.₀) , grp) ab where
-    grp : Group-on (G.₀ × H.₀)
-    grp = make-group (hlevel 2) (G.unit , H.unit)
-      (λ { (a , x) (b , y) → a G.⋆ b , x H.⋆ y })
-      (λ { (a , x) → a G.⁻¹ , x H.⁻¹ })
-      (λ { _ _ _ → Σ-pathp (sym G.associative) (sym H.associative) })
-      (λ _ → Σ-pathp G.inversel H.inversel)
-      (λ _ → Σ-pathp G.inverser H.inverser)
-      λ _ → Σ-pathp G.idl H.idl
-
-    ab : is-abelian-group ((G.₀ × H.₀) , grp)
+  _⊕_ = restrict (Direct-product (G .object) (H .object)) ab where
+    ab : is-abelian-group (Direct-product (G .object) (H .object))
     ab x y = Σ-pathp G.commutative H.commutative
 ```
 

@@ -161,54 +161,58 @@ Coeq-elim cset ci cg (squash x y p q i j) =
 
 There is a barrage of combined eliminators, whose definitions are not
 very enlightening --- you can mouse over these links to see their types:
-`Coeq-elim-prop₂`{.Agda} `Coeq-elim-prop₃`{.Agda} `Coeq-elim₂`{.Agda}
-`Coeq-rec₂`{.Agda}.
+`Coeq-elim-prop₂`{.Agda} `Coeq-elim-prop₃`{.Agda} `Coeq-rec₂`{.Agda}.
 
 <!--
 ```agda
+{-# TERMINATING #-}
 Coeq-elim-prop₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'}
                    {C : Coeq f g → Coeq f' g' → Type ℓ}
                → (∀ x y → is-prop (C x y))
                → (∀ x y → C (inc x) (inc y))
                → ∀ x y → C x y
-Coeq-elim-prop₂ prop f =
-  Coeq-elim-prop (λ x → Π-is-hlevel 1 λ _ → prop _ _)
-    λ x → Coeq-elim-prop (prop (inc x)) (f x)
+Coeq-elim-prop₂ prop f (inc x) (inc y) = f x y
+Coeq-elim-prop₂ {f' = f'} {g'} prop f (inc x) (glue y i) =
+  is-prop→pathp (λ i → prop (inc x) (glue y i)) (f x (f' y)) (f x (g' y)) i
+Coeq-elim-prop₂ prop f (inc x) (squash y y′ p q i j) =
+  is-prop→squarep (λ i j → prop (inc x) (squash y y′ p q i j))
+    (λ i → Coeq-elim-prop₂ prop f (inc x) y)
+    (λ i → Coeq-elim-prop₂ prop f (inc x) (p i))
+    (λ i → Coeq-elim-prop₂ prop f (inc x) (q i))
+    (λ i → Coeq-elim-prop₂ prop f (inc x) y′)
+    i j
+Coeq-elim-prop₂ {f = f'} {g = g'} prop f (glue x i) y =
+  is-prop→pathp (λ i → prop (glue x i) y)
+    (Coeq-elim-prop₂ prop f (inc (f' x)) y)
+    (Coeq-elim-prop₂ prop f (inc (g' x)) y)
+    i
+Coeq-elim-prop₂ prop f (squash x x′ p q i j) y =
+  is-prop→squarep (λ i j → prop (squash x x′ p q i j) y)
+    (λ i → Coeq-elim-prop₂ prop f x y)
+    (λ i → Coeq-elim-prop₂ prop f (p i) y)
+    (λ i → Coeq-elim-prop₂ prop f (q i) y)
+    (λ i → Coeq-elim-prop₂ prop f x′ y)
+    i j
 
 Coeq-elim-prop₃ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {f'' g'' : A'' → B''}
-                   {C : Coeq f g → Coeq f' g' → Coeq f'' g'' → Type ℓ}
+                    {C : Coeq f g → Coeq f' g' → Coeq f'' g'' → Type ℓ}
                → (∀ x y z → is-prop (C x y z))
                → (∀ x y z → C (inc x) (inc y) (inc z))
                → ∀ x y z → C x y z
-Coeq-elim-prop₃ cprop f =
-  Coeq-elim-prop₂ (λ x y → Π-is-hlevel 1 λ _ → cprop _ _ _)
-    λ x y → Coeq-elim-prop (λ y → cprop _ _ _) (f x y)
-
-Coeq-elim₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'}
-           → {C : Coeq f g → Coeq f' g' → Type ℓ}
-           → (∀ x y → is-set (C x y))
-           → (ci : ∀ x y → C (inc x) (inc y))
-           → (∀ a x → PathP (λ i → C (glue x i) (inc a)) (ci (f x) a) (ci (g x) a))
-           → (∀ a x → PathP (λ i → C (inc a) (glue x i)) (ci a (f' x)) (ci a (g' x)))
-           → ∀ x y → C x y
-Coeq-elim₂ {f = f} {g = g} {C = C} cset ci r-r l-r =
-  Coeq-elim (λ x → Π-is-hlevel 2 λ _ → cset _ _)
-    (λ x → Coeq-elim (λ _ → cset _ _) (ci x) (l-r x))
-    λ x → funext-dep λ {x₀} {x₁} →
-      Coeq-elim-prop₂
-        {C = λ x₀ x₁ → (p : x₀ ≡ x₁)
-           → PathP (λ i → C (glue x i) (p i))
-                   (Coeq-elim (cset _) _ _ x₀)
-                   (Coeq-elim (cset _) _ _ x₁) }
-
-        (λ _ _ → Π-is-hlevel 1 λ _ → Path-p-is-hlevel' 1 (cset _ _) _ _)
-
-        (λ x₀ _ p →
-          J (λ y p → PathP (λ i → C (glue x i) (p i))
-                      (Coeq-elim (cset _) (ci (f x)) (l-r (f x)) (inc x₀))
-                      (Coeq-elim (cset _) (ci (g x)) (l-r (g x)) y))
-            (r-r x₀ x) p)
-        x₀ x₁
+Coeq-elim-prop₃ cprop f (inc a) y z =
+  Coeq-elim-prop₂ (λ x y → Π-is-hlevel 1 λ z → cprop z x y)
+    (λ x y → Coeq-elim-prop (λ z → cprop z (inc x) (inc y)) λ z → f z x y) y z (inc a)
+Coeq-elim-prop₃ cprop f (glue x i) y z =
+  Coeq-elim-prop₂ (λ x y → Π-is-hlevel 1 λ z → cprop z x y)
+    (λ x y → Coeq-elim-prop (λ z → cprop z (inc x) (inc y)) λ z → f z x y) y z
+    (glue x i)
+Coeq-elim-prop₃ cprop f (squash x x′ p q i j) y z =
+  is-prop→squarep (λ i j → cprop (squash x x′ p q i j) y z)
+    (λ i → Coeq-elim-prop₃ cprop f x y z)
+    (λ i → Coeq-elim-prop₃ cprop f (p i) y z)
+    (λ i → Coeq-elim-prop₃ cprop f (q i) y z)
+    (λ i → Coeq-elim-prop₃ cprop f x′ y z)
+    i j
 
 Coeq-rec₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {C : Type ℓ}
           → is-set C

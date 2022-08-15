@@ -50,10 +50,16 @@ to this group in prose either as $0$ or as $\{\star\}$.
 
 ```agda
 Zero-group : ∀ {ℓ} → Group ℓ
-Zero-group = Lift _ ⊤ , make-group
-  (λ x y p q i j → lift tt)
-  (lift tt) (λ _ _ → lift tt) (λ _ → lift tt)
-  (λ _ _ _ → refl) (λ x → refl) (λ x → refl) (λ x → refl)
+Zero-group = Lift _ ⊤ , to-group-on zg where
+  zg : make-group (Lift _ ⊤)
+  zg .make-group.group-is-set x y p q i j = lift tt
+  zg .make-group.unit = lift tt
+  zg .make-group.mul = λ x y → lift tt
+  zg .make-group.inv x = lift tt
+  zg .make-group.assoc x y z = refl
+  zg .make-group.invl x = refl
+  zg .make-group.invr x = refl
+  zg .make-group.idl x = refl
 
 Zero-group-is-initial : is-initial Zero-group
 Zero-group-is-initial (_ , G) .centre = (λ x → G.unit) , gh where
@@ -93,23 +99,19 @@ addition".
 
 ```agda
 Direct-product : Group ℓ → Group ℓ → Group ℓ
-Direct-product (G , Gg) (H , Hg) = (G × H) , G×Hg where
+Direct-product (G , Gg) (H , Hg) = (G × H) , to-group-on G×Hg where
   module G = Group-on Gg
   module H = Group-on Hg
 
-  abstract
-    gh-set : is-set (G × H)
-    gh-set = ×-is-hlevel 2 G.has-is-set H.has-is-set
-
-  G×Hg : Group-on (G × H)
-  G×Hg = make-group gh-set
-    (G.unit , H.unit)
-    (λ { (a , b) (x , y) → a G.⋆ x , b H.⋆ y })
-    (λ { (a , b) → a G.⁻¹ , b H.⁻¹ })
-    (λ { x y z → ap₂ _,_ (sym G.associative) (sym H.associative) })
-    (λ x → ap₂ _,_ G.inversel H.inversel)
-    (λ x → ap₂ _,_ G.inverser H.inverser)
-    (λ x → ap₂ _,_ G.idl H.idl)
+  G×Hg : make-group (G × H)
+  G×Hg .make-group.group-is-set = hlevel 2
+  G×Hg .make-group.unit = G.unit , H.unit
+  G×Hg .make-group.mul (a , x) (b , y) = a G.⋆ b , x H.⋆ y
+  G×Hg .make-group.inv (a , x) = a G.⁻¹ , x H.⁻¹
+  G×Hg .make-group.assoc x y z = ap₂ _,_ (sym G.associative) (sym H.associative)
+  G×Hg .make-group.invl x = ap₂ _,_ G.inversel H.inversel
+  G×Hg .make-group.invr x = ap₂ _,_ G.inverser H.inverser
+  G×Hg .make-group.idl x = ap₂ _,_ G.idl H.idl
 ```
 
 The projection maps and universal factoring are all given exactly as for
@@ -192,7 +194,7 @@ follows from $f$ and $g$ being group homomorphisms:
 
 ```agda
   Equaliser-group : Group ℓ
-  Equaliser-group = _ , equ-group where
+  Equaliser-group = _ , to-group-on equ-group where
     equ-⋆ : ∣ seq.apex ∣ → ∣ seq.apex ∣ → ∣ seq.apex ∣
     equ-⋆ (a , p) (b , q) = (a G.⋆ b) , r where abstract
       r : f .fst (G .snd ._⋆_ a b) ≡ g .fst (G .snd ._⋆_ a b)
@@ -211,14 +213,15 @@ follows from $f$ and $g$ being group homomorphisms:
 Similar yoga must be done for the inverse maps and the group unit.
 
 ```agda
-    equ-group : Group-on ∣ seq.apex ∣
-    equ-group = make-group
-      (seq.apex .is-tr)
-      (G.unit , invs) equ-⋆ equ-inv
-      (λ x y z → Σ-prop-path (λ _ → H.has-is-set _ _) (sym G.associative))
-      (λ x → Σ-prop-path (λ _ → H.has-is-set _ _) G.inversel)
-      (λ x → Σ-prop-path (λ _ → H.has-is-set _ _) G.inverser)
-      λ x → Σ-prop-path (λ _ → H.has-is-set _ _) G.idl
+    equ-group : make-group ∣ seq.apex ∣
+    equ-group .make-group.group-is-set = seq.apex .is-tr
+    equ-group .make-group.unit = G.unit , invs
+    equ-group .make-group.mul = equ-⋆
+    equ-group .make-group.inv = equ-inv
+    equ-group .make-group.assoc x y z = Σ-prop-path (λ _ → H.has-is-set _ _) (sym G.associative)
+    equ-group .make-group.invl x = Σ-prop-path (λ _ → H.has-is-set _ _) G.inversel
+    equ-group .make-group.invr x = Σ-prop-path (λ _ → H.has-is-set _ _) G.inverser
+    equ-group .make-group.idl x = Σ-prop-path (λ _ → H.has-is-set _ _) G.idl
 
   open is-equaliser
   open Equaliser

@@ -75,12 +75,16 @@ module _ {o ℓ} (C : Precategory o ℓ) where
   private module C = Cat C
 
   Aut : C.Ob → Group _
-  Aut X = (X C.≅ X) ,
-    make-group C.≅-is-set C.id-iso (λ g f → f C.∘Iso g) C._Iso⁻¹
-      (λ _ _ _ → C.≅-pathp refl refl (sym (C.assoc _ _ _)))
-      (λ x → C.≅-pathp refl refl (x .C._≅_.invr))
-      (λ x → C.≅-pathp refl refl (x .C._≅_.invl))
-      (λ x → C.≅-pathp refl refl (C.idl _))
+  Aut X = (X C.≅ X) , to-group-on mg where
+    mg : make-group (X C.≅ X)
+    mg .make-group.group-is-set = C.≅-is-set
+    mg .make-group.unit = C.id-iso
+    mg .make-group.mul g f = f C.∘Iso g
+    mg .make-group.inv = C._Iso⁻¹
+    mg .make-group.assoc x y z = C.≅-pathp refl refl (sym (C.assoc _ _ _))
+    mg .make-group.invl x = C.≅-pathp refl refl (x .C.invr)
+    mg .make-group.invr x = C.≅-pathp refl refl (x .C.invl)
+    mg .make-group.idl x = C.≅-pathp refl refl (C.idl _)
 ```
 
 Suppose we have a category $\ca{C}$, an object $X : \ca{C}$, and a group

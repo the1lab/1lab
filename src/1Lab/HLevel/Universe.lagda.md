@@ -109,7 +109,7 @@ record n-Type ℓ n : Type (lsuc ℓ) where
     H-Level-n-type : ∀ {k} → H-Level ∣_∣ (n + k)
     H-Level-n-type = basic-instance n is-tr
 
-open n-Type using (∣_∣ ; is-tr) public
+open n-Type using (∣_∣ ; is-tr ; H-Level-n-type) public
 ```
 
 Like mentioned in the introduction, the main theorem of this section is

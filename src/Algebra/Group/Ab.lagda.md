@@ -80,16 +80,16 @@ module _ {ℓ ℓ′} (X : Type ℓ) (G : Group ℓ′) where private
   open Group-on (G .snd)
 
   Map-group : Group (ℓ ⊔ ℓ′)
-  Map-group = _ , grp where
-    grp : Group-on (X → G .fst)
-    grp = make-group (hlevel 2)
-      (λ _ → unit)
-      (λ f g x → f x ⋆ g x)
-      (λ f x → inverse (f x))
-      (λ f g h i x → associative {x = f x} {y = g x} {z = h x} (~ i))
-      (λ f i x → inversel {x = f x} i)
-      (λ f i x → inverser {x = f x} i)
-      (λ f i x → idl {x = f x} i)
+  Map-group = _ , to-group-on grp where
+    grp : make-group (X → G .fst)
+    grp .make-group.group-is-set = hlevel 2
+    grp .make-group.unit = λ _ → unit
+    grp .make-group.mul f g x = f x ⋆ g x
+    grp .make-group.inv f x = inverse (f x)
+    grp .make-group.assoc f g h i x = associative {x = f x} {y = g x} {z = h x} (~ i)
+    grp .make-group.invl f i x = inversel {x = f x} i
+    grp .make-group.invr f i x = inverser {x = f x} i
+    grp .make-group.idl f i x = idl {x = f x} i
 ```
 
 This definition works fine for groups and maps _of sets_ into a group,
@@ -111,7 +111,7 @@ module _ {ℓ} (A B : AbGroup ℓ) where
 
 ```agda
   Hom-group : AbGroup ℓ
-  Hom-group = restrict (T , grp) abel where
+  Hom-group = restrict (T , to-group-on grp) abel where
     T = Ab.Hom A B
 ```
 
@@ -152,15 +152,17 @@ homomorphism, as is done in the calculation below.
       (f y B.⋆ f x) ⁻¹ ≡⟨ B.inv-comm ⟩
       (f x ⁻¹) B.— f y ∎
 
-    grp : Group-on T
-    grp = make-group (Ab.Hom-set A B)
-      zero-map add-map inv-map
-      (λ f g h → Forget-is-faithful (funext λ x → sym B.associative))
-      (λ f → Forget-is-faithful (funext λ x → B.inversel))
-      (λ f → Forget-is-faithful (funext λ x → B.inverser))
-      (λ f → Forget-is-faithful (funext λ x → B.idl))
+    grp : make-group T
+    grp .make-group.group-is-set = Ab.Hom-set A B
+    grp .make-group.unit = zero-map
+    grp .make-group.mul = add-map
+    grp .make-group.inv = inv-map
+    grp .make-group.assoc x y z = Forget-is-faithful (funext λ x → sym B.associative)
+    grp .make-group.invl x = Forget-is-faithful (funext λ x → B.inversel)
+    grp .make-group.invr x = Forget-is-faithful (funext λ x → B.inverser)
+    grp .make-group.idl x = Forget-is-faithful (funext λ x → B.idl)
 
-    abel : is-abelian-group (T , grp)
+    abel : is-abelian-group (T , to-group-on grp)
     abel f g = Forget-is-faithful (funext λ _ → B.commutative)
 ```
 
@@ -254,14 +256,17 @@ These constructors all conspire to make an abelian group $A \otimes B$.
 
 ```agda
   _⊗_ : AbGroup ℓ
-  _⊗_ =
-    restrict ( Tensor
-             , make-group t-squash :0 _:+_ :inv
-                (λ _ _ _ → t-assoc)
-                (λ _ → t-invl)
-                (λ _ → t-invr)
-                (λ _ → t-idl))
-    λ x y → t-comm
+  _⊗_ = restrict ( Tensor , to-group-on tensor) λ x y → t-comm
+    where
+      tensor : make-group Tensor
+      tensor .make-group.group-is-set = t-squash
+      tensor .make-group.unit = :0
+      tensor .make-group.mul x y = x :+ y
+      tensor .make-group.inv = :inv
+      tensor .make-group.assoc x y z = t-assoc
+      tensor .make-group.invl x = t-invl
+      tensor .make-group.invr x = t-invr
+      tensor .make-group.idl x = t-idl
 ```
 
 <!--

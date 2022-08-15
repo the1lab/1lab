@@ -57,18 +57,19 @@ group homormophism.
 ```agda
 rep-subgroup→group-on
   : (H : ℙ (G .fst)) → represents-subgroup G H → Group-on (Σ[ x ∈ G .fst ] x ∈ H)
-rep-subgroup→group-on {G = G} H sg =
-  make-group
-    (Σ-is-hlevel 2 has-is-set λ x → is-prop→is-set (H x .is-tr))
-    (unit , has-unit)
-    (λ { (x , xin) (y , yin) → x ⋆ y , has-⋆ xin yin} )
-    (λ { (x , xin) → (x ⁻¹ , has-inv xin) })
-    (λ x y z → Σ-prop-path (λ x → H x .is-tr) (sym associative))
-    (λ x → Σ-prop-path (λ x → H x .is-tr) inversel)
-    (λ x → Σ-prop-path (λ x → H x .is-tr) inverser)
-    (λ x → Σ-prop-path (λ x → H x .is-tr) idl)
-  where open Group-on (G .snd)
-        open represents-subgroup sg
+rep-subgroup→group-on {G = G} H sg = to-group-on sg′ where
+  open Group-on (G .snd)
+  open represents-subgroup sg
+  sg′ : make-group (Σ[ x ∈ G .fst ] x ∈ H)
+  sg′ .make-group.group-is-set =
+    Σ-is-hlevel 2 has-is-set λ x → is-prop→is-set (H x .is-tr)
+  sg′ .make-group.unit = unit , has-unit
+  sg′ .make-group.mul (x , x∈) (y , y∈) = x ⋆ y , has-⋆ x∈ y∈
+  sg′ .make-group.inv (x , x∈) = x ⁻¹ , has-inv x∈
+  sg′ .make-group.assoc x y z = Σ-prop-path (λ x → H x .is-tr) (sym associative)
+  sg′ .make-group.invl x = Σ-prop-path (λ x → H x .is-tr) inversel
+  sg′ .make-group.invr x = Σ-prop-path (λ x → H x .is-tr) inverser
+  sg′ .make-group.idl x = Σ-prop-path (λ x → H x .is-tr) idl
 
 predicate→subgroup : (H : ℙ (G .fst)) → represents-subgroup G H → Subgroup G
 predicate→subgroup {G = G} H p = restrict (cut map) ism where
@@ -152,7 +153,7 @@ reader.</summary>
     T = image (f .fst)
 
   A/ker[_] : Group ℓ
-  A/ker[_] = T , grp where
+  A/ker[_] = T , to-group-on grp where
     unit : T
     unit = B.unit , inc (A.unit , f.pres-id)
 
@@ -167,10 +168,15 @@ reader.</summary>
            → inc (x* A.⋆ y* , f.pres-⋆ _ _ ∙ ap₂ B._⋆_ xp yp) })
         xp yp
 
-    grp : Group-on T
-    grp = make-group Tset unit mul inv
-      (λ x y z → Tpath (sym B.associative))
-      (λ x → Tpath B.inversel) (λ x → Tpath B.inverser) λ x → Tpath B.idl
+    grp : make-group T
+    grp .make-group.group-is-set = Tset
+    grp .make-group.unit = unit
+    grp .make-group.mul = mul
+    grp .make-group.inv = inv
+    grp .make-group.assoc = λ x y z → Tpath (sym B.associative)
+    grp .make-group.invl = λ x → Tpath B.inversel
+    grp .make-group.invr = λ x → Tpath B.inverser
+    grp .make-group.idl = λ x → Tpath B.idl
 ```
 
 </details>
@@ -489,16 +495,23 @@ in a group is a proposition, these follow from the group axioms on $G$
 rather directly:
 
 ```agda
-    Group-on-G/H : Group-on G/H
-    Group-on-G/H = make-group squash (inc unit) op inverse
-      (Coeq-elim-prop₃ (λ _ _ _ → squash _ _)
-        λ x y z i → inc (associative {x = x} {y} {z} (~ i)))
-      (Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inversel {x = x} i))
-      (Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inverser {x = x} i))
-      (Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (idl {x = x} i))
+    Group-on-G/H : make-group G/H
+    Group-on-G/H .make-group.group-is-set = squash
+    Group-on-G/H .make-group.unit = inc unit
+    Group-on-G/H .make-group.mul = op
+    Group-on-G/H .make-group.inv = inverse
+    Group-on-G/H .make-group.assoc =
+      Coeq-elim-prop₃ (λ _ _ _ → squash _ _) λ x y z i →
+        inc (associative {x = x} {y} {z} (~ i))
+    Group-on-G/H .make-group.invl =
+      Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inversel {x = x} i)
+    Group-on-G/H .make-group.invr =
+      Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inverser {x = x} i)
+    Group-on-G/H .make-group.idl =
+      Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (idl {x = x} i)
 
   _/ᴳ_ : Group _
-  _/ᴳ_ = G/H , Group-on-G/H
+  _/ᴳ_ = G/H , to-group-on Group-on-G/H
 
   incl : Groups.Hom Grp _/ᴳ_
   incl .fst = inc

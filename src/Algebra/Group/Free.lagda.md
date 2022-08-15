@@ -67,7 +67,16 @@ data needed by `make-group`{.Agda}"?
 ```agda
 Free-Group : Type ℓ → Group ℓ
 Free-Group A .fst = Free-group A
-Free-Group A .snd = make-group squash nil _◆_ inv f-assoc f-invl f-invr f-idl
+Free-Group A .snd = to-group-on fg where
+  fg : make-group (Free-group A)
+  fg .make-group.group-is-set = squash
+  fg .make-group.unit = nil
+  fg .make-group.mul = _◆_
+  fg .make-group.inv = inv
+  fg .make-group.assoc = f-assoc
+  fg .make-group.invl = f-invl
+  fg .make-group.invr = f-invr
+  fg .make-group.idl = f-idl
 ```
 
 This lemma will be very useful later. It says that whenever you want to

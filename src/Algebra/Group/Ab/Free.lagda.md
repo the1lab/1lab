@@ -165,14 +165,21 @@ inherited from $G$!
   ab*-associative = Coeq-elim-prop₃ (λ _ _ _ → squash _ _)
     λ _ _ _ → ap inc^ab (sym associative)
 
-  Group-on-G^ab : Group-on G^ab
-  Group-on-G^ab = make-group squash abunit _ab*_ abinv ab*-associative
-    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.inversel))
-    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.inverser))
-    (Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.idl))
+  Group-on-G^ab : make-group G^ab
+  Group-on-G^ab .make-group.group-is-set = squash
+  Group-on-G^ab .make-group.unit = abunit
+  Group-on-G^ab .make-group.mul = _ab*_
+  Group-on-G^ab .make-group.inv = abinv
+  Group-on-G^ab .make-group.assoc = ab*-associative
+  Group-on-G^ab .make-group.invl =
+    Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.inversel)
+  Group-on-G^ab .make-group.invr =
+    Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.inverser)
+  Group-on-G^ab .make-group.idl =
+    Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.idl)
 
   Abelianise : Group ℓ
-  Abelianise = _ , Group-on-G^ab
+  Abelianise = _ , to-group-on Group-on-G^ab
 
   Abelianise-is-abelian-group : is-abelian-group Abelianise
   Abelianise-is-abelian-group = ab*-comm

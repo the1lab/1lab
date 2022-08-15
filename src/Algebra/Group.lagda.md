@@ -1,9 +1,9 @@
 ```agda
 open import 1Lab.Prelude
 
-open import Algebra.Magma.Unital
+open import Algebra.Magma.Unital hiding (idl ; idr)
 open import Algebra.Semigroup
-open import Algebra.Monoid
+open import Algebra.Monoid hiding (idl ; idr)
 open import Algebra.Magma
 
 open import Cat.Instances.Delooping
@@ -60,7 +60,7 @@ give the unit, both on the left and on the right:
   abstract
     inv-unit : inverse unit ≡ unit
     inv-unit = monoid-inverse-unique
-      has-is-monoid unit _ _ inversel (idl has-is-monoid)
+      has-is-monoid unit _ _ inversel (has-is-monoid .is-monoid.idl)
 
     inv-inv : ∀ {x} → inverse (inverse x) ≡ x
     inv-inv = monoid-inverse-unique
@@ -75,7 +75,7 @@ give the unit, both on the left and on the right:
          ·· ap₂ _*_
               (  sym (associative has-is-monoid)
               ·· ap₂ _*_ refl inverser
-              ·· idr has-is-monoid)
+              ·· has-is-monoid .is-monoid.idr)
               refl
          ·· inverser
 
@@ -90,8 +90,6 @@ give the unit, both on the left and on the right:
   open Cat.Reasoning (B (underlying-monoid .snd))
     hiding (id ; assoc ; idl ; idr ; invr ; invl ; to ; from ; inverses ; _∘_)
     public
-
-open is-group
 ```
 -->
 
@@ -105,6 +103,7 @@ straightforward, but tedious. Suppose that $x, y$ are both witnesses of
 is-group-is-prop : ∀ {ℓ} {A : Type ℓ} {_*_ : A → A → A}
                  → is-prop (is-group _*_)
 is-group-is-prop {A = A} {_*_ = _*_} x y = path where
+  open is-group
 ```
 
 We begin by constructing a line showing that the `underlying monoid
@@ -199,11 +198,9 @@ record Group-on {ℓ} (A : Type ℓ) : Type ℓ where
   infixl 30 _⁻¹
 
   _⁻¹ : A → A
-  x ⁻¹ = inverse has-is-group x
+  x ⁻¹ = has-is-group .is-group.inverse x
 
   open is-group has-is-group public
-
-open Group-on
 
 Group : (ℓ : Level) → Type (lsuc ℓ)
 Group ℓ = Σ (Type ℓ) Group-on
@@ -275,8 +272,6 @@ Group≃ A B (f , _) = Group-hom A B f
 
 Group[_⇒_] : ∀ {ℓ} (A B : Group ℓ) → Type ℓ
 Group[ A ⇒ B ] = Σ (A .fst → B .fst) (Group-hom A B)
-
-open Group-hom
 ```
 
 We automatically derive the proof that paths between groups are
@@ -288,8 +283,11 @@ Group-univalent {ℓ = ℓ} =
   Derive-univalent-record (record-desc
     (Group-on {ℓ = ℓ}) Group≃
     (record:
-      field[ _⋆_         by pres-⋆ ]
+      field[ _⋆_          by pres-⋆ ]
       axiom[ has-is-group by (λ _ → is-group-is-prop) ]))
+  where
+    open Group-on
+    open Group-hom
 ```
 
 ## Making groups
@@ -299,32 +297,38 @@ introduce a helper function for arranging the data of a group into a
 record.
 
 ```agda
-make-group
-  : ∀ {ℓ} {G : Type ℓ}
-  → is-set G
-  → (unit : G) (_⋆_ : G → G → G) (inv : G → G)
-  → (∀ x y z → (x ⋆ y) ⋆ z ≡ x ⋆ (y ⋆ z))
-  → (∀ x → inv x ⋆ x ≡ unit) → (∀ x → x ⋆ inv x ≡ unit)
-  → (∀ x → unit ⋆ x ≡ x)
-  → Group-on G
-make-group gset id star inv assoc invl invr g-idl = r where
-  open is-group
+record make-group {ℓ} (G : Type ℓ) : Type ℓ where
+  no-eta-equality
+  field
+    group-is-set : is-set G
+    unit : G
+    mul  : G → G → G
+    inv  : G → G
 
-  r : Group-on _
-  r ._⋆_ = star
-  r .has-is-group .unit = id
-  r .has-is-group .has-is-monoid .has-is-semigroup .has-is-magma .has-is-set = gset
-  r .has-is-group .has-is-monoid .has-is-semigroup .associative = sym (assoc _ _ _)
-  r .has-is-group .has-is-monoid .idl = g-idl _
-  r .has-is-group .has-is-monoid .idr {x = x} =
-    star x ⌜ id ⌝             ≡˘⟨ ap¡ (invl x) ⟩
-    star x (star (inv x) x)   ≡⟨ sym (assoc _ _ _) ⟩
-    star ⌜ star x (inv x) ⌝ x ≡⟨ ap! (invr x) ⟩
-    star id x                 ≡⟨ g-idl x ⟩
-    x                         ∎
-  r .has-is-group .inverse = inv
-  r .has-is-group .inversel = invl _
-  r .has-is-group .inverser = invr _
+    assoc : ∀ x y z → mul (mul x y) z ≡ mul x (mul y z)
+    invl  : ∀ x → mul (inv x) x ≡ unit
+    invr  : ∀ x → mul x (inv x) ≡ unit
+    idl   : ∀ x → mul unit x ≡ x
+
+  to-group-on : Group-on G
+  to-group-on .Group-on._⋆_ = mul
+  to-group-on .Group-on.has-is-group .is-group.unit = unit
+  to-group-on .Group-on.has-is-group .is-group.inverse = inv
+  to-group-on .Group-on.has-is-group .is-group.inversel = invl _
+  to-group-on .Group-on.has-is-group .is-group.inverser = invr _
+  to-group-on .Group-on.has-is-group .is-group.has-is-monoid .is-monoid.idl {x} = idl x
+  to-group-on .Group-on.has-is-group .is-group.has-is-monoid .is-monoid.idr {x} =
+    mul x ⌜ unit ⌝           ≡˘⟨ ap¡ (invl x) ⟩
+    mul x (mul (inv x) x)    ≡⟨ sym (assoc _ _ _) ⟩
+    mul ⌜ mul x (inv x) ⌝ x  ≡⟨ ap! (invr x) ⟩
+    mul unit x               ≡⟨ idl x ⟩
+    x                        ∎
+  to-group-on .Group-on.has-is-group .is-group.has-is-monoid .has-is-semigroup =
+    record { has-is-magma = record { has-is-set = group-is-set }
+           ; associative = λ {x y z} → sym (assoc x y z)
+           }
+
+open make-group using (to-group-on) public
 ```
 
 # Symmetric Groups
@@ -335,17 +339,18 @@ set, and it forms the carrier for a group: The _symmetric group_ on $X$.
 ```agda
 Sym : ∀ {ℓ} → Set ℓ → Group ℓ
 Sym X .fst = ∣ X ∣ ≃ ∣ X ∣
-Sym X .snd = group-str where
+Sym X .snd = to-group-on group-str where
+  open make-group
   open n-Type X using (H-Level-n-type)
-  group-str : Group-on (∣ X ∣ ≃ ∣ X ∣)
-  group-str ._⋆_ g f = f ∙e g
+  group-str : make-group (∣ X ∣ ≃ ∣ X ∣)
+  group-str .mul g f = f ∙e g
 ```
 
 The group operation is `composition of equivalences`{.Agda ident=_∙e_};
 The identity element is `the identity equivalence`{.Agda ident=id-equiv}.
 
 ```agda
-  group-str .has-is-group .unit = id , id-equiv
+  group-str .unit = id , id-equiv
 ```
 
 This type is a set because $X \to X$ is a set (because $X$ is a set by
@@ -353,17 +358,15 @@ assumption), and `being an equivalence is a proposition`{.Agdaa
 ident=is-equiv-is-prop}.
 
 ```agda
-  group-str .has-is-group .has-is-monoid .has-is-semigroup .has-is-magma .has-is-set =
+  group-str .group-is-set =
     hlevel 2
 ```
 
 The associativity and identity laws hold definitionally.
 
 ```agda
-  group-str .has-is-group .has-is-monoid .has-is-semigroup .associative =
-    Σ-prop-path is-equiv-is-prop refl
-  group-str .has-is-group .has-is-monoid .idl = Σ-prop-path is-equiv-is-prop refl
-  group-str .has-is-group .has-is-monoid .idr = Σ-prop-path is-equiv-is-prop refl
+  group-str .assoc _ _ _ = Σ-prop-path is-equiv-is-prop refl
+  group-str .idl _ = Σ-prop-path is-equiv-is-prop refl
 ```
 
 The inverse is given by `the inverse equivalence`{.Agda ident=_e⁻¹}, and
@@ -371,10 +374,10 @@ the inverse equations hold by the fact that the inverse of an
 equivalence is both a section and a retraction.
 
 ```agda
-  group-str .has-is-group .inverse = _e⁻¹
-  group-str .has-is-group .inversel {x = f , eqv} =
+  group-str .inv = _e⁻¹
+  group-str .invl (f , eqv) =
     Σ-prop-path is-equiv-is-prop (funext (equiv→unit eqv))
-  group-str .has-is-group .inverser {x = f , eqv} =
+  group-str .invr (f , eqv) =
     Σ-prop-path is-equiv-is-prop (funext (equiv→counit eqv))
 ```
 
