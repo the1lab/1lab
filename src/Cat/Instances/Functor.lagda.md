@@ -391,17 +391,34 @@ module
     → F DD.≅ Id → (F F∘ G) CD.≅ G
   F∘-iso-id-l {F} {G} isom = subst ((F F∘ G) CD.≅_) F∘-idl (F∘-iso-l isom)
 
+  record make-natural-iso (F G : Functor C D) : Type (o ⊔ ℓ ⊔ ℓ′) where
+    no-eta-equality
+    field
+      eta : ∀ x → D.Hom (F .F₀ x) (G .F₀ x)
+      inv : ∀ x → D.Hom (G .F₀ x) (F .F₀ x)
+      eta∘inv : ∀ x → eta x D.∘ inv x ≡ D.id
+      inv∘eta : ∀ x → inv x D.∘ eta x ≡ D.id
+      natural : ∀ x y f → G .F₁ f D.∘ eta x ≡ eta y D.∘ F .F₁ f
 
-  make-natural-iso
-    : {F G : Functor C D}
-    → (eta : ∀ x → D.Hom (F .F₀ x) (G .F₀ x))
-    → (∀ x → D.is-invertible (eta x))
-    → (∀ x y f → G .F₁ f D.∘ eta x ≡ eta y D.∘ F .F₁ f)
-    → F CD.≅ G
-  make-natural-iso eta inv nat =
-    CD.invertible→iso
-      (NT eta (λ x y f → sym (nat x y f)))
-      (componentwise-invertible→invertible (NT eta _) inv)
+  to-natural-iso : {F G : Functor C D} → make-natural-iso F G → F CD.≅ G
+  to-natural-iso {F = F} {G = G} x = isom where
+    open CD._≅_
+    open CD.Inverses
+    open make-natural-iso x
+    module F = Functor F
+    module G = Functor G
+
+    isom : F CD.≅ G
+    isom .to .η = eta
+    isom .to .is-natural x y f = sym (natural _ _ _)
+    isom .from .η = inv
+    isom .from .is-natural x y f =
+      inv y D.∘ ⌜ G.₁ f ⌝                     ≡⟨ ap! (sym (D.idr _) ∙ ap (G.₁ f D.∘_) (sym (eta∘inv x))) ⟩
+      inv y D.∘ ⌜ G.₁ f D.∘ eta x D.∘ inv x ⌝ ≡⟨ ap! (D.extendl (natural _ _ _)) ⟩
+      inv y D.∘ eta y D.∘ F.₁ f D.∘ inv x     ≡⟨ D.cancell (inv∘eta y) ⟩
+      F.₁ f D.∘ inv x ∎
+    isom .inverses .invl = Nat-path eta∘inv
+    isom .inverses .invr = Nat-path inv∘eta
 
 open _=>_
 

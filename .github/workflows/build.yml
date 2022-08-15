@@ -22,7 +22,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: _build
-          key: shake-${{ hashFiles('.shake-version' )}}
+          key: shake-${{ hashFiles('.shake-version' )}}-${{ github.run_id }}
+          restore-keys: shake-${{ hashFiles('.shake-version' )}}-
 
       - name: Build 🛠️
         run: |

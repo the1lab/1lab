@@ -62,7 +62,6 @@ open Span
 
 record Span-hom {a b : Ob} (x y : Span a b) : Type ℓ where
   no-eta-equality
-  constructor span-hom
   field
     map   : Hom (x .apex) (y .apex)
     left  : x .left  ≡ y .left ∘ map
@@ -98,11 +97,12 @@ Spans x y .Precategory.Ob = Span x y
 Spans x y .Precategory.Hom = Span-hom
 Spans x y .Precategory.Hom-set _ _ =
   is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2)
-Spans x y .Precategory.id = span-hom id (intror refl) (intror refl)
-Spans x y .Precategory._∘_ f g =
-  span-hom (f .map ∘ g .map)
-    (g .left ∙ pushl (f .left))
-    (g .right ∙ pushl (f .right))
+Spans x y .Precategory.id .map = id
+Spans x y .Precategory.id .left = intror refl
+Spans x y .Precategory.id .right = intror refl
+Spans x y .Precategory._∘_ f g .map = f .map ∘ g .map
+Spans x y .Precategory._∘_ f g .left = g .left ∙ pushl (f .left)
+Spans x y .Precategory._∘_ f g .right = g .right ∙ pushl (f .right)
 Spans x y .Precategory.idr f = Span-hom-path (idr _)
 Spans x y .Precategory.idl f = Span-hom-path (idl _)
 Spans x y .Precategory.assoc f g h = Span-hom-path (assoc _ _ _)
@@ -143,11 +143,11 @@ module _ (pb : ∀ {a b c} (f : Hom a b) (g : Hom c b) → Pullback C f g) where
       module y = Pullback (pb (y1 .left) (y2 .right))
 
       x→y : Hom x.apex y.apex
-      x→y = y.limiting {p₁' = f .map ∘ x.p₁} {p₂' = g .map ∘ x.p₂} p
+      x→y = y.limiting {p₁' = f .map ∘ x.p₁} {p₂' = g .map ∘ x.p₂} comm
         where abstract
           open Pullback
-          p : y1 .left ∘ f .map ∘ x.p₁ ≡ y2 .right ∘ g .map ∘ x.p₂
-          p = pulll (sym (f .left)) ∙ x.square ∙ pushl (g .right)
+          comm : y1 .left ∘ f .map ∘ x.p₁ ≡ y2 .right ∘ g .map ∘ x.p₂
+          comm = pulll (sym (f .left)) ∙ x.square ∙ pushl (g .right)
 
       res : Span-hom _ _
       res .map = x→y
@@ -297,73 +297,72 @@ variables and) satisfy the triangle and pentagon identities.
     sα→ (f , g , h) .left = sym $ pullr (pb _ _ .p₂∘limiting) ∙ assoc _ _ _
     sα→ (f , g , h) .right = sym $ pullr (pb _ _ .p₁∘limiting) ∙ pullr (pb _ _ .p₁∘limiting)
 
+  open make-natural-iso
+  {-# TERMINATING #-}
   Spanᵇ : Prebicategory _ _ _
   Spanᵇ .Ob = C.Ob
   Spanᵇ .Hom = Spans
   Spanᵇ .id = span _ C.id C.id
   Spanᵇ .compose = Span-∘
-  Spanᵇ .unitor-l = make-natural-iso
-    sλ←
-    (λ x → record
-      { inv      = span-hom (pb _ _ .p₂) refl (pb _ _ .square)
-      ; inverses = record
-        { invl = Span-hom-path (Pullback.unique₂ (pb _ _) {p = idl _ ∙ ap₂ C._∘_ refl (introl refl)}
-            (pulll (pb _ _ .p₁∘limiting))
-            (pulll (pb _ _ .p₂∘limiting))
-            (id-comm ∙ pb _ _ .square)
-            id-comm)
-        ; invr = Span-hom-path (pb _ _ .p₂∘limiting)
-        }
-      })
-    λ x y f → Span-hom-path $
+  Spanᵇ .unitor-l = to-natural-iso ni where
+    ni : make-natural-iso (Id {C = Spans _ _}) _
+    ni .eta = sλ←
+    ni .inv x .map = pb _ _ .p₂
+    ni .inv x .left = refl
+    ni .inv x .right = pb _ _ .square
+    ni .eta∘inv x = Span-hom-path (Pullback.unique₂ (pb _ _) {p = idl _ ∙ ap₂ C._∘_ refl (introl refl)}
+      (pulll (pb _ _ .p₁∘limiting))
+      (pulll (pb _ _ .p₂∘limiting))
+      (id-comm ∙ pb _ _ .square)
+      id-comm)
+    ni .inv∘eta x = Span-hom-path (pb _ _ .p₂∘limiting)
+    ni .natural x y f = Span-hom-path $
       Pullback.unique₂ (pb _ _) {p = idl _ ∙ f .right}
         (pulll (pb _ _ .p₁∘limiting) ∙ pullr (pb _ _ .p₁∘limiting) ∙ idl _)
         (pulll (pb _ _ .p₂∘limiting) ∙ pullr (pb _ _ .p₂∘limiting) ∙ idr _)
         (pulll (pb _ _ .p₁∘limiting) ∙ sym (f .right))
         (pulll (pb _ _ .p₂∘limiting) ∙ idl _)
-  Spanᵇ .unitor-r = make-natural-iso
-    sρ←
-    (λ x → record
-      { inv      = span-hom (pb _ _ .p₁) (sym (pb _ _ .square)) refl
-      ; inverses = record
-        { invl = Span-hom-path (Pullback.unique₂ (pb _ _) {p = introl refl}
-            (pulll (pb _ _ .p₁∘limiting) ∙ idl _)
-            (pulll (pb _ _ .p₂∘limiting))
-            (idr _)
-            (id-comm ∙ sym (pb _ _ .square)))
-        ; invr = Span-hom-path (pb _ _ .p₁∘limiting)
-        }
-      })
-    λ x y f → Span-hom-path $
+  Spanᵇ .unitor-r = to-natural-iso ni where
+    ni : make-natural-iso (Id {C = Spans _ _}) _
+    ni .eta = sρ←
+    ni .inv _ .map = pb _ _ .p₁
+    ni .inv _ .left = sym (pb _ _ .square)
+    ni .inv _ .right = refl
+    ni .eta∘inv x = Span-hom-path (Pullback.unique₂ (pb _ _) {p = introl refl}
+      (pulll (pb _ _ .p₁∘limiting) ∙ idl _)
+      (pulll (pb _ _ .p₂∘limiting))
+      (idr _)
+      (id-comm ∙ sym (pb _ _ .square)))
+    ni .inv∘eta x = Span-hom-path (pb _ _ .p₁∘limiting)
+    ni .natural x y f = Span-hom-path $
       Pullback.unique₂ (pb _ _) {p = sym (f .left) ∙ introl refl}
         (pulll (pb _ _ .p₁∘limiting) ∙ pullr (pb _ _ .p₁∘limiting) ∙ idr _)
         (pulll (pb _ _ .p₂∘limiting) ∙ pullr (pb _ _ .p₂∘limiting) ∙ idl _)
         (pulll (pb _ _ .p₁∘limiting) ∙ idl _)
         (pulll (pb _ _ .p₂∘limiting) ∙ sym (f .left))
-  Spanᵇ .associator = make-natural-iso
-    sα←
-    (λ x → record
-      { inv      = sα→ x
-      ; inverses = record
-        { invl = Span-hom-path $ Pullback.unique₂ (pb _ _) {p = pb _ _ .square}
-            (pulll (pb _ _ .p₁∘limiting) ∙ pullr (pb _ _ .p₁∘limiting) ∙ pb _ _ .p₁∘limiting)
-            (pulll (pb _ _ .p₂∘limiting) ∙ unique₂ (pb _ _) {p = extendl (pb _ _ .square)}
-                (pulll (pb _ _ .p₁∘limiting) ∙ pullr (pb _ _ .p₁∘limiting) ∙ pb _ _ .p₂∘limiting)
-                (pulll (pb _ _ .p₂∘limiting) ∙ pb _ _ .p₂∘limiting)
-                refl refl)
-            (idr _)
-            (idr _)
-        ; invr = Span-hom-path $ Pullback.unique₂ (pb _ _) {p = pb _ _ .square}
-            (pulll (pb _ _ .p₁∘limiting) ∙ unique₂ (pb _ _) {p = extendl (pb _ _ .square)}
-              (pulll (pb _ _ .p₁∘limiting) ∙ pb _ _ .p₁∘limiting)
-              (pulll (pb _ _ .p₂∘limiting) ∙ pullr (pb _ _ .p₂∘limiting) ∙ pb _ _ .p₁∘limiting)
-              refl refl)
-            (pulll (pb _ _ .p₂∘limiting) ∙ pullr (pb _ _ .p₂∘limiting) ∙ pb _ _ .p₂∘limiting)
-            (idr _)
-            (idr _)
-        }
-      })
-    λ x y f → Span-hom-path $ Pullback.unique₂ (pb _ _)
+  Spanᵇ .associator = to-natural-iso ni where
+    ni : make-natural-iso _ _
+    ni .eta = sα←
+    ni .inv = sα→
+    ni .eta∘inv x = Span-hom-path $
+      Pullback.unique₂ (pb _ _) {p = pb _ _ .square}
+      (pulll (pb _ _ .p₁∘limiting) ∙ pullr (pb _ _ .p₁∘limiting) ∙ pb _ _ .p₁∘limiting)
+      (pulll (pb _ _ .p₂∘limiting) ∙ unique₂ (pb _ _) {p = extendl (pb _ _ .square)}
+          (pulll (pb _ _ .p₁∘limiting) ∙ pullr (pb _ _ .p₁∘limiting) ∙ pb _ _ .p₂∘limiting)
+          (pulll (pb _ _ .p₂∘limiting) ∙ pb _ _ .p₂∘limiting)
+          refl refl)
+      (idr _)
+      (idr _)
+    ni .inv∘eta x = Span-hom-path $
+      Pullback.unique₂ (pb _ _) {p = pb _ _ .square}
+      (pulll (pb _ _ .p₁∘limiting) ∙ unique₂ (pb _ _) {p = extendl (pb _ _ .square)}
+        (pulll (pb _ _ .p₁∘limiting) ∙ pb _ _ .p₁∘limiting)
+        (pulll (pb _ _ .p₂∘limiting) ∙ pullr (pb _ _ .p₂∘limiting) ∙ pb _ _ .p₁∘limiting)
+        refl refl)
+      (pulll (pb _ _ .p₂∘limiting) ∙ pullr (pb _ _ .p₂∘limiting) ∙ pb _ _ .p₂∘limiting)
+      (idr _)
+      (idr _)
+    ni .natural x y f = Span-hom-path $ Pullback.unique₂ (pb _ _)
       {p₁' = f .fst .map C.∘ pb _ _ .p₁ C.∘ pb _ _ .p₁}
       {p₂' = pb _ _ .limiting
         {p₁' = f .snd .fst .map C.∘ pb _ _ .p₂ C.∘ pb _ _ .p₁}

@@ -576,11 +576,18 @@ predℤ-is-equiv = is-iso→is-equiv (iso sucℤ pred-sucℤ suc-predℤ)
 
 ```agda
 _+ℤ_ : Int → Int → Int
-_+ℤ_ =
-  Int-rec₂-set
-    (λ { (a , b) (c , d) → diff (a + c) (b + d)})
-    (λ a b x y → quot _ _)
-    (λ a b x y → quot _ _ ∙ ap₂ diff (sym (+-sucr _ _)) (sym (+-sucr _ _)))
+diff a b +ℤ diff c d = diff (a + c) (b + d)
+diff x y +ℤ quot m n i =
+  (quot (x + m) (y + n) ∙ sym (ap₂ diff (+-sucr x m) (+-sucr y n))) i
+quot m n i +ℤ diff x y = quot (m + x) (n + y) i
+quot m n i +ℤ quot m′ n′ j =
+  is-set→squarep (λ i j → hlevel 2)
+    (λ j → quot (m + m′) (n + n′) j)
+    (quot (m + m′) (n + n′) ∙ sym (ap₂ diff (+-sucr m m′) (+-sucr n n′)))
+    ( quot (suc (m + m′)) (suc (n + n′))
+    ∙ sym (ap₂ diff (ap suc (+-sucr m m′)) (ap suc (+-sucr n n′))))
+    (λ j → quot (m + suc m′) (n + suc n′) j)
+    i j
 ```
 
 Since addition of integers is (essentially!) addition of pairs of
@@ -600,16 +607,17 @@ recursion helpers for props (`Int-elim-prop`{.Agda}) and the fact that
 <summary>See the proofs here</summary>
 
 ```agda
-+ℤ-associative =
-  Int-elim₃-prop
-    (λ x y z → hlevel 1)
-    (λ a b c d e f → ap₂ diff (+-associative a c e) (+-associative b d f))
-+ℤ-zerol = Int-elim-prop (λ x → hlevel 1) (λ a b → refl)
-+ℤ-zeror =
-  Int-elim-prop (λ x → hlevel 1) (λ a b → ap₂ diff (+-zeror a) (+-zeror b))
-+ℤ-commutative =
-  Int-elim₂-prop (λ x y → hlevel 1)
-    (λ a b c d → ap₂ diff (+-commutative a c) (+-commutative b d))
+abstract
+  +ℤ-associative =
+    Int-elim₃-prop
+      (λ x y z → hlevel 1)
+      (λ a b c d e f → ap₂ diff (+-associative a c e) (+-associative b d f))
+  +ℤ-zerol = Int-elim-prop (λ x → hlevel 1) (λ a b → refl)
+  +ℤ-zeror =
+    Int-elim-prop (λ x → hlevel 1) (λ a b → ap₂ diff (+-zeror a) (+-zeror b))
+  +ℤ-commutative =
+    Int-elim₂-prop (λ x y → hlevel 1)
+      (λ a b c d → ap₂ diff (+-commutative a c) (+-commutative b d))
 ```
 
 </details>
@@ -632,19 +640,20 @@ from commutativity of addition on natural numbers, and the fact that
 `all zeroes are identified`{.Agda ident=zeroes}.
 
 ```agda
-+ℤ-inverser : (x : Int) → x +ℤ negate x ≡ 0
-+ℤ-inverser =
-  Int-elim-prop (λ _ → hlevel 1) λ where
-    a b → diff (a + b) ⌜ b + a ⌝ ≡⟨ ap! (+-commutative b a) ⟩
-          diff (a + b) (a + b)   ≡⟨ sym (zeroes (a + b)) ⟩
-          diff 0 0               ∎
+abstract
+  +ℤ-inverser : (x : Int) → x +ℤ negate x ≡ 0
+  +ℤ-inverser =
+    Int-elim-prop (λ _ → hlevel 1) λ where
+      a b → diff (a + b) ⌜ b + a ⌝ ≡⟨ ap! (+-commutative b a) ⟩
+            diff (a + b) (a + b)   ≡⟨ sym (zeroes (a + b)) ⟩
+            diff 0 0               ∎
 
-+ℤ-inversel : (x : Int) → negate x +ℤ x ≡ 0
-+ℤ-inversel =
-  Int-elim-prop (λ _ → hlevel 1) λ where
-    a b → diff ⌜ b + a ⌝ (a + b) ≡⟨ ap! (+-commutative b a) ⟩
-          diff (a + b) (a + b)   ≡⟨ sym (zeroes (a + b)) ⟩
-          diff 0 0               ∎
+  +ℤ-inversel : (x : Int) → negate x +ℤ x ≡ 0
+  +ℤ-inversel =
+    Int-elim-prop (λ _ → hlevel 1) λ where
+      a b → diff ⌜ b + a ⌝ (a + b) ≡⟨ ap! (+-commutative b a) ⟩
+            diff (a + b) (a + b)   ≡⟨ sym (zeroes (a + b)) ⟩
+            diff 0 0               ∎
 ```
 
 Since `negate`{.Agda} is precisely what's missing for `Nat`{.Agda} to be
@@ -676,13 +685,10 @@ below) --- but this can be done with [the semiring solver].
 [the semiring solver]: Data.Nat.Solver.html
 
 
+<!--
 ```agda
-_*ℤ_ : Int → Int → Int
-_*ℤ_ = Int-rec₂-set
-  (λ { (a , b) (c , d) → diff (a * c + b * d) (a * d + b * c) })
-  (λ a b x y → same-difference (l₁ a b x y))
-  (λ a b x y → same-difference (l₂ a b x y))
-  where abstract
+module _ where
+  private abstract
     l₁
       : ∀ a b x y
       → a * x + b * y + (suc a * y + suc b * x)
@@ -694,6 +700,26 @@ _*ℤ_ = Int-rec₂-set
       → a * x + b * y + (a * suc y + b * suc x)
       ≡ a * y + b * x + (a * suc x + b * suc y)
     l₂ a b x y = solve!
+
+    rhs₁ : ∀ x y m n → diff (x * m + y * n) (x * n + y * m)
+                    ≡ diff (x * suc m + y * suc n) (x * suc n + y * suc m)
+    rhs₁ x y m n = same-difference (l₂ x y m n)
+
+    rhs₂ : ∀ x y m n
+        → diff (m * x + n * y) (m * y + n * x)
+        ≡ diff (x + m * x + (y + n * y)) (y + m * y + (x + n * x))
+    rhs₂ x y m n = same-difference (l₁ m n x y)
+```
+-->
+
+```agda
+  _*ℤ_ : Int → Int → Int
+  diff a b *ℤ diff c d = diff (a * c + b * d) (a * d + b * c)
+  diff x y *ℤ quot m n i = rhs₁ x y m n i
+  quot m n i *ℤ diff x y = rhs₂ x y m n i
+  quot m n i *ℤ quot x y j = is-set→squarep (λ i j → hlevel 2)
+    (rhs₂ x y m n) (rhs₁ m n x y)
+    (rhs₁ (suc m) (suc n) x y) (rhs₂ (suc x) (suc y) m n) i j
 ```
 
 We omit the proofs of the arithmetic identities below since they are

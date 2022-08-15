@@ -279,6 +279,7 @@ level does _not_ form a category, but it _does_ form a bicategory.
 [strict categories]: Cat.Instances.StrictCat.html
 
 ```agda
+{-# TERMINATING #-}
 Cat : ∀ o ℓ → Prebicategory (lsuc o ⊔ lsuc ℓ) (o ⊔ ℓ) (o ⊔ ℓ)
 Cat o ℓ = pb where
   open Prebicategory
@@ -324,26 +325,34 @@ definitional, so we can not use the identity natural isomorphism
 directly:
 
 ```agda
-  pb .unitor-r {B = B} =
-    make-natural-iso (λ x → NT (λ _ → B.id) λ _ _ f → B.id-comm-sym)
-      (λ x → componentwise-invertible→invertible _
-              (λ _ → B.make-invertible B.id (B.idl _) (B.idl _)))
-      (λ x y f → Nat-path λ _ → B.idr _ ∙ ap (B._∘ _) (y .F-id))
-    where module B = Cr B
+  pb .unitor-r {B = B} = to-natural-iso ni where
+    module B = Cr B
+    ni : make-natural-iso _ _
+    ni .make-natural-iso.eta x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
+    ni .make-natural-iso.inv x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
+    ni .make-natural-iso.eta∘inv x = Nat-path λ _ → B.idl _
+    ni .make-natural-iso.inv∘eta x = Nat-path λ _ → B.idl _
+    ni .make-natural-iso.natural x y f =
+      Nat-path λ _ → B.idr _ ∙ ap (B._∘ _) (y .F-id)
 
-  pb .unitor-l {B = B} =
-    make-natural-iso (λ x → NT (λ _ → B.id) λ _ _ f → B.id-comm-sym)
-      (λ x → componentwise-invertible→invertible _
-              (λ _ → B.make-invertible B.id (B.idl _) (B.idl _)))
-      (λ x y f → Nat-path λ _ → B.idr _ ∙ B.id-comm)
-    where module B = Cr B
+  pb .unitor-l {B = B} = to-natural-iso ni where
+    module B = Cr B
+    ni : make-natural-iso _ _
+    ni .make-natural-iso.eta x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
+    ni .make-natural-iso.inv x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
+    ni .make-natural-iso.eta∘inv x = Nat-path λ _ → B.idl _
+    ni .make-natural-iso.inv∘eta x = Nat-path λ _ → B.idl _
+    ni .make-natural-iso.natural x y f = Nat-path λ _ → B.idr _ ∙ B.id-comm
 
-  pb .associator {A} {B} {C} {D} =
-    make-natural-iso (λ x → NT (λ _ → D.id) λ _ _ f → D.id-comm-sym)
-      (λ x → componentwise-invertible→invertible _
-              (λ _ → D.make-invertible D.id (D.idl _) (D.idl _)))
-      λ x y f → Nat-path λ _ → D.idr _ ·· D.pushl (y .fst .F-∘ _ _) ·· D.introl refl
-    where module D = Cr D
+  pb .associator {A} {B} {C} {D} = to-natural-iso ni where
+    module D = Cr D
+    ni : make-natural-iso _ _
+    ni .make-natural-iso.eta x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
+    ni .make-natural-iso.inv x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
+    ni .make-natural-iso.eta∘inv x = Nat-path λ _ → D.idl _
+    ni .make-natural-iso.inv∘eta x = Nat-path λ _ → D.idl _
+    ni .make-natural-iso.natural x y f = Nat-path λ _ →
+      D.idr _ ·· D.pushl (y .fst .F-∘ _ _) ·· D.introl refl
 
   pb .triangle {C = C} f g = Nat-path (λ _ → Cr.idr C _)
   pb .pentagon {E = E} f g h i =

@@ -27,6 +27,7 @@ the Hom-sets of $\ca{C}$.
 [discrete categories]: Cat.Instances.Discrete.html
 
 ```agda
+{-# TERMINATING #-}
 Locally-discrete : Prebicategory o ℓ ℓ
 Locally-discrete .Ob = C.Ob
 Locally-discrete .Hom x y = Disc′ (el (C.Hom x y) (C.Hom-set x y))
@@ -35,23 +36,27 @@ Locally-discrete .compose .F₀ (f , g) = f C.∘ g
 Locally-discrete .compose .F₁ (p , q) = ap₂ C._∘_ p q
 Locally-discrete .compose .F-id = refl
 Locally-discrete .compose .F-∘ f g = C.Hom-set _ _ _ _ _ _
-Locally-discrete .unitor-l =
-  make-natural-iso (λ x → C.introl refl)
-    (λ x → make-invertible _ (C.eliml refl)
-      (C.Hom-set _ _ _ _ _ _)
-      (C.Hom-set _ _ _ _ _ _))
-    (λ x y f → C.Hom-set _ _ _ _ _ _)
-Locally-discrete .unitor-r =
-  make-natural-iso (λ x → C.intror refl)
-    (λ x → make-invertible _ (C.elimr refl)
-      (C.Hom-set _ _ _ _ _ _)
-      (C.Hom-set _ _ _ _ _ _))
-    (λ x y f → C.Hom-set _ _ _ _ _ _)
-Locally-discrete .associator =
-  make-natural-iso (λ x → sym (C.assoc _ _ _))
-    (λ x → make-invertible _ (C.assoc _ _ _)
-      (C.Hom-set _ _ _ _ _ _)
-      (C.Hom-set _ _ _ _ _ _))
-    (λ x y f → C.Hom-set _ _ _ _ _ _)
+Locally-discrete .unitor-l = to-natural-iso ni where
+  ni : make-natural-iso _ _
+  ni .make-natural-iso.eta x = sym (C.idl x)
+  ni .make-natural-iso.inv x = C.idl x
+  ni .make-natural-iso.eta∘inv x = ∙-inv-r (C.idl x)
+  ni .make-natural-iso.inv∘eta x = ∙-inv-l (C.idl x)
+  ni .make-natural-iso.natural x y f = C.Hom-set _ _ _ _ _ _
+Locally-discrete .unitor-r = to-natural-iso ni where
+  ni : make-natural-iso _ _
+  ni .make-natural-iso.eta x = sym (C.idr x)
+  ni .make-natural-iso.inv x = C.idr x
+  ni .make-natural-iso.eta∘inv x = ∙-inv-r (C.idr x)
+  ni .make-natural-iso.inv∘eta x = ∙-inv-l (C.idr x)
+  ni .make-natural-iso.natural x y f = C.Hom-set _ _ _ _ _ _
+Locally-discrete .associator = to-natural-iso ni where
+  ni : make-natural-iso _ _
+  ni .make-natural-iso.eta x = sym (C.assoc _ _ _)
+  ni .make-natural-iso.inv x = C.assoc _ _ _
+  ni .make-natural-iso.eta∘inv x = ∙-inv-r (C.assoc _ _ _)
+  ni .make-natural-iso.inv∘eta x = ∙-inv-l (C.assoc _ _ _)
+  ni .make-natural-iso.natural x y f = C.Hom-set _ _ _ _ _ _
 Locally-discrete .triangle f g = C.Hom-set _ _ _ _ _ _
 Locally-discrete .pentagon f g h i = C.Hom-set _ _ _ _ _ _
+```
