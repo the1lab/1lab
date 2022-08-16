@@ -585,65 +585,6 @@ inspect x = x , refl
 ```
 -->
 
-## Functorial Action
-
-In HoTT, every function behaves like a funct**or**, in that it has an
-action on objects (the actual computational content of the function) and
-an action on _morphisms_ --- how that function acts on paths. Reading
-paths as identity, this is a proof that functions take identical inputs
-to identical outputs.
-
-```agda
-ap : ∀ {a b} {A : Type a} {B : A → Type b} (f : (x : A) → B x) {x y : A}
-   → (p : x ≡ y) → PathP (λ i → B (p i)) (f x) (f y)
-ap f p i = f (p i)
-```
-
-The following function expresses the same thing as `ap`{.Agda}, but for
-binary functions. The type is huge! That's because it applies to the
-most general type of 2-argument dependent function possible: `(x : A) (y
-: B x) → C x y`. Even then, the proof is beautifully short:
-
-```agda
-ap₂ : ∀ {a b c} {A : Type a} {B : A → Type b} {C : (x : A) → B x → Type c}
-      (f : (x : A) (y : B x) → C x y)
-      {x y : A} {α : B x} {β : B y}
-    → (p : x ≡ y)
-    → (q : PathP (λ i → B (p i)) α β)
-    → PathP (λ i → C (p i) (q i))
-            (f x α)
-            (f y β)
-ap₂ f p q i = f (p i) (q i)
-```
-
-This operation satisfies many identities definitionally that are only
-propositional when `ap`{.Agda} is defined in terms of `J`{.Agda}. For
-instance:
-
-```agda
-module _ {A B C : Type} {f : A → B} {g : B → C} where
-  ap-comp : {x y : A} {p : x ≡ y}
-          → ap (λ x → g (f x)) p ≡ ap g (ap f p)
-  ap-comp = refl
-
-  ap-id : {x y : A} {p : x ≡ y}
-        → ap (λ x → x) p ≡ p
-  ap-id = refl
-
-  ap-sym : {x y : A} {p : x ≡ y}
-          → sym (ap f p) ≡ ap f (sym p)
-  ap-sym = refl
-
-  ap-refl : {x : A} → ap f (λ i → x) ≡ (λ i → f x)
-  ap-refl = refl
-```
-
-The last lemma, that `ap` respects composition of _paths_, needs path
-induction, and the rest of the groupoid structure on type formers, so
-it's in [a different module].
-
-[a different module]: 1Lab.Path.Groupoid.html#ap-comp-path
-
 # Composition
 
 In "Book HoTT", the primitive operation from which the
@@ -1206,7 +1147,87 @@ its filler), it is contractible:
 ··-contract p q r β = ··-unique p q r _ β
 ```
 
-## Syntax Sugar
+# Functorial Action
+
+This composition structure on paths makes every type into an
+$\infty$-groupoid, which is discussed in [a different module].
+
+[a different module]: 1Lab.Path.Groupoid.html
+
+It is then reasonable to expect that every function behave like
+a funct**or**, in that it has an
+action on objects (the actual computational content of the function) and
+an action on _morphisms_ --- how that function acts on paths. Reading
+paths as identity, this is a proof that functions take identical inputs
+to identical outputs.
+
+```agda
+ap : ∀ {a b} {A : Type a} {B : A → Type b} (f : (x : A) → B x) {x y : A}
+   → (p : x ≡ y) → PathP (λ i → B (p i)) (f x) (f y)
+ap f p i = f (p i)
+```
+
+The following function expresses the same thing as `ap`{.Agda}, but for
+binary functions. The type is huge! That's because it applies to the
+most general type of 2-argument dependent function possible: `(x : A) (y
+: B x) → C x y`. Even then, the proof is beautifully short:
+
+```agda
+ap₂ : ∀ {a b c} {A : Type a} {B : A → Type b} {C : (x : A) → B x → Type c}
+      (f : (x : A) (y : B x) → C x y)
+      {x y : A} {α : B x} {β : B y}
+    → (p : x ≡ y)
+    → (q : PathP (λ i → B (p i)) α β)
+    → PathP (λ i → C (p i) (q i))
+            (f x α)
+            (f y β)
+ap₂ f p q i = f (p i) (q i)
+```
+
+This operation satisfies many identities definitionally that are only
+propositional when `ap`{.Agda} is defined in terms of `J`{.Agda}. For
+instance:
+
+```agda
+module _  where
+  private variable
+    ℓ : Level
+    A B C : Type ℓ
+    f : A → B
+    g : B → C
+
+  ap-comp : {x y : A} {p : x ≡ y}
+          → ap (λ x → g (f x)) p ≡ ap g (ap f p)
+  ap-comp = refl
+
+  ap-id : {x y : A} {p : x ≡ y}
+        → ap (λ x → x) p ≡ p
+  ap-id = refl
+
+  ap-sym : {x y : A} {p : x ≡ y}
+          → sym (ap f p) ≡ ap f (sym p)
+  ap-sym = refl
+
+  ap-refl : {x : A} → ap f (λ i → x) ≡ (λ i → f x)
+  ap-refl = refl
+```
+
+The last lemma, that `ap` respects composition of _paths_, can be proven by
+[uniqueness]: both `ap f (p ∙ q)` and `ap f p ∙ ap f q` are valid "lids"
+for the open box with sides `refl`, `ap f p` and `ap f q`, so they must be equal:
+
+[uniqueness]: 1Lab.Path.html#uniqueness
+
+```agda
+  ap-comp-path : (f : A → B) {x y z : A} (p : x ≡ y) (q : y ≡ z)
+               → ap f (p ∙ q) ≡ ap f p ∙ ap f q
+  ap-comp-path f p q i = ··-unique refl (ap f p) (ap f q)
+    (ap f (p ∙ q)    , λ k j → f (∙-filler p q k j))
+    (ap f p ∙ ap f q , ∙-filler _ _)
+    i .fst
+```
+
+# Syntax Sugar
 
 When constructing long chains of identifications, it's rather helpful to
 be able to visualise _what_ is being identified with more "priority"

@@ -183,33 +183,10 @@ equal to `sym (sym p)`. In that case, we show that `sym p ∙ sym (sym p)
 
 In addition to the groupoid identities for paths in a type, it has been
 established that functions behave like functors: These are the lemmas
-`ap-refl`{.Agda} and `ap-sym`{.Agda} in the [1Lab.Path] module.
+`ap-refl`{.Agda}, `ap-comp-path`{.Agda} and `ap-sym`{.Agda} in the
+[1Lab.Path] module.
 
-[1Lab.Path]: 1Lab.Path.html#the-action-on-paths
-
-There, a proof that functions preserve path composition wasn't included,
-because it needs `hcomp`{.Agda} to be defined. We fill a cube where the
-left face is defined to be `ap f (p ∙ q)` (that's the `(i = i0)` face in
-the `hcomp`{.Agda} below), and the remaining structure of the proof
-mimics the definition of `_∙_`{.Agda}, so that we indeed get `ap f p ∙
-ap f q` as the right face.
-
-<!--
-```
-  _ = ap-refl
-  _ = ap-sym
-```
--->
-
-```agda
-  ap-comp-path : (f : A → B) {x y z : A} (p : x ≡ y) (q : y ≡ z)
-               → ap f (p ∙ q) ≡ ap f p ∙ ap f q
-  ap-comp-path f {x} p q i j = hcomp (∂ j ∨ ~ i) λ where
-    k (i = i0) → f (∙-filler p q k j)
-    k (j = i0) → f x
-    k (j = i1) → f (q k)
-    k (k = i0) → f (p j)
-```
+[1Lab.Path]: 1Lab.Path.html#functorial-action
 
 ### Convenient helpers
 
