@@ -29,7 +29,7 @@ Using the [twisted arrow category] as a mediating notion, we show how to
 compute [coends] as ordinary [colimits]. The calculation is actually a
 bit more straightforward than it might seem at first. The first thing we
 note is that any functor $F : C\op \times C \to D$ generates a functor
-from thw twisted arrow category of $\ca{C}\op$:
+from the twisted arrow category of $\ca{C}\op$:
 
 $$
 \id{Tw}(\ca{C}\op)\op \xto{\pi_t} C\op \times C \xto{F} D
