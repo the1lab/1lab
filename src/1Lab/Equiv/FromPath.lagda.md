@@ -94,9 +94,10 @@ square below (this is the `comp`{.Agda} term):
 ```agda
   hasFib : (y : B) → fibre f y
   hasFib y .fst = g y
-  hasFib y .snd i = comp P (λ j → λ { (i = i1) → v j y
-                                    ; (i = i0) → u j (g y) })
-                           (g y)
+  hasFib y .snd i = comp P (∂ i) λ where
+    j (i = i1) → v j y
+    j (i = i0) → u j (g y)
+    j (j = i0) → g y
 ```
 
 To prove that the fibre over y is propositional, there is significantly
@@ -157,10 +158,13 @@ look at, so focus on the diagram: It connects `β₀`{.Agda} and
     square x j i (j = i1) = u (~ i) x
 
     ω₀ : g y ≡ x₀
-    ω₀ j = comp ~P (square x₀ j) (β₀ (~ j))
+    ω₀ j = primComp (λ i → P (~ i)) (square x₀ j) (β₀ (~ j))
 
     θ₀ : SquareP (λ i j → P (~ j)) (sym β₀) (λ i → v (~ i) y) (λ i → u (~ i) x₀) ω₀
-    θ₀ j i = fill ~P (square x₀ j) (inS (β₀ (~ j))) i
+    θ₀ j i = fill ~P (∂ j) i λ where
+      i (j = i0) → v (~ i) y
+      i (j = i1) → u (~ i) x₀
+      i (i = i0) → β₀ (~ j)
 ```
 
 Analogously, we have `ω₁`{.Agda} and `θ₁`{.Agda} connecting `β₁`{.Agda}
@@ -180,10 +184,13 @@ and that, as the dashed line and filler of the square below:
 
 ```agda
     ω₁ : g y ≡ x₁
-    ω₁ j = comp ~P (square x₁ j) (β₁ (~ j))
+    ω₁ j = primComp (λ i → P (~ i)) (square x₁ j) (β₁ (~ j))
 
     θ₁ : SquareP (λ i j → P (~ j)) (sym β₁) (λ i → v (~ i) y) (λ i → u (~ i) x₁) ω₁
-    θ₁ j i = fill ~P (square x₁ j) (inS (β₁ (~ j))) i
+    θ₁ j i = fill ~P (∂ j) i λ where
+      i (j = i0) → v (~ i) y
+      i (j = i1) → u (~ i) x₁
+      i (i = i0) → β₁ (~ j)
 ```
 
 Now, we are almost done. Like a magic trick, the paths `ω₀` and
@@ -204,13 +211,16 @@ below:
 ~~~
 
 ```agda
-    sys : (k j : I) → _
-    sys k j (k = i0) = ω₀ j
-    sys k j (k = i1) = ω₁ j
+    ω k = hcomp (∂ k) λ where
+      j (k = i0) → ω₀ j
+      j (k = i1) → ω₁ j
+      j (j = i0) → g y
 
-    ω k = hcomp (sys k) (g y)
     θ : Square refl ω₀ ω₁ ω
-    θ k = hfill (sys k) (inS (g y))
+    θ k i = hfill (∂ k) i λ where
+      j (k = i0) → ω₀ j
+      j (k = i1) → ω₁ j
+      j (j = i0) → g y
 ```
 
 We also have `θ`{.Agda}, which is the filler of the above square - i.e.,
@@ -221,13 +231,12 @@ given by `θ`{.Agda}, which indicates the boundaries of the other faces.
 The full cube is right after the definition:
 
 ```agda
-    δ k j =
-      comp P
-        (λ i → λ { (j = i0) → v i y
-                 ; (k = i0) → θ₀ j (~ i)
-                 ; (j = i1) → u i (ω k)
-                 ; (k = i1) → θ₁ j (~ i) })
-        (θ k j)
+    δ k j = comp P (∂ j ∨ ∂ k) λ where
+      i (i = i0) → θ k j
+      i (j = i0) → v i y
+      i (j = i1) → u i (ω k)
+      i (k = i0) → θ₀ j (~ i)
+      i (k = i1) → θ₁ j (~ i)
 ```
 
 ~~~{.quiver .tall-2}

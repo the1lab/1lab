@@ -20,7 +20,22 @@ private module X where primitive
   primHComp  : ∀ {ℓ} {A : Type ℓ} {φ : I} (u : ∀ i → Partial φ A) (a : A) → A
   primComp : ∀ {ℓ} (A : (i : I) → Type (ℓ i)) {φ : I} (u : ∀ i → Partial φ (A i)) (a : A i0) → A i1
 
-open X public renaming (primTransp to transp ; primHComp to hcomp ; primComp to comp)
+open X public renaming (primTransp to transp)
+
+hcomp
+  : ∀ {ℓ} {A : Type ℓ} (φ : I)
+  → (u : (i : I) → Partial (φ ∨ ~ i) A)
+  → A
+hcomp φ u = X.primHComp (λ { j (φ = i1) → u j 1=1 }) (u i0 1=1)
+
+∂ : I → I
+∂ i = i ∨ ~ i
+
+comp
+  : ∀ {ℓ : I → Level} (A : (i : I) → Type (ℓ i)) (φ : I)
+  → (u : (i : I) → Partial (φ ∨ ~ i) (A i))
+  → A i1
+comp A φ u = X.primComp A (λ { j (φ = i1) → u j 1=1 }) (u i0 1=1)
 ```
 
 We also define the type of dependent paths, and of non-dependent paths.

@@ -89,12 +89,10 @@ whisker-r
   → (p : g ≡ g')
   → f′ E.∘′ hom[ p ] g′ ≡ hom[ ap (f B.∘_) p ] (f′ E.∘′ g′)
 whisker-r {f = f} {a′ = a′} {_} {c′} {f′} {g′} p i =
-  comp
-    (λ j → E.Hom[ f B.∘ p (i ∨ j) ] a′ c′)
-    (λ { j (i = i0) → f′ E.∘′ transport-filler (λ i → E.Hom[ p i ] _ _) g′ j
-       ; j (i = i1) → hom[ ap (f B.∘_) p ] (f′ E.∘′ g′)
-       })
-    (transport-filler (λ i → E.Hom[ f B.∘ p i ] _ _) (f′ E.∘′ g′) i)
+  comp (λ j → E.Hom[ f B.∘ p (i ∨ j) ] a′ c′) (∂ i) λ where
+    j (i = i0) → f′ E.∘′ transport-filler (λ i → E.Hom[ p i ] _ _) g′ j
+    j (i = i1) → hom[ ap (f B.∘_) p ] (f′ E.∘′ g′)
+    j (j = i0) → transport-filler (λ i → E.Hom[ f B.∘ p i ] _ _) (f′ E.∘′ g′) i
 
 whisker-l
   : ∀ {a b c} {f f' : B.Hom b c} {g : B.Hom a b} {a′ b′ c′}
@@ -102,12 +100,10 @@ whisker-l
   → (p : f ≡ f')
   → hom[ p ] f′ E.∘′ g′ ≡ hom[ ap (B._∘ g) p ] (f′ E.∘′ g′)
 whisker-l {g = g} {a′} {_} {c′} {f′ = f′} {g′ = g′} p i =
-  comp
-    (λ j → E.Hom[ p (i ∨ j) B.∘ g ] a′ c′)
-    (λ { j (i = i0) → transport-filler (λ i → E.Hom[ p i ] _ _) f′ j E.∘′ g′
-       ; j (i = i1) → hom[ ap (B._∘ g) p ] (f′ E.∘′ g′)
-       })
-    (transport-filler (λ i → E.Hom[ p i B.∘ g ] _ _) (f′ E.∘′ g′) i)
+  comp (λ j → E.Hom[ p (i ∨ j) B.∘ g ] a′ c′) (∂ i) λ where
+    j (i = i0) → transport-filler (λ i → E.Hom[ p i ] _ _) f′ j E.∘′ g′
+    j (i = i1) → hom[ ap (B._∘ g) p ] (f′ E.∘′ g′)
+    j (j = i0) → transport-filler (λ i → E.Hom[ p i B.∘ g ] _ _) (f′ E.∘′ g′) i
 ```
 
 The rest of this module is made up of grueling applications of the three

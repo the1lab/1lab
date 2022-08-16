@@ -175,8 +175,8 @@ something with precisely the same interface as `hcomp`{.Agda} for
 
 ```agda
 glue-hfill
-  : ∀ {ℓ} φ (u : I → Partial φ (Type ℓ)) (u0 : Type ℓ [ φ ↦ u i0 ])
-  → ∀ i → Type ℓ [ _ ↦ (λ { (i = i0) → outS u0
+  : ∀ {ℓ} φ (u : ∀ i → Partial (φ ∨ ~ i) (Type ℓ))
+  → ∀ i → Type ℓ [ _ ↦ (λ { (i = i0) → u i0 1=1
                           ; (φ = i1) → u i 1=1 }) ]
 ```
 
@@ -190,10 +190,10 @@ terms of extensions: We have a path (that's the `∀ i →` binder) of
 with `u` everywhere.
 
 ```agda
-glue-hfill φ u u0 i = inS (
-  Glue (outS u0) {φ = φ ∨ ~ i}
+glue-hfill φ u i = inS (
+  Glue (u i0 1=1) {φ = φ ∨ ~ i}
     λ { (φ = i1) → u i 1=1 , line→equiv (λ j → u (i ∧ ~ j) 1=1)
-      ; (i = i0) → outS u0 , line→equiv (λ i → outS u0)
+      ; (i = i0) → u i0 1=1 , line→equiv (λ i → u i0 1=1)
       })
 ```
 
@@ -216,16 +216,16 @@ from this conclude that `hcomp`{.Agda} on `Type`{.Agda} agrees with the
 definition of `glue-hfill`{.Agda}.
 
 ```agda
-hcomp-unique : ∀ {ℓ} {A : Type ℓ} {φ}
-               (u : I → Partial φ A)
-               (u0 : A [ φ ↦ u i0 ])
-             → (h2 : ∀ i → A [ _ ↦ (λ { (i = i0) → outS u0
+hcomp-unique : ∀ {ℓ} {A : Type ℓ} φ
+               (u : ∀ i → Partial (φ ∨ ~ i) A)
+             → (h2 : ∀ i → A [ _ ↦ (λ { (i = i0) → u i0 1=1
                                       ; (φ = i1) → u i 1=1 }) ])
-             → hcomp u (outS u0) ≡ outS (h2 i1)
-hcomp-unique {φ = φ} u u0 h2 i =
-  hcomp (λ k → λ { (φ = i1) → u k 1=1
-                 ; (i = i1) → outS (h2 k) })
-        (outS u0)
+             → hcomp φ u ≡ outS (h2 i1)
+hcomp-unique φ u h2 i =
+  hcomp (φ ∨ i) λ where
+    k (k = i0) → u i0 1=1
+    k (i = i1) → outS (h2 k)
+    k (φ = i1) → u k 1=1
 ```
 
 Using `hcomp-unique`{.Agda} and `glue-hfill`{.Agda} together, we get a
@@ -235,11 +235,11 @@ generalisation of the uniqueness of path compositions: Any open box has
 a contractible space of fillers.
 
 ```agda
-hcomp≡Glue : ∀ {ℓ} {φ} (u : I → Partial φ (Type ℓ)) (u0 : Type ℓ [ φ ↦ u i0 ])
-           → hcomp u (outS u0)
-           ≡ Glue (outS u0)
+hcomp≡Glue : ∀ {ℓ} {φ} (u : ∀ i → Partial (φ ∨ ~ i) (Type ℓ))
+           → hcomp φ u
+           ≡ Glue (u i0 1=1)
               (λ { (φ = i1) → u i1 1=1 , line→equiv (λ j → u (~ j) 1=1) })
-hcomp≡Glue u u0 = hcomp-unique u u0 (glue-hfill _ u u0)
+hcomp≡Glue {φ = φ} u = hcomp-unique φ u (glue-hfill φ u)
 ```
 
 ## Paths from Glue
@@ -741,12 +741,10 @@ ua→ : ∀ {ℓ ℓ'} {A₀ A₁ : Type ℓ} {e : A₀ ≃ A₁} {B : (i : I) �
   → ((a : A₀) → PathP B (f₀ a) (f₁ (e .fst a)))
   → PathP (λ i → ua e i → B i) f₀ f₁
 ua→ {e = e} {f₀ = f₀} {f₁} h i a =
-  hcomp
-    (λ j → λ
-      { (i = i0) → f₀ a
-      ; (i = i1) → f₁ (lem a j)
-      })
-    (h (transp (λ j → ua e (~ j ∧ i)) (~ i) a) i)
+  hcomp (∂ i) λ where
+    j (i = i0) → f₀ a
+    j (i = i1) → f₁ (lem a j)
+    j (j = i0) → h (transp (λ j → ua e (~ j ∧ i)) (~ i) a) i
   where
   lem : ∀ a₁ → e .fst (transport (sym (ua e)) a₁) ≡ a₁
   lem a₁ = equiv→counit (e .snd) _ ∙ transport-refl _

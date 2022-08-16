@@ -85,12 +85,10 @@ an equivalence.
     q : Hom→Mor D D.id ≡ Hom→Mor D (F.₁ f)
     q i .fst = F.₀ (p i .fst)
     q i .snd .fst = F.₀ (p i .snd .fst)
-    q i .snd .snd =
-      hcomp
-        (λ { j (i = i0) → F.F-id j
-           ; j (i = i1) → F.F₁ f
-           })
-        (F.₁ (p i .snd .snd))
+    q i .snd .snd = hcomp (∂ i) λ where
+      j (j = i0) → F.₁ (p i .snd .snd)
+      j (i = i1) → F.₁ f
+      j (i = i0) → F.F-id j
 
   is-amnestic : Type _
   is-amnestic = ∀ {a b : C.Ob} (f : C.Hom a b)

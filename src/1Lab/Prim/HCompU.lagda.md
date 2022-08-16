@@ -21,12 +21,12 @@ primitive
   prim^glueU
     : {ℓ : Level} {φ : I} {T : I → Partial φ (Type ℓ)}
       {A : Type ℓ [ φ ↦ T i0 ]}
-    → PartialP φ (T i1) → outS A → hcomp T (outS A)
+    → PartialP φ (T i1) → outS A → primHComp T (outS A)
 
   prim^unglueU
     : {ℓ : Level} {φ : I} {T : I → Partial φ (Type ℓ)}
       {A : Type ℓ [ φ ↦ T i0 ]}
-    → hcomp T (outS A) → outS A
+    → primHComp T (outS A) → outS A
 
   -- Needed for transp.
   primFaceForall : (I → I) → I
@@ -37,20 +37,17 @@ extend-transp-fibre
     (b : e i1 [ φ ↦ (λ o → transp e i0 (a o)) ])
   → fibre (transp e i0) (outS b)
 extend-transp-fibre e φ a b = _ , λ j →
-  comp e
-    (λ where
-      i (φ = i1) → coe0→i e i (a 1=1)
-      i (j = i0) → coe0→i e i (g i1)
-      i (j = i1) → g (~ i))
-    (g i1)
+  comp e (φ ∨ ∂ j) λ where
+    i (φ = i1) → coe0→i e i (a 1=1)
+    i (j = i0) → coe0→i e i (g i1)
+    i (j = i1) → g (~ i)
+    i (i = i0) → g i1
   where
     g : ∀ i → e (~ i)
-    g k = fill (λ i → e (~ i))
-      (λ where
-        i (φ = i1) → coe0→i e (~ i) (a 1=1)
-        i (φ = i0) → coe1→i e (~ i) (outS b))
-      (inS (outS b))
-      k
+    g k = fill (λ i → e (~ i)) (∂ φ) k λ where
+      i (φ = i1) → coe0→i e (~ i) (a 1=1)
+      i (φ = i0) → coe1→i e (~ i) (outS b)
+      i (i = i0) → outS b
 
 {-# BUILTIN TRANSPPROOF extend-transp-fibre #-}
 ```

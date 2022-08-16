@@ -882,12 +882,11 @@ left-right direction) path going in the top-down direction.
   \\
   w && z
   \arrow["{\id{sym}\ p\ j}", from=1-1, to=3-1]
-  \arrow["q\ i", from=1-1, to=1-3]
   \arrow["r\ j"', from=1-3, to=3-3]
 \end{tikzcd}\]
 ~~~
 <figcaption>
-The complete “open box”.
+The partially-defined “tube”.
 </figcaption>
 </div>
 
@@ -898,69 +897,47 @@ The complete “open box”.
   \\
   w && z
   \arrow["{\id{sym}\ p\ j}", from=1-1, to=3-1]
+  \arrow["q\ i", from=1-1, to=1-3]
   \arrow["r\ j"', from=1-3, to=3-3]
 \end{tikzcd}\]
 ~~~
 <figcaption>
-The partially-defined “tube”.
+The complete “open box”.
 </figcaption>
 </div>
 
 </div>
 
-We can make this the construction of this “tube” formal by giving a
-`Partial`{.Agda} element of `A`, which is defined on $\neg i \lor i$
-(that is: only the left/right faces of a square), as is done below.
-Since it is a tube of a _square_, it has _two_ interval variables: $j$
-gives the top-down direction.[^partialpath]
-
-[^partialpath]: This element has type `(i : I) → I → Partial (~ i ∨ i)
-A` rather than `(i : I) → Partial (~ i ∨ i) (I → A)` because of a
-universe restriction in Agda: The second argument to `Partial`{.Agda}
-must be a `Type`{.Agda}, but `I`{.Agda} is not a `Type`{.Agda}.
+We can make this the construction of this “open box” formal by giving a
+`Partial`{.Agda} element of `A`, which is defined on $\partial i \lor
+\neg j$ --- where $i$ represents the left/right direction, and $j$ the
+up/down direction, as is done below. So, this is an element that is
+defined _almost_ everywhere: all three out of four faces of the square
+exist, but we're missing the fourth face and an inside.
 
 ```agda
 module _ {A : Type} {w x y z : A} {p : w ≡ x} {q : x ≡ y} {r : y ≡ z} where private
-  double-comp-tube : (i : I) → I → Partial (~ i ∨ i) A
+  double-comp-tube : (i j : I) → Partial (~ i ∨ i ∨ ~ j) A
   double-comp-tube i j (i = i0) = sym p j
   double-comp-tube i j (i = i1) = r j
+  double-comp-tube i j (j = i0) = q i
 ```
 
-When given `i0`{.Agda} as `j`, `double-comp-tube`{.Agda} has boundary
-$p\ \id{i1} \to r\ \id{i0}$, which computes to $x \to y$. This means
-that for this path to be extensible at `i0`{.Agda}, we need a path with
-that boundary. By assumption, `q` extends `double-comp-tube`{.Agda} at
-`i0`{.Agda}.
+The Kan condition on types says that, whenever we have some formula
+$\phi$ and a partial element $u$ defined along $\phi \lor \neg j$ (for
+$j$ disjoint from $\phi$; we call it the "direction of composition",
+sometimes), then we can extend it to a totally-defined element, which
+agrees with $u$ along $\phi$.
 
-```agda
-  extensible-at-i0 : (i : I) → A [ (i ∨ ~ i) ↦ double-comp-tube i i0 ]
-  extensible-at-i0 i = inS (q i)
-```
-
-We can draw this as one of our red-black extensibility diagrams
-colouring the left/right faces in red --- since that is the partial
-element --- and colouring the top face black, since that is a
-totally-defined cube.
-
-~~~{.quiver}
-\[\begin{tikzcd}
-  \textcolor{rgb,255:red,214;green,92;blue,92}{x} && \textcolor{rgb,255:red,214;green,92;blue,92}{y} \\
-  \\
-  \textcolor{rgb,255:red,214;green,92;blue,92}{w} && \textcolor{rgb,255:red,214;green,92;blue,92}{z}
-  \arrow["{\id{sym}\ p\ j}"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=3-1]
-  \arrow["{r\ j}", color={rgb,255:red,214;green,92;blue,92}, from=1-3, to=3-3]
-  \arrow["{q\ i}", from=1-1, to=1-3]
-\end{tikzcd}\]
-~~~
-
-The Kan condition says that this path is then extensible at `i1`, i.e.
-there is some inhabitant of `A [ (i ∨ ~ i) ↦ double-comp-tube i i1 ]`.
-This element is written using the operator `hcomp`{.Agda}:
+The idea is that the $\neg j$, being in some sense "orthogonal to" the
+dimensions in $\phi$, will "connect" the tube given by $\phi$. This is a
+slight generalization of the classical Kan condition, which would insist
+$\phi = \bigvee_i \partial i$, where $i$ ranges over all dimensions in
+the context.
 
 ```agda
   extensible-at-i1 : (i : I) → A [ (i ∨ ~ i) ↦ double-comp-tube i i1 ]
-  extensible-at-i1 i =
-    inS (hcomp {φ = ~ i ∨ i} (λ k is1 → double-comp-tube i k is1) (q i))
+  extensible-at-i1 i = inS $ₛ hcomp (∂ i) (double-comp-tube i)
 ```
 
 Unwinding what it means for this element to exist, we see that the
@@ -974,20 +951,20 @@ complete square.
 ```
 
 Note that `hcomp`{.Agda} gives us the missing face of the open box, but
-the semantics guarantees the existence of the box itself, as a $n$-cube.
-From the De Morgan structure on the interval, we can derive the
-existence of the cubes themselves (called **fillers**) from the
+the semantics guarantees the existence of the box itself, as an
+$n$-cube. From the De Morgan structure on the interval, we can derive
+the existence of the cubes themselves (called **fillers**) from the
 existence of the missing faces:
 
 ```agda
-hfill : ∀ {ℓ} {A : Type ℓ} {φ : I}
-        (u : I → Partial φ A)
-        (u0 : A [ φ ↦ u i0 ])
-      → outS u0 ≡ hcomp u (outS u0)
-hfill {φ = φ} u u0 i =
-  hcomp (λ j → λ { (φ = i1) → u (i ∧ j) 1=1
-                 ; (i = i0) → outS u0 })
-        (outS u0)
+hfill : ∀ {ℓ} {A : Type ℓ} (φ : I) → I
+      → ((i : I) → Partial (φ ∨ ~ i) A)
+      → A
+hfill φ i u =
+  hcomp (φ ∨ ~ i) λ where
+    j (φ = i1) → u (i ∧ j) 1=1
+    j (i = i0) → u i0 1=1
+    j (j = i0) → u i0 1=1
 ```
 
 **Note**: While every inhabitant of `Type`{.Agda} has a composition
@@ -1012,32 +989,21 @@ universe, `IUniv`, with a typing rule for functions saying that `A → B`
 is fibrant whenever `B : Type` and `A : Type` _or_ `A : IUniv` - i.e.
 function types `I → A` were made fibrant whenever `A` is.
 
-Agda also provides a _heterogeneous_ version of composition (also called
-CCHM composition), called `comp`{.Agda}. It too has a corresponding
-filler, called `fill`{.Agda}. The idea behind CCHM composition is --- by
-analogy with `hcomp`{.Agda} expressing that "paths preserve
-extensibility" --- that `PathP`{.Agda}s preserve extensibility. Thus we
-have:
+Agda also provides a _heterogeneous_ version of composition (sometimes
+referred to as "CCHM composition"), called `comp`{.Agda}. It too has a
+corresponding filling operation, called `fill`{.Agda}. The idea behind
+CCHM composition is --- by analogy with `hcomp`{.Agda} expressing that
+"paths preserve extensibility" --- that `PathP`{.Agda}s preserve
+extensibility. Thus we have:
 
 ```agda
-private
-  comp-verbose : ∀ {ℓ} (A : I → Type ℓ)
-                   {φ : I}
-               → (u : ∀ i → Partial φ (A i))
-               → (u0 : A i0 [ φ ↦ u i0 ] )
-               → A i1 [ φ ↦ u i1 ]
-  comp-verbose A u u0 = inS (comp A u (outS u0))
-
-fill : ∀ {ℓ : I → Level} (A : ∀ i → Type (ℓ i))
-       {φ : I}
-     → (u : ∀ i → Partial φ (A i))
-     → (u0 : A i0 [ φ ↦ u i0 ])
-     → ∀ i → A i
-fill A {φ = φ} u u0 i =
-  comp (λ j → A (i ∧ j))
-       (λ j → λ { (φ = i1) → u (i ∧ j) 1=1
-                ; (i = i0) → outS u0 })
-       (outS u0)
+fill : ∀ {ℓ : I → Level} (A : ∀ i → Type (ℓ i)) (φ : I) (i : I)
+     → (u : ∀ i → Partial (φ ∨ ~ i) (A i))
+     → A i
+fill A φ i u = comp (λ j → A (i ∧ j)) (φ ∨ ~ i) λ where
+  j (φ = i1) → u (i ∧ j) 1=1
+  j (i = i0) → u i0 1=1
+  j (j = i0) → u i0 1=1
 ```
 
 Given the inputs to a composition --- a family of partial paths `u` and
@@ -1053,23 +1019,24 @@ face for the [square] at the start of this section.
 _··_··_ : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
         → w ≡ x → x ≡ y → y ≡ z
         → w ≡ z
-(p ·· q ·· r) i =
-  hcomp (λ j → λ { (i = i0) → p (~ j)
-                 ; (i = i1) → r j })
-        (q i)
+(p ·· q ·· r) i = hcomp (∂ i) λ where
+  j (i = i0) → p (~ j)
+  j (i = i1) → r j
+  j (j = i0) → q i
 ```
 
 Since it will be useful later, we also give an explicit name for the
 filler of the double composition square.
 
-```
+```agda
 ··-filler : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
           → (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
           → Square (sym p) q (p ·· q ·· r) r
 ··-filler p q r i j =
-  hfill (λ k → λ { (j = i0) → p (~ k)
-                 ; (j = i1) → r k })
-        (inS (q j)) i
+  hfill (∂ j) i λ where
+    k (j = i0) → p (~ k)
+    k (j = i1) → r k
+    k (k = i0) → q j
 ```
 
 We can define the ordinary, single composition by taking `p = refl`, as
@@ -1119,10 +1086,11 @@ setting the _right_ face to `refl`{.Agda}.
           → (p : x ≡ y) (q : y ≡ z)
           → Square (sym p) q (p ∙ q) refl
 ∙-filler' {x = x} {y} {z} p q j i =
-  hcomp (λ k → λ { (i = i0) → p (~ j)
-                 ; (i = i1) → q k
-                 ; (j = i0) → q (i ∧ k) })
-        (p (i ∨ ~ j))
+  hcomp (∂ i ∨ ~ j) λ where
+    k (i = i0) → p (~ j)
+    k (i = i1) → q k
+    k (j = i0) → q (i ∧ k)
+    k (k = i0) → p (i ∨ ~ j)
 ```
 
 ## Uniqueness
@@ -1152,13 +1120,12 @@ Note that the proof of this involves filling a cube in a context that
   λ i → (λ j → square i j) , (λ j k → cube i j k)
   where
     cube : (i j : I) → p (~ j) ≡ r j
-    cube i j k =
-      hfill (λ l → λ { (i = i0) → α-fill l k
-                     ; (i = i1) → β-fill l k
-                     ; (k = i0) → p (~ l)
-                     ; (k = i1) → r l
-                     })
-            (inS (q k)) j
+    cube i j k = hfill (∂ i ∨ ∂ k) j λ where
+      l (i = i0) → α-fill l k
+      l (i = i1) → β-fill l k
+      l (k = i0) → p (~ l)
+      l (k = i1) → r l
+      l (l = i0) → q k
 
     square : α ≡ β
     square i j = cube i i1 j
@@ -1167,7 +1134,6 @@ Note that the proof of this involves filling a cube in a context that
 The term `cube` above has the following cube as a boundary. Since it is
 a filler, there is a missing face at the bottom which has no name, so we
 denote it by `hcomp...` in the diagram.
-
 
 ~~~{.quiver .tall-2}
 \[\begin{tikzcd}
@@ -1425,10 +1391,10 @@ corners, and the dashed line is `coe A i i1`.
 ```agda
 coe : ∀ {ℓ : I → Level} (A : ∀ i → Type (ℓ i)) (i j : I) → A i → A j
 coe A i j a =
-  fill A (λ j → λ { (i = i0) → coe0→i A j a
-                  ; (i = i1) → coe1→i A j a
-                  })
-    (inS (coei→0 A i a)) j
+  fill A (∂ i) j λ where
+    j (i = i0) → coe0→i A j a
+    j (i = i1) → coe1→i A j a
+    j (j = i0) → coei→0 A i a
 ```
 
 As the square implies, when `j = i1`, we have the squeeze operation
@@ -1514,10 +1480,10 @@ definition is more efficient.
 to-pathp : ∀ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1}
          → coe0→1 A x ≡ y
          → PathP A x y
-to-pathp {A = A} {x} p i =
-  hcomp (λ j → λ { (i = i0) → x
-                 ; (i = i1) → p j })
-        (coe0→i A i x)
+to-pathp {A = A} {x} p i = hcomp (∂ i) λ where
+  j (i = i0) → x
+  j (i = i1) → p j
+  j (j = i0) → coe0→i A i x
 
 from-pathp : ∀ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1}
            → PathP A x y
@@ -1527,7 +1493,8 @@ from-pathp {A = A} p i = coei→1 A i (p i)
 
 These definitions illustrate how using the named squeezes and spreads
 --- `coe0→i`{.Agda}, `coei→1`{.Agda} --- can be a lot more elegant than
-trying to work out what composition to use in a `transp`{.Agda}.
+trying to work out what particular connection soup to use in a
+`transp`{.Agda}.
 
 # Path Spaces
 
@@ -1698,13 +1665,17 @@ TODO: Explain these whiskerings
 ```agda
 _◁_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ a₀' : A i0} {a₁ : A i1}
   → a₀ ≡ a₀' → PathP A a₀' a₁ → PathP A a₀ a₁
-(p ◁ q) i =
-  hcomp (λ j → λ {(i = i0) → p (~ j); (i = i1) → q i1}) (q i)
+(p ◁ q) i = hcomp (∂ i) λ where
+  j (i = i0) → p (~ j)
+  j (i = i1) → q i1
+  j (j = i0) → q i
 
 _▷_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ : A i0} {a₁ a₁' : A i1}
   → PathP A a₀ a₁ → a₁ ≡ a₁' → PathP A a₀ a₁'
-(p ▷ q) i =
-  hcomp (λ j → λ {(i = i0) → p i0; (i = i1) → q j}) (p i)
+(p ▷ q) i = hcomp (∂ i) λ where
+  j (i = i0) → p i0
+  j (i = i1) → q j
+  j (j = i0) → p i
 
 Square≡double-composite-path : ∀ {ℓ} {A : Type ℓ}
           → {w x y z : A}
@@ -1732,26 +1703,27 @@ double-composite
   → (p : x ≡ y) (q : y ≡ z) (r : z ≡ w)
   → p ·· q ·· r ≡ p ∙ q ∙ r
 double-composite p q r i j =
-  hcomp (λ k → λ { (i = i1) → ∙-filler' p (q ∙ r) k j
-                 ; (j = i0) → p (~ k)
-                 ; (j = i1) → r (i ∨ k)})
-        (∙-filler q r i j)
+  hcomp (i ∨ ∂ j) λ where
+    k (i = i1) → ∙-filler' p (q ∙ r) k j
+    k (j = i0) → p (~ k)
+    k (j = i1) → r (i ∨ k)
+    k (k = i0) → ∙-filler q r i j
 
 invert-sides : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : x ≡ z)
              → Square q p (sym q) (sym p)
-invert-sides {x = x} p q i j =
-  hcomp (λ k → λ { (i = i0) → p (k ∧ j)
-                 ; (i = i1) → q (~ j ∧ k)
-                 ; (j = i0) → q (i ∧ k)
-                 ; (j = i1) → p (~ i ∧ k)})
-        x
+invert-sides {x = x} p q i j = hcomp (∂ i ∨ ∂ j) λ where
+  k (i = i0) → p (k ∧ j)
+  k (i = i1) → q (~ j ∧ k)
+  k (j = i0) → q (i ∧ k)
+  k (j = i1) → p (~ i ∧ k)
+  k (k = i0) → x
 
 sym-∙-filler : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : y ≡ z) → I → I → I → A
 sym-∙-filler {A = A} {z = z} p q i j k =
-  hfill (λ k → λ { (i = i0) → q (k ∨ j)
-                 ; (i = i1) → p (~ k ∧ j) })
-       (inS (invert-sides q (sym p) i j))
-       k
+  hfill (∂ i) k λ where
+    l (i = i0) → q (l ∨ j)
+    l (i = i1) → p (~ l ∧ j)
+    l (l = i0) → invert-sides q (sym p) i j
 
 sym-∙ : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : y ≡ z) → sym (p ∙ q) ≡ sym q ∙ sym p
 sym-∙ p q i j = sym-∙-filler p q j i i1

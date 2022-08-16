@@ -115,16 +115,16 @@ they are included for completeness. </summary>
       open Σ (Σ-pathp-iso .snd .is-iso.inv (e .snd .is-eqv a' .is-contr.paths (r , ρ))) renaming (fst to a≡r; snd to α≡ρ)
 
       b!≡s : PB (ap (e .fst) a≡r) ctrB s
-      b!≡s i = comp (λ k → B (α≡ρ i (~ k))) (λ k → (λ
-        { (i = i0) → ctrP (~ k)
-        ; (i = i1) → σ (~ k)
-        })) b
+      b!≡s i = comp (λ k → B (α≡ρ i (~ k))) (∂ i) λ where
+        k (i = i0) → ctrP (~ k)
+        k (i = i1) → σ (~ k)
+        k (k = i0) → b
 
       coh : PathP (λ i → PB (α≡ρ i) (b!≡s i) b) ctrP σ
-      coh i j = fill (λ k → B (α≡ρ i (~ k))) (λ k → (λ
-        { (i = i0) → ctrP (~ k)
-        ; (i = i1) → σ (~ k)
-        })) (inS b) (~ j)
+      coh i j = fill (λ k → B (α≡ρ i (~ k))) (∂ i) (~ j) λ where
+        k (i = i0) → ctrP (~ k)
+        k (i = i1) → σ (~ k)
+        k (k = i0) → b
 
 Σ-assoc : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : (x : A) → B x → Type ℓ''}
         → (Σ[ x ∈ A ] Σ[ y ∈ B x ] C x y) ≃ (Σ[ x ∈ Σ _ B ] (C (x .fst) (x .snd)))

@@ -76,11 +76,13 @@ op-functor←→ {C = C} {D = D} = Functor-path (λ x → refl) λ {X} {Y} f →
       ≡ D.id
     lemma {Y} {x} =
       from-pathp {A = λ i → D.Hom (F₀ Y (transp (λ j → C.Ob) i x)) (F₀ Y (transp (λ j → C.Ob) i x))}
-        λ i →
-          hcomp (λ { j (i = i0) → D.id
-                   ; j (i = i1) → transport-filler (λ j → D.Hom (F₀ Y x) (F₀ Y x)) D.id (~ j)
-                   })
-          (coe0→i (λ j → D.Hom (F₀ Y (transp (λ j → C.Ob) (i ∨ j) x)) (F₀ Y (transp (λ j → C.Ob) (i ∨ j) x))) i D.id)
+        λ i → hcomp (∂ i) λ where
+          j (i = i0) → D.id
+          j (i = i1) → transport-filler (λ j → D.Hom (F₀ Y x) (F₀ Y x)) D.id (~ j)
+          j (j = i0) → coe0→i
+            (λ j → D.Hom (F₀ Y (transp (λ j → C.Ob) (i ∨ j) x))
+                         (F₀ Y (transp (λ j → C.Ob) (i ∨ j) x)))
+            i D.id
 
 module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {F G : Functor C D} where
   private

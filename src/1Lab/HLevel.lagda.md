@@ -130,11 +130,10 @@ own names:
 
 ```agda
 is-contr→is-prop : is-contr A → is-prop A
-is-contr→is-prop C x y i =
-  hcomp (λ j → λ { (i = i0) → C .paths x j
-                 ; (i = i1) → C .paths y j
-                 } )
-        (C .centre)
+is-contr→is-prop C x y i = hcomp (∂ i) λ where
+  j (i = i0) → C .paths x j
+  j (i = i1) → C .paths y j
+  j (j = i0) → C .centre
 ```
 
 <!--
@@ -144,8 +143,10 @@ SingletonP A a = Σ[ x ∈ A i1 ] PathP A a x
 
 SinglP-is-contr : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → is-contr (SingletonP A a)
 SinglP-is-contr A a .centre = _ , transport-filler (λ i → A i) a
-SinglP-is-contr A a .paths (x , p) i =
-  _ , λ j → fill A (λ j → λ {(i = i0) → transport-filler (λ i → A i) a j; (i = i1) → p j}) (inS a) j
+SinglP-is-contr A a .paths (x , p) i = _ , λ j → fill A (∂ i) j λ where
+  j (i = i0) → coe0→i A j a
+  j (i = i1) → p j
+  j (j = i0) → a
 
 SinglP-is-prop : ∀ {ℓ} {A : I → Type ℓ} {a : A i0} → is-prop (SingletonP A a)
 SinglP-is-prop = is-contr→is-prop (SinglP-is-contr _ _)
@@ -183,13 +184,12 @@ cubical description is, however, slightly more efficient.
 
 ```agda
 is-prop→is-set : is-prop A → is-set A
-is-prop→is-set h x y p q i j =
-  hcomp (λ k → λ { (i = i0) → h x (p j) k
-                 ; (i = i1) → h x (q j) k
-                 ; (j = i0) → h x x k
-                 ; (j = i1) → h x y k
-                 })
-        x
+is-prop→is-set h x y p q i j = hcomp (∂ i ∨ ∂ j) λ where
+  k (i = i0) → h x (p j) k
+  k (i = i1) → h x (q j) k
+  k (j = i0) → h x x k
+  k (j = i1) → h x y k
+  k (k = i0) → x
 ```
 
 The proof that any proposition is a set is slightly more complicated.
@@ -319,11 +319,12 @@ most one way!
 is-contr-is-prop : is-prop (is-contr A)
 is-contr-is-prop {A = A} (contr c₁ h₁) (contr c₂ h₂) i =
   record { centre = h₁ c₂ i
-         ; paths = λ x j → hcomp (λ k → λ { (i = i0) → h₁ (h₁ x j) k
-                                          ; (i = i1) → h₁ (h₂ x j) k
-                                          ; (j = i0) → h₁ (h₁ c₂ i) k
-                                          ; (j = i1) → h₁ x k })
-                                 c₁
+         ; paths = λ x j → hcomp (∂ i ∨ ∂ j) λ where
+            k (i = i0) → h₁ (h₁ x j) k
+            k (i = i1) → h₁ (h₂ x j) k
+            k (j = i0) → h₁ (h₁ c₂ i) k
+            k (j = i1) → h₁ x k
+            k (k = i0) → c₁
          }
 ```
 
@@ -408,11 +409,13 @@ is-prop→squarep
   → (r : PathP (λ j → B j i1) b d)
   → SquareP B p q s r
 is-prop→squarep {B = B} is-propB {a = a} p q s r i j =
-  hcomp (λ { k (j = i0) → is-propB i j (base i j) (p i) k
-           ; k (j = i1) → is-propB i j (base i j) (r i) k
-           ; k (i = i0) → is-propB i j (base i j) (q j) k
-           ; k (i = i1) → is-propB i j (base i j) (s j) k
-        }) (base i j) where
+  hcomp (∂ j ∨ ∂ i) λ where
+    k (j = i0) → is-propB i j (base i j) (p i) k
+    k (j = i1) → is-propB i j (base i j) (r i) k
+    k (i = i0) → is-propB i j (base i j) (q j) k
+    k (i = i1) → is-propB i j (base i j) (s j) k
+    k (k = i0) → base i j
+  where
     base : (i j : I) → B i j
     base i j = transport (λ k → B (i ∧ k) (j ∧ k)) a
 

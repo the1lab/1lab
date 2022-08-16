@@ -136,14 +136,13 @@ Hom-transport : ∀ {A B C D} (p : A ≡ C) (q : B ≡ D) (h : Hom A B)
               → transport (λ i → Hom (p i) (q i)) h
               ≡ path→iso q .to ∘ h ∘ path→iso p .from
 Hom-transport {A = A} {B} {D = D} p q h i =
-  comp (λ j → Hom (p (i ∨ j)) (q (i ∨ j)))
-       (λ { j (i = i0) → coe0→i (λ k → Hom (p (j ∧ k)) (q (j ∧ k))) j h
-          ; j (i = i1) → path→iso q .to ∘ h ∘ path→iso p .from
-          })
-       (hcomp (λ { j (i = i0) → idl (idr h j) j
-                 ; j (i = i1) → q′ i1 ∘ h ∘ p′ i1
-                 })
-              (q′ i ∘ h ∘ p′ i))
+  comp (λ j → Hom (p (i ∨ j)) (q (i ∨ j))) (∂ i) λ where
+    j (i = i0) → coe0→i (λ k → Hom (p (j ∧ k)) (q (j ∧ k))) j h
+    j (i = i1) → path→iso q .to ∘ h ∘ path→iso p .from
+    j (j = i0) → hcomp (∂ i) λ where
+       j (i = i0) → idl (idr h j) j
+       j (i = i1) → q′ i1 ∘ h ∘ p′ i1
+       j (j = i0) → q′ i ∘ h ∘ p′ i
   where
     p′ : PathP _ id (path→iso p .from)
     p′ i = coe0→i (λ j → Hom (p (i ∧ j)) A) i id

@@ -81,13 +81,12 @@ private
   pathsS∞ : (x : S∞) → N ≡ x
   pathsS∞ N = refl
   pathsS∞ S = merid N
-  pathsS∞ (merid x i) j =
-    hcomp
-      (λ k → λ { (i = i0) → N
-               ; (i = i1) → merid N j
-               ; (j = i0) → N
-               ; (j = i1) → merid (pathsS∞ x k) i})
-      (merid N (i ∧ j))
+  pathsS∞ (merid x i) j = hcomp (∂ i ∨ ∂ j) λ where
+    k (k = i0) → merid N (i ∧ j)
+    k (i = i0) → N
+    k (j = i0) → N
+    k (i = i1) → merid N j
+    k (j = i1) → merid (pathsS∞ x k) i
 
 is-contrS∞ : is-contr S∞
 is-contrS∞ .centre = N

@@ -94,6 +94,10 @@ infixr -1 _$_
 _$_ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : A → Type ℓ₂} → ((x : A) → B x) → ((x : A) → B x)
 f $ x = f x
 {-# INLINE _$_ #-}
+
+_$ₛ_ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : A → SSet ℓ₂} → ((x : A) → B x) → ((x : A) → B x)
+f $ₛ x = f x
+{-# INLINE _$ₛ_ #-}
 ```
 
 <!--

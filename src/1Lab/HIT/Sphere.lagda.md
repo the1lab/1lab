@@ -118,13 +118,12 @@ using lemmas on transport in pathspaces. </summary>
       loop                                     ∎)
   iso-pf .linv N = refl
   iso-pf .linv S = merid S
-  iso-pf .linv (merid N i) j =
-    hcomp
-      (λ k → λ { (i = i0) → N
-               ; (i = i1) → merid S (j ∨ ~ k)
-               ; (j = i0) → ∙-filler (merid N) (sym (merid S)) k i
-               ; (j = i1) → merid N i})
-      (merid N i)
+  iso-pf .linv (merid N i) j = hcomp (∂ i ∨ ∂ j) λ where
+    k (k = i0) → merid N i
+    k (i = i0) → N
+    k (i = i1) → merid S (j ∨ ~ k)
+    k (j = i0) → ∙-filler (merid N) (sym (merid S)) k i
+    k (j = i1) → merid N i
   iso-pf .linv (merid S i) j =
     merid S (i ∧ j)
 ```

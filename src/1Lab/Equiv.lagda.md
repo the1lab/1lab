@@ -117,10 +117,10 @@ is-eqv' : ∀ {a b} (A : Type a) (B : Type b)
         → Partial ψ (fibre (w .fst) a)
         → fibre (w .fst) a
 is-eqv' A B (f , is-equiv) a ψ u0 =
-  hcomp (λ i → λ { (ψ = i0) → c .centre
-                 ; (ψ = i1) → c .paths (u0 1=1) i
-                 })
-        (c .centre)
+  hcomp (∂ ψ) λ where
+    i (ψ = i0) → c .centre
+    i (ψ = i1) → c .paths (u0 1=1) i
+    i (i = i0) → c .centre
   where c = is-equiv .is-eqv a
 
 {-# BUILTIN EQUIVPROOF is-eqv' #-}
@@ -161,12 +161,12 @@ is-equiv-is-prop : (f : A → B) → is-prop (is-equiv f)
 is-equiv-is-prop f p q i .is-eqv y =
   let p2 = p .is-eqv y .paths
       q2 = q .is-eqv y .paths
-  in contr (p2 (q .is-eqv y .centre) i)
-      λ w j → hcomp (λ k → λ { (i = i0) → p2 w j
-                             ; (i = i1) → q2 w (j ∨ ~ k)
-                             ; (j = i0) → p2 (q2 w (~ k)) i
-                             ; (j = i1) → w })
-                    (p2 w (i ∨ j))
+  in contr (p2 (q .is-eqv y .centre) i) λ w j → hcomp (∂ i ∨ ∂ j) λ where
+     k (i = i0) → p2 w j
+     k (i = i1) → q2 w (j ∨ ~ k)
+     k (j = i0) → p2 (q2 w (~ k)) i
+     k (j = i1) → w
+     k (k = i0) → p2 w (i ∨ j)
 ```
 </details>
 
@@ -224,13 +224,12 @@ equiv→unit {f = f} eqv x i = eqv .is-eqv (f x) .paths (x , refl) i .fst
 equiv→zig
   : ∀ {f : A → B} (eqv : is-equiv f) x
   → ap f (equiv→unit eqv x) ≡ equiv→counit eqv (f x)
-equiv→zig {f = f} eqv x i j = hcomp
-  (λ { k (i = i0) → f (equiv→unit eqv x j)
-     ; k (i = i1) → equiv→counit eqv (f x) (j ∨ ~ k)
-     ; k (j = i0) → equiv→counit eqv (f x) (i ∧ ~ k)
-     ; k (j = i1) → f x
-     })
-  (eqv .is-eqv (f x) .paths (x , refl) j .snd i)
+equiv→zig {f = f} eqv x i j = hcomp (∂ i ∨ ∂ j) λ where
+   k (i = i0) → f (equiv→unit eqv x j)
+   k (i = i1) → equiv→counit eqv (f x) (j ∨ ~ k)
+   k (j = i0) → equiv→counit eqv (f x) (i ∧ ~ k)
+   k (j = i1) → f x
+   k (k = i0) → eqv .is-eqv (f x) .paths (x , refl) j .snd i
 
 is-equiv→is-iso : {f : A → B} → is-equiv f → is-iso f
 is-iso.inv (is-equiv→is-iso eqv) = equiv→inverse eqv
@@ -333,16 +332,16 @@ a name: $\theta$.
 
 ```agda
     π₀ : g y ≡ x0
-    π₀ i = hcomp (λ k → λ { (i = i0) → g y
-                          ; (i = i1) → t x0 k
-                          })
-                    (g (p0 (~ i)))
+    π₀ i = hcomp (∂ i) λ where
+      k (i = i0) → g y
+      k (i = i1) → t x0 k
+      k (k = i0) → g (p0 (~ i))
 
     θ₀ : Square (ap g (sym p0)) refl (t x0) π₀
-    θ₀ i j = hfill (λ k → λ { (i = i0) → g y
-                            ; (i = i1) → t x0 k
-                            })
-                   (inS (g (p0 (~ i)))) j
+    θ₀ i j = hfill (∂ i) j λ where
+      k (i = i0) → g y
+      k (i = i1) → t x0 k
+      k (k = i0) → g (p0 (~ i))
 ```
 
 Since the construction of $\pi_1$ is analogous, I'll simply present the
@@ -366,16 +365,16 @@ $\theta_1$.
 
 ```agda
     π₁ : g y ≡ x1
-    π₁ i = hcomp (λ k → λ { (i = i0) → g y
-                          ; (i = i1) → t x1 k
-                          })
-                    (g (p1 (~ i)))
+    π₁ i = hcomp (∂ i) λ where
+      j (i = i0) → g y
+      j (i = i1) → t x1 j
+      j (j = i0) → g (p1 (~ i))
 
     θ₁ : Square (ap g (sym p1)) refl (t x1) π₁
-    θ₁ i j = hfill (λ k → λ { (i = i0) → g y
-                            ; (i = i1) → t x1 k
-                            })
-                      (inS (g (p1 (~ i)))) j
+    θ₁ i j = hfill (∂ i) j λ where
+      j (i = i0) → g y
+      j (i = i1) → t x1 j
+      j (j = i0) → g (p1 (~ i))
 ```
 </div>
 
@@ -399,10 +398,10 @@ over the line $g\ y ≡ \pi\ i$.
 
 ```agda
     π : x0 ≡ x1
-    π i = hcomp (λ k → λ { (i = i0) → π₀ k
-                         ; (i = i1) → π₁ k
-                         })
-                (g y)
+    π i = hcomp (∂ i) λ where
+      j (j = i0) → g y
+      j (i = i0) → π₀ j
+      j (i = i1) → π₁ j
 ```
 </div>
 
@@ -415,10 +414,10 @@ filler for the square above.
 
 ```agda
     θ : Square refl π₀ π₁ π
-    θ i j = hfill (λ k → λ { (i = i1) → π₁ k
-                           ; (i = i0) → π₀ k
-                           })
-                      (inS (g y)) j
+    θ i j = hfill (∂ i) j λ where
+      k (i = i1) → π₁ k
+      k (i = i0) → π₀ k
+      k (k = i0) → g y
 ```
 
 Observe that we can coherently alter $\theta$ to get $\iota$ below,
@@ -427,12 +426,12 @@ identified.
 
 ```agda
     ι : Square (ap (g ∘ f) π) (ap g p0) (ap g p1) refl
-    ι i j = hcomp (λ k → λ { (i = i0) → θ₀ (~ j) (~ k)
-                           ; (i = i1) → θ₁ (~ j) (~ k)
-                           ; (j = i0) → t (π i) (~ k)
-                           ; (j = i1) → g y
-                           })
-                  (θ i (~ j))
+    ι i j = hcomp (∂ i ∨ ∂ j) λ where
+      k (k = i0) → θ i (~ j)
+      k (i = i0) → θ₀ (~ j) (~ k)
+      k (i = i1) → θ₁ (~ j) (~ k)
+      k (j = i0) → t (π i) (~ k)
+      k (j = i1) → g y
 ```
 
 This composition can be visualised as the _red_ (front) face in the
@@ -477,12 +476,12 @@ above to get what we wanted: $p_0 ≡ p_1$.
 
 ```agda
     sq1 : Square (ap f π) p0 p1 refl
-    sq1 i j = hcomp (λ k → λ { (i = i0) → s (p0 j) k
-                             ; (i = i1) → s (p1 j) k
-                             ; (j = i0) → s (f (π i)) k
-                             ; (j = i1) → s y k
-                             })
-                    (f (ι i j))
+    sq1 i j = hcomp (∂ i ∨ ∂ j) λ where
+       k (i = i0) → s (p0 j) k
+       k (i = i1) → s (p1 j) k
+       k (j = i0) → s (f (π i)) k
+       k (j = i1) → s y k
+       k (k = i0) → f (ι i j)
 ```
 
 The composition above can be visualised as the front (red) face in the

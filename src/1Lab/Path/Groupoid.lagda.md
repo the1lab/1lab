@@ -165,12 +165,11 @@ have to do this once!
 
 ```agda
   ∙-inv-r : ∀ {x y : A} (p : x ≡ y) → p ∙ sym p ≡ refl
-  ∙-inv-r {x = x} p i j =
-    hcomp (λ l → λ { (j = i0) → x
-                   ; (j = i1) → p (~ l ∧ ~ i)
-                   ; (i = i1) → x
-                   })
-          (p (j ∧ ~ i))
+  ∙-inv-r {x = x} p i j = hcomp (∂ j ∨ i) λ where
+    k (j = i0) → x
+    k (i = i1) → x
+    k (j = i1) → p (~ k ∧ ~ i)
+    k (k = i0) → p (j ∧ ~ i)
 ```
 
 For the other direction, we use the fact that `p` is definitionally
@@ -205,12 +204,11 @@ ap f q` as the right face.
 ```agda
   ap-comp-path : (f : A → B) {x y z : A} (p : x ≡ y) (q : y ≡ z)
                → ap f (p ∙ q) ≡ ap f p ∙ ap f q
-  ap-comp-path f {x} p q i j =
-    hcomp (λ k → λ { (i = i0) → f (∙-filler p q k j)
-                   ; (j = i0) → f x
-                   ; (j = i1) → f (q k)
-                   })
-          (f (p j))
+  ap-comp-path f {x} p q i j = hcomp (∂ j ∨ ~ i) λ where
+    k (i = i0) → f (∙-filler p q k j)
+    k (j = i0) → f x
+    k (j = i1) → f (q k)
+    k (k = i0) → f (p j)
 ```
 
 ### Convenient helpers

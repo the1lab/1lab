@@ -254,13 +254,12 @@ hlevel→hubs-and-spokes {A = A} (suc n) h =
     r : (x : Sⁿ⁻¹ (2 + n)) → f N ≡ f x
     r N = refl
     r S = h (f N) (f S) (λ x i → f (merid x i)) .fst
-    r (merid x i) j =
-      hcomp (λ { k (i = i0) → f N
-               ; k (i = i1) → h (f N) (f S) (λ x i → f (merid x i)) .snd x k j
-               ; k (j = i0) → f N
-               ; k (j = i1) → f (merid x i)
-               })
-            (f (merid x (i ∧ j)))
+    r (merid x i) j = hcomp (∂ i ∨ ∂ j) λ where
+       k (i = i0) → f N
+       k (i = i1) → h (f N) (f S) (λ x i → f (merid x i)) .snd x k j
+       k (j = i0) → f N
+       k (j = i1) → f (merid x i)
+       k (k = i0) → f (merid x (i ∧ j))
 
 hubs-and-spokes→hlevel {A = A} zero spheres x y
   = spheres map .snd N ∙ sym (spheres map .snd S) where
@@ -281,17 +280,15 @@ hubs-and-spokes→hlevel {A = A} (suc n) spheres x y =
     f' (merid u i) = f u i
 
     r : (s : Sⁿ⁻¹ (1 + n)) → f s ≡ h f' .snd N ∙ sym (h f' .snd S)
-    r s i j = hcomp
-      (λ { k (i = i0) → h f' .snd (merid s j) (~ k)
-         ; k (i = i1) →
-          hfill (λ { l (j = i0) → x
-                   ; l (j = i1) → h f' .snd S (~ l)
-                   })
-            (inS (h f' .snd N j)) k
-         ; k (j = i0) → h f' .snd N (~ i ∧ ~ k)
-         ; k (j = i1) → h f' .snd S (~ k)
-         })
-      (h f' .snd N (~ i ∨ j))
+    r s i j = hcomp (∂ i ∨ ∂ j) λ where
+      k (k = i0) → h f' .snd N (~ i ∨ j)
+      k (i = i0) → h f' .snd (merid s j) (~ k)
+      k (i = i1) → hfill (∂ j) k λ where
+        l (j = i0) → x
+        l (j = i1) → h f' .snd S (~ l)
+        l (l = i0) → h f' .snd N j
+      k (j = i0) → h f' .snd N (~ i ∧ ~ k)
+      k (j = i1) → h f' .snd S (~ k)
 ```
 -->
 

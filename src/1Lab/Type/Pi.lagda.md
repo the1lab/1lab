@@ -93,13 +93,10 @@ funext-dep
   → PathP (λ i → (x : A i) → B i x) f g
 
 funext-dep {A = A} {B} {f} {g} h i x =
-  comp
-    (λ k → B i (coei→i A i x k))
-    (λ k → λ
-      { (i = i0) → f (coei→i A i0 x k)
-      ; (i = i1) → g (coei→i A i1 x k)
-      })
-    (h (λ j → coe A i j x) i)
+  comp (λ k → B i (coei→i A i x k)) (∂ i) λ where
+    k (i = i0) → f (coei→i A i0 x k)
+    k (i = i1) → g (coei→i A i1 x k)
+    k (k = i0) → h (λ j → coe A i j x) i
 ```
 
 A very ugly cubical argument shows that this function is an equivalence:
@@ -121,24 +118,19 @@ funext-dep≃ {A = A} {B} {f} {g} = Iso→Equiv isom where
   isom .snd .is-iso.inv q p i = q i (p i)
 
   isom .snd .rinv q m i x =
-    comp
-      (λ k → B i (coei→i A i x (k ∨ m)))
-      (λ k → λ
-        { (i = i0) → f (coei→i A i0 x (k ∨ m))
-        ; (i = i1) → g (coei→i A i1 x (k ∨ m))
-        ; (m = i1) → q i x
-        })
-      (q i (coei→i A i x m))
+    comp (λ k → B i (coei→i A i x (k ∨ m))) (∂ i ∨ m) λ where
+      k (k = i0) → q i (coei→i A i x m)
+      k (i = i0) → f (coei→i A i0 x (k ∨ m))
+      k (i = i1) → g (coei→i A i1 x (k ∨ m))
+      k (m = i1) → q i x
 
   isom .snd .linv h m p i =
-    comp
-      (λ k → B i (lemi→i m k))
-      (λ k → λ
-        { (i = i0) → f (lemi→i m k)
-        ; (i = i1) → g (lemi→i m k)
-        ; (m = i1) → h p i
-        })
-      (h (λ j → lemi→j j m) i)
+    comp (λ k → B i (lemi→i m k)) (∂ i ∨ m) λ where
+      k (k = i0) → h (λ j → lemi→j j m) i
+      k (i = i0) → f (lemi→i m k)
+      k (i = i1) → g (lemi→i m k)
+      k (m = i1) → h p i
+
     where
     lemi→j : ∀ j → coe A i j (p i) ≡ p j
     lemi→j j =

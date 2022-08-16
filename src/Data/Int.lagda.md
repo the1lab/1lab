@@ -108,20 +108,19 @@ quot-diamond : (a b : Nat)
              → Square (quot a b) (quot a b)
                       (quot (suc a) (suc b))
                       (quot (suc a) (suc b))
-quot-diamond a b i j =
-  hcomp (λ k → λ { (i = i0) → quot a b j
-                 ; (i = i1) → quot (suc a) (suc b) (j ∧ k)
-                 ; (j = i0) → quot a b i
-                 ; (j = i1) → quot (suc a) (suc b) (i ∧ k)
-                 })
-        (quot a b (i ∨ j))
+quot-diamond a b i j = hcomp (∂ i ∨ ∂ j) λ where
+  k (i = i0) → quot a b j
+  k (i = i1) → quot (suc a) (suc b) (j ∧ k)
+  k (j = i0) → quot a b i
+  k (j = i1) → quot (suc a) (suc b) (i ∧ k)
+  k (k = i0) → quot a b (i ∨ j)
 
 quot-triangle : (a b : Nat) (i : I) → diff a b ≡ quot a b i
-quot-triangle a b i j = hcomp (λ k → λ
-  { (i = i0) → diff a b
-  ; (j = i0) → diff a b
-  ; (j = i1) → quot a b (i ∧ k)
-  }) (diff a b)
+quot-triangle a b i j = hcomp (∂ j ∨ ~ i) λ where
+  k (i = i0) → diff a b
+  k (j = i0) → diff a b
+  k (k = i0) → diff a b
+  k (j = i1) → quot a b (i ∧ k)
 ```
 -->
 
