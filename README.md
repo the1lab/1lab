@@ -43,13 +43,13 @@ development which supports compilation of the HTML and SVG files, in
 addition to the Agda.
 
 You can then use Nix to compile the project as usual. As a quick point
-of reference, `nix build` will type-check and compile the entire thing,
+of reference, `nix-build` will type-check and compile the entire thing,
 and copy the necessary assets (TeX Gyre Pagella and KaTeX css/fonts) to
 the right locations. The result will be linked as `./result`, which can
 then be used to serve a website:
 
 ```bash
-$ nix build
+$ nix-build
 $ python -m http.server --directory result
 ```
 

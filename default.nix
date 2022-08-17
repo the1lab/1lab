@@ -9,8 +9,6 @@ let
     fsnotify
   ]);
 
-  static-agda = import ./support/nix/static-agda.nix;
-
   our-texlive = texlive.combine {
     inherit (texlive)
       collection-basic
@@ -22,10 +20,9 @@ let
       varwidth xkeyval standalone;
   };
 
-  shakefile = import ./support/nix/build-shake.nix
+  shakefile = callPackage ./support/nix/build-shake.nix
     {
       inherit our-ghc haskellPackages;
-      inherit (pkgs) removeReferencesTo stdenv upx lua5_3 gmp;
       name = "1lab-shake";
       main = "Main.hs";
     };
@@ -56,15 +53,15 @@ in
     '';
 
     installPhase = ''
-    mkdir -p $out{,/css/,/lib/};
+    mkdir -p $out{,/css/}
 
     # Copy our build artifacts
-    cp -Lrv _build/html/* $out;
+    cp -Lrvf _build/html/* $out
 
     # Copy KaTeX CSS and fonts
-    cp -Lrv --no-preserve=mode ${nodePackages.katex}/lib/node_modules/katex/dist/{katex.min.css,fonts} $out/css/;
+    cp -Lrvf --no-preserve=mode ${nodePackages.katex}/lib/node_modules/katex/dist/{katex.min.css,fonts} $out/css/
     mkdir -p $out/static/ttf/
-    cp -Lrv --no-preserve=mode ${pkgs.julia-mono}/share/fonts/truetype/JuliaMono-Regular.ttf $out/static/ttf/julia-mono.ttf
+    cp -Lrvf --no-preserve=mode ${pkgs.julia-mono}/share/fonts/truetype/JuliaMono-Regular.ttf $out/static/ttf/julia-mono.ttf
     '';
 
     passthru = {
@@ -81,10 +78,9 @@ in
       texlive = our-texlive;
       ghc = our-ghc;
       inherit fonts shakefile;
-      agda-typed-html = import ./support/nix/build-shake.nix
+      agda-typed-html = callPackage ./support/nix/build-shake.nix
         {
           inherit our-ghc haskellPackages;
-          inherit (pkgs) removeReferencesTo stdenv upx lua5_3 gmp;
           main = "Wrapper.hs";
           name = "agda-typed-html";
         };

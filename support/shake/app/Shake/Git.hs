@@ -15,6 +15,11 @@ import Data.Generics
 import Development.Shake.Classes (Hashable, Binary, NFData)
 import Development.Shake
 
+-- | Set `--git-dir` explicitly to turn off repository discovery and work
+-- around https://github.blog/2022-04-12-git-security-vulnerability-announced/
+gitCommand :: CmdResult r => [String] -> Action r
+gitCommand args = command [] "git" (["--git-dir", ".git"] ++ args)
+
 newtype GitCommit = GitCommit ()
   deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
 
@@ -38,11 +43,11 @@ doGitAuthors (GitAuthors path) = do
   _commit <- gitCommit -- We depend on the commit, but don't actually need it.
 
   -- Sort authors list and make it unique.
-  Stdout authors <- command [] "git" ["log", "--format=%aN", "--", path]
+  Stdout authors <- gitCommand ["log", "--format=%aN", "--", path]
   let authorSet = Set.fromList . Text.lines . Text.decodeUtf8 $ authors
 
   Stdout coauthors <-
-    command [] "git" ["log", "--format=%(trailers:key=Co-authored-by,valueonly)", "--", path]
+    gitCommand ["log", "--format=%(trailers:key=Co-authored-by,valueonly)", "--", path]
 
   let
     coauthorSet = Set.fromList
@@ -59,7 +64,7 @@ doGitAuthors (GitAuthors path) = do
 gitRules :: Rules()
 gitRules = versioned 1 do
   _ <- addOracle \(GitCommit ()) -> do
-    Stdout t <- command [] "git" ["rev-parse", "--verify", "HEAD"]
+    Stdout t <- gitCommand ["rev-parse", "--verify", "HEAD"]
     pure (head (lines t))
 
   _ <- addOracleCache doGitAuthors

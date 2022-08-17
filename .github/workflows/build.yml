@@ -10,9 +10,9 @@ jobs:
 
     steps:
       - name: Checkout ⬇️
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # we need the commit history for authors
 
       - name: Get Shakefile version
         run: sha256sum /bin/1lab-shake | cut -d' ' -f1 > .shake-version
@@ -28,8 +28,6 @@ jobs:
       - name: Build 🛠️
         run: |
           echo "$mailmap" > .mailmap
-          ln -sf $NODE_DEPS_PATH .
-          git config --global --add safe.directory /__w/1lab/1lab
           1lab-shake all -j
           ./support/make-site.sh
 
