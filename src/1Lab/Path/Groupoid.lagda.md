@@ -11,6 +11,16 @@ open import 1Lab.Type
 module 1Lab.Path.Groupoid where
 ```
 
+<!--
+```agda
+_ = Path
+_ = hfill
+_ = ap-refl
+_ = ap-comp-path
+_ = ap-sym
+```
+-->
+
 # Types are Groupoids
 
 The `Path`{.Agda} types equip every `Type`{.Agda} with the structure of
@@ -45,7 +55,7 @@ module WithJ where
     w x y z : A
 ```
 
-First, we (re)define the operations using J. These will be closer to the
+First, we (re)define the operations using `J`{.Agda}. These will be closer to the
 structure given in the book.
 
 ```agda
@@ -65,7 +75,7 @@ path - `refl`{.Agda} - acts as an identity for path composition.
 ```
 
 This isn't as straightforward as it would be in "Book HoTT" because -
-remember - J doesn't compute definitionally, only up to the path
+remember - `J`{.Agda} doesn't compute definitionally, only up to the path
 `J-refl`{.Agda}.  Now the other identity law:
 
 ```agda
