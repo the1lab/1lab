@@ -16,6 +16,8 @@ import Data.Generics
 import Development.Shake.Classes (Hashable, Binary, NFData)
 import Development.Shake
 
+import Shake.Utils
+
 newtype LatexEquation = LatexEquation (Bool, Text)
   deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
 
@@ -37,7 +39,7 @@ katexRules = versioned 1 do
 
     let args = ["-f", ".macros", "-t"] ++ ["-d" | display]
         stdin = LazyBS.fromStrict $ Text.encodeUtf8 tex
-    Stdout out <- command [StdinBS stdin] "katex" args
+    Stdout out <- nodeCommand [StdinBS stdin] "katex" args
     pure . Text.stripEnd . Text.decodeUtf8 $ out
 
   pure ()
