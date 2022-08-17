@@ -56,6 +56,7 @@ executable shake
       , Shake.Modules
       , Shake.Options
       , Shake.SearchData
+      , Shake.Utils
       , Timer
     default-language: Haskell2010
     ghc-options: -Wextra -Wall -Wno-name-shadowing -Wno-implicit-prelude

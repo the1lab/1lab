@@ -15,10 +15,7 @@ import Data.Generics
 import Development.Shake.Classes (Hashable, Binary, NFData)
 import Development.Shake
 
--- | Set `--git-dir` explicitly to turn off repository discovery and work
--- around https://github.blog/2022-04-12-git-security-vulnerability-announced/
-gitCommand :: CmdResult r => [String] -> Action r
-gitCommand args = command [] "git" (["--git-dir", ".git"] ++ args)
+import Shake.Utils
 
 newtype GitCommit = GitCommit ()
   deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
