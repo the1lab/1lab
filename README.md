@@ -1,7 +1,7 @@
 [![Discord](https://img.shields.io/discord/914172963157323776?label=Discord&logo=discord)](https://discord.gg/Zp2e8hYsuX)
 [![Build 1Lab](https://github.com/plt-amy/cubical-1lab/actions/workflows/build.yml/badge.svg)](https://github.com/plt-amy/cubical-1lab/actions/workflows/build.yml)
 
-# [1Lab](https://cubical.1lab.dev)
+# [1Lab](https://1lab.dev)
 
 A formalised, cross-linked reference resource for mathematics done in
 Homotopy Type Theory. Unlike the HoTT book, the 1lab is not a “linear”
