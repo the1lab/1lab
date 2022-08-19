@@ -407,7 +407,7 @@ _already the limit_ of $\id{Dia}$!
 Finally, we say a functor _creates_ limits of shape $\id{Dia}$ if it
 both preserves _and_ reflects those limits. Intuitively, this means that
 the limits of shape $\id{Dia}$ in $\ca{C}$ are in a 1-1 correspondence
-with the limits $F \circ id{Dia}$ in $\ca{D}$.
+with the limits $F \circ \id{Dia}$ in $\ca{D}$.
 
 ```agda
   record Creates-limit (K : Cone Dia) : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
