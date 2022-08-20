@@ -114,13 +114,13 @@ and extensibility.
 is-eqv' : ∀ {a b} (A : Type a) (B : Type b)
         → (w : A ≃ B) (a : B)
         → (ψ : I)
-        → Partial ψ (fibre (w .fst) a)
-        → fibre (w .fst) a
-is-eqv' A B (f , is-equiv) a ψ u0 =
+        → (p : Partial ψ (fibre (w .fst) a))
+        → fibre (w .fst) a [ ψ ↦ p ]
+is-eqv' A B (f , is-equiv) a ψ u0 = inS (
   hcomp (∂ ψ) λ where
     i (ψ = i0) → c .centre
     i (ψ = i1) → c .paths (u0 1=1) i
-    i (i = i0) → c .centre
+    i (i = i0) → c .centre)
   where c = is-equiv .is-eqv a
 
 {-# BUILTIN EQUIVPROOF is-eqv' #-}
