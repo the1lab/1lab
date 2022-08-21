@@ -4,6 +4,7 @@ open import Algebra.Group
 open import Algebra.Ring
 
 open import Cat.Functor.FullSubcategory
+open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
 open import Cat.Prelude
@@ -151,3 +152,57 @@ $R$-modules_.
 R-Mod : ∀ {ℓ} ℓ′ (R : Ring ℓ) → Precategory (ℓ ⊔ lsuc ℓ′) (ℓ ⊔ ℓ′)
 R-Mod ℓ′ R = Fibre (Mods _ ℓ′) R
 ```
+
+## As a fibration
+
+Let us prove that `Mods`{.Agda} is not just displayed over the category
+of rings, but fibred over it, too. But this is essentially something we
+have already done: the data of a Cartesian fibration is essentially that
+of a functorial reindexing of the fibres by morphisms in the base, but
+this is given exactly by the restriction of scalars we defined above.
+
+```agda
+Mods-fibration : ∀ ℓ ℓ′ → Cartesian-fibration (Mods ℓ ℓ′)
+Mods-fibration ℓ ℓ′ = mods where
+  open Cartesian-fibration
+  open Cartesian-lift
+  open Cartesian
+```
+
+So, given a map $f : R \to S$ and an $S$-module $N$, how do we find a
+universal $R$-module $X$ making the following diagram cartesian? Well,
+I've already explained the answer, but our hand is essentially forced by
+the definition of maps-over in `Mods`{.Agda}. Since $R$-$S$-linear maps
+over $f : R \to S$ are defined as maps $X \to f^*(N)$, the freest choice
+we can make is that which makes the identity function $R$-$S$-linear:
+simply take $X = f^*(N)$.
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  {f^*(N)} && N \\
+  \\
+  R && S
+  \arrow["f"', from=3-1, to=3-3]
+  \arrow[Bar-{Triangle[open]}, from=1-3, to=3-3]
+  \arrow[from=1-1, to=1-3]
+  \arrow[Bar-{Triangle[open]}, from=1-1, to=3-1]
+  \arrow[dr, phantom, "\lrcorner", very near start, from=1-1, to=3-3]
+\end{tikzcd}\]
+~~~
+
+```agda
+  mods : Cartesian-fibration (Mods ℓ ℓ′)
+  mods .has-lift f N = the-lift where
+    the-lift : Cartesian-lift (Mods ℓ ℓ′) f N
+    the-lift .x′ = Scalar-restriction f N
+    the-lift .lifting .fst x = x
+    the-lift .lifting .snd r m s n = refl
+    the-lift .cartesian .universal m h′ = h′
+    the-lift .cartesian .commutes {u′ = u′} m h′ =
+       R-S-linear-map-path u′ N (f Rings.∘ m) refl
+    the-lift .cartesian .unique {u′ = u′} {m} m′ p =
+      R-S-linear-map-path u′ N (f Rings.∘ m) (ap fst p)
+```
+
+It is straightforward to calculate that this choice indeed furnishes a
+Cartesian lift of $f$.

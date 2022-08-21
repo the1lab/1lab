@@ -30,7 +30,7 @@ body {
   &.sans-serif {
     --serif: "";
     --font-size: 18pt;
-    --code-font-size: var(--font-size);
+    --code-font-size: calc(0.95 * var(--font-size));
   }
 
   width: 100%;
