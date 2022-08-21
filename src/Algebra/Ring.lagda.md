@@ -180,6 +180,7 @@ Rings ℓ = precat where
     where open Ring-on (A .snd) using (magma-hlevel)
   precat .assoc {z = Z} f g h = Σ-prop-path (λ _ → hlevel 1) refl
     where open Ring-on (Z .snd) using (magma-hlevel)
+module Rings {ℓ} = Precategory (Rings ℓ)
 ```
 -->
 
