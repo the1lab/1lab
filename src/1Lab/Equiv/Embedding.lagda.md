@@ -80,49 +80,6 @@ between-sets-injective≃has-prop-fibres aset bset f =
            (has-prop-fibres→injective f)
 ```
 
-However, for more general types, like the circle, this fails: A function
-can have propositional fibres in at most one way, but a function can be
-injective in more than one. Consider the following two witnesses of
-injectivity for the identity map of the circle, i.e., two functions $x =
-y → x = y$.
-
-```agda
-module _ where private
-  open import 1Lab.HIT.S1
-
-  circle-id : S¹ → S¹
-  circle-id p = p
-```
-
-The first is the boring option: it just gives back the same path,
-unchanged. The second is more interesting: By doing circle induction, we
-can consider the cases separately, and in the case where $y =
-\id{base}$, we add an extra twist onto the path:
-
-```agda
-  circle-id-inj₁ circle-id-inj₂ : injective circle-id
-  circle-id-inj₁ p = p
-  circle-id-inj₂ {x} =
-    S¹-elim {P = λ y → x ≡ y → x ≡ y} (_∙ loop)
-      (funext-dep λ p → to-pathp (subst-path-right _ _ ∙ lemma p))
-      _
-    where
-      lemma : ∀ {x} {p1 p2 : x ≡ base}
-            → PathP (λ i → x ≡ loop i) p1 p2
-            → (p1 ∙ loop) ∙ loop ≡ p2 ∙ loop
-      lemma path = ap (_∙ loop) (from-pathp path)
-```
-
-These functions are _not the same_! When given `refl`{.Agda},
-`circle-id-inj₁`{.Agda} will give `refl`{.Agda} (because it's boring),
-but the exciting function will give `loop`{.Agda}. And that ain't
-`refl`{.Agda}.
-
-```agda
-  circle-id-inj₁≠inj₂ : circle-id-inj₁ ≡ circle-id-inj₂ → ⊥
-  circle-id-inj₁≠inj₂ p = refl≠loop (happly p refl ∙ ∙-id-l _)
-```
-
 Since we want "is a subtype inclusion" to be a property --- that is, we
 really want to _not_ care about _how_ a function is a subtype inclusion,
 only that it is, we define **embeddings** as those functions which have

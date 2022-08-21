@@ -6,11 +6,12 @@ description: |
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Path.Groupoid
 open import 1Lab.Univalence
-open import 1Lab.HIT.S1
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+
+open import Homotopy.Space.Circle
 
 module 1Lab.Counterexamples.IsIso where
 ```
@@ -73,7 +74,17 @@ distinct elements. We go with the circle, `S¹`{.Agda}:
 
 ```agda
   ¬is-prop-loops : is-prop ((x : S¹) → x ≡ x) → ⊥
-  ¬is-prop-loops prop = refl≠loop (happly (prop (λ x → refl) always-loop) base)
+  ¬is-prop-loops prop = refl≠loop $
+    happly (prop (λ x → refl)
+      λ { base → loop
+        ; (loop i) j → hcomp (∂ i ∨ ∂ j) λ where
+            k (k = i0) → loop (i ∨ j)
+            k (i = i0) → loop j
+            k (i = i1) → loop (k ∧ j)
+            k (j = i0) → loop i
+            k (j = i1) → loop (k ∧ i)
+        })
+      base
 ```
 
 Hence, a contradiction:

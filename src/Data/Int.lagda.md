@@ -506,7 +506,7 @@ abstract
 
 ```agda
 Int-elim-by-sign
-  : (P : Int → Type)
+  : ∀ {ℓ} (P : Int → Type ℓ)
   → (pos : ∀ x → P (diff x 0))
   → (neg : ∀ x → P (diff 0 x))
   → P (diff 0 0)

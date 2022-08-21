@@ -1,10 +1,9 @@
 ```
-open import 1Lab.Path.Groupoid
-open import 1Lab.HLevel
-open import 1Lab.Path
-open import 1Lab.Type
+open import 1Lab.Prelude
 
-module 1Lab.HIT.Sinfty where
+open import Homotopy.Space.Circle
+
+module Homotopy.Space.Sinfty where
 ```
 
 # The Infinite Sphere

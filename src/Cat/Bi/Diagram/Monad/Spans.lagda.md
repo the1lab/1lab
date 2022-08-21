@@ -3,8 +3,8 @@ open import Cat.Instances.Sets.Complete
 open import Cat.Bi.Instances.Spans
 open import Cat.Bi.Diagram.Monad
 open import Cat.Instances.Sets
-open import Cat.Prelude
 open import Cat.Bi.Base
+open import Cat.Prelude
 
 module Cat.Bi.Diagram.Monad.Spans {ℓ} where
 ```

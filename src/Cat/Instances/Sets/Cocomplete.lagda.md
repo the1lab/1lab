@@ -40,7 +40,7 @@ F$. However, this type is in general _not a set_! Consider a family of
 sets indexed by [the circle]. Its total space will, by necessity, be a
 [groupoid] rather than a set.
 
-[the circle]: 1Lab.HIT.S1.html
+[the circle]: Homotopy.Space.Circle.html
 [groupoid]: 1Lab.HLevel.html#is-groupoid
 
 However, we can always [truncate] the sum down to a set, and it turns

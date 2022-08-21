@@ -27,7 +27,7 @@ sitting in $\bb{C}$. Given a real number $x : \bb{R}$, we can consider
 the "action" on the circle defined by
 
 [groups]: Algebra.Group.html
-[$S^1$]: 1Lab.HIT.S1.html
+[$S^1$]: Homotopy.Space.Circle.html
 
 $$
 a \mapsto e^{ix}a\text{,}
@@ -79,12 +79,12 @@ module _ {o ℓ} (C : Precategory o ℓ) where
     mg : make-group (X C.≅ X)
     mg .make-group.group-is-set = C.≅-is-set
     mg .make-group.unit = C.id-iso
-    mg .make-group.mul g f = f C.∘Iso g
+    mg .make-group.mul g f = g C.∘Iso f
     mg .make-group.inv = C._Iso⁻¹
-    mg .make-group.assoc x y z = C.≅-pathp refl refl (sym (C.assoc _ _ _))
-    mg .make-group.invl x = C.≅-pathp refl refl (x .C.invr)
-    mg .make-group.invr x = C.≅-pathp refl refl (x .C.invl)
-    mg .make-group.idl x = C.≅-pathp refl refl (C.idl _)
+    mg .make-group.assoc x y z = C.≅-pathp refl refl (C.assoc _ _ _)
+    mg .make-group.invl x = C.≅-pathp refl refl (x .C.invl)
+    mg .make-group.invr x = C.≅-pathp refl refl (x .C.invr)
+    mg .make-group.idl x = C.≅-pathp refl refl (C.idr _)
 ```
 
 Suppose we have a category $\ca{C}$, an object $X : \ca{C}$, and a group
@@ -109,12 +109,11 @@ of $G$ on the object $F(\bull)$!
 
 ```agda
   Functor→action
-    : {G : Group ℓ} (F : Functor (B (Group-on.underlying-monoid (G .snd) .snd)) C)
+    : {G : Group ℓ} (F : Functor (B (Group-on.underlying-monoid (G .snd) .snd) ^op) C)
     → Action G (F .F₀ tt)
-  Functor→action {G = G} F .fst it =
-    C.make-iso (F .F₁ it) (F .F₁ (it ⁻¹))
-               (F.annihilate inverser)
-               (F.annihilate inversel)
+  Functor→action {G = G} F .fst it = C.make-iso
+      (F .F₁ it) (F .F₁ (it ⁻¹))
+      (F.annihilate inversel) (F.annihilate inverser)
     where
       open Group-on (G .snd)
       module F = Functor-kit F
@@ -122,7 +121,7 @@ of $G$ on the object $F(\bull)$!
 
   Action→functor
     : {G : Group ℓ} {X : C.Ob} (A : Action G X)
-    → Functor (B (Group-on.underlying-monoid (G .snd) .snd)) C
+    → Functor (B (Group-on.underlying-monoid (G .snd) .snd) ^op) C
   Action→functor {X = X} A .F₀ _ = X
   Action→functor A .F₁ e = A .fst e .C.to
   Action→functor A .F-id = ap C.to (Group-hom.pres-id (A .snd))

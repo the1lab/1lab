@@ -1,11 +1,12 @@
 ```agda
-open import 1Lab.HIT.Suspension
-open import 1Lab.HIT.Sphere
 open import 1Lab.Prelude
 
 open import Algebra.Group.Homotopy
 
-module SHT.Base where
+open import Homotopy.Space.Suspension
+open import Homotopy.Space.Sphere
+
+module Homotopy.Base where
 ```
 
 # Synthetic homotopy theory

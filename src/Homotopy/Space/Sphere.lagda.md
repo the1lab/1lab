@@ -1,13 +1,10 @@
 ```
-open import 1Lab.HIT.Suspension
-open import 1Lab.Path.Groupoid
-open import 1Lab.Univalence
-open import 1Lab.HIT.S1
-open import 1Lab.Equiv
-open import 1Lab.Path
-open import 1Lab.Type
+open import 1Lab.Prelude
 
-module 1Lab.HIT.Sphere where
+open import Homotopy.Space.Suspension
+open import Homotopy.Space.Circle
+
+module Homotopy.Space.Sphere where
 ```
 
 # The -1 and 0 Spheres

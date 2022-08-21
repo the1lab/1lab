@@ -4,13 +4,11 @@ description: |
   the equivalence between that definition and a product of circles.
 ---
 ```agda
-open import 1Lab.Univalence
-open import 1Lab.HIT.S1
-open import 1Lab.Equiv
-open import 1Lab.Path
-open import 1Lab.Type
+open import 1Lab.Prelude
 
-module 1Lab.HIT.Torus where
+open import Homotopy.Space.Circle
+
+module Homotopy.Space.Torus where
 ```
 
 # The Torus
