@@ -70,7 +70,7 @@ through a map $u' \to a'$ (in green, marked $\exists!$).
   \arrow[Bar-{Triangle[open]}, from=2-4, to=4-4]
   \arrow["m"', color={rgb,255:red,124;green,50;blue,189}, from=3-1, to=4-2]
   \arrow[Bar-{Triangle[open]}, color={rgb,255:red,124;green,50;blue,189}, from=1-1, to=3-1]
-  \arrow["{h'}", color={rgb,255:red,204;green,51;blue,51}, curve={height=-6pt}, from=1-1, to=2-4]
+  \arrow["{h'}", color={rgb,255:red,204;green,51;blue,51}, curve={height=-12pt}, from=1-1, to=2-4]
   \arrow["{\exists!}"', color={rgb,255:red,36;green,202;blue,28}, dashed, from=1-1, to=2-2]
 \end{tikzcd}\]
 ~~~
@@ -84,8 +84,8 @@ through a map $u' \to a'$ (in green, marked $\exists!$).
               → (m′ : Hom[ m ] u′ a′) → f′ ∘′ m′ ≡ h′ → m′ ≡ universal m h′
 ```
 
-Given a "crooked leg" of the form below, and note that the input data
-consists of $a$, $b$, $f : a \to b$ and $b'$ over $a$,
+Given a "right corner" like that of the diagram below, and note that the
+input data consists of $a$, $b$, $f : a \to b$ and $b'$ over $a$,
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -116,8 +116,8 @@ record
 
 We note that the classical literature often differentiates between
 _fibrations_ --- those displayed categories for which _there exist_
-Cartesian lifts for every crooked leg --- and _cloven fibrations_, those
-for which the Cartesian fibrations are "algebraic" in a sense. This is
+Cartesian lifts for every right corner --- and _cloven fibrations_,
+those for which the Cartesian lifts are "algebraic" in a sense.  This is
 because, classically, _essentially unique_ means that there are still
 some choices to be made, and invoking the axiom of choice makes an
 "arbitrary" set of such choices. But, in the presence of univalence,
@@ -132,7 +132,7 @@ record Cartesian-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
 ```
 
 A Cartesian fibration is a displayed category having Cartesian lifts for
-every crooked pair.
+every right corner.
 
 ## Why?
 

@@ -55,8 +55,8 @@ Poly-is-category : ∀ {ℓ} → is-category (Poly ℓ)
 Poly-is-category =
   is-category-total _ Sets-is-category $
     is-category-fibrewise′ _
-      (λ x → Families-are-categories _ x (opposite-is-category Sets-is-category))
       Sets-is-category
+      (λ x → Families-are-categories _ x (opposite-is-category Sets-is-category))
 ```
 
 It is entirely mechanical to calculate that morphisms in $\ht{Poly}$ are

@@ -157,10 +157,10 @@ vertical isomorphisms:
 
 ```agda
 is-category-fibrewise
-  : (∀ {x} (A : Ob[ x ]) → is-prop (Σ[ B ∈ Ob[ x ] ] (A ≅↓ B)))
-  → is-category B
+  : is-category B
+  → (∀ {x} (A : Ob[ x ]) → is-prop (Σ[ B ∈ Ob[ x ] ] (A ≅↓ B)))
   → is-category-displayed
-is-category-fibrewise wit base-c f A =
+is-category-fibrewise base-c wit f A =
   J-iso _ base-c (λ y p → is-prop (Σ[ B ∈ Ob[ y ] ] (A ≅[ p ] B))) (wit A) f
 ```
 
@@ -170,10 +170,10 @@ particular fibre category.
 
 ```agda
 is-category-fibrewise′
-  : (∀ x → is-category (Fibre E x))
-  → is-category B
+  : is-category B
+  → (∀ x → is-category (Fibre E x))
   → is-category-displayed
-is-category-fibrewise′ wit b = is-category-fibrewise wit′ b where
+is-category-fibrewise′ b wit = is-category-fibrewise b wit′ where
   wit′ : ∀ {x} (A : Ob[ x ]) → is-prop (Σ[ B ∈ Ob[ x ] ] (A ≅↓ B))
   wit′ {x} A =
     is-contr→is-prop $ retract→is-contr

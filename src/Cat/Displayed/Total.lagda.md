@@ -96,3 +96,13 @@ With all that in place, we can construct the total category!
 ∫ .Precategory.idl _ = total-hom-path (idl _) (idl′ _)
 ∫ .Precategory.assoc _ _ _ = total-hom-path (assoc _ _ _) (assoc′ _ _ _)
 ```
+
+<!--
+```agda
+πᶠ : Functor ∫ B
+πᶠ .Functor.F₀ = fst
+πᶠ .Functor.F₁ = Total-hom.hom
+πᶠ .Functor.F-id = refl
+πᶠ .Functor.F-∘ f g = refl
+```
+-->

@@ -245,5 +245,14 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
   → PathP (λ i → B i (p i)) (x .snd) (y .snd)
   → PathP (λ i → Σ (A i) (B i)) x y
 Σ-pathp-dep p q i = p i , q i
+
+Σ-inj-set
+  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} {x y z}
+  → is-set A
+  → Path (Σ A B) (x , y) (x , z)
+  → y ≡ z
+Σ-inj-set {B = B} {y = y} {z} aset path =
+  subst (λ e → e ≡ z) (ap (λ e → transport (ap B e) y) (aset _ _ _ _) ∙ transport-refl y)
+    (from-pathp (ap snd path))
 ```
 -->
