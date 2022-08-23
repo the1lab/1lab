@@ -30,6 +30,7 @@ import qualified Citeproc as Cite
 import Text.DocTemplates
 import Text.HTML.TagSoup
 
+import Text.Collate.Lang (Lang (..))
 import Text.Pandoc.Builder (Inlines)
 import Text.Pandoc.Citeproc
 import Text.Pandoc.Walk
@@ -220,6 +221,7 @@ renderMarkdown authors references modname markdown = do
                   , writerTableOfContents = True
                   , writerVariables = context
                   , writerExtensions = getDefaultExtensions "html" }
+  setTranslations (Lang "en" Nothing Nothing [] [] [])
   writeHtml5String options markdown
 
 
