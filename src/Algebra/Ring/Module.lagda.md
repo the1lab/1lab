@@ -4,8 +4,11 @@ open import Algebra.Group
 open import Algebra.Ring
 
 open import Cat.Functor.FullSubcategory
+open import Cat.Functor.Adjoint.Hom
 open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Fibre
+open import Cat.Displayed.Total
+open import Cat.Functor.Adjoint
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
@@ -16,6 +19,8 @@ module Algebra.Ring.Module where
 ```agda
 open is-ring-hom
 open Displayed
+open Total-hom
+open Functor
 ```
 -->
 
@@ -30,9 +35,9 @@ _ring_ of scalars. More pertinently, though, modules _specialise_
 [functors]: Cat.Abelian.Instances.Functor.html
 
 ```agda
-record Module {ℓ} ℓ′ (R : Ring ℓ) : Type (ℓ ⊔ lsuc ℓ′) where
+record Module {ℓ} (R : Ring ℓ) : Type (lsuc ℓ) where
   no-eta-equality
-  field G : AbGroup ℓ′
+  field G : AbGroup ℓ
 
   module R = Ring-on (R .snd)
   module G = AbGrp G renaming (_⋆_ to _+_)
@@ -45,7 +50,7 @@ record Module {ℓ} ℓ′ (R : Ring ℓ) : Type (ℓ ⊔ lsuc ℓ′) where
     ⋆-add-l : ∀ r s x → (r R.+ s) ⋆ x ≡ (r ⋆ x) G.+ (s ⋆ x)
     ⋆-assoc : ∀ r s x → r ⋆ (s ⋆ x) ≡ (r R.* s) ⋆ x
 
-  G₀ : Type ℓ′
+  G₀ : Type ℓ
   G₀ = G .Restrict-ob.object .fst
 ```
 
@@ -65,7 +70,7 @@ _restriction of scalars_, defined below.
 
 ```agda
 Scalar-restriction
-  : ∀ {ℓ ℓ′} {R S : Ring ℓ} → Rings.Hom R S → Module ℓ′ S → Module ℓ′ R
+  : ∀ {ℓ} {R S : Ring ℓ} → Rings.Hom R S → Module S → Module R
 Scalar-restriction f M = N where
   module M = Module M
   open Module
@@ -77,7 +82,7 @@ on $G$ to an $R$-action by precomposition with $f$, hence the
 contravariance.
 
 ```agda
-  N : Module _ _
+  N : Module _
   N .G = M.G
   N ._⋆_ r m = f .fst r M.⋆ m
 
@@ -90,7 +95,7 @@ contravariance.
 <!--
 ```agda
 module
-   _ {ℓ ℓ′} {R S : Ring ℓ} (M : Module ℓ′ R) (N : Module ℓ′ S) (f : Rings.Hom R S)
+   _ {ℓ} {R S : Ring ℓ} (M : Module R) (N : Module S) (f : Rings.Hom R S)
   where
   private
     module M = Module M
@@ -126,22 +131,22 @@ f(m + n) = f(1m + 1n) = 1f(m) + 1f(n)\text{.}
 $$
 
 ```agda
-Mods : ∀ ℓ ℓ′ → Displayed (Rings ℓ) (ℓ ⊔ lsuc ℓ′) (ℓ ⊔ ℓ′)
-Ob[ Mods ℓ ℓ′ ] R = Module ℓ′ R
-Hom[ Mods ℓ ℓ′ ] f M N = R-S-linear-map M N f
-Hom[ Mods ℓ ℓ′ ]-set f x y =
+Mods : ∀ ℓ → Displayed (Rings ℓ) (lsuc ℓ) (ℓ)
+Ob[ Mods ℓ ] R = Module R
+Hom[ Mods ℓ ] f M N = R-S-linear-map M N f
+Hom[ Mods ℓ ]-set f x y =
   Σ-is-hlevel 2 (fun-is-hlevel 2 (Module.G.has-is-set y)) λ g →
     is-prop→is-set (is-R-S-linear-is-prop x y f g)
 
-Mods ℓ ℓ′ .id′ .fst x = x
-Mods ℓ ℓ′ .id′ .snd r m s n = refl
+Mods ℓ .id′ .fst x = x
+Mods ℓ .id′ .snd r m s n = refl
 
-Mods ℓ ℓ′ ._∘′_ (f , h) (g , i) .fst x = f (g x)
-Mods ℓ ℓ′ ._∘′_ (f , h) (g , i) .snd r m s n = ap f (i r m s n) ∙ h _ _ _ _
+Mods ℓ ._∘′_ (f , h) (g , i) .fst x = f (g x)
+Mods ℓ ._∘′_ (f , h) (g , i) .snd r m s n = ap f (i r m s n) ∙ h _ _ _ _
 
-Mods ℓ ℓ′ .idr′ {x = x} {y} {f} f′ = R-S-linear-map-path x y f refl
-Mods ℓ ℓ′ .idl′ {x = x} {y} {f} f′ = R-S-linear-map-path x y f refl
-Mods ℓ ℓ′ .assoc′ {w = w} {z = z} {f} {g} {h} f′ g′ h′ =
+Mods ℓ .idr′ {x = x} {y} {f} f′ = R-S-linear-map-path x y f refl
+Mods ℓ .idl′ {x = x} {y} {f} f′ = R-S-linear-map-path x y f refl
+Mods ℓ .assoc′ {w = w} {z = z} {f} {g} {h} f′ g′ h′ =
   R-S-linear-map-path w z (f Rings.∘ g Rings.∘ h) refl
 ```
 
@@ -149,8 +154,8 @@ The fibre of this displayed category over a ring $R$ is the _category of
 $R$-modules_.
 
 ```agda
-R-Mod : ∀ {ℓ} ℓ′ (R : Ring ℓ) → Precategory (ℓ ⊔ lsuc ℓ′) (ℓ ⊔ ℓ′)
-R-Mod ℓ′ R = Fibre (Mods _ ℓ′) R
+R-Mod : ∀ {ℓ} (R : Ring ℓ) → Precategory (lsuc ℓ) ℓ
+R-Mod R = Fibre (Mods _) R
 ```
 
 ## As a fibration
@@ -162,8 +167,8 @@ of a functorial reindexing of the fibres by morphisms in the base, but
 this is given exactly by the restriction of scalars we defined above.
 
 ```agda
-Mods-fibration : ∀ ℓ ℓ′ → Cartesian-fibration (Mods ℓ ℓ′)
-Mods-fibration ℓ ℓ′ = mods where
+Mods-fibration : ∀ ℓ → Cartesian-fibration (Mods ℓ)
+Mods-fibration ℓ = mods where
   open Cartesian-fibration
   open Cartesian-lift
   open Cartesian
@@ -191,9 +196,9 @@ simply take $X = f^*(N)$.
 ~~~
 
 ```agda
-  mods : Cartesian-fibration (Mods ℓ ℓ′)
+  mods : Cartesian-fibration (Mods ℓ)
   mods .has-lift f N = the-lift where
-    the-lift : Cartesian-lift (Mods ℓ ℓ′) f N
+    the-lift : Cartesian-lift (Mods ℓ) f N
     the-lift .x′ = Scalar-restriction f N
     the-lift .lifting .fst x = x
     the-lift .lifting .snd r m s n = refl
@@ -206,3 +211,43 @@ simply take $X = f^*(N)$.
 
 It is straightforward to calculate that this choice indeed furnishes a
 Cartesian lift of $f$.
+
+## Representable modules
+
+Analogously to how groups act on themselves (Cayley's theorem) and how
+precategories act on themselves (the Yoneda lemma), rings _also_ act on
+themselves to give a notion of _representable modules_. $R$ can be
+regarded as an $R$-module with underlying group given by $R$'s additive
+group, and with multiplication exactly $R$'s multiplication.
+
+```agda
+representable-module : ∀ {ℓ} (R : Ring ℓ) → Module R
+representable-module R = mod where
+  open Module hiding (module R ; module G)
+  module R = Ring-on (R .snd)
+  mod : Module R
+  mod .G = R.additive-group
+  mod ._⋆_ = R._*_
+  mod .⋆-id x = R.*-idl
+  mod .⋆-add-r r x y = R.*-distribl
+  mod .⋆-add-l r s x = R.*-distribr
+  mod .⋆-assoc r s x = R.*-associative
+```
+
+The construction of representable modules extends from a functor from
+the category of rings to the (big) category of modules --- the total
+space of the fibration of modules.
+
+```agda
+Representable-modules : ∀ {ℓ} → Functor (Rings ℓ) (∫ (Mods ℓ))
+Representable-modules .F₀ R = R , representable-module R
+Representable-modules .F₁ {x} {y} f = total-hom f $
+  f .fst , λ r m s n → f .snd .pres-+ _ _ ∙ ap₂ (y .snd .Ring-on._+_)
+    (f .snd .pres-* r m) (f .snd .pres-* s n)
+Representable-modules .F-id {x} = total-hom-path _ refl $
+  R-S-linear-map-path (representable-module x) (representable-module x)
+    Rings.id refl
+Representable-modules .F-∘ {x} {y} {z} f g = total-hom-path _ refl $
+  R-S-linear-map-path (representable-module x) (representable-module z)
+    (f Rings.∘ g) refl
+```

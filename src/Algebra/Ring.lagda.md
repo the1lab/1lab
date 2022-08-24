@@ -55,10 +55,15 @@ record is-ring {ℓ} {R : Type ℓ} (1R : R) (_*_ _+_ : R → R → R) : Type �
              ; inversel to +-invl
              ; inverser to +-invr
              ; associative to +-associative
-             ; idl to *-idl
-             ; idr to *-idr
+             ; idl to +-idl
+             ; idr to +-idr
              )
     public
+
+  additive-group : AbGroup ℓ
+  additive-group = restrict
+    (R , record { _⋆_ = _+_ ; has-is-group = +-group })
+    λ x y → +-commutes
 
 record Ring-on {ℓ} (R : Type ℓ) : Type ℓ where
   field
@@ -225,7 +230,7 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
 ```agda
   from-make-ring-on : Ring-on R
   from-make-ring-on = ring where
-    open is-ring hiding (-_ ; +-invr ; +-invl ; *-distribl ; *-distribr ; *-idl ; *-idr)
+    open is-ring hiding (-_ ; +-invr ; +-invl ; *-distribl ; *-distribr ; *-idl ; *-idr ; +-idl ; +-idr)
 
     -- All in copatterns to prevent the unfolding from exploding on you
     ring : Ring-on R
