@@ -17,7 +17,7 @@ module Cat.Bi.Base where
 ```agda
 open _=>_
 
-private module _ where
+module _ where
   open Functor
   compose-assocˡ
     : ∀ {o ℓ ℓ′} {O : Type o} {H : O → O → Precategory ℓ ℓ′}
