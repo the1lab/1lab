@@ -177,3 +177,37 @@ This makes the idea that a monoidal category is "just" the categorified
 version of a monoid precisely, and it's generally called the _delooping
 hypothesis_: A monoidal $n$-category is the same as an $(n+1)$-category
 with a single object.
+
+## Endomorphism categories
+
+In the same way that, if you have a category $\ca{C}$, making a choice
+of object $a : \ca{C}$ canonically gives you a monoid
+$\id{Endo}_\ca{C}(a)$ of _endomorphisms_ $a \to a$, having a bicategory
+$\ht{B}$ and choosing an object $a : \ht{B}$ canonically gives you a
+choice of _monoidal category_, $\ht{Endo}_\ht{B}(a)$.
+
+```agda
+Endomorphisms
+  : ∀ {o ℓ ℓ′} (B : Prebicategory o ℓ ℓ′)
+  → (a : Prebicategory.Ob B)
+  → Monoidal-category (Prebicategory.Hom B a a)
+Endomorphisms B a = mon where
+  open Monoidal-category
+  module B = Prebicategory B
+  mon : Monoidal-category (B.Hom a a)
+  mon .-⊗- = B.compose
+  mon .Unit = B.id
+  mon .unitor-l = B.unitor-l
+  mon .unitor-r = B.unitor-r
+  mon .associator = to-natural-iso $ ni where
+    open make-natural-iso
+    open Cr
+    ni : make-natural-iso _ _
+    ni .eta _ = B.α→ _ _ _
+    ni .inv _ = B.α← _ _ _
+    ni .eta∘inv _ = ap (λ e → e .η _) (Cr.invl _ B.associator)
+    ni .inv∘eta _ = ap (λ e → e .η _) (Cr.invr _ B.associator)
+    ni .natural x y f = sym $ Cr.to B.associator .is-natural _ _ _
+  mon .triangle = B.triangle _ _
+  mon .pentagon = B.pentagon _ _ _ _
+```

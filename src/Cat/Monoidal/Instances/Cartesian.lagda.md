@@ -11,12 +11,6 @@ import Cat.Reasoning as Cr
 module Cat.Monoidal.Instances.Cartesian where
 ```
 
-<!--
-```agda
-open _=>_
-```
--->
-
 # Cartesian monoidal categories
 
 Unlike with [categories] and [bicategories], there is no handy example
