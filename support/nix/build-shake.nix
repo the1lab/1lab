@@ -42,16 +42,16 @@ stdenv.mkDerivation {
   installPhase = ''
   mkdir -p $out/bin
   strip ${main}
+  remove-references-to -t ${haskellPackages.pandoc-types} ${main}
+  remove-references-to -t ${haskellPackages.pandoc}       ${main}
+  remove-references-to -t ${haskellPackages.Agda}         ${main}
+  remove-references-to -t ${haskellPackages.shake}        ${main}
+  remove-references-to -t ${haskellPackages.HTTP}         ${main}
+  remove-references-to -t ${haskellPackages.js-flot}      ${main}
+  remove-references-to -t ${haskellPackages.js-jquery}    ${main}
+  remove-references-to -t ${haskellPackages.js-dgtable}   ${main}
   upx ${main}
   cp ${main} $out/bin/${name}
-  remove-references-to -t ${haskellPackages.pandoc-types} $out/bin/${name}
-  remove-references-to -t ${haskellPackages.pandoc}       $out/bin/${name}
-  remove-references-to -t ${haskellPackages.Agda}         $out/bin/${name}
-  remove-references-to -t ${haskellPackages.shake}        $out/bin/${name}
-  remove-references-to -t ${haskellPackages.HTTP}         $out/bin/${name}
-  remove-references-to -t ${haskellPackages.js-flot}      $out/bin/${name}
-  remove-references-to -t ${haskellPackages.js-jquery}    $out/bin/${name}
-  remove-references-to -t ${haskellPackages.js-dgtable}   $out/bin/${name}
   wrapProgram $out/bin/${name} \
     --prefix PATH : ${nodeDependencies}/bin \
     --prefix NODE_PATH : ${nodeDependencies}/lib/node_modules

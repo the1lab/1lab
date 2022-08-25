@@ -37,6 +37,7 @@ executable shake
       tagsoup,
       text,
       transformers,
+      unicode-collation,
       unordered-containers,
       uri-encode
     hs-source-dirs:   app
@@ -81,6 +82,7 @@ executable agda-typed-html
       syb,
       text,
       transformers,
+      unicode-collation,
       unordered-containers,
       uri-encode
     hs-source-dirs:   app
