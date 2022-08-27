@@ -1,7 +1,8 @@
 {
   "owner": "agda",
   "repo": "agda",
+  "branch": "master",
   "private": false,
-  "rev": "9e1e375e4e395bceb5023a6dfaa71f26a4dd9147",
-  "sha256": "0czvdjbi24vz5122361mfbvaldh1729sgsanqi110nki3ha94dji"
+  "rev": "52467b24fd0670168b2dd8855e9b8d25227e78b9",
+  "sha256": "1lgw5mlw4rik2apilbb9nfhdpxh89wp8dwm2aiqfv2rzj7bmsm91"
 }
