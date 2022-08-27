@@ -5,6 +5,8 @@ open import Algebra.Prelude
 open import Algebra.Monoid
 open import Algebra.Group
 
+open import Data.Int
+
 module Algebra.Ring where
 ```
 
@@ -35,6 +37,7 @@ record is-ring {ℓ} {R : Type ℓ} (1R : R) (_*_ _+_ : R → R → R) : Type �
     *-monoid : is-monoid 1R _*_
     +-group  : is-group _+_
     +-commutes : ∀ {x y} → x + y ≡ y + x
+    *-commutes : ∀ {x y} → x * y ≡ y * x
     *-distribl : ∀ {x y z} → x * (y + z) ≡ (x * y) + (x * z)
     *-distribr : ∀ {x y z} → (y + z) * x ≡ (y * x) + (z * x)
 ```
@@ -82,6 +85,7 @@ instance
       x y i .*-monoid   → hlevel 1 (x .*-monoid) (y .*-monoid) i
       x y i .+-group    → hlevel 1 (x .+-group) (y .+-group) i
       x y i .+-commutes → x .+-group .is-group.has-is-set _ _ (x .+-commutes) (y .+-commutes) i
+      x y i .*-commutes → x .+-group .is-group.has-is-set _ _ (x .*-commutes) (y .*-commutes) i
       x y i .*-distribl → x .+-group .is-group.has-is-set _ _ (x .*-distribl) (y .*-distribl) i
       x y i .*-distribr → x .+-group .is-group.has-is-set _ _ (x .*-distribr) (y .*-distribr) i
     where open is-ring
@@ -214,12 +218,13 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
     +-assoc : ∀ {x y z} → (x + y) + z ≡ x + (y + z)
     +-comm  : ∀ {x y} → x + y ≡ y + x
 
-    -- R is a monoid:
+    -- R is a commutative monoid:
     1R      : R
     _*_     : R → R → R
     *-idl   : ∀ {x} → 1R * x ≡ x
     *-idr   : ∀ {x} → x * 1R ≡ x
     *-assoc : ∀ {x y z} → (x * y) * z ≡ x * (y * z)
+    *-comm  : ∀ {x y} → x * y ≡ y * x
 
     -- Multiplication is bilinear:
     *-distribl : ∀ {x y z} → x * (y + z) ≡ (x * y) + (x * z)
@@ -252,6 +257,7 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
     ring .Ring-on.has-is-ring .+-commutes = +-comm
     ring .Ring-on.has-is-ring .is-ring.*-distribl = *-distribl
     ring .Ring-on.has-is-ring .is-ring.*-distribr = *-distribr
+    ring .Ring-on.has-is-ring .is-ring.*-commutes = *-comm
 
   from-make-ring : Ring ℓ
   from-make-ring = R , from-make-ring-on
@@ -278,21 +284,54 @@ the ring $\{*\}$ the _One Ring_, which would be objectively cooler.
 
 ```agda
 Zero-ring : Ring lzero
-Zero-ring = from-make-ring {R = ⊤} $ record
-  { ring-is-set = λ _ _ _ _ _ _ → tt
-  ; 0R         = tt
-  ; _+_        = λ _ _ → tt
-  ; -_         = λ _ → tt
-  ; +-idl      = λ _ → tt
-  ; +-invr     = λ _ → tt
-  ; +-assoc    = λ _ → tt
-  ; +-comm     = λ _ → tt
-  ; 1R         = tt
-  ; _*_        = λ _ _ → tt
-  ; *-idl      = λ _ → tt
-  ; *-idr      = λ _ → tt
-  ; *-assoc    = λ _ → tt
-  ; *-distribl = λ _ → tt
-  ; *-distribr = λ _ → tt
-  }
+Zero-ring = from-make-ring {R = ⊤} λ where
+  .make-ring.ring-is-set _ _ _ _ _ _ → tt
+  .make-ring.0R → tt
+  .make-ring._+_ _ _ → tt
+  .make-ring.-_  _ → tt
+  .make-ring.+-idl _ → tt
+  .make-ring.+-invr _ → tt
+  .make-ring.+-assoc _ → tt
+  .make-ring.+-comm _ → tt
+  .make-ring.1R → tt
+  .make-ring._*_ _ _ → tt
+  .make-ring.*-idl _ → tt
+  .make-ring.*-idr _ → tt
+  .make-ring.*-assoc _ → tt
+  .make-ring.*-distribl _ → tt
+  .make-ring.*-distribr _ → tt
+  .make-ring.*-comm _ → tt
+```
+
+Rings, unlike other categories of algebraic structures (like that of
+[groups] or [abelian groups]), are structured enough to differentiate
+between the initial and terminal objects. As mentioned above, the
+initial object is the ring $\bb{Z}$, and the terminal ring is the zero
+ring. As for why this happens, consider that, since ring homomorphisms
+must preserve the unit[^being homomorphisms for the additive group, they
+automatically preserve zero], it is impossible to have a ring
+homomorphism $h : 0 \to R$ unless $0 = h(0) = h(1) = 1$ in $R$.
+
+[groups]: Algebra.Group.html
+[abelian groups]: Algebra.Group.Ab.html
+
+```agda
+ℤ : Ring lzero
+ℤ = from-make-ring {R = Int} λ where
+  .make-ring.ring-is-set → hlevel 2
+  .make-ring.0R → 0
+  .make-ring._+_ → _+ℤ_
+  .make-ring.-_ → negate
+  .make-ring.+-idl → +ℤ-zerol _
+  .make-ring.+-invr {x} → +ℤ-inverser x
+  .make-ring.+-assoc {x} {y} {z} → +ℤ-associative x y z
+  .make-ring.+-comm {x} {y} → +ℤ-commutative x y
+  .make-ring.1R → 1
+  .make-ring._*_ → _*ℤ_
+  .make-ring.*-idl → *ℤ-idl _
+  .make-ring.*-idr → *ℤ-idr _
+  .make-ring.*-assoc {x} {y} {z} → *ℤ-associative x y z
+  .make-ring.*-distribl {x} {y} {z} → *ℤ-distrib-+ℤ-l x y z
+  .make-ring.*-distribr {x} {y} {z} → *ℤ-distrib-+ℤ-r x y z
+  .make-ring.*-comm {x} {y} → *ℤ-commutative x y
 ```
