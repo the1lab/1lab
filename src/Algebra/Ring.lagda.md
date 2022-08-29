@@ -5,7 +5,12 @@ open import Algebra.Prelude
 open import Algebra.Monoid
 open import Algebra.Group
 
+open import Cat.Instances.Delooping
+open import Cat.Abelian.Base
+
 open import Data.Int
+
+import Cat.Reasoning
 
 module Algebra.Ring where
 ```
@@ -31,10 +36,10 @@ $(1, *, +)$ to be a ring structure on a type:
 [abelian group]: Algebra.Group.Ab.html
 
 ```agda
-record is-ring {ℓ} {R : Type ℓ} (1R : R) (_*_ _+_ : R → R → R) : Type ℓ where
+record is-ring {ℓ} {R : Type ℓ} (1r : R) (_*_ _+_ : R → R → R) : Type ℓ where
   no-eta-equality
   field
-    *-monoid : is-monoid 1R _*_
+    *-monoid : is-monoid 1r _*_
     +-group  : is-group _+_
     +-commutes : ∀ {x y} → x + y ≡ y + x
     *-commutes : ∀ {x y} → x * y ≡ y * x
@@ -55,6 +60,7 @@ record is-ring {ℓ} {R : Type ℓ} (1R : R) (_*_ _+_ : R → R → R) : Type �
   open is-group +-group
     renaming ( _—_ to _-_
              ; inverse to -_
+             ; unit to 0r
              ; inversel to +-invl
              ; inverser to +-invr
              ; associative to +-associative
@@ -63,25 +69,47 @@ record is-ring {ℓ} {R : Type ℓ} (1R : R) (_*_ _+_ : R → R → R) : Type �
              )
     public
 
-  additive-group : AbGroup ℓ
-  additive-group = restrict
-    (R , record { _⋆_ = _+_ ; has-is-group = +-group })
-    λ x y → +-commutes
+  additive-group : Group ℓ
+  additive-group = (R , record { _⋆_ = _+_ ; has-is-group = +-group })
+
+  Ringoid : Ab-category (B record { _⋆_ = _*_ ; has-is-monoid = *-monoid })
+  Ringoid .Ab-category.Group-on-hom _ _ = additive-group .snd
+  Ringoid .Ab-category.Hom-grp-ab _ _ f g = +-commutes
+  Ringoid .Ab-category.∘-linear-l f g h = sym *-distribr
+  Ringoid .Ab-category.∘-linear-r f g h = sym *-distribl
+
+  private
+    module ringoid = Ab-category Ringoid
+      using ( ∘-zero-l ; ∘-zero-r ; neg-∘-l ; neg-∘-r ; ∘-minus-l ; ∘-minus-r )
+
+  open ringoid renaming
+      ( ∘-zero-l to *-zerol
+      ; ∘-zero-r to *-zeror
+      ; neg-∘-l to neg-*-l
+      ; neg-∘-r to neg-*-r
+      ; ∘-minus-l to *-minus-l
+      ; ∘-minus-r to *-minus-r
+      )
+    public
+
+  module m = Cat.Reasoning (B record { _⋆_ = _*_ ; has-is-monoid = *-monoid })
+    hiding (module HLevel-instance)
+  module a = AbGrp (restrict additive-group λ _ _ → +-commutes)
 
 record Ring-on {ℓ} (R : Type ℓ) : Type ℓ where
   field
-    1R : R
+    1r : R
     _*_ _+_ : R → R → R
-    has-is-ring : is-ring 1R _*_ _+_
+    has-is-ring : is-ring 1r _*_ _+_
 
   open is-ring has-is-ring public
 
 instance
   H-Level-is-ring
-    : ∀ {ℓ} {R : Type ℓ} {1R : R} {_*_ _+_ : R → R → R} {n}
-    → H-Level (is-ring 1R _*_ _+_) (suc n)
-  H-Level-is-ring {1R = 1R} {_*_} {_+_} =
-    prop-instance {T = is-ring 1R _*_ _+_} $ λ where
+    : ∀ {ℓ} {R : Type ℓ} {1r : R} {_*_ _+_ : R → R → R} {n}
+    → H-Level (is-ring 1r _*_ _+_) (suc n)
+  H-Level-is-ring {1r = 1r} {_*_} {_+_} =
+    prop-instance {T = is-ring 1r _*_ _+_} $ λ where
       x y i .*-monoid   → hlevel 1 (x .*-monoid) (y .*-monoid) i
       x y i .+-group    → hlevel 1 (x .+-group) (y .+-group) i
       x y i .+-commutes → x .+-group .is-group.has-is-set _ _ (x .+-commutes) (y .+-commutes) i
@@ -109,7 +137,7 @@ record is-ring-hom {ℓ} (A B : Ring ℓ) (f : A .fst → B .fst) : Type ℓ whe
     module B = Ring-on (B .snd)
 
   field
-    pres-id : f A.1R ≡ B.1R
+    pres-id : f A.1r ≡ B.1r
     pres-+  : ∀ x y → f (x A.+ y) ≡ f x B.+ f y
     pres-*  : ∀ x y → f (x A.* y) ≡ f x B.* f y
 ```
@@ -136,7 +164,7 @@ Ring-univalent {ℓ = ℓ} =
     (record:
       field[ _*_         by pres-* ]
       field[ _+_         by pres-+ ]
-      field[ 1R          by pres-id ]
+      field[ 1r          by pres-id ]
       axiom[ has-is-ring by (λ _ → prop) ]))
   where
     open Ring-on
@@ -144,8 +172,8 @@ Ring-univalent {ℓ = ℓ} =
     -- if you try to use (λ _ → hlevel 1) in the record-desc, even with
     -- an explicit {T = is-ring _ _ _} argument, Agda gets an internal
     -- error at src/full/Agda/TypeChecking/Unquote.hs:511:20
-    prop : ∀ {A : Type ℓ} {1R : A} {_*_ _+_ : A → A → A}
-         → is-prop (is-ring 1R _*_ _+_)
+    prop : ∀ {A : Type ℓ} {1r : A} {_*_ _+_ : A → A → A}
+         → is-prop (is-ring 1r _*_ _+_)
     prop = hlevel 1
 ```
 -->
@@ -219,10 +247,10 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
     +-comm  : ∀ {x y} → x + y ≡ y + x
 
     -- R is a commutative monoid:
-    1R      : R
+    1r      : R
     _*_     : R → R → R
-    *-idl   : ∀ {x} → 1R * x ≡ x
-    *-idr   : ∀ {x} → x * 1R ≡ x
+    *-idl   : ∀ {x} → 1r * x ≡ x
+    *-idr   : ∀ {x} → x * 1r ≡ x
     *-assoc : ∀ {x y z} → (x * y) * z ≡ x * (y * z)
     *-comm  : ∀ {x y} → x * y ≡ y * x
 
@@ -239,7 +267,7 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
 
     -- All in copatterns to prevent the unfolding from exploding on you
     ring : Ring-on R
-    ring .Ring-on.1R = 1R
+    ring .Ring-on.1r = 1r
     ring .Ring-on._*_ = _*_
     ring .Ring-on._+_ = _+_
     ring .Ring-on.has-is-ring .*-monoid .has-is-semigroup .is-semigroup.has-is-magma = record { has-is-set = ring-is-set }
@@ -293,7 +321,7 @@ Zero-ring = from-make-ring {R = ⊤} λ where
   .make-ring.+-invr _ → tt
   .make-ring.+-assoc _ → tt
   .make-ring.+-comm _ → tt
-  .make-ring.1R → tt
+  .make-ring.1r → tt
   .make-ring._*_ _ _ → tt
   .make-ring.*-idl _ → tt
   .make-ring.*-idr _ → tt
@@ -326,7 +354,7 @@ homomorphism $h : 0 \to R$ unless $0 = h(0) = h(1) = 1$ in $R$.
   .make-ring.+-invr {x} → +ℤ-inverser x
   .make-ring.+-assoc {x} {y} {z} → +ℤ-associative x y z
   .make-ring.+-comm {x} {y} → +ℤ-commutative x y
-  .make-ring.1R → 1
+  .make-ring.1r → 1
   .make-ring._*_ → _*ℤ_
   .make-ring.*-idl → *ℤ-idl _
   .make-ring.*-idr → *ℤ-idr _
