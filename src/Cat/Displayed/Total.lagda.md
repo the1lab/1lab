@@ -4,8 +4,8 @@ open import Cat.Prelude
 
 import Cat.Reasoning as CR
 
-module Cat.Displayed.Total {o ℓ o′ ℓ′} {B : Precategory o ℓ}
-                        (E : Displayed B o′ ℓ′) where
+module Cat.Displayed.Total
+  {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′) where
 
 open Displayed E
 open CR B

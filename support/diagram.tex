@@ -26,6 +26,14 @@
 \tikzset{2tail/.code={\pgfsetarrowsstart{Implies[reversed]}}}
 \tikzset{2tail reversed/.code={\pgfsetarrowsstart{Implies}}}
 \tikzset{no body/.style={/tikz/dash pattern=on 0 off 1mm}}
+\tikzset{
+  lies over/.style = {
+    |-{Triangle[open, length=1.875mm, width=1.875mm]}
+  },
+  category over/.style = {
+    -{Triangle[open, length=1.875mm, width=1.875mm]}
+  },
+}
 
 \tikzset{
     Rightarrow/.style={double={diagrambg},double equal sign distance,>={Implies},->},

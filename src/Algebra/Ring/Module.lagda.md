@@ -192,9 +192,9 @@ simply take $X = f^*(N)$.
   \\
   R && S
   \arrow["f"', from=3-1, to=3-3]
-  \arrow[Bar-{Triangle[open]}, from=1-3, to=3-3]
+  \arrow[lies over, from=1-3, to=3-3]
   \arrow[from=1-1, to=1-3]
-  \arrow[Bar-{Triangle[open]}, from=1-1, to=3-1]
+  \arrow[lies over, from=1-1, to=3-1]
   \arrow[dr, phantom, "\lrcorner", very near start, from=1-1, to=3-3]
 \end{tikzcd}\]
 ~~~

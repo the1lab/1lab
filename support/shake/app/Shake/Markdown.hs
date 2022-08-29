@@ -19,6 +19,7 @@ import qualified Data.Text as Text
 import Data.Digest.Pure.SHA
 import Data.Text (Text)
 import Data.Foldable
+import Data.List (intersperse)
 import Data.Maybe
 
 import qualified System.Directory as Dir
@@ -52,10 +53,11 @@ buildMarkdown refs input output = do
   gitCommit <- gitCommit
   let modname = dropDirectory1 (dropDirectory1 (dropExtension input))
 
-  need [templateName, bibliographyName, input]
+  need [templateName, bibliographyName, autorefsName, input]
 
   modulePath <- findModule modname
   authors <- gitAuthors modulePath
+  autorefs <- liftIO $ readAutoRefs autorefsName
   let
     permalink = gitCommit </> modulePath
 
@@ -82,7 +84,7 @@ buildMarkdown refs input output = do
   liftIO $ Dir.createDirectoryIfMissing False "_build/diagrams"
 
   let refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
-  markdown <- walkM (patchInline refMap) . walk patchInlines . linkReferences $ markdown
+  markdown <- walkM (patchInline refMap autorefs) . walk patchInlines . linkReferences $ markdown
   (markdown, MarkdownState references dependencies) <- runWriterT (walkM patchBlock markdown)
   need dependencies
 
@@ -122,18 +124,32 @@ patchInlines [] = []
 
 
 -- | Rewrite a single inline element.
-patchInline :: Map.Map Text (Cite.Reference Inlines) -- ^ A lookup of reference names to the actual reference.
-            -> Inline -> Action Inline
+patchInline
+  :: Map.Map Text (Cite.Reference Inlines)
+  -- ^ A lookup of reference names to the actual reference.
+  -> Map.Map Text Text
+  -- ^ A lookup table of automatic <ref /> links. I hate this, but
+  -- Pandoc doesn't let me do any better.
+  -> Inline
+  -> Action Inline
 -- Pre-render latex equations.
-patchInline _ (Math DisplayMath contents) = htmlInl <$> getDisplayMath contents
-patchInline _ (Math InlineMath contents) = htmlInl <$> getInlineMath contents
+patchInline _ _ (Math DisplayMath contents) = htmlInl <$> getDisplayMath contents
+patchInline _ _ (Math InlineMath contents) = htmlInl <$> getInlineMath contents
 -- Add the title to reference links.
-patchInline refMap (Link attrs contents (target, ""))
+patchInline refMap _ (Link attrs contents (target, ""))
   | Just citation <- Text.stripPrefix "#ref-" target
   , Just ref <- Map.lookup citation refMap
   , Just title <- Cite.valToText =<< Cite.lookupVariable "title" ref
   = pure $ Link attrs contents (target, title)
-patchInline _ h = pure h
+patchInline _ autolinks (RawInline h txt)
+  | h == Format "tex"
+  , "\\r{" `Text.isPrefixOf` txt
+  , "}" `Text.isSuffixOf` txt
+  , let txt' = Text.strip $ Text.drop 3 txt
+  , let key = Text.take (Text.length txt' - 1) txt'
+  , Just target <- Map.lookup (Text.toLower key) autolinks
+  = pure $ Link ("", [], []) (intersperse Space $ map Str (Text.words key)) (target, key)
+patchInline _ _ h = pure h
 
 
 data MarkdownState = MarkdownState
@@ -288,6 +304,18 @@ getHeaders module' = flip evalState [] . getAp . query (Ap . go) where
 htmlInl :: Text -> Inline
 htmlInl = RawInline (Format "html")
 
-templateName, bibliographyName :: FilePath
+templateName, bibliographyName, autorefsName :: FilePath
 templateName = "support/web/template.html"
 bibliographyName = "src/bibliography.bibtex"
+autorefsName = "src/autorefs.txt"
+
+readAutoRefs :: FilePath -> IO (Map.Map Text Text)
+readAutoRefs file = do
+  ts <- Text.lines <$> Text.readFile file
+  let
+    go line
+      | (words, target) <- Text.breakOn ":" line
+      , let words' = Text.strip words
+      , let target' = Text.strip (Text.tail target)
+      = foldMap (flip Map.singleton target' . Text.strip) (Text.splitOn "," words')
+  pure $ foldMap go ts

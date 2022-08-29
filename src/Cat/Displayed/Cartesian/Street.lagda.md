@@ -56,7 +56,7 @@ P(u) \cong x$. But visually, we depict them as
 \[\begin{tikzcd}
   u \\
   {P(u)} & {x\text{,}}
-  \arrow[Bar-{Triangle[open]}, from=1-1, to=2-1]
+  \arrow[lies over, from=1-1, to=2-1]
   \arrow["\phi"', from=2-1, to=2-2]
 \end{tikzcd}\]
 ~~~
@@ -77,8 +77,8 @@ condition is for the lower shape, which is a distorted square.
   & u && v \\
   & {P(u)} && {P(v)} \\
   x &&&& y
-  \arrow[Bar-{Triangle[open]}, from=1-2, to=2-2]
-  \arrow[Bar-{Triangle[open]}, from=1-4, to=2-4]
+  \arrow[lies over, from=1-2, to=2-2]
+  \arrow[lies over, from=1-4, to=2-4]
   \arrow["{P(h)}"', from=2-2, to=2-4]
   \arrow["h"{description}, from=1-2, to=1-4]
   \arrow["\phi"', from=3-1, to=2-2]

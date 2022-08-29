@@ -38,7 +38,7 @@ displayed objects is a set, and such that, for each right corner
 \[\begin{tikzcd}
   & {y'} \\
   x & {y\text{,}}
-  \arrow[Bar-{Triangle[open]}, from=1-2, to=2-2]
+  \arrow[lies over, from=1-2, to=2-2]
   \arrow["f"', from=2-1, to=2-2]
 \end{tikzcd}\]
 ~~~
@@ -47,12 +47,14 @@ there is a contractible space of objects $x'$ over $x$ equipped with
 maps $x' \to_f y'$.
 
 <!--
+
 ```agda
 module _ {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′) where
   private
     module B = Cat.Reasoning B
     module E = Displayed E
 ```
+
 -->
 
 ```agda
@@ -90,10 +92,10 @@ So suppose we have an open diagram
   & a && {b,}
   \arrow["{f'}"', from=2-2, to=2-4]
   \arrow["f", from=4-2, to=4-4]
-  \arrow[Bar-{Triangle[open]}, from=2-2, to=4-2]
-  \arrow[Bar-{Triangle[open]}, from=2-4, to=4-4]
+  \arrow[lies over, from=2-2, to=4-2]
+  \arrow[lies over, from=2-4, to=4-4]
   \arrow["m"', from=3-1, to=4-2]
-  \arrow[Bar-{Triangle[open]}, from=1-1, to=3-1]
+  \arrow[lies over, from=1-1, to=3-1]
   \arrow["{h'}", curve={height=-12pt}, from=1-1, to=2-4]
 \end{tikzcd}\]
 ~~~
@@ -135,9 +137,9 @@ into a diagram like
   x && x && {x\text{,}}
   \arrow["f", from=1-1, to=1-3]
   \arrow["g"', from=1-5, to=1-3]
-  \arrow[Bar-{Triangle[open]}, from=1-1, to=3-1]
-  \arrow[Bar-{Triangle[open]}, from=1-3, to=3-3]
-  \arrow[Bar-{Triangle[open]}, from=1-5, to=3-5]
+  \arrow[lies over, from=1-1, to=3-1]
+  \arrow[lies over, from=1-3, to=3-3]
+  \arrow[lies over, from=1-5, to=3-5]
   \arrow["{\mathrm{id}}"{description}, from=3-1, to=3-3]
   \arrow["{\mathrm{id}}"{description}, from=3-5, to=3-3]
   \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=3-3]

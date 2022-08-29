@@ -1,0 +1,5 @@
+displayed over, displayed category, displayed categories: Cat.Displayed.Base.html#displayed-categories
+fibred over, fibred category, fibred categories, fibration in categories: Cat.Displayed.Cartesian.html
+category, precategory, 1-category, categories, precategories, 1-categories: Cat.Base.html#precategories
+functor, functors, functorial, functoriality: Cat.Base.html#functors
+natural transformation, natural transformations, naturality: Cat.Base.html#natural-transformations

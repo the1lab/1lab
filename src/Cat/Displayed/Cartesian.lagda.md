@@ -40,8 +40,8 @@ so are implicit in the type dependency.
   a && b
   \arrow["{f'}"', from=1-1, to=1-3]
   \arrow["f", from=3-1, to=3-3]
-  \arrow[Bar-{Triangle[open]}, from=1-1, to=3-1]
-  \arrow[Bar-{Triangle[open]}, from=1-3, to=3-3]
+  \arrow[lies over, from=1-1, to=3-1]
+  \arrow[lies over, from=1-3, to=3-3]
 \end{tikzcd}\]
 ~~~
 
@@ -66,10 +66,10 @@ through a map $u' \to a'$ (in green, marked $\exists!$).
   & a && b
   \arrow["{f'}"', from=2-2, to=2-4]
   \arrow["f", from=4-2, to=4-4]
-  \arrow[Bar-{Triangle[open]}, from=2-2, to=4-2]
-  \arrow[Bar-{Triangle[open]}, from=2-4, to=4-4]
+  \arrow[lies over, from=2-2, to=4-2]
+  \arrow[lies over, from=2-4, to=4-4]
   \arrow["m"', color={rgb,255:red,124;green,50;blue,189}, from=3-1, to=4-2]
-  \arrow[Bar-{Triangle[open]}, color={rgb,255:red,124;green,50;blue,189}, from=1-1, to=3-1]
+  \arrow[lies over, color={rgb,255:red,124;green,50;blue,189}, from=1-1, to=3-1]
   \arrow["{h'}", color={rgb,255:red,204;green,51;blue,51}, curve={height=-12pt}, from=1-1, to=2-4]
   \arrow["{\exists!}"', color={rgb,255:red,36;green,202;blue,28}, dashed, from=1-1, to=2-2]
 \end{tikzcd}\]
@@ -92,7 +92,7 @@ input data consists of $a$, $b$, $f : a \to b$ and $b'$ over $a$,
   && {b'} \\
   \\
   a && {b\text{,}}
-  \arrow[Bar-{Triangle[open]}, from=1-3, to=3-3]
+  \arrow[lies over, from=1-3, to=3-3]
   \arrow["f"', from=3-1, to=3-3]
 \end{tikzcd}\]
 ~~~
