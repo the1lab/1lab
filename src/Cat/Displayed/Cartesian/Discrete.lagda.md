@@ -1,7 +1,13 @@
+---
+description: |
+  We define discrete fibrations,
+  and explore their relations to presheaves.
+---
 ```agda
 open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
+open import Cat.Displayed.Instances.Elements
 open import Cat.Prelude
 open import Cat.Thin
 
@@ -160,3 +166,72 @@ are unique, we have $f = g$.
     t .Hom-is-prop A B f g = Σ-inj-set (fibre-set x) $
       is-contr→is-prop (lifts B.id B) (A , f) (A , g)
 ```
+
+## Discrete Fibrations are Presheaves
+
+As noted earlier, a discrete fibration over $\ca{B}$ encodes the same
+data as a presheaf on $\ca{B}$. First, let us show that we can construct
+a presheaf from a discrete fibration.
+
+<!--
+```agda
+module _ {o ℓ} (B : Precategory o ℓ)  where
+  private
+    module B = Precategory B
+```
+-->
+
+```agda
+  discrete→presheaf : ∀ {o′ ℓ′} (E : Displayed B o′ ℓ′) → Discrete-fibration E
+                      → Functor (B ^op) (Sets o′)
+  discrete→presheaf {o′ = o′} E disc = psh where
+    module E = Displayed E
+    open Discrete-fibration disc
+```
+
+For each object in $X : \ca{B}$, we take the set of objects $E$ that
+lie over $X$. The functorial action of `f : Hom X Y` is then constructed
+by taking the domain of the lift of `f`. Functoriality follows by
+uniqueness of the lifts.
+
+```agda
+    psh : Functor (B ^op) (Sets o′)
+    psh .Functor.F₀ X = el E.Ob[ X ] (fibre-set X)
+    psh .Functor.F₁ f X′ = lifts f X′ .centre .fst
+    psh .Functor.F-id = funext λ X′ → ap fst (lifts B.id X′ .paths (X′ , E.id′))
+    psh .Functor.F-∘ {X} {Y} {Z} f g = funext λ X′ →
+      let Y′ : E.Ob[ Y ]
+          Y′ = lifts g X′ .centre .fst
+
+          g′ : E.Hom[ g ] Y′ X′
+          g′ = lifts g X′ .centre .snd
+
+          Z′ : E.Ob[ Z ]
+          Z′ = lifts f Y′ .centre .fst 
+
+          f′ : E.Hom[ f ] Z′ Y′
+          f′ = lifts f Y′ .centre .snd
+      in ap fst (lifts (g B.∘ f) X′ .paths (Z′ , (g′ E.∘′ f′ )))
+```
+
+To construct a discrete fibration from a presheaf $P$, we take the
+[(displayed) category of elements] of $P$. This is a natural choice,
+as it encodes the same data as $P$, just rendered down into a soup
+of points and bits of functions. Discreteness follows immediately
+from the contractibilty of singletons.
+
+[(displayed) category of elements]: Cat.Displayed.Instances.Elements.html
+
+```agda
+  presheaf→discrete : ∀ {κ} → Functor (B ^op) (Sets κ)
+                      → Σ[ E ∈ Displayed B κ κ ] Discrete-fibration E
+  presheaf→discrete {κ = κ} P = ∫ B P , discrete where
+    module P = Functor P
+    
+    discrete : Discrete-fibration (∫ B P)
+    discrete .Discrete-fibration.fibre-set X =
+      P.₀ X .is-tr
+    discrete .Discrete-fibration.lifts f P[Y] =
+      contr (P.₁ f P[Y] , refl) Singleton-is-contr
+```
+
