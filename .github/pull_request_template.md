@@ -31,3 +31,7 @@ main point), consider adding it to the counterexamples folder.
 style", and you have the energy to do both, consider doing both!
 However, it is **completely fine** to only do one! For instance, I
 (Amélia) am much better at writing proofs "book-style".
+
+If a commit affects many files without adding any content and you don't
+want your name to appear on those pages (for example, treewide refactorings
+or reformattings), include the word `NOAUTHOR` in the commit message.

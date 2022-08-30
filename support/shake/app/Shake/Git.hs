@@ -15,7 +15,15 @@ import Data.Generics
 import Development.Shake.Classes (Hashable, Binary, NFData)
 import Development.Shake
 
-import Shake.Utils
+-- | Set `--git-dir` explicitly to turn off repository discovery and work
+-- around https://github.blog/2022-04-12-git-security-vulnerability-announced/
+gitCommand :: CmdResult r => [String] -> Action r
+gitCommand args = command [] "git" (["--git-dir", ".git"] ++ args)
+
+-- | Run `git log`, excluding commits containing the word NOAUTHOR (for example,
+-- trivial reformattings or treewide changes).
+gitLog :: CmdResult r => [String] -> Action r
+gitLog args = gitCommand (["log", "--invert-grep", "--grep=NOAUTHOR"] ++ args)
 
 newtype GitCommit = GitCommit ()
   deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
@@ -40,11 +48,11 @@ doGitAuthors (GitAuthors path) = do
   _commit <- gitCommit -- We depend on the commit, but don't actually need it.
 
   -- Sort authors list and make it unique.
-  Stdout authors <- gitCommand ["log", "--format=%aN", "--", path]
+  Stdout authors <- gitLog ["--format=%aN", "--", path]
   let authorSet = Set.fromList . Text.lines . Text.decodeUtf8 $ authors
 
   Stdout coauthors <-
-    gitCommand ["log", "--format=%(trailers:key=Co-authored-by,valueonly)", "--", path]
+    gitLog ["--format=%(trailers:key=Co-authored-by,valueonly)", "--", path]
 
   let
     coauthorSet = Set.fromList
