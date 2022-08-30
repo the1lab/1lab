@@ -6,7 +6,6 @@ import qualified Data.HashMap.Strict as HashMap
 import Data.HashMap.Strict (HashMap)
 import qualified Data.Text as T
 import Data.Text (Text)
-import Data.Maybe
 
 import Text.Pandoc.Definition
 import Text.HTML.TagSoup
@@ -21,7 +20,7 @@ link :: HashMap Text Reference -> Inline -> Inline
 link hm inline@(Code (_, classes, kv) text)
   | isToBeLinked =
     case HashMap.lookup identifier hm of
-      Just ref -> RawInline "html" (renderReference ref text)
+      Just ref -> renderReference ref text
       Nothing -> inline
   where
     classes' = map T.toLower classes
@@ -35,14 +34,9 @@ link hm inline@(Code (_, classes, kv) text)
         _ -> text
 link _ x = x
 
-renderReference :: Reference -> Text -> Text
+renderReference :: Reference -> Text -> Inline
 renderReference (Reference href cls) t =
-  renderTags [ TagOpen "span" [("class", "Agda")]
-             , TagOpen "a" [("href", href), ("class", cls)]
-             , TagText t
-             , TagClose "a"
-             , TagClose "span"
-             ]
+  Span ("", ["Agda"], []) [Link ("", [cls], []) [Str t] (href, "")]
 
 data Reference =
   Reference { refHref  :: Text
@@ -53,22 +47,19 @@ data Reference =
 -- | Find all links in Agda code blocks (represented as HTML not
 -- markdown) and build a map of ident -> reference.
 parseSymbolRefs :: [Block] -> HashMap Text Reference
-parseSymbolRefs = go mempty . concat . mapMaybe getHTML where
-  getHTML :: Block -> Maybe [Tag Text]
-  getHTML (RawBlock (Format x) xs)
-    | x == "html" = Just (concatMap parseTags' (parseTags xs))
-  getHTML (BlockQuote bs) = pure . concat $ mapMaybe getHTML bs
-  getHTML (Div _ bs) = pure . concat $ mapMaybe getHTML bs
-  getHTML _ = Nothing
+parseSymbolRefs = go mempty . concatMap getHTML where
+  getHTML :: Block -> [Tag Text]
+  getHTML (RawBlock "html" xs) = parseTags xs >>= parseTags'
+  getHTML (BlockQuote bs) = bs >>= getHTML
+  getHTML (Div _ bs) = bs >>= getHTML
+  getHTML _ = []
 
   parseTags' (TagComment x) = parseTags x >>= parseTags'
   parseTags' t = pure t
 
   go :: HashMap Text Reference -> [Tag Text] -> HashMap Text Reference
-  go map (TagOpen a meta:TagText t:TagClose a':xs)
-    | a == "a"
-    , a' == a
-    , Just cls <- lookup "class" meta
+  go map (TagOpen "a" meta:TagText t:TagClose "a":xs)
+    | Just cls <- lookup "class" meta
     , Just href <- lookup "href" meta
     = go (addIfNotPresent t (Reference href cls) map) xs
 
