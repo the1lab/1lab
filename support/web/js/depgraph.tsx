@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     .force('collision', d3.forceCollide<Node>().radius(d => d.radius));
 
   // Allocate new zoom behaviour
-  const zoom = d3.zoom<SVGSVGElement, unknown>();
+  const zoom = d3.zoom<SVGSVGElement, unknown>().scaleExtent([0.5, 4]);
 
   const container = document.querySelector("aside#toc > div#toc-container");
   if (!container) return;
@@ -301,14 +301,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Create the SVG element and add a <g>roup for the zoom
   // transformation.
-  const svg = d3
-    .select("aside#toc > div#toc-container")
+  const svgRoot = d3
+    .select(container)
     .append('svg')
-    .call(zoom)
-    .append('g');
+    .call(zoom);
+  const svg = svgRoot.append('g');
 
-  zoom.on('zoom', ({ transform: tr }) => {
-    svg.attr("transform", `translate(${tr.x}, ${tr.y}) scale(${tr.k})`);
+  zoom.on('zoom', ({ transform }) => {
+    svg.attr('transform', transform.toString());
   });
 
   // Draw the edges
@@ -427,7 +427,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   let addExpand: () => void;
   const reset = () => {
     // Reset zoom level
-    svg.transition().duration(750).call(zoom.transform as any, d3.zoomIdentity);
+    svgRoot.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
     // Clear all forced coordinates
     for (const n of nodes) {
       n.fx = undefined;
