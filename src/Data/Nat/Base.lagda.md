@@ -88,10 +88,10 @@ instance
 
 ## Arithmetic
 
-<div class=warning>
+::: warning
 **Heads up!** The arithmetic properties of operations on the natural
 numbers are in the module [`1Lab.Data.Nat.Properties`].
-</div>
+:::
 
 [`1Lab.Data.Nat.Properties`]: Data.Nat.Properties.html
 

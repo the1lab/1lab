@@ -60,7 +60,7 @@ strict category, and the right adjoint gives the simplicial nerve of a
 strict category.
 
 [strict categories]: Cat.Instances.StrictCat.html
-[poset]: Cat.Instances.Thin.html
+[poset]: Cat.Thin.html
 
 Since these adjunctions come for very cheap ($\kappa$-cocompleteness of
 the codomain category is all we need), they are built out of very thin

@@ -30,7 +30,7 @@ equivalence - satisfying only _one_ of the triangle identities - as a
 [good notion of equivalence].
 
 [isomorphism]: 1Lab.Equiv.html#isomorphisms-from-equivalences
-[homotopies]: 1Lab.Path.html#dependent-functions
+[homotopies]: 1Lab.Path.html#π-types
 [triangle identities]: https://ncatlab.org/nlab/show/triangle+identities
 [adjoint functors]: https://ncatlab.org/nlab/show/adjoint+functor
 [good notion of equivalence]: 1Lab.Equiv.html#equivalences

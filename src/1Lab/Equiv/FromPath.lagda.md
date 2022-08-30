@@ -59,7 +59,7 @@ Since `f`{.Agda} and `g`{.Agda} are defined by [coercion] along a path,
 we can define _fillers_ `u`{.Agda} and `v`{.Agda} connecting `f`{.Agda}
 (resp `g`{.Agda}) to the identity function, over `P`{.Agda}:
 
-[coercion]: 1Lab.Path.html#cartesian-coercion
+[coercion]: 1Lab.Path.html#coercion
 
 ```agda
   u : PathP (λ i → A → P i) id f

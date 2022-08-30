@@ -60,7 +60,7 @@ very straightforward to construct, but proving that the two maps
 `Σ-map→loops` and `loops→Σ-map` are inverses involves nontrivial path
 algebra.
 
-[adjunction]: Cat.Functor.Adjoint.hmtl
+[adjunction]: Cat.Functor.Adjoint.html
 
 ```agda
 module _ {ℓ ℓ′} {A : Type∙ ℓ} {B : Type∙ ℓ′} where

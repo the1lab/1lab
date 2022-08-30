@@ -53,6 +53,7 @@ equivalence.
 
 [free group]: Algebra.Group.Free.html
 [monadic]: Cat.Functor.Adjoint.Monadic.html
+[comparison functor]: Cat.Functor.Adjoint.Monadic.html#Comparison
 [univalent categories]: Cat.Univalent.html
 
 Let us abbreviate the [monad induced] by the free group adjunction by
@@ -62,7 +63,6 @@ reversible: If $\nu$ is our original algebra, applying our process then
 applying the comparison functor has to give $\nu$ back.
 
 [monad induced]: Cat.Functor.Adjoint.Monad.html
-[comparison functor]: Cat.Functor.Adjoint.Monad.html#Comparison
 
 ```agda
 Algebra-on→group-on : {G : Set ℓ} → Algebra-on (Sets ℓ) T G → Group-on ∣ G ∣

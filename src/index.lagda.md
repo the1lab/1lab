@@ -152,10 +152,10 @@ And, of course, the formalisation would not be possible without
 
 # Type Theory
 
-<div class=warning>
+::: warning
 Most of the modules in the 1Lab assume a baseline knowledge of type
 theory. For this, [**read the introduction here**](1Lab.intro.html).
-</div>
+:::
 
 The first things to be explained are the foundational constructions in
 (cubical) type theory - things like types themselves, [universes],

@@ -48,7 +48,7 @@ open Monad L∘R
 ```
 
 The composition of `R.₁`{.Agda} with the `adjunction counit`{.Agda
-ident="adj.counit.η"} natural transformation gives `R`{.Agda} an
+ident="adj.counit.ε"} natural transformation gives `R`{.Agda} an
 `Algebra`{.Agda} structure, thus extending `R` to a functor $D \to C^{L
 \circ R}$.
 

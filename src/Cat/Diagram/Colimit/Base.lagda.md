@@ -33,9 +33,9 @@ some collection of objects and morphisms, and then state that the
 colimit of that collection is some object with a universal property
 relating all of those objects and morphisms.
 
-[coproducts]: Cat.Diagra.Coproduct
-[coequalisers]: Cat.Diagra.Coequaliser
-[initial objects]: Cat.Diagra.Initial
+[coproducts]: Cat.Diagram.Coproduct.html
+[coequalisers]: Cat.Diagram.Coequaliser.html
+[initial objects]: Cat.Diagram.Initial.html
 
 It would be convienent to be able to talk about _all_ of these
 situations at once, as opposed to on a case-by-case basis. To do this,

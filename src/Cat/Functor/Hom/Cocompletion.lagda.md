@@ -35,7 +35,7 @@ equations which let us, broadly speaking, think of its objects as
 there are (families) of maps $[n]\to[n+1]$, exhibiting an
 $n$-dimensional simplex as a face in an $(n+1)$-dimensional simplex.
 
-[$\kappa$-small]: 1lab.intro.html#universes-and-size-issues
+[$\kappa$-small]: 1Lab.intro.html#universes-and-size-issues
 
 Now, this category does _not_ have all colimits. For example, we should
 be able to the red and blue triangles in the diagram below to obtain a

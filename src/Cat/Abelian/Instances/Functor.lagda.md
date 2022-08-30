@@ -43,7 +43,7 @@ $\hom$-mapping $F_{a,b} : \ca{A}(a,b) \to \ca{B}(F(a),F(b))$ extends to
 a group homomorphism.
 
 [$\Ab$-categories]: Cat.Abelian.Base.html#ab-enriched-categories
-[$\Ab$-functors]: Cat.Abelian.Functors.html#ab-enriched-functors
+[$\Ab$-functors]: Cat.Abelian.Functor.html#ab-enriched-functors
 [functor category]: Cat.Instances.Functor.html
 
 ```agda

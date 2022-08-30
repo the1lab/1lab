@@ -43,6 +43,12 @@ As warmup, we prove that if $A$ and $B$ are $n$-types, then so is the
 type of equivalences $A \simeq B$. For the case where $n$ is a
 successor, this only depends on the h-level of $B$.
 
+<!--
+```agda
+_ = is-contr
+```
+-->
+
 ```agda
 ≃-is-hlevel : (n : Nat) → is-hlevel A n → is-hlevel B n → is-hlevel (A ≃ B) n
 ≃-is-hlevel {A = A} {B = B} zero Ahl Bhl = contr (f , f-eqv) deform where

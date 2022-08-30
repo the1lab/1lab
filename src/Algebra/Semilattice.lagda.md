@@ -325,7 +325,7 @@ Semilattice-univalent {ℓ = ℓ} =
       axiom[ Semilattice-on.has-is-semilattice by (λ _ → hlevel 1) ]))
 ```
 
-Any semilattice homomorphism is `monotone`{.Agda ident=is-monotone} when
+Any semilattice homomorphism is `monotone`{.Agda ident=Monotone-map} when
 considered as a map between the posets induced by a semilattice,
 regardless of whether we consider it as a meet or as a join semilattice.
 

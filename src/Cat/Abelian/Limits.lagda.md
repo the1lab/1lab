@@ -23,7 +23,7 @@ kernel**!
 
 [abelian]: Cat.Abelian.Base.html#pre-abelian-abelian-categories
 [pre-abelian]: Cat.Abelian.Base.html#pre-abelian-abelian-categories
-[kernels]: Cat.Diagram.Kernel.html
+[kernels]: Cat.Diagram.Equaliser.Kernel.html
 [additive]: Cat.Abelian.Base.html#additive-categories
 [equaliser]: Cat.Diagram.Equaliser.html
 [finite limits]: Cat.Diagram.Limit.Finite.html

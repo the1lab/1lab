@@ -403,8 +403,6 @@ quotient map $G \to G/H$ is then $H$. We call a predicate representing a
 kernel a **normal subgroup**, and we denote this in shorthand by $H
 \unlhd G$.
 
-[quotient]: Data.Set.Coequaliser.html
-
 ```agda
 record normal-subgroup (G : Group ℓ) (H : ℙ (G .fst)) : Type ℓ where
   open Group-on (G .snd)
@@ -525,7 +523,7 @@ we must show that the relation $(x - y) \in H$ is an equivalence
 relation; We can then appeal to [effectivity of quotients] to conclude
 that, if $\id{inc}(x) = \id{inc}(y)$, then $(x - y) \in H$.
 
-[effectivity of quotients]: Data.Set.Coequaliser.html#effecitivity
+[effectivity of quotients]: Data.Set.Coequaliser.html#effectivity
 
 ```agda
   private

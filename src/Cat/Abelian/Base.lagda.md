@@ -278,7 +278,7 @@ An additive category is **pre-abelian** when it additionally has
 [kernels] and cokernels, hence binary [equalisers] and [coequalisers]
 where one of the maps is zero.
 
-[kernels]: Cat.Diagram.Kernel.html
+[kernels]: Cat.Diagram.Equaliser.Kernel.html
 [equalisers]: Cat.Diagram.Equaliser.html
 [coequalisers]: Cat.Diagram.Coequaliser.html
 

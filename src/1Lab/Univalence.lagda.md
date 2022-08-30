@@ -19,7 +19,7 @@ axiom**.
 
 [the book]: https://homotopytypetheory.org/book
 [equivalent]: 1Lab.Equiv.html#_≃_
-[identified]: 1Lab.Path.html#Path
+[identified]: 1Lab.Prim.Kan.html#Path
 
 Precisely, the axiom as presented in the book consists of the following
 data (right under remark §2.10.4):
@@ -496,7 +496,7 @@ univalence⁻¹ {A = A} {B} = is-iso→is-equiv (is-iso.inverse (Path≃Equiv .s
 
 In some situations, it is helpful to have a proof that
 `path→equiv`{.Agda} followed by `an adjustment of levels`{.Agda
-ident=Lift} is still an equivalence:
+ident=lift} is still an equivalence:
 
 ```agda
 univalence-lift : {A B : Type ℓ} → is-equiv (λ e → lift (path→equiv {A = A} {B} e))
@@ -571,7 +571,7 @@ $\id{ap}(f)_{x,y} : x \equiv y \to f(x) \equiv f(y)$ is an equivalence.
 where $B$ is $A$, and $f$ is the identity function.
 >
 > But then, we have that $\id{ap}(\id{id})$ is [definitionally
-equal](1Lab.Path.html#ap-id) to $\id{id}$, which is known to be `an
+equal](agda://1Lab.Path#ap-id) to $\id{id}$, which is known to be `an
 equivalence`{.Agda ident=id-equiv}. <span
 class=qed>$\blacksquare$</span>
 

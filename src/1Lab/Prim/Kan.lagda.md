@@ -11,8 +11,8 @@ module 1Lab.Prim.Kan where
 Using the machinery from the other `Prim` modules, we can define the Kan
 operations: [transport] and [composition].
 
-[transport]: 1Lab.Path.html#Transport
-[composition]: 1Lab.Path.html#Composition
+[transport]: 1Lab.Path.html#transport
+[composition]: 1Lab.Path.html#composition
 
 ```agda
 private module X where primitive

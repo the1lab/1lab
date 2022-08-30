@@ -78,6 +78,12 @@ _∩_ : ℙ X → ℙ X → ℙ X
 (A ∩ B) x = el (∣ A x ∣ × ∣ B x ∣) (×-is-hlevel 1 (A x .is-tr) (B x .is-tr))
 ```
 
+<!--
+```agda
+_ = ∥_∥
+```
+-->
+
 Note that in the definition of `union`{.Agda ident=_∪_}, we must
 `truncate`{.Agda ident=∥_∥} the `coproduct`{.Agda ident=⊎}, since there
 is nothing which guarantees that A and B are disjoint subsets.

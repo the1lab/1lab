@@ -81,12 +81,12 @@ structure on the category of cubical sets, referred to as a
 
 # Type theory
 
-<div class=warning>
+::: warning
 **Warning**: The text below is subject to change! It's still very much a
 document in flux. In particular, the type theory section doesn't talk
 about induction, which is something that will be expanded on in the
 future.
-</div>
+:::
 
 Type theory is a foundational system for mathematics which, in contrast
 to a set-theoretic foundation like ZFC, formalises mathematical
@@ -1402,7 +1402,7 @@ open import 1Lab.Path
 
 The module `1Lab.Path`{.Agda} develops the theory of path types, filling
 in the details that were missing in _[Interlude - Basics of
-paths](#interlude-just-enough-about-paths)_ above. In particular, the
+paths](#interlude-basics-of-paths)_ above. In particular, the
 Path module talks about the structure of the **interval type**
 $\bb{I}$, the definition of **dependent paths**, **squares**, and
 the symmetry involution on paths. It then introduce the **transport**
