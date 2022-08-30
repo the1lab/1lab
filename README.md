@@ -75,9 +75,8 @@ variables, you can use something like this to copy the static assets
 into place:
 
 ```bash
-$ export out=_build/site
 $ eval "${installPhase}"
-$ python -m http.server --directory "$out"
+$ python -m http.server --directory _build/site
 ```
 
 ## Directly

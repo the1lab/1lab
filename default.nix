@@ -64,6 +64,10 @@ in
 
     nativeBuildInputs = deps;
 
+    shellHook = ''
+      export out=_build/site
+    '';
+
     LANG = "C.UTF-8";
     buildPhase = ''
       1lab-shake all -j
