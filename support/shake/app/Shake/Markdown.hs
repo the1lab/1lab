@@ -34,6 +34,7 @@ import Text.HTML.TagSoup
 import Text.Collate.Lang (Lang (..))
 import Text.Pandoc.Builder (Inlines)
 import Text.Pandoc.Citeproc
+import Text.Pandoc.Shared
 import Text.Pandoc.Walk
 import Text.Pandoc
 
@@ -279,17 +280,26 @@ getHeaders module' = flip evalState [] . getAp . query (Ap . go) where
   go [] = pure []
   go (Header level (hId, _, _) hText:xs) = do
     path <- get
-    let title = renderPlain hText
+    let title = trimr (renderPlain hText)
     let path' = (level, title):dropWhile (\(l, _) -> l >= level) path
     put path'
 
     if hId == "" then go xs
     else
       (:) SearchTerm
-      { idIdent  = Text.intercalate " > " . reverse $ map snd path'
+        { idIdent  = Text.intercalate " > " . reverse $ map snd path'
+        , idAnchor = module' <> ".html#" <> hId
+        , idType   = Nothing
+        , idDesc   = getDesc xs
+        } <$> go xs
+  go (Div (hId, _, _) blocks:xs) | hId /= "" = do
+    path <- get
+
+    (:) SearchTerm
+      { idIdent  = Text.intercalate " > " . reverse $ hId:map snd path
       , idAnchor = module' <> ".html#" <> hId
       , idType   = Nothing
-      , idDesc   = getDesc xs
+      , idDesc   = getDesc blocks
       } <$> go xs
   go (_:xs) = go xs
 
@@ -299,6 +309,8 @@ getHeaders module' = flip evalState [] . getAp . query (Ap . go) where
   -- is followed by a paragraph, use its contents.
   getDesc (Para x:_) = Just (renderPlain x)
   getDesc (Plain x:_) = Just (renderPlain x)
+  getDesc (Div (_, cls, _) _:xs) | "warning" `elem` cls = getDesc xs
+  getDesc (BlockQuote blocks:_) = getDesc blocks
   getDesc _ = Nothing
 
 htmlInl :: Text -> Inline
