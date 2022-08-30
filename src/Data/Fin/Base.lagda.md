@@ -250,3 +250,35 @@ opposite : ∀ {n} → Fin n → Fin n
 opposite {n = suc n} fzero = from-nat n
 opposite {n = suc n} (fsuc i) = weaken (opposite i)
 ```
+
+# Finite choice
+
+An important fact about the (standard) finite sets in constructive
+mathematics is that they _always_ support choice, which we phrase below
+as a "search" operator: If $M$ is any extension system (for example, the
+propositional truncation monad), then $M$ commutes with finite products:
+
+```agda
+finite-choice
+  : ∀ {ℓ} n {A : Fin n → Type ℓ} {M : ∀ {ℓ} → Type ℓ → Type ℓ}
+  → ⦃ Do-syntax M ⦄ → ⦃ Idiom-syntax M ⦄
+  → (∀ x → M (A x)) → M (∀ x → A x)
+finite-choice zero _    = pure λ { () }
+finite-choice (suc n) k = do
+  azero ← k fzero
+  asuc  ← finite-choice n (k ∘ fsuc)
+  pure λ where
+    fzero    → azero
+    (fsuc x) → asuc x
+```
+
+An immediate consequence is that surjections into a finite set (thus,
+_between_ finite sets) merely split:
+
+```agda
+finite-surjection-split
+  : ∀ {ℓ} {n} {B : Type ℓ}
+  → (f : B → Fin n) → (∀ x → ∥ fibre f x ∥)
+  → ∥ (∀ x → fibre f x) ∥
+finite-surjection-split f = finite-choice _
+```

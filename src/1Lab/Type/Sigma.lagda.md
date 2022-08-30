@@ -254,5 +254,13 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
 Σ-inj-set {B = B} {y = y} {z} aset path =
   subst (λ e → e ≡ z) (ap (λ e → transport (ap B e) y) (aset _ _ _ _) ∙ transport-refl y)
     (from-pathp (ap snd path))
+
+Σ-swap₂
+  : ∀ {ℓ ℓ′ ℓ′′} {A : Type ℓ} {B : Type ℓ′} {C : A → B → Type ℓ′′}
+  → (Σ[ x ∈ A ] Σ[ y ∈ B ] (C x y)) ≃ (Σ[ y ∈ B ] Σ[ x ∈ A ] (C x y))
+Σ-swap₂ .fst (x , y , f) = y , x , f
+Σ-swap₂ .snd .is-eqv y = contr (f .fst) (f .snd) where
+  f = strict-fibres _ y
+  -- agda can actually infer the inverse here, which is neat
 ```
 -->

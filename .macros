@@ -37,6 +37,9 @@
 \Sub:\operatorname{Sub}
 \baut:\operatorname{\mathbf{B}}
 \bb:\mathbb
+\NN:\mathbb{N}
+\ZZ:\mathbb{Z}
+\RR:\mathbb{R}
 \bf:\mathbf
 \yo:よ
 \Lan:\id{Lan}

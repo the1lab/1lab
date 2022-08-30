@@ -38,6 +38,20 @@ codomain of a dependent function by an equivalence across universe levels:
 Π-cod≃ k .snd .is-eqv f .paths (g , p) i .snd j x =
   equiv-path (k x) (f x) (g x , λ k → p k x) i .snd j
 
+Π-dom≃ : (e : B ≃ A) → ((x : A) → P x) ≃ ((x : B) → P (e .fst x))
+Π-dom≃ {P = P} e =
+  Iso→Equiv λ where
+    .fst k x → k (e .fst x)
+    .snd .is-iso.inv k x → subst P (e.ε x) (k (e.from x))
+    .snd .is-iso.rinv k → funext λ x →
+        ap₂ (subst P) (sym (e.zig x))
+          (sym (from-pathp (symP (ap k (e.η x)))))
+      ∙ transport⁻transport (ap P (ap (e .fst) (sym (e.η x)))) (k x)
+    .snd .is-iso.linv k → funext λ x →
+      ap (subst P _) (sym (from-pathp (symP (ap k (e.ε x)))))
+      ∙ transport⁻transport (sym (ap P (e.ε x))) _
+  where module e = Equiv e
+
 Π-impl-cod≃ : ((x : A) → P x ≃ Q x) → ({x : A} → P x) ≃ ({x : A} → Q x)
 Π-impl-cod≃ k .fst f {x} = k x .fst (f {x})
 Π-impl-cod≃ k .snd .is-eqv f .centre .fst {x}   = equiv-centre (k x) (f {x}) .fst

@@ -137,10 +137,10 @@ n-univalence {n = n} {X} {Y} = n-ua , is-iso→is-equiv isic where
   rinv : ∀ {Y} → is-right-inverse (inv {Y}) n-ua
   rinv = J (λ y p → n-ua (inv p) ≡ p) path where
     path : n-ua (inv {X} refl) ≡ refl
-    path i j .∣_∣ = equiv→unit (univalence {A = ∣ X ∣}) refl i j
+    path i j .∣_∣ = ua.ε {A = ∣ X ∣} refl i j
     path i j .is-tr = is-prop→squarep
       (λ i j → is-hlevel-is-prop
-        {A = equiv→unit (univalence {A = ∣ X ∣}) refl i j} n)
+        {A = ua.ε {A = ∣ X ∣} refl i j} n)
       (λ j → X .is-tr) (λ j → n-ua {X = X} {Y = X} (path→equiv refl) j .is-tr)
       (λ j → X .is-tr) (λ j → X .is-tr)
       i j

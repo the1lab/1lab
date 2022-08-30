@@ -94,29 +94,30 @@ the domain category to serve as an inverse for $f$:
 ```agda
     g : C.Hom _ _
     g = equiv→inverse ff (isinv .Dm.is-invertible.inv)
+    module ff {a} {b} = Equiv (_ , ff {a} {b})
 
     Ffog =
       F₁ F (f C.∘ g)    ≡⟨ F-∘ F _ _ ⟩
-      F₁ F f D.∘ F₁ F g ≡⟨ ap₂ D._∘_ refl (equiv→counit ff _) ∙ isinv .Dm.is-invertible.invl ⟩
+      F₁ F f D.∘ F₁ F g ≡⟨ ap₂ D._∘_ refl (ff.ε _) ∙ isinv .Dm.is-invertible.invl ⟩
       D.id              ∎
 
     Fgof =
       F₁ F (g C.∘ f)    ≡⟨ F-∘ F _ _ ⟩
-      F₁ F g D.∘ F₁ F f ≡⟨ ap₂ D._∘_ (equiv→counit ff _) refl ∙ isinv .Dm.is-invertible.invr ⟩
+      F₁ F g D.∘ F₁ F f ≡⟨ ap₂ D._∘_ (ff.ε _) refl ∙ isinv .Dm.is-invertible.invr ⟩
       D.id              ∎
 
     i : Cm.is-invertible _
     i .inv = g
     i .inverses .invl =
-      f C.∘ g                             ≡⟨ sym (equiv→unit ff _) ⟩
-      equiv→inverse ff ⌜ F₁ F (f C.∘ g) ⌝ ≡⟨ ap! (Ffog ∙ sym (F-id F)) ⟩
-      equiv→inverse ff (F₁ F C.id)        ≡⟨ equiv→unit ff _ ⟩
-      C.id                                ∎
+      f C.∘ g                    ≡⟨ sym (ff.η _) ⟩
+      ff.from ⌜ F₁ F (f C.∘ g) ⌝ ≡⟨ ap! (Ffog ∙ sym (F-id F)) ⟩
+      ff.from (F₁ F C.id)        ≡⟨ ff.η _ ⟩
+      C.id                       ∎
     i .inverses .invr =
-      g C.∘ f                             ≡⟨ sym (equiv→unit ff _) ⟩
-      equiv→inverse ff ⌜ F₁ F (g C.∘ f) ⌝ ≡⟨ ap! (Fgof ∙ sym (F-id F)) ⟩
-      equiv→inverse ff (F₁ F C.id)        ≡⟨ equiv→unit ff _ ⟩
-      C.id                                ∎
+      g C.∘ f                    ≡⟨ sym (ff.η _) ⟩
+      ff.from ⌜ F₁ F (g C.∘ f) ⌝ ≡⟨ ap! (Fgof ∙ sym (F-id F)) ⟩
+      ff.from (F₁ F C.id)        ≡⟨ ff.η _ ⟩
+      C.id                       ∎
 
   is-ff→essentially-injective
     : {F : Functor C D} → is-fully-faithful F

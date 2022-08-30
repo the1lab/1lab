@@ -5,6 +5,8 @@ open import 1Lab.Prelude
 open import Data.Fin.Base
 open import Data.Sum
 
+import Data.Nat as Nat
+
 module Data.Fin.Closure where
 ```
 
@@ -43,7 +45,7 @@ Finite-one-is-contr .paths fzero = refl
 ```
 
 The successor operation on indices corresponds to taking coproducts with
-the unit set:
+the unit set, which is concisely phrased using the `Maybe` type:
 
 ```agda
 Finite-successor : Fin (suc n) ≃ (⊤ ⊎ Fin n)
@@ -63,6 +65,25 @@ Finite-successor {n} = Iso→Equiv (f , iso g rinv linv) where
   linv : is-left-inverse g f
   linv fzero = refl
   linv (fsuc x) = refl
+```
+
+We can also phrase this equivalence in a particularly strong way, which
+applies to dependent products over finite successor types:
+
+```agda
+Fin-suc-universal
+  : ∀ {ℓ} {n} {A : Fin (suc n) → Type ℓ}
+  → (∀ x → A x) ≃ (A fzero × (∀ x → A (fsuc x)))
+Fin-suc-universal = Iso→Equiv λ where
+  .fst f → f fzero , (λ x → f (fsuc x))
+
+  .snd .is-iso.inv (z , f) fzero    → z
+  .snd .is-iso.inv (z , f) (fsuc x) → f x
+
+  .snd .is-iso.rinv x → refl
+
+  .snd .is-iso.linv k i fzero    → k fzero
+  .snd .is-iso.linv k i (fsuc n) → k (fsuc n)
 ```
 
 ## Addition
@@ -108,6 +129,7 @@ Finite-sum {suc n} B =
   ∙-is-equiv (is-iso→is-equiv f-iso) (Finite-coproduct .snd)
     where
       rec = Finite-sum (B ∘ fsuc)
+      module rec = Equiv rec
 
       f : Σ _ (Fin ∘ B) → Fin (B fzero) ⊎ Fin (sum n (B ∘ fsuc))
       f (fzero , x) = inl x
@@ -115,17 +137,15 @@ Finite-sum {suc n} B =
 
       f-iso : is-iso f
       f-iso .is-iso.inv (inl x) = fzero , x
-      f-iso .is-iso.inv (inr x) with equiv→inverse (rec .snd) x
+      f-iso .is-iso.inv (inr x) with rec.from x
       ... | x , y = fsuc x , y
 
       f-iso .is-iso.rinv (inl x) = refl
-      f-iso .is-iso.rinv (inr x) = ap inr (equiv→counit (rec .snd) _)
+      f-iso .is-iso.rinv (inr x) = ap inr (rec.ε _)
 
       f-iso .is-iso.linv (fzero , x) = refl
       f-iso .is-iso.linv (fsuc x , y) =
-        Σ-pathp
-          (ap (fsuc ∘ fst) (equiv→unit (rec .snd) _))
-          (ap snd (equiv→unit (rec .snd) _))
+        Σ-pathp (ap (fsuc ∘ fst) (rec.η _)) (ap snd (rec.η _))
 ```
 
 ## Multiplication

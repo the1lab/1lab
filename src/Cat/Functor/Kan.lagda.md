@@ -376,18 +376,19 @@ extension along a fully-faithful functor does actually _extend_.
 
   ff-lan-ext : is-fully-faithful K → cocomplete→lan .Ext F∘ K Fn.≅ F
   ff-lan-ext ff = Fn._Iso⁻¹ (Fn.invertible→iso (cocomplete→lan .eta) inv) where
+    module ff {x} {y} = Equiv (_ , ff {x} {y})
     inv′ : ∀ x → E.is-invertible (cocomplete→lan .eta .η x)
     inv′ x = E.make-invertible to invl invr where
       cocone′ : Cocone _
       cocone′ .coapex = F.₀ x
-      cocone′ .ψ ob = F.₁ (equiv→inverse ff (ob .map))
+      cocone′ .ψ ob = F.₁ (ff.from (ob .map))
       cocone′ .commutes {x = y} {z} f =
         F.collapse (fully-faithful→faithful {F = K} ff
           ( K .Functor.F-∘  _ _
-          ∙ ap₂ D._∘_ (equiv→counit ff _) refl
+          ∙ ap₂ D._∘_ (ff.ε _) refl
           ∙ f .sq
           ∙ D.idl _
-          ∙ sym (equiv→counit ff _)))
+          ∙ sym (ff.ε _)))
 
       to : E.Hom _ (F.₀ x)
       to = colim _ .has⊥ cocone′ .centre .hom
@@ -398,13 +399,13 @@ extension along a fully-faithful functor does actually _extend_.
         (cocone-hom _ λ o →
             E.pullr (colim _ .has⊥ cocone′ .centre .commutes _)
           ∙ colim _ .bot .commutes
-              (record { sq = ap (D.id D.∘_) (equiv→counit ff _) }))
+              (record { sq = ap (D.id D.∘_) (ff.ε _) }))
         (cocone-hom _ λ o → E.idl _)
 
       invr : to E.∘ cocomplete→lan .eta .η x ≡ E.id
       invr = colim _ .has⊥ cocone′ .centre .commutes _
            ∙ F.elim (fully-faithful→faithful {F = K} ff
-                      (equiv→counit ff _ ∙ sym K.F-id))
+                      (ff.ε _ ∙ sym K.F-id))
 
     inv : Fn.is-invertible (cocomplete→lan .eta)
     inv = componentwise-invertible→invertible (cocomplete→lan .eta) inv′

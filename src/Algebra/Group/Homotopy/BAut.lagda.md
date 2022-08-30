@@ -86,7 +86,7 @@ direct application of `univalence`{.Agda}.
 
 ```agda
   encode∘decode : ∀ b (p : Code b) → encode b (decode b p) ≡ p
-  encode∘decode b p = equiv→counit univalence _
+  encode∘decode b p = ua.η _
 ```
 
 We now have the core result: Specialising `encode`{.Agda} and

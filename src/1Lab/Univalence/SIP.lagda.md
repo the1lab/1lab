@@ -469,9 +469,10 @@ sym-transport-str :
   {X Y : Type ℓ} (e : X ≃ Y) (t : S Y)
   → equiv→inverse (α e .snd) t ≡ subst S (sym (ua e)) t
 sym-transport-str {S = S} α τ e t =
-     sym (transport⁻transport (ap S (ua e)) (equiv→inverse (α e .snd) t))
-  ·· sym (ap (subst S (sym (ua e))) (τ e (equiv→inverse (α e .snd) t)))
-  ·· ap (subst S (sym (ua e))) (equiv→counit (α e .snd) t)
+     sym (transport⁻transport (ap S (ua e)) (ae.from t))
+  ·· sym (ap (subst S (sym (ua e))) (τ e (ae.from t)))
+  ·· ap (subst S (sym (ua e))) (ae.ε t)
+  where module ae = Equiv (α e)
 ```
 -->
 

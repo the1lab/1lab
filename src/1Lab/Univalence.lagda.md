@@ -726,6 +726,8 @@ Map-classifier {ℓ = ℓ} {B = B} P =
 
 <!--
 ```agda
+module ua {ℓ} {A B : Type ℓ} = Equiv (ua {A = A} {B} , univalence⁻¹)
+
 ua∙ : ∀ {A B C : Type ℓ} {f : A ≃ B} {g : B ≃ C}
     → ua (f ∙e g) ≡ ua f ∙ ua g
 ua∙ {C = C} {f = f} {g} =

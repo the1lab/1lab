@@ -41,10 +41,10 @@ module _
       {rp : ∀ x → is-prop (R x)}
   where private
     domain : Type ℓ
-    domain = equiv→inverse (subtype-classifier .snd) (λ x → R x , rp x) .fst
+    domain = subtype-classifier.from (λ x → R x , rp x) .fst
 
     m : domain ↣ (∣ A ∣ × ∣ A ∣)
-    m = equiv→inverse (subtype-classifier .snd) (λ x → R x , rp x) .snd
+    m = subtype-classifier.from (λ x → R x , rp x) .snd
 
     p₁ p₂ : domain → ∣ A ∣
     p₁ = fst ⊙ fst m

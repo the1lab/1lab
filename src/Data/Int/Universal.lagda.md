@@ -52,12 +52,12 @@ unique among functions with these properties.
 ```agda
   map-out-rotate-inv
     : ∀ {ℓ} {X : Type ℓ} (p : X) (r : X ≃ X) (i : ℤ)
-    → map-out p r (equiv→inverse (rotate .snd) i)
-    ≡ equiv→inverse (r .snd) (map-out p r i)
+    → map-out p r (Equiv.from rotate i)
+    ≡ Equiv.from r (map-out p r i)
   map-out-rotate-inv p r i =
-      sym (equiv→unit (r .snd) _)
-    ·· ap (equiv→inverse (r .snd)) (sym (map-out-rotate p r _))
-    ·· ap (equiv→inverse (r .snd) ∘ map-out p r) (equiv→counit (rotate .snd) i)
+      sym (Equiv.η r _)
+    ·· ap (Equiv.from r) (sym (map-out-rotate p r _))
+    ·· ap (Equiv.from r ∘ map-out p r) (Equiv.ε rotate i)
 ```
 -->
 
@@ -89,8 +89,8 @@ difference of naturals $x - y$, then we can compute the power $f^n : X
     private
       lemma : ∀ m n x
         → (n-power n e⁻¹) .fst (n-power m .fst x)
-        ≡ (n-power n e⁻¹) .fst (equiv→inverse (l .snd) (l .fst (n-power m .fst x)))
-      lemma m n x = ap ((n-power n e⁻¹) .fst) (sym (equiv→unit (l .snd) _))
+        ≡ (n-power n e⁻¹) .fst (Equiv.from (l) (l .fst (n-power m .fst x)))
+      lemma m n x = ap ((n-power n e⁻¹) .fst) (sym (Equiv.η l _))
 
     map : Int → X ≃ X
     map (diff x y) = n-power x ∙e (n-power y e⁻¹)
@@ -107,13 +107,13 @@ cancelling the $f^{-1}f$ critical pair in the middle.
 
 <!--
 ```agda
-    negatives   : ∀ k x → equiv→inverse (n-power k .snd) (l .fst x) ≡ l .fst (equiv→inverse (n-power k .snd) x)
-    negatives⁻¹ : ∀ k x → equiv→inverse (n-power k .snd) (equiv→inverse (l .snd) x) ≡ equiv→inverse (l .snd) (equiv→inverse (n-power k .snd) x)
+    negatives   : ∀ k x → Equiv.from (n-power k) (l .fst x) ≡ l .fst (Equiv.from (n-power k) x)
+    negatives⁻¹ : ∀ k x → Equiv.from (n-power k) (Equiv.from l x) ≡ Equiv.from l (Equiv.from (n-power k) x)
 
     negatives zero x = refl
     negatives (suc k) x =
-        ap (equiv→inverse (n-power k .snd)) (equiv→unit (l .snd) x)
-      ∙ sym (ap (l .fst) (negatives⁻¹ k x) ∙ equiv→counit (l .snd) _)
+        ap (Equiv.from (n-power k)) (Equiv.η l x)
+      ∙ sym (ap (l .fst) (negatives⁻¹ k x) ∙ Equiv.ε l _)
 
     negatives⁻¹ zero x = refl
     negatives⁻¹ (suc k) x = negatives⁻¹ k _
@@ -151,11 +151,11 @@ assumptions, the other cases follow by induction (on naturals).
       unique-pos zero = path
       unique-pos (suc k) = htpy (diff k 0) ∙ ap (rot .fst) (unique-pos k)
 
-      unique-neg : ∀ k → f (diff 0 k) ≡ equiv→inverse (map-out.n-power rot k .snd) point
+      unique-neg : ∀ k → f (diff 0 k) ≡ Equiv.from (map-out.n-power rot k) point
       unique-neg zero = path
       unique-neg (suc k) =
-           sym (equiv→unit (rot .snd) _)
-        ·· ap (equiv→inverse (rot .snd)) (
+           sym (Equiv.η rot _)
+        ·· ap (Equiv.from rot) (
                sym (htpy (diff 0 (suc k)))
             ·· ap f (sym (quot 0 k))
             ·· unique-neg k)

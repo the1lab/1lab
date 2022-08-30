@@ -211,6 +211,14 @@ arithmetic operators:
 +-preserves-≤ x y x' y' prf prf' = ≤-trans (x + x') (y + x') (y + y')
   (+-preserves-≤r x y x' prf) (+-preserves-≤l x' y' y prf')
 
++-≤l : (x y : Nat) → x ≤ x + y
++-≤l zero y = 0≤x y
++-≤l (suc x) y = +-≤l x y
+
++-≤r : (x y : Nat) → y ≤ x + y
++-≤r x zero = 0≤x (x + 0)
++-≤r x (suc y) = subst (λ p → suc y ≤ p) (sym (+-sucr x y)) (+-≤r x y)
+
 *-preserves-≤l : (x y z : Nat) → x ≤ y → z * x ≤ z * y
 *-preserves-≤l x y zero prf = tt
 *-preserves-≤l x y (suc z) prf = +-preserves-≤ x y (z * x) (z * y) prf

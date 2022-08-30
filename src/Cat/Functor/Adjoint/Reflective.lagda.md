@@ -83,22 +83,23 @@ is-reflective→counit-is-iso {C = C} {D} {F} {G} adj g-ff {o} = morp where
   module G = Func G
   open _⊣_ adj
 
+  module g-ff {x} {y} = Equiv (_ , g-ff {x} {y})
   morp : F.₀ (G.₀ o) D.≅ o
-  morp = D.make-iso (counit.ε _) (equiv→inverse g-ff (unit.η _)) invl invr
+  morp = D.make-iso (counit.ε _) (g-ff.from (unit.η _)) invl invr
     where abstract
-    invl : counit.ε o D.∘ equiv→inverse g-ff (unit.η (G.₀ o)) ≡ D.id
+    invl : counit.ε o D.∘ g-ff.from (unit.η (G.₀ o)) ≡ D.id
     invl = fully-faithful→faithful {F = G} g-ff (
-      G.₁ (counit.ε o D.∘ _)                          ≡⟨ G.F-∘ _ _ ⟩
-      G.₁ (counit.ε o) C.∘ G.₁ (equiv→inverse g-ff _) ≡⟨ C.refl⟩∘⟨ equiv→counit g-ff _ ⟩
-      G.₁ (counit.ε o) C.∘ unit.η (G.₀ o)             ≡⟨ zag ∙ sym G.F-id ⟩
-      G.₁ D.id                                        ∎)
+      G.₁ (counit.ε o D.∘ _)                 ≡⟨ G.F-∘ _ _ ⟩
+      G.₁ (counit.ε o) C.∘ G.₁ (g-ff.from _) ≡⟨ C.refl⟩∘⟨  g-ff.ε _ ⟩
+      G.₁ (counit.ε o) C.∘ unit.η (G.₀ o)    ≡⟨ zag ∙ sym G.F-id ⟩
+      G.₁ D.id                               ∎)
 
-    invr : equiv→inverse g-ff (unit.η (G.₀ o)) D.∘ counit.ε o ≡ D.id
+    invr : g-ff.from (unit.η (G.₀ o)) D.∘ counit.ε o ≡ D.id
     invr = fully-faithful→faithful {F = G} g-ff (ap G.₁ (
-      equiv→inverse g-ff _ D.∘ counit.ε _             ≡˘⟨ counit.is-natural _ _ _ ⟩
-      counit.ε _ D.∘ F.₁ (G.₁ (equiv→inverse g-ff _)) ≡⟨ D.refl⟩∘⟨ F.⟨ equiv→counit g-ff _ ⟩ ⟩
-      counit.ε _ D.∘ F.₁ (unit.η _)                   ≡⟨ zig ⟩
-      D.id                                            ∎))
+      g-ff.from _ D.∘ counit.ε _             ≡˘⟨ counit.is-natural _ _ _ ⟩
+      counit.ε _ D.∘ F.₁ (G.₁ (g-ff.from _)) ≡⟨ D.refl⟩∘⟨ F.⟨ g-ff.ε _ ⟩ ⟩
+      counit.ε _ D.∘ F.₁ (unit.η _)          ≡⟨ zig ⟩
+      D.id                                   ∎))
 
 is-reflective→counit-iso
   : {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {F : Functor C D} {G : Functor D C}

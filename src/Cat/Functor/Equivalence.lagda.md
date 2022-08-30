@@ -137,6 +137,7 @@ module _ {F : Functor C D} (ff : is-fully-faithful F) (eso : is-split-eso F) whe
   private
     ff⁻¹ : ∀ {x y} → D.Hom (F .F₀ x) (F .F₀ y) → C.Hom _ _
     ff⁻¹ = equiv→inverse ff
+    module ff {x} {y} = Equiv (_ , ff {x} {y})
 ```
 
 It remains to show that, when $F$ is fully faithful, this assignment of
@@ -169,17 +170,17 @@ by faithfulness.
     ff⁻¹ (f*x-iso .di.from D.∘ ⌜ D.id D.∘ f*x-iso .di.to ⌝) ≡⟨ ap! (D.idl _) ⟩
     ff⁻¹ (f*x-iso .di.from D.∘ f*x-iso .di.to)              ≡⟨ ap ff⁻¹ (f*x-iso .di.invr) ⟩
     ff⁻¹ D.id                                               ≡˘⟨ ap ff⁻¹ (F-id F) ⟩
-    ff⁻¹ (F₁ F C.id)                                        ≡⟨ equiv→unit ff _ ⟩
+    ff⁻¹ (F₁ F C.id)                                        ≡⟨ ff.η _ ⟩
     C.id                                                    ∎
     where open Σ (eso x) renaming (fst to f*x ; snd to f*x-iso)
 
   ff+split-eso→inverse .F-∘ {x} {y} {z} f g =
     fully-faithful→faithful {F = F} ff (
-      F₁ F (ff⁻¹ (ffz D.∘ (f D.∘ g) D.∘ ftx))      ≡⟨ equiv→counit ff _ ⟩
+      F₁ F (ff⁻¹ (ffz D.∘ (f D.∘ g) D.∘ ftx))      ≡⟨ ff.ε _ ⟩
       ffz D.∘ (f D.∘ g) D.∘ ftx                    ≡⟨ solve D ⟩
       ffz D.∘ f D.∘ ⌜ D.id ⌝ D.∘ g D.∘ ftx         ≡˘⟨ ap¡ (f*y-iso .di.invl) ⟩
       ffz D.∘ f D.∘ (fty D.∘ ffy) D.∘ g D.∘ ftx    ≡⟨ solve D ⟩
-      (ffz D.∘ f D.∘ fty) D.∘ (ffy D.∘ g D.∘ ftx)  ≡˘⟨ ap₂ D._∘_ (equiv→counit ff _) (equiv→counit ff _) ⟩
+      (ffz D.∘ f D.∘ fty) D.∘ (ffy D.∘ g D.∘ ftx)  ≡˘⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
       F₁ F (ff⁻¹ _) D.∘ F₁ F (ff⁻¹ _)              ≡˘⟨ F-∘ F _ _ ⟩
       F₁ F (ff⁻¹ _ C.∘ ff⁻¹ _)                     ∎
     )
@@ -231,10 +232,10 @@ essential fibre $F^*F(x)$ comes equipped with an isomorphism $FF^*F(x)
   ff+split-eso→unit .is-natural x y f =
     fully-faithful→faithful {F = F} ff (
       F₁ F (ff⁻¹ ffy C.∘ f)                                    ≡⟨ F-∘ F _ _ ⟩
-      ⌜ F₁ F (ff⁻¹ ffy) ⌝ D.∘ F₁ F f                           ≡⟨ ap! (equiv→counit ff _) ⟩
+      ⌜ F₁ F (ff⁻¹ ffy) ⌝ D.∘ F₁ F f                           ≡⟨ ap! (ff.ε _) ⟩
       ffy D.∘ ⌜ F₁ F f ⌝                                       ≡⟨ ap! (sym (D.idr _) ∙ ap (F₁ F f D.∘_) (sym (f*x-iso .di.invl))) ⟩
       ffy D.∘ F₁ F f D.∘ ftx D.∘ ffx                           ≡⟨ solve D ⟩
-      (ffy D.∘ F₁ F f D.∘ ftx) D.∘ ffx                         ≡˘⟨ ap₂ D._∘_ (equiv→counit ff _) (equiv→counit ff _) ⟩
+      (ffy D.∘ F₁ F f D.∘ ftx) D.∘ ffx                         ≡˘⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
       F₁ F (ff⁻¹ (ffy D.∘ F₁ F f D.∘ ftx)) D.∘ F₁ F (ff⁻¹ ffx) ≡˘⟨ F-∘ F _ _ ⟩
       F₁ F (ff⁻¹ (ffy D.∘ F₁ F f D.∘ ftx) C.∘ ff⁻¹ ffx)        ≡⟨⟩
       F₁ F (F₁ (G F∘ F) f C.∘ x→f*x)                           ∎
@@ -271,7 +272,7 @@ again pick the given isomorphism.
 
 ```agda
   ff+split-eso→counit .is-natural x y f =
-    fty D.∘ ⌜ F₁ F (ff⁻¹ (ffy D.∘ f D.∘ ftx)) ⌝ ≡⟨ ap! (equiv→counit ff _) ⟩
+    fty D.∘ ⌜ F₁ F (ff⁻¹ (ffy D.∘ f D.∘ ftx)) ⌝ ≡⟨ ap! (ff.ε _) ⟩
     fty D.∘ ffy D.∘ f D.∘ ftx                   ≡⟨ D.cancell (f*y-iso .di.invl) ⟩
     f D.∘ ftx                                   ∎
     where
@@ -296,7 +297,7 @@ calculations without commentary:
   ff+split-eso→F⊣inverse .unit    = ff+split-eso→unit
   ff+split-eso→F⊣inverse .counit  = ff+split-eso→counit
   ff+split-eso→F⊣inverse .zig {x} =
-    ftx D.∘ F₁ F (ff⁻¹ ffx) ≡⟨ ap (ftx D.∘_) (equiv→counit ff _) ⟩
+    ftx D.∘ F₁ F (ff⁻¹ ffx) ≡⟨ ap (ftx D.∘_) (ff.ε _) ⟩
     ftx D.∘ ffx             ≡⟨ f*x-iso .di.invl ⟩
     D.id                    ∎
 ```
@@ -316,7 +317,7 @@ The `zag`{.Agda} identity needs an appeal to faithfulness:
   ff+split-eso→F⊣inverse .zag {x} =
     fully-faithful→faithful {F = F} ff (
       F₁ F (ff⁻¹ (ffx D.∘ ftx D.∘ fftx) C.∘ ff⁻¹ fffx)        ≡⟨ F-∘ F _ _ ⟩
-      F₁ F (ff⁻¹ (ffx D.∘ ftx D.∘ fftx)) D.∘ F₁ F (ff⁻¹ fffx) ≡⟨ ap₂ D._∘_ (equiv→counit ff _) (equiv→counit ff _) ⟩
+      F₁ F (ff⁻¹ (ffx D.∘ ftx D.∘ fftx)) D.∘ F₁ F (ff⁻¹ fffx) ≡⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
       (ffx D.∘ ftx D.∘ fftx) D.∘ fffx                         ≡⟨ solve D ⟩
       (ffx D.∘ ftx) D.∘ (fftx D.∘ fffx)                       ≡⟨ ap₂ D._∘_ (f*x-iso .di.invr) (f*f*x-iso .di.invl) ⟩
       D.id D.∘ D.id                                           ≡⟨ D.idl _ ∙ sym (F-id F) ⟩
@@ -363,13 +364,13 @@ needs an appeal to faithfulness (two, actually):
     ; inverses = record
       { invl = fully-faithful→faithful {F = F} ff (
           F₁ F (ff⁻¹ ffx C.∘ ff⁻¹ ftx)        ≡⟨ F-∘ F _ _ ⟩
-          F₁ F (ff⁻¹ ffx) D.∘ F₁ F (ff⁻¹ ftx) ≡⟨ ap₂ D._∘_ (equiv→counit ff _) (equiv→counit ff _) ⟩
+          F₁ F (ff⁻¹ ffx) D.∘ F₁ F (ff⁻¹ ftx) ≡⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
           ffx D.∘ ftx                         ≡⟨ f*x-iso .di.invr ⟩
           D.id                                ≡˘⟨ F-id F ⟩
           F₁ F C.id                           ∎)
       ; invr = fully-faithful→faithful {F = F} ff (
           F₁ F (ff⁻¹ ftx C.∘ ff⁻¹ ffx)        ≡⟨ F-∘ F _ _ ⟩
-          F₁ F (ff⁻¹ ftx) D.∘ F₁ F (ff⁻¹ ffx) ≡⟨ ap₂ D._∘_ (equiv→counit ff _) (equiv→counit ff _) ⟩
+          F₁ F (ff⁻¹ ftx) D.∘ F₁ F (ff⁻¹ ffx) ≡⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
           ftx D.∘ ffx                         ≡⟨ f*x-iso .di.invl ⟩
           D.id                                ≡˘⟨ F-id F ⟩
           F₁ F C.id                           ∎)

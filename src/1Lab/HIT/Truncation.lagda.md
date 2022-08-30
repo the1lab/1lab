@@ -88,6 +88,9 @@ whenever it is a family of propositions, by providing a case for
          → (A → P)
          → (x : ∥ A ∥) → P
 ∥-∥-rec pprop = ∥-∥-elim (λ _ → pprop)
+
+∥-∥-proj : ∀ {ℓ} {A : Type ℓ} → ⦃ H-Level A 1 ⦄ → ∥ A ∥ → A
+∥-∥-proj = ∥-∥-rec (hlevel 1) λ x → x
 ```
 -->
 

@@ -1,4 +1,5 @@
 ```agda
+open import 1Lab.Path.Groupoid
 open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type
@@ -230,6 +231,24 @@ equiv→zig {f = f} eqv x i j = hcomp (∂ i ∨ ∂ j) λ where
    k (j = i0) → equiv→counit eqv (f x) (i ∧ ~ k)
    k (j = i1) → f x
    k (k = i0) → eqv .is-eqv (f x) .paths (x , refl) j .snd i
+
+equiv→zag
+  : ∀ {f : A → B} (eqv : is-equiv f) x
+  → ap (equiv→inverse eqv) (equiv→counit eqv x)
+  ≡ equiv→unit eqv (equiv→inverse eqv x)
+equiv→zag {f = f} eqv b =
+  subst (λ b → ap g (ε b) ≡ η (g b)) (ε b) (helper (g b)) where
+  g = equiv→inverse eqv
+  ε = equiv→counit eqv
+  η = equiv→unit eqv
+
+  helper : ∀ a → ap g (ε (f a)) ≡ η (g (f a))
+  helper a i j = hcomp (∂ i ∨ ∂ j) λ where
+    k (i = i0) → g (ε (f a) (j ∨ ~ k))
+    k (i = i1) → η (η a (~ k)) j
+    k (j = i0) → g (equiv→zig eqv a (~ i) (~ k))
+    k (j = i1) → η a (i ∧ ~ k)
+    k (k = i0) → η a (i ∧ j)
 
 is-equiv→is-iso : {f : A → B} → is-equiv f → is-iso f
 is-iso.inv (is-equiv→is-iso eqv) = equiv→inverse eqv
@@ -618,6 +637,21 @@ _∙e_ (f , e) (g , e') = (λ x → g (f x)) , eqv where
            → is-equiv g
            → is-equiv (λ x → g (f x))
 ∙-is-equiv {f = f} {g = g} e e' = ((f , e) ∙e (g , e')) .snd
+
+module Equiv {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} (f : A ≃ B) where
+  to = f .fst
+  from = equiv→inverse (f .snd)
+  η = equiv→unit (f .snd)
+  ε = equiv→counit (f .snd)
+  zig = equiv→zig (f .snd)
+  zag = equiv→zag (f .snd)
+
+  injective : ∀ {x y} → to x ≡ to y → x ≡ y
+  injective p = ap fst $ is-contr→is-prop (f .snd .is-eqv _) (_ , refl) (_ , sym p)
+
+  injective₂ : ∀ {x y z} → to x ≡ z → to y ≡ z → x ≡ y
+  injective₂ p q = ap fst $ is-contr→is-prop (f .snd .is-eqv _)
+    (_ , p) (_ , q)
 ```
 -->
 

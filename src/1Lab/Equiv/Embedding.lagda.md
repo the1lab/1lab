@@ -102,6 +102,7 @@ subtype-classifier
   : ∀ {ℓ} {B : Type ℓ}
   → (Σ[ A ∈ Type ℓ ] (A ↪ B)) ≃ (B → Σ[ T ∈ Type ℓ ] (is-prop T))
 subtype-classifier {ℓ} = Map-classifier {ℓ = ℓ} is-prop
+module subtype-classifier {ℓ} {B : Type ℓ} = Equiv (subtype-classifier {B = B})
 ```
 
 A canonical source of embedding, then, are the first projections from

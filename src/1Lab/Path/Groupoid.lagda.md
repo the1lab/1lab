@@ -4,7 +4,6 @@ description: |
   is derived from their Kan operations.
 ---
 ```agda
-open import 1Lab.Equiv
 open import 1Lab.Path hiding (_∙_)
 open import 1Lab.Type
 

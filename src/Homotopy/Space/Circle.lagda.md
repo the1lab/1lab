@@ -147,13 +147,13 @@ argument $x$.
 ```agda
   square-loopⁿ
     : (n : ℤ)
-    → Square refl (loopⁿ (equiv→inverse (rotate .snd) n)) (loopⁿ n) loop
+    → Square refl (loopⁿ (Equiv.from rotate n)) (loopⁿ n) loop
   square-loopⁿ n = composite-path→square $ sym $
-    ⌜ loopⁿ (equiv→inverse (rotate .snd) n) ⌝ ∙ loop ≡⟨ ap! (map-out-rotate-inv _ _ _) ⟩
-    (loopⁿ n ∙ sym loop) ∙ loop                      ≡˘⟨ ∙-assoc _ _ _ ⟩
-    loopⁿ n ∙ ⌜ sym loop ∙ loop ⌝                    ≡⟨ ap! (∙-inv-l loop) ⟩
-    loopⁿ n ∙ refl                                   ≡⟨ ∙-id-r _ ∙ sym (∙-id-l _) ⟩
-    refl ∙ loopⁿ n                                   ∎
+    ⌜ loopⁿ (Equiv.from rotate n) ⌝ ∙ loop ≡⟨ ap! (map-out-rotate-inv _ _ _) ⟩
+    (loopⁿ n ∙ sym loop) ∙ loop            ≡˘⟨ ∙-assoc _ _ _ ⟩
+    loopⁿ n ∙ ⌜ sym loop ∙ loop ⌝          ≡⟨ ap! (∙-inv-l loop) ⟩
+    loopⁿ n ∙ refl                         ≡⟨ ∙-id-r _ ∙ sym (∙-id-l _) ⟩
+    refl ∙ loopⁿ n                         ∎
 ```
 -->
 
@@ -210,7 +210,7 @@ face has a dotted boundary.
 ```agda
   decode (loop i) code j = hcomp (∂ i ∨ ∂ j) λ where
     k (k = i0) → square-loopⁿ (unglue (∂ i) code) i j
-    k (i = i0) → loopⁿ (equiv→unit (rotate .snd) code k) j
+    k (i = i0) → loopⁿ (Equiv.η rotate code k) j
     k (i = i1) → loopⁿ code j
     k (j = i0) → base
     k (j = i1) → loop i

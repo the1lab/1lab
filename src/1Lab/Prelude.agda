@@ -8,6 +8,8 @@ open import 1Lab.Type public
 open import 1Lab.Path public
 open import 1Lab.Path.Groupoid public
 
+open import 1Lab.Prim.Monad public
+
 open import 1Lab.HLevel public
 open import 1Lab.HLevel.Sets public
 open import 1Lab.HLevel.Retracts public
