@@ -61,14 +61,14 @@ module _ (solver : SimpleSolver) where
     elhs ← normalise lhs >>= build-expr
     erhs ← normalise rhs >>= build-expr
     (noConstraints $ unify hole (invoke-solver elhs erhs)) <|> solver-failed elhs erhs
-  
+
   mk-simple-normalise : Term → Term → TC ⊤
   mk-simple-normalise tm hole =
     withNormalisation false $
     dontReduceDefs dont-reduce $ do
     e ← normalise tm >>= build-expr
     unify hole (invoke-normalisier e)
-  
+
   mk-simple-repr : Term → TC ⊤
   mk-simple-repr tm =
     withNormalisation false $
@@ -115,7 +115,7 @@ module _ {ℓ} {A : Type ℓ} (solver : VariableSolver A) where
     size , env ← environment vs
     soln ← reduce (invoke-normalisier e env)
     unify hole soln
-  
+
   mk-var-repr : Term → TC ⊤
   mk-var-repr tm =
     withNormalisation false $
