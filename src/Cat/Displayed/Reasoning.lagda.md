@@ -3,7 +3,7 @@ open import Cat.Instances.Functor
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Reasoning
+import Cat.Reasoning as Cat
 
 module
   Cat.Displayed.Reasoning
@@ -19,7 +19,7 @@ module
 ```agda
 private
   module E = Displayed E
-  module B = Cat.Reasoning B
+  module B = Cat B
   _ = Displayed.Hom[_] -- anchor for the reference below
 ```
 -->
@@ -45,7 +45,7 @@ hom[_] : ∀ {a b x y} {f g : B.Hom a b} → f ≡ g → E.Hom[ f ] x y → E.Ho
 hom[ p ] f′ = subst (λ h → E.Hom[ h ] _ _) p f′
 
 hom[_]⁻ : ∀ {a b x y} {f g : B.Hom a b} → g ≡ f → E.Hom[ f ] x y → E.Hom[ g ] x y
-hom[ p ]⁻ f′ = subst (λ h → E.Hom[ h ] _ _) (sym p) f′
+hom[ p ]⁻ f′ = hom[ sym p ] f′
 ```
 
 Since equality in the base $\hom_b(-,-)$ is a proposition, we can always
@@ -126,6 +126,21 @@ smashl
   → hom[ q ] (hom[ p ] f′ E.∘′ g′) ≡ hom[ ap (B._∘ g) p ∙ q ] (f′ E.∘′ g′)
 smashl p q = ap hom[ q ] (whisker-l p) ∙ hom[]-∙ _ _
 
+yank
+  : ∀ {a b c d}
+      {f : B.Hom c d} {g : B.Hom b c} {h : B.Hom a b} {i : B.Hom a c} {j : B.Hom b d}
+      {a′ b′ c′ d′}
+      {f′ : E.Hom[ f ] c′ d′} {g′ : E.Hom[ g ] b′ c′} {h′ : E.Hom[ h ] a′ b′}
+      (p : g B.∘ h ≡ i) (q : f B.∘ g ≡ j) (r : f B.∘ i ≡ j B.∘ h)
+  → (f′ E.∘′ hom[ p ](g′ E.∘′ h′)) E.≡[ r ] hom[ q ] (f′ E.∘′ g′) E.∘′ h′
+yank {f′ = f′} {g′ = g′} {h′ = h′} p q r = to-pathp $
+  hom[ r ] (f′ E.∘′ hom[ p ] (g′ E.∘′ h′))                                             ≡⟨ smashr p r ⟩
+  hom[ ap (B._∘_ _) p ∙ r ] (f′ E.∘′ g′ E.∘′ h′)                                       ≡⟨ ap hom[ _ ] (sym (from-pathp λ i → E.assoc′ f′ g′ h′ (~ i))) ⟩
+  hom[ ap (B._∘_ _) p ∙ r  ] (hom[ sym (B.assoc _ _ _) ] ((f′ E.∘′ g′) E.∘′ h′))       ≡⟨ hom[]-∙ _ _ ⟩
+  hom[ sym (B.assoc _ _ _) ∙ (ap (B .Precategory._∘_ _) p ∙ r)] ((f′ E.∘′ g′) E.∘′ h′) ≡⟨ reindex _ _ ⟩
+  hom[ (ap (B._∘ _) q) ] ((f′ E.∘′ g′) E.∘′ h′)                                        ≡˘⟨ whisker-l q ⟩
+  hom[ q ] (f′ E.∘′ g′) E.∘′ h′ ∎
+
 cancel
   : ∀ {a b} {f g : B.Hom a b} (p q : f ≡ g) {a′ b′}
     {f′ : E.Hom[ f ] a′ b′} {g′ : E.Hom[ g ] a′ b′}
@@ -139,6 +154,17 @@ kill₁
   → PathP (λ i → E.Hom[ p i ] a′ b′) h₁′ h₂′
   → hom[ p ∙ q ] h₁′ ≡ hom[ q ] h₂′
 kill₁ p q r = sym (hom[]-∙ _ _) ∙ ap hom[ q ] (from-pathp r)
+
+
+revive₁ : ∀ {a b} {f g h : B.Hom a b}
+           {a′ b′} {f′ : E.Hom[ f ] a′ b′} {g′ : E.Hom[ g ] a′ b′}
+       → {p : f ≡ g} {q : f ≡ h}
+       → f′ E.≡[ p ] g′
+       → hom[ q ] f′ ≡ hom[ sym p ∙ q ] g′
+revive₁ {f′ = f′} {g′ = g′} {p = p} {q = q} p′ =
+  hom[ q ] f′             ≡⟨ reindex _ _ ⟩
+  hom[ p ∙ sym p ∙ q ] f′ ≡⟨ kill₁ p (sym p ∙ q) p′ ⟩
+  hom[ sym p ∙ q ] g′     ∎
 
 -- Idea: p is equal to some composite p′ ∙ q, but it's mis-associated or
 -- something. We combine the reindexing to fix the association and
@@ -161,6 +187,12 @@ split p q =
      reindex _ (ap₂ B._∘_ p refl ∙ ap₂ B._∘_ refl q)
   ·· sym (hom[]-∙ _ _)
   ·· ap hom[ _ ] (sym (whisker-l p)) ∙ sym (whisker-r q)
+
+liberate
+  : ∀ {a b x y} {f : B.Hom a b} {f′ : E.Hom[ f ] x y}
+      (p : f ≡ f)
+    → hom[ p ] f′ ≡ f′
+liberate p = reindex p refl ∙ transport-refl _
 
 hom[]⟩⟨_
   : ∀ {a b} {f f' : B.Hom a b} {a′ b′} {p : f ≡ f'}
@@ -209,7 +241,7 @@ infixr 5 _⟩∘′⟨_ refl⟩∘′⟨_ _⟩∘′⟨refl
 infixl 4 split⟩⟨_ hom[]⟩⟨_
 
 hom[] : ∀ {a b x y} {f g : B.Hom a b} {p : f ≡ g} → E.Hom[ f ] x y → E.Hom[ g ] x y
-hom[] {p = p} f′ = subst (λ h → E.Hom[ h ] _ _) p f′
+hom[] {p = p} f′ = hom[ p ] f′
 
 pulll-indexr
   : ∀ {a b c d} {f : B.Hom c d} {g : B.Hom b c} {h : B.Hom a b} {ac : B.Hom a c}
@@ -225,4 +257,227 @@ pulll-indexr p q = whisker-r _ ∙
   sym ( reindex _ (sym (B.assoc _ _ _) ∙ ap (_ B.∘_) p) ·· sym (hom[]-∙ _ _)
     ·· ap hom[] ( ap hom[] (ap (E._∘′ _) (sym q))
                 ∙ from-pathp (symP (E.assoc′ _ _ _))))
+```
+
+Using these tools, we can define displayed versions of the usual category
+reasoning combinators.
+
+<!--
+```agda
+open Cat B
+open Displayed E
+
+private variable
+  u w x y z : Ob
+  a b c d f g h i : Hom x y
+  u′ w′ x′ y′ z′ : Ob[ x ]
+  a′ b′ c′ d′ f′ g′ h′ i′ : Hom[ a ] x′ y′ 
+```
+-->
+
+## Shiftings
+
+When working with displayed categories, we prefer to write all of our laws
+using `PathP`{.Agda}, as this is conceptually cleaner and avoids coherence
+issues. However, when performing equational reasoning, we use regular
+paths and `hom[_]`{.Agda}. To resolve this mismatch, we define the following
+combinators.
+
+```agda
+module _ {f′ : Hom[ f ] x′ y′} {g′ : Hom[ g ] x′ y′} (p : f ≡ g) where abstract
+  shiftl : f′ ≡[ p ] g′ → hom[ p ] f′ ≡ g′
+  shiftl q i = from-pathp (λ j → q (i ∨ j)) i
+  
+  shiftr : f′ ≡[ p ] g′ → f′ ≡ hom[ p ]⁻ g′
+  shiftr q i = from-pathp (λ j → q (i ∧ ~ j)) (~ i)
+```
+
+## Path Actions
+
+Due to the plethora of `PathP`{.Agda}, we can no longer perform `ap`{.Agda} as easily.
+This is especially true when we have a `PathP`{.Agda} as well as a path between
+two `hom[_]`{.Agda}. These combinators allow us to more ergonomically handle that
+situation.
+
+```agda
+module _ {f′ : Hom[ f ] y′ z′} {g′ : Hom[ g ] x′ y′} {p : f ∘ g ≡ a} where abstract
+
+  apl′ : ∀ {h′ : Hom[ h ] y′ z′} {q : h ∘ g ≡ a}
+          → {f≡h : f ≡ h}
+          → f′ ≡[ f≡h ] h′
+          → hom[ p ] (f′ ∘′ g′) ≡ hom[ q ] (h′ ∘′ g′)
+  apl′ {h′ = h′} {q = q} {f≡h = f≡h} f′≡h′ =
+    hom[ p ] (f′ ∘′ g′)                       ≡⟨ hom[]⟩⟨ (ap (_∘′ g′) (shiftr _ f′≡h′)) ⟩
+    hom[ p ] (hom[ f≡h ]⁻ h′ ∘′ g′)           ≡⟨ smashl _ _ ⟩
+    hom[ ap (_∘ g) (sym f≡h) ∙ p ] (h′ ∘′ g′) ≡⟨ reindex _ _ ⟩
+    hom[ q ] (h′ ∘′ g′) ∎
+
+  apr′ : ∀ {h′ : Hom[ h ] x′ y′} {q : f ∘ h ≡ a}
+          → {g≡h : g ≡ h}
+          → g′ ≡[ g≡h ] h′
+          → hom[ p ] (f′ ∘′ g′) ≡ hom[ q ] (f′ ∘′ h′)
+  apr′ {h′ = h′} {q = q} {g≡h = g≡h} g′≡h′ =
+    hom[ p ] (f′ ∘′ g′)                       ≡⟨ hom[]⟩⟨ ap (f′ ∘′_) (shiftr _ g′≡h′) ⟩
+    hom[ p ] (f′ ∘′ hom[ g≡h ]⁻ h′)           ≡⟨ smashr _ _ ⟩
+    hom[ ap (f ∘_) (sym g≡h) ∙ p ] (f′ ∘′ h′) ≡⟨ reindex _ _ ⟩
+    hom[ q ] (f′ ∘′ h′) ∎
+```
+
+
+## Generalized Category Laws
+
+In the definition of displayed categories, the identity and associativity
+laws are defined over `idl`{.Agda}, `idr`{.Agda}, and `assoc`{.Agda}. However,
+we often run into situations where we need to apply these equations over
+different equations! These combinators do just that.
+  
+```agda
+module _ {f′ : Hom[ f ] x′ y′} where abstract
+  idl[] : {p : id ∘ f ≡ f} → hom[ p ] (id′ ∘′ f′) ≡ f′
+  idl[] {p = p} = reindex p (idl _) ∙ from-pathp (idl′ f′)
+
+  idr[] : {p : f ∘ id ≡ f} → hom[ p ] (f′ ∘′ id′) ≡ f′
+  idr[] {p = p} = reindex p (idr _) ∙ from-pathp (idr′ f′)
+
+assoc[] : ∀ {a′ : Hom[ a ] y′ z′} {b′ : Hom[ b ] x′ y′} {c′ : Hom[ c ] w′ x′}
+            {p : a ∘ (b ∘ c) ≡ d} {q : (a ∘ b) ∘ c ≡ d}
+          → hom[ p ] (a′ ∘′ (b′ ∘′ c′)) ≡ hom[ q ] ((a′ ∘′ b′) ∘′ c′)
+assoc[] {a = a} {b = b} {c =  c} {a′ = a′} {b′ = b′} {c′ = c′} {p = p} {q = q} =
+  hom[ p ] (a′ ∘′ b′ ∘′ c′)                         ≡⟨ hom[]⟩⟨ shiftr (assoc a b c) (assoc′ a′ b′ c′) ⟩
+  hom[ p ] (hom[ assoc a b c ]⁻ ((a′ ∘′ b′) ∘′ c′)) ≡⟨ hom[]-∙ _ _ ⟩
+  hom[ sym (assoc a b c) ∙ p ] ((a′ ∘′ b′) ∘′ c′)   ≡⟨ reindex _ q ⟩
+  hom[ q ] ((a′ ∘′ b′) ∘′ c′)                       ∎
+```
+
+## Identity Morphisms
+
+These are the displayed counterparts to the
+[identity morphism combinators] for categories.
+
+[identity morphism combinators]: Cat.Reasoning.html#identity-morphisms
+
+```agda
+module _ {a′ : Hom[ a ] x′ x′}
+         (p : a ≡ id) (p′ : a′ ≡[ p ] id′) where abstract
+  eliml′ : ∀ {f′ : Hom[ f ] y′ x′} → {q : a ∘ f ≡ f} → a′ ∘′ f′ ≡[ q ] f′
+  eliml′ {f = f} {f′ = f′} {q = q} = to-pathp $
+    hom[ q ] (a′ ∘′ f′)      ≡⟨ apl′ p′ ⟩
+    hom[ idl f ] (id′ ∘′ f′) ≡⟨ idl[] ⟩
+    f′ ∎
+
+  elimr′ : ∀ {f′ : Hom[ f ] x′ y′} → {q : f ∘ a ≡ f} → f′ ∘′ a′ ≡[ q ] f′
+  elimr′ {f = f} {f′ = f′} {q = q} = to-pathp $
+    hom[ q ] (f′ ∘′ a′)      ≡⟨ apr′ p′ ⟩
+    hom[ idr f ] (f′ ∘′ id′) ≡⟨ idr[] ⟩
+    f′ ∎
+
+  introl′ : ∀ {f′ : Hom[ f ] y′ x′} → {q : f ≡ a ∘ f} → f′ ≡[ q ] a′ ∘′ f′
+  introl′ {f′ = f′} {q = q} i = eliml′ {f′ = f′} {q = sym q} (~ i)
+
+  intror′ : ∀ {f′ : Hom[ f ] x′ y′} → {q : f ≡ f ∘ a} → f′ ≡[ q ] f′ ∘′ a′
+  intror′ {f′ = f′} {q = q} i = elimr′ {f′ = f′} {q = sym q} (~ i)
+```
+
+## Reassociations
+
+These are the displayed counterparts to the [reassociation combinators]
+for categories.
+
+[reassociation combinators]: Cat.Reasoning.html#reassociations
+
+```agda
+module _ {a′ : Hom[ a ] y′ z′} {b′ : Hom[ b ] x′ y′} {c′ : Hom[ c ] x′ z′}
+         (p : a ∘ b ≡ c) (p′ : a′ ∘′ b′ ≡[ p ] c′) where abstract
+
+  pulll′ : ∀ {f′ : Hom[ f ] w′ x′} {q : a ∘ (b ∘ f) ≡ c ∘ f}
+           → a′ ∘′ (b′ ∘′ f′) ≡[ q ] c′ ∘′ f′
+  pulll′ {f = f} {f′ = f′} {q = q} = to-pathp $
+    hom[ q ] (a′ ∘′ b′ ∘′ f′)                       ≡⟨ assoc[] ⟩
+    hom[ sym (assoc a b f) ∙ q ] ((a′ ∘′ b′) ∘′ f′) ≡⟨ apl′ p′ ⟩
+    hom[ refl ] (c′ ∘′ f′)                          ≡⟨ liberate _ ⟩
+    c′ ∘′ f′                                        ∎
+
+  pullr′ : ∀ {f′ : Hom[ f ] z′ w′} {q : (f ∘ a) ∘ b ≡ f ∘ c}
+           → (f′ ∘′ a′) ∘′ b′ ≡[ q ] f′ ∘′ c′
+  pullr′ {f = f} {f′ = f′} {q = q} = to-pathp $
+    hom[ q ] ((f′ ∘′ a′) ∘′ b′)             ≡˘⟨ assoc[] ⟩
+    hom[ assoc f a b ∙ q ] (f′ ∘′ a′ ∘′ b′) ≡⟨ apr′ p′ ⟩
+    hom[ refl ] (f′ ∘′ c′)                  ≡⟨ liberate _ ⟩
+    f′ ∘′ c′                                ∎
+
+module _ {a′ : Hom[ a ] y′ z′} {b′ : Hom[ b ] x′ y′} {c′ : Hom[ c ] x′ z′}
+         (p : c ≡ a ∘ b) (p′ : c′ ≡[ p ] a′ ∘′ b′) where abstract
+
+  pushl′ : ∀ {f′ : Hom[ f ] w′ x′} {q : c ∘ f ≡ a ∘ (b ∘ f)}
+           → c′ ∘′ f′ ≡[ q ] a′ ∘′ (b′ ∘′ f′)
+  pushl′ {f′ = f′} {q = q} i =
+    pulll′ (sym p) (λ j → p′ (~ j)) {f′ = f′} {q = sym q} (~ i)
+
+  pushr′ : ∀ {f′ : Hom[ f ] z′ w′} {q : f ∘ c ≡ (f ∘ a) ∘ b}
+           → f′ ∘′ c′ ≡[ q ] (f′ ∘′ a′) ∘′ b′
+  pushr′ {f′ = f′} {q = q} i =
+    pullr′ (sym p) (λ j → p′ (~ j)) {f′ = f′} {q = sym q} (~ i)
+
+module _ {f′ : Hom[ f ] y′ z′} {h′ : Hom[ h ] x′ y′}
+         {g′ : Hom[ g ] y′ z′} {i′ : Hom[ i ] x′ y′}
+         (p : f ∘ h ≡ g ∘ i) (p′ : f′ ∘′ h′ ≡[ p ] g′ ∘′ i′) where abstract
+
+  extendl′ : ∀ {b′ : Hom[ b ] w′ x′} {q : f ∘ (h ∘ b) ≡ g ∘ (i ∘ b)}
+             → f′ ∘′ (h′ ∘′ b′) ≡[ q ] g′ ∘′ (i′ ∘′ b′)
+  extendl′ {b = b} {b′ = b′} {q = q} = to-pathp $
+    hom[ q ] (f′ ∘′ h′ ∘′ b′)                       ≡⟨ assoc[] ⟩
+    hom[ sym (assoc f h b) ∙ q ] ((f′ ∘′ h′) ∘′ b′) ≡⟨ apl′ p′ ⟩
+    hom[ sym (assoc g i b) ] ((g′ ∘′ i′) ∘′ b′)     ≡⟨ shiftl _ (λ j → (assoc′ g′ i′ b′) (~ j)) ⟩
+    g′ ∘′ i′ ∘′ b′                                  ∎
+
+  extendr′ : ∀ {a′ : Hom[ a ] z′ w′} {q : (a ∘ f) ∘ h ≡ (a ∘ g) ∘ i}
+             → (a′ ∘′ f′) ∘′ h′ ≡[ q ] (a′ ∘′ g′) ∘′ i′
+  extendr′ {a = a} {a′ = a′} {q = q} = to-pathp $
+    hom[ q ] ((a′ ∘′ f′) ∘′ h′)             ≡˘⟨ assoc[] ⟩
+    hom[ assoc a f h ∙ q ] (a′ ∘′ f′ ∘′ h′) ≡⟨ apr′ p′ ⟩
+    hom[ assoc a g i ] (a′ ∘′(g′ ∘′ i′))    ≡⟨ shiftl _ (assoc′ a′ g′ i′) ⟩
+    (a′ ∘′ g′) ∘′ i′ ∎
+
+  extend-inner′ : ∀ {a′ : Hom[ a ] z′ u′} {b′ : Hom[ b ] w′ x′}
+                    {q : a ∘ f ∘ h ∘ b ≡ a ∘ g ∘ i ∘ b}
+                  → a′ ∘′ f′ ∘′ h′ ∘′ b′ ≡[ q ] a′ ∘′ g′ ∘′ i′ ∘′ b′
+  extend-inner′ {a = a} {b = b} {a′ = a′} {b′ = b′} {q = q} = to-pathp $
+    hom[ q ] (a′ ∘′ f′ ∘′ h′ ∘′ b′)                                   ≡⟨ apr′ (assoc′ f′ h′ b′) ⟩
+    hom[ ap (a ∘_) (sym (assoc f h b)) ∙ q ] (a′ ∘′ (f′ ∘′ h′) ∘′ b′) ≡⟨ apr′ (λ j → p′ j ∘′ b′) ⟩
+    hom[ ap (a ∘_) (sym (assoc g i b)) ] (a′ ∘′ (g′ ∘′ i′) ∘′ b′)     ≡⟨ shiftl _ (λ j → a′ ∘′ assoc′ g′ i′ b′ (~ j)) ⟩
+    a′ ∘′ g′ ∘′ i′ ∘′ b′ ∎
+```
+
+## Cancellation
+
+These are the displayed counterparts to the [cancellation combinators]
+for categories
+
+[cancellation combinators]: Cat.Reasoning.html#cancellation
+
+```agda
+module _ {a′ : Hom[ a ] y′ x′} {b′ : Hom[ b ] x′ y′}
+         (p : a ∘ b ≡ id) (p′ : a′ ∘′ b′ ≡[ p ] id′) where abstract
+
+  cancell′ : ∀ {f′ : Hom[ f ] z′ x′} {q : a ∘ b ∘ f ≡ f}
+             → a′ ∘′ b′ ∘′ f′ ≡[ q ] f′
+  cancell′ {f = f} {f′ = f′} {q = q} = to-pathp $
+    hom[ q ] (a′ ∘′ b′ ∘′ f′)                       ≡⟨ assoc[] ⟩
+    hom[ sym (assoc a b f) ∙ q ] ((a′ ∘′ b′) ∘′ f′) ≡⟨ shiftl _ (eliml′ p p′) ⟩
+    f′                                              ∎
+
+  cancelr′ : ∀ {f′ : Hom[ f ] x′ z′} {q : (f ∘ a) ∘ b ≡ f}
+             → (f′ ∘′ a′) ∘′ b′ ≡[ q ] f′
+  cancelr′ {f = f} {f′ = f′} {q = q} = to-pathp $
+    hom[ q ] ((f′ ∘′ a′) ∘′ b′)             ≡˘⟨ assoc[] ⟩
+    hom[ assoc f a b ∙ q ] (f′ ∘′ a′ ∘′ b′) ≡⟨ shiftl _ (elimr′ p p′) ⟩
+    f′ ∎
+
+  insertl′ : ∀ {f′ : Hom[ f ] z′ x′} {q : f ≡ a ∘ b ∘ f }
+             → f′ ≡[ q ] a′ ∘′ b′ ∘′ f′
+  insertl′ {f = f} {f′ = f′} {q = q} i = cancell′ {f′ = f′} {q = sym q} (~ i) 
+
+  insertr′ : ∀ {f′ : Hom[ f ] x′ z′} {q : f ≡ (f ∘ a) ∘ b }
+             → f′ ≡[ q ] (f′ ∘′ a′) ∘′ b′
+  insertr′ {f = f} {f′ = f′} {q = q} i = cancelr′ {f′ = f′} {q = sym q} (~ i) 
 ```
