@@ -646,8 +646,8 @@ solve-macro hole =
                  termErr nf-rhs ∷ [])
 
 macro
-  cat! : Term → TC ⊤
-  cat! = solve-macro
+  nat! : Term → TC ⊤
+  nat! = solve-macro
 ```
 
 # Examples
@@ -659,7 +659,7 @@ work for a moment.
 private
   wow-good-job : ∀ x y z
                → (x + 5 + suc y) * z ≡ z * 5 + x * z + z + z * y
-  wow-good-job x y z = cat!
+  wow-good-job x y z = nat!
 ```
 
 Thus concludes our journey. There is still room for improvement,
