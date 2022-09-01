@@ -20,11 +20,11 @@ private variable
   : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : y ≡ z)
   → Square refl (sym p) q (p ∙ q)
 ∙-filler'' {x = x} {y} {z} p q i j =
-  hcomp (λ { k (i = i0) → p (~ j)
-           ; k (i = i1) → q (j ∧ k)
-           ; k (j = i0) → y
-           })
-    (p (i ∨ ~ j))
+  hcomp (∂ i ∨ ~ j) λ where
+    k (i = i0) → p (~ j)
+    k (i = i1) → q (j ∧ k)
+    k (j = i0) → y
+    k (k = i0) → p (i ∨ ~ j)
 
 pasteP
   : ∀ {ℓ} {A : Type ℓ} {w w′ x x′ y y′ z z′ : A}
@@ -36,13 +36,12 @@ pasteP
   → Square γ s s′ δ
   → Square {a00 = w}  {x}  {y}  {z}  p  q  r  s
   → Square {a00 = w′} {x′} {y′} {z′} p′ q′ r′ s′
-pasteP top left right bottom square i j = hcomp
-  (λ where
-    k (i = i0) → left k j
-    k (i = i1) → right k j
-    k (j = i0) → top k i
-    k (j = i1) → bottom k i)
-  (square i j)
+pasteP top left right bottom square i j = hcomp (∂ i ∨ ∂ j) λ where
+  k (i = i0) → left k j
+  k (i = i1) → right k j
+  k (j = i0) → top k i
+  k (j = i1) → bottom k i
+  k (k = i0) → square i j
 
 paste
   : p ≡ p′ → q ≡ q′ → r ≡ r′ → s ≡ s′
@@ -57,12 +56,12 @@ paste p q r s = pasteP p q r s
 ```agda
 ∙-id-comm : p ∙ refl ≡ refl ∙ p
 ∙-id-comm {p = p} i j =
-  hcomp (λ { k (i = i0) → ∙-filler p refl k j
-           ; k (i = i1) → ∙-filler'' refl p j k
-           ; k (j = i0) → p i0
-           ; k (j = i1) → p (~ i ∨ k)
-           })
-    (p (~ i ∧ j))
+  hcomp (∂ i ∨ ∂ j) λ where
+    k (i = i0) → ∙-filler p refl k j
+    k (i = i1) → ∙-filler'' refl p j k
+    k (j = i0) → p i0
+    k (j = i1) → p (~ i ∨ k)
+    k (k = i0) → (p (~ i ∧ j))
 
 module _ (p≡refl : p ≡ refl) where
   ∙-eliml : p ∙ q ≡ q
