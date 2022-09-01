@@ -1,8 +1,8 @@
 ```agda
 open import Algebra.Group.Cat.Base
+open import Algebra.Group.Solver
 open import Algebra.Prelude
 open import Algebra.Group
-open import Algebra.Group.Solver
 
 open import Cat.Instances.Delooping
 

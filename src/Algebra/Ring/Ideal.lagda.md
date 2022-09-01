@@ -7,10 +7,10 @@ open import Algebra.Group.Ab
 open import Algebra.Group
 open import Algebra.Ring
 
-open import Data.Power
-
 open import Cat.Functor.FullSubcategory
 open import Cat.Prelude
+
+open import Data.Power
 
 module Algebra.Ring.Ideal where
 ```

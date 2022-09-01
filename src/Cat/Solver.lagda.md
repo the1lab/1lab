@@ -1,6 +1,6 @@
 ```agda
-open import 1Lab.Reflection
 open import 1Lab.Reflection.Solver
+open import 1Lab.Reflection
 open import 1Lab.Prelude hiding (id ; _∘_)
 
 open import Cat.Base

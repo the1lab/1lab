@@ -1,6 +1,7 @@
 module Algebra.Group.Solver where
 
 open import 1Lab.Prelude
+open import Data.List
 open import Data.Fin
 open import Data.Nat
 
@@ -12,7 +13,7 @@ open import 1Lab.Reflection.Variables
 
 module _ {ℓ} {A : Type ℓ} (G : Group-on A) where
   open Group-on G
-  
+
   data Expr (n : Nat) : Type ℓ where
     _‶⋆‶_  : (e1 : Expr n) → (e2 : Expr n) → Expr n
     ‶unit‶ : Expr n
@@ -55,7 +56,7 @@ module _ {ℓ} {A : Type ℓ} (G : Group-on A) where
   push n v = vmul n v
 
   push-inv : Fin n → Value n → Value n
-  push-inv n (vmul n' v) with Discrete-Fin n n' 
+  push-inv n (vmul n' v) with Discrete-Fin n n'
   ... | yes _ = v
   ... | no _  = vmul⁻¹ n (vmul n' v)
   push-inv n v = vmul⁻¹ n v
@@ -229,7 +230,7 @@ module Reflection where
   repr-macro : ∀ {ℓ} {A : Type ℓ} → Group-on A → Term → Term → TC ⊤
   repr-macro {A = A} grp tm hole = do
     solver ← group-solver grp
-    mk-var-repr solver tm 
+    mk-var-repr solver tm
 
   expand-macro : ∀ {ℓ} {A : Type ℓ} → Group-on A → Term → Term → TC ⊤
   expand-macro {A = A} grp tm hole = do

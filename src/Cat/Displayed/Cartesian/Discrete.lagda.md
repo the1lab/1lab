@@ -4,10 +4,10 @@ description: |
   and explore their relations to presheaves.
 ---
 ```agda
+open import Cat.Displayed.Instances.Elements
 open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
-open import Cat.Displayed.Instances.Elements
 open import Cat.Prelude
 open import Cat.Thin
 

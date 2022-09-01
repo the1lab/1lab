@@ -4,8 +4,8 @@ open import Algebra.Group
 open import Algebra.Ring
 
 open import Cat.Functor.FullSubcategory
-open import Cat.Functor.Adjoint.Hom
 open import Cat.Displayed.Cartesian
+open import Cat.Functor.Adjoint.Hom
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
