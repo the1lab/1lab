@@ -244,7 +244,7 @@ module Reflection where
     f′ ← build-expr f′
     returnTC $ con (quote NbE.`hom[_]_) (infer-hidden 10 $ f h∷ g h∷ p v∷ f′ v∷ [])
   build-expr f′ = do
-    “Hom[ f ]” x y ← inferType f′
+    “Hom[ f ]” x y ← inferType f′ >>= reduce
       where tp → typeError $ strErr "Expected a displayed morphism: " ∷ termErr tp ∷ []
     returnTC $ con (quote NbE._↑) (infer-hidden 8 $ x h∷ y h∷ Cat.build-expr f h∷ f′ v∷ [])
 
