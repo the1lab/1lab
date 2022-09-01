@@ -29,7 +29,7 @@ automatically solve equality goals of this form.
 With a precategory in hand, we by defining a language of composition.
 
 ```agda
-module _ (Cat : Precategory o h) where
+module NbE (Cat : Precategory o h) where
   open Precategory Cat
 ```
 <!--
@@ -146,15 +146,15 @@ module Reflection where
   mk-category-args cat xs = unknown h∷ unknown h∷ cat v∷ xs
 
   “solve” : Term → Term → Term → Term
-  “solve” cat lhs rhs = def (quote solve) (mk-category-args cat $ infer-hidden 2 $ lhs v∷ rhs v∷ def (quote refl) [] v∷ [])
+  “solve” cat lhs rhs = def (quote NbE.solve) (mk-category-args cat $ infer-hidden 2 $ lhs v∷ rhs v∷ def (quote refl) [] v∷ [])
 
   “nf” : Term → Term → Term
-  “nf” cat e = def (quote nf) (mk-category-args cat $ infer-hidden 2 $ e v∷ [])
+  “nf” cat e = def (quote NbE.nf) (mk-category-args cat $ infer-hidden 2 $ e v∷ [])
 
   build-expr : Term → Term
-  build-expr “id” = con (quote `id) []
-  build-expr (“∘” f g) = con (quote _`∘_) (build-expr f v∷ build-expr g v∷ [] )
-  build-expr f = con (quote _↑) (f v∷ [])
+  build-expr “id” = con (quote NbE.`id) []
+  build-expr (“∘” f g) = con (quote NbE._`∘_) (build-expr f v∷ build-expr g v∷ [] )
+  build-expr f = con (quote NbE._↑) (f v∷ [])
 
   dont-reduce : List Name
   dont-reduce = quote Precategory.id ∷ quote Precategory._∘_ ∷ []

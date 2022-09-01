@@ -555,6 +555,9 @@ get-boundary tm@(def (quote PathP) (_ h∷ T v∷ x v∷ y v∷ [])) = do
   returnTC (just (x , y))
 get-boundary (meta m _) = blockOnMeta m
 get-boundary _ = returnTC nothing
+
+“refl” : Term
+“refl” = def (quote refl) []
 ```
 
 ## Debugging Tools

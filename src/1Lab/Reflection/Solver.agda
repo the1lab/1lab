@@ -113,7 +113,8 @@ module _ {ℓ} {A : Type ℓ} (solver : VariableSolver A) where
     dontReduceDefs dont-reduce $ do
     e , vs ← normalise tm >>= build-expr empty-vars
     size , env ← environment vs
-    unify hole (invoke-normalisier e env)
+    soln ← reduce (invoke-normalisier e env)
+    unify hole soln
   
   mk-var-repr : Term → TC ⊤
   mk-var-repr tm =
