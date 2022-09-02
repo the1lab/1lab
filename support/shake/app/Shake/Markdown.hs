@@ -86,7 +86,7 @@ buildMarkdown refs input output = do
   liftIO $ Dir.createDirectoryIfMissing False "_build/diagrams"
 
   let refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
-  markdown <- walkM (patchInline refMap autorefs) . walk patchInlines . linkReferences $ markdown
+  markdown <- walkM (patchInline refMap autorefs) . walk patchInlines . linkReferences modname $ markdown
   (markdown, MarkdownState references dependencies) <- runWriterT (walkM patchBlock markdown)
   need dependencies
 
