@@ -1,52 +1,92 @@
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE BlockArguments, OverloadedStrings, RankNTypes, ScopedTypeVariables #-}
 
 -- | Build a graph of links between nodes.
 module Shake.LinkGraph
-  ( findLinks
-  , crawlLinks
+  ( linksRules
+  , getInternalLinks
   ) where
 
+import Control.Monad
 import Control.Monad.IO.Class
 
+import qualified Data.Map as Map
 import qualified Data.Set as Set
+import qualified Data.Text as Text
+import qualified Data.Text.IO as Text
+import Data.Aeson
 import Data.Char (isDigit)
-import Data.Foldable
+import Data.List
+import Data.Maybe
+import Data.Text (Text)
 
+import Development.Shake
 import Development.Shake.FilePath
+
+import HTML.Base (Identifier(Identifier))
+
+import Network.URI
+
+import Shake.Modules
+import Shake.Options
+import Shake.SearchData
+import Shake.Utils
 
 import Text.HTML.TagSoup
 
-import qualified System.Directory as Dir
-
-findLinks :: MonadIO m => (String -> m ()) -> [Tag String] -> m (Set.Set String)
-findLinks cb (TagOpen "a" attrs:xs)
-  | Just href' <- lookup "href" attrs
-  , (_, anchor) <- span (/= '#') href'
-  , not (any isDigit anchor)
-  = do
-    let href = takeWhile (/= '#') href'
-    t <- liftIO $ Dir.doesFileExist ("_build/html" </> href)
-    cb ("_build/html" </> href)
-    if t && Set.notMember href ignoreLinks
-      then Set.insert href <$> findLinks cb xs
-      else findLinks cb xs
-findLinks k (_:xs) = findLinks k xs
-findLinks _ [] = pure mempty
-
+-- | These modules should not appear in the dependency graph.
 ignoreLinks :: Set.Set String
-ignoreLinks = Set.fromList [ "all-pages.html", "index.html" ]
+ignoreLinks = Set.fromList [ "all-pages", "index" ]
 
-crawlLinks
-  :: MonadIO m'
-  => (forall m. MonadIO m => String -> String -> m ())
-  -> (String -> m' ())
-  -> [String]
-  -> m' ()
-crawlLinks link need = go mempty where
-  go _visitd [] = pure ()
-  go visited (x:xs)
-    | x `Set.member` visited = go visited xs
-    | otherwise = do
-      links <- findLinks need . parseTags =<< liftIO (readFile ("_build/html" </> x))
-      for_ links $ \other -> link x other
-      go (Set.insert x visited) (Set.toList links ++ xs)
+linksRules :: Rules ()
+linksRules = do
+  -- A set of valid link targets.
+  anchors <- newCache \() -> do
+    allModules <- getAllModules
+    let moduleAnchors = Set.fromList [ Text.pack (mod <.> "html") | mod <- Map.keys allModules ]
+    searchData :: [SearchTerm] <- readJSONFile "_build/html/static/search.json"
+    let searchAnchors = Set.fromList (map idAnchor searchData)
+    agdaIdents :: [Identifier] <- readJSONFile "_build/all-types.json"
+    let agdaAnchors = Set.fromList [ Text.concat [filename, "#", ident]
+                                   | Identifier ident anchor _type <- agdaIdents
+                                   , let (filename, _) = Text.break (== '#') anchor ]
+    pure $ Set.unions [moduleAnchors, searchAnchors, agdaAnchors]
+
+  -- This file contains a list of [source, target] links representing a directed
+  -- graph of module names *with no self-loops*.
+  -- While building this file, we also check links against the set of anchors above.
+  "_build/html/static/links.json" %> \out -> do
+    watching <- getWatching
+    ourModules <- getOurModules
+    anchors <- anchors ()
+    links :: [[String]] <- catMaybes . concat <$> forM (Map.keys ourModules) \source -> do
+      let input = "_build/html" </> source <.> "html"
+      need [input]
+      links <- Set.toList . getInternalLinks source . parseTags <$> liftIO (Text.readFile input)
+      forM links \link -> do
+        unless (watching || Text.pack link `Set.member` anchors) do
+          error $ "Could not find link target " ++ link ++ " in " ++ source
+        let target = dropExtension . fst $ break (== '#') link
+        pure if (  target /= source
+                && target `Map.member` ourModules
+                && source `Set.notMember` ignoreLinks
+                && target `Set.notMember` ignoreLinks)
+             then Just [source, target]
+             else Nothing
+    liftIO $ encodeFile out links
+
+-- | Extract internal links to 1Lab modules, with anchors. Ignore numeric
+-- links because they're always correct and make the graph too crowded.
+getInternalLinks :: String -> [Tag Text] -> Set.Set String
+getInternalLinks mod = foldMap go where
+  go (TagOpen "a" attrs)
+    | Just href <- lookup "href" attrs
+    , Just uri <- parseRelativeReference (Text.unpack href)
+    = maybe mempty (\target -> Set.singleton (target ++ uriFragment uri)) $
+        case pathSegments uri of
+          [target] | '#':anchor@(_:_) <- uriFragment uri, all isDigit anchor -> Nothing
+                   | otherwise -> Just target
+          [] | "/" `isPrefixOf` uriPath uri -> Just "index.html"
+             | not ("#fn" `isPrefixOf` uriFragment uri)
+             , not ("#ref-" `isPrefixOf` uriFragment uri) -> Just (mod <.> "html")
+          _ -> Nothing
+  go _ = mempty

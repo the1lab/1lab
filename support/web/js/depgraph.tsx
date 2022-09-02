@@ -65,7 +65,7 @@ const page = (() => {
 })();
 
 function nbhoodSubgraph(node: string, links: [string]): { nodes: Node[], edges: Edge[] } {
-  const nodes = neighbours(node, links);
+  const nodes = neighbours(node, links).add(node);
   const edges = [];
   const nodeMap: Record<string, Node> = {};
 

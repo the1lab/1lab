@@ -12,10 +12,11 @@ import Control.Monad.Writer
 import Control.Monad.State
 
 import qualified Data.ByteString.Lazy as LazyBS
-import qualified Data.Text.Encoding as Text
-import qualified Data.Text.IO as Text
 import qualified Data.Map.Lazy as Map
 import qualified Data.Text as Text
+import qualified Data.Text.Encoding as Text
+import qualified Data.Text.IO as Text
+import Data.Aeson (encodeFile)
 import Data.Digest.Pure.SHA
 import Data.Text (Text)
 import Data.Foldable
@@ -91,11 +92,12 @@ buildMarkdown refs input output = do
 
   text <- liftIO $ either (fail . show) pure =<< runIO (renderMarkdown authors references modname markdown)
 
-  let tags = map (parseAgdaLink refs) . foldEquations False $ parseTags text
+  tags <- mapM (parseAgdaLink modname refs) . foldEquations False $ parseTags text
   traverse_ (checkMarkup input) tags
   liftIO . Text.writeFile output $ renderHTML5 tags
 
-  writeSearchData ("_build/search" </> modname <.> "json") (query (getHeaders (Text.pack modname)) markdown)
+  liftIO $ Dir.createDirectoryIfMissing False "_build/search"
+  liftIO $ encodeFile ("_build/search" </> modname <.> "json") (query (getHeaders (Text.pack modname)) markdown)
 
 -- | Find the original Agda file from a 1Lab module name.
 findModule :: MonadIO m => String -> m FilePath
@@ -142,9 +144,8 @@ patchInline refMap _ (Link attrs contents (target, ""))
   , Just ref <- Map.lookup citation refMap
   , Just title <- Cite.valToText =<< Cite.lookupVariable "title" ref
   = pure $ Link attrs contents (target, title)
-patchInline _ autolinks (RawInline h txt)
-  | h == Format "tex"
-  , "\\r{" `Text.isPrefixOf` txt
+patchInline _ autolinks (RawInline "tex" txt)
+  | "\\r{" `Text.isPrefixOf` txt
   , "}" `Text.isSuffixOf` txt
   , let txt' = Text.strip $ Text.drop 3 txt
   , let key = Text.take (Text.length txt' - 1) txt'
@@ -314,7 +315,7 @@ getHeaders module' = flip evalState [] . getAp . query (Ap . go) where
   getDesc _ = Nothing
 
 htmlInl :: Text -> Inline
-htmlInl = RawInline (Format "html")
+htmlInl = RawInline "html"
 
 templateName, bibliographyName, autorefsName :: FilePath
 templateName = "support/web/template.html"

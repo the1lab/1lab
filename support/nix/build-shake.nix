@@ -1,4 +1,5 @@
 { pkgs
+, nix-gitignore
 , our-ghc
 , makeWrapper
 , removeReferencesTo
@@ -31,7 +32,7 @@ let
 in
 stdenv.mkDerivation {
   inherit name;
-  src = ../shake;
+  src = nix-gitignore.gitignoreSource [] ../shake;
   nativeBuildInputs = [ our-ghc makeWrapper removeReferencesTo upx ];
   propagatedBuildInputs = [ lua5_3 gmp ];
 

@@ -2,7 +2,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving, TypeFamilies #-}
 module Shake.AgdaCompile (agdaRules) where
 
-import qualified System.Directory as Dir
 import System.FilePath
 
 import Control.Monad.Except
@@ -170,8 +169,6 @@ emitAgda
   -> (String -> Action (Hm.HashMap T.Text Identifier))
   -> String -> Action ()
 emitAgda (CompileA tcState _) getTypes modName = do
-  liftIO $ Dir.createDirectoryIfMissing True "_build/html0"
-
   basepn <- filePath <$> liftIO (absolute "src/")
 
   let tlModName = toTopLevel modName

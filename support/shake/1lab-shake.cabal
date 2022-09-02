@@ -9,83 +9,65 @@ maintainer:         me@amelia.how
 -- category:
 extra-source-files: CHANGELOG.md
 
-executable shake
-    main-is:          Main.hs
-    build-depends:
-      base >=4.14.3.0,
-      aeson,
-      Agda,
-      blaze-html,
-      bytestring,
-      citeproc,
-      containers,
-      deepseq,
-      directory,
-      doctemplates,
-      extra,
-      filepath,
-      fsnotify,
-      mtl,
-      pandoc,
-      pandoc-types,
-      process,
-      SHA,
-      shake,
-      split,
-      stm,
-      syb,
-      tagsoup,
-      text,
-      transformers,
-      unicode-collation,
-      unordered-containers,
-      uri-encode
-    hs-source-dirs:   app
-    other-modules:
-        Agda
-      , HTML.Backend
-      , HTML.Base
-      , HTML.Emit
-      , Shake.AgdaCompile
-      , Shake.AgdaRefs
-      , Shake.Diagram
-      , Shake.Git
-      , Shake.KaTeX
-      , Shake.LinkGraph
-      , Shake.LinkReferences
-      , Shake.Markdown
-      , Shake.Modules
-      , Shake.Options
-      , Shake.SearchData
-      , Shake.Utils
-      , Timer
-    default-language: Haskell2010
-    ghc-options: -Wextra -Wall -Wno-name-shadowing -Wno-implicit-prelude
-                 -j -threaded -with-rtsopts -A128M -rtsopts
+common common
+  build-depends:
+    base >=4.14.3.0,
+    aeson,
+    Agda,
+    blaze-html,
+    bytestring,
+    containers,
+    deepseq,
+    directory,
+    filepath,
+    mtl,
+    SHA,
+    split,
+    syb,
+    text,
+    transformers,
+    unicode-collation,
+    unordered-containers,
+    uri-encode,
+  other-modules: Agda, HTML.Backend, HTML.Base
+  default-language: Haskell2010
+  ghc-options: -Wextra -Wall -Wno-name-shadowing -Wno-implicit-prelude
 
+executable shake
+  import:           common
+  -- putting hs-source-dirs in common confuses hie-bios
+  hs-source-dirs:   app
+  main-is:          Main.hs
+  build-depends:
+    citeproc,
+    doctemplates,
+    extra,
+    fsnotify,
+    network-uri,
+    pandoc,
+    pandoc-types,
+    process,
+    shake,
+    stm,
+    tagsoup,
+  other-modules:
+      HTML.Emit
+    , Shake.AgdaCompile
+    , Shake.AgdaRefs
+    , Shake.Diagram
+    , Shake.Git
+    , Shake.KaTeX
+    , Shake.LinkGraph
+    , Shake.LinkReferences
+    , Shake.Markdown
+    , Shake.Modules
+    , Shake.Options
+    , Shake.SearchData
+    , Shake.Utils
+    , Timer
+  ghc-options: -j -threaded -with-rtsopts -A128M -rtsopts
 
 executable agda-typed-html
-    main-is:          Wrapper.hs
-    build-depends:
-      base >=4.14.3.0,
-      aeson,
-      Agda,
-      blaze-html,
-      bytestring,
-      containers,
-      deepseq,
-      directory,
-      filepath,
-      mtl,
-      SHA,
-      split,
-      syb,
-      text,
-      transformers,
-      unicode-collation,
-      unordered-containers,
-      uri-encode
-    hs-source-dirs:   app
-    other-modules: Agda HTML.Backend, HTML.Base
-    default-language: Haskell2010
-    ghc-options: -Wextra -Wall -Wno-name-shadowing -Wno-implicit-prelude
+  import:           common
+  hs-source-dirs:   app
+  main-is:          Wrapper.hs
