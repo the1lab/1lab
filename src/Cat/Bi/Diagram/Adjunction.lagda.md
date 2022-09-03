@@ -59,11 +59,11 @@ identities** (because it sounds cool).
 ```agda
   record _⊣_ {a b : B.Ob} (f : a B.↦ b) (g : b B.↦ a) : Type ℓ′ where
     field
-      η : B.id B.⇒ (g B.∘ f)
-      ε : (f B.∘ g) B.⇒ B.id
+      η : B.id B.⇒ (g B.⊗ f)
+      ε : (f B.⊗ g) B.⇒ B.id
 
-      zig : B.Hom.id ≡ B.λ← f B.⊗ (ε B.◀ f) B.⊗ B.α← f g f B.⊗ (f B.▶ η) B.⊗ B.ρ→ f
-      zag : B.Hom.id ≡ B.ρ← g B.⊗ (g B.▶ ε) B.⊗ B.α→ g f g B.⊗ (η B.◀ g) B.⊗ B.λ→ g
+      zig : B.Hom.id ≡ B.λ← f B.∘ (ε B.◀ f) B.∘ B.α← f g f B.∘ (f B.▶ η) B.∘ B.ρ→ f
+      zag : B.Hom.id ≡ B.ρ← g B.∘ (g B.▶ ε) B.∘ B.α→ g f g B.∘ (η B.◀ g) B.∘ B.λ→ g
 ```
 
 Working in a fully weak bicategory means the triangle identities, rather

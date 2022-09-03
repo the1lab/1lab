@@ -132,27 +132,28 @@ whence the name **horizontal composition**.
   _⇒_ {A} {B} f g = Hom.Hom f g
 
   -- 1-cell composition
-  _∘_ : ∀ {A B C} (f : B ↦ C) (g : A ↦ B) → A ↦ C
-  f ∘ g = compose .Functor.F₀ (f , g)
+  _⊗_ : ∀ {A B C} (f : B ↦ C) (g : A ↦ B) → A ↦ C
+  f ⊗ g = compose .Functor.F₀ (f , g)
 
   -- vertical 2-cell composition
-  _⊗_ : ∀ {A B} {f g h : A ↦ B} → g ⇒ h → f ⇒ g → f ⇒ h
-  _⊗_ {A} {B} = Hom._∘_
+  _∘_ : ∀ {A B} {f g h : A ↦ B} → g ⇒ h → f ⇒ g → f ⇒ h
+  _∘_ {A} {B} = Hom._∘_
 
   -- horizontal 2-cell composition
   _◆_ : ∀ {A B C} {f₁ f₂ : B ↦ C} (β : f₁ ⇒ f₂) {g₁ g₂ : A ↦ B} (α : g₁ ⇒ g₂)
-      → (f₁ ∘ g₁) ⇒ (f₂ ∘ g₂)
+      → (f₁ ⊗ g₁) ⇒ (f₂ ⊗ g₂)
   _◆_ β α = compose .Functor.F₁ (β , α)
 
   infixr 30 _∘_
   infixr 25 _⊗_
+  infix 35 _◀_ _▶_
 
   -- whiskering on the right
-  _▶_ : ∀ {A B C} (f : B ↦ C) {a b : A ↦ B} (g : a ⇒ b) → f ∘ a ⇒ f ∘ b
+  _▶_ : ∀ {A B C} (f : B ↦ C) {a b : A ↦ B} (g : a ⇒ b) → f ⊗ a ⇒ f ⊗ b
   _▶_ {A} {B} {C} f g = compose .Functor.F₁ (Hom.id , g)
 
   -- whiskering on the left
-  _◀_ : ∀ {A B C} {a b : B ↦ C} (g : a ⇒ b) (f : A ↦ B) → a ∘ f ⇒ b ∘ f
+  _◀_ : ∀ {A B C} {a b : B ↦ C} (g : a ⇒ b) (f : A ↦ B) → a ⊗ f ⇒ b ⊗ f
   _◀_ {A} {B} {C} g f = compose .Functor.F₁ (g , Hom.id)
 ```
 
@@ -181,25 +182,56 @@ unitor as $\rho$, and to the associator as $\alpha$, so we set up those
 abbreviations here too:
 
 ```agda
-  λ← : ∀ {A B} (f : A ↦ B) → id ∘ f ⇒ f
+  λ← : ∀ {A B} (f : A ↦ B) → id ⊗ f ⇒ f
   λ← = unitor-l .Cr._≅_.from .η
 
-  λ→ : ∀ {A B} (f : A ↦ B) → f ⇒ id ∘ f
+  λ→ : ∀ {A B} (f : A ↦ B) → f ⇒ id ⊗ f
   λ→ = unitor-l .Cr._≅_.to .η
 
-  ρ← : ∀ {A B} (f : A ↦ B) → f ∘ id ⇒ f
+  ρ← : ∀ {A B} (f : A ↦ B) → f ⊗ id ⇒ f
   ρ← = unitor-r .Cr._≅_.from .η
 
-  ρ→ : ∀ {A B} (f : A ↦ B) → f ⇒ f ∘ id
+  ρ→ : ∀ {A B} (f : A ↦ B) → f ⇒ f ⊗ id
   ρ→ = unitor-r .Cr._≅_.to .η
 
+  ρ←nat : ∀ {A B} {f f′ : A ↦ B} (β : f ⇒ f′)
+        → Path ((f ⊗ id) ⇒ f′) (ρ← _ ∘ (β ◀ id)) (β ∘ ρ← _)
+  ρ←nat {A} {B} {f} {f′} β = unitor-r .Cr.from .is-natural f f′ β
+
+  λ←nat : ∀ {A B} {f f′ : A ↦ B} (β : f ⇒ f′)
+        → Path ((id ⊗ f) ⇒ f′) (λ← _ ∘ (id ▶ β)) (β ∘ λ← _)
+  λ←nat {A} {B} {f} {f′} β = unitor-l .Cr.from .is-natural f f′ β
+
+  ρ→nat : ∀ {A B} {f f′ : A ↦ B} (β : f ⇒ f′)
+        → Path (f ⇒ f′ ⊗ id) (ρ→ _ ∘ β) ((β ◀ id) ∘ ρ→ _)
+  ρ→nat {A} {B} {f} {f′} β = unitor-r .Cr.to .is-natural f f′ β
+
+  λ→nat : ∀ {A B} {f f′ : A ↦ B} (β : f ⇒ f′)
+        → Path (f ⇒ id ⊗ f′) (λ→ _ ∘ β) ((id ▶ β) ∘ λ→ _)
+  λ→nat {A} {B} {f} {f′} β = unitor-l .Cr.to .is-natural f f′ β
+
   α→ : ∀ {A B C D} (f : C ↦ D) (g : B ↦ C) (h : A ↦ B)
-     → (f ∘ g) ∘ h ⇒ f ∘ (g ∘ h)
+     → (f ⊗ g) ⊗ h ⇒ f ⊗ (g ⊗ h)
   α→ f g h = associator .Cr._≅_.to .η (f , g , h)
 
   α← : ∀ {A B C D} (f : C ↦ D) (g : B ↦ C) (h : A ↦ B)
-     → f ∘ (g ∘ h) ⇒ (f ∘ g) ∘ h
+     → f ⊗ (g ⊗ h) ⇒ (f ⊗ g) ⊗ h
   α← f g h = associator .Cr._≅_.from .η (f , g , h)
+
+  α←nat : ∀ {A B C D} {f f′ : C ↦ D} {g g′ : B ↦ C} {h h′ : A ↦ B}
+        → (β : f ⇒ f′) (γ : g ⇒ g′) (δ : h ⇒ h′)
+        → Path (f ⊗ g ⊗ h ⇒ ((f′ ⊗ g′) ⊗ h′))
+          (α← _ _ _ ∘ (β ◆ (γ ◆ δ))) (((β ◆ γ) ◆ δ) ∘ α← _ _ _)
+  α←nat {A} {B} {C} {D} {f} {f′} {g} {g′} {h} {h′} β γ δ =
+    associator .Cr._≅_.from .is-natural (f , g , h) (f′ , g′ , h′) (β , γ , δ)
+
+  α→nat : ∀ {A B C D} {f f′ : C ↦ D} {g g′ : B ↦ C} {h h′ : A ↦ B}
+        → (β : f ⇒ f′) (γ : g ⇒ g′) (δ : h ⇒ h′)
+        → Path ((f ⊗ g) ⊗ h ⇒ (f′ ⊗ g′ ⊗ h′))
+           (α→ _ _ _ ∘ ((β ◆ γ) ◆ δ))
+           ((β ◆ (γ ◆ δ)) ∘ α→ _ _ _)
+  α→nat {A} {B} {C} {D} {f} {f′} {g} {g′} {h} {h′} β γ δ =
+    associator .Cr._≅_.to .is-natural (f , g , h) (f′ , g′ , h′) (β , γ , δ)
 ```
 
 The final data we need are coherences relating the left and right
@@ -227,12 +259,12 @@ witnesses commutativity of the diagram
   field
     triangle
       : ∀ {A B C} (f : B ↦ C) (g : A ↦ B)
-      → (ρ← f ◀ g) ⊗ α← f id g ≡ f ▶ λ← g
+      → (ρ← f ◀ g) ∘ α← f id g ≡ f ▶ λ← g
 
     pentagon
       : ∀ {A B C D E} (f : D ↦ E) (g : C ↦ D) (h : B ↦ C) (i : A ↦ B)
-      → (α← f g h ◀ i) ⊗ α← f (g ∘ h) i ⊗ (f ▶ α← g h i)
-      ≡ α← (f ∘ g) h i ⊗ α← f g (h ∘ i)
+      → (α← f g h ◀ i) ∘ α← f (g ⊗ h) i ∘ (f ▶ α← g h i)
+      ≡ α← (f ⊗ g) h i ∘ α← f g (h ⊗ i)
 ```
 
 Our coherence diagrams for bicategorical data are taken from
@@ -249,22 +281,22 @@ module _ (B : Prebicategory o ℓ ℓ′) where
   open Functor
 
   postaction : ∀ {a b c} (f : a ↦ b) → Functor (Hom c a) (Hom c b)
-  postaction f .F₀ g = f ∘ g
+  postaction f .F₀ g = f ⊗ g
   postaction f .F₁ g = f ▶ g
   postaction f .F-id = compose.F-id
   postaction f .F-∘ g h =
-    f ▶ (g ⊗ h)                 ≡˘⟨ ap (_◆ g ⊗ h) (Hom.idl Hom.id) ⟩
-    (Hom.id ⊗ Hom.id) ◆ (g ⊗ h) ≡⟨ compose.F-∘ _ _ ⟩
-    (f ▶ g) ⊗ (f ▶ h)           ∎
+    f ▶ (g ∘ h)                 ≡˘⟨ ap (_◆ g ∘ h) (Hom.idl Hom.id) ⟩
+    (Hom.id ∘ Hom.id) ◆ (g ∘ h) ≡⟨ compose.F-∘ _ _ ⟩
+    (f ▶ g) ∘ (f ▶ h)           ∎
 
   preaction : ∀ {a b c} (f : a ↦ b) → Functor (Hom b c) (Hom a c)
-  preaction f .F₀ g = g ∘ f
+  preaction f .F₀ g = g ⊗ f
   preaction f .F₁ g = g ◀ f
   preaction f .F-id = compose.F-id
   preaction f .F-∘ g h =
-    (g ⊗ h) ◀ f                 ≡˘⟨ ap (g ⊗ h ◆_) (Hom.idl Hom.id) ⟩
-    (g ⊗ h) ◆ (Hom.id ⊗ Hom.id) ≡⟨ compose.F-∘ _ _ ⟩
-    (g ◀ f) ⊗ (h ◀ f)           ∎
+    (g ∘ h) ◀ f                 ≡˘⟨ ap (g ∘ h ◆_) (Hom.idl Hom.id) ⟩
+    (g ∘ h) ◆ (Hom.id ∘ Hom.id) ≡⟨ compose.F-∘ _ _ ⟩
+    (g ◀ f) ∘ (h ◀ f)           ∎
 ```
 -->
 
@@ -420,7 +452,7 @@ have components $F_1(f)F_1(g) \To F_1(fg)$ and $F_1(\id{id}) \To
   ₂ = P₁.F₁
 
   γ→ : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
-     → ₁ f C.∘ ₁ g C.⇒ ₁ (f B.∘ g)
+     → ₁ f C.⊗ ₁ g C.⇒ ₁ (f B.⊗ g)
   γ→ f g = compositor .η (f , g)
 ```
 -->
@@ -452,16 +484,16 @@ squares).
   field
     hexagon
       : ∀ {a b c d} (f : c B.↦ d) (g : b B.↦ c) (h : a B.↦ b)
-      → ₂ (B.α→ f g h) C.⊗ γ→ (f B.∘ g) h C.⊗ (γ→ f g C.◀ ₁ h)
-      ≡ γ→ f (g B.∘ h) C.⊗ (₁ f C.▶ γ→ g h) C.⊗ C.α→ (₁ f) (₁ g) (₁ h)
+      → ₂ (B.α→ f g h) C.∘ γ→ (f B.⊗ g) h C.∘ (γ→ f g C.◀ ₁ h)
+      ≡ γ→ f (g B.⊗ h) C.∘ (₁ f C.▶ γ→ g h) C.∘ C.α→ (₁ f) (₁ g) (₁ h)
 
     right-unit
       : ∀ {a b} (f : a B.↦ b)
-      → ₂ (B.ρ← f) C.⊗ γ→ f B.id C.⊗ (₁ f C.▶ unitor) ≡ C.ρ← (₁ f)
+      → ₂ (B.ρ← f) C.∘ γ→ f B.id C.∘ (₁ f C.▶ unitor) ≡ C.ρ← (₁ f)
 
     left-unit
       : ∀ {a b} (f : a B.↦ b)
-      → ₂ (B.λ← f) C.⊗ γ→ B.id f C.⊗ (unitor C.◀ ₁ f) ≡ C.λ← (₁ f)
+      → ₂ (B.λ← f) C.∘ γ→ B.id f C.∘ (unitor C.◀ ₁ f) ≡ C.λ← (₁ f)
 ```
 
 ## Pseudofunctors
@@ -493,7 +525,7 @@ record
       : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b) → C.Hom.is-invertible (γ→ f g)
 
   γ← : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
-    → ₁ (f B.∘ g) C.⇒ ₁ f C.∘ ₁ g
+    → ₁ (f B.⊗ g) C.⇒ ₁ f C.⊗ ₁ g
   γ← f g = compositor-inv f g .Cr.is-invertible.inv
 
   υ← : ∀ {a} → ₁ B.id C.⇒ C.id
@@ -551,7 +583,7 @@ and thus consists of a natural family of 2-cells $G(f)\sigma_a \To
         : ∀ {a b}
         → preaction C (σ b) F∘ G.P₁ => postaction C (σ a) F∘ F.P₁
 
-    ν→ : ∀ {a b} (f : a B.↦ b) → G.₁ f C.∘ σ a C.⇒ σ b C.∘ F.₁ f
+    ν→ : ∀ {a b} (f : a B.↦ b) → G.₁ f C.⊗ σ a C.⇒ σ b C.⊗ F.₁ f
     ν→ = naturator .η
 ```
 
@@ -564,18 +596,18 @@ boil down to commutativity of the nightmarish diagrams in [@basicbicats,
     field
       ν-compositor
         : ∀ {a b c} (f : b B.↦ c) (g : a B.↦ b)
-        → ν→ (f B.∘ g) C.⊗ (G.γ→ f g C.◀ σ a)
+        → ν→ (f B.⊗ g) C.∘ (G.γ→ f g C.◀ σ a)
         ≡   (σ c C.▶ F.γ→ f g)
-        C.⊗ C.α→ (σ c) (F.₁ f) (F.₁ g)
-        C.⊗ (ν→ f C.◀ F.₁ g)
-        C.⊗ C.α← (G.₁ f) (σ b) (F.₁ g)
-        C.⊗ (G.₁ f C.▶ ν→ g)
-        C.⊗ C.α→ (G.₁ f) (G.₁ g) (σ a)
+        C.∘ C.α→ (σ c) (F.₁ f) (F.₁ g)
+        C.∘ (ν→ f C.◀ F.₁ g)
+        C.∘ C.α← (G.₁ f) (σ b) (F.₁ g)
+        C.∘ (G.₁ f C.▶ ν→ g)
+        C.∘ C.α→ (G.₁ f) (G.₁ g) (σ a)
 
       ν-unitor
         : ∀ {a}
-        → ν→ (B.id {a}) C.⊗ (G.unitor C.◀ σ a)
-        ≡ (σ a C.▶ F.unitor) C.⊗ C.ρ→ (σ a) C.⊗ C.λ← (σ a)
+        → ν→ (B.id {a}) C.∘ (G.unitor C.◀ σ a)
+        ≡ (σ a C.▶ F.unitor) C.∘ C.ρ→ (σ a) C.∘ C.λ← (σ a)
 ```
 
 A lax transformation with invertible naturator is called a
@@ -591,7 +623,7 @@ A lax transformation with invertible naturator is called a
     field
       naturator-inv : ∀ {a b} (f : a B.↦ b) → C.Hom.is-invertible (ν→ f)
 
-    ν← : ∀ {a b} (f : a B.↦ b) → σ b C.∘ F.₁ f C.⇒ G.₁ f C.∘ σ a
+    ν← : ∀ {a b} (f : a B.↦ b) → σ b C.⊗ F.₁ f C.⇒ G.₁ f C.⊗ σ a
     ν← f = naturator-inv f .Cr.is-invertible.inv
 ```
 
@@ -640,8 +672,8 @@ module
 
       is-natural
         : ∀ {a b} {f : a B.↦ b}
-        → σ′.ν→ f C.⊗ (G.₁ f C.▶ Γ a)
-        ≡ (Γ b C.◀ F.₁ f) C.⊗ σ.ν→ f
+        → σ′.ν→ f C.∘ (G.₁ f C.▶ Γ a)
+        ≡ (Γ b C.◀ F.₁ f) C.∘ σ.ν→ f
 ```
 
 In a diagram, we display a modification as a 3-cell, i.e., a morphism

@@ -1,7 +1,4 @@
 ```agda
-open import Cat.Diagram.Limit.Finite
-open import Cat.Diagram.Limit.Base
-open import Cat.Instances.Discrete
 open import Cat.Prelude
 
 open import Data.Fin

@@ -20,7 +20,6 @@ module Cat.Diagram.Limit.Product {o h} (C : Precategory o h) where
 <!--
 ```agda
 open import Cat.Reasoning C
-open import Cat.Univalent C
 
 -- Yikes:
 open is-product

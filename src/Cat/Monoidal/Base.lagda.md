@@ -1,8 +1,8 @@
 ```agda
-open import Cat.Instances.Product
 open import Cat.Instances.Functor
-open import Cat.Prelude
+open import Cat.Instances.Product
 open import Cat.Bi.Base
+open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning as Cr

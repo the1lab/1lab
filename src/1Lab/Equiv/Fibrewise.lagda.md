@@ -51,10 +51,7 @@ total-fibres {A = A} {P = P} {Q = Q} {f = f} {x = x} {v = v} = the-iso where
   to (v' , p) = (_ , v') , λ i → _ , p i
 
   from : {x : A} {v : Q x} → fibre (total f) (x , v) → fibre (f x) v
-  from ((x , v) , p) =
-    J (λ { (x , v) _ → fibre (f x) v } )
-      (v , refl)
-      p
+  from ((x , v) , p) = transport (λ i → fibre (f (p i .fst)) (p i .snd)) (v , refl)
 
   the-iso : {x : A} {v : Q x} → Iso (fibre (f x) v) (fibre (total f) (x , v))
   the-iso .fst = to

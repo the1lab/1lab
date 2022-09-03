@@ -78,11 +78,11 @@ a proposition:
 ```agda
 ⊥-contractible : is-category C → is-prop Initial
 ⊥-contractible ccat x1 x2 i .bot =
-  iso→path C ccat (⊥-unique x1 x2) i
+  Univalent.iso→path ccat (⊥-unique x1 x2) i
 
 ⊥-contractible ccat x1 x2 i .has⊥ ob =
   is-prop→pathp
     (λ i → is-contr-is-prop
-      {A = Hom (iso→path C ccat (⊥-unique x1 x2) i) _})
+      {A = Hom (Univalent.iso→path ccat (⊥-unique x1 x2) i) _})
     (x1 .has⊥ ob) (x2 .has⊥ ob) i
 ```

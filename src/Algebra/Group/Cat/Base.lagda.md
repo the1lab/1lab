@@ -148,7 +148,10 @@ groups is indeed univalent.
 
 ```agda
 Groups-is-category : is-category (Groups ℓ)
-Groups-is-category = iso≃path→is-category _ eqv where
+Groups-is-category = equiv-path→identity-system (eqv e⁻¹)
+  λ a → Groups.≅-pathp refl refl
+    (Σ-prop-path (λ _ → Group-hom-is-prop) (funext transport-refl))
+  where
   open is-iso
 
   eqv : ∀ {A B} → (A ≡ B) ≃ (A Groups.≅ B)

@@ -62,9 +62,11 @@ map.
 
 ```agda
 Eilenberg-Moore-is-category : is-category EM
-Eilenberg-Moore-is-category A .centre = A , EM.id-iso
-Eilenberg-Moore-is-category (A , Am) .paths ((X , Xm) , A≅X) =
-  Σ-pathp A≡M triv where
+Eilenberg-Moore-is-category = λ { .to-path → A≡M ; .to-path-over → triv} where
+  module _ {A} {Am : Algebra-on C M A} {X}
+               {Xm : Algebra-on C M X}
+               (A≅X : EM.Isomorphism (A , Am) (X , Xm))
+    where
 ```
 
 The first thing we shall note is that an algebra is given by a pair of
@@ -123,7 +125,7 @@ resulting identification makes $f$ into the identity isomorphism.
 
 ```agda
     A₀≡X₀ : A ≡ X
-    A₀≡X₀ = iso→path C isc A₀≅X₀
+    A₀≡X₀ = isc .to-path A₀≅X₀
 ```
 
 By the characterisation of `paths in algebras`{.Agda
@@ -155,10 +157,10 @@ calculation then shows that the square above commutes.
     Am≡Xm = Algebra-on-pathp _ A₀≡X₀ same-mults′ where
       same-mults
         : PathP
-          (λ i → C.Hom (iso→path C isc (F-map-iso (Monad.M M) A₀≅X₀) i) (A₀≡X₀ i))
+          (λ i → C.Hom (isc .to-path (F-map-iso (Monad.M M) A₀≅X₀) i) (A₀≡X₀ i))
           (Am .ν) (Xm .ν)
       same-mults =
-        Hom-pathp-iso C isc (
+        Hom-pathp-iso isc (
           map A≅X.to C.∘ Am .ν C.∘ Monad.M₁ M (map A≅X.from)                 ≡⟨ C.pulll (sq A≅X.to) ⟩
           (Xm .ν C.∘ Monad.M₁ M (A≅X.to .map)) C.∘ Monad.M₁ M (map A≅X.from) ≡⟨ C.cancelr (sym (Monad.M-∘ M _ _) ·· ap (Monad.M₁ M) (ap map A≅X.invl) ·· Monad.M-id M) ⟩
           Xm .ν                                                              ∎
@@ -197,5 +199,5 @@ ident=Hom-pathp}.
 ```agda
     triv : PathP (λ i → (A , Am) EM.≅ A≡M i) EM.id-iso A≅X
     triv = EM.≅-pathp refl _
-      (Algebra-hom-pathp _ _ _ (Hom-pathp-reflr-iso C isc (C.idr _)))
+      (Algebra-hom-pathp _ _ _ (Hom-pathp-reflr-iso isc (C.idr _)))
 ```

@@ -14,7 +14,6 @@ module Cat.Diagram.Limit.Equaliser {o h} (Cat : Precategory o h) where
 <!--
 ```agda
 open import Cat.Reasoning Cat
-open import Cat.Univalent Cat
 
 open is-equaliser
 open Equaliser

@@ -178,20 +178,28 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
   F-map-path : ∀ {x y} (F : Functor C D) (i : x C.≅ y)
              → (ccat : is-category C)
              → (dcat : is-category D)
-             → ap (F₀ F) (iso→path C ccat i) ≡ iso→path D dcat (F-map-iso F i)
+             → ap (F₀ F) (Univalent.iso→path ccat i) ≡ Univalent.iso→path dcat (F-map-iso F i)
   F-map-path F i ccat dcat =
-    J-iso C ccat
-      (λ B p → ap (F₀ F) (iso→path C ccat p) ≡ iso→path D dcat (F-map-iso F p))
+    Univalent.J-iso ccat
+      (λ B p → ap (F₀ F) (Univalent.iso→path ccat p) ≡ Univalent.iso→path dcat (F-map-iso F p))
       idc
       i
     where abstract
-      idc : ∀ {x} → ap (F₀ F) (iso→path C ccat (C.id-iso {x}) )
-          ≡ iso→path D dcat (F-map-iso F C.id-iso)
+      idc : ∀ {x} → ap (F₀ F) (Univalent.iso→path ccat (C.id-iso {x}) )
+          ≡ Univalent.iso→path dcat (F-map-iso F C.id-iso)
       idc =
-        ap (F₀ F) ⌜ iso→path C ccat C.id-iso ⌝ ≡⟨ ap! (iso→path-id C ccat) ⟩
-        ap (F₀ F) refl                         ≡˘⟨ equiv→unit (path→iso-is-equiv D dcat) _ ⟩
-        iso→path D dcat ⌜ path→iso D refl ⌝    ≡⟨ ap! (D.≅-pathp refl refl (transport-refl _ ∙ sym (F-id F))) ⟩
-        iso→path D dcat (F-map-iso F C.id-iso) ∎
+        ap (F₀ F) ⌜ Univalent.iso→path ccat C.id-iso ⌝ ≡⟨ ap! (Univalent.iso→path-id ccat) ⟩
+        ap (F₀ F) refl                                 ≡˘⟨ Univalent.path→iso→path dcat _ ⟩
+        Univalent.iso→path dcat ⌜ path→iso refl ⌝      ≡⟨ ap! (D.≅-pathp refl refl (transport-refl _ ∙ sym (F-id F))) ⟩
+        Univalent.iso→path dcat (F-map-iso F C.id-iso) ∎
+
+  ap-F₀-to-iso
+    : ∀ (F : Functor C D) {y z : C .Ob}
+    → (p : y ≡ z) → path→iso (ap (F₀ F) p) ≡ F-map-iso F (path→iso p)
+  ap-F₀-to-iso F =
+    J (λ _ p → path→iso (ap (F₀ F) p) ≡ F-map-iso F (path→iso p))
+      (D.≅-pathp _ _
+        (transport-refl _ ·· sym (F .F-id) ·· ap (F .F₁) (sym (transport-refl _))))
 
   is-ff→F-map-iso-is-equiv
     : {F : Functor C D} → is-fully-faithful F

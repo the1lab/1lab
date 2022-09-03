@@ -7,6 +7,7 @@ open import 1Lab.Type public
 
 open import 1Lab.Path public
 open import 1Lab.Path.Groupoid public
+open import 1Lab.Path.IdentitySystem public
 
 open import 1Lab.Prim.Monad public
 

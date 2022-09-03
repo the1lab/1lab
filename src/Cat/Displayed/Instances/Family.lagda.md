@@ -127,12 +127,10 @@ module _ {ℓ} (X : Set ℓ) where
       (λ x → refl))
 
   Families-are-categories : is-category C → is-category (Fibre Family X)
-  Families-are-categories x A .centre = A , F.id-iso
-  Families-are-categories x A .paths (B , fs) =
-    Σ-pathp (funext λ i → iso→path C x
-      (make-iso (fs .F.to i) (fs .F.from i)
-        (happly (sym (transport-refl (λ y → fs .F.to y ∘ fs .F.from y)) ∙  fs .F.invl) i)
-        (happly (sym (transport-refl (λ y → fs .F.from y ∘ fs .F.to y)) ∙  fs .F.invr) i)))
-      (F.≅-pathp refl _ (funextP λ a → Hom-pathp-reflr C
-        (elimr refl ∙ ap to (equiv→counit (path→iso-is-equiv C x) _))))
+  Families-are-categories isc .to-path im = funext λ x →
+    isc .to-path $ make-iso (im .F.to x) (im .F.from x)
+      (happly (sym (transport-refl (λ y → im .F.to y ∘ im .F.from y)) ∙ im .F.invl) x)
+      (happly (sym (transport-refl (λ y → im .F.from y ∘ im .F.to y)) ∙ im .F.invr) x)
+  Families-are-categories isc .to-path-over im = F.≅-pathp refl _ $ funextP λ a →
+    Hom-pathp-reflr {C = C} (elimr refl ∙ ap to (Univalent.iso→path→iso isc _))
 ```
