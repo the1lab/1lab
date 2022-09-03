@@ -30,6 +30,12 @@ open _⊣_
 
 # Category of monoids
 
+<!--
+```agda
+_ = is-prop
+```
+-->
+
 The collection of all `Monoid`{.Agda}s relative to some universe level
 assembles into a precategory. This is because being a monoid
 homomorphism `is a proposition`{.Agda ident=is-prop}, and so does not

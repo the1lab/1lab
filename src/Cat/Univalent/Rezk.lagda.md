@@ -29,7 +29,7 @@ $\ca{A} \to \widehat{\ca{A}}$, such that any map from $\ca{A}$ to a
 [freely]: Cat.Functor.Adjoint.html
 [complete]: Cat.Thin.Completion.html
 [proset]: Cat.Thin.html#thin-categories
-[poset]: Cat.Thin.Completion.html#posets
+[poset]: Cat.Thin.html#posets
 [fully faithful]: Cat.Functor.Base.html#ff-functors
 [essentially surjective]: Cat.Functor.Base.html#essential-fibres
 [univalent category]: Cat.Univalent.html
@@ -47,7 +47,7 @@ sea of theory has risen to the point where our result is trivial:
 [funcu]: Cat.Instances.Functor.html#functor-categories
 [Yoneda lemma]: Cat.Functor.Hom.html#the-yoneda-embedding
 [full inclusion]: Cat.Functor.FullSubcategory.html#from-full-inclusions
-[fullu]: Cat.Functor.FullSubcategory.html#univalence
+[fullu]: Cat.Functor.FullSubcategory.html#Restrict-is-category
 
 ```agda
 Rezk-completion : Precategory o h → Precategory (o ⊔ lsuc h) (o ⊔ h)

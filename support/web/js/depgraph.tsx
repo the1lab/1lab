@@ -15,7 +15,7 @@ type Node = {
   x?: number,
   y?: number,
   hover?: boolean
-}
+};
 
 type Edge = {
   source: Node,
@@ -60,12 +60,12 @@ const page = (() => {
   if (window.location.pathname === "/") {
     return "index.html"
   } else {
-    return window.location.pathname.slice(1, -5);
+    return window.location.pathname.slice(1).replace(".html", "");
   }
 })();
 
 function nbhoodSubgraph(node: string, links: [string]): { nodes: Node[], edges: Edge[] } {
-  const nodes = neighbours(node, links);
+  const nodes = neighbours(node, links).add(node);
   const edges = [];
   const nodeMap: Record<string, Node> = {};
 
@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     .force('collision', d3.forceCollide<Node>().radius(d => d.radius));
 
   // Allocate new zoom behaviour
-  const zoom = d3.zoom<SVGSVGElement, unknown>();
+  const zoom = d3.zoom<SVGSVGElement, unknown>().scaleExtent([0.5, 4]);
 
   const container = document.querySelector("aside#toc > div#toc-container");
   if (!container) return;
@@ -301,14 +301,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Create the SVG element and add a <g>roup for the zoom
   // transformation.
-  const svg = d3
-    .select("aside#toc > div#toc-container")
+  const svgRoot = d3
+    .select(container)
     .append('svg')
-    .call(zoom)
-    .append('g');
+    .call(zoom);
+  const svg = svgRoot.append('g');
 
-  zoom.on('zoom', ({ transform: tr }) => {
-    svg.attr("transform", `translate(${tr.x}, ${tr.y}) scale(${tr.k})`);
+  zoom.on('zoom', ({ transform }) => {
+    svg.attr('transform', transform.toString());
   });
 
   // Draw the edges
@@ -367,23 +367,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   circles.call(drag);
 
-  const hoverEnter = (d: Node) => {
-    d.hover = true;
-    if (d.id !== page) {
-      for (const n of neighbours(d, edges)) {
-        n.saved = n.colour;
-        n.colour = d.colour;
+  const onHighlight = (d: Node, on: boolean) => {
+    d.hover = on;
+    if (on) {
+      if (d.id !== page) {
+        for (const n of neighbours(d, edges)) {
+          n.saved = n.colour;
+          n.colour = d.colour;
+        }
       }
-    }
-    renderCallback();
-  }
-
-  const hoverLeave = (d: Node) => {
-    d.hover = false;
-    for (const n of neighbours(d, edges)) {
-      if (n.saved !== undefined) {
-        n.colour = n.saved;
-        delete n.saved;
+    } else {
+      for (const n of neighbours(d, edges)) {
+        if (n.saved !== undefined) {
+          n.colour = n.saved;
+          delete n.saved;
+        }
       }
     }
     renderCallback();
@@ -391,34 +389,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Toggle visibility of the label on hover.
   circles
-    .on('mouseenter', (_, d) => hoverEnter(d))
-    .on('mouseleave', (_, d) => hoverLeave(d));
+    .on('mouseenter', (_, d) => document.dispatchEvent(new CustomEvent('highlight', { detail: { link: d, on: true } })))
+    .on('mouseleave', (_, d) => document.dispatchEvent(new CustomEvent('highlight', { detail: { link: d, on: false } })))
 
   // Make sure that hovering on the label keeps it shown, otherwise
   // hovering your cursor between the circle and the label causes the
   // label to flash rapidly
   labels
-    .on('mouseenter', (_, d) => hoverEnter(d))
-    .on('mouseleave', (_, d) => hoverLeave(d));
+    .on('mouseenter', (_, d) => document.dispatchEvent(new CustomEvent('highlight', { detail: { link: d, on: true } })))
+    .on('mouseleave', (_, d) => document.dispatchEvent(new CustomEvent('highlight', { detail: { link: d, on: false } })))
 
   // Install hover handlers for activating nodes on hovering their
   // corresponding links in the body text
-  document.querySelectorAll("a[href]").forEach(x => {
-    x.addEventListener("mouseenter", (ev) => {
-      if (!(ev.target instanceof HTMLAnchorElement)) return;
-      const id = ev.target.pathname.slice(1).replace(".html", "");
-      if (nodesById[id]) {
-        hoverEnter(nodesById[id])
-      }
-    });
-    x.addEventListener("mouseleave", (ev) => {
-      if (!(ev.target instanceof HTMLAnchorElement)) return;
-      const id = ev.target.pathname.slice(1).replace(".html", "");
-      if (nodesById[id]) {
-        hoverLeave(nodesById[id])
-      }
-    });
-  });
+  document.addEventListener('highlight', (({ detail: { link, on } }: CustomEvent) => {
+    if (link instanceof HTMLAnchorElement) {
+      const id = link.pathname.slice(1).replace(".html", "");
+      if (nodesById[id])
+        onHighlight(nodesById[id], on);
+    } else {
+      onHighlight(link, on);
+    }
+  }) as EventListener)
 
   // Navigate to on double click
   circles.on("dblclick", navigateTo);
@@ -427,7 +418,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   let addExpand: () => void;
   const reset = () => {
     // Reset zoom level
-    svg.transition().duration(750).call(zoom.transform as any, d3.zoomIdentity);
+    svgRoot.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
     // Clear all forced coordinates
     for (const n of nodes) {
       n.fx = undefined;

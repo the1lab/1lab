@@ -104,7 +104,7 @@ _full inclusion_, i.e. a [fully faithful] functor $F : \ca{D} \to
 of $\ca{C}$, namely that consisting of the objects in $\ca{C}$ merely in
 the image of $F$.
 
-[fully faithful]: Cat.Functor.Base#ff-functors
+[fully faithful]: Cat.Functor.Base.html#ff-functors
 
 ```agda
 module _ {o' h'} {D : Precategory o' h'} {F : Functor D C} (ff : is-fully-faithful F) where

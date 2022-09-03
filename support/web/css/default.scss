@@ -68,14 +68,6 @@ body {
   }
 }
 
-@mixin left-bordered-block($color) {
-  padding-left:   1em;
-  padding-top:    0.2em;
-  padding-bottom: 0.2em;
-
-  border-left: 5px dashed $color;
-}
-
 main {
   max-width: 85ch;
   width: 100%;
@@ -128,13 +120,6 @@ main {
       }
     }
 
-  }
-
-  div#post-info {
-    font-style: italic;
-    line-height: 1.2;
-
-    @include left-bordered-block($bluegray-500);
   }
 }
 

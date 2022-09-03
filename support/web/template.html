@@ -54,7 +54,6 @@
 <div id="post-toc-container" style="padding-left: 1em; padding-right: 1em;">
 
   <!-- Table of contents (only if the page has a table of contents) -->
-  $if(toc)$
   <aside id=toc>
     <div id=toc-container style="min-width: 10em; font-size: 15pt;">
       <!-- Title for the page -->
@@ -79,8 +78,10 @@
       <!-- Actual table of contents (separated from the rest by
       horizontal rules) -->
       <hr />
+      $if(toc)$
       $table-of-contents$
       <hr />
+      $endif$
 
       <!-- Sidebar controls -->
       <div style="display: flex; gap: 0.25em; flex-flow: row wrap;">
@@ -123,7 +124,6 @@
       </div>
     </div>
   </aside>
-  $endif$
 
   <article>
     <!-- Article navigation (narrow screens only) -->

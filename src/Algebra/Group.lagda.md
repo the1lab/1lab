@@ -119,9 +119,8 @@ same`{.Agda ident=same-unit}.
       (is-monoid→is-unital-magma (y .has-is-monoid))
 ```
 
-We then use the fact that `is-monoid is a proposition`{.Agda
-ident=is-monoid-is-prop} to conclude that the monoid structures underlying
-$x$ and $y$ are the same.
+We then use the fact that `is-monoid`{.Agda} is a proposition to conclude
+that the monoid structures underlying $x$ and $y$ are the same.
 
 ```agda
   same-monoid : PathP (λ i → is-monoid (same-unit i) _*_)
@@ -263,7 +262,7 @@ instance
 ```
 -->
 
-An `equivalence`{.Agda ident=_≃_} is an equivalence of groups when its
+An `equivalence`{.Agda ident=≃} is an equivalence of groups when its
 underlying map is a group homomorphism.
 
 ```agda
@@ -346,7 +345,7 @@ Sym X .snd = to-group-on group-str where
   group-str .mul g f = f ∙e g
 ```
 
-The group operation is `composition of equivalences`{.Agda ident=_∙e_};
+The group operation is `composition of equivalences`{.Agda ident=∙e};
 The identity element is `the identity equivalence`{.Agda ident=id-equiv}.
 
 ```agda

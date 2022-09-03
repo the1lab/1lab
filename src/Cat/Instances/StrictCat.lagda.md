@@ -24,7 +24,7 @@ private variable
 # Strict precategories
 
 We call a precategory **strict** if its space of objects is a
-`Set`{.Agda ident=is-set.}. While general precategories are too
+`Set`{.Agda ident=is-set}. While general precategories are too
 homotopically interesting to fit into a `Precategory`{.Agda} (because
 functor spaces will not, in general, be h-sets), the strict categories
 _do_ form a precategory, which we denote $\strcat$.

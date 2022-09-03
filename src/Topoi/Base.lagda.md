@@ -186,7 +186,7 @@ of" an edge.
 
 The definition of topos implies that any topos $\ca{T}$ enjoys many of
 the same categorical properties of the category $\sets$ (see
-[below](#properties)). Topoi are [complete] and [cocomplete], [cartesian
+[below](#properties-of-topoi)). Topoi are [complete] and [cocomplete], [cartesian
 closed] (even [locally so]) --- colimits are stable under pullback,
 coproducts are [disjoint], and [equivalence relations are effective].
 

@@ -48,7 +48,7 @@ the identity function. In that case, we can construct an isomorphism
 quite readily, where the proof uses our assumption `iso-is-prop`{.Agda} for
 convenience.
 
-[equivalence induction]: 1Lab.Univalence.html#consequences
+[equivalence induction]: 1Lab.Univalence.html#equivalence-induction
 
 ```agda
       helper : Iso _ _

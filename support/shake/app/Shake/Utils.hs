@@ -1,7 +1,9 @@
 module Shake.Utils
-  ( gitCommand
-  , nodeCommand
+  ( nodeCommand
+  , readJSONFile
   ) where
+
+import Data.Aeson
 
 import Development.Shake
 
@@ -9,7 +11,6 @@ import Development.Shake
 nodeCommand :: CmdResult r => [CmdOption] -> String -> [String] -> Action r
 nodeCommand opts = command (opts ++ [AddPath [] ["node_modules/.bin"]])
 
--- | Set `--git-dir` explicitly to turn off repository discovery and work
--- around https://github.blog/2022-04-12-git-security-vulnerability-announced/
-gitCommand :: CmdResult r => [String] -> Action r
-gitCommand args = command [] "git" (["--git-dir", ".git"] ++ args)
+-- | Read and decode JSON from a file, tracking it as a dependency.
+readJSONFile :: FromJSON b => FilePath -> Action b
+readJSONFile path = need [path] >> liftIO (eitherDecodeFileStrict' path) >>= either fail pure

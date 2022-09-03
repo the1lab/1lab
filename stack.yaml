@@ -1,8 +1,12 @@
-resolver: lts-18.28
+resolver: lts-19.21
 packages:
 - support/shake
 
 extra-deps:
-  - url: https://github.com/agda/agda/archive/a52fc3ca191b58e552626988b663bf76c6e8cc42.tar.gz
-    sha256: c8c4c89da758bda36c7597b72b49c3c0479ebf80b83b3aa0e0826aeeddd13333
+  - url: https://github.com/agda/agda/archive/52467b24fd0670168b2dd8855e9b8d25227e78b9.tar.gz
   - vector-hashtables-0.1.1.1@sha256:cb4ba4af6b83b6956278bbfe8d0f779a40928728e82977e566c0103fe8d6c867,2725
+
+nix:
+  enable: true
+  pure: false
+  packages: [zlib]

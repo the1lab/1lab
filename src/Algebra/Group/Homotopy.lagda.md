@@ -35,7 +35,7 @@ which we denote $\Omega^n A$.
 ```
 
 For positive $n$, we can give $\Omega^n A$ a `Group`{.Agda} structure,
-obtained by [truncating](1Lab.HIT.Truncation.Set.html) the higher
+obtained by [truncating](Data.Set.Truncation.html) the higher
 groupoid structure that $A$ is equiped with. We call the sequence
 $\pi_n(A)$ the **homotopy groups** of $A$, but remark that the indexing
 used by `πₙ`{.Agda} is off by 1: `πₙ 0 A` is the **fundamental group**

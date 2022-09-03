@@ -44,7 +44,6 @@ jobs:
           build_command: |
             set -eu
             1lab-shake -j all
-            export out=_build/site
             eval "$installPhase"
 
       - name: Upload site ⬆️

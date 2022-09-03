@@ -50,8 +50,6 @@ applies to [set-level] structures.
 [set-level]: agda://1Lab.HLevel#is-set
 
 
-[total space]: agda://1Lab.Type#Σ
-
 ```agda
 record
   Structure {ℓ₁ ℓ₂} (ℓ₃ : _) (S : Type ℓ₁ → Type ℓ₂) : Type (lsuc (ℓ₁ ⊔ ℓ₃) ⊔ ℓ₂)
@@ -66,8 +64,8 @@ The material on this page, especially the definition of
 <cite>[Internalizing Representation Independence with
 Univalence]</cite>. The SIP formalised here says, very generically, that
 a `Structure`{.Agda} is a family of types `S : Type → Type`, and a `type
-with`{.Agda ident=Type-with} structure is an inhabitant of the [total
-space] `Σ S`.
+with`{.Agda ident=Type-with} structure is an inhabitant of the `total
+space`{.Agda ident=Σ} `Σ S`.
 
 [Internalizing Representation Independence with Univalence]: https://arxiv.org/abs/2009.05547
 
@@ -677,7 +675,7 @@ transfer-axioms {univ = univ} {axioms = axioms} A B eqv =
 
 The structure combinators can be abstracted away into a _language_ for
 defining structures. A `Str-term`{.Agda} describes a structure, that may be
-`interpreted`{.Agda ident=interp} into a family of types, and defines
+interpreted into a family of types, and defines
 both transport and univalent structures.
 
 ```agda

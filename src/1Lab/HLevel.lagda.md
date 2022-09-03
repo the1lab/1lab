@@ -25,7 +25,7 @@ its inhabitants, the way those are related by paths. As an extreme
 example, the delooping groupoid of a group -- for instance, [the circle] --
 has uninteresting points (there's only one), but interesting _loops_.
 
-[the circle]: agda://1Lab.HIT.S1
+[the circle]: agda://Homotopy.Space.Circle
 
 For convenience, we refer to the collection of types of h-level $n$ as
 _homotopy $(n-2)$-types_. For instance: "The sets are the homotopy

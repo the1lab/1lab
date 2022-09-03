@@ -60,7 +60,9 @@ record Proset (o h : Level) : Type (lsuc (o ⊔ h)) where
 ```
 
 The collection of all thin categories assembles into a subcategory of
-`Strict-Cat`{.Agda}, which we call `Proset`{.Agda}.
+`Strict-Cat`{.Agda}, which we call `Prosets`{.Agda} (for "[preordered] sets").
+
+[preordered]: Relation.Order.html#order-relations
 
 ```agda
 Prosets : ∀ o h → Precategory (lsuc (o ⊔ h)) (o ⊔ h)

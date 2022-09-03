@@ -232,7 +232,7 @@ isomorphism looks like the identity.
 The first thing we must note is that we can recover the components of a
 natural isomorphism while passing to/from paths in $D$. Since $D$ is a
 category, `path→iso`{.Agda} is an equivalence; The lemmas we need then
-follow from `equivalences having sections`{.Agda ident=equiv→counit}.
+follow from `equivalences having sections`{.Agda ident=iso→path→iso}.
 
 ```agda
     open Cat.Univalent.Univalent DisCat
@@ -275,7 +275,7 @@ so that the two halves of the isomorphism annihilate.
 Putting these homotopies together defines a path `F≡G`{.Agda}. It
 remains to show that, over this path, the natural isomorphism we started
 with is homotopic to the identity; Equality of `isomorphisms`{.Agda
-ident=≅-pathp} and `natural transformations`{.Agda ident=Nat-pathP} are
+ident=≅-pathp} and `natural transformations`{.Agda ident=Nat-pathp} are
 both tested componentwise, so we can "push down" the relevant equalities
 to the level of families of morphisms; By computation, all we have to
 show is that $\eta{}_x \circ \id{id} \circ \id{id} = f$.

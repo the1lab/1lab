@@ -8,6 +8,7 @@ import Control.Exception
 
 import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
+import Data.Aeson
 import Data.Bifunctor
 import Data.Foldable
 import Data.Either
@@ -23,12 +24,6 @@ import System.Console.GetOpt
 import System.Environment
 import System.Time.Extra
 import System.Exit
-
-import Text.HTML.TagSoup
-
-import Text.Printf
-
-import System.IO (IOMode(..), hPutStrLn, withFile)
 
 import Shake.Options
 import Shake.AgdaCompile
@@ -55,7 +50,8 @@ rules = do
   agdaRefs <- getAgdaRefs
   gitRules
   katexRules
-  (getOurModules, getAllModules) <- moduleRules
+  moduleRules
+  linksRules
 
   {-
     Write @_build/all-pages.agda@. This imports every module in the source tree
@@ -74,7 +70,7 @@ rules = do
     writeFileLines out $ ["open import " ++ toOut x | x <- modules]
 
   {-
-    For each 1Lab module, read the emitted file from @_build/html0@. If its
+    For each 1Lab module, read the emitted file from @_build/html0@. If it's
     HTML, we just copy it to @_build/html@. Otherwise we compile the markdown
     to HTML with some additional post-processing steps (see 'buildMarkdown')
   -}
@@ -90,29 +86,13 @@ rules = do
         agdaRefs <- agdaRefs
         buildMarkdown agdaRefs (input <.> ".md") out
       _ -> copyFile' (input <.> ".html") out
-  "_build/search/*.json" %> \out -> need ["_build/html/" </> takeFileName out -<.> "html" ]
-
-  "_build/html/static/links.json" %> \out -> do
-    need ["_build/html/all-pages.html"]
-    (start, act) <- runWriterT $ findLinks (tell . Set.singleton) . parseTags
-      =<< liftIO (readFile "_build/html/all-pages.html")
-    need (Set.toList act)
-    traced "crawling links" . withFile out WriteMode $ \h -> do
-      hPutStrLn h "["
-      crawlLinks
-        (\x o -> liftIO $ hPrintf h "[%s, %s],"
-          (show (dropExtension x))
-          (show (dropExtension o)))
-        (const (pure ()))
-        (Set.toList start)
-      hPutStrLn h "null]"
+  "_build/search/*.json" %> \out -> need ["_build/html" </> takeFileName out -<.> "html"]
 
   "_build/html/static/search.json" %> \out -> do
     modules <- filter ((==) WithText . snd) . Map.toList <$> getOurModules
     let searchFiles = "_build/all-types.json":map (\(x, _) -> "_build/search" </> x <.> "json") modules
-    need searchFiles
-    searchData <- traverse readSearchData searchFiles
-    writeSearchData out (concat searchData)
+    searchData :: [[SearchTerm]] <- traverse readJSONFile searchFiles
+    liftIO $ encodeFile out (concat searchData)
 
   -- Compile Quiver to SVG. This is used by 'buildMarkdown'.
   "_build/html/light-*.svg" %> \out -> do

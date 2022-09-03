@@ -18,7 +18,7 @@ numbers]. Since they're mostly simple inductive arguments written in
 [equational reasoning] style, they are very lightly commented:
 
 [the natural numbers]: Data.Nat.Base.html
-[equational reasoning]: 1Lab.Path.html#equational-reasoning
+[equational reasoning]: 1Lab.Path.html#syntax-sugar
 
 ## Addition
 
