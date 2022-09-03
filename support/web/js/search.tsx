@@ -177,6 +177,7 @@ const startSearch = (mirrorInput: HTMLInputElement | null) => {
       .then(entries => {
         index = new Searcher(entries, {
           returnMatchData: true,
+          ignoreSymbols: false,
           keySelector: (x: SearchItem) => x.idIdent,
         });
 
