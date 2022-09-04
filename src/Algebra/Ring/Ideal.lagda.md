@@ -70,7 +70,7 @@ carries a canonical $R$-module structure.
     gr = rep-subgroup→group-on 𝔞 has-rep-subgroup
 
     mod : Module R
-    mod .G = restrict (_ , gr) λ x y → Σ-prop-path (λ _ → 𝔞 _ .is-tr) R.+-commutes
+    mod .G = restrict (el! _ , gr) λ x y → Σ-prop-path (λ _ → 𝔞 _ .is-tr) R.+-commutes
     mod ._⋆_ x y = _ , has-* x (y .snd)
     mod .⋆-id x = Σ-prop-path (λ _ → 𝔞 _ .is-tr) R.*-idl
     mod .⋆-add-r r x y = Σ-prop-path (λ _ → 𝔞 _ .is-tr) R.*-distribl
