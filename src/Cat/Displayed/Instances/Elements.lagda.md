@@ -42,7 +42,7 @@ elements, as we obtain the more traditional definition by taking the
 ∫ : Displayed B s s
 Displayed.Ob[ ∫ ] X = ∣ P.₀ X ∣
 Displayed.Hom[ ∫ ] f P[X] P[Y] = P.₁ f P[Y] ≡ P[X]
-Displayed.Hom[ ∫ ]-set _ _ _ = Path-is-hlevel 2 (P.₀ _ .is-tr)
+Displayed.Hom[ ∫ ]-set _ _ _ = hlevel!
 ∫ .Displayed.id′ = happly P.F-id _
 ∫ .Displayed._∘′_ {x = x} {y = y} {z = z} {f = f} {g = g} p q = pf where abstract
   pf : P.₁ (f ∘ g) z ≡ x

@@ -548,7 +548,6 @@ _ term=? _ = false
 debug! : ∀ {ℓ} {A : Type ℓ} → Term → TC A
 debug! tm = typeError (strErr "[DEBUG]: " ∷ termErr tm ∷ [])
 
-
 get-boundary : Term → TC (Maybe (Term × Term))
 get-boundary tm@(def (quote _≡_) (_ h∷ T h∷ x v∷ y v∷ [])) = do
   returnTC (just (x , y))

@@ -61,8 +61,7 @@ rep-subgroup→group-on {G = G} H sg = to-group-on sg′ where
   open Group-on (G .snd)
   open represents-subgroup sg
   sg′ : make-group (Σ[ x ∈ G .fst ] x ∈ H)
-  sg′ .make-group.group-is-set =
-    Σ-is-hlevel 2 has-is-set λ x → is-prop→is-set (H x .is-tr)
+  sg′ .make-group.group-is-set = hlevel!
   sg′ .make-group.unit = unit , has-unit
   sg′ .make-group.mul (x , x∈) (y , y∈) = x ⋆ y , has-⋆ x∈ y∈
   sg′ .make-group.inv (x , x∈) = x ⁻¹ , has-inv x∈
