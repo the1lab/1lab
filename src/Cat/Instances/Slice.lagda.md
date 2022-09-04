@@ -1,5 +1,4 @@
 ```agda
-{-# OPTIONS -vtactic.hlevel:10 #-}
 open import Cat.Instances.Shape.Terminal
 open import Cat.Instances.Shape.Join
 open import Cat.Diagram.Limit.Base

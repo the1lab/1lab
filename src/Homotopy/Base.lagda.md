@@ -1,5 +1,4 @@
 ```agda
-{-# OPTIONS -vtactic.hlevel:10 #-}
 open import 1Lab.Prelude
 
 open import Algebra.Group.Homotopy
