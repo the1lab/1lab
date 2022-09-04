@@ -1,5 +1,4 @@
 ```agda
-{-# OPTIONS -vtactic.hlevel:10 #-}
 open import Cat.Prelude
 
 module Cat.Instances.Elements {o ℓ s} (C : Precategory o ℓ)
