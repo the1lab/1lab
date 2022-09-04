@@ -76,8 +76,7 @@ private unquoteDecl eqv = declare-record-iso eqv (quote Element-hom)
 Element-hom-is-set : ∀ (x y : Element) → is-set (Element-hom x y)
 Element-hom-is-set x y = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) T-is-set where
   T-is-set : is-set _
-  T-is-set =
-    Σ-is-hlevel 2 (Hom-set _ _) λ f → Path-is-hlevel 2 (P.₀ (x .ob) .is-tr)
+  T-is-set = hlevel!
 ```
 -->
 

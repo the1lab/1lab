@@ -69,13 +69,13 @@ ident=_∪_}**.
 
 ```agda
 maximal : ℙ X
-maximal _ = el (Lift _ ⊤) λ x y i → lift tt
+maximal _ = el! (Lift _ ⊤)
 
 minimal : ℙ X
-minimal _ = el (Lift _ ⊥) λ x → absurd (Lift.lower x)
+minimal _ = el! (Lift _ ⊥)
 
 _∩_ : ℙ X → ℙ X → ℙ X
-(A ∩ B) x = el (∣ A x ∣ × ∣ B x ∣) (×-is-hlevel 1 (A x .is-tr) (B x .is-tr))
+(A ∩ B) x = el! (∣ A x ∣ × ∣ B x ∣)
 ```
 
 <!--
@@ -90,5 +90,5 @@ is nothing which guarantees that A and B are disjoint subsets.
 
 ```agda
 _∪_ : ℙ X → ℙ X → ℙ X
-(A ∪ B) x = el ∥ ∣ A x ∣ ⊎ ∣ B x ∣ ∥ squash
+(A ∪ B) x = el! ∥ ∣ A x ∣ ⊎ ∣ B x ∣ ∥
 ```

@@ -348,7 +348,7 @@ the morphisms.
 ```agda
   f : ∣ π₀ (C ×ᶜ D) ∣ → ∣ π₀ C ∣ × ∣ π₀ D ∣
   f = Quot-elim
-    (λ _ → ×-is-hlevel 2 squash squash)
+    (λ _ → hlevel!)
     (λ (a , b) → inc a , inc b)
     λ (x , x') (y , y') (f , g) i →
       glue (x , y , f) i , glue (x' , y' , g) i

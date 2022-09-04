@@ -89,7 +89,7 @@ infixr 40 _∘_
 id : ∀ {ℓ} {A : Type ℓ} → A → A
 id x = x
 
-infixr -1 _$_
+infixr -1 _$_ _$ₛ_
 
 _$_ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : A → Type ℓ₂} → ((x : A) → B x) → ((x : A) → B x)
 f $ x = f x

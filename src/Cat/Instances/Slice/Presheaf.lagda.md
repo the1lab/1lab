@@ -64,9 +64,7 @@ module _ {P : Functor (C ^op) (Sets κ)} where
   slice-ob→presheaf
     : Ob (Slice Cat[ C ^op , Sets κ ] P)
     → Functor (∫ C P ^op) (Sets κ)
-  slice-ob→presheaf sl .F₀ (elem x s) =
-      el (fibre (sl .map .η x) s)
-      (Σ-is-hlevel 2 (sl .domain .F₀ _ .is-tr) λ _ → is-prop→is-set (P.₀ _ .is-tr _ _))
+  slice-ob→presheaf sl .F₀ (elem x s) = el! (fibre (sl .map .η x) s)
 
   slice-ob→presheaf sl .F₁ eh (i , p) =
       sl .domain .F₁ (eh .hom) i
@@ -102,9 +100,7 @@ projection `fst`{.Agda}:
   presheaf→slice-ob : Functor (∫ C P ^op) (Sets κ) → Ob (Slice Cat[ C ^op , Sets κ ] P)
   presheaf→slice-ob y = obj where
     obj : /-Obj {C = Cat[ _ , _ ]} P
-    obj .domain .F₀ c =
-        el (Σ[ sect ∈ ∣ P.₀ c ∣ ] ∣ y .F₀ (elem c sect) ∣)
-          $ Σ-is-hlevel 2 (P.₀ _ .is-tr) λ _ → y .F₀ _ .is-tr
+    obj .domain .F₀ c = el! (Σ[ sect ∈ ∣ P.₀ c ∣ ] ∣ y .F₀ (elem c sect) ∣)
     obj .domain .F₁ f (x , p) = P.₁ f x , y .F₁ (elem-hom f refl) p
     obj .map .η x = fst
 ```

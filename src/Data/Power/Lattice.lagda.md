@@ -40,7 +40,7 @@ extensionality for subsets`{.Agda ident=ℙ-ext}.
     (λ _ x → x)
     (λ x⊆y y⊆z a a∈x → y⊆z a (x⊆y a a∈x))
     ℙ-ext
-    λ {x} {y} → Π-is-hlevel 1 λ x → fun-is-hlevel 1 (y x .is-tr)
+    λ {x} {y} → hlevel!
 ```
 
 Back on track, we equip intersection of subsets with the structure of a
@@ -165,10 +165,7 @@ $(x ⊆ y) \leftrightarrow (x ≡ (x ∩ y))$.
 ```agda
 subset-∩ : ∀ {ℓ} {A : Type ℓ} {X Y : ℙ A} → (X ⊆ Y) ≃ (X ≡ (X ∩ Y))
 subset-∩ {X = X} {Y = Y} =
-  prop-ext
-    (Π-is-hlevel 1 λ x → fun-is-hlevel 1 (Y x .is-tr))
-    (ℙ-is-set _ _)
-    to from
+  prop-ext (hlevel!) (ℙ-is-set _ _) to from
   where
 ```
 
@@ -212,7 +209,7 @@ module _ {ℓ} {X : Type ℓ} where
     → Indexed-product ℙ.underlying F
   ℙ-indexed-meet F = ip where
     ip : Indexed-product _ _
-    ip .ΠF i      = el (∀ x → i ∈ F x) $ Π-is-hlevel 1 λ x → F x i .is-tr
+    ip .ΠF i      = el! (∀ x → i ∈ F x)
     ip .π i x f   = f i
     ip .has-is-ip = indexed-meet→indexed-product {P = ℙ.→Proset} _
       λ f x b i → f i x b

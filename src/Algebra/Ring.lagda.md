@@ -1,4 +1,5 @@
 ```agda
+{-# OPTIONS -vtc.def.fun:10 #-}
 open import Algebra.Semigroup
 open import Algebra.Group.Ab
 open import Algebra.Prelude
@@ -199,7 +200,7 @@ Rings ℓ = precat where
     open Ring-on (A .snd) using (magma-hlevel)
     open Ring-on (B .snd) using (magma-hlevel)
     goal : is-set (Σ[ f ∈ (A .fst → B .fst) ] (is-ring-hom A B f))
-    goal = Σ-is-hlevel 2 (hlevel 2) λ f → hlevel 2
+    goal = hlevel 2
 
   precat .id = (λ x → x) , rh where
     rh : is-ring-hom _ _ _
