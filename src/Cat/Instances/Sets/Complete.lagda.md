@@ -27,12 +27,12 @@ Sets-is-complete {D = D} F = lim where
   comm-prop f = hlevel!
 ```
 
-Since `Set`{.Agda} is closed under (arbitrary) `products`{.Agda
-ident=Π-is-hlevel}, we can build the limit of an arbitrary diagram $F$
---- which we will write $\lim F$ --- by first taking the product
-$\prod_{j : \ca{D}} F(j)$ (which is a set of dependent functions), then
-restricting ourselves to the subset of those for which $F(g) \circ f(x)
-= f(y)$, i.e., those which are cones over $F$.
+Since `Set`{.Agda} is closed under (arbitrary) products, we can build
+the limit of an arbitrary diagram $F$ --- which we will write $\lim F$
+--- by first taking the product $\prod_{j : \ca{D}} F(j)$ (which is a
+set of dependent functions), then restricting ourselves to the subset of
+those for which $F(g) \circ f(x) = f(y)$, i.e., those which are cones
+over $F$.
 
 ```agda
   f-apex : Set _

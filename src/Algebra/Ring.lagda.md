@@ -1,4 +1,5 @@
 ```agda
+{-# OPTIONS -vtc.def.fun:10 #-}
 open import Algebra.Semigroup
 open import Algebra.Group.Ab
 open import Algebra.Prelude
