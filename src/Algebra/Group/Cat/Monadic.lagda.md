@@ -153,8 +153,8 @@ Group-is-monadic = is-precat-iso→is-equivalence
   open Algebra-on
 
   k₁inv : ∀ {G H} → Algebra-hom (Sets ℓ) T (K.₀ G) (K.₀ H) → Groups.Hom G H
-  k₁inv hom .fst = hom .morphism
-  k₁inv hom .snd .Group-hom.pres-⋆ x y = happly (hom .commutes) (inc x ◆ inc y)
+  k₁inv hom .hom = hom .morphism
+  k₁inv hom .preserves .Group-hom.pres-⋆ x y = happly (hom .commutes) (inc x ◆ inc y)
 
   ff : is-fully-faithful K
   ff = is-iso→is-equiv $ iso k₁inv (λ x → Algebra-hom-path (Sets ℓ) refl)
@@ -169,30 +169,26 @@ but the other direction is by induction on "words".
 
 ```agda
   isom : is-iso K.₀
-  isom .is-iso.inv (A , alg) = ∣ A ∣ , Algebra-on→group-on alg
-  isom .is-iso.linv x = sip Group-univalent $
-    (_ , id-equiv) , record { pres-⋆ = λ x y → refl }
-  isom .is-iso.rinv x = Σ-pathp ext (Algebra-on-pathp _ _ go) where
-    open n-Type (x .fst) hiding (∣_∣)
-    ext : el (∣ x .fst ∣) (x .fst .is-tr) ≡ x .fst
-    ext i .∣_∣ = ∣ x .fst ∣
-    ext i .is-tr = x .fst .is-tr
-
+  isom .is-iso.inv (A , alg) = A , Algebra-on→group-on alg
+  isom .is-iso.linv x = ∫-Path {spec = Group-structure _}
+    (total-hom (λ x → x) (record { pres-⋆ = λ x y → refl }))
+    id-equiv
+  isom .is-iso.rinv x = Σ-pathp refl (Algebra-on-pathp _ _ go) where
     alg = x .snd
     grp = Algebra-on→group-on alg
-    rec = fold-free-group {G = ∣ x .fst ∣ , grp} (λ x → x)
+    rec = fold-free-group {G = x .fst , grp} (λ x → x)
     module G = Group-on grp
 
-    alg-gh : Group-hom (Free-Group ∣ x .fst ∣) (_ , grp) (x .snd .ν)
+    alg-gh : Group-hom (Free-Group ⌞ x ⌟ .snd) grp (x .snd .ν)
     alg-gh .Group-hom.pres-⋆ x y = sym (happly (alg .ν-mult) (inc _ ◆ inc _))
 
-    go : rec .fst ≡ x .snd .ν
+    go : rec .hom ≡ x .snd .ν
     go = funext $ Free-elim-prop _ (λ _ → hlevel 1)
       (λ x → sym (happly (alg .ν-unit) x))
-      (λ x y p q → rec .snd .Group-hom.pres-⋆ x y
+      (λ x y p q → rec .preserves .Group-hom.pres-⋆ x y
                 ·· ap₂ G._⋆_ p q
                 ·· happly (alg .ν-mult) (inc _ ◆ inc _))
-      (λ x p → Group-hom.pres-inv (rec .snd) {x = x}
+      (λ x p → Group-hom.pres-inv (rec .preserves) {x = x}
               ·· ap G.inverse p
               ·· sym (Group-hom.pres-inv alg-gh {x = x}))
       refl

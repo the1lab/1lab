@@ -49,7 +49,7 @@ Ab-ab .Group-on-hom A B = Hom-group A B .Restrict-ob.object .snd
 Ab-ab .Hom-grp-ab A B = Hom-group A B .Restrict-ob.witness
 Ab-ab .∘-linear-l f g h = Forget-is-faithful refl
 Ab-ab .∘-linear-r f g h = Forget-is-faithful $ funext λ x →
-  sym $ f .snd .Group-hom.pres-⋆ _ _
+  sym $ f .preserves .Group-hom.pres-⋆ _ _
 ```
 
 Let us show it is additive. The terminal group is given by the terminal
@@ -61,7 +61,7 @@ direct sums.
 Ab-is-additive : is-additive (Ab ℓ)
 Ab-is-additive .has-ab = Ab-ab
 Ab-is-additive .has-terminal .top =
-  restrict (Lift _ ⊤ , to-group-on p) λ _ _ → refl where
+  restrict (to-group p) λ _ _ → refl where
     p : make-group (Lift _ ⊤)
     p .group-is-set a b p q i j = lift tt
     p .unit = lift tt
@@ -72,7 +72,7 @@ Ab-is-additive .has-terminal .top =
     p .invr x i = lift tt
     p .idl x i = lift tt
 Ab-is-additive .has-terminal .has⊤ x =
-  contr ((λ _ → lift tt) , record { pres-⋆ = λ _ _ → refl }) λ h →
+  contr (total-hom (λ _ → lift tt) record { pres-⋆ = λ _ _ → refl }) λ h →
     Forget-is-faithful refl
 
 Ab-is-additive .has-prods A B .Product.apex = A ⊕ B

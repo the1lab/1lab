@@ -3,6 +3,7 @@ open import Algebra.Group.Ab
 open import Algebra.Group
 open import Algebra.Ring
 
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.FullSubcategory
 open import Cat.Displayed.Cartesian
 open import Cat.Functor.Adjoint.Hom
@@ -53,7 +54,7 @@ record Module {ℓ} (R : Ring ℓ) : Type (lsuc ℓ) where
     ⋆-assoc : ∀ r s x → r ⋆ (s ⋆ x) ≡ (r R.* s) ⋆ x
 
   G₀ : Type ℓ
-  G₀ = G .Restrict-ob.object .fst
+  G₀ = ⌞ G .Restrict-ob.object ⌟
 ```
 
 In much the same way that a monoid determines a 1-object category, a

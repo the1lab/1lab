@@ -39,7 +39,7 @@ category of groups consisting of those objects which are abelian groups.
 
 ```agda
 Ab : ∀ ℓ → Precategory (lsuc ℓ) ℓ
-Ab ℓ = Restrict {C = Groups ℓ} is-abelian-group
+Ab ℓ = Restrict {C = Groups ℓ} λ (_ , x) → is-abelian-group x
 
 module Ab {ℓ} = Cat (Ab ℓ)
 
@@ -50,7 +50,7 @@ AbGroup _ = Ab.Ob
 <!--
 ```agda
 Ab-is-category : ∀ {ℓ} → is-category (Ab ℓ)
-Ab-is-category = Restrict-is-category is-abelian-group
+Ab-is-category = Restrict-is-category _
   (λ (_ , g) → let open Group-on g in hlevel 1)
   Groups-is-category
 
@@ -62,12 +62,12 @@ to-abelian-group
   → (g : make-group G)
   → (∀ x y → g .make-group.mul x y ≡ g .make-group.mul y x)
   → AbGroup ℓ
-to-abelian-group g x .object = _ , to-group-on g
+to-abelian-group g x .object = to-group g
 to-abelian-group g x .witness = x
 
 module AbGrp {ℓ} (G : AbGroup ℓ) where
   ₀ : Type ℓ
-  ₀ = G .object .fst
+  ₀ = ⌞ G .object ⌟
 
   open Group-on (G .object .snd) public
 
@@ -88,8 +88,8 @@ module _ {ℓ ℓ′} (X : Type ℓ) (G : Group ℓ′) where private
   open Group-on (G .snd)
 
   Map-group : Group (ℓ ⊔ ℓ′)
-  Map-group = _ , to-group-on grp where
-    grp : make-group (X → G .fst)
+  Map-group = to-group grp where
+    grp : make-group (X → ⌞ G ⌟)
     grp .make-group.group-is-set = hlevel 2
     grp .make-group.unit = λ _ → unit
     grp .make-group.mul f g x = f x ⋆ g x
@@ -119,7 +119,7 @@ module _ {ℓ} (A B : AbGroup ℓ) where
 
 ```agda
   Hom-group : AbGroup ℓ
-  Hom-group = restrict (T , to-group-on grp) abel where
+  Hom-group = restrict (to-group grp) abel where
     T = Ab.Hom A B
 ```
 
@@ -129,20 +129,20 @@ module _ {ℓ} (A B : AbGroup ℓ) where
     open Group-hom renaming (pres-⋆ to p)
 
     zero-map : T
-    zero-map .fst _ = B.unit
-    zero-map .snd .p _ _ = sym B.idl
+    zero-map .hom _ = B.unit
+    zero-map .preserves .p _ _ = sym B.idl
 ```
 -->
 
 ```agda
     add-map : T → T → T
-    add-map (f , fh) (g , gh) .fst x = f x B.⋆ g x
-    add-map (f , fh) (g , gh) .snd .p x y =
-      f (x A.⋆ y) B.⋆ g (x A.⋆ y)     ≡⟨ ap₂ B._⋆_ (fh .p x y) (gh .p x y) ⟩
-      (f x B.⋆ f y) B.⋆ (g x B.⋆ g y) ≡⟨ solve-monoid B.underlying-monoid  ⟩
-      f x B.⋆ (f y B.⋆ g x) B.⋆ g y   ≡⟨ (λ i → f x B.⋆ B.commutative {x = f y} {y = g x} i B.⋆ g y) ⟩
-      f x B.⋆ (g x B.⋆ f y) B.⋆ g y   ≡⟨ solve-monoid B.underlying-monoid ⟩
-      (f x B.⋆ g x) B.⋆ (f y B.⋆ g y) ∎
+    add-map f g .hom x = (f # x) B.⋆ (g # x)
+    add-map f g .preserves .p x y =
+      f # (x A.⋆ y) B.⋆ g # (x A.⋆ y)             ≡⟨ ap₂ B._⋆_ (f .preserves .p x y) (g .preserves .p x y) ⟩
+      (f # x B.⋆ f # y) B.⋆ (g # x B.⋆ g # y) ≡⟨ solve-monoid B.underlying-monoid  ⟩
+      f # x B.⋆ (f # y B.⋆ g # x) B.⋆ g # y   ≡⟨ (λ i → (f # x) B.⋆ B.commutative {x = f # y} {y = g # x} i B.⋆ (g # y)) ⟩
+      f # x B.⋆ (g # x B.⋆ f # y) B.⋆ g # y   ≡⟨ solve-monoid B.underlying-monoid ⟩
+      (f # x B.⋆ g # x) B.⋆ (f # y B.⋆ g # y) ∎
 ```
 
 Note the _crucial_ third step in our calculation above: For the
@@ -153,25 +153,25 @@ homomorphism, as is done in the calculation below.
 
 ```agda
     inv-map : T → T
-    inv-map (f , fh) .fst x = f x B.⁻¹
-    inv-map (f , fh) .snd .p x y =
-      f (x A.⋆ y) ⁻¹   ≡⟨ ap B.inverse (fh .p _ _) ⟩
-      (f x B.⋆ f y) ⁻¹ ≡⟨ ap B.inverse B.commutative ⟩
-      (f y B.⋆ f x) ⁻¹ ≡⟨ B.inv-comm ⟩
-      (f x ⁻¹) B.— f y ∎
+    inv-map f .hom x = f # x B.⁻¹
+    inv-map f .preserves .p x y =
+      f # (x A.⋆ y) ⁻¹   ≡⟨ ap B.inverse (f .preserves .p _ _) ⟩
+      (f # x B.⋆ f # y) ⁻¹ ≡⟨ ap B.inverse B.commutative ⟩
+      (f # y B.⋆ f # x) ⁻¹ ≡⟨ B.inv-comm ⟩
+      (f # x ⁻¹) B.— f # y ∎
 
     grp : make-group T
     grp .make-group.group-is-set = Ab.Hom-set A B
     grp .make-group.unit = zero-map
     grp .make-group.mul = add-map
     grp .make-group.inv = inv-map
-    grp .make-group.assoc x y z = Forget-is-faithful (funext λ x → sym B.associative)
-    grp .make-group.invl x = Forget-is-faithful (funext λ x → B.inversel)
-    grp .make-group.invr x = Forget-is-faithful (funext λ x → B.inverser)
-    grp .make-group.idl x = Forget-is-faithful (funext λ x → B.idl)
+    grp .make-group.assoc x y z = Homomorphism-path λ x → sym B.associative
+    grp .make-group.invl x = Homomorphism-path λ x → B.inversel
+    grp .make-group.invr x = Homomorphism-path λ x → B.inverser
+    grp .make-group.idl x = Homomorphism-path λ x → B.idl
 
-    abel : is-abelian-group (T , to-group-on grp)
-    abel f g = Forget-is-faithful (funext λ _ → B.commutative)
+    abel : is-abelian-group (to-group-on grp)
+    abel f g = Homomorphism-path λ _ → B.commutative
 ```
 
 By pre/post composition, the `Hom-group`{.Agda} construction extends to
@@ -185,14 +185,13 @@ module _ {ℓ} where
   Ab-hom : Functor (Ab ℓ ^op ×ᶜ Ab ℓ) (Ab ℓ)
   Ab-hom .F₀ (A , B) = Hom-group A B
   Ab-hom .F₁ {x , y} {x′ , y′} (fh , gh) = f′ where
-    module g = Group-hom (gh .snd)
+    module g = Group-hom (gh .preserves)
     f′ : Groups.Hom (Hom-group x y .object) (Hom-group x′ y′ .object)
-    f′ .fst h = gh Groups.∘ h Groups.∘ fh
-    f′ .snd .Group-hom.pres-⋆ (m , mh) (n , nh) = Forget-is-faithful $ funext λ i
-      → g.pres-⋆ _ _
+    f′ .hom h = gh Groups.∘ h Groups.∘ fh
+    f′ .preserves .Group-hom.pres-⋆ _ _ = Homomorphism-path λ i → g.pres-⋆ _ _
 
-  Ab-hom .F-id = Forget-is-faithful $ funext λ i → Forget-is-faithful refl
-  Ab-hom .F-∘ f g = Forget-is-faithful $ funext λ i → Forget-is-faithful refl
+  Ab-hom .F-id = Homomorphism-path λ i → Forget-is-faithful refl
+  Ab-hom .F-∘ f g = Homomorphism-path λ i → Forget-is-faithful refl
 ```
 
 # The tensor product
@@ -264,7 +263,7 @@ These constructors all conspire to make an abelian group $A \otimes B$.
 
 ```agda
   _⊗_ : AbGroup ℓ
-  _⊗_ = restrict ( Tensor , to-group-on tensor) λ x y → t-comm
+  _⊗_ = restrict (to-group tensor) λ x y → t-comm
     where
       tensor : make-group Tensor
       tensor .make-group.group-is-set = t-squash
@@ -330,25 +329,26 @@ $\hom(A \otimes B, C)$.
     → (∀ x y z → f (x A.⋆ y) z ≡ f x z C.⋆ f y z)
     → (∀ x y z → f z (x B.⋆ y) ≡ f z x C.⋆ f z y)
     → Ab.Hom (A ⊗ B) C
-  from-multilinear-map f fixr fixl = go , record { pres-⋆ = λ _ _ → refl } where
-    go : Tensor A B → C.₀
-    go (x :, y) = f x y
-    go (t-fixl  {x} {y} {z} i) = fixl y z x (~ i)
-    go (t-fixr  {x} {y} {z} i) = fixr x y z (~ i)
+  from-multilinear-map f fixr fixl = total-hom go record { pres-⋆ = λ _ _ → refl }
+    where
+      go : Tensor A B → C.₀
+      go (x :, y) = f x y
+      go (t-fixl  {x} {y} {z} i) = fixl y z x (~ i)
+      go (t-fixr  {x} {y} {z} i) = fixr x y z (~ i)
 ```
 
 <!--
 ```agda
-    go :0       = C.unit
-    go (x :+ y) = go x C.⋆ go y
-    go (:inv x) = C.inverse (go x)
-    go (t-invl  {x} i) = C.inversel {x = go x} i
-    go (t-invr  {x} i) = C.inverser {x = go x} i
-    go (t-idl   {x} i) = C.idl {x = go x} i
-    go (t-comm  {x} {y} i) = C.commutative {x = go x} {y = go y} i
-    go (t-assoc {x} {y} {z} i) = C.associative {x = go x} {y = go y} {z = go z} (~ i)
-    go (t-squash x y p q i j) =
-      C.has-is-set (go x) (go y) (λ i → go (p i)) (λ i → go (q i)) i j
+      go :0       = C.unit
+      go (x :+ y) = go x C.⋆ go y
+      go (:inv x) = C.inverse (go x)
+      go (t-invl  {x} i) = C.inversel {x = go x} i
+      go (t-invr  {x} i) = C.inverser {x = go x} i
+      go (t-idl   {x} i) = C.idl {x = go x} i
+      go (t-comm  {x} {y} i) = C.commutative {x = go x} {y = go y} i
+      go (t-assoc {x} {y} {z} i) = C.associative {x = go x} {y = go y} {z = go z} (~ i)
+      go (t-squash x y p q i j) =
+        C.has-is-set (go x) (go y) (λ i → go (p i)) (λ i → go (q i)) i j
 ```
 -->
 
@@ -359,9 +359,9 @@ $\hom(A \otimes B, C)$.
 
 ```agda
   from-ab-hom : (map : Ab.Hom A (Hom-group B C)) → Ab.Hom (A ⊗ B) C
-  from-ab-hom map = from-multilinear-map (λ x y → map .fst x .fst y)
-    (λ x y z → happly (ap fst (map .snd .pres-⋆ x y)) z)
-    (λ x y z → map .fst z .snd .pres-⋆ x y)
+  from-ab-hom map = from-multilinear-map (λ x y → map # x # y)
+    (λ x y z → happly (ap hom (map .preserves .pres-⋆ x y)) z)
+    (λ x y z → (map # z) .preserves .pres-⋆ x y)
 ```
 
 <!--
@@ -369,10 +369,10 @@ $\hom(A \otimes B, C)$.
   to-ab-hom : Ab.Hom (A ⊗ B) C → Ab.Hom A (Hom-group B C)
   to-ab-hom map = go where
     go : Ab.Hom A (Hom-group B C)
-    go .fst x .fst y = map .fst (x :, y)
-    go .fst x .snd .pres-⋆ a b = ap (map .fst) (sym t-fixl) ∙ map .snd .pres-⋆ _ _
-    go .snd .pres-⋆ a b = Forget-is-faithful $
-      funext λ c → ap (map .fst) (sym t-fixr) ∙ map .snd .pres-⋆ _ _
+    go .hom x .hom y = map # (x :, y)
+    go .hom x .preserves .pres-⋆ a b = ap (map #_) (sym t-fixl) ∙ map .preserves .pres-⋆ _ _
+    go .preserves .pres-⋆ a b = Forget-is-faithful $
+      funext λ c → ap (map #_) (sym t-fixr) ∙ map .preserves .pres-⋆ _ _
 ```
 -->
 
@@ -390,9 +390,9 @@ this extends to an equivalence of $\hom$-sets $\hom(A \otimes B, C)
     invl : is-left-inverse from-ab-hom to-ab-hom
     invl f = Forget-is-faithful $ funext $
       Tensor-elim-prop _ _ (λ x → C.has-is-set _ _) (λ x y → refl)
-        (λ p q → sym (f .snd .pres-⋆ _ _ ∙ ap₂ C._⋆_ (sym p) (sym q)))
-        (λ p → sym (pres-inv (f .snd) ∙ ap C.inverse (sym p)))
-        (sym (pres-id (f .snd)))
+        (λ p q → sym (f .preserves .pres-⋆ _ _ ∙ ap₂ C._⋆_ (sym p) (sym q)))
+        (λ p → sym (pres-inv (f .preserves) ∙ ap C.inverse (sym p)))
+        (sym (pres-id (f .preserves)))
 ```
 
 and indeed this isomorphism is one of $\hom$-groups, hence since
@@ -401,7 +401,7 @@ $\ht{Ab}$ is a univalent category, an _identification_ of $\hom$-groups.
 ```agda
   Tensor⊣Hom : Hom-group (A ⊗ B) C ≡ Hom-group A (Hom-group B C)
   Tensor⊣Hom = Ab-is-category .to-path $
-    Ab.make-iso (to-ab-hom , to′) (from-ab-hom , from′)
+    Ab.make-iso (total-hom to-ab-hom to′) (total-hom from-ab-hom from′)
       (Forget-is-faithful $ funext (equiv→counit (tensor⊣hom .snd)))
       (Forget-is-faithful $ funext (equiv→unit (tensor⊣hom .snd)))
 ```
@@ -413,31 +413,31 @@ $\ht{Ab}$ is a univalent category, an _identification_ of $\hom$-groups.
 
 ```agda
     where
-    to′ : Group-hom (Hom-group (A ⊗ B) C .object) (Hom-group A (Hom-group B C) .object) to-ab-hom
+    to′ : Group-hom _ _ to-ab-hom
     to′ .pres-⋆ f g = Forget-is-faithful $ funext λ x → Forget-is-faithful refl
 
-    from′ : Group-hom (Hom-group A (Hom-group B C) .object) (Hom-group (A ⊗ B) C .object) from-ab-hom
+    from′ : Group-hom _ _ from-ab-hom
     from′ .pres-⋆ f g = Forget-is-faithful $ funext $
       Tensor-elim-prop _ _ (λ x → C.has-is-set _ _)
         (λ x y → refl)
         (λ {x} {y} p q → ap₂ C._⋆_ p q ∙ path x y)
         (λ {x} p → ap C.inverse p
                 ·· C.inv-comm
-                ·· sym (ap₂ C._⋆_ (pres-inv (g′ .snd) {x = x}) (pres-inv (f′ .snd) {x = x}))
+                ·· sym (ap₂ C._⋆_ (pres-inv (g′ .preserves) {x = x}) (pres-inv (f′ .preserves) {x = x}))
                 ∙ C.commutative)
-        (sym ( ap₂ C._⋆_ (pres-id (f′ .snd))
-                         (pres-id (f′ .snd))
+        (sym ( ap₂ C._⋆_ (pres-id (f′ .preserves))
+                         (pres-id (f′ .preserves))
              ∙ C.idl))
       where
         f′ = from-ab-hom f
         g′ = from-ab-hom g
-        path : ∀ x y → (f′ .fst x C.⋆ g′ .fst x) C.⋆ (f′ .fst y C.⋆ g′ .fst y)
-                     ≡ f′ .fst (x :+ y) C.⋆ g′ .fst (x :+ y)
+        path : ∀ x y → (f′ # x C.⋆ g′ # x) C.⋆ (f′ # y C.⋆ g′ # y)
+                     ≡ f′ # (x :+ y) C.⋆ g′ # (x :+ y)
         path x y =
-          (f′ .fst x C.⋆ g′ .fst x) C.⋆ (f′ .fst y C.⋆ g′ .fst y) ≡⟨ solve-monoid C.underlying-monoid ⟩
-          f′ .fst x C.⋆ (g′ .fst x C.⋆ f′ .fst y) C.⋆ g′ .fst y   ≡⟨ (λ i → f′ .fst x C.⋆ C.commutative {x = g′ .fst x} {y = f′ .fst y} i C.⋆ g′ .fst y) ⟩
-          f′ .fst x C.⋆ (f′ .fst y C.⋆ g′ .fst x) C.⋆ g′ .fst y   ≡⟨ solve-monoid C.underlying-monoid ⟩
-          (f′ .fst x C.⋆ f′ .fst y) C.⋆ (g′ .fst x C.⋆ g′ .fst y) ≡˘⟨ ap₂ C._⋆_ (f′ .snd .pres-⋆ x y) (g′ .snd .pres-⋆ x y) ⟩
-          f′ .fst (x :+ y) C.⋆ g′ .fst (x :+ y)                   ∎
+          (f′ # x C.⋆ g′ # x) C.⋆ (f′ # y C.⋆ g′ # y) ≡⟨ solve-monoid C.underlying-monoid ⟩
+          f′ # x C.⋆ (g′ # x C.⋆ f′ # y) C.⋆ g′ # y   ≡⟨ (λ i → f′ # x C.⋆ C.commutative {x = g′ # x} {y = f′ # y} i C.⋆ g′ # y) ⟩
+          f′ # x C.⋆ (f′ # y C.⋆ g′ # x) C.⋆ g′ # y   ≡⟨ solve-monoid C.underlying-monoid ⟩
+          (f′ # x C.⋆ f′ # y) C.⋆ (g′ # x C.⋆ g′ # y) ≡˘⟨ ap₂ C._⋆_ (f′ .preserves .pres-⋆ x y) (g′ .preserves .pres-⋆ x y) ⟩
+          f′ # (x :+ y) C.⋆ g′ # (x :+ y)             ∎
 ```
 </details>

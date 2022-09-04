@@ -1,5 +1,6 @@
 ```agda
 {-# OPTIONS -vtc.def.fun:10 #-}
+open import Algebra.Group.Cat.Base
 open import Algebra.Semigroup
 open import Algebra.Group.Ab
 open import Algebra.Prelude
@@ -71,7 +72,7 @@ record is-ring {ℓ} {R : Type ℓ} (1r : R) (_*_ _+_ : R → R → R) : Type �
     public
 
   additive-group : Group ℓ
-  additive-group = (R , record { _⋆_ = _+_ ; has-is-group = +-group })
+  additive-group = (el! R , record { _⋆_ = _+_ ; has-is-group = +-group })
 
   Ringoid : Ab-category (B record { _⋆_ = _*_ ; has-is-monoid = *-monoid })
   Ringoid .Ab-category.Group-on-hom _ _ = additive-group .snd

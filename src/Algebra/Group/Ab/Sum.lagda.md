@@ -42,7 +42,7 @@ of product in $\Ab$ is the [tensor product of abelian groups][tensor].
 ```agda
   _⊕_ : AbGroup ℓ
   _⊕_ = restrict (Direct-product (G .object) (H .object)) ab where
-    ab : is-abelian-group (Direct-product (G .object) (H .object))
+    ab : is-abelian-group (Direct-product (G .object) (H .object) .snd)
     ab x y = Σ-pathp G.commutative H.commutative
 ```
 
@@ -68,20 +68,21 @@ limits][rapl]).
 
 ```agda
   ⊕-proj₁ : Ab.Hom (G ⊕ H) G
-  ⊕-proj₁ .fst = fst
-  ⊕-proj₁ .snd .pres-⋆ x y = refl
+  ⊕-proj₁ .hom = fst
+  ⊕-proj₁ .preserves .pres-⋆ x y = refl
 
   ⊕-proj₂ : Ab.Hom (G ⊕ H) H
-  ⊕-proj₂ .fst = snd
-  ⊕-proj₂ .snd .pres-⋆ x y = refl
+  ⊕-proj₂ .hom = snd
+  ⊕-proj₂ .preserves .pres-⋆ x y = refl
 
   open Ab.is-product
   Direct-sum-is-product : Ab.is-product {A = G} {H} {G ⊕ H} ⊕-proj₁ ⊕-proj₂
-  Direct-sum-is-product .⟨_,_⟩ f g .fst x = f .fst x , g .fst x
-  Direct-sum-is-product .⟨_,_⟩ f g .snd .pres-⋆ x y =
-    Σ-pathp (f .snd .pres-⋆ x y) (g .snd .pres-⋆ x y)
+  Direct-sum-is-product .⟨_,_⟩ f g .hom x = f # x , g # x
+  Direct-sum-is-product .⟨_,_⟩ f g .preserves .pres-⋆ x y =
+    Σ-pathp (f .preserves .pres-⋆ x y) (g .preserves .pres-⋆ x y)
+
   Direct-sum-is-product .π₁∘factor = Forget-is-faithful refl
   Direct-sum-is-product .π₂∘factor = Forget-is-faithful refl
   Direct-sum-is-product .unique other p q = Forget-is-faithful $ funext λ x →
-    Σ-pathp (happly (ap fst p) x) (happly (ap fst q) x)
+    Σ-pathp (p #ₚ x) (q #ₚ x)
 ```

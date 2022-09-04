@@ -49,8 +49,8 @@ instance
   H-Level-Monoid-hom : ∀ {ℓ} {x y : Monoid ℓ} {f} {n} → H-Level (Monoid-hom x y f) (suc n)
   H-Level-Monoid-hom {y = _ , M} = prop-instance λ x y i →
     record { pres-id = M .has-is-set _ _ (x .pres-id) (y .pres-id) i
-          ; pres-⋆ = λ a b → M .has-is-set _ _ (x .pres-⋆ a b) (y .pres-⋆ a b) i
-          }
+           ; pres-⋆ = λ a b → M .has-is-set _ _ (x .pres-⋆ a b) (y .pres-⋆ a b) i
+           }
 ```
 
 It's routine to check that the identity is a monoid homomorphism and
@@ -71,11 +71,20 @@ Monoid-structure ℓ .∘-is-hom f g p1 p2 .pres-id =
 Monoid-structure ℓ .∘-is-hom f g p1 p2 .pres-⋆ x y =
   ap f (p2 .pres-⋆ _ _) ∙ p1 .pres-⋆ _ _
 
+Monoid-structure ℓ .id-hom-unique mh i .identity = mh .pres-id i
+Monoid-structure ℓ .id-hom-unique mh i ._⋆_ x y = mh .pres-⋆ x y i
+Monoid-structure ℓ .id-hom-unique {s = s} {t = t} mh i .has-is-monoid =
+  is-prop→pathp
+    (λ i → hlevel {T = is-monoid (mh .pres-id i) (λ x y → mh .pres-⋆ x y i)} 1)
+    (s .has-is-monoid)
+    (t .has-is-monoid)
+    i
+
 Monoids : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Monoids ℓ = Structured-objects (Monoid-structure ℓ)
 
 Monoids-is-category : ∀ {ℓ} → is-category (Monoids ℓ)
-Monoids-is-category = displayed-SIP _ Monoid-univalent
+Monoids-is-category = Structured-objects-is-category (Monoid-structure _)
 ```
 
 By standard nonsense, then, the category of monoids admits a faithful

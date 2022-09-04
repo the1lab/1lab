@@ -200,9 +200,6 @@ record Group-on {ℓ} (A : Type ℓ) : Type ℓ where
   x ⁻¹ = has-is-group .is-group.inverse x
 
   open is-group has-is-group public
-
-Group : (ℓ : Level) → Type (lsuc ℓ)
-Group ℓ = Σ (Type ℓ) Group-on
 ```
 
 We have that a map `is a group homomorphism`{.Agda ident=Group-hom} if
@@ -210,13 +207,15 @@ it `preserves the multiplication`{.Agda ident=pres-⋆}.
 
 ```agda
 record
-  Group-hom {ℓ ℓ′} (A : Group ℓ) (B : Group ℓ′) (e : A .fst → B .fst) : Type (ℓ ⊔ ℓ′) where
+  Group-hom
+    {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+    (G : Group-on A) (G′ : Group-on B) (e : A → B) : Type (ℓ ⊔ ℓ′) where
   private
-    module A = Group-on (A .snd)
-    module B = Group-on (B .snd)
+    module A = Group-on G
+    module B = Group-on G′
 
   field
-    pres-⋆ : (x y : A .fst) → e (x A.⋆ y) ≡ e x B.⋆ e y
+    pres-⋆ : (x y : A) → e (x A.⋆ y) ≡ e x B.⋆ e y
 ```
 
 A tedious calculation shows that this is sufficient to preserve the
@@ -251,13 +250,18 @@ identity:
 
 <!--
 ```agda
-Group-hom-is-prop : ∀ {ℓ} {G H : Group ℓ} {f} → is-prop (Group-hom G H f)
-Group-hom-is-prop {H = _ , H} a b i .Group-hom.pres-⋆ x y =
+Group-hom-is-prop
+  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+      {G : Group-on A} {H : Group-on B} {f}
+  → is-prop (Group-hom G H f)
+Group-hom-is-prop {H = H} a b i .Group-hom.pres-⋆ x y =
   Group-on.has-is-set H _ _ (a .Group-hom.pres-⋆ x y) (b .Group-hom.pres-⋆ x y) i
 
 instance
-  H-Level-group-hom : ∀ {n} {ℓ} {G H : Group ℓ} {f}
-                    → H-Level (Group-hom G H f) (suc n)
+  H-Level-group-hom
+    : ∀ {n} {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+      {G : Group-on A} {H : Group-on B} {f}
+    → H-Level (Group-hom G H f) (suc n)
   H-Level-group-hom = prop-instance Group-hom-is-prop
 ```
 -->
@@ -266,11 +270,12 @@ An `equivalence`{.Agda ident=≃} is an equivalence of groups when its
 underlying map is a group homomorphism.
 
 ```agda
-Group≃ : ∀ {ℓ} (A B : Group ℓ) (e : A .fst ≃ B .fst) → Type ℓ
-Group≃ A B (f , _) = Group-hom A B f
+Group≃
+  : ∀ {ℓ} (A B : Σ (Type ℓ) Group-on) (e : A .fst ≃ B .fst) → Type ℓ
+Group≃ A B (f , _) = Group-hom (A .snd) (B .snd) f
 
-Group[_⇒_] : ∀ {ℓ} (A B : Group ℓ) → Type ℓ
-Group[ A ⇒ B ] = Σ (A .fst → B .fst) (Group-hom A B)
+Group[_⇒_] : ∀ {ℓ} (A B : Σ (Type ℓ) Group-on) → Type ℓ
+Group[ A ⇒ B ] = Σ (A .fst → B .fst) (Group-hom (A .snd) (B .snd))
 ```
 
 We automatically derive the proof that paths between groups are
@@ -336,9 +341,8 @@ If $X$ is a set, then the type of all bijections $X \simeq X$ is also a
 set, and it forms the carrier for a group: The _symmetric group_ on $X$.
 
 ```agda
-Sym : ∀ {ℓ} → Set ℓ → Group ℓ
-Sym X .fst = ∣ X ∣ ≃ ∣ X ∣
-Sym X .snd = to-group-on group-str where
+Sym : ∀ {ℓ} (X : Set ℓ) → Group-on (∣ X ∣ ≃ ∣ X ∣)
+Sym X = to-group-on group-str where
   open make-group
   open n-Type X using (H-Level-n-type)
   group-str : make-group (∣ X ∣ ≃ ∣ X ∣)
@@ -382,8 +386,8 @@ equivalence is both a section and a retraction.
 
 <!--
 ```agda
-is-abelian-group : ∀ {ℓ} (G : Group ℓ) → Type ℓ
-is-abelian-group (G , st) = ∀ (x y : G) → x G.⋆ y ≡ y G.⋆ x
+is-abelian-group : ∀ {ℓ} {G : Type ℓ} → Group-on G → Type ℓ
+is-abelian-group {G = G} st = ∀ (x y : G) → x G.⋆ y ≡ y G.⋆ x
   where module G = Group-on st
 ```
 -->

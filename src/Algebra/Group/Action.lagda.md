@@ -75,7 +75,7 @@ module _ {o ℓ} (C : Precategory o ℓ) where
   private module C = Cat C
 
   Aut : C.Ob → Group _
-  Aut X = (X C.≅ X) , to-group-on mg where
+  Aut X = to-group mg where
     mg : make-group (X C.≅ X)
     mg .make-group.group-is-set = C.≅-is-set
     mg .make-group.unit = C.id-iso
@@ -111,19 +111,19 @@ of $G$ on the object $F(\bull)$!
   Functor→action
     : {G : Group ℓ} (F : Functor (B (Group-on.underlying-monoid (G .snd) .snd) ^op) C)
     → Action G (F .F₀ tt)
-  Functor→action {G = G} F .fst it = C.make-iso
+  Functor→action {G = G} F .hom it = C.make-iso
       (F .F₁ it) (F .F₁ (it ⁻¹))
       (F.annihilate inversel) (F.annihilate inverser)
     where
       open Group-on (G .snd)
       module F = Functor-kit F
-  Functor→action F .snd .Group-hom.pres-⋆ x y = C.≅-pathp refl refl (F .F-∘ _ _)
+  Functor→action F .preserves .Group-hom.pres-⋆ x y = C.≅-pathp refl refl (F .F-∘ _ _)
 
   Action→functor
     : {G : Group ℓ} {X : C.Ob} (A : Action G X)
     → Functor (B (Group-on.underlying-monoid (G .snd) .snd) ^op) C
   Action→functor {X = X} A .F₀ _ = X
-  Action→functor A .F₁ e = A .fst e .C.to
-  Action→functor A .F-id = ap C.to (Group-hom.pres-id (A .snd))
-  Action→functor A .F-∘ f g = ap C.to (Group-hom.pres-⋆ (A .snd) _ _)
+  Action→functor A .F₁ e = (A # e) .C.to
+  Action→functor A .F-id = ap C.to (Group-hom.pres-id (A .preserves))
+  Action→functor A .F-∘ f g = ap C.to (Group-hom.pres-⋆ (A .preserves) _ _)
 ```

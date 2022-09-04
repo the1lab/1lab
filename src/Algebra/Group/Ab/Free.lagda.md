@@ -19,8 +19,10 @@ private variable
 # Free Abelian Groups
 
 ```agda
-module _ (Grp@(G , gst) : Group ℓ) where
-  private module G = Group-on gst
+module _ (Grp : Group ℓ) where
+  private
+    module G = Group-on (Grp .snd)
+    G = ⌞ Grp ⌟
   open G
 ```
 
@@ -179,9 +181,9 @@ inherited from $G$!
     Coeq-elim-prop (λ _ → squash _ _) (λ _ → ap inc^ab G.idl)
 
   Abelianise : Group ℓ
-  Abelianise = _ , to-group-on Group-on-G^ab
+  Abelianise = to-group Group-on-G^ab
 
-  Abelianise-is-abelian-group : is-abelian-group Abelianise
+  Abelianise-is-abelian-group : is-abelian-group (to-group-on Group-on-G^ab)
   Abelianise-is-abelian-group = ab*-comm
 ```
 
@@ -212,8 +214,8 @@ call `inc^ab`{.Agda}.
   init : Ob
   init .↓Obj.x = tt
   init .↓Obj.y = restrict (Abelianise G) $ Abelianise-is-abelian-group G
-  init .↓Obj.map .fst = inc^ab G
-  init .↓Obj.map .snd .Group-hom.pres-⋆ x y = refl
+  init .↓Obj.map .hom = inc^ab G
+  init .↓Obj.map .preserves .Group-hom.pres-⋆ x y = refl
 
   m : Initial
   m .bot = init
@@ -224,7 +226,7 @@ call `inc^ab`{.Agda}.
 ```agda
     module other = ↓Obj other
     module H = AbGrp other.y
-    open Σ other.map renaming (fst to f ; snd to gh)
+    open Total-hom other.map renaming (hom to f ; preserves to gh)
     open Group-hom gh
 ```
 -->
@@ -239,7 +241,7 @@ level of sets.
 ```agda
     factor : Hom _ other
     factor .↓Hom.α = tt
-    factor .↓Hom.β .fst = Coeq-elim (λ _ → H.has-is-set) f (λ (a , b , c) → resp a b c)
+    factor .↓Hom.β .hom = Coeq-elim (λ _ → H.has-is-set) f (λ (a , b , c) → resp a b c)
       where abstract
       resp : ∀ a b c → f (a G.⋆ (b G.⋆ c)) ≡ f (a G.⋆ (c G.⋆ b))
       resp a b c =
@@ -258,7 +260,7 @@ required identification $f(xy) = f(x)f(y)$ follows from $f$ being a
 group homomorphism.
 
 ```agda
-    factor .↓Hom.β .snd .Group-hom.pres-⋆ =
+    factor .↓Hom.β .preserves .Group-hom.pres-⋆ =
       Coeq-elim-prop₂ (λ _ _ → H.has-is-set _ _) λ x y → pres-⋆ _ _
     factor .↓Hom.sq = Forget-is-faithful refl
 ```
@@ -269,5 +271,5 @@ H$, since $G \to G^{ab}$ is an epimorphism, we must have $h = h'$.
 ```agda
     unique : ∀ h → factor ≡ h
     unique x = ↓Hom-path _ _ refl $ Forget-is-faithful $ funext $
-      Coeq-elim-prop (λ _ → H.has-is-set _ _) λ y i → x .↓Hom.sq i .fst y
+      Coeq-elim-prop (λ _ → H.has-is-set _ _) λ y i → x .↓Hom.sq i # y
 ```

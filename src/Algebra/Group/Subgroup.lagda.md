@@ -41,7 +41,7 @@ subgroup** if it contains the group `unit`{.Agda}, is closed under
 multiplication, and is closed under inverses.
 
 ```agda
-record represents-subgroup (G : Group ℓ) (H : ℙ (G .fst)) : Type ℓ where
+record represents-subgroup (G : Group ℓ) (H : ℙ ⌞ G ⌟) : Type ℓ where
   open Group-on (G .snd)
 
   field
@@ -56,11 +56,11 @@ group homormophism.
 
 ```agda
 rep-subgroup→group-on
-  : (H : ℙ (G .fst)) → represents-subgroup G H → Group-on (Σ[ x ∈ G .fst ] x ∈ H)
+  : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Group-on (Σ[ x ∈ ⌞ G ⌟ ] x ∈ H)
 rep-subgroup→group-on {G = G} H sg = to-group-on sg′ where
   open Group-on (G .snd)
   open represents-subgroup sg
-  sg′ : make-group (Σ[ x ∈ G .fst ] x ∈ H)
+  sg′ : make-group (Σ[ x ∈ ⌞ G ⌟ ] x ∈ H)
   sg′ .make-group.group-is-set = hlevel!
   sg′ .make-group.unit = unit , has-unit
   sg′ .make-group.mul (x , x∈) (y , y∈) = x ⋆ y , has-⋆ x∈ y∈
@@ -70,15 +70,14 @@ rep-subgroup→group-on {G = G} H sg = to-group-on sg′ where
   sg′ .make-group.invr x = Σ-prop-path (λ x → H x .is-tr) inverser
   sg′ .make-group.idl x = Σ-prop-path (λ x → H x .is-tr) idl
 
-predicate→subgroup : (H : ℙ (G .fst)) → represents-subgroup G H → Subgroup G
+predicate→subgroup : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Subgroup G
 predicate→subgroup {G = G} H p = restrict (cut map) ism where
-  map : Groups.Hom (Σ _ (∣_∣ ⊙ H) , rep-subgroup→group-on H p) G
-  map .fst = fst
-  map .snd .Group-hom.pres-⋆ x y = refl
+  map : Groups.Hom (el! (Σ _ (∣_∣ ⊙ H)) , rep-subgroup→group-on H p) G
+  map .hom = fst
+  map .preserves .Group-hom.pres-⋆ x y = refl
 
   ism : Groups.is-monic map
-  ism g h p = Forget-is-faithful
-    (embedding→monic (Subset-proj-embedding (is-tr ⊙ H)) (fst g) (fst h) (ap fst p))
+  ism = Homomorphism-monic map (λ p → Σ-prop-path (λ _ → hlevel!) p)
 ```
 
 # Kernels and Images
@@ -125,13 +124,13 @@ module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where
   private
     module A = Group-on (A .snd)
     module B = Group-on (B .snd)
-    module f = Group-hom (f .snd)
+    module f = Group-hom (f .preserves)
 
-    Tpath : {x y : image (f .fst)} → x .fst ≡ y .fst → x ≡ y
+    Tpath : {x y : image (f #_)} → x .fst ≡ y .fst → x ≡ y
     Tpath {x} {y} p = Σ-prop-path (λ _ → squash) p
 
     abstract
-      Tset : is-set (image (f .fst))
+      Tset : is-set (image (f #_))
       Tset = hlevel 2
 
     module Kerf = Kernel (Ker f)
@@ -149,10 +148,10 @@ reader.</summary>
 
 ```agda
     T : Type ℓ
-    T = image (f .fst)
+    T = image (f #_)
 
   A/ker[_] : Group ℓ
-  A/ker[_] = T , to-group-on grp where
+  A/ker[_] = to-group grp where
     unit : T
     unit = B.unit , inc (A.unit , f.pres-id)
 
@@ -190,12 +189,12 @@ $$
 
 ```agda
   A→im : Groups.Hom A A/ker[_]
-  A→im .fst x = f .fst x , inc (x , refl)
-  A→im .snd .Group-hom.pres-⋆ x y = Tpath (f.pres-⋆ _ _)
+  A→im .hom x = f # x , inc (x , refl)
+  A→im .preserves .Group-hom.pres-⋆ x y = Tpath (f.pres-⋆ _ _)
 
   im→B : Groups.Hom A/ker[_] B
-  im→B .fst (b , _) = b
-  im→B .snd .Group-hom.pres-⋆ x y = refl
+  im→B .hom (b , _) = b
+  im→B .preserves .Group-hom.pres-⋆ x y = refl
 ```
 
 When this monomorphism is taken as primary, we refer to $A/\ker(f)$ as
@@ -205,7 +204,7 @@ $\im f$.
   Im[_] : Subgroup B
   Im[_] = restrict (cut im→B) im↪B where
     im↪B : Groups.is-monic im→B
-    im↪B = injective-group-hom im→B Tpath
+    im↪B = Homomorphism-monic im→B Tpath
 ```
 
 The reason for denoting the set-theoretic image of $f : A \to B$ (which
@@ -259,10 +258,10 @@ elide the zero composite $e' \circ 0$.
     elim
       : ∀ {F} {e' : Groups.Hom A F}
           (p : e' Groups.∘ Zero.zero→ ∅ᴳ ≡ e' Groups.∘ Kerf.kernel)
-      → ∀ {x} → ∥ fibre (f .fst) x ∥ → _
-    elim {F = F} {e' = e' , gh} p {x} =
-      ∥-∥-rec-set (e' ⊙ fst) const (F .snd .Group-on.has-is-set) where abstract
-      module e' = Group-hom gh
+      → ∀ {x} → ∥ fibre (f #_) x ∥ → _
+    elim {F = F} {e' = e'} p {x} =
+      ∥-∥-rec-set ((e' #_) ⊙ fst) const (F .snd .Group-on.has-is-set) where abstract
+      module e' = Group-hom (e' .preserves)
       module F = Group-on (F .snd)
 ```
 
@@ -273,13 +272,13 @@ representative". This follows from algebraic manipulation of group
 homomorphisms + the assumed identity $0 = e' \circ \ker f$;
 
 ```agda
-      const′ : ∀ (x y : fibre (f .fst) x)
-             → e' (x .fst) F.— e' (y .fst) ≡ F.unit
+      const′ : ∀ (x y : fibre (f #_) x)
+             → e' # (x .fst) F.— e' # (y .fst) ≡ F.unit
       const′ (y , q) (z , r) =
-        e' y F.— e' z  ≡˘⟨ e'.pres-diff ⟩
-        e' (y A.— z)   ≡⟨ happly (sym (ap fst p)) (y A.— z , aux) ⟩
-        e' A.unit      ≡⟨ e'.pres-id ⟩
-        F.unit         ∎
+        e' # y F.— e' # z  ≡˘⟨ e'.pres-diff ⟩
+        e' # (y A.— z)     ≡⟨ happly (sym (ap hom p)) (y A.— z , aux) ⟩
+        e' # A.unit        ≡⟨ e'.pres-id ⟩
+        F.unit             ∎
         where
 ```
 
@@ -288,14 +287,14 @@ specific subset" to "show that $f(y - z) = 0$ when $f(y) = f(z) = x$";
 But that's just algebra, hence uninteresting:
 
 ```agda
-          aux : f .fst (y A.— z) ≡ B.unit
+          aux : f # (y A.— z) ≡ B.unit
           aux =
-            f .fst (y A.— z)        ≡⟨ f.pres-diff ⟩
-            f .fst y B.— f .fst z   ≡⟨ ap₂ B._—_ q r ⟩
-            x B.— x                 ≡⟨ B.inverser ⟩
-            B.unit                  ∎
+            f # (y A.— z)     ≡⟨ f.pres-diff ⟩
+            f # y B.— f # z   ≡⟨ ap₂ B._—_ q r ⟩
+            x B.— x           ≡⟨ B.inverser ⟩
+            B.unit            ∎
 
-      const : ∀ (x y : fibre (f .fst) x) → (e' (x .fst)) ≡ (e' (y .fst))
+      const : ∀ (x y : fibre (f #_) x) → e' # (x .fst) ≡ e' # (y .fst)
       const a b = F.zero-diff (const′ a b)
 ```
 
@@ -309,16 +308,16 @@ will compute.
 ```agda
     coeq : is-coequaliser _ _ A→im
     coeq .coequal = Forget-is-faithful (funext path) where
-      path : (x : Kerf.ker .fst) → A→im .fst A.unit ≡ A→im .fst (x .fst)
+      path : (x : ⌞ Kerf.ker ⌟) → A→im # A.unit ≡ A→im # (x .fst)
       path (x* , p) = Tpath (f.pres-id ∙ sym p)
 
     coeq .coequalise {F = F} {e′ = e'} p = gh where
       module F = Group-on (F .snd)
-      module e' = Group-hom (e' .snd)
+      module e' = Group-hom (e' .preserves)
 
       gh : Groups.Hom _ _
-      gh .fst (x , t) = elim {e' = e'} p t
-      gh .snd .Group-hom.pres-⋆ (x , q) (y , r) =
+      gh .hom (x , t) = elim {e' = e'} p t
+      gh .preserves .Group-hom.pres-⋆ (x , q) (y , r) =
         ∥-∥-elim₂
           {P = λ q r → elim p (((x , q) Ak.⋆ (y , r)) .snd) ≡ elim p q F.⋆ elim p r}
           (λ _ _ → F.has-is-set _ _) (λ x y → e'.pres-⋆ _ _) q r
@@ -328,13 +327,13 @@ will compute.
     coeq .unique {F} {p = p} {colim = colim} prf = Forget-is-faithful (funext path)
       where abstract
         module F = Group-on (F .snd)
-        path : ∀ x → colim .fst x ≡ elim p (x .snd)
+        path : ∀ x → colim # x ≡ elim p (x .snd)
         path (x , t) =
           ∥-∥-elim
-            {P = λ q → colim .fst (x , q) ≡ elim p q}
+            {P = λ q → colim # (x , q) ≡ elim p q}
             (λ _ → F.has-is-set _ _)
-            (λ { (f , fp) → ap (colim .fst) (Σ-prop-path (λ _ → squash) (sym fp))
-                          ∙ sym (happly (ap fst prf) f) })
+            (λ { (f , fp) → ap (colim #_) (Σ-prop-path (λ _ → squash) (sym fp))
+                          ∙ sym (happly (ap hom prf) f) })
             t
 ```
 
@@ -358,12 +357,12 @@ inverses, though we shall not make note of that here).
 ```agda
 module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where private
   module Ker[f] = Kernel (Ker f)
-  module f = Group-hom (f .snd)
+  module f = Group-hom (f .preserves)
   module A = Group-on (A .snd)
   module B = Group-on (B .snd)
 
-  kerf : Ker[f].ker .fst → A .fst
-  kerf = Ker[f].kernel .fst
+  kerf : ⌞ Ker[f].ker ⌟ → ⌞ A ⌟
+  kerf = Ker[f].kernel .hom
 
   has-zero : fibre kerf A.unit
   has-zero = (A.unit , f.pres-id) , refl
@@ -384,13 +383,13 @@ f(yy^{-1}) = f(1) = 1$$.
   has-conjugate : ∀ {x y} → fibre kerf x → fibre kerf (y A.⋆ x A.⋆ y A.⁻¹)
   has-conjugate {x} {y} ((a , p) , q) = (_ , path) , refl where
     path =
-      f .fst (y A.⋆ (x A.— y))             ≡⟨ ap (f .fst) A.associative ⟩
-      f .fst ((y A.⋆ x) A.— y)             ≡⟨ f.pres-diff ⟩
-      f .fst (y A.⋆ x) B.— f .fst y        ≡⟨ ap (B._⋆ _) (f.pres-⋆ y x) ⟩
-      (f .fst y B.⋆ f .fst x) B.— f .fst y ≡⟨ ap (B._⋆ _) (ap (_ B.⋆_) (ap (f .fst) (sym q) ∙ p) ∙ B.idr) ⟩
-      f .fst y B.— f .fst y                ≡˘⟨ f.pres-diff ⟩
-      f .fst (y A.— y)                     ≡⟨ ap (f .fst) A.inverser ∙ f.pres-id ⟩
-      B.unit                               ∎
+      f # (y A.⋆ (x A.— y))         ≡⟨ ap (f #_) A.associative ⟩
+      f # ((y A.⋆ x) A.— y)         ≡⟨ f.pres-diff ⟩
+      ⌜ f # (y A.⋆ x) ⌝ B.— f # y   ≡⟨ ap! (f.pres-⋆ y x) ⟩
+      ⌜ f # y B.⋆ f # x ⌝ B.— f # y ≡⟨ ap! (ap (_ B.⋆_) (ap (f #_) (sym q) ∙ p) ∙ B.idr) ⟩
+      f # y B.— f # y               ≡˘⟨ f.pres-diff ⟩
+      f # (y A.— y)                 ≡⟨ ap (f #_) A.inverser ∙ f.pres-id ⟩
+      B.unit                        ∎
 ```
 
 It turns out that this last property is enough to pick out exactly the
@@ -403,7 +402,7 @@ kernel a **normal subgroup**, and we denote this in shorthand by $H
 \unlhd G$.
 
 ```agda
-record normal-subgroup (G : Group ℓ) (H : ℙ (G .fst)) : Type ℓ where
+record normal-subgroup (G : Group ℓ) (H : ℙ ⌞ G ⌟) : Type ℓ where
   open Group-on (G .snd)
   field
     has-rep : represents-subgroup G H
@@ -430,11 +429,11 @@ inherited from $G$, but this is _incredibly_ tedious to do.
 
 <!--
 ```agda
-module _ (Grp : Group ℓ) {H : ℙ (Grp .fst)} (N : normal-subgroup Grp H) where
+module _ (Grp : Group ℓ) {H : ℙ ⌞ Grp ⌟} (N : normal-subgroup Grp H) where
   open normal-subgroup N
   open Group-on (Grp .snd) renaming (inverse to inv)
   private
-    G0 = Grp .fst
+    G0 = ⌞ Grp ⌟
     rel : G0 → G0 → Type _
     rel x y = (x ⋆ y ⁻¹) ∈ H
 
@@ -508,11 +507,11 @@ rather directly:
       Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (idl {x = x} i)
 
   _/ᴳ_ : Group _
-  _/ᴳ_ = G/H , to-group-on Group-on-G/H
+  _/ᴳ_ = to-group Group-on-G/H
 
   incl : Groups.Hom Grp _/ᴳ_
-  incl .fst = inc
-  incl .snd .Group-hom.pres-⋆ x y = refl
+  incl .hom = inc
+  incl .preserves .Group-hom.pres-⋆ x y = refl
 ```
 
 Before we show that the kernel of the quotient map is isomorphic to the
@@ -562,16 +561,16 @@ predicate $\id{inc}(x) = \id{inc}(0)$ recovers the subgroup $H$; And
   Ker[incl]≅H-group : Ker[incl].ker Groups.≅ H-g
   Ker[incl]≅H-group = Groups.make-iso to from il ir where
     to : Groups.Hom _ _
-    to .fst (x , p) = x , subst (_∈ H) (ap (_ ⋆_) inv-unit ∙ idr) x-0∈H where
+    to .hom (x , p) = x , subst (_∈ H) (ap (_ ⋆_) inv-unit ∙ idr) x-0∈H where
       x-0∈H = /ᴳ-effective p
-    to .snd .Group-hom.pres-⋆ _ _ = Σ-prop-path (λ _ → H _ .is-tr) refl
+    to .preserves .Group-hom.pres-⋆ _ _ = Σ-prop-path (λ _ → H _ .is-tr) refl
 
     from : Groups.Hom _ _
-    from .fst (x , p) = x , quot (subst (_∈ H) (sym idr ∙ ap (_ ⋆_) (sym inv-unit)) p)
-    from .snd .Group-hom.pres-⋆ _ _ = Σ-prop-path (λ _ → squash _ _) refl
+    from .hom (x , p) = x , quot (subst (_∈ H) (sym idr ∙ ap (_ ⋆_) (sym inv-unit)) p)
+    from .preserves .Group-hom.pres-⋆ _ _ = Σ-prop-path (λ _ → squash _ _) refl
 
-    il = Forget-is-faithful $ funext λ x → Σ-prop-path (λ _ → H _ .is-tr) refl
-    ir = Forget-is-faithful $ funext λ x → Σ-prop-path (λ _ → squash _ _) refl
+    il = Homomorphism-path λ x → Σ-prop-path (λ _ → H _ .is-tr) refl
+    ir = Homomorphism-path λ x → Σ-prop-path (λ _ → squash _ _) refl
 ```
 
 To show that these are equal as subgroups of $G$, we must show that the

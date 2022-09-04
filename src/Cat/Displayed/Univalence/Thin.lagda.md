@@ -1,5 +1,7 @@
 ```agda
+{-# OPTIONS --experimental-lossy-unification #-}
 open import Cat.Displayed.Univalence
+open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
 open import Cat.Instances.Sets
 open import Cat.Displayed.Base
@@ -48,11 +50,14 @@ record
   no-eta-equality
   field
     is-hom    : ∀ {x y} → (x → y) → S x → S y → Prop ℓ′
-
     id-is-hom : ∀ {x} {s : S x} → ∣ is-hom (λ x → x) s s ∣
+
     ∘-is-hom  :
       ∀ {x y z} {s t u} (f : y → z) (g : x → y)
-      → ∣ is-hom f t u ∣ → ∣ is-hom g s t ∣ → ∣ is-hom (λ x → f (g x)) s u ∣
+      → (α : ∣ is-hom f t u ∣) (β : ∣ is-hom g s t ∣)
+      → ∣ is-hom (λ x → f (g x)) s u ∣
+
+    id-hom-unique : ∀ {x} {s t : S x} → ∣ is-hom (λ x → x) s t ∣ → s ≡ t
 
 open Thin-structure public
 
@@ -87,38 +92,14 @@ of identities between $S$-structured $\ca{B}$-objects is equivalent to
 the type of $H$-homomorphic $\ca{B}$-isomorphisms.
 
 ```agda
-  thin-SIP
-    : ( ∀ {x} (α β : S x)
-      → ∣ spec .is-hom (λ x → x) α β ∣
-      → ∣ spec .is-hom (λ x → x) β α ∣
-      → α ≡ β )
-    → is-category Structured-objects
-  thin-SIP H-antisym =
+  Structured-objects-is-category : is-category Structured-objects
+  Structured-objects-is-category =
     is-category-total Thin-structure-over Sets-is-category $
       is-category-fibrewise _ Sets-is-category λ A x y →
       Σ-prop-path
         (λ _ _ _ → ≅[]-path _ (spec .is-hom _ _ _ .is-tr _ _)
                               (spec .is-hom _ _ _ .is-tr _ _))
-        (H-antisym _ _
-          (spec .∘-is-hom _ _ (y .snd .to′) (x .snd .from′))
-          (spec .∘-is-hom _ _ (x .snd .to′) (y .snd .from′)))
-```
-
-Connecting this to the typal SIP, if the thin structure $S$ induces a
-univalent structure (in the standard sense of the word), then it
-satisfies the premises of the thin SIP defined above. This means that we
-can re-use the automated SIP machinery for proving univalence of
-categories!
-
-```agda
-  displayed-SIP
-    : is-univalent {S = S}
-        (HomT→Str (λ A B f → ∣ spec .is-hom (f .fst) (A .snd) (B .snd) ∣))
-    → is-category Structured-objects
-  displayed-SIP univ = thin-SIP λ A B α β →
-       sym (transport-refl _)
-    ·· ap (λ e → subst S e A) (sym ua-id-equiv)
-    ·· from-pathp (univ (_ , id-equiv) .fst α)
+        (spec .id-hom-unique (x .snd .from′) ∙ spec .id-hom-unique (y .snd .to′))
 ```
 
 By construction, such a category of structured objects admits a faithful
@@ -132,16 +113,21 @@ functor into the category of sets.
   Structured-hom-path p =
     total-hom-path Thin-structure-over p (is-prop→pathp (λ _ → hlevel!) _ _)
 
+⌞_⌟ : ∀ {n} {ℓ o′} {S : n-Type ℓ n → Type o′} → Σ (n-Type ℓ n) S → Type ℓ
+⌞ x ⌟ = ∣ x .fst ∣
+
 module _ {ℓ o′ ℓ′} {S : Type ℓ → Type o′} {spec : Thin-structure ℓ′ S} where
   private
     module So = Precategory (Structured-objects spec)
     module Som = Cat.Morphism (Structured-objects spec)
 
-  ⌞_⌟ : So.Ob → Type ℓ
-  ⌞ x ⌟ = ∣ x .fst ∣
-
   _#_ : ∀ {a b : So.Ob} → So.Hom a b → ⌞ a ⌟ → ⌞ b ⌟
   f # x = f .Total-hom.hom x
+
+  _#ₚ_ : ∀ {a b : So.Ob} {f g : So.Hom a b } → f ≡ g → ∀ x → f # x ≡ g # x
+  f #ₚ x = happly (ap hom f) x
+
+  infixl 999 _#_
 
   Homomorphism-path
     : ∀ {x y : So.Ob} {f g : So.Hom x y}
@@ -150,8 +136,24 @@ module _ {ℓ o′ ℓ′} {S : Type ℓ → Type o′} {spec : Thin-structure �
   Homomorphism-path h = Structured-hom-path spec (funext h)
 
   Homomorphism-monic
-    : ∀ {x y : So.Ob} {f : So.Hom x y}
+    : ∀ {x y : So.Ob} (f : So.Hom x y)
     → (∀ {x y} (p : f # x ≡ f # y) → x ≡ y)
     → Som.is-monic f
-  Homomorphism-monic wit g h p = Homomorphism-path λ x → wit (ap hom p $ₚ x)
+  Homomorphism-monic f wit g h p = Homomorphism-path λ x → wit (ap hom p $ₚ x)
+
+  ∫-Path
+    : ∀ {a b : So.Ob}
+    → (f : So.Hom a b)
+    → is-equiv (f #_)
+    → a ≡ b
+  ∫-Path {a = a} {b = b} f eqv =
+    Σ-pathp (n-ua (f .hom , eqv)) $
+      EquivJ (λ B e → ∀ st → ∣ spec .is-hom (e .fst) (a .snd) st ∣ → PathP (λ i → S (ua e i)) (a .snd) st)
+        (λ st pres → to-pathp (ap (λ e → subst S e (a .snd)) ua-id-equiv
+                  ·· transport-refl _
+                  ·· spec .id-hom-unique pres))
+        (f .hom , eqv)
+        (b .snd)
+        (f .preserves)
+
 ```
