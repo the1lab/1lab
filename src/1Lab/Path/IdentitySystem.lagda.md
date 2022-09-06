@@ -89,14 +89,21 @@ IdsJ-refl {R = R} {r = r} {a = a} ids P x =
     lemma : Σ-pathp (ids .to-path (r a)) (ids .to-path-over (r a)) ≡ refl
     lemma = is-prop→is-set (is-contr→is-prop (is-contr-ΣR ids)) _ _ _ _
 
+to-path-refl-coh
+  : ∀ {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a}
+  → (ids : is-identity-system R r)
+  → ∀ a
+  → (Σ-pathp (ids .to-path (r a)) (ids .to-path-over (r a))) ≡ refl
+to-path-refl-coh {r = r} ids a =
+  is-contr→is-set (is-contr-ΣR ids) _ _
+    (Σ-pathp (ids .to-path (r a)) (ids .to-path-over (r a)))
+    refl
+
 to-path-refl
   : ∀ {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a} {a : A}
   → (ids : is-identity-system R r)
   → ids .to-path (r a) ≡ refl
-to-path-refl {r = r} {a = a} ids = ap (ap fst) $
-  is-prop→is-set (is-contr→is-prop (is-contr-ΣR ids)) (a , r a) (a , r a)
-    (Σ-pathp (ids .to-path (r a)) (ids .to-path-over (r a)))
-    refl
+to-path-refl {r = r} {a = a} ids = ap (ap fst) $ to-path-refl-coh ids a
 ```
 -->
 
@@ -173,6 +180,26 @@ module
       k (i = i1) → p
 ```
 
+<!--
+```agda
+module
+  _ {ℓ ℓ′} {A : Type ℓ}
+    {R S : A → A → Type ℓ′}
+    {r : ∀ a → R a a} {s : ∀ a → S a a}
+    (ids : is-identity-system R r)
+    (eqv : ∀ x y → R x y ≃ S x y)
+    (pres : ∀ x → eqv x x .fst (r x) ≡ s x)
+  where
+
+  transfer-identity-system : is-identity-system S s
+  transfer-identity-system =
+    transport
+      (λ i → is-identity-system (λ x y → ua (eqv x y) i)
+              λ a → path→ua-pathp (eqv a a) (pres a) i)
+      ids
+```
+-->
+
 ## Univalence
 
 Note that univalence is precisely the statement that equivalences are an
@@ -185,3 +212,60 @@ univalence-identity-system .to-path = ua
 univalence-identity-system .to-path-over p =
   Σ-prop-pathp (λ _ → is-equiv-is-prop) $ funextP $ λ a → path→ua-pathp p refl
 ```
+
+<!--
+```agda
+is-identity-system-is-prop
+  : ∀ {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a}
+  → is-prop (is-identity-system R r)
+is-identity-system-is-prop {A = A} {R} {r} =
+  retract→is-hlevel 1 from to cancel λ x y i a → is-contr-is-prop (x a) (y a) i
+  where
+    to : is-identity-system R r → ∀ x → is-contr (Σ A (R x))
+    to ids x = is-contr-ΣR ids
+
+    sys : ∀ (l : ∀ x → is-contr (Σ A (R x))) a b (s : R a b) (i j : I)
+        → Partial (∂ i ∨ ~ j) (Σ A (R a))
+    sys l a b s i j (j = i0) = l a .centre
+    sys l a b s i j (i = i0) = l a .paths (a , r a) j
+    sys l a b s i j (i = i1) = l a .paths (b , s) j
+
+    from : (∀ x → is-contr (Σ A (R x))) → is-identity-system R r
+    from x .to-path      {a} {b} s i = hcomp (∂ i) (sys x a b s i) .fst
+    from x .to-path-over {a} {b} s i = hcomp (∂ i) (sys x a b s i) .snd
+
+    square : ∀ (x : is-identity-system R r) a b (s : R a b)
+           → Square {A = Σ A (R a)}
+             (λ i → x .to-path (r a) i , x .to-path-over (r a) i)
+             (λ i → x .to-path s i , x .to-path-over s i)
+             (λ i → x .to-path s i , x .to-path-over s i)
+             refl
+    square x a b s i j = hcomp (∂ i ∨ ∂ j) λ where
+      k (k = i0) → x .to-path s j , x .to-path-over s j
+      k (i = i0) → x .to-path s j , x .to-path-over s j
+      k (i = i1) → x .to-path s j , x .to-path-over s j
+      k (j = i0) → to-path-refl-coh {R = R} {r = r} x a (~ k) i
+      k (j = i1) → b , s
+
+    sys′ : ∀ (x : is-identity-system R r) a b (s : R a b) i j k
+         → Partial (∂ i ∨ ∂ j ∨ ~ k) (Σ A (R a))
+    sys′ x a b s i j k (k = i0) = x .to-path (r a) i , x .to-path-over (r a) i
+    sys′ x a b s i j k (i = i0) = hfill (∂ j) k (sys (to x) a b s j)
+    sys′ x a b s i j k (i = i1) =
+        x .to-path (x .to-path-over s (k ∨ j)) (k ∧ j)
+      , x .to-path-over (x .to-path-over s (k ∨ j)) (k ∧ j)
+    sys′ x a b s i j k (j = i0) =
+        x .to-path (r a) (k ∨ i) , x .to-path-over (r a) (k ∨ i)
+    sys′ x a b s i j k (j = i1) = square x a b s i k
+
+    cancel : is-left-inverse from to
+    cancel x i .to-path {a} {b} s j      = hcomp (∂ i ∨ ∂ j) (sys′ x a b s i j) .fst
+    cancel x i .to-path-over {a} {b} s j = hcomp (∂ i ∨ ∂ j) (sys′ x a b s i j) .snd
+
+instance
+  H-Level-is-identity-system
+    : ∀ {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a} {n}
+    → H-Level (is-identity-system R r) (suc n)
+  H-Level-is-identity-system = prop-instance is-identity-system-is-prop
+```
+-->

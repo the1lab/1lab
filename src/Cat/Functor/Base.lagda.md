@@ -173,6 +173,13 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
       (sym (F-∘ F _ _) ·· ap (F₁ F) x.invr ·· F-id F)
     where module x = C._≅_ x
 
+  F-map-invertible : ∀ {x y} (F : Functor C D) {f : C.Hom x y} → C.is-invertible f → D.is-invertible (F₁ F f)
+  F-map-invertible F inv =
+    D.make-invertible (F₁ F _)
+      (sym (F-∘ F _ _) ·· ap (F₁ F) x.invl ·· F-id F)
+      (sym (F-∘ F _ _) ·· ap (F₁ F) x.invr ·· F-id F)
+    where module x = C.is-invertible inv
+
   open import Cat.Univalent
 
   F-map-path : ∀ {x y} (F : Functor C D) (i : x C.≅ y)
