@@ -149,6 +149,18 @@ module _ where
   open 1Lab.Path
 ```
 
+<!--
+```agda
+  ∙-filler₂ : ∀ {ℓ} {A : Type ℓ} {x y z : A} (q : x ≡ y) (r : y ≡ z)
+            → Square q (q ∙ r) r refl
+  ∙-filler₂ q r k i = hcomp (k ∨ ∂ i) λ where
+    l (l = i0) → q (i ∨ k)
+    l (k = i1) → r (l ∧ i)
+    l (i = i0) → q k
+    l (i = i1) → r l
+```
+-->
+
 The left and right identity laws follow directly from the two fillers
 for the composition operation.
 
@@ -175,10 +187,10 @@ have to do this once!
 ```agda
   ∙-inv-r : ∀ {x y : A} (p : x ≡ y) → p ∙ sym p ≡ refl
   ∙-inv-r {x = x} p i j = hcomp (∂ j ∨ i) λ where
-    k (j = i0) → x
-    k (i = i1) → x
-    k (j = i1) → p (~ k ∧ ~ i)
     k (k = i0) → p (j ∧ ~ i)
+    k (i = i1) → x
+    k (j = i0) → x
+    k (j = i1) → p (~ k ∧ ~ i)
 ```
 
 For the other direction, we use the fact that `p` is definitionally
@@ -205,31 +217,54 @@ For instance, we know that $p^{-1} ∙ p ∙ q$ is $q$, but this involves
 more than a handful of intermediate steps:
 
 ```agda
-  ∙-cancel-l : {x y z : A} (p : x ≡ y) (q : y ≡ z)
-             → (sym p ∙ p ∙ q) ≡ q
-  ∙-cancel-l p q =
-    sym p ∙ p ∙ q   ≡⟨ ∙-assoc _ _ _ ⟩
-    (sym p ∙ p) ∙ q ≡⟨ ap₂ _∙_ (∙-inv-l p) refl ⟩
-    refl ∙ q        ≡⟨ ∙-id-l q ⟩
-    q               ∎
+  ∙-cancel-l
+    : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : y ≡ z)
+    → (sym p ∙ p ∙ q) ≡ q
+  ∙-cancel-l {y = y} p q i j = hcomp (∂ i ∨ ∂ j) λ where
+    k (k = i0) → p (i ∨ ~ j)
+    k (i = i0) → ∙-filler (sym p) (p ∙ q) k j
+    k (i = i1) → q (j ∧ k)
+    k (j = i0) → y
+    k (j = i1) → ∙-filler₂ p q i k
 
-  ∙-cancel'-l : {x y z : A} (p : x ≡ y) (q r : y ≡ z)
-              → p ∙ q ≡ p ∙ r → q ≡ r
-  ∙-cancel'-l = J (λ y p → (q r : y ≡ _) → p ∙ q ≡ p ∙ r → q ≡ r)
-                  (λ q r proof → sym (∙-id-l q) ·· proof ·· ∙-id-l r)
+  ∙-cancel-r
+    : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : z ≡ y)
+    → ((p ∙ sym q) ∙ q) ≡ p
+  ∙-cancel-r {x = x} {y = y} q p = sym $ ∙-unique _ λ i j →
+    ∙-filler q (sym p) (~ i) j
 
-  ∙-cancel'-r : {x y z : A} (p : y ≡ z) (q r : x ≡ y)
-              → q ∙ p ≡ r ∙ p → q ≡ r
-  ∙-cancel'-r = J (λ y p → (q r : _ ≡ _) → q ∙ p ≡ r ∙ p → q ≡ r)
-                  (λ q r proof → sym (∙-id-r q) ·· proof ·· ∙-id-r r)
-
-  composite-path→square
+  commutes→square
     : {p : w ≡ x} {q : w ≡ y} {s : x ≡ z} {r : y ≡ z}
     → p ∙ s ≡ q ∙ r
     → Square p q s r
-  composite-path→square {p = p} {q} {s} {r} fill =
-    transport (sym Square≡double-composite-path) $
-      double-composite (sym p) q r ·· ap (sym p ∙_) (sym fill) ·· ∙-cancel-l p s
+  commutes→square {p = p} {q} {s} {r} fill i j =
+    hcomp (∂ i ∨ ∂ j) λ where
+      k (k = i0) → fill j i
+      k (i = i0) → q (k ∧ j)
+      k (i = i1) → s (~ k ∨ j)
+      k (j = i0) → ∙-filler p s (~ k) i
+      k (j = i1) → ∙-filler₂ q r k i
+
+  square→commutes
+    : {p : w ≡ x} {q : w ≡ y} {s : x ≡ z} {r : y ≡ z}
+    → Square p q s r → p ∙ s ≡ q ∙ r
+  square→commutes {p = p} {q} {s} {r} fill i j = hcomp (∂ i ∨ ∂ j) λ where
+    k (k = i0) → fill j i
+    k (i = i0) → ∙-filler p s k j
+    k (i = i1) → ∙-filler₂ q r (~ k) j
+    k (j = i0) → q (~ k ∧ i)
+    k (j = i1) → s (k ∨ i)
+
+  ∙-cancel'-l : {x y z : A} (p : x ≡ y) (q r : y ≡ z)
+              → p ∙ q ≡ p ∙ r → q ≡ r
+  ∙-cancel'-l p q r sq = sym (∙-cancel-l p q) ·· ap (sym p ∙_) sq ·· ∙-cancel-l p r
+
+  ∙-cancel'-r : {x y z : A} (p : y ≡ z) (q r : x ≡ y)
+              → q ∙ p ≡ r ∙ p → q ≡ r
+  ∙-cancel'-r p q r sq =
+       sym (∙-cancel-r q (sym p))
+    ·· ap (_∙ sym p) sq
+    ·· ∙-cancel-r r (sym p)
 ```
 
 # Groupoid structure of types (cont.)

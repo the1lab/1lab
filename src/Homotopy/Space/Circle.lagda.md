@@ -148,11 +148,10 @@ argument $x$.
   square-loopⁿ
     : (n : ℤ)
     → Square refl (loopⁿ (Equiv.from rotate n)) (loopⁿ n) loop
-  square-loopⁿ n = composite-path→square $ sym $
+  square-loopⁿ n = commutes→square $ sym $
     ⌜ loopⁿ (Equiv.from rotate n) ⌝ ∙ loop ≡⟨ ap! (map-out-rotate-inv _ _ _) ⟩
-    (loopⁿ n ∙ sym loop) ∙ loop            ≡˘⟨ ∙-assoc _ _ _ ⟩
-    loopⁿ n ∙ ⌜ sym loop ∙ loop ⌝          ≡⟨ ap! (∙-inv-l loop) ⟩
-    loopⁿ n ∙ refl                         ≡⟨ ∙-id-r _ ∙ sym (∙-id-l _) ⟩
+    (loopⁿ n ∙ sym loop) ∙ loop            ≡⟨ ∙-cancel-r _ _ ⟩
+    loopⁿ n                                ≡⟨ sym (∙-id-l _) ⟩
     refl ∙ loopⁿ n                         ∎
 ```
 -->
