@@ -1149,6 +1149,18 @@ its filler), it is contractible:
 ··-contract p q r β = ··-unique p q r _ β
 ```
 
+<!--
+```agda
+∙-unique
+  : ∀ {ℓ} {A : Type ℓ} {x y z : A} {p : x ≡ y} {q : y ≡ z}
+  → (r : x ≡ z)
+  → Square refl p r q
+  → r ≡ p ∙ q
+∙-unique {p = p} {q} r square i =
+  ··-unique refl p q (_ , square) (_ , (∙-filler p q)) i .fst
+```
+-->
+
 # Functorial Action
 
 This composition structure on paths makes every type into an
@@ -1239,6 +1251,14 @@ with weird names are defined:
 ```agda
 ≡⟨⟩-syntax : ∀ {ℓ} {A : Type ℓ} (x : A) {y z} → y ≡ z → x ≡ y → x ≡ z
 ≡⟨⟩-syntax x q p = p ∙ q
+
+≡⟨⟩≡⟨⟩-syntax
+  : ∀ {ℓ} {A : Type ℓ} (w x : A) {y z}
+  → (p : w ≡ x)
+  → (q : x ≡ y)
+  → (r : y ≡ z)
+  → w ≡ z
+≡⟨⟩≡⟨⟩-syntax w x p q r = p ·· q ·· r
 
 infixr 2 ≡⟨⟩-syntax
 syntax ≡⟨⟩-syntax x q p = x ≡⟨ p ⟩ q
@@ -1597,10 +1617,13 @@ homotopy-natural : ∀ {a b} {A : Type a} {B : Type b}
                  → (H : (x : A) → f x ≡ g x)
                  → {x y : A} (p : x ≡ y)
                  → H x ∙ ap g p ≡ ap f p ∙ H y
-homotopy-natural {f = f} {g = g} H p =
-  J (λ _ p → H _ ∙ ap g p ≡ ap f p ∙ H _)
-    (sym (∙-filler (H _) refl) ∙ ∙-filler' refl (H _))
-    p
+homotopy-natural {f = f} {g = g} H {x} {y} p = ∙-unique _ λ i j →
+  hcomp (∂ i ∨ ∂ j) λ where
+    k (k = i0) → H x (j ∧ i)
+    k (i = i0) → f (p (j ∧ k))
+    k (i = i1) → ∙-filler (H x) (ap g p) k j
+    k (j = i0) → f x
+    k (j = i1) → H (p k) i
 ```
 
 ## Paths
@@ -1611,34 +1634,54 @@ characterisation of `A`, there are general theorems that can be proven
 about _transport_ in path spaces. For example, transporting both
 endpoints of a path is equivalent to a ternary composition:
 
+<!--
+```agda
+double-composite
+  : ∀ {ℓ} {A : Type ℓ}
+  → {x y z w : A}
+  → (p : x ≡ y) (q : y ≡ z) (r : z ≡ w)
+  → p ·· q ·· r ≡ p ∙ q ∙ r
+double-composite p q r i j =
+  hcomp (i ∨ ∂ j) λ where
+    k (i = i1) → ∙-filler' p (q ∙ r) k j
+    k (j = i0) → p (~ k)
+    k (j = i1) → r (i ∨ k)
+    k (k = i0) → ∙-filler q r i j
+```
+-->
+
+
 ```agda
 transport-path : ∀ {ℓ} {A : Type ℓ} {x y x' y' : A}
                 → (p : x ≡ y)
                 → (left : x ≡ x') → (right : y ≡ y')
                 → transport (λ i → left i ≡ right i) p ≡ sym left ∙ p ∙ right
-transport-path {x = x} {y = y} p left right =
-  J (λ _ left → transport (λ i → left i ≡ right i) p ≡ sym left ∙ p ∙ right)
-    (J (λ _ right → transport (λ i → x ≡ right i) p ≡ sym refl ∙ p ∙ right)
-       (sym lemma)
-       right)
-    left
+transport-path {A = A} {x} {y} {x'} {y'} p left right =
+  lemma ∙ double-composite _ _ _
 ```
 
-The proof is by induction on the `left` and `right` "adjustment" paths: It
-suffices to consider the case where they are both `refl`. In that case, it
-becomes an application of the [groupoid laws for types].
+The argument is slightly indirect. First, we have a proof (omitted for
+space) that composing three paths using binary composition (twice) is
+the same path as composing them in one go, using the (ternary) double
+composition operation. This is used in a second step, as a slight
+endpoint correction.
 
-[groupoid laws for types]: 1Lab.Path.Groupoid.html
+The first step, the lemma below, characterises transport in path spaces
+in terms of the double composite: This is _almost_ definitional, but
+since Cubical Agda implements only composition **for `PathP`**, we need
+to adjust the path by a bunch of transports:
 
 ```agda
   where
-    lemma : sym refl ∙ p ∙ refl ≡ transport (λ i → x ≡ y) p
-    lemma =
-      sym refl ∙ p ∙ refl       ≡⟨⟩
-      refl ∙ p ∙ refl           ≡⟨ sym (∙-filler' _ _) ⟩
-      p ∙ refl                  ≡⟨ sym (∙-filler _ _) ⟩
-      p                         ≡⟨ sym (transport-refl _) ⟩
-      transport (λ i → x ≡ y) p ∎
+    lemma : _ ≡ (sym left ·· p ·· right)
+    lemma i j = hcomp (~ i ∨ ∂ j) λ where
+      k (k = i0) → transp (λ j → A) i (p j)
+      k (i = i0) → hfill (∂ j) k λ where
+        k (k = i0) → transp (λ i → A) i0 (p j)
+        k (j = i0) → transp (λ j → A) k (left k)
+        k (j = i1) → transp (λ j → A) k (right k)
+      k (j = i0) → transp (λ j → A) (k ∨ i) (left k)
+      k (j = i1) → transp (λ j → A) (k ∨ i) (right k)
 ```
 
 Special cases can be proven about substitution. For example, if we hold
@@ -1708,29 +1751,12 @@ Square≡double-composite-path {p = p} {q} {s} {r} k =
   PathP (λ i → p (i ∨ k) ≡ r (i ∨ k))
     (··-filler (sym p) q r k) s
 
-≡⟨⟩⟨⟩-syntax : ∀ {ℓ} {A : Type ℓ} (x y : A) {w z : A} → x ≡ y → y ≡ z → z ≡ w → x ≡ w
-≡⟨⟩⟨⟩-syntax x y p q r = p ·· q ·· r
-infixr 2.5 ≡⟨⟩⟨⟩-syntax
-syntax ≡⟨⟩⟨⟩-syntax x y B C = x ≡⟨ B ⟩≡ y ≡⟨ C ⟩≡
-
 J′ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁}
      (P : (x y : A) → x ≡ y → Type ℓ₂)
    → (∀ x → P x x refl)
    → {x y : A} (p : x ≡ y)
    → P x y p
 J′ P prefl {x} p = transport (λ i → P x (p i) λ j → p (i ∧ j)) (prefl x)
-
-double-composite
-  : ∀ {ℓ} {A : Type ℓ}
-  → {x y z w : A}
-  → (p : x ≡ y) (q : y ≡ z) (r : z ≡ w)
-  → p ·· q ·· r ≡ p ∙ q ∙ r
-double-composite p q r i j =
-  hcomp (i ∨ ∂ j) λ where
-    k (i = i1) → ∙-filler' p (q ∙ r) k j
-    k (j = i0) → p (~ k)
-    k (j = i1) → r (i ∨ k)
-    k (k = i0) → ∙-filler q r i j
 
 invert-sides : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : x ≡ z)
              → Square q p (sym q) (sym p)

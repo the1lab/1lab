@@ -95,6 +95,8 @@ primitive
           → PartialP (i ∨ j) A
 
 {-# BUILTIN ISONEEMPTY isOneEmpty #-}
+
+syntax primPOr φ ψ u v = [ φ ↦ u , ψ ↦ v ]
 ```
 
 Note that the type of `primPOr` is incomplete: it looks like the
