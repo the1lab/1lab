@@ -3,6 +3,8 @@ open import 1Lab.Prelude
 
 open import Data.Int
 
+import Data.Int.Inductive as Ind
+
 module Data.Int.Universal where
 ```
 
@@ -160,4 +162,64 @@ assumptions, the other cases follow by induction (on naturals).
             ·· ap f (sym (quot 0 k))
             ·· unique-neg k)
         ·· sym (map-out.negatives⁻¹ rot k _)
+```
+
+## Inductive integers are integers
+
+In the 1Lab, we have another implementation of the integers, in addition
+to the ones defined by quotient, which we have already characterised as
+satisfying the universal property, above. These are the _inductive
+integers_: defined as a particular binary coproduct of natural numbers.
+To avoid the problem of having "two zeroes", one of the summands is
+tagged "negative successor," rather than "successor", so that `negsuc 0`
+indicates the number $-1$.
+
+We have already proven that the inductive integers have a successor
+equivalence: What we now do is prove this equivalence is universal.
+
+```agda
+Inductive-integers : Integers Ind.Int
+Inductive-integers = r where
+  module map-out {ℓ} {X : Type ℓ} (l : X ≃ X) where
+    pos : Nat → X ≃ X
+    pos zero    = _ , id-equiv
+    pos (suc x) = pos x ∙e l
+
+    neg : Nat → X ≃ X
+    neg zero    = l e⁻¹
+    neg (suc x) = neg x ∙e (l e⁻¹)
+
+    to : Ind.Int → X ≃ X
+    to (Ind.pos x) = pos x
+    to (Ind.negsuc x) = neg x
+
+  r : Integers Ind.Int
+  r .ℤ-is-set = Discrete→is-set Ind.Discrete-Int
+  r .point = Ind.pos 0
+  r .rotate = Ind.suc-equiv
+  r .map-out p e i = map-out.to e i .fst p
+  r .map-out-point p _ = refl
+  r .map-out-rotate p e = go where
+    go : ∀ x → r .map-out p e (r .rotate .fst x)
+             ≡ e .fst (r .map-out p e x)
+    go (Ind.pos x)          = refl
+    go (Ind.negsuc zero)    = sym (Equiv.ε e _)
+    go (Ind.negsuc (suc x)) = sym (Equiv.ε e _)
+  r .map-out-unique f {p} {rot} fz fr = go where
+    pos : ∀ n → f (Ind.pos n) ≡ map-out.pos rot n .fst p
+    pos zero = fz
+    pos (suc n) = fr (Ind.pos n) ∙ ap (rot .fst) (pos n)
+
+    map-pred : ∀ n → f (Ind.pred-int n) ≡ Equiv.from rot (f n)
+    map-pred n = sym (Equiv.η rot _)
+              ·· ap (Equiv.from rot) (sym (fr _))
+              ·· ap (Equiv.from rot ∘ f) (Ind.suc-pred n)
+
+    neg : ∀ n → f (Ind.negsuc n) ≡ map-out.neg rot n .fst p
+    neg zero = map-pred (Ind.pos 0) ∙ ap (Equiv.from rot) fz
+    neg (suc n) = map-pred (Ind.negsuc n) ∙ ap (Equiv.from rot) (neg n)
+
+    go : ∀ i → f i ≡ r .map-out _ _ i
+    go (Ind.pos x) = pos x
+    go (Ind.negsuc x) = neg x
 ```
