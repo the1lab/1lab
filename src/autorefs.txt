@@ -6,3 +6,5 @@ natural transformation, natural transformations, naturality: Cat.Base.html#natur
 standard finite sets: Data.Fin.Base.html
 adjunctions: Cat.Functor.Adjoint.html#adjoint-functors
 identity system: 1Lab.Path.IdentitySystem.html#identity-systems
+fully faithful, fully faithful functor: Cat.Functor.Base.html#ff-functors
+essentially surjective, eso, essentially surjective on objects: Cat.Functor.Base.html#essential-fibres

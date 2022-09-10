@@ -8,6 +8,7 @@ description: |
 ```agda
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
+open import 1Lab.Equiv.Fibrewise
 open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
@@ -52,10 +53,10 @@ To develop this correspondence, we note that, if a map is
 injective : (A → B) → Type _
 injective f = ∀ {x y} → f x ≡ f y → x ≡ y
 
-injective-between-sets→has-prop-fibres
+injective→is-embedding
   : is-set B → (f : A → B) → injective f
   → ∀ x → is-prop (fibre f x)
-injective-between-sets→has-prop-fibres bset f inj x (f*x , p) (f*x′ , q) =
+injective→is-embedding bset f inj x (f*x , p) (f*x′ , q) =
   Σ-prop-path (λ x → bset _ _) (inj (p ∙ sym q))
 ```
 
@@ -76,7 +77,7 @@ between-sets-injective≃has-prop-fibres
 between-sets-injective≃has-prop-fibres aset bset f =
   prop-ext (λ p q i x → aset _ _ (p x) (q x) i)
            (Π-is-hlevel 1 λ _ → is-prop-is-prop)
-           (injective-between-sets→has-prop-fibres bset f)
+           (injective→is-embedding bset f)
            (has-prop-fibres→injective f)
 ```
 
@@ -128,13 +129,40 @@ embedding→monic
 embedding→monic {f = f} emb g h p =
   funext λ x → ap fst (emb _ (g x , refl) (h x , happly (sym p) x))
 
-monic-between-sets→is-embedding
+monic→is-embedding
   : ∀ {ℓ ℓ′ ℓ′′} {A : Type ℓ} {B : Type ℓ′} {f : A → B}
   → is-set B
   → (∀ {C : Set ℓ′′} (g h : ∣ C ∣ → A) → f ∘ g ≡ f ∘ h → g ≡ h)
   → is-embedding f
-monic-between-sets→is-embedding {f = f} bset monic =
-  injective-between-sets→has-prop-fibres bset _ λ {x} {y} p →
+monic→is-embedding {f = f} bset monic =
+  injective→is-embedding bset _ λ {x} {y} p →
     happly (monic {C = el (Lift _ ⊤) (λ _ _ _ _ i j → lift tt)} (λ _ → x) (λ _ → y) (funext (λ _ → p))) _
 ```
 -->
+
+# As ff morphisms
+
+A \r{fully faithful functor} is a functor whose action on morphisms is
+an isomorphism everywhere. By the "types are higher groupoids" analogy,
+functors are functions, so we're left to consider: what is a fully
+faithful _function_? The answer turns out to be precisely "an
+embedding", as long as we interpret "fully faithful" to mean "action on
+morphisms is an _equivalence_" everywhere.
+
+```agda
+module _ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} {f : A → B} where
+  embedding-lemma : (∀ x → is-contr (fibre f (f x))) → is-embedding f
+  embedding-lemma cffx y (x , p) q =
+    is-contr→is-prop (subst is-contr (ap (fibre f) p) (cffx x)) (x , p) q
+
+  cancellable→embedding : (∀ {x y} → (f x ≡ f y) ≃ (x ≡ y)) → is-embedding f
+  cancellable→embedding eqv =
+    embedding-lemma λ x → is-hlevel≃ 0 (Σ-ap-snd (λ _ → eqv e⁻¹)) $
+      contr (x , refl) λ (y , p) i → p (~ i) , λ j → p (~ i ∨ j)
+
+  embedding→cancellable : is-embedding f → ∀ {x y} → is-equiv {B = f x ≡ f y} (ap f)
+  embedding→cancellable emb = total→equiv {f = λ y p → ap f {y = y} p}
+    (is-contr→is-equiv
+      (contr (_ , refl) λ (y , p) i → p i , λ j → p (i ∧ j))
+      (contr (_ , refl) (is-hlevel≃ 1 (Σ-ap-snd λ _ → sym-equiv) (emb _) _)))
+```
