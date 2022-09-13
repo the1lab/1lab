@@ -6,6 +6,7 @@ open import 1Lab.HLevel.Retracts
 open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
+open import 1Lab.Type.Dec
 open import 1Lab.Type.Pi
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -87,7 +88,7 @@ IdsJ-refl {R = R} {r = r} {a = a} ids P x =
     P′ (b , r) = P b r
 
     lemma : Σ-pathp (ids .to-path (r a)) (ids .to-path-over (r a)) ≡ refl
-    lemma = is-prop→is-set (is-contr→is-prop (is-contr-ΣR ids)) _ _ _ _
+    lemma = is-contr→is-set (is-contr-ΣR ids) _ _ _ _
 
 to-path-refl-coh
   : ∀ {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a}
@@ -192,11 +193,11 @@ module
   where
 
   transfer-identity-system : is-identity-system S s
-  transfer-identity-system =
-    transport
-      (λ i → is-identity-system (λ x y → ua (eqv x y) i)
-              λ a → path→ua-pathp (eqv a a) (pres a) i)
-      ids
+  transfer-identity-system .to-path sab = ids .to-path (Equiv.from (eqv _ _) sab)
+  transfer-identity-system .to-path-over {a} {b} p i = hcomp (∂ i) λ where
+    j (j = i0) → Equiv.to (eqv _ _) (ids .to-path-over (Equiv.from (eqv _ _) p) i)
+    j (i = i0) → pres a j
+    j (i = i1) → Equiv.ε (eqv _ _) p j
 ```
 -->
 
@@ -267,5 +268,58 @@ instance
     : ∀ {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a} {n}
     → H-Level (is-identity-system R r) (suc n)
   H-Level-is-identity-system = prop-instance is-identity-system-is-prop
+
+identity-system→hlevel
+  : ∀ {ℓ ℓ′} {A : Type ℓ} n {R : A → A → Type ℓ′} {r : ∀ x → R x x}
+  → is-identity-system R r
+  → (∀ x y → is-hlevel (R x y) n)
+  → is-hlevel A (suc n)
+identity-system→hlevel zero ids hl x y = ids .to-path (hl _ _ .centre)
+identity-system→hlevel (suc n) ids hl x y =
+  is-hlevel≃ (suc n) (identity-system-gives-path ids) (hl x y)
 ```
 -->
+
+## Sets and Hedberg's theorem
+
+We now apply the general theory of identity systems to something a lot
+more mundane: recognising sets. An immediate consequence of having an
+identity system $(R, r)$ on a type $A$ is that, if $R$ is pointwise an
+$n$-type, then $A$ is an $(n+1)$-type. Now, if $R$ is a reflexive family
+of propositions, then all we need for $(R, r)$ to be an identity system
+is that $R(x, y) \to x = y$, by the previous observation, this implies
+$A$ is a set.
+
+```agda
+set-identity-system
+  : ∀ {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ x → R x x}
+  → (∀ x y → is-prop (R x y))
+  → (∀ {x y} → R x y → x ≡ y)
+  → is-identity-system R r
+set-identity-system rprop rpath .to-path = rpath
+set-identity-system rprop rpath .to-path-over p =
+  is-prop→pathp (λ i → rprop _ _) _ p
+```
+
+If $A$ is a type with ¬¬-stable equality, then by the theorem above, the
+pointwise double negation of its identity types is an identity system:
+and so, if a type has decidable (thus ¬¬-stable) equality, it is a set.
+
+```agda
+¬¬-stable-identity-system
+  : ∀ {ℓ} {A : Type ℓ}
+  → (∀ {x y} → ((Path A x y → ⊥) → ⊥) → x ≡ y)
+  → is-identity-system (λ x y → (Path A x y → ⊥) → ⊥) λ a k → k refl
+¬¬-stable-identity-system = set-identity-system λ x y f g →
+  funext λ h → absurd (g h)
+
+Discrete→is-set : ∀ {ℓ} {A : Type ℓ} → Discrete A → is-set A
+Discrete→is-set {A = A} dec =
+  identity-system→hlevel 1 (¬¬-stable-identity-system stable) λ x y f g →
+    funext λ h → absurd (g h)
+  where
+    stable : {x y : A} → ((x ≡ y → ⊥) → ⊥) → x ≡ y
+    stable {x = x} {y = y} ¬¬p with dec x y
+    ... | yes p = p
+    ... | no ¬p = absurd (¬¬p ¬p)
+```

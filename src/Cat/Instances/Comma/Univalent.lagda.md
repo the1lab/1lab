@@ -95,7 +95,7 @@ an identification $o \equiv o'$.
         (λ i → PathP (λ j → X.Hom (F-map-path F x-is-x yuniv xuniv (~ i) j)
                                   (F-map-path G y-is-y zuniv xuniv (~ i) j))
                     (ob .map) (ob′ .map)) $
-        Hom-pathp-iso xuniv $
+        Univalent.Hom-pathp-iso xuniv $
           X.pulll   (sym (isom.to .sq)) ∙
           X.cancelr (F.annihilate (ap α isom.invl))
 ```
@@ -107,6 +107,6 @@ pushing the identifications down to reach the "leaf" morphisms.
 ```agda
     maps : PathP (λ i → ob F↓G.≅ objs i) _ isom
     maps = F↓G.≅-pathp _ _
-      (↓Hom-pathp _ _ (Hom-pathp-reflr-iso yuniv (Y.idr _))
-                      (Hom-pathp-reflr-iso zuniv (Z.idr _)))
+      (↓Hom-pathp _ _ (Univalent.Hom-pathp-reflr-iso yuniv (Y.idr _))
+                      (Univalent.Hom-pathp-reflr-iso zuniv (Z.idr _)))
 ```

@@ -184,13 +184,11 @@ Forgetting the univalence datum lets us turn a `Poset`{.Agda} into a
 
 ## Making posets
 
-[Rijke's theorem] says that any type equipped with a reflexive relation
+Rijke's theorem says that any type equipped with a reflexive relation
 $x \sim y$ which implies $x \equiv y$ is automatically a set. If $x \le
 y$ is a reflexive, antisymmetric relation, we can take the relation $x
 \sim y = (x \le y) \land (y \le x)$, which is evidently reflexive and,
 by antisymmetry, implies $x \equiv y$.
-
-[Rijke's theorem]: 1Lab.HLevel.Sets.html#rijkes-theorem
 
 ```agda
 module _ where
@@ -213,10 +211,13 @@ described above, and prove that any antisymmetric proset is univalent.
   make-poset {A = A} {R} Rrefl Rtrans Rantisym Rprop = tc where
     abstract
       Aset : is-set A
-      Aset = Rijke-is-set {R = λ x y → R x y × R y x}
-        (Rrefl , Rrefl)
-        (λ (f , g) → Rantisym f g)
-        λ x y i → Rprop (x .fst) (y .fst) i , Rprop (x .snd) (y .snd) i
+      Aset = identity-system→hlevel 1
+        {R = λ x y → R x y × R y x}
+        {r = λ _ → Rrefl , Rrefl}
+        (set-identity-system
+          (λ a b x y i → Rprop (x .fst) (y .fst) i , Rprop (x .snd) (y .snd) i)
+          (λ { (a , b) → Rantisym a b }))
+        (λ a b x y i → Rprop (x .fst) (y .fst) i , Rprop (x .snd) (y .snd) i)
 
     open Proset (make-proset Aset Rrefl Rtrans Rprop)
       renaming ( underlying to cat ; has-is-thin to ist )

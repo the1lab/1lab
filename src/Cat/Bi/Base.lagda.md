@@ -101,7 +101,7 @@ sets for maps of precategories, i.e., functors.
     id      : ∀ {A} → Precategory.Ob (Hom A A)
     compose : ∀ {A B C} → Functor (Hom B C ×ᶜ Hom A B) (Hom A C)
 
-  module compose {a} {b} {c} = Functor (compose {a} {b} {c})
+  module compose {a} {b} {c} = Fr (compose {a} {b} {c})
 ```
 
 Before moving on to the isomorphisms witnessing identity and

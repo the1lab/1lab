@@ -42,7 +42,7 @@ path→iso
   → A ≡ B → Isomorphism C A B
 path→iso {C = C} {A} p = transport (λ i → Isomorphism C A (p i)) (id-iso C)
 
-module Univalent {o h} {C : Precategory o h} (r : is-category C) where
+module Univalent′ {o h} {C : Precategory o h} (r : is-category C) where
   module path→iso {A} {B} = Equiv (identity-system-gives-path r {a = A} {b = B})
   open Cat.Reasoning C hiding (id-iso) public
   iso→path : ∀ {A B} → A ≅ B → A ≡ B
@@ -171,32 +171,32 @@ paths in `Hom`{.Agda}-sets.
   path→to-sym : ∀ {A B} (p : A ≡ B) → path→iso p .from ≡ path→iso (sym p) .to
   path→to-sym = J (λ B p → path→iso p .from ≡ path→iso (sym p) .to) refl
 
-  module _ (isc : is-category C) where
-    open Univalent isc using (iso→path ; iso→path→iso)
+module Univalent {o h} {C : Precategory o h} (r : is-category C) where
+  open Univalent′ r public
 
-    Hom-pathp-refll-iso :
-      ∀ {A B C} {p : A ≅ C} {h : Hom A B} {h' : Hom C B}
-      → h ∘ p .from ≡ h'
-      → PathP (λ i → Hom (iso→path p i) B) h h'
-    Hom-pathp-refll-iso prf =
-      Hom-pathp-refll (ap₂ _∘_ refl (ap from (iso→path→iso _)) ∙ prf)
+  Hom-pathp-refll-iso :
+    ∀ {A B C} {p : A ≅ C} {h : Hom A B} {h' : Hom C B}
+    → h ∘ p .from ≡ h'
+    → PathP (λ i → Hom (iso→path p i) B) h h'
+  Hom-pathp-refll-iso prf =
+    Hom-pathp-refll {C = C} (ap₂ _∘_ refl (ap from (iso→path→iso _)) ∙ prf)
 
-    Hom-pathp-reflr-iso
-      : ∀ {A B D} {q : B ≅ D} {h : Hom A B} {h' : Hom A D}
-      → q .to ∘ h ≡ h'
-      → PathP (λ i → Hom A (iso→path q i)) h h'
-    Hom-pathp-reflr-iso prf =
-      Hom-pathp-reflr (
-        ap₂ _∘_ (ap to (iso→path→iso _)) refl
-        ∙ prf)
+  Hom-pathp-reflr-iso
+    : ∀ {A B D} {q : B ≅ D} {h : Hom A B} {h' : Hom A D}
+    → q .to ∘ h ≡ h'
+    → PathP (λ i → Hom A (iso→path q i)) h h'
+  Hom-pathp-reflr-iso prf =
+    Hom-pathp-reflr {C = C} (
+      ap₂ _∘_ (ap to (iso→path→iso _)) refl
+      ∙ prf)
 
-    Hom-pathp-iso
-      : ∀ {A B C D} {p : A ≅ C} {q : B ≅ D} {h : Hom A B} {h' : Hom C D}
-      → q .to ∘ h ∘ p .from ≡ h'
-      → PathP (λ i → Hom (iso→path p i) (iso→path q i)) h h'
-    Hom-pathp-iso {p = p} {q} {h} {h'} prf =
-      Hom-pathp (ap₂ _∘_ (ap to (iso→path→iso _))
-                        (ap₂ _∘_ refl (ap from (iso→path→iso _)))
-                ∙ prf)
+  Hom-pathp-iso
+    : ∀ {A B C D} {p : A ≅ C} {q : B ≅ D} {h : Hom A B} {h' : Hom C D}
+    → q .to ∘ h ∘ p .from ≡ h'
+    → PathP (λ i → Hom (iso→path p i) (iso→path q i)) h h'
+  Hom-pathp-iso {p = p} {q} {h} {h'} prf =
+    Hom-pathp {C = C} (ap₂ _∘_ (ap to (iso→path→iso _))
+                      (ap₂ _∘_ refl (ap from (iso→path→iso _)))
+              ∙ prf)
 ```
 -->

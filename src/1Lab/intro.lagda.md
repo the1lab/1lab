@@ -1432,7 +1432,6 @@ provide a module defining equivalent characterisations of sets.
 
 ```agda
 open import 1Lab.HLevel
-open import 1Lab.HLevel.Sets
 ```
 
 Contractible types can be used to give a definition of equivalence that

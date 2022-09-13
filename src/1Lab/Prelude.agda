@@ -12,7 +12,6 @@ open import 1Lab.Path.IdentitySystem public
 open import 1Lab.Prim.Monad public
 
 open import 1Lab.HLevel public
-open import 1Lab.HLevel.Sets public
 open import 1Lab.HLevel.Retracts public
 open import 1Lab.HLevel.Universe public
 

@@ -1,6 +1,6 @@
 ```
+open import 1Lab.Path.IdentitySystem
 open import 1Lab.HLevel.Retracts
-open import 1Lab.HLevel.Sets
 open import 1Lab.Type.Dec
 open import 1Lab.HLevel
 open import 1Lab.Path
@@ -75,7 +75,7 @@ Discrete-Nat (suc x) (suc y) with Discrete-Nat x y
 [Hedberg's theorem] implies that `Nat`{.Agda} is a [set], i.e., it only
 has trivial paths.
 
-[Hedberg's theorem]: agda://1Lab.HLevel.Sets#Discrete→is-set
+[Hedberg's theorem]: agda://1Lab.Path.IdentitySystem#Discrete→is-set
 [set]: agda://1Lab.HLevel#is-set
 
 ```agda

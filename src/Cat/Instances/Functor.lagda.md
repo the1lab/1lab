@@ -237,8 +237,7 @@ follow from `equivalences having sections`{.Agda ident=iso→path→iso}.
 
 ```agda
     open Cat.Univalent.Univalent DisCat
-      using (iso→path ; iso→path→iso ; path→iso→path)
-    open Cat.Univalent using (Hom-pathp-iso ; Hom-pathp-reflr-iso)
+      using (iso→path ; iso→path→iso ; path→iso→path ; Hom-pathp-iso ; Hom-pathp-reflr-iso)
 
     module _ {F G} (F≅G : _) where
       ptoi-to
@@ -266,7 +265,7 @@ so that the two halves of the isomorphism annihilate.
 ```agda
       F₁≡G₁ : ∀ {x y} (f : C .Hom x y)
             → PathP (λ i → D.Hom (F₀≡G₀ x i) (F₀≡G₀ y i)) (F .F₁ {x} {y} f) (G .F₁ {x} {y} f)
-      F₁≡G₁ {x = x} {y} f = Hom-pathp-iso DisCat $
+      F₁≡G₁ {x = x} {y} f = Hom-pathp-iso $
         (D.extendl (F≅G .to .is-natural x y f) ∙ D.elimr (ap (λ e → e .η x) (F≅G .invl)))
 
       F≡G : F ≡ G
@@ -284,7 +283,7 @@ show is that $\eta{}_x \circ \id{id} \circ \id{id} = f$.
 ```agda
       id≡F≅G : PathP (λ i → F ≅ F≡G i) id-iso F≅G
       id≡F≅G = ≅-pathp refl F≡G $ Nat-pathp refl F≡G λ x →
-        Hom-pathp-reflr-iso DisCat (D.idr _)
+        Hom-pathp-reflr-iso (D.idr _)
 ```
 
 A useful lemma is that if you have a natural transformation where each

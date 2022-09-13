@@ -8,3 +8,5 @@ adjunctions: Cat.Functor.Adjoint.html#adjoint-functors
 identity system: 1Lab.Path.IdentitySystem.html#identity-systems
 fully faithful, fully faithful functor: Cat.Functor.Base.html#ff-functors
 essentially surjective, eso, essentially surjective on objects: Cat.Functor.Base.html#essential-fibres
+colimit, colimits: Cat.Diagram.Colimit.Base.html
+limit, limits: Cat.Diagram.Limit.Base.html

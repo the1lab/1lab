@@ -1547,7 +1547,7 @@ theorem] says that for types with decidable equality, it's boring. For
 [the circle], we can prove its loop space is the integers --- we have
 `Path S¹ base base ≡ Int`.
 
-[Hedberg's theorem]: 1Lab.HLevel.Sets.html
+[Hedberg's theorem]: 1Lab.Path.IdentitySystem.html
 [the circle]: Homotopy.Space.Circle.html
 
 Most of these characterisations need machinery that is not in this
@@ -1777,7 +1777,7 @@ sym-∙-filler {A = A} {z = z} p q i j k =
 sym-∙ : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : y ≡ z) → sym (p ∙ q) ≡ sym q ∙ sym p
 sym-∙ p q i j = sym-∙-filler p q j i i1
 
-infixr -1 _$ₚ_
+infixl -1 _$ₚ_
 
 _$ₚ_ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : A → Type ℓ₂} {f g : ∀ x → B x}
      → f ≡ g → ∀ x → f x ≡ g x

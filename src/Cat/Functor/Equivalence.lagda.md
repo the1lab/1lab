@@ -461,7 +461,7 @@ the result with far less computation:
 ```agda
     over′ : PathP (λ i → Fx≡Fy i D.≅ z) i j
     over′ = D.≅-pathp Fx≡Fy refl
-      (Hom-pathp-refll-iso dcat (D.cancell (i .D._≅_.invl)))
+      (Univalent.Hom-pathp-refll-iso dcat (D.cancell (i .D._≅_.invl)))
 ```
 
 We must then connect $\id{ap}(F)(p)$ with this path $F(x) \cong
