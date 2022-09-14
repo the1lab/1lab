@@ -55,6 +55,16 @@ record Module {ℓ} (R : Ring ℓ) : Type (lsuc ℓ) where
 
   G₀ : Type ℓ
   G₀ = ⌞ G .Restrict-ob.object ⌟
+
+  ⋆-group-hom : ∀ (r : R .fst) → Group-hom (G .object .snd) (G .object .snd) (r ⋆_)
+  ⋆-group-hom r .Group-hom.pres-⋆ = ⋆-add-r r
+  module ⋆-group-hom r = Group-hom (⋆-group-hom r)
+
+  ⋆-group-homᵣ : ∀ (x : G.₀)
+    → Group-hom (record { has-is-group = R.+-group }) (G .object .snd) (_⋆ x)
+  ⋆-group-homᵣ x .Group-hom.pres-⋆ y z = ⋆-add-l y z x
+  module ⋆-group-homᵣ x = Group-hom (⋆-group-homᵣ x)
+  infixr 25 _⋆_
 ```
 
 In much the same way that a monoid determines a 1-object category, a
@@ -108,16 +118,35 @@ module
   is-R-S-linear f =
     ∀ r m s n → f ((r M.⋆ m) M.+ (s M.⋆ n)) ≡ (r N.⋆ f m) N.+ (s N.⋆ f n)
 
-  R-S-linear-map : Type _
-  R-S-linear-map = Σ _ is-R-S-linear
+  record Linear-map : Type ℓ where
+    no-eta-equality
+    field
+      map : M.G₀ → N.G₀
+      linear : is-R-S-linear map
+
+  open Linear-map public
 
   abstract
     is-R-S-linear-is-prop : ∀ f → is-prop (is-R-S-linear f)
     is-R-S-linear-is-prop f a b i r m s n =
       N.G.has-is-set _ _ (a r m s n) (b r m s n) i
 
-    R-S-linear-map-path : {x y : R-S-linear-map} → x .fst ≡ y .fst → x ≡ y
-    R-S-linear-map-path = Σ-prop-path is-R-S-linear-is-prop
+module
+   _ {ℓ} {R S : Ring ℓ} {M : Module R} {N : Module S} {f : I → Rings.Hom R S}
+  where
+  private module N i = Module (Scalar-restriction (f i) N)
+
+  Linear-map-path : ∀ {x y} → x .map ≡ y .map → PathP (λ i → Linear-map M N (f i)) x y
+  Linear-map-path {x} {y} p i .map = p i
+  Linear-map-path {x} {y} p i .linear r m s n =
+    is-prop→pathp
+      (λ i → N.G.has-is-set i
+        (p i _)
+        (N._+_ i (N._⋆_ i r (p i m)) (N._⋆_ i s (p i n))))
+      (x .linear r m s n)
+      (y .linear r m s n) i
+
+private unquoteDecl eqv = declare-record-iso eqv (quote Linear-map)
 ```
 -->
 
@@ -136,21 +165,21 @@ $$
 ```agda
 Mods : ∀ ℓ → Displayed (Rings ℓ) (lsuc ℓ) (ℓ)
 Ob[ Mods ℓ ] R = Module R
-Hom[ Mods ℓ ] f M N = R-S-linear-map M N f
-Hom[ Mods ℓ ]-set f x y =
+Hom[ Mods ℓ ] f M N = Linear-map M N f
+Hom[ Mods ℓ ]-set f x y = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) $
   Σ-is-hlevel 2 (fun-is-hlevel 2 (Module.G.has-is-set y)) λ g →
     is-prop→is-set (is-R-S-linear-is-prop x y f g)
 
-Mods ℓ .id′ .fst x = x
-Mods ℓ .id′ .snd r m s n = refl
+Mods ℓ .id′ .map x = x
+Mods ℓ .id′ .linear r m s n = refl
 
-Mods ℓ ._∘′_ (f , h) (g , i) .fst x = f (g x)
-Mods ℓ ._∘′_ (f , h) (g , i) .snd r m s n = ap f (i r m s n) ∙ h _ _ _ _
+Mods ℓ ._∘′_ f g .map x = f .map (g .map x)
+Mods ℓ ._∘′_ f g .linear r m s n =
+  ap (f .map) (g .linear r m s n) ∙ f .linear _ _ _ _
 
-Mods ℓ .idr′ {x = x} {y} {f} f′ = R-S-linear-map-path x y f refl
-Mods ℓ .idl′ {x = x} {y} {f} f′ = R-S-linear-map-path x y f refl
-Mods ℓ .assoc′ {w = w} {z = z} {f} {g} {h} f′ g′ h′ =
-  R-S-linear-map-path w z (f Rings.∘ g Rings.∘ h) refl
+Mods ℓ .idr′ f′ = Linear-map-path refl
+Mods ℓ .idl′ f′ = Linear-map-path refl
+Mods ℓ .assoc′ f′ g′ h′ = Linear-map-path refl
 ```
 
 The fibre of this displayed category over a ring $R$ is the _category of
@@ -205,13 +234,14 @@ simply take $X = f^*(N)$.
   mods .has-lift f N = the-lift where
     the-lift : Cartesian-lift (Mods ℓ) f N
     the-lift .x′ = Scalar-restriction f N
-    the-lift .lifting .fst x = x
-    the-lift .lifting .snd r m s n = refl
-    the-lift .cartesian .universal m h′ = h′
+    the-lift .lifting .map x = x
+    the-lift .lifting .linear r m s n = refl
+    the-lift .cartesian .universal m h′ .map = h′ .map
+    the-lift .cartesian .universal m h′ .linear = h′ .linear
     the-lift .cartesian .commutes {u′ = u′} m h′ =
-       R-S-linear-map-path u′ N (f Rings.∘ m) refl
+      Linear-map-path refl
     the-lift .cartesian .unique {u′ = u′} {m} m′ p =
-      R-S-linear-map-path u′ N (f Rings.∘ m) (ap fst p)
+      Linear-map-path (ap map p)
 ```
 
 It is straightforward to calculate that this choice indeed furnishes a
@@ -246,13 +276,14 @@ space of the fibration of modules.
 ```agda
 Representable-modules : ∀ {ℓ} → Functor (Rings ℓ) (∫ (Mods ℓ))
 Representable-modules .F₀ R = R , representable-module R
-Representable-modules .F₁ {x} {y} f = total-hom f $
-  f .fst , λ r m s n → f .snd .pres-+ _ _ ∙ ap₂ (y .snd .Ring-on._+_)
-    (f .snd .pres-* r m) (f .snd .pres-* s n)
+Representable-modules .F₁ {x} {y} f = total-hom f $ record
+  { map    = f .fst
+  ; linear = λ r m s n →
+      f .snd .pres-+ _ _
+    ∙ ap₂ (y .snd .Ring-on._+_) (f .snd .pres-* r m) (f .snd .pres-* s n)
+  }
 Representable-modules .F-id {x} = total-hom-path _ refl $
-  R-S-linear-map-path (representable-module x) (representable-module x)
-    Rings.id refl
+  Linear-map-path refl
 Representable-modules .F-∘ {x} {y} {z} f g = total-hom-path _ refl $
-  R-S-linear-map-path (representable-module x) (representable-module z)
-    (f Rings.∘ g) refl
+  Linear-map-path refl
 ```

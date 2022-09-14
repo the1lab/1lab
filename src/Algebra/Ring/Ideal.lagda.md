@@ -90,11 +90,10 @@ $\mathfrak{a}$ is a sub-$R$-module of $R$:
     : {𝔞 : ℙ (R .fst)} (idl : is-ideal 𝔞)
     → ideal→module _ idl R-Mod.↪ representable-module R
   ideal→submodule {𝔞 = 𝔞} idl = record
-    { mor   = fst , λ r m s n → refl
-    ; monic = λ {c = c} g h x →
-      Σ-prop-path (is-R-S-linear-is-prop c (ideal→module _ idl) Rings.id) $
-        embedding→monic (Subset-proj-embedding λ _ → 𝔞 _ .is-tr) (g .fst) (h .fst)
-          (sym (transport-refl _) ∙ ap fst x ∙ transport-refl _)
+    { mor   = record { map = fst ; linear = λ r m s n → refl }
+    ; monic = λ {c = c} g h x → Linear-map-path $
+      embedding→monic (Subset-proj-embedding λ _ → 𝔞 _ .is-tr) (g .map) (h .map)
+        (sym (transport-refl _) ·· ap map x ·· transport-refl _)
     }
 ```
 

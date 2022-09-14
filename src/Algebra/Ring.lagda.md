@@ -105,6 +105,8 @@ record Ring-on {ℓ} (R : Type ℓ) : Type ℓ where
     has-is-ring : is-ring 1r _*_ _+_
 
   open is-ring has-is-ring public
+  infixl 25 _*_
+  infixl 20 _+_
 
 instance
   H-Level-is-ring

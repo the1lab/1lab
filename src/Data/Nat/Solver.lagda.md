@@ -375,7 +375,7 @@ are nowhere near as bad.
 ```agda
 sound-*ₚ′ p zerop x₀ env = sym (*-zeror (⟦ p ⟧ₚ env))
 sound-*ₚ′ r (p *X+ q) x₀ env =
-  ⟦ r *ₚ′ p ⟧ₚ (x₀ ∷ env) * x₀ + ⟦ r *ₚ q ⟧ₚ env ≡⟨  ap₂ (λ ϕ ψ → ϕ * x₀ + ψ) (sound-*ₚ′ r p x₀ env) (sound-*ₚ r q env) ⟩
+  ⟦ r *ₚ′ p ⟧ₚ (x₀ ∷ env) * x₀ + ⟦ r *ₚ q ⟧ₚ env ≡⟨ ap₂ (λ ϕ ψ → ϕ * x₀ + ψ) (sound-*ₚ′ r p x₀ env) (sound-*ₚ r q env) ⟩
   ⟦r⟧ * ⟦p⟧ * x₀ + ⟦r⟧ * ⟦q⟧                     ≡⟨ ap (λ ϕ → ϕ + ⟦r⟧ * ⟦q⟧) (*-associative ⟦r⟧ ⟦p⟧ x₀) ⟩
   ⟦r⟧ * (⟦p⟧ * x₀) + ⟦r⟧ * ⟦q⟧                   ≡˘⟨ *-distrib-+l  (⟦p⟧ * x₀) ⟦q⟧ ⟦r⟧ ⟩
   ⟦r⟧ * (⟦p⟧ * x₀ + ⟦q⟧)                         ∎

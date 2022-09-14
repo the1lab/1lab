@@ -451,6 +451,12 @@ equivRet (f , e) = equiv→unit e
 newMeta : Term → TC Term
 newMeta = checkType unknown
 
+newMeta′ : Term → TC (Meta × Term)
+newMeta′ tm = do
+  tm@(meta mv _) ← checkType unknown tm
+    where _ → typeError (strErr "impossible newMeta′" ∷ [])
+  pure (mv , tm)
+
 varg : {ℓ : _} {A : Type ℓ} → A → Arg A
 varg = arg (arginfo visible (modality relevant quantity-ω))
 
