@@ -5,7 +5,9 @@ open import Algebra.Group.Ab
 open import Algebra.Group
 open import Algebra.Ring
 
+open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Displayed.Univalence.Thin
+open import Cat.Diagram.Product.Indexed
 open import Cat.Functor.FullSubcategory
 open import Cat.Prelude
 
@@ -89,4 +91,34 @@ module _ (S : Module R) where
     (∑ G′ λ i → (r R.* m i) S.⋆ fun i) S.+ (∑ G′ λ i → (s R.* n i) S.⋆ fun i) ≡˘⟨ ap₂ S._+_ (ap (∑ G′) (funext λ i → S.⋆-assoc r (m i) (fun i))) (ap (∑ G′) (funext λ i → S.⋆-assoc s (n i) (fun i))) ⟩
     (∑ G′ λ i → r S.⋆ (m i S.⋆ fun i)) S.+ (∑ G′ λ i → s S.⋆ (n i S.⋆ fun i)) ≡˘⟨ ap₂ S._+_ (∑-distr r λ i → m i S.⋆ fun i) (∑-distr s λ i → n i S.⋆ fun i) ⟩
     (r S.⋆ ∑ G′ (λ i → m i S.⋆ fun i)) S.+ (s S.⋆ ∑ G′ (λ i → n i S.⋆ fun i)) ∎
+```
+
+## As products
+
+To reduce how arbitrary the construction above seems, we show that the
+module of finite vectors is equivalently the finite product of $R$ with
+itself, $n$ times (indirectly justifying the notation $R^n$ while we're
+at it). Note that this is a product _in the category $R$-Mod_, not in
+the category of rings.
+
+```agda
+open is-indexed-product
+open Indexed-product
+
+Fin-vec-is-product
+  : ∀ {n} → Indexed-product (R-Mod R) {Idx = Fin n} λ _ → representable-module R
+Fin-vec-is-product {n} .ΠF = Fin-vec-module n
+Fin-vec-is-product .π i .map k = k i
+Fin-vec-is-product .π i .linear r m s n = refl
+Fin-vec-is-product {n} .has-is-ip .⟨_⟩ {Y} f = assemble
+  where
+    assemble : Linear-map Y (Fin-vec-module n) Rings.id
+    assemble .map yob ix = f ix .map yob
+    assemble .linear r m s n = funext λ i → f i .linear _ _ _ _
+Fin-vec-is-product .has-is-ip .commute = Linear-map-path (transport-refl _)
+Fin-vec-is-product .has-is-ip .unique {h = h} f ps =
+  Linear-map-path $ funext λ i → funext λ ix →
+       ap (λ e → h .map e ix) (sym (transport-refl _))
+    ·· sym (transport-refl _)
+    ·· (ap map (ps ix) $ₚ i)
 ```

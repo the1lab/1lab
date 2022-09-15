@@ -107,23 +107,46 @@ of $G$ on the object $F(\bull)$!
 [delooping]: Cat.Instances.Delooping.html
 [monoid]: Algebra.Monoid.html
 
+<!--
 ```agda
-  Functor→action
-    : {G : Group ℓ} (F : Functor (B (Group-on.underlying-monoid (G .snd) .snd) ^op) C)
-    → Action G (F .F₀ tt)
-  Functor→action {G = G} F .hom it = C.make-iso
-      (F .F₁ it) (F .F₁ (it ⁻¹))
-      (F.annihilate inversel) (F.annihilate inverser)
-    where
-      open Group-on (G .snd)
-      module F = Functor-kit F
-  Functor→action F .preserves .Group-hom.pres-⋆ x y = C.≅-pathp refl refl (F .F-∘ _ _)
+  module _ {G : Group ℓ} where
+    private BG = B (Group-on.underlying-monoid (G .snd) .snd) ^op
+```
+-->
 
-  Action→functor
-    : {G : Group ℓ} {X : C.Ob} (A : Action G X)
-    → Functor (B (Group-on.underlying-monoid (G .snd) .snd) ^op) C
-  Action→functor {X = X} A .F₀ _ = X
-  Action→functor A .F₁ e = (A # e) .C.to
-  Action→functor A .F-id = ap C.to (Group-hom.pres-id (A .preserves))
-  Action→functor A .F-∘ f g = ap C.to (Group-hom.pres-⋆ (A .preserves) _ _)
+```agda
+    Functor→action : (F : Functor BG C) → Action G (F .F₀ tt)
+    Functor→action F .hom it = C.make-iso
+        (F .F₁ it) (F .F₁ (it ⁻¹))
+        (F.annihilate inversel) (F.annihilate inverser)
+      where
+        open Group-on (G .snd)
+        module F = Functor-kit F
+    Functor→action F .preserves .Group-hom.pres-⋆ x y = C.≅-pathp refl refl (F .F-∘ _ _)
+
+    Action→functor : {X : C.Ob} (A : Action G X) → Functor BG C
+    Action→functor {X = X} A .F₀ _ = X
+    Action→functor A .F₁ e = (A # e) .C.to
+    Action→functor A .F-id = ap C.to (Group-hom.pres-id (A .preserves))
+    Action→functor A .F-∘ f g = ap C.to (Group-hom.pres-⋆ (A .preserves) _ _)
+```
+
+After constructing these functions in either direction, it's easy enough
+to show that they are inverse equivalences, but we must be careful about
+the codomain: rather than taking "$X$ with a $G$-action" for any
+particular $X$, we take the _total space_ of $\ca{C}$-objects equipped
+with $G$-actions.
+
+After this small correction, the proof is almost definitional: after
+applying the right helpers for pushing paths inwards, we're left with
+`refl`{.Agda} at all the leaves.
+
+```agda
+    Functor≃action : is-equiv {B = Σ _ (Action G)} λ i → _ , Functor→action i
+    Functor≃action = is-iso→is-equiv λ where
+      .is-iso.inv (x , act) → Action→functor act
+      .is-iso.rinv x → Σ-pathp refl $
+        total-hom-pathp _ _ _ (funext (λ i → C.≅-pathp _ _ refl))
+          (is-prop→pathp (λ i → Group-hom-is-prop) _ _)
+      .is-iso.linv x → Functor-path (λ _ → refl) λ _ → refl
 ```

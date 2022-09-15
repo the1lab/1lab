@@ -20,6 +20,17 @@ left": add the first element then keep going.
 ∑ : ∀ {n} {ℓ} {T : Type ℓ} (G : Group-on T) → (Fin n → T) → T
 ∑ {n = zero} G x  = Group-on.unit G
 ∑ {n = suc n} G x = Group-on._⋆_ G (x fzero) (∑ G λ e → x (fsuc e))
+
+∑-path : ∀ {n} {ℓ} {T : Type ℓ} (G : Group-on T) {f g : Fin n → T}
+  → (∀ i → f i ≡ g i)
+  → ∑ G f ≡ ∑ G g
+∑-path G p = ap (∑ G) (funext p)
+
+∑-zero
+  : ∀ {n} {ℓ} {T : Type ℓ} (G : Group-on T)
+  → ∑ {n} G (λ e → Group-on.unit G) ≡ Group-on.unit G
+∑-zero {n = zero} G = refl
+∑-zero {n = suc n} G = Group-on.idl G ∙ ∑-zero {n} G
 ```
 
 <!--

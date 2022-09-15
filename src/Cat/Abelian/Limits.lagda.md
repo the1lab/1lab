@@ -1,20 +1,25 @@
 <!--
 ```agda
+open import Cat.Diagram.Coproduct.Indexed
+open import Cat.Diagram.Product.Indexed
 open import Cat.Diagram.Limit.Finite
 open import Cat.Abelian.Base
-open import Cat.Prelude hiding (_-_)
+open import Cat.Prelude hiding (_-_ ; _+_)
+
+open import Algebra.Group.NAry
+
+open import Data.Fin
 ```
 -->
 
 ```agda
-module Cat.Abelian.Limits {o ℓ} {C : Precategory o ℓ} (A : is-pre-abelian C) where
-open is-pre-abelian A
+module Cat.Abelian.Limits {o ℓ} {C : Precategory o ℓ} where
 ```
 
 # Limits
 
-Recall that every [pre-abelian] admits [kernels] and cokernels, and is
-also [additive], so it additionally has products and
+Recall that every [pre-abelian] category admits [kernels] and cokernels,
+and is also [additive], so it additionally has products and
 coproducts^[actually, they're the same thing!]. It sounds like we're
 missing some [finite limits] (dually, missing some finite colimits), but
 it turns out that this is enough: We can construct the [equaliser] of
@@ -38,25 +43,27 @@ f\ker(f-g) - g\ker(f-g) = (f-g)\ker(f-g) = 0\text{.}
 $$
 
 ```agda
-difference-kernel
-  : ∀ {A B} {f g : Hom A B}
-  → is-equaliser f g (Ker.kernel (f - g))
-difference-kernel {f = f} {g} = equ where
-  open is-equaliser
-  equ : is-equaliser f g (Ker.kernel (f - g))
-  equ .equal = zero-diff $
-    (f ∘ Ker.kernel (f - g)) - (g ∘ Ker.kernel (f - g)) ≡⟨ ∘-minus-l f g (Ker.kernel (f - g)) ⟩
-    (f - g) ∘ Ker.kernel (f - g)                        ≡⟨ Ker.equal (f - g) ⟩
-    ∅.zero→ ∘ Ker.kernel (f - g)                        ≡⟨ ∅.zero-∘r _ ∙ 0m-unique ⟩
-    0m                                                  ∎
-  equ .limiting {e′ = e′} p = Ker.limiting (f - g) {e′ = e′} $
-    (f - g) ∘ e′         ≡˘⟨ ∘-minus-l _ _ _ ⟩
-    f ∘ e′ - g ∘ e′      ≡⟨ ap (f ∘ e′ -_) (sym p) ⟩
-    f ∘ e′ - f ∘ e′      ≡⟨ Hom.inverser ⟩
-    0m                   ≡˘⟨ ∅.zero-∘r _ ∙ 0m-unique ⟩
-    Zero.zero→ ∅ ∘ e′    ∎
-  equ .universal = Ker.universal _
-  equ .unique = Ker.unique (f - g)
+module _ (A : is-pre-abelian C) where
+  open is-pre-abelian A
+  difference-kernel
+    : ∀ {A B} {f g : Hom A B}
+    → is-equaliser f g (Ker.kernel (f - g))
+  difference-kernel {f = f} {g} = equ where
+    open is-equaliser
+    equ : is-equaliser f g (Ker.kernel (f - g))
+    equ .equal = zero-diff $
+      (f ∘ Ker.kernel (f - g)) - (g ∘ Ker.kernel (f - g)) ≡⟨ ∘-minus-l f g (Ker.kernel (f - g)) ⟩
+      (f - g) ∘ Ker.kernel (f - g)                        ≡⟨ Ker.equal (f - g) ⟩
+      ∅.zero→ ∘ Ker.kernel (f - g)                        ≡⟨ ∅.zero-∘r _ ∙ 0m-unique ⟩
+      0m                                                  ∎
+    equ .limiting {e′ = e′} p = Ker.limiting (f - g) {e′ = e′} $
+      (f - g) ∘ e′         ≡˘⟨ ∘-minus-l _ _ _ ⟩
+      f ∘ e′ - g ∘ e′      ≡⟨ ap (f ∘ e′ -_) (sym p) ⟩
+      f ∘ e′ - f ∘ e′      ≡⟨ Hom.inverser ⟩
+      0m                   ≡˘⟨ ∅.zero-∘r _ ∙ 0m-unique ⟩
+      Zero.zero→ ∅ ∘ e′    ∎
+    equ .universal = Ker.universal _
+    equ .unique = Ker.unique (f - g)
 ```
 
 By a standard characterisation of finite limits in terms of finite
@@ -64,8 +71,8 @@ products and binary equalisers, the construction of "difference kernels"
 above implies that any pre-abelian category is finitely complete.
 
 ```agda
-finitely-complete : Finitely-complete C
-finitely-complete =
-  with-equalisers C has-terminal has-prods λ f g →
-    record { has-is-eq = difference-kernel }
+  finitely-complete : Finitely-complete C
+  finitely-complete =
+    with-equalisers C has-terminal has-prods λ f g →
+      record { has-is-eq = difference-kernel }
 ```
