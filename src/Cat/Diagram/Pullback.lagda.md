@@ -27,6 +27,7 @@ $x$; Hence the pullback is also called the **fibred product**.
 record is-pullback {P} (p₁ : Hom P X) (f : Hom X Z) (p₂ : Hom P Y) (g : Hom Y Z)
   : Type (ℓ ⊔ ℓ′) where
 
+  no-eta-equality
   field
     square   : f ∘ p₁ ≡ g ∘ p₂
 ```
@@ -98,6 +99,7 @@ maps:
 
 ```agda
 record Pullback {X Y Z} (f : Hom X Z) (g : Hom Y Z) : Type (ℓ ⊔ ℓ′) where
+  no-eta-equality
   field
     {apex} : Ob
     p₁ : Hom apex X
