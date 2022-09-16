@@ -535,9 +535,16 @@ that, if $\id{inc}(x) = \id{inc}(y)$, then $(x - y) \in H$.
           x ⋆ ⌜ (y ⁻¹ ⋆ y) — z ⌝ ≡⟨ ap! (ap (_⋆ _) inversel ∙ idl) ⟩
           x — z                  ∎
 
+  open Congruence
+  normal-subgroup→congruence : Congruence _ _
+  normal-subgroup→congruence ._∼_ = rel
+  normal-subgroup→congruence .has-is-prop x y = hlevel!
+  normal-subgroup→congruence .reflᶜ = rel-refl _
+  normal-subgroup→congruence ._∙ᶜ_ = rel-trans
+  normal-subgroup→congruence .symᶜ = rel-sym
+
   /ᴳ-effective : ∀ {x y} → Path G/H (inc x) (inc y) → rel x y
-  /ᴳ-effective = equiv→inverse
-    (effective (λ _ _ → H _ .is-tr) (rel-refl _) rel-trans rel-sym)
+  /ᴳ-effective = equiv→inverse (effective normal-subgroup→congruence)
 ```
 
 <!--

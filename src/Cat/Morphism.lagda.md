@@ -140,6 +140,10 @@ make-iso f g p q ._≅_.from = g
 make-iso f g p q ._≅_.inverses .Inverses.invl = p
 make-iso f g p q ._≅_.inverses .Inverses.invr = q
 
+instance
+  H-Level-is-invertible : ∀ {f : Hom a b} {n} → H-Level (is-invertible f) (suc n)
+  H-Level-is-invertible = prop-instance is-invertible-is-prop
+
 invertible→iso : (f : Hom a b) → is-invertible f → a ≅ b
 invertible→iso f x =
   record

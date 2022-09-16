@@ -32,6 +32,7 @@ quickly lead to [inconsistency] when used without care.
 ```agda
 {-# NO_UNIVERSE_CHECK #-}
 record Prop* : Type where
+  constructor prop*
   field
     {ℓ} : Level
     ∣_∣ : Type ℓ

@@ -324,12 +324,21 @@ equivalence relation). In this case, we have that the quotient $A / R$
 is **effective**: The map `quot`{.Agda} is an equivalence.
 
 ```agda
-module _ {A : Type ℓ} {R : A → A → Type ℓ'}
-         (Rp : ∀ x y → is-prop (R x y))
-         (rr : ∀ {x} → R x x)
-         (rt : ∀ {x y z} → R x y → R y z → R x z)
-         (rs : ∀ {x y} → R x y → R y x)
-  where
+record Congruence {ℓ} (A : Type ℓ) ℓ′ : Type (ℓ ⊔ lsuc ℓ′) where
+  field
+    _∼_         : A → A → Type ℓ′
+    has-is-prop : ∀ x y → is-prop (x ∼ y)
+    reflᶜ : ∀ {x} → x ∼ x
+    _∙ᶜ_  : ∀ {x y z} → x ∼ y → y ∼ z → x ∼ z
+    symᶜ  : ∀ {x y}   → x ∼ y → y ∼ x
+
+  relation = _∼_
+
+  quotient : Type _
+  quotient = A / _∼_
+
+module _ {A : Type ℓ} (R : Congruence A ℓ') where
+  private module R = Congruence R
 ```
 
 We will show this using an encode-decode method. For each $x : A$, we
@@ -341,12 +350,14 @@ establish effectivity of the quotient.
 
 ```agda
   private
-    Code : A → A / R → Prop ℓ'
+    Code : A → R.quotient → Prop ℓ'
     Code x = Quot-elim
       (λ x → n-Type-is-hlevel 1)
-      (λ y → el (R x y) (Rp x y) {- 1 -})
+      (λ y → el (x R.∼ y) (R.has-is-prop x y) {- 1 -})
       λ y z r →
-        n-ua (prop-ext (Rp _ _) (Rp _ _) (λ z → rt z r) λ z → rt z (rs r))
+        n-ua (prop-ext (R.has-is-prop _ _) (R.has-is-prop _ _)
+          (λ z → z R.∙ᶜ r)
+          λ z → z R.∙ᶜ (R.symᶜ r))
 ```
 
 We do quotient induction into the `type of propositions`{.Agda
@@ -359,7 +370,7 @@ assumption that $R$ is an equivalence relation (`{- 2 -}`{.Agda}).
 
 ```agda
     encode : ∀ x y (p : inc x ≡ y) → ∣ Code x y ∣
-    encode x y p = subst (λ y → ∣ Code x y ∣) p rr
+    encode x y p = subst (λ y → ∣ Code x y ∣) p R.reflᶜ
 
     decode : ∀ x y (p : ∣ Code x y ∣) → inc x ≡ y
     decode x y p =
@@ -375,9 +386,9 @@ constructor `quot`{.Agda} says. Putting this all together, we get a
 proof that equivalence relations are `effective`{.Agda}.
 
 ```agda
-  effective : ∀ {x y : A} → is-equiv (quot {R = R})
+  effective : ∀ {x y : A} → is-equiv (quot {R = R.relation})
   effective {x = x} {y} =
-    prop-ext (Rp x y) (squash _ _) (decode x (inc y)) (encode x (inc y)) .snd
+    prop-ext (R.has-is-prop x y) (squash _ _) (decode x (inc y)) (encode x (inc y)) .snd
 ```
 
 <!--
@@ -391,5 +402,17 @@ Quot-op₂ Rr Sr op resp =
   Coeq-rec₂ squash (λ x y → inc (op x y))
     (λ { z (x , y , r) → quot (resp x y z z r (Sr z)) })
     λ { z (x , y , r) → quot (resp z z x y (Rr z) r) }
+
+Discrete-quotient
+  : ∀ {A : Type ℓ} (R : Congruence A ℓ')
+  → Discrete A
+  → (∀ x y → Dec (Congruence.relation R x y))
+  → Discrete (Congruence.quotient R)
+Discrete-quotient cong adisc rdec =
+  Coeq-elim-prop₂ (λ x y → hlevel 1) go where
+  go : ∀ x y → Dec (inc x ≡ inc y)
+  go x y with rdec x y
+  ... | yes xRy = yes (quot xRy)
+  ... | no ¬xRy = no λ p → ¬xRy (equiv→inverse (effective cong) p)
 ```
 -->

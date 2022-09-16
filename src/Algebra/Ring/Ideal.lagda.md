@@ -52,6 +52,13 @@ module _ {ℓ} (R : Ring ℓ) where
     open represents-subgroup has-rep-subgroup
       renaming ( has-unit to has-0 ; has-⋆ to has-+ ; has-inv to has-neg )
       public
+
+    ideal→normal : normal-subgroup R.additive-group 𝔞
+    ideal→normal .normal-subgroup.has-rep = has-rep-subgroup
+    ideal→normal .normal-subgroup.has-conjugate {y = y} x∈𝔞 =
+      subst (_∈ 𝔞) (sym (ap (y R.+_) R.+-commutes ∙ R.cancell R.+-invr)) x∈𝔞
+
+    open normal-subgroup ideal→normal hiding (has-rep) public
 ```
 
 Since an ideal is a [subgroup] of $R$'s additive group, its total space
