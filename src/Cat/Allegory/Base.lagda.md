@@ -1,6 +1,8 @@
 ```agda
 open import Cat.Prelude
 
+import Cat.Reasoning as Cr
+
 module Cat.Allegory.Base where
 ```
 
@@ -30,7 +32,7 @@ An allegory $\ca{A}$ has an underlying precategory (whose morphisms we
 call **relations**), but, more importantly, an ordering relation $f \le
 g$ on the relations, which we think of as inclusion in the usual
 sense^[This will make more sense when we see the construction of
-$\bf{Rel}$ below]. When considered with this ordering, $\ca{A}$ must be
+$\\Rel$ below]. When considered with this ordering, $\ca{A}$ must be
 a _locally posetal bicategory_: a bicategory $\ca{A}$, with all
 Hom-categories being posets.
 
@@ -115,7 +117,7 @@ really any univalent category), but we emphasise it _here_ for
 allegories since it will be used to prove important laws.
 
 ```agda
-module _ {o ℓ ℓ′} {A : Allegory o ℓ ℓ′} where
+module _ {o ℓ ℓ′} (A : Allegory o ℓ ℓ′) where
   open Allegory A
   ≤-yoneda
     : ∀ {x y} {g h : Hom x y}
@@ -158,15 +160,18 @@ get $h \le f^o$ and $h \le g^o$, which mean $h \le f^o \cap g^o$.
         h≤gᵒ = ≤-trans h≤gᵒ∩fᵒ ∩-le-r
         h≤fᵒ = ≤-trans h≤gᵒ∩fᵒ ∩-le-l
       in dual-≤ᵣ (∩-univ (dual-≤ₗ h≤fᵒ) (dual-≤ₗ h≤gᵒ)))
+
+  dual-id : ∀ {x} → id {x = x} ᵒ ≡ id
+  dual-id = sym (sym (dual id) ∙ ap _ᵒ (sym (idl _)) ∙ dual-∘ ∙ ap (_∘ id ᵒ) (dual _) ∙ idl _)
 ```
 
 # The allegory of relations
 
 The allegorical analogue of the category of sets is the **allegory of
-relations**, $\bf{Rel}$. As usual, every universe level $\kappa$ gives
-an allegory $\bf{Rel}_\kappa$, whose objects are $\kappa$-small sets,
+relations**, $\\Rel$. As usual, every universe level $\kappa$ gives
+an allegory $\\Rel_\kappa$, whose objects are $\kappa$-small sets,
 and morphisms are $\kappa$-small relations. Note that, in the absence of
-propositional resizing, $\bf{Rel}$'s underlying category is _not_
+propositional resizing, $\\Rel$'s underlying category is _not_
 locally $\kappa$-small: The set of $\kappa$-small propositions lives in
 the successor universe, not in $\kappa$.
 
