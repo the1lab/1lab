@@ -32,7 +32,7 @@ An allegory $\ca{A}$ has an underlying precategory (whose morphisms we
 call **relations**), but, more importantly, an ordering relation $f \le
 g$ on the relations, which we think of as inclusion in the usual
 sense^[This will make more sense when we see the construction of
-$\\Rel$ below]. When considered with this ordering, $\ca{A}$ must be
+$\Rel$ below]. When considered with this ordering, $\ca{A}$ must be
 a _locally posetal bicategory_: a bicategory $\ca{A}$, with all
 Hom-categories being posets.
 
@@ -57,8 +57,9 @@ data of a bicategory.
 
 <!--
 ```agda
-  infixl 50 _ᵒ
+  infixl 50 _†
   infixr 35 _∩_
+  infixr 40 _◆_
   infix 30 _≤_
 ```
 -->
@@ -77,10 +78,10 @@ and only then can you remove your socks.
 
 ```agda
   field
-    _ᵒ     : ∀ {x y} → Hom x y → Hom y x
-    dual   : ∀ {x y} (f : Hom x y) → f ᵒ ᵒ ≡ f
-    dual-∘ : ∀ {w x y} {f : Hom x y} {g : Hom w x} → (f ∘ g) ᵒ ≡ g ᵒ ∘ f ᵒ
-    dual-≤ : ∀ {x y} {f g : Hom x y} → f ≤ g → f ᵒ ≤ g ᵒ
+    _†     : ∀ {x y} → Hom x y → Hom y x
+    dual   : ∀ {x y} (f : Hom x y) → f † † ≡ f
+    dual-∘ : ∀ {w x y} {f : Hom x y} {g : Hom w x} → (f ∘ g) † ≡ g † ∘ f †
+    dual-≤ : ∀ {x y} {f g : Hom x y} → f ≤ g → f † ≤ g †
 ```
 
 The penultimate requirement is that each Hom-poset have binary products,
@@ -105,7 +106,7 @@ monoids.^[as a hint: _joins_ in your lattice become composition]
   field
     modular
       : ∀ {x y z} (f : Hom x y) (g : Hom y z) (h : Hom x z)
-      → (g ∘ f ∩ h) ≤ (g ∘ (f ∩ (g ᵒ) ∘ h))
+      → (g ∘ f) ∩ h ≤ g ∘ (f ∩ (g † ∘ h))
 ```
 
 ## Quick theorems
@@ -131,11 +132,11 @@ Since the duality respects ordering, we can ping-pong $(-)^o$ to get it
 out of the way: $f^o \le g$ is exactly the same as $f \le g^o$.
 
 ```agda
-  dual-≤ₗ : ∀ {x y} {f : Hom x y} {g} → f ≤ g ᵒ → f ᵒ ≤ g
-  dual-≤ₗ {f = f} w = subst (f ᵒ ≤_) (dual _) (dual-≤ w)
+  dual-≤ₗ : ∀ {x y} {f : Hom x y} {g} → f ≤ g † → f † ≤ g
+  dual-≤ₗ {f = f} w = subst (f † ≤_) (dual _) (dual-≤ w)
 
-  dual-≤ᵣ : ∀ {x y} {f : Hom x y} {g} → f ᵒ ≤ g → f ≤ g ᵒ
-  dual-≤ᵣ {f = f} {g} w = subst (_≤ g ᵒ) (dual _) (dual-≤ w)
+  dual-≤ᵣ : ∀ {x y} {f : Hom x y} {g} → f † ≤ g → f ≤ g †
+  dual-≤ᵣ {f = f} {g} w = subst (_≤ g †) (dual _) (dual-≤ w)
 ```
 
 As an application of these two quick lemmas and the laws for meets, we
@@ -147,8 +148,8 @@ $h^o \le f$ and $h^o \le g$. But ponging the dual on either of those, we
 get $h \le f^o$ and $h \le g^o$, which mean $h \le f^o \cap g^o$.
 
 ```agda
-  ∩-dual : ∀ {x y} {f g : Hom x y} → (f ∩ g) ᵒ ≡ f ᵒ ∩ g ᵒ
-  ∩-dual {f = f} {g = g} = ≤-yoneda
+  dual-∩ : ∀ {x y} {f g : Hom x y} → (f ∩ g) † ≡ f † ∩ g †
+  dual-∩ {f = f} {g = g} = ≤-yoneda
     (λ h h≤f∩gᵒ →
       let
         hᵒ≤f∩g = dual-≤ₗ h≤f∩gᵒ
@@ -161,17 +162,17 @@ get $h \le f^o$ and $h \le g^o$, which mean $h \le f^o \cap g^o$.
         h≤fᵒ = ≤-trans h≤gᵒ∩fᵒ ∩-le-l
       in dual-≤ᵣ (∩-univ (dual-≤ₗ h≤fᵒ) (dual-≤ₗ h≤gᵒ)))
 
-  dual-id : ∀ {x} → id {x = x} ᵒ ≡ id
-  dual-id = sym (sym (dual id) ∙ ap _ᵒ (sym (idl _)) ∙ dual-∘ ∙ ap (_∘ id ᵒ) (dual _) ∙ idl _)
+  dual-id : ∀ {x} → id {x = x} † ≡ id
+  dual-id = sym (sym (dual id) ∙ ap _† (sym (idl _)) ∙ dual-∘ ∙ ap (_∘ id †) (dual _) ∙ idl _)
 ```
 
 # The allegory of relations
 
 The allegorical analogue of the category of sets is the **allegory of
-relations**, $\\Rel$. As usual, every universe level $\kappa$ gives
-an allegory $\\Rel_\kappa$, whose objects are $\kappa$-small sets,
+relations**, $\Rel$. As usual, every universe level $\kappa$ gives
+an allegory $\Rel_\kappa$, whose objects are $\kappa$-small sets,
 and morphisms are $\kappa$-small relations. Note that, in the absence of
-propositional resizing, $\\Rel$'s underlying category is _not_
+propositional resizing, $\Rel$'s underlying category is _not_
 locally $\kappa$-small: The set of $\kappa$-small propositions lives in
 the successor universe, not in $\kappa$.
 
@@ -235,7 +236,7 @@ modular law is given by some pair-shuffling.
 
 ```agda
 Rel ℓ ._∩_ R S x y = el! (∣ R x y ∣ × ∣ S x y ∣)
-Rel ℓ ._ᵒ R x y = R y x
+Rel ℓ ._† R x y = R y x
 Rel ℓ .modular R S T x y (α , β) =
   ∥-∥-rec hlevel! (λ { (z , r , s) →
     inc (z , (r , inc (y , β , s)) , s) }) α

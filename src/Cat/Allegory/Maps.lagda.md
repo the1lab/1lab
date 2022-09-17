@@ -2,6 +2,8 @@
 open import Cat.Allegory.Base
 open import Cat.Prelude
 
+import Cat.Allegory.Reasoning as Ar
+
 module Cat.Allegory.Maps where
 ```
 
@@ -34,8 +36,8 @@ module _ {o ℓ h} (A : Allegory o ℓ h) where
   record is-map x y (f : Hom x y) : Type h where
     constructor mapping
     field
-      functional : f ∘ f ᵒ ≤ id
-      entire     : id ≤ f ᵒ ∘ f
+      functional : f ∘ f † ≤ id
+      entire     : id ≤ f † ∘ f
 
 module _ {o ℓ h} {A : Allegory o ℓ h} where
   open Allegory A
@@ -82,9 +84,10 @@ than arbitrary relations).
 
 ```agda
 module _ {o ℓ h} (A : Allegory o ℓ h) where
-  private module A = Allegory A
+  private module A = Ar A
   open is-map
-  open Precategory
+  open Precategory hiding (_∘_ ; id)
+  open A using (_† ; _∘_ ; id ; _◀_ ; _▶_)
 
   Maps[_] : Precategory _ _
   Maps[_] .Ob  = A.Ob
@@ -99,25 +102,21 @@ property "being a map" is defined to be $f \dashv f^o$, but without
 using those words.
 
 ```agda
-  Maps[_] .id = A.id , mapping
-    (subst (A._≤ A.id) (sym (A.idl _ ∙ dual-id A)) A.≤-refl)
-    (subst (A.id A.≤_) (sym (A.idr _ ∙ dual-id A)) A.≤-refl)
+  Maps[_] .Precategory.id = A.id , mapping
+    (subst (A._≤ id) (sym (A.idl _ ∙ dual-id A)) A.≤-refl)
+    (subst (id A.≤_) (sym (A.idr _ ∙ dual-id A)) A.≤-refl)
 
-  Maps[_] ._∘_ (f , m) (g , m′) = f A.∘ g , mapping
-    (subst (A._≤ A.id) (sym ( ap ((f A.∘ g) A.∘_) A.dual-∘
-                           ·· sym (A.assoc _ _ _)
-                           ·· ap (f A.∘_) (A.assoc _ _ _)))
-      (A.≤-trans (A.≤-refl A.◆ (m′ .functional A.◆ A.≤-refl))
-        (subst (A._≤ A.id) (sym (ap (f A.∘_) (A.idl _)))
-          (m .functional))))
-    (A.≤-trans (m′ .entire)
-      (transport (sym
-        (ap₂ A._≤_
-          (ap₂ A._∘_ refl (sym (A.idl _)))
-          (  ap₂ A._∘_ A.dual-∘ refl
-          ·· sym (A.assoc _ _ _)
-          ·· ap (g A.ᵒ A.∘_) (A.assoc _ _ _))))
-        (A.≤-refl A.◆ (m .entire A.◆ A.≤-refl))))
+  Maps[_] .Precategory._∘_ (f , m) (g , m′) = f A.∘ g , mapping
+    ( (f ∘ g) ∘ (f ∘ g) † A.=⟨ ap (_ ∘_) A.dual-∘ ·· sym (A.assoc _ _ _) ·· ap (f ∘_) (A.assoc _ _ _) ⟩
+      f ∘ (g ∘ g †) ∘ f † A.≤⟨ f ▶ m′ .functional ◀ f † ⟩
+      f ∘ id ∘ f †        A.=⟨ ap (f ∘_) (A.idl _) ⟩
+      f ∘ f †             A.≤⟨ m .functional ⟩
+      id                  A.≤∎ )
+    ( id                   A.≤⟨ m′ .entire ⟩
+      g † ∘ g              A.=⟨ ap (g † ∘_) (sym (A.idl _)) ⟩
+      g † ∘ id ∘ g         A.≤⟨ g † ▶ m .entire ◀ g ⟩
+      g † ∘ (f † ∘ f) ∘ g  A.=⟨ A.pulll (A.pulll (sym A.dual-∘)) ∙ A.pullr refl ⟩
+      (f ∘ g) † ∘ (f ∘ g)  A.≤∎ )
 
   Maps[_] .idr f = Σ-prop-path (λ _ → hlevel 1) (A.idr _)
   Maps[_] .idl f = Σ-prop-path (λ _ → hlevel 1) (A.idl _)
