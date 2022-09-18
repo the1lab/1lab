@@ -44,7 +44,6 @@ record is-ring {ℓ} {R : Type ℓ} (1r : R) (_*_ _+_ : R → R → R) : Type �
     *-monoid : is-monoid 1r _*_
     +-group  : is-group _+_
     +-commutes : ∀ {x y} → x + y ≡ y + x
-    *-commutes : ∀ {x y} → x * y ≡ y * x
     *-distribl : ∀ {x y z} → x * (y + z) ≡ (x * y) + (x * z)
     *-distribr : ∀ {x y z} → (y + z) * x ≡ (y * x) + (z * x)
 ```
@@ -117,7 +116,6 @@ instance
       x y i .*-monoid   → hlevel 1 (x .*-monoid) (y .*-monoid) i
       x y i .+-group    → hlevel 1 (x .+-group) (y .+-group) i
       x y i .+-commutes → x .+-group .is-group.has-is-set _ _ (x .+-commutes) (y .+-commutes) i
-      x y i .*-commutes → x .+-group .is-group.has-is-set _ _ (x .*-commutes) (y .*-commutes) i
       x y i .*-distribl → x .+-group .is-group.has-is-set _ _ (x .*-distribl) (y .*-distribl) i
       x y i .*-distribr → x .+-group .is-group.has-is-set _ _ (x .*-distribr) (y .*-distribr) i
     where open is-ring
@@ -251,12 +249,11 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
     +-comm  : ∀ {x y} → x + y ≡ y + x
 
     -- R is a commutative monoid:
-    1r      : R
+    1R      : R
     _*_     : R → R → R
-    *-idl   : ∀ {x} → 1r * x ≡ x
-    *-idr   : ∀ {x} → x * 1r ≡ x
+    *-idl   : ∀ {x} → 1R * x ≡ x
+    *-idr   : ∀ {x} → x * 1R ≡ x
     *-assoc : ∀ {x y z} → (x * y) * z ≡ x * (y * z)
-    *-comm  : ∀ {x y} → x * y ≡ y * x
 
     -- Multiplication is bilinear:
     *-distribl : ∀ {x y z} → x * (y + z) ≡ (x * y) + (x * z)
@@ -271,7 +268,7 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
 
     -- All in copatterns to prevent the unfolding from exploding on you
     ring : Ring-on R
-    ring .Ring-on.1r = 1r
+    ring .Ring-on.1r = 1R
     ring .Ring-on._*_ = _*_
     ring .Ring-on._+_ = _+_
     ring .Ring-on.has-is-ring .*-monoid .has-is-semigroup .is-semigroup.has-is-magma = record { has-is-set = ring-is-set }
@@ -289,7 +286,6 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
     ring .Ring-on.has-is-ring .+-commutes = +-comm
     ring .Ring-on.has-is-ring .is-ring.*-distribl = *-distribl
     ring .Ring-on.has-is-ring .is-ring.*-distribr = *-distribr
-    ring .Ring-on.has-is-ring .is-ring.*-commutes = *-comm
 
   from-make-ring : Ring ℓ
   from-make-ring = R , from-make-ring-on
@@ -325,14 +321,13 @@ Zero-ring = from-make-ring {R = ⊤} λ where
   .make-ring.+-invr _ → tt
   .make-ring.+-assoc _ → tt
   .make-ring.+-comm _ → tt
-  .make-ring.1r → tt
+  .make-ring.1R → tt
   .make-ring._*_ _ _ → tt
   .make-ring.*-idl _ → tt
   .make-ring.*-idr _ → tt
   .make-ring.*-assoc _ → tt
   .make-ring.*-distribl _ → tt
   .make-ring.*-distribr _ → tt
-  .make-ring.*-comm _ → tt
 ```
 
 Rings, unlike other categories of algebraic structures (like that of
@@ -358,12 +353,11 @@ homomorphism $h : 0 \to R$ unless $0 = h(0) = h(1) = 1$ in $R$.
   .make-ring.+-invr {x} → +ℤ-inverser x
   .make-ring.+-assoc {x} {y} {z} → +ℤ-associative x y z
   .make-ring.+-comm {x} {y} → +ℤ-commutative x y
-  .make-ring.1r → 1
+  .make-ring.1R → 1
   .make-ring._*_ → _*ℤ_
   .make-ring.*-idl → *ℤ-idl _
   .make-ring.*-idr → *ℤ-idr _
   .make-ring.*-assoc {x} {y} {z} → *ℤ-associative x y z
   .make-ring.*-distribl {x} {y} {z} → *ℤ-distrib-+ℤ-l x y z
   .make-ring.*-distribr {x} {y} {z} → *ℤ-distrib-+ℤ-r x y z
-  .make-ring.*-comm {x} {y} → *ℤ-commutative x y
 ```

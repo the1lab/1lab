@@ -71,13 +71,13 @@ thing: Since $(x - y) \in I$, also $(xa - ya) \in I$, so $[xa] = [ya]$.
 ```agda
       p1 : ∀ a {x y} (r : (x R.- y) ∈ I) → inc (x R.* a) ≡ inc (y R.* a)
       p1 a {x} {y} x-y∈I = quot $ subst (_∈ I)
-        (R.*-commutes ·· R.*-distribr ·· ap (x R.* a R.+_) (sym R.neg-*-l))
-        (I.has-* a x-y∈I)
+        (R.*-distribr ∙ ap (x R.* a R.+_) (sym R.neg-*-l))
+        (I.has-*ᵣ a x-y∈I)
 
       p2 : ∀ a {x y} (r : (x R.- y) ∈ I) → inc (a R.* x) ≡ inc (a R.* y)
       p2 a {x} {y} x-y∈I = quot $ subst (_∈ I)
         (R.*-distribl ∙ ap (a R.* x R.+_) (sym R.neg-*-r))
-        (I.has-* a x-y∈I)
+        (I.has-*ₗ a x-y∈I)
 ```
 
 <details>
@@ -95,7 +95,7 @@ quotients into propositions, then applying $R$'s laws.</summary>
   make-R/I .+-idl = R/I.idl
   make-R/I .+-invr {x} = R/I.inverser {x}
   make-R/I .+-assoc {x} {y} {z} = sym $ R/I.associative {x} {y} {z}
-  make-R/I .1r = inc R.1r
+  make-R/I .1R = inc R.1r
   make-R/I ._*_ = quot-mul
   make-R/I .+-comm {x} {y} =
     Coeq-elim-prop₂ {C = λ x y → x R/I.⋆ y ≡ y R/I.⋆ x} (λ x y → hlevel 1)
@@ -110,9 +110,6 @@ quotients into propositions, then applying $R$'s laws.</summary>
     Coeq-elim-prop₃
       {C = λ x y z → quot-mul (quot-mul x y) z ≡ quot-mul x (quot-mul y z)}
       (λ _ _ _ → hlevel 1) (λ x y z → ap Coeq.inc (sym R.*-associative)) x y z
-  make-R/I .*-comm {x} {y} =
-    Coeq-elim-prop₂ {C = λ x y → quot-mul x y ≡ quot-mul y x} (λ x y → hlevel 1)
-      (λ x y → ap Coeq.inc R.*-commutes) x y
   make-R/I .*-distribl {x} {y} {z} =
     Coeq-elim-prop₃
       {C = λ x y z → quot-mul x (y R/I.⋆ z) ≡ quot-mul x y R/I.⋆ quot-mul x z}

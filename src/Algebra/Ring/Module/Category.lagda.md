@@ -115,7 +115,7 @@ constantly the unit, including the paths, which are _all_ reflexivity.
 R-Mod-is-additive : is-additive (R-Mod R)
 R-Mod-is-additive .has-ab = R-Mod-ab-category
 R-Mod-is-additive .has-terminal = record
-  { top  = ∅ᴹ
+  { top  = _ , ∅ᴹ
   ; has⊤ = λ x → contr
     (record { map    = λ _ → lift tt
             ; linear = λ _ _ _ _ → refl
@@ -123,13 +123,12 @@ R-Mod-is-additive .has-terminal = record
     (λ _ → Linear-map-path refl)
   }
   where
-    ∅ᴹ : Module R
-    ∅ᴹ .Module.G = Ab-is-additive .has-terminal .Terminal.top
-    ∅ᴹ .Module._⋆_ = λ _ _ → lift tt
-    ∅ᴹ .Module.⋆-id _        = refl
-    ∅ᴹ .Module.⋆-add-r _ _ _ = refl
-    ∅ᴹ .Module.⋆-add-l _ _ _ = refl
-    ∅ᴹ .Module.⋆-assoc _ _ _ = refl
+    ∅ᴹ : Module-on R (Ab-is-additive .has-terminal .Terminal.top)
+    ∅ᴹ .Module-on._⋆_ = λ _ _ → lift tt
+    ∅ᴹ .Module-on.⋆-id _        = refl
+    ∅ᴹ .Module-on.⋆-add-r _ _ _ = refl
+    ∅ᴹ .Module-on.⋆-add-l _ _ _ = refl
+    ∅ᴹ .Module-on.⋆-assoc _ _ _ = refl
 ```
 
 For the direct products, on the other hand, we have to do a bit more
@@ -142,17 +141,16 @@ defined pointwise using the $R$-module structures of $M$ and $N$:
 R-Mod-is-additive .has-prods M N = prod where
   module P = is-additive.Product
     Ab-is-additive
-    (Ab-is-additive .has-prods (M .Module.G) (N .Module.G))
+    (Ab-is-additive .has-prods (M .fst) (N .fst))
   module M = Module M
   module N = Module N
 
-  M⊕ᵣN : Module R
-  M⊕ᵣN .Module.G = P.apex
-  M⊕ᵣN .Module._⋆_ r (a , b) = r M.⋆ a , r N.⋆ b
-  M⊕ᵣN .Module.⋆-id _        = Σ-pathp (M.⋆-id _)        (N.⋆-id _)
-  M⊕ᵣN .Module.⋆-add-r _ _ _ = Σ-pathp (M.⋆-add-r _ _ _) (N.⋆-add-r _ _ _)
-  M⊕ᵣN .Module.⋆-add-l _ _ _ = Σ-pathp (M.⋆-add-l _ _ _) (N.⋆-add-l _ _ _)
-  M⊕ᵣN .Module.⋆-assoc _ _ _ = Σ-pathp (M.⋆-assoc _ _ _) (N.⋆-assoc _ _ _)
+  M⊕ᵣN : Module-on R P.apex
+  M⊕ᵣN .Module-on._⋆_ r (a , b) = r M.⋆ a , r N.⋆ b
+  M⊕ᵣN .Module-on.⋆-id _        = Σ-pathp (M.⋆-id _)        (N.⋆-id _)
+  M⊕ᵣN .Module-on.⋆-add-r _ _ _ = Σ-pathp (M.⋆-add-r _ _ _) (N.⋆-add-r _ _ _)
+  M⊕ᵣN .Module-on.⋆-add-l _ _ _ = Σ-pathp (M.⋆-add-l _ _ _) (N.⋆-add-l _ _ _)
+  M⊕ᵣN .Module-on.⋆-assoc _ _ _ = Σ-pathp (M.⋆-assoc _ _ _) (N.⋆-assoc _ _ _)
 ```
 
 We can readily define the universal cone: The projection maps are the
@@ -164,7 +162,7 @@ path-mangling, but it's nothing _too_ bad:
   open Ab-category.is-product
   open Ab-category.Product
   prod : Ab-category.Product R-Mod-ab-category M N
-  prod .apex = M⊕ᵣN
+  prod .apex = _ , M⊕ᵣN
   prod .π₁ .map (a , _)    = a
   prod .π₁ .linear r m s n = refl
   prod .π₂ .map (_ , b)    = b
