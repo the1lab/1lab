@@ -1,8 +1,9 @@
 ```agda
 module Data.Fin where
 
-open import Data.Fin.Base public
 open import Data.Fin.Properties public
+open import Data.Fin.Finite public
+open import Data.Fin.Base public
 ```
 
 # Finite Sets - Index

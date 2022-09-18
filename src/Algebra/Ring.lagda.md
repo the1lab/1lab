@@ -146,6 +146,11 @@ record is-ring-hom {ℓ} (A B : Ring ℓ) (f : A .fst → B .fst) : Type ℓ whe
 
 <!--
 ```agda
+  ring-hom→group-hom : Group-hom (A.additive-group .snd) (B.additive-group .snd) f
+  ring-hom→group-hom = record { pres-⋆ = pres-+ }
+
+  module gh = Group-hom ring-hom→group-hom
+
 private unquoteDecl eqv = declare-record-iso eqv (quote is-ring-hom)
 
 module _ {ℓ} {A B : Ring ℓ} where

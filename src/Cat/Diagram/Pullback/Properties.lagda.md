@@ -267,5 +267,53 @@ pullback-unique {f = f} {g} {p1} {p2} {p1′} {p2′} pb pb′
       (pulll (pb .p₁∘limiting) ∙ pb′ .p₁∘limiting)
       (pulll (pb .p₂∘limiting) ∙ pb′ .p₂∘limiting)
       (idr _) (idr _)
+
+Pullback-unique
+  : ∀ {x y z} {f : Hom x z} {g : Hom y z}
+  → is-category C
+  → is-prop (Pullback f g)
+Pullback-unique {x = X} {Y} {Z} {f} {g} c-cat x y = p where
+  open Pullback
+  module x = Pullback x
+  module y = Pullback y
+  apices = c-cat .to-path (pullback-unique (x .has-is-pb) (y .has-is-pb))
+
+  abstract
+    p1s : PathP (λ i → Hom (apices i) X) x.p₁ y.p₁
+    p1s = Univalent.Hom-pathp-refll-iso c-cat (x.p₁∘limiting)
+
+    p2s : PathP (λ i → Hom (apices i) Y) x.p₂ y.p₂
+    p2s = Univalent.Hom-pathp-refll-iso c-cat (x.p₂∘limiting)
+
+    lims
+      : ∀ {P′} {p1′ : Hom P′ X} {p2′ : Hom P′ Y} (p : f ∘ p1′ ≡ g ∘ p2′)
+      → PathP (λ i → Hom P′ (apices i)) (x.limiting p) (y.limiting p)
+    lims p = Univalent.Hom-pathp-reflr-iso c-cat $
+      y.unique (pulll y.p₁∘limiting ∙ x.p₁∘limiting)
+              (pulll y.p₂∘limiting ∙ x.p₂∘limiting)
+
+  p : x ≡ y
+  p i .apex = apices i
+  p i .p₁ = p1s i
+  p i .p₂ = p2s i
+  p i .has-is-pb .square =
+    is-prop→pathp (λ i → Hom-set (apices i) Z (f ∘ p1s i) (g ∘ p2s i))
+      x.square y.square i
+  p i .has-is-pb .limiting p = lims p i
+  p i .has-is-pb .p₁∘limiting {p = p} =
+    is-prop→pathp (λ i → Hom-set _ X (p1s i ∘ lims p i) _)
+      x.p₁∘limiting y.p₁∘limiting i
+  p i .has-is-pb .p₂∘limiting {p = p} =
+    is-prop→pathp (λ i → Hom-set _ _ (p2s i ∘ lims p i) _)
+      x.p₂∘limiting y.p₂∘limiting i
+  p i .has-is-pb .unique {P′ = P′} {p₁' = p₁′} {p₂' = p₂′} {p = p′} {lim' = lim′} =
+    is-prop→pathp
+      (λ i   → Π-is-hlevel {A = Hom P′ (apices i)} 1
+       λ lim → Π-is-hlevel {A = p1s i ∘ lim ≡ p₁′} 1
+       λ p   → Π-is-hlevel {A = p2s i ∘ lim ≡ p₂′} 1
+       λ q   → Hom-set P′ (apices i) lim (lims p′ i))
+      (λ lim → x.unique {lim' = lim})
+      (λ lim → y.unique {lim' = lim})
+      i lim′
 ```
 -->
