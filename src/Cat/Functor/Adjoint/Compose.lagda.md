@@ -77,9 +77,9 @@ LF⊣GR .counit .is-natural x y f = path where abstract
 
 LF⊣GR .zig =
   (lr.counit.ε _ C.∘ L.₁ (fg.counit.ε _)) C.∘ ⌜ LF.₁ (G.₁ (lr.unit.η _) A.∘ fg.unit.η _) ⌝         ≡⟨ ap! (LF.F-∘ _ _) ⟩
-  (lr.counit.ε _ C.∘ L.₁ (fg.counit.ε _)) C.∘ LF.₁ (G.₁ (lr.unit.η _)) C.∘ LF.₁ (fg.unit.η _)      ≡⟨ solve C ⟩
+  (lr.counit.ε _ C.∘ L.₁ (fg.counit.ε _)) C.∘ LF.₁ (G.₁ (lr.unit.η _)) C.∘ LF.₁ (fg.unit.η _)      ≡⟨ cat! C ⟩
   lr.counit.ε _ C.∘ (⌜ L.₁ (fg.counit.ε _) C.∘ LF.₁ (G.₁ (lr.unit.η _)) ⌝ C.∘ LF.₁ (fg.unit.η _))  ≡⟨ ap! (sym (L.F-∘ _ _) ·· ap L.₁ (fg.counit.is-natural _ _ _) ·· L.F-∘ _ _) ⟩
-  lr.counit.ε _ C.∘ (L.₁ (lr.unit.η _) C.∘ L.₁ (fg.counit.ε _)) C.∘ LF.₁ (fg.unit.η _)             ≡⟨ solve C ⟩
+  lr.counit.ε _ C.∘ (L.₁ (lr.unit.η _) C.∘ L.₁ (fg.counit.ε _)) C.∘ LF.₁ (fg.unit.η _)             ≡⟨ cat! C ⟩
   (lr.counit.ε _ C.∘ L.₁ (lr.unit.η _)) C.∘ (L.₁ (fg.counit.ε _) C.∘ LF.₁ (fg.unit.η _))           ≡⟨ ap₂ C._∘_ lr.zig (sym (L.F-∘ _ _) ∙ ap L.₁ fg.zig ∙ L.F-id) ⟩
   C.id C.∘ C.id                                                                                    ≡⟨ C.eliml refl ⟩
   C.id                                                                                             ∎

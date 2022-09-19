@@ -227,16 +227,16 @@ Inverses-∘ {f = f} {f⁻¹} {g} {g⁻¹} finv ginv = record { invl = l ; invr 
 
   abstract
     l : (g ∘ f) ∘ f⁻¹ ∘ g⁻¹ ≡ id
-    l = (g ∘ f) ∘ f⁻¹ ∘ g⁻¹ ≡⟨ solve C ⟩
+    l = (g ∘ f) ∘ f⁻¹ ∘ g⁻¹ ≡⟨ cat! C ⟩
         g ∘ (f ∘ f⁻¹) ∘ g⁻¹ ≡⟨ (λ i → g ∘ finv.invl i ∘ g⁻¹) ⟩
-        g ∘ id ∘ g⁻¹        ≡⟨ solve C ⟩
+        g ∘ id ∘ g⁻¹        ≡⟨ cat! C ⟩
         g ∘ g⁻¹             ≡⟨ ginv.invl ⟩
         id                  ∎
 
     r : (f⁻¹ ∘ g⁻¹) ∘ g ∘ f ≡ id
-    r = (f⁻¹ ∘ g⁻¹) ∘ g ∘ f ≡⟨ solve C ⟩
+    r = (f⁻¹ ∘ g⁻¹) ∘ g ∘ f ≡⟨ cat! C ⟩
         f⁻¹ ∘ (g⁻¹ ∘ g) ∘ f ≡⟨ (λ i → f⁻¹ ∘ ginv.invr i ∘ f) ⟩
-        f⁻¹ ∘ id ∘ f        ≡⟨ solve C ⟩
+        f⁻¹ ∘ id ∘ f        ≡⟨ cat! C ⟩
         f⁻¹ ∘ f             ≡⟨ finv.invr ⟩
         id                  ∎
 

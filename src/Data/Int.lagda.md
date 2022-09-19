@@ -695,13 +695,13 @@ module _ where
       : ∀ a b x y
       → a * x + b * y + (suc a * y + suc b * x)
       ≡ a * y + b * x + (suc a * x + suc b * y)
-    l₁ a b x y = solve!
+    l₁ a b x y = nat!
 
     l₂
       : ∀ a b x y
       → a * x + b * y + (a * suc y + b * suc x)
       ≡ a * y + b * x + (a * suc x + b * suc y)
-    l₂ a b x y = solve!
+    l₂ a b x y = nat!
 
     rhs₁ : ∀ x y m n → diff (x * m + y * n) (x * n + y * m)
                     ≡ diff (x * suc m + y * suc n) (x * suc n + y * suc m)
@@ -747,35 +747,35 @@ abstract
         : ∀ a b c d e f
         → (a * c + b * d) * e + (a * d + b * c) * f + (a * (c * f + d * e) + b * (c * e + d * f))
         ≡ (a * c + b * d) * f + (a * d + b * c) * e + (a * (c * e + d * f) + b * (c * f + d * e))
-      lemma a b c d e f = solve!
+      lemma a b c d e f = nat!
 
   *ℤ-commutative =
     Int-elim₂-prop (λ _ _ → hlevel 1) λ a b x y → same-difference (lemma a b x y)
     where abstract
       lemma : ∀ a b x y → a * x + b * y + (x * b + y * a) ≡ a * y + b * x + (x * a + y * b)
-      lemma a b x y = solve!
+      lemma a b x y = nat!
 
   *ℤ-idl = Int-elim-prop (λ _ → hlevel 1) (λ a b → same-difference (lemma a b))
     where abstract
       lemma : ∀ a b → (a + 0 + 0 + b) ≡ (b + 0 + 0 + a)
-      lemma a b = solve!
+      lemma a b = nat!
 
   *ℤ-idr = Int-elim-prop (λ _ → hlevel 1) (λ a b → same-difference (lemma a b))
     where abstract
       lemma : ∀ a b → a * 1 + b * 0 + b ≡ a * 0 + b * 1 + a
-      lemma a b = solve!
+      lemma a b = nat!
 
   *ℤ-distrib-+ℤ-l = Int-elim₃-prop (λ _ _ _ → hlevel 1)
     λ a b c d e f → same-difference (lemma a b c d e f)
     where abstract
       lemma : ∀ a b c d e f → a * (c + e) + b * (d + f) + (a * d + b * c + (a * f + b * e)) ≡ a * (d + f) + b * (c + e) + (a * c + b * d + (a * e + b * f))
-      lemma a b c d e f = solve!
+      lemma a b c d e f = nat!
 
   *ℤ-distrib-+ℤ-r = Int-elim₃-prop (λ _ _ _ → hlevel 1)
     λ a b c d e f → same-difference (lemma a b c d e f)
     where
       lemma : ∀ a b c d e f → (c + e) * a + (d + f) * b + (c * b + d * a + (e * b + f * a)) ≡ (c + e) * b + (d + f) * a + (c * a + d * b + (e * a + f * b))
-      lemma a b c d e f = solve!
+      lemma a b c d e f = nat!
 
 canonicalise-injective
   : ∀ x y

@@ -107,7 +107,7 @@ of heart. </summary>
         ap hom[] (has-lift id x .commutes _ _)
       ·· hom[]-∙ _ _ ·· reindex _ _ ∙ transport-refl id′
     mi .inv∘eta x = sym $
-        has-lift id x .unique Fa.id (sym (from-pathp (symP (idr′ _))))
+        has-lift id x .unique Fa.id (shiftr (idr _) (idr′ _))
       ∙ sym (has-lift id x .unique _ (pulll-indexr _ (has-lift id x .commutes _ _)
       ·· ap hom[] (whisker-l _
       ·· reindex _ (idl _ ∙ sym (idr _) ∙ ap (_∘ id) (sym (idr _)))
@@ -144,7 +144,7 @@ properties and I recommend that nobody look at it, ever. </summary>.
     mi .inv x = has-lift (f ∘ g) _ .universal _ $
       hom[ sym (idr _) ] (has-lift f _ .lifting ∘′ has-lift g _ .lifting)
     mi .eta∘inv x = sym $
-        has-lift g _ .unique _ (sym (from-pathp (symP (idr′ _))))
+        has-lift g _ .unique _ (shiftr (idr _) (idr′ _))
       ∙ sym (has-lift g _ .unique _ (pulll-indexr _ (has-lift g _ .commutes _ _)
       ∙ has-lift f _ .unique _ (pulll-indexr _ (has-lift f _ .commutes _ _)
       ∙ ap hom[] (whisker-l _ ∙ ap hom[] (has-lift (f ∘ g) _ .commutes _ _))

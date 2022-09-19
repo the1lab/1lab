@@ -4,6 +4,7 @@ open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning as Dr
+import Cat.Displayed.Solver as Ds
 
 module
   Cat.Displayed.Instances.Pullback
@@ -58,21 +59,17 @@ category reasoning combinators][dr] are here to help.
 
 ```agda
 Change-of-base .idr′ {f = f} f′ = to-pathp $
-  hom[ ap F₁ (X.idr f) ] (hom[ F-∘ _ _ ]⁻ (f′ E.∘′ hom[ F-id ]⁻ _)) ≡⟨ hom[]⟩⟨ smashr _ _ ⟩
-  hom[ ap F₁ (X.idr f) ] (hom[] (f′ E.∘′ E.id′))                    ≡⟨ hom[]-∙ _ _ ⟩
-  hom[] (f′ E.∘′ E.id′)                                             ≡⟨ cancel _ _ (E.idr′ f′) ⟩
-  f′                                                                ∎
+  hom[] (hom[ F-∘ _ _ ]⁻ (f′ E.∘′ hom[ F-id ]⁻ _)) ≡⟨ hom[]⟩⟨ smashr _ _ ⟩
+  hom[] (hom[] (f′ E.∘′ E.id′))                    ≡⟨ Ds.disp! E ⟩
+  f′                                               ∎
 
 Change-of-base .idl′ f′ = to-pathp $
-  hom[ ap F₁ (X.idl _) ] (hom[ F-∘ _ _ ]⁻ (hom[ F-id ]⁻ _ E.∘′ f′)) ≡⟨ hom[]⟩⟨ smashl _ _ ⟩
-  hom[ ap F₁ (X.idl _) ] (hom[] (E.id′ E.∘′ f′))                    ≡⟨ hom[]-∙ _ _ ⟩
-  hom[] (E.id′ E.∘′ f′)                                             ≡⟨ cancel _ _ (E.idl′ f′) ⟩
-  f′                                                                ∎
+  hom[] (hom[ F-∘ _ _ ]⁻ (hom[ F-id ]⁻ _ E.∘′ f′)) ≡⟨ hom[]⟩⟨ smashl _ _ ⟩
+  hom[] (hom[] (E.id′ E.∘′ f′))                    ≡⟨ Ds.disp! E ⟩
+  f′                                               ∎
 
 Change-of-base .assoc′ f′ g′ h′ = to-pathp $
   hom[ ap F₁ _ ] (hom[ F-∘ _ _ ]⁻ (f′ E.∘′ hom[ F-∘ _ _ ]⁻ (g′ E.∘′ h′)))   ≡⟨ hom[]⟩⟨ smashr _ _ ⟩
-  hom[] (hom[] (f′ E.∘′ g′ E.∘′ h′))                                        ≡⟨ hom[]-∙ _ _ ⟩
-  hom[ (ap (_ B.∘_) _ ∙ sym (F-∘ _ _)) ∙ ap F₁ _ ] (f′ E.∘′ g′ E.∘′ h′)     ≡⟨ weave _ _ _ (E.assoc′ f′ g′ h′) ⟩
-  hom[ ap (B._∘ _) (sym (F-∘ _ _)) ∙ sym (F-∘ _ _) ] ((f′ E.∘′ g′) E.∘′ h′) ≡˘⟨ smashl _ _ ⟩
+  hom[] (hom[] (f′ E.∘′ g′ E.∘′ h′))                                        ≡⟨ Ds.disp! E ⟩
   hom[ sym (F-∘ _ _) ] (hom[ sym (F-∘ _ _) ] (f′ E.∘′ g′) E.∘′ h′)          ∎
 ```

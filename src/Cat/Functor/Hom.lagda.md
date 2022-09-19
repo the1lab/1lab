@@ -36,7 +36,7 @@ Hom[-,-] .F₀ (a , b) = el (Hom a b) (Hom-set a b)
 Hom[-,-] .F₁ (f , h) g = h ∘ g ∘ f
 Hom[-,-] .F-id = funext λ x → ap (_ ∘_) (idr _) ∙ idl _
 Hom[-,-] .F-∘ (f , h) (f' , h') = funext λ where
-  g → (h ∘ h') ∘ g ∘ f' ∘ f ≡⟨ solve C ⟩
+  g → (h ∘ h') ∘ g ∘ f' ∘ f ≡⟨ cat! C ⟩
       h ∘ (h' ∘ g ∘ f') ∘ f ∎
 ```
 
