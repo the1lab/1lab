@@ -447,10 +447,10 @@ must give a path $i \equiv j$ laying over $\id{ap}(F)(p)$.
 
 ```agda
     x≡y : x ≡ y
-    x≡y = iso→path C ccat x≅y
+    x≡y = ccat .to-path x≅y
 
     Fx≡Fy : F₀ F x ≡ F₀ F y
-    Fx≡Fy = iso→path D dcat Fx≅Fy
+    Fx≡Fy = dcat .to-path Fx≅Fy
 ```
 
 Rather than showing it over $p : x\equiv y$ directly, we'll show it over
@@ -461,7 +461,7 @@ the result with far less computation:
 ```agda
     over′ : PathP (λ i → Fx≡Fy i D.≅ z) i j
     over′ = D.≅-pathp Fx≡Fy refl
-      (Hom-pathp-refll-iso D dcat (D.cancell (i .D._≅_.invl)))
+      (Hom-pathp-refll-iso dcat (D.cancell (i .D._≅_.invl)))
 ```
 
 We must then connect $\id{ap}(F)(p)$ with this path $F(x) \cong
@@ -472,9 +472,9 @@ _are_ indeed the same path:
     abstract
       square : ap (F₀ F) x≡y ≡ Fx≡Fy
       square =
-        ap (F₀ F) x≡y                       ≡⟨ F-map-path F x≅y ccat dcat ⟩
-        iso→path D dcat ⌜ F-map-iso F x≅y ⌝ ≡⟨ ap! (equiv→counit (is-ff→F-map-iso-is-equiv {F = F} ff) _)  ⟩
-        iso→path D dcat Fx≅Fy               ∎
+        ap (F₀ F) x≡y                     ≡⟨ F-map-path F x≅y ccat dcat ⟩
+        dcat .to-path ⌜ F-map-iso F x≅y ⌝ ≡⟨ ap! (equiv→counit (is-ff→F-map-iso-is-equiv {F = F} ff) _)  ⟩
+        dcat .to-path Fx≅Fy               ∎
 
     over : PathP (λ i → F₀ F (x≡y i) D.≅ z) i j
     over = transport (λ l → PathP (λ m → square (~ l) m D.≅ z) i j) over′
@@ -511,6 +511,8 @@ addition its action on objects is an equivalence of types.
 
 ```agda
 record is-precat-iso (F : Functor C D) : Type (adj-level C D) where
+  no-eta-equality
+  constructor iso
   field
     has-is-ff  : is-fully-faithful F
     has-is-iso : is-equiv (F₀ F)
@@ -528,7 +530,7 @@ module _ {F : Functor C D} (p : is-precat-iso F) where
 
   is-precat-iso→is-split-eso : is-split-eso F
   is-precat-iso→is-split-eso ob = equiv→inverse has-is-iso ob , isom
-    where isom = path→iso D (equiv→counit has-is-iso _)
+    where isom = path→iso {C = D} (equiv→counit has-is-iso _)
 ```
 
 Thus, by the theorem above, $F$ is an adjoint equivalence of

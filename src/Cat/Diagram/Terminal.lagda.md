@@ -1,5 +1,4 @@
 ```agda
-open import Cat.Univalent
 open import Cat.Prelude
 
 module Cat.Diagram.Terminal {o h} (C : Precategory o h) where
@@ -66,12 +65,12 @@ terminal objects:
 ```agda
 ⊤-contractible : is-category C → is-prop Terminal
 ⊤-contractible ccat x1 x2 i .top =
-  iso→path C ccat (⊤-unique x1 x2) i
+  ccat .to-path (⊤-unique x1 x2) i
 
 ⊤-contractible ccat x1 x2 i .has⊤ ob =
   is-prop→pathp
     (λ i → is-contr-is-prop {A = Hom _
-      (iso→path C ccat (⊤-unique x1 x2) i)})
+      (ccat .to-path (⊤-unique x1 x2) i)})
     (x1 .has⊤ ob) (x2 .has⊤ ob) i
 
 is-terminal-iso : ∀ {A B} → A ≅ B → is-terminal A → is-terminal B

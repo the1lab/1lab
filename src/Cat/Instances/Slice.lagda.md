@@ -417,9 +417,7 @@ projection map $\id{fst} : \sum F \to I$.
 
 ```agda
   Total-space : Functor Cat[ Disc′ I , Sets ℓ ] (Slice (Sets ℓ) I)
-  Total-space .F₀ F .domain =
-    el (Σ _ (∣_∣ ⊙ F₀ F))
-       (Σ-is-hlevel 2 (I .is-tr) (is-tr ⊙ F₀ F))
+  Total-space .F₀ F .domain = el! (Σ _ (∣_∣ ⊙ F₀ F))
   Total-space .F₀ F .map = fst
 
   Total-space .F₁ nt .map (i , x) = i , nt .η _ x
@@ -480,13 +478,10 @@ an isomorphism directly, though it does involve an appeal to univalence.
 
 ```agda
   Total-space-is-eso : is-split-eso Total-space
-  Total-space-is-eso fam = functor , path→iso _ path
+  Total-space-is-eso fam = functor , path→iso path
     where
       functor : Functor _ _
-      functor .F₀ i = el
-        (fibre (fam .map) i)
-        (Σ-is-hlevel 2 (fam .domain .is-tr)
-                       λ _ → is-prop→is-set (I .is-tr _ _))
+      functor .F₀ i = el! (fibre (fam .map) i)
       functor .F₁ p = subst (fibre (fam .map)) p
       functor .F-id = funext transport-refl
       functor .F-∘ f g = funext (subst-∙ (fibre (fam .map)) _ _)
@@ -511,7 +506,6 @@ module _ {C : Precategory o ℓ} {o : Precategory.Ob C} (isc : is-category C) wh
   private
     module C   = Cat.Reasoning C
     module C/o = Cat.Reasoning (Slice C o)
-    module Cu  = Cat.Univalent C
 
     open /-Obj
     open /-Hom
@@ -519,21 +513,12 @@ module _ {C : Precategory o ℓ} {o : Precategory.Ob C} (isc : is-category C) wh
     open C._≅_
 
   slice-is-category : is-category (Slice C o)
-  slice-is-category A .centre = A , C/o.id-iso
-  slice-is-category A .paths (B , isom) = Σ-pathp A≡B eql where
-    Ad≡Bd : A .domain ≡ B .domain
-    Ad≡Bd = Cu.iso→path isc
-      (C.make-iso (isom .to .map) (isom .from .map)
-        (ap map (C/o._≅_.invl isom)) (ap map (C/o._≅_.invr isom)))
-
-    Af≡Bf : PathP (λ i → C.Hom (Ad≡Bd i) o) (A .map) (B .map)
-    Af≡Bf = Cu.Hom-pathp-refll-iso isc (isom .from .commutes)
-
-    A≡B = /-Obj-path Ad≡Bd Af≡Bf
-
-    eql : PathP (λ i → A C/o.≅ A≡B i) C/o.id-iso isom
-    eql = C/o.≅-pathp refl A≡B
-      (/-Hom-pathp _ _ (Cu.Hom-pathp-reflr-iso isc (C.idr _)))
+  slice-is-category .to-path x = /-Obj-path (isc .to-path $
+    C.make-iso (x .to .map) (x .from .map)
+      (ap map (C/o._≅_.invl x)) (ap map (C/o._≅_.invr x)))
+    (Hom-pathp-refll-iso isc (x .from .commutes))
+  slice-is-category .to-path-over x = C/o.≅-pathp refl _ $
+    /-Hom-pathp _ _ (Hom-pathp-reflr-iso isc (C.idr _))
 ```
 
 # Arbitrary limits in slices

@@ -6,6 +6,8 @@ open import Algebra.Group.Homotopy
 open import Homotopy.Space.Suspension
 open import Homotopy.Space.Sphere
 
+open import Data.List using (_∷_ ; [])
+
 module Homotopy.Base where
 ```
 
@@ -60,7 +62,7 @@ very straightforward to construct, but proving that the two maps
 `Σ-map→loops` and `loops→Σ-map` are inverses involves nontrivial path
 algebra.
 
-[adjunction]: Cat.Functor.Adjoint.hmtl
+[adjunction]: Cat.Functor.Adjoint.html
 
 ```agda
 module _ {ℓ ℓ′} {A : Type∙ ℓ} {B : Type∙ ℓ′} where
@@ -319,6 +321,10 @@ n-Tr-is-hlevel
   : ∀ {ℓ} {A : Type ℓ} n → is-hlevel (n-Tr A (suc n)) (suc n)
 n-Tr-is-hlevel n = hubs-and-spokes→hlevel n λ sph → hub sph , spokes sph
 
+instance
+  n-tr-decomp : ∀ {ℓ} {A : Type ℓ} {n} → Decomposition (n-Tr A (suc n))
+  n-tr-decomp = decomp (quote n-Tr-is-hlevel) (`level-minus 1 ∷ [])
+
 n-Tr-elim
   : ∀ {ℓ ℓ′} {A : Type ℓ} {n}
   → (P : n-Tr A (suc n) → Type ℓ′)
@@ -388,7 +394,7 @@ $(2+n)$-type.
     n-Tr-elim
       (λ y′ → n-Type _ (suc n))
       (λ y′ → n-Type-is-hlevel (suc n))
-      (λ y′ → el (n-Tr (Path A x y′) (suc n)) (n-Tr-is-hlevel n))
+      (λ y′ → el! (n-Tr (Path A x y′) (suc n)))
 ```
 
 The rest of the proof boils down to applications of `path
@@ -400,17 +406,14 @@ induction`{.Agda id=J} and the induction principle for $\|A\|_{n+2}$.
 
   decode′ : ∀ x y → ∣ code x y ∣ → inc x ≡ y
   decode′ x =
-    n-Tr-elim _
-      (λ x → Π-is-hlevel (2 + n)
-        (λ x → Path-is-hlevel (2 + n) (n-Tr-is-hlevel (1 + n))))
-      λ x → n-Tr-rec (Path-is-hlevel' (1 + n) (n-Tr-is-hlevel (1 + n)) _ _)
-              (ap inc)
+    n-Tr-elim _ (λ _ → hlevel!)
+      λ x → n-Tr-rec (Path-is-hlevel' (1 + n) hlevel! _ _) (ap inc)
 
   rinv : ∀ x y → is-right-inverse (decode′ x y) (encode′ x y)
   rinv x = n-Tr-elim _
     (λ y → Π-is-hlevel (2 + n)
       (λ c → Path-is-hlevel (2 + n) (is-hlevel-suc (suc n) (code x y .is-tr))))
-    λ x → n-Tr-elim _ (λ x → Path-is-hlevel (suc n) (n-Tr-is-hlevel n))
+    λ x → n-Tr-elim _ (λ x → hlevel!)
       λ p → ap n-Tr.inc (subst-path-right _ _ ∙ ∙-id-l _)
 
   linv : ∀ x y → is-left-inverse (decode′ x y) (encode′ x y)

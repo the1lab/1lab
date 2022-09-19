@@ -4,3 +4,5 @@ category, precategory, 1-category, categories, precategories, 1-categories: Cat.
 functor, functors, functorial, functoriality: Cat.Base.html#functors
 natural transformation, natural transformations, naturality: Cat.Base.html#natural-transformations
 standard finite sets: Data.Fin.Base.html
+adjunctions: Cat.Functor.Adjoint.html#adjoint-functors
+identity system: 1Lab.Path.IdentitySystem.html#identity-systems

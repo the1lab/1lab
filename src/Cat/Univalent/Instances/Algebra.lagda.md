@@ -26,7 +26,7 @@ algebra for the [list monad].
 [Eilenberg-Moore category]: Cat.Diagram.Monad.html#eilenberg-moore-category
 [category of monoids]: Algebra.Monoid.Category.html
 [monoid]: Algebra.Monoid.html
-[sets]: Category.Instances.Sets.html
+[sets]: Cat.Instances.Sets.html
 [list monad]: Algebra.Monoid.Category.html#free-objects
 
 Given that "hand-rolled" categories of this sort tend to be
@@ -62,17 +62,18 @@ map.
 
 ```agda
 Eilenberg-Moore-is-category : is-category EM
-Eilenberg-Moore-is-category A .centre = A , EM.id-iso
-Eilenberg-Moore-is-category (A , Am) .paths ((X , Xm) , A≅X) =
-  Σ-pathp A≡M triv where
+Eilenberg-Moore-is-category = λ { .to-path → A≡X ; .to-path-over → triv} where
+  module _ {A} {Am : Algebra-on C M A} {X}
+               {Xm : Algebra-on C M X}
+               (A≅X : EM.Isomorphism (A , Am) (X , Xm))
+    where
 ```
 
 The first thing we shall note is that an algebra is given by a pair of
 two data: An underlying object $A_0$ (resp $X_0$), together with the
 structure $A_m$ (resp. $X_m$) of an `M-algebra on`{.Agda
 ident=Algebra-on} $A_0$. Hence, an identification of algebras can be
-broken down into an identification of their components, re-using the
-equality lemma `for dependent pairs`{.Agda ident=Σ-pathp}.
+broken down into an identification of their components.
 
 <!--
 ```agda
@@ -116,14 +117,14 @@ between the underlying objects in $\ca{C}$:
 ```
 
 Since we assumed $\ca{C}$ to be univalent, this isomorphism can be `made
-into a path`{.Agda ident=iso→path} $A_0 \equiv X_0$. This covers a third
+into a path`{.Agda ident=to-path} $A_0 \equiv X_0$. This covers a third
 of the task: We must now show first that the algebra structures $A_m$
 and $X_m$ are identified over `A₀≡X₀`{.Agda}, and we must prove that the
 resulting identification makes $f$ into the identity isomorphism.
 
 ```agda
     A₀≡X₀ : A ≡ X
-    A₀≡X₀ = iso→path C isc A₀≅X₀
+    A₀≡X₀ = isc .to-path A₀≅X₀
 ```
 
 By the characterisation of `paths in algebras`{.Agda
@@ -155,10 +156,10 @@ calculation then shows that the square above commutes.
     Am≡Xm = Algebra-on-pathp _ A₀≡X₀ same-mults′ where
       same-mults
         : PathP
-          (λ i → C.Hom (iso→path C isc (F-map-iso (Monad.M M) A₀≅X₀) i) (A₀≡X₀ i))
+          (λ i → C.Hom (isc .to-path (F-map-iso (Monad.M M) A₀≅X₀) i) (A₀≡X₀ i))
           (Am .ν) (Xm .ν)
       same-mults =
-        Hom-pathp-iso C isc (
+        Hom-pathp-iso isc (
           map A≅X.to C.∘ Am .ν C.∘ Monad.M₁ M (map A≅X.from)                 ≡⟨ C.pulll (sq A≅X.to) ⟩
           (Xm .ν C.∘ Monad.M₁ M (A≅X.to .map)) C.∘ Monad.M₁ M (map A≅X.from) ≡⟨ C.cancelr (sym (Monad.M-∘ M _ _) ·· ap (Monad.M₁ M) (ap map A≅X.invl) ·· Monad.M-id M) ⟩
           Xm .ν                                                              ∎
@@ -184,18 +185,18 @@ ident=F-map-path}, and we can correct the source:
             (Am .ν) (Xm .ν))
           same-mults
 
-    A≡M : Path (Algebra _ M) (A , Am) (X , Xm)
-    A≡M i = A₀≡X₀ i , Am≡Xm i
+    A≡X : Path (Algebra _ M) (A , Am) (X , Xm)
+    A≡X i = A₀≡X₀ i , Am≡Xm i
 ```
 
 To finish the proof that $\ca{C}^M$ is univalent, we must show that the
 identification we've built trivialises the isomorphism $A \cong X$ we
 were given. This follows immediately from the characterisation of `paths
-in isomorphism spaces`{.Agda ident=≅-pathp} and `in Hom-spaces`{.Agda
-ident=Hom-pathp}.
+in isomorphism spaces`{.Agda ident=EM.≅-pathp} and `in Hom-spaces`{.Agda
+ident=Algebra-hom-pathp}.
 
 ```agda
-    triv : PathP (λ i → (A , Am) EM.≅ A≡M i) EM.id-iso A≅X
+    triv : PathP (λ i → (A , Am) EM.≅ A≡X i) EM.id-iso A≅X
     triv = EM.≅-pathp refl _
-      (Algebra-hom-pathp _ _ _ (Hom-pathp-reflr-iso C isc (C.idr _)))
+      (Algebra-hom-pathp _ _ _ (Hom-pathp-reflr-iso isc (C.idr _)))
 ```

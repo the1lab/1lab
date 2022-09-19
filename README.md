@@ -42,6 +42,15 @@ deployment of the 1Lab. This has the benefit of also providing
 development which supports compilation of the HTML and SVG files, in
 addition to the Agda.
 
+To speed things up (for example, to avoid building Agda), you can use the
+1Lab's binary cache. If you have the Cachix CLI installed, simply run
+`cachix use 1lab`. Otherwise, add the following to your Nix configuration:
+
+```
+substituters = https://1lab.cachix.org
+trusted-public-keys = 1lab.cachix.org-1:eYjd9F9RfibulS4OSFBYeaTMxWojPYLyMqgJHDvG1fs=
+```
+
 You can then use Nix to compile the project as usual. As a quick point
 of reference, `nix-build` will type-check and compile the entire thing,
 and copy the necessary assets (TeX Gyre Pagella and KaTeX css/fonts) to
@@ -66,9 +75,8 @@ variables, you can use something like this to copy the static assets
 into place:
 
 ```bash
-$ export out=_build/site
 $ eval "${installPhase}"
-$ python -m http.server --directory "$out"
+$ python -m http.server --directory _build/site
 ```
 
 ## Directly

@@ -89,6 +89,7 @@ $dark-code-cyan:   #56B6C2;
 :root {
   --text-bg: #fff;
   --text-fg: #222;
+  --text-fg-alt: #{$bluegray-800};
   --shadow: #000;
 
   --primary: #{$light-code-blue};
@@ -126,6 +127,7 @@ $dark-code-cyan:   #56B6C2;
   :root {
     --text-bg: #282C34;
     --text-fg: #bfbfbf;
+    --text-fg-alt: #{$bluegray-200};
     --shadow: #{$bluegray-600};
 
     --primary: #{$dark-code-blue};
@@ -143,12 +145,12 @@ $dark-code-cyan:   #56B6C2;
     --code-constructor: #{$dark-code-green};
     --code-highlight: #ef444499;
 
-    --search-selected: #474e5e;
+    --search-selected: #{$bluegray-600};
 
     --details-summary: #{$violet-800};
     --details-open:    #{$violet-900};
 
-    --depgraph-edge: #474e5e;
+    --depgraph-edge: #{$bluegray-600};
     --blockquote-bg: #{$bluegray-600};
   }
 

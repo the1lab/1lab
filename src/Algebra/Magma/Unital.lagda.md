@@ -138,6 +138,12 @@ record
 open Unital-magma≃
 ```
 
+<!--
+```agda
+_ = Magma≡
+```
+-->
+
 Similar to the `process for magmas`{.Agda ident=Magma≡}, we can see that
 the identity type between two unital magmas is the same as the type of
 their equivalences.

@@ -12,10 +12,11 @@ import Control.Monad.Writer
 import Control.Monad.State
 
 import qualified Data.ByteString.Lazy as LazyBS
-import qualified Data.Text.Encoding as Text
-import qualified Data.Text.IO as Text
 import qualified Data.Map.Lazy as Map
 import qualified Data.Text as Text
+import qualified Data.Text.Encoding as Text
+import qualified Data.Text.IO as Text
+import Data.Aeson (encodeFile)
 import Data.Digest.Pure.SHA
 import Data.Text (Text)
 import Data.Foldable
@@ -34,6 +35,7 @@ import Text.HTML.TagSoup
 import Text.Collate.Lang (Lang (..))
 import Text.Pandoc.Builder (Inlines)
 import Text.Pandoc.Citeproc
+import Text.Pandoc.Shared
 import Text.Pandoc.Walk
 import Text.Pandoc
 
@@ -84,17 +86,18 @@ buildMarkdown refs input output = do
   liftIO $ Dir.createDirectoryIfMissing False "_build/diagrams"
 
   let refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
-  markdown <- walkM (patchInline refMap autorefs) . walk patchInlines . linkReferences $ markdown
+  markdown <- walkM (patchInline refMap autorefs) . walk patchInlines . linkReferences modname $ markdown
   (markdown, MarkdownState references dependencies) <- runWriterT (walkM patchBlock markdown)
   need dependencies
 
   text <- liftIO $ either (fail . show) pure =<< runIO (renderMarkdown authors references modname markdown)
 
-  let tags = map (parseAgdaLink refs) . foldEquations False $ parseTags text
+  tags <- mapM (parseAgdaLink modname refs) . foldEquations False $ parseTags text
   traverse_ (checkMarkup input) tags
   liftIO . Text.writeFile output $ renderHTML5 tags
 
-  writeSearchData ("_build/search" </> modname <.> "json") (query (getHeaders (Text.pack modname)) markdown)
+  liftIO $ Dir.createDirectoryIfMissing False "_build/search"
+  liftIO $ encodeFile ("_build/search" </> modname <.> "json") (query (getHeaders (Text.pack modname)) markdown)
 
 -- | Find the original Agda file from a 1Lab module name.
 findModule :: MonadIO m => String -> m FilePath
@@ -141,9 +144,8 @@ patchInline refMap _ (Link attrs contents (target, ""))
   , Just ref <- Map.lookup citation refMap
   , Just title <- Cite.valToText =<< Cite.lookupVariable "title" ref
   = pure $ Link attrs contents (target, title)
-patchInline _ autolinks (RawInline h txt)
-  | h == Format "tex"
-  , "\\r{" `Text.isPrefixOf` txt
+patchInline _ autolinks (RawInline "tex" txt)
+  | "\\r{" `Text.isPrefixOf` txt
   , "}" `Text.isSuffixOf` txt
   , let txt' = Text.strip $ Text.drop 3 txt
   , let key = Text.take (Text.length txt' - 1) txt'
@@ -279,17 +281,26 @@ getHeaders module' = flip evalState [] . getAp . query (Ap . go) where
   go [] = pure []
   go (Header level (hId, _, _) hText:xs) = do
     path <- get
-    let title = renderPlain hText
+    let title = trimr (renderPlain hText)
     let path' = (level, title):dropWhile (\(l, _) -> l >= level) path
     put path'
 
     if hId == "" then go xs
     else
       (:) SearchTerm
-      { idIdent  = Text.intercalate " > " . reverse $ map snd path'
+        { idIdent  = Text.intercalate " > " . reverse $ map snd path'
+        , idAnchor = module' <> ".html#" <> hId
+        , idType   = Nothing
+        , idDesc   = getDesc xs
+        } <$> go xs
+  go (Div (hId, _, _) blocks:xs) | hId /= "" = do
+    path <- get
+
+    (:) SearchTerm
+      { idIdent  = Text.intercalate " > " . reverse $ hId:map snd path
       , idAnchor = module' <> ".html#" <> hId
       , idType   = Nothing
-      , idDesc   = getDesc xs
+      , idDesc   = getDesc blocks
       } <$> go xs
   go (_:xs) = go xs
 
@@ -299,10 +310,12 @@ getHeaders module' = flip evalState [] . getAp . query (Ap . go) where
   -- is followed by a paragraph, use its contents.
   getDesc (Para x:_) = Just (renderPlain x)
   getDesc (Plain x:_) = Just (renderPlain x)
+  getDesc (Div (_, cls, _) _:xs) | "warning" `elem` cls = getDesc xs
+  getDesc (BlockQuote blocks:_) = getDesc blocks
   getDesc _ = Nothing
 
 htmlInl :: Text -> Inline
-htmlInl = RawInline (Format "html")
+htmlInl = RawInline "html"
 
 templateName, bibliographyName, autorefsName :: FilePath
 templateName = "support/web/template.html"

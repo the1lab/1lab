@@ -17,7 +17,6 @@ We establish the correspondence between `Pullback`{.Agda} and the
 <!--
 ```agda
 open import Cat.Reasoning Cat
-open import Cat.Univalent Cat
 
 -- Yikes:
 open is-pullback

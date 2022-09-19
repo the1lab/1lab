@@ -3,4 +3,4 @@ packages: support/shake/1lab-shake.cabal
 source-repository-package
     type: git
     location: https://github.com/agda/agda.git
-    tag: a52fc3ca191b58e552626988b663bf76c6e8cc42
+    tag: 52467b24fd0670168b2dd8855e9b8d25227e78b9

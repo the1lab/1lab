@@ -24,24 +24,21 @@ Sets-is-complete {D = D} F = lim where
   module F = Functor F
 
   comm-prop : ∀ f → is-prop (∀ x y (g : D.Hom x y) → F.₁ g (f x) ≡ (f y))
-  comm-prop f = Π-is-hlevel 1 λ _ → Π-is-hlevel 1 λ _ → Π-is-hlevel 1 λ _ →
-                F.₀ _ .is-tr _ _
+  comm-prop f = hlevel!
 ```
 
-Since `Set`{.Agda} is closed under (arbitrary) `products`{.Agda
-ident=Π-is-level}, we can build the limit of an arbitrary diagram $F$
---- which we will write $\lim F$ --- by first taking the product
-$\prod_{j : \ca{D}} F(j)$ (which is a set of dependent functions), then
-restricting ourselves to the subset of those for which $F(g) \circ f(x)
-= f(y)$, i.e., those which are cones over $F$.
+Since `Set`{.Agda} is closed under (arbitrary) products, we can build
+the limit of an arbitrary diagram $F$ --- which we will write $\lim F$
+--- by first taking the product $\prod_{j : \ca{D}} F(j)$ (which is a
+set of dependent functions), then restricting ourselves to the subset of
+those for which $F(g) \circ f(x) = f(y)$, i.e., those which are cones
+over $F$.
 
 ```agda
   f-apex : Set _
-  f-apex .∣_∣   = Σ[ f ∈ ((j : D.Ob) → ∣ F.₀ j ∣) ]
-                    (∀ x y (g : D.Hom x y) → F.₁ g (f x) ≡ (f y))
-
-  f-apex .is-tr = Σ-is-hlevel 2 (Π-is-hlevel 2 (λ x → F.₀ x .is-tr))
-                    (λ f → is-prop→is-set (comm-prop f))
+  f-apex = el! $
+    Σ[ f ∈ ((j : D.Ob) → ∣ F.₀ j ∣) ]
+      (∀ x y (g : D.Hom x y) → F.₁ g (f x) ≡ (f y))
 ```
 
 To form a cone, given an object $x : \ca{D}$, and an inhabitant $(f,p)$
@@ -113,15 +110,15 @@ of sets of _any_ level $\ell$ admits them.
 
 ```agda
   Sets-terminal : Terminal (Sets ℓ)
-  Sets-terminal .top = el (Lift _  ⊤) (is-prop→is-set (λ _ _ → refl))
-  Sets-terminal .has⊤ _ = fun-is-hlevel 0 (contr (lift tt) λ x i → lift tt)
+  Sets-terminal .top = el! (Lift _  ⊤)
+  Sets-terminal .has⊤ _ = hlevel!
 ```
 
 Products are given by product sets:
 
 ```agda
   Sets-products : (A B : Set ℓ) → Product A B
-  Sets-products A B .apex = el (∣ A ∣ × ∣ B ∣) (×-is-hlevel 2 (A .is-tr) (B .is-tr))
+  Sets-products A B .apex = el! (∣ A ∣ × ∣ B ∣)
   Sets-products A B .π₁ = fst
   Sets-products A B .π₂ = snd
   Sets-products A B .has-is-product .⟨_,_⟩ f g x = f x , g x
@@ -137,8 +134,7 @@ using $\Sigma$:
   Sets-equalisers : (f g : Hom A B) → Equaliser {A = A} {B = B} f g
   Sets-equalisers {A = A} {B = B} f g = eq where
     eq : Equaliser f g
-    eq .apex = el (Σ[ x ∈ ∣ A ∣ ] (f x ≡ g x))
-                  (Σ-is-hlevel 2 (A .is-tr) λ _ → is-prop→is-set (B .is-tr _ _))
+    eq .apex = el! (Σ[ x ∈ ∣ A ∣ ] (f x ≡ g x))
     eq .equ = fst
     eq .has-is-eq .equal = funext snd
     eq .has-is-eq .limiting {e′ = e′} p x = e′ x , happly p x
@@ -154,11 +150,7 @@ Pullbacks are the same, but carving out a subset of $A \times B$.
                 → Pullback {X = A} {Y = B} {Z = C} f g
   Sets-pullbacks {A = A} {B = B} {C = C} f g = pb where
     pb : Pullback f g
-    pb .apex .∣_∣ = Σ[ x ∈ ∣ A ∣ ] Σ[ y ∈ ∣ B ∣ ] (f x ≡ g y)
-    pb .apex .is-tr =
-      Σ-is-hlevel 2 (A .is-tr) λ _ →
-      Σ-is-hlevel 2 (B .is-tr) λ _ →
-      is-prop→is-set (C .is-tr _ _)
+    pb .apex = el! $ Σ[ x ∈ ∣ A ∣ ] Σ[ y ∈ ∣ B ∣ ] (f x ≡ g y)
     pb .p₁ (x , _ , _) = x
     pb .p₂ (_ , y , _) = y
     pb .has-is-pb .square = funext (snd ⊙ snd)

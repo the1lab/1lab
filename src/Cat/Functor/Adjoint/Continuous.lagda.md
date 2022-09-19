@@ -43,7 +43,7 @@ then instantiate this theorem to the "canonical" shapes of limit:
 
 [terminal objects]: Cat.Diagram.Terminal.html
 [products]: Cat.Diagram.Product.html
-[pullbacks]: Cat.Diagram.Pullbacks.html
+[pullbacks]: Cat.Diagram.Pullback.html
 [equalisers]: Cat.Diagram.Equaliser.html
 
 ```agda

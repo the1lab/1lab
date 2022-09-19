@@ -59,7 +59,7 @@ Since `f`{.Agda} and `g`{.Agda} are defined by [coercion] along a path,
 we can define _fillers_ `u`{.Agda} and `v`{.Agda} connecting `f`{.Agda}
 (resp `g`{.Agda}) to the identity function, over `P`{.Agda}:
 
-[coercion]: 1Lab.Path.html#cartesian-coercion
+[coercion]: 1Lab.Path.html#coercion
 
 ```agda
   u : PathP (λ i → A → P i) id f
@@ -153,18 +153,16 @@ look at, so focus on the diagram: It connects `β₀`{.Agda} and
 ~~~
 
 ```agda
-    square : A → ∀ j i → PartialP (~ j ∨ j) (λ _ → P (~ i))
-    square x j i (j = i0) = v (~ i) y
-    square x j i (j = i1) = u (~ i) x
+    square : ∀ (x : A) (β : f x ≡ y) j i → PartialP (∂ j ∨ ~ i) (λ _ → P (~ i))
+    square x β j i (j = i0) = v (~ i) y
+    square x β j i (j = i1) = u (~ i) x
+    square x β j i (i = i0) = β (~ j)
 
     ω₀ : g y ≡ x₀
-    ω₀ j = primComp (λ i → P (~ i)) (square x₀ j) (β₀ (~ j))
+    ω₀ j = comp (λ i → P (~ i)) (∂ j) (square x₀ β₀ j)
 
     θ₀ : SquareP (λ i j → P (~ j)) (sym β₀) (λ i → v (~ i) y) (λ i → u (~ i) x₀) ω₀
-    θ₀ j i = fill ~P (∂ j) i λ where
-      i (j = i0) → v (~ i) y
-      i (j = i1) → u (~ i) x₀
-      i (i = i0) → β₀ (~ j)
+    θ₀ j i = fill ~P (∂ j) i (square x₀ β₀ j)
 ```
 
 Analogously, we have `ω₁`{.Agda} and `θ₁`{.Agda} connecting `β₁`{.Agda}
@@ -184,13 +182,10 @@ and that, as the dashed line and filler of the square below:
 
 ```agda
     ω₁ : g y ≡ x₁
-    ω₁ j = primComp (λ i → P (~ i)) (square x₁ j) (β₁ (~ j))
+    ω₁ j = comp (λ i → P (~ i)) (∂ j) (square x₁ β₁ j)
 
     θ₁ : SquareP (λ i j → P (~ j)) (sym β₁) (λ i → v (~ i) y) (λ i → u (~ i) x₁) ω₁
-    θ₁ j i = fill ~P (∂ j) i λ where
-      i (j = i0) → v (~ i) y
-      i (j = i1) → u (~ i) x₁
-      i (i = i0) → β₁ (~ j)
+    θ₁ j i = fill ~P (∂ j) i (square x₁ β₁ j)
 ```
 
 Now, we are almost done. Like a magic trick, the paths `ω₀` and

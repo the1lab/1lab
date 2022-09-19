@@ -5,6 +5,8 @@ module Shake.Modules
   ( ModName
   , ModKind(..)
   , moduleRules
+  , getOurModules
+  , getAllModules
   ) where
 
 import qualified Data.Map.Strict as Map
@@ -48,26 +50,25 @@ instance NFData ModulesA where
 
 type instance RuleResult ModulesQ = ModulesA
 
--- | Get all modules used within 1Lab
-moduleRules :: Rules
-  ( Action (Map ModName ModKind) -- ^ Get all 1Lab modules
-  , Action (Map ModName ModKind) -- ^ Get all Agda modules used within the project.
-  )
+-- | Define oracles to get the modules used within 1Lab.
+moduleRules :: Rules ()
 moduleRules = do
-  getOurModules_ <- addOracle \ModulesQ -> do
+  _ <- addOracle \ModulesQ -> do
     let
       toOut x | takeExtensions x == ".lagda.md"
               = (moduleName (dropExtensions x), WithText)
       toOut x = (moduleName (dropExtensions x), CodeOnly)
 
     ModulesA . Map.fromList . map toOut <$> getDirectoryFiles "src" ["**/*.agda", "**/*.lagda.md"]
+  pure ()
 
-  let
-    getOurModules = unModulesA <$> getOurModules_ ModulesQ
-    getAllModules :: Action (Map ModName ModKind)
-    getAllModules = do
-      our <- getOurModules
-      pure $ Map.singleton "all-pages" CodeOnly
-          <> our
+-- | Get all 1Lab modules.
+getOurModules :: Action (Map ModName ModKind)
+getOurModules = unModulesA <$> askOracle ModulesQ
 
-  pure (getOurModules, getAllModules)
+-- | Get all Agda modules used within the project.
+getAllModules :: Action (Map ModName ModKind)
+getAllModules = do
+  our <- getOurModules
+  pure $ Map.singleton "all-pages" CodeOnly
+      <> our

@@ -41,7 +41,7 @@ a.search-result {
   }
 
   li.active > & {
-    border-left: 5px solid $bluegray-600;
+    border-left: 5px solid var(--search-selected);
   }
 
   & h3 {
@@ -59,7 +59,7 @@ a.search-result {
     .search-module {
       margin-left: 0.5em;
       font-size: 0.7em;
-      color: $bluegray-800;
+      color: var(--text-fg-alt);
       font-style: italic;
     }
   }

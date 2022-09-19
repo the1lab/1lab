@@ -136,13 +136,18 @@ the isomorphism of first components coming from the isomorphism in $\int E$.
 
 ```agda
   is-category-total : is-category (∫ E)
-  is-category-total A .centre = A , ∫E.id-iso
-  is-category-total A .paths (B , isom) = wrapper _ _ _ _ where
+  is-category-total = record
+    { to-path      = λ p → ap fst (wrapper _  _ _ _)
+    ; to-path-over = λ p → ap snd (wrapper _ _ _ _)
+    }
+    where
     wrapper
       : ∀ {x y} (p : x B.≅ y) (A : Ob[ x ]) (B : Ob[ y ]) (f : A ≅[ p ] B)
-      → Path (Σ _ ((x , A) ∫E.≅_)) _ _
+      → Path (Σ _ ((x , A) ∫E.≅_))
+        ((x , A) , ∫E.id-iso)
+        ((y , B) , piece-together p f)
     wrapper p A =
-      J-iso _ base-c
+      Univalent.J-iso base-c
         (λ y p → (B : Ob[ y ]) (f : A ≅[ p ] B)
                → ((_ , A) , ∫E.id-iso) ≡ (((y , B) , piece-together p f)))
         contract-vertical-iso
@@ -161,7 +166,7 @@ is-category-fibrewise
   → (∀ {x} (A : Ob[ x ]) → is-prop (Σ[ B ∈ Ob[ x ] ] (A ≅↓ B)))
   → is-category-displayed
 is-category-fibrewise base-c wit f A =
-  J-iso _ base-c (λ y p → is-prop (Σ[ B ∈ Ob[ y ] ] (A ≅[ p ] B))) (wit A) f
+  Univalent.J-iso base-c (λ y p → is-prop (Σ[ B ∈ Ob[ y ] ] (A ≅[ p ] B))) (wit A) f
 ```
 
 Consequently, it suffices for each fibre _category_ to be univalent,
@@ -186,6 +191,6 @@ is-category-fibrewise′ b wit = is-category-fibrewise b wit′ where
       (λ (x , i) → x , F.make-iso (i .to′) (i .from′)
         (from-pathp (i .invl)) (from-pathp (i .invr)))
       (λ (x , i) → Σ-pathp refl (≅[]-path refl refl))
-      (wit x A)
+      (is-contr-ΣR (wit x))
     where module F = Cat.Reasoning (Fibre E x)
 ```

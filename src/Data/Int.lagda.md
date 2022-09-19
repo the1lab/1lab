@@ -10,14 +10,13 @@ module Data.Int where
 
 # Integers
 
-The **integers** are what you get when you complete the [additive monoid
-structure on the naturals] into a [group]. In non-cubical Agda, a
+The **integers** are what you get when you complete the additive monoid
+structure on the naturals into a [group]. In non-cubical Agda, a
 representation of the integers as a coproduct $\bb{N} \coprod
 \bb{N}$ with one of the factors offset (to avoid having two zeroes)
 is adopted. In Cubical Agda we can adopt a representation much closer to
 a "classical" construction of the integers:
 
-[additive monoid structure on the naturals]: Algebra.Monoid.html#ℕ-+
 [group]: Algebra.Group.html
 
 ```agda
@@ -414,6 +413,12 @@ Int-rec₂ f p-l p-r sq (quot a b i) (diff x y)   = p-l a b x y i
 Int-rec₂ f p-l p-r sq (quot a b i) (quot x y j) = sq a b x y i j
 ```
 
+<!--
+```agda
+_ = is-set
+```
+-->
+
 However, when the type $X$ we are mapping into `is a set`{.Agda
 ident=is-set}, as is the case for the integers themselves, the square is
 automatically satisfied, so we can give a simplified recursion
@@ -593,7 +598,7 @@ Since addition of integers is (essentially!) addition of pairs of
 naturals, the algebraic properties of `+`{.Agda} on the natural numbers
 automatically lift to properties about `_+ℤ_`{.Agda}, using the
 recursion helpers for props (`Int-elim-prop`{.Agda}) and the fact that
-`equality of integers is a proposition`{.Agda ident=Int-is-set}.
+equality of integers is a proposition.
 
 ```agda
 +ℤ-associative : (x y z : Int) → (x +ℤ y) +ℤ z ≡ x +ℤ (y +ℤ z)
@@ -656,10 +661,8 @@ abstract
 ```
 
 Since `negate`{.Agda} is precisely what's missing for `Nat`{.Agda} to be
-a group, we _can_ turn [the integers] into a group. Subtraction is
+a group, we _can_ turn the integers into a group. Subtraction is
 defined as addition with the inverse, rather than directly on `diff`{.Agda}:
-
-[the integers]: Algebra.Group.html#the-integers
 
 ```agda
 _-ℤ_ : Int → Int → Int

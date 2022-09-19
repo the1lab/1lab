@@ -104,9 +104,8 @@ $\ca{C}$ is univalent, too!
 
 ```agda
   reflect-category : is-category D → is-amnestic → is-category C
-  reflect-category d-cat forget A = contr (_ , C.id-iso) uniq where
-    uniq : ∀ x → (A , C.id-iso) ≡ x
-    uniq (B , isom) = Σ-pathp A≡B q where
+  reflect-category d-cat forget = record { to-path = A≡B ; to-path-over = q } where
+    module _ {A} {B} isom where
       isom′ = F-map-iso F isom
 ```
 
@@ -118,8 +117,8 @@ an identity, and by $F$'s amnesia, so is $i$.
 ```agda
       p : Σ[ c ∈ C.Ob ] Path (Mor C) (c , c , C.id) (A , B , isom .C.to)
       p = equiv→inverse (forget (isom .C.to) (C.iso→invertible isom)) $
-            F.₀ A , Mor-path D refl (iso→path D d-cat isom′)
-                      (Hom-pathp-reflr-iso D d-cat (D.idr _))
+            F.₀ A , Mor-path D refl (d-cat .to-path isom′)
+                      (Hom-pathp-reflr-iso d-cat (D.idr _))
 ```
 
 Unfolding, we have an object $x : \ca{C}$ and an identification $p : (x,
@@ -132,9 +131,9 @@ We're done!
       A≡B = sym (ap fst (p .snd)) ∙ ap (fst ⊙ snd) (p .snd)
 
       q : PathP (λ i → A C.≅ A≡B i) C.id-iso isom
-      q = C.≅-pathp refl A≡B $ Hom-pathp-reflr C $
+      q = C.≅-pathp refl A≡B $ Hom-pathp-reflr {C = C} $
            C.idr _
-        ·· path→to-∙ C _ _
-        ·· ap₂ C._∘_ refl (sym (path→to-sym C (ap fst (p .snd))))
-         ∙ Hom-pathp-id C (ap (snd ⊙ snd) (p .snd))
+        ·· path→to-∙ {C = C} _ _
+        ·· ap₂ C._∘_ refl (sym (path→to-sym {C = C} (ap fst (p .snd))))
+         ∙ Hom-pathp-id {C = C} (ap (snd ⊙ snd) (p .snd))
 ```

@@ -140,7 +140,7 @@ _can_ still ponder whether there is some "most efficient" way to turn a
 category into a proset.
 
 [ff]: Cat.Functor.Base.html#ff-functors
-[prosets]: Cat.Thin.html#prosets
+[prosets]: Cat.Thin.html#Prosets
 [strict precategories]: Cat.Instances.StrictCat.html#strict-precategories
 
 While we can't directly consider maps from precategories to proset, we

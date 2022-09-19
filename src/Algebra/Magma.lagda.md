@@ -115,6 +115,12 @@ record
 open Magma≃
 ```
 
+<!--
+```agda
+_ = Str-desc
+```
+-->
+
 By using record machinery that transforms our given definition into an
 equivalent `description`{.Agda ident=Str-desc}, we can see that
 `Magma-on`{.Agda} forms a univalent structure, which allows us to

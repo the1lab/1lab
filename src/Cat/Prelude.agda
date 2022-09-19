@@ -16,5 +16,7 @@ open import Data.Set.Coequaliser public
 open import Cat.Base public
 open import Cat.Solver public
 open import Cat.Univalent
-  using ( is-category )
+  using ( is-category ; path→iso ; Hom-pathp
+        ; Hom-transport ; Hom-pathp-refll ; Hom-pathp-reflr
+        ; module Univalent )
   public

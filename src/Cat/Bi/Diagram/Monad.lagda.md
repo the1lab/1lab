@@ -33,7 +33,7 @@ works in any [bicategory]!
   record Monad (a : B.Ob) : Type (ℓ ⊔ ℓ′) where
     field
       M : a B.↦ a
-      μ : (M B.∘ M) B.⇒ M
+      μ : (M B.⊗ M) B.⇒ M
       η : B.id B.⇒ M
 ```
 
@@ -46,9 +46,9 @@ the unit $\eta$ must be appropriately compatible with the left and right
 unitors $\lambda, \rho$.
 
 ```agda
-      μ-assoc : μ B.⊗ (M B.▶ μ) ≡ μ B.⊗ (μ B.◀ M) B.⊗ B.α← M M M
-      μ-unitr : μ B.⊗ (M B.▶ η) ≡ B.ρ← M
-      μ-unitl : μ B.⊗ (η B.◀ M) ≡ B.λ← M
+      μ-assoc : μ B.∘ (M B.▶ μ) ≡ μ B.∘ (μ B.◀ M) B.∘ B.α← M M M
+      μ-unitr : μ B.∘ (M B.▶ η) ≡ B.ρ← M
+      μ-unitl : μ B.∘ (η B.◀ M) ≡ B.λ← M
 ```
 
 We can draw these compatibility conditions as pretty commputative

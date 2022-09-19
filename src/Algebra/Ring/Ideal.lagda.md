@@ -26,7 +26,7 @@ R$'s composition is given by $R$'s multiplication, and sieves are
 subsets closed under precomposition, we instantly deduce that ideals are
 closed under multiplication.
 
-[$\Ab$-enriched]: Cat.Abelian.Base.html#ab-categories
+[$\Ab$-enriched]: Cat.Abelian.Base.html#ab-enriched-categories
 [sieve]: Cat.Diagram.Sieve.html
 [$R$-module]: Algebra.Ring.Module.html#modules
 [representable ring]: Algebra.Ring.Module.html#representable-modules

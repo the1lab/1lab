@@ -403,7 +403,7 @@ $\ht{Ab}$ is a univalent category, an _identification_ of $\hom$-groups.
 
 ```agda
   Tensor⊣Hom : Hom-group (A ⊗ B) C ≡ Hom-group A (Hom-group B C)
-  Tensor⊣Hom = iso→path (Ab _) Ab-is-category $
+  Tensor⊣Hom = Ab-is-category .to-path $
     Ab.make-iso (to-ab-hom , to′) (from-ab-hom , from′)
       (Forget-is-faithful $ funext (equiv→counit (tensor⊣hom .snd)))
       (Forget-is-faithful $ funext (equiv→unit (tensor⊣hom .snd)))

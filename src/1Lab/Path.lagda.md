@@ -540,7 +540,7 @@ Singleton x = Σ[ y ∈ _ ] (x ≡ y)
 ```
 
 There is a canonical inhabitant of `Singleton x`, namely `(x, refl)`. To
-say that `singletons`{.Agda ident=singleton} are contractible is to say
+say that `singletons`{.Agda ident=Singleton} are contractible is to say
 that every other inhabitant has a path to `(x, refl)`:
 
 ```agda
@@ -916,10 +916,12 @@ which are Kan complices. Examples of types which are _not_ fibrant
 include the interval `I`{.Agda}, the partial elements `Partial`{.Agda},
 and the extensions `_[_↦_]`[^notfibrant].
 
-> <a id="fibrant">**Definition**</a>: A type is _fibrant_ if it supports
+::: {#fibrant}
+> **Definition**: A type is _fibrant_ if it supports
 `hcomp`{.Agda}. This word comes up a lot when discussing not only the
 semantics of Cubical type theory, but also its practice! For instance,
 the fibrancy of `Type`{.Agda} is what powers [univalence].
+:::
 
 [univalence]: 1Lab.Univalence.html
 
@@ -1189,7 +1191,7 @@ propositional when `ap`{.Agda} is defined in terms of `J`{.Agda}. For
 instance:
 
 ```agda
-module _  where
+module _ where
   private variable
     ℓ : Level
     A B C : Type ℓ
@@ -1205,7 +1207,7 @@ module _  where
   ap-id = refl
 
   ap-sym : {x y : A} {p : x ≡ y}
-          → sym (ap f p) ≡ ap f (sym p)
+         → sym (ap f p) ≡ ap f (sym p)
   ap-sym = refl
 
   ap-refl : {x : A} → ap f (λ i → x) ≡ (λ i → f x)
@@ -1526,7 +1528,7 @@ theorem] says that for types with decidable equality, it's boring. For
 `Path S¹ base base ≡ Int`.
 
 [Hedberg's theorem]: 1Lab.HLevel.Sets.html
-[the circle]: 1Lab.HIT.S1.html
+[the circle]: Homotopy.Space.Circle.html
 
 Most of these characterisations need machinery that is not in this
 module to be properly stated. Even then, we can begin to outline a few
@@ -1749,5 +1751,11 @@ sym-∙-filler {A = A} {z = z} p q i j k =
 sym-∙ : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : y ≡ z) → sym (p ∙ q) ≡ sym q ∙ sym p
 sym-∙ p q i j = sym-∙-filler p q j i i1
 
+infixr -1 _$ₚ_
+
+_$ₚ_ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : A → Type ℓ₂} {f g : ∀ x → B x}
+     → f ≡ g → ∀ x → f x ≡ g x
+(f $ₚ x) i = f i x
+{-# INLINE _$ₚ_ #-}
 ```
 -->

@@ -217,6 +217,8 @@ id-iso .from = id
 id-iso .inverses .invl = idl id
 id-iso .inverses .invr = idl id
 
+Isomorphism = _≅_
+
 Inverses-∘ : {f : Hom a b} {f⁻¹ : Hom b a} {g : Hom b c} {g⁻¹ : Hom c b}
            → Inverses f f⁻¹ → Inverses g g⁻¹ → Inverses (g ∘ f) (f⁻¹ ∘ g⁻¹)
 Inverses-∘ {f = f} {f⁻¹} {g} {g⁻¹} finv ginv = record { invl = l ; invr = r } where
@@ -279,4 +281,3 @@ invertible→epic {f = f} invert g h p =
   where
     open is-invertible invert
 ```
-

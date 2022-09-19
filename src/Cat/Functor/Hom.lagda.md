@@ -162,7 +162,7 @@ $px : P(X)$. Then, to construct the injection map, we can just use the
 (contravariant) functorial action of $P$ to take a $px : P(X)$ and a $f
 : Hom(A, X)$ to a $P(A)$. This map is natural by functoriality of $P$.
 
-[canonical projection]: Cat.Instances.Elements.html#Projection
+[canonical projection]: Cat.Instances.Elements.html#projection
 
 
 ```agda

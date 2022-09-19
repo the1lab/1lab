@@ -25,9 +25,8 @@ the former is univalent iff the latter is.
 
 ```agda
 opposite-is-category : is-category C → is-category (C ^op)
-opposite-is-category x A .centre = A , Cop.id-iso
-opposite-is-category x A .paths (B , isom) =
-  Σ-pathp
-    (iso→path C x (C.make-iso (isom .Cop.from) (isom .Cop.to) (isom .Cop.invl) (isom .Cop.invr)))
-    (Cop.≅-pathp refl _ (Hom-pathp-refll-iso C x (C.idl _)))
+opposite-is-category x .to-path i = x .to-path $
+  C.make-iso (i .Cop.from) (i .Cop.to) (i .Cop.invl) (i .Cop.invr)
+opposite-is-category x .to-path-over p =
+  Cop.≅-pathp refl _ $ Hom-pathp-refll-iso x (C.idl _)
 ```

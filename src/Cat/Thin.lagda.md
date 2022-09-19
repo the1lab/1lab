@@ -60,7 +60,9 @@ record Proset (o h : Level) : Type (lsuc (o ⊔ h)) where
 ```
 
 The collection of all thin categories assembles into a subcategory of
-`Strict-Cat`{.Agda}, which we call `Proset`{.Agda}.
+`Strict-Cat`{.Agda}, which we call `Prosets`{.Agda} (for "[preordered] sets").
+
+[preordered]: Relation.Order.html#order-relations
 
 ```agda
 Prosets : ∀ o h → Precategory (lsuc (o ⊔ h)) (o ⊔ h)
@@ -135,7 +137,6 @@ record Poset (o h : Level) : Type (lsuc (o ⊔ h)) where
     using ( Ob ; Hom ; Hom-set ; id ; _∘_ ; idl ; idr ; assoc ) public
   open is-thin has-is-thin public
 
-  open import Cat.Univalent underlying
   module HLevel-instance where
     instance
       H-Level-Hom : ∀ {x y} {n} → H-Level (Hom x y) (suc n)
@@ -164,7 +165,7 @@ g) : A \le A$, then it must be equal to `reflexive`{.Agda} above.
 
 ```agda
   antisym : ∀ {x y} → x ≤ y → y ≤ x → x ≡ y
-  antisym f g = iso→path has-is-univalent
+  antisym f g = Univalent.iso→path has-is-univalent
     (record
       { to = f
       ; from = g
@@ -233,18 +234,9 @@ from the iso we have $(A \le B) \land (B \le A)$, and antisymmetry
 finishes the job.
 
 ```agda
-    tc .has-is-univalent A .centre        = A , id-iso
-    tc .has-is-univalent A .paths (B , i) = Σ-prop-path isp (Rantisym i.to i.from) where
-      module i = _≅_ i
-      abstract
-        isp : ∀ x → is-prop (A ≅ x)
-        isp ob x y i .to   = Rprop (x .to)   (y .to)   i
-        isp ob x y i .from = Rprop (x .from) (y .from) i
-        isp ob x y i .inverses =
-          is-prop→pathp
-            (λ i → Inverses-are-prop {f = Rprop (x .to)   (y .to)   i}
-                                     {g = Rprop (x .from) (y .from) i})
-            (x .inverses) (y .inverses) i
+    tc .has-is-univalent = λ where
+      .to-path i → Rantisym (i .to) (i .from)
+      .to-path-over p → ≅-pathp _ _ (is-prop→pathp (λ _ → Rprop) _ _)
 ```
 
 <!--
@@ -256,9 +248,9 @@ univalent-thin-precat→Poset
   → Poset o ℓ
 univalent-thin-precat→Poset C hprop cat = pos where
   module C = Cat.Reasoning C
-  module cu = Cat.Univalent C
+  module cu = Cat.Univalent.Univalent cat
   ob-set : is-set C.Ob
-  ob-set x y = is-hlevel≃ 1 ((cu.path→iso , cu.path→iso-is-equiv cat) e⁻¹)
+  ob-set x y = is-hlevel≃ 1 (identity-system-gives-path cat)
     λ f g → C.≅-pathp refl refl (hprop _ _ _ _)
   pos : Poset _ _
   pos .Poset.underlying = C

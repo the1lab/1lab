@@ -36,13 +36,13 @@ equivalent."
 
 The notion we adopt is due to Voevodsky: An equivalence is one that has
 `contractible`{.Agda ident=is-contr} `fibres`{.Agda ident=fibre}. Other
-definitions are possible (e.g.: [bi-inverible maps]) --- but
+definitions are possible (e.g.: [bi-invertible maps]) --- but
 contractible fibres are "privileged" in Cubical Agda because for
 [glueing] to work, we need a proof that `equivalences have contractible
 fibres`{.Agda ident=is-eqv'} anyway.
 
-[bi-inverible maps]: 1Lab.Equiv.Biinv.html
-[glueing]: 1Lab.Univalence.html#Glue
+[bi-invertible maps]: 1Lab.Equiv.Biinv.html
+[glueing]: 1Lab.Univalence.html#glue
 
 ```agda
 private
@@ -308,6 +308,12 @@ witnesses $s : f (g\ x) = x$ and $t : g (f\ x) = x$ (named for
 to show that, for any $y$, the `fibre`{.Agda} of $f$ over $y$ is
 contractible. It suffices to show that the fibre is propositional, and
 that it is inhabited.
+
+<!--
+```agda
+  _ = PathP
+```
+-->
 
 We begin with showing that the fibre over $y$ is propositional, since
 that's the harder of the two arguments. Suppose that we have $y$, $x_0$,

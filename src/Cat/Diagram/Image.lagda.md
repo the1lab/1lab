@@ -43,7 +43,7 @@ $$
 $$
 
 
-[embeds into]: 1Lab.Equivalence.Embedding.html
+[embeds into]: 1Lab.Equiv.Embedding.html
 
 While these are indeed two necessary properties of an _image_, they fail
 to accurately represent the set-theoretic construction: Observe that,

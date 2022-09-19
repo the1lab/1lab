@@ -133,7 +133,7 @@ computations with equalities and a whole waterfall of absurd cases:
     map (g ∙ f) (yes ⌜ x=z ⌝)              ≡⟨ ap! (set _ _ _ _) ⟩
     map (g ∙ f) (yes (x=y ∙ y=z))          ≡⟨⟩
     subst (P x) (x=y ∙ y=z) C.id           ≡⟨ subst-∙ (P x) _ _ _ ⟩
-    subst (P x) y=z (subst (P _) x=y C.id) ≡⟨ from-pathp ((Hom-pathp C (ap₂ C._∘_ refl (ap₂ C._∘_ refl (transport-refl _) ∙ C.idr _)))) ⟩
+    subst (P x) y=z (subst (P _) x=y C.id) ≡⟨ from-pathp ((Hom-pathp {C = C} (ap₂ C._∘_ refl (ap₂ C._∘_ refl (transport-refl _) ∙ C.idr _)))) ⟩
     map f (yes y=z) C.∘ map g (yes x=y)    ≡˘⟨ ap₂ C._∘_ (ap (map f) p3) (ap (map g) p1) ⟩
     map f (disc y z) C.∘ map g (disc x y)  ∎
 

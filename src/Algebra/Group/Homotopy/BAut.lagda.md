@@ -20,7 +20,7 @@ fundamental group of $\id{Sym}(X)$.
 
 [symg]: Algebra.Group.html#symmetric-groups
 [deloopings]: Algebra.Group.Homotopy.html#deloopings
-[fundamental group]: Algebra.Group.Homotopy.html#homotopy-groups.
+[fundamental group]: Algebra.Group.Homotopy.html#homotopy-groups
 [merely]: 1Lab.HIT.Truncation.html
 
 ```agda

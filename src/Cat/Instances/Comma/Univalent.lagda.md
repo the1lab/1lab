@@ -51,15 +51,15 @@ o_y \equiv o'_y$.
 
 ```agda
 Comma-is-category : is-category (F ↓ G)
-Comma-is-category ob .centre = ob , F↓G.id-iso
-Comma-is-category ob .paths (ob′ , isom) = Σ-pathp objs maps where
-  module isom = F↓G._≅_ isom
+Comma-is-category = record { to-path = objs ; to-path-over = maps } where
+  module _ {ob ob′} (isom : F↓G.Isomorphism ob ob′) where
+    module isom = F↓G._≅_ isom
 
-  x-is-x : ob .x Y.≅ ob′ .x
-  y-is-y : ob .y Z.≅ ob′ .y
+    x-is-x : ob .x Y.≅ ob′ .x
+    y-is-y : ob .y Z.≅ ob′ .y
 
-  x-is-x = Y.make-iso (isom.to .α) (isom.from .α) (ap α isom.invl) (ap α isom.invr)
-  y-is-y = Z.make-iso (isom.to .β) (isom.from .β) (ap β isom.invl) (ap β isom.invr)
+    x-is-x = Y.make-iso (isom.to .α) (isom.from .α) (ap α isom.invl) (ap α isom.invr)
+    y-is-y = Z.make-iso (isom.to .β) (isom.from .β) (ap β isom.invl) (ap β isom.invr)
 ```
 
 Observe that, over $\^f_\alpha$ and $\^f_\beta$, the map components
@@ -85,19 +85,19 @@ so over these isomorphisms the map parts become equal, thus establishing
 an identification $o \equiv o'$.
 
 ```agda
-  objs : ob ≡ ob′
-  objs i .x = iso→path Y yuniv x-is-x i
-  objs i .y = iso→path Z zuniv y-is-y i
-  objs i .map = lemma′ i where
-    lemma′ : PathP (λ i → X.Hom (F.₀ (objs i .x)) (G.₀ (objs i .y)))
-              (ob .map) (ob′ .map)
-    lemma′ = transport
-      (λ i → PathP (λ j → X.Hom (F-map-path F x-is-x yuniv xuniv (~ i) j)
-                                (F-map-path G y-is-y zuniv xuniv (~ i) j))
-                   (ob .map) (ob′ .map)) $
-      Hom-pathp-iso X xuniv $
-        X.pulll   (sym (isom.to .sq)) ∙
-        X.cancelr (F.annihilate (ap α isom.invl))
+    objs : ob ≡ ob′
+    objs i .x = yuniv .to-path x-is-x i
+    objs i .y = zuniv .to-path y-is-y i
+    objs i .map = lemma′ i where
+      lemma′ : PathP (λ i → X.Hom (F.₀ (objs i .x)) (G.₀ (objs i .y)))
+                (ob .map) (ob′ .map)
+      lemma′ = transport
+        (λ i → PathP (λ j → X.Hom (F-map-path F x-is-x yuniv xuniv (~ i) j)
+                                  (F-map-path G y-is-y zuniv xuniv (~ i) j))
+                    (ob .map) (ob′ .map)) $
+        Hom-pathp-iso xuniv $
+          X.pulll   (sym (isom.to .sq)) ∙
+          X.cancelr (F.annihilate (ap α isom.invl))
 ```
 
 It still remains to show that, over this identification, the isomorphism
@@ -105,8 +105,8 @@ $f$ is equal to the identity function. But this is simply a matter of
 pushing the identifications down to reach the "leaf" morphisms.
 
 ```agda
-  maps : PathP (λ i → ob F↓G.≅ objs i) _ isom
-  maps = F↓G.≅-pathp _ _
-    (↓Hom-pathp _ _ (Hom-pathp-reflr-iso Y yuniv (Y.idr _))
-                    (Hom-pathp-reflr-iso Z zuniv (Z.idr _)))
+    maps : PathP (λ i → ob F↓G.≅ objs i) _ isom
+    maps = F↓G.≅-pathp _ _
+      (↓Hom-pathp _ _ (Hom-pathp-reflr-iso yuniv (Y.idr _))
+                      (Hom-pathp-reflr-iso zuniv (Z.idr _)))
 ```

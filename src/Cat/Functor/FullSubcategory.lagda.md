@@ -88,30 +88,12 @@ is $\ca{R}$.
 
 ```agda
   Restrict-is-category : is-category C → is-category (Restrict P)
-  Restrict-is-category univ pb = is-hlevel≃ 0 equiv (univ A)
-    where
-      A = pb .object
-      p = pb .witness
-
-      to : (Σ[ B ∈ C.Ob ] A C.≅ B) → (Σ[ B ∈ R.Ob ] pb R.≅ B)
-      to (B , isom) = (restrict B (subst P A≡B p)) , super-iso→sub-iso isom
-        where A≡B = iso→path C univ isom
-
-      from : (Σ[ B ∈ R.Ob ] pb R.≅ B) → (Σ[ B ∈ C.Ob ] A C.≅ B)
-      from (B , isom) = B .object , sub-iso→super-iso isom
-
-      rinv : is-right-inverse from to
-      rinv pb = Σ-pathp path (R.≅-pathp _ _ refl) where
-        path : to (from pb) .fst ≡ pb .fst
-        path i .object = pb .fst .object
-        path i .witness = is-prop→pathp (λ _ → pprop (pb .fst .object))
-          (to (from pb) .fst .witness) (pb .fst .witness) i
-
-      linv : is-left-inverse from to
-      linv (x , i) = Σ-pathp refl (C.≅-pathp _ _ refl)
-
-      equiv : (Σ[ B ∈ C.Ob ] A C.≅ B) ≃ (Σ[ B ∈ R.Ob ] pb R.≅ B)
-      equiv = to , is-iso→is-equiv (iso from rinv linv)
+  Restrict-is-category cids = λ where
+    .to-path im i .object → Univalent.iso→path cids (sub-iso→super-iso im) i
+    .to-path {a = a} {b = b} im i .witness → is-prop→pathp
+      (λ i → pprop (cids .to-path (sub-iso→super-iso im) i))
+      (a .witness) (b .witness) i
+    .to-path-over p → R.≅-pathp _ _ λ i → cids .to-path-over (sub-iso→super-iso p) i .C.to
 ```
 
 ## From full inclusions
@@ -122,7 +104,7 @@ _full inclusion_, i.e. a [fully faithful] functor $F : \ca{D} \to
 of $\ca{C}$, namely that consisting of the objects in $\ca{C}$ merely in
 the image of $F$.
 
-[fully faithful]: Cat.Functor.Base#ff-functors
+[fully faithful]: Cat.Functor.Base.html#ff-functors
 
 ```agda
 module _ {o' h'} {D : Precategory o' h'} {F : Functor D C} (ff : is-fully-faithful F) where

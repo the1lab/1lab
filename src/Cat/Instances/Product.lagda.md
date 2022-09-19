@@ -63,7 +63,7 @@ C ×ᶜ D = prodcat where
   prodcat : Precategory _ _
   prodcat .Ob = Ob C × Ob D
   prodcat .Hom (a , a') (b , b') = Hom C a b × Hom D a' b'
-  prodcat .Hom-set (a , a') (b , b') = ×-is-hlevel 2 (Hom-set C a b) (Hom-set D a' b')
+  prodcat .Hom-set (a , a') (b , b') = hlevel!
   prodcat .id = id C , id D
   prodcat ._∘_ (f , f') (g , g') = f C.∘ g , f' D.∘ g'
   prodcat .idr (f , f') i = C.idr f i , D.idr f' i
@@ -115,24 +115,17 @@ module
   _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
     (c-cat : is-category C) (d-cat : is-category D) where
     private
-      module C   = Cat.Reasoning C
-      module D   = Cat.Reasoning D
+      module C   = Univalent c-cat
+      module D   = Univalent d-cat
       module C*D = Cat.Reasoning (C ×ᶜ D)
 ```
 -->
 
 ```agda
     ×ᶜ-is-category : is-category (C ×ᶜ D)
-    ×ᶜ-is-category A .centre = _ , C*D.id-iso
-    ×ᶜ-is-category (A₀ , A₁) .paths ((B₀ , B₁) , isom) i = (Ap i , Bp i) , ip i where
-      Ap : A₀ ≡ B₀
-      Ap = iso→path C c-cat (F-map-iso Fst isom)
-
-      Bp : A₁ ≡ B₁
-      Bp = iso→path D d-cat (F-map-iso Snd isom)
-
-      ip : PathP (λ i → (A₀ , A₁) C*D.≅ (Ap i , Bp i)) C*D.id-iso isom
-      ip = C*D.≅-pathp _ _ $
-        Σ-pathp-dep (Hom-pathp-reflr-iso C c-cat (C.idr _))
-                    (Hom-pathp-reflr-iso D d-cat (D.idr _))
+    ×ᶜ-is-category .to-path im =
+      Σ-pathp (C.iso→path (F-map-iso Fst im)) (D.iso→path (F-map-iso Snd im))
+    ×ᶜ-is-category .to-path-over p = C*D.≅-pathp _ _ $
+      Σ-pathp-dep (Hom-pathp-reflr-iso c-cat (C.idr _))
+                  (Hom-pathp-reflr-iso d-cat (D.idr _))
 ```

@@ -98,7 +98,7 @@ the map:
 
   trans′ : ∀ x y z → ∣ Hom′ x y ∣ → ∣ Hom′ y z ∣ → ∣ Hom′ x z ∣
   trans′ = Coeq-elim-prop₃
-    (λ x _ z → fun-is-hlevel 1 (fun-is-hlevel 1 (Hom′ x z .is-tr)))
+    (λ x _ z → hlevel!)
     (λ _ _ _ f g → g C.∘ f)
 
   antisym′ : ∀ x y → ∣ Hom′ x y ∣ → ∣ Hom′ y x ∣ → x ≡ y
@@ -184,8 +184,7 @@ move.
 
 ```agda
     F′₁ : (a b : X′.Ob) → X′.Hom a b → Y′.Hom (F′₀ a) (F′₀ b)
-    F′₁ = Coeq-elim-prop₂
-      (λ a b → fun-is-hlevel 1 (Y′.Hom-is-prop (F′₀ a) (F′₀ b)))
+    F′₁ = Coeq-elim-prop₂ (λ a b → hlevel!)
       (λ _ _ → F₁ F)
 
     abstract
@@ -199,10 +198,7 @@ move.
             ≡ Y′._∘_ {F′₀ x} {F′₀ y} {F′₀ z} (F′₁ y z f) (F′₁ x y g)
       F′₁-∘ =
         Coeq-elim-prop₃
-          (λ x y z →
-            Π-is-hlevel 1 λ f →
-            Π-is-hlevel 1 λ g →
-            Y′.Hom-set (F′₀ x) (F′₀ z) _ _)
+          (λ x y z → hlevel!)
           λ x y z f g → F-∘ F f g
 ```
 

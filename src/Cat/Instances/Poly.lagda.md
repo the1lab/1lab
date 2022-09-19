@@ -80,9 +80,7 @@ interpretation above _literally_:
 
 ```agda
 Polynomial-functor : ∀ {ℓ} → Poly.Ob {ℓ} → Functor (Sets ℓ) (Sets ℓ)
-Polynomial-functor (I , A) .F₀ X =
-  el (Σ[ i ∈ ∣ I ∣ ] (∣ A i ∣ → ∣ X ∣)) $
-    Σ-is-hlevel 2 (I .is-tr) λ _ → fun-is-hlevel 2 (X .is-tr)
+Polynomial-functor (I , A) .F₀ X = el! (Σ[ i ∈ ∣ I ∣ ] (∣ A i ∣ → ∣ X ∣))
 Polynomial-functor (I , A) .F₁ f (a , g) = a , λ z → f (g z)
 Polynomial-functor (I , A) .F-id = refl
 Polynomial-functor (I , A) .F-∘ f g = refl

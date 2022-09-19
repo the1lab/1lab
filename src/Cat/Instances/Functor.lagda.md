@@ -114,6 +114,62 @@ Functor-path {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-id =
 Functor-path {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-∘ f g =
   is-prop→pathp (λ i → D .Hom-set _ _ (p1 (C ._∘_ f g) i) (D ._∘_ (p1 f i) (p1 g i)))
     (F-∘ F f g) (F-∘ G f g) i
+
+Functor-pathp
+  : {C : I → Precategory o h} {D : I → Precategory o₁ h₁}
+    {F : Functor (C i0) (D i0)} {G : Functor (C i1) (D i1)}
+  → (p0 : ∀ (p : ∀ i → C i .Ob) → PathP (λ i → D i .Ob) (F₀ F (p i0)) (F₀ G (p i1)))
+  → (p1 : ∀ {x y : ∀ i → _}
+        → (r : ∀ i → C i .Hom (x i) (y i))
+        → PathP (λ i → D i .Hom (p0 x i) (p0 y i))
+                (F₁ F (r i0)) (F₁ G (r i1)))
+  → PathP (λ i → Functor (C i) (D i)) F G
+Functor-pathp {C = C} {D} {F} {G} p0 p1 = fn where
+  cob : I → Type _
+  cob = λ i → C i .Ob
+
+  exth
+    : ∀ i j (x y : C i .Ob) (f : C i .Hom x y)
+    → C i .Hom (coe cob i i x) (coe cob i i y)
+  exth i j x y f =
+    comp (λ j → C i .Hom (coei→i cob i x (~ j ∨ i)) (coei→i cob i y (~ j ∨ i)))
+    ((~ i ∧ ~ j) ∨ (i ∧ j))
+    λ where
+      k (k = i0) → f
+      k (i = i0) (j = i0) → f
+      k (i = i1) (j = i1) → f
+
+  actm
+    : ∀ i (x y : C i .Ob) f
+    → D i .Hom (p0 (λ j → coe cob i j x) i) (p0 (λ j → coe cob i j y) i)
+  actm i x y f =
+    p1 {λ j → coe cob i j x} {λ j → coe cob i j y}
+      (λ j → coe (λ j → C j .Hom (coe cob i j x) (coe cob i j y)) i j (exth i j x y f))
+      i
+
+  fn : PathP (λ i → Functor (C i) (D i)) F G
+  fn i .F₀ x =
+    p0 (λ j → coe cob i j x)
+      i
+  fn i .F₁ {x} {y} f = actm i x y f
+  fn i .F-id {x} =
+    hcomp (∂ i) λ where
+      j (i = i0) → D i .Hom-set (F .F₀ x) (F .F₀ x) (F .F₁ (C i .id)) (D i .id) base (F .F-id) j
+      j (i = i1) → D i .Hom-set (G .F₀ x) (G .F₀ x) (G .F₁ (C i .id)) (D i .id) base (G .F-id) j
+      j (j = i0) → base
+    where
+      base = coe0→i (λ i → (x : C i .Ob) → actm i x x (C i .id) ≡ D i .id) i
+        (λ _ → F .F-id) x
+  fn i .F-∘ {x} {y} {z} f g =
+    hcomp (∂ i) λ where
+      j (i = i0) → D i .Hom-set (F .F₀ x) (F .F₀ z) _ _ base (F .F-∘ f g) j
+      j (i = i1) → D i .Hom-set (G .F₀ x) (G .F₀ z) _ _ base (G .F-∘ f g) j
+      j (j = i0) → base
+    where
+      base = coe0→i (λ i → (x y z : C i .Ob) (f : C i .Hom y z) (g : C i .Hom x y)
+                         → actm i x z (C i ._∘_ f g)
+                         ≡ D i ._∘_ (actm i y z f) (actm i x y g)) i
+        (λ _ _ _ → F .F-∘) x y z f g
 ```
 -->
 
@@ -155,13 +211,11 @@ module _ {C : Precategory o₁ h₁} {D : Precategory o₂ h₂} where
   import Cat.Reasoning Cat[ C , D ] as [C,D]
   import Cat.Reasoning D as D
   open [C,D]
-  open Cat.Univalent D hiding (is-category)
 ```
 -->
 
 ```agda
   Functor-is-category : is-category D → is-category Cat[ C , D ]
-  Functor-is-category _ F .centre = F , id-iso
 ```
 
 The hard part is showing that, given some other functor $G : C \to D$
@@ -170,33 +224,37 @@ deformation $p : G \equiv F$, such that, over this $p$, the given
 isomorphism looks like the identity.
 
 ```agda
-  Functor-is-category DisCat F .paths (G , F≅G) = Σ-pathp F≡G id≡F≅G where
+  Functor-is-category DisCat =
+    record { to-path = F≡G ; to-path-over = id≡F≅G }
+    where
 ```
 
 The first thing we must note is that we can recover the components of a
 natural isomorphism while passing to/from paths in $D$. Since $D$ is a
 category, `path→iso`{.Agda} is an equivalence; The lemmas we need then
-follow from `equivalences having sections`{.Agda ident=equiv→counit}.
+follow from `equivalences having sections`{.Agda ident=iso→path→iso}.
 
 ```agda
-    ptoi-to
-      : ∀ x → path→iso (iso→path DisCat (Nat-iso→Iso F≅G _)) .D._≅_.to
-            ≡ F≅G .to .η x
-    ptoi-to x = ap (λ e → e .D._≅_.to)
-      (equiv→counit (path→iso-is-equiv DisCat) _)
+    open Cat.Univalent.Univalent DisCat
+      using (iso→path ; iso→path→iso ; path→iso→path)
+    open Cat.Univalent using (Hom-pathp-iso ; Hom-pathp-reflr-iso)
 
-    ptoi-from : ∀ x → path→iso (iso→path DisCat (Nat-iso→Iso F≅G _)) .D._≅_.from
-              ≡ F≅G .from .η x
-    ptoi-from x = ap (λ e → e .D._≅_.from)
-      (equiv→counit (path→iso-is-equiv DisCat) _)
+    module _ {F G} (F≅G : _) where
+      ptoi-to
+        : ∀ x → path→iso (iso→path (Nat-iso→Iso F≅G _)) .D._≅_.to ≡ F≅G .to .η x
+      ptoi-to x = ap (λ e → e .D._≅_.to) (iso→path→iso (Nat-iso→Iso F≅G x))
+
+      ptoi-from : ∀ x → path→iso (iso→path (Nat-iso→Iso F≅G _)) .D._≅_.from
+                ≡ F≅G .from .η x
+      ptoi-from x = ap (λ e → e .D._≅_.from) (iso→path→iso (Nat-iso→Iso F≅G x))
 ```
 
 We can then show that the natural isomorphism $F \cong G$ induces a
 homotopy between the object parts of $F$ and $G$:
 
 ```agda
-    F₀≡G₀ : ∀ x → F₀ F x ≡ F₀ G x
-    F₀≡G₀ x = iso→path DisCat (Nat-iso→Iso F≅G x)
+      F₀≡G₀ : ∀ x → F₀ F x ≡ F₀ G x
+      F₀≡G₀ x = iso→path (Nat-iso→Iso F≅G x)
 ```
 
 A slightly annoying calculation tells us that pre/post composition with
@@ -205,36 +263,27 @@ $F \cong G$ does in fact turn $F_1(f)$ into $G_1(f)$; This is because $F
 so that the two halves of the isomorphism annihilate.
 
 ```agda
-    abstract
-      F₁≡G₁ : ∀ {x y} {f : C .Hom x y}
-            → PathP (λ i → D.Hom (F₀≡G₀ x i) (F₀≡G₀ y i)) (F₁ F f) (F₁ G f)
-      F₁≡G₁ {x = x} {y} {f} = Hom-pathp (
-        _ D.∘ F .F₁ f D.∘ _                           ≡⟨ (λ i → ptoi-to _ i D.∘ F .F₁ f D.∘ ptoi-from _ i) ⟩
-        F≅G .to .η y D.∘ F .F₁ f D.∘ F≅G .from .η x   ≡⟨ ap₂ D._∘_ refl (sym (F≅G .from .is-natural _ _ _)) ∙ D.assoc _ _ _ ⟩
-        (F≅G .to .η y D.∘ F≅G .from .η y) D.∘ G .F₁ f ≡⟨ ap₂ D._∘_ (λ i → F≅G .invl i .η y) refl ⟩
-        D.id D.∘ G .F₁ f                              ≡⟨ cat! D ⟩
-        G .F₁ f                                       ∎)
+      F₁≡G₁ : ∀ {x y} (f : C .Hom x y)
+            → PathP (λ i → D.Hom (F₀≡G₀ x i) (F₀≡G₀ y i)) (F .F₁ {x} {y} f) (G .F₁ {x} {y} f)
+      F₁≡G₁ {x = x} {y} f = Hom-pathp-iso DisCat $
+        (D.extendl (F≅G .to .is-natural x y f) ∙ D.elimr (ap (λ e → e .η x) (F≅G .invl)))
 
-    F≡G : F ≡ G
-    F≡G = Functor-path F₀≡G₀ λ f → F₁≡G₁
+      F≡G : F ≡ G
+      F≡G = Functor-path F₀≡G₀ λ f → F₁≡G₁ f
 ```
 
 Putting these homotopies together defines a path `F≡G`{.Agda}. It
 remains to show that, over this path, the natural isomorphism we started
 with is homotopic to the identity; Equality of `isomorphisms`{.Agda
-ident=≅-pathp} and `natural transformations`{.Agda ident=Nat-pathP} are
+ident=≅-pathp} and `natural transformations`{.Agda ident=Nat-pathp} are
 both tested componentwise, so we can "push down" the relevant equalities
 to the level of families of morphisms; By computation, all we have to
 show is that $\eta{}_x \circ \id{id} \circ \id{id} = f$.
 
 ```agda
-    id≡F≅G : PathP (λ i → F ≅ F≡G i) id-iso F≅G
-    id≡F≅G = ≅-pathp refl F≡G
-      (Nat-pathp refl F≡G
-        λ x → Hom-pathp
-          (  ap₂ D._∘_ (ptoi-to _) refl
-          ·· ap₂ D._∘_ refl (ap₂ D._∘_ refl (transport-refl _) ∙ D.idl _)
-          ·· D.idr _))
+      id≡F≅G : PathP (λ i → F ≅ F≡G i) id-iso F≅G
+      id≡F≅G = ≅-pathp refl F≡G $ Nat-pathp refl F≡G λ x →
+        Hom-pathp-reflr-iso DisCat (D.idr _)
 ```
 
 A useful lemma is that if you have a natural transformation where each
@@ -428,5 +477,45 @@ whiskerl : ∀ {o ℓ o′ ℓ′ o′′ ℓ′′}
          → F => G → F F∘ H => G F∘ H
 whiskerl {F} {G} nt .η x = nt .η _
 whiskerl {F} {G} nt .is-natural x y f = nt .is-natural _ _ _
+
+module _
+  {o ℓ o′ ℓ′ o₂ ℓ₂}
+  {C : Precategory o ℓ}
+  {D : Precategory o′ ℓ′}
+  {E : Precategory o₂ ℓ₂}
+  where
+  private
+    de = Cat[ D , E ]
+    cd = Cat[ C , D ]
+  open Cat.Reasoning using (to ; from)
+  open Cat.Univalent
+
+  whisker-path-left
+    : ∀ {G G′ : Functor D E} {F : Functor C D}
+        (ecat : is-category de)
+    → (p : Cat.Reasoning._≅_ de G G′) → ∀ {x}
+    → path→iso {C = E} (λ i → (Univalent.iso→path ecat p i F∘ F) .F₀ x) .to
+    ≡ p .to .η (F₀ F x)
+  whisker-path-left {G} {G′} {F} p =
+    de.J-iso
+      (λ B isom → ∀ {x} → path→iso {C = E} (λ i → F₀ (de.iso→path isom i F∘ F) x) .to ≡ isom .to .η (F₀ F x))
+      λ {x} → ap (λ e → path→iso {C = E} e .to)
+        (λ i j → de.iso→path-id {A = G} i j .F₀ (F₀ F x))
+        ∙ transport-refl _
+    where module de = Univalent p
+
+  whisker-path-right
+    : ∀ {G : Functor D E} {F F′ : Functor C D}
+        (cdcat : is-category cd)
+    → (p : Cat.Reasoning._≅_ cd F F′) → ∀ {x}
+    → path→iso {C = E} (λ i → F₀ G (Univalent.iso→path cdcat p i .F₀ x)) .from
+    ≡ G .F₁ (p .from .η x)
+  whisker-path-right {G} {G′} {F} cdcat =
+    cd.J-iso
+      (λ B isom → ∀ {x} → path→iso {C = E} (λ i → F₀ G (cd.iso→path isom i .F₀ x)) .from ≡ G .F₁ (isom .from .η x))
+      λ {x} → ap (λ e → path→iso {C = E} e .from)
+        (λ i j → G .F₀ (cd.iso→path-id {A = G′} i j .F₀ x))
+        ∙ transport-refl _ ∙ sym (G .F-id)
+    where module cd = Univalent cdcat
 ```
 -->

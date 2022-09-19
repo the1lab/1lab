@@ -41,33 +41,15 @@ only difference between these types can be patched by
     where module x = Sets._≅_ x
 ```
 
-We then fix a set $A$ and show that the type of "sets equipped with an
-isomorphism to $A$" is contractible. For the center of contraction, as
-is usual, we pick $A$ itself and the identity isomorphism.
+Using univalence for $n$-types, function extensionality and the
+computation rule for univalence, it is almost trivial to show that
+categorical isomorphisms of sets are an identity system.
 
 ```agda
   Sets-is-category : is-category (Sets ℓ)
-  Sets-is-category A = isc where
-    isc : is-contr (Σ[ B ∈ Set ℓ ] (A Sets.≅ B))
-    isc .centre = A , Sets.id-iso
-```
-
-We must then show that, given some other set $B$ and an isomorphism $i :
-A \cong B$, we can continuously deform $A$ into $B$ and, in the process,
-deform $i$ into the identity. But this follows from `paths in sigma
-types`{.Agda ident=Σ-pathp}, the rearranging of isomorphisms defined
-above, and `n-ua`{.Agda}.
-
-```agda
-    isc .paths (B , isom) =
-      Σ-pathp (n-ua A≃B)
-        (Sets.≅-pathp refl _
-          (λ i x → path→ua-pathp A≃B {x = x} {y = isom.to x} refl i))
-      where
-        module isom = Sets._≅_ isom
-
-        A≃B : ∣ A ∣ ≃ ∣ B ∣
-        A≃B = iso→equiv isom
+  Sets-is-category .to-path i = n-ua (iso→equiv i)
+  Sets-is-category .to-path-over p = Sets.≅-pathp refl _ $
+    funextP λ a → path→ua-pathp _ refl
 ```
 
 ## Indirect proof
