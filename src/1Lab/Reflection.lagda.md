@@ -551,19 +551,25 @@ meta x x₁ term=? t₂ = false
 unknown term=? t₂ = false
 _ term=? _ = false
 
-get-boundary : Term → TC (Maybe (Term × Term))
-get-boundary tm@(def (quote _≡_) (_ h∷ T h∷ x v∷ y v∷ [])) = do
-  returnTC (just (x , y))
-get-boundary tm@(def (quote Path) (_ h∷ T v∷ x v∷ y v∷ [])) = do
-  returnTC (just (x , y))
-get-boundary tm@(def (quote PathP) (_ h∷ T v∷ x v∷ y v∷ [])) = do
-  unify tm (def (quote _≡_) (x v∷ y v∷ []))
-  returnTC (just (x , y))
-get-boundary (meta m _) = blockOnMeta m
-get-boundary _ = returnTC nothing
-
 “refl” : Term
 “refl” = def (quote refl) []
+
+wait-for-type : Term → TC Term
+wait-for-type (meta m _) = blockOnMeta m
+wait-for-type tm = pure tm
+
+unapply-path : Term → TC (Maybe (Term × Term × Term))
+unapply-path tm = (reduce tm >>= wait-for-type) >>= λ where
+  red@(def (quote PathP) (l h∷ T v∷ x v∷ y v∷ [])) → do
+    domain ← newMeta (def (quote Type) (l v∷ []))
+    unify red (def (quote Path) (domain v∷ x v∷ y v∷ []))
+    pure (just (domain , x , y))
+  _ → returnTC nothing
+
+get-boundary : Term → TC (Maybe (Term × Term))
+get-boundary tm = unapply-path tm >>= λ where
+  (just (_ , x , y)) → pure (just (x , y))
+  nothing            → pure nothing
 ```
 
 ## Debugging Tools

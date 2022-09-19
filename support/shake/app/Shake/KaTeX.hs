@@ -37,7 +37,7 @@ katexRules = versioned 1 do
   _ <- addOracleCache \(LatexEquation (display, tex)) -> do
     need [".macros"]
 
-    let args = ["-f", ".macros", "-t"] ++ ["-d" | display]
+    let args = ["-T", "-f", ".macros", "-t"] ++ ["-d" | display]
         stdin = LazyBS.fromStrict $ Text.encodeUtf8 tex
     Stdout out <- nodeCommand [StdinBS stdin] "katex" args
     pure . Text.stripEnd . Text.decodeUtf8 $ out

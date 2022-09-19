@@ -50,3 +50,4 @@
 \Cat:\ht{Cat}
 \B:\bf{B}
 \Rel:\ht{Rel}
+\liesover:\mathrel{\htmlClass{liesover}{\hspace{1.366em}}}
