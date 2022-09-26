@@ -62,8 +62,14 @@ Sets-effective-congruences {A = A} R = eff where
       m1 _ = r
       m2 _ = q
 
+  open Congruence hiding (quotient)
   undo : ∀ {x y} → inc x ≡ inc y → rel x y
-  undo = equiv→inverse (effective rel-prop rel-refl rel-trans rel-sym)
+  undo = equiv→inverse $ effective λ where
+    ._∼_ → rel
+    .has-is-prop x y → rel-prop x y
+    .reflᶜ → rel-refl
+    ._∙ᶜ_ → rel-trans
+    .symᶜ → rel-sym
 
   open is-coequaliser
   open is-pullback

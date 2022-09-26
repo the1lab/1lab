@@ -524,11 +524,28 @@ Int-elim-by-sign P pos neg zer x with inspect (canonicalise x)
   absurd (canonicalise-not-both-suc x (ap fst q) (ap (fst ∘ snd) q))
 ```
 
+<!--
+```agda
+data By-sign-view : Int → Type where
+  posv  : ∀ z → By-sign-view (diff z 0)
+  negv  : ∀ z → By-sign-view (diff 0 (suc z))
+
+by-sign : ∀ x → By-sign-view x
+by-sign = Int-elim-by-sign (λ z → By-sign-view z) posv
+  (λ { zero    → posv 0
+     ; (suc x) → negv x
+     })
+  (posv 0)
+```
+-->
+
 This procedure is useful, for instance, for computing absolute values:
 
 ```agda
 abs : Int → Nat
-abs = Int-elim-by-sign _ (λ x → x) (λ x → x) zero
+abs x with by-sign x
+... | posv z = z
+... | negv z = suc z
 
 _ : abs -10 ≡ 10
 _ = refl

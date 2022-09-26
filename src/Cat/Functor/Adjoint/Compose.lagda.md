@@ -2,6 +2,7 @@
 description: We compute the composite of two adjunctions.
 ---
 ```agda
+{-# OPTIONS --experimental-lossy-unification #-}
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
 

@@ -695,3 +695,10 @@ prop-ext pprop qprop p→q q→p .snd .is-eqv y .centre = q→p y , qprop _ _
 prop-ext pprop qprop p→q q→p .snd .is-eqv y .paths (p' , path) =
   Σ-path (pprop _ _) (is-prop→is-set qprop _ _ _ _)
 ```
+
+<!--
+```agda
+sym-equiv : ∀ {ℓ} {A : Type ℓ} {x y : A} → (x ≡ y) ≃ (y ≡ x)
+sym-equiv = sym , is-iso→is-equiv (iso sym (λ _ → refl) (λ _ → refl))
+```
+-->

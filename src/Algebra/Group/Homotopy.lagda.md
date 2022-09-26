@@ -1,6 +1,7 @@
 ```agda
 open import 1Lab.Prelude
 
+open import Algebra.Group.Cat.Base
 open import Algebra.Semigroup
 open import Algebra.Monoid
 open import Algebra.Group
@@ -43,8 +44,7 @@ $\pi_1(A)$.
 
 ```agda
 πₙ₊₁ : Nat → Type∙ ℓ → Group ℓ
-πₙ₊₁ n t .fst = ∥ Ωⁿ (suc n) t .fst ∥₀
-πₙ₊₁ n t .snd = to-group-on omega where
+πₙ₊₁ n t = to-group omega where
   omega : make-group ∥ Ωⁿ (suc n) t .fst ∥₀
   omega .make-group.group-is-set = squash
   omega .make-group.unit = inc refl
@@ -134,7 +134,7 @@ $\pi_{n+2}$ is an Abelian group:
 
 ```agda
 πₙ₊₂-is-abelian-group : ∀ {ℓ} {A : Type∙ ℓ} (n : Nat)
-                   → is-abelian-group (πₙ₊₁ (1 + n) A)
+                   → is-abelian-group (πₙ₊₁ (1 + n) A .snd)
 πₙ₊₂-is-abelian-group {A = A} n =
   ∥-∥₀-elim₂ (λ x y → is-prop→is-set (squash _ _))
              (λ x y i → inc (Ωⁿ⁺²-is-abelian-group n x y i))
@@ -157,8 +157,8 @@ module _ {ℓ} (G : Group ℓ) where
   data Deloop : Type ℓ where
     base    : Deloop
     squash  : is-groupoid Deloop
-    path    : G .fst → base ≡ base
-    path-sq : (x y : G .fst) → Square refl (path x) (path (x ⋆ y)) (path y)
+    path    : ⌞ G ⌟ → base ≡ base
+    path-sq : (x y : ⌞ G ⌟) → Square refl (path x) (path (x ⋆ y)) (path y)
 
   instance
     H-Level-Deloop : ∀ {n} → H-Level Deloop (3 + n)
@@ -265,9 +265,7 @@ together to establish `G ≡ (base ≡ base)`. First, to define
 ```agda
   Code : Deloop → Set ℓ
   Code =
-    Deloop-elim _
-      (λ _ → hlevel 3)
-      (el (G .fst) (Group-on.has-is-set (G .snd)))
+    Deloop-elim _ (λ _ → hlevel 3) (G .fst)
       (λ x → n-ua (map x))
       λ x y → n-Type-square (transport (sym Square≡double-composite-path) (lemma x y))
 ```
@@ -283,7 +281,7 @@ $\id{Aut}(G)$.
 
 ```agda
     where
-      map : ∀ x → G .fst ≃ G .fst
+      map : ∀ x → ⌞ G ⌟ ≃ ⌞ G ⌟
       map x = Iso→Equiv (_⋆ x , p) where
         open is-iso
 
@@ -363,11 +361,11 @@ This completes the proof, and lets us establish that the fundamental
 group of `Deloop`{.Agda} is `G`, which is what we wanted.
 
 ```
-  G≃ΩB : G .fst ≃ (base ≡ base)
+  G≃ΩB : ⌞ G ⌟ ≃ (base ≡ base)
   G≃ΩB = Iso→Equiv (path , iso (encode base) encode→decode (decode→encode base))
 
   G≡π₁B : G ≡ πₙ₊₁ 0 (Deloop , base)
-  G≡π₁B = sip Group-univalent
-    ( G≃ΩB ∙e (_ , ∥-∥₀-idempotent (squash base base))
-    , record { pres-⋆ = λ x y i → inc (path-∙ x y i) })
+  G≡π₁B = ∫-Path {spec = Group-structure _}
+    (total-hom (λ x → inc (path x)) (record { pres-⋆ = λ x y → ap ∥_∥₀.inc (path-∙ _ _) }))
+    (∙-is-equiv (G≃ΩB .snd) (∥-∥₀-idempotent (squash base base)))
 ```

@@ -101,7 +101,7 @@ sets for maps of precategories, i.e., functors.
     id      : ∀ {A} → Precategory.Ob (Hom A A)
     compose : ∀ {A B C} → Functor (Hom B C ×ᶜ Hom A B) (Hom A C)
 
-  module compose {a} {b} {c} = Functor (compose {a} {b} {c})
+  module compose {a} {b} {c} = Fr (compose {a} {b} {c})
 ```
 
 Before moving on to the isomorphisms witnessing identity and
@@ -324,37 +324,19 @@ Cat o ℓ = pb where
 ```
 
 The first thing we must compute is that the functor composition operator
-$- \circ -$ extends to a functor composition _functor_, which is
-annoying but straightforward.
+$- \circ -$ extends to a functor composition _functor_, which we have
+already done (but off-screen, since its construction is very
+straightforward).
 
 ```agda
-  pb .compose .F₀ (F , G) = F F∘ G
-
-  pb .compose {C = C} .F₁ {y = y , _} (n1 , n2) .η x =
-    y .F₁ (n2 .η _) C.∘ n1 .η _
-    where module C = Precategory C
-
-  pb .compose {C = C} .F₁ {x = F , G} {y = W , X} (n1 , n2) .is-natural _ _ f =
-    (W .F₁ (n2 .η _) C.∘ n1 .η _) C.∘ F .F₁ (G .F₁ f) ≡⟨ C.pullr (n1 .is-natural _ _ _) ⟩
-    W .F₁ (n2 .η _) C.∘ W .F₁ (G .F₁ f) C.∘ n1 .η _   ≡⟨ C.extendl (W.weave (n2 .is-natural _ _ _)) ⟩
-    W .F₁ (X .F₁ f) C.∘ W .F₁ (n2 .η _) C.∘ n1 .η _   ∎
-    where module C = Cr C
-          module W = Fr W
-
-  pb .compose {C = C} .F-id {x} = Nat-path λ _ → Cr.idr C _ ∙ x .fst .F-id
-  pb .compose {C = C} .F-∘ {x} {y} {z} f g = Nat-path λ _ →
-    z .fst .F₁ _ C.∘ f .fst .η _ C.∘ g .fst .η _                      ≡⟨ C.pushl (z .fst .F-∘ _ _) ⟩
-    z .fst .F₁ _ C.∘ z .fst .F₁ _ C.∘ f .fst .η _ C.∘ g .fst .η _     ≡⟨ C.extend-inner (sym (f .fst .is-natural _ _ _)) ⟩
-    z .fst .F₁ _ C.∘ f .fst .η _ C.∘ y .fst .F₁ _ C.∘ g .fst .η _     ≡⟨ cat! C ⟩
-    (z .fst .F₁ _ C.∘ f .fst .η _) C.∘ (y .fst .F₁ _ C.∘ g .fst .η _) ∎
-    where module C = Cr C
+  pb .compose = F∘-functor
 ```
 
-The unitors and associator are given in components by the identity
-2-cells, since componentwise the functor composition $\id{Id} \circ F$
-evaporates, leaving only $F$ behind. Unfortunately, this equation is not
-definitional, so we can not use the identity natural isomorphism
-directly:
+The unitors and associator are almost, but not quite, given by the
+identity 2-cells, since componentwise the functor composition $\id{Id}
+\circ F$ evaporates, leaving only $F$ behind. Unfortunately, this
+equation is not definitional, so we can not use the identity natural
+isomorphism directly:
 
 ```agda
   pb .unitor-r {B = B} = to-natural-iso ni where

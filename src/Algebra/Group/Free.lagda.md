@@ -66,8 +66,7 @@ data needed by `make-group`{.Agda}"?
 
 ```agda
 Free-Group : Type ℓ → Group ℓ
-Free-Group A .fst = Free-group A
-Free-Group A .snd = to-group-on fg where
+Free-Group A = to-group fg where
   fg : make-group (Free-group A)
   fg .make-group.group-is-set = squash
   fg .make-group.unit = nil
@@ -140,8 +139,8 @@ determines a group homomorphism.
 ```agda
 fold-free-group
   : {A : Type ℓ} {G : Group ℓ}
-  → (A → G .fst) → Groups.Hom (Free-Group A) G
-fold-free-group {A = A} {G = G , ggrp} map = go , go-hom where
+  → (A → ⌞ G ⌟) → Groups.Hom (Free-Group A) G
+fold-free-group {A = A} {G = G , ggrp} map = total-hom go go-hom where
   module G = Group-on ggrp
 ```
 
@@ -151,7 +150,7 @@ example, we must take multiplication in the free group (the `_◆_`{.Agda}
 constructor) to multiplication in the codomain.
 
 ```agda
-  go : Free-group A → G
+  go : Free-group A → ∣ G ∣
   go (inc x) = map x
   go (x ◆ y) = go x G.⋆ go y
   go (inv x) = go x G.⁻¹
@@ -207,7 +206,7 @@ $$
   um : Initial _
   um .bot        = it
   um .has⊥ other = contr factor unique where
-    g : ∣ S ∣ → other .y .fst
+    g : ∣ S ∣ → ⌞ other .y ⌟
     g = other .map
 
     factor : ↓Hom _ _ it other
@@ -218,9 +217,9 @@ $$
 
 To show that this factorisation is unique, suppose we had some other
 group homomorphism $g' : \id{Free}(S) \to H$, which also has the
-property that $U(g') \circ \id{inc} = g$; We must show that it is
-equal to $\id{fold}(g)$, which we can do `pointwise`{.Agda
-ident=funext}, so assume we have a $x : \id{Free}(S)$.
+property that $U(g') \circ \id{inc} = g$; We must show that it is equal
+to $\id{fold}(g)$, which we can do pointwise, so assume we have a $x :
+\id{Free}(S)$.
 
 By `induction`{.Agda ident=Free-elim-prop} on $x$, it suffices to
 consider the cases where $x$ is a `generator`{.Agda ident=inc}, or one
@@ -235,12 +234,12 @@ hypotheses and $g'$ being a group homomorphism.
     unique : ∀ x → factor ≡ x
     unique factoring = ↓Hom-path _ _ refl path where abstract
       path : factor .β ≡ factoring .β
-      path = Σ-prop-path (λ _ → Group-hom-is-prop)
-        (funext (Free-elim-prop _ (λ _ → y other .snd .has-is-set _ _)
+      path = Homomorphism-path
+        (Free-elim-prop _ (λ _ → y other .snd .has-is-set _ _)
           (λ x → happly (factoring .sq) _)
           (λ _ _ p q → ap₂ (other .y .snd ._⋆_) p q
-                     ∙ sym (factoring .β .snd .pres-⋆ _ _))
+                     ∙ sym (factoring .β .preserves .pres-⋆ _ _))
           (λ _ p → ap (other .y .snd .inverse) p
-                 ∙ sym (pres-inv (factoring .β .snd)))
-          (sym (pres-id (factoring .β .snd)))))
+                 ∙ sym (pres-inv (factoring .β .preserves)))
+          (sym (pres-id (factoring .β .preserves))))
 ```

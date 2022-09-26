@@ -1,5 +1,5 @@
 ```agda
-open import 1Lab.HLevel.Sets
+open import 1Lab.Path.IdentitySystem
 open import 1Lab.Type.Dec
 open import 1Lab.HLevel
 open import 1Lab.Path
@@ -64,15 +64,17 @@ record is-partial-order {A : Type ℓ} (R : A → A → Type ℓ') : Type (ℓ �
 ```
 
 Any type with a choice of partial order is a set. This is because of
-`Rijke's theorem`{.Agda ident=Rijke-is-set}: Any type with a reflexive
-relation implying equality is a set.
+Rijke's theorem: Any type with a reflexive relation implying equality is
+a set.
 
 ```agda
 has-partial-order→is-set : {A : Type ℓ} {R : A → A → Type ℓ'}
                       → is-partial-order R
                       → is-set A
 has-partial-order→is-set {A = A} {_≤_} ispo =
-  Rijke-is-set {R = R'} reflexive' (λ { (x , y) → antisym x y }) is-prop'
+  identity-system→hlevel 1 {r = λ _ →  reflexive'}
+    (set-identity-system is-prop' (λ { (x , y) → antisym x y }))
+    is-prop'
   where
     open is-partial-order ispo
 ```
@@ -88,8 +90,8 @@ products, this is a proposition.
     reflexive' : {x : A} → R' x x
     reflexive' = reflexive , reflexive
 
-    is-prop' : {x y : A} → is-prop (R' x y)
-    is-prop' (a , b) (a' , b') i = propositional a a' i , propositional b b' i
+    is-prop' : (x y : A) → is-prop (R' x y)
+    is-prop' _ _ (a , b) (a' , b') i = propositional a a' i , propositional b b' i
 ```
 
 With this theorem, we can prove that being a partial order is a

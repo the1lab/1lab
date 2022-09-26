@@ -3,6 +3,7 @@ open import Cat.Instances.Product
 open import Cat.Univalent using (is-category)
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning
 
 open Precategory
@@ -236,8 +237,7 @@ follow from `equivalences having sections`{.Agda ident=iso→path→iso}.
 
 ```agda
     open Cat.Univalent.Univalent DisCat
-      using (iso→path ; iso→path→iso ; path→iso→path)
-    open Cat.Univalent using (Hom-pathp-iso ; Hom-pathp-reflr-iso)
+      using (iso→path ; iso→path→iso ; path→iso→path ; Hom-pathp-iso ; Hom-pathp-reflr-iso)
 
     module _ {F G} (F≅G : _) where
       ptoi-to
@@ -265,7 +265,7 @@ so that the two halves of the isomorphism annihilate.
 ```agda
       F₁≡G₁ : ∀ {x y} (f : C .Hom x y)
             → PathP (λ i → D.Hom (F₀≡G₀ x i) (F₀≡G₀ y i)) (F .F₁ {x} {y} f) (G .F₁ {x} {y} f)
-      F₁≡G₁ {x = x} {y} f = Hom-pathp-iso DisCat $
+      F₁≡G₁ {x = x} {y} f = Hom-pathp-iso $
         (D.extendl (F≅G .to .is-natural x y f) ∙ D.elimr (ap (λ e → e .η x) (F≅G .invl)))
 
       F≡G : F ≡ G
@@ -283,7 +283,7 @@ show is that $\eta{}_x \circ \id{id} \circ \id{id} = f$.
 ```agda
       id≡F≅G : PathP (λ i → F ≅ F≡G i) id-iso F≅G
       id≡F≅G = ≅-pathp refl F≡G $ Nat-pathp refl F≡G λ x →
-        Hom-pathp-reflr-iso DisCat (D.idr _)
+        Hom-pathp-reflr-iso (D.idr _)
 ```
 
 A useful lemma is that if you have a natural transformation where each
@@ -517,5 +517,31 @@ module _
         (λ i j → G .F₀ (cd.iso→path-id {A = G′} i j .F₀ x))
         ∙ transport-refl _ ∙ sym (G .F-id)
     where module cd = Univalent cdcat
+
+module _
+  {oa ℓa ob ℓb oc ℓc}
+  {A : Precategory oa ℓa}
+  {B : Precategory ob ℓb}
+  {C : Precategory oc ℓc}
+  where
+  private module C = Cat.Reasoning C
+
+  F∘-functor : Functor (Cat[ B , C ] ×ᶜ Cat[ A , B ]) Cat[ A , C ]
+  F∘-functor .F₀ (F , G) = F F∘ G
+
+  F∘-functor .F₁ {y = y , _} (n1 , n2) .η x = y .F₁ (n2 .η _) C.∘ n1 .η _
+
+  F∘-functor .F₁ {x = F , G} {y = W , X} (n1 , n2) .is-natural _ _ f =
+    (W .F₁ (n2 .η _) C.∘ n1 .η _) C.∘ F .F₁ (G .F₁ f) ≡⟨ C.pullr (n1 .is-natural _ _ _) ⟩
+    W .F₁ (n2 .η _) C.∘ W .F₁ (G .F₁ f) C.∘ n1 .η _   ≡⟨ C.extendl (W.weave (n2 .is-natural _ _ _)) ⟩
+    W .F₁ (X .F₁ f) C.∘ W .F₁ (n2 .η _) C.∘ n1 .η _   ∎
+    where module W = Fr W
+
+  F∘-functor .F-id {x} = Nat-path λ _ → C.idr _ ∙ x .fst .F-id
+  F∘-functor .F-∘ {x} {y} {z} f g = Nat-path λ _ →
+    z .fst .F₁ _ C.∘ f .fst .η _ C.∘ g .fst .η _                      ≡⟨ C.pushl (z .fst .F-∘ _ _) ⟩
+    z .fst .F₁ _ C.∘ z .fst .F₁ _ C.∘ f .fst .η _ C.∘ g .fst .η _     ≡⟨ C.extend-inner (sym (f .fst .is-natural _ _ _)) ⟩
+    z .fst .F₁ _ C.∘ f .fst .η _ C.∘ y .fst .F₁ _ C.∘ g .fst .η _     ≡⟨ cat! C ⟩
+    (z .fst .F₁ _ C.∘ f .fst .η _) C.∘ (y .fst .F₁ _ C.∘ g .fst .η _) ∎
 ```
 -->

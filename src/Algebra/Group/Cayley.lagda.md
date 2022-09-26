@@ -1,6 +1,7 @@
 ```
 open import 1Lab.Prelude
 
+open import Algebra.Group.Cat.Base
 open import Algebra.Group
 
 module Algebra.Group.Cayley {ℓ} (G : Group ℓ) where
@@ -23,7 +24,7 @@ $x^{-1}$, and the proof that these are in fact inverse functions are
 given by the group laws:
 
 ```agda
-Cayley : G .fst → G .fst ≃ G .fst
+Cayley : ⌞ G ⌟ → ⌞ G ⌟ ≃ ⌞ G ⌟
 Cayley x = Iso→Equiv bij where
   bij : Iso _ _
   bij .fst y = x ⋆ y
@@ -40,9 +41,9 @@ We then show that this map is a group homomorphism from $G$ to
 $\id{Sym}(G)$:
 
 ```agda
-Cayley-is-hom : Group-hom G (Sym G-set) Cayley
+Cayley-is-hom : Group-hom (G .snd) (Sym G-set) Cayley
 Cayley-is-hom .Group-hom.pres-⋆ x y = Σ-prop-path is-equiv-is-prop (funext lemma) where
-  lemma : (e : G .fst) → (x ⋆ y) ⋆ e ≡ x ⋆ (y ⋆ e)
+  lemma : (e : ⌞ G ⌟) → (x ⋆ y) ⋆ e ≡ x ⋆ (y ⋆ e)
   lemma e = sym associative
 ```
 

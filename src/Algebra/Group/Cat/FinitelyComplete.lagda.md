@@ -50,7 +50,7 @@ to this group in prose either as $0$ or as $\{\star\}$.
 
 ```agda
 Zero-group : ∀ {ℓ} → Group ℓ
-Zero-group = Lift _ ⊤ , to-group-on zg where
+Zero-group = to-group zg where
   zg : make-group (Lift _ ⊤)
   zg .make-group.group-is-set x y p q i j = lift tt
   zg .make-group.unit = lift tt
@@ -62,19 +62,19 @@ Zero-group = Lift _ ⊤ , to-group-on zg where
   zg .make-group.idl x = refl
 
 Zero-group-is-initial : is-initial Zero-group
-Zero-group-is-initial (_ , G) .centre = (λ x → G.unit) , gh where
+Zero-group-is-initial (_ , G) .centre = total-hom (λ x → G.unit) gh where
   module G = Group-on G
   gh : Group-hom _ _ (λ x → G.unit)
   gh .pres-⋆ x y =
     G.unit            ≡˘⟨ G.idl ⟩
     G.unit G.⋆ G.unit ∎
 Zero-group-is-initial (_ , G) .paths x =
-  Forget-is-faithful (funext λ _ → sym (Group-hom.pres-id (x .snd)))
+  Homomorphism-path λ _ → sym (Group-hom.pres-id (x .preserves))
 
 Zero-group-is-terminal : is-terminal Zero-group
 Zero-group-is-terminal _ .centre =
-  (λ _ → lift tt) , (record { pres-⋆ = λ _ _ _ → lift tt })
-Zero-group-is-terminal _ .paths x = Forget-is-faithful refl
+  total-hom (λ _ → lift tt) record { pres-⋆ = λ _ _ _ → lift tt }
+Zero-group-is-terminal _ .paths x = Homomorphism-path λ _ → refl
 
 Zero-group-is-zero : is-zero Zero-group
 Zero-group-is-zero = record
@@ -99,12 +99,12 @@ addition".
 
 ```agda
 Direct-product : Group ℓ → Group ℓ → Group ℓ
-Direct-product (G , Gg) (H , Hg) = (G × H) , to-group-on G×Hg where
+Direct-product (G , Gg) (H , Hg) = to-group G×Hg where
   module G = Group-on Gg
   module H = Group-on Hg
 
-  G×Hg : make-group (G × H)
-  G×Hg .make-group.group-is-set = hlevel 2
+  G×Hg : make-group (∣ G ∣ × ∣ H ∣)
+  G×Hg .make-group.group-is-set = hlevel!
   G×Hg .make-group.unit = G.unit , H.unit
   G×Hg .make-group.mul (a , x) (b , y) = a G.⋆ b , x H.⋆ y
   G×Hg .make-group.inv (a , x) = a G.⁻¹ , x H.⁻¹
@@ -119,16 +119,16 @@ the category of sets.
 
 ```agda
 proj₁ : Groups.Hom (Direct-product G H) G
-proj₁ .fst = fst
-proj₁ .snd .pres-⋆ x y = refl
+proj₁ .hom = fst
+proj₁ .preserves .pres-⋆ x y = refl
 
 proj₂ : Groups.Hom (Direct-product G H) H
-proj₂ .fst = snd
-proj₂ .snd .pres-⋆ x y = refl
+proj₂ .hom = snd
+proj₂ .preserves .pres-⋆ x y = refl
 
 factor : Groups.Hom G H → Groups.Hom G K → Groups.Hom G (Direct-product H K)
-factor f g .fst x = f .fst x , g .fst x
-factor f g .snd .pres-⋆ x y = ap₂ _,_ (f .snd .pres-⋆ _ _) (g .snd .pres-⋆ _ _)
+factor f g .hom x = f .hom x , g .hom x
+factor f g .preserves .pres-⋆ x y = ap₂ _,_ (f .preserves .pres-⋆ _ _) (g .preserves .pres-⋆ _ _)
 
 Direct-product-is-product : is-product {G} {H} proj₁ proj₂
 Direct-product-is-product {G} {H} = p where
@@ -138,7 +138,7 @@ Direct-product-is-product {G} {H} = p where
   p .π₁∘factor = Forget-is-faithful refl
   p .π₂∘factor = Forget-is-faithful refl
   p .unique other p q = Forget-is-faithful (funext λ x →
-    ap₂ _,_ (happly (ap fst p) x) (happly (ap fst q) x))
+    ap₂ _,_ (happly (ap hom p) x) (happly (ap hom q) x))
 ```
 
 What sets the direct product of groups apart from (e.g.) the cartesian
@@ -149,14 +149,14 @@ a coproduct.
 
 ```agda
 inj₁ : G Groups.↪ Direct-product G H
-inj₁ {G} {H} .mor .fst x = x , H .snd .unit
-inj₁ {G} {H} .mor .snd .pres-⋆ x y = ap (_ ,_) (sym (H .snd .idl))
-inj₁ {G} {H} .monic g h x = Forget-is-faithful (funext λ e i → x i .fst e .fst)
+inj₁ {G} {H} .mor .hom x = x , H .snd .unit
+inj₁ {G} {H} .mor .preserves .pres-⋆ x y = ap (_ ,_) (sym (H .snd .idl))
+inj₁ {G} {H} .monic g h x = Forget-is-faithful (funext λ e i → x i .hom e .fst)
 
 inj₂ : H Groups.↪ Direct-product G H
-inj₂ {H} {G} .mor .fst x = G .snd .unit , x
-inj₂ {H} {G} .mor .snd .pres-⋆ x y = ap (_, _) (sym (G .snd .idl))
-inj₂ {H} {G} .monic g h x = Forget-is-faithful (funext λ e i → x i .fst e .snd)
+inj₂ {H} {G} .mor .hom x = G .snd .unit , x
+inj₂ {H} {G} .mor .preserves .pres-⋆ x y = ap (_, _) (sym (G .snd .idl))
+inj₂ {H} {G} .monic g h x = Forget-is-faithful (funext λ e i → x i .hom e .snd)
 ```
 
 ## Equalisers
@@ -177,13 +177,13 @@ module _ {G H : Group ℓ} (f g : Groups.Hom G H) where
     module G = Group-on (G .snd)
     module H = Group-on (H .snd)
 
-    module f = Group-hom (f .snd)
-    module g = Group-hom (g .snd)
+    module f = Group-hom (f .preserves)
+    module g = Group-hom (g .preserves)
     module seq = Equaliser
       (SL.Sets-equalisers
         {A = G.underlying-set}
         {B = H.underlying-set}
-        (fst f) (fst g))
+        (f .hom) (g .hom))
 ```
 
 Recall that points there are elements of the domain (here, a point $x :
@@ -194,19 +194,19 @@ follows from $f$ and $g$ being group homomorphisms:
 
 ```agda
   Equaliser-group : Group ℓ
-  Equaliser-group = _ , to-group-on equ-group where
+  Equaliser-group = to-group equ-group where
     equ-⋆ : ∣ seq.apex ∣ → ∣ seq.apex ∣ → ∣ seq.apex ∣
     equ-⋆ (a , p) (b , q) = (a G.⋆ b) , r where abstract
-      r : f .fst (G .snd ._⋆_ a b) ≡ g .fst (G .snd ._⋆_ a b)
+      r : f .hom (G .snd ._⋆_ a b) ≡ g .hom (G .snd ._⋆_ a b)
       r = f.pres-⋆ a b ·· ap₂ H._⋆_ p q ·· sym (g.pres-⋆ _ _)
 
     equ-inv : ∣ seq.apex ∣ → ∣ seq.apex ∣
     equ-inv (x , p) = x G.⁻¹ , q where abstract
-      q : f .fst (G.inverse x) ≡ g .fst (G.inverse x)
+      q : f .hom (G.inverse x) ≡ g .hom (G.inverse x)
       q = f.pres-inv ·· ap H._⁻¹ p ·· sym g.pres-inv
 
     abstract
-      invs : f .fst G.unit ≡ g .fst G.unit
+      invs : f .hom G.unit ≡ g .hom G.unit
       invs = f.pres-id ∙ sym g.pres-id
 ```
 
@@ -235,19 +235,19 @@ $g$.
 ```agda
   Groups-equalisers : Equaliser (Groups ℓ) f g
   Groups-equalisers .apex = Equaliser-group
-  Groups-equalisers .equ = fst , record { pres-⋆ = λ x y → refl }
+  Groups-equalisers .equ = total-hom fst record { pres-⋆ = λ x y → refl }
   Groups-equalisers .has-is-eq .equal = Forget-is-faithful seq.equal
-  Groups-equalisers .has-is-eq .limiting {F = F} {e′} p = map , lim-gh where
-    map = seq.limiting {F = underlying-set (F .snd)} (ap fst p)
+  Groups-equalisers .has-is-eq .limiting {F = F} {e′} p = total-hom map lim-gh where
+    map = seq.limiting {F = underlying-set (F .snd)} (ap hom p)
 
-    lim-gh : Group-hom F Equaliser-group map
-    lim-gh .pres-⋆ x y = Σ-prop-path (λ _ → H.has-is-set _ _) (e′ .snd .pres-⋆ _ _)
+    lim-gh : Group-hom _ _ map
+    lim-gh .pres-⋆ x y = Σ-prop-path (λ _ → H.has-is-set _ _) (e′ .preserves .pres-⋆ _ _)
 
   Groups-equalisers .has-is-eq .universal {F = F} {p = p} = Forget-is-faithful
-    (seq.universal {F = underlying-set (F .snd)} {p = ap fst p})
+    (seq.universal {F = underlying-set (F .snd)} {p = ap hom p})
 
   Groups-equalisers .has-is-eq .unique {F = F} {p = p} q = Forget-is-faithful
-    (seq.unique {F = underlying-set (F .snd)} {p = ap fst p} (ap fst q))
+    (seq.unique {F = underlying-set (F .snd)} {p = ap hom p} (ap hom q))
 ```
 
 Putting all of these constructions together, we get the proof that

@@ -28,5 +28,5 @@ opposite-is-category : is-category C → is-category (C ^op)
 opposite-is-category x .to-path i = x .to-path $
   C.make-iso (i .Cop.from) (i .Cop.to) (i .Cop.invl) (i .Cop.invr)
 opposite-is-category x .to-path-over p =
-  Cop.≅-pathp refl _ $ Hom-pathp-refll-iso x (C.idl _)
+  Cop.≅-pathp refl _ $ Univalent.Hom-pathp-refll-iso x (C.idl _)
 ```

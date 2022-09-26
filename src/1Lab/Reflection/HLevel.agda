@@ -313,6 +313,14 @@ macro hlevel! = hlevel-tactic-worker
 el! : ∀ {ℓ} (A : Type ℓ) {n} {@(tactic hlevel-tactic-worker) hl : is-hlevel A n} → n-Type ℓ n
 el! A {hl = hl} = el A hl
 
+prop-ext!
+  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+    {@(tactic hlevel-tactic-worker) aprop : is-hlevel A 1}
+    {@(tactic hlevel-tactic-worker) bprop : is-hlevel B 1}
+  → (A → B) → (B → A)
+  → A ≃ B
+prop-ext! {aprop = aprop} {bprop = bprop} f g = prop-ext aprop bprop f g
+
 -- Set up the common hints:
 instance
   decomp-lift : ∀ {ℓ ℓ′} {T : Type ℓ} → Decomposition (Lift ℓ′ T)

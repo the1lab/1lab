@@ -3,6 +3,7 @@ open import Algebra.Semigroup
 open import Algebra.Monoid
 open import Algebra.Magma
 
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Delooping
@@ -48,40 +49,50 @@ instance
   H-Level-Monoid-hom : ∀ {ℓ} {x y : Monoid ℓ} {f} {n} → H-Level (Monoid-hom x y f) (suc n)
   H-Level-Monoid-hom {y = _ , M} = prop-instance λ x y i →
     record { pres-id = M .has-is-set _ _ (x .pres-id) (y .pres-id) i
-          ; pres-⋆ = λ a b → M .has-is-set _ _ (x .pres-⋆ a b) (y .pres-⋆ a b) i
-          }
-
-Monoids : ∀ ℓ → Precategory (lsuc ℓ) ℓ
-Monoids ℓ .Ob      = Monoid ℓ
-Monoids ℓ .Hom A B = Σ _ (Monoid-hom A B)
-Monoids ℓ .Hom-set _ (_ , M) = hlevel 2
-  where open Monoid-on M
+           ; pres-⋆ = λ a b → M .has-is-set _ _ (x .pres-⋆ a b) (y .pres-⋆ a b) i
+           }
 ```
 
 It's routine to check that the identity is a monoid homomorphism and
-that composites of homomorphisms are again homomorphisms.
+that composites of homomorphisms are again homomorphisms; This means
+that `Monoid-on`{.Agda} assembles into a structure thinly displayed over
+the category of sets, so that we may appeal to general results about
+displayed categories to reason about the category of monoids.
 
 ```agda
-Monoids ℓ .id  = (λ x → x) , record { pres-id = refl ; pres-⋆ = λ _ _ → refl }
-Monoids ℓ ._∘_ (f , fh) (g , gh) = f ⊙ g , fogh where
-  fogh : Monoid-hom _ _ (f ⊙ g)
-  fogh .pres-id    = ap f (gh .pres-id)    ∙ fh .pres-id
-  fogh .pres-⋆ x y = ap f (gh .pres-⋆ x y) ∙ fh .pres-⋆ _ _
+Monoid-structure : ∀ ℓ → Thin-structure ℓ Monoid-on
+Monoid-structure ℓ .is-hom f A B = el! $ Monoid-hom (_ , A) (_ , B) f
 
-Monoids ℓ .idr f = Σ-prop-path (λ _ → hlevel 1) refl
-Monoids ℓ .idl f = Σ-prop-path (λ _ → hlevel 1) refl
-Monoids ℓ .assoc f g h = Σ-prop-path (λ _ → hlevel 1) refl
+Monoid-structure ℓ .id-is-hom .pres-id = refl
+Monoid-structure ℓ .id-is-hom .pres-⋆ x y = refl
+
+Monoid-structure ℓ .∘-is-hom f g p1 p2 .pres-id =
+  ap f (p2 .pres-id) ∙ p1 .pres-id
+Monoid-structure ℓ .∘-is-hom f g p1 p2 .pres-⋆ x y =
+  ap f (p2 .pres-⋆ _ _) ∙ p1 .pres-⋆ _ _
+
+Monoid-structure ℓ .id-hom-unique mh i .identity = mh .pres-id i
+Monoid-structure ℓ .id-hom-unique mh i ._⋆_ x y = mh .pres-⋆ x y i
+Monoid-structure ℓ .id-hom-unique {s = s} {t = t} mh i .has-is-monoid =
+  is-prop→pathp
+    (λ i → hlevel {T = is-monoid (mh .pres-id i) (λ x y → mh .pres-⋆ x y i)} 1)
+    (s .has-is-monoid)
+    (t .has-is-monoid)
+    i
+
+Monoids : ∀ ℓ → Precategory (lsuc ℓ) ℓ
+Monoids ℓ = Structured-objects (Monoid-structure ℓ)
+
+Monoids-is-category : ∀ {ℓ} → is-category (Monoids ℓ)
+Monoids-is-category = Structured-objects-is-category (Monoid-structure _)
 ```
 
-The category of monoids admits a faithful functor to the category of
-sets: `Forget`{.Agda}.
+By standard nonsense, then, the category of monoids admits a faithful
+functor into the category of sets.
 
 ```agda
 Forget : ∀ {ℓ} → Functor (Monoids ℓ) (Sets ℓ)
-Forget .F₀ (A , m) = el _ $ m .has-is-set
-Forget .F₁ = fst
-Forget .F-id = refl
-Forget .F-∘ _ _ = refl
+Forget = Forget-structure (Monoid-structure _)
 ```
 
 ## Free objects
@@ -122,7 +133,7 @@ map-++ f [] ys = refl
 map-++ f (x ∷ xs) ys = ap (f x ∷_) (map-++ f xs ys)
 
 Free : ∀ {ℓ} → Functor (Sets ℓ) (Monoids ℓ)
-Free .F₀ A = List ∣ A ∣ , List-is-monoid (A .is-tr)
+Free .F₀ A = el! (List ∣ A ∣) , List-is-monoid (A .is-tr)
 ```
 
 The action on morphisms is given by `map`{.Agda}, which preserves the
@@ -130,9 +141,9 @@ monoid identity definitionally; We must prove that it preserves
 concatenation, identity and composition by induction on the list.
 
 ```agda
-Free .F₁ f = map f , record { pres-id = refl ; pres-⋆  = map-++ f }
-Free .F-id = Σ-prop-path (λ _ → hlevel 1) (funext map-id)
-Free .F-∘ f g = Σ-prop-path (λ _ → hlevel 1) (funext map-∘) where
+Free .F₁ f = total-hom (map f) record { pres-id = refl ; pres-⋆  = map-++ f }
+Free .F-id = Homomorphism-path map-id
+Free .F-∘ f g = Homomorphism-path map-∘ where
   map-∘ : ∀ xs → map (λ x → f (g x)) xs ≡ map f (map g xs)
   map-∘ [] = refl
   map-∘ (x ∷ xs) = ap (f (g x) ∷_) (map-∘ xs)
@@ -193,11 +204,11 @@ fold-pure {X = X} (x ∷ xs) = ap (x ∷_) (fold-pure {X = X} xs)
 Free⊣Forget : ∀ {ℓ} → Free {ℓ} ⊣ Forget
 Free⊣Forget .unit .η _ x = x ∷ []
 Free⊣Forget .unit .is-natural x y f = refl
-Free⊣Forget .counit .η M = fold M , record { pres-id = refl ; pres-⋆ = fold-++ }
-Free⊣Forget .counit .is-natural x y (f , h) =
-  Σ-prop-path (λ _ → hlevel 1) (funext (fold-natural {X = x} {y} f h))
+Free⊣Forget .counit .η M = total-hom (fold _) record { pres-id = refl ; pres-⋆ = fold-++ }
+Free⊣Forget .counit .is-natural x y th =
+  Homomorphism-path $ fold-natural (th .hom) (th .preserves)
 Free⊣Forget .zig {A = A} =
-  Σ-prop-path (λ _ → hlevel 1) (funext (fold-pure {X = A}))
+  Homomorphism-path $ fold-pure {X = A}
 Free⊣Forget .zag {B = B} i x = B .snd .idr {x = x} i
 ```
 
@@ -235,9 +246,9 @@ properties of monoids:
 
 ```agda
     from : Algebra-hom _ _ (comparison.₀ x) (comparison.₀ y) → Monoids ℓ .Hom x y
-    from alg .fst = alg .Algebra-hom.morphism
-    from alg .snd .pres-id = happly (alg .Algebra-hom.commutes) []
-    from alg .snd .pres-⋆ a b =
+    from alg .hom = alg .Algebra-hom.morphism
+    from alg .preserves .pres-id = happly (alg .Algebra-hom.commutes) []
+    from alg .preserves .pres-⋆ a b =
       f (a x.⋆ b)                  ≡˘⟨ ap f (ap (a x.⋆_) x.idr) ⟩
       f (a x.⋆ (b x.⋆ x.identity)) ≡⟨ (λ i → alg .Algebra-hom.commutes i (a ∷ b ∷ [])) ⟩
       f a y.⋆ (f b y.⋆ y.identity) ≡⟨ ap (f a y.⋆_) y.idr ⟩
@@ -254,7 +265,7 @@ properties of the underlying map.
     from∘to x = Algebra-hom-path _ refl
 
     to∘from : is-left-inverse from comparison.₁
-    to∘from x = Σ-prop-path (λ _ → hlevel 1) refl
+    to∘from x = Homomorphism-path λ _ → refl
 ```
 
 Showing that the functor is essentially surjective is significantly more
@@ -271,7 +282,7 @@ $[x,y]$.
     import Cat.Reasoning (Eilenberg-Moore _ (L∘R (Free⊣Forget {ℓ}))) as R
 
     monoid : Monoids ℓ .Ob
-    monoid .fst = ∣ A ∣
+    monoid .fst = A
     monoid .snd .identity = alg .ν []
     monoid .snd ._⋆_ a b = alg .ν (a ∷ b ∷ [])
 ```
@@ -308,13 +319,13 @@ using this monoid recovers the original algebra multiplication, which we
 can show by induction on the list:
 
 ```agda
-    recover : ∀ x → fold monoid x ≡ alg .ν x
+    recover : ∀ x → fold _ x ≡ alg .ν x
     recover []       = refl
     recover (x ∷ xs) =
-      alg .ν (x ∷ fold monoid xs ∷ [])           ≡⟨ ap₂ (λ e f → alg .ν (e ∷ f ∷ [])) (sym (happly (alg .ν-unit) x)) (recover xs) ⟩
-      alg .ν (alg .ν (x ∷ []) ∷ alg .ν xs ∷ [])  ≡⟨ happly (alg .ν-mult) _ ⟩
-      alg .ν (x ∷ xs ++ [])                      ≡⟨ ap (alg .ν) (++-idr _) ⟩
-      alg .ν (x ∷ xs)                            ∎
+      alg .ν (x ∷ fold _ xs ∷ [])               ≡⟨ ap₂ (λ e f → alg .ν (e ∷ f ∷ [])) (sym (happly (alg .ν-unit) x)) (recover xs) ⟩
+      alg .ν (alg .ν (x ∷ []) ∷ alg .ν xs ∷ []) ≡⟨ happly (alg .ν-mult) _ ⟩
+      alg .ν (x ∷ xs ++ [])                     ≡⟨ ap (alg .ν) (++-idr _) ⟩
+      alg .ν (x ∷ xs)                           ∎
 ```
 
 We must then show that the image of this monoid under
@@ -331,7 +342,7 @@ recovered monoid has the same underlying type as the List-algebra!
     from : Algebra-hom _ _ (A , alg) (comparison.₀ monoid)
     from .morphism = λ x → x
     from .commutes =
-      funext (λ x → sym (recover x) ∙ ap (fold monoid) (sym (map-id x)))
+      funext (λ x → sym (recover x) ∙ ap (fold _) (sym (map-id x)))
 
     the-iso : comparison.₀ monoid R.≅ (A , alg)
     the-iso = R.make-iso into from (Algebra-hom-path _ refl) (Algebra-hom-path _ refl)

@@ -2,6 +2,7 @@
 open import Algebra.Prelude
 open import Algebra.Group
 
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Prelude
 
 module Algebra.Group.Cat.Base where
@@ -11,6 +12,7 @@ module Algebra.Group.Cat.Base where
 ```agda
 private variable
   ℓ : Level
+open Cat.Displayed.Univalence.Thin public
 open Functor
 import Cat.Reasoning as CR
 ```
@@ -23,35 +25,39 @@ The category of groups, as the name implies, has its objects the
 homomorphisms`{.Agda ident=Group-hom}.
 
 ```agda
+open Group-on
+open Group-hom
+
+Group-structure : ∀ ℓ → Thin-structure ℓ Group-on
+Group-structure ℓ .is-hom f G G′ = el! (Group-hom G G′ f)
+
+Group-structure ℓ .id-is-hom        .pres-⋆ x y = refl
+Group-structure ℓ .∘-is-hom f g α β .pres-⋆ x y =
+  ap f (β .pres-⋆ x y) ∙ α .pres-⋆ _ _
+
+Group-structure ℓ .id-hom-unique {s = s} {t = t} α i =
+  record
+    { _⋆_          = λ x y → α .pres-⋆ x y i
+    ; has-is-group =
+      is-prop→pathp (λ i → is-group-is-prop {_*_ = λ x y → α .pres-⋆ x y i})
+        (s .has-is-group)
+        (t .has-is-group)
+        i
+    }
+
 Groups : ∀ ℓ → Precategory (lsuc ℓ) ℓ
-Groups ℓ = c where
-  open Precategory
-  open Group-hom
-  open Group-on
+Groups ℓ = Structured-objects (Group-structure ℓ)
 
-  c : Precategory _ _
-  c .Ob = Group ℓ
-  c .Hom A B = Group[ A ⇒ B ]
-  c .Hom-set _ (B , bg) = hlevel 2 where open Group-on bg
-```
-
-We must show that the identity is a group homomorphisms, and group homs
-are closed under composition, but this follows immediately from the
-properties of equality:
-
-```agda
-  c .id .fst = λ x → x
-  c .id .snd = record { pres-⋆ = λ _ _ → refl }
-
-  c ._∘_ {x} {y} {z} (f , fh) (g , gh) = (λ x → f (g x)) , fogh where abstract
-    fogh : Group-hom x z (λ x → f (g x))
-    fogh .pres-⋆ x y = ap f (gh .pres-⋆ x y) ∙ fh .pres-⋆ _ _
-
-  c .idr f       = Σ-prop-path (λ _ → Group-hom-is-prop) refl
-  c .idl f       = Σ-prop-path (λ _ → Group-hom-is-prop) refl
-  c .assoc f g h = Σ-prop-path (λ _ → Group-hom-is-prop) refl
+Groups-is-category : ∀ {ℓ} → is-category (Groups ℓ)
+Groups-is-category = Structured-objects-is-category (Group-structure _)
 
 module Groups {ℓ} = Cat (Groups ℓ)
+
+Group : ∀ ℓ → Type (lsuc ℓ)
+Group _ = Groups.Ob
+
+to-group : ∀ {ℓ} {A : Type ℓ} → make-group A → Group ℓ
+to-group {A = A} mg = el A (mg .make-group.group-is-set) , (to-group-on mg)
 ```
 
 ## The underlying set
@@ -65,112 +71,8 @@ sets.
 
 ```agda
 Forget : Functor (Groups ℓ) (Sets ℓ)
-Forget .F₀ (G , ggroup) = el _ (ggroup .Group-on.has-is-set)
-Forget .F₁ = fst
-Forget .F-id = refl
-Forget .F-∘ _ _ = refl
+Forget = Forget-structure (Group-structure _)
 
 Forget-is-faithful : is-faithful (Forget {ℓ})
-Forget-is-faithful = Σ-prop-path λ _ → Group-hom-is-prop
+Forget-is-faithful = Structured-hom-path (Group-structure _)
 ```
-
-## Univalence
-
-The [structure identity principle] already implies that identification
-of groups is equivalent to isomorphism of groups. We now extend this to
-proving that the category of groups is [univalent], but first we take a
-detour by showing that isomorphisms in the category of groups are the
-same thing as homomorphic equivalences of the groups' underlying types.
-
-[structure identity principle]: 1Lab.Univalence.SIP.html
-[univalent]: Cat.Univalent.html
-
-```agda
-Group-equiv≃Groups-iso
-  : ∀ {A B : Group ℓ} → (Σ _ (Group≃ A B)) ≃ (A Groups.≅ B)
-Group-equiv≃Groups-iso {A = A} {B = B} .fst (eqv , grh) =
-  Groups.make-iso (f , grh) (eqv.from , inv-group-hom)
-    (Forget-is-faithful (funext eqv.ε))
-    (Forget-is-faithful (funext eqv.η))
-```
-
-To build an isomorphism given a homomorphic equivalence, we use
-`Forget-is-faithful`{.Agda}, reducing equality of morphisms in
-`Groups`{.Agda} to equality of morphisms in `Sets`{.Agda}. But then, the
-data of an equivalence guarantees that it has a two-sided inverse, so
-the only thing left to establish is that the inverse of a homomorphic
-equivalence is also homomorphic:
-
-```agda
-  where
-    module A = Group-on (A .snd)
-    module B = Group-on (B .snd)
-    open Group-hom
-
-    module eqv = Equiv eqv
-    g = eqv.from
-    f = eqv.to
-
-    abstract
-      inv-group-hom : Group-hom B A g
-      inv-group-hom .pres-⋆ x y =
-        g (x B.⋆ y)             ≡˘⟨ ap₂ (λ x y → g (x B.⋆ y)) (eqv.ε _) (eqv.ε _) ⟩
-        g (f (g x) B.⋆ f (g y)) ≡˘⟨ ap g (grh .pres-⋆ _ _) ⟩
-        g (f (g x A.⋆ g y))     ≡⟨ eqv.η _ ⟩
-        g x A.⋆ g y             ∎
-```
-
-<!--
-```agda
-Group-equiv≃Groups-iso .snd = is-iso→is-equiv isic where
-  open is-iso
-  open Groups._≅_
-
-  isic : is-iso _
-  isic .is-iso.inv x =
-    ( x .to .fst
-    , is-iso→is-equiv (iso
-        (x .from .fst)
-        (happly (ap fst (x .invl)))
-        (happly (ap fst (x .invr))))
-    )
-    , x .to .snd
-  isic .is-iso.rinv x =
-    Groups.≅-pathp refl refl refl
-  isic .is-iso.linv x =
-    Σ-prop-path (λ _ → Group-hom-is-prop)
-      (Σ-prop-path is-equiv-is-prop refl)
-```
--->
-
-With this equivalence in hands, we can establish that the category of
-groups is indeed univalent.
-
-```agda
-Groups-is-category : is-category (Groups ℓ)
-Groups-is-category = equiv-path→identity-system (eqv e⁻¹)
-  λ a → Groups.≅-pathp refl refl
-    (Σ-prop-path (λ _ → Group-hom-is-prop) (funext transport-refl))
-  where
-  open is-iso
-
-  eqv : ∀ {A B} → (A ≡ B) ≃ (A Groups.≅ B)
-  eqv {A} {B} =
-    (A ≡ B)          ≃⟨ SIP Group-univalent e⁻¹ ⟩
-    Σ _ (Group≃ A B) ≃⟨ Group-equiv≃Groups-iso ⟩
-    (A Groups.≅ B)   ≃∎
-```
-
-<!--
-```agda
-injective-group-hom
-  : ∀ {A B : Group ℓ} (f : Groups.Hom A B)
-  → injective (f .fst)
-  → Groups.is-monic f
-injective-group-hom {A = A} {B} f inj g h p =
-  Forget-is-faithful (fm (fst g) (fst h) (ap fst p)) where
-  open Group-on
-  fm = embedding→monic
-    (injective-between-sets→has-prop-fibres (B .snd .has-is-set) (f .fst) inj)
-```
--->

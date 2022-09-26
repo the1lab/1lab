@@ -118,7 +118,7 @@ an identity, and by $F$'s amnesia, so is $i$.
       p : Σ[ c ∈ C.Ob ] Path (Mor C) (c , c , C.id) (A , B , isom .C.to)
       p = equiv→inverse (forget (isom .C.to) (C.iso→invertible isom)) $
             F.₀ A , Mor-path D refl (d-cat .to-path isom′)
-                      (Hom-pathp-reflr-iso d-cat (D.idr _))
+                      (Univalent.Hom-pathp-reflr-iso d-cat (D.idr _))
 ```
 
 Unfolding, we have an object $x : \ca{C}$ and an identification $p : (x,

@@ -5,6 +5,7 @@ open import Algebra.Prelude
 open import Algebra.Monoid
 open import Algebra.Group
 
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Diagram.Equaliser.Kernel
 
 import Algebra.Group.Cat.Base as Grp
@@ -55,7 +56,7 @@ record Ab-category {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
     Hom-grp-ab : ∀ A B (f g : Hom A B) → f + g ≡ g + f
 
   Hom-grp : ∀ A B → AbGroup ℓ
-  Hom-grp A B = restrict (Hom A B , Group-on-hom A B) (Hom-grp-ab A B)
+  Hom-grp A B = restrict (el! (Hom A B) , Group-on-hom A B) (Hom-grp-ab A B)
 
   field
     -- Composition is multilinear:
@@ -173,7 +174,7 @@ module _ where
   Ab-ab-category .Hom-grp-ab A B = Hom-group A B .witness
   Ab-ab-category .∘-linear-l f g h = Grp.Forget-is-faithful refl
   Ab-ab-category .∘-linear-r f g h = Grp.Forget-is-faithful $ funext λ x →
-    sym (f .snd .Group-hom.pres-⋆ _ _)
+    sym (f .preserves .Group-hom.pres-⋆ _ _)
 ```
 
 # Additive categories

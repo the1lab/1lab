@@ -5,6 +5,7 @@ open import Data.List
 open import Data.Fin
 open import Data.Nat
 
+open import Algebra.Group.Cat.Base
 open import Algebra.Group
 
 open import 1Lab.Reflection
@@ -263,7 +264,7 @@ private module TestGroup-on {ℓ} {A : Type ℓ} (grp : Group-on A) where
 
 private module TestGroup {ℓ} (grp : Group ℓ) where
   A : Type ℓ
-  A = fst grp
+  A = ⌞ grp ⌟
 
   open Group-on (snd grp)
 

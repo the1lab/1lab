@@ -129,3 +129,72 @@ module _ {I : Type ℓ'} (isg : is-groupoid I) (F : Functor (Disc I isg) C) wher
         other .hom = h
         other .commutes i = p i
 ```
+
+## Uniqueness
+
+As is traditional with universal constructions, "having an indexed
+product for a diagram" is _property_ of a category, not structure: Put
+another way, for any particular diagram, in a univalent category, there
+is (at most) a contractible space of indexed products of that diagram.
+And again as is traditional with universal constructions, the proof is
+surprisingly straightforward!
+
+```agda
+Indexed-product-unique
+  : ∀ {ℓ′} {I : Type ℓ′} (F : I → C.Ob)
+  → is-category C → is-prop (Indexed-product F)
+Indexed-product-unique {I = I} F c-cat x y = p where
+  module x = Indexed-product x
+  module y = Indexed-product y
+```
+
+All we have to do --- "all" --- is exhibit an isomorphism between the
+apices which commutes with the projection function in one direction, and
+with the product with morphisms in the other. That's it! The isomorphism
+is induced by the universal properties, and is readily seen to commute
+with both projections:
+
+```agda
+  apices : x.ΠF C.≅ y.ΠF
+  apices = C.make-iso y.⟨ x.π ⟩ x.⟨ y.π ⟩
+    ( y.unique y.π (λ i → C.pulll y.commute ∙ x.commute)
+    ∙ sym (y.unique y.π λ i → C.idr _) )
+    ( x.unique x.π (λ i → C.pulll x.commute ∙ y.commute)
+    ∙ sym (x.unique x.π λ i → C.idr _))
+```
+
+By the characterisation of paths-over in Hom-sets, we get paths-over
+between the projection maps and the product maps:
+
+```agda
+  module apices = C._≅_ apices
+  abstract
+    pres : ∀ j → PathP (λ i → C.Hom (c-cat .to-path apices i) (F j)) (x.π j) (y.π j)
+    pres j = Univalent.Hom-pathp-refll-iso c-cat x.commute
+
+    pres′ : ∀ {Y} (f : ∀ j → C.Hom Y (F j))
+      → PathP (λ i → C.Hom Y (c-cat .to-path apices i)) x.⟨ f ⟩ y.⟨ f ⟩
+    pres′ f =
+      Univalent.Hom-pathp-reflr-iso c-cat (y.unique f λ j → C.pulll y.commute ∙ x.commute)
+```
+
+And after some munging (dealing with the axioms), that's exactly what we
+need to prove that indexed products are unique.
+
+```agda
+  open Indexed-product
+  open is-indexed-product
+  p : x ≡ y
+  p i .ΠF = c-cat .to-path apices i
+  p i .π j = pres j i
+  p i .has-is-ip .⟨_⟩ f = pres′ f i
+  p i .has-is-ip .commute {i = j} {f = f} =
+    is-prop→pathp (λ i → C.Hom-set _ (F j) (pres j i C.∘ pres′ f i) _)
+     (x .has-is-ip .commute) (y .has-is-ip .commute) i
+  p i .has-is-ip .unique {h = h} f =
+    is-prop→pathp
+      (λ i → Π-is-hlevel {A = C.Hom _ (c-cat .to-path apices i)} 1
+       λ h → Π-is-hlevel {A = ∀ j → pres j i C.∘ h ≡ f j} 1
+       λ p → C.Hom-set _ (c-cat .to-path apices i) h (pres′ f i))
+      (λ h → x.unique {h = h} f) (λ h → y.unique {h = h} f) i h
+```

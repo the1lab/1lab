@@ -184,7 +184,6 @@ open import 1Lab.Equiv.Fibrewise   -- Fibrewise equivalences
 open import 1Lab.Equiv.HalfAdjoint -- Half-adjoint equivalences
 
 open import 1Lab.HLevel          -- h-levels
-open import 1Lab.HLevel.Sets     -- K, Rijke's theorem, Hedberg's theorem
 open import 1Lab.HLevel.Retracts -- Closure of h-levels under retractions/isos
 open import 1Lab.HLevel.Universe -- The type of n-types is a (n+1)-type
 

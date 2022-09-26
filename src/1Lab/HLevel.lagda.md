@@ -138,6 +138,19 @@ is-contr→is-prop C x y i = hcomp (∂ i) λ where
 
 <!--
 ```agda
+is-contr→extend : is-contr A → (φ : I) (p : Partial φ A) → A [ φ ↦ p ]
+is-contr→extend C φ p = inS (hcomp φ
+  λ { j (φ = i1) → C .paths (p 1=1) j
+    ; j (j = i0) → C .centre
+    })
+
+is-contr→is-set : is-contr A → is-set A
+is-contr→is-set C x y p q i j = outS (is-contr→extend C (∂ i ∨ ∂ j) λ where
+  (i = i0) → p j
+  (i = i1) → q j
+  (j = i0) → x
+  (j = i1) → y)
+
 SingletonP : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → Type _
 SingletonP A a = Σ[ x ∈ A i1 ] PathP A a x
 

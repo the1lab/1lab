@@ -1,5 +1,7 @@
 ```agda
+open import 1Lab.HLevel.Universe
 open import 1Lab.HLevel.Retracts
+open import 1Lab.HIT.Truncation
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -100,4 +102,28 @@ using `is-set→squarep`{.Agda}.
            → ∀ x y z → D x y z
 ∥-∥₀-elim₃ Bset f = ∥-∥₀-elim₂ (λ x y → Π-is-hlevel 2 (Bset x y))
   λ x y → ∥-∥₀-elim (Bset (inc x) (inc y)) (f x y)
+```
+
+# Paths in the set truncation
+
+```agda
+∥-∥₀-path-equiv
+  : ∀ {ℓ} {A : Type ℓ} {x y : A}
+  → (∥_∥₀.inc x ≡ ∥_∥₀.inc y) ≃ ∥ x ≡ y ∥
+∥-∥₀-path-equiv {A = A} =
+  prop-ext (squash _ _) squash (encode _ _) (decode _ (inc _))
+  where
+    code : ∀ x (y : ∥ A ∥₀) → Prop _
+    code x = ∥-∥₀-elim (λ y → hlevel 2) λ y → el ∥ x ≡ y ∥ squash
+
+    encode : ∀ x y → inc x ≡ y → ∣ code x y ∣
+    encode x y p = J (λ y p → ∣ code x y ∣) (inc refl) p
+
+    decode : ∀ x y → ∣ code x y ∣ → inc x ≡ y
+    decode x = ∥-∥₀-elim
+      (λ _ → fun-is-hlevel 2 (is-prop→is-set (squash _ _)))
+      λ _ → ∥-∥-rec (squash _ _) (ap inc)
+
+module ∥-∥₀-path {ℓ} {A : Type ℓ} {x} {y}
+  = Equiv (∥-∥₀-path-equiv {A = A} {x} {y})
 ```

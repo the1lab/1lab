@@ -130,9 +130,10 @@ resulting identification makes $f$ into the identity isomorphism.
 By the characterisation of `paths in algebras`{.Agda
 ident=Algebra-on-pathp}, it suffices to show that `A₀≡X₀`{.Agda}
 transports $A_m$'s multiplication to that of $X_m$'s; Using the
-corresponding lemma for `paths in hom-spaces`{.Agda ident=Hom-pathp-iso}
-of univalent categories, we can get away with (still calling our
-isomorphism $f$) showing the square below commutes.
+corresponding lemma for `paths in hom-spaces`{.Agda
+ident=Univalent.Hom-pathp-iso} of univalent categories, we can get away
+with (still calling our isomorphism $f$) showing the square below
+commutes.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -159,7 +160,7 @@ calculation then shows that the square above commutes.
           (λ i → C.Hom (isc .to-path (F-map-iso (Monad.M M) A₀≅X₀) i) (A₀≡X₀ i))
           (Am .ν) (Xm .ν)
       same-mults =
-        Hom-pathp-iso isc (
+        Univalent.Hom-pathp-iso isc (
           map A≅X.to C.∘ Am .ν C.∘ Monad.M₁ M (map A≅X.from)                 ≡⟨ C.pulll (sq A≅X.to) ⟩
           (Xm .ν C.∘ Monad.M₁ M (A≅X.to .map)) C.∘ Monad.M₁ M (map A≅X.from) ≡⟨ C.cancelr (sym (Monad.M-∘ M _ _) ·· ap (Monad.M₁ M) (ap map A≅X.invl) ·· Monad.M-id M) ⟩
           Xm .ν                                                              ∎
@@ -198,5 +199,5 @@ ident=Algebra-hom-pathp}.
 ```agda
     triv : PathP (λ i → (A , Am) EM.≅ A≡X i) EM.id-iso A≅X
     triv = EM.≅-pathp refl _
-      (Algebra-hom-pathp _ _ _ (Hom-pathp-reflr-iso isc (C.idr _)))
+      (Algebra-hom-pathp _ _ _ (Univalent.Hom-pathp-reflr-iso isc (C.idr _)))
 ```

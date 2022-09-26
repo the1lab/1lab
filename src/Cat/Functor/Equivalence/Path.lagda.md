@@ -2,6 +2,7 @@
 open import Cat.Functor.Adjoint.Unique
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Functor
+open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
 open import Cat.Univalent
 open import Cat.Prelude
@@ -170,8 +171,6 @@ the other laws are not any more enlightening.
              → circ i w y z f (circ i w x y g h) ≡ circ i w x z (circ i x y z f g) h)
         i
         (λ _ _ _ _ f g h → C.assoc f g h) w x y z f g h
-
-private unquoteDecl eqv = declare-record-iso eqv (quote is-precat-iso)
 ```
 -->
 
@@ -189,7 +188,7 @@ Precategory-identity-system
     (λ a → Id , iso id-equiv id-equiv)
 Precategory-identity-system .to-path (F , i) = Precategory-path F i
 Precategory-identity-system .to-path-over {C} {D} (F , i) =
-  Σ-prop-pathp (λ _ _ → is-hlevel≃ 1 (Iso→Equiv eqv e⁻¹) (hlevel 1)) $
+  Σ-prop-pathp (λ _ _ → hlevel 1) $
     Functor-pathp (λ p → path→ua-pathp _ (λ j → F.₀ (p j)))
                   (λ {x} {y} → homs x y)
   where
@@ -211,3 +210,120 @@ Precategory-identity-system .to-path-over {C} {D} (F , i) =
 Note that we did not need to concern ourselves with the actual witness
 that the functor is an isomorphism, since being an isomorphism is a
 proposition.
+
+## For univalent categories
+
+Now we want to characterise the space of paths between _univalent_
+categories, as a refinement of the identity system constructed above.
+There are two observations that will allow us to do this like magic:
+
+1. Being univalent is a _property_ of a precategory: Univalence is
+defined to mean that the relation $X \cong Y$ is an identity system for
+the objects of $\ca{C}$, and "being an identity system" is a _property_
+of a relation^[Really, it's a property of a _pointed_ relation, but this
+does not make a difference here.]
+
+2. Between univalent categories, being an adjoint equivalence is a
+property of a functor, and it is logically equivalent to being an
+isomorphism of the underlying precategories.
+
+Putting this together is a matter of piecing pre-existing lemmas
+together. The first half of the construction is by observing that the
+map (of types) which forgets univalence for a given category is an
+embedding, so that we may compute an identity system on univalent
+categories by pulling back that of precategories:
+
+```agda
+Category-identity-system-pre
+  : ∀ {o ℓ} →
+    is-identity-system {A = Σ (Precategory o ℓ) is-category}
+      (λ C D → Σ (Functor (C .fst) (D .fst)) is-precat-iso)
+      (λ a → Id , iso id-equiv id-equiv)
+Category-identity-system-pre =
+  pullback-identity-system
+    Precategory-identity-system
+    (fst , (Subset-proj-embedding (λ x → is-identity-system-is-prop)))
+```
+
+<!--
+```agda
+module
+  _ {o o′ ℓ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+    (F : Functor C D)
+    (eqv : is-equivalence F)
+  where
+
+  open is-equivalence eqv
+  module C = Cat.Reasoning C
+  module D = Cat.Reasoning D
+  module F = Fr F
+  open _=>_
+
+  is-equivalence→is-ff : is-fully-faithful F
+  is-equivalence→is-ff = is-iso→is-equiv λ where
+    .is-iso.inv x → unit⁻¹ .η _ C.∘ L-adjunct F⊣F⁻¹ x
+    .is-iso.rinv x →
+      D.invertible→monic (F-map-invertible F (unit-iso _)) _ _ $
+        ap₂ D._∘_ refl (F .F-∘ _ _)
+      ·· D.cancell (F.annihilate (unit-iso _ .C.is-invertible.invl))
+      ·· D.invertible→monic (counit-iso _) _ _
+          (R-L-adjunct F⊣F⁻¹ x ∙ sym (D.cancell zig))
+    .is-iso.linv x →
+        ap (_ C.∘_) (sym (unit .is-natural _ _ _))
+      ∙ C.cancell (unit-iso _ .C.is-invertible.invr)
+```
+-->
+
+Then, since the spaces of equivalences $\ca{C} \cong \ca{D}$ and
+isomorphisms $\ca{C} \to \ca{D}$ are both defined as the total space of
+a predicate on the same types, it suffices to show that the predicates
+are equivalent pointwise, which follows by propositional extensionality
+and a tiny result to adjust an equivalence into an isomorphism.
+
+```agda
+Category-identity-system
+  : ∀ {o ℓ} → is-identity-system
+    {A = Σ (Precategory o ℓ) is-category}
+    (λ C D → Σ (Functor (C .fst) (D .fst)) is-equivalence)
+    (λ a → Id , Id-is-equivalence)
+Category-identity-system =
+  transfer-identity-system Category-identity-system-pre
+
+    (λ x y → Σ-ap-snd λ F → prop-ext! {bprop = is-equivalence-is-prop (x .snd) F}
+      is-precat-iso→is-equivalence
+      (eqv→iso (x .snd) (y .snd) F))
+```
+
+To show that this equivalence sends "reflexivity" to "reflexivity", all
+that matters is the functor (since being an equivalence is a
+proposition), and the functor is definitionally preserved.
+
+```agda
+    (λ x → Σ-prop-path (is-equivalence-is-prop (x .snd)) refl)
+```
+
+<!--
+```agda
+  where
+    module
+      _ {C D : Precategory _ _} (ccat : is-category C) (dcat : is-category D)
+      (F : Functor C D) (eqv : is-equivalence F)
+      where
+      open is-precat-iso
+      open is-equivalence
+```
+-->
+
+And now the aforementioned tiny result: All equivalences are fully
+faithful, and if both categories are univalent, the natural isomorphisms
+$F^{-1}F \cong \id{Id}$ and $FF^{-1} \cong \id{Id}$ provide the
+necessary paths for showing that $F_0$ is an equivalence of types.
+
+```agda
+      eqv→iso : is-precat-iso F
+      eqv→iso .has-is-ff = is-equivalence→is-ff F eqv
+      eqv→iso .has-is-iso = is-iso→is-equiv λ where
+        .is-iso.inv    → eqv .F⁻¹ .F₀
+        .is-iso.rinv x → dcat .to-path       $ Nat-iso→Iso (F∘F⁻¹≅Id eqv) _
+        .is-iso.linv x → sym $ ccat .to-path $ Nat-iso→Iso (Id≅F⁻¹∘F eqv) _
+```

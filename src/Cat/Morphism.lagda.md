@@ -39,6 +39,8 @@ record _↪_ (a b : Ob) : Type (o ⊔ h) where
   field
     mor   : Hom a b
     monic : is-monic mor
+
+open _↪_ public
 ```
 
 Conversely, a morphism is said to be **epic** when it is
@@ -56,8 +58,10 @@ is-epic-is-prop f x y i {c} g h p = Hom-set _ _ _ _ (x g h p) (y g h p) i
 
 record _↠_ (a b : Ob) : Type (o ⊔ h) where
   field
-    mor   : Hom a b
-    monic : is-epic mor
+    mor  : Hom a b
+    epic : is-epic mor
+
+open _↠_ public
 ```
 
 ## Isos
@@ -140,6 +144,10 @@ make-iso f g p q ._≅_.from = g
 make-iso f g p q ._≅_.inverses .Inverses.invl = p
 make-iso f g p q ._≅_.inverses .Inverses.invr = q
 
+instance
+  H-Level-is-invertible : ∀ {f : Hom a b} {n} → H-Level (is-invertible f) (suc n)
+  H-Level-is-invertible = prop-instance is-invertible-is-prop
+
 invertible→iso : (f : Hom a b) → is-invertible f → a ≅ b
 invertible→iso f x =
   record
@@ -207,6 +215,40 @@ abstract
   → PathP (λ i → Hom (p i) (q i)) (f ._≅_.to) (g ._≅_.to)
   → PathP (λ i → p i ≅ q i) f g
 ≅-pathp p q {f = f} {g = g} r = ≅-pathp-internal p q r (inverse-unique p q {f = f} {g = g} r)
+
+↪-pathp
+  : {a : I → Ob} {b : I → Ob} {f : a i0 ↪ b i0} {g : a i1 ↪ b i1}
+  → PathP (λ i → Hom (a i) (b i)) (f .mor) (g .mor)
+  → PathP (λ i → a i ↪ b i) f g
+↪-pathp {a = a} {b} {f} {g} pa = go where
+  go : PathP (λ i → a i ↪ b i) f g
+  go i .mor = pa i
+  go i .monic {c = c} =
+    is-prop→pathp
+      (λ i → Π-is-hlevel {A = Hom c (a i)} 1
+       λ g → Π-is-hlevel {A = Hom c (a i)} 1
+       λ h → fun-is-hlevel {A = pa i ∘ g ≡ pa i ∘ h} 1
+              (Hom-set c (a i) g h))
+      (f .monic)
+      (g .monic)
+      i
+
+↠-pathp
+  : {a : I → Ob} {b : I → Ob} {f : a i0 ↠ b i0} {g : a i1 ↠ b i1}
+  → PathP (λ i → Hom (a i) (b i)) (f .mor) (g .mor)
+  → PathP (λ i → a i ↠ b i) f g
+↠-pathp {a = a} {b} {f} {g} pa = go where
+  go : PathP (λ i → a i ↠ b i) f g
+  go i .mor = pa i
+  go i .epic {c = c} =
+    is-prop→pathp
+      (λ i → Π-is-hlevel {A = Hom (b i) c} 1
+       λ g → Π-is-hlevel {A = Hom (b i) c} 1
+       λ h → fun-is-hlevel {A = g ∘ pa i ≡ h ∘ pa i} 1
+              (Hom-set (b i) c g h))
+      (f .epic)
+      (g .epic)
+      i
 ```
 -->
 

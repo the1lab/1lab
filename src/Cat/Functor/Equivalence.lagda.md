@@ -461,7 +461,7 @@ the result with far less computation:
 ```agda
     over′ : PathP (λ i → Fx≡Fy i D.≅ z) i j
     over′ = D.≅-pathp Fx≡Fy refl
-      (Hom-pathp-refll-iso dcat (D.cancell (i .D._≅_.invl)))
+      (Univalent.Hom-pathp-refll-iso dcat (D.cancell (i .D._≅_.invl)))
 ```
 
 We must then connect $\id{ap}(F)(p)$ with this path $F(x) \cong
@@ -541,3 +541,32 @@ precategories.
   is-precat-iso→is-equivalence =
     ff+split-eso→is-equivalence has-is-ff is-precat-iso→is-split-eso
 ```
+
+<!--
+```agda
+open is-equivalence
+open Precategory
+open _⊣_
+
+Id-is-equivalence : ∀ {o h} {C : Precategory o h} → is-equivalence {C = C} Id
+Id-is-equivalence {C = C} .F⁻¹ = Id
+Id-is-equivalence {C = C} .F⊣F⁻¹ .unit .η x = C .id
+Id-is-equivalence {C = C} .F⊣F⁻¹ .unit .is-natural x y f = C .idl _ ∙ sym (C .idr _)
+Id-is-equivalence {C = C} .F⊣F⁻¹ .counit .η x = C .id
+Id-is-equivalence {C = C} .F⊣F⁻¹ .counit .is-natural x y f = C .idl _ ∙ sym (C .idr _)
+Id-is-equivalence {C = C} .F⊣F⁻¹ .zig = C .idl _
+Id-is-equivalence {C = C} .F⊣F⁻¹ .zag = C .idl _
+Id-is-equivalence {C = C} .unit-iso x =
+  Cat.Reasoning.make-invertible C (C .id) (C .idl _) (C .idl _)
+Id-is-equivalence {C = C} .counit-iso x =
+  Cat.Reasoning.make-invertible C (C .id) (C .idl _) (C .idl _)
+
+private unquoteDecl eqv = declare-record-iso eqv (quote is-precat-iso)
+instance
+  H-Level-is-precat-iso
+    : ∀ {o h o′ h′} {C : Precategory o h} {D : Precategory o′ h′}
+        {F : Functor C D} {n}
+    → H-Level (is-precat-iso F) (suc n)
+  H-Level-is-precat-iso = prop-instance (is-hlevel≃ 1 (Iso→Equiv eqv e⁻¹) (hlevel 1))
+```
+-->

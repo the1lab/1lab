@@ -50,7 +50,8 @@ morphism, preservation of inverses, and thus preservation of
 subtraction.
 
 ```agda
-    F-hom : ∀ {a b} → Group-hom (A.Hom-grp a b .object) (B.Hom-grp _ _ .object) F₁
+    F-hom : ∀ {a b}
+          → Group-hom (A.Group-on-hom a b) (B.Group-on-hom _ _) F₁
     F-hom .Group-hom.pres-⋆ = F-+
 
     F-0m : ∀ {a b} → F₁ {a} {b} A.0m ≡ B.0m

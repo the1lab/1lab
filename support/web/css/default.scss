@@ -585,3 +585,22 @@ hr {
 span.qed {
   float: right;
 }
+
+/* The \liesover{} macro: It's awful and I hate it. The \liesover{} arrow
+ * is just hspace --- KaTeX needs to know the actual size of the thing,
+ * so we let *it* control the sizing --- and here, we draw an arrow over
+ * it; An arrow with #000 stroke in light theme and #ABB2BF stroke in
+ * dark theme. */
+span.enclosing.liesover {
+  background: url('/static/lies-over-light.svg') no-repeat;
+  background-size: contain;
+  background-position: center center;
+}
+
+@media (prefers-color-scheme: dark) {
+  span.enclosing.liesover {
+    background: url('/static/lies-over-dark.svg') no-repeat;
+    background-size: contain;
+    background-position: center center;
+  }
+}

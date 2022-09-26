@@ -147,7 +147,7 @@ Discrete-Fin (fsuc i) (fsuc j) with Discrete-Fin i j
 [Hedberg's theorem] implies that `Fin`{.Agda} is a [set], i.e., it only
 has trivial paths.
 
-[Hedberg's theorem]: agda://1Lab.HLevel.Sets#Discrete→is-set
+[Hedberg's theorem]: agda://1Lab.Path.IdentitySystem#Discrete→is-set
 [set]: agda://1Lab.HLevel#is-set
 
 ```agda

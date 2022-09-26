@@ -516,9 +516,9 @@ module _ {C : Precategory o ℓ} {o : Precategory.Ob C} (isc : is-category C) wh
   slice-is-category .to-path x = /-Obj-path (isc .to-path $
     C.make-iso (x .to .map) (x .from .map)
       (ap map (C/o._≅_.invl x)) (ap map (C/o._≅_.invr x)))
-    (Hom-pathp-refll-iso isc (x .from .commutes))
+    (Univalent.Hom-pathp-refll-iso isc (x .from .commutes))
   slice-is-category .to-path-over x = C/o.≅-pathp refl _ $
-    /-Hom-pathp _ _ (Hom-pathp-reflr-iso isc (C.idr _))
+    /-Hom-pathp _ _ (Univalent.Hom-pathp-reflr-iso isc (C.idr _))
 ```
 
 # Arbitrary limits in slices
