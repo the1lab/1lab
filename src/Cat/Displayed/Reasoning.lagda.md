@@ -271,7 +271,7 @@ private variable
   u w x y z : Ob
   a b c d f g h i : Hom x y
   u′ w′ x′ y′ z′ : Ob[ x ]
-  a′ b′ c′ d′ f′ g′ h′ i′ : Hom[ a ] x′ y′ 
+  a′ b′ c′ d′ f′ g′ h′ i′ : Hom[ a ] x′ y′
 ```
 -->
 
@@ -287,7 +287,7 @@ combinators.
 module _ {f′ : Hom[ f ] x′ y′} {g′ : Hom[ g ] x′ y′} (p : f ≡ g) where abstract
   shiftl : f′ ≡[ p ] g′ → hom[ p ] f′ ≡ g′
   shiftl q i = from-pathp (λ j → q (i ∨ j)) i
-  
+
   shiftr : f′ ≡[ p ] g′ → f′ ≡ hom[ p ]⁻ g′
   shiftr q i = from-pathp (λ j → q (i ∧ ~ j)) (~ i)
 ```
@@ -330,7 +330,7 @@ In the definition of displayed categories, the identity and associativity
 laws are defined over `idl`{.Agda}, `idr`{.Agda}, and `assoc`{.Agda}. However,
 we often run into situations where we need to apply these equations over
 different equations! These combinators do just that.
-  
+
 ```agda
 module _ {f′ : Hom[ f ] x′ y′} where abstract
   idl[] : {p : id ∘ f ≡ f} → hom[ p ] (id′ ∘′ f′) ≡ f′
@@ -380,10 +380,8 @@ module _ {a′ : Hom[ a ] x′ x′}
 
 ## Reassociations
 
-These are the displayed counterparts to the [reassociation combinators]
+These are the displayed counterparts to the reassociation combinators
 for categories.
-
-[reassociation combinators]: Cat.Reasoning.html#reassociations
 
 ```agda
 module _ {a′ : Hom[ a ] y′ z′} {b′ : Hom[ b ] x′ y′} {c′ : Hom[ c ] x′ z′}
@@ -475,9 +473,9 @@ module _ {a′ : Hom[ a ] y′ x′} {b′ : Hom[ b ] x′ y′}
 
   insertl′ : ∀ {f′ : Hom[ f ] z′ x′} {q : f ≡ a ∘ b ∘ f }
              → f′ ≡[ q ] a′ ∘′ b′ ∘′ f′
-  insertl′ {f = f} {f′ = f′} {q = q} i = cancell′ {f′ = f′} {q = sym q} (~ i) 
+  insertl′ {f = f} {f′ = f′} {q = q} i = cancell′ {f′ = f′} {q = sym q} (~ i)
 
   insertr′ : ∀ {f′ : Hom[ f ] x′ z′} {q : f ≡ (f ∘ a) ∘ b }
              → f′ ≡[ q ] (f′ ∘′ a′) ∘′ b′
-  insertr′ {f = f} {f′ = f′} {q = q} i = cancelr′ {f′ = f′} {q = sym q} (~ i) 
+  insertr′ {f = f} {f′ = f′} {q = q} i = cancelr′ {f′ = f′} {q = sym q} (~ i)
 ```
