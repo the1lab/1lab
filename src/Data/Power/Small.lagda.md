@@ -60,7 +60,7 @@ open Bi
 Ω-univalence .to-path-over p i .to x =
   outS (ua-glue (p .to , Bi.to-equiv p) i (λ _ → x) (inS (p .to x)))
 Ω-univalence .to-path-over {a} p i .from x = hcomp (∂ i) λ where
-  j (j = i0) → p .from (ua-unglue (p .to , Bi.to-equiv p) i x)
+  j (j = i0) → p .from (outS (ua-unglue (p .to , Bi.to-equiv p) i x))
   j (i = i0) → a .is-tr (p .from (p .to x)) x j
   j (i = i1) → p .from x
 
