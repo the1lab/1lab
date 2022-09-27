@@ -144,6 +144,9 @@ is-contr→extend C φ p = inS (hcomp φ
     ; j (j = i0) → C .centre
     })
 
+extend→is-contr : (∀ φ (p : Partial φ A) → A [ φ ↦ p ]) → is-contr A
+extend→is-contr ext = contr (outS (ext i0 λ ())) λ x i → outS (ext i λ _ → x)
+
 is-contr→is-set : is-contr A → is-set A
 is-contr→is-set C x y p q i j = outS (is-contr→extend C (∂ i ∨ ∂ j) λ where
   (i = i0) → p j

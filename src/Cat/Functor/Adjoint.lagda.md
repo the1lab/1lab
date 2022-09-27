@@ -594,5 +594,49 @@ module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
   opposite-adjunction .counit .is-natural x y f = sym (adj.unit.is-natural _ _ _)
   opposite-adjunction .zig = adj.zag
   opposite-adjunction .zag = adj.zig
+
+record make-left-adjoint (R : Functor D C) : Type (adj-level C D) where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module R = Functor R
+
+  field
+    free      : C.Ob → D.Ob
+    unit      : ∀ x → C.Hom x (R.₀ (free x))
+    universal : ∀ {x y} (f : C.Hom x (R.₀ y)) → D.Hom (free x) y
+    commutes  : ∀ {x y} (f : C.Hom x (R.₀ y)) → f ≡ R.₁ (universal f) C.∘ unit _
+    unique
+      : ∀ {x y} {f : C.Hom x (R.₀ y)} {g : D.Hom (free x) y}
+      → f ≡ R.₁ g C.∘ unit _
+      → universal f ≡ g
+
+  to-universal-arrows : ∀ x → Universal-morphism x R
+  to-universal-arrows x = go where
+    start : ↓Obj _ _
+    start .↓Obj.x = tt
+    start .↓Obj.y = free x
+    start .↓Obj.map = unit _
+
+    go : Initial _
+    go .Initial.bot = start
+    go .Initial.has⊥ oth = contr dh uniq
+      where
+        dh : ↓Hom (Const x) R _ oth
+        dh .↓Hom.α = tt
+        dh .↓Hom.β = universal (oth .↓Obj.map)
+        dh .↓Hom.sq = C.idr (oth .↓Obj.map) ∙ commutes (↓Obj.map oth)
+
+        uniq : ∀ y → dh ≡ y
+        uniq y = ↓Hom-path _ _ refl (unique (sym (C.idr _) ∙ y .↓Hom.sq))
+
+  to-functor : Functor C D
+  to-functor = universal-maps→L R to-universal-arrows
+
+  to-left-adjoint : to-functor ⊣ R
+  to-left-adjoint = universal-maps→L⊣R R to-universal-arrows
+
+open make-left-adjoint
+module Ml = make-left-adjoint
 ```
 -->

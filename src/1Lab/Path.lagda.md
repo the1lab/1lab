@@ -1179,6 +1179,7 @@ to identical outputs.
 ap : ∀ {a b} {A : Type a} {B : A → Type b} (f : (x : A) → B x) {x y : A}
    → (p : x ≡ y) → PathP (λ i → B (p i)) (f x) (f y)
 ap f p i = f (p i)
+{-# NOINLINE ap #-}
 ```
 
 The following function expresses the same thing as `ap`{.Agda}, but for

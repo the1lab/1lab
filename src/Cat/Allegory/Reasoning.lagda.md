@@ -86,3 +86,18 @@ ordering in both of its arguments.
 ∩-idempotent = ≤-antisym ∩-le-l (∩-univ ≤-refl ≤-refl)
 ```
 -->
+
+```agda
+modular′
+  : ∀ {x y z} (f : Hom x y) (g : Hom y z) (h : Hom x z)
+  → (g ∘ f) ∩ h ≤ (g ∩ (h ∘ f †)) ∘ f
+modular′ f g h =
+  (g ∘ f) ∩ h                     =˘⟨ dual _ ⟩
+  ⌜ ((g ∘ f) ∩ h) † ⌝ †           =⟨ ap! (dual-∩ A) ⟩
+  (⌜ (g ∘ f) † ⌝ ∩ h †) †         =⟨ ap! dual-∘ ⟩
+  ⌜ ((f † ∘ g †) ∩ h †) ⌝ †       ≤⟨ dual-≤ (modular (g †) (f †) (h †)) ⟩
+  (f † ∘ (g † ∩ (f † † ∘ h †))) † =⟨ dual-∘ ⟩
+  (g † ∩ (f † † ∘ h †)) † ∘ f † † =⟨ ap₂ _∘_ (dual-∩ A) (dual f) ⟩
+  (g † † ∩ (f † † ∘ h †) †) ∘ f   =⟨ ap₂ _∘_ (ap₂ _∩_ (dual g) (ap _† (ap₂ _∘_ (dual f) refl) ·· dual-∘ ·· ap (_∘ f †) (dual h))) refl ⟩
+  (g ∩ h ∘ f †) ∘ f               ≤∎
+```

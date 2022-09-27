@@ -6,6 +6,7 @@ description: |
   isomorphisms are equivalences.
 ---
 ```agda
+{-# OPTIONS -vtc.def.fun:10 #-}
 open import 1Lab.Reflection.Marker
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Path.Groupoid
@@ -94,7 +95,7 @@ cancel:
     zig : (x : A) → ε' (f x) ≡ ap f (η x)
     zig x =
       ε' (f x)                                                    ≡⟨⟩
-      sym (ε (f (g (f x))))  ∙ ap f ⌜ (η (g (f x))) ⌝ ∙ ε (f x)   ≡⟨ ap! (homotopy-invert η) ⟩
+      sym (ε (f (g (f x))))  ∙ ap f ⌜ (η (g (f x))) ⌝ ∙ ε (f x)   ≡⟨ ap (λ e → sym (ε _) ∙ ap f e ∙ ε _) (homotopy-invert η) ⟩
       sym (ε (f (g (f x))))  ∙ ⌜ ap (f ∘ g ∘ f) (η x) ∙ ε (f x) ⌝ ≡˘⟨ ap¡ (homotopy-natural ε _) ⟩
       sym (ε (f (g (f x))))  ∙ ε (f (g (f x)))      ∙ ap f (η x)  ≡⟨ ∙-cancel-l (ε (f (g (f x)))) (ap f (η x)) ⟩
       ap f (η x)                                                  ∎

@@ -186,60 +186,17 @@ generators, and the universal map $\eta$ is in fact `inc`{.Agda}.
 [underlying set functor]: Algebra.Group.Cat.Base.html#the-underlying-set
 
 ```agda
-Free-universal-maps : ∀ s → Universal-morphism s (Forget {ℓ})
-Free-universal-maps S = um where
-  it : ↓Obj _ Forget
-  it .x   = tt
-  it .y   = Free-Group ∣ S ∣
-  it .map = inc
-```
-
-To prove that this map is unique, suppose we have a group $H$ together
-with a map $g : S \to U(H)$. We can insert $\id{Free}(S)$ in the
-middle by breaking this map down as
-
-$$
-S \xrightarrow{\id{inc}} U(\id{Free}(S) \xrightarrow{\id{fold}(g)} H)
-$$
-
-```agda
-  um : Initial _
-  um .bot        = it
-  um .has⊥ other = contr factor unique where
-    g : ∣ S ∣ → ⌞ other .y ⌟
-    g = other .map
-
-    factor : ↓Hom _ _ it other
-    factor .α  = tt
-    factor .β  = fold-free-group g
-    factor .sq = refl
-```
-
-To show that this factorisation is unique, suppose we had some other
-group homomorphism $g' : \id{Free}(S) \to H$, which also has the
-property that $U(g') \circ \id{inc} = g$; We must show that it is equal
-to $\id{fold}(g)$, which we can do pointwise, so assume we have a $x :
-\id{Free}(S)$.
-
-By `induction`{.Agda ident=Free-elim-prop} on $x$, it suffices to
-consider the cases where $x$ is a `generator`{.Agda ident=inc}, or one
-of the group operations (`inverses`{.Agda ident=inv},
-`multiplication`{.Agda ident=_◆_}, or the `identity`{.Agda ident=nil}).
-The case for generators is the most interesting: We have some $y : S$,
-and must show that $g(y) = U(g')(\id{inc}(y))$; but this is
-immediate, by assumption. The other cases all follow from the induction
-hypotheses and $g'$ being a group homomorphism.
-
-```agda
-    unique : ∀ x → factor ≡ x
-    unique factoring = ↓Hom-path _ _ refl path where abstract
-      path : factor .β ≡ factoring .β
-      path = Homomorphism-path
-        (Free-elim-prop _ (λ _ → y other .snd .has-is-set _ _)
-          (λ x → happly (factoring .sq) _)
-          (λ _ _ p q → ap₂ (other .y .snd ._⋆_) p q
-                     ∙ sym (factoring .β .preserves .pres-⋆ _ _))
-          (λ _ p → ap (other .y .snd .inverse) p
-                 ∙ sym (pres-inv (factoring .β .preserves)))
-          (sym (pres-id (factoring .β .preserves))))
+make-free-group : make-left-adjoint (Forget {ℓ})
+make-free-group .Ml.free S = Free-Group ∣ S ∣
+make-free-group .Ml.unit _ = inc
+make-free-group .Ml.universal f = fold-free-group f
+make-free-group .Ml.commutes f = refl
+make-free-group .Ml.unique {y = y} {g = g} p =
+  Homomorphism-path $ Free-elim-prop _ (λ _ → hlevel!)
+    (p $ₚ_)
+    (λ a b p q → ap₂ y._⋆_ p q ∙ sym (g .preserves .Group-hom.pres-⋆ _ _))
+    (λ a p → ap y.inverse p ∙ sym (Group-hom.pres-inv (g .preserves)))
+    (sym (Group-hom.pres-id (g .preserves)))
+  where module y = Group-on (y .snd)
+module Free-groups {ℓ} = make-left-adjoint (make-free-group {ℓ = ℓ})
 ```

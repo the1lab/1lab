@@ -338,10 +338,8 @@ i` (varying over an interval variable `i`), then we have an element of
 `B` which agrees with `e .fst x` on the left and with `x` on the right.
 
 ```agda
-ua-unglue : ∀ {A B : Type ℓ} (e : A ≃ B) (i : I) (x : ua e i)
-            → B [ _ ↦ (λ { (i = i0) → e .fst x
-                         ; (i = i1) → x }) ]
-ua-unglue e i x = inS (unglue (i ∨ ~ i) x)
+ua-unglue : ∀ {A B : Type ℓ} (e : A ≃ B) (i : I) (x : ua e i) → B
+ua-unglue e i x = unglue (i ∨ ~ i) x
 ```
 
 We can factor the interval variable out, to get a type in terms of
@@ -353,7 +351,7 @@ x ≡ y`.
 ua-pathp→path : ∀ {A B : Type ℓ} (e : A ≃ B) {x : A} {y : B}
               → PathP (λ i → ua e i) x y
               → e .fst x ≡ y
-ua-pathp→path e p i = outS (ua-unglue e i (p i))
+ua-pathp→path e p i = ua-unglue e i (p i)
 ```
 
 In the other direction, we have `ua-glue`{.Agda}, which expresses that a
@@ -463,7 +461,7 @@ univalence⁻¹ : {A B : Type ℓ} → is-equiv (ua {A = A} {B})
 
 Path≃Equiv {A = A} {B = B} = path→equiv , iiso where
   iiso : is-iso path→equiv
-  is-iso.inv iiso = ua
+  iiso .is-iso.inv = ua
 ```
 
 We show that `path→equiv` inverts `ua`{.Agda}, which means proving that
@@ -472,7 +470,7 @@ Because of the computational nature of Cubical Agda, all we have to do
 is apply `uaβ`{.Agda}:
 
 ```agda
-  is-iso.rinv iiso (f , is-eqv) =
+  iiso .is-iso.rinv (f , is-eqv) =
     Σ-path (funext (uaβ (f , is-eqv))) (is-equiv-is-prop f _ _)
 ```
 
@@ -486,7 +484,7 @@ equivalence to `refl`{.Agda} (`ua-id-equiv`{.Agda}).
 [path induction]: 1Lab.Path.html#J
 
 ```agda
-  is-iso.linv iiso =
+  iiso .is-iso.linv =
     J (λ _ p → ua (path→equiv p) ≡ p)
       (ap ua path→equiv-refl ∙ ua-id-equiv)
 
@@ -665,7 +663,7 @@ Fibration-equiv {B = B} = Iso→Equiv isom where
   isom .snd .inv p⁻¹      = Σ _ p⁻¹ , fst
   isom .snd .rinv prep i x = ua (Fibre-equiv prep x) i
   isom .snd .linv (E , p) i
-    = ua e (~ i) , λ x → fst (outS (ua-unglue e (~ i) x))
+    = ua e (~ i) , λ x → fst (ua-unglue e (~ i) x)
     where e = Total-equiv p
 ```
 
@@ -728,15 +726,51 @@ Map-classifier {ℓ = ℓ} {B = B} P =
 ```agda
 module ua {ℓ} {A B : Type ℓ} = Equiv (ua {A = A} {B} , univalence⁻¹)
 
-ua∙ : ∀ {A B C : Type ℓ} {f : A ≃ B} {g : B ≃ C}
-    → ua (f ∙e g) ≡ ua f ∙ ua g
-ua∙ {C = C} {f = f} {g} =
-  EquivJ
-    (λ B eq → (g : B ≃ C) → ua (eq ∙e g) ≡ ua eq ∙ ua g)
-    (λ g → ap ua (Σ-prop-path is-equiv-is-prop (refl {x = g .fst}))
-        ·· sym (∙-id-l (ua g))
-        ·· ap₂ _∙_ (sym ua-id-equiv) refl)
-    f g
+unglue-is-equiv
+  : ∀ {ℓ ℓ′} {A : Type ℓ} (φ : I)
+  → {B : Partial φ (Σ (Type ℓ′) (_≃ A))}
+  → is-equiv {A = Glue A B} (unglue φ)
+unglue-is-equiv {A = A} φ {B = B} .is-eqv y = extend→is-contr ctr
+  where module _ (ψ : I) (par : Partial ψ (fibre (unglue φ) y)) where
+    fib : .(p : IsOne φ)
+        → fibre (B p .snd .fst) y
+          [ (ψ ∧ φ) ↦ (λ { (ψ = i1) (φ = i1) → par 1=1 }) ]
+    fib p = is-contr→extend (B p .snd .snd .is-eqv y) (ψ ∧ φ) _
+
+    sys : ∀ j → Partial (φ ∨ ψ ∨ ~ j) A
+    sys j (j = i0) = y
+    sys j (φ = i1) = outS (fib 1=1) .snd (~ j)
+    sys j (ψ = i1) = par 1=1 .snd (~ j)
+
+    ctr = inS $ₛ glue-inc φ {Tf = B} (λ { (φ = i1) → outS (fib 1=1) .fst })
+                  (inS (hcomp (φ ∨ ψ) sys))
+               , (λ i → hfill (φ ∨ ψ) (~ i) sys)
+
+ua-unglue-is-equiv
+  : ∀ {ℓ} {A B : Type ℓ} (f : A ≃ B)
+  → PathP (λ i → is-equiv (ua-unglue f i)) (f .snd) id-equiv
+ua-unglue-is-equiv f =
+  is-prop→pathp (λ j → is-equiv-is-prop (ua-unglue f j)) (f .snd) id-equiv
+
+ua∙ : ∀ {ℓ} {A B C : Type ℓ} {f : A ≃ B} {g : B ≃ C} → ua (f ∙e g) ≡ ua f ∙ ua g
+ua∙ {ℓ = ℓ} {A} {B} {C} {f} {g} = ∙-unique (ua (f ∙e g)) λ i j → Glue C λ where
+  (i = i0) → ua f j , (λ x → g .fst (ua-unglue f j x)) ,
+    is-prop→pathp (λ j → is-equiv-is-prop (λ x → g .fst (ua-unglue f j x)))
+      ((f ∙e g) .snd) (g .snd) j
+  (i = i1) → ua (f ∙e g) j , ua-unglue (f ∙e g) j , ua-unglue-is-equiv (f ∙e g) j
+  (j = i0) → A , f ∙e g
+  (j = i1) → ua g i , ua-unglue g i , ua-unglue-is-equiv g i
+
+sym-ua : ∀ {ℓ} {A B : Type ℓ} (e : A ≃ B) → sym (ua e) ≡ ua (e e⁻¹)
+sym-ua {A = A} {B = B} e i j = Glue B λ where
+  (i = i0) → ua e (~ j)   , ua-unglue e (~ j) , ua-unglue-is-equiv e (~ j)
+  (i = i1) → ua (e e⁻¹) j , (λ x → e .fst (ua-unglue (e e⁻¹) j x)) ,
+    is-prop→pathp (λ j → is-equiv-is-prop λ x → e .fst (ua-unglue (e e⁻¹) j x))
+      (((e e⁻¹) ∙e e) .snd) (e .snd) j
+  (j = i0) → B , (λ x → Equiv.ε e x (~ i)) ,
+    is-prop→pathp (λ j → is-equiv-is-prop λ x → Equiv.ε e x (~ j))
+      id-equiv (((e e⁻¹) ∙e e) .snd) i
+  (j = i1) → A , e
 
 ua→ : ∀ {ℓ ℓ'} {A₀ A₁ : Type ℓ} {e : A₀ ≃ A₁} {B : (i : I) → Type ℓ'}
   {f₀ : A₀ → B i0} {f₁ : A₁ → B i1}
@@ -771,8 +805,5 @@ subst-∙ : ∀ {ℓ ℓ′} {A : Type ℓ} → (B : A → Type ℓ′)
 subst-∙ B p q Bx i =
   transport (ap B (∙-filler' p q (~ i))) (transport-filler-ext (ap B p) i Bx)
 
-sym-ua : ∀ {ℓ} {A B : Type ℓ} (e : A ≃ B) → sym (ua e) ≡ ua (e e⁻¹)
-sym-ua = EquivJ (λ B e → sym (ua e) ≡ ua (e e⁻¹))
-  (ap sym ua-id-equiv ∙ sym (ap ua (Σ-prop-path is-equiv-is-prop refl) ∙ ua-id-equiv))
 ```
 -->

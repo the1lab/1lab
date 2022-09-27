@@ -22,10 +22,10 @@ module Algebra.Group.Cat.Monadic {ℓ} where
 ```agda
 private
   F : Functor (Sets ℓ) (Groups ℓ)
-  F = universal-maps→L (Grp.Forget {ℓ = ℓ}) Free-universal-maps
+  F = Free-groups.to-functor
 
   F⊣U : F ⊣ _
-  F⊣U = universal-maps→L⊣R (Grp.Forget {ℓ = ℓ}) Free-universal-maps
+  F⊣U = Free-groups.to-left-adjoint
 
   K = Comparison F⊣U
 

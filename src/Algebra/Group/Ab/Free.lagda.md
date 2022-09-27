@@ -191,85 +191,43 @@ inherited from $G$!
 
 This finishes the construction of _an_ abelian group from a group. To
 show that this construction is correct, we'll show that it satisfies a
-universal property: The map `inc^ab`{.Agda}, which we write as being
-from $G \to G^{ab}$, is a group homomorphism, and furthermore, it
-provides a _universal_ way of mapping from $G$ to an abelian group, in
-that if $H$ is an abelian group, then a map $f : G \to H$ factors
-through `inc^ab`{.Agda} in a unique way.
+universal property: The inclusion map $G \xto{i} G^{ab}$ from a group to
+its abelianisation is universal among maps from groups to abelian
+groups. To wit: If $H$ is some other abelian group with a map $f : G \to
+H$, we can factor it uniquely as
+
+$$
+G \xto{i} G^{ab} \xto{\hat f} H
+$$
+
+for some $\hat f : G^{ab} \to H$ derived from $f$.
 
 ```agda
-Abelianise-universal
-  : ∀ {G : Group ℓ} → Universal-morphism G Ab→Grp
-Abelianise-universal {ℓ = ℓ} {G = G} = m where
-  open Cat (const! {A = Groups ℓ} G ↓ Ab→Grp)
-  open Initial
-  module G = Group-on (G .snd)
-```
+make-free-abelian : make-left-adjoint (Ab→Grp {ℓ = ℓ})
+make-free-abelian = go where
+  open make-left-adjoint
+  go : make-left-adjoint Ab→Grp
+  go .free G = restrict (Abelianise G) (Abelianise-is-abelian-group G)
 
-Our choice of initial object was already stated in the paragraph above
---- it's the epimorphism $q : G \to G^{ab}$, i.e., the map which we
-call `inc^ab`{.Agda}.
+  go .unit G .hom = inc^ab G
+  go .unit G .preserves .Group-hom.pres-⋆ x y = refl
 
-```agda
-  init : Ob
-  init .↓Obj.x = tt
-  init .↓Obj.y = restrict (Abelianise G) $ Abelianise-is-abelian-group G
-  init .↓Obj.map .hom = inc^ab G
-  init .↓Obj.map .preserves .Group-hom.pres-⋆ x y = refl
-
-  m : Initial
-  m .bot = init
-  m .has⊥ other = contr factor unique where
-```
-
-<!--
-```agda
-    module other = ↓Obj other
-    module H = AbGrp other.y
-    open Total-hom other.map renaming (hom to f ; preserves to gh)
-    open Group-hom gh
-```
--->
-
-Now suppose we have an abelian group $H$ and a map $f : G \to H$. We
-factor it through $G^{ab}$ as follows: Since $f$ is a homomorphism into
-an abelian group, it "respects commutativity", by which I mean that
-$f(ab) = f(a)f(b) = f(b)f(a) = f(ba)$, meaning in particular that it
-satisfies the requirements for mapping out of `Abelianise`{.Agda} at the
-level of sets.
-
-```agda
-    factor : Hom _ other
-    factor .↓Hom.α = tt
-    factor .↓Hom.β .hom = Coeq-elim (λ _ → H.has-is-set) f (λ (a , b , c) → resp a b c)
-      where abstract
-      resp : ∀ a b c → f (a G.⋆ (b G.⋆ c)) ≡ f (a G.⋆ (c G.⋆ b))
+  go .universal {x = G} {y = H} f .hom =
+    Coeq-elim (λ _ → H.has-is-set) (f #_) (λ (a , b , c) → resp a b c) where
+    module G = Group-on (G .snd)
+    module H = AbGrp H
+    open Group-hom (f .preserves)
+    abstract
+      resp : ∀ a b c → f # (a G.⋆ (b G.⋆ c)) ≡ f # (a G.⋆ (c G.⋆ b))
       resp a b c =
-        f (a G.⋆ (b G.⋆ c))   ≡⟨ pres-⋆ _ _ ⟩
-        f a H.⋆ f (b G.⋆ c)   ≡⟨ ap (f a H.⋆_) (pres-⋆ _ _) ⟩
-        f a H.⋆ (f b H.⋆ f c) ≡⟨ ap (f a H.⋆_) H.commutative ⟩
-        f a H.⋆ (f c H.⋆ f b) ≡˘⟨ ap (f a H.⋆_) (pres-⋆ _ _) ⟩
-        f a H.⋆ f (c G.⋆ b)   ≡˘⟨ pres-⋆ _ _ ⟩
-        f (a G.⋆ (c G.⋆ b))   ∎
-```
-
-To show that the map $h : G^{ab} \to H$ induced by $f$ is a group
-homomorphism, it suffices to assume that we have two honest-to-god
-elements $x, y : G$, and since $h$ is exactly $f$ on generators, the
-required identification $f(xy) = f(x)f(y)$ follows from $f$ being a
-group homomorphism.
-
-```agda
-    factor .↓Hom.β .preserves .Group-hom.pres-⋆ =
-      Coeq-elim-prop₂ (λ _ _ → H.has-is-set _ _) λ x y → pres-⋆ _ _
-    factor .↓Hom.sq = Forget-is-faithful refl
-```
-
-Now if $h'$ is any other map which factors $G \xepi{q} G^{ab} \xto{h'}
-H$, since $G \to G^{ab}$ is an epimorphism, we must have $h = h'$.
-
-```agda
-    unique : ∀ h → factor ≡ h
-    unique x = ↓Hom-path _ _ refl $ Forget-is-faithful $ funext $
-      Coeq-elim-prop (λ _ → H.has-is-set _ _) λ y i → x .↓Hom.sq i # y
+        f # (a G.⋆ (b G.⋆ c))       ≡⟨ pres-⋆ _ _ ⟩
+        f # a H.⋆ f # (b G.⋆ c)     ≡⟨ ap (f # a H.⋆_) (pres-⋆ _ _) ⟩
+        f # a H.⋆ (f # b H.⋆ f # c) ≡⟨ ap (f # a H.⋆_) H.commutative ⟩
+        f # a H.⋆ (f # c H.⋆ f # b) ≡˘⟨ ap (f # a H.⋆_) (pres-⋆ _ _) ⟩
+        f # a H.⋆ f # (c G.⋆ b)     ≡˘⟨ pres-⋆ _ _ ⟩
+        f # (a G.⋆ (c G.⋆ b))       ∎
+  go .universal f .preserves .Group-hom.pres-⋆ =
+    Coeq-elim-prop₂ (λ _ _ → hlevel!) λ _ _ → f .preserves .Group-hom.pres-⋆ _ _
+  go .commutes f = Homomorphism-path (λ _ → refl)
+  go .unique p = Homomorphism-path (Coeq-elim-prop (λ _ → hlevel!) (λ x → p #ₚ x))
 ```
