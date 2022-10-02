@@ -614,9 +614,9 @@ That's where the "Kan" part of "cubical Kan complex" comes in:
 Semantically, _every open box extends to a cube_. The concept of "open
 box" might make even less sense than the concept of "cube in a type"
 initially, so it helps to picture them! Suppose we have three paths $p :
-w ≡ x$, $q : x ≡ y$, and $r : y ≡ z$. We can pictorially arrange them
-into an open box like in the diagram below, by joining the paths by
-their common endpoints:
+w \equiv x$, $q : x \equiv y$, and $r : y \equiv z$. We can pictorially
+arrange them into an open box like in the diagram below, by joining the
+paths by their common endpoints:
 
 <figure>
 ~~~{.quiver}
@@ -631,14 +631,15 @@ their common endpoints:
 ~~~
 </figure>
 
-In the diagram above, we have a square assembled of three lines $w ≡ x$,
-$x ≡ y$, and $y ≡ z$. Note that in the left face of the diagram, the
-path was inverted; This is because while we have a path $w ≡ x$, we need
-a path $x ≡ w$, and all parallel faces of a cube must "point" in the
-same direction. The way the diagram is drawn strongly implies that there
-is a face missing --- the line $w ≡ z$. The interpretation of types as
-_Kan_ cubical sets guarantees that the open box above extends to a
-complete square, and thus the line $w ≡ z$ exists.
+In the diagram above, we have a square assembled of three lines $w
+\equiv x$, $x \equiv y$, and $y \equiv z$. Note that in the left face of
+the diagram, the path was inverted; This is because while we have a path
+$w \equiv x$, we need a path $x \equiv w$, and all parallel faces of a
+cube must "point" in the same direction. The way the diagram is drawn
+strongly implies that there is a face missing --- the line $w \equiv z$.
+The interpretation of types as _Kan_ cubical sets guarantees that the
+open box above extends to a complete square, and thus the line $w \equiv
+z$ exists.
 
 ## Partial Elements
 

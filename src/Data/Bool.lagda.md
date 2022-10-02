@@ -407,5 +407,9 @@ if x y true = x
 if_then_else_ : ∀ {ℓ} {A : Type ℓ} → Bool → A → A → A
 if false then t else f = f
 if true then t else f = t
+
+Bool-elim : ∀ {ℓ} (A : Bool → Type ℓ) → A true → A false → ∀ x → A x
+Bool-elim A at af true = at
+Bool-elim A at af false = af
 ```
 -->

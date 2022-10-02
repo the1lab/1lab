@@ -91,4 +91,7 @@ is nothing which guarantees that A and B are disjoint subsets.
 ```agda
 _∪_ : ℙ X → ℙ X → ℙ X
 (A ∪ B) x = el! ∥ ∣ A x ∣ ⊎ ∣ B x ∣ ∥
+
+infixr 22 _∩_
+infixr 21 _∪_
 ```

@@ -96,6 +96,10 @@ instance
       (λ _ → squash)
       (x .enumeration) (y .enumeration) i
 
+Finite→is-set : ∀ {ℓ} {A : Type ℓ} → Finite A → is-set A
+Finite→is-set (fin e) =
+  ∥-∥-rec (is-hlevel-is-prop 2) (λ e → is-hlevel≃ 2 (e e⁻¹) (hlevel 2)) e
+
 Finite-choice
   : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′}
   → ⦃ Finite A ⦄

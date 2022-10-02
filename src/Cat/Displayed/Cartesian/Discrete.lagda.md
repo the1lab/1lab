@@ -183,7 +183,7 @@ module _ {o ℓ} (B : Precategory o ℓ)  where
 
 ```agda
   discrete→presheaf : ∀ {o′ ℓ′} (E : Displayed B o′ ℓ′) → Discrete-fibration E
-                      → Functor (B ^op) (Sets o′)
+                    → Functor (B ^op) (Sets o′)
   discrete→presheaf {o′ = o′} E disc = psh where
     module E = Displayed E
     open Discrete-fibration disc
@@ -207,7 +207,7 @@ uniqueness of the lifts.
           g′ = lifts g X′ .centre .snd
 
           Z′ : E.Ob[ Z ]
-          Z′ = lifts f Y′ .centre .fst 
+          Z′ = lifts f Y′ .centre .fst
 
           f′ : E.Hom[ f ] Z′ Y′
           f′ = lifts f Y′ .centre .snd
@@ -224,14 +224,13 @@ from the contractibilty of singletons.
 
 ```agda
   presheaf→discrete : ∀ {κ} → Functor (B ^op) (Sets κ)
-                      → Σ[ E ∈ Displayed B κ κ ] Discrete-fibration E
+                    → Σ[ E ∈ Displayed B κ κ ] Discrete-fibration E
   presheaf→discrete {κ = κ} P = ∫ B P , discrete where
     module P = Functor P
-    
+
     discrete : Discrete-fibration (∫ B P)
     discrete .Discrete-fibration.fibre-set X =
       P.₀ X .is-tr
     discrete .Discrete-fibration.lifts f P[Y] =
       contr (P.₁ f P[Y] , refl) Singleton-is-contr
 ```
-

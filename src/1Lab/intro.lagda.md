@@ -198,10 +198,10 @@ specific _set_, or as denoting a specific _space_.
 | $\bot, \top$          | $\bot, \top$           | $\emptyset, \{\emptyset\}$      | $\emptyset, \{*\}$        |
 | $A \times B$          | $A \land B$            | Cartesian product               | product space             |
 | $A \uplus B$          | $A \lor B$             | disjoint union                  | coproduct space           |
-| $A \to B$             | $A \to B$              | function set                    | mapping space             |
+| $A \to B$             | $A \to B$              | function set                    | function space            |
 | $\prod_{(x : A)}B(x)$ | $\forall{(x : A)}B(x)$ | n-ary product                   | space of sections         |
 | $\sum_{(x : A)}B(x)$  | $\exists{(x : A)}B(x)$ | n-ary disjoint union            | total space               |
-| $x \equiv_A y$        | equality $x = y$       | diagonal $\{ (x,x) : x \in A\}$ | path space $A^\bb{I}$ |
+| $x \equiv_A y$        | equality $x = y$       | diagonal $\{ (x,x) : x \in A\}$ | path space $A^\bb{I}$     |
 </div>
 
 This segues nicely into another difference between type theory and set
