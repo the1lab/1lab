@@ -40,6 +40,14 @@ map into must be a set, as required by the `squash`{.Agda} constructor.
   is-set→squarep (λ i j → Bset (squash x y p q i j))
     (λ _ → g x) (λ i → g (p i)) (λ i → g (q i)) (λ i → g y) i j
   where g = ∥-∥₀-elim Bset binc
+
+∥-∥₀-rec
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → is-set B
+  → (A → B) → ∥ A ∥₀ → B
+∥-∥₀-rec bset f (inc x) = f x
+∥-∥₀-rec bset f (squash x y p q i j) =
+  bset (go x) (go y) (λ i → go (p i)) (λ i → go (q i)) i j
+  where go = ∥-∥₀-rec bset f
 ```
 
 The most interesting result is that, since the sets form a reflective
