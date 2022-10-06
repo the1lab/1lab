@@ -1,5 +1,5 @@
 ```agda
-{-# OPTIONS --experimental-lossy-unification #-}
+{-# OPTIONS --lossy-unification #-}
 open import Cat.Displayed.Univalence
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total

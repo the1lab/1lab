@@ -1,7 +1,7 @@
 -- Copyright (c) 2005-2021 remains with the Agda authors. See /support/shake/LICENSE.agda
 
 -- | Backend for generating highlighted, hyperlinked HTML from Agda sources.
-{-# LANGUAGE FlexibleContexts, ViewPatterns #-}
+{-# LANGUAGE FlexibleContexts, ViewPatterns, DeriveDataTypeable, StandaloneDeriving #-}
 module HTML.Backend
   ( htmlBackend
   , compileOneModule
@@ -12,6 +12,7 @@ module HTML.Backend
 import HTML.Base
 
 import Prelude hiding ((!!), concatMap)
+import Control.Monad.Identity
 import Control.Monad.Except
 
 import qualified Data.HashMap.Strict as Hm
@@ -21,19 +22,20 @@ import Data.List.NonEmpty (NonEmpty((:|)))
 import Data.Aeson
 import Data.IORef
 import Data.Maybe
+import Data.Data (Data)
 import Data.Text (Text)
 import Data.List
 import Data.Map (Map)
 import qualified Data.Map as Map
 
-import Data.Generics (everywhere, mkT)
-
 import Agda.Syntax.Translation.AbstractToConcrete (abstractToConcrete_)
 import Agda.Syntax.Translation.InternalToAbstract ( Reify(reify) )
 import Agda.Syntax.Internal (Type, Dom, domName)
 import Agda.TypeChecking.Reduce (instantiateFull)
+import qualified Agda.Syntax.Internal.Generic as I
 import qualified Agda.Utils.Maybe.Strict as S
 import qualified Agda.Syntax.Concrete as Con
+import qualified Agda.Syntax.Internal as I
 import Agda.Syntax.Abstract.Views
 import Agda.Compiler.Backend
 import Agda.Syntax.Abstract hiding (Type)
@@ -215,21 +217,23 @@ compileOneModule pn opts types iface = do
       compileDefHtml env menv NotMain def
 
 
-killDomainNames :: Type -> Type
-killDomainNames = everywhere (mkT unDomName) where
-  unDomName :: Dom Type -> Dom Type
-  unDomName m = m{ domName = Nothing }
+prettifyTerm :: Type -> Type
+prettifyTerm = runIdentity . I.traverseTermM unDomName where
+  unDomName :: I.Term -> Identity I.Term
+  unDomName (I.Pi d x) = pure $ I.Pi d{domName = Nothing} x
+  unDomName (I.Def q x) = pure $ I.Def q{qnameModule = MName []} x
+  unDomName x = pure x
 
-killQual :: Con.Expr -> Con.Expr
-killQual = everywhere (mkT unQual) where
-  unQual :: Con.QName -> Con.QName
-  unQual (Con.Qual _ x) = unQual x
-  unQual x = x
+-- killQual :: Con.Expr -> Con.Expr
+-- killQual = everywhere (mkT unQual) where
+--   unQual :: Con.QName -> Con.QName
+--   unQual (Con.Qual _ x) = unQual x
+--   unQual x = x
 
 typeToText :: Definition -> TCM String
 typeToText d = do
-  expr <- reify . killDomainNames $ defType d
-  fmap (render . pretty . killQual) .
+  expr <- reify . prettifyTerm $ defType d
+  fmap (render . pretty) .
     abstractToConcrete_ . removeImpls $ expr
 
 removeImpls :: Expr -> Expr

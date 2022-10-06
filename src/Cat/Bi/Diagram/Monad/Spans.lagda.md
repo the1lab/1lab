@@ -1,5 +1,5 @@
 ```agda
-{-# OPTIONS --experimental-lossy-unification -vtc.def.fun:10 #-}
+{-# OPTIONS --lossy-unification -vtc.def.fun:10 #-}
 open import Cat.Instances.Sets.Complete
 open import Cat.Bi.Instances.Spans
 open import Cat.Bi.Diagram.Monad
