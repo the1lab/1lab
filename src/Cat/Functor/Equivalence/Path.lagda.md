@@ -198,11 +198,11 @@ Precategory-identity-system .to-path-over {C} {D} (F , i) =
 
     homs : ∀ x y (r : ∀ j → C.Hom (x j) (y j)) → PathP _ _ _
     homs x y f = to-pathp $
-      transport (λ i₁ → D.Hom (F.₀ (x i₁)) (F.₀ (y i₁))) (F.₁ (f i0)) ≡⟨ Hom-transport {C = D} (λ i → F.₀ (x i)) (λ i → F.₀ (y i)) (F.₁ (f i0)) ⟩
+      transport (λ i₁ → D.Hom (F.₀ (x i₁)) (F.₀ (y i₁))) (F.₁ (f i0)) ≡⟨ Hom-transport D (λ i → F.₀ (x i)) (λ i → F.₀ (y i)) (F.₁ (f i0)) ⟩
       _ D.∘ F.₁ (f i0) D.∘ _                                          ≡⟨ ap D.to (ap-F₀-to-iso F (λ i → y i)) D.⟩∘⟨ (refl D.⟩∘⟨ ap D.from (ap-F₀-to-iso F (λ i → x i))) ⟩
       F.₁ _ D.∘ F.₁ (f i0) D.∘ F.₁ _                                  ≡˘⟨ D.refl⟩∘⟨ F.F-∘ _ _ ⟩
       (F.₁ _ D.∘ F.₁ (f i0 C.∘ _))                                    ≡˘⟨ F.F-∘ _ _ ⟩
-      F.₁ (_ C.∘ f i0 C.∘ _)                                          ≡˘⟨ ap F.₁ (Hom-transport {C = C} (λ i → x i) (λ i → y i) (f i0)) ⟩
+      F.₁ (_ C.∘ f i0 C.∘ _)                                          ≡˘⟨ ap F.₁ (Hom-transport C (λ i → x i) (λ i → y i) (f i0)) ⟩
       F.₁ (coe0→1 (λ z → C.Hom (x z) (y z)) (f i0))                   ≡⟨ ap F.₁ (from-pathp (λ i → f i)) ⟩
       F.₁ (f i1)                                                      ∎
 ```

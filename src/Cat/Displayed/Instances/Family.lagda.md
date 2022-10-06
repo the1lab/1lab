@@ -132,5 +132,5 @@ module _ {ℓ} (X : Set ℓ) where
       (happly (sym (transport-refl (λ y → im .F.to y ∘ im .F.from y)) ∙ im .F.invl) x)
       (happly (sym (transport-refl (λ y → im .F.from y ∘ im .F.to y)) ∙ im .F.invr) x)
   Families-are-categories isc .to-path-over im = F.≅-pathp refl _ $ funextP λ a →
-    Hom-pathp-reflr {C = C} (elimr refl ∙ ap to (Univalent.iso→path→iso isc _))
+    Hom-pathp-reflr C (elimr refl ∙ ap to (Univalent.iso→path→iso isc _))
 ```

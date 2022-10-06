@@ -108,3 +108,10 @@ record Pullback {X Y Z} (f : Hom X Z) (g : Hom Y Z) : Type (ℓ ⊔ ℓ′) wher
 
   open is-pullback has-is-pb public
 ```
+
+<!--
+```agda
+has-pullbacks : Type _
+has-pullbacks = ∀ {A B X} (f : Hom A X) (g : Hom B X) → Pullback f g
+```
+-->

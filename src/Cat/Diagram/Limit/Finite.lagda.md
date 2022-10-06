@@ -64,7 +64,7 @@ to give a terminal object and binary products.
       terminal   : Terminal C
       products   : ∀ A B → Product C A B
       equalisers : ∀ {A B} (f g : Hom A B) → Equaliser C f g
-      pullbacks  : ∀ {A B X} (f : Hom A X) (g : Hom B X) → Pullback C f g
+      pullbacks  : has-pullbacks C
 
     Eq : ∀ {A B} (f g : Hom A B) → Ob
     Eq f g = equalisers f g .Equaliser.apex

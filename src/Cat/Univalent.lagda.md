@@ -85,7 +85,7 @@ equivalent to turning the paths into isomorphisms and
 pre/post-composing:
 
 ```agda
-module _ {o h} {C : Precategory o h} where
+module _ {o h} (C : Precategory o h) where
   open Cat.Reasoning C hiding (id-iso ; Isomorphism)
   Hom-transport : ∀ {A B C D} (p : A ≡ C) (q : B ≡ D) (h : Hom A B)
                 → transport (λ i → Hom (p i) (q i)) h
@@ -119,6 +119,21 @@ paths in `Hom`{.Agda}-sets.
 
 <!--
 ```agda
+  Hom-transport-id
+    : ∀ {A C D} (p : A ≡ C) (q : A ≡ D)
+    → transport (λ i → Hom (p i) (q i)) id ≡ path→iso q .to ∘ path→iso p .from
+  Hom-transport-id p q = Hom-transport p q _ ∙ ap (path→iso q .to ∘_) (idl _)
+
+  Hom-transport-refll-id
+    : ∀ {A B} (q : A ≡ B)
+    → transport (λ i → Hom A (q i)) id ≡ path→iso q .to
+  Hom-transport-refll-id p = Hom-transport-id refl p ∙ elimr (transport-refl _)
+
+  Hom-transport-reflr-id
+    : ∀ {A B} (q : A ≡ B)
+    → transport (λ i → Hom (q i) A) id ≡ path→iso q .from
+  Hom-transport-reflr-id p = Hom-transport-id p refl ∙ eliml (transport-refl _)
+
   Hom-pathp-refll :
     ∀ {A B C} {p : A ≡ C} {h : Hom A B} {h' : Hom C B}
     → h ∘ path→iso p .from ≡ h'
@@ -179,14 +194,14 @@ module Univalent {o h} {C : Precategory o h} (r : is-category C) where
     → h ∘ p .from ≡ h'
     → PathP (λ i → Hom (iso→path p i) B) h h'
   Hom-pathp-refll-iso prf =
-    Hom-pathp-refll {C = C} (ap₂ _∘_ refl (ap from (iso→path→iso _)) ∙ prf)
+    Hom-pathp-refll C (ap₂ _∘_ refl (ap from (iso→path→iso _)) ∙ prf)
 
   Hom-pathp-reflr-iso
     : ∀ {A B D} {q : B ≅ D} {h : Hom A B} {h' : Hom A D}
     → q .to ∘ h ≡ h'
     → PathP (λ i → Hom A (iso→path q i)) h h'
   Hom-pathp-reflr-iso prf =
-    Hom-pathp-reflr {C = C} (
+    Hom-pathp-reflr C (
       ap₂ _∘_ (ap to (iso→path→iso _)) refl
       ∙ prf)
 
@@ -195,8 +210,8 @@ module Univalent {o h} {C : Precategory o h} (r : is-category C) where
     → q .to ∘ h ∘ p .from ≡ h'
     → PathP (λ i → Hom (iso→path p i) (iso→path q i)) h h'
   Hom-pathp-iso {p = p} {q} {h} {h'} prf =
-    Hom-pathp {C = C} (ap₂ _∘_ (ap to (iso→path→iso _))
-                      (ap₂ _∘_ refl (ap from (iso→path→iso _)))
+    Hom-pathp C (ap₂ _∘_ (ap to (iso→path→iso _))
+                  (ap₂ _∘_ refl (ap from (iso→path→iso _)))
               ∙ prf)
 ```
 -->

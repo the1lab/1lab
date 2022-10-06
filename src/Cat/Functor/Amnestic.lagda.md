@@ -131,9 +131,9 @@ We're done!
       A≡B = sym (ap fst (p .snd)) ∙ ap (fst ⊙ snd) (p .snd)
 
       q : PathP (λ i → A C.≅ A≡B i) C.id-iso isom
-      q = C.≅-pathp refl A≡B $ Hom-pathp-reflr {C = C} $
+      q = C.≅-pathp refl A≡B $ Hom-pathp-reflr C $
            C.idr _
-        ·· path→to-∙ {C = C} _ _
-        ·· ap₂ C._∘_ refl (sym (path→to-sym {C = C} (ap fst (p .snd))))
-         ∙ Hom-pathp-id {C = C} (ap (snd ⊙ snd) (p .snd))
+        ·· path→to-∙ C _ _
+        ·· ap₂ C._∘_ refl (sym (path→to-sym C (ap fst (p .snd))))
+         ∙ Hom-pathp-id C (ap (snd ⊙ snd) (p .snd))
 ```

@@ -141,13 +141,13 @@ is-left-adjoint-is-prop cc F (G , a) (G′ , a′) i = G≡G′ cd i , a≡a′ 
     abstract
       same-eta : PathP (λ i → Id => G≡G′ i F∘ F) (a .unit) (a′ .unit)
       same-eta = Nat-pathp refl (λ i → G≡G′ i F∘ F)
-        λ x → Hom-pathp-reflr {C = C} $
+        λ x → Hom-pathp-reflr C $
           ap₂ C._∘_ (whisker-path-left {G = G} {G′} {F = F} d G≅G′) refl
         ∙ unique-preserves-unit a a′
 
       same-eps : PathP (λ i → F F∘ G≡G′ i => Id) (a .counit) (a′ .counit)
       same-eps = Nat-pathp (λ i → F F∘ G≡G′ i) refl
-        λ x → Hom-pathp-refll {C = D} $
+        λ x → Hom-pathp-refll D $
           ap₂ D._∘_ refl (whisker-path-right {G = F} {F = G} {G′} d G≅G′)
         ∙ unique-preserves-counit a a′
 
