@@ -253,10 +253,11 @@ module
     (eqv : is-equivalence F)
   where
 
-  open is-equivalence eqv
-  module C = Cat.Reasoning C
-  module D = Cat.Reasoning D
-  module F = Fr F
+  private
+    open is-equivalence eqv
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module F = Fr F
   open _=>_
 
   is-equivalence→is-ff : is-fully-faithful F

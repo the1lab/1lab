@@ -290,11 +290,11 @@ Path-is-hlevel zero ahl =
         λ x → is-prop→is-set (is-contr→is-prop ahl) _ _ _ x
 Path-is-hlevel (suc n) ahl = is-hlevel-suc (suc n) ahl _ _
 
-Path-p-is-hlevel : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
+PathP-is-hlevel : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
                  → is-hlevel (A i1) n
                  → {x : A i0} {y : A i1}
                  → is-hlevel (PathP A x y) n
-Path-p-is-hlevel {A = A} n ahl {x} {y} =
+PathP-is-hlevel {A = A} n ahl {x} {y} =
   subst (λ e → is-hlevel e n) (sym (PathP≡Path A x y)) (Path-is-hlevel n ahl)
 ```
 
@@ -306,11 +306,11 @@ Path-is-hlevel' 0 ahl x y =
 
 Path-is-hlevel' (suc n) h x y = h x y
 
-Path-p-is-hlevel' : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
+PathP-is-hlevel' : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
                   → is-hlevel (A i1) (suc n)
                   → (x : A i0) (y : A i1)
                   → is-hlevel (PathP A x y) n
-Path-p-is-hlevel' {A = A} n ahl x y =
+PathP-is-hlevel' {A = A} n ahl x y =
   subst (λ e → is-hlevel e n) (sym (PathP≡Path A x y)) (Path-is-hlevel' n ahl _ _)
 ```
 -->
@@ -454,7 +454,7 @@ abstract
     → SquareP A p q s r
   is-set→squarep isset a₀₋ a₁₋ a₋₀ a₋₁ =
     transport (sym (PathP≡Path _ _ _))
-              (Path-p-is-hlevel' 1 (isset _ _) _ _ _ _)
+              (PathP-is-hlevel' 1 (isset _ _) _ _ _ _)
 
 -- Has to go through:
 _ : ∀ {A : Type} {a b c d : A} (p : a ≡ c) (q : a ≡ b) (s : c ≡ d) (r : b ≡ d)

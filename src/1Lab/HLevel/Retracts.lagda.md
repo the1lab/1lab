@@ -160,6 +160,19 @@ homotopy n-type is itself a homotopy n-type.
 Π-is-hlevel′ n bhl = retract→is-hlevel n
   (λ f {x} → f x) (λ f x → f) (λ _ → refl)
   (Π-is-hlevel n bhl)
+
+Π-is-hlevel²
+  : ∀ {a b c} {A : Type a} {B : A → Type b} {C : ∀ a → B a → Type c}
+  → (n : Nat) (Bhl : (x : A) (y : B x) → is-hlevel (C x y) n)
+  → is-hlevel (∀ x y → C x y) n
+Π-is-hlevel² n w = Π-is-hlevel n λ _ → Π-is-hlevel n (w _)
+
+Π-is-hlevel³
+  : ∀ {a b c d} {A : Type a} {B : A → Type b} {C : ∀ a → B a → Type c}
+      {D : ∀ a b → C a b → Type d}
+  → (n : Nat) (Bhl : (x : A) (y : B x) (z : C x y) → is-hlevel (D x y z) n)
+  → is-hlevel (∀ x y z → D x y z) n
+Π-is-hlevel³ n w = Π-is-hlevel n λ _ → Π-is-hlevel² n (w _)
 ```
 -->
 

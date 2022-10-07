@@ -24,7 +24,7 @@ properties.
 
 ```agda
 {-# NO_UNIVERSE_CHECK #-}
-record Ω ℓ : Type ℓ where
+record Ω ℓ : Type where
   no-eta-equality
   constructor el
   field
@@ -112,4 +112,11 @@ type $B$ in the same universe as $B$.
     (ua (Total-equiv f e⁻¹))
       (Σ-prop-pathp (λ i x → Π-is-hlevel 1 λ _ → is-hlevel-is-prop 1)
       (ua→ λ { (x , y , p) → sym p }))
+
+resize : ∀ {ℓ} ℓ′ → (T : Type ℓ) → is-prop T → Σ[ T′ ∈ Type ℓ′ ] (T′ ≃ T)
+resize ℓ′ T x =
+    Lift ℓ′ (Path (Ω _) (el T x) (el (Lift _ ⊤) (λ _ _ _ → lift tt)))
+  , prop-ext (hlevel 1) x
+    (λ p → transport (ap ∣_∣ (sym (Lift.lower p))) (lift tt))
+    λ t → lift (Ω-ua (bi (λ _ → lift tt) (λ _ → t)))
 ```
