@@ -35,7 +35,7 @@ Group-structure ℓ .id-is-hom        .pres-⋆ x y = refl
 Group-structure ℓ .∘-is-hom f g α β .pres-⋆ x y =
   ap f (β .pres-⋆ x y) ∙ α .pres-⋆ _ _
 
-Group-structure ℓ .id-hom-unique {s = s} {t = t} α i =
+Group-structure ℓ .id-hom-unique {s = s} {t = t} α β i =
   record
     { _⋆_          = λ x y → α .pres-⋆ x y i
     ; has-is-group =
@@ -50,6 +50,10 @@ Groups ℓ = Structured-objects (Group-structure ℓ)
 
 Groups-is-category : ∀ {ℓ} → is-category (Groups ℓ)
 Groups-is-category = Structured-objects-is-category (Group-structure _)
+
+instance
+  Groups-equational : ∀ {ℓ} → is-equational (Group-structure ℓ)
+  Groups-equational .is-equational.invert-id-hom x .pres-⋆ a b = sym (x .pres-⋆ a b)
 
 module Groups {ℓ} = Cat (Groups ℓ)
 

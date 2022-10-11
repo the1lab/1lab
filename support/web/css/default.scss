@@ -219,9 +219,9 @@ div.columns {
   }
 }
 
-p > code {
+p > code, summary > code {
   white-space: nowrap;
-  font-size: var(--code-font-size);
+  font-size: calc(0.9 * var(--code-font-size));
 }
 
 blockquote, details.blockquote {

@@ -71,9 +71,9 @@ Monoid-structure ℓ .∘-is-hom f g p1 p2 .pres-id =
 Monoid-structure ℓ .∘-is-hom f g p1 p2 .pres-⋆ x y =
   ap f (p2 .pres-⋆ _ _) ∙ p1 .pres-⋆ _ _
 
-Monoid-structure ℓ .id-hom-unique mh i .identity = mh .pres-id i
-Monoid-structure ℓ .id-hom-unique mh i ._⋆_ x y = mh .pres-⋆ x y i
-Monoid-structure ℓ .id-hom-unique {s = s} {t = t} mh i .has-is-monoid =
+Monoid-structure ℓ .id-hom-unique mh _ i .identity = mh .pres-id i
+Monoid-structure ℓ .id-hom-unique mh _ i ._⋆_ x y = mh .pres-⋆ x y i
+Monoid-structure ℓ .id-hom-unique {s = s} {t = t} mh _ i .has-is-monoid =
   is-prop→pathp
     (λ i → hlevel {T = is-monoid (mh .pres-id i) (λ x y → mh .pres-⋆ x y i)} 1)
     (s .has-is-monoid)

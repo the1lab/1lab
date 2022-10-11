@@ -6,7 +6,7 @@ open import Algebra.Magma
 
 open import Cat.Displayed.Univalence.Thin
 
-open import Data.Power.Small
+open import Principles.Resizing
 
 import Cat.Reasoning
 
@@ -122,14 +122,14 @@ Frame-str ℓ .id-is-hom .pres-∩ x y = refl
 Frame-str ℓ .id-is-hom .pres-⋃ g = refl
 Frame-str ℓ .∘-is-hom f g α β .pres-∩ x y = ap f (β .pres-∩ _ _) ∙ α .pres-∩ _ _
 Frame-str ℓ .∘-is-hom f g α β .pres-⋃ h = ap f (β .pres-⋃ _) ∙ α .pres-⋃ _
-Frame-str ℓ .id-hom-unique x i .Frame-on._∩_ a b = x .pres-∩ a b i
-Frame-str ℓ .id-hom-unique x i .Frame-on.⋃ f = x .pres-⋃ f i
+Frame-str ℓ .id-hom-unique α β i .Frame-on._∩_ a b = α .pres-∩ a b i
+Frame-str ℓ .id-hom-unique α β i .Frame-on.⋃ f = α .pres-⋃ f i
 ```
 
 <!--
 ```agda
-Frame-str ℓ .id-hom-unique {s = s} {t} x i .Frame-on.has-is-frame =
-  is-prop→pathp (λ i → lemma (λ a b → x .pres-∩ a b i) (λ f → x .pres-⋃ f i))
+Frame-str ℓ .id-hom-unique {s = s} {t} α β i .Frame-on.has-is-frame =
+  is-prop→pathp (λ i → lemma (λ a b → α .pres-∩ a b i) (λ f → α .pres-⋃ f i))
     (s .Frame-on.has-is-frame)
     (t .Frame-on.has-is-frame) i
   where
@@ -250,25 +250,27 @@ below.
 
 ```agda
 Power-frame : ∀ {ℓ} (A : Type ℓ) → Frames.Ob ℓ
-Power-frame {ℓ = ℓ} A .fst = el (A → Ω ℓ) (hlevel 2)
+Power-frame {ℓ = ℓ} A .fst = el (A → Ω) (hlevel 2)
 Power-frame A .snd = to-frame-on go where
-  go : make-frame (A → Ω _)
+  go : make-frame (A → Ω)
   go .has-is-set = hlevel 2
   go ._cap_ f g x .∣_∣   = ∣ f x ∣ × ∣ g x ∣
   go ._cap_ f g x .is-tr = ×-is-hlevel 1 (f x .is-tr) (g x .is-tr)
-  go .cup {I} P x = el (∃ I λ i → ∣ P i x ∣) squash
-  go .idempotent = funext λ i → Ω-ua (bi fst λ x → x , x)
-  go .commutative = funext λ i → Ω-ua $ bi
+  go .cup {I} P x = elΩ (∃ I λ i → ∣ P i x ∣) squash
+  go .idempotent = funext λ i → Squish-prop-ua (bi fst λ x → x , x)
+  go .commutative = funext λ i → Squish-prop-ua $ bi
     (λ { (x , y) → y , x }) (λ { (x , y) → y , x })
-  go .associative = funext λ i → Ω-ua $ bi
+  go .associative = funext λ i → Squish-prop-ua $ bi
     (λ { (x , y , z) → (x , y) , z })
     (λ { ((x , y) , z) → x , y , z })
-  go .universal {x = x} f W = funext λ i → Ω-ua $ bi
-    (∥-∥-rec (×-is-hlevel 1 squash (x i .is-tr)) λ (a , w) →
-      inc (_ , w) , transport (ap ∣_∣ (W a $ₚ i)) w .snd )
-    fst
-  go .colimiting i f = funext λ j → Ω-ua $ bi (λ w → w , inc (_ , w)) fst
-  go .distrib x f = funext λ i → Ω-ua $ bi
-    (λ { (x , i) → (λ { (y , z) → _ , x , z }) <$> i})
-    (∥-∥-rec (×-is-hlevel 1 (x i .is-tr) squash) λ { (x , y , z) → y , inc (_ , z) })
+  go .universal {x = x} f W = funext λ i → elΩₗ-ua
+    (∥-∥-rec (×-is-hlevel 1 (hlevel 1) (x i .is-tr)) λ (a , w) →
+      true→elΩ (inc (_ , w)) , transport (ap ∣_∣ (W a $ₚ i)) w .snd)
+    λ x → elΩ→true (x .fst)
+  go .colimiting i f = funext λ j → Squish-prop-ua $ bi
+    (λ x → x , true→elΩ (inc (_ , x))) fst
+  go .distrib x f = funext λ i → sym $ elΩₗ-ua
+    (∥-∥-rec (×-is-hlevel 1 (x i .is-tr) (hlevel 1))
+      λ { (x , y , z) → y , true→elΩ (inc (_ , z)) })
+    λ (x , i) → (λ (y , z) → _ , x , z) <$> elΩ→true i
 ```

@@ -14,3 +14,4 @@ Ab-category: Cat.Abelian.Base.html#ab-enriched-categories
 ring: Algebra.Ring.html#rings
 abelian group: Algebra.Group.Ab.html#abelian-groups
 total category: Cat.Displayed.Total.html
+proposition, propositions: 1Lab.HLevel.html#propositions

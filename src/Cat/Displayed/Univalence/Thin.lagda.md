@@ -57,7 +57,9 @@ record
       → (α : ∣ is-hom f t u ∣) (β : ∣ is-hom g s t ∣)
       → ∣ is-hom (λ x → f (g x)) s u ∣
 
-    id-hom-unique : ∀ {x} {s t : S x} → ∣ is-hom (λ x → x) s t ∣ → s ≡ t
+    id-hom-unique
+      : ∀ {x} {s t : S x}
+      → ∣ is-hom (λ x → x) s t ∣ → ∣ is-hom (λ x → x) t s ∣ → s ≡ t
 
 open Thin-structure public
 
@@ -99,7 +101,8 @@ the type of $H$-homomorphic $\ca{B}$-isomorphisms.
       Σ-prop-path
         (λ _ _ _ → ≅[]-path _ (spec .is-hom _ _ _ .is-tr _ _)
                               (spec .is-hom _ _ _ .is-tr _ _))
-        (spec .id-hom-unique (x .snd .from′) ∙ spec .id-hom-unique (y .snd .to′))
+        ( spec .id-hom-unique (x .snd .from′) (x .snd .to′)
+        ∙ spec .id-hom-unique (y .snd .to′) (y .snd .from′))
 ```
 
 By construction, such a category of structured objects admits a faithful
@@ -141,6 +144,14 @@ module _ {ℓ o′ ℓ′} {S : Type ℓ → Type o′} {spec : Thin-structure �
     → Som.is-monic f
   Homomorphism-monic f wit g h p = Homomorphism-path λ x → wit (ap hom p $ₚ x)
 
+record is-equational {ℓ o′ ℓ′} {S : Type ℓ → Type o′} (spec : Thin-structure ℓ′ S) : Type (lsuc ℓ ⊔ o′ ⊔ ℓ′) where
+  field
+    invert-id-hom : ∀ {x} {s t : S x} → ∣ spec .is-hom (λ x → x) s t ∣ → ∣ spec .is-hom (λ x → x) t s ∣
+
+  private
+    module So = Precategory (Structured-objects spec)
+    module Som = Cat.Morphism (Structured-objects spec)
+
   ∫-Path
     : ∀ {a b : So.Ob}
     → (f : So.Hom a b)
@@ -151,9 +162,10 @@ module _ {ℓ o′ ℓ′} {S : Type ℓ → Type o′} {spec : Thin-structure �
       EquivJ (λ B e → ∀ st → ∣ spec .is-hom (e .fst) (a .snd) st ∣ → PathP (λ i → S (ua e i)) (a .snd) st)
         (λ st pres → to-pathp (ap (λ e → subst S e (a .snd)) ua-id-equiv
                   ·· transport-refl _
-                  ·· spec .id-hom-unique pres))
+                  ·· spec .id-hom-unique pres (invert-id-hom pres)))
         (f .hom , eqv)
         (b .snd)
         (f .preserves)
 
+open is-equational public
 ```
