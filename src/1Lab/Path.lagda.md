@@ -469,9 +469,9 @@ For non-dependent products, the reduction rule says that
   _ = refl
 ```
 
-For non-dependent functions, we have a similar situation, except one the
-transports is _backwards_. This is because, given an `f : A i0 → B i0`,
-we have to turn an `A i1` into an `A i0` to apply f!
+For non-dependent functions, we have a similar situation, except one
+of the transports is _backwards_. This is because, given an `f : A i0
+→ B i0`, we have to turn an `A i1` into an `A i0` to apply f!
 
 ```agda
   _ : {f : A i0 → B i0}
