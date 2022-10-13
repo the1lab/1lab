@@ -92,7 +92,7 @@ We can also relax the upper bounds if `m ≤ n`.
 ```agda
 inject : ∀ {m n} → m Nat.≤ n → Fin m → Fin n
 inject {_} {suc n} le fzero = fzero
-inject {_} {suc n} le (fsuc i) = fsuc (inject le i)
+inject {_} {suc n} (Nat.s≤s le) (fsuc i) = fsuc (inject le i)
 ```
 
 
@@ -213,19 +213,19 @@ $n$ values of $\bb{N}$.
 
 from-ℕ< : ∀ {n} → ℕ< n → Fin n
 from-ℕ< {n = suc n} (zero , q) = fzero
-from-ℕ< {n = suc n} (suc p , q) = fsuc (from-ℕ< (p , q))
+from-ℕ< {n = suc n} (suc p , Nat.s≤s q) = fsuc (from-ℕ< (p , q))
 
 to-ℕ< : ∀ {n} → Fin n → ℕ< n
 to-ℕ< x = to-nat x , p x where
   p : ∀ {n} (x : Fin n) → suc (to-nat x) Nat.≤ n
-  p {n = suc n} fzero = Nat.0≤x n
-  p {n = suc n} (fsuc x) = p x
+  p {n = suc n} fzero = Nat.s≤s Nat.0≤x
+  p {n = suc n} (fsuc x) = Nat.s≤s (p x)
 
 to-from-ℕ< : ∀ {n} (x : ℕ< n) → to-ℕ< {n = n} (from-ℕ< x) ≡ x
-to-from-ℕ< {n = suc n} x = Σ-prop-path (λ k → Nat.≤-prop k n) (to-from-ℕ {n = suc n} x) where
+to-from-ℕ< {n = suc n} x = Σ-prop-path (λ k → Nat.≤-prop) (to-from-ℕ {n = suc n} x) where
   to-from-ℕ : ∀ {n} x → to-nat {n = n} (from-ℕ< x) ≡ x .fst
   to-from-ℕ {n = suc n} (zero , p) = refl
-  to-from-ℕ {n = suc n} (suc x , p) = ap suc (to-from-ℕ {n = n} (x , p))
+  to-from-ℕ {n = suc n} (suc x , Nat.s≤s p) = ap suc (to-from-ℕ {n = n} (x , p))
 
 from-to-ℕ< : ∀ {n} (x : Fin n) → from-ℕ< (to-ℕ< x) ≡ x
 from-to-ℕ< fzero = refl
@@ -240,7 +240,7 @@ Fin≃ℕ< {n} = to-ℕ< , is-iso→is-equiv (iso from-ℕ< (to-from-ℕ< {n}) f
 ```agda
 weaken-≤ : ∀ {m n} → m Nat.≤ n → Fin m → Fin n
 weaken-≤ {suc m} {suc n} m≤n fzero = fzero
-weaken-≤ {suc m} {suc n} m≤n (fsuc i) = fsuc (weaken-≤ m≤n i)
+weaken-≤ {suc m} {suc n} (Nat.s≤s m≤n) (fsuc i) = fsuc (weaken-≤ m≤n i)
 
 fshift : ∀ {n} (m : Nat) → Fin n → Fin (m + n)
 fshift zero i = i

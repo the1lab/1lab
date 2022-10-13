@@ -37,7 +37,7 @@ skip-comm : ∀ {n} (i j : Fin (suc n)) → i ≤ j
           → ∀ x → skip (weaken i) (skip j x) ≡ skip (fsuc j) (skip i x)
 skip-comm fzero    j        le x        = refl
 skip-comm (fsuc i) (fsuc j) le fzero    = refl
-skip-comm (fsuc i) (fsuc j) le (fsuc x) = ap fsuc (skip-comm i j le x)
+skip-comm (fsuc i) (fsuc j) (Nat.s≤s le) (fsuc x) = ap fsuc (skip-comm i j le x)
 
 drop-comm : ∀ {n} (i j : Fin n) → i ≤ j
           → ∀ x → squish j (squish (weaken i) x) ≡ squish i (squish (fsuc j) x)
@@ -46,13 +46,14 @@ drop-comm fzero    fzero    le (fsuc x) = refl
 drop-comm fzero    (fsuc j) le fzero = refl
 drop-comm fzero    (fsuc j) le (fsuc x) = refl
 drop-comm (fsuc i) (fsuc j) le fzero = refl
-drop-comm (fsuc i) (fsuc j) le (fsuc x) = ap fsuc (drop-comm i j le x)
+drop-comm (fsuc i) (fsuc j) (Nat.s≤s le) (fsuc x) = ap fsuc (drop-comm i j le x)
 
 squish-skip-comm : ∀ {n} (i : Fin (suc n)) (j : Fin n) → i < fsuc j
                  → ∀ x → squish (fsuc j) (skip (weaken i) x) ≡ skip i (squish j x)
-squish-skip-comm fzero j le x = refl
-squish-skip-comm (fsuc i) (fsuc j) le fzero = refl
-squish-skip-comm (fsuc i) (fsuc j) le (fsuc x) = ap fsuc (squish-skip-comm i j le x)
+squish-skip-comm fzero j (Nat.s≤s p) x = refl
+squish-skip-comm (fsuc i) (fsuc j) (Nat.s≤s p) fzero = refl
+squish-skip-comm (fsuc i) (fsuc j) (Nat.s≤s p) (fsuc x) =
+  ap fsuc (squish-skip-comm i j p x)
 
 squish-skip : ∀ {n} (i j : Fin n) → i ≡ j
             → ∀ x → squish j (skip (weaken j) x) ≡ x

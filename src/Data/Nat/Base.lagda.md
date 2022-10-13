@@ -135,16 +135,15 @@ infixr 8 _^_
 
 ## Ordering
 
-We define the order relation `_≤_`{.Agda} on the natural numbers by
-_recursion_:
+We define the order relation `_≤_`{.Agda} on the natural numbers as an
+inductive predicate. We could also define the relation by recursion on
+the numbers to be compared, but the inductive version has much better
+properties when it comes to type inference.
 
 ```agda
-_≤_ : Nat → Nat → Type
-zero ≤ zero = ⊤
-zero ≤ suc y = ⊤
-suc x ≤ zero = ⊥
-suc x ≤ suc y = x ≤ y
-infix 3 _≤_
+data _≤_ : Nat → Nat → Type where
+  0≤x : ∀ {x} → 0 ≤ x
+  s≤s : ∀ {x y} → x ≤ y → suc x ≤ suc y
 ```
 
 We define the strict ordering on `Nat`{.Agda} as well,
@@ -154,58 +153,6 @@ re-using the definition of `_≤_`{.Agda}.
 _<_ : Nat → Nat → Type
 m < n = suc m ≤ n
 infix 3 _<_
-```
-
-
-Then we can prove it is `reflexive`{.Agda ident=≤-refl},
-`transitive`{.Agda ident=≤-trans} and `antisymmetric`{.Agda
-ident=≤-antisym}.
-
-```agda
-≤-refl : (x : Nat) → x ≤ x
-≤-refl zero = tt
-≤-refl (suc x) = ≤-refl x
-
-0≤x : (x : Nat) → zero ≤ x
-0≤x zero = tt
-0≤x (suc x) = tt
-
-≤-trans : (x y z : Nat) → x ≤ y → y ≤ z → x ≤ z
-≤-trans zero zero zero _ _          = tt
-≤-trans zero zero (suc z) _ _       = tt
-≤-trans zero (suc y) z p q          = 0≤x z
-≤-trans (suc x) (suc y) (suc z) p q = ≤-trans x y z p q
-
-≤-antisym : (x y : Nat) → x ≤ y → y ≤ x → x ≡ y
-≤-antisym zero zero p q = refl
-≤-antisym (suc x) (suc y) p q = ap suc (≤-antisym x y p q)
-```
-
-A simple inductive argument proves that `_≤_`{.Agda} always takes values
-in `propositions`{.Agda ident=is-prop}, i.e. any "two" proofs that `x ≤
-y` are identical:
-
-```agda
-≤-prop : (x y : Nat) → is-prop (x ≤ y)
-≤-prop zero zero p q = refl
-≤-prop zero (suc y) p q = refl
-≤-prop (suc x) (suc y) p q = ≤-prop x y p q
-```
-
-Furthermore, `_≤_`{.Agda} is decidable:
-
-```agda
-≤-flip : (x y : Nat) → (x ≤ y → ⊥) → y ≤ x
-≤-flip zero zero ¬x≤y = tt
-≤-flip zero (suc y) ¬x≤y = ¬x≤y tt
-≤-flip (suc x) zero ¬x≤y = tt
-≤-flip (suc x) (suc y) ¬x≤y = ≤-flip x y ¬x≤y
-
-≤-dec : (x y : Nat) → Dec (x ≤ y)
-≤-dec zero zero = yes tt
-≤-dec zero (suc y) = yes tt
-≤-dec (suc x) zero = no (λ z → z)
-≤-dec (suc x) (suc y) = ≤-dec x y
 ```
 
 As an "ordering combinator", we can define the _maximum_ of two natural

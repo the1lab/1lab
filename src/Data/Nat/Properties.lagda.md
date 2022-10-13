@@ -3,6 +3,7 @@ open import 1Lab.Type.Dec
 open import 1Lab.Path
 open import 1Lab.Type
 
+open import Data.Nat.Order
 open import Data.Nat.Base
 open import Data.Sum
 
@@ -151,47 +152,6 @@ numbers]. Since they're mostly simple inductive arguments written in
   x * x ^ (z + y * suc z) ∎
 ```
 
-## Ordering
-
-The ordering relation on the natural numbers is a partial order:
-
-```agda
-≤-is-preorder : is-preorder _≤_
-≤-is-preorder .is-preorder.reflexive {x} = ≤-refl x
-≤-is-preorder .is-preorder.transitive {x} {y} {z} = ≤-trans x y z
-≤-is-preorder .is-preorder.propositional {x} {y} = ≤-prop x y
-
-≤-is-partial-order : is-partial-order _≤_
-≤-is-partial-order .is-partial-order.preorder = ≤-is-preorder
-≤-is-partial-order .is-partial-order.antisym {x} {y} = ≤-antisym x y
-```
-
-We also have that a successor is never smaller than the number it
-succeeds:
-
-```agda
-¬sucx≤x : (x : Nat) → suc x ≤ x → ⊥
-¬sucx≤x (suc x) ord = ¬sucx≤x x ord
-```
-
-We can do proofs on pairs of natural numbers by splitting into cases of
-their strict ordering:
-
-```agda
-≤-split : ∀ (x y : Nat) → (x < y) ⊎ (y < x) ⊎ (x ≡ y)
-≤-split x y with ≤-dec (suc x) y
-≤-split x y | yes x<y = inl x<y
-≤-split x y | no x≥y with ≤-dec (suc y) x
-≤-split x y | no x≥y | yes y<x = inr (inl y<x)
-≤-split x y | no x≥y | no y≥x  = inr (inr (go x y x≥y y≥x)) where
-  go : ∀ x y → (suc x ≤ y → ⊥) → (suc y ≤ x → ⊥) → x ≡ y
-  go zero zero p q          = refl
-  go zero (suc zero) p q    = absurd (p tt)
-  go zero (suc (suc y)) p q = absurd (p tt)
-  go (suc zero) zero p q    = absurd (q tt)
-  go (suc (suc x)) zero p q = absurd (q tt)
-  go (suc x) (suc y) p q    = ap suc (go x y p q)
-```
 
 ### Compatibility
 
@@ -199,48 +159,53 @@ The order relation on the natural numbers is also compatible with the
 arithmetic operators:
 
 ```agda
-+-preserves-≤l : (x y z : Nat) → x ≤ y → z + x ≤ z + y
-+-preserves-≤l x y zero prf = prf
-+-preserves-≤l x y (suc z) prf = +-preserves-≤l x y z prf
++-≤l : (x y : Nat) → x ≤ (x + y)
++-≤l zero y = 0≤x
++-≤l (suc x) y = s≤s (+-≤l x y)
 
-+-preserves-≤r : (x y z : Nat) → x ≤ y → x + z ≤ y + z
-+-preserves-≤r x y z prf = subst (λ a → a ≤ y + z) (+-commutative z x)
-  (subst (λ a → z + x ≤ a) (+-commutative z y) (+-preserves-≤l x y z prf))
++-≤r : (x y : Nat) → y ≤ (x + y)
++-≤r x zero = 0≤x
++-≤r x (suc y) = subst (λ p → suc y ≤ p) (sym (+-sucr x y)) (s≤s (+-≤r x y))
 
-+-preserves-≤ : (x y x' y' : Nat) → x ≤ y → x' ≤ y' → x + x' ≤ y + y'
-+-preserves-≤ x y x' y' prf prf' = ≤-trans (x + x') (y + x') (y + y')
++-preserves-≤l : (x y z : Nat) → x ≤ y → (z + x) ≤ (z + y)
++-preserves-≤l .0 y zero 0≤x = 0≤x
++-preserves-≤l .0 y (suc z) 0≤x =
+  s≤s (+-preserves-≤l zero y z 0≤x)
++-preserves-≤l .(suc _) .(suc _) zero (s≤s p) = s≤s p
++-preserves-≤l .(suc _) .(suc _) (suc z) (s≤s p) =
+  s≤s (+-preserves-≤l (suc _) (suc _) z (s≤s p))
+
++-preserves-≤r : (x y z : Nat) → x ≤ y → (x + z) ≤ (y + z)
++-preserves-≤r x y z prf = subst (λ a → a ≤ (y + z)) (+-commutative z x)
+  (subst (λ a → (z + x) ≤ a) (+-commutative z y) (+-preserves-≤l x y z prf))
+
++-preserves-≤ : (x y x' y' : Nat) → x ≤ y → x' ≤ y' → (x + x') ≤ (y + y')
++-preserves-≤ x y x' y' prf prf' = ≤-trans
   (+-preserves-≤r x y x' prf) (+-preserves-≤l x' y' y prf')
 
-+-≤l : (x y : Nat) → x ≤ x + y
-+-≤l zero y = 0≤x y
-+-≤l (suc x) y = +-≤l x y
 
-+-≤r : (x y : Nat) → y ≤ x + y
-+-≤r x zero = 0≤x (x + 0)
-+-≤r x (suc y) = subst (λ p → suc y ≤ p) (sym (+-sucr x y)) (+-≤r x y)
-
-*-preserves-≤l : (x y z : Nat) → x ≤ y → z * x ≤ z * y
-*-preserves-≤l x y zero prf = tt
+*-preserves-≤l : (x y z : Nat) → x ≤ y → (z * x) ≤ (z * y)
+*-preserves-≤l x y zero prf = 0≤x
 *-preserves-≤l x y (suc z) prf = +-preserves-≤ x y (z * x) (z * y) prf
   (*-preserves-≤l x y z prf)
 
-*-preserves-≤r : (x y z : Nat) → x ≤ y → x * z ≤ y * z
-*-preserves-≤r x y z prf = subst (λ a → a ≤ y * z) (*-commutative z x)
-  (subst (λ a → z * x ≤ a) (*-commutative z y) (*-preserves-≤l x y z prf))
+*-preserves-≤r : (x y z : Nat) → x ≤ y → (x * z) ≤ (y * z)
+*-preserves-≤r x y z prf = subst (λ a → a ≤ (y * z)) (*-commutative z x)
+  (subst (λ a → (z * x) ≤ a) (*-commutative z y) (*-preserves-≤l x y z prf))
 
-*-preserves-≤ : (x y x' y' : Nat) → x ≤ y → x' ≤ y' → x * x' ≤ y * y'
-*-preserves-≤ x y x' y' prf prf' = ≤-trans (x * x') (y * x') (y * y')
+*-preserves-≤ : (x y x' y' : Nat) → x ≤ y → x' ≤ y' → (x * x') ≤ (y * y')
+*-preserves-≤ x y x' y' prf prf' = ≤-trans
   (*-preserves-≤r x y x' prf) (*-preserves-≤l x' y' y prf')
 
-+-reflects-≤l : (x y z : Nat) → z + x ≤ z + y → x ≤ y
++-reflects-≤l : (x y z : Nat) → (z + x) ≤ (z + y) → x ≤ y
 +-reflects-≤l x y zero prf = prf
-+-reflects-≤l x y (suc z) prf = +-reflects-≤l x y z prf
++-reflects-≤l x y (suc z) (s≤s prf) = +-reflects-≤l x y z prf
 
-+-reflects-≤r : (x y z : Nat) → x + z ≤ y + z → x ≤ y
++-reflects-≤r : (x y z : Nat) → (x + z) ≤ (y + z) → x ≤ y
 +-reflects-≤r x y z prf =
   +-reflects-≤l x y z
-    (subst (_≤ z + y) (+-commutative x z)
-    (subst (x + z ≤_) (+-commutative y z) prf))
+    (subst (_≤ (z + y)) (+-commutative x z)
+    (subst ((x + z) ≤_) (+-commutative y z) prf))
 ```
 
 ### Maximum
@@ -257,16 +222,16 @@ max-assoc (suc x) (suc y) zero = refl
 max-assoc (suc x) (suc y) (suc z) = ap suc (max-assoc x y z)
 
 max-≤l : (x y : Nat) → x ≤ max x y
-max-≤l zero zero = tt
-max-≤l zero (suc y) = tt
-max-≤l (suc x) zero = ≤-refl (suc x)
-max-≤l (suc x) (suc y) = max-≤l x y
+max-≤l zero zero = 0≤x
+max-≤l zero (suc y) = 0≤x
+max-≤l (suc x) zero = ≤-refl
+max-≤l (suc x) (suc y) = s≤s (max-≤l x y)
 
 max-≤r : (x y : Nat) → y ≤ max x y
-max-≤r zero zero = tt
-max-≤r zero (suc y) = ≤-refl (suc y)
-max-≤r (suc x) zero = tt
-max-≤r (suc x) (suc y) = max-≤r x y
+max-≤r zero zero = 0≤x
+max-≤r zero (suc y) = ≤-refl
+max-≤r (suc x) zero = 0≤x
+max-≤r (suc x) (suc y) = s≤s (max-≤r x y)
 ```
 
 ### Minimum
@@ -283,14 +248,14 @@ min-assoc (suc x) (suc y) zero = refl
 min-assoc (suc x) (suc y) (suc z) = ap suc (min-assoc x y z)
 
 min-≤l : (x y : Nat) → min x y ≤ x
-min-≤l zero zero = tt
-min-≤l zero (suc y) = tt
-min-≤l (suc x) zero = tt
-min-≤l (suc x) (suc y) = min-≤l x y
+min-≤l zero zero = 0≤x
+min-≤l zero (suc y) = 0≤x
+min-≤l (suc x) zero = 0≤x
+min-≤l (suc x) (suc y) = s≤s (min-≤l x y)
 
 min-≤r : (x y : Nat) → min x y ≤ y
-min-≤r zero zero = tt
-min-≤r zero (suc y) = tt
-min-≤r (suc x) zero = tt
-min-≤r (suc x) (suc y) = min-≤r x y
+min-≤r zero zero = 0≤x
+min-≤r zero (suc y) = 0≤x
+min-≤r (suc x) zero = 0≤x
+min-≤r (suc x) (suc y) = s≤s (min-≤r x y)
 ```

@@ -252,11 +252,11 @@ from this page. You can unfold it below if you dare:
   -- lets us prove that the paths they return respect the Int quotient
   -- without using that Int is a set (because we don't know that yet!)
 
-  lemma₁ zero (suc y) p    = refl
-  lemma₁ (suc x) (suc y) p = lemma₁ x y p ∙ Int.quot x y
+  lemma₁ zero (suc y) p          = refl
+  lemma₁ (suc x) (suc y) (s≤s p) = lemma₁ x y p ∙ Int.quot x y
 
-  lemma₂ (suc x) zero p    = refl
-  lemma₂ (suc x) (suc y) p = lemma₂ x y p ∙ Int.quot x y
+  lemma₂ (suc x) zero p          = refl
+  lemma₂ (suc x) (suc y) (s≤s p) = lemma₂ x y p ∙ Int.quot x y
 
   lemma₃ zero zero p       = refl
   lemma₃ zero (suc y) p    = absurd (zero≠suc p)
@@ -277,16 +277,16 @@ from this page. You can unfold it below if you dare:
     --    lemma₁₂₃ (suc x) (suc y) p ≡ lemma₁₂₃ (suc x) (suc y) p' ∙ Int.quot x y
     -- but mediating between SquareP, ··, and ∙.
     work-respects-quot x y with ≤-split x y | ≤-split (suc x) (suc y)
-    ... | inl x<y | inl x<y' =
+    ... | inl x<y | inl (s≤s x<y') =
       Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡double-composite-path) $
           double-composite refl _ _
         ·· ∙-id-l _
-        ·· ap (λ e → lemma₁ x y e ∙ Int.quot x y) (≤-prop (suc x) y x<y x<y')
-    ... | inr (inl x>y) | inr (inl x>y') =
+        ·· ap (λ e → lemma₁ x y e ∙ Int.quot x y) (≤-prop x<y x<y')
+    ... | inr (inl x>y) | inr (inl (s≤s x>y')) =
       Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡double-composite-path) $
           double-composite refl _ _
         ·· ∙-id-l _
-        ·· ap (λ e → lemma₂ x y e ∙ Int.quot x y) (≤-prop (suc y) x x>y x>y')
+        ·· ap (λ e → lemma₂ x y e ∙ Int.quot x y) (≤-prop x>y x>y')
     ... | inr (inr x≡y) | inr (inr x≡y') =
       Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡double-composite-path) $
           double-composite refl _ _
@@ -296,28 +296,28 @@ from this page. You can unfold it below if you dare:
     -- This *barrage* of cases is to handle the cases where e.g. (x < y)
     -- but (1 + x > 1 + y), which is "obviously" impossible. But Agda
     -- doesn't care about what humans think is obvious.
-    ... | inl x<y | inr (inl x>y) = absurd (go x y x<y x>y) where
+    ... | inl x<y | inr (inl (s≤s x>y)) = absurd (go x y x<y x>y) where
       go : ∀ x y → x < y → y < x → ⊥
-      go (suc x) (suc y) p q = go x y p q
+      go (suc x) (suc y) (s≤s p) (s≤s q) = go x y p q
     ... | inl x<y | inr (inr x≡y) = absurd (go x y x<y (suc-inj x≡y)) where
       go : ∀ x y → x < y → x ≡ y → ⊥
       go zero (suc y) p q = absurd (zero≠suc q)
-      go (suc x) (suc y) p q = go x y p (suc-inj q)
-    ... | inr (inl x>y) | inl x<y = absurd (go x y x>y x<y) where
+      go (suc x) (suc y) (s≤s p) q = go x y p (suc-inj q)
+    ... | inr (inl x>y) | inl (s≤s x<y) = absurd (go x y x>y x<y) where
       go : ∀ x y → y < x → x < y → ⊥
-      go (suc x) (suc y) p q = go x y p q
-    ... | inr (inr x≡y) | inl x<y = absurd (go x y x<y x≡y) where
+      go (suc x) (suc y) (s≤s p) (s≤s q) = go x y p q
+    ... | inr (inr x≡y) | inl (s≤s x<y) = absurd (go x y x<y x≡y) where
       go : ∀ x y → x < y → x ≡ y → ⊥
       go zero (suc y) p q = absurd (zero≠suc q)
-      go (suc x) (suc y) p q = go x y p (suc-inj q)
+      go (suc x) (suc y) (s≤s p) q = go x y p (suc-inj q)
     ... | inr (inl x>y) | inr (inr x≡y) = absurd (go x y x>y (suc-inj x≡y)) where
       go : ∀ x y → y < x → x ≡ y → ⊥
       go (suc x) zero p q = absurd (zero≠suc (sym q))
-      go (suc x) (suc y) p q = go x y p (suc-inj q)
-    ... | inr (inr x≡y) | inr (inl x>y) = absurd (go x y x≡y x>y) where
+      go (suc x) (suc y) (s≤s p) q = go x y p (suc-inj q)
+    ... | inr (inr x≡y) | inr (inl (s≤s x>y)) = absurd (go x y x≡y x>y) where
       go : ∀ x y → x ≡ y → y < x → ⊥
       go (suc x) zero p q = absurd (zero≠suc (sym p))
-      go (suc x) (suc y) p q = go x y (suc-inj p) q
+      go (suc x) (suc y) p (s≤s q) = go x y (suc-inj p) q
 
   go : ∀ n → Canonical n
   go (diff x y) = work x y

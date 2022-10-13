@@ -1,0 +1,163 @@
+```agda
+open import 1Lab.Prelude
+
+open import Data.Nat.Base
+open import Data.Sum
+
+module Data.Nat.Order where
+```
+
+# Properties of ordering on ℕ
+
+We establish the basic properties of ordering on the natural numbers.
+These are properties of the order itself, and not how it interacts with
+the semiring structure. For that, see
+[`Data.Nat.Properties`](Data.Nat.Properties.html). The first thing we
+establish is that $x \le y$ is a partial order, so it deserves the name
+$\le$: It is reflexive, transitive, antisymmetric, and takes values in
+propositions. In all cases, save for reflexivity, the induction happens
+on the witnesses of ordering, and Agda handles inducting on the naturals
+automatically.
+
+```agda
+≤-refl : ∀ {x : Nat} → x ≤ x
+≤-refl {zero}  = 0≤x
+≤-refl {suc x} = s≤s ≤-refl
+
+≤-trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
+≤-trans 0≤x     0≤x     = 0≤x
+≤-trans 0≤x     (s≤s q) = 0≤x
+≤-trans (s≤s p) (s≤s q) = s≤s (≤-trans p q)
+
+≤-antisym : ∀ {x y : Nat} → x ≤ y → y ≤ x → x ≡ y
+≤-antisym 0≤x     0≤x     = refl
+≤-antisym (s≤s p) (s≤s q) = ap suc (≤-antisym p q)
+
+≤-prop : {x y : Nat} → is-prop (x ≤ y)
+≤-prop 0≤x     0≤x     = refl
+≤-prop (s≤s p) (s≤s q) = ap s≤s (≤-prop p q)
+```
+
+As a minor convenience, we prove that the constructor `s≤s`{.Agda} is an
+equivalence between $x \le y$ and $(1 + x) \le (1 + y)$.
+
+```agda
+≤-peel : ∀ {x y : Nat} → suc x ≤ suc y → x ≤ y
+≤-peel (s≤s p) = p
+```
+
+<!--
+```agda
+instance
+  H-Level-≤ : ∀ {n x y} → H-Level (x ≤ y) (suc n)
+  H-Level-≤ = prop-instance ≤-prop
+```
+-->
+
+Furthermore, `_≤_`{.Agda} is decidable:
+
+```agda
+≤-dec : (x y : Nat) → Dec (x ≤ y)
+≤-dec zero zero = yes 0≤x
+≤-dec zero (suc y) = yes 0≤x
+≤-dec (suc x) zero = no λ { () }
+≤-dec (suc x) (suc y) with ≤-dec x y
+... | yes x≤y = yes (s≤s x≤y)
+... | no ¬x≤y = no (λ { (s≤s x≤y) → ¬x≤y x≤y })
+```
+
+We also have that a successor is never smaller than the number it
+succeeds:
+
+```agda
+¬sucx≤x : (x : Nat) → suc x ≤ x → ⊥
+¬sucx≤x (suc x) (s≤s ord) = ¬sucx≤x x ord
+```
+
+We can do proofs on pairs of natural numbers by splitting into cases of
+their strict ordering:
+
+```agda
+≤-split : ∀ (x y : Nat) → (x < y) ⊎ (y < x) ⊎ (x ≡ y)
+≤-split x y with ≤-dec (suc x) y
+≤-split x y | yes x<y = inl x<y
+≤-split x y | no x≥y with ≤-dec (suc y) x
+≤-split x y | no x≥y | yes y<x = inr (inl y<x)
+≤-split x y | no x≥y | no y≥x  = inr (inr (go x y x≥y y≥x)) where
+  go : ∀ x y → (suc x ≤ y → ⊥) → (suc y ≤ x → ⊥) → x ≡ y
+  go zero zero p q          = refl
+  go zero (suc zero) p q    = absurd (p (s≤s 0≤x))
+  go zero (suc (suc y)) p q = absurd (p (s≤s 0≤x))
+  go (suc zero) zero p q    = absurd (q (s≤s 0≤x))
+  go (suc (suc x)) zero p q = absurd (q (s≤s 0≤x))
+  go (suc x) (suc y) p q    = ap suc (go x y (λ { a → p (s≤s a) }) λ { a → q (s≤s a) })
+```
+
+## Well-ordering
+
+In classical mathematics, the well-ordering principle states that every
+nonempty subset of the natural numbers has a minimal element. In
+constructive mathematics, there are subsets of $\bb{N}$ which only have
+a minimal elements if excluded middle holds. The LEM-agnostic statement
+is that every [inhabited] [_complemented_] subset of the natural numbers
+has a minimal element. Note that for a complemented subset, inhabitation
+is the same as nonemptiness, but we prefer the stronger phrasing since
+it makes the proof one step shorter.
+
+[inhabited]: 1Lab.HIT.Truncation.html
+[_complemented_]: Data.Power.Complemented.html
+
+The "subset" part only comes in at the start: To get out from under the
+truncation, we need the fact that minimal solutions are unique. Given a
+minimal solution $(n, p)$ and one $(k, q')$, we have that $n = k$ since
+both are minimal (so $k \le n$ and $n \le k$), but we do not^[We're
+implicitly appealing to path induction to reduce this to the case where
+$p, q : P(n)$] automatically have that $p = q$.
+
+```agda
+module _ {ℓ} {P : Nat → Prop ℓ} where
+  private
+    minimal-solution : ∀ {ℓ} (P : Nat → Type ℓ) → Type _
+    minimal-solution P = Σ[ n ∈ Nat ] (P n × (∀ k → P k → n ≤ k))
+
+    minimal-solution-unique : is-prop (minimal-solution λ x → ∣ P x ∣)
+    minimal-solution-unique (n , pn , n-min) (k , pk , k-min) =
+      Σ-prop-path (λ y → hlevel!) (≤-antisym (n-min _ pk) (k-min _ pn))
+```
+
+The step of the code that actually finds a minimal solution does not
+need $P$ to be a predicate: we only need that for actually searching for
+an inhabited subset.
+
+```agda
+    min-suc
+      : ∀ {P : Nat → Type ℓ} → ∀ n → (P 0 → ⊥)
+      → (∀ k → P (suc k) → n ≤ k)
+      → ∀ k → P k → suc n ≤ k
+    min-suc n ¬p0 nmins zero pk           = absurd (¬p0 pk)
+    min-suc zero ¬p0 nmins (suc k) psk    = s≤s 0≤x
+    min-suc (suc n) ¬p0 nmins (suc k) psk = s≤s (nmins k psk)
+
+    wo-suc
+      : ∀ {P : Nat → Type ℓ} n
+      → P (suc n) → Dec (P 0) → minimal-solution (λ n → P (suc n))
+      → minimal-solution P
+    wo-suc n psn (yes p0) (a , pa , x) = 0 , p0 , λ k _ → 0≤x
+    wo-suc {P} n psn (no ¬p0) (a , pa , x) = suc a , pa , min-suc {P} a ¬p0 x
+
+  ℕ-minimal-solution
+    : ∀ (P : Nat → Type _)
+    → (∀ n → Dec (P n))
+    → (n : Nat) → P n
+    → minimal-solution P
+  ℕ-minimal-solution P decp zero p = 0 , p , λ k _ → 0≤x
+  ℕ-minimal-solution P decp (suc n) p = wo-suc n p (decp zero)
+    (ℕ-minimal-solution (λ x → P (suc x)) (λ x → decp (suc x)) n p)
+
+  ℕ-well-ordered
+    : (∀ n → Dec ∣ P n ∣)
+    → (∃[ n ∈ Nat ] ∣ P n ∣)
+    → Σ[ n ∈ Nat ] (∣ P n ∣ × (∀ k → ∣ P k ∣ → n ≤ k))
+  ℕ-well-ordered P-dec wit = ∥-∥-rec minimal-solution-unique
+    (λ { (n , p) → ℕ-minimal-solution _ P-dec n p }) wit
+```

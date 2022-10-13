@@ -41,7 +41,7 @@ private
     Σ-is-hlevel 2 (hlevel 2) λ f → is-prop→is-set $
       Π-is-hlevel 1 λ α →
       Π-is-hlevel 1 λ β →
-      fun-is-hlevel 1 (Nat.≤-prop (to-nat (f α)) (to-nat (f β)))
+      fun-is-hlevel 1 Nat.≤-prop
 
 Δ-map-path
   : ∀ {n m : Nat} {f g : Δ-map n m}
@@ -49,7 +49,7 @@ private
   → f ≡ g
 Δ-map-path p i .map x = p x i
 Δ-map-path {f = f} {g} p i .ascending x y w =
-  is-prop→pathp (λ j → Nat.≤-prop (to-nat (p x j)) (to-nat (p y j)))
+  is-prop→pathp (λ j → Nat.≤-prop {to-nat (p x j)} {to-nat (p y j)})
     (f .ascending x y w) (g .ascending x y w) i
 ```
 -->

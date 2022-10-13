@@ -4,7 +4,7 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
-open import Data.Nat
+open import Data.Nat.Base
 
 module Data.Int.Inductive where
 ```
