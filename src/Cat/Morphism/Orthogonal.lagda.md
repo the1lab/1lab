@@ -121,6 +121,17 @@ holds in the generality of precategories.
 ```
 -->
 
+A slightly more interesting lemma is that, if $f$ is orthogonal to
+itself, then it is an isomorphism:
+
+```agda
+  self-orthogonal→is-iso : ∀ {a b} (f : C.Hom a b) → m⊥m f f → C.is-invertible f
+  self-orthogonal→is-iso f f⊥f =
+    C.make-invertible (gpq .fst) (gpq .snd .snd) (gpq .snd .fst)
+    where
+      gpq = f⊥f (C.idl _ ∙ C.intror refl) .centre
+```
+
 ## Regarding reflections
 
 <!--
