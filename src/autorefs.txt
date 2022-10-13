@@ -5,6 +5,7 @@ functor, functors, functorial, functoriality: Cat.Base.html#functors
 natural transformation, natural transformations, naturality: Cat.Base.html#natural-transformations
 standard finite sets: Data.Fin.Base.html
 adjunctions, adjoint functors, left adjoint, right adjoint: Cat.Functor.Adjoint.html#adjoint-functors
+reflective subcategory: Cat.Functor.Adjoint.Reflective.html
 identity system: 1Lab.Path.IdentitySystem.html#identity-systems
 fully faithful, fully faithful functor: Cat.Functor.Base.html#ff-functors
 essentially surjective, eso, essentially surjective on objects: Cat.Functor.Base.html#essential-fibres

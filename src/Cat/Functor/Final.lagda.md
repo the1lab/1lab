@@ -199,3 +199,36 @@ it in this `<details>`{.html} tag for the curious reader only.
       (Equiv.ε restriction-eqv _)
       (extend-is-colimit (restrict-cocone K) colim)
 ```
+
+<!--
+```agda
+module
+  _ {o ℓ o′ ℓ′ o′′ ℓ′′}
+    {𝒞 : Precategory o ℓ} {𝒟 : Precategory o′ ℓ′} {ℰ : Precategory o′′ ℓ′′}
+    (F : Functor 𝒞 𝒟) (G : Functor 𝒟 ℰ)
+    (f-fin : is-final F) (g-fin : is-final G)
+  where
+  private
+    module 𝒟 = Cr 𝒟
+    module ℰ = Cr ℰ
+    module G = Functor G
+    module F = Functor F
+    module ff = is-final f-fin
+    module gf = is-final g-fin
+    open is-final
+```
+-->
+
+Another short computation shows us that final functors are closed under
+composition.
+
+```agda
+  F∘-is-final : is-final (G F∘ F)
+  F∘-is-final .point e    = ff.point (gf.point e)
+  F∘-is-final .map d      = G.₁ (ff.map _) ℰ.∘ gf.map _
+  F∘-is-final .extend f g = ff.extend 𝒟.id (gf.extend f g)
+  F∘-is-final .extend-commutes f g =
+    g                                                ≡⟨ gf.extend-commutes _ _ ⟩
+    G.₁ ⌜ g-fin .extend f g ⌝ ℰ.∘ f                  ≡⟨ ap! (ff.extend-commutes _ _ ∙ 𝒟.elimr refl) ⟩
+    G.₁ (F.₁ (ff.extend 𝒟.id (gf.extend f g))) ℰ.∘ f ∎
+```

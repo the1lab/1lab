@@ -72,46 +72,66 @@ map $o \to FGo$, and this map can be seen to be a left- and right-
 inverse to $\eps$ applying the triangle identities.
 
 ```agda
-is-reflective→counit-is-iso
-  : {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {F : Functor C D} {G : Functor D C}
-  → (adj : F ⊣ G) → is-reflective adj
-  → ∀ {o} → Cat.Reasoning._≅_ D (F₀ F (F₀ G o)) o
-is-reflective→counit-is-iso {C = C} {D} {F} {G} adj g-ff {o} = morp where
-  module C = Cat.Reasoning C
-  module D = Cat.Reasoning D
-  module F = Func F
-  module G = Func G
+module
+  _ {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {F : Functor C D} {G : Functor D C}
+    (adj : F ⊣ G) (g-ff : is-reflective adj)
+  where
+  private
+    module DD = Cat.Reasoning Cat[ D , D ]
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module F = Func F
+    module G = Func G
+    module GF = Func (G F∘ F)
+    module FG = Func (F F∘ G)
+    module g-ff {x} {y} = Equiv (_ , g-ff {x} {y})
   open _⊣_ adj
 
-  module g-ff {x} {y} = Equiv (_ , g-ff {x} {y})
-  morp : F.₀ (G.₀ o) D.≅ o
-  morp = D.make-iso (counit.ε _) (g-ff.from (unit.η _)) invl invr
-    where abstract
-    invl : counit.ε o D.∘ g-ff.from (unit.η (G.₀ o)) ≡ D.id
-    invl = fully-faithful→faithful {F = G} g-ff (
-      G.₁ (counit.ε o D.∘ _)                 ≡⟨ G.F-∘ _ _ ⟩
-      G.₁ (counit.ε o) C.∘ G.₁ (g-ff.from _) ≡⟨ C.refl⟩∘⟨  g-ff.ε _ ⟩
-      G.₁ (counit.ε o) C.∘ unit.η (G.₀ o)    ≡⟨ zag ∙ sym G.F-id ⟩
-      G.₁ D.id                               ∎)
+  is-reflective→counit-is-iso : ∀ {o} → FG.₀ o D.≅ o
+  is-reflective→counit-is-iso {o} = morp where
+    morp : F.₀ (G.₀ o) D.≅ o
+    morp = D.make-iso (counit.ε _) (g-ff.from (unit.η _)) invl invr
+      where abstract
+      invl : counit.ε o D.∘ g-ff.from (unit.η (G.₀ o)) ≡ D.id
+      invl = fully-faithful→faithful {F = G} g-ff (
+        G.₁ (counit.ε o D.∘ _)                 ≡⟨ G.F-∘ _ _ ⟩
+        G.₁ (counit.ε o) C.∘ G.₁ (g-ff.from _) ≡⟨ C.refl⟩∘⟨  g-ff.ε _ ⟩
+        G.₁ (counit.ε o) C.∘ unit.η (G.₀ o)    ≡⟨ zag ∙ sym G.F-id ⟩
+        G.₁ D.id                               ∎)
 
-    invr : g-ff.from (unit.η (G.₀ o)) D.∘ counit.ε o ≡ D.id
-    invr = fully-faithful→faithful {F = G} g-ff (ap G.₁ (
-      g-ff.from _ D.∘ counit.ε _             ≡˘⟨ counit.is-natural _ _ _ ⟩
-      counit.ε _ D.∘ F.₁ (G.₁ (g-ff.from _)) ≡⟨ D.refl⟩∘⟨ F.⟨ g-ff.ε _ ⟩ ⟩
-      counit.ε _ D.∘ F.₁ (unit.η _)          ≡⟨ zig ⟩
-      D.id                                   ∎))
+      invr : g-ff.from (unit.η (G.₀ o)) D.∘ counit.ε o ≡ D.id
+      invr = fully-faithful→faithful {F = G} g-ff (ap G.₁ (
+        g-ff.from _ D.∘ counit.ε _             ≡˘⟨ counit.is-natural _ _ _ ⟩
+        counit.ε _ D.∘ F.₁ (G.₁ (g-ff.from _)) ≡⟨ D.refl⟩∘⟨ F.⟨ g-ff.ε _ ⟩ ⟩
+        counit.ε _ D.∘ F.₁ (unit.η _)          ≡⟨ zig ⟩
+        D.id                                   ∎))
 
-is-reflective→counit-iso
-  : {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {F : Functor C D} {G : Functor D C}
-  → (adj : F ⊣ G) → is-reflective adj
-  → Cat.Reasoning._≅_ Cat[ D , D ] (F F∘ G) Id
-is-reflective→counit-iso {C = C} {D} adj ff = DD.invertible→iso counit invs where
-  module DD = Cat.Reasoning Cat[ D , D ]
-  module D = Cat.Reasoning D
-  open _⊣_ adj
-  invs = componentwise-invertible→invertible counit λ x →
-    D.iso→invertible (is-reflective→counit-is-iso adj ff {o = x})
+  is-reflective→counit-iso : (F F∘ G) DD.≅ Id
+  is-reflective→counit-iso = DD.invertible→iso counit invs where
+    invs = componentwise-invertible→invertible counit λ x →
+      D.iso→invertible (is-reflective→counit-is-iso {o = x})
 ```
+
+<!--
+```agda
+  η-comonad-commute : ∀ {x} → unit.η (G.₀ (F.₀ x)) ≡ G.₁ (F.₁ (unit.η x))
+  η-comonad-commute {x} = C.right-inv-unique
+    (F-map-iso G is-reflective→counit-is-iso)
+    zag
+    (sym (G.F-∘ _ _) ∙ ap G.₁ zig ∙ G.F-id)
+
+  is-reflective→unit-G-is-iso : ∀ {o} → C.is-invertible (unit.η (G.₀ o))
+  is-reflective→unit-G-is-iso {o} = C.make-invertible (g-ff.to (counit.ε _))
+    (unit.is-natural _ _ _ ·· ap₂ C._∘_ refl η-comonad-commute ·· GF.annihilate zag)
+    zag
+
+  is-reflective→F-unit-is-iso : ∀ {o} → D.is-invertible (F.₁ (unit.η o))
+  is-reflective→F-unit-is-iso {o} = D.make-invertible
+    (counit.ε _)
+    (sym (counit.is-natural _ _ _) ∙ ap₂ D._∘_ refl (ap F.₁ (sym η-comonad-commute)) ∙ zig)
+    zig
+```
+-->
 
 We can now prove that the adjunction $L \dashv \iota$ is monadic.
 
@@ -153,11 +173,6 @@ assumption that $G$ is ff.
     isom .rinv x = Algebra-hom-path _ (equiv→counit g-ff _)
     isom .linv x = equiv→unit g-ff _
 
-  Tunit≡unitT : ∀ {x} → unit.η (G.₀ (F.₀ x)) ≡ G.₁ (F.₁ (unit.η x))
-  Tunit≡unitT {x} = C.right-inv-unique
-    (F-map-iso G (is-reflective→counit-is-iso adj g-ff))
-    zag
-    (sym (G.F-∘ _ _) ∙ ap G.₁ zig ∙ G.F-id)
 ```
 
 To show that the comparison functor is split essentially surjective,
@@ -184,17 +199,17 @@ is.
     o→Fo .morphism = unit.η _
     o→Fo .commutes =
         unit.is-natural _ _ _
-      ∙ ap₂ C._∘_ refl Tunit≡unitT
+      ∙ ap₂ C._∘_ refl (η-comonad-commute adj g-ff)
       ∙ sym (G.F-∘ _ _)
       ∙ ap G.₁ (sym (F.F-∘ _ _) ·· ap F.₁ (alg .ν-unit) ·· F.F-id)
-      ∙ sym (ap₂ C._∘_ refl (sym Tunit≡unitT) ∙ zag ∙ sym G.F-id)
+      ∙ sym (ap₂ C._∘_ refl (sym (η-comonad-commute adj g-ff)) ∙ zag ∙ sym G.F-id)
 
     isom : Comp.₀ (F.₀ ob) EM.≅ (ob , alg)
     isom = EM.make-iso Fo→o o→Fo
       (Algebra-hom-path _ (alg .ν-unit))
       (Algebra-hom-path _ (
           unit.is-natural _ _ _
-        ·· ap₂ C._∘_ refl Tunit≡unitT
+        ·· ap₂ C._∘_ refl (η-comonad-commute adj g-ff)
         ·· sym (G.F-∘ _ _)
         ·· ap G.₁ (sym (F.F-∘ _ _) ·· ap F.₁ (alg .ν-unit) ·· F.F-id)
         ·· G.F-id))

@@ -28,6 +28,7 @@
 \intcat:\{0 \le 1 \}
 \Arr:\id{Arr}(#1)
 \xadj:\xrightleftarrows[#2]{#1}
+\adj:\rightleftarrows
 \xto:\xrightarrow
 \xot:\xleftarrow
 \xepi:\xtwoheadrightarrow
@@ -51,3 +52,4 @@
 \B:\bf{B}
 \Rel:\ht{Rel}
 \liesover:\mathrel{\htmlClass{liesover}{\hspace{1.366em}}}
+\ortho:\mathrel{\bot}

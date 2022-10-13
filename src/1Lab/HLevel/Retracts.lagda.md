@@ -339,4 +339,7 @@ instance
   H-Level-Lift
     : ∀ {n} ⦃ s : H-Level T n ⦄ → H-Level (Lift ℓ T) n
   H-Level-Lift {n = n} .H-Level.has-hlevel = Lift-is-hlevel n (hlevel n)
+
+  H-Level-is-contr : ∀ {n} {ℓ} {T : Type ℓ} → H-Level (is-contr T) (suc n)
+  H-Level-is-contr = prop-instance is-contr-is-prop
 ```

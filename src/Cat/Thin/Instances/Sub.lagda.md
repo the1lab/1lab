@@ -230,3 +230,20 @@ is-complete→subobj-is-complete
 is-complete→subobj-is-complete lims F =
   slice-lim→subobj-lim F (is-complete→slice-is-complete lims _)
 ```
+
+<!--
+```agda
+subobject : ∀ {a b} → a C.↪ b → Subobj b .Precategory.Ob
+subobject x = restrict (cut (x .C.mor)) (x .C.monic)
+
+pullback-so
+  : ∀ {a b}
+  → has-pullbacks C
+  → (f : C.Hom b a)
+  → Subobj a .Precategory.Ob → Subobj b .Precategory.Ob
+pullback-so pb f subobj = restrict
+  (cut (pb f (subobj .object .map) .Pullback.p₁))
+  (is-monic→pullback-is-monic (subobj .witness)
+    (rotate-pullback (pb f _ .Pullback.has-is-pb)))
+```
+-->
