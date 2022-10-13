@@ -84,6 +84,8 @@ functors", i.e., those lying over the identity functor.
            → PathP (λ i → ℱ.Hom[ F.F-∘ f g i ] (F₀′ a′) (F₀′ c′))
                    (F₁′ (f′ ℰ.∘′ g′))
                    (F₁′ f′ ℱ.∘′ F₁′ g′)
+    ₀′ = F₀′
+    ₁′ = F₁′
 ```
 
 Note that, if $\ca{E}$ and $\ca{F}$ are \r{fibred categories} over their
