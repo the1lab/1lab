@@ -63,14 +63,13 @@ prove...], so here it is:
 
 ```agda
 Int-is-initial : is-initial (Rings ℓ) Liftℤ
-Int-is-initial R = contr hom λ x →
-  Σ-prop-path (λ _ → hlevel 1) (funext λ { (lift i) → lemma x i })
+Int-is-initial R = contr z→r λ x → Homomorphism-path λ { (lift i) → lemma x i }
   where
   module R = Ring-on (R .snd)
 ```
 
 ```agda
-  e : Nat → R .fst
+  e : Nat → ⌞ R ⌟
   e zero    = R.0r
   e (suc x) = R.1r R.+ e x
 ```
@@ -121,26 +120,26 @@ algebra, so I won't comment on it too much: it can be worked out on
 paper, following the ring laws.
 
 ```agda
-  ℤ↪R : Int → R .fst
+  ℤ↪R : Int → ⌞ R ⌟
   ℤ↪R (diff x y)       = e x R.- e y
   ℤ↪R (Int.quot m n i) = e-tr m n i
 
   open is-ring-hom
 
-  hom : Rings.Hom Liftℤ R
-  hom .fst (lift x) = ℤ↪R x
+  z→r : Rings.Hom Liftℤ R
+  z→r .hom (lift x) = ℤ↪R x
 ```
 <!--
 ```agda
-  hom .snd .pres-id = R.cancelr R.+-invr
-  hom .snd .pres-+ (lift x) (lift y) =
+  z→r .preserves .pres-id = R.cancelr R.+-invr
+  z→r .preserves .pres-+ (lift x) (lift y) =
     Int-elim₂-prop {P = λ x y → ℤ↪R (x +ℤ y) ≡ ℤ↪R x R.+ ℤ↪R y}
       (λ _ _ → hlevel 1)
       (λ a b x y → ap₂ R._-_ (e-add a x) (e-add b y)
                  ∙ ap₂ R._+_ refl (R.a.inv-comm ∙ R.+-commutes)
                  ∙ R.pulll (R.extendr R.+-commutes) ∙ R.pullr refl)
       x y
-  hom .snd .pres-* (lift x) (lift y) =
+  z→r .preserves .pres-* (lift x) (lift y) =
     Int-elim₂-prop {P = λ x y → ℤ↪R (x *ℤ y) ≡ ℤ↪R x R.* ℤ↪R y}
       (λ _ _ → hlevel 1)
       (λ a b x y → ap₂ R._-_ (e-add (a Nat.* x) _) (e-add (a Nat.* y) _)
@@ -181,11 +180,11 @@ and that last expression is pretty exactly what our canonical map
 evaluates to on $n$. So we're done!
 
 ```agda
-  lemma : ∀ (f : Rings.Hom Liftℤ R) i → hom .fst (lift i) ≡ f .fst (lift i)
+  lemma : ∀ (f : Rings.Hom Liftℤ R) i → z→r # lift i ≡ f # lift i
   lemma f =
     Int-elim-prop (λ _ → hlevel 1) λ a b → sym $
-         ap (f .fst) (ap lift (p a b))
-      ·· f .snd .pres-+ (lift (diff a 0)) (lift (diff 0 b))
+         ap (f #_) (ap lift (p a b))
+      ·· f .preserves .pres-+ (lift (diff a 0)) (lift (diff 0 b))
       ·· ap₂ R._+_ (q a) (Group-hom.pres-inv gh {x = lift (diff b 0)} ∙ ap R.-_ (q b))
     where
       p : ∀ a b → diff a b ≡ diff a 0 +ℤ diff 0 b
@@ -195,13 +194,13 @@ evaluates to on $n$. So we're done!
             (Ring-on.additive-group (Liftℤ .snd) .snd)
             (Ring-on.additive-group (R .snd) .snd)
             _
-      gh = record { pres-⋆ = f .snd .pres-+ }
+      gh = record { pres-⋆ = f .preserves .pres-+ }
 
-      q : ∀ a → f .fst (lift (diff a 0)) ≡ e a
+      q : ∀ a → f # lift (diff a 0) ≡ e a
       q zero = Group-hom.pres-id gh
       q (suc a) =
-          f .snd .pres-+ (lift (diff 1 0)) (lift (diff a 0))
-        ∙ ap₂ R._+_ (f .snd .pres-id) (q a)
+          f .preserves .pres-+ (lift (diff 1 0)) (lift (diff a 0))
+        ∙ ap₂ R._+_ (f .preserves .pres-id) (q a)
 ```
 
 ## Abelian groups as Z-modules

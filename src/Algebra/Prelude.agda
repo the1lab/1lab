@@ -26,6 +26,8 @@ import Cat.Diagram.Image
 import Cat.Diagram.Zero
 import Cat.Reasoning
 
+open import Cat.Displayed.Univalence.Thin public
+
 module Cat {o ℓ} (C : Precategory o ℓ) where
   open Cat.Diagram.Coequaliser C public
   open Cat.Diagram.Coproduct C public

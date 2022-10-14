@@ -4,11 +4,11 @@ open import 1Lab.Prim.Monad
 open import Algebra.Group.Subgroup
 open import Algebra.Ring.Module
 open import Algebra.Group.Ab
+open import Algebra.Prelude
 open import Algebra.Group
 open import Algebra.Ring
 
 open import Cat.Functor.FullSubcategory
-open import Cat.Prelude
 
 open import Data.Power
 
@@ -44,7 +44,7 @@ module _ {ℓ} (R : Ring ℓ) where
   private module R = Ring-on (R .snd)
   open Module hiding (module R ; module G)
 
-  record is-ideal (𝔞 : ℙ (R .fst)) : Type (lsuc ℓ) where
+  record is-ideal (𝔞 : ℙ ⌞ R ⌟) : Type (lsuc ℓ) where
     no-eta-equality
     field
       has-rep-subgroup : represents-subgroup R.additive-group 𝔞
@@ -83,7 +83,7 @@ carries a canonical $R$-module structure.
 [subgroup]: Algebra.Group.Subgroup.html
 
 ```agda
-  ideal→module : (𝔞 : ℙ (R .fst)) → is-ideal 𝔞 → Module R
+  ideal→module : (𝔞 : ℙ ⌞ R ⌟) → is-ideal 𝔞 → Module R
   ideal→module 𝔞 x = g , mod where
     open make-group
     open is-ideal x
@@ -109,7 +109,7 @@ $\mathfrak{a}$ is a sub-$R$-module of $R$:
 
 ```agda
   ideal→submodule
-    : {𝔞 : ℙ (R .fst)} (idl : is-ideal 𝔞)
+    : {𝔞 : ℙ ⌞ R ⌟} (idl : is-ideal 𝔞)
     → ideal→module _ idl R-Mod.↪ representable-module R
   ideal→submodule {𝔞 = 𝔞} idl = record
     { mor   = record { map = fst ; linear = λ r m s n → refl }
@@ -137,8 +137,8 @@ commutative.
 ```agda
   principal-ideal
     : (∀ x y → x R.* y ≡ y R.* x)
-    → (a : R .fst)
-    → is-ideal λ b → el (∃ (R .fst) λ c → b ≡ c R.* a) squash
+    → (a : ⌞ R ⌟)
+    → is-ideal λ b → el (∃ _ λ c → b ≡ c R.* a) squash
   principal-ideal comm a = record
     { has-rep-subgroup = record
       { has-unit = pure (_ , sym R.*-zerol)

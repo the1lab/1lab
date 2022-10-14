@@ -15,7 +15,6 @@ Horner normal forms are not sparse).
 open import 1Lab.Reflection.Variables
 open import 1Lab.Reflection
 open import 1Lab.Rewrite
-open import 1Lab.Prelude
 
 open import Data.Fin.Base
 open import Data.List
@@ -23,17 +22,19 @@ open import Data.Nat
 open import Data.Int
 
 open import Algebra.Ring.Cat.Initial
+open import Algebra.Ring.Commutative
+open import Algebra.Prelude
 open import Algebra.Ring
 
 module Algebra.Ring.Solver where
 
-module Impl {ℓ} (RRsnd : Ring ℓ) (*-commutes : ∀ {x y} → Ring-on._*_ (RRsnd .snd) x y ≡ Ring-on._*_ (RRsnd .snd) y x) where
+module Impl {ℓ} (RRsnd : CRing ℓ) where
   private
-    R = RRsnd .fst
-    module R = Ring-on (RRsnd .snd)
-    ℤ↪R-rh = Int-is-initial RRsnd .centre
-    module ℤ↪R = is-ring-hom (ℤ↪R-rh .snd)
-    embed-coe = ℤ↪R-rh .fst
+    R = ∣ RRsnd .fst ∣
+    module R = CRing-on (RRsnd .snd)
+    ℤ↪R-rh = Int-is-initial (el _ R.has-is-set , R.has-ring-on) .centre
+    module ℤ↪R = is-ring-hom (ℤ↪R-rh .preserves)
+    embed-coe = ℤ↪R-rh .hom
 
   data Poly   : Nat → Type ℓ
   data Normal : Nat → Type ℓ
@@ -150,7 +151,7 @@ module Impl {ℓ} (RRsnd : Ring ℓ) (*-commutes : ∀ {x y} → Ring-on._*_ (RR
   poly x *ₙ poly y = poly (x *ₚ y)
 
   ∅ *ₚ _ = ∅
-  _ *ₚ ∅ = ∅
+  (p *x+ c) *ₚ ∅ = ∅
   (p *x+ c) *ₚ (q *x+ d) = ((p *ₚ q) *x+ₚ (p *ₚₙ d +ₚ c *ₙₚ q)) *x+ₙ (c *ₙ d)
 
   -ₙ_ : ∀ {n} → Normal n → Normal n
@@ -224,7 +225,7 @@ module Impl {ℓ} (RRsnd : Ring ℓ) (*-commutes : ∀ {x y} → Ring-on._*_ (RR
   ⟦ x ⟧ₙ ρ = En (normal x) ρ
 
   0n-hom : ∀ {n} (ρ : Vec R n) → En 0n ρ ≡ R.0r
-  0n-hom [] = ℤ↪R.gh.pres-id
+  0n-hom [] = ℤ↪R.pres-0
   0n-hom (x ∷ ρ) = refl
 
   1n-hom : ∀ {n} (ρ : Vec R n) → En 1n ρ ≡ R.1r
@@ -232,7 +233,7 @@ module Impl {ℓ} (RRsnd : Ring ℓ) (*-commutes : ∀ {x y} → Ring-on._*_ (RR
   1n-hom (x ∷ ρ) =
     (R.0r R.* x) R.+ (En 1n ρ) ≡⟨ R.eliml R.*-zerol ⟩
     En 1n ρ                    ≡⟨ 1n-hom ρ ⟩
-    R.1r                                 ∎
+    R.1r                       ∎
 
   *x+ₙ-sound
     : ∀ {n} (p : Poly (suc n)) (c : Normal n) ρ
@@ -325,7 +326,7 @@ module Impl {ℓ} (RRsnd : Ring ℓ) (*-commutes : ∀ {x y} → Ring-on._*_ (RR
       where
       lem₁′ =
         a R.* c R.* x     ≡˘⟨ R.*-associative ⟩
-        a R.* ⌜ c R.* x ⌝ ≡⟨ ap! *-commutes ⟩
+        a R.* ⌜ c R.* x ⌝ ≡⟨ ap! R.*-commutes ⟩
         a R.* (x R.* c)   ≡⟨ R.*-associative ⟩
         a R.* x R.* c     ∎
 
@@ -337,7 +338,7 @@ module Impl {ℓ} (RRsnd : Ring ℓ) (*-commutes : ∀ {x y} → Ring-on._*_ (RR
       lem₂ =
         (a R.* d R.+ b R.* c) R.* x           ≡⟨ R.*-distribr ⟩
         a R.* d R.* x R.+ b R.* c R.* x       ≡˘⟨ ap₂ R._+_ R.*-associative R.*-associative ⟩
-        a R.* ⌜ d R.* x ⌝ R.+ b R.* (c R.* x) ≡⟨ ap! *-commutes ⟩
+        a R.* ⌜ d R.* x ⌝ R.+ b R.* (c R.* x) ≡⟨ ap! R.*-commutes ⟩
         a R.* (x R.* d) R.+ b R.* (c R.* x)   ≡⟨ ap₂ R._+_ R.*-associative refl ⟩
         a R.* x R.* d R.+ b R.* (c R.* x)     ∎
 
@@ -355,7 +356,7 @@ module Impl {ℓ} (RRsnd : Ring ℓ) (*-commutes : ∀ {x y} → Ring-on._*_ (RR
   *ₚₙ-hom c (p *x+ d) x ρ with c ==ₙ 0n
   ... | just c=0 = sym (ap₂ R._*_ refl (ap (λ e → En e ρ) c=0 ∙ 0n-hom ρ) ∙ R.*-zeror)
   ... | nothing  =
-      ap₂ R._+_ (ap (R._* x) (*ₚₙ-hom c p x ρ) ·· sym R.*-associative ·· ap₂ R._*_ refl *-commutes ∙ R.*-associative)
+      ap₂ R._+_ (ap (R._* x) (*ₚₙ-hom c p x ρ) ·· sym R.*-associative ·· ap₂ R._*_ refl R.*-commutes ∙ R.*-associative)
         (*ₙ-hom d c ρ)
     ∙ sym R.*-distribr
 
@@ -366,7 +367,7 @@ module Impl {ℓ} (RRsnd : Ring ℓ) (*-commutes : ∀ {x y} → Ring-on._*_ (RR
       *ₙₚ-hom (-ₙ 1n) p x ρ
     ∙ ap₂ R._*_ (-ₙ-hom 1n ρ ∙ ap R.-_ (1n-hom ρ)) refl
     ∙ sym R.neg-*-l ∙ ap R.-_ R.*-idl
-  -ₙ-hom (con x) ρ = ℤ↪R.gh.pres-inv {x = lift x}
+  -ₙ-hom (con x) ρ = ℤ↪R.pres-neg {x = lift x}
   -ₙ-hom (poly x) ρ = -ₚ-hom x ρ
 
   sound-coe
@@ -394,6 +395,10 @@ module Impl {ℓ} (RRsnd : Ring ℓ) (*-commutes : ∀ {x y} → Ring-on._*_ (RR
     → En (normal p) r ≡ En (normal q) r → ⟦ p ⟧ r ≡ ⟦ q ⟧ r
   solve p q r prf = sym (sound p r) ·· prf ·· sound q r
 
-  test : ∀ x y z → x R.* (y R.+ z) ≡ y R.* x R.+ z R.* x
-  test x y z =
-    solve (var 0 :* (var 1 :+ var 2)) ((var 1 :* var 0) :+ (var 2 :* var 0)) (x ∷ y ∷ z ∷ []) refl
+  instance
+    Number-ring : Number R
+    Number-ring .Number.Constraint _ = Lift _ ⊤
+    Number-ring .Number.fromNat x = embed-coe (lift (diff x 0))
+
+  test : Path R (1000000000 R.* 1000000000) 1000000000000000000
+  test = solve (con 1000000000 :* con 1000000000) (con 1000000000000000000) [] refl

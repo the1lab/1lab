@@ -36,7 +36,7 @@ elements of $R$ are a module over $R$.
 ```agda
 Fin-vec-group : ∀ n → AbGroup ℓ
 Fin-vec-group n = to-abelian-group mg λ x y → funext λ _ → R.+-commutes where
-  mg : make-group (Fin n → R .fst)
+  mg : make-group (Fin n → ⌞ R ⌟)
   mg .group-is-set = hlevel!
   mg .unit _ = R.0r
   mg .mul f g i = f i R.+ g i
