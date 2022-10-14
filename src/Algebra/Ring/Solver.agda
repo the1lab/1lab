@@ -1,0 +1,399 @@
+{-
+Adaptation of the ring solver from the Agda standard library to work
+with the 1Lab's weird primitives.
+
+Agda's ring solver was originally implemented by Nils Anders Danielsson,
+and the referenced version includes contributions by Matthew Daggit,
+Guillaume Allais, Donnacha Oisín Kidney, and Markus Wageringel.
+
+Uses ideas from the Coq ring tactic. See "Proving Equalities in a
+Commutative Ring Done Right in Coq" by Grégoire and Mahboubi. The
+code below is not optimised like theirs, though (in particular, our
+Horner normal forms are not sparse).
+-}
+
+open import 1Lab.Reflection.Variables
+open import 1Lab.Reflection
+open import 1Lab.Rewrite
+open import 1Lab.Prelude
+
+open import Data.Fin.Base
+open import Data.List
+open import Data.Nat
+open import Data.Int
+
+open import Algebra.Ring.Cat.Initial
+open import Algebra.Ring
+
+module Algebra.Ring.Solver where
+
+module Impl {ℓ} (RRsnd : Ring ℓ) (*-commutes : ∀ {x y} → Ring-on._*_ (RRsnd .snd) x y ≡ Ring-on._*_ (RRsnd .snd) y x) where
+  private
+    R = RRsnd .fst
+    module R = Ring-on (RRsnd .snd)
+    ℤ↪R-rh = Int-is-initial RRsnd .centre
+    module ℤ↪R = is-ring-hom (ℤ↪R-rh .snd)
+    embed-coe = ℤ↪R-rh .fst
+
+  data Poly   : Nat → Type ℓ
+  data Normal : Nat → Type ℓ
+
+  data Poly where
+    ∅     : ∀ {n} → Poly n
+    _*x+_ : ∀ {n} → Poly (suc n) → Normal n → Poly (suc n)
+
+  data Normal where
+    con  : Int → Normal 0
+    poly : ∀ {n} → Poly (suc n) → Normal (suc n)
+
+  Ep : ∀ {n} → Poly (suc n) → Vec R (suc n) → R
+  En : ∀ {n} → Normal n → Vec R n → R
+
+  Ep ∅ i = R.0r
+  Ep (p *x+ c) (x ∷ e) = Ep p (x ∷ e) R.* x R.+ En c e
+
+  En (con x) i = embed-coe (lift x)
+  En (poly x) i = Ep x i
+
+  0h : ∀ {n} → Poly n
+  0n : ∀ {n} → Normal n
+  0h = ∅
+  0n {zero} = con 0
+  0n {suc n} = poly 0h
+
+  1h : ∀ {n} → Poly (suc n)
+  1n : ∀ {n} → Normal n
+
+  1h {n} = ∅ *x+ 1n {n}
+  1n {zero} = con 1
+  1n {suc n} = poly 1h
+
+  -- Nasty and evil decidable equality procedure for the higher
+  -- inductive integers based on the fast equality predicate for natural
+  -- numbers, using rewrite rules to make the postulate compute away.
+  private
+    postulate
+      believe-me : ∀ {ℓ} {A : Type ℓ} (x y : A) → x ≡ y
+      believe-me-refl : ∀ {ℓ} {A : Type ℓ} {x : A} → believe-me x x ≡rw refl
+
+    {-# REWRITE believe-me-refl #-}
+
+    evil-discrete-int : (x y : Int) → Dec (x ≡ y)
+    evil-discrete-int = Int-elim₂-prop (λ _ _ → hlevel 1) go
+      where
+        go : (a b x y : Nat) → Dec (diff a b ≡ diff x y)
+        go a b x y with a + y == b + x
+        ... | true = yes (believe-me (diff a b) (diff x y))
+        ... | false = no λ _ → nah
+          where postulate nah : ⊥
+
+  -- The more cases that we can approximate here, the more powerful the
+  -- solver becomes.
+  _==ₕ_ : ∀ {n} (x y : Poly n) → Maybe (x ≡ y)
+  _==ₙ_ : ∀ {n} (x y : Normal n) → Maybe (x ≡ y)
+
+  ∅ ==ₕ ∅ = just refl
+  ∅ ==ₕ (_ *x+ _) = nothing
+  (_ *x+ _) ==ₕ ∅ = nothing
+  (p *x+ x) ==ₕ (q *x+ y) with p ==ₕ q | x ==ₙ y
+  ... | just p=q | just x=y = just $ ap₂ _*x+_ p=q x=y
+  ... | just _   | nothing = nothing
+  ... | nothing  | just _  = nothing
+  ... | nothing  | nothing = nothing
+
+  con c ==ₙ con d with evil-discrete-int c d
+  ... | yes c=d = just (ap con c=d)
+  ... | no ¬c=d = nothing
+  poly x ==ₙ poly y with x ==ₕ y
+  ... | just x=y = just $ ap poly x=y
+  ... | nothing  = nothing
+
+  _*x+ₙ_ : ∀ {n} → Poly (suc n) → Normal n → Poly (suc n)
+  (p *x+ c′) *x+ₙ c = (p *x+ c′) *x+ c
+  ∅          *x+ₙ c with c ==ₙ 0n
+  ... | just c≈0 = ∅
+  ... | nothing  = ∅ *x+ c
+
+  _+ₚ_ : ∀ {n} → Poly (suc n) → Poly (suc n) → Poly (suc n)
+  _+ₙ_ : ∀ {n} → Normal n → Normal n → Normal n
+
+  ∅         +ₚ y         = y
+  y         +ₚ ∅         = y
+  (p *x+ x) +ₚ (q *x+ y) = (p +ₚ q) *x+ₙ (x +ₙ y)
+
+  con x  +ₙ con y = con (x +ℤ y)
+  poly x +ₙ poly y = poly (x +ₚ y)
+
+  _*x+ₚ_ : ∀ {n} → Poly (suc n) → Poly (suc n) → Poly (suc n)
+  p *x+ₚ (q *x+ d) = (p +ₚ q) *x+ₙ d
+  ∅ *x+ₚ ∅         = ∅
+  (p *x+ c) *x+ₚ ∅ = (p *x+ c) *x+ 0n
+
+  _*ₙₚ_ : ∀ {n} → Normal n → Poly (suc n) → Poly (suc n)
+  _*ₚₙ_ : ∀ {n} → Poly (suc n) → Normal n → Poly (suc n)
+  _*ₚ_  : ∀ {n} → Poly (suc n) → Poly (suc n) → Poly (suc n)
+  _*ₙ_  : ∀ {n} → Normal n → Normal n → Normal n
+
+  infix 30 _*ₙₚ_ _*ₚₙ_ _*ₚ_ _*ₙ_
+
+  c *ₙₚ ∅ = ∅
+  c *ₙₚ (p *x+ d) with c ==ₙ 0n
+  ... | just _  = ∅
+  ... | nothing = (c *ₙₚ p) *x+ (c *ₙ d)
+
+  ∅ *ₚₙ y = ∅
+  (p *x+ c) *ₚₙ d with d ==ₙ 0n
+  ... | just _  = ∅
+  ... | nothing = (p *ₚₙ d) *x+ (c *ₙ d)
+
+  con x  *ₙ con y  = con (x *ℤ y)
+  poly x *ₙ poly y = poly (x *ₚ y)
+
+  ∅ *ₚ _ = ∅
+  _ *ₚ ∅ = ∅
+  (p *x+ c) *ₚ (q *x+ d) = ((p *ₚ q) *x+ₚ (p *ₚₙ d +ₚ c *ₙₚ q)) *x+ₙ (c *ₙ d)
+
+  -ₙ_ : ∀ {n} → Normal n → Normal n
+  -ₚ_ : ∀ {n} → Poly (suc n) → Poly (suc n)
+
+  -ₙ con x = con (negate x)
+  -ₙ poly x = poly (-ₚ x)
+
+  -ₚ x = (-ₙ 1n) *ₙₚ x
+
+  data Op : Type where
+    [+] : Op
+    [*] : Op
+
+  data Polynomial (m : Nat) : Type ℓ where
+    op   : (o : Op) (p q : Polynomial m) → Polynomial m
+    con  : (c : Int) → Polynomial m
+    var  : (x : Fin m) → Polynomial m
+    :-_  : (p : Polynomial m) → Polynomial m
+
+  -- Short-hand notation.
+
+  infix 40 _:-_
+  infix 30 _:*_
+
+  _:+_ : ∀ {n} → Polynomial n → Polynomial n → Polynomial n
+  _:+_ = op [+]
+
+  _:*_ : ∀ {n} → Polynomial n → Polynomial n → Polynomial n
+  _:*_ = op [*]
+
+  _:-_ : ∀ {n} → Polynomial n → Polynomial n → Polynomial n
+  x :- y = x :+ (:- y)
+
+  _:×_ : ∀ {n} → Nat → Polynomial n → Polynomial n
+  zero :× p = con 0
+  suc m :× p = p :+ (m :× p)
+
+  sem : Op → R → R → R
+  sem [+] = R._+_
+  sem [*] = R._*_
+
+  lookup : ∀ {ℓ} {A : Type ℓ} {n} → Vec A n → Fin n → A
+  lookup (x ∷ xs) fzero = x
+  lookup (x ∷ xs) (fsuc i) = lookup xs i
+
+  ⟦_⟧ : ∀ {n} → Polynomial n → Vec R n → R
+  ⟦ op o p₁ p₂ ⟧ ρ = sem o (⟦ p₁ ⟧ ρ) (⟦ p₂ ⟧ ρ)
+  ⟦ con c      ⟧ ρ = embed-coe (lift c)
+  ⟦ var x      ⟧ ρ = lookup ρ x
+  ⟦ :- p       ⟧ ρ = R.- ⟦ p ⟧ ρ
+
+  ---
+
+  normal-coe : ∀ {n} → Int → Normal n
+  normal-coe {zero} x  = con x
+  normal-coe {suc n} x = poly (∅ *x+ₙ normal-coe x)
+
+  normal-var : ∀ {n} → Fin n → Normal n
+  normal-var fzero    = poly ((∅ *x+ 1n) *x+ 0n)
+  normal-var (fsuc f) = poly (∅ *x+ₙ normal-var f)
+
+  normal : ∀ {n} → Polynomial n → Normal n
+  normal (op [+] x y) = normal x +ₙ normal y
+  normal (op [*] x y) = normal x *ₙ normal y
+  normal (con c) = normal-coe c
+  normal (var x) = normal-var x
+  normal (:- x) = -ₙ (normal x)
+
+  ⟦_⟧ₙ : ∀ {n} → Polynomial n → Vec R n → R
+  ⟦ x ⟧ₙ ρ = En (normal x) ρ
+
+  0n-hom : ∀ {n} (ρ : Vec R n) → En 0n ρ ≡ R.0r
+  0n-hom [] = ℤ↪R.gh.pres-id
+  0n-hom (x ∷ ρ) = refl
+
+  1n-hom : ∀ {n} (ρ : Vec R n) → En 1n ρ ≡ R.1r
+  1n-hom [] = ℤ↪R.pres-id
+  1n-hom (x ∷ ρ) =
+    (R.0r R.* x) R.+ (En 1n ρ) ≡⟨ R.eliml R.*-zerol ⟩
+    En 1n ρ                    ≡⟨ 1n-hom ρ ⟩
+    R.1r                                 ∎
+
+  *x+ₙ-sound
+    : ∀ {n} (p : Poly (suc n)) (c : Normal n) ρ
+    → Ep (p *x+ₙ c) ρ ≡ Ep (p *x+ c) ρ
+  *x+ₙ-sound ∅ c (e ∷ ρ) with c ==ₙ 0n
+  ... | just x = sym $
+    Ep (∅ *x+ ⌜ c ⌝) (e ∷ ρ)   ≡⟨ ap! x ⟩
+    Ep (∅ *x+ 0n) (e ∷ ρ)      ≡⟨⟩
+    (R.0r R.* e) R.+ En 0n ρ ≡⟨ R.eliml R.*-zerol ⟩
+    En 0n ρ                  ≡⟨ 0n-hom ρ ⟩
+    R.0r                               ∎
+  ... | nothing = refl
+  *x+ₙ-sound (p *x+ x) c ρ = refl
+
+  ∅*x+ₙ-hom
+    : ∀ {n} (c : Normal n) x ρ
+    → Ep (∅ *x+ₙ c) (x ∷ ρ) ≡ En c ρ
+  ∅*x+ₙ-hom c x ρ with c ==ₙ 0n
+  ... | just x = sym (ap (λ c → En c ρ) x ∙ 0n-hom ρ)
+  ... | nothing = R.eliml R.*-zerol
+
+  +ₚ-hom
+    : ∀ {n} (p q : Poly (suc n)) ρ
+    → Ep (p +ₚ q) ρ ≡ Ep p ρ R.+ Ep q ρ
+  +ₙ-hom
+    : ∀ {n} (p q : Normal n) ρ
+    → En (p +ₙ q) ρ ≡ En p ρ R.+ En q ρ
+
+  +ₚ-hom ∅ q ρ = sym R.+-idl
+  +ₚ-hom (p *x+ x) ∅ ρ = sym R.+-idr
+  +ₚ-hom (p *x+ c) (q *x+ d) (x ∷ ρ) =
+    Ep ((p +ₚ q) *x+ₙ (c +ₙ d)) (x ∷ ρ)                                 ≡⟨ *x+ₙ-sound (p +ₚ q) (c +ₙ d) (x ∷ ρ) ⟩
+    Ep ((p +ₚ q) *x+ (c +ₙ d)) (x ∷ ρ)                                  ≡⟨⟩
+    ⌜ Ep (p +ₚ q) (x ∷ ρ) ⌝ R.* x R.+ En (c +ₙ d) ρ                     ≡⟨ ap! (+ₚ-hom p q (x ∷ ρ)) ⟩
+    (Ep p (x ∷ ρ) R.+ Ep q (x ∷ ρ)) R.* x R.+ ⌜ En (c +ₙ d) ρ ⌝         ≡⟨ ap! (+ₙ-hom c d ρ) ⟩
+    ⌜ (Ep p (x ∷ ρ) R.+ Ep q (x ∷ ρ)) R.* x ⌝ R.+ (En c ρ R.+ En d ρ)   ≡⟨ ap! R.*-distribr  ⟩
+    Ep p (x ∷ ρ) R.* x R.+ Ep q (x ∷ ρ) R.* x R.+ (En c ρ R.+ En d ρ)   ≡⟨ R.a.pullr (R.pulll R.+-commutes) ⟩
+    Ep p (x ∷ ρ) R.* x R.+ (En c ρ R.+ Ep q (x ∷ ρ) R.* x R.+ En d ρ)   ≡⟨ R.a.extendl (R.a.pulll refl) ⟩
+    Ep p (x ∷ ρ) R.* x R.+ En c ρ R.+ (Ep q (x ∷ ρ) R.* x R.+ En d ρ)   ∎
+  +ₙ-hom (con x)  (con y)  ρ = ℤ↪R.pres-+ (lift x) (lift y)
+  +ₙ-hom (poly p) (poly q) ρ = +ₚ-hom p q ρ
+
+  *x+-hom
+    : ∀ {n} (p q : Poly (suc n)) x ρ
+    → Ep (p *x+ₚ q) (x ∷ ρ)
+    ≡ Ep p (x ∷ ρ) R.* x R.+ Ep q (x ∷ ρ)
+  *x+-hom ∅ ∅ x ρ = R.introl R.*-zerol
+  *x+-hom (p *x+ c) ∅ x ρ = ap₂ R._+_ refl (0n-hom ρ)
+  *x+-hom p (q *x+ d) x ρ =
+    Ep (p *x+ₚ (q *x+ d)) (x ∷ ρ)                          ≡⟨⟩
+    Ep ((p +ₚ q) *x+ₙ d) (x ∷ ρ)                           ≡⟨ *x+ₙ-sound (p +ₚ q) d (x ∷ ρ) ⟩
+    ⌜ Ep (p +ₚ q) (x ∷ ρ) ⌝ R.* x R.+ En d ρ               ≡⟨ ap! (+ₚ-hom p q (x ∷ ρ)) ⟩
+    ⌜ (Ep p (x ∷ ρ) R.+ Ep q (x ∷ ρ)) R.* x ⌝ R.+ En d ρ   ≡⟨ ap! R.*-distribr ⟩
+    Ep p (x ∷ ρ) R.* x R.+ Ep q (x ∷ ρ) R.* x R.+ En d ρ   ≡⟨ R.pullr refl ⟩
+    Ep p (x ∷ ρ) R.* x R.+ (Ep q (x ∷ ρ) R.* x R.+ En d ρ) ∎
+
+  *ₙₚ-hom
+    : ∀ {n} (c : Normal n) (p : Poly (suc n)) x ρ
+    → Ep (c *ₙₚ p) (x ∷ ρ) ≡ En c ρ R.* Ep p (x ∷ ρ)
+  *ₚₙ-hom
+    : ∀ {n} (c : Normal n) (p : Poly (suc n)) x ρ
+    → Ep (p *ₚₙ c) (x ∷ ρ) ≡ Ep p (x ∷ ρ) R.* En c ρ
+  *ₙ-hom : ∀ {n} (c d : Normal n) ρ → En (c *ₙ d) ρ ≡ En c ρ R.* En d ρ
+  *ₚ-hom : ∀ {n} (p q : Poly (suc n)) ρ → Ep (p *ₚ q) ρ ≡ Ep p ρ R.* Ep q ρ
+
+  *ₚ-hom ∅ q ρ = sym R.*-zerol
+  *ₚ-hom (p *x+ c) ∅ ρ = sym R.*-zeror
+  *ₚ-hom (p *x+ c) (q *x+ d) (x ∷ ρ) =
+      *x+ₙ-sound ((p *ₚ q) *x+ₚ ((p *ₚₙ d) +ₚ (c *ₙₚ q))) _ (x ∷ ρ)
+    ∙ ap₂ R._+_ (ap₂ R._*_ (*x+-hom (p *ₚ q) ((p *ₚₙ d) +ₚ (c *ₙₚ q)) x ρ) refl) refl
+    ∙ ap₂ R._+_ (ap₂ R._*_ (ap₂ R._+_ (ap (R._* x) (*ₚ-hom p q (x ∷ ρ)))
+        (+ₚ-hom (p *ₚₙ d) (c *ₙₚ q) (x ∷ ρ))) refl
+        ∙ ap₂ R._*_ (ap₂ R._+_ refl (ap₂ R._+_ (*ₚₙ-hom d p x ρ) (*ₙₚ-hom c q x ρ)))
+        refl) refl
+    ∙ ap₂ R._+_ refl (*ₙ-hom c d ρ) ∙ lemma _ _ _ _ _
+    where
+    lemma
+      : ∀ p q x d c
+      → (p R.* q R.* x R.+ ((p R.* d) R.+ (c R.* q))) R.* x R.+ (c R.* d)
+      ≡ (p R.* x R.+ c) R.* (q R.* x R.+ d)
+    lemma a c x d b =
+      (a R.* c R.* x R.+ (a R.* d R.+ b R.* c)) R.* x R.+ b R.* d                 ≡⟨ ap₂ R._+_ R.*-distribr refl ⟩
+      (a R.* c R.* x R.* x R.+ (a R.* d R.+ b R.* c) R.* x) R.+ b R.* d           ≡⟨ sym R.+-associative ⟩
+      a R.* c R.* x R.* x R.+ ((a R.* d R.+ b R.* c) R.* x R.+ b R.* d)           ≡⟨ ap₂ R._+_ lem₁ (ap₂ R._+_ lem₂ refl) ⟩
+      a R.* x R.* (c R.* x) R.+ (a R.* x R.* d R.+ b R.* (c R.* x) R.+ b R.* d)   ≡⟨ ap₂ R._+_ refl (sym R.+-associative) ⟩
+      a R.* x R.* (c R.* x) R.+ (a R.* x R.* d R.+ (b R.* (c R.* x) R.+ b R.* d)) ≡⟨ R.+-associative ⟩
+      a R.* x R.* (c R.* x) R.+ a R.* x R.* d R.+ (b R.* (c R.* x) R.+ b R.* d)   ≡˘⟨ ap₂ R._+_ R.*-distribl R.*-distribl ⟩
+      a R.* x R.* (c R.* x R.+ d) R.+ b R.* (c R.* x R.+ d)                       ≡˘⟨ R.*-distribr ⟩
+      (a R.* x R.+ b) R.* (c R.* x R.+ d)                                         ∎
+      where
+      lem₁′ =
+        a R.* c R.* x     ≡˘⟨ R.*-associative ⟩
+        a R.* ⌜ c R.* x ⌝ ≡⟨ ap! *-commutes ⟩
+        a R.* (x R.* c)   ≡⟨ R.*-associative ⟩
+        a R.* x R.* c     ∎
+
+      lem₁ =
+        a R.* c R.* x R.* x    ≡⟨ ap₂ R._*_ lem₁′ refl ⟩
+        a R.* x R.* c R.* x    ≡˘⟨ R.*-associative ⟩
+        a R.* x R.* (c R.* x)  ∎
+
+      lem₂ =
+        (a R.* d R.+ b R.* c) R.* x           ≡⟨ R.*-distribr ⟩
+        a R.* d R.* x R.+ b R.* c R.* x       ≡˘⟨ ap₂ R._+_ R.*-associative R.*-associative ⟩
+        a R.* ⌜ d R.* x ⌝ R.+ b R.* (c R.* x) ≡⟨ ap! *-commutes ⟩
+        a R.* (x R.* d) R.+ b R.* (c R.* x)   ≡⟨ ap₂ R._+_ R.*-associative refl ⟩
+        a R.* x R.* d R.+ b R.* (c R.* x)     ∎
+
+  *ₙ-hom (con x) (con y) ρ = ℤ↪R.pres-* (lift x) (lift y)
+  *ₙ-hom (poly p) (poly q) ρ = *ₚ-hom p q ρ
+
+  *ₙₚ-hom c ∅ x ρ = sym R.*-zeror
+  *ₙₚ-hom c (p *x+ d) x ρ with c ==ₙ 0n
+  ... | just c=0 = sym (ap₂ R._*_ (ap (λ e → En e ρ) c=0 ∙ 0n-hom ρ) refl ∙ R.*-zerol)
+  ... | nothing =
+      ap₂ R._+_ (ap (R._* x) (*ₙₚ-hom c p x ρ) ∙ sym R.*-associative) (*ₙ-hom c d ρ)
+    ∙ sym R.*-distribl
+
+  *ₚₙ-hom c ∅ x ρ = sym R.*-zerol
+  *ₚₙ-hom c (p *x+ d) x ρ with c ==ₙ 0n
+  ... | just c=0 = sym (ap₂ R._*_ refl (ap (λ e → En e ρ) c=0 ∙ 0n-hom ρ) ∙ R.*-zeror)
+  ... | nothing  =
+      ap₂ R._+_ (ap (R._* x) (*ₚₙ-hom c p x ρ) ·· sym R.*-associative ·· ap₂ R._*_ refl *-commutes ∙ R.*-associative)
+        (*ₙ-hom d c ρ)
+    ∙ sym R.*-distribr
+
+  -ₚ-hom : ∀ {n} (p : Poly (suc n)) ρ → Ep (-ₚ p) ρ ≡ R.- Ep p ρ
+  -ₙ-hom : ∀ {n} (n : Normal n) ρ → En (-ₙ n) ρ ≡ R.- En n ρ
+
+  -ₚ-hom p (x ∷ ρ) =
+      *ₙₚ-hom (-ₙ 1n) p x ρ
+    ∙ ap₂ R._*_ (-ₙ-hom 1n ρ ∙ ap R.-_ (1n-hom ρ)) refl
+    ∙ sym R.neg-*-l ∙ ap R.-_ R.*-idl
+  -ₙ-hom (con x) ρ = ℤ↪R.gh.pres-inv {x = lift x}
+  -ₙ-hom (poly x) ρ = -ₚ-hom x ρ
+
+  sound-coe
+    : ∀ {n} (c : Int) (ρ : Vec R n) → En (normal-coe c) ρ ≡ embed-coe (lift c)
+  sound-coe c [] = refl
+  sound-coe c (x ∷ ρ) = ∅*x+ₙ-hom (normal-coe c) x ρ ∙ sound-coe c ρ
+
+  sound-var : ∀ {n} (j : Fin n) ρ → En (normal-var j) ρ ≡ lookup ρ j
+  sound-var fzero (x ∷ ρ) =
+    Ep (∅ *x+ 1n) (x ∷ ρ) R.* x R.+ En 0n ρ ≡⟨ R.elimr (0n-hom ρ) ⟩
+    ⌜ Ep (∅ *x+ 1n) (x ∷ ρ) ⌝ R.* x         ≡⟨ ap! (R.eliml R.*-zerol ∙ 1n-hom ρ) ⟩
+    R.1r R.* x                              ≡⟨ R.*-idl ⟩
+    x                                       ∎
+  sound-var (fsuc j) (x ∷ ρ) = ∅*x+ₙ-hom (normal-var j) x ρ ∙ sound-var j ρ
+
+  sound : ∀ {n} (p : Polynomial n) ρ → En (normal p) ρ ≡ ⟦ p ⟧ ρ
+  sound (op [+] p q) ρ = +ₙ-hom (normal p) (normal q) ρ ∙ ap₂ R._+_ (sound p ρ) (sound q ρ)
+  sound (op [*] p q) ρ = *ₙ-hom (normal p) (normal q) ρ ∙ ap₂ R._*_ (sound p ρ) (sound q ρ)
+  sound (con c) ρ = sound-coe c ρ
+  sound (var x) ρ = sound-var x ρ
+  sound (:- p) ρ = -ₙ-hom (normal p) ρ ∙ ap R.-_ (sound p ρ)
+
+  solve
+    : ∀ {n} (p q : Polynomial n) (r : Vec R n)
+    → En (normal p) r ≡ En (normal q) r → ⟦ p ⟧ r ≡ ⟦ q ⟧ r
+  solve p q r prf = sym (sound p r) ·· prf ·· sound q r
+
+  test : ∀ x y z → x R.* (y R.+ z) ≡ y R.* x R.+ z R.* x
+  test x y z =
+    solve (var 0 :* (var 1 :+ var 2)) ((var 1 :* var 0) :+ (var 2 :* var 0)) (x ∷ y ∷ z ∷ []) refl
