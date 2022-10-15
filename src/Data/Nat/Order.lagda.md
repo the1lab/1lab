@@ -44,6 +44,13 @@ equivalence between $x \le y$ and $(1 + x) \le (1 + y)$.
 ```agda
 ≤-peel : ∀ {x y : Nat} → suc x ≤ suc y → x ≤ y
 ≤-peel (s≤s p) = p
+
+≤-sucr : ∀ {x y : Nat} → x ≤ y → x ≤ suc y
+≤-sucr 0≤x = 0≤x
+≤-sucr (s≤s p) = s≤s (≤-sucr p)
+
+≤-ascend : ∀ {x} → x ≤ suc x
+≤-ascend = ≤-sucr ≤-refl
 ```
 
 <!--

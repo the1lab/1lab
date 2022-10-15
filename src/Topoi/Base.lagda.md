@@ -1,5 +1,5 @@
 ```agda
-open import Algebra.Prelude
+open import Algebra.Prelude hiding (∫)
 
 open import Cat.Instances.Sets.Cocomplete
 open import Cat.Instances.Functor.Limits

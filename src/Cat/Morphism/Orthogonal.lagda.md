@@ -27,7 +27,7 @@ diagram like
   \arrow["g", from=3-1, to=3-3]
   \arrow["u"', from=1-1, to=3-1]
   \arrow["v", from=1-3, to=3-3]
-	\arrow[dashed, from=3-1, to=1-3]
+	\arrow[dashed, from=1-3, to=3-1]
 \end{tikzcd}\]
 ~~~
 
