@@ -21,17 +21,21 @@ open import Data.List
 open import Data.Nat
 open import Data.Int
 
+open import Algebra.Group
 open import Algebra.Ring.Cat.Initial
 open import Algebra.Ring.Commutative
 open import Algebra.Prelude
 open import Algebra.Ring
 
+open import 1Lab.Reflection
+open import 1Lab.Reflection.Solver
+open import 1Lab.Reflection.Variables
+
 module Algebra.Ring.Solver where
 
-module Impl {ℓ} (RRsnd : CRing ℓ) where
+module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   private
-    R = ∣ RRsnd .fst ∣
-    module R = CRing-on (RRsnd .snd)
+    module R = CRing-on cring
     ℤ↪R-rh = Int-is-initial (el _ R.has-is-set , R.has-ring-on) .centre
     module ℤ↪R = is-ring-hom (ℤ↪R-rh .preserves)
     embed-coe = ℤ↪R-rh .hom
@@ -390,15 +394,124 @@ module Impl {ℓ} (RRsnd : CRing ℓ) where
   sound (var x) ρ = sound-var x ρ
   sound (:- p) ρ = -ₙ-hom (normal p) ρ ∙ ap R.-_ (sound p ρ)
 
+  expand : ∀ {n} → Polynomial n → Vec R n → R
+  expand e ρ = ⟦ e ⟧ ρ
+
   solve
     : ∀ {n} (p q : Polynomial n) (r : Vec R n)
     → En (normal p) r ≡ En (normal q) r → ⟦ p ⟧ r ≡ ⟦ q ⟧ r
   solve p q r prf = sym (sound p r) ·· prf ·· sound q r
 
-  instance
-    Number-ring : Number R
-    Number-ring .Number.Constraint _ = Lift _ ⊤
-    Number-ring .Number.fromNat x = embed-coe (lift (diff x 0))
+  private
+    test-distrib : ∀ x y z → x R.* (y R.+ z) ≡ y R.* x R.+ z R.* x
+    test-distrib x y z =
+      solve (var 0 :* (var 1 :+ var 2)) ((var 1 :* var 0) :+ (var 2 :* var 0)) (x ∷ y ∷ z ∷ []) refl
 
-  test : Path R (1000000000 R.* 1000000000) 1000000000000000000
-  test = solve (con 1000000000 :* con 1000000000) (con 1000000000000000000) [] refl
+    test-identities : ∀ x → x R.+ (R.0r R.* R.1r) ≡ (R.1r R.+ R.0r) R.* x
+    test-identities x =
+      solve (var 0 :+ (con 0 :* con 1)) ((con 1 :+ con 0) :* var 0) (x ∷ []) refl
+
+module Reflection where
+  private
+    pattern ring-args cring args = (_ h0∷ _ h0∷ cring v∷ args)
+    pattern is-ring-args is-ring args = (_ h0∷ _ h0∷ _ h0∷ _ h0∷ _ h0∷ is-ring v∷ args)
+    pattern is-group-args is-group args = (_ h0∷ _ h0∷ _ h0∷ is-group v∷ args)
+    pattern ring-field field-name cring args =
+      def field-name (ring-args (def (quote CRing-on.has-ring-on) (ring-args cring [])) args)
+    pattern group-field field-name cring args =
+      def field-name (is-group-args (def (quote is-ring.+-group) (is-ring-args (ring-field (quote Ring-on.has-is-ring) cring []) [])) args)
+        
+    mk-cring-args : Term → List (Arg Term) → List (Arg Term)
+    mk-cring-args cring args = unknown h∷ unknown h∷ cring v∷ args
+
+    pattern “1” cring = ring-field (quote Ring-on.1r) cring []
+    pattern “*” cring x y = ring-field (quote Ring-on._*_) cring (x v∷ y v∷ [])
+    pattern “+” cring x y = ring-field (quote Ring-on._+_) cring (x v∷ y v∷ [])
+    pattern “0” cring = group-field (quote is-group.unit) cring []
+    pattern “-” cring x = group-field (quote is-group.inverse) cring (x v∷ [])
+
+  “expand” : Term → Term → Term → Term
+  “expand” cring p env = def (quote Impl.expand) (mk-cring-args cring (unknown h∷ p v∷ env v∷ []))
+
+  “solve” : Term → Term → Term → Term → Term
+  “solve” cring lhs rhs env =
+    def (quote Impl.solve) (mk-cring-args cring (unknown h∷ lhs v∷ rhs v∷ env v∷ “refl” v∷ []))
+
+  build-expr : ∀ {ℓ} {A : Type ℓ} → Term → Variables A → Term → TC (Term × Variables A)
+  build-expr cring vs (“0” cring') = do
+    unify cring cring'
+    z ← quoteTC (diff 0 0)
+    returnTC $ con (quote Impl.Polynomial.con) (z v∷ []) , vs
+  build-expr cring vs (“1” cring') = do
+    unify cring cring'
+    o ← quoteTC (diff 1 0)
+    returnTC $ con (quote Impl.Polynomial.con) (o v∷ []) , vs
+  build-expr cring vs (“*” cring' t1 t2) = do
+    unify cring cring'
+    e1 , vs ← build-expr cring vs t1
+    e2 , vs ← build-expr cring vs t2
+    returnTC $ def (quote Impl._:*_) (mk-cring-args cring $ e1 v∷ e2 v∷ []) , vs
+  build-expr cring vs (“+” cring' t1 t2) = do
+    unify cring cring'
+    e1 , vs ← build-expr cring vs t1
+    e2 , vs ← build-expr cring vs t2
+    returnTC $ def (quote Impl._:+_) (mk-cring-args cring $ e1 v∷ e2 v∷ []) , vs
+  build-expr cring vs (“-” cring' tm) = do
+    unify cring cring'
+    e , vs ← build-expr cring vs tm
+    returnTC $ con (quote Impl.Polynomial.:-_) (e v∷ []) , vs
+  build-expr cring vs tm = do
+    (v , vs) ← bind-var vs tm
+    returnTC $ con (quote Impl.Polynomial.var) (v v∷ []) , vs
+     
+  dont-reduce : List Name
+  dont-reduce =
+    quote Number.fromNat ∷
+    quote is-group.unit ∷
+    quote Ring-on.1r ∷
+    quote is-group.inverse ∷
+    quote Ring-on._*_ ∷
+    quote Ring-on._+_ ∷
+    []
+
+  cring-solver : ∀ {ℓ} {A : Type ℓ} → CRing-on A → TC (VariableSolver A)
+  cring-solver {A = A} cring = do
+    cring-tm ← quoteTC cring
+    returnTC $ var-solver dont-reduce (build-expr cring-tm) (“solve” cring-tm) (“expand” cring-tm)
+
+  repr-macro : ∀ {ℓ} {A : Type ℓ} → CRing-on A → Term → Term → TC ⊤
+  repr-macro cring tm hole = do
+    solver ← cring-solver cring
+    mk-var-repr solver tm
+
+  expand-macro : ∀ {ℓ} {A : Type ℓ} → CRing-on A → Term → Term → TC ⊤
+  expand-macro cring tm hole = do
+    solver ← cring-solver cring
+    mk-var-normalise solver tm hole
+
+  solve-macro : ∀ {ℓ} {A : Type ℓ} → CRing-on A → Term → TC ⊤
+  solve-macro cring hole = do
+    solver ← cring-solver cring
+    mk-var-solver solver hole
+
+macro
+  cring-repr! : ∀ {ℓ} → CRing ℓ → Term → Term → TC ⊤
+  cring-repr! cring tm = Reflection.repr-macro (cring .snd) tm
+
+  cring-simpl! : ∀ {ℓ} → CRing ℓ → Term → Term → TC ⊤
+  cring-simpl! cring tm = Reflection.expand-macro (cring .snd) tm
+
+  cring-on! : ∀ {ℓ} {A : Type ℓ} → CRing-on A → Term → TC ⊤
+  cring-on! cring = Reflection.solve-macro cring
+
+  cring! : ∀ {ℓ} → CRing ℓ → Term → TC ⊤
+  cring! cring = Reflection.solve-macro (cring .snd)
+
+private module TestCRing {ℓ} (R : CRing ℓ) where
+  module R = CRing-on (R .snd)
+
+  test-distrib : ∀ x y z → x R.* (y R.+ z) ≡ (y R.* x) R.+ (z R.* x)
+  test-distrib x y z = cring! R
+
+  test-identities : ∀ x → x R.+ (R.0r R.* R.1r) ≡ (R.1r R.+ R.0r) R.* x
+  test-identities x = cring! R
