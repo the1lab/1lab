@@ -68,10 +68,16 @@ Int-is-initial R = contr z→r λ x → Homomorphism-path λ { (lift i) → lemm
   module R = Ring-on (R .snd)
 ```
 
+Note that we treat 1 with care: we could have this map 1 to `1r + 0r`,
+but this results in worse definitional behaviour when actually using the embedding.
+This will result in a bit more work right now, but is work worth doing.
+
+
 ```agda
   e : Nat → ⌞ R ⌟
-  e zero    = R.0r
-  e (suc x) = R.1r R.+ e x
+  e zero          = R.0r
+  e (suc zero)    = R.1r
+  e (suc (suc x)) = R.1r R.+ e (suc x)
 ```
 
 Zero gets sent to zero, and "adding one" gets sent to adding one. Is
@@ -81,20 +87,32 @@ naturals to sums in $R$, and products of naturals to products in $R$.
 We'll need this later.
 
 ```agda
+  e-suc : ∀ n → e (suc n) ≡ R.1r R.+ e n 
   e-add : ∀ m n → e (m Nat.+ n) ≡ e m R.+ e n
   e-mul : ∀ m n → e (m Nat.* n) ≡ e m R.* e n
 ```
 
 <!--
 ```
-  e-add zero n    = sym R.+-idl
-  e-add (suc m) n = ap₂ R._+_ refl (e-add m n) ∙ R.pulll refl
+  e-suc zero = sym R.+-idr
+  e-suc (suc n) = refl
+
+  e-add zero n = sym R.+-idl
+  e-add (suc m) n =
+    e (suc m Nat.+ n)      ≡⟨ e-suc (m Nat.+ n) ⟩
+    R.1r R.+ e (m Nat.+ n) ≡⟨ ap (R.1r R.+_) (e-add m n) ⟩
+    R.1r R.+ (e m R.+ e n) ≡⟨ R.+-associative ⟩
+    (R.1r R.+ e m) R.+ e n ≡˘⟨ ap (R._+ e n) (e-suc m) ⟩
+    e (suc m) R.+ e n ∎
 
   e-mul zero n = sym R.*-zerol
   e-mul (suc m) n =
-       e-add n (m Nat.* n)
-    ·· ap₂ R._+_ refl (e-mul m n)
-    ·· sym (R.*-distribr ∙ ap₂ R._+_ R.*-idl refl)
+    e (suc m Nat.* n)            ≡⟨ e-add n (m Nat.* n) ⟩
+    e n R.+ e (m Nat.* n)        ≡⟨ ap (e n R.+_) (e-mul m n) ⟩
+    e n R.+ e m R.* e n          ≡˘⟨ ap (R._+ (e m R.* e n)) R.*-idl ⟩
+    R.1r R.* e n R.+ e m R.* e n ≡˘⟨ R.*-distribr ⟩
+    (R.1r R.+ e m) R.* e n       ≡˘⟨ ap (R._* e n) (e-suc m) ⟩
+    (e (suc m) R.* e n) ∎
 ```
 -->
 
@@ -108,6 +126,7 @@ annoying to show, but not _too_ annoying:
 ```agda
   e-tr : ∀ m n → e m R.- e n ≡ e (suc m) R.- e (suc n)
   e-tr m n = sym $
+    (e (suc m) R.- e (suc n))                   ≡⟨ ap₂ R._-_ (e-suc m) (e-suc n) ⟩
     (R.1r R.+ e m) R.- (R.1r R.+ e n)           ≡⟨ ap₂ R._+_ refl (R.a.inv-comm ∙ R.a.commutative) ∙ R.+-associative ⟩
     R.1r R.+ e m R.+ (R.- R.1r) R.+ (R.- e n)   ≡⟨ ap₂ R._+_ (R.pullr R.+-commutes ∙ R.pulll refl) refl ⟩
     R.1r R.+ (R.- R.1r) R.+ e m R.+ (R.- e n)   ≡⟨ ap₂ R._+_ (R.eliml R.+-invr) refl ⟩
@@ -131,7 +150,8 @@ paper, following the ring laws.
 ```
 <!--
 ```agda
-  z→r .preserves .pres-id = R.cancelr R.+-invr
+  z→r .preserves .pres-id = R.elimr R.inv-unit
+  -- R.cancelr R.+-invr
   z→r .preserves .pres-+ (lift x) (lift y) =
     Int-elim₂-prop {P = λ x y → ℤ↪R (x +ℤ y) ≡ ℤ↪R x R.+ ℤ↪R y}
       (λ _ _ → hlevel 1)
@@ -198,9 +218,11 @@ evaluates to on $n$. So we're done!
 
       q : ∀ a → f # lift (diff a 0) ≡ e a
       q zero = Group-hom.pres-id gh
-      q (suc a) =
-          f .preserves .pres-+ (lift (diff 1 0)) (lift (diff a 0))
-        ∙ ap₂ R._+_ (f .preserves .pres-id) (q a)
+      q (suc n) =
+        f # lift (diff (suc n) 0)          ≡⟨ f .preserves .pres-+ (lift (diff 1 0)) (lift (diff n 0)) ⟩
+        f # lift 1 R.+ f # lift (diff n 0) ≡⟨ ap₂ R._+_ (f .preserves .pres-id) (q n) ⟩
+        R.1r R.+ (e n)                     ≡˘⟨ e-suc n ⟩
+        e (suc n) ∎
 ```
 
 ## Abelian groups as Z-modules
