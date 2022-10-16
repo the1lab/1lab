@@ -34,7 +34,7 @@ way! In that case, we refer to $R/I$ as a **quotient ring**.
 
 <!--
 ```agda
-module _ {I : ℙ (R .fst)} (idl : is-ideal R I) where
+module _ {I : ℙ ⌞ R ⌟} (idl : is-ideal R I) where
   private module I = is-ideal idl
 ```
 -->
@@ -133,7 +133,7 @@ also discrete. This is a specialisation of a general result about
 decidable quotient sets, but we mention it here regardless:
 
 ```agda
-  Discrete-ring-quotient : Discrete (R .fst) → (∀ x → Dec (x ∈ I)) → Discrete (R/I .fst)
+  Discrete-ring-quotient : Discrete ⌞ R ⌟ → (∀ x → Dec (x ∈ I)) → Discrete ⌞ R/I ⌟
   Discrete-ring-quotient rdisc dec∈I = Discrete-quotient
     (normal-subgroup→congruence R.additive-group I.ideal→normal)
     rdisc

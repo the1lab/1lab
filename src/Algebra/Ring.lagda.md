@@ -119,9 +119,6 @@ instance
       x y i .*-distribl → x .+-group .is-group.has-is-set _ _ (x .*-distribl) (y .*-distribl) i
       x y i .*-distribr → x .+-group .is-group.has-is-set _ _ (x .*-distribr) (y .*-distribr) i
     where open is-ring
-
-Ring : ∀ ℓ → Type (lsuc ℓ)
-Ring _ = Σ (Type _) Ring-on
 ```
 -->
 
@@ -133,10 +130,13 @@ the multiplication. This encodes the view of a ring as an "abelian group
 with a monoid structure".
 
 ```agda
-record is-ring-hom {ℓ} (A B : Ring ℓ) (f : A .fst → B .fst) : Type ℓ where
+record is-ring-hom
+  {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} (R : Ring-on A) (S : Ring-on B)
+  (f : A → B)
+  : Type (ℓ ⊔ ℓ′) where
   private
-    module A = Ring-on (A .snd)
-    module B = Ring-on (B .snd)
+    module A = Ring-on R
+    module B = Ring-on S
 
   field
     pres-id : f A.1r ≡ B.1r
@@ -149,39 +149,20 @@ record is-ring-hom {ℓ} (A B : Ring ℓ) (f : A .fst → B .fst) : Type ℓ whe
   ring-hom→group-hom : Group-hom (A.additive-group .snd) (B.additive-group .snd) f
   ring-hom→group-hom = record { pres-⋆ = pres-+ }
 
-  module gh = Group-hom ring-hom→group-hom
+  module gh = Group-hom ring-hom→group-hom renaming (pres-id to pres-0 ; pres-inv to pres-neg)
+  open gh using (pres-0 ; pres-neg ; pres-diff) public
 
 private unquoteDecl eqv = declare-record-iso eqv (quote is-ring-hom)
 
-module _ {ℓ} {A B : Ring ℓ} where
-  open Ring-on (A .snd) using (magma-hlevel)
-  open Ring-on (B .snd) using (magma-hlevel)
+module _ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} {R : Ring-on A} {S : Ring-on B} where
+  open Ring-on R using (magma-hlevel)
+  open Ring-on S using (magma-hlevel)
 
   instance abstract
-    H-Level-ring-hom : ∀ {f n} → H-Level (is-ring-hom A B f) (suc n)
+    H-Level-ring-hom : ∀ {f n} → H-Level (is-ring-hom R S f) (suc n)
     H-Level-ring-hom = prop-instance λ x y → is-hlevel≃ 1 ((Iso→Equiv eqv) e⁻¹) (hlevel 1) x y
 
-is-ring≃ : ∀ {ℓ} (A B : Ring ℓ) (e : A .fst ≃ B .fst) → Type ℓ
-is-ring≃ A B (f , _) = is-ring-hom A B f
-
-Ring-univalent : ∀ {ℓ} → is-univalent (HomT→Str (is-ring≃ {ℓ}))
-Ring-univalent {ℓ = ℓ} =
-  Derive-univalent-record (record-desc
-    (Ring-on {ℓ = ℓ}) is-ring≃
-    (record:
-      field[ _*_         by pres-* ]
-      field[ _+_         by pres-+ ]
-      field[ 1r          by pres-id ]
-      axiom[ has-is-ring by (λ _ → prop) ]))
-  where
-    open Ring-on
-    open is-ring-hom
-    -- if you try to use (λ _ → hlevel 1) in the record-desc, even with
-    -- an explicit {T = is-ring _ _ _} argument, Agda gets an internal
-    -- error at src/full/Agda/TypeChecking/Unquote.hs:511:20
-    prop : ∀ {A : Type ℓ} {1r : A} {_*_ _+_ : A → A → A}
-         → is-prop (is-ring 1r _*_ _+_)
-    prop = hlevel 1
+open is-ring-hom
 ```
 -->
 
@@ -190,43 +171,29 @@ homomorphisms form a precategory --- for instance, we have $f(g(1_R)) =
 f(1_S) = 1_T$.
 
 ```agda
+Ring-structure : ∀ ℓ → Thin-structure ℓ Ring-on
+Ring-structure ℓ .is-hom f x y = el! (is-ring-hom x y f)
+Ring-structure ℓ .id-is-hom .pres-id = refl
+Ring-structure ℓ .id-is-hom .pres-+ x y = refl
+Ring-structure ℓ .id-is-hom .pres-* x y = refl
+Ring-structure ℓ .∘-is-hom f g α β .pres-id = ap f (β .pres-id) ∙ α .pres-id
+Ring-structure ℓ .∘-is-hom f g α β .pres-+ x y = ap f (β .pres-+ x y) ∙ α .pres-+ _ _
+Ring-structure ℓ .∘-is-hom f g α β .pres-* x y = ap f (β .pres-* x y) ∙ α .pres-* _ _
+Ring-structure ℓ .id-hom-unique α β i .Ring-on.1r = α .pres-id i
+Ring-structure ℓ .id-hom-unique α β i .Ring-on._*_ x y = α .pres-* x y i
+Ring-structure ℓ .id-hom-unique α β i .Ring-on._+_ x y = α .pres-+ x y i
+Ring-structure ℓ .id-hom-unique {s = s} {t} α β i .Ring-on.has-is-ring =
+  is-prop→pathp
+    (λ i → hlevel {T = is-ring (α .pres-id i)
+      (λ x y → α .pres-* x y i) (λ x y → α .pres-+ x y i)} 1)
+    (s .Ring-on.has-is-ring) (t .Ring-on.has-is-ring) i
+
 Rings : ∀ ℓ → Precategory (lsuc ℓ) ℓ
+Rings _ = Structured-objects (Ring-structure _)
+module Rings {ℓ} = Cat.Reasoning (Rings ℓ)
+Ring : ∀ ℓ → Type (lsuc ℓ)
+Ring ℓ = Rings.Ob
 ```
-
-<!--
-```agda
-Rings ℓ = precat where
-  open Precategory
-  open is-ring-hom
-
-  precat : Precategory _ _
-  precat .Ob = Ring _
-  precat .Hom A B = Σ[ f ∈ (A .fst → B .fst) ] (is-ring-hom A B f)
-  precat .Hom-set A B = goal where abstract
-    open Ring-on (A .snd) using (magma-hlevel)
-    open Ring-on (B .snd) using (magma-hlevel)
-    goal : is-set (Σ[ f ∈ (A .fst → B .fst) ] (is-ring-hom A B f))
-    goal = hlevel 2
-
-  precat .id = (λ x → x) , rh where
-    rh : is-ring-hom _ _ _
-    rh .pres-* _ _ = refl
-    rh .pres-+ _ _ = refl
-    rh .pres-id    = refl
-  precat ._∘_ f g = (λ x → f .fst (g .fst x)) , h where
-    h : is-ring-hom _ _ _
-    h .pres-* _ _ = ap (f .fst) (g .snd .pres-* _ _) ∙ f .snd .pres-* _ _
-    h .pres-+ _ _ = ap (f .fst) (g .snd .pres-+ _ _) ∙ f .snd .pres-+ _ _
-    h .pres-id    = ap (f .fst) (g .snd .pres-id) ∙ f .snd .pres-id
-  precat .idr {A} f = Σ-prop-path (λ f → hlevel 1) refl
-    where open Ring-on (A .snd) using (magma-hlevel)
-  precat .idl {A} f = Σ-prop-path (λ _ → hlevel 1) refl
-    where open Ring-on (A .snd) using (magma-hlevel)
-  precat .assoc {z = Z} f g h = Σ-prop-path (λ _ → hlevel 1) refl
-    where open Ring-on (Z .snd) using (magma-hlevel)
-module Rings {ℓ} = Precategory (Rings ℓ)
-```
--->
 
 ## In components
 
@@ -293,7 +260,7 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
     ring .Ring-on.has-is-ring .is-ring.*-distribr = *-distribr
 
   from-make-ring : Ring ℓ
-  from-make-ring = R , from-make-ring-on
+  from-make-ring = el R ring-is-set , from-make-ring-on
 
 open make-ring using (from-make-ring ; from-make-ring-on) public
 ```

@@ -12,3 +12,4 @@ flags:
   --guardedness
   --two-level
   -W noNoEquivWhenSplitting
+  -vtc.decl:5

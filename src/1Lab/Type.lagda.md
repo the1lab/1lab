@@ -72,6 +72,14 @@ record Lift {a} ℓ (A : Type a) : Type (a ⊔ ℓ) where
     lower : A
 ```
 
+<!--
+```agda
+instance
+  Lift-instance : ∀ {ℓ ℓ′} {A : Type ℓ} → ⦃ A ⦄ → Lift ℓ′ A
+  Lift-instance ⦃ x ⦄ = lift x
+```
+-->
+
 ## Function composition
 
 Since the following definitions are fundamental, they deserve a place in

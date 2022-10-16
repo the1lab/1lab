@@ -78,7 +78,7 @@ we don't differentiate between left and right modules.
 
 ```agda
   field
-    _⋆_     : R .fst → G.₀ → G.₀
+    _⋆_     : ⌞ R ⌟ → G.₀ → G.₀
     ⋆-id    : ∀ x → R.1r ⋆ x ≡ x
     ⋆-add-r : ∀ r x y → r ⋆ (x G.+ y) ≡ (r ⋆ x) G.+ (r ⋆ y)
     ⋆-add-l : ∀ r s x → (r R.+ s) ⋆ x ≡ (r ⋆ x) G.+ (s ⋆ x)
@@ -90,7 +90,7 @@ we don't differentiate between left and right modules.
   G₀ : Type ℓ′
   G₀ = ⌞ G .Restrict-ob.object ⌟
 
-  ⋆-group-hom : ∀ (r : R .fst) → Group-hom (G .object .snd) (G .object .snd) (r ⋆_)
+  ⋆-group-hom : ∀ (r : ⌞ R ⌟) → Group-hom (G .object .snd) (G .object .snd) (r ⋆_)
   ⋆-group-hom r .Group-hom.pres-⋆ = ⋆-add-r r
   module ⋆-group-hom r = Group-hom (⋆-group-hom r)
 
@@ -144,12 +144,12 @@ a treat.
 
 ```agda
   N : Module-on _ G
-  N ._⋆_ r m = f .fst r M.⋆ m
+  N ._⋆_ r m = f # r M.⋆ m
 
-  N .⋆-id x        = ap (M._⋆ x) (f .snd .pres-id) ∙ M.⋆-id x
+  N .⋆-id x        = ap (M._⋆ x) (f .preserves .pres-id) ∙ M.⋆-id x
   N .⋆-add-r r x y = M.⋆-add-r _ x y
-  N .⋆-add-l r s x = ap (M._⋆ x) (f .snd .pres-+ _ _) ∙ M.⋆-add-l _ _ x
-  N .⋆-assoc r s x = M.⋆-assoc _ _ _ ∙ ap (M._⋆ x) (sym (f .snd .pres-* r s))
+  N .⋆-add-l r s x = ap (M._⋆ x) (f .preserves .pres-+ _ _) ∙ M.⋆-add-l _ _ x
+  N .⋆-assoc r s x = M.⋆-assoc _ _ _ ∙ ap (M._⋆ x) (sym (f .preserves .pres-* r s))
 ```
 
 <!--
@@ -329,10 +329,11 @@ space of the fibration of modules.
 Representable-modules : ∀ {ℓ} → Functor (Rings ℓ) (∫ (Mods ℓ))
 Representable-modules .F₀ R = R , representable-module R
 Representable-modules .F₁ {x} {y} f = total-hom f $ record
-  { map    = f .fst
+  { map    = f #_
   ; linear = λ r m s n →
-      f .snd .pres-+ _ _
-    ∙ ap₂ (y .snd .Ring-on._+_) (f .snd .pres-* r m) (f .snd .pres-* s n)
+      f .preserves .pres-+ _ _
+    ∙ ap₂ (y .snd .Ring-on._+_)
+        (f .preserves .pres-* r m) (f .preserves .pres-* s n)
   }
 Representable-modules .F-id {x} = total-hom-path _ refl $
   Linear-map-path refl
@@ -363,19 +364,19 @@ module _ {ℓ} (R : Ring ℓ) where
   Module→Action G M = rh where
     module M = Module-on M
     rh : Rings.Hom R (Endo Ab-ab G)
-    rh .fst x .hom g    = x M.⋆ g
-    rh .snd .pres-id    = Homomorphism-path (λ x → M.⋆-id x)
-    rh .snd .pres-+ x y = Homomorphism-path (λ x → M.⋆-add-l _ y x)
-    rh .snd .pres-* x y = Homomorphism-path (λ x → sym (M.⋆-assoc _ _ _))
-    rh .fst x .preserves .Group-hom.pres-⋆ g g′ = M.⋆-add-r x g g′
+    rh .hom x .hom g    = x M.⋆ g
+    rh .preserves .pres-id    = Homomorphism-path (λ x → M.⋆-id x)
+    rh .preserves .pres-+ x y = Homomorphism-path (λ x → M.⋆-add-l _ y x)
+    rh .preserves .pres-* x y = Homomorphism-path (λ x → sym (M.⋆-assoc _ _ _))
+    rh .hom x .preserves .Group-hom.pres-⋆ g g′ = M.⋆-add-r x g g′
 
   open Module-on
   Action→Module : ∀ G → Rings.Hom R (Endo Ab-ab G) → Module-on R G
-  Action→Module G rh ._⋆_ r g       = rh .fst r .hom g
-  Action→Module G rh .⋆-id x        = rh .snd .pres-id #ₚ x
-  Action→Module G rh .⋆-add-r x y z = rh .fst x .preserves .Group-hom.pres-⋆ y z
-  Action→Module G rh .⋆-add-l x y z = rh .snd .pres-+ x y #ₚ z
-  Action→Module G rh .⋆-assoc x y z = sym $ rh .snd .pres-* x y #ₚ z
+  Action→Module G rh ._⋆_ r g       = (rh # r) .hom g
+  Action→Module G rh .⋆-id x        = rh .preserves .pres-id #ₚ x
+  Action→Module G rh .⋆-add-r x y z = (rh # x) .preserves .Group-hom.pres-⋆ y z
+  Action→Module G rh .⋆-add-l x y z = rh .preserves .pres-+ x y #ₚ z
+  Action→Module G rh .⋆-assoc x y z = sym $ rh .preserves .pres-* x y #ₚ z
 ```
 
 This correspondence between presentations --- shuffling of data --- is
@@ -391,8 +392,7 @@ it is unchanging.
     morp .fst = Module→Action G
     morp .snd .inv = Action→Module G
 
-    morp .snd .rinv x = Σ-prop-path (λ _ → hlevel 1) $ funext λ x →
-      Homomorphism-path (λ x → refl)
+    morp .snd .rinv x = Homomorphism-path λ x → Homomorphism-path λ y → refl
     morp .snd .linv x i ._⋆_     = x ._⋆_
     morp .snd .linv x i .⋆-id    = x .⋆-id
     morp .snd .linv x i .⋆-add-r = x .⋆-add-r

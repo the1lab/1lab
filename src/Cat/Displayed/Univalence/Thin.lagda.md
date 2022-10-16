@@ -1,5 +1,7 @@
 ```agda
 {-# OPTIONS --lossy-unification #-}
+open import 1Lab.Equiv.Embedding
+
 open import Cat.Displayed.Univalence
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
@@ -169,3 +171,18 @@ record is-equational {ℓ o′ ℓ′} {S : Type ℓ → Type o′} (spec : Thin
 
 open is-equational public
 ```
+
+<!--
+```agda
+Full-substructure
+  : ∀ {ℓ o′} ℓ′ (R S : Type ℓ → Type o′)
+  → (∀ X → R X ↪ S X)
+  → Thin-structure ℓ′ S
+  → Thin-structure ℓ′ R
+Full-substructure _ R S embed Sst .is-hom f x y =
+  Sst .is-hom f (embed _ .fst x) (embed _ .fst y)
+Full-substructure _ R S embed Sst .id-is-hom = Sst .id-is-hom
+Full-substructure _ R S embed Sst .∘-is-hom = Sst .∘-is-hom
+Full-substructure _ R S embed Sst .id-hom-unique α β =
+  has-prop-fibres→injective (embed _ .fst) (embed _ .snd)
+    (Sst .id-hom-unique α β)

@@ -15,8 +15,8 @@ private
   le-lemma
     : ∀ a b x y
     → Path (n-Type lzero 1)
-      (el ((a + y) Nat.≤ (b + x)) Nat.≤-prop)
-      (el ((a + suc y) Nat.≤ (b + suc x)) Nat.≤-prop)
+      (el (a + y Nat.≤ b + x) Nat.≤-prop)
+      (el (a + suc y Nat.≤ b + suc x) Nat.≤-prop)
   le-lemma a b x y = n-ua
     (prop-ext Nat.≤-prop Nat.≤-prop
       (λ p → transport (ap₂ Nat._≤_ (sym (Nat.+-sucr a y)) (sym (Nat.+-sucr b x))) (Nat.s≤s p))
@@ -25,13 +25,13 @@ private
   le-lemma′
     : ∀ a b x y
     → Path (n-Type lzero 1)
-      (el ((a + x) Nat.≤ (b + y)) Nat.≤-prop)
+      (el (a + x Nat.≤ b + y) Nat.≤-prop)
       (el (suc (a + x) Nat.≤ suc (b + y)) Nat.≤-prop)
   le-lemma′ a b x y = n-ua
     (prop-ext Nat.≤-prop Nat.≤-prop Nat.s≤s λ { (Nat.s≤s x) → x })
 
 Int-le-prop : Int → Int → Prop lzero
-Int-le-prop (diff a b) (diff c d)     = el ((a + d) Nat.≤ (b + c)) Nat.≤-prop
+Int-le-prop (diff a b) (diff c d)     = el (a + d Nat.≤ b + c) Nat.≤-prop
 Int-le-prop (diff a b) (quot x y i)   = le-lemma a b x y i
 Int-le-prop (quot m n i) (diff x y)   = le-lemma′ m n y x i
 Int-le-prop (quot a b i) (quot c d j) =
@@ -58,7 +58,7 @@ x ≤ y = ∣ Int-le-prop x y ∣
 
 ≤-refl : ∀ {x} → x ≤ x
 ≤-refl {x} = Int-elim-prop {P = λ x → x ≤ x} (λ _ → hlevel!)
-  (λ a b → subst ((a + b) Nat.≤_) (Nat.+-commutative a b) Nat.≤-refl)
+  (λ a b → subst (a + b Nat.≤_) (Nat.+-commutative a b) Nat.≤-refl)
   x
 
 private

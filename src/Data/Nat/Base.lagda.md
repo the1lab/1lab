@@ -142,9 +142,18 @@ properties when it comes to type inference.
 
 ```agda
 data _≤_ : Nat → Nat → Type where
-  0≤x : ∀ {x} → 0 ≤ x
+  instance
+    0≤x : ∀ {x} → 0 ≤ x
   s≤s : ∀ {x y} → x ≤ y → suc x ≤ suc y
 ```
+
+<!--
+```agda
+instance
+  s≤s′ : ∀ {x y} → ⦃ x ≤ y ⦄ → suc x ≤ suc y
+  s≤s′ ⦃ x ⦄ = s≤s x
+```
+-->
 
 We define the strict ordering on `Nat`{.Agda} as well,
 re-using the definition of `_≤_`{.Agda}.
@@ -152,7 +161,7 @@ re-using the definition of `_≤_`{.Agda}.
 ```agda
 _<_ : Nat → Nat → Type
 m < n = suc m ≤ n
-infix 3 _<_
+infix 3 _<_ _≤_
 ```
 
 As an "ordering combinator", we can define the _maximum_ of two natural

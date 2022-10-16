@@ -159,6 +159,18 @@ instance
   H-Level-Fin = basic-instance 2 Fin-is-set
 ```
 
+<!--
+```agda
+instance
+  Number-Fin : ∀ {n} → Number (Fin n)
+  Number-Fin {n} .Number.Constraint k = k Nat.< n
+  Number-Fin {n} .Number.fromNat k {{e}} = go k n e where
+    go : ∀ k n → k Nat.< n → Fin n
+    go zero (suc n) e = fzero
+    go (suc k) (suc n) (Nat.s≤s e) = fsuc (go k n e)
+```
+-->
+
 ## Ordering
 
 Keeping with the view that `Fin`{.Agda} represents the type of
@@ -171,11 +183,11 @@ on `Fin`{.Agda}.
 
 ```agda
 _≤_ : ∀ {n} → Fin n → Fin n → Type
-i ≤ j = (to-nat i) Nat.≤ (to-nat j)
+i ≤ j = to-nat i Nat.≤ to-nat j
 infix 3 _≤_
 
 _<_ : ∀ {n} → Fin n → Fin n → Type
-i < j = (to-nat i) Nat.< (to-nat j)
+i < j = to-nat i Nat.< to-nat j
 infix 3 _<_
 ```
 

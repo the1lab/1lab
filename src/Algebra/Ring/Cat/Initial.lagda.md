@@ -63,16 +63,21 @@ prove...], so here it is:
 
 ```agda
 Int-is-initial : is-initial (Rings ℓ) Liftℤ
-Int-is-initial R = contr hom λ x →
-  Σ-prop-path (λ _ → hlevel 1) (funext λ { (lift i) → lemma x i })
+Int-is-initial R = contr z→r λ x → Homomorphism-path λ { (lift i) → lemma x i }
   where
   module R = Ring-on (R .snd)
 ```
 
+Note that we treat 1 with care: we could have this map 1 to `1r + 0r`,
+but this results in worse definitional behaviour when actually using the embedding.
+This will result in a bit more work right now, but is work worth doing.
+
+
 ```agda
-  e : Nat → R .fst
-  e zero    = R.0r
-  e (suc x) = R.1r R.+ e x
+  e : Nat → ⌞ R ⌟
+  e zero          = R.0r
+  e (suc zero)    = R.1r
+  e (suc (suc x)) = R.1r R.+ e (suc x)
 ```
 
 Zero gets sent to zero, and "adding one" gets sent to adding one. Is
@@ -82,20 +87,32 @@ naturals to sums in $R$, and products of naturals to products in $R$.
 We'll need this later.
 
 ```agda
+  e-suc : ∀ n → e (suc n) ≡ R.1r R.+ e n 
   e-add : ∀ m n → e (m Nat.+ n) ≡ e m R.+ e n
   e-mul : ∀ m n → e (m Nat.* n) ≡ e m R.* e n
 ```
 
 <!--
 ```
-  e-add zero n    = sym R.+-idl
-  e-add (suc m) n = ap₂ R._+_ refl (e-add m n) ∙ R.pulll refl
+  e-suc zero = sym R.+-idr
+  e-suc (suc n) = refl
+
+  e-add zero n = sym R.+-idl
+  e-add (suc m) n =
+    e (suc m Nat.+ n)      ≡⟨ e-suc (m Nat.+ n) ⟩
+    R.1r R.+ e (m Nat.+ n) ≡⟨ ap (R.1r R.+_) (e-add m n) ⟩
+    R.1r R.+ (e m R.+ e n) ≡⟨ R.+-associative ⟩
+    (R.1r R.+ e m) R.+ e n ≡˘⟨ ap (R._+ e n) (e-suc m) ⟩
+    e (suc m) R.+ e n ∎
 
   e-mul zero n = sym R.*-zerol
   e-mul (suc m) n =
-       e-add n (m Nat.* n)
-    ·· ap₂ R._+_ refl (e-mul m n)
-    ·· sym (R.*-distribr ∙ ap₂ R._+_ R.*-idl refl)
+    e (suc m Nat.* n)            ≡⟨ e-add n (m Nat.* n) ⟩
+    e n R.+ e (m Nat.* n)        ≡⟨ ap (e n R.+_) (e-mul m n) ⟩
+    e n R.+ e m R.* e n          ≡˘⟨ ap (R._+ (e m R.* e n)) R.*-idl ⟩
+    R.1r R.* e n R.+ e m R.* e n ≡˘⟨ R.*-distribr ⟩
+    (R.1r R.+ e m) R.* e n       ≡˘⟨ ap (R._* e n) (e-suc m) ⟩
+    (e (suc m) R.* e n) ∎
 ```
 -->
 
@@ -109,6 +126,7 @@ annoying to show, but not _too_ annoying:
 ```agda
   e-tr : ∀ m n → e m R.- e n ≡ e (suc m) R.- e (suc n)
   e-tr m n = sym $
+    (e (suc m) R.- e (suc n))                   ≡⟨ ap₂ R._-_ (e-suc m) (e-suc n) ⟩
     (R.1r R.+ e m) R.- (R.1r R.+ e n)           ≡⟨ ap₂ R._+_ refl (R.a.inv-comm ∙ R.a.commutative) ∙ R.+-associative ⟩
     R.1r R.+ e m R.+ (R.- R.1r) R.+ (R.- e n)   ≡⟨ ap₂ R._+_ (R.pullr R.+-commutes ∙ R.pulll refl) refl ⟩
     R.1r R.+ (R.- R.1r) R.+ e m R.+ (R.- e n)   ≡⟨ ap₂ R._+_ (R.eliml R.+-invr) refl ⟩
@@ -120,47 +138,76 @@ this is a ring homomorphism... which involves a mountain of annoying
 algebra, so I won't comment on it too much: it can be worked out on
 paper, following the ring laws.
 
+Note that we special case `diff x 0` here for better definitional
+behaviour of the embedding.
+
 ```agda
-  ℤ↪R : Int → R .fst
-  ℤ↪R (diff x y)       = e x R.- e y
-  ℤ↪R (Int.quot m n i) = e-tr m n i
+
+  ℤ↪R : Int → ⌞ R ⌟
+  ℤ↪R (diff x zero)          = e x
+  ℤ↪R (diff x (suc y))       = e x R.- e (suc y)
+  ℤ↪R (Int.quot m zero i)    = along i $
+    e m                     ≡⟨ R.intror R.+-invr ⟩
+    e m R.+ (R.1r R.- R.1r) ≡⟨ R.+-associative ⟩
+    (e m R.+ R.1r) R.- R.1r ≡⟨ ap (R._- R.1r) R.+-commutes ⟩
+    (R.1r R.+ e m) R.- R.1r ≡˘⟨ ap (R._- R.1r) (e-suc m) ⟩
+    e (suc m) R.- R.1r      ∎
+  ℤ↪R (Int.quot m (suc n) i) = e-tr m (suc n) i
 
   open is-ring-hom
 
-  hom : Rings.Hom Liftℤ R
-  hom .fst (lift x) = ℤ↪R x
+  ℤ↪R-diff : ∀ m n → ℤ↪R (diff m n) ≡ e m R.- e n
+  ℤ↪R-diff m zero = R.intror R.inv-unit
+  ℤ↪R-diff m (suc n) = refl
+
+  z→r : Rings.Hom Liftℤ R
+  z→r .hom (lift x) = ℤ↪R x
 ```
 <!--
 ```agda
-  hom .snd .pres-id = R.cancelr R.+-invr
-  hom .snd .pres-+ (lift x) (lift y) =
+  z→r .preserves .pres-id = refl
+  z→r .preserves .pres-+ (lift x) (lift y) =
     Int-elim₂-prop {P = λ x y → ℤ↪R (x +ℤ y) ≡ ℤ↪R x R.+ ℤ↪R y}
       (λ _ _ → hlevel 1)
-      (λ a b x y → ap₂ R._-_ (e-add a x) (e-add b y)
-                 ∙ ap₂ R._+_ refl (R.a.inv-comm ∙ R.+-commutes)
-                 ∙ R.pulll (R.extendr R.+-commutes) ∙ R.pullr refl)
+      pf
       x y
-  hom .snd .pres-* (lift x) (lift y) =
+      where abstract
+        pf : ∀ a b x y → ℤ↪R (diff (a Nat.+ x) (b Nat.+ y)) ≡ (ℤ↪R (diff a b)) R.+ (ℤ↪R (diff x y))
+        pf a b x y =
+          ℤ↪R (diff (a Nat.+ x) (b Nat.+ y))    ≡⟨ ℤ↪R-diff (a Nat.+ x) (b Nat.+ y) ⟩
+          e (a Nat.+ x) R.- e (b Nat.+ y)       ≡⟨ ap₂ R._-_ (e-add a x) (e-add b y) ⟩
+          (e a R.+ e x) R.- (e b R.+ e y)       ≡⟨ ap₂ R._+_ refl (R.inv-comm ∙ R.+-commutes) ⟩
+          (e a R.+ e x) R.+ ((R.- e b) R.- e y) ≡⟨ R.extendl (R.extendr R.+-commutes) ⟩
+          (e a R.- e b) R.+ (e x R.- e y)       ≡˘⟨ ap₂ R._+_ (ℤ↪R-diff a b) (ℤ↪R-diff x y) ⟩
+          ℤ↪R (diff a b) R.+ ℤ↪R (diff x y)     ∎
+  z→r .preserves .pres-* (lift x) (lift y) =
     Int-elim₂-prop {P = λ x y → ℤ↪R (x *ℤ y) ≡ ℤ↪R x R.* ℤ↪R y}
       (λ _ _ → hlevel 1)
-      (λ a b x y → ap₂ R._-_ (e-add (a Nat.* x) _) (e-add (a Nat.* y) _)
-                 ∙ ap₂ R._-_ (ap₂ R._+_ (e-mul a x) (e-mul b y))
-                             (ap₂ R._+_ (e-mul a y) (e-mul b x))
-                 ∙ sym (p (e a) (e b) (e x) (e y)))
+      pf
       x y
-    where
-    p : ∀ a b x y
-      → (a R.- b) R.* (x R.- y)
-      ≡ (a R.* x R.+ b R.* y) R.- (a R.* y R.+ b R.* x)
-    p a b x y =
-      (a R.- b) R.* (x R.- y)                                                       ≡⟨ R.*-distribl ⟩
-      ((a R.- b) R.* x) R.+ ((a R.- b) R.* (R.- y))                                 ≡⟨ ap₂ R._+_ refl (sym R.neg-*-r) ⟩
-      ((a R.- b) R.* x) R.- ((a R.- b) R.* y)                                       ≡⟨ ap₂ R._-_ R.*-distribr R.*-distribr ⟩
-      (a R.* x R.+ (R.- b) R.* x) R.- (a R.* y R.+ (R.- b) R.* y)                   ≡⟨ ap₂ R._+_ refl (R.a.inv-comm ∙ R.+-commutes) ⟩
-      (a R.* x R.+ (R.- b) R.* x) R.+ ((R.- (a R.* y)) R.+ ⌜ R.- ((R.- b) R.* y) ⌝) ≡⟨ ap! (ap R.a.inverse (sym R.neg-*-l) ∙ R.a.inv-inv) ⟩
-      (a R.* x R.+ (R.- b) R.* x) R.+ ((R.- (a R.* y)) R.+ (b R.* y))               ≡⟨ R.pulll (R.extendr R.+-commutes) ⟩
-      (a R.* x) R.+ (R.- (a R.* y)) R.+ ((R.- b) R.* x) R.+ (b R.* y)               ≡⟨ R.pullr R.+-commutes ·· R.extendl (R.pullr R.+-commutes) ·· R.pulll (R.pulll refl) ∙ R.pullr (ap₂ R._+_ refl (sym R.neg-*-l) ·· sym R.a.inv-comm ·· ap R.a.inverse R.+-commutes) ⟩
-      (a R.* x R.+ b R.* y) R.- (a R.* y R.+ b R.* x)                               ∎
+    where abstract
+      swizzle : ∀ a b x y
+                → (a R.- b) R.* (x R.- y)
+                ≡ (a R.* x R.+ b R.* y) R.- (a R.* y R.+ b R.* x)
+      swizzle a b x y =
+        (a R.- b) R.* (x R.- y)                                                       ≡⟨ R.*-distribl ⟩
+        ((a R.- b) R.* x) R.+ ((a R.- b) R.* (R.- y))                                 ≡⟨ ap₂ R._+_ refl (sym R.neg-*-r) ⟩
+        ((a R.- b) R.* x) R.- ((a R.- b) R.* y)                                       ≡⟨ ap₂ R._-_ R.*-distribr R.*-distribr ⟩
+        (a R.* x R.+ (R.- b) R.* x) R.- (a R.* y R.+ (R.- b) R.* y)                   ≡⟨ ap₂ R._+_ refl (R.a.inv-comm ∙ R.+-commutes) ⟩
+        (a R.* x R.+ (R.- b) R.* x) R.+ ((R.- (a R.* y)) R.+ ⌜ R.- ((R.- b) R.* y) ⌝) ≡⟨ ap! (ap R.a.inverse (sym R.neg-*-l) ∙ R.a.inv-inv) ⟩
+        (a R.* x R.+ (R.- b) R.* x) R.+ ((R.- (a R.* y)) R.+ (b R.* y))               ≡⟨ R.pulll (R.extendr R.+-commutes) ⟩
+        (a R.* x) R.+ (R.- (a R.* y)) R.+ ((R.- b) R.* x) R.+ (b R.* y)               ≡⟨ R.pullr R.+-commutes ·· R.extendl (R.pullr R.+-commutes) ·· R.pulll (R.pulll refl) ∙ R.pullr (ap₂ R._+_ refl (sym R.neg-*-l) ·· sym R.a.inv-comm ·· ap R.a.inverse R.+-commutes) ⟩
+        (a R.* x R.+ b R.* y) R.- (a R.* y R.+ b R.* x)                               ∎
+
+      pf : ∀ a b x y → ℤ↪R (diff a b *ℤ diff x y) ≡ (ℤ↪R (diff a b) R.* ℤ↪R (diff x y))
+      pf a b x y =
+        ℤ↪R (diff (a Nat.* x Nat.+ b Nat.* y) (a Nat.* y Nat.+ b Nat.* x))      ≡⟨ ℤ↪R-diff (a Nat.* x Nat.+ b Nat.* y) (a Nat.* y Nat.+ b Nat.* x) ⟩
+        e (a Nat.* x Nat.+ b Nat.* y) R.- e (a Nat.* y Nat.+ b Nat.* x)         ≡⟨ ap₂ R._-_ (e-add (a Nat.* x) (b Nat.* y)) (e-add (a Nat.* y) (b Nat.* x)) ⟩
+        (e (a Nat.* x) R.+ e (b Nat.* y)) R.- (e (a Nat.* y) R.+ e (b Nat.* x)) ≡⟨ ap₂ R._-_ (ap₂ R._+_ (e-mul a x) (e-mul b y)) (ap₂ R._+_ (e-mul a y) (e-mul b x)) ⟩
+        ((e a R.* e x) R.+ (e b R.* e y)) R.- ((e a R.* e y) R.+ (e b R.* e x)) ≡˘⟨ swizzle (e a) (e b) (e x) (e y) ⟩
+        (e a R.- e b) R.* (e x R.- e y)                                         ≡˘⟨ ap₂ R._*_ (ℤ↪R-diff a b) (ℤ↪R-diff x y) ⟩
+        ℤ↪R (diff a b) R.* ℤ↪R (diff x y) ∎
+
 ```
 -->
 
@@ -181,12 +228,14 @@ and that last expression is pretty exactly what our canonical map
 evaluates to on $n$. So we're done!
 
 ```agda
-  lemma : ∀ (f : Rings.Hom Liftℤ R) i → hom .fst (lift i) ≡ f .fst (lift i)
+  lemma : ∀ (f : Rings.Hom Liftℤ R) i → z→r # lift i ≡ f # lift i
   lemma f =
     Int-elim-prop (λ _ → hlevel 1) λ a b → sym $
-         ap (f .fst) (ap lift (p a b))
-      ·· f .snd .pres-+ (lift (diff a 0)) (lift (diff 0 b))
-      ·· ap₂ R._+_ (q a) (Group-hom.pres-inv gh {x = lift (diff b 0)} ∙ ap R.-_ (q b))
+      f # lift (diff a b)                         ≡⟨ ap (f #_) (ap lift (p a b)) ⟩
+      f # lift (diff a 0 +ℤ diff 0 b)             ≡⟨ f .preserves .pres-+ (lift (diff a 0)) (lift (diff 0 b)) ⟩
+      f # lift (diff a 0) R.+ f # lift (diff 0 b) ≡⟨ ap₂ R._+_ (q a) (Group-hom.pres-inv gh {x = lift (diff b 0)} ∙ ap R.-_ (q b)) ⟩
+      (e a) R.+ (R.- e b)                         ≡˘⟨ ℤ↪R-diff a b ⟩
+      z→r # lift (diff a b)                       ∎
     where
       p : ∀ a b → diff a b ≡ diff a 0 +ℤ diff 0 b
       p a b = ap (λ e → diff e b) (sym (Nat.+-zeror a))
@@ -195,13 +244,15 @@ evaluates to on $n$. So we're done!
             (Ring-on.additive-group (Liftℤ .snd) .snd)
             (Ring-on.additive-group (R .snd) .snd)
             _
-      gh = record { pres-⋆ = f .snd .pres-+ }
+      gh = record { pres-⋆ = f .preserves .pres-+ }
 
-      q : ∀ a → f .fst (lift (diff a 0)) ≡ e a
+      q : ∀ a → f # lift (diff a 0) ≡ e a
       q zero = Group-hom.pres-id gh
-      q (suc a) =
-          f .snd .pres-+ (lift (diff 1 0)) (lift (diff a 0))
-        ∙ ap₂ R._+_ (f .snd .pres-id) (q a)
+      q (suc n) =
+        f # lift (diff (suc n) 0)          ≡⟨ f .preserves .pres-+ (lift (diff 1 0)) (lift (diff n 0)) ⟩
+        f # lift 1 R.+ f # lift (diff n 0) ≡⟨ ap₂ R._+_ (f .preserves .pres-id) (q n) ⟩
+        R.1r R.+ (e n)                     ≡˘⟨ e-suc n ⟩
+        e (suc n) ∎
 ```
 
 ## Abelian groups as Z-modules

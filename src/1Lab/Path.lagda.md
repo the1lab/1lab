@@ -1277,6 +1277,9 @@ x ∎ = refl
 infixr 30 _∙_
 infixr 2 _≡⟨⟩_ _≡˘⟨_⟩_
 infix  3 _∎
+
+along : ∀ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1} → (i : I) → PathP A x y → A i
+along i p = p i
 ```
 
 These functions are used to make _equational reasoning chains_. For
