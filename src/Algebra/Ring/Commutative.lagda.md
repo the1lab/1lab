@@ -50,4 +50,7 @@ CRings ℓ = Structured-objects (CRing-structure ℓ)
 
 CRing : ∀ ℓ → Type (lsuc ℓ)
 CRing ℓ = CRings ℓ .Precategory.Ob
+
+module CRing {ℓ} (R : CRing ℓ) where
+  open CRing-on (R .snd) public
 ```
