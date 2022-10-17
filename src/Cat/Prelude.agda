@@ -14,7 +14,7 @@ open import Data.Set.Truncation public
 open import Data.Set.Coequaliser public
 
 open import Cat.Base public
-open import Cat.Solver hiding (module Reflection) public
+open import Cat.Solver hiding (module NbE; module Reflection) public
 open import Cat.Univalent
   using ( is-category ; path→iso ; Hom-pathp
         ; Hom-transport ; Hom-pathp-refll ; Hom-pathp-reflr
