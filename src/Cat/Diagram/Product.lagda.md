@@ -253,4 +253,14 @@ separate top-level definitions:
   ⟨⟩∘ : ∀ {Q R} {p1 : Hom Q a} {p2 : Hom Q b} (f : Hom R Q)
       → ⟨ p1 , p2 ⟩ ∘ f ≡ ⟨ p1 ∘ f , p2 ∘ f ⟩
   ⟨⟩∘ f = is-product.⟨⟩∘ (hasprods _ _ .has-is-product) f
+
+  ⟨⟩-unique : ∀ {Q} {p1 : Hom Q A} {p2 : Hom Q B}
+             → (other : Hom Q (A ⊗ B))
+             → π₁ ∘ other ≡ p1
+             → π₂ ∘ other ≡ p2
+             → other ≡ ⟨ p1 , p2 ⟩
+  ⟨⟩-unique = hasprods _ _ .has-is-product .is-product.unique
+
+  ⟨⟩-η : ∀ {A B} → ⟨ π₁ , π₂ ⟩ ≡ id {A ⊗ B}
+  ⟨⟩-η = sym $ ⟨⟩-unique id (idr π₁) (idr π₂)
 ```
