@@ -6,6 +6,7 @@ open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Diagram.Product
+open import Cat.Diagram.Product.Solver
 import Cat.Reasoning as Cr
 
 module Cat.Monoidal.Instances.Cartesian where
@@ -78,42 +79,19 @@ formal proof requires a _lot_ of calculation, however:
       ni : make-natural-iso _ _
       ni .eta x = ⟨ π₁ ∘ π₁ , ⟨ π₂ ∘ π₁ , π₂ ⟩ ⟩
       ni .inv x = ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩
-      ni .eta∘inv x = Product.unique₂ (prods _ _)
-        (pulll π₁∘⟨⟩ ·· pullr π₁∘⟨⟩ ·· π₁∘⟨⟩)
-        (pulll π₂∘⟨⟩ ∙ Product.unique₂ (prods _ _)
-          (pulll π₁∘⟨⟩ ·· pullr π₁∘⟨⟩ ·· π₂∘⟨⟩)
-          (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)
-          refl refl)
-        (idr _) (idr _)
-      ni .inv∘eta x = Product.unique₂ (prods _ _)
-        (pulll π₁∘⟨⟩ ∙ Product.unique₂ (prods _ _)
-          (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩)
-          (pulll π₂∘⟨⟩ ·· pullr π₂∘⟨⟩ ·· π₁∘⟨⟩) refl refl)
-        (pulll π₂∘⟨⟩ ·· pullr π₂∘⟨⟩ ·· π₂∘⟨⟩)
-        (idr _) (idr _)
-      ni .natural x y f = Product.unique₂ (prods _ _)
-        (pulll π₁∘⟨⟩ ∙ pullr π₁∘⟨⟩)
-        (pulll π₂∘⟨⟩ ∙ Product.unique (prods _ _) _
-          (pulll (pulll π₁∘⟨⟩) ·· pullr π₂∘⟨⟩ ·· pullr π₁∘⟨⟩)
-          (pulll (pulll π₂∘⟨⟩) ·· pullr π₂∘⟨⟩ ·· pullr π₂∘⟨⟩))
-        (pulll π₁∘⟨⟩ ·· pullr π₁∘⟨⟩ ·· extendl π₁∘⟨⟩)
-        (pulll π₂∘⟨⟩ ∙ Product.unique (prods _ _) _
-          (pulll π₁∘⟨⟩ ·· pullr π₁∘⟨⟩ ·· extendl π₂∘⟨⟩)
-          (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩))
+      ni .eta∘inv x =
+        ⟨ π₁ ∘ π₁ , ⟨ π₂ ∘ π₁ , π₂ ⟩ ⟩ ∘ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ≡⟨ products! C prods ⟩
+        id ∎
+      ni .inv∘eta x =
+        ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ∘ ⟨ π₁ ∘ π₁ , ⟨ π₂ ∘ π₁ , π₂ ⟩ ⟩ ≡⟨ products! C prods ⟩
+        id ∎
+      ni .natural x y f =
+        ⟨ f .fst ∘ π₁ , ⟨ f .snd .fst ∘ π₁ , f .snd .snd ∘ π₂ ⟩ ∘ π₂ ⟩ ∘ ⟨ π₁ ∘ π₁ , ⟨ π₂ ∘ π₁ , π₂ ⟩ ⟩     ≡⟨ products! C prods ⟩
+        ⟨ π₁ ∘ π₁ , ⟨ π₂ ∘ π₁ , π₂ ⟩ ⟩ ∘ ⟨ (⟨ f .fst ∘ π₁ , f .snd .fst ∘ π₂ ⟩ ∘ π₁) , (f .snd .snd ∘ π₂) ⟩ ∎
     mon .triangle = Product.unique (prods _ _) _
       (pulll π₁∘⟨⟩ ·· pullr π₁∘⟨⟩ ·· π₁∘⟨⟩ ∙ introl refl)
       (pulll π₂∘⟨⟩ ·· pullr π₂∘⟨⟩ ·· idl _)
-    mon .pentagon = Product.unique₂ (prods _ _)
-      (pulll π₁∘⟨⟩ ∙ pullr (pulll π₁∘⟨⟩))
-      (pulll π₂∘⟨⟩ ∙ pullr (pulll π₂∘⟨⟩ ·· pullr π₂∘⟨⟩ ·· pulll π₂∘⟨⟩) ∙ idl _)
-      (pulll π₁∘⟨⟩ ∙ Product.unique₂ (prods _ _)
-        (pulll π₁∘⟨⟩ ∙ π₁∘⟨⟩)
-        (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩)
-        (pulll π₁∘⟨⟩ ∙ Product.unique (prods _ _) _
-          (pulll π₁∘⟨⟩ ·· pulll π₁∘⟨⟩ ·· π₁∘⟨⟩ ∙ eliml refl)
-          ( pulll π₂∘⟨⟩ ∙ pullr (pulll π₂∘⟨⟩ ·· pullr π₂∘⟨⟩ ·· pulll π₁∘⟨⟩)
-          ∙ pulll π₁∘⟨⟩))
-        (pulll π₂∘⟨⟩ ·· pulll (pullr π₂∘⟨⟩) ·· pullr (pullr π₂∘⟨⟩ ∙ pulll π₁∘⟨⟩)
-        ∙ extendl π₂∘⟨⟩))
-      (pulll π₂∘⟨⟩ ∙ pullr π₂∘⟨⟩ ∙ assoc _ _ _)
+    mon .pentagon =
+      ⟨ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ∘ π₁ , id ∘ π₂ ⟩ ∘ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ∘ ⟨ id ∘ π₁ , ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ∘ π₂ ⟩ ≡⟨ products! C prods ⟩
+      ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ∘ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ∎
 ```
