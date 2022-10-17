@@ -300,31 +300,39 @@ We begin by defining a bunch of pattern synonyms for matching on various fields
 of precategories, as well as objects + morphisms that arise from the product structure.
 
 The situation here is extremely fiddly when it comes to implicit arguments, as
-we not only need to get the number correct, but also their multiplicity. For
-records, implicit arguments are considered to have `quantity-0`{.Agda},
-that we need to use the `_h0∷_`{.Agda} pattern to match on them. However, if we
-are matching against implicits that are bound by a module, then they will have
-`quantity-ω`{.Agda}. The `cartesian-field`{.Agda} and `category-field`{.Agda} 
-pattern synonyms are used to take care of this.
+we not only need to get the number correct, but also their multiplicity. Record
+projections always mark the records parameters as `hidden`{.Agda} and
+`quantity-0`{.Agda}, so we need to take care to do the same in these patterns.
 
 ```agda
 module Reflection where
   private
-    pattern cartesian-field args = _ h∷ _ h∷ _ v∷ _ v∷ args
+    pattern is-product-field X Y args =
+      _ h0∷ _ h0∷ _ h0∷ -- category args
+      X h0∷ Y h0∷       -- objects of product 
+      _ h0∷             -- apex
+      _ h0∷ _ h0∷       -- projections
+      _ v∷              -- is-product record argument
+      args
+    pattern product-field X Y args =
+      _ h0∷ _ h0∷ _ h0∷ -- category args
+      X h0∷ Y h0∷       -- objects of product
+      _ v∷              -- product record argument
+      args
     pattern category-field args = _ h0∷ _ h0∷ _ v∷ args
 
     pattern “⊗” X Y =
-      def (quote Cartesian._⊗_) (cartesian-field (X v∷ Y v∷ []))
+      def (quote Product.apex) (product-field X Y [])
     pattern “id” X =
       def (quote Precategory.id) (category-field (X h∷ []))
     pattern “∘” X Y Z f g =
       def (quote Precategory._∘_) (category-field (X h∷ Y h∷ Z h∷ f v∷ g v∷ []))
     pattern “π₁” X Y =
-      def (quote (Cartesian.π₁)) (cartesian-field (X h∷ Y h∷ []))
+      def (quote (Product.π₁)) (product-field X Y [])
     pattern “π₂” X Y =
-      def (quote (Cartesian.π₂)) (cartesian-field (X h∷ Y h∷ []))
+      def (quote (Product.π₂)) (product-field X Y [])
     pattern “⟨⟩” X Y Z f g =
-      def (quote (Cartesian.⟨_,_⟩)) (cartesian-field (X h∷ Y h∷ Z h∷ f v∷ g v∷ []))
+      def (quote (is-product.⟨_,_⟩)) (is-product-field Y Z (X h∷ f v∷ g v∷ []))
 ```
 
 Next, we define some helpers to make constructing things in the
@@ -401,10 +409,10 @@ reflect upon.
     quote Precategory.Hom ∷
     quote Precategory.id ∷
     quote Precategory._∘_ ∷
-    quote Cartesian._⊗_ ∷
-    quote Cartesian.π₁ ∷
-    quote Cartesian.π₂ ∷
-    quote Cartesian.⟨_,_⟩ ∷ []
+    quote Product.apex ∷
+    quote Product.π₁ ∷
+    quote Product.π₂ ∷
+    quote is-product.⟨_,_⟩ ∷ []
 ```
 
 We will need to recover the objects from some quoted hom to make the
@@ -425,6 +433,7 @@ want to examine the exact quoted representations of objects/homs.
 ```agda
   obj-repr-macro : ∀ {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) → Term → Term → TC ⊤
   obj-repr-macro cat cart hom hole =
+    withReconstructed $
     withNormalisation false $
     dontReduceDefs dont-reduce $ do
     (x , y) ← get-objects hom
@@ -438,21 +447,35 @@ want to examine the exact quoted representations of objects/homs.
 
   hom-repr-macro : ∀ {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) → Term → Term → TC ⊤ 
   hom-repr-macro cat cart hom hole =
+    withReconstructed $
     withNormalisation false $
     dontReduceDefs dont-reduce $ do
-    goal ← inferType hole >>= reduce
+    (x , y) ← get-objects hom
+    “x” ← build-obj-expr <$> normalise x
+    “y” ← build-obj-expr <$> normalise y
     “hom” ← build-hom-expr <$> normalise hom
     typeError $ strErr "The morphism\n  " ∷
                 termErr hom ∷ strErr "\nis represented by\n  " ∷
-                termErr “hom” ∷ []
+                termErr “hom” ∷ strErr "\nwith objects\n  " ∷
+                termErr “x” ∷ strErr "\nAnd\n  " ∷
+                termErr “y” ∷ []
 ```
 
 Now, the simplifier and solver reflection. This just puts together
 all of our bits from before.
 
+There is one subtlety here with regards to `withReconstructed`.
+We are reflecting on the record parameters to `Product`{.Agda} and
+`is-product`{.Agda} to determine the objects involved in things like `⟨_,_⟩`{.Agda},
+which Agda will mark as `unknown` by default. This will cause `build-obj-expr`{.Agda}
+to then fail when we have expressions involving nested `_⊗_`{.Agda}.
+Wrapping everything in `withReconstructed` causes Agda to fill in these arguments
+with their actual values, which then fixes the issue.
+
 ```agda
   simpl-macro : ∀ {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) → Term → Term → TC ⊤
   simpl-macro cat cart hom hole =
+    withReconstructed $
     withNormalisation false $
     dontReduceDefs dont-reduce $ do
     (x , y) ← get-objects hom
@@ -465,6 +488,7 @@ all of our bits from before.
 
   solve-macro : ∀ {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) → Term → TC ⊤
   solve-macro cat cart hole =
+    withReconstructed $
     withNormalisation false $
     dontReduceDefs dont-reduce $ do
     goal ← inferType hole >>= reduce
@@ -523,13 +547,29 @@ private module Tests {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y →
   open Cartesian 𝒞 cartesian
   open NbE 𝒞 cartesian
 
-  test-η : ∀ {X Y Z} → (f : Hom X (Y ⊗ Z)) → f ≡ ⟨ π₁ ∘ f , π₂ ∘ f ⟩
+  test-η : ∀ {X Y Z} → (f : Hom X (Y ⊗ Z))
+           → f ≡ ⟨ π₁ ∘ f , π₂ ∘ f ⟩
   test-η f = products! 𝒞 cartesian
 
+  test-β₁ : ∀ {X Y Z} → (f : Hom X Y) → (g : Hom X Z)
+            → π₁ ∘ ⟨ f , g ⟩ ≡ f
+  test-β₁ f g = products! 𝒞 cartesian 
+
+  test-β₂ : ∀ {X Y Z} → (f : Hom X Y) → (g : Hom X Z)
+            → π₂ ∘ ⟨ f , g ⟩ ≡ g
+  test-β₂ f g = products! 𝒞 cartesian 
+
+  test-⟨⟩∘ : ∀ {W X Y Z} → (f : Hom X Y) → (g : Hom X Z) → (h : Hom W X)
+             → ⟨ f ∘ h , g ∘ h ⟩ ≡ ⟨ f , g ⟩ ∘ h
+  test-⟨⟩∘ f g h = products! 𝒞 cartesian 
+
+  -- If you don't have 'withReconstructed' on, this test will fail!
+  test-nested : ∀ {W X Y Z} → (f : Hom W X) → (g : Hom W Y) → (h : Hom W Z)
+             → ⟨ ⟨ f , g ⟩ , h ⟩ ≡ ⟨ ⟨ f , g ⟩ , h ⟩
+  test-nested {W} {X} {Y} {Z} f g h = products! 𝒞 cartesian
+
+  
   test-big : ∀ {W X Y Z} → (f : Hom (W ⊗ X) (W ⊗ Y)) → (g : Hom (W ⊗ X) Z)
              → (π₁ ∘ ⟨ f , g ⟩) ∘ id ≡ id ∘ ⟨ π₁ , π₂ ⟩ ∘ f
   test-big f g = products! 𝒞 cartesian
 ```
-
-
-
