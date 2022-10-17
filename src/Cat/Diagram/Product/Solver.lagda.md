@@ -488,6 +488,7 @@ with their actual values, which then fixes the issue.
 
   solve-macro : ∀ {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) → Term → TC ⊤
   solve-macro cat cart hole =
+    noConstraints $
     withReconstructed $
     withNormalisation false $
     dontReduceDefs dont-reduce $ do
@@ -505,11 +506,21 @@ with their actual values, which then fixes the issue.
     “rhs” ← build-hom-expr <$> normalise rhs
     “cat” ← quoteTC cat
     “cart” ← quoteTC cart
-    (noConstraints $ unify hole (“solve” “cat” “cart” “x” “y” “lhs” “rhs”)) <|>
-      typeError (strErr "Could not equate the following expressions:\n  " ∷
+    (unify hole (“solve” “cat” “cart” “x” “y” “lhs” “rhs”)) <|> do
+      vlhs ← normalise $ (“nf” “cat” “cart” “x” “y” “lhs”)
+      vrhs ← normalise $ (“nf” “cat” “cart” “x” “y” “rhs”)
+      typeError $ strErr "Could not equate the following expressions:\n  " ∷
+                   termErr lhs ∷
+                 strErr "\nAnd\n  " ∷
+                   termErr rhs ∷
+                 strErr "\nReflected expressions\n  " ∷
                    termErr “lhs” ∷
                  strErr "\nAnd\n  " ∷
-                   termErr “rhs” ∷ [])
+                   termErr “rhs” ∷
+                 strErr "\nComputed normal forms\n  " ∷
+                   termErr vlhs ∷
+                 strErr "\nAnd\n  " ∷
+                   termErr vrhs ∷ []
 ```
 
 Finally, we define the user-facing interface as a series of macros.
@@ -542,34 +553,57 @@ macro
 Wow, that was a lot of hard work! Let's marvel at the fruits of our labor.
 
 ```agda
-private module Tests {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) where
-  open Precategory 𝒞
-  open Cartesian 𝒞 cartesian
-  open NbE 𝒞 cartesian
+-- private module Tests {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) where
+--   open Precategory 𝒞
+--   open Cartesian 𝒞 cartesian
+--   open NbE 𝒞 cartesian
 
-  test-η : ∀ {X Y Z} → (f : Hom X (Y ⊗ Z))
-           → f ≡ ⟨ π₁ ∘ f , π₂ ∘ f ⟩
-  test-η f = products! 𝒞 cartesian
+--   test-η : ∀ {X Y Z} → (f : Hom X (Y ⊗ Z))
+--            → f ≡ ⟨ π₁ ∘ f , π₂ ∘ f ⟩
+--   test-η f = products! 𝒞 cartesian
 
-  test-β₁ : ∀ {X Y Z} → (f : Hom X Y) → (g : Hom X Z)
-            → π₁ ∘ ⟨ f , g ⟩ ≡ f
-  test-β₁ f g = products! 𝒞 cartesian 
+--   test-β₁ : ∀ {X Y Z} → (f : Hom X Y) → (g : Hom X Z)
+--             → π₁ ∘ ⟨ f , g ⟩ ≡ f
+--   test-β₁ f g = products! 𝒞 cartesian 
 
-  test-β₂ : ∀ {X Y Z} → (f : Hom X Y) → (g : Hom X Z)
-            → π₂ ∘ ⟨ f , g ⟩ ≡ g
-  test-β₂ f g = products! 𝒞 cartesian 
+--   test-β₂ : ∀ {X Y Z} → (f : Hom X Y) → (g : Hom X Z)
+--             → π₂ ∘ ⟨ f , g ⟩ ≡ g
+--   test-β₂ f g = products! 𝒞 cartesian 
 
-  test-⟨⟩∘ : ∀ {W X Y Z} → (f : Hom X Y) → (g : Hom X Z) → (h : Hom W X)
-             → ⟨ f ∘ h , g ∘ h ⟩ ≡ ⟨ f , g ⟩ ∘ h
-  test-⟨⟩∘ f g h = products! 𝒞 cartesian 
+--   test-⟨⟩∘ : ∀ {W X Y Z} → (f : Hom X Y) → (g : Hom X Z) → (h : Hom W X)
+--              → ⟨ f ∘ h , g ∘ h ⟩ ≡ ⟨ f , g ⟩ ∘ h
+--   test-⟨⟩∘ f g h = products! 𝒞 cartesian 
 
-  -- If you don't have 'withReconstructed' on, this test will fail!
-  test-nested : ∀ {W X Y Z} → (f : Hom W X) → (g : Hom W Y) → (h : Hom W Z)
-             → ⟨ ⟨ f , g ⟩ , h ⟩ ≡ ⟨ ⟨ f , g ⟩ , h ⟩
-  test-nested {W} {X} {Y} {Z} f g h = products! 𝒞 cartesian
+--   -- If you don't have 'withReconstructed' on, this test will fail!
+--   test-nested : ∀ {W X Y Z} → (f : Hom W X) → (g : Hom W Y) → (h : Hom W Z)
+--              → ⟨ ⟨ f , g ⟩ , h ⟩ ≡ ⟨ ⟨ f , g ⟩ , h ⟩
+--   test-nested {W} {X} {Y} {Z} f g h = products! 𝒞 cartesian
 
   
-  test-big : ∀ {W X Y Z} → (f : Hom (W ⊗ X) (W ⊗ Y)) → (g : Hom (W ⊗ X) Z)
-             → (π₁ ∘ ⟨ f , g ⟩) ∘ id ≡ id ∘ ⟨ π₁ , π₂ ⟩ ∘ f
-  test-big f g = products! 𝒞 cartesian
+--   test-big : ∀ {W X Y Z} → (f : Hom (W ⊗ X) (W ⊗ Y)) → (g : Hom (W ⊗ X) Z)
+--              → (π₁ ∘ ⟨ f , g ⟩) ∘ id ≡ id ∘ ⟨ π₁ , π₂ ⟩ ∘ f
+--   test-big f g = products! 𝒞 cartesian
+```
+
+```agda
+module Repro where
+  record Example (A : Type) : Type where
+    field
+      x : A
+      y : A
+      pf : x ≡ y
+
+  macro
+    print-endpoints! : Term → TC ⊤
+    print-endpoints! hole =
+      withReconstructed $ do
+      goal ← inferType hole >>= reduce
+      just (lhs , rhs) ← get-boundary goal
+        where nothing → typeError $ strErr "Can't determine boundary: " ∷ termErr goal ∷ []
+      typeError $ termErr lhs ∷ strErr " and " ∷ termErr rhs ∷ []
+
+  -- test : Bool → Example Bool
+  -- test b .Example.x = b
+  -- test b .Example.y = b
+  -- test b .Example.pf = {!print-endpoints!!}
 ```
