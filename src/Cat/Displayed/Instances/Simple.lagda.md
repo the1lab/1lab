@@ -3,7 +3,6 @@ open import Cat.Diagram.Product renaming (module Cartesian to Products)
 open import Cat.Diagram.Product.Solver
 open import Cat.Displayed.Base
 open import Cat.Displayed.Cartesian
-open import Cat.Displayed.Cartesian.Discrete
 open import Cat.Prelude
 import Cat.Reasoning
 
@@ -45,12 +44,9 @@ objects over some $\Gamma$ to be simply an object of $B$.
 This may seem odd, but recall that we are modeling a type theory with
 enough structure to consider contexts as types: if this is not the
 situation (IE: STLC without products), then we need to consider a more
-refined notion.
+[refined notion].
 
-<!--
-  [TODO: Reed M, 18/10/2022]
-  Link to CT-structures here when it's implemented
--->
+[refined notion]: Cat.Displayed.Instances.CT-Structure
 
 For the maps, we already have the map $\Gamma \to \Delta$ as the
 base morphism, so the displayed portion of the map will be the
