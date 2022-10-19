@@ -35,7 +35,7 @@ Intuitvely, this will be some sort of category of contexts, and
 context extension endows this category with products. We interpret a
 type in a context to be an object $\Gamma \times X : \ca{B}$.
 
-Maps between types in contexts $(\Gamma \times X) \to \Delta \times Y$
+Maps between types in contexts $(\Gamma \times X) \to (\Delta \times Y)$
 are then given by a map $\Gamma \to \Delta$ between contexts, and a
 map $\Gamma \times X \to Y$, which is meant to denote a derivation
 of $Y$ from $\Gamma \times X$.
@@ -64,9 +64,9 @@ can be entirely automated.
 
 ```agda
 simple : Displayed B o ℓ
-Displayed.Ob[ simple ] Γ = Ob
-Displayed.Hom[ simple ] {Γ} {Δ} u X Y = Hom (Γ ⊗ X) Y
-Displayed.Hom[ simple ]-set _ _ _ = Hom-set (_ ⊗ _) _
+simple .Displayed.Ob[_] Γ = Ob
+simple .Displayed.Hom[_] {Γ} {Δ} u X Y = Hom (Γ ⊗ X) Y
+simple .Displayed.Hom[_]-set _ _ _ = Hom-set (_ ⊗ _) _
 simple .Displayed.id′ = π₂
 simple .Displayed._∘′_ {f = u} {g = v} f g = f ∘ ⟨ v ∘ π₁ , g ⟩ 
 simple .Displayed.idr′ f =
@@ -88,7 +88,7 @@ upstairs, we can construct a lift by selecting $(\Gamma, Y)$ as the
 corner of the lift, and then using the second projection as the lift
 itself. Intuitively, this encodes a substitution of contexts: because
 we are working with a simple type theory, the substitutions don't need
-to touch the types, as there is no possible dependencies!
+to touch the types, as there are no possible dependencies!
 
 ```agda
 open Cartesian-fibration
