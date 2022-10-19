@@ -197,7 +197,7 @@ instance
   hlevel-proj-squish-prop : hlevel-projection
   hlevel-proj-squish-prop .underlying-type = quote Squish-prop.∣_∣
   hlevel-proj-squish-prop .has-level = quote Squish-prop.is-tr
-  hlevel-proj-squish-prop .get-level _ = returnTC 1
+  hlevel-proj-squish-prop .get-level _ = pure (quoteTerm 1)
   hlevel-proj-squish-prop .get-argument (_ ∷ t v∷ []) = pure  t
   hlevel-proj-squish-prop .get-argument _ = typeError []
 

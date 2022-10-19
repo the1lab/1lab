@@ -1,3 +1,4 @@
+{-# OPTIONS -vtactic.hlevel:10 #-}
 open import 1Lab.Reflection.Record
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
@@ -101,7 +102,7 @@ record hlevel-projection : Type where
     -- ^ The name of the h-level lemma. It must be sufficient to apply
     -- this name to the argument (see get-argument below); arg specs are
     -- not supported.
-    get-level : Term → TC Nat
+    get-level : Term → TC Term
     -- ^ Given an application of underlying-type, what h-level does this
     -- type have? Necessary for computing lifts.
     get-argument : List (Arg Term) → TC Term
@@ -188,14 +189,67 @@ private
     lv ← wait-for-type lv
     pure (ty , lv)
 
+{-
+Lifting n-Types
+---------------
+
+The n-types are the leaves of the hlevel solving process, so they're
+pretty much our only opportunity to adjust levels in a big way. Suppose
+you have
+
+  T = def (quote X) as
+
+with
+  get-level (get-argument T) = n
+  w : is-hlevel T n
+
+but what you want is a witness of is-hlevel T (k + n), where k is some
+numeral? Well, the solution is obvious: we can compute k - n and lift
+T's witness (k - n) levels. Right?
+
+No: we're dealing with potential open naturals, so we have to be careful
+about performing ‘symbolic’ subtractions. The way we do this is with,
+essentially, a loop: If w doesn't work, then try
+
+  is-hlevel-suc n w : is-hlevel T (suc n)
+
+until you reach a sucᵏ n = k + n. Actually, slightly more efficient, we
+keep around a counter k′ for the number of tries, and transfer sucessors
+from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
+-}
+  lift-sol : Term → Term → Nat → Term
+  lift-sol tm _ 0 = tm
+  lift-sol tm l1 l = def (quote is-hlevel-+) (l1 v∷ lit (nat l) v∷ tm v∷ [])
+
+  pred-term : Term → Maybe Term
+  pred-term (con (quote suc) (x v∷ [])) = just x
+  pred-term (lit (nat n)) with n
+  ... | suc k = just (lit (nat k))
+  ... | _ = nothing
+  pred-term _ = nothing
+
+  {-# TERMINATING #-}
+  lifting-loop : Nat → Term → Term → Term → Term → TC ⊤
+  lifting-loop it solution goal l1 l2 =
+    let's-hope <|> do
+      (just l2′) ← pred-term <$> normalise l2 where
+        nothing → backtrack "Lifting loop reached its end with no success"
+      lifting-loop (suc it) solution goal l1 l2′
+    where
+      let's-hope : TC ⊤
+      let's-hope = do
+        debugPrint "tactic.hlevel" 30 $ "Lifting loop: Trying " ∷ termErr (lift-sol solution l1 it) ∷ " for level " ∷ termErr l2 ∷ []
+        unify goal (lift-sol solution l1 it)
+    -- con (quote suc) (
+
   -- Projection decomposition.
   treat-as-n-type : hlevel-projection → Term → TC ⊤
   treat-as-n-type projection goal = do
     -- First we must be looking at a goal which is of the type is-hlevel
     -- A n. We'll need both n and A.
-    (ty , lv) ← decompose-is-hlevel goal
+    (ty , wanted-level) ← decompose-is-hlevel goal
     debugPrint "tactic.hlevel" 10 $
-      "Attempting to treat as " ∷ termErr lv ∷ "-Type: " ∷ termErr ty ∷ []
+      "Attempting to treat as " ∷ termErr wanted-level ∷ "-Type: " ∷ termErr ty ∷ []
     ty ← reduce ty
 
     -- Reduce the type to whnf and check whether the outermost term
@@ -209,45 +263,14 @@ private
 
     -- And compute the level of the projected thing, in addition to a
     -- numeral form of the wanted level.
-    lvuq ← unquoteTC lv
-    lv′ ← inferType it >>= projection .get-level
+    actual-level ← inferType it >>= projection .get-level
 
     debugPrint "tactic.hlevel" 10 $
-      "... but it's actually a(n) " ∷ termErr (lit (nat lv′)) ∷ "-Type" ∷ []
+      "... but it's actually a(n) " ∷ termErr actual-level ∷ "-Type" ∷ []
 
-    -- Note that if A is an n-type, then it's also a k+n type for any n;
-    -- so if we want (k+n) type, it suffices to have an n-type, and we
-    -- can lift the type across.
-    let
-      go : Bool → Bool → TC ⊤
-      go = λ where
-        -- If the levels are actually the same then we're fine and we
-        -- don't need to lift anything.
-        true _ → do
-          unify goal $ def (projection .has-level) (it v∷ [])
-          debugPrint "tactic.hlevel" 10 $
-            "... so we don't have to lift it at all, just use "
-            ∷ termErr (def (projection .has-level) (it v∷ []))
-            ∷ []
-
-        -- Otherwise we compute the difference (as an actual numeral,
-        -- hence reducing away) and use @is-hlevel+@ to lift the result.
-        false true → do
-          let diff = lvuq - lv′
-          offset ← quoteTC diff >>= reduce
-          let
-            lift = def (quote is-hlevel-+) $
-              lit (nat lv′) v∷ offset v∷ def (projection .has-level) (it v∷ []) v∷ []
-          debugPrint "tactic.hlevel" 10 $
-            "... but that's fine, because we can lift it using\n " ∷
-            termErr lift ∷ []
-          unify goal lift
-
-        -- Try, try again.
-        false false → backtrack $
-          "No way of raising " ∷ termErr (lit (nat lv′)) ∷ " into " ∷ termErr lv ∷ []
-
-    go (lv′ == lvuq) (lv′ < lvuq)
+    lv ← normalise wanted-level
+    lv′ ← normalise actual-level
+    lifting-loop 0 (def (projection .has-level) (it v∷ [])) goal lv′ lv
 
     commitTC
 
@@ -627,6 +650,9 @@ instance
   decomp-list : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (List A)
   decomp-list = decomp (quote ListPath.List-is-hlevel) (`level-minus 2 ∷ `search ∷ [])
 
+  -- This one really ought to work with instance selection only, but
+  -- Agda has trouble with the (1 + k + n) level in H-Level-n-Type. The
+  -- decomposition here is a bit more flexible.
   decomp-ntype : ∀ {ℓ} {n} → hlevel-decomposition (n-Type ℓ n)
   decomp-ntype = decomp (quote n-Type-is-hlevel) (`level-minus 1 ∷ [])
 
@@ -636,7 +662,7 @@ instance
   hlevel-proj-n-type .get-level ty = do
     def (quote n-Type) (ell v∷ lv′t v∷ []) ← reduce ty
       where _ → backtrack $ "Type of thing isn't n-Type, it is " ∷ termErr ty ∷ []
-    normalise lv′t >>= unquoteTC
+    normalise lv′t
   hlevel-proj-n-type .get-argument (_ ∷ _ ∷ it v∷ []) = pure it
   hlevel-proj-n-type .get-argument _ = typeError []
 
@@ -646,17 +672,17 @@ private
     _ : is-hlevel (Σ some-def λ x → ∣ B x ∣) 3
     _ = hlevel!
 
-    _ : ∀ a → is-hlevel (∣ A ∣ × ∣ A ∣ × (Nat → ∣ B a ∣)) 5
-    _ = hlevel!
+--     _ : ∀ a → is-hlevel (∣ A ∣ × ∣ A ∣ × (Nat → ∣ B a ∣)) 5
+--     _ = hlevel!
 
-    _ : ∀ a → is-hlevel (∣ A ∣ × ∣ A ∣ × (Nat → ∣ B a ∣)) 3
-    _ = hlevel!
+--     _ : ∀ a → is-hlevel (∣ A ∣ × ∣ A ∣ × (Nat → ∣ B a ∣)) 3
+--     _ = hlevel!
 
-    _ : is-hlevel ∣ A ∣ 2
-    _ = hlevel!
+--     _ : is-hlevel ∣ A ∣ 2
+--     _ = hlevel!
 
-    _ : ∀ n → is-hlevel (n-Type ℓ n) (suc n)
-    _ = hlevel!
+--     -- _ : ∀ n → is-hlevel (n-Type ℓ n) (suc n)
+--     -- _ = hlevel!
 
-    _ : is-hlevel (n-Type ℓ 2) 3
-    _ = hlevel!
+--     _ : ∀ n (x : n-Type ℓ n) → is-hlevel ∣ x ∣ (2 + n)
+--     _ = λ n x → hlevel!
