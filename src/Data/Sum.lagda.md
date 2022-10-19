@@ -1,10 +1,14 @@
 ```agda
+open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Universe
 open import 1Lab.Type.Dec
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+
+open import Data.List
 
 module Data.Sum where
 ```
@@ -232,8 +236,8 @@ _actual_ paths `A ⊎ B`. Since `Code`{.Agda} has a nice computational
 structure, we can establish its h-level by induction:
 
 ```agda
-  Code≃Path : {x y : A ⊎ B} → Code x y ≃ (x ≡ y)
-  Code≃Path = Iso→Equiv (decode , iso encode decode-encode encode-decode)
+  Code≃Path : {x y : A ⊎ B} → (x ≡ y) ≃ Code x y
+  Code≃Path = Iso→Equiv (encode , iso decode encode-decode decode-encode)
 ```
 
 ```agda
@@ -269,8 +273,22 @@ also at the same h-level as `A` and `B`. Thus, we have:
             → is-hlevel A (2 + n)
             → is-hlevel B (2 + n)
             → is-hlevel (A ⊎ B) (2 + n)
-⊎-is-hlevel n ahl bhl x y = is-hlevel≃ (1 + n) Code≃Path (Code-is-hlevel ahl bhl)
+⊎-is-hlevel n ahl bhl x y =
+  is-hlevel≃ (1 + n) Code≃Path (Code-is-hlevel ahl bhl)
+
+instance
+  hlevel-decomp-⊎ : hlevel-decomposition (A ⊎ B)
+  hlevel-decomp-⊎ = decomp (quote ⊎-is-hlevel)
+    (`level-minus 2 ∷ `search ∷ `search ∷ [])
 ```
+
+<!--
+```agda
+module _ {ℓ} {A : n-Type ℓ 2} where
+  _ : is-hlevel (∣ A ∣ ⊎ ∣ A ∣) 5
+  _ = hlevel!
+```
+-->
 
 Note that, in general, [being a proposition] and [being contractible]
 are not preserved under coproducts. Consider the case where `(A, a)` and

@@ -160,7 +160,7 @@ module _ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} {R : Ring-on A} {S : Ring
 
   instance abstract
     H-Level-ring-hom : ∀ {f n} → H-Level (is-ring-hom R S f) (suc n)
-    H-Level-ring-hom = prop-instance λ x y → is-hlevel≃ 1 ((Iso→Equiv eqv) e⁻¹) (hlevel 1) x y
+    H-Level-ring-hom = prop-instance λ x y → Iso→is-hlevel 1 eqv (hlevel 1) x y
 
 open is-ring-hom
 ```

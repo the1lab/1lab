@@ -257,7 +257,7 @@ private unquoteDecl eqv = declare-record-iso eqv (quote is-semilattice)
 instance
   H-Level-is-semilattice : ∀ {M : A → A → A} {n} → H-Level (is-semilattice M) (suc n)
   H-Level-is-semilattice = prop-instance λ x →
-    let open is-semilattice x in is-hlevel≃ 1 (Iso→Equiv eqv e⁻¹) (hlevel 1) x
+    let open is-semilattice x in Iso→is-hlevel 1 eqv (hlevel 1) x
 ```
 
 A **semilattice structure** on a type $A$ equips the type with an

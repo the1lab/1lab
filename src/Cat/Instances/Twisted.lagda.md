@@ -66,7 +66,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
   Twisted .Precategory.Ob = Σ[ (a , b) ∈ Ob × Ob ] Hom a b
   Twisted .Precategory.Hom (_ , f) (_ , g) = Twist f g
   Twisted .Precategory.Hom-set (_ , f) (_ , g) =
-    is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2)
+    Iso→is-hlevel 2 eqv (hlevel 2)
   Twisted .Precategory.id = record
     { before   = id ; after    = id ; commutes = idl _ ∙ idr _ }
   Twisted .Precategory._∘_ t1 t2 .Twist.before = t2 .Twist.before ∘ t1 .Twist.before

@@ -1,5 +1,8 @@
 ```agda
+open import 1Lab.Reflection
 open import 1Lab.Prelude
+
+open import Data.List
 
 module Principles.Resizing where
 ```
@@ -29,13 +32,14 @@ the 0th universe. We're justified in doing this because $T$, being a
 proposition, doesn't store a lot of information at all.
 
 ```agda
-{-# NO_UNIVERSE_CHECK #-}
-record Squish-prop ℓ : Type where
-  no-eta-equality
-  constructor el
-  field
-    ∣_∣ : Type ℓ
-    is-tr : is-prop ∣_∣
+private
+  {-# NO_UNIVERSE_CHECK #-}
+  record Squish-prop ℓ : Type where
+    no-eta-equality
+    constructor el
+    field
+      ∣_∣ : Type ℓ
+      is-tr : is-prop ∣_∣
 
 open Squish-prop public
 ```
@@ -117,6 +121,7 @@ first by squishing, then by lifting.
 ```agda
 Ω : Type
 Ω = Squish-prop lzero
+{-# DISPLAY Squish-prop lzero = Ω #-}
 
 resize : ∀ {ℓ} ℓ′ → (T : Type ℓ) → is-prop T → Σ[ T′ ∈ Type ℓ′ ] (T′ ≃ T)
 resize ℓ′ T x =
@@ -127,7 +132,16 @@ resize ℓ′ T x =
 
 elΩ : ∀ {ℓ} (A : Type ℓ) → is-prop A → Ω
 ∣ elΩ A A-prop ∣    = resize lzero A A-prop .fst
-elΩ A A-prop .is-tr = is-hlevel≃ 1 (resize lzero A A-prop .snd e⁻¹) A-prop
+elΩ A A-prop .is-tr = is-hlevel≃ 1 (resize lzero A A-prop .snd) A-prop
+```
+
+<!--
+```agda
+elΩ!
+  : ∀ {ℓ} (A : Type ℓ) {@(tactic hlevel-tactic-worker) aprop : is-hlevel A 1}
+  → Ω
+∣ elΩ! A {t} ∣ = resize lzero A t .fst
+elΩ! A {t} .is-tr = is-hlevel≃ 1 (resize lzero _ _ .snd) t
 
 elΩ-ua : ∀ {ℓ} {A B : Type ℓ} {ap bp} → (A → B) → (B → A) → elΩ A ap ≡ elΩ B bp
 elΩ-ua f g = Squish-prop-ua $ bi
@@ -145,6 +159,7 @@ true→elΩ x = lift (Squish-prop-ua (bi (λ _ → _) λ _ → x))
 elΩ→true : ∀ {ℓ} {A : Type ℓ} {ap : is-prop A} → ∣ elΩ A ap ∣ → A
 elΩ→true x = transport (ap ∣_∣ (sym (Lift.lower x))) (lift tt)
 ```
+-->
 
 Another application of univalence comes in proving that the type
 $\Omega$ indeed does classify subobjects: so, under the assumption that
@@ -169,10 +184,34 @@ type $B$ in the same universe as $B$.
 
 <!--
 ```
-_∈_ : ∀ {ℓ ℓ′} {A : Type ℓ} → A → (A → Squish-prop ℓ′) → Type ℓ′
+_∈_ : ∀ {ℓ ℓ′} {A : Type ℓ} → A → (A → Prop ℓ′) → Type ℓ′
 x ∈ P = ∣ P x ∣
 
+-- Like the membership relation defined just above but taking values in
+-- the first universe no matter how big the proposition is.
 _∈ᵣ_ : ∀ {ℓ ℓ′} {A : Type ℓ} → A → (A → Squish-prop ℓ′) → Type
 x ∈ᵣ P = ∣ (elΩ ∣ P x ∣ (P x .is-tr)) ∣
+
+open hlevel-projection
+instance
+  hlevel-proj-squish-prop : hlevel-projection
+  hlevel-proj-squish-prop .underlying-type = quote Squish-prop.∣_∣
+  hlevel-proj-squish-prop .has-level = quote Squish-prop.is-tr
+  hlevel-proj-squish-prop .get-level _ = returnTC 1
+  hlevel-proj-squish-prop .get-argument (_ ∷ t v∷ []) = pure  t
+  hlevel-proj-squish-prop .get-argument _ = typeError []
+
+module _ (A B : Ω) where
+  _ : is-prop ∣ A ∣
+  _ = hlevel!
+
+  _ : is-prop (∣ A ∣ → ∣ B ∣)
+  _ = hlevel!
+
+  _ : ∀ {A : Type} (F : A → Ω) → is-prop (∀ x → ∣ F x ∣)
+  _ = λ _ → hlevel!
+
+  _ : Ω
+  _ = elΩ! (∣ A ∣ × ∣ B ∣)
 ```
 -->

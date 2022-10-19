@@ -110,7 +110,7 @@ module _ {x y} {f g : Hom x y} {px : /-Obj x} {py : /-Obj y}
 
 module _ {x y} (f : Hom x y) (px : /-Obj x) (py : /-Obj y) where
   Slice-is-set : is-set (Slice-hom f px py)
-  Slice-is-set = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2)
+  Slice-is-set = Iso→is-hlevel 2 eqv (hlevel 2)
     where open HLevel-instance
 ```
 -->

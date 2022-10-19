@@ -56,7 +56,7 @@ instance
   H-Level-is-monoid : ∀ {id : A} {_⋆_ : A → A → A} {n}
                     → H-Level (is-monoid id _⋆_) (suc n)
   H-Level-is-monoid = prop-instance λ x →
-    let open is-monoid x in is-hlevel≃ 1 (Iso→Equiv eqv e⁻¹) (hlevel 1) x
+    let open is-monoid x in Iso→is-hlevel 1 eqv (hlevel 1) x
 ```
 
 A `monoid structure on`{.Agda ident=Monoid-on} a type is given by the

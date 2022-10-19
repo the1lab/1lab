@@ -257,6 +257,11 @@ data ErrorPart : Type where
   pattErr : Pattern → ErrorPart
   nameErr : Name → ErrorPart
 
+instance
+  String-ErrorPart : IsString ErrorPart
+  String-ErrorPart .IsString.Constraint _ = ⊤
+  String-ErrorPart .IsString.fromString s = strErr s
+
 postulate
   TC               : ∀ {a} → Type a → Type a
   returnTC         : ∀ {a} {A : Type a} → A → TC A
@@ -421,6 +426,7 @@ instance
     pure (f g)
 
   Alt-TC : Alt-syntax TC
+  Alt-TC .Alt-syntax.fail = typeError []
   Alt-TC .Alt-syntax._<|>_ = catchTC
 ```
 </details>
@@ -454,7 +460,7 @@ newMeta = checkType unknown
 newMeta′ : Term → TC (Meta × Term)
 newMeta′ tm = do
   tm@(meta mv _) ← checkType unknown tm
-    where _ → typeError (strErr "impossible newMeta′" ∷ [])
+    where _ → typeError $ "impossible newMeta′" ∷ []
   pure (mv , tm)
 
 varg : {ℓ : _} {A : Type ℓ} → A → Arg A
@@ -514,7 +520,8 @@ findName : Term → TC Name
 findName (def nm _) = returnTC nm
 findName (lam hidden (abs _ t)) = findName t
 findName (meta m _) = blockOnMeta m
-findName t = typeError (strErr "The projections in a field descriptor must be record selectors: " ∷ termErr t ∷ [])
+findName t = typeError $
+  "The projections in a field descriptor must be record selectors: " ∷ termErr t ∷ []
 
 _visibility=?_ : Visibility → Visibility → Bool
 visible visibility=? visible = true
@@ -576,20 +583,23 @@ get-boundary tm = unapply-path tm >>= λ where
 
 ```agda
 debug! : ∀ {ℓ} {A : Type ℓ} → Term → TC A
-debug! tm = typeError (strErr "[DEBUG]: " ∷ termErr tm ∷ [])
+debug! tm = typeError ("[DEBUG]: " ∷ termErr tm ∷ [])
 
 quote-repr-macro : ∀ {ℓ} {A : Type ℓ} → A → Term →  TC ⊤
 quote-repr-macro a hole = do
   tm ← quoteTC a
   repr ← quoteTC tm
-  typeError $ strErr "The term\n  " ∷
-                termErr tm ∷
-              strErr"\nHas quoted representation\n  " ∷
-                termErr repr ∷ []
+  typeError $ "The term\n  "
+    ∷ termErr tm
+    ∷ "\nHas quoted representation\n  "
+    ∷ termErr repr ∷ []
 
 macro
   quote-repr! : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → A → Term → TC ⊤
   quote-repr! a = quote-repr-macro a
 
+instance
+  IsString-Error : IsString (List ErrorPart)
+  IsString-Error .IsString.Constraint _ = ⊤
+  IsString-Error .fromString s = fromString s ∷ []
 ```
-

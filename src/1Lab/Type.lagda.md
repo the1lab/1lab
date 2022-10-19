@@ -110,7 +110,7 @@ f $ₛ x = f x
 
 <!--
 ```
-open import 1Lab.Prim.Numerals public
+open import 1Lab.Prim.Literals public
 
 Type∙ : ∀ ℓ → Type (lsuc ℓ)
 Type∙ _ = Σ _ id

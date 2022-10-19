@@ -1,5 +1,6 @@
 ```agda
 open import 1Lab.Prim.Data.Maybe
+open import 1Lab.Prim.Literals
 open import 1Lab.Type
 
 open import Data.List
@@ -23,9 +24,6 @@ primitive
   primCharToNat : Char → Nat
   primNatToChar : Nat → Char
   primCharEquality : Char → Char → Bool
-
-postulate String : Type
-{-# BUILTIN STRING String #-}
 
 primitive
   primStringUncons   : String → Maybe (Char × String)

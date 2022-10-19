@@ -131,6 +131,6 @@ proceed exactly by using connectedness.
     ∥-∥-elim₂ {P = λ _ _ → is-hlevel (x ≡ y) (1 + n)}
       (λ _ _ → is-hlevel-is-prop _)
       (λ p q → transport (ap₂ (λ a b → is-hlevel (a ≡ b) (1 + n)) (sym p) (sym q))
-        (is-hlevel≃ (1 + n) (Ω¹BAut e⁻¹) (≃-is-hlevel (1 + n) hl hl)))
+        (is-hlevel≃ (1 + n) Ω¹BAut (≃-is-hlevel (1 + n) hl hl)))
       (connected x) (connected y)
 ```

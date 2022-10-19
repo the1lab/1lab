@@ -1,5 +1,6 @@
 ```agda
-open import 1Lab.Type
+open import 1Lab.Prim.Type
+open import 1Lab.Prim.Kan
 
 module 1Lab.Prim.Data.Maybe where
 ```

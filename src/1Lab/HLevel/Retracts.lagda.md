@@ -6,6 +6,7 @@ description: |
   automating "boring" h-level obligations.
 ---
 ```agda
+{-# OPTIONS --no-projection-like #-}
 open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.HLevel
@@ -131,8 +132,12 @@ iso→is-hlevel n f is-iso =
 equiv→is-hlevel : (n : Nat) (f : A → B) → is-equiv f → is-hlevel A n → is-hlevel B n
 equiv→is-hlevel n f eqv = iso→is-hlevel n f (is-equiv→is-iso eqv)
 
-is-hlevel≃ : (n : Nat) → (A ≃ B) → is-hlevel A n → is-hlevel B n
-is-hlevel≃ n (f , eqv) = iso→is-hlevel n f (is-equiv→is-iso eqv)
+is-hlevel≃ : (n : Nat) → (B ≃ A) → is-hlevel A n → is-hlevel B n
+is-hlevel≃ n f = iso→is-hlevel n (Equiv.from f) (iso (Equiv.to f) (Equiv.η f) (Equiv.ε f))
+
+Iso→is-hlevel : (n : Nat) → Iso B A → is-hlevel A n → is-hlevel B n
+Iso→is-hlevel n (f , isic) = iso→is-hlevel n (isic .is-iso.inv) $
+  iso f (isic .is-iso.linv) (isic .is-iso.rinv)
 ```
 
 ## Functions into n-types
@@ -263,7 +268,7 @@ recover $n$ from the expected type of the application.
 
 ```agda
 hlevel : ∀ {ℓ} {T : Type ℓ} n ⦃ x : H-Level T n ⦄ → is-hlevel T n
-hlevel _ ⦃ x ⦄ = H-Level.has-hlevel x
+hlevel n ⦃ x ⦄ = H-Level.has-hlevel x
 
 private variable
   ℓ′ : Level

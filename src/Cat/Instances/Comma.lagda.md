@@ -145,7 +145,7 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
   ↓Hom-set : ∀ x y → is-set (↓Hom x y)
   ↓Hom-set a b = hl' where abstract
     hl' : is-set (↓Hom a b)
-    hl' = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2)
+    hl' = Iso→is-hlevel 2 eqv (hlevel 2)
 ```
 -->
 

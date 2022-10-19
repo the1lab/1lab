@@ -74,7 +74,7 @@ private unquoteDecl eqv = declare-record-iso eqv (quote is-lattice)
 instance
   H-Level-is-lattice : ∀ {M J : A → A → A} {n} → H-Level (is-lattice M J) (suc n)
   H-Level-is-lattice = prop-instance λ x →
-    let open is-lattice x in is-hlevel≃ 1 (Iso→Equiv eqv e⁻¹) (hlevel 1) x
+    let open is-lattice x in Iso→is-hlevel 1 eqv (hlevel 1) x
 
 record Lattice-on (A : Type ℓ) : Type ℓ where
   field

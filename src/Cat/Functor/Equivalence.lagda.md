@@ -567,6 +567,6 @@ instance
     : ∀ {o h o′ h′} {C : Precategory o h} {D : Precategory o′ h′}
         {F : Functor C D} {n}
     → H-Level (is-precat-iso F) (suc n)
-  H-Level-is-precat-iso = prop-instance (is-hlevel≃ 1 (Iso→Equiv eqv e⁻¹) (hlevel 1))
+  H-Level-is-precat-iso = prop-instance (Iso→is-hlevel 1 eqv (hlevel 1))
 ```
 -->

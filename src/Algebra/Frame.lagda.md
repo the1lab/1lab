@@ -114,7 +114,7 @@ categories of "sets-with-structure" applies here.
 ```agda
 Frame-str : ∀ ℓ → Thin-structure {ℓ = ℓ} _ Frame-on
 Frame-str ℓ .is-hom f x y .∣_∣   = is-frame-hom f x y
-Frame-str ℓ .is-hom f x y .is-tr = is-hlevel≃ 1 (Iso→Equiv eqv e⁻¹) (hlevel 1)
+Frame-str ℓ .is-hom f x y .is-tr = Iso→is-hlevel 1 eqv (hlevel 1)
   where instance
     ahl : H-Level _ 2
     ahl = hlevel-instance (Frame-on.has-is-set y)
@@ -134,7 +134,7 @@ Frame-str ℓ .id-hom-unique {s = s} {t} α β i .Frame-on.has-is-frame =
     (t .Frame-on.has-is-frame) i
   where
   lemma : ∀ a (b : ∀ {I} → (I → A) → A) → is-prop (is-frame a b)
-  lemma {A = A} a b x = is-hlevel≃ 1 (Iso→Equiv eqv′ e⁻¹) (hlevel 1) x where instance
+  lemma {A = A} a b x = Iso→is-hlevel 1 eqv′ (hlevel 1) x where instance
     ahl : H-Level A 2
     ahl = hlevel-instance (is-frame.has-is-set x)
 
@@ -255,7 +255,7 @@ Power-frame A .snd = to-frame-on go where
   go : make-frame (A → Ω)
   go .has-is-set = hlevel 2
   go ._cap_ f g x .∣_∣   = ∣ f x ∣ × ∣ g x ∣
-  go ._cap_ f g x .is-tr = ×-is-hlevel 1 (f x .is-tr) (g x .is-tr)
+  go ._cap_ f g x .is-tr = hlevel!
   go .cup {I} P x = elΩ (∃ I λ i → ∣ P i x ∣) squash
   go .idempotent = funext λ i → Squish-prop-ua (bi fst λ x → x , x)
   go .commutative = funext λ i → Squish-prop-ua $ bi
@@ -264,13 +264,12 @@ Power-frame A .snd = to-frame-on go where
     (λ { (x , y , z) → (x , y) , z })
     (λ { ((x , y) , z) → x , y , z })
   go .universal {x = x} f W = funext λ i → elΩₗ-ua
-    (∥-∥-rec (×-is-hlevel 1 (hlevel 1) (x i .is-tr)) λ (a , w) →
+    (∥-∥-rec! λ (a , w) →
       true→elΩ (inc (_ , w)) , transport (ap ∣_∣ (W a $ₚ i)) w .snd)
     λ x → elΩ→true (x .fst)
   go .colimiting i f = funext λ j → Squish-prop-ua $ bi
     (λ x → x , true→elΩ (inc (_ , x))) fst
   go .distrib x f = funext λ i → sym $ elΩₗ-ua
-    (∥-∥-rec (×-is-hlevel 1 (x i .is-tr) (hlevel 1))
-      λ { (x , y , z) → y , true→elΩ (inc (_ , z)) })
+    (∥-∥-rec! λ { (x , y , z) → y , true→elΩ (inc (_ , z)) })
     λ (x , i) → (λ (y , z) → _ , x , z) <$> elΩ→true i
 ```

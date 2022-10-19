@@ -164,7 +164,7 @@ n-Type-is-hlevel : ∀ n → is-hlevel (n-Type ℓ n) (suc n)
 n-Type-is-hlevel zero x y = n-ua
   ((λ _ → y .is-tr .centre) , is-contr→is-equiv (x .is-tr) (y .is-tr))
 n-Type-is-hlevel (suc n) x y =
-  is-hlevel≃ (suc n) n-univalence (≃-is-hlevel (suc n) (x .is-tr) (y .is-tr))
+  is-hlevel≃ (suc n) (n-univalence e⁻¹) (≃-is-hlevel (suc n) (x .is-tr) (y .is-tr))
 ```
 
 For 1-categorical mathematics, the important h-levels are the

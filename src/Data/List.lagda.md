@@ -1,5 +1,6 @@
 ```agda
 open import 1Lab.HLevel.Retracts
+open import 1Lab.Prim.Monad
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -108,8 +109,8 @@ These maps are inverses by construction:
     de-refl {[]}         = refl
     de-refl {x ∷ xs} i j = x ∷ de-refl {xs = xs} i j
 
-  Code≃Path : {xs ys : List A} → Code xs ys ≃ (xs ≡ ys)
-  Code≃Path = Iso→Equiv (decode , iso encode decode-encode encode-decode)
+  Code≃Path : {xs ys : List A} → (xs ≡ ys) ≃ Code xs ys
+  Code≃Path = Iso→Equiv (encode , iso decode encode-decode decode-encode)
 ```
 
 Thus we have a characterisation of `Path (List A)` in terms of `Path A`.
@@ -210,5 +211,12 @@ all=? eq=? [] [] = true
 all=? eq=? [] (x ∷ ys) = false
 all=? eq=? (x ∷ xs) [] = false
 all=? eq=? (x ∷ xs) (y ∷ ys) = and (eq=? x y) (all=? eq=? xs ys)
+
+nondet
+  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} {M : ∀ {ℓ} → Type ℓ → Type ℓ}
+    ⦃ alt : Alt-syntax M ⦄
+  → List A → (A → M B) → M B
+nondet [] _          = fail
+nondet (x ∷ xs) kont = kont x <|> nondet xs kont
 ```
 -->

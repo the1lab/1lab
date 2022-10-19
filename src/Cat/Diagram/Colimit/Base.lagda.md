@@ -177,8 +177,7 @@ Now, we can define the category of cocones over a given diagram:
 
 <!--
 ```agda
-    cat .Hom-set x y = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2)
-      where open C.HLevel-instance
+    cat .Hom-set x y = Iso→is-hlevel 2 eqv hlevel!
 ```
 -->
 
