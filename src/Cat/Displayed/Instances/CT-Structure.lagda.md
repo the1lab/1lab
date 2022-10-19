@@ -52,9 +52,9 @@ CT-structure distinguishes as types.
 
 ```agda
 simple-ct : ∀ {s} → CT-Structure s → Displayed B (o ⊔ s) ℓ
-Displayed.Ob[ simple-ct ct ] Γ = Σ[ X ∈ Ob ] ∣ is-tp ct X ∣
-Displayed.Hom[ simple-ct ct ] {Γ} {Δ} u X Y = Hom (Γ ⊗ X .fst) (Y .fst)
-Displayed.Hom[ simple-ct ct ]-set {Γ} {Δ} u X Y = Hom-set (Γ ⊗ X .fst) (Y .fst)
+simple-ct ct .Displayed.Ob[_] Γ = Σ[ X ∈ Ob ] ∣ is-tp ct X ∣
+simple-ct ct .Displayed.Hom[_] {Γ} {Δ} u X Y = Hom (Γ ⊗ X .fst) (Y .fst)
+simple-ct ct .Displayed.Hom[_]-set {Γ} {Δ} u X Y = Hom-set (Γ ⊗ X .fst) (Y .fst)
 simple-ct ct .Displayed.id′ = π₂
 simple-ct ct .Displayed._∘′_ {f = u} {g = v} f g = f ∘ ⟨ v ∘ π₁ , g ⟩ 
 simple-ct ct .Displayed.idr′ {f = u} f =
@@ -71,7 +71,7 @@ simple-ct ct .Displayed.assoc′ {f = u} {g = v} {h = w} f g h =
 # Fibration Structure
 
 Much like the simple fibration, the simple fibration associated to a
-CT-structure also deserves it's name.
+CT-structure also deserves its name.
 
 ```agda
 open Cartesian-fibration
