@@ -156,7 +156,7 @@ Group-is-monadic = is-precat-iso→is-equivalence
   k₁inv hom .hom = hom .morphism
   k₁inv hom .preserves .Group-hom.pres-⋆ x y = happly (hom .commutes) (inc x ◆ inc y)
 
-  ff : is-fully-faithful K
+  ff : is-ff K
   ff = is-iso→is-equiv $ iso k₁inv (λ x → Algebra-hom-path (Sets ℓ) refl)
                                    (λ x → Grp.Forget-is-faithful refl)
 ```

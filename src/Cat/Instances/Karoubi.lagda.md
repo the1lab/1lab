@@ -89,11 +89,11 @@ Embed .F-∘ f g = KH≡ {ai = C.idl _} {bi = C.idl _} refl
 
 An elementary argument shows that the morphism part of `Embed`{.Agda}
 has an inverse given by projecting the first component of the pair;
-Hence, `Embed` is `fully faithful`{.Agda ident=is-fully-faithful}.
+Hence, `Embed` is `fully faithful`{.Agda ident=is-ff}.
 
 ```agda
-Embed-is-fully-faithful : is-fully-faithful Embed
-Embed-is-fully-faithful = is-iso→is-equiv $
+Embed-is-ff : is-ff Embed
+Embed-is-ff = is-iso→is-equiv $
   iso fst (λ _ → Σ-prop-path (λ _ → hlevel 1) refl) λ _ → refl
 ```
 

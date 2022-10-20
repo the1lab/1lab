@@ -428,14 +428,14 @@ projection map $\id{fst} : \sum F \to I$.
 ```
 
 To prove that the `Total-space`{.Agda} functor is `fully faithful`{.Agda
-ident=is-fully-faithful}, we will exhibit a quasi-inverse to its action
+ident=is-ff}, we will exhibit a quasi-inverse to its action
 on morphisms. Given a fibre-preserving map between $\id{fst} : \sum
 F \to I$ and $\id{fst} : \sum G \to I$, we recover a natural
 transformation between $F$ and $G$. The hardest part is showing
 naturality, where we use path induction.
 
 ```agda
-  Total-space-is-ff : is-fully-faithful Total-space
+  Total-space-is-ff : is-ff Total-space
   Total-space-is-ff {f1} {f2} = is-iso→is-equiv
     (iso from linv (λ x → Nat-path (λ x → funext (λ _ → transport-refl _))))
     where

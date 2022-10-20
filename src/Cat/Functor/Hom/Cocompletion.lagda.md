@@ -84,5 +84,5 @@ extend-cocontinuous
 extend-cocontinuous F = left-adjoint-colimit (Realisation⊣Nerve colim F)
 
 extend-factors : (F : Functor C D) → (extend F F∘ よ C) ≅ F
-extend-factors F = ff-lan-ext colim (よ C) F (よ-is-fully-faithful C)
+extend-factors F = ff-lan-ext colim (よ C) F (よ-is-ff C)
 ```

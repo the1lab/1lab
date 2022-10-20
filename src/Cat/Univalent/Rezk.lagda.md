@@ -51,7 +51,7 @@ sea of theory has risen to the point where our result is trivial:
 
 ```agda
 Rezk-completion : Precategory o h → Precategory (o ⊔ lsuc h) (o ⊔ h)
-Rezk-completion A = Full-inclusion→Full-subcat {F = よ A} (よ-is-fully-faithful A)
+Rezk-completion A = Full-inclusion→Full-subcat {F = よ A} (よ-is-ff A)
 
 Rezk-completion-is-category
   : ∀ {A : Precategory o h} → is-category (Rezk-completion A)

@@ -129,7 +129,7 @@ d$.
 [eso]: Cat.Functor.Base.html#essential-fibres
 
 ```agda
-module _ {F : Functor C D} (ff : is-fully-faithful F) (eso : is-split-eso F) where
+module _ {F : Functor C D} (ff : is-ff F) (eso : is-split-eso F) where
   import Cat.Reasoning C as C
   import Cat.Reasoning D as D
   private module di = D._≅_
@@ -175,7 +175,7 @@ by faithfulness.
     where open Σ (eso x) renaming (fst to f*x ; snd to f*x-iso)
 
   ff+split-eso→inverse .F-∘ {x} {y} {z} f g =
-    fully-faithful→faithful {F = F} ff (
+    ff→faithful F ff (
       F₁ F (ff⁻¹ (ffz D.∘ (f D.∘ g) D.∘ ftx))      ≡⟨ ff.ε _ ⟩
       ffz D.∘ (f D.∘ g) D.∘ ftx                    ≡⟨ cat! D ⟩
       ffz D.∘ f D.∘ ⌜ D.id ⌝ D.∘ g D.∘ ftx         ≡˘⟨ ap¡ (f*y-iso .di.invl) ⟩
@@ -230,7 +230,7 @@ essential fibre $F^*F(x)$ comes equipped with an isomorphism $FF^*F(x)
 
 ```agda
   ff+split-eso→unit .is-natural x y f =
-    fully-faithful→faithful {F = F} ff (
+    ff→faithful F ff (
       F₁ F (ff⁻¹ ffy C.∘ f)                                    ≡⟨ F-∘ F _ _ ⟩
       ⌜ F₁ F (ff⁻¹ ffy) ⌝ D.∘ F₁ F f                           ≡⟨ ap! (ff.ε _) ⟩
       ffy D.∘ ⌜ F₁ F f ⌝                                       ≡⟨ ap! (sym (D.idr _) ∙ ap (F₁ F f D.∘_) (sym (f*x-iso .di.invl))) ⟩
@@ -315,7 +315,7 @@ The `zag`{.Agda} identity needs an appeal to faithfulness:
 
 ```agda
   ff+split-eso→F⊣inverse .zag {x} =
-    fully-faithful→faithful {F = F} ff (
+    ff→faithful F ff (
       F₁ F (ff⁻¹ (ffx D.∘ ftx D.∘ fftx) C.∘ ff⁻¹ fffx)        ≡⟨ F-∘ F _ _ ⟩
       F₁ F (ff⁻¹ (ffx D.∘ ftx D.∘ fftx)) D.∘ F₁ F (ff⁻¹ fffx) ≡⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
       (ffx D.∘ ftx D.∘ fftx) D.∘ fffx                         ≡⟨ cat! D ⟩
@@ -362,13 +362,13 @@ needs an appeal to faithfulness (two, actually):
   ff+split-eso→is-equivalence .unit-iso x = record
     { inv      = ff⁻¹ (f*x-iso .di.to)
     ; inverses = record
-      { invl = fully-faithful→faithful {F = F} ff (
+      { invl = ff→faithful F ff (
           F₁ F (ff⁻¹ ffx C.∘ ff⁻¹ ftx)        ≡⟨ F-∘ F _ _ ⟩
           F₁ F (ff⁻¹ ffx) D.∘ F₁ F (ff⁻¹ ftx) ≡⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
           ffx D.∘ ftx                         ≡⟨ f*x-iso .di.invr ⟩
           D.id                                ≡˘⟨ F-id F ⟩
           F₁ F C.id                           ∎)
-      ; invr = fully-faithful→faithful {F = F} ff (
+      ; invr = ff→faithful F ff (
           F₁ F (ff⁻¹ ftx C.∘ ff⁻¹ ffx)        ≡⟨ F-∘ F _ _ ⟩
           F₁ F (ff⁻¹ ftx) D.∘ F₁ F (ff⁻¹ ffx) ≡⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
           ftx D.∘ ffx                         ≡⟨ f*x-iso .di.invl ⟩
@@ -405,7 +405,7 @@ to go through.
 ```agda
 module
   _ (F : Functor C D) (ccat : is-category C) (dcat : is-category D)
-    (ff : is-fully-faithful F)
+    (ff : is-ff F)
   where
   private
     module C = Cat.Reasoning C
@@ -436,7 +436,7 @@ sends back to $i \circ j^{-1}$.
     Fx≅Fy = i D.∘Iso (j D.Iso⁻¹)
 
     x≅y : x C.≅ y
-    x≅y = is-ff→essentially-injective {F = F} ff Fx≅Fy
+    x≅y = is-ff→essentially-injective F ff Fx≅Fy
 ```
 
 Furthermore, since we're working with categories, these isomorphisms
@@ -473,7 +473,7 @@ _are_ indeed the same path:
       square : ap (F₀ F) x≡y ≡ Fx≡Fy
       square =
         ap (F₀ F) x≡y                     ≡⟨ F-map-path F x≅y ccat dcat ⟩
-        dcat .to-path ⌜ F-map-iso F x≅y ⌝ ≡⟨ ap! (equiv→counit (is-ff→F-map-iso-is-equiv {F = F} ff) _)  ⟩
+        dcat .to-path ⌜ F-map-iso F x≅y ⌝ ≡⟨ ap! (equiv→counit (is-ff→F-map-iso-is-equiv F ff) _)  ⟩
         dcat .to-path Fx≅Fy               ∎
 
     over : PathP (λ i → F₀ F (x≡y i) D.≅ z) i j
@@ -514,7 +514,7 @@ record is-precat-iso (F : Functor C D) : Type (adj-level C D) where
   no-eta-equality
   constructor iso
   field
-    has-is-ff  : is-fully-faithful F
+    has-is-ff  : is-ff F
     has-is-iso : is-equiv (F₀ F)
 ```
 

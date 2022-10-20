@@ -142,9 +142,9 @@ fully faithful. It exhibits $\ca{C}$ as a full subproset of
 $\widehat{\ca{C}}$.
 
 ```agda
-Complete-is-fully-faithful
-  : ∀ {o h} {X : Proset o h} → is-fully-faithful (Complete {X = X})
-Complete-is-fully-faithful = id-equiv
+Complete-is-ff
+  : ∀ {o h} {X : Proset o h} → is-ff (Complete {X = X})
+Complete-is-ff = id-equiv
 ```
 
 ## Lifting functors

@@ -374,7 +374,7 @@ extension along a fully-faithful functor does actually _extend_.
   private module Fn = Cat Cat[ C , E ]
   open _=>_
 
-  ff-lan-ext : is-fully-faithful K → cocomplete→lan .Ext F∘ K Fn.≅ F
+  ff-lan-ext : is-ff K → cocomplete→lan .Ext F∘ K Fn.≅ F
   ff-lan-ext ff = Fn._Iso⁻¹ (Fn.invertible→iso (cocomplete→lan .eta) inv) where
     module ff {x} {y} = Equiv (_ , ff {x} {y})
     inv′ : ∀ x → E.is-invertible (cocomplete→lan .eta .η x)
@@ -383,7 +383,7 @@ extension along a fully-faithful functor does actually _extend_.
       cocone′ .coapex = F.₀ x
       cocone′ .ψ ob = F.₁ (ff.from (ob .map))
       cocone′ .commutes {x = y} {z} f =
-        F.collapse (fully-faithful→faithful {F = K} ff
+        F.collapse (ff→faithful K ff
           ( K .Functor.F-∘  _ _
           ∙ ap₂ D._∘_ (ff.ε _) refl
           ∙ f .sq
@@ -404,7 +404,7 @@ extension along a fully-faithful functor does actually _extend_.
 
       invr : to E.∘ cocomplete→lan .eta .η x ≡ E.id
       invr = colim _ .has⊥ cocone′ .centre .commutes _
-           ∙ F.elim (fully-faithful→faithful {F = K} ff
+           ∙ F.elim (ff→faithful K ff
                       (ff.ε _ ∙ sym K.F-id))
 
     inv : Fn.is-invertible (cocomplete→lan .eta)

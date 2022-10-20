@@ -107,7 +107,7 @@ the image of $F$.
 [fully faithful]: Cat.Functor.Base.html#ff-functors
 
 ```agda
-module _ {o' h'} {D : Precategory o' h'} {F : Functor D C} (ff : is-fully-faithful F) where
+module _ {o' h'} {D : Precategory o' h'} {F : Functor D C} (ff : is-ff F) where
   open Functor F
 
   Full-inclusion→Full-subcat : Precategory _ _
@@ -128,8 +128,8 @@ functor from $\ca{D}$. This functor is actually just $F$ again:
   Ff-domain→Full-subcat .Functor.F-id = F-id
   Ff-domain→Full-subcat .Functor.F-∘ = F-∘
 
-  is-fully-faithful-domain→Full-subcat : is-fully-faithful Ff-domain→Full-subcat
-  is-fully-faithful-domain→Full-subcat = ff
+  is-ff-domain→Full-subcat : is-ff Ff-domain→Full-subcat
+  is-ff-domain→Full-subcat = ff
 
   is-eso-domain→Full-subcat : is-eso Ff-domain→Full-subcat
   is-eso-domain→Full-subcat yo =
@@ -150,6 +150,6 @@ module _ {P : C.Ob → Type ℓ} where
   Forget-full-subcat .Functor.F-id = refl
   Forget-full-subcat .Functor.F-∘ f g i = f C.∘ g
 
-  is-fully-faithful-Forget-full-subcat : is-fully-faithful Forget-full-subcat
-  is-fully-faithful-Forget-full-subcat = id-equiv
+  is-ff-Forget-full-subcat : is-ff Forget-full-subcat
+  is-ff-Forget-full-subcat = id-equiv
 ```

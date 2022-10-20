@@ -64,7 +64,7 @@ the induced [nerve] functor is fully faithful.
 [nerve]: Cat.Functor.Kan.Nerve.html
 
 ```agda
-  is-dense→nerve-is-ff : is-dense → is-fully-faithful (Nerve F)
+  is-dense→nerve-is-ff : is-dense → is-ff (Nerve F)
   is-dense→nerve-is-ff is-colim = is-iso→is-equiv $ iso inv invr invl where
     nt→cone : ∀ {x y} → (Nerve F .F₀ x => Nerve F .F₀ y) → Cocone _
     nt→cone {x} {y} nt .coapex = y
@@ -97,6 +97,6 @@ enough to tell morphisms (and so objects) in the ambient category apart.
     → (∀ {Z} (h : D.Hom (F.₀ Z) X) → f D.∘ h ≡ g D.∘ h)
     → f ≡ g
   dense→separating dense h =
-    fully-faithful→faithful {F = Nerve F} (is-dense→nerve-is-ff dense) $
+    ff→faithful (Nerve F) (is-dense→nerve-is-ff dense) $
       Nat-path λ x → funext λ g → h g
 ```

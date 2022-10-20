@@ -112,7 +112,7 @@ module _ {ℓ} (X : Set ℓ) where
   Families→functors .F-∘ f g =
     ap (Families→functors .F₁) (transport-refl _) ∙ Nat-path λ x → refl
 
-  Families→functors-is-ff : is-fully-faithful Families→functors
+  Families→functors-is-ff : is-ff Families→functors
   Families→functors-is-ff = is-iso→is-equiv
     (iso η (λ x → Nat-path λ _ → refl) λ x → refl)
 

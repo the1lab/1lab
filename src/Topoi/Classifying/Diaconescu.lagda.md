@@ -169,5 +169,5 @@ fully faithful functor.
 
 ```agda
     Diaconescu-invl : Diaconescu⁻¹ (Diaconescu F flat) DC.≅ F
-    Diaconescu-invl = ff-lan-ext colim (よ D) F (よ-is-fully-faithful D)
+    Diaconescu-invl = ff-lan-ext colim (よ D) F (よ-is-ff D)
 ```

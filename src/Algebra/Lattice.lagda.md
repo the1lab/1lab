@@ -206,7 +206,7 @@ A tiny calculation shows that this functor is fully faithful, and
 essential surjectivity is immediate:
 
 ```agda
-    ff : is-fully-faithful (covariant-order-map l)
+    ff : is-ff (covariant-order-map l)
     ff {x} {y} .is-eqv p .centre .fst =
       x               ≡⟨ sym ∧-absorbs-∨ ⟩
       x L∧ ⌜ x L∨ y ⌝ ≡˘⟨ ap¡ p ⟩

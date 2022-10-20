@@ -133,7 +133,7 @@ without comment.
     func .F-id    = Nat-path (λ x → funext λ y → Σ-prop-path (λ _ → P.₀ _ .is-tr _ _) refl)
     func .F-∘ f g = Nat-path (λ x → funext λ y → Σ-prop-path (λ _ → P.₀ _ .is-tr _ _) refl)
 
-  slice→total-is-ff : is-fully-faithful slice→total
+  slice→total-is-ff : is-ff slice→total
   slice→total-is-ff {x} {y} = is-iso→is-equiv (iso inv rinv linv) where
     inv : Hom Cat[ ∫ C P ^op , Sets _ ] _ _
         → Slice Cat[ C ^op , Sets _ ] P .Hom _ _

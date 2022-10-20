@@ -260,7 +260,7 @@ module
     module F = Fr F
   open _=>_
 
-  is-equivalence→is-ff : is-fully-faithful F
+  is-equivalence→is-ff : is-ff F
   is-equivalence→is-ff = is-iso→is-equiv λ where
     .is-iso.inv x → unit⁻¹ .η _ C.∘ L-adjunct F⊣F⁻¹ x
     .is-iso.rinv x →

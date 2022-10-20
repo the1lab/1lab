@@ -232,7 +232,7 @@ Monoid-is-monadic {ℓ} = ff+split-eso→is-equivalence it's-ff it's-eso where
   comparison = Comparison (Free⊣Forget {ℓ})
   module comparison = Functor comparison
 
-  it's-ff : is-fully-faithful comparison
+  it's-ff : is-ff comparison
   it's-ff {x} {y} = is-iso→is-equiv (iso from from∘to to∘from) where
     module x = Monoid-on (x .snd)
     module y = Monoid-on (y .snd)

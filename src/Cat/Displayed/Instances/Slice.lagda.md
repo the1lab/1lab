@@ -150,7 +150,7 @@ Fibre→slice .F₁ f ./-Hom.commutes = sym (f .commute) ∙ eliml refl
 Fibre→slice .F-id = /-Hom-path refl
 Fibre→slice .F-∘ f g = /-Hom-path (transport-refl _)
 
-Fibre→slice-is-ff : ∀ {x} → is-fully-faithful (Fibre→slice {x = x})
+Fibre→slice-is-ff : ∀ {x} → is-ff (Fibre→slice {x = x})
 Fibre→slice-is-ff {_} {x} {y} = is-iso→is-equiv isom where
   isom : is-iso (Fibre→slice .F₁)
   isom .is-iso.inv hom =

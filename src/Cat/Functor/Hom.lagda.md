@@ -116,8 +116,8 @@ natural transformation with the identity map; Hence, the Yoneda
 embedding functor is fully faithful.
 
 ```agda
-よ-is-fully-faithful : is-fully-faithful よ
-よ-is-fully-faithful = is-iso→is-equiv isom where
+よ-is-ff : is-ff よ
+よ-is-ff = is-iso→is-equiv isom where
   open is-iso
 
   isom : is-iso よ₁
@@ -340,7 +340,7 @@ private module _ where private
     → (∀ {Z} (h : Hom Z X) → f ∘ h ≡ g ∘ h)
     → f ≡ g
   よ-cancelr sep =
-    fully-faithful→faithful {F = よ} よ-is-fully-faithful $
+    ff→faithful よ よ-is-ff $
       Representables-generate-presheaf λ h → Nat-path λ x → funext λ a →
         sep (h .η x a)
 ```

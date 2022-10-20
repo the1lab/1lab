@@ -62,7 +62,7 @@ $\ca{D}$.
 
 ```agda
 is-reflective : F ⊣ G → Type _
-is-reflective {G = G} adj = is-fully-faithful G
+is-reflective {G = G} adj = is-ff G
 ```
 
 The first thing we will prove is that the counit map $\eps : FGo \to o$
@@ -93,18 +93,18 @@ module
     morp = D.make-iso (counit.ε _) (g-ff.from (unit.η _)) invl invr
       where abstract
       invl : counit.ε o D.∘ g-ff.from (unit.η (G.₀ o)) ≡ D.id
-      invl = fully-faithful→faithful {F = G} g-ff (
+      invl = ff→faithful G g-ff $
         G.₁ (counit.ε o D.∘ _)                 ≡⟨ G.F-∘ _ _ ⟩
         G.₁ (counit.ε o) C.∘ G.₁ (g-ff.from _) ≡⟨ C.refl⟩∘⟨  g-ff.ε _ ⟩
         G.₁ (counit.ε o) C.∘ unit.η (G.₀ o)    ≡⟨ zag ∙ sym G.F-id ⟩
-        G.₁ D.id                               ∎)
+        G.₁ D.id                               ∎
 
       invr : g-ff.from (unit.η (G.₀ o)) D.∘ counit.ε o ≡ D.id
-      invr = fully-faithful→faithful {F = G} g-ff (ap G.₁ (
+      invr = ff→faithful G g-ff $ ap G.₁ $
         g-ff.from _ D.∘ counit.ε _             ≡˘⟨ counit.is-natural _ _ _ ⟩
         counit.ε _ D.∘ F.₁ (G.₁ (g-ff.from _)) ≡⟨ D.refl⟩∘⟨ F.⟨ g-ff.ε _ ⟩ ⟩
         counit.ε _ D.∘ F.₁ (unit.η _)          ≡⟨ zig ⟩
-        D.id                                   ∎))
+        D.id                                   ∎
 
   is-reflective→counit-iso : (F F∘ G) DD.≅ Id
   is-reflective→counit-iso = DD.invertible→iso counit invs where
@@ -165,7 +165,7 @@ observe that it's always faithful; The fullness comes from the
 assumption that $G$ is ff.
 
 ```agda
-  comp-ff : is-fully-faithful Comp
+  comp-ff : is-ff Comp
   comp-ff {x} {y} = is-iso→is-equiv isom where
     open is-iso
     isom : is-iso _

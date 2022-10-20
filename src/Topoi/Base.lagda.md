@@ -95,7 +95,7 @@ record Topos {o} κ (𝓣 : Precategory o κ) : Type (lsuc (o ⊔ κ)) where
     site : Precategory κ κ
 
     ι : Functor 𝓣 (PSh κ site)
-    has-ff : is-fully-faithful ι
+    has-ff : is-ff ι
 
     L : Functor (PSh κ site) 𝓣
     L-lex : is-lex L
@@ -493,7 +493,7 @@ module _ {o ℓ} {C : Precategory o ℓ} (ct : Topos ℓ C) where
       → f C.∘ h ≡ g C.∘ h )
     → f ≡ g
   Representables-generate {f = f} {g} sep =
-    fully-faithful→faithful {F = ct.ι} ct.has-ff $
+    ff→faithful ct.ι ct.has-ff $
       Representables-generate-presheaf ct.site λ h →
         ι.₁ f PSh.∘ h                                     ≡⟨ mangle ⟩
         ι.₁ ⌜ f C.∘ counit.ε _ C.∘ L.₁ h ⌝ PSh.∘ unit.η _ ≡⟨ ap! (sep _) ⟩
@@ -694,7 +694,7 @@ convenient for this application.
 record Geom[_↪_] (E : Precategory o ℓ) (F : Precategory o′ ℓ′) : Type (lvl E F) where
   field
     morphism : Geom[ E , F ]
-    has-ff : is-fully-faithful Dir[ morphism ]
+    has-ff : is-ff Dir[ morphism ]
 
 Geometric-embeddings-compose : Geom[ F ↪ G ] → Geom[ E ↪ F ] → Geom[ E ↪ G ]
 Geometric-embeddings-compose f g =

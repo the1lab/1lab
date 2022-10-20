@@ -73,7 +73,7 @@ morphisms in the same way must be isomorphic.
 representation-unique : {F : Functor (C ^op) (Sets κ)} (X Y : Representation F)
                       → X .rep C.≅ Y .rep
 representation-unique X Y =
-  is-ff→essentially-injective {F = よ C} (よ-is-fully-faithful C) よX≅よY
+  is-ff→essentially-injective (よ C) (よ-is-ff C) よX≅よY
   where
     よX≅よY : よ₀ C (X .rep) C^.≅ よ₀ C (Y .rep)
     よX≅よY = (X .represents C^.Iso⁻¹) C^.∘Iso Y .represents

@@ -68,7 +68,7 @@ faithful.
   Sliced-faithful : is-faithful F → is-faithful (Sliced F X)
   Sliced-faithful faith p = /-Hom-path (faith (ap map p))
 
-  Sliced-ff : is-fully-faithful F → is-fully-faithful (Sliced F X)
+  Sliced-ff : is-ff F → is-ff (Sliced F X)
   Sliced-ff eqv = is-iso→is-equiv isom where
     isom : is-iso _
     isom .is-iso.inv sh = record

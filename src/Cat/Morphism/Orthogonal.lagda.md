@@ -139,7 +139,7 @@ itself, then it is an isomorphism:
 module
   _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
     {r : Functor C D} {ι : Functor D C}
-    (r⊣ι : r ⊣ ι) (ι-ff : is-fully-faithful ι)
+    (r⊣ι : r ⊣ ι) (ι-ff : is-ff ι)
   where
   private
     module C = Cr C
