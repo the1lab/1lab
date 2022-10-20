@@ -3,9 +3,33 @@ module Cat.Subcategory where
 
 open import Cat.Prelude
 open import Cat.Displayed.Base
+open import Cat.Displayed.Univalence
+
+import Cat.Reasoning
 ```
 
 # Subcategories
+
+Naïvely, a subcategory of a category $\ca{B}$ consists of a subset
+of objects, and a subset of morphisms between those objects that is
+closed under identity and composition. However, this definition is naïve
+for a reason: it's not invariant under equivalence of categories!
+The traditional approach repairing the definition is to try and
+generalize the situation with subobjects, and to work with the
+embeddings of subcategories instead of the foundational goop that
+underlies them, but this is not the route we shall take.
+
+Instead, we can take a step back and think of subcategories as
+_structure imposed upon a category_. This immediately leads us to the
+theory of [displayed categories], which provides the perfect setting to
+study stuctures over categories in type theory. Concretely, we shall
+say some displayed category $\ca{E}$ is a subcategory of $\ca{B}$ if
+both the object and hom spaces of $\ca{E}$ are propositions.
+Intuitively, the to think about this is that the structure we
+are imposing over $\ca{B}$ is "is this object/hom in the subcategory",
+instead of some more proof-relevant notion of structure.
+
+[displayed categories]: Cat.Displayed.Base.html
 
 ```agda
 record is-subcategory {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′) :
@@ -14,10 +38,14 @@ record is-subcategory {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed
   open Displayed E
 
   field
-    prop-obj : ∀ X → is-prop Ob[ X ]
-    prop-hom : ∀ {X Y} f (X′ : Ob[ X ]) (Y′ : Ob[ Y ]) → is-prop (Hom[ f ] X′ Y′)
+    Ob[_]-prop : ∀ X → is-prop Ob[ X ]
+    Hom[_]-prop : ∀ {X Y} f (X′ : Ob[ X ]) (Y′ : Ob[ Y ]) → is-prop (Hom[ f ] X′ Y′)
+```
 
+As per usual, we define a bundled notion of subcategory as well as the
+predicate.
 
+```agda
 record Subcategory {o ℓ} (B : Precategory o ℓ) (o′ ℓ′ : Level) :
   Type (o ⊔ ℓ ⊔ lsuc o′ ⊔ lsuc ℓ′) where
   field
@@ -27,7 +55,43 @@ record Subcategory {o ℓ} (B : Precategory o ℓ) (o′ ℓ′ : Level) :
   open is-subcategory has-is-subcategory public
 ```
 
+## Properties of Subcategories
+
+One interesting fact is that subcategories $\ca{E}$ of $\ca{B}$
+are _always_ univalent displayed categories, _regardless of whether or
+not the base category is univalent_. To see this, recall that a displayed
+category is univalent iff the for all `A : Ob[ X ]`, the space of
+displayed isomorphisms `Σ[ B ∈ Ob[ Y ] ] (A ≅[ f ] B)` is contractible.
+However, because all of the objects and homs in $\ca{E}$ are props,
+this follows directly from the fact that we can only ever have a single
+isomorphism between objects, due to the uniqueness of homs.
+
+```agda
+module _ {o ℓ o′ ℓ′} {B : Precategory o ℓ} {E : Displayed B o′ ℓ′}
+         (is-subcat : is-subcategory E) where
+
+  open Cat.Reasoning B
+  open Displayed E
+  open is-subcategory is-subcat
+
+  subcategory-is-category : is-category-displayed E
+  subcategory-is-category x≅y X′ =
+    Σ-is-hlevel 1
+      Ob[ _ ]-prop 
+      (λ _ _ _ →
+        ≅[]-path E
+          ((Hom[ _ ]-prop _ _) _ _)
+          ((Hom[ _ ]-prop _ _) _ _))
+```
+
 ## Constructing Subcategories
+
+Our definition of a subcategory has many things going for it.
+It's concise, uses existing theory, is easily extensible, and generally
+follows the principle of the rising sea. However, there is one glaring
+drawback: constructing one involves a lot of busywork! To work around
+this, we define an API for constructing subcategories from the datum
+that is normally used to define them.
 
 ```agda
 record make-subcategory {o ℓ} (B : Precategory o ℓ) (o′ ℓ′ : Level) :
@@ -58,24 +122,34 @@ to-subcategory mk-subcat = subcat
     subcat .Subcat .idr′ f = is-prop→pathp (λ _ → is-tr (Hom? _ _ _)) _ _
     subcat .Subcat .idl′ f = is-prop→pathp (λ _ → is-tr (Hom? _ _ _)) _ _
     subcat .Subcat .assoc′ f g h = is-prop→pathp (λ _ → is-tr (Hom? _ _ _)) _ _
-    subcat .has-is-subcategory .is-subcategory.prop-obj _ = is-tr (Ob? _)
-    subcat .has-is-subcategory .is-subcategory.prop-hom _ _ _ = is-tr (Hom? _ _ _)
+    subcat .has-is-subcategory .is-subcategory.Ob[_]-prop _ = is-tr (Ob? _)
+    subcat .has-is-subcategory .is-subcategory.Hom[_]-prop _ _ _ = is-tr (Hom? _ _ _)
 ```
 
 # Wide Subcategories
+
+We say a subcategory is wide if it contains "all of the objects,
+but some of the morphisms". This can be elegantly expressed by refining the definition
+of subcategory to require _contractible_ spaces of objects instead of propositional
+spaces.
 
 ```agda
 record is-wide-subcategory {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′) :
   Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
   open Displayed E
   field
-    contr-obj : ∀ X → is-contr Ob[ X ]
-    prop-hom : ∀ {X Y} f (X′ : Ob[ X ]) (Y′ : Ob[ Y ]) → is-prop (Hom[ f ] X′ Y′)
+    Ob[_]-contr : ∀ X → is-contr Ob[ X ]
+    Hom[_]-prop : ∀ {X Y} f (X′ : Ob[ X ]) (Y′ : Ob[ Y ]) → is-prop (Hom[ f ] X′ Y′)
 
   has-is-subcategory : is-subcategory E
-  has-is-subcategory .is-subcategory.prop-obj X = is-contr→is-prop (contr-obj X)
-  has-is-subcategory .is-subcategory.prop-hom = prop-hom
+  has-is-subcategory .is-subcategory.Ob[_]-prop X = is-contr→is-prop (Ob[_]-contr X)
+  has-is-subcategory .is-subcategory.Hom[_]-prop = Hom[_]-prop
+```
 
+As in the case of subcategories, we bundle up the definition to make it less
+annoying to work with in some cases.
+
+```agda
 record Wide-subcategory {o ℓ} (B : Precategory o ℓ) (o′ ℓ′ : Level) :
   Type (o ⊔ ℓ ⊔ lsuc o′ ⊔ lsuc ℓ′) where
   field
@@ -86,6 +160,9 @@ record Wide-subcategory {o ℓ} (B : Precategory o ℓ) (o′ ℓ′ : Level) :
 ```
 
 ## Constructing Wide Subcategories
+
+We also provide an API for constructing wide subcategories from the normal
+datum used to define them.
 
 ```agda
 record make-wide-subcategory {o ℓ} (B : Precategory o ℓ) (ℓ′ : Level) :
@@ -114,11 +191,15 @@ to-wide-subcategory mk-subcat = subcat
     subcat .Subcat .idr′ _ = is-prop→pathp (λ _ → is-tr (Hom? _)) _ _
     subcat .Subcat .idl′ _ = is-prop→pathp (λ _ → is-tr (Hom? _)) _ _
     subcat .Subcat .assoc′ _ _ _ = is-prop→pathp (λ _ → is-tr (Hom? _)) _ _
-    subcat .has-is-wide-subcategory .contr-obj _ = hlevel 0
-    subcat .has-is-wide-subcategory .prop-hom _ _ _ = is-tr (Hom? _)
+    subcat .has-is-wide-subcategory .Ob[_]-contr _ = hlevel 0
+    subcat .has-is-wide-subcategory .Hom[_]-prop _ _ _ = is-tr (Hom? _)
 ```
 
 # Full Subcategories
+
+Full subcategories are the cousins of wide subcategories: instead of
+"all of the objects, some of the morphisms", we have "some of the objects, all of the
+morphisms". We can encode this by requiring that the hom spaces be contractible.
 
 ```agda
 record is-full-subcategory {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′) :
@@ -126,12 +207,16 @@ record is-full-subcategory {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Disp
   open Displayed E
   field
     prop-obj : ∀ X → is-prop Ob[ X ]
-    contr-hom : ∀ {X Y} f (X′ : Ob[ X ]) (Y′ : Ob[ Y ]) → is-contr (Hom[ f ] X′ Y′)
+    Hom[_]-contr : ∀ {X Y} f (X′ : Ob[ X ]) (Y′ : Ob[ Y ]) → is-contr (Hom[ f ] X′ Y′)
 
   has-is-subcategory : is-subcategory E
-  has-is-subcategory .is-subcategory.prop-obj = prop-obj
-  has-is-subcategory .is-subcategory.prop-hom f PX PY = is-contr→is-prop (contr-hom f PX PY)
+  has-is-subcategory .is-subcategory.Ob[_]-prop = prop-obj
+  has-is-subcategory .is-subcategory.Hom[_]-prop f PX PY = is-contr→is-prop (Hom[_]-contr f PX PY)
+```
 
+In our usual style, we provide both an unbunbled and bundled definition.
+
+```agda
 record Full-subcategory {o ℓ} (B : Precategory o ℓ) (o′ ℓ′ : Level) :
   Type (o ⊔ ℓ ⊔ lsuc o′ ⊔ lsuc ℓ′) where
   field
@@ -142,6 +227,9 @@ record Full-subcategory {o ℓ} (B : Precategory o ℓ) (o′ ℓ′ : Level) :
 ```
 
 ## Constructing Full Subcategories
+
+The datum used to construct a full category is exceptionally simple, as we don't
+need to worry about closure conditions at all.
 
 ```agda
 to-full-subcategory : ∀ {o ℓ o′} {B : Precategory o ℓ}
@@ -163,5 +251,5 @@ to-full-subcategory Ob? = subcat
     subcat .Subcat .idl′ _ = refl
     subcat .Subcat .assoc′ _ _ _ = refl
     subcat .has-is-full-subcategory .prop-obj X = is-tr (Ob? X)
-    subcat .has-is-full-subcategory .contr-hom _ _ _ = hlevel 0
+    subcat .has-is-full-subcategory .Hom[_]-contr _ _ _ = hlevel 0
 ```
