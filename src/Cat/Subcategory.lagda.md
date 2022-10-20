@@ -1,9 +1,11 @@
 ```agda
 module Cat.Subcategory where
 
-open import Cat.Prelude
 open import Cat.Displayed.Base
+open import Cat.Displayed.Total
 open import Cat.Displayed.Univalence
+open import Cat.Functor.Base
+open import Cat.Prelude
 
 import Cat.Reasoning
 ```
@@ -55,7 +57,7 @@ record Subcategory {o ℓ} (B : Precategory o ℓ) (o′ ℓ′ : Level) :
   open is-subcategory has-is-subcategory public
 ```
 
-## Properties of Subcategories
+## Subcategories are Univalent
 
 One interesting fact is that subcategories $\ca{E}$ of $\ca{B}$
 are _always_ univalent displayed categories, _regardless of whether or
@@ -83,6 +85,28 @@ module _ {o ℓ o′ ℓ′} {B : Precategory o ℓ} {E : Displayed B o′ ℓ�
           ((Hom[ _ ]-prop _ _) _ _)
           ((Hom[ _ ]-prop _ _) _ _))
 ```
+
+## Faithfulness of the Projection Functor
+
+Given a subcategory $E$ of $B$, the projection functor `πᶠ`{.Agda} from the total
+category is faithful. This follows rather directly from the characterization of
+path spaces in the total category: these consist of paths between the base homs,
+along with a `PathP`{.Agda} over the displayed homs. We have the first path by
+our hypotheses, and the `PathP` is trivial, as the space of homs is a proposition.
+
+```agda
+module _ {o ℓ o′ ℓ′} {B : Precategory o ℓ} {E : Displayed B o′ ℓ′}
+  (is-subcat : is-subcategory E) where
+    
+  open Cat.Reasoning B
+  open is-subcategory is-subcat
+  open Total-hom
+
+  πᶠ-subcategory-faithful : is-faithful (πᶠ E)
+  πᶠ-subcategory-faithful p =
+    total-hom-path E p (is-prop→pathp (λ _ → Hom[ _ ]-prop _ _) _ _)
+```
+
 
 ## Constructing Subcategories
 
@@ -159,6 +183,27 @@ record Wide-subcategory {o ℓ} (B : Precategory o ℓ) (o′ ℓ′ : Level) :
   open is-wide-subcategory has-is-wide-subcategory public
 ```
 
+## Essential Surjectivity of the Projection Functor.
+
+If $E$ is a wide subcategory of $B$, then the projection functor `πᶠ`{.Agda}
+from the total category of $E$ is _split_ essentially surjective.
+The space of objects in $E$ is contractible, so we can always lift
+$X : \ca{B}$ to the pair of $X$ and the unique $X' : Ob_{X}$  in the total category, which projects down to $X$
+by `πᶠ`{.Agda}.
+
+```agda
+module _ {o ℓ o′ ℓ′} {B : Precategory o ℓ} {E : Displayed B o′ ℓ′}
+  (is-wide-subcat : is-wide-subcategory E) where
+    
+  open Cat.Reasoning B
+  open is-wide-subcategory is-wide-subcat
+  open Total-hom
+
+  πᶠ-wide-subcategory-split-eso : is-split-eso (πᶠ E)
+  πᶠ-wide-subcategory-split-eso Y = ((Y , Ob[ Y ]-contr .centre) , id-iso)
+```
+
+
 ## Constructing Wide Subcategories
 
 We also provide an API for constructing wide subcategories from the normal
@@ -206,11 +251,11 @@ record is-full-subcategory {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Disp
   Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
   open Displayed E
   field
-    prop-obj : ∀ X → is-prop Ob[ X ]
+    Ob[_]-prop : ∀ X → is-prop Ob[ X ]
     Hom[_]-contr : ∀ {X Y} f (X′ : Ob[ X ]) (Y′ : Ob[ Y ]) → is-contr (Hom[ f ] X′ Y′)
 
   has-is-subcategory : is-subcategory E
-  has-is-subcategory .is-subcategory.Ob[_]-prop = prop-obj
+  has-is-subcategory .is-subcategory.Ob[_]-prop = Ob[_]-prop
   has-is-subcategory .is-subcategory.Hom[_]-prop f PX PY = is-contr→is-prop (Hom[_]-contr f PX PY)
 ```
 
@@ -250,6 +295,107 @@ to-full-subcategory Ob? = subcat
     subcat .Subcat .idr′ _ = refl
     subcat .Subcat .idl′ _ = refl
     subcat .Subcat .assoc′ _ _ _ = refl
-    subcat .has-is-full-subcategory .prop-obj X = is-tr (Ob? X)
+    subcat .has-is-full-subcategory .Ob[_]-prop X = is-tr (Ob? X)
     subcat .has-is-full-subcategory .Hom[_]-contr _ _ _ = hlevel 0
+```
+
+## Full Inclusions, and Full Faithfulness of the Projection Functor
+
+If $\ca{E}$ is a full subcategory of $\ca{B}$, then the projection functor
+`πᶠ`{.Agda} from the total category of $\ca{E}$ to $\ca{B}$ is fully faithful.
+To see this, consider some morphism $f$ in $\ca{B}$. We need to show that the space
+of fibres of `πᶠ`{.Agda} at $f$ is contractible. To construct the centre of this
+contraction, we can use contractibility of hom spaces in $\ca{E}$ to obtain a
+morphism $f'$ in $\ca{E}$ that lives above $f$. This then gets us an element
+$(f, f')$ of the total category, which obviously lives in the fibre of `πᶠ`{.Agda}
+over $f$.
+
+To show contractibility, we can ignore any homotopical content of the equivalence,
+as all of the hom spaces are sets. This means that we need to show that $(f , f')$
+is the only element of the fibre of `πᶠ` at `f`, which follows directly from
+contractibility of hom spaces in $\ca{E}$.
+
+```agda
+module _ {o ℓ o′ ℓ′} {B : Precategory o ℓ} {E : Displayed B o′ ℓ′}
+  (is-full-subcat : is-full-subcategory E) where
+
+  open Precategory B
+  open is-full-subcategory is-full-subcat
+  open Total-hom
+
+  πᶠ-full-subcategory-ff : is-ff (πᶠ E)
+  πᶠ-full-subcategory-ff .is-eqv f .centre =
+    total-hom f (Hom[ f ]-contr _ _ .centre) , refl
+  πᶠ-full-subcategory-ff .is-eqv f .paths (pf , eq) =
+    Σ-prop-path
+      (λ _ → Hom-set _ _ _ _)
+      (total-hom-path E
+        (sym eq)
+        (is-prop→pathp (λ _ → is-contr→is-prop (Hom[ _ ]-contr _ _)) _ _))
+```
+
+We can also go the other direction: given a fully faithful functor
+$F : \ca{D} \to \ca{C}$, we can construct a full subcategory on $\ca{C}$
+that consists of only those objects that are _essentially_ in the
+image of $F$.
+
+```agda
+module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+         {F : Functor D C} (ff : is-ff F) where
+
+  private
+    module D = Cat.Reasoning D
+    module C = Cat.Reasoning C
+
+    open Full-subcategory
+    open is-full-subcategory
+    open Functor F
+    open Total-hom
+
+  Essential-image : Full-subcategory C (ℓ ⊔ o′) lzero
+  Essential-image =
+    to-full-subcategory λ X → el! (∃[ Y ∈ D.Ob ] (F₀ Y C.≅ X))
+```
+
+Notably, the total category of this full subcategory is equivalent to
+$\ca{D}$! To start, we first construct a functor from $\ca{D}$ to the
+total category of the constructed full subcategory that takes objects in
+$\ca{D}$ to their image in $\ca{C}$, and equips them with the identity
+isomorphism.
+
+```agda
+  Embed-essential-image : Functor D (∫ (Essential-image .Subcat))
+  Embed-essential-image .Functor.F₀ X = (F₀ X) , inc (X , C.id-iso)
+  Embed-essential-image .Functor.F₁ f = total-hom (F₁ f) tt
+  Embed-essential-image .Functor.F-id = total-hom-path _ F-id refl
+  Embed-essential-image .Functor.F-∘ f g = total-hom-path _ (F-∘ f g) refl
+```
+
+To see that this functor is fully faithful, recall that if both
+$F \circ G$  and $F$ are fully faithful, then so is $G$.
+The action of morphisms of `πᶠ F∘ Embed-essential-image` is `F.F₁`{.Agda},
+which is fully faithful by our hypotheses. `πᶠ`{.Agda} is fully faithful
+when the displayed category is a full subcategory, which `Essential-image`{.Agda}
+is, so we can conclude that `Embed-essential-image`{.Agda} is also fully faithful.
+
+```agda
+  Embed-essential-image-ff : is-ff Embed-essential-image
+  Embed-essential-image-ff =
+    ff-cancel-l (πᶠ _) Embed-essential-image
+      ff
+      (πᶠ-full-subcategory-ff (Essential-image .has-is-full-subcategory))
+```
+
+Furthermore, `Embed-essential-image`{.Agda} is essential surjective, as
+`πᶠ`{.Agda} is fully faithful, and fully faithful functors are essential injective,
+which allows us to lift the isomorphism in question.
+
+```agda
+  Embed-essential-image-eso : is-eso Embed-essential-image
+  Embed-essential-image-eso yo = do
+    (preimg , isom) ← yo .snd
+    pure $ preimg , is-ff→essentially-injective (πᶠ _) πᶠ-ff isom
+    where
+      open C._≅_
+      πᶠ-ff = πᶠ-full-subcategory-ff (Essential-image .has-is-full-subcategory)
 ```

@@ -162,6 +162,9 @@ is-split-eso F = ∀ y → Essential-fibre F y
 
 is-eso : Functor C D → Type _
 is-eso F = ∀ y → ∥ Essential-fibre F y ∥
+
+split-eso→eso : ∀ (F : Functor C D) → is-split-eso F → is-eso F
+split-eso→eso F split-eso y = inc (split-eso y)
 ```
 
 <!--
