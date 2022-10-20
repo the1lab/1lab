@@ -1,5 +1,6 @@
 ```agda
 open import Cat.Prelude
+import Cat.Reasoning
 
 module Cat.Functor.Base where
 ```
@@ -7,8 +8,8 @@ module Cat.Functor.Base where
 <!--
 ```agda
 private variable
-  o h o₁ h₁ : Level
-  C D : Precategory o h
+  o h o₁ h₁ o₂ h₂ : Level
+  C D E : Precategory o h
 open Precategory
 open Functor
 ```
@@ -44,18 +45,21 @@ a definition, we use the more directly useful data as a definition and
 prove the conjunction as a theorem.
 
 ```agda
-is-fully-faithful : Functor C D → Type _
-is-fully-faithful F = ∀ {x y} → is-equiv (F₁ F {x = x} {y})
+is-ff : Functor C D → Type _
+is-ff F = ∀ {x y} → is-equiv (F₁ F {x = x} {y})
 
-fully-faithful→faithful : {F : Functor C D} → is-fully-faithful F → is-faithful F
-fully-faithful→faithful {F = F} ff {_} {_} {x} {y} p =
+ff→full : (F : Functor C D) → is-ff F → is-full F
+ff→full _ ff f = inc (equiv→inverse ff f , equiv→counit ff f)
+
+ff→faithful : (F : Functor C D) → is-ff F → is-faithful F
+ff→faithful F ff {_} {_} {x} {y} p =
   x                         ≡⟨ sym (equiv→unit ff x) ⟩
   equiv→inverse ff (F₁ F x) ≡⟨ ap (equiv→inverse ff) p ⟩
   equiv→inverse ff (F₁ F y) ≡⟨ equiv→unit ff y ⟩
   y                         ∎
 
 full+faithful→ff
-  : (F : Functor C D) → is-full F → is-faithful F → is-fully-faithful F
+  : (F : Functor C D) → is-full F → is-faithful F → is-ff F
 full+faithful→ff {C = C} {D = D} F surj inj .is-eqv = p where
   img-is-prop : ∀ {x y} f → is-prop (fibre (F₁ F {x = x} {y}) f)
   img-is-prop f (g , p) (h , q) = Σ-prop-path (λ _ → D .Hom-set _ _ _ _) (inj (p ∙ sym q))
@@ -80,10 +84,10 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
   import Cat.Morphism D as Dm
 
   is-ff→is-conservative
-    : {F : Functor C D} → is-fully-faithful F
+    : (F : Functor C D) → is-ff F
     → ∀ {X Y} (f : C.Hom X Y)  → Dm.is-invertible (F₁ F f)
     → Cm.is-invertible f
-  is-ff→is-conservative {F = F} ff f isinv = i where
+  is-ff→is-conservative F ff f isinv = i where
     open Cm.is-invertible
     open Cm.Inverses
 ```
@@ -120,17 +124,17 @@ the domain category to serve as an inverse for $f$:
       C.id                       ∎
 
   is-ff→essentially-injective
-    : {F : Functor C D} → is-fully-faithful F
+    : (F : Functor C D) → is-ff F
     → ∀ {X Y} → F₀ F X Dm.≅ F₀ F Y
     → X Cm.≅ Y
-  is-ff→essentially-injective {F = F} ff
+  is-ff→essentially-injective F ff
     record { to = to ; from = from ; inverses = inverses } =
     Cm.make-iso (equiv→inverse ff to) inv invl invr
     where
       D-inv : Dm.is-invertible to
       D-inv = record { inv = from ; inverses = inverses }
       open Cm.is-invertible
-        (is-ff→is-conservative {F = F} ff
+        (is-ff→is-conservative F ff
           (equiv→inverse ff to)
           (subst Dm.is-invertible (sym (equiv→counit ff _)) D-inv))
 ```
@@ -209,12 +213,96 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
         (transport-refl _ ·· sym (F .F-id) ·· ap (F .F₁) (sym (transport-refl _))))
 
   is-ff→F-map-iso-is-equiv
-    : {F : Functor C D} → is-fully-faithful F
+    : (F : Functor C D) → is-ff F
     → ∀ {X Y} → is-equiv (F-map-iso {X} {Y} F)
-  is-ff→F-map-iso-is-equiv {F = F} ff = is-iso→is-equiv isom where
+  is-ff→F-map-iso-is-equiv F ff = is-iso→is-equiv isom where
     isom : is-iso _
-    isom .is-iso.inv = is-ff→essentially-injective {F = F} ff
+    isom .is-iso.inv = is-ff→essentially-injective F ff
     isom .is-iso.rinv x = D.≅-pathp refl refl (equiv→counit ff _)
     isom .is-iso.linv x = C.≅-pathp refl refl (equiv→unit ff _)
 ```
 -->
+
+
+<!--
+```agda
+module _ (F : Functor D E) (G : Functor C D) where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module E = Cat.Reasoning E
+    module F = Functor F
+    module G = Functor G
+```
+-->
+
+# Reflection of Functor Properties
+
+Given 2 functors $F$ and $G$, it is natural to ask if either $F$ or $G$
+is full/faithful/etc. when their composite $F \circ G$ is. The following
+lemmas characterize the situations when we can perform such a reflection.
+
+```agda
+  faithful-cancel-r : is-faithful (F F∘ G) → is-faithful G
+  faithful-cancel-r inj p = inj (ap F.₁ p)
+
+  full-cancel-faithful-r : is-full (F F∘ G) → is-faithful F → is-full G
+  full-cancel-faithful-r surj inj Gf = do
+    f , eq ← surj (F.F₁ Gf)
+    pure (f , inj eq)
+
+  ff-cancel-faithful-r : is-ff (F F∘ G) → is-faithful F → is-ff G
+  ff-cancel-faithful-r ff inj =
+    full+faithful→ff G
+      (full-cancel-faithful-r (ff→full (F F∘ G) ff) inj)
+      (faithful-cancel-r (ff→faithful (F F∘ G) ff))
+
+  ff-cancel-l : is-ff (F F∘ G) → is-ff F → is-ff G
+  ff-cancel-l ff∘ ffl =
+    ff-cancel-faithful-r ff∘ (ff→faithful F ffl)
+
+  eso∘→esol : is-eso (F F∘ G) → is-eso F
+  eso∘→esol eso-∘ Y = do
+    (Y′ , isom) ← eso-∘ Y
+    pure (G.₀ Y′ , isom)
+```
+
+# Closure of Functor Properties
+
+All of the classes of functors we've explored are closed under
+composition and identities. Some of these proofs are trivial, but
+we include them for completeness.
+
+```agda
+  faithful-∘ : is-faithful F → is-faithful G → is-faithful (F F∘ G)
+  faithful-∘ inj-F inj-G p = inj-G (inj-F p)
+
+  full-∘ : is-full F → is-full G → is-full (F F∘ G)
+  full-∘ surj-F surj-G FGf = do
+    Gf , p ← surj-F FGf
+    f , q ← surj-G Gf
+    pure (f , ap F.₁ q ∙ p)
+
+  ff-∘ : is-ff F → is-ff G → is-ff (F F∘ G)
+  ff-∘ ff-F ff-G = ∙-is-equiv ff-G ff-F
+
+  eso-∘ : is-eso F → is-eso G → is-eso (F F∘ G)
+  eso-∘ eso-F eso-G FGY = do
+    (GY , D-iso) ← eso-F FGY
+    (Y , C-iso) ← eso-G GY
+    pure $ Y , (F-map-iso F C-iso E.∘Iso D-iso)
+
+faithful-id : is-faithful (Id {C = C})
+faithful-id p = p
+
+full-id : is-full (Id {C = C})
+full-id g = inc (g , refl)
+
+ff-id : is-ff (Id {C = C})
+ff-id = id-equiv
+
+eso-id : is-eso (Id {C = C})
+eso-id {C = C} Y = inc (Y , id-iso)
+  where
+    open Cat.Reasoning C
+```
