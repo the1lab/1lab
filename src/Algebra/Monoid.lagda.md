@@ -101,29 +101,6 @@ Monoid≃ : (A B : Monoid ℓ) (e : A .fst ≃ B .fst) → Type _
 Monoid≃ A B (e , _) = Monoid-hom A B e
 ```
 
-We automatically derive a proof that `Monoid-on`{.Agda} is univalent for
-the `structure induced`{.Agda ident=HomT→Str} by `Monoid≃`{.Agda}:
-
-```agda
-Monoid-univalent : is-univalent {ℓ = ℓ} (HomT→Str Monoid≃)
-Monoid-univalent {ℓ = ℓ} =
-  Derive-univalent-record (record-desc
-    (Monoid-on {ℓ = ℓ}) Monoid≃
-    (record:
-      field[ identity    by pres-id ]
-      field[ _⋆_         by pres-⋆ ]
-      axiom[ has-is-monoid by (λ _ → hlevel 1) ]))
-```
-
-From this, we automatically get a specialisation of the `SIP`{.Agda} for
-`Monoid`{.Agda}s, which says that _identification of monoids is monoid
-isomorphism_.
-
-```agda
-Monoid≡ : {A B : Monoid ℓ} → (A ≃[ HomT→Str Monoid≃ ] B) ≃ (A ≡ B)
-Monoid≡ = SIP Monoid-univalent
-```
-
 # Relationships to Unital Magmas
 
 ```agda

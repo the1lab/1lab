@@ -166,21 +166,21 @@ module _ {ℓ} (F : Frames.Ob ℓ) where
   private module F = Frame-on (F .snd)
   subset-cup : ∀ {ℓ′} (P : ⌞ F ⌟ → Prop ℓ′) → ⌞ F ⌟
   subset-cup P = F.⋃
-    {I = Σ[ t ∈ ⌞ F ⌟ ] (resize ℓ ∣ P t ∣ (P t .is-tr) .fst)}
+    {I = Σ[ t ∈ ⌞ F ⌟ ] (□ ∣ P t ∣)}
     λ { (x , _) → x }
 
   subset-cup-colimiting
     : ∀ {ℓ′} (P : ⌞ F ⌟ → Prop ℓ′) {x}
     → ∣ P x ∣ → x F.≤ subset-cup P
   subset-cup-colimiting P x =
-    F.⋃-colimiting (_ , Equiv.from (resize _ _ _ .snd) x) λ { (f , w) → f }
+    F.⋃-colimiting (_ , box x) λ { (f , w) → f }
 
   subset-cup-universal
     : ∀ {ℓ′} (P : ⌞ F ⌟ → Prop ℓ′) {x}
     → (∀ i → ∣ P i ∣ → i F.≤ x)
     → subset-cup P F.≤ x
   subset-cup-universal P f =
-    F.⋃-universal fst λ { (i , w) → f i (resize _ _ _ .snd .fst w) }
+    F.⋃-universal fst λ { (i , w) → f i (out w) }
 ```
 
 Keep imagining that you have a subset $P \sube A$: Can we construct a
@@ -189,7 +189,7 @@ $P$, we get the a lower bound among upper bounds of $P$: a meet for $P$.
 
 ```agda
   subset-cap : ∀ {ℓ′} (P : ⌞ F ⌟ → Prop ℓ′) → ⌞ F ⌟
-  subset-cap P = subset-cup λ x → el (∀ a → ∣ P a ∣ → x F.≤ a) hlevel!
+  subset-cap P = subset-cup λ x → el! (∀ a → ∣ P a ∣ → x F.≤ a)
 
   subset-cap-limiting
     : ∀ {ℓ′} (P : ⌞ F ⌟ → Prop ℓ′) {x} → ∣ P x ∣ → subset-cap P F.≤ x
@@ -265,11 +265,11 @@ Power-frame A .snd = to-frame-on go where
     (λ { ((x , y) , z) → x , y , z })
   go .universal {x = x} f W = funext λ i → elΩₗ-ua
     (∥-∥-rec! λ (a , w) →
-      true→elΩ (inc (_ , w)) , transport (ap ∣_∣ (W a $ₚ i)) w .snd)
-    λ x → elΩ→true (x .fst)
+      box (inc (_ , w)) , transport (ap ∣_∣ (W a $ₚ i)) w .snd)
+    λ x → out (x .fst)
   go .colimiting i f = funext λ j → Squish-prop-ua $ bi
-    (λ x → x , true→elΩ (inc (_ , x))) fst
+    (λ x → x , box (inc (_ , x))) fst
   go .distrib x f = funext λ i → sym $ elΩₗ-ua
-    (∥-∥-rec! λ { (x , y , z) → y , true→elΩ (inc (_ , z)) })
-    λ (x , i) → (λ (y , z) → _ , x , z) <$> elΩ→true i
+    (∥-∥-rec! λ { (x , y , z) → y , box (inc (_ , z)) })
+    λ (x , i) → (λ (y , z) → _ , x , z) <$> out i
 ```

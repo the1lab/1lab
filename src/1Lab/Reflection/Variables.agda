@@ -1,4 +1,4 @@
-open import 1Lab.Reflection
+open import 1Lab.Reflection hiding (reverse)
 open import 1Lab.Type
 
 open import Data.Fin.Base

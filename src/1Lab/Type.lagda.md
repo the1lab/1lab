@@ -96,6 +96,7 @@ infixr 40 _∘_
 
 id : ∀ {ℓ} {A : Type ℓ} → A → A
 id x = x
+{-# INLINE id #-}
 
 infixr -1 _$_ _$ₛ_
 

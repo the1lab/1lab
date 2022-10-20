@@ -628,6 +628,9 @@ instance
   decomp-pi : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} → hlevel-decomposition (∀ a → B a)
   decomp-pi = decomp (quote Π-is-hlevel) (`level ∷ `search-under 1 ∷ [])
 
+  decomp-impl-pi : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} → hlevel-decomposition (∀ {a} → B a)
+  decomp-impl-pi = decomp (quote Π-is-hlevel′) (`level ∷ `search-under 1 ∷ [])
+
   decomp-sigma : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} → hlevel-decomposition (Σ A B)
   decomp-sigma = decomp (quote Σ-is-hlevel) (`level ∷ `search ∷ `search-under 1 ∷ [])
 
@@ -672,17 +675,17 @@ private
     _ : is-hlevel (Σ some-def λ x → ∣ B x ∣) 3
     _ = hlevel!
 
---     _ : ∀ a → is-hlevel (∣ A ∣ × ∣ A ∣ × (Nat → ∣ B a ∣)) 5
---     _ = hlevel!
+    _ : ∀ a → is-hlevel (∣ A ∣ × ∣ A ∣ × (Nat → ∣ B a ∣)) 5
+    _ = hlevel!
 
---     _ : ∀ a → is-hlevel (∣ A ∣ × ∣ A ∣ × (Nat → ∣ B a ∣)) 3
---     _ = hlevel!
+    _ : ∀ a → is-hlevel (∣ A ∣ × ∣ A ∣ × (Nat → ∣ B a ∣)) 3
+    _ = hlevel!
 
---     _ : is-hlevel ∣ A ∣ 2
---     _ = hlevel!
+    _ : is-hlevel ∣ A ∣ 2
+    _ = hlevel!
 
---     -- _ : ∀ n → is-hlevel (n-Type ℓ n) (suc n)
---     -- _ = hlevel!
+    _ : ∀ n → is-hlevel (n-Type ℓ n) (suc n)
+    _ = hlevel!
 
---     _ : ∀ n (x : n-Type ℓ n) → is-hlevel ∣ x ∣ (2 + n)
---     _ = λ n x → hlevel!
+    _ : ∀ n (x : n-Type ℓ n) → is-hlevel ∣ x ∣ (2 + n)
+    _ = λ n x → hlevel!

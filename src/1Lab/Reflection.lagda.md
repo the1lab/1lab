@@ -14,6 +14,8 @@ open import 1Lab.Prim.Data.Float public
 open import 1Lab.Prim.Data.Maybe public
 open import 1Lab.Prim.Data.Word public
 open import 1Lab.Prim.Monad public
+open Data.List public
+open Data.Bool public
 ```
 
 # Metaprogramming
@@ -415,17 +417,17 @@ postulate
 {-# BUILTIN AGDATCMDEFINEDATA                 defineData                 #-}
 
 instance
-  Do-TC : Do-syntax TC
+  Do-TC : Do-syntax (λ x → x) TC
   Do-TC .Do-syntax._>>=_ = bindTC
 
-  Idiom-TC : Idiom-syntax TC
+  Idiom-TC : Idiom-syntax (λ x → x) TC
   Idiom-TC .Idiom-syntax.pure = returnTC
   Idiom-TC .Idiom-syntax._<*>_ f g = do
     f ← f
     g ← g
     pure (f g)
 
-  Alt-TC : Alt-syntax TC
+  Alt-TC : Alt-syntax (λ x → x) TC
   Alt-TC .Alt-syntax.fail = typeError []
   Alt-TC .Alt-syntax._<|>_ = catchTC
 ```
@@ -455,12 +457,18 @@ equivRet : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (e : A ≃ B)
 equivRet (f , e) = equiv→unit e
 
 newMeta : Term → TC Term
-newMeta = checkType unknown
+newMeta ty = do
+  mv ← checkType unknown ty
+  debugPrint "tactic.meta" 70 $
+    "Created new meta " ∷ termErr mv ∷ " of type " ∷ termErr ty ∷ []
+  pure mv
 
 newMeta′ : Term → TC (Meta × Term)
-newMeta′ tm = do
-  tm@(meta mv _) ← checkType unknown tm
+newMeta′ ty = do
+  tm@(meta mv _) ← checkType unknown ty
     where _ → typeError $ "impossible newMeta′" ∷ []
+  debugPrint "tactic.meta" 70 $
+    "Created new meta " ∷ termErr tm ∷ " of type " ∷ termErr tm ∷ []
   pure (mv , tm)
 
 varg : {ℓ : _} {A : Type ℓ} → A → Arg A
@@ -478,6 +486,9 @@ infixr 30 _v∷_ _h∷_ _h0∷_
 infer-hidden : Nat → List (Arg Term) → List (Arg Term)
 infer-hidden zero xs = xs
 infer-hidden (suc n) xs = unknown h∷ infer-hidden n xs
+
+simple-pair : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → A → B → A × B
+simple-pair = _,_
 
 “_↦_” : Term → Term → Term
 “_↦_” x y = def (quote Fun) (x v∷ y v∷ [])
@@ -602,4 +613,21 @@ instance
   IsString-Error : IsString (List ErrorPart)
   IsString-Error .IsString.Constraint _ = ⊤
   IsString-Error .fromString s = fromString s ∷ []
+
+unify-loudly : Term → Term → TC ⊤
+unify-loudly a b = do
+  debugPrint "tactic" 50 $ termErr a ∷ " =? " ∷ termErr b ∷ []
+  unify a b
+
+print-depth : String → Nat → Nat → List ErrorPart → TC ⊤
+print-depth key level nesting es = debugPrint key level $
+  strErr (nest nesting ("[" <> primShowNat nesting <> "]  ")) ∷ es
+  where
+    _<>_ : String → String → String
+    _<>_ = primStringAppend
+    infixr 10 _<>_
+
+    nest : Nat → String → String
+    nest zero s = s
+    nest (suc x) s = nest x (s <> "  ")
 ```

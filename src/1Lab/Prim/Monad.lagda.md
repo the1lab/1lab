@@ -7,7 +7,8 @@ module 1Lab.Prim.Monad where
 # Primitive: `do` syntax
 
 ```agda
-record Do-syntax (M : ∀ {ℓ} → Type ℓ → Type ℓ) : Typeω where
+record
+  Do-syntax (f : Level → Level) (M : ∀ {ℓ} → Type ℓ → Type (f ℓ)) : Typeω where
   field
     _>>=_ : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → M A → (A → M B) → M B
 
@@ -16,7 +17,7 @@ record Do-syntax (M : ∀ {ℓ} → Type ℓ → Type ℓ) : Typeω where
 
 open Do-syntax ⦃ ... ⦄ public
 
-record Idiom-syntax (M : ∀ {ℓ} → Type ℓ → Type ℓ) : Typeω where
+record Idiom-syntax (f : Level → Level) (M : ∀ {ℓ} → Type ℓ → Type (f ℓ)) : Typeω where
   field
     pure  : ∀ {ℓ} {A : Type ℓ} → A → M A
     _<*>_ : ∀ {ℓ} {ℓ′} {A : Type ℓ} {B : Type ℓ′} → M (A → B) → M A → M B
@@ -30,7 +31,7 @@ record Idiom-syntax (M : ∀ {ℓ} → Type ℓ → Type ℓ) : Typeω where
 
 open Idiom-syntax ⦃ ... ⦄ public
 
-record Alt-syntax (M : ∀ {ℓ} → Type ℓ → Type ℓ) : Typeω where
+record Alt-syntax (f : Level → Level) (M : ∀ {ℓ} → Type ℓ → Type (f ℓ)) : Typeω where
   field
     fail : ∀ {ℓ} {A : Type ℓ} → M A
     _<|>_ : ∀ {ℓ} {A : Type ℓ} → M A → M A → M A
@@ -39,18 +40,18 @@ record Alt-syntax (M : ∀ {ℓ} → Type ℓ → Type ℓ) : Typeω where
 open Alt-syntax ⦃ ... ⦄ public
 
 guard
-  : ∀ {M : ∀ {ℓ} → Type ℓ → Type ℓ}
-    ⦃ appl : Idiom-syntax M ⦄
-    ⦃ alt : Alt-syntax M ⦄
+  : ∀ {f : Level → Level} {M : ∀ {ℓ} → Type ℓ → Type (f ℓ)}
+    ⦃ appl : Idiom-syntax f M ⦄
+    ⦃ alt : Alt-syntax f M ⦄
   → Bool → M ⊤
 guard true = pure tt
 guard false = fail
 
 guardM
-  : ∀ {M : ∀ {ℓ} → Type ℓ → Type ℓ}
-    ⦃ appl : Idiom-syntax M ⦄
-    ⦃ mon : Do-syntax M ⦄
-    ⦃ alt : Alt-syntax M ⦄
+  : ∀ {f : Level → Level} {M : ∀ {ℓ} → Type ℓ → Type (f ℓ)}
+    ⦃ appl : Idiom-syntax f M ⦄
+    ⦃ mon : Do-syntax f M ⦄
+    ⦃ alt : Alt-syntax f M ⦄
   → M Bool → M ⊤
 guardM M = M >>= guard
 ```

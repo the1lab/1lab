@@ -262,14 +262,14 @@ truncation onto a set using a constant map.
 <!--
 ```agda
 instance
-  Do-∥∥ : Do-syntax ∥_∥
+  Do-∥∥ : Do-syntax (λ x → x) ∥_∥
   Do-∥∥ .Do-syntax._>>=_ {A = A} {B = B} = go where
     go : ∥ A ∥ → (A → ∥ B ∥) → ∥ B ∥
     go (inc x) f = f x
     go (squash x y i) f = squash (go x f) (go y f) i
 
   {-# TERMINATING #-}
-  Idiom-∥∥ : Idiom-syntax ∥_∥
+  Idiom-∥∥ : Idiom-syntax (λ x → x) ∥_∥
   Idiom-∥∥ .Idiom-syntax.pure = inc
   Idiom-∥∥ .Idiom-syntax._<*>_ {A = A} {B = B} = go where
     go : ∥ (A → B) ∥ → ∥ A ∥ → ∥ B ∥

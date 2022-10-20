@@ -348,3 +348,11 @@ instance
   H-Level-is-contr : ∀ {n} {ℓ} {T : Type ℓ} → H-Level (is-contr T) (suc n)
   H-Level-is-contr = prop-instance is-contr-is-prop
 ```
+
+<!--
+```agda
+positive-hlevel : ∀ {ℓ} (T : Type ℓ) → Nat → Type _
+positive-hlevel T n = ∀ {k} → H-Level T (n + k)
+{-# INLINE positive-hlevel #-}
+```
+-->

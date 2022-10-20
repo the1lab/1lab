@@ -1,4 +1,5 @@
 ```agda
+{-# OPTIONS -vtactic.hlevel:10 #-}
 open import 1Lab.Prelude
 
 open import Algebra.Magma.Unital hiding (idl ; idr)
@@ -36,7 +37,6 @@ record is-group {ℓ} {A : Type ℓ} (_*_ : A → A → A) : Type ℓ where
   no-eta-equality
   field
     unit : A
-    has-is-monoid : is-monoid unit _*_
 ```
 
 There is also a map which assigns to each element $x$ its _`inverse`{.Agda
@@ -46,6 +46,7 @@ give the unit, both on the left and on the right:
 ```agda
     inverse : A → A
 
+    has-is-monoid : is-monoid unit _*_
     inversel : {x : A} → inverse x * x ≡ unit
     inverser : {x : A} → x * inverse x ≡ unit
 
@@ -96,79 +97,31 @@ give the unit, both on the left and on the right:
 ## is-group is propositional
 
 Showing that `is-group`{.Agda} takes values in propositions is
-straightforward, but tedious. Suppose that $x, y$ are both witnesses of
-`is-group`{.Agda} for the same operator; We'll build a path $x = y$.
+straightforward, but, fortunately, very easy to automate: Our automation
+takes care of all the propositional components, and we've already
+established that units and inverses (thus inverse-assigning maps) are
+unique in a monoid.
 
 ```agda
+private unquoteDecl eqv = declare-record-iso eqv (quote is-group)
+
 is-group-is-prop : ∀ {ℓ} {A : Type ℓ} {_*_ : A → A → A}
                  → is-prop (is-group _*_)
-is-group-is-prop {A = A} {_*_ = _*_} x y = path where
-  open is-group
-```
-
-We begin by constructing a line showing that the `underlying monoid
-structures`{.Agda ident=has-is-monoid} are identical -- but since these
-have different _types_, we must also show that `the units are the
-same`{.Agda ident=same-unit}.
-
-```agda
-  same-unit : x .unit ≡ y .unit
-  same-unit =
-    identities-equal (x .unit) (y .unit)
-      (is-monoid→is-unital-magma (x .has-is-monoid))
-      (is-monoid→is-unital-magma (y .has-is-monoid))
-```
-
-We then use the fact that `is-monoid`{.Agda} is a proposition to conclude
-that the monoid structures underlying $x$ and $y$ are the same.
-
-```agda
-  same-monoid : PathP (λ i → is-monoid (same-unit i) _*_)
-                      (x .has-is-monoid) (y .has-is-monoid)
-  same-monoid =
-    is-prop→pathp (λ i → hlevel {T = is-monoid (same-unit i) _*_} 1)
-      (x .has-is-monoid) (y .has-is-monoid)
-```
-
-Since `inverses in monoids are unique`{.Agda ident=monoid-inverse-unique}
-(when they exist), it follows that `the inverse-assigning maps`{.Agda
-ident=inverse} are pointwise equal; By extensionality, they are the same
-map.
-
-```agda
-  same-inverses : (e : A) → x .inverse e ≡ y .inverse e
-  same-inverses e =
-    monoid-inverse-unique (y .has-is-monoid) _ _ _
-      (x .inversel ∙ same-unit) (y .inverser)
-```
-
-Since the underlying type of a group `is a set`{.Agda ident=has-is-set},
-we have that any parallel paths are equal - even when the paths are
-dependent! This gives us the equations between the `inversel`{.Agda} and
-`inverser`{.Agda} fields of `x` and `y`.
-
-```agda
-  same-invl : (e : A) → Square _ _ _ _
-  same-invl e =
-    is-set→squarep (λ _ _ → x .has-is-monoid .has-is-set)
-      (ap₂ _*_ (same-inverses e) refl) (x .inversel) (y .inversel) same-unit
-
-  same-invr : (e : A) → Square _ _ _ _
-  same-invr e =
-    is-set→squarep (λ _ _ → x .has-is-monoid .has-is-set)
-      (ap₂ _*_ refl (same-inverses e)) (x .inverser) (y .inverser) same-unit
-```
-
-Putting all of this together lets us conclude that `x` and `y` are
-identical.
-
-```agda
-  path : x ≡ y
-  path i .unit         = same-unit i
-  path i .has-is-monoid  = same-monoid i
-  path i .inverse e    = same-inverses e i
-  path i .inversel {e} = same-invl e i
-  path i .inverser {e} = same-invr e i
+is-group-is-prop {A = A} x =
+  Iso→is-hlevel 1 eqv hl x
+  where
+    instance
+      A-hl : ∀ {n} → H-Level A (2 + n)
+      A-hl = basic-instance {T = A} 2 (x .is-group.has-is-set)
+    hl : ∀ x y → x ≡ y
+    hl x y = Σ-pathp xunit=yunit $ Σ-prop-pathp (λ _ → hlevel!)
+        (funext λ a → monoid-inverse-unique (x .snd .snd .fst) a _ _
+          (x .snd .snd .snd .fst {_})
+          (y .snd .snd .snd .snd {_} ∙ sym xunit=yunit))
+      where
+        xunit=yunit = identities-equal (x .fst) (y .fst)
+          (is-monoid→is-unital-magma (x .snd .snd .fst))
+          (is-monoid→is-unital-magma (y .snd .snd .fst))
 
 instance
   H-Level-is-group
@@ -276,22 +229,6 @@ Group≃ A B (f , _) = Group-hom (A .snd) (B .snd) f
 
 Group[_⇒_] : ∀ {ℓ} (A B : Σ (Type ℓ) Group-on) → Type ℓ
 Group[ A ⇒ B ] = Σ (A .fst → B .fst) (Group-hom (A .snd) (B .snd))
-```
-
-We automatically derive the proof that paths between groups are
-homomorphic equivalences:
-
-```agda
-Group-univalent : ∀ {ℓ} → is-univalent {ℓ = ℓ} (HomT→Str Group≃)
-Group-univalent {ℓ = ℓ} =
-  Derive-univalent-record (record-desc
-    (Group-on {ℓ = ℓ}) Group≃
-    (record:
-      field[ _⋆_          by pres-⋆ ]
-      axiom[ has-is-group by (λ _ → is-group-is-prop) ]))
-  where
-    open Group-on
-    open Group-hom
 ```
 
 ## Making groups

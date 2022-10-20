@@ -312,19 +312,6 @@ Semilattice≃ : (A B : Semilattice ℓ) (f : A .fst ≃ B .fst) → Type ℓ
 Semilattice≃ A B = is-semilattice-hom A B ∘ fst
 ```
 
-Using the automated machinery for deriving `is-univalent`{.Agda} proofs,
-we get the promised characterisation of identifications in the type of
-semilattices.
-
-```agda
-Semilattice-univalent : ∀ {ℓ} → is-univalent (HomT→Str (Semilattice≃ {ℓ = ℓ}))
-Semilattice-univalent {ℓ = ℓ} =
-  Derive-univalent-record (record-desc (Semilattice-on {ℓ = ℓ}) Semilattice≃
-    (record:
-      field[ Semilattice-on.∧ by is-semilattice-hom.pres-∧ ]
-      axiom[ Semilattice-on.has-is-semilattice by (λ _ → hlevel 1) ]))
-```
-
 Any semilattice homomorphism is `monotone`{.Agda ident=Monotone-map} when
 considered as a map between the posets induced by a semilattice,
 regardless of whether we consider it as a meet or as a join semilattice.

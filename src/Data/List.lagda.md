@@ -193,6 +193,10 @@ foldr : (A → B → B) → B → List A → B
 foldr f z [] = z
 foldr f z (x ∷ xs) = f x (foldr f z xs)
 
+concat : List (List A) → List A
+concat [] = []
+concat (x ∷ xs) = x ++ concat xs
+
 foldl : (B → A → B) → B → List A → B
 foldl f z [] = z
 foldl f z (x ∷ xs) = foldl f (f z x) xs
@@ -212,11 +216,25 @@ all=? eq=? [] (x ∷ ys) = false
 all=? eq=? (x ∷ xs) [] = false
 all=? eq=? (x ∷ xs) (y ∷ ys) = and (eq=? x y) (all=? eq=? xs ys)
 
+enumerate : ∀ {ℓ} {A : Type ℓ} → List A → List (Nat × A)
+enumerate = go 0 where
+  go : Nat → List _ → List (Nat × _)
+  go x [] = []
+  go x (a ∷ b) = (x , a) ∷ go (suc x) b
+
 nondet
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} {M : ∀ {ℓ} → Type ℓ → Type ℓ}
-    ⦃ alt : Alt-syntax M ⦄
+  : ∀ {ℓ ℓ′} {f : Level → Level} {A : Type ℓ} {B : Type ℓ′} {M : ∀ {ℓ} → Type ℓ → Type (f ℓ)}
+    ⦃ alt : Alt-syntax f M ⦄
   → List A → (A → M B) → M B
 nondet [] _          = fail
+nondet (x ∷ []) kont = kont x
 nondet (x ∷ xs) kont = kont x <|> nondet xs kont
+
+traverse
+  : ∀ {ℓ ℓ′} {f : Level → Level} {A : Type ℓ} {B : Type ℓ′} {M : ∀ {ℓ} → Type ℓ → Type (f ℓ)}
+  → ⦃ app : Idiom-syntax f M ⦄
+  → List A → (A → M B) → M (List B)
+traverse [] _ = pure []
+traverse (x ∷ xs) k = ⦇ (k x) ∷ (traverse xs k) ⦈
 ```
 -->

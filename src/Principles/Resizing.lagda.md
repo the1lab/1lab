@@ -123,16 +123,17 @@ first by squishing, then by lifting.
 Ω = Squish-prop lzero
 {-# DISPLAY Squish-prop lzero = Ω #-}
 
-resize : ∀ {ℓ} ℓ′ → (T : Type ℓ) → is-prop T → Σ[ T′ ∈ Type ℓ′ ] (T′ ≃ T)
-resize ℓ′ T x =
-    Lift ℓ′ (Path (Squish-prop _) (el T x) (el (Lift _ ⊤) (λ _ _ _ → lift tt)))
-  , prop-ext (hlevel 1) x
-    (λ p → transport (ap ∣_∣ (sym (Lift.lower p))) (lift tt))
-    λ t → lift (Squish-prop-ua (bi (λ _ → lift tt) (λ _ → t)))
+resize : ∀ {ℓ} (T : Type ℓ) → is-prop T → Type
+resize T x = Path (Squish-prop _) (el T x) (el (Lift _ ⊤) (λ _ _ _ → lift tt))
+
+resize-equiv : ∀ {ℓ} → (T : Type ℓ) (p : is-prop T) → resize T p ≃ T
+resize-equiv T x = prop-ext (hlevel 1) x
+  (λ p → transport (ap ∣_∣ (sym p)) (lift tt))
+  λ t → Squish-prop-ua (bi (λ _ → lift tt) (λ _ → t))
 
 elΩ : ∀ {ℓ} (A : Type ℓ) → is-prop A → Ω
-∣ elΩ A A-prop ∣    = resize lzero A A-prop .fst
-elΩ A A-prop .is-tr = is-hlevel≃ 1 (resize lzero A A-prop .snd) A-prop
+elΩ A A-prop .∣_∣   = resize A A-prop
+elΩ A A-prop .is-tr = is-hlevel≃ 1 (resize-equiv A A-prop) A-prop
 ```
 
 <!--
@@ -140,24 +141,36 @@ elΩ A A-prop .is-tr = is-hlevel≃ 1 (resize lzero A A-prop .snd) A-prop
 elΩ!
   : ∀ {ℓ} (A : Type ℓ) {@(tactic hlevel-tactic-worker) aprop : is-hlevel A 1}
   → Ω
-∣ elΩ! A {t} ∣ = resize lzero A t .fst
-elΩ! A {t} .is-tr = is-hlevel≃ 1 (resize lzero _ _ .snd) t
+∣ elΩ! A {t} ∣ = resize A t
+elΩ! A {t} .is-tr = is-hlevel≃ 1 (resize-equiv _ _) t
+
+□ : ∀ {ℓ} (T : Type ℓ) {@(tactic hlevel-tactic-worker) t-prop : is-prop T} → Type
+□ T {t} = resize T t
 
 elΩ-ua : ∀ {ℓ} {A B : Type ℓ} {ap bp} → (A → B) → (B → A) → elΩ A ap ≡ elΩ B bp
 elΩ-ua f g = Squish-prop-ua $ bi
-  (λ x → Equiv.from (resize _ _ _ .snd) (f (Equiv.to (resize _ _ _ .snd) x)))
-  (λ x → Equiv.from (resize _ _ _ .snd) (g (Equiv.to (resize _ _ _ .snd) x)))
+  (λ x → Equiv.from (resize-equiv _ _) (f (Equiv.to (resize-equiv _ _) x)))
+  (λ x → Equiv.from (resize-equiv _ _) (g (Equiv.to (resize-equiv _ _) x)))
 
 elΩₗ-ua : ∀ {ℓ} {A : Type ℓ} {B : Ω} {ap} → (A → ∣ B ∣) → (∣ B ∣ → A) → elΩ A ap ≡ B
 elΩₗ-ua f g = Squish-prop-ua $ bi
-  (λ x → f (Equiv.to (resize _ _ _ .snd) x))
-  (λ x → Equiv.from (resize _ _ _ .snd) (g x))
+  (λ x → f (Equiv.to (resize-equiv _ _) x))
+  (λ x → Equiv.from (resize-equiv _ _) (g x))
 
-true→elΩ : ∀ {ℓ} {A : Type ℓ} {ap : is-prop A} → A → ∣ elΩ A ap ∣
-true→elΩ x = lift (Squish-prop-ua (bi (λ _ → _) λ _ → x))
+box _! : ∀ {ℓ} {A : Type ℓ} {ap : is-prop A} → A → ∣ elΩ A ap ∣
+box x = Squish-prop-ua (bi (λ _ → _) λ _ → x)
+_! = box
 
-elΩ→true : ∀ {ℓ} {A : Type ℓ} {ap : is-prop A} → ∣ elΩ A ap ∣ → A
-elΩ→true x = transport (ap ∣_∣ (sym (Lift.lower x))) (lift tt)
+out ¿ : ∀ {ℓ} {A : Type ℓ} {ap : is-prop A} → ∣ elΩ A ap ∣ → A
+out x = transport (ap ∣_∣ (sym x)) (lift tt)
+¿ = out
+
+{-# DISPLAY resize A _ = □ A #-}
+
+-- Quick cheat sheet: □ A is the small type (proposition) associated
+-- with a (possibly large) proposition A. This means that el! (□ A) :
+-- Prop (lsuc lzero). Ω is Prop lzero, but living in Type lzero. elΩ is
+-- the Ω equivalent of el! (□ A).
 ```
 -->
 
@@ -213,5 +226,8 @@ module _ (A B : Ω) where
 
   _ : Ω
   _ = elΩ! (∣ A ∣ × ∣ B ∣)
+
+  _ : ∀ {ℓ} {A : Type ℓ} ⦃ x : positive-hlevel A 1 ⦄ → is-prop (□ A)
+  _ = hlevel!
 ```
 -->

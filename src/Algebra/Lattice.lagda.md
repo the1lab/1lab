@@ -120,20 +120,6 @@ Lattice≃ : (A B : Lattice ℓ) (f : A .fst ≃ B .fst) → Type ℓ
 Lattice≃ A B = Lattice→ A B ∘ fst
 ```
 
-Using the automated machinery for deriving `is-univalent`{.Agda} proofs,
-we get that identification of lattices is the same thing as lattice
-isomorphism.
-
-```agda
-Lattice-univalent : ∀ {ℓ} → is-univalent (HomT→Str (Lattice≃ {ℓ = ℓ}))
-Lattice-univalent {ℓ = ℓ} =
-  Derive-univalent-record (record-desc (Lattice-on {ℓ = ℓ}) Lattice≃
-    (record:
-      field[ Lattice-on._L∧_ by Lattice→.pres-∧ ]
-      field[ Lattice-on._L∨_ by Lattice→.pres-∨ ]
-      axiom[ Lattice-on.has-is-lattice by (λ _ → hlevel 1) ]))
-```
-
 ## Order-theoretically
 
 We [already know] that a given semilattice structure can induce one of
