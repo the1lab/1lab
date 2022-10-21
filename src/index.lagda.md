@@ -176,7 +176,7 @@ open import 1Lab.Type -- Universes
 open import 1Lab.Path           -- Path types
 open import 1Lab.Path.Groupoid  -- Groupoid structure of types
 open import 1Lab.Path.Reasoning -- Combinators for reasoning with path composition
-open import 1Lab.Path.IdentitySystems -- Families R for which R(x,y) ≃ (x ≡ y)
+open import 1Lab.Path.IdentitySystem -- Families R for which R(x,y) ≃ (x ≡ y)
 
 open import 1Lab.Equiv             -- “Contractible fibres” equivalences
 open import 1Lab.Equiv.Biinv       -- Biinvertible maps
