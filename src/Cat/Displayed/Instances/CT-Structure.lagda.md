@@ -32,7 +32,7 @@ a predicate on contexts meant to denote which ones are types, along
 with the restriction that there is at least one type, to prevent
 the entire structure from becoming degenerate.
 
-[simple fibrations]: Cat.Displayed.Instances.Simple
+[simple fibrations]: Cat.Displayed.Instances.Simple.html
 
 ```agda
 record CT-Structure (s : Level) : Type (o ⊔ lsuc s) where
@@ -56,7 +56,7 @@ simple-ct ct .Displayed.Ob[_] Γ = Σ[ X ∈ Ob ] ∣ is-tp ct X ∣
 simple-ct ct .Displayed.Hom[_] {Γ} {Δ} u X Y = Hom (Γ ⊗ X .fst) (Y .fst)
 simple-ct ct .Displayed.Hom[_]-set {Γ} {Δ} u X Y = Hom-set (Γ ⊗ X .fst) (Y .fst)
 simple-ct ct .Displayed.id′ = π₂
-simple-ct ct .Displayed._∘′_ {f = u} {g = v} f g = f ∘ ⟨ v ∘ π₁ , g ⟩ 
+simple-ct ct .Displayed._∘′_ {f = u} {g = v} f g = f ∘ ⟨ v ∘ π₁ , g ⟩
 simple-ct ct .Displayed.idr′ {f = u} f =
   f ∘ ⟨ (id ∘ π₁) , π₂ ⟩ ≡⟨ products! B has-prods ⟩
   f                      ∎
@@ -122,4 +122,3 @@ simple→simple-ct .Displayed-functor.F₁′ f = f
 simple→simple-ct .Displayed-functor.F-id′ = refl
 simple→simple-ct .Displayed-functor.F-∘′ = refl
 ```
-
