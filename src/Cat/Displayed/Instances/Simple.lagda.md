@@ -31,7 +31,7 @@ structure to study simply-typed languages that have enough structure
 to represent contexts internally (i.e.: product types).
 
 To start, we fix some base category $\ca{B}$ with binary products.
-Intuitvely, this will be some sort of category of contexts, and 
+Intuitvely, this will be some sort of category of contexts, and
 context extension endows this category with products. We interpret a
 type in a context to be an object $\Gamma \times X : \ca{B}$.
 
@@ -47,7 +47,7 @@ enough structure to consider contexts as types: if this is not the
 situation (IE: STLC without products), then we need to consider a more
 [refined notion].
 
-[refined notion]: Cat.Displayed.Instances.CT-Structure
+[refined notion]: Cat.Displayed.Instances.CT-Structure.html
 
 For the maps, we already have the map $\Gamma \to \Delta$ as the
 base morphism, so the displayed portion of the map will be the
@@ -68,7 +68,7 @@ simple .Displayed.Ob[_] Γ = Ob
 simple .Displayed.Hom[_] {Γ} {Δ} u X Y = Hom (Γ ⊗ X) Y
 simple .Displayed.Hom[_]-set _ _ _ = Hom-set (_ ⊗ _) _
 simple .Displayed.id′ = π₂
-simple .Displayed._∘′_ {f = u} {g = v} f g = f ∘ ⟨ v ∘ π₁ , g ⟩ 
+simple .Displayed._∘′_ {f = u} {g = v} f g = f ∘ ⟨ v ∘ π₁ , g ⟩
 simple .Displayed.idr′ f =
   f ∘ ⟨ (id ∘ π₁) , π₂ ⟩ ≡⟨ products! B has-prods ⟩
   f                      ∎
