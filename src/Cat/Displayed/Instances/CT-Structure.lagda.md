@@ -33,6 +33,7 @@ with the restriction that there is at least one type, to prevent
 the entire structure from becoming degenerate.
 
 [simple fibrations]: Cat.Displayed.Instances.Simple.html
+[simple fibration]: Cat.Displayed.Instances.Simple.html
 
 ```agda
 record CT-Structure (s : Level) : Type (o ⊔ lsuc s) where
@@ -48,7 +49,6 @@ much the same manner as the [simple fibration]; the only difference
 is that we restrict the displayed object to objects that the
 CT-structure distinguishes as types.
 
-[simple fibrations]: Cat.Displayed.Instances.Simple
 
 ```agda
 simple-ct : ∀ {s} → CT-Structure s → Displayed B (o ⊔ s) ℓ
@@ -95,8 +95,9 @@ There is an evident embedding of the simple fibration associated with a
 CT-structure into the simple fibration.
 
 ```agda
-simple-ct→simple : ∀ {s} → (ct : CT-Structure s)
-               → Displayed-functor (simple-ct ct) simple Id
+simple-ct→simple
+  : ∀ {s} → (ct : CT-Structure s)
+  → Displayed-functor (simple-ct ct) simple Id
 simple-ct→simple ct .Displayed-functor.F₀′ = fst
 simple-ct→simple ct .Displayed-functor.F₁′ f = f
 simple-ct→simple ct .Displayed-functor.F-id′ = refl
