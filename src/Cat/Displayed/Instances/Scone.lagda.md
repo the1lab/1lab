@@ -34,11 +34,24 @@ of category of contexts, then a scone over some context $X$
 is some means of attatching semantic information (the set $U$) to
 $X$, such that we can recover closed terms of $X$ from elements of $U$.
 
-Morphisms behave like they do in the slice category of $\ca{B}$:
+Morphisms behave like they do in an arrow category of $\ca{Sets}$:
 given a map $f : X \to Y$ in $\ca{B}$, a map over $f$ in the category
 between $(U, su : U \to \ca{B}(1, X))$ and $(V, sv : V \to \ca{B}(1, Y))$
 consists of a function $uv : U \to V$, such that for all $u : U$,
 we have $f \circ su(u) = sv (uv u)$.
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  U && V \\
+  \\
+  {\mathcal{B}(1, X)} && {\mathcal{B}(1, Y)}
+  \arrow["uv", from=1-1, to=1-3]
+  \arrow["su"', from=1-1, to=3-1]
+  \arrow["sv"', from=1-3, to=3-3]
+  \arrow["{f \circ-}"', from=3-1, to=3-3]
+\end{tikzcd}\]
+~~~
+
 
 With the exposition out of the way, we can now define the
 category of scones by abstract nonsense: the category of scones
