@@ -186,3 +186,4 @@ Full-substructure _ R S embed Sst .∘-is-hom = Sst .∘-is-hom
 Full-substructure _ R S embed Sst .id-hom-unique α β =
   has-prop-fibres→injective (embed _ .fst) (embed _ .snd)
     (Sst .id-hom-unique α β)
+-->
