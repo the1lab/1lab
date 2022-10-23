@@ -58,8 +58,8 @@ category of scones by abstract nonsense: the category of scones
 over $\ca{B}$ is the [pullback] of the [fundamental fibration] along the
 global sections functor.
 
-[pullback]: Cat.Displayed.Instances.Pullback
-[fundamental fibration]: Cat.Displayed.Instances.Slice
+[pullback]: Cat.Displayed.Instances.Pullback.html
+[fundamental fibration]: Cat.Displayed.Instances.Slice.html
 
 ~~~{.quiver}
 \[\begin{tikzcd}
