@@ -1,6 +1,7 @@
 ```agda
 open import Cat.Instances.Functor
 open import Cat.Displayed.Base
+open import Cat.Displayed.Cartesian
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning as Dr
@@ -72,4 +73,35 @@ Change-of-base .assoc′ f′ g′ h′ = to-pathp $
   hom[ ap F₁ _ ] (hom[ F-∘ _ _ ]⁻ (f′ E.∘′ hom[ F-∘ _ _ ]⁻ (g′ E.∘′ h′)))   ≡⟨ hom[]⟩⟨ smashr _ _ ⟩
   hom[] (hom[] (f′ E.∘′ g′ E.∘′ h′))                                        ≡⟨ Ds.disp! E ⟩
   hom[ sym (F-∘ _ _) ] (hom[ sym (F-∘ _ _) ] (f′ E.∘′ g′) E.∘′ h′)          ∎
+```
+
+## As a fibration
+
+If $\ca{E}$ is a cartesian fibration, then the base change of $\ca{E}$
+along $F$ is also cartesian. To prove this, observe that the object and
+hom spaces of `Change-of-base`{.Agda} contain the same data as $\ca{E}$,
+just restricted to objects and morphisms in the image of $F$. This means
+that we still have cartesian lifts of all morphisms in $\ca{X}$: we
+just have to perform the lifting of $F f$.
+
+```agda
+Change-of-base-fibration : Cartesian-fibration E → Cartesian-fibration Change-of-base
+Change-of-base-fibration fib .Cartesian-fibration.has-lift f FY′ = cart-lift
+  where
+    open Cartesian-lift (Cartesian-fibration.has-lift fib (F₁ f) FY′)
+
+    cart-lift : Cartesian-lift Change-of-base f FY′
+    cart-lift .Cartesian-lift.x′ = x′
+    cart-lift .Cartesian-lift.lifting = lifting
+    cart-lift .Cartesian-lift.cartesian .Cartesian.universal m h′ =
+      universal (F .Functor.F₁ m) (hom[ F-∘ f m ] h′)
+    cart-lift .Cartesian-lift.cartesian .Cartesian.commutes m h′ =
+      hom[ F-∘ f m ]⁻ (lifting E.∘′ universal (F₁ m) (hom[ F-∘ f m ] h′)) ≡⟨ ap hom[ F-∘ f m ]⁻ (commutes _ _) ⟩
+      hom[ F-∘ f m ]⁻ (hom[ F-∘ f m ] h′)                                 ≡⟨ Ds.disp! E ⟩
+      h′                                                                  ∎
+    cart-lift .Cartesian-lift.cartesian .Cartesian.unique {m = m} {h′ = h′} m′ p =
+      unique m′ $
+        lifting E.∘′ m′                                    ≡⟨ Ds.disp! E ⟩
+        hom[ F-∘ f m ] (hom[ F-∘ f m ]⁻ (lifting E.∘′ m′)) ≡⟨ ap hom[ F-∘ f m ] p ⟩
+        hom[ F-∘ f m ] h′ ∎
 ```
