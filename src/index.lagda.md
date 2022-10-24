@@ -430,6 +430,8 @@ open import Cat.Displayed.Instances.Slice    -- Canonical self-indexing
 open import Cat.Displayed.Instances.Family   -- Family fibration
 open import Cat.Displayed.Instances.Pullback
   -- Pullback of a displayed category by a functor
+open import Cat.Displayed.Instances.Scone
+  -- The displayed category of scones
 ```
 
 ## Bicategories
