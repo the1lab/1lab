@@ -168,15 +168,15 @@ private
       where
         -- Handle the ones with special names:
         def (quote is-set) (_ ∷ ty v∷ []) → do
-          ty ← wait-for-type ty
+          ty ← wait-just-a-bit ty
           pure (ty , quoteTerm 2)
 
         def (quote is-prop) (_ ∷ ty v∷ []) → do
-          ty ← wait-for-type ty
+          ty ← wait-just-a-bit ty
           pure (ty , quoteTerm 1)
 
         def (quote is-contr) (_ ∷ ty v∷ []) → do
-          ty ← wait-for-type ty
+          ty ← wait-just-a-bit ty
           pure (ty , quoteTerm 0)
 
         _ → backtrack "Goal type isn't is-hlevel"
@@ -185,8 +185,8 @@ private
     -- block decomposition on having a rigid-ish type at the
     -- top-level. Otherwise the first hint that matches will get
     -- matched endlessly until we run out of fuel!
-    ty ← wait-for-type ty
-    lv ← wait-for-type lv
+    ty ← wait-just-a-bit ty
+    lv ← wait-just-a-bit lv
     pure (ty , lv)
 
 {-
@@ -548,7 +548,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
     → Term → TC (Term × Term × (TC A → TC A) × (Term → Term))
   decompose-is-hlevel-top goal =
     do
-      ty ← dontReduceDefs hlevel-types $ (inferType goal >>= reduce) >>= wait-for-type
+      ty ← dontReduceDefs hlevel-types $ (inferType goal >>= reduce) >>= wait-just-a-bit
       go ty
     where
       go : Term → TC _
