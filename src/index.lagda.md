@@ -382,6 +382,7 @@ open import Cat.Instances.Sets.CartesianClosed -- and is locally cartesian close
 open import Cat.Instances.Shape.Join
 open import Cat.Instances.Shape.Cospan
 open import Cat.Instances.Shape.Interval
+open import Cat.Instances.Shape.Isomorphism
 open import Cat.Instances.Shape.Parallel
 open import Cat.Instances.Shape.Terminal
 
