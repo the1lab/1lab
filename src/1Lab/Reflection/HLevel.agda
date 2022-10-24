@@ -312,10 +312,9 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
         -- state but indicate success: this will cause the meta to be
         -- solved with an interaction point (if using
         -- elaborate-and-give).
-        [] → backtrack "No possible instances, but have other decompositions to try"
-          -- if has-alts
-          -- then
-          -- else pure (tt , false)
+        [] → if has-alts
+          then backtrack "No possible instances, but have other decompositions to try"
+          else pure (tt , false)
 
         _ → backtrack "Too many possible instances; will not use instance search for this goal"
     go instances
