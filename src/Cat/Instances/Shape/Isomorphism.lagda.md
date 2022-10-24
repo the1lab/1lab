@@ -38,8 +38,10 @@ Note that the space of isomorphisms between any 2 objects is contractible.
 
 ```agda
 *≅*-iso-contr : ∀ X Y → is-contr (X *≅*.≅ Y)
-*≅*-iso-contr _ _ .centre = *≅*.make-iso tt tt prop! prop!
-*≅*-iso-contr _ _ .paths p = *≅*.≅-pathp refl refl refl
+*≅*-iso-contr _ _ .centre =
+  *≅*.make-iso tt tt (hlevel 1 _ _) (hlevel 1 _ _)
+*≅*-iso-contr _ _ .paths p =
+  *≅*.≅-pathp refl refl refl
 ```
 
 The isomorphism category is strict, as it's objects form a set.
@@ -143,5 +145,5 @@ path spaces!
            ; {false} {false} tt → sym (F-id F) })
 
     linv : is-left-inverse functor→iso iso→functor
-    linv F = refl ,ₚ refl ,ₚ 𝒞.≅-pathp refl refl refl
+    linv F = Σ-pathp refl $ Σ-pathp refl $ 𝒞.≅-pathp refl refl refl
 ```
