@@ -257,9 +257,9 @@ Rel ℓ .cat .idl R = funext λ x → funext λ y → n-ua
 
 Rel ℓ .cat .assoc T S R = funext λ x → funext λ y → n-ua
   (prop-ext squash squash
-    (∥-∥-rec hlevel! λ { (a , b , w) → ∥-∥-rec hlevel! (λ { (c , d , x) →
+    (∥-∥-rec! λ { (a , b , w) → ∥-∥-rec! (λ { (c , d , x) →
       inc (c , d , inc (a , x , w)) }) b })
-    (∥-∥-rec hlevel! λ { (a , b , w) → ∥-∥-rec hlevel! (λ { (c , d , x) →
+    (∥-∥-rec! λ { (a , b , w) → ∥-∥-rec! (λ { (c , d , x) →
       inc (c , inc (a , b , d) , x) }) w }))
 
 Rel ℓ .≤-thin = hlevel!
@@ -268,11 +268,11 @@ Rel ℓ .≤-trans x y p q z = y p q (x p q z)
 Rel ℓ .≤-antisym p q = funext λ x → funext λ y → n-ua $
   prop-ext hlevel! hlevel! (p x y) (q x y)
 
-Rel ℓ ._◆_ f g a b = ∥-∥-rec hlevel! λ { (x , y , w) → inc (x , g a x y , f x b w) }
+Rel ℓ ._◆_ f g a b = ∥-∥-rec! λ { (x , y , w) → inc (x , g a x y , f x b w) }
 
 -- This is nice:
 Rel ℓ .dual R = refl
-Rel ℓ .dual-∘ = funext λ x → funext λ y → n-ua $ prop-ext hlevel! hlevel!
+Rel ℓ .dual-∘ = funext λ x → funext λ y → n-ua $ prop-ext!
   (∥-∥-rec squash λ { (x , y , w) → inc (x , w , y) })
   (∥-∥-rec squash λ { (x , y , w) → inc (x , w , y) })
 Rel ℓ .dual-≤ f≤g x y w = f≤g y x w

@@ -56,7 +56,7 @@ instance
   H-Level-is-monoid : ∀ {id : A} {_⋆_ : A → A → A} {n}
                     → H-Level (is-monoid id _⋆_) (suc n)
   H-Level-is-monoid = prop-instance λ x →
-    let open is-monoid x in is-hlevel≃ 1 (Iso→Equiv eqv e⁻¹) (hlevel 1) x
+    let open is-monoid x in Iso→is-hlevel 1 eqv (hlevel 1) x
 ```
 
 A `monoid structure on`{.Agda ident=Monoid-on} a type is given by the
@@ -99,29 +99,6 @@ open Monoid-hom
 
 Monoid≃ : (A B : Monoid ℓ) (e : A .fst ≃ B .fst) → Type _
 Monoid≃ A B (e , _) = Monoid-hom A B e
-```
-
-We automatically derive a proof that `Monoid-on`{.Agda} is univalent for
-the `structure induced`{.Agda ident=HomT→Str} by `Monoid≃`{.Agda}:
-
-```agda
-Monoid-univalent : is-univalent {ℓ = ℓ} (HomT→Str Monoid≃)
-Monoid-univalent {ℓ = ℓ} =
-  Derive-univalent-record (record-desc
-    (Monoid-on {ℓ = ℓ}) Monoid≃
-    (record:
-      field[ identity    by pres-id ]
-      field[ _⋆_         by pres-⋆ ]
-      axiom[ has-is-monoid by (λ _ → hlevel 1) ]))
-```
-
-From this, we automatically get a specialisation of the `SIP`{.Agda} for
-`Monoid`{.Agda}s, which says that _identification of monoids is monoid
-isomorphism_.
-
-```agda
-Monoid≡ : {A B : Monoid ℓ} → (A ≃[ HomT→Str Monoid≃ ] B) ≃ (A ≡ B)
-Monoid≡ = SIP Monoid-univalent
 ```
 
 # Relationships to Unital Magmas

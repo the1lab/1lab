@@ -74,7 +74,7 @@ Element-hom-path {x = x} {y = y} {f = f} {g = g} p i .commute =
 ```agda
 private unquoteDecl eqv = declare-record-iso eqv (quote Element-hom)
 Element-hom-is-set : ∀ (x y : Element) → is-set (Element-hom x y)
-Element-hom-is-set x y = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) T-is-set where
+Element-hom-is-set x y = Iso→is-hlevel 2 eqv T-is-set where
   T-is-set : is-set _
   T-is-set = hlevel!
 ```

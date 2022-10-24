@@ -1,4 +1,5 @@
 ```agda
+{-# OPTIONS -vtactic.hlevel:10 #-}
 open import 1Lab.Prelude
 
 open import Algebra.Group.Homotopy
@@ -322,7 +323,7 @@ n-Tr-is-hlevel
 n-Tr-is-hlevel n = hubs-and-spokes→hlevel n λ sph → hub sph , spokes sph
 
 instance
-  n-tr-decomp : ∀ {ℓ} {A : Type ℓ} {n} → Decomposition (n-Tr A (suc n))
+  n-tr-decomp : ∀ {ℓ} {A : Type ℓ} {n} → hlevel-decomposition (n-Tr A (suc n))
   n-tr-decomp = decomp (quote n-Tr-is-hlevel) (`level-minus 1 ∷ [])
 
 n-Tr-elim
@@ -349,6 +350,24 @@ n-Tr-elim {A = A} {n} P ptrunc pbase = go where
   go (hub r)        = hub′ r (λ x → go (r x))
   go (spokes r x i) = spokes′ r (λ x → go (r x)) x i
 ```
+
+<!--
+```agda
+n-Tr-elim!
+  : ∀ {ℓ ℓ′} {A : Type ℓ} {n}
+  → (P : n-Tr A (suc n) → Type ℓ′)
+  → {@(tactic hlevel-tactic-worker) hl : ∀ x → is-hlevel (P x) (suc n)}
+  → (∀ x → P (inc x))
+  → ∀ x → P x
+n-Tr-elim! P {hl} f = n-Tr-elim P hl f
+
+n-Tr-rec!
+  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} {n}
+  → {@(tactic hlevel-tactic-worker) hl : is-hlevel B (suc n)}
+  → (A → B) → n-Tr A (suc n) → B
+n-Tr-rec! {hl = hl} = n-Tr-elim (λ _ → _) (λ _ → hl)
+```
+-->
 
 As a simpler case of `n-Tr-elim`{.Agda}, we have the recursion
 principle, where the type we are eliminating into is constant.
@@ -391,9 +410,8 @@ $(2+n)$-type.
 ```agda
   code : (x : A) (y′ : n-Tr A (2 + n)) → n-Type _ (suc n)
   code x =
-    n-Tr-elim
+    n-Tr-elim!
       (λ y′ → n-Type _ (suc n))
-      (λ y′ → n-Type-is-hlevel (suc n))
       (λ y′ → el! (n-Tr (Path A x y′) (suc n)))
 ```
 
@@ -406,15 +424,13 @@ induction`{.Agda id=J} and the induction principle for $\|A\|_{n+2}$.
 
   decode′ : ∀ x y → ∣ code x y ∣ → inc x ≡ y
   decode′ x =
-    n-Tr-elim _ (λ _ → hlevel!)
-      λ x → n-Tr-rec (Path-is-hlevel' (1 + n) hlevel! _ _) (ap inc)
+    n-Tr-elim! _ λ x → n-Tr-rec hlevel! (ap inc)
 
   rinv : ∀ x y → is-right-inverse (decode′ x y) (encode′ x y)
   rinv x = n-Tr-elim _
     (λ y → Π-is-hlevel (2 + n)
       (λ c → Path-is-hlevel (2 + n) (is-hlevel-suc (suc n) (code x y .is-tr))))
-    λ x → n-Tr-elim _ (λ x → hlevel!)
-      λ p → ap n-Tr.inc (subst-path-right _ _ ∙ ∙-id-l _)
+    λ x → n-Tr-elim! _ λ p → ap n-Tr.inc (subst-path-right _ _ ∙ ∙-id-l _)
 
   linv : ∀ x y → is-left-inverse (decode′ x y) (encode′ x y)
   linv x _ = J (λ y p → decode′ x y (encode′ x y p) ≡ p)

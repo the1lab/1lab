@@ -251,8 +251,8 @@ univalent-thin-precat→Poset C hprop cat = pos where
   module C = Cat.Reasoning C
   module cu = Cat.Univalent.Univalent cat
   ob-set : is-set C.Ob
-  ob-set x y = is-hlevel≃ 1 (identity-system-gives-path cat)
-    λ f g → C.≅-pathp refl refl (hprop _ _ _ _)
+  ob-set = identity-system→hlevel 1 cat λ x y f g →
+    C.≅-pathp refl refl (hprop _ _ _ _)
   pos : Poset _ _
   pos .Poset.underlying = C
   pos .Poset.has-is-thin .is-thin.Ob-is-set = ob-set

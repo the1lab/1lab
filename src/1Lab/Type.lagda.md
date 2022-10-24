@@ -96,6 +96,7 @@ infixr 40 _∘_
 
 id : ∀ {ℓ} {A : Type ℓ} → A → A
 id x = x
+{-# INLINE id #-}
 
 infixr -1 _$_ _$ₛ_
 
@@ -110,7 +111,7 @@ f $ₛ x = f x
 
 <!--
 ```
-open import 1Lab.Prim.Numerals public
+open import 1Lab.Prim.Literals public
 
 Type∙ : ∀ ℓ → Type (lsuc ℓ)
 Type∙ _ = Σ _ id

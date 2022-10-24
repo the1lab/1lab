@@ -494,7 +494,7 @@ be shown to be a set using the standard `hlevel`{.Agda} machinery.
 ```agda
   private unquoteDecl eqv = declare-record-iso eqv (quote _=>_)
   Nat-is-set : is-set (F => G)
-  Nat-is-set = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2) where
+  Nat-is-set = Iso→is-hlevel 2 eqv (hlevel 2) where
     open C.HLevel-instance
     open D.HLevel-instance
 ```

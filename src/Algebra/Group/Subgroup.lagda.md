@@ -1,4 +1,5 @@
 ```agda
+{-# OPTIONS -vtactic.hlevel:30 #-}
 open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
 open import Algebra.Prelude
@@ -72,7 +73,8 @@ rep-subgroup→group-on {G = G} H sg = to-group-on sg′ where
 
 predicate→subgroup : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Subgroup G
 predicate→subgroup {G = G} H p = restrict (cut map) ism where
-  map : Groups.Hom (el! (Σ _ (∣_∣ ⊙ H)) , rep-subgroup→group-on H p) G
+  map : Groups.Hom (el! (Σ _ (∣_∣ ⊙ H))
+    , rep-subgroup→group-on H p) G
   map .hom = fst
   map .preserves .Group-hom.pres-⋆ x y = refl
 

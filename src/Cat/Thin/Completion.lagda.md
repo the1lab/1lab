@@ -197,8 +197,10 @@ move.
             → F′₁ x z (X′._∘_ {x} {y} {z} f g)
             ≡ Y′._∘_ {F′₀ x} {F′₀ y} {F′₀ z} (F′₁ y z f) (F′₁ x y g)
       F′₁-∘ =
+        -- n.b.: hlevel tactic chokes on this one, but it's easy enough
+        -- to do by hand so no biggie, I think
         Coeq-elim-prop₃
-          (λ x y z → hlevel!)
+          (λ x y z → Π-is-hlevel² 1 λ _ _ → Y′.Hom-set (F′₀ x) _ _ _)
           λ x y z f g → F-∘ F f g
 ```
 

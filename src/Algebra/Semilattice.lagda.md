@@ -257,7 +257,7 @@ private unquoteDecl eqv = declare-record-iso eqv (quote is-semilattice)
 instance
   H-Level-is-semilattice : ∀ {M : A → A → A} {n} → H-Level (is-semilattice M) (suc n)
   H-Level-is-semilattice = prop-instance λ x →
-    let open is-semilattice x in is-hlevel≃ 1 (Iso→Equiv eqv e⁻¹) (hlevel 1) x
+    let open is-semilattice x in Iso→is-hlevel 1 eqv (hlevel 1) x
 ```
 
 A **semilattice structure** on a type $A$ equips the type with an
@@ -310,19 +310,6 @@ record is-semilattice-hom (A B : Semilattice ℓ) (f : A .fst → B .fst) : Type
 
 Semilattice≃ : (A B : Semilattice ℓ) (f : A .fst ≃ B .fst) → Type ℓ
 Semilattice≃ A B = is-semilattice-hom A B ∘ fst
-```
-
-Using the automated machinery for deriving `is-univalent`{.Agda} proofs,
-we get the promised characterisation of identifications in the type of
-semilattices.
-
-```agda
-Semilattice-univalent : ∀ {ℓ} → is-univalent (HomT→Str (Semilattice≃ {ℓ = ℓ}))
-Semilattice-univalent {ℓ = ℓ} =
-  Derive-univalent-record (record-desc (Semilattice-on {ℓ = ℓ}) Semilattice≃
-    (record:
-      field[ Semilattice-on.∧ by is-semilattice-hom.pres-∧ ]
-      axiom[ Semilattice-on.has-is-semilattice by (λ _ → hlevel 1) ]))
 ```
 
 Any semilattice homomorphism is `monotone`{.Agda ident=Monotone-map} when

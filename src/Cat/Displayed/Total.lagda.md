@@ -58,11 +58,8 @@ the paths between morphisms.
 
 ```agda
 total-hom-is-set : ∀ (X Y : Total) → is-set (Total-hom X Y)
-total-hom-is-set X Y =
-  is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) Total-hom′-is-set
-  where
-    Total-hom′-is-set : is-set _
-    Total-hom′-is-set = Σ-is-hlevel 2 (Hom-set _ _) λ f → Hom[ f ]-set _ _
+total-hom-is-set X Y = Iso→is-hlevel 2 eqv $
+  Σ-is-hlevel 2 (hlevel 2) (λ a → Hom[ _ ]-set _ _)
 
 total-hom-path : ∀ {X Y : Total} {f g : Total-hom X Y}
                → (p : f .hom ≡ g .hom) → f .preserves ≡[ p ] g .preserves → f ≡ g

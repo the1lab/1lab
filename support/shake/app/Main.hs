@@ -23,6 +23,7 @@ import qualified System.FSNotify as Watch
 import System.Console.GetOpt
 import System.Environment
 import System.Time.Extra
+import System.Process
 import System.Exit
 
 import Shake.Options
@@ -163,6 +164,11 @@ rules = do
 
   -- Profit!
 
+data ArgOption
+  = ASkipTypes
+  | AWatching (Maybe String)
+  deriving (Eq, Show)
+
 main :: IO ()
 main = do
   args <- getArgs
@@ -173,7 +179,8 @@ main = do
   let (opts, extra, errs) = getOpt Permute optDescrs args
       (shakeOpts, ourOpts) = partitionEithers opts
       (errs', shakeOpts') = first (++errs) $ partitionEithers shakeOpts
-      rules' = setOptions ourOpts >> rules
+      (watchingCmd, ourOpts') = parseOptions ourOpts
+      rules' = setOptions ourOpts' >> rules
 
       shakeOptions' = foldl' (flip ($)) shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} shakeOpts'
       (shakeRules, wanted) = case extra of
@@ -184,12 +191,12 @@ main = do
     for_ errs' $ putStrLn . ("1lab-shake: " ++)
     exitFailure
 
-  let watching = Watching `elem` ourOpts
+  let watching = Watching `elem` ourOpts'
 
   (ok, after) <- shakeWithDatabase shakeOptions' shakeRules \db -> do
     case watching of
       False -> buildOnce db wanted
-      True -> buildMany db wanted
+      True -> buildMany db wanted watchingCmd
   shakeRunAfter shakeOptions' after
 
   reportTimes
@@ -197,15 +204,23 @@ main = do
   unless ok exitFailure
 
   where
-    optDescrs :: [OptDescr (Either (Either String (ShakeOptions -> ShakeOptions)) Option)]
+    optDescrs :: [OptDescr (Either (Either String (ShakeOptions -> ShakeOptions)) ArgOption)]
     optDescrs = map (fmap Left) shakeOptDescrs ++ map (fmap Right) ourOptsDescrs
 
     ourOptsDescrs =
-      [ Option "w" ["watch"] (NoArg Watching)
-          "Start 1lab-shake in watch mode. Starts a persistent process which runs a subset of build tasks for interactive editing. Implies --skip-types."
-      , Option [] ["skip-types"] (NoArg SkipTypes)
+      [ Option "w" ["watch"] (OptArg AWatching "COMMAND")
+          "Start 1lab-shake in watch mode. Starts a persistent process which runs a subset of build tasks for  \
+          \interactive editing. Implies --skip-types. Optionally takes a command to run after the build has finished."
+      , Option [] ["skip-types"] (NoArg ASkipTypes)
           "Skip generating type tooltips when compiling Agda to HTML."
       ]
+
+    parseOptions :: [ArgOption] -> (Maybe String, [Option])
+    parseOptions [] = (Nothing, [])
+    parseOptions (ASkipTypes:xs) = (SkipTypes:) <$> parseOptions xs
+    parseOptions (AWatching watching:xs) =
+      let (_, xs') = parseOptions xs
+      in (watching, Watching:xs')
 
     buildOnce :: ShakeDatabase -> [Action ()] -> IO (Bool, [IO ()])
     buildOnce db wanted = do
@@ -227,8 +242,8 @@ main = do
     watchConfig :: Watch.WatchConfig
     watchConfig = Watch.defaultConfig { Watch.confDebounce = Watch.Debounce 1e-10 }
 
-    buildMany :: ShakeDatabase -> [Action ()] -> IO (Bool, [IO ()])
-    buildMany db wanted = Watch.withManagerConf watchConfig \mgr -> do
+    buildMany :: ShakeDatabase -> [Action ()] -> Maybe String -> IO (Bool, [IO ()])
+    buildMany db wanted cmd = Watch.withManagerConf watchConfig \mgr -> do
       (_, clean) <- buildOnce db wanted
 
       toRebuild <- atomically $ newTVar Set.empty
@@ -262,6 +277,14 @@ main = do
             putStrLn $ "🔨 " ++ intercalate ", " changes' ++ " has changed. Rebuilding " ++ targetName ++ "."
 
             (_, clean') <- buildOnce db targets
+
+            case cmd of
+              Nothing -> pure ()
+              Just cmd -> do
+                putStrLn $ "🔨 Running `" ++ cmd ++ "`"
+                _ <- withCreateProcess (shell cmd) { delegate_ctlc = True } (\_ _ _ p -> waitForProcess p)
+                pure ()
+
             loop (clean' ++ clean)
 
       loop clean

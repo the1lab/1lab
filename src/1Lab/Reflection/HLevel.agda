@@ -1,31 +1,68 @@
 {-# OPTIONS -vtactic.hlevel:10 #-}
+open import 1Lab.Reflection.Record
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
 open import 1Lab.Prim.Data.Nat
+open import 1Lab.Type.Sigma
 open import 1Lab.Reflection
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 open import Data.List
+open import Data.Bool
 
 module 1Lab.Reflection.HLevel where
 
 {-
-Tactic for generating readable h-level proofs automatically.
+Tactic for generating readable h-level proofs automatically. Contains an
+essential reimplementation of the instance search mechanism, with
+support for arbitrary level offsets (`level-minus) and searching under
+binders (`search-under). Ambiguity is explicitly supported: the first
+goal for which we can complete a proof tree is the one we go with.
 
-Over the instance resolution mechanism, this supports arbitrary-ish
-hints for how to decompose goals and push obligations inwards. These are
-used for all the basic type formers (and also lists, since we need lists
-for this module).
+The tactic works in a naÏve way, trying h-level lemmas until one
+succeeds. There are three ways of making progress: Using a *projection
+hint*, using a *decomposition hint*, or by falling back to instance
+selection. The instance selection fallback is self-explanatory.
 
-Additionally, it handles ∣ A ∣ properly.
+Projection hints handle the situation is-hlevel (X .p) n, where X
+inhabits a record that contains evidence of its hlevel. If there is a
+projection hint with `underlying-type == p`, then we use `has-level
+(get-argument (X .p))` as the solution. Being a base case, projection
+hints also handle raising h-levels: If `get-level (X .p) < n`, we solve
+by raising `has-level ...` the appropriate amount.
 
-Falls back to instance search when no hints apply.
+Decomposition hints are slightly more interesting. Decomposition hints
+apply to a type, say P, and instruct the tactic on how to build an
+application of type (is-hlevel P n). The way this application is built
+is customizable.
+
+Finding rules
+-------------
+
+Rules are found using instance search, specifically for the
+'hlevel-decomposition' and 'hlevel-projection' types. The
+hlevel-projection type is flat, so the runtime of
+projection-decomposition is *linear in the number of possible
+projections*.
+
+The hlevel-decomposition type is more interesting, since it is indexed
+by the type that it can decompose. That way, we can use Agda's own
+instance selection mechanism to narrow down to relevant decompositions.
+
+Nondeterminism
+--------------
+
+In case more than one projection and/or decomposition hint is possible,
+they will all be tried in order. This allows the tactic to generate
+sensible-looking code, by trying simpler decompositions first. As an
+example, the non-dependent lemmas for → and × will be tried before those
+for Π and Σ, just like a human would.
 -}
 
-
--- | Argument specifications for decompositions.
+-- | Specifies how an argument should be filled in during elaboration of
+-- an h-level lemma.
 data Arg-spec : Type where
   `level-minus  : (n : Nat) → Arg-spec
   -- ^ Insert the level we're solving for minus the given offset (note
@@ -33,153 +70,295 @@ data Arg-spec : Type where
   -- argument position
 
   `search-under : (n : Nat) → Arg-spec
-  -- ^ Recursively search for an h-level witness under @n@ visible
-  -- lambdas
+  -- ^ Recursively search for an h-level witness, under @n@ visible
+  -- lambdas. This is suitable for lemmas of type
+  -- (∀ x y z → is-hlevel ...) → is-hlevel ...
 
   `meta         : Arg-spec
-  -- ^ Insert a meta at this argument position
+  -- ^ Insert a meta at this argument position. No search will be
+  -- performed for this meta, so it must be solved from the context in
+  -- which the lemma is used.
 
 -- Common patterns: Keep the level, search in the current scope.
 pattern `search = `search-under 0
 pattern `level = `level-minus 0
 
 -- | A specification for how to decompose the type @T@ into
--- sub-components for establishing an h-level result.
-data Decomposition {ℓ} (T : Type ℓ) : Type where
-  decomp : (h-level-lemma : Name) (arguments : List Arg-spec) → Decomposition T
+-- sub-components, to establish an h-level result.
+data hlevel-decomposition {ℓ} (T : Type ℓ) : Type where
+  decomp
+    : (h-level-lemma : Name) (arguments : List Arg-spec)
+    → hlevel-decomposition T
   -- To prove that T has a given h-level, we can invoke the
   -- @h-level-lemma@ with the specified @arguments@.
 
+-- | How to decompose an application of a record selector into something
+-- which might have an h-level.
+record hlevel-projection : Type where
+  field
+    underlying-type : Name
+    -- ^ The name of the 'underlying type' projection, e.g. ∣_∣
+    has-level : Name
+    -- ^ The name of the h-level lemma. It must be sufficient to apply
+    -- this name to the argument (see get-argument below); arg specs are
+    -- not supported.
+    get-level : Term → TC Term
+    -- ^ Given an application of underlying-type, what h-level does this
+    -- type have? Necessary for computing lifts.
+    get-argument : List (Arg Term) → TC Term
+    -- ^ Extract the argument out from under the application.
+{-
+Using projections
+-----------------
+
+Projection decomposition happens as follows; suppose we have some
+neutral
+
+  n = def (quote X) as
+
+in order, every 'hlevel-projection' instance definition will be tried;
+Let us call a generic instance I. If I.underlying-type == X, then we'll
+use this instance, otherwise, we fail (i.e. backtrack and try another
+projection).
+
+To use this instance, the get-level and get-argument functions are
+involved; get-argument must take 'as' and return some representative
+sub-expression e. get-level will receive e's inferred type and must
+return the h-level of the type n. Finally, we return
+
+  I.has-level (get-argument e),
+
+possibly wrapped in (k - get-level (get-argument e)) applications of
+is-hlevel-suc.
+-}
+
+open hlevel-projection
 private
   -- Throw an empty type error to try another alternative, stating the
   -- purpose of backtracking for debugging:
-  backtrack : ∀ {ℓ} {A : Type ℓ} → String → TC A
+  backtrack : ∀ {ℓ} {A : Type ℓ} → List ErrorPart → TC A
   backtrack note = do
-    debugPrint "tactic.hlevel" 10 $ strErr "Backtracking search... " ∷ strErr note ∷ []
-    typeError []
+    debugPrint "tactic.hlevel" 10 $ "Backtracking search... " ∷ note
+    typeError $ "Search hit a dead-end: " ∷ note
 
+  -- A list of names which we should not reduce while trying to invert
+  -- an application of is-hlevel/is-prop/is-set into an 'underlying
+  -- type' and level arguments.
   hlevel-types : List Name
-  hlevel-types = quote is-hlevel ∷ quote is-prop ∷ quote is-contr ∷ []
+  hlevel-types = quote is-hlevel ∷ quote is-prop ∷ quote is-set ∷ []
 
-  blockOn : Term → TC ⊤
-  blockOn (meta m _) = do
-    debugPrint "tactic.hlevel" 10 $
-      strErr "type under consideration is meta, blocking to avoid problems on reload" ∷ []
-    blockOnMeta m
-  blockOn _ = pure tt
+  pattern nat-lit n =
+    def (quote Number.fromNat) (_ ∷ _ ∷ _ ∷ lit (nat n) v∷ _)
 
-  -- | Infer the type of the goal and make sure that it is of the form
-  -- @is-hlevel A n@.
+  -- Decompose an application of is-hlevel and/or one of the other
+  -- 'hlevel-types' into its constituent parts. Invariant:
+  --
+  --    decompose-is-hlevel′ t = (a , n) ⊢ t = is-hlevel a n
+  decompose-is-hlevel′ : Term → TC (Term × Term)
+
+  -- Infer the type of the given term, and decompose it according to
+  -- decompose-is-hlevel′.
   decompose-is-hlevel : Term → TC (Term × Term)
   decompose-is-hlevel goal = do
     ty ← dontReduceDefs hlevel-types $ inferType goal >>= reduce
+    decompose-is-hlevel′ ty
+
+  decompose-is-hlevel′ ty = do
     def (quote is-hlevel) (_ ∷ ty v∷ lv v∷ []) ← pure ty
       where
+        -- Handle the ones with special names:
+        def (quote is-set) (_ ∷ ty v∷ []) → do
+          ty ← wait-for-type ty
+          pure (ty , quoteTerm 2)
+
         def (quote is-prop) (_ ∷ ty v∷ []) → do
-          blockOn ty
-          pure (ty , (con (quote suc) (con (quote zero) [] v∷ [])))
+          ty ← wait-for-type ty
+          pure (ty , quoteTerm 1)
 
         def (quote is-contr) (_ ∷ ty v∷ []) → do
-          blockOn ty
-          pure (ty , (con (quote zero) []))
+          ty ← wait-for-type ty
+          pure (ty , quoteTerm 0)
 
-        _ → backtrack "goal type isn't is-hlevel"
+        _ → backtrack "Goal type isn't is-hlevel"
 
     -- To support having bare hlevel! in the source file, we need to
     -- block decomposition on having a rigid-ish type at the
     -- top-level. Otherwise the first hint that matches will get
     -- matched endlessly until we run out of fuel!
-    blockOn ty
-    blockOn lv
-    lv′ ← normalise lv
-    pure (ty , lv′)
+    ty ← wait-for-type ty
+    lv ← wait-for-type lv
+    pure (ty , lv)
 
-  -- Step: Treat the type as being an n-Type, i.e., a projection of the
-  -- form ∣ A ∣, where A : n-Type ℓ n.
-  treat-as-n-type : Term → TC ⊤
-  treat-as-n-type goal = do
-    (ty , lv) ← decompose-is-hlevel goal
+{-
+Lifting n-Types
+---------------
+
+The n-types are the leaves of the hlevel solving process, so they're
+pretty much our only opportunity to adjust levels in a big way. Suppose
+you have
+
+  T = def (quote X) as
+
+with
+  get-level (get-argument T) = n
+  w : is-hlevel T n
+
+but what you want is a witness of is-hlevel T (k + n), where k is some
+numeral? Well, the solution is obvious: we can compute k - n and lift
+T's witness (k - n) levels. Right?
+
+No: we're dealing with potential open naturals, so we have to be careful
+about performing ‘symbolic’ subtractions. The way we do this is with,
+essentially, a loop: If w doesn't work, then try
+
+  is-hlevel-suc n w : is-hlevel T (suc n)
+
+until you reach a sucᵏ n = k + n. Actually, slightly more efficient, we
+keep around a counter k′ for the number of tries, and transfer sucessors
+from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
+-}
+  lift-sol : Term → Term → Nat → Term
+  lift-sol tm _ 0 = tm
+  lift-sol tm l1 l = def (quote is-hlevel-+) (l1 v∷ lit (nat l) v∷ tm v∷ [])
+
+  pred-term : Term → Maybe Term
+  pred-term (con (quote suc) (x v∷ [])) = just x
+  pred-term (lit (nat n)) with n
+  ... | suc k = just (lit (nat k))
+  ... | _ = nothing
+  pred-term _ = nothing
+
+  {-# TERMINATING #-}
+  lifting-loop : Nat → Term → Term → Term → Term → TC ⊤
+  lifting-loop it solution goal l1 l2 =
+    let's-hope <|> do
+      (just l2′) ← pred-term <$> normalise l2 where
+        nothing → backtrack "Lifting loop reached its end with no success"
+      lifting-loop (suc it) solution goal l1 l2′
+    where
+      let's-hope : TC ⊤
+      let's-hope = do
+        debugPrint "tactic.hlevel" 30 $ "Lifting loop: Trying " ∷ termErr (lift-sol solution l1 it) ∷ " for level " ∷ termErr l2 ∷ []
+        unify goal (lift-sol solution l1 it)
+    -- con (quote suc) (
+
+  -- Projection decomposition.
+  treat-as-n-type : hlevel-projection → Term → TC ⊤
+  treat-as-n-type projection goal = do
+    -- First we must be looking at a goal which is of the type is-hlevel
+    -- A n. We'll need both n and A.
+    (ty , wanted-level) ← decompose-is-hlevel goal
     debugPrint "tactic.hlevel" 10 $
-      strErr "Attempting to treat as " ∷ termErr lv ∷ strErr "-Type: " ∷ termErr ty ∷ []
+      "Attempting to treat as " ∷ termErr wanted-level ∷ "-Type: " ∷ termErr ty ∷ []
+    ty ← reduce ty
 
-    -- Reduce to whnf to find the ∣_∣ application
-    def (quote ∣_∣) (_ ∷ _ ∷ it v∷ []) ← reduce ty
-      where _ → backtrack "thing isn't application of ∣_∣"
+    -- Reduce the type to whnf and check whether the outermost term
+    -- constructor is an application of the projection we're looking
+    -- for.
+    def namen args ← returnTC ty
+      where what → backtrack $ "Thing isn't an application, it is " ∷ termErr what ∷ []
+    guard (primQNameEquality (projection .underlying-type) namen)
 
-    -- and infer the actual level. we'll need it in a second.
-    def (quote n-Type) (ell v∷ lv′t v∷ []) ← (inferType it >>= reduce)
-      where _ → backtrack "type of thing isn't n-Type"
-    lv ← unquoteTC lv
-    lv′ ← normalise lv′t >>= unquoteTC
+    it ← projection .get-argument args
+
+    -- And compute the level of the projected thing, in addition to a
+    -- numeral form of the wanted level.
+    actual-level ← inferType it >>= projection .get-level
 
     debugPrint "tactic.hlevel" 10 $
-      strErr "... but it's actually a(n) " ∷ termErr lv′t ∷ strErr "-Type" ∷ []
+      "... but it's actually a(n) " ∷ termErr actual-level ∷ "-Type" ∷ []
 
-    -- Note that if A is an n-type, then it's also a k+n type for any n;
-    -- so if we want (k+n) type, it suffices to have an n-type, and we
-    -- can lift the type across.
-    let
-      go : Bool → Bool → TC ⊤
-      go = λ where
-        -- If the levels are actually the same then we're fine and we
-        -- don't need to lift anything.
-        true _ → unify goal $ def (quote is-tr) (it v∷ [])
-
-        -- Otherwise we compute the difference (as an actual numeral,
-        -- hence reducing away) and use @is-hlevel+@ to lift the result.
-        false true → do
-          let diff = lv - lv′
-          offset ← quoteTC diff >>= reduce
-          let lift = def (quote is-hlevel-+) $ lv′t v∷ offset v∷ (def (quote is-tr) (it v∷ [])) v∷ []
-          debugPrint "tactic.hlevel" 10 $
-            strErr "... but that's fine, because we can lift it using\n " ∷
-            termErr lift ∷ []
-          unify goal lift
-
-        -- Try, try again.
-        false false → backtrack "no way of raising it"
-
-    go (lv′ == lv) (lv′ < lv)
+    lv ← normalise wanted-level
+    lv′ ← normalise actual-level
+    lifting-loop 0 (def (projection .has-level) (it v∷ [])) goal lv′ lv
 
     commitTC
 
-  -- Fall back to Agda's instance search mechanism:
-  use-instance-search : Term → TC ⊤
-  use-instance-search goal = runSpeculative $ do
+  -- Fall back to Agda's instance search mechanism. This isn't as
+  -- straightforward as just using the 'hlevel' function for a couple of
+  -- reasons.
+  use-instance-search : Bool → Term → TC ⊤
+  use-instance-search has-alts goal = runSpeculative $ do
     (ty , lv) ← decompose-is-hlevel goal
     solved@(meta mv _) ←
-      newMeta (def (quote H-Level) (ty v∷ lv v∷ [])) where _ → backtrack "impossible"
+      newMeta (def (quote H-Level) (ty v∷ lv v∷ [])) where _ → backtrack []
     instances ← getInstances mv
 
     t ← quoteTC instances
     debugPrint "tactic.hlevel" 10 $
-      strErr "Using instance search for\n" ∷ termErr ty ∷
-      strErr "\nFound candidates\n " ∷ termErr t ∷ []
+      "Using instance search for\n" ∷ termErr ty ∷
+      "\nFound candidates\n " ∷ termErr t ∷ []
 
+    -- We actually want to manage the instance searching ourselves,
+    -- sorta, to avoid getting into situations where the macro has
+    -- committed to instance search but Agda will disagree with it.
     let
       go : List Term → TC (⊤ × Bool)
       go = λ where
+        -- If there is *exactly* one instance candidate for this goal,
+        -- then we can go ahead and solve it. That's because having
+        -- exactly one instance means Agda will solve using that
+        -- instance!
         (x ∷ []) → do
-          -- Note that we need to do this garbage to get rid of the meta
-          -- before we can actually use the instance:
+          -- Note that, since getInstances works by creating a new meta,
+          -- we have to commit to the instance ourselves.
           unify solved x
-          unify goal (def (quote H-Level.has-hlevel)
-            (unknown h0∷ ty h0∷ lv h0∷ x v∷ []))
+          dontReduceDefs (quote hlevel ∷ []) $ withReconstructed $
+            unify goal (def (quote hlevel) (lv v∷ []))
           pure (tt , true)
-        _ → backtrack "wrong number of instances"
+
+        -- If there are any more alternatives to be tried after this
+        -- one, then we fail (backtrack). Otherwise, we discard the TC
+        -- state but indicate success: this will cause the meta to be
+        -- solved with an interaction point (if using
+        -- elaborate-and-give).
+        [] → if has-alts
+          then backtrack "No possible instances, but have other decompositions to try"
+          else pure (tt , false)
+
+        _ → backtrack "Too many possible instances; will not use instance search for this goal"
     go instances
 
-  -- Main loop for the tactic:
-  {-# TERMINATING #-}
-  search : Term → Nat → Term → TC ⊤
+  -- Entry point for calling the tactic.
+  search : Bool → Term → Nat → Term → TC ⊤
   -- Give up if we're out of fuel:
-  search _     zero    goal = unify goal unknown
+  search has-alts _     zero    goal = unify goal unknown
+
   -- Actual main loop: try using the hints database, try treating the
   -- goal as an n-type, fall back to instance search.
-  search level (suc n) goal =
-    use-hints <|> treat-as-n-type goal <|> use-instance-search goal
+  search has-alts level (suc n) goal =
+    use-projections
+      <|> use-hints
+      <|> use-instance-search has-alts goal
     where
-      -- Get rid of any invisible binders in the term
+      open hlevel-projection
+
+      -- Nondeterministically use a projection for establishing the
+      -- result. This follows the approach described in [Using
+      -- projections].
+      use-projections : TC ⊤
+      use-projections = do
+        debugPrint "tactic.hlevel" 20 $
+          "Entering try-n-type-projection loop for goal " ∷ termErr goal ∷ []
+
+        (solved , instances) ← runSpeculative $ do
+          solved@(meta mv _) ← newMeta (def (quote hlevel-projection) [])
+            where _ → typeError (termErr goal ∷ [])
+          debugPrint "tactic.hlevel" 20 $
+            "Trying n-type projections: " ∷ termErr goal ∷ []
+
+          -- If there are some hints, then great, otherwise we discard
+          -- the TC state.
+          (x ∷ xs) ← getInstances mv
+            where [] → pure ((unknown , []) , false)
+
+          pure ((solved , x ∷ xs) , true)
+
+        nondet instances λ a → do
+          projection ← unquoteTC {A = hlevel-projection} a
+          treat-as-n-type projection goal >> unify solved a
+
+      -- Get rid of any invisible binders that lead the term.
       remove-invisible : Term → Term → TC Term
       remove-invisible
         (lam _ (abs _ t))
@@ -187,13 +366,17 @@ private
         = remove-invisible t ret
       remove-invisible inner _ = pure inner
 
-      -- Wrap a term in n visible lambdas
+      -- Search using decompositions involves manipulating the scope,
+      -- which is why it's spread over so many functions, and even then,
+      -- some are too big.
+
+      -- Wrap the given term in a series of visible lambdas.
       wrap-lams : Nat → Term → Term
       wrap-lams zero r = r
       wrap-lams (suc x) r = lam visible $ abs "a" $ wrap-lams x r
 
-      -- Compute a continuation which extends the context by n unknown
-      -- variables
+      -- Compute a continuation which extends the context by n visible
+      -- variables, all typed 'unknown'.
       extend-n : ∀ {ℓ} → Nat → TC ((A : Type ℓ) → TC A → TC A)
       extend-n zero = pure λ _ x → x
       extend-n (suc n) = do
@@ -206,42 +389,88 @@ private
       -- the solution of decomposition, and call a continuation to
       -- perform any outstanding searches.
       gen-args
-        : Name              -- ^ The h-level lemma
-        → List Arg-spec     -- ^ The argument specifications
-        → List (Arg Term)   -- ^ Accumulator: computed arguments (in reverse order)
-        → TC ⊤              -- ^ Accumulator: what do we need to do after unifying the goal with the lemma?
+        : Bool              -- ^ Are there any alternatives after this one?
+        → Term              -- ^ What level are we searching for?
+
+        → Name              -- ^ Name of the lemma,
+        → List Arg-spec     -- ^ and the arguments we should invent.
+
+        → List (Arg Term)
+        -- ^ Accumulator: computed arguments (criminally, in reverse
+        -- order)
+        → TC ⊤
+          -- ^ Accumulator/continuation: what do we need to do after
+          -- unifying the goal with the lemma?. This is both
+          -- continuation (it can be used to run something after the
+          -- arguments are built) and accumulator (searching recursively
+          -- is done last).
         → TC ⊤              -- ^ Returns nada
-      gen-args defn [] accum cont = do
-        debugPrint "tactic.hlevel" 10 $
-          strErr "Decomposition solution: " ∷ termErr (def defn (reverse accum)) ∷ []
+      gen-args has-alts level defn [] accum cont = do
+        -- If we have no arguments to generate, then we can go ahead and
+        -- use the accumulator as-is.
         unify goal (def defn (reverse accum))
+        debugPrint "tactic.hlevel" 10 $
+          "Committed to solution: " ∷ termErr (def defn (reverse accum)) ∷ []
         cont
 
-      gen-args defn (x ∷ args) accum cont with x
+      gen-args has-alts level defn (x ∷ args) accum cont with x
+      -- If we got asked for the level without an adjustment (i.e. monus
+      -- by zero), then we may as well not bother *trying* to adjust it.
+      -- Saves a bit of computation.
+      ... | `level-minus 0 = gen-args has-alts level defn args (level v∷ accum) cont
       -- If we have to insert the level minus some offset, then we need
       -- to do the computation:
-      ... | `level-minus n = do
-        level′ ← unquoteTC level
-        level′′ ← quoteTC (level′ - n) >>= reduce
-        -- Reduce otherwise we get Number.fromNat as the term
-        gen-args defn args (level′′ v∷ accum) cont
+      ... | `level-minus n@(suc _) =
+        do
+          level ← normalise level
+          debugPrint "tactic.hlevel" 10 $
+            "Hint demands offset, performing symbolic monus, subtracting from\n  " ∷ termErr level ∷ []
+          level′′ ← monus level n
+          -- Reduce otherwise we get Number.fromNat as the term
+          gen-args has-alts level defn args (level′′ v∷ accum) cont
+        where
+          -- A 'symbolic' monus function. If we're looking at an actual
+          -- number, then we can just do the computation in TC, but
+          -- otherwise we have to reimplement the builtin subtraction,
+          -- where the minuend is a *term* rather than a number. In
+          -- addition to being a bad operation (monus, grr), it's
+          -- *partial*. We can end up backtracking while subtracting.
+          monus : Term → Nat → TC Term
+          monus (lit (nat n)) k = pure $ lit (nat (n - k))
+          monus tm zero = pure tm
+          monus thezero@(con (quote zero) []) (suc it) = pure thezero
+          monus (con (quote suc) (x v∷ [])) (suc it) = do
+            x ← reduce x
+            monus x it
+          monus tm (suc it) = do
+            debugPrint "tactic.hlevel" 10 $ "Dunno how to take 1 from " ∷ termErr tm ∷ []
+            typeError []
 
-      -- Insert a metavariable:
-      ... | `meta = gen-args defn args (unknown v∷ accum) cont
+      -- Insert a metavariable, to be solved by Agda. It'd be sad if the
+      -- macro handled everything!
+      ... | `meta = gen-args has-alts level defn args (unknown v∷ accum) cont
 
       ... | `search-under under = do
-        -- Create a new metavariable with n free variables of
-        -- indeterminate type..
-        gounder ← extend-n {lzero} under
+        -- To search under some variables, we work in a scope extended
+        -- by 'under'-many variables. The metavariable lives in that
+        -- scope, so we have to quantify over the variables we
+        -- introduced to use it outside, i.e., in the actual (outer)
+        -- search problem.
+        gounder ← extend-n under
         mv ← gounder Term $ newMeta unknown
-        -- wrap the argument metavariable in n lambdas..
-        gen-args defn args (wrap-lams under mv v∷ accum) $ do
+        -- After we've put the mv wrapped under some lambdas in the
+        -- argument list,
+        gen-args has-alts level defn args (wrap-lams under mv v∷ accum) $ do
+          -- On our way back up, we do any more searching that needed to
+          -- get done, and..
           cont
-          -- and go back under those indeterminates to search for a
-          -- solution.
-          gounder ⊤ $ search level n mv
+          -- go back under the new scope to recursively search for
+          -- levels.
+          gounder ⊤ $ search has-alts unknown n mv
 
-      -- Try all the candidate hints in order.
+      -- Try all the candidate hints in order. This is a version of
+      -- 'nondet' which additionally threads whether we're looking at
+      -- last alternative.
       use-decomp-hints : (Term × Term) → Term → List Term → TC (⊤ × Bool)
       use-decomp-hints (goal-ty , lv) solved (c1 ∷ cs) = do
         ty ← inferType c1
@@ -252,66 +481,114 @@ private
           -- using its argument specification to construct a little
           -- h-level lemma
           (con (quote decomp) (_ ∷ _ ∷ nm v∷ argspec v∷ [])) → do
-            debugPrint "tactic.hlevel" 10 $ strErr "Using " ∷ termErr nm ∷ strErr " decomposition for: " ∷ termErr goal ∷ []
+            debugPrint "tactic.hlevel" 10 $
+              "Using " ∷ termErr nm ∷ " decomposition for:\n  "
+              ∷ termErr (def (quote is-hlevel) (goal-ty v∷ lv v∷ [])) ∷ []
+
             nm′ ← unquoteTC nm
             argsp ← unquoteTC argspec
-            gen-args nm′ argsp [] (returnTC tt)
+            -- Generate the argument spine, and discard the instance
+            -- search meta.
+            gen-args (not (length cs == 0)) lv nm′ argsp [] (returnTC tt)
             unify solved c1
+
             pure (tt , true)
 
-          -- If we didn't get this then backtrack.
-          _ → backtrack "non-canonical hint")
-          -- If we didn't manage to get the hint to work for any reason,
-          -- try again with the other hints.
+          -- It's possible that this particular hint was a bust, i.e.
+          -- because someone wasn't being careful with what
+          -- hlevel-decomposition instances they've defined. That's no
+          -- matter: we can just ignore it.
+          _ → backtrack "Non-canonical hint")
+          -- If we didn't manage to get the hint to work, for any
+          -- reason, try again with the rest of the hints.
           <|> use-decomp-hints (goal-ty , lv) solved cs
 
-      use-decomp-hints _ _ [] = backtrack "ran out of hints"
+      use-decomp-hints (goal-ty , _) _ [] =
+        backtrack $ "Ran out of decomposition hints for " ∷ termErr goal-ty ∷ []
 
+      -- Using the hints involving querying Agda for potential
+      -- instances, then trying each in order.
       use-hints : TC ⊤
       use-hints = runSpeculative $ do
         (ty , lv) ← decompose-is-hlevel goal
 
+        -- Note that if the type here is a metavariable, the tactic is..
+        -- loopy.
         pure ty >>= λ where
           (meta m _) → do
-            debugPrint "tactic.hlevel" 10 $
-              strErr "Type under is-hlevel is metavariable, blocking to avoid infinite loop" ∷ []
+            debugPrint "tactic.hlevel" 10
+              "Type under is-hlevel is metavariable, blocking to avoid infinite loop"
             blockOnMeta m
           _ → pure tt
 
-        -- Create a meta of type Decomposition to find any possible hints..
-        solved@(meta mv _) ← newMeta (def (quote Decomposition) (ty v∷ []))
+        -- Create a meta of type hlevel-decomposition to find any possible hints..
+        solved@(meta mv _) ← newMeta (def (quote hlevel-decomposition) (ty v∷ []))
           where _ → typeError (termErr ty ∷ [])
         instances ← getInstances mv
 
         t ← quoteTC instances
         debugPrint "tactic.hlevel" 10 $
-          strErr "Finding decompositions for\n" ∷
+          "Finding decompositions for\n" ∷
           termErr ty ∷
-          strErr "\nFound candidates\n " ∷
+          "\nFound candidates\n " ∷
           termErr t ∷ []
 
         -- And try using the hints.
         use-decomp-hints (ty , lv) solved instances
 
-  hlevel-tactic-worker : Term → TC ⊤
-  hlevel-tactic-worker goal = do
-    ty ← dontReduceDefs hlevel-types $ inferType goal >>= reduce
-    (ty , lv) ← decompose-is-hlevel goal <|>
-      typeError
-        ( strErr "hlevel tactic: goal type is not of the form ``is-hlevel A n'':\n"
-        ∷ termErr ty
-        ∷ [])
+  -- At the top-level, our goal doesn't need to have literally the type
+  -- is-hlevel A n. It can be under any number of Πs, both implicit and
+  -- explicit. This means that a goal like (∀ x → is-hlevel T n) can be
+  -- solved using just hlevel!, rather than λ _ → hlevel!. Of course,
+  -- the effect is the same.
+  decompose-is-hlevel-top
+    : ∀ {ℓ} {A : Type ℓ}
+    → Term → TC (Term × Term × (TC A → TC A) × (Term → Term))
+  decompose-is-hlevel-top goal =
+    do
+      ty ← dontReduceDefs hlevel-types $ (inferType goal >>= reduce) >>= wait-for-type
+      go ty
+    where
+      go : Term → TC _
+      go (pi (arg as at) (abs vn cd)) = do
+        (inner , hlevel , enter , leave) ← go cd
+        pure $ inner , hlevel , extendContext vn (arg as at) , λ t → lam (ArgInfo.arg-vis as) (abs vn t)
+      go tm = do
+        (inner , hlevel) ← decompose-is-hlevel′ tm
+        pure $ inner , hlevel , (λ x → x) , (λ x → x)
 
-    -- 10 units of fuel isn't too many but it's enough for any realistic
-    -- use-case.
-    search lv 10 goal
+-- This is public so it's usable in tactic attributes. It decomposes the
+-- top-level goal type and enters the search loop.
+hlevel-tactic-worker : Term → TC ⊤
+hlevel-tactic-worker goal = do
+  ty ← dontReduceDefs hlevel-types $ inferType goal >>= reduce
+  (ty , lv , enter , leave) ← decompose-is-hlevel-top goal <|>
+    typeError
+      ( "hlevel tactic: goal type is not of the form ``is-hlevel A n'':\n"
+      ∷ termErr ty
+      ∷ [])
 
+  -- 10 units of fuel isn't too many but it's enough for any realistic
+  -- use-case. Note the scope nonsense: we have to 'enter' to get under
+  -- the Πs (extend the scope with their argument types), then 'leave'
+  -- (wrap in lambdas) to get back out.
+  solved ← enter $ do
+    goal′ ← newMeta (def (quote is-hlevel) (ty v∷ lv v∷ []))
+    search false lv 10 goal′
+    pure goal′
+  unify goal (leave solved)
 
--- Entry point to the macro:
+-- Entry points to the macro
+----------------------------
 macro hlevel! = hlevel-tactic-worker
 
+-- In addition to using the macro as a.. well, macro, it can be used as
+-- a tactic argument, to replace instance search by the more powerful
+-- decomposition-projection mechanism of the tactic. We provide only
+-- some of the most common helpers:
 el! : ∀ {ℓ} (A : Type ℓ) {n} {@(tactic hlevel-tactic-worker) hl : is-hlevel A n} → n-Type ℓ n
-el! A {hl = hl} = el A hl
+∣ el! A {hl = hl} ∣ = A
+el! A {hl = hl} .is-tr = hl
 
 prop-ext!
   : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
@@ -319,42 +596,96 @@ prop-ext!
     {@(tactic hlevel-tactic-worker) bprop : is-hlevel B 1}
   → (A → B) → (B → A)
   → A ≃ B
-prop-ext! {aprop = aprop} {bprop = bprop} f g = prop-ext aprop bprop f g
+prop-ext! {aprop = aprop} {bprop = bprop} = prop-ext aprop bprop
 
--- Set up the common hints:
+Σ-prop-path!
+  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′}
+  → {@(tactic hlevel-tactic-worker) bxprop : ∀ x → is-hlevel (B x) 1}
+  → {x y : Σ A B}
+  → x .fst ≡ y .fst
+  → x ≡ y
+Σ-prop-path! {bxprop = bxprop} = Σ-prop-path bxprop
+
+open hlevel-projection
+
+-- Hint database bootstrap
+--------------------------
+-- This instance block contains most of the decompositions we have
+-- defined in the dependencies of this module.
+
 instance
-  decomp-lift : ∀ {ℓ ℓ′} {T : Type ℓ} → Decomposition (Lift ℓ′ T)
+  decomp-lift : ∀ {ℓ ℓ′} {T : Type ℓ} → hlevel-decomposition (Lift ℓ′ T)
   decomp-lift = decomp (quote Lift-is-hlevel) (`level ∷ `search ∷ [])
 
   -- Non-dependent Π and Σ for readability first:
-  decomp-fun : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → Decomposition (A → B)
+  decomp-fun : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → hlevel-decomposition (A → B)
   decomp-fun = decomp (quote fun-is-hlevel) (`level ∷ `search ∷ [])
 
-  decomp-prod : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → Decomposition (A × B)
+  decomp-prod : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → hlevel-decomposition (A × B)
   decomp-prod = decomp (quote ×-is-hlevel) (`level ∷ `search ∷ `search ∷ [])
 
   -- Dependent type formers:
-  decomp-pi : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} → Decomposition (∀ a → B a)
+  decomp-pi : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} → hlevel-decomposition (∀ a → B a)
   decomp-pi = decomp (quote Π-is-hlevel) (`level ∷ `search-under 1 ∷ [])
 
-  decomp-sigma : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} → Decomposition (Σ A B)
+  decomp-impl-pi : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} → hlevel-decomposition (∀ {a} → B a)
+  decomp-impl-pi = decomp (quote Π-is-hlevel′) (`level ∷ `search-under 1 ∷ [])
+
+  decomp-sigma : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} → hlevel-decomposition (Σ A B)
   decomp-sigma = decomp (quote Σ-is-hlevel) (`level ∷ `search ∷ `search-under 1 ∷ [])
 
-  -- Path decomposition rules we have in scope:
-  decomp-path : ∀ {ℓ} {A : Type ℓ} {a b : A} → Decomposition (a ≡ b)
-  decomp-path = decomp (quote Path-is-hlevel) (`level ∷ `search ∷ [])
-
-  decomp-path′ : ∀ {ℓ} {A : Type ℓ} {a b : A} → Decomposition (a ≡ b)
+  -- Path decomposition rules we have in scope. Note the use of
+  -- nondeterminism: the following three instances both compete for
+  -- solving the same goals --- but generally only one will be
+  -- applicable. That way we don't have to juggle h-levels quite as
+  -- much.
+  decomp-path′ : ∀ {ℓ} {A : Type ℓ} {a b : A} → hlevel-decomposition (a ≡ b)
   decomp-path′ = decomp (quote Path-is-hlevel') (`level ∷ `search ∷ `meta ∷ `meta ∷ [])
 
-  decomp-univalence : ∀ {ℓ} {A B : Type ℓ} → Decomposition (A ≡ B)
+  decomp-path : ∀ {ℓ} {A : Type ℓ} {a b : A} → hlevel-decomposition (a ≡ b)
+  decomp-path = decomp (quote Path-is-hlevel) (`level ∷ `search ∷ [])
+
+  decomp-univalence : ∀ {ℓ} {A B : Type ℓ} → hlevel-decomposition (A ≡ B)
   decomp-univalence = decomp (quote ≡-is-hlevel) (`level ∷ `search ∷ `search ∷ [] )
 
-  -- This doesn't really fit the theme but we have it handy so we might
-  -- as well, right?
-  decomp-list : ∀ {ℓ} {A : Type ℓ} → Decomposition (List A)
+  -- List isn't really a type on the same footing as all the others, but
+  -- we're here, so we might as well, right?
+  decomp-list : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (List A)
   decomp-list = decomp (quote ListPath.List-is-hlevel) (`level-minus 2 ∷ `search ∷ [])
 
-private module _ {ℓ ℓ′} {A : n-Type ℓ 2} {B : ∣ A ∣ → n-Type ℓ′ 2} where
-  p : is-hlevel (∀ (a : ∣ A ∣) → ∣ A ∣ ≡ ∣ A ∣) 2
-  p = hlevel!
+  -- This one really ought to work with instance selection only, but
+  -- Agda has trouble with the (1 + k + n) level in H-Level-n-Type. The
+  -- decomposition here is a bit more flexible.
+  decomp-ntype : ∀ {ℓ} {n} → hlevel-decomposition (n-Type ℓ n)
+  decomp-ntype = decomp (quote n-Type-is-hlevel) (`level-minus 1 ∷ [])
+
+  hlevel-proj-n-type : hlevel-projection
+  hlevel-proj-n-type .underlying-type = quote n-Type.∣_∣
+  hlevel-proj-n-type .has-level = quote n-Type.is-tr
+  hlevel-proj-n-type .get-level ty = do
+    def (quote n-Type) (ell v∷ lv′t v∷ []) ← reduce ty
+      where _ → backtrack $ "Type of thing isn't n-Type, it is " ∷ termErr ty ∷ []
+    normalise lv′t
+  hlevel-proj-n-type .get-argument (_ ∷ _ ∷ it v∷ []) = pure it
+  hlevel-proj-n-type .get-argument _ = typeError []
+
+private
+  module _ {ℓ} {A : n-Type ℓ 2} {B : ∣ A ∣ → n-Type ℓ 3} where
+    some-def = ∣ A ∣
+    _ : is-hlevel (Σ some-def λ x → ∣ B x ∣) 3
+    _ = hlevel!
+
+    _ : ∀ a → is-hlevel (∣ A ∣ × ∣ A ∣ × (Nat → ∣ B a ∣)) 5
+    _ = hlevel!
+
+    _ : ∀ a → is-hlevel (∣ A ∣ × ∣ A ∣ × (Nat → ∣ B a ∣)) 3
+    _ = hlevel!
+
+    _ : is-hlevel ∣ A ∣ 2
+    _ = hlevel!
+
+    _ : ∀ n → is-hlevel (n-Type ℓ n) (suc n)
+    _ = hlevel!
+
+    _ : ∀ n (x : n-Type ℓ n) → is-hlevel ∣ x ∣ (2 + n)
+    _ = λ n x → hlevel!

@@ -136,7 +136,7 @@ says that the map $h$ "respects reindexing", or less obliquely
       open C.HLevel-instance
 
       hl : is-set (/-Hom a b)
-      hl = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2)
+      hl = Iso→is-hlevel 2 eqv (hlevel 2)
 ```
 -->
 
@@ -417,7 +417,7 @@ projection map $\id{fst} : \sum F \to I$.
 
 ```agda
   Total-space : Functor Cat[ Disc′ I , Sets ℓ ] (Slice (Sets ℓ) I)
-  Total-space .F₀ F .domain = el! (Σ _ (∣_∣ ⊙ F₀ F))
+  Total-space .F₀ F .domain = el (Σ _ (∣_∣ ⊙ F₀ F)) hlevel!
   Total-space .F₀ F .map = fst
 
   Total-space .F₁ nt .map (i , x) = i , nt .η _ x

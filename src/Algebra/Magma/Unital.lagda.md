@@ -138,29 +138,6 @@ record
 open Unital-magma≃
 ```
 
-<!--
-```agda
-_ = Magma≡
-```
--->
-
-Similar to the `process for magmas`{.Agda ident=Magma≡}, we can see that
-the identity type between two unital magmas is the same as the type of
-their equivalences.
-
-```agda
-Unital-magma-univalent : is-univalent {ℓ = ℓ} (HomT→Str Unital-magma≃)
-Unital-magma-univalent {ℓ = ℓ} = Derive-univalent-record
-  (record-desc (Unital-magma-on {ℓ = ℓ}) Unital-magma≃
-  (record:
-    field[ Unital-magma-on._⋆_ by pres-⋆ ]
-    field[ Unital-magma-on.identity by pres-identity ]
-    axiom[ Unital-magma-on.has-is-unital-magma by (λ _ → is-unital-magma-is-prop) ] ))
-
-Unital-magma≡ : {A B : Unital-magma ℓ} → (A ≃[ HomT→Str Unital-magma≃ ] B) ≃ (A ≡ B)
-Unital-magma≡ = SIP Unital-magma-univalent
-```
-
 * One-sided identities
 
 Dropping either of the paths involved in a unital magma results in a

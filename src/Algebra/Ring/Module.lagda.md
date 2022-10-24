@@ -219,7 +219,7 @@ $$
 Mods : ∀ ℓ → Displayed (Rings ℓ) (lsuc ℓ) (ℓ)
 Ob[ Mods ℓ ] R = Module R
 Hom[ Mods ℓ ] f M N = Linear-map M N f
-Hom[ Mods ℓ ]-set f x y = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) $
+Hom[ Mods ℓ ]-set f x y = Iso→is-hlevel 2 eqv $
   Σ-is-hlevel 2 (fun-is-hlevel 2 (Module.G.has-is-set y)) λ g →
     is-prop→is-set (is-R-S-bilinear-is-prop x y f g)
 

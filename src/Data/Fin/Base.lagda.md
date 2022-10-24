@@ -272,8 +272,9 @@ propositional truncation monad), then $M$ commutes with finite products:
 
 ```agda
 finite-choice
-  : ∀ {ℓ} n {A : Fin n → Type ℓ} {M : ∀ {ℓ} → Type ℓ → Type ℓ}
-  → ⦃ Do-syntax M ⦄ → ⦃ Idiom-syntax M ⦄
+  : ∀ {ℓ} n {A : Fin n → Type ℓ} {f : Level → Level}
+      {M : ∀ {ℓ} → Type ℓ → Type (f ℓ)}
+  → ⦃ Do-syntax f M ⦄ → ⦃ Idiom-syntax f M ⦄
   → (∀ x → M (A x)) → M (∀ x → A x)
 finite-choice zero _    = pure λ { () }
 finite-choice (suc n) k = do

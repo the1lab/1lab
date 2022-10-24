@@ -267,5 +267,5 @@ former!
 
 ```agda
 ℤ-module-unique : ∀ (G : AbGroup ℓ) → is-contr (Module-on Liftℤ G)
-ℤ-module-unique G = is-hlevel≃ 0 (Action≃Module Liftℤ G e⁻¹) (Int-is-initial _)
+ℤ-module-unique G = is-hlevel≃ 0 (Action≃Module Liftℤ G) (Int-is-initial _)
 ```

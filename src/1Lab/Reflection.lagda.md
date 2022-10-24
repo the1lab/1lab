@@ -14,6 +14,8 @@ open import 1Lab.Prim.Data.Float public
 open import 1Lab.Prim.Data.Maybe public
 open import 1Lab.Prim.Data.Word public
 open import 1Lab.Prim.Monad public
+open Data.List public
+open Data.Bool public
 ```
 
 # Metaprogramming
@@ -257,6 +259,11 @@ data ErrorPart : Type where
   pattErr : Pattern → ErrorPart
   nameErr : Name → ErrorPart
 
+instance
+  String-ErrorPart : IsString ErrorPart
+  String-ErrorPart .IsString.Constraint _ = ⊤
+  String-ErrorPart .IsString.fromString s = strErr s
+
 postulate
   TC               : ∀ {a} → Type a → Type a
   returnTC         : ∀ {a} {A : Type a} → A → TC A
@@ -410,17 +417,18 @@ postulate
 {-# BUILTIN AGDATCMDEFINEDATA                 defineData                 #-}
 
 instance
-  Do-TC : Do-syntax TC
+  Do-TC : Do-syntax (λ x → x) TC
   Do-TC .Do-syntax._>>=_ = bindTC
 
-  Idiom-TC : Idiom-syntax TC
+  Idiom-TC : Idiom-syntax (λ x → x) TC
   Idiom-TC .Idiom-syntax.pure = returnTC
   Idiom-TC .Idiom-syntax._<*>_ f g = do
     f ← f
     g ← g
     pure (f g)
 
-  Alt-TC : Alt-syntax TC
+  Alt-TC : Alt-syntax (λ x → x) TC
+  Alt-TC .Alt-syntax.fail = typeError []
   Alt-TC .Alt-syntax._<|>_ = catchTC
 ```
 </details>
@@ -449,12 +457,18 @@ equivRet : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (e : A ≃ B)
 equivRet (f , e) = equiv→unit e
 
 newMeta : Term → TC Term
-newMeta = checkType unknown
+newMeta ty = do
+  mv ← checkType unknown ty
+  debugPrint "tactic.meta" 70 $
+    "Created new meta " ∷ termErr mv ∷ " of type " ∷ termErr ty ∷ []
+  pure mv
 
 newMeta′ : Term → TC (Meta × Term)
-newMeta′ tm = do
-  tm@(meta mv _) ← checkType unknown tm
-    where _ → typeError (strErr "impossible newMeta′" ∷ [])
+newMeta′ ty = do
+  tm@(meta mv _) ← checkType unknown ty
+    where _ → typeError $ "impossible newMeta′" ∷ []
+  debugPrint "tactic.meta" 70 $
+    "Created new meta " ∷ termErr tm ∷ " of type " ∷ termErr tm ∷ []
   pure (mv , tm)
 
 varg : {ℓ : _} {A : Type ℓ} → A → Arg A
@@ -472,6 +486,9 @@ infixr 30 _v∷_ _h∷_ _h0∷_
 infer-hidden : Nat → List (Arg Term) → List (Arg Term)
 infer-hidden zero xs = xs
 infer-hidden (suc n) xs = unknown h∷ infer-hidden n xs
+
+simple-pair : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → A → B → A × B
+simple-pair = _,_
 
 “_↦_” : Term → Term → Term
 “_↦_” x y = def (quote Fun) (x v∷ y v∷ [])
@@ -514,7 +531,8 @@ findName : Term → TC Name
 findName (def nm _) = returnTC nm
 findName (lam hidden (abs _ t)) = findName t
 findName (meta m _) = blockOnMeta m
-findName t = typeError (strErr "The projections in a field descriptor must be record selectors: " ∷ termErr t ∷ [])
+findName t = typeError $
+  "The projections in a field descriptor must be record selectors: " ∷ termErr t ∷ []
 
 _visibility=?_ : Visibility → Visibility → Bool
 visible visibility=? visible = true
@@ -576,20 +594,40 @@ get-boundary tm = unapply-path tm >>= λ where
 
 ```agda
 debug! : ∀ {ℓ} {A : Type ℓ} → Term → TC A
-debug! tm = typeError (strErr "[DEBUG]: " ∷ termErr tm ∷ [])
+debug! tm = typeError ("[DEBUG]: " ∷ termErr tm ∷ [])
 
 quote-repr-macro : ∀ {ℓ} {A : Type ℓ} → A → Term →  TC ⊤
 quote-repr-macro a hole = do
   tm ← quoteTC a
   repr ← quoteTC tm
-  typeError $ strErr "The term\n  " ∷
-                termErr tm ∷
-              strErr"\nHas quoted representation\n  " ∷
-                termErr repr ∷ []
+  typeError $ "The term\n  "
+    ∷ termErr tm
+    ∷ "\nHas quoted representation\n  "
+    ∷ termErr repr ∷ []
 
 macro
   quote-repr! : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → A → Term → TC ⊤
   quote-repr! a = quote-repr-macro a
 
-```
+instance
+  IsString-Error : IsString (List ErrorPart)
+  IsString-Error .IsString.Constraint _ = ⊤
+  IsString-Error .fromString s = fromString s ∷ []
 
+unify-loudly : Term → Term → TC ⊤
+unify-loudly a b = do
+  debugPrint "tactic" 50 $ termErr a ∷ " =? " ∷ termErr b ∷ []
+  unify a b
+
+print-depth : String → Nat → Nat → List ErrorPart → TC ⊤
+print-depth key level nesting es = debugPrint key level $
+  strErr (nest nesting ("[" <> primShowNat nesting <> "]  ")) ∷ es
+  where
+    _<>_ : String → String → String
+    _<>_ = primStringAppend
+    infixr 10 _<>_
+
+    nest : Nat → String → String
+    nest zero s = s
+    nest (suc x) s = nest x (s <> "  ")
+```

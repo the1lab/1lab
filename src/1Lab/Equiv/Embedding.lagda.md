@@ -117,7 +117,7 @@ Since $B(x)$ was assumed to be a prop., then so are the fibres of
 Subset-proj-embedding
   : ∀ {B : A → Type ℓ} → (∀ x → is-prop (B x))
   → is-embedding {A = Σ A B} fst
-Subset-proj-embedding {B = B} Bprop x = is-hlevel≃ 1 (Fibre-equiv B x e⁻¹) (Bprop _)
+Subset-proj-embedding {B = B} Bprop x = is-hlevel≃ 1 (Fibre-equiv B x) (Bprop _)
 ```
 
 <!--
@@ -157,7 +157,7 @@ module _ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} {f : A → B} where
 
   cancellable→embedding : (∀ {x y} → (f x ≡ f y) ≃ (x ≡ y)) → is-embedding f
   cancellable→embedding eqv =
-    embedding-lemma λ x → is-hlevel≃ 0 (Σ-ap-snd (λ _ → eqv e⁻¹)) $
+    embedding-lemma λ x → is-hlevel≃ 0 (Σ-ap-snd (λ _ → eqv)) $
       contr (x , refl) λ (y , p) i → p (~ i) , λ j → p (~ i ∨ j)
 
   embedding→cancellable : is-embedding f → ∀ {x y} → is-equiv {B = f x ≡ f y} (ap f)

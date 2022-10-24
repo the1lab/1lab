@@ -74,7 +74,7 @@ private unquoteDecl eqv = declare-record-iso eqv (quote is-lattice)
 instance
   H-Level-is-lattice : ∀ {M J : A → A → A} {n} → H-Level (is-lattice M J) (suc n)
   H-Level-is-lattice = prop-instance λ x →
-    let open is-lattice x in is-hlevel≃ 1 (Iso→Equiv eqv e⁻¹) (hlevel 1) x
+    let open is-lattice x in Iso→is-hlevel 1 eqv (hlevel 1) x
 
 record Lattice-on (A : Type ℓ) : Type ℓ where
   field
@@ -118,20 +118,6 @@ record Lattice→ (A B : Lattice ℓ) (f : A .fst → B .fst) : Type ℓ where
 
 Lattice≃ : (A B : Lattice ℓ) (f : A .fst ≃ B .fst) → Type ℓ
 Lattice≃ A B = Lattice→ A B ∘ fst
-```
-
-Using the automated machinery for deriving `is-univalent`{.Agda} proofs,
-we get that identification of lattices is the same thing as lattice
-isomorphism.
-
-```agda
-Lattice-univalent : ∀ {ℓ} → is-univalent (HomT→Str (Lattice≃ {ℓ = ℓ}))
-Lattice-univalent {ℓ = ℓ} =
-  Derive-univalent-record (record-desc (Lattice-on {ℓ = ℓ}) Lattice≃
-    (record:
-      field[ Lattice-on._L∧_ by Lattice→.pres-∧ ]
-      field[ Lattice-on._L∨_ by Lattice→.pres-∨ ]
-      axiom[ Lattice-on.has-is-lattice by (λ _ → hlevel 1) ]))
 ```
 
 ## Order-theoretically

@@ -95,8 +95,7 @@ compared at the level of maps in $\ca{C}$.
 Spans : Ob → Ob → Precategory _ _
 Spans x y .Precategory.Ob = Span x y
 Spans x y .Precategory.Hom = Span-hom
-Spans x y .Precategory.Hom-set _ _ =
-  is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2)
+Spans x y .Precategory.Hom-set _ _ = Iso→is-hlevel 2 eqv (hlevel 2)
 Spans x y .Precategory.id .map = id
 Spans x y .Precategory.id .left = intror refl
 Spans x y .Precategory.id .right = intror refl

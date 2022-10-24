@@ -37,11 +37,7 @@ open Δ-map
 private
   unquoteDecl eqv = declare-record-iso eqv (quote Δ-map)
   Δ-map-is-set : ∀ x y → is-set (Δ-map x y)
-  Δ-map-is-set x y = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) $
-    Σ-is-hlevel 2 (hlevel 2) λ f → is-prop→is-set $
-      Π-is-hlevel 1 λ α →
-      Π-is-hlevel 1 λ β →
-      fun-is-hlevel 1 Nat.≤-prop
+  Δ-map-is-set x y = Iso→is-hlevel 2 eqv $ hlevel!
 
 Δ-map-path
   : ∀ {n m : Nat} {f g : Δ-map n m}

@@ -121,25 +121,6 @@ _ = Str-desc
 ```
 -->
 
-By using record machinery that transforms our given definition into an
-equivalent `description`{.Agda ident=Str-desc}, we can see that
-`Magma-on`{.Agda} forms a univalent structure, which allows us to
-characterise the path type between two magmas as the type of their
-equivalences by making use of the general
-`structure identity principle`{.Agda ident=SIP}.
-
-```agda
-Magma-univalent : is-univalent {ℓ = ℓ} (HomT→Str Magma≃)
-Magma-univalent {ℓ = ℓ} = Derive-univalent-record
-  (record-desc (Magma-on {ℓ = ℓ}) Magma≃
-  (record:
-    field[ Magma-on._⋆_ by pres-⋆ ]
-    axiom[ Magma-on.has-is-magma by (λ _ → is-magma-is-prop) ]))
-
-Magma≡ : {A B : Magma ℓ} → (A ≃[ HomT→Str Magma≃ ] B) ≃ (A ≡ B)
-Magma≡ = SIP Magma-univalent
-```
-
 ## The boolean implication magma
 
 ```agda

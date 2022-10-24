@@ -232,7 +232,7 @@ the identity and associativity laws from its underlying category.
   Eilenberg-Moore .idr f = Algebra-hom-path (C.idr (morphism f))
   Eilenberg-Moore .idl f = Algebra-hom-path (C.idl (morphism f))
   Eilenberg-Moore .assoc f g h = Algebra-hom-path (C.assoc _ _ _)
-  Eilenberg-Moore .Hom-set X Y = is-hlevel≃ 2 (Iso→Equiv eqv e⁻¹) (hlevel 2)
+  Eilenberg-Moore .Hom-set X Y = Iso→is-hlevel 2 eqv (hlevel 2)
     where open C.HLevel-instance
 ```
 

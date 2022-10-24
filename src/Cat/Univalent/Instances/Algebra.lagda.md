@@ -31,14 +31,11 @@ algebra for the [list monad].
 
 Given that "hand-rolled" categories of this sort tend to be
 well-behaved, in particular when it comes to identifications (see
-[univalence of monoids], [univalence of groups], [univalence of
-semilattices]), it's natural to ask whether _all_ Eilenberg-Moore
+univalence of monoids, univalence of groups, univalence of
+semilattices), it's natural to ask whether _all_ Eilenberg-Moore
 categories are themselves univalent, assuming that their underlying
 category is. Here we give a positive answer.
 
-[univalence of monoids]: Algebra.Monoid.html#Monoid-univalent
-[univalence of groups]: Algebra.Group.html#Group-univalent
-[univalence of semilattices]: Algebra.Semilattice.html#Semilattice-univalent
 
 Fixing a monad $M$ on a univalent category $\ca{C}$, we abbreviate its
 Eilenberg-Moore category $\ca{C}^M$ as `EM`{.Agda}.

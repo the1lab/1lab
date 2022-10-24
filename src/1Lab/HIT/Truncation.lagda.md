@@ -4,6 +4,7 @@ definition: |
   the universe of propositions.
 ---
 ```agda
+open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Prim.Monad
 open import 1Lab.Type.Sigma
@@ -89,8 +90,15 @@ whenever it is a family of propositions, by providing a case for
          → (x : ∥ A ∥) → P
 ∥-∥-rec pprop = ∥-∥-elim (λ _ → pprop)
 
-∥-∥-proj : ∀ {ℓ} {A : Type ℓ} → ⦃ H-Level A 1 ⦄ → ∥ A ∥ → A
-∥-∥-proj = ∥-∥-rec (hlevel 1) λ x → x
+∥-∥-rec!
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {P : Type ℓ'}
+  → {@(tactic hlevel-tactic-worker) pprop : is-prop P}
+  → (A → P)
+  → (x : ∥ A ∥) → P
+∥-∥-rec! {pprop = pprop} = ∥-∥-elim (λ _ → pprop)
+
+∥-∥-proj : ∀ {ℓ} {A : Type ℓ} → {@(tactic hlevel-tactic-worker) ap : is-prop A} → ∥ A ∥ → A
+∥-∥-proj {ap = ap} = ∥-∥-rec ap λ x → x
 ```
 -->
 
@@ -254,14 +262,14 @@ truncation onto a set using a constant map.
 <!--
 ```agda
 instance
-  Do-∥∥ : Do-syntax ∥_∥
+  Do-∥∥ : Do-syntax (λ x → x) ∥_∥
   Do-∥∥ .Do-syntax._>>=_ {A = A} {B = B} = go where
     go : ∥ A ∥ → (A → ∥ B ∥) → ∥ B ∥
     go (inc x) f = f x
     go (squash x y i) f = squash (go x f) (go y f) i
 
   {-# TERMINATING #-}
-  Idiom-∥∥ : Idiom-syntax ∥_∥
+  Idiom-∥∥ : Idiom-syntax (λ x → x) ∥_∥
   Idiom-∥∥ .Idiom-syntax.pure = inc
   Idiom-∥∥ .Idiom-syntax._<*>_ {A = A} {B = B} = go where
     go : ∥ (A → B) ∥ → ∥ A ∥ → ∥ B ∥

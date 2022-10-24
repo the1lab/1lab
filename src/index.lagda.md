@@ -173,8 +173,10 @@ are developed under the `1Lab` namespace. Start here:
 
 open import 1Lab.Type -- Universes
 
-open import 1Lab.Path          -- Path types
-open import 1Lab.Path.Groupoid -- Groupoid structure of types
+open import 1Lab.Path           -- Path types
+open import 1Lab.Path.Groupoid  -- Groupoid structure of types
+open import 1Lab.Path.Reasoning -- Combinators for reasoning with path composition
+open import 1Lab.Path.IdentitySystem -- Families R for which R(x,y) ≃ (x ≡ y)
 
 open import 1Lab.Equiv             -- “Contractible fibres” equivalences
 open import 1Lab.Equiv.Biinv       -- Biinvertible maps
@@ -190,7 +192,6 @@ open import 1Lab.HLevel.Universe -- The type of n-types is a (n+1)-type
 open import 1Lab.Univalence            -- Equivalence is equivalent to identification
 open import 1Lab.Univalence.SIP        -- Univalence + preservation of structure
 open import 1Lab.Univalence.SIP.Auto   -- Derive is-univalent for families of types
-open import 1Lab.Univalence.SIP.Record -- Derive is-univalent for record types
 
 open import 1Lab.Type.Dec   -- Decidable types, discrete types
 open import 1Lab.Type.Pi    -- Properties of dependent products
