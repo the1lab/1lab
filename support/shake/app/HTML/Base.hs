@@ -62,6 +62,7 @@ import Text.Blaze.Html.Renderer.Text ( renderHtml )
 import Agda.Interaction.Highlighting.Precise hiding (toList)
 
 import qualified Agda.Syntax.Concrete as C
+import Agda.Syntax.TopLevelModuleName (TopLevelModuleName)
 import Agda.Syntax.Common
 
 import qualified Agda.TypeChecking.Monad as TCM
@@ -129,7 +130,7 @@ defaultHtmlOptions = HtmlOptions
 -- | Internal type bundling the information related to a module source file
 
 data HtmlInputSourceFile = HtmlInputSourceFile
-  { _srcFileModuleName :: C.TopLevelModuleName
+  { _srcFileModuleName :: TopLevelModuleName
   , _srcFileType :: FileType
   -- ^ Source file type
   , _srcFileText :: Text
@@ -141,7 +142,7 @@ data HtmlInputSourceFile = HtmlInputSourceFile
 
 -- | Bundle up the highlighting info for a source file
 
-srcFileOfInterface :: C.TopLevelModuleName -> TCM.Interface -> HtmlInputSourceFile
+srcFileOfInterface :: TopLevelModuleName -> TCM.Interface -> HtmlInputSourceFile
 srcFileOfInterface m i = HtmlInputSourceFile m (TCM.iFileType i) (TCM.iSource i) (TCM.iHighlighting i)
 
 -- | Logging during HTML generation
@@ -192,7 +193,7 @@ defaultPageGen types opts srcFile@(HtmlInputSourceFile moduleName ft _ _) = do
     html = renderSourceFile types opts srcFile
 
 -- | Converts module names to the corresponding HTML file names.
-modToFile :: C.TopLevelModuleName -> String -> FilePath
+modToFile :: TopLevelModuleName -> String -> FilePath
 modToFile m ext = Network.URI.Encode.encode $ render (pretty m) <.> ext
 
 -- | Generates a highlighted, hyperlinked version of the given module.
@@ -215,7 +216,7 @@ h !! as = h ! mconcat as
 page
   :: HtmlOptions
   -> Bool                  -- ^ Whether to reserve literate
-  -> C.TopLevelModuleName  -- ^ Module to be highlighted.
+  -> TopLevelModuleName  -- ^ Module to be highlighted.
   -> Html
   -> Text
 page opts htmlHighlight modName pageContent =

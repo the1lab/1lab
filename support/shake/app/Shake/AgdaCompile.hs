@@ -8,6 +8,7 @@ import Control.Monad.Except
 
 import qualified Data.List.NonEmpty as List1
 import qualified Data.HashMap.Strict as Hm
+import qualified Agda.Utils.BiMap as BiMap
 import qualified Data.Map as Map
 import qualified Data.Text as T
 import Data.Aeson (eitherDecodeFileStrict', encodeFile)
@@ -26,7 +27,7 @@ import Agda.TypeChecking.Errors
 import Agda.Interaction.Imports
 import Agda.Interaction.Options
 import Agda.Syntax.Common (Cubical(CFull))
-import Agda.Syntax.Concrete.Name (TopLevelModuleName(..))
+import Agda.Syntax.TopLevelModuleName (TopLevelModuleName(..), RawTopLevelModuleName(..))
 import Agda.Syntax.Position (noRange)
 import Agda.Utils.FileName
 import Agda.Utils.Hash (Hash)
@@ -68,7 +69,7 @@ newtype MainCompileQ = MainCompileQ ()
 
 type instance RuleResult MainCompileQ = CompileA
 
-newtype ModuleCompileQ = ModuleCompileQ String
+newtype ModuleCompileQ = ModuleCompileQ T.Text
   deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
 
 type instance RuleResult ModuleCompileQ = CompileA
@@ -89,7 +90,7 @@ agdaRules = do
   _ <- addOracleHash \(ModuleCompileQ m) -> do
     (CompileA state _) <- askOracle (MainCompileQ ())
 
-    let hash = iFullHash . getInterface state $ toTopLevel m
+    let hash = iFullHash . getInterface state $ toTopLevel state m
     pure (CompileA state hash)
 
   -- Create a cache for the per-module type information.
@@ -104,7 +105,7 @@ agdaRules = do
   -- In order to write the JSON, we first compile the required module (which
   -- gives us the TC environment) and then emit the HTML/Markdown and type JSON.
   "_build/html0/*.json" %> \file -> do
-    let modName = dropExtension (takeFileName file)
+    let modName = T.pack . dropExtension $ takeFileName file
     compileResult <- askOracle (ModuleCompileQ modName)
     emitAgda compileResult getTypes modName
 
@@ -167,14 +168,14 @@ compileAgda stateVar = do
 emitAgda
   :: CompileA
   -> (String -> Action (Hm.HashMap T.Text Identifier))
-  -> String -> Action ()
+  -> T.Text -> Action ()
 emitAgda (CompileA tcState _) getTypes modName = do
   basepn <- filePath <$> liftIO (absolute "src/")
 
-  let tlModName = toTopLevel modName
+  let tlModName = toTopLevel tcState modName
       iface = getInterface tcState tlModName
 
-  types <- parallel . map (getTypes . render . pretty . toTopLevelModuleName . fst) $ iImportedModules iface
+  types <- parallel . map (getTypes . render . pretty . fst) $ iImportedModules iface
 
   skipTypes <- getSkipTypes
   ((), _) <- quietly . traced "agda html"
@@ -186,13 +187,12 @@ emitAgda (CompileA tcState _) getTypes modName = do
 
   pure ()
 
-toTopLevel :: String -> TopLevelModuleName
-toTopLevel = TopLevelModuleName noRange . List1.fromList . split where
-  split "" = []
-  split ('.':xs) = split xs
-  split xs =
-    let (here, there) = span (/= '.') xs in
-    here:split there
+toTopLevel :: TCState -> T.Text -> TopLevelModuleName
+toTopLevel tcState name =
+  let qname = List1.fromList (T.split (== '.') name) in
+  case BiMap.lookup (RawTopLevelModuleName noRange qname) (tcState ^. stTopLevelModuleNames) of
+    Nothing -> error ("Cannot find " ++ T.unpack name)
+    Just hash -> TopLevelModuleName noRange hash qname
 
 getInterface :: TCState -> TopLevelModuleName -> Interface
 getInterface tcState name =
