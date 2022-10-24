@@ -36,6 +36,7 @@ import qualified Agda.Syntax.Internal.Generic as I
 import qualified Agda.Utils.Maybe.Strict as S
 import qualified Agda.Syntax.Concrete as Con
 import qualified Agda.Syntax.Internal as I
+import Agda.Syntax.TopLevelModuleName
 import Agda.Syntax.Abstract.Views
 import Agda.Compiler.Backend
 import Agda.Syntax.Abstract hiding (Type)
@@ -58,7 +59,7 @@ data HtmlCompileEnv = HtmlCompileEnv
 
 data HtmlModuleEnv = HtmlModuleEnv
   { htmlModEnvCompileEnv :: HtmlCompileEnv
-  , htmlModEnvName       :: ModuleName
+  , htmlModEnvName       :: TopLevelModuleName
   }
 
 newtype HtmlModule = HtmlModule { getHtmlModule :: HashMap Text Identifier }
@@ -105,22 +106,21 @@ preModuleHtml
   :: (MonadIO m, ReadTCState m)
   => HtmlCompileEnv
   -> IsMain
-  -> ModuleName
+  -> TopLevelModuleName
   -> Maybe FilePath
   -> m (Recompile HtmlModuleEnv HtmlModule)
-preModuleHtml cenv _isMain modName _ifacePath
+preModuleHtml cenv _isMain topl _ifacePath
   | htmlOptGenTypes (htmlCompileEnvOpts cenv) = do
-    liftIO . putStrLn $ "Entering module " <> render (pretty modName)
-    pure $ Recompile (HtmlModuleEnv cenv modName)
+    liftIO . putStrLn $ "Entering module " <> render (pretty topl)
+    pure $ Recompile (HtmlModuleEnv cenv topl)
 -- When types are being skipped we can safely only re-render modules
 -- whose interface file have changed:
 preModuleHtml cenv _ modName mifile =
   do
     ft <- iFileType <$> curIF
     let
-      topl = toTopLevelModuleName modName
       ext = highlightedFileExt (htmlOptHighlight (htmlCompileEnvOpts cenv)) ft
-      path = htmlOptDir (htmlCompileEnvOpts cenv) </> modToFile topl ext
+      path = htmlOptDir (htmlCompileEnvOpts cenv) </> modToFile modName ext
 
     liftIO $ do
       uptd <- uptodate path
@@ -162,7 +162,7 @@ postModuleHtml
   => HtmlCompileEnv
   -> HtmlModuleEnv
   -> IsMain
-  -> ModuleName
+  -> TopLevelModuleName
   -> [Maybe (Text, Identifier)]
   -> m HtmlModule
 postModuleHtml env menv _isMain _modName _defs = do
@@ -179,7 +179,7 @@ postModuleHtml env menv _isMain _modName _defs = do
       . htmlCompileEnvOpts
       . htmlModEnvCompileEnv
       $ menv
-  htmlSrc <- srcFileOfInterface (toTopLevelModuleName . htmlModEnvName $ menv) <$> curIF
+  htmlSrc <- srcFileOfInterface (htmlModEnvName $ menv) <$> curIF
   runLogHtmlWithMonadDebug $ generatePage htmlSrc
   pure $ HtmlModule $ foldr ins mempty _defs
 
@@ -187,7 +187,7 @@ postCompileHtml
   :: MonadIO m
   => HtmlCompileEnv
   -> IsMain
-  -> Map ModuleName HtmlModule
+  -> Map TopLevelModuleName HtmlModule
   -> m ()
 postCompileHtml cenv _isMain _modulesByName = liftIO $ do
   case htmlOptDumpIdents (htmlCompileEnvOpts cenv) of
@@ -203,13 +203,13 @@ compileOneModule
 compileOneModule pn opts types iface = do
   types <- liftIO (newIORef types)
   let cEnv = HtmlCompileEnv opts types pn
-      mEnv = HtmlModuleEnv cEnv (iModuleName iface)
+      mEnv = HtmlModuleEnv cEnv (iTopLevelModuleName iface)
 
   setInterface iface
 
   defs <- map snd . sortDefs <$> curDefs
   res  <- mapM (compDef cEnv mEnv <=< instantiateFull) defs
-  _ <- postModuleHtml cEnv mEnv NotMain (iModuleName iface) res
+  _ <- postModuleHtml cEnv mEnv NotMain (iTopLevelModuleName iface) res
   pure ()
 
   where
@@ -255,8 +255,8 @@ definitionAnchor htmlenv def = f =<< go where
   go = do
     let name = defName def
     case rangeFile (nameBindingSite (qnameName name)) of
-      S.Just (filePath -> f) -> do
-        let f' = moduleName $ dropExtensions (makeRelative basepn f)
+      S.Just (rangeFilePath -> f) -> do
+        let f' = moduleName $ dropExtensions (makeRelative basepn (filePath f))
         pure (f' <.> "html")
       S.Nothing -> Nothing
   f modn =

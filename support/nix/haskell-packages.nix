@@ -9,6 +9,7 @@ in
           (self.callCabal2nixWithOptions "Agda" (thunkSource ./dep/Agda) "-f optimise-heavily" {})
           {
             doCheck = false;
+            doHaddock = false;
             enableExecutableProfiling = false;
             enableLibraryProfiling = false;
           };
