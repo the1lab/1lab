@@ -15,6 +15,9 @@ record
   _>>_ : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → M A → M B → M B
   _>>_ f g = f >>= λ _ → g
 
+  _=<<_ : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → (A → M B) → M A → M B
+  _=<<_ f x = x >>= f
+
 open Do-syntax ⦃ ... ⦄ public
 
 record Idiom-syntax (f : Level → Level) (M : ∀ {ℓ} → Type ℓ → Type (f ℓ)) : Typeω where

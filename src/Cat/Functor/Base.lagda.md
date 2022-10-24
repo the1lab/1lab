@@ -203,10 +203,10 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
   ap-F₀-to-iso
     : ∀ (F : Functor C D) {y z : C .Ob}
     → (p : y ≡ z) → path→iso (ap (F₀ F) p) ≡ F-map-iso F (path→iso p)
-  ap-F₀-to-iso F =
+  ap-F₀-to-iso F {y} =
     J (λ _ p → path→iso (ap (F₀ F) p) ≡ F-map-iso F (path→iso p))
-      (D.≅-pathp _ _
-        (transport-refl _ ·· sym (F .F-id) ·· ap (F .F₁) (sym (transport-refl _))))
+      (D.≅-pathp (λ _ → F .F₀ y) (λ _ → F .F₀ y)
+        (Regularity.fast! (sym (F .F-id))))
 
   is-ff→F-map-iso-is-equiv
     : {F : Functor C D} → is-fully-faithful F

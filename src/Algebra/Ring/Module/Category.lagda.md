@@ -73,26 +73,13 @@ decency.</summary>
 R-Mod-ab-category .Hom-grp-ab A B f g =
   Linear-map-path (funext λ x → Module.G.commutative B)
 R-Mod-ab-category .∘-linear-l {C = C} f g h =
-  Linear-map-path $ funext λ x →
-    ap₂ C._+_
-      (transport-refl _ ∙ ap (f .map ⊙ h .map) (transport-refl _))
-      (transport-refl _ ∙ ap (g .map ⊙ h .map) (transport-refl _))
-    ∙ sym ( transport-refl _
-          ∙ ap₂ C._+_
-              (ap (f .map ⊙ h .map) (transport-refl _))
-              (ap (g .map ⊙ h .map) (transport-refl _)))
-  where module C = Module C
+  Linear-map-path $ funext λ x → Regularity.fast! refl
 R-Mod-ab-category .∘-linear-r {B = B} {C} f g h =
-  Linear-map-path $ funext λ x →
-    ap₂ C._+_
-      (transport-refl _ ∙ ap (f .map ⊙ g .map) (transport-refl _))
-      (transport-refl _ ∙ ap (f .map ⊙ h .map) (transport-refl _))
-    ∙ sym ( transport-refl _
-          ∙ ap (f .map) (ap₂ B._+_
-              (ap (g .map) (transport-refl _) ∙ sym (B.⋆-id _))
-              (ap (h .map) (transport-refl _) ∙ sym (B.⋆-id _)))
-          ∙ f .linear R.1r (g .map x) R.1r (h .map x)
-          ∙ ap₂ C._+_ (C.⋆-id _) (C.⋆-id _))
+  Linear-map-path $ funext λ x → Regularity.fast! (
+    f .map (g .map x) C.+ f .map (h .map x)                     ≡⟨ ap₂ C._+_ (sym (C.⋆-id _)) (sym (C.⋆-id _)) ⟩
+    R.1r C.⋆ f .map (g .map x) C.+ (R.1r C.⋆ f .map (h .map x)) ≡⟨ sym (f .linear R.1r (g .map x) R.1r (h .map x)) ⟩
+    f .map (R.1r B.⋆ g .map x B.+ R.1r B.⋆ h .map x)            ≡⟨ ap (f .map) (ap₂ B._+_ (B.⋆-id _) (B.⋆-id _)) ⟩
+    f .map (g .map x B.+ h .map x)                              ∎)
   where
     module C = Module C
     module B = Module B
@@ -173,14 +160,10 @@ path-mangling, but it's nothing _too_ bad:
     Σ-pathp (f .linear _ _ _ _) (g .linear _ _ _ _)
   prod .has-is-product .π₁∘factor = Linear-map-path (transport-refl _)
   prod .has-is-product .π₂∘factor = Linear-map-path (transport-refl _)
-  prod .has-is-product .unique other p q = Linear-map-path $
-    funext λ x → Σ-pathp
-      (sym ( sym (ap map p $ₚ x)
-          ·· transport-refl _
-          ·· ap (λ e → other .map e .fst) (transport-refl _)))
-      (sym ( sym (ap map q $ₚ x)
-          ·· transport-refl _
-          ·· ap (λ e → other .map e .snd) (transport-refl _)))
+  prod .has-is-product .unique other p q = Linear-map-path $ funext λ x →
+    Σ-pathp
+      (sym Regularity.reduce! ∙ (ap map p $ₚ x))
+      (sym Regularity.reduce! ∙ (ap map q $ₚ x))
 ```
 
 <!-- TODO [Amy 2022-09-15]

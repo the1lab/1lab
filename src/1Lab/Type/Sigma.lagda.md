@@ -246,6 +246,9 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
   → PathP (λ i → Σ (A i) (B i)) x y
 Σ-pathp-dep p q i = p i , q i
 
+_,ₚ_ = Σ-pathp-dep
+infixr 4 _,ₚ_
+
 Σ-prop-pathp
   : ∀ {ℓ ℓ′} {A : I → Type ℓ} {B : ∀ i → A i → Type ℓ′}
   → (∀ i x → is-prop (B i x))

@@ -312,9 +312,10 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
         -- state but indicate success: this will cause the meta to be
         -- solved with an interaction point (if using
         -- elaborate-and-give).
-        [] → if has-alts
-          then backtrack "No possible instances, but have other decompositions to try"
-          else pure (tt , false)
+        [] → backtrack "No possible instances, but have other decompositions to try"
+          -- if has-alts
+          -- then
+          -- else pure (tt , false)
 
         _ → backtrack "Too many possible instances; will not use instance search for this goal"
     go instances
@@ -330,6 +331,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
     use-projections
       <|> use-hints
       <|> use-instance-search has-alts goal
+      <|> typeError "Search failed!!"
     where
       open hlevel-projection
 
@@ -605,6 +607,13 @@ prop-ext! {aprop = aprop} {bprop = bprop} = prop-ext aprop bprop
   → x .fst ≡ y .fst
   → x ≡ y
 Σ-prop-path! {bxprop = bxprop} = Σ-prop-path bxprop
+
+prop!
+  : ∀ {ℓ} {A : I → Type ℓ} {@(tactic hlevel-tactic-worker) aip : is-hlevel (A i0) 1}
+  → {x : A i0} {y : A i1}
+  → PathP (λ i → A i) x y
+prop! {A = A} {aip = aip} {x} {y} =
+  is-prop→pathp (λ i → coe (λ j → is-prop (A j)) i0 i aip) x y
 
 open hlevel-projection
 

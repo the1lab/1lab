@@ -557,7 +557,7 @@ Thus, the definition of `J`{.Agda}: `transport`{.Agda} +
 ```agda
 J : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {x : A}
     (P : (y : A) → x ≡ y → Type ℓ₂)
-  → P x refl
+  → P x (λ _ → x)
   → {y : A} (p : x ≡ y)
   → P y p
 J {x = x} P prefl {y} p = transport (λ i → P (path i .fst) (path i .snd)) prefl where
