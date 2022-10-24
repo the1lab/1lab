@@ -23,32 +23,34 @@ Iso-poset = make-proset {R = R} hlevel! _ _ hlevel! where
   R : Bool → Bool → Type
   R _ _ = ⊤
 
-*≅* : Precategory lzero lzero
-*≅* = Iso-poset .Proset.underlying
+0≅1 : Precategory lzero lzero
+0≅1 = Iso-poset .Proset.underlying
 ```
 
 <!--
 ```agda
 private
-  module *≅* = Cat.Reasoning *≅*
+  module 0≅1 = Cat.Reasoning 0≅1
+
+open Cat.Reasoning using (Isomorphism)
 ```
 -->
 
 Note that the space of isomorphisms between any 2 objects is contractible.
 
 ```agda
-*≅*-iso-contr : ∀ X Y → is-contr (X *≅*.≅ Y)
-*≅*-iso-contr _ _ .centre =
-  *≅*.make-iso tt tt (hlevel 1 _ _) (hlevel 1 _ _)
-*≅*-iso-contr _ _ .paths p =
-  *≅*.≅-pathp refl refl refl
+0≅1-iso-contr : ∀ X Y → is-contr (Isomorphism 0≅1 X Y)
+0≅1-iso-contr _ _ .centre =
+  0≅1.make-iso tt tt (hlevel 1 _ _) (hlevel 1 _ _)
+0≅1-iso-contr _ _ .paths p =
+  0≅1.≅-pathp refl refl refl
 ```
 
-The isomorphism category is strict, as it's objects form a set.
+The isomorphism category is strict, as its objects form a set.
 
 ```agda
-*≅*-strict : is-set *≅*.Ob
-*≅*-strict = hlevel!
+0≅1-is-strict : is-set 0≅1.Ob
+0≅1-is-strict = hlevel!
 ```
 
 # The isomorphism category is not univalent
@@ -58,16 +60,16 @@ category. If it were univalent, then we'd get a path between
 `true`{.Agda} and `false`{.Agda}!
 
 ```agda
-*≅*-not-univalent : is-category *≅* → ⊥
-*≅*-not-univalent is-cat =
+0≅1-not-univalent : is-category 0≅1 → ⊥
+0≅1-not-univalent is-cat =
   true≠false $ is-cat .to-path $
-  *≅*-iso-contr true false .centre
+  0≅1-iso-contr true false .centre
 ```
 
 # Functors out of the isomorphism category
 
 One important fact about the isomorphism category is that it classifies
-isomorphisms in categories, in the sense that functors out of `*≅*`{.Agda}
+isomorphisms in categories, in the sense that functors out of `0≅1`{.Agda}
 into some category $\ca{C}$ are equivalent to isomorphisms in $\ca{C}$.
 
 ```agda
@@ -77,7 +79,7 @@ Isos 𝒞 = Σ[ A ∈ 𝒞.Ob ] Σ[ B ∈ 𝒞.Ob ] (A 𝒞.≅ B)
 ```
 
 To prove this, we fix some category $\ca{C}$, and construct an
-isomorphism between functors out of `*≅*`{.Agda} and isomorphisms
+isomorphism between functors out of `0≅1`{.Agda} and isomorphisms
 in $\ca{C}$.
 
 ```agda
@@ -89,26 +91,26 @@ module _ {o ℓ} {𝒞 : Precategory o ℓ} where
 ```
 
 For the forward direction, we use the fact that all objects in
-`*≅*`{.Agda} are isomorphic to construct an iso between `true`{.Agda}
+`0≅1`{.Agda} are isomorphic to construct an iso between `true`{.Agda}
 and `false`{.Agda}, and then use the fact that functors preserve
 isomorphisms to obtain an isomorphism in $\ca{C}$.
 
 ```agda
-  functor→iso : (F : Functor *≅* 𝒞) → Isos 𝒞
+  functor→iso : (F : Functor 0≅1 𝒞) → Isos 𝒞
   functor→iso F =
-    _ , _ , F-map-iso F (*≅*-iso-contr true false .centre)
+    _ , _ , F-map-iso F (0≅1-iso-contr true false .centre)
 ```
 
 For the backwards direction, we are given an isomorphism $X \cong Y$
 in $\ca{C}$. Our functor will map `true`{.Agda} to $X$, and `false`
 to $Y$: this is somewhat arbitrary, but lines up with our choices for
-the forward direciton. We then perform a big case bash to construct
+the forward direction. We then perform a big case bash to construct
 the mapping of morphisms, and unpack the components of the provided
 isomorphism into place. Functoriality follows by the fact that the
 provided isomorphism is indeed an isomorphism.
 
 ```agda
-  iso→functor : Isos 𝒞 → Functor *≅* 𝒞
+  iso→functor : Isos 𝒞 → Functor 0≅1 𝒞
   iso→functor (X , Y , isom) = fun
     where
       fun : Functor _ _
