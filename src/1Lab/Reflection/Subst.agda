@@ -51,8 +51,6 @@ singletonS n u = map (λ i → var i []) (count (n - 1)) ++# u ∷ (raiseS n)
     count zero = []
     count (suc n) = 1 ∷ map suc (count n)
 
--- _ = {! singletonS 11 (var 8 [])  !}
-
 {-# TERMINATING #-}
 subst-tm  : Subst → Term → TC Term
 subst-tm* : Subst → List (Arg Term) → TC (List (Arg Term))

@@ -163,7 +163,7 @@ module Reflection where
   cat-solver cat .SimpleSolver.dont-reduce = dont-reduce
   cat-solver cat .SimpleSolver.build-expr tm = returnTC $ build-expr tm
   cat-solver cat .SimpleSolver.invoke-solver = “solve” cat
-  cat-solver cat .SimpleSolver.invoke-normalisier = “nf” cat
+  cat-solver cat .SimpleSolver.invoke-normaliser = “nf” cat
 
   repr-macro : Term → Term → Term → TC ⊤
   repr-macro cat f _ =

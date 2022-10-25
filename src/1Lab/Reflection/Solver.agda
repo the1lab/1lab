@@ -45,7 +45,7 @@ record SimpleSolver : Type where
     dont-reduce : List Name
     build-expr : Term → TC Term
     invoke-solver : Term → Term → Term
-    invoke-normalisier : Term → Term
+    invoke-normaliser : Term → Term
 
 module _ (solver : SimpleSolver) where
   open SimpleSolver solver
@@ -67,7 +67,7 @@ module _ (solver : SimpleSolver) where
     withNormalisation false $
     dontReduceDefs dont-reduce $ do
     e ← normalise tm >>= build-expr
-    unify hole (invoke-normalisier e)
+    unify hole (invoke-normaliser e)
 
   mk-simple-repr : Term → TC ⊤
   mk-simple-repr tm =
@@ -85,7 +85,7 @@ record VariableSolver {ℓ} (A : Type ℓ) : Type ℓ where
     dont-reduce : List Name
     build-expr : Variables A → Term → TC (Term × Variables A)
     invoke-solver : Term → Term → Term → Term
-    invoke-normalisier : Term → Term → Term
+    invoke-normaliser : Term → Term → Term
 
 module _ {ℓ} {A : Type ℓ} (solver : VariableSolver A) where
   open VariableSolver solver
@@ -113,7 +113,7 @@ module _ {ℓ} {A : Type ℓ} (solver : VariableSolver A) where
     dontReduceDefs dont-reduce $ do
     e , vs ← normalise tm >>= build-expr empty-vars
     size , env ← environment vs
-    soln ← reduce (invoke-normalisier e env)
+    soln ← reduce (invoke-normaliser e env)
     unify hole soln
 
   mk-var-repr : Term → TC ⊤
