@@ -81,7 +81,7 @@ square below (this is the `comp`{.Agda} term):
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  y && {g(y)} \\
+  {g(y)} && {g(y)} \\
   \\
   {f(g(y))} && y
   \arrow["{v(j,y)}", from=1-3, to=3-3]
