@@ -228,8 +228,8 @@ module Reflection where
     def (quote NbE.solve′) (mk-displayed-fn disp (infer-hidden 6 $ lhs v∷ rhs v∷ “refl” v∷ “reindex” v∷ []))
     where “reindex” = def (quote Dr.reindex) (disp v∷ unknown v∷ unknown v∷ [])
 
-  invoke-normalisier : Term → Term → Term
-  invoke-normalisier disp tm = def (quote NbE.nf′) (mk-displayed-fn disp (infer-hidden 5 $ tm v∷ []))
+  invoke-normaliser : Term → Term → Term
+  invoke-normaliser disp tm = def (quote NbE.nf′) (mk-displayed-fn disp (infer-hidden 5 $ tm v∷ []))
 
   build-expr : Term → TC Term
   build-expr “id” = returnTC $ con (quote NbE.`id) []
@@ -258,7 +258,7 @@ module Reflection where
   displayed-solver disp .SimpleSolver.dont-reduce = dont-reduce
   displayed-solver disp .SimpleSolver.build-expr tm = build-expr tm
   displayed-solver disp .SimpleSolver.invoke-solver = invoke-solver disp
-  displayed-solver disp .SimpleSolver.invoke-normalisier = invoke-normalisier disp
+  displayed-solver disp .SimpleSolver.invoke-normaliser = invoke-normaliser disp
 
   repr-macro : Term → Term → Term → TC ⊤
   repr-macro disp f _ =

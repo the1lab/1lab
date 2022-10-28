@@ -47,7 +47,7 @@ with un-quotiented syntax.
 
   data Expr : ‶Ob‶ → ‶Ob‶ → Type (o ⊔ ℓ) where
     ‶id‶    : ∀ {X} → Expr X X
-    _‶∘‶_   : ∀ {X Y Z} → Expr Y Z → Expr X Y → Expr X Z 
+    _‶∘‶_   : ∀ {X Y Z} → Expr Y Z → Expr X Y → Expr X Z
     ‶π₁‶    : ∀ {X Y} → Expr (X ‶⊗‶ Y) X
     ‶π₂‶    : ∀ {X Y} → Expr (X ‶⊗‶ Y) Y
     ‶⟨_,_⟩‶ : ∀ {X Y Z} → Expr X Y → Expr X Z → Expr X (Y ‶⊗‶ Z)
@@ -81,7 +81,7 @@ makes the enaction of η-laws[^eta] more difficult. On the other hand,
 if we quote in a type directed manner, we can perform η-expansion
 at every possible opportunity, which simplifies the implementation
 considerably. This will result in larger normal forms, but the
-expressions the solver needs to deal with are small, so this isn't 
+expressions the solver needs to deal with are small, so this isn't
 a pressing issue.
 
 [category solver]: Cat.Solver.html
@@ -287,7 +287,7 @@ a macro, which is critical for performance.
 ```agda
   abstract
     solve : ∀ X Y → (e1 e2 : Expr X Y) → nf X Y e1 ≡ nf X Y e2 → ⟦ e1 ⟧ₑ ≡ ⟦ e2 ⟧ₑ
-    solve X Y e1 e2 p = sym (sound X Y e1) ·· p ·· sound X Y e2 
+    solve X Y e1 e2 p = sym (sound X Y e1) ·· p ·· sound X Y e2
 ```
 
 # Reflection
@@ -309,7 +309,7 @@ module Reflection where
   private
     pattern is-product-field X Y args =
       _ h0∷ _ h0∷ _ h0∷ -- category args
-      X h0∷ Y h0∷       -- objects of product 
+      X h0∷ Y h0∷       -- objects of product
       _ h0∷             -- apex
       _ h0∷ _ h0∷       -- projections
       _ v∷              -- is-product record argument
@@ -420,7 +420,7 @@ calls to the solver/normaliser.
 
 ```agda
   get-objects : Term → TC (Term × Term)
-  get-objects tm = ((inferType tm >>= normalise) >>= wait-for-type) >>= λ where
+  get-objects tm = ((inferType tm >>= normalise) >>= wait-just-a-bit) >>= λ where
     (def (quote Precategory.Hom) (category-field (x v∷ y v∷ []))) →
       returnTC (x , y)
     tp →
@@ -445,7 +445,7 @@ want to examine the exact quoted representations of objects/homs.
                 termErr “x” ∷ strErr "\nAnd\n  " ∷
                 termErr “y” ∷ []
 
-  hom-repr-macro : ∀ {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) → Term → Term → TC ⊤ 
+  hom-repr-macro : ∀ {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) → Term → Term → TC ⊤
   hom-repr-macro cat cart hom hole =
     withReconstructed $
     withNormalisation false $
@@ -564,22 +564,22 @@ private module Tests {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y →
 
   test-β₁ : ∀ {X Y Z} → (f : Hom X Y) → (g : Hom X Z)
             → π₁ ∘ ⟨ f , g ⟩ ≡ f
-  test-β₁ f g = products! 𝒞 cartesian 
+  test-β₁ f g = products! 𝒞 cartesian
 
   test-β₂ : ∀ {X Y Z} → (f : Hom X Y) → (g : Hom X Z)
             → π₂ ∘ ⟨ f , g ⟩ ≡ g
-  test-β₂ f g = products! 𝒞 cartesian 
+  test-β₂ f g = products! 𝒞 cartesian
 
   test-⟨⟩∘ : ∀ {W X Y Z} → (f : Hom X Y) → (g : Hom X Z) → (h : Hom W X)
              → ⟨ f ∘ h , g ∘ h ⟩ ≡ ⟨ f , g ⟩ ∘ h
-  test-⟨⟩∘ f g h = products! 𝒞 cartesian 
+  test-⟨⟩∘ f g h = products! 𝒞 cartesian
 
   -- If you don't have 'withReconstructed' on, this test will fail!
   test-nested : ∀ {W X Y Z} → (f : Hom W X) → (g : Hom W Y) → (h : Hom W Z)
              → ⟨ ⟨ f , g ⟩ , h ⟩ ≡ ⟨ ⟨ f , g ⟩ , h ⟩
   test-nested {W} {X} {Y} {Z} f g h = products! 𝒞 cartesian
 
-  
+
   test-big : ∀ {W X Y Z} → (f : Hom (W ⊗ X) (W ⊗ Y)) → (g : Hom (W ⊗ X) Z)
              → (π₁ ∘ ⟨ f , g ⟩) ∘ id ≡ id ∘ ⟨ π₁ , π₂ ⟩ ∘ f
   test-big f g = products! 𝒞 cartesian

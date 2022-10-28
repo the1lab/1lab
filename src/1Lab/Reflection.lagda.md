@@ -572,15 +572,50 @@ _ term=? _ = false
 “refl” : Term
 “refl” = def (quote refl) []
 
+wait-for-args : List (Arg Term) → TC (List (Arg Term))
 wait-for-type : Term → TC Term
-wait-for-type (meta m _) = blockOnMeta m
-wait-for-type tm = pure tm
+
+wait-for-type (var x args) = var x <$> wait-for-args args
+wait-for-type (con c args) = con c <$> wait-for-args args
+wait-for-type (def f args) = def f <$> wait-for-args args
+wait-for-type (lam v (abs x t)) = pure (lam v (abs x t))
+wait-for-type (pat-lam cs args) = pure (pat-lam cs args)
+wait-for-type (pi (arg i a) (abs x b)) = do
+  a ← wait-for-type a
+  b ← wait-for-type b
+  pure (pi (arg i a) (abs x b))
+wait-for-type (agda-sort s) = pure (agda-sort s)
+wait-for-type (lit l) = pure (lit l)
+wait-for-type (meta x x₁) = blockOnMeta x
+wait-for-type unknown = pure unknown
+
+wait-for-args [] = pure []
+wait-for-args (arg i a ∷ xs) = ⦇ ⦇ (arg i) (wait-for-type a) ⦈ ∷ wait-for-args xs ⦈
+
+wait-just-a-bit : Term → TC Term
+wait-just-a-bit (meta m _) = blockOnMeta m
+wait-just-a-bit tm = pure tm
 
 unapply-path : Term → TC (Maybe (Term × Term × Term))
-unapply-path tm = (reduce tm >>= wait-for-type) >>= λ where
+unapply-path red@(def (quote PathP) (l h∷ T v∷ x v∷ y v∷ [])) = do
+  domain ← newMeta (def (quote Type) (l v∷ []))
+  ty ← pure (def (quote Path) (domain v∷ x v∷ y v∷ []))
+  debugPrint "tactic" 50 $ "(no reduction) got a " ∷ termErr red ∷ " but I really want it to be " ∷ termErr ty ∷ []
+  unify red ty
+  pure (just (domain , x , y))
+unapply-path tm = reduce tm >>= λ where
+  tm@(meta _ _) → do
+    dom ← newMeta (def (quote Type) [])
+    l ← newMeta dom
+    r ← newMeta dom
+    unify tm (def (quote Type) (dom v∷ l v∷ r v∷ []))
+    traverse (l ∷ r ∷ []) wait-for-type
+    pure (just (dom , l , r))
   red@(def (quote PathP) (l h∷ T v∷ x v∷ y v∷ [])) → do
     domain ← newMeta (def (quote Type) (l v∷ []))
-    unify red (def (quote Path) (domain v∷ x v∷ y v∷ []))
+    ty ← pure (def (quote Path) (domain v∷ x v∷ y v∷ []))
+    debugPrint "tactic" 50 $ "got a " ∷ termErr red ∷ " but I really want it to be " ∷ termErr ty ∷ []
+    unify red ty
     pure (just (domain , x , y))
   _ → returnTC nothing
 
@@ -630,4 +665,13 @@ print-depth key level nesting es = debugPrint key level $
     nest : Nat → String → String
     nest zero s = s
     nest (suc x) s = nest x (s <> "  ")
+
+argH : ∀ {ℓ} {A : Type ℓ} → A → Arg A
+argH = arg (arginfo hidden (modality relevant quantity-ω))
+
+argH0 : ∀ {ℓ} {A : Type ℓ} → A → Arg A
+argH0 = arg (arginfo hidden (modality relevant quantity-0))
+
+argN : ∀ {ℓ} {A : Type ℓ} → A → Arg A
+argN = arg (arginfo visible (modality relevant quantity-ω))
 ```

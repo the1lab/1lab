@@ -107,21 +107,21 @@ private unquoteDecl eqv = declare-record-iso eqv (quote is-group)
 
 is-group-is-prop : ∀ {ℓ} {A : Type ℓ} {_*_ : A → A → A}
                  → is-prop (is-group _*_)
-is-group-is-prop {A = A} x =
-  Iso→is-hlevel 1 eqv hl x
+is-group-is-prop {A = A} x y = Equiv.injective (Iso→Equiv eqv) $
+     1x=1y
+  ,ₚ funext (λ a →
+      monoid-inverse-unique x.has-is-monoid a _ _
+        x.inversel
+        (y.inverser ∙ sym 1x=1y))
+  ,ₚ prop!
   where
-    instance
-      A-hl : ∀ {n} → H-Level A (2 + n)
-      A-hl = basic-instance {T = A} 2 (x .is-group.has-is-set)
-    hl : ∀ x y → x ≡ y
-    hl x y = Σ-pathp xunit=yunit $ Σ-prop-pathp (λ _ → hlevel!)
-        (funext λ a → monoid-inverse-unique (x .snd .snd .fst) a _ _
-          (x .snd .snd .snd .fst {_})
-          (y .snd .snd .snd .snd {_} ∙ sym xunit=yunit))
-      where
-        xunit=yunit = identities-equal (x .fst) (y .fst)
-          (is-monoid→is-unital-magma (x .snd .snd .fst))
-          (is-monoid→is-unital-magma (y .snd .snd .fst))
+    module x = is-group x
+    module y = is-group y hiding (magma-hlevel ; module HLevel-instance)
+    A-hl : ∀ {n} → H-Level A (2 + n)
+    A-hl = basic-instance {T = A} 2 (x .is-group.has-is-set)
+    1x=1y = identities-equal _ _
+      (is-monoid→is-unital-magma x.has-is-monoid)
+      (is-monoid→is-unital-magma y.has-is-monoid)
 
 instance
   H-Level-is-group
