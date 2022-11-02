@@ -256,20 +256,20 @@ Power-frame A .snd = to-frame-on go where
   go .has-is-set = hlevel 2
   go ._cap_ f g x .∣_∣   = ∣ f x ∣ × ∣ g x ∣
   go ._cap_ f g x .is-tr = hlevel!
-  go .cup {I} P x = elΩ (∃ I λ i → ∣ P i x ∣) squash
-  go .idempotent = funext λ i → Squish-prop-ua (bi fst λ x → x , x)
-  go .commutative = funext λ i → Squish-prop-ua $ bi
+  go .cup {I} P x = elΩ (∃ I λ i → ∣ P i x ∣)
+  go .idempotent = funext λ i → Ω-ua fst λ x → x , x
+  go .commutative = funext λ i → Ω-ua
     (λ { (x , y) → y , x }) (λ { (x , y) → y , x })
-  go .associative = funext λ i → Squish-prop-ua $ bi
+  go .associative = funext λ i → Ω-ua
     (λ { (x , y , z) → (x , y) , z })
     (λ { ((x , y) , z) → x , y , z })
-  go .universal {x = x} f W = funext λ i → elΩₗ-ua
-    (∥-∥-rec! λ (a , w) →
-      box (inc (_ , w)) , transport (ap ∣_∣ (W a $ₚ i)) w .snd)
-    λ x → out (x .fst)
-  go .colimiting i f = funext λ j → Squish-prop-ua $ bi
-    (λ x → x , box (inc (_ , x))) fst
-  go .distrib x f = funext λ i → sym $ elΩₗ-ua
-    (∥-∥-rec! λ { (x , y , z) → y , box (inc (_ , z)) })
-    λ (x , i) → (λ (y , z) → _ , x , z) <$> out i
+  go .universal {x = x} f W = funext λ i → Ω-ua
+    (λ r → ∥-∥-rec!
+      (λ (a , w) → box (inc (_ , w)) , transport (ap ∣_∣ (W a $ₚ i)) w .snd)
+      (out r))
+    (λ r → r .fst)
+  go .colimiting i f = funext λ j → Ω-ua (λ i → i , box (inc (_ , i))) fst
+  go .distrib x f = funext λ i → Ω-ua
+    (λ (x , i) → box ((λ (y , z) → _ , x , z) <$> out i))
+    (λ r → ∥-∥-rec! (λ { (x , y , z) → y , box (inc (_ , z)) }) (out r))
 ```
