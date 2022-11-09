@@ -254,11 +254,9 @@ definitionAnchor htmlenv def = f =<< go where
   go :: Maybe FilePath
   go = do
     let name = defName def
-    case rangeFile (nameBindingSite (qnameName name)) of
-      S.Just (rangeFilePath -> f) -> do
-        let f' = moduleName $ dropExtensions (makeRelative basepn (filePath f))
-        pure (f' <.> "html")
-      S.Nothing -> Nothing
+    case rangeModule (nameBindingSite (qnameName name)) of
+      Just f -> Just (modToFile f "html")
+      Nothing -> Nothing
   f modn =
     case rStart (nameBindingSite (qnameName (defName def))) of
       Just pn -> pure $ Text.pack (modn <> "#" <> show (posPos pn))
