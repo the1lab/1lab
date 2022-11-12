@@ -184,7 +184,7 @@ A coproduct is a pushout under a span whose vertex is the initial object.
 The construction of coequalisers from pushouts follows its
 [dual].
 
-[dual]: Cat.Diagram.Limit.Finite#8325
+[dual]: Cat.Diagram.Limit.Finite#8325.html
 
 ~~~{.quiver}
 \iu04[\begin{tikzcd}
