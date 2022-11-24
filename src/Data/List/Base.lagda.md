@@ -11,9 +11,9 @@ module Data.List.Base where
 
 This module contains the definition of the type of lists, and some basic
 operations on lists. Properties of these operations are in the module
-[`Data.List.Properties`], not here.
+[`Data.List`], not here.
 
-[`Data.List.Properties`]: Data.List.Properties.html
+[`Data.List`]: Data.List.html
 
 <!--
 ```agda
