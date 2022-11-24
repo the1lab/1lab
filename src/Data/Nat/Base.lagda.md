@@ -23,6 +23,10 @@ Nat-elim : ∀ {ℓ} (P : Nat → Type ℓ)
          → (n : Nat) → P n
 Nat-elim P pz ps zero    = pz
 Nat-elim P pz ps (suc n) = Nat-elim (λ z → P (suc z)) (ps pz) ps n
+
+iter : ∀ {ℓ} {A : Type ℓ} → Nat → (A → A) → A → A
+iter zero f = id
+iter (suc n) f = f ∘ iter n f
 ```
 
 Translating from type theoretic notation to mathematical English, the
