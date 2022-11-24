@@ -193,7 +193,6 @@ open import 1Lab.Univalence            -- Equivalence is equivalent to identific
 open import 1Lab.Univalence.SIP        -- Univalence + preservation of structure
 open import 1Lab.Univalence.SIP.Auto   -- Derive is-univalent for families of types
 
-open import 1Lab.Type.Dec   -- Decidable types, discrete types
 open import 1Lab.Type.Pi    -- Properties of dependent products
 open import 1Lab.Type.Sigma -- Properties of dependent coproducts
 

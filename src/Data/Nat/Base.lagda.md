@@ -1,10 +1,11 @@
 ```
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.HLevel.Retracts
-open import 1Lab.Type.Dec
 open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type
+
+open import Data.Dec.Base
 
 module Data.Nat.Base where
 ```

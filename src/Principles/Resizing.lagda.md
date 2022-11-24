@@ -41,37 +41,28 @@ open Ω public
 ```
 
 This type, a priori, only contains the propositions whose underlying
-type lives in the first universe. What we do now is introduce a few
-postulates allowing us to show _any_ proposition is (equivalent to) one
-in the first universe. We do this with a quintuple of postulates: The
-type `resized`{.Agda}, its constructor `box`{.Agda}, its eliminator
-`out`{.Agda}, and the computation rules, expressing that `box`{.Agda} is
-a (definitional) isomorphism.
+type lives in the first universe. However, we can populate it using a
+`NO_UNIVERSE_CHECK`-powered higher inductive type, the "small
+propositional truncation":
 
 ```agda
-postulate
-  resized : ∀ {ℓ} (T : Type ℓ) (p : is-prop T) → Type
-  box     : ∀ {ℓ} {T : Type ℓ} {p : is-prop T} → T → resized T p
-  out     : ∀ {ℓ} {T : Type ℓ} {p : is-prop T} → resized T p → T
-  resize-box-out
-    : ∀ {ℓ} {T : Type ℓ} (p : is-prop T) x → box (out {p = p} x) ≡rw x
-  resize-out-box
-    : ∀ {ℓ} {T : Type ℓ} (p : is-prop T) x → out (box {p = p} x) ≡rw x
-
-{-# REWRITE resize-box-out resize-out-box #-}
-
-resized-is-prop
-  : ∀ {ℓ} {T : Type ℓ} (p : is-prop T)
-  → is-prop (resized T p)
-resized-is-prop p = retract→is-prop box out (λ _ → refl) p
+{-# NO_UNIVERSE_CHECK #-}
+data □ {ℓ} (A : Type ℓ) : Type where
+  inc    : A → □ A
+  squash : (x y : □ A) → x ≡ y
 ```
+
+Just like the ordinary propositional truncation, every type can be
+squashed, but unlike the ordinary propositional truncation, the
+`□`{.Agda}-squashing of a type always lives in the lowest universe.  If
+$T$ is a proposition in any universe, $\Box T$ is its name in the zeroth
+universe.
 
 <!--
 ```agda
 instance
-  H-Level-resized
-    : ∀ {ℓ} {T : Type ℓ} {p : is-prop T} {n} → H-Level (resized T p) (suc n)
-  H-Level-resized = prop-instance (resized-is-prop _)
+  H-Level-□ : ∀ {ℓ} {T : Type ℓ} {n} → H-Level (□ T) (suc n)
+  H-Level-□ = prop-instance squash
 
   open hlevel-projection
   Ω-hlevel-proj : hlevel-projection
@@ -101,19 +92,30 @@ instance abstract
     (n-Type-is-hlevel {lzero} 1)
 ```
 
-We also provide a shortened version of `resized` which automatically
-derives the proof of propositionality, using the hlevel tactic, and a
-shortening of `el`{.Agda} which automatically resizes its argument type.
+The `□`{.Agda} type former is a functor (in the handwavy sense that it
+supports a "map" operation), and can be projected from into propositions
+of any universe. These functions compute on `inc`{.Agda}s, as usual.
 
 ```agda
-□ : ∀ {ℓ} (T : Type ℓ) {@(tactic hlevel-tactic-worker) p : is-prop T}
-  → Type
-□ T {p} = resized T p
+□-map : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+      → (A → B) → □ A → □ B
+□-map f (inc x) = inc (f x)
+□-map f (squash x y i) = squash (□-map f x) (□-map f y) i
 
-elΩ : ∀ {ℓ} (T : Type ℓ) {@(tactic hlevel-tactic-worker) p : is-prop T}
-    → Ω
-∣ elΩ T {p = p} ∣ = □ T {p}
-elΩ T .is-tr = resized-is-prop _
+□-rec!
+  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+  → {@(tactic hlevel-tactic-worker) pa : is-prop B}
+  → (A → B) → □ A → B
+□-rec! {pa = pa} f (inc x) = f x
+□-rec! {pa = pa} f (squash x y i) =
+  pa (□-rec! {pa = pa} f x) (□-rec! {pa = pa} f y) i
 
-{-# DISPLAY resized T p = □ T #-}
+out! : ∀ {ℓ} {A : Type ℓ}
+     → {@(tactic hlevel-tactic-worker) pa : is-prop A}
+     → □ A → A
+out! {pa = pa} = □-rec! {pa = pa} (λ x → x)
+
+elΩ : ∀ {ℓ} (T : Type ℓ) → Ω
+∣ elΩ T ∣ = □ T
+elΩ T .is-tr = squash
 ```

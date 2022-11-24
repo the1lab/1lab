@@ -1,8 +1,8 @@
 ```agda
-open import 1Lab.Prim.Type
-open import 1Lab.Prim.Kan
+open import Prim.Type
+open import Prim.Kan
 
-module 1Lab.Prim.Data.Maybe where
+module Prim.Data.Maybe where
 ```
 
 # Primitive: The Maybe type

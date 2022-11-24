@@ -1,5 +1,6 @@
 ```agda
 open import Algebra.Group
+
 open import Cat.Prelude
 
 open import Data.Fin

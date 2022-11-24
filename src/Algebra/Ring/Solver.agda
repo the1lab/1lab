@@ -1,35 +1,32 @@
 {-
 Adaptation of the ring solver from the Agda standard library to work
 with the 1Lab's weird primitives.
-
 Agda's ring solver was originally implemented by Nils Anders Danielsson,
 and the referenced version includes contributions by Matthew Daggit,
 Guillaume Allais, Donnacha Oisín Kidney, and Markus Wageringel.
-
 Uses ideas from the Coq ring tactic. See "Proving Equalities in a
 Commutative Ring Done Right in Coq" by Grégoire and Mahboubi. The
 code below is not optimised like theirs, though (in particular, our
 Horner normal forms are not sparse).
 -}
-
 open import 1Lab.Reflection.Variables
+open import 1Lab.Reflection.Variables
+open import 1Lab.Reflection.Solver
+open import 1Lab.Reflection
 open import 1Lab.Reflection
 open import 1Lab.Rewrite
 
-open import Data.Fin.Base
-open import Data.List
-open import Data.Nat
-open import Data.Int
-
-open import Algebra.Group
 open import Algebra.Ring.Cat.Initial
 open import Algebra.Ring.Commutative
 open import Algebra.Prelude
+open import Algebra.Group
 open import Algebra.Ring
 
-open import 1Lab.Reflection
-open import 1Lab.Reflection.Solver
-open import 1Lab.Reflection.Variables
+open import Data.Fin.Base
+open import Data.List
+open import Data.Dec
+open import Data.Int
+open import Data.Nat
 
 module Algebra.Ring.Solver where
 
@@ -197,10 +194,6 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   sem : Op → R → R → R
   sem [+] = R._+_
   sem [*] = R._*_
-
-  lookup : ∀ {ℓ} {A : Type ℓ} {n} → Vec A n → Fin n → A
-  lookup (x ∷ xs) fzero = x
-  lookup (x ∷ xs) (fsuc i) = lookup xs i
 
   ⟦_⟧ : ∀ {n} → Polynomial n → Vec R n → R
   ⟦ op o p₁ p₂ ⟧ ρ = sem o (⟦ p₁ ⟧ ρ) (⟦ p₂ ⟧ ρ)
@@ -420,7 +413,7 @@ module Reflection where
       def field-name (ring-args (def (quote CRing-on.has-ring-on) (ring-args cring [])) args)
     pattern group-field field-name cring args =
       def field-name (is-group-args (def (quote is-ring.+-group) (is-ring-args (ring-field (quote Ring-on.has-is-ring) cring []) [])) args)
-        
+
     mk-cring-args : Term → List (Arg Term) → List (Arg Term)
     mk-cring-args cring args = unknown h∷ unknown h∷ cring v∷ args
 
@@ -463,7 +456,7 @@ module Reflection where
   build-expr cring vs tm = do
     (v , vs) ← bind-var vs tm
     returnTC $ con (quote Impl.Polynomial.var) (v v∷ []) , vs
-     
+
   dont-reduce : List Name
   dont-reduce =
     quote Number.fromNat ∷

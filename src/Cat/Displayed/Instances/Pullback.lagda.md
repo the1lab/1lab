@@ -1,7 +1,7 @@
 ```agda
+open import Cat.Displayed.Cartesian
 open import Cat.Instances.Functor
 open import Cat.Displayed.Base
-open import Cat.Displayed.Cartesian
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning as Dr

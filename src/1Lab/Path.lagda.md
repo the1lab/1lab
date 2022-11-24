@@ -48,9 +48,9 @@ when they're connected by a path-of-paths, and types are said to be
 </details>
 
 ```agda
-open import 1Lab.Prim.Extension public
-open import 1Lab.Prim.Interval public
-open import 1Lab.Prim.Kan public
+open import Prim.Extension public
+open import Prim.Interval public
+open import Prim.Kan public
 ```
 
 The type `I`{.Agda} is meant to represent the (real, closed) unit

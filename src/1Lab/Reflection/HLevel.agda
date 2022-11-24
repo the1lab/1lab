@@ -2,15 +2,19 @@
 open import 1Lab.Reflection.Record
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
-open import 1Lab.Prim.Data.Nat
-open import 1Lab.Type.Sigma
 open import 1Lab.Reflection
+open import 1Lab.Type.Sigma
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
-open import Data.List
+
 open import Data.Bool
+open import Data.List
+
+open import Meta.Foldable
+
+open import Prim.Data.Nat
 
 module 1Lab.Reflection.HLevel where
 
@@ -355,7 +359,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
 
           pure ((solved , x ∷ xs) , true)
 
-        nondet instances λ a → do
+        nondet (eff List) instances λ a → do
           projection ← unquoteTC {A = hlevel-projection} a
           treat-as-n-type projection goal >> unify solved a
 

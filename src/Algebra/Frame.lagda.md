@@ -173,14 +173,14 @@ module _ {ℓ} (F : Frames.Ob ℓ) where
     : ∀ {ℓ′} (P : ⌞ F ⌟ → Prop ℓ′) {x}
     → ∣ P x ∣ → x F.≤ subset-cup P
   subset-cup-colimiting P x =
-    F.⋃-colimiting (_ , box x) λ { (f , w) → f }
+    F.⋃-colimiting (_ , inc x) λ { (f , w) → f }
 
   subset-cup-universal
     : ∀ {ℓ′} (P : ⌞ F ⌟ → Prop ℓ′) {x}
     → (∀ i → ∣ P i ∣ → i F.≤ x)
     → subset-cup P F.≤ x
   subset-cup-universal P f =
-    F.⋃-universal fst λ { (i , w) → f i (out w) }
+    F.⋃-universal fst λ { (i , w) → f i (out! w) }
 ```
 
 Keep imagining that you have a subset $P \sube A$: Can we construct a
@@ -194,13 +194,13 @@ $P$, we get the a lower bound among upper bounds of $P$: a meet for $P$.
   subset-cap-limiting
     : ∀ {ℓ′} (P : ⌞ F ⌟ → Prop ℓ′) {x} → ∣ P x ∣ → subset-cap P F.≤ x
   subset-cap-limiting P x∈P =
-    subset-cup-universal (λ x → el _ _) λ i a∈P→i≤a → a∈P→i≤a _ x∈P
+    subset-cup-universal (λ x → el _ hlevel!) λ i a∈P→i≤a → a∈P→i≤a _ x∈P
 
   subset-cap-universal
     : ∀ {ℓ} (P : ⌞ F ⌟ → Prop ℓ) {x}
     → (∀ i → ∣ P i ∣ → x F.≤ i)
     → x F.≤ subset-cap P
-  subset-cap-universal P x∈P = subset-cup-colimiting (λ _ → el _ _) x∈P
+  subset-cap-universal P x∈P = subset-cup-colimiting (λ _ → el _ hlevel!) x∈P
 ```
 
 <!--
@@ -256,7 +256,7 @@ Power-frame A .snd = to-frame-on go where
   go .has-is-set = hlevel 2
   go ._cap_ f g x .∣_∣   = ∣ f x ∣ × ∣ g x ∣
   go ._cap_ f g x .is-tr = hlevel!
-  go .cup {I} P x = elΩ (∃ I λ i → ∣ P i x ∣)
+  go .cup {I} P x = elΩ (Σ I λ i → ∣ P i x ∣)
   go .idempotent = funext λ i → Ω-ua fst λ x → x , x
   go .commutative = funext λ i → Ω-ua
     (λ { (x , y) → y , x }) (λ { (x , y) → y , x })
@@ -264,12 +264,12 @@ Power-frame A .snd = to-frame-on go where
     (λ { (x , y , z) → (x , y) , z })
     (λ { ((x , y) , z) → x , y , z })
   go .universal {x = x} f W = funext λ i → Ω-ua
-    (λ r → ∥-∥-rec!
-      (λ (a , w) → box (inc (_ , w)) , transport (ap ∣_∣ (W a $ₚ i)) w .snd)
-      (out r))
+    (λ r → □-rec!
+      (λ (a , w) → inc (_ , w) , transport (ap ∣_∣ (W a $ₚ i)) w .snd)
+      r)
     (λ r → r .fst)
-  go .colimiting i f = funext λ j → Ω-ua (λ i → i , box (inc (_ , i))) fst
+  go .colimiting i f = funext λ j → Ω-ua (λ i → i , inc (_ , i)) fst
   go .distrib x f = funext λ i → Ω-ua
-    (λ (x , i) → box ((λ (y , z) → _ , x , z) <$> out i))
-    (λ r → ∥-∥-rec! (λ { (x , y , z) → y , box (inc (_ , z)) }) (out r))
+    (λ (x , i) → □-map (λ (y , z) → _ , x , z) i)
+    (λ r → □-rec! (λ { (x , y , z) → y , inc (_ , z) }) r)
 ```

@@ -4,16 +4,22 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type hiding (absurd)
 
+open import Data.Vec.Base
 open import Data.Bool
 open import Data.List
 
 module 1Lab.Reflection where
 
-open import 1Lab.Prim.Data.String public
-open import 1Lab.Prim.Data.Float public
-open import 1Lab.Prim.Data.Maybe public
-open import 1Lab.Prim.Data.Word public
-open import 1Lab.Prim.Monad public
+open import Prim.Data.String public
+open import Prim.Data.Float public
+open import Prim.Data.Maybe public
+open import Prim.Data.Word public
+open import Meta.Traverse public
+open import Meta.Idiom public
+open import Meta.Bind public
+open import Meta.Alt public
+
+open Data.Vec.Base using (Vec ; [] ; _∷_ ; lookup ; tabulate) public
 open Data.List public
 open Data.Bool public
 ```
@@ -417,19 +423,19 @@ postulate
 {-# BUILTIN AGDATCMDEFINEDATA                 defineData                 #-}
 
 instance
-  Do-TC : Do-syntax (λ x → x) TC
-  Do-TC .Do-syntax._>>=_ = bindTC
+  Map-TC : Map (eff TC)
+  Map-TC .Map._<$>_ f x = bindTC x λ x → returnTC (f x)
 
-  Idiom-TC : Idiom-syntax (λ x → x) TC
-  Idiom-TC .Idiom-syntax.pure = returnTC
-  Idiom-TC .Idiom-syntax._<*>_ f g = do
-    f ← f
-    g ← g
-    pure (f g)
+  Idiom-TC : Idiom (eff TC)
+  Idiom-TC .Idiom.pure = returnTC
+  Idiom-TC .Idiom._<*>_ f g = bindTC f λ f → bindTC g λ g → pure (f g)
 
-  Alt-TC : Alt-syntax (λ x → x) TC
-  Alt-TC .Alt-syntax.fail = typeError []
-  Alt-TC .Alt-syntax._<|>_ = catchTC
+  Bind-TC : Bind (eff TC)
+  Bind-TC .Bind._>>=_ = bindTC
+
+  Alt-TC : Alt (eff TC)
+  Alt-TC .Alt.fail = typeError []
+  Alt-TC .Alt._<|>_ = catchTC
 ```
 </details>
 
@@ -505,11 +511,6 @@ tStrMap A f = def (quote Σ-map₂) (f v∷ A v∷ [])
 tStrProj : Term → Name → Term
 tStrProj A sfield = tStrMap A (def sfield [])
 
-data Vec {ℓ} (A : Type ℓ) : Nat → Type ℓ where
-  []  : Vec A zero
-  _∷_ : ∀ {n} → A → Vec A n → Vec A (suc n)
-
-infixr 20 _∷_
 
 makeVarsFrom : {n : Nat} → Nat → Vec Term n
 makeVarsFrom {zero} k = []
@@ -609,7 +610,7 @@ unapply-path tm = reduce tm >>= λ where
     l ← newMeta dom
     r ← newMeta dom
     unify tm (def (quote Type) (dom v∷ l v∷ r v∷ []))
-    traverse (l ∷ r ∷ []) wait-for-type
+    traverse wait-for-type (l ∷ r ∷ [])
     pure (just (dom , l , r))
   red@(def (quote PathP) (l h∷ T v∷ x v∷ y v∷ [])) → do
     domain ← newMeta (def (quote Type) (l v∷ []))

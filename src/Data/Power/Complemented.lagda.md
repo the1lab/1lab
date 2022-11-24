@@ -3,6 +3,7 @@ open import 1Lab.Prelude
 
 open import Data.Power
 open import Data.Bool
+open import Data.Dec
 open import Data.Sum
 
 module Data.Power.Complemented where
@@ -116,7 +117,7 @@ process is inverse to taking fibres over $\mathtt{true}$.
 ```agda
   from : (pr : Σ[ p ∈ ℙ A ] (is-decidable p)) (x : A)
        → (Σ[ b ∈ Bool ] ((b ≡ true) ≃ (x ∈ pr .fst)))
-  from (p , dec) elt = case (λ _ → Σ Bool (λ b → (b ≡ true) ≃ (elt ∈ p)))
+  from (p , dec) elt = Dec-elim (λ _ → Σ Bool (λ b → (b ≡ true) ≃ (elt ∈ p)))
     (λ y → true , prop-ext hlevel! hlevel! (λ _ → y) (λ _ → refl))
     (λ x∉p → false , prop-ext hlevel! hlevel!
       (λ p → absurd (true≠false (sym p)))

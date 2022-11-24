@@ -1,11 +1,11 @@
 ```agda
-open import Cat.Diagram.Terminal
-open import Cat.Displayed.Base
-open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Instances.Pullback
 open import Cat.Displayed.Instances.Slice
 open import Cat.Instances.Sets.Complete
+open import Cat.Displayed.Cartesian
+open import Cat.Diagram.Terminal
 open import Cat.Instances.Slice
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Functor.Hom as Hom

@@ -6,8 +6,8 @@ open import 1Lab.Type
 
 open import Data.List
 
-import 1Lab.Prim.Data.Sigma as S
-import 1Lab.Prim.Data.Nat as N
+import Prim.Data.Sigma as S
+import Prim.Data.Nat as N
 
 module 1Lab.Reflection.Record where
 

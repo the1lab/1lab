@@ -419,17 +419,17 @@ kernel-pair-is-effective
   : ∀ {a b} {f : Hom a b}
   → is-quotient-of (Kernel-pair f) f
   → is-effective-congruence (Kernel-pair f)
-kernel-pair-is-effective {a = a} {b} {f} quot = eff where
+kernel-pair-is-effective {a = a} {b} {f} quot = epi where
   open is-effective-congruence hiding (A/R)
   module a×a = Product (fc.products a a)
   module pb = Pullback (fc.pullbacks f f)
 
   open is-coequaliser
-  eff : is-effective-congruence _
-  eff .is-effective-congruence.A/R = b
-  eff .quotient = f
-  eff .has-quotient = quot
-  eff .is-kernel-pair =
+  epi : is-effective-congruence _
+  epi .is-effective-congruence.A/R = b
+  epi .quotient = f
+  epi .has-quotient = quot
+  epi .is-kernel-pair =
     transport
       (λ i → is-pullback C (a×a.π₁∘factor {p1 = pb.p₁} {p2 = pb.p₂} (~ i)) f
                            (a×a.π₂∘factor {p1 = pb.p₁} {p2 = pb.p₂} (~ i)) f)

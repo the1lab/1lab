@@ -4,10 +4,10 @@ open import 1Lab.Prelude
 
 open import Algebra.Group.Homotopy
 
+open import Data.List using (_∷_ ; [])
+
 open import Homotopy.Space.Suspension
 open import Homotopy.Space.Sphere
-
-open import Data.List using (_∷_ ; [])
 
 module Homotopy.Base where
 ```

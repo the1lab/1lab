@@ -11,7 +11,7 @@ allow renaming it in an import declaration from the `Agda.Primitive`
 module.
 
 ```agda
-open import 1Lab.Prim.Type hiding (Prop) public
+open import Prim.Type hiding (Prop) public
 ```
 
 `Type`{.Agda} is a type itself, so it's a natural question to ask: does
@@ -37,9 +37,9 @@ level-of {ℓ} _ = ℓ
 We re-export the following very important types:
 
 ```agda
-open import 1Lab.Prim.Data.Sigma public
-open import 1Lab.Prim.Data.Bool public
-open import 1Lab.Prim.Data.Nat hiding (_<_) public
+open import Prim.Data.Sigma public
+open import Prim.Data.Bool public
+open import Prim.Data.Nat hiding (_<_) public
 ```
 
 Additionally, we define the empty type:
@@ -111,7 +111,7 @@ f $ₛ x = f x
 
 <!--
 ```
-open import 1Lab.Prim.Literals public
+open import Prim.Literals public
 
 Type∙ : ∀ ℓ → Type (lsuc ℓ)
 Type∙ _ = Σ _ id

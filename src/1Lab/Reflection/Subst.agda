@@ -1,7 +1,7 @@
-open import 1Lab.Prim.Data.Nat
-
 open import 1Lab.Reflection
 open import 1Lab.Type
+
+open import Prim.Data.Nat
 
 module 1Lab.Reflection.Subst where
 

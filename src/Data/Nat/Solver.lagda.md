@@ -92,10 +92,6 @@ private variable
   A : Type a
   n : Nat
 
-lookup : Vec A n → Fin n → A
-lookup (x ∷ xs) fzero = x
-lookup (x ∷ xs) (fsuc i) = lookup xs i
-
 -- NOTE: These little helper lemmas become very useful, and make
 -- some of the really involved proofs a lot less painful.
 commute-inner : ∀ w x y z → (w + x) + (y + z) ≡ (w + y) + (x + z)

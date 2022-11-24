@@ -1,7 +1,7 @@
 ```agda
-open import 1Lab.Prim.Type
+open import Prim.Type
 
-module 1Lab.Prim.Interval where
+module Prim.Interval where
 ```
 
 # Primitives: The Interval
@@ -102,4 +102,4 @@ syntax primPOr φ ψ u v = [ φ ↦ u , ψ ↦ v ]
 Note that the type of `primPOr` is incomplete: it looks like the
 eliminator for a coproduct, but `i ∨ j` behaves more like a pushout. We
 can represent the accurate type with [extension
-types](1Lab.Prim.Extension.html).
+types](Prim.Extension.html).

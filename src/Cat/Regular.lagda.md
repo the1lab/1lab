@@ -1,22 +1,22 @@
 ```agda
 open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Pullback.Properties
-open import Cat.Instances.Sets.Complete
 open import Cat.Functor.FullSubcategory
+open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Pullback
+open import Cat.Diagram.Initial
+open import Cat.Diagram.Product
 open import Cat.Instances.Comma
 open import Cat.Instances.Slice
-open import Cat.Diagram.Product
-open import Cat.Diagram.Initial
 open import Cat.Instances.Sets
 open import Cat.Diagram.Image
 open import Cat.Prelude
 
-import Cat.Reasoning as Cr
-
 open import Data.Set.Surjection
+
+import Cat.Reasoning as Cr
 
 module Cat.Regular where
 ```

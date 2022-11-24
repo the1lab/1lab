@@ -1,9 +1,10 @@
 ```agda
 open import 1Lab.Path.IdentitySystem
-open import 1Lab.Type.Dec
 open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type
+
+open import Data.Dec.Base
 
 module Relation.Order where
 ```

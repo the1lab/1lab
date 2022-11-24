@@ -1,12 +1,13 @@
 ```agda
-open import Cat.Diagram.Product renaming (module Cartesian to Products)
-open import Cat.Diagram.Product.Solver
-open import Cat.Displayed.Base
-open import Cat.Displayed.Functor
-open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Cartesian.Discrete
-import Cat.Displayed.Instances.Simple as Simple
+open import Cat.Diagram.Product.Solver
+open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Functor
+open import Cat.Diagram.Product renaming (module Cartesian to Products)
+open import Cat.Displayed.Base
 open import Cat.Prelude
+
+import Cat.Displayed.Instances.Simple as Simple
 import Cat.Reasoning
 
 module Cat.Displayed.Instances.CT-Structure

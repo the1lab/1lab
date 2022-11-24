@@ -1,5 +1,5 @@
 ```agda
-module 1Lab.Prim.Type where
+module Prim.Type where
 ```
 
 # Primitives: Sorts

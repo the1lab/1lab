@@ -19,7 +19,7 @@ axiom**.
 
 [the book]: https://homotopytypetheory.org/book
 [equivalent]: 1Lab.Equiv.html#_≃_
-[identified]: 1Lab.Prim.Kan.html#Path
+[identified]: Prim.Kan.html#Path
 
 Precisely, the axiom as presented in the book consists of the following
 data (right under remark §2.10.4):
@@ -94,7 +94,7 @@ private
                 → {T : Partial φ (Type ℓ')} → {e : PartialP φ (λ o → T o ≃ A)}
                 → primGlue A T e → A
 
-open import 1Lab.Prim.HCompU
+open import Prim.HCompU
 open import 1Lab.Equiv.FromPath
 ```
 -->

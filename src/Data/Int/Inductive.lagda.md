@@ -1,9 +1,9 @@
 ```
-open import 1Lab.Type.Dec
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
+open import Data.Dec.Base
 open import Data.Nat.Base
 
 module Data.Int.Inductive where

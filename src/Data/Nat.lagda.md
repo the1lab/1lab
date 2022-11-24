@@ -4,7 +4,7 @@ module Data.Nat where
 open import Data.Nat.Properties public
 open import Data.Nat.Order public
 open import Data.Nat.Base public
-open import 1Lab.Prim.Data.Nat
+open import Prim.Data.Nat
   using (Nat ; _+_ ; _-_) public
 ```
 

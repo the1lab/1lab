@@ -1,8 +1,8 @@
 ```agda
-open import 1Lab.Prim.Interval
-open import 1Lab.Prim.Type
+open import Prim.Interval
+open import Prim.Type
 
-module 1Lab.Prim.Extension where
+module Prim.Extension where
 ```
 
 # Primitives: Extension types
