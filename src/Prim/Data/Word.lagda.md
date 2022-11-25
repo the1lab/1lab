@@ -1,7 +1,7 @@
 ```agda
 open import 1Lab.Type
 
-module 1Lab.Prim.Data.Word where
+module Prim.Data.Word where
 ```
 
 # Primitive: Machine integers

@@ -1,8 +1,8 @@
 ```agda
+open import Algebra.Ring
+
 open import Cat.Abelian.Base
 open import Cat.Prelude
-
-open import Algebra.Ring
 
 module Cat.Abelian.Endo {o ℓ} {C : Precategory o ℓ} (A : Ab-category C) where
 ```

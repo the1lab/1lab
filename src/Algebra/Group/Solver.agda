@@ -4,6 +4,7 @@ open import 1Lab.Prelude
 open import Data.List
 open import Data.Fin
 open import Data.Nat
+open import Data.Dec
 
 open import Algebra.Group.Cat.Base
 open import Algebra.Group
@@ -23,10 +24,6 @@ module _ {ℓ} {A : Type ℓ} (G : Group-on A) where
 
   private variable
     n : Nat
-
-  lookup : Vec A n → Fin n → A
-  lookup (x ∷ xs) fzero = x
-  lookup (x ∷ xs) (fsuc i) = lookup xs i
 
   ⟦_⟧ₑ : Expr n → Vec A n → A
   ⟦ e1 ‶⋆‶ e2 ⟧ₑ ρ = ⟦ e1 ⟧ₑ ρ ⋆ ⟦ e2 ⟧ₑ ρ

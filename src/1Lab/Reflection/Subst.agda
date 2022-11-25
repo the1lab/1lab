@@ -1,7 +1,7 @@
-open import 1Lab.Prim.Data.Nat
-
 open import 1Lab.Reflection
 open import 1Lab.Type
+
+open import Prim.Data.Nat
 
 module 1Lab.Reflection.Subst where
 
@@ -94,7 +94,7 @@ apply-tm (agda-sort s)     argu = typeError "Type error: apply sort to argument"
 apply-tm (lit l)           argu = typeError "Type error: apply literal to argument"
 apply-tm (meta x args)     argu = pure $ meta x (args ++ argu ∷ [])
 apply-tm unknown           argu = do
-  mv ← newMeta unknown
+  mv ← new-meta unknown
   apply-tm mv argu
 
 subst-tm ids tm = pure tm

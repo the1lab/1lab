@@ -1,11 +1,11 @@
 ```agda
-open import 1Lab.Prim.Data.Bool
-open import 1Lab.Prim.Extension
-open import 1Lab.Prim.Interval
-open import 1Lab.Prim.Type
-open import 1Lab.Prim.Kan
+open import Prim.Data.Bool
+open import Prim.Extension
+open import Prim.Interval
+open import Prim.Type
+open import Prim.Kan
 
-module 1Lab.Prim.Data.Nat where
+module Prim.Data.Nat where
 ```
 
 # Primitive: Natural numbers

@@ -6,8 +6,8 @@ open import 1Lab.Type
 
 open import Data.List
 
-import 1Lab.Prim.Data.Sigma as S
-import 1Lab.Prim.Data.Nat as N
+import Prim.Data.Sigma as S
+import Prim.Data.Nat as N
 
 module 1Lab.Reflection.Record where
 
@@ -55,8 +55,8 @@ undo-clauses = go where
   go : List (Name × List Name) → List Clause
   go [] = []
   go ((r-field , sel-path) ∷ xs) =
-    clause (("sig" , varg unknown) ∷ [])
-           (varg (proj (quote snd)) ∷ varg (proj (quote is-iso.inv)) ∷ varg (var 0) ∷ varg (proj r-field) ∷ [])
+    clause (("sig" , argN unknown) ∷ [])
+           (argN (proj (quote snd)) ∷ argN (proj (quote is-iso.inv)) ∷ argN (var 0) ∷ argN (proj r-field) ∷ [])
            (foldr (λ n t → def n (t v∷ [])) (var 0 []) (reverse sel-path))
       ∷ go xs
 
@@ -65,8 +65,8 @@ redo-clauses = go where
   go : List (Name × List Name) → List Clause
   go [] = []
   go ((r-field , sel-path) ∷ xs) =
-    clause (("rec" , varg unknown) ∷ [])
-           (varg (proj (quote fst)) ∷ varg (var 0) ∷ map (varg ∘ proj) sel-path)
+    clause (("rec" , argN unknown) ∷ [])
+           (argN (proj (quote fst)) ∷ argN (var 0) ∷ map (argN ∘ proj) sel-path)
            (def r-field (var 0 [] v∷ []))
       ∷ go xs
 
@@ -75,9 +75,9 @@ undo-redo-clauses = go where
   go : Fields → List Clause
   go [] = []
   go ((r-field , _) ∷ xs) =
-    clause (("sig" , varg unknown) ∷ ("i" , varg (quoteTerm I)) ∷ [])
-           ( varg (proj (quote snd)) ∷ varg (proj (quote is-iso.linv))
-           ∷ varg (var 1) ∷ varg (var 0) ∷ varg (proj r-field) ∷ [])
+    clause (("sig" , argN unknown) ∷ ("i" , argN (quoteTerm I)) ∷ [])
+           ( argN (proj (quote snd)) ∷ argN (proj (quote is-iso.linv))
+           ∷ argN (var 1) ∷ argN (var 0) ∷ argN (proj r-field) ∷ [])
            (def r-field (var 1 [] v∷ []))
       ∷ go xs
 
@@ -86,8 +86,8 @@ redo-undo-clauses = go where
   go : List (Name × List Name) → List Clause
   go [] = []
   go ((r-field , sel-path) ∷ xs) =
-    clause (("rec" , varg unknown) ∷ ("i" , varg (quoteTerm I)) ∷ [])
-           (varg (proj (quote snd)) ∷ varg (proj (quote is-iso.rinv)) ∷ varg (var 1) ∷ varg (var 0) ∷ map (varg ∘ proj) sel-path)
+    clause (("rec" , argN unknown) ∷ ("i" , argN (quoteTerm I)) ∷ [])
+           (argN (proj (quote snd)) ∷ argN (proj (quote is-iso.rinv)) ∷ argN (var 1) ∷ argN (var 0) ∷ map (argN ∘ proj) sel-path)
            (foldr (λ n t → def n (t v∷ [])) (var 1 []) (reverse sel-path))
       ∷ go xs
 
@@ -119,7 +119,7 @@ make-record-iso-sigma declare? getName `R = do
 
   nm ← getName
   returnTC declare? >>= λ where
-    true → declareDef (varg nm) ty
+    true → declareDef (argN nm) ty
     false → returnTC tt
 
   defineFun nm

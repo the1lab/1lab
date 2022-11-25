@@ -1,10 +1,10 @@
 ```agda
-open import 1Lab.Prim.Extension
-open import 1Lab.Prim.Interval
-open import 1Lab.Prim.Type
-open import 1Lab.Prim.Kan
+open import Prim.Extension
+open import Prim.Interval
+open import Prim.Type
+open import Prim.Kan
 
-module 1Lab.Prim.Data.Bool where
+module Prim.Data.Bool where
 ```
 
 # Primitive: Booleans

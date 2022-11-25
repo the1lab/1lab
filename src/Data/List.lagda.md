@@ -1,6 +1,5 @@
 ```agda
 open import 1Lab.HLevel.Retracts
-open import 1Lab.Prim.Monad
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -9,6 +8,8 @@ open import 1Lab.Type
 open import Data.Bool
 
 module Data.List where
+
+open import Data.List.Base public
 ```
 
 # Lists
@@ -25,29 +26,12 @@ private variable
 ```
 -->
 
-```agda
-data List {ℓ} (A : Type ℓ) : Type ℓ where
-  [] : List A
-  _∷_ : A → List A → List A
-
-infixr 20 _∷_
-{-# BUILTIN LIST List #-}
-```
-
 ## Path Space
 
 We begin by characteristing the behaviour of paths of lists. For
 instance, `∷`{.Agda} is injective in both its arguments:
 
 ```agda
-head : A → List A → A
-head def []     = def
-head _   (x ∷ _) = x
-
-tail : List A → List A
-tail []      = []
-tail (_ ∷ xs) = xs
-
 ∷-head-inj : ∀ {x y : A} {xs ys} → (x ∷ xs) ≡ (y ∷ ys) → x ≡ y
 ∷-head-inj {x = x} p = ap (head x) p
 
@@ -135,15 +119,6 @@ We use this to prove that lists preserve h-levels for $n \ge 2$, i.e. if
   is-set→List-is-set = List-is-hlevel zero
 ```
 
-We can define concatenation of lists by recursion:
-
-```agda
-infixr 5 _++_
-_++_ : ∀ {ℓ} {A : Type ℓ} → List A → List A → List A
-[]      ++ ys = ys
-(x ∷ xs) ++ ys = x ∷ (xs ++ ys)
-```
-
 Then we can prove that this operation is associative and has `[]` as
 both left and right units:
 
@@ -177,10 +152,6 @@ ap-∷ x≡y xs≡ys i = x≡y i ∷ xs≡ys i
 ⚠️ TODO: Explain these ⚠️
 
 ```agda
-map : (A → B) → List A → List B
-map f [] = []
-map f (x₁ ∷ x₂) = f x₁ ∷ map f x₂
-
 mapUp : (Nat → A → B) → Nat → List A → List B
 mapUp f _ [] = []
 mapUp f n (x ∷ xs) = f n x ∷ mapUp f (suc n) xs
@@ -189,17 +160,9 @@ length : List A → Nat
 length [] = zero
 length (x ∷ x₁) = suc (length x₁)
 
-foldr : (A → B → B) → B → List A → B
-foldr f z [] = z
-foldr f z (x ∷ xs) = f x (foldr f z xs)
-
 concat : List (List A) → List A
 concat [] = []
 concat (x ∷ xs) = x ++ concat xs
-
-foldl : (B → A → B) → B → List A → B
-foldl f z [] = z
-foldl f z (x ∷ xs) = foldl f (f z x) xs
 
 reverse : List A → List A
 reverse = go [] where
@@ -221,20 +184,5 @@ enumerate = go 0 where
   go : Nat → List _ → List (Nat × _)
   go x [] = []
   go x (a ∷ b) = (x , a) ∷ go (suc x) b
-
-nondet
-  : ∀ {ℓ ℓ′} {f : Level → Level} {A : Type ℓ} {B : Type ℓ′} {M : ∀ {ℓ} → Type ℓ → Type (f ℓ)}
-    ⦃ alt : Alt-syntax f M ⦄
-  → List A → (A → M B) → M B
-nondet [] _          = fail
-nondet (x ∷ []) kont = kont x
-nondet (x ∷ xs) kont = kont x <|> nondet xs kont
-
-traverse
-  : ∀ {ℓ ℓ′} {f : Level → Level} {A : Type ℓ} {B : Type ℓ′} {M : ∀ {ℓ} → Type ℓ → Type (f ℓ)}
-  → ⦃ app : Idiom-syntax f M ⦄
-  → List A → (A → M B) → M (List B)
-traverse [] _ = pure []
-traverse (x ∷ xs) k = ⦇ (k x) ∷ (traverse xs k) ⦈
 ```
 -->

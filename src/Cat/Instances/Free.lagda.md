@@ -95,7 +95,7 @@ $\id{Codep}_b(xs, ys)$ codes for a path $xs \equiv ys$ over $b$.
     : ∀ (a : I → ∣ G.vert ∣) {c}
     → Path-in (a i0) c
     → Path-in (a i1) c
-    → Type _
+    → Type (o ⊔ ℓ)
 ```
 
 Note that in the case where $xs = \id{nil}$, Agda refines $b$ to be

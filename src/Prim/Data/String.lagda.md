@@ -1,11 +1,12 @@
 ```agda
-open import 1Lab.Prim.Data.Maybe
-open import 1Lab.Prim.Literals
 open import 1Lab.Type
 
 open import Data.List
 
-module 1Lab.Prim.Data.String where
+open import Prim.Data.Maybe
+open import Prim.Literals
+
+module Prim.Data.String where
 ```
 
 # Primitive: Characters and strings

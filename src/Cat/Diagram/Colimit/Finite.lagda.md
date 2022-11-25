@@ -1,9 +1,9 @@
 ```agda
-open import Cat.Diagram.Coproduct
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Coequaliser
-open import Cat.Diagram.Pushout
+open import Cat.Diagram.Coproduct
 open import Cat.Diagram.Initial
+open import Cat.Diagram.Pushout
 open import Cat.Prelude
 open import Cat.Thin
 

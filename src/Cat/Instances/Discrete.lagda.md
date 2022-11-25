@@ -2,6 +2,8 @@
 open import Cat.Univalent
 open import Cat.Prelude
 
+open import Data.Dec
+
 module Cat.Instances.Discrete where
 ```
 
@@ -95,9 +97,9 @@ Disc-diagram {X = X} {C = C} disc f = F where
 
   map : ∀ {x y : X} → x ≡ y → Dec (x ≡ y) → P x y
   map {x} {y} p =
-    case (λ _ → P x y)
-         (λ q → subst (P x) q C.id)
-         (λ ¬p → absurd (¬p p))
+    Dec-elim (λ _ → P x y)
+      (λ q → subst (P x) q C.id)
+      (λ ¬p → absurd (¬p p))
 ```
 
 The object part of the functor is the provided $f : X \to

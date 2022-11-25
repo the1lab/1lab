@@ -1,9 +1,10 @@
 ```agda
-open import 1Lab.Prim.Data.Maybe
 open import 1Lab.Prelude
 
 open import Data.Fin.Base
 open import Data.Sum
+
+open import Prim.Data.Maybe
 
 import Data.Nat as Nat
 

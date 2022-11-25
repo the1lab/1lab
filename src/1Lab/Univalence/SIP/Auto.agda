@@ -23,8 +23,8 @@ makeAutoStr-term (suc n) t =
 
     tryBin : Name → TC ⊤
     tryBin namen = do
-      h1 ← newMeta unknown
-      h2 ← newMeta unknown
+      h1 ← new-meta unknown
+      h2 ← new-meta unknown
       tt ← unify (con namen (h1 v∷ h2 v∷ [])) t
       tt ← makeAutoStr-term n h1
       makeAutoStr-term n h2

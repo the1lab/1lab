@@ -1,9 +1,16 @@
 ```agda
-open import 1Lab.Prelude
+open import 1Lab.Path.IdentitySystem
+open import 1Lab.HLevel.Retracts
+open import 1Lab.Type.Sigma
+open import 1Lab.HLevel
+open import 1Lab.Equiv
+open import 1Lab.Path
+open import 1Lab.Type
 
-open import Data.Sum
+open import Data.Dec.Base
+open import Data.Sum.Base
 
-import Data.Nat as Nat
+import Data.Nat.Base as Nat
 
 module Data.Fin.Base where
 ```
@@ -95,7 +102,6 @@ inject {_} {suc n} le fzero = fzero
 inject {_} {suc n} (Nat.s≤s le) (fsuc i) = fsuc (inject le i)
 ```
 
-
 ## Discreteness
 
 The proof here mirrors the one found in [`Data.Nat.Base`],
@@ -130,9 +136,9 @@ fsuc-inj {n = suc n} p = ap pred p
     pred (fsuc i) = i
 ```
 
-Finally, we pull everything together to show that `Fin`{.Agda}
-is Discrete. This is not exactly a shock (after all, `Nat`{.Agda}) is
-discrete), but it's useful nonetheless!
+Finally, we pull everything together to show that `Fin`{.Agda} is
+`Discrete`{.Agda}. This is not exactly a shock (after all, `Nat`{.Agda}
+is discrete), but it's useful nonetheless!
 
 ```agda
 Discrete-Fin : ∀ {n} → Discrete (Fin n)
@@ -173,11 +179,10 @@ instance
 
 ## Ordering
 
-Keeping with the view that `Fin`{.Agda} represents the type of
-bounded natural numbers, we can re-use the ordering on
-`Nat`{.Agda} to induce an ordering on `Fin`{.Agda}.
-This lets us repurpose any lemmas on [`≤`] to also operate
-on `Fin`{.Agda}.
+Keeping with the view that `Fin`{.Agda} represents the type of bounded
+natural numbers, we can re-use the ordering on `Nat`{.Agda} to induce an
+ordering on `Fin`{.Agda}.  This lets us repurpose any lemmas on [`≤`] to
+also operate on `Fin`{.Agda}.
 
 [`≤`]: agda://Data.Nat.Base#_≤_
 
@@ -232,19 +237,6 @@ to-ℕ< x = to-nat x , p x where
   p : ∀ {n} (x : Fin n) → suc (to-nat x) Nat.≤ n
   p {n = suc n} fzero = Nat.s≤s Nat.0≤x
   p {n = suc n} (fsuc x) = Nat.s≤s (p x)
-
-to-from-ℕ< : ∀ {n} (x : ℕ< n) → to-ℕ< {n = n} (from-ℕ< x) ≡ x
-to-from-ℕ< {n = suc n} x = Σ-prop-path (λ k → Nat.≤-prop) (to-from-ℕ {n = suc n} x) where
-  to-from-ℕ : ∀ {n} x → to-nat {n = n} (from-ℕ< x) ≡ x .fst
-  to-from-ℕ {n = suc n} (zero , p) = refl
-  to-from-ℕ {n = suc n} (suc x , Nat.s≤s p) = ap suc (to-from-ℕ {n = n} (x , p))
-
-from-to-ℕ< : ∀ {n} (x : Fin n) → from-ℕ< (to-ℕ< x) ≡ x
-from-to-ℕ< fzero = refl
-from-to-ℕ< (fsuc x) = ap fsuc (from-to-ℕ< x)
-
-Fin≃ℕ< : ∀ {n} → Fin n ≃ ℕ< n
-Fin≃ℕ< {n} = to-ℕ< , is-iso→is-equiv (iso from-ℕ< (to-from-ℕ< {n}) from-to-ℕ<)
 ```
 
 ## Arithmetic
@@ -261,37 +253,4 @@ fshift (suc m) i = fsuc (fshift m i)
 opposite : ∀ {n} → Fin n → Fin n
 opposite {n = suc n} fzero = from-nat n
 opposite {n = suc n} (fsuc i) = weaken (opposite i)
-```
-
-# Finite choice
-
-An important fact about the (standard) finite sets in constructive
-mathematics is that they _always_ support choice, which we phrase below
-as a "search" operator: If $M$ is any extension system (for example, the
-propositional truncation monad), then $M$ commutes with finite products:
-
-```agda
-finite-choice
-  : ∀ {ℓ} n {A : Fin n → Type ℓ} {f : Level → Level}
-      {M : ∀ {ℓ} → Type ℓ → Type (f ℓ)}
-  → ⦃ Do-syntax f M ⦄ → ⦃ Idiom-syntax f M ⦄
-  → (∀ x → M (A x)) → M (∀ x → A x)
-finite-choice zero _    = pure λ { () }
-finite-choice (suc n) k = do
-  azero ← k fzero
-  asuc  ← finite-choice n (k ∘ fsuc)
-  pure λ where
-    fzero    → azero
-    (fsuc x) → asuc x
-```
-
-An immediate consequence is that surjections into a finite set (thus,
-_between_ finite sets) merely split:
-
-```agda
-finite-surjection-split
-  : ∀ {ℓ} {n} {B : Type ℓ}
-  → (f : B → Fin n) → (∀ x → ∥ fibre f x ∥)
-  → ∥ (∀ x → fibre f x) ∥
-finite-surjection-split f = finite-choice _
 ```

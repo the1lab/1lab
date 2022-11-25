@@ -94,25 +94,25 @@ is-regular-epi→is-effective-epi
   → Pullback C f f
   → is-regular-epi f
   → is-effective-epi f
-is-regular-epi→is-effective-epi {f = f} kp reg = eff where
+is-regular-epi→is-effective-epi {f = f} kp reg = epi where
   module reg = is-regular-epi reg
   module kp = Pullback kp
 
   open is-effective-epi
   open is-coequaliser
-  eff : is-effective-epi f
-  eff .kernel = kp.apex
-  eff .p₁ = kp.p₁
-  eff .p₂ = kp.p₂
-  eff .is-kernel-pair = kp.has-is-pb
-  eff .has-is-coeq .coequal = kp.square
-  eff .has-is-coeq .coequalise {F = F} {e′} p = reg.coequalise q where
+  epi : is-effective-epi f
+  epi .kernel = kp.apex
+  epi .p₁ = kp.p₁
+  epi .p₂ = kp.p₂
+  epi .is-kernel-pair = kp.has-is-pb
+  epi .has-is-coeq .coequal = kp.square
+  epi .has-is-coeq .coequalise {F = F} {e′} p = reg.coequalise q where
     q : e′ ∘ reg.arr₁ ≡ e′ ∘ reg.arr₂
     q =
       e′ ∘ reg.arr₁                               ≡⟨ ap (e′ ∘_) (sym kp.p₂∘limiting) ⟩
       e′ ∘ kp.p₂ ∘ kp.limiting (sym reg.coequal)  ≡⟨ pulll (sym p) ⟩
       (e′ ∘ kp.p₁) ∘ kp.limiting _                ≡⟨ pullr kp.p₁∘limiting ⟩
       e′ ∘ reg.arr₂                               ∎
-  eff .has-is-coeq .universal = reg.universal
-  eff .has-is-coeq .unique = reg.unique
+  epi .has-is-coeq .universal = reg.universal
+  epi .has-is-coeq .unique = reg.unique
 ```

@@ -2,6 +2,8 @@
 open import Cat.Allegory.Base
 open import Cat.Prelude
 
+open import Principles.Resizing
+
 import Cat.Allegory.Reasoning as Ar
 
 module Cat.Allegory.Maps where
@@ -68,12 +70,11 @@ Rel-map→function {x = x} {y} {rel} map elt =
   where
     module map = is-map map
     functional′ : ∀ {a b c} → ∣ rel a b ∣ → ∣ rel a c ∣ → b ≡ c
-    functional′ r1 r2 = map.functional _ _ (inc (_ , r1 , r2))
+    functional′ r1 r2 = out! (map.functional _ _ (inc (_ , r1 , r2)))
 
     entire′ : ∀ a → ∃ ∣ y ∣ λ b → ∣ rel a b ∣
     entire′ a =
-      ∥-∥-rec squash (λ { (x , y , R) → inc (x , R) })
-        (map.entire a a refl)
+      □-rec! (λ { (x , y , R) → inc (x , R) }) (map.entire a a (inc refl))
 ```
 
 ## The category of maps

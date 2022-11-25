@@ -1,6 +1,4 @@
 ```agda
-open import 1Lab.Prim.Monad
-
 open import Algebra.Group.Subgroup
 open import Algebra.Ring.Module
 open import Algebra.Group.Ab
@@ -11,6 +9,8 @@ open import Algebra.Ring
 open import Cat.Functor.FullSubcategory
 
 open import Data.Power
+
+open import Meta.Bind
 
 module Algebra.Ring.Ideal where
 ```

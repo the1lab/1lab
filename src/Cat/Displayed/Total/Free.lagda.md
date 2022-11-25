@@ -1,9 +1,9 @@
 ```agda
 open import Cat.Instances.Functor
+open import Cat.Diagram.Initial
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Comma
-open import Cat.Diagram.Initial
 open import Cat.Displayed.Base
 open import Cat.Prelude
 

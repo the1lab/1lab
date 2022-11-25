@@ -1,13 +1,14 @@
 ```agda
-open import 1Lab.Prim.Data.String
-open import 1Lab.Prim.Data.Maybe
-open import 1Lab.Prim.Data.Word
 open import 1Lab.Type
 
 open import Data.Int.Inductive
 open import Data.Bool
 
-module 1Lab.Prim.Data.Float where
+open import Prim.Data.String
+open import Prim.Data.Maybe
+open import Prim.Data.Word
+
+module Prim.Data.Float where
 ```
 
 # Primitive: IEEE754 floats

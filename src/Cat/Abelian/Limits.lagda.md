@@ -1,12 +1,12 @@
 <!--
 ```agda
+open import Algebra.Group.NAry
+
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Diagram.Product.Indexed
 open import Cat.Diagram.Limit.Finite
 open import Cat.Abelian.Base
 open import Cat.Prelude hiding (_-_ ; _+_)
-
-open import Algebra.Group.NAry
 
 open import Data.Fin
 ```

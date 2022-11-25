@@ -11,5 +11,5 @@ flags:
   --rewriting
   --guardedness
   --two-level
-  -W noNoEquivWhenSplitting
+  -W noUnsupportedIndexedMatch
   -vtc.decl:5

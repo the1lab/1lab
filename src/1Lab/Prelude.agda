@@ -9,7 +9,10 @@ open import 1Lab.Path public
 open import 1Lab.Path.Groupoid public
 open import 1Lab.Path.IdentitySystem public
 
-open import 1Lab.Prim.Monad public
+open import Meta.Traverse public
+open import Meta.Idiom public
+open import Meta.Bind public
+open import Meta.Alt public
 
 open import 1Lab.HLevel public
 open import 1Lab.HLevel.Retracts public
@@ -25,7 +28,6 @@ open import 1Lab.Univalence public
 open import 1Lab.Univalence.SIP public
 
 open import 1Lab.Type.Pi public
-open import 1Lab.Type.Dec public
 open import 1Lab.Type.Sigma public
 
 open import 1Lab.HIT.Truncation public

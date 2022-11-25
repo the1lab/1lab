@@ -4,16 +4,24 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type hiding (absurd)
 
+open import Data.Product.NAry
+open import Data.Vec.Base
 open import Data.Bool
 open import Data.List
 
 module 1Lab.Reflection where
 
-open import 1Lab.Prim.Data.String public
-open import 1Lab.Prim.Data.Float public
-open import 1Lab.Prim.Data.Maybe public
-open import 1Lab.Prim.Data.Word public
-open import 1Lab.Prim.Monad public
+open import Prim.Data.String public
+open import Prim.Data.Float public
+open import Prim.Data.Maybe public
+open import Prim.Data.Word public
+open import Meta.Traverse public
+open import Meta.Idiom public
+open import Meta.Bind public
+open import Meta.Alt public
+
+open Data.Vec.Base using (Vec ; [] ; _∷_ ; lookup ; tabulate) public
+open Data.Product.NAry using ([_]) public
 open Data.List public
 open Data.Bool public
 ```
@@ -417,62 +425,50 @@ postulate
 {-# BUILTIN AGDATCMDEFINEDATA                 defineData                 #-}
 
 instance
-  Do-TC : Do-syntax (λ x → x) TC
-  Do-TC .Do-syntax._>>=_ = bindTC
+  Map-TC : Map (eff TC)
+  Map-TC .Map._<$>_ f x = bindTC x λ x → returnTC (f x)
 
-  Idiom-TC : Idiom-syntax (λ x → x) TC
-  Idiom-TC .Idiom-syntax.pure = returnTC
-  Idiom-TC .Idiom-syntax._<*>_ f g = do
-    f ← f
-    g ← g
-    pure (f g)
+  Idiom-TC : Idiom (eff TC)
+  Idiom-TC .Idiom.pure = returnTC
+  Idiom-TC .Idiom._<*>_ f g = bindTC f λ f → bindTC g λ g → pure (f g)
 
-  Alt-TC : Alt-syntax (λ x → x) TC
-  Alt-TC .Alt-syntax.fail = typeError []
-  Alt-TC .Alt-syntax._<|>_ = catchTC
+  Bind-TC : Bind (eff TC)
+  Bind-TC .Bind._>>=_ = bindTC
+
+  Alt-TC : Alt (eff TC)
+  Alt-TC .Alt.fail = typeError []
+  Alt-TC .Alt._<|>_ = catchTC
 ```
 </details>
 
 # Reflection helpers
 
 ```agda
+argH0 argH argN : ∀ {ℓ} {A : Type ℓ} → A → Arg A
+argH = arg (arginfo hidden (modality relevant quantity-ω))
+argH0 = arg (arginfo hidden (modality relevant quantity-0))
+argN = arg (arginfo visible (modality relevant quantity-ω))
+
 Fun : ∀ {ℓ ℓ'} → Type ℓ → Type ℓ' → Type (ℓ ⊔ ℓ')
 Fun A B = A → B
 
 idfun : ∀ {ℓ} (A : Type ℓ) → A → A
 idfun A x = x
 
-equivFun : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → A ≃ B → A → B
-equivFun (f , e) = f
-
-equivInv : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → A ≃ B → B → A
-equivInv (f , e) = equiv→inverse e
-
-equivSec : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (e : A ≃ B)
-         → _
-equivSec (f , e) = equiv→counit e
-
-equivRet : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (e : A ≃ B)
-         → _
-equivRet (f , e) = equiv→unit e
-
-newMeta : Term → TC Term
-newMeta ty = do
+new-meta : Term → TC Term
+new-meta ty = do
   mv ← checkType unknown ty
-  debugPrint "tactic.meta" 70 $
-    "Created new meta " ∷ termErr mv ∷ " of type " ∷ termErr ty ∷ []
+  debugPrint "tactic.meta" 70
+    [ "Created new meta " , termErr mv , " of type " , termErr ty ]
   pure mv
 
-newMeta′ : Term → TC (Meta × Term)
-newMeta′ ty = do
+new-meta′ : Term → TC (Meta × Term)
+new-meta′ ty = do
   tm@(meta mv _) ← checkType unknown ty
-    where _ → typeError $ "impossible newMeta′" ∷ []
-  debugPrint "tactic.meta" 70 $
-    "Created new meta " ∷ termErr tm ∷ " of type " ∷ termErr tm ∷ []
+    where _ → typeError $ [ "impossible new-meta′" ]
+  debugPrint "tactic.meta" 70
+    [ "Created new meta " , termErr tm , " of type " , termErr tm ]
   pure (mv , tm)
-
-varg : {ℓ : _} {A : Type ℓ} → A → Arg A
-varg = arg (arginfo visible (modality relevant quantity-ω))
 
 vlam : String → Term → Term
 vlam nam body = lam visible (abs nam body)
@@ -487,38 +483,6 @@ infer-hidden : Nat → List (Arg Term) → List (Arg Term)
 infer-hidden zero xs = xs
 infer-hidden (suc n) xs = unknown h∷ infer-hidden n xs
 
-simple-pair : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → A → B → A × B
-simple-pair = _,_
-
-“_↦_” : Term → Term → Term
-“_↦_” x y = def (quote Fun) (x v∷ y v∷ [])
-
-“Type” : Term → Term
-“Type” l = def (quote Type) (l v∷ [])
-
-tApply : Term → List (Arg Term) → Term
-tApply t l = def (quote id) (t v∷ l)
-
-tStrMap : Term → Term → Term
-tStrMap A f = def (quote Σ-map₂) (f v∷ A v∷ [])
-
-tStrProj : Term → Name → Term
-tStrProj A sfield = tStrMap A (def sfield [])
-
-data Vec {ℓ} (A : Type ℓ) : Nat → Type ℓ where
-  []  : Vec A zero
-  _∷_ : ∀ {n} → A → Vec A n → Vec A (suc n)
-
-infixr 20 _∷_
-
-makeVarsFrom : {n : Nat} → Nat → Vec Term n
-makeVarsFrom {zero} k = []
-makeVarsFrom {suc n} k = var (n + k) [] ∷ (makeVarsFrom k)
-
-iter : ∀ {ℓ} {A : Type ℓ} → Nat → (A → A) → A → A
-iter zero f = id
-iter (suc n) f = f ∘ iter n f
-
 getName : Term → Maybe Name
 getName (def x _) = just x
 getName (con x _) = just x
@@ -526,13 +490,6 @@ getName _ = nothing
 
 _name=?_ : Name → Name → Bool
 x name=? y = primQNameEquality x y
-
-findName : Term → TC Name
-findName (def nm _) = returnTC nm
-findName (lam hidden (abs _ t)) = findName t
-findName (meta m _) = blockOnMeta m
-findName t = typeError $
-  "The projections in a field descriptor must be record selectors: " ∷ termErr t ∷ []
 
 _visibility=?_ : Visibility → Visibility → Bool
 visible visibility=? visible = true
@@ -598,23 +555,33 @@ wait-just-a-bit tm = pure tm
 
 unapply-path : Term → TC (Maybe (Term × Term × Term))
 unapply-path red@(def (quote PathP) (l h∷ T v∷ x v∷ y v∷ [])) = do
-  domain ← newMeta (def (quote Type) (l v∷ []))
+  domain ← new-meta (def (quote Type) (l v∷ []))
   ty ← pure (def (quote Path) (domain v∷ x v∷ y v∷ []))
-  debugPrint "tactic" 50 $ "(no reduction) got a " ∷ termErr red ∷ " but I really want it to be " ∷ termErr ty ∷ []
+  debugPrint "tactic" 50
+    [ "(no reduction) unapply-path: got a "
+    , termErr red
+    , " but I really want it to be "
+    , termErr ty
+    ]
   unify red ty
   pure (just (domain , x , y))
 unapply-path tm = reduce tm >>= λ where
   tm@(meta _ _) → do
-    dom ← newMeta (def (quote Type) [])
-    l ← newMeta dom
-    r ← newMeta dom
-    unify tm (def (quote Type) (dom v∷ l v∷ r v∷ []))
-    traverse (l ∷ r ∷ []) wait-for-type
+    dom ← new-meta (def (quote Type) [])
+    l ← new-meta dom
+    r ← new-meta dom
+    unify tm (def (quote Type) [ argN dom , argN l , argN r ])
+    traverse wait-for-type (l ∷ r ∷ [])
     pure (just (dom , l , r))
   red@(def (quote PathP) (l h∷ T v∷ x v∷ y v∷ [])) → do
-    domain ← newMeta (def (quote Type) (l v∷ []))
+    domain ← new-meta (def (quote Type) (l v∷ []))
     ty ← pure (def (quote Path) (domain v∷ x v∷ y v∷ []))
-    debugPrint "tactic" 50 $ "got a " ∷ termErr red ∷ " but I really want it to be " ∷ termErr ty ∷ []
+    debugPrint "tactic" 50
+      [ "unapply-path: got a "
+      , termErr red
+      , " but I really want it to be "
+      , termErr ty
+      ]
     unify red ty
     pure (just (domain , x , y))
   _ → returnTC nothing
@@ -666,12 +633,4 @@ print-depth key level nesting es = debugPrint key level $
     nest zero s = s
     nest (suc x) s = nest x (s <> "  ")
 
-argH : ∀ {ℓ} {A : Type ℓ} → A → Arg A
-argH = arg (arginfo hidden (modality relevant quantity-ω))
-
-argH0 : ∀ {ℓ} {A : Type ℓ} → A → Arg A
-argH0 = arg (arginfo hidden (modality relevant quantity-0))
-
-argN : ∀ {ℓ} {A : Type ℓ} → A → Arg A
-argN = arg (arginfo visible (modality relevant quantity-ω))
 ```

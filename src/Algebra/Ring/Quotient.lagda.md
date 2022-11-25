@@ -2,12 +2,12 @@
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Subgroup
 open import Algebra.Ring.Ideal
+open import Algebra.Prelude
 open import Algebra.Group
 open import Algebra.Ring
 
 open import Data.Power
-
-open import Algebra.Prelude
+open import Data.Dec
 
 module Algebra.Ring.Quotient {ℓ} (R : Ring ℓ) where
 ```

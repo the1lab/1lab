@@ -105,7 +105,7 @@ is-regular-mono→is-effective-mono
   → Pushout C f f
   → is-regular-mono f
   → is-effective-mono f
-is-regular-mono→is-effective-mono {f = f} cokern reg = eff where
+is-regular-mono→is-effective-mono {f = f} cokern reg = mon where
   module f⊔f = Pushout cokern
   module reg = is-regular-mono reg
 ```
@@ -120,12 +120,12 @@ $\phi \circ i_2 = \id{arr_2}$.
   phi = f⊔f.colimiting reg.equal
 
   open is-effective-mono
-  eff : is-effective-mono f
-  eff .cokernel = f⊔f.coapex
-  eff .i₁ = f⊔f.i₁
-  eff .i₂ = f⊔f.i₂
-  eff .is-cokernel-pair = f⊔f.has-is-po
-  eff .has-is-equaliser = eq where
+  mon : is-effective-mono f
+  mon .cokernel = f⊔f.coapex
+  mon .i₁ = f⊔f.i₁
+  mon .i₂ = f⊔f.i₂
+  mon .is-cokernel-pair = f⊔f.has-is-po
+  mon .has-is-equaliser = eq where
 ```
 
 To show that $f$ also has the universal property of the equaliser of
@@ -193,8 +193,8 @@ is-effective-mono→image
   : ∀ {a b} {f : Hom a b}
   → is-effective-mono f
   → M-image C (is-regular-mono , is-regular-mono→is-mono) f
-is-effective-mono→image {f = f} eff = im where
-  module eff = is-effective-mono eff
+is-effective-mono→image {f = f} mon = im where
+  module eff = is-effective-mono mon
 
   itself : ↓Obj _ _
   itself .x = tt

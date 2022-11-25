@@ -6,12 +6,13 @@ open import 1Lab.HLevel.Retracts
 open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
-open import 1Lab.Type.Dec
 open import 1Lab.Type.Pi
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+
+open import Data.Dec.Base
 ```
 -->
 

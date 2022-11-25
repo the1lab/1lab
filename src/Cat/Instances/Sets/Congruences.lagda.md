@@ -32,7 +32,7 @@ comment.
 
 ```agda
 Sets-effective-congruences : ∀ {A} (R : Congruence-on A) → is-effective-congruence R
-Sets-effective-congruences {A = A} R = eff where
+Sets-effective-congruences {A = A} R = epi where
   module R = Congruence-on R
   open is-effective-congruence
 
@@ -74,35 +74,35 @@ Sets-effective-congruences {A = A} R = eff where
   open is-coequaliser
   open is-pullback
 
-  eff : is-effective-congruence R
-  eff .A/R            = el (∣ A ∣ / rel) squash
-  eff .quotient       = inc
+  epi : is-effective-congruence R
+  epi .A/R            = el (∣ A ∣ / rel) squash
+  epi .quotient       = inc
 
-  eff .has-quotient .coequal = funext λ { x → quot (x , refl) }
+  epi .has-quotient .coequal = funext λ { x → quot (x , refl) }
 
-  eff .has-quotient .coequalise {F = F} {e′ = e′} path =
+  epi .has-quotient .coequalise {F = F} {e′ = e′} path =
     Quot-elim (λ _ → F .is-tr) e′
       λ { x y (r , q) → ap e′ (ap fst (sym q))
                      ·· happly path r
                      ·· ap e′ (ap snd q)
         }
 
-  eff .has-quotient .universal = refl
+  epi .has-quotient .universal = refl
 
-  eff .has-quotient .unique {F = F} path =
+  epi .has-quotient .unique {F = F} path =
     funext (Coeq-elim-prop (λ x → F .is-tr _ _) (sym ⊙ happly path))
 
-  eff .is-kernel-pair .square = funext λ { x → quot (x , refl) }
+  epi .is-kernel-pair .square = funext λ { x → quot (x , refl) }
 
-  eff .is-kernel-pair .limiting path x = undo (happly path x) .fst
+  epi .is-kernel-pair .limiting path x = undo (happly path x) .fst
 
-  eff .is-kernel-pair .p₁∘limiting {p = path} =
+  epi .is-kernel-pair .p₁∘limiting {p = path} =
     funext (λ x → ap fst (undo (happly path x) .snd))
 
-  eff .is-kernel-pair .p₂∘limiting {p = path} =
+  epi .is-kernel-pair .p₂∘limiting {p = path} =
     funext (λ x → ap snd (undo (happly path x) .snd))
 
-  eff .is-kernel-pair .unique {p = p} q r = funext λ x →
+  epi .is-kernel-pair .unique {p = p} q r = funext λ x →
     let p = sym ( undo (happly p x) .snd
                 ∙ Σ-pathp (happly (sym q) _) (happly (sym r) _))
      in happly (R.has-is-monic {c = unit} _ _ (funext λ _ → p)) _

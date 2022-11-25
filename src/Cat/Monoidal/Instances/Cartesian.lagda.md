@@ -1,4 +1,5 @@
 ```agda
+open import Cat.Diagram.Product.Solver
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
 open import Cat.Monoidal.Base
@@ -6,7 +7,6 @@ open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Diagram.Product
-open import Cat.Diagram.Product.Solver
 import Cat.Reasoning as Cr
 
 module Cat.Monoidal.Instances.Cartesian where

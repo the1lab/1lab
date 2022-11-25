@@ -6,7 +6,6 @@ definition: |
 ```agda
 open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Retracts
-open import 1Lab.Prim.Monad
 open import 1Lab.Type.Sigma
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -261,17 +260,17 @@ truncation onto a set using a constant map.
 
 <!--
 ```agda
+open import Meta.Idiom
+open import Meta.Bind
+
 instance
-  Do-∥∥ : Do-syntax (λ x → x) ∥_∥
-  Do-∥∥ .Do-syntax._>>=_ {A = A} {B = B} = go where
-    go : ∥ A ∥ → (A → ∥ B ∥) → ∥ B ∥
-    go (inc x) f = f x
-    go (squash x y i) f = squash (go x f) (go y f) i
+  Map-∥∥ : Map (eff ∥_∥)
+  Map-∥∥ .Map._<$>_ = ∥-∥-map
 
   {-# TERMINATING #-}
-  Idiom-∥∥ : Idiom-syntax (λ x → x) ∥_∥
-  Idiom-∥∥ .Idiom-syntax.pure = inc
-  Idiom-∥∥ .Idiom-syntax._<*>_ {A = A} {B = B} = go where
+  Idiom-∥∥ : Idiom (eff ∥_∥)
+  Idiom-∥∥ .Idiom.pure = inc
+  Idiom-∥∥ .Idiom._<*>_ {A = A} {B = B} = go where
     go : ∥ (A → B) ∥ → ∥ A ∥ → ∥ B ∥
     go (inc f) (inc x) = inc (f x)
     go (inc f) (squash x y i) = squash (go (inc f) x) (go (inc f) y) i
@@ -282,5 +281,12 @@ instance
       k (j = i0) → squash (go f x) (go (squash f g i) x) k
       k (j = i1) → squash (go f x) (go (squash f g i) y) k
       k (k = i0) → go f x
+
+  Bind-∥∥ : Bind (eff ∥_∥)
+  Bind-∥∥ .Bind._>>=_ {A = A} {B = B} = go where
+    go : ∥ A ∥ → (A → ∥ B ∥) → ∥ B ∥
+    go (inc x) f = f x
+    go (squash x y i) f = squash (go x f) (go y f) i
+
 ```
 -->

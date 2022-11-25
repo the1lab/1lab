@@ -144,4 +144,50 @@ Fin-injective {zero} {suc k} l≃k with equiv→inverse (l≃k .snd) fzero
 Fin-injective {suc l} {zero} l≃k with l≃k .fst fzero
 ... | ()
 Fin-injective {suc l} {suc k} sl≃sk = ap suc $ Fin-injective (Fin-peel sl≃sk)
+
+to-from-ℕ< : ∀ {n} (x : ℕ< n) → to-ℕ< {n = n} (from-ℕ< x) ≡ x
+to-from-ℕ< {n = suc n} x = Σ-prop-path (λ k → Nat.≤-prop) (to-from-ℕ {n = suc n} x) where
+  to-from-ℕ : ∀ {n} x → to-nat {n = n} (from-ℕ< x) ≡ x .fst
+  to-from-ℕ {n = suc n} (zero , p) = refl
+  to-from-ℕ {n = suc n} (suc x , Nat.s≤s p) = ap suc (to-from-ℕ {n = n} (x , p))
+
+from-to-ℕ< : ∀ {n} (x : Fin n) → from-ℕ< (to-ℕ< x) ≡ x
+from-to-ℕ< fzero = refl
+from-to-ℕ< (fsuc x) = ap fsuc (from-to-ℕ< x)
+
+Fin≃ℕ< : ∀ {n} → Fin n ≃ ℕ< n
+Fin≃ℕ< {n} = to-ℕ< , is-iso→is-equiv (iso from-ℕ< (to-from-ℕ< {n}) from-to-ℕ<)
+```
+
+# Finite choice
+
+An important fact about the (standard) finite sets in constructive
+mathematics is that they _always_ support choice, which we phrase below
+as a "search" operator: If $M$ is any extension system (for example, the
+propositional truncation monad), then $M$ commutes with finite products:
+
+```agda
+finite-choice
+  : ∀ {ℓ} n {A : Fin n → Type ℓ} {M}
+      (let module M = Effect M)
+  → ⦃ Bind M ⦄
+  → (∀ x → M.₀ (A x)) → M.₀ (∀ x → A x)
+finite-choice zero _    = pure λ { () }
+finite-choice (suc n) k = do
+  azero ← k fzero
+  asuc  ← finite-choice n (k ∘ fsuc)
+  pure λ where
+    fzero    → azero
+    (fsuc x) → asuc x
+```
+
+An immediate consequence is that surjections into a finite set (thus,
+_between_ finite sets) merely split:
+
+```agda
+finite-surjection-split
+  : ∀ {ℓ} {n} {B : Type ℓ}
+  → (f : B → Fin n) → (∀ x → ∥ fibre f x ∥)
+  → ∥ (∀ x → fibre f x) ∥
+finite-surjection-split f = finite-choice _
 ```

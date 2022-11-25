@@ -2,15 +2,19 @@
 open import 1Lab.Reflection.Record
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
-open import 1Lab.Prim.Data.Nat
-open import 1Lab.Type.Sigma
 open import 1Lab.Reflection
+open import 1Lab.Type.Sigma
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
-open import Data.List
+
 open import Data.Bool
+open import Data.List
+
+open import Meta.Foldable
+
+open import Prim.Data.Nat
 
 module 1Lab.Reflection.HLevel where
 
@@ -281,7 +285,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
   use-instance-search has-alts goal = runSpeculative $ do
     (ty , lv) ← decompose-is-hlevel goal
     solved@(meta mv _) ←
-      newMeta (def (quote H-Level) (ty v∷ lv v∷ [])) where _ → backtrack []
+      new-meta (def (quote H-Level) (ty v∷ lv v∷ [])) where _ → backtrack []
     instances ← getInstances mv
 
     t ← quoteTC instances
@@ -343,7 +347,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
           "Entering try-n-type-projection loop for goal " ∷ termErr goal ∷ []
 
         (solved , instances) ← runSpeculative $ do
-          solved@(meta mv _) ← newMeta (def (quote hlevel-projection) [])
+          solved@(meta mv _) ← new-meta (def (quote hlevel-projection) [])
             where _ → typeError (termErr goal ∷ [])
           debugPrint "tactic.hlevel" 20 $
             "Trying n-type projections: " ∷ termErr goal ∷ []
@@ -355,7 +359,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
 
           pure ((solved , x ∷ xs) , true)
 
-        nondet instances λ a → do
+        nondet (eff List) instances λ a → do
           projection ← unquoteTC {A = hlevel-projection} a
           treat-as-n-type projection goal >> unify solved a
 
@@ -382,7 +386,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
       extend-n zero = pure λ _ x → x
       extend-n (suc n) = do
         rest ← extend-n n
-        mv ← newMeta unknown
+        mv ← new-meta unknown
         let domain = arg (arginfo visible (modality relevant quantity-ω)) mv
         pure λ a k → extendContext "a" domain $ rest a $ k
 
@@ -458,7 +462,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
         -- introduced to use it outside, i.e., in the actual (outer)
         -- search problem.
         gounder ← extend-n under
-        mv ← gounder Term $ newMeta unknown
+        mv ← gounder Term $ new-meta unknown
         -- After we've put the mv wrapped under some lambdas in the
         -- argument list,
         gen-args has-alts level defn args (wrap-lams under mv v∷ accum) $ do
@@ -523,7 +527,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
           _ → pure tt
 
         -- Create a meta of type hlevel-decomposition to find any possible hints..
-        solved@(meta mv _) ← newMeta (def (quote hlevel-decomposition) (ty v∷ []))
+        solved@(meta mv _) ← new-meta (def (quote hlevel-decomposition) (ty v∷ []))
           where _ → typeError (termErr ty ∷ [])
         instances ← getInstances mv
 
@@ -574,7 +578,7 @@ hlevel-tactic-worker goal = do
   -- the Πs (extend the scope with their argument types), then 'leave'
   -- (wrap in lambdas) to get back out.
   solved ← enter $ do
-    goal′ ← newMeta (def (quote is-hlevel) (ty v∷ lv v∷ []))
+    goal′ ← new-meta (def (quote is-hlevel) (ty v∷ lv v∷ []))
     search false lv 10 goal′
     pure goal′
   unify goal (leave solved)

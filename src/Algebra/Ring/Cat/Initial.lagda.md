@@ -9,8 +9,9 @@ open import Cat.Diagram.Initial
 
 open import Data.Int
 
-import 1Lab.Prim.Data.Nat as Nat
 import Data.Nat as Nat
+
+import Prim.Data.Nat as Nat
 
 module Algebra.Ring.Cat.Initial {ℓ} where
 ```
@@ -87,7 +88,7 @@ naturals to sums in $R$, and products of naturals to products in $R$.
 We'll need this later.
 
 ```agda
-  e-suc : ∀ n → e (suc n) ≡ R.1r R.+ e n 
+  e-suc : ∀ n → e (suc n) ≡ R.1r R.+ e n
   e-add : ∀ m n → e (m Nat.+ n) ≡ e m R.+ e n
   e-mul : ∀ m n → e (m Nat.* n) ≡ e m R.* e n
 ```

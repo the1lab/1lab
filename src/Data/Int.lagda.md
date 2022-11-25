@@ -2,6 +2,7 @@
 open import 1Lab.Prelude
 
 open import Data.Nat.Solver
+open import Data.Dec
 open import Data.Nat
 open import Data.Sum
 
@@ -806,7 +807,7 @@ canonicalise-injective = Int-elim₂-prop (λ _ _ → hlevel 1) λ a b x y p q �
 
 Discrete-Int : Discrete Int
 Discrete-Int = Int-elim₂-prop (λ _ _ → hlevel 1) λ a b x y →
-  case (λ _ → Dec (diff a b ≡ diff x y))
+  Dec-elim (λ _ → Dec (diff a b ≡ diff x y))
     (yes ∘ same-difference)
     (λ ¬sd → no λ sd → ¬sd (ℤ-Path.encode a b (diff x y) sd))
     (Discrete-Nat (a + y) (b + x))
