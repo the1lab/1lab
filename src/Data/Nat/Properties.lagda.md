@@ -46,6 +46,10 @@ numbers]. Since they're mostly simple inductive arguments written in
   suc (x + y) ≡⟨ ap suc (+-commutative x y) ⟩
   suc (y + x) ≡⟨ sym (+-sucr y x) ⟩
   y + suc x   ∎
+
++-inj : ∀ k x y → k + x ≡ k + y → x ≡ y
++-inj zero x y p = p
++-inj (suc k) x y p = +-inj k x y (suc-inj p)
 ```
 
 ## Multiplication
@@ -103,6 +107,15 @@ numbers]. Since they're mostly simple inductive arguments written in
   (y + x * y) * z     ≡⟨ *-distrib-+r y (x * y) z ⟩
   y * z + (x * y) * z ≡⟨ ap₂ _+_ refl (*-associative x y z) ⟩
   y * z + x * (y * z) ∎
+
+*-suc-inj : ∀ k x y → x * suc k ≡ y * suc k → x ≡ y
+*-suc-inj k zero zero p = refl
+*-suc-inj k zero (suc y) p = absurd (zero≠suc p)
+*-suc-inj k (suc x) zero p = absurd (zero≠suc (sym p))
+*-suc-inj k (suc x) (suc y) p = ap suc (*-suc-inj k x y (+-inj _ _ _ p))
+
+*-suc-inj′ : ∀ k x y → suc k * x ≡ suc k * y → x ≡ y
+*-suc-inj′ k x y p = *-suc-inj k x y (*-commutative x (suc k) ·· p ·· *-commutative (suc k) y)
 ```
 
 ## Exponentiation
@@ -206,6 +219,46 @@ arithmetic operators:
   +-reflects-≤l x y z
     (subst (_≤ (z + y)) (+-commutative x z)
     (subst ((x + z) ≤_) (+-commutative y z) prf))
+
+difference→≤ : ∀ {x z} y → x + y ≡ z → x ≤ z
+difference→≤ {x} {z} zero p            = subst (x ≤_) (sym (+-zeror x) ∙ p) ≤-refl
+difference→≤ {zero}  {z}     (suc y) p = 0≤x
+difference→≤ {suc x} {zero}  (suc y) p = absurd (zero≠suc (sym p))
+difference→≤ {suc x} {suc z} (suc y) p = s≤s (difference→≤ (suc y) (suc-inj p))
+```
+
+### Monus
+
+```agda
+monus-zero : ∀ a → 0 - a ≡ 0
+monus-zero zero = refl
+monus-zero (suc a) = refl
+
+monus-cancell : ∀ k m n → (k + m) - (k + n) ≡ m - n
+monus-cancell zero    = λ _ _ → refl
+monus-cancell (suc k) = monus-cancell k
+
+monus-distribr : ∀ m n k → (m - n) * k ≡ m * k - n * k
+monus-distribr m       zero    k = refl
+monus-distribr zero    (suc n) k = sym (monus-zero (k + n * k))
+monus-distribr (suc m) (suc n) k =
+  monus-distribr m n k ∙ sym (monus-cancell k (m * k) (n * k))
+
+monus-cancelr : ∀ m n k → (m + k) - (n + k) ≡ m - n
+monus-cancelr m n k = (λ i → +-commutative m k i - +-commutative n k i) ∙ monus-cancell k m n
+
+monus-addl : ∀ m n k → m - (n + k) ≡ m - n - k
+monus-addl zero zero k = refl
+monus-addl zero (suc n) k = sym (monus-zero k)
+monus-addl (suc m) zero k = refl
+monus-addl (suc m) (suc n) k = monus-addl m n k
+
+monus-commute : ∀ m n k → m - n - k ≡ m - k - n
+monus-commute m n k =
+  m - n - k   ≡˘⟨ monus-addl m n k ⟩
+  m - (n + k) ≡⟨ ap (m -_) (+-commutative n k) ⟩
+  m - (k + n) ≡⟨ monus-addl m k n ⟩
+  m - k - n   ∎
 ```
 
 ### Maximum

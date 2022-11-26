@@ -45,7 +45,7 @@ private
   → f ≡ g
 Δ-map-path p i .map x = p x i
 Δ-map-path {f = f} {g} p i .ascending x y w =
-  is-prop→pathp (λ j → Nat.≤-prop {to-nat (p x j)} {to-nat (p y j)})
+  is-prop→pathp (λ j → Nat.≤-is-prop {to-nat (p x j)} {to-nat (p y j)})
     (f .ascending x y w) (g .ascending x y w) i
 ```
 -->

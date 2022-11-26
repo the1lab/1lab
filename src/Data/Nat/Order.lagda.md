@@ -34,9 +34,9 @@ automatically.
 ≤-antisym 0≤x     0≤x     = refl
 ≤-antisym (s≤s p) (s≤s q) = ap suc (≤-antisym p q)
 
-≤-prop : {x y : Nat} → is-prop (x ≤ y)
-≤-prop 0≤x     0≤x     = refl
-≤-prop (s≤s p) (s≤s q) = ap s≤s (≤-prop p q)
+≤-is-prop : {x y : Nat} → is-prop (x ≤ y)
+≤-is-prop 0≤x     0≤x     = refl
+≤-is-prop (s≤s p) (s≤s q) = ap s≤s (≤-is-prop p q)
 ```
 
 As a minor convenience, we prove that the constructor `s≤s`{.Agda} is an
@@ -58,7 +58,7 @@ equivalence between $x \le y$ and $(1 + x) \le (1 + y)$.
 ```agda
 instance
   H-Level-≤ : ∀ {n x y} → H-Level (x ≤ y) (suc n)
-  H-Level-≤ = prop-instance ≤-prop
+  H-Level-≤ = prop-instance ≤-is-prop
 ```
 -->
 
@@ -99,6 +99,20 @@ their strict ordering:
   go (suc zero) zero p q    = absurd (q (s≤s 0≤x))
   go (suc (suc x)) zero p q = absurd (q (s≤s 0≤x))
   go (suc x) (suc y) p q    = ap suc (go x y (λ { a → p (s≤s a) }) λ { a → q (s≤s a) })
+```
+
+### Properties of the strict order
+
+```agda
+<-asym : ∀ {x y} → x < y → y < x → ⊥
+<-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-asym p q
+
+<-not-equal : ∀ {x y} → x < y → x ≡ y → ⊥
+<-not-equal {zero} (s≤s p) q = absurd (zero≠suc q)
+<-not-equal {suc x} (s≤s p) q = <-not-equal p (suc-inj q)
+
+weaken-< : ∀ {x y} → x < y → x ≤ y
+weaken-< {x} {suc y} p = ≤-sucr (≤-peel p)
 ```
 
 ## Nat is a lattice

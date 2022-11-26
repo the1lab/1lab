@@ -157,6 +157,10 @@ data _≤_ : Nat → Nat → Type where
 instance
   s≤s′ : ∀ {x y} → ⦃ x ≤ y ⦄ → suc x ≤ suc y
   s≤s′ ⦃ x ⦄ = s≤s x
+
+Positive : Nat → Type
+Positive zero    = ⊥
+Positive (suc n) = ⊤
 ```
 -->
 

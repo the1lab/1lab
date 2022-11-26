@@ -282,12 +282,12 @@ from this page. You can unfold it below if you dare:
       Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡double-composite-path) $
           double-composite refl _ _
         ·· ∙-id-l _
-        ·· ap (λ e → lemma₁ x y e ∙ Int.quot x y) (≤-prop x<y x<y')
+        ·· ap (λ e → lemma₁ x y e ∙ Int.quot x y) (≤-is-prop x<y x<y')
     ... | inr (inl x>y) | inr (inl (s≤s x>y')) =
       Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡double-composite-path) $
           double-composite refl _ _
         ·· ∙-id-l _
-        ·· ap (λ e → lemma₂ x y e ∙ Int.quot x y) (≤-prop x>y x>y')
+        ·· ap (λ e → lemma₂ x y e ∙ Int.quot x y) (≤-is-prop x>y x>y')
     ... | inr (inr x≡y) | inr (inr x≡y') =
       Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡double-composite-path) $
           double-composite refl _ _
