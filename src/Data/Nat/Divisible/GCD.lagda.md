@@ -22,7 +22,7 @@ greatest _in the divisibility ordering_, but the divisibility ordering
 is finer than the usual ordering, so this will turn out to imply they
 are greatest in magnitude, as well.
 
-[divides]: Data.Nat.Divisibility.html
+[divides]: Data.Nat.Divisible.html
 
 We start by defining what it means for a number to be a GCD --- that is,
 we start by defining the *graph* of the function $\gcd$. Only after will
