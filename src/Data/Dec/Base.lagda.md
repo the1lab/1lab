@@ -26,6 +26,16 @@ Dec-elim P f g (yes x) = f x
 Dec-elim P f g (no x)  = g x
 ```
 
+<!--
+```agda
+recover : ∀ {ℓ} {A : Type ℓ} → Dec A → .A → A
+recover (yes x) _ = x
+recover {A = A} (no ¬x) x = go (¬x x) where
+  go : .⊥ → A
+  go ()
+```
+-->
+
 A type is _discrete_ if it has decidable equality.
 
 ```agda

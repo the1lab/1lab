@@ -146,7 +146,7 @@ Fin-injective {suc l} {zero} l≃k with l≃k .fst fzero
 Fin-injective {suc l} {suc k} sl≃sk = ap suc $ Fin-injective (Fin-peel sl≃sk)
 
 to-from-ℕ< : ∀ {n} (x : ℕ< n) → to-ℕ< {n = n} (from-ℕ< x) ≡ x
-to-from-ℕ< {n = suc n} x = Σ-prop-path (λ k → Nat.≤-prop) (to-from-ℕ {n = suc n} x) where
+to-from-ℕ< {n = suc n} x = Σ-prop-path (λ k → Nat.≤-is-prop) (to-from-ℕ {n = suc n} x) where
   to-from-ℕ : ∀ {n} x → to-nat {n = n} (from-ℕ< x) ≡ x .fst
   to-from-ℕ {n = suc n} (zero , p) = refl
   to-from-ℕ {n = suc n} (suc x , Nat.s≤s p) = ap suc (to-from-ℕ {n = n} (x , p))
