@@ -518,3 +518,9 @@ open import Algebra.Group.Ab      -- Abelian groups, and the category Ab
 open import Algebra.Group.Ab.Sum  -- Direct sum abelian groups
 open import Algebra.Group.Ab.Free -- The free abelian group on a group
 ```
+
+<!-- Mastodon author links: !-->
+<div style="display: none;">
+<a rel="me" href="https://types.pl/@amy"></a>
+<a rel="me" href="https://types.pl/@totbwf"></a>
+</div>
