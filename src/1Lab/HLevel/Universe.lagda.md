@@ -126,11 +126,13 @@ by paths of the underlying types. By univalence, these correspond to
 _equivalences_ of the underlying type:
 
 ```agda
+n-path : {n : Nat} {X Y : n-Type ℓ n} → ∣ X ∣ ≡ ∣ Y ∣ → X ≡ Y
+n-path f i .∣_∣ = f i
+n-path {n = n} {X} {Y} f i .is-tr =
+  is-prop→pathp (λ i → is-hlevel-is-prop {A = f i} n) (X .is-tr) (Y .is-tr) i
+
 n-ua : {n : Nat} {X Y : n-Type ℓ n} → ∣ X ∣ ≃ ∣ Y ∣ → X ≡ Y
-n-ua f i .∣_∣ = ua f i
-n-ua {n = n} {X} {Y} f i .is-tr =
-  is-prop→pathp (λ i → is-hlevel-is-prop {A = ua f i} n)
-    (X .is-tr) (Y .is-tr) i
+n-ua f = n-path (ua f)
 
 n-univalence : {n : Nat} {X Y : n-Type ℓ n} → (∣ X ∣ ≃ ∣ Y ∣) ≃ (X ≡ Y)
 n-univalence {n = n} {X} {Y} = n-ua , is-iso→is-equiv isic where

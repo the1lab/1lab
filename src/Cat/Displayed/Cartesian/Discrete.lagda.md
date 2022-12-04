@@ -6,8 +6,11 @@ description: |
 ```agda
 open import Cat.Displayed.Instances.Elements
 open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Functor
+open import Cat.Instances.Functor
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
+open import Cat.Displayed.Path
 open import Cat.Prelude
 open import Cat.Thin
 
@@ -233,4 +236,92 @@ from the contractibilty of singletons.
       P.₀ X .is-tr
     discrete .Discrete-fibration.lifts f P[Y] =
       contr (P.₁ f P[Y] , refl) Singleton-is-contr
+```
+
+We conclude by proving that the two maps defined above are, in fact,
+inverses. Most of the complexity is in [characterising paths between
+displayed categories][disppath], but that doesn't mean that the proof
+here is entirely trivial, either. Well, first, we note that one
+direction _is_ trivial: modulo differences in the proofs of
+functoriality, which do not matter for identity, turning a functor into
+a discrete fibration and back is the identity.
+
+[disppath]: Cat.Displayed.Path.html
+
+```agda
+  open is-iso
+
+  presheaf≃discrete : ∀ {κ} → is-iso (presheaf→discrete {κ = κ})
+  presheaf≃discrete .inv  (d , f) = discrete→presheaf d f
+  presheaf≃discrete .linv x       = Functor-path (λ _ → n-path refl) λ _ → refl
+```
+
+The other direction is where the complication lies. Given a discrete
+fibration $P \liesover X$, how do we show that $\int P \equiv P$? Well,
+by the aforementioned characterisation of paths in displayed categories,
+it'll suffice to construct a functor $(\int P) \to P$ (lying over the
+identity), then show that this functor has an invertible action on
+objects, and an invertible action on morphisms.
+
+```agda
+  presheaf≃discrete .rinv (P , p-disc) = Σ-prop-path hl ∫≡dx where
+    open Discrete-fibration p-disc
+    open Displayed-functor
+    open Displayed P
+```
+
+The functor will send an object $c \liesover x$ to that same object $c$;
+This is readily seen to be invertible. But the action on morphisms is
+slightly more complicated. Recall that, since $P$ is a discrete
+fibration, every span $b' \liesover b \xot{f} a$ has a contractible
+space of Cartesian lifts $(a', f')$. Our functor must, given objects
+$a'', b'$, a map $f : a \to b$, and a proof that $a'' = a'$, produce a
+map $a'' \to_f b$ --- so we can take the canonical $f' : a' \to_f b$ and
+transport it over the given $a'' = a'$.
+
+```agda
+    pieces : Displayed-functor (∫ B (discrete→presheaf P p-disc)) P Id
+    pieces .F₀′ x = x
+    pieces .F₁′ {f = f} {a′} {b′} x =
+      subst (λ e → Hom[ f ] e b′) x $ lifts f b′ .centre .snd
+```
+
+This transport _threatens_ to throw a spanner in the works, since it is
+an equation between objects (over $a$). But since $P$ is a discrete
+fibration, the space of objects over $a$ is a set, so this equation
+_can't_ ruin our day. Directly from the uniqueness of $(a', f')$ we
+conclude that we've put together a functor.
+
+```agda
+    pieces .F-id′ = from-pathp (ap snd (lifts _ _ .paths _))
+    pieces .F-∘′ {f = f} {g} {a′} {b′} {c′} {f′} {g′} =
+      ap (λ e → subst (λ e → Hom[ f B.∘ g ] e c′) e
+            (lifts _ _ .centre .snd)) (fibre-set _ _ _ _ _)
+      ∙ from-pathp (ap snd (lifts _ _ .paths _))
+```
+
+It remains to show that, given a map $a'' \to b$ (and the rest of the
+data $a$, $b$, $f : a \to b$, $b' \liesover b$), we can recover a proof
+that $a''$ is the chosen lift $a'$. But again, lifts are unique, so this
+is immediate.
+
+```agda
+    ∫≡dx : ∫ B (discrete→presheaf P p-disc) ≡ P
+    ∫≡dx = Displayed-path pieces (λ _ → id-equiv) (is-iso→is-equiv p) where
+      p : ∀ {a b} {f : B.Hom a b} {a′} {b′} → is-iso (pieces .F₁′ {f = f} {a′} {b′})
+      p .inv f  = ap fst $ lifts _ _ .paths (_ , f)
+      p .rinv p = from-pathp (ap snd (lifts _ _ .paths _))
+      p .linv p = fibre-set _ _ _ _ _
+```
+
+We must additionally show that the witness that $P$ is a discrete
+fibration will survive a round-trip through the type of presheaves, but
+this witness lives in a proposition (it is a pair of propositions), so
+it survives automatically.
+
+```agda
+    private unquoteDecl eqv = declare-record-iso eqv (quote Discrete-fibration)
+    hl : ∀ x → is-prop _
+    hl x = is-hlevel≃ 1 (Iso→Equiv eqv) $
+      ×-is-hlevel 1 (Π-is-hlevel 1 λ _ → is-hlevel-is-prop 2) hlevel!
 ```
