@@ -1,8 +1,8 @@
 {
-  "owner": "agda",
+  "owner": "jespercockx",
   "repo": "agda",
-  "branch": "master",
+  "branch": "Issue6364",
   "private": false,
-  "rev": "c371cf6e8b36c7fda2ef37ba3208f4faa9303fc5",
-  "sha256": "1lbb3bnz0vbhvyvislhln0cigjrjl2q5pb5kii8iaqpmqi7yan9s"
+  "rev": "e1610f900f5397f6bcdfd39fe153cf7f054d9ab2",
+  "sha256": "1slsnwl1y867jj18glavsh9490nl725nxy8q5x41ljjp90kjd6kw"
 }

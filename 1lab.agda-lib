@@ -12,4 +12,3 @@ flags:
   --guardedness
   --two-level
   -W noUnsupportedIndexedMatch
-  -vtc.decl:5

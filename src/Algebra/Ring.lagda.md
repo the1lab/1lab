@@ -307,7 +307,7 @@ Rings, unlike other categories of algebraic structures (like that of
 between the initial and terminal objects. As mentioned above, the
 initial object is the ring $\bb{Z}$, and the terminal ring is the zero
 ring. As for why this happens, consider that, since ring homomorphisms
-must preserve the unit[^being homomorphisms for the additive group, they
+must preserve the unit^[being homomorphisms for the additive group, they
 automatically preserve zero], it is impossible to have a ring
 homomorphism $h : 0 \to R$ unless $0 = h(0) = h(1) = 1$ in $R$.
 

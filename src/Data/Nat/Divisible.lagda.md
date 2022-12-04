@@ -12,7 +12,7 @@ module Data.Nat.Divisible where
 
 In the natural numbers, **divisibility**[^divide] is the property
 expressing that a given number can be expressed as a multiple of
-another, and we write $a | b$[^read "a divides b"] when there exists
+another, and we write $a | b$^[read "a divides b"] when there exists
 some $k$ such that $b = ka$.
 
 [^divide]: Not to be confused with a proper [division](Data.Nat.DivMod.html) algorithm.

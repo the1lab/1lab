@@ -20,6 +20,7 @@ open _=>_
 
 ```agda
 record Monoidal-category {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
+  no-eta-equality
   open Cr C
 ```
 

@@ -138,7 +138,9 @@ An example of a naturally-occuring semigroup are the natural numbers
 under taking `minimums`{.Agda ident=min}.
 
 ```agda
-open import Data.Nat
+open import Data.Nat.Properties
+open import Data.Nat.Order
+open import Data.Nat.Base
 
 Nat-min : is-semigroup min
 Nat-min .has-is-magma .has-is-set = Nat-is-set
