@@ -324,7 +324,7 @@ functors is a categorification of the fact that monotone maps compose.
 
 <!--
 ```agda
-  where
+  module F∘ where
     module C = Precategory C
     module D = Precategory D
     module E = Precategory E
@@ -366,6 +366,12 @@ the witnesses that $F$ and $G$ are functorial.
     comps .Functor.F-id = F-id
     comps .Functor.F-∘ = F-∘
 ```
+
+<!--
+```agda
+{-# DISPLAY F∘.comps F G = F F∘ G #-}
+```
+-->
 
 The identity functor can be defined using the identity funct_ion_ for
 both its object and morphism mappings. That functors have an identity

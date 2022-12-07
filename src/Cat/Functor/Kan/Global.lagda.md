@@ -1,0 +1,115 @@
+```agda
+open import Cat.Instances.Functor.Compose
+open import Cat.Diagram.Colimit.Base
+open import Cat.Functor.Adjoint.Hom
+open import Cat.Instances.Product
+open import Cat.Instances.Functor
+open import Cat.Functor.Adjoint
+open import Cat.Functor.Kan
+open import Cat.Prelude
+
+import Cat.Reasoning
+
+open Functor
+open Lan
+open _=>_
+
+module Cat.Functor.Kan.Global
+```
+
+<!--
+```agda
+  {o ℓ o′ ℓ′ o′′ ℓ′′}
+  {C : Precategory o ℓ}
+  {C′ : Precategory o′ ℓ′}
+  {D : Precategory o′′ ℓ′′}
+  (p : Functor C C′)
+  where
+```
+-->
+
+# Global Kan extensions
+
+Recall that a [left Kan extension] of $F : C \to D$ along $p : C \to C'$
+is a universal solution $\Lan_p(F)$ to extending $F$ to a functor $C'
+\to D$. In particularly happy cases (e.g. when $C$ is [small] and $D$ is
+[cocomplete]), the left Kan extension $\Lan_p(F)$ along $p$ exists for
+**any** $F$; When this happens, the assignment $F \mapsto \Lan_p(F)$
+*extends to a functor, which we call a **global Kan extension**.
+
+[left Kan extension]: Cat.Functor.Kan.html
+[small]: 1Lab.intro.html#universes-and-size-issues
+[cocomplete]: Cat.Diagram.Colimit.base#cocompleteness
+
+<!--
+```agda
+private
+  module D = Cat.Reasoning D
+  module C = Cat.Reasoning C
+  module C′ = Cat.Reasoning C′
+```
+-->
+
+```agda
+module _ (has-lan : (G : Functor C D) → Lan p G) where
+  Lan-functor : Functor Cat[ C , D ] Cat[ C′ , D ]
+  Lan-functor .F₀ G = has-lan G .Ext
+  Lan-functor .F₁ {x} {y} θ =
+    has-lan x .σ (has-lan y .eta ∘nt θ)
+  Lan-functor .F-id {x} = has-lan x .σ-uniq (Nat-path λ _ → D.id-comm)
+  Lan-functor .F-∘ {x} {y} {z} f g =
+    has-lan x .σ-uniq $ Nat-path λ a → sym $
+        D.pullr (ap (λ e -> e .η a) (has-lan x .σ-comm))
+      ∙ D.extendl (ap (λ e → e .η a) (has-lan y .σ-comm))
+```
+
+Functoriality follows, essentially, from the fact that left Kan
+extensions are universal: we can map between them in a functorial way
+using only the defining natural transformations in the diagram, without
+appealing to the details of a particular computation. Moreover, the left
+Kan extension functor _itself_ has a universal property: it is a left
+adjoint to the [precomposition] functor $p_!$.
+
+[precomposition]: Cat.Functor.Instances.Compose.html
+
+```agda
+  Lan⊣! : Lan-functor ⊣ p !
+  Lan⊣! = hom-iso→adjoints f (is-iso→is-equiv eqv) natural where
+    f : ∀ {x : Functor C D} {y : Functor C′ D} → has-lan x .Ext => y → x => y F∘ p
+    f {x} {y} θ = (θ ◂ p) ∘nt has-lan x .eta
+
+    open is-iso
+
+    eqv : ∀ {x} {y} → is-iso (f {x} {y})
+    eqv {x} {y} .inv θ = has-lan _ .σ θ
+    eqv {x} {y} .rinv θ = Nat-path λ _ → ap (λ e → e .η _) (has-lan x .σ-comm)
+    eqv {x} {y} .linv θ = has-lan _ .σ-uniq refl
+
+    natural : hom-iso-natural {L = Lan-functor} {p !} f
+    natural {b = b} g h x = Nat-path λ a →
+      D.pullr (D.pullr (ap (λ e → e .η a) (has-lan _ .σ-comm)))
+      ∙ ap₂ D._∘_ refl (D.pushr refl)
+```
+
+And, since adjoints are unique, if $p_!$ has any left adjoint, then its
+values generate Kan extensions:
+
+```agda
+adjoint→Lan
+  : (F : Functor Cat[ C , D ] Cat[ C′ , D ])
+  → F ⊣ p !
+  → (G : Functor C D) → Lan p G
+adjoint→Lan F F⊣p! G = ext where
+  open Lan
+  module F⊣p! = _⊣_ F⊣p!
+
+  ext : Lan p G
+  ext .Ext = F .F₀ G
+  ext .eta = F⊣p!.unit .η G
+  ext .σ α = R-adjunct F⊣p! α
+  ext .σ-comm {M = M} {α = α} = Nat-path λ a →
+      D.pullr (ap (λ e → e .η a) (sym (F⊣p!.unit .is-natural _ _ _)))
+    ∙ D.cancell (ap (λ e → e .η a) F⊣p!.zag)
+  ext .σ-uniq x = Equiv.injective (_ , L-adjunct-is-equiv F⊣p!)
+    (L-R-adjunct F⊣p! _ ∙ x)
+```

@@ -1,4 +1,5 @@
 ```agda
+open import Cat.Instances.Functor.Compose
 open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Functor
 open import Cat.Diagram.Duals
@@ -56,15 +57,15 @@ record Ran (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
     eps : Ext F∘ p => F
 
     σ : {M : Functor C′ D} (α : M F∘ p => F) → M => Ext
-    σ-comm : {M : Functor C′ D} {β : M F∘ p => F} → eps ∘nt whiskerl (σ β) ≡ β
+    σ-comm : {M : Functor C′ D} {β : M F∘ p => F} → eps ∘nt (σ β ◂ p) ≡ β
     σ-uniq : {M : Functor C′ D} {β : M F∘ p => F} {σ′ : M => Ext}
-           → β ≡ eps ∘nt whiskerl σ′
+           → β ≡ eps ∘nt (σ′ ◂ p)
            → σ β ≡ σ′
 
   σ-uniq₂
     : {M : Functor C′ D} (β : M F∘ p => F) {σ₁′ σ₂′ : M => Ext}
-    → β ≡ eps ∘nt whiskerl σ₁′
-    → β ≡ eps ∘nt whiskerl σ₂′
+    → β ≡ eps ∘nt (σ₁′ ◂ p)
+    → β ≡ eps ∘nt (σ₂′ ◂ p)
     → σ₁′ ≡ σ₂′
   σ-uniq₂ β p q = sym (σ-uniq p) ∙ σ-uniq q
 ```
