@@ -80,6 +80,7 @@ unpack the definition here and talk about **cowedges** instead.
 
 ```agda
 record Cowedge (F : Functor (C ^op ×ᶜ C) D) : Type (coend-level F) where
+  no-eta-equality
 ```
 
 A **cowedge** under a functor $F$ is given by an object $w : \ca{D}$

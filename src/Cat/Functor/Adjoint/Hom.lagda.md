@@ -59,11 +59,17 @@ $\hom_\ca{D}(-,R-)$ whose data has been "unfolded" into elementary
 terms.
 
 ```agda
+hom-iso-natural
+  : (∀ {x y} → C.Hom (L.₀ x) y → D.Hom x (R.₀ y))
+  → Type _
+hom-iso-natural f =
+  ∀ {a b c d} (g : C.Hom a b) (h : D.Hom c d) x
+  → f (g C.∘ x C.∘ L.₁ h) ≡ R.₁ g D.∘ f x D.∘ h
+
 hom-iso→adjoints
   : (f : ∀ {x y} → C.Hom (L.₀ x) y → D.Hom x (R.₀ y))
   → (eqv : ∀ {x y} → is-equiv (f {x} {y}))
-  → ( ∀ {a b c d} (g : C.Hom a b) (h : D.Hom c d) x
-    → f (g C.∘ x C.∘ L.₁ h) ≡ R.₁ g D.∘ f x D.∘ h)
+  → hom-iso-natural f
   → L ⊣ R
 hom-iso→adjoints f f-equiv natural = adj′ where
   f⁻¹ : ∀ {x y} → D.Hom x (R.₀ y) → C.Hom (L.₀ x) y

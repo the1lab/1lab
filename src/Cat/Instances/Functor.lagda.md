@@ -471,13 +471,6 @@ module
 
 open _=>_
 
-whiskerl : ∀ {o ℓ o′ ℓ′ o′′ ℓ′′}
-           {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {E : Precategory o′′ ℓ′′}
-         → {F G : Functor D E} {H : Functor C D}
-         → F => G → F F∘ H => G F∘ H
-whiskerl {F} {G} nt .η x = nt .η _
-whiskerl {F} {G} nt .is-natural x y f = nt .is-natural _ _ _
-
 module _
   {o ℓ o′ ℓ′ o₂ ℓ₂}
   {C : Precategory o ℓ}
@@ -517,31 +510,5 @@ module _
         (λ i j → G .F₀ (cd.iso→path-id {A = G′} i j .F₀ x))
         ∙ transport-refl _ ∙ sym (G .F-id)
     where module cd = Univalent cdcat
-
-module _
-  {oa ℓa ob ℓb oc ℓc}
-  {A : Precategory oa ℓa}
-  {B : Precategory ob ℓb}
-  {C : Precategory oc ℓc}
-  where
-  private module C = Cat.Reasoning C
-
-  F∘-functor : Functor (Cat[ B , C ] ×ᶜ Cat[ A , B ]) Cat[ A , C ]
-  F∘-functor .F₀ (F , G) = F F∘ G
-
-  F∘-functor .F₁ {y = y , _} (n1 , n2) .η x = y .F₁ (n2 .η _) C.∘ n1 .η _
-
-  F∘-functor .F₁ {x = F , G} {y = W , X} (n1 , n2) .is-natural _ _ f =
-    (W .F₁ (n2 .η _) C.∘ n1 .η _) C.∘ F .F₁ (G .F₁ f) ≡⟨ C.pullr (n1 .is-natural _ _ _) ⟩
-    W .F₁ (n2 .η _) C.∘ W .F₁ (G .F₁ f) C.∘ n1 .η _   ≡⟨ C.extendl (W.weave (n2 .is-natural _ _ _)) ⟩
-    W .F₁ (X .F₁ f) C.∘ W .F₁ (n2 .η _) C.∘ n1 .η _   ∎
-    where module W = Fr W
-
-  F∘-functor .F-id {x} = Nat-path λ _ → C.idr _ ∙ x .fst .F-id
-  F∘-functor .F-∘ {x} {y} {z} f g = Nat-path λ _ →
-    z .fst .F₁ _ C.∘ f .fst .η _ C.∘ g .fst .η _                      ≡⟨ C.pushl (z .fst .F-∘ _ _) ⟩
-    z .fst .F₁ _ C.∘ z .fst .F₁ _ C.∘ f .fst .η _ C.∘ g .fst .η _     ≡⟨ C.extend-inner (sym (f .fst .is-natural _ _ _)) ⟩
-    z .fst .F₁ _ C.∘ f .fst .η _ C.∘ y .fst .F₁ _ C.∘ g .fst .η _     ≡⟨ cat! C ⟩
-    (z .fst .F₁ _ C.∘ f .fst .η _) C.∘ (y .fst .F₁ _ C.∘ g .fst .η _) ∎
 ```
 -->

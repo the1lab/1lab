@@ -56,7 +56,7 @@ afield into 2-category theory than is appropriate here.
 
 ```agda
 _×ᶜ_ : Precategory o₁ h₁ → Precategory o₂ h₂ → Precategory _ _
-C ×ᶜ D = prodcat where
+C ×ᶜ D = prodcat module ×ᶜ where
   module C = Precategory C
   module D = Precategory D
 
@@ -71,6 +71,7 @@ C ×ᶜ D = prodcat where
   prodcat .assoc (f , f') (g , g') (h , h') i =
     C.assoc f g h i , D.assoc f' g' h' i
 
+{-# DISPLAY ×ᶜ.prodcat a b = a ×ᶜ b #-}
 infixr 20 _×ᶜ_
 ```
 

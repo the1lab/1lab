@@ -1,4 +1,5 @@
 ```agda
+open import Cat.Instances.Functor.Compose
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
 open import Cat.Instances.Functor
@@ -112,9 +113,9 @@ that $\eta$ does for $\Lan_p F$), the 2-cell exists and is unique.
 
 ```agda
     σ : {M : Functor C′ D} (α : F => M F∘ p) → Ext => M
-    σ-comm : {M : Functor C′ D} {α : F => M F∘ p} → whiskerl (σ α) ∘nt eta ≡ α
+    σ-comm : {M : Functor C′ D} {α : F => M F∘ p} → (σ α ◂ p) ∘nt eta ≡ α
     σ-uniq : {M : Functor C′ D} {α : F => M F∘ p} {σ′ : Ext => M}
-           → α ≡ whiskerl σ′ ∘nt eta
+           → α ≡ (σ′ ◂ p) ∘nt eta
            → σ α ≡ σ′
 ```
 
@@ -247,7 +248,7 @@ each point. Agda's goal-and-context display guides you the whole way.
         D.id D.∘ (f D.∘ x .map)       ∎
 
   cocomplete→lan : Lan K F
-  cocomplete→lan = lan where
+  cocomplete→lan = lan module cocomplete→lan where
     diagram : ∀ d → Functor (K ↘ d) E
     diagram d = F F∘ Dom K (const! d)
 
