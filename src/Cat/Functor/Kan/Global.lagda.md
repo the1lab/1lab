@@ -70,7 +70,7 @@ appealing to the details of a particular computation. Moreover, the left
 Kan extension functor _itself_ has a universal property: it is a left
 adjoint to the [precomposition] functor $p_!$.
 
-[precomposition]: Cat.Functor.Instances.Compose.html
+[precomposition]: Cat.Instances.Functor.Compose.html
 
 ```agda
   Lan⊣! : Lan-functor ⊣ p !
