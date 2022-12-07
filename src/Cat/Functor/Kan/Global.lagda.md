@@ -39,7 +39,7 @@ is a universal solution $\Lan_p(F)$ to extending $F$ to a functor $C'
 
 [left Kan extension]: Cat.Functor.Kan.html
 [small]: 1Lab.intro.html#universes-and-size-issues
-[cocomplete]: Cat.Diagram.Colimit.base#cocompleteness
+[cocomplete]: Cat.Diagram.Colimit.Base.html#cocompleteness
 
 <!--
 ```agda
