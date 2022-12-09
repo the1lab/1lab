@@ -44,7 +44,7 @@ directly with `glue`{.Agda}. With that motivation out of the way, let's
 continue with the construction!
 
 ```agda
-module _ {o ℓ κ} {C : Precategory o ℓ} (F : Functor (C ^op ×ᶜ C) (Sets (o ⊔ ℓ ⊔ κ))) where
+module _ {o ℓ} {C : Precategory o ℓ} (F : Functor (C ^op ×ᶜ C) (Sets (o ⊔ ℓ))) where
 
   open Precategory C
   open Functor F
@@ -107,8 +107,8 @@ module _ {o ℓ} {𝒞 : Precategory o ℓ} where
   open Functor
   open _=>_
 
-  Coends : ∀ {κ} → Functor Cat[ 𝒞 ^op ×ᶜ 𝒞 , Sets (o ⊔ ℓ ⊔ κ) ] (Sets (o ⊔ ℓ ⊔ κ))
-  Coends {κ = κ} .F₀ F = el! (Coeq (dimapl {κ = κ} F) (dimapr {κ = κ} F))
+  Coends : Functor Cat[ 𝒞 ^op ×ᶜ 𝒞 , Sets (o ⊔ ℓ) ] (Sets (o ⊔ ℓ))
+  Coends .F₀ F = el! (Coeq (dimapl F) (dimapr F))
   Coends .F₁ α =
     Coeq-rec squash (λ ∫F → inc ((∫F .fst) , α .η _ (∫F .snd))) λ where
       (X , Y , f , Fxy) →
