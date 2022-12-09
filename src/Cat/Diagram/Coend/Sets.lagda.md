@@ -1,5 +1,6 @@
 ```agda
 open import Cat.Diagram.Coend
+open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Instances.Sets
 open import Cat.Prelude
@@ -93,5 +94,36 @@ to the family associated to the cowedge `W`.
     coend .unique {W = W} p =
       funext $ Coeq-elim hlevel! (λ ∫F → happly p (∫F .snd)) λ where
         (X , Y , f , Fxy) → is-set→squarep (λ _ _ → is-tr (W .nadir)) _ _ _ _
+```
+
+This construction is actually functorial! Given any functor
+$\ca{C}\op \times \ca{C} \to \sets$, we can naturally construct its
+Coend in $\sets$. This ends up assembling into a functor from the
+functor category $[ \ca{C}\op \times \ca{C} , \sets ]$ into $\sets$.
+
+```agda
+module _ {o ℓ} {𝒞 : Precategory o ℓ} where
+  open Precategory 𝒞
+  open Functor
+  open _=>_
+
+  Coends : ∀ {κ} → Functor Cat[ 𝒞 ^op ×ᶜ 𝒞 , Sets (o ⊔ ℓ ⊔ κ) ] (Sets (o ⊔ ℓ ⊔ κ))
+  Coends {κ = κ} .F₀ F = el! (Coeq (dimapl {κ = κ} F) (dimapr {κ = κ} F))
+  Coends .F₁ α =
+    Coeq-rec squash (λ ∫F → inc ((∫F .fst) , α .η _ (∫F .snd))) λ where
+      (X , Y , f , Fxy) →
+        (ap (λ ϕ → inc (X , ϕ)) $ happly (α .is-natural (X , Y) (X , X) (id , f)) Fxy) ··
+        glue (X , Y , f , α .η (X , Y) Fxy) ··
+        (sym $ ap (λ ϕ → inc (Y , ϕ)) $ happly (α .is-natural (X , Y) (Y , Y) (f , id)) Fxy)
+  Coends .F-id =
+    funext $ Coeq-elim
+      (λ _ → hlevel!)
+      (λ _ → refl)
+      (λ _ → is-set→squarep (λ _ _ → squash) _ _ _ _)
+  Coends .F-∘ f g =
+    funext $ Coeq-elim
+      (λ _ → hlevel!)
+      (λ _ → refl)
+      (λ _ → is-set→squarep (λ _ _ → squash) _ _ _ _)
 ```
 
