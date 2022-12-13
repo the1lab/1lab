@@ -12,6 +12,7 @@ import qualified Agda.Utils.BiMap as BiMap
 import qualified Data.Map as Map
 import qualified Data.Text as T
 import Data.Aeson (eitherDecodeFileStrict', encodeFile)
+import Data.Maybe (fromMaybe)
 import Data.Foldable
 import Data.IORef
 
@@ -27,7 +28,11 @@ import Agda.TypeChecking.Errors
 import Agda.Interaction.Imports
 import Agda.Interaction.Options
 import Agda.Syntax.Common (Cubical(CFull))
-import Agda.Syntax.TopLevelModuleName (TopLevelModuleName(..), RawTopLevelModuleName(..))
+import Agda.Syntax.TopLevelModuleName
+  ( TopLevelModuleName(..)
+  , RawTopLevelModuleName(..)
+  , hashRawTopLevelModuleName
+  )
 import Agda.Syntax.Position (noRange)
 import Agda.Utils.FileName
 import Agda.Utils.Hash (Hash)
@@ -187,12 +192,19 @@ emitAgda (CompileA tcState _) getTypes modName = do
 
   pure ()
 
+-- | Convert a module name to an internal Agda name.
+--
+-- This ia a very cut down version of topLevelModuleName. We sacrifice all the
+-- extra checking for the benefit of not having to run a TCM monad.
 toTopLevel :: TCState -> T.Text -> TopLevelModuleName
 toTopLevel tcState name =
-  let qname = List1.fromList (T.split (== '.') name) in
-  case BiMap.lookup (RawTopLevelModuleName noRange qname) (tcState ^. stTopLevelModuleNames) of
-    Nothing -> error ("Cannot find " ++ T.unpack name)
-    Just hash -> TopLevelModuleName noRange hash qname
+  let
+    qname = List1.fromList (T.split (== '.') name)
+    raw = RawTopLevelModuleName noRange qname
+    hash = BiMap.lookup raw (tcState ^. stTopLevelModuleNames)
+    hash' = fromMaybe (hashRawTopLevelModuleName raw) hash
+  in
+  TopLevelModuleName noRange hash' qname
 
 getInterface :: TCState -> TopLevelModuleName -> Interface
 getInterface tcState name =

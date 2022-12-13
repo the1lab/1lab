@@ -9,7 +9,9 @@ module Shake.Git
 import qualified Data.Text.Encoding as Text
 import qualified Data.Text as Text
 import qualified Data.Set as Set
+import Data.Char (isSpace, isDigit)
 import Data.Text (Text)
+import Data.List (sort)
 import Data.Generics
 
 import Development.Shake.Classes (Hashable, Binary, NFData)
@@ -19,11 +21,6 @@ import Development.Shake
 -- around https://github.blog/2022-04-12-git-security-vulnerability-announced/
 gitCommand :: CmdResult r => [String] -> Action r
 gitCommand args = command [] "git" (["--git-dir", ".git"] ++ args)
-
--- | Run `git log`, excluding commits containing the word NOAUTHOR (for example,
--- trivial reformattings or treewide changes).
-gitLog :: CmdResult r => [String] -> Action r
-gitLog args = gitCommand (["log", "--invert-grep", "--grep=NOAUTHOR"] ++ args)
 
 newtype GitCommit = GitCommit ()
   deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
@@ -47,23 +44,21 @@ doGitAuthors :: GitAuthors -> Action [Text]
 doGitAuthors (GitAuthors path) = do
   _commit <- gitCommit -- We depend on the commit, but don't actually need it.
 
-  -- Sort authors list and make it unique.
-  Stdout authors <- gitLog ["--format=%aN", "--", path]
-  let authorSet = Set.fromList . Text.lines . Text.decodeUtf8 $ authors
+  Stdout authors <- gitCommand
+    [ "shortlog", "-ns"
+    -- Exclude commits containing the word NOAUTHOR (for example, trivial
+    -- reformattings or treewide changes).
+    , "--invert-grep", "--grep=NOAUTHOR"
+    -- Include both authors and coauthors.
+    , "--group=author", "--group=trailer:co-authored-by"
+    , "HEAD", "--", path
+    ]
 
-  Stdout coauthors <-
-    gitLog ["--format=%(trailers:key=Co-authored-by,valueonly)", "--", path]
+  pure . sort . map dropCounts . Text.lines . Text.decodeUtf8 $ authors
 
-  let
-    coauthorSet = Set.fromList
-      . map dropEmail
-      . filter (not . Text.null . Text.strip)
-      . Text.lines
-      . Text.decodeUtf8 $ coauthors
-
-    dropEmail = Text.unwords . init . Text.words
-
-  pure . Set.toList $ authorSet <> coauthorSet
+  where
+    --- Given a line of the format "  123   Author", convert it to "Author".
+    dropCounts = Text.dropWhile isSpace . Text.dropWhile isDigit . Text.dropWhile isSpace
 
 -- | Shake rules required for reading Git information.
 gitRules :: Rules()
