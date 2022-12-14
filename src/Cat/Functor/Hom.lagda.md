@@ -323,9 +323,9 @@ _also_ a cocone homomorphism $X \to Y$; But $X$ is initial, so $f = g$!
 
       g′ : Cocone-hom (よ F∘ El.πₚ C X) (Reassemble X) (Map→cocone-under X f)
       g′ .hom = g
-      g′ .commutes o = Nat-path λ x → ap (λ e → e .η x) $ sym $ sep $
+      g′ .commutes o = Nat-path λ x → sym (sep $
         NT (λ i a → P.₁ a (o .section)) λ x y h →
-          funext λ _ → happly (P.F-∘ _ _) _
+          funext λ a → P.F-∘ _ _ $ₚ o .section) ηₚ x
 ```
 
 An immediate consequence is that, since any pair of maps $f, g : X \to

@@ -111,13 +111,13 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     monad′ .mult = M.μ
     monad′ .left-ident {x} =
         ap (M.μ .η x C.∘_) (C.intror refl)
-      ∙ ap (λ e → e .η x) M.μ-unitr
+      ∙ M.μ-unitr ηₚ x
     monad′ .right-ident {x} =
         ap (M.μ .η x C.∘_) (C.introl (M.M .Functor.F-id))
-      ∙ ap (λ e → e .η x) M.μ-unitl
+      ∙ M.μ-unitl ηₚ x
     monad′ .mult-assoc {x} =
         ap (M.μ .η x C.∘_) (C.intror refl)
-     ·· ap (λ e → e .η x) M.μ-assoc
+     ·· M.μ-assoc ηₚ x
      ·· ap (M.μ .η x C.∘_) (C.elimr refl ∙ C.eliml (M.M .Functor.F-id))
 
   Monad→bicat-monad : Cat.Monad C → Monad (Cat _ _) C

@@ -59,8 +59,8 @@ module _ (has-lan : (G : Functor C D) → Lan p G) where
   Lan-functor .F-id {x} = has-lan x .σ-uniq (Nat-path λ _ → D.id-comm)
   Lan-functor .F-∘ {x} {y} {z} f g =
     has-lan x .σ-uniq $ Nat-path λ a → sym $
-        D.pullr (ap (λ e -> e .η a) (has-lan x .σ-comm))
-      ∙ D.extendl (ap (λ e → e .η a) (has-lan y .σ-comm))
+        D.pullr   (has-lan x .σ-comm ηₚ a)
+      ∙ D.extendl (has-lan y .σ-comm ηₚ a)
 ```
 
 Functoriality follows, essentially, from the fact that left Kan
@@ -82,12 +82,12 @@ adjoint to the [precomposition] functor $p_!$.
 
     eqv : ∀ {x} {y} → is-iso (f {x} {y})
     eqv {x} {y} .inv θ = has-lan _ .σ θ
-    eqv {x} {y} .rinv θ = Nat-path λ _ → ap (λ e → e .η _) (has-lan x .σ-comm)
+    eqv {x} {y} .rinv θ = has-lan x .σ-comm
     eqv {x} {y} .linv θ = has-lan _ .σ-uniq refl
 
     natural : hom-iso-natural {L = Lan-functor} {p !} f
     natural {b = b} g h x = Nat-path λ a →
-      D.pullr (D.pullr (ap (λ e → e .η a) (has-lan _ .σ-comm)))
+      D.pullr (D.pullr (has-lan _ .σ-comm ηₚ a))
       ∙ ap₂ D._∘_ refl (D.pushr refl)
 ```
 
@@ -108,8 +108,8 @@ adjoint→Lan F F⊣p! G = ext where
   ext .eta = F⊣p!.unit .η G
   ext .σ α = R-adjunct F⊣p! α
   ext .σ-comm {M = M} {α = α} = Nat-path λ a →
-      D.pullr (ap (λ e → e .η a) (sym (F⊣p!.unit .is-natural _ _ _)))
-    ∙ D.cancell (ap (λ e → e .η a) F⊣p!.zag)
+      D.pullr   (sym (F⊣p!.unit .is-natural _ _ _) ηₚ a)
+    ∙ D.cancell (F⊣p!.zag ηₚ a)
   ext .σ-uniq x = Equiv.injective (_ , L-adjunct-is-equiv F⊣p!)
     (L-R-adjunct F⊣p! _ ∙ x)
 ```

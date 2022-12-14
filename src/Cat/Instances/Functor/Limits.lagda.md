@@ -93,7 +93,7 @@ as we perform this lifting, we can "adjust" the cone by a map $(x
   Lift-cone {x} {y} K f .ψ z  = F′.second f C.∘ K .ψ z .η _
   Lift-cone {x} {y} K g .commutes f =
     F′.first f C.∘ F′.second g C.∘ K .ψ _ .η x ≡⟨ C.extendl F′.first∘second ⟩
-    F′.second g C.∘ F′.first f C.∘ K .ψ _ .η x ≡⟨ ap (F′.second _ C.∘_) (ap₂ C._∘_ (C.elimr (F-id (F.₀ _))) refl ∙ ap (λ e → e .η x) (K .commutes f)) ⟩
+    F′.second g C.∘ F′.first f C.∘ K .ψ _ .η x ≡⟨ ap (F′.second _ C.∘_) (ap₂ C._∘_ (C.elimr (F-id (F.₀ _))) refl ∙ K .commutes f ηₚ x) ⟩
     F′.second g C.∘ K .ψ _ .η x                ∎
 ```
 
@@ -205,7 +205,7 @@ quite tedious:
         h1 .commutes o =
           lim-for y .ψ o C.∘ map y .hom C.∘ K .apex .F₁ f  ≡⟨ C.pulll (map y .commutes _ ∙ C.eliml F′.second-id) ⟩
           K .ψ _ .η _ C.∘ K .apex .F₁ f                    ≡⟨ K .ψ _ .is-natural _ _ _ ⟩
-          F₁ (F.₀ o) f C.∘ K .ψ o .η x                     ≡⟨ ap (C._∘ K .ψ o .η x) (C.introl (ap (λ e → e .η y) (F-id F))) ⟩
+          F₁ (F.₀ o) f C.∘ K .ψ o .η x                     ≡⟨ ap (C._∘ K .ψ o .η x) (C.introl (F-id F ηₚ y)) ⟩
           F′.second f C.∘ K .ψ o .η x                      ∎
 
         h2 : Cone-hom (F′.Left y) (Lift-cone K f) (lim-for y)
@@ -228,7 +228,7 @@ limit $\lim F$.
     where
       hom' : ∀ {x} → Cone-hom (F′.Left x) _ _
       hom' {x} .hom = h .hom .η x
-      hom' {x} .commutes o = ap (λ e → e .η _) (h .commutes o) ∙ C.introl F′.second-id
+      hom' {x} .commutes o = h .commutes o ηₚ _ ∙ C.introl F′.second-id
 
   functor-limit : Limit F
   functor-limit .top            = functor-cone

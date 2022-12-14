@@ -114,14 +114,14 @@ module _ (inv : h ∘ i ≡ id) where abstract
   cancell : h ∘ (i ∘ f) ≡ f
   cancell {f = f} =
     h ∘ (i ∘ f) ≡⟨ pulll inv ⟩
-    id ∘ f ≡⟨ idl f ⟩
-    f ∎
+    id ∘ f      ≡⟨ idl f ⟩
+    f           ∎
 
   cancelr : (f ∘ h) ∘ i ≡ f
   cancelr {f = f} =
     (f ∘ h) ∘ i ≡⟨ pullr inv ⟩
-    f ∘ id ≡⟨ idr f ⟩
-    f ∎
+    f ∘ id      ≡⟨ idr f ⟩
+    f           ∎
 
   insertl : f ≡ h ∘ (i ∘ f)
   insertl = sym cancell
@@ -131,6 +131,23 @@ module _ (inv : h ∘ i ≡ id) where abstract
 
   cancel-inner : (f ∘ h) ∘ (i ∘ g) ≡ f ∘ g
   cancel-inner = pulll cancelr
+
+  deleter : (f ∘ g ∘ h) ∘ i ≡ f ∘ g
+  deleter = pullr cancelr
+
+  deletel : h ∘ (i ∘ f) ∘ g ≡ f ∘ g
+  deletel = pulll cancell
+```
+
+We also have a combinator which combines expanding on the right with a
+cancellation on the left:
+
+```agda
+lswizzle : g ≡ h ∘ i → f ∘ h ≡ id → f ∘ g ≡ i
+lswizzle {g = g} {h = h} {i = i} {f = f} p q =
+  f ∘ g     ≡⟨ ap₂ _∘_ refl p ⟩
+  f ∘ h ∘ i ≡⟨ cancell q ⟩
+  i         ∎
 ```
 
 ## Isomorphisms

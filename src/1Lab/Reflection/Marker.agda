@@ -2,6 +2,7 @@ open import 1Lab.Reflection
 open import 1Lab.Path
 open import 1Lab.Type
 
+open import Data.Maybe.Base
 open import Data.List
 
 open import Prim.Data.Nat
@@ -23,10 +24,10 @@ module 1Lab.Reflection.Marker where
 --
 -- is (λ e → f e (λ _ → e)). The resulting term is open in precisely one
 -- variable: that variable is what substitutes the marked terms.
-abstract-marker : Term → TC Term
+abstract-marker : Term → Maybe Term
 abstract-marker = go 0 where
-  go : Nat → Term → TC Term
-  go* : Nat → List (Arg Term) → TC (List (Arg Term))
+  go  : Nat → Term → Maybe Term
+  go* : Nat → List (Arg Term) → Maybe (List (Arg Term))
 
   go k (var j args) = var j' <$> go* k args
     where
@@ -43,17 +44,12 @@ abstract-marker = go 0 where
   -- binders, we must increment this, since the marked term gets farther
   -- and farther away in the context.
   ... | x = def f <$> go* k args
-  go k (lam v (abs x t)) = do
-    debugPrint "1lab.marked-ap" 10 $ strErr "entering lambda " ∷ termErr (lam v (abs x t)) ∷ []
-    res ← lam v ∘ abs x <$> go (suc k) t
-    debugPrint "1lab.marked-ap" 10 $ strErr "result " ∷ termErr res ∷ []
-    returnTC res
-  go k (pat-lam cs args) =
-    typeError (strErr "Can not abstract over marker in term containing pattern lambdas" ∷ [])
+  go k (lam v (abs x t)) = lam v ∘ abs x <$> go (suc k) t
+  go k (pat-lam cs args) = nothing
   go k (pi (arg i a) (abs x t)) = do
     t ← go (suc k) t
     a ← go k a
-    returnTC (pi (arg i a) (abs x t))
+    pure (pi (arg i a) (abs x t))
   go k (agda-sort s) with s
   ... | set t = agda-sort ∘ set <$> go k t
   ... | lit n = pure (agda-sort (lit n))
@@ -65,11 +61,11 @@ abstract-marker = go 0 where
   go k (meta m args) = meta m <$> go* k args
   go k unknown = pure unknown
 
-  go* k [] = returnTC []
+  go* k [] = pure []
   go* k (arg i x ∷ xs) = do
     x ← go k x
     xs ← go* k xs
-    returnTC (arg i x ∷ xs)
+    pure (arg i x ∷ xs)
 
 macro
   -- Generalised ap. Automatically generates the function to apply to by
@@ -82,7 +78,8 @@ macro
       where nothing → typeError (strErr "ap!: Goal type " ∷
                                  termErr goalt ∷
                                  strErr " is not a path type" ∷ [])
-    l′ ← abstract-marker l
+    just l′ ← pure (abstract-marker l)
+      where _ → typeError $ "Failed to abstract over marker in term " ∷ termErr l ∷ []
     let dm = lam visible (abs "x" l′)
     path′ ← quoteTC path
     debugPrint "1lab.marked-ap" 10 $ strErr "original term " ∷ termErr l ∷ []
@@ -99,7 +96,8 @@ macro
       where nothing → typeError (strErr "ap¡: Goal type " ∷
                                  termErr goalt ∷
                                  strErr " is not a path type" ∷ [])
-    r′ ← abstract-marker r
+    just r′ ← pure (abstract-marker r)
+      where _ → typeError $ "Failed to abstract over marker in term " ∷ termErr r ∷ []
     path′ ← quoteTC path
     unify goal $
       def (quote ap) (lam visible (abs "x" r′) v∷ path′ v∷ [])

@@ -178,32 +178,46 @@ paths in `Hom`{.Agda}-sets.
   path→from-∙ {A = A} p q =
     J (λ B p → ∀ {C} (q : B ≡ C) → path→iso (p ∙ q) .from ≡ path→iso p .from ∘ path→iso q .from)
       (λ q → subst-∙ (λ e → Hom e _) refl q _
-          ∙ ap (subst (λ e → Hom e _) q) (transport-refl id)
-          ∙ sym (idl _) ∙ ap₂ _∘_ (sym (transport-refl id)) refl
+          ·· ap (subst (λ e → Hom e _) q) (transport-refl id)
+          ·· sym (idl _) ∙ ap₂ _∘_ (sym (transport-refl id)) refl
       )
       p q
 
   path→to-sym : ∀ {A B} (p : A ≡ B) → path→iso p .from ≡ path→iso (sym p) .to
   path→to-sym = J (λ B p → path→iso p .from ≡ path→iso (sym p) .to) refl
 
+  from-pathp-to
+    : ∀ {A B C} (p : A ≡ B) {f g}
+    → PathP (λ i → Hom C (p i)) f g
+    → path→iso p .to ∘ f ≡ g
+  from-pathp-to {C = C} p q =
+    J (λ B p → ∀ {f g} → PathP (λ i → Hom C (p i)) f g
+             → path→iso p .to ∘ f ≡ g)
+      (λ q → eliml (transport-refl _) ∙ q) p q
+
+  from-pathp-from
+    : ∀ {A B C} (p : A ≡ B) {f g}
+    → PathP (λ i → Hom C (p i)) f g
+    → path→iso (sym p) .from ∘ f ≡ g
+  from-pathp-from {C = C} p q = ap₂ _∘_ (path→to-sym (sym p)) refl
+                              ∙ from-pathp-to p q
+
 module Univalent {o h} {C : Precategory o h} (r : is-category C) where
   open Univalent′ r public
 
   Hom-pathp-refll-iso :
-    ∀ {A B C} {p : A ≅ C} {h : Hom A B} {h' : Hom C B}
-    → h ∘ p .from ≡ h'
-    → PathP (λ i → Hom (iso→path p i) B) h h'
+    ∀ {A B C} {p : A ≅ C} {h : Hom A B} {h′ : Hom C B}
+    → h ∘ p .from ≡ h′
+    → PathP (λ i → Hom (iso→path p i) B) h h′
   Hom-pathp-refll-iso prf =
     Hom-pathp-refll C (ap₂ _∘_ refl (ap from (iso→path→iso _)) ∙ prf)
 
   Hom-pathp-reflr-iso
-    : ∀ {A B D} {q : B ≅ D} {h : Hom A B} {h' : Hom A D}
-    → q .to ∘ h ≡ h'
-    → PathP (λ i → Hom A (iso→path q i)) h h'
+    : ∀ {A B D} {q : B ≅ D} {h : Hom A B} {h′ : Hom A D}
+    → q .to ∘ h ≡ h′
+    → PathP (λ i → Hom A (iso→path q i)) h h′
   Hom-pathp-reflr-iso prf =
-    Hom-pathp-reflr C (
-      ap₂ _∘_ (ap to (iso→path→iso _)) refl
-      ∙ prf)
+    Hom-pathp-reflr C (ap₂ _∘_ (ap to (iso→path→iso _)) refl ∙ prf)
 
   Hom-pathp-iso
     : ∀ {A B C D} {p : A ≅ C} {q : B ≅ D} {h : Hom A B} {h' : Hom C D}

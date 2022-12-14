@@ -96,5 +96,5 @@ to-presheaf↪よ {S} .mor .η x (f , _) = f
 to-presheaf↪よ {S} .mor .is-natural x y f = refl
 to-presheaf↪よ {S} .monic g h path = Nat-path λ x →
   embedding→monic (Subset-proj-embedding (λ _ → S .arrows _ .is-tr))
-    (g .η x) (h .η x) (ap (λ e → e .η x) path)
+    (g .η x) (h .η x) (path ηₚ x)
 ```

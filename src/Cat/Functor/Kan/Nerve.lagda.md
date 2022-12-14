@@ -143,9 +143,9 @@ look at the code. Godspeed.
     cocone′ ob .coapex = ob
     cocone′ ob .ψ obj = obj .map .η _ D.id
     cocone′ ob .commutes {x} {y} f =
-      happly (sym (y .map .is-natural _ _ _)) _
-      ∙ ap (y .map .η (x .↓Obj.x)) (sym D.id-comm)
-      ∙ happly (ap (λ e → e .η (x .↓Obj.x)) (f .sq)) _
+        sym (y .map .is-natural _ _ _) $ₚ _
+      ∙ ap (y .map .η (x .↓Obj.x)) D.id-comm-sym
+      ∙ f .sq ηₚ _ $ₚ _
 ```
 
 Before proceeding, take a moment to appreciate the beauty of the
@@ -198,7 +198,7 @@ counit is given by the unique "colimiting" map _from_ that colimit.
         cocone₂ .commutes {x₂} {y₂} f =
           C.pullr ( sym (happly (y₂ .map .is-natural _ _ _) _)
                   ∙ ap (y₂ .map .η _) (sym D.id-comm))
-          ∙ ap (_ C.∘_) (happly (ap (λ e → e .η (x₂ .↓Obj.x)) (f .sq)) D.id)
+          ∙ ap (_ C.∘_) (f .sq ηₚ _ $ₚ D.id)
 
     adj .zig {A} = ap hom $
       is-contr→is-prop (cocompl (F F∘ Dom (よ D) (const! A)) .has⊥ (cocompl _ .bot))

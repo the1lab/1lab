@@ -1782,7 +1782,7 @@ sym-∙-filler {A = A} {z = z} p q i j k =
 sym-∙ : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : y ≡ z) → sym (p ∙ q) ≡ sym q ∙ sym p
 sym-∙ p q i j = sym-∙-filler p q j i i1
 
-infixl -1 _$ₚ_
+infixl 45 _$ₚ_
 
 _$ₚ_ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : A → Type ℓ₂} {f g : ∀ x → B x}
      → f ≡ g → ∀ x → f x ≡ g x

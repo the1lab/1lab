@@ -121,7 +121,7 @@ private
   -- then wrap it in a lambda. Nice!
   to-regularity-path : Regularity-precision → Term → TC Term
   to-regularity-path pre tm = do
-    tm ← raise 1 tm
+    tm ← maybe→alt (raise 1 tm) <?> "Failed to raise term in regularity tactic"
     -- Since we'll be comparing terms, Agda really wants them to be
     -- well-scoped. Since we shifted eeeverything up by one, we have to
     -- grow the context, too.
@@ -185,7 +185,7 @@ module Regularity where
     reduct pres tm _ = do
       orig ← wait-for-type =<< normalise tm
       tm ← to-regularity-path pres orig
-      red ← apply-tm tm (argN (con (quote i1) [])) >>= normalise
+      red ← maybe→alt (apply-tm tm (argN (con (quote i1) []))) >>= normalise
       `pres ← quoteTC pres
       typeError $
         "The term\n\n  " ∷ termErr orig ∷ "\n\nreduces modulo " ∷ termErr `pres ∷ " regularity to\n\n  "

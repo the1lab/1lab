@@ -29,7 +29,7 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
   PSh-terminal : Terminal (PSh κ C)
   PSh-terminal = record { top = top ; has⊤ = uniq } where
     top : Functor (C ^op) (Sets κ)
-    top .F₀ x = el (Lift κ ⊤) λ _ _ _ _ _ _ → lift tt
+    top .F₀ x = el! (Lift κ ⊤)
     top .F₁ _ _ = lift tt
     top .F-id = refl
     top .F-∘ _ _ = refl
@@ -64,29 +64,26 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
         i j
 
     pb : Pullback (PSh κ C) f g
-    pb .apex .F₀ i =
-      el (Σ[ x ∈ ∣ X.₀ i ∣ ] Σ[ y ∈ ∣ Y.₀ i ∣ ] (f.η i x ≡ g.η i y))
-      $ Σ-is-hlevel 2 (X.₀ i .is-tr) λ _ → Σ-is-hlevel 2 (Y.₀ i .is-tr)
-        λ _ → is-prop→is-set (Z.₀ i .is-tr _ _)
+    pb .apex .F₀ i = el! (Σ[ x ∈ ∣ X.₀ i ∣ ] Σ[ y ∈ ∣ Y.₀ i ∣ ] (f.η i x ≡ g.η i y))
     pb .apex .F₁ {x} {y} h (a , b , p) = X.₁ h a , Y.₁ h b , path where abstract
       path : f.η y (X.₁ h a) ≡ g.η y (Y.₁ h b)
       path = happly (f.is-natural _ _ _) _
           ·· (λ i → Z.₁ h (p i))
           ·· sym (happly (g.is-natural _ _ _) _)
-    pb .apex .F-id = funext λ (a , b , _) → pb-path (happly X.F-id a) (happly Y.F-id b)
-    pb .apex .F-∘ f g = funext λ (a , b , _) → pb-path (happly (X.F-∘ f g) a) (happly (Y.F-∘ f g) b)
+    pb .apex .F-id = funext λ (a , b , _) → pb-path (X.F-id $ₚ a) (Y.F-id $ₚ b)
+    pb .apex .F-∘ f g = funext λ (a , b , _) → pb-path (X.F-∘ f g $ₚ a) (Y.F-∘ f g $ₚ b)
     pb .p₁ .η idx (a , b , _) = a
     pb .p₁ .is-natural _ _ _ = refl
     pb .p₂ .η x (a , b , _) = b
     pb .p₂ .is-natural _ _ _ = refl
     pb .has-is-pb .square = Nat-path λ _ → funext λ (_ , _ , p) → p
-    pb .has-is-pb .limiting path .η idx arg = _ , _ , ap (λ e → e .η idx arg) path
+    pb .has-is-pb .limiting path .η idx arg = _ , _ , (path ηₚ idx $ₚ arg)
     pb .has-is-pb .limiting {p₁' = p₁'} {p₂'} path .is-natural x y f =
       funext λ x → pb-path (happly (p₁' .is-natural _ _ _) _) (happly (p₂' .is-natural _ _ _) _)
     pb .has-is-pb .p₁∘limiting = Nat-path λ _ → refl
     pb .has-is-pb .p₂∘limiting = Nat-path λ _ → refl
     pb .has-is-pb .unique p q = Nat-path λ _ → funext λ _ →
-      pb-path (ap (λ e → e .η _ _) p) (ap (λ e → e .η _ _) q)
+      pb-path (p ηₚ _ $ₚ _) (q ηₚ _ $ₚ _)
 
   PSh-products : (A B : PSh.Ob) → Product (PSh κ C) A B
   PSh-products A B = prod where
@@ -96,8 +93,7 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     module B = Functor B
 
     prod : Product (PSh _ C) A B
-    prod .apex .F₀ x = el (∣ A.₀ x ∣ × ∣ B.₀ x ∣) $
-      ×-is-hlevel 2 (A.₀ x .is-tr) (B.₀ x .is-tr)
+    prod .apex .F₀ x = el! (∣ A.₀ x ∣ × ∣ B.₀ x ∣)
     prod .apex .F₁ f (x , y) = A.₁ f x , B.₁ f y
     prod .apex .F-id i (x , y) = A.F-id i x , B.F-id i y
     prod .apex .F-∘ f g i (x , y) = A.F-∘ f g i x , B.F-∘ f g i y
@@ -119,7 +115,7 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     module B = Functor B
 
     coprod : Coproduct (PSh _ C) A B
-    coprod .coapex .F₀ i = el (∣ A.₀ i ∣ ⊎ ∣ B.₀ i ∣) $ ⊎-is-hlevel 0 (A.₀ i .is-tr) (B.₀ i .is-tr)
+    coprod .coapex .F₀ i = el! (∣ A.₀ i ∣ ⊎ ∣ B.₀ i ∣)
     coprod .coapex .F₁ h (inl x) = inl (A.₁ h x)
     coprod .coapex .F₁ h (inr x) = inr (B.₁ h x)
     coprod .coapex .F-id = funext λ where
@@ -132,16 +128,16 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     coprod .in₀ .is-natural x y f i a = inl (A.₁ f a)
     coprod .in₁ .η _ x = inr x
     coprod .in₁ .is-natural x y f i b = inr (B.₁ f b)
-    is-coproduct.[ coprod .has-is-coproduct , f ] g .η _ (inl x) = f .η _ x
-    is-coproduct.[ coprod .has-is-coproduct , f ] g .η _ (inr x) = g .η _ x
-    is-coproduct.[ coprod .has-is-coproduct , f ] g .is-natural x y h = funext λ where
-      (inl x) → happly (f .is-natural _ _ _) _
-      (inr x) → happly (g .is-natural _ _ _) _
+    coprod .has-is-coproduct .is-coproduct.[_,_] f g .η _ (inl x) = f .η _ x
+    coprod .has-is-coproduct .is-coproduct.[_,_] f g .η _ (inr x) = g .η _ x
+    coprod .has-is-coproduct .is-coproduct.[_,_] f g .is-natural x y h = funext λ where
+      (inl x) → f .is-natural _ _ _ $ₚ _
+      (inr x) → g .is-natural _ _ _ $ₚ _
     coprod .has-is-coproduct .in₀∘factor = Nat-path λ _ → refl
     coprod .has-is-coproduct .in₁∘factor = Nat-path λ _ → refl
     coprod .has-is-coproduct .unique other p q = Nat-path λ a → funext λ where
-      (inl x) → ap (λ e → e .η a x) p
-      (inr x) → ap (λ e → e .η a x) q
+      (inl x) → p ηₚ a $ₚ x
+      (inr x) → q ηₚ a $ₚ x
 
   PSh-coequaliser
     : ∀ {X Y} (f g : PSh.Hom X Y)
@@ -170,12 +166,12 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     coequ .coeq .is-natural x y f = refl
     coequ .has-is-coeq .coequal = Nat-path λ _ → funext λ x → glue x
     coequ .has-is-coeq .coequalise {F = F} {e′ = e′} p .η x =
-      Coeq-rec (F .F₀  x .is-tr) (e′ .η x) λ x → ap (λ e → e .η _ x) p
+      Coeq-rec (F .F₀  x .is-tr) (e′ .η x) (p ηₚ x $ₚ_)
     coequ .has-is-coeq .coequalise {F = F} {e′ = e′} p .is-natural x y f = funext $
       Coeq-elim-prop (λ _ → F .F₀ _ .is-tr _ _) λ _ → happly (e′ .is-natural _ _ _) _
     coequ .has-is-coeq .universal = Nat-path λ _ → refl
     coequ .has-is-coeq .unique {F = F} p = Nat-path λ i → funext $
-      Coeq-elim-prop (λ _ → F .F₀ _ .is-tr _ _) λ x → ap (λ e → e .η i x) (sym p)
+      Coeq-elim-prop (λ _ → F .F₀ _ .is-tr _ _) λ x → sym p ηₚ i $ₚ x
 
 module _ {κ} {C : Precategory κ κ} where
   private

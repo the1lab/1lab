@@ -89,12 +89,12 @@ for $\sigma'_\eta\sigma_{\eta'}$ is analogous.
   Ext-unique : [C′,D].Isomorphism L₁.Ext L₂.Ext
   Ext-unique = [C′,D].make-iso (L₁.σ L₂.eta) (L₂.σ L₁.eta)
     ( sym (L₂.σ-uniq {α = L₂.eta}
-        (Nat-path λ _ → sym ( D.pullr (ap (λ e → e .η _) L₂.σ-comm)
-                            ∙ ap (λ e → e .η _) L₁.σ-comm)))
+        (Nat-path λ _ → sym ( D.pullr (L₂.σ-comm ηₚ _)
+                            ∙ L₁.σ-comm ηₚ _)))
     ∙ L₂.σ-uniq (Nat-path λ _ → D.introl refl))
     ( sym (L₁.σ-uniq {α = L₁.eta}
-        (Nat-path λ _ → sym ( D.pullr (ap (λ e → e .η _) L₁.σ-comm)
-                            ∙ ap (λ e → e .η _) L₂.σ-comm)))
+        (Nat-path λ _ → sym ( D.pullr (L₁.σ-comm ηₚ _)
+                            ∙ L₂.σ-comm ηₚ _)))
     ∙ L₁.σ-uniq (Nat-path λ _ → D.introl refl))
 
   Ext-uniqueₚ : L₁.Ext ≡ L₂.Ext
@@ -111,7 +111,7 @@ for $\sigma$.
 ```agda
   eta-uniqueₚ : PathP (λ i → F => Ext-uniqueₚ i F∘ p) L₁.eta L₂.eta
   eta-uniqueₚ = Nat-pathp refl _ λ _ →
-    Univalent.Hom-pathp-reflr-iso dcat (ap (λ e → e .η _) L₁.σ-comm)
+    Univalent.Hom-pathp-reflr-iso dcat (L₁.σ-comm ηₚ _)
 ```
 
 <details>
@@ -130,8 +130,8 @@ also identified.</summary>
 
       lemma : ∀ {x} → L₁.σ f .η x D.∘ L₂.σ (L₁.eta) .η x ≡ L₂.σ f .η x
       lemma {x = x} = sym $ ap (λ e → e .η x) {y = σ′} $
-        L₂.σ-uniq $ Nat-path λ _ →
-          sym (D.pullr (ap (λ e → e .η _) L₂.σ-comm) ∙ ap (λ e → e .η _) L₁.σ-comm)
+        L₂.σ-uniq $ Nat-path λ _ → sym (
+          D.pullr (L₂.σ-comm ηₚ _) ∙ L₁.σ-comm ηₚ _)
 ```
 </details>
 

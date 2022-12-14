@@ -127,34 +127,35 @@ construct auxilliary natural transformations representing each pair of
 maps we want to compute with.</summary>
 
 ```agda
-  Codensity .left-ident {x = x} = path where
+  Codensity .left-ident {x = x} = path ηₚ x where
     nat₁ : Ext => Ext
     nat₁ .η x = σ mult-nt .η x B.∘ Ext.₁ (σ unit-nt .η x)
     nat₁ .is-natural x y f = Ext.extendr (σ unit-nt .is-natural x y f)
                            ∙ B.pushl (σ mult-nt .is-natural _ _ _)
 
     abstract
-      path : nat₁ .η x ≡ B.id
-      path = ap (λ e → e .η x) $ σ-uniq₂ eps {σ₁′ = nat₁} {σ₂′ = idnt}
+      path : nat₁ ≡ idnt
+      path = σ-uniq₂ eps
         (Nat-path λ x →
-          sym (B.pulll (ap (λ e → e .η x) σ-comm)
-              ∙ Ext.cancelr (ap (λ e → e .η x) σ-comm)))
+          sym (B.pulll (σ-comm ηₚ x)
+             ∙ Ext.cancelr (σ-comm ηₚ x)))
         (Nat-path λ _ → B.intror refl)
 
-  Codensity .right-ident {x = x} = path where
+  Codensity .right-ident {x = x} = path ηₚ x where
     nat₁ : Ext => Ext
     nat₁ .η x = σ mult-nt .η x B.∘ σ unit-nt .η (Ext.₀ x)
     nat₁ .is-natural x y f = B.extendr (σ unit-nt .is-natural _ _ _)
                            ∙ B.pushl (σ mult-nt .is-natural _ _ _)
 
     abstract
-      path : nat₁ .η x ≡ B.id
-      path = ap (λ e → e .η x) $ σ-uniq₂ eps {σ₁′ = nat₁} {σ₂′ = idnt}
-        (Nat-path λ x → sym $ B.pulll (ap (λ e → e .η x) σ-comm)
+      path : nat₁ ≡ idnt
+      path = σ-uniq₂ eps
+        (Nat-path λ x → sym $ B.pulll (σ-comm ηₚ x)
                             ∙ B.pullr (sym (σ unit-nt .is-natural _ _ _))
-                            ∙ B.cancell (ap (λ e → e .η x) σ-comm))
+                            ∙ B.cancell (σ-comm ηₚ x))
         (Nat-path λ _ → B.intror refl)
-  Codensity .mult-assoc {x = x} = path where
+
+  Codensity .mult-assoc {x = x} = path ηₚ x where
     mult′ : (Ext F∘ Ext F∘ Ext) F∘ F => F
     mult′ .η x = eps .η x B.∘ Ext.₁ (mult-nt .η x)
     mult′ .is-natural x y f = Ext.extendr (mult-nt .is-natural _ _ _)
@@ -171,16 +172,14 @@ maps we want to compute with.</summary>
                             ∙ B.pushl (σ mult-nt .is-natural _ _ _)
 
     abstract
-      path : sig₁ .η x ≡ sig₂ .η x
-      path = ap (λ e → e .η x) $ σ-uniq₂ {M = Ext F∘ Ext F∘ Ext} mult′
-          {σ₁′ = sig₁}
-          {σ₂′ = sig₂}
-          (Nat-path λ x → sym (B.pulll (ap (λ e → e .η x) σ-comm)
-                            ∙ Ext.pullr (ap (λ e → e .η x) σ-comm)))
-          (Nat-path λ x → sym (B.pulll (ap (λ e → e .η x) σ-comm)
-                            ∙ B.pullr (sym (σ mult-nt .is-natural _ _ _))
-                            ∙ B.pulll (ap (λ e → e .η x) σ-comm)
-                            ∙ Ext.pullr refl))
+      path : sig₁ ≡ sig₂
+      path = σ-uniq₂ {M = Ext F∘ Ext F∘ Ext} mult′
+        (Nat-path λ x → sym (B.pulll (σ-comm ηₚ x)
+                           ∙ Ext.pullr (σ-comm ηₚ x)))
+        (Nat-path λ x → sym (B.pulll (σ-comm ηₚ x)
+                          ·· B.pullr (sym (σ mult-nt .is-natural _ _ _))
+                          ·· B.pulll (σ-comm ηₚ x)
+                           ∙ Ext.pullr refl))
 ```
 </details>
 
