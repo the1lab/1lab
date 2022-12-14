@@ -1,17 +1,13 @@
 ```agda
 {-# OPTIONS --lossy-unification #-}
 open import Cat.Instances.Functor.Compose
-open import Cat.Functor.FullSubcategory
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Functor
-open import Cat.Univalent.Rezk
 open import Cat.Functor.Base
-open import Cat.Functor.Hom
 open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning.FullyFaithful as FfR
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Functor.Reasoning as FR
 import Cat.Reasoning
 
@@ -25,7 +21,7 @@ module Cat.Univalent.Rezk.Universal where
 ```agda
 private variable
   o ℓ : Level
-  A B C : Precategory o ℓ
+  A B C C⁺ : Precategory o ℓ
 
 private module _ {o ℓ} {C : Precategory o ℓ} where
   open Cat.Reasoning C using (_≅_)
@@ -49,35 +45,36 @@ and is mostly a calculation.
 
 In generic terms, universality of the Rezk completion follows from
 univalent categories being the class of _local objects_ for the weak
-equivalences: A category $\ca{C}$ is univalent when if any weak
-equivalence $H : \ca{A} \to \ca{B}$ induces an equivalence
-$H_! : [\ca{B},\ca{C}] \to [\ca{A},\ca{C}]$; If there is any weak
-equivalence $R : \ca{C} \to \ca{C}^+$, precomposition with $R$ is an
-equivalence between $\ca{C}$-functors into categories and
-$\ca{C}^+$-functors. Moreover, this equivalence sends the identity to
-$R$.
+equivalences^[a _weak equivalence_ is a fully faithful, essentially
+surjective functor]: A category $\ca{C}$ is univalent _precisely_ if any
+weak equivalence $H : \ca{A} \to \ca{B}$ induces^[by [precomposition]]
+a proper equivalence of categories $H_! : [\ca{B},\ca{C}] \to [\ca{A},\ca{C}]$.
+
+[precomposition]: Cat.Instances.Functor.Compose.html
 
 The high-level overview of the proof is as follows:
 
-- For any eso $H : \ca{A} \to \ca{B}$, and for any $\ca{C}$, all
+- For any \r{eso} $H : \ca{A} \to \ca{B}$, and for any $\ca{C}$, all
 precategories, the functor $H_! : [\ca{A},\ca{B}] \to [\ca{B},\ca{C}]$
 is faithful. This is the least technical part of the proof, so we do it
 first.
 
-- If $H$ is additionally full, then $H_!$ is fully faithful.
+- If $H$ is additionally full, then $H_!$ is \r{fully faithful}.
 
-- If $H$ is a weak equivalence, and $\ca{C}$ is univalent, then $H_!$ is
-essentially surjective. By the principle of unique choice, it is an
-equivalence, and moreover (since both its domain and codomain are
-univalent), an isomorphism.
+- If $H$ is a weak equivalence, and $\ca{C}$ is [univalent], then $H_!$
+is essentially surjective. By the principle of unique choice, it is an
+equivalence, and thus^[since both its domain and codomain are univalent]
+an isomorphism.
+
+[univalent]: Cat.Univalent.html#univalent-categories
 
 ## Faithfulness
 
 The argument here is almost elementary: We're given a witness that
 $\gamma H = \delta H$, so all we have to do is manipulate the expression
 $\gamma_b$ to something which has a $\gamma H$ subexpression. Since $H$
-is eso, given $b : B$, we can find $a : A$ and an iso $m : Ha \cong b$,
-from which we can calculate:
+is eso, given $b : \ca{B}$, we can find $a : \ca{A}$ and an iso $m : Ha
+\cong b$, from which we can calculate:
 
 ```agda
 eso→pre-faithful
@@ -101,10 +98,16 @@ eso→pre-faithful {A = A} {B = B} {C = C} H {F} {G} h-eso γ δ p =
 
 The above is, unfortunately, the simplest result in this module. The
 next two proofs are both _quite_ technical: that's because we're given
-some _mere_ (truncated) data, from the assumption that $H$ is a weak
-equivalence, so to use it as proper data, we need to characterise the
-use up to a contractible space of choices (after which we are free to
-project what we are interested in).
+some _mere_^[truncated] data, from the assumption that $H$ is a weak
+equivalence, so to use it as proper data, we need to show that whatever
+we want lives in a contractible space, after which we are free to
+project only the data we are interested in, and forget about the coherences.
+
+It will turn out, however, that the coherence data necessary to make
+these types contractible is exactly the coherence data we need to show
+that we are indeed building functors, natural transformations, etc. So,
+not only do we need it to use unique choice, we also need it to show
+we're doing category theory.
 
 ## Full-faithfulness
 
@@ -120,10 +123,10 @@ eso-full→pre-ff {A = A} {B = B} {C = C} H H-eso H-full = res where
 ```
 
 We will show that, for every natural transformation $\gamma : FH \to
-GH$, and each $b : B$, there is a contractible type of "component data"
-over $b$.  This data consists of a morphism $g : Fb \to Gb$, together
-with a witness that $g$ is compatible with any way to exhibit $b$ as
-being in the image of $H$.
+GH$, and each $b : \ca{B}$, there is a contractible type of "component
+data" over $b$. These data consist of morphisms $g : Fb \to Gb$,
+each equipped with a witness that $g$ acts naturally when faced with
+isomorphisms $Ha \cong b$.
 
 <!--
 ```agda
@@ -141,9 +144,15 @@ being in the image of $H$.
 ```
 -->
 
-The compatibility condition is: if we're given an essential fibre
-$(a,f)$ of $H$ over $b$, then it must have been the case that our
-_component_ $g$ came from $\gamma$ through an adjustment using $f$.
+In more detail, if we're given an essential fibre $(a,f)$ of $H$ over
+$b$, we can use $f$ to "match up" our component $g$ with the components
+of the natural transformation $\gamma$: since $\gamma_a : FH(a) \to
+FG(a)$, we've claimed to have a $Fb \to Gb$, and someone has just handed
+us a $H(a) \cong b$, then it darn well better be the case that $\gamma$ is
+
+$$
+FH(a) \xto{Ff} Fb \xto{g} Gb \xto{Gf^{-1}} FG(a)\text{.}
+$$
 
 ```agda
     T : B.Ob → Type _
@@ -152,12 +161,13 @@ _component_ $g$ came from $\gamma$ through an adjustment using $f$.
       γ.η a ≡ G.₁ (f .from) C.∘ g C.∘ F.₁ (f .to)
 ```
 
-For starters, assume that we have some $b : B$ and an essential fibre
-$(a_0, h_0)$ over it. Don't concern yourself with actually producing an
-$(a_0, h_0)$ just yet. Given that data, we can directly define $g$ to
-come from $\gamma$ through the inverse of the adjustment described in
-the compatibility condition, and a short calculation establishes that
-defining
+We'll first show that components exist at all. Assume that we have some
+$b : \ca{B}$ and an essential fibre $(a_0, h_0)$ of $H$ over it^[Don't
+worry about actually getting your hands on an $(a_0, h_0)$.]. In this
+situation, guided by the compatibility condiiton (and isomorphisms being
+just the best), we can actually _define_ the component to be "whatever
+satisfies compatibility at $(a_0,h_0)$," and a short calculation
+establishes that defining
 
 <!--
 ```agda
@@ -170,7 +180,7 @@ defining
       g = G.₁ h.to C.∘ γ.η a₀ C.∘ F.₁ h.from
 ```
 
-is indeed a correct option. We present the formalisation below, but do
+is indeed a possible choice. We present the formalisation below, but do
 not comment on the calculation, leaving it to the curious reader to load
 this file in Agda and poke around the proof.
 
@@ -189,12 +199,14 @@ this file in Agda and poke around the proof.
           ·· C.pullr (ap (G.₁ h.to C.∘_) (C.pulll refl) ∙ C.pulll refl)
 ```
 
-The result of having $g$ satisfy this coherence condition is that if we
-have any $g$, $g'$ both satisfying it, then we have $\gamma$ equal to
-both $G(h)gF(h^{-1})$ and $G(h)g'F(h^{-1})$. Since isomorphisms are both
-monic and epic, we can cancel $G(h)$ and $F(h^{-1})$ from these
-equations to conclude $g = g'$. Since the coherence condition is a
-proposition, the type of component data over $b$ is a proposition.
+Anyway, because of how we've phrased the coherence condition, if $g$,
+$g'$ both satisfy it, then we have $\gamma$ equal to both
+$G(h)gF(h^{-1})$ and $G(h)g'F(h^{-1})$.^[I've implicitly used that $H$
+is eso to cough up an $(a,h)$ over $b$, since we're proving a
+proposition] Since isomorphisms are both monic and epic, we can cancel
+$G(h)$ and $F(h^{-1})$ from these equations to conclude $g = g'$.  Since
+the coherence condition is a proposition, the type of component data
+over $b$ is a proposition.
 
 ```agda
     T-prop : ∀ b → is-prop (T b)
@@ -209,8 +221,9 @@ proposition, the type of component data over $b$ is a proposition.
 
 Given any $b$, $H$ being eso means that we _merely_ have an essential
 fibre $(a,h)$ of $H$ over $b$. But since the type of components over $b$
-is a proposition, we can use unique choice to get our hands on an
-$(a,h)$, and thus on a concrete component $g : Fb \to Gb$.
+is a proposition, if we're going to use it to construct a component over
+$b$, then we are granted the honour of actually getting hold of an
+$(a,h)$ pair.
 
 ```agda
     mkT′ : ∀ b → ∥ Essential-fibre H b ∥ → ∥ T b ∥
@@ -526,7 +539,15 @@ give $F$_.
 
     G .F-id = ap fst $ Homs-contr B.id .paths $ C.id , λ a h a′ h′ l w →
       sym (C.idl _ ∙ sym (kcomm (a , h) (a′ , h′) l (w ∙ B.idl _)))
+```
 
+Note that we proved^[in the second `<details>`{.Agda} tag above] that
+$G_1$ is functorial given _choices_ of essential fibres of all three
+objects involved in the composition. Since we're showing an equality in
+a set --- a proposition --- these choices don't matter, so we can use
+essential surjectivity of $H$.
+
+```agda
     G .F-∘ {x} {y} {z} f g = ∥-∥-proj do
       (ax , hx) ← H-eso x
       (ay , hy) ← H-eso y
@@ -534,10 +555,11 @@ give $F$_.
       inc (G∘.commutes f g hx hy hz)
 ```
 
-That is: For any $x : \ca{A}$, the object $F(x)$ can be made into an
-object candidate over $H(x)$, which, since the type of object candidates
-is a proposition, is equal to the centre of contraction --- the value
-$GH(x)$. So that's half done.
+To use the unique charactersation of $G$ as "the functor satisfying $GH
+= F$", observe: for any $x : \ca{A}$, the object $F(x)$ can be made into
+an object candidate over $H(x)$, and since the type of object candidates
+is a proposition, our candidate $F(x)$ is identical to the value of
+$GH(x)$.  That's half of $GH = F$ established right off the bat!
 
 ```agda
     module _ (x : A.Ob) where
@@ -560,11 +582,13 @@ $GH(x)$. So that's half done.
 ```
 -->
 
-_Over that identification_, we can, by the characterisation of paths in
-(pre)categories, show that any map $f : x \to y$ in $\ca{A}$ can be
-extended to a morphism candidate for $H(f)$, which is thus equal ---
-over the identification $GH(x) = F(x)$ we just constructed --- to the
-value of $GF(x)$. So we're done!
+_Over that identification_, we can show that, for any $f : x \to y$ in
+$\ca{A}$, the value $F(f)$ is also a candidate for the morphism $GH(f)$,
+so these are also identical. This proof is a bit hairier, because $F(f)$
+only has the right type if we adjust it by the proof that $GH(x) =
+F(x)$: we have to transport $F(f)$, and then as punishment for our
+hubris, invoke a lot of technical lemmas about the characterisation of
+`PathP`{.Agda} in the morphism spaces of (pre)categories.
 
 ```agda
     module _ {x y} (f : A.Hom x y) where
@@ -587,16 +611,51 @@ value of $GF(x)$. So we're done!
       to-pathp (homp f)
 ```
 
-All that remains after showing that $GH(x) = F(x)$ for every $x$, and
-similarly for morphisms, is appealing to our pre-existing proof that
-$H_!$ is fully faithful, and the proof that fully faithful essentially
-surjective functors between categories are equivalences.
+Since we've shown that $GH = F$, so in particular $GH \cong F$, we've
+now put together proofs that $H_!$ is fully faithful and, since the
+construction above works for any $F$, essentially surjective. Even
+better, since we've actually _constructed_ a functor $G$, we've shown
+that $H_!$ is **split** essentially surjective! Since $[-,\ca{C}]$ is
+univalent whenever $\ca{C}$ is, the splitting would be automatic, but
+this is a nice strengthening.
 
 ```agda
   weak-equiv→pre-equiv : is-equivalence {C = Cat[ B , C ]} (H !)
-  weak-equiv→pre-equiv = ff+eso→is-equivalence (H !)
-    (Functor-is-category c-cat)
-    (Functor-is-category c-cat)
+  weak-equiv→pre-equiv = ff+split-eso→is-equivalence {F = H !}
     (eso-full→pre-ff H H-eso λ g → inc (H.from g , H.ε g))
-    λ F → inc (G F , path→iso (correct F))
+    λ F → G F , path→iso (correct F)
 ```
+
+And since a functor is an equivalence of categories iff. it is an
+isomorphism of categories, we also have that the rule sending $F$ to its
+$G$ is an equivalence of types.
+
+```agda
+  weak-equiv→pre-iso : is-precat-iso {C = Cat[ B , C ]} (H !)
+  weak-equiv→pre-iso = is-equivalence→is-precat-iso (H !) weak-equiv→pre-equiv
+    (Functor-is-category c-cat)
+    (Functor-is-category c-cat)
+```
+
+Restating the result that $H_!$ acts on objects as an equivalence of
+types, we have the following result: If $R : \ca{C} \to \ca{C}^+$ is a
+weak equivalence (a fully faithful and essentially surjective functor),
+then for any category $\ca{D}$ and functor $G : \ca{C} \to \ca{D}$,
+there is a contractible space(!) of extensions $H : \ca{C}^+ \to \ca{D}$
+which factor $G$ through $F$.
+
+```agda
+weak-equiv→reflection
+  : (F : Functor C C⁺) → is-eso F → is-fully-faithful F
+  → {D : Precategory o ℓ} → is-category D
+  → (G : Functor C D)
+  → is-contr (Σ (Functor C⁺ D) λ H → H F∘ F ≡ G)
+weak-equiv→reflection F F-eso F-ff D-cat G =
+  weak-equiv→pre-iso F F-eso F-ff D-cat
+    .is-precat-iso.has-is-iso .is-eqv G
+```
+
+Note that this is only _half_ of the point of the Rezk completion: we
+would also like for $\ca{C}^+$ to be univalent, but that is not
+necessary for $D$ to think that precomposition with $F$ is an
+isomorphism.
