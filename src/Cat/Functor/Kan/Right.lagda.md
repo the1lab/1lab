@@ -93,10 +93,9 @@ module _ (p : Functor C C′) (F : Functor C D) where
       α′ .η x = α .η x
       α′ .is-natural x y f = sym (α .is-natural y x f)
 
-    ran .σ-comm = Nat-path λ x → ap (λ e → e .η _) lan.σ-comm
+    ran .σ-comm = Nat-path λ x → lan.σ-comm ηₚ x
     ran .σ-uniq {M = M} {σ′ = σ′} p =
-      Nat-path λ x → ap (λ e → e .η x) $ lan.σ-uniq {σ′ = σ′op} $ Nat-path λ x →
-        ap (λ e → e .η x) p
+      Nat-path λ x → lan.σ-uniq {σ′ = σ′op} (Nat-path λ x → p ηₚ x) ηₚ x
       where
         σ′op : lan.Ext => Functor.op M
         σ′op .η x = σ′ .η x

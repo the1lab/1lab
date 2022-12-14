@@ -43,7 +43,7 @@ module _ (a≡id : a ≡ 𝒞.id) where
   elim : F₁ a ≡ 𝒟.id
   elim = ap F₁ a≡id ∙ F-id
 
-  eliml : F₁ a 𝒟.∘ f ≡ f 
+  eliml : F₁ a 𝒟.∘ f ≡ f
   eliml = 𝒟.eliml elim
 
   elimr : f 𝒟.∘ F₁ a ≡ f
@@ -81,7 +81,7 @@ module _ (c≡ab : c ≡ a 𝒞.∘ b) where
 
 module _ (p : a 𝒞.∘ c ≡ b 𝒞.∘ d) where
   weave : F₁ a 𝒟.∘ F₁ c ≡ F₁ b 𝒟.∘ F₁ d
-  weave = sym (F-∘ a c) ∙ ap F₁ p ∙ F-∘ b d
+  weave = sym (F-∘ a c) ·· ap F₁ p ·· F-∘ b d
 
   extendl : F₁ a 𝒟.∘ (F₁ c 𝒟.∘ f) ≡ F₁ b 𝒟.∘ (F₁ d 𝒟.∘ f)
   extendl = 𝒟.extendl weave
@@ -92,6 +92,10 @@ module _ (p : a 𝒞.∘ c ≡ b 𝒞.∘ d) where
   extend-inner :
     f 𝒟.∘ F₁ a 𝒟.∘ F₁ c 𝒟.∘ g ≡ f 𝒟.∘ F₁ b 𝒟.∘ F₁ d 𝒟.∘ g
   extend-inner = 𝒟.extend-inner weave
+
+module _ (p : F₁ a 𝒟.∘ F₁ c ≡ F₁ b 𝒟.∘ F₁ d) where
+  swap : F₁ (a 𝒞.∘ c) ≡ F₁ (b 𝒞.∘ d)
+  swap = F-∘ a c ·· p ·· sym (F-∘  b d)
 ```
 
 ## Cancellation
@@ -126,4 +130,3 @@ to make it somewhat cleaner.
 ⟨_⟩ : a ≡ b → F₁ a ≡ F₁ b
 ⟨_⟩ = ap F₁
 ```
-

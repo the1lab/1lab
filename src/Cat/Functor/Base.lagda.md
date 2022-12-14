@@ -123,10 +123,10 @@ the domain category to serve as an inverse for $f$:
     : {F : Functor C D} → is-fully-faithful F
     → ∀ {X Y} → F₀ F X Dm.≅ F₀ F Y
     → X Cm.≅ Y
-  is-ff→essentially-injective {F = F} ff
-    record { to = to ; from = from ; inverses = inverses } =
+  is-ff→essentially-injective {F = F} ff im =
     Cm.make-iso (equiv→inverse ff to) inv invl invr
     where
+      open Dm._≅_ im using (to ; from ; inverses)
       D-inv : Dm.is-invertible to
       D-inv = record { inv = from ; inverses = inverses }
       open Cm.is-invertible
@@ -165,12 +165,18 @@ is-eso F = ∀ y → ∥ Essential-fibre F y ∥
 module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
   import Cat.Reasoning C as C
   import Cat.Reasoning D as D
+  private module _ where
+    open import Cat.Reasoning using (_≅_ ; Inverses)
+    open _≅_ public
+    open Inverses public
 
   F-map-iso : ∀ {x y} (F : Functor C D) → x C.≅ y → F₀ F x D.≅ F₀ F y
-  F-map-iso F x =
-    D.make-iso (F₁ F x.to) (F₁ F x.from)
-      (sym (F-∘ F _ _) ·· ap (F₁ F) x.invl ·· F-id F)
-      (sym (F-∘ F _ _) ·· ap (F₁ F) x.invr ·· F-id F)
+  F-map-iso F x .to       = F .F₁ (x .to)
+  F-map-iso F x .from     = F .F₁ (x .from)
+  F-map-iso F x .inverses =
+    record { invl = sym (F .F-∘ _ _) ∙ ap (F .F₁) (x .invl) ∙ F .F-id
+           ; invr = sym (F .F-∘ _ _) ∙ ap (F .F₁) (x .invr) ∙ F .F-id
+           }
     where module x = C._≅_ x
 
   F-map-invertible : ∀ {x y} (F : Functor C D) {f : C.Hom x y} → C.is-invertible f → D.is-invertible (F₁ F f)
@@ -207,6 +213,12 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
     J (λ _ p → path→iso (ap (F₀ F) p) ≡ F-map-iso F (path→iso p))
       (D.≅-pathp (λ _ → F .F₀ y) (λ _ → F .F₀ y)
         (Regularity.fast! (sym (F .F-id))))
+
+  ap-F₀-iso
+    : ∀ (cc : is-category C) (F : Functor C D) {y z : C.Ob}
+    → (p : y C.≅ z) → path→iso (ap (F .F₀) (cc .to-path p)) ≡ F-map-iso F p
+  ap-F₀-iso cc F p = ap-F₀-to-iso F (cc .to-path p)
+                   ∙ ap (F-map-iso F) (Univalent.iso→path→iso cc p)
 
   is-ff→F-map-iso-is-equiv
     : {F : Functor C D} → is-fully-faithful F

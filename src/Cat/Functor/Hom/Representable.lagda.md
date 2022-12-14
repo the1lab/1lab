@@ -2,6 +2,7 @@
 open import Cat.Instances.Elements
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
+open import Cat.Instances.Sets
 open import Cat.Functor.Base
 open import Cat.Functor.Hom
 open import Cat.Prelude
@@ -18,6 +19,7 @@ private
   module C^ = Cat.Reasoning Cat[ C ^op , Sets κ ]
   module Sets = Cat.Reasoning (Sets κ)
 open Element-hom
+open Functor
 open Element
 open _=>_
 ```
@@ -39,11 +41,23 @@ situations as "representables" and "representing objects".
 
 ```agda
 record Representation (F : Functor (C ^op) (Sets κ)) : Type (o ⊔ κ) where
+  no-eta-equality
   field
     rep        : C.Ob
     represents : F C^.≅ よ₀ C rep
 
+  equiv : ∀ {a} → C.Hom a rep ≃ ∣ F .F₀ a ∣
+  equiv = Iso→Equiv λ where
+    .fst                → represents .C^.from .η _
+    .snd .is-iso.inv    → represents .C^.to .η _
+    .snd .is-iso.rinv x → represents .C^.invr ηₚ _ $ₚ x
+    .snd .is-iso.linv x → represents .C^.invl ηₚ _ $ₚ x
+
+  module rep = C^._≅_ represents
+  module Rep {a} = Equiv (equiv {a})
+
 open Representation
+open Representation using (module Rep) public
 ```
 
 This definition is _deceptively_ simple: the idea of representable
@@ -73,13 +87,45 @@ morphisms in the same way must be isomorphic.
 representation-unique : {F : Functor (C ^op) (Sets κ)} (X Y : Representation F)
                       → X .rep C.≅ Y .rep
 representation-unique X Y =
-  is-ff→essentially-injective {F = よ C} (よ-is-fully-faithful C) よX≅よY
-  where
+  is-ff→essentially-injective {F = よ C} (よ-is-fully-faithful C) よX≅よY where
     よX≅よY : よ₀ C (X .rep) C^.≅ よ₀ C (Y .rep)
     よX≅よY = (X .represents C^.Iso⁻¹) C^.∘Iso Y .represents
 ```
 
-## As initial objects
+Therefore, if $\ca{C}$ is a univalent category, then the type of
+representations for a functor $F$ is a proposition. This does not follow
+immediately from the lemma above: we also need to show that the
+isomorphism computed by the full-faithfulness of the Yoneda embedding
+commutes with the specified representation isomorphism.
+This follows by construction, but the proof needs to commute
+
+applications of functors and paths-from-isos, which is never pretty:
+
+```agda
+Representation-is-prop : ∀ {F} → is-category C → is-prop (Representation F)
+Representation-is-prop {F = F} c-cat x y = path where
+  module X = Representation x
+  module Y = Representation y
+
+  objs : X.rep ≡ Y.rep
+  objs = c-cat .to-path (representation-unique x y)
+
+  path : x ≡ y
+  path i .rep = objs i
+  path i .represents =
+    C^.≅-pathp refl (ap (よ₀ C) objs) {f = X.represents} {g = Y.represents}
+      (Nat-pathp _ _ λ a → Hom-pathp-reflr (Sets _)
+        {A = F .F₀ a} {q = λ i → el! (C.Hom a (objs i))}
+        (funext λ x →
+           ap (λ e → e .Sets.to) (ap-F₀-iso c-cat (Hom[_,-] C a) _) $ₚ _
+        ·· sym (Y.rep.to .is-natural _ _ _) $ₚ _
+        ·· ap Y.Rep.from (sym (X.rep.from .is-natural _ _ _ $ₚ _)
+                       ·· ap X.Rep.to (C.idl _)
+                       ·· X.Rep.ε _)))
+     i
+```
+
+## As terminal objects
 
 We begin to connect the idea of representing objects to other universal
 constructions by proving this alternative characterisation of
@@ -144,7 +190,5 @@ representable-unit→terminal
   : Representation (Const (el (Lift _ ⊤) (hlevel 2))) → Terminal C
 representable-unit→terminal repr .Terminal.top = repr .rep
 representable-unit→terminal repr .Terminal.has⊤ ob = retract→is-contr
-  (repr .represents .C^.to .η ob) (λ _ → lift tt)
-  (λ x → ap (λ e → e .η ob x) (repr .represents .C^.invl))
-  (hlevel 0)
+  (Rep.from repr) (λ _ → lift tt) (Rep.η repr) (hlevel 0)
 ```

@@ -322,4 +322,10 @@ invertible→epic {f = f} invert g h p =
   h ∎
   where
     open is-invertible invert
+
+iso→monic : (f : a ≅ b) → is-monic (f .to)
+iso→monic f = invertible→monic (iso→invertible f)
+
+iso→epic : (f : a ≅ b) → is-epic (f .to)
+iso→epic f = invertible→epic (iso→invertible f)
 ```

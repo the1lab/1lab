@@ -175,7 +175,7 @@ where uniqueness and commutativity follows from the triangle identities
           module M = Func M
 
   adjoint→lan .σ-uniq {M} {α} {σ'} p = Nat-path λ x →
-    M.₁ (counit.ε _) C.∘ α.η _                ≡⟨ ap (_ C.∘_) (ap (λ e → e .η _) p) ⟩
+    M.₁ (counit.ε _) C.∘ α.η _                ≡⟨ ap (_ C.∘_) (p ηₚ _) ⟩
     M.₁ (counit.ε _) C.∘ σ' .η _ C.∘ unit.η _ ≡⟨ C.extendl (sym (σ' .is-natural _ _ _)) ⟩
     σ' .η _ C.∘ G.₁ (counit.ε _) C.∘ unit.η _ ≡⟨ C.elimr zag ⟩
     σ' .η x                                   ∎
@@ -359,7 +359,7 @@ Fair advance warning that the computation here doesn't have any further comments
     lan .σ-uniq {M = M} {α} {σ'} path = Nat-path λ x →
       ap hom $ colim (diagram _) .has⊥ _ .paths
         (cocone-hom _ λ o → sym $
-            ap₂ E._∘_ refl (ap (λ e → e .η _) path)
+            ap₂ E._∘_ refl (path ηₚ ↓Obj.x o)
           ∙ E.pulll (sym (σ' .is-natural _ _ _))
           ∙ E.pullr ( colim _ .has⊥ _ .centre .commutes _
                     ∙ ap (colim (diagram x) .bot .ψ)
@@ -385,11 +385,11 @@ extension along a fully-faithful functor does actually _extend_.
       cocone′ .ψ ob = F.₁ (ff.from (ob .map))
       cocone′ .commutes {x = y} {z} f =
         F.collapse (fully-faithful→faithful {F = K} ff
-          ( K .Functor.F-∘  _ _
-          ∙ ap₂ D._∘_ (ff.ε _) refl
-          ∙ f .sq
-          ∙ D.idl _
-          ∙ sym (ff.ε _)))
+          (  K .Functor.F-∘  _ _
+          ·· ap₂ D._∘_ (ff.ε _) refl
+          ·· f .sq
+          ·· D.idl _
+          ·· sym (ff.ε _)))
 
       to : E.Hom _ (F.₀ x)
       to = colim _ .has⊥ cocone′ .centre .hom

@@ -281,7 +281,6 @@ set, and it forms the carrier for a group: The _symmetric group_ on $X$.
 Sym : ∀ {ℓ} (X : Set ℓ) → Group-on (∣ X ∣ ≃ ∣ X ∣)
 Sym X = to-group-on group-str where
   open make-group
-  open n-Type X using (H-Level-n-type)
   group-str : make-group (∣ X ∣ ≃ ∣ X ∣)
   group-str .mul g f = f ∙e g
 ```
@@ -298,8 +297,7 @@ assumption), and `being an equivalence is a proposition`{.Agdaa
 ident=is-equiv-is-prop}.
 
 ```agda
-  group-str .group-is-set =
-    hlevel 2
+  group-str .group-is-set = hlevel!
 ```
 
 The associativity and identity laws hold definitionally.

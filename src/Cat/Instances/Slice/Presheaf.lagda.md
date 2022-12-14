@@ -126,7 +126,7 @@ without comment.
     func : Functor (Slice Cat[ C ^op , Sets κ ] P) Cat[ (∫ C P) ^op , Sets κ ]
     func .F₀ = slice-ob→presheaf
     func .F₁ {x} {y} h .η i arg =
-      h .map .η (i .ob) (arg .fst) , ap (λ e → e .η _ (arg .fst)) (h .commutes) ∙ arg .snd
+      h .map .η (i .ob) (arg .fst) , h .commutes ηₚ _ $ₚ arg .fst ∙ arg .snd
     func .F₁ {x} {y} h .is-natural _ _ _ = funext λ i →
       Σ-prop-path (λ _ → P.₀ _ .is-tr _ _) (happly (h .map .is-natural _ _ _) _)
 

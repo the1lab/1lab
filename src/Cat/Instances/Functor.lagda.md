@@ -38,7 +38,7 @@ $\eta$ and $\theta$.
 ```agda
 _∘nt_ : {F G H : Functor C D} → G => H → F => G → F => H
 _∘nt_ {C = C} {D = D} {F} {G} {H} f g = nat where
-  module D = Precategory D
+  module D = Cat.Reasoning D
 
   nat : F => H
   nat .η x = f .η _ D.∘ g .η _
@@ -47,12 +47,9 @@ _∘nt_ {C = C} {D = D} {F} {G} {H} f g = nat where
 <!--
 ```agda
   nat .is-natural x y h =
-    (f .η y D.∘ g .η y) D.∘ F.₁ h    ≡⟨ sym (D.assoc _ _ _) ⟩
-    f .η y D.∘ (g .η y D.∘ F.₁ h)    ≡⟨ ap (D._∘_ (f .η y)) (g .is-natural _ _ _) ⟩
-    f .η y D.∘ (G.₁ h D.∘ g .η x)    ≡⟨ D.assoc _ _ _ ⟩
-    (f .η y D.∘ G.₁ h) D.∘ (g .η x)  ≡⟨ ap (λ e → e D.∘ (g .η x)) (f .is-natural _ _ _) ⟩
-    (H.₁ h D.∘ f .η x) D.∘ (g .η x)  ≡⟨ sym (D.assoc _ _ _) ⟩
-    H.₁ h D.∘  f .η _ D.∘ g .η  _    ∎
+    (f .η y D.∘ g .η y) D.∘ F.₁ h  ≡⟨ D.pullr (g .is-natural _ _ _) ⟩
+    f .η y D.∘ (G.₁ h D.∘ g .η x)  ≡⟨ D.extendl (f .is-natural _ _ _) ⟩
+    H.₁ h  D.∘ f .η _ D.∘ g .η  _  ∎
     where
       module C = Precategory C
       module F = Functor F
@@ -266,7 +263,7 @@ so that the two halves of the isomorphism annihilate.
       F₁≡G₁ : ∀ {x y} (f : C .Hom x y)
             → PathP (λ i → D.Hom (F₀≡G₀ x i) (F₀≡G₀ y i)) (F .F₁ {x} {y} f) (G .F₁ {x} {y} f)
       F₁≡G₁ {x = x} {y} f = Hom-pathp-iso $
-        (D.extendl (F≅G .to .is-natural x y f) ∙ D.elimr (ap (λ e → e .η x) (F≅G .invl)))
+        (D.extendl (F≅G .to .is-natural x y f) ∙ D.elimr (F≅G .invl ηₚ x))
 
       F≡G : F ≡ G
       F≡G = Functor-path F₀≡G₀ λ f → F₁≡G₁ f
@@ -412,8 +409,8 @@ module
              → F DE.≅ F′ → (F F∘ G) CE.≅ (F′ F∘ G)
     F∘-iso-l {F} {F′} {G} isom =
       CE.make-iso to from
-        (Nat-path λ x → ap (λ e → e .η _) isom.invl)
-        (Nat-path λ x → ap (λ e → e .η _) isom.invr)
+        (Nat-path λ x → isom.invl ηₚ _)
+        (Nat-path λ x → isom.invr ηₚ _)
       where
         module isom = DE._≅_ isom
         to : (F F∘ G) => (F′ F∘ G)

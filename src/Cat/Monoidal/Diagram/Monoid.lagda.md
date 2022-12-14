@@ -252,10 +252,10 @@ into an identification.
   F .F₀′ o ._⋆_ x y = o .μ (x , y)
   F .F₀′ o .has-is-monoid .Mon.has-is-semigroup =
     record { has-is-magma = record { has-is-set = hlevel! }
-           ; associative  = o .μ-assoc $ₚ _ , _ , _
+           ; associative  = o .μ-assoc $ₚ _
            }
-  F .F₀′ o .has-is-monoid .Mon.idl = o .μ-unitl $ₚ lift tt , _
-  F .F₀′ o .has-is-monoid .Mon.idr = o .μ-unitr $ₚ _ , lift tt
+  F .F₀′ o .has-is-monoid .Mon.idl = o .μ-unitl $ₚ _
+  F .F₀′ o .has-is-monoid .Mon.idr = o .μ-unitr $ₚ _
   F .F₁′ wit .pres-id = wit .pres-η $ₚ _
   F .F₁′ wit .pres-⋆ x y = wit .pres-μ $ₚ _
   F .F-id′ = prop!

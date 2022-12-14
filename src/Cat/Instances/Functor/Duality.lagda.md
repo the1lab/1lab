@@ -91,7 +91,7 @@ module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ�
 
   op-natural-iso : F CD.≅ G → (Functor.op F) CopDop.≅ (Functor.op G)
   op-natural-iso isom = CopDop.make-iso (_=>_.op isom.from) (_=>_.op isom.to)
-    (Nat-path (λ x → ap (λ e → e .η x) isom.invl))
-    (Nat-path λ x → ap (λ e → e .η x) isom.invr)
+    (Nat-path λ x → isom.invl ηₚ x)
+    (Nat-path λ x → isom.invr ηₚ x)
     where module isom = CD._≅_ isom
 ```

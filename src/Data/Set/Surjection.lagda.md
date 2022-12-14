@@ -54,7 +54,7 @@ surjective→regular-epi c d f surj .has-is-coeq = coeqs where
   go : ∀ {F} (e′ : ∣ c ∣ → ∣ F ∣) p (x : ∣ d ∣) → ∥ fibre f x ∥ → ∣ F ∣
   go e′ p x =
     ∥-∥-rec-set (λ x → e′ (x .fst))
-      (λ x y → p $ₚ x .fst , y .fst , x .snd ∙ sym (y .snd))
+      (λ x y → p $ₚ (x .fst , y .fst , x .snd ∙ sym (y .snd)))
       hlevel!
 ```
 
@@ -67,10 +67,10 @@ surjectivity out of the way, we get what we wanted.
   coeqs .coequalise {F} {e′} p x = go {F = F} e′ p x (surj x)
   coeqs .universal {F} {e′} {p = p} = funext λ x →
     ∥-∥-elim {P = λ e → go {F} e′ p (f x) e ≡ e′ x}
-      (λ x → hlevel!) (λ e → p $ₚ e .fst , x , e .snd) (surj (f x))
+      (λ x → hlevel!) (λ e → p $ₚ (e .fst , x , e .snd)) (surj (f x))
   coeqs .unique {F} {e′} {p} {colim} comm = funext λ a →
     ∥-∥-elim {P = λ e → colim a ≡ go {F} e′ p a e} (λ x → hlevel!)
-      (λ x → sym ((comm $ₚ x .fst) ∙ ap colim (x .snd)))
+      (λ x → sym (comm $ₚ x .fst ∙ ap colim (x .snd)))
       (surj a)
 ```
 

@@ -527,4 +527,9 @@ is a proposition:
            → ((x : _) → a .η x ≡ b .η x)
            → a ≡ b
   Nat-path = Nat-pathp refl refl
+
+  _ηₚ_ : ∀ {a b : F => G} → a ≡ b → ∀ x → a .η x ≡ b .η x
+  p ηₚ x = ap (λ e → e .η x) p
+
+  infixl 45 _ηₚ_
 ```

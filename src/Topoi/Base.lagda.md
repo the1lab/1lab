@@ -313,7 +313,7 @@ limits directly for efficiency concerns. </summary>
     func = incl .F₀ set
     cent = psh-terminal func .centre
     uniq : ∀ f → cent .η _ ≡ f
-    uniq f = ap (λ e → e .η _) (psh-terminal func .paths f′) where
+    uniq f = psh-terminal func .paths f′ ηₚ _ where
       f′ : _ => _
       f′ .η _ = f
       f′ .is-natural _ _ _ = funext λ x → happly (sym (F-id T)) _
@@ -321,7 +321,7 @@ limits directly for efficiency concerns. </summary>
   sets .L-lex .pres-pullback {P} {X} {Y} {Z} pb = pb′ where
     open is-pullback
     pb′ : is-pullback (Sets κ) _ _ _ _
-    pb′ .square = ap (λ e → η e _) (pb .square)
+    pb′ .square = pb .square ηₚ _
     pb′ .limiting {P'} {p₁' = p₁'} {p₂' = p₂'} p =
       η (pb .limiting {P′ = incl .F₀ P'} {p₁' = p1'} {p₂' = p2'}
           (Nat-path λ _ → p)) _
@@ -332,11 +332,10 @@ limits directly for efficiency concerns. </summary>
         p2' : _ => _
         p2' .η _ = p₂'
         p2' .is-natural x y f i o = F-id Y (~ i) (p₂' o)
-    pb′ .p₁∘limiting = ap (λ e → η e _) (pb .p₁∘limiting)
-    pb′ .p₂∘limiting = ap (λ e → η e _) (pb .p₂∘limiting)
+    pb′ .p₁∘limiting = pb .p₁∘limiting ηₚ _
+    pb′ .p₂∘limiting = pb .p₂∘limiting ηₚ _
     pb′ .unique {P′} {lim' = lim'} p1 p2 =
-      ap (λ e → η e _) (pb .unique {lim' = l′}
-        (Nat-path λ _ → p1) (Nat-path λ _ → p2))
+      pb .unique {lim' = l′} (Nat-path λ _ → p1) (Nat-path λ _ → p2) ηₚ _
       where
         l′ : incl .F₀ P′ => P
         l′ .η _ = lim'

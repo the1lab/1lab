@@ -627,7 +627,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
       K=>lim′ .hom = K′=>lim .centre .hom
       K=>lim′ .commutes o =
         (morp.to .η o C.∘ f-lim .top .ψ o) C.∘ K=>lim′ .hom ≡⟨ C.pullr (K′=>lim .centre .commutes o) ⟩
-        morp.to .η o C.∘ ψ K′ o                             ≡⟨ C.cancell (ap (λ e → η e o) morp.invl) ⟩
+        morp.to .η o C.∘ ψ K′ o                             ≡⟨ C.cancell (morp.invl ηₚ o) ⟩
         K .ψ o                                              ∎
 
       uniq : ∀ x → K=>lim′ ≡ x
@@ -635,7 +635,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
         x′ : Cone-hom F K′ (f-lim .top)
         x′ .hom = x .hom
         x′ .commutes o =
-          f-lim .top .ψ o C.∘ x .hom                                       ≡⟨ C.introl (ap (λ e → η e o) morp.invr) ⟩
+          f-lim .top .ψ o C.∘ x .hom                                       ≡⟨ C.introl (morp.invr ηₚ o) ⟩
           (morp.from .η o C.∘ morp.to .η o) C.∘ f-lim .top .ψ o C.∘ x .hom ≡⟨ C.pullr (C.assoc _ _ _ ∙ x .commutes o) ⟩
           morp.from .η o C.∘ K .ψ o ∎
 ```

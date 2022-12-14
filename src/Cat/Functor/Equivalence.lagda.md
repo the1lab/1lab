@@ -5,6 +5,7 @@ open import Cat.Functor.Base
 open import Cat.Univalent
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning
 
 module Cat.Functor.Equivalence where
@@ -568,5 +569,40 @@ instance
         {F : Functor C D} {n}
     → H-Level (is-precat-iso F) (suc n)
   H-Level-is-precat-iso = prop-instance (Iso→is-hlevel 1 eqv (hlevel 1))
+
+module
+  _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+    (F : Functor C D) (eqv : is-equivalence F)
+  where
+  private
+    module e = is-equivalence eqv
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module F = Fr F
+
+  is-equivalence→is-ff : is-fully-faithful F
+  is-equivalence→is-ff = is-iso→is-equiv λ where
+    .is-iso.inv x → e.unit⁻¹ .η _ C.∘ L-adjunct e.F⊣F⁻¹ x
+    .is-iso.rinv x →
+      D.invertible→monic (F-map-invertible F (e.unit-iso _)) _ _ $
+        ap₂ D._∘_ refl (F .F-∘ _ _)
+      ·· D.cancell (F.annihilate (e.unit-iso _ .C.is-invertible.invl))
+      ·· D.invertible→monic (e.counit-iso _) _ _
+          (R-L-adjunct e.F⊣F⁻¹ x ∙ sym (D.cancell e.zig))
+    .is-iso.linv x →
+        ap (_ C.∘_) (sym (e.unit .is-natural _ _ _))
+      ∙ C.cancell (e.unit-iso _ .C.is-invertible.invr)
+
+  open is-precat-iso
+  open is-iso
+
+  is-equivalence→is-precat-iso
+    : is-category C → is-category D → is-precat-iso F
+  is-equivalence→is-precat-iso c-cat d-cat = λ where
+    .has-is-ff → is-equivalence→is-ff
+    .has-is-iso → is-iso→is-equiv λ where
+      .inv → e.F⁻¹ .F₀
+      .rinv x → d-cat .to-path (D.invertible→iso _ (e.counit-iso x))
+      .linv x → sym $ c-cat .to-path (C.invertible→iso _ (e.unit-iso x))
 ```
 -->

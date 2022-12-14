@@ -1,25 +1,18 @@
 open import 1Lab.Reflection
 open import 1Lab.Type
 
+open import Data.Maybe.Base hiding (map ; extend)
+
 open import Prim.Data.Nat
 
 module 1Lab.Reflection.Subst where
-
-{-# NO_UNIVERSE_CHECK #-}
-record Impossible : Type where
-  field throw-impossible : ∀ {ℓ} {A : Type ℓ} → TC A
-
-open Impossible
-
-impossible : Impossible
-impossible .throw-impossible = typeError "The impossible happened!"
 
 data Subst : Type where
   ids        : Subst
   _∷_        : Term → Subst → Subst
   wk         : Nat → Subst → Subst
   lift       : Nat → Subst → Subst
-  strengthen : Impossible → Nat → Subst → Subst
+  strengthen : Nat → Subst → Subst
 
 infixr 20 _∷_
 
@@ -52,11 +45,11 @@ singletonS n u = map (λ i → var i []) (count (n - 1)) ++# u ∷ (raiseS n)
     count (suc n) = 1 ∷ map suc (count n)
 
 {-# TERMINATING #-}
-subst-tm  : Subst → Term → TC Term
-subst-tm* : Subst → List (Arg Term) → TC (List (Arg Term))
-apply-tm  : Term → Arg Term → TC Term
+subst-tm  : Subst → Term → Maybe Term
+subst-tm* : Subst → List (Arg Term) → Maybe (List (Arg Term))
+apply-tm  : Term → Arg Term → Maybe Term
 
-raise : Nat → Term → TC Term
+raise : Nat → Term → Maybe Term
 raise n = subst-tm (raiseS n)
 
 subst-tm* ρ [] = pure []
@@ -64,21 +57,21 @@ subst-tm* ρ (arg ι x ∷ ls) = do
   x ← subst-tm ρ x
   (arg ι x ∷_) <$> subst-tm* ρ ls
 
-apply-tm* : Term → List (Arg Term) → TC Term
+apply-tm* : Term → List (Arg Term) → Maybe Term
 apply-tm* tm [] = pure tm
 apply-tm* tm (x ∷ xs) = do
   tm′ ← apply-tm tm x
   apply-tm* tm′ xs
 
-lookup-tm : (σ : Subst) (i : Nat) → TC Term
+lookup-tm : (σ : Subst) (i : Nat) → Maybe Term
 lookup-tm ids i = pure $ var i []
 lookup-tm (wk n ids) i = pure $ var (i + n) []
 lookup-tm (wk n ρ) i = lookup-tm ρ i >>= subst-tm (raiseS n)
 lookup-tm (x ∷ ρ) i with (i == 0)
 … | true  = pure x
 … | false = lookup-tm ρ (i - 1)
-lookup-tm (strengthen err n ρ) i with (i < n)
-… | true = err .throw-impossible
+lookup-tm (strengthen n ρ) i with (i < n)
+… | true = nothing
 … | false = lookup-tm ρ (i - n)
 lookup-tm (lift n σ) i with (i < n)
 … | true  = pure $ var i []
@@ -88,14 +81,12 @@ apply-tm (var x args)      argu = pure $ var x (args ++ argu ∷ [])
 apply-tm (con c args)      argu = pure $ con c (args ++ argu ∷ [])
 apply-tm (def f args)      argu = pure $ def f (args ++ argu ∷ [])
 apply-tm (lam v (abs n t)) (arg _ argu) = subst-tm (argu ∷ ids) t
-apply-tm (pat-lam cs args) argu = typeError "Unsupported apply pat-lam"
-apply-tm (pi a b)          argu = typeError "Type error: apply Π to argument"
-apply-tm (agda-sort s)     argu = typeError "Type error: apply sort to argument"
-apply-tm (lit l)           argu = typeError "Type error: apply literal to argument"
+apply-tm (pat-lam cs args) argu = nothing
+apply-tm (pi a b)          argu = nothing
+apply-tm (agda-sort s)     argu = nothing
+apply-tm (lit l)           argu = nothing
 apply-tm (meta x args)     argu = pure $ meta x (args ++ argu ∷ [])
-apply-tm unknown           argu = do
-  mv ← new-meta unknown
-  apply-tm mv argu
+apply-tm unknown           argu = pure unknown
 
 subst-tm ids tm = pure tm
 subst-tm ρ (var i args) = do
@@ -105,7 +96,7 @@ subst-tm ρ (var i args) = do
 subst-tm ρ (con c args)      = con c <$> subst-tm* ρ args
 subst-tm ρ (def f args)      = def f <$> subst-tm* ρ args
 subst-tm ρ (meta x args)     = meta x <$> subst-tm* ρ args
-subst-tm ρ (pat-lam cs args) = typeError $ "Unsupported subst pat-lam"
+subst-tm ρ (pat-lam cs args) = nothing
 subst-tm ρ (lam v (abs n b)) = lam v ∘ abs n <$> subst-tm (liftS 1 ρ) b
 subst-tm ρ (pi (arg ι a) (abs n b)) = do
   a ← subst-tm ρ a

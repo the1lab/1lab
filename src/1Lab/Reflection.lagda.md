@@ -14,6 +14,7 @@ module 1Lab.Reflection where
 open import Prim.Data.String public
 open import Prim.Data.Float public
 open import Prim.Data.Maybe public
+open import Data.Maybe.Base using (maybe→alt) public
 open import Prim.Data.Word public
 open import Meta.Traverse public
 open import Meta.Idiom public
@@ -436,7 +437,7 @@ instance
   Bind-TC .Bind._>>=_ = bindTC
 
   Alt-TC : Alt (eff TC)
-  Alt-TC .Alt.fail = typeError []
+  Alt-TC .Alt.fail′ xs = typeError [ strErr xs ]
   Alt-TC .Alt._<|>_ = catchTC
 ```
 </details>

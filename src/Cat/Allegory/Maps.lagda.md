@@ -108,11 +108,11 @@ using those words.
     (subst (id A.≤_) (sym (A.idr _ ∙ dual-id A)) A.≤-refl)
 
   Maps[_] .Precategory._∘_ (f , m) (g , m′) = f A.∘ g , mapping
-    ( (f ∘ g) ∘ (f ∘ g) † A.=⟨ ap (_ ∘_) A.dual-∘ ·· sym (A.assoc _ _ _) ·· ap (f ∘_) (A.assoc _ _ _) ⟩
-      f ∘ (g ∘ g †) ∘ f † A.≤⟨ f ▶ m′ .functional ◀ f † ⟩
-      f ∘ id ∘ f †        A.=⟨ ap (f ∘_) (A.idl _) ⟩
-      f ∘ f †             A.≤⟨ m .functional ⟩
-      id                  A.≤∎ )
+    ( (f ∘ g) ∘ (f ∘ g) †     A.=⟨ A.†-inner refl ⟩
+      f ∘ (g ∘ g †) ∘ f †     A.≤⟨ f ▶ m′ .functional ◀ f † ⟩
+      f ∘ id ∘ f †            A.=⟨ A.refl⟩∘⟨ A.idl _ ⟩
+      f ∘ f †                 A.≤⟨ m .functional ⟩
+      id                      A.≤∎ )
     ( id                   A.≤⟨ m′ .entire ⟩
       g † ∘ g              A.=⟨ ap (g † ∘_) (sym (A.idl _)) ⟩
       g † ∘ id ∘ g         A.≤⟨ g † ▶ m .entire ◀ g ⟩

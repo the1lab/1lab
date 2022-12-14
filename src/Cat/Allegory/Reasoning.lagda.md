@@ -102,3 +102,9 @@ modular′ f g h =
   (g † † ∩ (f † † ∘ h †) †) ∘ f   =⟨ ap₂ _∘_ (ap₂ _∩_ (dual g) (ap _† (ap₂ _∘_ (dual f) refl) ·· dual-∘ ·· ap (_∘ f †) (dual h))) refl ⟩
   (g ∩ h ∘ f †) ∘ f               ≤∎
 ```
+
+```agda
+†-inner : (p : g ∘ g′ † ≡ h) → (f ∘ g) ∘ (f′ ∘ g′) † ≡ f ∘ h ∘ f′ †
+†-inner p = ap₂ _∘_ refl dual-∘ ∙ sym (assoc _ _ _)
+          ∙ ap₂ _∘_ refl (assoc _ _ _ ∙ ap₂ _∘_ p refl)
+```
