@@ -2,6 +2,7 @@
 open import Cat.Functor.FullSubcategory
 open import Cat.Instances.Functor
 open import Cat.Instances.Sets
+open import Cat.Functor.Base
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
@@ -58,4 +59,16 @@ Rezk-completion-is-category
 Rezk-completion-is-category {o} {h} {A} =
   Restrict-is-category _ (λ _ → squash)
     (Functor-is-category Sets-is-category)
+
+Complete : (A : Precategory o h) → Functor A (Rezk-completion A)
+Complete A = Ff-domain→Full-subcat {F = よ A} (よ-is-fully-faithful A)
+
+Complete-is-ff : {A : Precategory o h} → is-fully-faithful (Complete A)
+Complete-is-ff =
+  is-fully-faithful-domain→Full-subcat
+    {F = よ _} (よ-is-fully-faithful _)
+
+Complete-is-eso : {A : Precategory o h} → is-eso (Complete A)
+Complete-is-eso =
+  is-eso-domain→Full-subcat {F = よ _} (よ-is-fully-faithful _)
 ```

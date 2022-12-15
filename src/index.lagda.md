@@ -79,6 +79,11 @@ Thierry Coquand, and the late Vladimir Voevodsky.
 
 [the HoTT Book]: https://homotopytypetheory.org/book
 
+  While the 1Lab is not strictly meant to be a companion to, or a
+  formalisation of, the HoTT book. But since there is significant
+  overlap, one of our pages is simply a list of references to the HoTT
+  book and their correspondent on the 1Lab: [HoTT](HoTT.html)
+
 * Prof. Martín Escardó, at Birmingham, has done a great service to the
 community by _also_ formalising a great deal of univalent mathematics in
 Literate Agda, in his [Introduction to Univalent Foundations of
@@ -173,34 +178,34 @@ are developed under the `1Lab` namespace. Start here:
 
 open import 1Lab.Type -- Universes
 
-open import 1Lab.Path           -- Path types
+open import 1Lab.Path -- Path types
 open import 1Lab.Path.Groupoid  -- Groupoid structure of types
 open import 1Lab.Path.Reasoning -- Combinators for reasoning with path composition
 open import 1Lab.Path.IdentitySystem -- Families R for which R(x,y) ≃ (x ≡ y)
 
-open import 1Lab.Equiv             -- “Contractible fibres” equivalences
-open import 1Lab.Equiv.Biinv       -- Biinvertible maps
-open import 1Lab.Equiv.FromPath    -- Transport is an equivalence, cubically
-open import 1Lab.Equiv.Embedding   -- Embeddings
-open import 1Lab.Equiv.Fibrewise   -- Fibrewise equivalences
+open import 1Lab.Equiv -- “Contractible fibres” equivalences
+open import 1Lab.Equiv.Biinv -- Biinvertible maps
+open import 1Lab.Equiv.FromPath -- Transport is an equivalence, cubically
+open import 1Lab.Equiv.Embedding -- Embeddings
+open import 1Lab.Equiv.Fibrewise -- Fibrewise equivalences
 open import 1Lab.Equiv.HalfAdjoint -- Half-adjoint equivalences
 
-open import 1Lab.HLevel          -- h-levels
+open import 1Lab.HLevel -- h-levels
 open import 1Lab.HLevel.Retracts -- Closure of h-levels under retractions/isos
 open import 1Lab.HLevel.Universe -- The type of n-types is a (n+1)-type
 
-open import 1Lab.Univalence            -- Equivalence is equivalent to identification
-open import 1Lab.Univalence.SIP        -- Univalence + preservation of structure
-open import 1Lab.Univalence.SIP.Auto   -- Derive is-univalent for families of types
+open import 1Lab.Univalence -- Equivalence is equivalent to identification
+open import 1Lab.Univalence.SIP -- Univalence + preservation of structure
+open import 1Lab.Univalence.SIP.Auto -- Derive is-univalent for families of types
 
-open import 1Lab.Type.Pi    -- Properties of dependent products
+open import 1Lab.Type.Pi -- Properties of dependent products
 open import 1Lab.Type.Sigma -- Properties of dependent coproducts
 
 open import 1Lab.HIT.Truncation -- Propositional truncation
 
-open import 1Lab.Counterexamples.IsIso   -- Counterexample: is-iso is not a prop
+open import 1Lab.Counterexamples.IsIso -- Counterexample: is-iso is not a prop
 open import 1Lab.Counterexamples.Russell -- Counterexample: Russell's paradox
-open import 1Lab.Counterexamples.Sigma   -- Counterexample: Sigma is not prop
+open import 1Lab.Counterexamples.Sigma -- Counterexample: Sigma is not prop
 ```
 
 ## Data types
@@ -210,15 +215,74 @@ are fundamental to the rest of the development but not “basic type
 theory”. These modules contain (or re-export) the types themselves,
 useful operations on them, characterisation of their path spaces, etc.
 
+The natural numbers have a lot of associated theory (number theory), so
+there are a lot of child modules of `Data.Nat`{.Agda}:
+
 ```agda
 open import Data.Nat  -- The natural numbers
-open import Data.Int  -- The integers
+open import Data.Nat.Solver
+-- Commutative semiring solver for equations in Nat
+
+open import Data.Nat.DivMod -- Euclidean division
+open import Data.Nat.Divisible -- Divisibility
+open import Data.Nat.Divisible.GCD
+-- The greatest common divisor, Euclid's algorithm
+
+open import Data.Nat.Order -- Properties of ≤
+open import Data.Nat.Properties -- Arithmetic properties
+```
+
+We also have a theory of finite sets:
+
+```agda
+open import Data.Fin
+open import Data.Fin.Base -- The standard finite sets
+open import Data.Fin.Finite -- Finiteness
+open import Data.Fin.Closure -- Closure properties of finiteness
+open import Data.Fin.Properties -- Properties of finite sets
+```
+
+Of similar importance is the type of integers:
+
+```agda
+open import Data.Int -- The integers (as a higher inductive type!)
+open import Data.Int.Inductive -- Inductively-defined integers
+open import Data.Int.Order -- ≤ on the integers
+open import Data.Int.Universal -- A universal property of the integers
+```
+
+General constructions on sets:
+
+```agda
+open import Data.Set.Truncation -- Set truncations
+open import Data.Set.Surjection -- Surjections of sets
+open import Data.Set.Coequaliser -- Set coequalisers
+```
+
+Well-founded relations, well-founded trees and well-founded induction:
+
+```agda
+open import Data.Wellfounded.W -- Trees
+open import Data.Wellfounded.Base -- Relations
+open import Data.Wellfounded.Properties -- Properties of well-founded relations
+```
+
+And general data types:
+
+```agda
 open import Data.Sum  -- Coproduct types
+open import Data.Dec  -- Decisions and decidable types
 open import Data.Bool -- The booleans
 open import Data.List -- Finite lists
-open import Data.Power           -- Power sets
-open import Data.Power.Lattice   -- Power sets form a lattice
-open import Data.Set.Coequaliser -- Set coequalisers
+```
+
+We also consider "data types" to encompass properties of properties, or,
+more generally, predicates:
+
+```agda
+open import Data.Power -- Power sets
+open import Data.Power.Lattice -- Power sets form a lattice
+open import Data.Power.Complemented -- Complemented or decidable subobjects
 ```
 
 # Category Theory
@@ -236,8 +300,8 @@ rest of the development, defining basic constructions like precategories
 themselves, functors, natural transformations, etc.
 
 ```agda
-open import Cat.Base      -- Precategories, functors, natural transformations
-open import Cat.Solver    -- Automatic solver for associativity problems
+open import Cat.Base -- Precategories, functors, natural transformations
+open import Cat.Solver -- Automatic solver for associativity problems
 open import Cat.Morphism  -- Important classes of morphisms
 open import Cat.Reasoning -- Categorical reasoning combinators
 ```
@@ -253,37 +317,61 @@ indirection.
 open import Cat.Diagram.Congruence -- Internal equivalence relations
 
 -- Colimits:
-open import Cat.Diagram.Initial                -- Initial objects
-open import Cat.Diagram.Pushout                -- Pushouts
-open import Cat.Diagram.Coproduct              -- Binary coproducts
-open import Cat.Diagram.Coequaliser            -- Coequalisers
-open import Cat.Diagram.Colimit.Base           -- Conical colimits
-open import Cat.Diagram.Coproduct.Indexed      -- Indexed coproducts
+open import Cat.Diagram.Initial -- Initial objects
+open import Cat.Diagram.Pushout -- Pushouts
+open import Cat.Diagram.Coproduct -- Binary coproducts
+open import Cat.Diagram.Coproduct.Copower -- Copowers
+open import Cat.Diagram.Coequaliser -- Coequalisers
+open import Cat.Diagram.Colimit.Base -- Conical colimits
+open import Cat.Diagram.Colimit.Finite -- Finite colimits
+open import Cat.Diagram.Coproduct.Indexed -- Indexed coproducts
 open import Cat.Diagram.Coequaliser.RegularEpi -- Regular epimorphisms
+
+-- Coends:
+open import Cat.Diagram.Coend -- Coends
+open import Cat.Diagram.Coend.Sets -- Concrete computation of coends in sets
+open import Cat.Diagram.Coend.Formula -- A formula for computing coends
 
 open import Cat.Diagram.Duals -- Dualisation of co/limits
 open import Cat.Diagram.Image -- Image factorisations
+open import Cat.Diagram.Sieve -- Subobjects of a Hom-functor
 open import Cat.Diagram.Idempotent -- Idempotent morphisms
 
 -- Limits
-open import Cat.Diagram.Product                -- Binary products
-open import Cat.Diagram.Pullback               -- Fibred products
-open import Cat.Diagram.Terminal               -- Terminal objects
-open import Cat.Diagram.Equaliser              -- Equalisers
-open import Cat.Diagram.Limit.Base             -- Conical limits
+open import Cat.Diagram.Product -- Binary products
+open import Cat.Diagram.Product.Finite -- n-Ary products
+open import Cat.Diagram.Product.Solver
+-- Automatic solving of equations in a Cartesian monoidal category
+
+open import Cat.Diagram.Pullback -- Fibred products
+open import Cat.Diagram.Terminal -- Terminal objects
+open import Cat.Diagram.Equaliser -- Equalisers
+open import Cat.Diagram.Limit.Base -- Conical limits
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Limit.Product
 open import Cat.Diagram.Limit.Pullback
 open import Cat.Diagram.Limit.Equaliser
 open import Cat.Diagram.Product.Indexed
-open import Cat.Diagram.Equaliser.Kernel       -- Kernels
-open import Cat.Diagram.Pullback.Properties    -- Properties of fibred products
-open import Cat.Diagram.Equaliser.RegularMono  -- Regular monomorphisms
+open import Cat.Diagram.Equaliser.Kernel -- Kernels
+open import Cat.Diagram.Pullback.Properties -- Properties of fibred products
+open import Cat.Diagram.Equaliser.RegularMono -- Regular monomorphisms
 
-open import Cat.Diagram.Monad        -- Monads
+open import Cat.Diagram.Monad -- Monads
 open import Cat.Diagram.Monad.Limits -- Limits in Eilenberg-Moore categories
+open import Cat.Diagram.Monad.Codensity -- Codensity monads
 
 open import Cat.Diagram.Zero -- Zero objects
+```
+
+### Interesting morphisms
+
+There are a number of properties, constructions and classes of morphisms
+we can construct in _any_ category.
+
+```agda
+open import Cat.Morphism.StrongEpi -- Strong epimorphisms
+open import Cat.Morphism.Orthogonal -- Orthogonality
+open import Cat.Morphism.Factorisation -- Factorisation systems
 ```
 
 ## Functors
@@ -293,22 +381,41 @@ modules for working with functors, the definition of full subcategories,
 and adjoint functors.
 
 ```agda
-open import Cat.Functor.Hom -- Hom functor, Yoneda embedding, Coyoneda lemma
 open import Cat.Functor.Base -- Compendium of functor properties
+open import Cat.Functor.Dense -- Dense functors
+open import Cat.Functor.Final -- Final functors
+open import Cat.Functor.Slice -- Extending functors to slice categories
 open import Cat.Functor.Pullback -- Base change, dependent sum, Σf ⊣ f*
+open import Cat.Functor.Amnestic -- Functors which reflect univalence
 open import Cat.Functor.Bifunctor -- Functors out of product categories
-open import Cat.Functor.Equivalence -- Equivalences of (pre)categories
 open import Cat.Functor.Conservative -- Functors which reflect isomorphisms
 open import Cat.Functor.FullSubcategory -- Full subcategories
-open import Cat.Functor.Equivalence.Complete -- Completeness respects equivalence
+```
+
+Helpers for working with functions in equational reasoning:
+
+```agda
+open import Cat.Functor.Reasoning
+open import Cat.Functor.Reasoning.FullyFaithful
+```
+
+About equivalences of (pre)categories:
+
+```agda
+open import Cat.Functor.Equivalence -- Equivalences of (pre)categories
+open import Cat.Functor.Equivalence.Path
+  -- Categories are identical by their equivalences
+open import Cat.Functor.Equivalence.Complete -- Equivalences preserve completeness
 ```
 
 About adjoint functors, and their associated monads:
 
 ```agda
-open import Cat.Diagram.Monad   -- Definition of monads
+open import Cat.Diagram.Monad -- Definition of monads
 open import Cat.Functor.Adjoint -- Unit-counit adjunctions and universal arrows
+open import Cat.Functor.Adjoint.Hom -- Adjoints in terms of Hom-isomorphisms
 open import Cat.Functor.Adjoint.Monad -- Monad from an adjunction
+open import Cat.Functor.Adjoint.Unique -- Uniqueness of adjoints
 open import Cat.Functor.Adjoint.Monadic -- Monadic adjunctions
 open import Cat.Functor.Adjoint.Compose -- Adjunctions compose
 open import Cat.Functor.Adjoint.Continuous -- Right adjoints preserve limits
@@ -325,9 +432,20 @@ open import Cat.Functor.Monadic.Crude -- The crude monadicity theorem
 About Kan extensions:
 
 ```agda
-open import Cat.Functor.Kan       -- Left Kan extensions
+open import Cat.Functor.Kan -- Left Kan extensions
 open import Cat.Functor.Kan.Right -- Right Kan extensions
 open import Cat.Functor.Kan.Nerve -- The nerve/realisation adjunction
+open import Cat.Functor.Kan.Global -- Global Kan extensions
+open import Cat.Functor.Kan.Unique -- Uniqueness of Kan extensions
+```
+
+Properties of Hom-functors, and (direct) consequences of the Yoneda
+lemma:
+
+```agda
+open import Cat.Functor.Hom -- Hom functor, Yoneda embedding, Coyoneda lemma
+open import Cat.Functor.Hom.Cocompletion -- Universal property of PSh(C)
+open import Cat.Functor.Hom.Representable -- Representable functors
 ```
 
 ## Univalent categories
@@ -339,60 +457,118 @@ version of the univalence axiom. Sometimes we also refer to these as
 "univalent categories" to make the distinction clear.
 
 ```agda
-open import Cat.Univalent      -- Basic properties of categories
+open import Cat.Univalent -- Basic properties of categories
 open import Cat.Univalent.Rezk -- Free category on a precategory
+open import Cat.Univalent.Rezk.Universal
+  -- Universal property of the Rezk completion
 open import Cat.Univalent.Instances.Algebra
   -- Eilenberg-Moore categories preserve univalence
 ```
 
 ## Category instances
 
-Here's where we actually build some categories and prove that they have
-desirable properties.
+Category "instances" are constructions of, and proofs associated to, the
+construction of actual categories, rather than reasoning about
+categories in the abstract. We begin with some assorted constructions:
 
 ```agda
--- Comma categories:
-open import Cat.Instances.Comma
-open import Cat.Instances.Comma.Univalent
-
-open import Cat.Instances.Delooping -- Delooping a monoid to give a category
-open import Cat.Instances.Discrete -- Discrete categories
 open import Cat.Instances.Elements -- Category of elements of a presheaf
 
+open import Cat.Instances.Karoubi
+-- Completion of a category under splitting of idempotents
+
+open import Cat.Instances.Twisted
+-- The twisted arrow category (used in computing co/ends)
+
+open import Cat.Instances.Lift
+-- Lifting a category to higher universes
+
+open import Cat.Instances.Product -- Product categories
+```
+
+The construction and properties of functor categories:
+
+```agda
 -- Functor categories:
 open import Cat.Instances.Functor
 open import Cat.Instances.Functor.Limits -- Co/limits in functor categories
 open import Cat.Instances.Functor.Duality -- 2-cell duality in Cat
+open import Cat.Instances.Functor.Compose
+-- Composition of functors is functorial (also whiskering natural
+-- transformations)
+```
 
--- Completion of a category under splitting idempotents
-open import Cat.Instances.Karoubi
+Properties of the category of sets:
 
-open import Cat.Instances.Lift -- Lifting a category to higher universes
-open import Cat.Instances.Product -- Product categories
-
--- The category of sets
+```agda
+-- The category of sets:
 open import Cat.Instances.Sets -- is univalent
 open import Cat.Instances.Sets.Complete -- is complete
 open import Cat.Instances.Sets.Cocomplete -- is cocomplete, with disjoint coproducts
 open import Cat.Instances.Sets.Congruences -- has effective congruences
 open import Cat.Instances.Sets.CartesianClosed -- and is locally cartesian closed
+```
 
+The category of polynomial functors:
+
+```agda
+open import Cat.Instances.Poly
+```
+
+A few concrete, tiny categories are classed as "diagram shapes":
+
+```agda
 -- Diagram shapes:
 open import Cat.Instances.Shape.Join
 open import Cat.Instances.Shape.Cospan
 open import Cat.Instances.Shape.Interval
-open import Cat.Instances.Shape.Isomorphism
 open import Cat.Instances.Shape.Parallel
 open import Cat.Instances.Shape.Terminal
+open import Cat.Instances.Shape.Isomorphism -- The walking isomorphism
+```
 
--- Slice categories:
-open import Cat.Instances.Slice
+Slice categories and comma objects:
+
+```agda
+open import Cat.Instances.Comma -- Comma categories
+open import Cat.Instances.Slice -- Slice categories
 open import Cat.Instances.Slice.Presheaf -- PSh(C)/X ≅ PSh(∫ X)
+open import Cat.Instances.Comma.Univalent
+```
 
+Properties, constructions, and the category of strict categories:
+
+```agda
 -- Strict categories
 open import Cat.Instances.StrictCat
 open import Cat.Instances.StrictCat.Cohesive
-  -- ^ Strict category structure is a sort of "spatial" structure on a category
+  -- ^ Strict category structure is a sort of "spatial" structure on a
+  -- set
+
+open import Cat.Instances.Free
+-- Free strict categories on a directed graph
+
+open import Cat.Instances.FinSet
+-- Skeleton of the category of finite sets
+
+open import Cat.Instances.Simplex
+-- Skeleton of the simplex category
+
+open import Cat.Instances.Discrete -- Discrete categories
+open import Cat.Instances.Delooping -- Delooping a monoid to give a category
+```
+
+## Allegories
+
+Allegories are abstractions of the nice properties that the category of
+relations enjoys. They are, strictly speaking, _bicategories_, but since
+they are locally posets, we have a definition of allegory free of all
+the extra coherence that is necessary for specifying a bicategory.
+
+```agda
+open import Cat.Allegory.Base -- The definition
+open import Cat.Allegory.Maps -- Functional relations in an allegory
+open import Cat.Allegory.Reasoning -- Reasoning combinators
 ```
 
 ## Thin categories
@@ -403,40 +579,97 @@ equipped with a transitive and reflexive relation --- so we call them
 _univalent_ thin strict category --- so we call these "posets".
 
 ```agda
-open import Cat.Thin            -- Basics of thin categories
-open import Cat.Thin.Limits     -- Limits in thin categories
+open import Cat.Thin -- Basics of thin categories
+open import Cat.Thin.Limits -- Limits in thin categories
 open import Cat.Thin.Completion -- Free poset on a proset
 ```
 
 ## Displayed categories
 
-We also have a work-in-progress formalisation of [Foundations of
-Relative Category Theory][frct], in which the core idea is thinking of
-"categories over categories".
+A category displayed over $\ca{B}$ is a particular concrete presentation
+of the bicategorical slice $\cat/\ca{B}$; that is, it is a better way of
+presenting the data of a category $\ca{E}$ and a functor $\ca{E} \to
+\ca{B}$.
+
+In addition to the _extensive_ use of displayed categories to model
+"pre-indexing" in the 1Lab, we also contain an in-progress formalisation
+of [Foundations of Relative Category Theory][frct].
 
 [frct]: https://www.jonmsterling.com/math/lectures/categorical-foundations.html
 
 ```agda
-open import Cat.Displayed.Base       -- Displayed categories
-open import Cat.Displayed.Total      -- Total category of a displayed category
-open import Cat.Displayed.Fibre      -- Fibre categories of a displayed category
-open import Cat.Displayed.Cartesian  -- Cartesian lifts, cartesian fibrations
+open import Cat.Displayed.Base -- Displayed categories
+
+open import Cat.Displayed.Total -- Total category of a displayed category
+open import Cat.Displayed.Total.Free -- Free objects in a total category
+
+open import Cat.Displayed.Fibre -- Fibre categories of a displayed category
+
 open import Cat.Displayed.Univalence -- Univalence for displayed categories
+open import Cat.Displayed.Univalence.Thin -- The structure identity principle
 
 open import Cat.Displayed.Reasoning
   -- Reasoning combinators for displayed categories
 
-open import Cat.Displayed.Instances.Slice    -- Canonical self-indexing
-open import Cat.Displayed.Instances.Family   -- Family fibration
+open import Cat.Displayed.Instances.Elements
+-- The category of elements of a presheaf, instantiated as being
+-- displayed over the domain.
+```
+
+We can also investigate how displayed categories relate to other
+displayed categories (over the same base, or over different bases), and
+their higher groupoid structure:
+
+```agda
+open import Cat.Displayed.Path
+open import Cat.Displayed.Functor
+```
+
+### Cartesian fibrations
+
+In the land of 1-categories, the notion of "indexed families of objects"
+is accurately captured by [slice categories]. But when we're talking
+about the 2-category $\cat$, plain functors won't do. In terms of
+displayed categories, we need to talk about _Cartesian fibrations_
+instead. These satisfy a property analogous to the existence of
+pullbacks, and they are precisely those which correspond to families
+$\ca{B} \to \cat$.
+
+[slice categories]: Cat.Instances.Slice.html
+
+```agda
+open import Cat.Displayed.Cartesian
+ -- Cartesian lifts, cartesian fibrations
+
+open import Cat.Displayed.Cartesian.Street
+-- Street's fibrations
+
+open import Cat.Displayed.Cartesian.Discrete
+-- Discrete fibrations are presheaves
+
+open import Cat.Displayed.Cartesian.Indexing
+-- Fibrations have pseudofunctorial reindexing.
+```
+
+Not to dwell on a vacuous concept, we also have constructions of
+Cartesian fibrations:
+
+```agda
+open import Cat.Displayed.Instances.Slice -- Canonical self-indexing
+open import Cat.Displayed.Instances.Family -- Family fibration
 open import Cat.Displayed.Instances.Pullback
   -- Pullback of a displayed category by a functor
 open import Cat.Displayed.Instances.Scone
-  -- The displayed category of scones
+-- We can consider *scones* over a category C with a terminal object as
+-- forming a displayed category over C. Moreover, it's a Cartesian
+-- fibration by construction.
 ```
 
 ## Bicategories
 
-The modules under `Cat.Bi` are very much work-in-progress.
+The theory of bicategories, as isolated objects. Note that a
+comprehensive study of how bicategories interact with other bicategories
+is a **tri**categorical problem!
 
 ```agda
 open import Cat.Bi.Base
@@ -452,27 +685,46 @@ open import Cat.Bi.Instances.Discrete
 ### Diagrams in bicategories
 
 ```agda
-open import Cat.Bi.Diagram.Monad
-open import Cat.Bi.Diagram.Adjunction
+open import Cat.Bi.Diagram.Monad -- Monads in a bicategory
+open import Cat.Bi.Diagram.Monad.Spans  -- Internal categories as monads in Span(C)
+open import Cat.Bi.Diagram.Adjunction -- Adjunction diagrams in a bicategory
+```
+
+## Monoidal categories
+
+In addition to general bicategories, we also have bicategories with one
+object.
+
+```agda
+open import Cat.Monoidal.Base
+open import Cat.Monoidal.Diagram.Monoid
+open import Cat.Monoidal.Instances.Cartesian
 ```
 
 ## Homological algebra
 
-The theory of abelian categories.
+The theory of abelian (and Ab-enriched) categories in general, and
+specific constructions of abelian categories.
 
 ```agda
-open import Cat.Abelian.Base
-open import Cat.Abelian.Images
-open import Cat.Abelian.Limits
-open import Cat.Abelian.Functor
+open import Cat.Abelian.Base -- Definition of the tower of Ab-enriched categories
+open import Cat.Abelian.Endo -- Endomorphism rings
+open import Cat.Abelian.Images  -- Image factorisations in abelian categories
+open import Cat.Abelian.Limits  -- Finite biproducts in abelian categories
+open import Cat.Abelian.Functor -- Ab-enriched functors
+
+open import Cat.Abelian.Instances.Ab
+  -- The category of abelian groups
+open import Cat.Abelian.Instances.Functor
+  -- Ab-enriched functor categories
 ```
 
-# Topos theory
+## Topos theory
 
 Grothendieck topos theory developed constructively and predicatively.
 
 ```agda
-open import Topoi.Base       -- Topoi, properties of topoi, geometric morphisms
+open import Topoi.Base -- Topoi, properties of topoi, geometric morphisms
 open import Topoi.Reasoning  -- Exactness properties of topoi (cont'd), reasoning
 open import Topoi.Classifying.Diaconescu
 -- ^ Presheaf topoi classify flat functors on their site
@@ -480,43 +732,54 @@ open import Topoi.Classifying.Diaconescu
 
 # Algebra
 
-In the `Algebra` namespace, the theory of universal algebra is developed
-from a univalent perspective. Specifically, every definition of an
-algebraic structure comes with an associated proof that it is univalent
---- concretely, identification of groups is group isomorphism (for
-instance).
-
 ```agda
-open import Algebra.Magma                      -- Binary operations
-open import Algebra.Magma.Unital               -- Operations with two-sided units
+open import Algebra.Magma -- Binary operations
+open import Algebra.Magma.Unital -- Operations with two-sided units
 open import Algebra.Magma.Unital.EckmannHilton -- The Eckmann-Hilton argument
 
-open import Algebra.Semigroup   -- Semigroups (associative magmas)
+open import Algebra.Semigroup -- Semigroups (associative magmas)
 
-open import Algebra.Monoid          -- Monoids as unital semigroups
+open import Algebra.Monoid -- Monoids as unital semigroups
 open import Algebra.Monoid.Category -- The category of monoids
 
-open import Algebra.Lattice     -- Lattices
+open import Algebra.Lattice -- Lattices
+open import Algebra.Frame -- Frames
 open import Algebra.Semilattice -- Semilattices
+```
 
-open import Algebra.Ring -- Rings
+## Group theory
 
-open import Algebra.Group                      -- Groups as monoids with inverses
-open import Algebra.Group.Free                 -- Free groups
-open import Algebra.Group.Action               -- Group actions
-open import Algebra.Group.Cayley               -- Cayley's theorem
-open import Algebra.Group.Cat.Base             -- The category of groups
-open import Algebra.Group.Cat.Monadic          -- ... is monadic over Sets
+```agda
+open import Algebra.Group -- Groups as monoids with inverses
+open import Algebra.Group.NAry -- NAry sums on groups
+open import Algebra.Group.Free -- Free groups
+open import Algebra.Group.Action -- Group actions
+open import Algebra.Group.Cayley -- Cayley's theorem
+open import Algebra.Group.Cat.Base -- The category of groups
+open import Algebra.Group.Cat.Monadic -- ... is monadic over Sets
 open import Algebra.Group.Cat.FinitelyComplete -- Finite limits in Groups
-open import Algebra.Group.Subgroup             -- Subgroups, images and kernels
+open import Algebra.Group.Subgroup -- Subgroups, images and kernels
 
 open import Algebra.Group.Homotopy -- Homotopy groups
 open import Algebra.Group.Homotopy.BAut
   -- Delooping groupoids of automorphism groups
 
-open import Algebra.Group.Ab      -- Abelian groups, and the category Ab
+open import Algebra.Group.Ab -- Abelian groups, and the category Ab
 open import Algebra.Group.Ab.Sum  -- Direct sum abelian groups
 open import Algebra.Group.Ab.Free -- The free abelian group on a group
+```
+
+## Ring theory
+
+```agda
+open import Algebra.Ring -- Rings
+open import Algebra.Ring.Ideal -- Ideals in commutative rings
+open import Algebra.Ring.Module -- Modules over a commutative ring
+open import Algebra.Ring.Quotient -- Quotient rings
+open import Algebra.Ring.Module.Vec -- Finite direct sums of R as an R-module
+open import Algebra.Ring.Cat.Initial -- ℤ is the initial ring
+open import Algebra.Ring.Commutative -- Commutative rings
+open import Algebra.Ring.Module.Category -- The bifibration of Mod over Ring
 ```
 
 <!-- Mastodon author links: !-->
