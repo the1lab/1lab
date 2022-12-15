@@ -50,3 +50,4 @@ suc-wf = Induction-wf (λ x y → y ≡ suc x) λ P m →
   go (suc x) (suc y) w = acc k′ where
     k′ : ∀ x → x < suc y → Acc _<_ x
     k′ x′ w′ = go x x′ (≤-trans (≤-peel w′) (≤-peel w))
+```
