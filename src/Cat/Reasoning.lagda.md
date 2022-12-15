@@ -221,6 +221,8 @@ some cute mixfix notation from `agda-categories` which allows us to write
 _⟩∘⟨_ : f ≡ h → g ≡ i → f ∘ g ≡ h ∘ i
 _⟩∘⟨_ = ap₂ _∘_
 
+infixr 40 _⟩∘⟨_
+
 refl⟩∘⟨_ : g ≡ h → f ∘ g ≡ f ∘ h
 refl⟩∘⟨_ {f = f} p = ap (f ∘_) p
 

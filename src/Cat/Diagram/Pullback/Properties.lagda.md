@@ -319,5 +319,19 @@ Pullback-unique {x = X} {Y} {Z} {f} {g} c-cat x y = p where
       (λ lim → x.unique {lim' = lim})
       (λ lim → y.unique {lim' = lim})
       i lim′
+
+canonically-stable
+  : ∀ {ℓ′} (P : ∀ {a b} → Hom a b → Type ℓ′)
+  → is-category C
+  → (pb : ∀ {a b c} (f : Hom a c) (g : Hom b c) → Pullback f g)
+  → ( ∀ {A B X} (f : Hom A B) (g : Hom X B)
+    → P f → P (pb g f .Pullback.p₁) )
+  → is-pullback-stable P
+canonically-stable P C-cat pbs stab f g Pf pb =
+  transport (λ i → P (Pullback-unique C-cat (pbs g f) pb′ i .Pullback.p₁))
+    (stab f g Pf)
+  where
+    pb′ : Pullback _ _
+    pb′ = record { has-is-pb = pb }
 ```
 -->
