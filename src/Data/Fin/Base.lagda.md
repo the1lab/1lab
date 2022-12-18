@@ -174,6 +174,14 @@ instance
     go : ∀ k n → k Nat.< n → Fin n
     go zero (suc n) e = fzero
     go (suc k) (suc n) (Nat.s≤s e) = fsuc (go k n e)
+
+Fin-elim
+  : ∀ {ℓ} (P : ∀ {n} → Fin n → Type ℓ)
+  → (∀ {n} → P {suc n} fzero)
+  → (∀ {i} (j : Fin i) → P j → P (fsuc j))
+  → ∀ {n} (i : Fin n) → P i
+Fin-elim P pfzero pfsuc fzero = pfzero
+Fin-elim P pfzero pfsuc (fsuc x) = pfsuc x (Fin-elim P pfzero pfsuc x)
 ```
 -->
 

@@ -30,7 +30,7 @@ structure, but proving that the pointwise sum is a still a linear map
 is, ahem, very annoying. See for yourself:
 
 ```agda
-R-Mod-ab-category : Ab-category (R-Mod R)
+R-Mod-ab-category : ∀ {ℓ′} → Ab-category (R-Mod ℓ′ R)
 R-Mod-ab-category .Group-on-hom A B = to-group-on grp  where
   module A = Module A
   module B = Module B
@@ -73,13 +73,13 @@ decency.</summary>
 R-Mod-ab-category .Hom-grp-ab A B f g =
   Linear-map-path (funext λ x → Module.G.commutative B)
 R-Mod-ab-category .∘-linear-l {C = C} f g h =
-  Linear-map-path $ funext λ x → Regularity.fast! refl
+  Linear-map-path refl
 R-Mod-ab-category .∘-linear-r {B = B} {C} f g h =
-  Linear-map-path $ funext λ x → Regularity.fast! (
+  Linear-map-path $ funext λ x →
     f .map (g .map x) C.+ f .map (h .map x)                     ≡⟨ ap₂ C._+_ (sym (C.⋆-id _)) (sym (C.⋆-id _)) ⟩
     R.1r C.⋆ f .map (g .map x) C.+ (R.1r C.⋆ f .map (h .map x)) ≡⟨ sym (f .linear R.1r (g .map x) R.1r (h .map x)) ⟩
     f .map (R.1r B.⋆ g .map x B.+ R.1r B.⋆ h .map x)            ≡⟨ ap (f .map) (ap₂ B._+_ (B.⋆-id _) (B.⋆-id _)) ⟩
-    f .map (g .map x B.+ h .map x)                              ∎)
+    f .map (g .map x B.+ h .map x)                              ∎
   where
     module C = Module C
     module B = Module B
@@ -99,7 +99,7 @@ The zero object is simple, because the unit type is so well-behaved^[and
 constantly the unit, including the paths, which are _all_ reflexivity.
 
 ```agda
-R-Mod-is-additive : is-additive (R-Mod R)
+R-Mod-is-additive : is-additive (R-Mod _ R)
 R-Mod-is-additive .has-ab = R-Mod-ab-category
 R-Mod-is-additive .has-terminal = record
   { top  = _ , ∅ᴹ
@@ -158,12 +158,10 @@ path-mangling, but it's nothing _too_ bad:
   prod .has-is-product .⟨_,_⟩ f g .map x = f .map x , g .map x
   prod .has-is-product .⟨_,_⟩ f g .linear r m s n =
     Σ-pathp (f .linear _ _ _ _) (g .linear _ _ _ _)
-  prod .has-is-product .π₁∘factor = Linear-map-path (transport-refl _)
-  prod .has-is-product .π₂∘factor = Linear-map-path (transport-refl _)
-  prod .has-is-product .unique other p q = Linear-map-path $ funext λ x →
-    Σ-pathp
-      (sym Regularity.reduce! ∙ (ap map p $ₚ x))
-      (sym Regularity.reduce! ∙ (ap map q $ₚ x))
+  prod .has-is-product .π₁∘factor = Linear-map-path refl
+  prod .has-is-product .π₂∘factor = Linear-map-path refl
+  prod .has-is-product .unique other p q = Linear-map-path {ℓ′ = lzero} $ funext λ x →
+    Σ-pathp (ap map p $ₚ x) (ap map q $ₚ x)
 ```
 
 <!-- TODO [Amy 2022-09-15]

@@ -12,6 +12,7 @@ open import Cat.Functor.FullSubcategory
 open import Cat.Prelude
 
 open import Data.Fin
+open import Data.Dec
 
 module Algebra.Ring.Module.Vec {ℓ} (R : Ring ℓ) where
 ```
@@ -67,7 +68,7 @@ $$
 
 <!--
 ```agda
-module _ (S : Module R) where
+module _ {ℓ′} (S : Module ℓ′ R) where
   private
     module S = Module S
     G′ = S .fst .object .snd
@@ -84,7 +85,8 @@ module _ (S : Module R) where
 -->
 
 ```agda
-  linear-extension : ∀ {n} → (Fin n → S.G₀) → R-Mod.Hom (_ , Fin-vec-module n) S
+  linear-extension : ∀ {n} → (Fin n → S.G₀)
+                   → Linear-map (_ , Fin-vec-module n) S Rings.id
   linear-extension fun .map x = ∑ G′ λ i → x i S.⋆ fun i
   linear-extension fun .linear r m s n =
     ∑ G′ (λ i → (r R.* m i R.+ s R.* n i) S.⋆ fun i)                          ≡⟨ ap (∑ G′) (funext λ i → S.⋆-add-l (r R.* m i) (s R.* n i) (fun i)) ⟩
@@ -107,19 +109,15 @@ open is-indexed-product
 open Indexed-product
 
 Fin-vec-is-product
-  : ∀ {n} → Indexed-product (R-Mod R) {Idx = Fin n} λ _ → representable-module R
+  : ∀ {n} → Indexed-product (R-Mod _ R) {Idx = Fin n} λ _ → representable-module R
 Fin-vec-is-product {n} .ΠF = _ , Fin-vec-module n
 Fin-vec-is-product .π i .map k = k i
 Fin-vec-is-product .π i .linear r m s n = refl
-Fin-vec-is-product {n} .has-is-ip .⟨_⟩ {Y} f = assemble
-  where
-    assemble : Linear-map Y (_ , Fin-vec-module n) Rings.id
-    assemble .map yob ix = f ix .map yob
-    assemble .linear r m s n = funext λ i → f i .linear _ _ _ _
-Fin-vec-is-product .has-is-ip .commute = Linear-map-path (transport-refl _)
+Fin-vec-is-product {n} .has-is-ip .tuple {Y} f = assemble where
+  assemble : Linear-map Y (_ , Fin-vec-module n) Rings.id
+  assemble .map yob ix = f ix .map yob
+  assemble .linear r m s n = funext λ i → f i .linear _ _ _ _
+Fin-vec-is-product .has-is-ip .commute = Linear-map-path (refl)
 Fin-vec-is-product .has-is-ip .unique {h = h} f ps =
-  Linear-map-path $ funext λ i → funext λ ix →
-       ap (λ e → h .map e ix) (sym (transport-refl _))
-    ·· sym (transport-refl _)
-    ·· (ap map (ps ix) $ₚ i)
+  Linear-map-path $ funext λ i → funext λ ix → ap map (ps ix) $ₚ i
 ```

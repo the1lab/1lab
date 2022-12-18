@@ -89,7 +89,7 @@ Cartesian→standard-finite-products F = prod where
   prod : Indexed-product C F
   prod .ΠF = F-apex F
   prod .π  = F-pi F
-  prod .has-is-ip .⟨_⟩        = F-mult F
+  prod .has-is-ip .tuple      = F-mult F
   prod .has-is-ip .commute    = F-commute F _ _
   prod .has-is-ip .unique f p = F-unique F f p
 ```

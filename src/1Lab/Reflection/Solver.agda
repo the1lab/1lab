@@ -103,9 +103,9 @@ module _ {ℓ} {A : Type ℓ} (solver : VariableSolver A) where
     size , env ← environment vs
     (noConstraints $ unify hole (invoke-solver elhs erhs env)) <|>
       typeError (strErr "Could not equate the following expressions:\n  " ∷
-                   termErr lhs ∷
+                   termErr elhs ∷
                  strErr "\nAnd\n  " ∷
-                   termErr rhs ∷ [])
+                   termErr erhs ∷ [])
 
   mk-var-normalise : Term → Term → TC ⊤
   mk-var-normalise tm hole =

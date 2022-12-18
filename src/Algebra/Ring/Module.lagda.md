@@ -100,8 +100,8 @@ we don't differentiate between left and right modules.
   module ⋆-group-homᵣ x = Group-hom (⋆-group-homᵣ x)
   infixr 25 _⋆_
 
-Module : ∀ {ℓ} → Ring ℓ → Type (lsuc ℓ)
-Module R = Σ (AbGroup _) λ G → Module-on R G
+Module : ∀ {ℓ} ℓ′ → Ring ℓ → Type (lsuc ℓ′ ⊔ ℓ)
+Module ℓ′ R = Σ (AbGroup ℓ′) λ G → Module-on R G
 module Module {ℓ ℓ′} {R : Ring ℓ} (M : Σ (AbGroup ℓ′) (Module-on R)) where
   open Module-on (M .snd) public
 ```
@@ -155,7 +155,8 @@ a treat.
 <!--
 ```agda
 module
-   _ {ℓ} {R S : Ring ℓ} (M : Module R) (N : Module S) (f : Rings.Hom R S)
+   _ {ℓ ℓ′ ℓ′′} {R S : Ring ℓ} (M : Module ℓ′ R) (N : Module ℓ′′ S)
+     (f : Rings.Hom R S)
   where
   private
     module M = Module-on (M .snd)
@@ -165,11 +166,26 @@ module
   is-R-S-bilinear f =
     ∀ r m s n → f ((r M.⋆ m) M.+ (s M.⋆ n)) ≡ (r N.⋆ f m) N.+ (s N.⋆ f n)
 
-  record Linear-map : Type ℓ where
+  record Linear-map : Type (ℓ ⊔ ℓ′ ⊔ ℓ′′) where
     no-eta-equality
     field
       map : M.G₀ → N.G₀
       linear : is-R-S-bilinear map
+
+    linear-simple : ∀ x y → x N.⋆ map y ≡ map (x M.⋆ y)
+    linear-simple x y =
+      x N.⋆ map y                             ≡⟨ N.G.intror (N.⋆-group-homᵣ.pres-id _) ⟩
+      x N.⋆ map y N.+ N.R.0r N.⋆ map M.G.unit ≡˘⟨ linear _ _ _ _ ⟩
+      map (x M.⋆ y M.+ M.R.0r M.⋆ M.G.unit)   ≡⟨ ap map (M.G.elimr (M.⋆-group-homᵣ.pres-id _)) ⟩
+      map (x M.⋆ y)                           ∎
+
+    has-group-hom : Group-hom (M .fst .object .snd) (N .fst .object .snd) map
+    has-group-hom .Group-hom.pres-⋆ x y =
+      map (x M.+ y)                         ≡⟨ ap map (ap₂ M._+_ (sym (M.⋆-id _)) (sym (M.⋆-id _))) ⟩
+      map (M.R.1r M.⋆ x M.+ M.R.1r M.⋆ y)   ≡⟨ linear M.R.1r x N.R.1r y ⟩
+      M.R.1r N.⋆ map x N.+ M.R.1r N.⋆ map y ≡⟨ ap₂ N._+_ (N.⋆-id _) (N.⋆-id _) ⟩
+      map x N.+ map y                       ∎
+    module has-group-hom = Group-hom has-group-hom
 
   open Linear-map public
 
@@ -179,7 +195,8 @@ module
       N.G.has-is-set _ _ (a r m s n) (b r m s n) i
 
 module
-   _ {ℓ} {R S : Ring ℓ} {M : Module R} {N : Module S} {f : I → Rings.Hom R S}
+   _ {ℓ ℓ′ ℓ′′} {R S : Ring ℓ}
+     {M : Module ℓ′ R} {N : Module ℓ′′ S} {f : I → Rings.Hom R S}
   where
   private module N i = Module-on (Scalar-restriction (f i) (N .snd))
 
@@ -194,6 +211,14 @@ module
       (y .linear r m s n) i
 
 private unquoteDecl eqv = declare-record-iso eqv (quote Linear-map)
+Linear-map-is-set
+  : ∀ {ℓ ℓ′ ℓ′′} {R S : Ring ℓ} {x : Module ℓ′ R} {y : Module ℓ′′ S}
+  → {f : Rings.Hom R S}
+  → is-set (Linear-map x y f)
+Linear-map-is-set {x = x} {y} {f} =
+  Iso→is-hlevel 2 eqv $
+  Σ-is-hlevel 2 (fun-is-hlevel 2 (Module.G.has-is-set y)) λ g →
+    is-prop→is-set (is-R-S-bilinear-is-prop x y f g)
 ```
 -->
 
@@ -216,34 +241,51 @@ f(m + n) = f(1m + 1n) = 1f(m) + 1f(n) = f(m) + f(n)\text{.}
 $$
 
 ```agda
-Mods : ∀ ℓ → Displayed (Rings ℓ) (lsuc ℓ) (ℓ)
-Ob[ Mods ℓ ] R = Module R
-Hom[ Mods ℓ ] f M N = Linear-map M N f
-Hom[ Mods ℓ ]-set f x y = Iso→is-hlevel 2 eqv $
-  Σ-is-hlevel 2 (fun-is-hlevel 2 (Module.G.has-is-set y)) λ g →
-    is-prop→is-set (is-R-S-bilinear-is-prop x y f g)
+Mods : ∀ ℓ ℓ′ → Displayed (Rings ℓ) (ℓ ⊔ lsuc ℓ′) (ℓ ⊔ ℓ′)
+Ob[ Mods ℓ ℓ′ ] R = Module ℓ′ R
+Hom[ Mods ℓ ℓ′ ] f M N = Linear-map M N f
+Hom[ Mods ℓ ℓ′ ]-set f x y = Linear-map-is-set
 
-Mods ℓ .id′ .map x = x
-Mods ℓ .id′ .linear r m s n = refl
+Mods _ _ .id′ .map x = x
+Mods _ _ .id′ .linear r m s n = refl
 
-Mods ℓ ._∘′_ f g .map x = f .map (g .map x)
-Mods ℓ ._∘′_ f g .linear r m s n =
+Mods _ _ ._∘′_ f g .map x = f .map (g .map x)
+Mods _ _ ._∘′_ f g .linear r m s n =
   ap (f .map) (g .linear r m s n) ∙ f .linear _ _ _ _
 
-Mods ℓ .idr′ f′ = Linear-map-path refl
-Mods ℓ .idl′ f′ = Linear-map-path refl
-Mods ℓ .assoc′ f′ g′ h′ = Linear-map-path refl
+Mods _ _ .idr′ f′ = Linear-map-path refl
+Mods _ _ .idl′ f′ = Linear-map-path refl
+Mods _ _ .assoc′ f′ g′ h′ = Linear-map-path refl
 ```
 
 The fibre of this displayed category over a ring $R$ is the _category of
 $R$-modules_.
 
 ```agda
-R-Mod : ∀ {ℓ} (R : Ring ℓ) → Precategory (lsuc ℓ) ℓ
-R-Mod R = Fibre (Mods _) R
+R-Mod : ∀ {ℓ} ℓ′ (R : Ring ℓ) → Precategory (ℓ ⊔ lsuc ℓ′) (ℓ ⊔ ℓ′)
+R-Mod ℓ′ R = Fibre′ (Mods _ ℓ′) R fix coh where
+  fix : ∀ {x y : Module ℓ′ R} → Linear-map x y (Rings.id Rings.∘ Rings.id)
+      → Linear-map x y Rings.id
+  fix x .map = x .map
+  fix x .linear = x .linear
 
-module R-Mod {ℓ} {R : Ring ℓ} = Cat.Reasoning (R-Mod R)
+  abstract
+    coh : ∀ {x y : Module ℓ′ R} (f : Linear-map x y (Rings.id Rings.∘ Rings.id))
+        → fix f ≡ transport (λ i → Hom[_] (Mods _ ℓ′) (Rings.idl Rings.id i) x y) f
+    coh f = Linear-map-path $ funext λ x → Regularity.fast! refl
+
+module R-Mod {ℓ ℓ′} {R : Ring ℓ} = Cat.Reasoning (R-Mod ℓ′ R)
 ```
+
+<!--
+```agda
+Forget-module : ∀ {ℓ ℓ′} (R : Ring ℓ) → Functor (R-Mod ℓ′ R) (Sets ℓ′)
+Forget-module R .F₀ x = el! (AbGrp.₀ (x .fst))
+Forget-module R .F₁ x = x .map
+Forget-module R .F-id = refl
+Forget-module R .F-∘ f g = refl
+```
+-->
 
 ## As a fibration
 
@@ -254,8 +296,8 @@ of a functorial reindexing of the fibres by morphisms in the base, but
 this is given exactly by the restriction of scalars we defined above.
 
 ```agda
-Mods-fibration : ∀ ℓ → Cartesian-fibration (Mods ℓ)
-Mods-fibration ℓ = mods where
+Mods-fibration : ∀ ℓ ℓ′ → Cartesian-fibration (Mods ℓ ℓ′)
+Mods-fibration ℓ ℓ′ = mods where
   open Cartesian-fibration
   open Cartesian-lift
   open Cartesian
@@ -283,9 +325,9 @@ simply take $X = f^*(N)$.
 ~~~
 
 ```agda
-  mods : Cartesian-fibration (Mods ℓ)
+  mods : Cartesian-fibration (Mods ℓ ℓ′)
   mods .has-lift f N = the-lift where
-    the-lift : Cartesian-lift (Mods ℓ) f N
+    the-lift : Cartesian-lift (Mods ℓ ℓ′) f N
     the-lift .x′ = N .fst , Scalar-restriction f (N .snd)
     the-lift .lifting .map x = x
     the-lift .lifting .linear r m s n = refl
@@ -309,7 +351,7 @@ regarded as an $R$-module with underlying group given by $R$'s additive
 group, and with multiplication exactly $R$'s multiplication.
 
 ```agda
-representable-module : ∀ {ℓ} (R : Ring ℓ) → Module R
+representable-module : ∀ {ℓ} (R : Ring ℓ) → Module ℓ R
 representable-module R = _ , mod where
   open Module-on hiding (module R ; module G)
   module R = Ring-on (R .snd)
@@ -326,7 +368,7 @@ the category of rings to the (big) category of modules --- the total
 space of the fibration of modules.
 
 ```agda
-Representable-modules : ∀ {ℓ} → Functor (Rings ℓ) (∫ (Mods ℓ))
+Representable-modules : ∀ {ℓ} → Functor (Rings ℓ) (∫ (Mods ℓ ℓ))
 Representable-modules .F₀ R = R , representable-module R
 Representable-modules .F₁ {x} {y} f = total-hom f $ record
   { map    = f #_

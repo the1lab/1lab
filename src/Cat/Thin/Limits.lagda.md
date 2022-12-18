@@ -54,7 +54,7 @@ limit at all:
   lim .top .apex = Π.ΠF
   lim .top .ψ = Π.π
   lim .top .commutes _ = P.Hom-is-prop _ _ _ _
-  lim .has⊤ x .centre .hom = Π.⟨ x .ψ ⟩
+  lim .has⊤ x .centre .hom = Π.tuple (x .ψ)
   lim .has⊤ x .centre .commutes o = P.Hom-is-prop _ _ _ _
   lim .has⊤ x .paths _ = Cone-hom-path _ (P.Hom-is-prop _ _ _ _)
 ```
@@ -74,7 +74,7 @@ indexed-meet→indexed-product π is-meet = is-ip where
   open is-indexed-product
 
   is-ip : is-indexed-product _ _ _
-  ⟨ is-ip ⟩         = is-meet
+  is-ip .tuple      = is-meet
   is-ip .commute    = P.Hom-is-prop _ _ _ _
   is-ip .unique f x = P.Hom-is-prop _ _ _ _
 ```
