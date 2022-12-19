@@ -73,6 +73,18 @@ has-indexed-products : ∀ ℓ → Type _
 has-indexed-products ℓ = ∀ {I : Type ℓ} (F : I → C.Ob) → Indexed-product F
 ```
 
+<!--
+```agda
+module _ {ℓ′} {I : Type ℓ′} (F : I → C .Precategory.Ob) (ip : Indexed-product F) where
+  private module ip = Indexed-product ip
+
+  tuple∘ : ∀ {A B} (f : ∀ i → C.Hom B (F i))
+          {g : C.Hom A B}
+        → ip.tuple f C.∘ g ≡ ip.tuple λ i → f i C.∘ g
+  tuple∘ f = ip.unique _ λ i → C.pulll ip.commute
+```
+-->
+
 ## As limits
 
 In the particular case where $I$ is a groupoid, e.g. because it arises

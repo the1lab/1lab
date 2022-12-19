@@ -9,6 +9,7 @@ open import 1Lab.Type
 
 open import Data.Dec.Base
 open import Data.Sum.Base
+open import Data.Id.Base
 
 import Data.Nat.Base as Nat
 
@@ -141,13 +142,16 @@ Finally, we pull everything together to show that `Fin`{.Agda} is
 is discrete), but it's useful nonetheless!
 
 ```agda
+Discreteᵢ-Fin : ∀ {n} → Discreteᵢ (Fin n)
+Discreteᵢ-Fin fzero fzero = yes reflᵢ
+Discreteᵢ-Fin fzero (fsuc j) = no λ ()
+Discreteᵢ-Fin (fsuc i) fzero = no λ ()
+Discreteᵢ-Fin (fsuc i) (fsuc j) with Discreteᵢ-Fin i j
+... | yes reflᵢ = yes reflᵢ
+... | no ¬i≡j = no λ { reflᵢ → ¬i≡j reflᵢ }
+
 Discrete-Fin : ∀ {n} → Discrete (Fin n)
-Discrete-Fin fzero fzero = yes refl
-Discrete-Fin fzero (fsuc j) = no λ zero≡suc → absurd (fzero≠fsuc zero≡suc)
-Discrete-Fin (fsuc i) fzero = no λ zero≡suc → absurd (fzero≠fsuc (sym zero≡suc))
-Discrete-Fin (fsuc i) (fsuc j) with Discrete-Fin i j
-... | yes i≡j = yes (ap fsuc i≡j)
-... | no ¬i≡j = no λ suci≡sucj → ¬i≡j (fsuc-inj suci≡sucj)
+Discrete-Fin = Discreteᵢ→discrete Discreteᵢ-Fin
 ```
 
 [Hedberg's theorem] implies that `Fin`{.Agda} is a [set], i.e., it only
@@ -174,6 +178,8 @@ instance
     go : ∀ k n → k Nat.< n → Fin n
     go zero (suc n) e = fzero
     go (suc k) (suc n) (Nat.s≤s e) = fsuc (go k n e)
+
+open import Data.Nat.Base using (0≤x ; s≤s′) public
 
 Fin-elim
   : ∀ {ℓ} (P : ∀ {n} → Fin n → Type ℓ)
