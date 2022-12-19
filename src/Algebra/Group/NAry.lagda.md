@@ -55,6 +55,12 @@ $(\sum f) + (\sum g) = \sum (f + g)$:
     (f fzero G.⋆ ∑ G (λ e → f (fsuc e))) G.⋆ g fzero G.⋆ ∑ G (λ e → g (fsuc e)) ∎
 ```
 
+A trivial-looking, but very convenient result^[which, additionally, is
+hard to re-derive on a case-by-case basis] lets us reduce a sum to a
+single element, as long as the function we're defining has non-zero
+values at every other index. Put another way: if $f : [n] \to G$ is such
+that $f(i) = x$ but $f(j) = 0$ everywhere else, then $\sum f = x$.
+
 ```agda
 module _ {ℓ} {T : Type ℓ} (G : Group-on T)  where
   private module G = Group-on G
@@ -64,9 +70,6 @@ module _ {ℓ} {T : Type ℓ} (G : Group-on T)  where
     → f i ≡ x
     → (∀ j → (i ≡ j → ⊥) → f j ≡ G.unit)
     → ∑ G f ≡ x
-  -- Base case: we're summing over a nonempty set (guaranteed because i
-  -- : Fin n), and the element of interest is f fzero. Then the rest of
-  -- the sum becomes zero, so this is easy.
   ∑-diagonal-lemma {suc n} fzero f f0=x fj=0 =
     G.elimr ( ∑-path {n = n} G (λ i → fj=0 (fsuc i) fzero≠fsuc)
             ∙ ∑-zero {n = n} G) ∙ f0=x

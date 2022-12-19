@@ -264,6 +264,16 @@ $R$-modules_.
 ```agda
 R-Mod : ∀ {ℓ} ℓ′ (R : Ring ℓ) → Precategory (ℓ ⊔ lsuc ℓ′) (ℓ ⊔ ℓ′)
 R-Mod ℓ′ R = Fibre′ (Mods _ ℓ′) R fix coh where
+```
+
+<!--
+```agda
+  -- For computation reasons we use a custom reindexing function to
+  -- define R-Mod. Since the definition of Linear-map depends only on
+  -- the map component of the ring homomorphism, for which id ∘ id is
+  -- definitionally id (and for which path coming from the definition of
+  -- Ring would be refl), we can omit a transport refl:
+
   fix : ∀ {x y : Module ℓ′ R} → Linear-map x y (Rings.id Rings.∘ Rings.id)
       → Linear-map x y Rings.id
   fix x .map = x .map
@@ -273,7 +283,10 @@ R-Mod ℓ′ R = Fibre′ (Mods _ ℓ′) R fix coh where
     coh : ∀ {x y : Module ℓ′ R} (f : Linear-map x y (Rings.id Rings.∘ Rings.id))
         → fix f ≡ transport (λ i → Hom[_] (Mods _ ℓ′) (Rings.idl Rings.id i) x y) f
     coh f = Linear-map-path $ funext λ x → Regularity.fast! refl
+```
+-->
 
+```agda
 module R-Mod {ℓ ℓ′} {R : Ring ℓ} = Cat.Reasoning (R-Mod ℓ′ R)
 ```
 
