@@ -54,3 +54,27 @@ $(\sum f) + (\sum g) = \sum (f + g)$:
     f fzero G.⋆ ∑ G (λ e → f (fsuc e)) G.⋆ g fzero G.⋆ ∑ G (λ e → g (fsuc e))   ≡⟨ G.associative ⟩
     (f fzero G.⋆ ∑ G (λ e → f (fsuc e))) G.⋆ g fzero G.⋆ ∑ G (λ e → g (fsuc e)) ∎
 ```
+
+A trivial-looking, but very convenient result^[which, additionally, is
+hard to re-derive on a case-by-case basis] lets us reduce a sum to a
+single element, as long as the function we're defining has non-zero
+values at every other index. Put another way: if $f : [n] \to G$ is such
+that $f(i) = x$ but $f(j) = 0$ everywhere else, then $\sum f = x$.
+
+```agda
+module _ {ℓ} {T : Type ℓ} (G : Group-on T)  where
+  private module G = Group-on G
+  ∑-diagonal-lemma
+    : ∀ {n} (i : Fin n) {x : T}
+    → (f : Fin n → T)
+    → f i ≡ x
+    → (∀ j → (i ≡ j → ⊥) → f j ≡ G.unit)
+    → ∑ G f ≡ x
+  ∑-diagonal-lemma {suc n} fzero f f0=x fj=0 =
+    G.elimr ( ∑-path {n = n} G (λ i → fj=0 (fsuc i) fzero≠fsuc)
+            ∙ ∑-zero {n = n} G) ∙ f0=x
+  ∑-diagonal-lemma {suc n} (fsuc i) {x} f fj=x f≠i=0 =
+    f fzero G.⋆ ∑ {n} G (λ e → f (fsuc e)) ≡⟨ G.eliml (f≠i=0 fzero λ e → fzero≠fsuc (sym e)) ⟩
+    ∑ {n} G (λ e → f (fsuc e))             ≡⟨ ∑-diagonal-lemma {n} i (λ e → f (fsuc e)) fj=x (λ j i≠j → f≠i=0 (fsuc j) (λ e → i≠j (fsuc-inj e))) ⟩
+    x                                      ∎
+```

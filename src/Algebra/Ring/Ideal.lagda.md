@@ -83,7 +83,7 @@ carries a canonical $R$-module structure.
 [subgroup]: Algebra.Group.Subgroup.html
 
 ```agda
-  ideal→module : (𝔞 : ℙ ⌞ R ⌟) → is-ideal 𝔞 → Module R
+  ideal→module : (𝔞 : ℙ ⌞ R ⌟) → is-ideal 𝔞 → Module ℓ R
   ideal→module 𝔞 x = g , mod where
     open make-group
     open is-ideal x
@@ -115,7 +115,7 @@ $\mathfrak{a}$ is a sub-$R$-module of $R$:
     { mor   = record { map = fst ; linear = λ r m s n → refl }
     ; monic = λ {c = c} g h x → Linear-map-path $
       embedding→monic (Subset-proj-embedding λ _ → 𝔞 _ .is-tr) (g .map) (h .map)
-        (sym (transport-refl _) ∙ ap map x ∙ transport-refl _)
+        (ap map x)
     }
 ```
 

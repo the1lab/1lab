@@ -40,14 +40,20 @@ record is-indexed-product (F : Idx → C.Ob) (π : ∀ i → C.Hom P (F i))
   : Type (o ⊔ ℓ ⊔ level-of Idx) where
   no-eta-equality
   field
-    ⟨_⟩     : ∀ {Y} → (∀ i → C.Hom Y (F i)) → C.Hom Y P
-    commute : ∀ {i} {Y} {f : ∀ i → C.Hom Y (F i)} → π i C.∘ ⟨ f ⟩ ≡ f i
+    tuple   : ∀ {Y} → (∀ i → C.Hom Y (F i)) → C.Hom Y P
+    commute : ∀ {i} {Y} {f : ∀ i → C.Hom Y (F i)} → π i C.∘ tuple f ≡ f i
     unique  : ∀ {Y} {h : C.Hom Y P} (f : ∀ i → C.Hom Y (F i))
             → (∀ i → π i C.∘ h ≡ f i)
-            → h ≡ ⟨ f ⟩
+            → h ≡ tuple f
 
-  eta : ∀ {Y} (h : C.Hom Y P) → h ≡ ⟨ (λ i → π i C.∘ h) ⟩
+  eta : ∀ {Y} (h : C.Hom Y P) → h ≡ tuple λ i → π i C.∘ h
   eta h = unique _ λ _ → refl
+
+  hom-iso : ∀ {Y} → C.Hom Y P ≃ (∀ i → C.Hom Y (F i))
+  hom-iso = (λ f i → π i C.∘ f) , is-iso→is-equiv λ where
+    .is-iso.inv → tuple
+    .is-iso.rinv x → funext λ i → commute
+    .is-iso.linv x → sym (unique _ λ _ → refl)
 ```
 
 A category $\ca{C}$ **admits indexed products** (of level $\ell$) if,
@@ -95,7 +101,7 @@ module _ {I : Type ℓ'} (i-is-grpd : is-groupoid I) (F : I → C.Ob) where
 
     lim : Limit _
     lim .top = thelim
-    lim .has⊤ x .centre .hom = IP.⟨ x .ψ ⟩
+    lim .has⊤ x .centre .hom = IP.tuple (x .ψ)
     lim .has⊤ x .centre .commutes o = IP.commute
     lim .has⊤ x .paths h = Cone-hom-path _ (sym (IP.unique _ λ i → h .commutes _))
 
@@ -120,7 +126,7 @@ module _ {I : Type ℓ'} (isg : is-groupoid I) (F : Functor (Disc I isg) C) wher
     the-ip : Indexed-product _
     the-ip .ΠF = lim.apex
     the-ip .π = lim.ψ
-    the-ip .has-is-ip .⟨_⟩ f = lim .has⊤ (Proj→Cone f) .centre .hom
+    the-ip .has-is-ip .tuple f = lim .has⊤ (Proj→Cone f) .centre .hom
     the-ip .has-is-ip .commute = lim .has⊤ (Proj→Cone _) .centre .commutes _
     the-ip .has-is-ip .unique {h = h} f p i =
       lim .has⊤ (Proj→Cone f) .paths other (~ i) .hom
@@ -156,7 +162,7 @@ with both projections:
 
 ```agda
   apices : x.ΠF C.≅ y.ΠF
-  apices = C.make-iso y.⟨ x.π ⟩ x.⟨ y.π ⟩
+  apices = C.make-iso (y.tuple x.π) (x.tuple y.π)
     ( y.unique y.π (λ i → C.pulll y.commute ∙ x.commute)
     ∙ sym (y.unique y.π λ i → C.idr _) )
     ( x.unique x.π (λ i → C.pulll x.commute ∙ y.commute)
@@ -173,7 +179,7 @@ between the projection maps and the product maps:
     pres j = Univalent.Hom-pathp-refll-iso c-cat x.commute
 
     pres′ : ∀ {Y} (f : ∀ j → C.Hom Y (F j))
-      → PathP (λ i → C.Hom Y (c-cat .to-path apices i)) x.⟨ f ⟩ y.⟨ f ⟩
+      → PathP (λ i → C.Hom Y (c-cat .to-path apices i)) (x.tuple f) (y.tuple f)
     pres′ f =
       Univalent.Hom-pathp-reflr-iso c-cat (y.unique f λ j → C.pulll y.commute ∙ x.commute)
 ```
@@ -187,7 +193,7 @@ need to prove that indexed products are unique.
   p : x ≡ y
   p i .ΠF = c-cat .to-path apices i
   p i .π j = pres j i
-  p i .has-is-ip .⟨_⟩ f = pres′ f i
+  p i .has-is-ip .tuple f = pres′ f i
   p i .has-is-ip .commute {i = j} {f = f} =
     is-prop→pathp (λ i → C.Hom-set _ (F j) (pres j i C.∘ pres′ f i) _)
      (x .has-is-ip .commute) (y .has-is-ip .commute) i

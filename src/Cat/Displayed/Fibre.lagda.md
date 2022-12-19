@@ -75,13 +75,53 @@ closed under composition, the **fibre (pre)category over $x$**.
 [total space]: Cat.Displayed.Total.html
 
 ```agda
+Fibre′
+  : (X : Ob)
+  → (fix : {x y : Ob[ X ]} → Hom[ id ∘ id ] x y → Hom[ id ] x y)
+  → (coh : ∀ {x y} (f : Hom[ id ∘ id ] x y) → fix f ≡ hom[ idl id ] f)
+  → Precategory _ _
+Fibre′ X fix coh .Precategory.Ob = Ob[ X ]
+Fibre′ X fix coh .Precategory.Hom = Hom[ id ]
+Fibre′ X fix coh .Precategory.Hom-set = Hom[ id ]-set
+Fibre′ X fix coh .Precategory.id = id′
+Fibre′ X fix coh .Precategory._∘_ f g = fix (f ∘′ g)
+```
+
+The definition of `Fibre′`{.Agda} has an extra degree of freedom: it is
+parametrised over how to reindex a morphism from lying over $\id{id}
+\circ \id{id}$ to lying over $\id{id}$. You don't get _that_ much
+freedom, however: there is a canonical way of doing this reindexing,
+which is to transport the composite morphism (since $\id{id} \circ
+\id{id}$ is equal to $\id{id}$), and the provided method _must_ be
+homotopic to this canonical one --- to guarantee that the resulting
+construction is a precategory.
+
+It may seem that this extra freedom serves no purpose, then, but there
+are cases where it's possible to transport without actually
+transporting: For example, if $\ca{E}$ is displayed over $\sets$, then
+composition of morphisms is definitionally unital, so transporting is
+redundant; but without regularity, the transports along reflexivity
+would still pile up.
+
+<!--
+```agda
+Fibre′ X fix coh .Precategory.idr f =
+  fix (f ∘′ id′)           ≡⟨ coh (f ∘′ id′) ⟩
+  hom[ idl id ] (f ∘′ id′) ≡⟨ Ds.disp! E ⟩
+  f                        ∎
+Fibre′ X fix coh .Precategory.idl f =
+  fix (id′ ∘′ f)           ≡⟨ coh (id′ ∘′ f) ⟩
+  hom[ idl id ] (id′ ∘′ f) ≡⟨ from-pathp (idl′ f) ⟩
+  f                        ∎
+Fibre′ X fix coh .Precategory.assoc f g h =
+  fix (f ∘′ fix (g ∘′ h))                     ≡⟨ ap (λ e → fix (f ∘′ e)) (coh _) ∙ coh _ ⟩
+  hom[ idl id ] (f ∘′ hom[ idl id ] (g ∘′ h)) ≡⟨ Ds.disp! E ⟩
+  hom[ idl id ] (hom[ idl id ] (f ∘′ g) ∘′ h) ≡⟨ sym (coh _) ∙ ap (λ e → fix (e ∘′ h)) (sym (coh _)) ⟩
+  fix (fix (f ∘′ g) ∘′ h)                     ∎
+```
+-->
+
+```agda
 Fibre : Ob → Precategory _ _
-Fibre x .Precategory.Ob = Ob[ x ]
-Fibre x .Precategory.Hom a b = Hom[ id ] a b
-Fibre x .Precategory.Hom-set = Hom[ id ]-set
-Fibre x .Precategory.id = id′
-Fibre x .Precategory._∘_ f g = hom[ idl id ] (f ∘′ g)
-Fibre x .Precategory.idr f = Ds.disp! E
-Fibre x .Precategory.idl f = from-pathp (idl′ f)
-Fibre x .Precategory.assoc f g h = Ds.disp! E
+Fibre X = Fibre′ X _ (λ f → refl)
 ```

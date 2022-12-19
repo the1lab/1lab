@@ -3,6 +3,7 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Product.NAry
+open import Data.Nat.Base
 open import Data.Fin.Base
 
 module Data.Vec.Base where
@@ -21,6 +22,14 @@ data Vec {ℓ} (A : Type ℓ) : Nat → Type ℓ where
   []  : Vec A zero
   _∷_ : ∀ {n} → A → Vec A n → Vec A (suc n)
 
+Vec-elim
+  : ∀ {ℓ ℓ′} {A : Type ℓ} (P : ∀ {n} → Vec A n → Type ℓ′)
+  → P []
+  → (∀ {n} x (xs : Vec A n) → P xs → P (x ∷ xs))
+  → ∀ {n} (xs : Vec A n) → P xs
+Vec-elim P p[] p∷ [] = p[]
+Vec-elim P p[] p∷ (x ∷ xs) = p∷ x xs (Vec-elim P p[] p∷ xs)
+
 infixr 20 _∷_
 
 private variable
@@ -31,7 +40,38 @@ private variable
 lookup : Vec A n → Fin n → A
 lookup (x ∷ xs) fzero = x
 lookup (x ∷ xs) (fsuc i) = lookup xs i
+```
 
+<!--
+```agda
+Vec-cast : {x y : Nat} → x ≡ y → Vec A x → Vec A y
+Vec-cast {A = A} {x = x} {y = y} p xs =
+  Vec-elim (λ {n} _ → (y : Nat) → n ≡ y → Vec A y)
+    (λ { zero _ → []
+       ; (suc x) p → absurd (zero≠suc p)
+       })
+    (λ { {n} head tail cast-tail zero 1+n=len → absurd (zero≠suc (sym 1+n=len))
+       ; {n} head tail cast-tail (suc len) 1+n=len →
+          head ∷ cast-tail len (suc-inj 1+n=len)
+       })
+    xs y p
+
+-- Will always compute:
+lookup-safe : Vec A n → Fin n → A
+lookup-safe {A = A} xs n =
+  Fin-elim (λ {n} _ → Vec A n → A)
+    (λ {k} xs → Vec-elim (λ {k′} _ → suc k ≡ k′ → A)
+      (λ p → absurd (zero≠suc (sym p)))
+      (λ x _ _ _ → x) xs refl)
+    (λ {i} j cont vec →
+      Vec-elim (λ {k′} xs → suc i ≡ k′ → A)
+        (λ p → absurd (zero≠suc (sym p)))
+        (λ {n} head tail _ si=sn → cont (Vec-cast (suc-inj (sym si=sn)) tail)) vec refl)
+    n xs
+```
+-->
+
+```agda
 tabulate : (Fin n → A) → Vec A n
 tabulate {zero} f  = []
 tabulate {suc n} f = f fzero ∷ tabulate (λ x → f (fsuc x))
