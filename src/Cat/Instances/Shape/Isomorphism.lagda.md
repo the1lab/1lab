@@ -59,7 +59,7 @@ category. If it were univalent, then we'd get a path between
 `true`{.Agda} and `false`{.Agda}!
 
 ```agda
-0≅1-not-univalent : is-category 0≅1 → ⊥
+0≅1-not-univalent : ¬ is-category 0≅1
 0≅1-not-univalent is-cat =
   true≠false $ is-cat .to-path $
   0≅1-iso-contr true false .centre

@@ -72,8 +72,8 @@ presentation of frames.
 
 record Frame-on (A : Type ℓ) : Type (lsuc ℓ) where
   field
-    _∩_ : A → A → A
-    ⋃   : ∀ {I : Type (level-of A)} → (I → A) → A
+    _∩_          : A → A → A
+    ⋃            : ∀ {I : Type (level-of A)} → (I → A) → A
     has-is-frame : is-frame _∩_ ⋃
   open is-frame has-is-frame public
 ```

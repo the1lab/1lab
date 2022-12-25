@@ -153,7 +153,7 @@ made into a monoid: There is no natural number `unit` such that, for all
 
 ```agda
 private
-  min-no-id : (unit : Nat) → ((y : Nat) → min unit y ≡ y) → ⊥
+  min-no-id : (unit : Nat) → ¬ ((y : Nat) → min unit y ≡ y)
   min-no-id x id =
     let
       sucx≤x : suc x ≤ x

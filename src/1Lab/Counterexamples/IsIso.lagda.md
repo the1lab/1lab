@@ -73,7 +73,7 @@ Thus, it suffices to choose a type for which `(x : A) → x ≡ x` has two
 distinct elements. We go with the circle, `S¹`{.Agda}:
 
 ```agda
-  ¬is-prop-loops : is-prop ((x : S¹) → x ≡ x) → ⊥
+  ¬is-prop-loops : ¬ is-prop ((x : S¹) → x ≡ x)
   ¬is-prop-loops prop = refl≠loop $
     happly (prop (λ x → refl)
       λ { base → loop

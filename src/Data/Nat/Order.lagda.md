@@ -78,7 +78,7 @@ We also have that a successor is never smaller than the number it
 succeeds:
 
 ```agda
-¬sucx≤x : (x : Nat) → suc x ≤ x → ⊥
+¬sucx≤x : (x : Nat) → ¬ (suc x ≤ x)
 ¬sucx≤x (suc x) (s≤s ord) = ¬sucx≤x x ord
 ```
 
@@ -92,7 +92,7 @@ their strict ordering:
 ≤-split x y | no x≥y with ≤-dec (suc y) x
 ≤-split x y | no x≥y | yes y<x = inr (inl y<x)
 ≤-split x y | no x≥y | no y≥x  = inr (inr (go x y x≥y y≥x)) where
-  go : ∀ x y → (suc x ≤ y → ⊥) → (suc y ≤ x → ⊥) → x ≡ y
+  go : ∀ x y → ¬ (suc x ≤ y) → ¬ (suc y ≤ x) → x ≡ y
   go zero zero p q          = refl
   go zero (suc zero) p q    = absurd (p (s≤s 0≤x))
   go zero (suc (suc y)) p q = absurd (p (s≤s 0≤x))
@@ -104,12 +104,17 @@ their strict ordering:
 ### Properties of the strict order
 
 ```agda
-<-asym : ∀ {x y} → x < y → y < x → ⊥
+<-asym : ∀ {x y} → x < y → ¬ (y < x)
 <-asym {.(suc _)} {.(suc _)} (s≤s p) (s≤s q) = <-asym p q
 
-<-not-equal : ∀ {x y} → x < y → x ≡ y → ⊥
+<-not-equal : ∀ {x y} → x < y → ¬ x ≡ y
 <-not-equal {zero} (s≤s p) q = absurd (zero≠suc q)
 <-not-equal {suc x} (s≤s p) q = <-not-equal p (suc-inj q)
+
+<-irrefl : ∀ {x y} → x ≡ y → ¬ (x < y)
+<-irrefl {suc x} {zero}  p      q  = absurd (zero≠suc (sym p))
+<-irrefl {zero}  {suc y} p      _  = absurd (zero≠suc p)
+<-irrefl {suc x} {suc y} p (s≤s q) = <-irrefl (suc-inj p) q
 
 weaken-< : ∀ {x y} → x < y → x ≤ y
 weaken-< {x} {suc y} p = ≤-sucr (≤-peel p)
@@ -175,7 +180,7 @@ an inhabited subset.
 
 ```agda
     min-suc
-      : ∀ {P : Nat → Type ℓ} → ∀ n → (P 0 → ⊥)
+      : ∀ {P : Nat → Type ℓ} → ∀ n → ¬ P 0
       → (∀ k → P (suc k) → n ≤ k)
       → ∀ k → P k → suc n ≤ k
     min-suc n ¬p0 nmins zero pk           = absurd (¬p0 pk)

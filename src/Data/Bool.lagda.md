@@ -27,7 +27,7 @@ non-trivial. In particular, there are two: negation, and the identity.
 But first, true isn't false.
 
 ```agda
-true≠false : true ≡ false → ⊥
+true≠false : ¬ true ≡ false
 true≠false p = subst P p tt where
   P : Bool → Type
   P false = ⊥
@@ -235,11 +235,11 @@ Furthermore, if we know we're not looking at true, then we must be
 looking at false, and vice-versa:
 
 ```agda
-x≠true→x≡false : (x : Bool) → (x ≡ true → ⊥) → x ≡ false
+x≠true→x≡false : (x : Bool) → ¬ x ≡ true → x ≡ false
 x≠true→x≡false false p = refl
 x≠true→x≡false true p = absurd (p refl)
 
-x≠false→x≡true : (x : Bool) → (x ≡ false → ⊥) → x ≡ true
+x≠false→x≡true : (x : Bool) → ¬ x ≡ false → x ≡ true
 x≠false→x≡true false p = absurd (p refl)
 x≠false→x≡true true p = refl
 ```
@@ -300,7 +300,7 @@ Bool` _doesn't_ map `f x ≡ x`, then it maps `f x ≡ not x`.
 ```agda
 Bool-aut≡2 : (Bool ≡ Bool) ≡ Lift _ Bool
 Bool-aut≡2 = Iso→Path the-iso where
-  lemma : (f : Bool → Bool) {x : Bool} → (f x ≡ x → ⊥) → f x ≡ not x
+  lemma : (f : Bool → Bool) {x : Bool} → ¬ f x ≡ x → f x ≡ not x
   lemma f {false} x with Discrete-Bool (f false) true
   lemma f {false} x | yes p = p
   lemma f {false} x | no ¬p = absurd (¬p (x≠false→x≡true _ x))

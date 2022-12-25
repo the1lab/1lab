@@ -141,10 +141,10 @@ private
 We show it is not commutative or associative by giving counterexamples:
 
 ```agda
-  imp-not-commutative : ((x y : Bool) → imp x y ≡ imp y x) → ⊥
+  imp-not-commutative : ¬ ((x y : Bool) → imp x y ≡ imp y x)
   imp-not-commutative commutative = true≠false (commutative false true)
 
-  imp-not-associative : ((x y z : Bool) → imp (imp x y) z ≡ imp x (imp y z)) → ⊥
+  imp-not-associative : ¬ ((x y z : Bool) → imp (imp x y) z ≡ imp x (imp y z))
   imp-not-associative associative = true≠false (sym (associative false false false))
 ```
 
@@ -153,7 +153,7 @@ on the candidates:
 
 ```agda
   imp-not-unital
-    : (x : Bool) → ((y : Bool) → imp x y ≡ y) → ((y : Bool) → imp y x ≡ y) → ⊥
+    : (x : Bool) → ((y : Bool) → imp x y ≡ y) → ¬ ((y : Bool) → imp y x ≡ y)
   imp-not-unital false left-unital right-unital = true≠false (right-unital false)
   imp-not-unital true left-unital right-unital = true≠false (right-unital false)
 ```

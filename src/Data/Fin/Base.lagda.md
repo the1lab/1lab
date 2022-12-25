@@ -114,12 +114,11 @@ We begin by showing that one can `distinguish`{.Agda} zero
 from successor:
 
 ```agda
-fzero≠fsuc : ∀ {n} {i : Fin n} → fzero ≡ fsuc i → ⊥
-fzero≠fsuc {n = n} path = subst distinguish path tt
-  where
-    distinguish : Fin (suc n) → Type
-    distinguish fzero = ⊤
-    distinguish (fsuc _) = ⊥
+fzero≠fsuc : ∀ {n} {i : Fin n} → ¬ fzero ≡ fsuc i
+fzero≠fsuc {n = n} path = subst distinguish path tt where
+  distinguish : Fin (suc n) → Type
+  distinguish fzero = ⊤
+  distinguish (fsuc _) = ⊥
 ```
 
 Next, we show that `fsuc` is injective. This again follows

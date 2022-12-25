@@ -36,7 +36,7 @@ inr-inj {B = B} {x = x} path = ap f path where
   f (inl _) = x
   f (inr x) = x
 
-⊎-disjoint : {A : Type a} {B : Type b} {x : A} {y : B} → inl x ≡ inr y → ⊥
+⊎-disjoint : {A : Type a} {B : Type b} {x : A} {y : B} → ¬ inl x ≡ inr y
 ⊎-disjoint path = subst (λ { (inl x) → ⊤ ; (inr x) → ⊥ }) path tt
 ```
 
@@ -168,7 +168,7 @@ the coproduct of _disjoint_ propositions is a proposition:
 
 ```agda
 disjoint-⊎-is-prop
-  : is-prop A → is-prop B → (A × B → ⊥)
+  : is-prop A → is-prop B → ¬ A × B
   → is-prop (A ⊎ B)
 disjoint-⊎-is-prop Ap Bp notab (inl x) (inl y) = ap inl (Ap x y)
 disjoint-⊎-is-prop Ap Bp notab (inl x) (inr y) = absurd (notab (x , y))
