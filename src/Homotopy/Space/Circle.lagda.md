@@ -77,7 +77,7 @@ _ = refl
 _ : parity loop ≡ false
 _ = refl
 
-refl≠loop : refl ≡ loop → ⊥
+refl≠loop : ¬ refl ≡ loop
 refl≠loop path = true≠false (ap parity path)
 ```
 

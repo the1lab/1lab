@@ -158,9 +158,9 @@ we define what trichotomy means for 2 elements via `Tri`, then
 
 ```agda
 data Tri {A : Type ℓ} (R : A → A → Type ℓ') (x y : A) : Type (ℓ ⊔ ℓ') where
-  lt : R x y       → (x ≡ y → ⊥) → (R y x → ⊥) → Tri R x y
-  eq : (R x y → ⊥) → x ≡ y       → (R y x → ⊥) → Tri R x y
-  gt : (R x y → ⊥) → (x ≡ y → ⊥) → R y x       → Tri R x y
+  lt :   R x y → ¬ x ≡ y → ¬ R y x → Tri R x y
+  eq : ¬ R x y →   x ≡ y → ¬ R y x → Tri R x y
+  gt : ¬ R x y → ¬ x ≡ y →   R y x → Tri R x y
 
 is-trichotomous : {A : Type ℓ} → (R : A → A → Type ℓ') → Type (ℓ ⊔ ℓ')
 is-trichotomous R = ∀ x y → Tri R x y

@@ -42,7 +42,7 @@ there is an algorithm that can tell you whether or not they are equal.
 First, observe that we can `distinguish`{.Agda} zero from successor:
 
 ```agda
-zero≠suc : {n : Nat} → zero ≡ suc n → ⊥
+zero≠suc : {n : Nat} → ¬ zero ≡ suc n
 zero≠suc path = subst distinguish path tt where
   distinguish : Nat → Type
   distinguish zero = ⊤

@@ -297,28 +297,12 @@ from this page. You can unfold it below if you dare:
     -- This *barrage* of cases is to handle the cases where e.g. (x < y)
     -- but (1 + x > 1 + y), which is "obviously" impossible. But Agda
     -- doesn't care about what humans think is obvious.
-    ... | inl x<y | inr (inl (s≤s x>y)) = absurd (go x y x<y x>y) where
-      go : ∀ x y → x < y → y < x → ⊥
-      go (suc x) (suc y) (s≤s p) (s≤s q) = go x y p q
-    ... | inl x<y | inr (inr x≡y) = absurd (go x y x<y (suc-inj x≡y)) where
-      go : ∀ x y → x < y → x ≡ y → ⊥
-      go zero (suc y) p q = absurd (zero≠suc q)
-      go (suc x) (suc y) (s≤s p) q = go x y p (suc-inj q)
-    ... | inr (inl x>y) | inl (s≤s x<y) = absurd (go x y x>y x<y) where
-      go : ∀ x y → y < x → x < y → ⊥
-      go (suc x) (suc y) (s≤s p) (s≤s q) = go x y p q
-    ... | inr (inr x≡y) | inl (s≤s x<y) = absurd (go x y x<y x≡y) where
-      go : ∀ x y → x < y → x ≡ y → ⊥
-      go zero (suc y) p q = absurd (zero≠suc q)
-      go (suc x) (suc y) (s≤s p) q = go x y p (suc-inj q)
-    ... | inr (inl x>y) | inr (inr x≡y) = absurd (go x y x>y (suc-inj x≡y)) where
-      go : ∀ x y → y < x → x ≡ y → ⊥
-      go (suc x) zero p q = absurd (zero≠suc (sym q))
-      go (suc x) (suc y) (s≤s p) q = go x y p (suc-inj q)
-    ... | inr (inr x≡y) | inr (inl (s≤s x>y)) = absurd (go x y x≡y x>y) where
-      go : ∀ x y → x ≡ y → y < x → ⊥
-      go (suc x) zero p q = absurd (zero≠suc (sym p))
-      go (suc x) (suc y) p (s≤s q) = go x y (suc-inj p) q
+    ... | inl x<y | inr (inl (s≤s x>y)) = absurd (<-asym x<y x>y)
+    ... | inl x<y | inr (inr x≡y) = absurd (<-not-equal x<y (suc-inj x≡y))
+    ... | inr (inl x>y) | inl (s≤s x<y) = absurd (<-asym x>y x<y)
+    ... | inr (inr x≡y) | inl (s≤s x<y) = absurd (<-not-equal x<y x≡y)
+    ... | inr (inl x>y) | inr (inr x≡y) = absurd (<-not-equal x>y (sym (suc-inj x≡y)))
+    ... | inr (inr x≡y) | inr (inl (s≤s x>y)) = absurd (<-irrefl (sym x≡y) x>y)
 
   go : ∀ n → Canonical n
   go (diff x y) = work x y
@@ -488,21 +472,19 @@ $(1+x,0)$, or $(0,0)$], we can split on an integer based on its sign:
 abstract
   canonicalise-not-both-suc
     : ∀ x {k n}
-    → (p : canonicalise x .fst      ≡ suc k)
-    → (q : canonicalise x .snd .fst ≡ suc n)
-    → ⊥
+    → canonicalise x .fst ≡ suc k
+    → ¬ canonicalise x .snd .fst ≡ suc n
   canonicalise-not-both-suc =
     Int-elim-prop {P = λ x → ∀ {k n}
-                           → (p : canonicalise x .fst      ≡ suc k)
-                             (q : canonicalise x .snd .fst ≡ suc n)
-                           → ⊥ }
+                           → canonicalise x .fst ≡ suc k
+                           → ¬ canonicalise x .snd .fst ≡ suc n
+                           }
       (λ p → hlevel 1)
       go
     where
       go : ∀ a b {k n}
-           (p : canonicalise (diff a b) .fst      ≡ suc k)
-           (q : canonicalise (diff a b) .snd .fst ≡ suc n)
-         → ⊥
+         → canonicalise (diff a b) .fst ≡ suc k
+         → ¬ canonicalise (diff a b) .snd .fst ≡ suc n
       go a b p q with ≤-split a b
       ... | inl x       = absurd (zero≠suc p)
       ... | inr (inl x) = absurd (zero≠suc q)

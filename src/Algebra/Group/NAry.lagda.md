@@ -68,7 +68,7 @@ module _ {ℓ} {T : Type ℓ} (G : Group-on T)  where
     : ∀ {n} (i : Fin n) {x : T}
     → (f : Fin n → T)
     → f i ≡ x
-    → (∀ j → (i ≡ j → ⊥) → f j ≡ G.unit)
+    → (∀ j → ¬ i ≡ j → f j ≡ G.unit)
     → ∑ G f ≡ x
   ∑-diagonal-lemma {suc n} fzero f f0=x fj=0 =
     G.elimr ( ∑-path {n = n} G (λ i → fj=0 (fsuc i) fzero≠fsuc)

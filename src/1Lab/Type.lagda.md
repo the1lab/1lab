@@ -115,5 +115,9 @@ open import Prim.Literals public
 
 Type∙ : ∀ ℓ → Type (lsuc ℓ)
 Type∙ _ = Σ _ id
+
+¬_ : ∀ {ℓ} → Type ℓ → Type ℓ
+¬ A = A → ⊥
+infix 3 ¬_
 ```
 -->

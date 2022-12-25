@@ -43,7 +43,7 @@ Similarly, it is possible to distinguish `_ ∷ _` from `[]`{.Agda}, so
 they are not identical:
 
 ```agda
-∷≠[] : ∀ {x : A} {xs} → (x ∷ xs) ≡ [] → ⊥
+∷≠[] : ∀ {x : A} {xs} → ¬ (x ∷ xs) ≡ []
 ∷≠[] {A = A} p = subst distinguish p tt where
   distinguish : List A → Type
   distinguish []     = ⊥

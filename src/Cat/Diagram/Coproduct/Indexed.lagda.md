@@ -154,7 +154,7 @@ record is-disjoint-coproduct (F : Idx → C.Ob) (ι : ∀ i → C.Hom (F i) S)
     injections-are-monic : ∀ i → C.is-monic (ι i)
     summands-intersect   : ∀ i j → Pullback C (ι i) (ι j)
     different-images-are-disjoint
-      : ∀ i j → (i ≡ j → ⊥) → is-initial C (summands-intersect i j .Pullback.apex)
+      : ∀ i j → ¬ i ≡ j → is-initial C (summands-intersect i j .Pullback.apex)
 ```
 
 ## Initial objects are disjoint

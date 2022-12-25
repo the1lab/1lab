@@ -309,8 +309,8 @@ and so, if a type has decidable (thus ¬¬-stable) equality, it is a set.
 ```agda
 ¬¬-stable-identity-system
   : ∀ {ℓ} {A : Type ℓ}
-  → (∀ {x y} → ((Path A x y → ⊥) → ⊥) → x ≡ y)
-  → is-identity-system (λ x y → (Path A x y → ⊥) → ⊥) λ a k → k refl
+  → (∀ {x y} → ¬ ¬ Path A x y → x ≡ y)
+  → is-identity-system (λ x y → ¬ ¬ Path A x y) λ a k → k refl
 ¬¬-stable-identity-system = set-identity-system λ x y f g →
   funext λ h → absurd (g h)
 
@@ -319,7 +319,7 @@ Discrete→is-set {A = A} dec =
   identity-system→hlevel 1 (¬¬-stable-identity-system stable) λ x y f g →
     funext λ h → absurd (g h)
   where
-    stable : {x y : A} → ((x ≡ y → ⊥) → ⊥) → x ≡ y
+    stable : {x y : A} → ¬ ¬ x ≡ y → x ≡ y
     stable {x = x} {y = y} ¬¬p with dec x y
     ... | yes p = p
     ... | no ¬p = absurd (¬¬p ¬p)

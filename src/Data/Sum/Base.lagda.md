@@ -127,11 +127,11 @@ This type has a very similar structure to [Dec](agda://Data.Dec.Base#Dec), so
 we provide some helpers to convert between the two.
 
 ```agda
-from-dec : Dec A → A ⊎ (A → ⊥)
+from-dec : Dec A → A ⊎ ¬ A
 from-dec (yes a) = inl a
 from-dec (no ¬a) = inr ¬a
 
-to-dec : A ⊎ (A → ⊥) → Dec A
+to-dec : A ⊎ ¬ A → Dec A
 to-dec (inl  a) = yes a
 to-dec (inr ¬a) = no ¬a
 ```

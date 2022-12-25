@@ -47,7 +47,7 @@ First, let's show that if the head `xs` is greater than the head of `ys`, then
 then `xs` cannot be smaller than `ys`:
 
 ```agda
-lex-antisym-head : (x ≺ y → ⊥) → (x ≡ y → ⊥) → Lex _≺_ (x ∷ xs) (y ∷ ys) → ⊥
+lex-antisym-head : ¬ (x ≺ y) → ¬ x ≡ y → ¬ Lex _≺_ (x ∷ xs) (y ∷ ys)
 lex-antisym-head ¬x≺y ¬x≡y (here x≺y) = ¬x≺y x≺y
 lex-antisym-head ¬x≺y ¬x≡y (next _)   = ¬x≡y refl
 ```
@@ -55,7 +55,7 @@ lex-antisym-head ¬x≺y ¬x≡y (next _)   = ¬x≡y refl
 We can show something similar for the tails of lists as well!
 
 ```agda
-lex-antisym-tail : (x ≺ y → ⊥) → (Lex _≺_ xs ys → ⊥) → Lex _≺_ (x ∷ xs) (y ∷ ys) → ⊥
+lex-antisym-tail : ¬ (x ≺ y) → ¬ Lex _≺_ xs ys → ¬ Lex _≺_ (x ∷ xs) (y ∷ ys)
 lex-antisym-tail ¬x≺y ¬xs≺ys (here x≺y)   = ¬x≺y x≺y
 lex-antisym-tail ¬x≺y ¬xs≺ys (next xs≺ys) = ¬xs≺ys xs≺ys
 ```

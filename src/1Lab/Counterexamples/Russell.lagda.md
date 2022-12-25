@@ -51,7 +51,7 @@ we have the empty set:
 Ø : V
 Ø = set ⊥ absurd
 
-X∉Ø : {X : V} → X ∈ Ø → ⊥
+X∉Ø : {X : V} → ¬ X ∈ Ø
 X∉Ø ()
 ```
 
@@ -61,13 +61,13 @@ that do not contain themselves_:
 
 ```agda
 R : V
-R = set (Σ _ λ x → x ∈ x → ⊥) fst
+R = set (Σ _ λ x → ¬ x ∈ x) fst
 ```
 
 If `X` is an element of `R`, then it does not contain itself:
 
 ```agda
-X∈R→X∉X : {X : V} → X ∈ R → X ∈ X → ⊥
+X∈R→X∉X : {X : V} → X ∈ R → ¬ X ∈ X
 X∈R→X∉X ((I , I∉I) , prf) elem =
   let I∈I : I ∈ I
       I∈I = subst (λ x → x ∈ x) (sym prf) elem
@@ -77,14 +77,14 @@ X∈R→X∉X ((I , I∉I) , prf) elem =
 Using a diagonal argument, we can show that R does not contain itself:
 
 ```agda
-R∉R : R ∈ R → ⊥
+R∉R : ¬ R ∈ R
 R∉R R∈R = X∈R→X∉X R∈R R∈R
 ```
 
 And every set that doesn't contain itself is an element of `R`:
 
 ```agda
-X∉X→X∈R : {X : V} → (X ∈ X → ⊥) → X ∈ R
+X∉X→X∈R : {X : V} → ¬ X ∈ X → X ∈ R
 X∉X→X∈R X∉X = (_ , X∉X) , refl
 ```
 

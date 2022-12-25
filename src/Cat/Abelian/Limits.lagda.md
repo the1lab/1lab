@@ -146,7 +146,7 @@ identity on the diagonal.
       ap yes (is-set→is-setᵢ Fin-is-set i i x reflᵢ)
     δᵢᵢ i (no ¬x=x) = absurd (¬x=x reflᵢ)
 
-    δᵢⱼ : ∀ i j → (i ≡ j → ⊥) → (d : Dec (i ≡ᵢ j)) → δ′ i j d ≡ A.0m
+    δᵢⱼ : ∀ i j → ¬ i ≡ j → (d : Dec (i ≡ᵢ j)) → δ′ i j d ≡ A.0m
     δᵢⱼ i j i≠j (yes i=j) = absurd (i≠j (Id≃path.to i=j))
     δᵢⱼ i j i≠j (no _)    = refl
 ```
