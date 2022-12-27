@@ -119,3 +119,31 @@ elΩ : ∀ {ℓ} (T : Type ℓ) → Ω
 ∣ elΩ T ∣ = □ T
 elΩ T .is-tr = squash
 ```
+
+<!--
+```agda
+□-ap
+  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+  → □ (A → B) → □ A → □ B
+□-ap (inc f) (inc g) = inc (f g)
+□-ap (inc f) (squash g g′ i) = squash (□-ap (inc f) g) (□-ap (inc f) g′) i
+□-ap (squash f f′ i) g = squash (□-ap f g) (□-ap f′ g) i
+
+□-bind
+  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+  → □ A → (A → □ B) → □ B
+□-bind (inc x) f = f x
+□-bind (squash x x′ i) f = squash (□-bind x f) (□-bind x′ f) i
+
+instance
+  Map-□ : Map (eff □)
+  Map-□ .Map._<$>_ = □-map
+
+  Idiom-□ : Idiom (eff □)
+  Idiom-□ .Idiom.pure = inc
+  Idiom-□ .Idiom._<*>_ = □-ap
+
+  Bind-□ : Bind (eff □)
+  Bind-□ .Bind._>>=_ = □-bind
+```
+-->
