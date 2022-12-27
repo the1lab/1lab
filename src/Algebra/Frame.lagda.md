@@ -1,5 +1,4 @@
 ```agda
-
 open import Algebra.Semilattice
 open import Algebra.Semigroup
 open import Algebra.Prelude

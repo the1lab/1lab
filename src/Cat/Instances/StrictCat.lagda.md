@@ -46,14 +46,14 @@ Functor-is-set {o = o} {h} {C} {D} dobset =
 -->
 
 ```agda
-Strict-Cat : ∀ o h → Precategory _ _
-Strict-Cat o h .Ob = Σ[ C ∈ Precategory o h ] (is-set (Ob C))
-Strict-Cat o h .Hom (C , _) (D , _) = Functor C D
-Strict-Cat o h .id  = Id
-Strict-Cat o h ._∘_ = _F∘_
-Strict-Cat o h .idr _       = Functor-path (λ _ → refl) λ _ → refl
-Strict-Cat o h .idl _       = Functor-path (λ _ → refl) λ _ → refl
-Strict-Cat o h .assoc _ _ _ = Functor-path (λ _ → refl) λ _ → refl
+Strict-cats : ∀ o h → Precategory _ _
+Strict-cats o h .Ob = Σ[ C ∈ Precategory o h ] (is-set (Ob C))
+Strict-cats o h .Hom (C , _) (D , _) = Functor C D
+Strict-cats o h .id  = Id
+Strict-cats o h ._∘_ = _F∘_
+Strict-cats o h .idr _       = Functor-path (λ _ → refl) λ _ → refl
+Strict-cats o h .idl _       = Functor-path (λ _ → refl) λ _ → refl
+Strict-cats o h .assoc _ _ _ = Functor-path (λ _ → refl) λ _ → refl
 ```
 
 This assembles into a `Precategory`{.Agda} because the only bit of a
@@ -62,22 +62,22 @@ mapping; By asking that `D`{.Agda} be a strict category, this fixes the
 functors to be sets.
 
 ```agda
-Strict-Cat o h .Hom-set _ (D , dset) = Functor-is-set dset
+Strict-cats o h .Hom-set _ (D , dset) = Functor-is-set dset
 ```
 
 ## Products
 
-We prove that `Strict-Cat`{.Agda} has products. This is because
+We prove that `Strict-cats`{.Agda} has products. This is because
 $(\ca{C} \times_\cat \ca{D})_0$ is $\ca{C}_0 \times \ca{D}_0$,
 and h-levels are closed under products.
 
 ```agda
-Strict-Cat-Product
+Strict-cats-products
   : {C D : Precategory o h}
   → (cob : is-set (Ob C)) (dob : is-set (Ob D))
-  → Product (Strict-Cat o h) (C , cob) (D , dob)
-Strict-Cat-Product {C = C} {D = D} cob dob = prod where
-  prod : Product (Strict-Cat _ _) (C , cob) (D , dob)
+  → Product (Strict-cats o h) (C , cob) (D , dob)
+Strict-cats-products {C = C} {D = D} cob dob = prod where
+  prod : Product (Strict-cats _ _) (C , cob) (D , dob)
   prod .apex = C ×ᶜ D , ×-is-hlevel 2 cob dob
   prod .π₁ = Fst {C = C} {D = D}
   prod .π₂ = Snd {C = C} {D = D}

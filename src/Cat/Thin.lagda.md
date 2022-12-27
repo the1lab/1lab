@@ -60,9 +60,8 @@ record Proset (o h : Level) : Type (lsuc (o ⊔ h)) where
 ```
 
 The collection of all thin categories assembles into a subcategory of
-`Strict-Cat`{.Agda}, which we call `Prosets`{.Agda} (for "[preordered] sets").
-
-[preordered]: Relation.Order.html#order-relations
+`Strict-cats`{.Agda}, which we call `Prosets`{.Agda} (for "preordered
+sets").
 
 ```agda
 Prosets : ∀ o h → Precategory (lsuc (o ⊔ h)) (o ⊔ h)
@@ -305,7 +304,7 @@ prosets are functors between strict categories: it acts on morphisms
 literally by the identity function.
 
 ```agda
-Forget : ∀ {o h} → Functor (Prosets o h) (Strict-Cat o h)
+Forget : ∀ {o h} → Functor (Prosets o h) (Strict-cats o h)
 Forget .F₀ C = Proset.underlying C , Proset.Ob-is-set C
 Forget .F₁ f = f
 Forget .F-id = refl
@@ -320,7 +319,7 @@ categories into prosets.
 [propositionally truncate]: 1Lab.HIT.Truncation.html
 
 ```agda
-Free : ∀ {o h} → Functor (Strict-Cat o h) (Prosets o h)
+Free : ∀ {o h} → Functor (Strict-cats o h) (Prosets o h)
 Free .F₀ C = pro where
   open Precategory
 
@@ -348,7 +347,7 @@ Free .F-∘ f g = Functor-path (λ _ → refl) λ f → squash _ _
 
 This `Free`{.Agda} functor is a [left adjoint] to the `Forget`{.Agda}
 functor defined above, so in particular we conclude that it induces an
-idempotent monad on `Strict-Cat`{.Agda}: The "thinning" of a
+idempotent monad on `Strict-cats`{.Agda}: The "thinning" of a
 `Proset`{.Agda} is the same proset we started with.
 
 [left adjoint]: Cat.Functor.Adjoint.html

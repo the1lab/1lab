@@ -22,7 +22,7 @@ open _⊣_
 ```
 -->
 
-# Strict-Cat is "cohesive"
+# Strict-cats is "cohesive"
 
 We prove that the category $\strcat$ admits an adjoint
 quadruple
@@ -44,7 +44,7 @@ category. Two objects land in the same connected component if there is a
 path of morphisms connecting them, hence the name.
 
 **Note**: Generally, the term "cohesive" is applied to Grothendieck
-topoi, which `Strict-Cat`{.Agda} is _very far_ from being. We're using it
+topoi, which `Strict-cats`{.Agda} is _very far_ from being. We're using it
 here by analogy: There's an adjoint quadruple, where the functor
 $\Gamma$ sends each category to its set of points: see [the last
 section]. Strictly speaking, the left adjoint to $\Gamma$ isn't defined
@@ -58,7 +58,7 @@ sending $S$ to the coproduct of $S$-many copies of the point category.
 We begin by defining the object set functor.
 
 ```agda
-Γ : Functor (Strict-Cat o h) (Sets o)
+Γ : Functor (Strict-cats o h) (Sets o)
 Γ .F₀ (C , obset) = el (Ob C) obset
 Γ .F₁ = F₀
 Γ .F-id = refl
@@ -71,7 +71,7 @@ functor `Γ`{.Agda} we defined above. Then we define the adjunction
 `Disc⊣Γ`{.Agda}.
 
 ```agda
-Disc : Functor (Sets ℓ) (Strict-Cat ℓ ℓ)
+Disc : Functor (Sets ℓ) (Strict-cats ℓ ℓ)
 Disc .F₀ S = Disc′ S , S .is-tr
 Disc .F₁ = lift-disc
 Disc .F-id = Functor-path (λ x → refl) λ f → refl
@@ -84,7 +84,7 @@ Disc⊣Γ = adj where
 <!--
 ```agda
   abstract
-    lemma : ∀ {A : Strict-Cat ℓ ℓ .Precategory.Ob}
+    lemma : ∀ {A : Strict-cats ℓ ℓ .Precategory.Ob}
               {x y z : A .fst .Precategory.Ob} (f : y ≡ z) (g : x ≡ y)
           → subst (A .fst .Precategory.Hom _) (g ∙ f) (A .fst .Precategory.id)
           ≡ A .fst .Precategory._∘_
@@ -117,7 +117,7 @@ identity map suffices.
 
 ```agda
   adj .counit = NT (λ x → F x) nat where
-    F : (x : Precategory.Ob (Strict-Cat ℓ ℓ))
+    F : (x : Precategory.Ob (Strict-cats ℓ ℓ))
       → Functor (Disc′ (el _ (x .snd))) _
     F X .F₀ x = x
     F X .F₁ p = subst (X .fst .Hom _) p (X .fst .id) {- 1 -}
@@ -128,8 +128,8 @@ identity map suffices.
 <!--
 ```agda
     abstract
-      nat : (x y : Precategory.Ob (Strict-Cat ℓ ℓ))
-            (f : Precategory.Hom (Strict-Cat ℓ ℓ) x y)
+      nat : (x y : Precategory.Ob (Strict-cats ℓ ℓ))
+            (f : Precategory.Hom (Strict-cats ℓ ℓ) x y)
           → (F y F∘ F₁ (Disc F∘ Γ) f) ≡ (f F∘ F x)
       nat x y f =
         Functor-path (λ x → refl)
@@ -160,7 +160,7 @@ lift functions to act on object parts and the action on morphisms is
 trivial.
 
 ```agda
-Codisc : Functor (Sets ℓ) (Strict-Cat ℓ ℓ)
+Codisc : Functor (Sets ℓ) (Strict-cats ℓ ℓ)
 Codisc .F₀ S = Codisc′ ∣ S ∣ , S .is-tr
 
 Codisc .F₁ f .F₀ = f
@@ -205,9 +205,9 @@ $\hom$-sets are definitionally contractible.
 
 ```agda
 module _ {ℓ} where
-  import Cat.Morphism Cat[ Strict-Cat ℓ ℓ , Sets ℓ ] as Nt
+  import Cat.Morphism Cat[ Strict-cats ℓ ℓ , Sets ℓ ] as Nt
 
-  GlobalSections : Functor (Strict-Cat ℓ ℓ) (Sets ℓ)
+  GlobalSections : Functor (Strict-cats ℓ ℓ) (Sets ℓ)
   GlobalSections .F₀ C =
     el (Functor (Codisc′ (Lift _ ⊤)) (C .fst)) (Functor-is-set (C .snd))
   GlobalSections .F₁ G F = G F∘ F
@@ -270,13 +270,13 @@ connected. This is intentional!
 ```
 
 The `π₀`{.Agda} construction extends to a functor `Π₀`{.Agda} (capital
-pi for **P**ieces) from `Strict-Cat`{.Agda} back to `Sets`{.Agda}. We
+pi for **P**ieces) from `Strict-cats`{.Agda} back to `Sets`{.Agda}. We
 send a functor $F$ to its object part, but postcomposing with the map
 `inc`{.Agda} which sends an object of $\ca{D}$ to the connected
 component it inhabits.
 
 ```agda
-Π₀ : Functor (Strict-Cat o h) (Sets (o ⊔ h))
+Π₀ : Functor (Strict-cats o h) (Sets (o ⊔ h))
 Π₀ .F₀ (C , _) = π₀ C
 Π₀ .F₁ F =
   Quot-elim (λ _ → squash) (λ x → inc (F₀ F x))

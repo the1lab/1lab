@@ -16,3 +16,4 @@ ring: Algebra.Ring.html#rings
 abelian group: Algebra.Group.Ab.html#abelian-groups
 total category: Cat.Displayed.Total.html
 proposition, propositions: 1Lab.HLevel.html#is-prop
+set, sets: 1Lab.HLevel.html#is-set
