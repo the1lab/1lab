@@ -184,5 +184,16 @@ enumerate = go 0 where
   go : Nat → List _ → List (Nat × _)
   go x [] = []
   go x (a ∷ b) = (x , a) ∷ go (suc x) b
+
+map-id : ∀ {ℓ} {A : Type ℓ} → (xs : List A) → map id xs ≡ xs
+map-id [] = refl
+map-id (x ∷ xs) = ap (x ∷_) (map-id xs)
+
+map-∘ : ∀ {ℓ ℓ′ ℓ″} {A : Type ℓ} {B : Type ℓ′} {C : Type ℓ″}
+      → (f : B → C) (g : A → B)
+      → (xs : List A)
+      → map (f ∘ g) xs ≡ map f (map g xs)
+map-∘ f g [] = refl
+map-∘ f g (x ∷ xs) = ap ((f $ g x) ∷_) (map-∘ f g xs)
 ```
 -->
