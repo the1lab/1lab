@@ -11,6 +11,7 @@ open import 1Lab.Type
 
 open import Data.Bool
 open import Data.List
+open import Data.Sum
 
 open import Meta.Foldable
 
@@ -670,6 +671,10 @@ instance
   -- decomposition here is a bit more flexible.
   decomp-ntype : ∀ {ℓ} {n} → hlevel-decomposition (n-Type ℓ n)
   decomp-ntype = decomp (quote n-Type-is-hlevel) (`level-minus 1 ∷ [])
+
+  hlevel-decomp-⊎ : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → hlevel-decomposition (A ⊎ B)
+  hlevel-decomp-⊎ = decomp (quote ⊎-is-hlevel)
+    (`level-minus 2 ∷ `search ∷ `search ∷ [])
 
   hlevel-proj-n-type : hlevel-projection
   hlevel-proj-n-type .underlying-type = quote n-Type.∣_∣

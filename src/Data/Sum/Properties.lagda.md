@@ -1,5 +1,4 @@
 ```agda
-open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
 open import 1Lab.HLevel
@@ -105,19 +104,15 @@ structure, we can establish its h-level by induction:
 ```agda
   Code≃Path : {x y : A ⊎ B} → (x ≡ y) ≃ Code x y
   Code≃Path = Iso→Equiv (encode , iso decode encode-decode decode-encode)
-```
 
-```agda
-open ⊎Path
 
-Code-is-hlevel : {x y : A ⊎ B} {n : Nat}
-               → is-hlevel A (2 + n)
-               → is-hlevel B (2 + n)
-               → is-hlevel (Code x y) (suc n)
-Code-is-hlevel {x = inl x} {inl y} {n} ahl bhl =
-  Lift-is-hlevel (suc n) (ahl x y)
-Code-is-hlevel {x = inr x} {inr y} {n} ahl bhl =
-  Lift-is-hlevel (suc n) (bhl x y)
+⊎-is-hlevel : (n : Nat)
+            → is-hlevel A (2 + n)
+            → is-hlevel B (2 + n)
+            → is-hlevel (A ⊎ B) (2 + n)
+⊎-is-hlevel n ahl bhl x y =
+  is-hlevel≃ (1 + n) Code≃Path (Code-is-hlevel ahl bhl) where
+    open ⊎Path
 ```
 
 In the two cases where `x` and `y` match, we can use the fact that `Lift
@@ -125,10 +120,14 @@ preserves h-levels`{.Agda ident=Lift-is-hlevel} and the assumption that
 `A` (or `B`) have the given h-level.
 
 ```agda
-Code-is-hlevel {x = inl x} {inr y} {n} ahl bhl =
-  Lift-is-hlevel (suc n) (is-prop→is-hlevel-suc λ x → absurd x)
-Code-is-hlevel {x = inr x} {inl y} {n} ahl bhl =
-  Lift-is-hlevel (suc n) (is-prop→is-hlevel-suc λ x → absurd x)
+    Code-is-hlevel : {x y : A ⊎ B} {n : Nat}
+                   → is-hlevel A (2 + n)
+                   → is-hlevel B (2 + n)
+                   → is-hlevel (Code x y) (suc n)
+    Code-is-hlevel {x = inl x} {inl y} {n} ahl bhl =
+      Lift-is-hlevel (suc n) (ahl x y)
+    Code-is-hlevel {x = inr x} {inr y} {n} ahl bhl =
+      Lift-is-hlevel (suc n) (bhl x y)
 ```
 
 In the mismatched cases, we use the fact that `propositions have any
@@ -136,26 +135,11 @@ successor h-level`{.Agda ident=is-prop→is-hlevel-suc} to prove that `⊥` is
 also at the same h-level as `A` and `B`. Thus, we have:
 
 ```agda
-⊎-is-hlevel : (n : Nat)
-            → is-hlevel A (2 + n)
-            → is-hlevel B (2 + n)
-            → is-hlevel (A ⊎ B) (2 + n)
-⊎-is-hlevel n ahl bhl x y =
-  is-hlevel≃ (1 + n) Code≃Path (Code-is-hlevel ahl bhl)
-
-instance
-  hlevel-decomp-⊎ : hlevel-decomposition (A ⊎ B)
-  hlevel-decomp-⊎ = decomp (quote ⊎-is-hlevel)
-    (`level-minus 2 ∷ `search ∷ `search ∷ [])
+    Code-is-hlevel {x = inl x} {inr y} {n} ahl bhl =
+      Lift-is-hlevel (suc n) (is-prop→is-hlevel-suc λ x → absurd x)
+    Code-is-hlevel {x = inr x} {inl y} {n} ahl bhl =
+      Lift-is-hlevel (suc n) (is-prop→is-hlevel-suc λ x → absurd x)
 ```
-
-<!--
-```agda
-module _ {ℓ} {A : n-Type ℓ 2} where
-  _ : is-hlevel (∣ A ∣ ⊎ ∣ A ∣) 5
-  _ = hlevel!
-```
--->
 
 Note that, in general, [being a proposition] and [being contractible]
 are not preserved under coproducts. Consider the case where `(A, a)` and
