@@ -1,0 +1,229 @@
+```agda
+open import Algebra.Monoid.Category
+open import Algebra.Semigroup
+open import Algebra.Monoid
+
+open import Cat.Displayed.Univalence.Thin
+open import Cat.Instances.Delooping
+open import Cat.Order.Diagram.Glb
+open import Cat.Order.Base
+open import Cat.Prelude
+
+open import Data.Fin.Base hiding (_≤_)
+
+import Cat.Reasoning
+
+module Cat.Order.Semilattice where
+```
+
+# Semilattices
+
+A **semilattice**^[Really, either a _meet_ semilattice or a _join_
+semilattice, when considered ordered-theoretically] is a [partially
+ordered set] where every [finite] family of elements has a meet^[Or a
+join, depending]. But semilattices-in-general admit an _algebraic_
+presentation, as well as an order-theoretic presentation: a semilattice
+is a commutative idempotent monoid.
+
+Using the algebraic presentation, we can set up a category of
+semilattices, and exhibit the "join" and "meet" semilattices through two
+forgetful functors into the category of posets.
+
+[partially ordered set]: Cat.Order.Base.html
+[finite]: Data.Fin.Base.html
+
+```agda
+record is-semilattice {ℓ} {A : Type ℓ} (⊤ : A) (_∧_ : A → A → A) : Type ℓ where
+  no-eta-equality
+  field
+    has-is-monoid : is-monoid ⊤ _∧_
+    idempotent    : ∀ {x}   → x ∧ x ≡ x
+    commutative   : ∀ {x y} → x ∧ y ≡ y ∧ x
+  open is-monoid has-is-monoid public
+
+private unquoteDecl eqv = declare-record-iso eqv (quote is-semilattice)
+
+is-semilattice-is-prop
+  : ∀ {ℓ} {A : Type ℓ} (t : A) (m : A → A → A)
+  → is-prop (is-semilattice t m)
+is-semilattice-is-prop {A = A} t m x = Iso→is-hlevel 1 eqv (hlevel 1) x
+  where instance
+    h-l-a : H-Level A 2
+    h-l-a = basic-instance 2 (is-semilattice.has-is-set x)
+
+record Semilattice-on {ℓ} (A : Type ℓ) : Type ℓ where
+  no-eta-equality
+  field
+    top : A
+    _∩_ : A → A → A
+    has-is-semilattice : is-semilattice top _∩_
+  open is-semilattice has-is-semilattice public
+
+  to-monoid : Monoid-on A
+  to-monoid = record { has-is-monoid = has-is-monoid }
+
+Semilattice-structure : ∀ ℓ → Thin-structure {ℓ = ℓ} ℓ Semilattice-on
+Semilattice-structure ℓ =
+  Full-substructure ℓ _ _ SLat↪Mon (Monoid-structure ℓ) where
+  SLat↪Mon : ∀ x → Semilattice-on x ↣ Monoid-on x
+  SLat↪Mon x .fst = Semilattice-on.to-monoid
+  SLat↪Mon x .snd a (S , p) (T , q) = Σ-pathp {A = Semilattice-on x}
+    (λ { i .Semilattice-on.top → (p ∙ sym q) i .Monoid-on.identity
+        ; i .Semilattice-on._∩_ → (p ∙ sym q) i .Monoid-on._⋆_
+        ; i .Semilattice-on.has-is-semilattice → r i
+        })
+    (λ { i j .Monoid-on.identity → sq j i .Monoid-on.identity
+        ; i j .Monoid-on._⋆_ → sq j i .Monoid-on._⋆_
+        ; i j .Monoid-on.has-is-monoid →
+          is-prop→squarep (λ i j → hlevel {T = is-monoid (sq j i .Monoid-on.identity) (sq j i .Monoid-on._⋆_)} 1)
+          (λ i → r i .is-semilattice.has-is-monoid)
+          (λ i → p i .Monoid-on.has-is-monoid)
+          (λ i → q i .Monoid-on.has-is-monoid)
+          (λ _ → a .Monoid-on.has-is-monoid) i j
+        })
+    where
+      r = is-prop→pathp
+        (λ i → is-semilattice-is-prop ((p ∙ sym q) i .Monoid-on.identity) ((p ∙ sym q) i .Monoid-on._⋆_))
+        (S .Semilattice-on.has-is-semilattice) (T .Semilattice-on.has-is-semilattice)
+      sq : Square p (p ∙ sym q) refl q
+      sq i j = hcomp (i ∨ ∂ j) λ where
+        k (k = i0) → p j
+        k (i = i1) → p (j ∨ k)
+        k (j = i0) → p (i ∧ k)
+        k (j = i1) → q (i ∨ ~ k)
+
+Semilattices : ∀ ℓ → Precategory (lsuc ℓ) ℓ
+Semilattices ℓ = Structured-objects (Semilattice-structure ℓ)
+
+Semilattice : ∀ ℓ → Type (lsuc ℓ)
+Semilattice ℓ = Precategory.Ob (Semilattices ℓ)
+
+record make-semilattice {ℓ} (A : Type ℓ) : Type ℓ where
+  no-eta-equality
+  field
+    has-is-set  : is-set A
+    top         : A
+    op          : A → A → A
+    idl         : ∀ {x} → op top x ≡ x
+    associative : ∀ {x y z} → op x (op y z) ≡ op (op x y) z
+    commutative : ∀ {x y} → op x y ≡ op y x
+    idempotent  : ∀ {x} → op x x ≡ x
+
+module _ where
+  open Semilattice-on
+  open is-semilattice
+  open make-semilattice
+
+  to-semilattice-on : ∀ {ℓ} {A : Type ℓ} → make-semilattice A → Semilattice-on A
+  to-semilattice-on s .top = s .top
+  to-semilattice-on s ._∩_ = s .op
+  to-semilattice-on s .has-is-semilattice .has-is-monoid .has-is-semigroup .has-is-magma =
+    record { has-is-set = s .has-is-set }
+  to-semilattice-on s .has-is-semilattice .has-is-monoid .has-is-semigroup .associative =
+    s .associative
+  to-semilattice-on s .has-is-semilattice .has-is-monoid .idl = s .idl
+  to-semilattice-on s .has-is-semilattice .has-is-monoid .idr = s .commutative ∙ s .idl
+  to-semilattice-on s .has-is-semilattice .idempotent = s .idempotent
+  to-semilattice-on s .has-is-semilattice .commutative = s .commutative
+
+  to-semilattice : ∀ {ℓ} {A : Type ℓ} → make-semilattice A → Semilattice ℓ
+  ∣ to-semilattice s .fst ∣ = _
+  to-semilattice s .fst .is-tr = s .has-is-set
+  to-semilattice s .snd = to-semilattice-on s
+
+open Functor
+
+Meet-semi-lattice : ∀ {ℓ} → Functor (Semilattices ℓ) (Posets ℓ ℓ)
+Meet-semi-lattice .F₀ X = X .fst , po where
+  open Poset-on
+  open is-partial-order
+  module X = Semilattice-on (X .snd)
+  po : Poset-on _ ⌞ X ⌟
+  po ._≤_ x y = x ≡ x X.∩ y
+  po .has-is-poset .≤-thin = hlevel 1
+  po .has-is-poset .≤-refl = sym X.idempotent
+  po .has-is-poset .≤-trans {x} {y} {z} x=x∧y y=y∧z =
+    x                 ≡⟨ x=x∧y ⟩
+    x X.∩ ⌜ y ⌝       ≡⟨ ap! y=y∧z ⟩
+    x X.∩ (y X.∩ z)   ≡⟨ X.associative ⟩
+    ⌜ x X.∩ y ⌝ X.∩ z ≡˘⟨ ap¡ x=x∧y ⟩
+    x X.∩ z           ∎
+  po .has-is-poset .≤-antisym {x} {y} x=x∧y y=y∧x =
+    x       ≡⟨ x=x∧y ⟩
+    x X.∩ y ≡⟨ X.commutative ⟩
+    y X.∩ x ≡˘⟨ y=y∧x ⟩
+    y       ∎
+
+Meet-semi-lattice .F₁ f .hom = f .hom
+Meet-semi-lattice .F₁ f .preserves x y p = ap (f .hom) p ∙ f .preserves .Monoid-hom.pres-⋆ _ _
+Meet-semi-lattice .F-id    = Homomorphism-path λ _ → refl
+Meet-semi-lattice .F-∘ f g = Homomorphism-path λ _ → refl
+
+module Meet-SLat {ℓ} (A : Semilattice ℓ) where
+  po : Poset _ _
+  po = (Meet-semi-lattice .F₀ A)
+  open Poset po public
+
+  private module X = Semilattice-on (A .snd) renaming
+            ( associative to ∩-assoc
+            ; idl         to ∩-idl
+            ; idr         to ∩-idr
+            ; commutative to ∩-commutative
+            ; idempotent  to ∩-idempotent
+            )
+  open X using ( top ; _∩_ ; ∩-assoc ; ∩-idl ; ∩-idr ; ∩-commutative ; ∩-idempotent )
+    public
+
+  open Cat.Reasoning (B (Semilattice-on.to-monoid (A .snd)))
+    hiding ( Ob ; Hom ; id ; _∘_ ; assoc ; idl ; idr )
+    public
+
+  ∩-is-meet : ∀ {x y} → is-meet po x y (x ∩ y)
+  ∩-is-meet {x} {y} .is-meet.meet≤l =
+    x ∩ y       ≡⟨ pushl (sym ∩-idempotent) ⟩
+    x ∩ (x ∩ y) ≡⟨ ∩-commutative ⟩
+    (x ∩ y) ∩ x ∎
+  ∩-is-meet {x} {y} .is-meet.meet≤r =
+    x ∩ y       ≡˘⟨ pullr ∩-idempotent ⟩
+    (x ∩ y) ∩ y ∎
+  ∩-is-meet {x} {y} .is-meet.greatest lb lb=lb∧x lb=lb∧y =
+    lb           ≡⟨ lb=lb∧y ⟩
+    lb ∩ y       ≡⟨ pushl lb=lb∧x ⟩
+    lb ∩ (x ∩ y) ∎
+  private module Y {x} {y} = is-meet (∩-is-meet {x} {y}) renaming (meet≤l to ∩≤l ; meet≤r to ∩≤r ; greatest to ∩-univ)
+  open Y public
+
+  ⋂ : ∀ {n} (f : Fin n → ⌞ A ⌟) → ⌞ A ⌟
+  ⋂ {zero} f  = top
+  ⋂ {suc n} f = f fzero ∩ ⋂ (λ i → f (fsuc i))
+
+  ⋂-is-glb : ∀ {n} (f : Fin n → ⌞ A ⌟) → is-glb po f (⋂ f)
+  ⋂-is-glb {zero} f .is-glb.glb≤fam ()
+  ⋂-is-glb {zero} f .is-glb.greatest lb′ x = sym ∩-idr
+  ⋂-is-glb {suc n} f = go where
+    those : is-glb po (λ i → f (fsuc i)) _
+    those = ⋂-is-glb _
+
+    go : is-glb po f (f fzero ∩ ⋂ (λ i → f (fsuc i)))
+    go .is-glb.glb≤fam fzero = ∩≤l
+    go .is-glb.glb≤fam (fsuc i) =
+      f fzero ∩ ⋂ (λ i → f (fsuc i))   ≤⟨ ∩≤r ⟩
+      ⋂ (λ i → f (fsuc i))             ≤⟨ those .is-glb.glb≤fam i ⟩
+      f (fsuc i)                       ≤∎
+    go .is-glb.greatest lb′ f≤lb′ =
+      ∩-univ lb′ (f≤lb′ fzero) (those .is-glb.greatest lb′ (λ i → f≤lb′ (fsuc i)))
+
+module
+  _ {ℓ} (A B : Semilattice ℓ) (f : Precategory.Hom (Semilattices ℓ) A B)
+  where
+  private
+    module A = Meet-SLat A
+    module B = Meet-SLat B
+    open Monoid-hom
+
+  slat-pres-⋂ : ∀ {n} (d : Fin n → ⌞ A ⌟) → f # A.⋂ d ≡ B.⋂ (λ i → f # d i)
+  slat-pres-⋂ {n = zero} d = f .preserves .pres-id
+  slat-pres-⋂ {n = suc n} d =
+    f # (d fzero A.∩ A.⋂ (λ i → d (fsuc i)))   ≡⟨ f .preserves .pres-⋆ _ _ ⟩
+    f # d fzero B.∩ f # A.⋂ (λ i → d (fsuc i)) ≡⟨ ap₂ B._∩_ refl (slat-pres-⋂ λ i → d (fsuc i)) ⟩
+    f # d fzero B.∩ B.⋂ (λ i → f # d (fsuc i)) ∎
