@@ -147,7 +147,7 @@ under union.
           (inr x) → inc (inr (inc (inl x)))) x
         (inr x) → inc (inr (inc (inr x))))
 
-  private module KA = Meet-SLat K[_]
+  private module KA = Semilattice K[_]
   K-fin-lt
     : ∀ {x y : K-finite-subset}
     → (∀ i → ∣ y .fst i ∣ → ∣ x .fst i ∣)
@@ -222,11 +222,17 @@ the truncation.
     → (∣ A ∣ → B)
     → K-finite-subset → B
   fold-K {B = B} Bsl f (P , P-fin) = ε′ .fst module fold-K where
-    module B = Meet-SLat (el B (Semilattice-on.has-is-set Bsl) , Bsl)
+    module B = Semilattice (el B (Semilattice-on.has-is-set Bsl) , Bsl)
 
     fam : (Σ ∣ A ∣ λ x → ∣ P x ∣) → B
     fam (x , _) = f x
+```
 
+We need to do a slight bit of symbol pushing to "pull back", so to
+speak, the meet of our family $[n] \epi P \to B$ to a meet of $P \to B$,
+using surjectivity of the first map.
+
+```agda
     ε : Σ Nat (λ n → Σ (Fin n → Σ ∣ A ∣ λ x → ∣ P x ∣) λ f → ∀ x → ∥ fibre f x ∥)
       → Σ B (is-glb B.po fam)
     ε (card , g , surj) =
@@ -249,12 +255,12 @@ make-free-slat : ∀ {ℓ} → make-left-adjoint (Forget-structure (Semilattice-
 make-free-slat .free A = K[ A ]
 make-free-slat .unit x = ηₛₗ x
 make-free-slat .universal {x} {y} f = total-hom go pres where
-  module y = Meet-SLat (el ⌞ y ⌟ (Semilattice-on.has-is-set (y .snd)) , y .snd)
+  module y = Semilattice (el ⌞ y ⌟ (Semilattice-on.has-is-set (y .snd)) , y .snd)
   open Monoid-hom
   go = fold-K x (y .snd) f
   module go = fold-K x (y .snd) f
 
-  pres : Monoid-hom (_ , Semilattice-on.to-monoid (K[ x ] .snd)) (_ , Semilattice-on.to-monoid (y .snd)) _
+  pres : Monoid-hom (Semilattice-on.to-monoid (K[ x ] .snd)) (Semilattice-on.to-monoid (y .snd)) _
   pres .pres-id = refl
   pres .pres-⋆ (A , af) (B , bf) =
     ap fst $
@@ -277,7 +283,7 @@ make-free-slat .universal {x} {y} f = total-hom go pres where
       module g1 = is-glb (g1 .snd)
       module g2 = is-glb (g2 .snd)
 make-free-slat .commutes {y = y} f = funext λ x → sym y.∩-idr
-  where module y = Meet-SLat y
+  where module y = Semilattice y
 make-free-slat .unique {x = x} {y = y} {f = f} {g = g} w =
   Homomorphism-path λ arg → ∥-∥-proj {ap = y.has-is-set _ _} do
     (card , diagram , glb) ← K-reduce x arg
@@ -285,19 +291,19 @@ make-free-slat .unique {x = x} {y = y} {f = f} {g = g} w =
       path : arg ≡ KA.⋂ λ i → ηₛₗ x (diagram i)
       path = ap fst $ glb-unique KA.po (_ , glb) (_ , KA.⋂-is-glb λ i → ηₛₗ x (diagram i))
       f′ = make-free-slat .universal {x = x} {y = y′} f
-    pure (
+    pure $
       f′ # arg                                 ≡⟨ ap (f′ #_) path ⟩
-      f′ # KA.⋂ (λ i → ηₛₗ x (diagram i))      ≡⟨ slat-pres-⋂ K[ x ] y′ f′ (λ i → ηₛₗ x (diagram i)) ⟩
+      f′ # KA.⋂ (λ i → ηₛₗ x (diagram i))      ≡⟨ slat-pres-⋂ K[ x ] y′ f′ {card} _ ⟩
       y.⋂ (λ i → f′ # ηₛₗ x (diagram i))       ≡⟨ ap (y.⋂ {card}) (funext λ i → y.∩-idr) ⟩
       y.⋂ (λ i → f (diagram i))                ≡⟨ ap (y.⋂ {card}) (funext λ i → happly w (diagram i)) ⟩
-      y.⋂ {card} (λ i → g # ηₛₗ x (diagram i)) ≡˘⟨ slat-pres-⋂ K[ x ] y′ g′ (λ i → ηₛₗ x (diagram i))  ⟩
+      y.⋂ {card} (λ i → g # ηₛₗ x (diagram i)) ≡˘⟨ slat-pres-⋂ K[ x ] y′ g′ {card} _  ⟩
       g # KA.⋂ (λ i → ηₛₗ x (diagram i))       ≡˘⟨ ap (g #_) path ⟩
-      g # arg                                  ∎)
+      g # arg                                  ∎
   where
     y′ : Semilattice _
     y′ = el ⌞ y ⌟ (Semilattice-on.has-is-set (y .snd)) , y .snd
-    module y = Meet-SLat y′
-    module KA = Meet-SLat K[ x ]
+    module y = Semilattice y′
+    module KA = Semilattice K[ x ]
     module go = fold-K x (y .snd) f
 
     g′ : Semilattices _ .Precategory.Hom _ _

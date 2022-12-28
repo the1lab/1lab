@@ -10,11 +10,11 @@ module Cat.Order.Diagram.Glb where
 # Greatest lower bounds
 
 A **glb** $g$ (short for **greatest lower bound**) for a family of
-elements $(a_i)_{i : I}$ is, as the name implies, a greatest element among
-the lower bounds of the $a_i$. Being an a lower bound means that we have
-$g \le a_i$ for all $i : I$; Being the _greatest_ lower bound means that
-if we're given some other $m$ satisfying $m \le a_I$ (for each $i$),
-then we have $m \le u$.
+elements $(a_i)_{i : I}$ is, as the name implies, a greatest element
+among the lower bounds of the $a_i$. Being a lower bound means that we
+have $g \le a_i$ for all $i : I$; Being the _greatest_ lower bound means
+that if we're given some other $m$ satisfying $m \le a_i$ (for each
+$i$), then we have $m \le u$.
 
 A more common _word_ to use for "greatest lower bound" is "meet". But
 since "meet" is a fairly uninformative name, and "glb" (pronounced
@@ -23,7 +23,7 @@ indexed concept. However, if we're talking about the glb of a binary
 family, _then_ we use the word "meet". The distinction here is entirely
 artificial, and it's just because we can't reuse the identifier
 `is-glb`{.Agda} for these two slightly different cases. Summing up: to
-us, a meet is a lub of two elements.
+us, a meet is a glb of two elements.
 
 ```agda
 module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
@@ -70,7 +70,7 @@ module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
   is-meet→is-glb : ∀ {a b glb} → is-meet a b glb → is-glb (if_then a else b) glb
   is-meet→is-glb meet .glb≤fam true = meet .meet≤l
   is-meet→is-glb meet .glb≤fam false = meet .meet≤r
-  is-meet→is-glb meet .greatest lub′ x = meet .greatest lub′ (x true) (x false)
+  is-meet→is-glb meet .greatest glb′ x = meet .greatest glb′ (x true) (x false)
 
   is-glb→is-meet : ∀ {F : Bool → P.Ob} {glb} → is-glb F glb → is-meet (F true) (F false) glb
   is-glb→is-meet glb .meet≤l = glb .glb≤fam true
@@ -80,7 +80,7 @@ module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
     false → lb′<b
 
   open is-iso
-  is-meet≃is-glb : ∀ {a b lub : P.Ob} → is-equiv (is-meet→is-glb {a} {b} {lub})
+  is-meet≃is-glb : ∀ {a b glb : P.Ob} → is-equiv (is-meet→is-glb {a} {b} {glb})
   is-meet≃is-glb = prop-ext! _ is-glb→is-meet .snd
 
   meet-unique : ∀ {a b} → is-prop (Σ P.Ob (is-meet a b))

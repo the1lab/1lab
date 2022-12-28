@@ -86,19 +86,22 @@ commute with the multiplication:
 
 ```agda
 record
-  Monoid-hom (A B : Monoid ℓ) (e : A .fst → B .fst) : Type ℓ where
+  Monoid-hom {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+             (s : Monoid-on A) (t : Monoid-on B)
+             (e : A → B)
+           : Type (ℓ ⊔ ℓ′) where
   private
-    module A = Monoid-on (A .snd)
-    module B = Monoid-on (B .snd)
+    module A = Monoid-on s
+    module B = Monoid-on t
 
   field
     pres-id : e A.identity ≡ B.identity
-    pres-⋆ : (x y : A .fst) → e (x A.⋆ y) ≡ e x B.⋆ e y
+    pres-⋆ : (x y : A) → e (x A.⋆ y) ≡ e x B.⋆ e y
 
 open Monoid-hom
 
 Monoid≃ : (A B : Monoid ℓ) (e : A .fst ≃ B .fst) → Type _
-Monoid≃ A B (e , _) = Monoid-hom A B e
+Monoid≃ A B (e , _) = Monoid-hom (A .snd) (B .snd) e
 ```
 
 # Relationships to Unital Magmas

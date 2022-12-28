@@ -25,9 +25,19 @@ join, depending]. But semilattices-in-general admit an _algebraic_
 presentation, as well as an order-theoretic presentation: a semilattice
 is a commutative idempotent monoid.
 
-Using the algebraic presentation, we can set up a category of
-semilattices, and exhibit the "join" and "meet" semilattices through two
-forgetful functors into the category of posets.
+As a concrete example of a semilattice before we get started, consider
+the subsets of a fixed type (like $\bb{N}$), under the operation of
+subset intersection. If we don't know about the "subset" relation, can
+we derive it just from the behaviour of intersection?
+
+Surprisingly, the answer is yes! $X$ is a subset of $Y$ iff. the
+intersection of $X$ and $Y$ is $X$. Check this for yourself: The
+intersection of (e.g.) $X = \{ 1, 2, 3 \}$ and $Y = \{ 1, 2, 3, 4, 5 \}$
+is just $\{ 1, 2, 3 \}$ again, so $X \sube Y$.
+
+Generalising away from subsets and intersection, we can recover a
+partial ordering from any commutative monoid in which all elements are
+idempotent. That is precisely the definition of a semilattice:
 
 [partially ordered set]: Cat.Order.Base.html
 [finite]: Data.Fin.Base.html
@@ -41,6 +51,24 @@ record is-semilattice {ℓ} {A : Type ℓ} (⊤ : A) (_∧_ : A → A → A) : T
     commutative   : ∀ {x y} → x ∧ y ≡ y ∧ x
   open is-monoid has-is-monoid public
 
+record Semilattice-on {ℓ} (A : Type ℓ) : Type ℓ where
+  no-eta-equality
+  field
+    top : A
+    _∩_ : A → A → A
+    has-is-semilattice : is-semilattice top _∩_
+  open is-semilattice has-is-semilattice public
+```
+
+<!--
+```agda
+  to-monoid : Monoid-on A
+  to-monoid = record { has-is-monoid = has-is-monoid }
+
+  ⋂ : ∀ {n} (f : Fin n → A) → A
+  ⋂ {zero} f  = top
+  ⋂ {suc n} f = f fzero ∩ ⋂ (λ i → f (fsuc i))
+
 private unquoteDecl eqv = declare-record-iso eqv (quote is-semilattice)
 
 is-semilattice-is-prop
@@ -50,18 +78,10 @@ is-semilattice-is-prop {A = A} t m x = Iso→is-hlevel 1 eqv (hlevel 1) x
   where instance
     h-l-a : H-Level A 2
     h-l-a = basic-instance 2 (is-semilattice.has-is-set x)
+```
+-->
 
-record Semilattice-on {ℓ} (A : Type ℓ) : Type ℓ where
-  no-eta-equality
-  field
-    top : A
-    _∩_ : A → A → A
-    has-is-semilattice : is-semilattice top _∩_
-  open is-semilattice has-is-semilattice public
-
-  to-monoid : Monoid-on A
-  to-monoid = record { has-is-monoid = has-is-monoid }
-
+```agda
 Semilattice-structure : ∀ ℓ → Thin-structure {ℓ = ℓ} ℓ Semilattice-on
 Semilattice-structure ℓ =
   Full-substructure ℓ _ _ SLat↪Mon (Monoid-structure ℓ) where
@@ -159,7 +179,7 @@ Meet-semi-lattice .F₁ f .preserves x y p = ap (f .hom) p ∙ f .preserves .Mon
 Meet-semi-lattice .F-id    = Homomorphism-path λ _ → refl
 Meet-semi-lattice .F-∘ f g = Homomorphism-path λ _ → refl
 
-module Meet-SLat {ℓ} (A : Semilattice ℓ) where
+module Semilattice {ℓ} (A : Semilattice ℓ) where
   po : Poset _ _
   po = (Meet-semi-lattice .F₀ A)
   open Poset po public
@@ -171,7 +191,7 @@ module Meet-SLat {ℓ} (A : Semilattice ℓ) where
             ; commutative to ∩-commutative
             ; idempotent  to ∩-idempotent
             )
-  open X using ( top ; _∩_ ; ∩-assoc ; ∩-idl ; ∩-idr ; ∩-commutative ; ∩-idempotent )
+  open X using ( top ; _∩_ ; ∩-assoc ; ∩-idl ; ∩-idr ; ∩-commutative ; ∩-idempotent ; ⋂ )
     public
 
   open Cat.Reasoning (B (Semilattice-on.to-monoid (A .snd)))
@@ -193,10 +213,6 @@ module Meet-SLat {ℓ} (A : Semilattice ℓ) where
   private module Y {x} {y} = is-meet (∩-is-meet {x} {y}) renaming (meet≤l to ∩≤l ; meet≤r to ∩≤r ; greatest to ∩-univ)
   open Y public
 
-  ⋂ : ∀ {n} (f : Fin n → ⌞ A ⌟) → ⌞ A ⌟
-  ⋂ {zero} f  = top
-  ⋂ {suc n} f = f fzero ∩ ⋂ (λ i → f (fsuc i))
-
   ⋂-is-glb : ∀ {n} (f : Fin n → ⌞ A ⌟) → is-glb po f (⋂ f)
   ⋂-is-glb {zero} f .is-glb.glb≤fam ()
   ⋂-is-glb {zero} f .is-glb.greatest lb′ x = sym ∩-idr
@@ -217,8 +233,8 @@ module
   _ {ℓ} (A B : Semilattice ℓ) (f : Precategory.Hom (Semilattices ℓ) A B)
   where
   private
-    module A = Meet-SLat A
-    module B = Meet-SLat B
+    module A = Semilattice A
+    module B = Semilattice B
     open Monoid-hom
 
   slat-pres-⋂ : ∀ {n} (d : Fin n → ⌞ A ⌟) → f # A.⋂ d ≡ B.⋂ (λ i → f # d i)

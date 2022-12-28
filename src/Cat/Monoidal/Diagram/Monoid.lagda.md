@@ -1,4 +1,5 @@
 ```agda
+{-# OPTIONS --lossy-unification #-}
 open import Cat.Monoidal.Instances.Cartesian
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Displayed.Functor
@@ -280,7 +281,7 @@ into an identification.
     prop-ext (is-monoid-hom-is-prop Setsₓ) (hlevel 1)
              (λ z → F₁′ F z) invs .snd
     where
-      invs : Mon.Monoid-hom (∣ a ∣ , F .F₀′ a′) (∣ b ∣ , F .F₀′ b′) f
+      invs : Mon.Monoid-hom (F .F₀′ a′) (F .F₀′ b′) f
            → is-monoid-hom Setsₓ f a′ b′
       invs m .pres-η = funext λ _ → m .pres-id
       invs m .pres-μ = funext λ _ → m .pres-⋆ _ _

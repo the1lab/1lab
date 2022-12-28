@@ -1528,15 +1528,12 @@ definition is more efficient.
 to-pathp : ∀ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1}
          → coe0→1 A x ≡ y
          → PathP A x y
-to-pathp {A = A} {x} p i = hcomp (∂ i) λ where
-  j (i = i0) → x
-  j (i = i1) → p j
-  j (j = i0) → coe0→i A i x
+to-pathp {A = A} {x} {y} p = transport (sym (PathP≡Path A x y)) p
 
 from-pathp : ∀ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1}
            → PathP A x y
            → coe0→1 A x ≡ y
-from-pathp {A = A} p i = coei→1 A i (p i)
+from-pathp {A = A} {x} {y} p = transport (PathP≡Path A x y) p
 ```
 
 These definitions illustrate how using the named squeezes and spreads
