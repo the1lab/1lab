@@ -81,25 +81,36 @@ is-semilattice-is-prop {A = A} t m x = Iso→is-hlevel 1 eqv (hlevel 1) x
 ```
 -->
 
+Rather than going through the usual displayed structure dance, here we
+exhibit semilattices through an embedding into monoids: when $(A, \top,
+\cap)$ is considered as a monoid, the information that it is a
+semilattice is a proposition. To be a bit more explicit, $f : A \to B$
+is a semilattice homomorphism when $f(\top) = \top$ and $f(x \cap y) =
+f(x) \cap f(y)$.
+
 ```agda
 Semilattice-structure : ∀ ℓ → Thin-structure {ℓ = ℓ} ℓ Semilattice-on
 Semilattice-structure ℓ =
   Full-substructure ℓ _ _ SLat↪Mon (Monoid-structure ℓ) where
+```
+
+<!--
+```agda
   SLat↪Mon : ∀ x → Semilattice-on x ↣ Monoid-on x
   SLat↪Mon x .fst = Semilattice-on.to-monoid
   SLat↪Mon x .snd a (S , p) (T , q) = Σ-pathp {A = Semilattice-on x}
     (λ { i .Semilattice-on.top → (p ∙ sym q) i .Monoid-on.identity
-        ; i .Semilattice-on._∩_ → (p ∙ sym q) i .Monoid-on._⋆_
-        ; i .Semilattice-on.has-is-semilattice → r i
-        })
+       ; i .Semilattice-on._∩_ → (p ∙ sym q) i .Monoid-on._⋆_
+       ; i .Semilattice-on.has-is-semilattice → r i
+       })
     (λ { i j .Monoid-on.identity → sq j i .Monoid-on.identity
-        ; i j .Monoid-on._⋆_ → sq j i .Monoid-on._⋆_
-        ; i j .Monoid-on.has-is-monoid →
-          is-prop→squarep (λ i j → hlevel {T = is-monoid (sq j i .Monoid-on.identity) (sq j i .Monoid-on._⋆_)} 1)
-          (λ i → r i .is-semilattice.has-is-monoid)
-          (λ i → p i .Monoid-on.has-is-monoid)
-          (λ i → q i .Monoid-on.has-is-monoid)
-          (λ _ → a .Monoid-on.has-is-monoid) i j
+       ; i j .Monoid-on._⋆_ → sq j i .Monoid-on._⋆_
+       ; i j .Monoid-on.has-is-monoid →
+         is-prop→squarep (λ i j → hlevel {T = is-monoid (sq j i .Monoid-on.identity) (sq j i .Monoid-on._⋆_)} 1)
+           (λ i → r i .is-semilattice.has-is-monoid)
+           (λ i → p i .Monoid-on.has-is-monoid)
+           (λ i → q i .Monoid-on.has-is-monoid)
+           (λ _ → a .Monoid-on.has-is-monoid) i j
         })
     where
       r = is-prop→pathp
@@ -111,13 +122,27 @@ Semilattice-structure ℓ =
         k (i = i1) → p (j ∨ k)
         k (j = i0) → p (i ∧ k)
         k (j = i1) → q (i ∨ ~ k)
+```
+-->
 
+One might wonder about the soundness of this definition if we want to
+think of semilattices as order-theoretic objects: is a semilattice
+homomorphism in the above sense necessarily monotone? A little
+calculation tells us that yes: we can expand $f(x) \le f(y)$ to mean
+$f(x) = f(x) \cap f(y)$, which by preservation of meets means $f(x) =
+f(x \cap y)$ --- which is certainly the casae if $x = x \cap y$, i.e.,
+$x \le y$.
+
+```agda
 Semilattices : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Semilattices ℓ = Structured-objects (Semilattice-structure ℓ)
 
 Semilattice : ∀ ℓ → Type (lsuc ℓ)
 Semilattice ℓ = Precategory.Ob (Semilattices ℓ)
+```
 
+<!--
+```agda
 record make-semilattice {ℓ} (A : Type ℓ) : Type ℓ where
   no-eta-equality
   field
@@ -152,7 +177,19 @@ module _ where
   to-semilattice s .snd = to-semilattice-on s
 
 open Functor
+```
+-->
 
+## As orders
+
+We've already commented that a semilattice structure gives rise to a
+partial order on the underlying set --- and, in some sense, this order
+is canonical --- by setting $x \le y$ to mean $x = x \cap y$. To justify
+their inclusion in the same namespace as thin categories, though, we
+have to make this formal, by exhibiting a functor from semilattices to
+posets.
+
+```agda
 Meet-semi-lattice : ∀ {ℓ} → Functor (Semilattices ℓ) (Posets ℓ ℓ)
 Meet-semi-lattice .F₀ X = X .fst , po where
   open Poset-on
@@ -162,6 +199,15 @@ Meet-semi-lattice .F₀ X = X .fst , po where
   po ._≤_ x y = x ≡ x X.∩ y
   po .has-is-poset .≤-thin = hlevel 1
   po .has-is-poset .≤-refl = sym X.idempotent
+```
+
+Proving that our now-familiar semilattice-induced order _is_ a partial
+order reduces to a matter of algebra, which is presented without
+comment. Note that we do not need idempotence for transitivity or
+antisymmetry: it is only for reflexivity, where $x \le x$ directly
+translates to $x = x \land x$.
+
+```agda
   po .has-is-poset .≤-trans {x} {y} {z} x=x∧y y=y∧z =
     x                 ≡⟨ x=x∧y ⟩
     x X.∩ ⌜ y ⌝       ≡⟨ ap! y=y∧z ⟩
@@ -173,12 +219,23 @@ Meet-semi-lattice .F₀ X = X .fst , po where
     x X.∩ y ≡⟨ X.commutative ⟩
     y X.∩ x ≡˘⟨ y=y∧x ⟩
     y       ∎
+```
 
+And, formalising our comments about monotonicity from before, any
+semilattice homomorphism is a monotone map under the induced ordering.
+
+```agda
 Meet-semi-lattice .F₁ f .hom = f .hom
 Meet-semi-lattice .F₁ f .preserves x y p = ap (f .hom) p ∙ f .preserves .Monoid-hom.pres-⋆ _ _
 Meet-semi-lattice .F-id    = Homomorphism-path λ _ → refl
 Meet-semi-lattice .F-∘ f g = Homomorphism-path λ _ → refl
+```
 
+<!-- TODO [Amy 2022-12-28]
+Comment on the interface?
+-->
+
+```agda
 module Semilattice {ℓ} (A : Semilattice ℓ) where
   po : Poset _ _
   po = (Meet-semi-lattice .F₀ A)
