@@ -82,6 +82,13 @@ Sign ℓ = Signatures.Ob ℓ
 signature : ∀ {ℓ} → (S : Set ℓ) → (Ops : List ∣ S ∣  → ∣ S ∣ → Set ℓ) → Sign ℓ
 signature S Ops .fst = S
 signature S Ops .snd ctx = Ops (fst ctx) (snd ctx)
+
+module Sign {ℓ} (Sg : Sign ℓ) where
+  Sort : Set ℓ
+  Sort = fst Sg
+  
+  Op : List ∣ Sort ∣ → ∣ Sort ∣ → Set ℓ
+  Op Γ X = snd Sg (Γ , X)
 ```
 
 ## Single-Sorted Signatures

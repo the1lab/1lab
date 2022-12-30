@@ -1519,6 +1519,20 @@ coei→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i) → coe A i i a ≡ 
 coei→i A i = coe0→i (λ i → (a : A i) → coe A i i a ≡ a) i (λ _ → refl)
 ```
 
+We can use this fact to show that compositions of coercions are
+equivalent to performing a single coercion.
+
+```agda
+coei→j→k : ∀ {ℓ} (A : I → Type ℓ) (i : I) (j : I) (k : I) (x : A i)
+         → coe A j k (coe A i j x) ≡ coe A i k x
+coei→j→k A i j k =
+  coe
+    (λ i → (x : A i) → coe A j k (coe A i j x) ≡ coe A i k x)
+    j i
+    (λ x → ap (coe A j k) (coei→i A j x))
+```
+
+
 Using the Cartesian coercions, we define maps that convert between
 `PathP`{.Agda}s and Book dependent paths. These maps could also be
 defined in terms of `transp`{.Agda} and `PathP≡Path`{.Agda}, but this
