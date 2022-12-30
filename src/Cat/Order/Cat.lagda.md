@@ -5,6 +5,8 @@ open import Cat.Instances.Functor
 open import Cat.Order.Base
 open import Cat.Prelude
 
+import Cat.Order.Reasoning as Poset
+
 module Cat.Order.Cat where
 ```
 
@@ -20,8 +22,8 @@ unsurprising, but it is lengthy, thus ending up in this module.
 [strict categories]: Cat.Instances.StrictCat.html
 
 ```agda
-to-category : ∀ {ℓ ℓ′} → Posets.Ob → Precategory ℓ ℓ′
-to-category P = cat module poset-to-category where
+poset→category : ∀ {ℓ ℓ′} → Posets.Ob → Precategory ℓ ℓ′
+poset→category P = cat module poset-to-category where
   module P = Poset P
   open Precategory
 
@@ -35,7 +37,7 @@ to-category P = cat module poset-to-category where
   cat .assoc f g h = P.≤-thin _ _
   cat .Hom-set x y = is-prop→is-set P.≤-thin
 
-{-# DISPLAY poset-to-category.cat P = to-category P #-}
+{-# DISPLAY poset-to-category.cat P = poset→category P #-}
 ```
 
 Our functor into strict categories is similarly easy to describe:
@@ -45,7 +47,7 @@ is automatic.
 ```agda
 open Functor
 Posets↪Strict-cats : ∀ {ℓ ℓ′} → Functor (Posets ℓ ℓ′) (Strict-cats ℓ ℓ′)
-Posets↪Strict-cats .F₀ P = to-category P , Poset.has-is-set P
+Posets↪Strict-cats .F₀ P = poset→category P , Poset.has-is-set P
 
 Posets↪Strict-cats .F₁ f .F₀ = f .hom
 Posets↪Strict-cats .F₁ f .F₁ = f .preserves _ _

@@ -4,6 +4,8 @@ open import Cat.Prelude
 
 open import Data.Bool
 
+import Cat.Order.Reasoning as Poset
+
 module Cat.Order.Diagram.Lub where
 ```
 

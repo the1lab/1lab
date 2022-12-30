@@ -11,6 +11,7 @@ open import Cat.Prelude
 
 open import Data.Fin.Base hiding (_≤_)
 
+import Cat.Order.Reasoning as Poset
 import Cat.Reasoning
 
 module Cat.Order.Semilattice where
@@ -231,9 +232,22 @@ Meet-semi-lattice .F-id    = Homomorphism-path λ _ → refl
 Meet-semi-lattice .F-∘ f g = Homomorphism-path λ _ → refl
 ```
 
-<!-- TODO [Amy 2022-12-28]
-Comment on the interface?
--->
+## The interface
+
+This section is less about the mathematics per se, and more about how we
+formalise it. Semilattices (and lattices more generally) are an
+interesting structure, in that they are category-like in two different
+ways! In one direction, we have the the category structure by taking
+having a single Hom-set, and setting $a \cap b$ to be the _composition_
+operation --- the delooping of the $\cap$ monoid. In the other
+direction, we have the poset structure, with the ordering induced by
+meets.
+
+To effectively formalise mathematics to do with lattices, we need a
+convenient interface for _both_ of these "categories". We already have a
+fantastic module for working with morphisms in nontrivial categories:
+instantiating it with the delooping of the $\cap$ monoid means we get,
+for free, a bunch of combinators for handling big meet expressions.
 
 ```agda
 module Semilattice {ℓ} (A : Semilattice ℓ) where
@@ -252,8 +266,7 @@ module Semilattice {ℓ} (A : Semilattice ℓ) where
     public
 
   open Cat.Reasoning (B (Semilattice-on.to-monoid (A .snd)))
-    hiding ( Ob ; Hom ; id ; _∘_ ; assoc ; idl ; idr )
-    public
+    hiding ( Ob ; Hom ; id ; _∘_ ; assoc ; idl ; idr ) public
 
   ∩-is-meet : ∀ {x y} → is-meet po x y (x ∩ y)
   ∩-is-meet {x} {y} .is-meet.meet≤l =
@@ -267,6 +280,7 @@ module Semilattice {ℓ} (A : Semilattice ℓ) where
     lb           ≡⟨ lb=lb∧y ⟩
     lb ∩ y       ≡⟨ pushl lb=lb∧x ⟩
     lb ∩ (x ∩ y) ∎
+
   private module Y {x} {y} = is-meet (∩-is-meet {x} {y}) renaming (meet≤l to ∩≤l ; meet≤r to ∩≤r ; greatest to ∩-univ)
   open Y public
 

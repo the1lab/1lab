@@ -149,35 +149,5 @@ Poset ℓ ℓ′ = Precategory.Ob (Posets ℓ ℓ′)
 ```
 -->
 
-```agda
-module Poset {ℓ ℓ′} (P : Poset ℓ ℓ′) where
-  open Poset-on (P .snd) public
-
-  Ob : Type ℓ
-  Ob = ⌞ P ⌟
-
-  private variable
-    w x y z : ⌞ P ⌟
-
-  _≤⟨_⟩_ : (w : ⌞ P ⌟) → w ≤ x → x ≤ y → w ≤ y
-  _=⟨_⟩_ : (w : ⌞ P ⌟) → w ≡ x → x ≤ y → w ≤ y
-  _=˘⟨_⟩_ : (w : ⌞ P ⌟) → x ≡ w → x ≤ y → w ≤ y
-  _≤∎    : (w : ⌞ P ⌟) → w ≤ w
-
-  f ≤⟨ p ⟩ q = ≤-trans p q
-  f =⟨ p ⟩ q = subst (_≤ _) (sym p) q
-  f =˘⟨ p ⟩ q = subst (_≤ _) p q
-  f ≤∎ = ≤-refl
-
-  infixr 2 _=⟨_⟩_ _=˘⟨_⟩_ _≤⟨_⟩_
-  infix  3 _≤∎
-
-  instance
-    H-Level-≤ : ∀ {x y} {n} → H-Level (x ≤ y) (suc n)
-    H-Level-≤ = prop-instance ≤-thin
-
-open Precategory
-```
-
 The relationship between posets and (strict) categories is outlined in
 the module [`Cat.Order.Cat`](Cat.Order.Cat.html).
