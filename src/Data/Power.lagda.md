@@ -17,7 +17,7 @@ private variable
 # Power Sets
 
 The **power set** of a type $X$ is the collection of all maps from $X$
-into the universe of `propositional types`{.Agda ident=n-Type}. Since
+into the universe of `propositional types`{.Agda ident=Ω}. Since
 the universe of all $n$-types is a $(n+1)$-type (by
 `n-Type-is-hlevel`{.Agda}), and function types have the same h-level as
 their codomain (by `fun-is-hlevel`{.Agda}), the power set of a type $X$ is
