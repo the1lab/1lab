@@ -1,10 +1,10 @@
 ```
-module Cat.Order.Diagram where
+module Order.Diagram where
 ```
 
 # Diagrams in posets
 
-The namespace `Cat.Order.Diagram` contains many _duplicated_ definitions
+The namespace `Order.Diagram` contains many _duplicated_ definitions
 of diagrams --- things you could also find in `Cat.Diagram` if you were
 to look --- but specialised for the poset case, to cut down on the
 redundant data. For example: posets have meets, not products.

@@ -2,8 +2,8 @@
 open import Algebra.Monoid
 
 open import Cat.Displayed.Univalence.Thin
-open import Cat.Order.Diagram.Glb
-open import Cat.Order.Semilattice
+open import Order.Diagram.Glb
+open import Order.Semilattice
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
@@ -13,7 +13,7 @@ open import Data.Nat.Order
 open import Data.Fin.Base
 open import Data.Sum.Base
 
-module Cat.Order.Semilattice.Free where
+module Order.Semilattice.Free where
 ```
 
 # Free (semi)lattices

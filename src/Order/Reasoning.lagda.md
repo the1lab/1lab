@@ -1,9 +1,9 @@
 ```agda
 open import Cat.Displayed.Univalence.Thin
-open import Cat.Order.Base
+open import Order.Base
 open import Cat.Prelude
 
-module Cat.Order.Reasoning {ℓ ℓ′} (P : Poset ℓ ℓ′) where
+module Order.Reasoning {ℓ ℓ′} (P : Poset ℓ ℓ′) where
 ```
 
 # Partial order syntax

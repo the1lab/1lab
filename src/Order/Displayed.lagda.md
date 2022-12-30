@@ -1,10 +1,10 @@
 ```agda
-open import Cat.Order.Base
+open import Order.Base
 open import Cat.Prelude
 
-import Cat.Order.Reasoning as Pr
+import Order.Reasoning as Pr
 
-module Cat.Order.Displayed where
+module Order.Displayed where
 ```
 
 # Displayed posets
@@ -18,7 +18,10 @@ to recover --- of the data of a poset $P$ and a monotone map $P \to A$.
 
 ```agda
 record Displayed {ℓₒ ℓᵣ} ℓ ℓ′ (P : Poset ℓₒ ℓᵣ) : Type (lsuc (ℓ ⊔ ℓ′) ⊔ ℓₒ ⊔ ℓᵣ) where
+  no-eta-equality
+
   private module P = Pr P
+
   field
     Ob[_]   : P.Ob → Type ℓ
     Rel[_]  : ∀ {x y} → x P.≤ y → Ob[ x ] → Ob[ y ] → Type ℓ′
@@ -30,8 +33,12 @@ record Displayed {ℓₒ ℓᵣ} ℓ ℓ′ (P : Poset ℓₒ ℓᵣ) : Type (ls
       → Rel[ f ] x′ y′ → Rel[ g ] y′ z′
       → Rel[ P.≤-trans f g ] x′ z′
     ≤-antisym′
-      : ∀ {x} {x′ y′ : Ob[ x ]} → Rel[ P.≤-refl ] x′ y′ → Rel[ P.≤-refl ] y′ x′ → x′ ≡ y′
+      : ∀ {x} {x′ y′ : Ob[ x ]}
+      → Rel[ P.≤-refl ] x′ y′ → Rel[ P.≤-refl ] y′ x′ → x′ ≡ y′
+```
 
+<!--
+```agda
   ≤-antisym-over
     : ∀ {x y} {f : x P.≤ y} {g : y P.≤ x} {x′ y′}
     → Rel[ f ] x′ y′ → Rel[ g ] y′ x′
@@ -48,6 +55,7 @@ record Displayed {ℓₒ ℓᵣ} ℓ ℓ′ (P : Poset ℓₒ ℓᵣ) : Type (ls
         ≤-antisym′ r s
     where p = P.≤-antisym f g
 ```
+-->
 
 Analogously to a displayed category, where we can take pairs of an
 object $x$ and an object $x'$ over $x$ to make a _new_ category (the
@@ -56,16 +64,16 @@ make a new poset.
 
 ```agda
 ∫ : ∀ {ℓ ℓ′ ℓₒ ℓᵣ} {P : Poset ℓₒ ℓᵣ} → Displayed ℓ ℓ′ P → Poset _ _
-∫ {P = P} D =
-  to-poset (Σ ⌞ P ⌟ D.Ob[_]) λ where
-    .make-poset.rel (x , x′) (y , y′) → Σ (x P.≤ y) λ f → D.Rel[ f ] x′ y′
-    .make-poset.id → P.≤-refl , D.≤-refl′
-    .make-poset.thin → Σ-is-hlevel 1 P.≤-thin λ f → D.≤-thin′ f
-    .make-poset.trans (p , p′) (q , q′) → P.≤-trans p q , D.≤-trans′ p′ q′
-    .make-poset.antisym (p , p′) (q , q′) → Σ-pathp (P.≤-antisym p q) (D.≤-antisym-over p′ q′)
-  where
-    module D = Displayed D
-    module P = Pr P
+∫ {P = P} D = to-poset (Σ ⌞ P ⌟ D.Ob[_]) mk-∫ where
+  module D = Displayed D
+  module P = Pr P
+  mk-∫ : make-poset _ _
+  mk-∫ .make-poset.rel (x , x′) (y , y′) = Σ (x P.≤ y) λ f → D.Rel[ f ] x′ y′
+  mk-∫ .make-poset.id = P.≤-refl , D.≤-refl′
+  mk-∫ .make-poset.thin = Σ-is-hlevel 1 P.≤-thin λ f → D.≤-thin′ f
+  mk-∫ .make-poset.trans (p , p′) (q , q′) = P.≤-trans p q , D.≤-trans′ p′ q′
+  mk-∫ .make-poset.antisym (p , p′) (q , q′) =
+    Σ-pathp (P.≤-antisym p q) (D.≤-antisym-over p′ q′)
 
 open Displayed
 ```
@@ -79,13 +87,12 @@ order relation alone.
 Full-subposet′
   : ∀ {ℓₒ ℓᵣ ℓ} (P : Poset ℓₒ ℓᵣ) (S : ⌞ P ⌟ → Prop ℓ)
   → Displayed ℓ lzero P
-Full-subposet′ P S = λ where
-  .Ob[_] x → ∣ S x ∣
-  .Rel[_] f x y → ⊤
-  .≤-refl′ → tt
-  .≤-thin′ f x y → refl
-  .≤-trans′ _ _ → tt
-  .≤-antisym′ _ _ → is-prop→pathp (λ i → S _ .is-tr) _ _
+Full-subposet′ P S .Ob[_] x = ∣ S x ∣
+Full-subposet′ P S .Rel[_] f x y = ⊤
+Full-subposet′ P S .≤-refl′ = tt
+Full-subposet′ P S .≤-thin′ f x y = refl
+Full-subposet′ P S .≤-trans′ _ _ = tt
+Full-subposet′ P S .≤-antisym′ _ _ = is-prop→pathp (λ i → S _ .is-tr) _ _
 
 Full-subposet
   : ∀ {ℓₒ ℓᵣ ℓ} (P : Poset ℓₒ ℓᵣ) (S : ⌞ P ⌟ → Prop ℓ)

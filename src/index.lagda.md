@@ -288,10 +288,10 @@ open import Data.Power.Complemented -- Complemented or decidable subobjects
 # Category Theory
 
 In addition to providing a framework for the synthetic study of higher
-groupoids, HoTT also provides a natural place to develop constructive,
-predicative category theory, while still being compatible with
-classicality principles like the axiom of choice and/or the law of
-excluded middle. Here, we do not assume any classicality principles.
+groupoids, HoTT also provides a natural place to develop constructive
+category theory, while still being compatible with classicality
+principles like the axiom of choice and/or the law of excluded middle.
+Here, we do not assume any classicality principles.
 
 ## Basics
 
@@ -721,7 +721,7 @@ open import Cat.Abelian.Instances.Functor
 
 ## Topos theory
 
-Grothendieck topos theory developed constructively and predicatively.
+Grothendieck topos theory developed constructively.
 
 ```agda
 open import Topoi.Base -- Topoi, properties of topoi, geometric morphisms

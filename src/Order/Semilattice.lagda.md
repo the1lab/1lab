@@ -5,16 +5,16 @@ open import Algebra.Monoid
 
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Instances.Delooping
-open import Cat.Order.Diagram.Glb
-open import Cat.Order.Base
+open import Order.Diagram.Glb
+open import Order.Base
 open import Cat.Prelude
 
 open import Data.Fin.Base hiding (_≤_)
 
-import Cat.Order.Reasoning as Poset
+import Order.Reasoning as Poset
 import Cat.Reasoning
 
-module Cat.Order.Semilattice where
+module Order.Semilattice where
 ```
 
 # Semilattices
@@ -40,7 +40,7 @@ Generalising away from subsets and intersection, we can recover a
 partial ordering from any commutative monoid in which all elements are
 idempotent. That is precisely the definition of a semilattice:
 
-[partially ordered set]: Cat.Order.Base.html
+[partially ordered set]: Order.Base.html
 [finite]: Data.Fin.Base.html
 
 ```agda
@@ -267,7 +267,13 @@ module Semilattice {ℓ} (A : Semilattice ℓ) where
 
   open Cat.Reasoning (B (Semilattice-on.to-monoid (A .snd)))
     hiding ( Ob ; Hom ; id ; _∘_ ; assoc ; idl ; idr ) public
+```
 
+As an example of reasoning about the lattice operator, let us prove that
+$x \cap y$ is indeed the meet of $x$ and $y$ in the induced ordering.
+It's reduced to a bit of algebra:
+
+```agda
   ∩-is-meet : ∀ {x y} → is-meet po x y (x ∩ y)
   ∩-is-meet {x} {y} .is-meet.meet≤l =
     x ∩ y       ≡⟨ pushl (sym ∩-idempotent) ⟩
@@ -280,7 +286,10 @@ module Semilattice {ℓ} (A : Semilattice ℓ) where
     lb           ≡⟨ lb=lb∧y ⟩
     lb ∩ y       ≡⟨ pushl lb=lb∧x ⟩
     lb ∩ (x ∩ y) ∎
+```
 
+<!--
+```agda
   private module Y {x} {y} = is-meet (∩-is-meet {x} {y}) renaming (meet≤l to ∩≤l ; meet≤r to ∩≤r ; greatest to ∩-univ)
   open Y public
 
@@ -314,3 +323,5 @@ module
     f # (d fzero A.∩ A.⋂ (λ i → d (fsuc i)))   ≡⟨ f .preserves .pres-⋆ _ _ ⟩
     f # d fzero B.∩ f # A.⋂ (λ i → d (fsuc i)) ≡⟨ ap₂ B._∩_ refl (slat-pres-⋂ λ i → d (fsuc i)) ⟩
     f # d fzero B.∩ B.⋂ (λ i → f # d (fsuc i)) ∎
+```
+-->

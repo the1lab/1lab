@@ -2,12 +2,12 @@
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Instances.StrictCat
 open import Cat.Instances.Functor
-open import Cat.Order.Base
+open import Order.Base
 open import Cat.Prelude
 
-import Cat.Order.Reasoning as Poset
+import Order.Reasoning as Poset
 
-module Cat.Order.Cat where
+module Order.Cat where
 ```
 
 # Posets as categories
@@ -18,7 +18,7 @@ faithful functor from the category of posets into the category of [strict
 categories]. The construction of a category from a poset is entirely
 unsurprising, but it is lengthy, thus ending up in this module.
 
-[poset]: Cat.Order.Base.html
+[poset]: Order.Base.html
 [strict categories]: Cat.Instances.StrictCat.html
 
 ```agda

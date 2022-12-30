@@ -1,12 +1,12 @@
 ```agda
-open import Cat.Order.Base
+open import Order.Base
 open import Cat.Prelude
 
 open import Data.Bool
 
-import Cat.Order.Reasoning as Poset
+import Order.Reasoning as Poset
 
-module Cat.Order.Diagram.Glb where
+module Order.Diagram.Glb where
 ```
 
 # Greatest lower bounds

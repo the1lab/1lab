@@ -2,7 +2,7 @@
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Prelude
 
-module Cat.Order.Base where
+module Order.Base where
 ```
 
 # Partially ordered sets
@@ -148,6 +148,8 @@ Poset : (ℓ ℓ′ : Level) → Type (lsuc (ℓ ⊔ ℓ′))
 Poset ℓ ℓ′ = Precategory.Ob (Posets ℓ ℓ′)
 
 record make-poset {ℓ} ℓ′ (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ′) where
+  no-eta-equality
+
   field
     rel     : A → A → Type ℓ′
     id      : ∀ {x} → rel x x
@@ -170,7 +172,7 @@ to-poset A mk .snd = make-poset.to-poset-on mk
 -->
 
 The relationship between posets and (strict) categories is outlined in
-the module [`Cat.Order.Cat`](Cat.Order.Cat.html). Very similarly to
+the module [`Order.Cat`](Order.Cat.html). Very similarly to
 categories, posets have a duality involution. In fact, under the
 correspondence between posets and thin categories, these are the same
 construction.

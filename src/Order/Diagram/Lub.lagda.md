@@ -1,12 +1,12 @@
 ```agda
-open import Cat.Order.Base
+open import Order.Base
 open import Cat.Prelude
 
 open import Data.Bool
 
-import Cat.Order.Reasoning as Poset
+import Order.Reasoning as Poset
 
-module Cat.Order.Diagram.Lub where
+module Order.Diagram.Lub where
 ```
 
 # Least upper bounds
@@ -21,7 +21,7 @@ then we have $u \le l$.
 The same observation about the naming of [glbs vs meets] applies to
 lubs, with the binary name being **join**.
 
-[glbs vs meets]: Cat.Order.Diagram.Glb.html
+[glbs vs meets]: Order.Diagram.Glb.html
 
 ```agda
 module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
