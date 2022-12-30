@@ -19,7 +19,7 @@ number of elements has a greatest lower bound, then $A$ is a
 semilattice. As usual, by induction, it suffices to have nullary and
 binary greatest lower bounds: A top element, and meets.
 
-[semilattices]: Order.Semilattices.html
+[semilattices]: Order.Semilattice.html
 [poset]: Order.Base.html
 
 ```agda
