@@ -138,7 +138,7 @@ commutative.
   principal-ideal
     : (∀ x y → x R.* y ≡ y R.* x)
     → (a : ⌞ R ⌟)
-    → is-ideal λ b → el (∃ _ λ c → b ≡ c R.* a) squash
+    → is-ideal λ b → elΩ (Σ _ λ c → b ≡ c R.* a)
   principal-ideal comm a = record
     { has-rep-subgroup = record
       { has-unit = pure (_ , sym R.*-zerol)

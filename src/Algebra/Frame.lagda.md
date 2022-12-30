@@ -6,8 +6,6 @@ open import Algebra.Magma
 
 open import Cat.Displayed.Univalence.Thin
 
-open import Principles.Resizing
-
 import Cat.Reasoning
 
 module Algebra.Frame where

@@ -37,3 +37,5 @@ open import 1Lab.Reflection.Record
   using ( declare-record-iso ) public
 open import 1Lab.Reflection.HLevel public
 open import 1Lab.Reflection.Regularity public
+
+open import 1Lab.Resizing public

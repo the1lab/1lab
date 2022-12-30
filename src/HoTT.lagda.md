@@ -47,8 +47,6 @@ open import Homotopy.Space.Circle
 open import Homotopy.Space.Torus
 open import Homotopy.Base
 
-open import Principles.Resizing
-
 import Algebra.Monoid.Category as Monoid
 import Algebra.Group.Free as Group
 

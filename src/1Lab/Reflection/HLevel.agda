@@ -386,9 +386,9 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
       extend-n zero = pure λ _ x → x
       extend-n (suc n) = do
         rest ← extend-n n
-        mv ← new-meta unknown
+        lift mv ← rest (Lift _ Term) $ lift <$> new-meta unknown
         let domain = arg (arginfo visible (modality relevant quantity-ω)) mv
-        pure λ a k → extendContext "a" domain $ rest a $ k
+        pure λ a k → rest a $ extendContext "a" domain $ k
 
       -- Given a list of argument specs, actually unify the goal with
       -- the solution of decomposition, and call a continuation to
@@ -461,8 +461,12 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
         -- scope, so we have to quantify over the variables we
         -- introduced to use it outside, i.e., in the actual (outer)
         -- search problem.
+        debugPrint "tactic.hlevel" 10 $ "Going under " ∷ termErr (lit (nat under)) ∷ []
         gounder ← extend-n under
-        mv ← gounder Term $ new-meta unknown
+        mv ← gounder Term $ do
+          debugPrint "tactic.hlevel" 10 $ "In extended context"
+          new-meta unknown
+        debugPrint "tactic.hlevel" 10 $ "Metavariable: " ∷ termErr (wrap-lams under mv) ∷ []
         -- After we've put the mv wrapped under some lambdas in the
         -- argument list,
         gen-args has-alts level defn args (wrap-lams under mv v∷ accum) $ do
@@ -629,14 +633,25 @@ instance
   decomp-lift : ∀ {ℓ ℓ′} {T : Type ℓ} → hlevel-decomposition (Lift ℓ′ T)
   decomp-lift = decomp (quote Lift-is-hlevel) (`level ∷ `search ∷ [])
 
-  -- Non-dependent Π and Σ for readability first:
-  decomp-fun : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → hlevel-decomposition (A → B)
-  decomp-fun = decomp (quote fun-is-hlevel) (`level ∷ `search ∷ [])
+  -- -- Non-dependent Π and Σ for readability first:
 
-  decomp-prod : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → hlevel-decomposition (A × B)
-  decomp-prod = decomp (quote ×-is-hlevel) (`level ∷ `search ∷ `search ∷ [])
+  -- decomp-fun = decomp (quote fun-is-hlevel) (`level ∷ `search ∷ [])
+
+  -- decomp-prod : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → hlevel-decomposition (A × B)
+  -- decomp-prod = decomp (quote ×-is-hlevel) (`level ∷ `search ∷ `search ∷ [])
 
   -- Dependent type formers:
+  decomp-pi³
+    : ∀ {ℓa ℓb ℓc ℓd} {A : Type ℓa} {B : A → Type ℓb} {C : ∀ x (y : B x) → Type ℓc}
+    → {D : ∀ x y (z : C x y) → Type ℓd}
+    → hlevel-decomposition (∀ a b c → D a b c)
+  decomp-pi³ = decomp (quote Π-is-hlevel³) (`level ∷ `search-under 3 ∷ [])
+
+  decomp-pi²
+    : ∀ {ℓa ℓb ℓc} {A : Type ℓa} {B : A → Type ℓb} {C : ∀ x (y : B x) → Type ℓc}
+    → hlevel-decomposition (∀ a b → C a b)
+  decomp-pi² = decomp (quote Π-is-hlevel²) (`level ∷ `search-under 2 ∷ [])
+
   decomp-pi : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} → hlevel-decomposition (∀ a → B a)
   decomp-pi = decomp (quote Π-is-hlevel) (`level ∷ `search-under 1 ∷ [])
 
@@ -684,6 +699,9 @@ instance
 private
   module _ {ℓ} {A : n-Type ℓ 2} {B : ∣ A ∣ → n-Type ℓ 3} where
     some-def = ∣ A ∣
+    _ : is-hlevel (∣ A ∣ → ∣ A ∣ → ∣ A ∣ → ∣ A ∣) 2
+    _ = hlevel!
+
     _ : is-hlevel (Σ some-def λ x → ∣ B x ∣) 3
     _ = hlevel!
 

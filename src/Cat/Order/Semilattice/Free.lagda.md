@@ -13,8 +13,6 @@ open import Data.Nat.Order
 open import Data.Fin.Base
 open import Data.Sum.Base
 
-open import Principles.Resizing
-
 module Cat.Order.Semilattice.Free where
 ```
 
@@ -43,7 +41,7 @@ module _ {ℓ} (A : Set ℓ) where
   K-finite-subset =
     Σ (∣ A ∣ → Ω) λ P →
     ∃ Nat λ n →
-    Σ (Fin n → (Σ ∣ A ∣ λ x → ∣ P x ∣)) λ f →
+    Σ (Fin n → (Σ ∣ A ∣ λ x → x ∈ P)) λ f →
       ∀ x → ∥ fibre f x ∥
 ```
 
@@ -57,7 +55,7 @@ necessary to prove the universal property.
 ```agda
   {- TODO [Amy 2022-12-27] Refactor Data.Power.Lattice so we can "just" use that instead -}
   _∪_ : K-finite-subset → K-finite-subset → K-finite-subset
-  (P , pf) ∪ (Q , qf) = (λ x → el ∥ ∣ P x ∣ ⊎ ∣ Q x ∣ ∥ squash) , do
+  (P , pf) ∪ (Q , qf) = (λ x → el ∥ x ∈ P ⊎ x ∈ Q ∥ squash) , do
     (Pn , Pf , Ps) ← pf
     (Qn , Qf , Qs) ← qf
 ```
@@ -78,7 +76,7 @@ an upper bound, because we're really computing a proposition.
 
 ```agda
     let
-      cover : Fin Pn ⊎ Fin Qn → Σ ∣ A ∣ (λ x → ∥ ∣ P x ∣ ⊎ ∣ Q x ∣ ∥)
+      cover : Fin Pn ⊎ Fin Qn → Σ ∣ A ∣ (λ x → ∥ x ∈ P ⊎ x ∈ Q ∥)
       cover = λ where
         (inl x) → Pf x .fst , inc (inl (Pf x .snd))
         (inr x) → Qf x .fst , inc (inr (Qf x .snd))
@@ -125,7 +123,7 @@ under union.
     open make-semilattice
     make-ka : make-semilattice K-finite-subset
     make-ka .has-is-set = hlevel!
-    make-ka .top = (λ _ → el ⊥ (λ x → absurd x)) , (inc (0 , (λ { () }) , λ { () }))
+    make-ka .top = (λ _ → el ⊥ (λ x → absurd x)) , inc (0 , (λ { () }) , λ { () })
     make-ka .op = _∪_
     make-ka .idl = Σ-prop-path! $ funext λ i →
       Ω-ua (∥-∥-rec! (λ { (inr x) → x ; (inl ()) })) (λ x → inc (inr x))
@@ -150,7 +148,7 @@ under union.
   private module KA = Semilattice K[_]
   K-fin-lt
     : ∀ {x y : K-finite-subset}
-    → (∀ i → ∣ y .fst i ∣ → ∣ x .fst i ∣)
+    → (∀ i → i ∈ y .fst → i ∈ x .fst)
     → x KA.≤ y
   K-fin-lt wit = Σ-prop-path! $ funext λ i →
     Ω-ua (λ x → inc (inl x)) (∥-∥-rec! λ { (inl x) → x ; (inr y) → wit _ y })
@@ -158,8 +156,8 @@ under union.
   K-fin-lt′
     : ∀ {x y : K-finite-subset}
     → x KA.≤ y
-    → ∀ i → ∣ y .fst i ∣ → ∣ x .fst i ∣
-  K-fin-lt′ wit idx y′ = transport (λ i → ∣ wit (~ i) .fst idx ∣) (inc (inr y′))
+    → ∀ i → i ∈ y .fst → i ∈ x .fst
+  K-fin-lt′ wit idx y′ = transport (λ i → idx ∈ wit (~ i) .fst) (inc (inr y′))
 ```
 -->
 
@@ -185,7 +183,7 @@ $K$-finiteness condition, but it will be very useful!
   K-reduce (P , P-fin) = ∥-∥-map reduce P-fin where
     open is-glb
 
-    reduce : Σ Nat (λ n → Σ (Fin n → Σ ∣ A ∣ λ x → ∣ P x ∣) λ f → ∀ x → ∥ fibre f x ∥)
+    reduce : Σ Nat (λ n → Σ (Fin n → Σ ∣ A ∣ λ x → x ∈ P) λ f → ∀ x → ∥ fibre f x ∥)
            → Σ Nat λ n → Σ (Fin n → ∣ A ∣) λ f → is-glb KA.po (λ i → ηₛₗ (f i)) (P , P-fin)
     reduce (card , cover , surj) = card , (λ x → cover x .fst) , λ where
       .glb≤fam i →
@@ -233,7 +231,7 @@ speak, the meet of our family $[n] \epi P \to B$ to a meet of $P \to B$,
 using surjectivity of the first map.
 
 ```agda
-    ε : Σ Nat (λ n → Σ (Fin n → Σ ∣ A ∣ λ x → ∣ P x ∣) λ f → ∀ x → ∥ fibre f x ∥)
+    ε : Σ Nat (λ n → Σ (Fin n → Σ ∣ A ∣ λ x → x ∈ P) λ f → ∀ x → ∥ fibre f x ∥)
       → Σ B (is-glb B.po fam)
     ε (card , g , surj) =
       B.⋂ (λ x → fam (g x)) , λ where

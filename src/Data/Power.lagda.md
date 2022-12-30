@@ -25,8 +25,8 @@ always `a set`{.Agda ident=is-set}. We denote the power set of $X$ by
 $\bb{P}(X)$.
 
 ```agda
-ℙ : Type ℓ → Type (lsuc ℓ)
-ℙ X = X → n-Type _ 1
+ℙ : Type ℓ → Type ℓ
+ℙ X = X → Ω
 
 ℙ-is-set : is-set (ℙ X)
 ℙ-is-set = hlevel 2
@@ -37,8 +37,8 @@ projecting the underlying type of the proposition: We say that $x$ is an
 element of $P$ if $P(x)$ is inhabited.
 
 ```agda
-_∈_ : X → ℙ X → Type _
-x ∈ P = ∣ P x ∣
+_ : ∀ {x : X} {P : ℙ X} → x ∈ P ≡ ∣ P x ∣
+_ = refl
 ```
 
 The **subset** relation is defined as is done traditionally: If $x \in
@@ -57,7 +57,7 @@ propositions to each inhabitant of $X$.
 ℙ-ext : {A B : ℙ X}
       → A ⊆ B → B ⊆ A → A ≡ B
 ℙ-ext {A = A} {B = B} A⊆B B⊂A = funext λ x →
-  n-ua {n = 1} (prop-ext (A x .is-tr) (B x .is-tr) (A⊆B x) (B⊂A x))
+  Ω-ua (A⊆B x) (B⊂A x)
 ```
 
 ## Lattice Structure
@@ -69,13 +69,13 @@ ident=_∪_}**.
 
 ```agda
 maximal : ℙ X
-maximal _ = el! (Lift _ ⊤)
+maximal _ = el ⊤ hlevel!
 
 minimal : ℙ X
-minimal _ = el! (Lift _ ⊥)
+minimal _ = el (Lift _ ⊥) hlevel!
 
 _∩_ : ℙ X → ℙ X → ℙ X
-(A ∩ B) x = el! (∣ A x ∣ × ∣ B x ∣)
+(A ∩ B) x = el (x ∈ A × x ∈ B) hlevel!
 ```
 
 <!--
@@ -90,7 +90,7 @@ is nothing which guarantees that A and B are disjoint subsets.
 
 ```agda
 _∪_ : ℙ X → ℙ X → ℙ X
-(A ∪ B) x = el! ∥ ∣ A x ∣ ⊎ ∣ B x ∣ ∥
+(A ∪ B) x = elΩ (x ∈ A ⊎ x ∈ B)
 
 infixr 22 _∩_
 infixr 21 _∪_

@@ -5,8 +5,6 @@ open import Cat.Diagram.Terminal
 open import Cat.Displayed.Total
 open import Cat.Prelude
 
-open import Principles.Resizing
-
 import Cat.Reasoning
 
 module Algebra.Locale.Base where
@@ -67,4 +65,4 @@ locale), which we write `⊤ₗ`{.Agda}, whose frame of opens is the
 [subobject classifier] $\Omega$.^[Equivalently, its frame of opens is
 the power set of the unit type.]
 
-[subobject classifier]: Principles.Resizing.html
+[subobject classifier]: 1Lab.Resizing.html

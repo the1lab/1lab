@@ -146,8 +146,42 @@ Posets ℓ ℓ′ = Structured-objects (Poset-structure ℓ ℓ′)
 module Posets {ℓ ℓ′} = Precategory (Posets ℓ ℓ′)
 Poset : (ℓ ℓ′ : Level) → Type (lsuc (ℓ ⊔ ℓ′))
 Poset ℓ ℓ′ = Precategory.Ob (Posets ℓ ℓ′)
+
+record make-poset {ℓ} ℓ′ (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ′) where
+  field
+    rel     : A → A → Type ℓ′
+    id      : ∀ {x} → rel x x
+    thin    : ∀ {x y} → is-prop (rel x y)
+    trans   : ∀ {x y z} → rel x y → rel y z → rel x z
+    antisym : ∀ {x y} → rel x y → rel y x → x ≡ y
+
+  to-poset-on : Poset-on ℓ′ A
+  to-poset-on .Poset-on._≤_ = rel
+  to-poset-on .Poset-on.has-is-poset .is-partial-order.≤-thin = thin
+  to-poset-on .Poset-on.has-is-poset .is-partial-order.≤-refl = id
+  to-poset-on .Poset-on.has-is-poset .is-partial-order.≤-trans = trans
+  to-poset-on .Poset-on.has-is-poset .is-partial-order.≤-antisym = antisym
+
+to-poset : ∀ {ℓ ℓ′} (A : Type ℓ) → make-poset ℓ′ A → Poset ℓ ℓ′
+∣ to-poset A mk .fst ∣ = A
+to-poset A mk .fst .is-tr = Poset-on.has-is-set (make-poset.to-poset-on mk)
+to-poset A mk .snd = make-poset.to-poset-on mk
 ```
 -->
 
 The relationship between posets and (strict) categories is outlined in
-the module [`Cat.Order.Cat`](Cat.Order.Cat.html).
+the module [`Cat.Order.Cat`](Cat.Order.Cat.html). Very similarly to
+categories, posets have a duality involution. In fact, under the
+correspondence between posets and thin categories, these are the same
+construction.
+
+```agda
+_^opp : ∀ {ℓ ℓ′} → Poset ℓ ℓ′ → Poset ℓ ℓ′
+P ^opp = to-poset ⌞ P ⌟ λ where
+    .make-poset.rel x y         → y ≤ x
+    .make-poset.thin            → ≤-thin
+    .make-poset.id              → ≤-refl
+    .make-poset.trans f<g g<h   → ≤-trans g<h f<g
+    .make-poset.antisym f<g g<f → ≤-antisym g<f f<g
+  where open Poset-on (P .snd)
+```

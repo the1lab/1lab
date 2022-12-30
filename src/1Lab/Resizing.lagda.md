@@ -1,11 +1,19 @@
 ```agda
-open import 1Lab.Reflection
-open import 1Lab.Prelude
-open import 1Lab.Rewrite
+open import 1Lab.Reflection.HLevel
+open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Universe
+open import 1Lab.Reflection using (arg ; typeError)
+open import 1Lab.Univalence
+open import 1Lab.HLevel
+open import 1Lab.Path
+open import 1Lab.Type
 
-open import Data.List
+open import Data.List.Base
 
-module Principles.Resizing where
+open import Meta.Idiom
+open import Meta.Bind
+
+module 1Lab.Resizing where
 ```
 
 # Propositional Resizing
@@ -60,6 +68,7 @@ universe.
 
 <!--
 ```agda
+
 instance
   H-Level-□ : ∀ {ℓ} {T : Type ℓ} {n} → H-Level (□ T) (suc n)
   H-Level-□ = prop-instance squash
@@ -122,6 +131,15 @@ elΩ T .is-tr = squash
 
 <!--
 ```agda
+□-elim
+  : ∀ {ℓ ℓ′} {A : Type ℓ} {P : □ A → Type ℓ′}
+  → (∀ x → is-prop (P x))
+  → (∀ x → P (inc x))
+  → ∀ x → P x
+□-elim pprop go (inc x) = go x
+□-elim pprop go (squash x y i) =
+  is-prop→pathp (λ i → pprop (squash x y i)) (□-elim pprop go x) (□-elim pprop go y) i
+
 □-ap
   : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
   → □ (A → B) → □ A → □ B
@@ -145,5 +163,8 @@ instance
 
   Bind-□ : Bind (eff □)
   Bind-□ .Bind._>>=_ = □-bind
+
+_∈_ : ∀ {ℓ} {A : Type ℓ} → A → (A → Ω) → Type
+x ∈ P = ∣ P x ∣
 ```
 -->

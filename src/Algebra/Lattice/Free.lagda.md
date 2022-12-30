@@ -9,8 +9,6 @@ open import Data.Nat.Order
 open import Data.Fin.Base
 open import Data.Sum.Base
 
-open import Principles.Resizing
-
 module Algebra.Lattice.Free where
 ```
 

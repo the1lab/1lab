@@ -88,16 +88,16 @@ propositions.
   r : is-semilattice _
   r .has-is-semigroup .has-is-magma .has-is-set = ℙ-is-set
   r .has-is-semigroup .associative =
-    ℙ-ext (λ _ → ∥-∥-elim (λ _ → squash)
+    ℙ-ext (λ _ → □-elim (λ _ → squash)
                  λ { (inl x) → inc (inl (inc (inl x)))
-                   ; (inr x) → ∥-∥-elim (λ _ → squash)
-                               (λ { (inl y) → inc (inl (inc (inr y)))
-                                  ; (inr y) → inc (inr y) }) x
+                   ; (inr x) → □-elim (λ _ → squash)
+                      (λ { (inl y) → inc (inl (inc (inr y)))
+                         ; (inr y) → inc (inr y) }) x
                    })
-          (λ _ → ∥-∥-elim (λ _ → squash)
-                 λ { (inl x) → ∥-∥-elim (λ _ → squash)
-                               (λ { (inl y) → inc (inl y)
-                                  ; (inr y) → inc (inr (inc (inl y))) }) x
+          (λ _ → □-elim (λ _ → squash)
+                 λ { (inl x) → □-elim (λ _ → squash)
+                      (λ { (inl y) → inc (inl y)
+                         ; (inr y) → inc (inr (inc (inl y))) }) x
                    ; (inr x) → inc (inr (inc (inr x)))
                    })
 ```
@@ -108,10 +108,10 @@ reassociate _truncations_.
 
 ```agda
   r .commutative =
-    ℙ-ext (λ _ → ∥-∥-map λ { (inl x) → inr x
-                           ; (inr x) → inl x })
-          (λ _ → ∥-∥-map λ { (inl x) → inr x
-                           ; (inr x) → inl x })
+    ℙ-ext (λ _ → □-map λ { (inl x) → inr x
+                         ; (inr x) → inl x })
+          (λ _ → □-map λ { (inl x) → inr x
+                         ; (inr x) → inl x })
 ```
 
 For idempotence, we must show that `x ∈ X ≃ ∥ (x ∈ X) ⊎ (x ∈ X) ∥`.
@@ -121,7 +121,7 @@ direction, we inject it into the left summand for definiteness.
 
 ```agda
   r .idempotent {x = X} =
-    ℙ-ext (λ _ → ∥-∥-elim (λ _ → X _ .is-tr)
+    ℙ-ext (λ _ → □-elim (λ _ → X _ .is-tr)
                  (λ { (inl x) → x
                     ; (inr x) → x }))
           λ _ x → inc (inl x)
@@ -136,7 +136,7 @@ absorb intersections.
 
 ∪-absorbs-∩ : ∀ {ℓ} {A : Type ℓ} {X Y : ℙ A} → X ∪ (X ∩ Y) ≡ X
 ∪-absorbs-∩ {X = X} {Y = Y} =
-  ℙ-ext (λ _ → ∥-∥-elim (λ x → X _ .is-tr)
+  ℙ-ext (λ _ → □-elim (λ x → X _ .is-tr)
                (λ { (inl x∈X) → x∈X
                   ; (inr (x∈X , x∈Y)) → x∈X }))
         λ _ x∈X → inc (inl x∈X)
@@ -209,10 +209,10 @@ module _ {ℓ} {X : Type ℓ} where
     → Indexed-product ℙ.underlying F
   ℙ-indexed-meet F = ip where
     ip : Indexed-product _ _
-    ip .ΠF i      = el! (∀ x → i ∈ F x)
-    ip .π i x f   = f i
+    ip .ΠF i      = elΩ (∀ x → i ∈ F x)
+    ip .π i x f   = out! f i
     ip .has-is-ip = indexed-meet→indexed-product {P = ℙ.→Proset} _
-      λ f x b i → f i x b
+      λ f x b → inc λ i → f i x b
 
   ℙ-complete : is-complete ℓ ℓ ℙ.underlying
   ℙ-complete = has-indexed-products→proset-is-complete {P = ℙ.→Proset} ℙ-indexed-meet
@@ -233,10 +233,10 @@ need a proposition.
     → Indexed-coproduct ℙ.underlying F
   ℙ-indexed-join F = ic where
     ic : Indexed-coproduct _ _
-    ic .ΣF i      = el (∃[ x ∈ _ ] (i ∈ F x)) squash
+    ic .ΣF i      = elΩ (Σ[ x ∈ _ ] (i ∈ F x))
     ic .ι i x f   = inc (i , f)
     ic .has-is-ic = indexed-join→indexed-coproduct {P = ℙ.→Proset} _
-      λ {B = B} f x → ∥-∥-elim (λ _ → B x .is-tr) (λ { (i , y) → f i x y })
+      λ {B = B} f x → □-elim (λ _ → B x .is-tr) (λ { (i , y) → f i x y })
 
   ℙ-cocomplete : is-cocomplete ℓ ℓ ℙ.underlying
   ℙ-cocomplete = has-indexed-coproducts→proset-is-cocomplete {P = ℙ.→Proset}
