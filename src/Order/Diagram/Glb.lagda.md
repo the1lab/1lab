@@ -102,7 +102,6 @@ greatest lower bound of a family of two elements.
       → H-Level (is-meet a b glb) (suc n)
     H-Level-is-meet = prop-instance $ Iso→is-hlevel 1 eqv′ (hlevel 1)
 
-
   open is-iso
   is-meet≃is-glb : ∀ {a b glb : P.Ob} → is-equiv (is-meet→is-glb {a} {b} {glb})
   is-meet≃is-glb = prop-ext! _ is-glb→is-meet .snd
@@ -113,6 +112,19 @@ greatest lower bound of a family of two elements.
     glb-unique
 ```
 -->
+
+An important lemma about meets is that, if $x \le y$, then the greatest
+lower bound of $x$ and $y$ is just $x$:
+
+```agda
+  le→is-meet : ∀ {a b} → a P.≤ b → is-meet a b a
+  le→is-meet a≤b .meet≤l = P.≤-refl
+  le→is-meet a≤b .meet≤r = a≤b
+  le→is-meet a≤b .greatest lb′ lb′≤a _ = lb′≤a
+
+  le-meet : ∀ {a b l} → a P.≤ b → is-meet a b l → a ≡ l
+  le-meet a≤b l = ap fst $ meet-unique (_ , le→is-meet a≤b) (_ , l)
+```
 
 ## As products
 

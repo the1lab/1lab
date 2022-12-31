@@ -22,38 +22,55 @@ binary greatest lower bounds: A top element, and meets.
 [semilattices]: Order.Semilattice.html
 [poset]: Order.Base.html
 
+To this end, we define a type of finitely complete posets: Posets
+possessing meets and a top element.
+
 ```agda
-poset→semilattice
-  : ∀ {ℓₒ ℓᵣ} {T : Type ℓₒ} (P : Poset ℓₒ ℓᵣ)
-    (meet : ∀ x y → Σ _ (is-meet P x y))
-    (top : ⌞ P ⌟)
-    (is-top : ∀ x → Poset._≤_ P x top)
-  → Semilattice-on ⌞ P ⌟
+record Finitely-complete-poset ℓₒ ℓᵣ : Type (lsuc (ℓₒ ⊔ ℓᵣ)) where
+  no-eta-equality
+  field
+    poset : Poset ℓₒ ℓᵣ
+    _∩_         : ⌞ poset ⌟ → ⌞ poset ⌟ → ⌞ poset ⌟
+    has-is-meet : ∀ {x y} → is-meet poset x y (x ∩ y)
 
-poset→semilattice P meet top is-top = to-semilattice-on make-p where
-  module P = Poset P
+    top        : ⌞ poset ⌟
+    has-is-top : ∀ {x} → Poset._≤_ poset x top
+
+  open Poset poset public
+  private module meet {x} {y} = is-meet (has-is-meet {x} {y})
+  open meet renaming (meet≤l to ∩≤l ; meet≤r to ∩≤r ; greatest to ∩-univ) public
+```
+
+From a finitely complete poset, we can define a semilattice: from the
+universal property of meets, we can conclude that they are associative,
+idempotent, commutative, and have the top element as a unit.
+
+```agda
+fc-poset→semilattice : ∀ {o ℓ} (P : Finitely-complete-poset o ℓ) → Semilattice o
+fc-poset→semilattice P = to-semilattice make-p where
   module ml = make-semilattice
-  open is-meet
+  open Finitely-complete-poset P
 
-  _∩_ : ⌞ P ⌟ → ⌞ P ⌟ → ⌞ P ⌟
-  x ∩ y = meet x y .fst
-
-  module meet {x} {y} = is-meet (meet x y .snd) renaming (meet≤l to l ; meet≤r to r)
-
-  make-p : make-semilattice ⌞ P ⌟
+  make-p : make-semilattice ⌞ poset ⌟
   make-p .ml.has-is-set = hlevel!
   make-p .ml.top = top
   make-p .ml.op = _∩_
-  make-p .ml.idl = P.≤-antisym meet.r (meet.greatest _ (is-top _) P.≤-refl)
-  make-p .ml.associative = P.≤-antisym
-    (meet.greatest _
-      (meet.greatest _ meet.l (P.≤-trans meet.r meet.l))
-      (P.≤-trans meet.r meet.r))
-    (meet.greatest _
-      (P.≤-trans meet.l meet.l)
-      (meet.greatest _ (P.≤-trans meet.l meet.r) meet.r))
-  make-p .ml.commutative = P.≤-antisym
-    (meet.greatest _ meet.r meet.l)
-    (meet.greatest _ meet.r meet.l)
-  make-p .ml.idempotent = P.≤-antisym meet.l (meet.greatest _ P.≤-refl P.≤-refl)
+  make-p .ml.idl = ≤-antisym ∩≤r (∩-univ _ has-is-top ≤-refl)
+  make-p .ml.associative = ≤-antisym
+    (∩-univ _
+      (∩-univ _ ∩≤l (≤-trans ∩≤r ∩≤l))
+      (≤-trans ∩≤r ∩≤r))
+    (∩-univ _ (≤-trans ∩≤l ∩≤l) (∩-univ _ (≤-trans ∩≤l ∩≤r) ∩≤r))
+  make-p .ml.commutative = ≤-antisym
+    (∩-univ _ ∩≤r ∩≤l)
+    (∩-univ _ ∩≤r ∩≤l)
+  make-p .ml.idempotent = ≤-antisym ∩≤l (∩-univ _ ≤-refl ≤-refl)
+```
+
+It's a general fact about meets that the semilattice ordering defined
+with the meets from a finitely complete poset agrees with our original
+ordering, which we link below:
+
+```agda
+_ = le-meet
 ```
