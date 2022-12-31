@@ -42,7 +42,7 @@ executable shake
     citeproc,
     doctemplates,
     extra,
-    fsnotify,
+    fsnotify >= 0.3 && < 0.4,
     network-uri,
     pandoc,
     pandoc-types,

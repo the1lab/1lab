@@ -1,10 +1,11 @@
 ```agda
 {-# OPTIONS -WUnsupportedIndexedMatch #-}
 open import 1Lab.Path.IdentitySystem
+open import 1Lab.Univalence
 open import 1Lab.HLevel
 open import 1Lab.Equiv
-open import 1Lab.Type
 open import 1Lab.Path
+open import 1Lab.Type
 
 open import Data.Dec.Base
 
@@ -59,9 +60,11 @@ _ = refl
 <!--
 ```agda
 _ = _≡_
-module Id≃path {ℓ} {A : Type ℓ} {x y : A} =
-  Equiv (identity-system-gives-path
-    (Id-identity-system {ℓ = ℓ} {A = A}) {a = x} {b = y})
+Id≃path : ∀ {ℓ} {A : Type ℓ} {x y : A} → (x ≡ᵢ y) ≃ (x ≡ y)
+Id≃path {ℓ} {A} {x} {y} =
+  identity-system-gives-path (Id-identity-system {ℓ = ℓ} {A = A}) {a = x} {b = y}
+
+module Id≃path {ℓ} {A : Type ℓ} {x y : A} = Equiv (Id≃path {ℓ} {A} {x} {y})
 ```
 -->
 
@@ -84,4 +87,7 @@ Discreteᵢ→discrete d x y with d x y
 
 is-set→is-setᵢ : ∀ {ℓ} {A : Type ℓ} → is-set A → (x y : A) (p q : x ≡ᵢ y) → p ≡ q
 is-set→is-setᵢ A-set x y p q = Id≃path.injective (A-set _ _ _ _)
+
+≡ᵢ-is-hlevel' : ∀ {ℓ} {A : Type ℓ} {n} → is-hlevel A (suc n) → (x y : A) → is-hlevel (x ≡ᵢ y) n
+≡ᵢ-is-hlevel' {n = n} ahl x y = subst (λ e → is-hlevel e n) (sym (ua Id≃path)) (Path-is-hlevel' n ahl x y)
 ```

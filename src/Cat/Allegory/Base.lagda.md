@@ -1,8 +1,6 @@
 ```agda
 open import Cat.Prelude
 
-open import Principles.Resizing
-
 import Cat.Reasoning as Cr
 
 module Cat.Allegory.Base where

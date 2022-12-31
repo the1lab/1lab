@@ -7,8 +7,6 @@ open import Data.Dec.Base
 open import Data.Nat.Base
 open import Data.Sum
 
-open import Relation.Order
-
 module Data.Nat.Properties where
 ```
 

@@ -1,6 +1,6 @@
 ```agda
-open import Cat.Instances.Product
 open import Cat.Instances.Functor
+open import Cat.Instances.Product
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr

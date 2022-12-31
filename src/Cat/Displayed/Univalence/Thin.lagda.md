@@ -118,9 +118,6 @@ functor into the category of sets.
   Structured-hom-path p =
     total-hom-path Thin-structure-over p (is-prop→pathp (λ _ → hlevel!) _ _)
 
-⌞_⌟ : ∀ {n} {ℓ o′} {S : n-Type ℓ n → Type o′} → Σ (n-Type ℓ n) S → Type ℓ
-⌞ x ⌟ = ∣ x .fst ∣
-
 module _ {ℓ o′ ℓ′} {S : Type ℓ → Type o′} {spec : Thin-structure ℓ′ S} where
   private
     module So = Precategory (Structured-objects spec)

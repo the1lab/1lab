@@ -53,12 +53,12 @@ subobjects.
 
 ```agda
 maximal′ : Sieve
-maximal′ .arrows x = el! (Lift _ ⊤)
-maximal′ .closed g x = lift tt
+maximal′ .arrows x = el ⊤ hlevel!
+maximal′ .closed g x = tt
 
 intersect : ∀ {I : Type κ} (F : I → Sieve) → Sieve
-intersect {I = I} F .arrows h = el! ((x : I) → h ∈ F x .arrows)
-intersect {I = I} F .closed g x i = F i .closed g (x i)
+intersect {I = I} F .arrows h = elΩ ((x : I) → h ∈ F x .arrows)
+intersect {I = I} F .closed g x = inc λ i → F i .closed g (out! x i)
 ```
 
 ## Representing subfunctors

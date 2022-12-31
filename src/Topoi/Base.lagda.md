@@ -138,7 +138,7 @@ preserves arbitrary joins has a right adjoint; Conversely, every map
 which has a right adjoint preserves arbitrary joins.
 
 [powerset]: Data.Power.html
-[lattice]: Algebra.Lattice.html
+[lattice]: Order.Lattice.html
 
 We can prove that a topology $\tau$ on $X$ is the same thing as a
 subframe of its powerset $[X,\props]$ --- a collection of subsets of
@@ -200,13 +200,13 @@ coproducts are [disjoint], and [equivalence relations are effective].
 These properties, but _especially_ local cartesian closure, imply that
 the internal logic of a topos is an incredibly nice form of type theory.
 Dependent sums and products exist, there is an object of natural
-numbers, the [poset of subobjects] is a complete [lattice] (even a
-Heyting algebra), including existential and universal quantification.
-Effectivity of congruences means that two points in a quotient are
-identified if, and only if, they are related by the congruence.
+numbers, the poset of subobjects of any object is a complete [lattice]
+(even a Heyting algebra), including existential and universal
+quantification.  Effectivity of congruences means that two points in a
+quotient are identified if, and only if, they are related by the
+congruence.
 
-[lattice]: Algebra.Lattice.html
-[poset of subobjects]: Cat.Thin.Instances.Sub.html
+[lattice]: Order.Lattice.html
 
 In fact, this is essentially the _definition of_ a topos. The actual
 definition, as a lex [reflective subcategory] of a presheaf category,

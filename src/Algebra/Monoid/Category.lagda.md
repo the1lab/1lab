@@ -46,8 +46,11 @@ raise the [h-level] of the Hom-sets.
 
 ```agda
 instance
-  H-Level-Monoid-hom : ∀ {ℓ} {x y : Monoid ℓ} {f} {n} → H-Level (Monoid-hom x y f) (suc n)
-  H-Level-Monoid-hom {y = _ , M} = prop-instance λ x y i →
+  H-Level-Monoid-hom
+    : ∀ {ℓ ℓ′} {s : Type ℓ} {t : Type ℓ′}
+    → ∀ {x : Monoid-on s} {y : Monoid-on t} {f} {n}
+    → H-Level (Monoid-hom x y f) (suc n)
+  H-Level-Monoid-hom {y = M} = prop-instance λ x y i →
     record { pres-id = M .has-is-set _ _ (x .pres-id) (y .pres-id) i
            ; pres-⋆ = λ a b → M .has-is-set _ _ (x .pres-⋆ a b) (y .pres-⋆ a b) i
            }
@@ -61,7 +64,7 @@ displayed categories to reason about the category of monoids.
 
 ```agda
 Monoid-structure : ∀ ℓ → Thin-structure ℓ Monoid-on
-Monoid-structure ℓ .is-hom f A B = el! $ Monoid-hom (_ , A) (_ , B) f
+Monoid-structure ℓ .is-hom f A B = el! $ Monoid-hom A B f
 
 Monoid-structure ℓ .id-is-hom .pres-id = refl
 Monoid-structure ℓ .id-is-hom .pres-⋆ x y = refl
@@ -179,7 +182,7 @@ fold-++ {X = X} = go where
     x M.⋆ (fold X xs M.⋆ fold X ys)  ≡⟨ M.associative ⟩
     fold X (x ∷ xs) M.⋆ fold X ys    ∎
 
-fold-natural : ∀ {ℓ} {X Y : Monoid ℓ} f → Monoid-hom X Y f
+fold-natural : ∀ {ℓ} {X Y : Monoid ℓ} f → Monoid-hom (X .snd) (Y .snd) f
              → ∀ xs → fold Y (map f xs) ≡ f (fold X xs)
 fold-natural f mh [] = sym (mh .pres-id)
 fold-natural {X = X} {Y} f mh (x ∷ xs) =

@@ -563,16 +563,14 @@ is invertible, then that means that $K$ is also a limiting cone.
 
 A category is **complete** if admits for limits of arbitrary shape.
 However, in the presence of excluded middle, if a category admits
-products indexed by its class of morphisms, then it is automatically
-[thin]. Since excluded middle is independent of type theory, we can not
+products indexed by its class of morphisms, then it is automatically a
+poset. Since excluded middle is independent of type theory, we can not
 prove that any non-thin categories have arbitrary limits.
 
 Instead, categories are complete _with respect to_ a pair of universes:
 A category is **$(o, \ell)$-complete** if it has limits for any diagram
 indexed by a precategory with objects in $\ty\ o$ and morphisms in $\ty\
 \ell$.
-
-[thin]: Cat.Thin.html
 
 ```agda
 is-complete : ∀ {oc ℓc} o ℓ → Precategory oc ℓc → Type _

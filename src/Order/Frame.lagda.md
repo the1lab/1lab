@@ -1,16 +1,15 @@
 ```agda
-open import Algebra.Semilattice
 open import Algebra.Semigroup
-open import Algebra.Prelude
 open import Algebra.Magma
 
 open import Cat.Displayed.Univalence.Thin
+open import Cat.Prelude
 
-open import Principles.Resizing
+open import Order.Semilattice
 
 import Cat.Reasoning
 
-module Algebra.Frame where
+module Order.Frame where
 ```
 
 # Frames
@@ -23,30 +22,33 @@ private variable
 ```
 -->
 
-A **frame** is a lattice with binary meets and arbitrary joins
-satisfying the _infinite distributive_ law
+A **frame** is a lattice with finite meets^[So, in addition to the $x
+\cap y$ operation, we have a top element] and arbitrary joins satisfying
+the **infinite distributive law**
 
 $$
 x \cap \bigcup_i f(i) = \bigcup_i (x \cap f(i))\text{.}
 $$
 
 In the study of frames, for simplicity, we assume propositional
-`resizing`{.Agda}: that way, it suffices for a frame $A$ to have meets
+`resizing`{.Agda}: that way, it suffices for a frame $A$ to have joins
 of $\ca{J}$-indexed families, for $\ca{J}$ an arbitrary type in the same
 universe as $A$, to have joins for arbitrary subsets of $A$.
 
 ```agda
 record is-frame
+  (⊤   : A)
   (_∩_ : A → A → A)
   (⋃ : ∀ {I : Type (level-of A)} → (I → A) → A)
   : Type (lsuc (level-of A)) where
+
   field
-    has-is-slat : is-semilattice _∩_
+    has-meets : is-semilattice ⊤ _∩_
 ```
 
 <!--
 ```agda
-  open is-semilattice has-is-slat public
+  open is-semilattice has-meets public
   _≤_ : A → A → Type _
   x ≤ y = x ≡ x ∩ y
 ```
@@ -67,14 +69,12 @@ presentation of frames.
 
 <!--
 ```agda
-  module P = Poset (Semilattice-on→Meet-on has-is-slat) renaming (_∘_ to trans)
-  open P using (trans) public
-
 record Frame-on (A : Type ℓ) : Type (lsuc ℓ) where
   field
+    top          : A
     _∩_          : A → A → A
     ⋃            : ∀ {I : Type (level-of A)} → (I → A) → A
-    has-is-frame : is-frame _∩_ ⋃
+    has-is-frame : is-frame top _∩_ ⋃
   open is-frame has-is-frame public
 ```
 -->
@@ -93,6 +93,7 @@ record
     module X = Frame-on X
     module Y = Frame-on Y
   field
+    pres-⊤ : f X.top ≡ Y.top
     pres-∩ : ∀ x y → f (x X.∩ y) ≡ (f x Y.∩ f y)
     pres-⋃ : ∀ {I} (g : I → A) → f (X.⋃ g) ≡ Y.⋃ λ i → f (g i)
 ```
@@ -114,14 +115,16 @@ categories of "sets-with-structure" applies here.
 ```agda
 Frame-str : ∀ ℓ → Thin-structure {ℓ = ℓ} _ Frame-on
 Frame-str ℓ .is-hom f x y .∣_∣   = is-frame-hom f x y
-Frame-str ℓ .is-hom f x y .is-tr = Iso→is-hlevel 1 eqv (hlevel 1)
-  where instance
-    ahl : H-Level _ 2
-    ahl = hlevel-instance (Frame-on.has-is-set y)
+Frame-str ℓ .is-hom f x y .is-tr = Iso→is-hlevel 1 eqv (hlevel 1) where instance
+  ahl : H-Level _ 2
+  ahl = hlevel-instance (Frame-on.has-is-set y)
 Frame-str ℓ .id-is-hom .pres-∩ x y = refl
 Frame-str ℓ .id-is-hom .pres-⋃ g = refl
+Frame-str ℓ .id-is-hom .pres-⊤ = refl
 Frame-str ℓ .∘-is-hom f g α β .pres-∩ x y = ap f (β .pres-∩ _ _) ∙ α .pres-∩ _ _
+Frame-str ℓ .∘-is-hom f g α β .pres-⊤ = ap f (β .pres-⊤) ∙ α .pres-⊤
 Frame-str ℓ .∘-is-hom f g α β .pres-⋃ h = ap f (β .pres-⋃ _) ∙ α .pres-⋃ _
+Frame-str ℓ .id-hom-unique α β i .Frame-on.top = α .pres-⊤ i
 Frame-str ℓ .id-hom-unique α β i .Frame-on._∩_ a b = α .pres-∩ a b i
 Frame-str ℓ .id-hom-unique α β i .Frame-on.⋃ f = α .pres-⋃ f i
 ```
@@ -129,19 +132,22 @@ Frame-str ℓ .id-hom-unique α β i .Frame-on.⋃ f = α .pres-⋃ f i
 <!--
 ```agda
 Frame-str ℓ .id-hom-unique {s = s} {t} α β i .Frame-on.has-is-frame =
-  is-prop→pathp (λ i → lemma (λ a b → α .pres-∩ a b i) (λ f → α .pres-⋃ f i))
+  is-prop→pathp (λ i → lemma (α .pres-⊤ i) (λ a b → α .pres-∩ a b i) (λ f → α .pres-⋃ f i))
     (s .Frame-on.has-is-frame)
     (t .Frame-on.has-is-frame) i
   where
-  lemma : ∀ a (b : ∀ {I} → (I → A) → A) → is-prop (is-frame a b)
-  lemma {A = A} a b x = Iso→is-hlevel 1 eqv′ (hlevel 1) x where instance
+  lemma : ∀ top a (b : ∀ {I} → (I → A) → A) → is-prop (is-frame top a b)
+  lemma {A = A} top a b x = Iso→is-hlevel 1 eqv′ (hlevel 1) x where instance
     ahl : H-Level A 2
     ahl = hlevel-instance (is-frame.has-is-set x)
+
 
 Frames : ∀ ℓ → Precategory _ _
 Frames a = Structured-objects (Frame-str a)
 
 module Frames ℓ = Cat.Reasoning (Frames ℓ)
+Frame : (ℓ : Level) → Type (lsuc ℓ)
+Frame ℓ = Frames.Ob ℓ
 ```
 -->
 
@@ -211,33 +217,46 @@ open is-semilattice
 open is-frame
 
 record make-frame {ℓ} (A : Type ℓ) : Type (lsuc ℓ) where
+  no-eta-equality
+
   field
     has-is-set : is-set A
+    top   : A
     _cap_ : A → A → A
     cup   : ∀ {I : Type ℓ} → (I → A) → A
+    identity    : ∀ {a} → top cap a ≡ a
     idempotent  : ∀ {a} → a cap a ≡ a
     commutative : ∀ {a b} → a cap b ≡ b cap a
     associative : ∀ {a b c} → a cap (b cap c) ≡ (a cap b) cap c
 
   _le_ : A → A → Type _
   x le y = x ≡ x cap y
+
   field
     universal  : ∀ {I} {x} (f : I → A) → (∀ i → f i le x) → cup f le x
     colimiting : ∀ {I} i (f : I → A) → f i le cup f
     distrib    : ∀ {I} x (f : I → A) → x cap cup f ≡ cup λ i → x cap f i
 
+
 open make-frame
 open is-magma
 to-frame-on : ∀ {ℓ} {A : Type ℓ} → make-frame A → Frame-on A
 to-frame-on mfr ._∩_ = mfr ._cap_
+to-frame-on mfr .top = mfr .top
 to-frame-on mfr .⋃ = mfr .cup
-to-frame-on mfr .has-is-frame .has-is-slat .has-is-semigroup .has-is-magma .has-is-set = mfr .has-is-set
-to-frame-on mfr .has-is-frame .has-is-slat .has-is-semigroup .associative = mfr .associative
-to-frame-on mfr .has-is-frame .has-is-slat .commutative = mfr .commutative
-to-frame-on mfr .has-is-frame .has-is-slat .idempotent = mfr .idempotent
+to-frame-on mfr .has-is-frame .has-meets = to-semilattice-on mk .Semilattice-on.has-is-semilattice where
+  mk : make-semilattice _
+  mk .make-semilattice.has-is-set = mfr .has-is-set
+  mk .make-semilattice.top = mfr .top
+  mk .make-semilattice.op = mfr ._cap_
+  mk .make-semilattice.idl = mfr .identity
+  mk .make-semilattice.associative = mfr .associative
+  mk .make-semilattice.commutative = mfr .commutative
+  mk .make-semilattice.idempotent = mfr .idempotent
 to-frame-on mfr .has-is-frame .⋃-universal = mfr .universal
 to-frame-on mfr .has-is-frame .⋃-colimiting = mfr .colimiting
 to-frame-on mfr .has-is-frame .⋃-distrib = mfr .distrib
+
 ```
 -->
 
@@ -254,8 +273,10 @@ Power-frame {ℓ = ℓ} A .fst = el (A → Ω) (hlevel 2)
 Power-frame A .snd = to-frame-on go where
   go : make-frame (A → Ω)
   go .has-is-set = hlevel 2
+  go .top x = el ⊤ λ _ _ i → tt
   go ._cap_ f g x .∣_∣   = ∣ f x ∣ × ∣ g x ∣
   go ._cap_ f g x .is-tr = hlevel!
+  go .identity = funext λ i → Ω-ua snd (λ x → tt , x)
   go .cup {I} P x = elΩ (Σ I λ i → ∣ P i x ∣)
   go .idempotent = funext λ i → Ω-ua fst λ x → x , x
   go .commutative = funext λ i → Ω-ua

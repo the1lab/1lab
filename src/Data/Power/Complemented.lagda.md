@@ -1,4 +1,5 @@
 ```agda
+{-# OPTIONS -vtactic.hlevel:10 #-}
 open import 1Lab.Prelude
 
 open import Data.Power
@@ -48,7 +49,7 @@ is-decidable p = ∀ a → Dec (a ∈ p)
 is-decidable→is-complemented : (p : ℙ A) → is-decidable p → is-complemented p
 is-decidable→is-complemented {A = A} p dec = inv , intersection , union where
   inv : ℙ A
-  inv x = el! (¬ (x ∈ p))
+  inv x = el (¬ (x ∈ p)) hlevel!
 
   intersection : (p ∩ inv) ⊆ minimal
   intersection x (x∈p , x∉p) = lift (x∉p x∈p)
@@ -68,12 +69,10 @@ intersection $(p \cap p^{-1})$ is empty.
 ```agda
 is-complemented→is-decidable : (p : ℙ A) → is-complemented p → is-decidable p
 is-complemented→is-decidable p (p⁻¹ , intersection , union) elt =
-  ∥-∥-rec
-    (hlevel 1 ⦃ H-Level-Dec ⦃ hlevel-instance (is-tr (p elt)) ⦄ ⦄)
-    (λ { (inl x∈p) → yes x∈p
-       ; (inr x∈p⁻¹) → no λ x∈p → Lift.lower $ intersection elt (x∈p , x∈p⁻¹)
-       })
-    (union elt (lift tt))
+  □-rec!  (λ { (inl x∈p)   → yes x∈p
+             ; (inr x∈p⁻¹) → no λ x∈p → Lift.lower $ intersection elt (x∈p , x∈p⁻¹)
+             })
+    (union elt tt)
 ```
 
 # Decidable subobject classifiers
@@ -99,12 +98,9 @@ subobject because $2$ has decidable equality.
 
 ```agda
   to : (A → Bool) → (Σ[ p ∈ ℙ A ] (is-decidable p))
-  to map .fst x = el! (Lift _ (map x ≡ true))
-  to map .snd p =
-    Bool-elim (λ p → Dec (Lift _ (p ≡ true)))
-      (yes (lift refl))
-      (no (λ p → true≠false (sym (Lift.lower p))))
-      (map p)
+  to map .fst x = el (map x ≡ true) hlevel!
+  to map .snd p = Bool-elim (λ p → Dec (p ≡ true))
+    (yes refl) (no (λ p → true≠false (sym p))) (map p)
 ```
 
 Conversely, to each decidable subobject $p : \bb{P}(A)$ and element $x :
@@ -118,8 +114,8 @@ process is inverse to taking fibres over $\mathtt{true}$.
   from : (pr : Σ[ p ∈ ℙ A ] (is-decidable p)) (x : A)
        → (Σ[ b ∈ Bool ] ((b ≡ true) ≃ (x ∈ pr .fst)))
   from (p , dec) elt = Dec-elim (λ _ → Σ Bool (λ b → (b ≡ true) ≃ (elt ∈ p)))
-    (λ y → true , prop-ext hlevel! hlevel! (λ _ → y) (λ _ → refl))
-    (λ x∉p → false , prop-ext hlevel! hlevel!
+    (λ y → true , prop-ext! (λ _ → y) (λ _ → refl))
+    (λ x∉p → false , prop-ext!
       (λ p → absurd (true≠false (sym p)))
       (λ x → absurd (x∉p x)))
     (dec elt)
@@ -127,13 +123,9 @@ process is inverse to taking fibres over $\mathtt{true}$.
   eqv = Iso→Equiv λ where
     .fst → to
     .snd .is-iso.inv p x → from p x .fst
-    .snd .is-iso.rinv pred →
-      Σ-prop-path
-        (λ pred → Π-is-hlevel 1
-         λ a    → hlevel 1 ⦃ H-Level-Dec ⦃ hlevel-instance (pred a .is-tr) ⦄ ⦄)
-      $ ℙ-ext
-        (λ x w → from pred x .snd .fst (Lift.lower w))
-        (λ x p → lift (Equiv.from (from pred x .snd) p))
+    .snd .is-iso.rinv pred → Σ-prop-path! $ ℙ-ext
+      (λ x w → from pred x .snd .fst w)
+      (λ x p → Equiv.from (from pred x .snd) p)
     .snd .is-iso.linv pred → funext λ x →
       Bool-elim (λ p → from (to λ _ → p) x .fst ≡ p) refl refl (pred x)
 ```

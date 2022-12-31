@@ -2,8 +2,6 @@
 open import Cat.Allegory.Base
 open import Cat.Prelude
 
-open import Principles.Resizing
-
 import Cat.Allegory.Reasoning as Ar
 
 module Cat.Allegory.Maps where

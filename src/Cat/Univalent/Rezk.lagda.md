@@ -20,17 +20,14 @@ open Functor
 
 # The Rezk completion
 
-In the same way that we can [freely] [complete] a [proset] into a
-[poset], it is possible to, in a universal way, replace any precategory
-$\ca{A}$ by a category $\widehat{\ca{A}}$, such that there is a weak
-equivalence (a [fully faithful], [essentially surjective] functor)
-$\ca{A} \to \widehat{\ca{A}}$, such that any map from $\ca{A}$ to a
-[univalent category] $\ca{C}$ factors uniquely through $\widehat{\ca{A}}$.
+In the same way that we can [freely] complete a proset into a poset, it
+is possible to, in a universal way, replace any precategory $\ca{A}$ by
+a category $\widehat{\ca{A}}$, such that there is a weak equivalence (a
+[fully faithful], [essentially surjective] functor) $\ca{A} \to
+\widehat{\ca{A}}$, such that any map from $\ca{A}$ to a [univalent
+category] $\ca{C}$ factors uniquely through $\widehat{\ca{A}}$.
 
 [freely]: Cat.Functor.Adjoint.html
-[complete]: Cat.Thin.Completion.html
-[proset]: Cat.Thin.html#thin-categories
-[poset]: Cat.Thin.html#posets
 [fully faithful]: Cat.Functor.Base.html#ff-functors
 [essentially surjective]: Cat.Functor.Base.html#essential-fibres
 [univalent category]: Cat.Univalent.html
