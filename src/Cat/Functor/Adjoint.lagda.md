@@ -133,29 +133,29 @@ module _
 
 Another perspective on adjoint functors is given by finding "most
 efficient solutions" to the "problem" posed by a functor. For instance,
-the ([ff]) inclusion of [prosets] into [strict precategories] poses the
-problem of turning a precategory into a proset. While this can't be done
-in a 1:1 way (precategories are strictly more general than prosets), we
+the ([ff]) inclusion of [posets] into [strict precategories] poses the
+problem of turning a precategory into a posets. While this can't be done
+in a 1:1 way (precategories are strictly more general than posets), we
 _can_ still ponder whether there is some "most efficient" way to turn a
-category into a proset.
+category into a posets.
 
 [ff]: Cat.Functor.Base.html#ff-functors
-[prosets]: Cat.Thin.html#Prosets
+[posets]: Order.Base.html
 [strict precategories]: Cat.Instances.StrictCat.html#strict-precategories
 
-While we can't directly consider maps from precategories to proset, we
-_can_ consider maps from precategories to the inclusion of a proset; Let
+While we can't directly consider maps from precategories to posets, we
+_can_ consider maps from precategories to the inclusion of a poset; Let
 us write $\ca{C}$ for a generic precategory, $\ca{P}$ for a generic
-proset, and $U(\ca{P})$ for $\ca{P}$ considered as a precategory. Any
+poset, and $U(\ca{P})$ for $\ca{P}$ considered as a precategory. Any
 functor $\ca{C} \to U(\ca{P})$ can be seen as "a way to turn $\ca{C}$
-into a proset", but not all of these can be the "most efficient" way. In
+into a poset", but not all of these can be the "most efficient" way. In
 fact, there is a vast sea of uninteresting ways to turn a precategory
-into a proset: turn them all into the [terminal] proset!
+into a poset: turn them all into the [terminal] poset!
 
 [terminal]: Cat.Diagram.Terminal.html
 
 A "most efficient" solution, then, would be one through which all others
-factor. A "universal" way of turning a strict precategory into a proset:
+factor. A "universal" way of turning a strict precategory into a poset:
 A **universal morphism** from $\ca{C}$ to $U$. The way we think about
 universal morphisms (reusing the same variables) is as [initial objects]
 in the [comma category] $\ca{C} \swarrow U$, where that category is

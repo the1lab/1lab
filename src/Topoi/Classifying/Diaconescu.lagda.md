@@ -55,7 +55,7 @@ $\mathcal{O}_T$ with a [preorder] structure, with the conjunctions
 providing meets and the (infinitary) disjunctions providing joins.
 Additionally, in this proset, the distributive law
 
-[preorder]: Cat.Thin.html
+[preorder]: Order.Base.html
 
 $$
 x \land \bigvee_i F(i) = \bigvee_i (x \land F(i))

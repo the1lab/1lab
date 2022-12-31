@@ -23,18 +23,17 @@ private variable
 # Subgroups
 
 A **subgroup** $m$ of a group $G$ is a [monomorphism] $H \xto{m} G$,
-that is, an object of the [poset of subobjects] $\Sub(G)$. Since group
+that is, an object of the poset of subobjects $\Sub(G)$. Since group
 homomorphisms are injective exactly when their underlying function is an
 [embedding], we can alternatively describe this as a condition on a
 predicate $G \to \prop$.
 
 [monomorphism]: Cat.Morphism.html#monos
-[poset of subobjects]: Cat.Thin.Instances.Sub.html
 [embedding]: 1Lab.Equiv.Embedding.html
 
 ```agda
 Subgroup : Group ℓ → Type (lsuc ℓ)
-Subgroup {ℓ = ℓ} G = Precategory.Ob (Subobj (Groups ℓ) G)
+Subgroup {ℓ = ℓ} G = Σ (Group ℓ) λ H → H Groups.↪ G
 ```
 
 A proposition $H : G \to \prop$ of a group $(G, \star)$ **represents a
@@ -72,7 +71,7 @@ rep-subgroup→group-on {G = G} H sg = to-group-on sg′ where
   sg′ .make-group.idl x = Σ-prop-path (λ x → H x .is-tr) idl
 
 predicate→subgroup : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Subgroup G
-predicate→subgroup {G = G} H p = restrict (cut map) ism where
+predicate→subgroup {G = G} H p = _ , record { mor = map ; monic = ism } where
   map : Groups.Hom (el! (Σ _ (∣_∣ ⊙ H))
     , rep-subgroup→group-on H p) G
   map .hom = fst
@@ -102,8 +101,11 @@ module _ {ℓ} where
   open Canonical-kernels (Groups ℓ) ∅ᴳ Groups-equalisers public
 
   Ker-subgroup : ∀ {A B : Group ℓ} → Groups.Hom A B → Subgroup A
-  Ker-subgroup f = restrict (cut kernel) (Groups.is-equaliser→is-monic _ has-is-kernel) where
-    open Kernel (Ker f)
+  Ker-subgroup f =
+    ker , record { mor = kernel
+                 ; monic = Groups.is-equaliser→is-monic _ has-is-kernel }
+    where
+      open Kernel (Ker f)
 ```
 
 [limit]: Cat.Diagram.Limit.Base.html
@@ -204,7 +206,7 @@ $\im f$.
 
 ```agda
   Im[_] : Subgroup B
-  Im[_] = restrict (cut im→B) im↪B where
+  Im[_] = _ , record { mor = im→B ; monic = im↪B } where
     im↪B : Groups.is-monic im→B
     im↪B = Homomorphism-monic im→B Tpath
 ```
@@ -555,7 +557,7 @@ that, if $\id{inc}(x) = \id{inc}(y)$, then $(x - y) \in H$.
     module Ker[incl] = Kernel (Ker incl)
     Ker-sg = Ker-subgroup incl
     H-sg = predicate→subgroup H has-rep
-    H-g = H-sg .object ./-Obj.domain
+    H-g = H-sg .fst
 ```
 -->
 
@@ -585,19 +587,3 @@ predicate $\id{inc}(x) = \id{inc}(0)$ recovers the subgroup $H$; And
 To show that these are equal as subgroups of $G$, we must show that the
 isomorphism above commutes with the inclusions; But this is immediate by
 computation, so we can conclude: Every normal subgroup is a kernel.
-
-```
-  Ker[incl]≡H↪G : Ker-sg ≡ H-sg
-  Ker[incl]≡H↪G = antisym ker≤H H≤ker where
-    SubG = Subobjects (Groups ℓ) Groups-is-category Grp
-    open Poset SubG
-    open Groups._≅_ Ker[incl]≅H-group
-
-    ker≤H : Ker-sg ≤ H-sg
-    ker≤H ./-Hom.map = to
-    ker≤H ./-Hom.commutes = Forget-is-faithful refl
-
-    H≤ker : H-sg ≤ Ker-sg
-    H≤ker ./-Hom.map = from
-    H≤ker ./-Hom.commutes = Forget-is-faithful refl
-```

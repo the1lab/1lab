@@ -327,3 +327,4 @@ to-lattice A x .snd .has-is-lattice .has-joins = to-semilattice-on (make-joins x
 to-lattice A x .snd .has-is-lattice .∩-absorbs-∪ = x .cap-absorbs
 to-lattice A x .snd .has-is-lattice .∪-absorbs-∩ = x .cup-absorbs
 ```
+-->

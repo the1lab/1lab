@@ -11,7 +11,6 @@ open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Instances.Lift
 open import Cat.Prelude
-open import Cat.Thin
 
 open import Data.Bool
 
@@ -56,7 +55,7 @@ For proving that a [thin category] is finitely complete, given that
 equalisers are trivial and pullbacks coincide with products, it suffices
 to give a terminal object and binary products.
 
-[thin category]: Cat.Thin.html
+[thin category]: Order.Base.html
 
 ```agda
   record Finitely-complete : Type (ℓ ⊔ ℓ') where
@@ -400,73 +399,7 @@ Putting it all together into a record we get our proof of finite completeness:
     pb .p₁∘limiting = r .is-product.π₁∘factor
     pb .p₂∘limiting = r .is-product.π₂∘factor
     pb .unique p q = r .is-product.unique _ p q
-```
--->
 
-## Thinly
-
-Assuming that $\ca{C}$ is a thin category, it suffices to give
-constructions of products (i.e. meets) and a terminal object (i.e. a top
-element). In this sense, finitely complete thin categories correspond to
-bounded meet semilattices.
-
-```agda
-  with-top-and-meets
-    : is-thin C
-    → Terminal C
-    → (∀ A B → Product C A B)
-    → Finitely-complete
-  with-top-and-meets thin top meets = fc where
-    open Pullback
-    module Thin = is-thin thin
-
-    fc : Finitely-complete
-    fc .terminal = top
-    fc .products = meets
-```
-
-For equalisers, note that since any pair of parallel arrows $f, g : A
-\to B$ was assumed to be equal (since the category is thin), we can take
-the domain of the equaliser to be $A$ and the equalising arrow to be
-$\id{id}$.
-
-```agda
-    fc .equalisers {A} {B} f g = equalise where
-      open Equaliser
-      open is-equaliser
-      equalise : Equaliser C _ _
-      equalise .apex = A
-      equalise .equ = id
-      equalise .has-is-eq .equal = Thin.Hom-is-prop _ _ _ _
-      equalise .has-is-eq .limiting {e′ = e′} p = e′
-      equalise .has-is-eq .universal = idl _
-      equalise .has-is-eq .unique p = Thin.Hom-is-prop _ _ _ _
-```
-
-For pullbacks, we note that since the maps into the object $C$ are
-trivial, they do not factor into the definition. The square
-automatically commutes independently of them, because, again, the
-category is thin. Therefore, we can simply take $(A \times_C B) = (A
-\times B)$ as the definition of pullback.
-
-```agda
-    fc .pullbacks {A} {B} f g = pb where
-      open Pullback
-      open is-pullback
-      module P = Product (meets A B)
-      pb : Pullback C _ _
-      pb .apex = P.apex
-      pb .p₁ = P.π₁
-      pb .p₂ = P.π₂
-      pb .has-is-pb .square = Thin.Hom-is-prop _ _ _ _
-      pb .has-is-pb .limiting {p₁' = p₁′} {p₂' = p₂′} p = P.⟨ p₁′ , p₂′ ⟩
-      pb .has-is-pb .p₁∘limiting = P.π₁∘factor
-      pb .has-is-pb .p₂∘limiting = P.π₂∘factor
-      pb .has-is-pb .unique _ _ = Thin.Hom-is-prop _ _ _ _
-```
-
-<!--
-```agda
   is-complete→finitely
     : ∀ {a b} → is-complete a b C → Finitely-complete
   is-complete→finitely {a} {b} compl = with-pullbacks term′ pb

@@ -2,7 +2,6 @@ module Algebra.Prelude where
 
 open import Cat.Instances.Shape.Terminal public
 open import Cat.Functor.FullSubcategory public
-open import Cat.Thin.Instances.Sub public
 open import Cat.Instances.Product public
 open import Cat.Instances.Functor public
 open import Cat.Instances.Comma public
@@ -12,7 +11,6 @@ open import Cat.Functor.Base public
 open import Cat.Functor.Hom public
 open import Cat.Univalent public
 open import Cat.Prelude hiding (_+_ ; _-_ ; _*_) public
-open import Cat.Thin using (Poset ; Proset) public
 
 import Cat.Diagram.Coequaliser
 import Cat.Diagram.Coproduct

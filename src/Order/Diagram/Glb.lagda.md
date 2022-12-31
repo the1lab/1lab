@@ -1,9 +1,11 @@
 ```agda
+open import Cat.Diagram.Product
 open import Cat.Prelude
 
 open import Data.Bool
 
 open import Order.Base
+open import Order.Cat
 
 import Order.Reasoning as Poset
 
@@ -37,7 +39,10 @@ module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
     field
       glb≤fam  : ∀ i → glb P.≤ F i
       greatest : (lb′ : P.Ob) → (∀ i → lb′ P.≤ F i) → lb′ P.≤ glb
+```
 
+<!--
+```agda
   open is-glb
 
   private unquoteDecl eqv = declare-record-iso eqv (quote is-glb)
@@ -53,7 +58,14 @@ module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
   glb-unique (glb , is) (glb′ , is′) = Σ-prop-path! $ P.≤-antisym
     (is′ .greatest glb (is .glb≤fam))
     (is .greatest glb′ (is′ .glb≤fam))
+```
+-->
 
+As mentioned before, in the binary case, we refer to glbs as **meets**:
+The meet of $a$ and $b$ is, if it exists, the greatest element
+satisfying $(a \cap b) \le a$ and $(a \cap b) \le b$.
+
+```agda
   record is-meet (a b : P.Ob) (glb : P.Ob) : Type (ℓ ⊔ ℓ′) where
     field
       meet≤l   : glb P.≤ a
@@ -61,15 +73,12 @@ module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
       greatest : (lb′ : P.Ob) → lb′ P.≤ a → lb′ P.≤ b → lb′ P.≤ glb
 
   open is-meet
+```
 
-  private unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-meet)
+A shuffling of terms shows that being a meet is precisely being the
+greatest lower bound of a family of two elements.
 
-  instance
-    H-Level-is-meet
-      : ∀ {a b glb : P.Ob} {n}
-      → H-Level (is-meet a b glb) (suc n)
-    H-Level-is-meet = prop-instance $ Iso→is-hlevel 1 eqv′ (hlevel 1)
-
+```agda
   is-meet→is-glb : ∀ {a b glb} → is-meet a b glb → is-glb (if_then a else b) glb
   is-meet→is-glb meet .glb≤fam true = meet .meet≤l
   is-meet→is-glb meet .glb≤fam false = meet .meet≤r
@@ -81,6 +90,18 @@ module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
   is-glb→is-meet glb .greatest lb′ lb′<a lb′<b = glb .greatest lb′ λ where
     true  → lb′<a
     false → lb′<b
+```
+
+<!--
+```agda
+  private unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-meet)
+
+  instance
+    H-Level-is-meet
+      : ∀ {a b glb : P.Ob} {n}
+      → H-Level (is-meet a b glb) (suc n)
+    H-Level-is-meet = prop-instance $ Iso→is-hlevel 1 eqv′ (hlevel 1)
+
 
   open is-iso
   is-meet≃is-glb : ∀ {a b glb : P.Ob} → is-equiv (is-meet→is-glb {a} {b} {glb})
@@ -90,4 +111,26 @@ module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
   meet-unique {a} {b} = transport
     (λ i → is-prop (Σ P.Ob λ x → ua (_ , is-meet≃is-glb {a} {b} {x}) (~ i)))
     glb-unique
+```
+-->
+
+## As products
+
+The categorification of meets is _products_: put another way, if our
+category has propositional homs, then being given a product diagram is
+the same as being given a meet.
+
+```agda
+  open is-product
+  open Product
+
+  is-meet→product : ∀ {a b glb : P.Ob} → is-meet a b glb → Product (poset→category P) a b
+  is-meet→product glb .apex = _
+  is-meet→product glb .π₁ = glb .is-meet.meet≤l
+  is-meet→product glb .π₂ = glb .is-meet.meet≤r
+  is-meet→product glb .has-is-product .⟨_,_⟩ q<a q<b =
+    glb .is-meet.greatest _ q<a q<b
+  is-meet→product glb .has-is-product .π₁∘factor = prop!
+  is-meet→product glb .has-is-product .π₂∘factor = prop!
+  is-meet→product glb .has-is-product .unique _ _ _ = prop!
 ```

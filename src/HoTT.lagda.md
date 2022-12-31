@@ -20,7 +20,6 @@ open import Cat.Displayed.Univalence
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Congruence
-open import Cat.Thin.Instances.Sub
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Functor.Adjoint
@@ -35,7 +34,6 @@ open import Cat.Univalent
 open import Cat.Morphism
 open import Cat.Bi.Base
 open import Cat.Prelude
-open import Cat.Thin
 
 open import Data.Set.Surjection
 open import Data.Fin.Finite using (Finite-choice)
@@ -46,6 +44,8 @@ open import Data.Sum
 open import Homotopy.Space.Circle
 open import Homotopy.Space.Torus
 open import Homotopy.Base
+
+open import Order.Base
 
 import Algebra.Monoid.Category as Monoid
 import Algebra.Group.Free as Group
@@ -606,7 +606,6 @@ _ = Univalent.Ob-is-groupoid
 _ = Hom-transport
 _ = path→to-sym
 _ = path→to-∙
-_ = Proset
 _ = Poset
 _ = Rel
 _ = Sets-is-category
@@ -625,7 +624,7 @@ for categories. It is shown equivalent to the usual formulation by
 * Example 9.1.7: `Sets-is-category`{.Agda}
 * Lemma 9.1.8: `Univalent.Ob-is-groupoid`{.Agda}
 * Lemma 9.1.9: `Hom-transport`{.Agda} (9.1.10), `path→to-sym`{.Agda} (9.1.11), `path→to-∙`{.Agda} (9.1.12/9.1.13)
-* Example 9.1.14: `Proset`{.Agda}, `Poset`{.Agda}
+* Example 9.1.14: `Poset`{.Agda}
 * Example 9.1.19: `Rel`{.Agda}
 
 ### 9.2 Functors and Transformations
@@ -739,16 +738,9 @@ _ = hom-iso→adjoints
 
 ### 9.6 Strict categories
 
-<!--
-```agda
-_ = Subobjects
-```
--->
-
 This chapter is mostly text.
 
 * Definition 9.6.1: [Strict precategories](Cat.Instances.StrictCat.html)
-* Example 9.6.2: `Subobjects`{.Agda}
 
 ### 9.7 Dagger categories
 

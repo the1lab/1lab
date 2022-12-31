@@ -44,6 +44,9 @@ module
     pwise i .is-join.least (lb′ i) (lb′<f i) (lb′<g i)
 ```
 
+With a couple more variables, we see that the results above are a
+special case of both arbitrary lubs and glbs being pointwise:
+
 ```agda
 module
   _ {ℓₒ ℓᵣ ℓᵢ ℓⱼ} {I : Type ℓᵢ} {J : Type ℓⱼ}

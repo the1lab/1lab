@@ -12,7 +12,6 @@ open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
 open import Cat.Displayed.Path
 open import Cat.Prelude
-open import Cat.Thin
 
 import Cat.Reasoning
 
@@ -24,7 +23,6 @@ module Cat.Displayed.Cartesian.Discrete where
 open Cartesian-fibration
 open Cartesian-lift
 open Cartesian
-open is-thin
 ```
 -->
 
@@ -161,13 +159,12 @@ corner given by lifting the identity map along $b'$ --- so, since lifts
 are unique, we have $f = g$.
 
 ```agda
-  discrete→thin-fibres : ∀ x → Discrete-fibration → is-thin (Fibre E x)
-  discrete→thin-fibres x disc = t where
-    open Discrete-fibration disc
-    t : is-thin (Fibre E x)
-    t .Ob-is-set = fibre-set x
-    t .Hom-is-prop A B f g = Σ-inj-set (fibre-set x) $
-      is-contr→is-prop (lifts B.id B) (A , f) (A , g)
+  discrete→thin-fibres
+    : ∀ x → Discrete-fibration → ∀ {a b} → is-prop (Fibre E x .Precategory.Hom a b)
+  discrete→thin-fibres x disc {a} {b} f g =
+    Σ-inj-set (fibre-set x) $
+      is-contr→is-prop (lifts B.id b) (a , f) (a , g)
+    where open Discrete-fibration disc
 ```
 
 ## Discrete Fibrations are Presheaves

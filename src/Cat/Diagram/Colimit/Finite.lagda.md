@@ -5,7 +5,6 @@ open import Cat.Diagram.Coproduct
 open import Cat.Diagram.Initial
 open import Cat.Diagram.Pushout
 open import Cat.Prelude
-open import Cat.Thin
 
 import Cat.Reasoning as Cat
 
@@ -83,7 +82,7 @@ the coproduct.
 \end{tikzcd}\]
 ~~~
 
-Where $P'$ is some object which admits injections $i_1'$ and 
+Where $P'$ is some object which admits injections $i_1'$ and
 $i_2'$ from X and Y respectively. This coequaliser
 represents a pushout
 
@@ -276,62 +275,6 @@ The construction of coequalisers from pushouts follows its
     po .unique p q = r .is-coproduct.unique _ p q
 ```
 -->
-
-## Thinly
-
-A finitely cocomplete thin category corresponds to a bounded
-join-semilattice in that it is given by binary coproducts
-and an initial object.
-
-```agda
-  with-bot-and-joins
-      : is-thin C
-      → Initial C
-      → (∀ A B → Coproduct C A B)
-      → Finitely-cocomplete
-  with-bot-and-joins thin bot joins = fc where
-    open Pushout
-    module Thin = is-thin thin
-
-    fc : Finitely-cocomplete
-    fc .initial = bot
-    fc .coproducts = joins
-```
-
-Coequalisers for parallel morphisms $f, g : A \to B$ are B and the
-coequalising map is $\id{id}$.
-
-```agda
-    fc .coequalisers {A} {B} f g = thin-coequalise where
-        open Coequaliser
-        open is-coequaliser
-        thin-coequalise : Coequaliser C _ _
-        thin-coequalise .coapex = B
-        thin-coequalise .coeq = id
-        thin-coequalise .has-is-coeq .coequal = Thin.Hom-is-prop _ _ _ _
-        thin-coequalise .has-is-coeq .coequalise {e′ = e′} p = e′
-        thin-coequalise .has-is-coeq .universal = idr _
-        thin-coequalise .has-is-coeq .unique p = Thin.Hom-is-prop _ _ _ _
-  ```
-
-Since pushouts may be constructed as quotient objects of coproducts
-and coequalising maps are trivial, $(A +_C B) = (A + B)$.
-
-  ```agda
-    fc .pushouts {A} {B} f g = po where
-        open Pushout
-        open is-pushout
-        module P = Coproduct (joins A B)
-        po : Pushout C _ _
-        po .coapex = P.coapex
-        po .i₁ = P.in₀
-        po .i₂ = P.in₁
-        po .has-is-po .square = Thin.Hom-is-prop _ _ _ _
-        po .has-is-po .colimiting {i₁′ = i₁′} {i₂′ = i₂′} p = P.[ i₁′ , i₂′ ]
-        po .has-is-po .i₁∘colimiting = P.in₀∘factor
-        po .has-is-po .i₂∘colimiting = P.in₁∘factor
-        po .has-is-po .unique _ _ = Thin.Hom-is-prop _ _ _ _
-```
 
 # Rex functors
 

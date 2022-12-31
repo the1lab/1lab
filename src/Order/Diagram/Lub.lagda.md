@@ -1,9 +1,11 @@
 ```agda
+open import Cat.Diagram.Coproduct
 open import Cat.Prelude
 
 open import Data.Bool
 
 open import Order.Base
+open import Order.Cat
 
 import Order.Reasoning as Poset
 
@@ -33,7 +35,10 @@ module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
     field
       fam≤lub : ∀ i → F i P.≤ lub
       least   : (ub′ : P.Ob) → (∀ i → F i P.≤ ub′) → lub P.≤ ub′
+```
 
+<!--
+```agda
   open is-lub
 
   private unquoteDecl eqv = declare-record-iso eqv (quote is-lub)
@@ -49,7 +54,14 @@ module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
   lub-unique (lub , is) (lub′ , is′) = Σ-prop-path! $ P.≤-antisym
     (is .least lub′ (is′ .fam≤lub))
     (is′ .least lub (is .fam≤lub))
+```
+-->
 
+In the binary case, a least upper bound is called a **join**. A short
+computation shows that being a join is _precisely_ being the lub of a
+family of two elements.
+
+```agda
   record is-join (a b : P.Ob) (lub : P.Ob) : Type (ℓ ⊔ ℓ′) where
     field
       l≤join : a P.≤ lub
@@ -57,14 +69,6 @@ module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
       least  : (ub′ : P.Ob) → a P.≤ ub′ → b P.≤ ub′ → lub P.≤ ub′
 
   open is-join
-
-  private unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-join)
-
-  instance
-    H-Level-is-join
-      : ∀ {a b lub : P.Ob} {n}
-      → H-Level (is-join a b lub) (suc n)
-    H-Level-is-join = prop-instance $ Iso→is-hlevel 1 eqv′ (hlevel 1)
 
   is-join→is-lub : ∀ {a b lub} → is-join a b lub → is-lub (if_then a else b) lub
   is-join→is-lub join .fam≤lub true = join .l≤join
@@ -77,6 +81,18 @@ module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
   is-lub→is-join lub .least ub′ a<ub′ b<ub′ = lub .least ub′ λ where
     true  → a<ub′
     false → b<ub′
+```
+
+<!--
+```
+  private unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-join)
+
+  instance
+    H-Level-is-join
+      : ∀ {a b lub : P.Ob} {n}
+      → H-Level (is-join a b lub) (suc n)
+    H-Level-is-join = prop-instance $ Iso→is-hlevel 1 eqv′ (hlevel 1)
+
 
   open is-iso
   is-join≃is-lub : ∀ {a b lub : P.Ob} → is-equiv (is-join→is-lub {a} {b} {lub})
@@ -86,4 +102,26 @@ module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
   join-unique {a} {b} = transport
     (λ i → is-prop (Σ P.Ob λ x → ua (_ , is-join≃is-lub {a} {b} {x}) (~ i)))
     lub-unique
+```
+-->
+
+## As coproducts
+
+Joins are the “thinning” of coproducts; Put another way, when we allow a
+_set_ of relators rather than insisting on a propositional relation, the
+concept of join needs to be refined to that of coproduct.
+
+```agda
+  open is-coproduct
+  open Coproduct
+
+  is-join→coproduct : ∀ {a b lub : P.Ob} → is-join a b lub → Coproduct (poset→category P) a b
+  is-join→coproduct lub .coapex = _
+  is-join→coproduct lub .in₀ = lub .is-join.l≤join
+  is-join→coproduct lub .in₁ = lub .is-join.r≤join
+  is-join→coproduct lub .has-is-coproduct .[_,_] a<q b<q =
+    lub .is-join.least _ a<q b<q
+  is-join→coproduct lub .has-is-coproduct .in₀∘factor = prop!
+  is-join→coproduct lub .has-is-coproduct .in₁∘factor = prop!
+  is-join→coproduct lub .has-is-coproduct .unique _ _ _ = prop!
 ```

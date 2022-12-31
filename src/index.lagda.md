@@ -281,7 +281,6 @@ more generally, predicates:
 
 ```agda
 open import Data.Power -- Power sets
-open import Data.Power.Lattice -- Power sets form a lattice
 open import Data.Power.Complemented -- Complemented or decidable subobjects
 ```
 
@@ -571,19 +570,6 @@ open import Cat.Allegory.Maps -- Functional relations in an allegory
 open import Cat.Allegory.Reasoning -- Reasoning combinators
 ```
 
-## Thin categories
-
-Strict thin categories are a presentation of pre-ordered sets, i.e. sets
-equipped with a transitive and reflexive relation --- so we call them
-"prosets". When this relation is antisymmetric, we additionally have a
-_univalent_ thin strict category --- so we call these "posets".
-
-```agda
-open import Cat.Thin -- Basics of thin categories
-open import Cat.Thin.Limits -- Limits in thin categories
-open import Cat.Thin.Completion -- Free poset on a proset
-```
-
 ## Displayed categories
 
 A category displayed over $\ca{B}$ is a particular concrete presentation
@@ -730,6 +716,13 @@ open import Topoi.Classifying.Diaconescu
 -- ^ Presheaf topoi classify flat functors on their site
 ```
 
+# Order theory
+
+Order theory is, to the category theorist, the study of 0-categories:
+Those for which we have a (-1)-groupoid of morphisms between any two
+objects, i.e., those for which rather than having $\hom$-sets, we have a
+$x \le y$ relation.
+
 # Algebra
 
 ```agda
@@ -741,10 +734,6 @@ open import Algebra.Semigroup -- Semigroups (associative magmas)
 
 open import Algebra.Monoid -- Monoids as unital semigroups
 open import Algebra.Monoid.Category -- The category of monoids
-
-open import Algebra.Lattice -- Lattices
-open import Algebra.Frame -- Frames
-open import Algebra.Semilattice -- Semilattices
 ```
 
 ## Group theory
@@ -776,9 +765,11 @@ open import Algebra.Ring -- Rings
 open import Algebra.Ring.Ideal -- Ideals in commutative rings
 open import Algebra.Ring.Module -- Modules over a commutative ring
 open import Algebra.Ring.Quotient -- Quotient rings
-open import Algebra.Ring.Module.Vec -- Finite direct sums of R as an R-module
 open import Algebra.Ring.Cat.Initial -- ℤ is the initial ring
 open import Algebra.Ring.Commutative -- Commutative rings
+
+open import Algebra.Ring.Module.Vec -- Finite direct sums of R as an R-module
+open import Algebra.Ring.Module.Free -- Free R-modules as a HIT
 open import Algebra.Ring.Module.Category -- The bifibration of Mod over Ring
 ```
 
