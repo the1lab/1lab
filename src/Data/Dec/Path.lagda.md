@@ -6,8 +6,8 @@ open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type
 
-open import Data.Dec.Base
 open import Data.List.Base
+open import Data.Dec.Base
 
 module Data.Dec.Path where
 ```

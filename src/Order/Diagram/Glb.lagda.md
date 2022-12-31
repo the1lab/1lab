@@ -1,8 +1,9 @@
 ```agda
-open import Order.Base
 open import Cat.Prelude
 
 open import Data.Bool
+
+open import Order.Base
 
 import Order.Reasoning as Poset
 

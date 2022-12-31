@@ -2,8 +2,9 @@
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Instances.StrictCat
 open import Cat.Instances.Functor
-open import Order.Base
 open import Cat.Prelude
+
+open import Order.Base
 
 import Order.Reasoning as Poset
 

@@ -1,6 +1,7 @@
 ```agda
-open import Order.Base
 open import Cat.Prelude
+
+open import Order.Base
 
 module Order.Instances.Props where
 ```

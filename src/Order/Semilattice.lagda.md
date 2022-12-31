@@ -5,14 +5,16 @@ open import Algebra.Monoid
 
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Instances.Delooping
-open import Order.Diagram.Glb
-open import Order.Base
 open import Cat.Prelude
 
 open import Data.Fin.Base hiding (_≤_)
 
-import Order.Reasoning as Poset
+open import Order.Diagram.Glb
+open import Order.Base
+
 import Cat.Reasoning
+
+import Order.Reasoning as Poset
 
 module Order.Semilattice where
 ```
@@ -79,6 +81,12 @@ is-semilattice-is-prop {A = A} t m x = Iso→is-hlevel 1 eqv (hlevel 1) x
   where instance
     h-l-a : H-Level A 2
     h-l-a = basic-instance 2 (is-semilattice.has-is-set x)
+
+instance
+  H-Level-is-semilattice
+    : ∀ {ℓ} {A : Type ℓ} {top : A} {meet : A → A → A} {n}
+    → H-Level (is-semilattice top meet) (suc n)
+  H-Level-is-semilattice = prop-instance (is-semilattice-is-prop _ _)
 ```
 -->
 
@@ -252,7 +260,7 @@ for free, a bunch of combinators for handling big meet expressions.
 ```agda
 module Semilattice {ℓ} (A : Semilattice ℓ) where
   po : Poset _ _
-  po = (Meet-semi-lattice .F₀ A)
+  po = Meet-semi-lattice .F₀ A
   open Poset po public
 
   private module X = Semilattice-on (A .snd) renaming
@@ -310,18 +318,21 @@ It's reduced to a bit of algebra:
       ∩-univ lb′ (f≤lb′ fzero) (those .is-glb.greatest lb′ (λ i → f≤lb′ (fsuc i)))
 
 module
-  _ {ℓ} (A B : Semilattice ℓ) (f : Precategory.Hom (Semilattices ℓ) A B)
+  _ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+    (S : Semilattice-on A) (T : Semilattice-on B)
+    (f : A → B)
+    (fh : Monoid-hom (Semilattice-on.to-monoid S) (Semilattice-on.to-monoid T) f)
   where
   private
-    module A = Semilattice A
-    module B = Semilattice B
+    module S = Semilattice-on S
+    module T = Semilattice-on T
     open Monoid-hom
 
-  slat-pres-⋂ : ∀ {n} (d : Fin n → ⌞ A ⌟) → f # A.⋂ d ≡ B.⋂ (λ i → f # d i)
-  slat-pres-⋂ {n = zero} d = f .preserves .pres-id
+  slat-pres-⋂ : ∀ {n} (d : Fin n → A) → f (S.⋂ d) ≡ T.⋂ (λ i → f (d i))
+  slat-pres-⋂ {n = zero} d = fh .pres-id
   slat-pres-⋂ {n = suc n} d =
-    f # (d fzero A.∩ A.⋂ (λ i → d (fsuc i)))   ≡⟨ f .preserves .pres-⋆ _ _ ⟩
-    f # d fzero B.∩ f # A.⋂ (λ i → d (fsuc i)) ≡⟨ ap₂ B._∩_ refl (slat-pres-⋂ λ i → d (fsuc i)) ⟩
-    f # d fzero B.∩ B.⋂ (λ i → f # d (fsuc i)) ∎
+    f (d fzero S.∩ S.⋂ (λ i → d (fsuc i)))     ≡⟨ fh .pres-⋆ _ _ ⟩
+    f (d fzero) T.∩ f (S.⋂ λ i → d (fsuc i))   ≡⟨ ap₂ T._∩_ refl (slat-pres-⋂ λ i → d (fsuc i)) ⟩
+    f (d fzero) T.∩ T.⋂ (λ i → f (d (fsuc i))) ∎
 ```
 -->

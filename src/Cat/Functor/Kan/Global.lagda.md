@@ -2,8 +2,8 @@
 open import Cat.Instances.Functor.Compose
 open import Cat.Diagram.Colimit.Base
 open import Cat.Functor.Adjoint.Hom
-open import Cat.Instances.Product
 open import Cat.Instances.Functor
+open import Cat.Instances.Product
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Kan
 open import Cat.Prelude
@@ -11,8 +11,8 @@ open import Cat.Prelude
 import Cat.Reasoning
 
 open Functor
-open Lan
 open _=>_
+open Lan
 
 module Cat.Functor.Kan.Global
 ```

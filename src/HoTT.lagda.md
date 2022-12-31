@@ -19,8 +19,8 @@ open import Cat.Functor.Adjoint.Unique
 open import Cat.Displayed.Univalence
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Equivalence
-open import Cat.Thin.Instances.Sub
 open import Cat.Diagram.Congruence
+open import Cat.Thin.Instances.Sub
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Functor.Adjoint

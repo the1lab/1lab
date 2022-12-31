@@ -1,7 +1,8 @@
 ```agda
 open import Cat.Displayed.Univalence.Thin
-open import Order.Base
 open import Cat.Prelude
+
+open import Order.Base
 
 module Order.Reasoning {ℓ ℓ′} (P : Poset ℓ ℓ′) where
 ```

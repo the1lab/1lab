@@ -2,8 +2,6 @@
 open import Algebra.Monoid
 
 open import Cat.Displayed.Univalence.Thin
-open import Order.Diagram.Glb
-open import Order.Semilattice
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
@@ -12,6 +10,9 @@ open import Data.Fin.Closure
 open import Data.Nat.Order
 open import Data.Fin.Base
 open import Data.Sum.Base
+
+open import Order.Diagram.Glb
+open import Order.Semilattice
 
 module Order.Semilattice.Free where
 ```
@@ -215,14 +216,13 @@ the truncation.
 
 ```agda
   fold-K
-    : ∀ {ℓ′} {B : Type ℓ′}
-    → Semilattice-on B
-    → (∣ A ∣ → B)
-    → K-finite-subset → B
-  fold-K {B = B} Bsl f (P , P-fin) = ε′ .fst module fold-K where
-    module B = Semilattice (el B (Semilattice-on.has-is-set Bsl) , Bsl)
+    : ∀ {ℓ′} (B : Semilattice ℓ′)
+    → (∣ A ∣ → ⌞ B ⌟)
+    → K-finite-subset → ⌞ B ⌟
+  fold-K B f (P , P-fin) = ε′ .fst module fold-K where
+    module B = Semilattice B
 
-    fam : (Σ ∣ A ∣ λ x → ∣ P x ∣) → B
+    fam : (Σ ∣ A ∣ λ x → ∣ P x ∣) → ⌞ B ⌟
     fam (x , _) = f x
 ```
 
@@ -232,7 +232,7 @@ using surjectivity of the first map.
 
 ```agda
     ε : Σ Nat (λ n → Σ (Fin n → Σ ∣ A ∣ λ x → x ∈ P) λ f → ∀ x → ∥ fibre f x ∥)
-      → Σ B (is-glb B.po fam)
+      → Σ ⌞ B ⌟ (is-glb B.po fam)
     ε (card , g , surj) =
       B.⋂ (λ x → fam (g x)) , λ where
         .is-glb.glb≤fam elt →
@@ -244,7 +244,7 @@ using surjectivity of the first map.
         .is-glb.greatest lb′ lb′<subset → h.greatest lb′ λ i → lb′<subset (g i)
       where module h = is-glb (B.⋂-is-glb (λ x → fam (g x)))
 
-    ε′ : Σ B (is-glb B.po fam)
+    ε′ : Σ ⌞ B ⌟ (is-glb B.po fam)
     ε′ = ∥-∥-rec (glb-unique _) ε P-fin
 
 open is-glb
@@ -253,10 +253,10 @@ make-free-slat : ∀ {ℓ} → make-left-adjoint (Forget-structure (Semilattice-
 make-free-slat .free A = K[ A ]
 make-free-slat .unit x = ηₛₗ x
 make-free-slat .universal {x} {y} f = total-hom go pres where
-  module y = Semilattice (el ⌞ y ⌟ (Semilattice-on.has-is-set (y .snd)) , y .snd)
+  module y = Semilattice y
   open Monoid-hom
-  go = fold-K x (y .snd) f
-  module go = fold-K x (y .snd) f
+  go = fold-K x y f
+  module go = fold-K x y f
 
   pres : Monoid-hom (Semilattice-on.to-monoid (K[ x ] .snd)) (Semilattice-on.to-monoid (y .snd)) _
   pres .pres-id = refl
@@ -288,24 +288,17 @@ make-free-slat .unique {x = x} {y = y} {f = f} {g = g} w =
     let
       path : arg ≡ KA.⋂ λ i → ηₛₗ x (diagram i)
       path = ap fst $ glb-unique KA.po (_ , glb) (_ , KA.⋂-is-glb λ i → ηₛₗ x (diagram i))
-      f′ = make-free-slat .universal {x = x} {y = y′} f
+      f′ = make-free-slat .universal {x = x} {y = y} f
     pure $
       f′ # arg                                 ≡⟨ ap (f′ #_) path ⟩
-      f′ # KA.⋂ (λ i → ηₛₗ x (diagram i))      ≡⟨ slat-pres-⋂ K[ x ] y′ f′ {card} _ ⟩
+      f′ # KA.⋂ (λ i → ηₛₗ x (diagram i))      ≡⟨ slat-pres-⋂ (K[ x ] .snd) (y .snd) _ (f′ .preserves) {card} _ ⟩
       y.⋂ (λ i → f′ # ηₛₗ x (diagram i))       ≡⟨ ap (y.⋂ {card}) (funext λ i → y.∩-idr) ⟩
       y.⋂ (λ i → f (diagram i))                ≡⟨ ap (y.⋂ {card}) (funext λ i → happly w (diagram i)) ⟩
-      y.⋂ {card} (λ i → g # ηₛₗ x (diagram i)) ≡˘⟨ slat-pres-⋂ K[ x ] y′ g′ {card} _  ⟩
+      y.⋂ {card} (λ i → g # ηₛₗ x (diagram i)) ≡˘⟨ slat-pres-⋂ (K[ x ] .snd) (y .snd) _ (g .preserves) {card} _ ⟩
       g # KA.⋂ (λ i → ηₛₗ x (diagram i))       ≡˘⟨ ap (g #_) path ⟩
       g # arg                                  ∎
   where
-    y′ : Semilattice _
-    y′ = el ⌞ y ⌟ (Semilattice-on.has-is-set (y .snd)) , y .snd
-    module y = Semilattice y′
+    module y = Semilattice y
     module KA = Semilattice K[ x ]
-    module go = fold-K x (y .snd) f
-
-    g′ : Semilattices _ .Precategory.Hom _ _
-    g′ .hom = g .hom
-    g′ .preserves .Monoid-hom.pres-id = g .preserves .Monoid-hom.pres-id
-    g′ .preserves .Monoid-hom.pres-⋆ = g .preserves .Monoid-hom.pres-⋆
+    module go = fold-K x y f
 ```

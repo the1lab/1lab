@@ -1,9 +1,9 @@
 ```agda
+open import Cat.Prelude
+
 open import Order.Instances.Props
 open import Order.Displayed
 open import Order.Base
-
-open import Cat.Prelude
 
 import Order.Reasoning as Pr
 

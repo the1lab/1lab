@@ -11,8 +11,8 @@ open import Cat.Diagram.Product.Indexed
 open import Cat.Functor.FullSubcategory
 open import Cat.Prelude
 
-open import Data.Fin
 open import Data.Dec
+open import Data.Fin
 
 module Algebra.Ring.Module.Vec {ℓ} (R : Ring ℓ) where
 ```

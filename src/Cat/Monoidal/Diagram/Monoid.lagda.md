@@ -2,18 +2,19 @@
 {-# OPTIONS --lossy-unification #-}
 open import Cat.Monoidal.Instances.Cartesian
 open import Cat.Displayed.Univalence.Thin
-open import Cat.Displayed.Functor
 open import Cat.Instances.Sets.Complete
+open import Cat.Displayed.Functor
 open import Cat.Bi.Diagram.Monad
-open import Cat.Displayed.Path
 open import Cat.Displayed.Base
+open import Cat.Displayed.Path
 open import Cat.Monoidal.Base
 open import Cat.Bi.Base
 open import Cat.Prelude
 
 import Algebra.Monoid.Category as Mon
-import Cat.Diagram.Monad as Mo
 import Algebra.Monoid as Mon
+
+import Cat.Diagram.Monad as Mo
 import Cat.Reasoning
 
 module Cat.Monoidal.Diagram.Monoid where
