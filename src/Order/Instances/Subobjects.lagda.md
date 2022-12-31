@@ -20,7 +20,7 @@ be a poset.
 
 <!--
 ```agda
-module _ {o ℓ} (C : Precategory o ℓ) (c-cat : is-category C) (A : Precategory.Ob C) where
+module _ {o ℓ} (C : Precategory o ℓ) (c-cat : is-category C) where
   private module C = Cat.Reasoning C
   open C._↪_
 ```
