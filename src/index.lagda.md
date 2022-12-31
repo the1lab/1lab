@@ -755,7 +755,9 @@ Examples of actual orders:
 ```agda
 open import Order.Instances.Props -- Ω
 open import Order.Instances.Lower -- Lower sets
-open import Order.Instances.Pointwise -- The pointwise ordering
+open import Order.Instances.Subobjects -- Subobjects in a univalent category
+
+open import Order.Instances.Pointwise -- The pointwise ordering on A→B
 open import Order.Instances.Pointwise.Diagrams
 ```
 
