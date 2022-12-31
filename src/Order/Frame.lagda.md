@@ -1,9 +1,9 @@
 ```agda
 open import Algebra.Semigroup
-open import Algebra.Prelude
 open import Algebra.Magma
 
 open import Cat.Displayed.Univalence.Thin
+open import Cat.Prelude
 
 open import Order.Semilattice
 
@@ -43,12 +43,12 @@ record is-frame
   : Type (lsuc (level-of A)) where
 
   field
-    has-is-slat : is-semilattice ⊤ _∩_
+    has-meets : is-semilattice ⊤ _∩_
 ```
 
 <!--
 ```agda
-  open is-semilattice has-is-slat public
+  open is-semilattice has-meets public
   _≤_ : A → A → Type _
   x ≤ y = x ≡ x ∩ y
 ```
@@ -146,6 +146,8 @@ Frames : ∀ ℓ → Precategory _ _
 Frames a = Structured-objects (Frame-str a)
 
 module Frames ℓ = Cat.Reasoning (Frames ℓ)
+Frame : (ℓ : Level) → Type (lsuc ℓ)
+Frame ℓ = Frames.Ob ℓ
 ```
 -->
 
@@ -242,7 +244,7 @@ to-frame-on : ∀ {ℓ} {A : Type ℓ} → make-frame A → Frame-on A
 to-frame-on mfr ._∩_ = mfr ._cap_
 to-frame-on mfr .top = mfr .top
 to-frame-on mfr .⋃ = mfr .cup
-to-frame-on mfr .has-is-frame .has-is-slat = to-semilattice-on mk .Semilattice-on.has-is-semilattice where
+to-frame-on mfr .has-is-frame .has-meets = to-semilattice-on mk .Semilattice-on.has-is-semilattice where
   mk : make-semilattice _
   mk .make-semilattice.has-is-set = mfr .has-is-set
   mk .make-semilattice.top = mfr .top

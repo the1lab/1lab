@@ -97,3 +97,15 @@ operator automatically propositionally truncates.
     lub .is-lub.least lb′ lb′<Fi =
       (λ x → □-rec! (λ { (i , x∈Fi) → lb′<Fi i .fst x x∈Fi })) , tt
 ```
+
+<!--
+```agda
+  Lower-sets-meets : (a b : Lower-set P) → Σ _ (is-meet (Lower-sets P) a b)
+  Lower-sets-meets a b .fst .fst i = el (i ∈ a .fst × i ∈ b .fst) hlevel!
+  Lower-sets-meets a b .fst .snd x y y<x (x∈a , x∈b) = a .snd _ _ y<x x∈a , b .snd _ _ y<x x∈b
+  Lower-sets-meets a b .snd .is-meet.meet≤l = (λ _ → fst) , tt
+  Lower-sets-meets a b .snd .is-meet.meet≤r = (λ _ → snd) , tt
+  Lower-sets-meets a b .snd .is-meet.greatest lb′ (f , tt) (g , tt) =
+    (λ x x∈lb′ → f x x∈lb′ , (g x x∈lb′)) , tt
+```
+-->

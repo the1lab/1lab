@@ -39,6 +39,12 @@ record Finitely-complete-poset ℓₒ ℓᵣ : Type (lsuc (ℓₒ ⊔ ℓᵣ)) w
   open Poset poset public
   private module meet {x} {y} = is-meet (has-is-meet {x} {y})
   open meet renaming (meet≤l to ∩≤l ; meet≤r to ∩≤r ; greatest to ∩-univ) public
+
+  le→meet : ∀ {x y} → x ≤ y → x ≡ x ∩ y
+  le→meet x≤y = le-meet poset x≤y has-is-meet
+
+  meet→le : ∀ {x y} → x ≡ x ∩ y → x ≤ y
+  meet→le {y = y} x=x∩y = subst (_≤ y) (sym x=x∩y) ∩≤r
 ```
 
 From a finitely complete poset, we can define a semilattice: from the
