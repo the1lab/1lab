@@ -10,7 +10,7 @@ open import Order.Base
 
 import Order.Reasoning as Pr
 
-module Order.Instances.Pointwise.Lower where
+module Order.Instances.Lower where
 ```
 
 # Lower sets

@@ -138,7 +138,7 @@ preserves arbitrary joins has a right adjoint; Conversely, every map
 which has a right adjoint preserves arbitrary joins.
 
 [powerset]: Data.Power.html
-[lattice]: Algebra.Lattice.html
+[lattice]: Order.Lattice.html
 
 We can prove that a topology $\tau$ on $X$ is the same thing as a
 subframe of its powerset $[X,\props]$ --- a collection of subsets of
@@ -206,7 +206,7 @@ quantification.  Effectivity of congruences means that two points in a
 quotient are identified if, and only if, they are related by the
 congruence.
 
-[lattice]: Algebra.Lattice.html
+[lattice]: Order.Lattice.html
 
 In fact, this is essentially the _definition of_ a topos. The actual
 definition, as a lex [reflective subcategory] of a presheaf category,

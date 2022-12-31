@@ -723,6 +723,42 @@ Those for which we have a (-1)-groupoid of morphisms between any two
 objects, i.e., those for which rather than having $\hom$-sets, we have a
 $x \le y$ relation.
 
+```agda
+open import Order.Base -- Definitions
+open import Order.Cat  -- Posets generate categories
+open import Order.Reasoning -- Nice syntax for posets
+open import Order.Displayed -- Displayed posets
+```
+
+For readability, we have diagrams in orders separate from diagrams in
+their generated categories:
+
+```agda
+open import Order.Diagram.Glb
+open import Order.Diagram.Lub
+```
+
+Some order-theoretic structures are equivalently presented as algebraic
+structures: these are the lattices and related structures.
+
+```agda
+open import Order.Frame
+open import Order.Lattice
+
+open import Order.Semilattice
+open import Order.Semilattice.Free
+open import Order.Semilattice.Order
+```
+
+Examples of actual orders:
+
+```agda
+open import Order.Instances.Props -- Ω
+open import Order.Instances.Lower -- Lower sets
+open import Order.Instances.Pointwise -- The pointwise ordering
+open import Order.Instances.Pointwise.Diagrams
+```
+
 # Algebra
 
 ```agda
