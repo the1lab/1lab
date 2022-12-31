@@ -111,7 +111,7 @@ whenever $f$ is. Since we're extending semilattice homomorphisms, this
 means that $\Lan_{\darr}(f)$ is a frame homomorphism.
 
 [Yoneda embedding]: Cat.Functor.Hom.html#the-yoneda-embedding
-[left Kan extension]: Cat.Functor.Kan.html#Kan-extensions
+[left Kan extension]: Cat.Functor.Kan.html#kan-extensions
 
 Note the similarity between the construction of free frames outlined in
 the paragraph above and [Diaconescu's theorem]: “A map of frames $D(A)
