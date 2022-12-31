@@ -264,3 +264,66 @@ Lattice-structure ℓ .id-hom-unique {s = s} {t = t} α _ = p where
 Lattices : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Lattices ℓ = Structured-objects (Lattice-structure ℓ)
 ```
+
+<!--
+```agda
+Lattice : ∀ ℓ → Type (lsuc ℓ)
+Lattice ℓ = Precategory.Ob (Lattices ℓ)
+
+record make-lattice {ℓ} (A : Type ℓ) : Type ℓ where
+  no-eta-equality
+  field
+    has-is-set : is-set A
+    cup : A → A → A
+    cap : A → A → A
+    top : A
+    bot : A
+
+    cup-assoc      : ∀ {x y z} → cup x (cup y z) ≡ cup (cup x y) z
+    cup-commutes   : ∀ {x y} → cup x y ≡ cup y x
+    cup-idempotent : ∀ {x} → cup x x ≡ x
+    cup-idl        : ∀ {x} → cup bot x ≡ x
+
+    cap-assoc      : ∀ {x y z} → cap x (cap y z) ≡ cap (cap x y) z
+    cap-commutes   : ∀ {x y} → cap x y ≡ cap y x
+    cap-idempotent : ∀ {x} → cap x x ≡ x
+    cap-idl        : ∀ {x} → cap top x ≡ x
+
+    cap-absorbs : ∀ {x y} → cap x (cup x y) ≡ x
+    cup-absorbs : ∀ {x y} → cup x (cap x y) ≡ x
+
+  make-meets : make-semilattice A
+  make-meets .make-semilattice.has-is-set  = has-is-set
+  make-meets .make-semilattice.top         = top
+  make-meets .make-semilattice.op          = cap
+  make-meets .make-semilattice.idl         = cap-idl
+  make-meets .make-semilattice.associative = cap-assoc
+  make-meets .make-semilattice.commutative = cap-commutes
+  make-meets .make-semilattice.idempotent  = cap-idempotent
+
+  make-joins : make-semilattice A
+  make-joins .make-semilattice.has-is-set  = has-is-set
+  make-joins .make-semilattice.top         = bot
+  make-joins .make-semilattice.op          = cup
+  make-joins .make-semilattice.idl         = cup-idl
+  make-joins .make-semilattice.associative = cup-assoc
+  make-joins .make-semilattice.commutative = cup-commutes
+  make-joins .make-semilattice.idempotent  = cup-idempotent
+
+open make-lattice
+open Lattice-on
+open is-lattice
+open is-semilattice
+
+to-lattice : ∀ {ℓ} (A : Type ℓ) → make-lattice A → Lattice ℓ
+∣ to-lattice A x .fst ∣ = A
+to-lattice A x .fst .is-tr = x .has-is-set
+to-lattice A x .snd .top = x .top
+to-lattice A x .snd .bot = x .bot
+to-lattice A x .snd ._∩_ = x .cap
+to-lattice A x .snd ._∪_ = x .cup
+to-lattice A x .snd .has-is-lattice .has-meets = to-semilattice-on (make-meets x) .Semilattice-on.has-is-semilattice
+to-lattice A x .snd .has-is-lattice .has-joins = to-semilattice-on (make-joins x) .Semilattice-on.has-is-semilattice
+to-lattice A x .snd .has-is-lattice .∩-absorbs-∪ = x .cap-absorbs
+to-lattice A x .snd .has-is-lattice .∪-absorbs-∩ = x .cup-absorbs
+```
