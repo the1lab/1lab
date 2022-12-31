@@ -1,4 +1,5 @@
 ```agda
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Prelude
 
 open import Order.Diagram.Lub
@@ -97,6 +98,16 @@ record Lattice-on {ℓ} (A : Type ℓ) : Type ℓ where
     has-is-lattice : is-lattice top _∩_ bot _∪_
 
   open is-lattice has-is-lattice public
+
+  meets : Semilattice-on A
+  meets = record { has-is-semilattice = has-meets }
+
+  joins : Semilattice-on A
+  joins = record { has-is-semilattice = has-joins }
+
+  open Semilattice-on meets using (⋂) public
+  private module x = Semilattice-on joins renaming (⋂ to ⋃)
+  open x using (⋃) public
 ```
 
 <!--
@@ -190,4 +201,66 @@ record
     pres-⊥ : f S.bot ≡ T.bot
     pres-∩ : ∀ {x y} → f (x S.∩ y) ≡ f x T.∩ f y
     pres-∪ : ∀ {x y} → f (x S.∪ y) ≡ f x T.∪ f y
+```
+
+<!--
+```agda
+private unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-lattice-hom)
+
+instance
+  H-Level-is-lattice-hom
+    : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+    → {S : Lattice-on A} {T : Lattice-on B}
+    → ∀ {f : A → B} {n}
+    → H-Level (is-lattice-hom f S T) (suc n)
+  H-Level-is-lattice-hom {T = T} = prop-instance $
+    let open is-lattice (T .Lattice-on.has-is-lattice)
+     in Iso→is-hlevel 1 eqv′ (hlevel 1)
+
+open is-lattice-hom
+```
+-->
+
+Standard equational nonsense implies that (a) lattices and lattice
+homomorphisms form a precategory; and (b) this is a univalent category.
+
+```agda
+Lattice-structure : ∀ ℓ → Thin-structure ℓ Lattice-on
+
+Lattice-structure ℓ .is-hom f S T .∣_∣   = is-lattice-hom f S T
+Lattice-structure ℓ .is-hom f S T .is-tr = hlevel!
+
+Lattice-structure ℓ .id-is-hom .pres-⊤ = refl
+Lattice-structure ℓ .id-is-hom .pres-⊥ = refl
+Lattice-structure ℓ .id-is-hom .pres-∩ = refl
+Lattice-structure ℓ .id-is-hom .pres-∪ = refl
+
+Lattice-structure ℓ .∘-is-hom f g α β .pres-⊤ = ap f (β .pres-⊤) ∙ α .pres-⊤
+Lattice-structure ℓ .∘-is-hom f g α β .pres-⊥ = ap f (β .pres-⊥) ∙ α .pres-⊥
+Lattice-structure ℓ .∘-is-hom f g α β .pres-∩ = ap f (β .pres-∩) ∙ α .pres-∩
+Lattice-structure ℓ .∘-is-hom f g α β .pres-∪ = ap f (β .pres-∪) ∙ α .pres-∪
+```
+
+Univalence follows from the special case of considering the identity as
+a lattice homomorphism $(A, s) \to (A, t)$ --- preservation of the
+operations guarantees that we get $\top_s = \top_t$ (for each operation;
+$\bot$, $\cap$ and $\cup$), which eventually gives $s = t$.
+
+```agda
+Lattice-structure ℓ .id-hom-unique {s = s} {t = t} α _ = p where
+  open Lattice-on
+  p : s ≡ t
+  p i .top = α .pres-⊤ i
+  p i .bot = α .pres-⊥ i
+  p i ._∩_ x y = α .pres-∩ {x} {y} i
+  p i ._∪_ x y = α .pres-∪ {x} {y} i
+  p i .has-is-lattice =
+    is-prop→pathp
+      (λ i → hlevel {T = is-lattice (α .pres-⊤ i) (λ x y → α .pres-∩ i)
+                                    (α .pres-⊥ i) (λ x y → α .pres-∪ i)}
+        1)
+      (s .has-is-lattice) (t .has-is-lattice) i
+
+Lattices : ∀ ℓ → Precategory (lsuc ℓ) ℓ
+Lattices ℓ = Structured-objects (Lattice-structure ℓ)
 ```
