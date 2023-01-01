@@ -71,13 +71,11 @@ Constructing signatures using this formulation can be a bit clumsy, so
 we define a helper for constructing them.
 
 ```agda
-private
-  module Signatures ℓ = Precategory (∫ (Signatures ℓ))
+Signs : ∀ ℓ → Precategory (lsuc ℓ) ℓ
+Signs ℓ = ∫ (Signatures ℓ)
 
 Sign : ∀ ℓ → Type (lsuc ℓ)
-Sign ℓ = Signatures.Ob ℓ
-
-{-# DISPLAY Signatures.Ob ℓ = Sign ℓ #-}
+Sign ℓ = Precategory.Ob (Signs ℓ)
 
 signature : ∀ {ℓ} → (S : Set ℓ) → (Ops : List ∣ S ∣  → ∣ S ∣ → Set ℓ) → Sign ℓ
 signature S Ops .fst = S
