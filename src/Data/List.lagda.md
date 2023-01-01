@@ -197,47 +197,66 @@ map-∘ : ∀ {ℓ ℓ′ ℓ″} {A : Type ℓ} {B : Type ℓ′} {C : Type ℓ
 map-∘ f g [] = refl
 map-∘ f g (x ∷ xs) = ap ((f $ g x) ∷_) (map-∘ f g xs)
 
-_∈_ : ∀ {ℓ} {A : Type ℓ} → A → List A → Type ℓ
-x ∈ [] = Lift _ ⊥
-x ∈ (y ∷ xs) = y ≡ x ⊎ x ∈ xs
+_∈ₗ_ : ∀ {ℓ} {A : Type ℓ} → A → List A → Type ℓ
+x ∈ₗ [] = Lift _ ⊥
+x ∈ₗ (y ∷ xs) = y ≡ x ⊎ x ∈ₗ xs
+
+pattern here p = inl p
+pattern there p = inr p
+
+elim-∈ : ∀ {ℓ} {x : A} {xs}
+         → (P : ∀ {xs} → x ∈ₗ xs → Type ℓ)
+         → (∀ {y xs} → (p : y ≡ x) → P {xs = y ∷ xs} (here p))
+         → (∀ {y xs} → {v : x ∈ₗ xs} → P v → P {xs = y ∷ xs} (there v))
+         → ∀ (v : x ∈ₗ xs) → P v
+elim-∈ {xs = y ∷ xs} P phere pthere (here p) = phere p
+elim-∈ {xs = y ∷ xs} P phere pthere (there p) = pthere (elim-∈ P phere pthere p)
+
+∈ₗ-inl : ∀ {x : A} {xs ys : List A} → x ∈ₗ xs → x ∈ₗ (xs ++ ys) 
+∈ₗ-inl {xs = x ∷ xs} (here p) = here p
+∈ₗ-inl {xs = x ∷ xs} (there p) = there (∈ₗ-inl p)
+
+∈ₗ-inr : ∀ {x : A} {xs ys : List A} → x ∈ₗ ys → x ∈ₗ (xs ++ ys) 
+∈ₗ-inr {xs = []} p = p
+∈ₗ-inr {xs = x ∷ xs} p = there (∈ₗ-inr {xs = xs} p)
 
 module ∈Path where
   Code : ∀ {x : A} {xs : List A}
-           → x ∈ xs → x ∈ xs → Type (level-of A)
+           → x ∈ₗ xs → x ∈ₗ xs → Type (level-of A)
   Code {xs = []} _ _ = Lift _ ⊤
   Code {xs = x ∷ xs} (inl p) (inl q) = p ≡ q
   Code {xs = x ∷ xs} (inl _) (inr _) = Lift _ ⊥
   Code {xs = x ∷ xs} (inr _) (inl _) = Lift _ ⊥
   Code {xs = x ∷ xs} (inr p) (inr q) = Code p q
   
-  encode : ∀ {x : A} {xs : List A} {p q : x ∈ xs} → p ≡ q → Code p q
+  encode : ∀ {x : A} {xs : List A} {p q : x ∈ₗ xs} → p ≡ q → Code p q
   encode {xs = x ∷ xs} {p = inl p} {q = inl q} r = inl-inj r
   encode {xs = x ∷ xs} {p = inl _} {q = inr _} r = absurd (⊎-disjoint r)
   encode {xs = x ∷ xs} {p = inr _} {q = inl _} r = absurd (⊎-disjoint (sym r))
   encode {xs = x ∷ xs} {p = inr p} {q = inr q} r = encode (inr-inj r)
 
-  decode : ∀ {x : A} {xs : List A} {p q : x ∈ xs} → Code p q → p ≡ q
+  decode : ∀ {x : A} {xs : List A} {p q : x ∈ₗ xs} → Code p q → p ≡ q
   decode {xs = x ∷ xs} {p = inl p} {q = inl q} code = ap inl code
   decode {xs = x ∷ xs} {p = inr p} {q = inr q} code = ap inr (decode code)
 
-  decode-encode : ∀ {x : A} {xs : List A} {p q : x ∈ xs} (r : p ≡ q) → decode (encode r) ≡ r
+  decode-encode : ∀ {x : A} {xs : List A} {p q : x ∈ₗ xs} (r : p ≡ q) → decode (encode r) ≡ r
   decode-encode = J (λ _ r → decode (encode r) ≡ r) d-e-refl where
-    d-e-refl : ∀ {x : A} {xs : List A} {p : x ∈ xs} → decode (encode (λ _ → p)) ≡ λ _ → p
+    d-e-refl : ∀ {x : A} {xs : List A} {p : x ∈ₗ xs} → decode (encode (λ _ → p)) ≡ λ _ → p
     d-e-refl {xs = x ∷ xs} {p = inl p} = refl
     d-e-refl {xs = x ∷ xs} {p = inr p} i j = inr (d-e-refl {p = p} i j)
 
-  encode-decode : ∀ {x : A} {xs : List A} {p q : x ∈ xs} (c : Code p q) → encode (decode {p = p} c) ≡ c
+  encode-decode : ∀ {x : A} {xs : List A} {p q : x ∈ₗ xs} (c : Code p q) → encode (decode {p = p} c) ≡ c
   encode-decode {xs = x ∷ xs} {p = inl p} {q = inl q} c = refl
   encode-decode {xs = x ∷ xs} {p = inr p} {q = inr q} c = encode-decode {p = p} c
 
-  Code≃Path : ∀ {x : A} {xs : List A} {p q : x ∈ xs} → (p ≡ q) ≃ Code p q
+  Code≃Path : ∀ {x : A} {xs : List A} {p q : x ∈ₗ xs} → (p ≡ q) ≃ Code p q
   Code≃Path {p = p} = Iso→Equiv (encode , iso decode (encode-decode {p = p}) decode-encode)
 
-∈-is-hlevel : {x : A} {xs : List A} → (n : Nat) → is-hlevel A (2 + n) → is-hlevel (x ∈ xs) (2 + n)
+∈-is-hlevel : {x : A} {xs : List A} → (n : Nat) → is-hlevel A (2 + n) → is-hlevel (x ∈ₗ xs) (2 + n)
 ∈-is-hlevel {A = A} n ahl p q = is-hlevel≃ (suc n) Code≃Path (Code-is-hlevel p q) where
   open ∈Path
 
-  Code-is-hlevel : ∀ {x : A} {xs : List A} (p q : x ∈ xs) → is-hlevel (Code p q) (suc n)
+  Code-is-hlevel : ∀ {x : A} {xs : List A} (p q : x ∈ₗ xs) → is-hlevel (Code p q) (suc n)
   Code-is-hlevel {xs = x ∷ xs} (inl p) (inl q) = Path-is-hlevel (suc n) (ahl _ _)
   Code-is-hlevel {xs = x ∷ xs} (inl _) (inr _) = is-prop→is-hlevel-suc λ x → absurd (Lift.lower x)
   Code-is-hlevel {xs = x ∷ xs} (inr _) (inl _) = is-prop→is-hlevel-suc λ x → absurd (Lift.lower x)

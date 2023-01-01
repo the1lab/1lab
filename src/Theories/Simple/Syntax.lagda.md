@@ -1,4 +1,5 @@
 ```agda
+{-# OPTIONS --lossy-unification #-}
 open import Cat.Prelude
 
 open import Data.List
@@ -22,37 +23,12 @@ data Term (Γ : List ∣ Sort ∣) (X : ∣ Sort ∣) : Type ℓ
 data Fn (Ψ : List ∣ Sort ∣) (Γ : List ∣ Sort ∣) (X : ∣ Sort ∣) : Type ℓ
 
 data Term Γ X where
-  var : X ∈ Γ → Term Γ X
+  var : X ∈ₗ Γ → Term Γ X
   fn  : Fn [] Γ X → Term Γ X
 
 data Fn Ψ Γ X where
   op : ∣ Op Ψ X ∣ → Fn Ψ Γ X
-  app : ∀ {A} → Fn (A ∷ Ψ) Γ X → Term Γ A → Fn Ψ Γ X 
-```
-
-## Substitutions
-
-```agda
-Subst : ∀ (Γ Δ : List ∣ Sort ∣) → Type ℓ
-Subst Γ [] = Lift _ ⊤
-Subst Γ (X ∷ Δ) = Term Γ X × Subst Γ Δ
-
-lookup : ∀ {Γ Δ X} → Subst Γ Δ → X ∈ Δ → Term Γ X
-lookup {Δ = A ∷ Δ} (tm , σ) (inl p) = subst (Term _) p tm
-lookup {Δ = A ∷ Δ} (tm , σ) (inr v) = lookup σ v
-
-tabulate : ∀ {Γ Δ} → (∀ {X} → X ∈ Δ → Term Γ X) → Subst Γ Δ
-tabulate {Δ = []} k = lift tt
-tabulate {Δ = X ∷ Δ} k = k (inl refl) , tabulate (k ⊙ inr)
-
-sub : ∀ {Γ Δ X} → Subst Γ Δ → Term Δ X → Term Γ X
-sub-fn : ∀ {Ψ Γ Δ X} → Subst Γ Δ → Fn Ψ Δ X → Fn Ψ Γ X
-
-sub σ (var v) = lookup σ v
-sub σ (fn f) = fn (sub-fn σ f)
-
-sub-fn σ (op o) = op o
-sub-fn σ (app f x) = app (sub-fn σ f) (sub σ x)
+  app : ∀ {A} → Fn (A ∷ Ψ) Γ X → Term Γ A → Fn Ψ Γ X
 ```
 
 ## Path Space
@@ -63,7 +39,7 @@ module TermPath where
   TermCodeP : ∀ {Γ} (P : I → ∣ Sort ∣) → Term Γ (P i0) → Term Γ (P i1) → Type ℓ
   FnCodeP : ∀ (P : I → List ∣ Sort ∣) {Γ} (Q : I → ∣ Sort ∣) → Fn (P i0) Γ (Q i0) → Fn (P i1) Γ (Q i1) → Type ℓ
 
-  TermCodeP {Γ = Γ} P (var x) (var y) = PathP (λ i → P i ∈ Γ) x y
+  TermCodeP {Γ = Γ} P (var x) (var y) = PathP (λ i → P i ∈ₗ Γ) x y
   TermCodeP _ (var _) (fn _) = Lift _ ⊥
   TermCodeP _ (fn _) (var _) = Lift _ ⊥
   TermCodeP {Γ = Γ} P (fn x) (fn y) = FnCodeP (λ _ → []) P x y
@@ -253,7 +229,196 @@ Fn-is-hlevel n f g =
   where
     open TermPath
 
+instance
+  H-Level-Term : ∀ {Γ X n} → H-Level (Term Γ X) (2 + n)
+  H-Level-Term = basic-instance 2 (Term-is-hlevel 0)
+
+  H-Level-Fn : ∀ {Ψ Γ X n} → H-Level (Fn Ψ Γ X) (2 + n)
+  H-Level-Fn = basic-instance 2 (Fn-is-hlevel 0)
+```
+
+## Substitutions
+
+```agda
+record Subst (Γ Δ : List ∣ Sort ∣) : Type ℓ where
+  no-eta-equality
+  constructor sub
+  field
+    ⟦_⟧ₛ : ∀ {X} → X ∈ₗ Δ → Term Γ X
+
+open Subst
+
+subext : ∀ {Γ Δ} {σ δ : Subst Γ Δ} → (∀ {X} (v : X ∈ₗ Δ) → ⟦ σ ⟧ₛ v ≡ ⟦ δ ⟧ₛ v) → σ ≡ δ
+subext p i .⟦_⟧ₛ v = p v i
+
+subapply : ∀ {Γ Δ X} {σ δ : Subst Γ Δ} → σ ≡ δ → (v : X ∈ₗ Δ) → ⟦ σ ⟧ₛ v ≡ ⟦ δ ⟧ₛ v
+subapply p v i = ⟦ p i ⟧ₛ v
+```
+
+<!--
+```agda
 Subst-is-hlevel : ∀ {Γ Δ} → (n : Nat) → is-hlevel (Subst Γ Δ) (2 + n)
-Subst-is-hlevel {Δ = []} n = hlevel!
-Subst-is-hlevel {Δ = A ∷ Δ} n = ×-is-hlevel (2 + n) (Term-is-hlevel n) (Subst-is-hlevel n)
+Subst-is-hlevel {Γ} {Δ} n =
+  is-hlevel≃ (2 + n) eqv hlevel!
+  where
+    eqv : Subst Γ Δ ≃ (∀ {X} → X ∈ₗ Δ → Term Γ X)
+    eqv = Iso→Equiv (⟦_⟧ₛ , (iso sub (λ _ → refl) (λ _ → subext (λ _ → refl))))
+
+instance
+  H-Level-Subst : ∀ {Γ Δ n} → H-Level (Subst Γ Δ) (2 + n)
+  H-Level-Subst = basic-instance 2 (Subst-is-hlevel 0)
+```
+-->
+
+```agda
+_[_] : ∀ {Γ Δ X} → Term Δ X → Subst Γ Δ → Term Γ X
+_[_]ᶠ : ∀ {Ψ Γ Δ X} → Fn Ψ Δ X → Subst Γ Δ → Fn Ψ Γ X
+
+var v [ σ ] = ⟦ σ ⟧ₛ v
+fn f [ σ ] = fn (f [ σ ]ᶠ)
+
+op o [ σ ]ᶠ = op o
+app f x [ σ ]ᶠ = app (f [ σ ]ᶠ) (x [ σ ])
+```
+
+```agda
+dropₛ : ∀ {Γ Δ X} → Subst Γ (X ∷ Δ) → Subst Γ Δ
+dropₛ σ .⟦_⟧ₛ v = ⟦ σ ⟧ₛ (there v)
+
+dropₛ-there : ∀ {Γ Δ X Y}
+           → (σ : Subst Γ (X ∷ Δ)) → (v : Y ∈ₗ Δ)
+           → ⟦ dropₛ σ ⟧ₛ v ≡ ⟦ σ ⟧ₛ (there v)
+dropₛ-there {Δ = A ∷ Δ} σ (here x) = refl
+dropₛ-there {Δ = A ∷ Δ} σ (there x) = refl
+
+idₛ : ∀ {Γ} → Subst Γ Γ
+idₛ = sub var
+
+_∘ₛ_ : ∀ {Γ Δ Θ} → Subst Δ Θ → Subst Γ Δ → Subst Γ Θ
+σ ∘ₛ δ = sub (λ v → (⟦ σ ⟧ₛ v) [ δ ])
+
+fstₛ : ∀ {Γ Δ} → Subst (Γ ++ Δ) Γ
+fstₛ = sub (λ v → var (∈ₗ-inl v))
+
+sndₛ : ∀ {Γ Δ} → Subst (Γ ++ Δ) Δ
+sndₛ = sub (λ v → var (∈ₗ-inr v))
+
+⟨_,_⟩ₛ : ∀ {Γ Δ Θ} → Subst Γ Δ → Subst Γ Θ → Subst Γ (Δ ++ Θ)
+⟦ ⟨_,_⟩ₛ {Δ = []} {Θ = Θ} σ δ ⟧ₛ v = ⟦ δ ⟧ₛ v
+⟦ ⟨_,_⟩ₛ {Δ = x ∷ Δ} σ δ ⟧ₛ (here p) = ⟦ σ ⟧ₛ (here p)
+⟦ ⟨_,_⟩ₛ {Δ = x ∷ Δ} σ δ ⟧ₛ (there v) = ⟦ ⟨ dropₛ σ , δ ⟩ₛ ⟧ₛ v
+
+fstₛ-⟨⟩ₛ : ∀ {Γ Δ Θ X}
+         → (σ : Subst Γ Δ) → (δ : Subst Γ Θ) → (v : X ∈ₗ Δ)
+         → ⟦ fstₛ ∘ₛ ⟨ σ , δ ⟩ₛ ⟧ₛ v ≡ ⟦ σ ⟧ₛ v
+fstₛ-⟨⟩ₛ {Δ = A ∷ Δ} σ δ (here v) = refl
+fstₛ-⟨⟩ₛ {Δ = A ∷ Δ} σ δ (there v) =
+  ⟦ ⟨ dropₛ σ , δ ⟩ₛ ⟧ₛ (∈ₗ-inl v) ≡⟨ fstₛ-⟨⟩ₛ (dropₛ σ) δ v ⟩
+  ⟦ dropₛ σ ⟧ₛ v                   ≡⟨ dropₛ-there σ v ⟩
+  ⟦ σ ⟧ₛ (there v)                ∎
+
+sndₛ-⟨⟩ₛ : ∀ {Γ Δ Θ X}
+         → (σ : Subst Γ Δ) → (δ : Subst Γ Θ) → (v : X ∈ₗ Θ)
+         → ⟦ sndₛ ∘ₛ ⟨ σ , δ ⟩ₛ ⟧ₛ v ≡ ⟦ δ ⟧ₛ v
+sndₛ-⟨⟩ₛ {Δ = []} σ δ v = refl
+sndₛ-⟨⟩ₛ {Δ = A ∷ Δ} σ δ v = sndₛ-⟨⟩ₛ (dropₛ σ) δ v
+
+⟨⟩ₛ-unique : ∀ {Γ Δ Θ X}
+           → (σ : Subst Γ Δ) → (δ : Subst Γ Θ) → (ϕ : Subst Γ (Δ ++ Θ))
+           → fstₛ ∘ₛ ϕ ≡ σ → sndₛ ∘ₛ ϕ ≡ δ
+           → (v : X ∈ₗ (Δ ++ Θ))
+           → ⟦ ϕ ⟧ₛ v ≡ ⟦ ⟨ σ , δ ⟩ₛ ⟧ₛ v
+⟨⟩ₛ-unique {Δ = []} {Θ = Θ} σ δ ϕ p q v =
+  subapply q v
+⟨⟩ₛ-unique {Δ = A ∷ Δ} {Θ = Θ} σ δ ϕ p q (here v) =
+  subapply p (here v)
+⟨⟩ₛ-unique {Δ = A ∷ Δ} {Θ = Θ} σ δ ϕ p q (there v) =
+  ⟨⟩ₛ-unique (dropₛ σ) δ (dropₛ ϕ)
+    (subext λ v → drop-p ϕ v ∙ subapply p (there v))
+    (subext λ v → drop-q ϕ v ∙ subapply q v)
+    v
+    where
+      drop-p : ∀ {A Γ Δ Θ X}
+             → (σ : Subst Γ (A ∷ Δ ++ Θ))
+             → (v : X ∈ₗ Δ) → ⟦ fstₛ ∘ₛ dropₛ σ ⟧ₛ v ≡ ⟦ dropₛ σ ⟧ₛ (∈ₗ-inl v)
+      drop-p {Δ = A ∷ Δ} σ (here v) = refl
+      drop-p {Δ = A ∷ Δ} σ (there v) = refl
+
+      drop-q : ∀ {A Γ Δ Θ X}
+             → (σ : Subst Γ (A ∷ Δ ++ Θ))
+             → (v : X ∈ₗ Θ) → ⟦ sndₛ ∘ₛ dropₛ σ ⟧ₛ v ≡ ⟦ dropₛ σ ⟧ₛ (∈ₗ-inr v)
+      drop-q {Δ = []} σ v = refl
+      drop-q {Δ = A ∷ Δ} σ v = refl
+```
+
+```agda
+sub-id : ∀ {Γ X} → (x : Term Γ X) → x [ idₛ ] ≡ x
+sub-id-fn : ∀ {Ψ Γ X} → (f : Fn Ψ Γ X) → f [ idₛ ]ᶠ ≡ f
+
+sub-id (var x) = refl
+sub-id (fn f) = ap fn (sub-id-fn f)
+
+sub-id-fn (op o) = refl
+sub-id-fn (app f x) = ap₂ app (sub-id-fn f) (sub-id x)
+
+sub-∘ : ∀ {Γ Δ Θ X}
+        → (σ : Subst Δ Θ) (δ : Subst Γ Δ)
+        → (x : Term Θ X)
+        → x [ (σ ∘ₛ δ) ] ≡ (x [ σ ]) [ δ ]
+sub-∘-fn : ∀ {Ψ Γ Δ Θ X}
+           → (σ : Subst Δ Θ) (δ : Subst Γ Δ)
+           → (f : Fn Ψ Θ X)
+           → f [ σ ∘ₛ δ ]ᶠ ≡ (f [ σ ]ᶠ) [ δ ]ᶠ
+
+sub-∘ σ δ (var v) = refl
+sub-∘ σ δ (fn f) = ap fn (sub-∘-fn σ δ f)
+
+sub-∘-fn σ δ (op o) = refl
+sub-∘-fn σ δ (app f x) = ap₂ app (sub-∘-fn σ δ f) (sub-∘ σ δ x)
+
+∘ₛ-idr : ∀ {Γ Δ} (σ : Subst Γ Δ) → σ ∘ₛ idₛ ≡ σ
+∘ₛ-idr σ = subext λ v → sub-id (⟦ σ ⟧ₛ v)
+
+∘ₛ-idl : ∀ {Γ Δ} (σ : Subst Γ Δ) → idₛ ∘ₛ σ ≡ σ
+∘ₛ-idl σ = subext (λ _ → refl)
+
+∘ₛ-assoc : ∀ {Γ Δ Θ Ψ} (σ : Subst Θ Ψ) (δ : Subst Δ Θ) (ϕ : Subst Γ Δ)
+         → σ ∘ₛ (δ ∘ₛ ϕ) ≡ (σ ∘ₛ δ) ∘ₛ ϕ
+∘ₛ-assoc σ δ ϕ = subext λ v → sub-∘ δ ϕ (⟦ σ ⟧ₛ v)
+```
+
+## Multi-Terms
+
+```agda
+MultiTerm : (Γ Δ : List ∣ Sort ∣) → Set ℓ
+MultiTerm Γ = foldr (λ X σ → el! (Term Γ X × ∣ σ ∣)) (el! (Lift _ ⊤))
+
+apps : ∀ {Ψ Γ X} → Fn Ψ Γ X → ∣ MultiTerm Γ Ψ ∣ → Fn [] Γ X
+apps {Ψ = []} f σ = f
+apps {Ψ = A ∷ Ψ} f (x , σ) = apps (app f x) σ
+
+lookup : ∀ {Γ Δ} → ∣ MultiTerm Γ Δ ∣ → Subst Γ Δ
+lookup {Δ = A ∷ Δ} (tm , tms) .⟦_⟧ₛ (here p) = subst (Term _) p tm
+lookup {Δ = A ∷ Δ} (tm , tms) .⟦_⟧ₛ (there v) = ⟦ lookup tms ⟧ₛ v
+
+tabulate : ∀ {Γ Δ}  → Subst Γ Δ → ∣ MultiTerm Γ Δ ∣
+tabulate {Δ = []} σ = lift tt
+tabulate {Δ = X ∷ Δ} σ = (⟦ σ ⟧ₛ (here refl)) , tabulate (dropₛ σ)
+
+dropₛ-lookup : ∀ {Γ Δ X} → (tm : Term Γ X) → (tms : ∣ MultiTerm Γ Δ ∣)
+          → dropₛ (sub λ v → ⟦ lookup (tm , tms) ⟧ₛ v) ≡ sub (λ v → ⟦ lookup tms ⟧ₛ v)
+dropₛ-lookup tm tms = subext λ _ → refl
+
+lookup-tabulate : ∀ {Γ Δ X} → (σ : Subst Γ Δ) → (v : X ∈ₗ Δ)
+                → ⟦ lookup (tabulate σ) ⟧ₛ v ≡ ⟦ σ ⟧ₛ v
+lookup-tabulate {Δ = X ∷ Δ} σ (here p) =
+  J (λ _ r → ⟦ lookup (tabulate σ) ⟧ₛ (here r) ≡ ⟦ σ ⟧ₛ (here r)) (transport-refl _) p
+lookup-tabulate {Δ = X ∷ Δ} σ (there p) =
+  lookup-tabulate (dropₛ σ) p
+
+tabulate-lookup : ∀ {Γ Δ} → (tms : ∣ MultiTerm Γ Δ ∣)
+                → tabulate (sub λ v → ⟦ lookup tms ⟧ₛ v) ≡ tms
+tabulate-lookup {Δ = []} tms = refl
+tabulate-lookup {Δ = X ∷ Δ} (tm , tms) =
+  transport-refl tm ,ₚ ap tabulate (dropₛ-lookup tm tms) ∙ tabulate-lookup tms
 ```
