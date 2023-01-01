@@ -31,15 +31,22 @@ module Cat.Regular where
 A **regular category** is a category with [pullback]-stable [image]
 factorizations. To define regular categories, we use the theory of
 [orthogonal morphisms], specifically [strong epimorphisms]: A regular
-category is one where every morphism factors as a regular epimorphism
-followed by a monomorphism, and regular epimorphisms are stable under
+category is one where every morphism factors as a strong epimorphism
+followed by a monomorphism, and strong epimorphisms are stable under
 pullback.
 
 [pullback]: Cat.Diagram.Pullback.html
 [image]: Cat.Diagram.Image.html
 [regular epi]: Cat.Diagram.Coequaliser.RegularEpi.html
-[orthogonal morphisms]: Cat.Morphism.Orthogonal.lagda.md
-[strong epimorphisms]: Cat.Morphism.StrongEpi.lagda.md
+[orthogonal morphisms]: Cat.Morphism.Orthogonal.html
+[strong epimorphisms]: Cat.Morphism.StrongEpi.html
+
+At face value, it's a bit weird to take the definition of regular
+categories to talk about strong, rather than _regular_, epimorphisms.
+But it turns out that strong epimorphisms correspond pretty directly to
+the idea of an image factorisation, or at least much _more_ directly
+than regular epimorphisms do. As we shall see, in a regular category,
+every strong epimorphism is regular.
 
 ```agda
 module _ {o ℓ} (𝒞 : Precategory o ℓ) where

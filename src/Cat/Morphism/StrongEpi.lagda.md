@@ -382,3 +382,84 @@ is epic, this means we have $u = v$ --- exactly what we wanted!
 ```agda
     in e-epi u v ker.equal
 ```
+
+## Extremal epimorphism
+
+Another well-behaved subclass of epimorphism are the **extremal**
+epimorphisms: An epimorphism $e : A \epi B$ is extremal if when, given a
+factorisation $e = mg$ through a monomorphism $m : C \mono B$, then $m$
+is an isomorphism. In a finitely complete category, every extremal
+epimorphism is strong; the converse is immediate.
+
+```agda
+is-extremal-epi→is-strong-epi
+  : ∀ {a b} {e : Hom a b}
+  → Finitely-complete C
+  → is-epic e
+  → (∀ {c} (m : c ↪ b) (g : Hom a c) → e ≡ m .mor ∘ g → is-invertible (m .mor))
+  → is-strong-epi e
+is-extremal-epi→is-strong-epi {a} {b} {e} lex epi extremal =
+  equaliser-lifts→is-strong-epi lex.equalisers λ w → Mk.the-lift w where
+    module lex = Finitely-complete lex
+```
+
+We adapt the proof from [@Borceux:vol1; §4.3.7]. After
+`equaliser-lifts→is-strong-epi`{.Agda}, it will suffice to construct
+_some_ lift for a square with $ve = mu$, with $m$ monic. Pull $v$ back
+along $m$ to obtain the square
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  A \\
+  \\
+  && {A \times_D B} && B \\
+  \\
+  && C && D
+  \arrow["m"', hook, from=5-3, to=5-5]
+  \arrow["v", from=3-5, to=5-5]
+  \arrow["q", hook, from=3-3, to=3-5]
+  \arrow[from=3-3, to=5-3]
+  \arrow["{\exists!\ r}", dashed, from=1-1, to=3-3]
+  \arrow["e", curve={height=-12pt}, from=1-1, to=3-5]
+  \arrow["u", curve={height=12pt}, from=1-1, to=5-3]
+\end{tikzcd}\]
+
+and obtain the unique factorisation $A \to A \times_D B$. Note that the
+map $u : A \times_D B \mono B$ is a monomorphism since it results from
+pulling back a monomorphism.
+
+```agda
+    module Mk {c d : Ob} (m : c ↪ d) {u : Hom a c} {v : Hom b d}
+              (wit : v ∘ e ≡ m .mor ∘ u) where
+      module P = Pullback (lex.pullbacks v (m .mor)) renaming (p₁ to q ; p₂ to p)
+      r : Hom a P.apex
+      r = P.limiting {p₁' = e} {p₂' = u} wit
+
+      abstract
+        q-mono : is-monic P.q
+        q-mono = is-monic→pullback-is-monic (m .monic) (rotate-pullback P.has-is-pb)
+```
+
+We thus have a factorisation $e = qr$ of $e$ through a monomorphism $q$,
+which since $e$ was assumed extremal, must be an isomorphism. We define
+the diagonal map $b \to c$ to be $pq^{-1}$ and compute that it commutes
+appropriately:
+
+```agda
+      q-iso : is-invertible P.q
+      q-iso = extremal record{ monic = q-mono } r (sym P.p₁∘limiting)
+
+      q⁻¹ = q-iso .is-invertible.inv
+
+      the-lift : Σ (Hom b c) λ w → (w ∘ e ≡ u) × (m .mor ∘ w ≡ v)
+      the-lift .fst = P.p ∘ q-iso .is-invertible.inv
+      the-lift .snd .fst = m .monic _ _ $
+        m .mor ∘ (P.p ∘ q⁻¹) ∘ e ≡⟨ extendl (pulll (sym P.square)) ⟩
+        (v ∘ P.q) ∘ q⁻¹ ∘ e      ≡⟨ cancel-inner (q-iso .is-invertible.invl) ⟩
+        v ∘ e                    ≡⟨ wit ⟩
+        m .mor ∘ u               ∎
+      the-lift .snd .snd = epi _ _ $ sym $
+        v ∘ e                       ≡⟨ ap (v ∘_) (introl (q-iso .is-invertible.invl)) ⟩
+        v ∘ (P.q ∘ q⁻¹) ∘ e         ≡˘⟨ pushl (extendl (sym P.square)) ⟩
+        (m .mor ∘ P.p ∘ q⁻¹) ∘ e    ∎
+```
