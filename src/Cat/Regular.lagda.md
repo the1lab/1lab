@@ -48,6 +48,7 @@ the idea of an image factorisation, or at least much _more_ directly
 than regular epimorphisms do. As we shall see, in a regular category,
 every strong epimorphism is regular.
 
+<!--
 ```agda
 module _ {o ℓ} (𝒞 : Precategory o ℓ) where
   private module C = Cr 𝒞
@@ -57,7 +58,10 @@ module _ {o ℓ} (𝒞 : Precategory o ℓ) where
 
   Mono : ∀ {a b} → C.Hom a b → Ω
   Mono x = elΩ (C.is-monic x)
+```
+-->
 
+```agda
   record is-regular : Type (o ⊔ ℓ) where
     field
       factor : ∀ {a b} (f : C.Hom a b) → Factorisation 𝒞 StrongEpi Mono f
@@ -66,7 +70,15 @@ module _ {o ℓ} (𝒞 : Precategory o ℓ) where
 
     module factor {a b} (f : C.Hom a b) = Factorisation (factor f)
     module lex = Finitely-complete has-is-lex
+```
 
+We also introduce some more palatable names for the components of the
+provided factorisations: Letting $f : A \to B$ be a map and $A \epi X
+\mono B$ its image factorisation, we refer to $X$ as $\im(f)$, to $A
+\epi X$ as `a↠im[_]`{.Agda}, and $X \mono B$ as `im[_]↪b`{.Agda}. These
+latter two names have a placeholder for the morphism we are factoring.
+
+```agda
     im[_] : ∀ {a b} (f : C.Hom a b) → C.Ob
     im[ f ] = factor f .Factorisation.mediating
 
@@ -75,7 +87,10 @@ module _ {o ℓ} (𝒞 : Precategory o ℓ) where
 
     a↠im[_] : ∀ {a b} (f : C.Hom a b) → C.Hom a im[ f ]
     a↠im[ f ] = factor f .Factorisation.mediate
+```
 
+<!--
+```agda
   module _ (r : is-regular) where
     private module r = is-regular r
     open Cartesian 𝒞 r.lex.products
@@ -96,18 +111,56 @@ module _ {o ℓ} (𝒞 : Precategory o ℓ) where
         (out! (r.factor f .mediate∈E) .fst _ _
           (C.pullr (p .centre .snd .fst) ∙ C.id-comm))
         (p .centre .snd .fst)
+```
+-->
 
+# Strong epis are regular
+
+This section formalises the proof of A1.3.4 from [@Elephant], which says
+that every strong epimorphism^[Note: Johnstone prefers to work with
+"covers" instead, which in our lingo are _extremal_ epimorphism. In a
+finitely complete category, strong and extremal epimorphisms coincide]
+in a regular category is regular. Actually, we'll show that every strong
+epimorphism in a regular category is **effective**: it's the coequaliser
+of its kernel pair.
+
+```agda
   -- Johnstone, A.1.3.4
   module _ (r : is-regular) {A B} (f : C.Hom A B) (is-s : is-strong-epi 𝒞 f) where
     private
       module r = is-regular r
       module kp = Pullback (r.lex.pullbacks f f)
         renaming (apex to R ; p₁ to a ; p₂ to b)
+```
+
+<!--
+```agda
       open kp using (R ; a ; b ; square)
       open Cartesian 𝒞 r.lex.products
       open C
+```
+-->
 
+For a strong epimorphism $f : A \epi B$, start by pulling $f$ back along
+itself to form the kernel pair $(a, b) : R \tto A$. We want to show that
+$f$ coequalises $a$ and $b$, which means that any morphism $c : A \to C$
+satisfying $ca = cb$ should have a unique factorisation through $f$. So,
+quantify over such morphisms and let's get started.
+
+```agda
     private module Make {C} {c : C.Hom A C} (w : c C.∘ a ≡ c C.∘ b) where
+```
+
+We start by calculating the image factorisation of $(f,c) : A \to B
+\times C$,
+
+$$
+A \xepi{d} D \xmono {(g, h)} B \times C \text{.}
+$$
+
+
+
+```agda
       dgh : Factorisation 𝒞 StrongEpi Mono ⟨ f , c ⟩
       dgh = r.factor ⟨ f , c ⟩
       module dgh = Factorisation dgh
@@ -119,7 +172,22 @@ module _ {o ℓ} (𝒞 : Precategory o ℓ) where
 
       h : C.Hom D C
       h = π₂ C.∘ gh
+```
 
+Following Johnstone, we show that $g$ is an isomorphism, so that
+$hg^{-1}$ is the factorisation we're looking for.^[Johnstone says it's
+_clearly_ unique, but the tiny calculation is included at the end of the
+proof since it wasn't clear to me] Since $f$ is an extremal epimorphism,
+any monomorphism through which it factors must be an iso. And since we have
+
+$$
+f = \pi_1(f,c) = \pi_1(g,h)d = gd\text{,}
+$$
+
+it will suffice to show that $g$ is a monomorphism. So assume you're
+given $k, l : E \to D$ with $gk = gl$; Let's show that $k = l$.
+
+```agda
       g-monic : C.is-monic g
       g-monic {e} k l w′ = out! dgh.forget∈M _ _ rem₈ where
         d×d = ×-functor .F₁ (d , d)
