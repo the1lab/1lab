@@ -161,13 +161,13 @@ strong-epi-mono→is-invertible mono (_ , epi) =
   self-orthogonal→is-iso C _ (epi (record { monic = mono }))
 ```
 
-# Covers are strong
+# Regular epis are strong
 
-Suppose that $f : a \to b$ is a **cover** (better known as a [regular
-epimorphism]), that is, it identifies $b$ as some quotient of $a$ ---
-the stuff of $b$ is that of $a$, but with new potential identifications
-thrown in. Since we're taking "strong epimorphism" to mean "well-behaved
-epimorphism", we'd certainly like covers to be strong epis!
+Suppose that $f : a \to b$ is a regular epimorphism, that is, it
+identifies $b$ as some quotient of $a$ --- the stuff of $b$ is that of
+$a$, but with new potential identifications thrown in. Since we're
+taking "strong epimorphism" as the definition of "well-behaved
+epimorphism", we'd certainly like regular epis to be strong epis!
 
 [regular epimorphism]: Cat.Diagram.Coequaliser.RegularEpi.html
 
@@ -383,7 +383,7 @@ is epic, this means we have $u = v$ --- exactly what we wanted!
     in e-epi u v ker.equal
 ```
 
-## Extremal epimorphism
+## Extremal epimorphisms
 
 Another well-behaved subclass of epimorphism are the **extremal**
 epimorphisms: An epimorphism $e : A \epi B$ is extremal if when, given a

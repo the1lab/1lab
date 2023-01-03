@@ -185,7 +185,22 @@ f = \pi_1(f,c) = \pi_1(g,h)d = gd\text{,}
 $$
 
 it will suffice to show that $g$ is a monomorphism. So assume you're
-given $k, l : E \to D$ with $gk = gl$; Let's show that $k = l$.
+given $k, l : E \to D$ with $gk = gl$; Let's show that $k = l$. Start by
+pulling back $(k,l) : E \to D \times D$ along $d \times d : A \times A$,
+obtaining
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  P && E \\
+  \\
+  {A\times A} && {D\times D}
+  \arrow["p", from=1-1, to=1-3]
+  \arrow["{(m,n)}"', from=1-1, to=3-1]
+  \arrow["{d\times d}"', from=3-1, to=3-3]
+  \arrow["{(k,l)}", from=1-3, to=3-3]
+  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=3-3]
+\end{tikzcd}\]
+~~~
 
 ```agda
       g-monic : C.is-monic g
@@ -199,7 +214,13 @@ given $k, l : E \to D$ with $gk = gl$; Let's show that $k = l$.
         sq′ : ⟨ k C.∘ p , l C.∘ p ⟩ ≡ ⟨ d C.∘ m , d C.∘ n ⟩
         sq′ = sym (⟨⟩∘ _) ∙ sq′- ∙ ⟨⟩-unique _ (C.pulll π₁∘⟨⟩ ∙ C.pullr refl)
                                                (C.pulll π₂∘⟨⟩ ∙ C.pullr refl)
+```
 
+We define a map $q : P \to R$ into the kernel pair of $a$, factoring
+$(m,n)$ through $(a,b)$. Using this morphism we may conclude that $hkp =
+hlp$ (`rem₁`{.Agda}).
+
+```agda
         q : C.Hom P R
         q = kp.limiting $
           f ∘ m         ≡⟨ C.pushl (extend-π₁ dgh.factors ∙ C.pulll refl) ⟩
@@ -217,7 +238,23 @@ given $k, l : E \to D$ with $gk = gl$; Let's show that $k = l$.
                c ∘ n         ≡˘⟨ pulll (pullr (sym dgh.factors) ∙ π₂∘⟨⟩) ⟩
                h ∘ d ∘ n     ≡˘⟨ refl⟩∘⟨ by-π₂ sq′ ⟩
                h ∘ l ∘ p     ∎
+```
 
+We want to show that $hl = hk$, for which it will suffice for $p$ to be
+an epimorphism. Since we're working in a regular category, we can show
+that $p$ is a _strong_ epimorphism by showing that $d \times d$ is a
+composite of strong epis. But $d \times d$ is the composite $(d \times
+\rm{id})(\rm{id} \times d)$, and both of those maps are pullbacks of
+$d$, which _is_ a strong epimorphism since it arises from an image
+factorisation.
+
+<details>
+<summary>This `<details>`{.html} tag contains the proof that $d \times
+1$ and $1 \times d$ are pullbacks of $d$. You may choose to unfold or
+skip it.
+</summary>
+
+```agda
         open is-pullback
 
         rem₂ : is-strong-epi 𝒞 (×-functor .F₁ (d , id))
@@ -245,7 +282,16 @@ given $k, l : E \to D$ with $gk = gl$; Let's show that $k = l$.
 
         rem₄ = sym (×-functor .F-∘ _ _)
              ∙ ap (×-functor .F₁) (Σ-pathp (idl _) (idr _))
+```
+</details>
 
+So $d \times d$ is a strong epimorphism by the above remarks, and $p$ is
+a pullback of $d \times d$, so it is also strong epic (`rem₆`{.Agda});
+We obtain $hk = hl$ (`rem₇`{.Agda}). By pushing some symbols, this gives
+$(g,h)k = (g,h)l$ (`rem₈`{.Agda}), but $(g,h)$ is a monomorphism by
+construction, so $k = l$ --- so $g$ is _also_ monic.
+
+```agda
         rem₅ : is-strong-epi 𝒞 d×d
         rem₅ = subst (is-strong-epi 𝒞) rem₄ (strong-epi-compose 𝒞 _ _ rem₂ rem₃)
 
@@ -266,7 +312,15 @@ given $k, l : E \to D$ with $gk = gl$; Let's show that $k = l$.
           ⟨ g ∘ l , h ∘ l ⟩   ≡˘⟨ ⟨⟩∘ _ ⟩
           ⟨ g , h ⟩ ∘ l       ≡˘⟨ ⟨⟩-unique _ refl refl ⟩∘⟨refl ⟩
           gh ∘ l              ∎
+```
 
+Having shown that $g$ is monic, and knowing that $f$ --- a strong (thus
+extremal) epimorphism --- factors through it, we conclude that $g$ is an
+isomorphism. It remains to `compute`{.Agda} that $hg^{-1}f = c$, which
+we do below.
+
+<!--
+```agda
       g-iso : is-invertible g
       g-iso = make-invertible (p .centre .fst) (p .centre .snd .snd)
         (out! dgh.mediate∈E .fst _ _
@@ -276,7 +330,10 @@ given $k, l : E \to D$ with $gk = gl$; Let's show that $k = l$.
           p = is-s .snd (record { monic = g-monic })
             (idl _ ∙ sym (pullr (sym dgh.factors) ∙ π₁∘⟨⟩))
       module g = _≅_ (invertible→iso _ g-iso)
+```
+-->
 
+```agda
       compute =
         (h ∘ g.from) ∘ f                           ≡⟨ pullr refl ∙ pullr refl ⟩
         π₂ ∘ dgh.gh ∘ g.from ∘ f                   ≡⟨ refl ⟩∘⟨ ⟨⟩-unique _ refl refl ⟩∘⟨ refl ⟩
@@ -286,7 +343,14 @@ given $k, l : E \to D$ with $gk = gl$; Let's show that $k = l$.
         h ∘ dgh.d                                  ≡⟨ pullr (sym dgh.factors) ⟩
         π₂ ∘ ⟨ f , c ⟩                             ≡⟨ π₂∘⟨⟩ ⟩
         c                                          ∎
+```
 
+This proves that $f$, an arbitrary strong epi, coequalises its kernel
+pair. It's an effective epimorphism! So it's definitely the case that it
+coequalises _some_ pair of maps.
+
+
+```agda
     open is-regular-epi renaming (r to Kp)
     open is-coequaliser
     is-strong-epi→is-regular-epi : is-regular-epi 𝒞 f
