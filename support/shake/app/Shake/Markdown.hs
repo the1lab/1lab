@@ -246,7 +246,7 @@ renderMarkdown authors references modname markdown = do
 -- | Removes the RHS of equation reasoning steps?? IDK, ask Amelia.
 foldEquations :: Bool -> [Tag Text] -> [Tag Text]
 foldEquations _ (to@(TagOpen "a" attrs):tt@(TagText t):tc@(TagClose "a"):rest)
-  | Text.length t >= 1, Text.last t == '⟨', Just href <- lookup "href" attrs =
+  | Text.length t > 1, Text.last t == '⟨', Just href <- lookup "href" attrs =
   [ TagOpen "span" [("class", "reasoning-step")]
   , TagOpen "span" [("class", "as-written " <> fromMaybe "" (lookup "class" attrs))]
   , to, tt, tc ] ++ go href rest
