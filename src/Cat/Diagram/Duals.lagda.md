@@ -163,10 +163,20 @@ module _ {o ℓ} {J : Precategory o ℓ} {F : Functor J C} where
   Co-cone→Cocone cone .ψ = cone .ψ
   Co-cone→Cocone cone .commutes = cone .commutes
 
+  Co-cone→Cocone′ : Cone F → Cocone F^op
+  Co-cone→Cocone′ cone .coapex = cone .apex
+  Co-cone→Cocone′ cone .ψ = cone .ψ
+  Co-cone→Cocone′ cone .commutes = cone .commutes
+
   Cocone→Co-cone : Cocone F → Cone F^op
   Cocone→Co-cone cone .apex     = cone .coapex
   Cocone→Co-cone cone .ψ        = cone .ψ
   Cocone→Co-cone cone .commutes = cone .commutes
+
+  Cocone→Co-cone′ : Cocone F^op → Cone F
+  Cocone→Co-cone′ cone .apex     = cone .coapex
+  Cocone→Co-cone′ cone .ψ        = cone .ψ
+  Cocone→Co-cone′ cone .commutes = cone .commutes
 
   Cocone→Co-cone→Cocone : ∀ K → Co-cone→Cocone (Cocone→Co-cone K) ≡ K
   Cocone→Co-cone→Cocone K i .coapex = K .coapex
@@ -178,6 +188,16 @@ module _ {o ℓ} {J : Precategory o ℓ} {F : Functor J C} where
   Co-cone→Cocone→Co-cone K i .ψ = K .ψ
   Co-cone→Cocone→Co-cone K i .commutes = K .commutes
 
+  Cocone→Co-cone→Cocone′ : ∀ K → Co-cone→Cocone′ (Cocone→Co-cone′ K) ≡ K
+  Cocone→Co-cone→Cocone′ K i .coapex = K .coapex
+  Cocone→Co-cone→Cocone′ K i .ψ = K .ψ
+  Cocone→Co-cone→Cocone′ K i .commutes = K .commutes
+
+  Co-cone→Cocone→Co-cone′ : ∀ K → Cocone→Co-cone′ (Co-cone→Cocone′ K) ≡ K
+  Co-cone→Cocone→Co-cone′ K i .apex = K .apex
+  Co-cone→Cocone→Co-cone′ K i .ψ = K .ψ
+  Co-cone→Cocone→Co-cone′ K i .commutes = K .commutes
+
   Co-cone-hom→Cocone-hom
     : ∀ {x y}
     → Cone-hom F^op y x
@@ -185,60 +205,77 @@ module _ {o ℓ} {J : Precategory o ℓ} {F : Functor J C} where
   Co-cone-hom→Cocone-hom ch .hom = ch .hom
   Co-cone-hom→Cocone-hom ch .commutes o = ch .commutes o
 
+  Co-cone-hom→Cocone-hom′
+    : ∀ {x y}
+    → Cone-hom F y x
+    → Cocone-hom F^op (Co-cone→Cocone′ x) (Co-cone→Cocone′ y)
+  Co-cone-hom→Cocone-hom′ ch .hom = ch .hom
+  Co-cone-hom→Cocone-hom′ ch .commutes o = ch .commutes o
+
   Cocone-hom→Co-cone-hom
     : ∀ {x y}
     → Cocone-hom F x y
     → Cone-hom F^op (Cocone→Co-cone y) (Cocone→Co-cone x)
   Cocone-hom→Co-cone-hom ch .hom = ch .hom
   Cocone-hom→Co-cone-hom ch .commutes = ch .commutes
+
+  Cocone-hom→Co-cone-hom′
+    : ∀ {x y}
+    → Cocone-hom F^op x y
+    → Cone-hom F (Cocone→Co-cone′ y) (Cocone→Co-cone′ x)
+  Cocone-hom→Co-cone-hom′ ch .hom = ch .hom
+  Cocone-hom→Co-cone-hom′ ch .commutes = ch .commutes
 ```
 
 ## Co/limits
 
 ```agda
-  Colimit→Co-limit
-    : Colimit F → Limit F^op
-  Colimit→Co-limit colim = lim where
-    lim : Limit F^op
-    lim .top = Cocone→Co-cone (colim .bot)
-    lim .has⊤ co-cone =
-      retract→is-contr f g fg
-        (colim .has⊥ (Co-cone→Cocone co-cone))
-      where
-        f : _ → _
-        f x = subst (λ e → Cone-hom F^op e _)
-          (Co-cone→Cocone→Co-cone _)
-          (Cocone-hom→Co-cone-hom x)
+  is-colimit→is-co-limit : ∀ {K} → is-colimit F K → is-limit F^op (Cocone→Co-cone K)
+  is-colimit→is-co-limit colim co-cone = contr cen uniq where
+    c′ = colim (Co-cone→Cocone co-cone)
 
-        g : _ → _
-        g x = subst (λ e → Cocone-hom F e _)
-          (Cocone→Co-cone→Cocone _)
-          (Co-cone-hom→Cocone-hom x)
+    cen : Cone-hom _ _ _
+    cen .hom = c′ .centre .hom
+    cen .commutes = c′ .centre .commutes
 
-        fg : is-left-inverse f g
-        fg x = Cone-hom-path _ (transport-refl _ ∙ transport-refl _)
+    uniq : ∀ x → cen ≡ x
+    uniq x = Cone-hom-path _ $ ap hom $ c′ .paths record { commutes = x .commutes }
+
+  is-co-limit→is-colimit′ : ∀ {K} → is-limit F K → is-colimit F^op (Co-cone→Cocone′ K)
+  is-co-limit→is-colimit′ lim cocon = contr cen uniq where
+    c′ = lim (Cocone→Co-cone′ cocon)
+
+    cen : Cocone-hom _ _ _
+    cen .hom      = c′ .centre .hom
+    cen .commutes = c′ .centre .commutes
+
+    uniq : ∀ x → cen ≡ x
+    uniq x = Cocone-hom-path _ $ ap hom $ c′ .paths record { commutes = x .commutes }
+
+  is-co-limit→is-colimit : ∀ {K} → is-limit F^op K → is-colimit F (Co-cone→Cocone K)
+  is-co-limit→is-colimit lim cocon = contr cen uniq where
+    c′ = lim (Cocone→Co-cone cocon)
+
+    cen : Cocone-hom _ _ _
+    cen .hom      = c′ .centre .hom
+    cen .commutes = c′ .centre .commutes
+
+    uniq : ∀ x → cen ≡ x
+    uniq x = Cocone-hom-path _ $ ap hom $ c′ .paths record { commutes = x .commutes }
 
   Co-limit→Colimit
     : Limit F^op → Colimit F
   Co-limit→Colimit lim = colim where
     colim : Colimit F
     colim .bot = Co-cone→Cocone (lim .top)
-    colim .has⊥ cocon =
-      retract→is-contr f g fg
-        (lim .has⊤ (Cocone→Co-cone cocon))
-      where
-        f : _ → _
-        f x = subst (λ e → Cocone-hom F _ e)
-          (Cocone→Co-cone→Cocone _)
-          (Co-cone-hom→Cocone-hom x)
+    colim .has⊥ = is-co-limit→is-colimit (lim .has⊤)
 
-        g : _ → _
-        g x = subst (λ e → Cone-hom F^op _ e)
-          (Co-cone→Cocone→Co-cone _)
-          (Cocone-hom→Co-cone-hom x)
-
-        fg : is-left-inverse f g
-        fg x = Cocone-hom-path _ (transport-refl _ ∙ transport-refl _)
+  Colimit→Co-limit
+    : Colimit F → Limit F^op
+  Colimit→Co-limit colim = lim where
+    lim : Limit F^op
+    lim .top = Cocone→Co-cone (colim .bot)
+    lim .has⊤ = is-colimit→is-co-limit (colim .has⊥)
 
 module _ {o ℓ} {J : Precategory o ℓ} {F F′ : Functor J C} where
   private module JC = Cat.Reasoning Cat[ J , C ]

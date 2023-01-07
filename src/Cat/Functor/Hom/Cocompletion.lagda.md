@@ -1,4 +1,5 @@
 ```agda
+{-# OPTIONS -vtc.decl:5 #-}
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Diagram.Colimit.Base
 open import Cat.Functor.Kan.Nerve
@@ -79,9 +80,10 @@ extend : Functor C D → Functor (PSh κ C) D
 extend F = Realisation colim F
 
 extend-cocontinuous
-  : ∀ {od ℓd} {J : Precategory od ℓd} {Dg : Functor J (PSh κ C)} (F : Functor C D)
-  → Colimit Dg → Colimit (extend F F∘ Dg)
-extend-cocontinuous F = left-adjoint-colimit (Realisation⊣Nerve colim F)
+  : ∀ {od ℓd} {J : Precategory od ℓd} {Dg : Functor J (PSh κ C)} {K}
+  → (F : Functor C D)
+  → is-colimit Dg K → is-colimit (extend F F∘ Dg) (F-map-cocone (extend F) K)
+extend-cocontinuous F = left-adjoint-is-cocontinuous (Realisation⊣Nerve colim F)
 
 extend-factors : (F : Functor C D) → (extend F F∘ よ C) ≅ F
 extend-factors F = ff-lan-ext colim (よ C) F (よ-is-fully-faithful C)

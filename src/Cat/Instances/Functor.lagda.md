@@ -468,6 +468,21 @@ module
 
 open _=>_
 
+module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} where
+  private
+    CD = Cat[ C , D ]
+    module D = Cat.Reasoning D
+    module CD = Cat.Reasoning CD
+
+  F^op^op≅F : CD.Isomorphism (Functor.op (Functor.op F)) F
+  F^op^op≅F = to-natural-iso mk-opop where
+    mk-opop : make-natural-iso _ _
+    mk-opop .make-natural-iso.eta x = D.id
+    mk-opop .make-natural-iso.inv x = D.id
+    mk-opop .make-natural-iso.eta∘inv x = D.idl D.id
+    mk-opop .make-natural-iso.inv∘eta x = D.idl D.id
+    mk-opop .make-natural-iso.natural x y f = D.id-comm
+
 module _
   {o ℓ o′ ℓ′ o₂ ℓ₂}
   {C : Precategory o ℓ}

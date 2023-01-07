@@ -204,6 +204,28 @@ cocones over that diagram.
 
 <!--
 ```agda
+module _
+  {o₁ h₁ o₂ h₂ : _}
+  {J : Precategory o₁ h₁}
+  {C : Precategory o₂ h₂}
+  {D₁ D₂ : Functor J C}
+  {pD : D₁ ≡ D₂}
+  {K1 : Cocone D₁} {K2 : Cocone D₂}
+  where
+  private
+    module C = Precategory C
+  open Cocone
+
+  Cocone-pathp
+    : (p : K1 .coapex ≡ K2 .coapex)
+    → (∀ o → PathP (λ i → C.Hom (pD i .Functor.F₀ o) (p i)) (K1 .ψ o) (K2 .ψ o))
+    → PathP (λ i → Cocone (pD i)) K1 K2
+  Cocone-pathp p q i .coapex = p i
+  Cocone-pathp p q i .ψ x = q x i
+  Cocone-pathp p q i .commutes {a} {b} f =
+    is-prop→pathp (λ i → C.Hom-set _ _ (q b i C.∘ pD i .Functor.F₁ f) (q a i))
+      (K1 .commutes f) (K2 .commutes f) i
+
 module _ {o₁ h₁ o₂ h₂ o₃ h₃ : _}
          {J : Precategory o₁ h₁}
          {C : Precategory o₂ h₂}

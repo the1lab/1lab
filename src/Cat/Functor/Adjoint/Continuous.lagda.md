@@ -2,6 +2,7 @@
 description: We establish that right adjoints preserve limits.
 ---
 ```agda
+{-# OPTIONS --rewriting #-}
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Limit.Base
@@ -12,6 +13,8 @@ open import Cat.Functor.Adjoint
 open import Cat.Diagram.Duals
 open import Cat.Functor.Base
 open import Cat.Prelude
+
+import Cat.Reasoning
 
 open import Data.Bool
 
@@ -28,8 +31,8 @@ module _
   private
     module L = Functor L
     module R = Functor R
-    import Cat.Reasoning C as C
-    import Cat.Reasoning D as D
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
     module adj = _⊣_ L⊣R
 ```
 -->
@@ -210,26 +213,35 @@ module _
   where
 
   private
+    module D = Cat.Reasoning D
     adj′ : Functor.op R ⊣ Functor.op L
     adj′ = opposite-adjunction L⊣R
 
+  open make-natural-iso
+
   module _ {od ℓd} {J : Precategory od ℓd} {F : Functor J C} where
+    left-adjoint-is-cocontinuous
+      : ∀ {K} → is-colimit F K → is-colimit (L F∘ F) (F-map-cocone L K)
+    left-adjoint-is-cocontinuous {K = K} colim k′ = contr cen uniq where
+      open Cocone-hom
+      open Cocone
+
+      c′ = is-co-limit→is-colimit′ _
+        (right-adjoint-is-continuous adj′ _
+          (is-colimit→is-co-limit _ colim))
+        (cocone (k′ .coapex) (k′ .ψ) (k′ .commutes))
+
+      cen : Cocone-hom _ _ _
+      cen .hom = c′ .centre .hom
+      cen .commutes = c′ .centre .commutes
+
+      uniq : ∀ x → cen ≡ x
+      uniq x = Cocone-hom-path _ $ ap hom $ c′ .paths
+        record { commutes = x .commutes }
+
     left-adjoint-colimit : Colimit F → Colimit (L F∘ F)
-    left-adjoint-colimit colim = colim′′ where
-      lim : Limit (Functor.op F)
-      lim = Colimit→Co-limit _ colim
-
-      lim′ : Limit (Functor.op L F∘ Functor.op F)
-      lim′ = right-adjoint-limit adj′ lim
-
-      colim′ : Colimit (Functor.op (Functor.op L F∘ Functor.op F))
-      colim′ = Co-limit→Colimit _ (subst Limit (sym F^op^op≡F) lim′)
-
-      colim′′ : Colimit (L F∘ F)
-      colim′′ = subst Colimit (Functor-path (λ x → refl) λ x → refl) colim′
-
+    left-adjoint-colimit colim .Initial.bot = _
+    left-adjoint-colimit colim .Initial.has⊥ =
+      left-adjoint-is-cocontinuous (colim .Initial.has⊥)
 ```
-
-TODO [Amy 2022-04-05]
-cocontinuity
 -->
