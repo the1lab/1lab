@@ -6,6 +6,7 @@ description: |
 ---
 
 ```agda
+{-# OPTIONS -vtc.decl:5 --lossy-unification -WnoEmptyWhere #-}
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
 open import Cat.Instances.Functor
@@ -139,7 +140,10 @@ look at the code. Godspeed.
     hom′ P i arg .map .η j h = P .F₁ h arg
     hom′ P i arg .map .is-natural _ _ f = funext λ _ → happly (P .F-∘ _ _) _
 
-    cocone′ : ∀ ob → Cocone (F F∘ Dom (よ D) (const! (Nerve F .F₀ ob)))
+    Shape : (c : C.Ob) → Functor (よ D ↘ Nerve F .F₀ c) C
+    Shape c = F F∘ Dom (よ D) (const! (Nerve F .F₀ c))
+
+    cocone′ : ∀ ob → Cocone (Shape ob)
     cocone′ ob .coapex = ob
     cocone′ ob .ψ obj = obj .map .η _ D.id
     cocone′ ob .commutes {x} {y} f =
@@ -160,39 +164,24 @@ counit is given by the unique "colimiting" map _from_ that colimit.
     adj .counit .η ob       = cocompl _ .has⊥ (cocone′ ob) .centre .hom
 
     adj .unit .η P .is-natural x y f = funext λ arg →
-      sym (cocompl _ .bot .commutes {x = obj′ arg}
-          ( record { sq = Nat-path (λ _ → refl) })
-          ∙ ap (cocompl _ .bot .ψ)
-            (↓Obj-path _ _ refl refl
-              (Nat-path λ _ → funext λ _ → happly (P .F-∘ _ _) _)))
-      where
-        obj′ : ∀ arg → ↓Obj (よ _) _
-        obj′ arg .↓Obj.x = y
-        obj′ arg .↓Obj.y = tt
-        obj′ arg .map .η j h = P .F₁ (f D.∘ h) arg
-        obj′ arg .map .is-natural X Y F = funext λ A →
-            happly (P .F-∘ _ _) _
-          ∙ happly (P .F-∘ _ _) _
-          ∙ λ i → P .F₁ F (P .F-∘ A f (~ i) arg)
+      sym $ cocompl (F F∘ Dom (よ D) (Const P)) .bot .commutes
+        (record { sq = Nat-path (λ _ → funext λ _ → P .F-∘ _ _ $ₚ _) })
 
     adj .unit .is-natural x y f = Nat-path λ i → funext λ arg → sym $
-      cocompl (F F∘ Dom (よ D) (const! x)) .has⊥ (lan-approximate cocompl _ _ f)
+      cocompl (F F∘ Dom (よ D) (Const x)) .has⊥ (lan-approximate cocompl (よ D) F f)
         .centre .commutes (hom′ x i arg)
-      ∙ ap (cocompl _ .bot .ψ)
-           (↓Obj-path _ _ refl refl
-              (Nat-path λ _ → funext λ _ → happly (f .is-natural _ _ _) _))
+      ∙ ap (cocompl (F F∘ Dom (よ D) (Const y)) .bot .ψ)
+        (↓Obj-path _ _ refl refl (Nat-path λ _ → funext λ _ → f .is-natural _ _ _ $ₚ _))
 
     adj .counit .is-natural x y f = ap hom $
-      is-contr→is-prop
-        (cocompl (F F∘ Dom (よ D) (const! (Nerve F .F₀ x))) .has⊥ cocone₂)
+      is-contr→is-prop (cocompl _  .has⊥ cocone₂)
         (cocone-hom _ λ o →
-            C.pullr (cocompl _ .has⊥ (lan-approximate cocompl _ _ _)
-                      .centre .commutes _)
-          ∙ cocompl _ .has⊥ (cocone′ y) .centre .commutes _)
+          C.pullr (cocompl (Shape x) .has⊥ _ .centre .commutes o)
+          ∙ cocompl (Shape y) .has⊥ (cocone′ _) .centre .commutes _)
         (cocone-hom _ λ o →
           C.pullr (cocompl _ .has⊥ (cocone′ x) .centre .commutes _))
       where
-        cocone₂ : Cocone _
+        cocone₂ : Cocone (Shape x)
         cocone₂ .coapex = y
         cocone₂ .ψ ob = f C.∘ ob .map .η _ D.id
         cocone₂ .commutes {x₂} {y₂} f =
@@ -202,14 +191,13 @@ counit is given by the unique "colimiting" map _from_ that colimit.
 
     adj .zig {A} = ap hom $
       is-contr→is-prop (cocompl (F F∘ Dom (よ D) (const! A)) .has⊥ (cocompl _ .bot))
-        (cocone-hom _ λ o →
-            C.pullr (cocompl _ .has⊥ (lan-approximate cocompl _ _ _)
-                               .centre .commutes _)
-          ∙ cocompl _ .has⊥ (cocone′ _) .centre .commutes _
-          ∙ ap (cocompl (F F∘ Dom (よ D) (const! A)) .bot .ψ)
-                  (↓Obj-path _ _ _ refl (Nat-path λ x → funext λ _ →
-                      sym (happly (o .map .is-natural _ _ _) _)
-                    ∙ ap (o .map .η x) (D.idl _))))
+        (cocone-hom _ λ o → C.pullr (
+            cocompl (F F∘ Dom (よ D) (Const A)) .has⊥ _ .centre .commutes o)
+        ·· cocompl (Shape (Realisation F .F₀ A)) .has⊥ _ .centre .commutes _
+        ·· ap (cocompl (F F∘ Dom (よ D) (const! A)) .bot .ψ)
+                {x = hom′ A (o .x) (o .map .η (o .x) D.id)}
+                (↓Obj-path _ _ _ refl (Nat-path λ x → funext λ _ →
+                  sym (o .map .is-natural _ _ _ $ₚ _) ∙ ap (o .map .η x) (D.idl _))))
         (cocone-hom _ λ o → C.idl _)
 
     adj .zag {B} = Nat-path λ x → funext λ a →
