@@ -216,20 +216,20 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
 module Reflection where
 
   pattern category-args xs =
-    _ h0∷ _ h0∷ _ v∷ xs
+    _ hm∷ _ hm∷ _ v∷ xs
 
   pattern functor-args functor xs =
-    _ h0∷ _ h0∷ _ h0∷ _ h0∷ _ h0∷ _ h0∷ functor v∷ xs
+    _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ functor v∷ xs
 
   pattern nat-trans-args nt args =
-    _ h0∷ _ h0∷ _ h0∷ _ h0∷
-    _ h0∷ _ h0∷
-    _ h0∷ _ h0∷
+    _ hm∷ _ hm∷ _ hm∷ _ hm∷
+    _ hm∷ _ hm∷
+    _ hm∷ _ hm∷
     nt v∷ args
 
 
   pattern monad-args monad xs =
-    _ h0∷ _ h0∷ _ h0∷ monad v∷ xs
+    _ hm∷ _ hm∷ _ hm∷ monad v∷ xs
 
   pattern monad-fn-args monad xs =
     _ h∷ _ h∷ _ h∷ monad v∷ xs
@@ -253,7 +253,7 @@ module Reflection where
     def (quote _=>_.η) (nat-trans-args (def (quote Monad.mult) (monad-args monad [])) (x v∷ []))
 
   mk-monad-args : Term → List (Arg Term) → List (Arg Term)
-  mk-monad-args monad args = unknown h0∷ unknown h0∷ unknown h0∷ monad v∷ args
+  mk-monad-args monad args = unknown h∷ unknown h∷ unknown h∷ monad v∷ args
 
   “solve” : Term → Term → Term → Term
   “solve” monad lhs rhs =

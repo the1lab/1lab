@@ -476,9 +476,9 @@ vlam nam body = lam visible (abs nam body)
 
 pattern _v∷_ t xs = arg (arginfo visible (modality relevant quantity-ω)) t ∷ xs
 pattern _h∷_ t xs = arg (arginfo hidden (modality relevant quantity-ω)) t ∷ xs
-pattern _h0∷_ t xs = arg (arginfo hidden (modality relevant quantity-0)) t ∷ xs
+pattern _hm∷_ t xs = arg (arginfo hidden (modality relevant _)) t ∷ xs
 
-infixr 30 _v∷_ _h∷_ _h0∷_
+infixr 30 _v∷_ _h∷_ _hm∷_
 
 infer-hidden : Nat → List (Arg Term) → List (Arg Term)
 infer-hidden zero xs = xs

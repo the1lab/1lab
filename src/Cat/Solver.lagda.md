@@ -134,7 +134,7 @@ hom-sets, then they represent the same morphism.
 module Reflection where
 
   pattern category-args xs =
-    _ h0∷ _ h0∷ _ v∷ xs
+    _ hm∷ _ hm∷ _ v∷ xs
 
   pattern “id” =
     def (quote Precategory.id) (category-args (_ h∷ []))
