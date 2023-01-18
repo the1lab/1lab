@@ -406,9 +406,9 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
 
 module Reflection where
   private
-    pattern ring-args cring args = (_ h0∷ _ h0∷ cring v∷ args)
-    pattern is-ring-args is-ring args = (_ h0∷ _ h0∷ _ h0∷ _ h0∷ _ h0∷ is-ring v∷ args)
-    pattern is-group-args is-group args = (_ h0∷ _ h0∷ _ h0∷ is-group v∷ args)
+    pattern ring-args cring args = (_ hm∷ _ hm∷ cring v∷ args)
+    pattern is-ring-args is-ring args = (_ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ is-ring v∷ args)
+    pattern is-group-args is-group args = (_ hm∷ _ hm∷ _ hm∷ is-group v∷ args)
     pattern ring-field field-name cring args =
       def field-name (ring-args (def (quote CRing-on.has-ring-on) (ring-args cring [])) args)
     pattern group-field field-name cring args =

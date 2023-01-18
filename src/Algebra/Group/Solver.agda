@@ -187,8 +187,8 @@ module _ {ℓ} {A : Type ℓ} (G : Group-on A) where
   expand e ρ = ⟦ eval e ⟧ᵥ ρ
 
 module Reflection where
-  pattern is-group-args args = (_ h0∷ _ h0∷ _ h0∷ _ v∷ args)
-  pattern group-args args = (_ h0∷ _ h0∷ _ v∷ args)
+  pattern is-group-args args = (_ hm∷ _ hm∷ _ hm∷ _ v∷ args)
+  pattern group-args args = (_ hm∷ _ hm∷ _ v∷ args)
 
   pattern “unit” = def (quote is-group.unit) (is-group-args [])
   pattern “⋆” x y = def (quote Group-on._⋆_) (group-args (x v∷ y v∷ []))

@@ -197,9 +197,9 @@ module Reflection where
   module Cat = Cat.Solver.Reflection
 
   pattern displayed-field-args xs =
-    _ h0∷ _ h0∷ -- Base Levels
-    _ h0∷       -- Base Category
-    _ h0∷ _ h0∷ -- Displayed Levels
+    _ hm∷ _ hm∷ -- Base Levels
+    _ hm∷       -- Base Category
+    _ hm∷ _ hm∷ -- Displayed Levels
     _ v∷ xs     -- Displayed Category
 
   pattern displayed-fn-args xs =
@@ -295,5 +295,6 @@ private module Test {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B
     f′ g′ h′ : Hom[ f ] x′ y′
 
 
-  test : ∀ (f′ : Hom[ f ] y′ z′) → (g′ : Hom[ g ] x′ y′) → (p : (f ∘ id) ∘ g ≡ f ∘ g) → f′ ≡ hom[ idl f ] (id′ ∘′ f′)
-  test {f = f} f′ g′ p = disp! E
+  test : ∀ (f′ : Hom[ f ] y′ z′)
+       → f′ ≡ hom[ idl f ] (id′ ∘′ f′)
+  test {f = f} f′ = disp! E

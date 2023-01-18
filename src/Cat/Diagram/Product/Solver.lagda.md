@@ -308,18 +308,18 @@ projections always mark the records parameters as `hidden`{.Agda} and
 module Reflection where
   private
     pattern is-product-field X Y args =
-      _ h0∷ _ h0∷ _ h0∷ -- category args
-      X h0∷ Y h0∷       -- objects of product
-      _ h0∷             -- apex
-      _ h0∷ _ h0∷       -- projections
+      _ hm∷ _ hm∷ _ hm∷ -- category args
+      X hm∷ Y hm∷       -- objects of product
+      _ hm∷             -- apex
+      _ hm∷ _ hm∷       -- projections
       _ v∷              -- is-product record argument
       args
     pattern product-field X Y args =
-      _ h0∷ _ h0∷ _ h0∷ -- category args
-      X h0∷ Y h0∷       -- objects of product
+      _ hm∷ _ hm∷ _ hm∷ -- category args
+      X hm∷ Y hm∷       -- objects of product
       _ v∷              -- product record argument
       args
-    pattern category-field args = _ h0∷ _ h0∷ _ v∷ args
+    pattern category-field args = _ hm∷ _ hm∷ _ v∷ args
 
     pattern “⊗” X Y =
       def (quote Product.apex) (product-field X Y [])

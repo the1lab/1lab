@@ -139,10 +139,10 @@ module NbE {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h�
 
 module Reflection where
 
-  pattern category-args xs = _ h0∷ _ h0∷ _ v∷ xs
+  pattern category-args xs = _ hm∷ _ hm∷ _ v∷ xs
 
   pattern functor-args functor xs =
-    _ h0∷ _ h0∷ _ h0∷ _ h0∷ _ h0∷ _ h0∷ functor v∷ xs
+    _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ functor v∷ xs
 
   pattern “id” =
     def (quote Precategory.id) (category-args (_ h∷ []))
@@ -154,7 +154,8 @@ module Reflection where
     def (quote Functor.F₁) (functor-args functor (_ h∷ _ h∷ f v∷ []))
 
   mk-functor-args : Term → List (Arg Term) → List (Arg Term)
-  mk-functor-args functor args = unknown h0∷ unknown h0∷ unknown h0∷ unknown h0∷ unknown h0∷ unknown h0∷ functor v∷ args
+  mk-functor-args functor args =
+    unknown h∷ unknown h∷ unknown h∷ unknown h∷ unknown h∷ unknown h∷ functor v∷ args
 
   “solve” : Term → Term → Term → Term
   “solve” functor lhs rhs =
@@ -208,7 +209,6 @@ private module Test {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory
     X Y : 𝒟.Ob
     a b c : 𝒞.Hom A B
     x y z : 𝒟.Hom X Y
-
 
   test : (x 𝒟.∘ F₁ (𝒞.id 𝒞.∘ 𝒞.id)) 𝒟.∘ F₁ a 𝒟.∘ F₁ (𝒞.id 𝒞.∘ b) ≡ 𝒟.id 𝒟.∘ x 𝒟.∘ F₁ (a 𝒞.∘ b)
   test = functor! F
