@@ -20,8 +20,8 @@ $$
 and $\im(f) \mono B$ is universal among factorisations of $f$ through a
 subtype of its codomain.
 
-[image]: 1Lab.HIT.Truncation.lagda.md#maps-into-sets
-[merely]: 1Lab.HIT.Truncation.lagda.md
+[image]: 1Lab.HIT.Truncation.html#maps-into-sets
+[merely]: 1Lab.HIT.Truncation.html
 
 In general, we can consider images of arbitrary functions $f : A \to B$,
 where $A$ is a $\ell_1$-small type, and $B$ is a $\ell_2$-small type;
