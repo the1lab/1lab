@@ -215,6 +215,8 @@ $\im f$.
     im↪B = Homomorphism-monic im→B Tpath
 ```
 
+[]{#first-iso-theorem}
+
 The reason for denoting the set-theoretic image of $f : A \to B$ (which
 is a subobject **of $B$**, equipped with $B$'s group operation) by
 $A/\ker(f)$ is the **first isomorphism theorem** (though we phrase it
