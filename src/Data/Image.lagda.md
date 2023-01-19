@@ -47,7 +47,7 @@ includes $\sets$, as models of the trivial theory] to the setting of
 general types. Recall that the first isomorphism theorem says you can
 compute $\im f$ as the quotient $A/\ker f$.[^ker]
 
-[first isomorphism theorem]: Algebra.Group.Subgroup.html#first-iso-theorem
+[first isomorphism theorem]: Algebra.Group.Subgroup.html#the-first-isomorphism-theorem
 
 [^ker]: The meaning of kernel we're using generalises slightly that of
 groups, where a normal subgroup completely determines an equivalence
