@@ -1534,6 +1534,16 @@ from-pathp : ∀ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1}
            → PathP A x y
            → coe0→1 A x ≡ y
 from-pathp {A = A} {x} {y} p = transport (PathP≡Path A x y) p
+
+to-pathp⁻ : ∀ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1}
+         → x ≡ coe1→0 A y
+         → PathP A x y
+to-pathp⁻ {A = A} {x} {y} p = transport (sym (PathP≡Path⁻ A x y)) p
+
+from-pathp⁻ : ∀ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1}
+           → PathP A x y
+           → x ≡ coe1→0 A y
+from-pathp⁻ {A = A} {x} {y} p = transport (PathP≡Path⁻ A x y) p
 ```
 
 These definitions illustrate how using the named squeezes and spreads
