@@ -600,6 +600,9 @@ open import Cat.Displayed.Reasoning
 open import Cat.Displayed.Instances.Elements
 -- The category of elements of a presheaf, instantiated as being
 -- displayed over the domain.
+
+open import Cat.Displayed.Composition
+  -- Composition of displayed categories
 ```
 
 We can also investigate how displayed categories relate to other
