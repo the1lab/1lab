@@ -38,19 +38,3 @@ of subsets of a fixed type, which has underlying set $A \to \Omega$.
 Subsets : ∀ {ℓ} → Type ℓ → Poset ℓ ℓ
 Subsets A = Pointwise A Props
 ```
-
-Another important case: when your domain is not an arbitrary type but
-another poset, you might want to consider the full subposet of $P \to Q$
-consisting of the monotone maps:
-
-```agda
-Monotone : ∀ {ℓₒ ℓᵣ ℓₒ′ ℓᵣ′}
-         → Poset ℓₒ ℓᵣ
-         → Poset ℓₒ′ ℓᵣ′
-         → Poset (ℓₒ ⊔ ℓᵣ ⊔ ℓₒ′ ⊔ ℓᵣ′) (ℓₒ ⊔ ℓᵣ′)
-Monotone P Q =
-  Full-subposet (Pointwise ⌞ P ⌟ Q) λ f →
-    el! (∀ x y → x P.≤ y → f x Q.≤ f y)
-  where module P = Pr P
-        module Q = Pr Q
-```

@@ -70,6 +70,7 @@ presentation of frames.
 <!--
 ```agda
 record Frame-on (A : Type ℓ) : Type (lsuc ℓ) where
+  no-eta-equality
   field
     top          : A
     _∩_          : A → A → A

@@ -19,7 +19,7 @@ it belong to a universe? The answer is _yes_. However, Type can not
 belong to itself, or we could reproduce Russell's Paradox, as is done
 [in this module].
 
-[in this module]: agda://1Lab.Counterexamples.Russell
+[in this module]: agda://Counterexamples.Russell
 
 To prevent this, the universes are parametrised by a _`Level`{.Agda}_,
 where the collection of all `ℓ`-sized types is `Type (lsuc ℓ)`:

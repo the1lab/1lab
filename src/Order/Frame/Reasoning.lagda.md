@@ -27,11 +27,34 @@ open Semilattice meets public
 open Frame-on (B .snd) using (⋃ ; ⋃-universal ; ⋃-colimiting ; ⋃-distrib) public
 ```
 
+<!--
+```agda
+⋃-distrib′ : ∀ {I : Type ℓ} (F : I → ⌞ B ⌟) {x} → ⋃ F ∩ x ≡ ⋃ (λ i → F i ∩ x)
+⋃-distrib′ F = ∩-commutative ·· ⋃-distrib _ F ·· ap ⋃ (funext λ _ → ∩-commutative)
+
+⋃-commute
+  : ∀ {I J : Type ℓ} (F : I → J → ⌞ B ⌟)
+  → ⋃ (λ i → ⋃ λ j → F i j)
+  ≡ ⋃ (λ j → ⋃ λ i → F i j)
+⋃-commute F = ≤-antisym
+  (⋃-universal _ (λ i → ⋃-universal _
+    (λ j → ≤-trans (⋃-colimiting _ λ i → F i j) (⋃-colimiting j _))))
+  (⋃-universal _ (λ j → ⋃-universal _ (λ i →
+    ≤-trans (⋃-colimiting j (F i)) (⋃-colimiting i _))))
+
+⋃-monotone
+  : ∀ {I} (F G : I → ⌞ B ⌟)
+  → (∀ i → F i ≤ G i)
+  → ⋃ F ≤ ⋃ G
+⋃-monotone F G α = ⋃-universal F λ i → ≤-trans (α i) (⋃-colimiting i G)
+```
+-->
+
 Using this ordering, we can show that the underlying poset of a frame is
 indeed cocomplete:
 
 ```agda
-cocomplete : ∀ {I : Type ℓ} (F : I → ⌞ B ⌟) → Σ _ (is-lub po F)
+cocomplete : ∀ {I : Type ℓ} (F : I → ⌞ B ⌟) → Lub po F
 cocomplete F .fst = ⋃ F
 cocomplete F .snd .is-lub.fam≤lub i = ⋃-colimiting i F
 cocomplete F .snd .is-lub.least ub′ fam≤ub′ = ⋃-universal F fam≤ub′

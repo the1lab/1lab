@@ -38,12 +38,16 @@ surjection from some [finite ordinal] $[n] \epi \sum S$.
 
 ```agda
 module _ {ℓ} (A : Set ℓ) where
+  record is-K-finite (P : ∣ A ∣ → Ω) : Type ℓ where
+    constructor k-fin
+
+    field
+      size       : Nat
+      cover      : Fin size → Σ ∣ A ∣ λ x → x ∈ P
+      surjective : ∀ x → ∥ fibre cover x ∥
+
   K-finite-subset : Type ℓ
-  K-finite-subset =
-    Σ (∣ A ∣ → Ω) λ P →
-    ∃ Nat λ n →
-    Σ (Fin n → (Σ ∣ A ∣ λ x → x ∈ P)) λ f →
-      ∀ x → ∥ fibre f x ∥
+  K-finite-subset = Σ (∣ A ∣ → Ω) λ P → ∥ is-K-finite P ∥
 ```
 
 The operator we'll choose to make $K(A)$ into a semilattice is subset
@@ -53,13 +57,10 @@ reduction theorem (which we will prove after we have defined the
 semilattice) into a join of singletons, and this theorem will be
 necessary to prove the universal property.
 
-```agda
-  {- TODO [Amy 2022-12-27] Refactor Data.Power.Lattice so we can "just" use that instead -}
-  _∪_ : K-finite-subset → K-finite-subset → K-finite-subset
-  (P , pf) ∪ (Q , qf) = (λ x → el ∥ x ∈ P ⊎ x ∈ Q ∥ squash) , do
-    (Pn , Pf , Ps) ← pf
-    (Qn , Qf , Qs) ← qf
-```
+We know how to compute the disjunction of subobjects --- it is a
+truncated sum, equivalently described as the image of the copairing of
+the subobject inclusions. What remains to be shown is that the union of
+K-finite subsets is again K-finite.
 
 Now, the astute reader has probably noticed that, unless $A$ is assumed
 to have decidable equality, we can not compute the cardinality of the
@@ -76,11 +77,8 @@ bound". Note that this definition does not require choice to.. choose..
 an upper bound, because we're really computing a proposition.
 
 ```agda
-    let
-      cover : Fin Pn ⊎ Fin Qn → Σ ∣ A ∣ (λ x → ∥ x ∈ P ⊎ x ∈ Q ∥)
-      cover = λ where
-        (inl x) → Pf x .fst , inc (inl (Pf x .snd))
-        (inr x) → Qf x .fst , inc (inr (Qf x .snd))
+  ∪-is-K-finite : ∀ {P Q} → is-K-finite P → is-K-finite Q → is-K-finite λ x → el ∥ x ∈ P ⊎ x ∈ Q ∥ squash
+  ∪-is-K-finite {P} {Q} (k-fin Pn Pf Ps) (k-fin Qn Qf Qs) = go where
 ```
 
 Since $[n + k] = [n] \uplus [k]$, and we know how to cover $P$ and $Q$
@@ -95,20 +93,33 @@ $P \cup Q$ as $P \uplus Q$] showing that $\rm{inl}(x)$ (resp.
 $\rm{inr}(x)$) is associated with an element in $[n]$ (resp. $[k]$).
 
 ```agda
-    pure
-      $ Pn + Qn
-      , (λ x → cover (Equiv.from Finite-coproduct x))
-      , λ (elt , elt∈P∪Q) → elt∈P∪Q >>= λ where
-        (inl elt∈P) → do
-          (pix , path) ← Ps (elt , elt∈P)
-          pure ( Equiv.to Finite-coproduct (inl pix)
-               , ap cover (Equiv.η Finite-coproduct _)
-               ∙ Σ-prop-path hlevel! (ap fst path))
-        (inr elt∈Q) → do
-          (qix , path) ← Qs (elt , elt∈Q)
-          pure ( Equiv.to Finite-coproduct (inr qix)
-               , ap cover (Equiv.η Finite-coproduct _)
-               ∙ Σ-prop-path hlevel! (ap fst path))
+    cover : Fin Pn ⊎ Fin Qn → Σ ∣ A ∣ (λ x → ∥ x ∈ P ⊎ x ∈ Q ∥)
+    cover = λ where
+      (inl x) → Pf x .fst , inc (inl (Pf x .snd))
+      (inr x) → Qf x .fst , inc (inr (Qf x .snd))
+
+    module kf = is-K-finite
+    go : is-K-finite _
+    go .kf.size       = Pn + Qn
+    go .kf.cover x    = cover (Equiv.from Finite-coproduct x)
+    go .kf.surjective (elt , elt∈P∪Q) = elt∈P∪Q >>= λ where
+      (inl elt∈P) → do
+        (pix , path) ← Ps (elt , elt∈P)
+        pure ( Equiv.to Finite-coproduct (inl pix)
+              , ap cover (Equiv.η Finite-coproduct _)
+              ∙ Σ-prop-path hlevel! (ap fst path))
+      (inr elt∈Q) → do
+        (qix , path) ← Qs (elt , elt∈Q)
+        pure ( Equiv.to Finite-coproduct (inr qix)
+              , ap cover (Equiv.η Finite-coproduct _)
+              ∙ Σ-prop-path hlevel! (ap fst path))
+```
+
+```agda
+  {- TODO [Amy 2022-12-27] Refactor Data.Power.Lattice so we can "just" use that instead -}
+  _∪_ : K-finite-subset → K-finite-subset → K-finite-subset
+  ((P , pf) ∪ (Q , qf)) .fst x = el ∥ x ∈ P ⊎ x ∈ Q ∥ squash
+  ((P , pf) ∪ (Q , qf)) .snd = ⦇ ∪-is-K-finite pf qf ⦈
 ```
 
 Since $K(A)$ is closed under unions (and contains the least element), it
@@ -120,11 +131,13 @@ under union.
 <!--
 ```agda
   K[_] : Semilattice ℓ
-  K[_] = to-semilattice make-ka where
+  K[_] .fst .∣_∣ = Σ (∣ A ∣ → Ω) λ P → ∥ is-K-finite P ∥
+  K[_] .fst .is-tr = hlevel!
+  K[_] .snd = to-semilattice-on make-ka where
     open make-semilattice
     make-ka : make-semilattice K-finite-subset
     make-ka .has-is-set = hlevel!
-    make-ka .top = (λ _ → el ⊥ (λ x → absurd x)) , inc (0 , (λ { () }) , λ { () })
+    make-ka .top = (λ _ → el ⊥ (λ x → absurd x)) , inc (k-fin 0 (λ { () }) λ { () })
     make-ka .op = _∪_
     make-ka .idl = Σ-prop-path! $ funext λ i →
       Ω-ua (∥-∥-rec! (λ { (inr x) → x ; (inl ()) })) (λ x → inc (inr x))
@@ -168,7 +181,7 @@ universal property of $K(A)$.
 
 ```agda
   ηₛₗ : ∣ A ∣ → K-finite-subset
-  ηₛₗ x = (λ y → elΩ (x ≡ y)) , inc (1 , (λ _ → x , inc refl) ,
+  ηₛₗ x = (λ y → elΩ (x ≡ y)) , inc (k-fin 1 (λ _ → x , inc refl)
     λ (y , p) → inc (fzero , Σ-prop-path (λ _ → squash) (out! p)))
 ```
 
@@ -184,9 +197,9 @@ $K$-finiteness condition, but it will be very useful!
   K-reduce (P , P-fin) = ∥-∥-map reduce P-fin where
     open is-glb
 
-    reduce : Σ Nat (λ n → Σ (Fin n → Σ ∣ A ∣ λ x → x ∈ P) λ f → ∀ x → ∥ fibre f x ∥)
+    reduce : is-K-finite P
            → Σ Nat λ n → Σ (Fin n → ∣ A ∣) λ f → is-glb KA.po (λ i → ηₛₗ (f i)) (P , P-fin)
-    reduce (card , cover , surj) = card , (λ x → cover x .fst) , λ where
+    reduce (k-fin card cover surj) = card , (λ x → cover x .fst) , λ where
       .glb≤fam i →
         K-fin-lt {P , P-fin} {ηₛₗ (cover i .fst)} λ j i=j →
           subst (λ e → ∣ P e ∣) (out! i=j) (cover i .snd)
@@ -231,9 +244,8 @@ speak, the meet of our family $[n] \epi P \to B$ to a meet of $P \to B$,
 using surjectivity of the first map.
 
 ```agda
-    ε : Σ Nat (λ n → Σ (Fin n → Σ ∣ A ∣ λ x → x ∈ P) λ f → ∀ x → ∥ fibre f x ∥)
-      → Σ ⌞ B ⌟ (is-glb B.po fam)
-    ε (card , g , surj) =
+    ε : is-K-finite P → Σ ⌞ B ⌟ (is-glb B.po fam)
+    ε (k-fin card g surj) =
       B.⋂ (λ x → fam (g x)) , λ where
         .is-glb.glb≤fam elt →
           ∥-∥-rec B.≤-thin (λ { (ix , p) →

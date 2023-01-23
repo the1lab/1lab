@@ -203,9 +203,9 @@ open import 1Lab.Type.Sigma -- Properties of dependent coproducts
 
 open import 1Lab.HIT.Truncation -- Propositional truncation
 
-open import 1Lab.Counterexamples.IsIso -- Counterexample: is-iso is not a prop
-open import 1Lab.Counterexamples.Russell -- Counterexample: Russell's paradox
-open import 1Lab.Counterexamples.Sigma -- Counterexample: Sigma is not prop
+open import Counterexamples.IsIso -- Counterexample: is-iso is not a prop
+open import Counterexamples.Russell -- Counterexample: Russell's paradox
+open import Counterexamples.Sigma -- Counterexample: Sigma is not prop
 ```
 
 ## Data types

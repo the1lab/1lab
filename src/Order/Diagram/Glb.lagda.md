@@ -45,6 +45,9 @@ module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
 ```agda
   open is-glb
 
+  Glb : ∀ {ℓ′} {I : Type ℓ′} (F : I → ⌞ P ⌟) → Type _
+  Glb F = Σ P.Ob (is-glb F)
+
   private unquoteDecl eqv = declare-record-iso eqv (quote is-glb)
 
   instance
@@ -54,7 +57,7 @@ module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
     H-Level-is-glb = prop-instance $ Iso→is-hlevel 1 eqv (hlevel 1)
 
   glb-unique : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → P.Ob}
-             → is-prop (Σ P.Ob (is-glb F))
+             → is-prop (Glb F)
   glb-unique (glb , is) (glb′ , is′) = Σ-prop-path! $ P.≤-antisym
     (is′ .greatest glb (is .glb≤fam))
     (is .greatest glb′ (is′ .glb≤fam))
@@ -96,6 +99,12 @@ greatest lower bound of a family of two elements.
 ```agda
   private unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-meet)
 
+  Meet : ⌞ P ⌟ → ⌞ P ⌟ → Type _
+  Meet a b = Σ P.Ob (is-meet a b)
+
+  Top : Type _
+  Top = Σ P.Ob λ top → ∀ x → x P.≤ top
+
   instance
     H-Level-is-meet
       : ∀ {a b glb : P.Ob} {n}
@@ -106,7 +115,7 @@ greatest lower bound of a family of two elements.
   is-meet≃is-glb : ∀ {a b glb : P.Ob} → is-equiv (is-meet→is-glb {a} {b} {glb})
   is-meet≃is-glb = prop-ext! _ is-glb→is-meet .snd
 
-  meet-unique : ∀ {a b} → is-prop (Σ P.Ob (is-meet a b))
+  meet-unique : ∀ {a b} → is-prop (Meet a b)
   meet-unique {a} {b} = transport
     (λ i → is-prop (Σ P.Ob λ x → ua (_ , is-meet≃is-glb {a} {b} {x}) (~ i)))
     glb-unique
@@ -145,4 +154,58 @@ the same as being given a meet.
   is-meet→product glb .has-is-product .π₁∘factor = prop!
   is-meet→product glb .has-is-product .π₂∘factor = prop!
   is-meet→product glb .has-is-product .unique _ _ _ = prop!
+```
+
+## Completeness, meets of subsets
+
+In the case of proper 1-categories, the diagrams over which we take
+limits (and colimits, too) can vary wildly, not only in shape, but in
+size. In the posetal case, though, we're often interested in the meets
+and joins of _subsets_, so that it makes sense to define a _complete_
+poset to have limits whose shape lives in the same level as their
+objects.
+
+Note that, if classical logic is available, any _category_ which has
+limits indexed by its [arrow category] is necessarily a preorder. Since
+we're agnostic towards classical logic, we can't exhibit any "absolutely
+complete" non-thin categories, either! However, it's totally fine for a
+preorder to be "absolutely complete" like this. And, since the order
+relation in a poset has [negligible size], admitting limits for all
+subsets is the same as admitting limits indexed by its "arrow category".
+
+[arrow category]: Cat.Instances.Shape.Interval.html#the-space-of-arrows
+
+```agda
+module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
+  open Poset P
+  is-complete : Type _
+  is-complete = ∀ {I : Type ℓ} (F : I → ⌞ P ⌟) → Glb P F
+
+  is-subset-glb : (S : ⌞ P ⌟ → Ω) → ⌞ P ⌟ → Type _
+  is-subset-glb S = is-glb P {I = Σ ⌞ P ⌟ λ i → i ∈ S} fst
+
+  Subset-glb : (S : ⌞ P ⌟ → Ω) → Type _
+  Subset-glb S = Σ ⌞ P ⌟ λ x → is-subset-glb S x
+
+  module Complete (c : is-complete) where
+    fam-⋂ : {I : Type ℓ} (F : I → ⌞ P ⌟) → ⌞ P ⌟
+    fam-⋂ F = c F .fst
+
+    subset-⋂ : (S : ⌞ P ⌟ → Ω) → ⌞ P ⌟
+    subset-⋂ S = c {I = Σ _ (_∈ S)} fst .fst
+
+    prop-⋂ : ∀ {ℓₚ} (S : ⌞ P ⌟ → Prop ℓₚ) → ⌞ P ⌟
+    prop-⋂ S = subset-⋂ λ i → elΩ ∣ S i ∣
+
+    module subset (S : ⌞ P ⌟ → Ω) where
+      glb : Subset-glb S
+      glb = c {I = Σ _ (_∈ S)} fst
+
+      open Σ glb renaming (fst to apex ; snd to has-is-glb) public
+
+      glb≤S : ∀ {i} → i ∈ S → apex ≤ i
+      glb≤S i∈S = has-is-glb .is-glb.glb≤fam (_ , i∈S)
+
+      greatest : ∀ {apex′} (le : ∀ {i} → i ∈ S → apex′ ≤ i) → apex′ ≤ apex
+      greatest all = has-is-glb .is-glb.greatest _ λ i → all (i .snd)
 ```

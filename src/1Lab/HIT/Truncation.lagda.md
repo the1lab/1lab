@@ -87,7 +87,8 @@ whenever it is a family of propositions, by providing a case for
          → is-prop P
          → (A → P)
          → (x : ∥ A ∥) → P
-∥-∥-rec pprop = ∥-∥-elim (λ _ → pprop)
+∥-∥-rec pprop f (inc x) = f x
+∥-∥-rec pprop f (squash x y i) = pprop (∥-∥-rec pprop f x) (∥-∥-rec pprop f y) i
 
 ∥-∥-rec!
   : ∀ {ℓ ℓ'} {A : Type ℓ} {P : Type ℓ'}
@@ -189,10 +190,10 @@ a family of paths $(x\ y : A) \to f x \equiv_B f y$ to ensure that the
 image of $f$ is a proposition; Then we can map from $\| A \| \to \im f
 \to B$.
 
-From the discussion in [1Lab.Counterexamples.Sigma], we know the
+From the discussion in [Counterexamples.Sigma], we know the
 definition of image, or more properly of $(-1)$-image:
 
-[1Lab.Counterexamples.Sigma]: 1Lab.Counterexamples.Sigma.html
+[Counterexamples.Sigma]: Counterexamples.Sigma.html
 
 ```agda
 image : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → (A → B) → Type _

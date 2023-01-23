@@ -60,6 +60,7 @@ record Semilattice-on {ℓ} (A : Type ℓ) : Type ℓ where
     top : A
     _∩_ : A → A → A
     has-is-semilattice : is-semilattice top _∩_
+  infixr 20 _∩_
   open is-semilattice has-is-semilattice public
 ```
 
@@ -261,7 +262,7 @@ for free, a bunch of combinators for handling big meet expressions.
 module Semilattice {ℓ} (A : Semilattice ℓ) where
   po : Poset _ _
   po = Meet-semi-lattice .F₀ A
-  open Poset po public
+  open Poset po renaming (_≤_ to infix 10 _≤_) public
 
   private module X = Semilattice-on (A .snd) renaming
             ( associative to ∩-assoc
@@ -316,6 +317,19 @@ It's reduced to a bit of algebra:
       f (fsuc i)                       ≤∎
     go .is-glb.greatest lb′ f≤lb′ =
       ∩-univ lb′ (f≤lb′ fzero) (those .is-glb.greatest lb′ (λ i → f≤lb′ (fsuc i)))
+
+  ∩-monotone : ∀ {a b c d} → a ≤ b → c ≤ d → (a ∩ c) ≤ (b ∩ d)
+  ∩-monotone {a = a} {b} {c} {d} a=a∩b c=c∩d =
+    a ∩ c               ≡⟨ ap₂ _∩_ a=a∩b c=c∩d ⟩
+    (a ∩ b) ∩ (c ∩ d)   ≡⟨ pullr (extendl ∩-commutative) ⟩
+    a ∩ (c ∩ (b ∩ d))   ≡⟨ pulll refl ⟩
+    (a ∩ c) ∩ (b ∩ d)   ∎
+
+  ∩-monotoneᵣ : ∀ {a c d} → c ≤ d → (a ∩ c) ≤ (a ∩ d)
+  ∩-monotoneᵣ = ∩-monotone ≤-refl
+
+  ∩-monotoneₗ : ∀ {a b c} → a ≤ b → (a ∩ c) ≤ (b ∩ c)
+  ∩-monotoneₗ α = ∩-monotone α ≤-refl
 
 module
   _ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}

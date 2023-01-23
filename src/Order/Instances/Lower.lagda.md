@@ -46,12 +46,12 @@ module _ {ℓₒ ℓᵣ} (P : Poset ℓₒ ℓᵣ) where
   private module P = Pr P
 
   ↓ : ⌞ P ⌟ → Lower-set P
-  ↓ a .fst b = elΩ (b P.≤ a)
-  ↓ a .snd x y y<x x<a = P.≤-trans y<x <$> x<a
+  ↓ a .map b = elΩ (b P.≤ a)
+  ↓ a .monotone y<x x<a = P.≤-trans y<x <$> x<a
 
   よₚ : ⌞ Monotone P (Lower-sets P) ⌟
-  よₚ .fst = ↓
-  よₚ .snd x y x<y = (λ a a<x → ⦇ P.≤-trans a<x (pure x<y) ⦈) , tt
+  よₚ .map = ↓
+  よₚ .monotone x<y a a<x = ⦇ P.≤-trans a<x (pure x<y) ⦈
 ```
 
 ## (Co)completeness
@@ -64,18 +64,16 @@ by arbitrarily large types:
 
 ```agda
   Lower-sets-complete
-    : ∀ {ℓ′} {I : Type ℓ′} (F : I → Lower-set P) → Σ _ (is-glb (Lower-sets P) F)
-  Lower-sets-complete F = (fun , monotone) , glib where
-    fun : ⌞ Pointwise ⌞ P ^opp ⌟ Props ⌟
-    fun i = elΩ (∀ j → i ∈ F j .fst)
+    : ∀ {ℓ′} {I : Type ℓ′} (F : I → Lower-set P) → Glb (Lower-sets P) F
+  Lower-sets-complete F = fun , glib where
+    fun : ⌞ Monotone (P ^opp) Props ⌟
+    fun .map i = elΩ (∀ j → i ∈ F j .map)
+    fun .monotone y<x = □-map λ x∈Fj j → F j .monotone y<x (x∈Fj j)
 
-    monotone : ∀ x y → y P.≤ x → ∣ fun x ∣ → ∣ fun y ∣
-    monotone x y y<x = □-map λ x∈Fj j → F j .snd x y y<x (x∈Fj j)
-
-    glib : is-glb (Lower-sets P) F (fun , monotone)
-    glib .is-glb.glb≤fam i = (λ x x∈Fj → out! x∈Fj i) , tt
-    glib .is-glb.greatest lb′ lb′<Fi =
-      (λ y y∈lb′ → inc (λ j → lb′<Fi j .fst y y∈lb′)) , tt
+    glib : is-glb (Lower-sets P) F fun
+    glib .is-glb.glb≤fam i x x∈Fj = out! x∈Fj i
+    glib .is-glb.greatest lb′ lb′<Fi y y∈lb′ =
+      inc (λ j → lb′<Fi j y y∈lb′)
 ```
 
 The same thing happens for joins, which are given by an existential
@@ -84,28 +82,26 @@ operator automatically propositionally truncates.
 
 ```agda
   Lower-sets-cocomplete
-    : ∀ {ℓ′} {I : Type ℓ′} (F : I → Lower-set P) → Σ _ (is-lub (Lower-sets P) F)
-  Lower-sets-cocomplete F = (fun , monotone) , lub where
-    fun : ⌞ Pointwise ⌞ P ^opp ⌟ Props ⌟
-    fun i = elΩ (Σ _ λ j → i ∈ F j .fst)
+    : ∀ {ℓ′} {I : Type ℓ′} (F : I → Lower-set P) → Lub (Lower-sets P) F
+  Lower-sets-cocomplete F = fun , lub where
+    fun : ⌞ Monotone (P ^opp) Props ⌟
+    fun .map i = elΩ (Σ _ λ j → i ∈ F j .map)
+    fun .monotone y<x = □-map λ { (i , x∈Fi) → i , F i .monotone y<x x∈Fi }
 
-    monotone : ∀ x y → y P.≤ x → ∣ fun x ∣ → ∣ fun y ∣
-    monotone x y y<x = □-map λ { (i , x∈Fi) → i , F i .snd _ _ y<x x∈Fi }
-
-    lub : is-lub (Lower-sets P) F (fun , monotone)
-    lub .is-lub.fam≤lub i = (λ _ i → inc (_ , i)) , tt
-    lub .is-lub.least lb′ lb′<Fi =
-      (λ x → □-rec! (λ { (i , x∈Fi) → lb′<Fi i .fst x x∈Fi })) , tt
+    lub : is-lub (Lower-sets P) F fun
+    lub .is-lub.fam≤lub i _ j = inc (_ , j)
+    lub .is-lub.least lb′ lb′<Fi x =
+      □-rec! (λ { (i , x∈Fi) → lb′<Fi i x x∈Fi })
 ```
 
 <!--
 ```agda
-  Lower-sets-meets : (a b : Lower-set P) → Σ _ (is-meet (Lower-sets P) a b)
-  Lower-sets-meets a b .fst .fst i = el (i ∈ a .fst × i ∈ b .fst) hlevel!
-  Lower-sets-meets a b .fst .snd x y y<x (x∈a , x∈b) = a .snd _ _ y<x x∈a , b .snd _ _ y<x x∈b
-  Lower-sets-meets a b .snd .is-meet.meet≤l = (λ _ → fst) , tt
-  Lower-sets-meets a b .snd .is-meet.meet≤r = (λ _ → snd) , tt
-  Lower-sets-meets a b .snd .is-meet.greatest lb′ (f , tt) (g , tt) =
-    (λ x x∈lb′ → f x x∈lb′ , (g x x∈lb′)) , tt
+  Lower-sets-meets : (a b : Lower-set P) → Meet (Lower-sets P) a b
+  Lower-sets-meets a b .fst .map i = el (i ∈ a .map × i ∈ b .map) hlevel!
+  Lower-sets-meets a b .fst .monotone y<x (x∈a , x∈b) = a .monotone y<x x∈a , b .monotone y<x x∈b
+  Lower-sets-meets a b .snd .is-meet.meet≤l _ = fst
+  Lower-sets-meets a b .snd .is-meet.meet≤r _ = snd
+  Lower-sets-meets a b .snd .is-meet.greatest lb′ f g x x∈lb′ =
+    f x x∈lb′ , (g x x∈lb′)
 ```
 -->

@@ -8,7 +8,7 @@ description: |
 open import 1Lab.Path
 open import 1Lab.Type
 
-module 1Lab.Counterexamples.Russell where
+module Counterexamples.Russell where
 ```
 
 # Russell's Paradox

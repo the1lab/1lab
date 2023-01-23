@@ -41,6 +41,12 @@ module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
 ```agda
   open is-lub
 
+  Lub : ∀ {ℓ′} {I : Type ℓ′} (F : I → ⌞ P ⌟) → Type _
+  Lub F = Σ P.Ob (is-lub F)
+
+  Bot : Type _
+  Bot = Σ P.Ob λ bot → ∀ x → bot P.≤ x
+
   private unquoteDecl eqv = declare-record-iso eqv (quote is-lub)
 
   instance
@@ -50,7 +56,7 @@ module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
     H-Level-is-lub = prop-instance $ Iso→is-hlevel 1 eqv (hlevel 1)
 
   lub-unique : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → P.Ob}
-             → is-prop (Σ P.Ob (is-lub F))
+             → is-prop (Lub F)
   lub-unique (lub , is) (lub′ , is′) = Σ-prop-path! $ P.≤-antisym
     (is .least lub′ (is′ .fam≤lub))
     (is′ .least lub (is .fam≤lub))
@@ -87,18 +93,20 @@ family of two elements.
 ```
   private unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-join)
 
+  Join : ⌞ P ⌟ → ⌞ P ⌟ → Type _
+  Join a b = Σ P.Ob (is-join a b)
+
   instance
     H-Level-is-join
       : ∀ {a b lub : P.Ob} {n}
       → H-Level (is-join a b lub) (suc n)
     H-Level-is-join = prop-instance $ Iso→is-hlevel 1 eqv′ (hlevel 1)
 
-
   open is-iso
   is-join≃is-lub : ∀ {a b lub : P.Ob} → is-equiv (is-join→is-lub {a} {b} {lub})
   is-join≃is-lub = prop-ext! _ is-lub→is-join .snd
 
-  join-unique : ∀ {a b} → is-prop (Σ P.Ob (is-join a b))
+  join-unique : ∀ {a b} → is-prop (Join a b)
   join-unique {a} {b} = transport
     (λ i → is-prop (Σ P.Ob λ x → ua (_ , is-join≃is-lub {a} {b} {x}) (~ i)))
     lub-unique

@@ -681,7 +681,7 @@ containing all types; In fact, if we did have some magical universe
 $\ty_\infty : \ty_\infty$, we could reproduce Russell's paradox, as is
 done [here].
 
-[here]: 1Lab.Counterexamples.Russell.html
+[here]: Counterexamples.Russell.html
 
 The solution to this is the usual stratification of objects into
 "sizes", with the collection of all "small" objects being "large", and
@@ -780,7 +780,7 @@ upper bound on the size of the sets in $\cU$.
 
 [von Neumann universe]: https://en.wikipedia.org/wiki/Von_Neumann_universe
 
-[Russell's paradox]: 1Lab.Counterexamples.Russell.html
+[Russell's paradox]: Counterexamples.Russell.html
 [categories]: Cat.Base.html
 
 In traditional mathematical writing, it is common to entirely ignore
@@ -1444,7 +1444,7 @@ definitions are needed in place of the simpler notion of "isomorphism".
 open import 1Lab.Equiv
 open import 1Lab.Equiv.Biinv
 open import 1Lab.Equiv.HalfAdjoint
-open import 1Lab.Counterexamples.IsIso
+open import Counterexamples.IsIso
 ```
 
 ## Univalence

@@ -596,6 +596,7 @@ module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
   opposite-adjunction .zag = adj.zig
 
 record make-left-adjoint (R : Functor D C) : Type (adj-level C D) where
+  no-eta-equality
   private
     module C = Cat.Reasoning C
     module D = Cat.Reasoning D

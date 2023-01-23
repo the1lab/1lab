@@ -3,6 +3,7 @@
 open import Algebra.Monoid
 
 open import Cat.Displayed.Univalence.Thin
+open import Cat.Functor.Adjoint.Compose
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
@@ -11,6 +12,7 @@ open import Data.Bool
 open import Order.Instances.Lower.Cocompletion
 open import Order.Instances.Pointwise
 open import Order.Semilattice.Order
+open import Order.Semilattice.Free
 open import Order.Instances.Lower
 open import Order.Semilattice
 open import Order.Diagram.Glb
@@ -73,7 +75,8 @@ propositions], $\Omega$.
 
 ```agda
 Lower-sets-frame : ∀ {ℓ} → Semilattice ℓ → Frame ℓ
-Lower-sets-frame A = Lower-sets A.po .fst , to-frame-on mk↓A where
+Lower-sets-frame A .fst = Lower-sets (Semilattice.po A) .fst
+Lower-sets-frame A .snd = to-frame-on mk↓A where
   module A = Semilattice A
   module DA = Poset (Lower-sets A.po)
 
@@ -106,7 +109,7 @@ Lower-sets-frame A = Lower-sets A.po .fst , to-frame-on mk↓A where
     fcp.le→meet DA-meets {y = Lower-sets-cocomplete A.po f .fst} $
       Lower-sets-cocomplete A.po f .snd .is-lub.fam≤lub i
 
-  mk↓A .make-frame.distrib x f = Σ-prop-path! $ funext λ arg →
+  mk↓A .make-frame.distrib x f = Monotone-path λ arg →
     Ω-ua (λ { (x , box) → □-map (λ { (i , arg∈fi) → i , x , arg∈fi }) box })
          (□-rec! λ { (i , x , arg∈fi) → x , inc (i , arg∈fi) })
 ```
@@ -130,7 +133,6 @@ decategorification of “A geometric morphism $B \to D(A)$ is a flat
 functor $A \to B$”.
 
 [Diaconescu's theorem]: Topoi.Classifying.Diaconescu.html
-
 
 ```agda
 make-free-cocompletion : ∀ {ℓ} → make-left-adjoint (Frame↪SLat {ℓ})
@@ -156,7 +158,8 @@ performing this construction. Let's abbreviate it:
 
 ```agda
     f-monotone : ⌞ Monotone A.po B.po ⌟
-    f-monotone = f .hom , Meet-semi-lattice .F₁ f .preserves
+    f-monotone .map      = f .hom
+    f-monotone .monotone = Meet-semi-lattice .F₁ f .preserves _ _
 ```
 
 The easy part is an appeal to the existing machinery for free
@@ -165,7 +168,7 @@ map $DA \to B$, because $B$, being a frame, is cocomplete.
 
 ```agda
     mkhom : Frames.Hom ℓ (Lower-sets-frame A) B
-    mkhom .hom = Lan↓₀ A.po B.po B.cocomplete f-monotone
+    mkhom .hom = Lan↓ A.po B.po B.cocomplete f-monotone .map
     mkhom .preserves .is-frame-hom.pres-⋃ g =
       Lan↓-cocontinuous A.po B.po B.cocomplete f-monotone g
 ```
@@ -190,11 +193,11 @@ preserves meets, and the third step follows from the infinite
 distributive law in $B$.
 
 ```agda
-    mkhom .preserves .is-frame-hom.pres-∩ (S , s-lower) (T , t-lower) =
-      B.⋃ {I = Σ _ λ a → a ∈ S × a ∈ T} (λ i → f # i .fst)  ≡⟨ lemma ⟩
-      B.⋃ (λ i → f # (i .fst .fst A.∩ i .snd .fst))         ≡⟨ ap B.⋃ (funext λ i → f .preserves .pres-⋆ _ _) ⟩
-      B.⋃ (λ i → f # i .fst .fst B.∩ f # i .snd .fst)       ≡˘⟨ B.⋃-∩-product _ _ ⟩
-      B.⋃ (λ i → f # i .fst) B.∩ B.⋃ (λ i → f # i .fst)     ∎
+    mkhom .preserves .is-frame-hom.pres-∩ S T =
+      B.⋃ (λ i → f # i .fst)                             ≡⟨ lemma ⟩
+      B.⋃ (λ i → f # (i .fst .fst A.∩ i .snd .fst))      ≡⟨ ap B.⋃ (funext λ i → f .preserves .pres-⋆ _ _) ⟩
+      B.⋃ (λ i → f # i .fst .fst B.∩ f # i .snd .fst)    ≡˘⟨ B.⋃-∩-product _ _ ⟩
+      B.⋃ (λ i → f # i .fst) B.∩ B.⋃ (λ i → f # i .fst)  ∎
 ```
 
 <details>
@@ -204,8 +207,8 @@ an intersection of two lower sets as a join of their intersection.
 
 ```agda
       where
-        lemma : B.⋃ {I = Σ _ λ a → a ∈ S × a ∈ T} (λ i → f # i .fst)
-              ≡ B.⋃ {I = (Σ _ (_∈ S)) × (Σ _ (_∈ T))}
+        lemma : B.⋃ {I = Σ _ λ a → a ∈ S .map × a ∈ T .map} (λ i → f # i .fst)
+              ≡ B.⋃ {I = (Σ _ (_∈ S .map)) × (Σ _ (_∈ T .map))}
                     (λ i → f # (i .fst .fst A.∩ i .snd .fst))
         lemma = B.≤-antisym
           (B.⋃-universal _ (λ { (i , i∈S , i∈T) →
@@ -213,7 +216,7 @@ an intersection of two lower sets as a join of their intersection.
             f # (i A.∩ i)                                  B.≤⟨ B.⋃-colimiting ((i , i∈S) , i , i∈T) _ ⟩
             B.⋃ (λ i → f # (i .fst .fst A.∩ i .snd .fst))  B.≤∎}))
           (B.⋃-universal _ (λ { ((i , i∈S) , j , i∈T) →
-            B.⋃-colimiting (i A.∩ j , s-lower _ _ A.∩≤l i∈S , t-lower _ _ A.∩≤r i∈T) _
+            B.⋃-colimiting (i A.∩ j , S .monotone A.∩≤l i∈S , T .monotone A.∩≤r i∈T) _
             }))
 ```
 
@@ -243,11 +246,11 @@ $\land$.
     go : Precategory.Hom (Semilattices ℓ) S (Frame↪SLat .F₀ (Lower-sets-frame S))
     go .hom = ↓ (Semilattice.po S)
 
-    go .preserves .pres-id = Σ-prop-path! $ funext λ b →
+    go .preserves .pres-id = Monotone-path λ b →
       Ω-ua (λ _ → inc λ j → absurd j)
            (λ _ → inc (sym S.∩-idr))
 
-    go .preserves .pres-⋆ x y = Σ-prop-path! $ funext λ b → Ω-ua
+    go .preserves .pres-⋆ x y = Monotone-path λ b → Ω-ua
       (□-rec! {pa = Σ-is-hlevel 1 squash λ _ → squash} λ b≤x∩y →
           inc (S.≤-trans b≤x∩y S.∩≤l)
         , inc (S.≤-trans b≤x∩y S.∩≤r))
@@ -267,14 +270,35 @@ cocontinuous extensions to tie everything up:
   go .unit = the-unit
   go .universal {A} {B} f = Mk.mkhom A B f
   go .commutes {A} {B} f = Homomorphism-path (Mk.mkcomm A B f)
-  go .unique {A} {B} {f = f} {g} wit = Homomorphism-path q where
+  go .unique {A} {B} {f = f} {g} wit = Homomorphism-path λ x → q x where
     open Mk A B f
     p = Lan↓-unique A.po B.po B.cocomplete f-monotone
-      (g .hom , λ x y w → Meet-semi-lattice .F₁ (Frame↪SLat .F₁ g) .preserves x y
-        (le-meet (Lower-sets A.po) w (Lower-sets-meets A.po x y .snd)))
+      (record
+        { map = g .hom
+        ; monotone = λ {x} {y} w →
+          Meet-semi-lattice .F₁ (Frame↪SLat .F₁ g) .preserves x y
+            (le-meet (Lower-sets A.po) w (Lower-sets-meets A.po x y .snd))
+        })
       (g .preserves .is-frame-hom.pres-⋃)
       λ x → ap (_# x) (sym wit)
 
-    q : ∀ x → Lan↓₀ A.po B.po B.cocomplete f-monotone x ≡ g .hom x
-    q x = ap fst (sym p) $ₚ x
+    q : ∀ x → Lan↓ A.po B.po B.cocomplete f-monotone .map x ≡ g .hom x
+    q x = ap map (sym p) $ₚ x
 ```
+
+<!--
+```agda
+
+-- internal note: need λ x → q x in the RHS of go.unique above otherwise
+-- get a level error from lossy-unification
+
+Frames→Sets : ∀ {ℓ} → Functor (Frames ℓ) (Sets ℓ)
+Frames→Sets {ℓ} = Forget-structure (Semilattice-structure ℓ) F∘ Frame↪SLat
+
+Sets→Frames : ∀ {ℓ} → Functor (Sets ℓ) (Frames ℓ)
+Sets→Frames = to-functor make-free-cocompletion F∘ to-functor make-free-slat
+
+Free-frames : ∀ {ℓ} → Sets→Frames {ℓ} ⊣ Frames→Sets
+Free-frames = LF⊣GR (to-left-adjoint make-free-slat) (to-left-adjoint make-free-cocompletion)
+```
+-->

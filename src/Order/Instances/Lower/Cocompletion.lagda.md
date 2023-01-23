@@ -35,7 +35,7 @@ module ↓Coyoneda {o ℓ} (P : Poset o ℓ) (Ls : Lower-set P) where
     module P↓ = Poset (Lower-sets P)
 
   shape : Type o
-  shape = Σ ⌞ P ⌟ λ i → i ∈ Ls .fst
+  shape = Σ ⌞ P ⌟ λ i → i ∈ Ls .map
 
   diagram : shape → Lower-set P
   diagram (i , i∈P) = ↓ P i
@@ -49,9 +49,9 @@ in Agda and play with it themselves!
 ```agda
   lower-set-is-lub : is-lub (Lower-sets P) diagram Ls
   lower-set-is-lub .is-lub.fam≤lub (j , j∈Ls) =
-    (λ i □i≤j → Ls .snd _ _ (out! □i≤j) j∈Ls) , tt
+    λ i □i≤j → Ls .monotone (out! □i≤j) j∈Ls
   lower-set-is-lub .is-lub.least ub′ fam≤ub′ =
-    (λ i i∈Ls → fam≤ub′ (i , i∈Ls) .fst i (inc P.≤-refl)) , tt
+    λ i i∈Ls → fam≤ub′ (i , i∈Ls) i (inc P.≤-refl)
 ```
 
 A quick note on notation: The result saying that $L$ is the lub of the
@@ -73,7 +73,7 @@ saying that presheaves are computed as certain [coends].
 module
   _ {o ℓ ℓ′} (A : Poset o ℓ) (B : Poset o ℓ′)
     (B-cocomplete
-      : ∀ {I : Type o} (F : I → ⌞ B ⌟) → Σ _ (is-lub B F))
+      : ∀ {I : Type o} (F : I → ⌞ B ⌟) → Lub B F)
     (f : ⌞ Monotone A B ⌟)
   where
   private
@@ -94,11 +94,9 @@ $$
 It is readily computed that this procedure results in a monotone map.
 
 ```agda
-  Lan↓₀ : Lower-set A → ⌞ B ⌟
-  Lan↓₀ (S , is-lower) = B-cocomplete {I = Σ ⌞ A ⌟ λ i → i ∈ S} (λ i → f .fst (i .fst)) .fst
-
-  Lan↓₁ : ∀ x y → x DA.≤ y → Lan↓₀ x B.≤ Lan↓₀ y
-  Lan↓₁ (S , s-lower) (T , t-lower) (S⊆T , _) = B-cocomplete _ .snd .is-lub.least _ λ {
+  Lan↓ : Monotone-map (Lower-sets A) B
+  Lan↓ .map S = B-cocomplete {I = Σ ⌞ A ⌟ λ i → i ∈ S .map} (λ i → f .map (i .fst)) .fst
+  Lan↓ .monotone {S} {T} S⊆T = B-cocomplete _ .snd .is-lub.least _ λ {
     (i , i∈S) → B-cocomplete _ .snd .is-lub.fam≤lub (i , S⊆T i i∈S) }
 ```
 
@@ -107,9 +105,9 @@ elements under $x$ is $x$. Put like that, it seems trivial, but it says
 that our cocontinuous extension commutes with the "unit map" $A \to DA$.
 
 ```agda
-  Lan↓-commutes : ∀ x → Lan↓₀ (↓ A x) ≡ f .fst x
+  Lan↓-commutes : ∀ x → Lan↓ .map (↓ A x) ≡ f .map x
   Lan↓-commutes x = B.≤-antisym
-    (B-cocomplete _ .snd .is-lub.least _ λ { (i , □i≤x) → f .snd i x (out! □i≤x) })
+    (B-cocomplete _ .snd .is-lub.least _ λ { (i , □i≤x) → f .monotone (out! □i≤x) })
     (B-cocomplete _ .snd .is-lub.fam≤lub (x , inc A.≤-refl))
 ```
 
@@ -119,7 +117,7 @@ establishes that the cocontinuous extension does live up to its name:
 ```agda
   Lan↓-cocontinuous
     : ∀ {I : Type o} (F : I → Lower-set A)
-    → Lan↓₀ (Lower-sets-cocomplete A F .fst) ≡ B-cocomplete (λ i → Lan↓₀ (F i)) .fst
+    → Lan↓ .map (Lower-sets-cocomplete A F .fst) ≡ B-cocomplete (λ i → Lan↓ .map (F i)) .fst
   Lan↓-cocontinuous F = B.≤-antisym
     (B-cocomplete _ .snd .is-lub.least _ λ { (i , i∈⋃F) → □-rec! (λ { (j , i∈Fj) →
       B.≤-trans (B-cocomplete _ .snd .is-lub.fam≤lub (i , i∈Fj))
@@ -143,14 +141,14 @@ reveals that $f'$ must agree with $\widehat{f}$.
   Lan↓-unique
     : (f~ : ⌞ Monotone (Lower-sets A) B ⌟)
     → ( ∀ {I : Type o} (F : I → Lower-set A)
-      → f~ .fst (Lower-sets-cocomplete A F .fst) ≡ B-cocomplete (λ i → f~ .fst (F i)) .fst )
-    → (∀ x → f~ .fst (↓ A x) ≡ f .fst x)
-    → f~ ≡ (Lan↓₀ , Lan↓₁)
-  Lan↓-unique (f~ , f~-mon) f~-cocont f~-comm = Σ-prop-path! $ funext λ i →
-    f~ i                                                         ≡⟨ ap f~ (↓Coyoneda.lower-set-∫ A i) ⟩
-    f~ (Lower-sets-cocomplete A (↓Coyoneda.diagram A i) .fst)    ≡⟨ f~-cocont (↓Coyoneda.diagram A i) ⟩
-    B-cocomplete (λ j → f~ (↓Coyoneda.diagram A i j)) .fst       ≡⟨ ap (λ e → B-cocomplete e .fst) (funext λ j → f~-comm (j .fst) ∙ sym (Lan↓-commutes (j .fst))) ⟩
-    B-cocomplete (λ j → Lan↓₀ (↓ A (j .fst))) .fst               ≡˘⟨ Lan↓-cocontinuous (↓Coyoneda.diagram A i) ⟩
-    Lan↓₀ (Lower-sets-cocomplete A (↓Coyoneda.diagram A i) .fst) ≡˘⟨ ap Lan↓₀ (↓Coyoneda.lower-set-∫ A i) ⟩
-    Lan↓₀ i                                                      ∎
+      → f~ .map (Lower-sets-cocomplete A F .fst) ≡ B-cocomplete (λ i → f~ .map (F i)) .fst )
+    → (∀ x → f~ .map (↓ A x) ≡ f .map x)
+    → f~ ≡ Lan↓
+  Lan↓-unique f~ f~-cocont f~-comm = Monotone-path λ i →
+    f~ .map i                                                         ≡⟨ ap (f~ .map) (↓Coyoneda.lower-set-∫ A i) ⟩
+    f~ .map (Lower-sets-cocomplete A (↓Coyoneda.diagram A i) .fst)    ≡⟨ f~-cocont (↓Coyoneda.diagram A i) ⟩
+    B-cocomplete (λ j → f~ .map (↓Coyoneda.diagram A i j)) .fst       ≡⟨ ap (λ e → B-cocomplete e .fst) (funext λ j → f~-comm (j .fst) ∙ sym (Lan↓-commutes (j .fst))) ⟩
+    B-cocomplete (λ j → Lan↓ .map (↓ A (j .fst))) .fst               ≡˘⟨ Lan↓-cocontinuous (↓Coyoneda.diagram A i) ⟩
+    Lan↓ .map (Lower-sets-cocomplete A (↓Coyoneda.diagram A i) .fst) ≡˘⟨ ap (Lan↓ .map) (↓Coyoneda.lower-set-∫ A i) ⟩
+    Lan↓ .map i                                                      ∎
 ```

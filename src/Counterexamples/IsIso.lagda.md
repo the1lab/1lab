@@ -13,7 +13,7 @@ open import 1Lab.Type
 
 open import Homotopy.Space.Circle
 
-module 1Lab.Counterexamples.IsIso where
+module Counterexamples.IsIso where
 ```
 
 # is-iso is not a proposition

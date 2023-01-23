@@ -284,7 +284,7 @@ as is usual when making something "more coherent". Furthermore, if
 everything was preserved, `is-iso`{.Agda} would be a proposition, and
 this is [provably not the case].
 
-[provably not the case]: 1Lab.Counterexamples.IsIso.html
+[provably not the case]: Counterexamples.IsIso.html
 
 The argument presented here is done directly in cubical style, but a
 less direct proof is also available, by showing that every isomorphism

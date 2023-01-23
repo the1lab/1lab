@@ -179,11 +179,91 @@ construction.
 
 ```agda
 _^opp : ∀ {ℓ ℓ′} → Poset ℓ ℓ′ → Poset ℓ ℓ′
-P ^opp = to-poset ⌞ P ⌟ λ where
-    .make-poset.rel x y         → y ≤ x
-    .make-poset.thin            → ≤-thin
-    .make-poset.id              → ≤-refl
-    .make-poset.trans f<g g<h   → ≤-trans g<h f<g
-    .make-poset.antisym f<g g<f → ≤-antisym g<f f<g
-  where open Poset-on (P .snd)
+P ^opp = to-poset ⌞ P ⌟ mk-opp where
+  open Poset-on (P .snd)
+  mk-opp : make-poset _ _
+  mk-opp .make-poset.rel x y         = y ≤ x
+  mk-opp .make-poset.thin            = ≤-thin
+  mk-opp .make-poset.id              = ≤-refl
+  mk-opp .make-poset.trans f<g g<h   = ≤-trans g<h f<g
+  mk-opp .make-poset.antisym f<g g<f = ≤-antisym g<f f<g
 ```
+
+## Monotone maps
+
+The **monotone map** is the posetal analogue of a functor: A function
+between the underlying sets which preserves the order relation. Note
+that since a partial order is a proposition, we do not need to concern
+ourselves with functoriality! This is a special case of the [pointwise
+ordering], but it gets its own definition for two reasons:
+
+1. The conceptual importance of monotone maps. They simply come up in
+more constructions than arbitrary pointwise orders. As an example, take
+[lower sets]
+
+2. Proof assistants are evil software overlords we have to cater to.
+
+[pointwise ordering]: Cat.Instances.Pointwise.html
+[lower sets]: Cat.Instances.Lower.html
+
+```agda
+record Monotone-map {ℓₒ ℓᵣ ℓₒ′ ℓᵣ′} (P : Poset ℓₒ ℓᵣ) (Q : Poset ℓₒ′ ℓᵣ′) : Type (ℓₒ ⊔ ℓₒ′ ⊔ ℓᵣ ⊔ ℓᵣ′) where
+  no-eta-equality
+  private
+    module P = Poset-on (P .snd)
+    module Q = Poset-on (Q .snd)
+
+  field
+    map      : ⌞ P ⌟ → ⌞ Q ⌟
+    monotone : ∀ {x y} → x P.≤ y → map x Q.≤ map y
+
+open Monotone-map public
+
+private unquoteDecl eqv′ = declare-record-iso eqv′ (quote Monotone-map)
+
+Monotone : ∀ {ℓₒ ℓᵣ ℓₒ′ ℓᵣ′} (P : Poset ℓₒ ℓᵣ) (Q : Poset ℓₒ′ ℓᵣ′) → Poset _ _
+∣ Monotone P Q .fst ∣ = Monotone-map P Q
+
+Monotone P Q .fst .is-tr = Iso→is-hlevel 2 eqv′ $
+  Σ-is-hlevel 2 (fun-is-hlevel 2 (Q .fst .is-tr)) λ map →
+    is-prop→is-set $
+      Π-is-hlevel′ 1 λ x → Π-is-hlevel′ 1 λ y →
+        fun-is-hlevel 1 (Poset-on.≤-thin (Q .snd))
+
+Monotone P Q .snd = make-poset.to-poset-on mk where
+  module Q = Poset-on (Q .snd)
+
+  open make-poset
+  mk : make-poset _ _
+  mk .rel F G = ∀ x → F .map x Q.≤ G .map x
+  mk .id x = Q.≤-refl
+  mk .thin = Π-is-hlevel 1 λ _ → Q.≤-thin
+  mk .trans f g x = Q.≤-trans (f x) (g x)
+  mk .antisym f g i .map x = Q.≤-antisym (f x) (g x) i
+  mk .antisym {x = x} {y = y} f g i .monotone x≤y =
+    is-prop→pathp (λ i → Q.≤-thin {Q.≤-antisym (f _) (g _) i} {Q.≤-antisym (f _) (g _) i})
+      (x .monotone x≤y) (y .monotone x≤y) i
+```
+
+<!--
+```agda
+Monotone-pathp
+  : ∀ {ℓₒ ℓᵣ ℓₒ′ ℓᵣ′} (P : I → Poset ℓₒ ℓᵣ) (Q : I → Poset ℓₒ′ ℓᵣ′)
+  → {x : Monotone-map (P i0) (Q i0)} {y : Monotone-map (P i1) (Q i1)}
+  → PathP (λ i → ⌞ P i ⌟ → ⌞ Q i ⌟) (x .map) (y .map)
+  → PathP (λ i → Monotone-map (P i) (Q i)) x y
+Monotone-pathp P Q {x = x} {y} p i .map = p i
+Monotone-pathp P Q {x = x} {y} p i .monotone {a} {b} arg =
+  is-prop→pathp
+    (λ i → Π-is-hlevel³ {C = λ x y → P i .snd .Poset-on._≤_ x y} 1
+      λ a b c → Q i .snd .Poset-on.≤-thin {p i a} {p i b})
+    (λ _ _ → x .monotone) (λ _ _ → y .monotone) i a b arg
+
+Monotone-path
+  : ∀ {ℓₒ ℓᵣ ℓₒ′ ℓᵣ′} {P : Poset ℓₒ ℓᵣ} {Q : Poset ℓₒ′ ℓᵣ′}
+  → {x y : Monotone-map P Q}
+  → (∀ a → x .map a ≡ y .map a)
+  → x ≡ y
+Monotone-path {P = P} {Q} path = Monotone-pathp (λ _ → P) (λ _ → Q) (funext path)
+```
+-->
