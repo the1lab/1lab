@@ -112,7 +112,7 @@ commute-last x y z =
 ```
 -->
 
-Note that this representation, while convienent, does pose some problems.
+Note that this representation, while convenient, does pose some problems.
 We pay for the (relative) uniqueness by having larger terms: For instance, the
 polynomial $X^4 + 1$ is represented as
 
@@ -122,7 +122,7 @@ private
   x⁴+1 = zerop *X+ const 1 *X+ const 0 *X+ const 0 *X+ const 0 *X+ const 0
 ```
 
-This could be alieviated by using a *sparse* representation, but this is
+This could be alleviated by using a *sparse* representation, but this is
 decidedly more difficult. As the solver is not expected to deal with
 polynomials with large degrees, this term blow-up will not be a problem
 in practice.
@@ -303,11 +303,11 @@ sound-+ₚ (p *X+ r) (q *X+ s) (x₀ ∷ env) =
 
 Wow, that was a bit painful! This is a common theme when writing proof
 automation: it distills down a lot of the annoying proofs we need to
-write across the entire codebase into one _extremely_ painful proof.
+write across the entire code-base into one _extremely_ painful proof.
 Thus, conservation of frustration is preserved.
 
-Philisophical reflections aside, let's move onto multiplication of
-polynomials.  As the homogenous and heterogeneous multiplication were
+Philosophical reflections aside, let's move onto multiplication of
+polynomials.  As the homogeneous and heterogeneous multiplication were
 defined in a mutually recursive manner, we must do so for their proofs
 of soundness as well.
 
@@ -320,7 +320,7 @@ sound-*ₚ′
   → ⟦ p *ₚ′ q ⟧ₚ (x₀ ∷ env) ≡ ⟦ p ⟧ₚ env * ⟦ q ⟧ₚ (x₀ ∷ env)
 ```
 
-The first couple of cases of homogenous multiplication don't look so
+The first couple of cases of homogeneous multiplication don't look so
 bad...
 
 ```agda
@@ -365,7 +365,7 @@ sound-*ₚ (p *X+ r) (q *X+ s) (x₀ ∷ env) =
     ⟦s⟧ = ⟦ s ⟧ₚ env
 ```
 
-As a nice pallate cleanser, the proofs for heterogeneous multiplication
+As a nice palate cleanser, the proofs for heterogeneous multiplication
 are nowhere near as bad.
 
 ```agda
@@ -471,7 +471,7 @@ sound (e₁ ‵* e₂) env =
 
 Now, all we need to do is expose an interface for the reflection portion
 of the solver. The `abstract` here is VERY IMPORTANT, as it prevents the
-proof from unfolding into an enourmous term that kills our compile
+proof from unfolding into an enormous term that kills our compile
 times.
 
 ```agda
