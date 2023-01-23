@@ -83,7 +83,6 @@ through a map $u' \to a'$ (in green, marked $\exists!$).
     unique    : ∀ {u u′} {m : Hom u a} {h′ : Hom[ f ∘ m ] u′ b′}
               → (m′ : Hom[ m ] u′ a′) → f′ ∘′ m′ ≡ h′ → m′ ≡ universal m h′
 ```
-
 Given a "right corner" like that of the diagram below, and note that the
 input data consists of $a$, $b$, $f : a \to b$ and $b'$ over $a$,
 
@@ -97,7 +96,41 @@ input data consists of $a$, $b$, $f : a \to b$ and $b'$ over $a$,
 \end{tikzcd}\]
 ~~~
 
-we call an object $a'$ over $a$ together with a Cartesian arrow $f' : a'
+We also provide some helper functions for working with morphisms that
+are displayed over something that is *propositionally* equal to a
+composite, rather than displayed directly over a composite.
+
+```agda
+  universal′ : ∀ {u u′} {m : Hom u a} {k : Hom u b}
+             → (p : f ∘ m ≡ k) (h′ : Hom[ k ] u′ b′)
+             → Hom[ m ] u′ a′
+  universal′ {u′ = u′} p h′ =
+    universal _ (coe1→0 (λ i → Hom[ p i ] u′ b′) h′)
+
+  commutesp : ∀ {u u′} {m : Hom u a} {k : Hom u b}
+            → (p : f ∘ m ≡ k) (h′ : Hom[ k ] u′ b′)
+            → f′ ∘′ universal′ p h′ ≡[ p ] h′
+  commutesp {u′ = u′} p h′ =
+    to-pathp⁻ $ commutes _ (coe1→0 (λ i → Hom[ p i ] u′ b′) h′)
+
+  universalp : ∀ {u u′} {m₁ m₂ : Hom u a} {k : Hom u b}
+          → (p : f ∘ m₁ ≡ k) (q : m₁ ≡ m₂) (r : f ∘ m₂ ≡ k)
+          → (h′ : Hom[ k ] u′ b′)
+          → universal′ p h′ ≡[ q ] universal′ r h′
+  universalp {u = u} p q r h′ i =
+    universal′ (is-set→squarep (λ _ _ → Hom-set u b) (ap (f ∘_) q) p r refl i) h′
+
+  uniquep : ∀ {u u′} {m₁ m₂ : Hom u a} {k : Hom u b}
+          → (p : f ∘ m₁ ≡ k) (q : m₁ ≡ m₂) (r : f ∘ m₂ ≡ k)
+          → {h′ : Hom[ k ] u′ b′}
+          → (m′ : Hom[ m₁ ] u′ a′)
+          → f′ ∘′ m′ ≡[ p ] h′ → m′ ≡[ q ] universal′ r h′
+  uniquep p q r {h′ = h′} m′ s =
+    to-pathp⁻ (unique m′ (from-pathp⁻ s) ∙ from-pathp⁻ (universalp p q r h′))
+```
+
+
+We call an object $a'$ over $a$ together with a Cartesian arrow $f' : a'
 \to b'$ a _Cartesian lift_ of $f$. Cartesian lifts, defined by universal
 property as they are, are unique when they exist, so that "having
 Cartesian lifts" is a _property_, not a structure.
