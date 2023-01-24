@@ -472,7 +472,7 @@ For essential surjectivity, given a map $f : X \to I$, we recover a
 family of sets $(f^*i)_{i \in I}$ by taking the `fibre`{.Agda} of $f$
 over each point, which cleanly extends to a functor. To show that the
 `Total-space`{.Agda} of this functor is isomorphic to the map we started
-with, we use one of the auxilliary lemmas used in the construction of an
+with, we use one of the auxiliary lemmas used in the construction of an
 object classifier: `Total-equiv`{.Agda}. This is cleaner than exhibiting
 an isomorphism directly, though it does involve an appeal to univalence.
 

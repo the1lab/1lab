@@ -227,7 +227,7 @@ map $\widehat{f}$ satisfies $\widehat{f}(\darr x) = f(x)$.
     mkcomm x = sym (Lan↓-commutes A.po B.po B.cocomplete f-monotone x)
 ```
 
-Now we must define the unit map. We've already commited to defining
+Now we must define the unit map. We've already committed to defining
 $\eta_a = \darr a$, so we have to show that $\darr$ preserves finite
 meets. This is true because $\darr$ lands in _lower sets_, so it
 suffices to show an equivalence between (e.g.) being _under $a$ and

@@ -140,7 +140,7 @@ direction, namely, that every unital semigroup is a monoid.
 # Inverses
 
 A useful application of the monoid laws is in showing that _having an
-**inverse**_ is a _proprety_ of a specific element, not structure on
+**inverse**_ is a _property_ of a specific element, not structure on
 that element. To make this precise: Let $e$ be an element of a monoid,
 say $(M, 1, \star)$; If there are $x$ and $y$ such that $x \star e = 1$
 and $e \star y = 1$, then $x = y$.

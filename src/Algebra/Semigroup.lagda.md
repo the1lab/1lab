@@ -134,7 +134,7 @@ module _
 
 ## The "min" semigroup
 
-An example of a naturally-occuring semigroup are the natural numbers
+An example of a naturally-occurring semigroup are the natural numbers
 under taking `minimums`{.Agda ident=min}.
 
 ```agda
@@ -147,7 +147,7 @@ Nat-min .has-is-magma .has-is-set = Nat-is-set
 Nat-min .associative = min-assoc _ _ _
 ```
 
-What is meant by "naturally occuring" is that this semigroup can not be
+What is meant by "naturally occurring" is that this semigroup can not be
 made into a monoid: There is no natural number `unit` such that, for all
 `y`, `min unit y ≡ y` and `min y unit ≡ y`.
 

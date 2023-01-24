@@ -139,7 +139,7 @@ then so does $F$.
 
 What we must do, essentially, is prove that $\lim (U \circ F)$ admits an
 algebra structure, much like we did for products of groups. In this,
-we'll use two auxilliary cones over $U \circ F$, one with underlying
+we'll use two auxiliary cones over $U \circ F$, one with underlying
 object given by $M(\lim (U \circ F))$ and one by $M^2(\lim (U \circ
 F))$. We construct the one with a single $M$ first, and re-use its maps
 in the construction of the one with $M^2$.

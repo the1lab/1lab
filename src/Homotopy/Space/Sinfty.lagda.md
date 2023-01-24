@@ -68,11 +68,11 @@ is-contrS∞′ .paths = pathsS∞′
 
 The cubical approach essentially acomplishes the same thing as the previous
 proof, without using any helper lemmas, by way of drawing a slightly clever
-cube. The case of the defenition for the higher constructor requires a
+cube. The case of the definition for the higher constructor requires a
 square in which two of the sides are `merid N` and `merid x`. We start with
 a square in which both of these sides are `merid N` (specifically
 `merid N (i ∧ j)`), and then construct a cube in which one of the faces morphs
-`merid N ` into `merid x`. This is something that we can easilly do since we
+`merid N ` into `merid x`. This is something that we can easily do since we
 have a path `N ≡ x` via the recursive call `pathsS∞ x`.
 
 ```agda

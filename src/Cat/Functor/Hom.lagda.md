@@ -100,7 +100,7 @@ postcomposition; This is natural because we must show $f \circ x \circ g
 よ₁ f .is-natural x y g = funext λ x → assoc f x g
 ```
 
-The other category laws from $\ca{C}$ ensure that this assigment of
+The other category laws from $\ca{C}$ ensure that this assignment of
 natural transformations is indeed functorial:
 
 ```agda

@@ -130,8 +130,8 @@ satisfying these properties (finite meets, arbitrary joins, the
 distributive law) is called a **frame**. A map of frames $f : A \to B$
 is defined to be a map of their underlying sets preserving finite meets
 and arbitrary joins --- by abstract nonsense, this is the same as a
-function $f^* : B \to A$ which preserves finite meets and has a right
-adjoint $f_* : A \to B$[^aft].
+function $f^* : A \to B$ which preserves finite meets and has a right
+adjoint $f_* : B \to A$[^aft].
 
 [^aft]: By the adjoint functor theorem, any map between posets which
 preserves arbitrary joins has a right adjoint; Conversely, every map

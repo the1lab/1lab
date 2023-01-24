@@ -428,7 +428,7 @@ module _
 So, given an object $x \in \ca{C}$, we must find an object $y$ and a
 universal map $x \to R(y)$. Recall that, in the previous section, we
 constructed the left adjoint $L$'s action on objects by using our system
-of universal arrows; Symetrically, in this section, we take the codomain
+of universal arrows; Symmetrically, in this section, we take the codomain
 to be $y = L(x)$. We must then find an arrow $x \to RLx$, but this is
 exactly the adjunction unit $\eta$!
 

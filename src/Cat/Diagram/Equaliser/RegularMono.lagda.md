@@ -130,7 +130,7 @@ $\phi \circ i_2 = \id{arr_2}$.
 
 To show that $f$ also has the universal property of the equaliser of
 $i_1, i_2$, suppose that $e\prime : E \to b$ also equalises the
-injections. Then we can calulate:
+injections. Then we can calculate:
 
 $$
 \id{arr_1}e\prime = (\phi i_1)e\prime = (\phi i_2)e\prime = \id{arr_2}e\prime

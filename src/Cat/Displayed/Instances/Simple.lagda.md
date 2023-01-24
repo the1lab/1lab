@@ -24,7 +24,7 @@ When constructing models of type theories, the general pattern
 is to construct a category of contexts and substitutions, and then
 to study types and terms as structures over this category.
 The language of displayed categories allows us to capture this situation
-quite succinctly by considering these extra pieces of equippment as
+quite succinctly by considering these extra pieces of equipment as
 being fibred over our category of contexts.
 
 Focusing in, the language of *simple fibrations* provides us with enough

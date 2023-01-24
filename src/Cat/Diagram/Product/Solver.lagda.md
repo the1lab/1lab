@@ -14,7 +14,7 @@ open import Data.List
 
 Much like the [category solver], this module is split into two halves.
 The first implements an algorithm for normalizing expressions in the
-langauge of a category with binary products. The latter half consists
+language of a category with binary products. The latter half consists
 of the usual reflection hacks required to transform Agda expressions
 into our internal expression type.
 
@@ -134,7 +134,7 @@ We now define our eliminators for values.
 ## Quotation
 
 As noted above, our quotation is type-directed to make applying η-laws
-easier. When we encouter a `v : Value X (Y ‶⊗‶ Z)`, we will always
+easier. When we encounter a `v : Value X (Y ‶⊗‶ Z)`, we will always
 η-expand it using the eliminators defined above. If `v` is a
 `vpair`{.Agda}, then the eliminators will compute away, and we will be
 left with the same value we started with. If `v` is a `vhom`{.Agda},
@@ -281,7 +281,7 @@ morphism as naively interpreting the expression.
 
 In order to make the reflection easier later, we bundle up the soundness
 proof. Marking this as abstract is *very important*. This prevents
-agda from unfolding into an absolutely enourmous proof when used as
+agda from unfolding into an absolutely enormous proof when used as
 a macro, which is critical for performance.
 
 ```agda

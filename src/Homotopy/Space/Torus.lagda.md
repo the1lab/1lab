@@ -23,7 +23,7 @@ Such a CW complex can be regarded as a higher inductive type,
 regarding the 0-cell as a constructor `base`{.Agda}, the two 1-cells
 as distinct paths `base ≡ base`{.Agda}, and the 2-cell as a square
 with its top and bottom edges attached to one of the 1-cells, and its
-left and right edge attachd to the other.
+left and right edge attached to the other.
 
 ```agda
 data T² : Type where

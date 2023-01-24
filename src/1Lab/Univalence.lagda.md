@@ -418,7 +418,7 @@ module _ where private
 
 However, because of efficiency concerns (Agda _is_ a programming
 language, after all), instead of using `id→equiv`{.Agda} defined using
-J, we use `path→equiv`{.Agda}, which is [defined in an auxilliary
+J, we use `path→equiv`{.Agda}, which is [defined in an auxiliary
 module](1Lab.Equiv.FromPath.html).
 
 ```agda
