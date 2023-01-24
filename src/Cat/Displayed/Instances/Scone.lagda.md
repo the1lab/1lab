@@ -31,7 +31,7 @@ of categories that we want to think of as somehow "syntactic".
 A scone over some object $X : \ca{B}$ consists of a set $U$, along with
 a function $U \to B(\top, X)$. If we think about $\ca{B}$ as some sort
 of category of contexts, then a scone over some context $X$
-is some means of attatching semantic information (the set $U$) to
+is some means of attaching semantic information (the set $U$) to
 $X$, such that we can recover closed terms of $X$ from elements of $U$.
 
 Morphisms behave like they do in an arrow category of $\ca{Sets}$:

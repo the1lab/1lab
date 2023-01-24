@@ -211,7 +211,7 @@ getInterface tcState name =
   let modules = tcState ^. stVisitedModules in
   case Map.lookup name modules of
     Just iface -> miInterface iface
-    Nothing -> error $ "Cannot find inferface for module " ++ prettyShow name
+    Nothing -> error $ "Cannot find interface for module " ++ prettyShow name
 
 runTCMPrettyErrors :: TCEnv -> TCState -> TCM a -> IO (a, TCState)
 runTCMPrettyErrors env state tcm = do

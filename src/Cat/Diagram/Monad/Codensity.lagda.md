@@ -123,7 +123,7 @@ $(\Lan_F(F))^2 \To \Lan_F(F)$.
 <summary>Proving that these two extended natural transformations really
 do comprise a monad structure is a routine application of the uniqueness
 properties of Kan extensions. The real noise comes from having to
-construct auxilliary natural transformations representing each pair of
+construct auxiliary natural transformations representing each pair of
 maps we want to compute with.</summary>
 
 ```agda

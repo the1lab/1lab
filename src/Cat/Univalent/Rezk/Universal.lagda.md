@@ -164,7 +164,7 @@ $$
 We'll first show that components exist at all. Assume that we have some
 $b : \ca{B}$ and an essential fibre $(a_0, h_0)$ of $H$ over it^[Don't
 worry about actually getting your hands on an $(a_0, h_0)$.]. In this
-situation, guided by the compatibility condiiton (and isomorphisms being
+situation, guided by the compatibility condition (and isomorphisms being
 just the best), we can actually _define_ the component to be "whatever
 satisfies compatibility at $(a_0,h_0)$," and a short calculation
 establishes that defining

@@ -139,7 +139,7 @@ equiv-path→identity-system {R = R} {r = r} eqv pres′ = ids where
     i .fst
 ```
 
-Note that for any $(R, r)$, the type of identity sytem data on $(R, r)$
+Note that for any $(R, r)$, the type of identity system data on $(R, r)$
 is a proposition. This is because it is exactly equivalent to the type
 $\sum_a (R a)$ being contractible for every $a$, which is a proposition
 by standard results.

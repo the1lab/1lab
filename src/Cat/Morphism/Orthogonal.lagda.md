@@ -14,7 +14,7 @@ module Cat.Morphism.Orthogonal where
 # Orthogonal maps
 
 A pair of maps $f : a \to b$ and $g : c \ to d$ are called
-**orthogonal**, writen $f \ortho g$^[Though hang tight for a note on
+**orthogonal**, written $f \ortho g$^[Though hang tight for a note on
 formalised notation], if for every $u, v$ fitting into a commutative
 diagram like
 

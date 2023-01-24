@@ -37,7 +37,7 @@ relating all of those objects and morphisms.
 [coequalisers]: Cat.Diagram.Coequaliser.html
 [initial objects]: Cat.Diagram.Initial.html
 
-It would be convienent to be able to talk about _all_ of these
+It would be convenient to be able to talk about _all_ of these
 situations at once, as opposed to on a case-by-case basis. To do this,
 we need to introduce a bit of categorical machinery: the Cocone.
 
@@ -86,7 +86,7 @@ designated object the "coapex" of the cocone.
 ```
 
 If our diagram consisted of only objects, we would be done! However,
-some diagrams contan non-identity morphisms, so we need to take those
+some diagrams contain non-identity morphisms, so we need to take those
 into account as well. This bit is best understood through the lens of
 the coequaliser: in order to describe the commuting condition there,
 we want every injection map from the codomain of a morphism to

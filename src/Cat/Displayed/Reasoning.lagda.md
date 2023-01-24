@@ -166,7 +166,7 @@ revive₁ {f′ = f′} {g′ = g′} {p = p} {q = q} p′ =
   hom[ p ∙ sym p ∙ q ] f′ ≡⟨ kill₁ p (sym p ∙ q) p′ ⟩
   hom[ sym p ∙ q ] g′     ∎
 
--- Idea: p is equal to some composite p′ ∙ q, but it's mis-associated or
+-- Idea: p is equal to some composite p′ ∙ q, but it's misassociated or
 -- something. We combine the reindexing to fix the association and
 -- killing the first parameter to "weave" here.
 weave

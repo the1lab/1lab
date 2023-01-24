@@ -218,7 +218,7 @@ essentially, a loop: If w doesn't work, then try
   is-hlevel-suc n w : is-hlevel T (suc n)
 
 until you reach a sucᵏ n = k + n. Actually, slightly more efficient, we
-keep around a counter k′ for the number of tries, and transfer sucessors
+keep around a counter k′ for the number of tries, and transfer successors
 from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
 -}
   lift-sol : Term → Term → Nat → Term

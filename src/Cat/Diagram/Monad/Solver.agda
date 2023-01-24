@@ -18,7 +18,7 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
 
   --------------------------------------------------------------------------------
   -- NOTE: Object Expressions
-  -- We can′t index everyting by 'Ob', as Agda will (rightfully) assume that M₀ is not injective,
+  -- We can′t index everything by 'Ob', as Agda will (rightfully) assume that M₀ is not injective,
   -- which then inhibits on our ability to pattern match on things.
   -- Therefore, we introduce a reflected type of object expressions,
   -- which solves the injectivity issue.

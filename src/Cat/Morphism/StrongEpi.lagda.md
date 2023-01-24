@@ -233,7 +233,7 @@ is-regular-epi→is-strong-epi {a} {b} f regular =
 
 # Images
 
-Now we come to the _raison d'etre_ for strong epimorphisms: [Images].
+Now we come to the _raison d'être_ for strong epimorphisms: [Images].
 The definition of image we use is very complicated, and the
 justification is already present there, but the short of it is that the
 image of a morphism $f : a \to b$ is a monomorphism $\im(f) \mono b$ which is

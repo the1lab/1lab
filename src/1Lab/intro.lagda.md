@@ -399,7 +399,7 @@ even is a subset?
 a membership relation $\in$, then $S$ is a subset of $T$ if every
 element of $S$ is also an element of $T$. However, this notion does not
 carry over directly to structural set theory (where sets are essentially
-opaque objects of a category satifsying some properties), or indeed to
+opaque objects of a category satisfying some properties), or indeed to
 type theory (where there is no membership relation) --- but we can
 salvage it.
 
@@ -481,7 +481,7 @@ proposition.[^hprops]
 
 [^hprops]: In some foundational systems --- including HoTT, the one we
 are discussing --- "subsingleton" is literally taken as the _definition_
-of "proposition", so this translation isn't merely ommitted, it's not
+of "proposition", so this translation isn't merely omitted, it's not
 necessary at all.
 
 Conversely, if we have such an assignment $\chi : B \to \Omega$, we
@@ -1063,7 +1063,7 @@ left- and right- hand side of the unit interval. A classic result in the
 interpretation of constructive mathematics says that any function
 defined inside type theory is automatically continuous, and so, we
 define the type $x \equiv_A y$ to be the type of functions $f :
-\bb{I} \to A$, restricted to thse where $f(\id{i0}) = x$ and
+\bb{I} \to A$, restricted to those where $f(\id{i0}) = x$ and
 $f(\id{i1}) = y$ _definitionally_.
 
 The introduction rule for paths says that if $e : \bb{I} \to A$,
@@ -1361,7 +1361,7 @@ path at the left and right endpoints of the interval.
 As a very quick aside, there is a map $r : \lambda x.\ (x, x, \id{refl}$
 making the diagram below commute. This diagram expresses that the
 diagonal $A \to A \times A$ can be factored as a weak equivalence
-follwed by a fibration through $A^\bb{I}$, which is the defining
+followed by a fibration through $A^\bb{I}$, which is the defining
 property of a _path space object_.
 $A$.
 

@@ -71,7 +71,7 @@ module Canonical-kernels
 
 We now show that the maps $! : \ker\ker f \to \emptyset$ and $¡ :
 \emptyset \to \ker\ker f$ are inverses. In one direction the composite
-is in $\emptyset \to \emptyset$, so it is trivally unique. In the other
+is in $\emptyset \to \emptyset$, so it is trivially unique. In the other
 direction, we have maps $\ker\ker f \to \ker\ker f$, which, since $\ker$
 is a limit, are uniquely determined _if_ they are cone homomorphisms.
 

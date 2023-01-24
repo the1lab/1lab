@@ -25,7 +25,7 @@ type families, that just so happen to be valued in \r{propositions}. For
 most purposes we can work with this limitation: this is called
 **predicative mathematics**. But, for a few classes of theorems,
 predicativity is too restrictive: Even if we don't have a single
-universe of propositions that can accomodate all predicates, we would
+universe of propositions that can accommodate all predicates, we would
 still like for universes to be closed under power-sets.
 
 Using some of Agda's more suspicious features, we can achieve this in a
