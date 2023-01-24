@@ -6,6 +6,7 @@ open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning
+import Cat.Displayed.Morphism
 import Cat.Reasoning
 
 module Cat.Displayed.Univalence
@@ -22,6 +23,7 @@ private
   module E = Cat.Displayed.Reasoning E
   module ∫E = Cat.Reasoning (∫ E)
 open Displayed E
+open Cat.Displayed.Morphism E
 open Total-hom
 ```
 -->
@@ -29,50 +31,7 @@ open Total-hom
 # Univalence for displayed categories
 
 We provide equivalent characterisations of univalence for categories
-$\ca{E}$ which are displayed over a univalent category $\ca{B}$. The
-first thing we define is a type of _displayed isomorphisms_. If we have
-an isomorphism $f : x \cong y$ in $\ca{B}$, we may define a type of
-isomorphisms over $f$ to consist of maps $g : A \to_f B$ and $g^{-1} : B
-\to_{f^{-1}} A$ which are inverses.
-
-```agda
-record _≅[_]_ {x y : B.Ob} (A : Ob[ x ]) (f : x B.≅ y) (B : Ob[ y ]) : Type ℓ′ where
-  field
-    to′   : Hom[ B.to f ] A B
-    from′ : Hom[ B.from f ] B A
-    invr  : PathP (λ i → Hom[ B.invr f i ] A A) (from′ ∘′ to′) id′
-    invl  : PathP (λ i → Hom[ B.invl f i ] B B) (to′ ∘′ from′) id′
-
-open _≅[_]_
-```
-
-<!--
-```
-≅[]-path
-  : {x y : B.Ob} {A : Ob[ x ]} {B : Ob[ y ]} {f : x B.≅ y}
-    {p q : A ≅[ f ] B}
-  → p .to′ ≡ q .to′
-  → p .from′ ≡ q .from′
-  → p ≡ q
-≅[]-path {p = p} {q = q} a b i .to′ = a i
-≅[]-path {p = p} {q = q} a b i .from′ = b i
-≅[]-path {f = f} {p = p} {q = q} a b i .invr j =
-  is-set→squarep (λ i j → Hom[ f .B.invr j ]-set _ _)
-    (λ i → b i ∘′ a i) (p .invr) (q .invr) (λ i → id′) i j
-≅[]-path {f = f} {p = p} {q = q} a b i .invl j =
-  is-set→squarep (λ i j → Hom[ f .B.invl j ]-set _ _)
-    (λ i → a i ∘′ b i) (p .invl) (q .invl) (λ i → id′) i j
-```
--->
-
-Since isomorphisms over the identity map will be of particular
-importance, we also define their own type: they are the _vertical
-isomorphisms_.
-
-```agda
-_≅↓_ : {x : B.Ob} (A B : Ob[ x ]) → Type ℓ′
-_≅↓_ = _≅[ B.id-iso ]_
-```
+$\ca{E}$ which are displayed over a univalent category $\ca{B}$.
 
 We say a displayed category $\ca{E}$ is **univalent** when, for any $f :
 x \cong y$ in $\ca{B}$ and object $A$ over $x$, the space of "objects
@@ -104,8 +63,8 @@ module _ (base-c : is-category B) (disp-c : is-category-displayed) where
       → (x , A) ∫E.≅ (y , B)
     piece-together p f =
       ∫E.make-iso (total-hom (p .B.to) (f .to′)) (total-hom (p .B.from) (f .from′))
-        (total-hom-path E (p .B.invl) (f .invl))
-        (total-hom-path E (p .B.invr) (f .invr))
+        (total-hom-path E (p .B.invl) (f .invl′))
+        (total-hom-path E (p .B.invr) (f .invr′))
 ```
 
 We first tackle the case where $f : A \cong B$ is vertical, i.e. $A$ and
@@ -124,7 +83,7 @@ the identity (vertical) isomorphism.
         (∫E.≅-pathp refl _ (total-hom-pathp E _ _ refl λ i → pair i .snd .to′))
       where
         pair = disp-c B.id-iso A
-          (A , record { to′ = id′; from′ = id′; invr = idl′ id′; invl = idl′ id′ })
+          (A , id-iso↓)
           (B , f)
 ```
 
@@ -137,8 +96,10 @@ the isomorphism of first components coming from the isomorphism in $\int E$.
 ```agda
   is-category-total : is-category (∫ E)
   is-category-total = record
-    { to-path      = λ p → ap fst (wrapper _  _ _ _)
-    ; to-path-over = λ p → ap snd (wrapper _ _ _ _)
+    { to-path      = λ p → ap fst $
+        wrapper (total-iso→iso E p) _ _ (total-iso→iso[] E p)
+    ; to-path-over = λ p → ap snd $
+        wrapper (total-iso→iso E p) _ _ (total-iso→iso[] E p)
     }
     where
     wrapper
@@ -182,14 +143,13 @@ is-category-fibrewise′ b wit = is-category-fibrewise b wit′ where
   wit′ : ∀ {x} (A : Ob[ x ]) → is-prop (Σ[ B ∈ Ob[ x ] ] (A ≅↓ B))
   wit′ {x} A =
     is-contr→is-prop $ retract→is-contr
-      (λ (x , i) → x , record
-        { to′   = i .F.to
-        ; from′ = i .F.from
-        ; invr  = to-pathp (i .F.invr)
-        ; invl  = to-pathp (i .F.invl)
-        })
+      (λ (x , i) → x , make-iso[ B.id-iso ]
+        (i .F.to)
+        (i .F.from)
+        (to-pathp (i .F.invl))
+        (to-pathp (i .F.invr)))
       (λ (x , i) → x , F.make-iso (i .to′) (i .from′)
-        (from-pathp (i .invl)) (from-pathp (i .invr)))
+        (from-pathp (i .invl′)) (from-pathp (i .invr′)))
       (λ (x , i) → Σ-pathp refl (≅[]-path refl refl))
       (is-contr-ΣR (wit x))
     where module F = Cat.Reasoning (Fibre E x)

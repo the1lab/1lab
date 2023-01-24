@@ -15,7 +15,7 @@ module Cat.Displayed.Morphism
 <!--
 ```agda
 open Displayed ℰ
-open Cat.Reasoning ℬ public
+open Cat.Reasoning ℬ
 open Cat.Displayed.Reasoning ℰ
 private variable
   a b c d : Ob
@@ -43,7 +43,7 @@ is-monic[_]
   → is-monic f → Hom[ f ] a′ b′
   → Type _ 
 is-monic[_] {a = a} {a′ = a′} {f = f} mono f′ =
-  ∀ {c} {c′} {g h : Hom c a}
+  ∀ {c c′} {g h : Hom c a}
   → (g′ : Hom[ g ] c′ a′) (h′ : Hom[ h ] c′ a′)
   → (p : f ∘ g ≡ f ∘ h)
   → f′ ∘′ g′ ≡[ p ] f′ ∘′ h′
@@ -67,6 +67,42 @@ record _↪[_]_
     monic′ : is-monic[ f .monic ] mor′
 
 open _↪[_]_ public
+```
+
+## Weak Monos
+
+When working in a displayed setting, we also have weaker versions of
+the morphism classes we are familiar with, wherein we can only left/right
+cancel morphisms that are displayed over the same morphism in the base.
+We denote these morphisms classes as "weak".
+
+```agda
+is-weak-monic
+  : ∀ {a′ : Ob[ a ]} {b′ : Ob[ b ]} {f : Hom a b}
+  → Hom[ f ] a′ b′
+  → Type _ 
+is-weak-monic {a = a} {a′ = a′} {f = f} f′ =
+  ∀ {c c′} {g : Hom c a}
+  → (g′ g″ : Hom[ g ] c′ a′)
+  → f′ ∘′ g′ ≡ f′ ∘′ g″
+  → g′ ≡ g″
+
+is-weak-monic-is-prop
+  : ∀ {a′ : Ob[ a ]} {b′ : Ob[ b ]} {f : Hom a b}
+  → (f′ : Hom[ f ] a′ b′)
+  → is-prop (is-weak-monic f′)
+is-weak-monic-is-prop f′ mono mono′ i g′ g″ p =
+  is-prop→pathp (λ i → Hom[ _ ]-set _ _ g′ g″)
+    (mono g′ g″ p) (mono′ g′ g″ p) i
+
+record _↪ʷ_
+  {a b} (a′ : Ob[ a ]) (f : Hom a b) (b′ : Ob[ b ])
+  : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′)
+  where
+  no-eta-equality
+  field
+    mor′ : Hom[ f ] a′ b′
+    weak-monic : is-weak-monic mor′
 ```
 
 ## Epis
@@ -103,6 +139,40 @@ record _↠[_]_
   field
     mor′ : Hom[ f .mor ] a′ b′
     monic′ : is-epic[ f .epic ] mor′
+```
+
+## Weak Epis
+
+We can define a weaker notion of epis that is dual to the definition of
+a weak mono.
+
+```agda
+is-weak-epic
+  : ∀ {a′ : Ob[ a ]} {b′ : Ob[ b ]} {f : Hom a b}
+  → Hom[ f ] a′ b′
+  → Type _ 
+is-weak-epic {b = b} {b′ = b′} {f = f} f′ =
+  ∀ {c c′} {g : Hom b c}
+  → (g′ g″ : Hom[ g ] b′ c′)
+  → g′ ∘′ f′ ≡ g″ ∘′ f′
+  → g′ ≡ g″
+
+is-weak-epic-is-prop
+  : ∀ {a′ : Ob[ a ]} {b′ : Ob[ b ]} {f : Hom a b}
+  → (f′ : Hom[ f ] a′ b′)
+  → is-prop (is-weak-monic f′)
+is-weak-epic-is-prop f′ epi epi′ i g′ g″ p =
+  is-prop→pathp (λ i → Hom[ _ ]-set _ _ g′ g″)
+    (epi g′ g″ p) (epi′ g′ g″ p) i
+
+record _↠ʷ_
+  {a b} (a′ : Ob[ a ]) (f : Hom a b) (b′ : Ob[ b ])
+  : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′)
+  where
+  no-eta-equality
+  field
+    mor′ : Hom[ f ] a′ b′
+    weak-epic : is-weak-epic mor′
 ```
 
 ## Isos
@@ -150,6 +220,15 @@ record _≅[_]_
   open Inverses[_] inverses′ public
 
 open _≅[_]_ public
+```
+
+Since isomorphisms over the identity map will be of particular
+importance, we also define their own type: they are the _vertical
+isomorphisms_.
+
+```agda
+_≅↓_ : {x : Ob} (A B : Ob[ x ]) → Type ℓ′
+_≅↓_ = _≅[ id-iso ]_
 ```
 
 Like their non-displayed counterparts, existence of displayed inverses
@@ -205,5 +284,29 @@ make-iso[ inv ] f′ g′ p q .to′ = f′
 make-iso[ inv ] f′ g′ p q .from′ = g′
 make-iso[ inv ] f′ g′ p q .inverses′ .Inverses[_].invl′ = p
 make-iso[ inv ] f′ g′ p q .inverses′ .Inverses[_].invr′ = q
+
+≅[]-path
+  : {x y : Ob} {A : Ob[ x ]} {B : Ob[ y ]} {f : x ≅ y}
+    {p q : A ≅[ f ] B}
+  → p .to′ ≡ q .to′
+  → p .from′ ≡ q .from′
+  → p ≡ q
+≅[]-path {p = p} {q = q} a b i .to′ = a i
+≅[]-path {p = p} {q = q} a b i .from′ = b i
+≅[]-path {f = f} {p = p} {q = q} a b i .inverses′ .Inverses[_].invl′ j =
+  is-set→squarep (λ i j → Hom[ f .invl j ]-set _ _)
+    (λ i → a i ∘′ b i) (p .invl′) (q .invl′) (λ i → id′) i j
+≅[]-path {f = f} {p = p} {q = q} a b i .inverses′ .Inverses[_].invr′ j =
+  is-set→squarep (λ i j → Hom[ f .invr j ]-set _ _)
+    (λ i → b i ∘′ a i) (p .invr′) (q .invr′) (λ i → id′) i j
 ```
 -->
+
+As in the non-displayed case, the identity isomorphism is always an
+iso. In fact, it is a vertical iso!
+
+```agda
+id-iso↓ : ∀ {x} {x′ : Ob[ x ]} → x′ ≅↓ x′
+id-iso↓ = make-iso[ id-iso ] id′ id′ (idl′ id′) (idl′ id′)
+```
+
