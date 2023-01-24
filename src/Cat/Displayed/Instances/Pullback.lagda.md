@@ -19,7 +19,7 @@ module
 # Pullback of a displayed category
 
 If we have a category $E$ displayed over $B$, then a functor $F : X \to
-B$ defines a (contravariant) "change-of-base" action, reasulting in a
+B$ defines a (contravariant) "change-of-base" action, resulting in a
 category $F^*(E)$ displayed over $X$.
 
 <!--
