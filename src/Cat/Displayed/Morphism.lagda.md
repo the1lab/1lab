@@ -382,3 +382,30 @@ id-iso↓ : ∀ {x} {x′ : Ob[ x ]} → x′ ≅↓ x′
 id-iso↓ = make-iso[ id-iso ] id′ id′ (idl′ id′) (idl′ id′)
 ```
 
+Isomorphisms are also instances of sections and retracts.
+
+```agda
+iso[]→to-has-section[]
+  : {f : a ≅ b} → (f′ : a′ ≅[ f ] b′)
+  → has-section[ iso→to-has-section f ] (f′ .to′)
+iso[]→to-has-section[] f′ .has-section[_].section′ = f′ .from′
+iso[]→to-has-section[] f′ .has-section[_].is-section′ = f′ .invl′
+
+iso[]→from-has-section[]
+  : {f : a ≅ b} → (f′ : a′ ≅[ f ] b′)
+  → has-section[ iso→from-has-section f ] (f′ .from′)
+iso[]→from-has-section[] f′ .has-section[_].section′ = f′ .to′
+iso[]→from-has-section[] f′ .has-section[_].is-section′ = f′ .invr′
+
+iso[]→to-has-retract[]
+  : {f : a ≅ b} → (f′ : a′ ≅[ f ] b′)
+  → has-retract[ iso→to-has-retract f ] (f′ .to′)
+iso[]→to-has-retract[] f′ .has-retract[_].retract′ = f′ .from′
+iso[]→to-has-retract[] f′ .has-retract[_].is-retarct′ = f′ .invr′
+
+iso[]→from-has-retract[]
+  : {f : a ≅ b} → (f′ : a′ ≅[ f ] b′)
+  → has-retract[ iso→from-has-retract f ] (f′ .from′)
+iso[]→from-has-retract[] f′ .has-retract[_].retract′ = f′ .to′
+iso[]→from-has-retract[] f′ .has-retract[_].is-retarct′ = f′ .invl′
+```
