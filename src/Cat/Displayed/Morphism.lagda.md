@@ -175,6 +175,75 @@ record _↠ʷ_
     weak-epic : is-weak-epic mor′
 ```
 
+## Sections
+
+Following the same pattern as before, we define a notion of displayed
+sections.
+
+```agda
+_section-of[_]_
+  : ∀ {x y} {s : Hom y x} {r : Hom x y}
+  → ∀ {x′ y′} (s′ : Hom[ s ] y′ x′) → s section-of r → (r′ : Hom[ r ] x′ y′)
+  → Type _
+s′ section-of[ p ] r′ = r′ ∘′ s′ ≡[ p ] id′
+
+record has-section[_]
+  {x y x′ y′} {r : Hom x y} (sect : has-section r) (r′ : Hom[ r ] x′ y′)
+  : Type ℓ′
+  where
+  no-eta-equality
+  field
+    section′ : Hom[ sect .section ] y′ x′
+    is-section′ : section′ section-of[ sect .is-section ] r′
+```
+
+We also distinguish the sections that are displayed over the identity
+morphism; these are known as "vertical sections".
+
+```agda
+_section-of↓_
+  : ∀ {x} {x′ x″ : Ob[ x ]} (s′ : Hom[ id ] x″ x′) → (r : Hom[ id ] x′ x″)
+  → Type _
+s′ section-of↓ r′ = s′ section-of[ idl id ] r′
+
+has-section↓ : ∀ {x} {x′ x″ : Ob[ x ]} (r′ : Hom[ id ] x′ x″) → Type _
+has-section↓ r′ = has-section[ id-has-section ] r′
+```
+
+## Retracts
+
+We can do something similar for retracts.
+
+```agda
+_retract-of[_]_
+  : ∀ {x y} {s : Hom y x} {r : Hom x y}
+  → ∀ {x′ y′} (r′ : Hom[ r ] x′ y′) → r retract-of s → (s′ : Hom[ s ] y′ x′)
+  → Type _
+r′ retract-of[ p ] s′ = r′ ∘′ s′ ≡[ p ] id′
+
+
+record has-retract[_]
+  {x y x′ y′} {s : Hom x y} (ret : has-retract s) (s′ : Hom[ s ] x′ y′)
+  : Type ℓ′
+  where
+  no-eta-equality
+  field
+    retract′ : Hom[ ret .retract ] y′ x′
+    is-retarct′ : retract′ retract-of[ ret .is-retract ] s′
+```
+
+We also define vertical retracts in a similar manner as before.
+
+```agda
+_retract-of↓_
+  : ∀ {x} {x′ x″ : Ob[ x ]} (r′ : Hom[ id ] x′ x″) → (s : Hom[ id ] x″ x′)
+  → Type _
+r′ retract-of↓ s′ = r′ retract-of[ idl id ] s′
+
+has-retract↓ : ∀ {x} {x′ x″ : Ob[ x ]} (s′ : Hom[ id ] x″ x′) → Type _
+has-retract↓ s′ = has-retract[ id-has-retract ] s′
+```
+
 ## Isos
 
 Displayed [isomorphisms] must also be defined over isomorphisms in the
@@ -229,6 +298,9 @@ isomorphisms_.
 ```agda
 _≅↓_ : {x : Ob} (A B : Ob[ x ]) → Type ℓ′
 _≅↓_ = _≅[ id-iso ]_
+
+is-invertible↓ : {x : Ob} {x′ x″ : Ob[ x ]} → Hom[ id ] x′ x″ → Type _
+is-invertible↓ = is-invertible[ id-invertible ]
 ```
 
 Like their non-displayed counterparts, existence of displayed inverses
