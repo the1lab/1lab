@@ -24,8 +24,6 @@ private
   module D = Cat D
   module L = Func L
   module R = Func R
-open _⊣_
-open _=>_
 ```
 -->
 
@@ -66,6 +64,13 @@ hom-iso-natural f =
   ∀ {a b c d} (g : C.Hom a b) (h : D.Hom c d) x
   → f (g C.∘ x C.∘ L.₁ h) ≡ R.₁ g D.∘ f x D.∘ h
 
+hom-iso-natural⁻
+  : (∀ {x y} → D.Hom x (R.₀ y) → C.Hom (L.₀ x) y)
+  → Type _
+hom-iso-natural⁻ f⁻¹ =
+  ∀ {a b c d} (g : C.Hom a b) (h : D.Hom c d) x
+  → f⁻¹ (R.₁ g D.∘ x D.∘ h) ≡ g C.∘ f⁻¹ x C.∘ L.₁ h
+
 hom-iso→adjoints
   : (f : ∀ {x y} → C.Hom (L.₀ x) y → D.Hom x (R.₀ y))
   → (eqv : ∀ {x y} → is-equiv (f {x} {y}))
@@ -75,8 +80,10 @@ hom-iso→adjoints f f-equiv natural = adj′ where
   f⁻¹ : ∀ {x y} → D.Hom x (R.₀ y) → C.Hom (L.₀ x) y
   f⁻¹ = equiv→inverse f-equiv
 
-  inv-natural : ∀ {a b c d} (g : C.Hom a b) (h : D.Hom c d) x
-              → f⁻¹ (R.₁ g D.∘ x D.∘ h) ≡ g C.∘ f⁻¹ x C.∘ L.₁ h
+  open _⊣_
+  open _=>_
+
+  inv-natural : hom-iso-natural⁻ f⁻¹
   inv-natural g h x = ap fst $ is-contr→is-prop (f-equiv .is-eqv _)
     (f⁻¹ (R.₁ g D.∘ x D.∘ h) , refl)
     ( g C.∘ f⁻¹ x C.∘ L.₁ h
@@ -122,3 +129,69 @@ of adjunction units and co-units.
     f (f⁻¹ D.id C.∘ C.id C.∘ L.₁ D.id) ≡⟨ ap f (C.elimr (C.idl _ ∙ L.F-id)) ⟩
     f (f⁻¹ D.id)                       ≡⟨ equiv→counit f-equiv _ ⟩
     D.id                               ∎
+```
+
+Obtaining the hom equivalence from an adjunction is much simpler; we can
+use the functors to take morphisms from one category to the other, and
+the unit/counit to patch up the types. Proving that this yields an
+equivalence requires using naturality of the unit/counit, along with
+the zig-zag identities.
+
+```agda
+adjoints→hom-iso
+  : L ⊣ R
+  → ∀ {x y} → C.Hom (L.₀ x) y ≃ D.Hom x (R.₀ y)
+adjoints→hom-iso L⊣R {x = x} {y = y} =
+  Iso→Equiv $ to , iso from invl invr
+  where
+    open _⊣_ L⊣R
+
+    to : C.Hom (L.₀ x) y → D.Hom x (R.₀ y)
+    to f = R.₁ f D.∘ unit.η x
+
+    from : D.Hom x (R.₀ y) → C.Hom (L.₀ x) y
+    from f = counit.ε y C.∘ L.₁ f
+ 
+    invl : ∀ (f : D.Hom x (R.₀ y)) → to (from f) ≡ f
+    invl f =
+      R.₁ (counit.ε y C.∘ L.₁ f) D.∘ unit.η x         ≡⟨ R.F-∘ _ _ D.⟩∘⟨refl ⟩
+      (R.₁ (counit.ε y) D.∘ R.₁ (L.₁ f)) D.∘ unit.η x ≡⟨ D.pullr (sym $ unit.is-natural _ _ f) ⟩
+      R.₁ (counit.ε y) D.∘ unit.η (R.₀ y) D.∘ f       ≡⟨ D.cancell zag ⟩
+      f                                               ∎
+
+    invr : ∀ (f : C.Hom (L.₀ x) y) → from (to f) ≡ f
+    invr f =
+      counit.ε y C.∘ L.₁ (R.₁ f D.∘ unit.η x)       ≡⟨ C.refl⟩∘⟨ L.F-∘ _ _ ⟩
+      counit.ε y C.∘ L.₁ (R.₁ f) C.∘ L.₁ (unit.η x) ≡⟨ C.pulll (counit.is-natural _ _ f) ⟩
+      (f C.∘ counit.ε (L.₀ x)) C.∘ L.₁ (unit.η x)   ≡⟨ C.cancelr zig ⟩
+      f ∎
+```
+
+This equivalence is also natural. Proving this is mostly an exercise in
+shuffling around functors and applying naturality.
+
+```agda
+adjoints→hom-iso-natural
+  : (L⊣R : L ⊣ R)
+  → hom-iso-natural (Equiv.to (adjoints→hom-iso L⊣R))
+adjoints→hom-iso-natural L⊣R g h x =
+  R.₁ (g C.∘ x C.∘ L.₁ h) D.∘ unit.η _           ≡⟨ R.F-∘ _ _ D.⟩∘⟨refl ⟩
+  (R.₁ g D.∘ ⌜ R.₁ (x C.∘ L.₁ h) ⌝) D.∘ unit.η _ ≡⟨ ap! (R.F-∘ _ _) ⟩
+  (R.₁ g D.∘ R.₁ x D.∘ R.₁ (L.₁ h)) D.∘ unit.η _ ≡˘⟨ D.assoc _ _ _ ⟩
+  R.₁ g D.∘ (R.₁ x D.∘ R.₁ (L.₁ h)) D.∘ unit.η _ ≡⟨ D.refl⟩∘⟨ D.extendr (sym $ unit.is-natural _ _ h) ⟩
+  R.₁ g D.∘ (R.₁ x D.∘ unit.η _) D.∘ h           ∎
+  where
+    open _⊣_ L⊣R
+
+adjoints→hom-iso-natural⁻
+  : (L⊣R : L ⊣ R)
+  → hom-iso-natural⁻ (Equiv.from (adjoints→hom-iso L⊣R))
+adjoints→hom-iso-natural⁻ L⊣R g h x =
+  counit.ε _ C.∘ L.₁ (R.₁ g D.∘ x D.∘ h)             ≡⟨ C.refl⟩∘⟨ L.F-∘ _ _ ⟩
+  counit.ε _ C.∘ L.₁ (R.₁ g) C.∘ ⌜ L.₁ (x D.∘ h) ⌝   ≡⟨ ap! (L.F-∘ _ _) ⟩
+  counit.ε _ C.∘ L.₁ (R.₁ g) C.∘ L.₁ x C.∘ L.₁ h     ≡⟨ C.extendl (counit.is-natural _ _ g) ⟩
+  g C.∘ counit.ε _ C.∘ L.₁ x C.∘ L.₁ h               ≡⟨ C.refl⟩∘⟨ C.assoc _ _ _ ⟩
+  g C.∘ (counit.ε _ C.∘ L.₁ x) C.∘ L.₁ h             ∎
+  where
+    open _⊣_ L⊣R
+```
