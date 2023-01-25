@@ -226,18 +226,14 @@ We can use this fact to show that 2 cartesian lifts over the same
 morphisms must have their domains related by a vertical isomorphism.
 
 ```agda
-cartesian-lift-vert-iso
+cartesian-lift→vert-iso
   : ∀ {x y} {f : Hom x y}
   → ∀ {x′ x″ y′} {f′ : Hom[ f ] x′ y′} {f″ : Hom[ f ] x″ y′}
   → Cartesian f f′
   → Cartesian f f″
   → x′ ≅↓ x″
-cartesian-lift-vert-iso {f′ = f′} {f″ = f″} f′-cart f″-cart =
-  make-iso[ id-iso ]
-    (universal′ f″-cart (idr _) f′)
-    (universal′ f′-cart (idr _) f″)
-    invl*
-    invr*
+cartesian-lift→vert-iso {f′ = f′} {f″ = f″} f′-cart f″-cart =
+  make-iso[ id-iso ] to* from* invl* invr*
   where
     open Cartesian
 
