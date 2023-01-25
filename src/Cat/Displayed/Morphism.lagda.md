@@ -35,7 +35,7 @@ Displayed [monomorphisms] have the the same left-cancellation properties
 as their non-displayed counterparts. However, they must be displayed over
 a monomorphism in the base.
 
-[monomorphisms]: Cat.Morphism.html#Monos
+[monomorphisms]: Cat.Morphism.html#monos
 
 ```agda
 is-monic[_]
@@ -109,7 +109,7 @@ record _↪ʷ_
 
 Displayed [epimorphisms] are defined in a similar fashion.
 
-[epimorphisms]: Cat.Morphism.html#Epis
+[epimorphisms]: Cat.Morphism.html#epis
 
 ```agda
 is-epic[_]
@@ -249,7 +249,7 @@ has-retract↓ s′ = has-retract[ id-has-retract ] s′
 Displayed [isomorphisms] must also be defined over isomorphisms in the
 base.
 
-[isomorphisms]: Cat.Morphism.html#Isos
+[isomorphisms]: Cat.Morphism.html#isos
 
 ```agda
 record Inverses[_]
