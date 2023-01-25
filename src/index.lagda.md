@@ -597,6 +597,9 @@ open import Cat.Displayed.Univalence.Thin -- The structure identity principle
 open import Cat.Displayed.Reasoning
   -- Reasoning combinators for displayed categories
 
+open import Cat.Displayed.Morphism
+  -- Important classes of morphisms in displayed categories
+
 open import Cat.Displayed.Instances.Elements
 -- The category of elements of a presheaf, instantiated as being
 -- displayed over the domain.
@@ -629,6 +632,9 @@ $\ca{B} \to \cat$.
 ```agda
 open import Cat.Displayed.Cartesian
  -- Cartesian lifts, cartesian fibrations
+
+open import Cat.Displayed.Cartesian.Weak
+ -- Weak cartesian morphisms
 
 open import Cat.Displayed.Cartesian.Street
 -- Street's fibrations
