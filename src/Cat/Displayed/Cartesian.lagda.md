@@ -2,11 +2,17 @@
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
+import Cat.Reasoning
+import Cat.Displayed.Morphism
+import Cat.Displayed.Reasoning as DR
+
 module Cat.Displayed.Cartesian
   {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′) where
 
-open Precategory B
+open Cat.Reasoning B
 open Displayed E
+open Cat.Displayed.Morphism E
+open DR E
 ```
 
 # Cartesian morphisms and Fibrations
@@ -129,6 +135,202 @@ composite, rather than displayed directly over a composite.
     to-pathp⁻ (unique m′ (from-pathp⁻ s) ∙ from-pathp⁻ (universalp p q r h′))
 ```
 
+## Properties of Cartesian Morphisms
+
+The composite of 2 cartesian morphisms is in turn cartesian.
+
+```agda
+cartesian-∘
+  : ∀ {x y z} {f : Hom y z} {g : Hom x y}
+  → ∀ {x′ y′ z′} {f′ : Hom[ f ] y′ z′} {g′ : Hom[ g ] x′ y′}
+  → Cartesian f f′ → Cartesian g g′
+  → Cartesian (f ∘ g) (f′ ∘′ g′)
+cartesian-∘ {f = f} {g = g} {f′ = f′} {g′ = g′} f-cart g-cart = fg-cart where
+
+  module f′ = Cartesian f-cart
+  module g′ = Cartesian g-cart
+
+  fg-cart : Cartesian (f ∘ g) (f′ ∘′ g′)
+  fg-cart .Cartesian.universal m h′ =
+    g′.universal m (f′.universal′ (assoc f g m) h′)
+  fg-cart .Cartesian.commutes m h′ =
+    (f′ ∘′ g′) ∘′ g′.universal m (f′.universal′ (assoc f g m) h′) ≡⟨ shiftr (sym $ assoc _ _ _) (pullr′ refl (g′.commutes m _)) ⟩
+    hom[] (f′ ∘′ f′.universal′ (assoc f g m) h′)                  ≡⟨ hom[]⟩⟨ f′.commutes _ _ ⟩
+    hom[] (hom[] h′)                                              ≡⟨ hom[]-∙ _ _ ∙ liberate _ ⟩
+    h′                                                            ∎
+  fg-cart .Cartesian.unique {m = m} {h′ = h′} m′ p =
+    g′.unique m′ $ f′.unique (g′ ∘′ m′) $
+      f′ ∘′ g′ ∘′ m′           ≡⟨ from-pathp⁻ (assoc′ f′ g′ m′) ⟩
+      hom[] ((f′ ∘′ g′) ∘′ m′) ≡⟨ weave _ _ _ p ⟩
+      hom[] h′ ∎
+```
+
+Furthermore, the identity morphism is cartesian.
+
+```agda
+cartesian-id : ∀ {x x′} → Cartesian id (id′ {x} {x′})
+cartesian-id .Cartesian.universal m h′ = hom[ idl m ] h′
+cartesian-id .Cartesian.commutes m h′ =
+  from-pathp⁻ (idl′ _) ∙ hom[]-∙ _ _ ∙ liberate _
+cartesian-id .Cartesian.unique m′ p =
+  from-pathp⁻ (symP $ idl′ _) ∙ weave _ _ _ p
+```
+
+
+In fact, every invertible map is also cartesian, as we can use
+the inverse to construct the requisite factorization.
+
+```agda
+cartesian-invertible
+  : ∀ {x y} {f : Hom x y} {x′ y′} {f′ : Hom[ f ] x′ y′}
+  → (f-inv : is-invertible f)
+  → is-invertible[ f-inv ] f′
+  → Cartesian f f′
+cartesian-invertible {f = f} {f′ = f′} f-inv f′-inv = f-cart where
+  module f-inv = is-invertible f-inv
+  module f′-inv = is-invertible[_] f′-inv
+
+  f-cart : Cartesian f f′
+  f-cart .Cartesian.universal m h′ =
+    hom[ cancell f-inv.invr ] (f′-inv.inv′ ∘′ h′)
+  f-cart .Cartesian.commutes m h′ =
+    f′ ∘′ hom[ cancell f-inv.invr ] (f′-inv.inv′ ∘′ h′) ≡⟨ whisker-r _ ⟩
+    hom[] (f′ ∘′ f′-inv.inv′ ∘′ h′) ≡⟨ revive₁ (cancell′ f-inv.invl f′-inv.invl′ {q = cancell f-inv.invl}) ⟩
+    hom[] h′                        ≡⟨ liberate _ ⟩
+    h′ ∎
+  f-cart .Cartesian.unique {h′ = h′} m′ p =
+    m′                              ≡˘⟨ liberate _ ⟩
+    hom[] m′                        ≡⟨ weave refl (insertl f-inv.invr) (cancell f-inv.invr) (insertl′ _ f′-inv.invr′) ⟩
+    hom[] (f′-inv.inv′ ∘′ f′ ∘′ m′) ≡⟨ apr′ p ⟩
+    hom[] (f′-inv.inv′ ∘′ h′)       ∎
+```
+
+If $f$ is cartesian, it's also a [weak monomorphism].
+[weak monomorphism]: Cat.Displayed.Morphism.html#weak-monos
+
+```agda
+cartesian→weak-monic
+  : ∀ {x y} {f : Hom x y}
+  → ∀ {x′ y′} {f′ : Hom[ f ] x′ y′}
+  → Cartesian f f′
+  → is-weak-monic f′
+cartesian→weak-monic {f′ = f′} f-cart g′ g″ p =
+  g′                     ≡⟨ unique g′ p ⟩
+  universal _ (f′ ∘′ g″) ≡˘⟨ unique g″ refl ⟩
+  g″                     ∎
+  where
+    open Cartesian f-cart
+```
+
+We can use this fact to show that 2 cartesian lifts over the same
+morphisms must have their domains related by a vertical isomorphism.
+
+```agda
+cartesian-lift-vert-iso
+  : ∀ {x y} {f : Hom x y}
+  → ∀ {x′ x″ y′} {f′ : Hom[ f ] x′ y′} {f″ : Hom[ f ] x″ y′}
+  → Cartesian f f′
+  → Cartesian f f″
+  → x′ ≅↓ x″
+cartesian-lift-vert-iso {f′ = f′} {f″ = f″} f′-cart f″-cart =
+  make-iso[ id-iso ]
+    (universal′ f″-cart (idr _) f′)
+    (universal′ f′-cart (idr _) f″)
+    invl*
+    invr*
+  where
+    open Cartesian
+
+    to* = universal′ f″-cart (B .Precategory.idr _) f′
+    from* = universal′ f′-cart (B .Precategory.idr _) f″
+
+    invl* : to* ∘′ from* ≡[ idl id ] id′
+    invl* = to-pathp⁻ $ cartesian→weak-monic f″-cart _ _ $
+      f″ ∘′ to* ∘′ from*        ≡⟨ shiftr (assoc _ _ _) (pulll′ _ (f″-cart .commutes _ _)) ⟩
+      hom[] (hom[] f′ ∘′ from*) ≡⟨ smashl _ _ ⟩
+      hom[] (f′ ∘′ from*)       ≡⟨ (hom[]⟩⟨ f′-cart .commutes _ _) ∙ hom[]-∙ _ _ ⟩
+      hom[] f″                  ≡⟨ weave _ (sym $ idr _) (ap (_ ∘_) (sym $ idl _)) (symP $ idr′ f″) ⟩
+      hom[] (f″ ∘′ id′)         ≡˘⟨ whisker-r _ ⟩
+      f″ ∘′ hom[] id′ ∎
+
+    invr* : from* ∘′ to* ≡[ idl id ] id′
+    invr* = to-pathp⁻ $ cartesian→weak-monic f′-cart _ _ $
+      f′ ∘′ from* ∘′ to*      ≡⟨ shiftr (assoc _ _ _) (pulll′ _ (f′-cart .commutes _ _)) ⟩
+      hom[] (hom[] f″ ∘′ to*) ≡⟨ smashl _ _ ⟩
+      hom[] (f″ ∘′ to*)       ≡⟨ (hom[]⟩⟨ f″-cart .commutes _ _) ∙ hom[]-∙ _ _ ⟩
+      hom[] f′                ≡⟨ weave _ (sym $ idr _) (ap (_ ∘_) (sym $ idl _)) (symP $ idr′ f′) ⟩
+      hom[] (f′ ∘′ id′)       ≡˘⟨ whisker-r _ ⟩
+      f′ ∘′ hom[] id′ ∎
+```
+
+Cartesian morphisms are also stable under vertical vertical retracts.
+
+```agda
+cartesian-vert-retract-stable
+  : ∀ {x y} {f : Hom x y}
+  → ∀ {x′ x″ y′} {f′ : Hom[ f ] x′ y′} {f″ : Hom[ f ] x″ y′} {ϕ : Hom[ id ] x′ x″}
+  → Cartesian f f′
+  → has-section↓ ϕ
+  → f″ ∘′ ϕ ≡[ idr _ ] f′
+  → Cartesian f f″
+cartesian-vert-retract-stable {f′ = f′} {f″} {ϕ} f-cart ϕ-sect factor = f″-cart where
+  open Cartesian f-cart
+  module ϕ-sect = has-section[_] ϕ-sect
+
+  f″-cart : Cartesian _ f″
+  f″-cart .Cartesian.universal m h′ =
+    hom[ idl m ] (ϕ ∘′ universal m h′)
+  f″-cart .Cartesian.commutes m h′ =
+    f″ ∘′ hom[] (ϕ ∘′ universal m h′) ≡⟨ whisker-r _ ⟩
+    hom[] (f″ ∘′ ϕ ∘′ universal m h′) ≡⟨ revive₁ {p = ap (_ ∘_) (idl m)} (pulll′ (idr _) factor) ⟩
+    hom[] (f′ ∘′ universal m h′)      ≡⟨ (hom[]⟩⟨ commutes m h′) ∙ liberate _ ⟩
+    h′ ∎
+  f″-cart .Cartesian.unique {m = m} {h′ = h′} m′ p =
+    m′                                   ≡⟨ shiftr (sym (eliml (idl _))) (introl′ (idl _) ϕ-sect.is-section′) ⟩
+    hom[] ((ϕ ∘′ ϕ-sect.section′) ∘′ m′) ≡⟨ weave _ (pullr (idl _)) _ (pullr′ (idl _) (to-pathp (unique _ unique-path))) ⟩
+    hom[] (ϕ ∘′ universal m h′)          ∎
+    where
+      sect-commute : f′ ∘′ ϕ-sect.section′ ≡[ idr _ ] f″
+      sect-commute = to-pathp⁻ $
+        f′ ∘′ ϕ-sect.section′                ≡⟨ shiftr _ (λ i → factor (~ i) ∘′ ϕ-sect.section′) ⟩
+        hom[] ((f″ ∘′ ϕ) ∘′ ϕ-sect.section′) ≡⟨ weave _ (idr _ ∙ idr _) _ (cancelr′ (idl _) ϕ-sect.is-section′) ⟩
+        hom[] f″ ∎
+
+      unique-path : f′ ∘′ hom[ idl m ] (ϕ-sect.section′ ∘′ m′) ≡ h′
+      unique-path =
+        f′ ∘′ hom[ idl m ] (ϕ-sect.section′ ∘′ m′) ≡⟨ whisker-r _ ⟩
+        hom[] (f′ ∘′ ϕ-sect.section′ ∘′ m′)        ≡⟨ shiftl _ (pulll′ (idr _) sect-commute) ⟩
+        f″ ∘′ m′ ≡⟨ p ⟩
+        h′ ∎
+```
+
+We also have the following extremely useful pasting lemma, which
+generalizes the [pasting law for pullbacks].
+
+[pasting law for pullbacks]: Cat.Diagram.Pullback.Properties.html#pasting-law
+
+```agda
+cartesian-pasting
+  : ∀ {x y z} {f : Hom y z} {g : Hom x y}
+  → ∀ {x′ y′ z′} {f′ : Hom[ f ] y′ z′} {g′ : Hom[ g ] x′ y′}
+  → Cartesian f f′
+  → Cartesian (f ∘ g) (f′ ∘′ g′)
+  → Cartesian g g′
+cartesian-pasting {f = f} {g = g} {f′ = f′} {g′ = g′} f-cart fg-cart = g-cart where
+  open Cartesian
+
+  g-cart : Cartesian g g′
+  g-cart .universal m h′ =
+    universal′ fg-cart (sym (assoc _ _ _)) (f′ ∘′ h′)
+  g-cart .commutes m h′ =
+    g′ ∘′ universal′ fg-cart (sym (assoc _ _ _)) (f′ ∘′ h′)  ≡⟨ f-cart .unique _ (from-pathp⁻ (assoc′ _ _ _) ∙ from-pathp (commutesp fg-cart _ _)) ⟩
+    f-cart .universal _ (f′ ∘′ h′)                           ≡˘⟨ f-cart .unique h′ refl ⟩
+    h′                                                       ∎
+  g-cart .unique {m = m} {h′ = h′} m′ p =
+    uniquep fg-cart (sym (assoc _ _ _)) refl (sym (assoc _ _ _)) m′ (pullr′ refl p)
+```
+
+## Cartesian Lifts
 
 We call an object $a'$ over $a$ together with a Cartesian arrow $f' : a'
 \to b'$ a _Cartesian lift_ of $f$. Cartesian lifts, defined by universal
@@ -200,3 +402,24 @@ fibre over a ring $R$ is the category of $R$-modules, Cartesian lifts
 are given by restriction of scalars.
 
 [category of modules]: Algebra.Ring.Module.html
+
+## Properties of Cartesian Fibrations
+
+If $\ca{E}$ is a fibration, then every morphism is equivalent to
+a vertical morphism.
+
+```agda
+open Cartesian-lift
+open Cartesian-fibration
+
+fibration→vertical-equiv
+  : ∀ {X Y X′ Y′}
+  → (fib : Cartesian-fibration)
+  → (u : Hom X Y)
+  → Hom[ u ] X′ Y′ ≃ Hom[ id ] X′ (fib .has-lift u Y′ .x′)
+fibration→vertical-equiv fib u = Iso→Equiv $
+  (λ u′ → fib .has-lift _ _ .universal id (hom[ idr u ]⁻ u′)) ,
+  iso (λ u′ → hom[ idr u ] (fib .has-lift _ _ .lifting ∘′ u′))
+      (λ u′ → sym $ fib .has-lift _ _ .unique u′ (sym (hom[]-∙ _ _ ∙ liberate _)))
+      (λ u′ → (hom[]⟩⟨ fib .has-lift _ _ .commutes _ _) ·· hom[]-∙ _ _ ·· liberate _)
+```
