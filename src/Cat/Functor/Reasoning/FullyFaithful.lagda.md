@@ -37,6 +37,9 @@ private variable
 module _ {a} {b} where
   open Equiv (F₁ {a} {b} , ff) public
 
+iso-equiv : ∀ {a b} → (a C.≅ b) ≃ (F₀ a D.≅ F₀ b)
+iso-equiv {a} {b} = (F-map-iso {x = a} {b} F , is-ff→F-map-iso-is-equiv {F = F} ff)
+
 module iso {a} {b} =
   Equiv (F-map-iso {x = a} {b} F , is-ff→F-map-iso-is-equiv {F = F} ff)
 ```

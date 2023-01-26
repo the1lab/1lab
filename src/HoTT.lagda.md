@@ -773,16 +773,16 @@ _ = weak-equiv→pre-iso
 _ = eso→pre-faithful
 _ = eso-full→pre-ff
 _ = Rezk-completion
-_ = Complete-is-eso
-_ = Complete-is-ff
-_ = Complete
+_ = complete-is-eso
+_ = complete-is-ff
+_ = complete
 ```
 -->
 
 * Lemma 9.9.1: `eso→pre-faithful`{.Agda}
 * Lemma 9.9.2: `eso-full→pre-ff`{.Agda}
 * Lemma 9.9.4: `weak-equiv→pre-equiv`{.Agda}, `weak-equiv→pre-iso`{.Agda}
-* Theorem 9.9.5: `Rezk-completion`{.Agda}, `Rezk-completion-is-category`{.Agda}, `Complete`{.Agda}, `Complete-is-ff`{.Agda}, `Complete-is-eso`{.Agda}.
+* Theorem 9.9.5: `Rezk-completion`{.Agda}, `Rezk-completion-is-category`{.Agda}, `complete`{.Agda}, `complete-is-ff`{.Agda}, `complete-is-eso`{.Agda}.
 
 ### Exercises
 
