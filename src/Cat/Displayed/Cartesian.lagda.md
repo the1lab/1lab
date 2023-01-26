@@ -326,6 +326,35 @@ cartesian-pasting {f = f} {g = g} {f′ = f′} {g′ = g′} f-cart fg-cart = g
     uniquep fg-cart (sym (assoc _ _ _)) refl (sym (assoc _ _ _)) m′ (pullr′ refl p)
 ```
 
+If a morphism is both vertical and cartesian, then it must be an
+isomorphism. We can construct the inverse by factorizing the identity
+morphism, which is possible due to the fact that $f'$ is vertical.
+
+```agda
+vertical+cartesian→invertible
+  : ∀ {x} {x′ x″ : Ob[ x ]} {f′ : Hom[ id ] x′ x″}
+  → Cartesian id f′
+  → is-invertible↓ f′
+vertical+cartesian→invertible {x′ = x′} {x″ = x″} {f′ = f′} f-cart =
+  make-invertible↓ f⁻¹′  f′-invl f′-invr where
+    open Cartesian f-cart
+
+    f⁻¹′ : Hom[ id ] x″ x′
+    f⁻¹′ = universal′ (idl _) id′
+
+    f′-invl : f′ ∘′ f⁻¹′ ≡[ idl _ ] id′
+    f′-invl = commutesp _ id′
+
+    path : f′ ∘′ f⁻¹′ ∘′ f′ ≡[ elimr (idl _) ] f′
+    path = cancell′ (idl _) (commutesp (idl _) id′)
+
+    f′-invr : f⁻¹′ ∘′ f′ ≡[ idl _ ] id′
+    f′-invr = to-pathp⁻ $
+      f⁻¹′ ∘′ f′                    ≡⟨ shiftr _ (uniquep _ (idl _) (idl _) (f⁻¹′ ∘′ f′) path) ⟩
+      hom[] (universal′ (idl _) f′) ≡⟨ weave _ _ _ (symP $ uniquep (idr _) refl (idl _) id′ (idr′ _)) ⟩
+      hom[] id′ ∎
+```
+
 ## Cartesian Lifts
 
 We call an object $a'$ over $a$ together with a Cartesian arrow $f' : a'
