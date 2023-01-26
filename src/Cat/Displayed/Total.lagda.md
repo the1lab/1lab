@@ -3,11 +3,13 @@ open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Reasoning as CR
+import Cat.Displayed.Morphism as DM
 
 module Cat.Displayed.Total
   {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′) where
 
 open Displayed E
+open DM E
 open CR B
 ```
 
@@ -103,3 +105,26 @@ With all that in place, we can construct the total category!
 πᶠ .Functor.F-∘ f g = refl
 ```
 -->
+
+## Morphisms in the total category
+
+Isomorphisms in the total category of $E$ consist of pairs of
+isomorphisms in $B$ and $E$.
+
+```agda
+private module ∫E = CR ∫
+
+total-iso→iso : ∀ {x y} → x ∫E.≅ y → x .fst ≅ y .fst
+total-iso→iso f = make-iso
+    (∫E._≅_.to f .hom)
+    (∫E._≅_.from f .hom)
+    (ap hom $ ∫E._≅_.invl f)
+    (ap hom $ ∫E._≅_.invr f)
+
+total-iso→iso[] : ∀ {x y} → (f : x ∫E.≅ y) → x .snd ≅[ total-iso→iso f ] y .snd
+total-iso→iso[] f = make-iso[ total-iso→iso f ]
+    (∫E._≅_.to f .preserves)
+    (∫E._≅_.from f .preserves)
+    (ap preserves $ ∫E._≅_.invl f)
+    (ap preserves $ ∫E._≅_.invr f)
+```

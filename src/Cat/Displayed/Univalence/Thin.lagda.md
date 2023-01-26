@@ -12,6 +12,7 @@ open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Morphism
+import Cat.Displayed.Morphism
 
 module Cat.Displayed.Univalence.Thin where
 
@@ -24,6 +25,7 @@ open Cat.Displayed.Base public
 open Total-hom public
 open Precategory
 open Displayed
+open Cat.Displayed.Morphism
 open _≅[_]_
 ```
 -->

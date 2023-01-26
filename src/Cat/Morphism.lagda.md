@@ -64,6 +64,65 @@ record _↠_ (a b : Ob) : Type (o ⊔ h) where
 open _↠_ public
 ```
 
+## Sections
+
+A morphism $s : B \to A$ is a section of another morphism $r : A \to B$
+when $r \cdot s = id$. The intuition for this name is that $s$ picks
+out a cross-section of $a$ from $b$. For instance, $r$ could map
+animals to their species; a section of this map would have to pick out
+a canonical representative of each species from the set of all animals.
+
+```agda
+_section-of_ : (s : Hom b a) (r : Hom a b) → Type _
+s section-of r = r ∘ s ≡ id
+
+section-of-is-prop
+  : ∀ {s : Hom b a} {r : Hom a b}
+  → is-prop (s section-of r)
+section-of-is-prop = Hom-set _ _ _ _
+
+record has-section (r : Hom a b) : Type h where
+  field
+    section : Hom b a
+    is-section : section section-of r
+
+open has-section public
+
+id-has-section : ∀ {a} → has-section (id {a})
+id-has-section .section = id
+id-has-section .is-section = idl _
+```
+
+## Retracts
+
+A morphism $r : A \to B$ is a retract of another morphism $s : B \to A$
+when $r \cdot s = id$. Note that this is the same equation involved
+in the definition of a section; retracts and sections always come in
+pairs. If sections solve a sort of "curration problem" where we are
+asked to pick out canonical representatives, then retracts solve a
+sort of "classification problem".
+
+```agda
+_retract-of_ : (r : Hom a b) (s : Hom b a) → Type _
+r retract-of s = r ∘ s ≡ id
+
+retract-of-is-prop
+  : ∀ {s : Hom b a} {r : Hom a b}
+  → is-prop (r retract-of s)
+retract-of-is-prop = Hom-set _ _ _ _
+
+record has-retract (s : Hom b a) : Type h where
+  field
+    retract : Hom a b
+    is-retract : retract retract-of s
+
+open has-retract public
+
+id-has-retract : ∀ {a} → has-retract (id {a})
+id-has-retract .retract = id
+id-has-retract .is-retract = idl _
+```
+
 ## Isos
 
 Maps $f : A \to B$ and $g : B \to A$ are **inverses** when we have $f
@@ -253,6 +312,11 @@ abstract
 -->
 
 ```agda
+id-invertible : ∀ {a} → is-invertible (id {a})
+id-invertible .is-invertible.inv = id
+id-invertible .is-invertible.inverses .invl = idl id
+id-invertible .is-invertible.inverses .invr = idl id
+
 id-iso : a ≅ a
 id-iso .to = id
 id-iso .from = id
@@ -328,4 +392,24 @@ iso→monic f = invertible→monic (iso→invertible f)
 
 iso→epic : (f : a ≅ b) → is-epic (f .to)
 iso→epic f = invertible→epic (iso→invertible f)
+```
+
+Furthermore, isomorphisms also yield section/retraction pairs.
+
+```agda
+iso→to-has-section : (f : a ≅ b) → has-section (f .to)
+iso→to-has-section f .section = f .from
+iso→to-has-section f .is-section = f .invl
+
+iso→from-has-section : (f : a ≅ b) → has-section (f .from)
+iso→from-has-section f .section = f .to
+iso→from-has-section f .is-section = f .invr
+
+iso→to-has-retract : (f : a ≅ b) → has-retract (f .to)
+iso→to-has-retract f .retract = f .from
+iso→to-has-retract f .is-retract = f .invr
+
+iso→from-has-retract : (f : a ≅ b) → has-retract (f .from)
+iso→from-has-retract f .retract = f .to
+iso→from-has-retract f .is-retract = f .invl
 ```
