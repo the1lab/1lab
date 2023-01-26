@@ -203,8 +203,8 @@ more constructions than arbitrary pointwise orders. As an example, take
 
 2. Proof assistants are evil software overlords we have to cater to.
 
-[pointwise ordering]: Cat.Instances.Pointwise.html
-[lower sets]: Cat.Instances.Lower.html
+[pointwise ordering]: Order.Instances.Pointwise.html
+[lower sets]: Order.Instances.Lower.html
 
 ```agda
 record Monotone-map {ℓₒ ℓᵣ ℓₒ′ ℓᵣ′} (P : Poset ℓₒ ℓᵣ) (Q : Poset ℓₒ′ ℓᵣ′) : Type (ℓₒ ⊔ ℓₒ′ ⊔ ℓᵣ ⊔ ℓᵣ′) where
