@@ -6,6 +6,11 @@ open import Cat.Functor.Base
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
+open import Data.Image
+
+import Cat.Functor.Reasoning.FullyFaithful as Ffr
+import Cat.Reasoning as Cr
+
 module Cat.Univalent.Rezk where
 ```
 
@@ -48,24 +53,127 @@ sea of theory has risen to the point where our result is trivial:
 [fullu]: Cat.Functor.FullSubcategory.html#Restrict-is-category
 
 ```agda
-Rezk-completion : Precategory o h → Precategory (o ⊔ lsuc h) (o ⊔ h)
-Rezk-completion A = Full-inclusion→Full-subcat {F = よ A} (よ-is-fully-faithful A)
+module Rezk-large (A : Precategory o h) where
+  Rezk-completion : Precategory (o ⊔ lsuc h) (o ⊔ h)
+  Rezk-completion = Full-inclusion→Full-subcat {F = よ A} (よ-is-fully-faithful A)
 
-Rezk-completion-is-category
-  : ∀ {A : Precategory o h} → is-category (Rezk-completion A)
-Rezk-completion-is-category {o} {h} {A} =
-  Restrict-is-category _ (λ _ → squash)
-    (Functor-is-category Sets-is-category)
+  Rezk-completion-is-category : is-category Rezk-completion
+  Rezk-completion-is-category =
+    Restrict-is-category _ (λ _ → squash)
+      (Functor-is-category Sets-is-category)
 
-Complete : (A : Precategory o h) → Functor A (Rezk-completion A)
-Complete A = Ff-domain→Full-subcat {F = よ A} (よ-is-fully-faithful A)
+  Complete : Functor A Rezk-completion
+  Complete = Ff-domain→Full-subcat {F = よ A} (よ-is-fully-faithful A)
 
-Complete-is-ff : {A : Precategory o h} → is-fully-faithful (Complete A)
-Complete-is-ff =
-  is-fully-faithful-domain→Full-subcat
-    {F = よ _} (よ-is-fully-faithful _)
+  Complete-is-ff : is-fully-faithful Complete
+  Complete-is-ff = is-fully-faithful-domain→Full-subcat
+      {F = よ _} (よ-is-fully-faithful _)
 
-Complete-is-eso : {A : Precategory o h} → is-eso (Complete A)
-Complete-is-eso =
-  is-eso-domain→Full-subcat {F = よ _} (よ-is-fully-faithful _)
+  Complete-is-eso : is-eso Complete
+  Complete-is-eso = is-eso-domain→Full-subcat {F = よ _} (よ-is-fully-faithful _)
+```
+
+However, this construction is a bit disappointing, because we've had to
+pass to a _larger_ universe than the one we started with. If originally
+we had $\ca{A}$ with objects living in a universe $o$ and homs in $h$,
+we now have $\widehat{\ca{A}}$ with objects living in $o \lub (1 + h)$.
+
+It's unavoidable that the objects in $\widehat{\ca{A}}$ will live in an
+universe $\widehat{o}$ satisfying $(o \sqcup h) \le \widehat{o}$, since
+we want their identity type to be equivalent to something living in $h$,
+but going up a level is unfortunate. However, it's also avoidable!
+
+Since $\psh(\ca{A})$ is a category, isomorphism is an [identity system]
+on its objects, which lives at the level of its morphisms --- $o \lub h$
+--- rather than of its objects, $o \lub (1 + h)$. Therefore, using the
+construction of [small images], we may take $\im \yo_{\ca{A}}$ to be a
+$o \lub h$-type!
+
+[identity system]: 1Lab.Path.IdentitySystem.html
+[small images]: Data.Image.html
+
+```agda
+module _ (A : Precategory o h) where
+  private
+    PSh[A] = PSh h A
+    module PSh[A] = Precategory PSh[A]
+
+    PSh[A]-is-cat : is-category PSh[A]
+    PSh[A]-is-cat = Functor-is-category Sets-is-category
+
+    module よim = Replacement PSh[A]-is-cat (よ₀ A)
+
+  Rezk-completion : Precategory (o ⊔ h) (o ⊔ h)
+  Rezk-completion .Ob          = よim.Image
+  Rezk-completion .Hom x y     = よim.embed x => よim.embed y
+  Rezk-completion .Hom-set _ _ = PSh[A].Hom-set _ _
+  Rezk-completion .id    = PSh[A].id
+  Rezk-completion ._∘_   = PSh[A]._∘_
+  Rezk-completion .idr   = PSh[A].idr
+  Rezk-completion .idl   = PSh[A].idl
+  Rezk-completion .assoc = PSh[A].assoc
+```
+
+Our resized Rezk completion $\widehat{\ca{A}}$ factors the Yoneda
+embedding $\yo_\ca{A}$ as a functor
+
+$$
+\ca{A} \xto{\sim} \widehat{\ca{A}} \mono \psh(\ca{A})
+$$
+
+where the first functor is a weak equivalence, and the second functor is
+fully faithful. Let's first define the functors:
+
+```agda
+  complete : Functor A Rezk-completion
+  complete .F₀   = よim.inc
+  complete .F₁   = よ A .F₁
+  complete .F-id = よ A .F-id
+  complete .F-∘  = よ A .F-∘
+
+  Rezk↪PSh : Functor Rezk-completion (PSh h A)
+  Rezk↪PSh .F₀      = よim.embed
+  Rezk↪PSh .F₁ f    = f
+  Rezk↪PSh .F-id    = refl
+  Rezk↪PSh .F-∘ _ _ = refl
+```
+
+From the existence of the second functor, we can piece together
+pre-existing lemmas about the image and about identity systems in
+general to show that this resized Rezk completion is also a category: We
+can pull back the identity system on $\psh(\ca{A})$ to one on
+$\widehat{\ca{A}}$, since we know of a (type-theoretic) embedding
+between their types of objects.
+
+That gives us an identity system which is slightly off, that of
+"$\psh(\ca{A})$-isomorphisms on the image of the functor
+$\widehat{\ca{A}} \mono \psh(\ca{A})$", but since we know that this
+functor is fully faithful, that's equivalent to what we want.
+
+```agda
+  private module Rezk↪PSh = Ffr Rezk↪PSh id-equiv
+  abstract
+    Rezk-completion-is-category : is-category Rezk-completion
+    Rezk-completion-is-category =
+      transfer-identity-system
+        (pullback-identity-system
+          PSh[A]-is-cat
+          (_ , よim.embed-is-embedding))
+        (λ _ _ → Rezk↪PSh.iso-equiv e⁻¹)
+        λ x → Cr.≅-pathp Rezk-completion refl refl refl
+```
+
+It remains to show that the functor $\ca{A} \to \widehat{\ca{A}}$ is a
+weak equivalence. It's fully faithful because the Yoneda embedding is,
+and it's essentially surjective because it's _literally_
+surjective-on-objects.
+
+```agda
+  complete-is-ff : is-fully-faithful complete
+  complete-is-ff = よ-is-fully-faithful A
+
+  complete-is-eso : is-eso complete
+  complete-is-eso x = do
+    t ← よim.inc-is-surjective x
+    pure (t .fst , path→iso (t .snd))
 ```

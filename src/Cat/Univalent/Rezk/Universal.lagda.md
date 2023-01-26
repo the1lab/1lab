@@ -360,7 +360,7 @@ candidate over it.
         (λ i x → Π-is-hlevel³ 1 λ _ _ _ → Π-is-hlevel 1 λ _ → C.Hom-set _ _ _ _) $
         funextP λ a → funextP λ h → C.≅-pathp _ _ $
           Univalent.Hom-pathp-reflr-iso c-cat {q = c≅c′}
-            ( C.pullr (F.eliml (H.from-id (transport-refl _ ∙ h₀ .invr)))
+            ( C.pullr (F.eliml (H.from-id (h₀ .invr)))
             ∙ β _ _ _ (H.ε-lswizzle (h₀ .invl)))
       where
         ckα = obj′ (a₀ , h₀)

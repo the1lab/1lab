@@ -333,15 +333,14 @@ most one way!
 
 ```agda
 is-contr-is-prop : is-prop (is-contr A)
-is-contr-is-prop {A = A} (contr c₁ h₁) (contr c₂ h₂) i =
-  record { centre = h₁ c₂ i
-         ; paths = λ x j → hcomp (∂ i ∨ ∂ j) λ where
-            k (i = i0) → h₁ (h₁ x j) k
-            k (i = i1) → h₁ (h₂ x j) k
-            k (j = i0) → h₁ (h₁ c₂ i) k
-            k (j = i1) → h₁ x k
-            k (k = i0) → c₁
-         }
+is-contr-is-prop {A = A} (contr c₁ h₁) (contr c₂ h₂) i .centre = h₁ c₂ i
+is-contr-is-prop {A = A} (contr c₁ h₁) (contr c₂ h₂) i .paths x j =
+  hcomp (∂ i ∨ ∂ j) λ where
+    k (i = i0) → h₁ (h₁ x j) k
+    k (i = i1) → h₁ (h₂ x j) k
+    k (j = i0) → h₁ (h₁ c₂ i) k
+    k (j = i1) → h₁ x k
+    k (k = i0) → c₁
 ```
 
 First, we prove that being contractible is a proposition. Next, we prove

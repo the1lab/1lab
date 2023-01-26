@@ -149,10 +149,20 @@ identity-system-gives-path
   : ∀ {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a}
   → is-identity-system R r
   → ∀ {a b} → R a b ≃ (a ≡ b)
-identity-system-gives-path ids {a = a} =
-  ids .to-path {a = a}
-  , total→equiv {f = λ x → ids .to-path {a = a} {b = x}}
-    (is-contr→is-equiv (is-contr-ΣR ids) (contr _ Singleton-is-contr))
+identity-system-gives-path {R = R} {r = r} ids =
+  Iso→Equiv (ids .to-path , iso from ri li) where
+    from : ∀ {a b} → a ≡ b → R a b
+    from {a = a} p = transport (λ i → R a (p i)) (r a)
+
+    ri : ∀ {a b} → is-right-inverse (from {a} {b}) (ids .to-path)
+    ri = J (λ y p → ids .to-path (from p) ≡ p)
+           ( ap (ids .to-path) (transport-refl _)
+           ∙ to-path-refl ids)
+
+    li : ∀ {a b} → is-left-inverse (from {a} {b}) (ids .to-path)
+    li = IdsJ ids (λ y p → from (ids .to-path p) ≡ p)
+          ( ap from (to-path-refl ids)
+          ∙ transport-refl _ )
 ```
 
 ## In subtypes

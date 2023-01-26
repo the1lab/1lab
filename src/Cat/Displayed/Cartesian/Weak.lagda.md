@@ -128,7 +128,7 @@ Furthermore, if $\ca{E}$ is a fibration, weakly cartesian morphisms are
 also cartesian. To see this, we note that the lift of $f$ is cartesian,
 and thus also a weak cartesian morphism. This implies that there is
 an isomorphism between their codomains, which allows us to invoke
-`cartesian-vert-retract-stable`{.Agda} to show that $f'$ must also be
+`cartesian-vert-retraction-stable`{.Agda} to show that $f'$ must also be
 cartesian.
 
 ```agda
@@ -155,7 +155,7 @@ weak-cartesian→cartesian {x = x} {y′ = y′} {f = f} {f′ = f′} fib f-wea
 
   f-cart : Cartesian f f′ 
   f-cart =
-    cartesian-vert-retract-stable f*-cart
+    cartesian-vert-retraction-stable f*-cart
       (iso[]→to-has-section[] (weak-cartesian→vert-iso f*-weak f-weak))
       (f-weak.commutes f*)
 ```

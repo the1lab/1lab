@@ -222,9 +222,7 @@ deformation $p : G \equiv F$, such that, over this $p$, the given
 isomorphism looks like the identity.
 
 ```agda
-  Functor-is-category DisCat =
-    record { to-path = F≡G ; to-path-over = id≡F≅G }
-    where
+  Functor-is-category DisCat = functor-cat where
 ```
 
 The first thing we must note is that we can recover the components of a
@@ -281,6 +279,10 @@ show is that $\eta{}_x \circ \id{id} \circ \id{id} = f$.
       id≡F≅G : PathP (λ i → F ≅ F≡G i) id-iso F≅G
       id≡F≅G = ≅-pathp refl F≡G $ Nat-pathp refl F≡G λ x →
         Hom-pathp-reflr-iso (D.idr _)
+
+    functor-cat : is-category Cat[ C , D ]
+    functor-cat .to-path = F≡G
+    functor-cat .to-path-over = id≡F≅G
 ```
 
 A useful lemma is that if you have a natural transformation where each
