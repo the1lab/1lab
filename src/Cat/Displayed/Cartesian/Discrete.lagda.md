@@ -14,6 +14,8 @@ open import Cat.Displayed.Path
 open import Cat.Prelude
 
 import Cat.Reasoning
+import Cat.Displayed.Morphism
+import Cat.Displayed.Reasoning
 
 module Cat.Displayed.Cartesian.Discrete where
 ```
@@ -60,6 +62,8 @@ module _ {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ�
   private
     module B = Cat.Reasoning B
     module E = Displayed E
+    open Cat.Displayed.Morphism E
+    open Cat.Displayed.Reasoning E
 ```
 
 -->
@@ -165,6 +169,38 @@ are unique, we have $f = g$.
     Σ-inj-set (fibre-set x) $
       is-contr→is-prop (lifts B.id b) (a , f) (a , g)
     where open Discrete-fibration disc
+```
+
+## Morphisms in Discrete Fibrations
+
+If $\ca{E}$ is a discrete fibration, then the only vertical morphisms
+are identities. This follows directly from lifts being contractible.
+
+```agda
+  discrete→vertical-id
+    : Discrete-fibration
+    → ∀ {x} {x″ : E.Ob[ x ]} (f′ : Σ[ x′ ∈ E.Ob[ x ] ] (E.Hom[ B.id ] x′ x″))
+    → (x″ , E.id′) ≡ f′
+  discrete→vertical-id disc {x″ = x″} f′ =
+    sym (lifts B.id _ .paths (x″ , E.id′)) ∙ lifts B.id x″ .paths f′
+    where open Discrete-fibration disc
+```
+
+We can use this fact in conjunction with the fact that all fibres are thin to show
+that every vertical morphism in a discrete fibration is invertible.
+
+```agda
+  discrete→vertical-invertible
+    : Discrete-fibration
+    → (∀ {x} {x′ x″ : E.Ob[ x ]} → (f′ : E.Hom[ B.id ] x′ x″) → is-invertible↓ f′)
+  discrete→vertical-invertible disc {x′ = x′} {x″ = x″} f′ =
+    make-invertible↓
+      (subst (λ x′ → E.Hom[ B.id ] x″ x′) x″≡x′ E.id′)
+      (to-pathp (discrete→thin-fibres _ disc _ _))
+      (to-pathp (discrete→thin-fibres _ disc _ _))
+    where
+      x″≡x′ : x″ ≡ x′
+      x″≡x′ = ap fst (discrete→vertical-id disc (x′ , f′))
 ```
 
 ## Discrete Fibrations are Presheaves
