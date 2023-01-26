@@ -397,6 +397,30 @@ iso→epic f = invertible→epic (iso→invertible f)
 Furthermore, isomorphisms also yield section/retraction pairs.
 
 ```agda
+inverses→to-has-section
+  : ∀ {f : Hom a b} {g : Hom b a}
+  → Inverses f g → has-section f
+inverses→to-has-section {g = g} inv .section = g
+inverses→to-has-section inv .is-section = Inverses.invl inv
+
+inverses→from-has-section
+  : ∀ {f : Hom a b} {g : Hom b a}
+  → Inverses f g → has-section g
+inverses→from-has-section {f = f} inv .section = f
+inverses→from-has-section inv .is-section = Inverses.invr inv
+
+inverses→to-has-retract
+  : ∀ {f : Hom a b} {g : Hom b a}
+  → Inverses f g → has-retract f
+inverses→to-has-retract {g = g} inv .retract = g
+inverses→to-has-retract inv .is-retract = Inverses.invr inv
+
+inverses→from-has-retract
+  : ∀ {f : Hom a b} {g : Hom b a}
+  → Inverses f g → has-retract g
+inverses→from-has-retract {f = f} inv .retract = f
+inverses→from-has-retract inv .is-retract = Inverses.invl inv
+
 iso→to-has-section : (f : a ≅ b) → has-section (f .to)
 iso→to-has-section f .section = f .from
 iso→to-has-section f .is-section = f .invl

@@ -195,6 +195,8 @@ record has-section[_]
   field
     section′ : Hom[ sect .section ] y′ x′
     is-section′ : section′ section-of[ sect .is-section ] r′
+
+open has-section[_] public
 ```
 
 We also distinguish the sections that are displayed over the identity
@@ -229,7 +231,9 @@ record has-retract[_]
   no-eta-equality
   field
     retract′ : Hom[ ret .retract ] y′ x′
-    is-retarct′ : retract′ retract-of[ ret .is-retract ] s′
+    is-retract′ : retract′ retract-of[ ret .is-retract ] s′
+
+open has-retract[_] public
 ```
 
 We also define vertical retracts in a similar manner as before.
@@ -301,6 +305,16 @@ _≅↓_ = _≅[ id-iso ]_
 
 is-invertible↓ : {x : Ob} {x′ x″ : Ob[ x ]} → Hom[ id ] x′ x″ → Type _
 is-invertible↓ = is-invertible[ id-invertible ]
+
+make-invertible↓
+  : ∀ {x} {x′ x″ : Ob[ x ]} {f′ : Hom[ id ] x′ x″}
+  → (g′ : Hom[ id ] x″ x′)
+  → f′ ∘′ g′ ≡[ idl _ ] id′
+  → g′ ∘′ f′ ≡[ idl _ ] id′
+  → is-invertible↓ f′
+make-invertible↓ g′ p q .is-invertible[_].inv′ = g′
+make-invertible↓ g′ p q .is-invertible[_].inverses′ .Inverses[_].invl′ = p
+make-invertible↓ g′ p q .is-invertible[_].inverses′ .Inverses[_].invr′ = q
 ```
 
 Like their non-displayed counterparts, existence of displayed inverses
@@ -385,27 +399,59 @@ id-iso↓ = make-iso[ id-iso ] id′ id′ (idl′ id′) (idl′ id′)
 Isomorphisms are also instances of sections and retracts.
 
 ```agda
+inverses[]→to-has-section[]
+  : ∀ {f : Hom a b} {g : Hom b a}
+  → ∀ {a′ b′} {f′ : Hom[ f ] a′ b′} {g′ : Hom[ g ] b′ a′}
+  → {inv : Inverses f g} → Inverses[ inv ] f′ g′
+  → has-section[ inverses→to-has-section inv ] f′
+inverses[]→to-has-section[] {g′ = g′} inv′ .section′ = g′
+inverses[]→to-has-section[] inv′ .is-section′ = Inverses[_].invl′ inv′
+
+inverses[]→from-has-section[]
+  : ∀ {f : Hom a b} {g : Hom b a}
+  → ∀ {a′ b′} {f′ : Hom[ f ] a′ b′} {g′ : Hom[ g ] b′ a′}
+  → {inv : Inverses f g} → Inverses[ inv ] f′ g′
+  → has-section[ inverses→from-has-section inv ] g′
+inverses[]→from-has-section[] {f′ = f′} inv′ .section′ = f′
+inverses[]→from-has-section[] inv′ .is-section′ = Inverses[_].invr′ inv′
+
+inverses[]→to-has-retract[]
+  : ∀ {f : Hom a b} {g : Hom b a}
+  → ∀ {a′ b′} {f′ : Hom[ f ] a′ b′} {g′ : Hom[ g ] b′ a′}
+  → {inv : Inverses f g} → Inverses[ inv ] f′ g′
+  → has-retract[ inverses→to-has-retract inv ] f′
+inverses[]→to-has-retract[] {g′ = g′} inv′ .retract′ = g′
+inverses[]→to-has-retract[] inv′ .is-retract′ = Inverses[_].invr′ inv′
+
+inverses[]→from-has-retract[]
+  : ∀ {f : Hom a b} {g : Hom b a}
+  → ∀ {a′ b′} {f′ : Hom[ f ] a′ b′} {g′ : Hom[ g ] b′ a′}
+  → {inv : Inverses f g} → Inverses[ inv ] f′ g′
+  → has-retract[ inverses→from-has-retract inv ] g′
+inverses[]→from-has-retract[] {f′ = f′} inv′ .retract′ = f′
+inverses[]→from-has-retract[] inv′ .is-retract′ = Inverses[_].invl′ inv′
+
 iso[]→to-has-section[]
   : {f : a ≅ b} → (f′ : a′ ≅[ f ] b′)
   → has-section[ iso→to-has-section f ] (f′ .to′)
-iso[]→to-has-section[] f′ .has-section[_].section′ = f′ .from′
-iso[]→to-has-section[] f′ .has-section[_].is-section′ = f′ .invl′
+iso[]→to-has-section[] f′ .section′ = f′ .from′
+iso[]→to-has-section[] f′ .is-section′ = f′ .invl′
 
 iso[]→from-has-section[]
   : {f : a ≅ b} → (f′ : a′ ≅[ f ] b′)
   → has-section[ iso→from-has-section f ] (f′ .from′)
-iso[]→from-has-section[] f′ .has-section[_].section′ = f′ .to′
-iso[]→from-has-section[] f′ .has-section[_].is-section′ = f′ .invr′
+iso[]→from-has-section[] f′ .section′ = f′ .to′
+iso[]→from-has-section[] f′ .is-section′ = f′ .invr′
 
 iso[]→to-has-retract[]
   : {f : a ≅ b} → (f′ : a′ ≅[ f ] b′)
   → has-retract[ iso→to-has-retract f ] (f′ .to′)
-iso[]→to-has-retract[] f′ .has-retract[_].retract′ = f′ .from′
-iso[]→to-has-retract[] f′ .has-retract[_].is-retarct′ = f′ .invr′
+iso[]→to-has-retract[] f′ .retract′ = f′ .from′
+iso[]→to-has-retract[] f′ .is-retract′ = f′ .invr′
 
 iso[]→from-has-retract[]
   : {f : a ≅ b} → (f′ : a′ ≅[ f ] b′)
   → has-retract[ iso→from-has-retract f ] (f′ .from′)
-iso[]→from-has-retract[] f′ .has-retract[_].retract′ = f′ .to′
-iso[]→from-has-retract[] f′ .has-retract[_].is-retarct′ = f′ .invl′
+iso[]→from-has-retract[] f′ .retract′ = f′ .to′
+iso[]→from-has-retract[] f′ .is-retract′ = f′ .invl′
 ```
