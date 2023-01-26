@@ -25,7 +25,7 @@ _collection_ of fibre categories $\ca{E}^*(x)$, this assignment isn't
 necessarily functorial!
 
 More precisely, we should have that a collection of categories, indexed
-by a category, should be a _pseudofunctor_ $\ca{B} \to \Cat$, where
+by a category, should be a _pseudofunctor_ $\ca{B}^{op} \to \Cat$, where
 $\Cat$ is a [bicategory] of categories. It turns out that we can
 characterise this assignment entirely in terms of the displayed objects
 and morphisms in $\ca{E}$!
@@ -60,7 +60,7 @@ record
 
 More specifically, let $u : \ca{B}$ and $u'$ be over $u$, and suppose
 that we have a map $m : u \to a$ (below, in violet), and a map $h' : u'
-\to_m b'$ lying over the composite $fm$ (in red). The universal property
+\to_{fm} b'$ lying over the composite $fm$ (in red). The universal property
 of a Cartesian map says that we have a universal factorisation of $h'$
 through a map $u' \to a'$ (in green, marked $\exists!$).
 
