@@ -259,7 +259,7 @@ cartesian-lift→vert-iso {f′ = f′} {f″ = f″} f′-cart f″-cart =
       f′ ∘′ hom[] id′ ∎
 ```
 
-Cartesian morphisms are also stable under vertical vertical retracts.
+Cartesian morphisms are also stable under vertical retracts.
 
 ```agda
 cartesian-vert-retract-stable

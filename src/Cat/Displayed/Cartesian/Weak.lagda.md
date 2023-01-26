@@ -179,7 +179,7 @@ record Weak-cartesian-lift
 ```
 
 A displayed category that has weak cartesian lifts for all morphisms
-in the base is called a "Prefibered Category". Notably, prefibered
+in the base is called a **prefibered category**. Notably, prefibered
 categories are fibred when weak cartesian morphisms are closed under
 composition.
 
@@ -350,6 +350,9 @@ a cartesian lift of $f$.
   f-lift .Cartesian-lift.cartesian = f*-cartesian
 ```
 
+<!--
+[TODO: Reed M, 25/01/2023] Explain this code when showing that left
+adjoints to reindexing gives opfibrations.
 ```agda
 weak-cartesian-lift→reindex
   : ∀ {x y} {f : Hom x y} {x′ : Ob[ x ]} {y′ : Ob[ y ]}
@@ -362,9 +365,7 @@ weak-cartesian-lift→reindex weak-lift = Iso→Equiv $
       (λ f′ → (hom[]⟩⟨ from-pathp⁻ (commutes f′)) ·· hom[]-∙ _ _ ·· liberate _)
   where
     open Weak-cartesian-lift weak-lift
-```
 
-```agda
 module _ (U : ∀ {x y} → Hom x y → Functor (Fibre ℰ y) (Fibre ℰ x))
          where
 
@@ -415,4 +416,5 @@ module _ (U : ∀ {x y} → Hom x y → Functor (Fibre ℰ y) (Fibre ℰ x))
       to (hom[] (from id′ ∘′ h′)) ≡⟨ ap to (from-pathp p) ⟩
       to g′                       ∎
 ```
+-->
 
