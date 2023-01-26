@@ -35,6 +35,34 @@ is-faithful : Functor C D → Type _
 is-faithful F = ∀ {x y} → injective (F₁ F {x = x} {y})
 ```
 
+<!--
+```agda
+module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
+  import Cat.Reasoning C as C
+  import Cat.Reasoning D as D
+  private module _ where
+    open import Cat.Reasoning using (_≅_ ; Inverses)
+    open _≅_ public
+    open Inverses public
+
+  F-map-iso : ∀ {x y} (F : Functor C D) → x C.≅ y → F₀ F x D.≅ F₀ F y
+  F-map-iso F x .to       = F .F₁ (x .to)
+  F-map-iso F x .from     = F .F₁ (x .from)
+  F-map-iso F x .inverses =
+    record { invl = sym (F .F-∘ _ _) ∙ ap (F .F₁) (x .invl) ∙ F .F-id
+           ; invr = sym (F .F-∘ _ _) ∙ ap (F .F₁) (x .invr) ∙ F .F-id
+           }
+    where module x = C._≅_ x
+
+  F-map-invertible : ∀ {x y} (F : Functor C D) {f : C.Hom x y} → C.is-invertible f → D.is-invertible (F₁ F f)
+  F-map-invertible F inv =
+    D.make-invertible (F₁ F _)
+      (sym (F-∘ F _ _) ·· ap (F₁ F) x.invl ·· F-id F)
+      (sym (F-∘ F _ _) ·· ap (F₁ F) x.invr ·· F-id F)
+    where module x = C.is-invertible inv
+```
+-->
+
 ## ff Functors
 
 A functor is **fully faithful** (abbreviated **ff**) when its action on
@@ -81,7 +109,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
 
   is-ff→is-conservative
     : {F : Functor C D} → is-fully-faithful F
-    → ∀ {X Y} (f : C.Hom X Y)  → Dm.is-invertible (F₁ F f)
+    → ∀ {X Y} (f : C.Hom X Y) → Dm.is-invertible (F₁ F f)
     → Cm.is-invertible f
   is-ff→is-conservative {F = F} ff f isinv = i where
     open Cm.is-invertible
@@ -123,16 +151,21 @@ the domain category to serve as an inverse for $f$:
     : {F : Functor C D} → is-fully-faithful F
     → ∀ {X Y} → F₀ F X Dm.≅ F₀ F Y
     → X Cm.≅ Y
-  is-ff→essentially-injective {F = F} ff im =
-    Cm.make-iso (equiv→inverse ff to) inv invl invr
-    where
-      open Dm._≅_ im using (to ; from ; inverses)
-      D-inv : Dm.is-invertible to
-      D-inv = record { inv = from ; inverses = inverses }
-      open Cm.is-invertible
-        (is-ff→is-conservative {F = F} ff
-          (equiv→inverse ff to)
-          (subst Dm.is-invertible (sym (equiv→counit ff _)) D-inv))
+  is-ff→essentially-injective {F = F} ff im = im′ where
+    -- Cm.make-iso (equiv→inverse ff to) inv invl invr
+    open Dm._≅_ im using (to ; from ; inverses)
+    D-inv′ : Dm.is-invertible (F₁ F (equiv→inverse ff to))
+    D-inv′ .Dm.is-invertible.inv = from
+    D-inv′ .Dm.is-invertible.inverses =
+      subst (λ e → Dm.Inverses e from) (sym (equiv→counit ff _)) inverses
+
+    open Cm.is-invertible (is-ff→is-conservative {F = F} ff (equiv→inverse ff to) D-inv′)
+
+    im′ : _ Cm.≅ _
+    im′ .to   = equiv→inverse ff to
+    im′ .from = inv
+    im′ .inverses .Cm.Inverses.invl = invl
+    im′ .inverses .Cm.Inverses.invr = invr
 ```
 
 ## Essential Fibres
@@ -170,22 +203,6 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
     open _≅_ public
     open Inverses public
 
-  F-map-iso : ∀ {x y} (F : Functor C D) → x C.≅ y → F₀ F x D.≅ F₀ F y
-  F-map-iso F x .to       = F .F₁ (x .to)
-  F-map-iso F x .from     = F .F₁ (x .from)
-  F-map-iso F x .inverses =
-    record { invl = sym (F .F-∘ _ _) ∙ ap (F .F₁) (x .invl) ∙ F .F-id
-           ; invr = sym (F .F-∘ _ _) ∙ ap (F .F₁) (x .invr) ∙ F .F-id
-           }
-    where module x = C._≅_ x
-
-  F-map-invertible : ∀ {x y} (F : Functor C D) {f : C.Hom x y} → C.is-invertible f → D.is-invertible (F₁ F f)
-  F-map-invertible F inv =
-    D.make-invertible (F₁ F _)
-      (sym (F-∘ F _ _) ·· ap (F₁ F) x.invl ·· F-id F)
-      (sym (F-∘ F _ _) ·· ap (F₁ F) x.invr ·· F-id F)
-    where module x = C.is-invertible inv
-
   open import Cat.Univalent
 
   F-map-path : ∀ {x y} (F : Functor C D) (i : x C.≅ y)
@@ -222,7 +239,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
 
   is-ff→F-map-iso-is-equiv
     : {F : Functor C D} → is-fully-faithful F
-    → ∀ {X Y} → is-equiv (F-map-iso {X} {Y} F)
+    → ∀ {X Y} → is-equiv (F-map-iso {x = X} {Y} F)
   is-ff→F-map-iso-is-equiv {F = F} ff = is-iso→is-equiv isom where
     isom : is-iso _
     isom .is-iso.inv = is-ff→essentially-injective {F = F} ff
