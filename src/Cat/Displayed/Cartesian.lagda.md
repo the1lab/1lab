@@ -193,12 +193,13 @@ In fact, every invertible map is also cartesian, as we can use
 the inverse to construct the requisite factorization.
 
 ```agda
-cartesian-invertible
+invertible→cartesian
   : ∀ {x y} {f : Hom x y} {x′ y′} {f′ : Hom[ f ] x′ y′}
   → (f-inv : is-invertible f)
   → is-invertible[ f-inv ] f′
   → Cartesian f f′
-cartesian-invertible {f = f} {f′ = f′} f-inv f′-inv = f-cart where
+invertible→cartesian
+ {f = f} {f′ = f′} f-inv f′-inv = f-cart where
   module f-inv = is-invertible f-inv
   module f′-inv = is-invertible[_] f′-inv
 
