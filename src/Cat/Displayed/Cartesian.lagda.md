@@ -259,17 +259,17 @@ cartesian-lift→vert-iso {f′ = f′} {f″ = f″} f′-cart f″-cart =
       f′ ∘′ hom[] id′ ∎
 ```
 
-Cartesian morphisms are also stable under vertical retracts.
+Cartesian morphisms are also stable under vertical retractions.
 
 ```agda
-cartesian-vert-retract-stable
+cartesian-vert-retraction-stable
   : ∀ {x y} {f : Hom x y}
   → ∀ {x′ x″ y′} {f′ : Hom[ f ] x′ y′} {f″ : Hom[ f ] x″ y′} {ϕ : Hom[ id ] x′ x″}
   → Cartesian f f′
   → has-section↓ ϕ
   → f″ ∘′ ϕ ≡[ idr _ ] f′
   → Cartesian f f″
-cartesian-vert-retract-stable {f′ = f′} {f″} {ϕ} f-cart ϕ-sect factor = f″-cart where
+cartesian-vert-retraction-stable {f′ = f′} {f″} {ϕ} f-cart ϕ-sect factor = f″-cart where
   open Cartesian f-cart
   module ϕ-sect = has-section[_] ϕ-sect
 

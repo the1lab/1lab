@@ -192,7 +192,7 @@ that every vertical morphism in a discrete fibration is invertible.
 ```agda
   discrete→vertical-invertible
     : Discrete-fibration
-    → (∀ {x} {x′ x″ : E.Ob[ x ]} → (f′ : E.Hom[ B.id ] x′ x″) → is-invertible↓ f′)
+    → ∀ {x} {x′ x″ : E.Ob[ x ]} → (f′ : E.Hom[ B.id ] x′ x″) → is-invertible↓ f′
   discrete→vertical-invertible disc {x′ = x′} {x″ = x″} f′ =
     make-invertible↓
       (subst (λ x′ → E.Hom[ B.id ] x″ x′) x″≡x′ E.id′)

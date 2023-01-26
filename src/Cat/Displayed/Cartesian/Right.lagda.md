@@ -35,8 +35,7 @@ morphism in $\ca{E}$ is cartesian.
 record Right-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
   no-eta-equality
   field
-    is-fibration
-      : Cartesian-fibration
+    is-fibration : Cartesian-fibration
     cartesian
       : ∀ {x y} {f : Hom x y}
       → ∀ {x′ y′} (f′ : Hom[ f ] x′ y′)
@@ -45,11 +44,10 @@ record Right-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
   open Cartesian-fibration is-fibration public
 ```
 
-One notable fact is that all of the vertical morphisms of a right
-fibrations are invertible. In other words, if $\ca{E}$ is a right
-fibration, then all of the fibre categories are groupoids. This
-follows directly from the fact that vertical cartesian maps are
-invertible.
+One notable fact is every vertical morphism of a right fibrations is
+invertible. In other words, if $\ca{E}$ is a right fibration, then all
+of its fibre categories are groupoids. This follows directly from the
+fact that vertical cartesian maps are invertible.
 
 ```agda
 right-fibration→vertical-invertible
@@ -76,15 +74,17 @@ vertical-invertible+fibration→right-fibration fib vert-inv
     open Cartesian-lift renaming (x′ to x-lift)
 ```
 
-To see this, recall that cartesian morphisms are stable under
-vertical retracts. The cartesian lift $f^{*}$ of $f$ is obviously
-cartesian, so it suffices to show that there is a vertical retract
-$x^{*} \to x'$. To construct this retract, we shall factorize $f'$
+To see this, recall that cartesian morphisms are [stable under
+vertical retractions]. The cartesian lift $f^{*}$ of $f$ is obviously
+cartesian, so it suffices to show that there is a vertical retraction
+$x^{*} \to x'$. To construct this retraction, we shall factorize $f'$
 over $f \cdot id$; which yields a vertical morphism $i^{*} : x' \to x^{*}$.
-By our hypotheses, $i^{*}$ is invertible, and thus is a retract.
+By our hypotheses, $i^{*}$ is invertible, and thus is a retraction.
 What remains to be shown is that the inverse to $i^{*}$ factors
 $f'$ and $f^{*}$; this follows from the factorization of $f'$ and
 the fact that $i^{*}$ is invertible.
+
+[stable under vertical retractions]: Cat.Displayed.Cartesian.html#cartesian-vert-retraction-stable
 
 ```agda
     x* : Ob[ x ]
@@ -110,14 +110,14 @@ the fact that $i^{*}$ is invertible.
       hom[] f* ∎
 
     f-cart : Cartesian f f′
-    f-cart = cartesian-vert-retract-stable
+    f-cart = cartesian-vert-retraction-stable
       (has-lift f y′ .cartesian)
       (inverses[]→from-has-section[] i*-inv.inverses′)
       factors
 ```
 
 As a corollary, we get that all discrete fibrations are right fibrations.
-Intuitively this is true, as sets are 0-groupoids.
+Intuitively, this is true, as sets are 0-groupoids.
 
 ```agda
 discrete→right-fibration

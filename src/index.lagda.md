@@ -643,7 +643,7 @@ open import Cat.Displayed.Cartesian.Discrete
 -- Discrete fibrations are presheaves
 
 open import Cat.Displayed.Cartesian.Right
--- Fibrations of groupoids
+-- Fibrations in groupoids
 
 open import Cat.Displayed.Cartesian.Indexing
 -- Fibrations have pseudofunctorial reindexing.
