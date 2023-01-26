@@ -287,8 +287,34 @@ record Cocartesian-lift {x y} (f : Hom x y) (x′ : Ob[ x ]) : Type (o ⊔ ℓ �
   open Cocartesian cocartesian public
 ```
 
+We also can apply duality to cocartesian lifts.
+
+```agda
+cartesian-lift^op→cocartesian-lift
+  : ∀ {x y} {f : Hom x y} {x′ : Ob[ x ]}
+  → Cartesian-lift (ℰ ^total-op) f x′
+  → Cocartesian-lift f x′
+cartesian-lift^op→cocartesian-lift cart .Cocartesian-lift.y′ =
+  Cartesian-lift.x′ cart
+cartesian-lift^op→cocartesian-lift cart .Cocartesian-lift.lifting =
+  Cartesian-lift.lifting cart
+cartesian-lift^op→cocartesian-lift cart .Cocartesian-lift.cocartesian =
+  cartesian^op→cocartesian (Cartesian-lift.cartesian cart)
+
+cocartesian-lift→cartesian-lift^op
+  : ∀ {x y} {f : Hom x y} {x′ : Ob[ x ]}
+  → Cocartesian-lift f x′
+  → Cartesian-lift (ℰ ^total-op) f x′
+cocartesian-lift→cartesian-lift^op cocart .Cartesian-lift.x′ =
+  Cocartesian-lift.y′ cocart
+cocartesian-lift→cartesian-lift^op cocart .Cartesian-lift.lifting =
+  Cocartesian-lift.lifting cocart
+cocartesian-lift→cartesian-lift^op cocart .Cartesian-lift.cartesian =
+  cocartesian→cartesian^op (Cocartesian-lift.cocartesian cocart)
+```
+
 We can use this notion to define cocartesian fibrations (sometimes
-referred to as an opfibration).
+referred to as opfibrations).
 
 ```agda
 record Cocartesian-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
@@ -297,3 +323,12 @@ record Cocartesian-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
     has-lift : ∀ {x y} (f : Hom x y) (x′ : Ob[ x ]) → Cocartesian-lift f x′
 ```
 
+```agda
+fibration^op→opfibration : Cartesian-fibration (ℰ ^total-op) → Cocartesian-fibration
+fibration^op→opfibration fib .Cocartesian-fibration.has-lift f x′ =
+  cartesian-lift^op→cocartesian-lift (Cartesian-fibration.has-lift fib f x′)
+
+opfibration→fibration^op : Cocartesian-fibration → Cartesian-fibration (ℰ ^total-op)
+opfibration→fibration^op opfib .Cartesian-fibration.has-lift f y′ =
+  cocartesian-lift→cartesian-lift^op (Cocartesian-fibration.has-lift opfib f y′)
+```
