@@ -95,13 +95,7 @@ the isomorphism of first components coming from the isomorphism in $\int E$.
 
 ```agda
   is-category-total : is-category (∫ E)
-  is-category-total = record
-    { to-path      = λ p → ap fst $
-        wrapper (total-iso→iso E p) _ _ (total-iso→iso[] E p)
-    ; to-path-over = λ p → ap snd $
-        wrapper (total-iso→iso E p) _ _ (total-iso→iso[] E p)
-    }
-    where
+  is-category-total = total-cat where
     wrapper
       : ∀ {x y} (p : x B.≅ y) (A : Ob[ x ]) (B : Ob[ y ]) (f : A ≅[ p ] B)
       → Path (Σ _ ((x , A) ∫E.≅_))
@@ -113,6 +107,12 @@ the isomorphism of first components coming from the isomorphism in $\int E$.
                → ((_ , A) , ∫E.id-iso) ≡ (((y , B) , piece-together p f)))
         contract-vertical-iso
         p
+
+    total-cat : is-category (∫ E)
+    total-cat .to-path p = ap fst $
+        wrapper (total-iso→iso E p) _ _ (total-iso→iso[] E p)
+    total-cat .to-path-over p = ap snd $
+        wrapper (total-iso→iso E p) _ _ (total-iso→iso[] E p)
 ```
 
 ## Fibrewise univalent categories
@@ -150,7 +150,7 @@ is-category-fibrewise′ b wit = is-category-fibrewise b wit′ where
         (to-pathp (i .F.invr)))
       (λ (x , i) → x , F.make-iso (i .to′) (i .from′)
         (from-pathp (i .invl′)) (from-pathp (i .invr′)))
-      (λ (x , i) → Σ-pathp refl (≅[]-path refl refl))
+      (λ (x , i) → Σ-pathp refl (≅[]-path refl))
       (is-contr-ΣR (wit x))
     where module F = Cat.Reasoning (Fibre E x)
 ```

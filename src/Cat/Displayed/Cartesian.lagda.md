@@ -133,6 +133,18 @@ composite, rather than displayed directly over a composite.
           → f′ ∘′ m′ ≡[ p ] h′ → m′ ≡[ q ] universal′ r h′
   uniquep p q r {h′ = h′} m′ s =
     to-pathp⁻ (unique m′ (from-pathp⁻ s) ∙ from-pathp⁻ (universalp p q r h′))
+
+  uniquep₂
+    : ∀ {u u′} {m₁ m₂ : Hom u a} {k : Hom u b}
+    → (p : f ∘ m₁ ≡ k) (q : m₁ ≡ m₂) (r : f ∘ m₂ ≡ k)
+    → {h′ : Hom[ k ] u′ b′} (m₁′ : Hom[ m₁ ] u′ a′) (m₂′ : Hom[ m₂ ] u′ a′)
+    → f′ ∘′ m₁′ ≡[ p ] h′
+    → f′ ∘′ m₂′ ≡[ r ] h′
+    → m₁′ ≡[ q ] m₂′
+  uniquep₂ {u′ = u′} p q r m₁′ m₂′ α β = to-pathp⁻ $
+       unique m₁′ (from-pathp⁻ α)
+    ·· from-pathp⁻ (universalp p q r _)
+    ·· ap (coe1→0 (λ i → Hom[ q i ] u′ a′)) (sym (unique m₂′ (from-pathp⁻ β)))
 ```
 
 ## Properties of Cartesian Morphisms

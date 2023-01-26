@@ -41,7 +41,7 @@ a monomorphism in the base.
 is-monic[_]
   : ∀ {a′ : Ob[ a ]} {b′ : Ob[ b ]} {f : Hom a b}
   → is-monic f → Hom[ f ] a′ b′
-  → Type _ 
+  → Type _
 is-monic[_] {a = a} {a′ = a′} {f = f} mono f′ =
   ∀ {c c′} {g h : Hom c a}
   → (g′ : Hom[ g ] c′ a′) (h′ : Hom[ h ] c′ a′)
@@ -80,7 +80,7 @@ We denote these morphisms classes as "weak".
 is-weak-monic
   : ∀ {a′ : Ob[ a ]} {b′ : Ob[ b ]} {f : Hom a b}
   → Hom[ f ] a′ b′
-  → Type _ 
+  → Type _
 is-weak-monic {a = a} {a′ = a′} {f = f} f′ =
   ∀ {c c′} {g : Hom c a}
   → (g′ g″ : Hom[ g ] c′ a′)
@@ -115,7 +115,7 @@ Displayed [epimorphisms] are defined in a similar fashion.
 is-epic[_]
   : ∀ {a′ : Ob[ a ]} {b′ : Ob[ b ]} {f : Hom a b}
   → is-epic f → Hom[ f ] a′ b′
-  → Type _ 
+  → Type _
 is-epic[_] {b = b} {b′ = b′} {f = f} epi f′ =
   ∀ {c} {c′} {g h : Hom b c}
   → (g′ : Hom[ g ] b′ c′) (h′ : Hom[ h ] b′ c′)
@@ -150,7 +150,7 @@ a weak mono.
 is-weak-epic
   : ∀ {a′ : Ob[ a ]} {b′ : Ob[ b ]} {f : Hom a b}
   → Hom[ f ] a′ b′
-  → Type _ 
+  → Type _
 is-weak-epic {b = b} {b′ = b′} {f = f} f′ =
   ∀ {c c′} {g : Hom b c}
   → (g′ g″ : Hom[ g ] b′ c′)
@@ -349,7 +349,7 @@ make-iso[_]
   : ∀ {a b a′ b′}
   → (iso : a ≅ b)
   → (f′ : Hom[ iso .to ] a′ b′) (g′ : Hom[ iso .from ] b′ a′)
-  → f′ ∘′ g′ ≡[ iso .invl ] id′ 
+  → f′ ∘′ g′ ≡[ iso .invl ] id′
   → g′ ∘′ f′ ≡[ iso .invr ] id′
   → a′ ≅[ iso ] b′
 make-iso[ inv ] f′ g′ p q .to′ = f′
@@ -361,16 +361,17 @@ make-iso[ inv ] f′ g′ p q .inverses′ .Inverses[_].invr′ = q
   : {x y : Ob} {A : Ob[ x ]} {B : Ob[ y ]} {f : x ≅ y}
     {p q : A ≅[ f ] B}
   → p .to′ ≡ q .to′
-  → p .from′ ≡ q .from′
   → p ≡ q
-≅[]-path {p = p} {q = q} a b i .to′ = a i
-≅[]-path {p = p} {q = q} a b i .from′ = b i
-≅[]-path {f = f} {p = p} {q = q} a b i .inverses′ .Inverses[_].invl′ j =
-  is-set→squarep (λ i j → Hom[ f .invl j ]-set _ _)
-    (λ i → a i ∘′ b i) (p .invl′) (q .invl′) (λ i → id′) i j
-≅[]-path {f = f} {p = p} {q = q} a b i .inverses′ .Inverses[_].invr′ j =
-  is-set→squarep (λ i j → Hom[ f .invr j ]-set _ _)
-    (λ i → b i ∘′ a i) (p .invr′) (q .invr′) (λ i → id′) i j
+≅[]-path {f = f} {p = p} {q = q} a = it where
+  p′ : PathP (λ i → is-invertible[ iso→invertible f ] (a i))
+    (record { inv′ = p .from′ ; inverses′ = p .inverses′ })
+    (record { inv′ = q .from′ ; inverses′ = q .inverses′ })
+  p′ = is-prop→pathp (λ i → is-invertible[]-is-prop _ (a i)) _ _
+
+  it : p ≡ q
+  it i .to′       = a i
+  it i .from′     = p′ i .is-invertible[_].inv′
+  it i .inverses′ = p′ i .is-invertible[_].inverses′
 ```
 -->
 

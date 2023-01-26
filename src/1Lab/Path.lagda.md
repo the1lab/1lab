@@ -1770,6 +1770,13 @@ J′ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁}
    → P x y p
 J′ P prefl {x} p = transport (λ i → P x (p i) λ j → p (i ∧ j)) (prefl x)
 
+J₂
+  : ∀ {ℓa ℓb ℓp} {A : Type ℓa} {B : Type ℓb} {xa : A} {xb : B}
+  → (P : ∀ ya yb → xa ≡ ya → xb ≡ yb → Type ℓp)
+  → P xa xb refl refl
+  → ∀ {ya yb} p q → P ya yb p q
+J₂ P prr p q = transport (λ i → P (p i) (q i) (λ j → p (i ∧ j)) (λ j → q (i ∧ j))) prr
+
 invert-sides : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : x ≡ z)
              → Square q p (sym q) (sym p)
 invert-sides {x = x} p q i j = hcomp (∂ i ∨ ∂ j) λ where
