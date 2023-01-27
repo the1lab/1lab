@@ -318,7 +318,7 @@ cocartesian-lift→cartesian-lift^op cocart .Cartesian-lift.lifting =
 cocartesian-lift→cartesian-lift^op cocart .Cartesian-lift.cartesian =
   cocartesian→cartesian^op (Cocartesian-lift.cocartesian cocart)
 ```
-<details>
+</details>
 
 We can use this notion to define cocartesian fibrations (sometimes
 referred to as opfibrations).
@@ -342,4 +342,4 @@ opfibration→fibration^op : Cocartesian-fibration → Cartesian-fibration (ℰ 
 opfibration→fibration^op opfib .Cartesian-fibration.has-lift f y′ =
   cocartesian-lift→cartesian-lift^op (Cocartesian-fibration.has-lift opfib f y′)
 ```
-<details>
+</details>
