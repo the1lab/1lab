@@ -133,6 +133,18 @@ composite, rather than displayed directly over a composite.
           → f′ ∘′ m′ ≡[ p ] h′ → m′ ≡[ q ] universal′ r h′
   uniquep p q r {h′ = h′} m′ s =
     to-pathp⁻ (unique m′ (from-pathp⁻ s) ∙ from-pathp⁻ (universalp p q r h′))
+
+  uniquep₂
+    : ∀ {u u′} {m₁ m₂ : Hom u a} {k : Hom u b}
+    → (p : f ∘ m₁ ≡ k) (q : m₁ ≡ m₂) (r : f ∘ m₂ ≡ k)
+    → {h′ : Hom[ k ] u′ b′} (m₁′ : Hom[ m₁ ] u′ a′) (m₂′ : Hom[ m₂ ] u′ a′)
+    → f′ ∘′ m₁′ ≡[ p ] h′
+    → f′ ∘′ m₂′ ≡[ r ] h′
+    → m₁′ ≡[ q ] m₂′
+  uniquep₂ {u′ = u′} p q r m₁′ m₂′ α β = to-pathp⁻ $
+       unique m₁′ (from-pathp⁻ α)
+    ·· from-pathp⁻ (universalp p q r _)
+    ·· ap (coe1→0 (λ i → Hom[ q i ] u′ a′)) (sym (unique m₂′ (from-pathp⁻ β)))
 ```
 
 ## Properties of Cartesian Morphisms
@@ -224,15 +236,44 @@ cartesian→weak-monic {f′ = f′} f-cart g′ g″ p =
 
 We can use this fact to show that 2 cartesian lifts over the same
 morphisms must have their domains related by a vertical isomorphism.
+Suppose they're called $f_1$ and $f_2$, and fit into a diagram like the
+one below.
+
+~~~{.quiver .tall-2}
+\[\begin{tikzcd}
+  {a_2'} \\
+  & {a_1'} && {b'} \\
+  \\
+  a & a && b
+  \arrow["{f_2}", curve={height=-12pt}, from=1-1, to=2-4]
+  \arrow["{f_1}", from=2-2, to=2-4]
+  \arrow["f"', from=4-2, to=4-4]
+  \arrow[from=2-4, to=4-4]
+  \arrow[lies over, from=2-2, to=4-2]
+  \arrow[lies over, from=1-1, to=4-1]
+  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=4-4]
+  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=2-2, to=4-4]
+  \arrow[Rightarrow, no head, from=4-1, to=4-2]
+\end{tikzcd}\]
+~~~
+
+Since $f_1$ and $f_2$ are both Cartesian morphisms, we can factor $f_2$
+through $a_1'$ by a map $g$, and conversely, $f_1$ through $a_2'$ by
+$h$, so that we have $f_2gh = f_1h = f_2$, and $gh$ is a factorisation
+of $f_2$ through $a'_2$, its own domain; but, of course, $f_2$ also
+factors through its own domain by the identity map! Since $f_2$ is
+Cartesian, these factorisations must be the same, hence $gh = \id{id}$.
+A symmetric argument shows that $hg$ is also the identity, so $g : a_1'
+\cong a_2'$.
 
 ```agda
-cartesian-lift→vert-iso
+cartesian-domain-unique
   : ∀ {x y} {f : Hom x y}
   → ∀ {x′ x″ y′} {f′ : Hom[ f ] x′ y′} {f″ : Hom[ f ] x″ y′}
   → Cartesian f f′
   → Cartesian f f″
   → x′ ≅↓ x″
-cartesian-lift→vert-iso {f′ = f′} {f″ = f″} f′-cart f″-cart =
+cartesian-domain-unique {f′ = f′} {f″ = f″} f′-cart f″-cart =
   make-iso[ id-iso ] to* from* invl* invr*
   where
     open Cartesian

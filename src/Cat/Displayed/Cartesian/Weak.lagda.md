@@ -68,13 +68,13 @@ Like their stronger counterparts, weak cartesian lifts are unique
 up to vertical isomorphism.
 
 ```agda
-weak-cartesian→vert-iso
+weak-cartesian-domain-unique
   : ∀ {x y} {f : Hom x y}
   → ∀ {x′ x″ y′} {f′ : Hom[ f ] x′ y′} {f″ : Hom[ f ] x″ y′}
   → Weak-cartesian f f′
   → Weak-cartesian f f″
   → x′ ≅↓ x″
-weak-cartesian→vert-iso {f′ = f′} {f″ = f″} f′-weak f″-weak =
+weak-cartesian-domain-unique {f′ = f′} {f″ = f″} f′-weak f″-weak =
   make-iso[ _ ] to* from*
     (to-pathp $ unique f″-weak _ invl* ∙ (sym $ unique f″-weak _ (idr′ f″)))
     (to-pathp $ unique f′-weak _ invr* ∙ (sym $ unique f′-weak _ (idr′ f′)))
@@ -153,10 +153,10 @@ weak-cartesian→cartesian {x = x} {y′ = y′} {f = f} {f′ = f′} fib f-wea
   f*-weak : Weak-cartesian f f*
   f*-weak = cartesian→weak-cartesian f*-cart
 
-  f-cart : Cartesian f f′ 
+  f-cart : Cartesian f f′
   f-cart =
     cartesian-vert-retraction-stable f*-cart
-      (iso[]→to-has-section[] (weak-cartesian→vert-iso f*-weak f-weak))
+      (iso[]→to-has-section[] (weak-cartesian-domain-unique f*-weak f-weak))
       (f-weak.commutes f*)
 ```
 
@@ -376,7 +376,7 @@ module _ (U : ∀ {x y} → Hom x y → Functor (Fibre ℰ y) (Fibre ℰ x))
     ∀ {x y x′ x″ y′} {f : Hom x y}
     → (f′ : Hom[ f ] x″ y′) (g′ : Hom[ id ] x′ x″)
     → to (hom[ idr _ ] (f′ ∘′ g′)) ≡[ sym (idl id) ] to f′ ∘′ g′
-  
+
   reindex→weak-cartesian-lift
     : (to : ∀ {x y x′ y′} {f : Hom x y} → Hom[ f ] x′ y′ → Hom[ id ] x′ (U f .F₀ y′))
     → (eqv : ∀ {x y x′ y′} {f : Hom x y} → is-equiv (to {x} {y} {x′} {y′} {f}))
@@ -399,7 +399,7 @@ module _ (U : ∀ {x y} → Hom x y → Functor (Fibre ℰ y) (Fibre ℰ x))
         (from (hom[ idl id ] (f′ ∘′ g′)) , equiv→counit to-eqv _)
         (hom[ idr f ] (from f′ ∘′ g′) , from-pathp⁻ (natural (from f′) g′) ∙
                                         (hom[]⟩⟨ ap (_∘′ g′) (equiv→counit to-eqv _)))
-  
+
     weak-lift : Weak-cartesian-lift f y′
     weak-lift .x′ = U f .F₀ y′
     weak-lift .lifting = from id′
@@ -417,4 +417,3 @@ module _ (U : ∀ {x y} → Hom x y → Functor (Fibre ℰ y) (Fibre ℰ x))
       to g′                       ∎
 ```
 -->
-

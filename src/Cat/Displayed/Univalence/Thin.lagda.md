@@ -103,8 +103,7 @@ the type of $H$-homomorphic $\ca{B}$-isomorphisms.
     is-category-total Thin-structure-over Sets-is-category $
       is-category-fibrewise _ Sets-is-category λ A x y →
       Σ-prop-path
-        (λ _ _ _ → ≅[]-path _ (spec .is-hom _ _ _ .is-tr _ _)
-                              (spec .is-hom _ _ _ .is-tr _ _))
+        (λ _ _ _ → ≅[]-path _ (spec .is-hom _ _ _ .is-tr _ _))
         ( spec .id-hom-unique (x .snd .from′) (x .snd .to′)
         ∙ spec .id-hom-unique (y .snd .to′) (y .snd .from′))
 ```
