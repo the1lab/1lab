@@ -2,7 +2,7 @@
 open import Cat.Displayed.Base
 open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Cartesian.Weak
-open import Cat.Displayed.TotalOp
+open import Cat.Displayed.Total.Op
 open import Cat.Prelude
 
 import Cat.Displayed.Cocartesian as Cocart
