@@ -370,7 +370,7 @@ because $m^{*}$ is cartesian, thus finishing the proof.
 
 We can also define the dual to [weak cartesian lifts].
 
-[weak cartesian lifts]: Cat.Displayed.Cartesian.Weak#Weak-cartesian-lift
+[weak cartesian lifts]: Cat.Displayed.Cartesian.Weak.html#Weak-cartesian-lift
 
 ```agda
 record Weak-cocartesian-lift

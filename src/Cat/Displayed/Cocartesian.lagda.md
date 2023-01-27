@@ -68,11 +68,11 @@ to a unique universal factorisation of $h'$ through a map $b' \to_{m} u'$
 	{a'} && {b'} \\
 	&&& \textcolor{rgb,255:red,124;green,50;blue,189}{u} \\
 	a && b
-	\arrow[lies over from=2-1, to=4-1]
+	\arrow[lies over, from=2-1, to=4-1]
 	\arrow["f", from=4-1, to=4-3]
 	\arrow[lies over, from=2-3, to=4-3]
 	\arrow["{f'}", from=2-1, to=2-3]
-	\arrow["m"', color={rgb,255:red,153;green,92;blue,214}, from=4-3, to=3-4]
+	\arrow["{m'}", color={rgb,255:red,153;green,92;blue,214}, from=4-3, to=3-4]
 	\arrow["{\exists!}"', color={rgb,255:red,92;green,214;blue,92}, dashed, from=2-3, to=1-4]
 	\arrow[lies over, color={rgb,255:red,153;green,92;blue,214}, from=1-4, to=3-4]
 	\arrow["{h'}", color={rgb,255:red,214;green,92;blue,92}, curve={height=-12pt}, from=2-1, to=1-4]
