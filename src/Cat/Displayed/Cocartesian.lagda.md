@@ -187,9 +187,12 @@ cartesian^op≡cocartesian =
 
 ## Properties of Cocartesian Morphisms
 
+<details>
+<summary>
 We shall now prove some properties of cocartesian morphisms. These
 are all dual to the properties that we've proved about cartesian
 morphisms, so we will appeal to duality to prove them!
+</summary>
 
 ```agda
 cocartesian-∘
@@ -270,6 +273,7 @@ vertical+cocartesian→invertible cocart =
   vertical+cartesian→invertible (ℰ ^total-op)
     (cocartesian→cartesian^op cocart)
 ```
+</details>
 
 ## Cocartesian Lifts
 
@@ -287,8 +291,10 @@ record Cocartesian-lift {x y} (f : Hom x y) (x′ : Ob[ x ]) : Type (o ⊔ ℓ �
   open Cocartesian cocartesian public
 ```
 
+<details>
+<summary>
 We also can apply duality to cocartesian lifts.
-
+</summary>
 ```agda
 cartesian-lift^op→cocartesian-lift
   : ∀ {x y} {f : Hom x y} {x′ : Ob[ x ]}
@@ -312,6 +318,7 @@ cocartesian-lift→cartesian-lift^op cocart .Cartesian-lift.lifting =
 cocartesian-lift→cartesian-lift^op cocart .Cartesian-lift.cartesian =
   cocartesian→cartesian^op (Cocartesian-lift.cocartesian cocart)
 ```
+<details>
 
 We can use this notion to define cocartesian fibrations (sometimes
 referred to as opfibrations).
@@ -322,7 +329,10 @@ record Cocartesian-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
   field
     has-lift : ∀ {x y} (f : Hom x y) (x′ : Ob[ x ]) → Cocartesian-lift f x′
 ```
-
+<details>
+<summary>
+As expected, opfibrations are dual to fibrations.
+</summary>
 ```agda
 fibration^op→opfibration : Cartesian-fibration (ℰ ^total-op) → Cocartesian-fibration
 fibration^op→opfibration fib .Cocartesian-fibration.has-lift f x′ =
@@ -332,3 +342,4 @@ opfibration→fibration^op : Cocartesian-fibration → Cartesian-fibration (ℰ 
 opfibration→fibration^op opfib .Cartesian-fibration.has-lift f y′ =
   cocartesian-lift→cartesian-lift^op (Cocartesian-fibration.has-lift opfib f y′)
 ```
+<details>
