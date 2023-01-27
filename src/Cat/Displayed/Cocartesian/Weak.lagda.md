@@ -90,15 +90,15 @@ weak-cocartesian→weak-cartesian^op wcocart .Weak-cartesian.unique =
 The proofs consist of tedious applications of duality.
 </summary>
 ```agda
-weak-cocartesian→vert-iso
+weak-cocartesian-codomain-unique
   : ∀ {x y} {f : Hom x y}
   → ∀ {x′ y′ y″} {f′ : Hom[ f ] x′ y′} {f″ : Hom[ f ] x′ y″}
   → Weak-cocartesian f f′
   → Weak-cocartesian f f″
   → y′ ≅↓ y″
-weak-cocartesian→vert-iso f′-cocart f″-cocart =
+weak-cocartesian-codomain-unique f′-cocart f″-cocart =
   vert-iso^op→vert-iso $
-  weak-cartesian→vert-iso (ℰ ^total-op)
+  weak-cartesian-domain-unique (ℰ ^total-op)
     (weak-cocartesian→weak-cartesian^op f″-cocart)
     (weak-cocartesian→weak-cartesian^op f′-cocart)
 
@@ -368,7 +368,7 @@ because $m^{*}$ is cartesian, thus finishing the proof.
 
 ## Weak cocartesian lifts
 
-We can also the dual to [weak cartesian lifts].
+We can also define the dual to [weak cartesian lifts].
 
 [weak cartesian lifts]: Cat.Displayed.Cartesian.Weak#Weak-cartesian-lift
 

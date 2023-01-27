@@ -226,15 +226,15 @@ cocartesian→weak-epic
 cocartesian→weak-epic cocart =
   cartesian→weak-monic (ℰ ^total-op) (cocartesian→cartesian^op cocart)
 
-cocartesian-lift→vert-iso
+cocartesian-codomain-unique
   : ∀ {x y} {f : Hom x y}
   → ∀ {x′ y′ y″} {f′ : Hom[ f ] x′ y′} {f″ : Hom[ f ] x′ y″}
   → Cocartesian f f′
   → Cocartesian f f″
   → y′ ≅↓ y″
-cocartesian-lift→vert-iso f′-cocart f″-cocart =
+cocartesian-codomain-unique f′-cocart f″-cocart =
   vert-iso^op→vert-iso $
-  cartesian-lift→vert-iso (ℰ ^total-op)
+  cartesian-domain-unique (ℰ ^total-op)
     (cocartesian→cartesian^op f″-cocart)
     (cocartesian→cartesian^op f′-cocart)
 
@@ -247,7 +247,7 @@ cocartesian-vert-section-stable
   → Cocartesian f f″
 cocartesian-vert-section-stable cocart ret factor =
   cartesian^op→cocartesian $
-  cartesian-vert-retract-stable (ℰ ^total-op)
+  cartesian-vert-retraction-stable (ℰ ^total-op)
     (cocartesian→cartesian^op cocart)
     (vert-retract→vert-section^op ret)
     factor
