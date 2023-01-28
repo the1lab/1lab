@@ -95,8 +95,8 @@ is-weak-monic-is-prop f′ mono mono′ i g′ g″ p =
   is-prop→pathp (λ i → Hom[ _ ]-set _ _ g′ g″)
     (mono g′ g″ p) (mono′ g′ g″ p) i
 
-record _↪[_]ʷ_
-  {a b} (a′ : Ob[ a ]) (f : Hom a b) (b′ : Ob[ b ])
+record weak-mono-over
+  {a b} (f : Hom a b) (a′ : Ob[ a ]) (b′ : Ob[ b ])
   : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′)
   where
   no-eta-equality
@@ -104,7 +104,7 @@ record _↪[_]ʷ_
     mor′ : Hom[ f ] a′ b′
     weak-monic : is-weak-monic mor′
 
-open _↪[_]ʷ_ public
+open weak-mono-over public
 ```
 
 ## Epis
@@ -169,8 +169,8 @@ is-weak-epic-is-prop f′ epi epi′ i g′ g″ p =
   is-prop→pathp (λ i → Hom[ _ ]-set _ _ g′ g″)
     (epi g′ g″ p) (epi′ g′ g″ p) i
 
-record _↠[_]ʷ_
-  {a b} (a′ : Ob[ a ]) (f : Hom a b) (b′ : Ob[ b ])
+record weak-epi-over
+  {a b} (f : Hom a b) (a′ : Ob[ a ]) (b′ : Ob[ b ])
   : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′)
   where
   no-eta-equality
@@ -178,7 +178,7 @@ record _↠[_]ʷ_
     mor′ : Hom[ f ] a′ b′
     weak-epic : is-weak-epic mor′
 
-open _↠[_]ʷ_ public
+open weak-epi-over public
 ```
 
 ## Sections
@@ -377,13 +377,13 @@ make-iso[ inv ] f′ g′ p q .from′ = g′
 make-iso[ inv ] f′ g′ p q .inverses′ .Inverses[_].invl′ = p
 make-iso[ inv ] f′ g′ p q .inverses′ .Inverses[_].invr′ = q
 
-make-vert-iso
+make-vertical-iso
   : ∀ {x} {x′ x″ : Ob[ x ]}
   → (f′ : Hom[ id ] x′ x″) (g′ : Hom[ id ] x″ x′)
   → f′ ∘′ g′ ≡[ idl _ ] id′ 
   → g′ ∘′ f′ ≡[ idl _ ] id′
   → x′ ≅↓ x″
-make-vert-iso = make-iso[ id-iso ]
+make-vertical-iso = make-iso[ id-iso ]
 
 invertible[]→iso[]
   : ∀ {a b a′ b′} {f : Hom a b} {f′ : Hom[ f ] a′ b′}

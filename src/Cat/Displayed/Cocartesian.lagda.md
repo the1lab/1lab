@@ -266,14 +266,14 @@ cocartesian-id = co-cartesian→cocartesian (cartesian-id _)
 
 invertible→cocartesian f-inv f′-inv =
   co-cartesian→cocartesian $
-  invertible→cartesian _ _ (invertible[]→invertible[]^op f′-inv)
+  invertible→cartesian _ _ (invertible[]→co-invertible[] f′-inv)
 
 cocartesian→weak-epic cocart =
 
   cartesian→weak-monic (ℰ ^total-op) (cocartesian→co-cartesian cocart)
 
 cocartesian-codomain-unique f′-cocart f″-cocart =
-  vert-iso^op→vert-iso $
+  vertical-co-iso→vertical-iso $
   cartesian-domain-unique (ℰ ^total-op)
     (cocartesian→co-cartesian f″-cocart)
     (cocartesian→co-cartesian f′-cocart)
@@ -282,7 +282,7 @@ cocartesian-vert-section-stable cocart ret factor =
   co-cartesian→cocartesian $
   cartesian-vert-retraction-stable (ℰ ^total-op)
     (cocartesian→co-cartesian cocart)
-    (vert-retract→vert-section^op ret)
+    (vertical-retract→vertical-co-section ret)
     factor
 
 cocartesian-pasting g-cocart fg-cocart =
@@ -292,7 +292,7 @@ cocartesian-pasting g-cocart fg-cocart =
     (cocartesian→co-cartesian fg-cocart)
 
 vertical+cocartesian→invertible cocart =
-  vert-invertible^op→vert-invertible $
+  vertical-co-invertible→vertical-invertible $
   vertical+cartesian→invertible (ℰ ^total-op)
     (cocartesian→co-cartesian cocart)
 ```

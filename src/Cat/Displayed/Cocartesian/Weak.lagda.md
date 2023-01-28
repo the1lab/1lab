@@ -119,7 +119,7 @@ weak-cocartesian→cocartesian
 
 ```agda
 weak-cocartesian-codomain-unique f′-cocart f″-cocart =
-  vert-iso^op→vert-iso $
+  vertical-co-iso→vertical-iso $
   weak-cartesian-domain-unique (ℰ ^total-op)
     (weak-cocartesian→weak-co-cartesian f″-cocart)
     (weak-cocartesian→weak-co-cartesian f′-cocart)
@@ -401,12 +401,12 @@ record Weak-cocartesian-lift
 As expected, weak cocartesian lifts are dual to weak cartesian lifts.
 
 ```agda
-weak-cartesian-lift^op→weak-cocartesian-lift
+weak-co-cartesian-lift→weak-cocartesian-lift
   : ∀ {x y} {f : Hom x y} {x′ : Ob[ x ]}
   → Weak-cartesian-lift (ℰ ^total-op) f x′
   → Weak-cocartesian-lift f x′
 
-weak-cocartesian-lift→weak-cartesian-lift^op
+weak-cocartesian-lift→weak-co-cartesian-lift
   : ∀ {x y} {f : Hom x y} {x′ : Ob[ x ]}
   → Weak-cocartesian-lift f x′
   → Weak-cartesian-lift (ℰ ^total-op) f x′
@@ -418,18 +418,18 @@ duality.
 </summary>
 
 ```agda
-weak-cartesian-lift^op→weak-cocartesian-lift wlift .Weak-cocartesian-lift.y′ =
+weak-co-cartesian-lift→weak-cocartesian-lift wlift .Weak-cocartesian-lift.y′ =
   Weak-cartesian-lift.x′ wlift
-weak-cartesian-lift^op→weak-cocartesian-lift wlift .Weak-cocartesian-lift.lifting =
+weak-co-cartesian-lift→weak-cocartesian-lift wlift .Weak-cocartesian-lift.lifting =
   Weak-cartesian-lift.lifting wlift
-weak-cartesian-lift^op→weak-cocartesian-lift wlift .Weak-cocartesian-lift.weak-cocartesian =
+weak-co-cartesian-lift→weak-cocartesian-lift wlift .Weak-cocartesian-lift.weak-cocartesian =
   weak-co-cartesian→weak-cocartesian (Weak-cartesian-lift.weak-cartesian wlift)
 
-weak-cocartesian-lift→weak-cartesian-lift^op wlift .Weak-cartesian-lift.x′ =
+weak-cocartesian-lift→weak-co-cartesian-lift wlift .Weak-cartesian-lift.x′ =
   Weak-cocartesian-lift.y′ wlift
-weak-cocartesian-lift→weak-cartesian-lift^op wlift .Weak-cartesian-lift.lifting =
+weak-cocartesian-lift→weak-co-cartesian-lift wlift .Weak-cartesian-lift.lifting =
   Weak-cocartesian-lift.lifting wlift
-weak-cocartesian-lift→weak-cartesian-lift^op wlift .Weak-cartesian-lift.weak-cartesian =
+weak-cocartesian-lift→weak-co-cartesian-lift wlift .Weak-cartesian-lift.weak-cartesian =
   weak-cocartesian→weak-co-cartesian (Weak-cocartesian-lift.weak-cocartesian wlift)
 ```
 </details>
@@ -450,7 +450,7 @@ weak-cocartesian-lifts→opfibration
 weak-cocartesian-lifts→opfibration wlifts weak-∘ =
   op-fibration→opfibration $
   weak-cartesian-lifts→fibration (ℰ ^total-op)
-  (λ f y′ → weak-cocartesian-lift→weak-cartesian-lift^op (wlifts f y′))
+  (λ f y′ → weak-cocartesian-lift→weak-co-cartesian-lift (wlifts f y′))
   (λ f g →
     weak-cocartesian→weak-co-cartesian $
     weak-∘

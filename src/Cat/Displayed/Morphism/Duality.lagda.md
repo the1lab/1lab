@@ -27,6 +27,8 @@ private
   open Cat.Morphism.Duality ℬ
   open Cat.Displayed.Reasoning ℰ
 
+  open Cat.Displayed.Morphism
+
 private variable
   a b c d : ℬ.Ob
   f g : ℬ.Hom a b
@@ -40,256 +42,244 @@ private variable
 
 In this file we prove that morphism classes in a displayed category
 correspond to their duals in the total opposite displayed category.
-There is *even less* mathematical content here than the non-displayed
-case, just mountains of boilerplate.
+There is *even less* mathematical content here than the [non-displayed
+case], just mountains of boilerplate.
+
+[non-displayed case]: Cat.Morphism.Duality.html
 
 We start by showing that displayed monos and epis are dual.
 
 ```agda
-monic[]^op→epic[]
+co-mono[]→epi[]
   : ∀ {f : a ℬ^op.↪ b}
   → a′ ℰ^op.↪[ f ] b′
-  → b′ ℰ.↠[ monic^op→epic f ] a′
-monic[]^op→epic[] f .Cat.Displayed.Morphism.mor′ =
-  ℰ^op.mor′ f
-monic[]^op→epic[] f .Cat.Displayed.Morphism.epic′ =
-  ℰ^op.monic′ f
+  → b′ ℰ.↠[ co-mono→epi f ] a′
+co-mono[]→epi[] f .mor′ = ℰ^op.mor′ f
+co-mono[]→epi[] f .epic′ = ℰ^op.monic′ f
 
-epic[]→monic[]^op
+epi[]→co-mono[]
   : ∀ {f : b ℬ.↠ a}
   → b′ ℰ.↠[ f ] a′
-  → a′ ℰ^op.↪[ epic→monic^op f ] b′
-epic[]→monic[]^op f .Cat.Displayed.Morphism.mor′ =
-  ℰ.mor′ f
-epic[]→monic[]^op f .Cat.Displayed.Morphism.monic′ =
-  ℰ.epic′ f
+  → a′ ℰ^op.↪[ epi→co-mono f ] b′
+epi[]→co-mono[] f .mor′ = ℰ.mor′ f
+epi[]→co-mono[] f .monic′ = ℰ.epic′ f
 
-epic[]^op→monic[]
+co-epi[]→mono[]
   : ∀ {f : a ℬ^op.↠ b}
   → a′ ℰ^op.↠[ f ] b′
-  → b′ ℰ.↪[ epic^op→monic f ] a′
-epic[]^op→monic[] f .Cat.Displayed.Morphism.mor′ =
-  ℰ^op.mor′ f
-epic[]^op→monic[] f .Cat.Displayed.Morphism.monic′ =
-  ℰ^op.epic′ f
+  → b′ ℰ.↪[ co-epi→mono f ] a′
+co-epi[]→mono[] f .mor′ = ℰ^op.mor′ f
+co-epi[]→mono[] f .monic′ = ℰ^op.epic′ f
 
-monic[]→epic[]^op
+mono[]→co-epi[]
   : ∀ {f : b ℬ.↪ a}
   → b′ ℰ.↪[ f ] a′
-  → a′ ℰ^op.↠[ monic→epic^op f ] b′
-monic[]→epic[]^op f .Cat.Displayed.Morphism.mor′ =
-  ℰ.mor′ f
-monic[]→epic[]^op f .Cat.Displayed.Morphism.epic′ =
-  ℰ.monic′ f
+  → a′ ℰ^op.↠[ mono→co-epi f ] b′
+mono[]→co-epi[] f .mor′ = ℰ.mor′ f
+mono[]→co-epi[] f .epic′ = ℰ.monic′ f
 ```
 
 Next, we show the same for weak monos and weak epis.
 
 ```agda
-weak-monic→weak-epic^op
+weak-mono→weak-co-epi
   : ∀ {f : ℬ.Hom b a}
-  → b′ ℰ.↪[ f ]ʷ a′
-  → a′ ℰ^op.↠[ f ]ʷ b′
-weak-monic→weak-epic^op f .Cat.Displayed.Morphism.mor′ =
-  ℰ.mor′ f
-weak-monic→weak-epic^op f .Cat.Displayed.Morphism.weak-epic =
-  ℰ.weak-monic f
+  → ℰ.weak-mono-over f b′ a′
+  → ℰ^op.weak-epi-over f a′ b′
+weak-mono→weak-co-epi f .mor′ = ℰ.mor′ f
+weak-mono→weak-co-epi f .weak-epic = ℰ.weak-monic f
 
-weak-epic^op→weak-monic
+weak-co-epi→weak-mono
   : ∀ {f : ℬ.Hom b a}
-  → a′ ℰ^op.↠[ f ]ʷ b′
-  → b′ ℰ.↪[ f ]ʷ a′
-weak-epic^op→weak-monic f .Cat.Displayed.Morphism.mor′ =
-  ℰ^op.mor′ f
-weak-epic^op→weak-monic f .Cat.Displayed.Morphism.weak-monic =
-  ℰ^op.weak-epic f
+  → ℰ^op.weak-epi-over f a′ b′
+  → ℰ.weak-mono-over f b′ a′
+weak-co-epi→weak-mono f .mor′ = ℰ^op.mor′ f
+weak-co-epi→weak-mono f .weak-monic = ℰ^op.weak-epic f
 
-weak-epic→weak-monic^op
+weak-epi→weak-co-mono
   : ∀ {f : ℬ.Hom b a}
-  → b′ ℰ.↠[ f ]ʷ a′
-  → a′ ℰ^op.↪[ f ]ʷ b′
-weak-epic→weak-monic^op f .Cat.Displayed.Morphism.mor′ =
-  ℰ.mor′ f
-weak-epic→weak-monic^op f .Cat.Displayed.Morphism.weak-monic =
-  ℰ.weak-epic f
+  → ℰ.weak-epi-over f b′ a′
+  → ℰ^op.weak-mono-over f a′ b′
+weak-epi→weak-co-mono f .mor′ = ℰ.mor′ f
+weak-epi→weak-co-mono f .weak-monic = ℰ.weak-epic f
 
-weak-monic^op→weak-epic
+weak-co-mono→weak-epi
   : ∀ {f : ℬ.Hom b a}
-  → a′ ℰ^op.↪[ f ]ʷ b′
-  → b′ ℰ.↠[ f ]ʷ a′
-weak-monic^op→weak-epic f .Cat.Displayed.Morphism.mor′ =
-  ℰ^op.mor′ f
-weak-monic^op→weak-epic f .Cat.Displayed.Morphism.weak-epic =
-  ℰ^op.weak-monic f
+  → ℰ^op.weak-mono-over f a′ b′
+  → ℰ.weak-epi-over f b′ a′
+weak-co-mono→weak-epi f .mor′ = ℰ^op.mor′ f
+weak-co-mono→weak-epi f .weak-epic = ℰ^op.weak-monic f
 ```
 
 Next, sections and retractions.
 
 ```agda
-section[]^op→retract[]
+co-section[]→retract[]
   : ∀ {s : ℬ^op.has-section f}
   → ℰ^op.has-section[ s ] f′
-  → ℰ.has-retract[ section^op→retract s ] f′
-section[]^op→retract[] f .Cat.Displayed.Morphism.retract′ =
+  → ℰ.has-retract[ co-section→retract s ] f′
+co-section[]→retract[] f .retract′ =
   ℰ^op.section′ f
-section[]^op→retract[] f .Cat.Displayed.Morphism.is-retract′ =
+co-section[]→retract[] f .is-retract′ =
   ℰ^op.is-section′ f
 
-retract[]→section[]^op 
+retract[]→co-section[] 
   : ∀ {r : ℬ.has-retract f}
   → ℰ.has-retract[ r ] f′
-  → ℰ^op.has-section[ retract→section^op r ] f′
-retract[]→section[]^op f .Cat.Displayed.Morphism.section′ =
+  → ℰ^op.has-section[ retract→co-section r ] f′
+retract[]→co-section[] f .section′ =
   ℰ.retract′ f
-retract[]→section[]^op f .Cat.Displayed.Morphism.is-section′ =
+retract[]→co-section[] f .is-section′ =
   ℰ.is-retract′ f
 
-retract[]^op→section[]
+co-retract[]→section[]
   : ∀ {r : ℬ^op.has-retract f}
   → ℰ^op.has-retract[ r ] f′
-  → ℰ.has-section[ retract^op→section r ] f′
-retract[]^op→section[] f .Cat.Displayed.Morphism.section′ =
+  → ℰ.has-section[ co-retract→section r ] f′
+co-retract[]→section[] f .section′ =
   ℰ^op.retract′ f
-retract[]^op→section[] f .Cat.Displayed.Morphism.is-section′ =
+co-retract[]→section[] f .is-section′ =
   ℰ^op.is-retract′ f
 
-section[]→retract[]^op
+section[]→co-retract[]
   : ∀ {s : ℬ.has-section f}
   → ℰ.has-section[ s ] f′
-  → ℰ^op.has-retract[ section→retract^op s ] f′
-section[]→retract[]^op f .Cat.Displayed.Morphism.retract′ =
+  → ℰ^op.has-retract[ section→co-retract s ] f′
+section[]→co-retract[] f .retract′ =
   ℰ.section′ f
-section[]→retract[]^op f .Cat.Displayed.Morphism.is-retract′ =
+section[]→co-retract[] f .is-retract′ =
   ℰ.is-section′ f
 ```
 
 We handle vertical sections and retract separately.
 
 ```agda
-vert-section^op→vert-retract
+vertical-co-section→vertical-retract
   : ℰ^op.has-section↓ f′
   → ℰ.has-retract↓ f′
-vert-section^op→vert-retract f .Cat.Displayed.Morphism.retract′ =
+vertical-co-section→vertical-retract f .retract′ =
   ℰ^op.section′ f
-vert-section^op→vert-retract f .Cat.Displayed.Morphism.is-retract′ =
+vertical-co-section→vertical-retract f .is-retract′ =
   cast[] (ℰ^op.is-section′ f)
 
-vert-retract→vert-section^op
+vertical-retract→vertical-co-section
   : ℰ.has-retract↓ f′
   → ℰ^op.has-section↓ f′
-vert-retract→vert-section^op f .Cat.Displayed.Morphism.section′ =
+vertical-retract→vertical-co-section f .section′ =
   ℰ.retract′ f
-vert-retract→vert-section^op f .Cat.Displayed.Morphism.is-section′ =
+vertical-retract→vertical-co-section f .is-section′ =
   cast[] (ℰ.is-retract′ f)
 
-vert-retract^op→vert-section
+vertical-co-retract→vertical-section
   : ℰ^op.has-retract↓ f′
   → ℰ.has-section↓ f′
-vert-retract^op→vert-section f .Cat.Displayed.Morphism.section′ =
+vertical-co-retract→vertical-section f .section′ =
   ℰ^op.retract′ f
-vert-retract^op→vert-section f .Cat.Displayed.Morphism.is-section′ =
+vertical-co-retract→vertical-section f .is-section′ =
   cast[] (ℰ^op.is-retract′ f)
 
-vert-section→vert-retract^op
+vertical-section→vertical-co-retract
   : ℰ.has-section↓ f′
   → ℰ^op.has-retract↓ f′
-vert-section→vert-retract^op f .Cat.Displayed.Morphism.retract′ =
+vertical-section→vertical-co-retract f .retract′ =
   ℰ.section′ f
-vert-section→vert-retract^op f .Cat.Displayed.Morphism.is-retract′ =
+vertical-section→vertical-co-retract f .is-retract′ =
   cast[] (ℰ.is-section′ f)
 ```
 
 Now, on to self-duality for invertible morphisms.
 
 ```agda
-inverses[]^op→inverses[]
+co-inverses[]→inverses[]
   : {i : ℬ^op.Inverses f g}
   → ℰ^op.Inverses[ i ] f′ g′
-  → ℰ.Inverses[ inverses^op→inverses i ] f′ g′
-inverses[]^op→inverses[] i .Cat.Displayed.Morphism.Inverses[_].invl′ =
+  → ℰ.Inverses[ co-inverses→inverses i ] f′ g′
+co-inverses[]→inverses[] i .Inverses[_].invl′ =
   ℰ^op.Inverses[_].invr′ i
-inverses[]^op→inverses[] i .Cat.Displayed.Morphism.Inverses[_].invr′ =
+co-inverses[]→inverses[] i .Inverses[_].invr′ =
   ℰ^op.Inverses[_].invl′ i
 
-inverses[]→inverses[]^op
+inverses[]→co-inverses[]
   : {i : ℬ.Inverses f g}
   → ℰ.Inverses[ i ] f′ g′
-  → ℰ^op.Inverses[ inverses→inverses^op i ] f′ g′
-inverses[]→inverses[]^op i .Cat.Displayed.Morphism.Inverses[_].invl′ =
+  → ℰ^op.Inverses[ inverses→co-inverses i ] f′ g′
+inverses[]→co-inverses[] i .Inverses[_].invl′ =
   ℰ.Inverses[_].invr′ i
-inverses[]→inverses[]^op i .Cat.Displayed.Morphism.Inverses[_].invr′ =
+inverses[]→co-inverses[] i .Inverses[_].invr′ =
   ℰ.Inverses[_].invl′ i
 
-invertible[]^op→invertible[]
+co-invertible[]→invertible[]
   : {i : ℬ^op.is-invertible f}
   → ℰ^op.is-invertible[ i ] f′
-  → ℰ.is-invertible[ invertible^op→invertible i ] f′
-invertible[]^op→invertible[] i .Cat.Displayed.Morphism.is-invertible[_].inv′ =
+  → ℰ.is-invertible[ co-invertible→invertible i ] f′
+co-invertible[]→invertible[] i .is-invertible[_].inv′ =
   ℰ^op.is-invertible[_].inv′ i
-invertible[]^op→invertible[] i .Cat.Displayed.Morphism.is-invertible[_].inverses′ =
-  inverses[]^op→inverses[] (ℰ^op.is-invertible[_].inverses′ i)
+co-invertible[]→invertible[] i .is-invertible[_].inverses′ =
+  co-inverses[]→inverses[] (ℰ^op.is-invertible[_].inverses′ i)
 
-invertible[]→invertible[]^op
+invertible[]→co-invertible[]
   : {i : ℬ.is-invertible f}
   → ℰ.is-invertible[ i ] f′
-  → ℰ^op.is-invertible[ invertible→invertible^op i ] f′
-invertible[]→invertible[]^op i .Cat.Displayed.Morphism.is-invertible[_].inv′ =
+  → ℰ^op.is-invertible[ invertible→co-invertible i ] f′
+invertible[]→co-invertible[] i .is-invertible[_].inv′ =
   ℰ.is-invertible[_].inv′ i
-invertible[]→invertible[]^op i .Cat.Displayed.Morphism.is-invertible[_].inverses′ =
-  inverses[]→inverses[]^op (ℰ.is-invertible[_].inverses′ i)
+invertible[]→co-invertible[] i .is-invertible[_].inverses′ =
+  inverses[]→co-inverses[] (ℰ.is-invertible[_].inverses′ i)
 
-iso[]^op→iso[]
+co-iso[]→iso[]
   : {f : a ℬ^op.≅ b}
   → a′ ℰ^op.≅[ f ] b′
-  → b′ ℰ.≅[ iso^op→iso f ] a′
-iso[]^op→iso[] f .Cat.Displayed.Morphism.to′ =
+  → b′ ℰ.≅[ co-iso→iso f ] a′
+co-iso[]→iso[] f .to′ =
   ℰ^op.to′ f
-iso[]^op→iso[] f .Cat.Displayed.Morphism.from′ =
+co-iso[]→iso[] f .from′ =
   ℰ^op.from′ f
-iso[]^op→iso[] f .Cat.Displayed.Morphism.inverses′ =
-  inverses[]^op→inverses[] (ℰ^op.inverses′ f)
+co-iso[]→iso[] f .inverses′ =
+  co-inverses[]→inverses[] (ℰ^op.inverses′ f)
 
-iso[]→iso[]^op
+iso[]→co-iso[]
   : {f : b ℬ.≅ a}
   → b′ ℰ.≅[ f ] a′
-  → a′ ℰ^op.≅[ iso→iso^op f ] b′
-iso[]→iso[]^op f .Cat.Displayed.Morphism.to′ =
+  → a′ ℰ^op.≅[ iso→co-iso f ] b′
+iso[]→co-iso[] f .to′ =
   ℰ.to′ f
-iso[]→iso[]^op f .Cat.Displayed.Morphism.from′ =
+iso[]→co-iso[] f .from′ =
   ℰ.from′ f
-iso[]→iso[]^op f .Cat.Displayed.Morphism.inverses′ =
-  inverses[]→inverses[]^op (ℰ.inverses′ f)
+iso[]→co-iso[] f .inverses′ =
+  inverses[]→co-inverses[] (ℰ.inverses′ f)
 ```
 
 We handle the case of vertical isos separately, as the dual of the identity
 iso isn't definitionally the identity iso.
 
 ```agda
-vert-invertible^op→vert-invertible : ℰ^op.is-invertible↓ f′ → ℰ.is-invertible↓ f′
-vert-invertible^op→vert-invertible f =
+vertical-co-invertible→vertical-invertible
+  : ℰ^op.is-invertible↓ f′ → ℰ.is-invertible↓ f′
+vertical-co-invertible→vertical-invertible f =
   ℰ.make-invertible↓
     (ℰ^op.is-invertible[_].inv′ f)
     (cast[] (ℰ^op.is-invertible[_].invr′ f))
     (cast[] (ℰ^op.is-invertible[_].invl′ f))
 
-vert-invertible→vert-invertible^op : ℰ.is-invertible↓ f′ → ℰ^op.is-invertible↓ f′
-vert-invertible→vert-invertible^op f =
+vertical-invertible→vertical-co-invertible
+  : ℰ.is-invertible↓ f′ → ℰ^op.is-invertible↓ f′
+vertical-invertible→vertical-co-invertible f =
   ℰ^op.make-invertible↓
     (ℰ.is-invertible[_].inv′ f)
     (cast[] (ℰ.is-invertible[_].invr′ f))
     (cast[] (ℰ.is-invertible[_].invl′ f))
 
-vert-iso^op→vert-iso : a′ ℰ^op.≅↓ b′ → b′ ℰ.≅↓ a′
-vert-iso^op→vert-iso f =
-  ℰ.make-vert-iso
+vertical-co-iso→vertical-iso : a′ ℰ^op.≅↓ b′ → b′ ℰ.≅↓ a′
+vertical-co-iso→vertical-iso f =
+  ℰ.make-vertical-iso
     (ℰ^op.to′ f)
     (ℰ^op.from′ f)
     (cast[] (ℰ^op.invr′ f))
     (cast[] (ℰ^op.invl′ f))
 
-vert-iso→vert-iso^op : a′ ℰ.≅↓ b′ → b′ ℰ^op.≅↓ a′
-vert-iso→vert-iso^op f =
-  ℰ^op.make-vert-iso
+vertical-iso→vertical-co-iso : a′ ℰ.≅↓ b′ → b′ ℰ^op.≅↓ a′
+vertical-iso→vertical-co-iso f =
+  ℰ^op.make-vertical-iso
     (ℰ.to′ f)
     (ℰ.from′ f)
     (cast[] (ℰ.invr′ f))
