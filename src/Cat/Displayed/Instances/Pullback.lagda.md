@@ -93,13 +93,13 @@ Change-of-base-fibration fib .Cartesian-fibration.has-lift f FY′ = cart-lift
     cart-lift : Cartesian-lift Change-of-base f FY′
     cart-lift .Cartesian-lift.x′ = x′
     cart-lift .Cartesian-lift.lifting = lifting
-    cart-lift .Cartesian-lift.cartesian .Cartesian.universal m h′ =
+    cart-lift .Cartesian-lift.cartesian .is-cartesian.universal m h′ =
       universal (F .Functor.F₁ m) (hom[ F-∘ f m ] h′)
-    cart-lift .Cartesian-lift.cartesian .Cartesian.commutes m h′ =
+    cart-lift .Cartesian-lift.cartesian .is-cartesian.commutes m h′ =
       hom[ F-∘ f m ]⁻ (lifting E.∘′ universal (F₁ m) (hom[ F-∘ f m ] h′)) ≡⟨ ap hom[ F-∘ f m ]⁻ (commutes _ _) ⟩
       hom[ F-∘ f m ]⁻ (hom[ F-∘ f m ] h′)                                 ≡⟨ Ds.disp! E ⟩
       h′                                                                  ∎
-    cart-lift .Cartesian-lift.cartesian .Cartesian.unique {m = m} {h′ = h′} m′ p =
+    cart-lift .Cartesian-lift.cartesian .is-cartesian.unique {m = m} {h′ = h′} m′ p =
       unique m′ $
         lifting E.∘′ m′                                    ≡⟨ Ds.disp! E ⟩
         hom[ F-∘ f m ] (hom[ F-∘ f m ]⁻ (lifting E.∘′ m′)) ≡⟨ ap hom[ F-∘ f m ] p ⟩

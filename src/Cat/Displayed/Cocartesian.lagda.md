@@ -50,7 +50,7 @@ associated with cartesian maps.
 ~~~
 
 ```agda
-record Cocartesian
+record is-cocartesian
   {a b a′ b′} (f : Hom a b) (f′ : Hom[ f ] a′ b′)
   : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′)
   where
@@ -136,13 +136,13 @@ in the [total opposite] of $\ca{E}$ are cocartesian maps, and vice versa.
 ```agda
 co-cartesian→cocartesian
   : ∀ {x y} {f : Hom x y} {x′ y′} {f′ : Hom[ f ] x′ y′}
-  → Cartesian (ℰ ^total-op) f f′
-  → Cocartesian f f′
+  → is-cartesian (ℰ ^total-op) f f′
+  → is-cocartesian f f′
 
 cocartesian→co-cartesian
   : ∀ {x y} {f : Hom x y} {x′ y′} {f′ : Hom[ f ] x′ y′}
-  → Cocartesian f f′
-  → Cartesian (ℰ ^total-op) f f′
+  → is-cocartesian f f′
+  → is-cartesian (ℰ ^total-op) f f′
 ```
 
 <details>
@@ -151,19 +151,19 @@ particularly interesting.
 </summary>
 
 ```agda
-co-cartesian→cocartesian cart^op .Cocartesian.universal m h′ =
-  Cartesian.universal cart^op m h′
-co-cartesian→cocartesian cart^op .Cocartesian.commutes m h′ =
-  Cartesian.commutes cart^op m h′
-co-cartesian→cocartesian cart^op .Cocartesian.unique m′ p =
-  Cartesian.unique cart^op m′ p
+co-cartesian→cocartesian cart^op .is-cocartesian.universal m h′ =
+  is-cartesian.universal cart^op m h′
+co-cartesian→cocartesian cart^op .is-cocartesian.commutes m h′ =
+  is-cartesian.commutes cart^op m h′
+co-cartesian→cocartesian cart^op .is-cocartesian.unique m′ p =
+  is-cartesian.unique cart^op m′ p
 
-cocartesian→co-cartesian cocart .Cartesian.universal m h′ =
-  Cocartesian.universal cocart m h′
-cocartesian→co-cartesian cocart .Cartesian.commutes m h′ =
-  Cocartesian.commutes cocart m h′
-cocartesian→co-cartesian cocart .Cartesian.unique m′ p =
-  Cocartesian.unique cocart m′ p
+cocartesian→co-cartesian cocart .is-cartesian.universal m h′ =
+  is-cocartesian.universal cocart m h′
+cocartesian→co-cartesian cocart .is-cartesian.commutes m h′ =
+  is-cocartesian.commutes cocart m h′
+cocartesian→co-cartesian cocart .is-cartesian.unique m′ p =
+  is-cocartesian.unique cocart m′ p
 ```
 </details>
 
@@ -180,20 +180,20 @@ co-cartesian→cocartesian-is-equiv {f′ = f′} =
     cocart-invl
       : ∀ f
       → co-cartesian→cocartesian {f′ = f′} (cocartesian→co-cartesian f) ≡ f
-    cocart-invl f i .Cocartesian.universal m h′ = Cocartesian.universal f m h′
-    cocart-invl f i .Cocartesian.commutes m h′ = Cocartesian.commutes f m h′
-    cocart-invl f i .Cocartesian.unique m′ p = Cocartesian.unique f m′ p
+    cocart-invl f i .is-cocartesian.universal m h′ = is-cocartesian.universal f m h′
+    cocart-invl f i .is-cocartesian.commutes m h′ = is-cocartesian.commutes f m h′
+    cocart-invl f i .is-cocartesian.unique m′ p = is-cocartesian.unique f m′ p
 
     cocart-invr
       : ∀ f
       → cocartesian→co-cartesian {f′ = f′} (co-cartesian→cocartesian f) ≡ f
-    cocart-invr f i .Cartesian.universal m h′ = Cartesian.universal f m h′
-    cocart-invr f i .Cartesian.commutes m h′ = Cartesian.commutes f m h′
-    cocart-invr f i .Cartesian.unique m′ p = Cartesian.unique f m′ p
+    cocart-invr f i .is-cartesian.universal m h′ = is-cartesian.universal f m h′
+    cocart-invr f i .is-cartesian.commutes m h′ = is-cartesian.commutes f m h′
+    cocart-invr f i .is-cartesian.unique m′ p = is-cartesian.unique f m′ p
 
 co-cartesian≡cocartesian
   : ∀ {x y} {f : Hom x y} {x′ y′} {f′ : Hom[ f ] x′ y′}
-  → Cartesian (ℰ ^total-op) f f′ ≡ Cocartesian f f′
+  → is-cartesian (ℰ ^total-op) f f′ ≡ is-cocartesian f f′
 co-cartesian≡cocartesian =
   ua (co-cartesian→cocartesian , co-cartesian→cocartesian-is-equiv)
 ```
@@ -206,46 +206,48 @@ We shall now prove the following properties of cocartesian morphisms.
 cocartesian-∘
   : ∀ {x y z} {f : Hom y z} {g : Hom x y}
   → ∀ {x′ y′ z′} {f′ : Hom[ f ] y′ z′} {g′ : Hom[ g ] x′ y′}
-  → Cocartesian f f′ → Cocartesian g g′
-  → Cocartesian (f ∘ g) (f′ ∘′ g′)
+  → is-cocartesian f f′ → is-cocartesian g g′
+  → is-cocartesian (f ∘ g) (f′ ∘′ g′)
+
+cocartesian-id : ∀ {x x′} → is-cocartesian id (id′ {x} {x′})
 
 invertible→cocartesian
   : ∀ {x y} {f : Hom x y} {x′ y′} {f′ : Hom[ f ] x′ y′}
   → (f-inv : is-invertible f)
   → is-invertible[ f-inv ] f′
-  → Cocartesian f f′
+  → is-cocartesian f f′
 
 cocartesian→weak-epic
   : ∀ {x y} {f : Hom x y}
   → ∀ {x′ y′} {f′ : Hom[ f ] x′ y′}
-  → Cocartesian f f′
+  → is-cocartesian f f′
   → is-weak-epic f′
 
 cocartesian-codomain-unique
   : ∀ {x y} {f : Hom x y}
   → ∀ {x′ y′ y″} {f′ : Hom[ f ] x′ y′} {f″ : Hom[ f ] x′ y″}
-  → Cocartesian f f′
-  → Cocartesian f f″
+  → is-cocartesian f f′
+  → is-cocartesian f f″
   → y′ ≅↓ y″
 
-cocartesian-vert-section-stable
+cocartesian-vertical-section-stable
   : ∀ {x y} {f : Hom x y}
   → ∀ {x′ y′ y″} {f′ : Hom[ f ] x′ y′} {f″ : Hom[ f ] x′ y″} {ϕ : Hom[ id ] y″ y′}
-  → Cocartesian f f′
+  → is-cocartesian f f′
   → has-retract↓ ϕ
   → ϕ ∘′ f″ ≡[ idl _ ] f′
-  → Cocartesian f f″
+  → is-cocartesian f f″
 
 cocartesian-pasting
   : ∀ {x y z} {f : Hom y z} {g : Hom x y}
   → ∀ {x′ y′ z′} {f′ : Hom[ f ] y′ z′} {g′ : Hom[ g ] x′ y′}
-  → Cocartesian g g′
-  → Cocartesian (f ∘ g) (f′ ∘′ g′)
-  → Cocartesian f f′
+  → is-cocartesian g g′
+  → is-cocartesian (f ∘ g) (f′ ∘′ g′)
+  → is-cocartesian f f′
 
 vertical+cocartesian→invertible
   : ∀ {x} {x′ x″ : Ob[ x ]} {f′ : Hom[ id ] x′ x″}
-  → Cocartesian id f′
+  → is-cocartesian id f′
   → is-invertible↓ f′
 ```
 
@@ -261,7 +263,6 @@ cocartesian-∘ f-cocart g-cocart =
     (cocartesian→co-cartesian g-cocart)
     (cocartesian→co-cartesian f-cocart)
 
-cocartesian-id : ∀ {x x′} → Cocartesian id (id′ {x} {x′})
 cocartesian-id = co-cartesian→cocartesian (cartesian-id _)
 
 invertible→cocartesian f-inv f′-inv =
@@ -278,9 +279,9 @@ cocartesian-codomain-unique f′-cocart f″-cocart =
     (cocartesian→co-cartesian f″-cocart)
     (cocartesian→co-cartesian f′-cocart)
 
-cocartesian-vert-section-stable cocart ret factor =
+cocartesian-vertical-section-stable cocart ret factor =
   co-cartesian→cocartesian $
-  cartesian-vert-retraction-stable (ℰ ^total-op)
+  cartesian-vertical-retraction-stable (ℰ ^total-op)
     (cocartesian→co-cartesian cocart)
     (vertical-retract→vertical-co-section ret)
     factor
@@ -310,8 +311,8 @@ record Cocartesian-lift {x y} (f : Hom x y) (x′ : Ob[ x ]) : Type (o ⊔ ℓ �
   field
     {y′} : Ob[ y ]
     lifting : Hom[ f ] x′ y′
-    cocartesian : Cocartesian f lifting
-  open Cocartesian cocartesian public
+    cocartesian : is-cocartesian f lifting
+  open is-cocartesian cocartesian public
 ```
 
 We also can apply duality to cocartesian lifts.
@@ -357,6 +358,9 @@ record Cocartesian-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
   no-eta-equality
   field
     has-lift : ∀ {x y} (f : Hom x y) (x′ : Ob[ x ]) → Cocartesian-lift f x′
+
+  module has-lift {x y} (f : Hom x y) (x′ : Ob[ x ]) =
+    Cocartesian-lift (has-lift f x′)
 ```
 As expected, opfibrations are dual to fibrations.
 ```agda

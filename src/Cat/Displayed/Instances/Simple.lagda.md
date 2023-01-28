@@ -94,7 +94,7 @@ to touch the types, as there are no possible dependencies!
 ```agda
 open Cartesian-fibration
 open Cartesian-lift
-open Cartesian
+open is-cartesian
 
 simple-fibration : Cartesian-fibration simple
 simple-fibration .has-lift f Y .x′ = Y

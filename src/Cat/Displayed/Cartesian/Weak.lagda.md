@@ -50,7 +50,7 @@ as the weak cartesian map. This situation is best understood graphically.
 ~~~
 
 ```agda
-record Weak-cartesian
+record is-weak-cartesian
   {a b a′ b′} (f : Hom a b) (f′ : Hom[ f ] a′ b′)
   : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′)
   where
@@ -71,15 +71,15 @@ up to vertical isomorphism.
 weak-cartesian-domain-unique
   : ∀ {x y} {f : Hom x y}
   → ∀ {x′ x″ y′} {f′ : Hom[ f ] x′ y′} {f″ : Hom[ f ] x″ y′}
-  → Weak-cartesian f f′
-  → Weak-cartesian f f″
+  → is-weak-cartesian f f′
+  → is-weak-cartesian f f″
   → x′ ≅↓ x″
 weak-cartesian-domain-unique {f′ = f′} {f″ = f″} f′-weak f″-weak =
   make-iso[ _ ] to* from*
     (to-pathp $ unique f″-weak _ invl* ∙ (sym $ unique f″-weak _ (idr′ f″)))
     (to-pathp $ unique f′-weak _ invr* ∙ (sym $ unique f′-weak _ (idr′ f′)))
   where
-    open Weak-cartesian
+    open is-weak-cartesian
 
     to* = universal f″-weak f′
     from* = universal f′-weak f″
@@ -108,19 +108,18 @@ generalized versions of the functions from `Cartesian`{.Agda} to get
 the job done.
 
 ```agda
-cartesian→weak-cartesian
-  : ∀ {x y x′ y′} {f : Hom x y} {f′ : Hom[ f ] x′ y′}
-  → Cartesian f f′
-  → Weak-cartesian f f′
+cartesian→weak-cartesian : ∀ {x y x′ y′} {f : Hom x y} {f′ : Hom[ f ] x′ y′}
+  → is-cartesian f f′
+  → is-weak-cartesian f f′
 cartesian→weak-cartesian {f = f} {f′ = f′} cart = weak-cart where
-  open Cartesian cart
+  open is-cartesian cart
 
-  weak-cart : Weak-cartesian f f′
-  weak-cart .Weak-cartesian.universal g′ =
+  weak-cart : is-weak-cartesian f f′
+  weak-cart .is-weak-cartesian.universal g′ =
     universal′ (idr f) g′
-  weak-cart .Weak-cartesian.commutes g′ =
+  weak-cart .is-weak-cartesian.commutes g′ =
     commutesp (idr f) g′
-  weak-cart .Weak-cartesian.unique h′ p =
+  weak-cart .is-weak-cartesian.unique h′ p =
     uniquep (idr f) refl (idr f) h′ p
 ```
 
@@ -135,11 +134,11 @@ cartesian.
 weak-cartesian→cartesian
   : ∀ {x y x′ y′} {f : Hom x y} {f′ : Hom[ f ] x′ y′}
   → (fib : Cartesian-fibration)
-  → Weak-cartesian f f′
-  → Cartesian f f′
+  → is-weak-cartesian f f′
+  → is-cartesian f f′
 weak-cartesian→cartesian {x = x} {y′ = y′} {f = f} {f′ = f′} fib f-weak = f-cart where
   open Cartesian-fibration fib
-  module f-weak = Weak-cartesian f-weak
+  module f-weak = is-weak-cartesian f-weak
 
   x* : Ob[ x ]
   x* = Cartesian-lift.x′ (has-lift f y′)
@@ -147,15 +146,15 @@ weak-cartesian→cartesian {x = x} {y′ = y′} {f = f} {f′ = f′} fib f-wea
   f* : Hom[ f ] x* y′
   f* = Cartesian-lift.lifting (has-lift f y′)
 
-  f*-cart : Cartesian f f*
+  f*-cart : is-cartesian f f*
   f*-cart = Cartesian-lift.cartesian (has-lift f y′)
 
-  f*-weak : Weak-cartesian f f*
+  f*-weak : is-weak-cartesian f f*
   f*-weak = cartesian→weak-cartesian f*-cart
 
-  f-cart : Cartesian f f′
+  f-cart : is-cartesian f f′
   f-cart =
-    cartesian-vert-retraction-stable f*-cart
+    cartesian-vertical-retraction-stable f*-cart
       (iso[]→to-has-section[] (weak-cartesian-domain-unique f*-weak f-weak))
       (f-weak.commutes f*)
 ```
@@ -173,9 +172,9 @@ record Weak-cartesian-lift
   field
     {x′}    : Ob[ x ]
     lifting : Hom[ f ] x′ y′
-    weak-cartesian : Weak-cartesian f lifting
+    weak-cartesian : is-weak-cartesian f lifting
 
-  open Weak-cartesian weak-cartesian public
+  open is-weak-cartesian weak-cartesian public
 ```
 
 A displayed category that has weak cartesian lifts for all morphisms
@@ -188,15 +187,15 @@ weak-cartesian-lifts→fibration
   : (lifts : ∀ {x y} → (f : Hom x y) → (y′ : Ob[ y ]) → Weak-cartesian-lift f y′)
   → (∀ {x y z x′ y′ z′} {f : Hom y z} {g : Hom x y}
      → {f′ : Hom[ f ] y′ z′} {g′ : Hom[ g ] x′ y′}
-     → Weak-cartesian f f′ → Weak-cartesian g g′
-     → Weak-cartesian (f ∘ g) (f′ ∘′ g′))
+     → is-weak-cartesian f f′ → is-weak-cartesian g g′
+     → is-weak-cartesian (f ∘ g) (f′ ∘′ g′))
   → Cartesian-fibration
 weak-cartesian-lifts→fibration weak-lift weak-∘ .Cartesian-fibration.has-lift {x = x} f y′ = f-lift where
 
   module weak-lift {x y} (f : Hom x y) (y′ : Ob[ y ]) =
     Weak-cartesian-lift (weak-lift f y′)
   module weak-∘ {x y z} (f : Hom y z) (g : Hom x y) (z′ : Ob[ z ]) =
-    Weak-cartesian (weak-∘ (weak-lift.weak-cartesian f z′) (weak-lift.weak-cartesian g _))
+    is-weak-cartesian (weak-∘ (weak-lift.weak-cartesian f z′) (weak-lift.weak-cartesian g _))
 ```
 
 To show that $f$ has a cartesian lift, we begin by taking the weak
@@ -221,10 +220,10 @@ cartesian lift $f^{*}$ of $f$.
   f* : Hom[ f ] x* y′
   f* = weak-lift.lifting f y′
 
-  f*-weak-cartesian : Weak-cartesian f f*
+  f*-weak-cartesian : is-weak-cartesian f f*
   f*-weak-cartesian = weak-lift.weak-cartesian f y′
 
-  module f* = Weak-cartesian (f*-weak-cartesian)
+  module f* = is-weak-cartesian (f*-weak-cartesian)
 ```
 
 We must now show that the weak cartesian morphism $f^{*}$ is actually
@@ -256,9 +255,8 @@ morphism $u' \to u^{*}$, which we can then compose with $m^{*}$
 to obtain the requisite map.
 
 ```agda
-  f*-cartesian : Cartesian f f*
-  f*-cartesian .Cartesian.universal {u = u} {u′ = u′} m h′ =
-    hom[ idr m ] (m* ∘′  f*∘m*.universal h′)
+  module Morphisms
+    {u : Ob} {u′ : Ob[ u ]} (m : Hom u x) (h′ : Hom[ f ∘ m ] u′ y′)
     where
       u* : Ob[ u ]
       u* = weak-lift.x′ m _
@@ -266,10 +264,19 @@ to obtain the requisite map.
       m* : Hom[ m ] u* x*
       m* = weak-lift.lifting m _
 
-      m*-weak-cartesian : Weak-cartesian m m*
+      m*-weak-cartesian : is-weak-cartesian m m*
       m*-weak-cartesian = weak-lift.weak-cartesian m x*
 
-      module f*∘m* = Weak-cartesian (weak-∘ f*-weak-cartesian m*-weak-cartesian)
+      module m* = is-weak-cartesian m*-weak-cartesian
+      module f*∘m* = is-weak-cartesian (weak-∘ f*-weak-cartesian m*-weak-cartesian)
+```
+
+
+```agda
+  f*-cartesian : is-cartesian f f*
+  f*-cartesian .is-cartesian.universal {u = u} {u′ = u′} m h′ =
+    hom[ idr m ] (m* ∘′  f*∘m*.universal h′)
+    where open Morphisms m h′
 ```
 
 <details>
@@ -278,18 +285,9 @@ yoga; the only real mathematical content is that the factorization of
 $h'$ via $f^{*} \cdot m^{*}$ commutes.
 </summary>
 ```agda
-  f*-cartesian .Cartesian.commutes {u = u} {u′ = u′} m h′ = path
+  f*-cartesian .is-cartesian.commutes {u = u} {u′ = u′} m h′ = path
     where
-      u* : Ob[ u ]
-      u* = weak-lift.x′ m x*
-
-      m* : Hom[ m ] u* x*
-      m* = weak-lift.lifting m x*
-
-      m*-weak-cartesian : Weak-cartesian m m*
-      m*-weak-cartesian = weak-lift.weak-cartesian m x*
-
-      module f*∘m* = Weak-cartesian (weak-∘ f*-weak-cartesian m*-weak-cartesian)
+      open Morphisms m h′
 
       abstract
         path : f* ∘′ hom[ idr m ] (m* ∘′ f*∘m*.universal h′) ≡ h′
@@ -308,19 +306,9 @@ the fact that both $m^{*}$ and $f^{*} \cdot m^{*}$ are weak cartesian
 maps.
 </summary>
 ```agda
-  f*-cartesian .Cartesian.unique {u = u} {u′ = u′} {m = m} {h′ = h′} m′ p = path
+  f*-cartesian .is-cartesian.unique {u = u} {u′ = u′} {m = m} {h′ = h′} m′ p = path
     where
-      u* : Ob[ u ]
-      u* = weak-lift.x′ m x*
-
-      m* : Hom[ m ] u* x*
-      m* = weak-lift.lifting m x*
-
-      m*-weak-cartesian : Weak-cartesian m m*
-      m*-weak-cartesian = weak-lift.weak-cartesian m x*
-
-      module m* = Weak-cartesian m*-weak-cartesian
-      module f*∘m* = Weak-cartesian (weak-∘ f*-weak-cartesian m*-weak-cartesian)
+      open Morphisms m h′
 
       abstract
         universal-path : (f* ∘′ m*) ∘′ m*.universal m′ ≡[ idr (f ∘ m) ] h′
@@ -385,7 +373,7 @@ module _ (U : ∀ {x y} → Hom x y → Functor (Fibre ℰ y) (Fibre ℰ x))
     → Weak-cartesian-lift f y′
   reindex→weak-cartesian-lift to to-eqv natural {y′ = y′} {f = f} = weak-lift where
     open Weak-cartesian-lift
-    open Weak-cartesian
+    open is-weak-cartesian
 
     from : ∀ {x y x′ y′} {f : Hom x y} → Hom[ id ] x′ (U f .F₀ y′) → Hom[ f ] x′ y′
     from = equiv→inverse to-eqv

@@ -313,7 +313,7 @@ Mods-fibration : ∀ ℓ ℓ′ → Cartesian-fibration (Mods ℓ ℓ′)
 Mods-fibration ℓ ℓ′ = mods where
   open Cartesian-fibration
   open Cartesian-lift
-  open Cartesian
+  open is-cartesian
 ```
 
 So, given a map $f : R \to S$ and an $S$-module $N$, how do we find a

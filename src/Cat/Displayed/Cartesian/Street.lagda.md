@@ -15,7 +15,7 @@ module Cat.Displayed.Cartesian.Street where
 ```agda
 open Cartesian-fibration
 open Cartesian-lift
-open Cartesian
+open is-cartesian
 open Displayed
 ```
 -->

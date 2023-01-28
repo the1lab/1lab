@@ -37,7 +37,7 @@ with their [cartesian counterparts].
 [cartesian counterparts]: Cat.Displayed.Cartesian.Weak.html
 
 ```agda
-record Weak-cocartesian
+record is-weak-cocartesian
   {a b a′ b′} (f : Hom a b) (f′ : Hom[ f ] a′ b′)
   : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′)
   where
@@ -53,20 +53,19 @@ record Weak-cocartesian
 
 ## Duality
 
-
 Weak cartesian maps in the total opposite category are equivalent to
 weak cocartesian maps.
 
 ```agda
 weak-co-cartesian→weak-cocartesian
   : ∀ {x y} {f : Hom x y} {x′ y′} {f′ : Hom[ f ] x′ y′}
-  → Weak-cartesian (ℰ ^total-op) f f′
-  → Weak-cocartesian f f′
+  → is-weak-cartesian (ℰ ^total-op) f f′
+  → is-weak-cocartesian f f′
 
 weak-cocartesian→weak-co-cartesian
   : ∀ {x y} {f : Hom x y} {x′ y′} {f′ : Hom[ f ] x′ y′}
-  → Weak-cocartesian f f′
-  → Weak-cartesian (ℰ ^total-op) f f′
+  → is-weak-cocartesian f f′
+  → is-weak-cartesian (ℰ ^total-op) f f′
 ```
 
 <details>
@@ -75,19 +74,19 @@ definitions.
 </summary>
 
 ```agda
-weak-co-cartesian→weak-cocartesian wcart .Weak-cocartesian.universal =
-  Weak-cartesian.universal wcart
-weak-co-cartesian→weak-cocartesian wcart .Weak-cocartesian.commutes =
-  Weak-cartesian.commutes wcart
-weak-co-cartesian→weak-cocartesian wcart .Weak-cocartesian.unique =
-  Weak-cartesian.unique wcart
+weak-co-cartesian→weak-cocartesian wcart .is-weak-cocartesian.universal =
+  is-weak-cartesian.universal wcart
+weak-co-cartesian→weak-cocartesian wcart .is-weak-cocartesian.commutes =
+  is-weak-cartesian.commutes wcart
+weak-co-cartesian→weak-cocartesian wcart .is-weak-cocartesian.unique =
+  is-weak-cartesian.unique wcart
 
-weak-cocartesian→weak-co-cartesian wcocart .Weak-cartesian.universal =
-  Weak-cocartesian.universal wcocart
-weak-cocartesian→weak-co-cartesian wcocart .Weak-cartesian.commutes =
-  Weak-cocartesian.commutes wcocart
-weak-cocartesian→weak-co-cartesian wcocart .Weak-cartesian.unique =
-  Weak-cocartesian.unique wcocart
+weak-cocartesian→weak-co-cartesian wcocart .is-weak-cartesian.universal =
+  is-weak-cocartesian.universal wcocart
+weak-cocartesian→weak-co-cartesian wcocart .is-weak-cartesian.commutes =
+  is-weak-cocartesian.commutes wcocart
+weak-cocartesian→weak-co-cartesian wcocart .is-weak-cartesian.unique =
+  is-weak-cocartesian.unique wcocart
 ```
 </details>
 
@@ -97,20 +96,20 @@ Weak cocartesian maps satisfy the dual properties of weak cartesian maps.
 weak-cocartesian-codomain-unique
   : ∀ {x y} {f : Hom x y}
   → ∀ {x′ y′ y″} {f′ : Hom[ f ] x′ y′} {f″ : Hom[ f ] x′ y″}
-  → Weak-cocartesian f f′
-  → Weak-cocartesian f f″
+  → is-weak-cocartesian f f′
+  → is-weak-cocartesian f f″
   → y′ ≅↓ y″
 
 cocartesian→weak-cocartesian
   : ∀ {x y x′ y′} {f : Hom x y} {f′ : Hom[ f ] x′ y′}
-  → Cocartesian f f′
-  → Weak-cocartesian f f′
+  → is-cocartesian f f′
+  → is-weak-cocartesian f f′
 
 weak-cocartesian→cocartesian
   : ∀ {x y x′ y′} {f : Hom x y} {f′ : Hom[ f ] x′ y′}
   → Cocartesian-fibration
-  → Weak-cocartesian f f′
-  → Cocartesian f f′
+  → is-weak-cocartesian f f′
+  → is-cocartesian f f′
 ```
 
 <details>
@@ -144,12 +143,12 @@ morphisms are cocartesian.
 fibration+weak-cocartesian→cocartesian
   : ∀ {x y x′ y′} {f : Hom x y} {f′ : Hom[ f ] x′ y′}
   → Cartesian-fibration ℰ
-  → Weak-cocartesian f f′
-  → Cocartesian f f′
+  → is-weak-cocartesian f f′
+  → is-cocartesian f f′
 fibration+weak-cocartesian→cocartesian {x} {y} {x′} {y′} {f} {f′} fib weak = cocart
   where
     open Cartesian-fibration fib
-    module weak = Weak-cocartesian weak
+    module weak = is-weak-cocartesian weak
 ```
 
 To see show this, we need to construct a unique factorization of some
@@ -201,7 +200,7 @@ which we have highlighted in red.
       m* : Hom[ m ] y* u′
       m* =  Cartesian-lift.lifting (has-lift m u′)
 
-      module m* = Cartesian (Cartesian-lift.cartesian (has-lift m u′))
+      module m* = is-cartesian (Cartesian-lift.cartesian (has-lift m u′))
 ```
 
 Next, we can construct the morphism $h^{*}$ (highlighted in red) as the
@@ -262,8 +261,8 @@ as $f'$ is weakly cartesian.
 Composing $m^{*}$ and $h^{**}$ gives the desired factorisation.
 
 ```agda
-    cocart : Cocartesian f f′
-    cocart .Cocart.Cocartesian.universal m h′ =
+    cocart : is-cocartesian f f′
+    cocart .is-cocartesian.universal m h′ =
       hom[ idr _ ] (m* ∘′ h**)
       where open Morphisms m h′
 ```
@@ -273,7 +272,7 @@ both the $m^{*} \cdot h^{*} = h'$ and $h^{**} \cdot f' = h^{*}$ cells
 commute.
 
 ```agda
-    cocart .Cocart.Cocartesian.commutes m h′ =
+    cocart .is-cocartesian.commutes m h′ =
       hom[] (m* ∘′ h**) ∘′ f′   ≡˘⟨ yank _ _ _ ⟩
       m* ∘′ hom[] (h** ∘′ f′)   ≡⟨ ap (m* ∘′_) (from-pathp (weak.commutes _)) ⟩
       m* ∘′ m*.universal f h′                 ≡⟨ m*.commutes f h′ ⟩
@@ -361,7 +360,7 @@ $m^{*} \cdot id^{*} \cdot f' = m' \cdot f'$. This commutes because
 $m^{*}$ is cartesian, thus finishing the proof.
 
 ```agda
-    cocart .Cocart.Cocartesian.unique {m = m} {h′ = h′} m′ p =
+    cocart .is-cocartesian.unique {m = m} {h′ = h′} m′ p =
       m′                ≡⟨ from-pathp⁻ (symP (m*.commutesp (idr _) m′)) ⟩
       hom[] (m* ∘′ id*) ≡⟨ hom[]⟩⟨ ap (m* ∘′_) (weak.unique _ (to-pathp $ m*.unique _ path )) ⟩
       hom[] (m* ∘′ h**) ∎
@@ -393,9 +392,9 @@ record Weak-cocartesian-lift
   field
     {y′}    : Ob[ y ]
     lifting : Hom[ f ] x′ y′
-    weak-cocartesian : Weak-cocartesian f lifting
+    weak-cocartesian : is-weak-cocartesian f lifting
 
-  open Weak-cocartesian weak-cocartesian public
+  open is-weak-cocartesian weak-cocartesian public
 ```
 
 As expected, weak cocartesian lifts are dual to weak cartesian lifts.
@@ -444,8 +443,8 @@ weak-cocartesian-lifts→opfibration
   : (lifts : ∀ {x y} → (f : Hom x y) → (x′ : Ob[ x ]) → Weak-cocartesian-lift f x′)
   → (∀ {x y z x′ y′ z′} {f : Hom y z} {g : Hom x y}
      → {f′ : Hom[ f ] y′ z′} {g′ : Hom[ g ] x′ y′}
-     → Weak-cocartesian f f′ → Weak-cocartesian g g′
-     → Weak-cocartesian (f ∘ g) (f′ ∘′ g′))
+     → is-weak-cocartesian f f′ → is-weak-cocartesian g g′
+     → is-weak-cocartesian (f ∘ g) (f′ ∘′ g′))
   → Cocartesian-fibration
 weak-cocartesian-lifts→opfibration wlifts weak-∘ =
   op-fibration→opfibration $

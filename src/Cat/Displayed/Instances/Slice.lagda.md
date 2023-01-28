@@ -18,7 +18,7 @@ module Cat.Displayed.Instances.Slice {o ℓ} (B : Precategory o ℓ) where
 open Cartesian-fibration
 open Cartesian-lift
 open Displayed
-open Cartesian
+open is-cartesian
 open Functor
 open CR B
 open /-Obj

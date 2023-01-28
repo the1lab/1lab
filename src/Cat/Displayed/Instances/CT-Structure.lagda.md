@@ -77,7 +77,7 @@ CT-structure also deserves its name.
 ```agda
 open Cartesian-fibration
 open Cartesian-lift
-open Cartesian
+open is-cartesian
 
 simple-ct-fibration : ∀ {s} (ct : CT-Structure s) → Cartesian-fibration (simple-ct ct)
 simple-ct-fibration ct .has-lift u Y .x′ = Y

@@ -24,7 +24,7 @@ module Cat.Displayed.Cartesian.Discrete where
 ```agda
 open Cartesian-fibration
 open Cartesian-lift
-open Cartesian
+open is-cartesian
 ```
 -->
 
