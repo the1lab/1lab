@@ -25,7 +25,7 @@ _collection_ of fibre categories $\ca{E}^*(x)$, this assignment isn't
 necessarily functorial!
 
 More precisely, we should have that a collection of categories, indexed
-by a category, should be a _pseudofunctor_ $\ca{B}^{op} \to \Cat$, where
+by a category, should be a _pseudofunctor_ $\ca{B}\op \to \Cat$, where
 $\Cat$ is a [bicategory] of categories. It turns out that we can
 characterise this assignment entirely in terms of the displayed objects
 and morphisms in $\ca{E}$!

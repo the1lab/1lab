@@ -33,7 +33,8 @@ To do this, we must first dualise the notion of a cartesian map to a
 **cocartesian map**. Fix a map $a \to b$ in $\ca{B}$, objects $a'$
 and $b'$ displayed over $a$ and $b$ resp., and a map $f' : a' \to_f b'$
 over $f$. We say that $f'$ is **cocartesian** if it has the shape of a
-"pushout diagram", in contrast to the cartesian maps "pullback diagrams".
+"pushout diagram", in contrast to the "pullback diagrams" shape
+associated with cartesian maps.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -44,6 +45,7 @@ over $f$. We say that $f'$ is **cocartesian** if it has the shape of a
   \arrow["f", from=3-1, to=3-3]
   \arrow[lies over, from=1-1, to=3-1]
   \arrow[lies over, from=1-3, to=3-3]
+  \arrow["\lrcorner"{anchor=center, pos=0.125, rotate=180}, draw=none, from=3-3, to=1-1]
 \end{tikzcd}\]
 ~~~
 
@@ -62,7 +64,7 @@ in red). For $f'$ to be cocartesian, every such situation must give rise
 to a unique universal factorisation of $h'$ through a map $b' \to_{m} u'$
 (highlighted in green).
 
-~~~{.quiver}
+~~~{.quiver .tall-2}
 \begin{tikzcd}
 	&&& \textcolor{rgb,255:red,124;green,50;blue,189}{u'} \\
 	{a'} && {b'} \\
@@ -93,9 +95,7 @@ to a unique universal factorisation of $h'$ through a map $b' \to_{m} u'$
       → m′ ≡ universal m h′
 ```
 
-As in the cartesian case, we provide helper functions for working
-with morphisms that are propositionally displayed over a composite.
-
+<!--
 ```agda
   universal′ : ∀ {u u′} {m : Hom b u} {k : Hom a u}
              → (p : m ∘ f ≡ k) (h′ : Hom[ k ] a′ u′)
@@ -123,76 +123,84 @@ with morphisms that are propositionally displayed over a composite.
   uniquep p q r {h′ = h′} m′ s  =
     to-pathp⁻ (unique m′ (from-pathp⁻ s) ∙ from-pathp⁻ (universalp p q r h′))
 ```
+-->
 
 ## Duality
 
 As noted before, cocartesian maps are dual to cartesian maps. We
 can make this correspondence precise by showing that cartesian maps
-in the total opposite of $\ca{E}$ are cocartesian maps, and vice versa.
+in the [total opposite] of $\ca{E}$ are cocartesian maps, and vice versa.
+
+[total opposite]: Cat.Displayed.Total.Op.html
 
 ```agda
-cartesian^op→cocartesian
+co-cartesian→cocartesian
   : ∀ {x y} {f : Hom x y} {x′ y′} {f′ : Hom[ f ] x′ y′}
   → Cartesian (ℰ ^total-op) f f′
   → Cocartesian f f′
-cartesian^op→cocartesian cart^op .Cocartesian.universal m h′ =
+
+cocartesian→co-cartesian
+  : ∀ {x y} {f : Hom x y} {x′ y′} {f′ : Hom[ f ] x′ y′}
+  → Cocartesian f f′
+  → Cartesian (ℰ ^total-op) f f′
+```
+
+<details>
+<summary>These functions just unpack and repack data, they are not
+particularly interesting.
+</summary>
+
+```agda
+co-cartesian→cocartesian cart^op .Cocartesian.universal m h′ =
   Cartesian.universal cart^op m h′
-cartesian^op→cocartesian cart^op .Cocartesian.commutes m h′ =
+co-cartesian→cocartesian cart^op .Cocartesian.commutes m h′ =
   Cartesian.commutes cart^op m h′
-cartesian^op→cocartesian cart^op .Cocartesian.unique m′ p =
+co-cartesian→cocartesian cart^op .Cocartesian.unique m′ p =
   Cartesian.unique cart^op m′ p
 
-cocartesian→cartesian^op
-  : ∀ {x y} {f : Hom x y} {x′ y′} {f′ : Hom[ f ] x′ y′}
-  → Cocartesian f f′
-  → Cartesian (ℰ ^total-op) f f′
-cocartesian→cartesian^op cocart .Cartesian.universal m h′ =
+cocartesian→co-cartesian cocart .Cartesian.universal m h′ =
   Cocartesian.universal cocart m h′
-cocartesian→cartesian^op cocart .Cartesian.commutes m h′ =
+cocartesian→co-cartesian cocart .Cartesian.commutes m h′ =
   Cocartesian.commutes cocart m h′
-cocartesian→cartesian^op cocart .Cartesian.unique m′ p =
+cocartesian→co-cartesian cocart .Cartesian.unique m′ p =
   Cocartesian.unique cocart m′ p
 ```
+</details>
 
 Furthermore, these 2 functions form an equivalence, which we can extend
 to a path via univalence.
 
 ```agda
-cartesian^op→cocartesian-is-equiv
+co-cartesian→cocartesian-is-equiv
   : ∀ {x y} {f : Hom x y} {x′ y′} {f′ : Hom[ f ] x′ y′}
-  → is-equiv (cartesian^op→cocartesian {f′ = f′})
-cartesian^op→cocartesian-is-equiv {f′ = f′} =
-  is-iso→is-equiv $ iso cocartesian→cartesian^op cocart-invl cocart-invr
+  → is-equiv (co-cartesian→cocartesian {f′ = f′})
+co-cartesian→cocartesian-is-equiv {f′ = f′} =
+  is-iso→is-equiv $ iso cocartesian→co-cartesian cocart-invl cocart-invr
   where
     cocart-invl
       : ∀ f
-      → cartesian^op→cocartesian {f′ = f′} (cocartesian→cartesian^op f) ≡ f
+      → co-cartesian→cocartesian {f′ = f′} (cocartesian→co-cartesian f) ≡ f
     cocart-invl f i .Cocartesian.universal m h′ = Cocartesian.universal f m h′
     cocart-invl f i .Cocartesian.commutes m h′ = Cocartesian.commutes f m h′
     cocart-invl f i .Cocartesian.unique m′ p = Cocartesian.unique f m′ p
 
     cocart-invr
       : ∀ f
-      → cocartesian→cartesian^op {f′ = f′} (cartesian^op→cocartesian f) ≡ f
+      → cocartesian→co-cartesian {f′ = f′} (co-cartesian→cocartesian f) ≡ f
     cocart-invr f i .Cartesian.universal m h′ = Cartesian.universal f m h′
     cocart-invr f i .Cartesian.commutes m h′ = Cartesian.commutes f m h′
     cocart-invr f i .Cartesian.unique m′ p = Cartesian.unique f m′ p
 
-cartesian^op≡cocartesian
+co-cartesian≡cocartesian
   : ∀ {x y} {f : Hom x y} {x′ y′} {f′ : Hom[ f ] x′ y′}
   → Cartesian (ℰ ^total-op) f f′ ≡ Cocartesian f f′
-cartesian^op≡cocartesian =
-  ua (cartesian^op→cocartesian , cartesian^op→cocartesian-is-equiv)
+co-cartesian≡cocartesian =
+  ua (co-cartesian→cocartesian , co-cartesian→cocartesian-is-equiv)
 ```
 
 ## Properties of Cocartesian Morphisms
 
-<details>
-<summary>
-We shall now prove some properties of cocartesian morphisms. These
-are all dual to the properties that we've proved about cartesian
-morphisms, so we will appeal to duality to prove them!
-</summary>
+We shall now prove the following properties of cocartesian morphisms.
 
 ```agda
 cocartesian-∘
@@ -200,31 +208,18 @@ cocartesian-∘
   → ∀ {x′ y′ z′} {f′ : Hom[ f ] y′ z′} {g′ : Hom[ g ] x′ y′}
   → Cocartesian f f′ → Cocartesian g g′
   → Cocartesian (f ∘ g) (f′ ∘′ g′)
-cocartesian-∘ f-cocart g-cocart =
-  cartesian^op→cocartesian $
-  cartesian-∘ _
-    (cocartesian→cartesian^op g-cocart)
-    (cocartesian→cartesian^op f-cocart)
-
-cocartesian-id : ∀ {x x′} → Cocartesian id (id′ {x} {x′})
-cocartesian-id = cartesian^op→cocartesian (cartesian-id _)
 
 invertible→cocartesian
   : ∀ {x y} {f : Hom x y} {x′ y′} {f′ : Hom[ f ] x′ y′}
   → (f-inv : is-invertible f)
   → is-invertible[ f-inv ] f′
   → Cocartesian f f′
-invertible→cocartesian f-inv f′-inv =
-  cartesian^op→cocartesian $
-  invertible→cartesian _ _ (invertible[]→invertible[]^op f′-inv)
 
 cocartesian→weak-epic
   : ∀ {x y} {f : Hom x y}
   → ∀ {x′ y′} {f′ : Hom[ f ] x′ y′}
   → Cocartesian f f′
   → is-weak-epic f′
-cocartesian→weak-epic cocart =
-  cartesian→weak-monic (ℰ ^total-op) (cocartesian→cartesian^op cocart)
 
 cocartesian-codomain-unique
   : ∀ {x y} {f : Hom x y}
@@ -232,11 +227,6 @@ cocartesian-codomain-unique
   → Cocartesian f f′
   → Cocartesian f f″
   → y′ ≅↓ y″
-cocartesian-codomain-unique f′-cocart f″-cocart =
-  vert-iso^op→vert-iso $
-  cartesian-domain-unique (ℰ ^total-op)
-    (cocartesian→cartesian^op f″-cocart)
-    (cocartesian→cartesian^op f′-cocart)
 
 cocartesian-vert-section-stable
   : ∀ {x y} {f : Hom x y}
@@ -245,12 +235,6 @@ cocartesian-vert-section-stable
   → has-retract↓ ϕ
   → ϕ ∘′ f″ ≡[ idl _ ] f′
   → Cocartesian f f″
-cocartesian-vert-section-stable cocart ret factor =
-  cartesian^op→cocartesian $
-  cartesian-vert-retraction-stable (ℰ ^total-op)
-    (cocartesian→cartesian^op cocart)
-    (vert-retract→vert-section^op ret)
-    factor
 
 cocartesian-pasting
   : ∀ {x y z} {f : Hom y z} {g : Hom x y}
@@ -258,20 +242,59 @@ cocartesian-pasting
   → Cocartesian g g′
   → Cocartesian (f ∘ g) (f′ ∘′ g′)
   → Cocartesian f f′
-cocartesian-pasting g-cocart fg-cocart =
-  cartesian^op→cocartesian $
-  cartesian-pasting (ℰ ^total-op)
-    (cocartesian→cartesian^op g-cocart)
-    (cocartesian→cartesian^op fg-cocart)
 
 vertical+cocartesian→invertible
   : ∀ {x} {x′ x″ : Ob[ x ]} {f′ : Hom[ id ] x′ x″}
   → Cocartesian id f′
   → is-invertible↓ f′
+```
+
+<details>
+<summary>The proofs are all applications of duality, as we have already
+done the hard work of proving these properties for cartesian morphisms.
+</summary>
+
+```agda
+cocartesian-∘ f-cocart g-cocart =
+  co-cartesian→cocartesian $
+  cartesian-∘ _
+    (cocartesian→co-cartesian g-cocart)
+    (cocartesian→co-cartesian f-cocart)
+
+cocartesian-id : ∀ {x x′} → Cocartesian id (id′ {x} {x′})
+cocartesian-id = co-cartesian→cocartesian (cartesian-id _)
+
+invertible→cocartesian f-inv f′-inv =
+  co-cartesian→cocartesian $
+  invertible→cartesian _ _ (invertible[]→invertible[]^op f′-inv)
+
+cocartesian→weak-epic cocart =
+
+  cartesian→weak-monic (ℰ ^total-op) (cocartesian→co-cartesian cocart)
+
+cocartesian-codomain-unique f′-cocart f″-cocart =
+  vert-iso^op→vert-iso $
+  cartesian-domain-unique (ℰ ^total-op)
+    (cocartesian→co-cartesian f″-cocart)
+    (cocartesian→co-cartesian f′-cocart)
+
+cocartesian-vert-section-stable cocart ret factor =
+  co-cartesian→cocartesian $
+  cartesian-vert-retraction-stable (ℰ ^total-op)
+    (cocartesian→co-cartesian cocart)
+    (vert-retract→vert-section^op ret)
+    factor
+
+cocartesian-pasting g-cocart fg-cocart =
+  co-cartesian→cocartesian $
+  cartesian-pasting (ℰ ^total-op)
+    (cocartesian→co-cartesian g-cocart)
+    (cocartesian→co-cartesian fg-cocart)
+
 vertical+cocartesian→invertible cocart =
   vert-invertible^op→vert-invertible $
   vertical+cartesian→invertible (ℰ ^total-op)
-    (cocartesian→cartesian^op cocart)
+    (cocartesian→co-cartesian cocart)
 ```
 </details>
 
@@ -291,37 +314,43 @@ record Cocartesian-lift {x y} (f : Hom x y) (x′ : Ob[ x ]) : Type (o ⊔ ℓ �
   open Cocartesian cocartesian public
 ```
 
-<details>
-<summary>
 We also can apply duality to cocartesian lifts.
-</summary>
-```agda
-cartesian-lift^op→cocartesian-lift
-  : ∀ {x y} {f : Hom x y} {x′ : Ob[ x ]}
-  → Cartesian-lift (ℰ ^total-op) f x′
-  → Cocartesian-lift f x′
-cartesian-lift^op→cocartesian-lift cart .Cocartesian-lift.y′ =
-  Cartesian-lift.x′ cart
-cartesian-lift^op→cocartesian-lift cart .Cocartesian-lift.lifting =
-  Cartesian-lift.lifting cart
-cartesian-lift^op→cocartesian-lift cart .Cocartesian-lift.cocartesian =
-  cartesian^op→cocartesian (Cartesian-lift.cartesian cart)
 
-cocartesian-lift→cartesian-lift^op
+```agda
+co-cartesian-lift→cocartesian-lift
+  : ∀ {x y} {f : Hom x y} {x′ : Ob[ x ]}
+  → Cartesian-lift (ℰ ^total-op) f x′
+  → Cocartesian-lift f x′
+
+cocartesian-lift→co-cartesian-lift
   : ∀ {x y} {f : Hom x y} {x′ : Ob[ x ]}
   → Cocartesian-lift f x′
   → Cartesian-lift (ℰ ^total-op) f x′
-cocartesian-lift→cartesian-lift^op cocart .Cartesian-lift.x′ =
+```
+<details>
+<summary>The proofs are simply applying duality, so they are not
+particularly interesting.
+</summary>
+
+```agda
+co-cartesian-lift→cocartesian-lift cart .Cocartesian-lift.y′ =
+  Cartesian-lift.x′ cart
+co-cartesian-lift→cocartesian-lift cart .Cocartesian-lift.lifting =
+  Cartesian-lift.lifting cart
+co-cartesian-lift→cocartesian-lift cart .Cocartesian-lift.cocartesian =
+  co-cartesian→cocartesian (Cartesian-lift.cartesian cart)
+
+cocartesian-lift→co-cartesian-lift cocart .Cartesian-lift.x′ =
   Cocartesian-lift.y′ cocart
-cocartesian-lift→cartesian-lift^op cocart .Cartesian-lift.lifting =
+cocartesian-lift→co-cartesian-lift cocart .Cartesian-lift.lifting =
   Cocartesian-lift.lifting cocart
-cocartesian-lift→cartesian-lift^op cocart .Cartesian-lift.cartesian =
-  cocartesian→cartesian^op (Cocartesian-lift.cocartesian cocart)
+cocartesian-lift→co-cartesian-lift cocart .Cartesian-lift.cartesian =
+  cocartesian→co-cartesian (Cocartesian-lift.cocartesian cocart)
 ```
 </details>
 
 We can use this notion to define cocartesian fibrations (sometimes
-referred to as opfibrations).
+referred to as **opfibrations**).
 
 ```agda
 record Cocartesian-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
@@ -329,17 +358,22 @@ record Cocartesian-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
   field
     has-lift : ∀ {x y} (f : Hom x y) (x′ : Ob[ x ]) → Cocartesian-lift f x′
 ```
-<details>
-<summary>
 As expected, opfibrations are dual to fibrations.
+```agda
+op-fibration→opfibration : Cartesian-fibration (ℰ ^total-op) → Cocartesian-fibration
+
+opfibration→op-fibration : Cocartesian-fibration → Cartesian-fibration (ℰ ^total-op)
+```
+
+<details>
+<summary> The proofs here are just further applications of duality, so
+we omit them.
 </summary>
 ```agda
-fibration^op→opfibration : Cartesian-fibration (ℰ ^total-op) → Cocartesian-fibration
-fibration^op→opfibration fib .Cocartesian-fibration.has-lift f x′ =
-  cartesian-lift^op→cocartesian-lift (Cartesian-fibration.has-lift fib f x′)
+op-fibration→opfibration fib .Cocartesian-fibration.has-lift f x′ =
+  co-cartesian-lift→cocartesian-lift (Cartesian-fibration.has-lift fib f x′)
 
-opfibration→fibration^op : Cocartesian-fibration → Cartesian-fibration (ℰ ^total-op)
-opfibration→fibration^op opfib .Cartesian-fibration.has-lift f y′ =
-  cocartesian-lift→cartesian-lift^op (Cocartesian-fibration.has-lift opfib f y′)
+opfibration→op-fibration opfib .Cartesian-fibration.has-lift f y′ =
+  cocartesian-lift→co-cartesian-lift (Cocartesian-fibration.has-lift opfib f y′)
 ```
 </details>
