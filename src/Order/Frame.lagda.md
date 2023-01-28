@@ -32,7 +32,7 @@ $$
 
 In the study of frames, for simplicity, we assume propositional
 `resizing`{.Agda}: that way, it suffices for a frame $A$ to have joins
-of $\ca{J}$-indexed families, for $\ca{J}$ an arbitrary type in the same
+of $\cJ$-indexed families, for $\cJ$ an arbitrary type in the same
 universe as $A$, to have joins for arbitrary subsets of $A$.
 
 ```agda

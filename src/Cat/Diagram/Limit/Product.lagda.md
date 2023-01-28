@@ -34,7 +34,7 @@ open Cone
 # Products are limits
 
 We establish the correspondence between binary products $A \times B$ and
-limits over the functor out of $\id{Disc}(\{0,1\})$ which maps $0$
+limits over the functor out of $\rm{Disc}(\{0,1\})$ which maps $0$
 to $A$ and $1$ to $B$. We begin by defining the functor (reusing
 existing infrastructure):
 
@@ -92,7 +92,7 @@ Lim→Prod x .has-is-product .unique f p q =
     other .commutes true  = q
 ```
 
-We note that _any_ functor $F : \id{Disc}(\{0,1\}) \to \ca{C}$ is
+We note that _any_ functor $F : \rm{Disc}(\{0,1\}) \to \cC$ is
 canonically _equal_, not just naturally isomorphic, to the one we
 defined above.
 

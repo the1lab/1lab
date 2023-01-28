@@ -39,7 +39,7 @@ whence the name **difference kernel**!
 
 The calculation is straightforward: To map out of $\ker f$, we must have
 $(fe' - ge') = 0$, but this is immediate assuming that $fe' = ge'$ ---
-an assumption we _have_ to map out of $\id{eq}(f,g)$.  Similarly, to
+an assumption we _have_ to map out of $\rm{eq}(f,g)$.  Similarly, to
 show that $f\ker(f-g) = g\ker(f-g)$, we calculate
 
 $$
@@ -90,13 +90,13 @@ universal properties, but it is also an isomorphism.  This is, at least
 to the author, mildly unexpected, but it follows from the properties of
 zero morphisms.
 
-More generally, suppose that $F : [n] \to \ca{A}$ is a finite family of
+More generally, suppose that $F : [n] \to \cA$ is a finite family of
 objects in an $\Ab$-category. If $F$ has both a coproduct $\coprod F$
-and a product $\prod F$ in $\ca{A}$, then we can define a map $\coprod F
+and a product $\prod F$ in $\cA$, then we can define a map $\coprod F
 \to \prod F$ by giving a family of morphisms $F_i \to \prod F$, which
 amounts to defining a family of morphisms $F_i \to F_j$^[Where $i, j$
 both range over $[n]$.]. Since $[n]$ is discrete, we can define this
-family to be $\rm{id} : F_i \to F_i$ when $i = j$ and $0 : F_i \to F_j$
+family to be $\id : F_i \to F_i$ when $i = j$ and $0 : F_i \to F_j$
 everywhere else!
 
 What we actually prove in this module is a slight variation: we directly
@@ -160,7 +160,7 @@ component _except_ for the one corresponding to their index in the sum.
 In the binary case, we're showing that
 
 $$
-(1, 0)\pi_1 + (0,1)\pi_2 = (\pi_1, 0) + (0, \pi_2) = (\pi_1, \pi_2) = \rm{id}\text{.}
+(1, 0)\pi_1 + (0,1)\pi_2 = (\pi_1, 0) + (0, \pi_2) = (\pi_1, \pi_2) = \id\text{.}
 $$
 
 ```agda

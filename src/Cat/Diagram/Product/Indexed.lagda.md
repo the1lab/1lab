@@ -31,7 +31,7 @@ not sets.
 
 That's where $I$-indexed products come in: Rather than having a
 _functor_ giving the objects to take the limit over, we have an
-arbitrary map $F$ from $I$ to the space of objects of $\ca{C}$. An
+arbitrary map $F$ from $I$ to the space of objects of $\cC$. An
 _indexed product_ for this "diagram" is then an object admitting an
 universal family of maps $\pi_i : (\prod F) \to F_i$.
 
@@ -56,8 +56,8 @@ record is-indexed-product (F : Idx → C.Ob) (π : ∀ i → C.Hom P (F i))
     .is-iso.linv x → sym (unique _ λ _ → refl)
 ```
 
-A category $\ca{C}$ **admits indexed products** (of level $\ell$) if,
-for any type $I : \ty\ \ell$ and family $F : I \to \ca{C}$, there is an
+A category $\cC$ **admits indexed products** (of level $\ell$) if,
+for any type $I : \ty\ \ell$ and family $F : I \to \cC$, there is an
 indexed product of $F$.
 
 ```agda
@@ -89,8 +89,8 @@ module _ {ℓ′} {I : Type ℓ′} (F : I → C .Precategory.Ob) (ip : Indexed-
 
 In the particular case where $I$ is a groupoid, e.g. because it arises
 as the space of objects of a univalent category, an indexed product for
-$F : I \to \ca{C}$ is the same thing as a limit over $F$, considered as
-a functor $\disc{I} \to \ca{C}$. We can not lift this restriction: If
+$F : I \to \cC$ is the same thing as a limit over $F$, considered as
+a functor $\disc{I} \to \cC$. We can not lift this restriction: If
 $I$ is not a groupoid, then its path spaces $x = y$ are not necessarily
 sets, and so the `Disc`{.Agda} construction does not apply to it.
 

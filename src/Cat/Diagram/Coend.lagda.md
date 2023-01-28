@@ -24,11 +24,11 @@ private
 
 # Coends
 
-Let $F : \ca{C}\op \times \ca{C} \to \ca{D}$ be a functor, which, by the
+Let $F : \cC\op \times \cC \to \cD$ be a functor, which, by the
 general yoga of [bifunctors] we think of as combining a contravariant
-action $F(-,x) : \ca{C}\op \to \ca{D}$ and a covariant action $F(x,-) :
-\ca{C} \to \ca{D}$ of $\ca{C}$ on $\ca{D}$[^action]. As a concrete
-example, we could take $\ca{C} = \bf{B}R$, the 1-object [$\Ab$-category]
+action $F(-,x) : \cC\op \to \cD$ and a covariant action $F(x,-) :
+\cC \to \cD$ of $\cC$ on $\cD$[^action]. As a concrete
+example, we could take $\cC = \bf{B}R$, the 1-object [$\Ab$-category]
 associated to a [ring] $R$ --- then the functors $F(-,x)$ and $F(x,-)$
 would be left- and right- $R$-modules, respectively. In fact, let us
 focus on this case and consider two modules $A$ and $B$, incarnated as a
@@ -59,10 +59,10 @@ tensor product is the universal object where this is forced to hold.
 
 [tensor product of abelian groups]: Algebra.Group.Ab.html#the-tensor-product
 
-Going back to the absurd generality of a bifunctor $F : \ca{C}\op \times
-\ca{C} \to \ca{D}$, we may still wish to consider these sorts of
+Going back to the absurd generality of a bifunctor $F : \cC\op \times
+\cC \to \cD$, we may still wish to consider these sorts of
 "universal quotients where a pair of actions are forced to agree", even
-if our codomain category $\ca{D}$ does not have a well-behaved calculus
+if our codomain category $\cD$ does not have a well-behaved calculus
 of tensor products. As a motivating example, the computation of [left
 Kan extensions][lan] as certain colimits has this form!
 
@@ -83,7 +83,7 @@ record Cowedge (F : Functor (C ^op ×ᶜ C) D) : Type (coend-level F) where
   no-eta-equality
 ```
 
-A **cowedge** under a functor $F$ is given by an object $w : \ca{D}$
+A **cowedge** under a functor $F$ is given by an object $w : \cD$
 (which we refer to as the `nadir`{.Agda}, because we're pretentious),
 together with a family of maps $\psi_c : F(c,c) \to w$.
 

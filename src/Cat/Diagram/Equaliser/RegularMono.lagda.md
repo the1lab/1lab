@@ -64,7 +64,7 @@ open is-regular-mono using (is-regular-mono→is-mono) public
 ## Effective epimorphisms
 
 Proving that a map $f$ is a regular monomorphism involves finding two
-maps which it equalises, but if $\ca{C}$ is a category with [pushouts],
+maps which it equalises, but if $\cC$ is a category with [pushouts],
 there is often a canonical choice: The **cokernel pair** of $f$, that
 is, the pushout of $f$ along with itself. Morphisms which a) have a
 cokernel pair and b) equalise their cokernel pair are called **effective
@@ -110,10 +110,10 @@ is-regular-mono→is-effective-mono {f = f} cokern reg = mon where
   module reg = is-regular-mono reg
 ```
 
-Let $f : a \mono b$ be the equaliser of $\id{arr_1}, \id{arr_2} : b \to
+Let $f : a \mono b$ be the equaliser of $\rm{arr_1}, \rm{arr_2} : b \to
 c$. By the universal property of the cokernel pair of $f$, we have a map
-$\phi : B \sqcup_A B \to C$ such that $\phi \circ i_1 = \id{arr_1}$ and
-$\phi \circ i_2 = \id{arr_2}$.
+$\phi : B \sqcup_A B \to C$ such that $\phi \circ i_1 = \rm{arr_1}$ and
+$\phi \circ i_2 = \rm{arr_2}$.
 
 ```agda
   phi : Hom f⊔f.coapex reg.c
@@ -133,7 +133,7 @@ $i_1, i_2$, suppose that $e\prime : E \to b$ also equalises the
 injections. Then we can calculate:
 
 $$
-\id{arr_1}e\prime = (\phi i_1)e\prime = (\phi i_2)e\prime = \id{arr_2}e\prime
+\rm{arr_1}e\prime = (\phi i_1)e\prime = (\phi i_2)e\prime = \rm{arr_2}e\prime
 $$
 
 So $e\prime$ equalises the same arrows that $f$ does, hence there is a
@@ -181,7 +181,7 @@ pushouts, a regular mono. We show that $f$ admits an [image] relative to
 the class of regular monomorphisms. The construction of the image is as
 follows: We let $\im f = A$ and factor $f$ as
 
-$$ A \xto{\id{id}} A \xmono{f} B $$
+$$ A \xto{\id} A \xmono{f} B $$
 
 This factorisation is very straightforwardly shown to be universal, as
 the code below demonstrates.

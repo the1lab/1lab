@@ -64,7 +64,7 @@ map $Y \ortho f$.
 must be explicitly applied to the category in which the morphisms live.
 Thus, we define three distinct predicates expressing orthogonality:
 `m⊥m`{.Agda} ("map-map"), `m⊥o`{.Agda} ("map-object"), and `o⊥m`
-("object-map"). If the ambient category $\ca{C}$ has enough co/limits,
+("object-map"). If the ambient category $\cC$ has enough co/limits,
 being orthogonal to an object is equivalent to being orthogonal to an
 object. For example, $f \ortho X$ iff. $f \ortho \mathop{!}_X$, where
 $!_X : X \to 1$ is the unique map from $X$ into the terminal object.
@@ -152,7 +152,7 @@ module
 ```
 -->
 
-Let $r \dashv \iota : \ca{D} \adj \ca{C}$ be an arbitrary
+Let $r \dashv \iota : \cD \adj \cC$ be an arbitrary
 \r{reflective subcategory}. Speaking abstractly, there is a "universal"
 choice of test for whether an object is "in" the subcategory: Whether
 the adjunction unit: $\eta_x : x \to \iota{}r(x)$ is an isomorphism.

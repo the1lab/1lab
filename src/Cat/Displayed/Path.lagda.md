@@ -14,11 +14,11 @@ open Displayed
 
 # Paths of displayed categories
 
-If you have a pair of displayed categories $\ca{E} \liesover \ca{B}_0$
-and $\ca{F} \liesover \ca{B}_1$ over a line of precategories
-$\ca{B}_i, i : \II$, it might be interesting --- if you, like me, are a
+If you have a pair of displayed categories $\cE \liesover \cB_0$
+and $\cF \liesover \cB_1$ over a line of precategories
+$\cB_i, i : \II$, it might be interesting --- if you, like me, are a
 lunatic --- to know when they can be connected by a `PathP`{.Agda} over
-$\ca{B}$. This module answers that! A path between displayed categories,
+$\cB$. This module answers that! A path between displayed categories,
 over a path of their corresponding bases, is a displayed functor
 
 ~~~{.quiver}
@@ -160,11 +160,11 @@ components are, by definition, unimportant.
 
 ## Complicating it
 
-Suppose that we have $\ca{E} \liesover \ca{B}$ and $\ca{F} \liesover
-\ca{C}$, together with a functor $F : \ca{B} \to \ca{C}$ which is an
-[isomorphism of precategories], and a functor $G : \ca{E} \to \ca{F}$
+Suppose that we have $\cE \liesover \cB$ and $\cF \liesover
+\cC$, together with a functor $F : \cB \to \cC$ which is an
+[isomorphism of precategories], and a functor $G : \cE \to \cF$
 over $F$. This is the situation in the introduction, but where the line
-$\ca{B}_i$ comes from the identity system on precategories given by
+$\cB_i$ comes from the identity system on precategories given by
 isomorphisms of precategories.
 
 [isomorphism of precategories]: Cat.Functor.Equivalence.html#isomorphisms
@@ -202,7 +202,7 @@ the displayed equivalent of an isomorphism of precategories.
 We'll define a `displayed-pathp-data`{.Agda}. We define the paths
 between displayed object spaces and displayed path spaces by gluing
 _against the ungluing_ of the paths in the underlying category, in the
-right endpoint category $\ca{F}$. Diagramatically, this looks something
+right endpoint category $\cF$. Diagramatically, this looks something
 like
 
 ~~~{.quiver .tall-1}
@@ -225,11 +225,11 @@ like
       (i = i1) → ℱ.Ob[ x ] , _ , id-equiv
 ```
 
-We glue the type $\ca{E}[x]$ along $F_0'$ --- the action of the
+We glue the type $\cE[x]$ along $F_0'$ --- the action of the
 displayed functor on objects --- against the line of types given by
-applying the space of displayed objects of $\ca{F}$ to the ungluing of
-$x$, giving a line of type families `p1`{.Agda} ranging from $\ca{E}[-]
-\to \ca{F}[-]$. The situation for Hom spaces is analogous.
+applying the space of displayed objects of $\cF$ to the ungluing of
+$x$, giving a line of type families `p1`{.Agda} ranging from $\cE[-]
+\to \cF[-]$. The situation for Hom spaces is analogous.
 
 ```agda
     sys : ∀ i (x y : ps i .Ob) (f : ps i .Hom x y) (x′ : p1 i x) (y′ : p1 i y)
@@ -251,13 +251,13 @@ $x$, giving a line of type families `p1`{.Agda} ranging from $\ca{E}[-]
 ```
 
 We now "just" have to produce inhabitants of `p2`{.Agda} along $i : \II$
-which restrict to $\ca{E}$ and $\ca{F}$'s identity morphisms (and
+which restrict to $\cE$ and $\cF$'s identity morphisms (and
 composition morphisms) at the endoints of $i$. We can do so by gluing,
 now at the level of terms, against a heterogeneous composition. The
 details are quite nasty, but the core of it is extending the witness
 that $G$ respects identity to a path, over line given by gluing
 $F_1'$ and ungluing the domain/codomain, between the identity maps in
-$\ca{E}$ and $\ca{F}$.
+$\cE$ and $\cF$.
 
 ```agda
     input .idp i {x} {x′} = glue-inc (∂ i)
@@ -312,7 +312,7 @@ module
 -->
 
 As one last step, we show that if the functor $G$ is displayed over the
-identity, the path $\ca{E} \to \ca{F}$ is an actual identity, rather
+identity, the path $\cE \to \cF$ is an actual identity, rather
 than a `PathP`{.Agda}.
 
 ```agda

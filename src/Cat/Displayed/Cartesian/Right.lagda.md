@@ -28,8 +28,8 @@ open Cat.Displayed.Reasoning ℰ
 
 # Right Fibrations
 
-A [cartesian fibration] $\ca{E}$ is said to be a **right fibration** if every
-morphism in $\ca{E}$ is cartesian.
+A [cartesian fibration] $\cE$ is said to be a **right fibration** if every
+morphism in $\cE$ is cartesian.
 
 ```agda
 record Right-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
@@ -45,7 +45,7 @@ record Right-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
 ```
 
 One notable fact is every vertical morphism of a right fibrations is
-invertible. In other words, if $\ca{E}$ is a right fibration, then all
+invertible. In other words, if $\cE$ is a right fibration, then all
 of its fibre categories are groupoids. This follows directly from the
 fact that vertical cartesian maps are invertible.
 
@@ -58,7 +58,7 @@ right-fibration→vertical-invertible rfib f′ =
 ```
 
 More notably, this is an exact characterization of categories fibred
-in groupoids! If $\ca{E}$ is a cartesian fibration where all vertical
+in groupoids! If $\cE$ is a cartesian fibration where all vertical
 morphisms are invertible, then it must be a right fibration.
 
 ```agda
@@ -166,4 +166,3 @@ functor+discrete→fibred
 functor+discrete→fibred disc F′ =
   functor+right-fibration→fibred (discrete→right-fibration disc) F′
 ```
-

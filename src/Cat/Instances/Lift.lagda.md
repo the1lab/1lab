@@ -6,10 +6,10 @@ module Cat.Instances.Lift where
 
 # Lifting categories across universes
 
-Suppose you have a category $\ca{C}$ with objects in $o$ and homs in
+Suppose you have a category $\cC$ with objects in $o$ and homs in
 $\ell$, but you really need it to have objects in some larger universe
 $o \sqcup o'$ and homs in $\ell \sqcup \ell'$. Fortunately you can
-uniformly lift the precategory $\ca{C}$ to this bigger universe.
+uniformly lift the precategory $\cC$ to this bigger universe.
 
 ```agda
 Lift-cat : ∀ {o ℓ} o′ ℓ′ → Precategory o ℓ → Precategory (o ⊔ o′) (ℓ ⊔ ℓ′)

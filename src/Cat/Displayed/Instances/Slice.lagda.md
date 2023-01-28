@@ -27,10 +27,10 @@ open /-Obj
 
 # The canonical self-indexing
 
-There is a canonical way of viewing any category $\ca{B}$ as displayed
+There is a canonical way of viewing any category $\cB$ as displayed
 over _itself_, given [fibrewise] by taking [slice categories]. Following
 [@relativect], we refer to this construction as the **canonical-self
-indexing** of $\ca{B}$ and denote it $\underline{\ca{B}}$. Recall that
+indexing** of $\cB$ and denote it $\underline{\cB}$. Recall that
 the objects in the slice over $y$ are pairs consisting of an object $x$
 and a map $f : x \to y$. The core idea is that _any morphism_ lets us
 view an object $x$ as being "structure over" an object $y$; the
@@ -117,7 +117,7 @@ module _ {x y} (f : Hom x y) (px : /-Obj x) (py : /-Obj y) where
 
 It's straightforward to piece together the objects of the (ordinary)
 slice category and our displayed maps `Slice-hom`{.Agda} into a category
-displayed over $\ca{B}$.
+displayed over $\cB$.
 
 ```agda
 Slices : Displayed B (o ⊔ ℓ) (o ⊔ ℓ)
@@ -139,8 +139,8 @@ Slices .assoc′ {f = f} {g = g} {h = h} f′ g′ h′ =
 It's only slightly more annoying to show that a vertical map in the
 canonical self-indexing is a map in the ordinary slice category which,
 since the objects displayed over $x$ are _defined_ to be those of the
-slice category $\ca{B}/x$, gives an equivalence of categories between
-the fibre $\underline{\ca{B}}^*(x)$ and the slice $\ca{B}/x$.
+slice category $\cB/x$, gives an equivalence of categories between
+the fibre $\underline{\cB}^*(x)$ and the slice $\cB/x$.
 
 ```agda
 Fibre→slice : ∀ {x} → Functor (Fibre Slices x) (Slice B x)
@@ -167,13 +167,13 @@ Fibre→slice-is-equiv = is-precat-iso→is-equivalence $
 
 ## As a fibration
 
-If (and only if) $\ca{B}$ has all [pullbacks], then the self-indexing
-$\ca{B}$ is a [Cartesian fibration]. This is almost by definition, and
+If (and only if) $\cB$ has all [pullbacks], then the self-indexing
+$\cB$ is a [Cartesian fibration]. This is almost by definition, and
 is in fact where the "Cartesian" in "Cartesian fibration" (recall that
 another term for "pullback square" is "cartesian square"). Since the
-total space $\int \underline{\ca{B}}$ is equivalently the arrow category
-of $\ca{B}$, with the projection functor $\pi : \int \underline{\ca{B}}
-\to \ca{B}$ corresponding under this equivalence to the codomain
+total space $\int \underline{\cB}$ is equivalently the arrow category
+of $\cB$, with the projection functor $\pi : \int \underline{\cB}
+\to \cB$ corresponding under this equivalence to the codomain
 functor, we refer to $\underline{ca{B}}$ regarded as a Cartesian
 fibration as the **codomain fibration**.
 
@@ -199,9 +199,9 @@ Codomain-fibration pullbacks .has-lift f y′ = lift-f where
 [Cartesian fibration]: Cat.Displayed.Cartesian.html
 
 Since the proof that `Slices`{.Agda} is a cartesian fibration is given
-by essentially rearranging the data of pullbacks in $\ca{B}$, we also
-have the converse implication: If $\underline{\ca{B}}$ is a Cartesian
-fibration, then $\ca{B}$ has all pullbacks.
+by essentially rearranging the data of pullbacks in $\cB$, we also
+have the converse implication: If $\underline{\cB}$ is a Cartesian
+fibration, then $\cB$ has all pullbacks.
 
 ```agda
 Codomain-fibration→pullbacks

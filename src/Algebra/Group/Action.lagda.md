@@ -22,7 +22,7 @@ A useful way to think about [groups] is to think of their elements as
 encoding "symmetries" of a particular object. For a concrete example,
 consider the group $(\bb{R}, +, 0)$ of real numbers under addition, and
 consider the unit circle^[this is _not_ the higher inductive type [$S^1$],
-but rather the usual definition of the circle as a subset of $\ca{C}$.]
+but rather the usual definition of the circle as a subset of $\cC$.]
 sitting in $\bb{C}$. Given a real number $x : \bb{R}$, we can consider
 the "action" on the circle defined by
 
@@ -49,7 +49,7 @@ identity function. Note that since $\bb{C}$ is a set, this is
 equivalently a [group homomorphism]
 
 $$
-\bb{R} \to \id{Sym}(\bb{C})\text{,}
+\bb{R} \to \rm{Sym}(\bb{C})\text{,}
 $$
 
 where the codomain is the [group of symmetries] of $\bb{C}$. But what if
@@ -62,11 +62,11 @@ we want a group $G$ to act on an object $X$ of a more general
 
 ## Automorphism groups
 
-The answer is that, for an object $X$ of some category $\ca{C}$, the
+The answer is that, for an object $X$ of some category $\cC$, the
 collection of all [isomorphisms] $X \cong X$ forms a group under
-composition, generalising the construction of $\id{Sym}(X)$ to objects
+composition, generalising the construction of $\rm{Sym}(X)$ to objects
 beyond sets! We give refer to a "self-isomorphism" as an
-**automorphism**, and denote their group by $\id{Aut}(X)$.
+**automorphism**, and denote their group by $\rm{Aut}(X)$.
 
 [isomorphisms]: Cat.Morphism.html#isos
 
@@ -87,9 +87,9 @@ module _ {o ℓ} (C : Precategory o ℓ) where
     mg .make-group.idl x = C.≅-pathp refl refl (C.idr _)
 ```
 
-Suppose we have a category $\ca{C}$, an object $X : \ca{C}$, and a group
+Suppose we have a category $\cC$, an object $X : \cC$, and a group
 $G$; A **$G$-action on $X$** is a group homomorphism $G \to
-\id{Aut}(X)$.
+\rm{Aut}(X)$.
 
 ```agda
   Action : Group ℓ → C.Ob → Type _
@@ -101,7 +101,7 @@ $G$; A **$G$-action on $X$** is a group homomorphism $G \to
 Recall that we defined the [delooping] of a [monoid] $M$ into a category
 as the category $\bf{B}M$ with a single object $\bull$, and $\hom(\bull,
 \bull) = M$. If we instead deloop a group $G$ into a group $\bf{B}G$,
-then functors $F : \bf{B}G \to \ca{C}$ correspond precisely to actions
+then functors $F : \bf{B}G \to \cC$ correspond precisely to actions
 of $G$ on the object $F(\bull)$!
 
 [delooping]: Cat.Instances.Delooping.html
@@ -134,7 +134,7 @@ of $G$ on the object $F(\bull)$!
 After constructing these functions in either direction, it's easy enough
 to show that they are inverse equivalences, but we must be careful about
 the codomain: rather than taking "$X$ with a $G$-action" for any
-particular $X$, we take the _total space_ of $\ca{C}$-objects equipped
+particular $X$, we take the _total space_ of $\cC$-objects equipped
 with $G$-actions.
 
 After this small correction, the proof is almost definitional: after

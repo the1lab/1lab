@@ -35,11 +35,11 @@ open Functor
 # Reindexing for Cartesian fibrations
 
 A [cartesian fibration] can be thought of as a [displayed category]
-$\ca{E}$ whose [fibre categories] $\ca{E}^*(b)$ depend
-([pseudo])functorially on the object $b : \ca{B}$ from the base
+$\cE$ whose [fibre categories] $\cE^*(b)$ depend
+([pseudo])functorially on the object $b : \cB$ from the base
 category. A canonical example is [the canonical self-indexing]: If
-$\ca{C}$ is a category with [pullbacks], then each $b \xto{f} a :
-\ca{C}$ gives rise to [a functor] $\ca{C}/a \to \ca{C}/b$, the _change
+$\cC$ is a category with [pullbacks], then each $b \xto{f} a :
+\cC$ gives rise to [a functor] $\cC/a \to \cC/b$, the _change
 of base_ along $f$.
 
 [cartesian fibration]: Cat.Displayed.Cartesian.html

@@ -20,9 +20,9 @@ open Functor
 
 # Locally discrete bicategories
 
-Let $\ca{C}$ be a precategory. We can define a prebicategory $\bf{C}$ by
+Let $\cC$ be a precategory. We can define a prebicategory $\bf{C}$ by
 letting the hom-1-categories of $\bf{C}$ be the [discrete categories] on
-the Hom-sets of $\ca{C}$.
+the Hom-sets of $\cC$.
 
 [discrete categories]: Cat.Instances.Discrete.html
 

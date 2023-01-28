@@ -29,17 +29,17 @@ open /-Hom
 
 # Base change
 
-Let $\ca{C}$ be a category with all [pullbacks], and $f : Y \to X$ a
-morphism in $\ca{C}$. Then we have a functor $f* : \ca{C}/X \to
-\ca{C}/Y$, called the **base change**, where the action on objects is
+Let $\cC$ be a category with all [pullbacks], and $f : Y \to X$ a
+morphism in $\cC$. Then we have a functor $f* : \cC/X \to
+\cC/Y$, called the **base change**, where the action on objects is
 given by pulling back along $f$.
 
 [pullbacks]: Cat.Diagram.Pullback.html
 
 On objects, the functor maps as in the diagram below. It's a bit busy,
 so look at it in parts: On the left we have the object $K \xto{g} X$ of
-$\ca{C}/X$, and on the right we have the whole pullback diagram, showing
-how the parts fit together. The _actual_ object of $\ca{C}/Y$ the
+$\cC/X$, and on the right we have the whole pullback diagram, showing
+how the parts fit together. The _actual_ object of $\cC/Y$ the
 functor gives is the vertical arrow $Y \times_X K \to Y$.
 
 ~~~{.quiver}

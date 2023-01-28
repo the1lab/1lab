@@ -31,15 +31,15 @@ module _
 
 # Ab-enriched functor categories
 
-Recall that, for a pair of [$\Ab$-categories] $\ca{A}$ and $\ca{B}$, we
-define the [$\Ab$-functors] between them to be the functors $F : \ca{A}
-\to \ca{B}$ which additionally preserve homwise addition[^pres-add].
+Recall that, for a pair of [$\Ab$-categories] $\cA$ and $\cB$, we
+define the [$\Ab$-functors] between them to be the functors $F : \cA
+\to \cB$ which additionally preserve homwise addition[^pres-add].
 We can, mimicking the construction of the ordinary [functor category],
-construct a category $[\ca{A}, \ca{B}]_{\Ab}$ consisting only of the
+construct a category $[\cA, \cB]_{\Ab}$ consisting only of the
 $\Ab$-functors, and prove that it is _also_ an $\Ab$-category.
 
 [^pres-add]: i.e. those functors $F$ for which, for all $a, b$, the
-$\hom$-mapping $F_{a,b} : \ca{A}(a,b) \to \ca{B}(F(a),F(b))$ extends to
+$\hom$-mapping $F_{a,b} : \cA(a,b) \to \cB(F(a),F(b))$ extends to
 a group homomorphism.
 
 [$\Ab$-categories]: Cat.Abelian.Base.html#ab-enriched-categories

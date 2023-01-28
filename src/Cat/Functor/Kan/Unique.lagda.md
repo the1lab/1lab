@@ -25,7 +25,7 @@ module Cat.Functor.Kan.Unique
 
 Since [(left) Kan extensions] are defined by a universal property (they
 are partial values of a specific [adjunction]), they are unique: When
-$\ca{D}$ is a category, then the type $\Lan_p(F)$ of left Kan extensions
+$\cD$ is a category, then the type $\Lan_p(F)$ of left Kan extensions
 of $F$ along $p$ is a proposition.
 
 [(left) Kan extensions]: Cat.Functor.Kan.html

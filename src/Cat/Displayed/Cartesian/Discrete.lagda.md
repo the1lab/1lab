@@ -32,9 +32,9 @@ open is-cartesian
 
 A **discrete fibration** is a displayed category whose [fibres] are all
 _discrete categories_: thin, univalent groupoids. Since thin, univalent
-groupoids are sets, a discrete fibration over $\ca{B}$ is an alternate
-way of encoding a presheaf over $\ca{B}$, i.e., a functor
-$\ca{B}\op\to\sets$. Here, we identify a purely fibrational property
+groupoids are sets, a discrete fibration over $\cB$ is an alternate
+way of encoding a presheaf over $\cB$, i.e., a functor
+$\cB\op\to\sets$. Here, we identify a purely fibrational property
 that picks out the discrete fibrations among the displayed categories,
 without talking about the fibres directly.
 
@@ -135,10 +135,10 @@ map $u' \to a'$.
 
 ## Fibres of discrete fibrations
 
-Let $x$ be an object of $\ca{B}$. Let us ponder the fibre $\ca{E}^*(x)$:
+Let $x$ be an object of $\cB$. Let us ponder the fibre $\cE^*(x)$:
 we know that it is strict, since by assumption there is a _set_ of
 objects over $x$. Let us show also that it is thin: imagine that we have
-two parallel, vertical arrows $f, g : a \to_\id{id} b$. These assemble
+two parallel, vertical arrows $f, g : a \to_\id b$. These assemble
 into a diagram like
 
 ~~~{.quiver}
@@ -173,7 +173,7 @@ are unique, we have $f = g$.
 
 ## Morphisms in Discrete Fibrations
 
-If $\ca{E}$ is a discrete fibration, then the only vertical morphisms
+If $\cE$ is a discrete fibration, then the only vertical morphisms
 are identities. This follows directly from lifts being contractible.
 
 ```agda
@@ -205,8 +205,8 @@ that every vertical morphism in a discrete fibration is invertible.
 
 ## Discrete Fibrations are Presheaves
 
-As noted earlier, a discrete fibration over $\ca{B}$ encodes the same
-data as a presheaf on $\ca{B}$. First, let us show that we can construct
+As noted earlier, a discrete fibration over $\cB$ encodes the same
+data as a presheaf on $\cB$. First, let us show that we can construct
 a presheaf from a discrete fibration.
 
 <!--
@@ -225,7 +225,7 @@ module _ {o ℓ} (B : Precategory o ℓ)  where
     open Discrete-fibration disc
 ```
 
-For each object in $X : \ca{B}$, we take the set of objects $E$ that
+For each object in $X : \cB$, we take the set of objects $E$ that
 lie over $X$. The functorial action of `f : Hom X Y` is then constructed
 by taking the domain of the lift of `f`. Functoriality follows by
 uniqueness of the lifts.

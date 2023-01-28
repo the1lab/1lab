@@ -21,20 +21,20 @@ private module Sb = Prebicategory (Spanᵇ (Sets ℓ) Sets-pullbacks)
 
 # Monads in Spans(Sets)
 
-Let $\ca{C}$ be a [strict category]. Whatever your favourite strict
-category might be --- it doesn't matter in this case. Let $\ca{C}_0$
-denote its set of objects, and write $\ca{C}(x, y)$ for its Hom-family.
+Let $\cC$ be a [strict category]. Whatever your favourite strict
+category might be --- it doesn't matter in this case. Let $\cC_0$
+denote its set of objects, and write $\cC(x, y)$ for its Hom-family.
 We know that families are equivalently [fibrations], so that we may define
 
 [strict category]: Cat.Instances.StrictCat.html
 [fibrations]: 1Lab.Univalence.html#object-classifiers
 
 $$
-\ca{C}_1 = \sum_{x, y : \ca{C}_0} \ca{C}(x, y)\text{,}
+\cC_1 = \sum_{x, y : \cC_0} \cC(x, y)\text{,}
 $$
 
 and, since the family is valued in $\sets$ and indexed by a set, so is
-$\ca{C}_1$. We can picture $\ca{C}_1$ together with the components of
+$\cC_1$. We can picture $\cC_1$ together with the components of
 its first projection as a _[span]_ in the category of sets
 
 [span]: Cat.Bi.Instances.Spans.html
@@ -50,13 +50,13 @@ its first projection as a _[span]_ in the category of sets
 
 Under this presentation, what does the composition operation correspond
 to? Well, it takes something in the object of _composable morphisms_, a
-certain subset of $\ca{C}_1 \times \ca{C}_1$, and yields a morphism,
-i.e. something in $\ca{C}_1$. Moreover, this commutes with taking
+certain subset of $\cC_1 \times \cC_1$, and yields a morphism,
+i.e. something in $\cC_1$. Moreover, this commutes with taking
 source/target: The source of the composition is the source of its first
 argument, and the target is the target of its second argument. The key
 observation, that will lead to a new representation of categories, is
 that the object of composable morphisms is _precisely_ the composition
-$\ca{C}_1 \circ \ca{C}_1$ in the bicategory $\ht{Span}(\sets)$!
+$\cC_1 \circ \cC_1$ in the bicategory $\ht{Span}(\sets)$!
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -74,7 +74,7 @@ $\ca{C}_1 \circ \ca{C}_1$ in the bicategory $\ht{Span}(\sets)$!
 ~~~
 
 Phrased like this, we see that the composition map gives an associative
-and unital procedure for mapping $(\ca{C}_1\ca{C}_1) \To \ca{C}_1$ in a
+and unital procedure for mapping $(\cC_1\cC_1) \To \cC_1$ in a
 certain bicategory --- a [monad] in that bicategory.
 
 [monad]: Cat.Bi.Diagram.Monad.html
@@ -184,7 +184,7 @@ span-monad→strict-category C monad = precat where
 ```
 
 The family of morphisms $\hom(x,y)$ of our recovered category is
-precisely the fibre of $(s,t) : \ca{C}_1 \to \ca{C}_0 \times \ca{C}_0$
+precisely the fibre of $(s,t) : \cC_1 \to \cC_0 \times \cC_0$
 over the pair $x, y$. The commutativity conditions for 2-cells in
 $\ht{Span}(\sets)$ implies that source and target are preserved through
 composition, and that the identity morphism --- that is, the image of

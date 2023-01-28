@@ -26,7 +26,7 @@ open Functor F public
 
 The word **bifunctor** is a term of endearment for "functors out of a
 product category". They're named after bilinear maps, to evoke the idea
-that a functor out of $\ca{C} \times_\cat \ca{D}$ is functorial in each
+that a functor out of $\cC \times_\cat \cD$ is functorial in each
 of its arguments. Correspondingly we have the operations `first`{.Agda}
 and `second`{.Agda}, altering one coordinate and leaving the other
 fixed.

@@ -402,13 +402,13 @@ Another presentation of modules, which might make more sense to some, is
 the following: In the same way that a monoid can act on a category
 (resp. a group can act on a groupoid), a ring can act on a _ringoid_: an
 [$\Ab$-category]. And, as usual, we have an adjunction: an action of $R$
-on an $\Ab$-category $\ca{A}$ can be described either as an
-$\Ab$-functor $\bf{B}(R) \to \ca{A}$, or as a ring homomorphism $R \to
-\id{Endo}_\ca{A}(x)$, where $x$ is the object being acted on.
+on an $\Ab$-category $\cA$ can be described either as an
+$\Ab$-functor $\bf{B}(R) \to \cA$, or as a ring homomorphism $R \to
+\rm{Endo}_\cA(x)$, where $x$ is the object being acted on.
 
 [$\Ab$-category]: Cat.Abelian.Base.html#ab-enriched-categories
 
-In the particular case where $\ca{A} = \Ab$ is the archetypal
+In the particular case where $\cA = \Ab$ is the archetypal
 $\Ab$-category, these actions get a fancy name: **modules**. This is
 analogous to how _monoid actions_ and _group actions_ are fancy names
 for actions on the archetypal $\sets$-category, which is $\sets$ itself.

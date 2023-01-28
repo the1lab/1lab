@@ -180,7 +180,7 @@ Now, given a set $S$, we must come up with a group $G$, with a map
 $\eta : S \to U(G)$ (in $\sets$, where $U$ is the [underlying set functor]),
 such that, for any other group $H$, any map $S \to U(H)$ can be factored
 uniquely as $S \xrightarrow{\eta} U(G) \to U(H)$. As hinted above, we
-pick $G = \id{Free}(S)$, the free group with $S$ as its set of
+pick $G = \rm{Free}(S)$, the free group with $S$ as its set of
 generators, and the universal map $\eta$ is in fact `inc`{.Agda}.
 
 [underlying set functor]: Algebra.Group.Cat.Base.html#the-underlying-set

@@ -49,10 +49,10 @@ relations, by making some components directed: This starts at the level
 of categories, where "directing" an equivalence gives us the concept of
 **adjunction**.
 
-An _equivalence of categories_ between $\ca{C}$ and $\ca{D}$ is given by
-a pair of functors $L : \ca{C} \leftrightarrows \ca{D} : R$, equipped
-with natural _isomorphisms_ $\eta : \id{Id} \cong (R \circ L)$ (the
-"unit") and $\eps : (L \circ R) \cong \id{Id}$ (the "counit"). We
+An _equivalence of categories_ between $\cC$ and $\cD$ is given by
+a pair of functors $L : \cC \leftrightarrows \cD : R$, equipped
+with natural _isomorphisms_ $\eta : \rm{Id} \cong (R \circ L)$ (the
+"unit") and $\eps : (L \circ R) \cong \rm{Id}$ (the "counit"). We
 still want the correspondence to be bidirectional, so we can't change
 the types of $R$, $L$; What we _can_ do is weaken the natural
 isomorphisms to natural _transformations_. The data of an **adjunction**
@@ -145,9 +145,9 @@ category into a posets.
 
 While we can't directly consider maps from precategories to posets, we
 _can_ consider maps from precategories to the inclusion of a poset; Let
-us write $\ca{C}$ for a generic precategory, $\ca{P}$ for a generic
-poset, and $U(\ca{P})$ for $\ca{P}$ considered as a precategory. Any
-functor $\ca{C} \to U(\ca{P})$ can be seen as "a way to turn $\ca{C}$
+us write $\cC$ for a generic precategory, $\cP$ for a generic
+poset, and $U(\cP)$ for $\cP$ considered as a precategory. Any
+functor $\cC \to U(\cP)$ can be seen as "a way to turn $\cC$
 into a poset", but not all of these can be the "most efficient" way. In
 fact, there is a vast sea of uninteresting ways to turn a precategory
 into a poset: turn them all into the [terminal] poset!
@@ -156,10 +156,10 @@ into a poset: turn them all into the [terminal] poset!
 
 A "most efficient" solution, then, would be one through which all others
 factor. A "universal" way of turning a strict precategory into a poset:
-A **universal morphism** from $\ca{C}$ to $U$. The way we think about
+A **universal morphism** from $\cC$ to $U$. The way we think about
 universal morphisms (reusing the same variables) is as [initial objects]
-in the [comma category] $\ca{C} \swarrow U$, where that category is
-conceptualised as being "the category of maps from $\ca{C}$ to $U$".
+in the [comma category] $\cC \swarrow U$, where that category is
+conceptualised as being "the category of maps from $\cC$ to $U$".
 
 [initial objects]: Cat.Diagram.Initial.html
 [comma category]: Cat.Instances.Comma.html
@@ -212,7 +212,7 @@ $L_0(x)$ to be the codomain of the universal morphism:
   L₀′ x = universal-map-for x .bot .map
 ```
 
-Given an arrow $a \to b$ in $\ca{C}$, we can send it to a
+Given an arrow $a \to b$ in $\cC$, we can send it to a
 uniquely-determined _object_ in $a \swarrow R$: We take the universal
 arrow assigned to $b$ (an object of $b \swarrow R$), and precompose with
 $a$. This object will then serve as the domain of the morphism part of
@@ -284,13 +284,13 @@ it defines a left adjoint to the $R$ we started with.
 ## Building the adjunction
 
 We now prove that $L \dashv R$, which, recall, means giving natural
-transformations $\eta : \id{Id} \To (R F\circ L)$ (the
-_adjunction unit_) and $\eps : (L \circ R) \To \id{Id}$ (the
+transformations $\eta : \rm{Id} \To (R F\circ L)$ (the
+_adjunction unit_) and $\eps : (L \circ R) \To \rm{Id}$ (the
 _adjunction counit_). We begin with the counit, since that's more
 involved.
 
 The construction begins by defining a function `mapd`{.Agda} which sends
-each object of $\ca{C}$ to the initial object in $x \swarrow R$. Note
+each object of $\cC$ to the initial object in $x \swarrow R$. Note
 that this is the same as `L₀`{.Agda}, but returning the entire object
 rather than a part of it.
 
@@ -300,14 +300,14 @@ rather than a part of it.
     mapd x = universal-map-for x .bot
 ```
 
-Now for an object $x : \ca{D}$, we have $R(x) : \ca{C}$, so by the
+Now for an object $x : \cD$, we have $R(x) : \cC$, so by the
 assumption that $R$ has a collection of universal objects, the comma
 category $R(x) \swarrow R$ has an initial object; Let us write that
 object as $(L(R(x)), !)$ --- recall that here, $! : R(x) \to RLR(x)$.
 
 This means, in particular, that for any other object $(y, f)$ (with $y
-\in \ca{D}$ and $f : R(x) \to R(y)$ in $\ca{C}$), there is a unique map
-$\id{mapd}(x) \to (y, f)$, which breaks down as a map $\beta :
+\in \cD$ and $f : R(x) \to R(y)$ in $\cC$), there is a unique map
+$\rm{mapd}(x) \to (y, f)$, which breaks down as a map $\beta :
 L(R(x)) \to y$ such that the square below commutes.
 
 ~~~{.quiver}
@@ -325,7 +325,7 @@ L(R(x)) \to y$ such that the square below commutes.
     ε x = Initial.¡ (universal-map-for (R.₀ x)) {x = record { y = x ; map = C.id }}
 ```
 
-The magic trick is that, if we pick $(x, \id{id})$ as the object of
+The magic trick is that, if we pick $(x, \id)$ as the object of
 $R(x)\swarrow R$ to map into, then $\beta$ in the diagram above must be
 $LR(x) \to x$! We choose this map as our adjunction counit. A tedious
 calculation shows that this assignment is natural, essentially because
@@ -371,7 +371,7 @@ adjunction unit to be, so.. It's `zag`{.Agda}.
   {R(x)} && {RLR(x)} \\
   \\
   && R(x)
-  \arrow["{\id{id}}"', from=1-1, to=3-3]
+  \arrow["{\id}"', from=1-1, to=3-3]
   \arrow["{!}", from=1-1, to=1-3]
   \arrow["{R(\beta)}", from=1-3, to=3-3]
 \end{tikzcd}\]
@@ -425,7 +425,7 @@ module _
 ```
 -->
 
-So, given an object $x \in \ca{C}$, we must find an object $y$ and a
+So, given an object $x \in \cC$, we must find an object $y$ and a
 universal map $x \to R(y)$. Recall that, in the previous section, we
 constructed the left adjoint $L$'s action on objects by using our system
 of universal arrows; Symmetrically, in this section, we take the codomain

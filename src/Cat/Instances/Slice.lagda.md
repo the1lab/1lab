@@ -36,10 +36,10 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 
 When working in $\sets$, there is an evident notion of _family indexed
 by a set_: a family of sets $(F_i)_{i \in I}$ is equivalently a functor
-$[\id{Disc}(I), \sets]$, where we have equipped the set $I$ with the
+$[\rm{Disc}(I), \sets]$, where we have equipped the set $I$ with the
 [discrete category] structure. This works essentially because of the
 [discrete category-global sections][coh] adjunction, but in general this
-can not be applied to other categories, like $\id{Groups}$. How,
+can not be applied to other categories, like $\rm{Groups}$. How,
 then, should we work with "indexed families" in general categories?
 
 [discrete category]: Cat.Instances.Discrete.html
@@ -57,9 +57,9 @@ collection with index $i$ can be recovered as the pullback $t^*i$.
 
 Note that, since the discussion in the preceding paragraph made no
 mention of the category of sets, it applies in any category! More
-generally, for any category $\ca{C}$ and object $c : \ca{C}$, we have a
-_category of objects indexed by $c$_, the **slice category** $\ca{C}/c$.
-An object of "the slice over $c$" is given by an object $d : \ca{C}$ to
+generally, for any category $\cC$ and object $c : \cC$, we have a
+_category of objects indexed by $c$_, the **slice category** $\cC/c$.
+An object of "the slice over $c$" is given by an object $d : \cC$ to
 serve as the domain, and a map $f : d \to c$.
 
 ```agda
@@ -140,7 +140,7 @@ says that the map $h$ "respects reindexing", or less obliquely
 ```
 -->
 
-The slice category $\ca{C}/c$ is given by the `/-Obj`{.Agda} and
+The slice category $\cC/c$ is given by the `/-Obj`{.Agda} and
 `/-Hom`{.Agda}s.
 
 ```agda
@@ -195,9 +195,9 @@ commutativity for $g \circ f$).
 
 ## Limits
 
-We discuss some limits in the slice of $\ca{C}$ over $c$. First, every
+We discuss some limits in the slice of $\cC$ over $c$. First, every
 slice category has a terminal object, given by the identity map
-$\id{id} : c \to c$.
+$\id : c \to c$.
 
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
@@ -233,8 +233,8 @@ module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
 
 Suppose we have a pullback diagram like the one below, i.e., a limit of
 the diagram $a \xrightarrow{f} c \xleftarrow{g} b$, in the category
-$\ca{C}$. We'll show that it's also a limit of the (discrete) diagram
-consisting of $f$ and $g$, but now in the slice category $\ca{C}/c$.
+$\cC$. We'll show that it's also a limit of the (discrete) diagram
+consisting of $f$ and $g$, but now in the slice category $\cC/c$.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -268,7 +268,7 @@ one will do. For definiteness, we go with the composite $f \circ \pi_1$.
 
 Now, by commutativity of the square, the maps $\pi_1$ and $\pi_2$ in the
 diagram above extend to maps $(f \circ \pi_1) \to f$ and $(f \circ
-\pi_1) \to g$ in $\ca{C}/c$. Indeed, note that by scribbling a red line
+\pi_1) \to g$ in $\cC/c$. Indeed, note that by scribbling a red line
 across the diagonal of the diagram, we get the two needed triangles as
 the induced subdivisions.
 
@@ -298,9 +298,9 @@ the induced subdivisions.
 ```
 
 Unfolding what it means for a diagram to be a universal cone over the
-discrete diagram consisting of $f$ and $g$ in the category $\ca{C}/c$,
+discrete diagram consisting of $f$ and $g$ in the category $\cC/c$,
 we see that it is exactly the data of the pullback of $f$ and $g$ in
-$\ca{C}$, as below:
+$\cC$, as below:
 
 ```agda
     is-pullback→is-fibre-product
@@ -332,14 +332,14 @@ $\ca{C}$, as below:
     is-pullback→is-fibre-product (pb .Pullback.has-is-pb)
 ```
 
-While products and terminal objects in $\ca{C}/X$ do not correspond to
-those in $\ca{C}$, _pullbacks_ (and equalisers) are precisely
-equivalent. A square is a pullback in $\ca{C}/X$ iff. the square
-consisting of their underlying objects and maps is a square in $\ca{C}$.
+While products and terminal objects in $\cC/X$ do not correspond to
+those in $\cC$, _pullbacks_ (and equalisers) are precisely
+equivalent. A square is a pullback in $\cC/X$ iff. the square
+consisting of their underlying objects and maps is a square in $\cC$.
 
 The "if" direction (what is `pullback-above→pullback-below`{.Agda}) in
 the code is essentially an immediate consequence of the fact that
-equality of morphisms in $\ca{C}/X$ may be tested in $\ca{C}$, but we do
+equality of morphisms in $\cC/X$ may be tested in $\cC$, but we do
 have to take some care when extending the "limiting" morphism back down
 to the slice category (see the calculation marked `{- * -}`{.Agda}).
 
@@ -413,7 +413,7 @@ We shall prove that the functor `Total-space`{.Agda}, defined below, is
 an equivalence of categories, i.e. that it is fully faithful and
 essentially surjective. But first, we must define the functor! Like its
 name implies, it maps the functor $F : I → \sets$ to the first
-projection map $\id{fst} : \sum F \to I$.
+projection map $\rm{fst} : \sum F \to I$.
 
 ```agda
   Total-space : Functor Cat[ Disc′ I , Sets ℓ ] (Slice (Sets ℓ) I)
@@ -429,8 +429,8 @@ projection map $\id{fst} : \sum F \to I$.
 
 To prove that the `Total-space`{.Agda} functor is `fully faithful`{.Agda
 ident=is-fully-faithful}, we will exhibit a quasi-inverse to its action
-on morphisms. Given a fibre-preserving map between $\id{fst} : \sum
-F \to I$ and $\id{fst} : \sum G \to I$, we recover a natural
+on morphisms. Given a fibre-preserving map between $\rm{fst} : \sum
+F \to I$ and $\rm{fst} : \sum G \to I$, we recover a natural
 transformation between $F$ and $G$. The hardest part is showing
 naturality, where we use path induction.
 
@@ -493,9 +493,9 @@ an isomorphism directly, though it does involve an appeal to univalence.
 # Slices preserve univalence
 
 An important property of slice categories is that they preserve
-[univalence]. This can be seen intuitively: If $\ca{C}$ is a univalent
+[univalence]. This can be seen intuitively: If $\cC$ is a univalent
 category, then let $a, b, c$ be some objects, with the pairs $(a, f)$
-and $(b, g)$ objects in the slice $\ca{C}/c$. An isomorphism $h : (a, f)
+and $(b, g)$ objects in the slice $\cC/c$. An isomorphism $h : (a, f)
 \cong (b, g)$ induces an identification $a \equiv b$, which extends to
 an identification $(a, f) \equiv (b, g)$ since $h \circ g = f$.
 
@@ -523,7 +523,7 @@ module _ {C : Precategory o ℓ} {o : Precategory.Ob C} (isc : is-category C) wh
 
 # Arbitrary limits in slices
 
-Suppose we have some really weird diagram $F : \ca{J} \to \ca{C}/c$,
+Suppose we have some really weird diagram $F : \cJ \to \cC/c$,
 like the one below.  Well, alright, it's not that weird, but it's not a
 pullback or a terminal object, so we don't _a priori_ know how to
 compute it.
@@ -541,7 +541,7 @@ compute it.
 The observation that will let us compute a limit for this diagram is
 inspecting the computation of products in slice categories, above. To
 compute the product of $(a, f)$ and $(b, g)$, we had to pass to a
-_pullback_ of $a \xto{f} c \xot{b}$ in $\ca{C}$ --- which we had assumed
+_pullback_ of $a \xto{f} c \xot{b}$ in $\cC$ --- which we had assumed
 exists. But! Take a look at what that diagram _looks like_:
 
 ~~~{.quiver}
@@ -557,7 +557,7 @@ exists. But! Take a look at what that diagram _looks like_:
 We "exploded" a diagram of shape $\bullet \quad \bullet$ to one of shape
 $\bullet \to \bullet \ot \bullet$. This process can be described in a
 way easier to generalise: We "exploded" our diagram $F : \{*,*\} \to
-\ca{C}/c$ to one indexed by a category which contains $\{*,*\}$,
+\cC/c$ to one indexed by a category which contains $\{*,*\}$,
 contains an extra point, and has a unique map between each object of
 $\{*,*\}$ --- the [_join_] of these categories.
 
@@ -585,9 +585,9 @@ module
 ```
 -->
 
-Generically, if we have a diagram $F : J \to \ca{C}/c$, we can "explode"
-this into a diagram $F' : (J \star \{*\}) \to \ca{C}$, compute the limit
-in $\ca{C}$, then pass back to the slice category.
+Generically, if we have a diagram $F : J \to \cC/c$, we can "explode"
+this into a diagram $F' : (J \star \{*\}) \to \cC$, compute the limit
+in $\cC$, then pass back to the slice category.
 
 ```agda
     F′ : Functor (J ⋆ ⊤Cat) C
@@ -642,7 +642,7 @@ in $\ca{C}$, then pass back to the slice category.
         uniq = cont.paths c′
 ```
 
-In particular, if a category $\ca{C}$ is complete, then so are its slices:
+In particular, if a category $\cC$ is complete, then so are its slices:
 
 ```agda
 is-complete→slice-is-complete

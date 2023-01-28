@@ -215,7 +215,7 @@ diagonal {A} = fc.products A A .⟨_,_⟩ id id
 ```
 
 That the diagonal morphism is monic follows from the following
-calculation, where we use that $\id{id} = \pi_1 \circ \Delta$.
+calculation, where we use that $\id = \pi_1 \circ \Delta$.
 
 ```agda
 diagonal-is-monic : ∀ {A} → is-monic (diagonal {A})
@@ -350,7 +350,7 @@ Understanding the transitivity map is left as an exercise to the reader.
 
 # Quotient objects
 
-Let $m : R \mono A \times A$ be a congruence on $A$. If $\ca{C}$ has a
+Let $m : R \mono A \times A$ be a congruence on $A$. If $\cC$ has a
 coequaliser $q : A \epi A/R$ for the composites $R \mono A \times A \to
 A$, then we call $q$ the **quotient map**, and we call $A/R$ the
 **quotient** of $R$.

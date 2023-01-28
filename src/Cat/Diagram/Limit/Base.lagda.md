@@ -53,7 +53,7 @@ It'll be helpful to think of the maps as projections - which is why
 they're labelled with the greek letter $\pi$, for **p**rojection.
 However, for an arbitrary cone, the maps are.. well, arbitrary.  To
 consider a concrete example, we can pretend our diagram was in
-$\id{Set}$ all along, and that $A$ was the set $\bb{Q}$ and $B$
+$\rm{Set}$ all along, and that $A$ was the set $\bb{Q}$ and $B$
 was the set $\bb{R}$. Then the following is a cone over it:
 
 ~~~{.quiver .short-1}
@@ -98,10 +98,10 @@ The limit over a discrete diagram is called a **product**, and it's
 important to note that the diagram need not be finite. Here are concrete
 examples of products in categories:
 
-- In $\id{Sets}$, the limit is the _Cartesian product_ of the objects
+- In $\rm{Sets}$, the limit is the _Cartesian product_ of the objects
 of the diagram, and the arrows are the projections onto the factors.
 
-- In $\id{Top}$, the limit is the _product space_ of the objects,
+- In $\rm{Top}$, the limit is the _product space_ of the objects,
 and the arrows are projections, considered as continuous maps. The
 product topology can be defined as the coarsest topology that makes the
 projections continuous.
@@ -333,9 +333,9 @@ module _ {o₁ h₁ o₂ h₂ o₃ h₃ : _}
 # Preservation of limits
 
 Since a cone is, in particular, a commutative diagram, and every functor
-preserves commutativity of diagrams, a functor $F : \ca{C} \to \ca{D}$
-acts on a cone over $\id{Dia}$ (in $\ca{C}$), sending it to a cone over
-$F \circ \id{Dia}$ (in $\ca{D}$).
+preserves commutativity of diagrams, a functor $F : \cC \to \cD$
+acts on a cone over $\rm{Dia}$ (in $\cC$), sending it to a cone over
+$F \circ \rm{Dia}$ (in $\cD$).
 
 ```agda
   F-map-cone : Cone Dia → Cone (F F∘ Dia)
@@ -347,7 +347,7 @@ $F \circ \id{Dia}$ (in $\ca{D}$).
 
 ```
 
-Note that this also lets us map morphisms between cones into $\ca{D}$.
+Note that this also lets us map morphisms between cones into $\cD$.
 
 ```agda
   F-map-cone-hom
@@ -367,19 +367,19 @@ Note that this also lets us map morphisms between cones into $\ca{D}$.
         F .F₁ (X.ψ _)                   ∎
 ```
 
-Suppose you have a limit $L$ of $\id{Dia}$ --- which is, to reiterate, a
-terminal object in the category of cones over $\id{Dia}$. We say that
+Suppose you have a limit $L$ of $\rm{Dia}$ --- which is, to reiterate, a
+terminal object in the category of cones over $\rm{Dia}$. We say that
 $F$ *preserves $L$* if $F(L)$, as defined right above, is a terminal
-object in the category of cones over $F \circ \id{Dia}$.
+object in the category of cones over $F \circ \rm{Dia}$.
 
 ```agda
   Preserves-limit : Cone Dia → Type _
   Preserves-limit K = is-limit Dia K → is-limit (F F∘ Dia) (F-map-cone K)
 ```
 
-This definition is necessary because $\ca{D}$ will not, in general,
+This definition is necessary because $\cD$ will not, in general,
 possess an operation assigning a limit to every diagram --- therefore,
-there might not be a "canonical limit" of $F\circ\id{Dia}$ we could
+there might not be a "canonical limit" of $F\circ\rm{Dia}$ we could
 compare $F(L)$ to. However, since limits are described by a universal
 property (in particular, being terminal), we don't _need_ such an
 object! Any limit is as good as any other.
@@ -393,8 +393,8 @@ Using our analogy from before, we say a functor _reflects_ limits
 if it takes limiting cones "downstairs" to limiting cones "upstairs".
 
 More concretely, if we have some limiting cone in
-$\ca{D}$ of $F \circ \id{Dia}$ with apex $F(a)$, then $a$ was
-_already the limit_ of $\id{Dia}$!
+$\cD$ of $F \ci\rm{Dia}ia}$ with apex $F(a)$, then $a$ was
+_already the limit_ of $\rm{Dia}$!
 
 ```agda
   Reflects-limit : Cone Dia → Type _
@@ -403,10 +403,10 @@ _already the limit_ of $\id{Dia}$!
 
 ## Creation of limits
 
-Finally, we say a functor _creates_ limits of shape $\id{Dia}$ if it
+Finally, we say a functor _creates_ limits of shape $\rm{Dia}$ if it
 both preserves _and_ reflects those limits. Intuitively, this means that
-the limits of shape $\id{Dia}$ in $\ca{C}$ are in a 1-1 correspondence
-with the limits $F \circ \id{Dia}$ in $\ca{D}$.
+the limits of shape $\rm{Dia}$ in $\cC$ are in a 1-1 correspondence
+with the limits $F \circ \rm{Dia}$ in $\cD$.
 
 ```agda
   record Creates-limit (K : Cone Dia) : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
@@ -485,7 +485,7 @@ To show that $g$ is an inverse to $f$, consider the composition $g \circ
 f$ (the other case is symmetric): It is a map $g \circ f : X \to X$.
 Since $X$ is a terminal object, we have that the space of cone
 homomorphisms $X \to X$ is contractible - and thus any two such maps are
-equal. Thus, $g \circ f = \id{id}_{X} : X \to X$.
+equal. Thus, $g \circ f = \id_{X} : X \to X$.
 
 ```agda
     f∘g≡id : (f Cones.∘ g) ≡ Cones.id

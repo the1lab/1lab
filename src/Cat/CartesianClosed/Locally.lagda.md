@@ -25,7 +25,7 @@ open /-Hom
 
 # Locally Cartesian Closed Categories
 
-A [finitely complete] category $\ca{C}$ is said to be **locally
+A [finitely complete] category $\cC$ is said to be **locally
 Cartesian closed** when each of its [slice categories] is [Cartesian
 closed]. In practice, though, it is easier to express this property in
 terms of a certain family of functors existing.
@@ -34,9 +34,9 @@ terms of a certain family of functors existing.
 [slice categories]: Cat.Instances.Slice.html
 [Cartesian closed]: Cat.CartesianClosed.Base.html
 
-A [finitely complete] category $\ca{C}$ is **locally cartesian closed**
-when each of its [base change] functors $f^* : \ca{C}/x \to \ca{C}/y$
-admit a [right adjoint] $\prod_f : \ca{C}/y \to \ca{C}/x$, called the
+A [finitely complete] category $\cC$ is **locally cartesian closed**
+when each of its [base change] functors $f^* : \cC/x \to \cC/y$
+admit a [right adjoint] $\prod_f : \cC/y \to \cC/x$, called the
 **dependent sum**, thus extending the existing dependent sum-base change
 adjunction to an adjoint triple
 
@@ -64,9 +64,9 @@ record is-lcc {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
     f*⊣Πf : ∀ {a b} (f : Hom a b) → base-change f ⊣ Πf f
 ```
 
-Note that the slices of a finitely complete category $\ca{C}$ are
-automatically Cartesian categories, since products in $\ca{C}/a$ are
-computed as pullbacks in $\ca{C}$.
+Note that the slices of a finitely complete category $\cC$ are
+automatically Cartesian categories, since products in $\cC/a$ are
+computed as pullbacks in $\cC$.
 
 ```agda
   module /-Prods (a : Ob) = Cartesian (Slice C a)
@@ -75,7 +75,7 @@ computed as pullbacks in $\ca{C}$.
 
 ## Internal homs
 
-We now calculate that each slice of $\ca{C}$ is a [cartesian closed
+We now calculate that each slice of $\cC$ is a [cartesian closed
 category], by exhibiting a right adjoint each of their product functors.
 
 [cartesian closed category]: Cat.CartesianClosed.Base.html
@@ -100,11 +100,11 @@ module _ {o ℓ} {C : Precategory o ℓ} (lcc : is-lcc C) where
     { top  = cut (C .Precategory.id) ; has⊤ = Slice-terminal-object }
 ```
 
-For a map $f : x \to a$, the internal hom functor $[f,-]$ in $\ca{C}/a$
+For a map $f : x \to a$, the internal hom functor $[f,-]$ in $\cC/a$
 is given by the composite
 
 $$
-\ca{C}/a \xto{f^*} \ca{C}/x \xto {\prod_f} \ca{C}/a
+\cC/a \xto{f^*} \cC/x \xto {\prod_f} \cC/a
 $$
 
 ```agda
@@ -112,11 +112,11 @@ $$
 ```
 
 To prove that this is a right adjoint, we use that [adjunctions compose]
-and re-express the Cartesian product functor in $\ca{C}/a$ as the
+and re-express the Cartesian product functor in $\cC/a$ as the
 composite
 
 $$
-\ca{C}/a \xto{f^*} \ca{C}/x \xto {\sum_f} \ca{C}/a
+\cC/a \xto{f^*} \cC/x \xto {\sum_f} \cC/a
 $$
 
 We then have, since $\sum_f \dashv f^*$ and $f^* \dashv \prod_f$, the

@@ -44,9 +44,9 @@ corresponding generalisation of sheaves on a space. Instead of directly
 defining the notion of site, we will leave it implicitly, and define a
 **topos** as follows:
 
-A **topos** $\ca{T}$ is a [full subcategory] of a [presheaf category]
-$[\ca{C}\op,\sets]$ (the category $\ca{C}$ is part of the definition)
-such that the inclusion functor $\iota : \ca{T} \mono [\ca{C}\op,\sets]$
+A **topos** $\cT$ is a [full subcategory] of a [presheaf category]
+$[\cC\op,\sets]$ (the category $\cC$ is part of the definition)
+such that the inclusion functor $\iota : \cT \mono [\cC\op,\sets]$
 admits a [left adjoint], and this left adjoint preserves [finite
 limits]. We summarise this situation in the diagram below, where "lex"
 (standing for "**l**eft **ex**act") is old-timey speak for "finite limit
@@ -76,16 +76,16 @@ $\kappa$-small sites.
 [$\kappa$-small]: 1Lab.intro.html#universes-and-size-issues
 
 Fix a universe level $\kappa$, and consider the category $\sets_\kappa$:
-A topos $\ca{T}$ might be a large category (i.e. it might have a space
+A topos $\cT$ might be a large category (i.e. it might have a space
 of objects $o$ with $o > \kappa$), but it is _essentially locally
 small_, since it admits a fully-faithful functor into
-$[\ca{C}\op,\sets_\kappa]$, which have homs at level $\kappa$. Hence,
-even if we allowed the category $\ca{T}$ to have $\hom$s at a level
+$[\cC\op,\sets_\kappa]$, which have homs at level $\kappa$. Hence,
+even if we allowed the category $\cT$ to have $\hom$s at a level
 $\ell$, we would have no more information there than fits in $\kappa$.
 
-For this reason, a topos $\ca{C}$ only has two levels: The level $o$ of
+For this reason, a topos $\cC$ only has two levels: The level $o$ of
 its objects, and the level $\kappa$ of the category of Sets relative to
-which $\ca{C}$ is a topos.
+which $\cC$ is a topos.
 
 [universes]: 1Lab.Type.html
 
@@ -145,8 +145,8 @@ subframe of its powerset $[X,\props]$ --- a collection of subsets of
 $X$, closed under finite meets and arbitrary joins.
 
 Now, the notion of "topos" as a generalisation of that of "topological
-space" is essentially self-evident: A topos $\ca{T}$ is a sub-topos of a
-presheaf category $[\ca{C}\op,\sets]$. We have essentially categorified
+space" is essentially self-evident: A topos $\cT$ is a sub-topos of a
+presheaf category $[\cC\op,\sets]$. We have essentially categorified
 "subframe" into "subtopos", and $\props$ into $\sets$. Note that, while
 this seems circular ("a topos is a sub-topos of..."), the notion of
 subtopos --- or rather, of **geometric embedding** --- makes no mention
@@ -156,16 +156,16 @@ of actual topoi, and makes sense for any pair of categories.
 
 Another perspective on topoi is that they are _categories of_ spaces,
 rather than spaces themselves. We start by looking at presheaf topoi,
-$[\ca{C}\op,\sets]$. The [coyoneda lemma] tells us that every presheaf
+$[\cC\op,\sets]$. The [coyoneda lemma] tells us that every presheaf
 is a colimit of representables, which can be restated in less abstract
 terms by saying that _presheaves are instructions for gluing together
-objects of $\ca{C}$._ The objects of $\ca{C}$ are then interpreted as
-"primitive shapes", and the maps in $\ca{C}$ are interpreted as "maps to
+objects of $\cC$._ The objects of $\cC$ are then interpreted as
+"primitive shapes", and the maps in $\cC$ are interpreted as "maps to
 glue against".
 
 [coyoneda lemma]: Cat.Functor.Hom.html#the-coyoneda-lemma
 
-Let's make this more concrete by considering an example: Take $\ca{C} =
+Let's make this more concrete by considering an example: Take $\cC =
 \bull \tto \bull$, the category with two points --- let's
 call them $V$ and $E$ --- and two arrows $s, t : V \to E$. A presheaf
 $F$ on this category is given by a set $F_0(V)$, a set $F_0(E)$, and two
@@ -184,7 +184,7 @@ of" an edge.
 
 ## As "logically nice" categories
 
-The definition of topos implies that any topos $\ca{T}$ enjoys many of
+The definition of topos implies that any topos $\cT$ enjoys many of
 the same categorical properties of the category $\sets$ (see
 [below](#properties-of-topoi)). Topoi are [complete] and [cocomplete], [cartesian
 closed] (even [locally so]) --- colimits are stable under pullback,
@@ -210,21 +210,21 @@ congruence.
 
 In fact, this is essentially the _definition of_ a topos. The actual
 definition, as a lex [reflective subcategory] of a presheaf category,
-essentially ensures that the category $\ca{T}$ inherits the nice logical
+essentially ensures that the category $\cT$ inherits the nice logical
 properties of $\sets$ (through the presheaf category, which is _also_
 very nice logically).
 
 [reflective subcategory]: Cat.Functor.Adjoint.Reflective.html
 
 **Terminology**: As was implicitly mentioned above, for a topos $L :
-\ca{T} \xadj{}{} \psh(\ca{C})$, we call the category $\ca{C}$ the **site
-of definition**. Objects in $\ca{T}$ are called **sheaves**, and the
+\cT \xadj{}{} \psh(\cC)$, we call the category $\cC$ the **site
+of definition**. Objects in $\cT$ are called **sheaves**, and the
 functor $L$ is called **sheafification**. Maps between topoi are called
 **geometric morphisms**, and will be defined below. We denote the
 2-category of topoi, geometric morphisms and natural transformations by
-$\topos$, following Johnstone. When $\psh(\ca{C})$ is regarded as a topos
+$\topos$, following Johnstone. When $\psh(\cC)$ is regarded as a topos
 unto itself, rather than an indirection in the definition of a sheaf
-topos, we call it the **topos of $\ca{C}$-sets**.
+topos, we call it the **topos of $\cC$-sets**.
 
 # Examples
 
@@ -388,13 +388,13 @@ Presheaf {κ} C = psh where
 
 # Properties of topoi
 
-The defining property of a topos $\ca{T}$ is that it admits a
+The defining property of a topos $\cT$ is that it admits a
 geometric embedding into a presheaf category, meaning the adjunction
-$L : \ca{T} \xadj{}{} \psh(\ca{C}) : \iota$ is very special indeed: Since
+$L : \cT \xadj{}{} \psh(\cC) : \iota$ is very special indeed: Since
 the right adjoint is fully faithful, the adjunction is [monadic],
-meaning that it exhibits $\ca{T}$ as the category of [algebras] for
+meaning that it exhibits $\cT$ as the category of [algebras] for
 a (lex, idempotent) monad: the "sheafification monad". This gives us
-completeness in $\ca{T}$ for "free" (really, it's because presheaf
+completeness in $\cT$ for "free" (really, it's because presheaf
 categories are complete, and those are complete because $\sets$ is.)
 
 ```agda
@@ -418,11 +418,11 @@ module _ {o κ} {𝓣 : Precategory o κ} (T : Topos κ 𝓣) where
 [algebras]: Cat.Diagram.Monad.html#algebras-over-a-monad
 
 Furthermore, since $L$ preserves colimits (it is a left adjoint), then
-we can compute the colimit of some diagram $F : J \to \ca{T}$ as the
-colimit (in $\psh(\ca{C})$) of $\iota F$ --- which exists because
+we can compute the colimit of some diagram $F : J \to \cT$ as the
+colimit (in $\psh(\cC)$) of $\iota F$ --- which exists because
 $\sets$ is cocomplete --- then apply $L$ to get a colimiting cocone for
 $L \iota F$. But the counit of the adjunction $\eps : L \iota \To
-\id{Id}$ is a natural isomorphism, so we have a colimiting cocone for
+\rm{Id}$ is a natural isomorphism, so we have a colimiting cocone for
 $F$.
 
 ```agda
@@ -442,7 +442,7 @@ $F$.
 
 Since the reflector is left exact, and thus in particular preserves
 finite products, a theorem of Johnstone (Elephant A4.3.1) implies the
-topos $\ca{T}$ is an _exponential ideal_ in $\psh(\ca{C})$: If $Y$ is a
+topos $\cT$ is an _exponential ideal_ in $\psh(\cC)$: If $Y$ is a
 sheaf, and $X$ is any presheaf, then the internal hom $[X,Y]$ is a
 sheaf: topoi are [cartesian closed].
 
@@ -458,11 +458,11 @@ same sense that representables generate presheaves: In fact, the
 generating set of a Grothendieck topos is exactly the set of
 representables of its site!
 
-Elaborating, letting $\ca{T}$ be a topos, two maps $f, g : X \to Y \in
-\ca{T}$ are equal if and only if they are equal under $\iota$, i.e. as
+Elaborating, letting $\cT$ be a topos, two maps $f, g : X \to Y \in
+\cT$ are equal if and only if they are equal under $\iota$, i.e. as
 maps of presheaves. But it follows from the [coyoneda lemma] that maps
 of presheaves are equal if and only if they are equal on all
-representables. Consequently, two maps in a $\ca{T}$ are equal if and
+representables. Consequently, two maps in a $\cT$ are equal if and
 only if they agree on all generalised elements with domain the
 sheafification of a representable:
 
@@ -519,8 +519,8 @@ module _ {o ℓ} {C : Precategory o ℓ} (ct : Topos ℓ C) where
 
 Finally, the property of "being a topos" is invariant under slicing.
 More specifically, since a given topos can be presented by different
-sites, a presentation $\ca{T} \xadj{}{} \psh(\ca{C})$ can be sliced
-under an object $X \in \ca{T}$ to present $\ca{T}/X$ as a sheaf topos,
+sites, a presentation $\cT \xadj{}{} \psh(\cC)$ can be sliced
+under an object $X \in \cT$ to present $\cT/X$ as a sheaf topos,
 with site of definition $\psh(\int \iota(X))$. This follows from a
 wealth of pre-existing theorems:
 
@@ -531,7 +531,7 @@ geometric embedding gives a geometric embedding.
 
 [sliced]: Cat.Functor.Slice.html
 
-- The category $\psh(\ca{C})/\iota(X)$ [is equivalent to] the category
+- The category $\psh(\cC)/\iota(X)$ [is equivalent to] the category
 $\psh(\int \iota(X))$, hence "being a presheaf topos is stable under
 slicing". Furthermore, this equivalence is part of an ambidextrous
 adjunction, hence both functors preserve limits.
@@ -555,9 +555,9 @@ module _ {o ℓ} {C : Precategory o ℓ} (T : Topos ℓ C) (X : Precategory.Ob C
 ```
 -->
 
-We build the geometric embedding presenting $\ca{T}/X$ as a topos by
+We build the geometric embedding presenting $\cT/X$ as a topos by
 composing the adjunctions $\epsilon_!(L/\iota(X)) \dashv \iota/X$
-and $F \dashv F^{-1}$ --- where $F$ is the equivalence $\psh(\ca{C})/X
+and $F \dashv F^{-1}$ --- where $F$ is the equivalence $\psh(\cC)/X
 \to \psh(\int X)$. The right adjoint is fully faithful because it
 composes two fully faithful functors (a slice of $\iota$ and an
 equivalence), the left adjoint preserves finite limits because it is a
@@ -626,7 +626,7 @@ open Geom[_,_] public
 
 Computation establishes that the identity functor is left exact, and
 self adjoint, so it is in particular both the direct and inverse image
-parts of a geometric morphism $\ca{T} \to \ca{T}$.
+parts of a geometric morphism $\cT \to \cT$.
 
 ```agda
 Idg : Geom[ E , E ]
@@ -685,8 +685,8 @@ An important class of geometric morphism is the **geometric embedding**,
 which we've already met as the very definition of `Topos`{.Agda}. These
 are the geometric morphisms with fully faithful direct image. These are
 _again_ closed under composition, so if we want to exhibit that a
-certain category $\ca{C}$ is a topos, it suffices to give a geometric
-embedding $\ca{C} \to \ca{T}$, where $\ca{T}$ is some topos which is
+certain category $\cC$ is a topos, it suffices to give a geometric
+embedding $\cC \to \cT$, where $\cT$ is some topos which is
 convenient for this application.
 
 ```agda

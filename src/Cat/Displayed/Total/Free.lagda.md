@@ -16,18 +16,18 @@ module Cat.Displayed.Total.Free
 
 # Free objects in total categories
 
-When the \r{total category} of a \r{displayed category} $\ca{E}
-\liesover \ca{B}$ is being regarded as a _category of structured
-$\ca{B}$-objects_, a natural question to consider is whether any object
-$x : \ca{B}$ can be equipped with a _free_ $\ca{E}$ structure --- in the
+When the \r{total category} of a \r{displayed category} $\cE
+\liesover \cB$ is being regarded as a _category of structured
+$\cB$-objects_, a natural question to consider is whether any object
+$x : \cB$ can be equipped with a _free_ $\cE$ structure --- in the
 sense of having a \r{left adjoint} to the projection functor $\pi^f :
-\int\ca{E} \to \ca{B}$.
+\int\cE \to \cB$.
 
 The displayed formulation admits a particularly nice phrasing of the
 condition for "having free objects". To wit: a **system of free
-objects** for a displayed category $\ca{E}$ is a section $F$ of the
+objects** for a displayed category $\cE$ is a section $F$ of the
 displayed object space --- a function assigning objects $F(x) :
-\ca{E}^*x$ to objects $x : \ca{B}$ --- having the property that these
+\cE^*x$ to objects $x : \cB$ --- having the property that these
 are "initial" among displayed maps:
 
 
@@ -51,7 +51,7 @@ module
   where
 ```
 
-For any base morphism $x \xto{f} y : \ca{B}$ and displayed object $y'
+For any base morphism $x \xto{f} y : \cB$ and displayed object $y'
 \liesover y$, there must be a contractible space of morphisms $F(x)
 \to_{f} y'$ over $f$. The elegance of this definition speaks to the
 strength of the displayed framework for considering structured

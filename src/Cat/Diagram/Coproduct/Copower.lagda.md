@@ -12,7 +12,7 @@ module Cat.Diagram.Coproduct.Copower where
 
 # Copowers
 
-Let $\ca{C}$ be a category admitting [$\kappa$-small] [indexed
+Let $\cC$ be a category admitting [$\kappa$-small] [indexed
 coproducts], for example a $\kappa$-[cocomplete] category. In the same
 way that (in ordinary arithmetic) the iterated product of a bunch of
 copies of the same factor
@@ -28,9 +28,9 @@ $$
 is called a "power", we refer to the coproduct $\coprod_{X} A$ of many
 copies of an object $X$ indexed by a $\kappa$-small set $X$ as the
 **copower** of $A$ by $X$, and alternatively denote it $X \otimes A$. If
-$\ca{C}$ does indeed admit coproducts indexed by _any_ $\kappa$-small
+$\cC$ does indeed admit coproducts indexed by _any_ $\kappa$-small
 set, then the copowering construction extends to a functor $\sets_\kappa
-\times \ca{C} \to \ca{C}$.
+\times \cC \to \cC$.
 
 The notion of copowering gives us slick terminology for a category which
 admits all $\kappa$-small coproducts, but not necessarily all

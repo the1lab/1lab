@@ -18,10 +18,10 @@ open Functor
 
 # Comma categories
 
-The **comma category** of two functors $F : \ca{A} \to \ca{C}$ and $G :
-\ca{B} \to \ca{C}$ with common codomain, written $F \downarrow G$, is
+The **comma category** of two functors $F : \cA \to \cC$ and $G :
+\cB \to \cC$ with common codomain, written $F \downarrow G$, is
 the directed, bicategorical analogue of a [pullback] square. It consists
-of maps in $\ca{C}$ which all have their domain in the image of $F$, and
+of maps in $\cC$ which all have their domain in the image of $F$, and
 codomain in the image of $G$.
 
 [pullback]: Cat.Diagram.Pullback.html
@@ -40,8 +40,8 @@ _up to a natural transformation_ $\theta$. Note the similarity with a
   \mathcal{B}     && \mathcal{C}
   \arrow["F", from=1-3, to=3-3]
   \arrow["G"', from=3-1, to=3-3]
-  \arrow["{\id{dom}}", from=1-1, to=1-3]
-  \arrow["{\id{cod}}"', from=1-1, to=3-1]
+  \arrow["{\rm{dom}}", from=1-1, to=1-3]
+  \arrow["{\rm{cod}}"', from=1-1, to=3-1]
   \arrow["\theta"{description}, Rightarrow, from=1-1, to=3-3]
 \end{tikzcd}\]
 ~~~
@@ -66,7 +66,7 @@ module
 -->
 
 The objects in $F \downarrow G$ are given by triples $(x, y, f)$ where
-$x : \ca{A}$, $y : \ca{B}$, and $f : F(x) \to G(y)$.
+$x : \cA$, $y : \cB$, and $f : F(x) \to G(y)$.
 
 ```agda
   record ↓Obj : Type (h ⊔ ao ⊔ bo) where

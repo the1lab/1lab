@@ -31,10 +31,10 @@ open Total-hom
 # Univalence for displayed categories
 
 We provide equivalent characterisations of univalence for categories
-$\ca{E}$ which are displayed over a univalent category $\ca{B}$.
+$\cE$ which are displayed over a univalent category $\cB$.
 
-We say a displayed category $\ca{E}$ is **univalent** when, for any $f :
-x \cong y$ in $\ca{B}$ and object $A$ over $x$, the space of "objects
+We say a displayed category $\cE$ is **univalent** when, for any $f :
+x \cong y$ in $\cB$ and object $A$ over $x$, the space of "objects
 over $y$ isomorphic to $A$ over $f$" is a proposition.
 
 ```agda
@@ -44,7 +44,7 @@ is-category-displayed =
 ```
 
 This condition is sufficient for the total category $\int E$ to be
-univalent, if $\ca{B}$ is, too. The proof of this is a bit nasty, so
+univalent, if $\cB$ is, too. The proof of this is a bit nasty, so
 we'll break it down into parts. Initially, observe that the type of
 isomorphisms $(x, A) \cong (y, B)$ in $\int E$ is equivalent to the type
 
@@ -89,7 +89,7 @@ the identity (vertical) isomorphism.
 
 We can now use _isomorphism induction_ in the base category to reduce
 the general case to `contract-vertical-iso`{.Agda} above. To wit: If $p
-: x \cong y$ is an arbitrary isomorphism (in $\ca{B}$), it suffices to
+: x \cong y$ is an arbitrary isomorphism (in $\cB$), it suffices to
 consider the case where $y = x$ and $p$ is the identity. Here, $p$ is
 the isomorphism of first components coming from the isomorphism in $\int E$.
 

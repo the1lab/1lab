@@ -52,11 +52,11 @@ adjunction
 ~~~
 
 When this is the case, we refer to the left adjoint functor $L$ as the
-**reflector**, and $\iota$ exhibits $\ca{C}$ as a **reflective
-subcategory** of $\ca{D}$. Reflective subcategory inclusions are of
+**reflector**, and $\iota$ exhibits $\cC$ as a **reflective
+subcategory** of $\cD$. Reflective subcategory inclusions are of
 particular importance because they are [monadic functors]: They exhibit
-$\ca{C}$ as the category of algebras for an (idempotent) monad on
-$\ca{D}$.
+$\cC$ as the category of algebras for an (idempotent) monad on
+$\cD$.
 
 [monadic functors]: Cat.Functor.Adjoint.Monadic.html
 

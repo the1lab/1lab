@@ -25,7 +25,7 @@ private
 
 # Uniqueness of adjoints
 
-Let $F : \ca{C} \to \ca{D}$ be a functor participating in two
+Let $F : \cC \to \cD$ be a functor participating in two
 \r{adjunctions} $F \dashv G$ and $F \dashv G'$. Using the data from both
 adjunctions, we can exhibit a natural isomorphism $G \cong G'$, which
 additionally preserves the unit and counit: Letting $\gamma$, $\delta$
@@ -110,7 +110,7 @@ natural transformations is a matter of calculating:
       ε′ _                                   ∎
 ```
 
-If the codomain category $\ca{C}$ is furthermore univalent, so that
+If the codomain category $\cC$ is furthermore univalent, so that
 natural isomorphisms are an identity system on the functor category $[D,
 C]$, we can upgrade the isomorphism $G \cong G'$ to an identity $G
 \equiv G$, and preservation of the adjunction data means this identity
@@ -165,8 +165,8 @@ is-left-adjoint-is-prop cc F (G , a) (G′ , a′) i = G≡G′ cd i , a≡a′ 
 ```
 -->
 
-As a corollary, we conclude that, for a functor $F : \ca{C} \to \ca{D}$
-from a univalent category $\ca{C}$, "being an equivalence of categories"
+As a corollary, we conclude that, for a functor $F : \cC \to \cD$
+from a univalent category $\cC$, "being an equivalence of categories"
 is a proposition.
 
 ```agda

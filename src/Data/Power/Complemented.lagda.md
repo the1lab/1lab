@@ -39,7 +39,7 @@ is _decidable_ if its associated predicate is pointwise a decidable
 type. It turns out that these conditions are equivalent: a subobject is
 decidable if, and only if, it is complemented. It's immediate that
 decidable subobjects are complemented: given a decision procedure $p$,
-the fibres $p^*(\id{yes}(x))$ and $p^*(\id{no}(x))$ are disjoint and
+the fibres $p^*(\rm{yes}(x))$ and $p^*(\rm{no}(x))$ are disjoint and
 their union is all of $A$.
 
 ```agda
@@ -77,7 +77,7 @@ is-complemented→is-decidable p (p⁻¹ , intersection , union) elt =
 
 # Decidable subobject classifiers
 
-In the same way that we have a (large) type $\id{Prop}_\kappa$ of all
+In the same way that we have a (large) type $\rm{Prop}_\kappa$ of all
 propositions of size $\kappa$, the decidable (complemented) subobjects
 also have a classifying object: Any two-element type with decidable
 equality! This can be seen as a local instance of excluded middle: the
@@ -92,7 +92,7 @@ decidable-subobject-classifier = eqv where
 ```
 
 In much the same way that the subobject represented by a map $A \to
-\id{Prop}$ is the fibre over $\top$, the subobject represented by a map
+\rm{Prop}$ is the fibre over $\top$, the subobject represented by a map
 $A \to 2$ is the fibre over $\mathtt{true}$. This is a decidable
 subobject because $2$ has decidable equality.
 

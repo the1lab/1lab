@@ -14,7 +14,7 @@ module Cat.Instances.Slice.Presheaf {o ℓ} {C : Precategory o ℓ} where
 
 We prove that slices of a presheaf category are again presheaf
 categories. Specifically, for $P$ a presheaf, we have an isomorphism
-$\psh(\ca{C})/P \cong \psh(\int P)$, where $\int$ denotes the [category
+$\psh(\cC)/P \cong \psh(\int P)$, where $\int$ denotes the [category
 of elements] of $P$.
 
 [category of elements]: Cat.Instances.Elements.html
@@ -34,7 +34,7 @@ open _=>_
 ```
 -->
 
-An object in the slice $\psh(\ca{C})/P$ consists of a functor $Q$
+An object in the slice $\psh(\cC)/P$ consists of a functor $Q$
 together with a natural transformation $\eta : P \to Q$. To transform
 this data into a functor $\int P \to \sets$, observe that for each
 element $(x, s)$ in $\int P$, the fibre $\eta_x^*(s)$ is a set. But why
@@ -54,7 +54,7 @@ elements of a presheaf $* \mapsto S$ consists of pairs $(x, e)$ where $x
 : *$, of which there is only one choice, and $e : S$.
 
 $$
-\sets/S \cong \psh(*)/c(S) \cong \psh(\textstyle\int c(S)) \cong \psh(\id{Disc}(S))
+\sets/S \cong \psh(*)/c(S) \cong \psh(\textstyle\int c(S)) \cong \psh(\rm{Disc}(S))
 $$
 
 ```agda

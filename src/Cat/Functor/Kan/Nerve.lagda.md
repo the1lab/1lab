@@ -34,9 +34,9 @@ open _=>_
 
 # Nerve and realisation
 
-Let $F : \ca{C} \to \ca{D}$ be a functor from a [$\kappa$-small] category
-$\ca{C}$ to a locally $\kappa$-small, $\kappa$-[cocomplete] category
-$\ca{D}$. $F$ induces a pair of [adjoint functors], as in the diagram
+Let $F : \cC \to \cD$ be a functor from a [$\kappa$-small] category
+$\cC$ to a locally $\kappa$-small, $\kappa$-[cocomplete] category
+$\cD$. $F$ induces a pair of [adjoint functors], as in the diagram
 below, where $|-| \dashv \bf{N}$. In general, the left adjoint is called
 "realization", and the right adjoint is called "nerve".
 

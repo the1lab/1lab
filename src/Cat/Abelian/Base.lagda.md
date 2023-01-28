@@ -140,7 +140,7 @@ $-ab = (-a)b = a(-b)$, etc.</summary>
 </details>
 
 Before moving on, we note the following property of $\Ab$-categories: If
-$A$ is an object s.t. $\id{id}_{A} = 0$, then $A$ is a zero object.
+$A$ is an object s.t. $\id_{A} = 0$, then $A$ is a zero object.
 
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} (A : Ab-category C) where
@@ -209,8 +209,8 @@ are given by the pair of maps
 
 $$
 \begin{align*}
-&(\id{id} \times 0) : A \to A \times B \\
-&(0 \times \id{id}) : B \to A \times B\text{,}
+&(\id \times 0) : A \to A \times B \\
+&(0 \times \id) : B \to A \times B\text{,}
 \end{align*}
 $$
 
@@ -220,9 +220,9 @@ by comultiplication,
 
 $$
 \begin{align*}
-& (f\pi_1+g\pi_2)(\id{id}\times 0) \\
-=& f\pi_1(\id{id}\times 0) + g\pi_2(\id{id}\times 0) \\
-=& f\id{id} + g0 \\
+& (f\pi_1+g\pi_2)(\id\times 0) \\
+=& f\pi_1(\id\times 0) + g\pi_2(\id\times 0) \\
+=& f\id + g0 \\
 =& f\text{,}
 \end{align*}
 $$
@@ -376,7 +376,7 @@ This implies in particular that any monomorphism is a kernel, and every
 epimorphism is a cokernel. Let's investigate the case for "every mono is
 a kernel" first: Suppose that $f : A \mono B$ is some monomorphism;
 We'll show that it's isomorphic to $\ker (\coker f)$ in the slice
-category $\ca{A}/B$.
+category $\cA/B$.
 
 ```agda
   module _ {A B} (f : Hom A B) (monic : is-monic f) where
@@ -444,7 +444,7 @@ coequalisers are epic to make progress.
 
 Using the universal property of the cokernel (both uniqueness and
 universality), we establish that the maps defined above are inverses in
-$\ca{A}$, thus assemble into an isomorphism in the slice.
+$\cA$, thus assemble into an isomorphism in the slice.
 
 ```agda
     mono→kernel : cut f m.≅ cut (Ker.kernel (Coker.coeq f))

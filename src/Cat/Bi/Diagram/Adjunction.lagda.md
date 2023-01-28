@@ -22,7 +22,7 @@ module _ {o ℓ ℓ′} (B : Prebicategory o ℓ ℓ′) where
 Let $\bf{B}$ be a bicategory, $A, B : \bf{B}$ be objects, and $f : A \to
 B$ and $g : B \to A$ be 1-cells. Generalising the situation where $f$
 and $g$ are functors, we say they are **adjoints** if there exist
-2-cells $\eta : \id{id} \to gf$ and $\eps : fg \to \id{id}$ (the
+2-cells $\eta : \id \to gf$ and $\eps : fg \to \id$ (the
 **unit** and **counit** respectively), satisfying the equations
 
 <div class=mathpar>

@@ -21,8 +21,8 @@ open Functor
 # Conservative Functors
 
 We say a functor is _conservative_ if it reflects isomorphisms. More concretely,
-if $f : A \to B$ is some morphism $\ca{C}$, and if $F(f)$ is an iso in $\ca{D}$,
-then $f$ must have already been an iso in $\ca{C}$!
+if $f : A \to B$ is some morphism $\cC$, and if $F(f)$ is an iso in $\cD$,
+then $f$ must have already been an iso in $\cC$!
 
 ```agda
 is-conservative : Functor C D → Type _

@@ -7,8 +7,8 @@ module Cat.Instances.Twisted where
 
 # Twisted arrow categories
 
-The category of arrows of $\ca{C}$ is the category $\id{Arr}(\ca{C})$
-which has objects given by morphisms $a_0 \xto{a} a_1 : \ca{C}$^[We will
+The category of arrows of $\cC$ is the categor\rm{Arr}rr}(\cC)$
+which has objects given by morphisms $a_0 \xto{a} a_1 : \cC$^[We will
 metonymically refer to the triple $(a_0,a_1,a)$ using simply $a$.], and
 morphisms $f : a \to b$ given by pairs $f_0, f_1$ as indicated making
 the diagram below commute.
@@ -27,8 +27,8 @@ the diagram below commute.
 
 Now, add a twist. Literally! Invert the direction of the morphism $f_0$
 in the definition above. The resulting category is the **twisted arrow
-category** of $\ca{C}$, written $\id{Tw}(\ca{C})$. You can think of a
-morphism $f \to g$ in $\id{Tw}(\ca{C})$ as a factorisation of $g$
+category** of $\cC$, writte\rm{Tw}Tw}(\cC)$. You can think of a
+morphism $f \to g$ in $\rm{Tw}(\cC)$ as a factorisation of $g$
 through $f$.
 
 ```agda
@@ -89,8 +89,8 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 ```
 -->
 
-The twisted arrow category admits a forgetful functor $\id{Tw}(\ca{C})
-\to \ca{C}\op \times \ca{C}$, which sends each arrow $a \xto{f} b$ to
+The twisted arrow category admits a forgetful functor $\rm{Tw}(\cC)
+\to \cC\op \times \cC$, which sends each arrow $a \xto{f} b$ to
 the pair $(a, b)$, and forgets the commutativity datum for the diagram.
 Since commutativity of diagrams is a property (rather than structure),
 this inclusion functor is faithful, though it is not full.

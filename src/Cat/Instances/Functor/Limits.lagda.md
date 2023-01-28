@@ -18,10 +18,10 @@ module Cat.Instances.Functor.Limits where
 
 # Limits in functor categories
 
-Let $\ca{C}$ be a category admitting $\ca{D}$-shaped limits. Then the
-functor category $[\ca{E},\ca{S}]$, for $\ca{E}$ _any_ category, also
-admits $\ca{D}$-shaped limits. In particular, if $\ca{C}$ is
-$(\iota,\kappa)$-complete, then so is $[\ca{E},\ca{C}]$.
+Let $\cC$ be a category admitting $\cD$-shaped limits. Then the
+functor category $[\cE,\cS]$, for $\cE$ _any_ category, also
+admits $\cD$-shaped limits. In particular, if $\cC$ is
+$(\iota,\kappa)$-complete, then so is $[\cE,\cC]$.
 
 ```agda
 module _
@@ -50,12 +50,12 @@ module _
 ```
 -->
 
-Let $F : \ca{D} \to [\ca{E},\ca{C}]$ be a diagram, and suppose $\ca{C}$
-admits limits of $\ca{D}$-shaped diagrams; We wish to compute the limit
+Let $F : \cD \to [\cE,\cC]$ be a diagram, and suppose $\cC$
+admits limits of $\cD$-shaped diagrams; We wish to compute the limit
 $\lim F$. First, observe that we can `Uncurry`{.Agda} $F$ to obtain a
-functor $F' : \ca{D} \times \ca{E} \to \ca{C}$; By fixing the value of
-the $\ca{E}$ coordinate (say, to $x$), we obtain a family $F(-, x)$ of
-$\ca{D}$-shaped diagrams in $\ca{C}$, which, by assumption, all have
+functor $F' : \cD \times \cE \to \cC$; By fixing the value of
+the $\cE$ coordinate (say, to $x$), we obtain a family $F(-, x)$ of
+$\cD$-shaped diagrams in $\cC$, which, by assumption, all have
 limits.
 
 ```agda
@@ -65,7 +65,7 @@ limits.
     import Cat.Functor.Bifunctor {C = D} {D = E} {E = C} F-uncurried as F′
 ```
 
-Let us call the limit of $F(-, x)$ --- taken in $\ca{C}$ ---
+Let us call the limit of $F(-, x)$ --- taken in $\cC$ ---
 `lim-for`{.Agda}, and similarly the unique, "terminating" cone
 homomorphism $K \to \lim F(-, x)$ will be called `!-for`{.Agda}.
 
@@ -83,9 +83,9 @@ homomorphism $K \to \lim F(-, x)$ will be called `!-for`{.Agda}.
 The two _fundamental_ --- and very similar looking! --- constructions
 are `Lift-cone`{.Agda} and `map-cone`{.Agda} below. `Lift-cone`{.Agda}
 lets us take a component of a cone for $F$ --- in the functor category
---- into a cone for $F(y)$, in $\ca{C}$. Furthermore, at the same time
+--- into a cone for $F(y)$, in $\cC$. Furthermore, at the same time
 as we perform this lifting, we can "adjust" the cone by a map $(x
-\xto{f} y) \in \ca{E}$.
+\xto{f} y) \in \cE$.
 
 ```agda
   Lift-cone : ∀ {x y} (K : Cone F) (f : E.Hom x y) → Cone (F′.Left y)
@@ -99,7 +99,7 @@ as we perform this lifting, we can "adjust" the cone by a map $(x
 
 The function `map-cone`{.Agda} is `Lift-cone`{.Agda}, but specialised to
 the case where $K = \lim F(-, x)$ is the `lim-for`{.Agda} a particular
-point in $\ca{E}$.
+point in $\cE$.
 
 ```agda
   map-cone : ∀ {x y} (f : E.Hom x y) → Cone (F′.Left y)
@@ -114,9 +114,9 @@ point in $\ca{E}$.
 ### The cone
 
 We are now ready to build a universal cone over $F$, in the category $[
-\ca{E}, \ca{C} ]$, meaning the apex will be given by a functor $A : \ca{E}
-\to \ca{C}$. Using the fact that $\ca{C}$ was assumed to have
-$\ca{D}$-shaped limits, `the-apex`{.Agda} will be given by $x \mapsto
+\cE, \cC ]$, meaning the apex will be given by a functor $A : \cE
+\to \cC$. Using the fact that $\cC$ was assumed to have
+$\cD$-shaped limits, `the-apex`{.Agda} will be given by $x \mapsto
 \lim F(-, x)$. Similarly, the choice of map is essentially unique: we
 must map $\lim F(-, x) \to \lim F(-, y)$, but the space of maps $X \to
 \lim F(-, y)$ is contractible.
@@ -191,7 +191,7 @@ everything in sight:
 The hard part, then, is showing that this is a natural transformation.
 We'll do this in a roundabout way: We'll show that both composites in
 the naturality square inhabit the same _contractible_ space of cone
-homomorphisms, namely that of $\id{Lift-cone}(K,f) \to \lim F(-,y)$,
+homomorphisms, namely that of $\rm{Lift-cone}(K,f) \to \lim F(-,y)$,
 and thus conclude that they are unique. This isn't too hard, but it is
 quite tedious:
 
@@ -236,8 +236,8 @@ limit $\lim F$.
   functor-limit .has⊤ x .paths  = functor-!-unique
 ```
 
-As a corollary, if $\ca{D}$ is an $(o,\ell)$-complete category, then so
-is $[\ca{C},\ca{D}]$.
+As a corollary, if $\cD$ is an $(o,\ell)$-complete category, then so
+is $[\cC,\cD]$.
 
 ```agda
 Functor-cat-is-complete :

@@ -23,10 +23,10 @@ open Functor
 
 # Sieves
 
-Given a category $\ca{C}$, a **sieve** on an object $c$ Is a subset of
+Given a category $\cC$, a **sieve** on an object $c$ Is a subset of
 the maps $a \to c$ closed under composition: If $f \in S$, then $(f
 \circ g) \in S$. The data of a sieve on $c$ corresponds to the data of a
-subobject of $\yo(c)$, considered as an object of $\psh(\ca{C})$.
+subobject of $\yo(c)$, considered as an object of $\psh(\cC)$.
 
 Here, the subset is represented as the function `arrows`{.agda}, which,
 given an arrow $f : a \to c$ (and its domain), yields a proposition
@@ -63,7 +63,7 @@ intersect {I = I} F .closed g x = inc λ i → F i .closed g (out! x i)
 
 ## Representing subfunctors
 
-Let $S$ be a sieve on $\ca{C}$. We show that it determines a presheaf
+Let $S$ be a sieve on $\cC$. We show that it determines a presheaf
 $S'$, and that this presheaf admits a monic natural transformation $S'
 \mono \yo(c)$. The functor determined by a sieve $S$ sends each object
 $d$ to the set of arrows $d \xto{f} c$ s.t. $f \in S$; The functorial

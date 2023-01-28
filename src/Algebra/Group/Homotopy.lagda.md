@@ -24,7 +24,7 @@ private variable
 
 Given a `pointed type`{.Agda ident=Type∙} $(A, a)$ we refer to the type
 $a = a$ as the **loop space of $A$**, and refer to it in short as
-$\Omega A$. Since we always have $\id{refl} : a = a$, $\Omega A$ is
+$\Omega A$. Since we always have $\rm{refl} : a = a$, $\Omega A$ is
 _itself_ a pointed type, the construction can be iterated, a process
 which we denote $\Omega^n A$.
 
@@ -96,20 +96,20 @@ have `p` and `q` slip by each other.
 
 ~~~{.quiver .tall-2}
 \[\begin{tikzcd}
-	{\id{refl}} &&& {\id{refl}} &&& {\id{refl}} \\
-	& {\id{refl} \cdot \id{refl}} && {\id{refl} \cdot \id{refl}} && {\id{refl} \cdot \id{refl}} \\
+	{\rm{refl}} &&& {\rm{refl}} &&& {\rm{refl}} \\
+	& {\rm{refl} \cdot \rm{refl}} && {\rm{refl} \cdot \rm{refl}} && {\rm{refl} \cdot \rm{refl}} \\
 	\\
-	& {\id{refl} \cdot \id{refl}} && {\id{refl} \cdot \id{refl}} && {\id{refl} \cdot \id{refl}} \\
-	{\id{refl}} &&& {\id{refl}} &&& {\id{refl}}
+	& {\rm{refl} \cdot \rm{refl}} && {\rm{refl} \cdot \rm{refl}} && {\rm{refl} \cdot \rm{refl}} \\
+	{\rm{refl}} &&& {\rm{refl}} &&& {\rm{refl}}
 	\arrow[from=2-2, to=4-2]
 	\arrow["{p\ \neg i \cdot q\ i}"{description}, color={rgb,255:red,214;green,92;blue,214}, from=2-4, to=4-4]
 	\arrow[from=2-6, to=4-6]
 	\arrow[from=1-1, to=5-1]
 	\arrow[from=1-7, to=5-7]
-	\arrow[""{name=0, anchor=center, inner sep=0}, "{p\ j \cdot \id{refl}}"', color={rgb,255:red,214;green,92;blue,92}, from=2-2, to=2-4]
-	\arrow[""{name=1, anchor=center, inner sep=0}, "{\id{refl} \cdot q\ j}"', color={rgb,255:red,153;green,92;blue,214}, from=2-4, to=2-6]
-	\arrow[""{name=2, anchor=center, inner sep=0}, "{\id{refl} \cdot q\ j}", color={rgb,255:red,153;green,92;blue,214}, from=4-2, to=4-4]
-	\arrow[""{name=3, anchor=center, inner sep=0}, "{p\ j \cdot \id{refl}}", color={rgb,255:red,214;green,92;blue,92}, from=4-4, to=4-6]
+	\arrow[""{name=0, anchor=center, inner sep=0}, "{p\ j \cdot \rm{refl}}"', color={rgb,255:red,214;green,92;blue,92}, from=2-2, to=2-4]
+	\arrow[""{name=1, anchor=center, inner sep=0}, "{\rm{refl} \cdot q\ j}"', color={rgb,255:red,153;green,92;blue,214}, from=2-4, to=2-6]
+	\arrow[""{name=2, anchor=center, inner sep=0}, "{\rm{refl} \cdot q\ j}", color={rgb,255:red,153;green,92;blue,214}, from=4-2, to=4-4]
+	\arrow[""{name=3, anchor=center, inner sep=0}, "{p\ j \cdot \rm{refl}}", color={rgb,255:red,214;green,92;blue,92}, from=4-4, to=4-6]
 	\arrow[""{name=4, anchor=center, inner sep=0}, "{p\ j}", color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-4]
 	\arrow[""{name=5, anchor=center, inner sep=0}, "{q\ j}", color={rgb,255:red,153;green,92;blue,214}, from=1-4, to=1-7]
 	\arrow[""{name=6, anchor=center, inner sep=0}, "{q\ j}"', color={rgb,255:red,153;green,92;blue,214}, from=5-1, to=5-4]
@@ -122,10 +122,10 @@ have `p` and `q` slip by each other.
 	\arrow[from=4-6, to=5-7]
 	\arrow["{p (j \land \neg i) \cdot q (j \land i)}"{description}, color={rgb,255:red,214;green,92;blue,214}, draw=none, from=0, to=2]
 	\arrow["{p (\neg i \lor j) \cdot q (i \lor j)}"{description}, color={rgb,255:red,214;green,92;blue,214}, draw=none, from=1, to=3]
-	\arrow["{\id{\cdot\text{-id-r}}\ (p\ j)\ k}"{description}, color={rgb,255:red,214;green,92;blue,92}, draw=none, from=0, to=4]
-	\arrow["{\id{\cdot\text{-id-l}}\ (q\ j)\ k}"{description}, color={rgb,255:red,153;green,92;blue,214}, draw=none, from=1, to=5]
-	\arrow["{\id{\cdot\text{-id-l}}\ (q\ j)\ k}"{description}, color={rgb,255:red,153;green,92;blue,214}, draw=none, from=2, to=6]
-	\arrow["{\id{\cdot\text{-id-r}}\ (p\ j)\ k}"{description}, color={rgb,255:red,214;green,92;blue,92}, draw=none, from=3, to=7]
+	\arrow["{\rm{\cdot\text{-id-r}}\ (p\ j)\ k}"{description}, color={rgb,255:red,214;green,92;blue,92}, draw=none, from=0, to=4]
+	\arrow["{\rm{\cdot\text{-id-l}}\ (q\ j)\ k}"{description}, color={rgb,255:red,153;green,92;blue,214}, draw=none, from=1, to=5]
+	\arrow["{\rm{\cdot\text{-id-l}}\ (q\ j)\ k}"{description}, color={rgb,255:red,153;green,92;blue,214}, draw=none, from=2, to=6]
+	\arrow["{\rm{\cdot\text{-id-r}}\ (p\ j)\ k}"{description}, color={rgb,255:red,214;green,92;blue,92}, draw=none, from=3, to=7]
 \end{tikzcd}\]
 ~~~
 
@@ -180,10 +180,10 @@ that `path`{.Agda} is a group homomorphism. More specifically,
   \bullet && \bullet \\
   \\
   \bullet && \bullet
-  \arrow["{\id{refl}}"', from=1-1, to=3-1]
-  \arrow["{\id{path}(x)}", from=1-1, to=1-3]
-  \arrow["{\id{path}(y)}", from=1-3, to=3-3]
-  \arrow["{\id{path}(x \star y)}"', from=3-1, to=3-3]
+  \arrow["{\rm{refl}}"', from=1-1, to=3-1]
+  \arrow["{\rm{path}(x)}", from=1-1, to=1-3]
+  \arrow["{\rm{path}(y)}", from=1-3, to=3-3]
+  \arrow["{\rm{path}(x \star y)}"', from=3-1, to=3-3]
 \end{tikzcd}\]
 ~~~
 
@@ -277,7 +277,7 @@ $(n+1)$-type, this is a groupoid. To arrange that the fibre over
 the elimination. This locks us into giving a family of automorphisms
 `map : G → G ≡ G` for the `path`{.Agda} constructor; The constructor
 `path-sq`{.Agda} then requires that `map` be a homomorphism from $G$ to
-$\id{Aut}(G)$.
+$\rm{Aut}(G)$.
 
 ```agda
     where

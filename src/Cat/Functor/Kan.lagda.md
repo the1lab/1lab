@@ -29,9 +29,9 @@ private
 
 # Kan extensions
 
-Suppose we have a functor $F : \ca{C} \to \ca{D}$, and a functor $p :
-\ca{C} \to \ca{C}'$ --- perhaps to be thought of as a [full subcategory]
-inclusion, where $\ca{C}'$ is a completion of $\ca{C}$, but the
+Suppose we have a functor $F : \cC \to \cD$, and a functor $p :
+\cC \to \cC'$ --- perhaps to be thought of as a [full subcategory]
+inclusion, where $\cC'$ is a completion of $\cC$, but the
 situation applies just as well to any pair of functors --- which
 naturally fit into a commutative diagram
 
@@ -48,7 +48,7 @@ naturally fit into a commutative diagram
 ~~~
 
 but as we can see this is a particularly sad commutative diagram; it's
-crying out for a third edge $\ca{C}' \to \ca{D}$
+crying out for a third edge $\cC' \to \cD$
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -61,7 +61,7 @@ crying out for a third edge $\ca{C}' \to \ca{D}$
 \end{tikzcd}\]
 ~~~
 
-extending $F$ to a functor $\ca{C}' \to \ca{D}$. If there exists an
+extending $F$ to a functor $\cC' \to \cD$. If there exists an
 _universal_ such extension (we'll define what "universal" means in just
 a second), we call it the **left Kan extension** of $F$ along $p$, and
 denote it $\Lan_p F$. Such extensions do not come for free (in a sense
@@ -75,12 +75,12 @@ A left Kan extension $\Lan_p F$ is equipped with a natural
 transformation $\eta : F \To \Lan_p F \circ p$ witnessing the
 ("directed") commutativity of the triangle (so that it need not commute
 on-the-nose) which is universal among such transformations; Meaning that
-if $M : \ca{C'} \to \ca{D}$ is another functor with a transformation
+if $M : \ca{C'} \to \cD$ is another functor with a transformation
 $\alpha : M \To M \circ p$, there is a unique natural transformation
 $\sigma : \Lan_p F \To M$ which commutes with $\alpha$.
 
 Note that in general the triangle commutes "weakly", but when $p$ is
-[fully faithful] and $\ca{D}$ is [cocomplete], $\Lan_p F$ genuinely extends
+[fully faithful] and $\cD$ is [cocomplete], $\Lan_p F$ genuinely extends
 $p$, in that $\eta$ is a natural isomorphism.
 
 [fully faithful]: Cat.Functor.Base.html#ff-functors
@@ -123,7 +123,7 @@ that $\eta$ does for $\Lan_p F$), the 2-cell exists and is unique.
 
 The elevator pitch for Kan extensions is that "all concepts are Kan
 extensions". The example we will give here is that, if $F \dashv G$ is
-an adjunction, then $(G, \eta)$ gives $\Lan_F(\id{Id})$. This isn't
+an adjunction, then $(G, \eta)$ gives $\Lan_F(\rm{Id})$. This isn't
 exactly enlightening: adjunctions and Kan extensions have very different
 vibes, but the latter concept _is_ a legitimate generalisation.
 
@@ -149,7 +149,7 @@ module _ {F : Functor C D} {G : Functor D C} (adj : F ⊣ G) where
 
 The proof is mostly pushing symbols around, and the calculation is
 available below unabridged. In components, $\sigma_x$ must give,
-assuming a map $\alpha : \id{Id} \To MFx$, a map $Gx \to Mx$. The
+assuming a map $\alpha : \rm{Id} \To MFx$, a map $Gx \to Mx$. The
 transformation we're looking for arises as the composite
 
 $$
@@ -185,14 +185,14 @@ where uniqueness and commutativity follows from the triangle identities
 
 # A formula
 
-In the cases where $\ca{C}, \ca{D}$ are "small enough" and $\ca{E}$ is
-"cocomplete enough", the left Kan extension of _any_ functor $F : \ca{C}
-\to \ca{E}$ along _any_ functor $K : \ca{C} \to \ca{D}$ exists, and is
-computed as a colimit in $\ca{E}$. The size concerns here are
-unavoidable, so let's be explicit about them: Suppose that $\ca{E}$
+In the cases where $\cC, \cD$ are "small enough" and $\cE$ is
+"cocomplete enough", the left Kan extension of _any_ functor $F : \cC
+\to \cE$ along _any_ functor $K : \cC \to \cD$ exists, and is
+computed as a colimit in $\cE$. The size concerns here are
+unavoidable, so let's be explicit about them: Suppose that $\cE$
 admits colimits of [$\kappa$-small diagrams], e.g. because it is
-$\sets_\kappa$. Then the category $\ca{C}$ must be $\kappa$-small, and
-$\ca{D}$ must be locally $\kappa$-small, i.e. its Hom-sets must live in
+$\sets_\kappa$. Then the category $\cC$ must be $\kappa$-small, and
+$\cD$ must be locally $\kappa$-small, i.e. its Hom-sets must live in
 the $\kappa$th universe.
 
 [$\kappa$-small diagrams]: 1Lab.intro.html#universes-and-size-issues
@@ -221,10 +221,10 @@ module _
 ```
 -->
 
-The size restrictions on $\ca{C}$ and $\ca{D}$ ensure that the [comma
-category] $K \searrow d$ is $\kappa$-small, so that $\ca{E}$ has a
+The size restrictions on $\cC$ and $\cD$ ensure that the [comma
+category] $K \searrow d$ is $\kappa$-small, so that $\cE$ has a
 colimit for it. The objects of this category can be considered
-"approximations of $d$ coming from $\ca{C}$", so the colimit over this
+"approximations of $d$ coming from $\cC$", so the colimit over this
 category is a "best approximation of $d$"! The rest of the computation
 is "straightforward" in the way that most category-theoretic
 computations are: it looks mighty complicated from the outside, but when
@@ -258,12 +258,12 @@ each point. Agda's goal-and-context display guides you the whole way.
 Our extension will associate to each object $d$ the colimit of
 
 $$
-(K \searrow d) \xto{\id{Dom}} C \xto{F} E\text{,}
+(K \searrow d) \xto{\rm{Dom}} C \xto{F} E\text{,}
 $$
 
-where $\id{Dom}$ is the functor which projects out the *dom*ain of each
+where $\rm{Dom}$ is the functor which projects out the *dom*ain of each
 object of $K \searrow d$. Now, we must also associate _arrows_ $f : d
-\to e \in \ca{D}$ to arrows between the respective colimits of $d$ and
+\to e \in \cD$ to arrows between the respective colimits of $d$ and
 $e$. What we note is that any arrow $f : d \to e$ displays (the colimit
 associated with) $e$ as a cocone under $d$, as can be seen in the
 computation of `approx`{.Agda} above.

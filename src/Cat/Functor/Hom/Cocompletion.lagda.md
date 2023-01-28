@@ -22,13 +22,13 @@ open import Cat.Morphism Cat[ C , D ] using (_≅_)
 
 # Free cocompletions
 
-Let $\ca{C}$ be a [$\kappa$-small] precategory. It, broadly speaking,
+Let $\cC$ be a [$\kappa$-small] precategory. It, broadly speaking,
 will not be cocomplete. Suppose that we're interested in passing from
-$\ca{C}$ to a cocomplete category; How might we go about this in a
+$\cC$ to a cocomplete category; How might we go about this in a
 universal way?
 
 To substantiate this problem, it helps to picture a _geometric_ case.
-We'll take $\ca{C} = \Delta$, the category of non-empty finite ordinals
+We'll take $\cC = \Delta$, the category of non-empty finite ordinals
 and monotonic functions. The objects and maps in this category satisfy
 equations which let us, broadly speaking, think of its objects as
 "abstract (higher-dimensional) triangles", or _simplices_. For instance,
@@ -59,10 +59,10 @@ Universally embedding $\Delta$ in a cocomplete category should then
 result in a "category of shapes built by gluing simplices"; Formally,
 these are called _simplicial sets_. It turns out that the [Yoneda
 embedding] satisfies the property we're looking for: Any functor $F :
-\ca{C} \to \ca{D}$ into a cocomplete category $\ca{D}$ factors as
+\cC \to \cD$ into a cocomplete category $\cD$ factors as
 
 $$
-\ca{C} \xto{\yo} \psh(\ca{C}) \xto{\Lan_\yo F} \ca{D}\text{,}
+\cC \xto{\yo} \psh(\cC) \xto{\Lan_\yo F} \cD\text{,}
 $$
 
 where $\Lan_\yo F$ is the [left Kan extension] of $F$ along the Yoneda

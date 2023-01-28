@@ -33,11 +33,11 @@ private module _ {o ℓ} {C : Precategory o ℓ} where
 
 # Universal property of the Rezk completion
 
-With the [Rezk completion], we defined, for any precategory $\ca{C}$, a
-univalent category $\ca{C}^+$, together with a _weak equivalence_
-functor $R : \ca{C} \to \ca{C}^+$. We also stated, but did not in that
+With the [Rezk completion], we defined, for any precategory $\cC$, a
+univalent category $\cC^+$, together with a _weak equivalence_
+functor $R : \cC \to \cC^+$. We also stated, but did not in that
 module _prove_, the universal property of the Rezk completion: The
-functor $R$ is the universal map from $\ca{C}$ to categories. This
+functor $R$ is the universal map from $\cC$ to categories. This
 module actually proves it, but be warned: the proof is _very_ technical,
 and is mostly a calculation.
 
@@ -46,22 +46,22 @@ and is mostly a calculation.
 In generic terms, universality of the Rezk completion follows from
 univalent categories being the class of _local objects_ for the weak
 equivalences^[a _weak equivalence_ is a fully faithful, essentially
-surjective functor]: A category $\ca{C}$ is univalent _precisely_ if any
-weak equivalence $H : \ca{A} \to \ca{B}$ induces^[by [precomposition]]
-a proper equivalence of categories $H_! : [\ca{B},\ca{C}] \to [\ca{A},\ca{C}]$.
+surjective functor]: A category $\cC$ is univalent _precisely_ if any
+weak equivalence $H : \cA \to \cB$ induces^[by [precomposition]]
+a proper equivalence of categories $H_! : [\cB,\cC] \to [\cA,\cC]$.
 
 [precomposition]: Cat.Instances.Functor.Compose.html
 
 The high-level overview of the proof is as follows:
 
-- For any \r{eso} $H : \ca{A} \to \ca{B}$, and for any $\ca{C}$, all
-precategories, the functor $H_! : [\ca{A},\ca{B}] \to [\ca{B},\ca{C}]$
+- For any \r{eso} $H : \cA \to \cB$, and for any $\cC$, all
+precategories, the functor $H_! : [\cA,\cB] \to [\cB,\cC]$
 is faithful. This is the least technical part of the proof, so we do it
 first.
 
 - If $H$ is additionally full, then $H_!$ is \r{fully faithful}.
 
-- If $H$ is a weak equivalence, and $\ca{C}$ is [univalent], then $H_!$
+- If $H$ is a weak equivalence, and $\cC$ is [univalent], then $H_!$
 is essentially surjective. By the principle of unique choice, it is an
 equivalence, and thus^[since both its domain and codomain are univalent]
 an isomorphism.
@@ -73,7 +73,7 @@ an isomorphism.
 The argument here is almost elementary: We're given a witness that
 $\gamma H = \delta H$, so all we have to do is manipulate the expression
 $\gamma_b$ to something which has a $\gamma H$ subexpression. Since $H$
-is eso, given $b : \ca{B}$, we can find $a : \ca{A}$ and an iso $m : Ha
+is eso, given $b : \cB$, we can find $a : \cA$ and an iso $m : Ha
 \cong b$, from which we can calculate:
 
 ```agda
@@ -123,7 +123,7 @@ eso-full→pre-ff {A = A} {B = B} {C = C} H H-eso H-full = res where
 ```
 
 We will show that, for every natural transformation $\gamma : FH \to
-GH$, and each $b : \ca{B}$, there is a contractible type of "component
+GH$, and each $b : \cB$, there is a contractible type of "component
 data" over $b$. These data consist of morphisms $g : Fb \to Gb$,
 each equipped with a witness that $g$ acts naturally when faced with
 isomorphisms $Ha \cong b$.
@@ -162,7 +162,7 @@ $$
 ```
 
 We'll first show that components exist at all. Assume that we have some
-$b : \ca{B}$ and an essential fibre $(a_0, h_0)$ of $H$ over it^[Don't
+$b : \cB$ and an essential fibre $(a_0, h_0)$ of $H$ over it^[Don't
 worry about actually getting your hands on an $(a_0, h_0)$.]. In this
 situation, guided by the compatibility condition (and isomorphisms being
 just the best), we can actually _define_ the component to be "whatever
@@ -322,7 +322,7 @@ module
 ```
 -->
 
-The type of object-candidates `Obs`{.Agda} is indexed by a $b : \ca{B}$,
+The type of object-candidates `Obs`{.Agda} is indexed by a $b : \cB$,
 and any object candidate $c$ must come with a family of isomorphisms
 $k_h$ giving, for every way of expressing $b$ as coming from $Ha$, a way
 of $c$ coming from $Fa$. To show this type is a proposition, we
@@ -344,7 +344,7 @@ additionally require a naturality condition for these isomorphisms.
 Note that we can _derive_ an object candidate over $b$ from a fibre
 $(a,h)$ of $H$ over $b$. Moreover, this choice is a center of
 contraction, so we can once more apply unique choice and the assumption
-that $H$ is eso to conclude that every $b : \ca{B}$ has an object
+that $H$ is eso to conclude that every $b : \cB$ has an object
 candidate over it.
 
 ```agda
@@ -526,7 +526,7 @@ functor.</summary>
 </details>
 
 In this manner, the assignment of object candidates and morphism
-candidates fits together into a functor $G : \ca{B} \to \ca{C}$. After
+candidates fits together into a functor $G : \cB \to \cC$. After
 finishing this, we have to show that $GH = F$. But the compatibility
 data which we have used to uniquely characterise $G$... uniquely
 characterises $G$, after all, and it does so as _composing with $H$ to
@@ -556,7 +556,7 @@ essential surjectivity of $H$.
 ```
 
 To use the unique charactersation of $G$ as "the functor satisfying $GH
-= F$", observe: for any $x : \ca{A}$, the object $F(x)$ can be made into
+= F$", observe: for any $x : \cA$, the object $F(x)$ can be made into
 an object candidate over $H(x)$, and since the type of object candidates
 is a proposition, our candidate $F(x)$ is identical to the value of
 $GH(x)$.  That's half of $GH = F$ established right off the bat!
@@ -583,7 +583,7 @@ $GH(x)$.  That's half of $GH = F$ established right off the bat!
 -->
 
 _Over that identification_, we can show that, for any $f : x \to y$ in
-$\ca{A}$, the value $F(f)$ is also a candidate for the morphism $GH(f)$,
+$\cA$, the value $F(f)$ is also a candidate for the morphism $GH(f)$,
 so these are also identical. This proof is a bit hairier, because $F(f)$
 only has the right type if we adjust it by the proof that $GH(x) =
 F(x)$: we have to transport $F(f)$, and then as punishment for our
@@ -615,8 +615,8 @@ Since we've shown that $GH = F$, so in particular $GH \cong F$, we've
 now put together proofs that $H_!$ is fully faithful and, since the
 construction above works for any $F$, essentially surjective. Even
 better, since we've actually _constructed_ a functor $G$, we've shown
-that $H_!$ is **split** essentially surjective! Since $[-,\ca{C}]$ is
-univalent whenever $\ca{C}$ is, the splitting would be automatic, but
+that $H_!$ is **split** essentially surjective! Since $[-,\cC]$ is
+univalent whenever $\cC$ is, the splitting would be automatic, but
 this is a nice strengthening.
 
 ```agda
@@ -638,10 +638,10 @@ $G$ is an equivalence of types.
 ```
 
 Restating the result that $H_!$ acts on objects as an equivalence of
-types, we have the following result: If $R : \ca{C} \to \ca{C}^+$ is a
+types, we have the following result: If $R : \cC \to \cC^+$ is a
 weak equivalence (a fully faithful and essentially surjective functor),
-then for any category $\ca{D}$ and functor $G : \ca{C} \to \ca{D}$,
-there is a contractible space(!) of extensions $H : \ca{C}^+ \to \ca{D}$
+then for any category $\cD$ and functor $G : \cC \to \cD$,
+there is a contractible space(!) of extensions $H : \cC^+ \to \cD$
 which factor $G$ through $F$.
 
 ```agda
@@ -656,6 +656,6 @@ weak-equiv→reflection F F-eso F-ff D-cat G =
 ```
 
 Note that this is only _half_ of the point of the Rezk completion: we
-would also like for $\ca{C}^+$ to be univalent, but that is not
+would also like for $\cC^+$ to be univalent, but that is not
 necessary for $D$ to think that precomposition with $F$ is an
 isomorphism.

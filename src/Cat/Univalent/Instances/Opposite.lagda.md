@@ -20,7 +20,7 @@ private
 # Opposites of univalent categories
 
 A simple case of closure of univalence is the duality involution: Since
-isomorphisms in $\ca{C}\op$ are the same as isomorphisms in $\ca{C}$,
+isomorphisms in $\cC\op$ are the same as isomorphisms in $\cC$,
 the former is univalent iff the latter is.
 
 ```agda

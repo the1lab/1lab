@@ -54,7 +54,7 @@ We can visualise the situation using the commutative diagram below:
   F
   \arrow["f", shift left=1, from=1-2, to=1-3]
   \arrow["g"', shift right=1, from=1-2, to=1-3]
-  \arrow["{\id{equ}}", hook, from=1-1, to=1-2]
+  \arrow["{\rm{equ}}", hook, from=1-1, to=1-2]
   \arrow["{\exists!}", dashed, from=2-1, to=1-1]
   \arrow["e\prime"', from=2-1, to=1-2]
 \end{tikzcd}\]

@@ -273,7 +273,7 @@ with is homotopic to the identity; Equality of `isomorphisms`{.Agda
 ident=≅-pathp} and `natural transformations`{.Agda ident=Nat-pathp} are
 both tested componentwise, so we can "push down" the relevant equalities
 to the level of families of morphisms; By computation, all we have to
-show is that $\eta{}_x \circ \id{id} \circ \id{id} = f$.
+show is that $\eta{}_x \circ \id \circ \id = f$.
 
 ```agda
       id≡F≅G : PathP (λ i → F ≅ F≡G i) id-iso F≅G
@@ -330,8 +330,8 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} {F G : Functor C D} w
 # Currying
 
 There is an equivalence between the spaces of bifunctors
-$\ca{C} \times_\cat \ca{D} \to E$ and the space of functors
-$\ca{C} \to [\ca{D},E]$. We refer to the image of a functor under this
+$\cC \times_\cat \cD \to E$ and the space of functors
+$\cC \to [\cD,E]$. We refer to the image of a functor under this
 equivalence as its _exponential transpose_, and we refer to the map in
 the "forwards" direction (as in the text above) as _currying_:
 

@@ -121,10 +121,10 @@ connected-cofibre→surjective
 connected-cofibre→surjective {A = A} {B = B} f conn x = transport cen (lift tt) where
 ```
 
-We define a family $P$ of propositions over $\id{Cofibre}(f)$ which maps
+We define a family $P$ of propositions over $\rm{Cofibre}(f)$ which maps
 `tip`{.Agda} to the unit proposition and the base point with coordinate
-$x$ to the fibre $f^x$. Since $\id{Prop}$ is a set, $P$ extends to a map
-$P' : \| \id{Cofibre}(f) \|_0 \to \id{Prop}$.
+$x$ to the fibre $f^x$. Since $\rm{Prop}$ is a set, $P$ extends to a map
+$P' : \| \rm{Cofibre}(f) \|_0 \to \rm{Prop}$.
 
 ```agda
   P : Cofibre f → Prop _
@@ -142,7 +142,7 @@ Letting $x$ be an element of the codomain, and since by assumption $f$'s
 cofibre is connected, we have a path
 
 $$
-\top = P'(\id{tip}) = P'(\id{base}_x) = \| f^x \|\text{,}
+\top = P'(\rm{tip}) = P'(\rm{base}_x) = \| f^x \|\text{,}
 $$
 
 so since the unit type is trivially inhabited, so is the fibre of $f$
@@ -172,13 +172,13 @@ epi→connected-cofibre c d f epic = contr (inc tip) $
   where
 ```
 
-Let $x : d$ --- we'll show that $\| \id{tip} = \id{base}_x \|$. Here's
-where we $f$'s epimorphy: we have a homotopy $| \id{tip} | = |
-\id{base}_{(f x)} |$, namely the `cone`{.Agda} --- and since we can
+Let $x : d$ --- we'll show that $\| \rm{tip} = \rm{base}_x \|$. Here's
+where we $f$'s epimorphy: we have a homotopy $| \rm{tip} | = |
+\rm{base}_{(f x)} |$, namely the `cone`{.Agda} --- and since we can
 write its left-hand-side as the composition of $f$ with a constant
-function, $f$ gives us a path $| \id{tip} | = | \id{base}_x |$ ---
+function, $f$ gives us a path $| \rm{tip} | = | \rm{base}_x |$ ---
 which, by the characterisation of paths in the set truncation, means we
-merely have $\| \id{tip} = \id{base}_x \|$.
+merely have $\| \rm{tip} = \rm{base}_x \|$.
 
 ```agda
     go : ∀ x → ∥ tip ≡ base x ∥

@@ -48,8 +48,8 @@ $$
 While these are indeed two necessary properties of an _image_, they fail
 to accurately represent the set-theoretic construction: Observe that,
 e.g. for $f(x) = 2x$, we could take $\im f = \bb{N}$, taking $e = f$
-itself and $m = \bb{N} \xmono{\id{id}} \bb{N}$. This factoring
-clearly recovers $f$, as $\id{id} \circ f = f$. But by taking this as
+itself and $m = \bb{N} \xmono{\id} \bb{N}$. This factoring
+clearly recovers $f$, as $\id \circ f = f$. But by taking this as
 the image, we've lost the information that $f$ lands in the evens!
 
 We can refine the abstract definition by saying that, for a mono $\im f
@@ -59,11 +59,11 @@ of $f = m' \circ e'$, we must have $m \sube m'$ in the proset of
 subobjects of $B$, i.e. there exists some $k$ such that $m = m' \circ
 k$.
 
-In general categories, [monomorphisms] of $\ca{C}$ may be the wrong notion
+In general categories, [monomorphisms] of $\cC$ may be the wrong notion
 of "subobject" to use. For example, in topology, we'd rather talk about
 the image which admits a _subspace inclusion_ onto $B$. We may expand
 the definition above to work for an arbitrary subclass $M \sube
-\id{Mono}(\ca{C})$ of the monomorphisms of $C$, by requiring that the
+\rm{Mono}(\cC)$ of the monomorphisms of $C$, by requiring that the
 $M$-image of $f$ be the smallest $M$-subobject through which $f$
 factors.
 
@@ -73,15 +73,15 @@ Since keeping track of all the factorisations by hand would be fiddly,
 we formalise the idea of image here using [comma categories], namely the
 idea of [universal morphisms] as in the construction of adjoints. Fix a
 morphism $f : a \to b$, and consider it as an object of the [slice
-category] $\ca{C}/b$.
+category] $\cC/b$.
 
 [comma categories]: Cat.Instances.Comma.html
 [universal morphisms]: Cat.Functor.Adjoint.html#universal-morphisms
 [slice category]: Cat.Instances.Slice.html
 
 For a given subclass of monomorphisms $M$, there is a full subcategory
-of $\ca{C}/b$ spanned by those maps in $M$ --- let us call it $M/b$
---- admitting an evident [ff] inclusion $F : M/b \mono \ca{C}/b$. An
+of $\cC/b$ spanned by those maps in $M$ --- let us call it $M/b$
+--- admitting an evident [ff] inclusion $F : M/b \mono \cC/b$. An
 **$M$-image of $f$** is a universal morphism from $f$ to $F$.
 
 [ff]: Cat.Functor.Base.html#ff-functors

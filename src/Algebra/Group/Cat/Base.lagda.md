@@ -67,7 +67,7 @@ to-group {A = A} mg = el A (mg .make-group.group-is-set) , (to-group-on mg)
 ## The underlying set
 
 The category of groups admits a `faithful`{.Agda ident=is-faithful}
-functor into the category of sets, written $U : \id{Groups} \to
+functor into the category of sets, written $U : \rm{Groups} \to
 \sets$, which projects out the underlying set of the group. Faithfulness
 of this functor says, in more specific words, that equality of group
 homomorphisms can be tested by comparing the underlying morphisms of

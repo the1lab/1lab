@@ -23,7 +23,7 @@ open is-abelian A
 
 # Images in abelian categories
 
-Let $f : A \to B$ be a morphism in an [abelian category] $\ca{A}$, which
+Let $f : A \to B$ be a morphism in an [abelian category] $\cA$, which
 (by definition) admits a canonical decomposition as
 
 $$

@@ -14,10 +14,10 @@ module
 
 # Eilenberg-Moore Categories
 
-Given a base [univalent category] $\ca{C}$, we can consider a [monad]
-$M$ on $\ca{C}$, and its associated [Eilenberg-Moore category]
-$\ca{C}^M$, as a standard way of constructing categories of "algebraic
-gadgets" backed by objects of $\ca{C}$. A concrete example is given by
+Given a base [univalent category] $\cC$, we can consider a [monad]
+$M$ on $\cC$, and its associated [Eilenberg-Moore category]
+$\cC^M$, as a standard way of constructing categories of "algebraic
+gadgets" backed by objects of $\cC$. A concrete example is given by
 the [category of monoids]: A [monoid] (in [sets]) is equivalent to an
 algebra for the [list monad].
 
@@ -37,8 +37,8 @@ categories are themselves univalent, assuming that their underlying
 category is. Here we give a positive answer.
 
 
-Fixing a monad $M$ on a univalent category $\ca{C}$, we abbreviate its
-Eilenberg-Moore category $\ca{C}^M$ as `EM`{.Agda}.
+Fixing a monad $M$ on a univalent category $\cC$, we abbreviate its
+Eilenberg-Moore category $\cC^M$ as `EM`{.Agda}.
 
 ```agda
 private EM = Eilenberg-Moore C M
@@ -84,9 +84,9 @@ broken down into an identification of their components.
 
 Recall that a `homomorphism of M-algebras`{.Agda ident=Algebra-hom}
 between $(A_0,A_m) \to (X_0,X_m)$ is given by a map $h : A_0 \to X_0$ in
-$\ca{C}$, such that the diagram below commutes. By forgetting that the
+$\cC$, such that the diagram below commutes. By forgetting that the
 square commutes, algebra homomorphisms correspond [faithfully] to
-morphisms in the underlying category $\ca{C}$.
+morphisms in the underlying category $\cC$.
 
 [faithfully]: agda://Cat.Diagram.Monad#Forget
 
@@ -103,9 +103,9 @@ morphisms in the underlying category $\ca{C}$.
 ~~~
 
 Hence, given an _isomorphism_ $(A_0, A_m) \cong (X_0, X_m)$ (let us call
-it $f$) in $\ca{C}^M$, we can forget all of the commutativity data
+it $f$) in $\cC^M$, we can forget all of the commutativity data
 associated with the algebra homomorphisms, and recover an isomorphism
-between the underlying objects in $\ca{C}$:
+between the underlying objects in $\cC$:
 
 ```agda
     A₀≅X₀ : A C.≅ X
@@ -113,7 +113,7 @@ between the underlying objects in $\ca{C}$:
       (map A≅X.to) (map A≅X.from) (ap map A≅X.invl) (ap map A≅X.invr)
 ```
 
-Since we assumed $\ca{C}$ to be univalent, this isomorphism can be `made
+Since we assumed $\cC$ to be univalent, this isomorphism can be `made
 into a path`{.Agda ident=to-path} $A_0 \equiv X_0$. This covers a third
 of the task: We must now show first that the algebra structures $A_m$
 and $X_m$ are identified over `A₀≡X₀`{.Agda}, and we must prove that the
@@ -165,7 +165,7 @@ calculation then shows that the square above commutes.
 ```
 
 Note, however, that the path above is not in the correct space! While it
-is in a space of $\ca{C}$-morphisms, the source is not of the correct
+is in a space of $\cC$-morphisms, the source is not of the correct
 type. This is because functors between univalent categories can act on
 paths in "two" ways: One can either apply the functor's `action on
 isos`{.Agda ident=F-map-iso}, then take a path in the codomain category;
@@ -187,7 +187,7 @@ ident=F-map-path}, and we can correct the source:
     A≡X i = A₀≡X₀ i , Am≡Xm i
 ```
 
-To finish the proof that $\ca{C}^M$ is univalent, we must show that the
+To finish the proof that $\cC^M$ is univalent, we must show that the
 identification we've built trivialises the isomorphism $A \cong X$ we
 were given. This follows immediately from the characterisation of `paths
 in isomorphism spaces`{.Agda ident=EM.≅-pathp} and `in Hom-spaces`{.Agda

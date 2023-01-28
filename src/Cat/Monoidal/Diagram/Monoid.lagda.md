@@ -31,11 +31,11 @@ module _ {o ℓ} {C : Precategory o ℓ} (M : Monoidal-category C) where
 
 # Monoids in a monoidal category
 
-Let $(\ca{C}, \otimes, 1)$ be a [monoidal category] you want to study.
+Let $(\cC, \otimes, 1)$ be a [monoidal category] you want to study.
 It can be, for instance, one of the [endomorphism categories] in a
-[bicategory] that you like. A **monoid object in $\ca{C}$**, generally
-just called a "monoid in $\ca{C}$", is really a collection of diagrams
-in $\ca{C}$ centered around an object $M$, the monoid itself.
+[bicategory] that you like. A **monoid object in $\cC$**, generally
+just called a "monoid in $\cC$", is really a collection of diagrams
+in $\cC$ centered around an object $M$, the monoid itself.
 
 [monoidal category]: Cat.Monoidal.Base.html#monoidal-categories
 [endomorphism categories]: Cat.Monoidal.Base.html#endomorphism-categories
@@ -57,9 +57,9 @@ monoidal category:
       μ-assoc : μ C.∘ (C.id C.⊗₁ μ) ≡ μ C.∘ (μ C.⊗₁ C.id) C.∘ C.α← _ _ _
 ```
 
-If we think of $\ca{C}$ as a bicategory with a single object $*$ ---
-that is, we _deloop_ it ---, then a monoid in $\ca{C}$ is given by
-precisely the same data as a monad in $\bf{B}\ca{C}$, on the object $*$.
+If we think of $\cC$ as a bicategory with a single object $*$ ---
+that is, we _deloop_ it ---, then a monoid in $\cC$ is given by
+precisely the same data as a monad in $\bf{B}\cC$, on the object $*$.
 
 <!--
 ```agda
@@ -126,13 +126,13 @@ Put another way, a monad is just a monoid in the category of
 
 ## The category Mon(C)
 
-The monoid objects in $\ca{C}$ can be made into a category, much like
+The monoid objects in $\cC$ can be made into a category, much like
 the [monoids in the category of sets]. In fact, we shall see later that
 when $\sets$ is equipped with its [Cartesian monoidal structure],
-$\id{Mon}(\sets) \cong \id{Mon}$. Rather than defining
-$\id{Mon}(\ca{C})$ directly as a category, we instead define it as a
-category $\id{Mon}(\ca{C}) \liesover \ca{C}$ \r{displayed over}
-$\ca{C}$, which fits naturally with the way we have defined
+$\rm{Mon}(\sets) \cong \rm{Mon}$. Rather than defining
+$\rm{Mon}(\cC)$ directly as a category, we instead define it as a
+category $\rm{Mon}(\cC) \liesover \cC$ \r{displayed over}
+$\cC$, which fits naturally with the way we have defined
 `Monoid-object-on`{.Agda}.
 
 [Cartesian monoidal structure]: Cat.Monoidal.Instances.Cartesian.html
@@ -194,7 +194,7 @@ laws, a great simplification.
 The most complicated step of putting together the displayed category of
 monoid objects is proving that monoid homomorphisms are closed under
 composition. However, even in the point-free setting of an arbitrary
-category $\ca{C}$, the reasoning isn't _that_ painful:
+category $\cC$, the reasoning isn't _that_ painful:
 
 ```agda
   Mon[ .id′ ] .pres-η = C.idl _
@@ -242,7 +242,7 @@ Mon[Sets]≡Mon {ℓ} = Displayed-path F (λ a → is-iso→is-equiv (fiso a)) f
 ```
 
 The construction proceeds in three steps: First, put together a functor
-(displayed over the identity) $\id{Mon}(\ca{C}) \to \ht{Mon}$; Then,
+(displayed over the identity) $\rm{Mon}(\cC) \to \ht{Mon}$; Then,
 prove that its action on objects ("step 2") and action on morphisms
 ("step 3") are independently equivalences of types. The characterisation
 of paths of displayed categories will take care of turning this data

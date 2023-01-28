@@ -35,7 +35,7 @@ A _precategory_ is a "proof-relevant preorder". In a preordered set $(A,
 
 In a precategory, the condition that $a \le b$ be a proposition is
 relaxed: A precategory has a `type of objects`{.Agda ident=Ob} and, between
-each $x, y$, a **set** $\id{Hom}(x, y)$ of relations (or maps). The
+each $x, y$, a **set** $\rm{Hom}(x, y)$ of relations (or maps). The
 name Hom is historical and it betrays the original context in which
 categories where employed: algebra(ic topology), where the maps in
 question are **hom**omorphisms.
@@ -127,8 +127,8 @@ A common theme throughout precategory theory is that of _duality_: The dual
 of a categorical concept is same concept, with "all the arrows
 inverted". To make this formal, we introduce the idea of _opposite
 categories_: The opposite of $C$, written $C\op$, has the same
-`objects`{.Agda}, but with $\id{Hom}_{C\op}(x, y) =
-\id{Hom}_{C}(y, x)$.
+`objects`{.Agda}, but with $\rm{Hom}_{C\op}(x, y) =
+\rm{Hom}_{C}(y, x)$.
 
 ```agda
 infixl 60 _^op
@@ -153,7 +153,7 @@ Agda computes, is called _definitional_.
 
 The left and right identity laws are swapped for the construction of the
 opposite precategory: For `idr`{.Agda} one has to show $f \circ_{op}
-\id{id} = f$, which computes into having to show that $\id{id}
+\id = f$, which computes into having to show that $\id
 \circ_op{f} = f$. The case for `idl`{.Agda} is symmetric.
 
 ```agda
@@ -252,7 +252,7 @@ between Hom-sets.
 ```
 
 A Functor $F : C \to D$ consists of a `function between the object
-sets`{.Agda ident="F₀"} - $F_0 : \id{Ob}(C) \to \id{Ob}(D)$, and
+sets`{.Agda ident="F₀"} - $F_0 : \rm{Ob}(C) \to \rm{Ob}(D)$, and
 a `function between Hom-sets`{.Agda ident="F₁"} - which takes $f : x \to
 y \in C$ to $F_1(f) : F_0(x) \to F_0(y) \in D$.
 

@@ -8,9 +8,9 @@ module Cat.Instances.Shape.Join where
 
 # Join of categories
 
-The **join** $\ca{C} \star \ca{D}$ of two categories is the category
-obtained by "bridging" the disjoint union $\ca{C} \coprod \ca{D}$ with a
-_unique_ morphism between each object of $\ca{C}$ and each object of $\ca{D}$.
+The **join** $\cC \star \cD$ of two categories is the category
+obtained by "bridging" the disjoint union $\cC \coprod \cD$ with a
+_unique_ morphism between each object of $\cC$ and each object of $\cD$.
 
 ```agda
 module _ {o ℓ o′ ℓ′} (C : Precategory o ℓ) (D : Precategory o′ ℓ′) where

@@ -16,7 +16,7 @@ category. For instance, we can think of categories of algebraic objects
 (monoids, groups, rings, etc) as being extra structure placed atop the
 objects of Set, and extra conditions placed atop the morphisms of Set.
 
-We start by defining a displayed category over a base category $\ca{B}$
+We start by defining a displayed category over a base category $\cB$
 which will act as the category we add the extra structure to.
 
 ```agda

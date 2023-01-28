@@ -21,7 +21,7 @@ open Functor
 
 # Discrete categories
 
-Given a groupoid $A$, we can build the category $\id{Disc}(A)$ with
+Given a groupoid $A$, we can build the category $\rm{Disc}(A)$ with
 space of objects $A$ and a single morphism $x \to y$ whenever $x \equiv
 y$.
 
@@ -75,7 +75,7 @@ Codisc′ x .assoc _ _ _ = refl
 
 If $X$ is a `discrete type`{.Agda ident=Discrete}, then it is in
 particular in `Set`{.Agda}, and we can make diagrams of shape
-$\id{Disc}(X)$ in some category $\ca{C}$, using the decidable
+$\rm{Disc}(X)$ in some category $\cC$, using the decidable
 equality on $X$. We note that the decidable equality is _redundant_
 information: The construction `Disc′`{.Agda} above extends into a [left
 adjoint] to the `Ob`{.Agda} functor.
@@ -103,12 +103,12 @@ Disc-diagram {X = X} {C = C} disc f = F where
 ```
 
 The object part of the functor is the provided $f : X \to
-\id{Ob}(\ca{C})$, and the decidable equality is used to prove that
+\rm{Ob}(\cC)$, and the decidable equality is used to prove that
 $f$ respects equality. This is why it's redundant: $f$ automatically
 respects equality, because it's a function! However, by using the
 decision procedure, we get better computational behaviour: Very often,
-$\id{disc}(x,x)$ will be $\id{yes}(\id{refl})$, and
-substitution along $\id{refl}$ is easy to deal with.
+$\rm{disc}(x,x)$ will be $\rm{yes}(\rm{refl})$, and
+substitution along $\rm{refl}$ is easy to deal with.
 
 ```agda
   F : Functor _ _

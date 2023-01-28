@@ -125,8 +125,8 @@ quot-triangle a b i j = hcomp (∂ j ∨ ~ i) λ where
 -->
 
 In the other direction, we must be clever: we use path induction,
-defining a type family $\id{Code}_{a,b}(x)$ such that the fibre of
-$\id{Code}_{a,b}$ over $(c, d)$ is $a + d = b + c$. We can then use path
+defining a type family $\rm{Code}_{a,b}(x)$ such that the fibre of
+$\rm{Code}_{a,b}$ over $(c, d)$ is $a + d = b + c$. We can then use path
 induction to construct the map inverse to `same-difference`{.Agda}. On
 the way, the first thing we establish is a pair of observations about
 equalities on the natural numbers: $a + n = b + m$ and $a + 1 + n = b +
@@ -150,8 +150,8 @@ module ℤ-Path where
 ```
 
 We then define, fixing two natural numbers $a, b$, the family
-$\id{Code}_{a,b}(x)$ by recursion on the integer $x$. Recall that we
-want the fibre over $\id{diff}(c, d)$ to be $a + d = b + c$, so that's
+$\rm{Code}_{a,b}(x)$ by recursion on the integer $x$. Recall that we
+want the fibre over $\rm{diff}(c, d)$ to be $a + d = b + c$, so that's
 our pick. Now, the `quot`{.Agda} path constructor mandates that the
 fibre over $(c, d)$ be the same as that over $(1 + c, 1 + d)$ --- but
 this follows by propositional extensionality and the pair of
@@ -165,7 +165,7 @@ observations above.
     path = ua (prop-ext (Nat-is-set _ _) (Nat-is-set _ _) encode-p-from encode-p-to)
 ```
 
-Hence, if we have a path $\id{diff}(a, b) = x$, we can apply path
+Hence, if we have a path $\rm{diff}(a, b) = x$, we can apply path
 induction, whence it suffices to consider the case where $x$ is
 literally_ the difference of $a$ and $b$. To lift this into our
 `Code`{.Agda} fibration, we must show that $a + b = b + a$, but this is
@@ -362,7 +362,7 @@ Int-rec₂ : ∀ {ℓ} {B : Type ℓ}
 
 In addition, we must have that these two _paths_ `pl` and `pr` are
 _coherent_. There are two ways of obtaining an equality $f(a, b, x, y) =
-f(\id{S}a,\id{S}b,\id{S}x,\id{S}y)$ (`pl` after `pr` and
+f(\rm{S}a,\rm{S}b,\rm{S}x,\rm{S}y)$ (`pl` after `pr` and
 `pr` after `pl`, respectively) and these _must_ be homotopic:
 
 ```agda
@@ -377,17 +377,17 @@ The type of `square` says that we need the following square of paths to
 commute, which says exactly that `pl ∙ pr` and `pr ∙ pl` are homotopic
 and imposes no further structure on $X$[^1]:
 
-[^1]: In the diagram, we write $\id{S}x$ for `suc x`.
+[^1]: In the diagram, we write $\rm{S}x$ for `suc x`.
 
 ~~~{.quiver .tall-1}
 \[\begin{tikzcd}
-  {f(a,b,x,y)} && {f(a,b,\id{S}x,\id{S}y)} \\
+  {f(a,b,x,y)} && {f(a,b,\rm{S}x,\rm{S}y)} \\
   \\
-  {f(\id{S}a,\id{S}b, x, y)} && {f(\id{S}a,\id{S}b,\id{S}x,\id{S}y)}
+  {f(\rm{S}a,\rm{S}b, x, y)} && {f(\rm{S}a,\rm{S}b,\rm{S}x,\rm{S}y)}
   \arrow["{pl(a,b,x,y)}", from=1-1, to=3-1]
   \arrow["{pr(a,b,x,y)}", from=1-1, to=1-3]
-  \arrow["{pl(a,b,\id{S}x,\id{S}y)}"', from=1-3, to=3-3]
-  \arrow["{pr(\id{S}a,\id{S}b,x,y)}"', from=3-1, to=3-3]
+  \arrow["{pl(a,b,\rm{S}x,\rm{S}y)}"', from=1-3, to=3-3]
+  \arrow["{pr(\rm{S}a,\rm{S}b,x,y)}"', from=3-1, to=3-3]
 \end{tikzcd}\]
 ~~~
 

@@ -29,18 +29,18 @@ and Strecker in their book "The Joy of Cats"^[Cats are, indeed, very
 joyful] as a way to make precise the vibes-based notion of **forgetful
 functor**. Classically, the definition reads
 
-> A functor $F : \ca{C} \to \ca{D}$ is **amnestic** if an isomorphism
+> A functor $F : \cC \to \cD$ is **amnestic** if an isomorphism
 $f$ _is an identity_ whenever $Ff$ is,
 
 but what does it mean for an isomorphism $f : a \cong b$ to _be an
 identity_? The obvious translation would be that $f$ comes from an
 identification $a \equiv b$ of objects, but this is just rephrasing the
-condition that $\ca{C}$ is univalent, whereas we want a condition on the
+condition that $\cC$ is univalent, whereas we want a condition on the
 _functor_ $F$. So, we define:
 
 An isomorphism $f : a \cong b$ **is an identity** if it is an identity
 in the total space of `Hom`{.Agda}, i.e. if there is an object $c :
-\ca{C}$ s.t. $(c, c, \id{id}) = (a, b, f)$ in the type $\Sigma_a
+\cC$ s.t. $(c, \idid}) = (a, b, f)$ in the type $\Sigma_a
 \Sigma_b (a \to b)$. Every isomorphism in a univalent category is an
 identity, since we can take $c = a$, and the identification in
 `Mor`{.Agda} follows from univalence.
@@ -71,7 +71,7 @@ module _ (F : Functor C D) where
 -->
 
 Let $f$ be an identity, i.e. it is such that $(a, b, f) \cong (c, c,
-\id{id})$. Any functor $F$ induces an identification $(Fa, Fb, Ff) \cong
+\id)$. Any functor $F$ induces an identification $(Fa, Fb, Ff) \cong
 (Fc, Fc, id)$, meaning that it _preserves being an identity_. A functor
 is **amnestic** if it additionally _reflects_ being an identity: the
 natural map we have implicitly defined above (called `action`{.Agda}) is
@@ -98,9 +98,9 @@ an equivalence.
 # Who cares?
 
 The amnestic functors are interesting to consider in HoTT because they
-are exactly those that _reflect univalence_: If $F : \ca{C} \to \ca{D}$
-is an amnestic functor and $\ca{D}$ is a univalent category, then
-$\ca{C}$ is univalent, too!
+are exactly those that _reflect univalence_: If $F : \cC \to \cD$
+is an amnestic functor and $\cD$ is a univalent category, then
+$\cC$ is univalent, too!
 
 ```agda
   reflect-category : is-category D → is-amnestic → is-category C
@@ -109,9 +109,9 @@ $\ca{C}$ is univalent, too!
       isom′ = F-map-iso F isom
 ```
 
-For suppose that $i : a \cong b \in \ca{C}$ is an isomorphism. $F$
+For suppose that $i : a \cong b \in \cC$ is an isomorphism. $F$
 preserves this isomorphism, meaning we have an iso $Fi : Fa \cong Fb$,
-now in $\ca{D}$. But because $\ca{D}$ is a univalent category, $Fi$ is
+now in $\cD$. But because $\cD$ is a univalent category, $Fi$ is
 an identity, and by $F$'s amnesia, so is $i$.
 
 ```agda
@@ -121,10 +121,10 @@ an identity, and by $F$'s amnesia, so is $i$.
                       (Univalent.Hom-pathp-reflr-iso d-cat (D.idr _))
 ```
 
-Unfolding, we have an object $x : \ca{C}$ and an identification $p : (x,
-x, \id{id}) \equiv (a, b, i)$. We may construct an identification $p' :
+Unfolding, we have an object $x : \cC$ and an identification $p : (x,
+x, \id) \equiv (a, b, i)$. We may construct an identification $p' :
 a \cong b$ from the components of $p$, and this induces an
-identification $\id{id} \equiv i$ over $p'$ in a straightforward way.
+identification $\id \equiv i$ over $p'$ in a straightforward way.
 We're done!
 
 ```agda

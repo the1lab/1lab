@@ -28,14 +28,14 @@ private variable
 Recall the three conditions that make up the notion of [equivalence].
 
 > To be more specific, what we need for a notion of equivalence
-$\id{is-equiv}(f)$ to be "coherent" is:
+$\rm{is-equiv}(f)$ to be "coherent" is:
 >
 > - Being an `isomorphism`{.Agda ident=is-iso} implies being an
-`equivalence`{.Agda ident=is-equiv} ($\id{is-iso}(f) \to
-\id{is-equiv}(f)$)
+`equivalence`{.Agda ident=is-equiv} ($\rm{is-iso}(f) \to
+\rm{is-equiv}(f)$)
 >
-> - Being an equivalence implies being an isomorphism ($\id{is-equiv}(f)
-\to \id{is-iso}(f)$); Taken together with the first point we may
+> - Being an equivalence implies being an isomorphism ($\rm{is-equiv}(f)
+\to \rm{is-iso}(f)$); Taken together with the first point we may
 summarise: "Being an equivalence and being an isomorphism are logically
 equivalent."
 >
@@ -53,9 +53,9 @@ a good notion of equivalence.
 [contractible fibres]: agda://1Lab.Equiv#is-equiv
 
 A **left inverse** to a function $f : A \to B$ is a function $g : B \to
-A$ equipped with a [homotopy] $g \circ f \sim \id{id}$. Symmetrically, a
+A$ equipped with a [homotopy] $g \circ f \sim \id$. Symmetrically, a
 **right inverse** to $f$ is a function $h : B \to A$ equipped with a
-homotopy $f \circ h \sim \id{id}$.
+homotopy $f \circ h \sim \id$.
 
 [homotopy]: agda://1Lab.Path#funext
 
@@ -186,7 +186,7 @@ is-biinv-is-prop {f = f} = contractible-if-inhabited contract where
 
 Since `is-biinv`{.Agda} is a product of contractibles whenever it is
 inhabited, then it is contractible. Finally, we have that
-$\id{is-iso}(f) \to \id{is-biinv}(f)$: pick the given inverse as both a
+$\rm{is-iso}(f) \to \rm{is-biinv}(f)$: pick the given inverse as both a
 left- and right- inverse.
 
 ```agda

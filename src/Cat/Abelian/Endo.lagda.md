@@ -15,11 +15,11 @@ private module A = Ab-category A
 
 # Endomorphism rings
 
-Fix an [$\Ab$-category] $\ca{A}$: It can be the category of abelian
+Fix an [$\Ab$-category] $\cA$: It can be the category of abelian
 groups $\Ab$ itself, for example, or $R$-Mod for your favourite ring^[We
 tacitly assume the reader has a favourite ring.]. Because composition in
-$\ca{A}$ distributes over addition, the collection of endomorphisms of
-any particular object $x : \ca{A}$ is not only a monoid, but a _ring_:
+$\cA$ distributes over addition, the collection of endomorphisms of
+any particular object $x : \cA$ is not only a monoid, but a _ring_:
 the **endomorphism ring** of $x$.
 
 [$\Ab$-category]: Cat.Abelian.Base.html#ab-enriched-categories
@@ -48,5 +48,5 @@ Endo x = from-make-ring mr where
 
 This is a fantastic source of non-commutative rings, and indeed the
 justification for allowing them at all. Even for the relatively simple
-case of $\ca{A} = \Ab$, it is an open problem to characterise the
+case of $\cA = \Ab$, it is an open problem to characterise the
 abelian groups with commutative endomorphism rings.

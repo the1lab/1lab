@@ -105,7 +105,7 @@ simple-ct→simple ct .Displayed-functor.F-id′ = refl
 simple-ct→simple ct .Displayed-functor.F-∘′ = refl
 ```
 
-Furthermore, if $\ca{B}$ is inhabited, then we can construct a
+Furthermore, if $\cB$ is inhabited, then we can construct a
 CT-Structure that considers every context a type.
 
 <!--

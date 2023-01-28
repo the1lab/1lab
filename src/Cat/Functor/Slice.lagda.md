@@ -14,10 +14,10 @@ module Cat.Functor.Slice where
 
 # Slicing functors
 
-Let $F : \ca{C} \to \ca{D}$ be a functor and $X : \ca{C}$ an object. By
+Let $F : \cC \to \cD$ be a functor and $X : \cC$ an object. By
 a standard tool in category theory (namely "whacking an entire
 commutative diagram with a functor"), $F$ restricts to a functor $F/X :
-\ca{C}/X \to \ca{D}/F(X)$. We call this "slicing" the functor $F$. This
+\cC/X \to \cD/F(X)$. We call this "slicing" the functor $F$. This
 module investigates some of the properties of sliced functors.
 
 <!--
@@ -48,8 +48,8 @@ Sliced F X .F-∘ f g = /-Hom-path (F .F-∘ _ _)
 
 Slicing preserves faithfulness and fully-faithfulness. It does _not_
 preserve fullness: Even if, by fullness, we get a map $f : x \to y \in
-\ca{C}$ from a map $h : F(x) \to F(y) \in \ca{D}/F(X)$, it does not
-necessarily restrict to a map in $\ca{C}/X$. We'd have to show
+\cC$ from a map $h : F(x) \to F(y) \in \cD/F(X)$, it does not
+necessarily restrict to a map in $\cC/X$. We'd have to show
 $F(y)h=F(x)$ and $h=F(f)$ implies $yf=x$, which is possible only if $F$
 is faithful.
 
@@ -84,9 +84,9 @@ faithful.
 
 If $F$ is lex (meaning it preserves pullbacks and the terminal object),
 then $F/X$ is lex as well. We note that it (by definition) preserves
-products, since products in $\ca{C}/X$ are equivalently pullbacks in
-$\ca{C}/X$. Pullbacks are also immediately shown to be preserved, since
-a square in $\ca{C}/X$ is a pullback iff it is a pullback in $\ca{C}$.
+products, since products in $\cC/X$ are equivalently pullbacks in
+$\cC/X$. Pullbacks are also immediately shown to be preserved, since
+a square in $\cC/X$ is a pullback iff it is a pullback in $\cC$.
 
 ```agda
 Sliced-lex
@@ -109,8 +109,8 @@ That the slice of lex functor preserves the terminal object is slightly
 more involved, but not by a lot. The gist of the argument is that _we
 know what the terminal object is_: It's the identity map! So we can
 cheat: Since we know that $T$ is terminal, we know that $T \cong
-\id{id}$ --- but $F$ preserves this isomorphism, so we have $F(T) \cong
-F(\id{id})$. But $F(\id{id})$ is $\id{id}$ again, now in $\ca{D}$, so
+\id$ --- but $F$ preserves this isomorphism, so we have $F(T) \cong
+F(\id)$. But $F(\id)$ is $\id$ again, now in $\cD$, so
 $F(T)$, being isomorphic to the terminal object, is itself terminal!
 
 ```agda

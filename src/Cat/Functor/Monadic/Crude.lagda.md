@@ -60,10 +60,10 @@ elementary topoi, but carried out in full generality.
 [Beck's coequaliser]: Cat.Functor.Monadic.Beck.html#becks-coequaliser
 [monadic]: Cat.Functor.Adjoint.Monadic.html
 
-Recall our setup. We have a [left adjoint][ladj] functor $F : \ca{C} \to
-\ca{D}$ (call its right adjoint $U$), and we're interested in
-characterising exactly when the [comparison functor][comp] $K : \ca{D}
-\to \ca{C}^{UF}$ into the [Eilenberg-Moore category][emc] of the [monad
+Recall our setup. We have a [left adjoint][ladj] functor $F : \cC \to
+\cD$ (call its right adjoint $U$), and we're interested in
+characterising exactly when the [comparison functor][comp] $K : \cD
+\to \cC^{UF}$ into the [Eilenberg-Moore category][emc] of the [monad
 from the adjunction][madj] is an equivalence. Our refinement here gives
 a _sufficient_ condition.
 
@@ -76,7 +76,7 @@ a _sufficient_ condition.
 paragraph above, and abbreviate the resulting monad by $T$; Denote the
 comparison functor by $K$.
 
-1. If $\ca{D}$ has [Beck's coequalisers] for any $T$-algebra, then $K$
+1. If $\cD$ has [Beck's coequalisers] for any $T$-algebra, then $K$
 has a left adjoint $K^{-1} \dashv K$;
 
 2. If, in addition, $U$ preserves coequalisers for any pair which has a
@@ -93,7 +93,7 @@ adjunction $\eta$ is also a natural isomorphism, and $K$ is an
 
 **Proof** We already established (1) [here][Beck's coequalisers].
 
-Let us show (2). Suppose that $\ca{D}$ has Beck's coequalisers and that
+Let us show (2). Suppose that $\cD$ has Beck's coequalisers and that
 $U$ preserves coequalisers of pairs of morphisms with a common right
 inverse (we call these coequalisers **reflexive**):
 
@@ -194,7 +194,7 @@ we're seeking.
 
 It remains to show that $\eta^{-1}$ is a homomorphism of algebras. This
 is a calculation reusing the established proof that $\eta^{-1}\eta =
-\id{id}$ established using the universal property of coequalisers above.
+\id$ established using the universal property of coequalisers above.
 
 ```agda
     inverse : C^T.Hom (U.₀ _ , _) o
@@ -268,7 +268,7 @@ $U$ is conservative, so $\eps$ is an isomorphism, as desired.
         (C.introl refl)
 ```
 
-Packaging it all up, we get the claimed theorem: If $\ca{D}$ has Beck's
+Packaging it all up, we get the claimed theorem: If $\cD$ has Beck's
 coequalisers, and $U$ is a conservative functor which preserves
 reflexive coequalisers, then the adjunction $F \dashv U$ is monadic.
 

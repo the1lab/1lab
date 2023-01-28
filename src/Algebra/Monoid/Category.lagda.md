@@ -101,7 +101,7 @@ Forget = Forget-structure (Monoid-structure _)
 ## Free objects
 
 We piece together some properties of `lists`{.Agda ident=List} to show
-that, if $A$ is a set, then $\id{List}(A)$ is an object of
+that, if $A$ is a set, then $\rm{List}(A)$ is an object of
 `Monoids`{.Agda}; The operation is list concatenation, and the identity
 element is the empty list.
 
@@ -118,7 +118,7 @@ List-is-monoid aset .has-is-monoid .has-is-semigroup .associative {x} {y} {z} =
   sym (++-assoc x y z)
 ```
 
-We prove that the assignment $X \mapsto \id{List}(X)$ is functorial;
+We prove that the assignment $X \mapsto \rm{List}(X)$ is functorial;
 We call this functor `Free`{.Agda}, since it is a [left adjoint] to the
 `Forget`{.Agda} functor defined above: it solves the problem of turning
 a `set`{.Agda ident=Set} into a monoid in the most efficient way.

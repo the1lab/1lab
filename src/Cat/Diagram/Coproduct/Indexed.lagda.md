@@ -47,8 +47,8 @@ record is-indexed-coproduct (F : Idx → C.Ob) (ι : ∀ i → C.Hom (F i) S)
     .is-iso.linv x → sym (unique _ λ _ → refl)
 ```
 
-A category $\ca{C}$ **admits indexed coproducts** (of level $\ell$) if,
-for any type $I : \ty\ \ell$ and family $F : I \to \ca{C}$, there is an
+A category $\cC$ **admits indexed coproducts** (of level $\ell$) if,
+for any type $I : \ty\ \ell$ and family $F : I \to \cC$, there is an
 indexed coproduct of $F$.
 
 ```agda
@@ -160,7 +160,7 @@ record is-disjoint-coproduct (F : Idx → C.Ob) (ι : ∀ i → C.Hom (F i) S)
 ## Initial objects are disjoint
 
 We prove that if $\bot$ is an initial object, then it is also an indexed
-coproduct --- for any family $\bot \to \ca{C}$ --- and furthermore, it
+coproduct --- for any family $\bot \to \cC$ --- and furthermore, it
 is a disjoint coproduct.
 
 ```agda

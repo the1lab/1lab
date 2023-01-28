@@ -52,8 +52,8 @@ module _ (∅ : Zero) where
     open is-equaliser has-is-kernel public
 ```
 
-**Lemma**: Let $\ca{C}$ be a category with equalisers and a zero object.
-In $\ca{C}, the kernel of a kernel is zero. First, note that if a
+**Lemma**: Let $\cC$ be a category with equalisers and a zero object.
+In $\cC, the kernel of a kernel is zero. First, note that if a
 category has a choice of zero object and a choice of equaliser for any
 pair of morphisms, then it has canonically-defined choices of kernels:
 
