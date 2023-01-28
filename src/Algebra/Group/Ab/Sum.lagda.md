@@ -57,10 +57,10 @@ module _ {ℓ} {G H : AbGroup ℓ} where
 -->
 
 The construction of the projection homomorphisms and the "limiting"
-homomorphism is as in $\sets$: The existence of a [left adjoint] free
-abelian group functor $\sets \to \Ab$ implies that limits in $\Ab$ are
-computed as in $\sets$ (namely, because the _forgetful_ functor $U : \Ab
-\to \sets$ is a _right_ adjoint, and [right adjoints preserve
+homomorphism is as in $\Sets$: The existence of a [left adjoint] free
+abelian group functor $\Sets \to \Ab$ implies that limits in $\Ab$ are
+computed as in $\Sets$ (namely, because the _forgetful_ functor $U : \Ab
+\to \Sets$ is a _right_ adjoint, and [right adjoints preserve
 limits][rapl]).
 
 [left adjoint]: Cat.Functor.Adjoint.html

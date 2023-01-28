@@ -462,7 +462,7 @@ has all pullbacks, because in a world where the vertical arrows are
 Other examples exist:
 
 - The [family fibration] exhibits any category $\cC$ as displayed
-over $\sets$. The fibres are functor categories (with discrete domains),
+over $\Sets$. The fibres are functor categories (with discrete domains),
 reindexing is given by composition.
 
 [family fibration]: Cat.Displayed.Instances.Family.html

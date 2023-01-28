@@ -54,7 +54,7 @@ $$
 
 where the codomain is the [group of symmetries] of $\bb{C}$. But what if
 we want a group $G$ to act on an object $X$ of a more general
-[category], rather than an object of $\sets$?
+[category], rather than an object of $\Sets$?
 
 [group homomorphism]: Algebra.Group.html#group-homomorphisms
 [group of symmetries]: Algebra.Group.html#symmetric-groups

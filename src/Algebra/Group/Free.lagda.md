@@ -177,7 +177,7 @@ associativity, identity and inverse laws that provide the cases for
 ```
 
 Now, given a set $S$, we must come up with a group $G$, with a map
-$\eta : S \to U(G)$ (in $\sets$, where $U$ is the [underlying set functor]),
+$\eta : S \to U(G)$ (in $\Sets$, where $U$ is the [underlying set functor]),
 such that, for any other group $H$, any map $S \to U(H)$ can be factored
 uniquely as $S \xrightarrow{\eta} U(G) \to U(H)$. As hinted above, we
 pick $G = \rm{Free}(S)$, the free group with $S$ as its set of

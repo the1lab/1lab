@@ -155,7 +155,7 @@ Fortunately the triangle identities are straightforwardly checked.
 
 The _codiscrete_ category on a set $X$ is the strict category with
 object space $X$, and _all_ hom-spaces contractible. The assignment of
-codiscrete categories extends to a functor $\sets \to \strcat$, where we
+codiscrete categories extends to a functor $\Sets \to \strcat$, where we
 lift functions to act on object parts and the action on morphisms is
 trivial.
 

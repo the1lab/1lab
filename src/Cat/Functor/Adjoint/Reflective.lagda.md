@@ -36,7 +36,7 @@ open _=>_
 
 Occasionally, [full subcategory] inclusions (hence [fully faithful
 functors] --- like the inclusion of abelian groups into the category of
-all groups, or the inclusion $\props \mono \sets$) participate in an
+all groups, or the inclusion $\props \mono \Sets$) participate in an
 adjunction
 
 [full subcategory]: Cat.Functor.FullSubcategory.html

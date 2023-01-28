@@ -67,9 +67,9 @@ Strict-cats o h .Hom-set _ (D , dset) = Functor-is-set dset
 
 ## Products
 
-We prove that `Strict-cats`{.Agda} has products. This is because
-$(\cC \times_\cat \cD)_0$ is $\cC_0 \times \cD_0$,
-and h-levels are closed under products.
+We prove that `Strict-cats`{.Agda} has products. This is because $(\cC
+\times \cD)_0$ is $\cC_0 \times \cD_0$, and h-levels are closed under
+products.
 
 ```agda
 Strict-cats-products

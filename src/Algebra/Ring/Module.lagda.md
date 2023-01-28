@@ -411,7 +411,7 @@ $\Ab$-functor $\bf{B}(R) \to \cA$, or as a ring homomorphism $R \to
 In the particular case where $\cA = \Ab$ is the archetypal
 $\Ab$-category, these actions get a fancy name: **modules**. This is
 analogous to how _monoid actions_ and _group actions_ are fancy names
-for actions on the archetypal $\sets$-category, which is $\sets$ itself.
+for actions on the archetypal $\Sets$-category, which is $\Sets$ itself.
 
 ```agda
 module _ {ℓ} (R : Ring ℓ) where

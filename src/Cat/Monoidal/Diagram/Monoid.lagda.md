@@ -128,8 +128,8 @@ Put another way, a monad is just a monoid in the category of
 
 The monoid objects in $\cC$ can be made into a category, much like
 the [monoids in the category of sets]. In fact, we shall see later that
-when $\sets$ is equipped with its [Cartesian monoidal structure],
-$\rm{Mon}(\sets) \cong \rm{Mon}$. Rather than defining
+when $\Sets$ is equipped with its [Cartesian monoidal structure],
+$\rm{Mon}(\Sets) \cong \rm{Mon}$. Rather than defining
 $\rm{Mon}(\cC)$ directly as a category, we instead define it as a
 category $\rm{Mon}(\cC) \liesover \cC$ \r{displayed over}
 $\cC$, which fits naturally with the way we have defined
@@ -242,7 +242,7 @@ Mon[Sets]≡Mon {ℓ} = Displayed-path F (λ a → is-iso→is-equiv (fiso a)) f
 ```
 
 The construction proceeds in three steps: First, put together a functor
-(displayed over the identity) $\rm{Mon}(\cC) \to \ht{Mon}$; Then,
+(displayed over the identity) $\rm{Mon}(\cC) \to \thecat{Mon}$; Then,
 prove that its action on objects ("step 2") and action on morphisms
 ("step 3") are independently equivalences of types. The characterisation
 of paths of displayed categories will take care of turning this data

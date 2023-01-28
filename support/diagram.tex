@@ -7,8 +7,6 @@
 \usepackage{mathpazo}
 \usepackage[T1]{fontenc}
 
-\renewcommand{\rm}[1]{\mathrm{#1}}
-\newcommand{\id}{\rm{id}}
 \usetikzlibrary{calc}
 \usetikzlibrary{fit}
 \usetikzlibrary{decorations.pathmorphing}
@@ -42,8 +40,21 @@
     2cell/.style={double=diagrambg,-Implies}
 }
 
+\ExplSyntaxOn
+\NewDocumentCommand{\definealphabet}{mmmm}
+ {% #1 = prefix, #2 = command, #3 = start, #4 = end
+  \int_step_inline:nnn { `#3 } { `#4 }
+   {
+    \cs_new_protected:cpx { #1 \char_generate:nn { ##1 }{ 11 } }
+     {
+      \exp_not:N #2 { \char_generate:nn { ##1 } { 11 } }
+     }
+   }
+ }
 
-__DARK__
+\ExplSyntaxOff
+
+__PREAMBLE__
 
 \begin{document}
 \begin{page}

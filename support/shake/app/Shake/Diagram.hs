@@ -10,17 +10,19 @@ import Data.Text (Text)
 import Development.Shake.FilePath
 import Development.Shake
 
+import Macros (Preamble)
+
 -- | Render a LaTeX diagram to SVG. This renders the diagram using the
 -- @support/diagram.tex@ template, and then uses pdflatex and pdftocairo
 -- to convert it to SVG.
 buildDiagram
-  :: FilePath -- ^ The input (partial) TeX file.
-  -> FilePath -- ^ The output SVG file
-  -> Bool     -- ^ Is this the dark mode build?
+  :: Action Text -- ^ What preamble should we use?
+  -> FilePath    -- ^ The input (partial) TeX file.
+  -> FilePath    -- ^ The output SVG file
+  -> Bool
   -> Action ()
-buildDiagram input output isdark = do
-  need $ [input, templatePath]
-      ++ ["support/darken.tex" | isdark]
+buildDiagram preamble input output isdark = do
+  need [input, templatePath]
 
   (template, diagram') <- liftIO $ (,)
     <$> Text.readFile templatePath
@@ -30,14 +32,12 @@ buildDiagram input output isdark = do
     diagram = maybeDarken isdark diagram'
     texPath = replaceBaseName input (takeBaseName input ++ "_full" ++ ['d' | isdark])
 
-  darkenTemplate <- if isdark
-    then liftIO $ Text.readFile "support/darken.tex"
-    else pure ""
+  preamble <- preamble
 
   liftIO
     . Text.writeFile texPath
     . Text.replace "__BODY__" diagram
-    . Text.replace "__DARK__" darkenTemplate
+    . Text.replace "__PREAMBLE__" preamble
     $ template
 
   -- TODO: Do we want to parse the errors here/in the log file? Might be

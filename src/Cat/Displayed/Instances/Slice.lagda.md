@@ -82,13 +82,13 @@ private unquoteDecl eqv = declare-record-iso eqv (quote Slice-hom)
 -->
 
 The intuitive idea for the canonical self-indexing is possibly best
-obtained by considering the canonical self-indexing of $\sets_\kappa$.
-First, recall that an object $f : \sets/X$ is equivalently a $X$-indexed
+obtained by considering the canonical self-indexing of $\Sets_\kappa$.
+First, recall that an object $f : \Sets/X$ is equivalently a $X$-indexed
 family of sets, with the value of the family at each point $x : X$ being
 the fibre $f^*(x)$. A function $X \to Y$ of sets then corresponds to a
 _reindexing_, which takes an $X$-family of sets to a $Y$-family of sets
 ([in a functorial way]). A morphism $X' \to Y'$ in the canonical
-self-indexing of $\sets$ lying over a map $f : X \to Y$ is then a
+self-indexing of $\Sets$ lying over a map $f : X \to Y$ is then a
 function between the families $X' \to Y'$ which commutes with the
 reindexing given by $f$.
 

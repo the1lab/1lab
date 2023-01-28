@@ -14,7 +14,7 @@ any universe levels $\iota \le o$ and $\kappa \le o$. Inverting this to
 speak of maxima rather than ordering, to admit all $(\iota,\kappa)$-limits,
 we must be in _at least_ the category of $(\iota \sqcup \kappa)$-sets,
 but any extra adjustment $o$ is also acceptable. So, suppose we have an
-indexing category $\cD$ and a diagram $F : \cD \to \sets$; Let's
+indexing category $\cD$ and a diagram $F : \cD \to \Sets$; Let's
 build a limit for it!
 
 ```agda

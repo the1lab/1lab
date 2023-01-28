@@ -329,11 +329,11 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} {F G : Functor C D} w
 
 # Currying
 
-There is an equivalence between the spaces of bifunctors
-$\cC \times_\cat \cD \to E$ and the space of functors
-$\cC \to [\cD,E]$. We refer to the image of a functor under this
-equivalence as its _exponential transpose_, and we refer to the map in
-the "forwards" direction (as in the text above) as _currying_:
+There is an equivalence between the spaces of bifunctors $\cC \times \cD
+\to E$ and the space of functors $\cC \to [\cD,E]$. We refer to the
+image of a functor under this equivalence as its _exponential
+transpose_, and we refer to the map in the "forwards" direction (as in
+the text above) as _currying_:
 
 ```agda
 Curry : Functor (C ×ᶜ D) E → Functor C Cat[ D , E ]

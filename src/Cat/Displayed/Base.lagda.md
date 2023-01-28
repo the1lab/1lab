@@ -27,7 +27,7 @@ record Displayed {o ℓ} (B : Precategory o ℓ)
 ```
 
 For each object of the base category, we associate a type of objects.
-Going back to our original example of algebraic structures over $\sets$,
+Going back to our original example of algebraic structures over $\Sets$,
 this would be something like `Monoid-on : Set → Type`. This highlights
 an important point for intuition: we should think of the objects of the
 displayed category as _structures_ over the objects of the base.

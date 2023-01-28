@@ -184,8 +184,8 @@ with a single object.
 In the same way that, if you have a category $\cC$, making a choice
 of object $a : \cC$ canonically gives you a monoid
 $\rm{Endo}_\cC(a)$ of _endomorphisms_ $a \to a$, having a bicategory
-$\ht{B}$ and choosing an object $a : \ht{B}$ canonically gives you a
-choice of _monoidal category_, $\ht{Endo}_\ht{B}(a)$.
+$\bicat{B}$ and choosing an object $a : \bicat{B}$ canonically gives you
+a choice of _monoidal category_, $\rm{Endo}_\bicat{B}(a)$.
 
 ```agda
 Endomorphisms

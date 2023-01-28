@@ -7,9 +7,9 @@ module Cat.Instances.Free where
 # Graphs and free categories
 
 A **graph** (really, an $(o, \ell)$-graph^[and, even more pedantically,
-a directed multi-$(o, ℓ)$-graph]) is given by a set $V : \sets_o$ of
+a directed multi-$(o, ℓ)$-graph]) is given by a set $V : \Sets_o$ of
 **vertices** and, for each pair of elements $x, y : V$, a set of
-**edges** $E(x, y) : \sets_\ell$ from $x$ to $y$. That's it: a set $V$
+**edges** $E(x, y) : \Sets_\ell$ from $x$ to $y$. That's it: a set $V$
 and a family of sets over $V \times V$. Really, for our purposes, graphs
 by themselves are not very interesting: their utility comes in
 constructing new _categories_.

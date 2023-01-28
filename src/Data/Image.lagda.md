@@ -43,7 +43,7 @@ of [Evan Cavallo's construction] in terms of higher induction-recursion.
 
 We understand this construction as generalising the [first isomorphism
 theorem] from the setting of algebraic structures^[A class which
-includes $\sets$, as models of the trivial theory] to the setting of
+includes $\Sets$, as models of the trivial theory] to the setting of
 general types. Recall that the first isomorphism theorem says you can
 compute $\im f$ as the quotient $A/\ker f$.[^ker]
 

@@ -191,7 +191,7 @@ In the cases where $\cC, \cD$ are "small enough" and $\cE$ is
 computed as a colimit in $\cE$. The size concerns here are
 unavoidable, so let's be explicit about them: Suppose that $\cE$
 admits colimits of [$\kappa$-small diagrams], e.g. because it is
-$\sets_\kappa$. Then the category $\cC$ must be $\kappa$-small, and
+$\Sets_\kappa$. Then the category $\cC$ must be $\kappa$-small, and
 $\cD$ must be locally $\kappa$-small, i.e. its Hom-sets must live in
 the $\kappa$th universe.
 

@@ -661,8 +661,8 @@ this to a $\io$-category: a $\infty$-category where every map above
 dimension 1 is invertible.
 
 Using the proper higher-categorical jargon, we can define an object
-classifier $\ty$ in an $\io$-category $\ht{H}$ to be a representing
-object for the $\io$-presheaf $\rm{Core}(\ht{H}/-) : \ht{H}\op \to
+classifier $\ty$ in an $\io$-category $\cH$ to be a representing
+object for the $\io$-presheaf $\rm{Core}(\cH/-) : \cH\op \to
 \igpd$.
 
 Again, the importance of object classifiers is that they let us talk
@@ -801,7 +801,7 @@ universe; For the specific case of categories, we also use the
 terminology **locally $\kappa$-small** to refer to the universe in which
 the family $\hom(-,-)$ lands. We use subscript Greek letters in prose to
 index our structures by their universe level. For example,
-$\sets_\kappa$ is the ($(1+\kappa)$-small, locally $\kappa$-small)
+$\Sets_\kappa$ is the ($(1+\kappa)$-small, locally $\kappa$-small)
 category of $\kappa$-small sets.
 
 <details class=text>
@@ -812,10 +812,10 @@ categories, we might rephrase the _classical_ definitions of
 $\kappa$-small and locally $\kappa$-small categories as follows:
 
 - A category $\cC$ is $\kappa$-small if it is an internal category in
-$\sets_\kappa$;
+$\Sets_\kappa$;
 
 - A category $\cC$ is locally $\kappa$-small if it is enriched over
-the Cartesian monoidal category $\sets_\kappa$.
+the Cartesian monoidal category $\Sets_\kappa$.
 
 Because every type is contained in some universe, we note that _every_
 category that appears in our development is locally $\kappa$-small for
@@ -827,13 +827,13 @@ $\lambda$-small categories".
 
 **Warning**: Note that our use of the term "$\kappa$-small" is
 nonstandard. In set-theoretic foundations, where the only objects are
-sets anyway, this means "category internal to $\sets_\kappa$", as
+sets anyway, this means "category internal to $\Sets_\kappa$", as
 mentioned in the infobox above. In the 1Lab, the objects we manipulate
 are _higher groupoids_ rather than sets, and so very few categories will
 be internal to a category of sets. Instead, when we describe a category
 $\cC$ is $\kappa$-small, we mean that the type of objects of $\cC$
 is an inhabitant of the universe $\ty_\kappa$, and that the
-$\hom_\cC(-,-)$ family is valued in $\sets_\kappa$. Our shorthand for
+$\hom_\cC(-,-)$ family is valued in $\Sets_\kappa$. Our shorthand for
 the traditional notion is a "**[strict] $\kappa$-small**" category.
 
 [strict]: Cat.Instances.StrictCat.html

@@ -29,7 +29,7 @@ Topoi are an abstraction introduced by Alexander Grothendieck in the
 1960s as a generalisation of [topological spaces], suitable for his work
 in algebraic geometry. Later (in the work of William Lawvere, and even
 later Myles Tierney), topoi found a new life as "categories with a nice
-internal logic", which mirrors that of the category $\sets$. Perhaps
+internal logic", which mirrors that of the category $\Sets$. Perhaps
 surprisingly, every Grothendieck topos is also a topos in their logical
 conception (called **elementary**); Since elementary topoi are very hard
 to come by predicatively, we formalise a particular incarnation of
@@ -45,8 +45,8 @@ defining the notion of site, we will leave it implicitly, and define a
 **topos** as follows:
 
 A **topos** $\cT$ is a [full subcategory] of a [presheaf category]
-$[\cC\op,\sets]$ (the category $\cC$ is part of the definition)
-such that the inclusion functor $\iota : \cT \mono [\cC\op,\sets]$
+$[\cC\op,\Sets]$ (the category $\cC$ is part of the definition)
+such that the inclusion functor $\iota : \cT \mono [\cC\op,\Sets]$
 admits a [left adjoint], and this left adjoint preserves [finite
 limits]. We summarise this situation in the diagram below, where "lex"
 (standing for "**l**eft **ex**act") is old-timey speak for "finite limit
@@ -68,18 +68,18 @@ preserving".
 In type theory, we must take care about the specific [universes] in
 which everything lives. Now, much of Grothendieck topos theory
 generalises to arbitrary "base" topoi, via the use of bounded geometric
-morphisms, but the "main" definition talks about $\sets$-topoi. In
+morphisms, but the "main" definition talks about $\Sets$-topoi. In
 particular, every universe $\kappa$ generates a theory of
-$\sets_\kappa$-topoi, the categories of [$\kappa$-small] sheaves on
+$\Sets_\kappa$-topoi, the categories of [$\kappa$-small] sheaves on
 $\kappa$-small sites.
 
 [$\kappa$-small]: 1Lab.intro.html#universes-and-size-issues
 
-Fix a universe level $\kappa$, and consider the category $\sets_\kappa$:
+Fix a universe level $\kappa$, and consider the category $\Sets_\kappa$:
 A topos $\cT$ might be a large category (i.e. it might have a space
 of objects $o$ with $o > \kappa$), but it is _essentially locally
 small_, since it admits a fully-faithful functor into
-$[\cC\op,\sets_\kappa]$, which have homs at level $\kappa$. Hence,
+$[\cC\op,\Sets_\kappa]$, which have homs at level $\kappa$. Hence,
 even if we allowed the category $\cT$ to have $\hom$s at a level
 $\ell$, we would have no more information there than fits in $\kappa$.
 
@@ -146,8 +146,8 @@ $X$, closed under finite meets and arbitrary joins.
 
 Now, the notion of "topos" as a generalisation of that of "topological
 space" is essentially self-evident: A topos $\cT$ is a sub-topos of a
-presheaf category $[\cC\op,\sets]$. We have essentially categorified
-"subframe" into "subtopos", and $\props$ into $\sets$. Note that, while
+presheaf category $[\cC\op,\Sets]$. We have essentially categorified
+"subframe" into "subtopos", and $\props$ into $\Sets$. Note that, while
 this seems circular ("a topos is a sub-topos of..."), the notion of
 subtopos --- or rather, of **geometric embedding** --- makes no mention
 of actual topoi, and makes sense for any pair of categories.
@@ -156,7 +156,7 @@ of actual topoi, and makes sense for any pair of categories.
 
 Another perspective on topoi is that they are _categories of_ spaces,
 rather than spaces themselves. We start by looking at presheaf topoi,
-$[\cC\op,\sets]$. The [coyoneda lemma] tells us that every presheaf
+$[\cC\op,\Sets]$. The [coyoneda lemma] tells us that every presheaf
 is a colimit of representables, which can be restated in less abstract
 terms by saying that _presheaves are instructions for gluing together
 objects of $\cC$._ The objects of $\cC$ are then interpreted as
@@ -185,7 +185,7 @@ of" an edge.
 ## As "logically nice" categories
 
 The definition of topos implies that any topos $\cT$ enjoys many of
-the same categorical properties of the category $\sets$ (see
+the same categorical properties of the category $\Sets$ (see
 [below](#properties-of-topoi)). Topoi are [complete] and [cocomplete], [cartesian
 closed] (even [locally so]) --- colimits are stable under pullback,
 coproducts are [disjoint], and [equivalence relations are effective].
@@ -211,7 +211,7 @@ congruence.
 In fact, this is essentially the _definition of_ a topos. The actual
 definition, as a lex [reflective subcategory] of a presheaf category,
 essentially ensures that the category $\cT$ inherits the nice logical
-properties of $\sets$ (through the presheaf category, which is _also_
+properties of $\Sets$ (through the presheaf category, which is _also_
 very nice logically).
 
 [reflective subcategory]: Cat.Functor.Adjoint.Reflective.html
@@ -222,16 +222,16 @@ of definition**. Objects in $\cT$ are called **sheaves**, and the
 functor $L$ is called **sheafification**. Maps between topoi are called
 **geometric morphisms**, and will be defined below. We denote the
 2-category of topoi, geometric morphisms and natural transformations by
-$\topos$, following Johnstone. When $\psh(\cC)$ is regarded as a topos
+$\Topos$, following Johnstone. When $\psh(\cC)$ is regarded as a topos
 unto itself, rather than an indirection in the definition of a sheaf
 topos, we call it the **topos of $\cC$-sets**.
 
 # Examples
 
-The "trivial" example of topoi is the category $\sets$, which is
-equivalently the category $[*\op,\sets]$ of presheaves on the [terminal
+The "trivial" example of topoi is the category $\Sets$, which is
+equivalently the category $[*\op,\Sets]$ of presheaves on the [terminal
 category]. This is, in fact, the [terminal object] in the 2-category
-$\topos$ of topoi (morphisms are described
+$\Topos$ of topoi (morphisms are described
 [below](#geometric-morphisms)), so we denote it by `𝟙`.
 
 [terminal category]: Cat.Instances.Shape.Terminal.html
@@ -246,7 +246,7 @@ $\topos$ of topoi (morphisms are described
   open is-lex
 ```
 
-The inclusion functor $\sets \mono \psh(*)$ is given by the "constant
+The inclusion functor $\Sets \mono \psh(*)$ is given by the "constant
 presheaf" functor, which sends each set $X$ to the constant functor with
 value $X$.
 
@@ -395,7 +395,7 @@ the right adjoint is fully faithful, the adjunction is [monadic],
 meaning that it exhibits $\cT$ as the category of [algebras] for
 a (lex, idempotent) monad: the "sheafification monad". This gives us
 completeness in $\cT$ for "free" (really, it's because presheaf
-categories are complete, and those are complete because $\sets$ is.)
+categories are complete, and those are complete because $\Sets$ is.)
 
 ```agda
 module _ {o κ} {𝓣 : Precategory o κ} (T : Topos κ 𝓣) where
@@ -420,7 +420,7 @@ module _ {o κ} {𝓣 : Precategory o κ} (T : Topos κ 𝓣) where
 Furthermore, since $L$ preserves colimits (it is a left adjoint), then
 we can compute the colimit of some diagram $F : J \to \cT$ as the
 colimit (in $\psh(\cC)$) of $\iota F$ --- which exists because
-$\sets$ is cocomplete --- then apply $L$ to get a colimiting cocone for
+$\Sets$ is cocomplete --- then apply $L$ to get a colimiting cocone for
 $L \iota F$. But the counit of the adjunction $\eps : L \iota \To
 \rm{Id}$ is a natural isomorphism, so we have a colimiting cocone for
 $F$.
@@ -591,7 +591,7 @@ us to look for a categorification of "continuous map" to functors
 between topoi. In the same way that a continuous function $f : X \to Y$
 may be seen as a homomorphism of frames $f^* : O(Y) \to O(X)$, with
 defining feature the preservation of finite meets and arbitrary joins,
-we shall define a **geometric morphism** $\topos(X,Y)$ to be a functor
+we shall define a **geometric morphism** $\Topos(X,Y)$ to be a functor
 $f^* : Y \to X$ which is left exact and admits a right adjoint.
 
 Why the right adjoint? Well, [right adjoints preserve limits], but by

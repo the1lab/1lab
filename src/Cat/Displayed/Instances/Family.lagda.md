@@ -42,7 +42,7 @@ Family : ∀ {ℓ} → Displayed (Sets ℓ) _ _
 Family .Ob[_] S = ∣ S ∣ → Ob
 ```
 
-The set of maps over a function $f : A \to B$ (in $\sets$) is the set of
+The set of maps over a function $f : A \to B$ (in $\Sets$) is the set of
 families of morphisms $F(x) \to G(fx)$. Here we are abusing that, for
 functors between discrete categories, naturality is automatic.
 

@@ -34,9 +34,9 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 
 # Slice categories
 
-When working in $\sets$, there is an evident notion of _family indexed
+When working in $\Sets$, there is an evident notion of _family indexed
 by a set_: a family of sets $(F_i)_{i \in I}$ is equivalently a functor
-$[\rm{Disc}(I), \sets]$, where we have equipped the set $I$ with the
+$[\rm{Disc}(I), \Sets]$, where we have equipped the set $I$ with the
 [discrete category] structure. This works essentially because of the
 [discrete category-global sections][coh] adjunction, but in general this
 can not be applied to other categories, like $\rm{Groups}$. How,
@@ -398,8 +398,8 @@ module _ where
 
 # Slices of Sets
 
-We now prove the correspondence between slices of $\sets$ and functor
-categories into $\sets$, i.e. the corresponding between indexing and
+We now prove the correspondence between slices of $\Sets$ and functor
+categories into $\Sets$, i.e. the corresponding between indexing and
 slicing mentioned in the first paragraph.
 
 ```agda
@@ -412,7 +412,7 @@ module _ {I : Set ℓ} where
 We shall prove that the functor `Total-space`{.Agda}, defined below, is
 an equivalence of categories, i.e. that it is fully faithful and
 essentially surjective. But first, we must define the functor! Like its
-name implies, it maps the functor $F : I → \sets$ to the first
+name implies, it maps the functor $F : I → \Sets$ to the first
 projection map $\rm{fst} : \sum F \to I$.
 
 ```agda

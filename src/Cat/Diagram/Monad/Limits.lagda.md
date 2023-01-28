@@ -43,7 +43,7 @@ told you whether $\lim F$ admits an algebra structure at all.
 Perhaps we can make this situation slightly more concrete, by working in
 a category _equivalent to_ an Eilenberg-Moore category: If we have two
 groups $G$, $H$, considered as a discrete diagram, then the limit our
-evil wizard would give us is the product $U(G) \times U(H)$ in $\sets$.
+evil wizard would give us is the product $U(G) \times U(H)$ in $\Sets$.
 But we [already know] we can equip this product with a "pointwise" group
 structure! Does this result generalise?
 

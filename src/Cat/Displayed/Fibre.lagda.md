@@ -98,7 +98,7 @@ construction is a precategory.
 
 It may seem that this extra freedom serves no purpose, then, but there
 are cases where it's possible to transport without actually
-transporting: For example, if $\cE$ is displayed over $\sets$, then
+transporting: For example, if $\cE$ is displayed over $\Sets$, then
 composition of morphisms is definitionally unital, so transporting is
 redundant; but without regularity, the transports along reflexivity
 would still pile up.

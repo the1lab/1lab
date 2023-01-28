@@ -30,7 +30,7 @@ A [frame] is, in particular, a [semilattice]: the semilattice of
 [meets]. Frame homomorphisms preserve finite meets, so they are also
 homomorphisms for the meet semilattice. Since equality of homomorphisms
 is defined by equality of the underlying functions, these remarks
-assemble into a functor $\ht{Frames} \to \ht{Semilattices}$.
+assemble into a functor $\thecat{Frames} \to \thecat{SLat}$.
 
 [frame]: Order.Frame.html
 [semilattice]: Order.Semilattice.html

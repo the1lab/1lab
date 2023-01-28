@@ -574,7 +574,7 @@ open import Cat.Allegory.Reasoning -- Reasoning combinators
 ## Displayed categories
 
 A category displayed over $\cB$ is a particular concrete presentation
-of the bicategorical slice $\cat/\cB$; that is, it is a better way of
+of the bicategorical slice $\Cat/\cB$; that is, it is a better way of
 presenting the data of a category $\cE$ and a functor $\cE \to
 \cB$.
 
@@ -627,11 +627,11 @@ open import Cat.Displayed.Functor
 
 In the land of 1-categories, the notion of "indexed families of objects"
 is accurately captured by [slice categories]. But when we're talking
-about the 2-category $\cat$, plain functors won't do. In terms of
+about the 2-category $\Cat$, plain functors won't do. In terms of
 displayed categories, we need to talk about _Cartesian fibrations_
 instead. These satisfy a property analogous to the existence of
 pullbacks, and they are precisely those which correspond to families
-$\cB \to \cat$.
+$\cB \to \Cat$.
 
 [slice categories]: Cat.Instances.Slice.html
 

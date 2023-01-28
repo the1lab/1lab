@@ -27,7 +27,7 @@ open _=>_
 
 # Representable functors
 
-A functor $F : \cC\op \to \sets_\kappa$ (from a [locally
+A functor $F : \cC\op \to \Sets_\kappa$ (from a [locally
 $\kappa$-small category][univ]) is said to be **representable** when it
 is [naturally isomorphic][niso] to $\hom(-, X)$ for an object $X :
 \cC$ (called the **representing object**) — that is, the functor $F$
@@ -142,7 +142,7 @@ terminal-element→representation {F} term = f-rep where
 ```
 
 From the terminal object in $\int F$^[Which, recall, consists of an
-object $X : \cC$ and a section $F(X) : \sets$], we obtain a natural
+object $X : \cC$ and a section $F(X) : \Sets$], we obtain a natural
 transformation $\eta_y : F(y) \to \hom(y,X)$, given componentwise by
 interpreting each pair $(y, s)$ as an object of $\int F$, then taking
 the terminating morphism $(y, s) \to (X, F(X))$, which satisfies (by
@@ -174,7 +174,7 @@ constitutes a natural isomorphism.
 
 We now show a partial converse to the calculation above: That terminal
 objects are representing objects for a particular functor. Consider, to
-be more specific, the constant functor $F : \cC\op \to \sets$ which
+be more specific, the constant functor $F : \cC\op \to \Sets$ which
 sends everything to the terminal set. When is $F$ representable?
 
 Well, unfolding the definition, it's when we have an object $X : \cC$

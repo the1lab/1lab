@@ -34,7 +34,7 @@ A **discrete fibration** is a displayed category whose [fibres] are all
 _discrete categories_: thin, univalent groupoids. Since thin, univalent
 groupoids are sets, a discrete fibration over $\cB$ is an alternate
 way of encoding a presheaf over $\cB$, i.e., a functor
-$\cB\op\to\sets$. Here, we identify a purely fibrational property
+$\cB\op\to\Sets$. Here, we identify a purely fibrational property
 that picks out the discrete fibrations among the displayed categories,
 without talking about the fibres directly.
 

@@ -36,7 +36,7 @@ open _=>_
 
 An object in the slice $\psh(\cC)/P$ consists of a functor $Q$
 together with a natural transformation $\eta : P \to Q$. To transform
-this data into a functor $\int P \to \sets$, observe that for each
+this data into a functor $\int P \to \Sets$, observe that for each
 element $(x, s)$ in $\int P$, the fibre $\eta_x^*(s)$ is a set. But why
 this choice in particular? Well, observe that $\int P$ is essentially
 the _total space_ of $P$ --- so that what we're doing here is proving an
@@ -47,14 +47,14 @@ level, with [slices of Sets].
 [object classifiers]: 1Lab.Univalence.html#object-classifiers
 [slices of Sets]: Cat.Instances.Slice.html#slices-of-sets
 
-In fact, since we have $\sets = \psh(*)$, that latter equivalence is a
+In fact, since we have $\Sets = \psh(*)$, that latter equivalence is a
 special case of the one constructed here --- where in the calculation
 below, $c$ denotes the constant presheaf $* \mapsto S$. The category of
 elements of a presheaf $* \mapsto S$ consists of pairs $(x, e)$ where $x
 : *$, of which there is only one choice, and $e : S$.
 
 $$
-\sets/S \cong \psh(*)/c(S) \cong \psh(\textstyle\int c(S)) \cong \psh(\rm{Disc}(S))
+\Sets/S \cong \psh(*)/c(S) \cong \psh(\textstyle\int c(S)) \cong \psh(\rm{Disc}(S))
 $$
 
 ```agda

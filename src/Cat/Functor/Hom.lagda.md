@@ -16,9 +16,9 @@ module Cat.Functor.Hom {o h} (C : Precategory o h) where
 
 We prove that the assignment of $\hom$-sets in a `Precategory`{.Agda}
 $\cC$ is a `functor`{.Agda}, specifically a bifunctor from $\cC\op
-\times_\cat \cC$ to $\sets$. The action of $(f, h)$ on a morphism $g$
-is given by $h \circ g \circ f$; Since $f$ is acting by precomposition,
-the first coordinate is contravariant ($\cC\op$).
+\times \cC$ to $\Sets$. The action of $(f, h)$ on a morphism $g$ is
+given by $h \circ g \circ f$; Since $f$ is acting by precomposition, the
+first coordinate is contravariant ($\cC\op$).
 
 <!--
 ```agda

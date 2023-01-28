@@ -42,7 +42,7 @@ pre-existing results: The univalence principle for $n$-types implies
 that [Sets is a univalent category][setu], and [functor categories with
 univalent codomain are univalent][funcu]; The [Yoneda lemma] implies
 that any precategory $\cA$ admits a [full inclusion] into
-$[\cA\op, \sets]$, and [full subcategories of univalent categories
+$[\cA\op, \Sets]$, and [full subcategories of univalent categories
 are univalent][fullu] --- so, like Grothendieck cracking the nut, the
 sea of theory has risen to the point where our result is trivial:
 

@@ -27,7 +27,7 @@ Let $F : \cA \to \cB$ be a functor with a [left adjoint] $G :
 \cB \to \cA$. Some pretty [standard abstract nonsense][adjm] tells
 us that the composite $GF$ is a [monad] in $\cB$, with the unit and
 multiplication inherited from the adjunction $G \dashv F$. The easiest
-cases to picture are when $\cB$ is $\sets_\kappa$, and $F$ is the
+cases to picture are when $\cB$ is $\Sets_\kappa$, and $F$ is the
 "underlying set" functor from an algebraic category (like [monoids] or
 [groups]). What's slightly more interesting is that functors _without_
 left adjoints may also induce monads!

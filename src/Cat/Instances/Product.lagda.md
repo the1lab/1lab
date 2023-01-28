@@ -75,11 +75,11 @@ C ×ᶜ D = prodcat module ×ᶜ where
 infixr 20 _×ᶜ_
 ```
 
-We define the two projection functors $\cC \times_\cat \cD \to
-\cC$ (resp $\to \cD$) as the evident liftings of the `fst`{.Agda}
-and `snd`{.Agda} operations from the product _type_. Functoriality is
-automatic because composites (and identities) are defined componentwise
-in the product category.
+We define the two projection functors $\cC \times \cD \to \cC$ (resp
+$\to \cD$) as the evident liftings of the `fst`{.Agda} and `snd`{.Agda}
+operations from the product _type_. Functoriality is automatic because
+composites (and identities) are defined componentwise in the product
+category.
 
 ```agda
 Fst : Functor (C ×ᶜ D) C

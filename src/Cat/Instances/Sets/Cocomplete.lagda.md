@@ -35,7 +35,7 @@ Sets-has-coproducts : ∀ {κ ℓ} → has-indexed-coproducts (Sets (κ ⊔ ℓ)
 Sets-has-coproducts {κ} {ℓ} {I = I} F = coprod where
 ```
 
-The coproduct of the family $F : I \to \sets$ is given by the type $\sum
+The coproduct of the family $F : I \to \Sets$ is given by the type $\sum
 F$. However, this type is in general _not a set_! Consider a family of
 sets indexed by [the circle]. Its total space will, by necessity, be a
 [groupoid] rather than a set.
@@ -46,7 +46,7 @@ sets indexed by [the circle]. Its total space will, by necessity, be a
 However, we can always [truncate] the sum down to a set, and it turns
 out that this truncation _does_ serve as a coproduct of the family _in
 the category of sets_. The point here is that, since the objects of
-$\sets$ are.. well, sets, they can't have any interesting paths, _by
+$\Sets$ are.. well, sets, they can't have any interesting paths, _by
 definition_. A grim slogan: In the category of Sets, nobody can hear
 your paths scream.
 
@@ -75,13 +75,13 @@ tell that $\sum F$ might have had some extra paths we squashed away.
 
 ## Colimits
 
-Perfectly dually to the construction of [limits in $\sets$], rather than
+Perfectly dually to the construction of [limits in $\Sets$], rather than
 taking the equaliser of a product, we take the [coequaliser] of a sum. The
 same considerations about truncation level that apply for arbitrary
 coproducts apply to arbitrary colimits: fortunately, the construction of
 set-coequalisers already includes a truncation.
 
-[limits in $\sets$]: Cat.Instances.Sets.Complete.html
+[limits in $\Sets$]: Cat.Instances.Sets.Complete.html
 [coequaliser]: Data.Set.Coequaliser.html
 
 ```agda
@@ -135,7 +135,7 @@ definition.
 
 # Coproducts are disjoint
 
-As a final lemma, we prove that coproducts in $\sets$, as constructed
+As a final lemma, we prove that coproducts in $\Sets$, as constructed
 above, are disjoint. However, this does not apply to _arbitrary_
 coproducts; To prove that the injections are monomorphisms, we require
 that the indexing type be a set.

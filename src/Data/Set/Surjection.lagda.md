@@ -27,7 +27,7 @@ together, we get _every epimorphism is regular_ as a corollary.
 
 ## Surjections are epic
 
-This is the straightforward direction: We know (since $\sets$ has
+This is the straightforward direction: We know (since $\Sets$ has
 pullbacks) that if a morphism is going to be a regular epimorphism, then
 it must be an _effective_ epimorphism, too: so if it is to coequalise
 any morphisms, it certainly coequalises its kernel pair.
@@ -202,7 +202,7 @@ discharged automatically since we're mapping into a proposition.
 ```
 
 And, composing this with the previous step, we have what we originally
-set out to prove: all $\sets$-epimorphisms are regular, because they're
+set out to prove: all $\Sets$-epimorphisms are regular, because they're
 all surjections!
 
 ```agda

@@ -33,7 +33,7 @@ $$
 \cC_1 = \sum_{x, y : \cC_0} \cC(x, y)\text{,}
 $$
 
-and, since the family is valued in $\sets$ and indexed by a set, so is
+and, since the family is valued in $\Sets$ and indexed by a set, so is
 $\cC_1$. We can picture $\cC_1$ together with the components of
 its first projection as a _[span]_ in the category of sets
 
@@ -56,7 +56,7 @@ source/target: The source of the composition is the source of its first
 argument, and the target is the target of its second argument. The key
 observation, that will lead to a new representation of categories, is
 that the object of composable morphisms is _precisely_ the composition
-$\cC_1 \circ \cC_1$ in the bicategory $\ht{Span}(\sets)$!
+$\cC_1 \circ \cC_1$ in the bicategory $\bicat{Span}(\Sets)$!
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -116,7 +116,7 @@ strict-category→span-monad C cset = m where
 
 It is annoying, but entirely straightforward, to verify that the
 operations `mult`{.Agda} and `unit`{.Agda} defined above _do_ constitute
-a monad in $\ht{Span}(\sets)$. We omit the verification here and
+a monad in $\bicat{Span}(\Sets)$. We omit the verification here and
 instruct the curious reader to check the proof on GitHub.
 
 <!--
@@ -184,11 +184,11 @@ span-monad→strict-category C monad = precat where
 ```
 
 The family of morphisms $\hom(x,y)$ of our recovered category is
-precisely the fibre of $(s,t) : \cC_1 \to \cC_0 \times \cC_0$
-over the pair $x, y$. The commutativity conditions for 2-cells in
-$\ht{Span}(\sets)$ implies that source and target are preserved through
-composition, and that the identity morphism --- that is, the image of
-$x$ under the unit map --- lies in the fibre over $x, x$.
+precisely the fibre of $(s,t) : \cC_1 \to \cC_0 \times \cC_0$ over the
+pair $x, y$. The commutativity conditions for 2-cells in
+$\bicat{Span}(\Sets)$ implies that source and target are preserved
+through composition, and that the identity morphism --- that is, the
+image of $x$ under the unit map --- lies in the fibre over $x, x$.
 
 The verification follows from the monad laws, and it would be trivial in
 extensional type theory, but the tradeoff for decidable type-checking is

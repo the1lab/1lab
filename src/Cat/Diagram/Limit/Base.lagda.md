@@ -392,9 +392,9 @@ limiting cones "upstairs" to limiting cones "downstairs".
 Using our analogy from before, we say a functor _reflects_ limits
 if it takes limiting cones "downstairs" to limiting cones "upstairs".
 
-More concretely, if we have some limiting cone in
-$\cD$ of $F \ci\rm{Dia}ia}$ with apex $F(a)$, then $a$ was
-_already the limit_ of $\rm{Dia}$!
+More concretely, if we have some limiting cone in $\cD$ of $F \circ
+\rm{Dia}$ with apex $F(a)$, then $a$ was _already the limit_ of
+$\rm{Dia}$!
 
 ```agda
   Reflects-limit : Cone Dia → Type _
@@ -485,7 +485,7 @@ To show that $g$ is an inverse to $f$, consider the composition $g \circ
 f$ (the other case is symmetric): It is a map $g \circ f : X \to X$.
 Since $X$ is a terminal object, we have that the space of cone
 homomorphisms $X \to X$ is contractible - and thus any two such maps are
-equal. Thus, $g \circ f = \id_{X} : X \to X$.
+equal. Thus, $g \circ f = \id{X} : X \to X$.
 
 ```agda
     f∘g≡id : (f Cones.∘ g) ≡ Cones.id

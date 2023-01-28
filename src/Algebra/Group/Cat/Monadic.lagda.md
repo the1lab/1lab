@@ -40,16 +40,16 @@ private
 
 # Monadicity of the category of groups
 
-We prove that the category $\ht{Groups}_\kappa$ is monadic over
-$\sets_\kappa$, or more specifically that the [free group] adjunction $F
+We prove that the category $\thecat{Groups}_\kappa$ is monadic over
+$\Sets_\kappa$, or more specifically that the [free group] adjunction $F
 \dashv U$ is [monadic]. Rather than appealing to a monadicity theorem,
 we show this directly by calculation. This actually gives us a slightly
 sharper result, too: rather than showing that the [comparison functor]
 is an equivalence, we show directly that it is an isomorphism of
-categories. This doesn't exactly matter since $\sets_\kappa$ and
-$\ht{Groups}_\kappa$ are both [univalent categories], but it's interesting
-that it's easier to construct an isomorphism than it is to construct an
-equivalence.
+categories. This doesn't exactly matter since $\Sets_\kappa$ and
+$\thecat{Groups}_\kappa$ are both [univalent categories], but it's
+interesting that it's easier to construct an isomorphism than it is to
+construct an equivalence.
 
 [free group]: Algebra.Group.Free.html
 [monadic]: Cat.Functor.Adjoint.Monadic.html

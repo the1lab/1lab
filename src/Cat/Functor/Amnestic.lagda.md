@@ -39,11 +39,11 @@ condition that $\cC$ is univalent, whereas we want a condition on the
 _functor_ $F$. So, we define:
 
 An isomorphism $f : a \cong b$ **is an identity** if it is an identity
-in the total space of `Hom`{.Agda}, i.e. if there is an object $c :
-\cC$ s.t. $(c, \idid}) = (a, b, f)$ in the type $\Sigma_a
-\Sigma_b (a \to b)$. Every isomorphism in a univalent category is an
-identity, since we can take $c = a$, and the identification in
-`Mor`{.Agda} follows from univalence.
+in the total space of `Hom`{.Agda}, i.e. if there is an object $c : \cC$
+s.t. $(c, \id) = (a, b, f)$ in the type $\Sigma_a \Sigma_b (a \to b)$.
+Every isomorphism in a univalent category is an identity, since we can
+take $c = a$, and the identification in `Mor`{.Agda} follows from
+univalence.
 
 ```agda
 Mor : Precategory o ℓ → Type (o ⊔ ℓ)
