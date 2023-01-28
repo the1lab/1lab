@@ -210,7 +210,7 @@ patchBlock (Div ("refs", _, _) body) = do
       tell mempty { mdReferences = [ MapVal ref ]}
 
     _ -> fail ("Unknown reference node " ++ show ref)
-  pure Null
+  pure $ Plain [] -- TODO: pandoc-types 1.23 removed Null
 patchBlock h = pure h
 
 

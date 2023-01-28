@@ -7,7 +7,7 @@ let
   pkgs = import ./support/nix/nixpkgs.nix;
   inherit (pkgs) lib;
 
-  our-ghc = pkgs.haskellPackages.ghcWithPackages (ps: with ps; [
+  our-ghc = pkgs.labHaskellPackages.ghcWithPackages (ps: with ps; [
     shake directory tagsoup
     text containers uri-encode
     process aeson Agda pandoc SHA
@@ -48,8 +48,8 @@ let
   ] ++ (if interactive then [
     our-ghc
   ] else [
-    haskellPackages.Agda.data
-    haskellPackages.pandoc.data
+    labHaskellPackages.Agda.data
+    labHaskellPackages.pandoc.data
   ]);
 in
   pkgs.stdenv.mkDerivation rec {
