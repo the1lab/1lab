@@ -3,9 +3,8 @@
 , our-ghc
 , makeWrapper
 , removeReferencesTo
-, haskellPackages
+, labHaskellPackages
 , stdenv
-, upx
 , lua5_3
 , gmp
 , name
@@ -33,7 +32,7 @@ in
 stdenv.mkDerivation {
   inherit name;
   src = nix-gitignore.gitignoreSource [] ../shake;
-  nativeBuildInputs = [ our-ghc makeWrapper removeReferencesTo upx ];
+  nativeBuildInputs = [ our-ghc makeWrapper removeReferencesTo ];
   propagatedBuildInputs = [ lua5_3 gmp ];
 
   buildPhase = ''
@@ -43,22 +42,21 @@ stdenv.mkDerivation {
   installPhase = ''
   mkdir -p $out/bin
   strip ${main}
-  remove-references-to -t ${haskellPackages.pandoc-types} ${main}
-  remove-references-to -t ${haskellPackages.pandoc}       ${main}
-  remove-references-to -t ${haskellPackages.Agda}         ${main}
-  remove-references-to -t ${haskellPackages.shake}        ${main}
-  remove-references-to -t ${haskellPackages.HTTP}         ${main}
-  remove-references-to -t ${haskellPackages.js-flot}      ${main}
-  remove-references-to -t ${haskellPackages.js-jquery}    ${main}
-  remove-references-to -t ${haskellPackages.js-dgtable}   ${main}
-  upx ${main}
+  remove-references-to -t ${labHaskellPackages.pandoc-types} ${main}
+  remove-references-to -t ${labHaskellPackages.pandoc}       ${main}
+  remove-references-to -t ${labHaskellPackages.Agda}         ${main}
+  remove-references-to -t ${labHaskellPackages.shake}        ${main}
+  remove-references-to -t ${labHaskellPackages.HTTP}         ${main}
+  remove-references-to -t ${labHaskellPackages.js-flot}      ${main}
+  remove-references-to -t ${labHaskellPackages.js-jquery}    ${main}
+  remove-references-to -t ${labHaskellPackages.js-dgtable}   ${main}
   cp ${main} $out/bin/${name}
   wrapProgram $out/bin/${name} \
     --prefix PATH : ${nodeDependencies}/bin \
     --prefix NODE_PATH : ${nodeDependencies}/lib/node_modules
   '';
 
-  disallowedReferences = with haskellPackages; [
+  disallowedReferences = with labHaskellPackages; [
     shake directory tagsoup
     text containers uri-encode
     process aeson Agda pandoc SHA pandoc-types HTTP
