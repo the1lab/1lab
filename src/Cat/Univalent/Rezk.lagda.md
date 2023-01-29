@@ -76,7 +76,7 @@ module Rezk-large (A : Precategory o h) where
 However, this construction is a bit disappointing, because we've had to
 pass to a _larger_ universe than the one we started with. If originally
 we had $\cA$ with objects living in a universe $o$ and homs in $h$,
-we now have $\widehat{\cA}$ with objects living in $o \lub (1 + h)$.
+we now have $\widehat{\cA}$ with objects living in $o \sqcup (1 + h)$.
 
 It's unavoidable that the objects in $\widehat{\cA}$ will live in an
 universe $\widehat{o}$ satisfying $(o \sqcup h) \le \widehat{o}$, since
@@ -84,10 +84,10 @@ we want their identity type to be equivalent to something living in $h$,
 but going up a level is unfortunate. However, it's also avoidable!
 
 Since $\psh(\cA)$ is a category, isomorphism is an [identity system]
-on its objects, which lives at the level of its morphisms --- $o \lub h$
---- rather than of its objects, $o \lub (1 + h)$. Therefore, using the
+on its objects, which lives at the level of its morphisms --- $o \sqcup h$
+--- rather than of its objects, $o \sqcup (1 + h)$. Therefore, using the
 construction of [small images], we may take $\im \yo_{\cA}$ to be a
-$o \lub h$-type!
+$o \sqcup h$-type!
 
 [identity system]: 1Lab.Path.IdentitySystem.html
 [small images]: Data.Image.html

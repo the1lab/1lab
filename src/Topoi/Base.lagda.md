@@ -116,7 +116,7 @@ subset of its [powerset] which is closed under arbitrary unions and
 finite intersections.
 
 Let's reword that using category-theoretic language: Recall that the
-powerset of $X$ is the poset $[X,\props]$. It is --- being a functor
+powerset of $X$ is the poset $[X,\Props]$. It is --- being a functor
 category into a complete and cocomplete (thin) category --- _also_
 complete and cocomplete, so all joins and finite meets (unions and
 intersections) exist; Furthermore, the distributive law
@@ -141,13 +141,13 @@ which has a right adjoint preserves arbitrary joins.
 [lattice]: Order.Lattice.html
 
 We can prove that a topology $\tau$ on $X$ is the same thing as a
-subframe of its powerset $[X,\props]$ --- a collection of subsets of
+subframe of its powerset $[X,\Props]$ --- a collection of subsets of
 $X$, closed under finite meets and arbitrary joins.
 
 Now, the notion of "topos" as a generalisation of that of "topological
 space" is essentially self-evident: A topos $\cT$ is a sub-topos of a
 presheaf category $[\cC\op,\Sets]$. We have essentially categorified
-"subframe" into "subtopos", and $\props$ into $\Sets$. Note that, while
+"subframe" into "subtopos", and $\Props$ into $\Sets$. Note that, while
 this seems circular ("a topos is a sub-topos of..."), the notion of
 subtopos --- or rather, of **geometric embedding** --- makes no mention
 of actual topoi, and makes sense for any pair of categories.

@@ -270,7 +270,7 @@ Because of this naturality result, all the components we've chosen piece
 together into a natural transformation. And since we defined $\delta$
 parametrically over the choice of essential fibre, if we're looking at
 some $Hb$, then we can choose the _identity_ isomorphism, from which it
-falls out that $\deltaH = \gamma$. Since we had already established that
+falls out that $\delta H = \gamma$. Since we had already established that
 $H_!$ is faithful, and now we've shown it is full, it is fully faithful.
 
 ```agda
