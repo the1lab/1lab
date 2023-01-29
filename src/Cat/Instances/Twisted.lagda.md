@@ -7,8 +7,8 @@ module Cat.Instances.Twisted where
 
 # Twisted arrow categories
 
-The category of arrows of $\cC$ is the categor\rm{Arr}rr}(\cC)$
-which has objects given by morphisms $a_0 \xto{a} a_1 : \cC$^[We will
+The category of arrows of $\cC$ is the category $\rm{Arr}(\cC)$ which
+has objects given by morphisms $a_0 \xto{a} a_1 : \cC$^[We will
 metonymically refer to the triple $(a_0,a_1,a)$ using simply $a$.], and
 morphisms $f : a \to b$ given by pairs $f_0, f_1$ as indicated making
 the diagram below commute.
@@ -27,9 +27,8 @@ the diagram below commute.
 
 Now, add a twist. Literally! Invert the direction of the morphism $f_0$
 in the definition above. The resulting category is the **twisted arrow
-category** of $\cC$, writte\rm{Tw}Tw}(\cC)$. You can think of a
-morphism $f \to g$ in $\rm{Tw}(\cC)$ as a factorisation of $g$
-through $f$.
+category** of $\cC$, written $\rm{Tw}(\cC)$. You can think of a morphism
+$f \to g$ in $\rm{Tw}(\cC)$ as a factorisation of $g$ through $f$.
 
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} where

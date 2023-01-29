@@ -77,9 +77,9 @@ Rel-map→function {x = x} {y} {rel} map elt =
 
 ## The category of maps
 
-Given an allegory $\cA$, we can form a categor\rm{Map}ap}(\cA)$
-with the same objects as $\cA$, but considering only the maps (rather
-than arbitrary relations).
+Given an allegory $\cA$, we can form a category $\rm{Map}(\cA)$ with the
+same objects as $\cA$, but considering only the maps (rather than
+arbitrary relations).
 
 ```agda
 module _ {o ℓ h} (A : Allegory o ℓ h) where
