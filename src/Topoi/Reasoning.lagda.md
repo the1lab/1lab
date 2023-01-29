@@ -19,7 +19,7 @@ As mentioned in the [overture on topos theory], categories of sheaves
 are incredibly nice categories to work in _logically_, mirroring many of
 the same properties of the category of Sets. This follows from the fact
 that they are reflective subcategories of presheaf categories, and
-_those_ categories enjoy many of the exactness properties of $\sets$ by
+_those_ categories enjoy many of the exactness properties of $\Sets$ by
 virtue of being functor categories.
 
 [overture on topos theory]: Topoi.Base.html
@@ -57,8 +57,8 @@ module Sheaf-topos {o ℓ} {𝒯 : Precategory o ℓ} (T : Topos ℓ 𝒯) where
 ```
 
 **Terminology**: We will refer to the objects of $\mathcal{C}$, the
-topos, as **sheaves**, and the objects of $[S\op,\sets]$ as
-**presheaves**. Correspondingly, the left adjoint functor $[S\op, \sets]
+topos, as **sheaves**, and the objects of $[S\op,\Sets]$ as
+**presheaves**. Correspondingly, the left adjoint functor $[S\op, \Sets]
 \to \mathcal{C}$ is called **sheafification**.
 
 ## Limits
@@ -68,7 +68,7 @@ is fully faithful (thus the adjunction counit is an isomorphism, c.f.
 `Lι-iso`{.Agda}), we can compute limits directly in the presheaf
 category and sheafify. Unfolding the result of this procedure, rather
 than appealing to the equivalence $\mathcal{C} \cong
-[S\op,\sets]^{L\iota}$, yields much better computational properties. We
+[S\op,\Sets]^{L\iota}$, yields much better computational properties. We
 do it by hand for the terminal object, binary products, and binary
 pullbacks.
 

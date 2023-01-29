@@ -35,7 +35,7 @@ open ↓Hom
 
 # Comma categories preserve univalence
 
-**Theorem**. Let $\ca{Y} \xto{F} \ca{X} \xot{G} \ca{Z}$ be a [cospan] of
+**Theorem**. Let $\cY \xto{F} \cX \xot{G} \cZ$ be a [cospan] of
 functors between three [univalent categories]. Then the comma category
 $F \downarrow G$ is also univalent.
 
@@ -44,7 +44,7 @@ $F \downarrow G$ is also univalent.
 
 It suffices to establish that, given an isomorphism $f : o \cong o'$ in
 $F \downarrow G$, one gets an identification $\^f : o \equiv o'$, over
-which $f$ is the identity map. Since $\ca{Y}$ and $\ca{Z}$ are both
+which $f$ is the identity map. Since $\cY$ and $\cZ$ are both
 univalent categories, we get (from the components $f_\alpha$, $f_\beta$
 of $f$) identifications $\^f_\alpha : o_x \equiv o'_x$ and $\^f_\beta :
 o_y \equiv o'_y$.

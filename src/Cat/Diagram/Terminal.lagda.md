@@ -47,7 +47,7 @@ If a category has two terminal objects $t_1$ and $t_2$, then there is a
 unique isomorphism $t_1 \cong t_2$. We first establish the isomorphism:
 Since $t_1$ (resp. $t_2$) is terminal, there is a _unique_ map $!_1 : t_1 \to
 t_2$ (resp. $!_2 : t_2 \to t_1$). To show these maps are inverses, we
-must show that $!_1 \circ !_2$ is $\id{id}$; But these morphisms
+must show that $!_1 \circ !_2$ is $\id$; But these morphisms
 inhabit a contractible space, namely the space of maps into $t_2$, so
 they are equal.
 

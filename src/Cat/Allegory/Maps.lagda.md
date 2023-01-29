@@ -9,7 +9,7 @@ module Cat.Allegory.Maps where
 
 # Maps in allegories
 
-Suppose we have an allegory $\ca{A}$ --- for definiteness you could
+Suppose we have an allegory $\cA$ --- for definiteness you could
 consider the archetypal allegory $\Rel$ --- but what we really wanted
 was to get our hands on an ordinary _category_. That is: we want, given
 some category of "sets and relations", to recover the associated
@@ -19,7 +19,7 @@ If you have a relation $R \mono A \times B$, when does it correspond to
 a function $A \to B$? Well, it must definitely be _functional_: if we
 want $R(x, y)$ to represent "$f(x) = y$", then surely if $R(x, y) \land
 R(x, z)$, we must have $y = z$. In allegorical language, we would say
-$RR^o \le \id{id}$, which we can calculate to mean (in $\Rel$) that, for
+$RR^o \le \id$, which we can calculate to mean (in $\Rel$) that, for
 all $x, y$,
 
 $$
@@ -77,8 +77,8 @@ Rel-map→function {x = x} {y} {rel} map elt =
 
 ## The category of maps
 
-Given an allegory $\ca{A}$, we can form a category $\id{Map}(\ca{A})$
-with the same objects as $\ca{A}$, but considering only the maps (rather
+Given an allegory $\cA$, we can form a categor\rm{Map}ap}(\cA)$
+with the same objects as $\cA$, but considering only the maps (rather
 than arbitrary relations).
 
 ```agda

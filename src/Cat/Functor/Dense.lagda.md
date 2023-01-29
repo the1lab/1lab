@@ -13,11 +13,11 @@ module Cat.Functor.Dense where
 
 # Dense subcategories
 
-A $\kappa$-small subcategory $\ca{C} \sube \ca{D}$ of a locally
-$\kappa$-small category $\ca{D}$ (hence a \r{fully faithful} functor $F
-: \ca{C} \mono \ca{D}$) is called **dense** if objects of $\ca{D}$ are
-generated under \r{colimits} by those of $\ca{C}$, in a certain
-canonical way. In particular, any functor $F$ and object $d : \ca{D}$
+A $\kappa$-small subcategory $\cC \sube \cD$ of a locally
+$\kappa$-small category $\cD$ (hence a \r{fully faithful} functor $F
+: \cC \mono \cD$) is called **dense** if objects of $\cD$ are
+generated under \r{colimits} by those of $\cC$, in a certain
+canonical way. In particular, any functor $F$ and object $d : \cD$
 can be put into a diagram
 
 $$
@@ -58,7 +58,7 @@ module
 ```
 
 The functor $F$ is called _dense_ if this cocone is colimiting for every
-$d : \ca{D}$. The important of density is that, for a dense functor $F$,
+$d : \cD$. The important of density is that, for a dense functor $F$,
 the induced [nerve] functor is fully faithful.
 
 [nerve]: Cat.Functor.Kan.Nerve.html

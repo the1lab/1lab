@@ -269,14 +269,14 @@ along the diagonal map:
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  {\id{eq}(f,g)} && A \\
+  {\rm{eq}(f,g)} && A \\
   \\
   B && {B \times B}
-  \arrow["{\id{equ}}", from=1-1, to=1-3]
+  \arrow["{\rm{equ}}", from=1-1, to=1-3]
   \arrow[from=1-1, to=3-1]
   \arrow["{\langle f,g\rangle}", from=1-3, to=3-3]
   \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=3-3]
-  \arrow["{\langle \id{id}, \id{id}\rangle}"', from=3-1, to=3-3]
+  \arrow["{\langle \id, \id\rangle}"', from=3-1, to=3-3]
 \end{tikzcd}\]
 ~~~
 
@@ -300,12 +300,12 @@ The actual equaliser map is the top, horizontal face (what the code
 calls `Pb.p₂`{.Agda}), so we must show that, composed with this map, $f$
 and $g$ become equal. Here's where we use the fact that pullback
 squares, well, commute: We know that $f$ is $\pi_1 \circ \langle f , g
-\rangle$, and that $\langle f , g \rangle \circ \id{equ} = \langle
-\id{id}, \id{id} \rangle$ (since the square above is a pullback).
+\rangle$, and that $\langle f , g \rangle \circ \rm{equ} = \langle
+\id, \id \rangle$ (since the square above is a pullback).
 
-But both projections out of $\langle \id{id}, \id{id} \rangle$
+But both projections out of $\langle \id, \id \rangle$
 are equal, so we can apply commutativity of the square above _again_ to
-conclude that $f \circ \id{equ} = g \circ \id{equ}$.
+conclude that $f \circ \rm{equ} = g \circ \rm{equ}$.
 
 ```agda
       eq : Equaliser C f g
@@ -322,20 +322,20 @@ conclude that $f \circ \id{equ} = g \circ \id{equ}$.
 
 We must now show that if $e'$ is another map which equalises $f$ and
 $g$, then it fits into a commutative diagram like the one below, so that
-we may conclude the dashed arrow $E' \to \id{eq}(f,g)$ exists and is
+we may conclude the dashed arrow $E' \to \rm{eq}(f,g)$ exists and is
 unique.
 
 ~~~{.quiver .tall-2}
 \[\begin{tikzcd}
   {E'} \\
-  & {\id{eq}(f,g)} && A \\
+  & {\rm{eq}(f,g)} && A \\
   \\
   & B && {B \times B}
-  \arrow["{\id{equ}}", from=2-2, to=2-4]
+  \arrow["{\rm{equ}}", from=2-2, to=2-4]
   \arrow["{\langle f, g \rangle}", from=2-4, to=4-4]
   \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=2-2, to=4-4]
   \arrow[from=2-2, to=4-2]
-  \arrow["{\langle \id{id}, \id{id} \rangle}"', from=4-2, to=4-4]
+  \arrow["{\langle \id, \id \rangle}"', from=4-2, to=4-4]
   \arrow["{e'}", curve={height=-6pt}, from=1-1, to=2-4]
   \arrow["{\exists!}"', dashed, from=1-1, to=2-2]
 \end{tikzcd}\]
@@ -343,7 +343,7 @@ unique.
 
 A bit of boring limit-chasing lets us conclude that this diagram _does_
 commute, hence the dashed arrow _does_ exist (uniquely!), so that the
-top face $\id{equ} : \id{eq}(f,g) \to A$ in our pullback diagram
+top face $\rm{equ} : \rm{eq}(f,g) \to A$ in our pullback diagram
 is indeed the equaliser of $f$ and $g$.
 
 ```agda
@@ -462,8 +462,8 @@ module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ�
 ```
 
 Since (if a terminal object exists), products $A \times B$ can be
-identified with pullbacks $A \times_\top B$, if $\ca{C}$ has a terminal
-object, then a lex functor $F : \ca{C} \to \ca{D}$ also preserves
+identified with pullbacks $A \times_\top B$, if $\cC$ has a terminal
+object, then a lex functor $F : \cC \to \cD$ also preserves
 products.
 
 ```agda

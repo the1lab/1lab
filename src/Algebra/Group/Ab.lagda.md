@@ -25,15 +25,15 @@ instructive names in mathematics. It's the law.
 [groups]: Algebra.Group.html
 
 The theory of abelian groups is generally simpler than that of arbitrary
-groups, and surprisingly the category $\ht{Ab}$ of abelian groups is
-better behaved than the category $\ht{Grp}$ of possibly non-commutative
+groups, and surprisingly the category $\thecat{Ab}$ of abelian groups is
+better behaved than the category $\thecat{Grp}$ of possibly non-commutative
 groups. This goes contrary to a common trade-off in category theory,
 that of a "category of nice objects" vs a "nice category of objects" (as
 an example, consider the category of fields: fields are very nice
 objects algebraically, but the category of fields is utterly terrible
 --- but I digress).
 
-We define the category $\ht{Ab}$ as the [full subcategory] of the
+We define the category $\thecat{Ab}$ as the [full subcategory] of the
 category of groups consisting of those objects which are abelian groups.
 
 [full subcategory]: Cat.Functor.FullSubcategory.html
@@ -103,7 +103,7 @@ module _ {ℓ ℓ′} (X : Type ℓ) (G : Group ℓ′) where private
 
 This definition works fine for groups and maps _of sets_ into a group,
 but maps of sets aren't what we're interested in when studying groups!
-We'd like to equip the set $\hom_{\ht{Grp}}(A, B)$ with a group
+We'd like to equip the set $\hom_{\thecat{Grp}}(A, B)$ with a group
 structure induced by pointwise multiplication, but this turns out to be
 possible if, and only if, the groups involved are abelian. Let us skip
 the details of constructing the zero map, which is a group homomorphism
@@ -178,8 +178,8 @@ homomorphism, as is done in the calculation below.
 ```
 
 By pre/post composition, the `Hom-group`{.Agda} construction extends to
-a functor $\ht{Ab}\op \times \ht{Ab} \to \ht{Ab}$, the **internal $\hom$
-abelian group**.
+a functor $\thecat{Ab}\op \times \thecat{Ab} \to \thecat{Ab}$, the
+**internal $\hom$ abelian group**.
 
 ```agda
 module _ {ℓ} where
@@ -199,15 +199,15 @@ module _ {ℓ} where
 
 # The tensor product
 
-We extend the category $\ht{Ab}$ defined above to a monoidal category by
-equipping it with the _tensor product_ of abelian groups. Note that this
-is not the only notion of "product" in $\ht{Ab}$; There is also the
-"direct (bi)product" of abelian groups. The tensor product has primacy
-because it defines a [left adjoint] to the internal $\hom$ functor ---
-that is, homs $A \otimes B \to C$ correspond to **bilinear maps** $A, B
-\to C$: functions which are "separately group homomorphisms in each
-variable". By adjointness, these are the same as group homomorphisms $A
-\to [B, C]$.
+We extend the category $\thecat{Ab}$ defined above to a monoidal
+category by equipping it with the _tensor product_ of abelian groups.
+Note that this is not the only notion of "product" in $\thecat{Ab}$;
+There is also the "direct (bi)product" of abelian groups. The tensor
+product has primacy because it defines a [left adjoint] to the internal
+$\hom$ functor --- that is, homs $A \otimes B \to C$ correspond to
+**bilinear maps** $A, B \to C$: functions which are "separately group
+homomorphisms in each variable". By adjointness, these are the same as
+group homomorphisms $A \to [B, C]$.
 
 [left adjoint]: Cat.Functor.Adjoint.html
 
@@ -399,7 +399,7 @@ this extends to an equivalence of $\hom$-sets $\hom(A \otimes B, C)
 ```
 
 and indeed this isomorphism is one of $\hom$-groups, hence since
-$\ht{Ab}$ is a univalent category, an _identification_ of $\hom$-groups.
+$\thecat{Ab}$ is a univalent category, an _identification_ of $\hom$-groups.
 
 ```agda
   Tensor⊣Hom : Hom-group (A ⊗ B) C ≡ Hom-group A (Hom-group B C)

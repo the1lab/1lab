@@ -40,8 +40,8 @@ reason to believe that this implies _all_ finite products exist, right?
 Right --- which is why we have to prove it.
 
 In this module, we prove the following theorem: If you have a sequence
-of objects in $\ca{C}$ of length $n$, then its product exists as long as
-$\ca{C}$ is Cartesian, and can be computed in terms of iterated binary
+of objects in $\cC$ of length $n$, then its product exists as long as
+$\cC$ is Cartesian, and can be computed in terms of iterated binary
 products and terminal objects.
 
 We take an opportunity to complicate the definition while we're at it:

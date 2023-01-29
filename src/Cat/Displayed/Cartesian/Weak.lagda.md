@@ -123,7 +123,7 @@ cartesian→weak-cartesian {f = f} {f′ = f′} cart = weak-cart where
     uniquep (idr f) refl (idr f) h′ p
 ```
 
-Furthermore, if $\ca{E}$ is a fibration, weakly cartesian morphisms are
+Furthermore, if $\cE$ is a fibration, weakly cartesian morphisms are
 also cartesian. To see this, we note that the lift of $f$ is cartesian,
 and thus also a weak cartesian morphism. This implies that there is
 an isomorphism between their codomains, which allows us to invoke

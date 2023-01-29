@@ -188,9 +188,9 @@ is-product-iso f-iso g-iso prod = prod′ where
 
 # The product functor
 
-If $\ca{C}$ admits products of all pairs of objects, then the assignment
-$(A, B) \mapsto (A \times B)$ extends to a [bifunctor] $(\ca{C} \times
-\ca{C}) \to \ca{C}$.
+If $\cC$ admits products of all pairs of objects, then the assignment
+$(A, B) \mapsto (A \times B)$ extends to a [bifunctor] $(\cC \times
+\cC) \to \cC$.
 
 [bifunctor]: Cat.Functor.Bifunctor.html
 

@@ -73,7 +73,7 @@ class of higher inductive types.
 Below, we describe _cubical type theory_, which is one particular
 homotopy type theory. In cubical type theory, we interpret types as the
 Kan complices in the category of De Morgan cubical sets,
-$\id{PSh}(\square)$. This interpretation gives rise to a model
+$\rm{PSh}(\square)$. This interpretation gives rise to a model
 structure on the category of cubical sets, referred to as a
 "cubical-type model structure".
 
@@ -147,7 +147,7 @@ ordered pair $(a, b)$.
   \bb{R}$, hence we know that the rules of function types can be
   used with $f$. However, when introducing a more complex object, we're
   forced to break into informality and conventional shorthand: "Let G be
-  a group". In HoTT, we can directly write $G : \id{Group}$[^allgroups],
+  a group". In HoTT, we can directly write $G : \rm{Group}$[^allgroups],
   which tells us that the rules for the type of groups apply to $G$.
 
 [^allgroups]: As usual, we do not have a type of _all_ groups. Instead,
@@ -289,7 +289,7 @@ same as the notation $x \mapsto e$ often used for specifying a map.
 Indeed, Agda supports definition of functions using a more traditional,
 "rule-like" notation, as shorthand for using $\lambda$ abstraction. For
 instance, the following definitions of inhabitants `f` and `g` of
-$\id{Nat} \to \id{Nat}$ are definitionally the same:
+$\rm{Nat} \to \rm{Nat}$ are definitionally the same:
 
 <div class=mathpar>
 <figure>
@@ -413,7 +413,7 @@ salvage it.
   To see that this definition is a generalisation of the material
   definition in terms of $\in$, we note that any injective function $f :
   S \hookrightarrow T$ can be _restricted_ to a bijective function $f :
-  S \xrightarrow{\sim} \id{im}(f)$, by swapping the original codomain
+  S \xrightarrow{\sim} \rm{im}(f)$, by swapping the original codomain
   for the image of the function. Since the image is a subset of the
   codomain, we can interpret any injective $f : S \hookrightarrow T$ as
   expressing a _particular_ way that $S$ can be regarded as a subset of
@@ -537,7 +537,7 @@ One would like to find a correspondence between these "categories over
 categories" and some data that we already know how to conceptualise; It
 turns out that Grothendieck fibrations over $B$ --- i.e., the functors $F
 : E \to B$ satisfying a certain lifting property --- correspond to
-weak 2-functors into $\id{Cat}$.
+weak 2-functors into $\rm{Cat}$.
 
 Conversely, this equivalence lets us think of a family of categories
 indexed by $B$ --- a 2-dimensional concept --- corresponds precisely to
@@ -564,11 +564,11 @@ case where we're actually talking about $(n,1)$-topoi.
 </details>
 
 [^subobjclass]: Let me make this more precise. In any (univalent)
-category with finite limits $\mathscr{E}$, we have a functor $\id{Sub} :
+category with finite limits $\mathscr{E}$, we have a functor $\rm{Sub} :
 \mathscr{E}\op \to \set$, which takes $c$ to the full subcategory of
 $\mathscr{E}/c$ on the injections. We say that $\Omega \in \mathscr{E}$
 is a **subobject classifier** if there is a natural isomorphism
-$\id{Sub} \cong \hom(-,\Omega)$, i.e., if $\Omega$ is a representing
+$\rm{Sub} \cong \hom(-,\Omega)$, i.e., if $\Omega$ is a representing
 object for the subobject functor. Since the Yoneda lemma implies that
 representing objects are unique, this characterises $\Omega$.
 
@@ -595,7 +595,7 @@ A **discrete object classifier** (say $\set$) would then be a classifier
 for functors which have discrete groupoids as fibres --- the fibres have
 no categorical information, being nothing more than a set. Given any set
 $X$, we'd have a name for it as the interpretation of the unique map
-$\id{Disc}(X) \to *$ as a map $* \to \set$. The name $\set$ was
+$\rm{Disc}(X) \to *$ as a map $* \to \set$. The name $\set$ was
 chosen because in the $(2,1)$-category $\grpd$, the discrete object
 classifier is exactly the category of sets.
 
@@ -607,11 +607,11 @@ maps $B \to \ty$ correspond to _arbitrary_ maps $A \to B$. Let's specify
 this notion better using the language of higher category theory:
 
 A **subobject classifier** is a [representing object] for the functor
-$\id{Sub} : \mathscr{E}\op \to \set$ which takes an object to its
+$\rm{Sub} : \mathscr{E}\op \to \set$ which takes an object to its
 poset of subobjects. Since the subobjects of $x$ can be described as
 (isomorphism classes of) objects of a subcategory of $\mathscr{E}/x$, we
 would hope that an **object classifier** would classify the entire
-groupoid $\id{Core}(\mathscr{E}/x)$, keeping around _all_ of the maps
+groupoid $\rm{Core}(\mathscr{E}/x)$, keeping around _all_ of the maps
 into $x$, and keeping track of the isomorphisms between them.
 
 <details class=text>
@@ -623,7 +623,7 @@ further afield than is appropriate here, so let me give a quick summary
 and point you towards the nLab for further details. Fix a category $C$
 that we may talk about:
 
-The core of $C$, written.. well, $\id{Core}(C)$, is the largest
+The core of $C$, written.. well, $\rm{Core}(C)$, is the largest
 groupoid inside $C$. It has all the same objects, but only keeps around
 the isomorphisms.
 
@@ -646,9 +646,9 @@ $C$ that makes the following triangle (in $C$) commute:
 
 [representing object]: https://ncatlab.org/nlab/show/representable+functor#idea
 
-But for us to be able to represent $\id{Core}(\mathscr{E}/-) : \mathscr{E}\op
+But for us to be able to represent $\rm{Core}(\mathscr{E}/-) : \mathscr{E}\op
 \to \grpd$ as an object $\mathcal{U}$ of $\mathscr{E}$, we need
-the hom-space $\id{Hom}_{\mathscr{E}}(x, \mathcal{U})$ to be a groupoid,
+the hom-space $\rm{Hom}_{\mathscr{E}}(x, \mathcal{U})$ to be a groupoid,
 instead of just a set; Thus $\mathscr{E}$ was actually a 2-category!
 We're not in the clear though, since a slice of a n-category is another
 n-category, we now have a 2-category $\mathscr{E}/x$, so the core of
@@ -661,8 +661,8 @@ this to a $\io$-category: a $\infty$-category where every map above
 dimension 1 is invertible.
 
 Using the proper higher-categorical jargon, we can define an object
-classifier $\ty$ in an $\io$-category $\ht{H}$ to be a representing
-object for the $\io$-presheaf $\id{Core}(\ht{H}/-) : \ht{H}\op \to
+classifier $\ty$ in an $\io$-category $\cH$ to be a representing
+object for the $\io$-presheaf $\rm{Core}(\cH/-) : \cH\op \to
 \igpd$.
 
 Again, the importance of object classifiers is that they let us talk
@@ -719,7 +719,7 @@ higher universes:
 To avoid having `Lift`{.Agda} everywhere, universes are indexed by a
 (small) type of countable ordinals, called `Level`, and constructions
 can be parametrised by the level(s) of types they deal with. The
-collection of all $\ell$-level types is $\ty_{\id{lsuc}\ \ell}$, which
+collection of all $\ell$-level types is $\ty_{\rm{lsuc}\ \ell}$, which
 is itself a type in the next universe up, etc. Since levels are
 themselves inhabitants of a type, we do in fact have a definable
 function $\lambda \ell.\ \ty_\ell$. To avoid further Russellian
@@ -738,8 +738,8 @@ To represent a collection of types varying over an value of $A$, we use
 a function type into a universe, called a **type family** for
 convenience: A type family over $A$ is a function $A \to \ty_i$, for
 some choice of level $i$. An example of a type family are the _finite
-types_, regarded as a family $\id{Fin} : \bb{N} \to \ty$ --- where
-$\id{Fin}(n)$ is a type with $n$ elements. Type families are also used
+types_, regarded as a family $\rm{Fin} : \bb{N} \to \ty$ --- where
+$\rm{Fin}(n)$ is a type with $n$ elements. Type families are also used
 to model **type constructors**, which are familiar to programmers as
 being the _generic types_. And finally, if we have a type $B : \ty_i$,
 we can consider the **constant family** at $B$, defined to be the
@@ -771,12 +771,12 @@ only axiomatise the _sets_ which are not too big.
 
 In the branches of mathematics that Alexander Grothendieck influenced, a
 more common approach is to work instead with _Grothendieck universes_: A
-Grothendieck universe is a set $\ca{U}$ that forms a transitive model of
-ZF, closed under $\ca{U}$-small indexed products.  The classification of
-models of ZF implies that any Grothendieck universe $\ca{U}$ is
+Grothendieck universe is a set $\cU$ that forms a transitive model of
+ZF, closed under $\cU$-small indexed products.  The classification of
+models of ZF implies that any Grothendieck universe $\cU$ is
 equivalent to a segment of the [von Neumann universe] $\bf{V}_\kappa$,
 where $\kappa$ is a strongly inaccessible cardinal --- essentially, an
-upper bound on the size of the sets in $\ca{U}$.
+upper bound on the size of the sets in $\cU$.
 
 [von Neumann universe]: https://en.wikipedia.org/wiki/Von_Neumann_universe
 
@@ -801,7 +801,7 @@ universe; For the specific case of categories, we also use the
 terminology **locally $\kappa$-small** to refer to the universe in which
 the family $\hom(-,-)$ lands. We use subscript Greek letters in prose to
 index our structures by their universe level. For example,
-$\sets_\kappa$ is the ($(1+\kappa)$-small, locally $\kappa$-small)
+$\Sets_\kappa$ is the ($(1+\kappa)$-small, locally $\kappa$-small)
 category of $\kappa$-small sets.
 
 <details class=text>
@@ -811,11 +811,11 @@ For those familiar with the notions of _internal_ and _enriched_
 categories, we might rephrase the _classical_ definitions of
 $\kappa$-small and locally $\kappa$-small categories as follows:
 
-- A category $\ca{C}$ is $\kappa$-small if it is an internal category in
-$\sets_\kappa$;
+- A category $\cC$ is $\kappa$-small if it is an internal category in
+$\Sets_\kappa$;
 
-- A category $\ca{C}$ is locally $\kappa$-small if it is enriched over
-the Cartesian monoidal category $\sets_\kappa$.
+- A category $\cC$ is locally $\kappa$-small if it is enriched over
+the Cartesian monoidal category $\Sets_\kappa$.
 
 Because every type is contained in some universe, we note that _every_
 category that appears in our development is locally $\kappa$-small for
@@ -827,13 +827,13 @@ $\lambda$-small categories".
 
 **Warning**: Note that our use of the term "$\kappa$-small" is
 nonstandard. In set-theoretic foundations, where the only objects are
-sets anyway, this means "category internal to $\sets_\kappa$", as
+sets anyway, this means "category internal to $\Sets_\kappa$", as
 mentioned in the infobox above. In the 1Lab, the objects we manipulate
 are _higher groupoids_ rather than sets, and so very few categories will
 be internal to a category of sets. Instead, when we describe a category
-$\ca{C}$ is $\kappa$-small, we mean that the type of objects of $\ca{C}$
+$\cC$ is $\kappa$-small, we mean that the type of objects of $\cC$
 is an inhabitant of the universe $\ty_\kappa$, and that the
-$\hom_\ca{C}(-,-)$ family is valued in $\sets_\kappa$. Our shorthand for
+$\hom_\cC(-,-)$ family is valued in $\Sets_\kappa$. Our shorthand for
 the traditional notion is a "**[strict] $\kappa$-small**" category.
 
 [strict]: Cat.Instances.StrictCat.html
@@ -1058,22 +1058,22 @@ we keep!
 
 The **interval type**, $\bb{I}$, has two introduction rules --- but
 they are so simple that we refer to them as "closed inhabitants"
-instead. These are written $\id{i0}$ and $\id{i1}$, and they denote the
+instead. These are written $\rm{i0}$ and $\rm{i1}$, and they denote the
 left- and right- hand side of the unit interval. A classic result in the
 interpretation of constructive mathematics says that any function
 defined inside type theory is automatically continuous, and so, we
 define the type $x \equiv_A y$ to be the type of functions $f :
-\bb{I} \to A$, restricted to those where $f(\id{i0}) = x$ and
-$f(\id{i1}) = y$ _definitionally_.
+\bb{I} \to A$, restricted to those where $f(\rm{i0}) = x$ and
+$f(\rm{i1}) = y$ _definitionally_.
 
 The introduction rule for paths says that if $e : \bb{I} \to A$,
-with $e(\id{i0}) = x$ and $e(\id{i1}) = y$ (those are _definitional_
+with $e(\rm{i0}) = x$ and $e(\rm{i1}) = y$ (those are _definitional_
 equalities), then we can treat it as a path $x \equiv_A y$. Conversely,
 if we have a term $p : x \equiv_A y$, then we can apply it to an
 argument $i : \bb{I}$ to get a term $p(i)$ of type $A$. The type of
 paths satisfies the same reduction rule ($\beta$-reduction) as function
-types, but with an additional rule that says $p(\id{i0})$ is
-definitionally equal to $x$ (resp. $\id{i1}$ and $y$), even if $p$ has
+types, but with an additional rule that says $p(\rm{i0})$ is
+definitionally equal to $x$ (resp. $\rm{i1}$ and $y$), even if $p$ has
 not reduced to a $\lambda$-abstraction.
 
 By considering the constant function at a point $x : A$, we obtain a
@@ -1085,7 +1085,7 @@ identity morphism. The rest of the groupoid structure is here too! Any
 path $p : x \equiv y$ has an inverse $p^{-1} : y \equiv x$, and for any
 $p : x \equiv_A y$ and $q : y \equiv_A z$, there is a composite path $p
 \bullet q : x \equiv_A z$. There are paths between paths which express
-the groupoid identities (e.g. $p \bullet p^{-1} \equiv \id{refl}$),
+the groupoid identities (e.g. $p \bullet p^{-1} \equiv \rm{refl}$),
 and those paths satisfy their own identities (up to a path between paths
 between paths), and so on.
 
@@ -1125,24 +1125,24 @@ which is notated by $A \times B$.
 For the elimination rules, well, pairs would be rather useless if we
 couldn't somehow get out what we put in, right? The first elimination
 rule says that if we have an inhabitant $e : \sum_{(x : A)} B(x)$, then
-we can project out the first component, which is written $e \id{.fst}$,
+we can project out the first component, which is written $e \rm{.fst}$,
 to get an inhabitant of $A$. The computation rule here says that if you
-project from a pair, you get back what you put in: $(a,b)\id{.fst} = a$.
+project from a pair, you get back what you put in: $(a,b)\rm{.fst} = a$.
 
 Projecting out the second component is trickier, so we start by
 considering the special case where we're projecting from a literal pair.
 We know that in $(a,b)$, the terms have types $a : A$ and $b : B(a)$, so
-in this case, the second projection is $(a,b)\id{.snd} : B(a)$. When
+in this case, the second projection is $(a,b)\rm{.snd} : B(a)$. When
 we're not projecting from a literal pair, though, we're in a bit of a
 pickle. How do we state the type of the second projection, when we don't
 know what the first component is? Well - we generalise. We know that for
-a pair, $a = (a,b)\id{.fst}$, so that we may replace the aforementioned
-typing for $\id{.snd}$ with the wordy $(a,b)\id{.snd} :
-B((a,b)\id{.fst})$. Now we don't use any subterms of the pair in the
+a pair, $a = (a,b)\rm{.fst}$, so that we may replace the aforementioned
+typing for $\rm{.snd}$ with the wordy $(a,b)\rm{.snd} :
+B((a,b)\rm{.fst})$. Now we don't use any subterms of the pair in the
 typing judgement, so we can generalise:
 
 $$
-e\id{.snd} : B (e\id{.fst})
+e\rm{.snd} : B (e\rm{.fst})
 $$
 
 A very common application of the dependent sum type is describing types
@@ -1185,8 +1185,8 @@ paradox.
 Just like functions, pairs enjoy a uniqueness principle, which (since
 coming up with names is very hard), also goes by $\eta$-expansion. The
 rule says that every inhabitant of a $\Sigma$-type is _definitionally_
-equal to the pairing of its projections: $p = (p\id{.fst},
-p\id{.snd})$. This essentially guarantees us that the inhabitants of
+equal to the pairing of its projections: $p = (p\rm{.fst},
+p\rm{.snd})$. This essentially guarantees us that the inhabitants of
 a dependent sum type can't have any "extra stuff" hiding from our
 projection maps; They are exactly the pairs, no more, and no less.
 
@@ -1207,14 +1207,14 @@ union $B(0) \uplus B(1)$;
 to be a _fibration_, since as we shall see later it satisfies the path
 lifting property; In that sense, $\sum B$ gives the **total space**, and
 the actual fibration is the first projection map $x \mapsto
-x\id{.fst}$.
+x\rm{.fst}$.
 
 This last correspondence will be particularly important later, and it
 inspires much of the terminology we use in HoTT. Since universes are
 object classifiers, we know that there is an equivalence between type
 families $F : B \to \ty$ and maps into $B$.  Dependent sums and paths
 let us be more precise about this equivalence: We can turn any type
-family $F : B \to \ty$ into a map $\id{fst} : \sum F \to B$, and looking
+family $F : B \to \ty$ into a map $\rm{fst} : \sum F \to B$, and looking
 at the fibre of first over a point $y$ recovers $F(y)$. We thus blur
 this distinction a bit and refer to $F(x)$ for some $x : B$ as a fibre
 of $F$, and we say that something happens _fibrewise_ if it happens for
@@ -1245,47 +1245,47 @@ in the same universe, which can be any universe of our choice. We know
 that we can consider $B$ to be a constant type family taking indices in
 $A$: $\lambda (x : A).\ B$. Furthermore, we know that the total space of
 this family is the product type $A \times B$, and that it comes equipped
-with a projection map $\id{fst} : \sum B \to A$.
+with a projection map $\rm{fst} : \sum B \to A$.
 
-Given any function $f : A \to B$, we define its _graph_ $\id{graph}(f) :
+Given any function $f : A \to B$, we define its _graph_ $\rm{graph}(f) :
 A \to A \times B$ to be the function $\lambda x.\ (x, f(x))$, which
 takes each point of the input space to an ordered pair where the first
 coordinate is the input, and the second coordinate is the output of $f$
 _at that input_. The graph of a function is special because of its
-interaction with the projection map $\id{fst} : A \times B \to A$. In
-particular, we can see that $\lambda x.\ \id{graph}(f)\id{.fst}$ is the
+interaction with the projection map $\rm{fst} : A \times B \to A$. In
+particular, we can see that $\lambda x.\ \rm{graph}(f)\rm{.fst}$ is the
 identity function! This property turns out to precisely characterise the
 functions $A \to A \times B$ which are the graphs of functions $A \to
 B$.
 
 By rewriting the equality we noticed above in terms of function
-composition, we obtain $\id{.fst} \circ \id{graph}(f) = \id{id}$. A
-function, like $\id{graph}(f)$, which composes on the right with some
-other function $\id{fst}$ to give the identity function, is called a
-**section** of $\id{fst}$. This lets us characterise the functions $A
-\to B$ as the _sections of $\id{fst} : A \times B \to A$._ In this
+composition, we obtain $\rm{.fst} \circ \rm{graph}(f) = \id$. A
+function, like $\rm{graph}(f)$, which composes on the right with some
+other function $\rm{fst}$ to give the identity function, is called a
+**section** of $\rm{fst}$. This lets us characterise the functions $A
+\to B$ as the _sections of $\rm{fst} : A \times B \to A$._ In this
 sense, we see that a function $A \to B$ is precisely a choice of values
 $f(x)$, where $f(x)$ is in the fibre over $x$ --- in this case, the
 fibres over all points are $B$!
 
 Given a map $g : A \to A \times B$ that we know is a section of
-$\id{fst}$, we can recover a function $f : A \to B$. Specifically, given
-a point $x : A$, we know that the second projection $g(x)\id{.snd}$ has
+$\rm{fst}$, we can recover a function $f : A \to B$. Specifically, given
+a point $x : A$, we know that the second projection $g(x)\rm{.snd}$ has
 type $B$ --- so we can simply define $f$ to be $\lambda x.\
-g(x)\id{.snd}$. Since we know that $g$ is a section of $\id{fst}$, we
-conclude that $\id{graph}(f) = g$.
+g(x)\rm{.snd}$. Since we know that $g$ is a section of $\rm{fst}$, we
+conclude that $\rm{graph}(f) = g$.
 
 This idea generalises cleanly from the case where $B$ is just some type,
 to the case where $B$ is a type family indexed by $A$. We define a
 **section of $B$** to be a function $g : A \to \sum B$, where
-$\id{fst} \circ g = \id{id}$. Note that this terminology conflates the
+$\rm{fst} \circ g = \id$. Note that this terminology conflates the
 type family $B$ with the projection map $\sum B \to A$, keeping with the
 trend of identifying type families with fibrations.  Generalising the
 argument from the previous paragraph, we show that a section $g$ gives a
 rule for assigning a point in $B(x)$ to each point in $x$. We again take
-the second projection of $g(x)\id{.snd}$, but since now $B$ is a type
-family, this lives in the type $B(g(x)\id{.fst})$ --- but since we know
-that $g$ is a section of $\id{fst}$, we can correct this to be $B(x)$.
+the second projection of $g(x)\rm{.snd}$, but since now $B$ is a type
+family, this lives in the type $B(g(x)\rm{.fst})$ --- but since we know
+that $g$ is a section of $\rm{fst}$, we can correct this to be $B(x)$.
 
 We would like to package up such a rule into a function $A \to B$, but
 this is not a well-formed type, since $B$ is a type _family_. Moreover,
@@ -1339,7 +1339,7 @@ First, we'll shuffle the type so that we can phrase it in terms of a
 single dependent product, and a single type family. We define a type $A$
 to be a _subsingleton_ if there is a term
 
-$$f : (xy : A \times A) \to (xy\id{.fst} \equiv xy\id{.snd})$$
+$$f : (xy : A \times A) \to (xy\rm{.fst} \equiv xy\rm{.snd})$$
 
 An $f$ of this type can be seen as a section of the type family $F : A
 \times A \to \ty$ defined by the rule
@@ -1351,14 +1351,14 @@ $$
 The total space $\sum F$ of this family is the space of all paths in
 $A$, which will be written as $A^\bb{I}$ to emphasise its nature as
 a path space. Since it is the total space of a type family, it comes
-equipped with a fibration $\id{fst} : A^\bb{I} \to A \times A$.
+equipped with a fibration $\rm{fst} : A^\bb{I} \to A \times A$.
 Given that a term in $A^\bb{I}$ can be seen to be a pair $((x, y),
 p)$ where $p : x \equiv y$, we see that this fibration projects both
 endpoints of a path --- so we will write it $(d_0,d_1) : A^\bb{I}
 \to A \times A$, since it is the pairing of the maps which evaluate a
 path at the left and right endpoints of the interval.
 
-As a very quick aside, there is a map $r : \lambda x.\ (x, x, \id{refl}$
+As a very quick aside, there is a map $r : \lambda x.\ (x, x, \rm{refl}$
 making the diagram below commute. This diagram expresses that the
 diagonal $A \to A \times A$ can be factored as a weak equivalence
 followed by a fibration through $A^\bb{I}$, which is the defining
@@ -1371,7 +1371,7 @@ $$
 
 A section of this fibration --- that is, a dependent function like $f$
 --- is then a _continuous_ function $A \times A \to A^\bb{I}$, with
-the property that $(d_0,d_1) \circ f = \id{id}$. Now assume that our
+the property that $(d_0,d_1) \circ f = \id$. Now assume that our
 space $A$ is pointed, say with a point $y_0 : A$, and that we have a
 section $f$. We can then define the homotopy $(x,t) \mapsto f(x,y_0,t)$,
 mapping between the identity function on $A$ and the constant

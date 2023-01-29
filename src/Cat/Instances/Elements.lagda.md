@@ -17,7 +17,7 @@ private
 
 # The Category of Elements
 
-The category of elements of a presheaf $P : C\op \to \sets$ is a means
+The category of elements of a presheaf $P : C\op \to \Sets$ is a means
 of unpacking the data of the presheaf. Its objects are pairs of an
 object $x$, and a section $s : P x$.
 
@@ -40,7 +40,7 @@ and are left with a big soup of points.
 We do something similar for morphisms, and turn functions $P(f) : P(Y)
 \to P(X)$ into a huge collection of morphisms between points. We do this
 by defining a morphism $(x, x_0) \to (y, y_0)$ to be a morphism $f : X
-\to Y$ in $\ca{C}$, as well as a proof that $P(f)(y_0) = x_0$ This too
+\to Y$ in $\cC$, as well as a proof that $P(f)(y_0) = x_0$ This too
 can be seen as erasing boundaries, just this time with the data
 associated with a function. Instead of having a bunch of data bundled
 together that describes the action of $P(f)$ on each point of $P(Y)$, we
@@ -127,5 +127,5 @@ morphism actions.
 ```
 
 This functor makes it clear that we ought to think of the category of
-elements as something defined _over_ $\ca{C}$. For instance, if we look
-at the fibre over each $X : \ca{C}$, we get back the set $P(X)$!
+elements as something defined _over_ $\cC$. For instance, if we look
+at the fibre over each $X : \cC$, we get back the set $P(X)$!

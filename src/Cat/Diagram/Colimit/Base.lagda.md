@@ -224,8 +224,8 @@ module _ {o₁ h₁ o₂ h₂ o₃ h₃ : _}
 
 # Preservation of Colimits
 
-Because a cocone is a commutative diagram, any given functor $F : \ca{C}
-\to \ca{D}$ takes cocones in $\ca{C}$ to cocones in $\ca{D}$, as
+Because a cocone is a commutative diagram, any given functor $F : \cC
+\to \cD$ takes cocones in $\cC$ to cocones in $\cD$, as
 functors preserve commutative diagrams.
 
 ```agda

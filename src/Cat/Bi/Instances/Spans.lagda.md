@@ -19,19 +19,19 @@ open C
 
 # The bicategory of spans
 
-Let $\ca{C}$ be a [precategory]. By a span in $\ca{C}$ (from an object
-$A : \ca{C}$ to an object $B : \ca{C}$), we mean a diagram of the form
+Let $\cC$ be a [precategory]. By a span in $\cC$ (from an object
+$A : \cC$ to an object $B : \cC$), we mean a diagram of the form
 $A \ot C \to B$. Note that the "vertex" of this span, the object $C$, is
-part of the data, so that the collection of "spans in $\ca{C}$" will not
-be [a set] (unless $\ca{C}$ is [strict]) --- so we can not construct a
+part of the data, so that the collection of "spans in $\cC$" will not
+be [a set] (unless $\cC$ is [strict]) --- so we can not construct a
 category where $\hom(a,b)$ is the collection of spans from $a$ to $b$.
 
 [precategory]: Cat.Base.html
 [a set]: 1Lab.HLevel.html#is-set
 [strict]: Cat.Instances.StrictCat.html
 
-However, we can make spans in $\ca{C}$ the _objects_ of a category, and
-the hom-sets are the maps in $\ca{C}$ between the vertices which
+However, we can make spans in $\cC$ the _objects_ of a category, and
+the hom-sets are the maps in $\cC$ between the vertices which
 "commute with the legs". Diagramatically, a map between spans is the
 dashed line in
 
@@ -86,10 +86,10 @@ Span-hom-path {x = x} {y} {f} {g} p i .right j =
 ```
 -->
 
-The category $\id{Spans}_\ca{C}(A, B)$ of spans between $A$ and $B$
-admits a faithful functor to $\ca{C}$ (projecting the vertex and the
+The category $\rm{Spans}_\cC(A, B)$ of spans between $A$ and $B$
+admits a faithful functor to $\cC$ (projecting the vertex and the
 "middle map", respectively), so that equality of maps of spans can be
-compared at the level of maps in $\ca{C}$.
+compared at the level of maps in $\cC$.
 
 ```agda
 Spans : Ob → Ob → Precategory _ _
@@ -107,7 +107,7 @@ Spans x y .Precategory.idl f = Span-hom-path (idl _)
 Spans x y .Precategory.assoc f g h = Span-hom-path (assoc _ _ _)
 ```
 
-Now suppose that $\ca{C}$ admits pullbacks for arbitrary pairs of maps.
+Now suppose that $\cC$ admits pullbacks for arbitrary pairs of maps.
 Supposing that we have some spans $S : A \to B$ and $S' : B \to C$, we
 can fit them in an M-shaped diagram like
 
@@ -168,16 +168,16 @@ module _ (pb : ∀ {a b c} (f : Hom a b) (g : Hom c b) → Pullback C f g) where
 
 What we'll show in the rest of this module is that `Span-∘`{.Agda} lets
 us make `Spans`{.Agda} into the categories of 1-cells of a
-_prebicategory_, the **(pre)bicategory of spans** (of $\ca{C}$)
-$\id{Span}(\ca{C})$. As mentioned before, this prebicategory has (a
+_prebicategory_, the **(pre)bicategory of spans** (of $\cC$)
+$\rm{Span}(\cC)$. As mentioned before, this prebicategory has (a
 priori) no upper bound on the h-levels of its 1-cells, so it is not
-locally strict. We remark that when $\ca{C}$ is univalent, then
-$\id{Span}(\ca{C})$ is locally so, and when $\ca{C}$ is gaunt, then
-$\id{Span}(\ca{C})$ is strict.
+locally strict. We remark that when $\cC$ is univalent, then
+$\rm{Span}(\cC)$ is locally so, and when $\cC$ is gaunt, then
+$\rm{Span}(\cC)$ is strict.
 
 Since the details of the full construction are _grueling_, we will
 present only an overview of the unitors and the associator. For the left
-unitor, observe that the composition $\id{id} \circ S$ is implemented by
+unitor, observe that the composition $\id \circ S$ is implemented by
 a pullback diagram like
 
 ~~~{.quiver}
@@ -197,10 +197,10 @@ a pullback diagram like
 \end{tikzcd}\]
 ~~~
 
-but observe that the maps $S \xto{f} A$ and $S \xto{\id{id}} S$ also
+but observe that the maps $S \xto{f} A$ and $S \xto{\id} S$ also
 form a cone over the cospan $A \to A \xot{f} S$, so that there is a
 unique map filling the dashed line in the diagram above such that
-everything commutes: hence there is an invertible 2-cell $\id{id} \circ
+everything commutes: hence there is an invertible 2-cell $\id \circ
 S \To S$. The right unitor is analogous.
 
 ```agda

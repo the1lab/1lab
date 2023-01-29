@@ -77,11 +77,11 @@ Change-of-base .assoc′ f′ g′ h′ = to-pathp $
 
 ## As a fibration
 
-If $\ca{E}$ is a cartesian fibration, then the base change of $\ca{E}$
+If $\cE$ is a cartesian fibration, then the base change of $\cE$
 along $F$ is also cartesian. To prove this, observe that the object and
-hom spaces of `Change-of-base`{.Agda} contain the same data as $\ca{E}$,
+hom spaces of `Change-of-base`{.Agda} contain the same data as $\cE$,
 just restricted to objects and morphisms in the image of $F$. This means
-that we still have cartesian lifts of all morphisms in $\ca{X}$: we
+that we still have cartesian lifts of all morphisms in $\cX$: we
 just have to perform the lifting of $F f$.
 
 ```agda

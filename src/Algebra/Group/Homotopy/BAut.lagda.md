@@ -10,13 +10,13 @@ module Algebra.Group.Homotopy.BAut where
 
 # Deloopings of automorphism groups
 
-Recall that any set $X$ generates a group [$\id{Sym}(X)$][symg], given
+Recall that any set $X$ generates a group [$\rm{Sym}(X)$][symg], given
 by the automorphisms $X \simeq X$. We also have a generic construction
 of [deloopings]: special spaces $K(G,1)$ (for a group $G$), where the
 [fundamental group] $\pi_1(K(G,1))$ recovers $G$. For the specific case
 of deloping automorphism groups, we can give an alternative
 construction: The type of small types [merely] equivalent to $X$ has a
-fundamental group of $\id{Sym}(X)$.
+fundamental group of $\rm{Sym}(X)$.
 
 [symg]: Algebra.Group.html#symmetric-groups
 [deloopings]: Algebra.Group.Homotopy.html#deloopings
@@ -46,8 +46,8 @@ of its interesting information is in its (higher) path spaces:
 ```
 
 We now turn to proving that $\pi_1(\baut(X)) \simeq (X \simeq X)$. We
-will define a type family $\id{Code}(b)$, where a value $p : \id{Code}(x)$
-codes for an identification $p \equiv \id{base}$. Correspondingly, there
+will define a type family $\rm{Code}(b)$, where a value $p : \rm{Code}(x)$
+codes for an identification $p \equiv \rm{base}$. Correspondingly, there
 are functions to and from these types: The core of the proof is showing
 that these functions, `encode`{.Agda} and `decode`{.Agda}, are inverses.
 
@@ -62,13 +62,13 @@ that these functions, `encode`{.Agda} and `decode`{.Agda}, are inverses.
   decode (b , eqv) rot = Σ-pathp (ua rot) (is-prop→pathp (λ _ → squash) _ _)
 ```
 
-Recall that $\id{base}$ is the type $T$ itself, equipped with the
-identity equivalence. Hence, to code for an identification $\id{base}
+Recall that $\rm{base}$ is the type $T$ itself, equipped with the
+identity equivalence. Hence, to code for an identification $\rm{base}
 \equiv (X, e)$, it suffices to record $e$ --- which by univalence
-corresponds to a path $\id{ua}(e) : T \equiv X$.  We can not directly
+corresponds to a path $\rm{ua}(e) : T \equiv X$.  We can not directly
 extract the equivalence from a given point $(X, e) : \baut(X)$: it is
 "hidden away" under a truncation. But, given an identification $p : b
-\equiv \id{base}$, we can recover the equivalence by seeing _how_ $p$
+\equiv \rm{base}$, we can recover the equivalence by seeing _how_ $p$
 identifies $X \equiv T$.
 
 ```agda
@@ -91,7 +91,7 @@ direct application of `univalence`{.Agda}.
 
 We now have the core result: Specialising `encode`{.Agda} and
 `decode`{.Agda} to the `basepoint`{.Agda}, we conclude that loop space
-$\id{base} \equiv \id{base}$ is equivalent to $\id{Sym}(X)$.
+$\rm{base} \equiv \rm{base}$ is equivalent to $\rm{Sym}(X)$.
 
 ```agda
   Ω¹BAut : (base ≡ base) ≃ (T ≃ T)

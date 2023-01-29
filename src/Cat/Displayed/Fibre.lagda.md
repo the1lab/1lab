@@ -22,17 +22,17 @@ open Cr B
 A displayed category can be thought of as representing data of a "family
 of categories"^[Though note that unless the displayed category is a
 [Cartesian fibration], this "family" might not be functorially-indexed].
-Given an object $x : \ca{B}$ of the base category, the morphisms in the
+Given an object $x : \cB$ of the base category, the morphisms in the
 fibre over x, or **vertical morphisms**, are those in the set
-$\hom_{\id{id}_x}(x, y)$ of morphisms over the identity map (on $x$).
+$\hom_{\id_x}(x, y)$ of morphisms over the identity map (on $x$).
 
 [Cartesian fibration]: Cat.Displayed.Cartesian.html
 
 The intuition from the term _vertical_ comes from _literally_ thinking
-of a category $E$ displayed over $\ca{B}$ as being a like a grab-bag of
-categories, admitting a map into $\ca{B}$ (the [total space]
+of a category $E$ displayed over $\cB$ as being a like a grab-bag of
+categories, admitting a map into $\cB$ (the [total space]
 perspective), a situation examplified by the diagram below. Here, $\int
-E$ is the total space of a category $E$ displayed over $\ca{B}$, and
+E$ is the total space of a category $E$ displayed over $\cB$, and
 $\pi$ is the corresponding projection functor.
 
 ~~~{.quiver .tall-2}
@@ -68,7 +68,7 @@ drawn vertically. Additionally, the unwritten (displayed) identity
 morphisms on $a$, $b$, $c$, and $d$ are all vertical.
 
 This last observation, coupled with the equation
-$\id{id}\circ\id{id}=\id{id}$ from the base category, implies that the
+$\id\circ\id=\id$ from the base category, implies that the
 set of vertical arrows over an object $x$ contain identities and are
 closed under composition, the **fibre (pre)category over $x$**.
 
@@ -88,17 +88,17 @@ Fibre′ X fix coh .Precategory._∘_ f g = fix (f ∘′ g)
 ```
 
 The definition of `Fibre′`{.Agda} has an extra degree of freedom: it is
-parametrised over how to reindex a morphism from lying over $\id{id}
-\circ \id{id}$ to lying over $\id{id}$. You don't get _that_ much
+parametrised over how to reindex a morphism from lying over $\id
+\circ \id$ to lying over $\id$. You don't get _that_ much
 freedom, however: there is a canonical way of doing this reindexing,
-which is to transport the composite morphism (since $\id{id} \circ
-\id{id}$ is equal to $\id{id}$), and the provided method _must_ be
+which is to transport the composite morphism (since $\id \circ
+\id$ is equal to $\id$), and the provided method _must_ be
 homotopic to this canonical one --- to guarantee that the resulting
 construction is a precategory.
 
 It may seem that this extra freedom serves no purpose, then, but there
 are cases where it's possible to transport without actually
-transporting: For example, if $\ca{E}$ is displayed over $\sets$, then
+transporting: For example, if $\cE$ is displayed over $\Sets$, then
 composition of morphisms is definitionally unital, so transporting is
 redundant; but without regularity, the transports along reflexivity
 would still pile up.

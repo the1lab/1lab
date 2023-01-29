@@ -31,10 +31,10 @@ Focusing in, the language of *simple fibrations* provides us with enough
 structure to study simply-typed languages that have enough structure
 to represent contexts internally (i.e.: product types).
 
-To start, we fix some base category $\ca{B}$ with binary products.
+To start, we fix some base category $\cB$ with binary products.
 Intuitvely, this will be some sort of category of contexts, and
 context extension endows this category with products. We interpret a
-type in a context to be an object $\Gamma \times X : \ca{B}$.
+type in a context to be an object $\Gamma \times X : \cB$.
 
 Maps between types in contexts $(\Gamma \times X) \to (\Delta \times Y)$
 are then given by a map $\Gamma \to \Delta$ between contexts, and a

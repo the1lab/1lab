@@ -28,7 +28,7 @@ $$
 
 When this is the case, we say that $e$ is a **split idempotent**: We
 have some pair of maps $p : X \to F$ (the "projector") and $i : F \to
-X$, with $r \circ i = \id{id}$ and $i \circ r = e$.
+X$, with $r \circ i = \id$ and $i \circ r = e$.
 
 ```agda
 is-idempotent : Hom A A → Type _
@@ -56,7 +56,7 @@ It's not the case that idempotents are split in every category. Those
 where this is the case are called **idempotent-complete**. Every
 category can be embedded, by a [full and faithful] functor, into an
 idempotent-complete category; This construction is called the [Karoubi
-envelope] of $\ca{C}$.
+envelope] of $\cC$.
 
 [full and faithful]: Cat.Functor.Base.html#ff-functors
 [Karoubi envelope]: Cat.Instances.Karoubi.html

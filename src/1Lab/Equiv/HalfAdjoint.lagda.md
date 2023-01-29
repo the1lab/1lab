@@ -77,8 +77,8 @@ Drawn as a diagram, the path above factors like:
 \[\begin{tikzcd}
   {f(g(y))} && y \\
   {f(g(f(g(y))))} && {f(g(y))}
-  \arrow["{\id{sym}\ (\varepsilon(f(g(y))))}"', from=1-1, to=2-1]
-  \arrow["{\id{ap}\ f\ (\eta(g(y)))}"', from=2-1, to=2-3]
+  \arrow["{\rm{sym}\ (\varepsilon(f(g(y))))}"', from=1-1, to=2-1]
+  \arrow["{\rm{ap}\ f\ (\eta(g(y)))}"', from=2-1, to=2-3]
   \arrow["{\varepsilon \ y}"', from=2-3, to=1-3]
   \arrow["{\varepsilon'\ y}", dashed, from=1-1, to=1-3]
 \end{tikzcd}\]
@@ -88,7 +88,7 @@ There is a great deal of redundancy in this definition, given that
 $\varepsilon y$ and $\varepsilon' y$ have the same boundary! The point
 is that while the definition of $\varepsilon$ is entirely opaque to us,
 $\varepsilon'$ is written in such a way that we can use properties of
-paths to make the $\id{sym}\ (\varepsilon ...)$ and $\varepsilon$
+paths to make the $\rm{sym}\ (\varepsilon ...)$ and $\varepsilon$
 cancel:
 
 ```agda
@@ -180,7 +180,7 @@ another $(x, p)$ using a very boring calculation:
 The calculation of `path`{.Agda} factors as a bunch of boring
 adjustments to paths using the groupoid structure of types, and the two
 interesting steps above: The triangle identity says that
-$\id{ap}(f)(\eta x) = \varepsilon(f x)$, and naturality of
+$\rm{ap}(f)(\eta x) = \varepsilon(f x)$, and naturality of
 $\varepsilon$ lets us "push it past $p$" to get something we can cancel:
 
 ```agda

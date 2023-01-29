@@ -45,10 +45,10 @@ open Algebra-on
 
 # Beck's coequaliser
 
-Let $F : \ca{C} \to \ca{D}$ be a functor admitting a [right adjoint]
-$U : \ca{D} \to \ca{C}$. Recall that every adjunction [induces] a
+Let $F : \cC \to \cD$ be a functor admitting a [right adjoint]
+$U : \cD \to \cC$. Recall that every adjunction [induces] a
 [monad] $UF$ (which we will call $T$ for short) on the category
-$\ca{C}$, and a "[comparison]" functor $K : \ca{D} \to \ca{C}^{T}$ into
+$\cC$, and a "[comparison]" functor $K : \cD \to \cC^{T}$ into
 the [Eilenberg-Moore category] of $T$. In this module we will lay out a
 sufficient condition for the functor $K$ to have a left adjoint, which
 we call $K^{-1}$ (`Comparison⁻¹`). Let us first establish a result about
@@ -95,7 +95,7 @@ lacking in quotients! In particular, we have the following theorem:
 ~~~
 
 called the **Beck coequaliser** (of $A$). Furthermore, this coequaliser
-is _reflexive_ in $\ca{C}^T$, meaning that the arrows $\mu$ and $T\nu$
+is _reflexive_ in $\cC^T$, meaning that the arrows $\mu$ and $T\nu$
 have a common right inverse. Elaborating a bit, this theorem lets us
 decompose any $T$-algebra $(A, \nu)$ into a canonical presentation of
 $A$ by generators and relations, as a quotient of a free algebra by a
@@ -187,8 +187,8 @@ generators and relations; The relations are encoded by the pair of maps
 $T^2A \tto TA$ in Beck's coequaliser, above. But what about the
 converse?  The following lemma says that, if every algebra presented by
 generators-and-relations (encoded by a parallel pair $T^2A \tto TA$) has
-a coequaliser _in $\ca{D}$_, then the comparison functor $\ca{D} \to
-\ca{C}^T$ has a left adjoint.
+a coequaliser _in $\cD$_, then the comparison functor $\cD \to
+\cC^T$ has a left adjoint.
 
 <!--
 ```agda
@@ -203,16 +203,16 @@ module _
 
 On objects, this left adjoint acts by sending each algebra $M$ to the
 coequaliser of (the diagram underlying) its Beck coequaliser. In a
-sense, this is "the best approximation in $\ca{D}$ of the algebra". The
+sense, this is "the best approximation in $\cD$ of the algebra". The
 action on morphisms is uniquely determined since it's a map out of a
 coequaliser.
 
 If we consider the comparison functor as being "the $T$-algebra
-underlying an object of $\ca{D}$", then the functor we construct below
-is the "free object of $\ca{D}$ on a $T$-algebra". Why is this
+underlying an object of $\cD$", then the functor we construct below
+is the "free object of $\cD$ on a $T$-algebra". Why is this
 adjunction relevant, though? Its failure to be an equivalence measures
 just how far our original adjunction is from being monadic, that is, how
-far $\ca{D}$ is from being the category of $T$-algebras.
+far $\cD$ is from being the category of $T$-algebras.
 
 ```agda
   Comparison⁻¹ : Functor (Eilenberg-Moore C T) D

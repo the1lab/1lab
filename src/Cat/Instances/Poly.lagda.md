@@ -26,10 +26,10 @@ open Functor
 # Polynomial functors and lenses
 
 The category of _polynomial functors_ is the free coproduct completion
-of $\sets\op$. Equivalently, it is the [total space] of the [family
-fibration] of $\sets\op$. More concretely, an object of $\ht{Poly}$ is
-given by a set $I$ and a family of sets $A : I \to \sets$. The idea is
-that these data corresponds to the polynomial (set-valued, with set
+of $\Sets\op$. Equivalently, it is the [total space] of the [family
+fibration] of $\Sets\op$. More concretely, an object of $\thecat{Poly}$
+is given by a set $I$ and a family of sets $A : I \to \Sets$. The idea
+is that these data corresponds to the polynomial (set-valued, with set
 coefficients) given by
 
 $$
@@ -59,9 +59,9 @@ Poly-is-category =
       (λ x → Families-are-categories _ x (opposite-is-category Sets-is-category))
 ```
 
-It is entirely mechanical to calculate that morphisms in $\ht{Poly}$ are
-given by pairs of a reindexing together with a contravariant action on
-the families. It is _so_ mechanical that we can do it automatically:
+It is entirely mechanical to calculate that morphisms in $\thecat{Poly}$
+are given by pairs of a reindexing together with a contravariant action
+on the families. It is _so_ mechanical that we can do it automatically:
 
 ```agda
 poly-maps : ∀ {ℓ} {A B} → Iso
@@ -73,7 +73,7 @@ unquoteDef poly-maps = define-record-iso poly-maps (quote Total-hom)
 ## Polynomials as functors
 
 We commented above that polynomials, i.e. terms of the type
-`Poly`{.Agda}, should correspond to particular $\sets$-valued
+`Poly`{.Agda}, should correspond to particular $\Sets$-valued
 polynomials. In particular, given a polynomial $(I, A)$, it should be
 possible to evaluate it at a set $X$ and get back a set. We take the
 interpretation above _literally_:
@@ -94,9 +94,9 @@ written $Iy^B$.
 
 ## Lenses
 
-We call the maps in $\ht{Poly}$ _dependent lenses_, or simply _lenses_,
-because in the case of maps between monomials $Si^T \to Ay^B$, we
-recover the usual definition of the Haskell type `Lens s t a b`:
+We call the maps in $\thecat{Poly}$ _dependent lenses_, or simply
+_lenses_, because in the case of maps between monomials $Si^T \to Ay^B$,
+we recover the usual definition of the Haskell type `Lens s t a b`:
 
 ```agda
 Lens : ∀ {ℓ} (S T A B : Set ℓ) → Type ℓ

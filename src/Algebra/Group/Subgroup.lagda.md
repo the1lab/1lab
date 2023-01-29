@@ -529,7 +529,7 @@ subgroup we started with (and indeed, that this isomorphism commutes
 with the respective, so that they determine the same subobject of $G$),
 we must show that the relation $(x - y) \in H$ is an equivalence
 relation; We can then appeal to [effectivity of quotients] to conclude
-that, if $\id{inc}(x) = \id{inc}(y)$, then $(x - y) \in H$.
+that, if $\rm{inc}(x) = \rm{inc}(y)$, then $(x - y) \in H$.
 
 [effectivity of quotients]: Data.Set.Coequaliser.html#effectivity
 
@@ -568,11 +568,11 @@ that, if $\id{inc}(x) = \id{inc}(y)$, then $(x - y) \in H$.
 -->
 
 The two halves of the isomorphism are now very straightforward to
-define: If we have $\id{inc}(x) = \id{inc}(0)$, then $x - 0 \in H$ by
+define: If we have $\rm{inc}(x) = \rm{inc}(0)$, then $x - 0 \in H$ by
 effectivity, and $x \in H$ by the group laws. Conversely, if $x \in H$,
 then $x - 0 \in H$, thus they are identified in the quotient. Thus, the
-predicate $\id{inc}(x) = \id{inc}(0)$ recovers the subgroup $H$; And
-(the total space of) that predicate is exactly the kernel of $\id{inc}$!
+predicate $\rm{inc}(x) = \rm{inc}(0)$ recovers the subgroup $H$; And
+(the total space of) that predicate is exactly the kernel of $\rm{inc}$!
 
 ```agda
   Ker[incl]≅H-group : Ker[incl].ker Groups.≅ H-g

@@ -28,12 +28,12 @@ record Allegory o ℓ ℓ′ : Type (lsuc (o ⊔ ℓ ⊔ ℓ′)) where
   open Precategory cat public
 ```
 
-An allegory $\ca{A}$ has an underlying precategory (whose morphisms we
+An allegory $\cA$ has an underlying precategory (whose morphisms we
 call **relations**), but, more importantly, an ordering relation $f \le
 g$ on the relations, which we think of as inclusion in the usual
 sense^[This will make more sense when we see the construction of
-$\Rel$ below]. When considered with this ordering, $\ca{A}$ must be
-a _locally posetal bicategory_: a bicategory $\ca{A}$, with all
+$\Rel$ below]. When considered with this ordering, $\cA$ must be
+a _locally posetal bicategory_: a bicategory $\cA$, with all
 Hom-categories being posets.
 
 ```agda
@@ -64,7 +64,7 @@ data of a bicategory.
 ```
 -->
 
-Moreover, $\ca{A}$ must be equipped with an involution on its Hom-sets:
+Moreover, $\cA$ must be equipped with an involution on its Hom-sets:
 This is the usual opposite of a relation, i.e. $R^o(x,y) = R(y,x)$, and,
 as you have noticed, we will write the opposite of $f$ as $f^o$. The
 involution must play nice with the ordering, and it must follow the
@@ -208,11 +208,11 @@ Rel ℓ .cat .id x y      = elΩ (x ≡ y)
 
 We can investigate the reason for this by working through e.g. the proof
 that relational composition is right-unital. We'll leave the identity
-relation written as just $\id{Id}$, but in either case, what we want to
-show that $$(x, y) \mapsto \exists (a : A), \id{Id}(x, a) \land R(a,
+relation written as just $\rm{Id}$, but in either case, what we want to
+show that $$(x, y) \mapsto \exists (a : A), \rm{Id}(x, a) \land R(a,
 y)$$ relates the same pairs as $R$. In the interesting direction, we're
 given some $a : A$ and a witness that $R(a, y)$: but what we wanted was
-to show $R(x, y)$! Fortunately if we we set $\id{Id}(x, a)$, then $R(x,
+to show $R(x, y)$! Fortunately if we we set $\rm{Id}(x, a)$, then $R(x,
 y) \simeq R(a, y)$, and we're done.
 
 ```agda

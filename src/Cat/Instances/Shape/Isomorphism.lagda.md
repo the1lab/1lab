@@ -70,7 +70,7 @@ The isomorphism category is strict, as its objects form a set.
 
 -- One important fact about the isomorphism category is that it classifies
 -- isomorphisms in categories, in the sense that functors out of `0≅1`{.Agda}
--- into some category $\ca{C}$ are equivalent to isomorphisms in $\ca{C}$.
+-- into some category $\cC$ are equivalent to isomorphisms in $\cC$.
 
 -- ```agda
 -- Isos : ∀ {o ℓ} → Precategory o ℓ → Type (o ⊔ ℓ)
@@ -78,9 +78,9 @@ The isomorphism category is strict, as its objects form a set.
 --   where module 𝒞 = Cat.Reasoning 𝒞
 -- ```
 
--- To prove this, we fix some category $\ca{C}$, and construct an
+-- To prove this, we fix some category $\cC$, and construct an
 -- isomorphism between functors out of `0≅1`{.Agda} and isomorphisms
--- in $\ca{C}$.
+-- in $\cC$.
 
 -- ```agda
 -- module _ {o ℓ} {𝒞 : Precategory o ℓ} where
@@ -93,7 +93,7 @@ The isomorphism category is strict, as its objects form a set.
 -- For the forward direction, we use the fact that all objects in
 -- `0≅1`{.Agda} are isomorphic to construct an iso between `true`{.Agda}
 -- and `false`{.Agda}, and then use the fact that functors preserve
--- isomorphisms to obtain an isomorphism in $\ca{C}$.
+-- isomorphisms to obtain an isomorphism in $\cC$.
 
 -- ```agda
 --   functor→iso : (F : Functor 0≅1 𝒞) → Isos 𝒞
@@ -102,7 +102,7 @@ The isomorphism category is strict, as its objects form a set.
 -- ```
 
 -- For the backwards direction, we are given an isomorphism $X \cong Y$
--- in $\ca{C}$. Our functor will map `true`{.Agda} to $X$, and `false`
+-- in $\cC$. Our functor will map `true`{.Agda} to $X$, and `false`
 -- to $Y$: this is somewhat arbitrary, but lines up with our choices for
 -- the forward direction. We then perform a big case bash to construct
 -- the mapping of morphisms, and unpack the components of the provided

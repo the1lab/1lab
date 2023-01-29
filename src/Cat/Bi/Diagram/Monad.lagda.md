@@ -19,10 +19,10 @@ module _ {o ℓ ℓ′} (B : Prebicategory o ℓ ℓ′) where
 
 # Monads in a bicategory
 
-Recall that a [monad] _on_ a category $\ca{C}$ consists of a functor
-$M : \ca{C} \to \ca{C}$ and natural transformations $\mu : MM \To M$,
-$\eta : \id{Id} \To M$. While the words "functor" and "natural
-transformation" are specific to the setup where $\ca{C}$ is a category,
+Recall that a [monad] _on_ a category $\cC$ consists of a functor
+$M : \cC \to \cC$ and natural transformations $\mu : MM \To M$,
+$\eta : \rm{Id} \To M$. While the words "functor" and "natural
+transformation" are specific to the setup where $\cC$ is a category,
 if we replace those with "1-cell" and "2-cell", then the definition
 works in any [bicategory]!
 
@@ -39,7 +39,7 @@ works in any [bicategory]!
 
 The setup is, in a sense, a lot more organic when phrased in an
 arbitrary bicategory: Rather than dealing with the specificities of
-natural transformations and the category $\ca{C}$, we abstract all of
+natural transformations and the category $\cC$, we abstract all of
 that away into the setup of the bicategory $\bf{B}$. All we need is that
 the multiplication $\mu$ be compatible with the associator $\alpha$, and
 the unit $\eta$ must be appropriately compatible with the left and right

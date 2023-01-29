@@ -34,9 +34,9 @@ open _=>_
 
 # Nerve and realisation
 
-Let $F : \ca{C} \to \ca{D}$ be a functor from a [$\kappa$-small] category
-$\ca{C}$ to a locally $\kappa$-small, $\kappa$-[cocomplete] category
-$\ca{D}$. $F$ induces a pair of [adjoint functors], as in the diagram
+Let $F : \cC \to \cD$ be a functor from a [$\kappa$-small] category
+$\cC$ to a locally $\kappa$-small, $\kappa$-[cocomplete] category
+$\cD$. $F$ induces a pair of [adjoint functors], as in the diagram
 below, where $|-| \dashv \bf{N}$. In general, the left adjoint is called
 "realization", and the right adjoint is called "nerve".
 
@@ -56,7 +56,7 @@ below, where $|-| \dashv \bf{N}$. In general, the left adjoint is called
 An example to keep in mind is the inclusion $F : \Delta \mono \strcat$
 from the simplex category to [strict categories], which sends the
 $n$-simplex to the finite [poset] $[n]$. In this case, the left adjoint
-is the ordinary realisation of a simplicial set $[\Delta\op,\sets]$ as a
+is the ordinary realisation of a simplicial set $[\Delta\op,\Sets]$ as a
 strict category, and the right adjoint gives the simplicial nerve of a
 strict category.
 

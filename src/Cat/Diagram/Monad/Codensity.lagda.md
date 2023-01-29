@@ -23,11 +23,11 @@ open _=>_
 
 # Codensity monads
 
-Let $F : \ca{A} \to \ca{B}$ be a functor with a [left adjoint] $G :
-\ca{B} \to \ca{A}$. Some pretty [standard abstract nonsense][adjm] tells
-us that the composite $GF$ is a [monad] in $\ca{B}$, with the unit and
+Let $F : \cA \to \cB$ be a functor with a [left adjoint] $G :
+\cB \to \cA$. Some pretty [standard abstract nonsense][adjm] tells
+us that the composite $GF$ is a [monad] in $\cB$, with the unit and
 multiplication inherited from the adjunction $G \dashv F$. The easiest
-cases to picture are when $\ca{B}$ is $\sets_\kappa$, and $F$ is the
+cases to picture are when $\cB$ is $\Sets_\kappa$, and $F$ is the
 "underlying set" functor from an algebraic category (like [monoids] or
 [groups]). What's slightly more interesting is that functors _without_
 left adjoints may also induce monads!
@@ -39,8 +39,8 @@ left adjoints may also induce monads!
 [groups]: Algebra.Group.Free.html#universal-property
 
 This is called the **codensity monad** of the functor $F$, and it exists
-whenever $\ca{B}$ admits [limits] indexed by categories the [size] of
-$\ca{A}$. When $F$ does have a left adjoint, its codensity monad
+whenever $\cB$ admits [limits] indexed by categories the [size] of
+$\cA$. When $F$ does have a left adjoint, its codensity monad
 coincides with the ordinary monad-from-an-adjunction construction.
 Rather than unfolding the necessary limits here, though, we defer to
 general categorical machinery: [right Kan extensions].
@@ -72,8 +72,8 @@ $G$), then this extends to a (unique) natural transformation $G \To
 \Ran_F F$.
 
 For example, the unit map $\eta$ is obtained by extending the identity
-natural transformation $\id{id} : \id{Id}F \To F$, which is implicit
-witnessing commutativity of the $F$ -- $\id{Id}$ -- $F$ triangle below.
+natural transformation $\id : \rm{Id}F \To F$, which is implicit
+witnessing commutativity of the $F$ -- $\rm{Id}$ -- $F$ triangle below.
 
 ~~~{.quiver}
 \[\begin{tikzcd}

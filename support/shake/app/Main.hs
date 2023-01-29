@@ -38,6 +38,7 @@ import Shake.KaTeX
 import Shake.Git
 import Shake.Utils
 
+import Macros
 import Timer
 
 {-
@@ -98,11 +99,11 @@ rules = do
   -- Compile Quiver to SVG. This is used by 'buildMarkdown'.
   "_build/html/light-*.svg" %> \out -> do
     let inp = "_build/diagrams" </> drop (length ("light-" :: String)) (takeFileName out) -<.> "tex"
-    buildDiagram inp out False
+    buildDiagram (getPreambleFor False) inp out False
 
   "_build/html/dark-*.svg" %> \out -> do
     let inp = "_build/diagrams" </> drop (length ("dark-" :: String)) (takeFileName out) -<.> "tex"
-    buildDiagram inp out True
+    buildDiagram (getPreambleFor True) inp out True
 
   "_build/html/css/*.css" %> \out -> do
     let inp = "support/web/css/" </> takeFileName out -<.> "scss"
@@ -129,6 +130,10 @@ rules = do
       , "--minify"
       , "--sourcemap"
       ]
+
+  phony "preamble" do
+    liftIO . print =<< getPreambleFor True
+    liftIO . print =<< getParsedPreamble
 
   {-
     The final build step. This basically just finds all the files we actually

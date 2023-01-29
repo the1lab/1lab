@@ -35,7 +35,7 @@ Recall from the page on [adjoint functors] that an adjoint pair $L
 \dashv R$ induces an isomorphism
 
 $$
-\hom_\ca{C}(L(x), y) \cong \hom_\ca{D}(x, R(y))
+\hom_\cC(L(x), y) \cong \hom_\cD(x, R(y))
 $$
 
 of $\hom$-sets, sending each morphism to its left and right _adjuncts_,
@@ -47,15 +47,15 @@ counit given by the adjuncts of each identity morphism.
 [adjoint functors]: Cat.Functor.Adjoint.html
 
 More precisely, the data we require is an equivalence (of sets) $f :
-\hom_\ca{C}(Lx,y) \to \hom_\ca{D}(x,Ry)$ such that the equation
+\hom_\cC(Lx,y) \to \hom_\cD(x,Ry)$ such that the equation
 
 $$
 f(g \circ x \circ Lh) = Rg \circ fx \circ h
 $$
 
 holds. While this may seem un-motivated, it's really a naturality square
-for a transformation between the functors $\hom_\ca{C}(L-,-)$ and
-$\hom_\ca{D}(-,R-)$ whose data has been "unfolded" into elementary
+for a transformation between the functors $\hom_\cC(L-,-)$ and
+$\hom_\cD(-,R-)$ whose data has been "unfolded" into elementary
 terms.
 
 ```agda
@@ -89,7 +89,7 @@ hom-iso→adjoints f f-equiv natural = adj′ where
 We do not require an explicit naturality witness for the inverse of $f$,
 since if a natural transformation is componentwise invertible, then its
 inverse is natural as well. It remains to use our "binaturality" to
-compute that $f(\id{id})$ and $f^{-1}(\id{id})$ do indeed give a system
+compute that $f(\id)$ and $f^{-1}(\id)$ do indeed give a system
 of adjunction units and co-units.
 
 ```agda

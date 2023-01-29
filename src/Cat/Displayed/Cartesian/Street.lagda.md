@@ -23,12 +23,12 @@ open Displayed
 # Street fibrations
 
 In classical category theory, a fibration is defined to be a certain
-functor $P : \ca{E} \to \ca{B}$, the idea being that $\ca{E}$ is really
+functor $P : \cE \to \cB$, the idea being that $\cE$ is really
 the total space of a certain displayed category, and $P$ is really the
 first projection functor $\pi^f$, which sends each displayed object to
 the object it is displayed over. But can we go the other way? If we have
-a functor $P : \ca{E} \to \ca{B}$, can we create a category displayed
-$\ca{E}'$ over $\ca{B}$, such that $\int \ca{E}' \cong \ca{E}$?
+a functor $P : \cE \to \cB$, can we create a category displayed
+$\cE'$ over $\cB$, such that $\int \cE' \cong \cE$?
 
 <!--
 ```agda
@@ -88,7 +88,7 @@ condition is for the lower shape, which is a distorted square.
 ~~~
 
 The axioms for a displayed category are evident: all that matters are
-the maps in the total category $\ca{E}$, since the rest of the data is
+the maps in the total category $\cE$, since the rest of the data is
 property (rather than data).
 
 ```

@@ -12,9 +12,9 @@ import Cat.Reasoning
 module Cat.Morphism.Factorisation where
 ```
 
-Suppose you have some category $\ca{C}$ and you, inspired by the wisdom
+Suppose you have some category $\cC$ and you, inspired by the wisdom
 of King Solomon, want to chop every morphism in half. A **factorisation
-system** $(E, M)$ on $\ca{C}$ will provide a tool for doing so, in a
+system** $(E, M)$ on $\cC$ will provide a tool for doing so, in a
 particularly coherent way. Here, $E$ and $M$ are predicates on the space
 of morphisms of $C$. First, we package the data of an $(E,
 M)$-factorisation of a morphism $f : a \to b$.
@@ -129,7 +129,7 @@ To show that $u$ and $v$ are inverses, fit first $e$ and $m$ into a
 lifting diagram like the one below. Since $e \ortho m$, we have that the
 space of diagonals $r(f) \to r(f)$ is contractible, hence a proposition,
 and since both $vu$ and the identity are in that diagonal, $uv =
-\id{id}$.
+\id$.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -253,7 +253,7 @@ orthogonal to $m$, we can fit it into a lifting diagram
 ~~~
 
 and make note of the diagonal filler $g : B \to r(f)$, and that it
-satisfies $gf=e$ and $mg = \id{id}$.
+satisfies $gf=e$ and $mg = \id$.
 
 ```agda
         fa = factor f
@@ -261,8 +261,8 @@ satisfies $gf=e$ and $mg = \id{id}$.
         gpq = ortho fa.forget fa.forget∈M {v = C.id} (C.idl _ ∙ fa.factors)
 ```
 
-We'll show $gm = \id{id}$ by fitting it into a lifting diagram. But
-since $e \ortho m$, the factorisation is unique, and $gm = \id{id}$, as
+We'll show $gm = \id$ by fitting it into a lifting diagram. But
+since $e \ortho m$, the factorisation is unique, and $gm = \id$, as
 needed.
 
 ~~~{.quiver}

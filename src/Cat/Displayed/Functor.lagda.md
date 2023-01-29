@@ -10,10 +10,10 @@ module Cat.Displayed.Functor where
 
 # Displayed and fibred functors
 
-If you have a pair of categories $\ca{E}, \ca{F}$ \r{displayed over} a
-common base \r{category} $\ca{B}$, it makes immediate sense to talk
-about \r{functors} $F : \ca{E} \to \ca{F}$: you'd have an assignment of
-objects $F_x : \ca{E}^*(x) \to \ca{F}^*(x)$ and an assignment of
+If you have a pair of categories $\cE, \cF$ \r{displayed over} a
+common base \r{category} $\cB$, it makes immediate sense to talk
+about \r{functors} $F : \cE \to \cF$: you'd have an assignment of
+objects $F_x : \cE^*(x) \to \cF^*(x)$ and an assignment of
 morphisms
 
 $$
@@ -38,8 +38,8 @@ _different_ bases, as in
 \end{tikzcd}\]
 ~~~
 
-with our displayed functor $\bf{F} : \ca{E} \to \ca{F}$ lying over an
-ordinary functor $F : \ca{A} \to \ca{B}$ to mediate between the bases.
+with our displayed functor $\bf{F} : \cE \to \cF$ lying over an
+ordinary functor $F : \cA \to \cB$ to mediate between the bases.
 
 <!--
 ```agda
@@ -88,7 +88,7 @@ functors", i.e., those lying over the identity functor.
     ₁′ = F₁′
 ```
 
-Note that, if $\ca{E}$ and $\ca{F}$ are \r{fibred categories} over their
+Note that, if $\cE$ and $\cF$ are \r{fibred categories} over their
 bases (rather than just _displayed_ categories), then the appropriate
 notion of 1-cell are displayed functors that take Cartesian morphisms to
 Cartesian morphisms:

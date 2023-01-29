@@ -16,7 +16,7 @@ category. For instance, we can think of categories of algebraic objects
 (monoids, groups, rings, etc) as being extra structure placed atop the
 objects of Set, and extra conditions placed atop the morphisms of Set.
 
-We start by defining a displayed category over a base category $\ca{B}$
+We start by defining a displayed category over a base category $\cB$
 which will act as the category we add the extra structure to.
 
 ```agda
@@ -27,7 +27,7 @@ record Displayed {o ℓ} (B : Precategory o ℓ)
 ```
 
 For each object of the base category, we associate a type of objects.
-Going back to our original example of algebraic structures over $\sets$,
+Going back to our original example of algebraic structures over $\Sets$,
 this would be something like `Monoid-on : Set → Type`. This highlights
 an important point for intuition: we should think of the objects of the
 displayed category as _structures_ over the objects of the base.

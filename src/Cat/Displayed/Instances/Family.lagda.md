@@ -31,18 +31,18 @@ Hom-spaces of $\mathcal{C}$.
 
 In a neutral presentation of displayed category theory, the collection
 of objects over $S$ would given by the space of functors
-$[\id{Disc}(S),C]$, regarding $S$ as a discrete category.  This is
+$[\rm{Disc}(S),C]$, regarding $S$ as a discrete category.  This is
 essentially an $S$-indexed family of objects of $C$, hence the name
 "family fibration". To reduce the noise, however, in HoTT we can (ab)use
 the fact that all precategories have a _space of objects_, and say that
-the objects over $S$ are precisely the families $S \to \id{Ob}_\ca{C}$.
+the objects over $S$ are precisely the families $S \to \rm{Ob}_\cC$.
 
 ```agda
 Family : ∀ {ℓ} → Displayed (Sets ℓ) _ _
 Family .Ob[_] S = ∣ S ∣ → Ob
 ```
 
-The set of maps over a function $f : A \to B$ (in $\sets$) is the set of
+The set of maps over a function $f : A \to B$ (in $\Sets$) is the set of
 families of morphisms $F(x) \to G(fx)$. Here we are abusing that, for
 functors between discrete categories, naturality is automatic.
 
@@ -141,7 +141,7 @@ cartesian→pointwise-iso {X = X} {f = f} {P = P} {Q = Q} {fₓ = fₓ} fₓ-car
 We now prove that the [fibres](Cat.Displayed.Fibre.html) of the family
 fibration are indeed the expected functor categories. This involves a
 bit of annoying calculation, but it will let us automatically prove that
-the family fibration is fibrewise univalent whenever $\ca{C}$ is.
+the family fibration is fibrewise univalent whenever $\cC$ is.
 
 ```agda
 module _ {ℓ} (X : Set ℓ) where

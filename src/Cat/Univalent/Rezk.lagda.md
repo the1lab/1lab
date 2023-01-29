@@ -26,11 +26,11 @@ open Functor
 # The Rezk completion
 
 In the same way that we can [freely] complete a proset into a poset, it
-is possible to, in a universal way, replace any precategory $\ca{A}$ by
-a category $\widehat{\ca{A}}$, such that there is a weak equivalence (a
-[fully faithful], [essentially surjective] functor) $\ca{A} \to
-\widehat{\ca{A}}$, such that any map from $\ca{A}$ to a [univalent
-category] $\ca{C}$ factors uniquely through $\widehat{\ca{A}}$.
+is possible to, in a universal way, replace any precategory $\cA$ by
+a category $\widehat{\cA}$, such that there is a weak equivalence (a
+[fully faithful], [essentially surjective] functor) $\cA \to
+\widehat{\cA}$, such that any map from $\cA$ to a [univalent
+category] $\cC$ factors uniquely through $\widehat{\cA}$.
 
 [freely]: Cat.Functor.Adjoint.html
 [fully faithful]: Cat.Functor.Base.html#ff-functors
@@ -41,8 +41,8 @@ The construction is essentially piecing together a handful of
 pre-existing results: The univalence principle for $n$-types implies
 that [Sets is a univalent category][setu], and [functor categories with
 univalent codomain are univalent][funcu]; The [Yoneda lemma] implies
-that any precategory $\ca{A}$ admits a [full inclusion] into
-$[\ca{A}\op, \sets]$, and [full subcategories of univalent categories
+that any precategory $\cA$ admits a [full inclusion] into
+$[\cA\op, \Sets]$, and [full subcategories of univalent categories
 are univalent][fullu] --- so, like Grothendieck cracking the nut, the
 sea of theory has risen to the point where our result is trivial:
 
@@ -75,18 +75,18 @@ module Rezk-large (A : Precategory o h) where
 
 However, this construction is a bit disappointing, because we've had to
 pass to a _larger_ universe than the one we started with. If originally
-we had $\ca{A}$ with objects living in a universe $o$ and homs in $h$,
-we now have $\widehat{\ca{A}}$ with objects living in $o \lub (1 + h)$.
+we had $\cA$ with objects living in a universe $o$ and homs in $h$,
+we now have $\widehat{\cA}$ with objects living in $o \lub (1 + h)$.
 
-It's unavoidable that the objects in $\widehat{\ca{A}}$ will live in an
+It's unavoidable that the objects in $\widehat{\cA}$ will live in an
 universe $\widehat{o}$ satisfying $(o \sqcup h) \le \widehat{o}$, since
 we want their identity type to be equivalent to something living in $h$,
 but going up a level is unfortunate. However, it's also avoidable!
 
-Since $\psh(\ca{A})$ is a category, isomorphism is an [identity system]
+Since $\psh(\cA)$ is a category, isomorphism is an [identity system]
 on its objects, which lives at the level of its morphisms --- $o \lub h$
 --- rather than of its objects, $o \lub (1 + h)$. Therefore, using the
-construction of [small images], we may take $\im \yo_{\ca{A}}$ to be a
+construction of [small images], we may take $\im \yo_{\cA}$ to be a
 $o \lub h$-type!
 
 [identity system]: 1Lab.Path.IdentitySystem.html
@@ -114,11 +114,11 @@ module _ (A : Precategory o h) where
   Rezk-completion .assoc = PSh[A].assoc
 ```
 
-Our resized Rezk completion $\widehat{\ca{A}}$ factors the Yoneda
-embedding $\yo_\ca{A}$ as a functor
+Our resized Rezk completion $\widehat{\cA}$ factors the Yoneda
+embedding $\yo_\cA$ as a functor
 
 $$
-\ca{A} \xto{\sim} \widehat{\ca{A}} \mono \psh(\ca{A})
+\cA \xto{\sim} \widehat{\cA} \mono \psh(\cA)
 $$
 
 where the first functor is a weak equivalence, and the second functor is
@@ -141,13 +141,13 @@ fully faithful. Let's first define the functors:
 From the existence of the second functor, we can piece together
 pre-existing lemmas about the image and about identity systems in
 general to show that this resized Rezk completion is also a category: We
-can pull back the identity system on $\psh(\ca{A})$ to one on
-$\widehat{\ca{A}}$, since we know of a (type-theoretic) embedding
+can pull back the identity system on $\psh(\cA)$ to one on
+$\widehat{\cA}$, since we know of a (type-theoretic) embedding
 between their types of objects.
 
 That gives us an identity system which is slightly off, that of
-"$\psh(\ca{A})$-isomorphisms on the image of the functor
-$\widehat{\ca{A}} \mono \psh(\ca{A})$", but since we know that this
+"$\psh(\cA)$-isomorphisms on the image of the functor
+$\widehat{\cA} \mono \psh(\cA)$", but since we know that this
 functor is fully faithful, that's equivalent to what we want.
 
 ```agda
@@ -163,7 +163,7 @@ functor is fully faithful, that's equivalent to what we want.
         λ x → Cr.≅-pathp Rezk-completion refl refl refl
 ```
 
-It remains to show that the functor $\ca{A} \to \widehat{\ca{A}}$ is a
+It remains to show that the functor $\cA \to \widehat{\cA}$ is a
 weak equivalence. It's fully faithful because the Yoneda embedding is,
 and it's essentially surjective because it's _literally_
 surjective-on-objects.

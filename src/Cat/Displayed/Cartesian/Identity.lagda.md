@@ -106,7 +106,7 @@ Having established that being Cartesian is a property of a morphism,
 that any pair of Cartesian lifts for the same $f : a \to b$ and $b'
 \liesover b$ have isomorphic domains, and that this isomorphism sends
 the first morphism to the second, all that remains is putting this
-together into a tidy proof: If $\ca{E}$ is univalent, the space of
+together into a tidy proof: If $\cE$ is univalent, the space of
 Cartesian lifts for $(f, b')$ is a proposition.
 
 ```agda

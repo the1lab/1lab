@@ -72,7 +72,7 @@ module _
   (spec : Thin-structure ℓ′ S) where
 ```
 
-The data above conspires to make a category displayed over $\ca{B}$. The
+The data above conspires to make a category displayed over $\cB$. The
 laws are trivial since $H$ is valued in propositions.
 
 ```agda
@@ -94,8 +94,8 @@ We recall that the $S$-structures can be made into a preorder by setting
 $\alpha \le \beta$ iff. the identity morphism is an $H$-homomorphism
 from $\alpha$ to $\beta$. And, if this preorder is in fact a partial
 order, then the total category of structures is univalent --- the type
-of identities between $S$-structured $\ca{B}$-objects is equivalent to
-the type of $H$-homomorphic $\ca{B}$-isomorphisms.
+of identities between $S$-structured $\cB$-objects is equivalent to
+the type of $H$-homomorphic $\cB$-isomorphisms.
 
 ```agda
   Structured-objects-is-category : is-category Structured-objects

@@ -25,8 +25,8 @@ private
 
 Dually to our setup for a [left Kan extension], we have **right Kan
 extensions**: The (suitably weakly) [terminal] solution to the problem of
-lifting a functor $F : \ca{C} \to \ca{D}$ along a functor $p : \ca{C}'
-\to \ca{C}$. We picture the situation as in the following commutative
+lifting a functor $F : \cC \to \cD$ along a functor $p : \cC'
+\to \cC$. We picture the situation as in the following commutative
 diagram:
 
 [left Kan extension]: Cat.Functor.Kan.html
@@ -107,10 +107,10 @@ module _ (p : Functor C C′) (F : Functor C D) where
 Using the helper `Co-lan→Ran`{.Agda} defined above and the formula for
 computing _left_ Kan extensions, we can formulate a condition for the
 existence of right Kan extensions based on the size and completeness of
-the categories involved. If $\ca{E}$ admits limits of [$\kappa$-small
-diagrams], $\ca{C}$ is $\kappa$-small, and $\ca{D}$ is locally
-$\kappa$-small, then for any $p : \ca{C} \to \ca{D}$ and $F : \ca{D} \to
-\ca{E}$, the right Kan extension $\Ran_p F$ exists.
+the categories involved. If $\cE$ admits limits of [$\kappa$-small
+diagrams], $\cC$ is $\kappa$-small, and $\cD$ is locally
+$\kappa$-small, then for any $p : \cC \to \cD$ and $F : \cD \to
+\cE$, the right Kan extension $\Ran_p F$ exists.
 
 [$\kappa$-small diagrams]: 1Lab.intro.html#universes-and-size-issues
 

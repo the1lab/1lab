@@ -23,8 +23,8 @@ open _=>_ hiding (op)
 
 # Equivalences
 
-A functor $F : \ca{C} \to \ca{D}$ is an **equivalence of categories**
-when it has a [right adjoint] $G : \ca{D} \to \ca{D}$, with the unit and
+A functor $F : \cC \to \cD$ is an **equivalence of categories**
+when it has a [right adjoint] $G : \cD \to \cD$, with the unit and
 counit natural transformations being [natural isomorphisms]. This
 immediately implies that our adjoint pair $F \dashv G$ extends to an
 adjoint triple $F \dashv G \dashv F$.
@@ -122,8 +122,8 @@ though, so we provide some alternatives:
 Any [fully faithful][ff] and [(split!) essentially surjective][eso]
 functor determines an equivalence of precategories. Recall that "split
 essentially surjective" means we have some determined _procedure_ for
-picking out an essential fibre over any object $d : \ca{D}$: an object
-$F^*(d) : \ca{C}$ together with a specified isomorphism $F^*(d) \cong
+picking out an essential fibre over any object $d : \cD$: an object
+$F^*(d) : \cC$ together with a specified isomorphism $F^*(d) \cong
 d$.
 
 [ff]: Cat.Functor.Base.html#ff-functors
@@ -142,7 +142,7 @@ module _ {F : Functor C D} (ff : is-fully-faithful F) (eso : is-split-eso F) whe
 ```
 
 It remains to show that, when $F$ is fully faithful, this assignment of
-essential fibres extends to a functor $\ca{D} \to \ca{C}$. For the
+essential fibres extends to a functor $\cD \to \cC$. For the
 object part, we send $x$ to the specified preimage. For the morphism
 part, the splitting gives us isomorphisms $F^*(x) \cong x$ and $F^*(y)
 \cong y$, so that we may form the composite $F^*(x) \to x \to y \to
@@ -213,7 +213,7 @@ _rough_.
     G = ff+split-eso→inverse
 ```
 
-For the unit, we have an object $x : \ca{C}$ and we're asked to provide
+For the unit, we have an object $x : \cC$ and we're asked to provide
 a morphism $x \to F^*F(x)$ --- where, recall, the notation $F^*(x)$
 represents the chosen essential fibre of $F$ over $x$. By fullness, it
 suffices to provide a morphism $F(x) \to FF^*F(x)$; But recall that the
@@ -413,9 +413,9 @@ module
     module D = Cat.Reasoning D
 ```
 
-So, suppose we have categories $\ca{C}$ and $\ca{D}$, together with a
-fully faithful functor $F : \ca{C} \to \ca{D}$. For any $y : \ca{D}$,
-we're given an inhabitant of $\| \sum_{x : \ca{C}} F(x) \cong y \|$,
+So, suppose we have categories $\cC$ and $\cD$, together with a
+fully faithful functor $F : \cC \to \cD$. For any $y : \cD$,
+we're given an inhabitant of $\| \sum_{x : \cC} F(x) \cong y \|$,
 which we want to "get out" from under the truncation. For this, we'll
 show that the type being truncated is a proposition, so that we may
 "untruncate" it.
@@ -425,11 +425,11 @@ show that the type being truncated is a proposition, so that we may
   Essential-fibre-between-cats-is-prop z (x , i) (y , j) = they're-equal where
 ```
 
-For this magic trick, assume we're given a $z : \ca{D}$, together with
-objects $x, y : \ca{C}$ and isomorphisms $i : F(x) \cong z$ and $j :
+For this magic trick, assume we're given a $z : \cD$, together with
+objects $x, y : \cC$ and isomorphisms $i : F(x) \cong z$ and $j :
 F(y) \cong z$. We must show that $x \equiv y$, and that over this path,
 $i = j$. Since $F$ is fully faithful, we can `find an isomorphism`{.Agda
-ident=is-ff→essentially-injective} $x \cong y$ in $\ca{C}$, which $F$
+ident=is-ff→essentially-injective} $x \cong y$ in $\cC$, which $F$
 sends back to $i \circ j^{-1}$.
 
 ```agda
@@ -444,7 +444,7 @@ Furthermore, since we're working with categories, these isomorphisms
 restrict to _paths_ $x \equiv y$ and $F(x) \equiv F(y)$. We're
 half-done: we've shown that some $p : x \equiv y$ exists, and it remains to
 show that over this path we have $i \equiv j$. More specifically, we
-must give a path $i \equiv j$ laying over $\id{ap}(F)(p)$.
+must give a path $i \equiv j$ laying over $\rm{ap}(F)(p)$.
 
 ```agda
     x≡y : x ≡ y
@@ -465,7 +465,7 @@ the result with far less computation:
       (Univalent.Hom-pathp-refll-iso dcat (D.cancell (i .D._≅_.invl)))
 ```
 
-We must then connect $\id{ap}(F)(p)$ with this path $F(x) \cong
+We must then connect $\rm{ap}(F)(p)$ with this path $F(x) \cong
 F(y)$. But since we originally got $p$ by full faithfulness of $F$, they
 _are_ indeed the same path:
 
@@ -482,7 +482,7 @@ _are_ indeed the same path:
 ```
 
 Hence --- blink and you'll miss it --- the essential fibres of $F$ over
-any $z : \ca{D}$ are propositions, so it suffices for them to be merely
+any $z : \cD$ are propositions, so it suffices for them to be merely
 inhabited for the functor to be split eso. With tongue firmly in cheek
 we call this result the _theorem of choice_.
 

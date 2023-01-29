@@ -1,0 +1,79 @@
+\renewcommand{\rm}[1]{\mathrm{#1}}
+\newcommand{\bb}[1]{\mathbb{#1}}
+\renewcommand{\bf}[1]{\mathbf{#1}}
+
+\newcommand{\thecat}[1]{\mathbf{#1}}     % Names of "concrete" categories
+\newcommand{\thebicat}[1]{\mathfrak{#1}} % Names of "concrete" bicategories
+\newcommand{\bicat}[1]{\mathbf{#1}}  % Names of variable bicategories
+\newcommand{\ca}[1]{\mathcal{#1}}    % Names of variable categories
+
+\newcommand{\Arr}[1]{%% The arrow category of a category.
+  \rm{Arr}(#1)}
+
+% \liesover arrow is only allowed in KaTeX:
+\newcommand{\liesover}\katex{\mathrel{\htmlClass{liesover}{\hspace{1.366em}}}}
+
+% \yo for よ is only allowed in KaTeX:
+\newcommand{\yo}\katex{よ}
+
+% Define \cA..\cZ
+\definealphabet{c}{\mathcal}{A}{Z}
+
+\newcommand{\knowncat}[1]{\newcommand{\csname #1\endcsname}{\thecat{#1}}}
+\newcommand{\knownbicat}[1]{\newcommand{\csname #1\endcsname}{\thebicat{#1}}}
+
+\newcommand{\ty}{\rm{Type}}
+\newcommand{\set}{\rm{Set}}
+\newcommand{\prop}{\rm{Prop}}
+\newcommand{\psh}{\rm{PSh}}
+\newcommand{\id}[1][]{\rm{id}_{#1}}
+
+\knowncat{Sets}
+\knowncat{Ab}
+\knowncat{Props}
+\knowncat{FinSets}
+\knowncat{Rings}
+\knowncat{Grp}
+\knowncat{Rel}
+\knownbicat{Cat}
+\knownbicat{Topos}
+\knownbicat{Grpd}
+
+\newcommand{\strcat}{\Cat_\rm{strict}}
+\newcommand{\intcat}{\{0 \le 1\}}
+\newcommand{\igpd}{\text{$\infty$-\textbf{Grpd}}}
+\newcommand{\io}{(\infty,1)}
+
+\newcommand{\ot}{\leftarrow}
+\newcommand{\op}{^{\rm{op}}}
+\renewcommand{\epsilon}{\varepsilon}
+\newcommand{\eps}{\varepsilon}
+
+\newcommand{\To}{\Rightarrow}
+\newcommand{\adj}{\rightleftarrows}
+\newcommand{\epi}{\twoheadrightarrow}
+\newcommand{\mono}{\hookrightarrow}
+\newcommand{\tto}{\rightrightarrows}
+
+\newcommand{\xadj}[2]{\xrightleftarrows[#2]{#1}}
+\newcommand{\xto}[1]{\xrightarrow{#1}}
+\newcommand{\xot}[1]{\xleftarrow{#1}}
+\newcommand{\xepi}[1]{\xtwoheadrightarrow{#1}}
+\newcommand{\xmono}[1]{\xhookrightarrow{#1}}
+
+\DeclareMathOperator{\coker}{coker}
+\DeclareMathOperator*{\colim}{colim}
+\DeclareMathOperator*{\im}{im}
+\DeclareMathOperator*{\Sub}{Sub}
+\DeclareMathOperator*{\baut}{\mathbf{B}}
+
+\DeclareMathOperator{\Lan}{Lan}
+\DeclareMathOperator{\Ran}{Ran}
+
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\II}{\mathbb{I}}
+
+\renewcommand{\hom}{\mathbf{Hom}}
+\newcommand{\ortho}{\mathrel{\bot}}

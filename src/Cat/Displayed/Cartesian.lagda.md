@@ -20,19 +20,19 @@ open DR E
 While displayed categories give the essential framework we need to
 express the idea of families of categories indexed by a category, they
 do not _quite_ capture the concept precisely. The problem is that while
-a category $\ca{E}$ displayed over $\ca{B}$ does indeed give a
-_collection_ of fibre categories $\ca{E}^*(x)$, this assignment isn't
+a category $\cE$ displayed over $\cB$ does indeed give a
+_collection_ of fibre categories $\cE^*(x)$, this assignment isn't
 necessarily functorial!
 
 More precisely, we should have that a collection of categories, indexed
-by a category, should be a _pseudofunctor_ $\ca{B}\op \to \Cat$, where
+by a category, should be a _pseudofunctor_ $\cB\op \to \Cat$, where
 $\Cat$ is a [bicategory] of categories. It turns out that we can
 characterise this assignment entirely in terms of the displayed objects
-and morphisms in $\ca{E}$!
+and morphisms in $\cE$!
 
 [bicategory]: Cat.Bi.Base.html
 
-Fix an arrow $f : a \to b$ in the base category $\ca{B}$, an object $a'$
+Fix an arrow $f : a \to b$ in the base category $\cB$, an object $a'$
 over $a$ (resp. $b'$ over $b$), and an arrow $f' : a' \to_f b'$ over
 $f$. We say that $f'$ is **cartesian** if, up to very strong handwaving,
 it fits into a "pullback diagram". The barred arrows with triangle tips
@@ -58,7 +58,7 @@ record
   no-eta-equality
 ```
 
-More specifically, let $u : \ca{B}$ and $u'$ be over $u$, and suppose
+More specifically, let $u : \cB$ and $u'$ be over $u$, and suppose
 that we have a map $m : u \to a$ (below, in violet), and a map $h' : u'
 \to_{fm} b'$ lying over the composite $fm$ (in red). The universal property
 of a Cartesian map says that we have a universal factorisation of $h'$
@@ -263,8 +263,8 @@ through $a_1'$ by a map $g$, and conversely, $f_1$ through $a_2'$ by
 $h$, so that we have $f_2gh = f_1h = f_2$, and $gh$ is a factorisation
 of $f_2$ through $a'_2$, its own domain; but, of course, $f_2$ also
 factors through its own domain by the identity map! Since $f_2$ is
-Cartesian, these factorisations must be the same, hence $gh = \id{id}$.
-A symmetric argument shows that $hg$ is also the identity, so $g : a_1'
+Cartesian, these factorisations must be the same, hence $gh = \id$. A
+symmetric argument shows that $hg$ is also the identity, so $g : a_1'
 \cong a_2'$.
 
 ```agda
@@ -443,26 +443,26 @@ every right corner.
 
 Admittedly, the notion of Cartesian morphism is slightly artificial. It
 arises from studying the specific properties of the pullback functors
-$f^* : \ca{C}/y \to \ca{C}/x$ which exist in a category of pullbacks,
+$f^* : \cC/y \to \cC/x$ which exist in a category of pullbacks,
 hence the similarity in universal property!
 
 In fact, the quintessential example of a Cartesian fibration is the
-[_codomain fibration_], which is a category displayed over $\ca{C}$, where
-the fibre over $x$ is the slice category $\ca{C}/x$. We may investigate
+[_codomain fibration_], which is a category displayed over $\cC$, where
+the fibre over $x$ is the slice category $\cC/x$. We may investigate
 further (to uncover the name "codomain"): the total space of this
-fibration is the arrow category $\id{Arr}(\ca{C})$, and the projection
-functor is the codomain functor $\id{Arr}(\ca{C}) \to \ca{C}$.
+fibration is the arrow category $\Arr{\cC}$, and the projection
+functor is the codomain functor $\Arr{\cC} \to \cC$.
 
 [_codomain fibration_]: Cat.Displayed.Instances.Slice.html
 
-This displayed category extends to a pseudofunctor exactly when $\ca{C}$
+This displayed category extends to a pseudofunctor exactly when $\cC$
 has all pullbacks, because in a world where the vertical arrows are
 "_just_" arrows, a Cartesian morphism is exactly a pullback square.
 
 Other examples exist:
 
-- The [family fibration] exhibits any category $\ca{C}$ as displayed
-over $\sets$. The fibres are functor categories (with discrete domains),
+- The [family fibration] exhibits any category $\cC$ as displayed
+over $\Sets$. The fibres are functor categories (with discrete domains),
 reindexing is given by composition.
 
 [family fibration]: Cat.Displayed.Instances.Family.html
@@ -475,7 +475,7 @@ are given by restriction of scalars.
 
 ## Properties of Cartesian Fibrations
 
-If $\ca{E}$ is a fibration, then every morphism is equivalent to
+If $\cE$ is a fibration, then every morphism is equivalent to
 a vertical morphism.
 
 ```agda

@@ -27,10 +27,10 @@ open _=>_
 
 # Representable functors
 
-A functor $F : \ca{C}\op \to \sets_\kappa$ (from a [locally
+A functor $F : \cC\op \to \Sets_\kappa$ (from a [locally
 $\kappa$-small category][univ]) is said to be **representable** when it
 is [naturally isomorphic][niso] to $\hom(-, X)$ for an object $X :
-\ca{C}$ (called the **representing object**) — that is, the functor $F$
+\cC$ (called the **representing object**) — that is, the functor $F$
 classifies the _maps into_ $X$. Note that we can evidently dualise the
 definition, to get what is called a **corepresentable functor**, one of
 the form $\hom(X, -)$, but we refer informally to both of these
@@ -92,7 +92,7 @@ representation-unique X Y =
     よX≅よY = (X .represents C^.Iso⁻¹) C^.∘Iso Y .represents
 ```
 
-Therefore, if $\ca{C}$ is a univalent category, then the type of
+Therefore, if $\cC$ is a univalent category, then the type of
 representations for a functor $F$ is a proposition. This does not follow
 immediately from the lemma above: we also need to show that the
 isomorphism computed by the full-faithfulness of the Yoneda embedding
@@ -142,7 +142,7 @@ terminal-element→representation {F} term = f-rep where
 ```
 
 From the terminal object in $\int F$^[Which, recall, consists of an
-object $X : \ca{C}$ and a section $F(X) : \sets$], we obtain a natural
+object $X : \cC$ and a section $F(X) : \Sets$], we obtain a natural
 transformation $\eta_y : F(y) \to \hom(y,X)$, given componentwise by
 interpreting each pair $(y, s)$ as an object of $\int F$, then taking
 the terminating morphism $(y, s) \to (X, F(X))$, which satisfies (by
@@ -174,10 +174,10 @@ constitutes a natural isomorphism.
 
 We now show a partial converse to the calculation above: That terminal
 objects are representing objects for a particular functor. Consider, to
-be more specific, the constant functor $F : \ca{C}\op \to \sets$ which
+be more specific, the constant functor $F : \cC\op \to \Sets$ which
 sends everything to the terminal set. When is $F$ representable?
 
-Well, unfolding the definition, it's when we have an object $X : \ca{C}$
+Well, unfolding the definition, it's when we have an object $X : \cC$
 with a natural isomorphism $\hom(-,X) \cong F$. Unfolding _that_, it's
 an object $X$ for which, given any other object $Y$, we have an
 isomorphism of sets $\hom(Y,X) \cong \{*\}$^[which varies naturally in

@@ -20,20 +20,20 @@ private variable
 
 # Product categories
 
-Let $\ca{C}$ and $\ca{D}$ be two precategories; we put no restrictions
-on their relative sizes. Their _product category_ $\ca{C} \times^c
-\ca{D}$ is the category having as object _pairs_ $(x, y)$ of an object
-$x : \ca{C}$ and $y : \ca{D}$, and the morphisms are pairs $(f, g)$ of a
-morphism in $\ca{C}$ and a morphism in $\ca{D}$. The product category
+Let $\cC$ and $\cD$ be two precategories; we put no restrictions
+on their relative sizes. Their _product category_ $\cC \times^c
+\cD$ is the category having as object _pairs_ $(x, y)$ of an object
+$x : \cC$ and $y : \cD$, and the morphisms are pairs $(f, g)$ of a
+morphism in $\cC$ and a morphism in $\cD$. The product category
 admits two projection functors
 
 $$
-\ca{C} \xot{\pi_1} (\ca{C} \times^c \ca{D}) \xto{\pi_2} \ca{D}\text{,}
+\cC \xot{\pi_1} (\cC \times^c \cD) \xto{\pi_2} \cD\text{,}
 $$
 
 satisfying a universal property analogous to those of [product diagrams]
 _in_ categories. Namely, given a setup like in the diagram below, there
-is a unique^[When $\ca{C}$ and $\ca{D}$ are precategories, this functor
+is a unique^[When $\cC$ and $\cD$ are precategories, this functor
 is only unique up to a natural isomorphism] functor which fits into the
 dashed line and makes the whole diagram commute.
 
@@ -75,11 +75,11 @@ C ×ᶜ D = prodcat module ×ᶜ where
 infixr 20 _×ᶜ_
 ```
 
-We define the two projection functors $\ca{C} \times_\cat \ca{D} \to
-\ca{C}$ (resp $\to \ca{D}$) as the evident liftings of the `fst`{.Agda}
-and `snd`{.Agda} operations from the product _type_. Functoriality is
-automatic because composites (and identities) are defined componentwise
-in the product category.
+We define the two projection functors $\cC \times \cD \to \cC$ (resp
+$\to \cD$) as the evident liftings of the `fst`{.Agda} and `snd`{.Agda}
+operations from the product _type_. Functoriality is automatic because
+composites (and identities) are defined componentwise in the product
+category.
 
 ```agda
 Fst : Functor (C ×ᶜ D) C

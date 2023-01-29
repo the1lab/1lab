@@ -15,10 +15,10 @@ module Cat.Functor.Hom {o h} (C : Precategory o h) where
 # The Hom functor
 
 We prove that the assignment of $\hom$-sets in a `Precategory`{.Agda}
-$\ca{C}$ is a `functor`{.Agda}, specifically a bifunctor from $\ca{C}\op
-\times_\cat \ca{C}$ to $\sets$. The action of $(f, h)$ on a morphism $g$
-is given by $h \circ g \circ f$; Since $f$ is acting by precomposition,
-the first coordinate is contravariant ($\ca{C}\op$).
+$\cC$ is a `functor`{.Agda}, specifically a bifunctor from $\cC\op
+\times \cC$ to $\Sets$. The action of $(f, h)$ on a morphism $g$ is
+given by $h \circ g \circ f$; Since $f$ is acting by precomposition, the
+first coordinate is contravariant ($\cC\op$).
 
 <!--
 ```agda
@@ -100,7 +100,7 @@ postcomposition; This is natural because we must show $f \circ x \circ g
 よ₁ f .is-natural x y g = funext λ x → assoc f x g
 ```
 
-The other category laws from $\ca{C}$ ensure that this assignment of
+The other category laws from $\cC$ ensure that this assignment of
 natural transformations is indeed functorial:
 
 ```agda
@@ -154,9 +154,9 @@ we construct will then glue all those points back together into $P$.
 
 [category of elements]: Cat.Instances.Elements.html
 
-This is done by projecting out of $\int P$ into $\ca{C}$ via the
-[canonical projection], and then embedding $\ca{C}$ into the category of
-presheaves over $\ca{C}$ via the yoneda embedding. Concretely, what this
+This is done by projecting out of $\int P$ into $\cC$ via the
+[canonical projection], and then embedding $\cC$ into the category of
+presheaves over $\cC$ via the yoneda embedding. Concretely, what this
 diagram gives us is a bunch of copies of the hom functor, one for each
 $px : P(X)$. Then, to construct the injection map, we can just use the
 (contravariant) functorial action of $P$ to take a $px : P(X)$ and a $f
@@ -257,7 +257,7 @@ The first thing we prove is that any map $P \To Y$ of presheaves
 expresses $Y$ as a cocone over $\yo (\pi P)$. The special case
 `Reassemble`{.Agda} above is this procedure for the identity map ---
 whence we see that `coyoneda`{.Agda} is essentially a restatement of the
-fact that $\id{id}$ is initial the coslice category under $P$.
+fact that $\id$ is initial the coslice category under $P$.
 
 ```agda
     Map→cocone-under : Cocone (よ F∘ πₚ)
@@ -329,8 +329,8 @@ _also_ a cocone homomorphism $X \to Y$; But $X$ is initial, so $f = g$!
 ```
 
 An immediate consequence is that, since any pair of maps $f, g : X \to
-Y$ in $\ca{C}$ extend to maps $\yo(f), \yo(g) : \yo(X) \to \yo(Y)$, and
-the functor $\yo(-)$ is fully faithful, two maps in $\ca{C}$ are equal
+Y$ in $\cC$ extend to maps $\yo(f), \yo(g) : \yo(X) \to \yo(Y)$, and
+the functor $\yo(-)$ is fully faithful, two maps in $\cC$ are equal
 iff. they agree on all generalised elements:
 
 ```agda

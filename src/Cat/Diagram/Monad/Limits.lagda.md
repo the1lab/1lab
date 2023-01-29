@@ -28,11 +28,11 @@ open Cone
 
 # Limits in categories of algebras
 
-Suppose that $\ca{C}$ be a category, $M$ be a [monad] on $\ca{C}$, and
-$F$ be a $\ca{J}$-shaped diagram of [$M$-algebras][malg] (that is, a
-functor $F : \ca{J} \to \ca{C}^M$ into the [Eilenberg-Moore category] of
+Suppose that $\cC$ be a category, $M$ be a [monad] on $\cC$, and
+$F$ be a $\cJ$-shaped diagram of [$M$-algebras][malg] (that is, a
+functor $F : \cJ \to \cC^M$ into the [Eilenberg-Moore category] of
 M). Suppose that an evil wizard has given you a [limit] for the diagram
-in $\ca{C}$ which underlies $F$, but they have not (being evil and all)
+in $\cC$ which underlies $F$, but they have not (being evil and all)
 told you whether $\lim F$ admits an algebra structure at all.
 
 [monad]: Cat.Diagram.Monad.html#monads
@@ -43,7 +43,7 @@ told you whether $\lim F$ admits an algebra structure at all.
 Perhaps we can make this situation slightly more concrete, by working in
 a category _equivalent to_ an Eilenberg-Moore category: If we have two
 groups $G$, $H$, considered as a discrete diagram, then the limit our
-evil wizard would give us is the product $U(G) \times U(H)$ in $\sets$.
+evil wizard would give us is the product $U(G) \times U(H)$ in $\Sets$.
 But we [already know] we can equip this product with a "pointwise" group
 structure! Does this result generalise?
 
@@ -52,7 +52,7 @@ structure! Does this result generalise?
 The answer is positive, though this is one of those cases where abstract
 nonsense can not help us: gotta roll up our sleeves and calculate away.
 Suppose we have a diagram as in the setup --- we'll show that the
-functor $U : \ca{C}^M \to \ca{C}$ both preserves and _reflects_ limits,
+functor $U : \cC^M \to \cC$ both preserves and _reflects_ limits,
 in that $K$ is a limiting cone if, and only if, $U(K)$ is.
 
 ```agda
@@ -214,7 +214,7 @@ algebraic identities follow from again from limits being terminal.
                   })
 ```
 
-The cone maps in $\ca{C}^M$ are given by the cone maps we started with
+The cone maps in $\cC^M$ are given by the cone maps we started with
 --- specialising again to groups, we're essentially showing that the
 projection map $\pi_1 : G \times H \to G$ _between sets_ is actually a
 group homomorphism.
@@ -228,8 +228,8 @@ group homomorphism.
       U$L≡L = Cone-path _ refl λ o → refl
 ```
 
-We conclude by saying that, if $\ca{C}$ is a complete category, then so
-is $\ca{C}^M$, with no assumptions on $M$.
+We conclude by saying that, if $\cC$ is a complete category, then so
+is $\cC^M$, with no assumptions on $M$.
 
 ```agda
 Eilenberg-Moore-is-complete

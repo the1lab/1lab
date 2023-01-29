@@ -165,8 +165,8 @@ for a thin category it is a set, and for a univalent category it is a
 groupoid.
 
 An equivalent description of the space of arrows is as the collection of
-functors $[ \intcat, \ca{C} ]$: a functor out of $\intcat$ corresponds
-rather directly to picking out an arrow in $\ca{C}$. Its domain is the
+functors $[ \intcat, \cC ]$: a functor out of $\intcat$ corresponds
+rather directly to picking out an arrow in $\cC$. Its domain is the
 object that $\bot$ maps to, and is codomain is the object that $\top$
 maps to.
 
@@ -184,8 +184,8 @@ Arrows C = Σ[ A ∈ C.Ob ] Σ[ B ∈ C.Ob ] (C.Hom A B)
 ```
 
 We now fix a category and prove the correspondence between the space of
-arrows $\Arr{\ca{C}}$, as defined above, and the space of functors $[
-\intcat, \ca{C} ]$.
+arrows $\Arr{\cC}$, as defined above, and the space of functors $[
+\intcat, \cC ]$.
 
 ```agda
 module _ {C : Precategory o ℓ} where
@@ -248,8 +248,8 @@ it must preserve identity arrows. The converse direction (going functor
     linv x = refl
 ```
 
-Correspondingly, we _define_ the arrow category $\Arr{\ca{C}}$ as the
-functor category $[ \intcat, \ca{C} ]$.
+Correspondingly, we _define_ the arrow category $\Arr{\cC}$ as the
+functor category $[ \intcat, \cC ]$.
 
 ```
 Arr : Precategory o ℓ → Precategory (o ⊔ ℓ) ℓ

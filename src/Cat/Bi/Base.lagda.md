@@ -162,7 +162,7 @@ We now move onto the invertible 2-cells witnessing that the chosen
 identity map is a left- and right- unit element for the composition
 functor, and that composition is associative. In reality, to get a fully
 coherent structure, we need these invertible 2-cells to be given as
-natural isomorphisms, e.g. $(\id{id} \circ -) \id{Id}$, which witnesses
+natural isomorphisms, e.g. $(\id \circ -) \rm{Id}$, which witnesses
 that the functor "compose with the identity 1-cell on the left" is
 naturally isomorphic to the identity functor.
 
@@ -334,7 +334,7 @@ straightforward).
 ```
 
 The unitors and associator are almost, but not quite, given by the
-identity 2-cells, since componentwise the functor composition $\id{Id}
+identity 2-cells, since componentwise the functor composition $\rm{Id}
 \circ F$ evaporates, leaving only $F$ behind. Unfortunately, this
 equation is not definitional, so we can not use the identity natural
 isomorphism directly:
@@ -390,7 +390,7 @@ However, when talking about general bicategories, we are faced with a
 choice: We could generalise the functoriality axioms to natural
 isomorphisms, keeping with the fact that equations are invertible, but
 we could also drop this invertibility requirement, and work only with
-natural _transformations_ $P(\id{id}_A) \to \id{id}_{PA}$. When these
+natural _transformations_ $P(\id_A) \to \id_{PA}$. When these
 are not invertible, the resulting structure is called a **lax functor**;
 When they _are_, we talk about **pseudofunctors** instead.
 
@@ -410,8 +410,8 @@ record
 
 The resulting structure has "directed functoriality", witnessed by the
 `compositor`{.Agda} and `unitor`{.Agda} natural transformations, which
-have components $F_1(f)F_1(g) \To F_1(fg)$ and $F_1(\id{id}) \To
-\id{id}$.
+have components $F_1(f)F_1(g) \To F_1(fg)$ and $F_1(\id) \To
+\id$.
 
 ```agda
     compositor

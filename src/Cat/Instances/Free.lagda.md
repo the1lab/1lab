@@ -7,9 +7,9 @@ module Cat.Instances.Free where
 # Graphs and free categories
 
 A **graph** (really, an $(o, \ell)$-graph^[and, even more pedantically,
-a directed multi-$(o, ℓ)$-graph]) is given by a set $V : \sets_o$ of
+a directed multi-$(o, ℓ)$-graph]) is given by a set $V : \Sets_o$ of
 **vertices** and, for each pair of elements $x, y : V$, a set of
-**edges** $E(x, y) : \sets_\ell$ from $x$ to $y$. That's it: a set $V$
+**edges** $E(x, y) : \Sets_\ell$ from $x$ to $y$. That's it: a set $V$
 and a family of sets over $V \times V$. Really, for our purposes, graphs
 by themselves are not very interesting: their utility comes in
 constructing new _categories_.
@@ -21,11 +21,11 @@ record Graph o ℓ : Type (lsuc o ⊔ lsuc ℓ) where
     edge : ∣ vert ∣ → ∣ vert ∣ → Set ℓ
 ```
 
-Given a graph $G$, we construct a [strict category] $\id{Path}(G)$ in
+Given a graph $G$, we construct a [strict category] $\rm{Path}(G)$ in
 the following manner:
 
-- The objects of $\id{Path}(G)$ are the vertices of $G$
-- The morphisms in $\id{Path}(G)$ are given by _finite paths_ in $G$.
+- The objects of $\rm{Path}(G)$ are the vertices of $G$
+- The morphisms in $\rm{Path}(G)$ are given by _finite paths_ in $G$.
 Finite paths are defined by the following indexed-inductive type
 
 [strict category]: Cat.Instances.StrictCat.html
@@ -48,7 +48,7 @@ itself (these are the identity morphisms), or we can form a path from $a
 \to c$ by starting with a path $b \to c$ and precomposing with an edge
 $(a \to b) : G$. Much of the code below is dedicated to characterising
 the identity types between paths. Indeed, to construct a category
-$\id{Path}(G)$, we must show that paths in $G$ form a set.
+$\rm{Path}(G)$, we must show that paths in $G$ form a set.
 
 We have a couple of options here:
 
@@ -78,17 +78,17 @@ we can take this to be the unit type, otherwise it's the bottom type.
   is-nil (cons _ _) = Lift _ ⊥
 ```
 
-We'd like to define a relation $\id{Code}(xs, ys)$, standing for an
+We'd like to define a relation $\rm{Code}(xs, ys)$, standing for an
 identification of paths $xs \equiv ys$. But observe what happens in the
 case where we've built up a path $a \to c$ by adding an edge: We know
 that the edges start at $a$, and the inner paths end at $c$, but the
 inner vertex may vary!
 
 We'll need to package an identification $p : b \equiv b'$ in the
-relation for $\id{cons}$, and so, we'll have to encode for a path $xs
+relation for $\rm{cons}$, and so, we'll have to encode for a path $xs
 \equiv ys$ _over_ some identification of their start points. That's why
 we have `path-codep`{.Agda} and not "path-code". A value in
-$\id{Codep}_b(xs, ys)$ codes for a path $xs \equiv ys$ over $b$.
+$\rm{Codep}_b(xs, ys)$ codes for a path $xs \equiv ys$ over $b$.
 
 ```agda
   path-codep
@@ -98,10 +98,10 @@ $\id{Codep}_b(xs, ys)$ codes for a path $xs \equiv ys$ over $b$.
     → Type (o ⊔ ℓ)
 ```
 
-Note that in the case where $xs = \id{nil}$, Agda refines $b$ to be
+Note that in the case where $xs = \rm{nil}$, Agda refines $b$ to be
 definitionally $a$, and we can no longer match on the right-hand-side
 path $ys$. That's where the `is-nil`{.Agda} predicate comes in: We say
-that $ys$ is equal to $\id{nil}$ if `is-nil`{.Agda} $ys$ holds. Of
+that $ys$ is equal to $\rm{nil}$ if `is-nil`{.Agda} $ys$ holds. Of
 course, a `cons`{.Agda} and a `nil`{.Agda} can never be equal.
 
 ```agda
@@ -125,7 +125,7 @@ if we have a code for an identification, we can indeed compute an
 identification. The most involved case is actually when the lists are
 empty, in which case we must show that `is-nil(xs)`{.Agda
 ident=is-nil}^[for $xs : a \to b$ an arbitrary path] implies that $xs
-\equiv \id{nil}$, but it must be over an arbitrary identification
+\equiv \rm{nil}$, but it must be over an arbitrary identification
 $p$^[which we know is a loop $a = a$]. Fortunately, vertices in a graph
 $G$ live in a set, so $p$ is reflexivity.
 

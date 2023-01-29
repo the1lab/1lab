@@ -11,10 +11,10 @@ module Cat.Functor.Equivalence.Complete where
 
 # Completeness respects equivalences
 
-Let $\ca{C}$ be a category admitting limits for $\ca{J}$-shaped
-diagrams, and $F : \ca{C} \cong \ca{D}$ an equivalence. Then $\ca{D}$
-also admits limits for $\ca{J}$-shaped diagrams; In particular, if
-$\ca{C}$ is complete, then so is $\ca{D}$.
+Let $\cC$ be a category admitting limits for $\cJ$-shaped
+diagrams, and $F : \cC \cong \cD$ an equivalence. Then $\cD$
+also admits limits for $\cJ$-shaped diagrams; In particular, if
+$\cC$ is complete, then so is $\cD$.
 
 ```agda
 module
@@ -25,10 +25,10 @@ module
   open is-equivalence eqv
 ```
 
-This is a very short theorem: If $\ca{C}$ admits $\ca{J}$-shaped limits,
-then for any diagram $K : \ca{J} \to \ca{D}$, the composite $F^{-1}K$
+This is a very short theorem: If $\cC$ admits $\cJ$-shaped limits,
+then for any diagram $K : \cJ \to \cD$, the composite $F^{-1}K$
 has a limit. But since equivalences are right adjoints, $F$ preserves
-this limit, so $FF^{-1}K$ has a limit in $\ca{D}$; But that composite is
+this limit, so $FF^{-1}K$ has a limit in $\cD$; But that composite is
 naturally isomorphic to $K$, so $K$ also has a limit.
 
 ```agda

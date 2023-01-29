@@ -21,7 +21,7 @@ An **ideal** in a ring $R$ is the [$\Ab$-enriched] analogue of a
 [sieve], when $R$ is considered as an $\Ab$-category with a single
 object, in that it picks out a sub-[$R$-module] of $R$, considered as a
 [representable ring], in exactly the same way that a sieve on an object
-$x : \ca{C}$ picks out a subfunctor of $\yo(x)$. Since we know that $\B
+$x : \cC$ picks out a subfunctor of $\yo(x)$. Since we know that $\B
 R$'s composition is given by $R$'s multiplication, and sieves are
 subsets closed under precomposition, we instantly deduce that ideals are
 closed under multiplication.

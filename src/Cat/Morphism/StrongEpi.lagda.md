@@ -305,12 +305,12 @@ in the relevant comma categories.
 
 # In the lex case
 
-Suppose that $\ca{C}$ is additionally left exact, or more restrictively,
+Suppose that $\cC$ is additionally left exact, or more restrictively,
 that it has all equalisers. In that case, a map left orthogonal to all
 monomorphisms is _automatically_ an epimorphism, thus a strong epi.
 Let's see how. First, there's a quick observation to be made about
 epimorphisms: if $f$ is such that there exists a $g$ with $fg =
-\id{id}$, then $f$ is an epimorphism. You can think of this as a special
+\id$, then $f$ is an epimorphism. You can think of this as a special
 case of "$fg$ epic implies $f$ epic" or as a short calculation:
 
 ```agda

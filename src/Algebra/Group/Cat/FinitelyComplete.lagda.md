@@ -188,7 +188,7 @@ module _ {G H : Group ℓ} (f g : Groups.Hom G H) where
 
 Recall that points there are elements of the domain (here, a point $x :
 G$) together with a proof that $f(x) = g(x)$. To "lift" the group
-structure from $G$ to $\id{equ}(f,g)$, we must prove that, if $f(x)
+structure from $G$ to $\rm{equ}(f,g)$, we must prove that, if $f(x)
 = g(x)$ and $f(y) = g(y)$, then $f(x\star y) = g(x\star y)$. But this
 follows from $f$ and $g$ being group homomorphisms:
 
@@ -229,7 +229,7 @@ Similar yoga must be done for the inverse maps and the group unit.
 
 We can then, pretty effortlessly, prove that the
 `Equaliser-group`{.Agda}, together with the canonical injection
-$\id{equ}(f,g) \mono G$, equalise the group homomorphisms $f$ and
+$\rm{equ}(f,g) \mono G$, equalise the group homomorphisms $f$ and
 $g$.
 
 ```agda

@@ -44,7 +44,7 @@ monomorphism through with a morphism factors"]. For the definition, we
 unpack this into more elementary conditions^[using the fact that any
 image is a [regular epi]], but that is essentially the gist of it.
 Regular categories abound: Any [topos] is a regular category^[hence the
-category $\sets$], every category of models for an algebraic theory in a
+category $\Sets$], every category of models for an algebraic theory in a
 regular category^[thus groups, rings, monoids, etc], all [abelian
 categories] are regular, etc.
 
@@ -115,7 +115,7 @@ coequaliser,
 open is-regular
 ```
 
-The basic example of regular category is the category $\sets$. As
+The basic example of regular category is the category $\Sets$. As
 mentioned in the introductory paragraph, this is an instance of a more
 general fact, but we prove it here in this specific case first, for the
 sake of concreteness.
@@ -127,8 +127,8 @@ Sets-is-regular .has-is-lex = Sets-finitely-complete
 ```
 
 Note that the cofork given by $f$'s kernel pair^[for any map $f$] has a
-coequaliser in $\sets$, because _every_ cofork has a coequaliser in
-$\sets$: it is a cocomplete category. But we can compute it very
+coequaliser in $\Sets$, because _every_ cofork has a coequaliser in
+$\Sets$: it is a cocomplete category. But we can compute it very
 directly as the [_quotient set_] of $f$'s kernel pair.
 
 [_quotient set_]: Data.Set.Coequaliser.html#quotients

@@ -14,7 +14,7 @@ module Cat.Diagram.Coend.Sets where
 
 We can give an explicit construction of [coends] in the category of sets
 by taking a [coequaliser]. Intuitively, the coend should be the
-"sum of the diagonal" of a functor $\ca{C}\op \times \ca{C} \to \sets$,
+"sum of the diagonal" of a functor $\cC\op \times \cC \to \Sets$,
 which translates directly to the sigma type `Σ[ X ∈ Ob ] ∣ F₀ (X , X) ∣`.
 However, trying to use this without some sort of quotient is going to
 be immediately problematic. For starters, this isn't even a set!
@@ -97,9 +97,9 @@ to the family associated to the cowedge `W`.
 ```
 
 This construction is actually functorial! Given any functor
-$\ca{C}\op \times \ca{C} \to \sets$, we can naturally construct its
-Coend in $\sets$. This ends up assembling into a functor from the
-functor category $[ \ca{C}\op \times \ca{C} , \sets ]$ into $\sets$.
+$\cC\op \times \cC \to \Sets$, we can naturally construct its
+Coend in $\Sets$. This ends up assembling into a functor from the
+functor category $[ \cC\op \times \cC , \Sets ]$ into $\Sets$.
 
 ```agda
 module _ {o ℓ} {𝒞 : Precategory o ℓ} where
@@ -126,4 +126,3 @@ module _ {o ℓ} {𝒞 : Precategory o ℓ} where
       (λ _ → refl)
       (λ _ → is-set→squarep (λ _ _ → squash) _ _ _ _)
 ```
-

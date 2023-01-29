@@ -189,11 +189,11 @@ The construction of coequalisers from pushouts follows its
 \[\begin{tikzcd}
 	{A + A} && A \\
 	\\
-	B && {\id{coequ}}
+	B && {\rm{coequ}}
 	\arrow[from=1-3, to=3-3]
-	\arrow["{[\id{id}, \id{id}]}", from=1-1, to=1-3]
+	\arrow["{[\id, \id]}", from=1-1, to=1-3]
 	\arrow["{[f,g]}"', from=1-1, to=3-1]
-	\arrow["{\id{coeq}}"', from=3-1, to=3-3]
+	\arrow["{\rm{coeq}}"', from=3-1, to=3-3]
 	\arrow["\lrcorner"{anchor=center, pos=0.125, rotate=180}, draw=none, from=3-3, to=1-1]
 \end{tikzcd}\]
 ~~~

@@ -11,8 +11,8 @@ module Order.Instances.Subobjects where
 
 # Posets of subobjects
 
-Let $\ca{C}$ be a [category] and $A : \ca{C}$ an arbitrary object. We're
-interested here in the restriction of the slice category $\ca{C}/A$ to
+Let $\cC$ be a [category] and $A : \cC$ an arbitrary object. We're
+interested here in the restriction of the slice category $\cC/A$ to
 those objects whose map is a monomorphism. This restriction turns out to
 be a poset.
 
@@ -63,7 +63,7 @@ g = Yf'$, so $f = f'$.
 Now, it's certainly _not_ the case that you can get an isomorphism $A
 \cong B$ from any ol' pair of morphisms $f : A \to B$ and $g : B \to A$.
 But if we're talking morphisms in a slice between monomorphisms, then we
-have a much better shot: Instead of having to show $fg = \rm{id}$
+have a much better shot: Instead of having to show $fg = \id$
 (hard), we can show $Yfg = Y$, which follows from commutativity of the
 triangles. So the subjects of $A$ are a poset!
 

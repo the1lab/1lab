@@ -20,7 +20,7 @@ module Cat.Functor.Equivalence.Path where
 We know that, _in_ a univalent category, paths between objects are the
 same thing as isomorphisms. A natural question to follow up is: what are
 the paths _between_ univalent categories? We prove that the space of
-functors $F : \ca{C} \to \ca{D}$ whose mappings on objects and on
+functors $F : \cC \to \cD$ whose mappings on objects and on
 morphisms are both equivalences ("isomorphisms of precategories") is an
 \r{identity system} on the space of precategories.
 
@@ -42,7 +42,7 @@ Precategory-path {o = o} {ℓ} {C} {D} F p = path where
 ```
 
 By assumption, $F$'s action on objects $F_0$ is an equivalence, so by
-univalence it induces an equivalence $\ca{C}_0 \equiv \ca{D}_0$. The
+univalence it induces an equivalence $\cC_0 \equiv \cD_0$. The
 path between `Hom`{.Agda}-sets is slightly more complicated. It is,
 essentially, the dashed line in the diagram
 
@@ -70,13 +70,13 @@ essentially, the dashed line in the diagram
   hom i x y = Glue (D.Hom (unglue (i ∨ ~ i) x) (unglue (i ∨ ~ i) y)) (sys i x y)
 ```
 
-Note that $\id{unglue}_{i \lor \neg i}(x)$ is a term in $\ca{D}_0$ which
+Note that $\rm{unglue}_{i \lor \neg i}(x)$ is a term in $\cD_0$ which
 evaluates to $F_0(x)$ when $i = i1$ or $i = i0$, so that the system
 described above can indeed be built. The introduction rule for
 `hom`{.Agda} is `hom-glue`{.Agda}: If we have a partial element $\neg i
 \vdash f : \Hom_\mathca{C} x y$ together with an element $g$ of base
 type satisfying definitionally $\neg i \vdash F_1(f) = g$, we may glue
-$f$ along $g$ to get an element of $\id{hom}_i(x, y)$.
+$f$ along $g$ to get an element of $\rm{hom}_i(x, y)$.
 
 ```agda
   hom-glue
@@ -92,8 +92,8 @@ $f$ along $g$ to get an element of $\id{hom}_i(x, y)$.
 
 To obtain these definitional extensions of a morphism in C, we use
 homogeneous composition, together with the functor laws. For example,
-below, we obtain a line which definitionally extends $\id{id}_\ca{C}$ on
-the left and $\id{id}_\ca{D}$ by gluing $\id{id}_\ca{C}$ _against the
+below, we obtain a line which definitionally extends $\id_\cC$ on
+the left and $\id_\cD$ by gluin\idid}_\cC$ _against the
 proof that $F$ preserves identity_.
 
 ```agda
@@ -112,10 +112,10 @@ proof that $F$ preserves identity_.
 ```
 
 The last trick is extending a proposition $P$ along the line
-$\id{hom}_i$, in a way that agrees with the original categories. We do
+$\rm{hom}_i$, in a way that agrees with the original categories. We do
 this by piecing together a square whose sides are the witness that $P$
 is a proposition, and where the base is given by spreading
-(`coe0→i`{.Agda}) the proposition from $\ca{C}$ throughout the line. We
+(`coe0→i`{.Agda}) the proposition from $\cC$ throughout the line. We
 only include the case for `Hom-set`{.Agda} since it is instructive and
 the other laws are not any more enlightening.
 
@@ -219,7 +219,7 @@ There are two observations that will allow us to do this like magic:
 
 1. Being univalent is a _property_ of a precategory: Univalence is
 defined to mean that the relation $X \cong Y$ is an identity system for
-the objects of $\ca{C}$, and "being an identity system" is a _property_
+the objects of $\cC$, and "being an identity system" is a _property_
 of a relation^[Really, it's a property of a _pointed_ relation, but this
 does not make a difference here.]
 
@@ -263,8 +263,8 @@ module
 ```
 -->
 
-Then, since the spaces of equivalences $\ca{C} \cong \ca{D}$ and
-isomorphisms $\ca{C} \to \ca{D}$ are both defined as the total space of
+Then, since the spaces of equivalences $\cC \cong \cD$ and
+isomorphisms $\cC \to \cD$ are both defined as the total space of
 a predicate on the same types, it suffices to show that the predicates
 are equivalent pointwise, which follows by propositional extensionality
 and a tiny result to adjust an equivalence into an isomorphism.
@@ -305,7 +305,7 @@ proposition), and the functor is definitionally preserved.
 
 And now the aforementioned tiny result: All equivalences are fully
 faithful, and if both categories are univalent, the natural isomorphisms
-$F^{-1}F \cong \id{Id}$ and $FF^{-1} \cong \id{Id}$ provide the
+$F^{-1}F \cong \rm{Id}$ and $FF^{-1} \cong \rm{Id}$ provide the
 necessary paths for showing that $F_0$ is an equivalence of types.
 
 ```agda

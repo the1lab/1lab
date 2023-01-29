@@ -13,12 +13,12 @@ import Cat.Reasoning C as C
 
 # Monads
 
-A **monad on a category** $\ca{C}$ is one way of categorifying the
+A **monad on a category** $\cC$ is one way of categorifying the
 concept of [monoid]. Specifically, rather than living in a monoidal
 category, a monad lives in a bicategory. Here, we concern ourselves with
 the case of monads in the bicategory of categories, so that we may say:
 A monad is an endofunctor $M$, equipped with a `unit`{.Agda} natural
-transformation $\id{Id} \To M$, and a `multiplication`{.Agda
+transformation $\rm{Id} \To M$, and a `multiplication`{.Agda
 ident=mult} $(M \circ M) \To M$.
 
 [monoid]: Algebra.Monoid.html
@@ -310,8 +310,8 @@ algebraic action:
 
 This is a free construction in the precise sense of the word: it's the
 [left adjoint] to the functor `Forget`{.Agda}, so in particular it
-provides a systematic, [universal] way of mapping from $\ca{C}$ to
-$\ca{C}^M$.
+provides a systematic, [universal] way of mapping from $\cC$ to
+$\cC^M$.
 
 [left adjoint]: Cat.Functor.Adjoint.html
 [universal]: Cat.Functor.Adjoint.html#universal-morphisms

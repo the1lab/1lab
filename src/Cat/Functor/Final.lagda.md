@@ -10,9 +10,9 @@ module Cat.Functor.Final where
 # Final functors
 
 A **final functor** expresses an equivalence of diagram schemata for the
-purposes of computing colimits: If $F : \ca{C} \to \ca{D}$ is final,
-then colimits for $D : \ca{D} \to \ca{E}$ are equivalents to colimits
-for $D\circ F : \ca{C} \to \ca{E}$. A terminological warning: In older
+purposes of computing colimits: If $F : \cC \to \cD$ is final,
+then colimits for $D : \cD \to \cE$ are equivalents to colimits
+for $D\circ F : \cC \to \cE$. A terminological warning: In older
 literature (e.g. [@Borceux:vol1] and [@AdamekRosicky]), these functors
 are called **cofinal**, but we stick with terminology from the nLab
 here.
@@ -38,7 +38,7 @@ module
 Finality has an elementary characterisation: We define a functor $F$ to
 be final if, for every $d$, the comma category $d \swarrow F$ is pointed
 and connected. That is, unpacking, the following data: For every object
-$d : \ca{D}$, an object $d_0$ and a map $d_! : d \to F(d_0)$, and for
+$d : \cD$, an object $d_0$ and a map $d_! : d \to F(d_0)$, and for
 every span
 
 ~~~{.quiver .short-05}
@@ -91,7 +91,7 @@ commutes.
 
 The utility of this definition comes, as mentioned, from the ability to
 move (colimiting) cocones back and forth between a diagram $D$ and its
-restriction $D_{|F}$ to the domain category $\ca{C}$. If we have a
+restriction $D_{|F}$ to the domain category $\cC$. If we have a
 cocone $\{DF(x) \to K\}$, then precomposition with the map $D(x_!) :
 D(x) \to DF(x_0)$ (where $x_!$ comes from the finality of $F$) defines a
 cocone $\{D(x) \to K\}$.

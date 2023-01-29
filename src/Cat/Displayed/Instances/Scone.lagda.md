@@ -23,20 +23,20 @@ open /-Obj
 
 ## Sierpinski cones
 
-Given a category $\ca{B}$, we can construct a displayed category
-of "Sierpinski cones" over $\ca{B}$, or "scones" for short.
+Given a category $\cB$, we can construct a displayed category
+of "Sierpinski cones" over $\cB$, or "scones" for short.
 Scones provide a powerful set of tools for proving various properties
 of categories that we want to think of as somehow "syntactic".
 
-A scone over some object $X : \ca{B}$ consists of a set $U$, along with
-a function $U \to B(\top, X)$. If we think about $\ca{B}$ as some sort
+A scone over some object $X : \cB$ consists of a set $U$, along with
+a function $U \to B(\top, X)$. If we think about $\cB$ as some sort
 of category of contexts, then a scone over some context $X$
 is some means of attaching semantic information (the set $U$) to
 $X$, such that we can recover closed terms of $X$ from elements of $U$.
 
 Morphisms behave like they do in an arrow category of $\ca{Sets}$:
-given a map $f : X \to Y$ in $\ca{B}$, a map over $f$ in the category
-between $(U, su : U \to \ca{B}(1, X))$ and $(V, sv : V \to \ca{B}(1, Y))$
+given a map $f : X \to Y$ in $\cB$, a map over $f$ in the category
+between $(U, su : U \to \cB(1, X))$ and $(V, sv : V \to \cB(1, Y))$
 consists of a function $uv : U \to V$, such that for all $u : U$,
 we have $f \circ su(u) = sv (uv u)$.
 
@@ -55,7 +55,7 @@ we have $f \circ su(u) = sv (uv u)$.
 
 With the exposition out of the way, we can now define the
 category of scones by abstract nonsense: the category of scones
-over $\ca{B}$ is the [pullback] of the [fundamental fibration] along the
+over $\cB$ is the [pullback] of the [fundamental fibration] along the
 global sections functor.
 
 [pullback]: Cat.Displayed.Instances.Pullback.html
@@ -86,7 +86,7 @@ objects and morphisms described above.
 ```agda
 private
   module Scones = Displayed Scones
-  
+
 ```
 -->
 
@@ -104,7 +104,7 @@ scone-hom uv p = slice-hom uv (funext p)
 
 ## As a fibration
 
-The category of scones over $\ca{B}$ is always a fibration. This is
+The category of scones over $\cB$ is always a fibration. This is
 where our definition by abstract nonsense begins to shine: base change
 preserves fibrations, and the codomain fibration is a fibration whenever
 the base category has pullbacks, which sets [has]!

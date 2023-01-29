@@ -35,9 +35,9 @@ out.
 [_monoid_]: Algebra.Monoid.html
 [precategory]: Cat.Base.html
 
-We start with a category $\ca{C}$ together with a chosen functor, the
-**tensor product**, $\otimes : \ca{C} \times \ca{C} \to \ca{C}$, and a
-distinguished object $I : \ca{C}$, the **tensor unit**. These take the
+We start with a category $\cC$ together with a chosen functor, the
+**tensor product**, $\otimes : \cC \times \cC \to \cC$, and a
+distinguished object $I : \cC$, the **tensor unit**. These take the
 place of the multiplication operation and identity element,
 respectively.
 
@@ -181,11 +181,11 @@ with a single object.
 
 ## Endomorphism categories
 
-In the same way that, if you have a category $\ca{C}$, making a choice
-of object $a : \ca{C}$ canonically gives you a monoid
-$\id{Endo}_\ca{C}(a)$ of _endomorphisms_ $a \to a$, having a bicategory
-$\ht{B}$ and choosing an object $a : \ht{B}$ canonically gives you a
-choice of _monoidal category_, $\ht{Endo}_\ht{B}(a)$.
+In the same way that, if you have a category $\cC$, making a choice
+of object $a : \cC$ canonically gives you a monoid
+$\rm{Endo}_\cC(a)$ of _endomorphisms_ $a \to a$, having a bicategory
+$\bicat{B}$ and choosing an object $a : \bicat{B}$ canonically gives you
+a choice of _monoidal category_, $\rm{Endo}_\bicat{B}(a)$.
 
 ```agda
 Endomorphisms

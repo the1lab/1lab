@@ -36,8 +36,8 @@ module _
 
 # Continuity of adjoints
 
-We prove that every functor $R : \ca{D} \to \ca{C}$ admitting a left
-adjoint $L \dashv R$ preserves every limit which exists in $\ca{D}$. We
+We prove that every functor $R : \cD \to \cC$ admitting a left
+adjoint $L \dashv R$ preserves every limit which exists in $\cD$. We
 then instantiate this theorem to the "canonical" shapes of limit:
 [terminal objects], [products], [pullbacks] and [equalisers].
 
@@ -62,7 +62,7 @@ then instantiate this theorem to the "canonical" shapes of limit:
 ## Passing cones along
 
 The first thing we prove is that, given a cone over a diagram $F$ in
-$\ca{D}$, we can get a cone in $\ca{C}$ over $R \circ F$, by passing
+$\cD$, we can get a cone in $\cC$ over $R \circ F$, by passing
 both the apex and the morphisms "over" using $R$. In reality, this is
 just the canonically-defined action of $R$ on cones over $F$:
 
