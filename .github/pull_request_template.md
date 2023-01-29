@@ -34,4 +34,5 @@ However, it is **completely fine** to only do one! For instance, I
 
 If a commit affects many files without adding any content and you don't
 want your name to appear on those pages (for example, treewide refactorings
-or reformattings), include the word `NOAUTHOR` in the commit message.
+or reformattings), start the commit message with `chore:` or include the word
+`NOAUTHOR` anywhere.
