@@ -596,7 +596,7 @@ for functors which have discrete groupoids as fibres --- the fibres have
 no categorical information, being nothing more than a set. Given any set
 $X$, we'd have a name for it as the interpretation of the unique map
 $\rm{Disc}(X) \to *$ as a map $* \to \set$. The name $\set$ was
-chosen because in the $(2,1)$-category $\grpd$, the discrete object
+chosen because in the $(2,1)$-category $\Grpd$, the discrete object
 classifier is exactly the category of sets.
 
 </details>
@@ -647,7 +647,7 @@ $C$ that makes the following triangle (in $C$) commute:
 [representing object]: https://ncatlab.org/nlab/show/representable+functor#idea
 
 But for us to be able to represent $\rm{Core}(\mathscr{E}/-) : \mathscr{E}\op
-\to \grpd$ as an object $\mathcal{U}$ of $\mathscr{E}$, we need
+\to \Grpd$ as an object $\mathcal{U}$ of $\mathscr{E}$, we need
 the hom-space $\rm{Hom}_{\mathscr{E}}(x, \mathcal{U})$ to be a groupoid,
 instead of just a set; Thus $\mathscr{E}$ was actually a 2-category!
 We're not in the clear though, since a slice of a n-category is another
