@@ -27,7 +27,7 @@ open Cat.Displayed.Reasoning E
 open Cat.Reasoning B
 open Cartesian-lift
 open Displayed E
-open Cartesian
+open is-cartesian
 open Functor
 ```
 -->

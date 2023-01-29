@@ -127,13 +127,13 @@ of `ℱ-lift` to construct the universal map, and show that it is indeed
 universal.
 
 ```agda
-      cart-lift .cartesian .Cartesian.universal m (h′ , h″) =
+      cart-lift .cartesian .is-cartesian.universal m (h′ , h″) =
         ℰ-lift .universal m h′ ,
         universal′ ℱ-lift (total-hom-path ℰ refl (ℰ-lift .commutes m h′)) h″
-      cart-lift .cartesian .Cartesian.commutes m h′ =
+      cart-lift .cartesian .is-cartesian.commutes m h′ =
         ℰ-lift .commutes m (h′ .fst) ,ₚ
         commutesp ℱ-lift _ (h′ .snd)
-      cart-lift .cartesian .Cartesian.unique m′ p =
+      cart-lift .cartesian .is-cartesian.unique m′ p =
         ℰ-lift .unique (m′ .fst) (ap fst p) ,ₚ
         uniquep ℱ-lift _ _
           (total-hom-path ℰ refl (ℰ-lift .commutes _ _))

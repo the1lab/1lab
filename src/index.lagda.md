@@ -371,6 +371,7 @@ we can construct in _any_ category.
 open import Cat.Morphism.StrongEpi -- Strong epimorphisms
 open import Cat.Morphism.Orthogonal -- Orthogonality
 open import Cat.Morphism.Factorisation -- Factorisation systems
+open import Cat.Morphism.Duality  -- Duality of morphism classes
 ```
 
 ## Functors
@@ -589,6 +590,8 @@ open import Cat.Displayed.Base -- Displayed categories
 open import Cat.Displayed.Total -- Total category of a displayed category
 open import Cat.Displayed.Total.Free -- Free objects in a total category
 
+open import Cat.Displayed.Total.Op -- Total opposite categories
+
 open import Cat.Displayed.Fibre -- Fibre categories of a displayed category
 
 open import Cat.Displayed.Univalence -- Univalence for displayed categories
@@ -599,6 +602,9 @@ open import Cat.Displayed.Reasoning
 
 open import Cat.Displayed.Morphism
   -- Important classes of morphisms in displayed categories
+
+open import Cat.Displayed.Morphism.Duality
+  -- Duality of morphism classes in displayed categories
 
 open import Cat.Displayed.Instances.Elements
 -- The category of elements of a presheaf, instantiated as being
@@ -662,6 +668,17 @@ open import Cat.Displayed.Instances.Scone
 -- forming a displayed category over C. Moreover, it's a Cartesian
 -- fibration by construction.
 ```
+
+### Cocartesian fibrations
+
+```agda
+open import Cat.Displayed.Cocartesian
+  -- Cocartesian lifts, opfibrations
+
+open import Cat.Displayed.Cocartesian.Weak
+  -- Weak cocartesian morphisms
+```
+
 
 ## Bicategories
 

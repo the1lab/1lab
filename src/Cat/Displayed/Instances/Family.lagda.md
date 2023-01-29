@@ -72,13 +72,13 @@ Y(f(a))$, and family is constantly the identity map.
 ```agda
 open Cartesian-fibration
 open Cartesian-lift
-open Cartesian
+open is-cartesian
 
 Family-is-cartesian : ∀ {ℓ} → Cartesian-fibration (Family {ℓ = ℓ})
 Family-is-cartesian = iscart where
   cart : ∀ {x y : Set _} (f : ∣ x ∣ → ∣ y ∣)
            (y′ : ∣ y ∣ → Ob)
-       → Cartesian Family f λ _ → id
+       → is-cartesian Family f λ _ → id
   cart f y′ .universal m nt = nt
   cart f y′ .commutes m h′ = funext λ _ → idl _
   cart f y′ .unique m′ p = funext λ _ → introl refl ∙ happly p _
@@ -87,6 +87,53 @@ Family-is-cartesian = iscart where
   iscart .has-lift f y′ .x′ z = y′ (f z)
   iscart .has-lift f y′ .lifting x = id
   iscart .has-lift {x = x} {y} f y′ .cartesian = cart {x = x} {y} f y′
+```
+
+Morphisms in the family fibration are cartesian if and only if they are
+pointwise isomorphisms. Showing the forward direction is a matter of
+using the inverse to construct the factorization, and then applying
+the isomorphism equations to show that we've actually constructed
+the unique factorization.
+
+```agda
+pointwise-iso→cartesian
+  : ∀ {ℓ} {X Y : Set ℓ} {f : ∣ X ∣ → ∣ Y ∣}
+  → {P : ∣ X ∣ → Ob} {Q : ∣ Y ∣ → Ob} {fₓ : ∀ x → Hom (P x) (Q (f x))}
+  → (∀ x → is-invertible (fₓ x))
+  → is-cartesian Family {X} {Y} {P} {Q} f fₓ
+pointwise-iso→cartesian {fₓ = fₓ} fₓ-inv = fₓ-cart where
+  module fₓ-inv x = is-invertible (fₓ-inv x)
+
+  fₓ-cart : is-cartesian Family _ fₓ
+  fₓ-cart .universal m h′ x =
+    fₓ-inv.inv (m x) ∘ h′ x
+  fₓ-cart .commutes m h′ =
+    funext λ x → cancell (fₓ-inv.invl (m x))
+  fₓ-cart .unique {m = m} m′ p =
+    funext λ x → introl (fₓ-inv.invr (m x)) ∙ pullr (happly p x)
+```
+
+Showing the backwards direction requires using the usual trick of
+factorizing the identity morphism; this is an isomorphism due
+to the fact that the factorization is unique.
+
+```agda
+cartesian→pointwise-iso
+  : ∀ {ℓ} {X Y : Set ℓ} {f : ∣ X ∣ → ∣ Y ∣}
+  → {P : ∣ X ∣ → Ob} {Q : ∣ Y ∣ → Ob} {fₓ : ∀ x → Hom (P x) (Q (f x))}
+  → is-cartesian Family {X} {Y} {P} {Q} f fₓ
+  → (∀ x → is-invertible (fₓ x))
+cartesian→pointwise-iso {X = X} {f = f} {P = P} {Q = Q} {fₓ = fₓ} fₓ-cart x =
+  make-invertible
+    fₓ⁻¹
+    (happly (fₓ-cart.commutes _ _) x)
+    (happly (fₓ-cart.unique {u = X} (λ _ → fₓ⁻¹ ∘ fₓ x) (funext λ _ → cancell (happly (fₓ-cart.commutes _ _) x))) x ∙
+     sym (happly (fₓ-cart.unique (λ _ → id) (funext λ _ → idr _)) x))
+  where
+    module fₓ-cart = is-cartesian fₓ-cart
+
+    fₓ⁻¹ : Hom (Q (f x)) (P x)
+    fₓ⁻¹ = fₓ-cart.universal {u = X} (λ x → x) (λ _ → id) x
 ```
 
 ## Fibres

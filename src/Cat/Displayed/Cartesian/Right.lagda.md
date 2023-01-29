@@ -39,7 +39,7 @@ record Right-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
     cartesian
       : ∀ {x y} {f : Hom x y}
       → ∀ {x′ y′} (f′ : Hom[ f ] x′ y′)
-      → Cartesian f f′
+      → is-cartesian f f′
 
   open Cartesian-fibration is-fibration public
 ```
@@ -84,7 +84,7 @@ What remains to be shown is that the inverse to $i^{*}$ factors
 $f'$ and $f^{*}$; this follows from the factorization of $f'$ and
 the fact that $i^{*}$ is invertible.
 
-[stable under vertical retractions]: Cat.Displayed.Cartesian.html#cartesian-vert-retraction-stable
+[stable under vertical retractions]: Cat.Displayed.Cartesian.html#cartesian-vertical-retraction-stable
 
 ```agda
     x* : Ob[ x ]
@@ -93,7 +93,7 @@ the fact that $i^{*}$ is invertible.
     f* : Hom[ f ] x* y′
     f* = has-lift f y′ .lifting
 
-    module f* = Cartesian (has-lift f y′ .cartesian)
+    module f* = is-cartesian (has-lift f y′ .cartesian)
 
     i* : Hom[ id ] x′ x*
     i* = f*.universal′ (idr f) f′
@@ -109,8 +109,8 @@ the fact that $i^{*}$ is invertible.
       hom[] (f* ∘′ i* ∘′ i*⁻¹) ≡⟨ weave _ (elimr (idl id)) _ (elimr′ _ i*-inv.invl′) ⟩
       hom[] f* ∎
 
-    f-cart : Cartesian f f′
-    f-cart = cartesian-vert-retraction-stable
+    f-cart : is-cartesian f f′
+    f-cart = cartesian-vertical-retraction-stable
       (has-lift f y′ .cartesian)
       (inverses[]→from-has-section[] i*-inv.inverses′)
       factors

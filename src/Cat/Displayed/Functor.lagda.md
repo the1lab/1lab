@@ -103,5 +103,5 @@ Cartesian morphisms:
     field
       F-cartesian
         : ∀ {a b a′ b′} {f : A.Hom a b} (f′ : ℰ.Hom[ f ] a′ b′)
-        → Cartesian ℰ f f′ → Cartesian ℱ (F.₁ f) (F₁′ f′)
+        → is-cartesian ℰ f f′ → is-cartesian ℱ (F.₁ f) (F₁′ f′)
 ```

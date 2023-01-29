@@ -43,14 +43,14 @@ can be Cartesian in at most one way.
 
 ```agda
 module _ {a b a′ b′} (f : B.Hom a b) {f′ : Hom[ f ] a′ b′}
-         (c₁ c₂ : Cartesian E f f′)
+         (c₁ c₂ : is-cartesian E f f′)
   where
 
   private
-    module c1 = Cartesian c₁
-    module c2 = Cartesian c₂
+    module c1 = is-cartesian c₁
+    module c2 = is-cartesian c₂
 
-  open Cartesian
+  open is-cartesian
 
   private
     univ : ∀ {u u′} (m : B.Hom u a) (h′ : Hom[ f B.∘ m ] u′ b′)
@@ -76,11 +76,11 @@ isomorphism sends $f_1$ to $f_2$!
 <!--
 ```agda
 module _ {a b a₁′ a₂′ b′} (f : B.Hom a b) {f₁′ : Hom[ f ] a₁′ b′}
-         {f₂′ : Hom[ f ] a₂′ b′} (c₁ : Cartesian E f f₁′) (c₂ : Cartesian E f f₂′)
+         {f₂′ : Hom[ f ] a₂′ b′} (c₁ : is-cartesian E f f₁′) (c₂ : is-cartesian E f f₂′)
   where
   private
-    module c1 = Cartesian c₁
-    module c2 = Cartesian c₂
+    module c1 = is-cartesian c₁
+    module c2 = is-cartesian c₂
 ```
 -->
 
