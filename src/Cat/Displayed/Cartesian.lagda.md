@@ -147,6 +147,29 @@ composite, rather than displayed directly over a composite.
     ·· ap (coe1→0 (λ i → Hom[ q i ] u′ a′)) (sym (unique m₂′ (from-pathp⁻ β)))
 ```
 
+Furthermore, if $f'' : a'' \to_{f} b'$ is also displayed over $f$,
+there's a unique vertical map $a'' \to a'$. This witnesses the fact that
+every cartesian map is [weakly cartesian].
+
+[weakly cartesian]: Cat.Displayed.Cartesian.Weak.html
+
+```agda
+  universalv : ∀ {a″} (f″ : Hom[ f ] a″ b′) → Hom[ id ] a″ a′
+  universalv f″ = universal′ (idr _) f″
+
+  commutesv
+    : ∀ {x′} → (g′ : Hom[ f ] x′ b′)
+    → f′ ∘′ universalv g′ ≡[ idr _ ] g′
+  commutesv = commutesp (idr _)
+
+  uniquev
+    : ∀ {x′} {g′ : Hom[ f ] x′ b′}
+    → (h′ : Hom[ id ] x′ a′)
+    → f′ ∘′ h′ ≡[ idr _ ] g′
+    → h′ ≡ universalv g′
+  uniquev h′ p = uniquep (idr f) refl (idr f) h′ p
+```
+
 ## Properties of Cartesian Morphisms
 
 The composite of 2 cartesian morphisms is in turn cartesian.
@@ -472,24 +495,3 @@ fibre over a ring $R$ is the category of $R$-modules, Cartesian lifts
 are given by restriction of scalars.
 
 [category of modules]: Algebra.Ring.Module.html
-
-## Properties of Cartesian Fibrations
-
-If $\cE$ is a fibration, then every morphism is equivalent to
-a vertical morphism.
-
-```agda
-open Cartesian-lift
-open Cartesian-fibration
-
-fibration→vertical-equiv
-  : ∀ {X Y X′ Y′}
-  → (fib : Cartesian-fibration)
-  → (u : Hom X Y)
-  → Hom[ u ] X′ Y′ ≃ Hom[ id ] X′ (fib .has-lift u Y′ .x′)
-fibration→vertical-equiv fib u = Iso→Equiv $
-  (λ u′ → fib .has-lift _ _ .universal id (hom[ idr u ]⁻ u′)) ,
-  iso (λ u′ → hom[ idr u ] (fib .has-lift _ _ .lifting ∘′ u′))
-      (λ u′ → sym $ fib .has-lift _ _ .unique u′ (sym (hom[]-∙ _ _ ∙ liberate _)))
-      (λ u′ → (hom[]⟩⟨ fib .has-lift _ _ .commutes _ _) ·· hom[]-∙ _ _ ·· liberate _)
-```
