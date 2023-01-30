@@ -574,6 +574,48 @@ $\hom(La,b) \cong \hom(a,Rb)$.
     (iso L-adjunct R-L-adjunct L-R-adjunct)
 ```
 
+Furthermore, these equivalences are natural.
+
+```agda
+  L-adjunct-naturall
+    : ∀ {a b c} (f : D.Hom (L.₀ b) c) (g : C.Hom a b)
+    → L-adjunct (f D.∘ L.₁ g) ≡ L-adjunct f C.∘ g
+  L-adjunct-naturall f g =
+    R.₁ (f D.∘ L.₁ g) C.∘ adj.unit.η _       ≡⟨ R.F-∘ _ _ C.⟩∘⟨refl ⟩
+    (R.₁ f C.∘ R.₁ (L.₁ g)) C.∘ adj.unit.η _ ≡⟨ C.extendr (sym $ adj.unit.is-natural _ _ _) ⟩
+    (R.₁ f C.∘ adj.unit.η _) C.∘ g           ∎
+
+  L-adjunct-naturalr 
+      : ∀ {a b c} (f : D.Hom b c) (g : D.Hom (L.₀ a) b)
+      → L-adjunct (f D.∘ g) ≡ R.₁ f C.∘ L-adjunct g
+  L-adjunct-naturalr f g = C.pushl (R.F-∘ f g)
+
+  L-adjunct-natural₂
+      : ∀ {a b c d} (f : D.Hom a b) (g : C.Hom c d) (x : D.Hom (L.F₀ d) a)
+      → L-adjunct (f D.∘ x D.∘ L.₁ g) ≡ R.₁ f C.∘ L-adjunct x C.∘ g
+  L-adjunct-natural₂ f g x =
+    L-adjunct-naturalr f (x D.∘ L.₁ g) ∙ ap (R.₁ f C.∘_) (L-adjunct-naturall x g)
+
+  R-adjunct-naturall
+      : ∀ {a b c} (f : C.Hom b (R.₀ c)) (g : C.Hom a b)
+      → R-adjunct (f C.∘ g) ≡ R-adjunct f D.∘ L.₁ g
+  R-adjunct-naturall f g = D.pushr (L.F-∘ f g)
+
+  R-adjunct-naturalr
+    : ∀ {a b c} (f : D.Hom b c) (g : C.Hom a (R.₀ b))
+    → R-adjunct (R.₁ f C.∘ g) ≡ f D.∘ R-adjunct g
+  R-adjunct-naturalr f g =
+    adj.counit.ε _ D.∘ L.₁ (R.₁ f C.∘ g)     ≡⟨ D.refl⟩∘⟨ L.F-∘ _ _ ⟩
+    adj.counit.ε _ D.∘ L.₁ (R.₁ f) D.∘ L.₁ g ≡⟨ D.extendl (adj.counit.is-natural _ _ _) ⟩
+    f D.∘ (adj.counit.ε _ D.∘ L.₁ g) ∎
+
+  R-adjunct-natural₂
+    : ∀ {a b c d} (f : D.Hom a b) (g : C.Hom c d) (x : C.Hom d (R.F₀ a))
+    → R-adjunct (R.₁ f C.∘ x C.∘ g) ≡ f D.∘ R-adjunct x D.∘ L.₁ g
+  R-adjunct-natural₂ f g x =
+    R-adjunct-naturalr f (x C.∘ g) ∙ ap (f D.∘_) (R-adjunct-naturall x g)
+```
+
 <!--
 ```agda
 module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
