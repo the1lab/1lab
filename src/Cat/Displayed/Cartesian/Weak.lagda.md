@@ -160,6 +160,34 @@ weak-cartesian→cartesian {x = x} {y′ = y′} {f = f} {f′ = f′} fib f-wea
       (f-weak.commutes f*)
 ```
 
+$f' : x' \to_{f} y'$ is a weak cartesian morphism if and only if
+postcomposition of $f'$ onto vertical maps is an equivalence.
+
+```agda
+postcompose-equiv→weak-cartesian
+  : ∀ {x y x′ y′} {f : Hom x y}
+  → (f′ : Hom[ f ] x′ y′)
+  → (∀ {x″} → is-equiv {A = Hom[ id ] x″ x′} (f′ ∘′_))
+  → is-weak-cartesian f f′
+postcompose-equiv→weak-cartesian f′ eqv .is-weak-cartesian.universal h′ =
+  equiv→inverse eqv (hom[ idr _ ]⁻ h′)
+postcompose-equiv→weak-cartesian f′ eqv .is-weak-cartesian.commutes h′ =
+  to-pathp⁻ (equiv→counit eqv (hom[ idr _ ]⁻ h′))
+postcompose-equiv→weak-cartesian f′ eqv .is-weak-cartesian.unique m′ p =
+  (sym $ equiv→unit eqv m′) ∙ ap (equiv→inverse eqv) (from-pathp⁻ p)
+
+weak-cartesian→postcompose-equiv
+  : ∀ {x y x′ x″ y′} {f : Hom x y} {f′ : Hom[ f ] x′ y′}
+  → is-weak-cartesian f f′
+  → is-equiv {A = Hom[ id ] x″ x′} (f′ ∘′_)
+weak-cartesian→postcompose-equiv wcart =
+  is-iso→is-equiv $
+    iso (λ h′ → universal (hom[ idr _ ] h′))
+        (λ h′ → from-pathp⁻ (commutes _) ·· hom[]-∙ _ _ ·· liberate _)
+        (λ h′ → sym $ unique _ (to-pathp refl))
+    where open is-weak-cartesian wcart
+```
+
 ## Weak Cartesian Lifts
 
 We can also define a notion of weak cartesian lifts, much like we can
