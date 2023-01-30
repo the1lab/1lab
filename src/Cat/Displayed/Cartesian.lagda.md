@@ -420,6 +420,35 @@ vertical+cartesian→invertible {x′ = x′} {x″ = x″} {f′ = f′} f-cart
       hom[] id′ ∎
 ```
 
+Furthermore, $f' : x' \to_{f} y'$ is cartesian if and only if the
+function $f \cdot' -$ is an equivalence.
+
+```agda
+postcompose-equiv→cartesian
+  : ∀ {x y x′ y′} {f : Hom x y}
+  → (f′ : Hom[ f ] x′ y′)
+  → (∀ {w w′} {g : Hom w x} → is-equiv {A = Hom[ g ] w′ x′} (f′ ∘′_))
+  → is-cartesian f f′
+postcompose-equiv→cartesian f′ eqv .is-cartesian.universal m h′ =
+  equiv→inverse eqv h′
+postcompose-equiv→cartesian f′ eqv .is-cartesian.commutes m h′ =
+  equiv→counit eqv h′
+postcompose-equiv→cartesian f′ eqv .is-cartesian.unique m′ p =
+  sym (equiv→unit eqv m′) ∙ ap (equiv→inverse eqv) p
+
+cartesian→postcompose-equiv
+  : ∀ {x y z x′ y′ z′} {f : Hom y z} {g : Hom x y} {f′ : Hom[ f ] y′ z′}
+  → is-cartesian f f′
+  → is-equiv {A = Hom[ g ] x′ y′} (f′ ∘′_)
+cartesian→postcompose-equiv cart =
+  is-iso→is-equiv $
+    iso (universal _)
+        (commutes _)
+        (λ g′ → sym (unique g′ refl))
+  where open is-cartesian cart
+```
+
+
 ## Cartesian Lifts
 
 We call an object $a'$ over $a$ together with a Cartesian arrow $f' : a'
