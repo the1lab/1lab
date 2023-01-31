@@ -168,6 +168,15 @@ every cartesian map is [weakly cartesian].
     → f′ ∘′ h′ ≡[ idr _ ] g′
     → h′ ≡ universalv g′
   uniquev h′ p = uniquep (idr f) refl (idr f) h′ p
+
+  uniquev₂
+    : ∀ {x′} {g′ : Hom[ f ] x′ b′}
+    → (h′ h″ : Hom[ id ] x′ a′)
+    → f′ ∘′ h′ ≡[ idr _ ] g′
+    → f′ ∘′ h″ ≡[ idr _ ] g′
+    → h′ ≡ h″
+  uniquev₂ h′ h″ p q =
+    uniquep₂ (idr f) refl (idr f) h′ h″ p q
 ```
 
 ## Properties of Cartesian Morphisms
@@ -486,6 +495,23 @@ record Cartesian-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
 
   module has-lift {x y} (f : Hom x y) (y′ : Ob[ y ]) =
     Cartesian-lift (has-lift f y′)
+```
+
+Note that if $\cE$ is a fibration, we can define an operation that
+allows us to move vertical morphisms between fibres. This actually
+extends to a collection of functors, called [base change functors].
+This operation is also definable for [weak fibrations], as it only
+uses the universal property that yields a vertical morphism.
+
+[base change functors]: Cat.Displayed.Cartesian.Indexing.html
+[weak fibrations]: Cat.Displayed.Cartesian.Weak.html#is-weak-cartesian-fibration
+
+```agda
+  rebase : ∀ {x y y′ y″} → (f : Hom x y)
+           → Hom[ id ] y′ y″
+           → Hom[ id ] (has-lift.x′ f y′) (has-lift.x′ f y″)
+  rebase f vert =
+    has-lift.universalv f _ (hom[ idl _ ] (vert ∘′ has-lift.lifting f _))
 ```
 
 A Cartesian fibration is a displayed category having Cartesian lifts for
