@@ -1,5 +1,6 @@
 ```agda
 open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Cocartesian
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Pullback
 open import Cat.Displayed.Fibre
@@ -235,3 +236,26 @@ reinterpret the above results as, essentially, giving the [pullback
 functors] between slice categories.
 
 [pullback functors]: Cat.Functor.Pullback.html
+
+## As an Opfibration
+
+The canonical self-indexing is *always* an opfibration, where
+opreindexing is given by postcomposition. If we think about slices as
+families, then opreindexing along $X \to Y$ extends a family over $X$
+to a family over $Y$ by adding in empty fibres for all elements of $Y$
+that do not lie in the image of $f$.
+
+```agda
+Codomain-opfibration : Cocartesian-fibration Slices
+Codomain-opfibration .Cocartesian-fibration.has-lift f x′ = lift-f where
+
+  lift-f : Cocartesian-lift Slices f x′
+  lift-f .Cocartesian-lift.y′ = cut (f ∘ x′ .map)
+  lift-f .Cocartesian-lift.lifting = slice-hom id (sym (idr _))
+  lift-f .Cocartesian-lift.cocartesian .is-cocartesian.universal m h′ =
+    slice-hom (h′ .to) (assoc _ _ _ ∙ h′ .commute)
+  lift-f .Cocartesian-lift.cocartesian .is-cocartesian.commutes m h′ =
+    Slice-pathp refl (idr _)
+  lift-f .Cocartesian-lift.cocartesian .is-cocartesian.unique m′ p =
+    Slice-pathp refl (sym (idr _) ∙ ap to p)
+```
