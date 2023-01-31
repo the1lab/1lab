@@ -1,11 +1,14 @@
 ```agda
 open import Cat.Displayed.Base
+open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
 open import Cat.Functor.Equivalence
 open import Cat.Functor.Equivalence.Path
 open import Cat.Prelude
 
 open import 1Lab.Rewrite
+
+import Cat.Displayed.Reasoning as DR
 
 module Cat.Displayed.Total.Op where
 
@@ -18,7 +21,7 @@ open Total-hom
 Opposites of displayed categories are somewhat subtle, as there are
 multiple constructions that one could reasonably call the "opposite".
 The most obvious construction is to construct a new
-displayed category over $\ca{B}\op$; we call this category the
+displayed category over $\ca{B}op$; we call this category the
 **total opposite** of $\ca{E}$.
 
 ```agda
@@ -102,8 +105,6 @@ total-op→total-hom-is-equiv
 total-op→total-hom-is-equiv =
   is-iso→is-equiv $ iso total-hom→total-op (λ _ → refl) (λ _ → refl)
 
-
-
 total-op≡total-hom
   : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′}
   → ∀ {x y} → Total-hom (ℰ ^total-op) x y ≡ Total-hom ℰ y x
@@ -140,3 +141,47 @@ Finally, we show that this extends to an equality of categories.
     (∫total-op→∫^op ℰ)
     (∫total-op≅∫^op ℰ)
 ```
+
+# Functors between fibres
+
+If there is a functor between the fibres of a displayed category $\cE$,
+then we also obtain a functor between the fibres of the total opposite
+of $\cE$.
+
+```agda
+fibre-functor-total-op
+  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′} {x y}
+  → Functor (Fibre ℰ x) (Fibre ℰ y)
+  → Functor (Fibre (ℰ ^total-op) x) (Fibre (ℰ ^total-op) y)
+fibre-functor-total-op F .F₀ = F .F₀
+fibre-functor-total-op F .F₁ = F .F₁
+fibre-functor-total-op F .F-id = F .F-id
+fibre-functor-total-op {ℰ = ℰ} F .F-∘ f g =
+  ap (F .F₁) (DR.reindex ℰ _ _ ) ·· F .F-∘ g f ·· DR.reindex ℰ _ _
+```
+
+<!--
+```agda
+fibre-functor-total-op-total-op  
+  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′} {x y}
+  → {F : Functor (Fibre ℰ x) (Fibre ℰ y)}
+  → fibre-functor-total-op (fibre-functor-total-op F) ≡ F
+fibre-functor-total-op-total-op {F = F} i .F₀ = F .F₀
+fibre-functor-total-op-total-op {F = F} i .F₁ = F .F₁
+fibre-functor-total-op-total-op  {F = F} i .F-id = F .F-id
+fibre-functor-total-op-total-op {ℰ = ℰ} {y = y} {F = F} i .F-∘ f g =
+  is-prop→pathp (λ i → Hom-set  _ _ _ (F .F₁ f ∘ F .F₁ g))
+    ((fibre-functor-total-op (fibre-functor-total-op F)) .F-∘ f g)
+    (F .F-∘ f g)
+    i
+    where open Precategory (Fibre ℰ y)
+
+private
+  fibre-functor-double-dual
+    : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′} {x y}
+    → {F : Functor (Fibre ℰ x) (Fibre ℰ y)}
+    → fibre-functor-total-op (fibre-functor-total-op F) ≡rw F
+  fibre-functor-double-dual = make-rewrite fibre-functor-total-op-total-op
+{-# REWRITE fibre-functor-double-dual #-}
+```
+-->
