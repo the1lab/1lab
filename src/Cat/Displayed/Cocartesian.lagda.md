@@ -122,6 +122,42 @@ to a unique universal factorisation of $h'$ through a map $b' \to_{m} u'$
           → m′ ∘′ f′ ≡[ p ] h′ → m′ ≡[ q ] universal′ r h′
   uniquep p q r {h′ = h′} m′ s  =
     to-pathp⁻ (unique m′ (from-pathp⁻ s) ∙ from-pathp⁻ (universalp p q r h′))
+
+  uniquep₂ : ∀ {u u′} {m₁ m₂ : Hom b u} {k : Hom a u}
+          → (p : m₁ ∘ f ≡ k) (q : m₁ ≡ m₂) (r : m₂ ∘ f ≡ k)
+          → {h′ : Hom[ k ] a′ u′}
+          → (m₁′ : Hom[ m₁ ] b′ u′)
+          → (m₂′ : Hom[ m₂ ] b′ u′)
+          → m₁′ ∘′ f′ ≡[ p ] h′
+          → m₂′ ∘′ f′ ≡[ r ] h′
+          → m₁′ ≡[ q ] m₂′
+  uniquep₂ p q r {h′ = h′} m₁′ m₂′ α β = to-pathp⁻ $
+       unique m₁′ (from-pathp⁻ α)
+    ·· from-pathp⁻ (universalp p q r _)
+    ·· ap hom[] (sym (unique m₂′ (from-pathp⁻ β)))
+
+  universalv : ∀ {b″} (f″ : Hom[ f ] a′ b″) → Hom[ id ] b′ b″
+  universalv f″ = universal′ (idl _) f″
+
+  commutesv
+    : ∀ {x′} (g′ : Hom[ f ] a′ x′)
+    → universalv g′ ∘′ f′ ≡[ idl _ ] g′
+  commutesv = commutesp (idl _)
+
+  uniquev
+    : ∀ {x′} {g′ : Hom[ f ] a′ x′}
+    → (h′ : Hom[ id ] b′ x′)
+    → h′ ∘′ f′ ≡[ idl _ ] g′
+    → h′ ≡ universalv g′
+  uniquev h′ p = uniquep (idl _) refl (idl _) h′ p
+
+  uniquev₂
+    : ∀ {x′} {g′ : Hom[ f ] a′ x′}
+    → (h′ h″ : Hom[ id ] b′ x′)
+    → h′ ∘′ f′ ≡[ idl _ ] g′
+    → h″ ∘′ f′ ≡[ idl _ ] g′
+    → h′ ≡ h″
+  uniquev₂ h′ h″ p q = uniquep₂ (idl _) refl (idl _) h′ h″ p q
 ```
 -->
 
@@ -362,6 +398,18 @@ record Cocartesian-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
   module has-lift {x y} (f : Hom x y) (x′ : Ob[ x ]) =
     Cocartesian-lift (has-lift f x′)
 ```
+
+<!--
+
+```agda
+  rebase : ∀ {x y x′ x″} → (f : Hom x y)
+           → Hom[ id ] x′ x″
+           → Hom[ id ] (has-lift.y′ f x′) (has-lift.y′ f x″)
+  rebase f vert =
+    has-lift.universalv f _ (hom[ idr _ ] (has-lift.lifting f _ ∘′ vert))
+```
+-->
+
 As expected, opfibrations are dual to fibrations.
 ```agda
 op-fibration→opfibration : Cartesian-fibration (ℰ ^total-op) → Cocartesian-fibration
