@@ -61,17 +61,17 @@ module _ {𝒶 𝒷} (f : Hom 𝒶 𝒷) where
 ```agda
   base-change .F-id {x} =
     sym $ has-lift.uniquev _ _ _ $ to-pathp $
-      idr[] ·· sym $ cancel (idl _) _ (idl′ _) ·· reindex _ _
+      idr[] ∙ (sym $ cancel _ _ (idl′ _))
 
   base-change .F-∘ {x} {y} {z} f′ g′ =
     sym $ has-lift.uniquev _ _ _ $ to-pathp $
-      smashr _ _ ··
-      revive₁ (pulll[] (idr f) (has-lift.commutesv _ _ _)) ··
-      smashl _ _ ··
-      revive₁ (pullr[] (idr f) (has-lift.commutesv _ _ _)) ··
-      smashr _ _ ··
-      assoc[] ··
-      sym (smashl _ _)
+      smashr _ _
+      ·· revive₁ (pulll[] (idr f) (has-lift.commutesv _ _ _))
+      ·· smashl _ _
+      ·· revive₁ (pullr[] (idr f) (has-lift.commutesv _ _ _))
+      ·· smashr _ _
+      ·· assoc[]
+      ·· sym (smashl _ _)
 ```
 -->
 
