@@ -7,6 +7,7 @@ open import Cat.Prelude
 import Cat.Displayed.Cartesian as Cart
 import Cat.Displayed.Reasoning as DR
 import Cat.Displayed.Morphism as DM
+import Cat.Reasoning as CR
 
 module Cat.Displayed.Cartesian.Weak
   {o ℓ o′ ℓ′}
@@ -14,7 +15,7 @@ module Cat.Displayed.Cartesian.Weak
   (ℰ : Displayed ℬ o′ ℓ′)
   where
 
-open Precategory ℬ
+open CR ℬ
 open Displayed ℰ
 open Cart ℰ
 open DR ℰ
@@ -220,6 +221,21 @@ record is-weak-cartesian-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
 
   module weak-lift {x y} (f : Hom x y) (y′ : Ob[ y ]) =
     Weak-cartesian-lift (weak-lift f y′)
+```
+
+Note that if $\cE$ is a weak fibration, we can define an operation that
+allows us to move vertical morphisms between fibres. This is actually
+enough to define [base change functors], though they are not well behaved
+unless $\cE$ is a fibration.
+
+[base change functors]: Cat.Displayed.Cartesian.Indexing.html
+
+```agda
+  rebase : ∀ {x y y′ y″} → (f : Hom x y)
+           → Hom[ id ] y′ y″
+           → Hom[ id ] (weak-lift.x′ f y′) (weak-lift.x′ f y″)
+  rebase f vert =
+    weak-lift.universal f _ (hom[ idl _ ] (vert ∘′ weak-lift.lifting f _))
 ```
 
 Every fibration is a weak fibration.
@@ -493,20 +509,32 @@ module _ (wfib : is-weak-cartesian-fibration) where
 Furthermore, this equivalence is natural.
 
 ```agda
-  weak-fibration→vertical-equiv-naturall
+  weak-fibration→vertical-equiv-naturalr
     : ∀ {x y x′ x″ y′} {f : Hom x y}
     → (f′ : Hom[ f ] x″ y′) (g′ : Hom[ id ] x′ x″)
     → weak-lift.universal f y′ (hom[ idr _ ] (f′ ∘′ g′)) ≡[ sym (idl id) ]
       weak-lift.universal f y′ f′ ∘′ g′
-  weak-fibration→vertical-equiv-naturall {f = f} f′ g′ =
+  weak-fibration→vertical-equiv-naturalr {f = f} f′ g′ =
     to-pathp⁻ $ sym $ weak-lift.unique f _ _ $ to-pathp $
       hom[] (weak-lift.lifting f _ ∘′ hom[] (weak-lift.universal f _ f′ ∘′ g′)) ≡⟨ smashr _ _ ⟩
       hom[] (weak-lift.lifting f _ ∘′ weak-lift.universal f _ f′ ∘′ g′)         ≡⟨ weave _ (ap (f ∘_) (idl id)) _ (pulll′ _ (weak-lift.commutes _ _ _)) ⟩
       hom[] (f′ ∘′ g′) ∎
+
+  weak-fibration→vertical-equiv-naturall
+    : ∀ {x y x′ y′ y″ } {g : Hom x y}
+    → (f′ : Hom[ id ] y′ y″) (g′ : Hom[ g ] x′ y′)
+    → weak-lift.universal g y″ (hom[ idl _ ] (f′ ∘′ g′)) ≡[ sym (idl id) ]
+      rebase g f′ ∘′ weak-lift.universal g y′ g′
+  weak-fibration→vertical-equiv-naturall {g = g} f′ g′ =
+    to-pathp⁻ $ sym $ weak-lift.unique g _ _ $ to-pathp $
+      smashr _ _
+      ∙ revive₁ (pulll[] _ (weak-lift.commutes g _ _))
+      ∙ smashl _ _
+      ∙ weave _ (pullr (idr g)) _ (pullr[] _ (weak-lift.commutes g _ _))
 ```
 
 An *extremely* useful fact is that the converse is true: if there is some
-lifting of objects `Ob[ y ] → Ob[ x ]` for every morphism $f : x \to y$
+lifting of objects $\cE_{y} \to \cE_{x}$ for every morphism $f : x \to y$
 in $\cB$, along with a natural equivalence of homs as above, then
 $\cE$ is a weak fibration.
 
@@ -533,28 +561,28 @@ module _ (_*₀_ : ∀ {x y} → Hom x y → Ob[ y ] → Ob[ x ]) where
       → to (hom[ idr _ ] (f′ ∘′ g′)) ≡[ sym (idl id) ] to f′ ∘′ g′
 
   vertical-equiv→weak-fibration
-    : (to : ∀ {x y x′ y′} {f : Hom x y} → Hom[ f ] x′ y′ → Hom[ id ] x′ (f *₀ y′))
-    → (∀ {x y x′ y′} {f : Hom x y} → is-equiv (to {x} {y} {x′} {y′} {f}))
-    → vertical-equiv-iso-natural to
+    : (to* : ∀ {x y x′ y′} {f : Hom x y} → Hom[ f ] x′ y′ → Hom[ id ] x′ (f *₀ y′))
+    → (∀ {x y x′ y′} {f : Hom x y} → is-equiv (to* {x} {y} {x′} {y′} {f}))
+    → vertical-equiv-iso-natural to*
     → is-weak-cartesian-fibration
-  vertical-equiv→weak-fibration to to-eqv natural .weak-lift f y′ = f-lift where
+  vertical-equiv→weak-fibration to* to-eqv natural .weak-lift f y′ = f-lift where
 ```
 
 To start, we note that the inverse portion of the equivalence is also
 natural.
 
 ```agda
-    from : ∀ {x y x′ y′} {f : Hom x y} → Hom[ id ] x′ (f *₀ y′) → Hom[ f ] x′ y′
-    from = equiv→inverse to-eqv
+    from* : ∀ {x y x′ y′} {f : Hom x y} → Hom[ id ] x′ (f *₀ y′) → Hom[ f ] x′ y′
+    from* = equiv→inverse to-eqv
 
-    from-natural
+    from*-natural
       : ∀ {x y} {f : Hom x y} {x′ x″ : Ob[ x ]} {y′ : Ob[ y ]}
       → (f′ : Hom[ id ] x″ (f *₀ y′)) (g′ : Hom[ id ] x′ x″)
-      → from (hom[ idl id ] (f′ ∘′ g′)) ≡[ sym (idr f) ] from f′ ∘′ g′
-    from-natural {f = f} f′ g′ =
+      → from* (hom[ idl id ] (f′ ∘′ g′)) ≡[ sym (idr f) ] from* f′ ∘′ g′
+    from*-natural {f = f} f′ g′ =
       to-pathp⁻ $ ap fst $ is-contr→is-prop (to-eqv .is-eqv (hom[ idl id ] (f′ ∘′ g′)))
-        (from (hom[ idl id ] (f′ ∘′ g′)) , equiv→counit to-eqv _)
-        (hom[ idr f ] (from f′ ∘′ g′) , from-pathp⁻ (natural (from f′) g′) ∙
+        (from* (hom[ idl id ] (f′ ∘′ g′)) , equiv→counit to-eqv _)
+        (hom[ idr f ] (from* f′ ∘′ g′) , from-pathp⁻ (natural (from* f′) g′) ∙
                                         (hom[]⟩⟨ ap (_∘′ g′) (equiv→counit to-eqv _)))
 ```
 
@@ -566,7 +594,7 @@ obtain the required lifting $x' \to_{f} f^{*}(y')$.
 ```agda
     f-lift : Weak-cartesian-lift f y′
     f-lift .x′ = f *₀ y′
-    f-lift .lifting = from id′
+    f-lift .lifting = from* id′
 ```
 
 Now, we must show that the constructed lifting is weakly cartesian. We
@@ -575,16 +603,59 @@ universal map; the remaining properties follow from the fact that
 the equivalence is natural.
 
 ```agda
-    f-lift .weak-cartesian .universal g′ = to g′
+    f-lift .weak-cartesian .universal g′ = to* g′
     f-lift .weak-cartesian .commutes g′ = to-pathp $
-      hom[] (from id′ ∘′ to g′)   ≡˘⟨ from-pathp⁻ (from-natural id′ (to g′)) ⟩
-      from (hom[] (id′ ∘′ to g′)) ≡⟨ ap from idl[] ⟩
-      from (to g′)                ≡⟨ equiv→unit to-eqv g′ ⟩
-      g′ ∎
+      hom[] (from* id′ ∘′ to* g′)   ≡˘⟨ from-pathp⁻ (from*-natural id′ (to* g′)) ⟩
+      from* (hom[] (id′ ∘′ to* g′)) ≡⟨ ap from* idl[] ⟩
+      from* (to* g′)                ≡⟨ equiv→unit to-eqv g′ ⟩
+      g′                            ∎
     f-lift .weak-cartesian .unique {g′ = g′} h′ p =
-      h′                          ≡˘⟨ idl[] {p = idl id} ⟩
-      hom[] (id′ ∘′ h′)           ≡˘⟨  hom[]⟩⟨ ap (_∘′ h′) (equiv→counit to-eqv id′) ⟩
-      hom[] (to (from id′) ∘′ h′) ≡˘⟨ from-pathp⁻ (natural (from id′) h′) ⟩
-      to (hom[] (from id′ ∘′ h′)) ≡⟨ ap to (from-pathp p) ⟩
-      to g′                       ∎
+      h′                            ≡˘⟨ idl[] {p = idl id} ⟩
+      hom[] (id′ ∘′ h′)             ≡˘⟨ hom[]⟩⟨ ap (_∘′ h′) (equiv→counit to-eqv id′) ⟩
+      hom[] (to* (from* id′) ∘′ h′) ≡˘⟨ from-pathp⁻ (natural (from* id′) h′) ⟩
+      to* (hom[] (from* id′ ∘′ h′)) ≡⟨ ap to* (from-pathp p) ⟩
+      to* g′                        ∎
 ```
+
+Note that this result does *not* extend to fibrations; the equivalence
+of homs can only get us weak cartesian lifts. To make the final step
+to a fibration, we need to use other means.
+
+However, we still get the nice equivalence of hom sets if $\cE$ is a
+fibration.
+
+```agda
+module _ (fib : Cartesian-fibration) where
+  open Cartesian-fibration fib
+
+  fibration→universal-is-equiv
+    : ∀ {x y x′ y′}
+    → (f : Hom x y)
+    → is-equiv (has-lift.universalv f y′ {x′})
+  fibration→universal-is-equiv f =
+    weak-fibration→universal-is-equiv (fibration→weak-fibration fib) f
+
+  fibration→vertical-equiv
+    : ∀ {x y x′ y′}
+    → (f : Hom x y)
+    → Hom[ f ] x′ y′ ≃ Hom[ id ] x′ (has-lift.x′ f y′)
+  fibration→vertical-equiv f =
+    weak-fibration→vertical-equiv (fibration→weak-fibration fib) f
+
+  fibration→vertical-equiv-naturalr
+    : ∀ {x y x′ x″ y′} {f : Hom x y}
+    → (f′ : Hom[ f ] x″ y′) (g′ : Hom[ id ] x′ x″)
+    → has-lift.universalv f y′ (hom[ idr _ ] (f′ ∘′ g′)) ≡[ sym (idl id) ]
+      has-lift.universalv f y′ f′ ∘′ g′
+  fibration→vertical-equiv-naturalr f′ g′ =
+    weak-fibration→vertical-equiv-naturalr (fibration→weak-fibration fib) f′ g′
+
+  fibration→vertical-equiv-naturall
+    : ∀ {x y x′ y′ y″ } {g : Hom x y}
+    → (f′ : Hom[ id ] y′ y″) (g′ : Hom[ g ] x′ y′)
+    → has-lift.universalv g y″ (hom[ idl _ ] (f′ ∘′ g′)) ≡[ sym (idl id) ]
+      rebase g f′ ∘′ has-lift.universalv g y′ g′
+  fibration→vertical-equiv-naturall {g = g} f′ g′ =
+    weak-fibration→vertical-equiv-naturall (fibration→weak-fibration fib) f′ g′
+```
+
