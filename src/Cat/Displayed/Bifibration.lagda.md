@@ -73,6 +73,8 @@ isomorphic to $\cE_{u}(-,-)$ (see `opfibration→hom-iso`{.Agda} and
 `fibration→hom-iso`{.Agda}), so all we need to do is compose these
 natural isomorphisms!
 
+[left adjoint]: Cat.Functor.Adjoint.html
+
 ```agda
 module _ (bifib : is-bifibration) where
   open is-bifibration bifib
@@ -88,7 +90,7 @@ module _ (bifib : is-bifibration) where
 ```
 
 In fact, if $\cE$ is a cartesian fibration where every reindexing
-functor has a left adjoint, then $\cE$ is in fact a bifibration!
+functor has a left adjoint, then $\cE$ is a bifibration!
 To see this, note that we have a natural iso
 $\cE_{u}(x',-) \simeq \cE_{x}(x', u^{*}(-))$ for every $u : x \to y$ in
 the base. However, $u^{*}$ has a left adjoint $L_{u}$ for every $u$,

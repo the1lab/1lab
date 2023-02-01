@@ -25,7 +25,7 @@ open Functor
 # Displayed Hom Functors
 
 Let $\cE$ be a displayed category over $\cB$. For every $u : x \to y$
-in the base, we have obtain a bifunctor from $\cE_{x}\op \times \cE_{y}$
+in the base, we can obtain a bifunctor from $\cE_{x}\op \times \cE_{y}$
 to $\Sets$, where $\cE_{x}$ denotes the [fibre category] of $\cE$ at $x$.
 The action of $(f, h)$ on $g$ is given by $h \circ g \circ f$, just as
 in the [non-displayed case].

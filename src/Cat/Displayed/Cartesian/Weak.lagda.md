@@ -550,7 +550,7 @@ already have a suite of tools for constructing natural equivalences of
 hom sets! Most notably, this allows us to use the theory of [adjuncts]
 to construct weak fibrations.
 
-[adjuncts]: Cat.Functor.Adjoint#adjuncts
+[adjuncts]: Cat.Functor.Adjoint.html#adjuncts
 
 ```agda
 module _ (_*₀_ : ∀ {x y} → Hom x y → Ob[ y ] → Ob[ x ]) where

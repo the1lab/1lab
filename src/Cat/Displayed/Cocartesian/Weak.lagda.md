@@ -619,7 +619,7 @@ a lifting of objects `Ob[ x ] → Ob[ y ]` for every morphism $f : x \to y$
 in $\cB$, along with a equivalence of homs as above, then $\cE$ is a weak
 opfibration.
 
-[weak cartesian case]: Cat.Cartesian.Weak.html#weak-fibrations-and-equivalence-of-hom-sets
+[weak cartesian case]: Cat.Displayed.Cartesian.Weak.html#weak-fibrations-and-equivalence-of-hom-sets
 
 ```agda
 module _ (_*₀_ : ∀ {x y} → Hom x y → Ob[ x ] → Ob[ y ]) where
