@@ -49,7 +49,6 @@ Hom[ x ,-] .F-id = funext (λ f → idl f)
 Hom[ x ,-] .F-∘ f g = funext λ h → sym (assoc f g h)
 ```
 
-
 ## The Yoneda embedding
 
 Abstractly and nonsensically, one could say that the Yoneda embedding
@@ -89,6 +88,17 @@ direction.
 Hom[-,_] : Ob → Functor (C ^op) (Sets h)
 Hom[-,_] x = よ₀ x
 ```
+
+<!--
+```agda
+Hom-from : Ob → Functor C (Sets h)
+Hom-from = Hom[_,-]
+
+Hom-into : Ob → Functor (C ^op) (Sets h)
+Hom-into = よ₀
+```
+-->
+
 
 The morphism part takes a map $f$ to the transformation given by
 postcomposition; This is natural because we must show $f \circ x \circ g

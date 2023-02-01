@@ -14,7 +14,7 @@ open Precategory
 open Functor
 private variable
   o₁ h₁ o₂ h₂ : Level
-  C D E : Precategory o₁ h₁
+  B C D E : Precategory o₁ h₁
 ```
 -->
 
@@ -101,7 +101,24 @@ Cat⟨ F , G ⟩ = f where
   f .F₁ f = F₁ F f , F₁ G f
   f .F-id i = F-id F i , F-id G i
   f .F-∘ f g i = F-∘ F f g i , F-∘ G f g i
+
+_F×_ : Functor B D → Functor C E → Functor (B ×ᶜ C) (D ×ᶜ E)
+_F×_ {B = B} {D = D} {C = C} {E = E} G H = func
+  module F× where
+
+  func : Functor (B ×ᶜ C) (D ×ᶜ E)
+  func .F₀ (x , y) = (G .F₀ x) , (H .F₀ y)
+  func .F₁ (f , g) = (G .F₁ f) , (H .F₁ g)
+  func .F-id = (G .F-id) ,ₚ (H .F-id)
+  func .F-∘ (f , g) (f' , g') = (G .F-∘ f f') ,ₚ H .F-∘ g g'
 ```
+
+<!--
+```agda
+{-# DISPLAY F×.func F G = F F× G #-}  
+```
+-->
+
 
 ## Univalence
 

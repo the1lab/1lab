@@ -1,10 +1,14 @@
 ```agda
-{-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Displayed.Base
 open import Cat.Displayed.Fibre
+open import Cat.Functor.Hom
+open import Cat.Functor.Hom.Displayed
+open import Cat.Instances.Functor
+open import Cat.Instances.Product
 open import Cat.Prelude
 
 import Cat.Displayed.Cartesian as Cart
+import Cat.Displayed.Cartesian.Indexing as Indexing
 import Cat.Displayed.Reasoning as DR
 import Cat.Displayed.Morphism as DM
 import Cat.Reasoning as CR
@@ -14,7 +18,10 @@ module Cat.Displayed.Cartesian.Weak
   {ℬ : Precategory o ℓ}
   (ℰ : Displayed ℬ o′ ℓ′)
   where
+```
 
+<!--
+```agda
 open CR ℬ
 open Displayed ℰ
 open Cart ℰ
@@ -22,6 +29,7 @@ open DR ℰ
 open DM ℰ
 open Functor
 ```
+-->
 
 # Weak Cartesian Morphisms
 
@@ -506,31 +514,30 @@ module _ (wfib : is-weak-cartesian-fibration) where
     weak-fibration→universal-is-equiv f
 ```
 
-Furthermore, this equivalence is natural.
+Furthermore, this equivalence can be extended into a natural isomorphism
+between $\cE_{u}(-,y')$ and $\cE_{x}(-,u^{*}(y'))$.
 
 ```agda
-  weak-fibration→vertical-equiv-naturalr
-    : ∀ {x y x′ x″ y′} {f : Hom x y}
-    → (f′ : Hom[ f ] x″ y′) (g′ : Hom[ id ] x′ x″)
-    → weak-lift.universal f y′ (hom[ idr _ ] (f′ ∘′ g′)) ≡[ sym (idl id) ]
-      weak-lift.universal f y′ f′ ∘′ g′
-  weak-fibration→vertical-equiv-naturalr {f = f} f′ g′ =
-    to-pathp⁻ $ sym $ weak-lift.unique f _ _ $ to-pathp $
-      hom[] (weak-lift.lifting f _ ∘′ hom[] (weak-lift.universal f _ f′ ∘′ g′)) ≡⟨ smashr _ _ ⟩
-      hom[] (weak-lift.lifting f _ ∘′ weak-lift.universal f _ f′ ∘′ g′)         ≡⟨ weave _ (ap (f ∘_) (idl id)) _ (pulll′ _ (weak-lift.commutes _ _ _)) ⟩
-      hom[] (f′ ∘′ g′) ∎
+  weak-fibration→hom-iso-into
+    : ∀ {x y y′} (u : Hom x y)
+    → natural-iso (Hom-over-into ℰ u y′) (Hom-into (Fibre ℰ x) (weak-lift.x′ u y′))
+  weak-fibration→hom-iso-into {x} {y} {y′} u = to-natural-iso mi where
+    open make-natural-iso
 
-  weak-fibration→vertical-equiv-naturall
-    : ∀ {x y x′ y′ y″ } {g : Hom x y}
-    → (f′ : Hom[ id ] y′ y″) (g′ : Hom[ g ] x′ y′)
-    → weak-lift.universal g y″ (hom[ idl _ ] (f′ ∘′ g′)) ≡[ sym (idl id) ]
-      rebase g f′ ∘′ weak-lift.universal g y′ g′
-  weak-fibration→vertical-equiv-naturall {g = g} f′ g′ =
-    to-pathp⁻ $ sym $ weak-lift.unique g _ _ $ to-pathp $
-      smashr _ _
-      ∙ revive₁ (pulll[] _ (weak-lift.commutes g _ _))
-      ∙ smashl _ _
-      ∙ weave _ (pullr (idr g)) _ (pullr[] _ (weak-lift.commutes g _ _))
+    u*y′ : Ob[ x ]
+    u*y′ = weak-lift.x′ u y′
+   
+    mi : make-natural-iso (Hom-over-into ℰ u y′) (Hom-into (Fibre ℰ x) u*y′)
+    mi .eta x u′ = weak-lift.universal u y′ u′
+    mi .inv x v′ = hom[ idr u ] (weak-lift.lifting u y′ ∘′ v′)
+    mi .eta∘inv x = funext λ v′ →
+      sym $ weak-lift.unique u _ _ (to-pathp refl)
+    mi .inv∘eta x = funext λ u′ →
+      from-pathp (weak-lift.commutes u _ _)
+    mi .natural x y v′ = funext λ u′ →
+      weak-lift.unique u _ _ $ to-pathp $
+        smashr _ _
+        ∙ weave _ (ap (u ∘_) (idl id)) _ (pulll′ _ (weak-lift.commutes _ _ _))
 ```
 
 An *extremely* useful fact is that the converse is true: if there is some
@@ -617,17 +624,67 @@ the equivalence is natural.
       to* g′                        ∎
 ```
 
+<!--
+```agda
+module _ (U : ∀ {x y} → Hom x y → Functor (Fibre ℰ y) (Fibre ℰ x)) where
+  open Functor
+  open _=>_
+
+  hom-iso→weak-fibration
+    : (∀ {x y y′} (u : Hom x y)
+       → natural-iso (Hom-over-into ℰ u y′) (Hom-into (Fibre ℰ x) (U u .F₀ y′)))
+    → is-weak-cartesian-fibration
+  hom-iso→weak-fibration hom-iso =
+    vertical-equiv→weak-fibration
+      (λ u → U u .F₀)
+      (λ u′ → natural-iso.to (hom-iso _) .η _ u′)
+      (natural-iso-to-is-equiv (hom-iso _) _)
+      λ f′ g′ → to-pathp⁻ $
+        happly (natural-iso.to (hom-iso _) .is-natural _ _ g′) f′
+```
+-->
+
+
 Note that this result does *not* extend to fibrations; the equivalence
 of homs can only get us weak cartesian lifts. To make the final step
 to a fibration, we need to use other means.
 
-However, we still get the nice equivalence of hom sets if $\cE$ is a
-fibration.
+However, we do obtain a natural isomorphism between $\cE_{u}(x',-)$ and
+$cE_{y}(x',u^{*}(-))$.
 
 ```agda
 module _ (fib : Cartesian-fibration) where
   open Cartesian-fibration fib
+  open Indexing ℰ fib
 
+  fibration→hom-iso-from
+    : ∀ {x y x′} (u : Hom x y)
+    → natural-iso
+      (Hom-over-from ℰ u x′)
+      (Hom-from (Fibre ℰ x) x′ F∘ base-change u)
+  fibration→hom-iso-from {x} {y} {x′} u = to-natural-iso mi where
+    open make-natural-iso
+
+    mi : make-natural-iso
+          (Hom-over-from ℰ u x′)
+          (Hom-from (Fibre ℰ x) x′ F∘ base-change u)
+    mi .eta x u′ = has-lift.universalv u x u′
+    mi .inv x v′ = hom[ idr u ] (has-lift.lifting u x ∘′ v′)
+    mi .eta∘inv x = funext λ v′ →
+      sym $ has-lift.uniquev u _ _ (to-pathp refl)
+    mi .inv∘eta x = funext λ u′ →
+      from-pathp (has-lift.commutesv u _ _)
+    mi .natural _ _ v′ = funext λ u′ →
+      has-lift.unique u _ _ $ to-pathp $
+        smashr _ _
+        ·· revive₁ (pulll[] _ (has-lift.commutesv u _ _))
+        ·· smashl _ _
+        ·· weave _ (pullr (idr u)) _ (pullr[] _ (has-lift.commutesv u _ _))
+        ·· duplicate id-comm-sym _ (idl u)
+```
+
+<!--
+```agda
   fibration→universal-is-equiv
     : ∀ {x y x′ y′}
     → (f : Hom x y)
@@ -642,20 +699,39 @@ module _ (fib : Cartesian-fibration) where
   fibration→vertical-equiv f =
     weak-fibration→vertical-equiv (fibration→weak-fibration fib) f
 
-  fibration→vertical-equiv-naturalr
-    : ∀ {x y x′ x″ y′} {f : Hom x y}
-    → (f′ : Hom[ f ] x″ y′) (g′ : Hom[ id ] x′ x″)
-    → has-lift.universalv f y′ (hom[ idr _ ] (f′ ∘′ g′)) ≡[ sym (idl id) ]
-      has-lift.universalv f y′ f′ ∘′ g′
-  fibration→vertical-equiv-naturalr f′ g′ =
-    weak-fibration→vertical-equiv-naturalr (fibration→weak-fibration fib) f′ g′
-
-  fibration→vertical-equiv-naturall
-    : ∀ {x y x′ y′ y″ } {g : Hom x y}
-    → (f′ : Hom[ id ] y′ y″) (g′ : Hom[ g ] x′ y′)
-    → has-lift.universalv g y″ (hom[ idl _ ] (f′ ∘′ g′)) ≡[ sym (idl id) ]
-      rebase g f′ ∘′ has-lift.universalv g y′ g′
-  fibration→vertical-equiv-naturall {g = g} f′ g′ =
-    weak-fibration→vertical-equiv-naturall (fibration→weak-fibration fib) f′ g′
+  fibration→hom-iso-into
+    : ∀ {x y y′} (u : Hom x y)
+    → natural-iso
+      (Hom-over-into ℰ u y′)
+      (Hom-into (Fibre ℰ x) (has-lift.x′ u y′))
+  fibration→hom-iso-into u =
+    weak-fibration→hom-iso-into (fibration→weak-fibration fib) u
 ```
+-->
 
+If we combine this with `weak-fibration→hom-iso-into`{.Agda}, we obtain
+a natural iso between $\cE_{u}(-,-)$ and $\cE_{id}(-,u^{*}(-))$.
+
+```agda
+  fibration→hom-iso
+    : ∀ {x y} (u : Hom x y)
+    → natural-iso (Hom-over ℰ u) (Hom[-,-] (Fibre ℰ x) F∘ (Id F× base-change u))
+  fibration→hom-iso {x = x} u = to-natural-iso mi where
+    open make-natural-iso
+    open _=>_
+
+    module into-iso {y′} = natural-iso (fibration→hom-iso-into {y′ = y′} u)
+    module from-iso {x′} = natural-iso (fibration→hom-iso-from {x′ = x′} u)
+
+    mi : make-natural-iso (Hom-over ℰ u) (Hom[-,-] (Fibre ℰ x) F∘ (Id F× base-change u))
+    mi .eta x u′ = has-lift.universalv u _ u′
+    mi .inv x v′ = hom[ idr u ] (has-lift.lifting u _ ∘′ v′)
+    mi .eta∘inv x = funext λ v′ →
+      sym $ has-lift.uniquev u _ _ (to-pathp refl)
+    mi .inv∘eta x = funext λ u′ →
+      from-pathp (has-lift.commutesv u _ _)
+    mi .natural _ _ (v₁′ , v₂′) = funext λ u′ →
+      sym (apr′ (happly (into-iso.to .is-natural _ _ v₁′) u′))
+      ·· sym (happly (from-iso.to .is-natural _ _ v₂′) (hom[ idr _ ] (u′ ∘′ v₁′)))
+      ·· ap (into-iso.to .η _) (smashr _ _ ∙ reindex _ _ )
+```
