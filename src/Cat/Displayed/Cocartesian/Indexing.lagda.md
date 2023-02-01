@@ -48,21 +48,18 @@ adding in empty fibres.
 [the canonical self-indexing]: Cat.Displayed.Instances.Slice.html
 [pullbacks]: Cat.Diagram.Pullback.html
 
-Continuing the analogy of indexing as pullback, we call the opreindexing
-functors _pushouts_.
-
 ```agda
-push-out : ∀ {x y} (f : Hom x y) → Functor (Fibre ℰ x) (Fibre ℰ y)
-push-out f .F₀ ob = has-lift.y′ f ob
-push-out f .F₁ vert = rebase f vert
+cobase-change : ∀ {x y} (f : Hom x y) → Functor (Fibre ℰ x) (Fibre ℰ y)
+cobase-change f .F₀ ob = has-lift.y′ f ob
+cobase-change f .F₁ vert = rebase f vert
 ```
 
 <!--
 ```agda
-push-out f .F-id =
+cobase-change f .F-id =
   sym $ has-lift.uniquev _ _ _ $ to-pathp $
     idl[] ∙ (sym $ cancel _ _ (idr′ _))
-push-out f .F-∘ f′ g′ =
+cobase-change f .F-∘ f′ g′ =
   sym $ has-lift.uniquev _ _ _ $ to-pathp $
     smashl _ _
     ·· revive₁ (pullr[] _ (has-lift.commutesv _ _ _))

@@ -81,10 +81,10 @@ module _ (bifib : is-bifibration) where
   open Cat.Displayed.Cartesian.Indexing ℰ fibration
   open Cat.Displayed.Cocartesian.Indexing ℰ opfibration
 
-  push-out⊣base-change
+  cobase-change⊣base-change
     : ∀ {x y} (f : Hom x y)
-    → push-out f ⊣ base-change f
-  push-out⊣base-change {x} {y} f =
+    → cobase-change f ⊣ base-change f
+  cobase-change⊣base-change {x} {y} f =
     hom-natural-iso→adjoints $
       (opfibration→hom-iso opfibration f ni⁻¹) ni∘ fibration→hom-iso fibration f
 ```
@@ -108,11 +108,11 @@ module _ (fib : Cartesian-fibration) where
   open Cartesian-fibration fib
   open Cat.Displayed.Cartesian.Indexing ℰ fib
 
-  left-adjoint-reindexing→opfibration
+  left-adjoint-base-change→opfibration
     : (L : ∀ {x y} → (f : Hom x y) → Functor (Fibre ℰ x) (Fibre ℰ y))
     → (∀ {x y} → (f : Hom x y) → (L f ⊣ base-change f)) 
     → Cocartesian-fibration
-  left-adjoint-reindexing→opfibration L adj =
+  left-adjoint-base-change→opfibration L adj =
     cartesian+weak-opfibration→opfibration fib $
     hom-iso→weak-opfibration L λ u →
       fibration→hom-iso-from fib u ni∘ (adjunct-hom-iso-from (adj u) _ ni⁻¹)
@@ -125,8 +125,8 @@ With some repackaging, we can see that this yields a bifibration.
     : (L : ∀ {x y} → (f : Hom x y) → Functor (Fibre ℰ x) (Fibre ℰ y))
     → (∀ {x y} → (f : Hom x y) → (L f ⊣ base-change f))
     → is-bifibration
-  left-adjoint-reindexing→bifibration L adj .is-bifibration.fibration =
+  left-adjoint-base-change→bifibration L adj .is-bifibration.fibration =
     fib
-  left-adjoint-reindexing→bifibration L adj .is-bifibration.opfibration =
-    left-adjoint-reindexing→opfibration L adj
+  left-adjoint-base-change→bifibration L adj .is-bifibration.opfibration =
+    left-adjoint-base-change→opfibration L adj
 ```
