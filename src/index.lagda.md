@@ -670,6 +670,8 @@ open import Cat.Displayed.Instances.Scone
 -- We can consider *scones* over a category C with a terminal object as
 -- forming a displayed category over C. Moreover, it's a Cartesian
 -- fibration by construction.
+open import Cat.Displayed.Instances.Trivial
+-- Any category can be displayed over the terminal category.
 ```
 
 ### Cocartesian fibrations
