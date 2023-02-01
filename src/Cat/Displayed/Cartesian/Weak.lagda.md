@@ -28,6 +28,7 @@ open Cart ℰ
 open DR ℰ
 open DM ℰ
 open Functor
+open Functor
 ```
 -->
 
@@ -72,6 +73,8 @@ record is-weak-cartesian
                 → (h′ : Hom[ id ] x′ a′)
                 → f′ ∘′ h′ ≡[ idr _ ] g′
                 → h′ ≡ universal g′
+
+open is-weak-cartesian
 ```
 
 Like their stronger counterparts, weak cartesian lifts are unique
@@ -125,11 +128,11 @@ cartesian→weak-cartesian {f = f} {f′ = f′} cart = weak-cart where
   open is-cartesian cart
 
   weak-cart : is-weak-cartesian f f′
-  weak-cart .is-weak-cartesian.universal g′ =
+  weak-cart .universal g′ =
     universalv g′
-  weak-cart .is-weak-cartesian.commutes g′ =
+  weak-cart .commutes g′ =
     commutesv g′
-  weak-cart .is-weak-cartesian.unique h′ p =
+  weak-cart .unique h′ p =
     uniquev h′ p
 ```
 
@@ -151,13 +154,13 @@ weak-cartesian→cartesian {x = x} {y′ = y′} {f = f} {f′ = f′} fib f-wea
   module f-weak = is-weak-cartesian f-weak
 
   x* : Ob[ x ]
-  x* = Cartesian-lift.x′ (has-lift f y′)
+  x* = has-lift.x′ f y′
 
   f* : Hom[ f ] x* y′
-  f* = Cartesian-lift.lifting (has-lift f y′)
+  f* = has-lift.lifting f y′
 
   f*-cart : is-cartesian f f*
-  f*-cart = Cartesian-lift.cartesian (has-lift f y′)
+  f*-cart = has-lift.cartesian f y′
 
   f*-weak : is-weak-cartesian f f*
   f*-weak = cartesian→weak-cartesian f*-cart
@@ -178,11 +181,11 @@ postcompose-equiv→weak-cartesian
   → (f′ : Hom[ f ] x′ y′)
   → (∀ {x″} → is-equiv {A = Hom[ id ] x″ x′} (f′ ∘′_))
   → is-weak-cartesian f f′
-postcompose-equiv→weak-cartesian f′ eqv .is-weak-cartesian.universal h′ =
+postcompose-equiv→weak-cartesian f′ eqv .universal h′ =
   equiv→inverse eqv (hom[ idr _ ]⁻ h′)
-postcompose-equiv→weak-cartesian f′ eqv .is-weak-cartesian.commutes h′ =
+postcompose-equiv→weak-cartesian f′ eqv .commutes h′ =
   to-pathp⁻ (equiv→counit eqv (hom[ idr _ ]⁻ h′))
-postcompose-equiv→weak-cartesian f′ eqv .is-weak-cartesian.unique m′ p =
+postcompose-equiv→weak-cartesian f′ eqv .unique m′ p =
   (sym $ equiv→unit eqv m′) ∙ ap (equiv→inverse eqv) (from-pathp⁻ p)
 
 weak-cartesian→postcompose-equiv
@@ -191,10 +194,9 @@ weak-cartesian→postcompose-equiv
   → is-equiv {A = Hom[ id ] x″ x′} (f′ ∘′_)
 weak-cartesian→postcompose-equiv wcart =
   is-iso→is-equiv $
-    iso (λ h′ → universal (hom[ idr _ ] h′))
-        (λ h′ → from-pathp⁻ (commutes _) ·· hom[]-∙ _ _ ·· liberate _)
-        (λ h′ → sym $ unique _ (to-pathp refl))
-    where open is-weak-cartesian wcart
+    iso (λ h′ → wcart .universal (hom[ idr _ ] h′))
+        (λ h′ → from-pathp⁻ (wcart .commutes _) ·· hom[]-∙ _ _ ·· liberate _)
+        (λ h′ → sym $ wcart .unique _ (to-pathp refl))
 ```
 
 ## Weak Cartesian Lifts
@@ -281,19 +283,23 @@ Notably, weak fibrations are fibrations when weak cartesian morphisms
 are closed under composition.
 
 ```agda
-weak-fibration→fibration
-  : is-weak-cartesian-fibration
-  → (∀ {x y z x′ y′ z′} {f : Hom y z} {g : Hom x y}
-     → {f′ : Hom[ f ] y′ z′} {g′ : Hom[ g ] x′ y′}
-     → is-weak-cartesian f f′ → is-weak-cartesian g g′
-     → is-weak-cartesian (f ∘ g) (f′ ∘′ g′))
-  → Cartesian-fibration
-weak-fibration→fibration weak-fib weak-∘ .Cartesian-fibration.has-lift {x = x} f y′ = f-lift where
-  open is-weak-cartesian-fibration weak-fib
+module _ where
+  open Cartesian-fibration
+  open is-cartesian
 
-  module weak-∘ {x y z} (f : Hom y z) (g : Hom x y) (z′ : Ob[ z ]) =
-    is-weak-cartesian (weak-∘ (weak-lift.weak-cartesian f z′)
-                              (weak-lift.weak-cartesian g _))
+  weak-fibration→fibration
+    : is-weak-cartesian-fibration
+    → (∀ {x y z x′ y′ z′} {f : Hom y z} {g : Hom x y}
+       → {f′ : Hom[ f ] y′ z′} {g′ : Hom[ g ] x′ y′}
+       → is-weak-cartesian f f′ → is-weak-cartesian g g′
+       → is-weak-cartesian (f ∘ g) (f′ ∘′ g′))
+    → Cartesian-fibration
+  weak-fibration→fibration weak-fib weak-∘ .has-lift {x = x} f y′ = f-lift where
+    open is-weak-cartesian-fibration weak-fib
+  
+    module weak-∘ {x y z} (f : Hom y z) (g : Hom x y) (z′ : Ob[ z ]) =
+      is-weak-cartesian (weak-∘ (weak-lift.weak-cartesian f z′)
+                                (weak-lift.weak-cartesian g _))
 ```
 
 To show that $f$ has a cartesian lift, we begin by taking the weak
@@ -312,16 +318,16 @@ cartesian lift $f^{*}$ of $f$.
 ~~~
 
 ```agda
-  x* : Ob[ x ]
-  x* = weak-lift.x′ f y′
-
-  f* : Hom[ f ] x* y′
-  f* = weak-lift.lifting f y′
-
-  f*-weak-cartesian : is-weak-cartesian f f*
-  f*-weak-cartesian = weak-lift.weak-cartesian f y′
-
-  module f* = is-weak-cartesian (f*-weak-cartesian)
+    x* : Ob[ x ]
+    x* = weak-lift.x′ f y′
+  
+    f* : Hom[ f ] x* y′
+    f* = weak-lift.lifting f y′
+  
+    f*-weak-cartesian : is-weak-cartesian f f*
+    f*-weak-cartesian = weak-lift.weak-cartesian f y′
+  
+    module f* = is-weak-cartesian (f*-weak-cartesian)
 ```
 
 We must now show that the weak cartesian morphism $f^{*}$ is actually
@@ -353,28 +359,28 @@ morphism $u' \to u^{*}$, which we can then compose with $m^{*}$
 to obtain the requisite map.
 
 ```agda
-  module Morphisms
-    {u : Ob} {u′ : Ob[ u ]} (m : Hom u x) (h′ : Hom[ f ∘ m ] u′ y′)
-    where
-      u* : Ob[ u ]
-      u* = weak-lift.x′ m _
-
-      m* : Hom[ m ] u* x*
-      m* = weak-lift.lifting m _
-
-      m*-weak-cartesian : is-weak-cartesian m m*
-      m*-weak-cartesian = weak-lift.weak-cartesian m x*
-
-      module m* = is-weak-cartesian m*-weak-cartesian
-      module f*∘m* = is-weak-cartesian (weak-∘ f*-weak-cartesian m*-weak-cartesian)
+    module Morphisms
+      {u : Ob} {u′ : Ob[ u ]} (m : Hom u x) (h′ : Hom[ f ∘ m ] u′ y′)
+      where
+        u* : Ob[ u ]
+        u* = weak-lift.x′ m _
+  
+        m* : Hom[ m ] u* x*
+        m* = weak-lift.lifting m _
+  
+        m*-weak-cartesian : is-weak-cartesian m m*
+        m*-weak-cartesian = weak-lift.weak-cartesian m x*
+  
+        module m* = is-weak-cartesian m*-weak-cartesian
+        module f*∘m* = is-weak-cartesian (weak-∘ f*-weak-cartesian m*-weak-cartesian)
 ```
 
 
 ```agda
-  f*-cartesian : is-cartesian f f*
-  f*-cartesian .is-cartesian.universal {u = u} {u′ = u′} m h′ =
-    hom[ idr m ] (m* ∘′  f*∘m*.universal h′)
-    where open Morphisms m h′
+    f*-cartesian : is-cartesian f f*
+    f*-cartesian .universal {u = u} {u′ = u′} m h′ =
+      hom[ idr m ] (m* ∘′  f*∘m*.universal h′)
+      where open Morphisms m h′
 ```
 
 <details>
@@ -383,18 +389,18 @@ yoga; the only real mathematical content is that the factorization of
 $h'$ via $f^{*} \cdot m^{*}$ commutes.
 </summary>
 ```agda
-  f*-cartesian .is-cartesian.commutes {u = u} {u′ = u′} m h′ = path
-    where
-      open Morphisms m h′
-
-      abstract
-        path : f* ∘′ hom[ idr m ] (m* ∘′ f*∘m*.universal h′) ≡ h′
-        path =
-          f* ∘′ hom[] (m* ∘′ f*∘m*.universal h′)   ≡⟨ whisker-r _ ⟩
-          hom[] (f* ∘′ m* ∘′ f*∘m*.universal h′)   ≡⟨ assoc[] {q = idr _} ⟩
-          hom[] ((f* ∘′ m*) ∘′ f*∘m*.universal h′) ≡⟨ hom[]⟩⟨ from-pathp⁻ (f*∘m*.commutes h′) ⟩
-          hom[] (hom[] h′)                         ≡⟨ hom[]-∙ _ _ ∙ liberate _ ⟩
-          h′                                       ∎
+    f*-cartesian .commutes {u = u} {u′ = u′} m h′ = path
+      where
+        open Morphisms m h′
+  
+        abstract
+          path : f* ∘′ hom[ idr m ] (m* ∘′ f*∘m*.universal h′) ≡ h′
+          path =
+            f* ∘′ hom[] (m* ∘′ f*∘m*.universal h′)   ≡⟨ whisker-r _ ⟩
+            hom[] (f* ∘′ m* ∘′ f*∘m*.universal h′)   ≡⟨ assoc[] {q = idr _} ⟩
+            hom[] ((f* ∘′ m*) ∘′ f*∘m*.universal h′) ≡⟨ hom[]⟩⟨ from-pathp⁻ (f*∘m*.commutes h′) ⟩
+            hom[] (hom[] h′)                         ≡⟨ hom[]-∙ _ _ ∙ liberate _ ⟩
+            h′                                       ∎
 ```
 </details>
 
@@ -404,25 +410,25 @@ the fact that both $m^{*}$ and $f^{*} \cdot m^{*}$ are weak cartesian
 maps.
 </summary>
 ```agda
-  f*-cartesian .is-cartesian.unique {u = u} {u′ = u′} {m = m} {h′ = h′} m′ p = path
-    where
-      open Morphisms m h′
-
-      abstract
-        universal-path : (f* ∘′ m*) ∘′ m*.universal m′ ≡[ idr (f ∘ m) ] h′
-        universal-path = to-pathp $
-          hom[] ((f* ∘′ m*) ∘′ m*.universal m′) ≡˘⟨ assoc[] {p = ap (f ∘_) (idr m)} ⟩
-          hom[] (f* ∘′ (m* ∘′ m*.universal m′)) ≡⟨ hom[]⟩⟨ ap (f* ∘′_) (from-pathp⁻ (m*.commutes m′)) ⟩
-          hom[] (f* ∘′ hom[] m′)                ≡⟨ smashr _ _ ∙ liberate _ ⟩
-          f* ∘′ m′                              ≡⟨ p ⟩
-          h′ ∎
-
-        path : m′ ≡ hom[ idr m ] (m* ∘′ f*∘m*.universal h′)
-        path =
-          m′                               ≡˘⟨ from-pathp (m*.commutes m′) ⟩
-          hom[] (m* ∘′ m*.universal m′)    ≡⟨ reindex _ (idr m) ⟩
-          hom[] (m* ∘′ m*.universal m′)    ≡⟨ hom[]⟩⟨ ap (m* ∘′_) (f*∘m*.unique _ universal-path) ⟩
-          hom[] (m* ∘′ f*∘m*.universal h′) ∎
+    f*-cartesian .unique {u = u} {u′ = u′} {m = m} {h′ = h′} m′ p = path
+      where
+        open Morphisms m h′
+  
+        abstract
+          universal-path : (f* ∘′ m*) ∘′ m*.universal m′ ≡[ idr (f ∘ m) ] h′
+          universal-path = to-pathp $
+            hom[] ((f* ∘′ m*) ∘′ m*.universal m′) ≡˘⟨ assoc[] {p = ap (f ∘_) (idr m)} ⟩
+            hom[] (f* ∘′ (m* ∘′ m*.universal m′)) ≡⟨ hom[]⟩⟨ ap (f* ∘′_) (from-pathp⁻ (m*.commutes m′)) ⟩
+            hom[] (f* ∘′ hom[] m′)                ≡⟨ smashr _ _ ∙ liberate _ ⟩
+            f* ∘′ m′                              ≡⟨ p ⟩
+            h′ ∎
+  
+          path : m′ ≡ hom[ idr m ] (m* ∘′ f*∘m*.universal h′)
+          path =
+            m′                               ≡˘⟨ from-pathp (m*.commutes m′) ⟩
+            hom[] (m* ∘′ m*.universal m′)    ≡⟨ reindex _ (idr m) ⟩
+            hom[] (m* ∘′ m*.universal m′)    ≡⟨ hom[]⟩⟨ ap (m* ∘′_) (f*∘m*.unique _ universal-path) ⟩
+            hom[] (m* ∘′ f*∘m*.universal h′) ∎
 ```
 </details>
 
@@ -430,10 +436,10 @@ Putting this all together, we can finally deduce that $f^{*}$ is
 a cartesian lift of $f$.
 
 ```agda
-  f-lift : Cartesian-lift f y′
-  f-lift .Cartesian-lift.x′ = x*
-  f-lift .Cartesian-lift.lifting = f*
-  f-lift .Cartesian-lift.cartesian = f*-cartesian
+    f-lift : Cartesian-lift f y′
+    f-lift .Cartesian-lift.x′ = x*
+    f-lift .Cartesian-lift.lifting = f*
+    f-lift .Cartesian-lift.cartesian = f*-cartesian
 ```
 
 ## Factorisations in Weak Fibrations
@@ -510,7 +516,6 @@ module _ (wfib : is-weak-cartesian-fibration) where
     → Hom[ f ] x′ y′ ≃ Hom[ id ] x′ (weak-lift.x′ f y′)
   weak-fibration→vertical-equiv {y′ = y′} f =
     weak-lift.universal f y′ ,
-
     weak-fibration→universal-is-equiv f
 ```
 
@@ -546,7 +551,7 @@ in $\cB$, along with a natural equivalence of homs as above, then
 $\cE$ is a weak fibration.
 
 This result is the primary reason to care about weak fibrations, as we
-already have a suite of tools for constructing natural equivalences of
+already have a toolkit for constructing natural equivalences of
 hom sets! Most notably, this allows us to use the theory of [adjuncts]
 to construct weak fibrations.
 

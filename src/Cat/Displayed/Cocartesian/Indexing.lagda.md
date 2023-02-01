@@ -27,23 +27,23 @@ open Functor
 
 # Opreindexing for Cocartesian fibrations
 
-[opfibrations] are dual to [fibrations], so they inherit the ability
+[Opfibrations] are dual to [fibrations], so they inherit the ability
 to [reindex along morphisms in the base]. However, this reindexing is
 *covariant* for opfibrations, whereas it is *contravariant* for
 fibrations.
 
-[opfibrations]: Cat.Displayed.Cocartesian.html
+[Opfibrations]: Cat.Displayed.Cocartesian.html
 [fibrations]: Cat.Displayed.Cartesian.html
 [reindex along morphisms in the base] Cat.Displayed.Cartesian.Indexing.html
 
-This gives distinction opfibrations a distinct character. Reindexing in
-fibrations can be thought of a sort of restriction map. This can be
-seen clearly with [the canonical self-indexing], where the reindexing
-functors are given by [pullbacks]. On the other hand, opreindexing
-can be thought of as an extension map. We can again use the the canonical
-self-indexing as our example: opreindexing is given by postcomposition,
-which extends families over $X$ to families over $Y$ by adding in
-empty fibres.
+This difference in variance gives opfibrations a distinct character.
+Reindexing in fibrations can be thought of a sort of restriction map.
+This can be seen clearly with [the canonical self-indexing], where the
+reindexing functors are given by [pullbacks]. On the other hand,
+opreindexing can be thought of as an extension map. We can again use the
+the canonical self-indexing as our example: opreindexing is given by
+postcomposition, which extends families over $X$ to families over $Y$ by
+adding in empty fibres.
 
 [the canonical self-indexing]: Cat.Displayed.Instances.Slice.html
 [pullbacks]: Cat.Diagram.Pullback.html
