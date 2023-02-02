@@ -490,6 +490,9 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
 ```
 -->
 
+Suppose you have a limit $L$ of a diagram $\rm{Dia}$. We say that $F$
+*preserves $L$* if $F(L)$ is also a limit of $F \circ \rm{Dia}$.
+
 This definition is necessary because $\cD$ will not, in general,
 possess an operation assigning a limit to every diagram --- therefore,
 there might not be a "canonical limit" of $F\circ\rm{Dia}$ we could
@@ -501,8 +504,8 @@ In more concise terms, we say a functor preserves limits if it takes
 limiting cones "upstairs" to limiting cones "downstairs".
 
 ```agda
-  Preserves-limit : Type _
-  Preserves-limit = ∀ x → is-limit Diagram x → is-limit (F F∘ Diagram) (F.₀ x)
+  preserves-limit : Type _
+  preserves-limit = ∀ x → is-limit Diagram x → is-limit (F F∘ Diagram) (F.₀ x)
 ```
 
 ## Reflection of limits
@@ -514,8 +517,8 @@ More concretely, if we have a limit in $\cD$ of $F \circ \rm{Dia}$ with
 apex $F(a)$, then $a$ was _already the limit_ of $\rm{Dia}$!
 
 ```agda
-  Reflects-limit : Type _
-  Reflects-limit = ∀ x → is-limit (F F∘ Diagram) (F.₀ x) → is-limit Diagram x
+  reflects-limit : Type _
+  reflects-limit = ∀ x → is-limit (F F∘ Diagram) (F.₀ x) → is-limit Diagram x
 ```
 
 ## Creation of limits
@@ -549,7 +552,7 @@ limit for that diagram.
 ```agda
 is-continuous {oshape = oshape} {hshape} {C = C} F =
   ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
-  → Preserves-limit F Diagram
+  → preserves-limit F Diagram
 ```
 
 ## Completeness
