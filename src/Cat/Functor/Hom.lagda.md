@@ -1,5 +1,6 @@
 ```agda
 open import Cat.Diagram.Colimit.Base
+open import Cat.Diagram.Colimit.Cocone
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Diagram.Initial
@@ -155,14 +156,19 @@ module _ (P : Functor (C ^op) (Sets h)) where
   open Element-hom
 ```
 
-We start by fixing some presheaf $P$, and constructing a `Cocone`{.Agda}
+We start by fixing some presheaf $P$, and constructing a colimit
 whose coapex is $P$. This involves a clever choice of diagram category:
 specifically, the [category of elements] of $P$. This may seem like a
 somewhat odd choice, but recall that the data contained in $\int P$ is
-the _same_ data as $P$, just melted into a soup of points.  The cocone
+the _same_ data as $P$, just melted into a soup of points.  The colimit
 we construct will then glue all those points back together into $P$.
 
 [category of elements]: Cat.Instances.Elements.html
+
+```agda
+  coyoneda : is-colimit (よ F∘ πₚ) P
+  coyoneda = to-is-colimit colim where
+```
 
 This is done by projecting out of $\int P$ into $\cC$ via the
 [canonical projection], and then embedding $\cC$ into the category of
@@ -174,18 +180,19 @@ $px : P(X)$. Then, to construct the injection map, we can just use the
 
 [canonical projection]: Cat.Instances.Elements.html#projection
 
-
 ```agda
-  Reassemble : Cocone (よ F∘ πₚ)
-  Reassemble .Cocone.coapex = P
-  Reassemble .Cocone.ψ x .η y f = P.F₁ f (x .section)
-  Reassemble .Cocone.ψ x .is-natural y z f =
-    funext (λ g → happly (P.F-∘ f g) (x .section))
-  Reassemble .Cocone.commutes {x = x} {y = y} f =
-    Nat-path λ z → funext λ g →
-    P.F₁ (f .hom ∘ g) (y .section)      ≡⟨ happly (P.F-∘ g (f .hom)) (y .section) ⟩
-    P.F₁ g (P.F₁ (f .hom) (y .section)) ≡⟨ ap (P.F₁ g) (f .commute) ⟩
-    P.F₁ g (x .section)                 ∎
+    open make-is-colimit
+    module ∫ = Precategory ∫
+
+    colim : make-is-colimit (よ F∘ πₚ) P
+    colim .ψ x .η y f = P.F₁ f (x .section)
+    colim .ψ x .is-natural y z f = 
+      funext (λ g → happly (P.F-∘ f g) (x .section))
+    colim .commutes {x = x} {y = y} f =
+      Nat-path λ z → funext λ g →
+      P.F₁ (f .hom ∘ g) (y .section)      ≡⟨ happly (P.F-∘ g (f .hom)) (y .section) ⟩
+      P.F₁ g (P.F₁ (f .hom) (y .section)) ≡⟨ ap (P.F₁ g) (f .commute) ⟩
+      P.F₁ g (x .section)                 ∎
 ```
 
 Now that we've constructed a cocone, all that remains is to see that
@@ -195,16 +202,6 @@ the data associated with $P$ and glued it back together.  However,
 proving this does involve futzing about with various naturality + cocone
 commuting conditions.
 
-```agda
-  coyoneda : is-colimit (よ F∘ πₚ) Reassemble
-  coyoneda K = contr (cocone-hom universal factors) unique
-    where
-      module K = Cocone K
-      module ∫ = Precategory ∫
-      module Reassemble = Cocone Reassemble
-      open Cocone-hom
-```
-
 We start by constructing the universal map from $P$ into the coapex of
 some other cocone $K$. The components of this natural transformation are
 obtained in a similar manner to the yoneda lemma; we bundle up the data
@@ -213,13 +210,12 @@ construct to the identity morphism. Naturality follows from the fact
 that $K$ is a cocone, and the components of $K$ are natural.
 
 ```agda
-      universal : P => K.coapex
-      universal .η x px = K.ψ (elem x px) .η x id
-      universal .is-natural x y f = funext λ px →
-        K.ψ (elem y (P.F₁ f px)) .η y id        ≡˘⟨ (λ i → K.commutes (induce f px) i .η y id) ⟩
-        K.ψ (elem x px) .η y (f ∘ id)           ≡⟨ ap (K.ψ (elem x px) .η y) id-comm ⟩
-        K.ψ (elem x px) .η y (id ∘ f)           ≡⟨ happly (K.ψ (elem x px) .is-natural x y f) id ⟩
-        F₁ K.coapex f (K.ψ (elem x px) .η x id) ∎
+    colim .universal eps _ .η x px =  eps (elem x px) .η x id
+    colim .universal {Q} eps comm .is-natural x y f = funext λ px →
+      eps (elem y (P.F₁ f px)) .η y id        ≡˘⟨ (λ i → comm (induce f px) i .η y id) ⟩
+      eps (elem x px) .η y (f ∘ id)           ≡⟨ ap (eps (elem x px) .η y) id-comm ⟩
+      eps (elem x px) .η y (id ∘ f)           ≡⟨ happly (eps (elem x px) .is-natural x y f) id ⟩
+      F₁ Q f (eps (elem x px) .η x id) ∎
 ```
 
 Next, we need to show that this morphism factors each of the components
@@ -227,23 +223,20 @@ of $K$. The tricky bit of the proof here is that we need to use
 `induce`{.Agda} to regard `f` as a morphism in the category of elements.
 
 ```agda
-      factors : ∀ o → universal ∘nt Reassemble.ψ o ≡ K.ψ o
-      factors o = Nat-path λ x → funext λ f →
-        K.ψ (elem x (P.F₁ f (o .section))) .η x id ≡˘⟨ (λ i → K.commutes (induce f (o .section)) i .η x id) ⟩
-        K.ψ o .η x (f ∘ id)                        ≡⟨ ap (K.ψ o .η x) (idr f) ⟩
-        K.ψ o .η x f ∎
+    colim .factors {o} eps comm = Nat-path λ x → funext λ f →
+      eps (elem x (P.F₁ f (o .section))) .η x id ≡˘⟨ (λ i → comm (induce f (o .section)) i .η x id) ⟩
+      eps o .η x (f ∘ id)                        ≡⟨ ap (eps o .η x) (idr f) ⟩
+      eps o .η x f ∎
 ```
 
 Finally, uniqueness: This just follows by the commuting conditions on
 `α`.
 
 ```agda
-      unique : (α : Cocone-hom (よ F∘ πₚ) Reassemble K)
-             → cocone-hom universal factors ≡ α
-      unique α = Cocone-hom-path (よ F∘ πₚ) $ Nat-path λ x → funext λ px →
-        K.ψ (elem x px) .η x id                        ≡˘⟨ (λ i → α .commutes (elem x px) i .η x id) ⟩
-        α .hom .η x (Reassemble.ψ (elem x px) .η x id) ≡⟨ ap (α .hom .η x) (happly (P.F-id) px) ⟩
-        α .hom .η x px ∎
+    colim .unique eps comm α p = Nat-path λ x → funext λ px →
+       α .η x px               ≡˘⟨ ap (α .η x) (happly P.F-id px) ⟩
+       α .η x (P.F₁ id px)     ≡⟨ happly (p _ ηₚ x) id ⟩
+       eps (elem x px) .η x id ∎
 ```
 
 And that's it! The important takeaway here is not the shuffling around
@@ -326,12 +319,15 @@ _also_ a cocone homomorphism $X \to Y$; But $X$ is initial, so $f = g$!
 
 ```agda
   Representables-generate-presheaf {f} {g} sep =
-    ap hom $ is-contr→is-prop (coyoneda X (Map→cocone-under X f)) f′ g′ where
-      f′ : Cocone-hom (よ F∘ El.πₚ C X) (Reassemble X) (Map→cocone-under X f)
+    ap hom $ is-contr→is-prop
+      (is-colimit→initial-cocone _ (coyoneda X) (Map→cocone-under X f))
+      f′ g′
+    where
+      f′ : Cocone-hom (よ F∘ El.πₚ C X) _ (Map→cocone-under X f)
       f′ .hom = f
       f′ .commutes o = Nat-path (λ _ → refl)
 
-      g′ : Cocone-hom (よ F∘ El.πₚ C X) (Reassemble X) (Map→cocone-under X f)
+      g′ : Cocone-hom (よ F∘ El.πₚ C X) _ (Map→cocone-under X f)
       g′ .hom = g
       g′ .commutes o = Nat-path λ x → sym (sep $
         NT (λ i a → P.₁ a (o .section)) λ x y h →
