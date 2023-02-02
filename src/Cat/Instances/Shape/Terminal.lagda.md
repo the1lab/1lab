@@ -32,4 +32,10 @@ module _ {o h} {A : Precategory o h} where
 
   const! : Ob A → Functor ⊤Cat A
   const! = Const
+
+  !F : Functor A ⊤Cat
+  !F .F₀ _ = tt
+  !F .F₁ _ = tt
+  !F .F-id = refl
+  !F .F-∘ _ _ = refl
 ```
