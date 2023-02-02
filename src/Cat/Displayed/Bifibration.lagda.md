@@ -121,7 +121,7 @@ module _ (fib : Cartesian-fibration) where
 With some repackaging, we can see that this yields a bifibration.
 
 ```agda
-  left-adjoint-reindexing→bifibration
+  left-adjoint-base-change→bifibration
     : (L : ∀ {x y} → (f : Hom x y) → Functor (Fibre ℰ x) (Fibre ℰ y))
     → (∀ {x y} → (f : Hom x y) → (L f ⊣ base-change f))
     → is-bifibration
