@@ -34,7 +34,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (F : Functor J 
 
   record Cone : Type (o₁ ⊔ o₂ ⊔ h₁ ⊔ h₂) where
     no-eta-equality
-    constructor mk-cone
+    constructor cone
 ```
 
 A `Cone`{.Agda} over $F$ is given by an object (the `apex`{.agda})
@@ -94,7 +94,7 @@ category.
 ```agda
   record Cone-hom (x y : Cone) : Type (o₁ ⊔ h₂) where
     no-eta-equality
-    constructor mk-cone-hom
+    constructor cone-hom
 ```
 
 A `Cone homomorphism`{.Agda ident="Cone-hom"} is -- like the introduction
@@ -160,11 +160,13 @@ again preserve _all_ the commutativities.
 ```
 -->
 
-Note that this is the exact same data as natural transformations from
-the constant functor to the diagram. To obtain a limit, all we need
-is a way of stating that a given cone is universal. In particular, the
-[terminal object] in the category of cones over a diagram $F$ (if it
-exists!) is the limit of $F$.
+## Terminal Cones as Limits
+
+Note that cones over some diagram $F$ contain the exact same data as
+natural transformations from a constant functor to $F$.
+To obtain a limit, all we need is a way of stating that a given cone is
+universal. In particular, the [terminal object] in the category of cones
+over a diagram $F$ (if it exists!) is the limit of $F$.
 
 [terminal object]: Cat.Diagram.Terminal.html
 
@@ -185,10 +187,10 @@ differently.
     lim : make-is-limit F (Cone.apex K)
     lim .ψ = K .ψ
     lim .commutes = K .commutes
-    lim .universal eta p = term (mk-cone _ eta p) .centre .hom
-    lim .factors eta p = term (mk-cone _ eta p) .centre .commutes _
+    lim .universal eta p = term (cone _ eta p) .centre .hom
+    lim .factors eta p = term (cone _ eta p) .centre .commutes _
     lim .unique eta p other q =
-      ap hom (sym (term (mk-cone _ eta p) .paths (mk-cone-hom other q)))
+      ap hom (sym (term (cone _ eta p) .paths (cone-hom other q)))
 ```
 
 The inverse direction of this equivalence also consists of packing and
@@ -204,10 +206,10 @@ unpacking data.
     module K = Cone K
     open Cone-hom
 
-    term : is-contr (Cone-hom K (mk-cone x L.ψ L.commutes))
-    term .centre .Cone-hom.hom =
+    term : is-contr (Cone-hom K (cone x L.ψ L.commutes))
+    term .centre .hom =
       L.universal K.ψ K.commutes
-    term .centre .Cone-hom.commutes _ =
+    term .centre .commutes _ =
       L.factors K.ψ K.commutes
     term .paths f =
       Cone-hom-path (sym (L.unique K.ψ K.commutes (f .hom) (f .commutes)))

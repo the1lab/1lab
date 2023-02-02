@@ -34,7 +34,14 @@ instead of [right kan extensions]. This gives us the expected
 associated to limits.
 
 [left kan extension]: Cat.Functor.Kan.Left.html
-[right kan extension]: Cat.Functor.Kan.Rigth.html
+[right kan extension]: Cat.Functor.Kan.Right.html
+
+Note that approach to colimits is not what normally presented in
+introductory material. Instead, most books opt to define colimits
+via [cocones], as they are less abstract, though harder to work with
+in the long run.
+
+[cocones]: Cat.Diagram.Colimit.Cocone.html
 
 <!--
 ```agda
