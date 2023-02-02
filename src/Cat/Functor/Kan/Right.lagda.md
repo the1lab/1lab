@@ -1,9 +1,7 @@
 ```agda
 open import Cat.Instances.Functor.Compose
-open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Functor
-open import Cat.Diagram.Duals
-open import Cat.Functor.Kan
+open import Cat.Functor.Kan.Left
 open import Cat.Prelude
 
 module Cat.Functor.Kan.Right where
@@ -51,9 +49,10 @@ commuting on the nose, we have natural transformations $\eps$ witnessing
 their commutativity.
 
 ```agda
-record Ran (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
+record is-right-kan-extension
+  (p : Functor C C′) (F : Functor C D) (Ext : Functor C′ D) : Type (kan-lvl p F) where
+  no-eta-equality
   field
-    Ext : Functor C′ D
     eps : Ext F∘ p => F
 
     σ : {M : Functor C′ D} (α : M F∘ p => F) → M => Ext
@@ -68,6 +67,14 @@ record Ran (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
     → β ≡ eps ∘nt (σ₂′ ◂ p)
     → σ₁′ ≡ σ₂′
   σ-uniq₂ β p q = sym (σ-uniq p) ∙ σ-uniq q
+
+record Ran (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
+  no-eta-equality
+  field
+    Ext : Functor C′ D
+    has-right-kan-extension : is-right-kan-extension p F Ext
+
+  open is-right-kan-extension has-right-kan-extension public
 ```
 
 The first thing we'll verify is that this construction is indeed dual to
@@ -78,56 +85,37 @@ in the way.
 ```agda
 module _ (p : Functor C C′) (F : Functor C D) where
   open Ran
+  open Lan
+  open is-right-kan-extension
   open _=>_
 
-  Co-lan→Ran : Lan (Functor.op p) (Functor.op F) -> Ran p F
-  Co-lan→Ran lan = ran where
-    module lan = Lan lan
-    ran : Ran p F
-    ran .Ext = Functor.op lan.Ext
-    ran .eps .η x = lan.eta .η x
-    ran .eps .is-natural x y f = sym (lan.eta .is-natural y x f)
+  is-co-lan→is-ran
+    : ∀ {Ext : Functor (C′ ^op) (D ^op)}
+    → is-left-kan-extension (Functor.op p) (Functor.op F) Ext
+    → is-right-kan-extension p F (Functor.op Ext)
+  is-co-lan→is-ran {Ext = Ext} is-lan = is-ran where
+    module is-lan = is-left-kan-extension is-lan
 
-    ran .σ {M = M} α = op (lan.σ α′) where
+    is-ran : is-right-kan-extension p F (Functor.op Ext)
+    is-ran .eps .η x = is-lan.eta .η x
+    is-ran .eps .is-natural x y f = sym (is-lan.eta .is-natural y x f)
+
+    is-ran .σ {M = M} α = op (is-lan.σ α′) where
       α′ : Functor.op F => Functor.op M F∘ Functor.op p
       α′ .η x = α .η x
       α′ .is-natural x y f = sym (α .is-natural y x f)
 
-    ran .σ-comm = Nat-path λ x → lan.σ-comm ηₚ x
-    ran .σ-uniq {M = M} {σ′ = σ′} p =
-      Nat-path λ x → lan.σ-uniq {σ′ = σ′op} (Nat-path λ x → p ηₚ x) ηₚ x
+    is-ran .σ-comm = Nat-path λ x → is-lan.σ-comm ηₚ x
+    is-ran .σ-uniq {M = M} {σ′ = σ′} p =
+      Nat-path λ x → is-lan.σ-uniq {σ′ = σ′op} (Nat-path λ x → p ηₚ x) ηₚ x
       where
-        σ′op : lan.Ext => Functor.op M
+        σ′op : Ext => Functor.op M
         σ′op .η x = σ′ .η x
         σ′op .is-natural x y f = sym (σ′ .is-natural y x f)
+
+  Co-lan→Ran : Lan (Functor.op p) (Functor.op F) -> Ran p F
+  Co-lan→Ran lan .Ext =
+    Functor.op (lan .Ext)
+  Co-lan→Ran lan .has-right-kan-extension =
+    is-co-lan→is-ran (lan .has-left-kan-extension)
 ```
-
-## Computation
-
-Using the helper `Co-lan→Ran`{.Agda} defined above and the formula for
-computing _left_ Kan extensions, we can formulate a condition for the
-existence of right Kan extensions based on the size and completeness of
-the categories involved. If $\cE$ admits limits of [$\kappa$-small
-diagrams], $\cC$ is $\kappa$-small, and $\cD$ is locally
-$\kappa$-small, then for any $p : \cC \to \cD$ and $F : \cD \to
-\cE$, the right Kan extension $\Ran_p F$ exists.
-
-[$\kappa$-small diagrams]: 1Lab.intro.html#universes-and-size-issues
-
-```agda
-module _
-  {o o′ ℓ κ} {C : Precategory κ κ} {D : Precategory o′ κ} {E : Precategory o ℓ}
-  (lims : is-complete κ κ E) (p : Functor C D) (F : Functor C E)
-  where
-
-  complete→ran : Ran p F
-  complete→ran =
-    Co-lan→Ran p F $
-      cocomplete→lan
-        (λ F → Co-limit→Colimit (E ^op) (lims (Functor.op F)))
-        (Functor.op p) (Functor.op F)
-```
-
-As before, it's impossible to cheat the size limitations for computing
-Kan extensions as (co)limits, but this does not preclude the existence
-of extensions in other situations.
