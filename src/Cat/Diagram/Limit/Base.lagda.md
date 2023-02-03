@@ -292,8 +292,12 @@ To _use_ the data of `is-limit`, we provide a function for *un*making a
 limit:
 
 ```agda
-  unmake-limit : ∀ {D : Functor J C} {a} → is-limit D a → make-is-limit D a
-  unmake-limit {D} {a} lim = ml module unmake-limit where
+  unmake-limit
+    : ∀ {D : Functor J C} {F : Functor ⊤Cat C}
+    → is-ran !F D F
+    → make-is-limit D (Functor.F₀ F tt)
+  unmake-limit {D} {F} lim = ml module unmake-limit where
+    a = Functor.F₀ F tt
     open is-ran lim
     open Functor D
     open make-is-limit
@@ -312,16 +316,16 @@ limit:
 
     ml : make-is-limit D a
     ml .ψ j        = eps.ε j
-    ml .commutes f = sym (eps.is-natural _ _ f) ∙ C.idr _
+    ml .commutes f = sym (eps.is-natural _ _ f) ∙ C.elimr (Functor.F-id F)
 
     ml .universal   = hom
     ml .factors e p = σ-comm {β = eta-nt e p} ηₚ _
     ml .unique {x = x} eta p other q =
       sym $ σ-uniq {σ′ = other-nt} (Nat-path λ j → sym (q j)) ηₚ tt
       where
-        other-nt : const! x => const! a
+        other-nt : const! x => F
         other-nt .η _ = other
-        other-nt .is-natural _ _ _ = C.id-comm
+        other-nt .is-natural _ _ _ = C.idr _ ∙ C.introl (Functor.F-id F) -- C.id-comm
 
 ```
 
@@ -329,10 +333,10 @@ limit:
 ```agda
 module is-limit
   {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
-  {D : Functor J C} {a} (L : is-limit D a)
+  {D : Functor J C} {F : Functor ⊤Cat C} (t : is-ran !F D F)
   where
 
-  open make-is-limit (unmake-limit L) public
+  open make-is-limit (unmake-limit {F = F} t) public
 ```
 -->
 
