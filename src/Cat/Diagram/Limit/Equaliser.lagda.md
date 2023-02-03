@@ -1,12 +1,10 @@
 ```agda
 open import Cat.Instances.Shape.Parallel
-open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Limit.Cone
 open import Cat.Diagram.Equaliser
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
-open import Cat.Functor.Kan.Right
 open import Cat.Prelude
 
 open import Data.Bool
@@ -18,14 +16,12 @@ module Cat.Diagram.Limit.Equaliser {o h} (Cat : Precategory o h) where
 ```agda
 open import Cat.Reasoning Cat
 
-open make-is-limit
 open is-equaliser
 open Equaliser
 open Terminal
 open Cone-hom
 open Functor
 open Cone
-open Ran
 ```
 -->
 
@@ -48,53 +44,53 @@ Fork→Cone F eq p .commutes {false} {true}  false = refl
 Fork→Cone F eq p .commutes {false} {true}  true  = sym p
 Fork→Cone F eq p .commutes {true}  {true}  tt    = eliml (F .F-id)
 
-Equaliser→Limit
+Equaliser→Terminal-cone
   : ∀ {F : Functor ·⇉· Cat}
-  → Equaliser Cat (F .F₁ {false} {true} false) (F .F₁ true)
-  → Limit F
-Equaliser→Limit {F = F} eq = lim where
+  → Equaliser Cat (F .F₁ false) (F .F₁ true)
+  → Terminal (Cones F)
+Equaliser→Terminal-cone {F = F} eq = lim where
   module eq = Equaliser eq
-  lim : Limit _
-  lim .Ext = const! eq.apex
-  lim .has-ran = to-is-limit mk where
-    mk : make-is-limit _ _
-    mk .ψ true  = F .F₁ false ∘ eq.equ
-    mk .ψ false = eq.equ
-    mk .commutes {true}  {true}  tt    = eliml (F .F-id)
-    mk .commutes {false} {true}  true  = sym eq.equal
-    mk .commutes {false} {true}  false = refl
-    mk .commutes {false} {false} tt    = eliml (F .F-id)
+  lim : Terminal (Cones F)
+  lim .top = Fork→Cone F eq.equ eq.equal
+  lim .has⊤ cone .centre .hom      =
+    eq.limiting (cone .commutes {false} {true} false ∙ sym (cone .commutes true))
+  lim .has⊤ cone .centre .commutes false = eq.universal
+  lim .has⊤ cone .centre .commutes true = pullr eq.universal ∙ cone .commutes {false} {true} false
+  lim .has⊤ cone .paths other = Cone-hom-path _ (sym (eq.unique p)) where
+    p : cone .ψ false ≡ eq .equ ∘ other .hom
+    p = sym (other .commutes _)
 
-    mk .universal eta p
-      = eq.limiting (p {x = false} {true} false ∙ sym (p {x = false} {true} true))
-    mk .factors {j = true} eta p  = pullr eq.universal ∙ p false
-    mk .factors {j = false} eta p = eq.universal
-    mk .unique eta p other q      = eq.unique (sym (q false))
-
-Limit→Equaliser
+Terminal-cone→Equaliser
   : ∀ {F : Functor ·⇉· Cat}
-  → Limit F
+  → Terminal (Cones F)
   → Equaliser Cat (F .F₁ {false} {true} false) (F .F₁ true)
-Limit→Equaliser {F} lim = eq where
-  module lim = is-limit (lim .has-ran)
+Terminal-cone→Equaliser {F} lim = eq where
+  module lim = Terminal lim
   eq : Equaliser Cat _ _
   eq .apex = _
-  eq .equ = lim.ψ false
-  eq .has-is-eq .equal = lim.commutes {false} {true} false ∙ sym (lim.commutes true)
-  eq .has-is-eq .limiting {e′ = e′} p = lim.universal
-    (λ { true  → F .F₁ true ∘ e′
-       ; false → e′
-       })
-    λ { {true}  {true} t     → eliml (F .F-id)
-      ; {false} {true} true  → refl
-      ; {false} {true} false → p
-      ; {false} {false} t    → eliml (F .F-id)
-      }
-  eq .has-is-eq .universal {p = p} = lim.factors _ _
-  eq .has-is-eq .unique {e′ = e′} {p = p} {lim' = lim′} x = lim.unique _ _ lim′ λ where
-    true → sym $
-      F .F₁ true ∘ e′             ≡⟨ ap (_ ∘_) x ⟩
-      F .F₁ true ∘ eq .equ ∘ lim′ ≡⟨ pulll (lim.commutes true) ⟩
-      lim.ψ true ∘ lim′           ∎
-    false → sym x
+  eq .equ = lim.top .ψ false
+  eq .has-is-eq .equal =
+    lim.top .commutes {false} {true} false ∙ sym (lim.top .commutes true)
+  eq .has-is-eq .limiting p = lim.has⊤ (Fork→Cone _ _ p) .centre .hom
+  eq .has-is-eq .universal {p = p} =
+    lim.has⊤ (Fork→Cone _ _ p) .centre .commutes false
+  eq .has-is-eq .unique {e′ = e'} {p = p} {lim' = lim'} x =
+    sym (ap hom (lim.has⊤ (Fork→Cone _ _ p) .paths other))
+    where
+      other : Cone-hom _ _ _
+      other .hom = _
+      other .commutes false = sym x
+      other .commutes true = sym (
+        F .F₁ false ∘ e'                      ≡⟨ ap (_ ∘_) x ⟩
+        F .F₁ false ∘ lim.top .ψ false ∘ lim' ≡⟨ pulll (lim.top .commutes false) ⟩
+        lim.top .ψ true ∘ lim'                ∎
+        )
+
+Equaliser→Limit
+  : ∀ {F : Functor ·⇉· Cat} → Equaliser Cat (F .F₁ false) (F .F₁ true) → Limit F
+Equaliser→Limit eq = Terminal-cone→Limit _ (Equaliser→Terminal-cone eq)
+
+Limit→Equaliser
+  : ∀ {F : Functor ·⇉· Cat} → Limit F → Equaliser Cat (F .F₁ false) (F .F₁ true)
+Limit→Equaliser eq = Terminal-cone→Equaliser (Limit→Terminal-cone _ eq)
 ```

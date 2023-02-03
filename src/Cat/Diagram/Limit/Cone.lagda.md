@@ -1,5 +1,6 @@
 ```agda
 open import Cat.Instances.Functor
+open import Cat.Functor.Kan.Right
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Terminal
 open import Cat.Prelude
@@ -167,16 +168,16 @@ exists!) is the limit of $F$.
 
 [terminal object]: Cat.Diagram.Terminal.html
 
-The proof here is just shuffling data around; this is not totally
+The proof here is just shuffling data around: this is not totally
 surprising, as both constructions contain the same data, just organized
 differently.
 
 ```agda
-  terminal-cone→is-limit
+  is-terminal-cone→is-limit
     : ∀ {K : Cone}
     → is-terminal Cones K
     → is-limit F (Cone.apex K)
-  terminal-cone→is-limit {K = K} term = to-is-limit lim where
+  is-terminal-cone→is-limit {K = K} term = to-is-limit lim where
     open make-is-limit
     open Cone
     open Cone-hom
@@ -190,15 +191,15 @@ differently.
       ap hom (sym (term (mk-cone _ eta p) .paths (mk-cone-hom other q)))
 ```
 
-The inverse direction of this equivalence also consists packing and
+The inverse direction of this equivalence also consists of packing and
 unpacking data.
 
 ```agda
-  is-limit→terminal-cone
+  is-limit→is-terminal-cone
     : ∀ {x}
     → (L : is-limit F x)
     → is-terminal Cones (mk-cone x (is-limit.ψ L) (is-limit.commutes L))
-  is-limit→terminal-cone {x = x} L K = term where
+  is-limit→is-terminal-cone {x = x} L K = term where
     module L = is-limit L
     module K = Cone K
     open Cone-hom
@@ -211,3 +212,18 @@ unpacking data.
     term .paths f =
       Cone-hom-path (sym (L.unique K.ψ K.commutes (f .hom) (f .commutes)))
 ```
+
+<!--
+```agda
+  open Ran
+
+  Terminal-cone→Limit : Terminal Cones → Limit F
+  Terminal-cone→Limit x .Ext     = _
+  Terminal-cone→Limit x .has-ran = is-terminal-cone→is-limit (x .Terminal.has⊤)
+
+  Limit→Terminal-cone : Limit F → Terminal Cones
+  Limit→Terminal-cone x .Terminal.top  = _
+  Limit→Terminal-cone x .Terminal.has⊤ = is-limit→is-terminal-cone
+    (Limit.has-limit x)
+```
+-->
