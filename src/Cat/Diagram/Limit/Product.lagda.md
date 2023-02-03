@@ -6,6 +6,7 @@ description: |
 
 ```agda
 open import Cat.Diagram.Limit.Base
+open import Cat.Diagram.Limit.Cone
 open import Cat.Instances.Discrete
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
@@ -68,22 +69,28 @@ The two-way correspondence between products and terminal cones is then
 simple enough to establish by appropriately shuffling the data.
 
 ```agda
-Prod→Lim : ∀ {iss} {A B} → Product C A B → Limit (2-object-diagram {iss = iss} A B)
-Prod→Lim prod .top = Pair→Cone (prod .π₁) (prod .π₂)
-Prod→Lim prod .has⊤ x .centre .hom = prod .⟨_,_⟩ (x .ψ false) (x .ψ true)
-Prod→Lim prod .has⊤ x .centre .commutes false = prod .π₁∘factor
-Prod→Lim prod .has⊤ x .centre .commutes true  = prod .π₂∘factor
-Prod→Lim prod .has⊤ x .paths y = Cone-hom-path (2-object-diagram _ _)
+Prod→Terminal-cone
+  : ∀ {iss} {A B}
+  → Product C A B
+  → Terminal (Cones (2-object-diagram {iss = iss} A B))
+Prod→Terminal-cone prod .top = Pair→Cone (prod .π₁) (prod .π₂)
+Prod→Terminal-cone prod .has⊤ x .centre .hom = prod .⟨_,_⟩ (x .ψ false) (x .ψ true)
+Prod→Terminal-cone prod .has⊤ x .centre .commutes false = prod .π₁∘factor
+Prod→Terminal-cone prod .has⊤ x .centre .commutes true  = prod .π₂∘factor
+Prod→Terminal-cone prod .has⊤ x .paths y = Cone-hom-path (2-object-diagram _ _)
   (sym (prod .unique (y .hom) (y .commutes _) (y .commutes _)))
 
-Lim→Prod : ∀ {iss} {A B} → Limit (2-object-diagram {iss = iss} A B) → Product C A B
-Lim→Prod x .apex = x .top .apex
-Lim→Prod x .π₁   = x .top .ψ false
-Lim→Prod x .π₂   = x .top .ψ true
-Lim→Prod x .has-is-product .⟨_,_⟩ p1 p2 = x .has⊤ (Pair→Cone p1 p2) .centre .hom
-Lim→Prod x .has-is-product .π₁∘factor = x .has⊤ (Pair→Cone _ _) .centre .commutes _
-Lim→Prod x .has-is-product .π₂∘factor = x .has⊤ (Pair→Cone _ _) .centre .commutes _
-Lim→Prod x .has-is-product .unique f p q =
+Terminal-cone→Prod
+  : ∀ {iss} {A B}
+  → Terminal (Cones (2-object-diagram {iss = iss} A B))
+  → Product C A B
+Terminal-cone→Prod x .apex = x .top .apex
+Terminal-cone→Prod x .π₁   = x .top .ψ false
+Terminal-cone→Prod x .π₂   = x .top .ψ true
+Terminal-cone→Prod x .has-is-product .⟨_,_⟩ p1 p2 = x .has⊤ (Pair→Cone p1 p2) .centre .hom
+Terminal-cone→Prod x .has-is-product .π₁∘factor = x .has⊤ (Pair→Cone _ _) .centre .commutes _
+Terminal-cone→Prod x .has-is-product .π₂∘factor = x .has⊤ (Pair→Cone _ _) .centre .commutes _
+Terminal-cone→Prod x .has-is-product .unique f p q =
   sym (ap hom (x .has⊤ (Pair→Cone _ _) .paths other))
   where
     other : Cone-hom (2-object-diagram _ _) _ _
@@ -91,6 +98,22 @@ Lim→Prod x .has-is-product .unique f p q =
     other .commutes false = p
     other .commutes true  = q
 ```
+
+<!--
+```agda
+Limit→Prod
+  : ∀ {iss} {A B}
+  → Limit (2-object-diagram {iss = iss} A B)
+  → Product C A B
+Limit→Prod l = Terminal-cone→Prod (Limit→Terminal-cone _ l)
+
+Prod→Limit
+  : ∀ {iss} {A B}
+  → Product C A B
+  → Limit (2-object-diagram {iss = iss} A B)
+Prod→Limit l = Terminal-cone→Limit _ (Prod→Terminal-cone l)
+```
+-->
 
 We note that _any_ functor $F : \rm{Disc}(\{0,1\}) \to \cC$ is
 canonically _equal_, not just naturally isomorphic, to the one we

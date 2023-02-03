@@ -1,8 +1,8 @@
 ```agda
 open import Cat.Instances.Functor.Compose
 open import Cat.Instances.Functor
+open import Cat.Functor.Kan.Left
 open import Cat.Functor.Base
-open import Cat.Functor.Kan
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -30,6 +30,12 @@ of $F$ along $p$ is a proposition.
 
 [(left) Kan extensions]: Cat.Functor.Kan.html
 [adjunction]: Cat.Functor.Kan.Global.html
+
+Note that the type expressing _being_ a left extension is _not_ a
+proposition: This proof critically relies on being able to vary the
+extension functor, even if it varies along a loop. The situation is
+analogous to that with adjunctions: the type $L \dashv R$ is not a
+proposition, but the type $\Sigma_l L \dashv R$ _is_.
 
 ```agda
 Lan-is-prop : is-prop (Lan p F)
@@ -140,17 +146,18 @@ two fields are propositions, and so they are automatically identified
 --- regardless of the specific isomorphism we would have exhibited.
 
 ```agda
+  open is-lan
   open Lan
 
   Lan-unique : L₁ ≡ L₂
   Lan-unique i .Ext = cd-cat .to-path Ext-unique i
-  Lan-unique i .eta = eta-uniqueₚ i
-  Lan-unique i .σ f = σ-uniqueₚ f i
-  Lan-unique i .σ-comm {α = α} =
+  Lan-unique i .has-lan .eta = eta-uniqueₚ i
+  Lan-unique i .has-lan .σ f = σ-uniqueₚ f i
+  Lan-unique i .has-lan .σ-comm {α = α} =
     is-prop→pathp
       (λ i → [C,D].Hom-set _ _ ((σ-uniqueₚ α i ◂ p) ∘nt eta-uniqueₚ i) α)
       L₁.σ-comm L₂.σ-comm i
-  Lan-unique i .σ-uniq {M = M} {α = α} {σ′ = σ′} =
+  Lan-unique i .has-lan .σ-uniq {M = M} {α = α} {σ′ = σ′} =
     is-prop→pathp
       (λ i → Π-is-hlevel² {A = cd-cat .to-path Ext-unique i => M}
                           {B = λ σ′ → α ≡ (σ′ ◂ p) ∘nt eta-uniqueₚ i} 1

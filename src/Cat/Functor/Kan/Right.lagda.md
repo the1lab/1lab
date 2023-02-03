@@ -91,6 +91,7 @@ module _ (p : Functor C C′) (F : Functor C D) where
   open Ran
   open Lan
   open is-ran
+  open is-lan
   open _=>_
 
   is-co-lan→is-ran
@@ -116,8 +117,42 @@ module _ (p : Functor C C′) (F : Functor C D) where
         σ′op : Ext => Functor.op M
         σ′op .η x = σ′ .η x
         σ′op .is-natural x y f = sym (σ′ .is-natural y x f)
+```
 
-  Co-lan→Ran : Lan (Functor.op p) (Functor.op F) -> Ran p F
+<!--
+```agda
+  is-ran→is-co-lan
+    : ∀ {Ext : Functor C′ D}
+    → is-ran p F Ext
+    → is-lan (Functor.op p) (Functor.op F) (Functor.op Ext)
+  is-ran→is-co-lan {Ext = Ext} is-ran = lan where
+    module ran = is-ran is-ran
+
+    lan : is-lan (Functor.op p) (Functor.op F) (Functor.op Ext)
+    lan .eta .η x = ran.eps.ε x
+    lan .eta .is-natural x y f = sym (ran.eps .is-natural y x f)
+
+    lan .σ {M = M} α = σ′ where
+      α′ : Functor.op M F∘ p => F
+      α′ .η x = α .η x
+      α′ .is-natural x y f = sym (α .is-natural y x f)
+
+      σ′ : Functor.op Ext => M
+      σ′ .η = ran.σ α′ .η
+      σ′ .is-natural _ _ f = sym (ran.σ α′ .is-natural _ _ f)
+
+    lan .σ-comm = Nat-path λ x → ran.σ-comm ηₚ x
+    lan .σ-uniq {M = M} {σ′ = σ′} p =
+      Nat-path λ x → ran.σ-uniq {σ′ = σ′op} (Nat-path λ x → p ηₚ x) ηₚ x
+      where
+        σ′op : Functor.op M => Ext
+        σ′op .η x = σ′ .η x
+        σ′op .is-natural x y f = sym (σ′ .is-natural y x f)
+```
+-->
+
+```agda
+  Co-lan→Ran : Lan (Functor.op p) (Functor.op F) → Ran p F
   Co-lan→Ran lan .Ext     = Functor.op (lan .Ext)
   Co-lan→Ran lan .has-ran = is-co-lan→is-ran (lan .has-lan)
 ```

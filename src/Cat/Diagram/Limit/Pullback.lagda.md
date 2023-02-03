@@ -1,6 +1,7 @@
 ```agda
 open import Cat.Instances.Shape.Cospan
 open import Cat.Diagram.Limit.Base
+open import Cat.Diagram.Limit.Cone
 open import Cat.Instances.Functor
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
@@ -44,13 +45,13 @@ Square→Cone {F = F} p1 p2 square .commutes {cs-b} {cs-b} _ = eliml (F .F-id)
 Square→Cone {F = F} p1 p2 square .commutes {cs-b} {cs-c} _ = sym square
 Square→Cone {F = F} p1 p2 square .commutes {cs-c} {cs-c} _ = eliml (F .F-id)
 
-Pullback→Limit
+Pullback→Terminal-cone
   : ∀ {x y} {A B C} {f : Hom A C} {g : Hom B C}
   → Pullback Cat f g
-  → Limit (cospan→cospan-diagram x y {C = Cat} f g)
-Pullback→Limit {f = f} {g} pb = lim where
+  → Terminal (Cones (cospan→cospan-diagram x y {C = Cat} f g))
+Pullback→Terminal-cone {f = f} {g} pb = lim where
   module pb = Pullback pb
-  lim : Limit _
+  lim : Terminal (Cones _)
   lim .top = Square→Cone _ _ pb.square
   lim .has⊤ cone .centre .hom      = pb.limiting (cone .commutes (lift tt) ∙ sym (cone .commutes {cs-b} {cs-c} (lift tt)))
   lim .has⊤ cone .centre .commutes cs-a = pb.p₁∘limiting
@@ -58,12 +59,12 @@ Pullback→Limit {f = f} {g} pb = lim where
   lim .has⊤ cone .centre .commutes cs-c = pullr pb.p₁∘limiting ∙ cone .commutes (lift tt)
   lim .has⊤ cone .paths otherhom = Cone-hom-path _ (sym (pb.unique (otherhom .commutes _) (otherhom .commutes _)))
 
-Limit→Pullback
+Terminal-cone→Pullback
   : ∀ {x y}
   → {F : Functor (·→·←· {x} {y}) Cat}
-  → Limit F
+  → Terminal (Cones F)
   → Pullback Cat (F .F₁ {cs-a} {cs-c} _) (F .F₁ {cs-b} {cs-c} _)
-Limit→Pullback {F = F} lim = pb where
+Terminal-cone→Pullback {F = F} lim = pb where
   module lim = Terminal lim
   pb : Pullback Cat _ _
   pb .apex = lim.top .apex
@@ -84,4 +85,20 @@ Limit→Pullback {F = F} lim = pb where
         lim.top .ψ cs-c ∘ lim'                         ≡˘⟨ pulll (lim.top .commutes _) ⟩
         F .F₁ {cs-a} {cs-c} _ ∘ lim.top .ψ cs-a ∘ lim' ≡⟨ ap (_ ∘_) a ⟩
         F .F₁ {cs-a} {cs-c} _ ∘ p₁'                    ∎
+```
+
+<!--
+```agda
+Limit→Pullback
+  : ∀ {x y}
+  → {F : Functor (·→·←· {x} {y}) Cat}
+  → Limit F
+  → Pullback Cat (F .F₁ {cs-a} {cs-c} _) (F .F₁ {cs-b} {cs-c} _)
+Limit→Pullback x = Terminal-cone→Pullback (Limit→Terminal-cone _ x)
+
+Pullback→Limit
+  : ∀ {x y} {A B C} {f : Hom A C} {g : Hom B C}
+  → Pullback Cat f g
+  → Limit (cospan→cospan-diagram x y {C = Cat} f g)
+Pullback→Limit x = Terminal-cone→Limit _ (Pullback→Terminal-cone x)
 ```
