@@ -13,8 +13,8 @@ open import Cat.Instances.Functor
 open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Comma
+open import Cat.Functor.Kan.Left
 open import Cat.Functor.Hom
-open import Cat.Functor.Kan
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Functor-kit

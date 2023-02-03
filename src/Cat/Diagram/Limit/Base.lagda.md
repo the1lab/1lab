@@ -153,7 +153,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (Diagram : Func
     module C = Precategory C
 
   is-limit : C.Ob → Type _
-  is-limit x = is-right-kan-extension !F Diagram (const! x)
+  is-limit x = is-ran !F Diagram (const! x)
 ```
 
 Furthermore, we say $D$ has a limit if there exists some right kan extension
@@ -164,126 +164,183 @@ of $!$ along $D$.
   Limit = Ran !F Diagram
 ```
 
-This definition is somewhat difficult to work with in it's raw state,
-so we also expose a friendlier user interface.
+## Concretely
+
+The definition above is very concise, and it has the benefit of being
+abstract: We can re-use definitions and theorems originally stated for
+Kan extensions to limits. However, it has the downside of being
+abstract: it's good for working with _limits in general_, but working
+with a _specific_ limit is penalised, as the data we want to get at is
+"buried".
+
+The definition above is also hard to _instantiate_, since you have to..
+bury the data, and some of it is really quite deep! What we do is
+provide an auxiliary record, `make-is-limit`{.Agda}, which computes
+right extensions to the point.
+
+<!--
+```agda
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+  where
+  private
+    module J = Precategory J
+    module C = Cat.Reasoning C
+
+  record make-is-limit (Diagram : Functor J C) (apex : C.Ob)
+            : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂) where
+    no-eta-equality
+    open Functor Diagram
+```
+-->
+
+We solve this by defining a _concretised_ version of `is-limit`{.Agda},
+called `make-is-limit`{.Agda}, which exposes the following data. First,
+we have morphisms from the apex to every value in the diagram, a family
+called $\psi$. Moreover, if $f : x \to y$ is a morphism in the "shape"
+category $\cJ$, then $Ff\psi x = \psi y$, i.e., the $\psi$ maps fit into
+triangles
+
+~~~{.quiver .tall-15}
+\[\begin{tikzcd}
+  & {\mathrm{apex}} \\
+  \\
+  Fx && {Fy\text{.}}
+  \arrow["{\psi_x}"', curve={height=6pt}, from=1-2, to=3-1]
+  \arrow["{\psi_y}", curve={height=-6pt}, from=1-2, to=3-3]
+  \arrow["Ff"', from=3-1, to=3-3]
+\end{tikzcd}\]
+~~~
 
 ```agda
-module is-limit
-  {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
-  {Diagram : Functor J C} {apex}
-  (L : is-limit Diagram apex)
-  where
+    field
+      ψ        : (j : J.Ob) → C.Hom apex (F₀ j)
+      commutes : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ ψ x ≡ ψ y
+```
+
+The rest of the data says that $\psi$ is the universal family of maps
+with this property: If $\eta_j : x \to Fj$ is another family of maps
+with the same commutativty property, then each $\eta_j$ factors through
+the apex by a single, _unique_ universal morphism:
+
+```agda
+      universal
+        : ∀ {x : C.Ob}
+        → (eta : ∀ j → C.Hom x (F₀ j))
+        → (∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
+        → C.Hom x apex
+
+      factors
+        : ∀ {j : J.Ob} {x : C.Ob}
+        → (eta : ∀ j → C.Hom x (F₀ j))
+        → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
+        → ψ j C.∘ universal eta p ≡ eta j
+
+      unique
+        : ∀ {x : C.Ob}
+        → (eta : ∀ j → C.Hom x (F₀ j))
+        → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
+        → (other : C.Hom x apex)
+        → (∀ j → ψ j C.∘ other ≡ eta j)
+        → other ≡ universal eta p
 ```
 
 <!--
 ```agda
+    unique₂
+      : ∀ {x : C.Ob}
+      → (eta : ∀ j → C.Hom x (F₀ j))
+      → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
+      → {o1 : C.Hom x apex} → (∀ j → ψ j C.∘ o1 ≡ eta j)
+      → {o2 : C.Hom x apex} → (∀ j → ψ j C.∘ o2 ≡ eta j)
+      → o1 ≡ o2
+    unique₂ {x = x} eta p q r = unique eta p _ q ∙ sym (unique eta p _ r)
+```
+-->
 
-  private
-    module J = Cat.Reasoning J
-    module C = Cat.Reasoning C
-    module Diagram = Functor Diagram
-  
-    open is-right-kan-extension L
+If we have this data, then we can make a value of `is-limit`{.Agda}. It
+might seem like naturality, required for a Kan extension, is missing
+from `make-is-limit`{.Agda}, but it can be derived from the other data
+we have been given:
+
+```
+  to-is-limit : ∀ {D : Functor J C} {apex} → make-is-limit D apex → is-limit D apex
+  to-is-limit {Diagram} {apex} mklim = lim where
+    open make-is-limit mklim
+    open is-ran
     open Functor
     open _=>_
-```
--->
 
-If $x$ is the limit of $D$, then we have map from $x$ to every object
-in the diagram.
-
-```agda
-  ψ : (j : J.Ob) → C.Hom apex (Diagram.₀ j)
-  ψ j = hom
-    module limit-proj where
-      hom : C.Hom apex (Diagram.₀ j)
-      hom = eps .η j
-```
-
-<!--
-```agda
-  {-# DISPLAY limit-proj.hom x = ψ x #-}
-```
--->
-
-Furthermore, these maps must commute with all morphisms in the diagram.
-
-```agda
-  commutes : ∀ {x y} (f : J.Hom x y) → Diagram.₁ f C.∘ ψ x ≡ ψ y
-  commutes {x} f = sym (eps .is-natural x _ f) ∙ C.idr _
+    lim : is-limit Diagram apex
+    lim .eps .η = ψ
+    lim .eps .is-natural _ _ f =
+      ψ _ C.∘ C.id          ≡⟨ C.idr _ ⟩
+      ψ _                   ≡˘⟨ commutes f ⟩
+      Diagram .F₁ f C.∘ ψ _ ∎
+    lim .σ {M = M} α .η _ =
+      universal (α .η) (λ f → sym (α .is-natural _ _ f) ∙ C.elimr (M .F-id))
+    lim .σ {M = M} α .is-natural _ _ _ =
+      lim .σ α .η _ C.∘ M .F₁ tt ≡⟨ C.elimr (M .F-id) ⟩
+      lim .σ α .η _              ≡˘⟨ C.idl _ ⟩
+      C.id C.∘ lim .σ α .η _     ∎
+    lim .σ-comm {β = β} = Nat-path λ j →
+      factors (β .η) _
+    lim .σ-uniq {β = β} {σ′ = σ′} p = Nat-path λ _ →
+      sym $ unique (β .η) _ (σ′ .η _) (λ j → sym (p ηₚ j))
 ```
 
-We also have a universal map out of $x$ from any other object $y$
-that also has the required commuting maps into the diagram.
+To _use_ the data of `is-limit`, we provide a function for *un*making a
+limit:
 
 ```agda
-  universal
-    : ∀ {x : C.Ob}
-    → (eta : ∀ j → C.Hom x (Diagram.₀ j))
-    → (∀ {x y} (f : J.Hom x y) → Diagram.₁ f C.∘ eta x ≡ eta y)
-    → C.Hom x apex
-  universal {x = x} eta p = hom
-    module limit-universal where
-      eta-nt : const! x F∘ !F => Diagram
+  unmake-limit : ∀ {D : Functor J C} {a} → is-limit D a → make-is-limit D a
+  unmake-limit {D} {a} lim = ml module unmake-limit where
+    open is-ran lim
+    open Functor D
+    open make-is-limit
+    open _=>_
+
+    module _ {x} (eta : ∀ j → C.Hom x (F₀ j))
+                 (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
+      where
+
+      eta-nt : const! x F∘ !F => D
       eta-nt .η = eta
       eta-nt .is-natural _ _ f = C.idr _ ∙ sym (p f)
 
-      hom : C.Hom x apex
+      hom : C.Hom x a
       hom = σ {M = const! x} eta-nt .η tt
+
+    ml : make-is-limit D a
+    ml .ψ j        = eps.ε j
+    ml .commutes f = sym (eps.is-natural _ _ f) ∙ C.idr _
+
+    ml .universal   = hom
+    ml .factors e p = σ-comm {β = eta-nt e p} ηₚ _
+    ml .unique {x = x} eta p other q =
+      sym $ σ-uniq {σ′ = other-nt} (Nat-path λ j → sym (q j)) ηₚ tt
+      where
+        other-nt : const! x => const! a
+        other-nt .η _ = other
+        other-nt .is-natural _ _ _ = C.id-comm
+
 ```
 
 <!--
 ```agda
-  {-# DISPLAY limit-universal.hom eta p = universal eta p #-}
+module is-limit
+  {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+  {D : Functor J C} {a} (L : is-limit D a)
+  where
+
+  open make-is-limit (unmake-limit L) public
 ```
 -->
-
-Furthermore, all maps from $x$ into the diagram commute with the
-universal map.
-
-```agda
-  factors
-    : ∀ {j : J.Ob} {x : C.Ob}
-    → (eta : ∀ j → C.Hom x (Diagram.₀ j))
-    → (p : ∀ {x y} (f : J.Hom x y) → Diagram.₁ f C.∘ eta x ≡ eta y)
-    → ψ j C.∘ universal eta p ≡ eta j
-  factors eta p = σ-comm {β = limit-universal.eta-nt eta p} ηₚ _
-```
-
-Finally, this map is unique.
-
-```agda
-  unique
-    : ∀ {x : C.Ob}
-    → (eta : ∀ j → C.Hom x (Diagram.₀ j))
-    → (p : ∀ {x y} (f : J.Hom x y) → Diagram.₁ f C.∘ eta x ≡ eta y)
-    → (other : C.Hom x apex)
-    → (∀ j → ψ j C.∘ other ≡ eta j)
-    → other ≡ universal eta p
-  unique {x = x} eta _ other q =
-    sym $ σ-uniq {σ′ = other-nt} (Nat-path λ j → sym (q j)) ηₚ tt
-    where
-      other-nt : const! x => const! apex
-      other-nt .η _ = other
-      other-nt .is-natural _ _ _ = C.id-comm
-
-  unique₂
-    : ∀ {x : C.Ob}
-    → (eta : ∀ j → C.Hom x (Diagram.₀ j))
-    → (p : ∀ {x y} (f : J.Hom x y) → Diagram.₁ f C.∘ eta x ≡ eta y)
-    → {o1 : C.Hom x apex} → (∀ j → ψ j C.∘ o1 ≡ eta j)
-    → {o2 : C.Hom x apex} → (∀ j → ψ j C.∘ o2 ≡ eta j)
-    → o1 ≡ o2
-  unique₂ {x = x} eta p q r = unique eta p _ q ∙ sym (unique eta p _ r)
-```
 
 We also provide a similar interface for the bundled form of limits.
 
 ```agda
 module Limit
-  {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
-  {Diagram : Functor J C}
-  (L : Limit Diagram)
+  {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Functor J C} (L : Limit D)
   where
 ```
 
@@ -292,37 +349,43 @@ module Limit
   private
     import Cat.Reasoning J as J
     import Cat.Reasoning C as C
-    module Diagram = Functor Diagram
+    module Diagram = Functor D
     open Ran L
     open Functor
     open _=>_
 ```
 -->
 
-The apex of the limit can be obtained by applying the extension functor
-to the single object of `⊤Cat`{.Agda}.
+The "apex" object of the limit is the single value in the image of the
+extension functor.
 
 ```agda
   apex : C.Ob
-  apex = Ext .F₀ tt
+  apex = Ext.₀ tt
 ```
 
-Furthermore, we can show that the apex is the limit of the diagram.
-This is somewhat more tedious than it needs to be for silly programming
-reasons; Agda is not smart enough to realize that all functors out of
-`⊤Cat`{.Agda} are constant functors!
+Furthermore, we can show that the apex is the limit, in the sense of
+`is-limit`{.Agda}, of the diagram. You'd think this is immediate, but
+unfortunately proof assistants: `is-limit`{.Agda} asks for _the_
+constant functor functor $\{*\} \to \cC$ with value `apex` to be a Kan
+extension, but `Limit`{.Agda}, being an instance of `Ran`{.Agda},
+packages an _arbitrary_ functor $\{*\} \to \cC$.
+
+Since Agda does not compare functors for $\eta$-equality, we have to
+shuffle our data around manually. Fortunately, this isn't a very long
+computation.
 
 ```agda
-  has-limit : is-limit Diagram apex
-  has-limit .is-right-kan-extension.eps .η = eps .η
-  has-limit .is-right-kan-extension.eps .is-natural x y f =
-    ap (_ C.∘_) (sym $ Ext .F-id) ∙ eps .is-natural x y f
-  has-limit .is-right-kan-extension.σ α .η = σ α .η
-  has-limit .is-right-kan-extension.σ α .is-natural x y f =
+  has-limit : is-limit D apex
+  has-limit .is-ran.eps .η = eps.ε
+  has-limit .is-ran.eps .is-natural x y f =
+    ap (_ C.∘_) (sym $ Ext .F-id) ∙ eps.is-natural x y f
+  has-limit .is-ran.σ α .η = σ α .η
+  has-limit .is-ran.σ α .is-natural x y f =
     σ α .is-natural tt tt tt ∙ ap (C._∘ _) (Ext .F-id)
-  has-limit .is-right-kan-extension.σ-comm =
+  has-limit .is-ran.σ-comm =
     Nat-path (λ _ → σ-comm ηₚ _)
-  has-limit .is-right-kan-extension.σ-uniq {M = M} {σ′ = σ′} p =
+  has-limit .is-ran.σ-uniq {M = M} {σ′ = σ′} p =
     Nat-path (λ _ → σ-uniq {σ′ = nt} (Nat-path (λ j → p ηₚ j)) ηₚ _) where
       nt : M => Ext
       nt .η = σ′ .η
@@ -331,70 +394,7 @@ reasons; Agda is not smart enough to realize that all functors out of
   open is-limit has-limit public
 ```
 
-## Constructing Limits
-
-One can obviously use the definition of right kan extensions to construct
-limits, but this can be a bit cumbersome. To work around this, we provide
-a more streamlined interface.
-
-```agda
-module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
-  where
-  private
-    module J = Precategory J
-    module C = Cat.Reasoning C
-
-  record make-is-limit (Diagram : Functor J C) (apex : C.Ob) : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂) where
-    no-eta-equality
-    open Functor Diagram
-    field
-      ψ : (j : J.Ob) → C.Hom apex (F₀ j)
-      commutes : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ ψ x ≡ ψ y
-      universal
-        : ∀ {x : C.Ob}
-        → (eta : ∀ j → C.Hom x (F₀ j))
-        → (∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
-        → C.Hom x apex
-      factors
-        : ∀ {j : J.Ob} {x : C.Ob}
-        → (eta : ∀ j → C.Hom x (F₀ j))
-        → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
-        → ψ j C.∘ universal eta p ≡ eta j
-      unique
-        : ∀ {x : C.Ob}
-        → (eta : ∀ j → C.Hom x (F₀ j))
-        → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
-        → (other : C.Hom x apex)
-        → (∀ j → ψ j C.∘ other ≡ eta j)
-        → other ≡ universal eta p
-
-  to-is-limit
-    : ∀ {Diagram : Functor J C} {apex}
-    → make-is-limit Diagram apex
-    → is-limit Diagram apex
-  to-is-limit {Diagram} {apex} mklim = lim where
-    open make-is-limit mklim
-    open is-right-kan-extension
-    open Functor
-    open _=>_
-
-    lim : is-limit Diagram apex
-    lim .eps .η = ψ
-    lim .eps .is-natural _ _ f =
-      C.idr _ ∙ sym (commutes f)
-    lim .σ {M = M} α .η _ =
-      universal (α .η) (λ f → sym (α .is-natural _ _ f) ∙ C.elimr (M .F-id))
-    lim .σ {M = M} α .is-natural _ _ _ =
-      C.elimr (M .F-id) ∙ sym (C.idl _)
-    lim .σ-comm {β = β} = Nat-path λ j →
-      factors (β .η) _
-    lim .σ-uniq {β = β} {σ′ = σ′} p = Nat-path λ _ →
-      sym $ unique (β .η) _ (σ′ .η _) (λ j → sym (p ηₚ j))
-```
-
-
 # Uniqueness
-
 
 <!--
 ```agda
@@ -405,7 +405,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
     module J = Precategory J
     module C = Cat.Reasoning C
     module Diagram = Functor Diagram
-    open is-right-kan-extension
+    open is-ran
     open _=>_
 ```
 -->
@@ -438,8 +438,8 @@ are mutually inverse, as universal maps are unique.
       module L′ = is-limit L′
 ```
 
-Furthermore, if the universal map  is invertible, then that means that
-the domain is also a limit of the diagram.
+Furthermore, if the universal map is invertible, then that means that
+its domain is _also_ a limit of the diagram.
 
 ```agda
   is-invertible→is-limit
@@ -464,15 +464,15 @@ the domain is also a limit of the diagram.
       L.ψ _ C.∘ L.universal tau q                                 ≡⟨ L.factors tau q ⟩
       tau _ ∎
     lim .unique tau q other r =
-        other                               ≡⟨ C.insertl invr ⟩
-        inv C.∘ L.universal eta p C.∘ other ≡⟨ C.refl⟩∘⟨ L.unique _ _ _ (λ j → C.pulll (L.factors eta p) ∙ r j) ⟩
-        inv C.∘ L.universal tau q           ∎
+      other                               ≡⟨ C.insertl invr ⟩
+      inv C.∘ L.universal eta p C.∘ other ≡⟨ C.refl⟩∘⟨ L.unique _ _ _ (λ j → C.pulll (L.factors eta p) ∙ r j) ⟩
+      inv C.∘ L.universal tau q           ∎
 ```
 
 # Preservation of Limits
 
 Suppose you have a limit $L$ of a diagram $\rm{Dia}$. We say that $F$
-*preserves $L$* if $F(L)$ is also a limit of $F \circ \rm{Dia}$.
+**preserves $L$** if $F(L)$ is also a limit of $F \circ \rm{Dia}$.
 
 <!--
 ```agda
@@ -525,7 +525,7 @@ with the limits $F \circ \rm{Dia}$ in $\cD$.
   record creates-limit : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
     field
       preserves-limit : Preserves-limit
-      reflects-limit : Reflects-limit
+      reflects-limit  : Reflects-limit
 ```
 
 ## Continuity

@@ -49,9 +49,10 @@ commuting on the nose, we have natural transformations $\eps$ witnessing
 their commutativity.
 
 ```agda
-record is-right-kan-extension
+record is-ran
   (p : Functor C C′) (F : Functor C D) (Ext : Functor C′ D) : Type (kan-lvl p F) where
   no-eta-equality
+
   field
     eps : Ext F∘ p => F
 
@@ -60,6 +61,8 @@ record is-right-kan-extension
     σ-uniq : {M : Functor C′ D} {β : M F∘ p => F} {σ′ : M => Ext}
            → β ≡ eps ∘nt (σ′ ◂ p)
            → σ β ≡ σ′
+
+  module eps = _=>_ eps renaming (η to ε)
 
   σ-uniq₂
     : {M : Functor C′ D} (β : M F∘ p => F) {σ₁′ σ₂′ : M => Ext}
@@ -71,10 +74,11 @@ record is-right-kan-extension
 record Ran (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
   no-eta-equality
   field
-    Ext : Functor C′ D
-    has-right-kan-extension : is-right-kan-extension p F Ext
+    Ext     : Functor C′ D
+    has-ran : is-ran p F Ext
 
-  open is-right-kan-extension has-right-kan-extension public
+  module Ext = Functor Ext
+  open is-ran has-ran public
 ```
 
 The first thing we'll verify is that this construction is indeed dual to
@@ -86,36 +90,34 @@ in the way.
 module _ (p : Functor C C′) (F : Functor C D) where
   open Ran
   open Lan
-  open is-right-kan-extension
+  open is-ran
   open _=>_
 
   is-co-lan→is-ran
     : ∀ {Ext : Functor (C′ ^op) (D ^op)}
-    → is-left-kan-extension (Functor.op p) (Functor.op F) Ext
-    → is-right-kan-extension p F (Functor.op Ext)
-  is-co-lan→is-ran {Ext = Ext} is-lan = is-ran where
-    module is-lan = is-left-kan-extension is-lan
+    → is-lan (Functor.op p) (Functor.op F) Ext
+    → is-ran p F (Functor.op Ext)
+  is-co-lan→is-ran {Ext = Ext} is-lan = ran where
+    module lan = is-lan is-lan
 
-    is-ran : is-right-kan-extension p F (Functor.op Ext)
-    is-ran .eps .η x = is-lan.eta .η x
-    is-ran .eps .is-natural x y f = sym (is-lan.eta .is-natural y x f)
+    ran : is-ran p F (Functor.op Ext)
+    ran .eps .η x = lan.eta .η x
+    ran .eps .is-natural x y f = sym (lan.eta .is-natural y x f)
 
-    is-ran .σ {M = M} α = op (is-lan.σ α′) where
+    ran .σ {M = M} α = op (lan.σ α′) where
       α′ : Functor.op F => Functor.op M F∘ Functor.op p
       α′ .η x = α .η x
       α′ .is-natural x y f = sym (α .is-natural y x f)
 
-    is-ran .σ-comm = Nat-path λ x → is-lan.σ-comm ηₚ x
-    is-ran .σ-uniq {M = M} {σ′ = σ′} p =
-      Nat-path λ x → is-lan.σ-uniq {σ′ = σ′op} (Nat-path λ x → p ηₚ x) ηₚ x
+    ran .σ-comm = Nat-path λ x → lan.σ-comm ηₚ x
+    ran .σ-uniq {M = M} {σ′ = σ′} p =
+      Nat-path λ x → lan.σ-uniq {σ′ = σ′op} (Nat-path λ x → p ηₚ x) ηₚ x
       where
         σ′op : Ext => Functor.op M
         σ′op .η x = σ′ .η x
         σ′op .is-natural x y f = sym (σ′ .is-natural y x f)
 
   Co-lan→Ran : Lan (Functor.op p) (Functor.op F) -> Ran p F
-  Co-lan→Ran lan .Ext =
-    Functor.op (lan .Ext)
-  Co-lan→Ran lan .has-right-kan-extension =
-    is-co-lan→is-ran (lan .has-left-kan-extension)
+  Co-lan→Ran lan .Ext     = Functor.op (lan .Ext)
+  Co-lan→Ran lan .has-ran = is-co-lan→is-ran (lan .has-lan)
 ```

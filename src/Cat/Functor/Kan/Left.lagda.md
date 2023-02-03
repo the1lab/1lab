@@ -83,7 +83,7 @@ $p$, in that $\eta$ is a natural isomorphism.
 [cocomplete]: Cat.Diagram.Colimit.Base.html#cocompleteness
 
 ```agda
-record is-left-kan-extension
+record is-lan
   (p : Functor C C′) (F : Functor C D) (Ext : Functor C′ D) : Type (kan-lvl p F) where
   field
     eta : F => Ext F∘ p
@@ -120,10 +120,10 @@ We also provide a bundled form of this data.
 ```agda
 record Lan (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
   field
-    Ext : Functor C′ D
-    has-left-kan-extension : is-left-kan-extension p F Ext
+    Ext     : Functor C′ D
+    has-lan : is-lan p F Ext
 
-  open is-left-kan-extension has-left-kan-extension public
+  open is-lan has-lan public
 ```
 
 ## Ubiquity
@@ -138,7 +138,7 @@ vibes, but the latter concept _is_ a legitimate generalisation.
 ```agda
 module _ {F : Functor C D} {G : Functor D C} (adj : F ⊣ G) where
   open Lan
-  open is-left-kan-extension
+  open is-lan
   private
     module F = Functor F
     module G = Functor G
@@ -150,7 +150,7 @@ module _ {F : Functor C D} {G : Functor D C} (adj : F ⊣ G) where
 -->
 
 ```agda
-  adjoint→is-lan : is-left-kan-extension F Id G
+  adjoint→is-lan : is-lan F Id G
   adjoint→is-lan .eta = unit
 ```
 
