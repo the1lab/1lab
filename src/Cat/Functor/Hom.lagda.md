@@ -320,7 +320,7 @@ _also_ a cocone homomorphism $X \to Y$; But $X$ is initial, so $f = g$!
 ```agda
   Representables-generate-presheaf {f} {g} sep =
     ap hom $ is-contr→is-prop
-      (is-colimit→initial-cocone _ (coyoneda X) (Map→cocone-under X f))
+      (is-colimit→is-initial-cocone _ (coyoneda X) (Map→cocone-under X f))
       f′ g′
     where
       f′ : Cocone-hom (よ F∘ El.πₚ C X) _ (Map→cocone-under X f)

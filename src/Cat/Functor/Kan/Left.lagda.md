@@ -113,6 +113,8 @@ that $\eta$ does for $\Lan_p F$), the 2-cell exists and is unique.
     σ-uniq : {M : Functor C′ D} {α : F => M F∘ p} {σ′ : Ext => M}
            → α ≡ (σ′ ◂ p) ∘nt eta
            → σ α ≡ σ′
+
+  module eta = _=>_ eta
 ```
 
 We also provide a bundled form of this data.

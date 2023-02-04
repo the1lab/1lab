@@ -56,183 +56,28 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (Diagram : Func
     module C = Precategory C
 
   is-colimit : C.Ob → Type _
-  is-colimit x = is-left-kan-extension !F Diagram (const! x)
+  is-colimit x = is-lan !F Diagram (const! x)
 
   Colimit : Type _
   Colimit = Lan !F Diagram
 ```
 
-These definitions are a bit difficult to work with as they are, so we
-define more human-friendly interface.
+## Concretely
 
-```agda
-module is-colimit
-  {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
-  {Diagram : Functor J C} {coapex}
-  (L : is-colimit Diagram coapex)
-  where
-```
+The above definition is very concise, and has the benefit of being
+abstract: this means that we can directly re-use definitions and
+theorems for kan extensions for colimits. However, this also means
+that the definition is abstract: it makes working with colimits
+_in general_ easier, at the cost of making _specific_ colimits more
+difficult, as the data we actually care about has been obfuscated.
 
-<!--
-```agda
-
-  private
-    module J = Cat.Reasoning J
-    module C = Cat.Reasoning C
-    module Diagram = Functor Diagram
-  
-    open is-left-kan-extension L
-    open Functor
-    open _=>_
-```
--->
-
-If $x$ is the limit of $D$, then we have map to $x$ from every object
-in the diagram.
-
-```agda
-  ψ : (j : J.Ob) → C.Hom (Diagram.₀ j) coapex
-  ψ j = hom
-    module colimit-proj where
-      hom : C.Hom (Diagram.₀ j) coapex
-      hom = eta .η j
-```
+For instance, it's quite hard to actually show that a specific object
+is a colimit of aa diagram, as you have to wrap all the relevant data
+in a few layers of abstraction. To work around this, we provide an
+auxiliary record type, `make-is-colimit`{.Agda}, which computes the
+appropriate left extension.
 
 <!--
-```agda
-  {-# DISPLAY colimit-proj.hom x = ψ x #-}
-```
--->
-
-Furthermore, these maps must commute with all morphisms in the diagram.
-
-```agda
-  commutes : ∀ {x y} (f : J.Hom x y) → ψ y C.∘ Diagram.₁ f ≡ ψ x
-  commutes {x} f = eta .is-natural x _ f ∙ C.idl _
-```
-
-We also have a universal map out of $x$ to any other object $y$
-that also has the required commuting maps into the diagram.
-
-```agda
-  universal
-    : ∀ {x : C.Ob}
-    → (eps : ∀ j → C.Hom (Diagram.₀ j) x)
-    → (∀ {x y} (f : J.Hom x y) → eps y C.∘ Diagram.₁ f ≡ eps x)
-    → C.Hom coapex x
-  universal {x = x} eps p = hom
-    module colimit-universal where
-      eps-nt : Diagram => const! x F∘ !F
-      eps-nt .η = eps
-      eps-nt .is-natural _ _ f = p f ∙ sym (C.idl _)
-
-      hom : C.Hom coapex x
-      hom = σ {M = const! x} eps-nt .η tt
-```
-
-<!--
-```agda
-  {-# DISPLAY colimit-universal.hom eta p = universal eta p #-}
-```
--->
-
-Furthermore, all maps into $x$ from the diagram commute with the
-universal map.
-
-```agda
-  factors
-    : ∀ {j : J.Ob} {x : C.Ob}
-    → (eps : ∀ j → C.Hom (Diagram.₀ j) x)
-    → (p : ∀ {x y} (f : J.Hom x y) → eps y C.∘ Diagram.₁ f ≡ eps x)
-    → universal eps p C.∘ ψ j ≡ eps j
-  factors eta p = σ-comm {α = colimit-universal.eps-nt eta p} ηₚ _
-```
-
-Finally, this map is unique.
-
-```agda
-  unique
-    : ∀ {x : C.Ob}
-    → (eps : ∀ j → C.Hom (Diagram.₀ j) x)
-    → (p : ∀ {x y} (f : J.Hom x y) → eps y C.∘ Diagram.₁ f ≡ eps x)
-    → (other : C.Hom coapex x)
-    → (∀ j → other C.∘ ψ j ≡ eps j)
-    → other ≡ universal eps p
-  unique {x = x} eps _ other q =
-    sym $ σ-uniq {σ′ = other-nt} (Nat-path (λ j → sym (q j))) ηₚ tt
-    where
-      other-nt : const! coapex => const! x
-      other-nt .η _ = other
-      other-nt .is-natural _ _ _ = C.id-comm
-
-  unique₂
-    : ∀ {x : C.Ob}
-    → (eps : ∀ j → C.Hom (Diagram.₀ j) x)
-    → (p : ∀ {x y} (f : J.Hom x y) → eps y C.∘ Diagram.₁ f ≡ eps x)
-    → ∀ {o1} → (∀ j → o1 C.∘ ψ j ≡ eps j)
-    → ∀ {o2} → (∀ j → o2 C.∘ ψ j ≡ eps j)
-    → o1 ≡ o2
-  unique₂ eps p q r = unique eps p _ q ∙ sym (unique eps p _ r)
-```
-
-We also provide an interface for the bundled form of colimits.
-
-```agda
-module Colimit
-  {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
-  {Diagram : Functor J C}
-  (L : Colimit Diagram)
-  where
-```
-
-<!--
-```agda
-  private
-    import Cat.Reasoning J as J
-    import Cat.Reasoning C as C
-    module Diagram = Functor Diagram
-    open Lan L
-    open Functor
-    open _=>_
-```
--->
-
-The coapex of the colimit can be obtained by applying the extension functor
-to the single object of `⊤Cat`{.Agda}.
-
-```agda
-  coapex : C.Ob
-  coapex = Ext .F₀ tt
-```
-
-We also show that the coapex is indeed the colimit of the diagram.
-This is a bit annoying, as Agda isn't able to realize that all functors
-out of `⊤Cat`{.Agda} are constant.
-
-```agda
-  has-colimit : is-colimit Diagram coapex
-  has-colimit .is-left-kan-extension.eta .η = eta .η
-  has-colimit .is-left-kan-extension.eta .is-natural x y f =
-    eta .is-natural x y f ∙ ap (C._∘ _) (Ext .F-id)
-  has-colimit .is-left-kan-extension.σ α .η = σ α .η
-  has-colimit .is-left-kan-extension.σ α .is-natural x y f =
-    ap (_ C.∘_) (sym (Ext .F-id)) ∙ σ α .is-natural tt tt tt
-  has-colimit .is-left-kan-extension.σ-comm =
-    Nat-path (λ _ → σ-comm ηₚ _)
-  has-colimit .is-left-kan-extension.σ-uniq {M = M} {σ′ = σ′} p =
-    Nat-path (λ _ → σ-uniq {σ′ = nt} (Nat-path (λ j → p ηₚ j)) ηₚ _)
-    where
-      nt : Ext => M
-      nt .η = σ′ .η
-      nt .is-natural x y f = ap (_ C.∘_) (Ext .F-id) ∙ σ′ .is-natural x y f
-```
-
-## Constructing Colimits
-
-Writing out colimits as kan extensions can get a bit tedious, so we also
-define a nicer interface for constructing colimits.
-
-
 ```agda
 module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
   where
@@ -246,9 +91,26 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
     where
     no-eta-equality
     open Functor Diagram
+```
+-->A
+
+First, we require morphisms from the every value to the diagram to
+the coapex; we call this family $\phi$. Moreover, if $f : x \to y$ is
+a morphism in the "shape" category $\cJ$, then $\psi y \circ Ff = \psi x$,
+IE: the $\psi$ family is actually natural.
+
+```agda
     field
       ψ : (j : J.Ob) → C.Hom (F₀ j) coapex
       commutes : ∀ {x y} (f : J.Hom x y) → ψ y C.∘ F₁ f ≡ ψ x
+```
+
+The rest of the data ensures that $\psi$ is the universal family
+of maps iwth this property; if $\epsilon_j : Fj \to x$ is another natural
+family, then each $\epsilon_j$ factors through the coapex by a _unique_
+universal morphism:
+
+```agda
       universal
         : ∀ {x : C.Ob}
         → (eps : ∀ j → C.Hom (F₀ j) x)
@@ -267,13 +129,29 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
         → (∀ j → other C.∘ ψ j ≡ eps j)
         → other ≡ universal eps p
 
+    unique₂
+      : ∀ {x : C.Ob}
+      → (eps : ∀ j → C.Hom (F₀ j) x)
+      → (p : ∀ {x y} (f : J.Hom x y) → eps y C.∘ F₁ f ≡ eps x)
+      → ∀ {o1} → (∀ j → o1 C.∘ ψ j ≡ eps j)
+      → ∀ {o2} → (∀ j → o2 C.∘ ψ j ≡ eps j)
+      → o1 ≡ o2
+    unique₂ eps p q r = unique eps p _ q ∙ sym (unique eps p _ r)
+```
+
+Once we have this data, we can use it to construct a value of
+`is-colimit`{.Agda}. The naturality condition we required above may
+seem too weak, but the full naturality condition can be derived from
+the rest of the data.
+
+```agda
   to-is-colimit
     : ∀ {Diagram : Functor J C} {coapex}
     → make-is-colimit Diagram coapex
     → is-colimit Diagram coapex
   to-is-colimit {Diagram} {coapex} mkcolim = colim where
     open make-is-colimit mkcolim
-    open is-left-kan-extension
+    open is-lan
     open Functor
     open _=>_
 
@@ -291,7 +169,93 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
       sym $ unique (α .η) _ (σ′ .η _) (λ j → sym (p ηₚ j))
 ```
 
-## Uniqueness
+We also want to be able to use the interface of `make-is-colimit`{.Agda}
+when we have our hands on a colimit. To do this, we provide a function
+for *un*making a colimit.
+
+```agda
+  unmake-colimit
+    : ∀ {D : Functor J C} {F : Functor ⊤Cat C}
+    → is-lan !F D F
+    → make-is-colimit D (Functor.F₀ F tt)
+  unmake-colimit {D} {F} colim = mc module unmake-colimit where
+    coapex = Functor.F₀ F tt
+    open is-lan colim
+    open Functor D
+    open make-is-colimit
+    open _=>_
+
+    module _ {x} (eps : ∀ j → C.Hom (F₀ j) x)
+                 (p : ∀ {x y} (f : J.Hom x y) →  eps y C.∘ F₁ f ≡ eps x)
+      where
+
+      eps-nt : D => const! x F∘ !F
+      eps-nt .η = eps
+      eps-nt .is-natural _ _ f = p f ∙ sym (C.idl _)
+
+      hom : C.Hom coapex x
+      hom = σ {M = const! x} eps-nt .η tt
+
+    mc : make-is-colimit D coapex
+    mc .ψ = eta.η
+    mc .commutes f = eta.is-natural _ _ f ∙ C.eliml (Functor.F-id F)
+    mc .universal = hom
+    mc .factors e p = σ-comm {α = eps-nt e p} ηₚ _
+    mc .unique {x = x} eta p other q =
+      sym $ σ-uniq {σ′ = other-nt} (Nat-path λ j → sym (q j)) ηₚ tt
+      where
+        other-nt : F => const! x
+        other-nt .η _ = other
+        other-nt .is-natural _ _ _ = C.elimr (Functor.F-id F) ∙ sym (C.idl _)
+```
+
+<!--
+```agda
+module is-colimit
+  {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+  {D : Functor J C} {F : Functor ⊤Cat C} (t : is-lan !F D F)
+  where
+
+  open make-is-colimit (unmake-colimit {F = F} t) public
+```
+-->
+
+We also provide a similar interface for the bundled form of colimits.
+
+```agda
+module Colimit
+  {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Functor J C} (L : Colimit D)
+  where
+```
+
+<!--
+```agda
+  private
+    import Cat.Reasoning J as J
+    import Cat.Reasoning C as C
+    module Diagram = Functor D
+    open Lan L
+    open Functor
+    open _=>_
+```
+-->
+
+The coapex of the colimit can be obtained by applying the extension functor
+to the single object of `⊤Cat`{.Agda}.
+
+```agda
+  coapex : C.Ob
+  coapex = Ext .F₀ tt
+```
+
+<!--
+```agda
+  open is-colimit has-lan public  
+```
+-->
+
+
+# Uniqueness
 
 [Much like limits], colimits are unique up to isomorphism.
 
@@ -330,7 +294,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
       module L′ = is-colimit L′
 ```
 
-## Preservation of Colimits
+# Preservation of Colimits
 
 The definitions here are the same idea as [preservation of limits], just
 dualized.
@@ -350,16 +314,16 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
 -->
 
 ```agda
-  preserves-colimit : Type _
-  preserves-colimit = ∀ x → is-colimit Diagram x → is-colimit (F F∘ Diagram) (F.₀ x)
+  Preserves-colimit : Type _
+  Preserves-colimit = ∀ x → is-colimit Diagram x → is-colimit (F F∘ Diagram) (F.₀ x)
 
-  reflects-colimit : Type _
-  reflects-colimit = ∀ x → is-colimit (F F∘ Diagram) (F.₀ x) → is-colimit Diagram x
+  Reflects-colimit : Type _
+  Reflects-colimit = ∀ x → is-colimit (F F∘ Diagram) (F.₀ x) → is-colimit Diagram x
 
   record creates-colimit : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
     field
-      preserves : preserves-colimit
-      reflects : reflects-colimit
+      preserves-colimit : Preserves-colimit
+      reflects-colimit : Reflects-colimit
 ```
 
 ## Cocontinuity
@@ -379,7 +343,7 @@ colimit for that diagram.
 ```agda
 is-cocontinuous {oshape = oshape} {hshape} {C = C} F =
   ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
-  → preserves-colimit F Diagram
+  → Preserves-colimit F Diagram
 ```
 
 ## Cocompleteness

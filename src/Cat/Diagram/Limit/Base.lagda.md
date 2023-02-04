@@ -368,35 +368,11 @@ extension functor.
   apex = Ext.₀ tt
 ```
 
-Furthermore, we can show that the apex is the limit, in the sense of
-`is-limit`{.Agda}, of the diagram. You'd think this is immediate, but
-unfortunately proof assistants: `is-limit`{.Agda} asks for _the_
-constant functor functor $\{*\} \to \cC$ with value `apex` to be a Kan
-extension, but `Limit`{.Agda}, being an instance of `Ran`{.Agda},
-packages an _arbitrary_ functor $\{*\} \to \cC$.
-
-Since Agda does not compare functors for $\eta$-equality, we have to
-shuffle our data around manually. Fortunately, this isn't a very long
-computation.
-
+<!--
 ```agda
-  has-limit : is-limit D apex
-  has-limit .is-ran.eps .η = eps.ε
-  has-limit .is-ran.eps .is-natural x y f =
-    ap (_ C.∘_) (sym $ Ext .F-id) ∙ eps.is-natural x y f
-  has-limit .is-ran.σ α .η = σ α .η
-  has-limit .is-ran.σ α .is-natural x y f =
-    σ α .is-natural tt tt tt ∙ ap (C._∘ _) (Ext .F-id)
-  has-limit .is-ran.σ-comm =
-    Nat-path (λ _ → σ-comm ηₚ _)
-  has-limit .is-ran.σ-uniq {M = M} {σ′ = σ′} p =
-    Nat-path (λ _ → σ-uniq {σ′ = nt} (Nat-path (λ j → p ηₚ j)) ηₚ _) where
-      nt : M => Ext
-      nt .η = σ′ .η
-      nt .is-natural x y f = σ′ .is-natural x y f ∙ ap (C._∘ _) (sym $ Ext .F-id)
-
-  open is-limit has-limit public
+  open is-limit has-ran public
 ```
+-->
 
 # Uniqueness
 
@@ -504,8 +480,8 @@ In more concise terms, we say a functor preserves limits if it takes
 limiting cones "upstairs" to limiting cones "downstairs".
 
 ```agda
-  preserves-limit : Type _
-  preserves-limit = ∀ x → is-limit Diagram x → is-limit (F F∘ Diagram) (F.₀ x)
+  Preserves-limit : Type _
+  Preserves-limit = ∀ x → is-limit Diagram x → is-limit (F F∘ Diagram) (F.₀ x)
 ```
 
 ## Reflection of limits
@@ -517,8 +493,8 @@ More concretely, if we have a limit in $\cD$ of $F \circ \rm{Dia}$ with
 apex $F(a)$, then $a$ was _already the limit_ of $\rm{Dia}$!
 
 ```agda
-  reflects-limit : Type _
-  reflects-limit = ∀ x → is-limit (F F∘ Diagram) (F.₀ x) → is-limit Diagram x
+  Reflects-limit : Type _
+  Reflects-limit = ∀ x → is-limit (F F∘ Diagram) (F.₀ x) → is-limit Diagram x
 ```
 
 ## Creation of limits
@@ -552,7 +528,7 @@ limit for that diagram.
 ```agda
 is-continuous {oshape = oshape} {hshape} {C = C} F =
   ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
-  → preserves-limit F Diagram
+  → Preserves-limit F Diagram
 ```
 
 ## Completeness
