@@ -248,11 +248,36 @@ to the single object of `⊤Cat`{.Agda}.
   coapex = Ext .F₀ tt
 ```
 
-<!--
+Furthermore, we can show that the apex is the colimit, in the sense of
+`is-colimit`{.Agda}, of the diagram. You'd think this is immediate, but
+unfortunately proof assistants: `is-colimit`{.Agda} asks for _the_
+constant functor functor $\{*\} \to \cC$ with value `coapex` to be a Kan
+extension, but `Colimit`{.Agda}, being an instance of `Lan`{.Agda},
+packages an _arbitrary_ functor $\{*\} \to \cC$.
+
+Since Agda does not compare functors for $\eta$-equality, we have to
+shuffle our data around manually. Fortunately, this isn't a very long
+computation.
+
 ```agda
-  open is-colimit has-lan public  
+  has-colimit : is-colimit D coapex
+  has-colimit .is-lan.eta .η = eta .η
+  has-colimit .is-lan.eta .is-natural x y f =
+    eta .is-natural x y f ∙ ap (C._∘ _) (Ext .F-id)
+  has-colimit .is-lan.σ α .η = σ α .η
+  has-colimit .is-lan.σ α .is-natural x y f =
+    ap (_ C.∘_) (sym (Ext .F-id)) ∙ σ α .is-natural tt tt tt
+  has-colimit .is-lan.σ-comm =
+    Nat-path (λ _ → σ-comm ηₚ _)
+  has-colimit .is-lan.σ-uniq {M = M} {σ′ = σ′} p =
+    Nat-path (λ _ → σ-uniq {σ′ = nt} (Nat-path (λ j → p ηₚ j)) ηₚ _)
+    where
+      nt : Ext => M
+      nt .η = σ′ .η
+      nt .is-natural x y f = ap (_ C.∘_) (Ext .F-id) ∙ σ′ .is-natural x y f
+
+  open is-colimit has-colimit public
 ```
--->
 
 
 # Uniqueness

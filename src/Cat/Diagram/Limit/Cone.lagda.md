@@ -200,7 +200,7 @@ unpacking data.
   is-limit→is-terminal-cone
     : ∀ {x}
     → (L : is-limit F x)
-    → is-terminal Cones (mk-cone x (is-limit.ψ L) (is-limit.commutes L))
+    → is-terminal Cones (cone x (is-limit.ψ L) (is-limit.commutes L))
   is-limit→is-terminal-cone {x = x} L K = term where
     module L = is-limit L
     module K = Cone K
