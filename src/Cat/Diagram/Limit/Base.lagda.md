@@ -1,5 +1,6 @@
 ```agda
 open import Cat.Instances.Shape.Terminal
+open import Cat.Functor.Coherence
 open import Cat.Functor.Kan.Right
 open import Cat.Instances.Functor
 open import Cat.Prelude
@@ -152,8 +153,11 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (Diagram : Func
   private
     module C = Precategory C
 
-  is-limit : C.Ob → Type _
-  is-limit x = is-ran !F Diagram (const! x)
+  cone→counit : ∀ {x : C.Ob} → (Const x => Diagram) → const! x F∘ !F => Diagram
+  unquoteDef cone→counit = define-coherence cone→counit
+
+  is-limit : (x : C.Ob) → Const x => Diagram → Type _
+  is-limit x cone = is-ran !F Diagram (const! x) (cone→counit cone)
 ```
 
 Furthermore, we say $D$ has a limit if there exists some right kan extension
@@ -262,20 +266,27 @@ might seem like naturality, required for a Kan extension, is missing
 from `make-is-limit`{.Agda}, but it can be derived from the other data
 we have been given:
 
+<!--
+```agda
+  open _=>_
+
+  to-cone : ∀ {D : Functor J C} {apex} → make-is-limit D apex → Const apex => D
+  to-cone ml .η = ml .make-is-limit.ψ
+  to-cone ml .is-natural x y f = C.idr _ ∙ sym (ml .make-is-limit.commutes f)
 ```
-  to-is-limit : ∀ {D : Functor J C} {apex} → make-is-limit D apex → is-limit D apex
+-->
+
+```
+  to-is-limit : ∀ {D : Functor J C} {apex}
+              → (mk : make-is-limit D apex)
+              → is-limit D apex (to-cone mk)
   to-is-limit {Diagram} {apex} mklim = lim where
     open make-is-limit mklim
     open is-ran
     open Functor
     open _=>_
 
-    lim : is-limit Diagram apex
-    lim .eps .η = ψ
-    lim .eps .is-natural _ _ f =
-      ψ _ C.∘ C.id          ≡⟨ C.idr _ ⟩
-      ψ _                   ≡˘⟨ commutes f ⟩
-      Diagram .F₁ f C.∘ ψ _ ∎
+    lim : is-limit Diagram apex (to-cone mklim)
     lim .σ {M = M} α .η _ =
       universal (α .η) (λ f → sym (α .is-natural _ _ f) ∙ C.elimr (M .F-id))
     lim .σ {M = M} α .is-natural _ _ _ =
@@ -293,11 +304,12 @@ limit:
 
 ```agda
   unmake-limit
-    : ∀ {D : Functor J C} {F : Functor ⊤Cat C}
-    → is-ran !F D F
+    : ∀ {D : Functor J C} {F : Functor ⊤Cat C} {eps}
+    → is-ran !F D F eps
     → make-is-limit D (Functor.F₀ F tt)
-  unmake-limit {D} {F} lim = ml module unmake-limit where
+  unmake-limit {D} {F} {eps = eps} lim = ml module unmake-limit where
     a = Functor.F₀ F tt
+    module eps = _=>_ eps
     open is-ran lim
     open Functor D
     open make-is-limit
@@ -315,7 +327,7 @@ limit:
       hom = σ {M = const! x} eta-nt .η tt
 
     ml : make-is-limit D a
-    ml .ψ j        = eps.ε j
+    ml .ψ j        = eps.η j
     ml .commutes f = sym (eps.is-natural _ _ f) ∙ C.elimr (Functor.F-id F)
 
     ml .universal   = hom
@@ -333,7 +345,8 @@ limit:
 ```agda
 module is-limit
   {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
-  {D : Functor J C} {F : Functor ⊤Cat C} (t : is-ran !F D F)
+  {D : Functor J C} {F : Functor ⊤Cat C} {eps : F F∘ !F => D}
+  (t : is-ran !F D F eps)
   where
 
   open make-is-limit (unmake-limit {F = F} t) public
@@ -380,10 +393,11 @@ shuffle our data around manually. Fortunately, this isn't a very long
 computation.
 
 ```agda
-  has-limit : is-limit D apex
-  has-limit .is-ran.eps .η = eps.ε
-  has-limit .is-ran.eps .is-natural x y f =
-    ap (_ C.∘_) (sym $ Ext .F-id) ∙ eps.is-natural x y f
+  cone : Const apex => D
+  cone .η x = eps .η x
+  cone .is-natural x y f = ap (_ C.∘_) (sym $ Ext .F-id) ∙ eps .is-natural x y f
+
+  has-limit : is-limit D apex cone
   has-limit .is-ran.σ α .η = σ α .η
   has-limit .is-ran.σ α .is-natural x y f =
     σ α .is-natural tt tt tt ∙ ap (C._∘ _) (Ext .F-id)
@@ -422,55 +436,55 @@ to construct both directions of the isomorphism. Furthermore, these
 are mutually inverse, as universal maps are unique.
 
 ```agda
-  limits-unique
-    : ∀ {x y}
-    → is-limit Diagram x
-    → is-limit Diagram y
-    → x C.≅ y
-  limits-unique {x} {y} L L′ =
-    C.make-iso
-      (L′.universal L.ψ L.commutes)
-      (L.universal L′.ψ L′.commutes)
-      (L′.unique₂ L′.ψ L′.commutes
-        (λ j → C.pulll (L′.factors L.ψ L.commutes) ∙ L.factors L′.ψ L′.commutes)
-        λ j → C.idr _)
-      (L.unique₂ L.ψ L.commutes
-        (λ j → C.pulll (L.factors L′.ψ L′.commutes) ∙ L′.factors L.ψ L.commutes)
-        λ j → C.idr _)
-    where
-      module L = is-limit L
-      module L′ = is-limit L′
+  -- limits-unique
+  --   : ∀ {x y}
+  --   → is-limit Diagram x
+  --   → is-limit Diagram y
+  --   → x C.≅ y
+  -- limits-unique {x} {y} L L′ =
+  --   C.make-iso
+  --     (L′.universal L.ψ L.commutes)
+  --     (L.universal L′.ψ L′.commutes)
+  --     (L′.unique₂ L′.ψ L′.commutes
+  --       (λ j → C.pulll (L′.factors L.ψ L.commutes) ∙ L.factors L′.ψ L′.commutes)
+  --       λ j → C.idr _)
+  --     (L.unique₂ L.ψ L.commutes
+  --       (λ j → C.pulll (L.factors L′.ψ L′.commutes) ∙ L′.factors L.ψ L.commutes)
+  --       λ j → C.idr _)
+  --   where
+  --     module L = is-limit L
+  --     module L′ = is-limit L′
 ```
 
 Furthermore, if the universal map is invertible, then that means that
 its domain is _also_ a limit of the diagram.
 
 ```agda
-  is-invertible→is-limit
-    : ∀ {x y}
-    → (L : is-limit Diagram y)
-    → (eta : ∀ j → C.Hom x (Diagram.₀ j))
-    → (p : ∀ {x y} (f : J.Hom x y) → Diagram.₁ f C.∘ eta x ≡ eta y)
-    → C.is-invertible (is-limit.universal L eta p)
-    → is-limit Diagram x
-  is-invertible→is-limit {x = x} L eta p invert = to-is-limit lim where
-    module L = is-limit L
-    open C.is-invertible invert
-    open make-is-limit
+  -- is-invertible→is-limit
+  --   : ∀ {x y}
+  --   → (L : is-limit Diagram y)
+  --   → (eta : ∀ j → C.Hom x (Diagram.₀ j))
+  --   → (p : ∀ {x y} (f : J.Hom x y) → Diagram.₁ f C.∘ eta x ≡ eta y)
+  --   → C.is-invertible (is-limit.universal L eta p)
+  --   → is-limit Diagram x
+  -- is-invertible→is-limit {x = x} L eta p invert = to-is-limit lim where
+  --   module L = is-limit L
+  --   open C.is-invertible invert
+  --   open make-is-limit
 
-    lim : make-is-limit Diagram x
-    lim .ψ = eta
-    lim .commutes = p
-    lim .universal tau q = inv C.∘ L.universal tau q
-    lim .factors tau q =
-      lim .ψ _ C.∘ inv C.∘ L.universal tau q                      ≡˘⟨ L.factors eta p C.⟩∘⟨refl ⟩
-      (L.ψ _ C.∘ L.universal eta p) C.∘ inv C.∘ L.universal tau q ≡⟨ C.cancel-inner invl ⟩
-      L.ψ _ C.∘ L.universal tau q                                 ≡⟨ L.factors tau q ⟩
-      tau _ ∎
-    lim .unique tau q other r =
-      other                               ≡⟨ C.insertl invr ⟩
-      inv C.∘ L.universal eta p C.∘ other ≡⟨ C.refl⟩∘⟨ L.unique _ _ _ (λ j → C.pulll (L.factors eta p) ∙ r j) ⟩
-      inv C.∘ L.universal tau q           ∎
+  --   lim : make-is-limit Diagram x
+  --   lim .ψ = eta
+  --   lim .commutes = p
+  --   lim .universal tau q = inv C.∘ L.universal tau q
+  --   lim .factors tau q =
+  --     lim .ψ _ C.∘ inv C.∘ L.universal tau q                      ≡˘⟨ L.factors eta p C.⟩∘⟨refl ⟩
+  --     (L.ψ _ C.∘ L.universal eta p) C.∘ inv C.∘ L.universal tau q ≡⟨ C.cancel-inner invl ⟩
+  --     L.ψ _ C.∘ L.universal tau q                                 ≡⟨ L.factors tau q ⟩
+  --     tau _ ∎
+  --   lim .unique tau q other r =
+  --     other                               ≡⟨ C.insertl invr ⟩
+  --     inv C.∘ L.universal eta p C.∘ other ≡⟨ C.refl⟩∘⟨ L.unique _ _ _ (λ j → C.pulll (L.factors eta p) ∙ r j) ⟩
+  --     inv C.∘ L.universal tau q           ∎
 ```
 
 # Preservation of Limits
@@ -504,8 +518,8 @@ In more concise terms, we say a functor preserves limits if it takes
 limiting cones "upstairs" to limiting cones "downstairs".
 
 ```agda
-  Preserves-limit : Type _
-  Preserves-limit = ∀ x → is-limit Diagram x → is-limit (F F∘ Diagram) (F.₀ x)
+  -- Preserves-limit : Type _
+  -- Preserves-limit = ∀ x → is-limit Diagram x → is-limit (F F∘ Diagram) (F.₀ x)
 ```
 
 ## Reflection of limits
@@ -517,8 +531,8 @@ More concretely, if we have a limit in $\cD$ of $F \circ \rm{Dia}$ with
 apex $F(a)$, then $a$ was _already the limit_ of $\rm{Dia}$!
 
 ```agda
-  Reflects-limit : Type _
-  Reflects-limit = ∀ x → is-limit (F F∘ Diagram) (F.₀ x) → is-limit Diagram x
+  -- Reflects-limit : Type _
+  -- Reflects-limit = ∀ x → is-limit (F F∘ Diagram) (F.₀ x) → is-limit Diagram x
 ```
 
 ## Creation of limits
@@ -529,20 +543,20 @@ the limits of shape $\rm{Dia}$ in $\cC$ are in a 1-1 correspondence
 with the limits $F \circ \rm{Dia}$ in $\cD$.
 
 ```agda
-  record creates-limit : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
-    field
-      preserves-limit : Preserves-limit
-      reflects-limit  : Reflects-limit
+  -- record creates-limit : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
+  --   field
+  --     preserves-limit : Preserves-limit
+  --     reflects-limit  : Reflects-limit
 ```
 
 ## Continuity
 
 ```agda
-is-continuous
-  : ∀ {oshape hshape}
-      {C : Precategory o₁ h₁}
-      {D : Precategory o₂ h₂}
-  → Functor C D → Type _
+-- is-continuous
+--   : ∀ {oshape hshape}
+--       {C : Precategory o₁ h₁}
+--       {D : Precategory o₂ h₂}
+--   → Functor C D → Type _
 ```
 
 A continuous functor is one that --- for every shape of diagram `J`, and
@@ -550,9 +564,9 @@ every diagram `diagram`{.Agda} of shape `J` in `C` --- preserves the
 limit for that diagram.
 
 ```agda
-is-continuous {oshape = oshape} {hshape} {C = C} F =
-  ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
-  → Preserves-limit F Diagram
+-- is-continuous {oshape = oshape} {hshape} {C = C} F =
+--   ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
+--   → Preserves-limit F Diagram
 ```
 
 ## Completeness
