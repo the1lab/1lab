@@ -1,11 +1,9 @@
 ```agda
-open import Cat.Prelude
-
-open import Cat.Displayed.Base
+open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Functor
 open import Cat.Displayed.Total
-
-open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Base
+open import Cat.Prelude
 
 import Cat.Displayed.Reasoning as DR
 

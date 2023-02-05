@@ -1,6 +1,6 @@
 ```agda
-open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Cocartesian
+open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Pullback
 open import Cat.Displayed.Fibre

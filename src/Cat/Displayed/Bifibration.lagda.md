@@ -1,17 +1,17 @@
 ```agda
-open import Cat.Displayed.Base
-open import Cat.Displayed.Fibre
-open import Cat.Functor.Adjoint
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Instances.Functor
+open import Cat.Displayed.Fibre
+open import Cat.Functor.Adjoint
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Displayed.Cartesian.Indexing
 import Cat.Displayed.Cocartesian.Indexing
-import Cat.Displayed.Cocartesian
+import Cat.Displayed.Cartesian.Indexing
 import Cat.Displayed.Cocartesian.Weak
-import Cat.Displayed.Cartesian
 import Cat.Displayed.Cartesian.Weak
+import Cat.Displayed.Cocartesian
+import Cat.Displayed.Cartesian
 import Cat.Displayed.Reasoning
 import Cat.Reasoning
 

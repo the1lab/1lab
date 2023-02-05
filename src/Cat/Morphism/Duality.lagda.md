@@ -1,5 +1,6 @@
 ```agda
 open import Cat.Base
+
 import Cat.Morphism
 
 module Cat.Morphism.Duality {o ℓ} (𝒞 : Precategory o ℓ) where

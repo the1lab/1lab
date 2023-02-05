@@ -5,10 +5,10 @@ description: |
   isomorphism of Hom-sets.
 ---
 ```agda
-open import Cat.Functor.Adjoint
-open import Cat.Functor.Hom
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
+open import Cat.Functor.Adjoint
+open import Cat.Functor.Hom
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func

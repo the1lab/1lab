@@ -1,13 +1,13 @@
 ```agda
-open import Cat.Displayed.Base
 open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Total.Op
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Reasoning
-import Cat.Displayed.Morphism
 import Cat.Displayed.Morphism.Duality
 import Cat.Displayed.Reasoning as DR
+import Cat.Displayed.Morphism
+import Cat.Reasoning
 
 module Cat.Displayed.Cocartesian
   {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o′ ℓ′) where

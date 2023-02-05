@@ -1,6 +1,6 @@
 ```agda
-open import Cat.Instances.Functor
 open import Cat.Diagram.Colimit.Base
+open import Cat.Instances.Functor
 open import Cat.Diagram.Initial
 open import Cat.Prelude
 

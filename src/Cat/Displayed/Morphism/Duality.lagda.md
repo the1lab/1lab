@@ -1,12 +1,12 @@
 ```agda
-open import Cat.Displayed.Base
 open import Cat.Displayed.Total.Op
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Morphism
-import Cat.Morphism.Duality
-import Cat.Displayed.Morphism
 import Cat.Displayed.Reasoning
+import Cat.Displayed.Morphism
+import Cat.Morphism.Duality
+import Cat.Morphism
 
 module Cat.Displayed.Morphism.Duality
   {o ℓ o′ ℓ′}

@@ -83,10 +83,10 @@ $p$, in that $\eta$ is a natural isomorphism.
 [cocomplete]: Cat.Diagram.Colimit.Base.html#cocompleteness
 
 ```agda
-record is-lan
-  (p : Functor C C′) (F : Functor C D) (Ext : Functor C′ D) : Type (kan-lvl p F) where
+record
+  is-lan (p : Functor C C′) (F : Functor C D) (L : Functor C′ D) (eta : F => L F∘ p)
+    : Type (kan-lvl p F) where
   field
-    eta : F => Ext F∘ p
 ```
 
 Universality of `eta`{.Agda} is witnessed by the following fields, which
@@ -108,13 +108,13 @@ that $\eta$ does for $\Lan_p F$), the 2-cell exists and is unique.
 ~~~
 
 ```agda
-    σ : {M : Functor C′ D} (α : F => M F∘ p) → Ext => M
+    σ : {M : Functor C′ D} (α : F => M F∘ p) → L => M
     σ-comm : {M : Functor C′ D} {α : F => M F∘ p} → (σ α ◂ p) ∘nt eta ≡ α
-    σ-uniq : {M : Functor C′ D} {α : F => M F∘ p} {σ′ : Ext => M}
+    σ-uniq : {M : Functor C′ D} {α : F => M F∘ p} {σ′ : L => M}
            → α ≡ (σ′ ◂ p) ∘nt eta
            → σ α ≡ σ′
 
-  module eta = _=>_ eta
+  open _=>_ eta
 ```
 
 We also provide a bundled form of this data.
@@ -123,7 +123,8 @@ We also provide a bundled form of this data.
 record Lan (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
   field
     Ext     : Functor C′ D
-    has-lan : is-lan p F Ext
+    eta     : F => Ext F∘ p
+    has-lan : is-lan p F Ext eta
 
   open is-lan has-lan public
 ```
@@ -152,8 +153,7 @@ module _ {F : Functor C D} {G : Functor D C} (adj : F ⊣ G) where
 -->
 
 ```agda
-  adjoint→is-lan : is-lan F Id G
-  adjoint→is-lan .eta = unit
+  adjoint→is-lan : is-lan F Id G unit
 ```
 
 The proof is mostly pushing symbols around, and the calculation is
@@ -191,3 +191,30 @@ where uniqueness and commutativity follows from the triangle identities
     where module α = _=>_ α
           module M = Func M
 ```
+
+<!--
+```agda
+is-lan-is-prop
+  : {p : Functor C C′} {F : Functor C D} {G : Functor C′ D} {eta : F => G F∘ p}
+  → is-prop (is-lan p F G eta)
+is-lan-is-prop {p = p} {F} {G} {eta} a b = path where
+  private
+    module a = is-lan a
+    module b = is-lan b
+
+  σ≡ : {M : Functor _ _} (α : F => M F∘ p) → a.σ α ≡ b.σ α
+  σ≡ α = Nat-path λ x → a.σ-uniq (sym b.σ-comm) ηₚ x
+
+  open is-lan
+  path : a ≡ b
+  path i .σ α = σ≡ α i
+  path i .σ-comm {α = α} =
+    is-prop→pathp (λ i → Nat-is-set ((σ≡ α i ◂ p) ∘nt eta) α)
+      (a.σ-comm {α = α}) (b.σ-comm {α = α})
+      i
+  path i .σ-uniq {α = α} β =
+    is-prop→pathp (λ i → Nat-is-set (σ≡ α i) _)
+      (a.σ-uniq β) (b.σ-uniq β)
+      i
+```
+-->

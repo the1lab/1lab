@@ -3,15 +3,15 @@ description: |
   We define right fibrations, and characterize their fibre categories.
 ---
 ```agda
-open import Cat.Displayed.Base
 open import Cat.Displayed.Cartesian.Discrete
 open import Cat.Displayed.Functor
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Reasoning
 import Cat.Displayed.Cartesian
-import Cat.Displayed.Morphism
 import Cat.Displayed.Reasoning
+import Cat.Displayed.Morphism
+import Cat.Reasoning
 
 module Cat.Displayed.Cartesian.Right
   {o ℓ o′ ℓ′}

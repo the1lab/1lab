@@ -12,9 +12,9 @@ open import Order.Instances.Lower.Cocompletion
 open import Order.Instances.Pointwise
 open import Order.Semilattice.Order
 open import Order.Instances.Lower
-open import Order.Semilattice
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
+open import Order.Semilattice
 open import Order.Frame
 open import Order.Base
 

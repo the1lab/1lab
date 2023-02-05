@@ -1,13 +1,13 @@
 ```agda
-open import Cat.Displayed.Base
+open import Cat.Functor.Equivalence.Path
+open import Cat.Instances.Shape.Terminal
 open import Cat.Displayed.Bifibration
-open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Cocartesian
+open import Cat.Displayed.Cartesian
+open import Cat.Functor.Equivalence
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
-open import Cat.Instances.Shape.Terminal
-open import Cat.Functor.Equivalence
-open import Cat.Functor.Equivalence.Path
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
 module Cat.Displayed.Instances.Trivial

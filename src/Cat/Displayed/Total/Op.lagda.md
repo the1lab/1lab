@@ -1,12 +1,12 @@
 ```agda
-open import Cat.Displayed.Base
+open import 1Lab.Rewrite
+
+open import Cat.Functor.Equivalence.Path
+open import Cat.Functor.Equivalence
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
-open import Cat.Functor.Equivalence
-open import Cat.Functor.Equivalence.Path
+open import Cat.Displayed.Base
 open import Cat.Prelude
-
-open import 1Lab.Rewrite
 
 import Cat.Displayed.Reasoning as DR
 

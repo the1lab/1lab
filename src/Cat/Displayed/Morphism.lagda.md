@@ -2,8 +2,8 @@
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Reasoning
 import Cat.Displayed.Reasoning
+import Cat.Reasoning
 
 module Cat.Displayed.Morphism
   {o ℓ o′ ℓ′}

@@ -1,10 +1,10 @@
 ```agda
+open import Cat.Functor.Coherence
+open import Cat.Functor.Kan.Right
+open import Cat.Instances.Functor
+open import Cat.Functor.Kan.Left
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
-open import Cat.Functor.Kan.Left
-open import Cat.Functor.Kan.Right
-open import Cat.Instances.Functor.Compose
-open import Cat.Instances.Functor
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
@@ -58,7 +58,8 @@ module
     {p : Functor C C′}
     {F : Functor C D}
     {G : Functor C′ D}
-    (lan : is-lan p F G)
+    {eta : F => G F∘ p}
+    (lan : is-lan p F G eta)
     {L : Functor D A} {R : Functor A D}
     (adj : L ⊣ R)
   where
@@ -85,7 +86,7 @@ module
 -->
 
 ```agda
-  left-adjoint→left-extension : is-lan p LF LG
+  left-adjoint→left-extension : is-lan p LF LG (nat-assoc-to (L ▸ eta))
   left-adjoint→left-extension = pres where
 ```
 
@@ -107,12 +108,7 @@ assistants; Our existing definition of whiskering lands in $L(Gp)$, but
 we need a natural transformation onto $(LG)p$.
 
 ```agda
-    l-eta : LF => LG F∘ p
-    l-eta .η x              = L.₁ (l.eta .η x)
-    l-eta .is-natural x y f = L.weave (l.eta .is-natural x y f)
-
-    pres : is-lan p (L F∘ F) (L F∘ G)
-    pres .eta = l-eta
+    pres : is-lan p (L F∘ F) (L F∘ G) (nat-assoc-to (L ▸ eta))
 ```
 
 Given a 2-cell $\alpha : LF \to Mp$, how do we factor it through $\eta$
@@ -144,9 +140,9 @@ reader but they will not be elaborated on.
 
 ```agda
     pres .σ-comm {α = α} = Nat-path λ x →
-      (R-adjunct adj (l.σ (fixup α) .η _)) A.∘ L.₁ (l.eta .η _) ≡⟨ L.pullr (l.σ-comm {α = fixup α} ηₚ _) ⟩
-      R-adjunct adj (L-adjunct adj (α .η x))                    ≡⟨ equiv→unit (L-adjunct-is-equiv adj) (α .η x) ⟩
-      α .η x                                                    ∎
+      (R-adjunct adj (l.σ (fixup α) .η _)) A.∘ L.₁ (eta .η _) ≡⟨ L.pullr (l.σ-comm {α = fixup α} ηₚ _) ⟩
+      R-adjunct adj (L-adjunct adj (α .η x))                  ≡⟨ equiv→unit (L-adjunct-is-equiv adj) (α .η x) ⟩
+      α .η x                                                  ∎
 
     pres .σ-uniq {M = M} {α = α} {σ′ = σ′} wit = Nat-path λ x →
       R-adjunct adj (l.σ (fixup α) .η x)      ≡⟨ A.refl⟩∘⟨ ap L.₁ (l.σ-uniq lemma ηₚ x) ⟩
@@ -162,11 +158,56 @@ reader but they will not be elaborated on.
           (R.₁ (σ′ .η _) D.∘ (RL.₁ (G.₁ f)) D.∘ unit.η _) ≡⟨ D.extendl (R.weave (σ′ .is-natural _ _ _)) ⟩
           R.₁ (M.₁ f) D.∘ R.₁ (σ′ .η x) D.∘ unit.η _      ∎
 
-        lemma : fixup α ≡ ((σ′′ ◂ p) ∘nt l.eta)
+        lemma : fixup α ≡ ((σ′′ ◂ p) ∘nt eta)
         lemma = Nat-path λ x →
-          R.₁ (α .η x) D.∘ unit.η _                       ≡⟨ ap R.₁ (wit ηₚ _) D.⟩∘⟨refl ⟩
-          R.₁ (σ′ .η _ A.∘ L.₁ (l.eta .η _)) D.∘ unit.η _ ≡⟨ ap (D._∘ unit.η _) (R.F-∘ _ _) ∙ D.extendr (sym (unit.is-natural _ _ _)) ⟩
-          (R.₁ (σ′ .η _) D.∘ unit.η _) D.∘ l.eta .η x     ∎
+          R.₁ (α .η x) D.∘ unit.η _                     ≡⟨ ap R.₁ (wit ηₚ _) D.⟩∘⟨refl ⟩
+          R.₁ (σ′ .η _ A.∘ L.₁ (eta .η _)) D.∘ unit.η _ ≡⟨ ap (D._∘ unit.η _) (R.F-∘ _ _) ∙ D.extendr (sym (unit.is-natural _ _ _)) ⟩
+          (R.₁ (σ′ .η _) D.∘ unit.η _) D.∘ eta .η x     ∎
 ```
 
 </details>
+
+## Dually
+
+By duality, right adjoints preserve right extensions.
+
+<!--
+```agda
+module
+  _ {oc ℓc oc′ ℓc′ od ℓd oa ℓa}
+    {C : Precategory oc ℓc} {C′ : Precategory oc′ ℓc′} {D : Precategory od ℓd}
+    {A : Precategory oa ℓa}
+    {p : Functor C C′}
+    {F : Functor C D}
+    {G : Functor C′ D}
+    {eps : G F∘ p => F}
+    (ran : is-ran p F G eps)
+    {L : Functor A D} {R : Functor D A}
+    (adj : L ⊣ R)
+  where
+```
+-->
+
+```agda
+  right-adjoint→right-extension : is-ran p (R F∘ F) (R F∘ G) (nat-assoc-from (R ▸ eps))
+  right-adjoint→right-extension = fixed where
+    pres-lan = left-adjoint→left-extension
+      (is-ran→is-co-lan _ _ ran)
+      (opposite-adjunction adj)
+
+    module p = is-lan pres-lan
+    open is-ran
+    open _=>_
+
+    fixed : is-ran p (R F∘ F) (R F∘ G) (nat-assoc-from (R ▸ eps))
+    fixed .is-ran.σ {M = M} α = σ′ where
+      unquoteDecl α′ = dualise-into α′
+        (Functor.op R F∘ Functor.op F => Functor.op M F∘ Functor.op p)
+        α
+      unquoteDecl σ′ = dualise-into σ′ (M => R F∘ G) (p.σ α′)
+
+    fixed .is-ran.σ-comm = Nat-path λ x → p.σ-comm ηₚ _
+    fixed .is-ran.σ-uniq {M = M} {σ′ = σ′} p =
+      Nat-path λ x → p.σ-uniq {σ′ = σ′′} (Nat-path λ x → p ηₚ x) ηₚ x where
+      unquoteDecl σ′′ = dualise-into σ′′ _ σ′
+```

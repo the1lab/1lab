@@ -1,14 +1,14 @@
 ```agda
-open import Cat.Displayed.Base
-open import Cat.Displayed.Fibre
-open import Cat.Functor.Hom
 open import Cat.Functor.Hom.Displayed
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
+open import Cat.Displayed.Fibre
+open import Cat.Displayed.Base
+open import Cat.Functor.Hom
 open import Cat.Prelude
 
-import Cat.Displayed.Cartesian as Cart
 import Cat.Displayed.Cartesian.Indexing as Indexing
+import Cat.Displayed.Cartesian as Cart
 import Cat.Displayed.Reasoning as DR
 import Cat.Displayed.Morphism as DM
 import Cat.Reasoning as CR

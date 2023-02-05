@@ -1,5 +1,6 @@
 ```agda
-open import Cat.Instances.Functor.Compose
+{-# OPTIONS -vtactic.dualise:30 -vtc.unquote.def:10 #-}
+open import Cat.Functor.Coherence
 open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Left
 open import Cat.Prelude
@@ -50,19 +51,19 @@ their commutativity.
 
 ```agda
 record is-ran
-  (p : Functor C C′) (F : Functor C D) (Ext : Functor C′ D) : Type (kan-lvl p F) where
+  (p : Functor C C′) (F : Functor C D) (Ext : Functor C′ D)
+  (eps : Ext F∘ p => F)
+  : Type (kan-lvl p F) where
   no-eta-equality
 
   field
-    eps : Ext F∘ p => F
-
     σ : {M : Functor C′ D} (α : M F∘ p => F) → M => Ext
     σ-comm : {M : Functor C′ D} {β : M F∘ p => F} → eps ∘nt (σ β ◂ p) ≡ β
     σ-uniq : {M : Functor C′ D} {β : M F∘ p => F} {σ′ : M => Ext}
            → β ≡ eps ∘nt (σ′ ◂ p)
            → σ β ≡ σ′
 
-  module eps = _=>_ eps renaming (η to ε)
+  open _=>_ eps renaming (η to ε)
 
   σ-uniq₂
     : {M : Functor C′ D} (β : M F∘ p => F) {σ₁′ σ₂′ : M => Ext}
@@ -75,7 +76,8 @@ record Ran (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
   no-eta-equality
   field
     Ext     : Functor C′ D
-    has-ran : is-ran p F Ext
+    eps     : Ext F∘ p => F
+    has-ran : is-ran p F Ext eps
 
   module Ext = Functor Ext
   open is-ran has-ran public
@@ -86,6 +88,7 @@ the left Kan extension. This is straightforward enough to do, but we
 have some administrative noise from all the opposite categories getting
 in the way.
 
+<!--
 ```agda
 module _ (p : Functor C C′) (F : Functor C D) where
   open Ran
@@ -94,65 +97,90 @@ module _ (p : Functor C C′) (F : Functor C D) where
   open is-lan
   open _=>_
 
+  co-unit→counit
+    : ∀ {G : Functor (C′ ^op) (D ^op)}
+    → Functor.op F => G F∘ Functor.op p → Functor.op G F∘ p => F
+  counit→co-unit
+    : ∀ {G : Functor C′ D}
+    → G F∘ p => F
+    → Functor.op F => Functor.op G F∘ Functor.op p
+
+  unquoteDef co-unit→counit = define-dualiser co-unit→counit
+  unquoteDef counit→co-unit = define-dualiser counit→co-unit
+```
+-->
+
+```agda
   is-co-lan→is-ran
-    : ∀ {Ext : Functor (C′ ^op) (D ^op)}
-    → is-lan (Functor.op p) (Functor.op F) Ext
-    → is-ran p F (Functor.op Ext)
-  is-co-lan→is-ran {Ext = Ext} is-lan = ran where
+    : ∀ {G : Functor (C′ ^op) (D ^op)} {eta : Functor.op F => G F∘ Functor.op p}
+    → is-lan (Functor.op p) (Functor.op F) G eta
+    → is-ran p F (Functor.op G) (co-unit→counit eta)
+  is-co-lan→is-ran {G = G} {eta = eta} is-lan = ran where
     module lan = is-lan is-lan
 
-    ran : is-ran p F (Functor.op Ext)
-    ran .eps .η x = lan.eta .η x
-    ran .eps .is-natural x y f = sym (lan.eta .is-natural y x f)
-
+    ran : is-ran p F (Functor.op G) (co-unit→counit eta)
     ran .σ {M = M} α = op (lan.σ α′) where
-      α′ : Functor.op F => Functor.op M F∘ Functor.op p
-      α′ .η x = α .η x
-      α′ .is-natural x y f = sym (α .is-natural y x f)
+      unquoteDecl α′ = dualise-into α′
+        (Functor.op F => Functor.op M F∘ Functor.op p)
+        α
 
     ran .σ-comm = Nat-path λ x → lan.σ-comm ηₚ x
     ran .σ-uniq {M = M} {σ′ = σ′} p =
       Nat-path λ x → lan.σ-uniq {σ′ = σ′op} (Nat-path λ x → p ηₚ x) ηₚ x
-      where
-        σ′op : Ext => Functor.op M
-        σ′op .η x = σ′ .η x
-        σ′op .is-natural x y f = sym (σ′ .is-natural y x f)
+      where unquoteDecl σ′op = dualise-into σ′op _ σ′
 ```
 
 <!--
 ```agda
   is-ran→is-co-lan
-    : ∀ {Ext : Functor C′ D}
-    → is-ran p F Ext
-    → is-lan (Functor.op p) (Functor.op F) (Functor.op Ext)
+    : ∀ {Ext : Functor C′ D} {eta : Ext F∘ p => F}
+    → is-ran p F Ext eta
+    → is-lan (Functor.op p) (Functor.op F) (Functor.op Ext) (counit→co-unit eta)
   is-ran→is-co-lan {Ext = Ext} is-ran = lan where
     module ran = is-ran is-ran
 
-    lan : is-lan (Functor.op p) (Functor.op F) (Functor.op Ext)
-    lan .eta .η x = ran.eps.ε x
-    lan .eta .is-natural x y f = sym (ran.eps .is-natural y x f)
-
+    lan : is-lan (Functor.op p) (Functor.op F) (Functor.op Ext) _
     lan .σ {M = M} α = σ′ where
-      α′ : Functor.op M F∘ p => F
-      α′ .η x = α .η x
-      α′ .is-natural x y f = sym (α .is-natural y x f)
-
-      σ′ : Functor.op Ext => M
-      σ′ .η = ran.σ α′ .η
-      σ′ .is-natural _ _ f = sym (ran.σ α′ .is-natural _ _ f)
+      unquoteDecl α′ = dualise-into α′ (Functor.op M F∘ p => F) α
+      unquoteDecl σ′ = dualise-into σ′ (Functor.op Ext => M) (ran.σ α′)
 
     lan .σ-comm = Nat-path λ x → ran.σ-comm ηₚ x
     lan .σ-uniq {M = M} {σ′ = σ′} p =
       Nat-path λ x → ran.σ-uniq {σ′ = σ′op} (Nat-path λ x → p ηₚ x) ηₚ x
-      where
-        σ′op : Functor.op M => Ext
-        σ′op .η x = σ′ .η x
-        σ′op .is-natural x y f = sym (σ′ .is-natural y x f)
+      where unquoteDecl σ′op = dualise-into σ′op _ σ′
 ```
 -->
 
 ```agda
   Co-lan→Ran : Lan (Functor.op p) (Functor.op F) → Ran p F
   Co-lan→Ran lan .Ext     = Functor.op (lan .Ext)
+  Co-lan→Ran lan .eps     = co-unit→counit (lan .eta)
   Co-lan→Ran lan .has-ran = is-co-lan→is-ran (lan .has-lan)
 ```
+
+<!--
+```agda
+is-ran-is-prop
+  : {p : Functor C C′} {F : Functor C D} {G : Functor C′ D} {eps : G F∘ p => F}
+  → is-prop (is-ran p F G eps)
+is-ran-is-prop {p = p} {F} {G} {eps} a b = path where
+  private
+    module a = is-ran a
+    module b = is-ran b
+
+  σ≡ : {M : Functor _ _} (α : M F∘ p => F) → a.σ α ≡ b.σ α
+  σ≡ α = Nat-path λ x → a.σ-uniq (sym b.σ-comm) ηₚ x
+
+  open is-ran
+  path : a ≡ b
+  path i .σ α = σ≡ α i
+  path i .σ-comm {β = α} =
+    is-prop→pathp (λ i → Nat-is-set (eps ∘nt (σ≡ α i ◂ p)) α)
+      (a.σ-comm {β = α}) (b.σ-comm {β = α})
+      i
+  path i .σ-uniq {β = α} γ =
+    is-prop→pathp (λ i → Nat-is-set (σ≡ α i) _)
+      (a.σ-uniq γ) (b.σ-uniq γ)
+      i
+```
+--β>

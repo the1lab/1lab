@@ -1,7 +1,7 @@
 ```agda
-open import Cat.Instances.Functor
-open import Cat.Functor.Kan.Right
 open import Cat.Diagram.Limit.Base
+open import Cat.Functor.Kan.Right
+open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
 open import Cat.Prelude
 

@@ -1,7 +1,7 @@
 ```agda
+open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Kan.Right
 open import Cat.Instances.Functor
-open import Cat.Instances.Shape.Terminal
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
