@@ -3,7 +3,7 @@ open import Cat.Instances.Functor.Compose
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
-open import Cat.Functor.Kan.Left
+open import Cat.Functor.Kan.Base
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
 

@@ -86,7 +86,7 @@ module
 -->
 
 ```agda
-  left-adjoint→left-extension : is-lan p LF LG (nat-assoc-to (L ▸ eta))
+  left-adjoint→left-extension : preserves-lan L lan
   left-adjoint→left-extension = pres where
 ```
 
