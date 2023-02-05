@@ -115,6 +115,13 @@ that $\eta$ does for $\Lan_p F$), the 2-cell exists and is unique.
            → α ≡ (σ′ ◂ p) ∘nt eta
            → σ α ≡ σ′
 
+  σ-uniq₂
+    : {M : Functor C′ D} (α : F => M F∘ p) {σ₁′ σ₂′ : L => M}
+    → α ≡ (σ₁′ ◂ p) ∘nt eta
+    → α ≡ (σ₂′ ◂ p) ∘nt eta
+    → σ₁′ ≡ σ₂′
+  σ-uniq₂ β p q = sym (σ-uniq p) ∙ σ-uniq q
+
   open _=>_ eta
 ```
 

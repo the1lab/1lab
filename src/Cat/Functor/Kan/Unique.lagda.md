@@ -1,168 +1,240 @@
 ```agda
 open import Cat.Instances.Functor.Compose
 open import Cat.Instances.Functor
-open import Cat.Functor.Kan.Left
+open import Cat.Functor.Kan.Base
 open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
 
-module Cat.Functor.Kan.Unique
-
+module Cat.Functor.Kan.Unique where
 ```
-
-<!--
-```agda
-  {o ℓ o′ ℓ′ o′′ ℓ′′}
-  {C : Precategory o ℓ} {C′ : Precategory o′ ℓ′} {D : Precategory o′′ ℓ′′}
-  (dcat : is-category D)
-  (p : Functor C C′) (F : Functor C D)
-  where
-```
--->
 
 # Uniqueness of Kan extensions
 
-Since [(left) Kan extensions] are defined by a universal property (they
-are partial values of a specific [adjunction]), they are unique: When
-$\cD$ is a category, then the type $\Lan_p(F)$ of left Kan extensions
-of $F$ along $p$ is a proposition.
+[Kan extensions] (both left and [right]) are [universal constructions],
+so they are [unique when they exist]. To get a theorem out of this
+intuition, we must be careful about how the structure and the properties
+are separated: Informally, we refer to the _functor_ as "the Kan
+extension", but in reality, the data associated with "the Kan extension
+of $F$ along $p$" also includes the natural transformation. For
+accuracy, using the setup from the diagram below, we should say “$(G,
+\eta)$ is the Kan extension of $F$ along $p$".
 
-[(left) Kan extensions]: Cat.Functor.Kan.html
-[adjunction]: Cat.Functor.Kan.Global.html
+[Kan extensions]: Cat.Functor.Kan.Base.html
+[right]: Cat.Functor.Kan.Base.html#right-kan-extensions
+[universal constructions]: Cat.Functor.Representable.html
+[unique when they exist]: 1Lab.HLevel.html#is-prop
 
-Note that the type expressing _being_ a left extension is _not_ a
-proposition: This proof critically relies on being able to vary the
-extension functor, even if it varies along a loop. The situation is
-analogous to that with adjunctions: the type $L \dashv R$ is not a
-proposition, but the type $\Sigma_l L \dashv R$ _is_.
-
-```agda
-Lan-is-prop : is-prop (Lan p F)
-Lan-is-prop L₁ L₂ = Lan-unique module Lan-unique where
-```
-
-We diagram the situation generically as follows: $p$ and $F$ are fixed,
-with $G$ and $G'$ being both left extensions of $F$ along $p$. The
-functor $G$ (resp. $G'$) is equipped with a natural transformation $\eta
-: F \to Gp$ (resp. $\eta' : F \to G'p$), and if $M$ is equipped with
-$\theta : F \to Mp$, then $G$ can cough up a _unique_ natural
-transformation $\sigma_\theta : G \to M$ (resp. $\sigma'_\theta : G' \to
-M$) making everything in sight commute.
-
-~~~{.quiver .tall-2}
+~~~{.quiver .tall-15}
 \[\begin{tikzcd}
-  C \\
-  &&& D \\
+  C && D \\
   \\
-  & {C'}
-  \arrow["p"', from=1-1, to=4-2]
-  \arrow["F", from=1-1, to=2-4]
-  \arrow[""{name=0, anchor=center, inner sep=0}, "M"{description, pos=0.2}, dashed, from=4-2, to=2-4]
-  \arrow[""{name=1, anchor=center, inner sep=0}, "G"{description}, curve={height=-24pt}, from=4-2, to=2-4]
-  \arrow[""{name=2, anchor=center, inner sep=0}, "{G'}"{description}, curve={height=24pt}, from=4-2, to=2-4]
-  \arrow["{\sigma'}"', shorten <=3pt, shorten >=3pt, Rightarrow, from=2, to=0]
-  \arrow["\sigma"', shorten <=4pt, shorten >=4pt, Rightarrow, from=1, to=0]
+  {C'}
+  \arrow["F", from=1-1, to=1-3]
+  \arrow["p"', from=1-1, to=3-1]
+  \arrow[""{name=0, anchor=center, inner sep=0}, "G"', from=3-1, to=1-3]
+  \arrow["\eta"', shorten <=6pt, Rightarrow, from=0, to=1-1]
 \end{tikzcd}\]
 ~~~
 
 <!--
 ```agda
-  private
-    module C  = Cat.Reasoning C
-    module C′ = Cat.Reasoning C′
-    module D  = Cat.Reasoning D
-    module [C′,D] = Cat.Reasoning Cat[ C′ , D ]
-    module [C,D] = Precategory Cat[ C , D ]
-    module L₁ = Lan L₁
-    module L₂ = Lan L₂
-    cd-cat : is-category Cat[ C′ , D ]
-    cd-cat = Functor-is-category dcat
+private variable
+  o ℓ : Level
+  C C′ D : Precategory o ℓ
 
-  open _=>_
+module
+  Lan-unique
+    {p : Functor C C′} {F : Functor C D}
+    {G₁ G₂ : Functor C′ D} {η₁ η₂}
+    (l₁ : is-lan p F G₁ η₁)
+    (l₂ : is-lan p F G₂ η₂)
+  where
+
+  private
+    module l₁ = is-lan l₁
+    module l₂ = is-lan l₂
+    module D = Cat.Reasoning D
+    module C′D = Cat.Reasoning Cat[ C′ , D ]
+
+  open C′D._≅_
+  open C′D.Inverses
 ```
 -->
 
-The isomorphism $G \cong G'$ is constructed as follows: Since $G'$ is
-equipped with $\eta'$, $G$ can produce $\sigma_{\eta'} : G \to G'$;
-Since $G$ is equipped with $\eta$, $G'$ can produce $\sigma'_\eta : G'
-\to G$. To show $\sigma_{\eta'}\sigma'_\eta : G' \to G'$ is the
-identity, note that both make "everything in sight commute", so they
-inhabit a contractible space since $G'$ is an extension. The argument
-for $\sigma'_\eta\sigma_{\eta'}$ is analogous.
+To show uniqueness, suppose that $(G_1, \eta_1)$ and $(G_2, \eta_2)$ and
+both left extensions of $F$ along $p$. Diagramming this with both
+natural transformations shown is a bit of a nightmare: the option which
+doesn't result in awful crossed arrows is to duplicate the span $\cC'
+\ot \cC \to \cD$. So, to be clear: The upper triangle and the lower
+triangle _are the same_.
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  && \cC \\
+  \\
+  {\cC'} &&&& \cD \\
+  \\
+  && \cC
+  \arrow["F", from=1-3, to=3-5]
+  \arrow["p"', from=1-3, to=3-1]
+  \arrow[""{name=0, anchor=center, inner sep=0}, "{G_1}", curve={height=-12pt}, from=3-1, to=3-5]
+  \arrow["p", from=5-3, to=3-1]
+  \arrow["F"', from=5-3, to=3-5]
+  \arrow[""{name=1, anchor=center, inner sep=0}, "{G_2}"', curve={height=12pt}, from=3-1, to=3-5]
+  \arrow["{\eta_1}", shorten <=9pt, Rightarrow, from=0, to=1-3]
+  \arrow["{\eta_2}"', shorten <=9pt, Rightarrow, from=1, to=5-3]
+\end{tikzcd}\]
+~~~
+
+Recall that $(G_1, \eta_1)$ being a left extension means we can
+(uniquely) factor natural transformations $F \to Mp$ through
+transformations $G_1 \to M$. We want a map $G_1 \to G_2$, for which it
+will suffice to find a map $F \to G_2p$ --- but $\eta_2$ is right there!
+In the other direction, we can factor $\eta_1$ to get a map $G_2 \to
+G_1$. Since these factorisations are unique, we have a natural
+isomorphism.
 
 ```agda
-  Ext-unique : [C′,D].Isomorphism L₁.Ext L₂.Ext
-  Ext-unique = [C′,D].make-iso (L₁.σ L₂.eta) (L₂.σ L₁.eta)
-    ( sym (L₂.σ-uniq {α = L₂.eta}
-        (Nat-path λ _ → sym ( D.pullr (L₂.σ-comm ηₚ _)
-                            ∙ L₁.σ-comm ηₚ _)))
-    ∙ L₂.σ-uniq (Nat-path λ _ → D.introl refl))
-    ( sym (L₁.σ-uniq {α = L₁.eta}
-        (Nat-path λ _ → sym ( D.pullr (L₁.σ-comm ηₚ _)
-                            ∙ L₂.σ-comm ηₚ _)))
-    ∙ L₁.σ-uniq (Nat-path λ _ → D.introl refl))
-
-  Ext-uniqueₚ : L₁.Ext ≡ L₂.Ext
-  Ext-uniqueₚ = cd-cat .to-path Ext-unique
+  functor : natural-iso G₁ G₂
+  functor = morp where
+    morp : natural-iso G₁ G₂
+    morp .to   = l₁.σ η₂
+    morp .from = l₂.σ η₁
+    morp .inverses .invl = l₂.σ-uniq₂ η₂
+      (Nat-path λ x → sym (D.pullr (l₂.σ-comm ηₚ _) ∙ l₁.σ-comm ηₚ _))
+      (Nat-path λ x → D.introl refl)
+    morp .inverses .invr = l₁.σ-uniq₂ η₁
+      (Nat-path λ x → sym (D.pullr (l₁.σ-comm ηₚ _) ∙ l₂.σ-comm ηₚ _))
+      (Nat-path λ x → D.introl refl)
+  module functor = C′D._≅_ functor
 ```
 
-The functor is not the only data associated with a left extension,
-though: we must also verify that, under the identification $G \equiv G'$
-we just produced, the natural transformations $\eta$ and $\eta'$ are
-also identified. This boils down to verifying, in components, that
-$\sigma_{\eta'}\eta = \eta'$, but that is immediate by the specification
-for $\sigma$.
+It's immediate from the construction that this isomorphism "sends
+$\eta_1$ to $\eta_2$".
 
 ```agda
-  eta-uniqueₚ : PathP (λ i → F => Ext-uniqueₚ i F∘ p) L₁.eta L₂.eta
-  eta-uniqueₚ = Nat-pathp refl _ λ _ →
-    Univalent.Hom-pathp-reflr-iso dcat (L₁.σ-comm ηₚ _)
+  unit : (functor.to ◂ p) ∘nt η₁ ≡ η₂
+  unit = l₁.σ-comm
 ```
 
-<details>
-<summary>A similar argument shows that $\sigma_j$ and $\sigma'_j$ are
-also identified.</summary>
-```agda
-  σ-uniqueₚ : ∀ {M} (f : F => M F∘ p)
-            → PathP (λ i → Ext-uniqueₚ i => M) (L₁.σ f) (L₂.σ f)
-  σ-uniqueₚ {M = M} f = Nat-pathp _ _ λ _ →
-    Univalent.Hom-pathp-refll-iso dcat lemma
-    where
-      σ′ : L₂.Ext => M
-      σ′ .η x = L₁.σ f .η x D.∘ L₂.σ L₁.eta .η x
-      σ′ .is-natural x y f = D.pullr (L₂.σ _ .is-natural _ _ _)
-                          ∙ D.extendl (L₁.σ _ .is-natural _ _ _)
+## Into univalent categories
 
-      lemma : ∀ {x} → L₁.σ f .η x D.∘ L₂.σ (L₁.eta) .η x ≡ L₂.σ f .η x
-      lemma {x = x} = sym $ ap (λ e → e .η x) {y = σ′} $
-        L₂.σ-uniq $ Nat-path λ _ → sym (
-          D.pullr (L₂.σ-comm ηₚ _) ∙ L₁.σ-comm ηₚ _)
+As traditional with universal constructions, if $F : \cC \to \cD$ takes
+values in a [univalent category], we can sharpen our result: the type of
+left extensions of $F$ along $p$ is a proposition.
+
+[univalent category]: Cat.Univalent.html#univalent-categories
+
+```agda
+Lan-is-prop
+  : ∀ {p : Functor C C′} {F : Functor C D} → is-category D → is-prop (Lan p F)
+Lan-is-prop {C = C} {C′ = C′} {D = D} {p = p} {F = F} d-cat L₁ L₂ = path where
 ```
-</details>
 
-Now $(G, \eta, \sigma)$ _is_ all the data of a left extension: The other
-two fields are propositions, and so they are automatically identified
---- regardless of the specific isomorphism we would have exhibited.
-
+<!--
 ```agda
-  open is-lan
+  module L₁ = Lan L₁
+  module L₂ = Lan L₂
+  module Lu = Lan-unique L₁.has-lan L₂.has-lan
+
   open Lan
 
-  Lan-unique : L₁ ≡ L₂
-  Lan-unique i .Ext = cd-cat .to-path Ext-unique i
-  Lan-unique i .has-lan .eta = eta-uniqueₚ i
-  Lan-unique i .has-lan .σ f = σ-uniqueₚ f i
-  Lan-unique i .has-lan .σ-comm {α = α} =
-    is-prop→pathp
-      (λ i → [C,D].Hom-set _ _ ((σ-uniqueₚ α i ◂ p) ∘nt eta-uniqueₚ i) α)
-      L₁.σ-comm L₂.σ-comm i
-  Lan-unique i .has-lan .σ-uniq {M = M} {α = α} {σ′ = σ′} =
-    is-prop→pathp
-      (λ i → Π-is-hlevel² {A = cd-cat .to-path Ext-unique i => M}
-                          {B = λ σ′ → α ≡ (σ′ ◂ p) ∘nt eta-uniqueₚ i} 1
-              λ σ′ x → [C′,D].Hom-set _ _ (σ-uniqueₚ α i) σ′)
-      (λ σ′ → L₁.σ-uniq {σ′ = σ′})
-      (λ σ′ → L₂.σ-uniq {σ′ = σ′})
-      i σ′
+  c′d-cat : is-category Cat[ C′ , D ]
+  c′d-cat = Functor-is-category d-cat
 ```
+-->
+
+That's because if $\cD$ is univalent, then [so is $[\cC',
+\cD]$][functor-is-category], so our natural isomorphism $i : G_1 \cong
+G_2$ is equivalent to an identification $i' : G_1 \equiv G_2$. Then, our
+tiny lemma stating that this isomorphism "sends $\eta_1$ to $\eta_2$" is
+precisely the data of a dependent identification $\eta_1 \equiv \eta_2$
+over $i'$.
+
+[functor-is-category]: Cat.Instances.Functor.html#functor-is-category
+
+```agda
+  functor-path : L₁.Ext ≡ L₂.Ext
+  functor-path = c′d-cat .to-path Lu.functor
+
+  eta-path : PathP (λ i → F => functor-path i F∘ p) L₁.eta L₂.eta
+  eta-path = Nat-pathp _ _ λ x →
+    Univalent.Hom-pathp-reflr-iso d-cat (Lu.unit ηₚ _)
+```
+
+Since being a left extension is always a proposition when applied to
+$(G, \eta)$, even when the categories are not univalent, we can finish
+our proof.
+
+```agda
+  path : L₁ ≡ L₂
+  path i .Ext = functor-path i
+  path i .eta = eta-path i
+  path i .has-lan =
+    is-prop→pathp (λ i → is-lan-is-prop {p = p} {F} {functor-path i} {eta-path i})
+      L₁.has-lan L₂.has-lan i
+```
+
+<!--
+```agda
+module
+  Ran-unique
+    {p : Functor C C′} {F : Functor C D}
+    {G₁ G₂ : Functor C′ D} {ε₁ ε₂}
+    (r₁ : is-ran p F G₁ ε₁)
+    (r₂ : is-ran p F G₂ ε₂)
+  where
+
+  private
+    module r₁ = is-ran r₁
+    module r₂ = is-ran r₂
+    module D = Cat.Reasoning D
+    module C′D = Cat.Reasoning Cat[ C′ , D ]
+
+  open C′D._≅_
+  open C′D.Inverses
+
+  functor : natural-iso G₁ G₂
+  functor = morp where
+    morp : natural-iso G₁ G₂
+    morp .to   = r₂.σ ε₁
+    morp .from = r₁.σ ε₂
+    morp .inverses .invl = r₂.σ-uniq₂ ε₂
+      (Nat-path λ x → sym (D.pulll (r₂.σ-comm ηₚ _) ∙ r₁.σ-comm ηₚ _))
+      (Nat-path λ x → D.intror refl)
+    morp .inverses .invr = r₁.σ-uniq₂ ε₁
+      (Nat-path λ x → sym (D.pulll (r₁.σ-comm ηₚ _) ∙ r₂.σ-comm ηₚ _))
+      (Nat-path λ x → D.intror refl)
+  module functor = C′D._≅_ functor
+
+  counit : ε₁ ∘nt (functor.from ◂ p) ≡ ε₂
+  counit = r₁.σ-comm
+
+Ran-is-prop
+  : ∀ {p : Functor C C′} {F : Functor C D} → is-category D → is-prop (Ran p F)
+Ran-is-prop {C = C} {C′ = C′} {D = D} {p = p} {F = F} d-cat R₁ R₂ = path where
+  module R₁ = Ran R₁
+  module R₂ = Ran R₂
+  module Ru = Ran-unique R₁.has-ran R₂.has-ran
+
+  open Ran
+
+  c′d-cat : is-category Cat[ C′ , D ]
+  c′d-cat = Functor-is-category d-cat
+
+  fp : R₁.Ext ≡ R₂.Ext
+  fp = c′d-cat .to-path Ru.functor
+
+  εp : PathP (λ i → fp i F∘ p => F) R₁.eps R₂.eps
+  εp = Nat-pathp _ _ λ x → Univalent.Hom-pathp-refll-iso d-cat (Ru.counit ηₚ _)
+
+  path : R₁ ≡ R₂
+  path i .Ext = fp i
+  path i .eps = εp i
+  path i .has-ran =
+    is-prop→pathp (λ i → is-ran-is-prop {p = p} {F} {fp i} {εp i})
+      R₁.has-ran R₂.has-ran i
+```
+-->
