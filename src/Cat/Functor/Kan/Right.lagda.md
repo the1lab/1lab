@@ -183,4 +183,4 @@ is-ran-is-prop {p = p} {F} {G} {eps} a b = path where
       (a.σ-uniq γ) (b.σ-uniq γ)
       i
 ```
---β>
+-->
