@@ -55,15 +55,17 @@ linksRules = do
   -- graph of module names *with no self-loops*.
   -- While building this file, we also check links against the set of anchors above.
   "_build/html/static/links.json" %> \out -> do
-    watching <- getWatching
+    skipTypes <- getSkipTypes
+    skipAgda <- getSkipAgda
+
     ourModules <- getOurModules
-    anchors <- anchors ()
+    anchors <- if skipAgda then pure mempty else anchors ()
     links :: [[String]] <- catMaybes . concat <$> forM (Map.keys ourModules) \source -> do
       let input = "_build/html" </> source <.> "html"
       need [input]
       links <- Set.toList . getInternalLinks source . parseTags <$> liftIO (Text.readFile input)
       forM links \link -> do
-        unless (watching || Text.pack link `Set.member` anchors) do
+        unless (skipTypes || Text.pack link `Set.member` anchors) do
           error $ "Could not find link target " ++ link ++ " in " ++ source
         let target = dropExtension . fst $ break (== '#') link
         pure if (  target /= source
