@@ -1,8 +1,9 @@
 ```agda
+open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Limit.Base
-open import Cat.Functor.Kan.Right
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
+open import Cat.Functor.Kan.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
@@ -34,7 +35,6 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (F : Functor J 
 
   record Cone : Type (o₁ ⊔ o₂ ⊔ h₁ ⊔ h₂) where
     no-eta-equality
-    constructor cone
 ```
 
 A `Cone`{.Agda} over $F$ is given by an object (the `apex`{.agda})
@@ -157,6 +157,8 @@ again preserve _all_ the commutativities.
 <!--
 ```agda
     cat .Hom-set x y = Iso→is-hlevel 2 eqv hlevel!
+
+  open _=>_
 ```
 -->
 
@@ -175,22 +177,33 @@ surprising, as both constructions contain the same data, just organized
 differently.
 
 ```agda
+  Cone→cone : (K : Cone) → Const (Cone.apex K) => F
+  Cone→cone K .η = K .Cone.ψ
+  Cone→cone K .is-natural x y f = C.idr _ ∙ sym (K .Cone.commutes f)
+
   is-terminal-cone→is-limit
     : ∀ {K : Cone}
     → is-terminal Cones K
-    → is-limit F (Cone.apex K)
-  is-terminal-cone→is-limit {K = K} term = to-is-limit lim where
-    open make-is-limit
-    open Cone
+    → is-limit F (Cone.apex K) (Cone→cone K)
+  is-terminal-cone→is-limit {K = K} term = isl where
     open Cone-hom
+    open is-ran
+    open Cone
 
-    lim : make-is-limit F (Cone.apex K)
-    lim .ψ = K .ψ
-    lim .commutes = K .commutes
-    lim .universal eta p = term (cone _ eta p) .centre .hom
-    lim .factors eta p = term (cone _ eta p) .centre .commutes _
-    lim .unique eta p other q =
-      ap hom (sym (term (cone _ eta p) .paths (cone-hom other q)))
+    isl : is-ran _ F _ (cone→counit F (Cone→cone K))
+    isl .σ {M = M} α = nt where
+      α′ : Cone
+      α′ .apex = M .Functor.F₀ tt
+      α′ .ψ x = α .η x
+      α′ .commutes f = sym (α .is-natural _ _ f) ∙ C.elimr (M .Functor.F-id)
+
+      nt : M => const! (K .apex)
+      nt .η x = term α′ .centre .hom
+      nt .is-natural tt tt tt = C.elimr (M .Functor.F-id) ∙ C.introl refl
+    isl .σ-comm = Nat-path λ x → term _ .centre .commutes _
+    isl .σ-uniq {σ′ = σ′} x = Nat-path λ _ → ap hom $ term _ .paths λ where
+      .hom        → σ′ .η _
+      .commutes _ → sym (x ηₚ _)
 ```
 
 The inverse direction of this equivalence also consists of packing and
@@ -198,15 +211,15 @@ unpacking data.
 
 ```agda
   is-limit→is-terminal-cone
-    : ∀ {x}
-    → (L : is-limit F x)
-    → is-terminal Cones (cone x (is-limit.ψ L) (is-limit.commutes L))
+    : ∀ {x} {eps : Const x => F}
+    → (L : is-limit F x eps)
+    → is-terminal Cones (record { commutes = is-limit.commutes L })
   is-limit→is-terminal-cone {x = x} L K = term where
     module L = is-limit L
     module K = Cone K
     open Cone-hom
 
-    term : is-contr (Cone-hom K (cone x L.ψ L.commutes))
+    term : is-contr (Cone-hom K _)
     term .centre .hom =
       L.universal K.ψ K.commutes
     term .centre .commutes _ =
@@ -221,6 +234,7 @@ unpacking data.
 
   Terminal-cone→Limit : Terminal Cones → Limit F
   Terminal-cone→Limit x .Ext     = _
+  Terminal-cone→Limit x .eps     = _
   Terminal-cone→Limit x .has-ran = is-terminal-cone→is-limit (x .Terminal.has⊤)
 
   Limit→Terminal-cone : Limit F → Terminal Cones

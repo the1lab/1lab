@@ -4,6 +4,7 @@ open import Cat.Diagram.Limit.Pullback
 open import Cat.Instances.Shape.Cospan
 open import Cat.Diagram.Limit.Product
 open import Cat.Diagram.Limit.Base
+open import Cat.Diagram.Limit.Cone
 open import Cat.Instances.Discrete
 open import Cat.Diagram.Equaliser
 open import Cat.Diagram.Pullback
@@ -423,13 +424,11 @@ Putting it all together into a record we get our proof of finite completeness:
       open Cone
 
       term′ : Terminal C
-      term′ = record { top = limF .top .apex ; has⊤ = limiting } where
+      term′ = record { top = Limit.apex limF ; has⊤ = limiting } where
         limiting : ∀ x → is-contr _
         limiting x =
-          contr (limF .has⊤ (h′ x) .centre .hom) λ h →
-            ap hom (limF .has⊤ (h′ x) .paths (record { hom = h ; commutes = λ { () } }))
-          where h′ : ∀ x → Cone _
-                h′ x = record { apex = x ; ψ = λ { () } ; commutes = λ { {()} } }
+          contr (Limit.universal limF (λ { () }) (λ { {()} })) λ h →
+            sym (Limit.unique limF _ _ h λ { () })
 ```
 -->
 

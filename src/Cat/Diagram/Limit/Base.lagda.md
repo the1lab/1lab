@@ -276,7 +276,7 @@ we have been given:
 ```
 -->
 
-```
+```agda
   to-is-limit : ∀ {D : Functor J C} {apex}
               → (mk : make-is-limit D apex)
               → is-limit D apex (to-cone mk)
