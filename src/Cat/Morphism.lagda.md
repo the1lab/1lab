@@ -192,6 +192,10 @@ We note that the identity morphism is always iso, and that isos compose:
 
 <!--
 ```agda
+make-inverses : {f : Hom a b} {g : Hom b a} → f ∘ g ≡ id → g ∘ f ≡ id → Inverses f g
+make-inverses p q .invl = p
+make-inverses p q .invr = q
+
 make-invertible : {f : Hom a b} → (g : Hom b a) → f ∘ g ≡ id → g ∘ f ≡ id → is-invertible f
 make-invertible g p q .is-invertible.inv = g
 make-invertible g p q .is-invertible.inverses .invl = p
@@ -206,6 +210,10 @@ make-iso f g p q ._≅_.inverses .Inverses.invr = q
 instance
   H-Level-is-invertible : ∀ {f : Hom a b} {n} → H-Level (is-invertible f) (suc n)
   H-Level-is-invertible = prop-instance is-invertible-is-prop
+
+inverses→invertible : ∀ {f : Hom a b} {g : Hom b a} → Inverses f g → is-invertible f
+inverses→invertible x .is-invertible.inv = _
+inverses→invertible x .is-invertible.inverses = x
 
 invertible→iso : (f : Hom a b) → is-invertible f → a ≅ b
 invertible→iso f x =

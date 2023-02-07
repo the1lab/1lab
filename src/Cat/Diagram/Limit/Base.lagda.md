@@ -2,6 +2,7 @@
 open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Coherence
 open import Cat.Functor.Kan.Base
+open import Cat.Functor.Kan.Unique
 open import Cat.Instances.Functor
 open import Cat.Prelude
 
@@ -296,8 +297,35 @@ we have been given:
     lim .σ-comm {β = β} = Nat-path λ j →
       factors (β .η) _
     lim .σ-uniq {β = β} {σ′ = σ′} p = Nat-path λ _ →
-      sym $ unique (β .η) _ (σ′ .η _) (λ j → sym (p ηₚ j))
+      sym $ unique (β .η) _ (σ′ .η tt) (λ j → sym (p ηₚ j))
 ```
+
+<!--
+```agda
+  to-is-limitp
+    : ∀ {D : Functor J C} {apex} {eps : Const apex => D}
+    → (mk : make-is-limit D apex)
+    → (∀ {j} → to-cone mk .η j ≡ eps .η j)
+    → is-limit D apex eps
+  to-is-limitp {Diagram} {apex} {eps} mklim p = lim where
+    open make-is-limit mklim
+    open is-ran
+    open Functor
+    open _=>_
+
+    lim : is-limit Diagram apex eps
+    lim .σ {M = M} α .η _ =
+      universal (α .η) (λ f → sym (α .is-natural _ _ f) ∙ C.elimr (M .F-id))
+    lim .σ {M = M} α .is-natural _ _ _ =
+      lim .σ α .η _ C.∘ M .F₁ tt ≡⟨ C.elimr (M .F-id) ⟩
+      lim .σ α .η _              ≡˘⟨ C.idl _ ⟩
+      C.id C.∘ lim .σ α .η _     ∎
+    lim .σ-comm {β = β} = Nat-path λ j →
+      ap (C._∘ _) (sym p) ∙ factors (β .η) _
+    lim .σ-uniq {β = β} {σ′ = σ′} q = Nat-path λ _ →
+      sym (unique (β .η) _ (σ′ .η tt) λ j → ap (C._∘ _) p ∙ sym (q ηₚ j))
+```
+-->
 
 To _use_ the data of `is-limit`, we provide a function for *un*making a
 limit:
@@ -338,8 +366,19 @@ limit:
         other-nt : const! x => F
         other-nt .η _ = other
         other-nt .is-natural _ _ _ = C.idr _ ∙ C.introl (Functor.F-id F) -- C.id-comm
-
 ```
+
+<!--
+```agda
+  to-limit
+    : ∀ {D : Functor J C} {apex : C.Ob} {eps : Const apex => D}
+    → is-limit D apex eps
+    → Limit D
+  to-limit l .Ran.Ext = _
+  to-limit l .Ran.eps = _
+  to-limit l .Ran.has-ran = l
+```
+-->
 
 <!--
 ```agda
@@ -417,7 +456,10 @@ computation.
 <!--
 ```agda
 module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
-         (Diagram : Functor J C)
+         {Diagram : Functor J C}
+         {x y} {epsy : Const y => Diagram} {epsx : Const x => Diagram}
+         (Ly : is-limit Diagram y epsy)
+         (Lx : is-limit Diagram x epsx)
        where
   private
     module J = Precategory J
@@ -425,6 +467,9 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
     module Diagram = Functor Diagram
     open is-ran
     open _=>_
+
+    module Ly = is-limit Ly
+    module Lx = is-limit Lx
 ```
 -->
 
@@ -435,57 +480,149 @@ limits of $F$. We can use the universal maps associated with each limit
 to construct both directions of the isomorphism. Furthermore, these
 are mutually inverse, as universal maps are unique.
 
+We show a slightly more general result first: if there exist a pair of
+maps $f$, $g$ between the apexes of the 2 limits, and these maps commute
+with the 2 limits, then $f$ and $g$ are inverses.
+
 ```agda
-  -- limits-unique
-  --   : ∀ {x y}
-  --   → is-limit Diagram x
-  --   → is-limit Diagram y
-  --   → x C.≅ y
-  -- limits-unique {x} {y} L L′ =
-  --   C.make-iso
-  --     (L′.universal L.ψ L.commutes)
-  --     (L.universal L′.ψ L′.commutes)
-  --     (L′.unique₂ L′.ψ L′.commutes
-  --       (λ j → C.pulll (L′.factors L.ψ L.commutes) ∙ L.factors L′.ψ L′.commutes)
-  --       λ j → C.idr _)
-  --     (L.unique₂ L.ψ L.commutes
-  --       (λ j → C.pulll (L.factors L′.ψ L′.commutes) ∙ L′.factors L.ψ L.commutes)
-  --       λ j → C.idr _)
-  --   where
-  --     module L = is-limit L
-  --     module L′ = is-limit L′
+  limits→inversesp
+    : ∀ {f : C.Hom x y} {g : C.Hom y x}
+    → (∀ {j : J.Ob} → Ly.ψ j C.∘ f ≡ Lx.ψ j)
+    → (∀ {j : J.Ob} → Lx.ψ j C.∘ g ≡ Ly.ψ j)
+    → C.Inverses f g
+  limits→inversesp f-factor g-factor =
+    C.make-inverses
+      (Ly.unique₂ Ly.ψ Ly.commutes (λ j → C.pulll f-factor ∙ g-factor) λ _ → C.idr _)
+      (Lx.unique₂ Lx.ψ Lx.commutes (λ j → C.pulll g-factor ∙ f-factor) λ _ → C.idr _)
 ```
+
+Furthermore, any morphism between apexes that commutes with the limit
+must be invertible.
+
+```agda
+  limits→invertiblep
+    : ∀ {f : C.Hom x y}
+    → (∀ {j : J.Ob} → Ly.ψ j C.∘ f ≡ Lx.ψ j)
+    → C.is-invertible f
+  limits→invertiblep f-factor =
+    C.inverses→invertible $
+    limits→inversesp f-factor (Lx.factors Ly.ψ Ly.commutes)
+```
+
+This implies that the universal maps must also be inverses.
+
+```agda
+  limits→inverses
+    : C.Inverses (Ly.universal Lx.ψ Lx.commutes) (Lx.universal Ly.ψ Ly.commutes)
+  limits→inverses =
+    limits→inversesp (Ly.factors Lx.ψ Lx.commutes) (Lx.factors Ly.ψ Ly.commutes)
+
+  limits→invertible
+    : C.is-invertible (Ly.universal Lx.ψ Lx.commutes)
+  limits→invertible = limits→invertiblep (Ly.factors Lx.ψ Lx.commutes)
+```
+
+Finally, we can bundle this data up to show that the apexes are isomorphic.
+
+```agda
+  limits-unique : x C.≅ y
+  limits-unique = C.invertible→iso _ limits→invertible 
+```
+
 
 Furthermore, if the universal map is invertible, then that means that
 its domain is _also_ a limit of the diagram.
 
+<!--
 ```agda
-  -- is-invertible→is-limit
-  --   : ∀ {x y}
-  --   → (L : is-limit Diagram y)
-  --   → (eta : ∀ j → C.Hom x (Diagram.₀ j))
-  --   → (p : ∀ {x y} (f : J.Hom x y) → Diagram.₁ f C.∘ eta x ≡ eta y)
-  --   → C.is-invertible (is-limit.universal L eta p)
-  --   → is-limit Diagram x
-  -- is-invertible→is-limit {x = x} L eta p invert = to-is-limit lim where
-  --   module L = is-limit L
-  --   open C.is-invertible invert
-  --   open make-is-limit
+module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+         {Diagram : Functor J C}
+         {y} {epsy : Const y => Diagram}
+         (Ly : is-limit Diagram y epsy)
+       where
+  private
+    module J = Precategory J
+    module C = Cat.Reasoning C
+    module Diagram = Functor Diagram
+    open is-ran
+    open _=>_
 
-  --   lim : make-is-limit Diagram x
-  --   lim .ψ = eta
-  --   lim .commutes = p
-  --   lim .universal tau q = inv C.∘ L.universal tau q
-  --   lim .factors tau q =
-  --     lim .ψ _ C.∘ inv C.∘ L.universal tau q                      ≡˘⟨ L.factors eta p C.⟩∘⟨refl ⟩
-  --     (L.ψ _ C.∘ L.universal eta p) C.∘ inv C.∘ L.universal tau q ≡⟨ C.cancel-inner invl ⟩
-  --     L.ψ _ C.∘ L.universal tau q                                 ≡⟨ L.factors tau q ⟩
-  --     tau _ ∎
-  --   lim .unique tau q other r =
-  --     other                               ≡⟨ C.insertl invr ⟩
-  --     inv C.∘ L.universal eta p C.∘ other ≡⟨ C.refl⟩∘⟨ L.unique _ _ _ (λ j → C.pulll (L.factors eta p) ∙ r j) ⟩
-  --     inv C.∘ L.universal tau q           ∎
+    module Ly = is-limit Ly
+
+  family→cone
+    : ∀ {x}
+    → (eta : ∀ j → C.Hom x (Diagram.₀ j))
+    → (∀ {x y} (f : J.Hom x y) → Diagram.₁ f C.∘ eta x ≡ eta y)
+    → Const x => Diagram
+  family→cone eta p .η = eta
+  family→cone eta p .is-natural _ _ _ = C.idr _ ∙ sym (p _)
 ```
+-->
+
+```agda
+  is-invertible→is-limitp
+    : ∀ {x} {eps : Const x => Diagram}
+    → (eta : ∀ j → C.Hom x (Diagram.₀ j))
+    → (p : ∀ {x y} (f : J.Hom x y) → Diagram.₁ f C.∘ eta x ≡ eta y)
+    → (∀ {j} → eta j ≡ eps .η j)
+    → C.is-invertible (Ly.universal eta p)
+    → is-limit Diagram x eps
+  is-invertible→is-limitp {x = x} eta p q invert = to-is-limitp lim q where
+    open C.is-invertible invert
+    open make-is-limit
+
+    lim : make-is-limit Diagram x
+    lim .ψ = eta
+    lim .commutes = p
+    lim .universal tau q = inv C.∘ Ly.universal tau q
+    lim .factors tau q =
+      lim .ψ _ C.∘ inv C.∘ Ly.universal tau q                        ≡˘⟨ Ly.factors eta p C.⟩∘⟨refl ⟩
+      (Ly.ψ _ C.∘ Ly.universal eta p) C.∘ inv C.∘ Ly.universal tau q ≡⟨ C.cancel-inner invl ⟩
+      Ly.ψ _ C.∘ Ly.universal tau q                                  ≡⟨ Ly.factors tau q ⟩
+      tau _                                                          ∎
+    lim .unique tau q other r =
+      other                                ≡⟨ C.insertl invr ⟩
+      inv C.∘ Ly.universal eta p C.∘ other ≡⟨ C.refl⟩∘⟨ Ly.unique _ _ _ (λ j → C.pulll (Ly.factors eta p) ∙ r j) ⟩
+      inv C.∘ Ly.universal tau q           ∎
+```
+
+<!--
+```agda
+module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+         {Diagram : Functor J C}
+         {x} {eps : Const x => Diagram}
+         where
+  private
+    module J = Precategory J
+    module C = Cat.Reasoning C
+    module Diagram = Functor Diagram
+    open is-ran
+    open _=>_
+
+  is-limit-is-prop : is-prop (is-limit Diagram x eps)
+  is-limit-is-prop = is-ran-is-prop
+```
+-->
+
+Therefore, if $C$ is a category, then $Limit$ is a proposition! However,
+this follows from a much more general result about [uniqueness of
+kan extensions].
+
+[uniqueness of kan extensions]: Cat.Functor.Kan.Unique.html
+
+<!--
+```agda
+module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+         {Diagram : Functor J C}
+         where
+```
+-->
+
+```agda
+  Limit-is-prop : is-category C → is-prop (Limit Diagram)
+  Limit-is-prop cat = Ran-is-prop cat
+```
+
 
 # Preservation of Limits
 
