@@ -4,6 +4,8 @@ open import Cat.Prelude
 
 open import Data.Dec
 
+import Cat.Reasoning
+
 module Cat.Instances.Discrete where
 ```
 
@@ -16,6 +18,7 @@ private variable
 
 open Precategory
 open Functor
+open _=>_
 ```
 -->
 
@@ -84,18 +87,16 @@ adjoint] to the `Ob`{.Agda} functor.
 
 ```agda
 Disc-diagram
-  : ∀ {iss : is-set X} (disc : Discrete X)
-  → (X → Ob C)
-  → Functor (Disc′ (el X iss)) C
-Disc-diagram {X = X} {C = C} disc f = F where
+  : ∀ {X : Set ℓ} (disc : Discrete ∣ X ∣)
+  → (∣ X ∣ → Ob C)
+  → Functor (Disc′ X) C
+Disc-diagram {C = C} {X = X} disc f = F where
   module C = Precategory C
-  set : is-set X
-  set = Discrete→is-set disc
 
-  P : X → X → Type _
+  P : ∣ X ∣ → ∣ X ∣ → Type _
   P x y = C.Hom (f x) (f y)
 
-  map : ∀ {x y : X} → x ≡ y → Dec (x ≡ y) → P x y
+  map : ∀ {x y : ∣ X ∣} → x ≡ y → Dec (x ≡ y) → P x y
   map {x} {y} p =
     Dec-elim (λ _ → P x y)
       (λ q → subst (P x) q C.id)
@@ -123,7 +124,7 @@ computations with equalities and a whole waterfall of absurd cases:
   F .F-id {x} with inspect (disc x x)
   ... | yes p , q =
     map refl (disc x x)   ≡⟨ ap (map refl) q ⟩
-    map refl (yes p)      ≡⟨ ap (map refl ⊙ yes) (set _ _ p refl) ⟩
+    map refl (yes p)      ≡⟨ ap (map refl ⊙ yes) (X .is-tr _ _ p refl) ⟩
     map refl (yes refl)   ≡⟨⟩
     subst (P x) refl C.id ≡⟨ transport-refl _ ⟩
     C.id                  ∎
@@ -132,7 +133,7 @@ computations with equalities and a whole waterfall of absurd cases:
   F .F-∘ {x} {y} {z} f g with inspect (disc x y) | inspect (disc x z) | inspect (disc y z)
   ... | yes x=y , p1 | yes x=z , p2 | yes y=z , p3 =
     map (g ∙ f) (disc x z)                 ≡⟨ ap (map (g ∙ f)) p2 ⟩
-    map (g ∙ f) (yes ⌜ x=z ⌝)              ≡⟨ ap! (set _ _ _ _) ⟩
+    map (g ∙ f) (yes ⌜ x=z ⌝)              ≡⟨ ap! (X .is-tr _ _ _ _) ⟩
     map (g ∙ f) (yes (x=y ∙ y=z))          ≡⟨⟩
     subst (P x) (x=y ∙ y=z) C.id           ≡⟨ subst-∙ (P x) _ _ _ ⟩
     subst (P x) y=z (subst (P _) x=y C.id) ≡⟨ from-pathp (Hom-pathp-reflr C refl) ⟩
@@ -168,5 +169,21 @@ Disc-adjunct {C = C} {iss = iss} F .F-∘ {x} {y} {z} f g = path where
               ·· transport-refl _
               ·· C.introl (transport-refl _))
         f {x} g
+```
+-->
+
+<!--
+```agda
+Disc-natural
+  : ∀ {X : Set ℓ}
+  → {F G : Functor (Disc′ X) C}
+  → (∀ x → C .Hom (F .F₀ x) (G .F₀ x))
+  → F => G
+Disc-natural fam .η = fam
+Disc-natural {C = C} {F = F} {G = G} fam .is-natural x y f =
+  J (λ y p → fam y C.∘ F .F₁ p ≡ (G .F₁ p C.∘ fam x))
+    (C.elimr (F .F-id) ∙ C.introl (G .F-id))
+    f
+  where module C = Cat.Reasoning C
 ```
 -->

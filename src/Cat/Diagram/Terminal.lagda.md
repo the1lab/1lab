@@ -136,6 +136,8 @@ If a category has two terminal objects $t_1$ and $t_2$, then there is a
 unique isomorphism $t_1 \cong t_2$. This follows directly from [uniqueness
 of limits]!
 
+[uniqueness of limits]: Cat.Diagram.Limit.Base#uniqueness
+
 ```agda
 !-inverses : (t1 t2 : Terminal) → Inverses (t1 .!) (t2 .!)
 !-inverses t1 t2 =

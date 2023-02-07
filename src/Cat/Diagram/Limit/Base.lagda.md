@@ -545,6 +545,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
     module C = Cat.Reasoning C
     module Diagram = Functor Diagram
     open is-ran
+    open Functor
     open _=>_
 
     module Ly = is-limit Ly
@@ -585,6 +586,41 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
       inv C.∘ Ly.universal eta p C.∘ other ≡⟨ C.refl⟩∘⟨ Ly.unique _ _ _ (λ j → C.pulll (Ly.factors eta p) ∙ r j) ⟩
       inv C.∘ Ly.universal tau q           ∎
 ```
+
+Another useful fact is that if $L$ is a limit of some diagram $Dia$, and
+$Dia$ is naturally isomorphic to some other diagram $Dia'$, then the
+apex of $L$ is also a limit of $Dia'$.
+
+```agda
+  natural-iso→is-limitp
+    : ∀ {D′ : Functor J C}
+    → {eps : Const y => D′}
+    → (isos : natural-iso Diagram D′)
+    → (∀ {j} → natural-iso.to isos .η j C.∘ Ly.ψ j ≡ eps .η j)
+    → is-limit D′ y eps
+  natural-iso→is-limitp {D′ = D′} isos p = to-is-limitp lim p where
+    open make-is-limit
+    module isos = natural-iso isos
+
+    lim : make-is-limit D′ y
+    lim .ψ j =  isos.to .η _ C.∘ Ly.ψ j
+    lim .commutes f =
+      C.pulll (sym $ isos.to .is-natural _ _ f)
+      ∙ C.pullr (Ly.commutes f)
+    lim .universal eta q =
+      Ly.universal
+        (λ j → isos.from .η _ C.∘ eta j)
+        (λ f →
+          C.pulll (sym $ isos.from .is-natural _ _ f)
+          ∙ C.pullr (q f))
+    lim .factors eta q =
+      C.pullr (Ly.factors _ _)
+      ∙ C.cancell (isos.invl ηₚ _)
+    lim .unique eta q other r =
+      Ly.unique _ _ other λ j →
+        ap (C._∘ other) (C.insertl (isos.invr ηₚ _)) ∙ C.pullr (r j)
+```
+
 
 <!--
 ```agda
