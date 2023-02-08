@@ -79,11 +79,11 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     funct .F-∘ {false} {true}  {true}  tt _  = sym (idl _)
     funct .F-∘ {true}  {true}  {true}  tt tt = sym (idl _)
 
-  fork
+  fork-cone
     : ∀ {a b e} {f g : Hom a b} {equ : Hom e a}
     → (f ∘ equ ≡ g ∘ equ)
     → Const e => Fork f g
-  fork {e = e} {f = f} {g = g} {equ = equ} equal = nt where
+  fork-cone {e = e} {f = f} {g = g} {equ = equ} equal = nt where
     nt : Const e => Fork f g
     nt .η true = f ∘ equ
     nt .η false = equ

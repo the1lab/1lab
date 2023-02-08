@@ -37,7 +37,7 @@ We can define equalisers as [limits] of a the [parallel arrows diagram].
 ```agda
 is-equaliser : {f g : Hom a b} {equ : Hom e a} → (f ∘ equ ≡ g ∘ equ) → Type _
 is-equaliser {e = e} {f = f} {g = g} {equ = equ} equal =
-  is-limit {C = C} (Fork f g) e (fork equal)
+  is-limit {C = C} (Fork f g) e (fork-cone equal)
 
 Equaliser : (f g : Hom a b) → Type _
 Equaliser f g = Limit {C = C} (Fork f g)
@@ -63,11 +63,12 @@ record make-is-equaliser {e a b} (f g : Hom a b) (equ : Hom e a) : Type (o ⊔ �
       → other ≡ universal p
 
   unique₂
-    : ∀ {x} {e′ : Hom x a} {p : f ∘ e′ ≡ g ∘ e′} {o1 o2 : Hom x e}
+    : ∀ {x} {e′ : Hom x a}  {o1 o2 : Hom x e}
+    → f ∘ e′ ≡ g ∘ e′
     → equ ∘ o1 ≡ e′
     → equ ∘ o2 ≡ e′
     → o1 ≡ o2
-  unique₂ {p = p} q1 q2 = unique {p = p} q1 ∙ sym (unique q2)
+  unique₂ p q1 q2 = unique {p = p} q1 ∙ sym (unique q2)
 ```
 
 We can visualise the situation using the commutative diagram below:
@@ -90,8 +91,8 @@ construct an element of `is-equaliser`{.Agda}.
 ```agda
 to-is-equaliser
   : ∀ {e a b} {f g : Hom a b} {equ : Hom e a}
-  → (mk-eq : make-is-equaliser f g equ)
-  → is-equaliser (make-is-equaliser.equal mk-eq)
+  → (mkeq : make-is-equaliser f g equ)
+  → is-equaliser (make-is-equaliser.equal mkeq)
 to-is-equaliser {e = e} {a} {b} {f} {g} {equ} mkeq =
   to-is-limitp ml λ where
     {true} → refl
@@ -233,5 +234,5 @@ is-equaliser→is-monic
   → is-equaliser equal
   → is-monic equ
 is-equaliser→is-monic {equal = equal} equalises h₁ h₂ p =
-  is-equaliser.unique₂ equalises {p = extendl equal} p refl
+  is-equaliser.unique₂ equalises (extendl equal) p refl
 ```
