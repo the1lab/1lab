@@ -3,6 +3,8 @@ open import Cat.Prelude
 
 open import Data.Bool
 
+import Cat.Reasoning
+
 module Cat.Instances.Shape.Parallel where
 ```
 
@@ -57,11 +59,12 @@ parallel arrows between them. It is the shape of [equaliser] and
 
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} where
-  open Precategory C
+  open Cat.Reasoning C
   open Functor
+  open _=>_
 
-  par-arrows→par-diagram : ∀ {a b} (f g : Hom a b) → Functor ·⇉· C
-  par-arrows→par-diagram f g = funct where
+  Fork : ∀ {a b} (f g : Hom a b) → Functor ·⇉· C
+  Fork f g = funct where
     funct : Functor _ _
     funct .F₀ false = _
     funct .F₀ true = _
@@ -75,4 +78,17 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     funct .F-∘ {false} {false} {true}  f g   = sym (idr _)
     funct .F-∘ {false} {true}  {true}  tt _  = sym (idl _)
     funct .F-∘ {true}  {true}  {true}  tt tt = sym (idl _)
+
+  fork
+    : ∀ {a b e} {f g : Hom a b} {equ : Hom e a}
+    → (f ∘ equ ≡ g ∘ equ)
+    → Const e => Fork f g
+  fork {e = e} {f = f} {g = g} {equ = equ} equal = nt where
+    nt : Const e => Fork f g
+    nt .η true = f ∘ equ
+    nt .η false = equ
+    nt .is-natural true true tt = id-comm
+    nt .is-natural false true true = idr _ ∙ equal
+    nt .is-natural false true false = idr _
+    nt .is-natural false false tt = id-comm
 ```
