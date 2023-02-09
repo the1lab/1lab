@@ -115,6 +115,8 @@ definition into friendlier terms.
 
 ```agda
 module M-Image {a b} {M : Class-of-monos ℓ′} {f : Hom a b} (im : M-image M f) where
+  private
+    module im = Initial (cut f ↙ Forget-full-subcat) im
 ```
 
 The first thing to notice is that, being an initial object in the comma
@@ -123,10 +125,10 @@ is the image object, and $m$ is the inclusion map:
 
 ```agda
   Im : Ob
-  Im = im .bot .y .object .domain
+  Im = im.bot .y .object .domain
 
   Im→codomain : Hom Im b
-  Im→codomain = im .bot .y .object .map
+  Im→codomain = im.bot .y .object .map
 ```
 
 Furthermore, this map is both an inclusion (since $M$ is a class of
@@ -134,7 +136,7 @@ monomorphisms), and an $M$-inclusion at that:
 
 ```agda
   Im→codomain-is-M : M .fst Im→codomain
-  Im→codomain-is-M = im .bot .y .witness
+  Im→codomain-is-M = im.bot .y .witness
 
   Im→codomain-is-monic : is-monic Im→codomain
   Im→codomain-is-monic = M .snd Im→codomain-is-M
@@ -146,10 +148,10 @@ comma category. We also have the "morphism" part, which provides our
 
 ```agda
   corestrict : Hom a Im
-  corestrict = im .bot .map .map
+  corestrict = im.bot .map .map
 
   image-factors : Im→codomain ∘ corestrict ≡ f
-  image-factors = im .bot .map .commutes
+  image-factors = im.bot .map .commutes
 ```
 
 This is also the _smallest_ factorisation, which takes quite a lot of
@@ -171,7 +173,7 @@ through $k$:
     : ∀ {c} (m : Hom c b) (M-m : M .fst m) (i : Hom a c)
     → m ∘ i ≡ f
     → Hom Im c
-  im≤other-image m M i p = im .has⊥ obj .centre .β .map where
+  im≤other-image m M i p = im.¡ {x = obj} .β .map where
     obj : ↓Obj _ _
     obj .x = tt
     obj .y = restrict (cut m) M
@@ -181,5 +183,5 @@ through $k$:
     : ∀ {c} {m : Hom c b} {M : M .fst m} {i : Hom a c}
     → {p : m ∘ i ≡ f}
     → m ∘ im≤other-image m M i p ≡ Im→codomain
-  im≤other-image-factors {m = m} {M} {i} {p} = im .has⊥ _ .centre .β .commutes
+  im≤other-image-factors {m = m} {M} {i} {p} = im.¡ .β .commutes
 ```
