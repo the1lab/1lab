@@ -6,7 +6,6 @@ description: |
   objects in certain comma categories).
 ---
 ```agda
-open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Initial
 open import Cat.Instances.Comma
 open import Cat.Prelude
@@ -185,6 +184,7 @@ module _
   (universal-map-for : ∀ c → Universal-morphism c R)
   where
 
+  open Initial
   open ↓Hom using (β)
   open ↓Obj using (map)
 
@@ -194,7 +194,6 @@ module _
     import Cat.Reasoning C as C
     import Cat.Reasoning D as D
     module R = Functor R
-    module universal-map-for c = Initial (c ↙ R) (universal-map-for c)
 ```
 -->
 
@@ -207,10 +206,10 @@ $L_0(x)$ to be the codomain of the universal morphism:
 
 ```agda
   L₀ : C.Ob → D.Ob
-  L₀ x = universal-map-for.bot x .↓Obj.y
+  L₀ x = universal-map-for x .bot .↓Obj.y
 
   L₀′ : (c : C.Ob) → C.Hom c (R.₀ (L₀ c))
-  L₀′ x = universal-map-for.bot x .map
+  L₀′ x = universal-map-for x .bot .map
 ```
 
 Given an arrow $a \to b$ in $\cC$, we can send it to a
@@ -226,8 +225,8 @@ object in $a \swarrow R$ (see `lift↓`{.Agda} below).
     to-ob {a} {b} h = record { map = L₀′ b C.∘ h }
 
     lift↓ : ∀ {x y} (g : C.Hom x y)
-          → Precategory.Hom (x ↙ R) (universal-map-for.bot x) (to-ob g)
-    lift↓ {x} {y} g = universal-map-for.¡ x
+          → Precategory.Hom (x ↙ R) (universal-map-for x .bot) (to-ob g)
+    lift↓ {x} {y} g = ¡ (universal-map-for x) {to-ob g}
 
   L₁ : ∀ {a b} → C.Hom a b → D.Hom (L₀ a) (L₀ b)
   L₁ {a} {b} x = lift↓ x .β
@@ -243,10 +242,10 @@ object.
 ```agda
   private abstract
     L-id : ∀ {a} → L₁ (C.id {a}) ≡ D.id {L₀ a}
-    L-id {a} =
-      ap β $ sym $
-      universal-map-for.¡-unique a
-        (↓hom (C.elimr refl ·· C.elimr refl ·· sym (C.eliml R.F-id)))
+    L-id {a} = ap β (¡-unique (universal-map-for a)
+                      (record { sq = C.elimr refl
+                                  ·· C.elimr refl
+                                  ·· sym (C.eliml R.F-id) }))
 
     lemma : ∀ {x y z} (f : C.Hom y z) (g : C.Hom x y)
           → R.₁ (L₁ f D.∘ L₁ g) C.∘ (L₀′ x)
@@ -260,8 +259,7 @@ object.
 
     L-∘ : ∀ {x y z} (f : C.Hom y z) (g : C.Hom x y)
         → L₁ (f C.∘ g) ≡ L₁ f D.∘ L₁ g
-    L-∘ f g =
-      ap β $ sym $ universal-map-for.¡-unique _ (↓hom (sym (lemma f g)))
+    L-∘ f g = ap β (¡-unique (universal-map-for _) (record { sq = sym (lemma f g) }))
 ```
 </details>
 
@@ -299,7 +297,7 @@ rather than a part of it.
 ```agda
   private
     mapd : ∀ (x : C.Ob) → Ob (x ↙ R)
-    mapd x = universal-map-for.bot x
+    mapd x = universal-map-for x .bot
 ```
 
 Now for an object $x : \cD$, we have $R(x) : \cC$, so by the
@@ -324,7 +322,7 @@ L(R(x)) \to y$ such that the square below commutes.
 
 ```agda
     ε : ∀ (x : D.Ob) → Hom (R.₀ x ↙ R) (mapd (R.₀ x)) _
-    ε x = universal-map-for.¡ (R.₀ x) {x = ↓obj C.id}
+    ε x = Initial.¡ (universal-map-for (R.₀ x)) {x = record { y = x ; map = C.id }}
 ```
 
 The magic trick is that, if we pick $(x, \id)$ as the object of
@@ -337,20 +335,18 @@ $\beta$ is unique.
   universal-maps→L⊣R : universal-maps→L ⊣ R
   universal-maps→L⊣R .counit .η x = ε x .↓Hom.β
   universal-maps→L⊣R .counit .is-natural x y f =
-    ap ↓Hom.β $
-      universal-map-for.¡-unique₂ (R.₀ x) {↓obj (R.₁ f)} {↓hom sql} {↓hom sqr}
-      where
-        sql =
-          R.₁ f C.∘ C.id                                          ≡⟨ C.idr _ ⟩
-          R.₁ f                                                   ≡˘⟨ C.cancell (sym (ε y .↓Hom.sq) ∙ C.idr _) ⟩
-          R.₁ (ε y .β) C.∘ _ C.∘ R.₁ f                            ≡˘⟨ ap₂ C._∘_ refl (sym (lift↓ (R.₁ f) .↓Hom.sq) ∙ C.idr _) ⟩
-          R.₁ (ε y .β) C.∘ R.₁ (L₁ (R.₁ f)) C.∘ mapd (R.₀ x) .map ≡⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
-          R.₁ (ε y .β D.∘ L₁ (R.₁ f)) C.∘ mapd (R.₀ x) .map       ∎
-
-        sqr =
-          R.₁ f C.∘ C.id                               ≡˘⟨ ap (R.₁ f C.∘_) (sym (ε x .↓Hom.sq) ∙ C.idr _) ⟩
-          R.₁ f C.∘ R.₁ (ε x .β) C.∘ mapd (R.₀ x) .map ≡⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
-          R.₁ (f D.∘ ε x .β) C.∘ mapd (R.₀ x) .map     ∎
+    ap ↓Hom.β (
+      ¡-unique₂ (universal-map-for (R.₀ x)) {record { map = R.₁ f }}
+      (record { sq =
+        R.₁ f C.∘ C.id                                          ≡⟨ C.idr _ ⟩
+        R.₁ f                                                   ≡˘⟨ C.cancell (sym (ε y .↓Hom.sq) ∙ C.idr _) ⟩
+        R.₁ (ε y .β) C.∘ _ C.∘ R.₁ f                            ≡˘⟨ ap₂ C._∘_ refl (sym (lift↓ (R.₁ f) .↓Hom.sq) ∙ C.idr _) ⟩
+        R.₁ (ε y .β) C.∘ R.₁ (L₁ (R.₁ f)) C.∘ mapd (R.₀ x) .map ≡⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
+        R.₁ (ε y .β D.∘ L₁ (R.₁ f)) C.∘ mapd (R.₀ x) .map       ∎ })
+      (record { sq =
+        R.₁ f C.∘ C.id                               ≡˘⟨ ap (R.₁ f C.∘_) (sym (ε x .↓Hom.sq) ∙ C.idr _) ⟩
+        R.₁ f C.∘ R.₁ (ε x .β) C.∘ mapd (R.₀ x) .map ≡⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
+        R.₁ (f D.∘ ε x .β) C.∘ mapd (R.₀ x) .map     ∎ }))
 ```
 
 For the adjunction unit, the situation is a lot easier. Recall that we
@@ -391,16 +387,19 @@ object:
 
 ```agda
   universal-maps→L⊣R .zig {x} =
-    ap ↓Hom.β $ universal-map-for.¡-unique₂ x {↓obj α} {↓hom sql} {↓hom sqr}
+    ap ↓Hom.β (
+      ¡-unique₂ (universal-map-for x) {record { map = α }}
+        (record { sq =
+          α C.∘ C.id                     ≡⟨ C.idr _ ⟩
+          α                              ≡˘⟨ C.cancell (sym (ε (L₀ x) .↓Hom.sq) ∙ C.idr _) ⟩
+          R.₁ _ C.∘ _ C.∘ α              ≡˘⟨ C.pullr (sym (lift↓ α .↓Hom.sq) ∙ C.idr _) ⟩
+          (R.₁ _ C.∘ R.₁ (F₁ L α)) C.∘ α ≡˘⟨ ap (C._∘ α) (R.F-∘ _ _) ⟩
+          R.₁ (_ D.∘ F₁ L α) C.∘ α       ∎
+        })
+        (record { sq = C.id-comm ∙ ap (C._∘ _) (sym R.F-id) })
+    )
     where α = L₀′ x
           L = universal-maps→L
-          sql =
-            α C.∘ C.id                     ≡⟨ C.idr _ ⟩
-            α                              ≡˘⟨ C.cancell (sym (ε (L₀ x) .↓Hom.sq) ∙ C.idr _) ⟩
-            R.₁ _ C.∘ _ C.∘ α              ≡˘⟨ C.pullr (sym (lift↓ α .↓Hom.sq) ∙ C.idr _) ⟩
-            (R.₁ _ C.∘ R.₁ (F₁ L α)) C.∘ α ≡˘⟨ ap (C._∘ α) (R.F-∘ _ _) ⟩
-            R.₁ (_ D.∘ F₁ L α) C.∘ α       ∎
-          sqr = C.id-comm ∙ ap (C._∘ _) (sym R.F-id)
 ```
 
 ## From an adjunction
@@ -472,20 +471,18 @@ $$
 ```agda
   L⊣R→map-to-R-is-initial
     : ∀ x → is-initial (x ↙ R) (L⊣R→map-to-R x)
-  L⊣R→map-to-R-is-initial x = to-is-initial (x ↙ R) init where
-    open make-is-initial
-
-    init : make-is-initial (x ↙ R) (L⊣R→map-to-R x)
-    init .¡ .↓Hom.α = tt
-    init .¡ {x} .↓Hom.β = adj.counit.ε _ D.∘ L.₁ (x .↓Obj.map)
-    init .¡ {x} .↓Hom.sq =
-      sym $
-        R.₁ (adj.counit.ε _ D.∘ L.₁ x.map) C.∘ adj.unit.η _       ≡⟨ ap₂ C._∘_ (R.F-∘ _ _) refl ∙ sym (C.assoc _ _ _) ⟩
-        R.₁ (adj.counit.ε _) C.∘ R.₁ (L.₁ x.map) C.∘ adj.unit.η _ ≡˘⟨ C.refl⟩∘⟨ adj.unit.is-natural _ _ _ ⟩
-        (R.₁ (adj.counit.ε _) C.∘ adj.unit.η _ C.∘ x.map)         ≡⟨ C.cancell adj.zag ⟩
-        x.map                                                     ≡⟨ sym (C.idr _) ⟩
-        x.map C.∘ C.id                                            ∎
-      where module x = ↓Obj x
+  L⊣R→map-to-R-is-initial x other-map .centre .↓Hom.α = tt
+  L⊣R→map-to-R-is-initial x other-map .centre .↓Hom.β =
+    adj.counit.ε _ D.∘ L.₁ (other-map .↓Obj.map)
+  L⊣R→map-to-R-is-initial x other-map .centre .↓Hom.sq =
+    sym (
+      R.₁ (adj.counit.ε _ D.∘ L.₁ om.map) C.∘ adj.unit.η _       ≡⟨ ap₂ C._∘_ (R.F-∘ _ _) refl ∙ sym (C.assoc _ _ _) ⟩
+      R.₁ (adj.counit.ε _) C.∘ R.₁ (L.₁ om.map) C.∘ adj.unit.η _ ≡˘⟨ C.refl⟩∘⟨ adj.unit.is-natural _ _ _ ⟩
+      (R.₁ (adj.counit.ε _) C.∘ adj.unit.η _ C.∘ om.map)         ≡⟨ C.cancell adj.zag ⟩
+      om.map                                                     ≡⟨ sym (C.idr _) ⟩
+      om.map C.∘ C.id                                            ∎
+    )
+    where module om = ↓Obj other-map
 ```
 
 Checking that the triangle above commutes is a routine application of
@@ -493,15 +490,16 @@ naturality and the triangle identities; The same is true for proving
 that the map $g$ above is unique.
 
 ```agda
-    init .¡-unique {x} f =
-      ↓Hom-path _ _ refl $
-        f .↓Hom.β                                                 ≡⟨ D.insertr adj.zig ⟩
-        (f.β D.∘ adj.counit.ε _) D.∘ L.₁ (adj.unit.η _)           ≡⟨ D.pushl (sym $ adj.counit.is-natural _ _ _) ⟩
-        adj.counit.ε _ D.∘ (L.₁ (R.₁ f.β) D.∘ L.₁ (adj.unit.η _)) ≡⟨ (D.refl⟩∘⟨ L.collapse (sym f.sq ∙ C.idr _)) ⟩
-        adj.counit.ε _ D.∘ L.₁ (x.map)                            ∎
-      where
-        module x = ↓Obj x
-        module f = ↓Hom f
+  L⊣R→map-to-R-is-initial x other-map .paths y =
+    ↓Hom-path _ _ refl (
+      adj.counit.ε _ D.∘ L.₁ om.map                            ≡⟨ D.refl⟩∘⟨ L.expand (sym (C.idr _) ∙ y .↓Hom.sq) ⟩
+      adj.counit.ε _ D.∘ L.₁ (R.₁ y.β) D.∘ L.₁ (adj.unit.η _)  ≡⟨ D.pulll (adj.counit.is-natural _ _ _) ⟩ -- nvmd
+      (y.β D.∘ adj.counit.ε _) D.∘ L.₁ (adj.unit.η _)          ≡⟨ D.cancelr adj.zig ⟩
+      y.β                                                      ∎
+    )
+    where
+      module om = ↓Obj other-map
+      module y = ↓Hom y
 ```
 
 Hence, we can safely say that having a functor $L$ and an adjunction $L
@@ -510,7 +508,8 @@ universal arrows into $R$:
 
 ```
   L⊣R→universal-maps : ∀ x → Universal-morphism x R
-  L⊣R→universal-maps x = to-colimit (L⊣R→map-to-R-is-initial x)
+  L⊣R→universal-maps x .Initial.bot = L⊣R→map-to-R x
+  L⊣R→universal-maps x .Initial.has⊥ = L⊣R→map-to-R-is-initial x
 ```
 
 <!-- TODO [Amy 2022-03-02]
@@ -662,16 +661,16 @@ record make-left-adjoint (R : Functor D C) : Type (adj-level C D) where
     start .↓Obj.map = unit _
 
     go : Initial _
-    go = to-initial (x ↙ R) init where
-      open make-initial
+    go .Initial.bot = start
+    go .Initial.has⊥ oth = contr dh uniq
+      where
+        dh : ↓Hom (Const x) R _ oth
+        dh .↓Hom.α = tt
+        dh .↓Hom.β = universal (oth .↓Obj.map)
+        dh .↓Hom.sq = C.idr (oth .↓Obj.map) ∙ commutes (↓Obj.map oth)
 
-      init : make-initial (x ↙ R)
-      init .bot = start
-      init .¡ .↓Hom.α = tt
-      init .¡ {x} .↓Hom.β = universal (x .↓Obj.map)
-      init .¡ {x} .↓Hom.sq = C.idr _ ∙ commutes (x .↓Obj.map)
-      init .¡-unique f =
-        ↓Hom-path _ _ refl (sym (unique (sym (C.idr _) ∙ f .↓Hom.sq)))
+        uniq : ∀ y → dh ≡ y
+        uniq y = ↓Hom-path _ _ refl (unique (sym (C.idr _) ∙ y .↓Hom.sq))
 
   to-functor : Functor C D
   to-functor = universal-maps→L R to-universal-arrows

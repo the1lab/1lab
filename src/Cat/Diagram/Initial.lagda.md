@@ -1,141 +1,46 @@
 ```agda
-open import Cat.Diagram.Colimit.Base
-open import Cat.Functor.Kan.Base
-open import Cat.Instances.Shape.Initial
+open import Cat.Univalent
 open import Cat.Prelude
 
-module Cat.Diagram.Initial {o ℓ} (C : Precategory o ℓ) where
+module Cat.Diagram.Initial {o h} (C : Precategory o h) where
 ```
 
 <!--
 ```agda
-open import Cat.Reasoning C
+open import Cat.Morphism C
 ```
 -->
 
 # Initial objects
 
 An object $\bot$ of a category $\mathcal{C}$ is said to be **initial**
-if there exists a _unique_ map to any other object. We can define this
-concisely as the [colimit] of the [empty diagram].
-
-[colimit]: Cat.Diagram.Colimit.Base.html
-[empty diagram]: Cat.Instances.Shape.Initial.html
+if there exists a _unique_ map to any other object:
 
 ```agda
 is-initial : Ob → Type _
-is-initial x = is-colimit {C = C} ¡F x ¡nt
+is-initial ob = ∀ x → is-contr (Hom ob x)
 
-Initial : Type _
-Initial = Colimit {C = C} ¡F
-```
-
-## Concretely
-
-We use this definition as it is abstract: it allows us to use general
-theorems about limits when working with initial objects! However,
-it is also abstract, which means that working with a _specific_ initial
-object becomes a lot more difficult. To work around this, we provide
-an auxiliary record `make-is-initial` that describes initial objects
-more concretely.
-
-```agda
-record make-is-initial (t : Ob) : Type (o ⊔ ℓ) where
-  no-eta-equality
+record Initial : Type (o ⊔ h) where
   field
-    ¡ : ∀ {x} → Hom t x
-    ¡-unique : ∀ {x} → (f : Hom t x) → f ≡ ¡
-
-  ¡-unique₂ : ∀ {x} {f g : Hom t x} → f ≡ g
-  ¡-unique₂ = ¡-unique _ ∙ sym (¡-unique _)
-
-  ⊥-id : ∀ (f : Hom t t) → f ≡ id
-  ⊥-id _ = ¡-unique₂
-
-  ¡-contr : ∀ {x} → is-contr (Hom t x)
-  ¡-contr = contr ¡ λ f → sym (¡-unique f)
+    bot  : Ob
+    has⊥ : is-initial bot
 ```
 
-If we have this data, then we can make a value of `is-initial{.Agda}.
+We refer to the centre of contraction as `¡`{.Agda}. Since it inhabits a
+contractible type, it is unique.
 
 ```agda
-to-is-initial : ∀ {t} → make-is-initial t → is-initial t
-to-is-initial {t = t} mkinit = isc where
-  open make-is-initial mkinit
-  open is-lan
-  open _=>_
+  ¡ : ∀ {x} → Hom bot x
+  ¡ = has⊥ _ .centre
 
-  isc : is-colimit ¡F t ¡nt
-  isc .σ _ .η _ = ¡
-  isc .σ _ .is-natural _ _ _ = ¡-unique₂
-  isc .σ-comm = Nat-path (λ ())
-  isc .σ-uniq _ = Nat-path λ _ → sym $ ¡-unique _
-```
+  ¡-unique : ∀ {x} (h : Hom bot x) → ¡ ≡ h
+  ¡-unique = has⊥ _ .paths
 
-To use the data of `is-initial we provide a function for *un*making
-an initial object.
-
-```agda
-unmake-is-initial : ∀ {t} → is-initial t → make-is-initial t
-unmake-is-initial {t = t} colim = init module unmake-initial where
-  open make-is-initial
-  module colim = is-colimit colim
-
-  init : make-is-initial t
-  init .¡ = colim.universal (λ ()) (λ ())
-  init .¡-unique f = colim.unique (λ ()) (λ ()) f λ ()
-```
-
-<!--
-```agda
-module is-initial {t} (term : is-initial t) where
-  open make-is-initial (unmake-is-initial term) public
-```
--->
-
-```agda
-record make-initial : Type (o ⊔ ℓ) where
-  no-eta-equality
-  field
-    bot : Ob
-    ¡ : ∀ {x} → Hom bot x
-    ¡-unique : ∀ {x} → (f : Hom bot x) → f ≡ ¡
-```
-
-<!--
-```agda
-to-initial : make-initial → Initial
-to-initial mi = to-colimit $ to-is-initial init
-  where
-    module mi = make-initial mi
-    open make-is-initial
-
-    init : make-is-initial mi.bot
-    init .¡ = mi.¡
-    init .¡-unique = mi.¡-unique
-
-module Initial (i : Initial) where
-
-  open Colimit i
-  open is-lan
-  open Functor
-  open _=>_
-
-  bot : Ob
-  bot = coapex
-
-  has-is-initial : is-initial bot
-  has-is-initial =
-    to-is-colimitp (unmake-colimit has-colimit) (λ { {()} })
-
-  open is-initial has-is-initial public
+  ¡-unique₂ : ∀ {x} (f g : Hom bot x) → f ≡ g
+  ¡-unique₂ = is-contr→is-prop (has⊥ _)
 
 open Initial
 ```
--->
-
-
-We do a similar construction for the bundled form of initial objects.
 
 ## Intuition
 
@@ -164,16 +69,20 @@ to isomorphism:
 
 ```agda
 ⊥-unique : (i i′ : Initial) → bot i ≅ bot i′
-⊥-unique i i′ =
-  colimits-unique
-    (has-is-initial i′)
-    (has-is-initial i)
+⊥-unique i i′ = make-iso (¡ i) (¡ i′) (¡-unique₂ i′ _ _) (¡-unique₂ i _ _)
 ```
 
 Additionally, if $C$ is a category, then the space of initial objects is
 a proposition:
 
 ```agda
-Initial-is-prop : is-category C → is-prop Initial
-Initial-is-prop = Colimit-is-prop
+⊥-contractible : is-category C → is-prop Initial
+⊥-contractible ccat x1 x2 i .bot =
+  Univalent.iso→path ccat (⊥-unique x1 x2) i
+
+⊥-contractible ccat x1 x2 i .has⊥ ob =
+  is-prop→pathp
+    (λ i → is-contr-is-prop
+      {A = Hom (Univalent.iso→path ccat (⊥-unique x1 x2) i) _})
+    (x1 .has⊥ ob) (x2 .has⊥ ob) i
 ```

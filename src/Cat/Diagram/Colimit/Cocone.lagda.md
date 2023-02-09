@@ -14,6 +14,8 @@ module Cat.Diagram.Colimit.Cocone where
 ```agda
 private variable
   o ℓ o′ ℓ′ : Level
+
+open _=>_
 ```
 -->
 
@@ -144,11 +146,15 @@ be the [initial] object in the category of cocones over $F$.
 The proof mostly is an exercise in shuffling about data.
 
 ```agda
+  Cocone→cocone : (K : Cocone) → F => Const (Cocone.coapex K)
+  Cocone→cocone K .η = K .Cocone.ψ
+  Cocone→cocone K .is-natural x y f = K .Cocone.commutes f ∙ sym (C.idl _)
+
   is-initial-cocone→is-colimit
     : ∀ {K : Cocone}
     → is-initial Cocones K
-    → is-colimit F (Cocone.coapex K)
-  is-initial-cocone→is-colimit {K = K} init = to-is-colimit colim where
+    → is-colimit F (Cocone.coapex K) (Cocone→cocone K)
+  is-initial-cocone→is-colimit {K = K} init = to-is-colimitp colim refl where
     open make-is-colimit
     open Cocone
     open Cocone-hom
@@ -167,8 +173,8 @@ data around.
 
 ```agda
   is-colimit→is-initial-cocone
-    : ∀ {x}
-    → (L : is-colimit F x)
+    : ∀ {x} {eta : F => Const x}
+    → (L : is-colimit F x eta)
     → is-initial Cocones (cocone x (is-colimit.ψ L) (is-colimit.commutes L))
   is-colimit→is-initial-cocone {x  = x} L K = init where
     module L = is-colimit L

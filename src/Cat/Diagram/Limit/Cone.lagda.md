@@ -35,7 +35,6 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (F : Functor J 
 
   record Cone : Type (o₁ ⊔ o₂ ⊔ h₁ ⊔ h₂) where
     no-eta-equality
-    constructor cone
 ```
 
 A `Cone`{.Agda} over $F$ is given by an object (the `apex`{.agda})
@@ -182,27 +181,29 @@ differently.
   Cone→cone K .η = K .Cone.ψ
   Cone→cone K .is-natural x y f = C.idr _ ∙ sym (K .Cone.commutes f)
 
-  cone→Cone : ∀ {x} → Const x => F → Cone
-  cone→Cone {x = x} σ .Cone.apex = x
-  cone→Cone σ .Cone.ψ = σ .η
-  cone→Cone σ .Cone.commutes f = sym (σ .is-natural _ _ f) ∙ C.idr _
-
   is-terminal-cone→is-limit
     : ∀ {K : Cone}
     → is-terminal Cones K
     → is-limit F (Cone.apex K) (Cone→cone K)
-  is-terminal-cone→is-limit {K = K} term = to-is-limitp isl refl where
+  is-terminal-cone→is-limit {K = K} term = isl where
     open Cone-hom
-    open make-is-limit
-    open is-terminal Cones term
+    open is-ran
     open Cone
 
-    isl : make-is-limit F (Cone.apex K)
-    isl .ψ = K .ψ
-    isl .commutes = K .commutes
-    isl .universal eta p = ! {x = cone _ eta p} .hom
-    isl .factors eta p = ! {x = cone _ eta p} .commutes _
-    isl .unique eta p other q = ap hom (!-unique (cone-hom other q))
+    isl : is-ran _ F _ (cone→counit F (Cone→cone K))
+    isl .σ {M = M} α = nt where
+      α′ : Cone
+      α′ .apex = M .Functor.F₀ tt
+      α′ .ψ x = α .η x
+      α′ .commutes f = sym (α .is-natural _ _ f) ∙ C.elimr (M .Functor.F-id)
+
+      nt : M => const! (K .apex)
+      nt .η x = term α′ .centre .hom
+      nt .is-natural tt tt tt = C.elimr (M .Functor.F-id) ∙ C.introl refl
+    isl .σ-comm = Nat-path λ x → term _ .centre .commutes _
+    isl .σ-uniq {σ′ = σ′} x = Nat-path λ _ → ap hom $ term _ .paths λ where
+      .hom        → σ′ .η _
+      .commutes _ → sym (x ηₚ _)
 ```
 
 The inverse direction of this equivalence also consists of packing and
@@ -212,20 +213,19 @@ unpacking data.
   is-limit→is-terminal-cone
     : ∀ {x} {eps : Const x => F}
     → (L : is-limit F x eps)
-    → is-terminal Cones (cone→Cone eps)
-  is-limit→is-terminal-cone {x = x} {eps = eps} L = to-is-terminal Cones term where
+    → is-terminal Cones (record { commutes = is-limit.commutes L })
+  is-limit→is-terminal-cone {x = x} L K = term where
     module L = is-limit L
-    open make-is-terminal
-    open Cone
+    module K = Cone K
     open Cone-hom
 
-    term : make-is-terminal Cones (cone→Cone eps)
-    term .! {K} .hom =
-      L.universal (K .ψ) (K .commutes)
-    term .! {K} .commutes _ =
-      L.factors (K .ψ) (K .commutes)
-    term .!-unique {K} f =
-      Cone-hom-path (L.unique (K .ψ) (K .commutes) (f .hom) (f .commutes))
+    term : is-contr (Cone-hom K _)
+    term .centre .hom =
+      L.universal K.ψ K.commutes
+    term .centre .commutes _ =
+      L.factors K.ψ K.commutes
+    term .paths f =
+      Cone-hom-path (sym (L.unique K.ψ K.commutes (f .hom) (f .commutes)))
 ```
 
 <!--
@@ -233,11 +233,13 @@ unpacking data.
   open Ran
 
   Terminal-cone→Limit : Terminal Cones → Limit F
-  Terminal-cone→Limit K =
-    to-limit $ is-terminal-cone→is-limit $ Terminal.has-is-terminal Cones K
+  Terminal-cone→Limit x .Ext     = _
+  Terminal-cone→Limit x .eps     = _
+  Terminal-cone→Limit x .has-ran = is-terminal-cone→is-limit (x .Terminal.has⊤)
 
   Limit→Terminal-cone : Limit F → Terminal Cones
-  Limit→Terminal-cone L =
-    to-limit $ is-limit→is-terminal-cone $ Limit.has-limit L
+  Limit→Terminal-cone x .Terminal.top  = _
+  Limit→Terminal-cone x .Terminal.has⊤ = is-limit→is-terminal-cone
+    (Limit.has-limit x)
 ```
 -->
