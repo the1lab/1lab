@@ -36,7 +36,7 @@ We can define equalisers as [limits] of [cospans].
 
 ```agda
 is-pullback
-  : ∀ {p₁ : Hom p x} {f : Hom x z} {p₂ : Hom p y} {g : Hom y z}
+  : ∀ {x y z p} {p₁ : Hom p x} {f : Hom x z} {p₂ : Hom p y} {g : Hom y z}
   → f ∘ p₁ ≡ g ∘ p₂
   → Type _
 is-pullback {p = p} {f = f} {g = g} square =
