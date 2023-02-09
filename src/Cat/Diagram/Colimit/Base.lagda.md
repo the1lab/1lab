@@ -188,21 +188,21 @@ the rest of the data.
 <!--
 ```agda
   to-is-colimitp
-    : ∀ {D : Functor J C} {coapex} {eta : D => Const coapex}
-    → (mk : make-is-colimit D coapex)
+    : ∀ {D : Functor J C} {K : Functor ⊤Cat C} {eta : D => K F∘ !F}
+    → (mk : make-is-colimit D (Functor.F₀ K tt))
     → (∀ {j} → to-cocone mk .η j ≡ eta .η j)
-    → is-colimit D coapex eta
-  to-is-colimitp {Diagram} {coapex} {eta} mkcolim p = colim where
+    → is-lan !F D K eta
+  to-is-colimitp {D} {K} {eta} mkcolim p = colim where
     open make-is-colimit mkcolim
     open is-lan
     open Functor
     open _=>_
 
-    colim : is-colimit Diagram coapex eta
+    colim : is-lan !F D K eta
     colim .σ {M = M} β .η _ =
       universal (β .η) (λ f → β .is-natural _ _ f ∙ C.eliml (M .F-id))
     colim .σ {M = M} β .is-natural _ _ _ =
-      C.idr _ ∙ C.introl (M .F-id)
+      C.elimr (K .F-id) ∙ C.introl (M .F-id)
     colim .σ-comm {α = α} = Nat-path λ j →
       ap (_ C.∘_) (sym p) ∙ factors (α .η) _
     colim .σ-uniq {α = α} {σ′ = σ′} q = Nat-path λ _ →
@@ -402,14 +402,14 @@ domain is _also_ a colimit of the diagram.
 <!--
 ```agda
 module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
-         {Diagram : Functor J C}
-         {y} {etay : Diagram => Const y}
-         (Cy : is-colimit Diagram y etay)
+         {D : Functor J C} {K : Functor ⊤Cat C}
+         {etay : D => Const (Functor.F₀ K tt)}
+         (Cy : is-colimit D (Functor.F₀ K tt) etay)
        where
   private
     module J = Precategory J
     module C = Cat.Reasoning C
-    module Diagram = Functor Diagram
+    module D = Functor D
     open is-ran
     open Functor
     open _=>_
@@ -418,9 +418,9 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 
   family→cocone
     : ∀ {x}
-    → (eps : ∀ j → C.Hom (Diagram.₀ j) x)
-    → (∀ {x y} (f : J.Hom x y) → eps y C.∘ Diagram.₁ f ≡ eps x)
-    → Diagram => Const x
+    → (eps : ∀ j → C.Hom (D.₀ j) x)
+    → (∀ {x y} (f : J.Hom x y) → eps y C.∘ D.₁ f ≡ eps x)
+    → D => Const x
   family→cocone eta p .η = eta
   family→cocone eta p .is-natural _ _ _ = p _ ∙ sym (C.idl _)
 ```
@@ -428,19 +428,19 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 
 ```agda
   is-invertible→is-colimitp
-    : ∀ {x} {eta : Diagram => Const x}
-    → (eps : ∀ j → C.Hom (Diagram.₀ j) x)
-    → (p : ∀ {x y} (f : J.Hom x y) → eps y C.∘ Diagram.₁ f ≡ eps x)
+    : ∀ {K' : Functor ⊤Cat C} {eta : D => K' F∘ !F}
+    → (eps : ∀ j → C.Hom (D.₀ j) (K' .F₀ tt))
+    → (p : ∀ {x y} (f : J.Hom x y) → eps y C.∘ D.₁ f ≡ eps x)
     → (∀ {j} → eps j ≡ eta .η j)
     → C.is-invertible (Cy.universal eps p)
-    → is-colimit Diagram x eta
-  is-invertible→is-colimitp {x = x} eps p q invert =
+    → is-lan !F D K' eta
+  is-invertible→is-colimitp {K' = K'} eps p q invert =
     to-is-colimitp colim q
     where
       open C.is-invertible invert
       open make-is-colimit
 
-      colim : make-is-colimit Diagram x
+      colim : make-is-colimit D (K' .F₀ tt)
       colim .ψ = eps
       colim .commutes = p
       colim .universal tau q = Cy.universal tau q C.∘ inv
@@ -451,7 +451,6 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
       colim .unique tau q other r =
         C.insertr invl
         ∙ (Cy.unique _ _ _ (λ j → C.pullr (Cy.factors eps p) ∙ r j) C.⟩∘⟨refl)
-      
 ```
 
 Another useful fact is that if $C$ is a colimit of some diagram $Dia$,
@@ -460,16 +459,15 @@ coapex of $C$ is also a colimit of $Dia'$.
 
 ```agda
   natural-iso→is-colimitp
-    : ∀ {D′ : Functor J C}
-    → {eta : D′ => Const y}
-    → (isos : natural-iso Diagram D′)
+    : ∀ {D′ : Functor J C} {eta : D′ => K F∘ !F}
+    → (isos : natural-iso D D′)
     → (∀ {j} →  Cy.ψ j C.∘ natural-iso.from isos .η j ≡ eta .η j)
-    → is-colimit D′ y eta
+    → is-lan !F D′ K eta
   natural-iso→is-colimitp {D′ = D′} isos p = to-is-colimitp colim p where
     open make-is-colimit
     module isos = natural-iso isos
 
-    colim : make-is-colimit D′ y
+    colim : make-is-colimit D′ (K .F₀ tt)
     colim .ψ j = Cy.ψ j C.∘ isos.from .η _
     colim .commutes f =
       C.pullr (isos.from .is-natural _ _ f)
@@ -487,6 +485,23 @@ coapex of $C$ is also a colimit of $Dia'$.
       Cy.unique _ _ other λ j →
         ap (other C.∘_) (C.insertr (isos.invr ηₚ _)) ∙ C.pulll (r j)
 ```
+
+<!--
+```agda
+module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+         {D D′ : Functor J C}
+         where
+
+  natural-iso→colimit
+    : natural-iso D D′
+    → Colimit D
+    → Colimit D′
+  natural-iso→colimit isos C .Lan.Ext = Lan.Ext C
+  natural-iso→colimit isos C .Lan.eta = Lan.eta C ∘nt natural-iso.from isos
+  natural-iso→colimit isos C .Lan.has-lan =
+    natural-iso→is-colimitp (Colimit.has-colimit C) isos refl
+```
+-->
 
 <!--
 ```agda

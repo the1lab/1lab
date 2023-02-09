@@ -303,23 +303,21 @@ we have been given:
 <!--
 ```agda
   to-is-limitp
-    : ∀ {D : Functor J C} {apex} {eps : Const apex => D}
-    → (mk : make-is-limit D apex)
+    : ∀ {D : Functor J C} {K : Functor ⊤Cat C} {eps : K F∘ !F => D}
+    → (mk : make-is-limit D (Functor.F₀ K tt))
     → (∀ {j} → to-cone mk .η j ≡ eps .η j)
-    → is-limit D apex eps
-  to-is-limitp {Diagram} {apex} {eps} mklim p = lim where
+    → is-ran !F D K eps
+  to-is-limitp {D} {K} {eps} mklim p = lim where
     open make-is-limit mklim
     open is-ran
     open Functor
     open _=>_
 
-    lim : is-limit Diagram apex eps
+    lim : is-ran !F D K eps
     lim .σ {M = M} α .η _ =
       universal (α .η) (λ f → sym (α .is-natural _ _ f) ∙ C.elimr (M .F-id))
     lim .σ {M = M} α .is-natural _ _ _ =
-      lim .σ α .η _ C.∘ M .F₁ tt ≡⟨ C.elimr (M .F-id) ⟩
-      lim .σ α .η _              ≡˘⟨ C.idl _ ⟩
-      C.id C.∘ lim .σ α .η _     ∎
+      C.elimr (M .F-id) ∙ C.introl (K .F-id)
     lim .σ-comm {β = β} = Nat-path λ j →
       ap (C._∘ _) (sym p) ∙ factors (β .η) _
     lim .σ-uniq {β = β} {σ′ = σ′} q = Nat-path λ _ →
@@ -536,14 +534,14 @@ its domain is _also_ a limit of the diagram.
 <!--
 ```agda
 module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
-         {Diagram : Functor J C}
-         {y} {epsy : Const y => Diagram}
-         (Ly : is-limit Diagram y epsy)
+         {D : Functor J C} {K : Functor ⊤Cat C}
+         {epsy : Const (Functor.F₀ K tt) => D}
+         (Ly : is-limit D (Functor.F₀ K tt) epsy)
        where
   private
     module J = Precategory J
     module C = Cat.Reasoning C
-    module Diagram = Functor Diagram
+    module D = Functor D
     open is-ran
     open Functor
     open _=>_
@@ -552,9 +550,9 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 
   family→cone
     : ∀ {x}
-    → (eta : ∀ j → C.Hom x (Diagram.₀ j))
-    → (∀ {x y} (f : J.Hom x y) → Diagram.₁ f C.∘ eta x ≡ eta y)
-    → Const x => Diagram
+    → (eta : ∀ j → C.Hom x (D.₀ j))
+    → (∀ {x y} (f : J.Hom x y) → D.₁ f C.∘ eta x ≡ eta y)
+    → Const x => D
   family→cone eta p .η = eta
   family→cone eta p .is-natural _ _ _ = C.idr _ ∙ sym (p _)
 ```
@@ -562,19 +560,19 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 
 ```agda
   is-invertible→is-limitp
-    : ∀ {x} {eps : Const x => Diagram}
-    → (eta : ∀ j → C.Hom x (Diagram.₀ j))
-    → (p : ∀ {x y} (f : J.Hom x y) → Diagram.₁ f C.∘ eta x ≡ eta y)
+    : ∀ {K' : Functor ⊤Cat C} {eps : K' F∘ !F => D}
+    → (eta : ∀ j → C.Hom (K' .F₀ tt) (D.₀ j))
+    → (p : ∀ {x y} (f : J.Hom x y) → D.₁ f C.∘ eta x ≡ eta y)
     → (∀ {j} → eta j ≡ eps .η j)
     → C.is-invertible (Ly.universal eta p)
-    → is-limit Diagram x eps
-  is-invertible→is-limitp {x = x} eta p q invert =
+    → is-ran !F D K' eps
+  is-invertible→is-limitp {K' = K'} eta p q invert =
     to-is-limitp lim q
     where
       open C.is-invertible invert
       open make-is-limit
 
-      lim : make-is-limit Diagram x
+      lim : make-is-limit D (K' .F₀ tt)
       lim .ψ = eta
       lim .commutes = p
       lim .universal tau q = inv C.∘ Ly.universal tau q
@@ -595,16 +593,15 @@ apex of $L$ is also a limit of $Dia'$.
 
 ```agda
   natural-iso→is-limitp
-    : ∀ {D′ : Functor J C}
-    → {eps : Const y => D′}
-    → (isos : natural-iso Diagram D′)
+    : ∀ {D′ : Functor J C} {eps : K F∘ !F => D′}
+    → (isos : natural-iso D D′)
     → (∀ {j} → natural-iso.to isos .η j C.∘ Ly.ψ j ≡ eps .η j)
-    → is-limit D′ y eps
+    → is-ran !F D′ K eps
   natural-iso→is-limitp {D′ = D′} isos p = to-is-limitp lim p where
     open make-is-limit
     module isos = natural-iso isos
 
-    lim : make-is-limit D′ y
+    lim : make-is-limit D′ (K .F₀ tt)
     lim .ψ j =  isos.to .η _ C.∘ Ly.ψ j
     lim .commutes f =
       C.pulll (sym $ isos.to .is-natural _ _ f)
@@ -623,6 +620,23 @@ apex of $L$ is also a limit of $Dia'$.
         ap (C._∘ other) (C.insertl (isos.invr ηₚ _)) ∙ C.pullr (r j)
 ```
 
+<!--
+```agda
+module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+         {D D′ : Functor J C}
+         where
+
+  natural-iso→limit
+    : natural-iso D D′
+    → Limit D
+    → Limit D′
+  natural-iso→limit isos L .Ran.Ext = Ran.Ext L
+  natural-iso→limit isos L .Ran.eps = natural-iso.to isos ∘nt Ran.eps L
+  natural-iso→limit isos L .Ran.has-ran =
+    natural-iso→is-limitp (Limit.has-limit L) isos refl
+```
+-->
+ 
 
 <!--
 ```agda
