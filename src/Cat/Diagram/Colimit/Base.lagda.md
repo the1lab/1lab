@@ -1,7 +1,9 @@
 ```agda
-open import Cat.Instances.Shape.Terminal
+open import Cat.Functor.Coherence
+open import Cat.Functor.Kan.Base
+open import Cat.Functor.Kan.Unique
 open import Cat.Instances.Functor
-open import Cat.Functor.Kan.Left
+open import Cat.Instances.Shape.Terminal
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
@@ -55,8 +57,12 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (Diagram : Func
   private
     module C = Precategory C
 
-  is-colimit : C.Ob → Type _
-  is-colimit x = is-lan !F Diagram (const! x)
+  cocone→unit : ∀ {x : C.Ob} → (Diagram => Const x) → Diagram => const! x F∘ !F
+  unquoteDef cocone→unit = define-coherence cocone→unit
+
+  is-colimit : (x : C.Ob) → Diagram => Const x → Type _
+  is-colimit x cocone =
+    is-lan !F Diagram (const! x) (cocone→unit cocone)
 
   Colimit : Type _
   Colimit = Lan !F Diagram
@@ -144,21 +150,31 @@ Once we have this data, we can use it to construct a value of
 seem too weak, but the full naturality condition can be derived from
 the rest of the data.
 
+<!--
+```agda
+  open _=>_
+
+  to-cocone
+    : ∀ {D : Functor J C} {coapex}
+    → make-is-colimit D coapex
+    → D => Const coapex
+  to-cocone ml .η = ml .make-is-colimit.ψ
+  to-cocone ml .is-natural x y f = (ml .make-is-colimit.commutes f) ∙ sym (C.idl _)
+```
+-->
+
 ```agda
   to-is-colimit
     : ∀ {Diagram : Functor J C} {coapex}
-    → make-is-colimit Diagram coapex
-    → is-colimit Diagram coapex
+    → (mc : make-is-colimit Diagram coapex)
+    → is-colimit Diagram coapex (to-cocone mc)
   to-is-colimit {Diagram} {coapex} mkcolim = colim where
     open make-is-colimit mkcolim
     open is-lan
     open Functor
     open _=>_
 
-    colim : is-colimit Diagram coapex
-    colim .eta .η = ψ
-    colim .eta .is-natural _ _ f =
-      commutes f ∙ sym (C.idl _)
+    colim : is-colimit Diagram coapex (to-cocone mkcolim)
     colim .σ {M = M} α .η _ =
       universal (α .η) (λ f → α .is-natural _ _ f ∙ C.eliml (M .F-id))
     colim .σ {M = M} α .is-natural _ _ _ =
@@ -169,17 +185,44 @@ the rest of the data.
       sym $ unique (α .η) _ (σ′ .η _) (λ j → sym (p ηₚ j))
 ```
 
+<!--
+```agda
+  to-is-colimitp
+    : ∀ {D : Functor J C} {coapex} {eta : D => Const coapex}
+    → (mk : make-is-colimit D coapex)
+    → (∀ {j} → to-cocone mk .η j ≡ eta .η j)
+    → is-colimit D coapex eta
+  to-is-colimitp {Diagram} {coapex} {eta} mkcolim p = colim where
+    open make-is-colimit mkcolim
+    open is-lan
+    open Functor
+    open _=>_
+
+    colim : is-colimit Diagram coapex eta
+    colim .σ {M = M} β .η _ =
+      universal (β .η) (λ f → β .is-natural _ _ f ∙ C.eliml (M .F-id))
+    colim .σ {M = M} β .is-natural _ _ _ =
+      C.idr _ ∙ C.introl (M .F-id)
+    colim .σ-comm {α = α} = Nat-path λ j →
+      ap (_ C.∘_) (sym p) ∙ factors (α .η) _
+    colim .σ-uniq {α = α} {σ′ = σ′} q = Nat-path λ _ →
+      sym $ unique (α .η) _ (σ′ .η tt) λ j →
+        ap (_ C.∘_) p ∙ sym (q ηₚ j)
+```
+-->
+
 We also want to be able to use the interface of `make-is-colimit`{.Agda}
 when we have our hands on a colimit. To do this, we provide a function
 for *un*making a colimit.
 
 ```agda
   unmake-colimit
-    : ∀ {D : Functor J C} {F : Functor ⊤Cat C}
-    → is-lan !F D F
+    : ∀ {D : Functor J C} {F : Functor ⊤Cat C} {eta}
+    → is-lan !F D F eta
     → make-is-colimit D (Functor.F₀ F tt)
-  unmake-colimit {D} {F} colim = mc module unmake-colimit where
+  unmake-colimit {D} {F} {eta} colim = mc module unmake-colimit where
     coapex = Functor.F₀ F tt
+    module eta = _=>_ eta
     open is-lan colim
     open Functor D
     open make-is-colimit
@@ -211,9 +254,22 @@ for *un*making a colimit.
 
 <!--
 ```agda
+  to-colimit
+    : ∀ {D : Functor J C} {coapex : C.Ob} {eta : D => Const coapex}
+    → is-colimit D coapex eta
+    → Colimit D
+  to-colimit c .Lan.Ext = _
+  to-colimit c .Lan.eta = _
+  to-colimit c .Lan.has-lan = c
+```
+-->
+
+<!--
+```agda
 module is-colimit
   {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
-  {D : Functor J C} {F : Functor ⊤Cat C} (t : is-lan !F D F)
+  {D : Functor J C} {F : Functor ⊤Cat C} {eta : D => F F∘ !F}
+  (t : is-lan !F D F eta)
   where
 
   open make-is-colimit (unmake-colimit {F = F} t) public
@@ -260,10 +316,12 @@ shuffle our data around manually. Fortunately, this isn't a very long
 computation.
 
 ```agda
-  has-colimit : is-colimit D coapex
-  has-colimit .is-lan.eta .η = eta .η
-  has-colimit .is-lan.eta .is-natural x y f =
+  cocone : D => Const coapex
+  cocone .η = eta .η
+  cocone .is-natural x y f =
     eta .is-natural x y f ∙ ap (C._∘ _) (Ext .F-id)
+
+  has-colimit : is-colimit D coapex cocone
   has-colimit .is-lan.σ α .η = σ α .η
   has-colimit .is-lan.σ α .is-natural x y f =
     ap (_ C.∘_) (sym (Ext .F-id)) ∙ σ α .is-natural tt tt tt
@@ -290,101 +348,250 @@ computation.
 ```agda
 module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
          (Diagram : Functor J C)
+         {x y} {etay : Diagram => Const y} {etax : Diagram => Const x}
+         (Cy : is-colimit Diagram y etay)
+         (Cx : is-colimit Diagram x etax)
        where
   private
     module J = Precategory J
     module C = Cat.Reasoning C
     module Diagram = Functor Diagram
+    open is-lan
+    open _=>_
+
+    module Cy = is-colimit Cy
+    module Cx = is-colimit Cx
 ```
 -->
 
 ```agda
-  colimits-unique
-    : ∀ {x y}
-    → is-colimit Diagram x
-    → is-colimit Diagram y
-    → x C.≅ y
-  colimits-unique {x} {y} L L′ =
-    C.make-iso
-      (L.universal L′.ψ L′.commutes)
-      (L′.universal L.ψ L.commutes)
-      (L′.unique₂ L′.ψ L′.commutes
-        (λ j → C.pullr (L′.factors L.ψ L.commutes) ∙ L.factors L′.ψ L′.commutes)
-        λ j → C.idl _)
-      (L.unique₂ L.ψ L.commutes
-        (λ j → C.pullr (L.factors L′.ψ L′.commutes) ∙ L′.factors L.ψ L.commutes)
-        λ j → C.idl _)
-    where
-      module L = is-colimit L
-      module L′ = is-colimit L′
+  colimits→inversesp
+    : ∀ {f : C.Hom x y} {g : C.Hom y x}
+    → (∀ {j : J.Ob} → f C.∘ Cx.ψ j ≡ Cy.ψ j)
+    → (∀ {j : J.Ob} → g C.∘ Cy.ψ j ≡ Cx.ψ j)
+    → C.Inverses f g
+  colimits→inversesp f-factor g-factor =
+    C.make-inverses
+      (Cy.unique₂ Cy.ψ Cy.commutes (λ j → C.pullr g-factor ∙ f-factor) λ _ → C.idl _)
+      (Cx.unique₂ Cx.ψ Cx.commutes (λ j → C.pullr f-factor ∙ g-factor) λ _ → C.idl _)
+
+  colimits→invertiblep
+    : ∀ {f : C.Hom x y}
+    → (∀ {j : J.Ob} → f C.∘ Cx.ψ j ≡ Cy.ψ j)
+    → C.is-invertible f
+  colimits→invertiblep f-factor =
+    C.inverses→invertible $
+    colimits→inversesp f-factor (Cy.factors Cx.ψ Cx.commutes)
+
+  colimits→inverses
+    : C.Inverses (Cx.universal Cy.ψ Cy.commutes) (Cy.universal Cx.ψ Cx.commutes)
+  colimits→inverses =
+    colimits→inversesp (Cx.factors Cy.ψ Cy.commutes) (Cy.factors Cx.ψ Cx.commutes)
+
+  colimits→invertible
+    : C.is-invertible (Cx.universal Cy.ψ Cy.commutes)
+  colimits→invertible = colimits→invertiblep (Cx.factors Cy.ψ Cy.commutes)
+
+  colimits-unique : x C.≅ y
+  colimits-unique = C.invertible→iso _ colimits→invertible
 ```
 
-# Preservation of Colimits
-
-The definitions here are the same idea as [preservation of limits], just
-dualized.
-
-[preservation of limits]: Cat.Diagram.Limit.Base#preservation-of-limits
+Furthermore, if the universal map is invertible, then that means its
+domain is _also_ a colimit of the diagram.
 
 <!--
 ```agda
-module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
-         (F : Functor C D) (Diagram : Functor J C) where
+module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+         {Diagram : Functor J C}
+         {y} {etay : Diagram => Const y}
+         (Cy : is-colimit Diagram y etay)
+       where
   private
-    module D = Precategory D
-    module C = Precategory C
     module J = Precategory J
-    module F = Func F
+    module C = Cat.Reasoning C
+    module Diagram = Functor Diagram
+    open is-ran
+    open Functor
+    open _=>_
+
+    module Cy = is-colimit Cy
+
+  family→cocone
+    : ∀ {x}
+    → (eps : ∀ j → C.Hom (Diagram.₀ j) x)
+    → (∀ {x y} (f : J.Hom x y) → eps y C.∘ Diagram.₁ f ≡ eps x)
+    → Diagram => Const x
+  family→cocone eta p .η = eta
+  family→cocone eta p .is-natural _ _ _ = p _ ∙ sym (C.idl _)
 ```
 -->
 
 ```agda
-  Preserves-colimit : Type _
-  Preserves-colimit = ∀ x → is-colimit Diagram x → is-colimit (F F∘ Diagram) (F.₀ x)
+  is-invertible→is-colimitp
+    : ∀ {x} {eta : Diagram => Const x}
+    → (eps : ∀ j → C.Hom (Diagram.₀ j) x)
+    → (p : ∀ {x y} (f : J.Hom x y) → eps y C.∘ Diagram.₁ f ≡ eps x)
+    → (∀ {j} → eps j ≡ eta .η j)
+    → C.is-invertible (Cy.universal eps p)
+    → is-colimit Diagram x eta
+  is-invertible→is-colimitp {x = x} eps p q invert =
+    to-is-colimitp colim q
+    where
+      open C.is-invertible invert
+      open make-is-colimit
 
-  Reflects-colimit : Type _
-  Reflects-colimit = ∀ x → is-colimit (F F∘ Diagram) (F.₀ x) → is-colimit Diagram x
-
-  record creates-colimit : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
-    field
-      preserves-colimit : Preserves-colimit
-      reflects-colimit : Reflects-colimit
+      colim : make-is-colimit Diagram x
+      colim .ψ = eps
+      colim .commutes = p
+      colim .universal tau q = Cy.universal tau q C.∘ inv
+      colim .factors tau q =
+        sym (C.refl⟩∘⟨ Cy.factors eps p)
+        ·· C.cancel-inner invr
+        ·· Cy.factors tau q
+      colim .unique tau q other r =
+        C.insertr invl
+        ∙ (Cy.unique _ _ _ (λ j → C.pullr (Cy.factors eps p) ∙ r j) C.⟩∘⟨refl)
+      
 ```
 
-## Cocontinuity
+Another useful fact is that if $C$ is a colimit of some diagram $Dia$,
+and $Dia$ is naturally isomorphic to some other diagram $Dia'$, then the
+coapex of $C$ is also a colimit of $Dia'$.
 
 ```agda
-is-cocontinuous
-  : ∀ {oshape hshape}
-      {C : Precategory o₁ h₁}
-      {D : Precategory o₂ h₂}
-  → Functor C D → Type _
+  natural-iso→is-colimitp
+    : ∀ {D′ : Functor J C}
+    → {eta : D′ => Const y}
+    → (isos : natural-iso Diagram D′)
+    → (∀ {j} →  Cy.ψ j C.∘ natural-iso.from isos .η j ≡ eta .η j)
+    → is-colimit D′ y eta
+  natural-iso→is-colimitp {D′ = D′} isos p = to-is-colimitp colim p where
+    open make-is-colimit
+    module isos = natural-iso isos
+
+    colim : make-is-colimit D′ y
+    colim .ψ j = Cy.ψ j C.∘ isos.from .η _
+    colim .commutes f =
+      C.pullr (isos.from .is-natural _ _ f)
+      ∙ C.pulll (Cy.commutes f)
+    colim .universal eps q =
+      Cy.universal
+        (λ j → eps j C.∘ isos.to .η _)
+        (λ f →
+          C.pullr (isos.to .is-natural _ _ f)
+          ∙ C.pulll (q f))
+    colim .factors eta q =
+      C.pulll (Cy.factors _ _)
+      ∙ C.cancelr (isos.invl ηₚ _)
+    colim .unique eta q other r =
+      Cy.unique _ _ other λ j →
+        ap (other C.∘_) (C.insertr (isos.invr ηₚ _)) ∙ C.pulll (r j)
 ```
 
-A cocontinuous functor is one that --- for every shape of diagram `J`,
-and every diagram `diagram`{.Agda} of shape `J` in `C` --- preserves the
-colimit for that diagram.
+<!--
+```agda
+module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+         {Diagram : Functor J C}
+         {x} {eta : Diagram => Const x}
+         where
+  private
+    module J = Precategory J
+    module C = Cat.Reasoning C
+    module Diagram = Functor Diagram
+    open is-lan
+    open _=>_
+
+  is-colimit-is-prop : is-prop (is-colimit Diagram x eta)
+  is-colimit-is-prop = is-lan-is-prop
+```
+-->
+
+Therefore, if $C$ is a category, then `Coimit`{.Agda} is a proposition!
+However, this follows from a much more general result about [uniqueness
+of kan extensions].
+
+[uniqueness of kan extensions]: Cat.Functor.Kan.Unique.html
+
+<!--
+```agda
+module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+         {Diagram : Functor J C}
+         where
+```
+-->
 
 ```agda
-is-cocontinuous {oshape = oshape} {hshape} {C = C} F =
-  ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
-  → Preserves-colimit F Diagram
+  Limit-is-prop : is-category C → is-prop (Colimit Diagram)
+  Limit-is-prop cat = Lan-is-prop cat
 ```
 
-## Cocompleteness
 
-A category is **cocomplete** if admits for limits of arbitrary shape.
-However, in the presence of excluded middle, if a category admits
-coproducts indexed by its class of morphisms, then it is automatically
-[thin]. Since excluded middle is independent of type theory, we can not
-prove that any non-thin categories have arbitrary colimits.
+-- # Preservation of Colimits
 
-Instead, categories are cocomplete _with respect to_ a pair of
-universes: A category is **$(o, \ell)$-cocomplete** if it has colimits
-for any diagram indexed by a precategory with objects in $\ty\ o$ and
-morphisms in $\ty\ \ell$.
+-- The definitions here are the same idea as [preservation of limits], just
+-- dualized.
 
-```agda
-is-cocomplete : ∀ {oc ℓc} o ℓ → Precategory oc ℓc → Type _
-is-cocomplete o ℓ C = ∀ {D : Precategory o ℓ} (F : Functor D C) → Colimit F
-```
+-- [preservation of limits]: Cat.Diagram.Limit.Base#preservation-of-limits
+
+-- <!--
+-- ```agda
+-- module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+--          (F : Functor C D) (Diagram : Functor J C) where
+--   private
+--     module D = Precategory D
+--     module C = Precategory C
+--     module J = Precategory J
+--     module F = Func F
+-- ```
+-- -->
+
+-- ```agda
+--   Preserves-colimit : Type _
+--   Preserves-colimit = ∀ x → is-colimit Diagram x → is-colimit (F F∘ Diagram) (F.₀ x)
+
+--   Reflects-colimit : Type _
+--   Reflects-colimit = ∀ x → is-colimit (F F∘ Diagram) (F.₀ x) → is-colimit Diagram x
+
+--   record creates-colimit : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
+--     field
+--       preserves-colimit : Preserves-colimit
+--       reflects-colimit : Reflects-colimit
+-- ```
+
+-- ## Cocontinuity
+
+-- ```agda
+-- is-cocontinuous
+--   : ∀ {oshape hshape}
+--       {C : Precategory o₁ h₁}
+--       {D : Precategory o₂ h₂}
+--   → Functor C D → Type _
+-- ```
+
+-- A cocontinuous functor is one that --- for every shape of diagram `J`,
+-- and every diagram `diagram`{.Agda} of shape `J` in `C` --- preserves the
+-- colimit for that diagram.
+
+-- ```agda
+-- is-cocontinuous {oshape = oshape} {hshape} {C = C} F =
+--   ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
+--   → Preserves-colimit F Diagram
+-- ```
+
+-- ## Cocompleteness
+
+-- A category is **cocomplete** if admits for limits of arbitrary shape.
+-- However, in the presence of excluded middle, if a category admits
+-- coproducts indexed by its class of morphisms, then it is automatically
+-- [thin]. Since excluded middle is independent of type theory, we can not
+-- prove that any non-thin categories have arbitrary colimits.
+
+-- Instead, categories are cocomplete _with respect to_ a pair of
+-- universes: A category is **$(o, \ell)$-cocomplete** if it has colimits
+-- for any diagram indexed by a precategory with objects in $\ty\ o$ and
+-- morphisms in $\ty\ \ell$.
+
+-- ```agda
+-- is-cocomplete : ∀ {oc ℓc} o ℓ → Precategory oc ℓc → Type _
+-- is-cocomplete o ℓ C = ∀ {D : Precategory o ℓ} (F : Functor D C) → Colimit F
+-- ```

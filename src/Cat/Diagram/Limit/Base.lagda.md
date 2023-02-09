@@ -1,9 +1,9 @@
 ```agda
-open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Coherence
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Kan.Unique
 open import Cat.Instances.Functor
+open import Cat.Instances.Shape.Terminal
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
@@ -568,23 +568,25 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
     → (∀ {j} → eta j ≡ eps .η j)
     → C.is-invertible (Ly.universal eta p)
     → is-limit Diagram x eps
-  is-invertible→is-limitp {x = x} eta p q invert = to-is-limitp lim q where
-    open C.is-invertible invert
-    open make-is-limit
+  is-invertible→is-limitp {x = x} eta p q invert =
+    to-is-limitp lim q
+    where
+      open C.is-invertible invert
+      open make-is-limit
 
-    lim : make-is-limit Diagram x
-    lim .ψ = eta
-    lim .commutes = p
-    lim .universal tau q = inv C.∘ Ly.universal tau q
-    lim .factors tau q =
-      lim .ψ _ C.∘ inv C.∘ Ly.universal tau q                        ≡˘⟨ Ly.factors eta p C.⟩∘⟨refl ⟩
-      (Ly.ψ _ C.∘ Ly.universal eta p) C.∘ inv C.∘ Ly.universal tau q ≡⟨ C.cancel-inner invl ⟩
-      Ly.ψ _ C.∘ Ly.universal tau q                                  ≡⟨ Ly.factors tau q ⟩
-      tau _                                                          ∎
-    lim .unique tau q other r =
-      other                                ≡⟨ C.insertl invr ⟩
-      inv C.∘ Ly.universal eta p C.∘ other ≡⟨ C.refl⟩∘⟨ Ly.unique _ _ _ (λ j → C.pulll (Ly.factors eta p) ∙ r j) ⟩
-      inv C.∘ Ly.universal tau q           ∎
+      lim : make-is-limit Diagram x
+      lim .ψ = eta
+      lim .commutes = p
+      lim .universal tau q = inv C.∘ Ly.universal tau q
+      lim .factors tau q =
+        lim .ψ _ C.∘ inv C.∘ Ly.universal tau q                        ≡˘⟨ Ly.factors eta p C.⟩∘⟨refl ⟩
+        (Ly.ψ _ C.∘ Ly.universal eta p) C.∘ inv C.∘ Ly.universal tau q ≡⟨ C.cancel-inner invl ⟩
+        Ly.ψ _ C.∘ Ly.universal tau q                                  ≡⟨ Ly.factors tau q ⟩
+        tau _                                                          ∎
+      lim .unique tau q other r =
+        other                                ≡⟨ C.insertl invr ⟩
+        inv C.∘ Ly.universal eta p C.∘ other ≡⟨ C.refl⟩∘⟨ Ly.unique _ _ _ (λ j → C.pulll (Ly.factors eta p) ∙ r j) ⟩
+        inv C.∘ Ly.universal tau q           ∎
 ```
 
 Another useful fact is that if $L$ is a limit of some diagram $Dia$, and
@@ -640,9 +642,9 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```
 -->
 
-Therefore, if $C$ is a category, then $Limit$ is a proposition! However,
-this follows from a much more general result about [uniqueness of
-kan extensions].
+Therefore, if $C$ is a category, then `Limit`{.Agda} is a proposition!
+However, this follows from a much more general result about [uniqueness
+of kan extensions].
 
 [uniqueness of kan extensions]: Cat.Functor.Kan.Unique.html
 
