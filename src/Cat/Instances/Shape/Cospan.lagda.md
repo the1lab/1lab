@@ -1,8 +1,6 @@
 ```agda
 open import Cat.Prelude
 
-import Cat.Reasoning
-
 module Cat.Instances.Shape.Cospan where
 ```
 
@@ -92,12 +90,11 @@ diagram is straightforward:
 
 ```agda
 module _ x y {o ℓ} {C : Precategory o ℓ} where
-  open Cat.Reasoning C
+  open Precategory C
   open Functor
-  open _=>_
 
-  Cospan : ∀ {a b c} → Hom a c → Hom b c → Functor (·→·←· {x} {y}) C
-  Cospan f g = funct where
+  cospan→cospan-diagram : ∀ {a b c} → Hom a c → Hom b c → Functor (·→·←· {x} {y}) C
+  cospan→cospan-diagram f g = funct where
     funct : Functor _ _
     funct .F₀ cs-a = _
     funct .F₀ cs-b = _
@@ -122,8 +119,8 @@ module _ x y {o ℓ} {C : Precategory o ℓ} where
     funct .F-∘ {cs-b} {cs-c} {cs-c} _ _ i = idl g (~ i)
     funct .F-∘ {cs-c} {cs-c} {cs-c} _ _ i = idl id (~ i)
 
-  Span : ∀ {a b c} → Hom a b → Hom a c → Functor (·←·→· {x} {y}) C
-  Span {a} {b} {c} f g = funct where
+  span→span-diagram : ∀ {a b c} → Hom a b → Hom a c → Functor (·←·→· {x} {y}) C
+  span→span-diagram {a} {b} {c} f g = funct where
     funct : Functor _ _
     funct .F₀ cs-a = _
     funct .F₀ cs-b = _
@@ -143,20 +140,5 @@ module _ x y {o ℓ} {C : Precategory o ℓ} where
     funct .F-∘ {cs-c} {cs-c} {cs-a} _ _ i = idr g (~ i)
     funct .F-∘ {cs-c} {cs-c} {cs-b} _ _ i = idr f (~ i)
     funct .F-∘ {cs-c} {cs-c} {cs-c} _ _ i = idr id (~ i)
-
-  cospan-cone
-    : ∀ {p x y z} {p1 : Hom p x} {f : Hom x z} {p2 : Hom p y} {g : Hom y z}
-    → f ∘ p1 ≡ g ∘ p2
-    → Const p => Cospan f g
-  cospan-cone {p = p} {p1 = p1} {f} {p2} {g} square = nt where
-    nt : Const p => Cospan f g
-    nt .η cs-a = p1
-    nt .η cs-b = p2
-    nt .η cs-c = f ∘ p1
-    nt .is-natural cs-a cs-a _ = id-comm
-    nt .is-natural cs-a cs-c f = idr _
-    nt .is-natural cs-b cs-b f = id-comm
-    nt .is-natural cs-b cs-c f = idr _ ∙ square
-    nt .is-natural cs-c cs-c f = id-comm
 ```
 -->
