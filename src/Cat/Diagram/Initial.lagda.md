@@ -98,16 +98,21 @@ record make-initial : Type (o ⊔ ℓ) where
   no-eta-equality
   field
     bot : Ob
-    has-is-initial : make-is-initial bot
-
-  open make-is-initial public
+    ¡ : ∀ {x} → Hom bot x
+    ¡-unique : ∀ {x} → (f : Hom bot x) → f ≡ ¡
 ```
 
 <!--
 ```agda
 to-initial : make-initial → Initial
-to-initial mi = to-colimit (to-is-initial has-is-initial)
-  where open make-initial mi
+to-initial mi = to-colimit $ to-is-initial init
+  where
+    module mi = make-initial mi
+    open make-is-initial
+
+    init : make-is-initial mi.bot
+    init .¡ = mi.¡
+    init .¡-unique = mi.¡-unique
 
 module Initial (i : Initial) where
 

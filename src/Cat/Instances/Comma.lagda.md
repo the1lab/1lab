@@ -71,6 +71,7 @@ $x : \cA$, $y : \cB$, and $f : F(x) \to G(y)$.
 ```agda
   record ↓Obj : Type (h ⊔ ao ⊔ bo) where
     no-eta-equality
+    constructor ↓obj
     field
       {x} : Ob A
       {y} : Ob B
@@ -99,6 +100,7 @@ component of a [naturality square].
 ```agda
   record ↓Hom (a b : ↓Obj) : Type (h ⊔ bh ⊔ ah) where
     no-eta-equality
+    constructor ↓hom
     private
       module a = ↓Obj a
       module b = ↓Obj b
