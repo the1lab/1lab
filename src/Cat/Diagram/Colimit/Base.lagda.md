@@ -541,57 +541,65 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```
 
 
--- # Preservation of Colimits
+# Preservation of Colimits
 
--- The definitions here are the same idea as [preservation of limits], just
--- dualized.
+The definitions here are the same idea as [preservation of limits], just
+dualized.
 
--- [preservation of limits]: Cat.Diagram.Limit.Base#preservation-of-limits
+[preservation of limits]: Cat.Diagram.Limit.Base#preservation-of-limits
 
--- <!--
--- ```agda
--- module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
---          (F : Functor C D) (Diagram : Functor J C) where
---   private
---     module D = Precategory D
---     module C = Precategory C
---     module J = Precategory J
---     module F = Func F
--- ```
--- -->
+<!--
+```agda
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+         (F : Functor C D) {Diagram : Functor J C} where
+  private
+    module D = Precategory D
+    module C = Precategory C
+    module J = Precategory J
+    module F = Func F
+```
+-->
 
--- ```agda
---   Preserves-colimit : Type _
---   Preserves-colimit = ∀ x → is-colimit Diagram x → is-colimit (F F∘ Diagram) (F.₀ x)
+```agda
+  preserves-colimit
+     : ∀ {K : Functor ⊤Cat C} {eta : Diagram => K F∘ !F}
+     → is-lan !F Diagram K eta
+     → Type _
+  preserves-colimit colim = preserves-lan F colim
 
---   Reflects-colimit : Type _
---   Reflects-colimit = ∀ x → is-colimit (F F∘ Diagram) (F.₀ x) → is-colimit Diagram x
+  reflects-colimit
+    : ∀ {K : Functor ⊤Cat C} {eps : Diagram => K F∘ !F}
+    → is-lan !F (F F∘ Diagram) (F F∘ K) (nat-assoc-to (F ▸ eps))
+    → Type _
+  reflects-colimit lan = reflects-lan F lan
 
 --   record creates-colimit : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
 --     field
 --       preserves-colimit : Preserves-colimit
 --       reflects-colimit : Reflects-colimit
--- ```
+```
 
--- ## Cocontinuity
+## Cocontinuity
 
--- ```agda
--- is-cocontinuous
---   : ∀ {oshape hshape}
---       {C : Precategory o₁ h₁}
---       {D : Precategory o₂ h₂}
---   → Functor C D → Type _
--- ```
+```agda
+is-cocontinuous
+  : ∀ {oshape hshape}
+      {C : Precategory o₁ h₁}
+      {D : Precategory o₂ h₂}
+  → Functor C D → Type _
+```
 
--- A cocontinuous functor is one that --- for every shape of diagram `J`,
--- and every diagram `diagram`{.Agda} of shape `J` in `C` --- preserves the
--- colimit for that diagram.
+A cocontinuous functor is one that --- for every shape of diagram `J`,
+and every diagram `diagram`{.Agda} of shape `J` in `C` --- preserves the
+colimit for that diagram.
 
--- ```agda
--- is-cocontinuous {oshape = oshape} {hshape} {C = C} F =
---   ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
---   → Preserves-colimit F Diagram
--- ```
+```agda
+is-cocontinuous {oshape = oshape} {hshape} {C = C} F =
+  ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
+  → ∀ {K : Functor ⊤Cat C} {eta : Diagram => K F∘ !F} 
+  → (colim : is-lan !F Diagram K eta)
+  → preserves-colimit F colim
+```
 
 -- ## Cocompleteness
 

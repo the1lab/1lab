@@ -684,7 +684,7 @@ Suppose you have a limit $L$ of a diagram $\rm{Dia}$. We say that $F$
 <!--
 ```agda
 module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
-         (F : Functor C D) (Diagram : Functor J C) where
+         (F : Functor C D) {Diagram : Functor J C} where
   private
     module D = Precategory D
     module C = Precategory C
@@ -707,8 +707,11 @@ In more concise terms, we say a functor preserves limits if it takes
 limiting cones "upstairs" to limiting cones "downstairs".
 
 ```agda
-  -- Preserves-limit : Type _
-  -- Preserves-limit = ∀ x → is-limit Diagram x → is-limit (F F∘ Diagram) (F.₀ x)
+  preserves-limit
+    : ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
+    → is-ran !F Diagram K eps
+    → Type _
+  preserves-limit lim = preserves-ran F lim
 ```
 
 ## Reflection of limits
@@ -720,8 +723,11 @@ More concretely, if we have a limit in $\cD$ of $F \circ \rm{Dia}$ with
 apex $F(a)$, then $a$ was _already the limit_ of $\rm{Dia}$!
 
 ```agda
-  -- Reflects-limit : Type _
-  -- Reflects-limit = ∀ x → is-limit (F F∘ Diagram) (F.₀ x) → is-limit Diagram x
+  reflects-limit
+    : ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
+    → is-ran !F (F F∘ Diagram) (F F∘ K) (nat-assoc-from (F ▸ eps))
+    → Type _
+  reflects-limit ran = reflects-ran F ran
 ```
 
 ## Creation of limits
@@ -732,20 +738,20 @@ the limits of shape $\rm{Dia}$ in $\cC$ are in a 1-1 correspondence
 with the limits $F \circ \rm{Dia}$ in $\cD$.
 
 ```agda
-  -- record creates-limit : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
+  -- record creates-limit {K : Functor ⊤Cat} : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
   --   field
-  --     preserves-limit : Preserves-limit
-  --     reflects-limit  : Reflects-limit
+  --     preserves  : preserves-limit
+  --     reflectst  : reflects-limit
 ```
 
 ## Continuity
 
 ```agda
--- is-continuous
---   : ∀ {oshape hshape}
---       {C : Precategory o₁ h₁}
---       {D : Precategory o₂ h₂}
---   → Functor C D → Type _
+is-continuous
+  : ∀ {oshape hshape}
+      {C : Precategory o₁ h₁}
+      {D : Precategory o₂ h₂}
+  → Functor C D → Type _
 ```
 
 A continuous functor is one that --- for every shape of diagram `J`, and
@@ -753,9 +759,11 @@ every diagram `diagram`{.Agda} of shape `J` in `C` --- preserves the
 limit for that diagram.
 
 ```agda
--- is-continuous {oshape = oshape} {hshape} {C = C} F =
---   ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
---   → Preserves-limit F Diagram
+is-continuous {oshape = oshape} {hshape} {C = C} F =
+  ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
+  → ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
+  → (lim : is-ran !F Diagram K eps)
+  → preserves-limit F lim
 ```
 
 ## Completeness

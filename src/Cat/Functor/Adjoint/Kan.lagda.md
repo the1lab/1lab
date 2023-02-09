@@ -1,8 +1,8 @@
 ```agda
 open import Cat.Functor.Coherence
-open import Cat.Functor.Kan.Right
+open import Cat.Functor.Kan.Base
+open import Cat.Functor.Kan.Duality
 open import Cat.Instances.Functor
-open import Cat.Functor.Kan.Left
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
 open import Cat.Prelude
@@ -189,7 +189,7 @@ module
 -->
 
 ```agda
-  right-adjoint→right-extension : is-ran p (R F∘ F) (R F∘ G) (nat-assoc-from (R ▸ eps))
+  right-adjoint→right-extension : preserves-ran R ran
   right-adjoint→right-extension = fixed where
     pres-lan = left-adjoint→left-extension
       (is-ran→is-co-lan _ _ ran)
