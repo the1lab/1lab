@@ -36,22 +36,23 @@ and $g$.
 record is-coequaliser {E} (f g : Hom A B) (coeq : Hom B E) : Type (o ⊔ ℓ) where
   field
     coequal    : coeq ∘ f ≡ coeq ∘ g
-    coequalise : ∀ {F} {e′ : Hom B F} (p : e′ ∘ f ≡ e′ ∘ g) → Hom E F
-    universal  : ∀ {F} {e′ : Hom B F} {p : e′ ∘ f ≡ e′ ∘ g}
-               → coequalise p ∘ coeq ≡ e′
+    universal  : ∀ {F} {e′ : Hom B F} (p : e′ ∘ f ≡ e′ ∘ g) → Hom E F
+    factors    : ∀ {F} {e′ : Hom B F} {p : e′ ∘ f ≡ e′ ∘ g}
+               → universal p ∘ coeq ≡ e′
 
     unique     : ∀ {F} {e′ : Hom B F} {p : e′ ∘ f ≡ e′ ∘ g} {colim : Hom E F}
                → e′ ≡ colim ∘ coeq
-               → colim ≡ coequalise p
+               → colim ≡ universal p
 
   unique₂
-    : ∀ {F} {e′ : Hom B F} {p : e′ ∘ f ≡ e′ ∘ g} {colim' colim'' : Hom E F}
+    : ∀ {F} {e′ : Hom B F}  {colim' colim'' : Hom E F}
+    → (e′ ∘ f ≡ e′ ∘ g)
     → e′ ≡ colim' ∘ coeq
     → e′ ≡ colim'' ∘ coeq
     → colim' ≡ colim''
-  unique₂ {p = p} q r = unique {p = p} q ∙ sym (unique r)
+  unique₂ p q r = unique {p = p} q ∙ sym (unique r)
 
-  id-coequalise : id ≡ coequalise coequal
+  id-coequalise : id ≡ universal coequal
   id-coequalise = unique (sym (idl _))
 ```
 
@@ -82,7 +83,7 @@ is-coequaliser→is-epic
   → is-epic coequ
 is-coequaliser→is-epic {f = f} {g = g} equ equalises h i p =
   h                            ≡⟨ unique (sym p) ⟩
-  coequalise (extendr coequal) ≡˘⟨ unique refl ⟩
+  universal (extendr coequal) ≡˘⟨ unique refl ⟩
   i                            ∎
   where open is-coequaliser equalises
 
@@ -93,9 +94,9 @@ coequaliser-unique
   → E ≅ E′
 coequaliser-unique {c1 = c1} {c2} co1 co2 =
   make-iso
-    (co1 .coequalise {e′ = c2} (co2 .coequal))
-    (co2 .coequalise {e′ = c1} (co1 .coequal))
-    (unique₂ co2 {p = co2 .coequal} (sym (pullr (co2 .universal) ∙ co1 .universal)) (introl refl))
-    (unique₂ co1 {p = co1 .coequal} (sym (pullr (co1 .universal) ∙ co2 .universal)) (introl refl))
+    (co1 .universal {e′ = c2} (co2 .coequal))
+    (co2 .universal {e′ = c1} (co1 .coequal))
+    (unique₂ co2 (co2 .coequal) (sym (pullr (co2 .factors) ∙ co1 .factors)) (introl refl))
+    (unique₂ co1 (co1 .coequal) (sym (pullr (co1 .factors) ∙ co2 .factors)) (introl refl))
   where open is-coequaliser
 ```

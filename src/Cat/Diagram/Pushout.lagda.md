@@ -56,15 +56,15 @@ The universal property ensures that we only perform the minimal number
 of identifications required to make the aforementioned square commute.
 
 ```agda
-      colimiting : ∀ {Q} {i₁′ : Hom Y Q} {i₂′ : Hom Z Q}
+      universal : ∀ {Q} {i₁′ : Hom Y Q} {i₂′ : Hom Z Q}
                  → i₁′ ∘ f ≡ i₂′ ∘ g → Hom P Q
-      i₁∘colimiting : {p : i₁′ ∘ f ≡ i₂′ ∘ g} → colimiting p ∘ i₁ ≡ i₁′
-      i₂∘colimiting : {p : i₁′ ∘ f ≡ i₂′ ∘ g} → colimiting p ∘ i₂ ≡ i₂′
+      i₁∘universal : {p : i₁′ ∘ f ≡ i₂′ ∘ g} → universal p ∘ i₁ ≡ i₁′
+      i₂∘universal : {p : i₁′ ∘ f ≡ i₂′ ∘ g} → universal p ∘ i₂ ≡ i₂′
 
       unique : {p : i₁′ ∘ f ≡ i₂′ ∘ g} {colim′ : Hom P Q}
              → colim′ ∘ i₁ ≡ i₁′
              → colim′ ∘ i₂ ≡ i₂′
-             → colim′ ≡ colimiting p
+             → colim′ ≡ universal p
 ```
 
 We provide a convenient packaging of the pushout and the injection

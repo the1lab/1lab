@@ -254,7 +254,7 @@ comultiplication.
 ```
 
 For uniqueness, we use distributivity of composition over addition of
-morphisms and the universal property of the product to establish the
+morphisms and the factors property of the product to establish the
 desired equation. Check it out:
 
 ```agda
@@ -317,7 +317,7 @@ monomorphism].
   decompose {A} {B} f = map , sym path
     where
       proj′ : Hom (Coker.coapex (Ker.kernel f)) B
-      proj′ = Coker.coequalise (Ker.kernel f) {e′ = f} $ sym path
+      proj′ = Coker.universal (Ker.kernel f) {e′ = f} $ sym path
 ```
 
 <!--
@@ -333,11 +333,11 @@ monomorphism].
 
 ```agda
       map : Hom (Coker.coapex (Ker.kernel f)) (Ker.ker (Coker.coeq f))
-      map = Ker.limiting (Coker.coeq f) {e′ = proj′} $ sym path
+      map = Ker.universal (Coker.coeq f) {e′ = proj′} $ sym path
 ```
 
 The existence of the map $f'$, and indeed of the maps $p$ and $i$,
-follow from the universal properties of kernels and cokernels. The map
+follow from the factors properties of kernels and cokernels. The map
 $p$ is the canonical quotient map $A \to \coker(f)$, and the map $i$ is
 the canonical subobject inclusion $\ker(f) \to B$.
 
@@ -346,16 +346,16 @@ the canonical subobject inclusion $\ker(f) \to B$.
         where abstract
           path : ∅.zero→ ∘ proj′ ≡ Coker.coeq f ∘ proj′
           path = Coker.unique₂ (Ker.kernel f)
-            {e′ = 0m} {p = ∘-zero-r ∙ sym ∘-zero-l}
+            {e′ = 0m} (∘-zero-r ∙ sym ∘-zero-l)
             (sym ( pushl (∅.zero-∘r _) ∙ pulll ( ap₂ _∘_ refl (∅.has⊤ _ .paths 0m)
                                                ∙ ∘-zero-r)
                  ∙ ∘-zero-l))
-            (sym ( pullr (Coker.universal (Ker.kernel f)) ∙ sym (Coker.coequal _)
+            (sym ( pullr (Coker.factors (Ker.kernel f)) ∙ sym (Coker.coequal _)
                  ∙ ∘-zero-r))
 
       path =
-        Ker.kernel (Coker.coeq f) ∘ map ∘ Coker.coeq (Ker.kernel f) ≡⟨ pulll (Ker.universal _) ⟩
-        proj′ ∘ Coker.coeq (Ker.kernel f)                           ≡⟨ Coker.universal _ ⟩
+        Ker.kernel (Coker.coeq f) ∘ map ∘ Coker.coeq (Ker.kernel f) ≡⟨ pulll (Ker.factors _) ⟩
+        proj′ ∘ Coker.coeq (Ker.kernel f)                           ≡⟨ Coker.factors _ ⟩
         f                                                           ∎
 ```
 -->
@@ -404,14 +404,14 @@ $$
 \ker (\coker f) \cong \coker (\ker f) \to A\text{,}
 $$
 
-where the second map arises from the universal property of the cokernel:
+where the second map arises from the factors property of the cokernel:
 We can map out of it with the map $\ker f \mono A$, since (using that
 $f$ is mono), we have $0 = \ker f$ from $f0 = f\ker f$.
 
 ```agda
       kercoker→f : m.Hom (cut (Ker.kernel (Coker.coeq f))) (cut f)
       kercoker→f ./-Hom.map =
-        Coker.coequalise (Ker.kernel f) {e′ = id} (monic _ _ path) ∘
+        Coker.universal (Ker.kernel f) {e′ = id} (monic _ _ path) ∘
           coker-ker≃ker-coker f .is-invertible.inv
         where abstract
           path : f ∘ id ∘ 0m ≡ f ∘ id ∘ Ker.kernel f
@@ -430,20 +430,20 @@ coequalisers are epic to make progress.
       kercoker→f ./-Hom.commutes = path where
         lemma =
           is-coequaliser→is-epic (Coker.coeq _) (Coker.has-is-coeq _) _ _ $
-               pullr (Coker.universal _)
+               pullr (Coker.factors _)
             ·· elimr refl
             ·· (decompose f .snd ∙ assoc _ _ _)
 
         path =
           invertible→epic (coker-ker≃ker-coker _) _ _ $
-            (f ∘ Coker.coequalise _ _ ∘ _) ∘ decompose f .fst   ≡⟨ ap₂ _∘_ (assoc _ _ _) refl ⟩
-            ((f ∘ Coker.coequalise _ _) ∘ _) ∘ decompose f .fst ≡⟨ cancelr (coker-ker≃ker-coker _ .is-invertible.invr) ⟩
-            f ∘ Coker.coequalise _ _                            ≡⟨ lemma ⟩
+            (f ∘ Coker.universal _ _ ∘ _) ∘ decompose f .fst   ≡⟨ ap₂ _∘_ (assoc _ _ _) refl ⟩
+            ((f ∘ Coker.universal _ _) ∘ _) ∘ decompose f .fst ≡⟨ cancelr (coker-ker≃ker-coker _ .is-invertible.invr) ⟩
+            f ∘ Coker.universal _ _                            ≡⟨ lemma ⟩
             Ker.kernel _ ∘ decompose f .fst                     ∎
 ```
 
-Using the universal property of the cokernel (both uniqueness and
-universality), we establish that the maps defined above are inverses in
+Using the factors property of the cokernel (both uniqueness and
+factorsity), we establish that the maps defined above are inverses in
 $\cA$, thus assemble into an isomorphism in the slice.
 
 ```agda
@@ -451,19 +451,19 @@ $\cA$, thus assemble into an isomorphism in the slice.
     mono→kernel = m.make-iso f→kercoker kercoker→f f→kc→f kc→f→kc where
       f→kc→f : f→kercoker m.∘ kercoker→f ≡ m.id
       f→kc→f = /-Hom-path $
-        (decompose f .fst ∘ Coker.coeq _) ∘ Coker.coequalise _ _ ∘ _ ≡⟨ cancel-inner lemma ⟩
+        (decompose f .fst ∘ Coker.coeq _) ∘ Coker.universal _ _ ∘ _  ≡⟨ cancel-inner lemma ⟩
         decompose f .fst ∘ _                                         ≡⟨ coker-ker≃ker-coker f .is-invertible.invl ⟩
         id                                                           ∎
         where
           lemma = Coker.unique₂ _
             {e′ = Coker.coeq (Ker.kernel f)}
-            {p = ∘-zero-r ∙ sym (sym (Coker.coequal _) ∙ ∘-zero-r)}
-            (sym (pullr (Coker.universal (Ker.kernel f)) ∙ elimr refl))
+            (∘-zero-r ∙ sym (sym (Coker.coequal _) ∙ ∘-zero-r))
+            (sym (pullr (Coker.factors (Ker.kernel f)) ∙ elimr refl))
             (introl refl)
 
       kc→f→kc : kercoker→f m.∘ f→kercoker ≡ m.id
       kc→f→kc = /-Hom-path $
-        (Coker.coequalise _ _ ∘ _) ∘ decompose f .fst ∘ Coker.coeq _ ≡⟨ cancel-inner (coker-ker≃ker-coker f .is-invertible.invr) ⟩
-        Coker.coequalise _ _ ∘ Coker.coeq _                          ≡⟨ Coker.universal _ ⟩
+        (Coker.universal _ _ ∘ _) ∘ decompose f .fst ∘ Coker.coeq _ ≡⟨ cancel-inner (coker-ker≃ker-coker f .is-invertible.invr) ⟩
+        Coker.universal _ _ ∘ Coker.coeq _                          ≡⟨ Coker.factors _ ⟩
         id                                                           ∎
 ```

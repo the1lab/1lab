@@ -1,7 +1,5 @@
 ```agda
 open import Cat.Univalent
-open import Cat.Diagram.Colimit.Base
-open import Cat.Diagram.Limit.Base
 open import Cat.Prelude
 
 module Cat.Diagram.Zero {o h} (C : Precategory o h) where
@@ -27,9 +25,6 @@ record is-zero (ob : Ob) : Type (o ⊔ h) where
     has-is-initial  : is-initial ob
     has-is-terminal : is-terminal ob
 
-  open is-initial has-is-initial public
-  open is-terminal has-is-terminal public
-
 record Zero : Type (o ⊔ h) where
   field
     ∅       : Ob
@@ -38,10 +33,13 @@ record Zero : Type (o ⊔ h) where
   open is-zero has-is-zero public
 
   terminal : Terminal
-  terminal = to-limit has-is-terminal
+  terminal = record { top = ∅ ; has⊤ = has-is-terminal }
 
   initial : Initial
-  initial = to-colimit has-is-initial
+  initial = record { bot = ∅ ; has⊥ = has-is-initial }
+
+  open Terminal terminal public hiding (top)
+  open Initial initial public hiding (bot)
 ```
 
 A curious fact about zero objects is that their existence implies that
@@ -52,10 +50,10 @@ every hom set is inhabited!
   zero→ = ¡ ∘ !
 
   zero-∘l : ∀ {x y z} → (f : Hom y z) → f ∘ zero→ {x} {y} ≡ zero→
-  zero-∘l f = pulll (¡-unique (f ∘ ¡))
+  zero-∘l f = pulll (sym (¡-unique (f ∘ ¡)))
 
   zero-∘r : ∀ {x y z} → (f : Hom x y) → zero→ {y} {z} ∘ f ≡ zero→
-  zero-∘r f = pullr (!-unique (! ∘ f))
+  zero-∘r f = pullr (sym (!-unique (! ∘ f)))
 ```
 
 ## Intuition
