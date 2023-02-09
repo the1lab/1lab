@@ -347,7 +347,7 @@ computation.
 <!--
 ```agda
 module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
-         (Diagram : Functor J C)
+         {Diagram : Functor J C}
          {x y} {etay : Diagram => Const y} {etax : Diagram => Const x}
          (Cy : is-colimit Diagram y etay)
          (Cx : is-colimit Diagram x etax)
@@ -521,8 +521,8 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 -->
 
 ```agda
-  Limit-is-prop : is-category C → is-prop (Colimit Diagram)
-  Limit-is-prop cat = Lan-is-prop cat
+  Colimit-is-prop : is-category C → is-prop (Colimit Diagram)
+  Colimit-is-prop cat = Lan-is-prop cat
 ```
 
 

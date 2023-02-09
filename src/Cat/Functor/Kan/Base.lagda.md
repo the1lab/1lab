@@ -1,5 +1,4 @@
 ```agda
-open import Cat.Functor.Adjoint
 open import Cat.Functor.Coherence
 open import Cat.Instances.Functor.Compose
 open import Cat.Instances.Shape.Terminal

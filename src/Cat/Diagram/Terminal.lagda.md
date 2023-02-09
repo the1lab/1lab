@@ -4,7 +4,7 @@ open import Cat.Functor.Kan.Base
 open import Cat.Instances.Shape.Initial
 open import Cat.Prelude
 
-module Cat.Diagram.Terminal {o h} (C : Precategory o h) where
+module Cat.Diagram.Terminal {o ℓ} (C : Precategory o ℓ) where
 ```
 
 <!--
@@ -36,11 +36,11 @@ We use this definition as it is abstract: it allows us to use general
 theorems about limits when working with terminal objects! However,
 it is also abstract, which means that working with a _specific_ terminal
 object becomes a lot more difficult. To work around this, we provide
-an auxilliary record `make-is-terminal` that describes terminal objects
+an auxiliary record `make-is-terminal` that describes terminal objects
 more concretely.
 
 ```agda
-record make-is-terminal (t : Ob) : Type (o ⊔ h) where
+record make-is-terminal (t : Ob) : Type (o ⊔ ℓ) where
   no-eta-equality
   field
     ! : ∀ {x} → Hom x t
@@ -96,7 +96,7 @@ module is-terminal {t} (term : is-terminal t) where
 We do a similar construction for the bundled form of terminal objects.
 
 ```agda
-record make-terminal : Type (o ⊔ h) where
+record make-terminal : Type (o ⊔ ℓ) where
   no-eta-equality
   field
     top : Ob
@@ -142,22 +142,22 @@ of limits]!
 !-inverses : (t1 t2 : Terminal) → Inverses (t1 .!) (t2 .!)
 !-inverses t1 t2 =
   limits→inversesp
-    (Terminal.has-is-terminal t1)
-    (Terminal.has-is-terminal t2)
+    (has-is-terminal t1)
+    (has-is-terminal t2)
     (λ { {()} }) (λ { {()} })
 
 !-invertible : (t1 t2 : Terminal) → is-invertible (t1 .! {x = top t2})
 !-invertible t1 t2 =
   limits→invertiblep
-  (Terminal.has-is-terminal t1)
-  (Terminal.has-is-terminal t2)
+  (has-is-terminal t1)
+  (has-is-terminal t2)
   (λ { {()} })
 
 ⊤-unique : (t1 t2 : Terminal) → top t1 ≅ top t2
 ⊤-unique t1 t2 =
   limits-unique 
-    (Terminal.has-is-terminal t2)
-    (Terminal.has-is-terminal t1)
+    (has-is-terminal t2)
+    (has-is-terminal t1)
 ```
 
 If $C$ is additionally a category, it has a propositional space of
