@@ -347,11 +347,11 @@ the canonical subobject inclusion $\ker(f) \to B$.
           path : ∅.zero→ ∘ proj′ ≡ Coker.coeq f ∘ proj′
           path = Coker.unique₂ (Ker.kernel f)
             {e′ = 0m} (∘-zero-r ∙ sym ∘-zero-l)
-            (sym ( pushl (∅.zero-∘r _) ∙ pulll ( ap₂ _∘_ refl (∅.has⊤ _ .paths 0m)
+            (pushl (∅.zero-∘r _) ∙ pulll ( ap₂ _∘_ refl (∅.has⊤ _ .paths 0m)
                                                ∙ ∘-zero-r)
-                 ∙ ∘-zero-l))
-            (sym ( pullr (Coker.factors (Ker.kernel f)) ∙ sym (Coker.coequal _)
-                 ∙ ∘-zero-r))
+                 ∙ ∘-zero-l)
+            (pullr (Coker.factors (Ker.kernel f)) ∙ sym (Coker.coequal _)
+                 ∙ ∘-zero-r)
 
       path =
         Ker.kernel (Coker.coeq f) ∘ map ∘ Coker.coeq (Ker.kernel f) ≡⟨ pulll (Ker.factors _) ⟩
@@ -458,8 +458,8 @@ $\cA$, thus assemble into an isomorphism in the slice.
           lemma = Coker.unique₂ _
             {e′ = Coker.coeq (Ker.kernel f)}
             (∘-zero-r ∙ sym (sym (Coker.coequal _) ∙ ∘-zero-r))
-            (sym (pullr (Coker.factors (Ker.kernel f)) ∙ elimr refl))
-            (introl refl)
+            (pullr (Coker.factors (Ker.kernel f)) ∙ elimr refl)
+            (eliml refl)
 
       kc→f→kc : kercoker→f m.∘ f→kercoker ≡ m.id
       kc→f→kc = /-Hom-path $

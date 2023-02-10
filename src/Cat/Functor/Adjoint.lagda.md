@@ -618,6 +618,25 @@ Furthermore, these equivalences are natural.
 
 <!--
 ```agda
+  R-adjunct-ap
+    : ∀ {a b c}
+    → {f : D.Hom b c} {g : C.Hom a (R.₀ b)} {h : C.Hom a (R.₀ c)}
+    → R.₁ f C.∘ g ≡ h
+    → f D.∘ R-adjunct g ≡ R-adjunct h
+  R-adjunct-ap p = sym (R-adjunct-naturalr _ _) ∙ ap R-adjunct p
+
+  R-adjunct-square
+    : ∀ {a b c d}
+    → {p1 : C.Hom a (R.₀ b)} {f : D.Hom b d} {p2 : C.Hom a (R.₀ c)} {g : D.Hom c d}
+    → R.₁ f C.∘ p1 ≡ R.₁ g C.∘ p2
+    → f D.∘ R-adjunct p1 ≡ g D.∘ R-adjunct p2
+  R-adjunct-square sq =
+    sym (R-adjunct-naturalr _ _) ·· ap R-adjunct sq ·· R-adjunct-naturalr _ _
+```
+-->
+
+<!--
+```agda
 module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
   private
     module L = Functor L

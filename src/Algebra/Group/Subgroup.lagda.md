@@ -343,7 +343,7 @@ will compute.
             {P = λ q → colim # (x , q) ≡ elim p q}
             (λ _ → F.has-is-set _ _)
             (λ { (f , fp) → ap (colim #_) (Σ-prop-path (λ _ → squash) (sym fp))
-                          ∙ sym (happly (ap hom prf) f) })
+                          ∙ (happly (ap hom prf) f) })
             t
 ```
 

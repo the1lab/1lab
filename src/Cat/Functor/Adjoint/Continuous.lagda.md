@@ -7,14 +7,19 @@ open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
+open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Adjoint.Kan
+open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Duals
 open import Cat.Functor.Base
 open import Cat.Prelude
 
 open import Data.Bool
+
+import Cat.Reasoning as Cat
+import Cat.Functor.Reasoning as Func
 
 module Cat.Functor.Adjoint.Continuous where
 ```
@@ -27,11 +32,12 @@ module _
     (L⊣R : L ⊣ R)
   where
   private
-    module L = Functor L
-    module R = Functor R
-    import Cat.Reasoning C as C
-    import Cat.Reasoning D as D
+    module L = Func L
+    module R = Func R
+    module C = Cat C
+    module D = Cat D
     module adj = _⊣_ L⊣R
+    open _=>_
 ```
 -->
 
@@ -67,63 +73,88 @@ extensions].
     left-adjoint→left-extension colim L⊣R
 ```
 
--- ## Concrete limits
+## Concrete limits
 
--- For establishing the preservation of "concrete limits", in addition to
--- the preexisting conversion functions (`Lim→Prod`{.Agda},
--- `Limit→Pullback`{.Agda}, `Limit→Equaliser`{.Agda}, etc.), we must
--- establish results analogous to `canonical-functors`{.Agda}: Functors out
--- of shape categories are entirely determined by the "introduction forms"
--- `cospan→cospan-diagram`{.Agda} and `par-arrows→par-diagram`{.Agda}.
+We now show that adjoint functors preserve "concrete limits". We could
+show this using general abstract nonsense, but we can avoid transports
+if we do it by hand.
 
--- ```agda
---   open import Cat.Instances.Shape.Parallel
---   open import Cat.Instances.Shape.Cospan
---   open import Cat.Diagram.Limit.Equaliser
---   open import Cat.Diagram.Limit.Pullback
---   open import Cat.Diagram.Limit.Product
---   open import Cat.Diagram.Equaliser
---   open import Cat.Diagram.Pullback
---   open import Cat.Diagram.Product
+<!--
+```agda
+  open import Cat.Diagram.Equaliser
+  open import Cat.Diagram.Pullback
+  open import Cat.Diagram.Product
+```
+-->
 
---   right-adjoint→product
---     : ∀ {A B} → Product D A B → Product C (R.₀ A) (R.₀ B)
---   right-adjoint→product {A = A} {B} prod =
---     Lim→Prod C (fixup (right-adjoint-limit (Prod→Lim D prod)))
---     where
---       fixup : Limit (R F∘ 2-object-diagram D {iss = Bool-is-set} A B)
---             → Limit (2-object-diagram C {iss = Bool-is-set} (R.₀ A) (R.₀ B))
---       fixup = subst Limit (canonical-functors _ _)
+```agda
+  right-adjoint→is-product
+    : ∀ {x a b} {p1 : D.Hom x a} {p2 : D.Hom x b}
+    → is-product D p1 p2
+    → is-product C (R.₁ p1) (R.₁ p2)
+  right-adjoint→is-product {x = x} {a} {b} {p1} {p2} d-prod = c-prod where
+    open is-product
 
---   right-adjoint→pullback
---     : ∀ {A B c} {f : D.Hom A c} {g : D.Hom B c}
---     → Pullback D f g → Pullback C (R.₁ f) (R.₁ g)
---   right-adjoint→pullback {f = f} {g} pb =
---     Limit→Pullback C {x = lzero} {y = lzero}
---       (right-adjoint-limit (Pullback→Limit D pb))
+    c-prod : is-product C (R.₁ p1) (R.₁ p2)
+    c-prod .⟨_,_⟩ f g =
+      L-adjunct L⊣R (d-prod .⟨_,_⟩ (R-adjunct L⊣R f) (R-adjunct L⊣R g))
+    c-prod .π₁∘factor =
+      R.pulll (d-prod .π₁∘factor) ∙ L-R-adjunct L⊣R _
+    c-prod .π₂∘factor =
+      R.pulll (d-prod .π₂∘factor) ∙ L-R-adjunct L⊣R _
+    c-prod .unique other p q =
+      sym (L-R-adjunct L⊣R other)
+      ∙ ap (L-adjunct L⊣R)
+           (d-prod .unique _ (R-adjunct-ap L⊣R p) (R-adjunct-ap L⊣R q))
 
---   right-adjoint→equaliser
---     : ∀ {A B} {f g : D.Hom A B}
---     → Equaliser D f g → Equaliser C (R.₁ f) (R.₁ g)
---   right-adjoint→equaliser {f = f} {g} eq =
---     Limit→Equaliser C (right-adjoint-limit
---       (Equaliser→Limit D {F = par-arrows→par-diagram f g} eq))
+  right-adjoint→is-pullback
+    : ∀ {p x y z}
+    → {p1 : D.Hom p x} {f : D.Hom x z} {p2 : D.Hom p y} {g : D.Hom y z}
+    → is-pullback D p1 f p2 g
+    → is-pullback C (R.₁ p1) (R.₁ f) (R.₁ p2) (R.₁ g)
+  right-adjoint→is-pullback {p1 = p1} {f} {p2} {g} d-pb = c-pb where
+    open is-pullback
 
---   right-adjoint→terminal
---     : ∀ {X} → is-terminal D X → is-terminal C (R.₀ X)
---   right-adjoint→terminal term x = contr fin uniq where
---     fin = L-adjunct L⊣R (term (L.₀ x) .centre)
---     uniq : ∀ x → fin ≡ x
---     uniq x = ap fst $ is-contr→is-prop (R-adjunct-is-equiv L⊣R .is-eqv _)
---       (_ , equiv→counit (R-adjunct-is-equiv L⊣R) _)
---       (x , is-contr→is-prop (term _) _ _)
+    c-pb : is-pullback C (R.₁ p1) (R.₁ f) (R.₁ p2) (R.₁ g)
+    c-pb .square = R.weave (d-pb .square)
+    c-pb .universal sq =
+      L-adjunct L⊣R (d-pb .universal (R-adjunct-square L⊣R sq))
+    c-pb .p₁∘universal =
+      R.pulll (d-pb .p₁∘universal) ∙ L-R-adjunct L⊣R _
+    c-pb .p₂∘universal =
+      R.pulll (d-pb .p₂∘universal) ∙ L-R-adjunct L⊣R _
+    c-pb .unique {_} {p₁'} {p₂'} {sq} {other} p q =
+      sym (L-R-adjunct L⊣R other)
+      ∙ ap (L-adjunct L⊣R)
+           (d-pb .unique (R-adjunct-ap L⊣R p) (R-adjunct-ap L⊣R q))
 
---   right-adjoint→lex : is-lex R
---   right-adjoint→lex .is-lex.pres-⊤ = right-adjoint→terminal
---   right-adjoint→lex .is-lex.pres-pullback {f = f} {g = g} pb =
---     right-adjoint→pullback (record { p₁ = _ ; p₂ = _ ; has-is-pb = pb }) .Pullback.has-is-pb
--- ```
+  right-adjoint→is-equaliser
+    : ∀ {e a b} {f g : D.Hom a b} {equ : D.Hom e a}
+    → is-equaliser D f g equ
+    → is-equaliser C (R.₁ f) (R.₁ g) (R.₁ equ)
+  right-adjoint→is-equaliser {f = f} {g} {equ} d-equal = c-equal where
+    open is-equaliser
+  
+    c-equal : is-equaliser C (R.₁ f) (R.₁ g) (R.₁ equ)
+    c-equal .equal = R.weave (d-equal .equal)
+    c-equal .universal sq =
+      L-adjunct L⊣R (d-equal .universal (R-adjunct-square L⊣R sq))
+    c-equal .factors =
+      R.pulll (d-equal .factors) ∙ L-R-adjunct L⊣R _
+    c-equal .unique p =
+      sym (L-R-adjunct L⊣R _)
+      ∙ ap (L-adjunct L⊣R)
+           (d-equal .unique (R-adjunct-ap L⊣R p))
 
+  right-adjoint→terminal
+    : ∀ {x} → is-terminal D x → is-terminal C (R.₀ x)
+  right-adjoint→terminal term x = contr fin uniq where
+    fin = L-adjunct L⊣R (term (L.₀ x) .centre)
+    uniq : ∀ x → fin ≡ x
+    uniq x = ap fst $ is-contr→is-prop (R-adjunct-is-equiv L⊣R .is-eqv _)
+      (_ , equiv→counit (R-adjunct-is-equiv L⊣R) _)
+      (x , is-contr→is-prop (term _) _ _)
+```
 -- <!--
 -- ```agda
 -- module _

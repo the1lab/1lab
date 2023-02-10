@@ -30,7 +30,7 @@ record is-equaliser {E} (f g : Hom A B) (equ : Hom E A) : Type (ℓ ⊔ ℓ′) 
     factors   : ∀ {F} {e′ : Hom F A} {p : f ∘ e′ ≡ g ∘ e′} → equ ∘ universal p ≡ e′
     unique
       : ∀ {F} {e′ : Hom F A} {p : f ∘ e′ ≡ g ∘ e′} {other : Hom F E}
-      → e′ ≡ equ ∘ other
+      → equ ∘ other ≡ e′
       → other ≡ universal p
 
   equal-∘ : f ∘ equ ∘ h ≡ g ∘ equ ∘ h
@@ -39,11 +39,11 @@ record is-equaliser {E} (f g : Hom A B) (equ : Hom E A) : Type (ℓ ⊔ ℓ′) 
     g ∘ equ ∘ h ∎
 
   unique₂
-    : ∀ {F} {e′ : Hom F A}  {lim' lim'' : Hom F E}
+    : ∀ {F} {e′ : Hom F A}  {o1 o2 : Hom F E}
     → f ∘ e′ ≡ g ∘ e′
-    → e′ ≡ equ ∘ lim'
-    → e′ ≡ equ ∘ lim''
-    → lim' ≡ lim''
+    → equ ∘ o1 ≡ e′
+    → equ ∘ o2 ≡ e′
+    → o1 ≡ o2
   unique₂ p q r = unique {p = p} q ∙ sym (unique r)
 ```
 
@@ -87,7 +87,7 @@ is-equaliser→is-monic
   → is-equaliser f g equ
   → is-monic equ
 is-equaliser→is-monic equ equalises g h p =
-  unique₂ (extendl equal) (sym p) refl
+  unique₂ (extendl equal) p refl
   where open is-equaliser equalises
 ```
 

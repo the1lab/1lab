@@ -41,19 +41,19 @@ record is-coequaliser {E} (f g : Hom A B) (coeq : Hom B E) : Type (o ⊔ ℓ) wh
                → universal p ∘ coeq ≡ e′
 
     unique     : ∀ {F} {e′ : Hom B F} {p : e′ ∘ f ≡ e′ ∘ g} {colim : Hom E F}
-               → e′ ≡ colim ∘ coeq
+               → colim ∘ coeq ≡ e′
                → colim ≡ universal p
 
   unique₂
-    : ∀ {F} {e′ : Hom B F}  {colim' colim'' : Hom E F}
+    : ∀ {F} {e′ : Hom B F}  {o1 o2 : Hom E F}
     → (e′ ∘ f ≡ e′ ∘ g)
-    → e′ ≡ colim' ∘ coeq
-    → e′ ≡ colim'' ∘ coeq
-    → colim' ≡ colim''
+    → o1 ∘ coeq ≡ e′
+    → o2 ∘ coeq ≡ e′
+    → o1 ≡ o2
   unique₂ p q r = unique {p = p} q ∙ sym (unique r)
 
   id-coequalise : id ≡ universal coequal
-  id-coequalise = unique (sym (idl _))
+  id-coequalise = unique (idl _)
 ```
 
 There is also a convenient bundling of an coequalising arrow together with
@@ -82,7 +82,7 @@ is-coequaliser→is-epic
   → is-coequaliser f g coequ
   → is-epic coequ
 is-coequaliser→is-epic {f = f} {g = g} equ equalises h i p =
-  h                            ≡⟨ unique (sym p) ⟩
+  h                            ≡⟨ unique p ⟩
   universal (extendr coequal) ≡˘⟨ unique refl ⟩
   i                            ∎
   where open is-coequaliser equalises
@@ -96,7 +96,7 @@ coequaliser-unique {c1 = c1} {c2} co1 co2 =
   make-iso
     (co1 .universal {e′ = c2} (co2 .coequal))
     (co2 .universal {e′ = c1} (co1 .coequal))
-    (unique₂ co2 (co2 .coequal) (sym (pullr (co2 .factors) ∙ co1 .factors)) (introl refl))
-    (unique₂ co1 (co1 .coequal) (sym (pullr (co1 .factors) ∙ co2 .factors)) (introl refl))
+    (unique₂ co2 (co2 .coequal) (pullr (co2 .factors) ∙ co1 .factors) (idl _))
+    (unique₂ co1 (co1 .coequal) (pullr (co1 .factors) ∙ co2 .factors) (idl _))
   where open is-coequaliser
 ```

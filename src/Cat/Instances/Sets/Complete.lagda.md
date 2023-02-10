@@ -124,10 +124,10 @@ using $\Sigma$:
     eq .apex = el! (Σ[ x ∈ ∣ A ∣ ] (f x ≡ g x))
     eq .equ = fst
     eq .has-is-eq .equal = funext snd
-    eq .has-is-eq .universal {e′ = e′} p x = e′ x , happly p x
+    eq .has-is-eq .universal {e′ = e′} p x = e′ x , p $ₚ x
     eq .has-is-eq .factors = refl
     eq .has-is-eq .unique {p = p} q =
-      funext λ x → Σ-prop-path (λ _ → B .is-tr _ _) (happly (sym q) x)
+      funext λ x → Σ-prop-path (λ _ → B .is-tr _ _) (happly q x)
 ```
 
 Pullbacks are the same, but carving out a subset of $A \times B$.

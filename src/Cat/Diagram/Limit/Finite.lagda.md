@@ -163,7 +163,7 @@ equalisers to factor _that_ as a unique arrow $P' \to X \times_Z Y$.
     pb .p₁∘universal = pullr eq.factors ∙ pr.π₁∘factor
     pb .p₂∘universal = pullr eq.factors ∙ pr.π₂∘factor
     pb .unique p q =
-      eq.unique (sym (pr.unique _ (assoc _ _ _ ∙ p) (assoc _ _ _ ∙ q)))
+      eq.unique ((pr.unique _ (assoc _ _ _ ∙ p) (assoc _ _ _ ∙ q)))
 ```
 
 Hence, assuming that a category has a terminal object, binary products
@@ -365,14 +365,14 @@ is indeed the equaliser of $f$ and $g$.
             Bb.π₂ ∘ ⟨f,g⟩ ∘ e′         ∎
 
       eq .has-is-eq .factors = Pb.p₂∘universal
-      eq .has-is-eq .unique {F} {e′ = e′} {other = other} e′=p₂∘l =
-        Pb.unique path (sym e′=p₂∘l)
+      eq .has-is-eq .unique {F} {e′ = e′} {other = other} p₂∘l=e′ =
+        Pb.unique path p₂∘l=e′
         where
           path : Pb.p₁ ∘ other ≡ f ∘ e′
           path =
             Pb.p₁ ∘ other                   ≡⟨ insertl Bb.π₁∘factor ⟩
             Bb.π₁ ∘ ⟨id,id⟩ ∘ Pb.p₁ ∘ other ≡⟨ ap (Bb.π₁ ∘_) (extendl Pb.square) ⟩
-            Bb.π₁ ∘ ⟨f,g⟩ ∘ Pb.p₂ ∘ other   ≡⟨ ap (Bb.π₁ ∘_) (ap (⟨f,g⟩ ∘_) (sym e′=p₂∘l)) ⟩
+            Bb.π₁ ∘ ⟨f,g⟩ ∘ Pb.p₂ ∘ other   ≡⟨ ap (Bb.π₁ ∘_) (ap (⟨f,g⟩ ∘_) p₂∘l=e′) ⟩
             Bb.π₁ ∘ ⟨f,g⟩ ∘ e′              ≡⟨ pulll Bb.π₁∘factor ⟩
             f ∘ e′                          ∎
 ```
