@@ -1,7 +1,8 @@
 ```agda
 open import Cat.Diagram.Limit.Base
+open import Cat.Functor.Kan.Base
 open import Cat.Instances.Discrete
-open import Cat.Diagram.Terminal
+open import Cat.Instances.Shape.Terminal
 open import Cat.Prelude
 
 module Cat.Diagram.Product.Indexed {o ℓ} (C : Precategory o ℓ) where
@@ -96,56 +97,68 @@ sets, and so the `Disc`{.Agda} construction does not apply to it.
 
 ```agda
 module _ {I : Type ℓ'} (i-is-grpd : is-groupoid I) (F : I → C.Ob) where
-  open Cone-hom
-  open Terminal
-  open Cone
+  open _=>_
+
+  Proj→Cone : ∀ {x} → (∀ i → C.Hom x (F i))
+            → Const x => Disc-adjunct {C = C} {iss = i-is-grpd} F
+  Proj→Cone π .η i = π i
+  Proj→Cone π .is-natural i j p =
+    J (λ j p →  π j C.∘ C.id ≡ subst (C.Hom (F i) ⊙ F) p C.id C.∘ π i)
+      (C.idr _ ∙ C.introl (transport-refl C.id))
+      p
+
+  is-indexed-product→is-limit
+    : ∀ {x} {π : ∀ i → C.Hom x (F i)}
+    → is-indexed-product F π
+    → is-limit (Disc-adjunct F) x (Proj→Cone π)
+  is-indexed-product→is-limit {x = x} {π} ip =
+    to-is-limitp ml refl
+    where
+      module ip = is-indexed-product ip
+      open make-is-limit
+
+      ml : make-is-limit (Disc-adjunct F) x
+      ml .ψ j = π j
+      ml .commutes {i} {j} p =
+        J (λ j p → subst (C.Hom (F i) ⊙ F) p C.id C.∘ π i ≡ π j)
+          (C.eliml (transport-refl _))
+          p
+      ml .universal eta p =
+        ip.tuple eta
+      ml .factors eta p =
+        ip.commute
+      ml .unique eta p other q =
+        ip.unique eta q
+
+  is-limit→is-indexed-product
+    : ∀ {K : Functor ⊤Cat C}
+    → {eta : K F∘ !F => Disc-adjunct {iss = i-is-grpd} F}
+    → is-ran !F (Disc-adjunct F) K eta
+    → is-indexed-product F (eta .η)
+  is-limit→is-indexed-product {K = K} {eta} lim = ip where
+    module lim = is-limit lim
+    open is-indexed-product hiding (eta)
+
+    ip : is-indexed-product F (eta .η)
+    ip .tuple k =
+      lim.universal k
+        (J (λ j p → subst (C.Hom (F _) ⊙ F) p C.id C.∘ k _ ≡ k j)
+           (C.eliml (transport-refl _)))
+    ip .commute =
+      lim.factors _ _
+    ip .unique k comm =
+      lim.unique _ _ _ comm
 
   IP→Limit : Indexed-product F → Limit {C = C} (Disc-adjunct {iss = i-is-grpd} F)
-  IP→Limit IP = lim where
-    module IP = Indexed-product IP
+  IP→Limit ip =
+    to-limit (is-indexed-product→is-limit has-is-ip)
+    where open Indexed-product ip
 
-    thelim : Cone _
-    thelim .apex = IP.ΠF
-    thelim .ψ = IP.π
-    thelim .commutes {x} =
-      J (λ y p → subst (C.Hom (F x) ⊙ F) p C.id C.∘ (IP.π x) ≡ IP.π y)
-        (C.eliml (transport-refl _))
-
-    lim : Limit _
-    lim .top = thelim
-    lim .has⊤ x .centre .hom = IP.tuple (x .ψ)
-    lim .has⊤ x .centre .commutes o = IP.commute
-    lim .has⊤ x .paths h = Cone-hom-path _ (sym (IP.unique _ λ i → h .commutes _))
-
-module _ {I : Type ℓ'} (isg : is-groupoid I) (F : Functor (Disc I isg) C) where
-  private module F = Functor F
-  open is-indexed-product
-  open Indexed-product
-  open Cone-hom
-  open Terminal
-  open Cone
-
-  Proj→Cone : ∀ {Y} → (∀ i → C.Hom Y (F.₀ i)) → Cone F
-  Proj→Cone f .apex = _
-  Proj→Cone f .ψ = f
-  Proj→Cone f .commutes {x} =
-    J (λ y p → F.₁ p C.∘ f x ≡ f y) (C.eliml F.F-id)
-
-  Limit→IP : Limit {C = C} F → Indexed-product F.₀
-  Limit→IP lim = the-ip where
-    module lim = Cone (lim .top)
-
-    the-ip : Indexed-product _
-    the-ip .ΠF = lim.apex
-    the-ip .π = lim.ψ
-    the-ip .has-is-ip .tuple f = lim .has⊤ (Proj→Cone f) .centre .hom
-    the-ip .has-is-ip .commute = lim .has⊤ (Proj→Cone _) .centre .commutes _
-    the-ip .has-is-ip .unique {h = h} f p i =
-      lim .has⊤ (Proj→Cone f) .paths other (~ i) .hom
-      where
-        other : Cone-hom _ _ _
-        other .hom = h
-        other .commutes i = p i
+  Limit→IP : Limit {C = C} (Disc-adjunct {iss = i-is-grpd} F) → Indexed-product F
+  Limit→IP lim .Indexed-product.ΠF = _
+  Limit→IP lim .Indexed-product.π = _
+  Limit→IP lim .Indexed-product.has-is-ip =
+    is-limit→is-indexed-product (Limit.has-limit lim)
 ```
 
 ## Uniqueness
