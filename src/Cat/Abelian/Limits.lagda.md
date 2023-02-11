@@ -60,13 +60,13 @@ module _ (A : is-pre-abelian C) where
       (f - g) ∘ Ker.kernel (f - g)                        ≡⟨ Ker.equal (f - g) ⟩
       ∅.zero→ ∘ Ker.kernel (f - g)                        ≡⟨ ∅.zero-∘r _ ∙ 0m-unique ⟩
       0m                                                  ∎
-    equ .limiting {e′ = e′} p = Ker.limiting (f - g) {e′ = e′} $
+    equ .universal {e′ = e′} p = Ker.universal (f - g) {e′ = e′} $
       (f - g) ∘ e′         ≡˘⟨ ∘-minus-l _ _ _ ⟩
       f ∘ e′ - g ∘ e′      ≡⟨ ap (f ∘ e′ -_) (sym p) ⟩
       f ∘ e′ - f ∘ e′      ≡⟨ Hom.inverser ⟩
       0m                   ≡˘⟨ ∅.zero-∘r _ ∙ 0m-unique ⟩
       Zero.zero→ ∅ ∘ e′    ∎
-    equ .universal = Ker.universal _
+    equ .factors = Ker.factors _
     equ .unique = Ker.unique (f - g)
 ```
 

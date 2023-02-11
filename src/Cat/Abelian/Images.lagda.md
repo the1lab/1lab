@@ -81,7 +81,7 @@ $$
 
 ```agda
   the-img .map ./-Hom.map = decompose f .fst ∘ Coker.coeq _
-  the-img .map ./-Hom.commutes = pulll (Ker.universal _) ∙ Coker.universal _
+  the-img .map ./-Hom.commutes = pulll (Ker.factors _) ∙ Coker.factors _
 ```
 
 ## Universality
@@ -115,7 +115,7 @@ commutes.
     factor : ↓Hom (const! (cut f)) Forget-full-subcat the-img other
     factor .α = tt
     factor .β ./-Hom.map =
-        Coker.coequalise (Ker.kernel f) {e′ = other .map .map} path
+        Coker.universal (Ker.kernel f) {e′ = other .map .map} path
       ∘ coker-ker≃ker-coker f .is-invertible.inv
 ```
 
@@ -146,17 +146,18 @@ is the image of $f$.
 <summary>Here's the tedious isomorphism algebra.</summary>
 ```agda
     factor .β ./-Hom.commutes = invertible→epic (coker-ker≃ker-coker f) _ _ $
-      Coker.unique₂ (Ker.kernel f) {e′ = f}
-        {p = sym (Ker.equal f ∙ ∅.zero-∘r _ ∙ 0m-unique ∙ sym ∘-zero-r)}
-        (sym ( ap₂ _∘_ ( sym (assoc _ _ _)
+      Coker.unique₂ (Ker.kernel f)
+        (sym (Ker.equal f ∙ ∅.zero-∘r _ ∙ 0m-unique ∙ sym ∘-zero-r))
+        (ap₂ _∘_ ( sym (assoc _ _ _)
                         ∙ ap₂ _∘_ refl (cancelr
                           (coker-ker≃ker-coker f .is-invertible.invr))) refl
-              ∙ pullr (Coker.universal _) ∙ other .map .commutes))
-        (decompose f .snd ∙ assoc _ _ _)
+              ∙ pullr (Coker.factors _) ∙ other .map .commutes)
+        (sym (decompose f .snd ∙ assoc _ _ _))
     factor .sq = /-Hom-path $ sym $ other .y .witness _ _ $
-          pulll (factor .β .commutes)
-      ·· the-img .map .commutes
-      ·· (sym (other .map .commutes) ∙ ap (other .y .object .map ∘_) (intror refl))
+      pulll (factor .β .commutes)
+      ∙ the-img .map .commutes
+      ·· sym (other .map .commutes)
+      ·· ap (other .y .object .map ∘_) (intror refl)
 
     unique : ∀ x → factor ≡ x
     unique x = ↓Hom-path _ _ refl $ /-Hom-path $ other .y .witness _ _ $

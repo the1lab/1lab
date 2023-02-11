@@ -60,8 +60,6 @@ extensions].
 
 
 ```agda
-  module _ {od ℓd} {J : Precategory od ℓd} {F : Functor J D} where
-
   right-adjoint-is-continuous
     : ∀ {os ℓs} → is-continuous {oshape = os} {hshape = ℓs} R
   right-adjoint-is-continuous lim =
@@ -71,6 +69,15 @@ extensions].
     : ∀ {os ℓs} → is-cocontinuous {oshape = os} {hshape = ℓs} L
   left-adjoint-is-cocontinuous colim =
     left-adjoint→left-extension colim L⊣R
+
+  module _ {od ℓd} {J : Precategory od ℓd} where
+    right-adjoint-limit : ∀ {F : Functor J D} → Limit F → Limit (R F∘ F)
+    right-adjoint-limit lim =
+      to-limit (right-adjoint-is-continuous (Limit.has-limit lim))
+
+    left-adjoint-limit : ∀ {F : Functor J C} → Colimit F → Colimit (L F∘ F)
+    left-adjoint-limit colim =
+      to-colimit (left-adjoint-is-cocontinuous (Colimit.has-colimit colim))
 ```
 
 ## Concrete limits

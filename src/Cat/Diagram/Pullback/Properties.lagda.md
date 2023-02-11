@@ -118,16 +118,16 @@ We thus have an induced map $x \to a$, which, since $a$ is a pullback,
 makes everything in sight commute, and does so uniquely.
 
 ```agda
-    pb .limiting {p₁' = P→b} {p₂' = P→d} p =
-      outer.limiting {p₁' = b→c ∘ P→b} {p₂' = P→d} (path p)
+    pb .universal {p₁' = P→b} {p₂' = P→d} p =
+      outer.universal {p₁' = b→c ∘ P→b} {p₂' = P→d} (path p)
 
-    pb .p₁∘limiting {p₁' = P→b} {p₂' = P→d} {p = p} =
+    pb .p₁∘universal {p₁' = P→b} {p₂' = P→d} {p = p} =
       right.unique₂ {p = pulll right.square ∙ pullr p}
-        (assoc _ _ _ ∙ outer.p₁∘limiting)
-        (pulll square ∙ pullr outer.p₂∘limiting)
+        (assoc _ _ _ ∙ outer.p₁∘universal)
+        (pulll square ∙ pullr outer.p₂∘universal)
         refl p
 
-    pb .p₂∘limiting {p₁' = P→b} {p₂' = P→d} {p = p} = outer.p₂∘limiting
+    pb .p₂∘universal {p₁' = P→b} {p₂' = P→d} {p = p} = outer.p₂∘universal
 
     pb .unique {p = p} q r =
       outer.unique (sym (ap (_ ∘_) (sym q) ∙ assoc _ _ _)) r
@@ -151,11 +151,11 @@ then have a map $x \to a$, as we wanted.
     pb .is-pullback.square =
       c→f ∘ b→c ∘ a→b   ≡⟨ square ⟩
       (e→f ∘ d→e) ∘ a→d ∎
-    pb .limiting {p₁' = P→c} {p₂' = P→d} x =
-      left.limiting {p₁' = right.limiting (x ∙ sym (assoc _ _ _))} {p₂' = P→d}
-        right.p₂∘limiting
-    pb .p₁∘limiting = pullr left.p₁∘limiting ∙ right.p₁∘limiting
-    pb .p₂∘limiting = left.p₂∘limiting
+    pb .universal {p₁' = P→c} {p₂' = P→d} x =
+      left.universal {p₁' = right.universal (x ∙ sym (assoc _ _ _))} {p₂' = P→d}
+        right.p₂∘universal
+    pb .p₁∘universal = pullr left.p₁∘universal ∙ right.p₁∘universal
+    pb .p₂∘universal = left.p₂∘universal
     pb .unique {p₁' = P→c} {P→d} {p = p} {lim'} q r =
       left.unique (right.unique (assoc _ _ _ ∙ q) s) r
       where
@@ -187,13 +187,13 @@ is a monomorphism iff. the square below is a pullback.
 module _ {a b} {f : Hom a b} where
   is-monic→is-pullback : is-monic f → is-pullback id f id f
   is-monic→is-pullback mono .square = refl
-  is-monic→is-pullback mono .limiting {p₁' = p₁'} p = p₁'
-  is-monic→is-pullback mono .p₁∘limiting = idl _
-  is-monic→is-pullback mono .p₂∘limiting {p = p} = idl _ ∙ mono _ _ p
+  is-monic→is-pullback mono .universal {p₁' = p₁'} p = p₁'
+  is-monic→is-pullback mono .p₁∘universal = idl _
+  is-monic→is-pullback mono .p₂∘universal {p = p} = idl _ ∙ mono _ _ p
   is-monic→is-pullback mono .unique p q = introl refl ∙ p
 
   is-pullback→is-monic : is-pullback id f id f → is-monic f
-  is-pullback→is-monic pb f g p = sym (pb .p₁∘limiting {p = p}) ∙ pb .p₂∘limiting
+  is-pullback→is-monic pb f g p = sym (pb .p₁∘universal {p = p}) ∙ pb .p₂∘universal
 ```
 
 Pullbacks additionally preserve monomorphisms, as shown below:
@@ -228,9 +228,9 @@ rotate-pullback
   → is-pullback p1 f p2 g
   → is-pullback p2 g p1 f
 rotate-pullback pb .square = sym (pb .square)
-rotate-pullback pb .limiting p = pb .limiting (sym p)
-rotate-pullback pb .p₁∘limiting = pb .p₂∘limiting
-rotate-pullback pb .p₂∘limiting = pb .p₁∘limiting
+rotate-pullback pb .universal p = pb .universal (sym p)
+rotate-pullback pb .p₁∘universal = pb .p₂∘universal
+rotate-pullback pb .p₂∘universal = pb .p₁∘universal
 rotate-pullback pb .unique p q = pb .unique q p
 
 is-pullback-iso
@@ -242,9 +242,9 @@ is-pullback-iso {f = f} {g} {p1} {p2} i pb = pb′ where
   module i = _≅_ i
   pb′ : is-pullback _ _ _ _
   pb′ .square = extendl (pb .square)
-  pb′ .limiting p = i.to ∘ pb .limiting p
-  pb′ .p₁∘limiting = cancel-inner i.invr ∙ pb .p₁∘limiting
-  pb′ .p₂∘limiting = cancel-inner i.invr ∙ pb .p₂∘limiting
+  pb′ .universal p = i.to ∘ pb .universal p
+  pb′ .p₁∘universal = cancel-inner i.invr ∙ pb .p₁∘universal
+  pb′ .p₂∘universal = cancel-inner i.invr ∙ pb .p₂∘universal
   pb′ .unique p q = invertible→monic (iso→invertible (i Iso⁻¹)) _ _ $ sym $
     cancell i.invr ∙ sym (pb .unique (assoc _ _ _ ∙ p) (assoc _ _ _ ∙ q))
 
@@ -257,15 +257,15 @@ pullback-unique
 pullback-unique {f = f} {g} {p1} {p2} {p1′} {p2′} pb pb′
   = make-iso pb→pb′ pb′→pb il ir
   where
-    pb→pb′ = pb′ .limiting (pb .square)
-    pb′→pb = pb .limiting (pb′ .square)
+    pb→pb′ = pb′ .universal (pb .square)
+    pb′→pb = pb .universal (pb′ .square)
     il = unique₂ pb′ {p = pb′ .square}
-      (pulll (pb′ .p₁∘limiting) ∙ pb .p₁∘limiting)
-      (pulll (pb′ .p₂∘limiting) ∙ pb .p₂∘limiting)
+      (pulll (pb′ .p₁∘universal) ∙ pb .p₁∘universal)
+      (pulll (pb′ .p₂∘universal) ∙ pb .p₂∘universal)
       (idr _) (idr _)
     ir = unique₂ pb {p = pb .square}
-      (pulll (pb .p₁∘limiting) ∙ pb′ .p₁∘limiting)
-      (pulll (pb .p₂∘limiting) ∙ pb′ .p₂∘limiting)
+      (pulll (pb .p₁∘universal) ∙ pb′ .p₁∘universal)
+      (pulll (pb .p₂∘universal) ∙ pb′ .p₂∘universal)
       (idr _) (idr _)
 
 Pullback-unique
@@ -280,17 +280,17 @@ Pullback-unique {x = X} {Y} {Z} {f} {g} c-cat x y = p where
 
   abstract
     p1s : PathP (λ i → Hom (apices i) X) x.p₁ y.p₁
-    p1s = Univalent.Hom-pathp-refll-iso c-cat (x.p₁∘limiting)
+    p1s = Univalent.Hom-pathp-refll-iso c-cat (x.p₁∘universal)
 
     p2s : PathP (λ i → Hom (apices i) Y) x.p₂ y.p₂
-    p2s = Univalent.Hom-pathp-refll-iso c-cat (x.p₂∘limiting)
+    p2s = Univalent.Hom-pathp-refll-iso c-cat (x.p₂∘universal)
 
     lims
       : ∀ {P′} {p1′ : Hom P′ X} {p2′ : Hom P′ Y} (p : f ∘ p1′ ≡ g ∘ p2′)
-      → PathP (λ i → Hom P′ (apices i)) (x.limiting p) (y.limiting p)
+      → PathP (λ i → Hom P′ (apices i)) (x.universal p) (y.universal p)
     lims p = Univalent.Hom-pathp-reflr-iso c-cat $
-      y.unique (pulll y.p₁∘limiting ∙ x.p₁∘limiting)
-              (pulll y.p₂∘limiting ∙ x.p₂∘limiting)
+      y.unique (pulll y.p₁∘universal ∙ x.p₁∘universal)
+              (pulll y.p₂∘universal ∙ x.p₂∘universal)
 
   p : x ≡ y
   p i .apex = apices i
@@ -299,13 +299,13 @@ Pullback-unique {x = X} {Y} {Z} {f} {g} c-cat x y = p where
   p i .has-is-pb .square =
     is-prop→pathp (λ i → Hom-set (apices i) Z (f ∘ p1s i) (g ∘ p2s i))
       x.square y.square i
-  p i .has-is-pb .limiting p = lims p i
-  p i .has-is-pb .p₁∘limiting {p = p} =
+  p i .has-is-pb .universal p = lims p i
+  p i .has-is-pb .p₁∘universal {p = p} =
     is-prop→pathp (λ i → Hom-set _ X (p1s i ∘ lims p i) _)
-      x.p₁∘limiting y.p₁∘limiting i
-  p i .has-is-pb .p₂∘limiting {p = p} =
+      x.p₁∘universal y.p₁∘universal i
+  p i .has-is-pb .p₂∘universal {p = p} =
     is-prop→pathp (λ i → Hom-set _ _ (p2s i ∘ lims p i) _)
-      x.p₂∘limiting y.p₂∘limiting i
+      x.p₂∘universal y.p₂∘universal i
   p i .has-is-pb .unique {P′ = P′} {p₁' = p₁′} {p₂' = p₂′} {p = p′} {lim' = lim′} =
     is-prop→pathp
       (λ i   → Π-is-hlevel {A = Hom P′ (apices i)} 1

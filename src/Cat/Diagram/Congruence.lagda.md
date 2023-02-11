@@ -298,20 +298,20 @@ which is characterised by $p_1 f = p_2 f = \mathrm{id}$; This expresses,
 diagramatically, that $f(x) = f(x)$.
 
 ```agda
-    cg .has-refl = Kp.limiting {p₁' = id} {p₂' = id} refl
-    cg .refl-p₁ = ap (_∘ Kp.limiting refl) a×a.π₁∘factor ∙ Kp.p₁∘limiting
-    cg .refl-p₂ = ap (_∘ Kp.limiting refl) a×a.π₂∘factor ∙ Kp.p₂∘limiting
+    cg .has-refl = Kp.universal {p₁' = id} {p₂' = id} refl
+    cg .refl-p₁ = ap (_∘ Kp.universal refl) a×a.π₁∘factor ∙ Kp.p₁∘universal
+    cg .refl-p₂ = ap (_∘ Kp.universal refl) a×a.π₂∘factor ∙ Kp.p₂∘universal
 ```
 
 Symmetry is witnessed by the map $(A \times_B A) \to (A \times_B A)$
 which swaps the components. This one's pretty simple.
 
 ```agda
-    cg .has-sym = Kp.limiting {p₁' = Kp.p₂} {p₂' = Kp.p₁} (sym Kp.square)
-    cg .sym-p₁ = ap (_∘ Kp.limiting (sym Kp.square)) a×a.π₁∘factor
-               ∙ sym (a×a.π₂∘factor ∙ sym Kp.p₁∘limiting)
-    cg .sym-p₂ = ap (_∘ Kp.limiting (sym Kp.square)) a×a.π₂∘factor
-               ∙ sym (a×a.π₁∘factor ∙ sym Kp.p₂∘limiting)
+    cg .has-sym = Kp.universal {p₁' = Kp.p₂} {p₂' = Kp.p₁} (sym Kp.square)
+    cg .sym-p₁ = ap (_∘ Kp.universal (sym Kp.square)) a×a.π₁∘factor
+               ∙ sym (a×a.π₂∘factor ∙ sym Kp.p₁∘universal)
+    cg .sym-p₂ = ap (_∘ Kp.universal (sym Kp.square)) a×a.π₂∘factor
+               ∙ sym (a×a.π₁∘factor ∙ sym Kp.p₂∘universal)
 ```
 
 <details>
@@ -321,7 +321,7 @@ Understanding the transitivity map is left as an exercise to the reader.
 
 ```agda
     cg .has-trans =
-      Kp.limiting {p₁' = Kp.p₁ ∘ rel.p₂} {p₂' = Kp.p₂ ∘ rel.p₁} path
+      Kp.universal {p₁' = Kp.p₁ ∘ rel.p₂} {p₂' = Kp.p₂ ∘ rel.p₁} path
       where abstract
         path : f ∘ Kp.p₁ ∘ rel.p₂ ≡ f ∘ Kp.p₂ ∘ rel.p₁
         path =
@@ -332,11 +332,11 @@ Understanding the transitivity map is left as an exercise to the reader.
 
     cg .trans-factors =
       sym (
-        kernel-pair ∘ Kp.limiting _
+        kernel-pair ∘ Kp.universal _
       ≡⟨ a×a.⟨⟩∘ _ ⟩
-        a×a.⟨ Kp.p₁ ∘ Kp.limiting _ , Kp.p₂ ∘ Kp.limiting _ ⟩
-      ≡⟨ ap₂ a×a.⟨_,_⟩ (Kp.p₁∘limiting ∙ ap₂ _∘_ (sym a×a.π₁∘factor) refl)
-                       (Kp.p₂∘limiting ∙ ap₂ _∘_ (sym a×a.π₂∘factor) refl) ⟩
+        a×a.⟨ Kp.p₁ ∘ Kp.universal _ , Kp.p₂ ∘ Kp.universal _ ⟩
+      ≡⟨ ap₂ a×a.⟨_,_⟩ (Kp.p₁∘universal ∙ ap₂ _∘_ (sym a×a.π₁∘factor) refl)
+                       (Kp.p₂∘universal ∙ ap₂ _∘_ (sym a×a.π₂∘factor) refl) ⟩
         a×a.⟨ (a×a.π₁ ∘ kernel-pair) ∘ rel.p₂ , (a×a.π₂ ∘ kernel-pair) ∘ rel.p₁ ⟩
       ∎)
 

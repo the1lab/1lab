@@ -106,13 +106,13 @@ is-regular-epi→is-effective-epi {f = f} kp reg = epi where
   epi .p₂ = kp.p₂
   epi .is-kernel-pair = kp.has-is-pb
   epi .has-is-coeq .coequal = kp.square
-  epi .has-is-coeq .coequalise {F = F} {e′} p = reg.coequalise q where
+  epi .has-is-coeq .universal {F = F} {e′} p = reg.universal q where
     q : e′ ∘ reg.arr₁ ≡ e′ ∘ reg.arr₂
     q =
-      e′ ∘ reg.arr₁                               ≡⟨ ap (e′ ∘_) (sym kp.p₂∘limiting) ⟩
-      e′ ∘ kp.p₂ ∘ kp.limiting (sym reg.coequal)  ≡⟨ pulll (sym p) ⟩
-      (e′ ∘ kp.p₁) ∘ kp.limiting _                ≡⟨ pullr kp.p₁∘limiting ⟩
+      e′ ∘ reg.arr₁                               ≡⟨ ap (e′ ∘_) (sym kp.p₂∘universal) ⟩
+      e′ ∘ kp.p₂ ∘ kp.universal (sym reg.coequal)  ≡⟨ pulll (sym p) ⟩
+      (e′ ∘ kp.p₁) ∘ kp.universal _                ≡⟨ pullr kp.p₁∘universal ⟩
       e′ ∘ reg.arr₂                               ∎
-  epi .has-is-coeq .universal = reg.universal
+  epi .has-is-coeq .factors = reg.factors
   epi .has-is-coeq .unique = reg.unique
 ```

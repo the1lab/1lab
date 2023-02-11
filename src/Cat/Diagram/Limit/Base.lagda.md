@@ -153,9 +153,17 @@ private variable
 module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (Diagram : Functor J C) where
   private
     module C = Precategory C
+    open _=>_
+    open Functor
 
   cone→counit : ∀ {x : C.Ob} → (Const x => Diagram) → const! x F∘ !F => Diagram
   unquoteDef cone→counit = define-coherence cone→counit
+  -- unquoteDef counit→cone = define-coherence counit→cone
+
+  counit→cone : ∀ {K : Functor ⊤Cat C} → K F∘ !F => Diagram → (Const (K .F₀ tt) => Diagram)
+  counit→cone {K = K} eta .η = eta .η
+  counit→cone {K = K} eta .is-natural x y f =
+    ap (_ C.∘_) (sym (K .F-id)) ∙ eta .is-natural x y f
 
   is-limit : (x : C.Ob) → Const x => Diagram → Type _
   is-limit x cone = is-ran !F Diagram (const! x) (cone→counit cone)
@@ -302,6 +310,28 @@ we have been given:
 
 <!--
 ```agda
+  fixup-is-limit
+    : ∀ {D : Functor J C} {K : Functor ⊤Cat C} {eps : K F∘ !F => D}
+    → is-ran !F D K eps
+    → is-limit D (Functor.F₀ K tt) (counit→cone D eps)
+  fixup-is-limit {D = D} {K} {eps} lim = lim' where
+    open Functor
+    open is-ran
+
+    lim' : is-limit D (Functor.F₀ K tt) (counit→cone D eps)
+    lim' .σ α .η = lim .σ α .η
+    lim' .σ {M = M} α .is-natural x y f =
+      C.elimr (M .F-id) ∙ sym (C.idl _)
+    lim' .σ-comm = Nat-path λ j →
+      lim .σ-comm ηₚ j
+    lim' .σ-uniq {M = M} {β = β} {σ′ = σ′} p = Nat-path λ _ →
+      lim .σ-uniq {β = β} {σ′ = σ″} (Nat-path (p ηₚ_)) ηₚ tt
+      where
+        σ″ : M => K
+        σ″ .η = σ′ .η
+        σ″ .is-natural _ _ _ =
+          σ′ .is-natural _ _ _ ∙ ap (C._∘ _) (sym (K .F-id))
+
   to-is-limitp
     : ∀ {D : Functor J C} {K : Functor ⊤Cat C} {eps : K F∘ !F => D}
     → (mk : make-is-limit D (Functor.F₀ K tt))
@@ -369,8 +399,8 @@ limit:
 <!--
 ```agda
   to-limit
-    : ∀ {D : Functor J C} {apex : C.Ob} {eps : Const apex => D}
-    → is-limit D apex eps
+    : ∀ {D : Functor J C} {K : Functor ⊤Cat C} {eps : K F∘ !F => D}
+    → is-ran !F D K eps
     → Limit D
   to-limit l .Ran.Ext = _
   to-limit l .Ran.eps = _
@@ -404,9 +434,10 @@ module Limit
     import Cat.Reasoning J as J
     import Cat.Reasoning C as C
     module Diagram = Functor D
-    open Ran L
     open Functor
     open _=>_
+
+  open Ran L public
 ```
 -->
 
@@ -587,6 +618,12 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
         inv C.∘ Ly.universal tau q           ∎
 ```
 
+<!--
+```agda
+
+```
+-->
+
 Another useful fact is that if $L$ is a limit of some diagram $Dia$, and
 $Dia$ is naturally isomorphic to some other diagram $Dia'$, then the
 apex of $L$ is also a limit of $Dia'$.
@@ -684,7 +721,7 @@ Suppose you have a limit $L$ of a diagram $\rm{Dia}$. We say that $F$
 <!--
 ```agda
 module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
-         (F : Functor C D) {Diagram : Functor J C} where
+         (F : Functor C D) (Diagram : Functor J C) where
   private
     module D = Precategory D
     module C = Precategory C
@@ -707,11 +744,11 @@ In more concise terms, we say a functor preserves limits if it takes
 limiting cones "upstairs" to limiting cones "downstairs".
 
 ```agda
-  preserves-limit
-    : ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
-    → is-ran !F Diagram K eps
-    → Type _
-  preserves-limit lim = preserves-ran F lim
+  preserves-limit : Type _
+  preserves-limit =
+    ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
+    → (lim : is-ran !F Diagram K eps)
+    → preserves-ran F lim
 ```
 
 ## Reflection of limits
@@ -723,11 +760,11 @@ More concretely, if we have a limit in $\cD$ of $F \circ \rm{Dia}$ with
 apex $F(a)$, then $a$ was _already the limit_ of $\rm{Dia}$!
 
 ```agda
-  reflects-limit
-    : ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
-    → is-ran !F (F F∘ Diagram) (F F∘ K) (nat-assoc-from (F ▸ eps))
-    → Type _
-  reflects-limit ran = reflects-ran F ran
+  reflects-limit : Type _
+  reflects-limit =
+    ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
+    → (ran : is-ran !F (F F∘ Diagram) (F F∘ K) (nat-assoc-from (F ▸ eps)))
+    → reflects-ran F ran
 ```
 
 ## Creation of limits
@@ -761,9 +798,7 @@ limit for that diagram.
 ```agda
 is-continuous {oshape = oshape} {hshape} {C = C} F =
   ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
-  → ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
-  → (lim : is-ran !F Diagram K eps)
-  → preserves-limit F lim
+  → preserves-limit F Diagram
 ```
 
 ## Completeness

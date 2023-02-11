@@ -255,8 +255,8 @@ for *un*making a colimit.
 <!--
 ```agda
   to-colimit
-    : ∀ {D : Functor J C} {coapex : C.Ob} {eta : D => Const coapex}
-    → is-colimit D coapex eta
+    : ∀ {D : Functor J C} {K : Functor ⊤Cat C} {eta : D => K F∘ !F}
+    → is-lan !F D K eta
     → Colimit D
   to-colimit c .Lan.Ext = _
   to-colimit c .Lan.eta = _
