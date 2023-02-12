@@ -133,6 +133,7 @@ record Lan (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
     eta     : F => Ext F∘ p
     has-lan : is-lan p F Ext eta
 
+  module Ext = Func Ext
   open is-lan has-lan public
 ```
 
@@ -194,7 +195,7 @@ record Ran (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
     eps     : Ext F∘ p => F
     has-ran : is-ran p F Ext eps
 
-  module Ext = Functor Ext
+  module Ext = Func Ext
   open is-ran has-ran public
 ```
 

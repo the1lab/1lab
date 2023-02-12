@@ -3,7 +3,7 @@ open import Cat.Displayed.Cartesian.Discrete
 open import Cat.Diagram.Product.Solver
 open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Functor
-open import Cat.Diagram.Product renaming (module Cartesian to Products)
+open import Cat.Diagram.Product
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
@@ -16,7 +16,7 @@ module Cat.Displayed.Instances.CT-Structure
   where
 
 open Precategory B
-open Products B has-prods
+open BinaryProducts B has-prods
 open Simple B has-prods
 ```
 
@@ -54,8 +54,8 @@ CT-structure distinguishes as types.
 ```agda
 simple-ct : ∀ {s} → CT-Structure s → Displayed B (o ⊔ s) ℓ
 simple-ct ct .Displayed.Ob[_] Γ = Σ[ X ∈ Ob ] ∣ is-tp ct X ∣
-simple-ct ct .Displayed.Hom[_] {Γ} {Δ} u X Y = Hom (Γ ⊗ X .fst) (Y .fst)
-simple-ct ct .Displayed.Hom[_]-set {Γ} {Δ} u X Y = Hom-set (Γ ⊗ X .fst) (Y .fst)
+simple-ct ct .Displayed.Hom[_] {Γ} {Δ} u X Y = Hom (Γ ⊗₀ X .fst) (Y .fst)
+simple-ct ct .Displayed.Hom[_]-set {Γ} {Δ} u X Y = Hom-set (Γ ⊗₀ X .fst) (Y .fst)
 simple-ct ct .Displayed.id′ = π₂
 simple-ct ct .Displayed._∘′_ {f = u} {g = v} f g = f ∘ ⟨ v ∘ π₁ , g ⟩
 simple-ct ct .Displayed.idr′ {f = u} f =

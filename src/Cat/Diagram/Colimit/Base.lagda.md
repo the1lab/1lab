@@ -601,20 +601,20 @@ is-cocontinuous {oshape = oshape} {hshape} {C = C} F =
   → preserves-colimit F colim
 ```
 
--- ## Cocompleteness
+## Cocompleteness
 
--- A category is **cocomplete** if admits for limits of arbitrary shape.
--- However, in the presence of excluded middle, if a category admits
--- coproducts indexed by its class of morphisms, then it is automatically
--- [thin]. Since excluded middle is independent of type theory, we can not
--- prove that any non-thin categories have arbitrary colimits.
+A category is **cocomplete** if admits for limits of arbitrary shape.
+However, in the presence of excluded middle, if a category admits
+coproducts indexed by its class of morphisms, then it is automatically
+[thin]. Since excluded middle is independent of type theory, we can not
+prove that any non-thin categories have arbitrary colimits.
 
--- Instead, categories are cocomplete _with respect to_ a pair of
--- universes: A category is **$(o, \ell)$-cocomplete** if it has colimits
--- for any diagram indexed by a precategory with objects in $\ty\ o$ and
--- morphisms in $\ty\ \ell$.
+Instead, categories are cocomplete _with respect to_ a pair of
+universes: A category is **$(o, \ell)$-cocomplete** if it has colimits
+for any diagram indexed by a precategory with objects in $\ty\ o$ and
+morphisms in $\ty\ \ell$.
 
--- ```agda
--- is-cocomplete : ∀ {oc ℓc} o ℓ → Precategory oc ℓc → Type _
--- is-cocomplete o ℓ C = ∀ {D : Precategory o ℓ} (F : Functor D C) → Colimit F
--- ```
+```agda
+is-cocomplete : ∀ {oc ℓc} o ℓ → Precategory oc ℓc → Type _
+is-cocomplete o ℓ C = ∀ {D : Precategory o ℓ} (F : Functor D C) → Colimit F
+```

@@ -208,7 +208,8 @@ module BinaryProducts (all-products : has-products) where
 
   module product {a} {b} = Product (all-products a b)
 
-  open product renaming (unique to ⟨⟩-unique) public
+  open product renaming
+    (unique to ⟨⟩-unique; π₁∘factor to π₁∘⟨⟩; π₂∘factor to π₂∘⟨⟩) public
   open Functor
 
   infixr 7 _⊗₀_
@@ -235,8 +236,8 @@ This operation extends to a bifunctor $\cC \times \cC \to \cC$.
   ×-functor .F-id = sym $ ⟨⟩-unique id id-comm id-comm
   ×-functor .F-∘ (f , g) (h , i) =
     sym $ ⟨⟩-unique (f ⊗₁ g ∘ h ⊗₁ i)
-      (pulll π₁∘factor ∙ extendr π₁∘factor)
-      (pulll π₂∘factor ∙ extendr π₂∘factor)
+      (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩)
+      (pulll π₂∘⟨⟩ ∙ extendr π₂∘⟨⟩)
 ```
 
 We also define a handful of common morphisms.

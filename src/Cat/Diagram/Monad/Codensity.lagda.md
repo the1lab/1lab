@@ -1,5 +1,5 @@
 ```agda
-open import Cat.Functor.Kan.Right
+open import Cat.Functor.Kan.Base
 open import Cat.Instances.Functor
 open import Cat.Diagram.Monad
 open import Cat.Functor.Base
@@ -59,7 +59,6 @@ module _ (F : Functor A B) (R : Ran F F) where
   private
     module A = Cat A
     module B = Cat B
-    module Ext = Func Ext
     module F = Func F
 ```
 -->

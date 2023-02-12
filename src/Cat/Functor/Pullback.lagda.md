@@ -85,9 +85,9 @@ diagram below is a cone over $K' \to X \ot Y$.
     module ypb = Pullback (pullbacks (y .map) f)
     module xpb = Pullback (pullbacks (x .map) f)
     dh′ : /-Hom _ _
-    dh′ .map = ypb.limiting {p₁' = dh .map ∘ xpb.p₁}
+    dh′ .map = ypb.universal {p₁' = dh .map ∘ xpb.p₁}
       (pulll (dh .commutes) ∙ xpb.square)
-    dh′ .commutes = ypb.p₂∘limiting
+    dh′ .commutes = ypb.p₂∘universal
 ```
 
 <details>
@@ -100,8 +100,8 @@ functorial, but the details are not particularly enlightening.</summary>
 
   Base-change .F-∘ {x} {y} {z} am bm =
     /-Hom-path (sym (zpb.unique
-      (pulll zpb.p₁∘limiting ∙ pullr ypb.p₁∘limiting ∙ assoc _ _ _)
-      (pulll zpb.p₂∘limiting ∙ ypb.p₂∘limiting)))
+      (pulll zpb.p₁∘universal ∙ pullr ypb.p₁∘universal ∙ assoc _ _ _)
+      (pulll zpb.p₂∘universal ∙ ypb.p₂∘universal)))
     where
       module ypb = Pullback (pullbacks (y .map) f)
       module zpb = Pullback (pullbacks (z .map) f)
@@ -179,15 +179,15 @@ module _ (pullbacks : ∀ {X Y Z} f g → Pullback C {X} {Y} {Z} f g) {X Y : Ob}
   Σf⊣f* .unit .η obj = dh where
     module pb = Pullback (pullbacks (f ∘ obj .map) f)
     dh : /-Hom _ _
-    dh .map = pb.limiting {p₁' = id} {p₂' = obj .map} (idr _)
-    dh .commutes = pb.p₂∘limiting
+    dh .map = pb.universal {p₁' = id} {p₂' = obj .map} (idr _)
+    dh .commutes = pb.p₂∘universal
   Σf⊣f* .unit .is-natural x y g =
     /-Hom-path (pb.unique₂
       {p = (f ∘ y .map) ∘ id ∘ g .map ≡⟨ cat! C ⟩ f ∘ y .map ∘ g .map ∎}
-      (pulll pb.p₁∘limiting)
-      (pulll pb.p₂∘limiting)
-      (pulll pb.p₁∘limiting ∙ pullr pb′.p₁∘limiting ∙ id-comm)
-      (pulll pb.p₂∘limiting ∙ pb′.p₂∘limiting ∙ sym (g .commutes)))
+      (pulll pb.p₁∘universal)
+      (pulll pb.p₂∘universal)
+      (pulll pb.p₁∘universal ∙ pullr pb′.p₁∘universal ∙ id-comm)
+      (pulll pb.p₂∘universal ∙ pb′.p₂∘universal ∙ sym (g .commutes)))
     where
       module pb = Pullback (pullbacks (f ∘ y .map) f)
       module pb′ = Pullback (pullbacks (f ∘ x .map) f)
@@ -197,17 +197,17 @@ module _ (pullbacks : ∀ {X Y Z} f g → Pullback C {X} {Y} {Z} f g) {X Y : Ob}
     dh : /-Hom _ _
     dh .map = pb.p₁
     dh .commutes = pb.square
-  Σf⊣f* .counit .is-natural x y g = /-Hom-path pb.p₁∘limiting
+  Σf⊣f* .counit .is-natural x y g = /-Hom-path pb.p₁∘universal
     where module pb = Pullback (pullbacks (y .map) f)
 
-  Σf⊣f* .zig {A} = /-Hom-path pb.p₁∘limiting
+  Σf⊣f* .zig {A} = /-Hom-path pb.p₁∘universal
     where module pb = Pullback (pullbacks (f ∘ A .map) f)
 
   Σf⊣f* .zag {B} = /-Hom-path
     (sym (pb.unique₂ {p = pb.square}
       (idr _) (idr _)
-      (pulll pb.p₁∘limiting ∙ pullr pb′.p₁∘limiting ∙ idr _)
-      (pulll pb.p₂∘limiting ∙ pb′.p₂∘limiting))) where
+      (pulll pb.p₁∘universal ∙ pullr pb′.p₁∘universal ∙ idr _)
+      (pulll pb.p₂∘universal ∙ pb′.p₂∘universal))) where
     module pb = Pullback (pullbacks (B .map) f)
     module pb′ = Pullback (pullbacks (f ∘ pb.p₂) f)
 ```
