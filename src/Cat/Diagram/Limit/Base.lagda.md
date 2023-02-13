@@ -158,7 +158,6 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (Diagram : Func
 
   cone→counit : ∀ {x : C.Ob} → (Const x => Diagram) → const! x F∘ !F => Diagram
   unquoteDef cone→counit = define-coherence cone→counit
-  -- unquoteDef counit→cone = define-coherence counit→cone
 
   counit→cone : ∀ {K : Functor ⊤Cat C} → K F∘ !F => Diagram → (Const (K .F₀ tt) => Diagram)
   counit→cone {K = K} eta .η = eta .η

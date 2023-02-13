@@ -101,3 +101,7 @@ module _ (p : Functor C C′) where
   _^* .F-id    = Nat-path λ _ → p .F-id
   _^* .F-∘ f g = Nat-path λ _ → p .F-∘ _ _
 ```
+
+<!--
+[TODO: Reed M, 13/02/2023] Add whiskering reasoning combinators!
+-->

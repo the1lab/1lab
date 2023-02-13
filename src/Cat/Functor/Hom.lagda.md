@@ -5,7 +5,6 @@ open import Cat.Diagram.Initial
 open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Instances.Elements as El
 import Cat.Reasoning
 
 module Cat.Functor.Hom {o h} (C : Precategory o h) where

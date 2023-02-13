@@ -16,7 +16,11 @@ module Cat.Functor.Hom.Coyoneda {o h} (C : Precategory o h) where
 
 <!--
 ```agda
+open import Cat.Reasoning C
 open Cat.Functor.Hom C
+
+open Functor
+open _=>_
 ```
 -->
 
@@ -31,7 +35,6 @@ gluing together a bunch of (things isomorphic to) hom functors!
 module _ (P : Functor (C ^op) (Sets h)) where
   private
     module P = Functor P
-
   open El C P
   open Element
   open Element-hom
@@ -47,7 +50,7 @@ we construct will then glue all those points back together into $P$.
 [category of elements]: Cat.Instances.Elements.html
 
 ```agda
-  coyoneda : is-colimit (よ F∘ πₚ) P
+  coyoneda : is-colimit (よ F∘ πₚ) P _
   coyoneda = to-is-colimit colim where
 ```
 
