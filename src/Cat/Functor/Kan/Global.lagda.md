@@ -94,12 +94,12 @@ And, since adjoints are unique, if $p_!$ has any left adjoint, then its
 values generate Kan extensions:
 
 ```agda
-adjoint→Lan
+adjoint!→Lan
   : (F : Functor Cat[ C , D ] Cat[ C′ , D ])
   → (F⊣p! : F ⊣ p !)
   → (G : Functor C D)
   → is-lan p G (F .F₀ G) (F⊣p! ._⊣_.unit .η G)
-adjoint→Lan F F⊣p! G = ext where
+adjoint!→Lan F F⊣p! G = ext where
   open Lan
   open is-lan
   module F⊣p! = _⊣_ F⊣p!
@@ -112,3 +112,18 @@ adjoint→Lan F F⊣p! G = ext where
   ext .σ-uniq x = Equiv.injective (_ , L-adjunct-is-equiv F⊣p!)
     (L-R-adjunct F⊣p! _ ∙ x)
 ```
+
+In particular, if $p$ itself has a *right* adjoint $p \dashv r$, then left Kan
+extensions along $p$ are given by `precomposition`{.Agda ident=!} with $r$:
+
+```agda
+adjoint→Lan
+  : (r : Functor C′ C)
+  → (p⊣r : p ⊣ r)
+  → (G : Functor C D)
+  → is-lan p G (G F∘ r) (precomposite-adjunction p⊣r ._⊣_.unit .η G)
+adjoint→Lan r p⊣r = adjoint!→Lan (r !) (precomposite-adjunction p⊣r)
+```
+
+Dually, if $p$ has a *left* adjoint $q \dashv p$, then *right* Kan extensions
+along $p$ are given by `precomposition`{.Agda ident=!} with $q$.
