@@ -40,7 +40,7 @@ categories.
 
 [zero object]: Cat.Diagram.Zero.html
 [Abelian group]: Algebra.Group.Ab.html
-[tensor product]: Algebra.Group.Ab.html#the-tensor-product
+[tensor product]: Algebra.Group.Ab.Tensor.html
 
 ```agda
 record Ab-category {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
