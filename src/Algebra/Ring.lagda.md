@@ -198,6 +198,7 @@ Ring-structure ℓ .id-hom-unique {s = s} {t} α β i .Ring-on.has-is-ring =
 Rings : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Rings _ = Structured-objects (Ring-structure _)
 module Rings {ℓ} = Cat.Reasoning (Rings ℓ)
+
 Ring : ∀ ℓ → Type (lsuc ℓ)
 Ring ℓ = Rings.Ob
 ```
@@ -241,8 +242,8 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
 
 <!--
 ```agda
-  from-make-ring-on : Ring-on R
-  from-make-ring-on = ring where
+  to-ring-on : Ring-on R
+  to-ring-on = ring where
     open is-ring hiding (-_ ; +-invr ; +-invl ; *-distribl ; *-distribr ; *-idl ; *-idr ; +-idl ; +-idr)
 
     -- All in copatterns to prevent the unfolding from exploding on you
@@ -266,10 +267,11 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
     ring .Ring-on.has-is-ring .is-ring.*-distribl = *-distribl
     ring .Ring-on.has-is-ring .is-ring.*-distribr = *-distribr
 
-  from-make-ring : Ring ℓ
-  from-make-ring = el R ring-is-set , from-make-ring-on
+  to-ring : Ring ℓ
+  to-ring .fst = el R ring-is-set
+  to-ring .snd = to-ring-on
 
-open make-ring using (from-make-ring ; from-make-ring-on) public
+open make-ring using (to-ring ; to-ring-on) public
 ```
 -->
 
@@ -291,7 +293,7 @@ the ring $\{*\}$ the _One Ring_, which would be objectively cooler.
 
 ```agda
 Zero-ring : Ring lzero
-Zero-ring = from-make-ring {R = ⊤} λ where
+Zero-ring = to-ring {R = ⊤} λ where
   .make-ring.ring-is-set _ _ _ _ _ _ → tt
   .make-ring.0R → tt
   .make-ring._+_ _ _ → tt
@@ -323,7 +325,7 @@ homomorphism $h : 0 \to R$ unless $0 = h(0) = h(1) = 1$ in $R$.
 
 ```agda
 ℤ : Ring lzero
-ℤ = from-make-ring {R = Int} λ where
+ℤ = to-ring {R = Int} λ where
   .make-ring.ring-is-set → hlevel 2
   .make-ring.0R → 0
   .make-ring._+_ → _+ℤ_

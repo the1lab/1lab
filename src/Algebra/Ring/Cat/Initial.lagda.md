@@ -28,7 +28,7 @@ thing we must do is define a lifting of $\ZZ$ to larger universes:
 
 ```agda
 Liftℤ : Ring ℓ
-Liftℤ = from-make-ring mr where
+Liftℤ = to-ring mr where
   open make-ring
   mr : make-ring (Lift ℓ Int)
   mr .ring-is-set = hlevel 2

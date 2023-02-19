@@ -39,7 +39,7 @@ of product in $\Ab$ is the [tensor product of abelian groups][tensor].
 [$\Ab$-categories]: Cat.Abelian.Base.html#ab-enriched-categories
 [additive]: Cat.Abelian.Base.html#additive-categories
 [_product_]: Cat.Diagram.Product.html
-[tensor]: Algebra.Group.Ab.html#the-tensor-product
+[tensor]: Algebra.Group.Ab.Tensor.html
 
 ```agda
   _⊕_ : Abelian-group ℓ
