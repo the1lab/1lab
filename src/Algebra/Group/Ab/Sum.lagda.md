@@ -42,7 +42,6 @@ of product in $\Ab$ is the [tensor product of abelian groups][tensor].
 [tensor]: Algebra.Group.Ab.Tensor.html
 
 ```agda
-  ⋆
   _⊕_ : Abelian-group ℓ
   _⊕_ = from-commutative-group
     (Direct-product (Ab↪Grp .Functor.F₀ G) (Ab↪Grp .Functor.F₀ H))
