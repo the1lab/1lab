@@ -59,7 +59,7 @@ that function is abstract, put `where abstract` into a single line, like
 in `Algebra.Group.Ab.Free`:
 
 ```agda
-    fold : (f : G → G' .fst) → Group-hom Grp G' f → G^ab → G' .fst
+    fold : (f : G → G' .fst) → is-group-hom Grp G' f → G^ab → G' .fst
     fold f gh = Coeq-rec G'.has-is-set f l1
       where abstract
         l1 : ((x , y , z) : G × G × G) → f (x ⋆ y ⋆ z) ≡ f (x ⋆ z ⋆ y)

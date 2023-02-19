@@ -128,7 +128,7 @@ annoying to show, but not _too_ annoying:
   e-tr : ∀ m n → e m R.- e n ≡ e (suc m) R.- e (suc n)
   e-tr m n = sym $
     (e (suc m) R.- e (suc n))                   ≡⟨ ap₂ R._-_ (e-suc m) (e-suc n) ⟩
-    (R.1r R.+ e m) R.- (R.1r R.+ e n)           ≡⟨ ap₂ R._+_ refl (R.a.inv-comm ∙ R.a.commutative) ∙ R.+-associative ⟩
+    (R.1r R.+ e m) R.- (R.1r R.+ e n)           ≡⟨ ap₂ R._+_ refl (R.a.inv-comm ∙ R.+-commutes) ∙ R.+-associative ⟩
     R.1r R.+ e m R.+ (R.- R.1r) R.+ (R.- e n)   ≡⟨ ap₂ R._+_ (R.pullr R.+-commutes ∙ R.pulll refl) refl ⟩
     R.1r R.+ (R.- R.1r) R.+ e m R.+ (R.- e n)   ≡⟨ ap₂ R._+_ (R.eliml R.+-invr) refl ⟩
     e m R.- e n                                 ∎
@@ -195,9 +195,9 @@ behaviour of the embedding.
         ((a R.- b) R.* x) R.+ ((a R.- b) R.* (R.- y))                                 ≡⟨ ap₂ R._+_ refl (sym R.neg-*-r) ⟩
         ((a R.- b) R.* x) R.- ((a R.- b) R.* y)                                       ≡⟨ ap₂ R._-_ R.*-distribr R.*-distribr ⟩
         (a R.* x R.+ (R.- b) R.* x) R.- (a R.* y R.+ (R.- b) R.* y)                   ≡⟨ ap₂ R._+_ refl (R.a.inv-comm ∙ R.+-commutes) ⟩
-        (a R.* x R.+ (R.- b) R.* x) R.+ ((R.- (a R.* y)) R.+ ⌜ R.- ((R.- b) R.* y) ⌝) ≡⟨ ap! (ap R.a.inverse (sym R.neg-*-l) ∙ R.a.inv-inv) ⟩
+        (a R.* x R.+ (R.- b) R.* x) R.+ ((R.- (a R.* y)) R.+ ⌜ R.- ((R.- b) R.* y) ⌝) ≡⟨ ap! (ap R.a._⁻¹ (sym R.neg-*-l) ∙ R.a.inv-inv) ⟩
         (a R.* x R.+ (R.- b) R.* x) R.+ ((R.- (a R.* y)) R.+ (b R.* y))               ≡⟨ R.pulll (R.extendr R.+-commutes) ⟩
-        (a R.* x) R.+ (R.- (a R.* y)) R.+ ((R.- b) R.* x) R.+ (b R.* y)               ≡⟨ R.pullr R.+-commutes ·· R.extendl (R.pullr R.+-commutes) ·· R.pulll (R.pulll refl) ∙ R.pullr (ap₂ R._+_ refl (sym R.neg-*-l) ·· sym R.a.inv-comm ·· ap R.a.inverse R.+-commutes) ⟩
+        (a R.* x) R.+ (R.- (a R.* y)) R.+ ((R.- b) R.* x) R.+ (b R.* y)               ≡⟨ R.pullr R.+-commutes ·· R.extendl (R.pullr R.+-commutes) ·· R.pulll (R.pulll refl) ∙ R.pullr (ap₂ R._+_ refl (sym R.neg-*-l) ·· sym R.a.inv-comm ·· ap R.a._⁻¹ R.+-commutes) ⟩
         (a R.* x R.+ b R.* y) R.- (a R.* y R.+ b R.* x)                               ∎
 
       pf : ∀ a b x y → ℤ↪R (diff a b *ℤ diff x y) ≡ (ℤ↪R (diff a b) R.* ℤ↪R (diff x y))
@@ -234,21 +234,21 @@ evaluates to on $n$. So we're done!
     Int-elim-prop (λ _ → hlevel 1) λ a b → sym $
       f # lift (diff a b)                         ≡⟨ ap (f #_) (ap lift (p a b)) ⟩
       f # lift (diff a 0 +ℤ diff 0 b)             ≡⟨ f .preserves .pres-+ (lift (diff a 0)) (lift (diff 0 b)) ⟩
-      f # lift (diff a 0) R.+ f # lift (diff 0 b) ≡⟨ ap₂ R._+_ (q a) (Group-hom.pres-inv gh {x = lift (diff b 0)} ∙ ap R.-_ (q b)) ⟩
+      f # lift (diff a 0) R.+ f # lift (diff 0 b) ≡⟨ ap₂ R._+_ (q a) (is-group-hom.pres-inv gh {x = lift (diff b 0)} ∙ ap R.-_ (q b)) ⟩
       (e a) R.+ (R.- e b)                         ≡˘⟨ ℤ↪R-diff a b ⟩
       z→r # lift (diff a b)                       ∎
     where
       p : ∀ a b → diff a b ≡ diff a 0 +ℤ diff 0 b
       p a b = ap (λ e → diff e b) (sym (Nat.+-zeror a))
 
-      gh : Group-hom
+      gh : is-group-hom
             (Ring-on.additive-group (Liftℤ .snd) .snd)
             (Ring-on.additive-group (R .snd) .snd)
             _
       gh = record { pres-⋆ = f .preserves .pres-+ }
 
       q : ∀ a → f # lift (diff a 0) ≡ e a
-      q zero = Group-hom.pres-id gh
+      q zero = is-group-hom.pres-id gh
       q (suc n) =
         f # lift (diff (suc n) 0)          ≡⟨ f .preserves .pres-+ (lift (diff 1 0)) (lift (diff n 0)) ⟩
         f # lift 1 R.+ f # lift (diff n 0) ≡⟨ ap₂ R._+_ (f .preserves .pres-id) (q n) ⟩
@@ -267,6 +267,6 @@ delooping-endomorphism ring adjunction, we have a correspondence between
 former!
 
 ```agda
-ℤ-module-unique : ∀ (G : AbGroup ℓ) → is-contr (Module-on Liftℤ G)
+ℤ-module-unique : ∀ (G : Abelian-group ℓ) → is-contr (Module-on Liftℤ G)
 ℤ-module-unique G = is-hlevel≃ 0 (Action≃Module Liftℤ G) (Int-is-initial _)
 ```

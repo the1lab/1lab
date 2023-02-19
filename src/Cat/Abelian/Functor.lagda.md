@@ -1,4 +1,5 @@
 ```agda
+open import Algebra.Group.Ab
 open import Algebra.Group
 
 open import Cat.Functor.FullSubcategory
@@ -50,18 +51,20 @@ morphism, preservation of inverses, and thus preservation of
 subtraction.
 
 ```agda
-    F-hom : ∀ {a b}
-          → Group-hom (A.Group-on-hom a b) (B.Group-on-hom _ _) F₁
-    F-hom .Group-hom.pres-⋆ = F-+
+    F-hom : ∀ {a b} → is-group-hom
+      (Abelian→Group-on (A.Abelian-group-on-hom a b))
+      (Abelian→Group-on (B.Abelian-group-on-hom _ _))
+      F₁
+    F-hom .is-group-hom.pres-⋆ = F-+
 
     F-0m : ∀ {a b} → F₁ {a} {b} A.0m ≡ B.0m
-    F-0m = Group-hom.pres-id F-hom
+    F-0m = is-group-hom.pres-id F-hom
 
     F-diff : ∀ {a b} (f g : A.Hom a b) → F₁ (f A.- g) ≡ F₁ f B.- F₁ g
-    F-diff _ _ = Group-hom.pres-diff F-hom
+    F-diff _ _ = is-group-hom.pres-diff F-hom
 
-    F-inv : ∀ {a b} (f : A.Hom a b) → F₁ (f A.Hom.⁻¹) ≡ F₁ f B.Hom.⁻¹
-    F-inv _ = Group-hom.pres-inv F-hom
+    F-inv : ∀ {a b} (f : A.Hom a b) → F₁ (A.Hom.inverse f) ≡ B.Hom.inverse (F₁ f)
+    F-inv _ = is-group-hom.pres-inv F-hom
 ```
 
 Since the zero object $\emptyset$ in an $\Ab$-category is characterised

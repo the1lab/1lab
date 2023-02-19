@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Algebra.Group.NAry
+open import Algebra.Group.Ab
 
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Diagram.Product.Indexed
@@ -170,7 +171,7 @@ $$
     split-remark : A.id ≡ split
     split-remark = ip.unique ip.π (λ _ → A.idr _) ∙ sym (ip.unique _ πΣδπ) where
       sum-δ-π : ∀ i → ∑ {I} _ (λ j → δ j i A.∘ ip.π j) ≡ ip.π i
-      sum-δ-π i = ∑-diagonal-lemma (A.Group-on-hom _ _) {I} i _
+      sum-δ-π i = ∑-diagonal-lemma (Abelian→Group-on (A.Abelian-group-on-hom _ _)) {I} i _
         (A.eliml (δᵢᵢ i (Discreteᵢ-Fin i i)))
         λ j i≠j →
             ap₂ A._∘_ (δᵢⱼ j i (λ e → i≠j (sym e)) (Discreteᵢ-Fin j i))
@@ -232,7 +233,7 @@ f\pi_i$, then we certainly have $(\sum_i f'_i) \iota_j$ = $f$!
 <!--
 ```agda
       where
-        remark = ∑-diagonal-lemma (A.Group-on-hom _ _) {I} i _
+        remark = ∑-diagonal-lemma (Abelian→Group-on (A.Abelian-group-on-hom _ _)) {I} i _
           (A.cancelr (ip.commute ∙ δᵢᵢ i (Discreteᵢ-Fin i i)))
           λ j i≠j → A.pullr (ip.commute ∙ δᵢⱼ i j i≠j (Discreteᵢ-Fin i j))
                   ∙ A.∘-zero-r

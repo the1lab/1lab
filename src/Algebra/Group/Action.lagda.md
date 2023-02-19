@@ -122,13 +122,13 @@ of $G$ on the object $F(\bull)$!
       where
         open Group-on (G .snd)
         module F = Functor-kit F
-    Functor→action F .preserves .Group-hom.pres-⋆ x y = C.≅-pathp refl refl (F .F-∘ _ _)
+    Functor→action F .preserves .is-group-hom.pres-⋆ x y = C.≅-pathp refl refl (F .F-∘ _ _)
 
     Action→functor : {X : C.Ob} (A : Action G X) → Functor BG C
     Action→functor {X = X} A .F₀ _ = X
     Action→functor A .F₁ e = (A # e) .C.to
-    Action→functor A .F-id = ap C.to (Group-hom.pres-id (A .preserves))
-    Action→functor A .F-∘ f g = ap C.to (Group-hom.pres-⋆ (A .preserves) _ _)
+    Action→functor A .F-id = ap C.to (is-group-hom.pres-id (A .preserves))
+    Action→functor A .F-∘ f g = ap C.to (is-group-hom.pres-⋆ (A .preserves) _ _)
 ```
 
 After constructing these functions in either direction, it's easy enough
@@ -147,6 +147,6 @@ applying the right helpers for pushing paths inwards, we're left with
       .is-iso.inv (x , act) → Action→functor act
       .is-iso.rinv x → Σ-pathp refl $
         total-hom-pathp _ _ _ (funext (λ i → C.≅-pathp _ _ refl))
-          (is-prop→pathp (λ i → Group-hom-is-prop) _ _)
+          (is-prop→pathp (λ i → is-group-hom-is-prop) _ _)
       .is-iso.linv x → Functor-path (λ _ → refl) λ _ → refl
 ```

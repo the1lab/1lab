@@ -66,13 +66,13 @@ composition operation.
 
 ```agda
   [_,_]Ab : Ab-category Ab-functors
-  [_,_]Ab .Group-on-hom F G = to-group-on grp where
-    open make-group
+  [_,_]Ab .Abelian-group-on-hom F G = to-abelian-group-on grp where
+    open make-abelian-group
     open Group-on
     module F = Ab-functor F
     module G = Ab-functor G
 
-    grp : make-group (F .functor => G .functor)
+    grp : make-abelian-group (F .functor => G .functor)
     grp .mul f g .η x = f .η x B.+ g .η x
     grp .mul f g .is-natural x y h =
       (f .η y B.+ g .η y) B.∘ F.₁ h             ≡˘⟨ B.∘-linear-l _ _ _ ⟩
@@ -88,8 +88,8 @@ establish that the pointwise inverse of natural transformations is
 natural.
 
 ```agda
-    grp .unit .η x = B.0m
-    grp .unit .is-natural x y f = B.∘-zero-l ∙ sym (B.∘-zero-r)
+    grp .1g .η x = B.0m
+    grp .1g .is-natural x y f = B.∘-zero-l ∙ sym (B.∘-zero-r)
 
     grp .inv f .η x = B.Hom.inverse (f .η x)
     grp .inv f .is-natural x y g =
@@ -101,10 +101,9 @@ natural.
     grp .assoc _ _ _ = Nat-path λ _ → sym B.Hom.associative
     grp .idl _ = Nat-path λ x → B.Hom.idl
     grp .invl _ = Nat-path λ x → B.Hom.inversel
-    grp .invr _ = Nat-path λ x → B.Hom.inverser
-    grp .group-is-set = Nat-is-set
+    grp .comm _ _ = Nat-path λ x → B.Hom.commutes
+    grp .ab-is-set = Nat-is-set
 
-  [_,_]Ab .Hom-grp-ab F G f g = Nat-path λ x → B.Hom.commutative
   [_,_]Ab .∘-linear-l f g h = Nat-path λ x → B.∘-linear-l _ _ _
   [_,_]Ab .∘-linear-r f g h = Nat-path λ x → B.∘-linear-r _ _ _
 ```

@@ -1,4 +1,5 @@
 ```agda
+open import Algebra.Group.Ab.Tensor
 open import Algebra.Magma.Unital
 open import Algebra.Group.Ab
 open import Algebra.Prelude
@@ -9,6 +10,7 @@ open import Cat.Displayed.Univalence.Thin
 open import Cat.Diagram.Equaliser.Kernel
 
 import Algebra.Group.Cat.Base as Grp
+import Algebra.Group.Ab.Hom as Ab
 
 module Cat.Abelian.Base where
 ```
@@ -44,19 +46,16 @@ categories.
 record Ab-category {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
   open Cat C public
   field
-    Group-on-hom : ∀ A B → Group-on (Hom A B)
+    Abelian-group-on-hom : ∀ A B → Abelian-group-on (Hom A B)
 
   _+_ : ∀ {A B} (f g : Hom A B) → Hom A B
-  f + g = Group-on-hom _ _ .Group-on._⋆_ f g
+  f + g = Abelian-group-on-hom _ _ .Abelian-group-on._*_ f g
 
   0m : ∀ {A B} → Hom A B
-  0m = Group-on-hom _ _ .Group-on.unit
+  0m = Abelian-group-on-hom _ _ .Abelian-group-on.1g
 
-  field
-    Hom-grp-ab : ∀ A B (f g : Hom A B) → f + g ≡ g + f
-
-  Hom-grp : ∀ A B → AbGroup ℓ
-  Hom-grp A B = restrict (el! (Hom A B) , Group-on-hom A B) (Hom-grp-ab A B)
+  Hom-grp : ∀ A B → Abelian-group ℓ
+  Hom-grp A B = (el (Hom A B) (Hom-set A B)) , Abelian-group-on-hom A B
 
   field
     -- Composition is multilinear:
@@ -69,12 +68,13 @@ record Ab-category {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
 
   ∘map : ∀ {A B C} → Ab.Hom (Hom-grp B C ⊗ Hom-grp A B) (Hom-grp A C)
   ∘map {A} {B} {C} =
-    from-multilinear-map {A = Hom-grp B C} {B = Hom-grp A B} {C = Hom-grp A C}
-      _∘_
-      (λ f g h → sym (∘-linear-l _ _ _))
-      (λ f g h → sym (∘-linear-r _ _ _))
+    from-bilinear-map (Hom-grp B C) (Hom-grp A B) (Hom-grp A C)
+      (record { map     = _∘_
+              ; pres-*l = λ x y z → sym (∘-linear-l x y z)
+              ; pres-*r = λ x y z → sym (∘-linear-r x y z)
+              })
 
-  module Hom {A B} = AbGrp (Hom-grp A B)
+  module Hom {A B} = Abelian-group-on (Abelian-group-on-hom A B) renaming (_⁻¹ to inverse)
   open Hom
     using (zero-diff)
     renaming (_—_ to _-_)
@@ -170,11 +170,10 @@ example is $\Ab$ itself:
 module _ where
   open Ab-category
   Ab-ab-category : ∀ {ℓ} → Ab-category (Ab ℓ)
-  Ab-ab-category .Group-on-hom A B = Hom-group A B .object .snd
-  Ab-ab-category .Hom-grp-ab A B = Hom-group A B .witness
-  Ab-ab-category .∘-linear-l f g h = Grp.Forget-is-faithful refl
-  Ab-ab-category .∘-linear-r f g h = Grp.Forget-is-faithful $ funext λ x →
-    sym (f .preserves .Group-hom.pres-⋆ _ _)
+  Ab-ab-category .Abelian-group-on-hom A B = Ab.Abelian-group-on-hom A B
+  Ab-ab-category .∘-linear-l f g h = Homomorphism-path (λ _ → refl)
+  Ab-ab-category .∘-linear-r f g h =
+    Homomorphism-path (λ _ → sym (f .preserves .is-group-hom.pres-⋆ _ _))
 ```
 
 # Additive categories

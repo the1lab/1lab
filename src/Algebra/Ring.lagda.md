@@ -42,8 +42,7 @@ record is-ring {ℓ} {R : Type ℓ} (1r : R) (_*_ _+_ : R → R → R) : Type �
   no-eta-equality
   field
     *-monoid : is-monoid 1r _*_
-    +-group  : is-group _+_
-    +-commutes : ∀ {x y} → x + y ≡ y + x
+    +-group  : is-abelian-group _+_
     *-distribl : ∀ {x y z} → x * (y + z) ≡ (x * y) + (x * z)
     *-distribr : ∀ {x y z} → (y + z) * x ≡ (y * x) + (z * x)
 ```
@@ -58,24 +57,33 @@ record is-ring {ℓ} {R : Type ℓ} (1r : R) (_*_ _+_ : R → R → R) : Type �
     hiding (has-is-set ; magma-hlevel ; underlying-set)
     public
 
-  open is-group +-group
+  open is-abelian-group +-group
     renaming ( _—_ to _-_
              ; inverse to -_
-             ; unit to 0r
+             ; 1g to 0r
              ; inversel to +-invl
              ; inverser to +-invr
              ; associative to +-associative
              ; idl to +-idl
              ; idr to +-idr
+             ; commutes to +-commutes
              )
     public
 
   additive-group : Group ℓ
-  additive-group = (el! R , record { _⋆_ = _+_ ; has-is-group = +-group })
+  ∣ additive-group .fst ∣                    = R
+  additive-group .fst .is-tr                 = is-abelian-group.has-is-set +-group
+  additive-group .snd .Group-on._⋆_          = _+_
+  additive-group .snd .Group-on.has-is-group = is-abelian-group.has-is-group +-group
+
+  group : Abelian-group ℓ
+  ∣ group .fst ∣                         = R
+  group .fst .is-tr                      = is-abelian-group.has-is-set +-group
+  group .snd .Abelian-group-on._*_       = _+_
+  group .snd .Abelian-group-on.has-is-ab = +-group
 
   Ringoid : Ab-category (B record { _⋆_ = _*_ ; has-is-monoid = *-monoid })
-  Ringoid .Ab-category.Group-on-hom _ _ = additive-group .snd
-  Ringoid .Ab-category.Hom-grp-ab _ _ f g = +-commutes
+  Ringoid .Ab-category.Abelian-group-on-hom _ _ = record { has-is-ab = +-group }
   Ringoid .Ab-category.∘-linear-l f g h = sym *-distribr
   Ringoid .Ab-category.∘-linear-r f g h = sym *-distribl
 
@@ -95,7 +103,7 @@ record is-ring {ℓ} {R : Type ℓ} (1r : R) (_*_ _+_ : R → R → R) : Type �
 
   module m = Cat.Reasoning (B record { _⋆_ = _*_ ; has-is-monoid = *-monoid })
     hiding (module HLevel-instance)
-  module a = AbGrp (restrict additive-group λ _ _ → +-commutes)
+  module a = Abelian-group-on record { has-is-ab = +-group }
 
 record Ring-on {ℓ} (R : Type ℓ) : Type ℓ where
   field
@@ -115,9 +123,8 @@ instance
     prop-instance {T = is-ring 1r _*_ _+_} $ λ where
       x y i .*-monoid   → hlevel 1 (x .*-monoid) (y .*-monoid) i
       x y i .+-group    → hlevel 1 (x .+-group) (y .+-group) i
-      x y i .+-commutes → x .+-group .is-group.has-is-set _ _ (x .+-commutes) (y .+-commutes) i
-      x y i .*-distribl → x .+-group .is-group.has-is-set _ _ (x .*-distribl) (y .*-distribl) i
-      x y i .*-distribr → x .+-group .is-group.has-is-set _ _ (x .*-distribr) (y .*-distribr) i
+      x y i .*-distribl → x .+-group .is-abelian-group.has-is-set _ _ (x .*-distribl) (y .*-distribl) i
+      x y i .*-distribr → x .+-group .is-abelian-group.has-is-set _ _ (x .*-distribr) (y .*-distribr) i
     where open is-ring
 ```
 -->
@@ -146,10 +153,10 @@ record is-ring-hom
 
 <!--
 ```agda
-  ring-hom→group-hom : Group-hom (A.additive-group .snd) (B.additive-group .snd) f
+  ring-hom→group-hom : is-group-hom (A.additive-group .snd) (B.additive-group .snd) f
   ring-hom→group-hom = record { pres-⋆ = pres-+ }
 
-  module gh = Group-hom ring-hom→group-hom renaming (pres-id to pres-0 ; pres-inv to pres-neg)
+  module gh = is-group-hom ring-hom→group-hom renaming (pres-id to pres-0 ; pres-inv to pres-neg)
   open gh using (pres-0 ; pres-neg ; pres-diff) public
 
 private unquoteDecl eqv = declare-record-iso eqv (quote is-ring-hom)
@@ -247,15 +254,15 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
     ring .Ring-on.has-is-ring .*-monoid .has-is-semigroup .is-semigroup.associative = sym *-assoc
     ring .Ring-on.has-is-ring .*-monoid .idl = *-idl
     ring .Ring-on.has-is-ring .*-monoid .idr = *-idr
-    ring .Ring-on.has-is-ring .+-group .is-group.unit = 0R
-    ring .Ring-on.has-is-ring .+-group .is-group.has-is-monoid .has-is-semigroup .has-is-magma = record { has-is-set = ring-is-set }
-    ring .Ring-on.has-is-ring .+-group .is-group.has-is-monoid .has-is-semigroup .associative = sym +-assoc
-    ring .Ring-on.has-is-ring .+-group .is-group.has-is-monoid .idl = +-idl
-    ring .Ring-on.has-is-ring .+-group .is-group.has-is-monoid .idr = +-comm ∙ +-idl
-    ring .Ring-on.has-is-ring .+-group .is-group.inverse = -_
-    ring .Ring-on.has-is-ring .+-group .is-group.inversel = +-comm ∙ +-invr
-    ring .Ring-on.has-is-ring .+-group .is-group.inverser = +-invr
-    ring .Ring-on.has-is-ring .+-commutes = +-comm
+    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.unit = 0R
+    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .has-is-semigroup .has-is-magma = record { has-is-set = ring-is-set }
+    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .has-is-semigroup .associative = sym +-assoc
+    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .idl = +-idl
+    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .idr = +-comm ∙ +-idl
+    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.inverse = -_
+    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.inversel = +-comm ∙ +-invr
+    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.inverser = +-invr
+    ring .Ring-on.has-is-ring .+-group .is-abelian-group.commutes = +-comm
     ring .Ring-on.has-is-ring .is-ring.*-distribl = *-distribl
     ring .Ring-on.has-is-ring .is-ring.*-distribr = *-distribr
 
@@ -326,7 +333,7 @@ homomorphism $h : 0 \to R$ unless $0 = h(0) = h(1) = 1$ in $R$.
   .make-ring.+-assoc {x} {y} {z} → +ℤ-associative x y z
   .make-ring.+-comm {x} {y} → +ℤ-commutative x y
   .make-ring.1R → 1
-  .make-ring._*_ → _*ℤ_
+  .make-ring._*_   → _*ℤ_
   .make-ring.*-idl → *ℤ-idl _
   .make-ring.*-idr → *ℤ-idr _
   .make-ring.*-assoc {x} {y} {z} → *ℤ-associative x y z
