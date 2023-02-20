@@ -1,10 +1,12 @@
 ```agda
 open import Algebra.Group.Cat.Base
-open import Algebra.Group.Solver
-open import Algebra.Prelude
 open import Algebra.Group
 
-open import Cat.Instances.Delooping
+open import Cat.Displayed.Univalence.Thin
+open import Cat.Displayed.Total
+open import Cat.Prelude hiding (_*_ ; _+_)
+
+open import Data.Int
 
 import Cat.Reasoning
 
@@ -13,434 +15,181 @@ module Algebra.Group.Ab where
 
 # Abelian groups
 
-A very important class of [groups] (which includes most familiar examples
-of groups: the integers, all finite cyclic groups, etc) are those with a
-_commutative_ group operation, that is, those for which $xy = yx$.
-Accordingly, these have a name reflecting their importance and ubiquity:
-They are called **commutative groups**. Just kidding! They're named
-**abelian groups**, named after [some dude], because nothing can have
-instructive names in mathematics. It's the law.
+A very important class of [groups] (which includes most familiar
+examples of groups: the integers, all finite cyclic groups, etc) are
+those with a _commutative_ group operation, that is, those for which $xy
+= yx$.  Accordingly, these have a name reflecting their importance and
+ubiquity: They are called **commutative groups**. Just kidding! They're
+named **abelian groups**, named after [a person], because nothing can
+have self-explicative names in mathematics. It's the law.
 
-[some dude]: https://en.wikipedia.org/wiki/Niels_Henrik_Abel
+[a person]: https://en.wikipedia.org/wiki/Niels_Henrik_Abel
 [groups]: Algebra.Group.html
 
-The theory of abelian groups is generally simpler than that of arbitrary
-groups, and surprisingly the category $\thecat{Ab}$ of abelian groups is
-better behaved than the category $\thecat{Grp}$ of possibly non-commutative
-groups. This goes contrary to a common trade-off in category theory,
-that of a "category of nice objects" vs a "nice category of objects" (as
-an example, consider the category of fields: fields are very nice
-objects algebraically, but the category of fields is utterly terrible
---- but I digress).
+<!--
+```agda
+private variable
+  ℓ : Level
+  G : Type ℓ
 
-We define the category $\thecat{Ab}$ as the [full subcategory] of the
-category of groups consisting of those objects which are abelian groups.
+Group-on-is-abelian : Group-on G → Type _
+Group-on-is-abelian G = ∀ x y → Group-on._⋆_ G x y ≡ Group-on._⋆_ G y x
+```
+-->
 
-[full subcategory]: Cat.Functor.FullSubcategory.html
+This module does the usual algebraic structure dance to set up the
+category $\Ab$ of Abelian groups.
 
 ```agda
+record is-abelian-group (_*_ : G → G → G) : Type (level-of G) where
+  no-eta-equality
+  field
+    has-is-group : is-group _*_
+    commutes     : ∀ {x y} → x * y ≡ y * x
+  open is-group has-is-group renaming (unit to 1g) public
+```
+
+<!--
+```agda
+private unquoteDecl eqv = declare-record-iso eqv (quote is-abelian-group)
+instance
+  H-Level-is-abelian-group
+    : ∀ {n} {* : G → G → G} → H-Level (is-abelian-group *) (suc n)
+  H-Level-is-abelian-group = prop-instance $ Iso→is-hlevel 1 eqv $
+    Σ-is-hlevel 1 (hlevel 1) λ x → Π-is-hlevel′ 1 λ _ → Π-is-hlevel′ 1 λ _ →
+      is-group.has-is-set x _ _
+```
+-->
+
+```agda
+record Abelian-group-on (T : Type ℓ) : Type ℓ where
+  no-eta-equality
+  field
+    _*_       : T → T → T
+    has-is-ab : is-abelian-group _*_
+  open is-abelian-group has-is-ab renaming (inverse to infixl 30 _⁻¹) public
+```
+
+<!--
+```agda
+  Abelian→Group-on : Group-on T
+  Abelian→Group-on .Group-on._⋆_ = _*_
+  Abelian→Group-on .Group-on.has-is-group = has-is-group
+
+  infixr 20 _*_
+
+open Abelian-group-on using (Abelian→Group-on) public
+```
+-->
+
+```agda
+Abelian-group-structure : ∀ ℓ → Thin-structure ℓ Abelian-group-on
+∣ Abelian-group-structure ℓ .is-hom f G₁ G₂ ∣ =
+  is-group-hom (Abelian→Group-on G₁) (Abelian→Group-on G₂) f
+Abelian-group-structure ℓ .is-hom f G₁ G₂ .is-tr = hlevel 1
+Abelian-group-structure ℓ .id-is-hom .is-group-hom.pres-⋆ x y = refl
+Abelian-group-structure ℓ .∘-is-hom f g α β .is-group-hom.pres-⋆ x y =
+  ap f (β .is-group-hom.pres-⋆ x y) ∙ α .is-group-hom.pres-⋆ (g x) (g y)
+Abelian-group-structure ℓ .id-hom-unique {s = s} {t} α _ = p where
+  open Abelian-group-on
+
+  p : s ≡ t
+  p i ._*_ x y = α .is-group-hom.pres-⋆ x y i
+  p i .has-is-ab = is-prop→pathp
+    (λ i → hlevel {T = is-abelian-group (λ x y → p i ._*_ x y)} 1)
+    (s .has-is-ab) (t .has-is-ab) i
+
 Ab : ∀ ℓ → Precategory (lsuc ℓ) ℓ
-Ab ℓ = Restrict {C = Groups ℓ} λ (_ , x) → is-abelian-group x
+Ab ℓ = Structured-objects (Abelian-group-structure ℓ)
 
-module Ab {ℓ} = Cat (Ab ℓ)
-
-AbGroup : ∀ ℓ → Type (lsuc ℓ)
-AbGroup _ = Ab.Ob
+module Ab {ℓ} = Cat.Reasoning (Ab ℓ)
 ```
 
 <!--
 ```agda
-Ab-is-category : ∀ {ℓ} → is-category (Ab ℓ)
-Ab-is-category = Restrict-is-category _
-  (λ (_ , g) → let open Group-on g in hlevel 1)
-  Groups-is-category
+Abelian-group : (ℓ : Level) → Type (lsuc ℓ)
+Abelian-group _ = Ab.Ob
 
-Ab→Grp : ∀ {ℓ} → Functor (Ab ℓ) (Groups ℓ)
-Ab→Grp = Forget-full-subcat
+record make-abelian-group (T : Type ℓ) : Type ℓ where
+  no-eta-equality
+  field
+    ab-is-set : is-set T
+    mul   : T → T → T
+    inv   : T → T
+    1g    : T
+    idl   : ∀ x → mul 1g x ≡ x
+    assoc : ∀ x y z → mul (mul x y) z ≡ mul x (mul y z)
+    invl  : ∀ x → mul (inv x) x ≡ 1g
+    comm  : ∀ x y → mul x y ≡ mul y x
 
-to-abelian-group
-  : ∀ {ℓ} {G : Type ℓ}
-  → (g : make-group G)
-  → (∀ x y → g .make-group.mul x y ≡ g .make-group.mul y x)
-  → AbGroup ℓ
-to-abelian-group g x .object = to-group g
-to-abelian-group g x .witness = x
+  make-abelian-group→make-group : make-group T
+  make-abelian-group→make-group = mg where
+    mg : make-group T
+    mg .make-group.group-is-set = ab-is-set
+    mg .make-group.unit   = 1g
+    mg .make-group.mul    = mul
+    mg .make-group.inv    = inv
+    mg .make-group.assoc  = assoc
+    mg .make-group.invl   = invl
+    mg .make-group.invr x = comm x (inv x) ∙ invl x
+    mg .make-group.idl    = idl
 
-module AbGrp {ℓ} (G : AbGroup ℓ) where
-  ₀ : Type ℓ
-  ₀ = ⌞ G .object ⌟
+  to-group-on-ab : Group-on T
+  to-group-on-ab = to-group-on make-abelian-group→make-group
 
-  open Group-on (G .object .snd) public
+  to-abelian-group-on : Abelian-group-on T
+  to-abelian-group-on .Abelian-group-on._*_ = mul
+  to-abelian-group-on .Abelian-group-on.has-is-ab .is-abelian-group.has-is-group =
+    Group-on.has-is-group to-group-on-ab
+  to-abelian-group-on .Abelian-group-on.has-is-ab .is-abelian-group.commutes =
+    comm _ _
 
-  commutative : ∀ {x y : ₀} → x ⋆ y ≡ y ⋆ x
-  commutative = G .witness _ _
+  to-ab : Abelian-group ℓ
+  ∣ to-ab .fst ∣ = T
+  to-ab .fst .is-tr = ab-is-set
+  to-ab .snd = to-abelian-group-on
+
+from-commutative-group
+  : ∀ {ℓ} (G : Group ℓ)
+  → (∀ x y → Group-on._⋆_ (G .snd) x y ≡ Group-on._⋆_ (G .snd) y x)
+  → Abelian-group ℓ
+from-commutative-group G comm .fst = G .fst
+from-commutative-group G comm .snd .Abelian-group-on._*_ =
+  Group-on._⋆_ (G .snd)
+from-commutative-group G comm .snd .Abelian-group-on.has-is-ab .is-abelian-group.has-is-group =
+  Group-on.has-is-group (G .snd)
+from-commutative-group G comm .snd .Abelian-group-on.has-is-ab .is-abelian-group.commutes =
+  comm _ _
+
+open make-abelian-group using (make-abelian-group→make-group ; to-group-on-ab ; to-abelian-group-on ; to-ab) public
+
+open Functor
+
+Ab↪Grp : ∀ {ℓ} → Functor (Ab ℓ) (Groups ℓ)
+Ab↪Grp .F₀ (X , A) = X , Abelian→Group-on A
+Ab↪Grp .F₁ f .hom = f .hom
+Ab↪Grp .F₁ f .preserves = f .preserves
+Ab↪Grp .F-id = total-hom-path _ refl refl
+Ab↪Grp .F-∘ f g = total-hom-path _ refl refl
 ```
 -->
 
-This means that homomorphisms of abelian groups are the same as
-homomorphisms of their underlying groups: Commutativity of the operation
-is _property_, rather than structure. As a first example of the
-niceness of abelian groups (or perhaps the non-niceness of general
-groups), consider the following construction of a group of maps $X \to
-G$:
+The fundamental example of abelian group is the integers, $\ZZ$, under
+addition. A type-theoretic interjection is necessary: the integers live
+on the zeroth universe, so to have an $\ell$-sized group of integers, we
+must lift it.
 
 ```agda
-module _ {ℓ ℓ′} (X : Type ℓ) (G : Group ℓ′) where private
-  open Group-on (G .snd)
-
-  Map-group : Group (ℓ ⊔ ℓ′)
-  Map-group = to-group grp where
-    grp : make-group (X → ⌞ G ⌟)
-    grp .make-group.group-is-set = hlevel 2
-    grp .make-group.unit = λ _ → unit
-    grp .make-group.mul f g x = f x ⋆ g x
-    grp .make-group.inv f x = inverse (f x)
-    grp .make-group.assoc f g h i x = associative {x = f x} {y = g x} {z = h x} (~ i)
-    grp .make-group.invl f i x = inversel {x = f x} i
-    grp .make-group.invr f i x = inverser {x = f x} i
-    grp .make-group.idl f i x = idl {x = f x} i
+ℤ-ab : ∀ {ℓ} → Abelian-group ℓ
+ℤ-ab = to-ab mk-ℤ where
+  open make-abelian-group
+  mk-ℤ : make-abelian-group (Lift _ Int)
+  mk-ℤ .ab-is-set = hlevel 2
+  mk-ℤ .mul (lift x) (lift y) = lift (x +ℤ y)
+  mk-ℤ .inv (lift x) = lift (negate x)
+  mk-ℤ .1g = lift 0
+  mk-ℤ .idl (lift x) = ap lift (+ℤ-zerol x)
+  mk-ℤ .assoc (lift x) (lift y) (lift z) = ap lift (+ℤ-associative x y z)
+  mk-ℤ .invl (lift x) = ap lift (+ℤ-inversel x)
+  mk-ℤ .comm (lift x) (lift y) = ap lift (+ℤ-commutative x y)
 ```
-
-This definition works fine for groups and maps _of sets_ into a group,
-but maps of sets aren't what we're interested in when studying groups!
-We'd like to equip the set $\hom_{\thecat{Grp}}(A, B)$ with a group
-structure induced by pointwise multiplication, but this turns out to be
-possible if, and only if, the groups involved are abelian. Let us skip
-the details of constructing the zero map, which is a group homomorphism
-since it is constantly zero, and skip to considering sums of maps:
-
-<!--
-```agda
-module _ {ℓ} (A B : AbGroup ℓ) where
-  private
-    module A = AbGrp A
-    module B = AbGrp B
-```
--->
-
-```agda
-  Hom-group : AbGroup ℓ
-  Hom-group = restrict (to-group grp) abel where
-    T = Ab.Hom A B
-```
-
-<!--
-```agda
-    open B using (_⁻¹)
-    open Group-hom renaming (pres-⋆ to p)
-
-    zero-map : T
-    zero-map .hom _ = B.unit
-    zero-map .preserves .p _ _ = sym B.idl
-```
--->
-
-```agda
-
-    open import 1Lab.Reflection
-    add-map : T → T → T
-    add-map f g .hom x = (f # x) B.⋆ (g # x)
-    add-map f g .preserves .p x y =
-      f # (x A.⋆ y) B.⋆ g # (x A.⋆ y)         ≡⟨ ap₂ B._⋆_ (f .preserves .p x y) (g .preserves .p x y) ⟩
-      (f # x B.⋆ f # y) B.⋆ (g # x B.⋆ g # y) ≡⟨ group! (B .object)  ⟩
-      f # x B.⋆ (f # y B.⋆ g # x) B.⋆ g # y   ≡⟨ (λ i → (f # x) B.⋆ B.commutative {x = f # y} {y = g # x} i B.⋆ (g # y)) ⟩
-      f # x B.⋆ (g # x B.⋆ f # y) B.⋆ g # y   ≡⟨ group! (B .object) ⟩
-      (f # x B.⋆ g # x) B.⋆ (f # y B.⋆ g # y) ∎
-```
-
-Note the _crucial_ third step in our calculation above: For the
-pointwise sum of two group homomorphisms to be a group homomorphism, we
-_must_ have that $f(y)g(x) = g(x)f(y)$. We must also use commutativity
-to prove that the pointwise inverse of a group homomorphism is again a
-homomorphism, as is done in the calculation below.
-
-```agda
-    inv-map : T → T
-    inv-map f .hom x = f # x B.⁻¹
-    inv-map f .preserves .p x y =
-      f # (x A.⋆ y) ⁻¹   ≡⟨ ap B.inverse (f .preserves .p _ _) ⟩
-      (f # x B.⋆ f # y) ⁻¹ ≡⟨ ap B.inverse B.commutative ⟩
-      (f # y B.⋆ f # x) ⁻¹ ≡⟨ B.inv-comm ⟩
-      (f # x ⁻¹) B.— f # y ∎
-
-    grp : make-group T
-    grp .make-group.group-is-set = Ab.Hom-set A B
-    grp .make-group.unit = zero-map
-    grp .make-group.mul = add-map
-    grp .make-group.inv = inv-map
-    grp .make-group.assoc x y z = Homomorphism-path λ x → sym B.associative
-    grp .make-group.invl x = Homomorphism-path λ x → B.inversel
-    grp .make-group.invr x = Homomorphism-path λ x → B.inverser
-    grp .make-group.idl x = Homomorphism-path λ x → B.idl
-
-    abel : is-abelian-group (to-group-on grp)
-    abel f g = Homomorphism-path λ _ → B.commutative
-```
-
-By pre/post composition, the `Hom-group`{.Agda} construction extends to
-a functor $\thecat{Ab}\op \times \thecat{Ab} \to \thecat{Ab}$, the
-**internal $\hom$ abelian group**.
-
-```agda
-module _ {ℓ} where
-  open Functor
-
-  Ab-hom : Functor (Ab ℓ ^op ×ᶜ Ab ℓ) (Ab ℓ)
-  Ab-hom .F₀ (A , B) = Hom-group A B
-  Ab-hom .F₁ {x , y} {x′ , y′} (fh , gh) = f′ where
-    module g = Group-hom (gh .preserves)
-    f′ : Groups.Hom (Hom-group x y .object) (Hom-group x′ y′ .object)
-    f′ .hom h = gh Groups.∘ h Groups.∘ fh
-    f′ .preserves .Group-hom.pres-⋆ _ _ = Homomorphism-path λ i → g.pres-⋆ _ _
-
-  Ab-hom .F-id = Homomorphism-path λ i → Forget-is-faithful refl
-  Ab-hom .F-∘ f g = Homomorphism-path λ i → Forget-is-faithful refl
-```
-
-# The tensor product
-
-We extend the category $\thecat{Ab}$ defined above to a monoidal
-category by equipping it with the _tensor product_ of abelian groups.
-Note that this is not the only notion of "product" in $\thecat{Ab}$;
-There is also the "direct (bi)product" of abelian groups. The tensor
-product has primacy because it defines a [left adjoint] to the internal
-$\hom$ functor --- that is, homs $A \otimes B \to C$ correspond to
-**bilinear maps** $A, B \to C$: functions which are "separately group
-homomorphisms in each variable". By adjointness, these are the same as
-group homomorphisms $A \to [B, C]$.
-
-[left adjoint]: Cat.Functor.Adjoint.html
-
-```agda
-module _ {ℓ} (A B : AbGroup ℓ) where
-  private
-    module A = AbGrp A
-    module B = AbGrp B
-```
-
-While the universal property of $A \otimes B$ is simple enough to state,
-actually _constructing_ it is... another matter entirely. We construct
-the underlying set of $A \otimes B$, written `Tensor`{.Agda} in the
-code, as a massive higher inductive type:
-
-- The first constructor is the inclusion $A \times B \to A \otimes B$
-which generates the tensor product (in fact, the tensor product is a
-kind of free group).
-
-```agda
-  data Tensor : Type ℓ where
-    _:,_     : A.₀ → B.₀ → Tensor
-```
-
-- The next block of constructors ensures that `Tensor`{.Agda} is a
-group; We add "words" to `Tensor`{.Agda}, and identify them by the group
-axioms. Note that we don't need $x + 0 = x$ as a constructor.
-
-```agda
-    :0       : Tensor
-    _:+_     : Tensor → Tensor → Tensor
-    :inv     : Tensor → Tensor
-    t-squash : is-set Tensor
-    t-invl   : ∀ {x} → :inv x :+ x ≡ :0
-    t-invr   : ∀ {x} → x :+ :inv x ≡ :0
-    t-idl    : ∀ {x} → :0 :+ x ≡ x
-    t-assoc  : ∀ {x y z} → (x :+ y) :+ z ≡ x :+ (y :+ z)
-```
-
-- The next constructor ensures that `Tensor`{.Agda} is abelian, and
-
-```agda
-    t-comm   : ∀ {x y} → x :+ y ≡ y :+ x
-```
-
-- The last two constructors encode the "universal multi-linearity": The
-group operation of the tensor product, with one coordinate fixed, is
-identified with the group operation of that factor.
-
-```agda
-    t-fixl   : ∀ {x y z} → (x :, y) :+ (x :, z) ≡ (x :, (y B.⋆ z))
-    t-fixr   : ∀ {x y z} → (x :, z) :+ (y :, z) ≡ ((x A.⋆ y) :, z)
-```
-
-These constructors all conspire to make an abelian group $A \otimes B$.
-
-```agda
-  _⊗_ : AbGroup ℓ
-  _⊗_ = restrict (to-group tensor) λ x y → t-comm
-    where
-      tensor : make-group Tensor
-      tensor .make-group.group-is-set = t-squash
-      tensor .make-group.unit = :0
-      tensor .make-group.mul x y = x :+ y
-      tensor .make-group.inv = :inv
-      tensor .make-group.assoc x y z = t-assoc
-      tensor .make-group.invl x = t-invl
-      tensor .make-group.invr x = t-invr
-      tensor .make-group.idl x = t-idl
-```
-
-<!--
-```agda
-  Tensor-elim-prop
-    : ∀ {ℓ′} {P : Tensor → Type ℓ′}
-    → (∀ x → is-prop (P x))
-    → (∀ x y → P (x :, y))
-    → (∀ {x y} → P x → P y → P (x :+ y))
-    → (∀ {x} → P x → P (:inv x))
-    → P :0
-    → ∀ x → P x
-  Tensor-elim-prop {P = P} pprop ppair padd pinv pz = go where
-    go : ∀ x → P x
-    go (x :, y) = ppair x y
-    go :0 = pz
-    go (x :+ y) = padd (go x) (go y)
-    go (:inv x) = pinv (go x)
-    go (t-squash x y p q i j) = is-prop→squarep (λ i j → pprop (t-squash x y p q i j))
-      (λ i → go x) (λ i → go (p i)) (λ i → go (q i)) (λ i → go y) i j
-    go (t-invl {x} i) = is-prop→pathp (λ i → pprop (t-invl i)) (padd (pinv (go x)) (go x)) pz i
-    go (t-invr {x} i) = is-prop→pathp (λ i → pprop (t-invr i)) (padd (go x) (pinv (go x))) pz i
-    go (t-idl {x} i) = is-prop→pathp (λ i → pprop (t-idl i)) (padd pz (go x)) (go x) i
-    go (t-assoc {x} {y} {z} i) =
-      is-prop→pathp (λ i → pprop (t-assoc i))
-        (padd (padd (go x) (go y)) (go z))
-        (padd (go x) (padd (go y) (go z))) i
-    go (t-comm {x} {y} i) =
-      is-prop→pathp (λ i → pprop (t-comm i)) (padd (go x) (go y)) (padd (go y) (go x)) i
-    go (t-fixl {x} {y} {z} i) = is-prop→pathp (λ i → pprop (t-fixl i)) (padd (ppair x y) (ppair x z)) (ppair x (y B.⋆ z)) i
-    go (t-fixr {x} {y} {z} i) = is-prop→pathp (λ i → pprop (t-fixr i)) (padd (ppair x z) (ppair y z)) (ppair (x A.⋆ y) z) i
-
-module _ {ℓ} {A B C : AbGroup ℓ} where
-  private
-    module A = AbGrp A
-    module B = AbGrp B
-    module C = AbGrp C
-    open Group-hom
-```
--->
-
-All of those path constructors impose restrictions on mapping out of $A
-\otimes B$, to the point where actually writing down its induction
-principle would be wildly unpractical. Instead, we only write down the
-(non-dependent) universal property: if $f : A \times B \to C$ is a
-function of sets such that $f(xy, z) = f(x, z)f(y, z)$ and $f(x, yz) =
-f(x, y)f(x, z)$, then it extends to an abelian group homomorphism
-$\hom(A \otimes B, C)$.
-
-```agda
-  from-multilinear-map
-    : (f : A.₀ → B.₀ → C.₀)
-    → (∀ x y z → f (x A.⋆ y) z ≡ f x z C.⋆ f y z)
-    → (∀ x y z → f z (x B.⋆ y) ≡ f z x C.⋆ f z y)
-    → Ab.Hom (A ⊗ B) C
-  from-multilinear-map f fixr fixl = total-hom go record { pres-⋆ = λ _ _ → refl }
-    where
-      go : Tensor A B → C.₀
-      go (x :, y) = f x y
-      go (t-fixl  {x} {y} {z} i) = fixl y z x (~ i)
-      go (t-fixr  {x} {y} {z} i) = fixr x y z (~ i)
-```
-
-<!--
-```agda
-      go :0       = C.unit
-      go (x :+ y) = go x C.⋆ go y
-      go (:inv x) = C.inverse (go x)
-      go (t-invl  {x} i) = C.inversel {x = go x} i
-      go (t-invr  {x} i) = C.inverser {x = go x} i
-      go (t-idl   {x} i) = C.idl {x = go x} i
-      go (t-comm  {x} {y} i) = C.commutative {x = go x} {y = go y} i
-      go (t-assoc {x} {y} {z} i) = C.associative {x = go x} {y = go y} {z = go z} (~ i)
-      go (t-squash x y p q i j) =
-        C.has-is-set (go x) (go y) (λ i → go (p i)) (λ i → go (q i)) i j
-```
--->
-
-These multilinear maps are given by exactly the same data as a group
-homomorphism $\hom(A, [B, C])$, just packaged differently. By unpacking
-and re-packing that data, we can also turn those homomorphisms into ones
-$\hom(A \otimes B, C)$.
-
-```agda
-  from-ab-hom : (map : Ab.Hom A (Hom-group B C)) → Ab.Hom (A ⊗ B) C
-  from-ab-hom map = from-multilinear-map (λ x y → map # x # y)
-    (λ x y z → happly (ap hom (map .preserves .pres-⋆ x y)) z)
-    (λ x y z → (map # z) .preserves .pres-⋆ x y)
-```
-
-<!--
-```agda
-  to-ab-hom : Ab.Hom (A ⊗ B) C → Ab.Hom A (Hom-group B C)
-  to-ab-hom map = go where
-    go : Ab.Hom A (Hom-group B C)
-    go .hom x .hom y = map # (x :, y)
-    go .hom x .preserves .pres-⋆ a b = ap (map #_) (sym t-fixl) ∙ map .preserves .pres-⋆ _ _
-    go .preserves .pres-⋆ a b = Forget-is-faithful $
-      funext λ c → ap (map #_) (sym t-fixr) ∙ map .preserves .pres-⋆ _ _
-```
--->
-
-In fact, we can turn elements of $\hom(A \otimes B, C)$ to $\hom(A, [B,
-C])$, too!  It follows, since the underlying function is preserved, that
-this extends to an equivalence of $\hom$-sets $\hom(A \otimes B, C)
-\cong \hom(A, [B, C])$.
-
-```agda
-  tensor⊣hom : Ab.Hom (A ⊗ B) C ≃ Ab.Hom A (Hom-group B C)
-  tensor⊣hom = Iso→Equiv (to-ab-hom , iso from-ab-hom invr invl) where abstract
-    invr : is-right-inverse from-ab-hom to-ab-hom
-    invr f = Forget-is-faithful $ funext λ x → Forget-is-faithful refl
-
-    invl : is-left-inverse from-ab-hom to-ab-hom
-    invl f = Forget-is-faithful $ funext $
-      Tensor-elim-prop _ _ (λ x → C.has-is-set _ _) (λ x y → refl)
-        (λ p q → sym (f .preserves .pres-⋆ _ _ ∙ ap₂ C._⋆_ (sym p) (sym q)))
-        (λ p → sym (pres-inv (f .preserves) ∙ ap C.inverse (sym p)))
-        (sym (pres-id (f .preserves)))
-```
-
-and indeed this isomorphism is one of $\hom$-groups, hence since
-$\thecat{Ab}$ is a univalent category, an _identification_ of $\hom$-groups.
-
-```agda
-  Tensor⊣Hom : Hom-group (A ⊗ B) C ≡ Hom-group A (Hom-group B C)
-  Tensor⊣Hom = Ab-is-category .to-path $
-    Ab.make-iso (total-hom to-ab-hom to′) (total-hom from-ab-hom from′)
-      (Forget-is-faithful $ funext (equiv→counit (tensor⊣hom .snd)))
-      (Forget-is-faithful $ funext (equiv→unit (tensor⊣hom .snd)))
-```
-
-<details>
-<summary> Actually establishing that the components of
-`tensor⊣hom`{.Agda} are group homomorphisms is very tedious, though!
-</summary>
-
-```agda
-    where
-    to′ : Group-hom _ _ to-ab-hom
-    to′ .pres-⋆ f g = Forget-is-faithful $ funext λ x → Forget-is-faithful refl
-
-    from′ : Group-hom _ _ from-ab-hom
-    from′ .pres-⋆ f g = Forget-is-faithful $ funext $
-      Tensor-elim-prop _ _ (λ x → C.has-is-set _ _)
-        (λ x y → refl)
-        (λ {x} {y} p q → ap₂ C._⋆_ p q ∙ path x y)
-        (λ {x} p → ap C.inverse p
-                ·· C.inv-comm
-                ·· sym (ap₂ C._⋆_ (pres-inv (g′ .preserves) {x = x}) (pres-inv (f′ .preserves) {x = x}))
-                ∙ C.commutative)
-        (sym ( ap₂ C._⋆_ (pres-id (f′ .preserves))
-                         (pres-id (f′ .preserves))
-             ∙ C.idl))
-      where
-        f′ = from-ab-hom f
-        g′ = from-ab-hom g
-        path : ∀ x y → (f′ # x C.⋆ g′ # x) C.⋆ (f′ # y C.⋆ g′ # y)
-                     ≡ f′ # (x :+ y) C.⋆ g′ # (x :+ y)
-        path x y =
-          (f′ # x C.⋆ g′ # x) C.⋆ (f′ # y C.⋆ g′ # y) ≡⟨ group! (C .object) ⟩
-          f′ # x C.⋆ (g′ # x C.⋆ f′ # y) C.⋆ g′ # y   ≡⟨ (λ i → f′ # x C.⋆ C.commutative {x = g′ # x} {y = f′ # y} i C.⋆ g′ # y) ⟩
-          f′ # x C.⋆ (f′ # y C.⋆ g′ # x) C.⋆ g′ # y   ≡⟨ group! (C .object) ⟩
-          (f′ # x C.⋆ f′ # y) C.⋆ (g′ # x C.⋆ g′ # y) ≡˘⟨ ap₂ C._⋆_ (f′ .preserves .pres-⋆ x y) (g′ .preserves .pres-⋆ x y) ⟩
-          f′ # (x :+ y) C.⋆ g′ # (x :+ y)             ∎
-```
-</details>

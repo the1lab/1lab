@@ -202,7 +202,5 @@ instance
     → H-Level (is-equiv f) (suc n)
   H-Level-is-equiv = prop-instance (is-equiv-is-prop _)
 
-⌞_⌟ : ∀ {n} {ℓ o′} {S : n-Type ℓ n → Type o′} → Σ (n-Type ℓ n) S → Type ℓ
-⌞ x ⌟ = ∣ x .fst ∣
 ```
 -->

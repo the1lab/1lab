@@ -10,14 +10,13 @@ code below is not optimised like theirs, though (in particular, our
 Horner normal forms are not sparse).
 -}
 open import 1Lab.Reflection.Variables
-open import 1Lab.Reflection.Variables
 open import 1Lab.Reflection.Solver
-open import 1Lab.Reflection
 open import 1Lab.Reflection
 open import 1Lab.Rewrite
 
 open import Algebra.Ring.Cat.Initial
 open import Algebra.Ring.Commutative
+open import Algebra.Group.Ab
 open import Algebra.Prelude
 open import Algebra.Group
 open import Algebra.Ring
@@ -412,7 +411,11 @@ module Reflection where
     pattern ring-field field-name cring args =
       def field-name (ring-args (def (quote CRing-on.has-ring-on) (ring-args cring [])) args)
     pattern group-field field-name cring args =
-      def field-name (is-group-args (def (quote is-ring.+-group) (is-ring-args (ring-field (quote Ring-on.has-is-ring) cring []) [])) args)
+      def field-name
+        (is-group-args
+          (def (quote is-ring.+-group)
+            (is-ring-args (ring-field (quote Ring-on.has-is-ring) cring []) []))
+          args)
 
     mk-cring-args : Term → List (Arg Term) → List (Arg Term)
     mk-cring-args cring args = unknown h∷ unknown h∷ cring v∷ args
@@ -420,8 +423,8 @@ module Reflection where
     pattern “1” cring = ring-field (quote Ring-on.1r) cring []
     pattern “*” cring x y = ring-field (quote Ring-on._*_) cring (x v∷ y v∷ [])
     pattern “+” cring x y = ring-field (quote Ring-on._+_) cring (x v∷ y v∷ [])
-    pattern “0” cring = group-field (quote is-group.unit) cring []
-    pattern “-” cring x = group-field (quote is-group.inverse) cring (x v∷ [])
+    pattern “0” cring = group-field (quote is-abelian-group.1g) cring []
+    pattern “-” cring x = group-field (quote is-abelian-group.inverse) cring (x v∷ [])
 
   “expand” : Term → Term → Term → Term
   “expand” cring p env = def (quote Impl.expand) (mk-cring-args cring (unknown h∷ p v∷ env v∷ []))
@@ -460,9 +463,9 @@ module Reflection where
   dont-reduce : List Name
   dont-reduce =
     quote Number.fromNat ∷
-    quote is-group.unit ∷
+    quote is-abelian-group.1g ∷
     quote Ring-on.1r ∷
-    quote is-group.inverse ∷
+    quote is-abelian-group.inverse ∷
     quote Ring-on._*_ ∷
     quote Ring-on._+_ ∷
     []

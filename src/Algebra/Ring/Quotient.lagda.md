@@ -124,7 +124,7 @@ quotients into propositions, then applying $R$'s laws.</summary>
 
 ```agda
   R/I : Ring ℓ
-  R/I = from-make-ring make-R/I
+  R/I = to-ring make-R/I
 ```
 
 As a quick aside, if $I$ is a complemented ideal (equivalently: a
