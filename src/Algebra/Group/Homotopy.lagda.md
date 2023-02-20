@@ -3,6 +3,7 @@ open import 1Lab.Prelude
 
 open import Algebra.Group.Cat.Base
 open import Algebra.Semigroup
+open import Algebra.Group.Ab
 open import Algebra.Monoid
 open import Algebra.Group
 open import Algebra.Magma
@@ -134,7 +135,7 @@ $\pi_{n+2}$ is an Abelian group:
 
 ```agda
 πₙ₊₂-is-abelian-group : ∀ {ℓ} {A : Type∙ ℓ} (n : Nat)
-                   → is-abelian-group (πₙ₊₁ (1 + n) A .snd)
+                      → Group-on-is-abelian (πₙ₊₁ (1 + n) A .snd)
 πₙ₊₂-is-abelian-group {A = A} n =
   ∥-∥₀-elim₂ (λ x y → is-prop→is-set (squash _ _))
              (λ x y i → inc (Ωⁿ⁺²-is-abelian-group n x y i))

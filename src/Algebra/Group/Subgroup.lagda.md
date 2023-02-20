@@ -79,7 +79,7 @@ predicate→subgroup {G = G} H p = _ , record { mor = map ; monic = ism } where
   map : Groups.Hom (el! (Σ _ (∣_∣ ⊙ H))
     , rep-subgroup→group-on H p) G
   map .hom = fst
-  map .preserves .Group-hom.pres-⋆ x y = refl
+  map .preserves .is-group-hom.pres-⋆ x y = refl
 
   ism : Groups.is-monic map
   ism = Homomorphism-monic map (λ p → Σ-prop-path (λ _ → hlevel!) p)
@@ -132,7 +132,7 @@ module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where
   private
     module A = Group-on (A .snd)
     module B = Group-on (B .snd)
-    module f = Group-hom (f .preserves)
+    module f = is-group-hom (f .preserves)
 
     Tpath : {x y : image (f #_)} → x .fst ≡ y .fst → x ≡ y
     Tpath {x} {y} p = Σ-prop-path (λ _ → squash) p
@@ -198,11 +198,11 @@ $$
 ```agda
   A→im : Groups.Hom A A/ker[_]
   A→im .hom x = f # x , inc (x , refl)
-  A→im .preserves .Group-hom.pres-⋆ x y = Tpath (f.pres-⋆ _ _)
+  A→im .preserves .is-group-hom.pres-⋆ x y = Tpath (f.pres-⋆ _ _)
 
   im→B : Groups.Hom A/ker[_] B
   im→B .hom (b , _) = b
-  im→B .preserves .Group-hom.pres-⋆ x y = refl
+  im→B .preserves .is-group-hom.pres-⋆ x y = refl
 ```
 
 When this monomorphism is taken as primary, we refer to $A/\ker(f)$ as
@@ -271,7 +271,7 @@ elide the zero composite $e' \circ 0$.
       → ∀ {x} → ∥ fibre (f #_) x ∥ → _
     elim {F = F} {e' = e'} p {x} =
       ∥-∥-rec-set ((e' #_) ⊙ fst) const (F .snd .Group-on.has-is-set) where abstract
-      module e' = Group-hom (e' .preserves)
+      module e' = is-group-hom (e' .preserves)
       module F = Group-on (F .snd)
 ```
 
@@ -323,11 +323,11 @@ will compute.
 
     coeq .coequalise {F = F} {e′ = e'} p = gh where
       module F = Group-on (F .snd)
-      module e' = Group-hom (e' .preserves)
+      module e' = is-group-hom (e' .preserves)
 
       gh : Groups.Hom _ _
       gh .hom (x , t) = elim {e' = e'} p t
-      gh .preserves .Group-hom.pres-⋆ (x , q) (y , r) =
+      gh .preserves .is-group-hom.pres-⋆ (x , q) (y , r) =
         ∥-∥-elim₂
           {P = λ q r → elim p (((x , q) Ak.⋆ (y , r)) .snd) ≡ elim p q F.⋆ elim p r}
           (λ _ _ → F.has-is-set _ _) (λ x y → e'.pres-⋆ _ _) q r
@@ -367,7 +367,7 @@ inverses, though we shall not make note of that here).
 ```agda
 module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where private
   module Ker[f] = Kernel (Ker f)
-  module f = Group-hom (f .preserves)
+  module f = is-group-hom (f .preserves)
   module A = Group-on (A .snd)
   module B = Group-on (B .snd)
 
@@ -521,7 +521,7 @@ rather directly:
 
   incl : Groups.Hom Grp _/ᴳ_
   incl .hom = inc
-  incl .preserves .Group-hom.pres-⋆ x y = refl
+  incl .preserves .is-group-hom.pres-⋆ x y = refl
 ```
 
 Before we show that the kernel of the quotient map is isomorphic to the
@@ -580,11 +580,11 @@ predicate $\rm{inc}(x) = \rm{inc}(0)$ recovers the subgroup $H$; And
     to : Groups.Hom _ _
     to .hom (x , p) = x , subst (_∈ H) (ap (_ ⋆_) inv-unit ∙ idr) x-0∈H where
       x-0∈H = /ᴳ-effective p
-    to .preserves .Group-hom.pres-⋆ _ _ = Σ-prop-path (λ _ → H _ .is-tr) refl
+    to .preserves .is-group-hom.pres-⋆ _ _ = Σ-prop-path (λ _ → H _ .is-tr) refl
 
     from : Groups.Hom _ _
     from .hom (x , p) = x , quot (subst (_∈ H) (sym idr ∙ ap (_ ⋆_) (sym inv-unit)) p)
-    from .preserves .Group-hom.pres-⋆ _ _ = Σ-prop-path (λ _ → squash _ _) refl
+    from .preserves .is-group-hom.pres-⋆ _ _ = Σ-prop-path (λ _ → squash _ _) refl
 
     il = Homomorphism-path λ x → Σ-prop-path (λ _ → H _ .is-tr) refl
     ir = Homomorphism-path λ x → Σ-prop-path (λ _ → squash _ _) refl

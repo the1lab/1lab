@@ -57,7 +57,7 @@ and $B$. More explicitly, letting $a \otimes b$ stand for a tensor, the
 equation $a\otimes rb = ar\otimes b$ holds in $A \otimes_R B$, and the
 tensor product is the universal object where this is forced to hold.
 
-[tensor product of abelian groups]: Algebra.Group.Ab.html#the-tensor-product
+[tensor product of abelian groups]: Algebra.Group.Ab.Tensor.html
 
 Going back to the absurd generality of a bifunctor $F : \cC\op \times
 \cC \to \cD$, we may still wish to consider these sorts of

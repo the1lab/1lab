@@ -68,7 +68,6 @@ universe.
 
 <!--
 ```agda
-
 instance
   H-Level-□ : ∀ {ℓ} {T : Type ℓ} {n} → H-Level (□ T) (suc n)
   H-Level-□ = prop-instance squash

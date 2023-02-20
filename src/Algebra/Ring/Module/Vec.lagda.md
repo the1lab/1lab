@@ -20,8 +20,8 @@ module Algebra.Ring.Module.Vec {ℓ} (R : Ring ℓ) where
 <!--
 ```agda
 private module R = Ring-on (R .snd)
-open make-group
-open Module hiding (module R ; module G ; G₀)
+open make-abelian-group
+open Module hiding (module R ; module G)
 ```
 -->
 
@@ -35,17 +35,17 @@ $\RR$. Here we prove a generalisation of that fact: lists of $n$
 elements of $R$ are a module over $R$.
 
 ```agda
-Fin-vec-group : ∀ n → AbGroup ℓ
-Fin-vec-group n = to-abelian-group mg λ x y → funext λ _ → R.+-commutes where
-  mg : make-group (Fin n → ⌞ R ⌟)
-  mg .group-is-set = hlevel!
-  mg .unit _ = R.0r
+Fin-vec-group : ∀ n → Abelian-group ℓ
+Fin-vec-group n = to-ab mg where
+  mg : make-abelian-group (Fin n → ⌞ R ⌟)
+  mg .ab-is-set = hlevel!
+  mg .1g _ = R.0r
   mg .mul f g i = f i R.+ g i
   mg .inv f i = R.- (f i)
   mg .assoc x y z = funext λ _ → sym R.+-associative
   mg .invl x = funext λ _ → R.+-invl
-  mg .invr x = funext λ _ → R.+-invr
   mg .idl x = funext λ _ → R.+-idl
+  mg .comm x y = funext λ _ → R.+-commutes
 
 Fin-vec-module : ∀ n → Module-on R (Fin-vec-group n)
 Fin-vec-module n .Module-on._⋆_ r f i = r R.* f i
@@ -71,9 +71,9 @@ $$
 module _ {ℓ′} (S : Module ℓ′ R) where
   private
     module S = Module S
-    G′ = S .fst .object .snd
+    G′ = Abelian→Group-on (S .fst .snd)
 
-  ∑-distr : ∀ {n} r (f : Fin n → S.G₀)
+  ∑-distr : ∀ {n} r (f : Fin n → ⌞ S ⌟)
           → r S.⋆ ∑ G′ f
           ≡ ∑ G′ λ i → r S.⋆ f i
   ∑-distr {n = zero} r f = S.⋆-group-hom.pres-id _
@@ -85,12 +85,12 @@ module _ {ℓ′} (S : Module ℓ′ R) where
 -->
 
 ```agda
-  linear-extension : ∀ {n} → (Fin n → S.G₀)
+  linear-extension : ∀ {n} → (Fin n → ⌞ S ⌟)
                    → Linear-map (_ , Fin-vec-module n) S Rings.id
   linear-extension fun .map x = ∑ G′ λ i → x i S.⋆ fun i
   linear-extension fun .linear r m s n =
     ∑ G′ (λ i → (r R.* m i R.+ s R.* n i) S.⋆ fun i)                          ≡⟨ ap (∑ G′) (funext λ i → S.⋆-add-l (r R.* m i) (s R.* n i) (fun i)) ⟩
-    ∑ G′ (λ i → ((r R.* m i) S.⋆ fun i) S.+ ((s R.* n i) S.⋆ fun i))          ≡⟨ ∑-split G′ (S .fst .witness) (λ i → (r R.* m i) S.⋆ fun i) (λ i → (s R.* n i) S.⋆ fun i) ⟩
+    ∑ G′ (λ i → ((r R.* m i) S.⋆ fun i) S.+ ((s R.* n i) S.⋆ fun i))          ≡⟨ ∑-split (S .fst .snd) (λ i → (r R.* m i) S.⋆ fun i) (λ i → (s R.* n i) S.⋆ fun i) ⟩
     (∑ G′ λ i → (r R.* m i) S.⋆ fun i) S.+ (∑ G′ λ i → (s R.* n i) S.⋆ fun i) ≡˘⟨ ap₂ S._+_ (ap (∑ G′) (funext λ i → S.⋆-assoc r (m i) (fun i))) (ap (∑ G′) (funext λ i → S.⋆-assoc s (n i) (fun i))) ⟩
     (∑ G′ λ i → r S.⋆ (m i S.⋆ fun i)) S.+ (∑ G′ λ i → s S.⋆ (n i S.⋆ fun i)) ≡˘⟨ ap₂ S._+_ (∑-distr r λ i → m i S.⋆ fun i) (∑-distr s λ i → n i S.⋆ fun i) ⟩
     (r S.⋆ ∑ G′ (λ i → m i S.⋆ fun i)) S.+ (s S.⋆ ∑ G′ (λ i → n i S.⋆ fun i)) ∎

@@ -41,8 +41,8 @@ We then show that this map is a group homomorphism from $G$ to
 $\rm{Sym}(G)$:
 
 ```agda
-Cayley-is-hom : Group-hom (G .snd) (Sym G-set) Cayley
-Cayley-is-hom .Group-hom.pres-⋆ x y = Σ-prop-path is-equiv-is-prop (funext lemma) where
+Cayley-is-hom : is-group-hom (G .snd) (Sym G-set) Cayley
+Cayley-is-hom .is-group-hom.pres-⋆ x y = Σ-prop-path is-equiv-is-prop (funext lemma) where
   lemma : (e : ⌞ G ⌟) → (x ⋆ y) ⋆ e ≡ x ⋆ (y ⋆ e)
   lemma e = sym associative
 ```

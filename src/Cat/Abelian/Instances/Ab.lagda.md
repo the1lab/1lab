@@ -38,19 +38,10 @@ The prototypal --- representative, even --- example of an
 [$\Ab$-enriched], and an [abelian] category at that, is the category of
 abelian groups, $\Ab$. For abstractly-nonsensical reasons, we could say
 $\Ab$ is $\Ab$-enriched by virtue of being monoidal closed, but we have
-a concrete construction at hand to apply. Let's see it:
+a concrete construction at hand: `Ab-ab-category`{.Agda}
 
 [$\Ab$-enriched]: Cat.Abelian.Base.html#ab-enriched-categories
 [abelian]: Cat.Abelian.Base.html#pre-abelian-abelian-categories
-
-```agda
-Ab-ab : Ab-category (Ab ℓ)
-Ab-ab .Group-on-hom A B = Hom-group A B .Restrict-ob.object .snd
-Ab-ab .Hom-grp-ab A B = Hom-group A B .Restrict-ob.witness
-Ab-ab .∘-linear-l f g h = Forget-is-faithful refl
-Ab-ab .∘-linear-r f g h = Forget-is-faithful $ funext λ x →
-  sym $ f .preserves .Group-hom.pres-⋆ _ _
-```
 
 Let us show it is additive. The terminal group is given by the terminal
 set, equipped with its unique group structure, and we have already
@@ -59,21 +50,11 @@ direct sums.
 
 ```agda
 Ab-is-additive : is-additive (Ab ℓ)
-Ab-is-additive .has-ab = Ab-ab
-Ab-is-additive .has-terminal .top =
-  restrict (to-group p) λ _ _ → refl where
-    p : make-group (Lift _ ⊤)
-    p .group-is-set a b p q i j = lift tt
-    p .unit = lift tt
-    p .mul _ _ = lift tt
-    p .inv _ = lift tt
-    p .assoc x y z i = lift tt
-    p .invl x i = lift tt
-    p .invr x i = lift tt
-    p .idl x i = lift tt
+Ab-is-additive .has-ab = Ab-ab-category
+Ab-is-additive .has-terminal .top = from-commutative-group (Zero-group {ℓ}) (λ x y → refl)
 Ab-is-additive .has-terminal .has⊤ x =
-  contr (total-hom (λ _ → lift tt) record { pres-⋆ = λ _ _ → refl }) λ h →
-    Forget-is-faithful refl
+  contr (total-hom (λ _ → lift tt) (record { pres-⋆ = λ x y i → lift tt }))
+    λ x → Homomorphism-path λ _ → refl
 
 Ab-is-additive .has-prods A B .Product.apex = A ⊕ B
 Ab-is-additive .has-prods A B .Product.π₁ = _

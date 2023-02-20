@@ -154,7 +154,7 @@ Group-is-monadic = is-precat-iso→is-equivalence
 
   k₁inv : ∀ {G H} → Algebra-hom (Sets ℓ) T (K.₀ G) (K.₀ H) → Groups.Hom G H
   k₁inv hom .hom = hom .morphism
-  k₁inv hom .preserves .Group-hom.pres-⋆ x y = happly (hom .commutes) (inc x ◆ inc y)
+  k₁inv hom .preserves .is-group-hom.pres-⋆ x y = happly (hom .commutes) (inc x ◆ inc y)
 
   ff : is-fully-faithful K
   ff = is-iso→is-equiv $ iso k₁inv (λ x → Algebra-hom-path (Sets ℓ) refl)
@@ -179,17 +179,17 @@ but the other direction is by induction on "words".
     rec = fold-free-group {G = x .fst , grp} (λ x → x)
     module G = Group-on grp
 
-    alg-gh : Group-hom (Free-Group ⌞ x ⌟ .snd) grp (x .snd .ν)
-    alg-gh .Group-hom.pres-⋆ x y = sym (happly (alg .ν-mult) (inc _ ◆ inc _))
+    alg-gh : is-group-hom (Free-Group ⌞ x ⌟ .snd) grp (x .snd .ν)
+    alg-gh .is-group-hom.pres-⋆ x y = sym (happly (alg .ν-mult) (inc _ ◆ inc _))
 
     go : rec .hom ≡ x .snd .ν
     go = funext $ Free-elim-prop _ (λ _ → hlevel 1)
       (λ x → sym (happly (alg .ν-unit) x))
-      (λ x y p q → rec .preserves .Group-hom.pres-⋆ x y
+      (λ x y p q → rec .preserves .is-group-hom.pres-⋆ x y
                 ·· ap₂ G._⋆_ p q
                 ·· happly (alg .ν-mult) (inc _ ◆ inc _))
-      (λ x p → Group-hom.pres-inv (rec .preserves) {x = x}
+      (λ x p → is-group-hom.pres-inv (rec .preserves) {x = x}
               ·· ap G.inverse p
-              ·· sym (Group-hom.pres-inv alg-gh {x = x}))
+              ·· sym (is-group-hom.pres-inv alg-gh {x = x}))
       refl
 ```

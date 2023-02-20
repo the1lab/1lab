@@ -10,7 +10,7 @@ module Algebra.Group.Cat.FinitelyComplete {ℓ} where
 
 <!--
 ```agda
-open Group-hom
+open is-group-hom
 open Group-on
 open Groups._↪_
 private variable
@@ -64,12 +64,12 @@ Zero-group = to-group zg where
 Zero-group-is-initial : is-initial Zero-group
 Zero-group-is-initial (_ , G) .centre = total-hom (λ x → G.unit) gh where
   module G = Group-on G
-  gh : Group-hom _ _ (λ x → G.unit)
+  gh : is-group-hom _ _ (λ x → G.unit)
   gh .pres-⋆ x y =
     G.unit            ≡˘⟨ G.idl ⟩
     G.unit G.⋆ G.unit ∎
 Zero-group-is-initial (_ , G) .paths x =
-  Homomorphism-path λ _ → sym (Group-hom.pres-id (x .preserves))
+  Homomorphism-path λ _ → sym (is-group-hom.pres-id (x .preserves))
 
 Zero-group-is-terminal : is-terminal Zero-group
 Zero-group-is-terminal _ .centre =
@@ -177,8 +177,8 @@ module _ {G H : Group ℓ} (f g : Groups.Hom G H) where
     module G = Group-on (G .snd)
     module H = Group-on (H .snd)
 
-    module f = Group-hom (f .preserves)
-    module g = Group-hom (g .preserves)
+    module f = is-group-hom (f .preserves)
+    module g = is-group-hom (g .preserves)
     module seq = Equaliser
       (SL.Sets-equalisers
         {A = G.underlying-set}
@@ -240,7 +240,7 @@ $g$.
   Groups-equalisers .has-is-eq .limiting {F = F} {e′} p = total-hom map lim-gh where
     map = seq.limiting {F = underlying-set (F .snd)} (ap hom p)
 
-    lim-gh : Group-hom _ _ map
+    lim-gh : is-group-hom _ _ map
     lim-gh .pres-⋆ x y = Σ-prop-path (λ _ → H.has-is-set _ _) (e′ .preserves .pres-⋆ _ _)
 
   Groups-equalisers .has-is-eq .universal {F = F} {p = p} = Forget-is-faithful

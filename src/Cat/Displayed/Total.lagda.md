@@ -89,8 +89,10 @@ With all that in place, we can construct the total category!
 ∫ .Precategory.Ob = Total
 ∫ .Precategory.Hom = Total-hom
 ∫ .Precategory.Hom-set = total-hom-is-set
-∫ .Precategory.id = total-hom id id′
-∫ .Precategory._∘_ f g = total-hom (f .hom ∘ g .hom) (f .preserves ∘′ g .preserves)
+∫ .Precategory.id .hom = id
+∫ .Precategory.id .preserves = id′
+∫ .Precategory._∘_ f g .hom = f .hom ∘ g .hom
+∫ .Precategory._∘_ f g .preserves = f .preserves ∘′ g .preserves
 ∫ .Precategory.idr _ = total-hom-path (idr _) (idr′ _)
 ∫ .Precategory.idl _ = total-hom-path (idl _) (idl′ _)
 ∫ .Precategory.assoc _ _ _ = total-hom-path (assoc _ _ _) (assoc′ _ _ _)

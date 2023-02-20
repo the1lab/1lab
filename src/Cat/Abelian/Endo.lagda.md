@@ -26,7 +26,7 @@ the **endomorphism ring** of $x$.
 
 ```agda
 Endo : A.Ob → Ring ℓ
-Endo x = from-make-ring mr where
+Endo x = to-ring mr where
   open make-ring
   mr : make-ring (A.Hom x x)
   mr .ring-is-set = A.Hom-set x x
@@ -38,7 +38,7 @@ Endo x = from-make-ring mr where
   mr .+-idl = A.Hom.idl
   mr .+-invr = A.Hom.inverser
   mr .+-assoc = sym A.Hom.associative
-  mr .+-comm = A.Hom.commutative
+  mr .+-comm = A.Hom.commutes
   mr .*-idl = A.idl _
   mr .*-idr = A.idr _
   mr .*-assoc = sym (A.assoc _ _ _)

@@ -27,23 +27,22 @@ record CRing-on {ℓ} (R : Type ℓ) : Type ℓ where
   open Ring-on has-ring-on public
 
 CRing-structure : ∀ ℓ → Thin-structure ℓ CRing-on
-CRing-structure ℓ = Full-substructure ℓ CRing-on Ring-on emb (Ring-structure ℓ)
-  where
-    open CRing-on hiding (_↪_)
-    emb : ∀ X → CRing-on X ↪ Ring-on X
-    emb X .fst = has-ring-on
-    emb X .snd y (r , p) (s , q) =
-      Σ-pathp (λ i →
-        record { has-ring-on = (p ∙ sym q) i
-               ; *-commutes  = λ {x} {y} j →
-                  is-set→squarep (λ i j → CRing-on.has-is-set r)
-                    (λ i → (p ∙ sym q) i ._*_ x y)
-                    (r .*-commutes)
-                    (s .*-commutes)
-                    (λ i → (p ∙ sym q) i ._*_ y x)
-                    i j
-               })
-        (commutes→square (∙-cancel-r p q ∙ sym (∙-id-r p)))
+CRing-structure ℓ = Full-substructure ℓ CRing-on Ring-on emb (Ring-structure ℓ) where
+  open CRing-on hiding (_↪_)
+  emb : ∀ X → CRing-on X ↪ Ring-on X
+  emb X .fst = has-ring-on
+  emb X .snd y (r , p) (s , q) =
+    Σ-pathp (λ i →
+      record { has-ring-on = (p ∙ sym q) i
+              ; *-commutes  = λ {x} {y} j →
+                is-set→squarep (λ i j → CRing-on.has-is-set r)
+                  (λ i → (p ∙ sym q) i ._*_ x y)
+                  (r .*-commutes)
+                  (s .*-commutes)
+                  (λ i → (p ∙ sym q) i ._*_ y x)
+                  i j
+              })
+      (commutes→square (∙-cancel-r p q ∙ sym (∙-id-r p)))
 
 CRings : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 CRings ℓ = Structured-objects (CRing-structure ℓ)

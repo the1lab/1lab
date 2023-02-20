@@ -15,7 +15,7 @@ module Algebra.Group.Free where
 private variable
   ℓ : Level
   A : Type ℓ
-open Group-hom
+open is-group-hom
 open Group-on
 open Initial
 open ↓Obj
@@ -170,9 +170,9 @@ associativity, identity and inverse laws that provide the cases for
   go (squash x y p q i j) =
     G.has-is-set (go x) (go y) (λ i → go (p i)) (λ i → go (q i)) i j
 
-  open Group-hom
+  open is-group-hom
 
-  go-hom : Group-hom _ _ go
+  go-hom : is-group-hom _ _ go
   go-hom .pres-⋆ x y = refl
 ```
 
@@ -194,9 +194,9 @@ make-free-group .Ml.commutes f = refl
 make-free-group .Ml.unique {y = y} {g = g} p =
   Homomorphism-path $ Free-elim-prop _ (λ _ → hlevel!)
     (p $ₚ_)
-    (λ a b p q → ap₂ y._⋆_ p q ∙ sym (g .preserves .Group-hom.pres-⋆ _ _))
-    (λ a p → ap y.inverse p ∙ sym (Group-hom.pres-inv (g .preserves)))
-    (sym (Group-hom.pres-id (g .preserves)))
+    (λ a b p q → ap₂ y._⋆_ p q ∙ sym (g .preserves .is-group-hom.pres-⋆ _ _))
+    (λ a p → ap y.inverse p ∙ sym (is-group-hom.pres-inv (g .preserves)))
+    (sym (is-group-hom.pres-id (g .preserves)))
   where module y = Group-on (y .snd)
 module Free-groups {ℓ} = make-left-adjoint (make-free-group {ℓ = ℓ})
 ```

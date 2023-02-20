@@ -21,7 +21,7 @@ inverse for an element is [necessarily, unique]; Thus, to say that "$(G,
 \star)$ is a group" is a statement about $(G, \star)$ having a certain
 _property_ (namely, being a group), not _structure_ on $(G, \star)$.
 
-Furthermore, since `group homomorphisms`{.Agda ident=Group-hom}
+Furthermore, since `group homomorphisms`{.Agda ident=is-group-hom}
 automatically preserve this structure, we are justified in calling this
 _property_ rather than _property-like structure_.
 
@@ -155,12 +155,12 @@ record Group-on {ℓ} (A : Type ℓ) : Type ℓ where
   open is-group has-is-group public
 ```
 
-We have that a map `is a group homomorphism`{.Agda ident=Group-hom} if
+We have that a map `is a group homomorphism`{.Agda ident=is-group-hom} if
 it `preserves the multiplication`{.Agda ident=pres-⋆}.
 
 ```agda
 record
-  Group-hom
+  is-group-hom
     {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
     (G : Group-on A) (G′ : Group-on B) (e : A → B) : Type (ℓ ⊔ ℓ′) where
   private
@@ -203,19 +203,19 @@ identity:
 
 <!--
 ```agda
-Group-hom-is-prop
+is-group-hom-is-prop
   : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
       {G : Group-on A} {H : Group-on B} {f}
-  → is-prop (Group-hom G H f)
-Group-hom-is-prop {H = H} a b i .Group-hom.pres-⋆ x y =
-  Group-on.has-is-set H _ _ (a .Group-hom.pres-⋆ x y) (b .Group-hom.pres-⋆ x y) i
+  → is-prop (is-group-hom G H f)
+is-group-hom-is-prop {H = H} a b i .is-group-hom.pres-⋆ x y =
+  Group-on.has-is-set H _ _ (a .is-group-hom.pres-⋆ x y) (b .is-group-hom.pres-⋆ x y) i
 
 instance
   H-Level-group-hom
     : ∀ {n} {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
       {G : Group-on A} {H : Group-on B} {f}
-    → H-Level (Group-hom G H f) (suc n)
-  H-Level-group-hom = prop-instance Group-hom-is-prop
+    → H-Level (is-group-hom G H f) (suc n)
+  H-Level-group-hom = prop-instance is-group-hom-is-prop
 ```
 -->
 
@@ -225,10 +225,10 @@ underlying map is a group homomorphism.
 ```agda
 Group≃
   : ∀ {ℓ} (A B : Σ (Type ℓ) Group-on) (e : A .fst ≃ B .fst) → Type ℓ
-Group≃ A B (f , _) = Group-hom (A .snd) (B .snd) f
+Group≃ A B (f , _) = is-group-hom (A .snd) (B .snd) f
 
 Group[_⇒_] : ∀ {ℓ} (A B : Σ (Type ℓ) Group-on) → Type ℓ
-Group[ A ⇒ B ] = Σ (A .fst → B .fst) (Group-hom (A .snd) (B .snd))
+Group[ A ⇒ B ] = Σ (A .fst → B .fst) (is-group-hom (A .snd) (B .snd))
 ```
 
 ## Making groups
@@ -318,11 +318,3 @@ equivalence is both a section and a retraction.
   group-str .invr (f , eqv) =
     Σ-prop-path is-equiv-is-prop (funext (equiv→counit eqv))
 ```
-
-<!--
-```agda
-is-abelian-group : ∀ {ℓ} {G : Type ℓ} → Group-on G → Type ℓ
-is-abelian-group {G = G} st = ∀ (x y : G) → x G.⋆ y ≡ y G.⋆ x
-  where module G = Group-on st
-```
--->
