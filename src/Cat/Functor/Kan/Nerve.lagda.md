@@ -11,10 +11,9 @@ open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Hom
-open import Cat.Functor.Hom.Coyoneda
 open import Cat.Functor.Kan.Base
+open import Cat.Functor.Kan.Pointwise
 open import Cat.Instances.Comma
-open import Cat.Instances.Elements
 open import Cat.Instances.Functor
 open import Cat.Instances.Functor.Compose
 open import Cat.Instances.Shape.Terminal
@@ -33,8 +32,6 @@ private
 open Func
 open _=>_
 open is-lan
-open Element
-open Element-hom
 ```
 -->
 
@@ -158,164 +155,103 @@ nonsense.
 <!--
 ```agda
 module _
-  {o κ} {C : Precategory κ κ} {D : Precategory o κ}
+  {o κ κ′} {C : Precategory κ κ} {D : Precategory o κ′}
   (F : Functor C D)
   (cocompl : is-cocomplete κ κ D)
   where
-    private
-      module C = Cat.Reasoning C
-      module D = Cat.Reasoning D
-      module F = Func F
-      module colim (P : Functor (C ^op) (Sets κ)) =
-        Colimit (cocompl (F F∘ πₚ C P))
-      module coyoneda (P : Functor (C ^op) (Sets κ)) =
-        is-colimit (coyoneda C P)
 ```
 -->
 
 ```agda
-    Realisation : Functor (PSh κ C) D
-    Realisation .F₀ = colim.coapex
-    Realisation .F₁ {P} {Q} f =
-      colim.universal _
-        (λ j → colim.ψ Q (elem (j .ob) (f .η _ (j .section))))
-        (λ g → colim.commutes Q
-          (elem-hom (g .hom)
-              (sym (f .is-natural _ _ _) $ₚ _
-               ∙ ap (f .η _) (g .commute))))
-    Realisation .F-id =
-      sym $ colim.unique _ _ _ _ λ j →
-        D.idl _
-    Realisation .F-∘ f g =
-      sym $ colim.unique _ _ _ _ λ j →
-        D.pullr (colim.factors _ _ _)
-        ∙ colim.factors _ _ _
+  Realisation : Functor (PSh κ C) D
+  Realisation = Lan.Ext (cocomplete→lan (よ C) F cocompl)
 
-    approx : F => Realisation F∘ よ C
-    approx .η x = colim.ψ _ (elem x C.id) 
-    approx .is-natural x y f =
-      colim.commutes _ (elem-hom f C.id-comm-sym)
-       ∙ sym (colim.factors _ _ _)
+  approx : F => Realisation F∘ よ C
+  approx = Lan.eta (cocomplete→lan (よ C) F cocompl)
 
-    Realisation-is-lan : is-lan (よ C) F Realisation approx
-    Realisation-is-lan .σ {M = M} α .η P = 
-      colim.universal P
-        (λ j → M .F₁ (coyoneda.ψ P j) D.∘ α .η (j .ob))
-        λ f →
-          D.pullr (α .is-natural _ _ _)
-          ∙ pulll M (coyoneda.commutes P f)
-    Realisation-is-lan .σ {M = M} α .is-natural P Q f =
-      colim.unique₂ P _
-        (λ g →
-          D.pullr (α .is-natural _ _ _)
-          ∙ pulll M (coyoneda.commutes _ (elem-hom (g .hom) (sym (f .is-natural _ _ _ $ₚ _) ∙ ap (f .η _) (g .commute)))))
+  Realisation-is-lan : is-lan (よ C) F Realisation approx
+  Realisation-is-lan = Lan.has-lan (cocomplete→lan (よ C) F cocompl)
+```
+
+<!--
+```agda
+module _
+  {o κ} {C : Precategory κ κ} {D : Precategory o κ}
+  (F : Functor C D)
+  (cocompl : is-cocomplete κ κ D)
+  where
+
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module F = Func F
+
+    module ↓colim c' =
+      cocomplete→lan.↓colim (よ C) F cocompl c'
+```
+-->
+
+```agda
+  Realisation⊣Nerve : Realisation F cocompl ⊣ Nerve F
+  Realisation⊣Nerve = adj where
+
+    open _⊣_
+    open ↓Obj
+    open ↓Hom
+
+    hom′ : (P : Functor (C ^op) (Sets κ)) (i : C.Ob)
+         → (arg : ∣ P .F₀ i ∣)
+         → ↓Obj (よ C) _
+    hom′ P i arg .x = i
+    hom′ P i arg .y = tt
+    hom′ P i arg .map .η j h = P .F₁ h arg
+    hom′ P i arg .map .is-natural _ _ f = funext λ _ → happly (P .F-∘ _ _) _
+
+    adj : Realisation F cocompl ⊣ Nerve F
+    adj .unit .η P .η i arg =
+      ↓colim.ψ P (hom′ P i arg)
+    adj .unit .η P .is-natural x y f =
+      funext λ _ →
+        sym $ ↓colim.commutes P $ ↓hom (Nat-path λ _ → funext λ _ → P .F-∘ _ _ $ₚ _)
+    adj .unit .is-natural x y f =
+      Nat-path λ i → funext λ arg →
+        sym $ ↓colim.factors _ {j = hom′ x i arg} _ _
+        ∙ ap (↓colim.ψ _) (↓Obj-path _ _ refl refl
+                             (Nat-path λ _ → funext λ _ → f .is-natural _ _ _ $ₚ _))
+
+    adj .counit .η ob =
+      ↓colim.universal _
+        (λ j → j .map .η (x j) C.id)
+        (λ {x} {y} f →
+          sym (y .map .is-natural _ _ _ $ₚ _)
+          ·· ap (y .map .η _) C.id-comm-sym
+          ·· f .sq ηₚ _ $ₚ _)
+    adj .counit .is-natural x y f =
+      ↓colim.unique₂ _ _
+        (λ {x'} {y'} f →
+          D.pullr (sym (y' .map .is-natural _ _ _ $ₚ _)
+                   ∙ ap (y' .map .η _) C.id-comm-sym)
+          ∙ ap (_ D.∘_) (f .sq ηₚ _ $ₚ C.id))
         (λ j →
-          D.pullr (colim.factors P _ _)
-          ∙ colim.factors Q _ _)
+          D.pullr (↓colim.factors _ _ _)
+          ∙ ↓colim.factors _ _ _)
+        (λ j → D.pullr (↓colim.factors _ _ _))
+
+    adj .zig {A} =
+      ↓colim.unique₂ A _
+      (λ f → ↓colim.commutes _ f)
         (λ j →
-          D.pullr (colim.factors P _ _)
-          ∙ pulll M (Nat-path (λ _ → funext λ x → f .is-natural _ _ _ $ₚ j .section)))
-    Realisation-is-lan .σ-comm {M = M} =
-      Nat-path λ _ →
-        colim.factors _ _ _
-        ∙ eliml M (Nat-path (λ _ → funext λ _ → C.idl _))
-    Realisation-is-lan .σ-uniq {M = M} {α = α} {σ′ = σ′} p =
-      Nat-path λ P →
-      sym $ colim.unique _ _ _ _ λ j →
-        σ′ .η _ D.∘ colim.ψ P j                                     ≡⟨ D.pushr (sym (colim.factors _ _ _ ∙ ap (colim.ψ _) (ap₂ elem refl (P .F-id $ₚ _)))) ⟩
-        (σ′ .η _ D.∘ colim.universal _ _ _) D.∘ colim.ψ (よ₀ C _) _ ≡⟨ D.pushl (σ′ .is-natural _ _ _) ⟩
-        M .F₁ (coyoneda.ψ P j) D.∘ σ′ .η _ D.∘ colim.ψ (よ₀ C _) _  ≡˘⟨ (D.refl⟩∘⟨ (p ηₚ _)) ⟩
-        M .F₁ (coyoneda.ψ P j) D.∘ α .η _                           ∎
-
---   Realisation⊣Nerve
---     : {D : Precategory κ κ} (F : Functor D C)
---     → Realisation F ⊣ Nerve F
--- ```
-
--- The construction of the nerve-realisation adjunction is done below in
--- components, but understanding it is not necessary: Either ponder the
--- $\Delta \mono \strcat$ example from above, or take it as a foundational
--- assumption. However, if you're feeling particularly brave, feel free to
--- look at the code. Godspeed.
-
--- ```agda
---   Realisation⊣Nerve {D = D} F = adj where
---     module D = Cat.Reasoning D
---     open _⊣_
---     open ↓Obj
---     open ↓Hom
---     module F = Functor-kit F
-
---     hom′ : (P : Functor (D ^op) (Sets κ)) (i : D.Ob)
---          → (arg : ∣ P .F₀ i ∣)
---          → ↓Obj (よ D) _
---     hom′ P i arg .x = i
---     hom′ P i arg .y = tt
---     hom′ P i arg .map .η j h = P .F₁ h arg
---     hom′ P i arg .map .is-natural _ _ f = funext λ _ → happly (P .F-∘ _ _) _
-
---     Shape : (c : C.Ob) → Functor (よ D ↘ Nerve F .F₀ c) C
---     Shape c = F F∘ Dom (よ D) (const! (Nerve F .F₀ c))
-
---     cocone′ : ∀ ob → Cocone (Shape ob)
---     cocone′ ob .coapex = ob
---     cocone′ ob .ψ obj = obj .map .η _ D.id
---     cocone′ ob .commutes {x} {y} f =
---         sym (y .map .is-natural _ _ _) $ₚ _
---       ∙ ap (y .map .η (x .↓Obj.x)) D.id-comm-sym
---       ∙ f .sq ηₚ _ $ₚ _
--- ```
-
--- Before proceeding, take a moment to appreciate the beauty of the
--- adjunction unit and counit, and you'll see that it _makes sense_ that
--- nerve and realisation are adjoints: The unit is given by the
--- coprojections defining the left Kan extension as a colimit, and the
--- counit is given by the unique "colimiting" map _from_ that colimit.
-
--- ```agda
---     adj : Realisation F ⊣ Nerve F
---     adj .unit .η P .η i arg = cocompl _ .bot .ψ (hom′ P i arg)
---     adj .counit .η ob       = cocompl _ .has⊥ (cocone′ ob) .centre .hom
-
---     adj .unit .η P .is-natural x y f = funext λ arg →
---       sym $ cocompl (F F∘ Dom (よ D) (Const P)) .bot .commutes
---         (record { sq = Nat-path (λ _ → funext λ _ → P .F-∘ _ _ $ₚ _) })
-
---     adj .unit .is-natural x y f = Nat-path λ i → funext λ arg → sym $
---       cocompl (F F∘ Dom (よ D) (Const x)) .has⊥ (lan-approximate cocompl (よ D) F f)
---         .centre .commutes (hom′ x i arg)
---       ∙ ap (cocompl (F F∘ Dom (よ D) (Const y)) .bot .ψ)
---         (↓Obj-path _ _ refl refl (Nat-path λ _ → funext λ _ → f .is-natural _ _ _ $ₚ _))
-
---     adj .counit .is-natural x y f = ap hom $
---       is-contr→is-prop (cocompl _  .has⊥ cocone₂)
---         (cocone-hom _ λ o →
---           C.pullr (cocompl (Shape x) .has⊥ _ .centre .commutes o)
---           ∙ cocompl (Shape y) .has⊥ (cocone′ _) .centre .commutes _)
---         (cocone-hom _ λ o →
---           C.pullr (cocompl _ .has⊥ (cocone′ x) .centre .commutes _))
---       where
---         cocone₂ : Cocone (Shape x)
---         cocone₂ .coapex = y
---         cocone₂ .ψ ob = f C.∘ ob .map .η _ D.id
---         cocone₂ .commutes {x₂} {y₂} f =
---           C.pullr ( sym (happly (y₂ .map .is-natural _ _ _) _)
---                   ∙ ap (y₂ .map .η _) (sym D.id-comm))
---           ∙ ap (_ C.∘_) (f .sq ηₚ _ $ₚ D.id)
-
---     adj .zig {A} = ap hom $
---       is-contr→is-prop (cocompl (F F∘ Dom (よ D) (const! A)) .has⊥ (cocompl _ .bot))
---         (cocone-hom _ λ o → C.pullr (
---             cocompl (F F∘ Dom (よ D) (Const A)) .has⊥ _ .centre .commutes o)
---         ·· cocompl (Shape (Realisation F .F₀ A)) .has⊥ _ .centre .commutes _
---         ·· ap (cocompl (F F∘ Dom (よ D) (const! A)) .bot .ψ)
---                 {x = hom′ A (o .x) (o .map .η (o .x) D.id)}
---                 (↓Obj-path _ _ _ refl (Nat-path λ x → funext λ _ →
---                   sym (o .map .is-natural _ _ _ $ₚ _) ∙ ap (o .map .η x) (D.idl _))))
---         (cocone-hom _ λ o → C.idl _)
-
---     adj .zag {B} = Nat-path λ x → funext λ a →
---         cocompl (F F∘ Dom (よ D) (const! (Nerve F .F₀ B))) .has⊥ (cocone′ B)
---           .centre .commutes (hom′ _ x a)
---       ∙ F.elimr refl
--- ```
+          D.pullr (↓colim.factors _ _ _)
+          ∙ ↓colim.factors _ _ _
+          ∙ ap (↓colim.ψ _)
+              (↓Obj-path _ _ refl refl
+                (Nat-path λ _ → funext λ _ →
+                   sym (j .map .is-natural _ _ _ $ₚ _)
+                   ∙ ap (j .map .η _) (C.idl _))))
+        (λ j → D.idl _)
+          
+    adj .zag {d} =
+      Nat-path λ c → funext λ f →
+        ↓colim.factors (Nerve F .F₀ d) {j = hom′ _ c f} _ _
+        ∙ F.elimr refl
+```

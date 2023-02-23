@@ -179,17 +179,18 @@ we're seeking.
     η⁻¹η : adj.unit.η _ .morphism C.∘ η⁻¹ ≡ C.id
     ηη⁻¹ : η⁻¹ C.∘ adj.unit.η _ .morphism ≡ C.id
 
-    η⁻¹ = preserved .coequalise {e′ = o .snd .ν} (o .snd .ν-mult)
+    η⁻¹ = preserved .universal {e′ = o .snd .ν} (o .snd .ν-mult)
 
     η⁻¹η = is-coequaliser.unique₂ preserved
-      {e′ = U.₁ (has-coeq o .coeq)} {p = preserved .coequal}
-      (sym (C.pullr (preserved .universal)
-          ∙ C.pullr (unit.is-natural _ _ _)
-          ∙ C.pulll (preserved .coequal)
-          ∙ C.cancelr zag))
-      (C.introl refl)
+      {e′ = U.₁ (has-coeq o .coeq)}
+      (preserved .coequal)
+      (C.pullr (preserved .factors)
+       ∙ C.pullr (unit.is-natural _ _ _)
+       ∙ C.pulll (preserved .coequal)
+       ∙ C.cancelr zag)
+      (C.idl _)
 
-    ηη⁻¹ = C.pulll (preserved .universal) ∙ o .snd .ν-unit
+    ηη⁻¹ = C.pulll (preserved .factors) ∙ o .snd .ν-unit
 ```
 
 It remains to show that $\eta^{-1}$ is a homomorphism of algebras. This
@@ -203,7 +204,7 @@ is a calculation reusing the established proof that $\eta^{-1}\eta =
       η⁻¹ C.∘ U.₁ (counit.ε _)                                                              ≡⟨ C.refl⟩∘⟨ ap U.₁ (D.intror (F.annihilate (C.assoc _ _ _ ∙ η⁻¹η))) ⟩
       η⁻¹ C.∘ U.₁ (counit.ε _ D.∘ F.₁ (U.₁ (has-coeq o .coeq)) D.∘ F.₁ (unit.η _ C.∘ η⁻¹))  ≡⟨ C.refl⟩∘⟨ ap U.₁ (D.extendl (counit.is-natural _ _ _)) ⟩
       η⁻¹ C.∘ U.₁ (has-coeq o .coeq D.∘ counit.ε _ D.∘ F.₁ (unit.η _ C.∘ η⁻¹))              ≡⟨ C.refl⟩∘⟨ U.F-∘ _ _ ⟩
-      η⁻¹ C.∘ U.₁ (has-coeq o .coeq) C.∘ U.₁ (counit.ε _ D.∘ F.₁ (unit.η _ C.∘ η⁻¹))        ≡⟨ C.pulll (preserved .universal) ⟩
+      η⁻¹ C.∘ U.₁ (has-coeq o .coeq) C.∘ U.₁ (counit.ε _ D.∘ F.₁ (unit.η _ C.∘ η⁻¹))        ≡⟨ C.pulll (preserved .factors) ⟩
       o .snd .ν C.∘ U.₁ (counit.ε _ D.∘ F.₁ (unit.η _ C.∘ η⁻¹))                             ≡⟨ C.refl⟩∘⟨ ap U.₁ (ap (counit.ε _ D.∘_) (F.F-∘ _ _) ∙ D.cancell zig) ⟩
       o .snd .ν C.∘ UF.₁ η⁻¹                                                                ∎
 ```
@@ -244,7 +245,7 @@ $U$ is conservative, so $\eps$ is an isomorphism, as desired.
     : ∀ {o} → is-conservative U → D.is-invertible (adj.counit.ε o)
   conservative-prcoeq→counit-is-iso {o} reflect-iso = reflect-iso $
     C.make-invertible
-      (U.₁ (coequ .coeq) C.∘ unit.η _) (U.pulll (coequ .universal) ∙ zag)
+      (U.₁ (coequ .coeq) C.∘ unit.η _) (U.pulll (coequ .factors) ∙ zag)
       inversel
     where
 
@@ -260,12 +261,13 @@ $U$ is conservative, so $\eps$ is an isomorphism, as desired.
 
     inversel =
       is-coequaliser.unique₂ preserved
-        {e′ = U.₁ (coequ .coeq)} {p = preserved .coequal}
-        (sym (C.pullr (U.collapse (coequ .universal))
+        {e′ = U.₁ (coequ .coeq)}
+        (preserved .coequal)
+        (C.pullr (U.collapse (coequ .factors))
             ∙ C.pullr (unit.is-natural _ _ _)
             ∙ C.pulll (preserved .coequal)
-            ∙ C.cancelr zag))
-        (C.introl refl)
+            ∙ C.cancelr zag)
+        (C.idl _)
 ```
 
 Packaging it all up, we get the claimed theorem: If $\cD$ has Beck's
