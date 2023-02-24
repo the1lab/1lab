@@ -74,9 +74,9 @@ Kan extension] of $F$ along the [Yoneda embedding] $\yo$, which can be
 given by the _restricted_ Yoneda embedding functor $X \mapsto \hom(F(-),
 X)$.
 
-[left Kan extension]: Cat.Functor.Kan.html
+[left Kan extension]: Cat.Functor.Kan.Base.html
 [Yoneda embedding]: Cat.Functor.Hom.html
-[computed]: Cat.Functor.Kan.html#a-formula
+[computed]: Cat.Functor.Kan.Pointwise.html
 
 <!--
 ```agda

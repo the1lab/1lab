@@ -163,7 +163,7 @@ objects of $\cC$._ The objects of $\cC$ are then interpreted as
 "primitive shapes", and the maps in $\cC$ are interpreted as "maps to
 glue against".
 
-[coyoneda lemma]: Cat.Functor.Hom.html#the-coyoneda-lemma
+[coyoneda lemma]: Cat.Functor.Hom.Coyoneda.html
 
 Let's make this more concrete by considering an example: Take $\cC =
 \bull \tto \bull$, the category with two points --- let's
@@ -466,7 +466,7 @@ representables. Consequently, two maps in a $\cT$ are equal if and
 only if they agree on all generalised elements with domain the
 sheafification of a representable:
 
-[coyoneda lemma]: Cat.Functor.Hom.html#the-coyoneda-lemma
+[coyoneda lemma]: Cat.Functor.Hom.Coyoneda.html
 
 <!--
 ```agda

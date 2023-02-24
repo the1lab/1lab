@@ -115,7 +115,7 @@ functor, the nerve-realisation adjunction $\Lan_\yo(F) \dashv \hom(F(-),
 -)$ is 75% of the way to being a [geometric morphism], with flatness
 _definitionally_ guaranteeing that the left adjoint is lex.
 
-[left Kan extension]: Cat.Functor.Kan.html
+[left Kan extension]: Cat.Functor.Kan.Base.html
 [realisation]: Cat.Functor.Kan.Nerve.html
 [left exact]: Cat.Diagram.Limit.Finite.html#lex-functors
 [geometric morphism]: Topoi.Base.html#geometric-morphisms

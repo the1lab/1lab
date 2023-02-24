@@ -102,3 +102,4 @@ Pullback→Limit
   → Limit (cospan→cospan-diagram x y {C = Cat} f g)
 Pullback→Limit x = Terminal-cone→Limit _ (Pullback→Terminal-cone x)
 ```
+-->

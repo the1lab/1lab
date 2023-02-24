@@ -36,7 +36,7 @@ is a universal solution $\Lan_p(F)$ to extending $F$ to a functor $C'
 **any** $F$; When this happens, the assignment $F \mapsto \Lan_p(F)$
 *extends to a functor, which we call a **global Kan extension**.
 
-[left Kan extension]: Cat.Functor.Kan.html
+[left Kan extension]: Cat.Functor.Kan.Base.html
 [small]: 1Lab.intro.html#universes-and-size-issues
 [cocomplete]: Cat.Diagram.Colimit.Base.html#cocompleteness
 

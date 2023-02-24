@@ -23,7 +23,7 @@ accuracy, using the setup from the diagram below, we should say “$(G,
 
 [Kan extensions]: Cat.Functor.Kan.Base.html
 [right]: Cat.Functor.Kan.Base.html#right-kan-extensions
-[universal constructions]: Cat.Functor.Representable.html
+[universal constructions]: Cat.Functor.Hom.Representable.html
 [unique when they exist]: 1Lab.HLevel.html#is-prop
 
 ~~~{.quiver .tall-15}
@@ -147,13 +147,13 @@ Lan-is-prop {C = C} {C′ = C′} {D = D} {p = p} {F = F} d-cat L₁ L₂ = path
 -->
 
 That's because if $\cD$ is univalent, then [so is $[\cC',
-\cD]$][functor-is-category], so our natural isomorphism $i : G_1 \cong
+\cD]$][Functor-is-category], so our natural isomorphism $i : G_1 \cong
 G_2$ is equivalent to an identification $i' : G_1 \equiv G_2$. Then, our
 tiny lemma stating that this isomorphism "sends $\eta_1$ to $\eta_2$" is
 precisely the data of a dependent identification $\eta_1 \equiv \eta_2$
 over $i'$.
 
-[functor-is-category]: Cat.Instances.Functor.html#functor-is-category
+[Functor-is-category]: Cat.Instances.Functor.html#Functor-is-category
 
 ```agda
   functor-path : L₁.Ext ≡ L₂.Ext

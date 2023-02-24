@@ -71,7 +71,7 @@ of representing objects for functors: [limits], [colimits], [coends],
 [limits]: Cat.Diagram.Limit.Base.html
 [coends]: Cat.Diagram.Coend.html
 [colimits]: Cat.Diagram.Colimit.Base.html
-[Kan extensions]: Cat.Functor.Kan.html
+[Kan extensions]: Cat.Functor.Kan.Base.html
 [adjoint functors]: Cat.Functor.Adjoint.html
 
 The first thing we will observe is an immediate consequence of the

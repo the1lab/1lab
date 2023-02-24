@@ -47,7 +47,7 @@ general categorical machinery: [right Kan extensions].
 
 [limits]: Cat.Diagram.Limit.Base.html
 [size]: 1Lab.intro.html#universes-and-size-issues
-[right Kan extensions]: Cat.Functor.Kan.Right.html
+[right Kan extensions]: Cat.Functor.Kan.Base.html
 
 The really, really short of it is that the codensity monad of $F$ is the
 right Kan extension of $F$ along itself, $\Ran_F F$.

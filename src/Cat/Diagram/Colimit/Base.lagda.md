@@ -30,13 +30,12 @@ acts as a solution to an "equational problem".
 [limit]: Cat.Diagram.Limit.Base.html
 
 We define colimits in a similar way to limits; the only difference being
-that we define a colimits of a diagram $F$ as [left kan extensions]
-instead of [right kan extensions]. This gives us the expected
+that we define a colimits of a diagram $F$ as left [kan extensions]
+instead of right [kan extensions]. This gives us the expected
 "mapping out" universal property, as opposed to the "mapping in" property
 associated to limits.
 
-[left kan extension]: Cat.Functor.Kan.Left.html
-[right kan extension]: Cat.Functor.Kan.Right.html
+[kan extensions]: Cat.Functor.Kan.Base.html
 
 Note that approach to colimits is not what normally presented in
 introductory material. Instead, most books opt to define colimits
@@ -342,7 +341,7 @@ computation.
 
 [Much like limits], colimits are unique up to isomorphism.
 
-[Much like limits]: Cat.Diagram.Limit.Base#uniqueness
+[Much like limits]: Cat.Diagram.Limit.Base.html#uniqueness
 
 <!--
 ```agda
@@ -546,7 +545,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 The definitions here are the same idea as [preservation of limits], just
 dualized.
 
-[preservation of limits]: Cat.Diagram.Limit.Base#preservation-of-limits
+[preservation of limits]: Cat.Diagram.Limit.Base.html#preservation-of-limits
 
 <!--
 ```agda

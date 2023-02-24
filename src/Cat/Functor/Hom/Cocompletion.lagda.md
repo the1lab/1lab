@@ -84,7 +84,7 @@ risen above it: Everything claimed above follows from the general theory
 of Kan extensions.
 
 [Yoneda embedding]: Cat.Functor.Hom.html#the-yoneda-embedding
-[left Kan extension]: Cat.Functor.Kan.html
+[left Kan extension]: Cat.Functor.Kan.Base.html
 
 ```agda
 よ-extension : (F : Functor C D) → Lan (よ C) F

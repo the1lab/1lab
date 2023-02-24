@@ -26,7 +26,7 @@ As an intermediate step, we establish the posetal analogue of the
 [coyoneda lemma], saying that every lower set $L$ is the join of all
 $\darr a$ for $a : A, a \in L$.
 
-[coyoneda lemma]: Cat.Functor.Hom.html#the-coyoneda-lemma
+[coyoneda lemma]: Cat.Functor.Hom.Coyoneda.html
 
 ```agda
 module ↓Coyoneda {o ℓ} (P : Poset o ℓ) (Ls : Lower-set P) where

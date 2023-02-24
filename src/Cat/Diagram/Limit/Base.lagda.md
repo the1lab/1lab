@@ -140,7 +140,7 @@ definition of limits: $x : \cC$ is the limit of a diagram
 $D : \cJ \to \cC$ when the constant functor $!x : \top \to \cC$ is
 a right kan extension of $! : \cJ \to \top$ along $D$.
 
-[right kan extensions]: Cat.Functor.Kan.Right.html
+[right kan extensions]: Cat.Functor.Kan.Base.html
 
 <!--
 ```agda
