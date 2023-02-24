@@ -26,13 +26,13 @@ be a good idea to check out those pages before continuing!
 
 To motivate limits, note how all the above examples have roughly the
 same structure. They all consist of some object, a bunch of maps out
-of said object, some commuting conditions, and a universal property
+of said object, some commutativity conditions, and a universal property
 that states that we can construct unique maps into the object under
 certain conditions.
 
 Our first step towards making this vague intuition precise is to construct
 a mathematical widget that picks out a collection of objects, arrows,
-and commutation conditions in a category. This is required to describe
+and commutativity conditions in a category. This is required to describe
 the collection of maps out of our special objects, and the equations
 they satisfy. Luckily, we already have such a widget: functors!
 
@@ -68,8 +68,8 @@ parallel arrows category. Pullbacks defined over a diagram of the shape,
 $\bullet \to \bullet \leftarrow \bullet$; again, these diagrams are
 given by functors out of the category with that exact shape. Terminal
 objects may seem to break this trend, but we can think of them as
-being defined over the empty diagram, which is given by functors out
-of the category with no objects.
+being defined over the empty diagram, the unique functor from
+the category with no objects.
 
 We now move our attention to the maps out of our special object into
 the objects of the diagram. Note that these maps need to commute with
@@ -114,10 +114,10 @@ situation diagrammatically like so:
 
 All that remains is the universal property. If we translate this into
 our existing machinery, that means that $!x$ must be the universal
-functor equipped with natural transformation $\eta$; that is, for
+functor equipped with a natural transformation $\eta$; that is, for
 any other $K : \top \to \cC$ equipped with $\tau : K \circ \to D$, we
-have a unique natural transformation $\sigma : K \to !x$ that factorises
-$\tau$. This is a bit of a mouthful, so lets look at a diagram instead.
+have a unique natural transformation $\sigma : K \to !x$ that factors
+$\tau$. This is a bit of a mouthful, so let's look at a diagram instead.
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -135,10 +135,10 @@ $\tau$. This is a bit of a mouthful, so lets look at a diagram instead.
 
 We might be tempted to stop here and call it a day, but we can go one
 step further. It turns out that these universal functors have a name:
-they are [right kan extensions]. This allows for an extremely concise
+they are [right Kan extensions]. This allows for an extremely concise
 definition of limits: $x : \cC$ is the limit of a diagram
 $D : \cJ \to \cC$ when the constant functor $!x : \top \to \cC$ is
-a right kan extension of $! : \cJ \to \top$ along $D$.
+a right Kan extension of $! : \cJ \to \top$ along $D$.
 
 [right kan extensions]: Cat.Functor.Kan.Base.html
 
@@ -450,7 +450,7 @@ extension functor.
 
 Furthermore, we can show that the apex is the limit, in the sense of
 `is-limit`{.Agda}, of the diagram. You'd think this is immediate, but
-unfortunately proof assistants: `is-limit`{.Agda} asks for _the_
+unfortunately, proof assistants: `is-limit`{.Agda} asks for _the_
 constant functor functor $\{*\} \to \cC$ with value `apex` to be a Kan
 extension, but `Limit`{.Agda}, being an instance of `Ran`{.Agda},
 packages an _arbitrary_ functor $\{*\} \to \cC$.

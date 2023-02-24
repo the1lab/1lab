@@ -20,7 +20,7 @@ The **initial category** is the category with no objects.
 ⊥Cat .Hom _ _ = ⊥
 ```
 
-This category is notable, as there exists a unique functor from
+This category is notable for the existence of a unique functor from
 it to any other category.
 
 ```agda

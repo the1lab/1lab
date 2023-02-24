@@ -144,6 +144,7 @@ is the image of $f$.
 
 <details>
 <summary>Here's the tedious isomorphism algebra.</summary>
+
 ```agda
     factor .β ./-Hom.commutes = invertible→epic (coker-ker≃ker-coker f) _ _ $
       Coker.unique₂ (Ker.kernel f)

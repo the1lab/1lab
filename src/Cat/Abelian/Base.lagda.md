@@ -337,7 +337,7 @@ monomorphism].
 ```
 
 The existence of the map $f'$, and indeed of the maps $p$ and $i$,
-follow from the factors properties of kernels and cokernels. The map
+follow from the universal properties of kernels and cokernels. The map
 $p$ is the canonical quotient map $A \to \coker(f)$, and the map $i$ is
 the canonical subobject inclusion $\ker(f) \to B$.
 
@@ -404,7 +404,7 @@ $$
 \ker (\coker f) \cong \coker (\ker f) \to A\text{,}
 $$
 
-where the second map arises from the factors property of the cokernel:
+where the second map arises from the universal property of the cokernel:
 We can map out of it with the map $\ker f \mono A$, since (using that
 $f$ is mono), we have $0 = \ker f$ from $f0 = f\ker f$.
 
@@ -442,8 +442,8 @@ coequalisers are epic to make progress.
             Ker.kernel _ ∘ decompose f .fst                     ∎
 ```
 
-Using the factors property of the cokernel (both uniqueness and
-factorsity), we establish that the maps defined above are inverses in
+Using the universal property of the cokernel (both uniqueness and
+universality), we establish that the maps defined above are inverses in
 $\cA$, thus assemble into an isomorphism in the slice.
 
 ```agda

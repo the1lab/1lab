@@ -22,7 +22,7 @@ open _=>_
 # Colimits via Cocones
 
 As noted in the main page on [colimits], most introductory texts opt
-to define colimits via a categorical gadget called a **cocone**.
+to define colimits via categorical gadgets called **cocones**.
 
 [colimits]: Cat.Diagram.Colimit.Base.html
 
@@ -48,7 +48,7 @@ module _ {J : Precategory o ℓ} {C : Precategory o′ ℓ′} (F : Functor J C)
 ```
 
 As per usual, we define a helper lemma charaterizing the path space
-of cones:
+of cocones:
 
 ```agda
   open Cocone
@@ -136,10 +136,10 @@ Now, we can define the category of cocones over a given diagram:
 ## Initial Cocones as Colimits
 
 A cocone over some diagram $F$ contains the same data as natural
-transformations from $F$ to a constant functor. This means that they
-contain all of the data of a colimit; the only other bit we need is
-the universal property. This can be obtained by defining a colimit to
-be the [initial] object in the category of cocones over $F$.
+transformation from $F$ to a constant functor. This means that they
+capture all the structure of colimits, save for the universal property.
+That too can be encoded, by asking that the cocone in question be
+an [initial object].
 
 [initial object]: Cat.Diagram.Initial.html
 

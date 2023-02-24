@@ -122,6 +122,7 @@ embedding.
 <details>The remainder of the proof follows by applying naturality 10000
 times, and is not very interesting.
 <summary>
+
 ```agda
     Nerve-is-lan .σ {M = M} α .η d .is-natural x y f =
       funext λ g →

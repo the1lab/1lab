@@ -69,18 +69,18 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (Diagram : Func
 
 ## Concretely
 
-The above definition is very concise, and has the benefit of being
-abstract: this means that we can directly re-use definitions and
-theorems for kan extensions for colimits. However, this also means
-that the definition is abstract: it makes working with colimits
-_in general_ easier, at the cost of making _specific_ colimits more
-difficult, as the data we actually care about has been obfuscated.
+As mentioned, our definition is very abstract, meaning we can directly
+re-use definitions and theorems about Kan extensions in the setting of
+colimits. The trade-off is that while working with colimits _in general_
+is easier, working with _specific_ colimits becomes more difficult, as
+the data we actually care about has been obfuscated.
 
-For instance, it's quite hard to actually show that a specific object
-is a colimit of aa diagram, as you have to wrap all the relevant data
-in a few layers of abstraction. To work around this, we provide an
-auxiliary record type, `make-is-colimit`{.Agda}, which computes the
-appropriate left extension.
+One particularly egregious failure is... actually constructing colimits.
+The definition in terms of `Lan`{.Agda} hides the concrete data behind a
+few abstractions, which would be very tedious to write out each time. To
+work around this, we provide an auxiliary record type,
+`make-is-colimit`{.Agda}, as an intermediate step in constructing left
+extensions.
 
 <!--
 ```agda
@@ -99,10 +99,10 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
 ```
 -->A
 
-First, we require morphisms from the every value to the diagram to
-the coapex; we call this family $\phi$. Moreover, if $f : x \to y$ is
-a morphism in the "shape" category $\cJ$, then $\psi y \circ Ff = \psi x$,
-IE: the $\psi$ family is actually natural.
+First, we require morphisms from the every value of the diagram to
+the coapex; taken as a family, we call it $\phi$. Moreover, if $f : x \to y$ is
+a morphism in the "shape" category $\cJ$, we require $\psi y \circ Ff = \psi x$,
+which encodes the relevant naturality.
 
 ```agda
     field
@@ -111,8 +111,8 @@ IE: the $\psi$ family is actually natural.
 ```
 
 The rest of the data ensures that $\psi$ is the universal family
-of maps iwth this property; if $\epsilon_j : Fj \to x$ is another natural
-family, then each $\epsilon_j$ factors through the coapex by a _unique_
+of maps with this property; if $\eps_j : Fj \to x$ is another natural
+family, then each $\eps_j$ factors through the coapex by a _unique_
 universal morphism:
 
 ```agda
@@ -210,9 +210,9 @@ the rest of the data.
 ```
 -->
 
-We also want to be able to use the interface of `make-is-colimit`{.Agda}
-when we have our hands on a colimit. To do this, we provide a function
-for *un*making a colimit.
+The concrete interface of `make-is-colimit`{.Agda} is also handy for
+_consuming_ specific colimits. To enable this use case, we provide a
+function which **un**makes a colimit.
 
 ```agda
   unmake-colimit
@@ -305,7 +305,7 @@ to the single object of `⊤Cat`{.Agda}.
 
 Furthermore, we can show that the apex is the colimit, in the sense of
 `is-colimit`{.Agda}, of the diagram. You'd think this is immediate, but
-unfortunately proof assistants: `is-colimit`{.Agda} asks for _the_
+unfortunately, proof assistants: `is-colimit`{.Agda} asks for _the_
 constant functor functor $\{*\} \to \cC$ with value `coapex` to be a Kan
 extension, but `Colimit`{.Agda}, being an instance of `Lan`{.Agda},
 packages an _arbitrary_ functor $\{*\} \to \cC$.
