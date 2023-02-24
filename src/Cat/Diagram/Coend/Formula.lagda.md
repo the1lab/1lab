@@ -51,6 +51,8 @@ module _ (F : Functor (C ^op ×ᶜ C) D) where
     module D = Cat D
     module F = F-r F
     open _=>_
+    open Twist
+    open Bifunctor
 
   cocone→cowedge : ∀ {x} → twistᵒᵖ F => Const x → Cowedge F
   cocone→cowedge eta .nadir = _
@@ -60,13 +62,14 @@ module _ (F : Functor (C ^op ×ᶜ C) D) where
     ∙ (sym $ eta .is-natural _ _ (twist _ _ (C.cancelr (C.idl _))))
 
   cowedge→cocone : (W : Cowedge F) → twistᵒᵖ F => Const (W .nadir)
-  cowedge→cocone W .η ((c , c') , f) = W .ψ c D.∘ Bifunctor.second F f
+  cowedge→cocone W .η ((c , c') , f) = W .ψ c D.∘ second F f
   cowedge→cocone W .is-natural ((a , b) , f) ((x , y) , g) h =
-    (W .extranatural g D.⟩∘⟨refl)
-    ·· D.pullr (F.weave (C.introl refl ,ₚ refl))
-    ·· D.extendl (sym (W .extranatural _))
-    ·· (D.refl⟩∘⟨ sym (Bifunctor.second∘second F) ∙ ap (Bifunctor.second F) (h .Twist.commutes))
-    ·· sym (D.idl _)
+    (W .ψ x D.∘ F.F₁ (C.id , g)) D.∘ F.F₁ (_ , _)                           ≡⟨ W .extranatural g D.⟩∘⟨refl ⟩
+    (W .ψ y D.∘ F.F₁ (g , C.id)) D.∘ F.F₁ (h .before , h .after)            ≡⟨ D.pullr (F.weave (C.introl refl ,ₚ refl)) ⟩
+    W .ψ y D.∘ ((F.F₁ (h .before C.∘ g , C.id)) D.∘ F.F₁ (C.id , h .after)) ≡⟨ D.extendl (sym (W .extranatural _)) ⟩
+    (W .ψ a D.∘ (F.F₁ (C.id , h .before C.∘ g) D.∘ F.F₁ (C.id , h .after))) ≡⟨ D.refl⟩∘⟨ sym (Bifunctor.second∘second F) ∙ ap (Bifunctor.second F) (h .commutes) ⟩
+    W .ψ a D.∘ F.F₁ (C.id , f)                                              ≡⟨ sym (D.idl _) ⟩
+    D.id D.∘ W .ψ a D.∘ F.F₁ (C.id , f) ∎
 ```
 
 We can now extend that correspondence to calculating coends as certain

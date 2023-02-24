@@ -253,7 +253,7 @@ comultiplication.
 ```
 
 For uniqueness, we use distributivity of composition over addition of
-morphisms and the factors property of the product to establish the
+morphisms and the universal property of the product to establish the
 desired equation. Check it out:
 
 ```agda
