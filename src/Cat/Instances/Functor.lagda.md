@@ -37,26 +37,34 @@ $\eta$ and $\theta$.
 
 ```agda
 _∘nt_ : {F G H : Functor C D} → G => H → F => G → F => H
-_∘nt_ {C = C} {D = D} {F} {G} {H} f g = nat where
-  module D = Cat.Reasoning D
+_∘nt_ {C = C} {D = D} {F} {G} {H} f g = nat
+  module ∘nt where
+    module D = Cat.Reasoning D
 
-  nat : F => H
-  nat .η x = f .η _ D.∘ g .η _
+    nat : F => H
+    nat .η x = f .η _ D.∘ g .η _
 ```
 
 <!--
 ```agda
-  nat .is-natural x y h =
-    (f .η y D.∘ g .η y) D.∘ F.₁ h  ≡⟨ D.pullr (g .is-natural _ _ _) ⟩
-    f .η y D.∘ (G.₁ h D.∘ g .η x)  ≡⟨ D.extendl (f .is-natural _ _ _) ⟩
-    H.₁ h  D.∘ f .η _ D.∘ g .η  _  ∎
-    where
-      module C = Precategory C
-      module F = Functor F
-      module G = Functor G
-      module H = Functor H
+    nat .is-natural x y h =
+      (f .η y D.∘ g .η y) D.∘ F.₁ h  ≡⟨ D.pullr (g .is-natural _ _ _) ⟩
+      f .η y D.∘ (G.₁ h D.∘ g .η x)  ≡⟨ D.extendl (f .is-natural _ _ _) ⟩
+      H.₁ h  D.∘ f .η _ D.∘ g .η  _  ∎
+      where
+        module C = Precategory C
+        module F = Functor F
+        module G = Functor G
+        module H = Functor H
 ```
 -->
+
+<!--
+```agda
+{-# DISPLAY ∘nt.nat f g = f ∘nt g #-}  
+```
+-->
+
 
 We can then show that these definitions assemble into a category where
 the objects are functors $F, G : C \to D$, and the morphisms are natural
@@ -434,6 +442,19 @@ module
     module D = Cat.Reasoning D
     module C = Cat.Reasoning C
 
+  natural-iso : (F G : Functor C D) → Type _
+  natural-iso F G = F CD.≅ G
+
+  module natural-iso {F G : Functor C D} (eta : F CD.≅ G) = CD._≅_ eta
+
+  _ni∘_ : ∀ {F G H : Functor C D}
+          → natural-iso F G → natural-iso G H
+          → natural-iso F H
+  _ni∘_ = CD._∘Iso_
+
+  _ni⁻¹ : ∀ {F G : Functor C D} → natural-iso F G → natural-iso G F
+  _ni⁻¹ = CD._Iso⁻¹
+
   F∘-iso-id-l
     : {F : Functor D D} {G : Functor C D}
     → F DD.≅ Id → (F F∘ G) CD.≅ G
@@ -509,5 +530,37 @@ module _
         (λ i j → G .F₀ (cd.iso→path-id {A = G′} i j .F₀ x))
         ∙ transport-refl _ ∙ sym (G .F-id)
     where module cd = Univalent cdcat
+
+module _ {o ℓ κ} {C : Precategory o ℓ} where
+  open Functor
+  open _=>_
+
+  natural-iso-to-is-equiv
+    : {F G : Functor C (Sets κ)}
+    → (eta : natural-iso F G)
+    → ∀ x → is-equiv (natural-iso.to eta .η x)
+  natural-iso-to-is-equiv eta x =
+    is-iso→is-equiv $
+      iso (natural-iso.from eta .η x)
+          (λ x i → natural-iso.invl eta i .η _ x)
+          (λ x i → natural-iso.invr eta i .η _ x)
+
+  natural-iso-from-is-equiv
+    : {F G : Functor C (Sets κ)}
+    → (eta : natural-iso F G)
+    → ∀ x → is-equiv (natural-iso.from eta .η x)
+  natural-iso-from-is-equiv eta x =
+    is-iso→is-equiv $
+      iso (natural-iso.to eta .η x)
+          (λ x i → natural-iso.invr eta i .η _ x)
+          (λ x i → natural-iso.invl eta i .η _ x)
+
+  natural-iso→equiv
+    : {F G : Functor C (Sets κ)}
+    → (eta : natural-iso F G)
+    → ∀ x → ∣ F .F₀ x ∣ ≃ ∣ G .F₀ x ∣
+  natural-iso→equiv eta x =
+    natural-iso.to eta .η x ,
+    natural-iso-to-is-equiv eta x
 ```
 -->

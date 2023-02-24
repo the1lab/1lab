@@ -446,6 +446,9 @@ lemma:
 open import Cat.Functor.Hom -- Hom functor, Yoneda embedding, Coyoneda lemma
 open import Cat.Functor.Hom.Cocompletion -- Universal property of PSh(C)
 open import Cat.Functor.Hom.Representable -- Representable functors
+
+open import Cat.Functor.Hom.Displayed
+  -- Hom functors of displayed categories
 ```
 
 ## Univalent categories
@@ -667,6 +670,8 @@ open import Cat.Displayed.Instances.Scone
 -- We can consider *scones* over a category C with a terminal object as
 -- forming a displayed category over C. Moreover, it's a Cartesian
 -- fibration by construction.
+open import Cat.Displayed.Instances.Trivial
+-- Any category can be displayed over the terminal category.
 ```
 
 ### Cocartesian fibrations
@@ -675,9 +680,20 @@ open import Cat.Displayed.Instances.Scone
 open import Cat.Displayed.Cocartesian
   -- Cocartesian lifts, opfibrations
 
+open import Cat.Displayed.Cocartesian.Indexing
+  -- Opfibrations have covariant opreindexing 
+
 open import Cat.Displayed.Cocartesian.Weak
   -- Weak cocartesian morphisms
 ```
+
+### Bifibrations
+
+```agda
+open import Cat.Displayed.Bifibration
+  -- Bifibrations, adjoints to base change
+```
+
 
 
 ## Bicategories

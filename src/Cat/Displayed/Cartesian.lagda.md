@@ -147,6 +147,38 @@ composite, rather than displayed directly over a composite.
     ·· ap (coe1→0 (λ i → Hom[ q i ] u′ a′)) (sym (unique m₂′ (from-pathp⁻ β)))
 ```
 
+Furthermore, if $f'' : a'' \to_{f} b'$ is also displayed over $f$,
+there's a unique vertical map $a'' \to a'$. This witnesses the fact that
+every cartesian map is [weakly cartesian].
+
+[weakly cartesian]: Cat.Displayed.Cartesian.Weak.html
+
+```agda
+  universalv : ∀ {a″} (f″ : Hom[ f ] a″ b′) → Hom[ id ] a″ a′
+  universalv f″ = universal′ (idr _) f″
+
+  commutesv
+    : ∀ {x′} → (g′ : Hom[ f ] x′ b′)
+    → f′ ∘′ universalv g′ ≡[ idr _ ] g′
+  commutesv = commutesp (idr _)
+
+  uniquev
+    : ∀ {x′} {g′ : Hom[ f ] x′ b′}
+    → (h′ : Hom[ id ] x′ a′)
+    → f′ ∘′ h′ ≡[ idr _ ] g′
+    → h′ ≡ universalv g′
+  uniquev h′ p = uniquep (idr f) refl (idr f) h′ p
+
+  uniquev₂
+    : ∀ {x′} {g′ : Hom[ f ] x′ b′}
+    → (h′ h″ : Hom[ id ] x′ a′)
+    → f′ ∘′ h′ ≡[ idr _ ] g′
+    → f′ ∘′ h″ ≡[ idr _ ] g′
+    → h′ ≡ h″
+  uniquev₂ h′ h″ p q =
+    uniquep₂ (idr f) refl (idr f) h′ h″ p q
+```
+
 ## Properties of Cartesian Morphisms
 
 The composite of 2 cartesian morphisms is in turn cartesian.
@@ -397,6 +429,35 @@ vertical+cartesian→invertible {x′ = x′} {x″ = x″} {f′ = f′} f-cart
       hom[] id′ ∎
 ```
 
+Furthermore, $f' : x' \to_{f} y'$ is cartesian if and only if the
+function $f \cdot' -$ is an equivalence.
+
+```agda
+postcompose-equiv→cartesian
+  : ∀ {x y x′ y′} {f : Hom x y}
+  → (f′ : Hom[ f ] x′ y′)
+  → (∀ {w w′} {g : Hom w x} → is-equiv {A = Hom[ g ] w′ x′} (f′ ∘′_))
+  → is-cartesian f f′
+postcompose-equiv→cartesian f′ eqv .is-cartesian.universal m h′ =
+  equiv→inverse eqv h′
+postcompose-equiv→cartesian f′ eqv .is-cartesian.commutes m h′ =
+  equiv→counit eqv h′
+postcompose-equiv→cartesian f′ eqv .is-cartesian.unique m′ p =
+  sym (equiv→unit eqv m′) ∙ ap (equiv→inverse eqv) p
+
+cartesian→postcompose-equiv
+  : ∀ {x y z x′ y′ z′} {f : Hom y z} {g : Hom x y} {f′ : Hom[ f ] y′ z′}
+  → is-cartesian f f′
+  → is-equiv {A = Hom[ g ] x′ y′} (f′ ∘′_)
+cartesian→postcompose-equiv cart =
+  is-iso→is-equiv $
+    iso (universal _)
+        (commutes _)
+        (λ g′ → sym (unique g′ refl))
+  where open is-cartesian cart
+```
+
+
 ## Cartesian Lifts
 
 We call an object $a'$ over $a$ together with a Cartesian arrow $f' : a'
@@ -436,6 +497,23 @@ record Cartesian-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
     Cartesian-lift (has-lift f y′)
 ```
 
+Note that if $\cE$ is a fibration, we can define an operation that
+allows us to move vertical morphisms between fibres. This actually
+extends to a collection of functors, called [base change functors].
+This operation is also definable for [weak fibrations], as it only
+uses the universal property that yields a vertical morphism.
+
+[base change functors]: Cat.Displayed.Cartesian.Indexing.html
+[weak fibrations]: Cat.Displayed.Cartesian.Weak.html#is-weak-cartesian-fibration
+
+```agda
+  rebase : ∀ {x y y′ y″} → (f : Hom x y)
+           → Hom[ id ] y′ y″
+           → Hom[ id ] (has-lift.x′ f y′) (has-lift.x′ f y″)
+  rebase f vert =
+    has-lift.universalv f _ (hom[ idl _ ] (vert ∘′ has-lift.lifting f _))
+```
+
 A Cartesian fibration is a displayed category having Cartesian lifts for
 every right corner.
 
@@ -472,24 +550,3 @@ fibre over a ring $R$ is the category of $R$-modules, Cartesian lifts
 are given by restriction of scalars.
 
 [category of modules]: Algebra.Ring.Module.html
-
-## Properties of Cartesian Fibrations
-
-If $\cE$ is a fibration, then every morphism is equivalent to
-a vertical morphism.
-
-```agda
-open Cartesian-lift
-open Cartesian-fibration
-
-fibration→vertical-equiv
-  : ∀ {X Y X′ Y′}
-  → (fib : Cartesian-fibration)
-  → (u : Hom X Y)
-  → Hom[ u ] X′ Y′ ≃ Hom[ id ] X′ (fib .has-lift u Y′ .x′)
-fibration→vertical-equiv fib u = Iso→Equiv $
-  (λ u′ → fib .has-lift _ _ .universal id (hom[ idr u ]⁻ u′)) ,
-  iso (λ u′ → hom[ idr u ] (fib .has-lift _ _ .lifting ∘′ u′))
-      (λ u′ → sym $ fib .has-lift _ _ .unique u′ (sym (hom[]-∙ _ _ ∙ liberate _)))
-      (λ u′ → (hom[]⟩⟨ fib .has-lift _ _ .commutes _ _) ·· hom[]-∙ _ _ ·· liberate _)
-```

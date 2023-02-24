@@ -79,6 +79,12 @@ hom[]-∙
       {f′ : E.Hom[ f ] x y}
   → hom[ q ] (hom[ p ] f′) ≡ hom[ p ∙ q ] f′
 hom[]-∙ p q = sym (subst-∙ (λ h → E.Hom[ h ] _ _) _ _ _)
+
+duplicate
+  : ∀ {a b x y} {f f' g : B.Hom a b} (p : f ≡ g) (q : f' ≡ g) (r : f ≡ f')
+      {f′ : E.Hom[ f ] x y}
+  → hom[ p ] f′ ≡ hom[ q ] (hom[ r ] f′)
+duplicate p q r = reindex _ _ ∙ sym (hom[]-∙ r q)
 ```
 
 To understand why these whiskering lemmas have such complicated types,
@@ -117,6 +123,24 @@ whisker-l {g = g} {a′} {_} {c′} {f′ = f′} {g′ = g′} p i =
     j (j = i0) → transport-filler (λ i → E.Hom[ p i B.∘ g ] _ _) (f′ E.∘′ g′) i
 ```
 
+<!--
+```agda
+unwhisker-r
+  : ∀ {a b c} {f : B.Hom b c} {g g' : B.Hom a b} {a′ b′ c′}
+      {f′ : E.Hom[ f ] b′ c′} {g′ : E.Hom[ g ] a′ b′}
+  → (p : f B.∘ g ≡ f B.∘ g') (q : g ≡ g')
+  → hom[ p ] (f′ E.∘′ g′) ≡ f′ E.∘′ hom[ q ] g′
+unwhisker-r p q = reindex _ _ ∙ sym (whisker-r _)
+
+unwhisker-l
+  : ∀ {a b c} {f f' : B.Hom b c} {g : B.Hom a b} {a′ b′ c′}
+      {f′ : E.Hom[ f ] b′ c′} {g′ : E.Hom[ g ] a′ b′}
+  → (p : f B.∘ g ≡ f' B.∘ g) (q : f ≡ f')
+  → hom[ p ] (f′ E.∘′ g′) ≡ hom[ q ] f′ E.∘′ g′
+unwhisker-l p q = reindex _ _ ∙ sym (whisker-l _)
+```
+-->
+
 The rest of this module is made up of grueling applications of the three
 lemmas above:
 
@@ -134,6 +158,20 @@ smashl
   → (p : f ≡ f') (q : f' B.∘ g ≡ h)
   → hom[ q ] (hom[ p ] f′ E.∘′ g′) ≡ hom[ ap (B._∘ g) p ∙ q ] (f′ E.∘′ g′)
 smashl p q = ap hom[ q ] (whisker-l p) ∙ hom[]-∙ _ _
+
+expandl
+  : ∀ {a b c} {f f' : B.Hom b c} {g : B.Hom a b} {h : B.Hom a c} {a′ b′ c′}
+      {f′ : E.Hom[ f ] b′ c′} {g′ : E.Hom[ g ] a′ b′}
+  → (p : f ≡ f') (q : f B.∘ g ≡ h)
+  → hom[ q ] (f′ E.∘′ g′) ≡ hom[ ap (B._∘ g) (sym p) ∙ q ] (hom[ p ] f′ E.∘′ g′)
+expandl p q = reindex q _ ∙ (sym $ smashl _ _)
+
+expandr
+  : ∀ {a b c} {f : B.Hom b c} {g g' : B.Hom a b} {h : B.Hom a c} {a′ b′ c′}
+      {f′ : E.Hom[ f ] b′ c′} {g′ : E.Hom[ g ] a′ b′}
+  → (p : g ≡ g') (q : f B.∘ g ≡ h)
+  → hom[ q ] (f′ E.∘′ g′) ≡ hom[ ap (f B.∘_) (sym p) ∙ q ] (f′ E.∘′ hom[ p ] g′)
+expandr p q = reindex q _ ∙ (sym $ smashr _ _)
 
 yank
   : ∀ {a b c d}
@@ -404,13 +442,21 @@ module _ {a′ : Hom[ a ] y′ z′} {b′ : Hom[ b ] x′ y′} {c′ : Hom[ c 
     hom[ refl ] (c′ ∘′ f′)                          ≡⟨ liberate _ ⟩
     c′ ∘′ f′                                        ∎
 
+  pulll[] : ∀ {f′ : Hom[ f ] w′ x′}
+           → a′ ∘′ (b′ ∘′ f′) ≡[ pulll p ] c′ ∘′ f′
+  pulll[] = pulll′
+
   pullr′ : ∀ {f′ : Hom[ f ] z′ w′} {q : (f ∘ a) ∘ b ≡ f ∘ c}
-           → (f′ ∘′ a′) ∘′ b′ ≡[ q ] f′ ∘′ c′
+         → (f′ ∘′ a′) ∘′ b′ ≡[ q ] f′ ∘′ c′
   pullr′ {f = f} {f′ = f′} {q = q} = to-pathp $
     hom[ q ] ((f′ ∘′ a′) ∘′ b′)             ≡˘⟨ assoc[] ⟩
     hom[ assoc f a b ∙ q ] (f′ ∘′ a′ ∘′ b′) ≡⟨ apr′ p′ ⟩
     hom[ refl ] (f′ ∘′ c′)                  ≡⟨ liberate _ ⟩
     f′ ∘′ c′                                ∎
+
+  pullr[] : ∀ {f′ : Hom[ f ] z′ w′}
+          → (f′ ∘′ a′) ∘′ b′ ≡[ pullr p ] f′ ∘′ c′
+  pullr[] = pullr′
 
 module _ {a′ : Hom[ a ] y′ z′} {b′ : Hom[ b ] x′ y′} {c′ : Hom[ c ] x′ z′}
          (p : c ≡ a ∘ b) (p′ : c′ ≡[ p ] a′ ∘′ b′) where abstract
@@ -420,10 +466,18 @@ module _ {a′ : Hom[ a ] y′ z′} {b′ : Hom[ b ] x′ y′} {c′ : Hom[ c 
   pushl′ {f′ = f′} {q = q} i =
     pulll′ (sym p) (λ j → p′ (~ j)) {f′ = f′} {q = sym q} (~ i)
 
+  pushl[] : ∀ {f′ : Hom[ f ] w′ x′}
+           → c′ ∘′ f′ ≡[ pushl p ] a′ ∘′ (b′ ∘′ f′)
+  pushl[] = pushl′
+
   pushr′ : ∀ {f′ : Hom[ f ] z′ w′} {q : f ∘ c ≡ (f ∘ a) ∘ b}
            → f′ ∘′ c′ ≡[ q ] (f′ ∘′ a′) ∘′ b′
   pushr′ {f′ = f′} {q = q} i =
     pullr′ (sym p) (λ j → p′ (~ j)) {f′ = f′} {q = sym q} (~ i)
+
+  pushr[] : ∀ {f′ : Hom[ f ] z′ w′}
+           → f′ ∘′ c′ ≡[ pushr p ] (f′ ∘′ a′) ∘′ b′
+  pushr[] = pushr′
 
 module _ {f′ : Hom[ f ] y′ z′} {h′ : Hom[ h ] x′ y′}
          {g′ : Hom[ g ] y′ z′} {i′ : Hom[ i ] x′ y′}
@@ -472,6 +526,10 @@ module _ {a′ : Hom[ a ] y′ x′} {b′ : Hom[ b ] x′ y′}
     hom[ q ] (a′ ∘′ b′ ∘′ f′)                       ≡⟨ assoc[] ⟩
     hom[ sym (assoc a b f) ∙ q ] ((a′ ∘′ b′) ∘′ f′) ≡⟨ shiftl _ (eliml′ p p′) ⟩
     f′                                              ∎
+
+  cancell[] : ∀ {f′ : Hom[ f ] z′ x′}
+             → a′ ∘′ b′ ∘′ f′ ≡[ cancell p ] f′
+  cancell[] = cancell′
 
   cancelr′ : ∀ {f′ : Hom[ f ] x′ z′} {q : (f ∘ a) ∘ b ≡ f}
              → (f′ ∘′ a′) ∘′ b′ ≡[ q ] f′
