@@ -133,16 +133,16 @@ module _ {o κ} {C : Precategory o κ} (𝓣 : Topos κ C) where
 
 ```agda
   Flat : {D : Precategory κ κ} → Functor D C → Type _
-  Flat F = is-lex (Realisation colim F)
+  Flat F = is-lex (Realisation F colim)
 
   Diaconescu
     : {D : Precategory κ κ} (F : Functor D C)
     → Flat F
     → Geom[ C , PSh κ D ]
-  Inv[ Diaconescu F F-flat ] = Realisation colim F
+  Inv[ Diaconescu F F-flat ] = Realisation F colim
   Dir[ Diaconescu F F-flat ] = Nerve F
   Diaconescu F F-flat .Inv-lex = F-flat
-  Diaconescu F F-flat .Inv⊣Dir = Realisation⊣Nerve colim F
+  Diaconescu F F-flat .Inv⊣Dir = Realisation⊣Nerve F colim
 ```
 
 Conversely, any given geometric morphism $f : \cC \to \psh(\cD)$
@@ -169,5 +169,5 @@ fully faithful functor.
 
 ```agda
     Diaconescu-invl : Diaconescu⁻¹ (Diaconescu F flat) DC.≅ F
-    Diaconescu-invl = ff-lan-ext colim (よ D) F (よ-is-fully-faithful D)
+    Diaconescu-invl = ff→pointwise-lan-ext (よ D) F colim (よ-is-fully-faithful D)
 ```

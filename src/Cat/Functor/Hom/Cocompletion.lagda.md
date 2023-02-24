@@ -147,13 +147,4 @@ of Kan extensions.
       (σ′ .η _ D.∘ colim.universal _ _ _) D.∘ colim.ψ (よ₀ C _) _ ≡⟨ D.pushl (σ′ .is-natural _ _ _) ⟩
       M .F₁ (coyoneda.ψ P j) D.∘ σ′ .η _ D.∘ colim.ψ (よ₀ C _) _  ≡˘⟨ (D.refl⟩∘⟨ (p ηₚ _)) ⟩
       M .F₁ (coyoneda.ψ P j) D.∘ α .η _                           ∎
-
--- extend-cocontinuous
---   : ∀ {od ℓd} {J : Precategory od ℓd} {Dg : Functor J (PSh κ C)} (F : Functor C D)
---   → Colimit Dg → Colimit (extend F F∘ Dg)
--- extend-cocontinuous F = {!!}
--- left-adjoint-colimit (Realisation⊣Nerve colim F)
-
--- extend-factors : (F : Functor C D) → (extend F F∘ よ C) ≅ F
--- extend-factors F = ff-lan-ext colim (よ C) F (よ-is-fully-faithful C)
--- ```
+```

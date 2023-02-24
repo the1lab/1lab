@@ -51,7 +51,6 @@ stdenv.mkDerivation {
   remove-references-to -t ${haskellPackages.js-flot}      ${main}
   remove-references-to -t ${haskellPackages.js-jquery}    ${main}
   remove-references-to -t ${haskellPackages.js-dgtable}   ${main}
-  upx ${main}
   cp ${main} $out/bin/${name}
   wrapProgram $out/bin/${name} \
     --prefix PATH : ${nodeDependencies}/bin \

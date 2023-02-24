@@ -139,12 +139,12 @@ Sets-is-regular .kernel-pair-coeq {d} {c} f = coequ where
   coequ .coapex = el! (∣ d ∣ / λ x y → f x ≡ f y)
   coequ .coeq = inc
   coequ .has-is-coeq .coequal = funext λ { (x , y , p) → quot p }
-  coequ .has-is-coeq .coequalise {e′ = e′} p =
+  coequ .has-is-coeq .universal {e′ = e′} p =
     Coeq-rec hlevel! e′ (p $ₚ_)
-  coequ .has-is-coeq .universal = refl
+  coequ .has-is-coeq .factors = refl
   coequ .has-is-coeq .unique {e′ = e′} {p} {colim = colim} q = funext $
     Coeq-elim-prop (λ _ → hlevel!)
-      λ e → sym (q $ₚ e)
+      λ e → q $ₚ e
 ```
 
 To prove that the pullback of a regular epimorphism is regular, we

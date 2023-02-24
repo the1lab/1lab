@@ -432,10 +432,10 @@ open import Cat.Functor.Monadic.Crude -- The crude monadicity theorem
 About Kan extensions:
 
 ```agda
-open import Cat.Functor.Kan -- Left Kan extensions
-open import Cat.Functor.Kan.Right -- Right Kan extensions
+open import Cat.Functor.Kan.Base -- Kan extensions
 open import Cat.Functor.Kan.Nerve -- The nerve/realisation adjunction
 open import Cat.Functor.Kan.Global -- Global Kan extensions
+open import Cat.Functor.Kan.Pointwise -- Pointwise Kan extensions
 open import Cat.Functor.Kan.Unique -- Uniqueness of Kan extensions
 ```
 
@@ -443,8 +443,9 @@ Properties of Hom-functors, and (direct) consequences of the Yoneda
 lemma:
 
 ```agda
-open import Cat.Functor.Hom -- Hom functor, Yoneda embedding, Coyoneda lemma
+open import Cat.Functor.Hom -- Hom functor, Yoneda embedding
 open import Cat.Functor.Hom.Cocompletion -- Universal property of PSh(C)
+open import Cat.Functor.Hom.Coyoneda -- The Coyoneda lemma
 open import Cat.Functor.Hom.Representable -- Representable functors
 
 open import Cat.Functor.Hom.Displayed

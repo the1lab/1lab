@@ -1,8 +1,10 @@
 ```agda
 open import Cat.Diagram.Colimit.Base
+open import Cat.Instances.Shape.Terminal
 open import Cat.Prelude
 
 import Cat.Reasoning as Cr
+import Cat.Functor.Reasoning as Func
 
 module Cat.Functor.Final where
 ```
@@ -24,9 +26,7 @@ module
     (F : Functor 𝒞 𝒟)
   where
 
-  open Cocone-hom
   open Functor
-  open Cocone
 
   private
     module 𝒞 = Cr 𝒞
@@ -84,8 +84,9 @@ commutes.
     where
     private
       module fin = is-final final
-      module D = Functor D
+      module D = Func D
       module ℰ = Cr ℰ
+      open _=>_
 ```
 -->
 
@@ -97,18 +98,13 @@ D(x) \to DF(x_0)$ (where $x_!$ comes from the finality of $F$) defines a
 cocone $\{D(x) \to K\}$.
 
 ```agda
-    extend-cocone : Cocone (D F∘ F) → Cocone D
-    extend-cocone cone = cone′ where
-      open is-iso
-      module cone = Cocone cone
-      cone′ : Cocone D
-      cone′ .coapex = cone.coapex
-      cone′ .ψ x = cone.ψ _ ℰ.∘ D.₁ (fin.map x)
-      cone′ .commutes f =
-        (cone.ψ _ ℰ.∘ D.₁ (fin.map _)) ℰ.∘ D.₁ f ≡⟨ ℰ.pullr (sym (D.F-∘ _ _)) ⟩
-        cone.ψ _ ℰ.∘ D.₁ (fin.map _ 𝒟.∘ f)       ≡⟨ ℰ.pushl (sym (cone.commutes (fin.extend (fin.map _ 𝒟.∘ f) (fin.map _)))) ⟩
-        cone.ψ _ ℰ.∘ _                           ≡⟨ ℰ.refl⟩∘⟨ sym (D.F-∘ _ _) ∙ ap D.₁ (sym (fin.extend-commutes _ _)) ⟩
-        cone.ψ _ ℰ.∘ D.₁ (fin.map _)             ∎
+    extend-cocone : ∀ {coapex} → D F∘ F => Const coapex → D => Const coapex
+    extend-cocone cone .η x = cone .η _ ℰ.∘ D.₁ (fin.map x) 
+    extend-cocone cone .is-natural x y f =
+      ℰ.pullr (sym (D.F-∘ _ _))
+      ·· ℰ.pushl (sym (cone .is-natural _ _ _ ∙ ℰ.idl _))
+      ·· (ℰ.refl⟩∘⟨ D.collapse (sym (fin.extend-commutes _ _)))
+      ∙ sym (ℰ.idl _)
 ```
 
 In the other direction, suppose that we have a cocone $\{D(x) \to K\}$
@@ -116,13 +112,9 @@ In the other direction, suppose that we have a cocone $\{D(x) \to K\}$
 K\}$.
 
 ```agda
-    restrict-cocone : Cocone D → Cocone (D F∘ F)
-    restrict-cocone K = K′ where
-      module K = Cocone K
-      K′ : Cocone (D F∘ F)
-      K′ .coapex = K.coapex
-      K′ .ψ x = K.ψ (F.F₀ x)
-      K′ .commutes f = K.commutes (F.F₁ f)
+    restrict-cocone : ∀ {coapex} → D => Const coapex → D F∘ F => Const coapex
+    restrict-cocone K .η x = K .η (F.F₀ x)
+    restrict-cocone K .is-natural x y f = K .is-natural (F.F₀ x) (F.F₀ y) (F.F₁ f)
 ```
 
 A computation using connectedness of the comma categories shows that
@@ -130,18 +122,17 @@ these formulae are mutually inverse:
 
 ```agda
     open is-iso
-    extend-cocone-is-iso : is-iso extend-cocone
+    extend-cocone-is-iso : ∀ {coapex} → is-iso (extend-cocone {coapex})
     extend-cocone-is-iso .inv = restrict-cocone
-    extend-cocone-is-iso .rinv x = Cocone-path _ refl $ λ o →
-      x .commutes _
-    extend-cocone-is-iso .linv x = Cocone-path _ refl $ λ o →
-      x .ψ _ ℰ.∘ D.₁ (fin.map (F.F₀ o))                           ≡˘⟨ x .commutes (fin.extend (fin.map (F.F₀ o)) 𝒟.id) ℰ.⟩∘⟨refl ⟩
-      (x .ψ o ℰ.∘ D.₁ (F.₁ (fin.extend _ _))) ℰ.∘ D.₁ (fin.map _) ≡⟨ ℰ.pullr (sym (D.F-∘ _ _) ·· ap D.₁ (fin.extend-commutes _ _) ·· ap D.₁ (𝒟.idr _)) ⟩
-      x .ψ o ℰ.∘ D.₁ (F.₁ (fin.extend _ _))                       ≡⟨ x .commutes _ ⟩
-      x .ψ o                                                      ∎
-
-    restriction-eqv : Cocone (D F∘ F) ≃ Cocone D
-    restriction-eqv = _ , is-iso→is-equiv extend-cocone-is-iso
+    extend-cocone-is-iso .rinv x =
+      Nat-path λ o →
+        x .is-natural _ _ _ ∙ ℰ.idl _
+    extend-cocone-is-iso .linv x =
+      Nat-path λ o →
+        (sym (ℰ.idl _) ∙ sym (x .is-natural _ _ (fin.extend (fin.map (F.F₀ o)) 𝒟.id)) ℰ.⟩∘⟨refl)
+        ·· ℰ.pullr (D.collapse (fin.extend-commutes _ _ ∙ 𝒟.idr _))
+        ·· x .is-natural _ _ _
+        ∙ ℰ.idl _
 ```
 
 The most important conclusion that we get is the following: If you can
@@ -153,8 +144,9 @@ the polarity mismatch.
 
 ```agda
     extend-is-colimit
-      : (K : Cocone (D F∘ F))
-      → is-colimit (D F∘ F) K → is-colimit D (extend-cocone K)
+      : ∀ {coapex} (K : D F∘ F => Const coapex)
+      → is-colimit (D F∘ F) coapex K
+      → is-colimit D coapex (extend-cocone K)
 ```
 
 <details>
@@ -164,40 +156,41 @@ it in this `<details>`{.html} tag for the curious reader only.
 </summary>
 
 ```agda
-    extend-is-colimit K colim x = contr x¡ x¡-unique where
-      module K = Cocone K
-      module x = Cocone x
-      x′ : Cocone (D F∘ F)
-      x′ = restrict-cocone x
+    extend-is-colimit {coapex} K colim =
+      to-is-colimitp mc refl
+      module extend-is-colimit where
+        module colim = is-colimit colim
+        open make-is-colimit
 
-      x′¡ = colim x′
-      x¡ : Cocone-hom D (extend-cocone K) x
-      x¡ .hom = x′¡ .centre .hom
-      x¡ .commutes o =
-        x′¡ .centre .hom ℰ.∘ K.ψ _ ℰ.∘ D.₁ _    ≡⟨ ℰ.pulll (x′¡ .centre .commutes _) ⟩
-        x′ .ψ _ ℰ.∘ D.₁ (fin.map o)             ≡⟨ x .commutes _ ⟩
-        x.ψ o                                   ∎
-
-      x¡-unique : ∀ h′ → x¡ ≡ h′
-      x¡-unique h′ = Cocone-hom-path D $ ap hom $ x′¡ .paths go where
-        go : Cocone-hom (D F∘ F) K x′
-        go .hom = h′ .hom
-        go .commutes o =
-          h′ .hom ℰ.∘ K.ψ o                     ≡˘⟨ ℰ.refl⟩∘⟨ K.commutes (fin.extend 𝒟.id (fin.map _)) ⟩
-          h′ .hom ℰ.∘ K.ψ _ ℰ.∘ D.₁ (F.₁ _)     ≡⟨ ℰ.refl⟩∘⟨ ℰ.refl⟩∘⟨ ap D.₁ (𝒟.intror refl ∙ sym (fin.extend-commutes _ _)) ⟩
-          h′ .hom ℰ.∘ K.ψ _ ℰ.∘ D.₁ (fin.map _) ≡⟨ h′ .commutes _ ⟩
-          x.ψ (F.₀ o)                           ∎
+        mc : make-is-colimit D coapex
+        mc .ψ x = extend-cocone K .η x
+        mc .commutes f = extend-cocone K .is-natural _ _ _ ∙ ℰ.idl _
+        mc .universal eps p =
+          colim.universal (λ j → eps (F.F₀ j)) λ f → p (F.F₁ f)
+        mc .factors eps p =
+          ℰ.pulll (colim.factors _ _)
+          ∙ p (fin.map _)
+        mc .unique eps p other q =
+          colim.unique _ _ _ λ j →
+            other ℰ.∘ K .η j                                  ≡⟨ ℰ.refl⟩∘⟨ (sym (ℰ.idl _) ∙ sym (K .is-natural _ _ _)) ⟩
+            other ℰ.∘ K .η _ ℰ.∘ D.F₁ (F.F₁ (fin.extend _ _)) ≡⟨ ℰ.refl⟩∘⟨ ℰ.refl⟩∘⟨ ap D.₁ (sym (𝒟.idr _) ∙ sym (fin.extend-commutes _ _)) ⟩
+            other ℰ.∘ K .η _ ℰ.∘ D.F₁ (fin.map _)             ≡⟨ q (F.F₀ j) ⟩
+            eps (F.F₀ j)                                      ∎
 ```
 
 </details>
 
 ```agda
     is-colimit-restrict
-      : (K : Cocone D)
-      → is-colimit (D F∘ F) (restrict-cocone K) → is-colimit D K
-    is-colimit-restrict K colim = subst (is-colimit D)
-      (Equiv.ε restriction-eqv _)
-      (extend-is-colimit (restrict-cocone K) colim)
+      : ∀ {coapex}
+      → (K : D => Const coapex)
+      → is-colimit (D F∘ F) coapex (restrict-cocone K)
+      → is-colimit D coapex K
+    is-colimit-restrict {coapex} K colim =
+      to-is-colimitp
+        (extend-is-colimit.mc (restrict-cocone K) colim)
+        (extend-cocone-is-iso .rinv K ηₚ _)
+        where open is-iso
 ```
 
 <!--

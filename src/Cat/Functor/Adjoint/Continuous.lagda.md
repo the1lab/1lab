@@ -75,8 +75,8 @@ extensions].
     right-adjoint-limit lim =
       to-limit (right-adjoint-is-continuous (Limit.has-limit lim))
 
-    left-adjoint-limit : ∀ {F : Functor J C} → Colimit F → Colimit (L F∘ F)
-    left-adjoint-limit colim =
+    left-adjoint-colimit : ∀ {F : Functor J C} → Colimit F → Colimit (L F∘ F)
+    left-adjoint-colimit colim =
       to-colimit (left-adjoint-is-cocontinuous (Colimit.has-colimit colim))
 ```
 
@@ -161,36 +161,10 @@ if we do it by hand.
     uniq x = ap fst $ is-contr→is-prop (R-adjunct-is-equiv L⊣R .is-eqv _)
       (_ , equiv→counit (R-adjunct-is-equiv L⊣R) _)
       (x , is-contr→is-prop (term _) _ _)
+
+  right-adjoint→lex : is-lex R
+  right-adjoint→lex .is-lex.pres-⊤ =
+    right-adjoint→terminal
+  right-adjoint→lex .is-lex.pres-pullback {f = f} {g = g} pb =
+    right-adjoint→is-pullback pb
 ```
--- <!--
--- ```agda
--- module _
---     {o o′ ℓ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
---     {L : Functor C D} {R : Functor D C}
---     (L⊣R : L ⊣ R)
---   where
-
---   private
---     adj′ : Functor.op R ⊣ Functor.op L
---     adj′ = opposite-adjunction L⊣R
-
---   module _ {od ℓd} {J : Precategory od ℓd} {F : Functor J C} where
---     left-adjoint-colimit : Colimit F → Colimit (L F∘ F)
---     left-adjoint-colimit colim = colim′′ where
---       lim : Limit (Functor.op F)
---       lim = Colimit→Co-limit _ colim
-
---       lim′ : Limit (Functor.op L F∘ Functor.op F)
---       lim′ = right-adjoint-limit adj′ lim
-
---       colim′ : Colimit (Functor.op (Functor.op L F∘ Functor.op F))
---       colim′ = Co-limit→Colimit _ (subst Limit (sym F^op^op≡F) lim′)
-
---       colim′′ : Colimit (L F∘ F)
---       colim′′ = subst Colimit (Functor-path (λ x → refl) λ x → refl) colim′
-
--- ```
-
--- TODO [Amy 2022-04-05]
--- cocontinuity
--- -->

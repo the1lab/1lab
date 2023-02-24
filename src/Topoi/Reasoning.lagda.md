@@ -96,7 +96,7 @@ pullbacks.
             (product-presheaf .has-is-product)
       in is-product-iso 𝒯 (Lι-iso _) (Lι-iso _) prod
 
-  open Cartesian 𝒯 product-sheaf public
+  open BinaryProducts 𝒯 product-sheaf public
 ```
 
 The computation for finite connected limits (pullbacks, equalisers) is a
@@ -129,8 +129,8 @@ bit more involved, but not by much:
           counit.ε _ ∘ L.₁ (ι.₁ g) ∘ L.₁ Pb.p₂ ≡⟨ extendl (counit.is-natural _ _ _) ⟩
           g ∘ counit.ε _ ∘ L.₁ Pb.p₂           ∎
 
-      pb′ .limiting {p₁' = p₁'} {p₂'} p =
-        lpb.limiting {p₁' = ε⁻¹.η _ ∘ p₁'} {p₂' = ε⁻¹.η _ ∘ p₂'} path
+      pb′ .universal {p₁' = p₁'} {p₂'} p =
+        lpb.universal {p₁' = ε⁻¹.η _ ∘ p₁'} {p₂' = ε⁻¹.η _ ∘ p₂'} path
         where abstract
           path : L.₁ (ι.₁ f) ∘ ε⁻¹.η _ ∘ p₁' ≡ L.₁ (ι.₁ g) ∘ ε⁻¹.η _ ∘ p₂'
           path =
@@ -139,10 +139,10 @@ bit more involved, but not by much:
             ε⁻¹.η _ ∘ g ∘ p₂'           ≡⟨ extendl (ε⁻¹.is-natural _ _ _) ⟩
             L.₁ (ι.₁ g) ∘ ε⁻¹.η _ ∘ p₂' ∎
 
-      pb′ .p₁∘limiting =
-        pullr lpb.p₁∘limiting ∙ cancell (Lι-iso _ .is-invertible.invl)
-      pb′ .p₂∘limiting =
-        pullr lpb.p₂∘limiting ∙ cancell (Lι-iso _ .is-invertible.invl)
+      pb′ .p₁∘universal =
+        pullr lpb.p₁∘universal ∙ cancell (Lι-iso _ .is-invertible.invl)
+      pb′ .p₂∘universal =
+        pullr lpb.p₂∘universal ∙ cancell (Lι-iso _ .is-invertible.invl)
       pb′ .unique p q = lpb.unique
         (sym ( ap₂ _∘_ refl (sym p ∙ sym (assoc _ _ _))
              ∙ cancell (Lι-iso _ .is-invertible.invr)))

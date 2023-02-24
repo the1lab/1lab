@@ -322,8 +322,8 @@ limits directly for efficiency concerns. </summary>
     open is-pullback
     pb′ : is-pullback (Sets κ) _ _ _ _
     pb′ .square = pb .square ηₚ _
-    pb′ .limiting {P'} {p₁' = p₁'} {p₂' = p₂'} p =
-      η (pb .limiting {P′ = incl .F₀ P'} {p₁' = p1'} {p₂' = p2'}
+    pb′ .universal {P'} {p₁' = p₁'} {p₂' = p₂'} p =
+      η (pb .universal {P′ = incl .F₀ P'} {p₁' = p1'} {p₂' = p2'}
           (Nat-path λ _ → p)) _
       where
         p1' : _ => _
@@ -332,8 +332,8 @@ limits directly for efficiency concerns. </summary>
         p2' : _ => _
         p2' .η _ = p₂'
         p2' .is-natural x y f i o = F-id Y (~ i) (p₂' o)
-    pb′ .p₁∘limiting = pb .p₁∘limiting ηₚ _
-    pb′ .p₂∘limiting = pb .p₂∘limiting ηₚ _
+    pb′ .p₁∘universal = pb .p₁∘universal ηₚ _
+    pb′ .p₂∘universal = pb .p₂∘universal ηₚ _
     pb′ .unique {P′} {lim' = lim'} p1 p2 =
       pb .unique {lim' = l′} (Nat-path λ _ → p1) (Nat-path λ _ → p2) ηₚ _
       where
@@ -428,7 +428,7 @@ $F$.
 ```agda
   Topos-is-cocomplete : is-cocomplete κ κ 𝓣
   Topos-is-cocomplete F =
-    Colimit-ap-iso _
+    natural-iso→colimit
       (F∘-iso-id-l (is-reflective→counit-iso L⊣ι has-ff))
       sheafified
       where
@@ -571,14 +571,15 @@ functor.
   Slice-topos .has-ff = ∙-is-equiv (Sliced-ff {F = T.ι} (T.has-ff)) slice→total-is-ff
   Slice-topos .L = (Σf (T .L⊣ι.counit.ε _) F∘ Sliced (T.L) (T.ι.F₀ X)) F∘ total→slice
 
-  Slice-topos .L-lex = F∘-is-lex
-    (F∘-is-lex
-      (right-adjoint→lex
-        (is-equivalence.F⁻¹⊣F
-          (Σ-iso-equiv (C.iso→invertible
-            (is-reflective→counit-is-iso T.L⊣ι T.has-ff)))))
-      (Sliced-lex T.L-lex))
-    (right-adjoint→lex (slice→total-is-equiv .is-equivalence.F⊣F⁻¹))
+  Slice-topos .L-lex =
+    F∘-is-lex
+      (F∘-is-lex
+        (right-adjoint→lex
+          (is-equivalence.F⁻¹⊣F
+            (Σ-iso-equiv (C.iso→invertible
+              (is-reflective→counit-is-iso T.L⊣ι T.has-ff)))))
+        (Sliced-lex T.L-lex))
+      (right-adjoint→lex (slice→total-is-equiv .is-equivalence.F⊣F⁻¹))
 
   Slice-topos .L⊣ι = LF⊣GR (is-equivalence.F⁻¹⊣F slice→total-is-equiv)
                            (Sliced-adjoints T.L⊣ι)
