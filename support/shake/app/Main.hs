@@ -38,6 +38,7 @@ import Shake.KaTeX
 import Shake.Git
 import Shake.Utils
 
+import Warning
 import Macros
 import Timer
 
@@ -246,7 +247,8 @@ main = do
     buildOnce db wanted = do
       start <- offsetTime
 
-      res :: Either SomeException x <- try $ shakeRunDatabase db wanted
+      res :: Either SomeException x <- try do
+        shakeRunDatabase db wanted <* flushWarnings
 
       tot <- start
       case res of

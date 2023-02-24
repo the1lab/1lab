@@ -17,6 +17,7 @@ import Data.Aeson
 import Data.Char (isDigit)
 import Data.List
 import Data.Maybe
+import Data.Either
 import Data.Text (Text)
 
 import Development.Shake
@@ -30,6 +31,7 @@ import Shake.Modules
 import Shake.Options
 import Shake.SearchData
 import Shake.Utils
+import Warning
 
 import Text.HTML.TagSoup
 
@@ -66,7 +68,7 @@ linksRules = do
       links <- Set.toList . getInternalLinks source . parseTags <$> liftIO (Text.readFile input)
       forM links \link -> do
         unless (skipTypes || Text.pack link `Set.member` anchors) do
-          error $ "Could not find link target " ++ link ++ " in " ++ source
+          putWarning $ "Could not find link target " ++ link ++ " in " ++ source
         let target = dropExtension . fst $ break (== '#') link
         pure if (  target /= source
                 && target `Map.member` ourModules

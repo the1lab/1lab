@@ -10,6 +10,7 @@ import Data.Text (Text)
 import Text.HTML.TagSoup
 
 import Development.Shake
+import Warning
 
 -- | Write a HTML file, correctly handling the closing of some tags.
 renderHTML5 :: [Tag Text] -> Text
@@ -24,5 +25,5 @@ checkMarkup :: FilePath -> Tag Text -> Action ()
 checkMarkup file (TagText txt)
   |  "<!--" `Text.isInfixOf` txt || "<!–" `Text.isInfixOf` txt
   || "-->" `Text.isInfixOf` txt  || "–>" `Text.isInfixOf` txt
-  = fail $ "[WARN] " ++ file ++ " contains misplaced <!-- or -->"
+  = putWarning $ "[WARN] " ++ file ++ " contains misplaced <!-- or -->"
 checkMarkup _ _ = pure ()
