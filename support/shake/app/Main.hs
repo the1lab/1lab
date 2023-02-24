@@ -77,22 +77,35 @@ rules = do
     to HTML with some additional post-processing steps (see 'buildMarkdown')
   -}
   "_build/html/*.html" %> \out -> do
-    let
-      modName = dropExtension (takeFileName out)
-      input = "_build/html0" </> modName
+    let modName = dropExtension (takeFileName out)
 
     modKind <- Map.lookup modName <$> getOurModules
+    agdaRefs <- agdaRefs
 
-    case modKind of
-      Just WithText -> do
-        agdaRefs <- agdaRefs
-        buildMarkdown agdaRefs (input <.> ".md") out
-      _ -> copyFile' (input <.> ".html") out
+    skipAgda <- getSkipAgda
+    if skipAgda
+    then
+      let
+        input = case modName of
+          "all-pages" -> "_build/all-pages"
+          _ -> "src" </> map (\c -> if c == '.' then '/' else c) modName
+      in
+      case modKind of
+        Just WithText -> buildMarkdown agdaRefs modName (input <.> ".lagda.md") out
+        _ -> copyFile' (input <.> ".agda") out -- Wrong, but eh!
+    else
+      let input = "_build/html0" </> modName in
+      case modKind of
+        Just WithText -> do buildMarkdown agdaRefs modName (input <.> ".md") out
+        _ -> copyFile' (input <.> ".html") out
+
   "_build/search/*.json" %> \out -> need ["_build/html" </> takeFileName out -<.> "html"]
 
   "_build/html/static/search.json" %> \out -> do
+    skipAgda <- getSkipAgda
     modules <- filter ((==) WithText . snd) . Map.toList <$> getOurModules
-    let searchFiles = "_build/all-types.json":map (\(x, _) -> "_build/search" </> x <.> "json") modules
+    let searchFiles = (if skipAgda then [] else ["_build/all-types.json"])
+                    ++ map (\(x, _) -> "_build/search" </> x <.> "json") modules
     searchData :: [[SearchTerm]] <- traverse readJSONFile searchFiles
     liftIO $ encodeFile out (concat searchData)
 
@@ -170,7 +183,7 @@ rules = do
   -- Profit!
 
 data ArgOption
-  = ASkipTypes
+  = AFlag Option
   | AWatching (Maybe String)
   deriving (Eq, Show)
 
@@ -214,15 +227,17 @@ main = do
 
     ourOptsDescrs =
       [ Option "w" ["watch"] (OptArg AWatching "COMMAND")
-          "Start 1lab-shake in watch mode. Starts a persistent process which runs a subset of build tasks for  \
-          \interactive editing. Implies --skip-types. Optionally takes a command to run after the build has finished."
-      , Option [] ["skip-types"] (NoArg ASkipTypes)
+          "Start 1lab-shake in watch mode. Starts a persistent process which runs a subset of build tasks for \
+          \interactive editing. Implies --skip-types.\nOptionally takes a command to run after the build has finished."
+      , Option [] ["skip-types"] (NoArg (AFlag SkipTypes))
           "Skip generating type tooltips when compiling Agda to HTML."
+      , Option [] ["skip-agda"] (NoArg (AFlag SkipAgda))
+          "Skip typechecking Agda. Markdown files are read from src/ directly."
       ]
 
     parseOptions :: [ArgOption] -> (Maybe String, [Option])
     parseOptions [] = (Nothing, [])
-    parseOptions (ASkipTypes:xs) = (SkipTypes:) <$> parseOptions xs
+    parseOptions (AFlag f:xs) = (f:) <$> parseOptions xs
     parseOptions (AWatching watching:xs) =
       let (_, xs') = parseOptions xs
       in (watching, Watching:xs')

@@ -42,18 +42,20 @@ import Text.Pandoc
 import Shake.LinkReferences
 import Shake.SearchData
 import Shake.AgdaRefs
+import Shake.Options
 import Shake.KaTeX
 import Shake.Git
 
 import HTML.Emit
 
 buildMarkdown :: AgdaRefs -- ^ All Agda identifiers in the codebase.
+              -> String   -- ^ The name of the Agda module.
               -> FilePath -- ^ Input markdown file, produced by the Agda compiler.
               -> FilePath -- ^ Output HTML file.
               -> Action ()
-buildMarkdown refs input output = do
+buildMarkdown refs modname input output = do
   gitCommit <- gitCommit
-  let modname = dropDirectory1 (dropDirectory1 (dropExtension input))
+  skipAgda <- getSkipAgda
 
   need [templateName, bibliographyName, autorefsName, input]
 
@@ -86,7 +88,11 @@ buildMarkdown refs input output = do
   liftIO $ Dir.createDirectoryIfMissing False "_build/diagrams"
 
   let refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
-  markdown <- walkM (patchInline refMap autorefs) . walk patchInlines . linkReferences modname $ markdown
+  markdown <-
+      walkM (patchInline refMap autorefs)
+    . walk patchInlines
+    . (if skipAgda then id else linkReferences modname)
+    $ markdown
   (markdown, MarkdownState references dependencies) <- runWriterT (walkM patchBlock markdown)
   need dependencies
 

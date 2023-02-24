@@ -26,10 +26,12 @@ newtype AgdaRefs = AgdaRefs { unAgdaRefs :: HM.HashMap Text Text }
 getAgdaRefs :: Rules (Action AgdaRefs)
 getAgdaRefs = versioned 1 do
   rule <- newCache \() -> do
-    types :: [Identifier] <- readJSONFile "_build/all-types.json"
-    pure . AgdaRefs . HM.fromList . concatMap toModuleIdent $ types
+      types :: [Identifier] <- readJSONFile "_build/all-types.json"
+      pure . AgdaRefs . HM.fromList . concatMap toModuleIdent $ types
 
-  pure (rule ())
+  pure do
+    skipAgda <- getSkipAgda
+    if skipAgda then pure . AgdaRefs $ mempty else rule ()
 
   where
     toModuleIdent :: Identifier -> [(Text, Text)]
@@ -53,8 +55,8 @@ parseAgdaLink modname fileIds x@(TagOpen "a" attrs)
     case HM.lookup ident (unAgdaRefs fileIds) of
       Just href -> pure $ TagOpen "a" (emplace [("href", href)] attrs)
       _ -> do
-        watching <- getWatching
-        unless watching $ error $ "Could not find Agda link " ++ Text.unpack ident ++ " in " ++ modname
+        skipTypes <- getSkipTypes
+        unless skipTypes $ error $ "Could not find Agda link " ++ Text.unpack ident ++ " in " ++ modname
         pure x
 parseAgdaLink _ _ x = pure x
 

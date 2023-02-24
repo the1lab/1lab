@@ -6,6 +6,7 @@ module Shake.Options
   ( Option(..)
   , setOptions
   , getSkipTypes
+  , getSkipAgda
   , getWatching
   ) where
 
@@ -16,6 +17,7 @@ import GHC.Generics (Generic)
 
 data Option
   = SkipTypes -- ^ Skip generating types when emitting HTML.
+  | SkipAgda -- ^ Skip typechecking Agda, emitting the markdown directly.
   | Watching -- ^ Launch in watch mode. Prevents some build tasks running.
   deriving (Eq, Show, Typeable, Generic)
 
@@ -31,9 +33,13 @@ setOptions options = do
   _ <- addOracle (pure . getOption)
   pure ()
   where
-    getOption SkipTypes = SkipTypes `elem` options || Watching `elem` options
+    getOption SkipTypes = SkipTypes `elem` options
+                       || SkipAgda `elem` options
+                       || Watching `elem` options
+    getOption SkipAgda = SkipAgda `elem` options
     getOption Watching = Watching `elem` options
 
-getSkipTypes, getWatching :: Action Bool
+getSkipTypes, getSkipAgda, getWatching :: Action Bool
 getSkipTypes = askOracle SkipTypes
+getSkipAgda = askOracle SkipAgda
 getWatching = askOracle Watching
