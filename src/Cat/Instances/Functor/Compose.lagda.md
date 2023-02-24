@@ -25,12 +25,12 @@ interested in:
 - The functor composition functor itself, having type $[B, C] \times [A,
 B] \to [A,C]$;
 - The _precomposition functor_ associated with any $p : C \to C'$, which
-will be denoted $p_! : [C', D] \to [C,D]$ in TeX and `_!`{.Agda} in Agda;
+will be denoted $- \circ p : [C', D] \to [C,D]$ in TeX and `precompose`{.Agda} in Agda;
 - The _postcomposition functor_ associated with any $p : C \to C'$,
-which will be denoted $p^* : [A,C] \to [A,C']$; In the code, that's
-`_^*`{.Agda}.
+which will be denoted $p \circ - : [A,C] \to [A,C']$; In the code, that's
+`postcompose`{.Agda}.
 
-Note that the precomposition functor $p_!$ is necessarily
+Note that the precomposition functor $- \circ p$ is necessarily
 "contravariant" when compared with $p$, in that it points in the
 opposite direction to $p$.
 
@@ -87,22 +87,21 @@ _▸_ H nt .is-natural x y f =
   sym (H .F-∘ _ _) ∙ ap (H .F₁) (nt .is-natural _ _ _) ∙ H .F-∘ _ _
 ```
 
-
-With the whiskerings already defined, defining $p_!$ and $p^*$ is easy:
+With the whiskerings already defined, defining $- \circ p$ and $p \circ -$ is easy:
 
 ```agda
 module _ (p : Functor C C′) where
-  _! : Functor Cat[ C′ , D ] Cat[ C , D ]
-  _! .F₀ G    = G F∘ p
-  _! .F₁ θ    = θ ◂ p
-  _! .F-id    = Nat-path λ _ → refl
-  _! .F-∘ f g = Nat-path λ _ → refl
+  precompose : Functor Cat[ C′ , D ] Cat[ C , D ]
+  precompose .F₀ G    = G F∘ p
+  precompose .F₁ θ    = θ ◂ p
+  precompose .F-id    = Nat-path λ _ → refl
+  precompose .F-∘ f g = Nat-path λ _ → refl
 
-  _^* : Functor Cat[ D , C ] Cat[ D , C′ ]
-  _^* .F₀ G    = p F∘ G
-  _^* .F₁ θ    = p ▸ θ
-  _^* .F-id    = Nat-path λ _ → p .F-id
-  _^* .F-∘ f g = Nat-path λ _ → p .F-∘ _ _
+  postcompose : Functor Cat[ D , C ] Cat[ D , C′ ]
+  postcompose .F₀ G    = p F∘ G
+  postcompose .F₁ θ    = p ▸ θ
+  postcompose .F-id    = Nat-path λ _ → p .F-id
+  postcompose .F-∘ f g = Nat-path λ _ → p .F-∘ _ _
 ```
 
 Whiskerings are instances of a more general form of composition for

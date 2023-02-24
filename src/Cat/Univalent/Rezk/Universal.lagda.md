@@ -48,20 +48,20 @@ univalent categories being the class of _local objects_ for the weak
 equivalences^[a _weak equivalence_ is a fully faithful, essentially
 surjective functor]: A category $\cC$ is univalent _precisely_ if any
 weak equivalence $H : \cA \to \cB$ induces^[by [precomposition]]
-a proper equivalence of categories $H_! : [\cB,\cC] \to [\cA,\cC]$.
+a proper equivalence of categories $- \circ H : [\cB,\cC] \to [\cA,\cC]$.
 
 [precomposition]: Cat.Instances.Functor.Compose.html
 
 The high-level overview of the proof is as follows:
 
 - For any \r{eso} $H : \cA \to \cB$, and for any $\cC$, all
-precategories, the functor $H_! : [\cA,\cB] \to [\cB,\cC]$
+precategories, the functor $- \circ H : [\cA,\cB] \to [\cB,\cC]$
 is faithful. This is the least technical part of the proof, so we do it
 first.
 
-- If $H$ is additionally full, then $H_!$ is \r{fully faithful}.
+- If $H$ is additionally full, then $- \circ H$ is \r{fully faithful}.
 
-- If $H$ is a weak equivalence, and $\cC$ is [univalent], then $H_!$
+- If $H$ is a weak equivalence, and $\cC$ is [univalent], then $- \circ H$
 is essentially surjective. By the principle of unique choice, it is an
 equivalence, and thus^[since both its domain and codomain are univalent]
 an isomorphism.
@@ -118,7 +118,7 @@ full (in addition to eso).
 eso-full→pre-ff
   : (H : Functor A B)
   → is-eso H → is-full H
-  → is-fully-faithful {C = Cat[ B , C ]} (H !)
+  → is-fully-faithful {C = Cat[ B , C ]} (precompose H)
 eso-full→pre-ff {A = A} {B = B} {C = C} H H-eso H-full = res where
 ```
 
@@ -271,7 +271,7 @@ together into a natural transformation. And since we defined $\delta$
 parametrically over the choice of essential fibre, if we're looking at
 some $Hb$, then we can choose the _identity_ isomorphism, from which it
 falls out that $\delta H = \gamma$. Since we had already established that
-$H_!$ is faithful, and now we've shown it is full, it is fully faithful.
+$- \circ H$ is faithful, and now we've shown it is full, it is fully faithful.
 
 ```agda
     δ : F => G
@@ -282,7 +282,7 @@ $H_!$ is faithful, and now we've shown it is full, it is fully faithful.
       (λ _ _ → C.Hom-set _ _ _ _)
       (λ (a′ , h′) (a , h) → naturality f a a′ h h′) (H-eso b′) (H-eso b)
 
-  full : is-full (H !)
+  full : is-full (precompose H)
   full {x = x} {y = y} γ = pure (δ _ _ γ , Nat-path p) where
     p : ∀ b → δ _ _ γ .η (H.₀ b) ≡ γ .η b
     p b = subst
@@ -291,8 +291,8 @@ $H_!$ is faithful, and now we've shown it is full, it is fully faithful.
       (squash (inc (b , B.id-iso)) (H-eso (H.₀ b)))
       (C.eliml (y .F-id) ∙ C.elimr (x .F-id))
 
-  res : is-fully-faithful (H !)
-  res = full+faithful→ff (H !) full λ {F} {G} {γ} {δ} p →
+  res : is-fully-faithful (precompose H)
+  res = full+faithful→ff (precompose H) full λ {F} {G} {γ} {δ} p →
     eso→pre-faithful H H-eso γ δ λ b → p ηₚ b
 ```
 
@@ -300,7 +300,7 @@ $H_!$ is faithful, and now we've shown it is full, it is fully faithful.
 
 The rest of the proof proceeds in this same way: Define a type which
 characterises, up to a compatible space of choices, first the action on
-morphisms of a functor which inverts $H_!$, and in terms of this type,
+morphisms of a functor which inverts $- \circ H$, and in terms of this type,
 the action on morphisms. It's mostly the same trick as above, but a
 _lot_ wilder. We do not comment on it too extensively: the curious
 reader, again, can load this file in Agda and play around.
@@ -612,16 +612,16 @@ hubris, invoke a lot of technical lemmas about the characterisation of
 ```
 
 Since we've shown that $GH = F$, so in particular $GH \cong F$, we've
-now put together proofs that $H_!$ is fully faithful and, since the
+now put together proofs that $- \circ H$ is fully faithful and, since the
 construction above works for any $F$, essentially surjective. Even
 better, since we've actually _constructed_ a functor $G$, we've shown
-that $H_!$ is **split** essentially surjective! Since $[-,\cC]$ is
+that $- \circ H$ is **split** essentially surjective! Since $[-,\cC]$ is
 univalent whenever $\cC$ is, the splitting would be automatic, but
 this is a nice strengthening.
 
 ```agda
-  weak-equiv→pre-equiv : is-equivalence {C = Cat[ B , C ]} (H !)
-  weak-equiv→pre-equiv = ff+split-eso→is-equivalence {F = H !}
+  weak-equiv→pre-equiv : is-equivalence {C = Cat[ B , C ]} (precompose H)
+  weak-equiv→pre-equiv = ff+split-eso→is-equivalence {F = precompose H}
     (eso-full→pre-ff H H-eso λ g → inc (H.from g , H.ε g))
     λ F → G F , path→iso (correct F)
 ```
@@ -631,13 +631,13 @@ isomorphism of categories, we also have that the rule sending $F$ to its
 $G$ is an equivalence of types.
 
 ```agda
-  weak-equiv→pre-iso : is-precat-iso {C = Cat[ B , C ]} (H !)
-  weak-equiv→pre-iso = is-equivalence→is-precat-iso (H !) weak-equiv→pre-equiv
+  weak-equiv→pre-iso : is-precat-iso {C = Cat[ B , C ]} (precompose H)
+  weak-equiv→pre-iso = is-equivalence→is-precat-iso (precompose H) weak-equiv→pre-equiv
     (Functor-is-category c-cat)
     (Functor-is-category c-cat)
 ```
 
-Restating the result that $H_!$ acts on objects as an equivalence of
+Restating the result that $- \circ H$ acts on objects as an equivalence of
 types, we have the following result: If $R : \cC \to \cC^+$ is a
 weak equivalence (a fully faithful and essentially surjective functor),
 then for any category $\cD$ and functor $G : \cC \to \cD$,

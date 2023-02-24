@@ -667,7 +667,7 @@ between [postcomposition and precomposition functors], respectively:
 ```agda
   open import Cat.Instances.Functor.Compose
 
-  postcomposite-adjunction : (L ^*) {D = E} ⊣ R ^*
+  postcomposite-adjunction : postcompose L {D = E} ⊣ postcompose R
   postcomposite-adjunction .unit .η F .η = (adj.unit ◂ F) .η
   postcomposite-adjunction .unit .η F .is-natural = (adj.unit ◂ F) .is-natural
   postcomposite-adjunction .unit .is-natural F G α = Nat-path λ _ → adj.unit.is-natural _ _ _
@@ -677,7 +677,7 @@ between [postcomposition and precomposition functors], respectively:
   postcomposite-adjunction .zig = Nat-path λ _ → adj.zig
   postcomposite-adjunction .zag = Nat-path λ _ → adj.zag
 
-  precomposite-adjunction : (R !) {D = E} ⊣ L !
+  precomposite-adjunction : precompose R {D = E} ⊣ precompose L
   precomposite-adjunction .unit .η F .η = (F ▸ adj.unit) .η
   precomposite-adjunction .unit .η F .is-natural = (F ▸ adj.unit) .is-natural
   precomposite-adjunction .unit .is-natural F G α = Nat-path λ _ → sym (α .is-natural _ _ _)
