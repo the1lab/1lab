@@ -83,7 +83,6 @@ module _ {o ℓ} (C : Precategory o ℓ) where
     mg .make-group.inv = C._Iso⁻¹
     mg .make-group.assoc x y z = C.≅-pathp refl refl (C.assoc _ _ _)
     mg .make-group.invl x = C.≅-pathp refl refl (x .C.invl)
-    mg .make-group.invr x = C.≅-pathp refl refl (x .C.invr)
     mg .make-group.idl x = C.≅-pathp refl refl (C.idr _)
 ```
 

@@ -71,7 +71,6 @@ rep-subgroup→group-on {G = G} H sg = to-group-on sg′ where
   sg′ .make-group.inv (x , x∈) = x ⁻¹ , has-inv x∈
   sg′ .make-group.assoc x y z = Σ-prop-path (λ x → H x .is-tr) (sym associative)
   sg′ .make-group.invl x = Σ-prop-path (λ x → H x .is-tr) inversel
-  sg′ .make-group.invr x = Σ-prop-path (λ x → H x .is-tr) inverser
   sg′ .make-group.idl x = Σ-prop-path (λ x → H x .is-tr) idl
 
 predicate→subgroup : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Subgroup G
@@ -181,7 +180,6 @@ reader.</summary>
     grp .make-group.inv = inv
     grp .make-group.assoc = λ x y z → Tpath (sym B.associative)
     grp .make-group.invl = λ x → Tpath B.inversel
-    grp .make-group.invr = λ x → Tpath B.inverser
     grp .make-group.idl = λ x → Tpath B.idl
 ```
 
@@ -511,8 +509,6 @@ rather directly:
         inc (associative {x = x} {y} {z} (~ i))
     Group-on-G/H .make-group.invl =
       Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inversel {x = x} i)
-    Group-on-G/H .make-group.invr =
-      Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inverser {x = x} i)
     Group-on-G/H .make-group.idl =
       Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (idl {x = x} i)
 

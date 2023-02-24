@@ -131,7 +131,6 @@ record make-abelian-group (T : Type ℓ) : Type ℓ where
     mg .make-group.inv    = inv
     mg .make-group.assoc  = assoc
     mg .make-group.invl   = invl
-    mg .make-group.invr x = comm x (inv x) ∙ invl x
     mg .make-group.idl    = idl
 
   to-group-on-ab : Group-on T

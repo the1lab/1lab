@@ -64,8 +64,6 @@ inverses are given by `inverting paths`{.Agda ident=sym}.
       λ x y z i → inc (∙-assoc x y z (~ i))
   omega .make-group.invl =
     ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ x i → inc (∙-inv-l x i)
-  omega .make-group.invr =
-    ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ x i → inc (∙-inv-r x i)
   omega .make-group.idl =
     ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ x i → inc (∙-id-l x i)
 ```

@@ -58,7 +58,6 @@ Zero-group = to-group zg where
   zg .make-group.inv x = lift tt
   zg .make-group.assoc x y z = refl
   zg .make-group.invl x = refl
-  zg .make-group.invr x = refl
   zg .make-group.idl x = refl
 
 Zero-group-is-initial : is-initial Zero-group
@@ -110,7 +109,6 @@ Direct-product (G , Gg) (H , Hg) = to-group G×Hg where
   G×Hg .make-group.inv (a , x) = a G.⁻¹ , x H.⁻¹
   G×Hg .make-group.assoc x y z = ap₂ _,_ (sym G.associative) (sym H.associative)
   G×Hg .make-group.invl x = ap₂ _,_ G.inversel H.inversel
-  G×Hg .make-group.invr x = ap₂ _,_ G.inverser H.inverser
   G×Hg .make-group.idl x = ap₂ _,_ G.idl H.idl
 ```
 
@@ -220,7 +218,6 @@ Similar yoga must be done for the inverse maps and the group unit.
     equ-group .make-group.inv = equ-inv
     equ-group .make-group.assoc x y z = Σ-prop-path (λ _ → H.has-is-set _ _) (sym G.associative)
     equ-group .make-group.invl x = Σ-prop-path (λ _ → H.has-is-set _ _) G.inversel
-    equ-group .make-group.invr x = Σ-prop-path (λ _ → H.has-is-set _ _) G.inverser
     equ-group .make-group.idl x = Σ-prop-path (λ _ → H.has-is-set _ _) G.idl
 
   open is-equaliser

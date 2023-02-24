@@ -248,20 +248,31 @@ record make-group {ℓ} (G : Type ℓ) : Type ℓ where
 
     assoc : ∀ x y z → mul (mul x y) z ≡ mul x (mul y z)
     invl  : ∀ x → mul (inv x) x ≡ unit
-    invr  : ∀ x → mul x (inv x) ≡ unit
     idl   : ∀ x → mul unit x ≡ x
+
+  private
+    inverser : ∀ x → mul x (inv x) ≡ unit
+    inverser x =
+      mul x (inv x)                                   ≡˘⟨ idl _ ⟩
+      mul unit (mul x (inv x))                        ≡˘⟨ ap₂ mul (invl _) refl ⟩
+      mul (mul (inv (inv x)) (inv x)) (mul x (inv x)) ≡⟨ assoc _ _ _ ⟩
+      mul (inv (inv x)) (mul (inv x) (mul x (inv x))) ≡˘⟨ ap₂ mul refl (assoc _ _ _) ⟩
+      mul (inv (inv x)) (mul (mul (inv x) x) (inv x)) ≡⟨ ap₂ mul refl (ap₂ mul (invl _) refl) ⟩
+      mul (inv (inv x)) (mul unit (inv x))            ≡⟨ ap₂ mul refl (idl _) ⟩
+      mul (inv (inv x)) (inv x)                       ≡⟨ invl _ ⟩
+      unit                                            ∎
 
   to-group-on : Group-on G
   to-group-on .Group-on._⋆_ = mul
   to-group-on .Group-on.has-is-group .is-group.unit = unit
   to-group-on .Group-on.has-is-group .is-group.inverse = inv
   to-group-on .Group-on.has-is-group .is-group.inversel = invl _
-  to-group-on .Group-on.has-is-group .is-group.inverser = invr _
+  to-group-on .Group-on.has-is-group .is-group.inverser = inverser _
   to-group-on .Group-on.has-is-group .is-group.has-is-monoid .is-monoid.idl {x} = idl x
   to-group-on .Group-on.has-is-group .is-group.has-is-monoid .is-monoid.idr {x} =
     mul x ⌜ unit ⌝           ≡˘⟨ ap¡ (invl x) ⟩
     mul x (mul (inv x) x)    ≡⟨ sym (assoc _ _ _) ⟩
-    mul ⌜ mul x (inv x) ⌝ x  ≡⟨ ap! (invr x) ⟩
+    mul ⌜ mul x (inv x) ⌝ x  ≡⟨ ap! (inverser x) ⟩
     mul unit x               ≡⟨ idl x ⟩
     x                        ∎
   to-group-on .Group-on.has-is-group .is-group.has-is-monoid .has-is-semigroup =
@@ -315,6 +326,4 @@ equivalence is both a section and a retraction.
   group-str .inv = _e⁻¹
   group-str .invl (f , eqv) =
     Σ-prop-path is-equiv-is-prop (funext (equiv→unit eqv))
-  group-str .invr (f , eqv) =
-    Σ-prop-path is-equiv-is-prop (funext (equiv→counit eqv))
 ```

@@ -55,7 +55,6 @@ property, and there, this redundancy doesn't matter.
 ```agda
   f-assoc : ∀ x y z → (x ◆ y) ◆ z ≡ x ◆ (y ◆ z)
   f-invl : ∀ x → inv x ◆ x ≡ nil
-  f-invr : ∀ x → x ◆ inv x ≡ nil
   f-idl  : ∀ x → nil ◆ x ≡ x
   squash : is-set (Free-group A)
 ```
@@ -74,7 +73,6 @@ Free-Group A = to-group fg where
   fg .make-group.inv = inv
   fg .make-group.assoc = f-assoc
   fg .make-group.invl = f-invl
-  fg .make-group.invr = f-invr
   fg .make-group.idl = f-idl
 ```
 
@@ -113,8 +111,6 @@ Free-elim-prop B bp bi bd binv bnil = go where
       (bd x (y ◆ z) (go x) (bd y z (go y) (go z))) i
   go (f-invl x i) =
     is-prop→pathp (λ i → bp (f-invl x i)) (bd (inv x) x (binv x (go x)) (go x)) bnil i
-  go (f-invr x i) =
-    is-prop→pathp (λ i → bp (f-invr x i)) (bd x (inv x) (go x) (binv x (go x))) bnil i
   go (f-idl x i) = is-prop→pathp (λ i → bp (f-idl x i)) (bd nil x bnil (go x)) (go x) i
   go (squash x y p q i j) =
     is-prop→squarep (λ i j → bp (squash x y p q i j))
@@ -165,7 +161,6 @@ associativity, identity and inverse laws that provide the cases for
   go (f-assoc x y z i) =
     G.associative {x = go x} {y = go y} {z = go z} (~ i)
   go (f-invl x i) = G.inversel {x = go x} i
-  go (f-invr x i) = G.inverser {x = go x} i
   go (f-idl x i) = G.idl {x = go x} i
   go (squash x y p q i j) =
     G.has-is-set (go x) (go y) (λ i → go (p i)) (λ i → go (q i)) i j
