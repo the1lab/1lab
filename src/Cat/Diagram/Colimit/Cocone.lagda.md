@@ -168,14 +168,20 @@ The proof mostly is an exercise in shuffling about data.
       ap hom (sym (init (cocone _ eta p) .paths (cocone-hom other q)))
 ```
 
-The inverse direction of this equivalences also consists of moving
-data around.
+This process is invertible.
 
 ```agda
   is-colimit→is-initial-cocone
     : ∀ {x} {eta : F => Const x}
     → (L : is-colimit F x eta)
     → is-initial Cocones (cocone x (is-colimit.ψ L) (is-colimit.commutes L))
+```
+
+<details>
+<summary>The proof consists of more data shuffling, so we omit it.
+</summary>
+
+```agda
   is-colimit→is-initial-cocone {x  = x} L K = init where
     module L = is-colimit L
     module K = Cocone K
@@ -189,4 +195,5 @@ data around.
     init .paths f =
       Cocone-hom-path (sym (L.unique K.ψ K.commutes (f .hom) (f .commutes)))
 ```
+</details>
 
