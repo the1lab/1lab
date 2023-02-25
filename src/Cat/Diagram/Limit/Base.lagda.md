@@ -309,48 +309,32 @@ we have been given:
 
 <!--
 ```agda
-  fixup-is-limit
-    : ∀ {D : Functor J C} {K : Functor ⊤Cat C} {eps : K F∘ !F => D}
-    → is-ran !F D K eps
-    → is-limit D (Functor.F₀ K tt) (counit→cone D eps)
-  fixup-is-limit {D = D} {K} {eps} lim = lim' where
-    open Functor
+  generalize-limitp
+    : ∀ {D : Functor J C} {K : Functor ⊤Cat C}
+    → {eps : (const! (Functor.F₀ K tt)) F∘ !F => D} {eps' : K F∘ !F => D}
+    → is-ran !F D (const! (Functor.F₀ K tt)) eps
+    → (∀ {j} → eps .η j ≡ eps' .η j)
+    → is-ran !F D K eps'
+  generalize-limitp {D} {K} {eps} {eps'} ran q = ran' where
+    module ran = is-ran ran
     open is-ran
+    open Functor
 
-    lim' : is-limit D (Functor.F₀ K tt) (counit→cone D eps)
-    lim' .σ α .η = lim .σ α .η
-    lim' .σ {M = M} α .is-natural x y f =
-      C.elimr (M .F-id) ∙ sym (C.idl _)
-    lim' .σ-comm = Nat-path λ j →
-      lim .σ-comm ηₚ j
-    lim' .σ-uniq {M = M} {β = β} {σ′ = σ′} p = Nat-path λ _ →
-      lim .σ-uniq {β = β} {σ′ = σ″} (Nat-path (p ηₚ_)) ηₚ tt
-      where
-        σ″ : M => K
-        σ″ .η = σ′ .η
-        σ″ .is-natural _ _ _ =
-          σ′ .is-natural _ _ _ ∙ ap (C._∘ _) (sym (K .F-id))
+    ran' : is-ran !F D K eps'
+    ran' .σ α = hom→⊤-natural-trans (ran.σ α .η tt)
+    ran' .σ-comm {M} {β} = Nat-path λ j →
+      ap (C._∘ _) (sym q) ∙ ran.σ-comm {β = β} ηₚ _
+    ran' .σ-uniq {M} {β} {σ′} r = Nat-path λ j →
+      ran.σ-uniq {σ′ = hom→⊤-natural-trans (σ′ .η tt)}
+        (Nat-path (λ j → r ηₚ j ∙ ap (C._∘ _) (sym q))) ηₚ j
 
   to-is-limitp
     : ∀ {D : Functor J C} {K : Functor ⊤Cat C} {eps : K F∘ !F => D}
     → (mk : make-is-limit D (Functor.F₀ K tt))
     → (∀ {j} → to-cone mk .η j ≡ eps .η j)
     → is-ran !F D K eps
-  to-is-limitp {D} {K} {eps} mklim p = lim where
-    open make-is-limit mklim
-    open is-ran
-    open Functor
-    open _=>_
-
-    lim : is-ran !F D K eps
-    lim .σ {M = M} α .η _ =
-      universal (α .η) (λ f → sym (α .is-natural _ _ f) ∙ C.elimr (M .F-id))
-    lim .σ {M = M} α .is-natural _ _ _ =
-      C.elimr (M .F-id) ∙ C.introl (K .F-id)
-    lim .σ-comm {β = β} = Nat-path λ j →
-      ap (C._∘ _) (sym p) ∙ factors (β .η) _
-    lim .σ-uniq {β = β} {σ′ = σ′} q = Nat-path λ _ →
-      sym (unique (β .η) _ (σ′ .η tt) λ j → ap (C._∘ _) p ∙ sym (q ηₚ j))
+  to-is-limitp {D} {K} {eps} mklim p =
+    generalize-limitp (to-is-limit mklim) p
 ```
 -->
 
@@ -502,11 +486,10 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 -->
 
 Above, there has been mention of _the_ limit. The limit of a diagram, if
-it exists, is unique up to isomorphism. We prove that here. The argument
-is as follows: Fixing a diagram $F$, suppose that $x$ and $y$ are both
-limits of $F$. We can use the universal maps associated with each limit
-to construct both directions of the isomorphism. Furthermore, these
-are mutually inverse, as universal maps are unique.
+it exists, is unique up to isomorphism. This follows directly from
+[uniqueness of Kan extensions].
+
+[uniqueness of Kan extensions]: Cat.Functor.Kan.Unique.html
 
 We show a slightly more general result first: if there exist a pair of
 maps $f$, $g$ between the apexes of the 2 limits, and these maps commute
@@ -518,10 +501,14 @@ with the 2 limits, then $f$ and $g$ are inverses.
     → (∀ {j : J.Ob} → Ly.ψ j C.∘ f ≡ Lx.ψ j)
     → (∀ {j : J.Ob} → Lx.ψ j C.∘ g ≡ Ly.ψ j)
     → C.Inverses f g
-  limits→inversesp f-factor g-factor =
-    C.make-inverses
-      (Ly.unique₂ Ly.ψ Ly.commutes (λ j → C.pulll f-factor ∙ g-factor) λ _ → C.idr _)
-      (Lx.unique₂ Lx.ψ Lx.commutes (λ j → C.pulll g-factor ∙ f-factor) λ _ → C.idr _)
+  limits→inversesp {f = f} {g = g} f-factor g-factor =
+    natural-inverses→inverses
+      {α = hom→⊤-natural-trans f}
+      {β = hom→⊤-natural-trans g}
+      (Ran-unique.σ-inversesp Ly Lx
+        (Nat-path λ j → f-factor {j})
+        (Nat-path λ j → g-factor {j}))
+      tt
 ```
 
 Furthermore, any morphism between apexes that commutes with the limit
@@ -532,9 +519,14 @@ must be invertible.
     : ∀ {f : C.Hom x y}
     → (∀ {j : J.Ob} → Ly.ψ j C.∘ f ≡ Lx.ψ j)
     → C.is-invertible f
-  limits→invertiblep f-factor =
-    C.inverses→invertible $
-    limits→inversesp f-factor (Lx.factors Ly.ψ Ly.commutes)
+  limits→invertiblep {f = f} f-factor =
+    is-natural-invertible→invertible
+      {α = hom→⊤-natural-trans f}
+      (Ran-unique.σ-is-invertiblep
+        Ly
+        Lx
+        (Nat-path λ j → f-factor {j}))
+      tt
 ```
 
 This implies that the universal maps must also be inverses.
@@ -554,7 +546,8 @@ Finally, we can bundle this data up to show that the apexes are isomorphic.
 
 ```agda
   limits-unique : x C.≅ y
-  limits-unique = C.invertible→iso _ limits→invertible 
+  limits-unique =
+    Nat-iso→Iso (Ran-unique.unique Lx Ly) tt
 ```
 
 
@@ -597,63 +590,25 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
     → C.is-invertible (Ly.universal eta p)
     → is-ran !F D K' eps
   is-invertible→is-limitp {K' = K'} eta p q invert =
-    to-is-limitp lim q
-    where
-      open C.is-invertible invert
-      open make-is-limit
-
-      lim : make-is-limit D (K' .F₀ tt)
-      lim .ψ = eta
-      lim .commutes = p
-      lim .universal tau q = inv C.∘ Ly.universal tau q
-      lim .factors tau q =
-        lim .ψ _ C.∘ inv C.∘ Ly.universal tau q                        ≡˘⟨ Ly.factors eta p C.⟩∘⟨refl ⟩
-        (Ly.ψ _ C.∘ Ly.universal eta p) C.∘ inv C.∘ Ly.universal tau q ≡⟨ C.cancel-inner invl ⟩
-        Ly.ψ _ C.∘ Ly.universal tau q                                  ≡⟨ Ly.factors tau q ⟩
-        tau _                                                          ∎
-      lim .unique tau q other r =
-        other                                ≡⟨ C.insertl invr ⟩
-        inv C.∘ Ly.universal eta p C.∘ other ≡⟨ C.refl⟩∘⟨ Ly.unique _ _ _ (λ j → C.pulll (Ly.factors eta p) ∙ r j) ⟩
-        inv C.∘ Ly.universal tau q           ∎
+    generalize-limitp
+      (is-invertible→is-ran Ly $ componentwise-invertible→invertible _ (λ _ → invert))
+      q
 ```
-
-<!--
-```agda
-
-```
--->
 
 Another useful fact is that if $L$ is a limit of some diagram $Dia$, and
 $Dia$ is naturally isomorphic to some other diagram $Dia'$, then the
 apex of $L$ is also a limit of $Dia'$.
 
 ```agda
-  natural-iso→is-limitp
+  natural-iso-diagram→is-limitp
     : ∀ {D′ : Functor J C} {eps : K F∘ !F => D′}
     → (isos : natural-iso D D′)
     → (∀ {j} → natural-iso.to isos .η j C.∘ Ly.ψ j ≡ eps .η j)
     → is-ran !F D′ K eps
-  natural-iso→is-limitp {D′ = D′} isos p = to-is-limitp lim p where
-    open make-is-limit
-    module isos = natural-iso isos
-
-    lim : make-is-limit D′ (K .F₀ tt)
-    lim .ψ j =  isos.to .η _ C.∘ Ly.ψ j
-    lim .commutes f =
-      C.pulll (sym $ isos.to .is-natural _ _ f)
-      ∙ C.pullr (Ly.commutes f)
-    lim .universal eta q =
-      Ly.universal
-        (λ j → isos.from .η _ C.∘ eta j)
-        (λ f →
-          C.pulll (sym $ isos.from .is-natural _ _ f)
-          ∙ C.pullr (q f))
-    lim .factors eta q =
-      C.pullr (Ly.factors _ _)
-      ∙ C.cancell (isos.invl ηₚ _)
-    lim .unique eta q other r =
-      Ly.unique _ _ other λ j →
-        ap (C._∘ other) (C.insertl (isos.invr ηₚ _)) ∙ C.pullr (r j)
+  natural-iso-diagram→is-limitp {D′ = D′} isos p =
+    generalize-limitp
+      (natural-iso-of→is-ran Ly isos)
+      p
 ```
 
 <!--
@@ -668,8 +623,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
     → Limit D′
   natural-iso→limit isos L .Ran.Ext = Ran.Ext L
   natural-iso→limit isos L .Ran.eps = natural-iso.to isos ∘nt Ran.eps L
-  natural-iso→limit isos L .Ran.has-ran =
-    natural-iso→is-limitp (Limit.has-limit L) isos refl
+  natural-iso→limit isos L .Ran.has-ran = natural-iso-of→is-ran (Ran.has-ran L) isos
 ```
 -->
  
@@ -764,20 +718,6 @@ apex $F(a)$, then $a$ was _already the limit_ of $\rm{Dia}$!
     ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
     → (ran : is-ran !F (F F∘ Diagram) (F F∘ K) (nat-assoc-from (F ▸ eps)))
     → reflects-ran F ran
-```
-
-## Creation of limits
-
-Finally, we say a functor _creates_ limits of shape $\rm{Dia}$ if it
-both preserves _and_ reflects those limits. Intuitively, this means that
-the limits of shape $\rm{Dia}$ in $\cC$ are in a 1-1 correspondence
-with the limits $F \circ \rm{Dia}$ in $\cD$.
-
-```agda
-  -- record creates-limit {K : Functor ⊤Cat} : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
-  --   field
-  --     preserves  : preserves-limit
-  --     reflectst  : reflects-limit
 ```
 
 ## Continuity

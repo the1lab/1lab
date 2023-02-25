@@ -199,7 +199,7 @@ extension of $F'$ along $p$.
       α .η j ∎
     lan' .σ-uniq {M} {α} {σ′} p =
       lan.σ-uniq $ Nat-path λ j →
-        α .η j D.∘ isos.to .η j ≡⟨ (p ηₚ j) D.⟩∘⟨refl ⟩
+        α .η j D.∘ isos.to .η j                                    ≡⟨ (p ηₚ j) D.⟩∘⟨refl ⟩
         (σ′ .η _ D.∘ eta .η j D.∘ isos.from .η j) D.∘ isos.to .η j ≡⟨ D.deleter (isos.invr ηₚ _) ⟩
         σ′ .η _ D.∘ eta .η j ∎
 ```
@@ -231,17 +231,14 @@ kan extension of $F$ along $p$.
 
 <!--
 ```agda
-  universal-path→is-lan
-    : ∀ {eta'}
-    → eta ≡ eta'
-    → is-lan p F G eta'
+  universal-path→is-lan : ∀ {eta'} → eta ≡ eta' → is-lan p F G eta'
   universal-path→is-lan {eta'} q = lan' where
     open is-lan
 
     lan' : is-lan p F G eta'
     lan' .σ = lan.σ
-    lan' .σ-comm = ap ((lan.σ _ ◂ p) ∘nt_) (sym q) ∙ lan.σ-comm
-    lan' .σ-uniq r = lan.σ-uniq (r ∙ ap ((_ ◂ p) ∘nt_) (sym q))
+    lan' .σ-comm = ap (_ ∘nt_) (sym q) ∙ lan.σ-comm
+    lan' .σ-uniq r = lan.σ-uniq (r ∙ ap (_ ∘nt_) (sym q))
 ```
 -->
 
@@ -322,21 +319,114 @@ module
   open C′D._≅_
   open C′D.Inverses
 
-  functor : natural-iso G₁ G₂
-  functor = morp where
-    morp : natural-iso G₁ G₂
-    morp .to   = r₂.σ ε₁
-    morp .from = r₁.σ ε₂
-    morp .inverses .invl = r₂.σ-uniq₂ ε₂
-      (Nat-path λ x → sym (D.pulll (r₂.σ-comm ηₚ _) ∙ r₁.σ-comm ηₚ _))
-      (Nat-path λ x → D.intror refl)
-    morp .inverses .invr = r₁.σ-uniq₂ ε₁
-      (Nat-path λ x → sym (D.pulll (r₁.σ-comm ηₚ _) ∙ r₂.σ-comm ηₚ _))
-      (Nat-path λ x → D.intror refl)
-  module functor = C′D._≅_ functor
+  σ-inversesp
+    : ∀ {α : G₂ => G₁} {β : G₁ => G₂}
+    → (ε₁ ∘nt (α ◂ p)) ≡ ε₂
+    → (ε₂ ∘nt (β ◂ p)) ≡ ε₁
+    → natural-inverses α β
+  σ-inversesp α-factor β-factor =
+    C′D.make-inverses
+      (r₁.σ-uniq₂ ε₁
+        (Nat-path λ j → sym (D.pulll (α-factor ηₚ j) ∙ β-factor ηₚ j))
+        (Nat-path λ j → sym (D.idr _)))
+      (r₂.σ-uniq₂ ε₂
+        (Nat-path λ j → sym (D.pulll (β-factor ηₚ j) ∙ α-factor ηₚ j))
+        (Nat-path λ j → sym (D.idr _)))
 
-  counit : ε₁ ∘nt (functor.from ◂ p) ≡ ε₂
+  σ-is-invertiblep
+    : ∀ {α : G₂ => G₁}
+    → (ε₁ ∘nt (α ◂ p)) ≡ ε₂
+    → is-natural-invertible α
+  σ-is-invertiblep {α} α-factor =
+    C′D.inverses→invertible (σ-inversesp {α} α-factor r₂.σ-comm)
+
+  σ-inverses : natural-inverses (r₁.σ ε₂) (r₂.σ ε₁)
+  σ-inverses = σ-inversesp r₁.σ-comm r₂.σ-comm
+
+  σ-is-invertible : is-natural-invertible (r₁.σ ε₂)
+  σ-is-invertible = σ-is-invertiblep r₁.σ-comm
+
+  unique : natural-iso G₁ G₂
+  unique = C′D.invertible→iso (r₁.σ ε₂) (σ-is-invertiblep r₁.σ-comm) ni⁻¹
+
+  counit : ε₁ ∘nt (r₁.σ ε₂ ◂ p) ≡ ε₂
   counit = r₁.σ-comm
+
+module _
+    {p : Functor C C′} {F : Functor C D}
+    {G : Functor C′ D} {eps}
+    (ran : is-ran p F G eps)
+    where
+
+  private
+    module ran = is-ran ran
+    module D = Cat.Reasoning D
+    module C′D = Cat.Reasoning Cat[ C′ , D ]
+    open _=>_
+
+  -- These are more annoying to do via duality then it is to do by hand,
+  -- due to the natural isos.
+  is-invertible→is-ran
+    : ∀ {G' : Functor C′ D} {eps'}
+    → is-natural-invertible (ran.σ eps')
+    → is-ran p F G' eps'
+  is-invertible→is-ran {G' = G'} {eps'} invert = ran' where
+    open is-ran
+    open C′D.is-invertible invert
+
+    ran' : is-ran p F G' eps'
+    ran' .σ β = inv ∘nt ran.σ β
+    ran' .σ-comm {M} {β} = Nat-path λ j →
+      sym ((ran.σ-comm ηₚ _) D.⟩∘⟨refl)
+      ·· D.cancel-inner (invl ηₚ _)
+      ·· (ran.σ-comm ηₚ _)
+    ran' .σ-uniq {M} {β} {σ′} p = Nat-path λ j →
+      (D.refl⟩∘⟨ ran.σ-uniq {σ′ = ran.σ eps' ∘nt σ′} (Nat-path λ j → p ηₚ j ∙ D.pushl (sym (ran.σ-comm ηₚ j))) ηₚ _)
+      ∙ D.cancell (invr ηₚ _)
+
+  natural-iso-of→is-ran
+    : {F' : Functor C D}
+    → (isos : natural-iso F F')
+    → is-ran p F' G (natural-iso.to isos ∘nt eps)
+  natural-iso-of→is-ran {F'} isos = ran' where
+    open is-ran
+    module isos = natural-iso isos
+
+    ran' : is-ran p F' G (isos.to ∘nt eps)
+    ran' .σ β = ran.σ (isos.from ∘nt β)
+    ran' .σ-comm {M} {β} = Nat-path λ j →
+      D.pullr (ran.σ-comm ηₚ j)
+      ∙ D.cancell (isos.invl ηₚ _)
+    ran' .σ-uniq {M} {β} {σ′} p =
+      ran.σ-uniq $ Nat-path λ j →
+        (D.refl⟩∘⟨ p ηₚ j)
+        ∙ D.deletel (isos.invr ηₚ _)
+
+  natural-iso-ext→is-ran
+    : {G' : Functor C′ D}
+    → (isos : natural-iso G G')
+    → is-ran p F G' (eps ∘nt (natural-iso.from isos ◂ p))
+  natural-iso-ext→is-ran {G'} isos = ran' where
+    open is-ran
+    module isos = natural-iso isos
+
+    ran' : is-ran p F G' (eps ∘nt (isos.from ◂ p))
+    ran' .σ β = isos.to ∘nt ran.σ β
+    ran' .σ-comm {M} {β} = Nat-path λ j →
+      D.cancel-inner (isos.invr ηₚ _)
+      ∙ ran.σ-comm ηₚ _
+    ran' .σ-uniq {M} {β} {σ′} p = Nat-path λ j →
+      D.pushr (ran.σ-uniq {σ′ = isos.from ∘nt σ′} (Nat-path λ j → p ηₚ j ∙ sym (D.assoc _ _ _)) ηₚ j)
+      ∙ D.eliml (isos.invl ηₚ _)
+
+  universal-path→is-ran : ∀ {eps'} → eps ≡ eps' → is-ran p F G eps'
+  universal-path→is-ran {eps'} q = ran' where
+    open is-ran
+
+    ran' : is-ran p F G eps'
+    ran' .σ = ran.σ
+    ran' .σ-comm = ap (_∘nt _) (sym q) ∙ ran.σ-comm
+    ran' .σ-uniq r = ran.σ-uniq (r ∙ ap (_∘nt _) (sym q))
 
 Ran-is-prop
   : ∀ {p : Functor C C′} {F : Functor C D} → is-category D → is-prop (Ran p F)
@@ -351,7 +441,7 @@ Ran-is-prop {C = C} {C′ = C′} {D = D} {p = p} {F = F} d-cat R₁ R₂ = path
   c′d-cat = Functor-is-category d-cat
 
   fp : R₁.Ext ≡ R₂.Ext
-  fp = c′d-cat .to-path Ru.functor
+  fp = c′d-cat .to-path Ru.unique
 
   εp : PathP (λ i → fp i F∘ p => F) R₁.eps R₂.eps
   εp = Nat-pathp _ _ λ x → Univalent.Hom-pathp-refll-iso d-cat (Ru.counit ηₚ _)
