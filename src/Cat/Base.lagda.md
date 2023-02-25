@@ -486,6 +486,7 @@ module _ {o₁ h₁ o₂ h₂}
     module D = Precategory D
     module C = Precategory C
 
+  open Functor
   open _=>_
 ```
 -->
@@ -530,6 +531,12 @@ is a proposition:
 
   _ηₚ_ : ∀ {a b : F => G} → a ≡ b → ∀ x → a .η x ≡ b .η x
   p ηₚ x = ap (λ e → e .η x) p
+
+  _ηᵈ_ : ∀ {F' G' : Functor C D} {p : F ≡ F'} {q : G ≡ G'}
+       → {a : F => G} {b : F' => G'}
+       → PathP (λ i → p i => q i) a b
+       → ∀ x → PathP (λ i → D.Hom (p i .F₀ x) (q i .F₀ x)) (a .η x) (b .η x)
+  p ηᵈ x = apd (λ i e → e .η x) p
 
   infixl 45 _ηₚ_
 ```
