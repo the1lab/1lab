@@ -123,12 +123,9 @@ module _ {I : Type ℓ'} (i-is-grpd : is-groupoid I) (F : I → C.Ob) where
         J (λ j p → subst (C.Hom (F i) ⊙ F) p C.id C.∘ π i ≡ π j)
           (C.eliml (transport-refl _))
           p
-      ml .universal eta p =
-        ip.tuple eta
-      ml .factors eta p =
-        ip.commute
-      ml .unique eta p other q =
-        ip.unique eta q
+      ml .universal eta p = ip.tuple eta
+      ml .factors eta p = ip.commute
+      ml .unique eta p other q = ip.unique eta q
 
   is-limit→is-indexed-product
     : ∀ {K : Functor ⊤Cat C}

@@ -98,12 +98,9 @@ module _ {I : Type ℓ'} (i-is-grpd : is-groupoid I) (F : I → C.Ob) where
         J (λ j p → inj j C.∘ subst (C.Hom (F i) ⊙ F) p C.id ≡ inj i)
           (C.elimr (transport-refl C.id))
           p
-      mc .universal eta p =
-        ic.match eta
-      mc .factors eta p =
-        ic.commute
-      mc .unique eta p other q =
-        ic.unique eta q
+      mc .universal eta p = ic.match eta
+      mc .factors eta p = ic.commute
+      mc .unique eta p other q = ic.unique eta q
 
   is-colimit→is-indexed-coprduct
     : ∀ {K : Functor ⊤Cat C}
