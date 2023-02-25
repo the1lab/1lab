@@ -97,7 +97,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
     no-eta-equality
     open Functor Diagram
 ```
--->A
+-->
 
 First, we require morphisms from the every value of the diagram to
 the coapex; taken as a family, we call it $\phi$. Moreover, if $f : x \to y$ is
@@ -171,7 +171,6 @@ the rest of the data.
     open make-is-colimit mkcolim
     open is-lan
     open Functor
-    open _=>_
 
     colim : is-colimit Diagram coapex (to-cocone mkcolim)
     colim .σ {M = M} α .η _ =
@@ -186,27 +185,38 @@ the rest of the data.
 
 <!--
 ```agda
+  -- We often find ourselves working with something that isn't a colimit
+  -- on the nose due to some annoying extensionality reasons involving
+  -- functors '⊤Cat → C'
+  -- We could use some general theorems of kan extensions to adjust the
+  -- colimit, but this has better definitional behaviour.
+  generalize-colimitp
+    : ∀ {D : Functor J C} {K : Functor ⊤Cat C}
+    → {eta : D => (const! (Functor.F₀ K tt)) F∘ !F} {eta' : D => K F∘ !F}
+    → is-lan !F D (const! (Functor.F₀ K tt)) eta
+    → (∀ {j} → eta .η j ≡ eta' .η j)
+    → is-lan !F D K eta'
+  generalize-colimitp {D} {K} {eta} {eta'} lan q = lan' where
+    module lan = is-lan lan
+    open is-lan
+    open Functor
+
+    lan' : is-lan !F D K eta'
+    lan' .σ α = hom→⊤-natural-trans (lan.σ α .η tt)
+    lan' .σ-comm {M} {α} = Nat-path λ j →
+      ap (_ C.∘_) (sym q)
+      ∙ lan.σ-comm {α = α} ηₚ _
+    lan' .σ-uniq {M} {α} {σ′} r = Nat-path λ j →
+      lan.σ-uniq {σ′ = hom→⊤-natural-trans (σ′ .η tt)}
+        (Nat-path (λ j → r ηₚ j ∙ ap (_ C.∘_) (sym q))) ηₚ j
+
   to-is-colimitp
     : ∀ {D : Functor J C} {K : Functor ⊤Cat C} {eta : D => K F∘ !F}
     → (mk : make-is-colimit D (Functor.F₀ K tt))
     → (∀ {j} → to-cocone mk .η j ≡ eta .η j)
     → is-lan !F D K eta
-  to-is-colimitp {D} {K} {eta} mkcolim p = colim where
-    open make-is-colimit mkcolim
-    open is-lan
-    open Functor
-    open _=>_
-
-    colim : is-lan !F D K eta
-    colim .σ {M = M} β .η _ =
-      universal (β .η) (λ f → β .is-natural _ _ f ∙ C.eliml (M .F-id))
-    colim .σ {M = M} β .is-natural _ _ _ =
-      C.elimr (K .F-id) ∙ C.introl (M .F-id)
-    colim .σ-comm {α = α} = Nat-path λ j →
-      ap (_ C.∘_) (sym p) ∙ factors (α .η) _
-    colim .σ-uniq {α = α} {σ′ = σ′} q = Nat-path λ _ →
-      sym $ unique (α .η) _ (σ′ .η tt) λ j →
-        ap (_ C.∘_) p ∙ sym (q ηₚ j)
+  to-is-colimitp {D} {K} {eta} mkcolim p =
+    generalize-colimitp (to-is-colimit mkcolim) p
 ```
 -->
 
@@ -339,7 +349,10 @@ computation.
 
 # Uniqueness
 
-[Much like limits], colimits are unique up to isomorphism.
+[Much like limits], colimits are unique up to isomorphism. This all
+follows from general properties of kan extensions, combined with the
+fact that natural isomorphisms between functors $\top \to \cC$ correspond
+with isomorphisms in $\cC$.
 
 [Much like limits]: Cat.Diagram.Limit.Base.html#uniqueness
 
@@ -369,18 +382,27 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
     → (∀ {j : J.Ob} → f C.∘ Cx.ψ j ≡ Cy.ψ j)
     → (∀ {j : J.Ob} → g C.∘ Cy.ψ j ≡ Cx.ψ j)
     → C.Inverses f g
-  colimits→inversesp f-factor g-factor =
-    C.make-inverses
-      (Cy.unique₂ Cy.ψ Cy.commutes (λ j → C.pullr g-factor ∙ f-factor) λ _ → C.idl _)
-      (Cx.unique₂ Cx.ψ Cx.commutes (λ j → C.pullr f-factor ∙ g-factor) λ _ → C.idl _)
+  colimits→inversesp {f = f} {g = g} f-factor g-factor =
+    natural-inverses→inverses
+      {α = hom→⊤-natural-trans f}
+      {β = hom→⊤-natural-trans g}
+      (Lan-unique.σ-inversesp Cx Cy
+        (Nat-path λ j → f-factor {j})
+        (Nat-path λ j → g-factor {j}))
+      tt
 
   colimits→invertiblep
     : ∀ {f : C.Hom x y}
     → (∀ {j : J.Ob} → f C.∘ Cx.ψ j ≡ Cy.ψ j)
     → C.is-invertible f
-  colimits→invertiblep f-factor =
-    C.inverses→invertible $
-    colimits→inversesp f-factor (Cy.factors Cx.ψ Cx.commutes)
+  colimits→invertiblep {f = f} f-factor =
+    is-natural-invertible→invertible
+      {α = hom→⊤-natural-trans f}
+      (Lan-unique.σ-is-invertiblep
+        Cx
+        Cy
+        (Nat-path λ j → f-factor {j}))
+      tt
 
   colimits→inverses
     : C.Inverses (Cx.universal Cy.ψ Cy.commutes) (Cy.universal Cx.ψ Cx.commutes)
@@ -389,14 +411,20 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 
   colimits→invertible
     : C.is-invertible (Cx.universal Cy.ψ Cy.commutes)
-  colimits→invertible = colimits→invertiblep (Cx.factors Cy.ψ Cy.commutes)
+  colimits→invertible =
+    colimits→invertiblep (Cx.factors Cy.ψ Cy.commutes)
 
   colimits-unique : x C.≅ y
-  colimits-unique = C.invertible→iso _ colimits→invertible
+  colimits-unique =
+    Nat-iso→Iso (Lan-unique.unique Cx Cy) tt
 ```
 
 Furthermore, if the universal map is invertible, then that means its
-domain is _also_ a colimit of the diagram.
+domain is _also_ a colimit of the diagram. This also follows from a
+[general theorem of kan extensions], though some golf is required to
+obtain the correct inverse.
+
+[general theorem of kan extensions]: Cat.Functor.Kan.Unique.html#is-invertible→is-lan
 
 <!--
 ```agda
@@ -433,23 +461,10 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
     → (∀ {j} → eps j ≡ eta .η j)
     → C.is-invertible (Cy.universal eps p)
     → is-lan !F D K' eta
-  is-invertible→is-colimitp {K' = K'} eps p q invert =
-    to-is-colimitp colim q
-    where
-      open C.is-invertible invert
-      open make-is-colimit
-
-      colim : make-is-colimit D (K' .F₀ tt)
-      colim .ψ = eps
-      colim .commutes = p
-      colim .universal tau q = Cy.universal tau q C.∘ inv
-      colim .factors tau q =
-        sym (C.refl⟩∘⟨ Cy.factors eps p)
-        ·· C.cancel-inner invr
-        ·· Cy.factors tau q
-      colim .unique tau q other r =
-        C.insertr invl
-        ∙ (Cy.unique _ _ _ (λ j → C.pullr (Cy.factors eps p) ∙ r j) C.⟩∘⟨refl)
+  is-invertible→is-colimitp {K' = K'} {eta = eta} eps p q invert =
+    generalize-colimitp
+      (is-invertible→is-lan Cy $ componentwise-invertible→invertible _ λ _ → invert)
+      q
 ```
 
 Another useful fact is that if $C$ is a colimit of some diagram $Dia$,
@@ -457,32 +472,15 @@ and $Dia$ is naturally isomorphic to some other diagram $Dia'$, then the
 coapex of $C$ is also a colimit of $Dia'$.
 
 ```agda
-  natural-iso→is-colimitp
+  natural-iso-diagram→is-colimitp
     : ∀ {D′ : Functor J C} {eta : D′ => K F∘ !F}
     → (isos : natural-iso D D′)
     → (∀ {j} →  Cy.ψ j C.∘ natural-iso.from isos .η j ≡ eta .η j)
     → is-lan !F D′ K eta
-  natural-iso→is-colimitp {D′ = D′} isos p = to-is-colimitp colim p where
-    open make-is-colimit
-    module isos = natural-iso isos
-
-    colim : make-is-colimit D′ (K .F₀ tt)
-    colim .ψ j = Cy.ψ j C.∘ isos.from .η _
-    colim .commutes f =
-      C.pullr (isos.from .is-natural _ _ f)
-      ∙ C.pulll (Cy.commutes f)
-    colim .universal eps q =
-      Cy.universal
-        (λ j → eps j C.∘ isos.to .η _)
-        (λ f →
-          C.pullr (isos.to .is-natural _ _ f)
-          ∙ C.pulll (q f))
-    colim .factors eta q =
-      C.pulll (Cy.factors _ _)
-      ∙ C.cancelr (isos.invl ηₚ _)
-    colim .unique eta q other r =
-      Cy.unique _ _ other λ j →
-        ap (other C.∘_) (C.insertr (isos.invr ηₚ _)) ∙ C.pulll (r j)
+  natural-iso-diagram→is-colimitp {D′ = D′} isos q =
+    generalize-colimitp
+      (natural-iso-of→is-lan Cy isos)
+      q
 ```
 
 <!--
@@ -497,8 +495,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
     → Colimit D′
   natural-iso→colimit isos C .Lan.Ext = Lan.Ext C
   natural-iso→colimit isos C .Lan.eta = Lan.eta C ∘nt natural-iso.from isos
-  natural-iso→colimit isos C .Lan.has-lan =
-    natural-iso→is-colimitp (Colimit.has-colimit C) isos refl
+  natural-iso→colimit isos C .Lan.has-lan = natural-iso-of→is-lan (Lan.has-lan C) isos
 ```
 -->
 
@@ -571,11 +568,6 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
     → is-lan !F (F F∘ Diagram) (F F∘ K) (nat-assoc-to (F ▸ eps))
     → Type _
   reflects-colimit lan = reflects-lan F lan
-
---   record creates-colimit : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
---     field
---       preserves-colimit : Preserves-colimit
---       reflects-colimit : Reflects-colimit
 ```
 
 ## Cocontinuity
@@ -588,8 +580,8 @@ is-cocontinuous
   → Functor C D → Type _
 ```
 
-A cocontinuous functor is one that --- for every shape of diagram `J`,
-and every diagram `diagram`{.Agda} of shape `J` in `C` --- preserves the
+A cocontinuous functor is one that, for every shape of diagram `J`,
+and every diagram `diagram`{.Agda} of shape `J` in `C`, preserves the
 colimit for that diagram.
 
 ```agda

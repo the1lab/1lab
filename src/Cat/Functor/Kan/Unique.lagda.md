@@ -97,27 +97,153 @@ G_1$. Since these factorisations are unique, we have a natural
 isomorphism.
 
 ```agda
-  functor : natural-iso G₁ G₂
-  functor = morp where
-    morp : natural-iso G₁ G₂
-    morp .to   = l₁.σ η₂
-    morp .from = l₂.σ η₁
-    morp .inverses .invl = l₂.σ-uniq₂ η₂
-      (Nat-path λ x → sym (D.pullr (l₂.σ-comm ηₚ _) ∙ l₁.σ-comm ηₚ _))
-      (Nat-path λ x → D.introl refl)
-    morp .inverses .invr = l₁.σ-uniq₂ η₁
-      (Nat-path λ x → sym (D.pullr (l₁.σ-comm ηₚ _) ∙ l₂.σ-comm ηₚ _))
-      (Nat-path λ x → D.introl refl)
-  module functor = C′D._≅_ functor
+  σ-inversesp
+    : ∀ {α : G₁ => G₂} {β : G₂ => G₁}
+    → (α ◂ p) ∘nt η₁ ≡ η₂
+    → (β ◂ p) ∘nt η₂ ≡ η₁
+    → natural-inverses α β
+  σ-inversesp α-factor β-factor =
+    C′D.make-inverses
+      (l₂.σ-uniq₂ η₂
+        (Nat-path λ j → sym (D.pullr (β-factor ηₚ j) ∙ α-factor ηₚ j))
+        (Nat-path λ j → sym (D.idl _)))
+      (l₁.σ-uniq₂ η₁
+        (Nat-path λ j → sym (D.pullr (α-factor ηₚ j) ∙ β-factor ηₚ j))
+        (Nat-path λ j → sym (D.idl _)))
+
+  σ-is-invertiblep
+    : ∀ {α : G₁ => G₂}
+    → (α ◂ p) ∘nt η₁ ≡ η₂
+    → is-natural-invertible α
+  σ-is-invertiblep {α = α} α-factor =
+    C′D.inverses→invertible (σ-inversesp {α} α-factor l₂.σ-comm)
+
+  σ-inverses : natural-inverses (l₁.σ η₂) (l₂.σ η₁)
+  σ-inverses = σ-inversesp l₁.σ-comm l₂.σ-comm
+
+  σ-is-invertible : is-natural-invertible (l₁.σ η₂)
+  σ-is-invertible = σ-is-invertiblep l₁.σ-comm
+
+  unique : natural-iso G₁ G₂
+  unique = C′D.invertible→iso (l₁.σ η₂) (σ-is-invertiblep l₁.σ-comm)
 ```
 
 It's immediate from the construction that this isomorphism "sends
 $\eta_1$ to $\eta_2$".
 
 ```agda
-  unit : (functor.to ◂ p) ∘nt η₁ ≡ η₂
+  unit : (l₁.σ η₂ ◂ p) ∘nt η₁ ≡ η₂
   unit = l₁.σ-comm
 ```
+
+<!--
+```agda
+module _
+    {p : Functor C C′} {F : Functor C D}
+    {G : Functor C′ D} {eta}
+    (lan : is-lan p F G eta)
+    where
+
+  private
+    module lan = is-lan lan
+    module D = Cat.Reasoning D
+    module C′D = Cat.Reasoning Cat[ C′ , D ]
+    open _=>_
+```
+-->
+
+Another useful fact is that if the universal natural transformation
+of a left kan extension is invertible for some $G' : \cC' \to \cD$,
+then $G'$ is also a left kan extension.
+
+```agda
+  is-invertible→is-lan
+    : ∀ {G' : Functor C′ D} {eta' : F => G' F∘ p}
+    → is-natural-invertible (lan.σ eta')
+    → is-lan p F G' eta'
+  is-invertible→is-lan {G' = G'} {eta'} invert = lan' where
+    open is-lan
+    open C′D.is-invertible invert
+
+    lan' : is-lan p F G' eta'
+    lan' .σ α = lan.σ α ∘nt inv
+    lan' .σ-comm {M} {α} = Nat-path λ j →
+      (lan.σ α .η _ D.∘ inv .η _) D.∘ eta' .η j                      ≡˘⟨ D.refl⟩∘⟨ (lan.σ-comm ηₚ _) ⟩
+      (lan.σ α .η _ D.∘ inv .η _) D.∘ (lan.σ eta' .η _ D.∘ eta .η j) ≡⟨ D.cancel-inner (invr ηₚ _) ⟩
+      lan.σ α .η _ D.∘ eta .η j                                      ≡⟨ lan.σ-comm ηₚ _ ⟩
+      α .η j                                                         ∎
+    lan' .σ-uniq {M} {α} {σ′} p = Nat-path λ j →
+      lan.σ α .η j D.∘ inv .η j                  ≡⟨ (lan.σ-uniq {σ′ = σ′ ∘nt lan.σ eta'} (Nat-path λ j → p ηₚ j ∙ D.pushr (sym (lan.σ-comm ηₚ j))) ηₚ j) D.⟩∘⟨refl ⟩
+      (σ′ .η j D.∘ lan.σ eta' .η j) D.∘ inv .η _ ≡⟨ D.cancelr (invl ηₚ _) ⟩
+      σ′ .η j                                    ∎
+```
+
+Furthermore, if $G$ is a left Kan extension of $F$ along $p$, and $F$
+is naturally isomorphic to some $F'$, then $G$ is also a left kan
+extension of $F'$ along $p$.
+
+```agda
+  natural-iso-of→is-lan
+    : {F' : Functor C D}
+    → (isos : natural-iso F F')
+    → is-lan p F' G (eta ∘nt natural-iso.from isos)
+  natural-iso-of→is-lan {F' = F'} isos = lan' where
+    open is-lan
+    module isos = natural-iso isos
+
+    lan' : is-lan p F' G (eta ∘nt isos.from)
+    lan' .σ α = lan.σ (α ∘nt isos.to)
+    lan' .σ-comm {M} {α} = Nat-path λ j →
+      lan.σ (α ∘nt isos.to) .η _ D.∘ eta .η j D.∘ isos.from .η j ≡⟨ D.pulll (lan.σ-comm ηₚ j) ⟩
+      (α .η j D.∘ isos.to .η j) D.∘ isos.from .η j               ≡⟨ D.cancelr (isos.invl ηₚ _) ⟩
+      α .η j ∎
+    lan' .σ-uniq {M} {α} {σ′} p =
+      lan.σ-uniq $ Nat-path λ j →
+        α .η j D.∘ isos.to .η j ≡⟨ (p ηₚ j) D.⟩∘⟨refl ⟩
+        (σ′ .η _ D.∘ eta .η j D.∘ isos.from .η j) D.∘ isos.to .η j ≡⟨ D.deleter (isos.invr ηₚ _) ⟩
+        σ′ .η _ D.∘ eta .η j ∎
+```
+
+A related result is that when $G$ is a left Kan extension of $F$ along
+$p$, and $G$ is naturally isomorphic to $G'$, then $G'$ is also a left
+kan extension of $F$ along $p$.
+
+```agda
+  natural-iso-ext→is-lan
+    : {G' : Functor C′ D}
+    → (isos : natural-iso G G')
+    → is-lan p F G' ((natural-iso.to isos ◂ p) ∘nt eta)
+  natural-iso-ext→is-lan {G' = G'} isos = lan' where
+    open is-lan
+    module isos = natural-iso isos
+
+    lan' : is-lan p F G' ((isos.to ◂ p) ∘nt eta)
+    lan' .σ α = lan.σ α ∘nt isos.from
+    lan' .σ-comm {M} {α} = Nat-path λ j →
+      (lan.σ α .η _ D.∘ isos.from .η _) D.∘ isos.to .η _ D.∘ eta .η j ≡⟨ D.cancel-inner (isos.invr ηₚ _) ⟩
+      lan.σ α .η _ D.∘ eta .η j                                       ≡⟨ lan.σ-comm ηₚ _ ⟩
+      α .η j                                                          ∎
+    lan' .σ-uniq {M} {α} {σ′} p = Nat-path λ j →
+      lan.σ α .η j D.∘ isos.from .η j             ≡⟨ D.pushl (lan.σ-uniq {σ′ = σ′ ∘nt isos.to} (Nat-path λ j → p ηₚ j ∙ D.assoc _ _ _) ηₚ j) ⟩
+      σ′ .η j D.∘ isos.to .η j D.∘ isos.from .η j ≡⟨ D.elimr (isos.invl ηₚ _) ⟩
+      σ′ .η j                                     ∎
+```
+
+<!--
+```agda
+  universal-path→is-lan
+    : ∀ {eta'}
+    → eta ≡ eta'
+    → is-lan p F G eta'
+  universal-path→is-lan {eta'} q = lan' where
+    open is-lan
+
+    lan' : is-lan p F G eta'
+    lan' .σ = lan.σ
+    lan' .σ-comm = ap ((lan.σ _ ◂ p) ∘nt_) (sym q) ∙ lan.σ-comm
+    lan' .σ-uniq r = lan.σ-uniq (r ∙ ap ((_ ◂ p) ∘nt_) (sym q))
+```
+-->
 
 ## Into univalent categories
 
@@ -157,7 +283,7 @@ over $i'$.
 
 ```agda
   functor-path : L₁.Ext ≡ L₂.Ext
-  functor-path = c′d-cat .to-path Lu.functor
+  functor-path = c′d-cat .to-path Lu.unique
 
   eta-path : PathP (λ i → F => functor-path i F∘ p) L₁.eta L₂.eta
   eta-path = Nat-pathp _ _ λ x →

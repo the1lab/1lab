@@ -442,6 +442,12 @@ module
     module D = Cat.Reasoning D
     module C = Cat.Reasoning C
 
+  natural-inverses : {F G : Functor C D} → F => G → G => F → Type _
+  natural-inverses = CD.Inverses
+
+  is-natural-invertible : {F G : Functor C D} → F => G → Type _
+  is-natural-invertible = CD.is-invertible
+
   natural-iso : (F G : Functor C D) → Type _
   natural-iso F G = F CD.≅ G
 
@@ -469,6 +475,14 @@ module
       inv∘eta : ∀ x → inv x D.∘ eta x ≡ D.id
       natural : ∀ x y f → G .F₁ f D.∘ eta x ≡ eta y D.∘ F .F₁ f
 
+  to-natural-inverses
+    : {F G : Functor C D} {α : F => G} {β : G => F}
+    → (∀ x → α .η x D.∘ β .η x ≡ D.id)
+    → (∀ x → β .η x D.∘ α .η x ≡ D.id)
+    → natural-inverses α β
+  to-natural-inverses p q =
+    CD.make-inverses (Nat-path p) (Nat-path q)
+
   to-natural-iso : {F G : Functor C D} → make-natural-iso F G → F CD.≅ G
   to-natural-iso {F = F} {G = G} x = isom where
     open CD._≅_
@@ -488,6 +502,25 @@ module
       F.₁ f D.∘ inv x ∎
     isom .inverses .invl = Nat-path eta∘inv
     isom .inverses .invr = Nat-path inv∘eta
+
+  natural-inverses→inverses
+    : ∀ {α : F => G} {β : G => F}
+    → natural-inverses α β
+    → ∀ x → D.Inverses (α .η x) (β .η x)
+  natural-inverses→inverses inv x =
+    D.make-inverses
+      (CD.Inverses.invl inv ηₚ x)
+      (CD.Inverses.invr inv ηₚ x)
+
+  is-natural-invertible→invertible
+    : ∀ {α : F => G}
+    → is-natural-invertible α
+    → ∀ x → D.is-invertible (α .η x)
+  is-natural-invertible→invertible inv x =
+    D.make-invertible
+      (CD.is-invertible.inv inv .η x)
+      (CD.is-invertible.invl inv ηₚ x)
+      (CD.is-invertible.invr inv ηₚ x)
 
 open _=>_
 

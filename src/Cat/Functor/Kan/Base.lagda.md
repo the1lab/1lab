@@ -20,6 +20,8 @@ private
   kan-lvl : ∀ {o ℓ o′ ℓ′ o′′ ℓ′′} {C : Precategory o ℓ} {C′ : Precategory o′ ℓ′} {D : Precategory o′′ ℓ′′}
           → Functor C D → Functor C C′ → Level
   kan-lvl {a} {b} {c} {d} {e} {f} _ _ = a ⊔ b ⊔ c ⊔ d ⊔ e ⊔ f
+
+open _=>_
 ```
 -->
 
@@ -120,6 +122,15 @@ that $\eta$ does for $\Lan_p F$), the 2-cell exists and is unique.
     → α ≡ (σ₂′ ◂ p) ∘nt eta
     → σ₁′ ≡ σ₂′
   σ-uniq₂ β p q = sym (σ-uniq p) ∙ σ-uniq q
+
+  σ-uniqp
+    : ∀ {M₁ M₂ : Functor C′ D}
+    → {α₁ : F => M₁ F∘ p} {α₂ : F => M₂ F∘ p}
+    → (q : M₁ ≡ M₂)
+    → PathP (λ i → F => q i F∘ p) α₁ α₂
+    → PathP (λ i → L => q i) (σ α₁) (σ α₂)
+  σ-uniqp q r = Nat-pathp refl q λ c' i →
+    σ {M = q i} (r i) .η c'
 
   open _=>_ eta
 ```
