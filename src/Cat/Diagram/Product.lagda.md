@@ -204,7 +204,7 @@ a module for working with them.
 has-products : Type _
 has-products = ∀ a b → Product a b
 
-module BinaryProducts (all-products : has-products) where
+module Binary-products (all-products : has-products) where
 
   module product {a} {b} = Product (all-products a b)
 

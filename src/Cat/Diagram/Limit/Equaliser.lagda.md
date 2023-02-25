@@ -30,10 +30,10 @@ We establish the correspondence between `Equaliser`{.Agda} and the
 
 ```agda
 is-equaliser→is-limit
-  : ∀ {e a b} {f g : Hom a b} {equ : Hom e a}
-  → (eq : is-equaliser C f g equ)
-  → is-limit {C = C} (Fork f g) e (Fork→Cone (is-equaliser.equal eq))
-is-equaliser→is-limit {e = e} {a} {b} {f} {g} {equ} is-eq =
+  : ∀ {e} (F : Functor ·⇉· C) {equ : Hom e (F .F₀ false)}
+  → (eq : is-equaliser C (forkl F) (forkr F) equ)
+  → is-limit {C = C} F e (Fork→Cone F (is-equaliser.equal eq))
+is-equaliser→is-limit {e} F {equ} is-eq =
   to-is-limitp ml λ where
     {true} → refl
     {false} → refl
@@ -41,13 +41,13 @@ is-equaliser→is-limit {e = e} {a} {b} {f} {g} {equ} is-eq =
     module is-eq = is-equaliser is-eq
     open make-is-limit
 
-    ml : make-is-limit (Fork f g) e
-    ml .ψ true = f ∘ equ
+    ml : make-is-limit F e
+    ml .ψ true = forkl F ∘ equ
     ml .ψ false = equ
-    ml .commutes {true} {true} tt = idl _
+    ml .commutes {true} {true} tt = eliml (F .F-id)
     ml .commutes {false} {true} true = sym is-eq.equal
     ml .commutes {false} {true} false = refl
-    ml .commutes {false} {false} tt = idl _
+    ml .commutes {false} {false} tt = eliml (F .F-id)
     ml .universal eta p =
       is-eq.universal (p {false} {true} false ∙ sym (p {false} {true} true))
     ml .factors {true} eta p =
@@ -58,28 +58,30 @@ is-equaliser→is-limit {e = e} {a} {b} {f} {g} {equ} is-eq =
       is-eq.unique (q false)
 
 is-limit→is-equaliser
-  : ∀ {a b} {f g : Hom a b} {K : Functor ⊤Cat C}
-  → {eta : K F∘ !F => Fork f g}
-  → is-ran !F (Fork f g) K eta
-  → is-equaliser C f g (eta .η false)
-is-limit→is-equaliser {a = a} {b} {f} {g} {K} {eta} lim = eq where
+  : ∀ (F : Functor ·⇉· C) {K : Functor ⊤Cat C}
+  → {eta : K F∘ !F => F}
+  → is-ran !F F K eta
+  → is-equaliser C (forkl F) (forkr F) (eta .η false)
+is-limit→is-equaliser F {K} {eta} lim = eq where
   module lim = is-limit lim
 
-  parallel : ∀ {x} → Hom x a → (j : Bool) → Hom x (Fork {C = C} f g .F₀ j)
-  parallel e′ true = f ∘ e′
+  parallel
+    : ∀ {x} → Hom x (F .F₀ false)
+    → (j : Bool) → Hom x (F .F₀ j)
+  parallel e′ true = forkl F ∘ e′
   parallel e′ false = e′
 
   parallel-commutes
-    : ∀ {x} {e′ : Hom x a}
-    → f ∘ e′ ≡ g ∘ e′
+    : ∀ {x} {e′ : Hom x (F .F₀ false)}
+    → forkl F ∘ e′ ≡ forkr F ∘ e′
     → ∀ i j → (h : Precategory.Hom ·⇉· i j)
-    → Fork {C = C} f g .F₁ {i} {j} h ∘ parallel e′ i ≡ parallel e′ j
-  parallel-commutes p true true tt = idl _
+    → F .F₁ {i} {j} h ∘ parallel e′ i ≡ parallel e′ j
+  parallel-commutes p true true tt = eliml (F .F-id)
   parallel-commutes p false true true = sym p
   parallel-commutes p false true false = refl
-  parallel-commutes p false false tt = idl _
+  parallel-commutes p false false tt = eliml (F .F-id)
 
-  eq : is-equaliser C f g (eta .η false)
+  eq : is-equaliser C (forkl F) (forkr F) (eta .η false)
   eq .equal =
     sym (eta .is-natural false true false) ∙ eta .is-natural false true true
   eq .universal {e′ = e′} p =
@@ -93,12 +95,12 @@ is-limit→is-equaliser {a = a} {b} {f} {g} {K} {eta} lim = eq where
         ·· sym p
       false → q
 
-Equaliser→Limit : ∀ {a b} {f g : Hom a b} → Equaliser C f g → Limit (Fork {C = C} f g)
-Equaliser→Limit eq = to-limit (is-equaliser→is-limit (has-is-eq eq))
+Equaliser→Limit : ∀ {F : Functor ·⇉· C} → Equaliser C (forkl F) (forkr F) → Limit F
+Equaliser→Limit {F = F} eq = to-limit (is-equaliser→is-limit F (has-is-eq eq))
 
-Limit→Equaliser : ∀ {a b} {f g : Hom a b} → Limit (Fork {C = C} f g) → Equaliser C f g
+Limit→Equaliser : ∀ {F : Functor ·⇉· C} → Limit F → Equaliser C (forkl F) (forkr F)
 Limit→Equaliser lim .apex = _
 Limit→Equaliser lim .equ = _
-Limit→Equaliser lim .has-is-eq =
-  is-limit→is-equaliser (Limit.has-limit lim)
+Limit→Equaliser {F = F} lim .has-is-eq =
+  is-limit→is-equaliser F (Limit.has-limit lim)
 ```

@@ -72,7 +72,7 @@ to give a terminal object and binary products.
     Pb : ∀ {A B C} (f : Hom A C) (g : Hom B C) → Ob
     Pb f g = pullbacks f g .Pullback.apex
 
-    module Products = BinaryProducts C products
+    module Products = Binary-products C products
     open Products using (_⊗₀_) public
 
   open Finitely-complete

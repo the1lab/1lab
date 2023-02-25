@@ -51,7 +51,7 @@ record is-cc {o ℓ} (C : Precategory o ℓ) (cartesian : ∀ A B → Product C 
     terminal  : Terminal C
 
   open Cat.Reasoning C
-  open BinaryProducts C cartesian public
+  open Binary-products C cartesian public
 
   private
     module ×-Bifunctor = Bifunctor {C = C} {C} {C} ×-functor

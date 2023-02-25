@@ -26,7 +26,7 @@ open is-product
 open Terminal
 open Product
 open Cr C
-private module Cart = BinaryProducts C products
+private module Cart = Binary-products C products
 open Cart using (_⊗₀_)
 ```
 -->

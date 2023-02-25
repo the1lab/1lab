@@ -96,7 +96,7 @@ pullbacks.
             (product-presheaf .has-is-product)
       in is-product-iso 𝒯 (Lι-iso _) (Lι-iso _) prod
 
-  open BinaryProducts 𝒯 product-sheaf public
+  open Binary-products 𝒯 product-sheaf public
 ```
 
 The computation for finite connected limits (pullbacks, equalisers) is a

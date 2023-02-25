@@ -16,7 +16,7 @@ module Cat.Displayed.Instances.CT-Structure
   where
 
 open Precategory B
-open BinaryProducts B has-prods
+open Binary-products B has-prods
 open Simple B has-prods
 ```
 

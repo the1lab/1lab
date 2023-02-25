@@ -13,7 +13,7 @@ module Cat.Displayed.Instances.Simple
   where
 
 open Precategory B
-open BinaryProducts B has-prods
+open Binary-products B has-prods
 ```
 
 # Simple Fibrations

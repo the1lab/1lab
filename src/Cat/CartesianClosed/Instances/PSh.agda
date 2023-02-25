@@ -182,7 +182,7 @@ module _ {κ} {C : Precategory κ κ} where
   PSh-closed = cc where
     cat = PSh κ C
 
-    open BinaryProducts cat (PSh-products {C = C}) public
+    open Binary-products cat (PSh-products {C = C}) public
 
     module _ (A : PSh.Ob) where
       module A = Functor A

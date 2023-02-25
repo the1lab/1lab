@@ -49,12 +49,12 @@ module
 -->
 
 ```agda
-  dense-cone : ∀ d → F F∘ Dom F (const! d) => Const d
-  dense-cone d .η x = x .map
-  dense-cone d .is-natural _ _ f = f .sq
+  dense-cocone : ∀ d → F F∘ Dom F (const! d) => Const d
+  dense-cocone d .η x = x .map
+  dense-cocone d .is-natural _ _ f = f .sq
 
   is-dense : Type _
-  is-dense = ∀ d → is-colimit {J = F ↘ d} (F F∘ Dom _ _) d (dense-cone d)
+  is-dense = ∀ d → is-colimit {J = F ↘ d} (F F∘ Dom _ _) d (dense-cocone d)
 ```
 
 The functor $F$ is called _dense_ if this cocone is colimiting for every
