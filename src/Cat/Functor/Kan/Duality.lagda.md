@@ -112,10 +112,7 @@ module _ (p : Functor C C′) (F : Functor C D) where
     lan .σ-uniq {M = M} {σ′ = σ′} p =
       Nat-path λ x → ran.σ-uniq {σ′ = σ′op} (Nat-path λ x → p ηₚ x) ηₚ x
       where unquoteDecl σ′op = dualise-into σ′op _ σ′
-```
--->
 
-```agda
   Co-lan→Ran : Lan (Functor.op p) (Functor.op F) → Ran p F
   Co-lan→Ran lan .Ext     = Functor.op (lan .Ext)
   Co-lan→Ran lan .eps     = co-unit→counit (lan .eta)
@@ -125,10 +122,7 @@ module _ (p : Functor C C′) (F : Functor C D) where
   Ran→Co-lan ran .Ext = Functor.op (ran .Ext)
   Ran→Co-lan ran .eta = co-unit←counit (ran .eps)
   Ran→Co-lan ran .has-lan = is-ran→is-co-lan (ran .has-ran)
-```
 
-
-```agda
   is-co-ran'→is-lan
     : {G : Functor (C′ ^op) (D ^op)} {eps : G F∘ Functor.op p => Functor.op F}
     → is-ran (Functor.op p) (Functor.op F) G eps
