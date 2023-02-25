@@ -197,6 +197,15 @@ module _ {o ℓ} {J : Precategory o ℓ} {F : Functor J C} where
 
 ## Co/limits
 
+Limits and colimits are defined via [Kan extensions], so it's reasonable
+to expect that [duality of Kan extensions] would apply to (co)limits.
+Unfortunately, proof assistants: (co)limits are extensions of
+`!F`{.Agda}, but duality of Kan extensions inserts an extra `Functor.op`.
+We could work around this, but it's easier to just do the proofs by hand.
+
+[Kan extensions]: Cat.Functor.Kan.Base.html
+[duality of Kan extensions]: Cat.Functor.Kan.Duality.html
+
 ```agda
   Colimit→Co-limit
     : Colimit F → Limit F^op
