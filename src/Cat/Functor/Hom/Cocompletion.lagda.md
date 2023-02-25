@@ -1,15 +1,15 @@
 ```agda
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Diagram.Colimit.Base
-open import Cat.Functor.Kan.Base
+open import Cat.Functor.Hom.Coyoneda
 open import Cat.Instances.Elements
 open import Cat.Instances.Functor
+open import Cat.Functor.Kan.Base
 open import Cat.Functor.Hom
-open import Cat.Functor.Hom.Coyoneda
 open import Cat.Prelude
 
-import Cat.Reasoning
 import Cat.Functor.Reasoning as Func
+import Cat.Reasoning
 
 module
   Cat.Functor.Hom.Cocompletion

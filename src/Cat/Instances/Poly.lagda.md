@@ -66,7 +66,7 @@ on the families. It is _so_ mechanical that we can do it automatically:
 ```agda
 poly-maps : ∀ {ℓ} {A B} → Iso
   (Poly.Hom {ℓ} A B)
-  (Σ[ f ∈ (∣ A .fst ∣ → ∣ B .fst ∣) ] ∀ x → ∣ B .snd (f x) ∣ → ∣ A .snd x ∣)
+  (Σ[ f ∈ (⌞ A ⌟ → ⌞ B ⌟) ] ∀ x → ∣ B .snd (f x) ∣ → ∣ A .snd x ∣)
 unquoteDef poly-maps = define-record-iso poly-maps (quote Total-hom)
 ```
 

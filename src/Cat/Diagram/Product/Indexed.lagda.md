@@ -1,8 +1,8 @@
 ```agda
-open import Cat.Diagram.Limit.Base
-open import Cat.Functor.Kan.Base
-open import Cat.Instances.Discrete
 open import Cat.Instances.Shape.Terminal
+open import Cat.Diagram.Limit.Base
+open import Cat.Instances.Discrete
+open import Cat.Functor.Kan.Base
 open import Cat.Prelude
 
 module Cat.Diagram.Product.Indexed {o ℓ} (C : Precategory o ℓ) where
@@ -91,7 +91,7 @@ module _ {ℓ′} {I : Type ℓ′} (F : I → C .Precategory.Ob) (ip : Indexed-
 In the particular case where $I$ is a groupoid, e.g. because it arises
 as the space of objects of a univalent category, an indexed product for
 $F : I \to \cC$ is the same thing as a limit over $F$, considered as
-a functor $\disc{I} \to \cC$. We can not lift this restriction: If
+a functor $\rm{Disc}{I} \to \cC$. We can not lift this restriction: If
 $I$ is not a groupoid, then its path spaces $x = y$ are not necessarily
 sets, and so the `Disc`{.Agda} construction does not apply to it.
 

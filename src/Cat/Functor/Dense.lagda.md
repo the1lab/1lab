@@ -1,8 +1,8 @@
 ```agda
+open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
 open import Cat.Functor.Kan.Nerve
 open import Cat.Instances.Comma
-open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Base
 open import Cat.Prelude
 

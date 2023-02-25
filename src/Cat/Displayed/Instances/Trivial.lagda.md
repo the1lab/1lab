@@ -29,7 +29,7 @@ Any category $\ca{C}$ can be regarded as being displayed over the
 terminal category $\top$.
 
 ```agda
-Trivial : Displayed ⊤Cat o ℓ 
+Trivial : Displayed ⊤Cat o ℓ
 Trivial .Displayed.Ob[_] _ = Ob
 Trivial .Displayed.Hom[_] _ = Hom
 Trivial .Displayed.Hom[_]-set _ _ _ = Hom-set _ _
@@ -111,4 +111,3 @@ trivial→fibre-iso : is-precat-iso trivial-fibre
 trivial→fibre-iso .is-precat-iso.has-is-ff = id-equiv
 trivial→fibre-iso .is-precat-iso.has-is-iso = id-equiv
 ```
-

@@ -74,7 +74,7 @@ Note that $\rm{unglue}_{i \lor \neg i}(x)$ is a term in $\cD_0$ which
 evaluates to $F_0(x)$ when $i = i1$ or $i = i0$, so that the system
 described above can indeed be built. The introduction rule for
 `hom`{.Agda} is `hom-glue`{.Agda}: If we have a partial element $\neg i
-\vdash f : \Hom_\mathca{C} x y$ together with an element $g$ of base
+\vdash f : \hom_\mathcal{C} x y$ together with an element $g$ of base
 type satisfying definitionally $\neg i \vdash F_1(f) = g$, we may glue
 $f$ along $g$ to get an element of $\rm{hom}_i(x, y)$.
 

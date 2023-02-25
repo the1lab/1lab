@@ -1,8 +1,8 @@
 ```agda
-open import Cat.Functor.Coherence
-open import Cat.Functor.Kan.Base
 open import Cat.Functor.Kan.Duality
+open import Cat.Functor.Coherence
 open import Cat.Instances.Functor
+open import Cat.Functor.Kan.Base
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
 open import Cat.Prelude

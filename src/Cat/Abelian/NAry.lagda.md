@@ -1,5 +1,6 @@
 ```agda
 open import Algebra.Group.NAry
+open import Algebra.Group.Ab
 open import Algebra.Group
 
 open import Cat.Abelian.Base
@@ -21,7 +22,7 @@ to distribution over arbitrary sums.
 private module A = Ab-category A
 
 ∑ₕ : ∀ {x y} n → (Fin n → A.Hom x y) → A.Hom x y
-∑ₕ n f = ∑ {n = n} (A.Group-on-hom _ _) f
+∑ₕ n f = ∑ {n = n} (Abelian→Group-on (A.Abelian-group-on-hom _ _)) f
 
 ∑-∘-left : ∀ {j} {A B C} (f : Fin j → A.Hom A B) {g : A.Hom B C}
           → g A.∘ ∑ₕ j f

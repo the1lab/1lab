@@ -5,8 +5,8 @@ open import Cat.Functor.Base
 open import Cat.Morphism
 open import Cat.Prelude hiding (J)
 
-import Cat.Reasoning as Cat
 import Cat.Functor.Reasoning as Func
+import Cat.Reasoning as Cat
 
 module Cat.Functor.Conservative where
 ```

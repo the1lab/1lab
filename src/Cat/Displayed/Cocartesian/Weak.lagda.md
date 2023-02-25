@@ -13,6 +13,7 @@ open import Cat.Prelude
 import Cat.Displayed.Cocartesian.Indexing as Indexing
 import Cat.Displayed.Morphism.Duality
 import Cat.Displayed.Cocartesian as Cocart
+import Cat.Displayed.Cocartesian as Cocart
 import Cat.Displayed.Reasoning
 import Cat.Displayed.Morphism
 import Cat.Reasoning as CR
@@ -607,7 +608,7 @@ Furthermore, this equivalence is natural.
     mi .eta∘inv _ = funext λ v′ →
       sym $ weak-lift.unique u _ _ (to-pathp refl)
     mi .inv∘eta _ = funext λ u′ →
-      from-pathp $ weak-lift.commutes u _ _ 
+      from-pathp $ weak-lift.commutes u _ _
     mi .natural _ _ v′ = funext λ u′ →
       weak-lift.unique _ _ _ $ to-pathp $
         smashl _ _
@@ -680,13 +681,13 @@ module _ (opfib : Cocartesian-fibration) where
     : ∀ {x y y′} (u : Hom x y)
     → natural-iso
         (Hom-over-into ℰ u y′)
-        (Hom-into (Fibre ℰ y) y′ F∘ Functor.op (push-out u) )
+        (Hom-into (Fibre ℰ y) y′ F∘ Functor.op (cobase-change u) )
   opfibration→hom-iso-into {y = y} {y′ = y′} u = to-natural-iso mi where
     open make-natural-iso
 
     mi : make-natural-iso
            (Hom-over-into ℰ u y′)
-           (Hom-into (Fibre ℰ y) y′ F∘ Functor.op (push-out u) )
+           (Hom-into (Fibre ℰ y) y′ F∘ Functor.op (cobase-change u) )
     mi .eta x u′ = has-lift.universalv u x u′
     mi .inv x v′ = hom[ idl u ] (v′ ∘′ has-lift.lifting u _)
     mi .eta∘inv x = funext λ v′ →
@@ -703,7 +704,9 @@ module _ (opfib : Cocartesian-fibration) where
 
   opfibration→hom-iso
     : ∀ {x y} (u : Hom x y)
-    → natural-iso (Hom-over ℰ u) (Hom[-,-] (Fibre ℰ y) F∘ (Functor.op (push-out u) F× Id))
+    → natural-iso
+        (Hom-over ℰ u)
+        (Hom[-,-] (Fibre ℰ y) F∘ (Functor.op (cobase-change u) F× Id))
   opfibration→hom-iso {y = y} u = to-natural-iso mi where
     open make-natural-iso
     open _=>_
@@ -715,7 +718,7 @@ module _ (opfib : Cocartesian-fibration) where
 
     mi : make-natural-iso
            (Hom-over ℰ u)
-           (Hom[-,-] (Fibre ℰ y) F∘ (Functor.op (push-out u) F× Id))
+           (Hom[-,-] (Fibre ℰ y) F∘ (Functor.op (cobase-change u) F× Id))
     mi .eta x u′ = has-lift.universalv u _ u′
     mi .inv x v′ = hom[ idl u ] (v′ ∘′ has-lift.lifting u _)
     mi .eta∘inv x = funext λ v′ →

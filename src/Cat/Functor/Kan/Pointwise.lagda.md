@@ -1,16 +1,16 @@
 ```agda
-open import Cat.Diagram.Limit.Base
-open import Cat.Diagram.Colimit.Base
-open import Cat.Functor.Base
-open import Cat.Instances.Functor
-open import Cat.Instances.Comma
 open import Cat.Instances.Functor.Compose
 open import Cat.Instances.Shape.Terminal
+open import Cat.Diagram.Colimit.Base
+open import Cat.Diagram.Limit.Base
+open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
+open import Cat.Instances.Comma
+open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Reasoning
 import Cat.Functor.Reasoning as Func
+import Cat.Reasoning
 
 module Cat.Functor.Kan.Pointwise where
 ```

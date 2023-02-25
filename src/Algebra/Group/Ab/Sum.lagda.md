@@ -5,15 +5,17 @@ open import Algebra.Group.Ab
 open import Algebra.Prelude
 open import Algebra.Group
 
+open import Cat.Diagram.Product
+
 module Algebra.Group.Ab.Sum where
 ```
 
 <!--
 ```agda
-module _ {ℓ} (G H : AbGroup ℓ) where
+module _ {ℓ} (G H : Abelian-group ℓ) where
   private
-    module G = AbGrp G
-    module H = AbGrp H
+    module G = Abelian-group-on (G .snd)
+    module H = Abelian-group-on (H .snd)
 ```
 -->
 
@@ -37,22 +39,22 @@ of product in $\Ab$ is the [tensor product of abelian groups][tensor].
 [$\Ab$-categories]: Cat.Abelian.Base.html#ab-enriched-categories
 [additive]: Cat.Abelian.Base.html#additive-categories
 [_product_]: Cat.Diagram.Product.html
-[tensor]: Algebra.Group.Ab.html#the-tensor-product
+[tensor]: Algebra.Group.Ab.Tensor.html
 
 ```agda
-  _⊕_ : AbGroup ℓ
-  _⊕_ = restrict (Direct-product (G .object) (H .object)) ab where
-    ab : is-abelian-group (Direct-product (G .object) (H .object) .snd)
-    ab x y = Σ-pathp G.commutative H.commutative
+  _⊕_ : Abelian-group ℓ
+  _⊕_ = from-commutative-group
+    (Direct-product (Ab↪Grp .Functor.F₀ G) (Ab↪Grp .Functor.F₀ H))
+    λ x y → Σ-pathp G.commutes H.commutes
 ```
 
 <!--
 ```agda
-module _ {ℓ} {G H : AbGroup ℓ} where
+module _ {ℓ} {G H : Abelian-group ℓ} where
   private
-    module G = AbGrp G
-    module H = AbGrp H
-  open Group-hom
+    module G = Abelian-group-on (G .snd)
+    module H = Abelian-group-on (H .snd)
+  open is-group-hom
 ```
 -->
 
@@ -75,14 +77,14 @@ limits][rapl]).
   ⊕-proj₂ .hom = snd
   ⊕-proj₂ .preserves .pres-⋆ x y = refl
 
-  open Ab.is-product
-  Direct-sum-is-product : Ab.is-product {A = G} {H} {G ⊕ H} ⊕-proj₁ ⊕-proj₂
+  open is-product
+  Direct-sum-is-product : is-product (Ab ℓ) {A = G} {H} {G ⊕ H} ⊕-proj₁ ⊕-proj₂
   Direct-sum-is-product .⟨_,_⟩ f g .hom x = f # x , g # x
   Direct-sum-is-product .⟨_,_⟩ f g .preserves .pres-⋆ x y =
     Σ-pathp (f .preserves .pres-⋆ x y) (g .preserves .pres-⋆ x y)
 
-  Direct-sum-is-product .π₁∘factor = Forget-is-faithful refl
-  Direct-sum-is-product .π₂∘factor = Forget-is-faithful refl
-  Direct-sum-is-product .unique other p q = Forget-is-faithful $ funext λ x →
+  Direct-sum-is-product .π₁∘factor = Homomorphism-path λ _ → refl
+  Direct-sum-is-product .π₂∘factor = Homomorphism-path λ _ → refl
+  Direct-sum-is-product .unique other p q = Homomorphism-path λ x →
     Σ-pathp (p #ₚ x) (q #ₚ x)
 ```

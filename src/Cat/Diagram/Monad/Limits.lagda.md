@@ -1,11 +1,11 @@
 ```agda
 open import Cat.Functor.Equivalence.Complete
+open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Conservative
 open import Cat.Functor.Equivalence
-open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Limit.Base
-open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Terminal
+open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Monad
 open import Cat.Prelude
 

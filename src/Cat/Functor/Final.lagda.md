@@ -1,10 +1,10 @@
 ```agda
-open import Cat.Diagram.Colimit.Base
 open import Cat.Instances.Shape.Terminal
+open import Cat.Diagram.Colimit.Base
 open import Cat.Prelude
 
-import Cat.Reasoning as Cr
 import Cat.Functor.Reasoning as Func
+import Cat.Reasoning as Cr
 
 module Cat.Functor.Final where
 ```

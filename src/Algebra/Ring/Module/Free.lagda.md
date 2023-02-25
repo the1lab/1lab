@@ -145,24 +145,23 @@ simply use the corresponding constructors.</summary>
 
 ```agda
 open Module-on using (_⋆_ ; ⋆-id ; ⋆-add-r ; ⋆-add-l ; ⋆-assoc)
-open make-group
+open make-abelian-group
 
-Group-on-free-mod : ∀ {ℓ′} {A : Type ℓ′} → Group-on (Free-mod A)
-Group-on-free-mod = to-group-on λ where
-  .group-is-set → squash
-  .unit   → 0m
+Abelian-group-on-free-mod : ∀ {ℓ′} {A : Type ℓ′} → Abelian-group-on (Free-mod A)
+Abelian-group-on-free-mod = to-abelian-group-on λ where
+  .ab-is-set → squash
+  .1g     → 0m
   .mul    → _+_
   .inv    → neg
   .assoc  → +-assoc
   .invl   → +-invl
-  .invr x → +-comm x (neg x) ∙ +-invl _
   .idl    → +-idl
+  .comm   → +-comm
 
-Free-mod-ab-group : ∀ {ℓ′} {A : Type ℓ′} → AbGroup _
-Free-mod-ab-group {A = A} .object =
-  el (Free-mod A) squash ,
-  Group-on-free-mod
-Free-mod-ab-group .witness = +-comm
+Free-mod-ab-group : ∀ {ℓ′} {A : Type ℓ′} → Ab.Ob
+∣ Free-mod-ab-group {A = A} .fst ∣ = Free-mod A
+Free-mod-ab-group .fst .is-tr = squash
+Free-mod-ab-group .snd = Abelian-group-on-free-mod
 
 
 Module-on-free-mod
@@ -185,8 +184,8 @@ open Functor
 
 ```agda
 fold-free-mod
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {G : AbGroup ℓ′} (N : Module-on R G)
-  → (A → AbGrp.₀ G)
+  : ∀ {ℓ ℓ′} {A : Type ℓ} {G : Abelian-group ℓ′} (N : Module-on R G)
+  → (A → ⌞ G ⌟)
   → Linear-map (Free-Mod A) (_ , N) Rings.id
 fold-free-mod {A = A} {G} N f = go-linear module fold-free-mod where
   private module N = Module (_ , N)
@@ -201,13 +200,13 @@ write, is definitionally a linear map --- saving us a bit of effort.
 
 ```agda
   -- Rough:
-  go : Free-mod A → N.G₀
+  go : Free-mod A → ⌞ G ⌟
   go (inc x) = f x
   go (x · y) = x N.⋆ go y
   go (x + y) = go x N.+ go y
-  go (neg x) = N.G.inverse (go x)
-  go 0m      = N.G.unit
-  go (+-comm x y i)    = N.G.commutative {go x} {go y} i
+  go (neg x) = N.G._⁻¹ (go x)
+  go 0m      = N.G.1g
+  go (+-comm x y i)    = N.G.commutes {go x} {go y} i
   go (+-assoc x y z i) = N.G.associative {go x} {go y} {go z} (~ i)
   go (+-invl x i)      = N.G.inversel {go x} i
   go (+-idl x i)       = N.G.idl {go x} i
@@ -258,8 +257,8 @@ make-free-module = go where
       g.map x y.+ g.map y ≡˘⟨ g.has-group-hom.pres-⋆ _ _ ⟩
       g.map (x + y)       ∎
     m .P-neg x p =
-      y.G.inverse (fold x)  ≡⟨ ap y.G.inverse p ⟩
-      y.G.inverse (g.map x) ≡˘⟨ g.has-group-hom.pres-inv ⟩
+      y.G._⁻¹ (fold x)  ≡⟨ ap y.G._⁻¹ p ⟩
+      y.G._⁻¹ (g.map x) ≡˘⟨ g.has-group-hom.pres-inv ⟩
       g.map (neg x)         ∎
     m .P-inc x = p $ₚ x
 ```

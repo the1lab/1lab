@@ -2,24 +2,24 @@
 description: We establish that right adjoints preserve limits.
 ---
 ```agda
+open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
+open import Cat.Functor.Adjoint.Kan
 open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
-open import Cat.Instances.Shape.Terminal
+open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
-open import Cat.Functor.Adjoint.Kan
-open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Duals
 open import Cat.Functor.Base
 open import Cat.Prelude
 
 open import Data.Bool
 
-import Cat.Reasoning as Cat
 import Cat.Functor.Reasoning as Func
+import Cat.Reasoning as Cat
 
 module Cat.Functor.Adjoint.Continuous where
 ```

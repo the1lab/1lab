@@ -54,7 +54,7 @@ getParsedPreamble = askOracle $ ParsedPreamble ()
 
 -- | Shake rules required for compiling KaTeX equations.
 katexRules :: Rules ()
-katexRules = versioned 1 do
+katexRules = versioned 2 do
   _ <- addOracle \(ParsedPreamble _) -> do
     need ["src/preamble.tex"]
     t <- liftIO $ Text.readFile "src/preamble.tex"
@@ -70,7 +70,7 @@ katexRules = versioned 1 do
   _ <- addOracleCache \(LatexEquation (display, tex)) -> do
     pre <- askOracle (ParsedPreamble ())
 
-    let args = ["-T", "-t"] ++ ["-d" | display]
+    let args = ["-T"] ++ ["-d" | display]
         stdin = LazyBS.fromStrict $ Text.encodeUtf8 $ applyPreamble pre tex
 
     Stdout out <- nodeCommand [StdinBS stdin] "katex" args

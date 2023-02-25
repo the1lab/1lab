@@ -35,10 +35,10 @@ open Displayed ℰ
 
 # Bifibrations
 
-A displayed category $\cE$ is a **bifibration** if it both a fibration
-and an opfibration. This means that $\cE$ is equipped with both
-[reindexing] and [opreindexing] functors, which allows us to both
-restrict and extend along morphisms $X \to Y$ in the base.
+A displayed category $\cE \liesover \cB$ is a **bifibration** if is it
+both a fibration and an opfibration. This means that $\cE$ is equipped
+with both [reindexing] and [opreindexing] functors, which allows us to
+both restrict and extend along morphisms $X \to Y$ in the base.
 
 Note that a bifibration is *not* the same as a "profunctor of categories";
 these are called **two-sided fibrations**, and are a distinct concept.
@@ -64,16 +64,16 @@ record is-bifibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
 
 # Bifibrations and Adjoints
 
-If $\cE$ is a bifibration, then opreindexing functors are [left adjoint]
-to reindexing functors. To see this, note that we need to construct
-a natural isomorphism between $\cE_{y}(u_{*}(-),-)$ and
+If $\cE$ is a bifibration, then its opreindexing functors are [left
+adjoints] to its reindexing functors. To see this, note that we need to
+construct a natural isomorphism between $\cE_{y}(u_{*}(-),-)$ and
 $\cE_{x}(-,u^{*}(-))$. However, we have already shown that
 $\cE_{y}(u_{*}(-),-)$ and $\cE_{x}(-,u^{*}(-))$ are both naturally
 isomorphic to $\cE_{u}(-,-)$ (see `opfibration→hom-iso`{.Agda} and
 `fibration→hom-iso`{.Agda}), so all we need to do is compose these
 natural isomorphisms!
 
-[left adjoint]: Cat.Functor.Adjoint.html
+[left adjoints]: Cat.Functor.Adjoint.html
 
 ```agda
 module _ (bifib : is-bifibration) where
@@ -81,10 +81,10 @@ module _ (bifib : is-bifibration) where
   open Cat.Displayed.Cartesian.Indexing ℰ fibration
   open Cat.Displayed.Cocartesian.Indexing ℰ opfibration
 
-  push-out⊣base-change
+  cobase-change⊣base-change
     : ∀ {x y} (f : Hom x y)
-    → push-out f ⊣ base-change f
-  push-out⊣base-change {x} {y} f =
+    → cobase-change f ⊣ base-change f
+  cobase-change⊣base-change {x} {y} f =
     hom-natural-iso→adjoints $
       (opfibration→hom-iso opfibration f ni⁻¹) ni∘ fibration→hom-iso fibration f
 ```
@@ -108,11 +108,11 @@ module _ (fib : Cartesian-fibration) where
   open Cartesian-fibration fib
   open Cat.Displayed.Cartesian.Indexing ℰ fib
 
-  left-adjoint-reindexing→opfibration
+  left-adjoint-base-change→opfibration
     : (L : ∀ {x y} → (f : Hom x y) → Functor (Fibre ℰ x) (Fibre ℰ y))
-    → (∀ {x y} → (f : Hom x y) → (L f ⊣ base-change f)) 
+    → (∀ {x y} → (f : Hom x y) → (L f ⊣ base-change f))
     → Cocartesian-fibration
-  left-adjoint-reindexing→opfibration L adj =
+  left-adjoint-base-change→opfibration L adj =
     cartesian+weak-opfibration→opfibration fib $
     hom-iso→weak-opfibration L λ u →
       fibration→hom-iso-from fib u ni∘ (adjunct-hom-iso-from (adj u) _ ni⁻¹)
@@ -121,12 +121,12 @@ module _ (fib : Cartesian-fibration) where
 With some repackaging, we can see that this yields a bifibration.
 
 ```agda
-  left-adjoint-reindexing→bifibration
+  left-adjoint-base-change→bifibration
     : (L : ∀ {x y} → (f : Hom x y) → Functor (Fibre ℰ x) (Fibre ℰ y))
     → (∀ {x y} → (f : Hom x y) → (L f ⊣ base-change f))
     → is-bifibration
-  left-adjoint-reindexing→bifibration L adj .is-bifibration.fibration =
+  left-adjoint-base-change→bifibration L adj .is-bifibration.fibration =
     fib
-  left-adjoint-reindexing→bifibration L adj .is-bifibration.opfibration =
-    left-adjoint-reindexing→opfibration L adj
+  left-adjoint-base-change→bifibration L adj .is-bifibration.opfibration =
+    left-adjoint-base-change→opfibration L adj
 ```

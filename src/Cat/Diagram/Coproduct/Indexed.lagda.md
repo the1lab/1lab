@@ -1,10 +1,10 @@
 ```agda
+open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
-open import Cat.Diagram.Initial
+open import Cat.Instances.Discrete
 open import Cat.Diagram.Pullback
 open import Cat.Functor.Kan.Base
-open import Cat.Instances.Discrete
-open import Cat.Instances.Shape.Terminal
+open import Cat.Diagram.Initial
 open import Cat.Prelude
 
 module Cat.Diagram.Coproduct.Indexed {o ℓ} (C : Precategory o ℓ) where

@@ -6,13 +6,13 @@ open import Algebra.Ring
 
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.FullSubcategory
-open import Cat.Abelian.Instances.Ab
 open import Cat.Displayed.Cartesian
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Displayed.Base
+open import Cat.Abelian.Base
 open import Cat.Abelian.Endo
 open import Cat.Prelude
 
@@ -49,7 +49,7 @@ a theorem we prove later. Instead, we define a record packaging an
 $R$-module structure _on_ an abelian group:
 
 ```agda
-record Module-on {ℓ ℓ′} (R : Ring ℓ) (G : AbGroup ℓ′) : Type (ℓ ⊔ lsuc ℓ′) where
+record Module-on {ℓ ℓ′} (R : Ring ℓ) (G : Abelian-group ℓ′) : Type (ℓ ⊔ lsuc ℓ′) where
 ```
 
 <!--
@@ -57,7 +57,7 @@ record Module-on {ℓ ℓ′} (R : Ring ℓ) (G : AbGroup ℓ′) : Type (ℓ �
   no-eta-equality
 
   module R = Ring-on (R .snd)
-  module G = AbGrp G renaming (_⋆_ to _+_)
+  module G = Abelian-group-on (G .snd) renaming (_*_ to _+_)
   open G using (_+_) public
 ```
 -->
@@ -78,7 +78,7 @@ we don't differentiate between left and right modules.
 
 ```agda
   field
-    _⋆_     : ⌞ R ⌟ → G.₀ → G.₀
+    _⋆_     : ⌞ R ⌟ → ⌞ G ⌟ → ⌞ G ⌟
     ⋆-id    : ∀ x → R.1r ⋆ x ≡ x
     ⋆-add-r : ∀ r x y → r ⋆ (x G.+ y) ≡ (r ⋆ x) G.+ (r ⋆ y)
     ⋆-add-l : ∀ r s x → (r R.+ s) ⋆ x ≡ (r ⋆ x) G.+ (s ⋆ x)
@@ -87,22 +87,22 @@ we don't differentiate between left and right modules.
 
 <!--
 ```agda
-  G₀ : Type ℓ′
-  G₀ = ⌞ G .Restrict-ob.object ⌟
+  ⋆-group-hom : ∀ (r : ⌞ R ⌟) → is-group-hom (Abelian→Group-on (G .snd)) (Abelian→Group-on (G .snd)) (r ⋆_)
+  ⋆-group-hom r .is-group-hom.pres-⋆ = ⋆-add-r r
+  module ⋆-group-hom r = is-group-hom (⋆-group-hom r)
 
-  ⋆-group-hom : ∀ (r : ⌞ R ⌟) → Group-hom (G .object .snd) (G .object .snd) (r ⋆_)
-  ⋆-group-hom r .Group-hom.pres-⋆ = ⋆-add-r r
-  module ⋆-group-hom r = Group-hom (⋆-group-hom r)
-
-  ⋆-group-homᵣ : ∀ (x : G.₀)
-    → Group-hom (record { has-is-group = R.+-group }) (G .object .snd) (_⋆ x)
-  ⋆-group-homᵣ x .Group-hom.pres-⋆ y z = ⋆-add-l y z x
-  module ⋆-group-homᵣ x = Group-hom (⋆-group-homᵣ x)
+  ⋆-group-homᵣ : ∀ (x : ⌞ G ⌟)
+    → is-group-hom
+        (record { has-is-group = is-abelian-group.has-is-group R.+-group })
+        (Abelian→Group-on (G .snd))
+        (_⋆ x)
+  ⋆-group-homᵣ x .is-group-hom.pres-⋆ y z = ⋆-add-l y z x
+  module ⋆-group-homᵣ x = is-group-hom (⋆-group-homᵣ x)
   infixr 25 _⋆_
 
 Module : ∀ {ℓ} ℓ′ → Ring ℓ → Type (lsuc ℓ′ ⊔ ℓ)
-Module ℓ′ R = Σ (AbGroup ℓ′) λ G → Module-on R G
-module Module {ℓ ℓ′} {R : Ring ℓ} (M : Σ (AbGroup ℓ′) (Module-on R)) where
+Module ℓ′ R = Σ (Abelian-group ℓ′) λ G → Module-on R G
+module Module {ℓ ℓ′} {R : Ring ℓ} (M : Module ℓ′ R) where
   open Module-on (M .snd) public
 ```
 -->
@@ -129,7 +129,7 @@ f^*(N)$, where $f^*(N)$ is the _restriction of scalars_, defined below.
 
 ```agda
 Scalar-restriction
-  : ∀ {ℓ ℓ′} {G : AbGroup ℓ′} {R S : Ring ℓ}
+  : ∀ {ℓ ℓ′} {G : Abelian-group ℓ′} {R S : Ring ℓ}
   → Rings.Hom R S → Module-on S G → Module-on R G
 Scalar-restriction {G = G} f M = N where
   module M = Module-on M
@@ -162,30 +162,30 @@ module
     module M = Module-on (M .snd)
     module N = Module-on (Scalar-restriction f (N .snd))
 
-  is-R-S-bilinear : (f : M.G₀ → N.G₀) → Type _
+  is-R-S-bilinear : (f : ⌞ M ⌟ → ⌞ N ⌟) → Type _
   is-R-S-bilinear f =
-    ∀ r m s n → f ((r M.⋆ m) M.+ (s M.⋆ n)) ≡ (r N.⋆ f m) N.+ (s N.⋆ f n)
+    ∀ r m s n → f (r M.⋆ m M.+ s M.⋆ n) ≡ r N.⋆ f m N.+ s N.⋆ f n
 
   record Linear-map : Type (ℓ ⊔ ℓ′ ⊔ ℓ′′) where
     no-eta-equality
     field
-      map : M.G₀ → N.G₀
+      map : ⌞ M ⌟ → ⌞ N ⌟
       linear : is-R-S-bilinear map
 
     linear-simple : ∀ x y → x N.⋆ map y ≡ map (x M.⋆ y)
     linear-simple x y =
-      x N.⋆ map y                             ≡⟨ N.G.intror (N.⋆-group-homᵣ.pres-id _) ⟩
-      x N.⋆ map y N.+ N.R.0r N.⋆ map M.G.unit ≡˘⟨ linear _ _ _ _ ⟩
-      map (x M.⋆ y M.+ M.R.0r M.⋆ M.G.unit)   ≡⟨ ap map (M.G.elimr (M.⋆-group-homᵣ.pres-id _)) ⟩
-      map (x M.⋆ y)                           ∎
+      x N.⋆ map y                           ≡⟨ N.G.intror (N.⋆-group-homᵣ.pres-id _) ⟩
+      x N.⋆ map y N.+ N.R.0r N.⋆ map M.G.1g ≡˘⟨ linear _ _ _ _ ⟩
+      map (x M.⋆ y M.+ M.R.0r M.⋆ M.G.1g)   ≡⟨ ap map (M.G.elimr (M.⋆-group-homᵣ.pres-id _)) ⟩
+      map (x M.⋆ y)                         ∎
 
-    has-group-hom : Group-hom (M .fst .object .snd) (N .fst .object .snd) map
-    has-group-hom .Group-hom.pres-⋆ x y =
+    has-group-hom : is-group-hom (Abelian→Group-on (M .fst .snd)) (Abelian→Group-on (N .fst .snd)) map
+    has-group-hom .is-group-hom.pres-⋆ x y =
       map (x M.+ y)                         ≡⟨ ap map (ap₂ M._+_ (sym (M.⋆-id _)) (sym (M.⋆-id _))) ⟩
       map (M.R.1r M.⋆ x M.+ M.R.1r M.⋆ y)   ≡⟨ linear M.R.1r x N.R.1r y ⟩
       M.R.1r N.⋆ map x N.+ M.R.1r N.⋆ map y ≡⟨ ap₂ N._+_ (N.⋆-id _) (N.⋆-id _) ⟩
       map x N.+ map y                       ∎
-    module has-group-hom = Group-hom has-group-hom
+    module has-group-hom = is-group-hom has-group-hom
 
   open Linear-map public
 
@@ -293,7 +293,7 @@ module R-Mod {ℓ ℓ′} {R : Ring ℓ} = Cat.Reasoning (R-Mod ℓ′ R)
 <!--
 ```agda
 Forget-module : ∀ {ℓ ℓ′} (R : Ring ℓ) → Functor (R-Mod ℓ′ R) (Sets ℓ′)
-Forget-module R .F₀ x = el! (AbGrp.₀ (x .fst))
+Forget-module R .F₀ x = x .fst .fst
 Forget-module R .F₁ x = x .map
 Forget-module R .F-id = refl
 Forget-module R .F-∘ f g = refl
@@ -368,7 +368,7 @@ representable-module : ∀ {ℓ} (R : Ring ℓ) → Module ℓ R
 representable-module R = _ , mod where
   open Module-on hiding (module R ; module G)
   module R = Ring-on (R .snd)
-  mod : Module-on R (restrict R.additive-group λ _ _ → R.+-commutes)
+  mod : Module-on R (R .fst , record { has-is-ab = R.+-group })
   mod ._⋆_ = R._*_
   mod .⋆-id x = R.*-idl
   mod .⋆-add-r r x y = R.*-distribl
@@ -415,21 +415,21 @@ for actions on the archetypal $\Sets$-category, which is $\Sets$ itself.
 
 ```agda
 module _ {ℓ} (R : Ring ℓ) where
-  Module→Action : ∀ G (M : Module-on R G) → Rings.Hom R (Endo Ab-ab G)
+  Module→Action : ∀ G (M : Module-on R G) → Rings.Hom R (Endo Ab-ab-category G)
   Module→Action G M = rh where
     module M = Module-on M
-    rh : Rings.Hom R (Endo Ab-ab G)
+    rh : Rings.Hom R (Endo Ab-ab-category G)
     rh .hom x .hom g    = x M.⋆ g
     rh .preserves .pres-id    = Homomorphism-path (λ x → M.⋆-id x)
     rh .preserves .pres-+ x y = Homomorphism-path (λ x → M.⋆-add-l _ y x)
     rh .preserves .pres-* x y = Homomorphism-path (λ x → sym (M.⋆-assoc _ _ _))
-    rh .hom x .preserves .Group-hom.pres-⋆ g g′ = M.⋆-add-r x g g′
+    rh .hom x .preserves .is-group-hom.pres-⋆ g g′ = M.⋆-add-r x g g′
 
   open Module-on
-  Action→Module : ∀ G → Rings.Hom R (Endo Ab-ab G) → Module-on R G
+  Action→Module : ∀ G → Rings.Hom R (Endo Ab-ab-category G) → Module-on R G
   Action→Module G rh ._⋆_ r g       = (rh # r) .hom g
   Action→Module G rh .⋆-id x        = rh .preserves .pres-id #ₚ x
-  Action→Module G rh .⋆-add-r x y z = (rh # x) .preserves .Group-hom.pres-⋆ y z
+  Action→Module G rh .⋆-add-r x y z = (rh # x) .preserves .is-group-hom.pres-⋆ y z
   Action→Module G rh .⋆-add-l x y z = rh .preserves .pres-+ x y #ₚ z
   Action→Module G rh .⋆-assoc x y z = sym $ rh .preserves .pres-* x y #ₚ z
 ```
@@ -440,10 +440,10 @@ appeal to some extensionality principles to "get at" the data, even if
 it is unchanging.
 
 ```agda
-  Action≃Module : ∀ G → Module-on R G ≃ Rings.Hom R (Endo Ab-ab G)
+  Action≃Module : ∀ G → Module-on R G ≃ Rings.Hom R (Endo Ab-ab-category G)
   Action≃Module G = Iso→Equiv morp where
     open is-iso
-    morp : Iso (Module-on R G) (Rings.Hom R (Endo Ab-ab G))
+    morp : Iso (Module-on R G) (Rings.Hom R (Endo Ab-ab-category G))
     morp .fst = Module→Action G
     morp .snd .inv = Action→Module G
 

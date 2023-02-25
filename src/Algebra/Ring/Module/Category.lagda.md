@@ -16,7 +16,7 @@ module Algebra.Ring.Module.Category {ℓ} (R : Ring ℓ) where
 private module R = Ring-on (R .snd)
 open Ab-category
 open is-additive
-open make-group
+open make-abelian-group
 ```
 -->
 
@@ -31,16 +31,16 @@ is, ahem, very annoying. See for yourself:
 
 ```agda
 R-Mod-ab-category : ∀ {ℓ′} → Ab-category (R-Mod ℓ′ R)
-R-Mod-ab-category .Group-on-hom A B = to-group-on grp  where
+R-Mod-ab-category .Abelian-group-on-hom A B = to-abelian-group-on grp where
   module A = Module A
   module B = Module B
-  grp : make-group (R-Mod.Hom A B)
-  grp .group-is-set = R-Mod.Hom-set _ _
+  grp : make-abelian-group (R-Mod.Hom A B)
+  grp .ab-is-set = R-Mod.Hom-set _ _
 
   grp .mul f g .map x = f .map x B.+ g .map x
   grp .mul f g .linear r m s n =
     fₘ (r A.⋆ m A.+ s A.⋆ n) B.+ gₘ (r A.⋆ m A.+ s A.⋆ n)       ≡⟨ ap₂ B._+_ (f .linear _ _ _ _) (g .linear _ _ _ _) ⟩
-    (r B.⋆ fₘ m B.+ s B.⋆ fₘ n) B.+ (r B.⋆ gₘ m B.+ s B.⋆ gₘ n) ≡⟨ B.G.pullr (B.G.pulll B.G.commutative) ⟩
+    (r B.⋆ fₘ m B.+ s B.⋆ fₘ n) B.+ (r B.⋆ gₘ m B.+ s B.⋆ gₘ n) ≡⟨ B.G.pullr (B.G.pulll B.G.commutes) ⟩
     r B.⋆ fₘ m B.+ (r B.⋆ gₘ m B.+ s B.⋆ fₘ n) B.+ s B.⋆ gₘ n   ≡⟨ B.G.pulll (B.G.pulll (sym (B.⋆-add-r r _ _))) ⟩
     (r B.⋆ (fₘ m B.+ gₘ m) B.+ (s B.⋆ fₘ n)) B.+ (s B.⋆ gₘ n)   ≡⟨ B.G.pullr (sym (B.⋆-add-r s _ _)) ⟩
     r B.⋆ (fₘ m B.+ gₘ m) B.+ s B.⋆ (fₘ n B.+ gₘ n)             ∎
@@ -54,26 +54,22 @@ R-Mod-ab-category .Group-on-hom A B = to-group-on grp  where
 going to keep it in this `<details>`{.html} element out of
 decency.</summary>
 ```agda
-  grp .unit .map x    = B.G.unit
-  grp .unit .linear r m s n =
-    B.G.unit                          ≡˘⟨ B.⋆-group-hom.pres-id _ ⟩
-    s B.⋆ B.G.unit                    ≡˘⟨ B.G.eliml (B.⋆-group-hom.pres-id _) ⟩
-    r B.⋆ B.G.unit B.+ s B.⋆ B.G.unit ∎
-  grp .inv f .map x   = B.G.inverse (f .map x)
+  grp .1g .map x    = B.G.1g
+  grp .1g .linear r m s n =
+    B.G.1g                        ≡˘⟨ B.⋆-group-hom.pres-id _ ⟩
+    s B.⋆ B.G.1g                  ≡˘⟨ B.G.eliml (B.⋆-group-hom.pres-id _) ⟩
+    r B.⋆ B.G.1g B.+ s B.⋆ B.G.1g ∎
+  grp .inv f .map x   = B.G._⁻¹ (f .map x)
   grp .inv f .linear r m s n =
-       ap B.G.inverse (f .linear r m s n)
+       ap B.G._⁻¹ (f .linear r m s n)
     ·· B.G.inv-comm
-    ·· B.G.commutative
+    ·· B.G.commutes
      ∙ ap₂ B._+_ (sym (B.⋆-group-hom.pres-inv _)) (sym (B.⋆-group-hom.pres-inv _))
   grp .assoc x y z = Linear-map-path (funext λ x → sym B.G.associative)
   grp .invl x = Linear-map-path (funext λ x → B.G.inversel)
-  grp .invr x = Linear-map-path (funext λ x → B.G.inverser)
   grp .idl x = Linear-map-path (funext λ x → B.G.idl)
-
-R-Mod-ab-category .Hom-grp-ab A B f g =
-  Linear-map-path (funext λ x → Module.G.commutative B)
-R-Mod-ab-category .∘-linear-l {C = C} f g h =
-  Linear-map-path refl
+  grp .comm x y = Linear-map-path (funext λ x → B.G.commutes)
+R-Mod-ab-category .∘-linear-l f g h = Linear-map-path refl
 R-Mod-ab-category .∘-linear-r {B = B} {C} f g h =
   Linear-map-path $ funext λ x →
     f .map (g .map x) C.+ f .map (h .map x)                     ≡⟨ ap₂ C._+_ (sym (C.⋆-id _)) (sym (C.⋆-id _)) ⟩

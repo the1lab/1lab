@@ -36,7 +36,7 @@ Lower-set P = ⌞ Lower-sets P ⌟
 
 Note the similarity between this construction and the [Yoneda
 embedding]: Indeed, if we take the perspective that a poset $P$ is a
-"$\props$-category" (as opposed to a "$\Sets$-category"), then the lower
+"$\Props$-category" (as opposed to a "$\Sets$-category"), then the lower
 sets of $P$ are precisely the presheaves on $P$.
 
 [Yoneda embedding]: Cat.Functor.Hom.html#the-yoneda-embedding

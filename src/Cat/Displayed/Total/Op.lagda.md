@@ -3,11 +3,16 @@ open import 1Lab.Rewrite
 
 open import Cat.Functor.Equivalence.Path
 open import Cat.Functor.Equivalence
+open import Cat.Functor.Equivalence
+open import Cat.Displayed.Fibre
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
+open import Cat.Displayed.Total
+open import Cat.Displayed.Base
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
+import Cat.Displayed.Reasoning as DR
 import Cat.Displayed.Reasoning as DR
 
 module Cat.Displayed.Total.Op where
@@ -162,7 +167,7 @@ fibre-functor-total-op {ℰ = ℰ} F .F-∘ f g =
 
 <!--
 ```agda
-fibre-functor-total-op-total-op  
+fibre-functor-total-op-total-op
   : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′} {x y}
   → {F : Functor (Fibre ℰ x) (Fibre ℰ y)}
   → fibre-functor-total-op (fibre-functor-total-op F) ≡ F

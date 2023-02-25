@@ -21,7 +21,7 @@ inverse for an element is [necessarily, unique]; Thus, to say that "$(G,
 \star)$ is a group" is a statement about $(G, \star)$ having a certain
 _property_ (namely, being a group), not _structure_ on $(G, \star)$.
 
-Furthermore, since `group homomorphisms`{.Agda ident=Group-hom}
+Furthermore, since `group homomorphisms`{.Agda ident=is-group-hom}
 automatically preserve this structure, we are justified in calling this
 _property_ rather than _property-like structure_.
 
@@ -155,12 +155,12 @@ record Group-on {ℓ} (A : Type ℓ) : Type ℓ where
   open is-group has-is-group public
 ```
 
-We have that a map `is a group homomorphism`{.Agda ident=Group-hom} if
+We have that a map `is a group homomorphism`{.Agda ident=is-group-hom} if
 it `preserves the multiplication`{.Agda ident=pres-⋆}.
 
 ```agda
 record
-  Group-hom
+  is-group-hom
     {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
     (G : Group-on A) (G′ : Group-on B) (e : A → B) : Type (ℓ ⊔ ℓ′) where
   private
@@ -203,19 +203,19 @@ identity:
 
 <!--
 ```agda
-Group-hom-is-prop
+is-group-hom-is-prop
   : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
       {G : Group-on A} {H : Group-on B} {f}
-  → is-prop (Group-hom G H f)
-Group-hom-is-prop {H = H} a b i .Group-hom.pres-⋆ x y =
-  Group-on.has-is-set H _ _ (a .Group-hom.pres-⋆ x y) (b .Group-hom.pres-⋆ x y) i
+  → is-prop (is-group-hom G H f)
+is-group-hom-is-prop {H = H} a b i .is-group-hom.pres-⋆ x y =
+  Group-on.has-is-set H _ _ (a .is-group-hom.pres-⋆ x y) (b .is-group-hom.pres-⋆ x y) i
 
 instance
   H-Level-group-hom
     : ∀ {n} {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
       {G : Group-on A} {H : Group-on B} {f}
-    → H-Level (Group-hom G H f) (suc n)
-  H-Level-group-hom = prop-instance Group-hom-is-prop
+    → H-Level (is-group-hom G H f) (suc n)
+  H-Level-group-hom = prop-instance is-group-hom-is-prop
 ```
 -->
 
@@ -225,10 +225,10 @@ underlying map is a group homomorphism.
 ```agda
 Group≃
   : ∀ {ℓ} (A B : Σ (Type ℓ) Group-on) (e : A .fst ≃ B .fst) → Type ℓ
-Group≃ A B (f , _) = Group-hom (A .snd) (B .snd) f
+Group≃ A B (f , _) = is-group-hom (A .snd) (B .snd) f
 
 Group[_⇒_] : ∀ {ℓ} (A B : Σ (Type ℓ) Group-on) → Type ℓ
-Group[ A ⇒ B ] = Σ (A .fst → B .fst) (Group-hom (A .snd) (B .snd))
+Group[ A ⇒ B ] = Σ (A .fst → B .fst) (is-group-hom (A .snd) (B .snd))
 ```
 
 ## Making groups
@@ -248,20 +248,31 @@ record make-group {ℓ} (G : Type ℓ) : Type ℓ where
 
     assoc : ∀ x y z → mul (mul x y) z ≡ mul x (mul y z)
     invl  : ∀ x → mul (inv x) x ≡ unit
-    invr  : ∀ x → mul x (inv x) ≡ unit
     idl   : ∀ x → mul unit x ≡ x
+
+  private
+    inverser : ∀ x → mul x (inv x) ≡ unit
+    inverser x =
+      mul x (inv x)                                   ≡˘⟨ idl _ ⟩
+      mul unit (mul x (inv x))                        ≡˘⟨ ap₂ mul (invl _) refl ⟩
+      mul (mul (inv (inv x)) (inv x)) (mul x (inv x)) ≡⟨ assoc _ _ _ ⟩
+      mul (inv (inv x)) (mul (inv x) (mul x (inv x))) ≡˘⟨ ap₂ mul refl (assoc _ _ _) ⟩
+      mul (inv (inv x)) (mul (mul (inv x) x) (inv x)) ≡⟨ ap₂ mul refl (ap₂ mul (invl _) refl) ⟩
+      mul (inv (inv x)) (mul unit (inv x))            ≡⟨ ap₂ mul refl (idl _) ⟩
+      mul (inv (inv x)) (inv x)                       ≡⟨ invl _ ⟩
+      unit                                            ∎
 
   to-group-on : Group-on G
   to-group-on .Group-on._⋆_ = mul
   to-group-on .Group-on.has-is-group .is-group.unit = unit
   to-group-on .Group-on.has-is-group .is-group.inverse = inv
   to-group-on .Group-on.has-is-group .is-group.inversel = invl _
-  to-group-on .Group-on.has-is-group .is-group.inverser = invr _
+  to-group-on .Group-on.has-is-group .is-group.inverser = inverser _
   to-group-on .Group-on.has-is-group .is-group.has-is-monoid .is-monoid.idl {x} = idl x
   to-group-on .Group-on.has-is-group .is-group.has-is-monoid .is-monoid.idr {x} =
     mul x ⌜ unit ⌝           ≡˘⟨ ap¡ (invl x) ⟩
     mul x (mul (inv x) x)    ≡⟨ sym (assoc _ _ _) ⟩
-    mul ⌜ mul x (inv x) ⌝ x  ≡⟨ ap! (invr x) ⟩
+    mul ⌜ mul x (inv x) ⌝ x  ≡⟨ ap! (inverser x) ⟩
     mul unit x               ≡⟨ idl x ⟩
     x                        ∎
   to-group-on .Group-on.has-is-group .is-group.has-is-monoid .has-is-semigroup =
@@ -315,14 +326,4 @@ equivalence is both a section and a retraction.
   group-str .inv = _e⁻¹
   group-str .invl (f , eqv) =
     Σ-prop-path is-equiv-is-prop (funext (equiv→unit eqv))
-  group-str .invr (f , eqv) =
-    Σ-prop-path is-equiv-is-prop (funext (equiv→counit eqv))
 ```
-
-<!--
-```agda
-is-abelian-group : ∀ {ℓ} {G : Type ℓ} → Group-on G → Type ℓ
-is-abelian-group {G = G} st = ∀ (x y : G) → x G.⋆ y ≡ y G.⋆ x
-  where module G = Group-on st
-```
--->

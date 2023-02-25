@@ -585,7 +585,7 @@ Furthermore, these equivalences are natural.
     (R.₁ f C.∘ R.₁ (L.₁ g)) C.∘ adj.unit.η _ ≡⟨ C.extendr (sym $ adj.unit.is-natural _ _ _) ⟩
     (R.₁ f C.∘ adj.unit.η _) C.∘ g           ∎
 
-  L-adjunct-naturalr 
+  L-adjunct-naturalr
       : ∀ {a b c} (f : D.Hom b c) (g : D.Hom (L.₀ a) b)
       → L-adjunct (f D.∘ g) ≡ R.₁ f C.∘ L-adjunct g
   L-adjunct-naturalr f g = C.pushl (R.F-∘ f g)

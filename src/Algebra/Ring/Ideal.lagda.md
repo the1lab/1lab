@@ -21,7 +21,7 @@ An **ideal** in a ring $R$ is the [$\Ab$-enriched] analogue of a
 [sieve], when $R$ is considered as an $\Ab$-category with a single
 object, in that it picks out a sub-[$R$-module] of $R$, considered as a
 [representable ring], in exactly the same way that a sieve on an object
-$x : \cC$ picks out a subfunctor of $\yo(x)$. Since we know that $\B
+$x : \cC$ picks out a subfunctor of $\yo(x)$. Since we know that $\baut
 R$'s composition is given by $R$'s multiplication, and sieves are
 subsets closed under precomposition, we instantly deduce that ideals are
 closed under multiplication.
@@ -90,7 +90,7 @@ carries a canonical $R$-module structure.
     gr : Group-on _
     gr = rep-subgroup→group-on 𝔞 has-rep-subgroup
 
-    g = restrict (el! _ , gr) λ x y → Σ-prop-path (λ _ → 𝔞 _ .is-tr) R.+-commutes
+    g = from-commutative-group (el! _ , gr) λ x y → Σ-prop-path! R.+-commutes
 
     mod : Module-on R g
     mod .Module-on._⋆_ x y = _ , has-*ₗ x (y .snd)
