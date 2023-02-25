@@ -38,6 +38,8 @@ module _ {F : Functor C D} {G : Functor D C} (adj : F ⊣ G) where
     module G = Functor G
     module C = Cat C
     module D = Cat D
+
+  open Functor
   open _⊣_ adj
   open _=>_
 ```
@@ -60,7 +62,7 @@ where uniqueness and commutativity follows from the triangle identities
 `zig`{.Agda} and `zag`{.Agda}.
 
 ```agda
-  adjoint→is-lan .σ {M} α .η x = M .Functor.F₁ (counit.ε _) C.∘ α .η (G.₀ x)
+  adjoint→is-lan .σ {M} α .η x = M .F₁ (counit.ε _) C.∘ α .η (G.₀ x)
   adjoint→is-lan .σ {M} nt .is-natural x y f =
     (M.₁ (counit.ε _) C.∘ nt .η _) C.∘ G.₁ f            ≡⟨ C.pullr (nt .is-natural _ _ _) ⟩
     M.₁ (counit.ε _) C.∘ M.₁ (F.₁ (G.₁ f)) C.∘ nt .η _  ≡⟨ M.extendl (counit.is-natural _ _ _) ⟩
@@ -84,4 +86,28 @@ where uniqueness and commutativity follows from the triangle identities
 ```
 
 As expected, adjoints also yield right kan extensions.
-[TODO: Reed M, 05/02/2023] Finish this!
+
+```agda
+  adjoint→is-ran : is-ran G Id F counit
+```
+
+<details>
+<summary>The proof is the same as left adjoints, just dualized.
+</summary>
+
+```agda
+  adjoint→is-ran .σ {M} β .η x = β .η _ D.∘ M .F₁ (unit.η _)
+  adjoint→is-ran .σ {M} β .is-natural _ _ _ =
+    M.extendr (unit.is-natural _ _ _)
+    ∙ D.pushl (β .is-natural _ _ _)
+    where module M = Func M
+  adjoint→is-ran .σ-comm {M} {β} = Nat-path λ _ →
+    D.pulll (sym $ β .is-natural _ _ _)
+    ∙ M.cancelr zag
+    where module M = Func M
+  adjoint→is-ran .σ-uniq {M} {β} {σ′} p = Nat-path λ _ →
+    ap (D._∘ _) (p ηₚ _)
+    ·· D.extendr (σ′ .is-natural _ _ _)
+    ·· D.eliml zig
+```
+</details>
