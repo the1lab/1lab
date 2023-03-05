@@ -68,9 +68,9 @@ subtraction.
 ```
 
 Since the zero object $\emptyset$ in an $\Ab$-category is characterised
-as the unique object having $\id{\emptyset} = 0$, and $\Ab$-functors
-preserve both $\id$ and $0$, every $\Ab$-functor preserves zero
-objects. We say that the zero object, considered as a colimit, is
+as the unique object having $\id[\emptyset] = 0$, and $\Ab$-functors
+preserve both $\id$ and $0$, every $\Ab$-functor preserves zero objects.
+We say that the zero object, considered as a colimit, is
 **absolute**, i.e., preserved by every (relevant) functor.
 
 ```agda

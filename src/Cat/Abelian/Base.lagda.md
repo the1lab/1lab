@@ -140,7 +140,7 @@ $-ab = (-a)b = a(-b)$, etc.</summary>
 </details>
 
 Before moving on, we note the following property of $\Ab$-categories: If
-$A$ is an object s.t. $\id{A} = 0$, then $A$ is a zero object.
+$A$ is an object s.t. $\id[A] = 0$, then $A$ is a zero object.
 
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} (A : Ab-category C) where

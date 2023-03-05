@@ -6,6 +6,7 @@ open import 1Lab.HLevel.Universe
 open import 1Lab.Reflection using (arg ; typeError)
 open import 1Lab.Univalence
 open import 1Lab.HLevel
+open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
@@ -139,6 +140,9 @@ elΩ T .is-tr = squash
 □-elim pprop go (inc x) = go x
 □-elim pprop go (squash x y i) =
   is-prop→pathp (λ i → pprop (squash x y i)) (□-elim pprop go x) (□-elim pprop go y) i
+
+□-idempotent : ∀ {ℓ} {A : Type ℓ} → is-prop A → □ A ≃ A
+□-idempotent aprop = prop-ext squash aprop (out! {pa = aprop}) inc
 
 □-ap
   : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}

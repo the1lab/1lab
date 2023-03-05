@@ -92,8 +92,8 @@ $f$ along $g$ to get an element of $\rm{hom}_i(x, y)$.
 
 To obtain these definitional extensions of a morphism in C, we use
 homogeneous composition, together with the functor laws. For example,
-below, we obtain a line which definitionally extends $\id{\cC}$ on the
-left and $\id{\cD}$ by gluing $\id{\cC}$ _against the proof that $F$
+below, we obtain a line which definitionally extends $\id[\cC]$ on
+the left and $\id[\cD]$ by gluing $\id[\cC]$ _against the proof that $F$
 preserves identity_.
 
 ```agda

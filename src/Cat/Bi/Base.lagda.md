@@ -390,7 +390,7 @@ However, when talking about general bicategories, we are faced with a
 choice: We could generalise the functoriality axioms to natural
 isomorphisms, keeping with the fact that equations are invertible, but
 we could also drop this invertibility requirement, and work only with
-natural _transformations_ $P(\id{A}) \to \id{PA}$. When these
+natural _transformations_ $P(\id[A]) \to \id[PA]$. When these
 are not invertible, the resulting structure is called a **lax functor**;
 When they _are_, we talk about **pseudofunctors** instead.
 
