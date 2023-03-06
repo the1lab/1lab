@@ -65,6 +65,13 @@ of identifications required to make the aforementioned square commute.
              → colim′ ∘ i₁ ≡ i₁′
              → colim′ ∘ i₂ ≡ i₂′
              → colim′ ≡ colimiting p
+
+    unique₂
+      : {p : i₁′ ∘ f ≡ i₂′ ∘ g} {colim′ colim′′ : Hom P Q}
+      → colim′ ∘ i₁ ≡ i₁′ → colim′ ∘ i₂ ≡ i₂′
+      → colim′′ ∘ i₁ ≡ i₁′ → colim′′ ∘ i₂ ≡ i₂′
+      → colim′ ≡ colim′′
+    unique₂ {p = o} p q r s = unique {p = o} p q ∙ sym (unique r s)
 ```
 
 We provide a convenient packaging of the pushout and the injection

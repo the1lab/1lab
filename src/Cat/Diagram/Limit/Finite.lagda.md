@@ -1,4 +1,5 @@
 ```agda
+open import Cat.Diagram.Pullback.Properties
 open import Cat.Diagram.Limit.Equaliser
 open import Cat.Diagram.Limit.Pullback
 open import Cat.Instances.Shape.Cospan
@@ -444,7 +445,8 @@ preserve the terminal object and pullbacks.
 <!--
 ```agda
 module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} where
-  private module C = Precategory C
+  private module C = Cat C
+  private module D = Cat D
 ```
 -->
 
@@ -475,6 +477,17 @@ products.
     pres-product term pr = terminal-pullback→product D (pres-⊤ term)
       (pres-pullback {f = term _ .centre} {g = term _ .centre}
         (product→terminal-pullback C term pr))
+```
+
+Since $f : A \to B$ being a monomorphism is equivalent to certain squares
+being pullbacks, a lex functor $F : \cC \to \cD$ preserves monomorphisms.
+
+```agda
+    pres-monos : ∀ {A B} {f : C.Hom A B} → C.is-monic f → D.is-monic (F.₁ f)
+    pres-monos {f = f} mono = is-pullback→is-monic
+      (subst (λ x → is-pullback D x _ x _) F.F-id
+        (pres-pullback
+          (is-monic→is-pullback mono)))
 ```
 
 <!--
