@@ -1,4 +1,5 @@
 ```agda
+open import Cat.Diagram.Pushout.Properties
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Coproduct
@@ -284,7 +285,8 @@ finite colimits.
 <!--
 ```agda
 module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} where
-  private module C = Precategory C
+  private module C = Cat C
+  private module D = Cat D
 ```
 -->
 
@@ -307,4 +309,9 @@ module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ�
     pres-coproduct  init copr = initial-pushout→coproduct D (pres-⊥ init)
       (pres-pushout {f = init _ .centre} {g = init _ .centre}
         (coproduct→initial-pushout C init copr))
+    pres-epis : ∀ {A B} {f : C.Hom A B} → C.is-epic f → D.is-epic (F.₁ f)
+    pres-epis {f = f} epi = is-pushout→is-epic
+      (subst (λ x → is-pushout D _ x _ x) F.F-id
+        (pres-pushout
+          (is-epic→is-pushout epi)))
 ```
