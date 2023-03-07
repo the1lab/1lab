@@ -14,7 +14,7 @@ open Cat.Reasoning C
 open is-pushout
 
 ```
---!>
+-->
 
 ## Epimorphisms
 
