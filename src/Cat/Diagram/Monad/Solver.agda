@@ -299,7 +299,7 @@ module Reflection where
   solve-macro : ∀ {o h} {𝒞 : Precategory o h} → Monad 𝒞 → Term → TC ⊤
   solve-macro monad hole =
     withNormalisation false $
-    dontReduceDefs dont-reduce $ do
+    withReduceDefs (false , dont-reduce) $ do
       monad-tm ← quoteTC monad
       goal ← inferType hole >>= reduce
       just (lhs , rhs) ← get-boundary goal
