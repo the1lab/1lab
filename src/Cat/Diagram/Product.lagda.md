@@ -249,3 +249,24 @@ We also define a handful of common morphisms.
   swap : Hom (a ⊗₀ b) (b ⊗₀ a)
   swap = ⟨ π₂ , π₁ ⟩
 ```
+
+## Representability of products
+
+The collection of maps into a product $a \times b$ is equivalent to
+the collection of pairs of maps into $a$ and $b$. The forward direction
+of the equivalence is given by postcomposition of the projections, and
+the reverse direction by the universal property of products.
+
+```agda
+product-repr
+  : ∀ {a b}
+  → (prod : Product a b)
+  → (x : Ob)
+  → Hom x (Product.apex prod) ≃ (Hom x a × Hom x b)
+product-repr prod x = Iso→Equiv λ where
+    .fst f → π₁ ∘ f , π₂ ∘ f
+    .snd .is-iso.inv (f , g) → ⟨ f , g ⟩
+    .snd .is-iso.rinv (f , g) → π₁∘factor ,ₚ π₂∘factor
+    .snd .is-iso.linv f → sym (⟨⟩∘ f) ∙ eliml ⟨⟩-η
+  where open Product prod
+```

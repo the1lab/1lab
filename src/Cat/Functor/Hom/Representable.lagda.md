@@ -289,7 +289,15 @@ Corepresentation-is-prop {F = F} c-cat X Y = path where
 
 A useful fact about corepresentable functors is that they preserve
 all limits. To show this, we first need to show that the covariant
-hom functor $\cC(c,-)$ preserves limits.
+hom functor $\cC(x,-)$ preserves limits.
+
+To get an intuition for why this is true, consider how the
+functor $\cC(x,-)$ behaves on products. The set of morphisms
+$\cC(x,a \times b)$ is equivalent to the set $\cC(x, a) \times \cC(x, b)$
+of pairs of morphisms (See [`product-repr`] for a proof of this
+equivalence).
+
+[`product-repr`]: Cat.Diagram.Product.html#product-repr
 
 ```agda
 Hom-from-preserves-limits
@@ -336,11 +344,10 @@ functor $F : \cC\op \to \set$ is contravariant. Specifically, $F$ will
 take limits in $\cC\op$ to limits in $\set$, but limits in $\cC\op$
 are colimits, so $F$ will take colimits in $\cC$ to limits in $\set$.
 
-We opt to phrase this in a slightly different manner: if $F$ is
-representable, then it takes colimits in $\cC$ to colimits in $\set\op$
-(IE: limits in $\set$). Despite all the confusing opposites, the proof
-of this fact is straightforward, and mirrors the case for
-corepresentables.
+A less formal perspective on this is that the collection of maps
+out of a colimit is still defined as a limit in $\set$. For instance,
+to give a $a + b \to x$ out of a coproduct, we are required to give
+a pair of maps $a \to x$ and $b \to x$.
 
 ```agda
 よ-reverses-colimits
