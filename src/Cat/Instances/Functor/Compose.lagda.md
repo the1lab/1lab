@@ -4,6 +4,7 @@ open import Cat.Instances.Product
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
+import Cat.Morphism
 import Cat.Reasoning
 
 open Functor
@@ -38,7 +39,7 @@ opposite direction to $p$.
 private variable
   o ℓ : Level
   A B C C′ D E : Precategory o ℓ
-  F G H : Functor C D
+  F G H K : Functor C D
 ```
 -->
 
@@ -85,6 +86,7 @@ _▸_ H nt .is-natural x y f =
   sym (H .F-∘ _ _) ∙ ap (H .F₁) (nt .is-natural _ _ _) ∙ H .F-∘ _ _
 ```
 
+
 With the whiskerings already defined, defining $p_!$ and $p^*$ is easy:
 
 ```agda
@@ -102,6 +104,48 @@ module _ (p : Functor C C′) where
   _^* .F-∘ f g = Nat-path λ _ → p .F-∘ _ _
 ```
 
+Whiskerings are instances of a more general form of composition for
+natural transformations, known as **horizontal composition**.
+
+```agda
+_◆_ : ∀ {F G : Functor D E} {H K : Functor C D}
+    → F => G → H => K → F F∘ H => G F∘ K
+_◆_ {E = E} {F = F} {G} {H} {K} α β = nat module horizontal-comp where
+  private module E = Cat.Reasoning E
+  open Fr
+  nat : F F∘ H => G F∘ K
+  nat .η x = G .F₁ (β .η _) E.∘ α .η _
+  nat .is-natural x y f =
+    E.pullr (α .is-natural _ _ _)
+    ∙ E.extendl (weave G (β .is-natural _ _ _))
+```
+
+<!--
+```agda
+{-# DISPLAY horizontal-comp.nat f g = f ◆ g #-}  
+```
+-->
+
 <!--
 [TODO: Reed M, 13/02/2023] Add whiskering reasoning combinators!
+-->
+
+<!--
+```agda
+module _ {F G : Functor C D} where
+  open Cat.Morphism
+  open Fr
+
+  _◂ni_ : natural-iso F G → (H : Functor B C) → natural-iso (F F∘ H) (G F∘ H)
+  (α ◂ni H) =
+    make-iso _ (α .to ◂ H) (α .from ◂ H)
+      (Nat-path λ _ → α .invl ηₚ _)
+      (Nat-path λ _ → α .invr ηₚ _)
+
+  _▸ni_ : (H : Functor D E) → natural-iso F G → natural-iso (H F∘ F) (H F∘ G)
+  (H ▸ni α) =
+    make-iso _ (H ▸ α .to) (H ▸ α .from)
+      (Nat-path λ _ → annihilate H (α .invl ηₚ _))
+      (Nat-path λ _ → annihilate H (α .invr ηₚ _))
+```
 -->

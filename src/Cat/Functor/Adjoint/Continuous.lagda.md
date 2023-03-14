@@ -61,12 +61,12 @@ extensions].
 
 ```agda
   right-adjoint-is-continuous
-    : ∀ {os ℓs} → is-continuous {oshape = os} {hshape = ℓs} R
+    : ∀ {os ℓs} → is-continuous os ℓs R
   right-adjoint-is-continuous lim =
     right-adjoint→right-extension lim L⊣R
 
   left-adjoint-is-cocontinuous
-    : ∀ {os ℓs} → is-cocontinuous {oshape = os} {hshape = ℓs} L
+    : ∀ {os ℓs} → is-cocontinuous os ℓs L
   left-adjoint-is-cocontinuous colim =
     left-adjoint→left-extension colim L⊣R
 

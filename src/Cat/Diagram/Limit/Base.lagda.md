@@ -720,11 +720,63 @@ apex $F(a)$, then $a$ was _already the limit_ of $\rm{Dia}$!
     → reflects-ran F ran
 ```
 
+<!--
+```agda
+module preserves-limit
+  {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+  {F : Functor C D} {Dia : Functor J C}
+  (preserves : preserves-limit F Dia)
+  {K : Functor ⊤Cat C} {eta : K F∘ !F => Dia}
+  (lim : is-ran !F Dia K eta)
+  where
+  private
+    module D = Precategory D
+    module C = Precategory C
+    module J = Precategory J
+    module F = Func F
+    module Dia = Func Dia
+
+    module lim = is-limit lim
+    module F-lim = is-limit (preserves lim)
+
+  universal
+    : {x : C.Ob}
+    → {eps : (j : J.Ob) → C.Hom x (Dia.F₀ j)}
+    → {p : ∀ {i j} (f : J.Hom i j) → Dia.F₁ f C.∘ eps i ≡ eps j}
+    → F.F₁ (lim.universal eps p) ≡ F-lim.universal (λ j → F.F₁ (eps j)) (λ f → F.collapse (p f))
+  universal = F-lim.unique _ _ _ (λ j → F.collapse (lim.factors _ _))
+
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+         {F F' : Functor C D} {Dia : Functor J C} where
+
+  private
+    module D = Cat.Reasoning D
+    open Func
+    open _=>_
+
+  natural-iso→preserves-limits
+    : natural-iso F F'
+    → preserves-limit F Dia
+    → preserves-limit F' Dia
+  natural-iso→preserves-limits α F-preserves {K = K} {eps} lim =
+    natural-isos→is-ran
+      idni (α ◂ni Dia) (α ◂ni K)
+        (Nat-path λ j →
+          α.to .η _ D.∘ (F .F₁ (eps .η j) D.∘ ⌜ F .F₁ (K .F₁ tt) D.∘ α.from .η _ ⌝) ≡⟨ ap! (eliml F (K .F-id)) ⟩
+          α.to .η _ D.∘ (F .F₁ (eps .η j) D.∘ α.from .η _)                          ≡⟨ D.pushr (sym (α.from .is-natural _ _ _)) ⟩
+          (α.to .η _ D.∘ α.from .η _) D.∘ F' .F₁ (eps .η j)                         ≡⟨ D.eliml (α.invl ηₚ _) ⟩
+          F' .F₁ (eps .η j)                                                         ∎)
+        (F-preserves lim)
+    where
+      module α = natural-iso α
+```
+-->
+
 ## Continuity
 
 ```agda
 is-continuous
-  : ∀ {oshape hshape}
+  : ∀ (oshape hshape : Level)
       {C : Precategory o₁ h₁}
       {D : Precategory o₂ h₂}
   → Functor C D → Type _
@@ -735,7 +787,7 @@ every diagram `diagram`{.Agda} of shape `J` in `C` --- preserves the
 limit for that diagram.
 
 ```agda
-is-continuous {oshape = oshape} {hshape} {C = C} F =
+is-continuous oshape hshape {C = C} F =
   ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
   → preserves-limit F Diagram
 ```

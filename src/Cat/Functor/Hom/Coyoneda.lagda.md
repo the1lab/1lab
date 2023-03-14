@@ -185,7 +185,7 @@ watch out for the formalisation below:
 ```agda
   Representables-generate-presheaf
     : {f g : X => Y}
-    → ( ∀ {A : Ob} (h : よ₀ A => X) → f PSh.∘ h ≡ g PSh.∘ h )
+    → (∀ {A : Ob} (h : よ₀ A => X) → f PSh.∘ h ≡ g PSh.∘ h)
     → f ≡ g
 ```
 

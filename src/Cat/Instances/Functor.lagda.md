@@ -61,6 +61,7 @@ _∘nt_ {C = C} {D = D} {F} {G} {H} f g = nat
 
 <!--
 ```agda
+infixr 40 _∘nt_
 {-# DISPLAY ∘nt.nat f g = f ∘nt g #-}  
 ```
 -->
@@ -453,6 +454,9 @@ module
 
   module natural-iso {F G : Functor C D} (eta : F CD.≅ G) = CD._≅_ eta
 
+  idni : natural-iso F F
+  idni = CD.id-iso
+
   _ni∘_ : ∀ {F G H : Functor C D}
           → natural-iso F G → natural-iso G H
           → natural-iso F H
@@ -465,6 +469,7 @@ module
     : {F : Functor D D} {G : Functor C D}
     → F DD.≅ Id → (F F∘ G) CD.≅ G
   F∘-iso-id-l {F} {G} isom = subst ((F F∘ G) CD.≅_) F∘-idl (F∘-iso-l isom)
+
 
   record make-natural-iso (F G : Functor C D) : Type (o ⊔ ℓ ⊔ ℓ′) where
     no-eta-equality
@@ -523,6 +528,14 @@ module
       (CD.is-invertible.invr inv ηₚ x)
 
 open _=>_
+
+_ni^op : natural-iso F G → natural-iso (Functor.op F) (Functor.op G)
+_ni^op α =
+  Cat.Reasoning.make-iso _
+    (_=>_.op (natural-iso.from α))
+    (_=>_.op (natural-iso.to α))
+    (Nat-path λ j → natural-iso.invl α ηₚ _)
+    (Nat-path λ j → natural-iso.invr α ηₚ _)
 
 module _
   {o ℓ o′ ℓ′ o₂ ℓ₂}

@@ -119,6 +119,7 @@ natural transformations is indeed functorial:
 よ .F-∘ f g = Nat-path λ _ i h → assoc f g h (~ i)
 ```
 
+
 The morphism mapping `よ₁`{.Agda} has an inverse, given by evaluating the
 natural transformation with the identity map; Hence, the Yoneda
 embedding functor is fully faithful.
@@ -133,4 +134,39 @@ embedding functor is fully faithful.
   isom .rinv nt = Nat-path λ c → funext λ g →
     happly (sym (nt .is-natural _ _ _)) _ ∙ ap (nt .η c) (idl g)
   isom .linv _ = idr _
+```
+
+## The covariant yoneda embedding
+
+One common point of confusion is why category theorists prefer
+presheaves over covariant functors into $\set$. One key reason is that
+the yoneda embedding into presheaves is **covariant**, whereas the
+embedding into functors $\cC \to \sets$ is **contravariant**. This
+makes the covariant yoneda embedding much less pleasant to work with,
+though we define it anyways for posterity.
+
+```agda
+よcov₁ : Hom a b → Hom-from b => Hom-from a
+よcov₁ f .η _ g = g ∘ f
+よcov₁ f .is-natural x y g = funext λ x → sym (assoc g x f)
+
+よcov : Functor (C ^op) Cat[ C , Sets h ]
+よcov .F₀ = Hom-from
+よcov .F₁ = よcov₁
+よcov .F-id = Nat-path λ _ → funext λ g → idr g
+よcov .F-∘ f g = Nat-path λ _ → funext λ h → (assoc h g f)
+```
+
+As expected, the covariant yoneda embedding is also fully faithful.
+
+```agda
+よcov-is-fully-faithful : is-fully-faithful よcov
+よcov-is-fully-faithful = is-iso→is-equiv isom where
+  open is-iso
+
+  isom : is-iso よcov₁
+  isom .inv nt = nt .η _ id
+  isom .rinv nt = Nat-path λ c → funext λ g →
+    sym (nt .is-natural _ _ _) $ₚ _ ∙ ap (nt .η c) (idr g)
+  isom .linv _ = idl _
 ```

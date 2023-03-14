@@ -547,7 +547,7 @@ dualized.
 <!--
 ```agda
 module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
-         (F : Functor C D) {Diagram : Functor J C} where
+         (F : Functor C D) (Diagram : Functor J C) where
   private
     module D = Precategory D
     module C = Precategory C
@@ -557,24 +557,76 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
 -->
 
 ```agda
-  preserves-colimit
-     : ∀ {K : Functor ⊤Cat C} {eta : Diagram => K F∘ !F}
-     → is-lan !F Diagram K eta
-     → Type _
-  preserves-colimit colim = preserves-lan F colim
+  preserves-colimit : Type _
+  preserves-colimit =
+     ∀ {K : Functor ⊤Cat C} {eta : Diagram => K F∘ !F}
+     → (colim : is-lan !F Diagram K eta)
+     → preserves-lan F colim
 
-  reflects-colimit
-    : ∀ {K : Functor ⊤Cat C} {eps : Diagram => K F∘ !F}
-    → is-lan !F (F F∘ Diagram) (F F∘ K) (nat-assoc-to (F ▸ eps))
-    → Type _
-  reflects-colimit lan = reflects-lan F lan
+  reflects-colimit : Type _
+  reflects-colimit =
+    ∀ {K : Functor ⊤Cat C} {eps : Diagram => K F∘ !F}
+    → (lan : is-lan !F (F F∘ Diagram) (F F∘ K) (nat-assoc-to (F ▸ eps)))
+    → reflects-lan F lan
 ```
+
+<!--
+```agda
+module preserves-colimit
+  {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+  {F : Functor C D} {Dia : Functor J C}
+  (preserves : preserves-colimit F Dia)
+  {K : Functor ⊤Cat C} {eta : Dia => K F∘ !F}
+  (colim : is-lan !F Dia K eta)
+  where
+  private
+    module D = Precategory D
+    module C = Precategory C
+    module J = Precategory J
+    module F = Func F
+    module Dia = Func Dia
+
+    module colim = is-colimit colim
+    module F-colim = is-colimit (preserves colim)
+
+  universal
+    : {x : C.Ob}
+    → {eps : (j : J.Ob) → C.Hom (Dia.F₀ j) x}
+    → {p : ∀ {i j} (f : J.Hom i j) → eps j C.∘ Dia.F₁ f ≡ eps i}
+    → F.F₁ (colim.universal eps p) ≡ F-colim.universal (λ j → F.F₁ (eps j)) (λ f → F.collapse (p f))
+  universal = F-colim.unique _ _ _ (λ j → F.collapse (colim.factors _ _))
+
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+         {F F' : Functor C D} {Dia : Functor J C} where
+
+  private
+    module D = Cat.Reasoning D
+    open Func
+    open _=>_
+
+  natural-iso→preserves-colimits
+    : natural-iso F F'
+    → preserves-colimit F Dia
+    → preserves-colimit F' Dia
+  natural-iso→preserves-colimits α F-preserves {K = K} {eps} colim =
+    natural-isos→is-lan
+      idni (α ◂ni Dia) (α ◂ni K)
+      (Nat-path λ j →
+        ⌜ F' .F₁ (K .F₁ tt) D.∘ α.to .η _ ⌝ D.∘ (F .F₁ (eps .η j) D.∘ α.from .η _) ≡⟨ ap! (eliml F' (K .F-id)) ⟩
+        α.to .η _ D.∘ (F .F₁ (eps .η j) D.∘ α.from .η _)                           ≡⟨ D.pushr (sym (α.from .is-natural _ _ _)) ⟩
+        ((α.to .η _ D.∘ α.from .η _) D.∘ F' .F₁ (eps .η j))                        ≡⟨ D.eliml (α.invl ηₚ _) ⟩
+        F' .F₁ (eps .η j) ∎)
+      (F-preserves colim)
+    where
+      module α = natural-iso α
+```
+-->
 
 ## Cocontinuity
 
 ```agda
 is-cocontinuous
-  : ∀ {oshape hshape}
+  : ∀ (oshape hshape : Level)
       {C : Precategory o₁ h₁}
       {D : Precategory o₂ h₂}
   → Functor C D → Type _
@@ -585,11 +637,9 @@ and every diagram `diagram`{.Agda} of shape `J` in `C`, preserves the
 colimit for that diagram.
 
 ```agda
-is-cocontinuous {oshape = oshape} {hshape} {C = C} F =
+is-cocontinuous oshape hshape {C = C} F =
   ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
-  → ∀ {K : Functor ⊤Cat C} {eta : Diagram => K F∘ !F} 
-  → (colim : is-lan !F Diagram K eta)
-  → preserves-colimit F colim
+  → preserves-colimit F Diagram
 ```
 
 ## Cocompleteness
