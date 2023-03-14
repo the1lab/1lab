@@ -138,7 +138,7 @@ map $u' \to a'$.
 Let $x$ be an object of $\cB$. Let us ponder the fibre $\cE^*(x)$:
 we know that it is strict, since by assumption there is a _set_ of
 objects over $x$. Let us show also that it is thin: imagine that we have
-two parallel, vertical arrows $f, g : a \to_\id b$. These assemble
+two parallel, vertical arrows $f, g : a \to_{\id} b$. These assemble
 into a diagram like
 
 ~~~{.quiver}
