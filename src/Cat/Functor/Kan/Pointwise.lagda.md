@@ -118,7 +118,7 @@ module _
     ni : make-natural-iso G (F′ F∘ F)
     ni .eta x =
       ↓colim.ψ _ (↓obj C'.id)
-    ni .inv x = 
+    ni .inv x =
       ↓colim.universal _
         (λ j → G .F₁ (ff.from (j .map)))
         (λ f →
