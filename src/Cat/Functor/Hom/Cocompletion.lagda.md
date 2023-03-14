@@ -1,8 +1,6 @@
 ```agda
-open import Cat.Functor.Adjoint.Continuous
+open import Cat.Functor.Kan.Pointwise
 open import Cat.Diagram.Colimit.Base
-open import Cat.Functor.Hom.Coyoneda
-open import Cat.Instances.Elements
 open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Hom
@@ -27,8 +25,6 @@ open import Cat.Morphism Cat[ C , D ] using (_≅_)
 
 open Func
 open _=>_
-open Element
-open Element-hom
 ```
 -->
 
@@ -88,63 +84,8 @@ of Kan extensions.
 
 ```agda
 よ-extension : (F : Functor C D) → Lan (よ C) F
-よ-extension F = lan where
+よ-extension F = cocomplete→lan (よ C) F colim
 
-  module colim (P : Functor (C ^op) (Sets κ)) =
-    Colimit (colim (F F∘ πₚ C P))
-  module coyoneda (P : Functor (C ^op) (Sets κ)) =
-    is-colimit (coyoneda C P)
-
-  open Lan
-  open is-lan
-
-  extend : Functor (PSh κ C) D
-  extend .F₀ = colim.coapex
-  extend .F₁ {P} {Q} f =
-    colim.universal _
-      (λ j → colim.ψ Q (elem (j .ob) (f .η _ (j .section))))
-      (λ g → colim.commutes Q
-        (elem-hom (g .hom)
-            (sym (f .is-natural _ _ _) $ₚ _
-             ∙ ap (f .η _) (g .commute))))
-  extend .F-id =
-    sym $ colim.unique _ _ _ _ λ j →
-      D.idl _
-  extend .F-∘ f g =
-    sym $ colim.unique _ _ _ _ λ j →
-      D.pullr (colim.factors _ _ _)
-      ∙ colim.factors _ _ _
-
-  lan : Lan (よ C) F
-  lan .Ext = extend
-  lan .eta .η x = colim.ψ _ (elem x C.id)
-  lan .eta .is-natural x y f =
-    colim.commutes _ (elem-hom f C.id-comm-sym)
-    ∙ sym (colim.factors _ _ _)
-  lan .has-lan .σ {M = M} α .η P =
-    colim.universal P
-      (λ j → M .F₁ (coyoneda.ψ P j) D.∘ α .η (j .ob))
-      λ f →
-        D.pullr (α .is-natural _ _ _)
-        ∙ pulll M (coyoneda.commutes P f)
-  lan .has-lan .σ {M = M} α .is-natural P Q f =
-    colim.unique₂ P _
-      (λ g →
-        D.pullr (α .is-natural _ _ _)
-        ∙ pulll M (coyoneda.commutes _ (elem-hom (g .hom) (sym (f .is-natural _ _ _ $ₚ _) ∙ ap (f .η _) (g .commute)))))
-      (λ j →
-        D.pullr (colim.factors P _ _)
-        ∙ colim.factors Q _ _)
-      (λ j →
-        D.pullr (colim.factors P _ _)
-        ∙ pulll M (Nat-path (λ _ → funext λ x → f .is-natural _ _ _ $ₚ j .section)))
-  lan .has-lan .σ-comm {M = M} = Nat-path λ _ →
-    colim.factors _ _ _
-    ∙ eliml M (Nat-path (λ _ → funext λ _ → C.idl _))
-  lan .has-lan .σ-uniq {M = M} {α = α} {σ′ = σ′} p = Nat-path λ P →
-    sym $ colim.unique _ _ _ _ λ j →
-      σ′ .η _ D.∘ colim.ψ P j                                     ≡⟨ D.pushr (sym (colim.factors _ _ _ ∙ ap (colim.ψ _) (ap₂ elem refl (P .F-id $ₚ _)))) ⟩
-      (σ′ .η _ D.∘ colim.universal _ _ _) D.∘ colim.ψ (よ₀ C _) _ ≡⟨ D.pushl (σ′ .is-natural _ _ _) ⟩
-      M .F₁ (coyoneda.ψ P j) D.∘ σ′ .η _ D.∘ colim.ψ (よ₀ C _) _  ≡˘⟨ (D.refl⟩∘⟨ (p ηₚ _)) ⟩
-      M .F₁ (coyoneda.ψ P j) D.∘ α .η _                           ∎
+extend-factors : (F : Functor C D) → (よ-extension F .Lan.Ext F∘ よ C) ≅ F
+extend-factors F = ff→pointwise-lan-ext (よ C) F colim (よ-is-fully-faithful C)
 ```
