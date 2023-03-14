@@ -104,8 +104,8 @@ applyMacros ms s =
 ------------------------------------------------------------------------------
 
 pSkipSpaceComments :: (Monad m, Stream s m Char)
-                   => ParsecT s st m ()
-pSkipSpaceComments = spaces >> skipMany (comment >> spaces)
+                   => ParsecT s st m String
+pSkipSpaceComments = many space <* skipMany (comment >> spaces)
 
 pMacroDefinitions :: (Monad m, Stream s m Char)
                   => ParsecT s st m ([Macro], s)
@@ -241,7 +241,7 @@ newcommand = try $ do
       string name'
       when (all isLetter name') $
         notFollowedBy letter
-      pSkipSpaceComments
+      spc <- pSkipSpaceComments
       opt <- case optarg of
                   Nothing  -> return Nothing
                   Just _   -> liftM (`mplus` optarg) optArg
@@ -250,7 +250,7 @@ newcommand = try $ do
       let args' = case opt of
                       Just x  -> x : args
                       Nothing -> args
-      return $ apply args' $ "{" ++ body ++ "}"
+      return $ apply args' $ body ++ spc
 
   return $ Macro (T.pack defn) (T.pack name) numargs kao parsec
 
