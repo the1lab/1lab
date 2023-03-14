@@ -300,24 +300,30 @@ postulate
   commitTC         : TC ⊤
   isMacro          : Name → TC Bool
 
-  -- If the argument is 'true' makes the following primitives also normalise
-  -- their results: inferType, checkType, quoteTC, getType, and getContext
-  withNormalisation : ∀ {a} {A : Type a} → Bool → TC A → TC A
-
-  -- Makes the following primitives to reconstruct hidden arguments
-  -- getDefinition, normalise, reduce, inferType, checkType and getContext
-  withReconstructed : ∀ {a} {A : Type a} → TC A → TC A
-
   formatErrorParts : List ErrorPart → TC String
+
   -- Prints the third argument if the corresponding verbosity level is turned
   -- on (with the -v flag to Agda).
   debugPrint : String → Nat → List ErrorPart → TC ⊤
 
-  -- Only allow reduction of specific definitions while executing the TC computation
-  onlyReduceDefs : ∀ {a} {A : Type a} → List Name → TC A → TC A
+  -- If 'true', makes the following primitives also normalise
+  -- their results: inferType, checkType, quoteTC, getType, and getContext
+  withNormalisation : ∀ {a} {A : Type a} → Bool → TC A → TC A
+  askNormalisation  : TC Bool
 
-  -- Don't allow reduction of specific definitions while executing the TC computation
-  dontReduceDefs : ∀ {a} {A : Type a} → List Name → TC A → TC A
+  -- If 'true', makes the following primitives to reconstruct hidden arguments:
+  -- getDefinition, normalise, reduce, inferType, checkType and getContext
+  withReconstructed : ∀ {a} {A : Type a} → Bool → TC A → TC A
+  askReconstructed  : TC Bool
+
+  -- Whether implicit arguments at the end should be turned into metavariables
+  withExpandLast : ∀ {a} {A : Type a} → Bool → TC A → TC A
+  askExpandLast  : TC Bool
+
+  -- White/blacklist specific definitions for reduction while executing the TC computation
+  -- 'true' for whitelist, 'false' for blacklist
+  withReduceDefs : ∀ {a} {A : Type a} → (Σ Bool λ _ → List Name) → TC A → TC A
+  askReduceDefs  : TC (Σ Bool λ _ → List Name)
 
   -- Fail if the given computation gives rise to new, unsolved
   -- "blocking" constraints.
@@ -416,9 +422,13 @@ postulate
 {-# BUILTIN AGDATCMWITHNORMALISATION          withNormalisation          #-}
 {-# BUILTIN AGDATCMFORMATERRORPARTS           formatErrorParts           #-}
 {-# BUILTIN AGDATCMDEBUGPRINT                 debugPrint                 #-}
-{-# BUILTIN AGDATCMONLYREDUCEDEFS             onlyReduceDefs             #-}
-{-# BUILTIN AGDATCMDONTREDUCEDEFS             dontReduceDefs             #-}
-{-# BUILTIN AGDATCMWITHRECONSPARAMS           withReconstructed          #-}
+{-# BUILTIN AGDATCMWITHRECONSTRUCTED          withReconstructed          #-}
+{-# BUILTIN AGDATCMWITHEXPANDLAST             withExpandLast             #-}
+{-# BUILTIN AGDATCMWITHREDUCEDEFS             withReduceDefs             #-}
+{-# BUILTIN AGDATCMASKNORMALISATION           askNormalisation           #-}
+{-# BUILTIN AGDATCMASKRECONSTRUCTED           askReconstructed           #-}
+{-# BUILTIN AGDATCMASKEXPANDLAST              askExpandLast              #-}
+{-# BUILTIN AGDATCMASKREDUCEDEFS              askReduceDefs              #-}
 {-# BUILTIN AGDATCMNOCONSTRAINTS              noConstraints              #-}
 {-# BUILTIN AGDATCMRUNSPECULATIVE             runSpeculative             #-}
 {-# BUILTIN AGDATCMGETINSTANCES               getInstances               #-}

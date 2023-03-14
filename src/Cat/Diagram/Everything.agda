@@ -24,6 +24,7 @@ open import Cat.Diagram.Product public
 open import Cat.Diagram.Pullback public
 open import Cat.Diagram.Pullback.Properties public
 open import Cat.Diagram.Pushout public
+open import Cat.Diagram.Pushout.Properties public
 open import Cat.Diagram.Sieve public
 open import Cat.Diagram.Terminal public
 open import Cat.Diagram.Zero public

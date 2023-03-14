@@ -53,7 +53,7 @@ module _ (solver : SimpleSolver) where
   mk-simple-solver : Term → TC ⊤
   mk-simple-solver hole =
     withNormalisation false $
-    dontReduceDefs dont-reduce $ do
+    withReduceDefs (false , dont-reduce) $ do
     goal ← inferType hole >>= reduce
     just (lhs , rhs) ← get-boundary goal
       where nothing → typeError $ strErr "Can't determine boundary: " ∷
@@ -65,14 +65,14 @@ module _ (solver : SimpleSolver) where
   mk-simple-normalise : Term → Term → TC ⊤
   mk-simple-normalise tm hole =
     withNormalisation false $
-    dontReduceDefs dont-reduce $ do
+    withReduceDefs (false , dont-reduce) $ do
     e ← normalise tm >>= build-expr
     unify hole (invoke-normaliser e)
 
   mk-simple-repr : Term → TC ⊤
   mk-simple-repr tm =
     withNormalisation false $
-    dontReduceDefs dont-reduce $ do
+    withReduceDefs (false , dont-reduce) $ do
     repr ← normalise tm >>= build-expr
     print-repr tm repr
 
@@ -93,7 +93,7 @@ module _ {ℓ} {A : Type ℓ} (solver : VariableSolver A) where
   mk-var-solver : Term → TC ⊤
   mk-var-solver hole =
     withNormalisation false $
-    dontReduceDefs dont-reduce $ do
+    withReduceDefs (false , dont-reduce) $ do
     goal ← inferType hole >>= reduce
     just (lhs , rhs) ← get-boundary goal
       where nothing → typeError $ strErr "Can't determine boundary: " ∷
@@ -110,7 +110,7 @@ module _ {ℓ} {A : Type ℓ} (solver : VariableSolver A) where
   mk-var-normalise : Term → Term → TC ⊤
   mk-var-normalise tm hole =
     withNormalisation false $
-    dontReduceDefs dont-reduce $ do
+    withReduceDefs (false , dont-reduce) $ do
     e , vs ← normalise tm >>= build-expr empty-vars
     size , env ← environment vs
     soln ← reduce (invoke-normaliser e env)
@@ -119,7 +119,7 @@ module _ {ℓ} {A : Type ℓ} (solver : VariableSolver A) where
   mk-var-repr : Term → TC ⊤
   mk-var-repr tm =
     withNormalisation false $
-    dontReduceDefs dont-reduce $ do
+    withReduceDefs (false , dont-reduce) $ do
     repr , vs ← normalise tm >>= build-expr empty-vars
     size , env ← environment vs
     print-var-repr tm repr env

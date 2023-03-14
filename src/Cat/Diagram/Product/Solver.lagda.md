@@ -398,10 +398,9 @@ If we don't do this, Agda will get *very* upset.
     con (quote NbE.Expr.‶_‶) (f v∷ [])
 ```
 
-Now, for the solver interface. This follows the usual pattern:
-we create a list of names that we will pass to `dontReduceDefs`{.Agda},
-which will prevent Agda from normalizing away the things we want to
-reflect upon.
+Now, for the solver interface. This follows the usual pattern: we create
+a list of names that we will pass to `withReduceDefs`{.Agda}, which will
+prevent Agda from normalizing away the things we want to reflect upon.
 
 ```agda
   dont-reduce : List Name
@@ -433,9 +432,9 @@ want to examine the exact quoted representations of objects/homs.
 ```agda
   obj-repr-macro : ∀ {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) → Term → Term → TC ⊤
   obj-repr-macro cat cart hom hole =
-    withReconstructed $
+    withReconstructed true $
     withNormalisation false $
-    dontReduceDefs dont-reduce $ do
+    withReduceDefs (false , dont-reduce) $ do
     (x , y) ← get-objects hom
     “x” ← build-obj-expr <$> normalise x
     “y” ← build-obj-expr <$> normalise y
@@ -447,9 +446,9 @@ want to examine the exact quoted representations of objects/homs.
 
   hom-repr-macro : ∀ {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) → Term → Term → TC ⊤
   hom-repr-macro cat cart hom hole =
-    withReconstructed $
+    withReconstructed true $
     withNormalisation false $
-    dontReduceDefs dont-reduce $ do
+    withReduceDefs (false , dont-reduce) $ do
     (x , y) ← get-objects hom
     “x” ← build-obj-expr <$> normalise x
     “y” ← build-obj-expr <$> normalise y
@@ -475,9 +474,9 @@ with their actual values, which then fixes the issue.
 ```agda
   simpl-macro : ∀ {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) → Term → Term → TC ⊤
   simpl-macro cat cart hom hole =
-    withReconstructed $
+    withReconstructed true $
     withNormalisation false $
-    dontReduceDefs dont-reduce $ do
+    withReduceDefs (false , dont-reduce) $ do
     (x , y) ← get-objects hom
     “x” ← build-obj-expr <$> normalise x
     “y” ← build-obj-expr <$> normalise y
@@ -489,9 +488,9 @@ with their actual values, which then fixes the issue.
   solve-macro : ∀ {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) → Term → TC ⊤
   solve-macro cat cart hole =
     noConstraints $
-    withReconstructed $
+    withReconstructed true $
     withNormalisation false $
-    dontReduceDefs dont-reduce $ do
+    withReduceDefs (false , dont-reduce) $ do
     goal ← inferType hole >>= reduce
     just (lhs , rhs) ← get-boundary goal
       where nothing → typeError $ strErr "Can't determine boundary: " ∷

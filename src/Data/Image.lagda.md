@@ -1,4 +1,5 @@
 ```agda
+{-# OPTIONS -vtc.def:10 -vtc.ip.boundary:30 #-}
 open import 1Lab.Prelude
 
 open import Data.Id.Base
@@ -286,7 +287,7 @@ first step, and deal only with untruncated data from then on.
       p
     where
       work′ : (f⁻¹x : A) → is-contr (fibre Image→image (f f⁻¹x , inc (_ , refl)))
-      work′ f⁻¹x .centre = inc f⁻¹x , refl
+      work′ f⁻¹x .centre = inc f⁻¹x , refl -- inc f⁻¹x , refl
 ```
 
 Contracting the fibres is where we get some mileage out of having gotten
@@ -298,5 +299,5 @@ what we need.
 ```agda
       work′ f⁻¹x .paths (i , α) = Σ-pathp (quot (ls.from (sym (ap fst α)))) $
         Σ-prop-square (λ _ → squash) $ commutes→square $
-        ap₂ _∙_ (ls.ε _) refl ∙ ∙-inv-l _ ∙ sym (∙-id-l _)
+          (ap₂ _∙_ (ls.ε (sym (ap fst α))) refl ∙ ∙-inv-l _ ∙ sym (∙-id-l _))
 ```
