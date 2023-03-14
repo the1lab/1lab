@@ -164,7 +164,7 @@ private
   -- decompose-is-hlevel′.
   decompose-is-hlevel : Term → TC (Term × Term)
   decompose-is-hlevel goal = do
-    ty ← dontReduceDefs hlevel-types $ inferType goal >>= reduce
+    ty ← withReduceDefs (false , hlevel-types) $ inferType goal >>= reduce
     decompose-is-hlevel′ ty
 
   decompose-is-hlevel′ ty = do
@@ -307,7 +307,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
           -- Note that, since getInstances works by creating a new meta,
           -- we have to commit to the instance ourselves.
           unify solved x
-          dontReduceDefs (quote hlevel ∷ []) $ withReconstructed $
+          withReduceDefs (false , quote hlevel ∷ []) $ withReconstructed true $
             unify goal (def (quote hlevel) (lv v∷ []))
           pure (tt , true)
 
@@ -555,7 +555,8 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
     → Term → TC (Term × Term × (TC A → TC A) × (Term → Term))
   decompose-is-hlevel-top goal =
     do
-      ty ← dontReduceDefs hlevel-types $ (inferType goal >>= reduce) >>= wait-just-a-bit
+      ty ← withReduceDefs (false , hlevel-types) $
+        (inferType goal >>= reduce) >>= wait-just-a-bit
       go ty
     where
       go : Term → TC _
@@ -570,7 +571,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
 -- top-level goal type and enters the search loop.
 hlevel-tactic-worker : Term → TC ⊤
 hlevel-tactic-worker goal = do
-  ty ← dontReduceDefs hlevel-types $ inferType goal >>= reduce
+  ty ← withReduceDefs (false , hlevel-types) $ inferType goal >>= reduce
   (ty , lv , enter , leave) ← decompose-is-hlevel-top goal <|>
     typeError
       ( "hlevel tactic: goal type is not of the form ``is-hlevel A n'':\n"

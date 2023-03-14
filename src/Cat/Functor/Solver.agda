@@ -185,7 +185,7 @@ module Reflection where
   solve-macro : ∀ {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′} → Functor 𝒞 𝒟 → Term → TC ⊤
   solve-macro functor hole =
    withNormalisation false $
-   dontReduceDefs dont-reduce $ do
+   withReduceDefs (false , dont-reduce) $ do
      functor-tm ← quoteTC functor
      goal ← inferType hole >>= reduce
      just (lhs , rhs) ← get-boundary goal

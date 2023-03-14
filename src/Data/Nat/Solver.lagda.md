@@ -561,7 +561,7 @@ Now, the actual reflection API calls. In order to keep drawing this file
 out, we start by defining some useful debugging macros. As we noted a
 looong time ago, we don't want to unfold the `_+_`{.Agda} or
 `_*_`{.Agda} functions, so let's make a list of those names so that we
-can call `dontReduceDefs`{.Agda} more easily.
+can call `withReduceDefs`{.Agda} more easily.
 
 ```agda
 private
@@ -576,7 +576,7 @@ expression of type `Nat`. This is _very_ useful when we are debugging.
 repr-macro : Nat → Term → TC ⊤
 repr-macro n hole =
   withNormalisation false $
-  dontReduceDefs don't-reduce $ do
+  withReduceDefs (false , don't-reduce) $ do
   tm ← quoteTC n
   e , vs ← build-expr empty-vars tm
   size , env ← environment vs
@@ -603,7 +603,7 @@ which is bound to `C-c RET` by default.
 expand-macro : Nat → Term → TC ⊤
 expand-macro n hole =
   withNormalisation false $
-  dontReduceDefs don't-reduce $ do
+  withReduceDefs (false , don't-reduce) $ do
   tm ← quoteTC n
   e , vs ← build-expr empty-vars tm
   size , env ← environment vs
@@ -622,7 +622,7 @@ to automatically solve equations involving natural numbers.
 solve-macro : Term → TC ⊤
 solve-macro hole =
   withNormalisation false $
-  dontReduceDefs don't-reduce $ do
+  withReduceDefs (false , don't-reduce) $ do
   goal ← inferType hole >>= reduce
 
   just (lhs , rhs) ← get-boundary goal
