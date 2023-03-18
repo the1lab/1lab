@@ -40,6 +40,7 @@ private variable
   o ℓ : Level
   A B C C′ D E : Precategory o ℓ
   F G H K : Functor C D
+  α β γ : F => G
 ```
 -->
 
@@ -147,5 +148,15 @@ module _ {F G : Functor C D} where
     make-iso _ (H ▸ α .to) (H ▸ α .from)
       (Nat-path λ _ → annihilate H (α .invl ηₚ _))
       (Nat-path λ _ → annihilate H (α .invr ηₚ _))
+```
+-->
+
+<!--
+```agda
+◂-distribl : (α ∘nt β) ◂ H ≡ (α ◂ H) ∘nt (β ◂ H)
+◂-distribl = Nat-path λ _ → refl
+
+▸-distribr : F ▸ (α ∘nt β) ≡ (F ▸ α) ∘nt (F ▸ β)
+▸-distribr {F = F} = Nat-path λ _ → F .F-∘ _ _
 ```
 -->

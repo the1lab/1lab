@@ -576,8 +576,7 @@ module preserves-colimit
   {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
   {F : Functor C D} {Dia : Functor J C}
   (preserves : preserves-colimit F Dia)
-  {K : Functor ⊤Cat C} {eta : Dia => K F∘ !F}
-  (colim : is-lan !F Dia K eta)
+  
   where
   private
     module D = Precategory D
@@ -586,15 +585,17 @@ module preserves-colimit
     module F = Func F
     module Dia = Func Dia
 
-    module colim = is-colimit colim
-    module F-colim = is-colimit (preserves colim)
-
   universal
     : {x : C.Ob}
+    → {K : Functor ⊤Cat C} {eta : Dia => K F∘ !F}
     → {eps : (j : J.Ob) → C.Hom (Dia.F₀ j) x}
     → {p : ∀ {i j} (f : J.Hom i j) → eps j C.∘ Dia.F₁ f ≡ eps i}
-    → F.F₁ (colim.universal eps p) ≡ F-colim.universal (λ j → F.F₁ (eps j)) (λ f → F.collapse (p f))
-  universal = F-colim.unique _ _ _ (λ j → F.collapse (colim.factors _ _))
+    → (colim : is-lan !F Dia K eta)
+    → F.F₁ (is-colimit.universal colim eps p) ≡ is-colimit.universal (preserves colim) (λ j → F.F₁ (eps j)) (λ f → F.collapse (p f))
+  universal colim = is-colimit.unique (preserves colim) _ _ _ (λ j → F.collapse (is-colimit.factors colim _ _))
+
+  colimit : Colimit Dia → Colimit (F F∘ Dia)
+  colimit colim = to-colimit (preserves (Colimit.has-colimit colim))
 
 module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
          {F F' : Functor C D} {Dia : Functor J C} where

@@ -334,3 +334,15 @@ We can define dual notions for right kan extensions as well.
   reflects-ran _ _ =
     is-ran p F G eps
 ```
+
+<!--
+```agda
+to-lan
+  : ∀ {p : Functor C C′} {F : Functor C D} {L : Functor C′ D} {eta : F => L F∘ p}
+  → is-lan p F L eta
+  → Lan p F
+to-lan {L = L} lan .Lan.Ext = L
+to-lan {eta = eta} lan .Lan.eta = eta
+to-lan lan .Lan.has-lan = lan
+```
+-->

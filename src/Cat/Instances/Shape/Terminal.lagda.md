@@ -79,3 +79,19 @@ module _ {o ℓ} {𝒞 : Precategory o ℓ} {F G : Functor ⊤Cat 𝒞} where
     mi .inv∘eta _ = i .invr
     mi .natural _ _ _ = 𝒞.eliml (G .F-id) ∙ 𝒞.intror (F .F-id)
 ```
+
+<!--
+```agda
+module _ {o ℓ o′ ℓ′} {𝒞 : Precategory o ℓ} {𝒟 : Precategory o′ ℓ′} where
+  private
+    module 𝒟 = Precategory 𝒟
+    open Functor
+    open _=>_
+
+  idnat-constr
+    : ∀ {M : Functor ⊤Cat 𝒟}
+    → M F∘ !F => Const {C = 𝒞} (M .F₀ tt)
+  idnat-constr .η _ = 𝒟.id
+  idnat-constr {M = M} .is-natural _ _ _ = ap (𝒟.id 𝒟.∘_) (M .F-id)
+```
+-->
