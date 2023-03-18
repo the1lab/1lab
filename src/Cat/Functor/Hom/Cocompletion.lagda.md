@@ -87,5 +87,5 @@ of Kan extensions.
 よ-extension F = cocomplete→lan (よ C) F colim
 
 extend-factors : (F : Functor C D) → (よ-extension F .Lan.Ext F∘ よ C) ≅ F
-extend-factors F = ff→pointwise-lan-ext (よ C) F colim (よ-is-fully-faithful C)
+extend-factors F = ff→cocomplete-lan-ext (よ C) F colim (よ-is-fully-faithful C)
 ```

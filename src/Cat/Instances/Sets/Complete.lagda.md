@@ -19,7 +19,7 @@ build a limit for it!
 
 ```agda
 Sets-is-complete : ∀ {ι κ o} → is-complete ι κ (Sets (ι ⊔ κ ⊔ o))
-Sets-is-complete {D = D} F = to-limit (to-is-limit lim) where
+Sets-is-complete {D = D} F = to-limit (to-is-limit lim) module Sets-is-complete where
   module D = Precategory D
   module F = Functor F
   open make-is-limit
@@ -33,8 +33,8 @@ those for which $F(g) \circ f(x) = f(y)$, i.e., those which are cones
 over $F$.
 
 ```agda
-  f-apex : Set _
-  f-apex = el! $
+  apex : Set _
+  apex = el! $
     Σ[ f ∈ ((j : D.Ob) → ∣ F.₀ j ∣) ]
       (∀ x y (g : D.Hom x y) → F.₁ g (f x) ≡ (f y))
 ```
@@ -54,7 +54,7 @@ out by $\lim F$ since $K$ is a cone, hence $F(f) \circ \psi(x) =
 
 ```agda
   -- open Terminal
-  lim : make-is-limit F f-apex
+  lim : make-is-limit F apex
   lim .ψ x (f , p) = f x
   lim .commutes f = funext λ where
     (_ , p) → p _ _ f

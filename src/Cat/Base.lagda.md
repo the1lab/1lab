@@ -473,6 +473,12 @@ module _ where
   Const {D = D} x .F-id = refl
   Const {D = D} x .F-∘ _ _ = sym (idr D _)
 
+  const-nt : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+           → {x y : Ob D} → Hom D x y
+           → Const {C = C} {D = D} x => Const {C = C} {D = D} y
+  const-nt f ._=>_.η _ = f
+  const-nt {D = D} f ._=>_.is-natural _ _ _ = idr D _ ∙ sym (idl D _)
+
 infixr 30 _F∘_
 infix 20 _=>_
 

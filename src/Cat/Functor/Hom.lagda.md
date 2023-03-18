@@ -1,5 +1,6 @@
 ```agda
 open import Cat.Instances.Functor
+open import Cat.Instances.Functor.Compose
 open import Cat.Instances.Product
 open import Cat.Diagram.Initial
 open import Cat.Functor.Base

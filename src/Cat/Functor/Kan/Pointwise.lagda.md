@@ -1,17 +1,19 @@
 ```agda
-open import Cat.Instances.Functor.Compose
-open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
+open import Cat.Diagram.Colimit.Representable
 open import Cat.Diagram.Limit.Base
-open import Cat.Instances.Functor
-open import Cat.Instances.Functor.Compose
+open import Cat.Functor.Base
 open import Cat.Functor.Coherence
 open import Cat.Functor.Hom
 open import Cat.Functor.Hom.Representable
 open import Cat.Functor.Kan.Base
+open import Cat.Functor.Kan.Representable
 open import Cat.Functor.Kan.Unique
 open import Cat.Instances.Comma
-open import Cat.Functor.Base
+open import Cat.Instances.Functor
+open import Cat.Instances.Functor.Compose
+open import Cat.Instances.Functor.Compose
+open import Cat.Instances.Shape.Terminal
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
@@ -379,3 +381,239 @@ words, the extension we constructed is pointwise.
       colim (Functor.op (Hom-into D d))
       (よ-reverses-colimits d)
 ```
+
+## All Pointwise Extensions are Computed via (Co)limits
+
+As we've seen earlier, we can compute the extension of $F : \cC \to \cD$
+along $p : \cC \to \cC'$ when $\cD$ has enough colimits, and that this
+extension is pointwise. It turns out that this is an exact
+characterization of the pointwise extensions: if $L$ is a pointwise
+extension of $F$ along $p$, then $\cD$ must have colimits of all
+diagrams of the form $F \circ \mathit{Dom} : p \searrow c' \to C \to D$,
+and $L$ must be computed via these colimits. This is where the name
+"pointwise extension" comes from; they really are computed pointwise!
+
+<!--
+```agda
+module _
+  {o ℓ}
+  {C : Precategory ℓ ℓ} {C' : Precategory ℓ ℓ} {D : Precategory o ℓ}
+  {p : Functor C C'} {F : Functor C D} {L : Functor C' D} {eta : F => L F∘ p}
+  (lan : is-lan p F L eta) (pointwise : is-pointwise-lan lan)
+  where
+
+  private
+    module C = Cat.Reasoning C
+    module C' = Cat.Reasoning C'
+    module D = Cat.Reasoning D
+    module [D,Sets] = Cat.Reasoning (Cat[ D , Sets ℓ ])
+    open Func
+    open ↓Obj
+    open ↓Hom
+    open _=>_
+    module lan = is-lan lan
+    module pointwise d = is-lan (pointwise d)
+    open is-lan
+```
+-->
+
+We begin by constructing a cocone for every object $c' : \cC'$.
+
+```agda
+  ↓cocone : ∀ (c' : C'.Ob) → F F∘ Dom p (const! c') => Const (L .F₀ c')
+  ↓cocone c' .η j = L .F₁ (j .map) D.∘ eta .η _
+  ↓cocone c' .is-natural _ _ f =
+    D.pullr (eta .is-natural _ _ _ )
+    ∙ pulll L (f .sq ∙ C'.idl _)
+    ∙ sym (D.idl _)
+```
+
+To show that the extension is computed pointwise by these extensions,
+we shall appeal to the fact that [colimits are representable].
+
+[colimits are representable]: Cat.Diagram.Colimit.Representable.html
+
+```agda
+  pointwise-lan→has-comma-colimits
+    : ∀ (c' : C'.Ob)
+    → is-colimit (F F∘ Dom p (const! c')) (L .F₀ c') (↓cocone c')
+  pointwise-lan→has-comma-colimits c' =
+    represents→is-colimit $
+    [D,Sets].make-invertible inv invl invr
+    where
+```
+
+As $(L,\eta)$ is pointwise, we can represent every cocone
+$F \circ p \searrow c' \to d$ as a natural transformation
+$\cC'(-,c') \to \cD(L(-),d)$, though we do need to pass through some
+abstract representability nonsense to get there.
+
+```agda
+      represent-↓cocone
+        : ∀ (d : D.Ob)
+        → F F∘ Dom p (const! c') => Const d
+        → Functor.op (よ₀ D d) F∘ F => Functor.op (よ₀ C' c') F∘ p
+      represent-↓cocone d α .η c f = α .η (↓obj f)
+      represent-↓cocone d α .is-natural _ _ f = funext λ g →
+        α .is-natural (↓obj (g C'.∘ p .F₁ f)) (↓obj g) (↓hom (sym (C'.idl _)))
+        ∙ D.idl _
+
+      pointwise-↓cocone
+        : ∀ (d : D.Ob)
+        → (α : F F∘ Dom p (const! c') => Const d)
+        → Functor.op (Hom-into D d) F∘ L => Functor.op (Hom-into C' c')
+      pointwise-↓cocone d α = pointwise.σ d (represent-↓cocone d α)
+```
+
+We can use this representation to construct the required inverse, via
+the usual yoneda shenanigans.
+
+```agda
+      inv : Lim[C[F-,=]] => Hom-from D (L .F₀ c')
+      inv .η d α =
+        pointwise-↓cocone d α .η c' C'.id
+      inv .is-natural x y f = funext λ α →
+        pointwise.σ-uniq y {σ′ = pointwise-↓cocone x α ∘nt (_=>_.op (よ₁ D f) ◂ L)}
+          (Nat-path λ c → funext λ g → D.pushr (sym (pointwise.σ-comm x ηₚ _ $ₚ _))) ηₚ c' $ₚ C'.id
+```
+
+<details>
+<summary>To show that this is an inverse, we can use the fact that the
+pointwise kan extension is in fact a kan extension.
+</summary>
+
+```agda
+      invl : Hom-into-inj (↓cocone c') ∘nt inv ≡ idnt
+      invl = Nat-path λ d → funext λ α → Nat-path λ p↓c' →
+        pointwise-↓cocone d α .η _ C'.id D.∘ L .Functor.F₁ (p↓c' .map) D.∘ eta .η _ ≡⟨ D.pulll (pointwise.σ d (represent-↓cocone d α) .is-natural _ _ _ $ₚ _) ⟩
+        pointwise-↓cocone d α .η _ ⌜ C'.id C'.∘ p↓c' .map ⌝ D.∘ eta .η _            ≡⟨ ap! (C'.idl _) ⟩
+        pointwise-↓cocone d α .η _ (p↓c' .map) D.∘ eta .η (x p↓c')                  ≡⟨ pointwise.σ-comm d ηₚ _ $ₚ p↓c' .map ⟩
+        α .η (↓obj (p↓c' .map))                                                     ≡⟨ ap (α .η) (↓Obj-path _ _ refl refl refl) ⟩
+        α .η p↓c'                                                                   ∎
+
+      vaguely-yoneda
+        : ∀ {d : D.Ob} (α : D.Hom (L .F₀ c') d)
+        → Functor.op (Hom-into D d) F∘ L => Functor.op (Hom-into C' c')
+      vaguely-yoneda α .η c'' f = α D.∘ L .F₁ f
+      vaguely-yoneda α .is-natural x y f =
+        funext λ g → D.pullr (sym (L .F-∘ _ _))
+
+      invr : inv ∘nt Hom-into-inj (↓cocone c') ≡ idnt
+      invr = Nat-path λ d → funext λ α →
+        pointwise.σ-uniq d {σ′ = vaguely-yoneda α}
+          (Nat-path λ c → funext λ f → D.assoc _ _ _) ηₚ c' $ₚ C'.id
+        ∙ D.elimr (L .F-id)
+```
+</details>
+
+A corollary of this fact is if $(L, \eta)$ is a pointwise left extension along a
+fully faithful functor, then $\eta$ is a natural isomorphism.
+
+```agda
+  ff→pointwise-lan-ext
+    : is-fully-faithful p
+    → is-natural-invertible eta
+```
+
+The idea is to use the fact that $L$ is computed via colimits to
+construct an inverse to $\eta$. In particular, we use the universal
+map out of each colimit, relying on the full faithfulness of $p$ to
+construct the requisite cocone.
+
+```agda
+  ff→pointwise-lan-ext p-ff =
+     componentwise-invertible→invertible eta λ c →
+       D.make-invertible (inv c)
+         (pointwise-colim.unique₂ _ _
+           (λ f →
+             D.pullr (eta .is-natural _ _ _)
+             ∙ pulll L (sym (p .F-∘ _ _) ∙ path f))
+           (λ j →
+             D.pullr (pointwise-colim.factors _ {j = j} _ _)
+             ∙ eta .is-natural _ _ _)
+           (λ j →
+             D.idl _
+             ∙ ap₂ D._∘_ (ap (L .F₁) (sym (equiv→counit p-ff (j .map)))) refl))
+         (pointwise.σ-comm _ ηₚ c $ₚ C'.id
+          ∙ elimr F (ap (equiv→inverse p-ff) (sym (p .F-id)) ∙ equiv→unit p-ff _))
+    where
+      module pointwise-colim c' = is-colimit (pointwise-lan→has-comma-colimits c')
+
+      path
+        : {c : C.Ob} {x y : ↓Obj p (const! (p .F₀ c))} (f : ↓Hom p (const! (p .F₀ c)) x y)
+        → p .F₁ (equiv→inverse p-ff (y .map) C.∘ f .α) ≡ p .F₁ (equiv→inverse p-ff (x .map))
+      path {c} {x} {y} f =
+        p .F₁ (equiv→inverse p-ff (y .map) C.∘ f .α)          ≡⟨ p .F-∘ _ _ ⟩
+        p .F₁ (equiv→inverse p-ff (y .map)) C'.∘ p .F₁ (f .α) ≡⟨ equiv→counit p-ff _ C'.⟩∘⟨refl ⟩
+        y .map C'.∘ p .F₁ (f .α)                              ≡⟨ f .sq ⟩
+        C'.id C'.∘ x .map                                     ≡⟨ C'.idl _ ⟩
+        x .map                                                ≡˘⟨ equiv→counit p-ff _ ⟩
+        p .F₁ (equiv→inverse p-ff (x .map)) ∎
+
+      inv : ∀ c → D.Hom (L .F₀ (p .F₀ c)) (F .F₀ c)
+      inv c =
+        pointwise-colim.universal (p .F₀ c)
+          (λ j → F .F₁ (equiv→inverse p-ff (j .map)))
+          (λ {x} {y} f → collapse F (fully-faithful→faithful {F = p} p-ff (path f)))
+```
+
+<!--
+```agda
+module _
+  {o o′ ℓ ℓ′}
+  {C : Precategory ℓ ℓ} {C' : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  (F : Functor C C') (G : Functor C D)
+  where
+
+  private
+    module C = Cat.Reasoning C
+    module C' = Cat.Reasoning C'
+    module D = Cat.Reasoning D
+    open Func
+    open ↓Obj
+    open ↓Hom
+    open _=>_
+    open Lan
+
+  -- We don't use 'ff→pointwise-lan-ext' here, as it has a more restrictive
+  -- universe bound.
+  ff→cocomplete-lan-ext
+    : (cocompl : is-cocomplete ℓ ℓ D)
+    → is-fully-faithful F
+    → natural-iso (cocomplete→lan F G cocompl .Ext F∘ F) G
+  ff→cocomplete-lan-ext cocompl ff = (to-natural-iso ni) ni⁻¹ where
+    open comma-colimits→lan F G (λ c' → cocompl (G F∘ Dom F (Const c')))
+    open make-natural-iso renaming (eta to to)
+    module ff {x} {y} = Equiv (_ , ff {x} {y})
+
+    ni : make-natural-iso G (F′ F∘ F)
+    ni .to x =
+      ↓colim.ψ _ (↓obj C'.id)
+    ni .inv x = 
+      ↓colim.universal _
+        (λ j → G .F₁ (ff.from (j .map)))
+        (λ f →
+          collapse G $
+          fully-faithful→faithful {F = F} ff $
+          F .F-∘ _ _
+          ·· ap₂ C'._∘_ (ff.ε _) refl
+          ·· f .sq
+          ·· C'.idl _
+          ·· sym (ff.ε _))
+    ni .eta∘inv x =
+      ↓colim.unique₂ _ _
+        (λ f →
+          ↓colim.commutes _ f)
+        (λ j →
+          D.pullr (↓colim.factors _ _ _)
+          ∙ ↓colim.commutes _ (↓hom (ap₂ C'._∘_ refl (ff.ε _))))
+        (λ j → D.idl _)
+    ni .inv∘eta x =
+      ↓colim.factors _ _ _
+      ∙ elim G (ap ff.from (sym (F .F-id)) ∙ ff.η _)
+    ni .natural x y f =
+      ↓colim.factors _ _ _
+      ∙ sym (↓colim.commutes _ (↓hom (ap₂ C'._∘_ refl (sym (C'.idr _)))))
+```
+-->
+
