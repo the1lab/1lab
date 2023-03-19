@@ -179,10 +179,7 @@ then $G'$ is also a left kan extension.
       σ′ .η j                                    ∎
 ```
 
-Furthermore, if $G$ is a left Kan extension of $F$ along $p$, and $F$
-is naturally isomorphic to some $F'$, then $G$ is also a left kan
-extension of $F'$ along $p$.
-
+<!--
 ```agda
   natural-iso-of→is-lan
     : {F' : Functor C D}
@@ -203,13 +200,7 @@ extension of $F'$ along $p$.
         α .η j D.∘ isos.to .η j                                    ≡⟨ (p ηₚ j) D.⟩∘⟨refl ⟩
         (σ′ .η _ D.∘ eta .η j D.∘ isos.from .η j) D.∘ isos.to .η j ≡⟨ D.deleter (isos.invr ηₚ _) ⟩
         σ′ .η _ D.∘ eta .η j ∎
-```
 
-A related result is that when $G$ is a left Kan extension of $F$ along
-$p$, and $G$ is naturally isomorphic to $G'$, then $G'$ is also a left
-kan extension of $F$ along $p$.
-
-```agda
   natural-iso-ext→is-lan
     : {G' : Functor C′ D}
     → (isos : natural-iso G G')
@@ -228,13 +219,7 @@ kan extension of $F$ along $p$.
       lan.σ α .η j D.∘ isos.from .η j             ≡⟨ D.pushl (lan.σ-uniq {σ′ = σ′ ∘nt isos.to} (Nat-path λ j → p ηₚ j ∙ D.assoc _ _ _) ηₚ j) ⟩
       σ′ .η j D.∘ isos.to .η j D.∘ isos.from .η j ≡⟨ D.elimr (isos.invl ηₚ _) ⟩
       σ′ .η j                                     ∎
-```
 
-Finally, if $p$ is naturally isomorphic to $p'$, and $G$ is a left
-extension of $F$ along $p$, then $G$ is also a left extension of $F$
-along $p'$.
-
-```agda
   natural-iso-along→is-lan
     : {p' : Functor C C′}
     → (isos : natural-iso p p')
@@ -256,10 +241,7 @@ along $p'$.
           D.pushr (q ηₚ _)
           ∙ D.pulll (D.pullr (σ′ .is-natural _ _ _)
                      ∙ cancell M (isos.invr ηₚ _))) ηₚ c'
-```
 
-<!--
-```agda
   universal-path→is-lan : ∀ {eta'} → eta ≡ eta' → is-lan p F G eta'
   universal-path→is-lan {eta'} q = lan' where
     open is-lan
@@ -277,7 +259,12 @@ module _
     module D = Cat.Reasoning D
     open Cat.Functor.Reasoning
     open _=>_
+```
+-->
 
+Left kan extensions are also invariant under natural isomorphisms.
+
+```agda
   natural-isos→is-lan
     : (p-iso : natural-iso p p')
     → (F-iso : natural-iso F F')
@@ -299,7 +286,6 @@ module _
         ∙ q ηₚ _)
     where open natural-iso
 ```
--->
 
 ## Into univalent categories
 

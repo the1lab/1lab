@@ -368,7 +368,7 @@ end up being off by a bunch of natural isomorphisms.
 ```
 </details>
 
-Hom functors take colimits in $\cD$ to colimits in $\set^op$, so by
+Hom functors take colimits in $\cD$ to colimits in $\Sets^op$, so by
 the previous lemma, they must preserve the left extension. In other
 words, the extension we constructed is pointwise.
 

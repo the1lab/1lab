@@ -140,9 +140,9 @@ embedding functor is fully faithful.
 ## The covariant yoneda embedding
 
 One common point of confusion is why category theorists prefer
-presheaves over covariant functors into $\set$. One key reason is that
+presheaves over covariant functors into $\Sets$. One key reason is that
 the yoneda embedding into presheaves is **covariant**, whereas the
-embedding into functors $\cC \to \sets$ is **contravariant**. This
+embedding into functors $\cC \to \Sets$ is **contravariant**. This
 makes the covariant yoneda embedding much less pleasant to work with,
 though we define it anyways for posterity.
 

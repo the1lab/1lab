@@ -240,6 +240,7 @@ corepresentation-unique
 <details>
 <summary>We omit the proof, as it is identical to the representable case.
 </summary>
+
 ```agda
 corepresentation-unique X Y =
   is-ff→essentially-injective {F = Functor.op (よcov C)}
@@ -249,6 +250,7 @@ corepresentation-unique X Y =
     ni : natural-iso (Hom-from C (Y .corep)) (Hom-from C (X .corep))
     ni = (Y .corepresents ni⁻¹) ni∘ X .corepresents
 ```
+</details>
 
 This implies that the type of corepresentations is a proposition when
 $\cC$ is univalent.
@@ -262,6 +264,7 @@ Corepresentation-is-prop : ∀ {F} → is-category C → is-prop (Corepresentati
 proof for representables due to the fact that the yoneda embedding
 for covariant functors is itself contravariant.
 </summary>
+
 ```agda
 Corepresentation-is-prop {F = F} c-cat X Y = path where
 
@@ -340,12 +343,12 @@ corepresentable-preserves-limits F-corep lim =
 
 We can show a similar fact for representable functors, but with a twist:
 they **reverse** colimits! This is due to the fact that a representable
-functor $F : \cC\op \to \set$ is contravariant. Specifically, $F$ will
-take limits in $\cC\op$ to limits in $\set$, but limits in $\cC\op$
-are colimits, so $F$ will take colimits in $\cC$ to limits in $\set$.
+functor $F : \cC\op \to \Sets$ is contravariant. Specifically, $F$ will
+take limits in $\cC\op$ to limits in $\Sets$, but limits in $\cC\op$
+are colimits, so $F$ will take colimits in $\cC$ to limits in $\Sets$.
 
 A less formal perspective on this is that the collection of maps
-out of a colimit is still defined as a limit in $\set$. For instance,
+out of a colimit is still defined as a limit in $\Sets$. For instance,
 to give a $a + b \to x$ out of a coproduct, we are required to give
 a pair of maps $a \to x$ and $b \to x$.
 
