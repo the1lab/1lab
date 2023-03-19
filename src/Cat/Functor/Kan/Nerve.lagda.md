@@ -214,7 +214,8 @@ module _
     module D = Cat.Reasoning D
     module F = Func F
 
-    module ↓colim c' = cocomplete→lan.↓colim (よ C) F cocompl c'
+    module ↓colim c' =
+      comma-colimits→lan.↓colim (よ C) F (λ c'' → cocompl (F F∘ Dom (よ C) (Const c''))) c'
 ```
 -->
 
