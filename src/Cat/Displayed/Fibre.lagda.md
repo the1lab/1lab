@@ -24,7 +24,7 @@ of categories"^[Though note that unless the displayed category is a
 [Cartesian fibration], this "family" might not be functorially-indexed].
 Given an object $x : \cB$ of the base category, the morphisms in the
 fibre over x, or **vertical morphisms**, are those in the set
-$\hom_{\id{x}}(x, y)$ of morphisms over the identity map (on $x$).
+$\hom_{\id[x]}(x, y)$ of morphisms over the identity map (on $x$).
 
 [Cartesian fibration]: Cat.Displayed.Cartesian.html
 
