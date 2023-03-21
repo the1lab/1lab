@@ -250,6 +250,39 @@ We also define a handful of common morphisms.
   swap = ⟨ π₂ , π₁ ⟩
 ```
 
+Another useful fact is that any other product in $\cC$ will be isomorphic
+to our chosen products.
+
+<!--
+```agda
+  module _ {x a b} {p1 : Hom x a} {p2 : Hom x b} (p : is-product p1 p2) where
+    private
+      module p = is-product p
+
+      a×b : Product a b
+      a×b .Product.apex = x
+      a×b .Product.π₁ = p1
+      a×b .Product.π₂ = p2
+      a×b .Product.has-is-product = p
+
+    product-iso : x ≅ (a ⊗₀ b)
+    product-iso = ×-Unique a×b (all-products _ _)
+
+    π₁∘factor'
+      : ∀ {z} {f : Hom z a} {g : Hom z b}
+      → p1 ∘ product-iso .from ∘ ⟨ f , g ⟩ ≡ f
+    π₁∘factor' {f = f} {g = g} =
+      pulll p.π₁∘factor ∙ product.π₁∘factor
+
+    π₂∘factor'
+      : ∀ {z} {f : Hom z a} {g : Hom z b}
+      → p2 ∘ product-iso .from ∘ ⟨ f , g ⟩ ≡ g
+    π₂∘factor' {f = f} {g = g} =
+      pulll p.π₂∘factor ∙ product.π₂∘factor
+```
+-->
+
+
 ## Representability of products
 
 The collection of maps into a product $a \times b$ is equivalent to
