@@ -1,4 +1,6 @@
 ```agda
+open import 1Lab.Path.Cartesian
+
 open import Cat.Instances.Product
 open import Cat.Univalent using (is-category)
 open import Cat.Prelude
@@ -584,7 +586,7 @@ module _
     de.J-iso
       (λ B isom → ∀ {x} → path→iso {C = E} (λ i → F₀ (de.iso→path isom i F∘ F) x) .to ≡ isom .to .η (F₀ F x))
       λ {x} → ap (λ e → path→iso {C = E} e .to)
-        (λ i j → de.iso→path-id {A = G} i j .F₀ (F₀ F x))
+        (λ i j → de.iso→path-id {a = G} i j .F₀ (F₀ F x))
         ∙ transport-refl _
     where module de = Univalent p
 
@@ -598,7 +600,7 @@ module _
     cd.J-iso
       (λ B isom → ∀ {x} → path→iso {C = E} (λ i → F₀ G (cd.iso→path isom i .F₀ x)) .from ≡ G .F₁ (isom .from .η x))
       λ {x} → ap (λ e → path→iso {C = E} e .from)
-        (λ i j → G .F₀ (cd.iso→path-id {A = G′} i j .F₀ x))
+        (λ i j → G .F₀ (cd.iso→path-id {a = G′} i j .F₀ x))
         ∙ transport-refl _ ∙ sym (G .F-id)
     where module cd = Univalent cdcat
 

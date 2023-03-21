@@ -1,4 +1,5 @@
 ```agda
+open import 1Lab.Path.IdentitySystem
 open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
@@ -165,5 +166,12 @@ instance
 
 _∈_ : ∀ {ℓ} {A : Type ℓ} → A → (A → Ω) → Type
 x ∈ P = ∣ P x ∣
+
+is-set→locally-small
+  : ∀ {ℓ} {A : Type ℓ}
+  → is-set A
+  → is-identity-system {A = A} (λ x y → □ (x ≡ y)) (λ x → inc refl)
+is-set→locally-small a-set .to-path = out! {pa = a-set _ _}
+is-set→locally-small a-set .to-path-over p = is-prop→pathp (λ _ → squash) _ _
 ```
 -->

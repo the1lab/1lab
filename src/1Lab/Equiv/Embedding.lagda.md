@@ -166,3 +166,15 @@ module _ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} {f : A → B} where
       (contr (_ , refl) λ (y , p) i → p i , λ j → p (i ∧ j))
       (contr (_ , refl) (is-hlevel≃ 1 (Σ-ap-snd λ _ → sym-equiv) (emb _) _)))
 ```
+
+<!--
+```agda
+  abstract
+    embedding→is-hlevel
+      : ∀ n → is-embedding f
+      → is-hlevel B (suc n)
+      → is-hlevel A (suc n)
+    embedding→is-hlevel n emb a-hl = is-hlevel≃ (suc n) (Total-equiv f) $
+      Σ-is-hlevel (suc n) a-hl λ x → is-prop→is-hlevel-suc (emb x)
+```
+-->

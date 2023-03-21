@@ -183,9 +183,7 @@ module Replacement
     (f : A → T)
   where
 
-  private
-    module ls {x} {y} =
-      Equiv (identity-system-gives-path locally-small {x} {y})
+  private module ls = Ids locally-small
 
   data Image : Type (ℓₐ ⊔ ℓᵢ)
   embed : Image → T
@@ -219,14 +217,21 @@ equivalence $(f'(x) \equiv f'(y)) \simeq (x \equiv y)$.
 
     invr : ∀ {x y} → is-right-inverse (ap embed {x} {y}) from
     invr = J (λ y p → from (ap embed p) ≡ p)
-              (ap quot (transport-refl _) ∙ coh _)
+             (ap quot (transport-refl _) ∙ coh _)
 
     invl : ∀ {x y} → is-left-inverse (ap embed {x} {y}) from
     invl p = ls.ε _
 ```
 
-As usual with these things, we can prove propositions of `Image`{.Agda}
-without caring about the higher constructors.
+<!--
+```agda
+  Image-is-hlevel : ∀ n → is-hlevel T (suc n) → is-hlevel Image (suc n)
+  Image-is-hlevel n = embedding→is-hlevel n embed-is-embedding
+```
+-->
+
+As usual with these things, we can establish properties of
+`Image`{.Agda} without caring about the higher constructors.
 
 ```agda
   Image-elim-prop

@@ -1,4 +1,5 @@
 ```agda
+{-# OPTIONS -vtc.def:10 #-}
 open import Cat.Univalent.Instances.Opposite
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Base
@@ -383,5 +384,3 @@ representable-reverses-colimits F-rep colim =
     (よ-reverses-colimits (F-rep .rep))
     colim
 ```
-
-
