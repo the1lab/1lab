@@ -115,7 +115,7 @@ _F×_ {B = B} {D = D} {C = C} {E = E} G H = func
 
 <!--
 ```agda
-{-# DISPLAY F×.func F G = F F× G #-}  
+{-# DISPLAY F×.func F G = F F× G #-}
 ```
 -->
 

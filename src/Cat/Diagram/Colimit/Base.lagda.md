@@ -576,7 +576,7 @@ module preserves-colimit
   {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
   {F : Functor C D} {Dia : Functor J C}
   (preserves : preserves-colimit F Dia)
-  
+
   where
   private
     module D = Precategory D

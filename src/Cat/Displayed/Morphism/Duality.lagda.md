@@ -123,7 +123,7 @@ co-section[]→retract[] f .retract′ =
 co-section[]→retract[] f .is-retract′ =
   ℰ^op.is-section′ f
 
-retract[]→co-section[] 
+retract[]→co-section[]
   : ∀ {r : ℬ.has-retract f}
   → ℰ.has-retract[ r ] f′
   → ℰ^op.has-section[ retract→co-section r ] f′
@@ -285,4 +285,3 @@ vertical-iso→vertical-co-iso f =
     (cast[] (ℰ.invr′ f))
     (cast[] (ℰ.invl′ f))
 ```
-

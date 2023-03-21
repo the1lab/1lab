@@ -1,19 +1,19 @@
 ```agda
-open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Colimit.Representable
-open import Cat.Diagram.Limit.Base
-open import Cat.Functor.Base
-open import Cat.Functor.Coherence
-open import Cat.Functor.Hom
 open import Cat.Functor.Hom.Representable
-open import Cat.Functor.Kan.Base
 open import Cat.Functor.Kan.Representable
-open import Cat.Functor.Kan.Unique
-open import Cat.Instances.Comma
-open import Cat.Instances.Functor
 open import Cat.Instances.Functor.Compose
 open import Cat.Instances.Functor.Compose
 open import Cat.Instances.Shape.Terminal
+open import Cat.Diagram.Colimit.Base
+open import Cat.Diagram.Limit.Base
+open import Cat.Functor.Kan.Unique
+open import Cat.Functor.Coherence
+open import Cat.Instances.Functor
+open import Cat.Functor.Kan.Base
+open import Cat.Instances.Comma
+open import Cat.Functor.Base
+open import Cat.Functor.Hom
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
@@ -79,7 +79,7 @@ module _
 module _
   {o o′ ℓ ℓ′}
   {J : Precategory o′ ℓ′} {C : Precategory o ℓ}
-  {Dia : Functor J C} {x : Precategory.Ob C} 
+  {Dia : Functor J C} {x : Precategory.Ob C}
   where
 
   private
@@ -589,7 +589,7 @@ module _
     ni : make-natural-iso G (F′ F∘ F)
     ni .to x =
       ↓colim.ψ _ (↓obj C'.id)
-    ni .inv x = 
+    ni .inv x =
       ↓colim.universal _
         (λ j → G .F₁ (ff.from (j .map)))
         (λ f →
@@ -616,4 +616,3 @@ module _
       ∙ sym (↓colim.commutes _ (↓hom (ap₂ C'._∘_ refl (sym (C'.idr _)))))
 ```
 -->
-

@@ -145,7 +145,7 @@ is-pushout→is-co-pullback po =
 ```agda
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Colimit.Cocone
-open import Cat.Diagram.Limit.Base 
+open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Limit.Cone
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Initial

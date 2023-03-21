@@ -99,7 +99,7 @@ cocone $\{D(x) \to K\}$.
 
 ```agda
     extend-cocone : ∀ {coapex} → D F∘ F => Const coapex → D => Const coapex
-    extend-cocone cone .η x = cone .η _ ℰ.∘ D.₁ (fin.map x) 
+    extend-cocone cone .η x = cone .η _ ℰ.∘ D.₁ (fin.map x)
     extend-cocone cone .is-natural x y f =
       ℰ.pullr (sym (D.F-∘ _ _))
       ·· ℰ.pushl (sym (cone .is-natural _ _ _ ∙ ℰ.idl _))

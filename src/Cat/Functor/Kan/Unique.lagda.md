@@ -5,8 +5,8 @@ open import Cat.Functor.Kan.Base
 open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Reasoning
 import Cat.Functor.Reasoning
+import Cat.Reasoning
 
 module Cat.Functor.Kan.Unique where
 ```

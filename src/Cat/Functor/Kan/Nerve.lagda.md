@@ -15,8 +15,8 @@ open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
-open import Cat.Functor.Base
 open import Cat.Instances.Comma
+open import Cat.Functor.Base
 open import Cat.Functor.Hom
 open import Cat.Prelude
 

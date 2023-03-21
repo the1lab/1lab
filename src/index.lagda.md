@@ -682,7 +682,7 @@ open import Cat.Displayed.Cocartesian
   -- Cocartesian lifts, opfibrations
 
 open import Cat.Displayed.Cocartesian.Indexing
-  -- Opfibrations have covariant opreindexing 
+  -- Opfibrations have covariant opreindexing
 
 open import Cat.Displayed.Cocartesian.Weak
   -- Weak cocartesian morphisms

@@ -75,7 +75,7 @@ module _ {F : Functor C D} (conservative : is-conservative F) where
             (λ j → F .F₁ (L-lim.ψ j))
             (λ f → sym (F .F-∘ _ _) ∙ ap (F .F₁) (L-lim.commutes f)))
 
-      invert : D.is-invertible (F .F₁ (L-lim.universal (eps .η) _)) 
+      invert : D.is-invertible (F .F₁ (L-lim.universal (eps .η) _))
       invert =
         D.make-invertible uinv
           (FL-lim.unique₂ _ (λ j → FL-lim.commutes j)

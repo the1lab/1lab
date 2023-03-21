@@ -1,9 +1,9 @@
 ```agda
-open import Cat.Instances.Functor
+open import Cat.Functor.Hom.Representable
 open import Cat.Instances.Functor.Compose
+open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Hom
-open import Cat.Functor.Hom.Representable
 open import Cat.Prelude
 
 import Cat.Reasoning

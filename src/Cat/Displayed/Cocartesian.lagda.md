@@ -102,9 +102,9 @@ to a unique universal factorisation of $h'$ through a map $b' \to_{m} u'$
              → Hom[ m ] b′ u′
   universal′ {u′ = u′} p h′ = universal _ (coe1→0 (λ i → Hom[ p i ] a′ u′) h′)
 
-  commutesp : ∀ {u u′} {m : Hom b u} {k : Hom a u} 
+  commutesp : ∀ {u u′} {m : Hom b u} {k : Hom a u}
             → (p : m ∘ f ≡ k) (h′ : Hom[ k ] a′ u′)
-            → universal′ p h′ ∘′ f′ ≡[ p ] h′ 
+            → universal′ p h′ ∘′ f′ ≡[ p ] h′
   commutesp {u′ = u′} p h′ =
     to-pathp⁻ (commutes _ (coe1→0 (λ i → Hom[ p i ] a′ u′) h′))
 

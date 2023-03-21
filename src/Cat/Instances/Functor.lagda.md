@@ -62,7 +62,7 @@ _∘nt_ {C = C} {D = D} {F} {G} {H} f g = nat
 <!--
 ```agda
 infixr 40 _∘nt_
-{-# DISPLAY ∘nt.nat f g = f ∘nt g #-}  
+{-# DISPLAY ∘nt.nat f g = f ∘nt g #-}
 ```
 -->
 

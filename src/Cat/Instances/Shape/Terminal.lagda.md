@@ -1,8 +1,8 @@
 ```agda
 open import 1Lab.Prelude
 
-open import Cat.Base
 open import Cat.Instances.Functor
+open import Cat.Base
 
 import Cat.Reasoning
 
@@ -53,7 +53,7 @@ module _ {o h} {A : Precategory o h} where
 ```
 
 
-Natural isomorphisms between functors $\top \to \cC$ 
+Natural isomorphisms between functors $\top \to \cC$
 correspond to isomorphisms in $\cC$.
 
 ```agda

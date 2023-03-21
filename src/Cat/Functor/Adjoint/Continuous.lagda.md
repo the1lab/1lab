@@ -141,7 +141,7 @@ if we do it by hand.
     → is-equaliser C (R.₁ f) (R.₁ g) (R.₁ equ)
   right-adjoint→is-equaliser {f = f} {g} {equ} d-equal = c-equal where
     open is-equaliser
-  
+
     c-equal : is-equaliser C (R.₁ f) (R.₁ g) (R.₁ equ)
     c-equal .equal = R.weave (d-equal .equal)
     c-equal .universal sq =

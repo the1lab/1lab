@@ -4,8 +4,8 @@ open import Cat.Instances.Product
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
-import Cat.Morphism
 import Cat.Reasoning
+import Cat.Morphism
 
 open Functor
 open _=>_
@@ -123,7 +123,7 @@ _◆_ {E = E} {F = F} {G} {H} {K} α β = nat module horizontal-comp where
 
 <!--
 ```agda
-{-# DISPLAY horizontal-comp.nat f g = f ◆ g #-}  
+{-# DISPLAY horizontal-comp.nat f g = f ◆ g #-}
 ```
 -->
 

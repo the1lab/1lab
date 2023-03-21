@@ -77,7 +77,7 @@ record is-product {A B P} (π₁ : Hom P A) (π₂ : Hom P B) : Type (o ⊔ h) w
   ⟨⟩∘ f = unique _ (pulll π₁∘factor) (pulll π₂∘factor)
 
   ⟨⟩-η : ⟨ π₁ , π₂ ⟩ ≡ id
-  ⟨⟩-η = sym $ unique id (idr _) (idr _) 
+  ⟨⟩-η = sym $ unique id (idr _) (idr _)
 ```
 
 A product of $A$ and $B$ is an explicit choice of product diagram:
@@ -148,10 +148,10 @@ $P$, and symmetrically for $P' \to P$.
     where
       module p1 = Product p1
       module p2 = Product p2
-  
+
       p1→p2 : Hom (apex p1) (apex p2)
       p1→p2 = p2.⟨ p1.π₁ , p1.π₂ ⟩
-  
+
       p2→p1 : Hom (apex p2) (apex p1)
       p2→p1 = p1.⟨ p2.π₁ , p2.π₂ ⟩
 ```
@@ -166,14 +166,14 @@ the projections.
           (assoc _ _ _ ·· ap (_∘ _) p2.π₁∘factor ·· p1.π₁∘factor)
           (assoc _ _ _ ·· ap (_∘ _) p2.π₂∘factor ·· p1.π₂∘factor)
           (idr _) (idr _)
-  
+
       p2→p1→p2 : p2→p1 ∘ p1→p2 ≡ id
       p2→p1→p2 =
         p1.unique₂
           (assoc _ _ _ ·· ap (_∘ _) p1.π₁∘factor ·· p2.π₁∘factor)
           (assoc _ _ _ ·· ap (_∘ _) p1.π₂∘factor ·· p2.π₂∘factor)
           (idr _) (idr _)
-  
+
   is-product-iso
     : ∀ {A A′ B B′ P} {π₁ : Hom P A} {π₂ : Hom P B}
         {f : Hom A A′} {g : Hom B B′}
@@ -184,7 +184,7 @@ the projections.
   is-product-iso f-iso g-iso prod = prod′ where
     module fi = is-invertible f-iso
     module gi = is-invertible g-iso
-  
+
     open is-product
     prod′ : is-product _ _
     prod′ .⟨_,_⟩ qa qb = prod .⟨_,_⟩ (fi.inv ∘ qa) (gi.inv ∘ qb)
