@@ -12,8 +12,8 @@ open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Displayed.Base
-open import Cat.Abelian.Endo
 open import Cat.Abelian.Base
+open import Cat.Abelian.Endo
 open import Cat.Prelude
 
 import Cat.Reasoning

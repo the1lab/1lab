@@ -585,7 +585,7 @@ Furthermore, these equivalences are natural.
     (R.₁ f C.∘ R.₁ (L.₁ g)) C.∘ adj.unit.η _ ≡⟨ C.extendr (sym $ adj.unit.is-natural _ _ _) ⟩
     (R.₁ f C.∘ adj.unit.η _) C.∘ g           ∎
 
-  L-adjunct-naturalr 
+  L-adjunct-naturalr
       : ∀ {a b c} (f : D.Hom b c) (g : D.Hom (L.₀ a) b)
       → L-adjunct (f D.∘ g) ≡ R.₁ f C.∘ L-adjunct g
   L-adjunct-naturalr f g = C.pushl (R.F-∘ f g)
@@ -615,6 +615,25 @@ Furthermore, these equivalences are natural.
   R-adjunct-natural₂ f g x =
     R-adjunct-naturalr f (x C.∘ g) ∙ ap (f D.∘_) (R-adjunct-naturall x g)
 ```
+
+<!--
+```agda
+  R-adjunct-ap
+    : ∀ {a b c}
+    → {f : D.Hom b c} {g : C.Hom a (R.₀ b)} {h : C.Hom a (R.₀ c)}
+    → R.₁ f C.∘ g ≡ h
+    → f D.∘ R-adjunct g ≡ R-adjunct h
+  R-adjunct-ap p = sym (R-adjunct-naturalr _ _) ∙ ap R-adjunct p
+
+  R-adjunct-square
+    : ∀ {a b c d}
+    → {p1 : C.Hom a (R.₀ b)} {f : D.Hom b d} {p2 : C.Hom a (R.₀ c)} {g : D.Hom c d}
+    → R.₁ f C.∘ p1 ≡ R.₁ g C.∘ p2
+    → f D.∘ R-adjunct p1 ≡ g D.∘ R-adjunct p2
+  R-adjunct-square sq =
+    sym (R-adjunct-naturalr _ _) ·· ap R-adjunct sq ·· R-adjunct-naturalr _ _
+```
+-->
 
 <!--
 ```agda

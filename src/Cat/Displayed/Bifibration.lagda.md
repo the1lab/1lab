@@ -1,17 +1,17 @@
 ```agda
-open import Cat.Displayed.Base
-open import Cat.Displayed.Fibre
-open import Cat.Functor.Adjoint
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Instances.Functor
+open import Cat.Displayed.Fibre
+open import Cat.Functor.Adjoint
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Displayed.Cartesian.Indexing
 import Cat.Displayed.Cocartesian.Indexing
-import Cat.Displayed.Cocartesian
+import Cat.Displayed.Cartesian.Indexing
 import Cat.Displayed.Cocartesian.Weak
-import Cat.Displayed.Cartesian
 import Cat.Displayed.Cartesian.Weak
+import Cat.Displayed.Cocartesian
+import Cat.Displayed.Cartesian
 import Cat.Displayed.Reasoning
 import Cat.Reasoning
 
@@ -35,10 +35,10 @@ open Displayed ℰ
 
 # Bifibrations
 
-A displayed category $\cE \liesover \cB$ is a **bifibration** if it both
-a fibration and an opfibration. This means that $\cE$ is equipped with
-both [reindexing] and [opreindexing] functors, which allows us to both
-restrict and extend along morphisms $X \to Y$ in the base.
+A displayed category $\cE \liesover \cB$ is a **bifibration** if is it
+both a fibration and an opfibration. This means that $\cE$ is equipped
+with both [reindexing] and [opreindexing] functors, which allows us to
+both restrict and extend along morphisms $X \to Y$ in the base.
 
 Note that a bifibration is *not* the same as a "profunctor of categories";
 these are called **two-sided fibrations**, and are a distinct concept.
@@ -64,9 +64,9 @@ record is-bifibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
 
 # Bifibrations and Adjoints
 
-If $\cE$ is a bifibration, then its opreindexing functors are
-[left adjoints] to reindexing functors. To see this, note that we need
-to construct a natural isomorphism between $\cE_{y}(u_{*}(-),-)$ and
+If $\cE$ is a bifibration, then its opreindexing functors are [left
+adjoints] to its reindexing functors. To see this, note that we need to
+construct a natural isomorphism between $\cE_{y}(u_{*}(-),-)$ and
 $\cE_{x}(-,u^{*}(-))$. However, we have already shown that
 $\cE_{y}(u_{*}(-),-)$ and $\cE_{x}(-,u^{*}(-))$ are both naturally
 isomorphic to $\cE_{u}(-,-)$ (see `opfibration→hom-iso`{.Agda} and
@@ -110,7 +110,7 @@ module _ (fib : Cartesian-fibration) where
 
   left-adjoint-base-change→opfibration
     : (L : ∀ {x y} → (f : Hom x y) → Functor (Fibre ℰ x) (Fibre ℰ y))
-    → (∀ {x y} → (f : Hom x y) → (L f ⊣ base-change f)) 
+    → (∀ {x y} → (f : Hom x y) → (L f ⊣ base-change f))
     → Cocartesian-fibration
   left-adjoint-base-change→opfibration L adj =
     cartesian+weak-opfibration→opfibration fib $

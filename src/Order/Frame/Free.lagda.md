@@ -12,9 +12,9 @@ open import Order.Instances.Lower.Cocompletion
 open import Order.Instances.Pointwise
 open import Order.Semilattice.Order
 open import Order.Instances.Lower
-open import Order.Semilattice
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
+open import Order.Semilattice
 open import Order.Frame
 open import Order.Base
 
@@ -121,7 +121,7 @@ whenever $f$ is. Since we're extending semilattice homomorphisms, this
 means that $\Lan_{\darr}(f)$ is a frame homomorphism.
 
 [Yoneda embedding]: Cat.Functor.Hom.html#the-yoneda-embedding
-[left Kan extension]: Cat.Functor.Kan.html#kan-extensions
+[left Kan extension]: Cat.Functor.Kan.Base.html
 
 Note the similarity between the construction of free frames outlined in
 the paragraph above and [Diaconescu's theorem]: “A map of frames $D(A)

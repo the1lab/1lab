@@ -5,6 +5,9 @@ open import Cat.Functor.Base
 open import Cat.Morphism
 open import Cat.Prelude hiding (J)
 
+import Cat.Functor.Reasoning as Func
+import Cat.Reasoning as Cat
+
 module Cat.Functor.Conservative where
 ```
 
@@ -40,36 +43,45 @@ By the universal property of $L$, there exists a map $\eta$ from the apex of $K$
 to the apex of $L$ in $C$. Furthermore, as $F(K)$ is a limit in $D$, $F(\eta)$
 becomes an isomorphism in $D$. However, $F$ is conservative, which implies that
 $\eta$ was an isomorphism in $C$ all along! This means that $K$ must be a limit
-in $C$ as well (see `apex-iso→is-limit`{.Agda}).
+in $C$ as well (see `is-invertible→is-limitp`{.Agda}).
 
 ```agda
 module _ {F : Functor C D} (conservative : is-conservative F) where
-  conservative-reflects-limits : ∀ {Dia : Functor J C} → (L : Limit Dia)
-                               → (∀ (K : Cone Dia) → Preserves-limit F K)
-                               → (∀ (K : Cone Dia) → Reflects-limit F K)
-  conservative-reflects-limits {Dia = Dia} L-lim preserves K limits =
-    apex-iso→is-limit Dia K L-lim
+  private
+    open _=>_
+    module C = Cat C
+    module D = Cat D
+    module F = Func F
+
+  conservative-reflects-limits : ∀ {Dia : Functor J C}
+                               → (L : Limit Dia)
+                               → preserves-limit F Dia
+                               → reflects-limit F Dia
+  conservative-reflects-limits L-lim preservesa {K} {eps} lim =
+    is-invertible→is-limitp
+      {K = Limit.Ext L-lim} {epsy = Limit.cone L-lim} (Limit.has-limit L-lim)
+      (eps .η) (λ f → sym (eps .is-natural _ _ f) ∙ C.elimr (K .F-id)) refl
       $ conservative
-      $ subst (λ ϕ → is-invertible D ϕ) F-preserves-universal
-      $ Cone-invertible→apex-invertible (F F∘ Dia)
-      $ !-invertible (Cones (F F∘ Dia)) F∘L-lim K-lim
+      $ invert
+
     where
-      F∘L-lim : Limit (F F∘ Dia)
-      F∘L-lim .Terminal.top = F-map-cone F (Terminal.top L-lim)
-      F∘L-lim .Terminal.has⊤ = preserves (Terminal.top L-lim) (Terminal.has⊤ L-lim)
+      module L-lim = Limit L-lim
+      module FL-lim = is-limit (preservesa L-lim.has-limit)
+      module lim = is-limit lim
 
-      K-lim : Limit (F F∘ Dia)
-      K-lim .Terminal.top = F-map-cone F K
-      K-lim .Terminal.has⊤ = limits
+      uinv : D.Hom (F .F₀ L-lim.apex) (F .F₀ (K .F₀ tt))
+      uinv =
+          (lim.universal
+            (λ j → F .F₁ (L-lim.ψ j))
+            (λ f → sym (F .F-∘ _ _) ∙ ap (F .F₁) (L-lim.commutes f)))
 
-      module L-lim = Terminal L-lim
-      module F∘L-lim = Terminal F∘L-lim
-      open Cone-hom
-
-      F-preserves-universal
-        : hom F∘L-lim.! ≡ F .F₁ (hom {x = K} L-lim.!)
-      F-preserves-universal =
-        hom F∘L-lim.!                             ≡⟨ ap hom (F∘L-lim.!-unique (F-map-cone-hom F L-lim.!)) ⟩
-        hom (F-map-cone-hom F (Terminal.! L-lim)) ≡⟨⟩
-        F .F₁ (hom L-lim.!)                       ∎
+      invert : D.is-invertible (F .F₁ (L-lim.universal (eps .η) _))
+      invert =
+        D.make-invertible uinv
+          (FL-lim.unique₂ _ (λ j → FL-lim.commutes j)
+            (λ j → F.pulll (L-lim.factors _ _) ∙ lim.factors _ _)
+            (λ j → D.idr _))
+          (lim.unique₂ _ (λ j → lim.commutes j)
+            (λ j → D.pulll (lim.factors _ _) ∙ F.collapse (L-lim.factors _ _))
+            (λ j → D.idr _))
 ```

@@ -1,4 +1,5 @@
 ```agda
+open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
 open import Cat.Functor.Kan.Nerve
 open import Cat.Instances.Comma
@@ -35,9 +36,7 @@ nadir of a cocone over $J$.
 module
   _ {o ℓ} {C : Precategory ℓ ℓ} {D : Precategory o ℓ} (F : Functor C D)
   where
-  open Cocone-hom
   open Functor
-  open Cocone
   open ↓Obj
   open ↓Hom
   open _=>_
@@ -50,11 +49,12 @@ module
 -->
 
 ```agda
+  dense-cocone : ∀ d → F F∘ Dom F (const! d) => Const d
+  dense-cocone d .η x = x .map
+  dense-cocone d .is-natural _ _ f = f .sq
+
   is-dense : Type _
-  is-dense = ∀ d → is-colimit {J = F ↘ d} (F F∘ Dom _ _) $ λ where
-    .coapex     → d
-    .ψ x        → x .map
-    .commutes f → f .sq ∙ D.idl _
+  is-dense = ∀ d → is-colimit {J = F ↘ d} (F F∘ Dom _ _) d (dense-cocone d)
 ```
 
 The functor $F$ is called _dense_ if this cocone is colimiting for every
@@ -65,26 +65,21 @@ the induced [nerve] functor is fully faithful.
 
 ```agda
   is-dense→nerve-is-ff : is-dense → is-fully-faithful (Nerve F)
-  is-dense→nerve-is-ff is-colim = is-iso→is-equiv $ iso inv invr invl where
-    nt→cone : ∀ {x y} → (Nerve F .F₀ x => Nerve F .F₀ y) → Cocone _
-    nt→cone {x} {y} nt .coapex = y
-    nt→cone {x} {y} nt .ψ o = nt .η _ (o .map)
-    nt→cone {x} {y} nt .commutes {γ} {δ} f =
-      nt .η _ (δ .map) D.∘ F.₁ (f .α)   ≡˘⟨ nt .is-natural _ _ _ $ₚ _ ⟩
-      nt .η _ ⌜ δ .map D.∘ F.₁ (f .α) ⌝ ≡⟨ ap! (f .sq ∙ D.idl _) ⟩
-      nt .η _ (γ .map)                  ∎
+  is-dense→nerve-is-ff is-dense = is-iso→is-equiv $ iso inv invr invl where
+    module is-dense d = is-colimit (is-dense d)
 
     inv : ∀ {x y} → (Nerve F .F₀ x => Nerve F .F₀ y) → D.Hom x y
-    inv {x} {y} nt = is-colim x (nt→cone nt) .centre .hom
+    inv nt =
+      is-dense.universal _
+        (λ j → nt .η _ (j .map))
+        λ f → sym (nt .is-natural _ _ _ $ₚ _) ∙ ap (nt .η _) (f .sq ∙ D.idl _)
 
     invr : ∀ {x y} (f : Nerve F .F₀ x => Nerve F .F₀ y) → Nerve F .F₁ (inv f) ≡ f
     invr f = Nat-path λ x → funext λ i →
-      is-colim _ (nt→cone f) .centre .commutes record { map = i }
+      is-dense.factors _ {j = ↓obj i} _ _
 
     invl : ∀ {x y} (f : D.Hom x y) → inv (Nerve F .F₁ f) ≡ f
-    invl f = ap hom $ is-colim _ (nt→cone _) .paths $ λ where
-      .hom        → f
-      .commutes o → refl
+    invl f = sym $ is-dense.unique _ _ _ f (λ _ → refl)
 ```
 
 Another way of putting this is that probes by a dense subcategory are

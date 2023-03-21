@@ -1,7 +1,7 @@
 ```agda
 open import Cat.Diagram.Product.Solver
 open import Cat.Displayed.Cartesian
-open import Cat.Diagram.Product renaming (module Cartesian to Products)
+open import Cat.Diagram.Product
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
@@ -13,7 +13,7 @@ module Cat.Displayed.Instances.Simple
   where
 
 open Precategory B
-open Products B has-prods
+open Binary-products B has-prods
 ```
 
 # Simple Fibrations
@@ -66,8 +66,8 @@ can be entirely automated.
 ```agda
 simple : Displayed B o ℓ
 simple .Displayed.Ob[_] Γ = Ob
-simple .Displayed.Hom[_] {Γ} {Δ} u X Y = Hom (Γ ⊗ X) Y
-simple .Displayed.Hom[_]-set _ _ _ = Hom-set (_ ⊗ _) _
+simple .Displayed.Hom[_] {Γ} {Δ} u X Y = Hom (Γ ⊗₀ X) Y
+simple .Displayed.Hom[_]-set _ _ _ = Hom-set (_ ⊗₀ _) _
 simple .Displayed.id′ = π₂
 simple .Displayed._∘′_ {f = u} {g = v} f g = f ∘ ⟨ v ∘ π₁ , g ⟩
 simple .Displayed.idr′ f =

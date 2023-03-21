@@ -78,5 +78,5 @@ cocomplete→copowering
   : ∀ {o ℓ} {C : Precategory o ℓ}
   → is-cocomplete ℓ ℓ C → Functor (Sets ℓ ×ᶜ C) C
 cocomplete→copowering colim = Copowering λ S F →
-  Colimit→IC _ (is-hlevel-suc 2 (S .is-tr)) (Disc-adjunct F) (colim _)
+  Colimit→IC _ (is-hlevel-suc 2 (S .is-tr)) F (colim _)
 ```

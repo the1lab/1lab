@@ -66,7 +66,7 @@ if our codomain category $\cD$ does not have a well-behaved calculus
 of tensor products. As a motivating example, the computation of [left
 Kan extensions][lan] as certain colimits has this form!
 
-[lan]: Cat.Functor.Kan.html#a-formula
+[lan]: Cat.Functor.Kan.Pointwise.html#computing-pointwise-extensions
 
 We call such an object a **coend** of the functor $F$, and denote it by
 $\int^c F(c,c)$ (or $\int F$ for short). Being a type of [colimit],

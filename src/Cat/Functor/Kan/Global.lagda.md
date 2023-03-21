@@ -1,11 +1,10 @@
 ```agda
 open import Cat.Instances.Functor.Compose
-open import Cat.Diagram.Colimit.Base
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
+open import Cat.Functor.Kan.Base
 open import Cat.Functor.Adjoint
-open import Cat.Functor.Kan
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -37,7 +36,7 @@ is a universal solution $\Lan_p(F)$ to extending $F$ to a functor $C'
 **any** $F$; When this happens, the assignment $F \mapsto \Lan_p(F)$
 *extends to a functor, which we call a **global Kan extension**.
 
-[left Kan extension]: Cat.Functor.Kan.html
+[left Kan extension]: Cat.Functor.Kan.Base.html
 [small]: 1Lab.intro.html#universes-and-size-issues
 [cocomplete]: Cat.Diagram.Colimit.Base.html#cocompleteness
 
@@ -97,15 +96,15 @@ values generate Kan extensions:
 ```agda
 adjoint→Lan
   : (F : Functor Cat[ C , D ] Cat[ C′ , D ])
-  → F ⊣ p !
-  → (G : Functor C D) → Lan p G
+  → (F⊣p! : F ⊣ p !)
+  → (G : Functor C D)
+  → is-lan p G (F .F₀ G) (F⊣p! ._⊣_.unit .η G)
 adjoint→Lan F F⊣p! G = ext where
   open Lan
+  open is-lan
   module F⊣p! = _⊣_ F⊣p!
 
-  ext : Lan p G
-  ext .Ext = F .F₀ G
-  ext .eta = F⊣p!.unit .η G
+  ext : is-lan p G _ _
   ext .σ α = R-adjunct F⊣p! α
   ext .σ-comm {M = M} {α = α} = Nat-path λ a →
       D.pullr   (sym (F⊣p!.unit .is-natural _ _ _) ηₚ a)

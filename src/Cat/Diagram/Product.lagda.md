@@ -75,6 +75,9 @@ record is-product {A B P} (π₁ : Hom P A) (π₂ : Hom P B) : Type (o ⊔ h) w
   ⟨⟩∘ : ∀ {Q R} {p1 : Hom Q A} {p2 : Hom Q B} (f : Hom R Q)
       → ⟨ p1 , p2 ⟩ ∘ f ≡ ⟨ p1 ∘ f , p2 ∘ f ⟩
   ⟨⟩∘ f = unique _ (pulll π₁∘factor) (pulll π₂∘factor)
+
+  ⟨⟩-η : ⟨ π₁ , π₂ ⟩ ≡ id
+  ⟨⟩-η = sym $ unique id (idr _) (idr _)
 ```
 
 A product of $A$ and $B$ is an explicit choice of product diagram:
@@ -90,10 +93,16 @@ record Product (A B : Ob) : Type (o ⊔ h) where
 
   open is-product has-is-product public
 
-open Product hiding (⟨_,_⟩ ; π₁ ; π₂ ; ⟨⟩∘)
 ```
 
 ## Uniqueness
+
+<!--
+```agda
+module _ where
+  open Product hiding (⟨_,_⟩ ; π₁ ; π₂ ; ⟨⟩∘)
+```
+-->
 
 Products, when they exist, are unique. It's easiest to see this with a
 diagrammatic argument: If we have product diagrams $A \ot P \to B$ and
@@ -134,133 +143,130 @@ We construct the map $P \to P'$ as the pairing of the projections from
 $P$, and symmetrically for $P' \to P$.
 
 ```agda
-×-Unique : (p1 p2 : Product A B) → apex p1 ≅ apex p2
-×-Unique p1 p2 = make-iso p1→p2 p2→p1 p1→p2→p1 p2→p1→p2
-  where
-    module p1 = Product p1
-    module p2 = Product p2
+  ×-Unique : (p1 p2 : Product A B) → apex p1 ≅ apex p2
+  ×-Unique p1 p2 = make-iso p1→p2 p2→p1 p1→p2→p1 p2→p1→p2
+    where
+      module p1 = Product p1
+      module p2 = Product p2
 
-    p1→p2 : Hom (apex p1) (apex p2)
-    p1→p2 = p2.⟨ p1.π₁ , p1.π₂ ⟩
+      p1→p2 : Hom (apex p1) (apex p2)
+      p1→p2 = p2.⟨ p1.π₁ , p1.π₂ ⟩
 
-    p2→p1 : Hom (apex p2) (apex p1)
-    p2→p1 = p1.⟨ p2.π₁ , p2.π₂ ⟩
+      p2→p1 : Hom (apex p2) (apex p1)
+      p2→p1 = p1.⟨ p2.π₁ , p2.π₂ ⟩
 ```
 
 These are unique because they are maps into products which commute with
 the projections.
 
 ```agda
-    p1→p2→p1 : p1→p2 ∘ p2→p1 ≡ id
-    p1→p2→p1 =
-      p2.unique₂
-        (assoc _ _ _ ·· ap (_∘ _) p2.π₁∘factor ·· p1.π₁∘factor)
-        (assoc _ _ _ ·· ap (_∘ _) p2.π₂∘factor ·· p1.π₂∘factor)
-        (idr _) (idr _)
+      p1→p2→p1 : p1→p2 ∘ p2→p1 ≡ id
+      p1→p2→p1 =
+        p2.unique₂
+          (assoc _ _ _ ·· ap (_∘ _) p2.π₁∘factor ·· p1.π₁∘factor)
+          (assoc _ _ _ ·· ap (_∘ _) p2.π₂∘factor ·· p1.π₂∘factor)
+          (idr _) (idr _)
 
-    p2→p1→p2 : p2→p1 ∘ p1→p2 ≡ id
-    p2→p1→p2 =
-      p1.unique₂
-        (assoc _ _ _ ·· ap (_∘ _) p1.π₁∘factor ·· p2.π₁∘factor)
-        (assoc _ _ _ ·· ap (_∘ _) p1.π₂∘factor ·· p2.π₂∘factor)
-        (idr _) (idr _)
+      p2→p1→p2 : p2→p1 ∘ p1→p2 ≡ id
+      p2→p1→p2 =
+        p1.unique₂
+          (assoc _ _ _ ·· ap (_∘ _) p1.π₁∘factor ·· p2.π₁∘factor)
+          (assoc _ _ _ ·· ap (_∘ _) p1.π₂∘factor ·· p2.π₂∘factor)
+          (idr _) (idr _)
 
-is-product-iso
-  : ∀ {A A′ B B′ P} {π₁ : Hom P A} {π₂ : Hom P B}
-      {f : Hom A A′} {g : Hom B B′}
-  → is-invertible f
-  → is-invertible g
-  → is-product π₁ π₂
-  → is-product (f ∘ π₁) (g ∘ π₂)
-is-product-iso f-iso g-iso prod = prod′ where
-  module fi = is-invertible f-iso
-  module gi = is-invertible g-iso
+  is-product-iso
+    : ∀ {A A′ B B′ P} {π₁ : Hom P A} {π₂ : Hom P B}
+        {f : Hom A A′} {g : Hom B B′}
+    → is-invertible f
+    → is-invertible g
+    → is-product π₁ π₂
+    → is-product (f ∘ π₁) (g ∘ π₂)
+  is-product-iso f-iso g-iso prod = prod′ where
+    module fi = is-invertible f-iso
+    module gi = is-invertible g-iso
 
-  open is-product
-  prod′ : is-product _ _
-  prod′ .⟨_,_⟩ qa qb = prod .⟨_,_⟩ (fi.inv ∘ qa) (gi.inv ∘ qb)
-  prod′ .π₁∘factor = pullr (prod .π₁∘factor) ∙ cancell fi.invl
-  prod′ .π₂∘factor = pullr (prod .π₂∘factor) ∙ cancell gi.invl
-  prod′ .unique other p q = prod .unique other
-    (sym (ap (_ ∘_) (sym p) ∙ pulll (cancell fi.invr)))
-    (sym (ap (_ ∘_) (sym q) ∙ pulll (cancell gi.invr)))
+    open is-product
+    prod′ : is-product _ _
+    prod′ .⟨_,_⟩ qa qb = prod .⟨_,_⟩ (fi.inv ∘ qa) (gi.inv ∘ qb)
+    prod′ .π₁∘factor = pullr (prod .π₁∘factor) ∙ cancell fi.invl
+    prod′ .π₂∘factor = pullr (prod .π₂∘factor) ∙ cancell gi.invl
+    prod′ .unique other p q = prod .unique other
+      (sym (ap (_ ∘_) (sym p) ∙ pulll (cancell fi.invr)))
+      (sym (ap (_ ∘_) (sym q) ∙ pulll (cancell gi.invr)))
 ```
 
-# The product functor
+# Categories with all binary products
 
-If $\cC$ admits products of all pairs of objects, then the assignment
-$(A, B) \mapsto (A \times B)$ extends to a [bifunctor] $(\cC \times
-\cC) \to \cC$.
-
-[bifunctor]: Cat.Functor.Bifunctor.html
+Categories with all binary products are quite common, so we define
+a module for working with them.
 
 ```agda
-module Cartesian (hasprods : ∀ A B → Product A B) where
+has-products : Type _
+has-products = ∀ a b → Product a b
+
+module Binary-products (all-products : has-products) where
+
+  module product {a} {b} = Product (all-products a b)
+
+  open product renaming
+    (unique to ⟨⟩-unique; π₁∘factor to π₁∘⟨⟩; π₂∘factor to π₂∘⟨⟩) public
   open Functor
 
-  ×-functor : Functor (C ×ᶜ C) C
-  ×-functor .F₀ (A , B) = hasprods A B .apex
-  ×-functor .F₁ {a , x} {b , y} (f , g) =
-    hasprods b y .has-is-product .is-product.⟨_,_⟩
-      (f ∘ hasprods a x .Product.π₁) (g ∘ hasprods a x .Product.π₂)
-
-  ×-functor .F-id {a , b} =
-    unique₂ (hasprods a b)
-      (hasprods a b .π₁∘factor)
-      (hasprods a b .π₂∘factor)
-      id-comm id-comm
-
-  ×-functor .F-∘ {a , b} {c , d} {e , f} x y =
-    unique₂ (hasprods e f)
-      (hasprods e f .π₁∘factor)
-      (hasprods e f .π₂∘factor)
-      (  pulll (hasprods e f .π₁∘factor)
-      ·· pullr (hasprods c d .π₁∘factor)
-      ·· assoc _ _ _)
-      (  pulll (hasprods e f .π₂∘factor)
-      ·· pullr (hasprods c d .π₂∘factor)
-      ·· assoc _ _ _)
+  infixr 7 _⊗₀_
+  infix 50 _⊗₁_
 ```
 
-We refer to a category admitting all binary products as **cartesian**.
-When working with products, a Cartesian category is the place to be,
-since we can work with the "canonical" product operations --- rather
-than requiring different product data for any pair of objects we need a
-product for.
-
-Here we extract the data of the "global" product-assigning operation to
-separate top-level definitions:
+We start by defining a "global" product-assigning operation.
 
 ```agda
-  _⊗_ : Ob → Ob → Ob
-  A ⊗ B = F₀ ×-functor (A , B)
+  _⊗₀_ : Ob → Ob → Ob
+  a ⊗₀ b = product.apex {a} {b}
+```
 
-  ⟨_,_⟩ : Hom a b → Hom a c → Hom a (b ⊗ c)
-  ⟨ f , g ⟩ = hasprods _ _ .has-is-product .is-product.⟨_,_⟩ f g
+This operation extends to a bifunctor $\cC \times \cC \to \cC$.
 
-  π₁ : Hom (a ⊗ b) a
-  π₁ = hasprods _ _ .Product.π₁
+```agda
+  _⊗₁_ : ∀ {a b x y} → Hom a x → Hom b y → Hom (a ⊗₀ b) (x ⊗₀ y)
+  f ⊗₁ g = ⟨ f ∘ π₁ , g ∘ π₂ ⟩
 
-  π₂ : Hom (a ⊗ b) b
-  π₂ = hasprods _ _ .Product.π₂
 
-  π₁∘⟨⟩ : {f : Hom a b} {g : Hom a c} → π₁ ∘ ⟨ f , g ⟩ ≡ f
-  π₁∘⟨⟩ = hasprods _ _ .has-is-product .is-product.π₁∘factor
+  ×-functor : Functor (C ×ᶜ C) C
+  ×-functor .F₀ (a , b) = a ⊗₀ b
+  ×-functor .F₁ (f , g) = f ⊗₁ g
+  ×-functor .F-id = sym $ ⟨⟩-unique id id-comm id-comm
+  ×-functor .F-∘ (f , g) (h , i) =
+    sym $ ⟨⟩-unique (f ⊗₁ g ∘ h ⊗₁ i)
+      (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩)
+      (pulll π₂∘⟨⟩ ∙ extendr π₂∘⟨⟩)
+```
 
-  π₂∘⟨⟩ : {f : Hom a b} {g : Hom a c} → π₂ ∘ ⟨ f , g ⟩ ≡ g
-  π₂∘⟨⟩ = hasprods _ _ .has-is-product .is-product.π₂∘factor
+We also define a handful of common morphisms.
 
-  ⟨⟩∘ : ∀ {Q R} {p1 : Hom Q a} {p2 : Hom Q b} (f : Hom R Q)
-      → ⟨ p1 , p2 ⟩ ∘ f ≡ ⟨ p1 ∘ f , p2 ∘ f ⟩
-  ⟨⟩∘ f = is-product.⟨⟩∘ (hasprods _ _ .has-is-product) f
+```agda
+  δ : Hom a (a ⊗₀ a)
+  δ = ⟨ id , id ⟩
 
-  ⟨⟩-unique : ∀ {Q} {p1 : Hom Q A} {p2 : Hom Q B}
-             → (other : Hom Q (A ⊗ B))
-             → π₁ ∘ other ≡ p1
-             → π₂ ∘ other ≡ p2
-             → other ≡ ⟨ p1 , p2 ⟩
-  ⟨⟩-unique = hasprods _ _ .has-is-product .is-product.unique
+  swap : Hom (a ⊗₀ b) (b ⊗₀ a)
+  swap = ⟨ π₂ , π₁ ⟩
+```
 
-  ⟨⟩-η : ∀ {A B} → ⟨ π₁ , π₂ ⟩ ≡ id {A ⊗ B}
-  ⟨⟩-η = sym $ ⟨⟩-unique id (idr π₁) (idr π₂)
+## Representability of products
+
+The collection of maps into a product $a \times b$ is equivalent to
+the collection of pairs of maps into $a$ and $b$. The forward direction
+of the equivalence is given by postcomposition of the projections, and
+the reverse direction by the universal property of products.
+
+```agda
+product-repr
+  : ∀ {a b}
+  → (prod : Product a b)
+  → (x : Ob)
+  → Hom x (Product.apex prod) ≃ (Hom x a × Hom x b)
+product-repr prod x = Iso→Equiv λ where
+    .fst f → π₁ ∘ f , π₂ ∘ f
+    .snd .is-iso.inv (f , g) → ⟨ f , g ⟩
+    .snd .is-iso.rinv (f , g) → π₁∘factor ,ₚ π₂∘factor
+    .snd .is-iso.linv f → sym (⟨⟩∘ f) ∙ eliml ⟨⟩-η
+  where open Product prod
 ```

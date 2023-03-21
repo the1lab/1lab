@@ -11,8 +11,8 @@ open import Cat.Functor.Base
 open import Cat.Univalent
 open import Cat.Prelude
 
-import Cat.Morphism
 import Cat.Displayed.Morphism
+import Cat.Morphism
 
 module Cat.Displayed.Univalence.Thin where
 

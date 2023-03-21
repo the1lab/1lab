@@ -2,8 +2,8 @@
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Reasoning as CR
 import Cat.Displayed.Morphism as DM
+import Cat.Reasoning as CR
 
 module Cat.Displayed.Total
   {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′) where

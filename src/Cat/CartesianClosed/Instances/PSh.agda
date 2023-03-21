@@ -77,11 +77,11 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     pb .p₂ .η x (a , b , _) = b
     pb .p₂ .is-natural _ _ _ = refl
     pb .has-is-pb .square = Nat-path λ _ → funext λ (_ , _ , p) → p
-    pb .has-is-pb .limiting path .η idx arg = _ , _ , (path ηₚ idx $ₚ arg)
-    pb .has-is-pb .limiting {p₁' = p₁'} {p₂'} path .is-natural x y f =
+    pb .has-is-pb .universal path .η idx arg = _ , _ , (path ηₚ idx $ₚ arg)
+    pb .has-is-pb .universal {p₁' = p₁'} {p₂'} path .is-natural x y f =
       funext λ x → pb-path (happly (p₁' .is-natural _ _ _) _) (happly (p₂' .is-natural _ _ _) _)
-    pb .has-is-pb .p₁∘limiting = Nat-path λ _ → refl
-    pb .has-is-pb .p₂∘limiting = Nat-path λ _ → refl
+    pb .has-is-pb .p₁∘universal = Nat-path λ _ → refl
+    pb .has-is-pb .p₂∘universal = Nat-path λ _ → refl
     pb .has-is-pb .unique p q = Nat-path λ _ → funext λ _ →
       pb-path (p ηₚ _ $ₚ _) (q ηₚ _ $ₚ _)
 
@@ -165,13 +165,13 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     coequ .coeq .η i = incq
     coequ .coeq .is-natural x y f = refl
     coequ .has-is-coeq .coequal = Nat-path λ _ → funext λ x → glue x
-    coequ .has-is-coeq .coequalise {F = F} {e′ = e′} p .η x =
+    coequ .has-is-coeq .universal {F = F} {e′ = e′} p .η x =
       Coeq-rec (F .F₀  x .is-tr) (e′ .η x) (p ηₚ x $ₚ_)
-    coequ .has-is-coeq .coequalise {F = F} {e′ = e′} p .is-natural x y f = funext $
+    coequ .has-is-coeq .universal {F = F} {e′ = e′} p .is-natural x y f = funext $
       Coeq-elim-prop (λ _ → F .F₀ _ .is-tr _ _) λ _ → happly (e′ .is-natural _ _ _) _
-    coequ .has-is-coeq .universal = Nat-path λ _ → refl
+    coequ .has-is-coeq .factors = Nat-path λ _ → refl
     coequ .has-is-coeq .unique {F = F} p = Nat-path λ i → funext $
-      Coeq-elim-prop (λ _ → F .F₀ _ .is-tr _ _) λ x → sym p ηₚ i $ₚ x
+      Coeq-elim-prop (λ _ → F .F₀ _ .is-tr _ _) λ x → p ηₚ i $ₚ x
 
 module _ {κ} {C : Precategory κ κ} where
   private
@@ -182,7 +182,7 @@ module _ {κ} {C : Precategory κ κ} where
   PSh-closed = cc where
     cat = PSh κ C
 
-    open Cartesian cat (PSh-products {C = C}) public
+    open Binary-products cat (PSh-products {C = C}) public
 
     module _ (A : PSh.Ob) where
       module A = Functor A
@@ -191,7 +191,7 @@ module _ {κ} {C : Precategory κ κ} where
       hom₀ B = F where
         module B = Functor B
         F : PSh.Ob
-        F .F₀ c = el ((よ₀ C c ⊗ A) => B) Nat-is-set
+        F .F₀ c = el ((よ₀ C c ⊗₀ A) => B) Nat-is-set
         F .F₁ f nt .η i (g , x) = nt .η i (f C.∘ g , x)
         F .F₁ f nt .is-natural x y g = funext λ o →
           ap (nt .η y) (Σ-pathp (C.assoc _ _ _) refl) ∙ happly (nt .is-natural _ _ _) _

@@ -1,8 +1,8 @@
 ```agda
-open import Cat.Displayed.Base
 open import Cat.Displayed.Cocartesian
-open import Cat.Displayed.Fibre
 open import Cat.Instances.Functor
+open import Cat.Displayed.Fibre
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning

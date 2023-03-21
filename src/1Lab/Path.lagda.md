@@ -1200,6 +1200,18 @@ ap₂ : ∀ {a b c} {A : Type a} {B : A → Type b} {C : (x : A) → B x → Typ
 ap₂ f p q i = f (p i) (q i)
 ```
 
+<!--
+```agda
+apd : ∀ {a b} {A : I → Type a} {B : (i : I) → A i → Type b}
+    → (f : (i : I) → (a : A i) → B i a)
+    → {x : A i0}
+    → {y : A i1}
+    → (p : PathP A x y)
+    → PathP (λ i → B i (p i)) (f i0 x) (f i1 y)
+apd f p i = f i (p i)
+```
+-->
+
 This operation satisfies many identities definitionally that are only
 propositional when `ap`{.Agda} is defined in terms of `J`{.Agda}. For
 instance:

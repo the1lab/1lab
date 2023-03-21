@@ -1,14 +1,18 @@
 ```agda
-open import Cat.Displayed.Base
-open import Cat.Displayed.Fibre
-open import Cat.Functor.Hom
+open import Cat.Functor.Hom.Displayed
 open import Cat.Functor.Hom.Displayed
 open import Cat.Instances.Functor
+open import Cat.Instances.Functor
 open import Cat.Instances.Product
+open import Cat.Instances.Product
+open import Cat.Displayed.Fibre
+open import Cat.Displayed.Base
+open import Cat.Functor.Hom
 open import Cat.Prelude
 
-import Cat.Displayed.Cartesian as Cart
 import Cat.Displayed.Cartesian.Indexing as Indexing
+import Cat.Displayed.Cartesian.Indexing as Indexing
+import Cat.Displayed.Cartesian as Cart
 import Cat.Displayed.Reasoning as DR
 import Cat.Displayed.Morphism as DM
 import Cat.Reasoning as CR
@@ -128,12 +132,9 @@ cartesian→weak-cartesian {f = f} {f′ = f′} cart = weak-cart where
   open is-cartesian cart
 
   weak-cart : is-weak-cartesian f f′
-  weak-cart .universal g′ =
-    universalv g′
-  weak-cart .commutes g′ =
-    commutesv g′
-  weak-cart .unique h′ p =
-    uniquev h′ p
+  weak-cart .universal g′ = universalv g′
+  weak-cart .commutes g′ = commutesv g′
+  weak-cart .unique h′ p = uniquev h′ p
 ```
 
 Furthermore, if $\cE$ is a fibration, weakly cartesian morphisms are
@@ -296,7 +297,7 @@ module _ where
     → Cartesian-fibration
   weak-fibration→fibration weak-fib weak-∘ .has-lift {x = x} f y′ = f-lift where
     open is-weak-cartesian-fibration weak-fib
-  
+
     module weak-∘ {x y z} (f : Hom y z) (g : Hom x y) (z′ : Ob[ z ]) =
       is-weak-cartesian (weak-∘ (weak-lift.weak-cartesian f z′)
                                 (weak-lift.weak-cartesian g _))
@@ -320,13 +321,13 @@ cartesian lift $f^{*}$ of $f$.
 ```agda
     x* : Ob[ x ]
     x* = weak-lift.x′ f y′
-  
+
     f* : Hom[ f ] x* y′
     f* = weak-lift.lifting f y′
-  
+
     f*-weak-cartesian : is-weak-cartesian f f*
     f*-weak-cartesian = weak-lift.weak-cartesian f y′
-  
+
     module f* = is-weak-cartesian (f*-weak-cartesian)
 ```
 
@@ -364,13 +365,13 @@ to obtain the requisite map.
       where
         u* : Ob[ u ]
         u* = weak-lift.x′ m _
-  
+
         m* : Hom[ m ] u* x*
         m* = weak-lift.lifting m _
-  
+
         m*-weak-cartesian : is-weak-cartesian m m*
         m*-weak-cartesian = weak-lift.weak-cartesian m x*
-  
+
         module m* = is-weak-cartesian m*-weak-cartesian
         module f*∘m* = is-weak-cartesian (weak-∘ f*-weak-cartesian m*-weak-cartesian)
 ```
@@ -392,7 +393,7 @@ $h'$ via $f^{*} \cdot m^{*}$ commutes.
     f*-cartesian .commutes {u = u} {u′ = u′} m h′ = path
       where
         open Morphisms m h′
-  
+
         abstract
           path : f* ∘′ hom[ idr m ] (m* ∘′ f*∘m*.universal h′) ≡ h′
           path =
@@ -413,7 +414,7 @@ maps.
     f*-cartesian .unique {u = u} {u′ = u′} {m = m} {h′ = h′} m′ p = path
       where
         open Morphisms m h′
-  
+
         abstract
           universal-path : (f* ∘′ m*) ∘′ m*.universal m′ ≡[ idr (f ∘ m) ] h′
           universal-path = to-pathp $
@@ -422,7 +423,7 @@ maps.
             hom[] (f* ∘′ hom[] m′)                ≡⟨ smashr _ _ ∙ liberate _ ⟩
             f* ∘′ m′                              ≡⟨ p ⟩
             h′ ∎
-  
+
           path : m′ ≡ hom[ idr m ] (m* ∘′ f*∘m*.universal h′)
           path =
             m′                               ≡˘⟨ from-pathp (m*.commutes m′) ⟩
@@ -531,7 +532,7 @@ between $\cE_{u}(-,y')$ and $\cE_{x}(-,u^{*}(y'))$.
 
     u*y′ : Ob[ x ]
     u*y′ = weak-lift.x′ u y′
-   
+
     mi : make-natural-iso (Hom-over-into ℰ u y′) (Hom-into (Fibre ℰ x) u*y′)
     mi .eta x u′ = weak-lift.universal u y′ u′
     mi .inv x v′ = hom[ idr u ] (weak-lift.lifting u y′ ∘′ v′)

@@ -26,7 +26,7 @@ module NbE {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ A B → Product �
   -- Instead, what we want to do is perform type-directe
 
   open Cat.Reasoning 𝒞
-  open Cartesian 𝒞 cartesian
+  open Binary-products 𝒞 cartesian
 ```
 
 ## Expressions
@@ -42,7 +42,7 @@ with un-quotiented syntax.
     ‶_‶   : Ob → ‶Ob‶
 
   ⟦_⟧ₒ : ‶Ob‶ → Ob
-  ⟦ X ‶⊗‶ Y ⟧ₒ =  ⟦ X ⟧ₒ ⊗ ⟦ Y ⟧ₒ
+  ⟦ X ‶⊗‶ Y ⟧ₒ =  ⟦ X ⟧ₒ ⊗₀ ⟦ Y ⟧ₒ
   ⟦ ‶ X ‶ ⟧ₒ = X
 
   data Expr : ‶Ob‶ → ‶Ob‶ → Type (o ⊔ ℓ) where
@@ -554,10 +554,10 @@ Wow, that was a lot of hard work! Let's marvel at the fruits of our labor.
 ```agda
 private module Tests {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) where
   open Precategory 𝒞
-  open Cartesian 𝒞 cartesian
+  open Binary-products 𝒞 cartesian
   open NbE 𝒞 cartesian
 
-  test-η : ∀ {X Y Z} → (f : Hom X (Y ⊗ Z))
+  test-η : ∀ {X Y Z} → (f : Hom X (Y ⊗₀ Z))
            → f ≡ ⟨ π₁ ∘ f , π₂ ∘ f ⟩
   test-η f = products! 𝒞 cartesian
 
@@ -579,7 +579,7 @@ private module Tests {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y →
   test-nested {W} {X} {Y} {Z} f g h = products! 𝒞 cartesian
 
 
-  test-big : ∀ {W X Y Z} → (f : Hom (W ⊗ X) (W ⊗ Y)) → (g : Hom (W ⊗ X) Z)
+  test-big : ∀ {W X Y Z} → (f : Hom (W ⊗₀ X) (W ⊗₀ Y)) → (g : Hom (W ⊗₀ X) Z)
              → (π₁ ∘ ⟨ f , g ⟩) ∘ id ≡ id ∘ ⟨ π₁ , π₂ ⟩ ∘ f
   test-big f g = products! 𝒞 cartesian
 ```

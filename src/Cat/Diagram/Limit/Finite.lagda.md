@@ -5,6 +5,7 @@ open import Cat.Diagram.Limit.Pullback
 open import Cat.Instances.Shape.Cospan
 open import Cat.Diagram.Limit.Product
 open import Cat.Diagram.Limit.Base
+open import Cat.Diagram.Limit.Cone
 open import Cat.Instances.Discrete
 open import Cat.Diagram.Equaliser
 open import Cat.Diagram.Pullback
@@ -62,8 +63,8 @@ to give a terminal object and binary products.
   record Finitely-complete : Type (ℓ ⊔ ℓ') where
     field
       terminal   : Terminal C
-      products   : ∀ A B → Product C A B
-      equalisers : ∀ {A B} (f g : Hom A B) → Equaliser C f g
+      products   : has-products C
+      equalisers : has-equalisers C
       pullbacks  : has-pullbacks C
 
     Eq : ∀ {A B} (f g : Hom A B) → Ob
@@ -72,8 +73,8 @@ to give a terminal object and binary products.
     Pb : ∀ {A B C} (f : Hom A C) (g : Hom B C) → Ob
     Pb f g = pullbacks f g .Pullback.apex
 
-    module Cart = Cartesian C products
-    open Cart using (_⊗_) public
+    module Products = Binary-products C products
+    open Products using (_⊗₀_) public
 
   open Finitely-complete
 ```
@@ -153,17 +154,17 @@ equalisers to factor _that_ as a unique arrow $P' \to X \times_Z Y$.
 ~~~
 
 ```agda
-    pb .limiting {p₁' = p₁'} {p₂' = p₂'} p =
-      eq.limiting {e′ = pr.⟨ p₁' , p₂' ⟩} (
+    pb .universal {p₁' = p₁'} {p₂' = p₂'} p =
+      eq.universal {e′ = pr.⟨ p₁' , p₂' ⟩} (
         (f ∘ p1) ∘ pr.⟨ p₁' , p₂' ⟩ ≡⟨ pullr pr.π₁∘factor ⟩
         f ∘ p₁'                     ≡⟨ p ⟩
         g ∘ p₂'                     ≡˘⟨ pullr pr.π₂∘factor ⟩
         (g ∘ p2) ∘ pr.⟨ p₁' , p₂' ⟩ ∎
       )
-    pb .p₁∘limiting = pullr eq.universal ∙ pr.π₁∘factor
-    pb .p₂∘limiting = pullr eq.universal ∙ pr.π₂∘factor
+    pb .p₁∘universal = pullr eq.factors ∙ pr.π₁∘factor
+    pb .p₂∘universal = pullr eq.factors ∙ pr.π₂∘factor
     pb .unique p q =
-      eq.unique (sym (pr.unique _ (assoc _ _ _ ∙ p) (assoc _ _ _ ∙ q)))
+      eq.unique ((pr.unique _ (assoc _ _ _ ∙ p) (assoc _ _ _ ∙ q)))
 ```
 
 Hence, assuming that a category has a terminal object, binary products
@@ -241,9 +242,9 @@ object $*$.
 
     prod : is-product C p1 p2
     prod .is-product.⟨_,_⟩ p1' p2' =
-      Pb.limiting {p₁' = p1'} {p₂' = p2'} (is-contr→is-prop (term _) _ _)
-    prod .is-product.π₁∘factor = Pb.p₁∘limiting
-    prod .is-product.π₂∘factor = Pb.p₂∘limiting
+      Pb.universal {p₁' = p1'} {p₂' = p2'} (is-contr→is-prop (term _) _ _)
+    prod .is-product.π₁∘factor = Pb.p₁∘universal
+    prod .is-product.π₂∘factor = Pb.p₂∘universal
     prod .is-product.unique other p q = Pb.unique p q
 
   with-pullbacks
@@ -348,8 +349,8 @@ top face $\rm{equ} : \rm{eq}(f,g) \to A$ in our pullback diagram
 is indeed the equaliser of $f$ and $g$.
 
 ```agda
-      eq .has-is-eq .limiting {e′ = e′} p =
-        Pb.limiting (Bb.unique₂ refl refl (sym p1) (sym p2))
+      eq .has-is-eq .universal {e′ = e′} p =
+        Pb.universal (Bb.unique₂ refl refl (sym p1) (sym p2))
         where
           p1 : Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e′ ≡ Bb.π₁ ∘ ⟨f,g⟩ ∘ e′
           p1 =
@@ -364,17 +365,17 @@ is indeed the equaliser of $f$ and $g$.
             g ∘ e′                     ≡˘⟨ pulll Bb.π₂∘factor ⟩
             Bb.π₂ ∘ ⟨f,g⟩ ∘ e′         ∎
 
-      eq .has-is-eq .universal = Pb.p₂∘limiting
-      eq .has-is-eq .unique {F} {e′ = e′} {lim' = lim'} e′=p₂∘l =
-        Pb.unique path (sym e′=p₂∘l)
+      eq .has-is-eq .factors = Pb.p₂∘universal
+      eq .has-is-eq .unique {F} {e′ = e′} {other = other} p₂∘l=e′ =
+        Pb.unique path p₂∘l=e′
         where
-          path : Pb.p₁ ∘ lim' ≡ f ∘ e′
+          path : Pb.p₁ ∘ other ≡ f ∘ e′
           path =
-            Pb.p₁ ∘ lim'                   ≡⟨ insertl Bb.π₁∘factor ⟩
-            Bb.π₁ ∘ ⟨id,id⟩ ∘ Pb.p₁ ∘ lim' ≡⟨ ap (Bb.π₁ ∘_) (extendl Pb.square) ⟩
-            Bb.π₁ ∘ ⟨f,g⟩ ∘ Pb.p₂ ∘ lim'   ≡⟨ ap (Bb.π₁ ∘_) (ap (⟨f,g⟩ ∘_) (sym e′=p₂∘l)) ⟩
-            Bb.π₁ ∘ ⟨f,g⟩ ∘ e′             ≡⟨ pulll Bb.π₁∘factor ⟩
-            f ∘ e′                         ∎
+            Pb.p₁ ∘ other                   ≡⟨ insertl Bb.π₁∘factor ⟩
+            Bb.π₁ ∘ ⟨id,id⟩ ∘ Pb.p₁ ∘ other ≡⟨ ap (Bb.π₁ ∘_) (extendl Pb.square) ⟩
+            Bb.π₁ ∘ ⟨f,g⟩ ∘ Pb.p₂ ∘ other   ≡⟨ ap (Bb.π₁ ∘_) (ap (⟨f,g⟩ ∘_) p₂∘l=e′) ⟩
+            Bb.π₁ ∘ ⟨f,g⟩ ∘ e′              ≡⟨ pulll Bb.π₁∘factor ⟩
+            f ∘ e′                          ∎
 ```
 
 Putting it all together into a record we get our proof of finite completeness:
@@ -396,9 +397,9 @@ Putting it all together into a record we get our proof of finite completeness:
     open is-pullback
     pb : is-pullback C _ _ _ _
     pb .square = is-contr→is-prop (t _) _ _
-    pb .limiting _ = r .is-product.⟨_,_⟩ _ _
-    pb .p₁∘limiting = r .is-product.π₁∘factor
-    pb .p₂∘limiting = r .is-product.π₂∘factor
+    pb .universal _ = r .is-product.⟨_,_⟩ _ _
+    pb .p₁∘universal = r .is-product.π₁∘factor
+    pb .p₂∘universal = r .is-product.π₂∘factor
     pb .unique p q = r .is-product.unique _ p q
 
   is-complete→finitely
@@ -424,13 +425,11 @@ Putting it all together into a record we get our proof of finite completeness:
       open Cone
 
       term′ : Terminal C
-      term′ = record { top = limF .top .apex ; has⊤ = limiting } where
+      term′ = record { top = Limit.apex limF ; has⊤ = limiting } where
         limiting : ∀ x → is-contr _
         limiting x =
-          contr (limF .has⊤ (h′ x) .centre .hom) λ h →
-            ap hom (limF .has⊤ (h′ x) .paths (record { hom = h ; commutes = λ { () } }))
-          where h′ : ∀ x → Cone _
-                h′ x = record { apex = x ; ψ = λ { () } ; commutes = λ { {()} } }
+          contr (Limit.universal limF (λ { () }) (λ { {()} })) λ h →
+            sym (Limit.unique limF _ _ h λ { () })
 ```
 -->
 

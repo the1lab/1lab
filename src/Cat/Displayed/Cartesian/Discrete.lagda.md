@@ -13,9 +13,9 @@ open import Cat.Displayed.Base
 open import Cat.Displayed.Path
 open import Cat.Prelude
 
-import Cat.Reasoning
-import Cat.Displayed.Morphism
 import Cat.Displayed.Reasoning
+import Cat.Displayed.Morphism
+import Cat.Reasoning
 
 module Cat.Displayed.Cartesian.Discrete where
 ```

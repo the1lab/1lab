@@ -73,8 +73,8 @@ is-co-equaliser→is-coequaliser
 is-co-equaliser→is-coequaliser eq =
   record
     { coequal    = eq.equal
-    ; coequalise = eq.limiting
     ; universal  = eq.universal
+    ; factors    = eq.factors
     ; unique     = eq.unique
     }
   where module eq = Co-equ.is-equaliser eq
@@ -85,8 +85,8 @@ is-coequaliser→is-co-equaliser
 is-coequaliser→is-co-equaliser coeq =
   record
     { equal     = coeq.coequal
-    ; limiting  = coeq.coequalise
     ; universal = coeq.universal
+    ; factors   = coeq.factors
     ; unique    = coeq.unique
     }
   where module coeq = Coequ.is-coequaliser coeq
@@ -119,9 +119,9 @@ is-co-pullback→is-pushout
 is-co-pullback→is-pushout pb =
   record
     { square = pb.square
-    ; colimiting = pb.limiting
-    ; i₁∘colimiting = pb.p₁∘limiting
-    ; i₂∘colimiting = pb.p₂∘limiting
+    ; universal = pb.universal
+    ; i₁∘universal = pb.p₁∘universal
+    ; i₂∘universal = pb.p₂∘universal
     ; unique = pb.unique
     }
   where module pb = Co-pull.is-pullback pb
@@ -132,9 +132,9 @@ is-pushout→is-co-pullback
 is-pushout→is-co-pullback po =
   record
     { square      = po.square
-    ; limiting    = po.colimiting
-    ; p₁∘limiting = po.i₁∘colimiting
-    ; p₂∘limiting = po.i₂∘colimiting
+    ; universal    = po.universal
+    ; p₁∘universal = po.i₁∘universal
+    ; p₂∘universal = po.i₂∘universal
     ; unique      = po.unique
     }
   where module po = Push.is-pushout po
@@ -144,7 +144,9 @@ is-pushout→is-co-pullback po =
 
 ```agda
 open import Cat.Diagram.Colimit.Base
+open import Cat.Diagram.Colimit.Cocone
 open import Cat.Diagram.Limit.Base
+open import Cat.Diagram.Limit.Cone
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Initial
 
@@ -195,55 +197,39 @@ module _ {o ℓ} {J : Precategory o ℓ} {F : Functor J C} where
 
 ## Co/limits
 
+Limits and colimits are defined via [Kan extensions], so it's reasonable
+to expect that [duality of Kan extensions] would apply to (co)limits.
+Unfortunately, proof assistants: (co)limits are extensions of
+`!F`{.Agda}, but duality of Kan extensions inserts an extra `Functor.op`.
+We could work around this, but it's easier to just do the proofs by hand.
+
+[Kan extensions]: Cat.Functor.Kan.Base.html
+[duality of Kan extensions]: Cat.Functor.Kan.Duality.html
+
 ```agda
   Colimit→Co-limit
     : Colimit F → Limit F^op
-  Colimit→Co-limit colim = lim where
-    lim : Limit F^op
-    lim .top = Cocone→Co-cone (colim .bot)
-    lim .has⊤ co-cone =
-      retract→is-contr f g fg
-        (colim .has⊥ (Co-cone→Cocone co-cone))
-      where
-        f : _ → _
-        f x = subst (λ e → Cone-hom F^op e _)
-          (Co-cone→Cocone→Co-cone _)
-          (Cocone-hom→Co-cone-hom x)
+  Colimit→Co-limit colim = to-limit (to-is-limit ml) where
+    module colim = Colimit colim
+    open make-is-limit
 
-        g : _ → _
-        g x = subst (λ e → Cocone-hom F e _)
-          (Cocone→Co-cone→Cocone _)
-          (Co-cone-hom→Cocone-hom x)
-
-        fg : is-left-inverse f g
-        fg x = Cone-hom-path _ (transport-refl _ ∙ transport-refl _)
+    ml : make-is-limit F^op colim.coapex
+    ml .ψ = colim.ψ
+    ml .commutes = colim.commutes
+    ml .universal eta p = colim.universal eta p
+    ml .factors eta p = colim.factors eta p
+    ml .unique eta p other q = colim.unique eta p other q
 
   Co-limit→Colimit
     : Limit F^op → Colimit F
-  Co-limit→Colimit lim = colim where
-    colim : Colimit F
-    colim .bot = Co-cone→Cocone (lim .top)
-    colim .has⊥ cocon =
-      retract→is-contr f g fg
-        (lim .has⊤ (Cocone→Co-cone cocon))
-      where
-        f : _ → _
-        f x = subst (λ e → Cocone-hom F _ e)
-          (Cocone→Co-cone→Cocone _)
-          (Co-cone-hom→Cocone-hom x)
+  Co-limit→Colimit lim = to-colimit (to-is-colimit mc) where
+    module lim = Limit lim
+    open make-is-colimit
 
-        g : _ → _
-        g x = subst (λ e → Cone-hom F^op _ e)
-          (Co-cone→Cocone→Co-cone _)
-          (Cocone-hom→Co-cone-hom x)
-
-        fg : is-left-inverse f g
-        fg x = Cocone-hom-path _ (transport-refl _ ∙ transport-refl _)
-
-module _ {o ℓ} {J : Precategory o ℓ} {F F′ : Functor J C} where
-  private module JC = Cat.Reasoning Cat[ J , C ]
-
-  Colimit-ap-iso : F JC.≅ F′ → Colimit F → Colimit F′
-  Colimit-ap-iso f cl =
-    Co-limit→Colimit (Limit-ap-iso (op-natural-iso f) (Colimit→Co-limit cl))
+    mc : make-is-colimit F lim.apex
+    mc .ψ = lim.ψ
+    mc .commutes = lim.commutes
+    mc .universal eta p = lim.universal eta p
+    mc .factors eta p = lim.factors eta p
+    mc .unique eta p other q = lim.unique eta p other q
 ```

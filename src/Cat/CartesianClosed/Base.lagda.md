@@ -51,7 +51,7 @@ record is-cc {o ℓ} (C : Precategory o ℓ) (cartesian : ∀ A B → Product C 
     terminal  : Terminal C
 
   open Cat.Reasoning C
-  open Cartesian C cartesian public
+  open Binary-products C cartesian public
 
   private
     module ×-Bifunctor = Bifunctor {C = C} {C} {C} ×-functor
@@ -86,13 +86,13 @@ uncurrying transformations:
 [adjuncts]: Cat.Functor.Adjoint.html#adjuncts
 
 ```agda
-  ev : Hom ([ X , Y ] ⊗ X) Y
+  ev : Hom ([ X , Y ] ⊗₀ X) Y
   ev = T⊣H.counit.ε _
 
-  curry : Hom (X ⊗ Y) Z → Hom X [ Y , Z ]
+  curry : Hom (X ⊗₀ Y) Z → Hom X [ Y , Z ]
   curry = L-adjunct (tensor⊣hom _)
 
-  uncurry : Hom X [ Y , Z ] → Hom (X ⊗ Y) Z
+  uncurry : Hom X [ Y , Z ] → Hom (X ⊗₀ Y) Z
   uncurry = R-adjunct (tensor⊣hom _)
 ```
 

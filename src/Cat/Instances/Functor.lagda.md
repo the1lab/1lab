@@ -14,7 +14,7 @@ module Cat.Instances.Functor where
 
 private variable
   o h o₁ h₁ o₂ h₂ : Level
-  C D E : Precategory o h
+  B C D E : Precategory o h
   F G : Functor C D
 ```
 
@@ -61,7 +61,8 @@ _∘nt_ {C = C} {D = D} {F} {G} {H} f g = nat
 
 <!--
 ```agda
-{-# DISPLAY ∘nt.nat f g = f ∘nt g #-}  
+infixr 40 _∘nt_
+{-# DISPLAY ∘nt.nat f g = f ∘nt g #-}
 ```
 -->
 
@@ -442,10 +443,23 @@ module
     module D = Cat.Reasoning D
     module C = Cat.Reasoning C
 
+  natural-inverses : {F G : Functor C D} → F => G → G => F → Type _
+  natural-inverses = CD.Inverses
+
+  is-natural-invertible : {F G : Functor C D} → F => G → Type _
+  is-natural-invertible = CD.is-invertible
+
   natural-iso : (F G : Functor C D) → Type _
   natural-iso F G = F CD.≅ G
 
-  module natural-iso {F G : Functor C D} (eta : F CD.≅ G) = CD._≅_ eta
+  module natural-inverses {F G : Functor C D} {α : F => G} {β : G => F} (inv : natural-inverses α β) =
+    CD.Inverses inv
+  module is-natural-invertible {F G : Functor C D} {α : F => G} (inv : is-natural-invertible α) =
+    CD.is-invertible inv
+  module natural-iso {F G : Functor C D} (eta : natural-iso F G) = CD._≅_ eta
+
+  idni : natural-iso F F
+  idni = CD.id-iso
 
   _ni∘_ : ∀ {F G H : Functor C D}
           → natural-iso F G → natural-iso G H
@@ -460,6 +474,7 @@ module
     → F DD.≅ Id → (F F∘ G) CD.≅ G
   F∘-iso-id-l {F} {G} isom = subst ((F F∘ G) CD.≅_) F∘-idl (F∘-iso-l isom)
 
+
   record make-natural-iso (F G : Functor C D) : Type (o ⊔ ℓ ⊔ ℓ′) where
     no-eta-equality
     field
@@ -468,6 +483,22 @@ module
       eta∘inv : ∀ x → eta x D.∘ inv x ≡ D.id
       inv∘eta : ∀ x → inv x D.∘ eta x ≡ D.id
       natural : ∀ x y f → G .F₁ f D.∘ eta x ≡ eta y D.∘ F .F₁ f
+
+  to-natural-inverses
+    : {F G : Functor C D} {α : F => G} {β : G => F}
+    → (∀ x → α .η x D.∘ β .η x ≡ D.id)
+    → (∀ x → β .η x D.∘ α .η x ≡ D.id)
+    → natural-inverses α β
+  to-natural-inverses p q =
+    CD.make-inverses (Nat-path p) (Nat-path q)
+
+  to-is-natural-invertible
+    : {F G : Functor C D} {α : F => G}
+    → (β : G => F)
+    → (∀ x → α .η x D.∘ β .η x ≡ D.id)
+    → (∀ x → β .η x D.∘ α .η x ≡ D.id)
+    → is-natural-invertible α
+  to-is-natural-invertible β p q = CD.make-invertible β (Nat-path p) (Nat-path q)
 
   to-natural-iso : {F G : Functor C D} → make-natural-iso F G → F CD.≅ G
   to-natural-iso {F = F} {G = G} x = isom where
@@ -489,7 +520,47 @@ module
     isom .inverses .invl = Nat-path eta∘inv
     isom .inverses .invr = Nat-path inv∘eta
 
+  natural-inverses→inverses
+    : ∀ {α : F => G} {β : G => F}
+    → natural-inverses α β
+    → ∀ x → D.Inverses (α .η x) (β .η x)
+  natural-inverses→inverses inv x =
+    D.make-inverses
+      (CD.Inverses.invl inv ηₚ x)
+      (CD.Inverses.invr inv ηₚ x)
+
+  is-natural-invertible→invertible
+    : ∀ {α : F => G}
+    → is-natural-invertible α
+    → ∀ x → D.is-invertible (α .η x)
+  is-natural-invertible→invertible inv x =
+    D.make-invertible
+      (CD.is-invertible.inv inv .η x)
+      (CD.is-invertible.invl inv ηₚ x)
+      (CD.is-invertible.invr inv ηₚ x)
+
+  is-natural-invertible→natural-iso
+    : ∀ {α : F => G}
+    → is-natural-invertible α
+    → natural-iso F G
+  is-natural-invertible→natural-iso nat-inv =
+    CD.invertible→iso _ nat-inv
+
+  natural-iso→is-natural-invertible
+    : (i : natural-iso F G)
+    → is-natural-invertible (natural-iso.to i)
+  natural-iso→is-natural-invertible i =
+    CD.iso→invertible i
+
 open _=>_
+
+_ni^op : natural-iso F G → natural-iso (Functor.op F) (Functor.op G)
+_ni^op α =
+  Cat.Reasoning.make-iso _
+    (_=>_.op (natural-iso.from α))
+    (_=>_.op (natural-iso.to α))
+    (Nat-path λ j → natural-iso.invl α ηₚ _)
+    (Nat-path λ j → natural-iso.invr α ηₚ _)
 
 module _
   {o ℓ o′ ℓ′ o₂ ℓ₂}
@@ -562,5 +633,19 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
   natural-iso→equiv eta x =
     natural-iso.to eta .η x ,
     natural-iso-to-is-equiv eta x
+
+module _ where
+  open Cat.Reasoning
+
+  -- [TODO: Reed M, 14/03/2023] Extend the coherence machinery to handle natural
+  -- isos.
+  ni-assoc : {F : Functor D E} {G : Functor C D} {H : Functor B C}
+         → natural-iso (F F∘ G F∘ H) ((F F∘ G) F∘ H)
+  ni-assoc {E = E} = to-natural-iso λ where
+    .make-natural-iso.eta _ → E .id
+    .make-natural-iso.inv _ → E .id
+    .make-natural-iso.eta∘inv _ → E .idl _
+    .make-natural-iso.inv∘eta _ → E .idl _
+    .make-natural-iso.natural _ _ _ → E .idr _ ∙ sym (E .idl _)
 ```
 -->

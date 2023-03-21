@@ -53,15 +53,15 @@ overall square has to commute.
 ~~~
 
 ```agda
-    limiting : ∀ {P′} {p₁' : Hom P′ X} {p₂' : Hom P′ Y}
+    universal : ∀ {P′} {p₁' : Hom P′ X} {p₂' : Hom P′ Y}
              → f ∘ p₁' ≡ g ∘ p₂' → Hom P′ P
-    p₁∘limiting : {p : f ∘ p₁' ≡ g ∘ p₂'} → p₁ ∘ limiting p ≡ p₁'
-    p₂∘limiting : {p : f ∘ p₁' ≡ g ∘ p₂'} → p₂ ∘ limiting p ≡ p₂'
+    p₁∘universal : {p : f ∘ p₁' ≡ g ∘ p₂'} → p₁ ∘ universal p ≡ p₁'
+    p₂∘universal : {p : f ∘ p₁' ≡ g ∘ p₂'} → p₂ ∘ universal p ≡ p₂'
 
     unique : {p : f ∘ p₁' ≡ g ∘ p₂'} {lim' : Hom P′ P}
            → p₁ ∘ lim' ≡ p₁'
            → p₂ ∘ lim' ≡ p₂'
-           → lim' ≡ limiting p
+           → lim' ≡ universal p
 
   unique₂
     : {p : f ∘ p₁' ≡ g ∘ p₂'} {lim' lim'' : Hom P′ P}
@@ -109,9 +109,20 @@ record Pullback {X Y Z} (f : Hom X Z) (g : Hom Y Z) : Type (ℓ ⊔ ℓ′) wher
   open is-pullback has-is-pb public
 ```
 
-<!--
+# Categories with all pullbacks
+
+We also provide a helper module for working with categories that have all
+pullbacks.
+
 ```agda
 has-pullbacks : Type _
 has-pullbacks = ∀ {A B X} (f : Hom A X) (g : Hom B X) → Pullback f g
+
+module Pullbacks (all-pullbacks : has-pullbacks) where
+
+  module pullback {x y z} (f : Hom x z) (g : Hom y z) =
+    Pullback (all-pullbacks f g)
+
+  Pb : ∀ {x y z} → Hom x z → Hom y z → Ob
+  Pb = pullback.apex
 ```
--->

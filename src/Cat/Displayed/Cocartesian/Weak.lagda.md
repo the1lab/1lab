@@ -1,20 +1,21 @@
 ```agda
-open import Cat.Displayed.Base
-open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Cartesian.Weak
-open import Cat.Displayed.Fibre
-open import Cat.Displayed.Total.Op
-open import Cat.Functor.Hom
 open import Cat.Functor.Hom.Displayed
+open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Total.Op
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
+open import Cat.Displayed.Fibre
+open import Cat.Displayed.Base
+open import Cat.Functor.Hom
 open import Cat.Prelude
 
-import Cat.Displayed.Cocartesian as Cocart
 import Cat.Displayed.Cocartesian.Indexing as Indexing
-import Cat.Displayed.Morphism
 import Cat.Displayed.Morphism.Duality
+import Cat.Displayed.Cocartesian as Cocart
+import Cat.Displayed.Cocartesian as Cocart
 import Cat.Displayed.Reasoning
+import Cat.Displayed.Morphism
 import Cat.Reasoning as CR
 
 module Cat.Displayed.Cocartesian.Weak
@@ -607,7 +608,7 @@ Furthermore, this equivalence is natural.
     mi .eta∘inv _ = funext λ v′ →
       sym $ weak-lift.unique u _ _ (to-pathp refl)
     mi .inv∘eta _ = funext λ u′ →
-      from-pathp $ weak-lift.commutes u _ _ 
+      from-pathp $ weak-lift.commutes u _ _
     mi .natural _ _ v′ = funext λ u′ →
       weak-lift.unique _ _ _ $ to-pathp $
         smashl _ _

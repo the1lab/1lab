@@ -2,11 +2,14 @@
 description: We establish that right adjoints preserve limits.
 ---
 ```agda
+open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
+open import Cat.Functor.Adjoint.Kan
 open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
+open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
 open import Cat.Diagram.Duals
@@ -14,6 +17,9 @@ open import Cat.Functor.Base
 open import Cat.Prelude
 
 open import Data.Bool
+
+import Cat.Functor.Reasoning as Func
+import Cat.Reasoning as Cat
 
 module Cat.Functor.Adjoint.Continuous where
 ```
@@ -26,11 +32,12 @@ module _
     (L⊣R : L ⊣ R)
   where
   private
-    module L = Functor L
-    module R = Functor R
-    import Cat.Reasoning C as C
-    import Cat.Reasoning D as D
+    module L = Func L
+    module R = Func R
+    module C = Cat C
+    module D = Cat D
     module adj = _⊣_ L⊣R
+    open _=>_
 ```
 -->
 
@@ -46,148 +53,108 @@ then instantiate this theorem to the "canonical" shapes of limit:
 [pullbacks]: Cat.Diagram.Pullback.html
 [equalisers]: Cat.Diagram.Equaliser.html
 
-```agda
-  module _ {od ℓd} {J : Precategory od ℓd} {F : Functor J D} where
-```
+This follows directly from the fact that [adjoints preserve Kan
+extensions].
 
-<!--
-```agda
-    private module F = Functor F
-    open Cone-hom
-    open Terminal hiding (! ; !-unique)
-    open Cone
-```
--->
+[adjoints preserve Kan extensions]: Cat.Functor.Adjoint.Kan.html
 
-## Passing cones along
-
-The first thing we prove is that, given a cone over a diagram $F$ in
-$\cD$, we can get a cone in $\cC$ over $R \circ F$, by passing
-both the apex and the morphisms "over" using $R$. In reality, this is
-just the canonically-defined action of $R$ on cones over $F$:
-
-```agda
-    cone-right-adjoint : Cone F → Cone (R F∘ F)
-    cone-right-adjoint = F-map-cone R
-```
-
-Conversely, if we have a cone over $R \circ F$, we can turn that into a
-cone for $F$. In this direction, we use $L$ on the apex, but we must
-additionally use the `adjunction counit`{.Agda ident=adj.counit.ε} to
-"adjust" the cone maps (that's `ψ`{.Agda}).
-
-```agda
-    right-adjoint-cone : Cone (R F∘ F) → Cone F
-    right-adjoint-cone K .apex     = L.₀ (K .apex)
-    right-adjoint-cone K .ψ x      = adj.counit.ε _ D.∘ L.₁ (K .ψ x)
-    right-adjoint-cone K .commutes {x} {y} f =
-      F.₁ f D.∘ adj.counit.ε _ D.∘ L.₁ (K .ψ x)                    ≡⟨ D.extendl (sym (adj.counit.is-natural _ _ _)) ⟩
-      adj.counit.ε (F.₀ y) D.∘ L.₁ (R.₁ (F.₁ f)) D.∘ L.₁ (K .ψ x)  ≡˘⟨ ap (λ e → adj.counit.ε _ D.∘ e) (L.F-∘ _ _) ⟩
-      adj.counit.ε (F.₀ y) D.∘ L.₁ (R.₁ (F.₁ f) C.∘ K .ψ x)        ≡⟨ ap (λ e → adj.counit.ε _ D.∘ L.₁ e) (K .commutes f) ⟩
-      adj.counit.ε _ D.∘ L.₁ _                                     ∎
-```
-
-The key fact is that we can also pass _homomorphisms_ along, both ways!
-
-```agda
-    cone-hom-right-adjoint
-      : {K : Cone (R F∘ F)} {K′ : Cone F}
-      → Cone-hom F (right-adjoint-cone K) K′
-      → Cone-hom (R F∘ F) K (cone-right-adjoint K′)
-    cone-hom-right-adjoint map .hom = R.₁ (map .hom) C.∘ adj.unit.η _
-    cone-hom-right-adjoint {K = K} {K′ = K′} map .commutes o =
-      R.₁ (K′ .ψ o) C.∘ R.₁ (map .hom) C.∘ adj.unit.η _                 ≡⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
-      R.₁ (K′ .ψ o D.∘ map .hom) C.∘ adj.unit.η _                       ≡⟨ ap (λ e → R.₁ e C.∘ _) (map .commutes _) ⟩
-      R.₁ (adj.counit.ε _ D.∘ L.₁ (Cone.ψ K o)) C.∘ adj.unit.η _        ≡⟨ C.pushl (R.F-∘ _ _) ⟩
-      R.₁ (adj.counit.ε _) C.∘ R.₁ (L.₁ (Cone.ψ K o)) C.∘ adj.unit.η _  ≡˘⟨ C.pullr (adj.unit.is-natural _ _ _) ⟩
-      (R.F₁ (adj.counit.ε _) C.∘ adj.unit.η _) C.∘ Cone.ψ K o           ≡⟨ ap (λ e → e C.∘ Cone.ψ K _) adj.zag ⟩
-      C.id C.∘ Cone.ψ K o                                               ≡⟨ C.idl _ ⟩
-      Cone.ψ K o                                                        ∎
-
-    right-adjoint-cone-hom
-      : {K : Cone (R F∘ F)} {K′ : Cone F}
-      → Cone-hom (R F∘ F) K (cone-right-adjoint K′)
-      → Cone-hom F (right-adjoint-cone K) K′
-    right-adjoint-cone-hom map .hom = adj.counit.ε _ D.∘ L.₁ (map .hom)
-    right-adjoint-cone-hom {K = K} {K′ = K′} map .commutes o =
-      K′ .ψ o D.∘ adj.counit.ε _ D.∘ L.₁ (map .hom)               ≡⟨ D.extendl (sym (adj.counit.is-natural _ _ _)) ⟩
-      adj.counit.ε _ D.∘ (L.₁ (R.₁ (K′ .ψ o)) D.∘ L.₁ (map .hom)) ≡⟨ ap (λ e → _ D.∘ e) (sym (L.F-∘ _ _)) ⟩
-      adj.counit.ε _ D.∘ (L.₁ (R.₁ (K′ .ψ o) C.∘ map .hom))       ≡⟨ ap (λ e → _ D.∘ L.₁ e) (map .commutes _) ⟩
-      adj.counit.ε _ D.∘ L.₁ (K .ψ o)                             ∎
-```
-
-Hence, if we have a limit for $F$, the two lemmas above (in the "towards
-right adjoint" direction) already get us 66% of the way to having a
-limit for $R \circ F$. The missing bit is a very short calculation:
-
-```
-    right-adjoint-limit : Limit F → Limit (R F∘ F)
-    right-adjoint-limit lim .top = cone-right-adjoint (lim .top)
-    right-adjoint-limit lim .has⊤ cone = contr ! !-unique where
-      pre! = lim .has⊤ _ .centre
-      ! = cone-hom-right-adjoint pre!
-
-      !-unique : ∀ x → ! ≡ x
-      !-unique x = Cone-hom-path _ (
-        R.₁ (pre! .hom) C.∘ adj.unit.η _                             ≡⟨ ap (λ e → R.₁ e C.∘ _) (ap hom (lim .has⊤ _ .paths (right-adjoint-cone-hom x))) ⟩
-        R.₁ (adj.counit.ε _ D.∘ L.₁ (x .hom)) C.∘ adj.unit.η _       ≡˘⟨ C.pulll (sym (R.F-∘ _ _)) ⟩
-        R.₁ (adj.counit.ε _) C.∘ R.₁ (L.₁ (x .hom)) C.∘ adj.unit.η _ ≡˘⟨ ap (R.₁ _ C.∘_) (adj.unit.is-natural _ _ _) ⟩
-        R.₁ (adj.counit.ε _) C.∘ adj.unit.η _ C.∘ x .hom             ≡⟨ C.cancell adj.zag ⟩
-        x .hom                                                       ∎)
-```
-
-We then have the promised theorem: right adjoints preserve limits.
 
 ```agda
   right-adjoint-is-continuous
-    : ∀ {os ℓs} → is-continuous {oshape = os} {hshape = ℓs} R
-  right-adjoint-is-continuous L x = Terminal.has⊤ (right-adjoint-limit (record { top = L ; has⊤ = x }))
+    : ∀ {os ℓs} → is-continuous os ℓs R
+  right-adjoint-is-continuous lim =
+    right-adjoint→right-extension lim L⊣R
+
+  left-adjoint-is-cocontinuous
+    : ∀ {os ℓs} → is-cocontinuous os ℓs L
+  left-adjoint-is-cocontinuous colim =
+    left-adjoint→left-extension colim L⊣R
+
+  module _ {od ℓd} {J : Precategory od ℓd} where
+    right-adjoint-limit : ∀ {F : Functor J D} → Limit F → Limit (R F∘ F)
+    right-adjoint-limit lim =
+      to-limit (right-adjoint-is-continuous (Limit.has-limit lim))
+
+    left-adjoint-colimit : ∀ {F : Functor J C} → Colimit F → Colimit (L F∘ F)
+    left-adjoint-colimit colim =
+      to-colimit (left-adjoint-is-cocontinuous (Colimit.has-colimit colim))
 ```
 
 ## Concrete limits
 
-For establishing the preservation of "concrete limits", in addition to
-the preexisting conversion functions (`Lim→Prod`{.Agda},
-`Limit→Pullback`{.Agda}, `Limit→Equaliser`{.Agda}, etc.), we must
-establish results analogous to `canonical-functors`{.Agda}: Functors out
-of shape categories are entirely determined by the "introduction forms"
-`cospan→cospan-diagram`{.Agda} and `par-arrows→par-diagram`{.Agda}.
+We now show that adjoint functors preserve "concrete limits". We could
+show this using general abstract nonsense, but we can avoid transports
+if we do it by hand.
 
+<!--
 ```agda
-  open import Cat.Instances.Shape.Parallel
-  open import Cat.Instances.Shape.Cospan
-  open import Cat.Diagram.Limit.Equaliser
-  open import Cat.Diagram.Limit.Pullback
-  open import Cat.Diagram.Limit.Product
   open import Cat.Diagram.Equaliser
   open import Cat.Diagram.Pullback
   open import Cat.Diagram.Product
+```
+-->
 
-  right-adjoint→product
-    : ∀ {A B} → Product D A B → Product C (R.₀ A) (R.₀ B)
-  right-adjoint→product {A = A} {B} prod =
-    Lim→Prod C (fixup (right-adjoint-limit (Prod→Lim D prod)))
-    where
-      fixup : Limit (R F∘ 2-object-diagram D {iss = Bool-is-set} A B)
-            → Limit (2-object-diagram C {iss = Bool-is-set} (R.₀ A) (R.₀ B))
-      fixup = subst Limit (canonical-functors _ _)
+```agda
+  right-adjoint→is-product
+    : ∀ {x a b} {p1 : D.Hom x a} {p2 : D.Hom x b}
+    → is-product D p1 p2
+    → is-product C (R.₁ p1) (R.₁ p2)
+  right-adjoint→is-product {x = x} {a} {b} {p1} {p2} d-prod = c-prod where
+    open is-product
 
-  right-adjoint→pullback
-    : ∀ {A B c} {f : D.Hom A c} {g : D.Hom B c}
-    → Pullback D f g → Pullback C (R.₁ f) (R.₁ g)
-  right-adjoint→pullback {f = f} {g} pb =
-    Limit→Pullback C {x = lzero} {y = lzero}
-      (right-adjoint-limit (Pullback→Limit D pb))
+    c-prod : is-product C (R.₁ p1) (R.₁ p2)
+    c-prod .⟨_,_⟩ f g =
+      L-adjunct L⊣R (d-prod .⟨_,_⟩ (R-adjunct L⊣R f) (R-adjunct L⊣R g))
+    c-prod .π₁∘factor =
+      R.pulll (d-prod .π₁∘factor) ∙ L-R-adjunct L⊣R _
+    c-prod .π₂∘factor =
+      R.pulll (d-prod .π₂∘factor) ∙ L-R-adjunct L⊣R _
+    c-prod .unique other p q =
+      sym (L-R-adjunct L⊣R other)
+      ∙ ap (L-adjunct L⊣R)
+           (d-prod .unique _ (R-adjunct-ap L⊣R p) (R-adjunct-ap L⊣R q))
 
-  right-adjoint→equaliser
-    : ∀ {A B} {f g : D.Hom A B}
-    → Equaliser D f g → Equaliser C (R.₁ f) (R.₁ g)
-  right-adjoint→equaliser {f = f} {g} eq =
-    Limit→Equaliser C (right-adjoint-limit
-      (Equaliser→Limit D {F = par-arrows→par-diagram f g} eq))
+  right-adjoint→is-pullback
+    : ∀ {p x y z}
+    → {p1 : D.Hom p x} {f : D.Hom x z} {p2 : D.Hom p y} {g : D.Hom y z}
+    → is-pullback D p1 f p2 g
+    → is-pullback C (R.₁ p1) (R.₁ f) (R.₁ p2) (R.₁ g)
+  right-adjoint→is-pullback {p1 = p1} {f} {p2} {g} d-pb = c-pb where
+    open is-pullback
+
+    c-pb : is-pullback C (R.₁ p1) (R.₁ f) (R.₁ p2) (R.₁ g)
+    c-pb .square = R.weave (d-pb .square)
+    c-pb .universal sq =
+      L-adjunct L⊣R (d-pb .universal (R-adjunct-square L⊣R sq))
+    c-pb .p₁∘universal =
+      R.pulll (d-pb .p₁∘universal) ∙ L-R-adjunct L⊣R _
+    c-pb .p₂∘universal =
+      R.pulll (d-pb .p₂∘universal) ∙ L-R-adjunct L⊣R _
+    c-pb .unique {_} {p₁'} {p₂'} {sq} {other} p q =
+      sym (L-R-adjunct L⊣R other)
+      ∙ ap (L-adjunct L⊣R)
+           (d-pb .unique (R-adjunct-ap L⊣R p) (R-adjunct-ap L⊣R q))
+
+  right-adjoint→is-equaliser
+    : ∀ {e a b} {f g : D.Hom a b} {equ : D.Hom e a}
+    → is-equaliser D f g equ
+    → is-equaliser C (R.₁ f) (R.₁ g) (R.₁ equ)
+  right-adjoint→is-equaliser {f = f} {g} {equ} d-equal = c-equal where
+    open is-equaliser
+
+    c-equal : is-equaliser C (R.₁ f) (R.₁ g) (R.₁ equ)
+    c-equal .equal = R.weave (d-equal .equal)
+    c-equal .universal sq =
+      L-adjunct L⊣R (d-equal .universal (R-adjunct-square L⊣R sq))
+    c-equal .factors =
+      R.pulll (d-equal .factors) ∙ L-R-adjunct L⊣R _
+    c-equal .unique p =
+      sym (L-R-adjunct L⊣R _)
+      ∙ ap (L-adjunct L⊣R)
+           (d-equal .unique (R-adjunct-ap L⊣R p))
 
   right-adjoint→terminal
-    : ∀ {X} → is-terminal D X → is-terminal C (R.₀ X)
+    : ∀ {x} → is-terminal D x → is-terminal C (R.₀ x)
   right-adjoint→terminal term x = contr fin uniq where
     fin = L-adjunct L⊣R (term (L.₀ x) .centre)
     uniq : ∀ x → fin ≡ x
@@ -196,40 +163,8 @@ of shape categories are entirely determined by the "introduction forms"
       (x , is-contr→is-prop (term _) _ _)
 
   right-adjoint→lex : is-lex R
-  right-adjoint→lex .is-lex.pres-⊤ = right-adjoint→terminal
+  right-adjoint→lex .is-lex.pres-⊤ =
+    right-adjoint→terminal
   right-adjoint→lex .is-lex.pres-pullback {f = f} {g = g} pb =
-    right-adjoint→pullback (record { p₁ = _ ; p₂ = _ ; has-is-pb = pb }) .Pullback.has-is-pb
+    right-adjoint→is-pullback pb
 ```
-
-<!--
-```agda
-module _
-    {o o′ ℓ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
-    {L : Functor C D} {R : Functor D C}
-    (L⊣R : L ⊣ R)
-  where
-
-  private
-    adj′ : Functor.op R ⊣ Functor.op L
-    adj′ = opposite-adjunction L⊣R
-
-  module _ {od ℓd} {J : Precategory od ℓd} {F : Functor J C} where
-    left-adjoint-colimit : Colimit F → Colimit (L F∘ F)
-    left-adjoint-colimit colim = colim′′ where
-      lim : Limit (Functor.op F)
-      lim = Colimit→Co-limit _ colim
-
-      lim′ : Limit (Functor.op L F∘ Functor.op F)
-      lim′ = right-adjoint-limit adj′ lim
-
-      colim′ : Colimit (Functor.op (Functor.op L F∘ Functor.op F))
-      colim′ = Co-limit→Colimit _ (subst Limit (sym F^op^op≡F) lim′)
-
-      colim′′ : Colimit (L F∘ F)
-      colim′′ = subst Colimit (Functor-path (λ x → refl) λ x → refl) colim′
-
-```
-
-TODO [Amy 2022-04-05]
-cocontinuity
--->

@@ -26,12 +26,12 @@ right-hand-sides agree.
 record is-equaliser {E} (f g : Hom A B) (equ : Hom E A) : Type (ℓ ⊔ ℓ′) where
   field
     equal     : f ∘ equ ≡ g ∘ equ
-    limiting  : ∀ {F} {e′ : Hom F A} (p : f ∘ e′ ≡ g ∘ e′) → Hom F E
-    universal : ∀ {F} {e′ : Hom F A} {p : f ∘ e′ ≡ g ∘ e′} → equ ∘ limiting p ≡ e′
+    universal : ∀ {F} {e′ : Hom F A} (p : f ∘ e′ ≡ g ∘ e′) → Hom F E
+    factors   : ∀ {F} {e′ : Hom F A} {p : f ∘ e′ ≡ g ∘ e′} → equ ∘ universal p ≡ e′
     unique
-      : ∀ {F} {e′ : Hom F A} {p : f ∘ e′ ≡ g ∘ e′} {lim' : Hom F E}
-      → e′ ≡ equ ∘ lim'
-      → lim' ≡ limiting p
+      : ∀ {F} {e′ : Hom F A} {p : f ∘ e′ ≡ g ∘ e′} {other : Hom F E}
+      → equ ∘ other ≡ e′
+      → other ≡ universal p
 
   equal-∘ : f ∘ equ ∘ h ≡ g ∘ equ ∘ h
   equal-∘ {h = h} =
@@ -39,11 +39,12 @@ record is-equaliser {E} (f g : Hom A B) (equ : Hom E A) : Type (ℓ ⊔ ℓ′) 
     g ∘ equ ∘ h ∎
 
   unique₂
-    : ∀ {F} {e′ : Hom F A} {p : f ∘ e′ ≡ g ∘ e′} {lim' lim'' : Hom F E}
-    → e′ ≡ equ ∘ lim'
-    → e′ ≡ equ ∘ lim''
-    → lim' ≡ lim''
-  unique₂ {p = p} q r = unique {p = p} q ∙ sym (unique r)
+    : ∀ {F} {e′ : Hom F A}  {o1 o2 : Hom F E}
+    → f ∘ e′ ≡ g ∘ e′
+    → equ ∘ o1 ≡ e′
+    → equ ∘ o2 ≡ e′
+    → o1 ≡ o2
+  unique₂ p q r = unique {p = p} q ∙ sym (unique r)
 ```
 
 We can visualise the situation using the commutative diagram below:
@@ -86,8 +87,22 @@ is-equaliser→is-monic
   → is-equaliser f g equ
   → is-monic equ
 is-equaliser→is-monic equ equalises g h p =
-  g                ≡⟨ unique (sym p) ⟩
-  limiting equal-∘ ≡˘⟨ unique refl ⟩
-  h ∎
+  unique₂ (extendl equal) p refl
   where open is-equaliser equalises
+```
+
+# Categories with all equalisers
+
+We also define a helper module for working with categories that have
+equalisers of all parallel pairs of morphisms.
+
+```agda
+has-equalisers : Type _
+has-equalisers = ∀ {a b} (f g : Hom a b) → Equaliser f g
+
+module Equalisers (all-equalisers : has-equalisers) where
+  module equaliser {a b} (f g : Hom a b) = Equaliser (all-equalisers f g)
+
+  Equ : ∀ {a b} (f g : Hom a b) → Ob
+  Equ = equaliser.apex
 ```

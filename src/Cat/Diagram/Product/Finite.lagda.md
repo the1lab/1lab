@@ -26,8 +26,8 @@ open is-product
 open Terminal
 open Product
 open Cr C
-private module Cart = Cartesian C products
-open Cart using (_⊗_)
+private module Cart = Binary-products C products
+open Cart using (_⊗₀_)
 ```
 -->
 
@@ -56,7 +56,7 @@ Cartesian→standard-finite-products F = prod where
   F-apex : ∀ {n} → (F : Fin n → Ob) → Ob
   F-apex {zero} F        = terminal .top
   F-apex {suc zero} F    = F fzero
-  F-apex {suc (suc n)} F = F fzero ⊗ F-apex (λ e → F (fsuc e))
+  F-apex {suc (suc n)} F = F fzero ⊗₀ F-apex (λ e → F (fsuc e))
 
   F-pi : ∀ {n} (F : Fin n → Ob) (i : Fin n) → Hom (F-apex F) (F i)
   F-pi {suc zero} F fzero       = id

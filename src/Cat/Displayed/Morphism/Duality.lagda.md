@@ -1,12 +1,12 @@
 ```agda
-open import Cat.Displayed.Base
 open import Cat.Displayed.Total.Op
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Morphism
-import Cat.Morphism.Duality
-import Cat.Displayed.Morphism
 import Cat.Displayed.Reasoning
+import Cat.Displayed.Morphism
+import Cat.Morphism.Duality
+import Cat.Morphism
 
 module Cat.Displayed.Morphism.Duality
   {o ℓ o′ ℓ′}
@@ -123,7 +123,7 @@ co-section[]→retract[] f .retract′ =
 co-section[]→retract[] f .is-retract′ =
   ℰ^op.is-section′ f
 
-retract[]→co-section[] 
+retract[]→co-section[]
   : ∀ {r : ℬ.has-retract f}
   → ℰ.has-retract[ r ] f′
   → ℰ^op.has-section[ retract→co-section r ] f′
@@ -285,4 +285,3 @@ vertical-iso→vertical-co-iso f =
     (cast[] (ℰ.invr′ f))
     (cast[] (ℰ.invl′ f))
 ```
-

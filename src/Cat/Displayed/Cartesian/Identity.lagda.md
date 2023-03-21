@@ -5,8 +5,8 @@ open import Cat.Prelude
 
 import Cat.Displayed.Univalence.Reasoning
 import Cat.Displayed.Univalence
-import Cat.Displayed.Morphism
 import Cat.Displayed.Reasoning as Dr
+import Cat.Displayed.Morphism
 import Cat.Reasoning as Cr
 
 module Cat.Displayed.Cartesian.Identity

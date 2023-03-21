@@ -2,9 +2,9 @@
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Reasoning
-import Cat.Displayed.Morphism
 import Cat.Displayed.Reasoning as DR
+import Cat.Displayed.Morphism
+import Cat.Reasoning
 
 module Cat.Displayed.Cartesian
   {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′) where

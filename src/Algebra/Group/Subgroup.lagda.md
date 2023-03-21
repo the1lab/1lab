@@ -319,7 +319,7 @@ will compute.
       path : (x : ⌞ Kerf.ker ⌟) → A→im # A.unit ≡ A→im # (x .fst)
       path (x* , p) = Tpath (f.pres-id ∙ sym p)
 
-    coeq .coequalise {F = F} {e′ = e'} p = gh where
+    coeq .universal {F = F} {e′ = e'} p = gh where
       module F = Group-on (F .snd)
       module e' = is-group-hom (e' .preserves)
 
@@ -330,7 +330,7 @@ will compute.
           {P = λ q r → elim p (((x , q) Ak.⋆ (y , r)) .snd) ≡ elim p q F.⋆ elim p r}
           (λ _ _ → F.has-is-set _ _) (λ x y → e'.pres-⋆ _ _) q r
 
-    coeq .universal = Forget-is-faithful refl
+    coeq .factors = Forget-is-faithful refl
 
     coeq .unique {F} {p = p} {colim = colim} prf = Forget-is-faithful (funext path)
       where abstract
@@ -341,7 +341,7 @@ will compute.
             {P = λ q → colim # (x , q) ≡ elim p q}
             (λ _ → F.has-is-set _ _)
             (λ { (f , fp) → ap (colim #_) (Σ-prop-path (λ _ → squash) (sym fp))
-                          ∙ sym (happly (ap hom prf) f) })
+                          ∙ (happly (ap hom prf) f) })
             t
 ```
 

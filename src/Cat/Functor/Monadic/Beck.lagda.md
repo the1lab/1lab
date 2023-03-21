@@ -157,9 +157,9 @@ can be seen below. Uniqueness of this map follows almost immediately
 from the algebra laws.
 
 ```agda
-  algebra-is-coequaliser .coequalise {F = F} {e'} p .morphism =
+  algebra-is-coequaliser .universal {F = F} {e'} p .morphism =
     e' .morphism C.∘ T.unit .η A
-  algebra-is-coequaliser .coequalise {F = F} {e'} p .commutes =
+  algebra-is-coequaliser .universal {F = F} {e'} p .commutes =
     (e' .morphism C.∘ unit.η A) C.∘ A.ν                   ≡⟨ C.extendr (unit.is-natural _ _ _) ⟩
     (e' .morphism C.∘ T.M₁ A.ν) C.∘ unit.η  (T.M₀ A)      ≡˘⟨ ap morphism p C.⟩∘⟨refl ⟩
     (e' .morphism C.∘ T.mult .η A) C.∘ unit.η  (T.M₀ A)   ≡⟨ C.cancelr T.right-ident ⟩
@@ -168,14 +168,14 @@ from the algebra laws.
     (e' .morphism C.∘ T.mult .η A) C.∘ T.M₁ (unit.η A)    ≡⟨ C.pushl (e' .commutes) ⟩
     F .snd .ν C.∘ T.M₁ (e' .morphism) C.∘ T.M₁ (unit.η A) ≡˘⟨ C.refl⟩∘⟨ T.M-∘ _ _ ⟩
     F .snd .ν C.∘ T.M₁ (e' .morphism C.∘ unit.η A)        ∎
-  algebra-is-coequaliser .universal {F = F} {e'} {p} = Algebra-hom-path C $
+  algebra-is-coequaliser .factors {F = F} {e'} {p} = Algebra-hom-path C $
     (e' .morphism C.∘ unit.η _) C.∘ A.ν          ≡⟨ C.extendr (unit.is-natural _ _ _) ⟩
     (e' .morphism C.∘ T.M₁ A.ν) C.∘ unit.η  _    ≡˘⟨ ap morphism p C.⟩∘⟨refl ⟩
     (e' .morphism C.∘ T.mult .η _) C.∘ unit.η  _ ≡⟨ C.cancelr T.right-ident ⟩
     e' .morphism                                 ∎
   algebra-is-coequaliser .unique {F = F} {e'} {p} {colim} q =
     Algebra-hom-path C $ sym $
-      e' .morphism C.∘ unit.η A              ≡⟨ ap morphism q C.⟩∘⟨refl ⟩
+      e' .morphism C.∘ unit.η A              ≡⟨ ap morphism (sym q) C.⟩∘⟨refl ⟩
       (colim .morphism C.∘ A.ν) C.∘ unit.η A ≡⟨ C.cancelr A.ν-unit ⟩
       colim .morphism                        ∎
 ```
@@ -218,7 +218,7 @@ far $\cD$ is from being the category of $T$-algebras.
   Comparison⁻¹ : Functor (Eilenberg-Moore C T) D
   Comparison⁻¹ .F₀ = coapex ⊙ has-coeq
   Comparison⁻¹ .F₁ {X} {Y} alg-map =
-    has-coeq X .coequalise {e′ = e′} path where
+    has-coeq X .universal {e′ = e′} path where
       e′ : D.Hom (F.F₀ (X .fst)) (Comparison⁻¹ .F₀ Y)
       e′ = has-coeq Y .coeq D.∘ F.₁ (alg-map .morphism)
 ```
@@ -231,10 +231,10 @@ far $\cD$ is from being the category of $T$-algebras.
           has-coeq Y .coeq D.∘ F.₁ (Y .snd .ν) D.∘ F.₁ (T.M₁ (alg-map .morphism)) ≡⟨ D.extendl (has-coeq Y .coequal) ⟩
           has-coeq Y .coeq D.∘ counit.ε _ D.∘ F.₁ (T.M₁ (alg-map .morphism))      ≡⟨ D.pushr (counit.is-natural _ _ _) ⟩
           (has-coeq Y .coeq D.∘ F.₁ (alg-map .morphism)) D.∘ counit.ε _           ∎
-  Comparison⁻¹ .F-id {X} = sym $ has-coeq X .unique (F.elimr refl ∙ D.introl refl)
-  Comparison⁻¹ .F-∘ {X} f g = sym $ has-coeq X .unique $ sym $
-       D.pullr (has-coeq X .universal)
-    ·· D.pulll (has-coeq _ .universal)
+  Comparison⁻¹ .F-id {X} = sym $ has-coeq X .unique (D.idl _ ∙ D.intror F.F-id)
+  Comparison⁻¹ .F-∘ {X} f g = sym $ has-coeq X .unique $
+       D.pullr (has-coeq X .factors)
+    ·· D.pulll (has-coeq _ .factors)
     ·· F.pullr refl
 
   open _⊣_
@@ -252,7 +252,7 @@ readers.
   Comparison⁻¹⊣Comparison .unit .η x .morphism =
     G.₁ (has-coeq _ .coeq) C.∘ T.unit .η _
   Comparison⁻¹⊣Comparison .counit .η x =
-    has-coeq _ .coequalise (F⊣G .counit.is-natural _ _ _)
+    has-coeq _ .universal (F⊣G .counit.is-natural _ _ _)
 ```
 
 <details>
@@ -268,25 +268,27 @@ readers.
   Comparison⁻¹⊣Comparison .unit .is-natural x y f = Algebra-hom-path C $
     (G.₁ (has-coeq y .coeq) C.∘ T.unit.η _) C.∘ f .morphism                    ≡⟨ C.pullr (T.unit.is-natural _ _ _) ⟩
     G.₁ (has-coeq y .coeq) C.∘ T.M₁ (f .morphism) C.∘ T.unit .η (x .fst)       ≡⟨ C.pulll (sym (G.F-∘ _ _)) ⟩
-    G.₁ (has-coeq y .coeq D.∘ F.₁ (f .morphism)) C.∘ T.unit .η (x .fst)        ≡⟨ ap G.₁ (sym (has-coeq _ .universal)) C.⟩∘⟨refl ⟩
-    G.₁ (has-coeq x .coequalise _ D.∘ has-coeq x .coeq) C.∘ T.unit .η (x .fst) ≡⟨ C.pushl (G.F-∘ _ _) ⟩
-    G.₁ (has-coeq x .coequalise _) C.∘ G.₁ (has-coeq x .coeq) C.∘ T.unit.η _   ∎
+    G.₁ (has-coeq y .coeq D.∘ F.₁ (f .morphism)) C.∘ T.unit .η (x .fst)        ≡⟨ ap G.₁ (sym (has-coeq _ .factors)) C.⟩∘⟨refl ⟩
+    G.₁ (has-coeq x .universal _ D.∘ has-coeq x .coeq) C.∘ T.unit .η (x .fst) ≡⟨ C.pushl (G.F-∘ _ _) ⟩
+    G.₁ (has-coeq x .universal _) C.∘ G.₁ (has-coeq x .coeq) C.∘ T.unit.η _   ∎
   Comparison⁻¹⊣Comparison .counit .is-natural x y f =
       has-coeq (F₀ (Comparison F⊣G) x) .unique
         {p = ap₂ D._∘_ (F⊣G .counit.is-natural _ _ _) refl
           ·· D.pullr (F⊣G .counit.is-natural _ _ _)
           ·· D.pulll (sym (F⊣G .counit.is-natural _ _ _))}
-        (sym (D.pullr (has-coeq _ .universal) ∙ D.pulll (has-coeq _ .universal)))
-    ∙ sym (has-coeq _ .unique (F⊣G .counit.is-natural _ _ _ ∙ D.pushr (sym (has-coeq _ .universal))))
+        (D.pullr (has-coeq _ .factors) ∙ D.pulll (has-coeq _ .factors))
+    ∙ sym (has-coeq _ .unique (D.pullr (has-coeq _ .factors) ∙ sym (F⊣G .counit.is-natural _ _ _)))
   Comparison⁻¹⊣Comparison .zig =
-    has-coeq _ .unique {e′ = has-coeq _ .coeq} {p = has-coeq _ .coequal}
-      (sym (D.pullr (has-coeq _ .universal)
-          ∙ D.pulll (has-coeq _ .universal)
-          ∙ ap₂ D._∘_ refl (F.F-∘ _ _) ∙ D.pulll (F⊣G .counit.is-natural _ _ _)
-          ∙ D.cancelr (F⊣G .zig)))
-    ∙ sym (has-coeq _ .unique (D.introl refl))
+    unique₂ (has-coeq _)
+      (has-coeq _ .coequal)
+      (D.pullr (has-coeq _ .factors)
+      ∙ D.pulll (has-coeq _ .factors)
+      ∙ ap₂ D._∘_ refl (F.F-∘ _ _)
+      ∙ D.pulll (F⊣G .counit.is-natural _ _ _)
+      ∙ D.cancelr (F⊣G .zig))
+      (D.idl _)
   Comparison⁻¹⊣Comparison .zag = Algebra-hom-path C $
-    G.pulll (has-coeq _ .universal) ∙ F⊣G .zag
+    G.pulll (has-coeq _ .factors) ∙ F⊣G .zag
 ```
 
 </details>

@@ -1,11 +1,13 @@
 ```agda
-open import Cat.Functor.Adjoint.Continuous
+open import Cat.Functor.Kan.Pointwise
 open import Cat.Diagram.Colimit.Base
-open import Cat.Functor.Kan.Nerve
 open import Cat.Instances.Functor
+open import Cat.Functor.Kan.Base
 open import Cat.Functor.Hom
-open import Cat.Functor.Kan
 open import Cat.Prelude
+
+import Cat.Functor.Reasoning as Func
+import Cat.Reasoning
 
 module
   Cat.Functor.Hom.Cocompletion
@@ -16,7 +18,13 @@ module
 
 <!--
 ```agda
+private
+  module C = Cat.Reasoning C
+  module D = Cat.Reasoning D
 open import Cat.Morphism Cat[ C , D ] using (_≅_)
+
+open Func
+open _=>_
 ```
 -->
 
@@ -72,17 +80,12 @@ risen above it: Everything claimed above follows from the general theory
 of Kan extensions.
 
 [Yoneda embedding]: Cat.Functor.Hom.html#the-yoneda-embedding
-[left Kan extension]: Cat.Functor.Kan.html
+[left Kan extension]: Cat.Functor.Kan.Base.html
 
 ```agda
-extend : Functor C D → Functor (PSh κ C) D
-extend F = Realisation colim F
+よ-extension : (F : Functor C D) → Lan (よ C) F
+よ-extension F = cocomplete→lan (よ C) F colim
 
-extend-cocontinuous
-  : ∀ {od ℓd} {J : Precategory od ℓd} {Dg : Functor J (PSh κ C)} (F : Functor C D)
-  → Colimit Dg → Colimit (extend F F∘ Dg)
-extend-cocontinuous F = left-adjoint-colimit (Realisation⊣Nerve colim F)
-
-extend-factors : (F : Functor C D) → (extend F F∘ よ C) ≅ F
-extend-factors F = ff-lan-ext colim (よ C) F (よ-is-fully-faithful C)
+extend-factors : (F : Functor C D) → (よ-extension F .Lan.Ext F∘ よ C) ≅ F
+extend-factors F = ff→cocomplete-lan-ext (よ C) F colim (よ-is-fully-faithful C)
 ```

@@ -1,6 +1,7 @@
 ```agda
-open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Cocartesian
+open import Cat.Displayed.Cocartesian
+open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Pullback
 open import Cat.Displayed.Fibre
@@ -183,15 +184,15 @@ Codomain-fibration
   : (∀ {x y z} (f : Hom x y) (g : Hom z y) → Pullback B f g)
   → Cartesian-fibration Slices
 Codomain-fibration pullbacks .has-lift f y′ = lift-f where
-  open Pullback (pullbacks f (y′ .map))
+  module pb = Pullback (pullbacks f (y′ .map))
 
   lift-f : Cartesian-lift Slices f y′
-  lift-f .x′ = cut p₁
-  lift-f .lifting .to = p₂
-  lift-f .lifting .commute = square
-  lift-f .cartesian .universal m h′ .to = limiting (assoc _ _ _ ∙ h′ .commute)
-  lift-f .cartesian .universal m h′ .commute = sym p₁∘limiting
-  lift-f .cartesian .commutes m h′ = Slice-pathp refl p₂∘limiting
+  lift-f .x′ = cut pb.p₁
+  lift-f .lifting .to = pb.p₂
+  lift-f .lifting .commute = pb.square
+  lift-f .cartesian .universal m h′ .to = pb.universal (assoc _ _ _ ∙ h′ .commute)
+  lift-f .cartesian .universal m h′ .commute = sym pb.p₁∘universal
+  lift-f .cartesian .commutes m h′ = Slice-pathp refl pb.p₂∘universal
   lift-f .cartesian .unique m′ x = Slice-pathp refl $
     Pullback.unique (pullbacks f (y′ .map)) (sym (m′ .commute)) (ap to x)
 ```
@@ -212,20 +213,20 @@ Codomain-fibration→pullbacks
 Codomain-fibration→pullbacks f g lifts = pb where
   open Pullback
   open is-pullback
-  the-lift = lifts .has-lift f (cut g)
+  module the-lift = Cartesian-lift (lifts .has-lift f (cut g))
 
   pb : Pullback B f g
-  pb .apex = the-lift .x′ .domain
-  pb .p₁ = the-lift .x′ .map
-  pb .p₂ = the-lift .lifting .to
-  pb .has-is-pb .square = the-lift .lifting .commute
-  pb .has-is-pb .limiting {p₁' = p₁'} {p₂'} p =
-    the-lift .cartesian .universal {u′ = cut id}
+  pb .apex = the-lift.x′ .domain
+  pb .p₁ = the-lift.x′ .map
+  pb .p₂ = the-lift.lifting .to
+  pb .has-is-pb .square = the-lift.lifting .commute
+  pb .has-is-pb .universal {p₁' = p₁'} {p₂'} p =
+    the-lift.cartesian .universal {u′ = cut id}
       p₁' (slice-hom p₂' (pullr (idr _) ∙ p)) .to
-  pb .has-is-pb .p₁∘limiting =
-    sym (the-lift .cartesian .universal _ _ .commute) ∙ idr _
-  pb .has-is-pb .p₂∘limiting = ap to (the-lift .cartesian .commutes _ _)
-  pb .has-is-pb .unique p q = ap to $ the-lift .cartesian .unique
+  pb .has-is-pb .p₁∘universal =
+    sym (the-lift.universal _ _ .commute) ∙ idr _
+  pb .has-is-pb .p₂∘universal = ap to (the-lift.cartesian .commutes _ _)
+  pb .has-is-pb .unique p q = ap to $ the-lift.cartesian .unique
     (slice-hom _ (idr _ ∙ sym p)) (Slice-pathp refl q)
 ```
 

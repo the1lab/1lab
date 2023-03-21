@@ -5,10 +5,12 @@ description: |
   isomorphism of Hom-sets.
 ---
 ```agda
-open import Cat.Functor.Adjoint
-open import Cat.Functor.Hom
+open import Cat.Instances.Functor
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
+open import Cat.Instances.Product
+open import Cat.Functor.Adjoint
+open import Cat.Functor.Hom
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
@@ -69,7 +71,7 @@ terms.
   hom-iso-natural f =
     ∀ {a b c d} (g : C.Hom a b) (h : D.Hom c d) x
     → f (g C.∘ x C.∘ L.₁ h) ≡ R.₁ g D.∘ f x D.∘ h
-  
+
   hom-iso→adjoints
     : (f : ∀ {x y} → C.Hom (L.₀ x) y → D.Hom x (R.₀ y))
     → (eqv : ∀ {x y} → is-equiv (f {x} {y}))
@@ -78,7 +80,7 @@ terms.
   hom-iso→adjoints f f-equiv natural = adj′ where
     f⁻¹ : ∀ {x y} → D.Hom x (R.₀ y) → C.Hom (L.₀ x) y
     f⁻¹ = equiv→inverse f-equiv
-  
+
     inv-natural : ∀ {a b c d} (g : C.Hom a b) (h : D.Hom c d) x
                 → f⁻¹ (R.₁ g D.∘ x D.∘ h) ≡ g C.∘ f⁻¹ x C.∘ L.₁ h
     inv-natural g h x = ap fst $ is-contr→is-prop (f-equiv .is-eqv _)

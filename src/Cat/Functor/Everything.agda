@@ -16,9 +16,10 @@ open import Cat.Functor.Equivalence public
 open import Cat.Functor.FullSubcategory public
 open import Cat.Functor.Hom public
 open import Cat.Functor.Hom.Cocompletion public
+open import Cat.Functor.Hom.Coyoneda public
 open import Cat.Functor.Hom.Representable public
-open import Cat.Functor.Kan public
-open import Cat.Functor.Kan.Right public
+open import Cat.Functor.Kan.Base public
 open import Cat.Functor.Kan.Nerve public
+open import Cat.Functor.Kan.Pointwise public
 open import Cat.Functor.Pullback public
 open import Cat.Functor.Slice public

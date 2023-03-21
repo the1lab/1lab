@@ -1,6 +1,6 @@
 ```agda
-open import Cat.Functor.Kan.Right
 open import Cat.Instances.Functor
+open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Monad
 open import Cat.Functor.Base
 open import Cat.Prelude
@@ -47,7 +47,7 @@ general categorical machinery: [right Kan extensions].
 
 [limits]: Cat.Diagram.Limit.Base.html
 [size]: 1Lab.intro.html#universes-and-size-issues
-[right Kan extensions]: Cat.Functor.Kan.Right.html
+[right Kan extensions]: Cat.Functor.Kan.Base.html
 
 The really, really short of it is that the codensity monad of $F$ is the
 right Kan extension of $F$ along itself, $\Ran_F F$.
@@ -59,7 +59,6 @@ module _ (F : Functor A B) (R : Ran F F) where
   private
     module A = Cat A
     module B = Cat B
-    module Ext = Func Ext
     module F = Func F
 ```
 -->

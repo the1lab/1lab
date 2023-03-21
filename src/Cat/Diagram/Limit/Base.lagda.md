@@ -1,6 +1,9 @@
 ```agda
+open import Cat.Instances.Shape.Terminal
+open import Cat.Functor.Kan.Unique
+open import Cat.Functor.Coherence
 open import Cat.Instances.Functor
-open import Cat.Diagram.Terminal
+open import Cat.Functor.Kan.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
@@ -11,371 +14,680 @@ module Cat.Diagram.Limit.Base where
 
 # Idea
 
-The idea of limits generalises many concrete constructions in
-mathematics - from several settings, such as set theory, topology and
-algebra - to arbitrary categories. A limit, _if it exists_, is "the best
-solution" to an "equational problem". For a first intuition, we can
-build them graphically, working directly "on top" of a diagram.
+**Note**: This page describes the general definition of limits, and
+assumes some familiarity with some concrete examples, in particular
+[terminal objects], [products], [equalisers], and [pullbacks]. It might
+be a good idea to check out those pages before continuing!
 
-## Products
+[terminal objects]: Cat.Diagram.Terminal.html
+[products]: Cat.Diagram.Product.html
+[equalisers]: Cat.Diagram.Equaliser.html
+[pullbacks]: Cat.Diagram.Pullback.html
 
-**Note**: Products are described explicitly in
-[`Cat.Diagram.Product`]. The description there might be easier to parse.
+To motivate limits, note how all the above examples have roughly the
+same structure. They all consist of some object, a bunch of maps out
+of said object, some commutativity conditions, and a universal property
+that states that we can construct unique maps into the object under
+certain conditions.
 
-[`Cat.Diagram.Product`]: Cat.Diagram.Product.html
+Our first step towards making this vague intuition precise is to construct
+a mathematical widget that picks out a collection of objects, arrows,
+and commutativity conditions in a category. This is required to describe
+the collection of maps out of our special objects, and the equations
+they satisfy. Luckily, we already have such a widget: functors!
 
-Consider a _discrete_ diagram - one that has no interesting morphisms,
-only identities, such as the collection of objects below.
+To see how this works, let's take a very simple example: a functor out
+of the [single object category with one morphism] into some category
+$\cC$. If we look at the image of such a functor, we can see that it
+picks out a single object; the single morphism must be taken to the
+identity morphism due to functoriality. We can scale this example up
+to functors from [discrete category] with $n$ elements; if we look at
+the image of such a functor, we shall see that it selects out $n$ objects
+of $\cC$.
 
-~~~{.quiver .short-2}
-\[\begin{tikzcd}
-A & B
-\end{tikzcd}\]
-~~~
+[single object category with one morphism]: Cat.Instances.Shape.Terminal.html
+[discrete category]: Cat.Instances.Discrete.html
 
-To consider a limit for this diagram, we first have to go through an
-intermediate step - a `Cone`{.Agda}. Draw a new object, the
-`apex`{.Agda} - let's call it $P$ - and a family of maps from $P$ "down
-onto" all of the objects of the diagram. The new maps have to make
-everything in sight commute, but in the case of a discrete diagram, we
-can pick any maps. There are no obligations.
+We can perform the same trick with non-discrete categories; for instance,
+a functor out of the [parallel arrows category] selects a pair of
+parallel arrows in $\cC$, a functor out of the [isomorphism category]
+selects an isomorphism in $\cC$, and so on. We call such functors
+**diagrams** to suggest that we should think of them as picking out some
+shape in $\cC$.
 
-~~~{.quiver .short-1}
-\[\begin{tikzcd}
-  & P \\
-  A && B
-  \arrow["\pi_1"', from=1-2, to=2-1]
-  \arrow["\pi_2", from=1-2, to=2-3]
-\end{tikzcd}\]
-~~~
+[parallel arrows category]: Cat.Instances.Shape.Parallel.html
+[isomorphism category]: Cat.Instances.Shape.Isomorphism.html
 
-It'll be helpful to think of the maps as projections - which is why
-they're labelled with the greek letter $\pi$, for **p**rojection.
-However, for an arbitrary cone, the maps are.. well, arbitrary.  To
-consider a concrete example, we can pretend our diagram was in
-$\rm{Set}$ all along, and that $A$ was the set $\bb{Q}$ and $B$
-was the set $\bb{R}$. Then the following is a cone over it:
+We can use this newfound insight to describe the shape that each of our
+examples is defined over. Products are defined over a diagram that
+consists of a pair of objects; these diagrams correspond to functors
+out of the category with 2 objects and only identity morphisms.
+Equalisers are defined over a diagram that consists of a pair of parallel
+morphisms; such diagrams are given by functors out of the aforementioned
+parallel arrows category. Pullbacks defined over a diagram of the shape,
+$\bullet \to \bullet \leftarrow \bullet$; again, these diagrams are
+given by functors out of the category with that exact shape. Terminal
+objects may seem to break this trend, but we can think of them as
+being defined over the empty diagram, the unique functor from
+the category with no objects.
 
-~~~{.quiver .short-1}
-\[\begin{tikzcd}
-  & {\mathbb{N}} \\
-  {\mathbb{Q}} && {\mathbb{R}}
-  \arrow["{x \mapsto x}"', hook, from=1-2, to=2-1]
-  \arrow["{x \mapsto \sqrt{x}}", from=1-2, to=2-3]
-\end{tikzcd}\]
-~~~
+We now move our attention to the maps out of our special object into
+the objects of the diagram. Note that these maps need to commute with
+any morphisms in the diagram, as is the case with pullbacks and
+equalisers. This is where our definition diverges from many other
+introductory sources. The typical approach is to define a bespoke
+widget called a [cone] that encodes the required morphisms and commuting
+conditions, and then proceeding from there.
 
-Abstracting again, there is a canonical definition of _cone homomorphism_ -
-A map between the apices that makes everything in sight commute. If $P'$
-and $P$ were both apices for our original discrete diagram, we would
-draw a cone homomorphism $f : P' \to P$ as the dashed arrow in following
-commutative Starfleet comms badge.
+[cone]: Cat.Diagram.Limit.Cone.html
 
-~~~{.quiver .tall-2}
-\[\begin{tikzcd}
-  & {P'} \\
+However, this approach is somewhat unsatisfying. Why did we have to
+invent a new object just to bundle up the data we needed? Furthermore,
+cones are somewhat disconnected from the rest of category theory, which
+makes it more difficult to integrate results about limits into the larger
+body of work. It would be great if we could encode the data we needed
+using existing objects!
+
+Luckily, we can! If we take a step back, we can notice that we are trying
+to construct a map into a functor. What are maps into functors? Natural
+transformations! Concretely, let $D : \cJ \to cC$ be some diagram.
+We can encode the same data as a cone in a natural transformation
+$\eta : {!x} \circ \mathord{!} \to D$, where $!x : \top \to \cC$ denotes
+the constant functor that maps object to $x$ and every morphism to $id$,
+and $! : \cJ \to \top$ denotes the unique functor into the terminal
+category. The components of such a natural transformation yield maps from
+$x \to D(j)$ for every $j : \cJ$, and naturality ensures that these
+maps must commute with the rest of the diagram. We can describe this
+situation diagrammatically like so:
+
+~~~{.quiver}
+\begin{tikzcd}
+  && \{*\} \\
   \\
-  & P \\
-  A && B
-  \arrow["{f}"{description}, dashed, from=1-2, to=3-2]
-  \arrow["{\pi_1}", from=3-2, to=4-1]
-  \arrow["{\pi_2}"', from=3-2, to=4-3]
-  \arrow[curve={height=6pt}, from=1-2, to=4-1]
-  \arrow[curve={height=-6pt}, from=1-2, to=4-3]
-\end{tikzcd}\]
+  {\cJ} &&& {} & {\cC}
+  \arrow[from=3-1, to=1-3]
+  \arrow["{!X}"', from=1-3, to=3-5]
+  \arrow[""{name=0, anchor=center, inner sep=0}, from=3-1, to=3-5]
+  \arrow["\eta"{description}, shorten <=4pt, shorten >=4pt, Rightarrow, from=1-3, to=0]
+\end{tikzcd}
 ~~~
 
-These assemble into a category, `Cones`{.agda}, with composition and
-identity given by the composition and identity of ambient category. A
-`Limit`{.agda} is, then, a [terminal object] in this category. For $P$
-to be a limit in our diagram above, we require that, for any other cone
-$P'$ there exists a _unique_ arrow $P' \to P$ that makes everything
-commute.
+All that remains is the universal property. If we translate this into
+our existing machinery, that means that $!x$ must be the universal
+functor equipped with a natural transformation $\eta$; that is, for any
+other $K : \{*\} \to \cC$ equipped with $\tau : K \circ \mathord{!} \to
+D$, we have a unique natural transformation $\sigma : K \to {!x}$ that
+factors $\tau$. This is a bit of a mouthful, so let's look at a diagram
+instead.
 
-[terminal object]: Cat.Diagram.Terminal.html
+~~~{.quiver}
+\begin{tikzcd}
+  && {\{*\}} \\
+  \\
+  {\cJ} &&& {} & {\cC}
+  \arrow[from=3-1, to=1-3]
+  \arrow[""{name=0, anchor=center, inner sep=0}, "{!x}"', from=1-3, to=3-5]
+  \arrow[""{name=1, anchor=center, inner sep=0}, from=3-1, to=3-5]
+  \arrow[""{name=2, anchor=center, inner sep=0}, "K", curve={height=-18pt}, from=1-3, to=3-5]
+  \arrow["\eta"{description}, shorten <=4pt, shorten >=4pt, Rightarrow, from=1-3, to=1]
+  \arrow["\sigma", shorten <=3pt, shorten >=3pt, Rightarrow, from=2, to=0]
+\end{tikzcd}
+~~~
 
-The limit over a discrete diagram is called a **product**, and it's
-important to note that the diagram need not be finite. Here are concrete
-examples of products in categories:
+We might be tempted to stop here and call it a day, but we can go one
+step further. It turns out that these universal functors have a name:
+they are [right Kan extensions]. This allows for an extremely concise
+definition of limits: $x : \cC$ is the limit of a diagram
+$D : \cJ \to \cC$ when the constant functor $!x : \{*\} \to \cC$ is
+a right Kan extension of $! : \cJ \to \{*\}$ along $D$.
 
-- In $\rm{Sets}$, the limit is the _Cartesian product_ of the objects
-of the diagram, and the arrows are the projections onto the factors.
-
-- In $\rm{Top}$, the limit is the _product space_ of the objects,
-and the arrows are projections, considered as continuous maps. The
-product topology can be defined as the coarsest topology that makes the
-projections continuous.
-
-- In a partially ordered set, considered as a category, the limit is the
-_greatest lower bound_ of the objects - In a poset, we consider that
-there exists a map $a \to b$ whenever $a \le b$.
-
-  Normalising the definition of limit slightly, it's works out to be an
-  object $p$ such that $p \le a$ and $p \le b$, and if there are any
-  other $p'$s satisfying that, then $p' \le p$.
-
-This last example also demonstrates that, while we can always _describe_
-the limit over a diagram, it does not necessarily exist. Consider the
-poset $(\bb{R} \setminus {0}, \le)$ of real numbers except zero,
-with the usual ordering. Then the product indexed by $\{ x \in
-\bb{R} : x > 0 \}$ - which is normally $0$ - does not exist. Not
-every category has every limit. Some categories have no limits at all!
-If a category has every limit, it's called _complete_.
-
-## Terminal objects
-
-**Note**: Terminal objects are described explicitly in
-[`Cat.Diagram.Terminal`]. The description there might be easier to
-parse.
-
-[`Cat.Diagram.Terminal`]: Cat.Diagram.Terminal.html
-
-Perhaps a simpler example of a limit is the one over the empty diagram.
-Since the empty diagram is discrete, what we'll end up with is a kind of
-product - an empty product. A cone over the empty diagram is an object -
-the family of maps, indexed over the objects of the diagram, is empty.
-
-In this case, a cone homomorphism works out to be a regular ol'
-morphism, so the terminal object in the cone category is a terminal
-object in the ambient category: an object $\top$ such that, for every
-other $A$, there's a unique arrow $A \to \top$.
-
-# Construction
-
-Cones are always considered over a _diagram_. Diagram just means
-"functor", but it's a concept with an attitude: Whereas, in general,
-functors can be a lot more involved than the name "diagram" would
-suggest, _every_ functor can be considered a diagram! However, for the
-purpose of constructing limits, we generally work with functors out of
-"shapes", tiny categories like $\bullet \to \bullet \leftarrow \bullet$.
+[right Kan extensions]: Cat.Functor.Kan.Base.html
 
 <!--
 ```agda
 private variable
-  o₁ o₂ h₁ h₂ : Level
+  o₁ o₂ o₃ h₁ h₂ h₃ : Level
 ```
 -->
 
 ```agda
-module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (F : Functor J C) where
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (Diagram : Functor J C) where
   private
-    import Cat.Reasoning J as J
-    import Cat.Reasoning C as C
-    module F = Functor F
+    module C = Precategory C
+    open _=>_
+    open Functor
 
-  record Cone : Type (o₁ ⊔ o₂ ⊔ h₁ ⊔ h₂) where
-    no-eta-equality
+  cone→counit : ∀ {x : C.Ob} → (Const x => Diagram) → const! x F∘ !F => Diagram
+  unquoteDef cone→counit = define-coherence cone→counit
+
+  counit→cone : ∀ {K : Functor ⊤Cat C} → K F∘ !F => Diagram → (Const (K .F₀ tt) => Diagram)
+  counit→cone {K = K} eta .η = eta .η
+  counit→cone {K = K} eta .is-natural x y f =
+    ap (_ C.∘_) (sym (K .F-id)) ∙ eta .is-natural x y f
+
+  is-limit : (x : C.Ob) → Const x => Diagram → Type _
+  is-limit x cone = is-ran !F Diagram (const! x) (cone→counit cone)
 ```
 
-A `Cone`{.Agda} over $F$ is given by an object (the `apex`{.agda})
-together with a family of maps `ψ`{.Agda} --- one for each object in the
-indexing category `J`{.Agda} --- such that "everything in sight
-commutes".
-
-```agda
-    field
-      apex     : C.Ob
-      ψ        : (x : J.Ob) → C.Hom apex (F.₀ x)
-```
-
-For every map $f : x \to y$ in the indexing category, we require that
-the diagram below commutes. This encompasses "everything" since the only
-non-trivial composites that can be formed with the data at hand are of
-the form $F(f) \circ \psi_x$.
-
-```agda
-      commutes : ∀ {x y} (f : J.Hom x y) → F.₁ f C.∘ ψ x ≡ ψ y
-```
-
-These non-trivial composites consist of following the left leg of the
-diagram below, followed by the bottom leg. For it to commute, that path
-has to be the same as following the right leg.
-
-~~~{.quiver .short-05}
-\[\begin{tikzcd}
-  & {\operatorname{apex}} \\
-  {F(x)} && {F(y)}
-  \arrow["{F(f)}"', from=2-1, to=2-3]
-  \arrow["{\psi_x}"', from=1-2, to=2-1]
-  \arrow["{\psi_y}", from=1-2, to=2-3]
-\end{tikzcd}\]
-~~~
-
-Since paths in Hom-spaces `are propositions`{.Agda ident=Hom-set}, to
-test equality of cones, it suffices for the apices to be equal, and for
-their $\psi$s to assign equal morphisms for every object in the shape
-category.
-
-```agda
-  Cone-path : {x y : Cone}
-        → (p : Cone.apex x ≡ Cone.apex y)
-        → (∀ o → PathP (λ i → C.Hom (p i) (F.₀ o)) (Cone.ψ x o) (Cone.ψ y o))
-        → x ≡ y
-  Cone-path p q i .Cone.apex = p i
-  Cone-path p q i .Cone.ψ o = q o i
-  Cone-path {x = x} {y} p q i .Cone.commutes {x = a} {y = b} f =
-    is-prop→pathp (λ i → C.Hom-set _ _ (F.₁ f C.∘ q a i) (q b i))
-      (x .commutes f) (y .commutes f) i
-    where open Cone
-```
-
-## Cone maps
-
-```agda
-  record Cone-hom (x y : Cone) : Type (o₁ ⊔ h₂) where
-    no-eta-equality
-```
-
-A `Cone homomorphism`{.Agda ident="Cone-hom"} is -- like the introduction
-says -- a map `hom`{.Agda} in the ambient category between the apices,
-such that "everything in sight `commutes`{.Agda ident="Cone-hom.commutes"}".
-Specifically, for any choice of object $o$ in the index category, the
-composition of `hom`{.Agda} with the domain cone's `ψ`{.Agda} (at that
-object) must be equal to the codomain's `ψ`{.Agda}.
-
-
-```agda
-    field
-      hom      : C.Hom (Cone.apex x) (Cone.apex y)
-      commutes : ∀ o → Cone.ψ y o C.∘ hom ≡ Cone.ψ x o
-```
-
-<!--
-```agda
-  private unquoteDecl eqv = declare-record-iso eqv (quote Cone-hom)
-
-  Cone-hom-path : ∀ {x y} {f g : Cone-hom x y} → Cone-hom.hom f ≡ Cone-hom.hom g → f ≡ g
-  Cone-hom-path p i .Cone-hom.hom = p i
-  Cone-hom-path {x = x} {y} {f} {g} p i .Cone-hom.commutes o j =
-    is-set→squarep (λ i j → C.Hom-set _ _)
-      (λ j → Cone.ψ y o C.∘ p j) (f .Cone-hom.commutes o) (g .Cone-hom.commutes o) refl i j
-```
--->
-
-Since cone homomorphisms are morphisms in the underlying category with
-extra properties, we can lift the laws from the underlying category to
-the category of `Cones`{.Agda}. The definition of `compose`{.Agda} is the
-enlightening part, since we have to prove that two cone homomorphisms
-again preserve _all_ the commutativities.
-
-```agda
-  Cones : Precategory _ _
-  Cones = cat where
-    open Precategory
-
-    compose : {x y z : _} → Cone-hom y z → Cone-hom x y → Cone-hom x z
-    compose {x} {y} {z} F G = r where
-      open Cone-hom
-      r : Cone-hom x z
-      r .hom = hom F C.∘ hom G
-      r .commutes o =
-        Cone.ψ z o C.∘ hom F C.∘ hom G ≡⟨ C.pulll (commutes F o) ⟩
-        Cone.ψ y o C.∘ hom G           ≡⟨ commutes G o ⟩
-        Cone.ψ x o                     ∎
-
-    cat : Precategory _ _
-    cat .Ob = Cone
-    cat .Hom = Cone-hom
-    cat .id = record { hom = C.id ; commutes = λ _ → C.idr _ }
-    cat ._∘_ = compose
-    cat .idr f = Cone-hom-path (C.idr _)
-    cat .idl f = Cone-hom-path (C.idl _)
-    cat .assoc f g h = Cone-hom-path (C.assoc _ _ _)
-```
-
-<!--
-```agda
-    cat .Hom-set x y = Iso→is-hlevel 2 eqv hlevel!
-```
--->
-
-## Limits
-
-At risk of repeating myself: *A `Limit`{.agda} is, then, a [terminal
-object] in this category.*
-
-[terminal object]: Cat.Diagram.Terminal.html
+In a "bundled" form, we may define the _type of limits_ for a diagram
+$D$ as the type of right extensions of $D$ along the terminating functor
+$\mathord{!} : \cJ \to \{*\}$.
 
 ```agda
   Limit : Type _
-  Limit = Terminal Cones
+  Limit = Ran !F Diagram
+```
 
-  Limit-apex : Limit → C.Ob
-  Limit-apex x = Cone.apex (Terminal.top x)
+## Concretely
 
-  Limit-universal : (L : Limit) → (K : Cone) → C.Hom (Cone.apex K) (Limit-apex L)
-  Limit-universal L K = Cone-hom.hom (Terminal.! L {K})
+The definition above is very concise, and it has the benefit of being
+abstract: We can re-use definitions and theorems originally stated for
+Kan extensions to limits. However, it has the downside of being
+abstract: it's good for working with _limits in general_, but working
+with a _specific_ limit is penalised, as the data we want to get at is
+"buried".
 
-  is-limit : Cone → Type _
-  is-limit K = is-terminal Cones K
+The definition above is also hard to _instantiate_, since you have to..
+bury the data, and some of it is really quite deep! What we do is
+provide an auxiliary record, `make-is-limit`{.Agda}, which computes
+right extensions to the point.
+
+<!--
+```agda
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+  where
+  private
+    module J = Precategory J
+    module C = Cat.Reasoning C
+
+  record make-is-limit (Diagram : Functor J C) (apex : C.Ob)
+            : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂) where
+    no-eta-equality
+    open Functor Diagram
+```
+-->
+
+We solve this by defining a _concretised_ version of `is-limit`{.Agda},
+called `make-is-limit`{.Agda}, which exposes the following data. First,
+we have morphisms from the apex to every value in the diagram, a family
+called $\psi$. Moreover, if $f : x \to y$ is a morphism in the "shape"
+category $\cJ$, then $F(f)\psi_x = \psi_y$, i.e., the $\psi$ maps fit into
+triangles
+
+~~~{.quiver .tall-15}
+\[\begin{tikzcd}
+  & {\mathrm{apex}} \\
+  \\
+  Fx && {Fy\text{.}}
+  \arrow["{\psi_x}"', curve={height=6pt}, from=1-2, to=3-1]
+  \arrow["{\psi_y}", curve={height=-6pt}, from=1-2, to=3-3]
+  \arrow["Ff"', from=3-1, to=3-3]
+\end{tikzcd}\]
+~~~
+
+```agda
+    field
+      ψ        : (j : J.Ob) → C.Hom apex (F₀ j)
+      commutes : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ ψ x ≡ ψ y
+```
+
+The rest of the data says that $\psi$ is the universal family of maps
+with this property: If $\eta_j : x \to Fj$ is another family of maps
+with the same commutativty property, then each $\eta_j$ factors through
+the apex by a single, _unique_ universal morphism:
+
+```agda
+      universal
+        : ∀ {x : C.Ob}
+        → (eta : ∀ j → C.Hom x (F₀ j))
+        → (∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
+        → C.Hom x apex
+
+      factors
+        : ∀ {j : J.Ob} {x : C.Ob}
+        → (eta : ∀ j → C.Hom x (F₀ j))
+        → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
+        → ψ j C.∘ universal eta p ≡ eta j
+
+      unique
+        : ∀ {x : C.Ob}
+        → (eta : ∀ j → C.Hom x (F₀ j))
+        → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
+        → (other : C.Hom x apex)
+        → (∀ j → ψ j C.∘ other ≡ eta j)
+        → other ≡ universal eta p
 ```
 
 <!--
 ```agda
-module _ {o₁ h₁ o₂ h₂ o₃ h₃ : _}
-         {J : Precategory o₁ h₁}
-         {C : Precategory o₂ h₂}
-         {D : Precategory o₃ h₃}
-         {Dia : Functor J C}
-         (F : Functor C D)
+    unique₂
+      : ∀ {x : C.Ob}
+      → (eta : ∀ j → C.Hom x (F₀ j))
+      → (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
+      → {o1 : C.Hom x apex} → (∀ j → ψ j C.∘ o1 ≡ eta j)
+      → {o2 : C.Hom x apex} → (∀ j → ψ j C.∘ o2 ≡ eta j)
+      → o1 ≡ o2
+    unique₂ {x = x} eta p q r = unique eta p _ q ∙ sym (unique eta p _ r)
+```
+-->
+
+If we have this data, then we can make a value of `is-limit`{.Agda}. It
+might seem like naturality, required for a Kan extension, is missing
+from `make-is-limit`{.Agda}, but it can be derived from the other data
+we have been given:
+
+<!--
+```agda
+  open _=>_
+
+  to-cone : ∀ {D : Functor J C} {apex} → make-is-limit D apex → Const apex => D
+  to-cone ml .η = ml .make-is-limit.ψ
+  to-cone ml .is-natural x y f = C.idr _ ∙ sym (ml .make-is-limit.commutes f)
+```
+-->
+
+```agda
+  to-is-limit : ∀ {D : Functor J C} {apex}
+              → (mk : make-is-limit D apex)
+              → is-limit D apex (to-cone mk)
+  to-is-limit {Diagram} {apex} mklim = lim where
+    open make-is-limit mklim
+    open is-ran
+    open Functor
+    open _=>_
+
+    lim : is-limit Diagram apex (to-cone mklim)
+    lim .σ {M = M} α .η _ =
+      universal (α .η) (λ f → sym (α .is-natural _ _ f) ∙ C.elimr (M .F-id))
+    lim .σ {M = M} α .is-natural _ _ _ =
+      lim .σ α .η _ C.∘ M .F₁ tt ≡⟨ C.elimr (M .F-id) ⟩
+      lim .σ α .η _              ≡˘⟨ C.idl _ ⟩
+      C.id C.∘ lim .σ α .η _     ∎
+    lim .σ-comm {β = β} = Nat-path λ j →
+      factors (β .η) _
+    lim .σ-uniq {β = β} {σ′ = σ′} p = Nat-path λ _ →
+      sym $ unique (β .η) _ (σ′ .η tt) (λ j → sym (p ηₚ j))
+```
+
+<!--
+```agda
+  generalize-limitp
+    : ∀ {D : Functor J C} {K : Functor ⊤Cat C}
+    → {eps : (const! (Functor.F₀ K tt)) F∘ !F => D} {eps' : K F∘ !F => D}
+    → is-ran !F D (const! (Functor.F₀ K tt)) eps
+    → (∀ {j} → eps .η j ≡ eps' .η j)
+    → is-ran !F D K eps'
+  generalize-limitp {D} {K} {eps} {eps'} ran q = ran' where
+    module ran = is-ran ran
+    open is-ran
+    open Functor
+
+    ran' : is-ran !F D K eps'
+    ran' .σ α = hom→⊤-natural-trans (ran.σ α .η tt)
+    ran' .σ-comm {M} {β} = Nat-path λ j →
+      ap (C._∘ _) (sym q) ∙ ran.σ-comm {β = β} ηₚ _
+    ran' .σ-uniq {M} {β} {σ′} r = Nat-path λ j →
+      ran.σ-uniq {σ′ = hom→⊤-natural-trans (σ′ .η tt)}
+        (Nat-path (λ j → r ηₚ j ∙ ap (C._∘ _) (sym q))) ηₚ j
+
+  to-is-limitp
+    : ∀ {D : Functor J C} {K : Functor ⊤Cat C} {eps : K F∘ !F => D}
+    → (mk : make-is-limit D (Functor.F₀ K tt))
+    → (∀ {j} → to-cone mk .η j ≡ eps .η j)
+    → is-ran !F D K eps
+  to-is-limitp {D} {K} {eps} mklim p =
+    generalize-limitp (to-is-limit mklim) p
+```
+-->
+
+To _use_ the data of `is-limit`, we provide a function for *un*making a
+limit:
+
+```agda
+  unmake-limit
+    : ∀ {D : Functor J C} {F : Functor ⊤Cat C} {eps}
+    → is-ran !F D F eps
+    → make-is-limit D (Functor.F₀ F tt)
+```
+
+<!--
+```agda
+  unmake-limit {D} {F} {eps = eps} lim = ml module unmake-limit where
+    a = Functor.F₀ F tt
+    module eps = _=>_ eps
+    open is-ran lim
+    open Functor D
+    open make-is-limit
+    open _=>_
+
+    module _ {x} (eta : ∀ j → C.Hom x (F₀ j))
+                 (p : ∀ {x y} (f : J.Hom x y) → F₁ f C.∘ eta x ≡ eta y)
+      where
+
+      eta-nt : const! x F∘ !F => D
+      eta-nt .η = eta
+      eta-nt .is-natural _ _ f = C.idr _ ∙ sym (p f)
+
+      hom : C.Hom x a
+      hom = σ {M = const! x} eta-nt .η tt
+
+    ml : make-is-limit D a
+    ml .ψ j        = eps.η j
+    ml .commutes f = sym (eps.is-natural _ _ f) ∙ C.elimr (Functor.F-id F)
+
+    ml .universal   = hom
+    ml .factors e p = σ-comm {β = eta-nt e p} ηₚ _
+    ml .unique {x = x} eta p other q =
+      sym $ σ-uniq {σ′ = other-nt} (Nat-path λ j → sym (q j)) ηₚ tt
+      where
+        other-nt : const! x => F
+        other-nt .η _ = other
+        other-nt .is-natural _ _ _ = C.idr _ ∙ C.introl (Functor.F-id F) -- C.id-comm
+
+  to-limit
+    : ∀ {D : Functor J C} {K : Functor ⊤Cat C} {eps : K F∘ !F => D}
+    → is-ran !F D K eps
+    → Limit D
+  to-limit l .Ran.Ext = _
+  to-limit l .Ran.eps = _
+  to-limit l .Ran.has-ran = l
+```
+-->
+
+<!--
+```agda
+module is-limit
+  {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+  {D : Functor J C} {F : Functor ⊤Cat C} {eps : F F∘ !F => D}
+  (t : is-ran !F D F eps)
   where
 
+  open make-is-limit (unmake-limit {F = F} t) public
+```
+-->
+
+We also provide a similar interface for the bundled form of limits.
+
+```agda
+module Limit
+  {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Functor J C} (L : Limit D)
+  where
+```
+
+<!--
+```agda
+  private
+    import Cat.Reasoning J as J
+    import Cat.Reasoning C as C
+    module Diagram = Functor D
+    open Functor
+    open _=>_
+
+  open Ran L public
+```
+-->
+
+The "apex" object of the limit is the single value in the image of the
+extension functor.
+
+```agda
+  apex : C.Ob
+  apex = Ext.₀ tt
+```
+
+Furthermore, we can show that the apex is the limit, in the sense of
+`is-limit`{.Agda}, of the diagram. You'd think this is immediate, but
+unfortunately, proof assistants: `is-limit`{.Agda} asks for _the_
+constant functor functor $\{*\} \to \cC$ with value `apex` to be a Kan
+extension, but `Limit`{.Agda}, being an instance of `Ran`{.Agda},
+packages an _arbitrary_ functor $\{*\} \to \cC$.
+
+Since Agda does not compare functors for $\eta$-equality, we have to
+shuffle our data around manually. Fortunately, this isn't a very long
+computation.
+
+```agda
+  cone : Const apex => D
+  cone .η x = eps .η x
+  cone .is-natural x y f = ap (_ C.∘_) (sym $ Ext .F-id) ∙ eps .is-natural x y f
+
+  has-limit : is-limit D apex cone
+  has-limit .is-ran.σ α .η = σ α .η
+  has-limit .is-ran.σ α .is-natural x y f =
+    σ α .is-natural tt tt tt ∙ ap (C._∘ _) (Ext .F-id)
+  has-limit .is-ran.σ-comm =
+    Nat-path (λ _ → σ-comm ηₚ _)
+  has-limit .is-ran.σ-uniq {M = M} {σ′ = σ′} p =
+    Nat-path (λ _ → σ-uniq {σ′ = nt} (Nat-path (λ j → p ηₚ j)) ηₚ _) where
+      nt : M => Ext
+      nt .η = σ′ .η
+      nt .is-natural x y f = σ′ .is-natural x y f ∙ ap (C._∘ _) (sym $ Ext .F-id)
+
+  open is-limit has-limit public
+```
+
+# Uniqueness
+
+<!--
+```agda
+module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+         {Diagram : Functor J C}
+         {x y} {epsy : Const y => Diagram} {epsx : Const x => Diagram}
+         (Ly : is-limit Diagram y epsy)
+         (Lx : is-limit Diagram x epsx)
+       where
+  private
+    module J = Precategory J
+    module C = Cat.Reasoning C
+    module Diagram = Functor Diagram
+    open is-ran
+    open _=>_
+
+    module Ly = is-limit Ly
+    module Lx = is-limit Lx
+```
+-->
+
+Above, there has been mention of _the_ limit. The limit of a diagram, if
+it exists, is unique up to isomorphism. This follows directly from
+[uniqueness of Kan extensions].
+
+[uniqueness of Kan extensions]: Cat.Functor.Kan.Unique.html
+
+We show a slightly more general result first: if there exist a pair of
+maps $f$, $g$ between the apexes of the 2 limits, and these maps commute
+with the 2 limits, then $f$ and $g$ are inverses.
+
+```agda
+  limits→inversesp
+    : ∀ {f : C.Hom x y} {g : C.Hom y x}
+    → (∀ {j : J.Ob} → Ly.ψ j C.∘ f ≡ Lx.ψ j)
+    → (∀ {j : J.Ob} → Lx.ψ j C.∘ g ≡ Ly.ψ j)
+    → C.Inverses f g
+  limits→inversesp {f = f} {g = g} f-factor g-factor =
+    natural-inverses→inverses
+      {α = hom→⊤-natural-trans f}
+      {β = hom→⊤-natural-trans g}
+      (Ran-unique.σ-inversesp Ly Lx
+        (Nat-path λ j → f-factor {j})
+        (Nat-path λ j → g-factor {j}))
+      tt
+```
+
+Furthermore, any morphism between apexes that commutes with the limit
+must be invertible.
+
+```agda
+  limits→invertiblep
+    : ∀ {f : C.Hom x y}
+    → (∀ {j : J.Ob} → Ly.ψ j C.∘ f ≡ Lx.ψ j)
+    → C.is-invertible f
+  limits→invertiblep {f = f} f-factor =
+    is-natural-invertible→invertible
+      {α = hom→⊤-natural-trans f}
+      (Ran-unique.σ-is-invertiblep
+        Ly
+        Lx
+        (Nat-path λ j → f-factor {j}))
+      tt
+```
+
+This implies that the universal maps must also be inverses.
+
+```agda
+  limits→inverses
+    : C.Inverses (Ly.universal Lx.ψ Lx.commutes) (Lx.universal Ly.ψ Ly.commutes)
+  limits→inverses =
+    limits→inversesp (Ly.factors Lx.ψ Lx.commutes) (Lx.factors Ly.ψ Ly.commutes)
+
+  limits→invertible
+    : C.is-invertible (Ly.universal Lx.ψ Lx.commutes)
+  limits→invertible = limits→invertiblep (Ly.factors Lx.ψ Lx.commutes)
+```
+
+Finally, we can bundle this data up to show that the apexes are isomorphic.
+
+```agda
+  limits-unique : x C.≅ y
+  limits-unique =
+    Nat-iso→Iso (Ran-unique.unique Lx Ly) tt
+```
+
+
+Furthermore, if the universal map is invertible, then that means that
+its domain is _also_ a limit of the diagram.
+
+<!--
+```agda
+module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+         {D : Functor J C} {K : Functor ⊤Cat C}
+         {epsy : Const (Functor.F₀ K tt) => D}
+         (Ly : is-limit D (Functor.F₀ K tt) epsy)
+       where
+  private
+    module J = Precategory J
+    module C = Cat.Reasoning C
+    module D = Functor D
+    open is-ran
+    open Functor
+    open _=>_
+
+    module Ly = is-limit Ly
+
+  family→cone
+    : ∀ {x}
+    → (eta : ∀ j → C.Hom x (D.₀ j))
+    → (∀ {x y} (f : J.Hom x y) → D.₁ f C.∘ eta x ≡ eta y)
+    → Const x => D
+  family→cone eta p .η = eta
+  family→cone eta p .is-natural _ _ _ = C.idr _ ∙ sym (p _)
+```
+-->
+
+```agda
+  is-invertible→is-limitp
+    : ∀ {K' : Functor ⊤Cat C} {eps : K' F∘ !F => D}
+    → (eta : ∀ j → C.Hom (K' .F₀ tt) (D.₀ j))
+    → (p : ∀ {x y} (f : J.Hom x y) → D.₁ f C.∘ eta x ≡ eta y)
+    → (∀ {j} → eta j ≡ eps .η j)
+    → C.is-invertible (Ly.universal eta p)
+    → is-ran !F D K' eps
+  is-invertible→is-limitp {K' = K'} eta p q invert =
+    generalize-limitp
+      (is-invertible→is-ran Ly $ componentwise-invertible→invertible _ (λ _ → invert))
+      q
+```
+
+Another useful fact is that if $L$ is a limit of some diagram $Dia$, and
+$Dia$ is naturally isomorphic to some other diagram $Dia'$, then the
+apex of $L$ is also a limit of $Dia'$.
+
+```agda
+  natural-iso-diagram→is-limitp
+    : ∀ {D′ : Functor J C} {eps : K F∘ !F => D′}
+    → (isos : natural-iso D D′)
+    → (∀ {j} → natural-iso.to isos .η j C.∘ Ly.ψ j ≡ eps .η j)
+    → is-ran !F D′ K eps
+  natural-iso-diagram→is-limitp {D′ = D′} isos p =
+    generalize-limitp
+      (natural-iso-of→is-ran Ly isos)
+      p
+```
+
+<!--
+```agda
+module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+         {D D′ : Functor J C}
+         where
+
+  natural-iso→limit
+    : natural-iso D D′
+    → Limit D
+    → Limit D′
+  natural-iso→limit isos L .Ran.Ext = Ran.Ext L
+  natural-iso→limit isos L .Ran.eps = natural-iso.to isos ∘nt Ran.eps L
+  natural-iso→limit isos L .Ran.has-ran = natural-iso-of→is-ran (Ran.has-ran L) isos
+```
+-->
+
+
+<!--
+```agda
+module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+         {Diagram : Functor J C}
+         {x} {eps : Const x => Diagram}
+         where
+  private
+    module J = Precategory J
+    module C = Cat.Reasoning C
+    module Diagram = Functor Diagram
+    open is-ran
+    open _=>_
+
+  is-limit-is-prop : is-prop (is-limit Diagram x eps)
+  is-limit-is-prop = is-ran-is-prop
+```
+-->
+
+Since limits are unique “up to isomorphism”, if $C$ is a univalent
+category, then `Limit`{.Agda} itself is a proposition! This is an
+instance of the more general [uniqueness of Kan extensions].
+
+[uniqueness of Kan extensions]: Cat.Functor.Kan.Unique.html
+
+<!--
+```agda
+module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
+         {Diagram : Functor J C}
+         where
+```
+-->
+
+```agda
+  Limit-is-prop : is-category C → is-prop (Limit Diagram)
+  Limit-is-prop cat = Ran-is-prop cat
+```
+
+
+# Preservation of Limits
+
+Suppose you have a limit $L$ of a diagram $\rm{Dia}$. We say that $F$
+**preserves $L$** if $F(L)$ is also a limit of $F \circ \rm{Dia}$.
+
+<!--
+```agda
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+         (F : Functor C D) (Diagram : Functor J C) where
   private
     module D = Precategory D
     module C = Precategory C
     module J = Precategory J
     module F = Func F
-
-  open Functor
 ```
 -->
 
-# Preservation of limits
-
-Since a cone is, in particular, a commutative diagram, and every functor
-preserves commutativity of diagrams, a functor $F : \cC \to \cD$
-acts on a cone over $\rm{Dia}$ (in $\cC$), sending it to a cone over
-$F \circ \rm{Dia}$ (in $\cD$).
-
-```agda
-  F-map-cone : Cone Dia → Cone (F F∘ Dia)
-  Cone.apex (F-map-cone x) = F₀ F (Cone.apex x)
-  Cone.ψ (F-map-cone x) x₁ = F₁ F (Cone.ψ x x₁)
-  Cone.commutes (F-map-cone x) {y = y} f =
-    F.₁ (F₁ Dia f) D.∘ F.₁ (Cone.ψ x _)  ≡⟨ F.collapse (Cone.commutes x _) ⟩
-    F.₁ (Cone.ψ x y)                     ∎
-
-```
-
-Note that this also lets us map morphisms between cones into $\cD$.
-
-```agda
-  F-map-cone-hom
-    : {X Y : Cone Dia}
-    → Cone-hom Dia X Y
-    → Cone-hom (F F∘ Dia) (F-map-cone X) (F-map-cone Y)
-  F-map-cone-hom {X = X} {Y = Y} f = cone-hom
-    where
-      module X = Cone X
-      module Y = Cone Y
-      module f = Cone-hom f
-
-      cone-hom : Cone-hom (F F∘ Dia) (F-map-cone X) (F-map-cone Y)
-      cone-hom .Cone-hom.hom = F .F₁ f.hom
-      cone-hom .Cone-hom.commutes _ =
-        F .F₁ (Y.ψ _) D.∘ (F .F₁ f.hom) ≡⟨ F.collapse (f .Cone-hom.commutes _) ⟩
-        F .F₁ (X.ψ _)                   ∎
-```
-
-Suppose you have a limit $L$ of $\rm{Dia}$ --- which is, to reiterate, a
-terminal object in the category of cones over $\rm{Dia}$. We say that
-$F$ *preserves $L$* if $F(L)$, as defined right above, is a terminal
-object in the category of cones over $F \circ \rm{Dia}$.
-
-```agda
-  Preserves-limit : Cone Dia → Type _
-  Preserves-limit K = is-limit Dia K → is-limit (F F∘ Dia) (F-map-cone K)
-```
+Suppose you have a limit $L$ of a diagram $\rm{Dia}$. We say that $F$
+**preserves $L$** if $F(L)$ is also a limit of $F \circ \rm{Dia}$.
 
 This definition is necessary because $\cD$ will not, in general,
 possess an operation assigning a limit to every diagram --- therefore,
@@ -387,39 +699,87 @@ object! Any limit is as good as any other.
 In more concise terms, we say a functor preserves limits if it takes
 limiting cones "upstairs" to limiting cones "downstairs".
 
+```agda
+  preserves-limit : Type _
+  preserves-limit =
+    ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
+    → (lim : is-ran !F Diagram K eps)
+    → preserves-ran F lim
+```
+
 ## Reflection of limits
 
-Using our analogy from before, we say a functor _reflects_ limits
+Using the terminology from before, we say a functor **reflects limits**
 if it takes limiting cones "downstairs" to limiting cones "upstairs".
-
-More concretely, if we have some limiting cone in $\cD$ of $F \circ
-\rm{Dia}$ with apex $F(a)$, then $a$ was _already the limit_ of
-$\rm{Dia}$!
-
-```agda
-  Reflects-limit : Cone Dia → Type _
-  Reflects-limit K = is-limit (F F∘ Dia) (F-map-cone K) → is-limit Dia K
-```
-
-## Creation of limits
-
-Finally, we say a functor _creates_ limits of shape $\rm{Dia}$ if it
-both preserves _and_ reflects those limits. Intuitively, this means that
-the limits of shape $\rm{Dia}$ in $\cC$ are in a 1-1 correspondence
-with the limits $F \circ \rm{Dia}$ in $\cD$.
+More concretely, if we have a limit in $\cD$ of $F \circ \rm{Dia}$ with
+apex $F(a)$, then $F$ reflects this limit means that $a$ _was already_
+the limit of $\rm{Dia}$!
 
 ```agda
-  record Creates-limit (K : Cone Dia) : Type (o₁ ⊔ h₁ ⊔ o₂ ⊔ h₂ ⊔ o₃ ⊔ h₃) where
-    field
-      preserves-limit : Preserves-limit K
-      reflects-limit : Reflects-limit K
+  reflects-limit : Type _
+  reflects-limit =
+    ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
+    → (ran : is-ran !F (F F∘ Diagram) (F F∘ K) (nat-assoc-from (F ▸ eps)))
+    → reflects-ran F ran
 ```
+
+<!--
+```agda
+module preserves-limit
+  {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+  {F : Functor C D} {Dia : Functor J C}
+  (preserves : preserves-limit F Dia)
+  {K : Functor ⊤Cat C} {eta : K F∘ !F => Dia}
+  (lim : is-ran !F Dia K eta)
+  where
+  private
+    module D = Precategory D
+    module C = Precategory C
+    module J = Precategory J
+    module F = Func F
+    module Dia = Func Dia
+
+    module lim = is-limit lim
+    module F-lim = is-limit (preserves lim)
+
+  universal
+    : {x : C.Ob}
+    → {eps : (j : J.Ob) → C.Hom x (Dia.F₀ j)}
+    → {p : ∀ {i j} (f : J.Hom i j) → Dia.F₁ f C.∘ eps i ≡ eps j}
+    → F.F₁ (lim.universal eps p) ≡ F-lim.universal (λ j → F.F₁ (eps j)) (λ f → F.collapse (p f))
+  universal = F-lim.unique _ _ _ (λ j → F.collapse (lim.factors _ _))
+
+module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+         {F F' : Functor C D} {Dia : Functor J C} where
+
+  private
+    module D = Cat.Reasoning D
+    open Func
+    open _=>_
+
+  natural-iso→preserves-limits
+    : natural-iso F F'
+    → preserves-limit F Dia
+    → preserves-limit F' Dia
+  natural-iso→preserves-limits α F-preserves {K = K} {eps} lim =
+    natural-isos→is-ran
+      idni (α ◂ni Dia) (α ◂ni K)
+        (Nat-path λ j →
+          α.to .η _ D.∘ (F .F₁ (eps .η j) D.∘ ⌜ F .F₁ (K .F₁ tt) D.∘ α.from .η _ ⌝) ≡⟨ ap! (eliml F (K .F-id)) ⟩
+          α.to .η _ D.∘ (F .F₁ (eps .η j) D.∘ α.from .η _)                          ≡⟨ D.pushr (sym (α.from .is-natural _ _ _)) ⟩
+          (α.to .η _ D.∘ α.from .η _) D.∘ F' .F₁ (eps .η j)                         ≡⟨ D.eliml (α.invl ηₚ _) ⟩
+          F' .F₁ (eps .η j)                                                         ∎)
+        (F-preserves lim)
+    where
+      module α = natural-iso α
+```
+-->
 
 ## Continuity
 
 ```agda
 is-continuous
-  : ∀ {oshape hshape}
+  : ∀ (oshape hshape : Level)
       {C : Precategory o₁ h₁}
       {D : Precategory o₂ h₂}
   → Functor C D → Type _
@@ -430,136 +790,12 @@ every diagram `diagram`{.Agda} of shape `J` in `C` --- preserves the
 limit for that diagram.
 
 ```agda
-is-continuous {oshape = oshape} {hshape} {C = C} F =
-  ∀ {J : Precategory oshape hshape} {diagram : Functor J C}
-  → (K : Cone diagram) → Preserves-limit F K
+is-continuous oshape hshape {C = C} F =
+  ∀ {J : Precategory oshape hshape} {Diagram : Functor J C}
+  → preserves-limit F Diagram
 ```
 
-<!--
-```agda
-_ = Cone-hom.commutes
-```
--->
-
-# Uniqueness
-
-<!--
-```agda
-module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
-         (F : Functor J C)
-       where
-  private
-    module J = Precategory J
-    module C = Cat.Reasoning C
-    module F = Functor F
-    module Cones = Cat.Reasoning (Cones F)
-```
--->
-
-Above, there has been mention of _the_ limit. The limit of a diagram, if
-it exists, is unique up to isomorphism. We prove that here. The argument
-is as follows: Fixing a diagram $F$, suppose that $X$ and $Y$ are both
-limiting cones for for $F$.
-
-```agda
-  Limiting-cone-unique
-    : (X Y : Limit F)
-    → Terminal.top X Cones.≅ Terminal.top Y
-  Limiting-cone-unique X Y = Cones.make-iso f g f∘g≡id g∘f≡id where
-    X-cone = Terminal.top X
-    Y-cone = Terminal.top Y
-```
-
-It follows from $Y$ (resp. $X$) being a terminal object that there is a
-unique cone homomorphism $f : X \to Y$ (resp $g : Y \to X$).
-
-```
-    f : Cones.Hom X-cone Y-cone
-    f = Terminal.! Y {X-cone}
-
-    g : Cones.Hom Y-cone X-cone
-    g = Terminal.! X {Y-cone}
-```
-
-To show that $g$ is an inverse to $f$, consider the composition $g \circ
-f$ (the other case is symmetric): It is a map $g \circ f : X \to X$.
-Since $X$ is a terminal object, we have that the space of cone
-homomorphisms $X \to X$ is contractible - and thus any two such maps are
-equal. Thus, $g \circ f = \id{X} : X \to X$.
-
-```agda
-    f∘g≡id : (f Cones.∘ g) ≡ Cones.id
-    f∘g≡id = Terminal.!-unique₂ Y (f Cones.∘ g) Cones.id
-
-    g∘f≡id : (g Cones.∘ f) ≡ Cones.id
-    g∘f≡id = Terminal.!-unique₂ X (g Cones.∘ f) Cones.id
-```
-
-There is an evident functor from `Cones`{.Agda} to `C`, which sends
-cones to their apices and cone homomorphisms to their underlying maps.
-Being a functor, it preserves isomorphisms, so we get an isomorphism of
-the limit _objects_ from the isomorphism of limit _cones_.
-
-Contrary to the paragraph above, though, rather than defining a functor,
-there is a direct proof that an isomorphism of limits results in an
-isomorphism of apices. Fortunately, the direct proof
-`Cone≅→apex≅`{.Agda} is exactly what one would get had they defined the
-functor and used the proof that it preserves isomorphisms.
-
-```agda
-  Cone≅→apex≅ : {X Y : Cone F}
-              → X Cones.≅ Y
-              → (Cone.apex X) C.≅ (Cone.apex Y)
-  Cone≅→apex≅ c =
-    C.make-iso (Cone-hom.hom c.to) (Cone-hom.hom c.from)
-      (ap Cone-hom.hom c.invl)
-      (ap Cone-hom.hom c.invr)
-    where module c = Cones._≅_ c
-
-  Cone-invertible→apex-invertible : {X Y : Cone F} {f : Cones.Hom X Y}
-                                  → Cones.is-invertible f
-                                  → C.is-invertible (Cone-hom.hom f)
-  Cone-invertible→apex-invertible {f = f} f-invert =
-    C.make-invertible (Cone-hom.hom inv) (ap Cone-hom.hom invl) (ap Cone-hom.hom invr)
-    where open Cones.is-invertible f-invert
-
-  Limit-unique
-    : {X Y : Limit F}
-    → Cone.apex (Terminal.top X) C.≅ Cone.apex (Terminal.top Y)
-  Limit-unique {X} {Y} = Cone≅→apex≅ (Limiting-cone-unique X Y)
-```
-
-If the universal map $K \to L$ between apexes of some limit
-is invertible, then that means that $K$ is also a limiting cone.
-
-```agda
-  apex-iso→is-limit
-    : (K : Cone F)
-      (L : Limit F)
-      → C.is-invertible (Limit-universal F L K)
-      → is-limit F K
-  apex-iso→is-limit K L invert K′ = limits
-    where
-      module K = Cone K
-      module K′ = Cone K′
-      module L = Cone (Terminal.top L)
-      module universal {K} = Cone-hom (Terminal.! L {K})
-      open C.is-invertible invert
-
-      limits : is-contr (Cones.Hom K′ K)
-      limits .centre .Cone-hom.hom = inv C.∘ Limit-universal F L K′
-      limits .centre .Cone-hom.commutes _ =
-        (K.ψ _) C.∘ (inv C.∘ universal.hom)                   ≡˘⟨ ap ( C._∘ (inv C.∘ universal.hom)) (universal.commutes _) ⟩
-        (L.ψ _ C.∘ universal.hom) C.∘ (inv C.∘ universal.hom) ≡⟨ C.cancel-inner invl ⟩
-        L.ψ _ C.∘ universal.hom                               ≡⟨ universal.commutes _ ⟩
-        K′.ψ _                                                ∎
-      limits .paths f = Cone-hom-path F $ C.invertible→monic invert _ _ $
-        universal.hom C.∘ (inv C.∘ universal.hom) ≡⟨ C.cancell invl ⟩
-        universal.hom                             ≡⟨ ap Cone-hom.hom (Terminal.!-unique L (Terminal.! L Cones.∘ f)) ⟩
-        universal.hom C.∘ Cone-hom.hom f          ∎
-```
-
-## Completeness
+# Completeness
 
 A category is **complete** if admits for limits of arbitrary shape.
 However, in the presence of excluded middle, if a category admits
@@ -576,65 +812,3 @@ indexed by a precategory with objects in $\ty\ o$ and morphisms in $\ty\
 is-complete : ∀ {oc ℓc} o ℓ → Precategory oc ℓc → Type _
 is-complete o ℓ C = ∀ {D : Precategory o ℓ} (F : Functor D C) → Limit F
 ```
-
-<!--
-```agda
-module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} where
-  private
-    module [J,C] = Cat.Reasoning (Cat[ J , C ])
-    module C = Cat.Reasoning C
-
-  open Terminal
-  open Cone-hom
-  open Cone
-  open _=>_
-
-  module _ {F G} (morp : F [J,C].≅ G) where
-    private
-      module morp = [J,C]._≅_ morp
-      module F = Functor F
-      module G = Functor G
-
-    Cone-ap-iso : Cone F → Cone G
-    Cone-ap-iso K = K′ where
-      module K = Cone K
-      K′ : Cone G
-      K′ .apex = K.apex
-      K′ .ψ x = morp.to .η _ C.∘ K.ψ x
-      K′ .commutes f =
-        G.₁ f C.∘ morp.to .η _ C.∘ K.ψ _ ≡⟨ C.extendl (sym (morp.to .is-natural _ _ _)) ⟩
-        morp.to .η _ C.∘ F.₁ f C.∘ K.ψ _ ≡⟨ ap (_ C.∘_) (K.commutes f) ⟩
-        morp.to .η _ C.∘ K.ψ _           ∎
-
-  Limit-ap-iso : ∀ {F G} → F [J,C].≅ G → Limit F → Limit G
-  Limit-ap-iso {F} {G} morp f-lim = g-lim where
-    module morp = [J,C]._≅_ morp
-    module F = Functor F
-    module G = Functor G
-
-    g-lim : Limit G
-    g-lim .top = Cone-ap-iso morp (f-lim .top)
-    g-lim .has⊤ K = contr K=>lim′ uniq where
-      K′ : Cone F
-      K′ = Cone-ap-iso (morp [J,C].Iso⁻¹) K
-
-      K′=>lim : is-contr (Cone-hom F K′ (f-lim .top))
-      K′=>lim = f-lim .has⊤ K′
-
-      K=>lim′ : Cone-hom G K (g-lim .top)
-      K=>lim′ .hom = K′=>lim .centre .hom
-      K=>lim′ .commutes o =
-        (morp.to .η o C.∘ f-lim .top .ψ o) C.∘ K=>lim′ .hom ≡⟨ C.pullr (K′=>lim .centre .commutes o) ⟩
-        morp.to .η o C.∘ ψ K′ o                             ≡⟨ C.cancell (morp.invl ηₚ o) ⟩
-        K .ψ o                                              ∎
-
-      uniq : ∀ x → K=>lim′ ≡ x
-      uniq x = Cone-hom-path G (ap hom (K′=>lim .paths x′)) where
-        x′ : Cone-hom F K′ (f-lim .top)
-        x′ .hom = x .hom
-        x′ .commutes o =
-          f-lim .top .ψ o C.∘ x .hom                                       ≡⟨ C.introl (morp.invr ηₚ o) ⟩
-          (morp.from .η o C.∘ morp.to .η o) C.∘ f-lim .top .ψ o C.∘ x .hom ≡⟨ C.pullr (C.assoc _ _ _ ∙ x .commutes o) ⟩
-          morp.from .η o C.∘ K .ψ o ∎
-```
--->

@@ -2,8 +2,8 @@
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Reasoning
 import Cat.Displayed.Reasoning
+import Cat.Reasoning
 
 module Cat.Displayed.Morphism
   {o ℓ o′ ℓ′}
@@ -380,7 +380,7 @@ make-iso[ inv ] f′ g′ p q .inverses′ .Inverses[_].invr′ = q
 make-vertical-iso
   : ∀ {x} {x′ x″ : Ob[ x ]}
   → (f′ : Hom[ id ] x′ x″) (g′ : Hom[ id ] x″ x′)
-  → f′ ∘′ g′ ≡[ idl _ ] id′ 
+  → f′ ∘′ g′ ≡[ idl _ ] id′
   → g′ ∘′ f′ ≡[ idl _ ] id′
   → x′ ≅↓ x″
 make-vertical-iso = make-iso[ id-iso ]

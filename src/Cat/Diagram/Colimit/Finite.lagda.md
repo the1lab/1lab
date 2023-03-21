@@ -117,17 +117,17 @@ of $in_0f$ and $in_1g$.
 
     po : is-pushout C _ _ _ _
     po .square = sym (assoc _ _ _) ∙ cq.coequal ∙ assoc _ _ _
-    po .colimiting {i₁′ = i₁′} {i₂′} p =
-      cq.coequalise {e′ = cp.[ i₁′ , i₂′ ]} (
+    po .universal {i₁′ = i₁′} {i₂′} p =
+      cq.universal {e′ = cp.[ i₁′ , i₂′ ]} (
         cp.[ i₁′ , i₂′ ] ∘ (in1 ∘ f) ≡⟨ pulll cp.in₀∘factor ⟩
         i₁′ ∘ f                      ≡⟨ p ⟩
         i₂′ ∘ g                      ≡˘⟨ pulll cp.in₁∘factor ⟩
         cp.[ i₁′ , i₂′ ] ∘ (in2 ∘ g) ∎
       )
-    po .i₁∘colimiting = pulll cq.universal ∙ cp.in₀∘factor
-    po .i₂∘colimiting = pulll cq.universal ∙ cp.in₁∘factor
+    po .i₁∘universal = pulll cq.factors ∙ cp.in₀∘factor
+    po .i₂∘universal = pulll cq.factors ∙ cp.in₁∘factor
     po .unique p q =
-      cq.unique (sym (cp.unique _ (sym (assoc _ _ _) ∙ p) (sym (assoc _ _ _) ∙ q)))
+      cq.unique ((cp.unique _ (sym (assoc _ _ _) ∙ p) (sym (assoc _ _ _) ∙ q)))
 ```
 
 Thus, if a category has an initial object, binary coproducts, and
@@ -162,9 +162,9 @@ A coproduct is a pushout under a span whose vertex is the initial object.
 
       coprod : is-coproduct C in1 in2
       coprod .is-coproduct.[_,_] in1′ in2′ =
-        Po.colimiting {i₁′ = in1′} {i₂′ = in2′} (is-contr→is-prop (init _) _ _)
-      coprod .is-coproduct.in₀∘factor = Po.i₁∘colimiting
-      coprod .is-coproduct.in₁∘factor = Po.i₂∘colimiting
+        Po.universal {i₁′ = in1′} {i₂′ = in2′} (is-contr→is-prop (init _) _ _)
+      coprod .is-coproduct.in₀∘factor = Po.i₁∘universal
+      coprod .is-coproduct.in₁∘factor = Po.i₂∘universal
       coprod .is-coproduct.unique other p q = Po.unique p q
 
   with-pushouts
@@ -226,8 +226,8 @@ The construction of coequalisers from pushouts follows its
         (Po.i₂ ∘ [id,id]) ∘ A+A.in₁ ≡⟨ ap (_∘ A+A.in₁) (sym Po.square) ⟩
         (Po.i₁ ∘ [f,g]) ∘ A+A.in₁   ≡⟨ sym (assoc _ _ _) ∙ ap (Po.i₁ ∘_) A+A.in₁∘factor ⟩
         Po.i₁ ∘ g                 ∎
-      coequ .has-is-coeq .coequalise {e′ = e′} p =
-        Po.colimiting (A+A.unique₂ _ refl refl _ (in1) (in2))
+      coequ .has-is-coeq .universal {e′ = e′} p =
+        Po.universal (A+A.unique₂ _ refl refl _ (in1) (in2))
         where
           in1 : ((e′ ∘ f) ∘ [id,id]) ∘ A+A.in₀ ≡ (e′ ∘ [f,g]) ∘ A+A.in₀
           in1 =
@@ -242,15 +242,15 @@ The construction of coequalisers from pushouts follows its
             e′ ∘ g                     ≡˘⟨ pullr A+A.in₁∘factor ⟩
             (e′ ∘ [f,g]) ∘ A+A.in₁        ∎
 
-      coequ .has-is-coeq .universal = Po.i₁∘colimiting
+      coequ .has-is-coeq .factors = Po.i₁∘universal
       coequ .has-is-coeq .unique {F} {e′ = e′} {colim = colim} e′=col∘i₁ =
-        Po.unique (sym e′=col∘i₁) path
+        Po.unique e′=col∘i₁ path
         where
           path : colim ∘ Po.i₂ ≡ e′ ∘ f
           path =
             colim ∘ Po.i₂                         ≡⟨ insertr A+A.in₀∘factor ⟩
             ((colim ∘ Po.i₂) ∘ [id,id]) ∘ A+A.in₀ ≡⟨ ap (_∘ A+A.in₀) (extendr (sym Po.square)) ⟩
-            ((colim ∘ Po.i₁) ∘ [f,g]) ∘ A+A.in₀   ≡⟨ ap (_∘ A+A.in₀) (ap (_∘ [f,g]) (sym e′=col∘i₁)) ⟩
+            ((colim ∘ Po.i₁) ∘ [f,g]) ∘ A+A.in₀   ≡⟨ ap (_∘ A+A.in₀) (ap (_∘ [f,g]) e′=col∘i₁) ⟩
             (e′ ∘ [f,g]) ∘ A+A.in₀                ≡⟨ pullr A+A.in₀∘factor ⟩
             e′ ∘ f           ∎
 
@@ -270,9 +270,9 @@ The construction of coequalisers from pushouts follows its
     open is-pushout
     po : is-pushout C _ _ _ _
     po .square = is-contr→is-prop (i _) _ _
-    po .colimiting _ = r .is-coproduct.[_,_] _ _
-    po .i₁∘colimiting = r .is-coproduct.in₀∘factor
-    po .i₂∘colimiting = r .is-coproduct.in₁∘factor
+    po .universal _ = r .is-coproduct.[_,_] _ _
+    po .i₁∘universal = r .is-coproduct.in₀∘factor
+    po .i₂∘universal = r .is-coproduct.in₁∘factor
     po .unique p q = r .is-coproduct.unique _ p q
 ```
 -->

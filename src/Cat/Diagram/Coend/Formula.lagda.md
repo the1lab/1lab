@@ -17,9 +17,7 @@ module Cat.Diagram.Coend.Formula
 
 <!--
 ```agda
-open Cocone-hom
 open Cowedge
-open Cocone
 ```
 -->
 
@@ -52,24 +50,26 @@ module _ (F : Functor (C ^op ×ᶜ C) D) where
     module C = Cat C
     module D = Cat D
     module F = F-r F
+    open _=>_
+    open Twist
+    open Bifunctor
 
-  cocone→cowedge : Cocone (twistᵒᵖ F) → Cowedge F
-  cocone→cowedge x .nadir = x .coapex
-  cocone→cowedge x .ψ c = x .ψ ((c , c) , C.id)
-  cocone→cowedge x .extranatural f =
-    x .ψ (_ , C.id) D.∘ Bifunctor.second F f ≡⟨ x .commutes (record { commutes = C.eliml (C.idl C.id) }) ⟩
-    x .ψ (_ , f)                             ≡˘⟨ x .commutes (record { commutes = C.cancelr (C.idl C.id) }) ⟩
-    x .ψ (_ , C.id) D.∘ Bifunctor.first F f  ∎
+  cocone→cowedge : ∀ {x} → twistᵒᵖ F => Const x → Cowedge F
+  cocone→cowedge eta .nadir = _
+  cocone→cowedge eta .ψ c = eta .η ((c , c) , C.id)
+  cocone→cowedge eta .extranatural f =
+    eta .is-natural _ _ (twist _ _ (C.eliml (C.idl _)))
+    ∙ (sym $ eta .is-natural _ _ (twist _ _ (C.cancelr (C.idl _))))
 
-  cowedge→cocone : Cowedge F → Cocone (twistᵒᵖ F)
-  cowedge→cocone W .coapex = W .nadir
-  cowedge→cocone W .ψ ((c , c′) , f) = W .ψ c D.∘ Bifunctor.second F f
-  cowedge→cocone W .commutes {(a , b) , f} {(x , y) , g} h =
-    (W .ψ x D.∘ Bifunctor.second F g) D.∘ F.₁ (_ , _)                                           ≡⟨ W .extranatural g D.⟩∘⟨refl ⟩
-    (W .ψ y D.∘ Bifunctor.first F g) D.∘ F.₁ (_ , _)                                            ≡⟨ D.pullr (F.weave (Σ-pathp (C.introl refl) refl)) ⟩
-    W .ψ y D.∘ Bifunctor.first F (Twist.before h C.∘ g) D.∘ Bifunctor.second F (Twist.after h)  ≡⟨ D.extendl (sym (W .extranatural _)) ⟩
-    W .ψ a D.∘ Bifunctor.second F (Twist.before h C.∘ g) D.∘ Bifunctor.second F (Twist.after h) ≡⟨ D.refl⟩∘⟨ sym (Bifunctor.second∘second F) ∙ ap (Bifunctor.second F) (h .Twist.commutes) ⟩
-    W .ψ a D.∘ Bifunctor.second F f                                                             ∎
+  cowedge→cocone : (W : Cowedge F) → twistᵒᵖ F => Const (W .nadir)
+  cowedge→cocone W .η ((c , c') , f) = W .ψ c D.∘ second F f
+  cowedge→cocone W .is-natural ((a , b) , f) ((x , y) , g) h =
+    (W .ψ x D.∘ F.F₁ (C.id , g)) D.∘ F.F₁ (_ , _)                           ≡⟨ W .extranatural g D.⟩∘⟨refl ⟩
+    (W .ψ y D.∘ F.F₁ (g , C.id)) D.∘ F.F₁ (h .before , h .after)            ≡⟨ D.pullr (F.weave (C.introl refl ,ₚ refl)) ⟩
+    W .ψ y D.∘ ((F.F₁ (h .before C.∘ g , C.id)) D.∘ F.F₁ (C.id , h .after)) ≡⟨ D.extendl (sym (W .extranatural _)) ⟩
+    (W .ψ a D.∘ (F.F₁ (C.id , h .before C.∘ g) D.∘ F.F₁ (C.id , h .after))) ≡⟨ D.refl⟩∘⟨ sym (Bifunctor.second∘second F) ∙ ap (Bifunctor.second F) (h .commutes) ⟩
+    W .ψ a D.∘ F.F₁ (C.id , f)                                              ≡⟨ sym (D.idl _) ⟩
+    D.id D.∘ W .ψ a D.∘ F.F₁ (C.id , f) ∎
 ```
 
 We can now extend that correspondence to calculating coends as certain
@@ -79,20 +79,21 @@ colimits: $\cD$ has a coend for $F$ if it has a colimit for $F\pi_t$.
   colimit→coend : Colimit (twistᵒᵖ F) → Coend F
   colimit→coend colim = coend where
     open Coend
-    module W = Initial colim
+    module W = Colimit colim
     coend : Coend F
-
-    coend .Coend.cowedge = cocone→cowedge (colim .Initial.bot)
-    coend .Coend.factor W′ = W.¡ {x = cowedge→cocone W′} .hom
-    coend .Coend.commutes = W.¡ .commutes _ ∙ D.elimr F.F-id
-    coend .Coend.unique {W = W} {g = g} comm =
-      ap hom ⊙ sym $ W.¡-unique $ cocone-hom _ λ o → sym $ square (o .snd) where
-      square : ∀ {a b} (f : C.Hom b a) → _
-      square {a} {b} f =
-        W .ψ a D.∘ Bifunctor.second F f                   ≡⟨ W .extranatural f ⟩
-        W .ψ b D.∘ Bifunctor.first F f                    ≡⟨ D.pushl (sym comm) ⟩
-        g D.∘ W.bot .ψ (_ , C.id) D.∘ Bifunctor.first F f ≡⟨ D.refl⟩∘⟨ W.bot .commutes (record { before = f ; after = C.id ; commutes = C.cancelr (C.idl _) }) ⟩
-        g D.∘ W.bot .ψ (_ , f)                            ∎
+    coend .cowedge = cocone→cowedge W.cocone
+    coend .factor W′ =
+      W.universal
+        (cowedge→cocone W′ .η)
+        (λ f → cowedge→cocone W′ .is-natural _ _ f ∙ D.idl _)
+    coend .commutes {W = W′} =
+      W.factors _ _ ∙ D.elimr (Bifunctor.second-id F)
+    coend .unique {W = W′} comm =
+      W.unique _ _ _ $ λ j →
+        sym $
+          W′ .extranatural _
+          ·· D.pushl (sym comm)
+          ·· (D.refl⟩∘⟨ (W.commutes (twist _ _ (C.cancelr (C.idl _)))))
 
   cocomplete→coend : is-cocomplete (o ⊔ ℓ) ℓ D → Coend F
   cocomplete→coend colim = colimit→coend (colim _)

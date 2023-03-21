@@ -34,6 +34,7 @@ $f \to g$ in $\rm{Tw}(\cC)$ as a factorisation of $g$ through $f$.
 module _ {o ℓ} {C : Precategory o ℓ} where
   open Precategory C
   record Twist {a₀ a₁ b₀ b₁} (f : Hom a₀ a₁) (g : Hom b₀ b₁) : Type ℓ where
+    constructor twist
     no-eta-equality
     field
       before : Hom b₀ a₀

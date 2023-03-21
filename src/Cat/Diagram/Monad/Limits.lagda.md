@@ -1,9 +1,11 @@
 ```agda
 open import Cat.Functor.Equivalence.Complete
+open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Conservative
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Terminal
+open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Monad
 open import Cat.Prelude
 
@@ -21,8 +23,6 @@ private
 
 open Algebra-hom
 open Algebra-on
-open Cone-hom
-open Cone
 ```
 -->
 
@@ -55,184 +55,157 @@ Suppose we have a diagram as in the setup --- we'll show that the
 functor $U : \cC^M \to \cC$ both preserves and _reflects_ limits,
 in that $K$ is a limiting cone if, and only if, $U(K)$ is.
 
-```agda
-module _ {jo jℓ} {J : Precategory jo jℓ} (F : Functor J (Eilenberg-Moore C M)) where
-  private module F = Functor F
-
-  Forget-reflects-limits
-    : (K : Cone F)
-    → is-limit (Forget C M F∘ F) (F-map-cone (Forget C M) K)
-    → is-limit F K
-  Forget-reflects-limits K uniq other = contr ! unique where
-    !′ = uniq (F-map-cone (Forget C M) other) .centre
-```
-
-Let $L$ be a cone over $F$: Since $U(K)$ is a limiting cone, then we
-have a unique map of $U(L) \to U(K)$, which we must show extends to a
-map of _algebras_ $L \to K$, which by definition means $! \nu = \nu
-M_1(!)$. But those are maps $M_0(L) \to U(K)$ --- so if $M_0(L)$ was a
-cone over $U \circ F$, and those two were maps of cones, then they would
-be equal!
-
-```agda
-    ! : Cone-hom _ other K
-    ! .hom .morphism = !′ .hom
-    ! .hom .commutes =
-      ap hom $ is-contr→is-prop (uniq cone′)
-        (record { hom = !′ .hom C.∘ apex other .snd .ν
-                ; commutes = λ o → C.pulll (!′ .commutes o)
-                })
-        (record { hom = apex K .snd .ν C.∘ M.M₁ (!′ .hom)
-                ; commutes = λ o → C.pulll (K .ψ o .commutes)
-                                ·· C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (!′ .commutes o))
-                                ·· sym (other .ψ o .commutes)
-                })
-```
-
-The cone structure on $M_0(L)$ is given by composites $\psi_x \nu$,
-which commute because $\psi$ is also a cone structure. More explicitly,
-what we must show is $F_1(o) \psi_x \nu = \psi_y \nu$, which follows
-immediately.
-
-```agda
-      where
-        cone′ : Cone (Forget C M F∘ F)
-        cone′ .apex       = M.M₀ (apex other .fst)
-        cone′ .ψ x        = morphism (ψ other x) C.∘ apex other .snd .ν
-        cone′ .commutes o = C.pulll (ap morphism (commutes other o))
-
-    ! .commutes o = Algebra-hom-path _
-       (uniq (F-map-cone (Forget C M) other) .centre .commutes o)
-```
-
-For uniqueness, we use that the map $U(L) \to U(K)$ is unique, and that
-the functor $U$ is faithful.
-
-```agda
-    unique : ∀ x → ! ≡ x
-    unique x = Cone-hom-path _ $ Algebra-hom-path _ $
-      ap hom (uniq (F-map-cone (Forget _ M) other) .paths hom′)
-      where
-        hom′ : Cone-hom _ _ _
-        hom′ .hom        = hom x .morphism
-        hom′ .commutes o = ap morphism (x .commutes o)
-```
-
-I hope you like appealing to uniqueness of maps into limits, by the way.
-We now relax the conditions on the theorem above, which relies on the
-pre-existence of a cone $K$. In fact, what we have shown is that
-`Forget` reflects the property of _being a limit_ --- what we now show
-is that it reflects limit _objects_, too: if $U \circ F$ has a limit,
-then so does $F$.
-
-```agda
-  Forget-lift-limit : Limit (Forget _ M F∘ F) → Limit F
-  Forget-lift-limit lim-over =
-    record { top = cone′
-           ; has⊤ = Forget-reflects-limits cone′ $
-              subst (is-limit _) (sym U$L≡L) (lim-over .has⊤)
-           }
-    where
-      open Terminal
-      module cone = Cone (lim-over .top)
-```
-
-What we must do, essentially, is prove that $\lim (U \circ F)$ admits an
-algebra structure, much like we did for products of groups. In this,
-we'll use two auxiliary cones over $U \circ F$, one with underlying
-object given by $M(\lim (U \circ F))$ and one by $M^2(\lim (U \circ
-F))$. We construct the one with a single $M$ first, and re-use its maps
-in the construction of the one with $M^2$.
-
-The maps out of $M_0(\lim (U \circ F))$ are given by the composite
-below, which assembles into a cone since $F_1(f)$ is a map of algebras
-and $\psi$ is a cone.
-
-$$
-M_0 (\lim (U \circ F)) \xto{M_1(\psi_x)} M_0 (F_0(x)) \xto{\nu} F_0(x)
-$$
-
-```agda
-      cone₂ : Cone (Forget _ M F∘ F)
-      cone₂ .apex = M.M₀ cone.apex
-      cone₂ .ψ x  = F.₀ x .snd .ν C.∘ M.M₁ (cone.ψ x)
-      cone₂ .commutes {x} {y} f =
-        F.₁ f .morphism C.∘ F.₀ x .snd .ν C.∘ M.M₁ (cone.ψ x)           ≡⟨ C.pulll (F.₁ f .commutes) ⟩
-        (F.₀ y .snd .ν C.∘ M.M₁ (F.₁ f .morphism)) C.∘ M.M₁ (cone.ψ x)  ≡⟨ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (cone.commutes f)) ⟩
-        F.₀ y .snd .ν C.∘ M.M₁ (cone.ψ y)                               ∎
-```
-
-Below, we can reuse the work we did above by precomposing with $M$'s
-multiplication $\mu$.
-
-```agda
-      cone² : Cone (Forget _ M F∘ F)
-      cone² .apex       = M.M₀ (M.M₀ cone.apex)
-      cone² .ψ x        = cone₂ .ψ x C.∘ M.mult.η _
-      cone² .commutes f = C.pulll (cone₂ .commutes f)
-```
-
-We now define the algebra structure on $\lim (U \circ F)$. It's very
-tedious, but the multiplication is uniquely defined since it's a map
-$M(\lim (U \circ F)) \to \lim (U \circ F)$ into a limit, and the
-algebraic identities follow from again from limits being terminal.
-
-```agda
-      cone′ : Cone F
-      cone′ .apex = cone.apex , alg where
-```
-
 <!--
 ```agda
-        comm1 : ∀ o → _
-        comm1 o =
-             C.pulll (lim-over .has⊤ cone₂ .centre .commutes o)
-          ·· C.pullr (sym (M.unit.is-natural _ _ _))
-          ·· C.cancell (F.₀ o .snd .ν-unit)
-
-        comm2 : ∀ o → _
-        comm2 o =
-             C.pulll (lim-over .has⊤ cone₂ .centre .commutes o)
-          ·· C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (lim-over .has⊤ cone₂ .centre .commutes o) ∙ M.M-∘ _ _)
-          ·· C.extendl (F.₀ o .snd .ν-mult)
-          ·· ap (F.₀ o .snd .ν C.∘_) (M.mult.is-natural _ _ _) ·· C.assoc _ _ _
+module _ {jo jℓ} {J : Precategory jo jℓ} (F : Functor J (Eilenberg-Moore C M)) where
+  private
+    module J = Precategory J
+    module F = Functor F
+    module FAlg j = Algebra-on (F.₀ j .snd)
+  open Functor
+  open _=>_
 ```
 -->
 
-```agda
-        alg : Algebra-on _ M cone.apex
-        alg .ν = lim-over .has⊤ cone₂ .centre .hom
-        alg .ν-unit = ap hom $
-          is-contr→is-prop (lim-over .has⊤ (lim-over .top))
-            (record { hom = alg .ν C.∘ M.unit.η cone.apex ; commutes = comm1 })
-            (record { hom = C.id ; commutes = λ _ → C.idr _ })
-
-        alg .ν-mult = ap hom $ is-contr→is-prop (lim-over .has⊤ cone²)
-          (record { hom = alg .ν C.∘ M.M₁ (alg .ν) ; commutes = comm2 })
-          (record { hom      = alg .ν C.∘ M.mult.η cone.apex
-                  ; commutes = λ o → C.pulll (lim-over .has⊤ cone₂ .centre .commutes o)
-                  })
-```
-
-The cone maps in $\cC^M$ are given by the cone maps we started with
---- specialising again to groups, we're essentially showing that the
-projection map $\pi_1 : G \times H \to G$ _between sets_ is actually a
-group homomorphism.
+We begin with the following key lemma: Write $K : \cC$ for the limit of
+a diagram $\cJ \xto{F} \cC^M \xto{U} \cC$. If $K$ carries an $M$-algebra
+structure $\nu$, and the limit projections $\psi : K \to F(j)$ are
+$M$-algebra morphisms, then $(K, \nu)$ is the limit of $F$ in $\cC^M$.
 
 ```agda
-      cone′ .ψ x .morphism = cone.ψ x
-      cone′ .ψ x .commutes = lim-over .has⊤ cone₂ .centre .commutes x
-      cone′ .commutes f = Algebra-hom-path _ (cone.commutes f)
-
-      U$L≡L : F-map-cone (Forget _ M) cone′ ≡ lim-over .top
-      U$L≡L = Cone-path _ refl λ o → refl
+  make-algebra-limit
+    : ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Forget C M F∘ F}
+    → (lim : is-ran !F (Forget C M F∘ F) K eps)
+    → (nu : Algebra-on C M (K .F₀ tt))
+    → (∀ j → is-limit.ψ lim j C.∘ nu .ν ≡ FAlg.ν j C.∘ M.M₁ (is-limit.ψ lim j))
+    → make-is-limit F (K .F₀ tt , nu)
+  make-algebra-limit lim apex-alg comm = em-lim where
+    module lim = is-limit lim
+    open make-is-limit
+    module apex = Algebra-on apex-alg
+    open _=>_
 ```
 
-We conclude by saying that, if $\cC$ is a complete category, then so
-is $\cC^M$, with no assumptions on $M$.
+The assumptions to this lemma are actually rather hefty: they pretty
+much directly say that $K$ was already the limit of $F$. However, with
+this more "elementary" rephrasing, we gain a bit of extra control which
+will be necessary for _constructing_ limits in $\cC^M$ out of limits in
+$\cC$ later.
+
+```agda
+    em-lim : make-is-limit F _
+    em-lim .ψ j .morphism = lim.ψ j
+    em-lim .ψ j .commutes = comm j
+    em-lim .commutes f    = Algebra-hom-path C (lim.commutes f)
+    em-lim .universal eta p .morphism =
+      lim.universal (λ j → eta j .morphism) (λ f i → p f i .morphism)
+    em-lim .factors eta p =
+      Algebra-hom-path C (lim.factors _ _)
+    em-lim .unique eta p other q =
+      Algebra-hom-path C (lim.unique _ _ _ λ j i → q j i .morphism)
+    em-lim .universal eta p .commutes = lim.unique₂ _
+      (λ f → C.pulll (F.F₁ f .commutes)
+           ∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (ap morphism (p f))))
+      (λ j → C.pulll (lim.factors _ _)
+           ∙ eta j .commutes)
+      (λ j → C.pulll (comm j)
+           ∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (lim.factors _ _)))
+```
+
+This key lemma also doubles as a proof that the underlying object
+functor $U$ reflects limits: We already had an algebra structure
+"upstairs"!
+
+```agda
+  Forget-reflects-limits : reflects-limit (Forget C M) F
+  Forget-reflects-limits {K} {eps} lim = to-is-limitp
+    (make-algebra-limit lim (K .F₀ tt .snd) (λ j → eps .η j .commutes))
+    (Algebra-hom-path C refl)
+```
+
+Having shown that $U$ reflects the property of _being a limit_, we now
+turn to showing it reflects limits in general. Using our key lemma, it
+will suffice to construct an algebra structure on $\lim_j UF(j)$, then
+show that the projection maps $\psi_j : (\lim_j UF(j)) \to UF(j)$ extend
+to algebra homomorphisms.
+
+```agda
+  Forget-lift-limit : Limit (Forget C M F∘ F) → Limit F
+  Forget-lift-limit lim-over = to-limit $ to-is-limit $ make-algebra-limit
+    (Limit.has-limit lim-over) apex-algebra (λ j → lim-over.factors _ _)
+    where
+    module lim-over = Limit lim-over
+    module lim = Ran lim-over
+```
+
+An algebra structure consists, centrally, of a map $M(\lim_j UF(j)) \to
+\lim_j UF(j)$: a map _into_ the limit. Maps into limits are the happy
+case, since $\lim_j UF(j)$ is essentially defined by a (natural)
+isomorphism between the sets $\hom(X, \lim_j UF(j))$ and $\lim_j \hom(X,
+UF(j))$, the latter limit being computed in $\Sets$. We understand
+limits of sets very well: they're (subsets of) sets of tuples!
+
+Our algebra map is thus defined _componentwise_: Since we have a bunch
+of maps $\nu_j : M(UF(j)) \to UF(j)$, coming from the algebra structures
+on each $F(j)$, we can "tuple" them into a big map $\nu = \langle \nu_j
+\psi_j \rangle _j$. Abusing notation slightly, we're defining $\nu(a, b,
+...)$ to be $(\nu_a(a), \nu_b(b), ...)$.
+
+```agda
+    apex-algebra : Algebra-on C M lim-over.apex
+    apex-algebra .ν =
+      lim-over.universal (λ j → FAlg.ν j C.∘ M.M₁ (lim-over.ψ j)) comm where abstract
+      comm : ∀ {x y} (f : J.Hom x y)
+            → F.₁ f .morphism C.∘ FAlg.ν x C.∘ M.M₁ (lim-over.ψ x)
+            ≡ FAlg.ν y C.∘ M.M₁ (lim-over.ψ y)
+      comm {x} {y} f =
+        F.₁ f .morphism C.∘ FAlg.ν x C.∘ M.M₁ (lim-over.ψ x)        ≡⟨ C.extendl (F.₁ f .commutes) ⟩
+        FAlg.ν y C.∘ M.M₁ (F.₁ f .morphism) C.∘ M.M₁ (lim-over.ψ x) ≡˘⟨ C.refl⟩∘⟨ M.M-∘ _ _ ⟩
+        FAlg.ν y C.∘ M.M₁ (F.₁ f .morphism C.∘ lim-over.ψ x)        ≡⟨ C.refl⟩∘⟨ ap M.M₁ (lim-over.commutes f) ⟩
+        FAlg.ν y C.∘ M.M₁ (lim-over.ψ y)                            ∎
+```
+
+To show that $\nu$ really is an algebra structure, we'll reason
+componentwise, too: we must show that $\nu(\eta_a, \eta_b, ...)$ is
+the identity map: but we can compute
+
+$$
+\nu(\eta_a, \eta_b, ...) = (\nu_a\eta_a, \nu_b\eta_b, ...) = (\id, \id, ...) = \id\text{!}
+$$
+
+<details>
+<summary>
+The other condition, compatibility with $M$'s multiplication, is
+analogous. Formally, the computation is a bit less pretty, but it's no
+more complicated.
+</summary>
+
+```agda
+    apex-algebra .ν-unit = lim-over.unique₂ _ lim-over.commutes
+      (λ j → C.pulll (lim-over.factors _ _)
+          ·· C.pullr (sym $ M.unit.is-natural _ _ _)
+          ·· C.cancell (FAlg.ν-unit j))
+      (λ j → C.idr _)
+    apex-algebra .ν-mult = lim-over.unique₂ _
+      (λ f → C.pulll $ C.pulll (F.₁ f .commutes)
+           ∙ C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (lim-over.commutes f)))
+      (λ j → C.pulll (lim-over.factors _ _)
+          ·· C.pullr (sym (M.M-∘ _ _) ∙ ap M.M₁ (lim-over.factors _ _) ∙ M.M-∘ _ _)
+          ·· C.extendl (FAlg.ν-mult j)
+          ·· ap (FAlg.ν j C.∘_) (M.mult.is-natural _ _ _)
+          ·· C.assoc _ _ _)
+      (λ j → C.pulll (lim-over.factors _ _))
+```
+
+</details>
+
+Putting our previous results together, we conclude by observing that, if
+$\cC$ is a complete category, then so is $\cC^M$, regardless of how
+ill-behaved the monad $M$ might be.
 
 ```agda
 Eilenberg-Moore-is-complete
   : ∀ {a b} → is-complete a b C → is-complete a b (Eilenberg-Moore _ M)
-Eilenberg-Moore-is-complete complete F = Forget-lift-limit F (complete _)
+Eilenberg-Moore-is-complete complete F =
+  Forget-lift-limit F (complete _)
 ```

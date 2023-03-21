@@ -34,6 +34,6 @@ naturally isomorphic to $K$, so $K$ also has a limit.
 ```agda
   equivalence→complete : ∀ {co cℓ} → is-complete co cℓ C → is-complete co cℓ D
   equivalence→complete ccomp K =
-    Limit-ap-iso (F∘-iso-id-l F∘F⁻¹≅Id)
+    natural-iso→limit (F∘-iso-id-l F∘F⁻¹≅Id)
       (subst Limit F∘-assoc (right-adjoint-limit F⁻¹⊣F (ccomp (F⁻¹ F∘ K))))
 ```

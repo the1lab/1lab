@@ -1,6 +1,6 @@
 ```agda
-open import Cat.Prelude
 open import Cat.Univalent
+open import Cat.Prelude
 
 open import Order.Base
 

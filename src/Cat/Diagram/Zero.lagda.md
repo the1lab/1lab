@@ -54,6 +54,12 @@ every hom set is inhabited!
 
   zero-∘r : ∀ {x y z} → (f : Hom x y) → zero→ {y} {z} ∘ f ≡ zero→
   zero-∘r f = pullr (sym (!-unique (! ∘ f)))
+
+  zero-comm : ∀ {x y z} → (f : Hom y z) → (g : Hom x y) → f ∘ zero→  ≡ zero→ ∘ g
+  zero-comm f g = zero-∘l f ∙ sym (zero-∘r g)
+
+  zero-comm-sym : ∀ {x y z} → (f : Hom y z) → (g : Hom x y) → zero→ ∘ f  ≡ g ∘ zero→
+  zero-comm-sym f g = zero-∘r f ∙ sym (zero-∘l g)
 ```
 
 ## Intuition

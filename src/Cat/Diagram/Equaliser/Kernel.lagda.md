@@ -95,7 +95,8 @@ $$
 
 ```agda
     p : ¡ ∘ ! ≡ id
-    p = KKf.unique₂ {p = zero-∘l _ ∙ sym (zero-∘r _)} (sym (zero-∘l _))
-      ( Kf.unique₂  {p = zero-∘l _ ∙ sym (zero-∘r _)} (sym (zero-∘l _))
-          (sym (KKf.equal ∙ zero-∘r _)) ∙ intror refl)
+    p = KKf.unique₂ (zero-comm _ _) (zero-∘l _)
+          (Kf.unique₂ (extendl (zero-comm _ _))
+                      (pulll KKf.equal ∙ idr _)
+                      (zero-comm _ _))
 ```

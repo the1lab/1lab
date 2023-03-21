@@ -51,11 +51,17 @@ module _ (a≡id : a ≡ id) where abstract
     f ∘ id ≡⟨ idr f ⟩
     f ∎
 
+  elim-inner : f ∘ a ∘ h ≡ f ∘ h
+  elim-inner {f = f} = ap (f ∘_) eliml
+
   introl : f ≡ a ∘ f
   introl = sym eliml
 
   intror : f ≡ f ∘ a
   intror = sym elimr
+
+  intro-inner : f ∘ h ≡ f ∘ a ∘ h
+  intro-inner {f = f} = ap (f ∘_) introl
 ```
 
 ## Reassocations

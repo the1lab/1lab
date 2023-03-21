@@ -12,9 +12,7 @@ module Cat.Instances.Sets.Cocomplete where
 
 <!--
 ```agda
-open Cocone-hom
 open Initial
-open Cocone
 ```
 -->
 
@@ -86,9 +84,11 @@ set-coequalisers already includes a truncation.
 
 ```agda
 Sets-is-cocomplete : ∀ {ι κ o} → is-cocomplete ι κ (Sets (ι ⊔ κ ⊔ o))
-Sets-is-cocomplete {D = D} F = colim where
+Sets-is-cocomplete {ι} {κ} {o} {D = D} F = to-colimit (to-is-colimit colim) where
   module D = Precategory D
   module F = Functor F
+  open _=>_
+  open make-is-colimit
 
   sum : Type _
   sum = Σ[ d ∈ D.Ob ] ∣ F.₀ d ∣
@@ -104,33 +104,32 @@ that $F(f)(x) = y$.
 
 [quotient]: Data.Set.Coequaliser.html#quotients
 
-```agda
-  apex : Cocone F
-  apex .coapex = el (sum / rel) squash
-  apex .ψ x p = inc (x , p)
-  apex .commutes f = funext (λ i → sym (quot (f , refl)))
-```
-
 By the same truncation nonsense as above, we can apply `Coeq-rec`{.Agda}
 to eliminate from our quotient to the coapex of any other cocone over
 $F$; The family of maps $\psi$ respects the quotient essentially by
 definition.
 
 ```agda
-  colim : Initial _
-  colim .bot = apex
-  colim .has⊥ other = contr map unique where
-    map : Cocone-hom F apex other
-    map .hom = Coeq-rec (other .coapex .is-tr) (λ { (x , p) → other .ψ x p })
-                  λ { ((X , x) , (Y , y) , f , p) →
-                      sym (happly (other .commutes f) x) ∙ ap (other .ψ Y) p
-                    }
-    map .commutes o = refl
+  univ : ∀ {A : Set (ι ⊔ κ ⊔ o)}
+       → (eps : ∀ j → ∣ F.F₀ j ∣ → ∣ A ∣)
+       → (∀ {x y} (f : D.Hom x y) → ∀ Fx → eps y (F.F₁ f Fx) ≡ eps x Fx)
+       → sum / rel
+       → ∣ A ∣
+  univ {A} eps p =
+    Coeq-rec (A .is-tr)
+      (λ { (x , p) → eps x p })
+      (λ { ((X , x) , (Y , y) , f , q) → sym (p f x) ∙ ap (eps _) q})
 
-    unique : ∀ x → map ≡ x
-    unique hom′ = Cocone-hom-path _
-      (funext (Coeq-elim-prop (λ x → other .coapex .is-tr _ _)
-                λ y → sym (happly (hom′ .commutes _) _)))
+  colim : make-is-colimit F (el! (sum / rel))
+  colim .ψ x p = inc (x , p)
+  colim .commutes f = funext λ _ → sym (quot (f , refl))
+  colim .universal {A} eps p x = univ {A} eps (λ f → happly (p f)) x
+  colim .factors eps p = refl
+  colim .unique {A} eps p other q = funext λ x →
+    Coeq-elim-prop
+      (λ x →  A .is-tr (other x) (univ {A} eps (λ f → happly (p f)) x))
+      (λ x → happly (q (x .fst)) (x .snd))
+      x
 ```
 
 # Coproducts are disjoint

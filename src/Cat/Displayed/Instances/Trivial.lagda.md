@@ -1,13 +1,13 @@
 ```agda
-open import Cat.Displayed.Base
+open import Cat.Functor.Equivalence.Path
+open import Cat.Instances.Shape.Terminal
 open import Cat.Displayed.Bifibration
-open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Cocartesian
+open import Cat.Displayed.Cartesian
+open import Cat.Functor.Equivalence
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
-open import Cat.Instances.Shape.Terminal
-open import Cat.Functor.Equivalence
-open import Cat.Functor.Equivalence.Path
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
 module Cat.Displayed.Instances.Trivial
@@ -29,7 +29,7 @@ Any category $\ca{C}$ can be regarded as being displayed over the
 terminal category $\top$.
 
 ```agda
-Trivial : Displayed ⊤Cat o ℓ 
+Trivial : Displayed ⊤Cat o ℓ
 Trivial .Displayed.Ob[_] _ = Ob
 Trivial .Displayed.Hom[_] _ = Hom
 Trivial .Displayed.Hom[_]-set _ _ _ = Hom-set _ _
@@ -111,4 +111,3 @@ trivial→fibre-iso : is-precat-iso trivial-fibre
 trivial→fibre-iso .is-precat-iso.has-is-ff = id-equiv
 trivial→fibre-iso .is-precat-iso.has-is-iso = id-equiv
 ```
-

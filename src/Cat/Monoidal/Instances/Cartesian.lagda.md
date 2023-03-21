@@ -37,7 +37,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 ```agda
   Cartesian-monoidal : (∀ A B → Product A B) → Terminal C → Monoidal-category C
   Cartesian-monoidal prods term = mon where
-    open Cartesian prods
+    open Binary-products prods
     open Terminal term
     mon : Monoidal-category C
     mon .-⊗- = ×-functor

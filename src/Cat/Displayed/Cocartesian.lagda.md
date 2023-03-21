@@ -1,13 +1,13 @@
 ```agda
-open import Cat.Displayed.Base
 open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Total.Op
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Reasoning
-import Cat.Displayed.Morphism
 import Cat.Displayed.Morphism.Duality
 import Cat.Displayed.Reasoning as DR
+import Cat.Displayed.Morphism
+import Cat.Reasoning
 
 module Cat.Displayed.Cocartesian
   {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o′ ℓ′) where
@@ -102,9 +102,9 @@ to a unique universal factorisation of $h'$ through a map $b' \to_{m} u'$
              → Hom[ m ] b′ u′
   universal′ {u′ = u′} p h′ = universal _ (coe1→0 (λ i → Hom[ p i ] a′ u′) h′)
 
-  commutesp : ∀ {u u′} {m : Hom b u} {k : Hom a u} 
+  commutesp : ∀ {u u′} {m : Hom b u} {k : Hom a u}
             → (p : m ∘ f ≡ k) (h′ : Hom[ k ] a′ u′)
-            → universal′ p h′ ∘′ f′ ≡[ p ] h′ 
+            → universal′ p h′ ∘′ f′ ≡[ p ] h′
   commutesp {u′ = u′} p h′ =
     to-pathp⁻ (commutes _ (coe1→0 (λ i → Hom[ p i ] a′ u′) h′))
 

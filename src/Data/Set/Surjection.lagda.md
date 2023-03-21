@@ -64,13 +64,13 @@ surjectivity out of the way, we get what we wanted.
 ```agda
   coeqs : is-coequaliser (Sets _) _ _ _
   coeqs .coequal i (x , y , p) = p i
-  coeqs .coequalise {F} {e′} p x = go {F = F} e′ p x (surj x)
-  coeqs .universal {F} {e′} {p = p} = funext λ x →
+  coeqs .universal {F} {e′} p x = go {F = F} e′ p x (surj x)
+  coeqs .factors {F} {e′} {p = p} = funext λ x →
     ∥-∥-elim {P = λ e → go {F} e′ p (f x) e ≡ e′ x}
       (λ x → hlevel!) (λ e → p $ₚ (e .fst , x , e .snd)) (surj (f x))
   coeqs .unique {F} {e′} {p} {colim} comm = funext λ a →
     ∥-∥-elim {P = λ e → colim a ≡ go {F} e′ p a e} (λ x → hlevel!)
-      (λ x → sym (comm $ₚ x .fst ∙ ap colim (x .snd)))
+      (λ x → ap colim (sym (x .snd)) ∙ comm $ₚ x .fst)
       (surj a)
 ```
 

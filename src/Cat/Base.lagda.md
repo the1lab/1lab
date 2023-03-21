@@ -473,6 +473,12 @@ module _ where
   Const {D = D} x .F-id = refl
   Const {D = D} x .F-∘ _ _ = sym (idr D _)
 
+  const-nt : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+           → {x y : Ob D} → Hom D x y
+           → Const {C = C} {D = D} x => Const {C = C} {D = D} y
+  const-nt f ._=>_.η _ = f
+  const-nt {D = D} f ._=>_.is-natural _ _ _ = idr D _ ∙ sym (idl D _)
+
 infixr 30 _F∘_
 infix 20 _=>_
 
@@ -486,6 +492,7 @@ module _ {o₁ h₁ o₂ h₂}
     module D = Precategory D
     module C = Precategory C
 
+  open Functor
   open _=>_
 ```
 -->
@@ -530,6 +537,12 @@ is a proposition:
 
   _ηₚ_ : ∀ {a b : F => G} → a ≡ b → ∀ x → a .η x ≡ b .η x
   p ηₚ x = ap (λ e → e .η x) p
+
+  _ηᵈ_ : ∀ {F' G' : Functor C D} {p : F ≡ F'} {q : G ≡ G'}
+       → {a : F => G} {b : F' => G'}
+       → PathP (λ i → p i => q i) a b
+       → ∀ x → PathP (λ i → D.Hom (p i .F₀ x) (q i .F₀ x)) (a .η x) (b .η x)
+  p ηᵈ x = apd (λ i e → e .η x) p
 
   infixl 45 _ηₚ_
 ```

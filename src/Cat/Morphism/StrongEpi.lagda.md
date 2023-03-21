@@ -216,19 +216,19 @@ is-regular-epi→is-strong-epi
 is-regular-epi→is-strong-epi {a} {b} f regular =
   lifts→is-strong-epi
     r.is-regular-epi→is-epic
-    (λ m x → map m x , r.universal , lemma m x)
+    (λ m x → map m x , r.factors , lemma m x)
     where
     module r = is-regular-epi regular renaming (arr₁ to s ; arr₂ to t)
     module _ {c} {d} (z : c ↪ d) {u} {v} (vf=zu : v ∘ f ≡ z .mor ∘ u) where
       module z = _↪_ z
       map : Hom b c
-      map = r.coequalise {e′ = u} $ z.monic _ _ $
+      map = r.universal {e′ = u} $ z.monic _ _ $
         z .mor ∘ u ∘ r.s ≡⟨ extendl (sym vf=zu) ⟩
         v ∘ f ∘ r.s      ≡⟨ refl⟩∘⟨ r.coequal ⟩
         v ∘ f ∘ r.t      ≡˘⟨ extendl (sym vf=zu) ⟩
         z .mor ∘ u ∘ r.t ∎
       lemma = r.is-regular-epi→is-epic _ _ $
-        sym (vf=zu ∙ pushr (sym r.universal))
+        sym (vf=zu ∙ pushr (sym r.factors))
 ```
 
 # Images
@@ -366,11 +366,11 @@ $ew = \mathrm{id}$ --- so that $e$, being a retract, is an epimorphism.
   epi u v uf=vf =
     let
       module ker = Equaliser (eqs u v)
-      k = ker.limiting uf=vf
+      k = ker.universal uf=vf
       (w , p , q) = ls
         (record { monic = is-equaliser→is-monic C _ ker.has-is-eq })
         {u = k} {v = id}
-        (idl _ ∙ sym ker.universal)
+        (idl _ ∙ sym ker.factors)
       e-epi : is-epic ker.equ
       e-epi = retract-is-epi q
 ```

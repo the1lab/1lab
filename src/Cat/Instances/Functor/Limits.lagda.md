@@ -35,10 +35,8 @@ module _
 
 <!--
 ```agda
-  open Cone-hom
   open Terminal
   open Functor
-  open Cone
   open _=>_
 
   import Cat.Reasoning C as C
@@ -63,6 +61,7 @@ limits.
     F-uncurried = Uncurry {C = D} {D = E} {E = C} F
 
     import Cat.Functor.Bifunctor {C = D} {D = E} {E = C} F-uncurried as F′
+    module D-lim x = Limit (has-D-lims (F′.Left x))
 ```
 
 Let us call the limit of $F(-, x)$ --- taken in $\cC$ ---
@@ -70,170 +69,54 @@ Let us call the limit of $F(-, x)$ --- taken in $\cC$ ---
 homomorphism $K \to \lim F(-, x)$ will be called `!-for`{.Agda}.
 
 ```agda
-    lim-for : ∀ x → _
-    lim-for x = has-D-lims (F′.Left x) .top
+    !-for : ∀ {x y} (f : E.Hom x y) → C.Hom (D-lim.apex x) (D-lim.apex y)
+    !-for {x} {y} f =
+      D-lim.universal y
+        (λ j → F′.Right j .F₁ f C.∘ D-lim.ψ x j)
+        (λ g →
+          C.extendl F′.first∘second
+          ∙ ap₂ C._∘_ refl (D-lim.commutes x g))
 
-    !-for : ∀ {x} K → _
-    !-for {x} K = has-D-lims (F′.Left x) .has⊤ K .centre
-
-    !-for-unique : ∀ {x} {K} h → !-for K ≡ h
-    !-for-unique {x} {K} = has-D-lims (F′.Left x) .has⊤ K .paths
-```
-
-The two _fundamental_ --- and very similar looking! --- constructions
-are `Lift-cone`{.Agda} and `map-cone`{.Agda} below. `Lift-cone`{.Agda}
-lets us take a component of a cone for $F$ --- in the functor category
---- into a cone for $F(y)$, in $\cC$. Furthermore, at the same time
-as we perform this lifting, we can "adjust" the cone by a map $(x
-\xto{f} y) \in \cE$.
-
-```agda
-  Lift-cone : ∀ {x y} (K : Cone F) (f : E.Hom x y) → Cone (F′.Left y)
-  Lift-cone {x} {y} K f .apex = K .apex .F₀ x
-  Lift-cone {x} {y} K f .ψ z  = F′.second f C.∘ K .ψ z .η _
-  Lift-cone {x} {y} K g .commutes f =
-    F′.first f C.∘ F′.second g C.∘ K .ψ _ .η x ≡⟨ C.extendl F′.first∘second ⟩
-    F′.second g C.∘ F′.first f C.∘ K .ψ _ .η x ≡⟨ ap (F′.second _ C.∘_) (ap₂ C._∘_ (C.elimr (F-id (F.₀ _))) refl ∙ K .commutes f ηₚ x) ⟩
-    F′.second g C.∘ K .ψ _ .η x                ∎
-```
-
-The function `map-cone`{.Agda} is `Lift-cone`{.Agda}, but specialised to
-the case where $K = \lim F(-, x)$ is the `lim-for`{.Agda} a particular
-point in $\cE$.
-
-```agda
-  map-cone : ∀ {x y} (f : E.Hom x y) → Cone (F′.Left y)
-  map-cone {x} f .apex       = lim-for x .apex
-  map-cone {x} f .ψ z        = F′.second f C.∘ lim-for x .ψ z
-  map-cone {x} f .commutes g =
-    F′.first g C.∘ F′.second f C.∘ lim-for x .ψ _ ≡⟨ C.extendl F′.first∘second ⟩
-    F′.second f C.∘ F′.first g C.∘ lim-for x .ψ _ ≡⟨ ap (F′.second _ C.∘_) (lim-for x .commutes _) ⟩
-    F′.second f C.∘ lim-for x .ψ _                ∎
-```
-
-### The cone
-
-We are now ready to build a universal cone over $F$, in the category $[
-\cE, \cC ]$, meaning the apex will be given by a functor $A : \cE
-\to \cC$. Using the fact that $\cC$ was assumed to have
-$\cD$-shaped limits, `the-apex`{.Agda} will be given by $x \mapsto
-\lim F(-, x)$. Similarly, the choice of map is essentially unique: we
-must map $\lim F(-, x) \to \lim F(-, y)$, but the space of maps $X \to
-\lim F(-, y)$ is contractible.
-
-```agda
-  functor-cone : Cone F
-  functor-cone .apex  = the-apex where
-    the-apex : Functor E C
-    the-apex .F₀ x = lim-for x .apex
-    the-apex .F₁ {x} {y} f = !-for (map-cone f) .hom
-```
-
-<details>
-<summary> We use that contractibility of mapping spaces to prove
-`the-apex`{.Agda} is actually a functor. </summary>
-
-```agda
-    the-apex .F-id = ap hom (!-for-unique map) where
-      map : Cone-hom _ _ _
-      map .hom = C.id
-      map .commutes _ = C.idr _ ∙ C.introl F′.second-id
-    the-apex .F-∘ {x} {y} {z} f g = ap hom (!-for-unique map)
-      where
-        map : Cone-hom _ _ _
-        map .hom = the-apex .F₁ f C.∘ the-apex .F₁ g
-        map .commutes o =
-          (lim-for z .ψ o C.∘ _ C.∘ _)                               ≡⟨ C.extendl (!-for (map-cone f) .commutes _) ⟩
-          (F′.second f C.∘ lim-for y .ψ o C.∘ _)                     ≡⟨ ap (F′.second f C.∘_) (!-for (map-cone g) .commutes _) ⟩
-          (F′.second f C.∘ F′.second g C.∘ lim-for x .ψ o)           ≡⟨ C.pulll (sym F′.second∘second) ⟩
-          (F′.second (f E.∘ g) C.∘ has-D-lims (F′.Left x) .top .ψ o) ∎
-```
-
-</details>
-
-We must now give the construction of the actual cone, i.e. the natural
-$\psi'_x$ transformations $A \To F(x)$. The natural transformations are
-defined componentwise by taking $(\psi'_x)_y$ to be the map underlying
-the cone homomorphism $\psi_x : (\lim F(-,y)) \to F(x)(y)$; This is
-natural because $\psi$ is a family of cone homomorphisms, and the cone
-commutes since each limiting cone $\lim F(-,x)$ is indeed a cone.
-
-```agda
-  functor-cone .ψ x .η y              = lim-for y .ψ x
-  functor-cone .ψ x .is-natural y z f =
-    !-for (map-cone f) .commutes _ ∙ ap₂ C._∘_ (C.eliml (λ i → F.F-id i .η z)) refl
-  functor-cone .commutes f = Nat-path λ x →
-      ap₂ C._∘_ (C.intror (F-id (F.₀ _))) refl ∙ lim-for _ .commutes f
-```
-
-### The maps
-
-For the `functor-cone`{.Agda} --- our candidate for $\lim F$ --- to be
-limiting, we must, given some other cone $K$, find a unique cone
-homomorphism $K \to \lim F$. We'll be fine, though: We can (using
-`Lift-cone`{.Agda}) _explode_ $K$ into a bunch of cones $K_x$, each lying
-over $F(-,x)$, and use the universal property of $\lim F(-,x)$ to find
-cone homs $K_x \to \lim F(-,x)$. Assuming these maps assemble to a
-natural transformation $K_x \to \lim F$, we can show they commute with
-everything in sight:
-
-```agda
-  functor-! : ∀ K → Cone-hom F K functor-cone
-  functor-! K = ch where
-    map : ∀ x → Cone-hom (F′.Left x) (Lift-cone K E.id) (lim-for x)
-    map x = !-for (Lift-cone K E.id)
-
-    ch : Cone-hom F K functor-cone
-    ch .hom .η x = map _ .hom
-    ch .commutes _ = Nat-path λ x → map _ .commutes _ ∙ C.eliml F′.second-id
-```
-
-The hard part, then, is showing that this is a natural transformation.
-We'll do this in a roundabout way: We'll show that both composites in
-the naturality square inhabit the same _contractible_ space of cone
-homomorphisms, namely that of $\rm{Lift-cone}(K,f) \to \lim F(-,y)$,
-and thus conclude that they are unique. This isn't too hard, but it is
-quite tedious:
-
-```agda
-    ch .hom .is-natural x y f =
-      map y .hom C.∘ K .apex .F₁ f            ≡⟨ (λ i → is-contr→is-prop (has-D-lims (F′.Left y) .has⊤ (Lift-cone K f)) h1 h2 i .hom) ⟩
-      !-for (map-cone f) .hom C.∘ map x .hom  ∎
-      where
-        h1 : Cone-hom (F′.Left y) (Lift-cone K f) (lim-for y)
-        h1 .hom = map y .hom C.∘ K .apex .F₁ f
-        h1 .commutes o =
-          lim-for y .ψ o C.∘ map y .hom C.∘ K .apex .F₁ f  ≡⟨ C.pulll (map y .commutes _ ∙ C.eliml F′.second-id) ⟩
-          K .ψ _ .η _ C.∘ K .apex .F₁ f                    ≡⟨ K .ψ _ .is-natural _ _ _ ⟩
-          F₁ (F.₀ o) f C.∘ K .ψ o .η x                     ≡⟨ ap (C._∘ K .ψ o .η x) (C.introl (F-id F ηₚ y)) ⟩
-          F′.second f C.∘ K .ψ o .η x                      ∎
-
-        h2 : Cone-hom (F′.Left y) (Lift-cone K f) (lim-for y)
-        h2 .hom = has-D-lims (F′.Left y) .has⊤ (map-cone f) .centre .hom C.∘ map x .hom
-        h2 .commutes o =
-          lim-for y .ψ o C.∘ !-for (map-cone f) .hom C.∘ map x .hom  ≡⟨ C.pulll (has-D-lims (F′.Left y) .has⊤ (map-cone f) .centre .commutes _) ⟩
-          (F′.second f C.∘ lim-for x .ψ o) C.∘ map x .hom            ≡⟨ C.pullr (map x .commutes _ ∙ C.eliml F′.second-id) ⟩
-          F′.second f C.∘ K .ψ o .η x                                ∎
-```
-
-Since we built the natural transformation underlying `functor-!`{.Agda}
-out of the unique maps `!-for`{.Agda}, we can appeal to `that
-uniqueness`{.Agda ident=!-for-unique} here to conclude that
-`functor-!`{.Agda} is itself unique, showing that we put together a
-limit $\lim F$.
-
-```agda
-  functor-!-unique : ∀ {K} (h : Cone-hom F K functor-cone) → functor-! K ≡ h
-  functor-!-unique h = Cone-hom-path _ (Nat-path λ x → ap hom (!-for-unique hom'))
-    where
-      hom' : ∀ {x} → Cone-hom (F′.Left x) _ _
-      hom' {x} .hom = h .hom .η x
-      hom' {x} .commutes o = h .commutes o ηₚ _ ∙ C.introl F′.second-id
+    functor-apex : Functor E C
+    functor-apex .F₀ x = D-lim.apex x
+    functor-apex .F₁ {x} {y} f = !-for f
+    functor-apex .F-id =
+      sym $ D-lim.unique _ _ _ _ λ j →
+        C.idr _ ∙ sym (D-lim.commutes _ _)
+    functor-apex .F-∘ f g =
+      sym $ D-lim.unique _ _ _ _ λ j →
+        C.pulll (D-lim.factors _ _ _)
+        ∙ C.pullr (D-lim.factors _ _ _)
+        ∙ C.pulll (sym (F′.Right _ .F-∘ _ _))
 
   functor-limit : Limit F
-  functor-limit .top            = functor-cone
-  functor-limit .has⊤ x .centre = functor-! x
-  functor-limit .has⊤ x .paths  = functor-!-unique
+  functor-limit = to-limit $ to-is-limit ml
+    where
+      open make-is-limit
+
+      ml : make-is-limit F functor-apex
+      ml .ψ j .η x = D-lim.ψ x j
+      ml .ψ j .is-natural x y f =
+        D-lim.factors _ _ _ ∙ ap₂ C._∘_ (C.eliml (F.F-id ηₚ _)) refl
+      ml .commutes f = Nat-path λ j →
+        C.pushr (C.introl (F.₀ _ .F-id)) ∙ D-lim.commutes j f
+      ml .universal eta p .η x =
+        D-lim.universal x
+          (λ j → eta j .η x)
+          (λ f → ap₂ C._∘_ (C.elimr (F.₀ _ .F-id)) refl ∙ p f ηₚ x)
+      ml .universal eta p .is-natural x y f =
+        D-lim.unique₂ y _
+          (λ g → C.pulll (ap₂ C._∘_ (C.elimr (F.₀ _ .F-id)) refl ∙ p g ηₚ y))
+          (λ j → C.pulll (D-lim.factors _ _ _))
+          (λ j →
+            C.pulll (D-lim.factors _ _ _)
+            ∙ C.pullr (D-lim.factors _ _ _)
+            ∙ ap₂ C._∘_ (C.eliml (F.F-id ηₚ _)) refl
+            ∙ sym (eta j .is-natural x y f))
+      ml .factors eta p = Nat-path λ j →
+        D-lim.factors j _ _
+      ml .unique eta p other q = Nat-path λ x →
+        D-lim.unique _ _ _ _ λ j → q j ηₚ x
 ```
 
 As a corollary, if $\cD$ is an $(o,\ell)$-complete category, then so

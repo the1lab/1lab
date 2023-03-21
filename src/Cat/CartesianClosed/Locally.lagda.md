@@ -69,7 +69,7 @@ automatically Cartesian categories, since products in $\cC/a$ are
 computed as pullbacks in $\cC$.
 
 ```agda
-  module /-Prods (a : Ob) = Cartesian (Slice C a)
+  module /-Prods (a : Ob) = Binary-products (Slice C a)
     (λ A B → Pullback→Fibre-product (pullbacks (A .map) (B .map)))
 ```
 
@@ -135,7 +135,7 @@ adjunction $(\sum_f f^*) \dashv (\prod_f f^*)$.
     tensor⊣hom′ = LF⊣GR (f*⊣Πf _) (Σf⊣f* pullbacks f.map)
 
     -- The product functor we have to give an adjoint to...
-    product = Cartesian.×-functor (Slice C a) (λ A B → Pullback→Fibre-product (pullbacks (A .map) (B .map)))
+    product = Binary-products.×-functor (Slice C a) (λ A B → Pullback→Fibre-product (pullbacks (A .map) (B .map)))
     a×- = Left product f
 
     -- ... is the same that we already proved is left adjoint to hom!
@@ -148,8 +148,8 @@ adjunction $(\sum_f f^*) \dashv (\prod_f f^*)$.
          → PathP (λ i → /-Hom (p1 x i) (p1 y i)) (F₁ tensor g) (F₁ a×- g)
       p2 {x} {y} g =
         /-Hom-pathp _ _ (Pullback.unique₂ (pullbacks (y .map) (f .map)) {p = path}
-          (Pullback.p₁∘limiting (pullbacks _ _)) (Pullback.p₂∘limiting (pullbacks _ _))
-          (Pullback.p₁∘limiting (pullbacks _ _)) (Pullback.p₂∘limiting (pullbacks _ _) ∙ idl _))
+          (Pullback.p₁∘universal (pullbacks _ _)) (Pullback.p₂∘universal (pullbacks _ _))
+          (Pullback.p₁∘universal (pullbacks _ _)) (Pullback.p₂∘universal (pullbacks _ _) ∙ idl _))
         where
           path =
             y .map ∘ g .map ∘ Pullback.p₁ (pullbacks _ _) ≡⟨ pulll (g .commutes) ⟩

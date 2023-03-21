@@ -3,6 +3,8 @@ open import Cat.Prelude
 
 open import Data.Bool
 
+import Cat.Reasoning
+
 module Cat.Instances.Shape.Parallel where
 ```
 
@@ -57,11 +59,12 @@ parallel arrows between them. It is the shape of [equaliser] and
 
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} where
-  open Precategory C
+  open Cat.Reasoning C
   open Functor
+  open _=>_
 
-  par-arrows→par-diagram : ∀ {a b} (f g : Hom a b) → Functor ·⇉· C
-  par-arrows→par-diagram f g = funct where
+  Fork : ∀ {a b} (f g : Hom a b) → Functor ·⇉· C
+  Fork f g = funct where
     funct : Functor _ _
     funct .F₀ false = _
     funct .F₀ true = _
@@ -75,4 +78,23 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     funct .F-∘ {false} {false} {true}  f g   = sym (idr _)
     funct .F-∘ {false} {true}  {true}  tt _  = sym (idl _)
     funct .F-∘ {true}  {true}  {true}  tt tt = sym (idl _)
+
+  forkl : (F : Functor ·⇉· C) → Hom (F .F₀ false) (F .F₀ true)
+  forkl F = F .F₁ {false} {true} false
+
+  forkr : (F : Functor ·⇉· C) → Hom (F .F₀ false) (F .F₀ true)
+  forkr F = F .F₁ {false} {true} true
+
+  Fork→Cone
+    : ∀ {e} (F : Functor ·⇉· C) {equ : Hom e (F .F₀ false)}
+    → forkl F ∘ equ ≡ forkr F ∘ equ
+    → Const e => F
+  Fork→Cone {e = e} F {equ = equ} equal = nt where
+    nt : Const e => F
+    nt .η true = forkl F ∘ equ
+    nt .η false = equ
+    nt .is-natural true true tt = idr _ ∙ introl (F .F-id)
+    nt .is-natural false true true = idr _ ∙ equal
+    nt .is-natural false true false = idr _
+    nt .is-natural false false tt = idr _ ∙ introl (F .F-id)
 ```
