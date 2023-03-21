@@ -103,15 +103,17 @@ isomorphism.
     → (α ◂ p) ∘nt η₁ ≡ η₂
     → (β ◂ p) ∘nt η₂ ≡ η₁
     → natural-inverses α β
-  σ-inversesp α-factor β-factor =
-    C′D.make-inverses
-      (l₂.σ-uniq₂ η₂
-        (Nat-path λ j → sym (D.pullr (β-factor ηₚ j) ∙ α-factor ηₚ j))
-        (Nat-path λ j → sym (D.idl _)))
-      (l₁.σ-uniq₂ η₁
-        (Nat-path λ j → sym (D.pullr (α-factor ηₚ j) ∙ β-factor ηₚ j))
-        (Nat-path λ j → sym (D.idl _)))
+  σ-inversesp α-factor β-factor = C′D.make-inverses
+    (l₂.σ-uniq₂ η₂
+      (Nat-path λ j → sym (D.pullr (β-factor ηₚ j) ∙ α-factor ηₚ j))
+      (Nat-path λ j → sym (D.idl _)))
+    (l₁.σ-uniq₂ η₁
+      (Nat-path λ j → sym (D.pullr (α-factor ηₚ j) ∙ β-factor ηₚ j))
+      (Nat-path λ j → sym (D.idl _)))
+```
 
+<!--
+```agda
   σ-is-invertiblep
     : ∀ {α : G₁ => G₂}
     → (α ◂ p) ∘nt η₁ ≡ η₂
@@ -128,6 +130,7 @@ isomorphism.
   unique : natural-iso G₁ G₂
   unique = C′D.invertible→iso (l₁.σ η₂) (σ-is-invertiblep l₁.σ-comm)
 ```
+-->
 
 It's immediate from the construction that this isomorphism "sends
 $\eta_1$ to $\eta_2$".
@@ -153,9 +156,11 @@ module _
 ```
 -->
 
-Another useful fact is that if the universal natural transformation
-of a left kan extension is invertible for some $G' : \cC' \to \cD$,
-then $G'$ is also a left kan extension.
+Another _uniqueness-like_ result we can state for left extensions is the
+following: Given any functor $G' : \cC' \to \cD$ and candidate "unit"
+transformation $\eta' : F \to G'p$, if a left extension $\Lan_p(F)$
+sends $\eta'$ to a natural isomorphism, then $(G', \eta')$ is also a
+left extension of $F$ along $p$.
 
 ```agda
   is-invertible→is-lan
@@ -262,7 +267,10 @@ module _
 ```
 -->
 
-Left kan extensions are also invariant under natural isomorphisms.
+Left Kan extensions are also invariant under arbitrary natural
+isomorphisms. To get better definitional control, we allow “adjusting”
+the resulting construction to talk about any natural transformation
+which is propositionally equal to the whiskering:
 
 ```agda
   natural-isos→is-lan
@@ -272,6 +280,10 @@ Left kan extensions are also invariant under natural isomorphisms.
     → (natural-iso.to G-iso ◆ natural-iso.to p-iso) ∘nt eps ∘nt natural-iso.from F-iso ≡ eps'
     → is-lan p F G eps
     → is-lan p' F' G' eps'
+```
+
+<!--
+```agda
   natural-isos→is-lan p-iso F-iso G-iso q lan =
     universal-path→is-lan
       (natural-iso-ext→is-lan
@@ -286,6 +298,7 @@ Left kan extensions are also invariant under natural isomorphisms.
         ∙ q ηₚ _)
     where open natural-iso
 ```
+-->
 
 ## Into univalent categories
 

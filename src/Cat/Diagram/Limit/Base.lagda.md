@@ -92,7 +92,7 @@ Luckily, we can! If we take a step back, we can notice that we are trying
 to construct a map into a functor. What are maps into functors? Natural
 transformations! Concretely, let $D : \cJ \to cC$ be some diagram.
 We can encode the same data as a cone in a natural transformation
-$\eta : !x \circ ! \to D$, where $!x : \top \to \cC$ denotes
+$\eta : {!x} \circ \mathord{!} \to D$, where $!x : \top \to \cC$ denotes
 the constant functor that maps object to $x$ and every morphism to $id$,
 and $! : \cJ \to \top$ denotes the unique functor into the terminal
 category. The components of such a natural transformation yield maps from
@@ -102,7 +102,7 @@ situation diagrammatically like so:
 
 ~~~{.quiver}
 \begin{tikzcd}
-  && \top \\
+  && \{*\} \\
   \\
   {\cJ} &&& {} & {\cC}
   \arrow[from=3-1, to=1-3]
@@ -114,14 +114,15 @@ situation diagrammatically like so:
 
 All that remains is the universal property. If we translate this into
 our existing machinery, that means that $!x$ must be the universal
-functor equipped with a natural transformation $\eta$; that is, for
-any other $K : \top \to \cC$ equipped with $\tau : K \circ \to D$, we
-have a unique natural transformation $\sigma : K \to !x$ that factors
-$\tau$. This is a bit of a mouthful, so let's look at a diagram instead.
+functor equipped with a natural transformation $\eta$; that is, for any
+other $K : \{*\} \to \cC$ equipped with $\tau : K \circ \mathord{!} \to
+D$, we have a unique natural transformation $\sigma : K \to {!x}$ that
+factors $\tau$. This is a bit of a mouthful, so let's look at a diagram
+instead.
 
 ~~~{.quiver}
 \begin{tikzcd}
-  && \top \\
+  && {\{*\}} \\
   \\
   {\cJ} &&& {} & {\cC}
   \arrow[from=3-1, to=1-3]
@@ -137,10 +138,10 @@ We might be tempted to stop here and call it a day, but we can go one
 step further. It turns out that these universal functors have a name:
 they are [right Kan extensions]. This allows for an extremely concise
 definition of limits: $x : \cC$ is the limit of a diagram
-$D : \cJ \to \cC$ when the constant functor $!x : \top \to \cC$ is
-a right Kan extension of $! : \cJ \to \top$ along $D$.
+$D : \cJ \to \cC$ when the constant functor $!x : \{*\} \to \cC$ is
+a right Kan extension of $! : \cJ \to \{*\}$ along $D$.
 
-[right kan extensions]: Cat.Functor.Kan.Base.html
+[right Kan extensions]: Cat.Functor.Kan.Base.html
 
 <!--
 ```agda
@@ -168,8 +169,9 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} (Diagram : Func
   is-limit x cone = is-ran !F Diagram (const! x) (cone→counit cone)
 ```
 
-Furthermore, we say $D$ has a limit if there exists some right kan extension
-of $!$ along $D$.
+In a "bundled" form, we may define the _type of limits_ for a diagram
+$D$ as the type of right extensions of $D$ along the terminating functor
+$\mathord{!} : \cJ \to \{*\}$.
 
 ```agda
   Limit : Type _
@@ -209,7 +211,7 @@ We solve this by defining a _concretised_ version of `is-limit`{.Agda},
 called `make-is-limit`{.Agda}, which exposes the following data. First,
 we have morphisms from the apex to every value in the diagram, a family
 called $\psi$. Moreover, if $f : x \to y$ is a morphism in the "shape"
-category $\cJ$, then $Ff\psi x = \psi y$, i.e., the $\psi$ maps fit into
+category $\cJ$, then $F(f)\psi_x = \psi_y$, i.e., the $\psi$ maps fit into
 triangles
 
 ~~~{.quiver .tall-15}
@@ -346,6 +348,10 @@ limit:
     : ∀ {D : Functor J C} {F : Functor ⊤Cat C} {eps}
     → is-ran !F D F eps
     → make-is-limit D (Functor.F₀ F tt)
+```
+
+<!--
+```agda
   unmake-limit {D} {F} {eps = eps} lim = ml module unmake-limit where
     a = Functor.F₀ F tt
     module eps = _=>_ eps
@@ -377,10 +383,7 @@ limit:
         other-nt : const! x => F
         other-nt .η _ = other
         other-nt .is-natural _ _ _ = C.idr _ ∙ C.introl (Functor.F-id F) -- C.id-comm
-```
 
-<!--
-```agda
   to-limit
     : ∀ {D : Functor J C} {K : Functor ⊤Cat C} {eps : K F∘ !F => D}
     → is-ran !F D K eps
@@ -626,7 +629,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
   natural-iso→limit isos L .Ran.has-ran = natural-iso-of→is-ran (Ran.has-ran L) isos
 ```
 -->
- 
+
 
 <!--
 ```agda
@@ -646,11 +649,11 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```
 -->
 
-Therefore, if $C$ is a category, then `Limit`{.Agda} is a proposition!
-However, this follows from a much more general result about [uniqueness
-of kan extensions].
+Since limits are unique “up to isomorphism”, if $C$ is a univalent
+category, then `Limit`{.Agda} itself is a proposition! This is an
+instance of the more general [uniqueness of Kan extensions].
 
-[uniqueness of kan extensions]: Cat.Functor.Kan.Unique.html
+[uniqueness of Kan extensions]: Cat.Functor.Kan.Unique.html
 
 <!--
 ```agda
@@ -684,7 +687,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
 -->
 
 Suppose you have a limit $L$ of a diagram $\rm{Dia}$. We say that $F$
-*preserves $L$* if $F(L)$ is also a limit of $F \circ \rm{Dia}$.
+**preserves $L$** if $F(L)$ is also a limit of $F \circ \rm{Dia}$.
 
 This definition is necessary because $\cD$ will not, in general,
 possess an operation assigning a limit to every diagram --- therefore,
@@ -706,11 +709,11 @@ limiting cones "upstairs" to limiting cones "downstairs".
 
 ## Reflection of limits
 
-Using our analogy from before, we say a functor _reflects_ limits
+Using the terminology from before, we say a functor **reflects limits**
 if it takes limiting cones "downstairs" to limiting cones "upstairs".
-
 More concretely, if we have a limit in $\cD$ of $F \circ \rm{Dia}$ with
-apex $F(a)$, then $a$ was _already the limit_ of $\rm{Dia}$!
+apex $F(a)$, then $F$ reflects this limit means that $a$ _was already_
+the limit of $\rm{Dia}$!
 
 ```agda
   reflects-limit : Type _
@@ -792,7 +795,7 @@ is-continuous oshape hshape {C = C} F =
   → preserves-limit F Diagram
 ```
 
-## Completeness
+# Completeness
 
 A category is **complete** if admits for limits of arbitrary shape.
 However, in the presence of excluded middle, if a category admits

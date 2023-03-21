@@ -69,7 +69,7 @@ has-indexed-coproducts ℓ = ∀ {I : Type ℓ} (F : I → C.Ob) → Indexed-cop
 ## As colimits
 
 Similarly to the product case, when $I$ is a groupoid, indexed
-coproducts correspond to discrete diagrams of shape $I$.
+coproducts correspond to colimits of discrete diagrams of shape $I$.
 
 ```agda
 module _ {I : Type ℓ'} (i-is-grpd : is-groupoid I) (F : I → C.Ob) where

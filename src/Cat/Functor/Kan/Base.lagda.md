@@ -262,10 +262,10 @@ is-ran-is-prop {p = p} {F} {G} {eps} a b = path where
 
 # Preservation and reflection of Kan extensions
 
-Let $(G : C' \to D, \eta : F \to G \circ p)$ be the left kan extension
+Let $(G : C' \to D, \eta : F \to G \circ p)$ be the left Kan extension
 of $F : C \to D$ along $p : C \to C'$, and suppose that $H : D \to E$ is
-a functor. Note that we can $H$ with all of the data of the kan extension
-to obtain the following diagram.
+a functor. We can “apply” $H$ to all the data of the Kan extension,
+obtaining the following diagram.
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -279,9 +279,9 @@ to obtain the following diagram.
 \end{tikzcd}
 ~~~
 
-This looks like yet another kan extension, but it may not be universal!
-If this diagram is a left kan extension, we say that $H$ **preserves**
-$(G, \eta)$.
+This looks like yet another Kan extension diagram, but it may not be
+universal! If this diagram _is_ a left Kan extension, we say that $H$
+**preserves** $(G, \eta)$.
 
 <!--
 ```agda
@@ -301,8 +301,8 @@ Unfortunately, proof assistants; our definition of whiskering lands in
 $H(Gp)$, but we requires a natural transformation to $(HG)p$.
 
 It may also be the case that $(HG, H\eta)$ is already a left kan
-extension of $HF$ along $p$. We say that $H$ reflects this kan extension
-if $G, \eta$ is a kan extension of $F$ along $p$.
+extension of $HF$ along $p$. We say that $H$ reflects this Kan extension
+if $G, \eta$ is a also a left extension of $F$ along $p$.
 
 ```agda
   reflects-lan
@@ -320,7 +320,7 @@ module _
 ```
 -->
 
-We can define dual notions for right kan extensions as well.
+We can define dual notions for right Kan extensions as well.
 
 ```agda
   preserves-ran : (H : Functor D E) → is-ran p F G eps → Type _

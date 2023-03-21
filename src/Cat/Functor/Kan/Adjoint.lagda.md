@@ -85,7 +85,7 @@ where uniqueness and commutativity follows from the triangle identities
           module M = Func M
 ```
 
-As expected, adjoints also yield right kan extensions.
+As expected, adjoints also yield right Kan extensions.
 
 ```agda
   adjoint→is-ran : is-ran G Id F counit

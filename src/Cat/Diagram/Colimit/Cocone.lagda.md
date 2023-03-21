@@ -31,13 +31,17 @@ together with a family of maps `ψ`{.Agda} --- one for each object in the
 indexing category `J`{.Agda} --- such that "everything in sight
 commutes".
 
+<!--
 ```agda
 module _ {J : Precategory o ℓ} {C : Precategory o′ ℓ′} (F : Functor J C) where
   private
     import Cat.Reasoning J as J
     import Cat.Reasoning C as C
     module F = Functor F
+```
+-->
 
+```agda
   record Cocone : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
     no-eta-equality
     constructor cocone
@@ -47,14 +51,12 @@ module _ {J : Precategory o ℓ} {C : Precategory o′ ℓ′} (F : Functor J C)
       commutes : ∀ {x y} (f : J.Hom x y) → ψ y C.∘ F.₁ f ≡ ψ x
 ```
 
-As per usual, we define a helper lemma charaterizing the path space
-of cocones:
-
+<!--
 ```agda
   open Cocone
 
   Cocone-path : {x y : Cocone}
-              → (p : coapex x ≡ coapex y)
+              → (p : x .coapex ≡ y .coapex)
               → (∀ o → PathP (λ i → C.Hom (F.₀ o) (p i)) (ψ x o) (ψ y o))
               → x ≡ y
   Cocone-path p q i .coapex = p i
@@ -63,35 +65,28 @@ of cocones:
     is-prop→pathp (λ i → C.Hom-set _ _ (q b i C.∘ F.₁ f) (q a i))
       (x .commutes f) (y .commutes f) i
 ```
+-->
 
 ## Cocone Maps
 
-Now that we've defined cocones, we need a way to figure out how to
-express universal properties. Like most things categorical, we begin
-by considering a "cocone morphism", which will give us a category
-that we can work within. The idea here is that a morphism of cocones
-is a morphism in $C$ between the coapicies, such that all of the
-injection maps commute.
+To express the universal property of a colimit in terms of cocones, we
+now have to define the notion of **cocone homomorphism**. We define a
+cocone homomorphism to be a map between the coapices which commutes with
+the family $\psi$.
 
 ```agda
   record Cocone-hom (x y : Cocone) : Type (o ⊔ ℓ′) where
     no-eta-equality
     constructor cocone-hom
     field
-      hom : C.Hom (x .coapex) (y .coapex)
+      hom      : C.Hom (x .coapex) (y .coapex)
       commutes : ∀ o → hom C.∘ x .ψ o ≡ y .ψ o
 ```
 
 <!--
 ```agda
   private unquoteDecl eqv = declare-record-iso eqv (quote Cocone-hom)
-```
--->
 
-We define yet another helper lemma that describes the path space
-of cocone morphisms.
-
-```agda
   open Cocone-hom
 
   Cocone-hom-path : ∀ {x y} {f g : Cocone-hom x y} → f .hom ≡ g .hom → f ≡ g
@@ -100,8 +95,10 @@ of cocone morphisms.
     is-set→squarep (λ i j → C.Hom-set _ _)
       (λ j → p j C.∘ x .ψ o) (f .commutes o) (g .commutes o) refl i j
 ```
+-->
 
-Now, we can define the category of cocones over a given diagram:
+Since cocone homomorphisms are closed under composition in the base
+category, it's immediate that they form a category.
 
 ```agda
   Cocones : Precategory _ _
@@ -114,7 +111,10 @@ Now, we can define the category of cocones over a given diagram:
       (K .hom C.∘ L .hom) C.∘ x .ψ o ≡⟨ C.pullr (L .commutes o) ⟩
       K .hom C.∘ y .ψ o              ≡⟨ K .commutes o ⟩
       z .ψ o                         ∎
+```
 
+<!--
+```agda
     cat : Precategory _ _
     cat .Ob = Cocone
     cat .Hom = Cocone-hom
@@ -123,11 +123,6 @@ Now, we can define the category of cocones over a given diagram:
     cat .idr f = Cocone-hom-path (C.idr (f .hom))
     cat .idl f = Cocone-hom-path (C.idl (f .hom))
     cat .assoc f g h = Cocone-hom-path (C.assoc (f .hom) (g .hom) (h .hom))
-
-```
-
-<!--
-```agda
     cat .Hom-set x y = Iso→is-hlevel 2 eqv hlevel!
 ```
 -->
@@ -136,20 +131,24 @@ Now, we can define the category of cocones over a given diagram:
 ## Initial Cocones as Colimits
 
 A cocone over some diagram $F$ contains the same data as natural
-transformation from $F$ to a constant functor. This means that they
-capture all the structure of colimits, save for the universal property.
-That too can be encoded, by asking that the cocone in question be
-an [initial object].
-
-[initial object]: Cat.Diagram.Initial.html
-
-The proof mostly is an exercise in shuffling about data.
+transformation from $F$ to a constant functor. Since we have defined a
+colimit to consist of (a functor equipped with) a natural transformation
+into a constant functor, there is an equivalence between the cocones
+defined here and those considered in the definition of colimit.
 
 ```agda
   Cocone→cocone : (K : Cocone) → F => Const (Cocone.coapex K)
   Cocone→cocone K .η = K .Cocone.ψ
   Cocone→cocone K .is-natural x y f = K .Cocone.commutes f ∙ sym (C.idl _)
+```
 
+We can then rephrase the universality from the definition of left Kan
+extension by asking that a particular cocone be [initial] in the
+category we have just constructed.
+
+[initial object]: Cat.Diagram.Initial.html
+
+```agda
   is-initial-cocone→is-colimit
     : ∀ {K : Cocone}
     → is-initial Cocones K
@@ -168,7 +167,8 @@ The proof mostly is an exercise in shuffling about data.
       ap hom (sym (init (cocone _ eta p) .paths (cocone-hom other q)))
 ```
 
-This process is invertible.
+To finish concretising the correspondence, note that this process is
+invertible: From a colimit, we can extract an initial cocone.
 
 ```agda
   is-colimit→is-initial-cocone
@@ -188,12 +188,9 @@ This process is invertible.
     open Cocone-hom
 
     init : is-contr (Cocone-hom (cocone x L.ψ L.commutes) K)
-    init .centre .hom =
-      L.universal K.ψ K.commutes
-    init .centre .commutes _ =
-      L.factors K.ψ K.commutes
+    init .centre .hom = L.universal K.ψ K.commutes
+    init .centre .commutes _ = L.factors K.ψ K.commutes
     init .paths f =
       Cocone-hom-path (sym (L.unique K.ψ K.commutes (f .hom) (f .commutes)))
 ```
 </details>
-

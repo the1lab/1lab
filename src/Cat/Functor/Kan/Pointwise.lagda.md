@@ -35,11 +35,13 @@ just preserve limits, they preserve *all* right extensions!
 
 However, this pattern of generalization fails in one critical way:
 [corepresentable functors preserve limits], but corepresentable functors
-do **not** preserve kan extensions! This seemingly slight issue has
-far-reaching consequences, to the point that some authors write off
-general Kan extensions entirely. However, we can restrict our attention
-to the class of Kan extensions that **are** preserved by (co)representables;
-we call such extensions pointwise.
+do _not_ necessarily preserve Kan extensions! This seemingly slight
+issue has far-reaching consequences, to the point that some authors
+write off general Kan extensions entirely.
+
+Instead of throwing the whole thing out, an alternative is to focus on
+only the Kan extensions that _are_ preserved by arbitrary
+(co)representables; we call such extensions **pointwise**.
 
 [corepresentable functors preserve limits]: Cat.Functor.Hom.Representable.html#corepresentable-functors-preserve-limits
 
@@ -108,14 +110,14 @@ As noted earlier, limits and colimits are pointwise Kan extensions.
 
 ## Computing Pointwise Extensions
 
-One useful fact about pointwise left/right Kan extensions is that they
-can be computed via colimits/limits, though we shall focus our attention
-on the case of left extensions for the momemnt.
+One useful fact about pointwise left Kan extensions (resp. right) is
+that they can be computed via colimits (resp. limits). We will focus on
+the left extensions for the moment. Given functors $F : \cC \to \cC'$
+and $G : \cC \to \cD$, if $\cC$ is a [$\kappa$-small] category, $\cC'$
+is _locally_ $\kappa$-small, and $\cD$ has $\kappa$-small colimits, then
+$\Lan_F(G)$ exists _and_ is pointwise.
 
-Suppose we have functors $F : \cC \to \cC'$ and $G : \cC \to \cD$, and
-we wish to extend $G$ along $F$. If $\cD$ has all
-$\kappa$-small colimits, then such an extension exists, and it is
-pointwise.
+[$\kappa$-small]: 1Lab.intro.html#universes-and-size-issues
 
 <!--
 ```agda
@@ -137,28 +139,34 @@ module _
 ```
 -->
 
-The big idea of our construction is to
-approximate $G$ by gluing together "all of the ways that $C$ is able to
-see $C'$ through $G$"". Concretely, this means looking at the
-[comma category] $F \searrow c'$ for a given $c' : \cC'$. The objects of
-this category are pairs of an object $c$ in $C$ and a map
-$\cC'(F(c), c')$ in $\cC'$. If apply the projection
-$\mathit{Dom} : F \searrow c' \to \cC$, we obtain a diagram in $\cC$,
-which encodes the hand-wavy intuition from before.
+The big idea of our construction is to approximate $G$ by gluing
+together "all the ways that $C$ is able to see $C'$ through $G$".
+Concretely, this means looking at the [comma category] $F \swarrow c'$
+for a given $c' : \cC'$. Objects in this category are pairs of an object
+$c: \cC$ and morphisms $\cC'(F(c), c')$. If we apply the “domain”
+projection $F \swarrow c' \to \cC$, we obtain a diagram in $\cC$
+encoding the hand-wavy intuition from before.
 
 [comma category]: Cat.Instances.Comma.html
 
-To finish the construction, we shall take our diagram in $\cC$, and
-post-compose with $G$ to obtain a diagram in $\cD$. Crucially, this
-diagram is $\kappa$-small, so we can take a colimit of it in $\cD$.
+To finish the construction, we take our diagram in $\cC$ and
+post-compose with $G$ to obtain a diagram
+
+$$
+F \swarrow c' \to \cC \xto{G} \cD\text{.}
+$$
+
+Since $F \swarrow c'$ is put together out of objects in $\cC$ and
+morphisms in $\cC'$, it is also a $\kappa$-small category, so these
+diagrams all have colimits in $\cD$.
 
 ```agda
     ↓Dia : (c' : C'.Ob) → Functor (F ↘ c') D
     ↓Dia c' = G F∘ Dom F (Const c')
 ```
 
-In fact, we don't even require that $\cD$ is cocomplete, just that it has
-colimits of these comma-shaped diagrams.
+In fact, we can weaken the precondition from cocompleteness of $\cD$ to
+having colimits of these comma-category-shaped diagrams.
 
 ```agda
   comma-colimits→lan
@@ -168,21 +176,23 @@ colimits of these comma-shaped diagrams.
       module ↓colim c' = Colimit (↓colim c')
 ```
 
-These colimits give us canonical choices of objects in $\cD$ for each
-$c' : \cC$. Furthermore, we can readily construct maps between them,
-allowing us to show that the assignment of objects to colimits is
-functorial.
+Taking the colimit at each $c' : \cC'$ gives an assignment of objects
+$F'(c') : \cD$, so we're left with extending it to a proper functor
+$\cC' \to \cD$. Coming up with morphisms in the image of $F'$ isn't too
+complicated, and universality of colimits guarantees the functoriality
+constraints are satisfied.
 
 ```agda
       F′ : Functor C' D
       F′ .F₀ c' = ↓colim.coapex c'
-      F′ .F₁ f =
-        ↓colim.universal _
-          (λ j → ↓colim.ψ _ (↓obj (f C'.∘ j .map)))
-          (λ f →
-            ↓colim.commutes _ (↓hom {β = f .β} (C'.pullr (f .sq)
+      F′ .F₁ f = ↓colim.universal _
+        (λ j → ↓colim.ψ _ (↓obj (f C'.∘ j .map)))
+        (λ f → ↓colim.commutes _ (↓hom {β = f .β} (C'.pullr (f .sq)
             ·· C'.elim-inner refl
             ·· sym (C'.idl _))))
+```
+<!--
+```agda
       F′ .F-id =
         sym $ ↓colim.unique _ _ _ _ λ j →
           D.idl _
@@ -193,44 +203,48 @@ functorial.
           ∙ ↓colim.factors _ _ _
           ∙ ap (↓colim.ψ _) (↓Obj-path _ _ refl refl (C'.assoc _ _ _))
 ```
+-->
 
-Next, we need to show that the functor we constructed actually is a
-left extension. The natural transformation $\eta : G \to F' \circ F$
-can be readily constructed from colimit injections, as the objects of
-$F'(F(x))$ are all colimits!
+Next, we need to show that the functor we constructed actually is a left
+extension. The first step will be to construct a "unit" natural
+transformation $\eta : G \to F'F$, which, in components, means we're
+looking for maps $G(x) \to F'(F(x))$. Since each $F'(-)$ is a colimit,
+we can use the coprojections!
 
 ```agda
       eta : G => F′ F∘ F
       eta .η c = ↓colim.ψ (F .F₀ c) (↓obj C'.id)
+```
+
+This "type checks" because the colimit coprojections for our $F
+\swarrow c'$-colimits, essentially, convert maps $C'(F(X), Y)$ into
+maps $G(X) \to F'(Y)$. If we take the identity $C'(F(c), F(c))$, we get
+what we wanted: a map $G(c) \to F'(F(c))$.
+
+```agda
       eta .is-natural x y f =
         ↓colim.commutes (F₀ F y) (↓hom (ap (C'.id C'.∘_) (sym (C'.idr _))))
         ∙ sym (↓colim.factors _ _ _)
 ```
 
-
-The universal natural transformation $\sigma$ is constructed using
-the universal property of the colimits; naturality is somewhat tedious
-to prove, but follows from uniqueness of the universal map.
+For the other obligation, suppose we're given some $M : \cC' \to \cD$
+and natural transformation $\alpha : G \to MF$. How do we extend it to a
+transformation $F' \to M$? By "matching" on the colimit, with a slight
+adjustment to $\alpha$:
 
 ```agda
       has-lan : is-lan F G F′ eta
-      has-lan .σ {M = M} α .η c' =
-        ↓colim.universal c'
-          (λ j → M .F₁ (j .map) D.∘ α .η (j .x))
-          (λ f →
-            D.pullr (α .is-natural _ _ _)
+      has-lan .σ {M = M} α .η c' = ↓colim.universal c'
+        (λ j → M .F₁ (j .map) D.∘ α .η (j .x))
+        (λ f → D.pullr (α .is-natural _ _ _)
             ∙ pulll M ((f .sq) ∙ C'.idl _))
-      has-lan .σ {M = M} α .is-natural x y f =
-        ↓colim.unique₂ _ _
-          (λ f →
-            D.pullr (α .is-natural _ _ _)
-            ∙ pulll M (C'.pullr (f .sq) ∙ C'.elim-inner refl))
-          (λ j →
-            D.pullr (↓colim.factors _ _ _)
-            ∙ ↓colim.factors _ _ _)
-          (λ j →
-            D.pullr (↓colim.factors _ _ _)
-            ∙ D.pulll (sym (M .F-∘ _ _)))
+      has-lan .σ {M = M} α .is-natural x y f = ↓colim.unique₂ _ _
+        (λ f → D.pullr (α .is-natural _ _ _)
+             ∙ pulll M (C'.pullr (f .sq) ∙ C'.elim-inner refl))
+        (λ j → D.pullr (↓colim.factors _ _ _)
+             ∙ ↓colim.factors _ _ _)
+        (λ j → D.pullr (↓colim.factors _ _ _)
+             ∙ D.pulll (sym (M .F-∘ _ _)))
 
 ```
 
@@ -240,8 +254,7 @@ properties of colimits.
 
 ```agda
       has-lan .σ-comm {M = M} = Nat-path λ c →
-        ↓colim.factors _ _ _
-        ∙ D.eliml (M .F-id)
+        ↓colim.factors _ _ _ ∙ D.eliml (M .F-id)
       has-lan .σ-uniq {M = M} {α = α} {σ′ = σ′} p = Nat-path λ c' →
         sym $ ↓colim.unique _ _ _ _ λ j →
           σ′ .η c' D.∘ ↓colim.ψ c' j                                ≡⟨ ap (λ ϕ → σ′ .η c' D.∘ ↓colim.ψ c' ϕ) (↓Obj-path _ _ refl refl (sym (C'.idr _))) ⟩
@@ -260,22 +273,19 @@ All that remains is to bundle up the data!
       lan .Lan.has-lan = has-lan
 ```
 
-Obviously if $\cD$ is $\kappa$-cocomplete, then it has the required
-colimits.
+And, if $\cD$ is $\kappa$-cocomplete, then it certainly has the required
+colimits: we can "un-weaken" our result.
 
 ```agda
-  cocomplete→lan
-    : is-cocomplete ℓ ℓ D
-    → Lan F G
-  cocomplete→lan colimits =
-    comma-colimits→lan (λ c' → colimits (↓Dia c'))
+  cocomplete→lan : is-cocomplete ℓ ℓ D → Lan F G
+  cocomplete→lan colimits = comma-colimits→lan (λ c' → colimits (↓Dia c'))
 ```
 
 
 Next, we shall show that the left extension we just constructed is
-pointwise. To do this, we shall show a more general fact: if
-$H : D \to E$ preserves all $\kappa$-small colimits, then $H$ preserves
-left kan extensions constructed from colimits.
+pointwise. To do this, we will show a more general fact: if $H : D \to
+E$ is $\kappa$-cocontinuous, then it also preserves extensions "built
+from" colimits.
 
 <!--
 ```agda
@@ -312,8 +322,7 @@ end up being off by a bunch of natural isomorphisms.
     → preserves-lan H (Lan.has-lan (cocomplete→lan F G colimits))
   preserves-colimits→preserves-pointwise-lan {E = E} colimits H cocont =
     natural-isos→is-lan idni idni HF′-cohere fixup $
-    comma-colimits→lan.has-lan F (H F∘ G) H-↓colim
-
+      comma-colimits→lan.has-lan F (H F∘ G) H-↓colim
     where
       module E = Cat.Reasoning E
       open make-natural-iso
@@ -333,7 +342,10 @@ end up being off by a bunch of natural isomorphisms.
 ```
 
 <details>
-<summary>Whe shall omit the tedious coherence details.
+<summary>
+Unfortunately, proof assistants. By "a bunch", we really do mean _a
+bunch_. This fold contains all the required coherence data, which ends
+up not being very interesting.
 </summary>
 
 ```agda
@@ -389,9 +401,10 @@ along $p : \cC \to \cC'$ when $\cD$ has enough colimits, and that this
 extension is pointwise. It turns out that this is an exact
 characterization of the pointwise extensions: if $L$ is a pointwise
 extension of $F$ along $p$, then $\cD$ must have colimits of all
-diagrams of the form $F \circ \mathit{Dom} : p \searrow c' \to C \to D$,
+diagrams of the form $F \circ \mathrm{Dom} : p \swarrow c' \to C \to D$,
 and $L$ must be computed via these colimits. This is where the name
-"pointwise extension" comes from; they really are computed pointwise!
+"pointwise extension" comes from --- they really _are_ computed
+pointwise!
 
 <!--
 ```agda
@@ -443,10 +456,10 @@ we shall appeal to the fact that [colimits are representable].
     where
 ```
 
-As $(L,\eta)$ is pointwise, we can represent every cocone
-$F \circ p \searrow c' \to d$ as a natural transformation
-$\cC'(-,c') \to \cD(L(-),d)$, though we do need to pass through some
-abstract representability nonsense to get there.
+As $(L,\eta)$ is pointwise, we can represent every cocone $F \circ p
+\searrow c' \to d$ as a natural transformation $\cC'(-,c') \to
+\cD(L(-),d)$, though we do need to pass through some abstract
+representability nonsense to get there.
 
 ```agda
       represent-↓cocone
@@ -466,7 +479,7 @@ abstract representability nonsense to get there.
 ```
 
 We can use this representation to construct the required inverse, via
-the usual yoneda shenanigans.
+the usual Yoneda-like argument.
 
 ```agda
       inv : Lim[C[F-,=]] => Hom-from D (L .F₀ c')
@@ -478,8 +491,9 @@ the usual yoneda shenanigans.
 ```
 
 <details>
-<summary>To show that this is an inverse, we can use the fact that the
-pointwise kan extension is in fact a kan extension.
+<summary>
+To show that we've constructed an isomorphism, we'll forget the
+_pointwise_, and remember that we're working with a Kan extension.
 </summary>
 
 ```agda
@@ -506,18 +520,16 @@ pointwise kan extension is in fact a kan extension.
 ```
 </details>
 
-A corollary of this fact is if $(L, \eta)$ is a pointwise left extension along a
+A corollary is that if $(L, \eta)$ is a pointwise left extension along a
 fully faithful functor, then $\eta$ is a natural isomorphism.
 
 ```agda
-  ff→pointwise-lan-ext
-    : is-fully-faithful p
-    → is-natural-invertible eta
+  ff→pointwise-lan-ext : is-fully-faithful p → is-natural-invertible eta
 ```
 
 The idea is to use the fact that $L$ is computed via colimits to
-construct an inverse to $\eta$. In particular, we use the universal
-map out of each colimit, relying on the full faithfulness of $p$ to
+construct an inverse to $\eta$. In particular, we use the universal map
+out of each colimit, relying on the full faithfulness of $p$ to
 construct the requisite cocone.
 
 ```agda
@@ -525,17 +537,18 @@ construct the requisite cocone.
      componentwise-invertible→invertible eta λ c →
        D.make-invertible (inv c)
          (pointwise-colim.unique₂ _ _
-           (λ f →
-             D.pullr (eta .is-natural _ _ _)
-             ∙ pulll L (sym (p .F-∘ _ _) ∙ path f))
-           (λ j →
-             D.pullr (pointwise-colim.factors _ {j = j} _ _)
-             ∙ eta .is-natural _ _ _)
-           (λ j →
-             D.idl _
-             ∙ ap₂ D._∘_ (ap (L .F₁) (sym (equiv→counit p-ff (j .map)))) refl))
+           (λ f → D.pullr (eta .is-natural _ _ _)
+                ∙ pulll L (sym (p .F-∘ _ _) ∙ path f))
+           (λ j → D.pullr (pointwise-colim.factors _ {j = j} _ _)
+                ∙ eta .is-natural _ _ _)
+           (λ j → D.idl _
+                ∙ ap₂ D._∘_ (ap (L .F₁) (sym (equiv→counit p-ff (j .map)))) refl))
          (pointwise.σ-comm _ ηₚ c $ₚ C'.id
           ∙ elimr F (ap (equiv→inverse p-ff) (sym (p .F-id)) ∙ equiv→unit p-ff _))
+```
+
+<!--
+```agda
     where
       module pointwise-colim c' = is-colimit (pointwise-lan→has-comma-colimits c')
 
@@ -555,10 +568,7 @@ construct the requisite cocone.
         pointwise-colim.universal (p .F₀ c)
           (λ j → F .F₁ (equiv→inverse p-ff (j .map)))
           (λ {x} {y} f → collapse F (fully-faithful→faithful {F = p} p-ff (path f)))
-```
 
-<!--
-```agda
 module _
   {o o′ ℓ ℓ′}
   {C : Precategory ℓ ℓ} {C' : Precategory o ℓ} {D : Precategory o′ ℓ′}
@@ -587,32 +597,25 @@ module _
     module ff {x} {y} = Equiv (_ , ff {x} {y})
 
     ni : make-natural-iso G (F′ F∘ F)
-    ni .to x =
-      ↓colim.ψ _ (↓obj C'.id)
-    ni .inv x =
-      ↓colim.universal _
-        (λ j → G .F₁ (ff.from (j .map)))
-        (λ f →
-          collapse G $
-          fully-faithful→faithful {F = F} ff $
-          F .F-∘ _ _
-          ·· ap₂ C'._∘_ (ff.ε _) refl
-          ·· f .sq
-          ·· C'.idl _
-          ·· sym (ff.ε _))
-    ni .eta∘inv x =
-      ↓colim.unique₂ _ _
-        (λ f →
-          ↓colim.commutes _ f)
-        (λ j →
-          D.pullr (↓colim.factors _ _ _)
-          ∙ ↓colim.commutes _ (↓hom (ap₂ C'._∘_ refl (ff.ε _))))
-        (λ j → D.idl _)
+    ni .to x = ↓colim.ψ _ (↓obj C'.id)
+    ni .inv x = ↓colim.universal _
+      (λ j → G .F₁ (ff.from (j .map)))
+      (λ f → collapse G $ fully-faithful→faithful {F = F} ff $
+           F .F-∘ _ _
+        ·· ap₂ C'._∘_ (ff.ε _) refl
+        ·· f .sq
+        ·· C'.idl _
+        ·· sym (ff.ε _))
+    ni .eta∘inv x = ↓colim.unique₂ _ _
+      (λ f → ↓colim.commutes _ f)
+      (λ j → D.pullr (↓colim.factors _ _ _)
+           ∙ ↓colim.commutes _ (↓hom (ap₂ C'._∘_ refl (ff.ε _))))
+      (λ j → D.idl _)
     ni .inv∘eta x =
-      ↓colim.factors _ _ _
+        ↓colim.factors _ _ _
       ∙ elim G (ap ff.from (sym (F .F-id)) ∙ ff.η _)
     ni .natural x y f =
-      ↓colim.factors _ _ _
+        ↓colim.factors _ _ _
       ∙ sym (↓colim.commutes _ (↓hom (ap₂ C'._∘_ refl (sym (C'.idr _)))))
 ```
 -->

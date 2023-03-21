@@ -14,9 +14,9 @@ module Cat.Functor.Kan.Representable where
 ## Representability of Kan Extensions
 
 Like most constructions with a universal property, we can phrase the
-definition of [Kan extensions] in terms of an equivalence of hom sets.
-Doing so allows us to establish the existense of extensions by chaining
-together natural isomorphisms of hom sets.
+definition of [Kan extensions] in terms of an equivalence of $\hom$
+functors. This rephrasing lets us construct extensions in terms of
+chains of natural isomorphisms, which can be very handy!
 
 [Kan extensions]: Cat.Functor.Kan.Base.html
 
@@ -67,8 +67,8 @@ $D^{C'}(G, -) \to D^{C}(F, p(-))$.
   Hom-from-! eta .is-natural H K α = funext λ β → [C,D].pushl ◂-distribl
 ```
 
-If this natural transformation is an isomorphism, then $(G, \eta)$ is
-a left kan extension of $F$ along $p$.
+If this natural transformation is an isomorphism, then $(G, \eta)$ is a
+left Kan extension of $F$ along $p$.
 
 ```agda
   represents→is-lan
@@ -157,4 +157,3 @@ module _
         α ∘nt Corep.from has-corep (Corep.to has-corep idnt)       ≡⟨ [C',D].elimr (Corep.η has-corep idnt) ⟩
         α ∎)
 ```
-

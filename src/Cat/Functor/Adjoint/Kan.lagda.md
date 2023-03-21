@@ -16,15 +16,23 @@ module Cat.Functor.Adjoint.Kan where
 # Adjoints preserve Kan extensions
 
 Let $L \adj R$ be a pair of [adjoint functors]. It's well-known that
-[right adjoints preserve limits], and dually that left adjoints preserve
-colimits, but it turns out that this theorem can be made a bit more
-general: If $G$ is a [left] (resp. [right]) extension of $F$ along
+right adjoints preserve limits[^rapl], and dually that left adjoints
+preserve colimits, but it turns out that this theorem can be made a bit
+more general: If $G$ is a [left] (resp. [right]) extension of $F$ along
 $p$, then $LG$ is a left extension of $LF$ along $p$: left adjoints
 preserve left extensions. This dualises to right adjoints preserving
 _right_ extensions.
 
 [adjoint functors]: Cat.Functor.Adjoint.html
-[right adjoints preserve limits]: Cat.Functor.Adjoint.Continuous.html
+[left]: Cat.Diagram.Kan.Base.html#left-kan-extensions
+[right]: Cat.Diagram.Kan.Base.html#right-kan-extensions
+
+[^rapl]: Here on the 1Lab, we derive the proof that right (resp. left)
+adjoints preserve limits (resp. colimits) from _this proof_ that
+adjoints preserve Kan extensions. For a more concrete approach to that
+proof, we recommend [the nLab's]
+
+[the nLab's]: https://ncatlab.org/nlab/show/adjoints+preserve+%28co-%29limits.
 
 The proof could be given in bicategorical generality: If the triangle
 below is a left extension diagram, then the overall pasted diagram is
@@ -33,7 +41,7 @@ adjunction provides a bunch of isomorphisms between natural
 transformations, e.g. $(LF \to Mp) \cong (F \to RMp)$, which we can use
 to "grow" the original extension diagram.
 
-~~~{.quiver .tall-2}
+~~~{.quiver .tall-15}
 \[\begin{tikzcd}
   {\mathcal{C}} && D && A \\
   \\

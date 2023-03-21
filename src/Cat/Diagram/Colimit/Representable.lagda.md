@@ -17,8 +17,8 @@ module Cat.Diagram.Colimit.Representable where
 
 ## Representability of Colimits
 
-As [colimits] are defined via a universal property, we can rephrase
-the definition in terms of an equivalence of hom sets.
+Since [colimits] are defined by universal property, we can also phrase
+the definition in terms of an equivalence between $\hom$-functors.
 
 [colimits]: Cat.Diagram.Colimit.Base.html
 
@@ -38,8 +38,8 @@ module _
 ```
 -->
 
-Let $\mathit{Dia} : \cJ \to \cC$ be some diagram in $\cC$. If
-$\mathit{Dia}$ has a colimit $c$, then that means that maps **out** of
+Let $\mathrm{Dia} : \cJ \to \cC$ be some diagram in $\cC$. If
+$\mathrm{Dia}$ has a colimit $c$, then that means that maps **out** of
 $c$ are in bijection with a product of maps $\pi_i$, subject to some
 conditions.
 
@@ -55,7 +55,7 @@ conditions.
     → Hom-from C c => Lim[C[F-,=]]
   Hom-into-inj eta .η x f = const-nt f ∘nt eta
   Hom-into-inj eta .is-natural x y f = funext λ g → Nat-path λ _ →
-    sym $ C.assoc _ _ _ 
+    sym $ C.assoc _ _ _
 
   represents→is-colimit
     : ∀ {c : C.Ob} {eta : Dia => Const c}
@@ -75,4 +75,3 @@ conditions.
       nat-inv.inv .η (M .F₀ tt) (const-nt (σ′ .η j) ∘nt eta)                  ≡⟨ nat-inv.invr ηₚ _ $ₚ _ ⟩
       σ′ .η tt ∎
 ```
-

@@ -17,9 +17,9 @@ private
 
 # Duality for Kan extensions
 
-Left kan extensions are dual to right kan extensions.
-This is straightforward enough to prove, but does involve some
-bureaucracy involving opposite categories.
+Left Kan extensions are dual to right Kan extensions. This is
+straightforward enough to prove, but does involve some bureaucracy
+involving opposite categories.
 
 <!--
 ```agda

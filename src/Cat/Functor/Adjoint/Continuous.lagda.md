@@ -53,10 +53,10 @@ then instantiate this theorem to the "canonical" shapes of limit:
 [pullbacks]: Cat.Diagram.Pullback.html
 [equalisers]: Cat.Diagram.Equaliser.html
 
-This follows directly from the fact that [adjoints preserve kan
+This follows directly from the fact that [adjoints preserve Kan
 extensions].
 
-[adjoints preserve kan extensions]: Cat.Functor.Adjoint.Kan.html
+[adjoints preserve Kan extensions]: Cat.Functor.Adjoint.Kan.html
 
 
 ```agda

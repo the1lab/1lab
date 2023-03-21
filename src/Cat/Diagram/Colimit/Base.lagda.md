@@ -22,25 +22,25 @@ private variable
 # Idea
 
 Colimits are dual to limits [limit]; much like their cousins, they
-generalize constructions in several settings to arbitrary categories.
-A colimit (if it exists), is the "best solution" to an
-"identification problem". This is in contrast to the limit, which
-acts as a solution to an "equational problem".
+generalize constructions in several settings to arbitrary categories.  A
+colimit (if it exists), is the "best solution" to an "identification
+problem". This is in contrast to the limit, which acts as a solution to
+an "equational problem".
 
 [limit]: Cat.Diagram.Limit.Base.html
 
 We define colimits in a similar way to limits; the only difference being
-that we define a colimits of a diagram $F$ as left [kan extensions]
-instead of right [kan extensions]. This gives us the expected
-"mapping out" universal property, as opposed to the "mapping in" property
+that we define a colimits of a diagram $F$ as left [Kan extensions]
+instead of right [Kan extensions]. This gives us the expected "mapping
+out" universal property, as opposed to the "mapping in" property
 associated to limits.
 
-[kan extensions]: Cat.Functor.Kan.Base.html
+[Kan extensions]: Cat.Functor.Kan.Base.html
 
 Note that approach to colimits is not what normally presented in
-introductory material. Instead, most books opt to define colimits
-via [cocones], as they are less abstract, though harder to work with
-in the long run.
+introductory material. Instead, most books opt to define colimits via
+[cocones], as they are less abstract, though harder to work with in the
+long run.
 
 [cocones]: Cat.Diagram.Colimit.Cocone.html
 
@@ -99,10 +99,10 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
 ```
 -->
 
-First, we require morphisms from the every value of the diagram to
-the coapex; taken as a family, we call it $\phi$. Moreover, if $f : x \to y$ is
-a morphism in the "shape" category $\cJ$, we require $\psi y \circ Ff = \psi x$,
-which encodes the relevant naturality.
+First, we require morphisms from the every value of the diagram to the
+coapex; taken as a family, we call it $\phi$. Moreover, if $f : x \to y$
+is a morphism in the "shape" category $\cJ$, we require $\psi y \circ Ff
+= \psi x$, which encodes the relevant naturality.
 
 ```agda
     field
@@ -110,10 +110,10 @@ which encodes the relevant naturality.
       commutes : ∀ {x y} (f : J.Hom x y) → ψ y C.∘ F₁ f ≡ ψ x
 ```
 
-The rest of the data ensures that $\psi$ is the universal family
-of maps with this property; if $\eps_j : Fj \to x$ is another natural
-family, then each $\eps_j$ factors through the coapex by a _unique_
-universal morphism:
+The rest of the data ensures that $\psi$ is the universal family of maps
+with this property; if $\eps_j : Fj \to x$ is another natural family,
+then each $\eps_j$ factors through the coapex by a _unique_ universal
+morphism:
 
 ```agda
       universal
@@ -133,7 +133,10 @@ universal morphism:
         → (other : C.Hom coapex x)
         → (∀ j → other C.∘ ψ j ≡ eps j)
         → other ≡ universal eps p
+```
 
+<!--
+```agda
     unique₂
       : ∀ {x : C.Ob}
       → (eps : ∀ j → C.Hom (F₀ j) x)
@@ -143,10 +146,11 @@ universal morphism:
       → o1 ≡ o2
     unique₂ eps p q r = unique eps p _ q ∙ sym (unique eps p _ r)
 ```
+-->
 
-Once we have this data, we can use it to construct a value of
-`is-colimit`{.Agda}. The naturality condition we required above may
-seem too weak, but the full naturality condition can be derived from
+Once we have this data, we can use it to construct a value of type
+`is-colimit`{.Agda}. The naturality condition we required above may seem
+too weak, but the full naturality condition can be derived from it and
 the rest of the data.
 
 <!--
@@ -188,7 +192,7 @@ the rest of the data.
   -- We often find ourselves working with something that isn't a colimit
   -- on the nose due to some annoying extensionality reasons involving
   -- functors '⊤Cat → C'
-  -- We could use some general theorems of kan extensions to adjust the
+  -- We could use some general theorems of Kan extensions to adjust the
   -- colimit, but this has better definitional behaviour.
   generalize-colimitp
     : ∀ {D : Functor J C} {K : Functor ⊤Cat C}
@@ -350,9 +354,9 @@ computation.
 # Uniqueness
 
 [Much like limits], colimits are unique up to isomorphism. This all
-follows from general properties of kan extensions, combined with the
-fact that natural isomorphisms between functors $\top \to \cC$ correspond
-with isomorphisms in $\cC$.
+follows from general properties of Kan extensions, combined with the
+fact that natural isomorphisms between functors $\top \to \cC$
+correspond with isomorphisms in $\cC$.
 
 [Much like limits]: Cat.Diagram.Limit.Base.html#uniqueness
 
@@ -382,6 +386,20 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
     → (∀ {j : J.Ob} → f C.∘ Cx.ψ j ≡ Cy.ψ j)
     → (∀ {j : J.Ob} → g C.∘ Cy.ψ j ≡ Cx.ψ j)
     → C.Inverses f g
+
+  colimits→invertiblep
+    : ∀ {f : C.Hom x y}
+    → (∀ {j : J.Ob} → f C.∘ Cx.ψ j ≡ Cy.ψ j)
+    → C.is-invertible f
+
+  colimits-unique     : x C.≅ y
+  colimits→invertible : C.is-invertible (Cx.universal Cy.ψ Cy.commutes)
+  colimits→inverses
+    : C.Inverses (Cx.universal Cy.ψ Cy.commutes) (Cy.universal Cx.ψ Cx.commutes)
+```
+
+<!--
+```agda
   colimits→inversesp {f = f} {g = g} f-factor g-factor =
     natural-inverses→inverses
       {α = hom→⊤-natural-trans f}
@@ -391,10 +409,6 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
         (Nat-path λ j → g-factor {j}))
       tt
 
-  colimits→invertiblep
-    : ∀ {f : C.Hom x y}
-    → (∀ {j : J.Ob} → f C.∘ Cx.ψ j ≡ Cy.ψ j)
-    → C.is-invertible f
   colimits→invertiblep {f = f} f-factor =
     is-natural-invertible→invertible
       {α = hom→⊤-natural-trans f}
@@ -404,27 +418,23 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
         (Nat-path λ j → f-factor {j}))
       tt
 
-  colimits→inverses
-    : C.Inverses (Cx.universal Cy.ψ Cy.commutes) (Cy.universal Cx.ψ Cx.commutes)
   colimits→inverses =
     colimits→inversesp (Cx.factors Cy.ψ Cy.commutes) (Cy.factors Cx.ψ Cx.commutes)
 
-  colimits→invertible
-    : C.is-invertible (Cx.universal Cy.ψ Cy.commutes)
   colimits→invertible =
     colimits→invertiblep (Cx.factors Cy.ψ Cy.commutes)
 
-  colimits-unique : x C.≅ y
   colimits-unique =
     Nat-iso→Iso (Lan-unique.unique Cx Cy) tt
 ```
+-->
 
 Furthermore, if the universal map is invertible, then that means its
 domain is _also_ a colimit of the diagram. This also follows from a
-[general theorem of kan extensions], though some golf is required to
-obtain the correct inverse.
+[general theorem of Kan extensions], though some golfin is required to
+obtain the correct inverse definitionally.
 
-[general theorem of kan extensions]: Cat.Functor.Kan.Unique.html#is-invertible→is-lan
+[general theorem of Kan extensions]: Cat.Functor.Kan.Unique.html#is-invertible→is-lan
 
 <!--
 ```agda
@@ -477,18 +487,15 @@ coapex of $C$ is also a colimit of $Dia'$.
     → (isos : natural-iso D D′)
     → (∀ {j} →  Cy.ψ j C.∘ natural-iso.from isos .η j ≡ eta .η j)
     → is-lan !F D′ K eta
-  natural-iso-diagram→is-colimitp {D′ = D′} isos q =
-    generalize-colimitp
-      (natural-iso-of→is-lan Cy isos)
-      q
+  natural-iso-diagram→is-colimitp {D′ = D′} isos q = generalize-colimitp
+    (natural-iso-of→is-lan Cy isos)
+    q
 ```
 
 <!--
 ```agda
 module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
-         {D D′ : Functor J C}
-         where
-
+         {D D′ : Functor J C} where
   natural-iso→colimit
     : natural-iso D D′
     → Colimit D
@@ -517,11 +524,12 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```
 -->
 
-Therefore, if $C$ is a category, then `Coimit`{.Agda} is a proposition!
-However, this follows from a much more general result about [uniqueness
-of kan extensions].
+Since `is-colimit`{.Agda} is a proposition, and the colimiting cocones
+are all unique (“up to isomorphism”), if we're talking about univalent
+categories, then `Colimit`{.Agda} _itself_ is a proposition.  This is
+also an instance of the more general [uniqueness of Kan extensions].
 
-[uniqueness of kan extensions]: Cat.Functor.Kan.Unique.html
+[uniqueness of Kan extensions]: Cat.Functor.Kan.Unique.html
 
 <!--
 ```agda
