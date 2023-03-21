@@ -1,4 +1,5 @@
 ```
+open import 1Lab.Path.Cartesian
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -139,21 +140,11 @@ funext-dep≃ {A = A} {B} {f} {g} = Iso→Equiv isom where
       k (m = i1) → q i x
 
   isom .snd .linv h m p i =
-    comp (λ k → B i (lemi→i m k)) (∂ i ∨ m) λ where
-      k (k = i0) → h (λ j → lemi→j j m) i
-      k (i = i0) → f (lemi→i m k)
-      k (i = i1) → g (lemi→i m k)
+    comp (λ k → B i (coe-path-i→i p m k)) (∂ i ∨ m) λ where
+      k (k = i0) → h (λ j → coe-path-i→j p {i} j m) i
+      k (i = i0) → f (coe-path-i→i p m k)
+      k (i = i1) → g (coe-path-i→i p m k)
       k (m = i1) → h p i
-
-    where
-    lemi→j : ∀ j → coe A i j (p i) ≡ p j
-    lemi→j j =
-      coe (λ k → coe A i k (p i) ≡ p k) i j (coei→i A i (p i))
-
-    lemi→i : Square (lemi→j i) (coei→i A i (p i)) refl refl
-    lemi→i =
-      sym (coei→i (λ k → coe A i k (p i) ≡ p k) i (coei→i A i (p i)))
-      ◁ λ m k → lemi→j i (m ∨ k)
 
 hetero-homotopy≃homotopy
   : {A : I → Type ℓ} {B : (i : I) → Type ℓ₁}

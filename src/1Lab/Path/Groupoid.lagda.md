@@ -269,24 +269,30 @@ more than a handful of intermediate steps:
 
 # Groupoid structure of types (cont.)
 
-A useful fact is that if $H$ is a homotopy `f ~ id`, then we can
-"invert" it as such:
+A useful fact is that if $H$ is a homotopy $f \sim \id$, then it
+"commutes with $f$", in the following sense:
 
+<!--
 ```agda
 open 1Lab.Path
+```
+-->
 
-homotopy-invert : ∀ {a} {A : Type a} {f : A → A}
-                → (H : (x : A) → f x ≡ x) {x : A}
-                → H (f x) ≡ ap f (H x)
-homotopy-invert {f = f} H {x = x} =
-  sym (
-    ap f (H x)                     ≡⟨ sym (∙-id-r _) ⟩
-    ap f (H x) ∙ refl              ≡⟨ ap₂ _∙_ refl (sym (∙-inv-r _)) ⟩
-    ap f (H x) ∙ H x ∙ sym (H x)   ≡⟨ ∙-assoc _ _ _ ⟩
-    (ap f (H x) ∙ H x) ∙ sym (H x) ≡⟨ ap₂ _∙_ (sym (homotopy-natural H _)) refl ⟩
-    (H (f x) ∙ H x) ∙ sym (H x)    ≡⟨ sym (∙-assoc _ _ _) ⟩
-    H (f x) ∙ H x ∙ sym (H x)      ≡⟨ ap₂ _∙_ refl (∙-inv-r _) ⟩
-    H (f x) ∙ refl                 ≡⟨ ∙-id-r _ ⟩
-    H (f x)                        ∎
-  )
+```agda
+homotopy-invert
+  : ∀ {a} {A : Type a} {f : A → A}
+  → (H : (x : A) → f x ≡ x) {x : A}
+  → H (f x) ≡ ap f (H x)
+```
+
+The proof proceeds entirely using $H$ itself, together with the De
+Morgan algebra structure on the interval.
+
+```agda
+homotopy-invert {f = f} H {x} i j = hcomp (∂ i ∨ ∂ j) λ where
+  k (k = i0) → H x       (j ∧ i)
+  k (j = i0) → H (f x)   (~ k)
+  k (j = i1) → H x       (~ k ∧ i)
+  k (i = i0) → H (f x)   (~ k ∨ j)
+  k (i = i1) → H (H x j) (~ k)
 ```

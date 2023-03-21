@@ -621,7 +621,7 @@ prop!
   → {x : A i0} {y : A i1}
   → PathP (λ i → A i) x y
 prop! {A = A} {aip = aip} {x} {y} =
-  is-prop→pathp (λ i → coe (λ j → is-prop (A j)) i0 i aip) x y
+  is-prop→pathp (λ i → coe0→i (λ j → is-prop (A j)) i aip) x y
 
 open hlevel-projection
 

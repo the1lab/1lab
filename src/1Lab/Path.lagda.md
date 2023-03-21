@@ -1379,37 +1379,26 @@ of the word _equal_ --- but over the identification $\rm{Bool} \equiv
 \rm{Bool}$ that switches the points around, `true` and `false` can be
 identified!
 
-## Coercion
+## Squeezing and spreading
 
-In Cubical Agda, the interval is given the structure of a De Morgan
-algebra. This is not the only choice of structure on the interval that
-gives a model of univalent type theory: We could also subject the
-interval to _no_ additional structure other than what comes from the
-structural rules of type theory (introducing variables, ignoring
-variables, swapping variables, etc). This is a different cubical type
-theory, called _Cartesian cubical type theory_.
-
-In Cartesian cubical type theory, instead of having a `transp`{.Agda}
-operation which takes $A(\rm{i0}) \to A(\rm{i1})$, there is a “more
-powerful” _coercion_ operation, written $\rm{coe}^A_{i \to j}$, which
-takes $A(i) \to A(j)$, as in the subscript. However, despite the seeming
-added power, the coercion operation can be implemented in Cubical Agda:
-First, we introduce alternative names for several uses of
-`transp`{.Agda}.
+Using the De Morgan algebra structure on the interval, together with the
+"$\phi$" argument to `transp`{.Agda}, we can implement operations that
+move a point between the concrete endpoints (i0, i1) and arbitrary
+points on the interval, represented as variables. First, we introduce
+the following names for transporting forwards and backwards along a
+path.
 
 ```agda
 coe0→1 : ∀ {ℓ} (A : I → Type ℓ) → A i0 → A i1
 coe0→1 A a = transp (λ i → A i) i0 a
--- ^ This is another name for transport
 
 coe1→0 : ∀ {ℓ} (A : I → Type ℓ) → A i1 → A i0
 coe1→0 A a = transp (λ i → A (~ i)) i0 a
--- ^ This is equivalent to transport ∘ sym
 ```
 
-There are also “more exciting” operations, which transport from one of
-the endpoints to a path which can vary over the interval. These
-generalise the `transport-filler`{.Agda} operation.
+These two operations will "spread" a value which is concentrated at one
+of the endpoints to cover the entire path. They are named after their
+type: they move a value from i0/i1 to an arbitrary $i$.
 
 ```agda
 coe0→i : ∀ {ℓ : I → Level} (A : ∀ i → Type (ℓ i)) (i : I) → A i0 → A i
@@ -1419,149 +1408,120 @@ coe1→i : ∀ {ℓ : I → Level} (A : ∀ i → Type (ℓ i)) (i : I) → A i1
 coe1→i A i a = transp (λ j → A (i ∨ ~ j)) i a
 ```
 
-We visualise `coe0→i`{.Agda} and `coe1→i`{.Agda} as being "spread"
-operations, since they take a value from one endpoint of the interval (0
-or 1, respectively) and "spread it" to a line varying over the variable
-`i`. Similarly, we have "squeeze" operations, which take a line varying
-over `i` to one of the endpoints:
+In the converse direction, we have "squeeze" operations, which take a
+value from $A(i)$ to $A(i0)$ or $A(i1)$.
 
 ```
 coei→0 : ∀ {ℓ : I → Level} (A : ∀ i → Type (ℓ i)) (i : I) → A i → A i0
 coei→0 A i a = transp (λ j → A (i ∧ ~ j)) (~ i) a
-```
 
-Using the filler of a square, we can put together the `0→i` and `1→i`
-coercions to get the "master coercion" operation. That square is drawn
-as the diagram below, where the edges are more important than the
-corners, and the dashed line is `coe A i i1`.
-
-~~~{.quiver}
-\[\begin{tikzcd}
-  {a} && {\rm{coe}^A_{1\to0}(a)} \\
-  \\
-  {\rm{coe}^A_{0\to1}(a)} && {a}
-  \arrow["{\rm{coe}^A_{0\to j}(a)}"', from=1-1, to=3-1]
-  \arrow["{\rm{coe}^A_{1\to j}(a)}", from=1-3, to=3-3]
-  \arrow[""{name=0, anchor=center, inner sep=0}, "{\rm{coe}^A_{i\to0}(a)}", from=1-1, to=1-3]
-  \arrow[""{name=1, anchor=center, inner sep=0}, "{\rm{coe}^A_{i\to1}(a)}"', dashed, from=3-1, to=3-3]
-  \arrow["{\rm{coe}^A_{i\to j}(a)}"{description}, Rightarrow, draw=none, from=0, to=1]
-\end{tikzcd}\]
-~~~
-
-```agda
-coe : ∀ {ℓ : I → Level} (A : ∀ i → Type (ℓ i)) (i j : I) → A i → A j
-coe A i j a =
-  fill A (∂ i) j λ where
-    j (i = i0) → coe0→i A j a
-    j (i = i1) → coe1→i A j a
-    j (j = i0) → coei→0 A i a
-```
-
-As the square implies, when `j = i1`, we have the squeeze operation
-opposite to `coei→0`{.Agda}, which we call `coei→1`{.Agda}.
-
-```
 coei→1 : ∀ {ℓ : I → Level} (A : ∀ i → Type (ℓ i)) (i : I) → A i → A i1
-coei→1 A i a = coe A i i1 a
+coei→1 A i a = transp (λ l → A (i ∨ l)) i a
 ```
 
-**Sidenote**: The boundary for the square implies that we can give a
-more verbose type for `coe`{.Agda}, one which mentions all of the
-spreads and squeezes. Note that this is a _dependent path between
-functions $A\ i \to A\ j$_, a very complicated construction indeed!
+Using squeezes and spreads, we can define maps that convert between
+`PathP`{.Agda}s and "book-style" dependent paths. These conversions
+could also be defined in terms of `PathP≡Path`{.Agda}, but the following
+definitions are more efficient.
 
 ```agda
-private
-  coe-verbose : ∀ {ℓ} (A : I → Type ℓ)
-              → PathP (λ i → PathP (λ j → A i → A j)
-                                (coei→0 A i)
-                                (coei→1 A i))
-                      (λ j → coe0→i A j)
-                      (λ j → coe1→i A j)
-  coe-verbose A i j = coe A i j
+module _ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1} where
+  to-pathp : coe0→1 A x ≡ y → PathP A x y
+  to-pathp p i = hcomp (∂ i) λ where
+    j (j = i0) → coe0→i A i x
+    j (i = i0) → x
+    j (i = i1) → p j
+
+  from-pathp : PathP A x y → coe0→1 A x ≡ y
+  from-pathp p i = transp (λ j → A (i ∨ j)) i (p i)
 ```
 
-This operation satisfies, _definitionally_, a whole host of equations.
-For starters, we have that the $\rm{coe}^A_{i\to1}$ (resp $i \to 0$)
-specialises to transport when $i = 0$ (resp. $i = 1$), and to the
-identity when $i = 1$ (resp. $i = 0$):
+Note that by composing the functions `to-pathp`{.Agda} and
+`to-pathp`{.Agda} with the reversal on the interval, we obtain a
+correspondence `PathP`{.Agda} and paths with a backwards transport on
+the right-hand side.
 
 ```agda
-coei0→1 : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → coei→1 A i0 a ≡ coe0→1 A a
-coei0→1 A a = refl
+module _ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1} where
+  to-pathp⁻ : x ≡ coe1→0 A y → PathP A x y
+  to-pathp⁻ p = symP $ to-pathp {A = λ j → A (~ j)} (λ i → p (~ i))
 
-coei1→1 : ∀ {ℓ} (A : I → Type ℓ) (a : A i1) → coei→1 A i1 a ≡ a
-coei1→1 A a = refl
-
-coei1→0 : ∀ {ℓ} (A : I → Type ℓ) (a : A i1) → coei→0 A i1 a ≡ coe1→0 A a
-coei1→0 A a = refl
-
-coei0→0 : ∀ {ℓ} (A : I → Type ℓ) (a : A i0) → coei→0 A i0 a ≡ a
-coei0→0 A a = refl
+  from-pathp⁻ : PathP A x y → x ≡ coe1→0 A y
+  from-pathp⁻ p = sym $ from-pathp (λ i → p (~ i))
 ```
 
-Then we have paths connecting the "master coercion" `coe`{.Agda} and
-its several faces:
-
-```
-coei→i0 : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i)
-        → coe A i i0 a ≡ coei→0 A i a
-coei→i0 A i a = refl
-
-coei0→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i0)
-        → coe A i0 i a ≡ coe0→i A i a
-coei0→i A i a = refl
-
-coei→i1 : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i)
-        → coe A i i1 a ≡ coei→1 A i a
-coei→i1 A i a = refl
-
-coei1→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i1)
-        → coe A i1 i a ≡ coe1→i A i a
-coei1→i A i a = refl
-```
-
-In Cartesian cubical type theory, the following equation is
-definitional. It says that the top right and bottom left corners of the
-diagram are indeed what I said they were! However, in Cubical Agda, it
-is only propositional:
+It's actually fairly complicated to show that the functions
+`to-pathp`{.Agda} and `from-pathp`{.Agda} are inverses. The statements
+of the theorems are simple:
 
 ```agda
-coei→i : ∀ {ℓ} (A : I → Type ℓ) (i : I) (a : A i) → coe A i i a ≡ a
-coei→i A i = coe0→i (λ i → (a : A i) → coe A i i a ≡ a) i (λ _ → refl)
+to-from-pathp
+  : ∀ {ℓ} {A : I → Type ℓ} {x y} (p : PathP A x y) → to-pathp (from-pathp p) ≡ p
+
+from-to-pathp
+  : ∀ {ℓ} {A : I → Type ℓ} {x y} (p : coe0→1 A x ≡ y)
+  → from-pathp {A = A} (to-pathp p) ≡ p
 ```
 
-Using the Cartesian coercions, we define maps that convert between
-`PathP`{.Agda}s and Book dependent paths. These maps could also be
-defined in terms of `transp`{.Agda} and `PathP≡Path`{.Agda}, but this
-definition is more efficient.
+<!--
+```agda
+hcomp-unique : ∀ {ℓ} {A : Type ℓ} φ
+               (u : ∀ i → Partial (φ ∨ ~ i) A)
+             → (h2 : ∀ i → A [ _ ↦ (λ { (i = i0) → u i0 1=1
+                                      ; (φ = i1) → u i 1=1 }) ])
+             → hcomp φ u ≡ outS (h2 i1)
+hcomp-unique φ u h2 i =
+  hcomp (φ ∨ i) λ where
+    k (k = i0) → u i0 1=1
+    k (i = i1) → outS (h2 k)
+    k (φ = i1) → u k 1=1
+```
+-->
+
+<details>
+<summary>
+The proof is a bit hairy, since it involves very high-dimensional
+hcomps. We leave it under this fold for the curious reader, but we
+encourage you to take `to-from-pathp`{.Agda} and `from-to-pathp`{.Agda}
+on faith otherwise.
+</summary>
 
 ```agda
-to-pathp : ∀ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1}
-         → coe0→1 A x ≡ y
-         → PathP A x y
-to-pathp {A = A} {x} {y} p = transport (sym (PathP≡Path A x y)) p
+to-from-pathp {A = A} {x} {y} p i j = hcomp-unique (∂ j)
+  (λ { k (k = i0) → coe0→i A j x
+     ; k (j = i0) → x
+     ; k (j = i1) → coei→1 A k (p k)
+     })
+  (λ k → inS (transp (λ l → A (j ∧ (k ∨ l))) (~ j ∨ k) (p (j ∧ k))))
+  i
 
-from-pathp : ∀ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1}
-           → PathP A x y
-           → coe0→1 A x ≡ y
-from-pathp {A = A} {x} {y} p = transport (PathP≡Path A x y) p
+from-to-pathp {A = A} {x} {y} p i j =
+  hcomp (∂ i ∨ ∂ j) λ where
+    k (k = i0) →
+      coei→1 A (j ∨ ~ i) $
+        transp (λ l → A (j ∨ (~ i ∧ l))) (i ∨ j) $
+          coe0→i A j x
 
-to-pathp⁻ : ∀ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1}
-         → x ≡ coe1→0 A y
-         → PathP A x y
-to-pathp⁻ {A = A} {x} {y} p = transport (sym (PathP≡Path⁻ A x y)) p
+    k (j = i0) → slide (k ∨ ~ i)
+    k (j = i1) → p k
 
-from-pathp⁻ : ∀ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1}
-           → PathP A x y
-           → x ≡ coe1→0 A y
-from-pathp⁻ {A = A} {x} {y} p = transport (PathP≡Path⁻ A x y) p
+    k (i = i0) → coei→1 A j $ hfill (∂ j) k λ where
+      k (k = i0) → coe0→i A j x
+      k (j = i0) → x
+      k (j = i1) → p k
+
+    k (i = i1) → hcomp (∂ k ∨ ∂ j) λ where
+      l (l = i0) → slide (k ∨ j)
+      l (k = i0) → slide j
+      l (k = i1) → p (j ∧ l)
+      l (j = i0) → slide k
+      l (j = i1) → p (k ∧ l)
+  where
+    slide : coe0→1 A x ≡ coe0→1 A x
+    slide i = coei→1 A i (coe0→i A i x)
 ```
 
-These definitions illustrate how using the named squeezes and spreads
---- `coe0→i`{.Agda}, `coei→1`{.Agda} --- can be a lot more elegant than
-trying to work out what particular connection soup to use in a
-`transp`{.Agda}.
+</details>
 
 # Path Spaces
 
@@ -1642,10 +1602,9 @@ homotopy-natural : ∀ {a b} {A : Type a} {B : Type b}
                  → {x y : A} (p : x ≡ y)
                  → H x ∙ ap g p ≡ ap f p ∙ H y
 homotopy-natural {f = f} {g = g} H {x} {y} p = ∙-unique _ λ i j →
-  hcomp (∂ i ∨ ∂ j) λ where
+  hcomp (~ i ∨ ∂ j) λ where
     k (k = i0) → H x (j ∧ i)
     k (i = i0) → f (p (j ∧ k))
-    k (i = i1) → ∙-filler (H x) (ap g p) k j
     k (j = i0) → f x
     k (j = i1) → H (p k) i
 ```
@@ -1673,7 +1632,6 @@ double-composite p q r i j =
     k (k = i0) → ∙-filler q r i j
 ```
 -->
-
 
 ```agda
 transport-path : ∀ {ℓ} {A : Type ℓ} {x y x' y' : A}

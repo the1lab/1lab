@@ -1,5 +1,6 @@
 ```agda
 {-# OPTIONS -WUnsupportedIndexedMatch #-}
+open import 1Lab.Path.IdentitySystem.Interface
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.Univalence
 open import 1Lab.HLevel
@@ -64,7 +65,7 @@ Id≃path : ∀ {ℓ} {A : Type ℓ} {x y : A} → (x ≡ᵢ y) ≃ (x ≡ y)
 Id≃path {ℓ} {A} {x} {y} =
   identity-system-gives-path (Id-identity-system {ℓ = ℓ} {A = A}) {a = x} {b = y}
 
-module Id≃path {ℓ} {A : Type ℓ} {x y : A} = Equiv (Id≃path {ℓ} {A} {x} {y})
+module Id≃path {ℓ} {A : Type ℓ} = Ids (Id-identity-system {A = A})
 ```
 -->
 

@@ -30,6 +30,7 @@ postulate
   _⊔_   : Level → Level → Level
 infixl 6 _⊔_
 
+{-# BUILTIN LEVELUNIV LevelUniv #-}
 {-# BUILTIN LEVEL Level #-}
 {-# BUILTIN LEVELZERO lzero #-}
 {-# BUILTIN LEVELSUC lsuc #-}

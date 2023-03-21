@@ -43,25 +43,19 @@ path→iso
 path→iso {C = C} {A} p = transport (λ i → Isomorphism C A (p i)) (id-iso C)
 
 module Univalent′ {o h} {C : Precategory o h} (r : is-category C) where
-  module path→iso {A} {B} = Equiv (identity-system-gives-path r {a = A} {b = B})
+  module path→iso = Ids r
+    renaming ( to            to iso→path
+             ; J             to J-iso
+             ; to-refl       to iso→path-id
+             ; η             to iso→path→iso
+             ; ε             to path→iso→path
+             )
+
   open Cat.Reasoning C hiding (id-iso) public
-  iso→path : ∀ {A B} → A ≅ B → A ≡ B
-  iso→path = path→iso.to
 
-  J-iso : ∀ {ℓ} {A} (P : ∀ B → A ≅ B → Type ℓ)
-        → P A (id-iso C)
-        → ∀ {B} (p : A ≅ B) → P B p
-  J-iso {A} P pid {B} p = IdsJ r P pid p
-
-  iso→path-id : ∀ {A} → iso→path (id-iso C {A}) ≡ refl
-  iso→path-id = to-path-refl r
-
-  iso→path→iso : ∀ {A B} (p : A ≅ B) → path→iso (iso→path p) ≡ p
-  iso→path→iso p = from-pathp (r .to-path-over p)
-
-  path→iso→path : ∀ {A B} (p : A ≡ B) → iso→path (path→iso p) ≡ p
-  path→iso→path p = J (λ B p → iso→path (path→iso p) ≡ p)
-    (ap (r .to-path) (transport-refl _) ∙ to-path-refl r) p
+  open path→iso
+    using ( iso→path ; J-iso ; iso→path-id ; iso→path→iso ; path→iso→path )
+    public
 ```
 
 Furthermore, we have that this function is an equivalence, and so the
@@ -75,8 +69,7 @@ the fact that [h-levels are closed under equivalences] and that
 
 ```agda
   Ob-is-groupoid : is-groupoid (C .Precategory.Ob)
-  Ob-is-groupoid x y =
-    equiv→is-hlevel 2 iso→path (identity-system-gives-path r .snd) ≅-is-set
+  Ob-is-groupoid = path→iso.hlevel 2 λ _ _ → ≅-is-set
 ```
 
 We can characterise transport in the Hom-sets of categories using the

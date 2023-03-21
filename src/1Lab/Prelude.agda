@@ -7,7 +7,9 @@ open import 1Lab.Type public
 
 open import 1Lab.Path public
 open import 1Lab.Path.Groupoid public
+
 open import 1Lab.Path.IdentitySystem public
+open import 1Lab.Path.IdentitySystem.Interface public
 
 open import Meta.Traverse public
 open import Meta.Idiom public
