@@ -24,8 +24,8 @@ preserve left extensions. This dualises to right adjoints preserving
 _right_ extensions.
 
 [adjoint functors]: Cat.Functor.Adjoint.html
-[left]: Cat.Diagram.Kan.Base.html#left-kan-extensions
-[right]: Cat.Diagram.Kan.Base.html#right-kan-extensions
+[left]: Cat.Functor.Kan.Base.html#left-kan-extensions
+[right]: Cat.Functor.Kan.Base.html#right-kan-extensions
 
 [^rapl]: Here on the 1Lab, we derive the proof that right (resp. left)
 adjoints preserve limits (resp. colimits) from _this proof_ that
