@@ -11,7 +11,7 @@ import Cat.Reasoning
 module Cat.Functor.Kan.Representable where
 ```
 
-## Representability of Kan Extensions
+## Representability of Kan extensions
 
 Like most constructions with a universal property, we can phrase the
 definition of [Kan extensions] in terms of an equivalence of $\hom$

@@ -22,7 +22,7 @@ import Cat.Reasoning
 module Cat.Functor.Kan.Pointwise where
 ```
 
-# Pointwise Kan Extensions
+# Pointwise Kan extensions
 
 One useful perspective on [Kan extensions] is that they are
 generalizations of (co)limits; in fact, we have defined (co)limits as a

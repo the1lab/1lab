@@ -433,10 +433,13 @@ About Kan extensions:
 
 ```agda
 open import Cat.Functor.Kan.Base -- Kan extensions
+open import Cat.Functor.Kan.Duality -- Left and right extensions are dual
 open import Cat.Functor.Kan.Nerve -- The nerve/realisation adjunction
 open import Cat.Functor.Kan.Global -- Global Kan extensions
+open import Cat.Functor.Kan.Adjoint -- Adjoints are Kan extensions
 open import Cat.Functor.Kan.Pointwise -- Pointwise Kan extensions
 open import Cat.Functor.Kan.Unique -- Uniqueness of Kan extensions
+open import Cat.Functor.Kan.Representable -- Kan extensions as Hom isomorphisms
 ```
 
 Properties of Hom-functors, and (direct) consequences of the Yoneda
