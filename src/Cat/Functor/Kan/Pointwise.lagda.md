@@ -76,6 +76,24 @@ module _
     ∀ (x : D.Ob) → preserves-ran (Hom-from D x) ran
 ```
 
+Absolute Kan extensions are trivially pointwise, since they are preserved by *all* functors.
+
+```agda
+  absolute-lan→pointwise
+    : {eta : G => E F∘ F}
+    → {lan : is-lan F G E eta}
+    → is-absolute-lan lan
+    → is-pointwise-lan lan
+  absolute-lan→pointwise abs _ = abs _
+
+  absolute-ran→pointwise
+    : {eps : E F∘ F => G}
+    → {ran : is-ran F G E eps}
+    → is-absolute-ran ran
+    → is-pointwise-ran ran
+  absolute-ran→pointwise abs _ = abs _
+```
+
 <!--
 ```agda
 module _

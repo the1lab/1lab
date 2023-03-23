@@ -405,10 +405,17 @@ F∘-assoc = Functor-path (λ x → refl) λ x → refl
 
 F∘-idl
   : ∀ {o′′ ℓ′′ o₃ ℓ₃}
-      {E : Precategory o′′ ℓ′′} {F : Precategory o₃ ℓ₃}
-      {F : Functor E F}
+      {E : Precategory o′′ ℓ′′} {E′ : Precategory o₃ ℓ₃}
+      {F : Functor E E′}
   → Id F∘ F ≡ F
 F∘-idl = Functor-path (λ x → refl) λ x → refl
+
+F∘-idr
+  : ∀ {o′′ ℓ′′ o₃ ℓ₃}
+      {E : Precategory o′′ ℓ′′} {E′ : Precategory o₃ ℓ₃}
+      {F : Functor E E′}
+  → F F∘ Id ≡ F
+F∘-idr = Functor-path (λ x → refl) λ x → refl
 
 module
   _ {o ℓ o′ ℓ′ o′′ ℓ′′}

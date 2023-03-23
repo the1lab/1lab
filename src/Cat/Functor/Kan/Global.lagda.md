@@ -34,7 +34,7 @@ is a universal solution $\Lan_p(F)$ to extending $F$ to a functor $C'
 \to D$. In particularly happy cases (e.g. when $C$ is [small] and $D$ is
 [cocomplete]), the left Kan extension $\Lan_p(F)$ along $p$ exists for
 **any** $F$; When this happens, the assignment $F \mapsto \Lan_p(F)$
-*extends to a functor, which we call a **global Kan extension**.
+extends to a functor, which we call a **global Kan extension**.
 
 [left Kan extension]: Cat.Functor.Kan.Base.html
 [small]: 1Lab.intro.html#universes-and-size-issues
@@ -113,17 +113,6 @@ adjoint-precompose→Lan F adj G = ext where
     (L-R-adjunct adj _ ∙ x)
 ```
 
-In particular, if $p$ itself has a *right* adjoint $p \dashv r$, then left Kan
-extensions along $p$ are given by `precomposition`{.Agda ident=precompose} with $r$:
+This in turn implies that [adjoints are Kan extensions].
 
-```agda
-adjoint→Lan
-  : (r : Functor C′ C)
-  → (p⊣r : p ⊣ r)
-  → (G : Functor C D)
-  → is-lan p G (G F∘ r) (precomposite-adjunction p⊣r ._⊣_.unit .η G)
-adjoint→Lan r p⊣r = adjoint-precompose→Lan (precompose r) (precomposite-adjunction p⊣r)
-```
-
-Dually, if $p$ has a *left* adjoint $q \dashv p$, then *right* Kan extensions
-along $p$ are given by `precomposition`{.Agda ident=precompose} with $q$.
+[adjoints are Kan extensions]: Cat.Functor.Kan.Adjoint.html
