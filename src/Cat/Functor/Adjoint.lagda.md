@@ -666,23 +666,20 @@ between [postcomposition and precomposition functors], respectively:
 
 ```agda
   open import Cat.Instances.Functor.Compose
+  open import Cat.Functor.Coherence
 
   postcomposite-adjunction : postcompose L {D = E} ⊣ postcompose R
-  postcomposite-adjunction .unit .η F .η = (adj.unit ◂ F) .η
-  postcomposite-adjunction .unit .η F .is-natural = (adj.unit ◂ F) .is-natural
+  postcomposite-adjunction .unit .η F = cohere! (adj.unit ◂ F)
   postcomposite-adjunction .unit .is-natural F G α = Nat-path λ _ → adj.unit.is-natural _ _ _
-  postcomposite-adjunction .counit .η F .η = (adj.counit ◂ F) .η
-  postcomposite-adjunction .counit .η F .is-natural = (adj.counit ◂ F) .is-natural
+  postcomposite-adjunction .counit .η F = cohere! (adj.counit ◂ F)
   postcomposite-adjunction .counit .is-natural F G α = Nat-path λ _ → adj.counit.is-natural _ _ _
   postcomposite-adjunction .zig = Nat-path λ _ → adj.zig
   postcomposite-adjunction .zag = Nat-path λ _ → adj.zag
 
   precomposite-adjunction : precompose R {D = E} ⊣ precompose L
-  precomposite-adjunction .unit .η F .η = (F ▸ adj.unit) .η
-  precomposite-adjunction .unit .η F .is-natural = (F ▸ adj.unit) .is-natural
+  precomposite-adjunction .unit .η F = cohere! (F ▸ adj.unit)
   precomposite-adjunction .unit .is-natural F G α = Nat-path λ _ → sym (α .is-natural _ _ _)
-  precomposite-adjunction .counit .η F .η = (F ▸ adj.counit) .η
-  precomposite-adjunction .counit .η F .is-natural = (F ▸ adj.counit) .is-natural
+  precomposite-adjunction .counit .η F = cohere! (F ▸ adj.counit)
   precomposite-adjunction .counit .is-natural F G α = Nat-path λ _ → sym (α .is-natural _ _ _)
   precomposite-adjunction .zig {F} = Nat-path λ _ → Func.annihilate F adj.zag
   precomposite-adjunction .zag {F} = Nat-path λ _ → Func.annihilate F adj.zig

@@ -71,8 +71,7 @@ module _ (p : Functor C C′) (F : Functor C D) where
 
     ran .σ-comm = Nat-path λ x → lan.σ-comm ηₚ x
     ran .σ-uniq {M = M} {σ′ = σ′} p =
-      Nat-path λ x → lan.σ-uniq {σ′ = σ′op} (Nat-path λ x → p ηₚ x) ηₚ x
-      where unquoteDecl σ′op = dualise-into σ′op _ σ′
+      Nat-path λ x → lan.σ-uniq {σ′ = dualise! σ′} (Nat-path λ x → p ηₚ x) ηₚ x
 ```
 
 <!--
@@ -93,8 +92,7 @@ module _ (p : Functor C C′) (F : Functor C D) where
         α
     ran .σ-comm = Nat-path λ x → lan.σ-comm ηₚ x
     ran .σ-uniq {M = M} {σ′ = σ′} p =
-      Nat-path λ x → lan.σ-uniq {σ′ = σ′op} (Nat-path λ x → p ηₚ x) ηₚ x
-      where unquoteDecl σ′op = dualise-into σ′op _ σ′
+      Nat-path λ x → lan.σ-uniq {σ′ = dualise! σ′} (Nat-path λ x → p ηₚ x) ηₚ x
 
   is-ran→is-co-lan
     : ∀ {Ext : Functor C′ D} {eta : Ext F∘ p => F}
@@ -110,8 +108,7 @@ module _ (p : Functor C C′) (F : Functor C D) where
 
     lan .σ-comm = Nat-path λ x → ran.σ-comm ηₚ x
     lan .σ-uniq {M = M} {σ′ = σ′} p =
-      Nat-path λ x → ran.σ-uniq {σ′ = σ′op} (Nat-path λ x → p ηₚ x) ηₚ x
-      where unquoteDecl σ′op = dualise-into σ′op _ σ′
+      Nat-path λ x → ran.σ-uniq {σ′ = dualise! σ′} (Nat-path λ x → p ηₚ x) ηₚ x
 
   Co-lan→Ran : Lan (Functor.op p) (Functor.op F) → Ran p F
   Co-lan→Ran lan .Ext     = Functor.op (lan .Ext)
@@ -137,8 +134,7 @@ module _ (p : Functor C C′) (F : Functor C D) where
         β
     lan .σ-comm = Nat-path λ x → ran.σ-comm ηₚ x
     lan .σ-uniq {M = M} {σ′ = σ′} p =
-      Nat-path λ x → ran.σ-uniq {σ′ = σ′op} (Nat-path λ x → p ηₚ x) ηₚ x
-      where unquoteDecl σ′op = dualise-into σ′op _ σ′
+      Nat-path λ x → ran.σ-uniq {σ′ = dualise! σ′} (Nat-path λ x → p ηₚ x) ηₚ x
 
   is-co-ran→is-lan
     : ∀ {G : Functor C′ D} {eta}
@@ -154,8 +150,7 @@ module _ (p : Functor C C′) (F : Functor C D) where
         β
     lan .σ-comm = Nat-path λ x → ran.σ-comm ηₚ x
     lan .σ-uniq {M = M} {σ′ = σ′} p =
-      Nat-path λ x → ran.σ-uniq {σ′ = σ′op} (Nat-path λ x → p ηₚ x) ηₚ x
-      where unquoteDecl σ′op = dualise-into σ′op _ σ′
+      Nat-path λ x → ran.σ-uniq {σ′ = dualise! σ′} (Nat-path λ x → p ηₚ x) ηₚ x
 
   is-lan→is-co-ran
     : ∀ {G : Functor C′ D} {eps : F => G F∘ p}
@@ -170,8 +165,7 @@ module _ (p : Functor C C′) (F : Functor C D) where
       unquoteDecl σ′ = dualise-into σ′ (M => Functor.op G) (lan.σ β′)
     ran .σ-comm = Nat-path λ x → lan.σ-comm ηₚ x
     ran .σ-uniq {M = M} {σ′ = σ′} p =
-      Nat-path λ x → lan.σ-uniq {σ′ = σ′op} (Nat-path λ x → p ηₚ x) ηₚ x
-      where unquoteDecl σ′op = dualise-into σ′op _ σ′
+      Nat-path λ x → lan.σ-uniq {σ′ = dualise! σ′} (Nat-path λ x → p ηₚ x) ηₚ x
 
   Co-ran→Lan : Ran (Functor.op p) (Functor.op F) → Lan p F
   Co-ran→Lan ran .Ext = Functor.op (ran .Ext)
