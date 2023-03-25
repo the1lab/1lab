@@ -24,22 +24,24 @@ private
 
 # Adjoints are Kan extensions
 
-One way to think about [Kan extensions] is that, when they exist, they allow us to
-"compose" two functors when one of them is going the wrong way: given a span
+One way to think about [Kan extensions] is that, when they exist, they
+allow us to "compose" two functors when one of them is going the wrong
+way: given a span
 
 $$
 D \xot{F} C \xto{H} E
 $$
 
-we get a "composite" $\Lan_F(H) : D \to E$. With this perspective in mind, it's
-reasonable to expect that, if $F$ has an [inverse] $G : D \to C$, the composite
-we get should be the actual composite $H \circ G$.
+we get a "composite" $\Lan_F(H) : D \to E$. With this perspective in
+mind, it's reasonable to expect that, if $F$ has an [inverse] $G : D \to
+C$, the composite we get should be the actual composite $H \circ G$.
 
-In fact, we can do better: if $F$ only has a [right adjoint] $F \dashv G$ (which
-we can think of as a directed inverse), then the induced
-`precomposite adjunction`{.Agda ident=precomposite-adjunction} $- \circ G \dashv - \circ F$
-means that *left* ([global]) Kan extensions along $F$ are given by precomposition with $G$
-(and, dually, right Kan extensions along $G$ are given by precomposition with $F$).
+In fact, we can do better: if $F$ only has a [right adjoint] $F \dashv
+G$ (which we can think of as a directed inverse), then the induced
+`precomposite adjunction`{.Agda ident=precomposite-adjunction} $- \circ
+G \dashv - \circ F$ means that *left* ([global]) Kan extensions along
+$F$ are given by precomposition with $G$ (and, dually, right Kan
+extensions along $G$ are given by precomposition with $F$).
 
 [Kan extensions]: Cat.Functor.Kan.Base.html
 [inverse]: Cat.Functor.Equivalence.html
@@ -54,8 +56,9 @@ module _ {F : Functor C D} {G : Functor D C} (F⊣G : F ⊣ G) where
   adjoint→is-lan = adjoint-precompose→Lan F (precompose G) (precomposite-adjunction F⊣G)
 ```
 
-A more common way to say this is that $G$ is the `absolute`{.Agda ident=is-absolute-lan}
-left Kan extension of $F$ along the identity; this is essentially a reformulation of the above fact:
+A more common way to say this is that $G$ is the `absolute`{.Agda
+ident=is-absolute-lan} left Kan extension of $F$ along the identity;
+this is essentially a reformulation of the above fact:
 
 ```agda
   adjoint→is-lan-id : is-lan F Id G (F⊣G .unit)
@@ -75,7 +78,8 @@ left Kan extension of $F$ along the identity; this is essentially a reformulatio
       fixNT = Nat-pathp F∘-idr refl (λ _ → refl)
 ```
 
-The dual statement is obtained by... [duality], this time using the `counit`{.Agda} of the precomposite adjunction:
+The dual statement is obtained by... [duality], this time using the
+`counit`{.Agda} of the precomposite adjunction:
 
 [duality]: Cat.Functor.Kan.Duality.html
 
@@ -95,5 +99,7 @@ module _ {F : Functor C D} {G : Functor D C} (F⊣G : F ⊣ G) where
       fixNT = Nat-pathp (λ i → fixF i F∘ G) refl (λ _ → refl)
 ```
 
-Even more dually, we can flip the span above to get a *cospan* of functors, giving rise to the theory of
-**Kan lifts**. We then get analogous statements: left (resp. right) adjoints are absolute left (resp. right) Kan lifts along the identity.
+Even more dually, we can flip the span above to get a *cospan* of
+functors, giving rise to the theory of **Kan lifts**. We then get
+analogous statements: left (resp. right) adjoints are absolute left
+(resp. right) Kan lifts along the identity.
