@@ -34,7 +34,7 @@ is a universal solution $\Lan_p(F)$ to extending $F$ to a functor $C'
 \to D$. In particularly happy cases (e.g. when $C$ is [small] and $D$ is
 [cocomplete]), the left Kan extension $\Lan_p(F)$ along $p$ exists for
 **any** $F$; When this happens, the assignment $F \mapsto \Lan_p(F)$
-*extends to a functor, which we call a **global Kan extension**.
+extends to a functor, which we call a **global Kan extension**.
 
 [left Kan extension]: Cat.Functor.Kan.Base.html
 [small]: 1Lab.intro.html#universes-and-size-issues
@@ -67,13 +67,13 @@ extensions are universal: we can map between them in a functorial way
 using only the defining natural transformations in the diagram, without
 appealing to the details of a particular computation. Moreover, the left
 Kan extension functor _itself_ has a universal property: it is a left
-adjoint to the [precomposition] functor $p_!$.
+adjoint to the [precomposition] functor $- \circ p$.
 
 [precomposition]: Cat.Instances.Functor.Compose.html
 
 ```agda
-  Lan⊣! : Lan-functor ⊣ p !
-  Lan⊣! = hom-iso→adjoints f (is-iso→is-equiv eqv) natural where
+  Lan⊣precompose : Lan-functor ⊣ precompose p
+  Lan⊣precompose = hom-iso→adjoints f (is-iso→is-equiv eqv) natural where
     f : ∀ {x : Functor C D} {y : Functor C′ D} → has-lan x .Ext => y → x => y F∘ p
     f {x} {y} θ = (θ ◂ p) ∘nt has-lan x .eta
 
@@ -84,31 +84,35 @@ adjoint to the [precomposition] functor $p_!$.
     eqv {x} {y} .rinv θ = has-lan x .σ-comm
     eqv {x} {y} .linv θ = has-lan _ .σ-uniq refl
 
-    natural : hom-iso-natural {L = Lan-functor} {p !} f
+    natural : hom-iso-natural {L = Lan-functor} {precompose p} f
     natural {b = b} g h x = Nat-path λ a →
       D.pullr (D.pullr (has-lan _ .σ-comm ηₚ a))
       ∙ ap₂ D._∘_ refl (D.pushr refl)
 ```
 
-And, since adjoints are unique, if $p_!$ has any left adjoint, then its
+And, since adjoints are unique, if $- \circ p$ has any left adjoint, then its
 values generate Kan extensions:
 
 ```agda
-adjoint→Lan
+adjoint-precompose→Lan
   : (F : Functor Cat[ C , D ] Cat[ C′ , D ])
-  → (F⊣p! : F ⊣ p !)
+  → (adj : F ⊣ precompose p)
   → (G : Functor C D)
-  → is-lan p G (F .F₀ G) (F⊣p! ._⊣_.unit .η G)
-adjoint→Lan F F⊣p! G = ext where
+  → is-lan p G (F .F₀ G) (adj ._⊣_.unit .η G)
+adjoint-precompose→Lan F adj G = ext where
   open Lan
   open is-lan
-  module F⊣p! = _⊣_ F⊣p!
+  module adj = _⊣_ adj
 
   ext : is-lan p G _ _
-  ext .σ α = R-adjunct F⊣p! α
+  ext .σ α = R-adjunct adj α
   ext .σ-comm {M = M} {α = α} = Nat-path λ a →
-      D.pullr   (sym (F⊣p!.unit .is-natural _ _ _) ηₚ a)
-    ∙ D.cancell (F⊣p!.zag ηₚ a)
-  ext .σ-uniq x = Equiv.injective (_ , L-adjunct-is-equiv F⊣p!)
-    (L-R-adjunct F⊣p! _ ∙ x)
+      D.pullr   (sym (adj.unit .is-natural _ _ _) ηₚ a)
+    ∙ D.cancell (adj.zag ηₚ a)
+  ext .σ-uniq x = Equiv.injective (_ , L-adjunct-is-equiv adj)
+    (L-R-adjunct adj _ ∙ x)
 ```
+
+This in turn implies that [adjoints are Kan extensions].
+
+[adjoints are Kan extensions]: Cat.Functor.Kan.Adjoint.html

@@ -300,6 +300,18 @@ In the diagram above, the 2-cell is simply the whiskering $H\eta$.
 Unfortunately, proof assistants; our definition of whiskering lands in
 $H(Gp)$, but we requires a natural transformation to $(HG)p$.
 
+We say that a Kan extension is **absolute** if it is preserved by *all*
+functors out of $D$.  An important example of this is given by [adjoint
+functors].
+
+[adjoint functors]: Cat.Functor.Kan.Adjoint.html
+
+```agda
+  is-absolute-lan : is-lan p F G eta → Typeω
+  is-absolute-lan lan =
+    {o ℓ : Level} {E : Precategory o ℓ} (H : Functor D E) → preserves-lan H lan
+```
+
 It may also be the case that $(HG, H\eta)$ is already a left kan
 extension of $HF$ along $p$. We say that $H$ reflects this Kan extension
 if $G, \eta$ is a also a left extension of $F$ along $p$.
@@ -326,6 +338,10 @@ We can define dual notions for right Kan extensions as well.
   preserves-ran : (H : Functor D E) → is-ran p F G eps → Type _
   preserves-ran H _ =
     is-ran p (H F∘ F) (H F∘ G) (nat-assoc-from (H ▸ eps))
+
+  is-absolute-ran : is-ran p F G eps → Typeω
+  is-absolute-ran ran =
+    {o ℓ : Level} {E : Precategory o ℓ} (H : Functor D E) → preserves-ran H ran
 
   reflects-ran
     : (H : Functor D E)

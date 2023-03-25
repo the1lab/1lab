@@ -216,6 +216,5 @@ module
 
     fixed .is-ran.σ-comm = Nat-path λ x → p.σ-comm ηₚ _
     fixed .is-ran.σ-uniq {M = M} {σ′ = σ′} p =
-      Nat-path λ x → p.σ-uniq {σ′ = σ′′} (Nat-path λ x → p ηₚ x) ηₚ x where
-      unquoteDecl σ′′ = dualise-into σ′′ _ σ′
+      Nat-path λ x → p.σ-uniq {σ′ = dualise! σ′} (Nat-path λ x → p ηₚ x) ηₚ x
 ```

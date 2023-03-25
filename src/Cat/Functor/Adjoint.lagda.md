@@ -20,7 +20,7 @@ module Cat.Functor.Adjoint where
 ```agda
 private variable
   o h : Level
-  C D : Precategory o h
+  C D E : Precategory o h
 
 open Functor hiding (op)
 
@@ -635,14 +635,16 @@ Furthermore, these equivalences are natural.
 ```
 -->
 
-<!--
+# Induced adjunctions
+
+Any adjunction $L \dashv R$ induces, in a very boring way, an *opposite* adjunction
+$R\op \dashv L\op$ between `opposite functors`{.Agda ident=op}:
+
 ```agda
 module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
   private
     module L = Functor L
     module R = Functor R
-    module C = Cat.Reasoning C
-    module D = Cat.Reasoning D
     module adj = _⊣_ adj
 
   open _⊣_
@@ -655,7 +657,36 @@ module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
   opposite-adjunction .counit .is-natural x y f = sym (adj.unit.is-natural _ _ _)
   opposite-adjunction .zig = adj.zag
   opposite-adjunction .zag = adj.zig
+```
 
+As well as adjunctions $L \circ - \dashv R \circ -$ and $- \circ R \dashv - \circ L$
+between [postcomposition and precomposition functors], respectively:
+
+[postcomposition and precomposition functors]: Cat.Instances.Functor.Compose.html
+
+```agda
+  open import Cat.Instances.Functor.Compose
+  open import Cat.Functor.Coherence
+
+  postcomposite-adjunction : postcompose L {D = E} ⊣ postcompose R
+  postcomposite-adjunction .unit .η F = cohere! (adj.unit ◂ F)
+  postcomposite-adjunction .unit .is-natural F G α = Nat-path λ _ → adj.unit.is-natural _ _ _
+  postcomposite-adjunction .counit .η F = cohere! (adj.counit ◂ F)
+  postcomposite-adjunction .counit .is-natural F G α = Nat-path λ _ → adj.counit.is-natural _ _ _
+  postcomposite-adjunction .zig = Nat-path λ _ → adj.zig
+  postcomposite-adjunction .zag = Nat-path λ _ → adj.zag
+
+  precomposite-adjunction : precompose R {D = E} ⊣ precompose L
+  precomposite-adjunction .unit .η F = cohere! (F ▸ adj.unit)
+  precomposite-adjunction .unit .is-natural F G α = Nat-path λ _ → sym (α .is-natural _ _ _)
+  precomposite-adjunction .counit .η F = cohere! (F ▸ adj.counit)
+  precomposite-adjunction .counit .is-natural F G α = Nat-path λ _ → sym (α .is-natural _ _ _)
+  precomposite-adjunction .zig {F} = Nat-path λ _ → Func.annihilate F adj.zag
+  precomposite-adjunction .zag {F} = Nat-path λ _ → Func.annihilate F adj.zig
+```
+
+<!--
+```agda
 record make-left-adjoint (R : Functor D C) : Type (adj-level C D) where
   private
     module C = Cat.Reasoning C

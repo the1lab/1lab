@@ -1,113 +1,105 @@
 ```agda
+open import Cat.Instances.Functor.Compose
 open import Cat.Functor.Kan.Duality
+open import Cat.Functor.Kan.Global
+open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
-
-import Cat.Functor.Reasoning as Func
-import Cat.Reasoning as Cat
 
 module Cat.Functor.Kan.Adjoint where
 ```
 
 <!--
 ```agda
+open _=>_
+open _⊣_
+
 private
   variable
     o ℓ : Level
-    C C′ D E : Precategory o ℓ
+    C D E : Precategory o ℓ
 ```
 -->
 
 # Adjoints are Kan extensions
 
-The elevator pitch for Kan extensions is that "all concepts are Kan
-extensions". The example we will give here is that, if $F \dashv G$ is
-an adjunction, then $(G, \eta)$ gives $\Lan_F(\rm{Id})$. This isn't
-exactly enlightening: adjunctions and Kan extensions have very different
-vibes, but the latter concept _is_ a legitimate generalisation.
-
-<!--
-```agda
-module _ {F : Functor C D} {G : Functor D C} (adj : F ⊣ G) where
-  open Lan
-  open is-lan
-  open is-ran
-  private
-    module F = Functor F
-    module G = Functor G
-    module C = Cat C
-    module D = Cat D
-
-  open Functor
-  open _⊣_ adj
-  open _=>_
-```
--->
-
-```agda
-  adjoint→is-lan : is-lan F Id G unit
-```
-
-The proof is mostly pushing symbols around, and the calculation is
-available below unabridged. In components, $\sigma_x$ must give,
-assuming a map $\alpha : \rm{Id} \To MFx$, a map $Gx \to Mx$. The
-transformation we're looking for arises as the composite
+One way to think about [Kan extensions] is that, when they exist, they
+allow us to "compose" two functors when one of them is going the wrong
+way: given a span
 
 $$
-Gx \xto{\alpha} MFGx \xto{M\epsilon} Mx\text{,}
+D \xot{F} C \xto{H} E
 $$
 
-where uniqueness and commutativity follows from the triangle identities
-`zig`{.Agda} and `zag`{.Agda}.
+we get a "composite" $\Lan_F(H) : D \to E$. With this perspective in
+mind, it's reasonable to expect that, if $F$ has an [inverse] $G : D \to
+C$, the composite we get should be the actual composite $H \circ G$.
+
+In fact, we can do better: if $F$ only has a [right adjoint] $F \dashv
+G$ (which we can think of as a directed inverse), then the induced
+`precomposite adjunction`{.Agda ident=precomposite-adjunction} $- \circ
+G \dashv - \circ F$ means that *left* ([global]) Kan extensions along
+$F$ are given by precomposition with $G$ (and, dually, right Kan
+extensions along $G$ are given by precomposition with $F$).
+
+[Kan extensions]: Cat.Functor.Kan.Base.html
+[inverse]: Cat.Functor.Equivalence.html
+[right adjoint]: Cat.Functor.Adjoint.html
+[global]: Cat.Functor.Kan.Global.html
 
 ```agda
-  adjoint→is-lan .σ {M} α .η x = M .F₁ (counit.ε _) C.∘ α .η (G.₀ x)
-  adjoint→is-lan .σ {M} nt .is-natural x y f =
-    (M.₁ (counit.ε _) C.∘ nt .η _) C.∘ G.₁ f            ≡⟨ C.pullr (nt .is-natural _ _ _) ⟩
-    M.₁ (counit.ε _) C.∘ M.₁ (F.₁ (G.₁ f)) C.∘ nt .η _  ≡⟨ M.extendl (counit.is-natural _ _ _) ⟩
-    M.₁ f C.∘ M.₁ (counit.ε _) C.∘ nt .η _              ∎
-    where module M = Func M
-
-  adjoint→is-lan .σ-comm {M} {α} = Nat-path λ _ →
-    (M.₁ (counit.ε _) C.∘ α.η _) C.∘ unit.η _              ≡⟨ C.pullr (α.is-natural _ _ _) ⟩
-    M.₁ (counit.ε _) C.∘ M.₁ (F.F₁ (unit .η _)) C.∘ α.η _  ≡⟨ M.cancell zig ⟩
-    α.η _                                                  ∎
-    where module α = _=>_ α
-          module M = Func M
-
-  adjoint→is-lan .σ-uniq {M} {α} {σ'} p = Nat-path λ x →
-    M.₁ (counit.ε _) C.∘ α.η _                ≡⟨ ap (_ C.∘_) (p ηₚ _) ⟩
-    M.₁ (counit.ε _) C.∘ σ' .η _ C.∘ unit.η _ ≡⟨ C.extendl (sym (σ' .is-natural _ _ _)) ⟩
-    σ' .η _ C.∘ G.₁ (counit.ε _) C.∘ unit.η _ ≡⟨ C.elimr zag ⟩
-    σ' .η x                                   ∎
-    where module α = _=>_ α
-          module M = Func M
+module _ {F : Functor C D} {G : Functor D C} (F⊣G : F ⊣ G) where
+  adjoint→is-lan
+    : (H : Functor C E)
+    → is-lan F H (H F∘ G) (precomposite-adjunction F⊣G .unit .η H)
+  adjoint→is-lan = adjoint-precompose→Lan F (precompose G) (precomposite-adjunction F⊣G)
 ```
 
-As expected, adjoints also yield right Kan extensions.
+A more common way to say this is that $G$ is the `absolute`{.Agda
+ident=is-absolute-lan} left Kan extension of $F$ along the identity;
+this is essentially a reformulation of the above fact:
 
 ```agda
-  adjoint→is-ran : is-ran G Id F counit
+  adjoint→is-lan-id : is-lan F Id G (F⊣G .unit)
+  adjoint→is-lan-id =
+    transport (λ i → is-lan F Id (F∘-idl i) (fixNT i))
+      (adjoint→is-lan Id)
+    where
+      fixNT : PathP (λ i → Id => F∘-idl {F = G} i F∘ F) _ _
+      fixNT = Nat-pathp refl (λ i → F∘-idl i F∘ F) (λ _ → refl)
+
+  adjoint→is-absolute-lan : is-absolute-lan adjoint→is-lan-id
+  adjoint→is-absolute-lan H =
+    transport (λ i → is-lan F (F∘-idr (~ i)) (H F∘ G) (fixNT (~ i)))
+      (adjoint→is-lan H)
+    where
+      fixNT : PathP (λ i → F∘-idr {F = H} i => (H F∘ G) F∘ F) _ _
+      fixNT = Nat-pathp F∘-idr refl (λ _ → refl)
 ```
 
-<details>
-<summary>The proof is the same as left adjoints, just dualized.
-</summary>
+The dual statement is obtained by... [duality], this time using the
+`counit`{.Agda} of the precomposite adjunction:
+
+[duality]: Cat.Functor.Kan.Duality.html
 
 ```agda
-  adjoint→is-ran .σ {M} β .η x = β .η _ D.∘ M .F₁ (unit.η _)
-  adjoint→is-ran .σ {M} β .is-natural _ _ _ =
-    M.extendr (unit.is-natural _ _ _)
-    ∙ D.pushl (β .is-natural _ _ _)
-    where module M = Func M
-  adjoint→is-ran .σ-comm {M} {β} = Nat-path λ _ →
-    D.pulll (sym $ β .is-natural _ _ _)
-    ∙ M.cancelr zag
-    where module M = Func M
-  adjoint→is-ran .σ-uniq {M} {β} {σ′} p = Nat-path λ _ →
-    ap (D._∘ _) (p ηₚ _)
-    ·· D.extendr (σ′ .is-natural _ _ _)
-    ·· D.eliml zig
+module _ {F : Functor C D} {G : Functor D C} (F⊣G : F ⊣ G) where
+  adjoint→is-ran
+    : (H : Functor D E)
+    → is-ran G H (H F∘ F) (precomposite-adjunction F⊣G .counit .η H)
+  adjoint→is-ran H =
+    transport (λ i → is-ran G H (fixF i) (fixNT i))
+      (is-co-lan'→is-ran G H
+        (adjoint→is-lan (opposite-adjunction F⊣G) (Functor.op H)))
+    where
+      fixF : Functor.op (Functor.op H F∘ Functor.op F) ≡ H F∘ F
+      fixF = Functor-path (λ _ → refl) (λ _ → refl)
+      fixNT : PathP (λ i → fixF i F∘ G => H) _ _
+      fixNT = Nat-pathp (λ i → fixF i F∘ G) refl (λ _ → refl)
 ```
-</details>
+
+Even more dually, we can flip the span above to get a *cospan* of
+functors, giving rise to the theory of **Kan lifts**. We then get
+analogous statements: left (resp. right) adjoints are absolute left
+(resp. right) Kan lifts along the identity.

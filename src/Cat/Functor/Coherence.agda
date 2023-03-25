@@ -24,67 +24,83 @@ private
 
 record Dualises {ℓ} (T : Type ℓ) : Type where
   field
-    fields   : List (Arg Name)
     dualiser : Name
+
+open Dualises
 
 instance
   Dualises-nat-trans
     : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
         {F G : Functor C D}
     → Dualises (F => G)
-  Dualises-nat-trans .Dualises.fields   =
-      argN (quote _=>_.η)
-    ∷ argN (quote _=>_.is-natural)
-    ∷ []
-  Dualises-nat-trans .Dualises.dualiser = quote _=>_.op
+  Dualises-nat-trans .dualiser = quote _=>_.op
 
-open Dualises
+private
+  get-record : Term → TC (Name × List (Arg Name))
+  get-record T = do
+    def n _ ← reduce T
+      where _ → typeError [ "Cannot generate coherence for non-record type " , termErr T ]
+    record-type c fs ← getDefinition n
+      where _ → typeError [ "Cannot generate coherence for non-record type " , termErr T ]
+    pure (c , fs)
 
-cohere-dualise-into
-  : Bool → ∀ {ℓ ℓ′} {S : Type ℓ′} → Name → (T : Type ℓ) → ⦃ Dualises T ⦄ → S → TC ⊤
-cohere-dualise-into is-dual a T ⦃ du ⦄ tm = do
+  get-dual : Bool → Term → TC (Term → Term)
+  get-dual false _ = pure (λ t → t)
+  get-dual true T = runSpeculative do
+    (mv , _) ← new-meta′ (def (quote Dualises) [ argN T ])
+    (qn ∷ []) ← getInstances mv
+      where _ → typeError [ "Don't know how to dualise type " , termErr T ]
+    du ← normalise (def (quote dualiser) [ argN qn ])
+      >>= unquoteTC {A = Name}
+    pure ((λ t → def du [ argN t ]) , false)
+
+cohere-dualise : Bool → ∀ {ℓ} {S : Type ℓ} → S → Term → TC ⊤
+cohere-dualise is-dual tm hole = do
   `tm ← quoteTC tm
-  clauses ← for (du .fields) λ where (arg ai prj) → do
-    t ← if is-dual
-      then (reduce (def prj [ argN (def (du .dualiser) [ argN `tm ]) ]))
-      else (reduce (def prj [ argN `tm ]))
+  `T ← inferType hole
+  (c , fs) ← get-record `T
+  dual ← get-dual is-dual `T
+  args ← for fs λ (arg ai prj) → do
+    t ← reduce $ def prj [ argN (dual `tm) ]
+    pure (argN t)
+
+  unify hole (con c args)
+
+cohere-dualise-into : Bool → ∀ {ℓ ℓ′} {S : Type ℓ′} → Name → (T : Type ℓ) → S → TC ⊤
+cohere-dualise-into is-dual nam T tm = do
+  `tm ← quoteTC tm
+  `T ← quoteTC T
+  (_ , fs) ← get-record `T
+  dual ← get-dual is-dual `T
+  clauses ← for fs λ (arg ai prj) → do
+    t ← reduce $ def prj [ argN (dual `tm) ]
     pure $ clause [] [ arg ai (proj prj) ] t
 
-  `T ← quoteTC T
-  declareDef (argN a) `T
-  defineFun a clauses
+  declareDef (argN nam) `T
+  defineFun nam clauses
 
 define-coherator-dualiser : Bool → Name → TC ⊤
 define-coherator-dualiser is-dual nam = do
   (fs , dual) ← runSpeculative do
-    ty ← inferType (def nam [ argN unknown ])
-    (mv , _) ← new-meta′ (def (quote Dualises) [ argN ty ])
-    getInstances mv >>= λ where
-      (qn ∷ []) -> do
-        fs ← normalise (def (quote Dualises.fields) [ argN qn ])
-          >>= unquoteTC {A = List (Arg Name)}
-        du ← normalise (def (quote Dualises.dualiser) [ argN qn ])
-          >>= unquoteTC {A = Name}
-        pure ((fs , du) , false)
-      _ → typeError [ strErr "Failed to determine how to define a coherence map for"
-                    , termErr (def nam [])
-                    ]
-
-  clauses ← for fs λ where (arg ai prj) → do
-    pure $ if is-dual
-      then (clause (("α" , argN unknown) ∷ [])
+    `T ← inferType (def nam [ argN unknown ])
+    (_ , fs) ← get-record `T
+    dual ← get-dual is-dual `T
+    pure ((fs , dual) , false)
+  clauses ← for fs λ (arg ai prj) → do
+    pure $ clause (("α" , argN unknown) ∷ [])
               [ argN (var 0) , arg ai (proj prj) ]
-              (def prj [ argN (def dual [ argN (var 0 []) ]) ]))
-      else (clause (("α" , argN unknown) ∷ [])
-              [ argN (var 0) , arg ai (proj prj) ]
-              (def prj [ argN (var 0 []) ]))
+              (def prj [ argN (dual (var 0 [])) ])
 
   defineFun nam clauses
 
-define-coherence = define-coherator-dualiser false
-define-dualiser  = define-coherator-dualiser true
+macro
+  cohere!  = cohere-dualise false
+  dualise! = cohere-dualise true
+
 cohere-into      = cohere-dualise-into false
 dualise-into     = cohere-dualise-into true
+define-coherence = define-coherator-dualiser false
+define-dualiser  = define-coherator-dualiser true
 
 nat-assoc-to    : f ⇒ g ⊗ h ⊗ i → f ⇒ (g ⊗ h) ⊗ i
 nat-assoc-from  : f ⊗ g ⊗ h ⇒ i → (f ⊗ g) ⊗ h ⇒ i
