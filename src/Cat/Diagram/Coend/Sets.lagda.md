@@ -29,7 +29,7 @@ However, if we take a [coequaliser] of `Σ[ X ∈ Ob ] ∣ F₀ (X , X) ∣` bot
 of these problems immediately disappear. In particular, we want to take
 the coequaliser of the following pair of functions:
 
-[coequaliser] Data.Set.Coequaliser.html
+[coequaliser]: Data.Set.Coequaliser.html
 
 ~~~{.quiver}
 \begin{tikzcd}

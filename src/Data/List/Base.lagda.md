@@ -88,7 +88,7 @@ foldl f x (a ∷ as) = foldl f (f x a) as
 
 ## Functorial action
 
-It's also possible to list a function `A → B` to a function `List A →
+It's also possible to lift a function `A → B` to a function `List A →
 List B`.
 
 ```agda
