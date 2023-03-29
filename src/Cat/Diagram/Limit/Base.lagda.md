@@ -1,4 +1,5 @@
 ```agda
+{-# OPTIONS -vtc.def:10 -vtc.display.pragma:20 #-}
 open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Coherence
@@ -821,11 +822,11 @@ module _
     open Func
     open _=>_
 
-  into-limit : D.Hom (F .F₀ L.apex) L'.apex  
-  into-limit =
-    L'.universal
-      (λ j → F .F₁ (L.ψ j))
-      (λ f → collapse F (L.commutes f))
+  into-limit : D.Hom (F .F₀ L.apex) L'.apex
+  into-limit = L'.universal (λ j → F .F₁ (L.ψ j)) α where abstract
+    α : ∀ {x y} (f : J .Precategory.Hom x y)
+      → F .F₁ (Dia .F₁ f) D.∘ F .F₁ (L.ψ x) ≡ F .F₁ (L.ψ y)
+    α f = collapse F (L.commutes f)
 
   preserves-chosen-limit→preserves-limit
     : (invert : D.is-invertible into-limit)

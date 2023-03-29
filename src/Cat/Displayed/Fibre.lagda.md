@@ -124,4 +124,53 @@ Fibre′ X fix coh .Precategory.assoc f g h =
 ```agda
 Fibre : Ob → Precategory _ _
 Fibre X = Fibre′ X _ (λ f → refl)
+
+module _ (X : Ob) where
+  record Fibre-hom (a b : Ob[ X ]) : Type (ℓ ⊔ ℓ′) where
+    no-eta-equality
+    field
+      base  : Hom X X
+      is-id : base ≡ id
+      vert  : Hom[ base ] a b
+
+  open Fibre-hom public
+
+  from-vert : ∀ {a b} → Hom[ id ] a b → Fibre-hom a b
+  from-vert x .base  = id
+  from-vert x .is-id = refl
+  from-vert x .vert  = x
+
+  Fibre-hom-pathp
+    : ∀ (a b : I → Ob[ X ])
+      {f : Fibre-hom (a i0) (b i0)}
+      {g : Fibre-hom (a i1) (b i1)}
+    → (p : f .base ≡ g .base)
+    → (α : PathP (λ i → Hom[ p i ] (a i) (b i)) (f .vert) (g .vert))
+    → PathP (λ i → Fibre-hom (a i) (b i)) f g
+  Fibre-hom-pathp a b {f} {g} p α = done where
+    done : PathP (λ i → Fibre-hom (a i) (b i)) f g
+    done i .base  = p i
+    done i .is-id = is-prop→pathp (λ i → Hom-set _ _ (p i) _) (f .is-id) (g .is-id) i
+    done i .vert  = α i
+
+  Fibre-hom-path
+    : ∀ {a b} {f g : Fibre-hom a b}
+    → (p : f .base ≡ g .base) → PathP (λ i → Hom[ p i ] a b) (f .vert) (g .vert) → f ≡ g
+  Fibre-hom-path {a} {b} {f} {g} =
+    Fibre-hom-pathp (λ _ → a) (λ _ → b) {f = f} {g = g}
+
+  Fibre-cps : Precategory o′ (ℓ ⊔ ℓ′)
+  Fibre-cps .Precategory.Ob = Ob[ X ]
+  Fibre-cps .Precategory.Hom = Fibre-hom
+  Fibre-cps .Precategory.Hom-set = TODO where
+    postulate TODO : ∀ x y →  is-set (Fibre-hom x y)
+  Fibre-cps .Precategory.id .base = id
+  Fibre-cps .Precategory.id .is-id = refl
+  Fibre-cps .Precategory.id .vert = id′
+  Fibre-cps .Precategory._∘_ f g .base  = f .base ∘ g .base
+  Fibre-cps .Precategory._∘_ f g .is-id = eliml (f .is-id) ∙ g .is-id
+  Fibre-cps .Precategory._∘_ f g .vert  = f .vert ∘′ g .vert
+  Fibre-cps .Precategory.idr f = Fibre-hom-pathp _ _ (idr _) (idr′ _)
+  Fibre-cps .Precategory.idl f = Fibre-hom-pathp _ _ (idl _) (idl′ _)
+  Fibre-cps .Precategory.assoc f g h = Fibre-hom-pathp _ _ (assoc _ _ _) (assoc′ _ _ _)
 ```

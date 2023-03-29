@@ -165,3 +165,36 @@ properties and I recommend that nobody look at it, ever. </summary>.
         ∙ cancel (sym $ assoc _ _ _) _ (pushl[] _ (symP $ has-lift.commutes g _ _ _))
 ```
 </details>
+
+
+```agda
+module _ {𝒶 𝒷} (f : Hom 𝒶 𝒷) where
+  base-change-cps : Functor (Fibre-cps E 𝒷) (Fibre-cps E 𝒶)
+  base-change-cps .F₀ o = has-lift f o .x′
+  base-change-cps .F₁ hom .base  = id
+  base-change-cps .F₁ hom .is-id = refl
+  base-change-cps .F₁ hom .vert  =
+    has-lift.universal′ f _ (idr _ ∙ introl (hom .is-id))
+      (hom .vert ∘′ has-lift f _ .lifting)
+  base-change-cps .F-id = Fibre-hom-path E 𝒶 refl $ sym $
+    has-lift.unique _ _ _ $
+        from-pathp⁻ (idr′ _)
+      ∙ sym (cancel _ id-comm-sym (
+          to-pathp (revive₁ (from-pathp⁻ (idl′ _))
+        ·· hom[]-∙ _ _
+        ·· reindex _ _)))
+  base-change-cps .F-∘ g h = Fibre-hom-path E _ (sym (idl id)) $
+    symP $ has-lift.uniquep _ _
+      (elimr (idr _) ∙ introl (elimr (h .is-id) ∙ g .is-id)) (idl id) _ _
+       $ to-pathp (revive₁ (pulll[] (idr _ ∙ introl (g .is-id)) (has-lift.commutesp f _ _ _))
+      ·· revive₁ (pullr[] (idr _ ∙ introl (h .is-id)) (has-lift.commutesp f _ _ _))
+      ·· assoc[] ∙ liberate refl)
+
+-- module _ {𝒶} where
+--   private
+--     module FC = Cat.Reasoning (Cat[ Fibre E 𝒶 , Fibre E 𝒶 ])
+--     module Fa = Cat.Reasoning (Fibre E 𝒶)
+
+--   base-change-id-cps : base-change-cps (id {𝒶}) ≡ Id
+--   base-change-id-cps = Functor-path (λ _ → {!   !}) {!   !}
+```

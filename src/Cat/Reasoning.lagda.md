@@ -62,6 +62,12 @@ module _ (a≡id : a ≡ id) where abstract
 
   intro-inner : f ∘ h ≡ f ∘ a ∘ h
   intro-inner {f = f} = ap (f ∘_) introl
+
+  id-comml : a ∘ f ≡ f ∘ a
+  id-comml = eliml ∙ intror
+
+  id-commr : f ∘ a ≡ a ∘ f
+  id-commr = elimr ∙ introl
 ```
 
 ## Reassocations
