@@ -1,15 +1,22 @@
 ```agda
+{-# OPTIONS --lossy-unification #-}
+open import Cat.Diagram.Limit.Base
 open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Discrete
 open import Cat.Instances.Functor
+open import Cat.Instances.Shape.Terminal
 open import Cat.Displayed.Fibre
+open import Cat.Displayed.Cartesian.Diagram.Limit
+open import Cat.Displayed.Cartesian.Indexing
 open import Cat.Displayed.Base
 open import Cat.Functor.Base
 open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Reasoning
+import Cat.Displayed.Reasoning
+import Cat.Displayed.Fibre.Reasoning
 
 module Cat.Displayed.Instances.Family {o h} (C : Precategory o h) where
 ```
@@ -181,3 +188,171 @@ module _ {ℓ} (X : Set ℓ) where
   Families-are-categories isc .to-path-over im = F.≅-pathp refl _ $ funextP λ a →
     Hom-pathp-reflr C (elimr refl ∙ ap to (Univalent.iso→path→iso isc _))
 ```
+
+## Limits
+
+We can embed $\cC$ into any fibre of the family fibration by taking
+constant families.
+
+```agda
+Const-family : ∀ {κ} X → Functor C (Fibre (Family {ℓ = κ}) X)
+Const-family _ .F₀ x _ = x
+Const-family _ .F₁ f _ = f
+Const-family _ .F-id = refl
+Const-family _ .F-∘ _ _ = funext λ _ → sym (transport-refl _)
+```
+
+Furthermore, this functor preserves limits.
+
+<!--
+```agda
+private module Fibre {κ} X = Cat.Displayed.Fibre.Reasoning (Family {ℓ = κ}) X
+
+-- align-fam-fibre
+--   : ∀ {κ} (X : Set κ) {S T U}
+--   → (f : Fibre.Hom X T U) (g : Fibre.Hom X S T) {x : ∣ X ∣}
+--   → (Fibre._∘_ X f g) x ≡ f x ∘ g x
+-- align-fam-fibre X {S = S} {U = U} f g {x} =
+--   coe1→0 (λ i →
+--       coei→1 (λ j → Hom (S (transport-refl x j)) (U (transport-refl x j))) i
+--              (f (transport-refl x i) ∘ g (transport-refl x i))
+--       ≡ f x ∘ g x) refl
+```
+-->
+
+```agda
+Const-family-preserves-limits
+  : ∀ {κ oshape hshape} {X : Set κ}
+  → is-continuous oshape hshape (Const-family X)
+Const-family-preserves-limits {X = X} {Diagram = Dia} {K} {eps} lim =
+  to-is-limitp pres refl where
+  module lim = is-limit lim
+  open make-is-limit
+
+  pres : make-is-limit (Const-family X F∘ Dia) (λ _ → K .F₀ tt)
+  pres .ψ j _ = lim.ψ j
+  pres .commutes f = funext λ _ →
+    transport-refl _ ∙ lim.commutes f
+  pres .universal eta p x =
+    lim.universal (λ j → eta j x) λ f →
+      let foo = to-pathp (p f $ₚ x) in {!foo!}
+--       {!Fibre′!}
+--     --   sym (align-fam-fibre X (λ _ → Dia .F₁ f) (eta _))
+--     --   ∙ p f $ₚ x
+--   pres .factors eta p = funext λ x → {!!}
+--     --  align-fam-fibre X (λ x → pres .ψ _ x) (λ x → pres .universal eta p x)
+--     -- ∙ lim.factors (λ j → eta j x)
+--     --     (λ f → sym (align-fam-fibre X (λ _ → Dia .F₁ f) (eta _)) ∙ p f $ₚ x)
+--   pres .unique eta p other q = funext λ x → {!!}
+--     -- lim.unique _ _ _ λ j →
+--     -- sym (align-fam-fibre X (pres .ψ j) other)
+--     -- ∙ q j $ₚ x
+```
+
+Furthermore, base change preserves these limits. This proof is conceptually quite
+simple; the limits we've computed are all constant families, so reindexing shouldn't
+impact them one bit. However, there are a huge pile of transports that get in the way.
+
+```agda
+-- module _ {o' ℓ'} {J : Precategory o' ℓ'} {Dia : Functor J C} (L : Limit Dia) where
+--   base-change-preserves-fam-limits
+--     : ∀ {κ} {X Y : Set κ}
+--     → (f : ∣ X ∣ → ∣ Y ∣)
+--     → preserves-limit (base-change Family Family-is-cartesian {X} {Y} f) (Const-family Y F∘ Dia)
+--   base-change-preserves-fam-limits {X = X} {Y = Y} f =
+--     preserves-chosen-limit→preserves-limit YLim XLim inv
+--       -- (Fibre.make-invertible X (λ _ → id)
+--       --   (funext λ _ →
+--       --     L.unique₂ L.ψ L.commutes
+--       --       (λ j → pushr (align-fam-fibre X (into-limit YLim XLim) (λ _ → id))
+--       --              ∙ {!!}
+--       --              ∙ L.factors _ _)
+--       --       {!!})
+--       --   {!!})
+--       {!!}
+--     where
+--       module L = Limit L
+--       open make-is-limit
+
+--       YLim : Limit (Const-family Y F∘ Dia)
+--       YLim = to-limit (Const-family-preserves-limits (Limit.has-limit L))
+
+--       mklim : make-is-limit (base-change Family _ f F∘ Const-family Y F∘ Dia) (λ _ → L.apex)
+--       mklim .ψ j _ = L.ψ j
+--       mklim .commutes g = funext λ x →
+--         transport refl (transport refl (transport refl (Dia .F₁ g ∘ id)) ∘ L.ψ _) ≡⟨ Regularity.fast! refl ⟩
+--         (Dia .F₁ g ∘ id) ∘ L.ψ _                                                  ≡⟨ ap₂ _∘_ (idr _) refl ∙ L.commutes g ⟩
+--         L.ψ _                                                                     ∎
+--       mklim .universal {S} eta p x =
+--         L.universal (λ j → eta j x) λ g →
+--           Dia .F₁ g ∘ eta _ x                                          ≡⟨ ap₂ _∘_ (sym (idr _)) refl ⟩
+--           (Dia .F₁ g ∘ id) ∘ eta _ x                                   ≡⟨ Regularity.fast! refl ⟩
+--           (transport refl (transport refl (Dia .F₁ g ∘ id)) ∘ eta _ x) ≡⟨ sym (align-fam-fibre X (λ _ → transport refl (transport refl (Dia .F₁ g ∘ id))) (λ x → eta _ x)) ∙ p g $ₚ x ⟩
+--           eta _ x                                                      ∎
+--       mklim .factors {j} {S} eta p = funext λ x →
+--         align-fam-fibre X (mklim .ψ _) (mklim .universal eta p)
+--         ∙ L.factors _ _
+--       mklim .unique eta p other q = funext λ x →
+--         L.unique _ _ _ λ j →
+--         sym (align-fam-fibre X (λ _ → L.ψ j) other)
+--         ∙ q j $ₚ x
+
+--       XLim : Limit (base-change Family _ f F∘ Const-family Y F∘ Dia)
+--       XLim = to-limit $ to-is-limit mklim
+
+--       inv : Fibre.is-invertible X (into-limit YLim XLim)
+--       inv = Fibre.make-invertible X (λ _ → id)
+--         (funext λ _ →
+--           {!!} ≡⟨ {!!} ⟩
+--           {!!} ∎)
+--         {!!}
+```
+
+If the family fibration has fibrewise limits of some diagram, then the
+base category has those same limits. This can be seen by noticing that
+the fibre category of the family fibration over `⊤`{.Agda} is equivalent
+to $\cC$ itself.
+
+```agda
+-- fam-fibre-⊤-ff : ∀ {κ} → is-fully-faithful (Const-family (el! (Lift κ ⊤)))
+-- fam-fibre-⊤-ff .is-eqv S .centre =
+--   S (lift tt) , refl
+-- fam-fibre-⊤-ff .is-eqv S .paths (f , fam) =
+--   Σ-prop-path (λ _ → hlevel!) (sym (fam $ₚ _))
+
+-- fam-fibre-⊤-split-eso : ∀ {κ} → is-split-eso (Const-family (el! (Lift κ ⊤)))
+-- fam-fibre-⊤-split-eso S =
+--   S (lift tt) ,
+--   Fibre.make-iso _ (λ _ → id) (λ _ → id)
+--     (funext λ _ → align-fam-fibre _ _ _ ∙ idl _)
+--     (funext λ _ → align-fam-fibre _ _ _ ∙ idl _)
+
+-- fam-fibre-⊤-equiv : ∀ {κ} → is-equivalence (Const-family (el! (Lift κ ⊤)))
+-- fam-fibre-⊤-equiv =
+--   ff+split-eso→is-equivalence fam-fibre-⊤-ff fam-fibre-⊤-split-eso
+```
+
+As fully faithful functors reflect limits, any limits that are present in
+the fibre category over `⊤`{.Agda} get reflected to $\cC$.
+
+```agda
+-- fibrewise-fam-limit→limit
+--   : ∀ {o' ℓ' κ} {J : Precategory o' ℓ'} {Dia : Functor J C}
+--   → Fibrewise-limit (Family-is-cartesian {ℓ = κ}) (λ X → Const-family X F∘ Dia)
+--   → Limit Dia
+-- fibrewise-fam-limit→limit {κ = κ} {Dia = Dia} fib-lim =
+--   to-limit  {eps = cone→counit Dia cone} $
+--   ff→reflects-limit (Const-family (el! (Lift κ ⊤))) Dia
+--     fam-fibre-⊤-ff (generalize-limitp ⊤lim.has-limit refl)
+--   where
+--     module fib-lim = Fibrewise-limit fib-lim
+--     module ⊤lim = Limit (fib-lim.fibrewise-limit (el! (Lift κ ⊤)))
+
+--     cone : Const (⊤lim.apex _) => Dia
+--     cone .η j = ⊤lim.ψ j (lift tt)
+--     cone .is-natural _ _ f =
+--       idr _
+--       ∙ sym (⊤lim.commutes f $ₚ _)
+--       ∙ align-fam-fibre _ _ _
+```
+

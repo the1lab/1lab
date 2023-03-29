@@ -4,6 +4,7 @@ open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Coherence
 open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
@@ -683,6 +684,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
     module C = Precategory C
     module J = Precategory J
     module F = Func F
+    module Diagram = Func Diagram
 ```
 -->
 
@@ -721,6 +723,39 @@ the limit of $\rm{Dia}$!
     ∀ {K : Functor ⊤Cat C} {eps : K F∘ !F => Diagram}
     → (ran : is-ran !F (F F∘ Diagram) (F F∘ K) (nat-assoc-from (F ▸ eps)))
     → reflects-ran F ran
+```
+
+If $F$ is a fully faithful functor, then it reflects all limits.
+
+```agda
+  ff→reflects-limit : is-fully-faithful F → reflects-limit
+  ff→reflects-limit ff lim = to-is-limitp reflected (ff.η _) where
+    module lim = is-limit lim
+    module ff {x} {y} = Equiv (F.F₁ {x} {y} , ff)
+    open make-is-limit
+
+    reflected : make-is-limit Diagram _
+    reflected .ψ j = ff.from (lim.ψ j)
+    reflected .commutes {i} {j} f =
+      fully-faithful→faithful {F = F} ff $
+        F.F₁ (Diagram.F₁ f C.∘ ff.from (lim.ψ i))        ≡⟨ F.F-∘ _ _ ⟩
+        F.F₁ (Diagram.F₁ f) D.∘ F.F₁ (ff.from (lim.ψ i)) ≡⟨ ap₂ D._∘_ refl (ff.ε _) ⟩
+        F.F₁ (Diagram.F₁ f) D.∘ lim.ψ i                  ≡⟨ lim.commutes f ⟩
+        lim.ψ j                                          ≡˘⟨ ff.ε _ ⟩
+        F.F₁ (ff.from (lim.ψ j)) ∎
+    reflected .universal eta p =
+      ff.from (lim.universal (λ j → F.F₁ (eta j)) λ f → F.collapse (p f))
+    reflected .factors {j} eta p =
+      fully-faithful→faithful {F = F} ff $
+        F.F₁ (ff.from (lim.ψ _) C.∘ ff.from (lim.universal _ _))        ≡⟨ F.F-∘ _ _ ⟩
+        F.F₁ (ff.from (lim.ψ _)) D.∘ F.F₁ (ff.from (lim.universal _ _)) ≡⟨ ap₂ D._∘_ (ff.ε _) (ff.ε _) ⟩
+        (lim.ψ _ D.∘ lim.universal _ _)                                 ≡⟨ lim.factors _ _ ⟩
+        F.F₁ (eta j) ∎
+    reflected .unique eta p other q =
+      fully-faithful→faithful {F = F} ff $
+        F.F₁ other                         ≡⟨ lim.unique _ _ _ (λ j → sym (F.F-∘ _ _) ∙ ap F.F₁ (ap₂ C._∘_ (sym (ff.η _)) refl ∙ q j)) ⟩
+        lim.universal _ _                  ≡˘⟨ ff.ε _ ⟩
+        F.F₁ (ff.from (lim.universal _ _)) ∎
 ```
 
 <!--
@@ -772,6 +807,58 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
         (F-preserves lim)
     where
       module α = natural-iso α
+
+module _
+  {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
+  {Dia : Functor J C} {F : Functor C D}
+  (L : Limit Dia) (L' : Limit (F F∘ Dia))
+  where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module L = Limit L
+    module L' = Limit L'
+    open Func
+    open _=>_
+
+  into-limit : D.Hom (F .F₀ L.apex) L'.apex  
+  into-limit =
+    L'.universal
+      (λ j → F .F₁ (L.ψ j))
+      (λ f → collapse F (L.commutes f))
+
+  preserves-chosen-limit→preserves-limit
+    : (invert : D.is-invertible into-limit)
+    → (open D.is-invertible invert)
+    → (∀ j → F .F₁ (L.ψ j) D.∘ inv ≡ L'.ψ j)
+    → preserves-limit F Dia
+  preserves-chosen-limit→preserves-limit invert comm {K} {eps} lim =
+    to-is-limitp pres refl where
+    open make-is-limit
+    module lim = is-limit lim
+    module invert = D.is-invertible invert
+
+    pres : make-is-limit (F F∘ Dia) (F .F₀ (K .F₀ tt))
+    pres .ψ j = F .F₁ (lim.ψ j)
+    pres .commutes f = collapse F (lim.commutes f)
+    pres .universal eta p =
+      F .F₁ (lim.universal L.ψ L.commutes) D.∘ invert.inv D.∘ L'.universal eta p
+    pres .factors {j} eta p =
+      pulll F (lim.factors _ _)
+      ·· D.pulll (comm j)
+      ·· L'.factors _ _
+    pres .unique eta p other q =
+      insertl F
+        (lim.unique₂ (λ j → lim.ψ j)
+          lim.commutes
+          (λ j → C.pulll (lim.factors _ _) ∙ L.factors lim.ψ lim.commutes)
+          (λ _ → C.idr _))
+      ·· ap₂ D._∘_ refl (D.introl invert.invr)
+      ·· ap₂ D._∘_ refl
+           (D.pullr (L'.unique _ _ _ λ j →
+             D.pulll (L'.factors _ _)
+             ·· pulll F (L.factors _ _)
+             ·· q j))
 ```
 -->
 
