@@ -100,22 +100,20 @@ funextP
 funextP p i x = p x i
 
 funext-dep
-  : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
-    {f : (x : A i0) → B i0 x} {g : (x : A i1) → B i1 x}
-  → ( {x₀ : A i0} {x₁ : A i1}
-    → (p : PathP A x₀ x₁)
+  : ∀ {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁} {f g}
+  → ( ∀ {x₀ x₁} (p : PathP A x₀ x₁)
     → PathP (λ i → B i (p i)) (f x₀) (g x₁) )
   → PathP (λ i → (x : A i) → B i x) f g
-
-funext-dep {A = A} {B} {f} {g} h i x =
-  comp (λ k → B i (coei→i A i x k)) (∂ i) λ where
-    k (i = i0) → f (coei→i A i0 x k)
-    k (i = i1) → g (coei→i A i1 x k)
-    k (k = i0) → h (λ j → coe A i j x) i
+funext-dep {A = A} {B} h i x =
+  transp (λ k → B i (coei→i A i x k)) (i ∨ ~ i)
+    (h (λ j → coe A i j x) i)
 ```
 
-A very ugly cubical argument shows that this function is an equivalence:
+A slightly wonky cubical argument shows that this function is an
+equivalence. The complication comes from `coe` not being definitionally
+the identity when staying at a variable point in the interval.
 
+<!--
 ```agda
 funext-dep≃
   : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
@@ -125,7 +123,10 @@ funext-dep≃
     → PathP (λ i → B i (p i)) (f x₀) (g x₁)
     )
   ≃ PathP (λ i → (x : A i) → B i x) f g
+```
+-->
 
+```agda
 funext-dep≃ {A = A} {B} {f} {g} = Iso→Equiv isom where
   open is-iso
   isom : Iso _ _
@@ -133,18 +134,16 @@ funext-dep≃ {A = A} {B} {f} {g} = Iso→Equiv isom where
   isom .snd .is-iso.inv q p i = q i (p i)
 
   isom .snd .rinv q m i x =
-    comp (λ k → B i (coei→i A i x (k ∨ m))) (∂ i ∨ m) λ where
-      k (k = i0) → q i (coei→i A i x m)
-      k (i = i0) → f (coei→i A i0 x (k ∨ m))
-      k (i = i1) → g (coei→i A i1 x (k ∨ m))
-      k (m = i1) → q i x
+    transp (λ k → B i (coei→i A i x (k ∨ m))) (m ∨ i ∨ ~ i) (q i (coei→i A i x m))
 
   isom .snd .linv h m p i =
-    comp (λ k → B i (coe-path-i→i p m k)) (∂ i ∨ m) λ where
-      k (k = i0) → h (λ j → coe-path-i→j p {i} j m) i
-      k (i = i0) → f (coe-path-i→i p m k)
-      k (i = i1) → g (coe-path-i→i p m k)
-      k (m = i1) → h p i
+    transp (λ k → B i (lemi→i m k)) (m ∨ i ∨ ~ i) (h (λ j → lemi→j j m) i)
+    where
+      lemi→j : ∀ j → coe A i j (p i) ≡ p j
+      lemi→j j k = coe-path A (λ i → p i) i j k
+
+      lemi→i : PathP (λ m → lemi→j i m ≡ p i) (coei→i A i (p i)) refl
+      lemi→i m k = coei→i A i (p i) (m ∨ k)
 
 hetero-homotopy≃homotopy
   : {A : I → Type ℓ} {B : (i : I) → Type ℓ₁}

@@ -26,7 +26,7 @@ hcomp
   : ∀ {ℓ} {A : Type ℓ} (φ : I)
   → (u : (i : I) → Partial (φ ∨ ~ i) A)
   → A
-hcomp φ u = X.primHComp (λ { j (φ = i1) → u j 1=1 }) (u i0 1=1)
+hcomp φ u = X.primHComp (λ j .o → u j (leftIs1 φ (~ j) o)) (u i0 1=1)
 
 ∂ : I → I
 ∂ i = i ∨ ~ i
@@ -35,7 +35,7 @@ comp
   : ∀ {ℓ : I → Level} (A : (i : I) → Type (ℓ i)) (φ : I)
   → (u : (i : I) → Partial (φ ∨ ~ i) (A i))
   → A i1
-comp A φ u = X.primComp A (λ { j (φ = i1) → u j 1=1 }) (u i0 1=1)
+comp A φ u = X.primComp A (λ j .o → u j (leftIs1 φ (~ j) o)) (u i0 1=1)
 ```
 
 We also define the type of dependent paths, and of non-dependent paths.
