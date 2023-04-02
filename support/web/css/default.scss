@@ -69,12 +69,12 @@ body {
 }
 
 main {
-  max-width: 85ch;
+  max-width: 80rem;
   width: 100%;
   margin: 0px auto 0px auto;
   flex: 1 0 auto;
 
-  padding: 2ch;
+  padding: 3rem;
   padding-top: $nav-height;
 
   box-sizing: border-box;
@@ -258,7 +258,7 @@ table {
   }
 }
 
-@media only screen and (min-width: calc(1280px + 85ch)) {
+@media only screen and (min-width: 95rem) {
   .narrow-only {
     display: none !important;
   }
@@ -272,7 +272,7 @@ table {
 
       aside#toc {
         display: block !important;
-        margin-right: 1em;
+        margin-right: 1rem;
 
         h3 { @include centered-contents; }
 
@@ -280,17 +280,17 @@ table {
           box-sizing: border-box;
           overflow-x: hidden;
           position: sticky;
-          top: 2em;
+          top: $page-padding;
 
           overflow-y: auto;
           max-height: 90vh;
 
-          bottom: 2em;
+          bottom: $page-padding;
 
-          padding-right: 1em;
+          padding-right: 1rem;
           display: flex;
           flex-direction: column;
-          gap: 0.5em;
+          gap: 0.5rem;
           width: 100%;
 
           a[href]#logo.hover-highlight {
@@ -298,8 +298,8 @@ table {
           }
 
           > hr {
-            margin-top: 0.25em;
-            margin-bottom: 0.25em;
+            margin-top: 0.25rem;
+            margin-bottom: 0.25rem;
             width: 100%;
             border: none;
             border-bottom: 2px solid #94a3b8;
@@ -335,7 +335,7 @@ table {
       }
 
       article {
-        max-width: 85ch;
+        max-width: 80rem;
         margin-top: -100px;
         margin: auto;
       }
@@ -549,8 +549,8 @@ div#return {
 }
 
 article {
-  padding-top: 2em;
-  padding-bottom: 2em;
+  padding-top: $page-padding;
+  padding-bottom: $page-padding;
   margin-top: 0 !important;
   max-width: 100%;
 
