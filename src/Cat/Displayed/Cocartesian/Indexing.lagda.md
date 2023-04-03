@@ -51,22 +51,27 @@ adding in empty fibres.
 ```agda
 cobase-change : ∀ {x y} (f : Hom x y) → Functor (Fibre ℰ x) (Fibre ℰ y)
 cobase-change f .F₀ ob = has-lift.y′ f ob
-cobase-change f .F₁ vert = rebase f vert
+cobase-change f .F₁ v .base = id
+cobase-change f .F₁ v .is-id = refl
+cobase-change f .F₁ v .vert =
+  has-lift.universal′ f _ (idl _ ∙ intror (v .is-id))
+    (has-lift.lifting f _ ∘′ v .vert)
 ```
 
 <!--
 ```agda
 cobase-change f .F-id =
-  sym $ has-lift.uniquev _ _ _ $ to-pathp $
-    idl[] ∙ (sym $ cancel _ _ (idr′ _))
-cobase-change f .F-∘ f′ g′ =
-  sym $ has-lift.uniquev _ _ _ $ to-pathp $
-    smashl _ _
-    ·· revive₁ (pullr[] _ (has-lift.commutesv _ _ _))
-    ·· smashr _ _
-    ·· revive₁ (pulll[] _ (has-lift.commutesv _ _ _))
-      ·· smashl _ _
-      ·· sym assoc[]
-      ·· sym (smashr _ _)
+  Fibre-hom-path _ _ refl $ sym $
+  has-lift.unique _ _ _ $
+  from-pathp⁻ (idl′ _)
+  ∙ sym (revive₁ (idr′ _) ∙ reindex _ _)
+cobase-change f .F-∘ g h =
+  Fibre-hom-path _ _ (sym (idr id)) $ symP $
+  has-lift.uniquep f _ (eliml (idl _) ∙ intror (eliml (g .is-id) ∙ h .is-id)) (idr id)
+  (idl _ ∙ intror (eliml (g .is-id) ∙ h .is-id)) _ $ to-pathp $
+    revive₁ (pullr[] (idl _ ∙ intror (h .is-id)) (has-lift.commutesp f _ _ _))
+    ·· revive₁ (pulll[] (idl _ ∙ intror (g .is-id)) (has-lift.commutesp f _ _ _))
+    ·· sym assoc[]
+    ∙ liberate refl
 ```
 -->
