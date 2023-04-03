@@ -263,28 +263,8 @@ $R$-modules_.
 
 ```agda
 R-Mod : ∀ {ℓ} ℓ′ (R : Ring ℓ) → Precategory (ℓ ⊔ lsuc ℓ′) (ℓ ⊔ ℓ′)
-R-Mod ℓ′ R = Fibre′ (Mods _ ℓ′) R fix coh where
+R-Mod ℓ′ R = Fibre (Mods _ ℓ′) R
 ```
-
-<!--
-```agda
-  -- For computation reasons we use a custom reindexing function to
-  -- define R-Mod. Since the definition of Linear-map depends only on
-  -- the map component of the ring homomorphism, for which id ∘ id is
-  -- definitionally id (and for which path coming from the definition of
-  -- Ring would be refl), we can omit a transport refl:
-
-  fix : ∀ {x y : Module ℓ′ R} → Linear-map x y (Rings.id Rings.∘ Rings.id)
-      → Linear-map x y Rings.id
-  fix x .map = x .map
-  fix x .linear = x .linear
-
-  abstract
-    coh : ∀ {x y : Module ℓ′ R} (f : Linear-map x y (Rings.id Rings.∘ Rings.id))
-        → fix f ≡ transport (λ i → Hom[_] (Mods _ ℓ′) (Rings.idl Rings.id i) x y) f
-    coh f = Linear-map-path $ funext λ x → Regularity.fast! refl
-```
--->
 
 ```agda
 module R-Mod {ℓ ℓ′} {R : Ring ℓ} = Cat.Reasoning (R-Mod ℓ′ R)
@@ -292,9 +272,27 @@ module R-Mod {ℓ ℓ′} {R : Ring ℓ} = Cat.Reasoning (R-Mod ℓ′ R)
 
 <!--
 ```agda
+module _ {ℓ ℓ'} {R : Ring ℓ} {M N : Module ℓ' R} (f : R-Mod.Hom M N) where
+  private
+    module M = Module M
+    module N = Module N
+  linearv
+    : ∀ r m s n
+    → f .vert .map (r M.⋆ m M.+ s M.⋆ n) ≡ (r N.⋆ f .vert .map m N.+ s N.⋆ f .vert .map n)
+  linearv r m s n =
+    f .vert .linear r m s n
+    ∙ ap₂ N._+_
+      (ap₂ N._⋆_ (ap hom (f .is-id) $ₚ r) refl)
+      (ap₂ N._⋆_ (ap hom (f .is-id) $ₚ s) refl)
+
+```
+-->
+
+<!--
+```agda
 Forget-module : ∀ {ℓ ℓ′} (R : Ring ℓ) → Functor (R-Mod ℓ′ R) (Sets ℓ′)
 Forget-module R .F₀ x = x .fst .fst
-Forget-module R .F₁ x = x .map
+Forget-module R .F₁ x = x .vert .map
 Forget-module R .F-id = refl
 Forget-module R .F-∘ f g = refl
 ```

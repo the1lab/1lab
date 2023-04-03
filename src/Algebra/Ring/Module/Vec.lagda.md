@@ -6,6 +6,7 @@ open import Algebra.Group
 open import Algebra.Ring
 
 open import Cat.Diagram.Coproduct.Indexed
+open import Cat.Displayed.Fibre
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Diagram.Product.Indexed
 open import Cat.Functor.FullSubcategory
@@ -111,13 +112,18 @@ open Indexed-product
 Fin-vec-is-product
   : ∀ {n} → Indexed-product (R-Mod _ R) {Idx = Fin n} λ _ → representable-module R
 Fin-vec-is-product {n} .ΠF = _ , Fin-vec-module n
-Fin-vec-is-product .π i .map k = k i
-Fin-vec-is-product .π i .linear r m s n = refl
-Fin-vec-is-product {n} .has-is-ip .tuple {Y} f = assemble where
+Fin-vec-is-product .π i .base = Rings.id
+Fin-vec-is-product .π i .is-id = refl
+Fin-vec-is-product .π i .vert .map k = k i
+Fin-vec-is-product .π i .vert .linear r m s n = refl
+Fin-vec-is-product {n} .has-is-ip .tuple {Y} f = from-vert _ assemble where
   assemble : Linear-map Y (_ , Fin-vec-module n) Rings.id
-  assemble .map yob ix = f ix .map yob
-  assemble .linear r m s n = funext λ i → f i .linear _ _ _ _
-Fin-vec-is-product .has-is-ip .commute = Linear-map-path (refl)
+  assemble .map yob ix = f ix .vert .map yob
+  assemble .linear r m s n = funext λ i → linearv (f i) r m s n
+Fin-vec-is-product .has-is-ip .commute {i = i} {f = f} =
+  Fibre-hom-path _ _ (Rings.idl _ ∙ sym (f i .is-id)) $
+   Linear-map-path refl
 Fin-vec-is-product .has-is-ip .unique {h = h} f ps =
-  Linear-map-path $ funext λ i → funext λ ix → ap map (ps ix) $ₚ i
+  Fibre-hom-path _ _ (h .is-id) $
+  Linear-map-path $ funext λ i → funext λ ix → ap (map ⊙ vert) (ps ix) $ₚ i
 ```

@@ -5,6 +5,8 @@ open import Algebra.Prelude
 open import Algebra.Group
 open import Algebra.Ring
 
+open import Cat.Displayed.Fibre
+
 module Algebra.Ring.Module.Free {ℓ} (R : Ring ℓ) where
 ```
 
@@ -237,19 +239,21 @@ make-free-module = go where
   go : make-left-adjoint (Forget-module R)
   go .free x = Free-Mod ∣ x ∣
   go .unit x = Free-mod.inc
-  go .universal {y = y} = fold-free-mod (y .snd)
+  go .universal {y = y} f = from-vert _ $ fold-free-mod (y .snd) f
   go .commutes f = refl
   go .unique {y = y} {f = f} {g = g} p =
+    Fibre-hom-path _ _ (sym (g .is-id)) $
     Linear-map-path (funext (Free-elim-prop.elim m)) where
     open Free-elim-prop
-    module g = Linear-map g
+    module g = Linear-map (g .vert)
     module y = Module y
     fold = fold-free-mod (y .snd) f .map
-    m : Free-elim-prop (λ a → fold-free-mod (y .snd) f .map a ≡ g .map a)
+    m : Free-elim-prop (λ a → fold-free-mod (y .snd) f .map a ≡ g .vert .map a)
     m .has-is-prop x = hlevel!
     m .P-· x y p =
       x y.⋆ fold y   ≡⟨ ap (x y.⋆_) p ⟩
-      x y.⋆ g .map y ≡⟨ g.linear-simple _ _ ⟩
+      x y.⋆ g .vert .map y ≡⟨ ap₂ y._⋆_ (sym (ap hom (g .is-id) $ₚ x)) refl ⟩
+      g .base .hom x y.⋆ g .vert .map y ≡⟨ g.linear-simple x y ⟩
       g.map (x · y)  ∎
     m .P-0m = sym g.has-group-hom.pres-id
     m .P-+ x y p q =

@@ -6,6 +6,8 @@ open import Algebra.Ring
 
 open import Cat.Abelian.Instances.Ab
 open import Cat.Abelian.Base
+open import Cat.Displayed.Fibre
+open import Cat.Displayed.Total
 open import Cat.Prelude
 
 module Algebra.Ring.Module.Category {ℓ} (R : Ring ℓ) where
@@ -15,6 +17,7 @@ module Algebra.Ring.Module.Category {ℓ} (R : Ring ℓ) where
 ```agda
 private module R = Ring-on (R .snd)
 open Ab-category
+open Total-hom
 open is-additive
 open make-abelian-group
 ```
@@ -37,16 +40,18 @@ R-Mod-ab-category .Abelian-group-on-hom A B = to-abelian-group-on grp where
   grp : make-abelian-group (R-Mod.Hom A B)
   grp .ab-is-set = R-Mod.Hom-set _ _
 
-  grp .mul f g .map x = f .map x B.+ g .map x
-  grp .mul f g .linear r m s n =
-    fₘ (r A.⋆ m A.+ s A.⋆ n) B.+ gₘ (r A.⋆ m A.+ s A.⋆ n)       ≡⟨ ap₂ B._+_ (f .linear _ _ _ _) (g .linear _ _ _ _) ⟩
+  grp .mul f g .base = Rings.id
+  grp .mul f g .is-id = refl
+  grp .mul f g .vert .map x = f .vert .map x B.+ g .vert .map x
+  grp .mul f g .vert .linear r m s n =
+    fₘ (r A.⋆ m A.+ s A.⋆ n) B.+ gₘ (r A.⋆ m A.+ s A.⋆ n)       ≡⟨ ap₂ B._+_ (linearv f _ _ _ _) (linearv g _ _ _ _) ⟩
     (r B.⋆ fₘ m B.+ s B.⋆ fₘ n) B.+ (r B.⋆ gₘ m B.+ s B.⋆ gₘ n) ≡⟨ B.G.pullr (B.G.pulll B.G.commutes) ⟩
     r B.⋆ fₘ m B.+ (r B.⋆ gₘ m B.+ s B.⋆ fₘ n) B.+ s B.⋆ gₘ n   ≡⟨ B.G.pulll (B.G.pulll (sym (B.⋆-add-r r _ _))) ⟩
     (r B.⋆ (fₘ m B.+ gₘ m) B.+ (s B.⋆ fₘ n)) B.+ (s B.⋆ gₘ n)   ≡⟨ B.G.pullr (sym (B.⋆-add-r s _ _)) ⟩
     r B.⋆ (fₘ m B.+ gₘ m) B.+ s B.⋆ (fₘ n B.+ gₘ n)             ∎
     where
-      fₘ = f .map
-      gₘ = g .map
+      fₘ = f .vert .map
+      gₘ = g .vert .map
 ```
 
 <details>
@@ -54,28 +59,44 @@ R-Mod-ab-category .Abelian-group-on-hom A B = to-abelian-group-on grp where
 going to keep it in this `<details>`{.html} element out of
 decency.</summary>
 ```agda
-  grp .1g .map x    = B.G.1g
-  grp .1g .linear r m s n =
+  grp .1g .base = Rings.id
+  grp .1g .is-id = refl
+  grp .1g .vert .map x    = B.G.1g
+  grp .1g .vert .linear r m s n =
     B.G.1g                        ≡˘⟨ B.⋆-group-hom.pres-id _ ⟩
     s B.⋆ B.G.1g                  ≡˘⟨ B.G.eliml (B.⋆-group-hom.pres-id _) ⟩
     r B.⋆ B.G.1g B.+ s B.⋆ B.G.1g ∎
-  grp .inv f .map x   = B.G._⁻¹ (f .map x)
-  grp .inv f .linear r m s n =
-       ap B.G._⁻¹ (f .linear r m s n)
+  grp .inv f .base = Rings.id
+  grp .inv f .is-id = refl
+  grp .inv f .vert .map x   = B.G._⁻¹ (f .vert .map x)
+  grp .inv f .vert .linear r m s n =
+       ap B.G._⁻¹ (linearv f r m s n)
     ·· B.G.inv-comm
     ·· B.G.commutes
      ∙ ap₂ B._+_ (sym (B.⋆-group-hom.pres-inv _)) (sym (B.⋆-group-hom.pres-inv _))
-  grp .assoc x y z = Linear-map-path (funext λ x → sym B.G.associative)
-  grp .invl x = Linear-map-path (funext λ x → B.G.inversel)
-  grp .idl x = Linear-map-path (funext λ x → B.G.idl)
-  grp .comm x y = Linear-map-path (funext λ x → B.G.commutes)
-R-Mod-ab-category .∘-linear-l f g h = Linear-map-path refl
+  grp .assoc x y z =
+    Fibre-hom-path _ _ refl $
+    Linear-map-path (funext λ x → sym B.G.associative)
+  grp .invl x =
+    Fibre-hom-path _ _ refl $
+    Linear-map-path (funext λ x → B.G.inversel)
+  grp .idl x =
+    Fibre-hom-path _ _ (sym (x .is-id)) $
+    Linear-map-path (funext λ x → B.G.idl)
+  grp .comm x y =
+    Fibre-hom-path _ _ refl $
+    Linear-map-path (funext λ x → B.G.commutes)
+
+R-Mod-ab-category .∘-linear-l f g h =
+  Fibre-hom-path _ _ (Rings.intror (h .is-id)) $
+  Linear-map-path refl
 R-Mod-ab-category .∘-linear-r {B = B} {C} f g h =
+  Fibre-hom-path _ _ (Rings.introl (f .is-id)) $
   Linear-map-path $ funext λ x →
-    f .map (g .map x) C.+ f .map (h .map x)                     ≡⟨ ap₂ C._+_ (sym (C.⋆-id _)) (sym (C.⋆-id _)) ⟩
-    R.1r C.⋆ f .map (g .map x) C.+ (R.1r C.⋆ f .map (h .map x)) ≡⟨ sym (f .linear R.1r (g .map x) R.1r (h .map x)) ⟩
-    f .map (R.1r B.⋆ g .map x B.+ R.1r B.⋆ h .map x)            ≡⟨ ap (f .map) (ap₂ B._+_ (B.⋆-id _) (B.⋆-id _)) ⟩
-    f .map (g .map x B.+ h .map x)                              ∎
+    f .vert .map (g .vert .map x) C.+ f .vert .map (h .vert .map x)                     ≡⟨ ap₂ C._+_ (sym (C.⋆-id _)) (sym (C.⋆-id _)) ⟩
+    R.1r C.⋆ f .vert .map (g .vert .map x) C.+ (R.1r C.⋆ f .vert .map (h .vert .map x)) ≡⟨ sym (linearv f R.1r (g .vert .map x) R.1r (h .vert .map x)) ⟩
+    f .vert .map (R.1r B.⋆ g .vert .map x B.+ R.1r B.⋆ h .vert .map x)                  ≡⟨ ap (f .vert .map) (ap₂ B._+_ (B.⋆-id _) (B.⋆-id _)) ⟩
+    f .vert .map (g .vert .map x B.+ h .vert .map x)                                    ∎
   where
     module C = Module C
     module B = Module B
@@ -100,10 +121,11 @@ R-Mod-is-additive .has-ab = R-Mod-ab-category
 R-Mod-is-additive .has-terminal = record
   { top  = _ , ∅ᴹ
   ; has⊤ = λ x → contr
-    (record { map    = λ _ → lift tt
-            ; linear = λ _ _ _ _ → refl
-            })
-    (λ _ → Linear-map-path refl)
+    (from-vert _ $ record
+      { map = λ _ → lift tt
+      ; linear = λ _ _ _ _ → refl
+      })
+    (λ f → Fibre-hom-path _ _ (sym (f .is-id)) (Linear-map-path refl))
   }
   where
     ∅ᴹ : Module-on R (Ab-is-additive .has-terminal .Terminal.top)
@@ -146,18 +168,30 @@ path-mangling, but it's nothing _too_ bad:
   open Ab-category.Product
   prod : Ab-category.Product R-Mod-ab-category M N
   prod .apex = _ , M⊕ᵣN
-  prod .π₁ .map (a , _)    = a
-  prod .π₁ .linear r m s n = refl
-  prod .π₂ .map (_ , b)    = b
-  prod .π₂ .linear r m s n = refl
+  prod .π₁ .base = Rings.id
+  prod .π₁ .is-id = refl
+  prod .π₁ .vert .map (a , _)    = a
+  prod .π₁ .vert .linear r m s n = refl
+  prod .π₂ .base = Rings.id
+  prod .π₂ .is-id = refl
+  prod .π₂ .vert .map (_ , b)    = b
+  prod .π₂ .vert .linear r m s n = refl
 
-  prod .has-is-product .⟨_,_⟩ f g .map x = f .map x , g .map x
-  prod .has-is-product .⟨_,_⟩ f g .linear r m s n =
-    Σ-pathp (f .linear _ _ _ _) (g .linear _ _ _ _)
-  prod .has-is-product .π₁∘factor = Linear-map-path refl
-  prod .has-is-product .π₂∘factor = Linear-map-path refl
-  prod .has-is-product .unique other p q = Linear-map-path {ℓ′ = lzero} $ funext λ x →
-    Σ-pathp (ap map p $ₚ x) (ap map q $ₚ x)
+  prod .has-is-product .⟨_,_⟩ f g .base = Rings.id
+  prod .has-is-product .⟨_,_⟩ f g .is-id = refl
+  prod .has-is-product .⟨_,_⟩ f g .vert .map x = f .vert .map x , g .vert .map x
+  prod .has-is-product .⟨_,_⟩ f g .vert .linear r m s n =
+    linearv f r m s n ,ₚ linearv g r m s n
+  prod .has-is-product .π₁∘factor {p1 = p1} =
+    Fibre-hom-path _ _ (Rings.idl _ ∙ sym (p1 .is-id)) $
+    Linear-map-path refl
+  prod .has-is-product .π₂∘factor {p2 = p2} =
+    Fibre-hom-path _ _ (Rings.idl _ ∙ sym (p2 .is-id)) $
+    Linear-map-path refl
+  prod .has-is-product .unique other p q =
+    Fibre-hom-path _ _ (other .is-id) $
+    Linear-map-path {ℓ′ = lzero} $ funext λ x →
+    (ap (map ⊙ vert) p $ₚ x) ,ₚ (ap (map ⊙ vert) q $ₚ x)
 ```
 
 <!-- TODO [Amy 2022-09-15]

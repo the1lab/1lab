@@ -7,6 +7,7 @@ open import Algebra.Group
 open import Algebra.Ring
 
 open import Cat.Functor.FullSubcategory
+open import Cat.Displayed.Fibre
 
 open import Data.Power
 
@@ -111,12 +112,16 @@ $\mathfrak{a}$ is a sub-$R$-module of $R$:
   ideal→submodule
     : {𝔞 : ℙ ⌞ R ⌟} (idl : is-ideal 𝔞)
     → ideal→module _ idl R-Mod.↪ representable-module R
-  ideal→submodule {𝔞 = 𝔞} idl = record
-    { mor   = record { map = fst ; linear = λ r m s n → refl }
-    ; monic = λ {c = c} g h x → Linear-map-path $
-      embedding→monic (Subset-proj-embedding λ _ → 𝔞 _ .is-tr) (g .map) (h .map)
-        (ap map x)
-    }
+  ideal→submodule {𝔞 = 𝔞} idl =
+    record
+      { mor = from-vert _ (record { map = fst ; linear = λ r m s n → refl })
+      ; monic = λ {c = c} g h x →
+        Fibre-hom-path _ _ (g .is-id ∙ sym (h .is-id)) $
+        Linear-map-path $
+        embedding→monic (Subset-proj-embedding λ _ → 𝔞 _ .is-tr)
+          (g .vert .map) (h .vert .map)
+          (ap (map ⊙ vert) x)
+      }
 ```
 
 ## Principal ideals
