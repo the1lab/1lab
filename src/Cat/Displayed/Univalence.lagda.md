@@ -142,15 +142,10 @@ is-category-fibrewise′
 is-category-fibrewise′ b wit = is-category-fibrewise b wit′ where
   wit′ : ∀ {x} (A : Ob[ x ]) → is-prop (Σ[ B ∈ Ob[ x ] ] (A ≅↓ B))
   wit′ {x} A =
-    is-contr→is-prop $ retract→is-contr
-      (λ (x , i) → x , make-iso[ B.id-iso ]
-        (i .F.to)
-        (i .F.from)
-        (to-pathp (i .F.invl))
-        (to-pathp (i .F.invr)))
-      (λ (x , i) → x , F.make-iso (i .to′) (i .from′)
-        (from-pathp (i .invl′)) (from-pathp (i .invr′)))
-      (λ (x , i) → Σ-pathp refl (≅[]-path refl))
+    is-contr→is-prop $ retract→is-contr {A = Σ[ B ∈ Ob[ x ] ] (A F.≅ B)}
+      (λ (x , i) → x , fibre-iso→vert-iso E i)
+      (λ (x , i) → x , vert-iso→fibre-iso E i)
+      (λ (x , i) → refl ,ₚ ≅[]-path (transport-refl _))
       (is-contr-ΣR (wit x))
     where module F = Cat.Reasoning (Fibre E x)
 ```

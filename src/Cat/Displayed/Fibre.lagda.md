@@ -5,6 +5,7 @@ open import Cat.Prelude
 import Cat.Displayed.Reasoning as Dr
 import Cat.Displayed.Solver as Ds
 import Cat.Reasoning as Cr
+import Cat.Displayed.Morphism as Dm
 
 module Cat.Displayed.Fibre
   {o ℓ o′ ℓ′} {B : Precategory o ℓ}
@@ -15,6 +16,7 @@ open Displayed E
 open Ds
 open Dr E
 open Cr B
+open Dm E
 ```
 
 ## Fibre categories
@@ -74,57 +76,13 @@ closed under composition, the **fibre (pre)category over $x$**.
 
 [total space]: Cat.Displayed.Total.html
 
-```agda
-Fibre′
-  : (X : Ob)
-  → (fix : {x y : Ob[ X ]} → Hom[ id ∘ id ] x y → Hom[ id ] x y)
-  → (coh : ∀ {x y} (f : Hom[ id ∘ id ] x y) → fix f ≡ hom[ idl id ] f)
-  → Precategory _ _
-Fibre′ X fix coh .Precategory.Ob = Ob[ X ]
-Fibre′ X fix coh .Precategory.Hom = Hom[ id ]
-Fibre′ X fix coh .Precategory.Hom-set = Hom[ id ]-set
-Fibre′ X fix coh .Precategory.id = id′
-Fibre′ X fix coh .Precategory._∘_ f g = fix (f ∘′ g)
-```
-
-The definition of `Fibre′`{.Agda} has an extra degree of freedom: it is
-parametrised over how to reindex a morphism from lying over $\id
-\circ \id$ to lying over $\id$. You don't get _that_ much
-freedom, however: there is a canonical way of doing this reindexing,
-which is to transport the composite morphism (since $\id \circ
-\id$ is equal to $\id$), and the provided method _must_ be
-homotopic to this canonical one --- to guarantee that the resulting
-construction is a precategory.
-
-It may seem that this extra freedom serves no purpose, then, but there
-are cases where it's possible to transport without actually
-transporting: For example, if $\cE$ is displayed over $\Sets$, then
-composition of morphisms is definitionally unital, so transporting is
-redundant; but without regularity, the transports along reflexivity
-would still pile up.
-
-<!--
-```agda
-Fibre′ X fix coh .Precategory.idr f =
-  fix (f ∘′ id′)           ≡⟨ coh (f ∘′ id′) ⟩
-  hom[ idl id ] (f ∘′ id′) ≡⟨ Ds.disp! E ⟩
-  f                        ∎
-Fibre′ X fix coh .Precategory.idl f =
-  fix (id′ ∘′ f)           ≡⟨ coh (id′ ∘′ f) ⟩
-  hom[ idl id ] (id′ ∘′ f) ≡⟨ from-pathp (idl′ f) ⟩
-  f                        ∎
-Fibre′ X fix coh .Precategory.assoc f g h =
-  fix (f ∘′ fix (g ∘′ h))                     ≡⟨ ap (λ e → fix (f ∘′ e)) (coh _) ∙ coh _ ⟩
-  hom[ idl id ] (f ∘′ hom[ idl id ] (g ∘′ h)) ≡⟨ Ds.disp! E ⟩
-  hom[ idl id ] (hom[ idl id ] (f ∘′ g) ∘′ h) ≡⟨ sym (coh _) ∙ ap (λ e → fix (e ∘′ h)) (sym (coh _)) ⟩
-  fix (fix (f ∘′ g) ∘′ h)                     ∎
-```
--->
+This definition does work, but requires a transport every time we compose!
+To avoid this, we allow the morphisms of fibre categories to be displayed
+over any morphism $u : \cC(X, X)$, so long as $u$ is propositionally
+equal to the identity morphism. This allows us to fuse all of the
+transports, which drastically improves the situation.
 
 ```agda
-Fibre : Ob → Precategory _ _
-Fibre X = Fibre′ X _ (λ f → refl)
-
 module _ (X : Ob) where
   record Fibre-hom (a b : Ob[ X ]) : Type (ℓ ⊔ ℓ′) where
     no-eta-equality
@@ -135,11 +93,15 @@ module _ (X : Ob) where
 
   open Fibre-hom public
 
-  from-vert : ∀ {a b} → Hom[ id ] a b → Fibre-hom a b
-  from-vert x .base  = id
-  from-vert x .is-id = refl
-  from-vert x .vert  = x
+```
 
+As an aside, this fusion technique is a sneaky application of the
+[coyoneda lemma].
+
+[coyoneda lemma]: Cat.Functor.Hom.Coyoneda.html
+
+<!--
+```agda
   Fibre-hom-pathp
     : ∀ (a b : I → Ob[ X ])
       {f : Fibre-hom (a i0) (b i0)}
@@ -159,18 +121,96 @@ module _ (X : Ob) where
   Fibre-hom-path {a} {b} {f} {g} =
     Fibre-hom-pathp (λ _ → a) (λ _ → b) {f = f} {g = g}
 
-  Fibre-cps : Precategory o′ (ℓ ⊔ ℓ′)
-  Fibre-cps .Precategory.Ob = Ob[ X ]
-  Fibre-cps .Precategory.Hom = Fibre-hom
-  Fibre-cps .Precategory.Hom-set = TODO where
-    postulate TODO : ∀ x y →  is-set (Fibre-hom x y)
-  Fibre-cps .Precategory.id .base = id
-  Fibre-cps .Precategory.id .is-id = refl
-  Fibre-cps .Precategory.id .vert = id′
-  Fibre-cps .Precategory._∘_ f g .base  = f .base ∘ g .base
-  Fibre-cps .Precategory._∘_ f g .is-id = eliml (f .is-id) ∙ g .is-id
-  Fibre-cps .Precategory._∘_ f g .vert  = f .vert ∘′ g .vert
-  Fibre-cps .Precategory.idr f = Fibre-hom-pathp _ _ (idr _) (idr′ _)
-  Fibre-cps .Precategory.idl f = Fibre-hom-pathp _ _ (idl _) (idl′ _)
-  Fibre-cps .Precategory.assoc f g h = Fibre-hom-pathp _ _ (assoc _ _ _) (assoc′ _ _ _)
+  private unquoteDecl eqv = declare-record-iso eqv (quote Fibre-hom)
+
+  abstract
+    Fibre-hom-is-set
+      : ∀ {a b} → is-set (Fibre-hom a b)
+    Fibre-hom-is-set = Iso→is-hlevel 2 eqv (hlevel 2)
+      where open Hom[]-hlevel-instance
+```
+-->
+
+With that technicality out of the way, we can proceed to define the
+actual category.
+
+```agda
+  Fibre : Precategory o′ (ℓ ⊔ ℓ′)
+  Fibre .Precategory.Ob = Ob[ X ]
+  Fibre .Precategory.Hom = Fibre-hom
+  Fibre .Precategory.Hom-set _ _ = Fibre-hom-is-set
+  Fibre .Precategory.id .base = id
+  Fibre .Precategory.id .is-id = refl
+  Fibre .Precategory.id .vert = id′
+  Fibre .Precategory._∘_ f g .base  = f .base ∘ g .base
+  Fibre .Precategory._∘_ f g .is-id = eliml (f .is-id) ∙ g .is-id
+  Fibre .Precategory._∘_ f g .vert  = f .vert ∘′ g .vert
+```
+
+<!--
+```agda
+  Fibre .Precategory.idr f = Fibre-hom-path (idr _) (idr′ _)
+  Fibre .Precategory.idl f = Fibre-hom-path (idl _) (idl′ _)
+  Fibre .Precategory.assoc f g h = Fibre-hom-path (assoc _ _ _) (assoc′ _ _ _)
+```
+-->
+
+# Morphisms in Fibre Categories
+
+Our trick for postponing transports does make morphisms of fibre
+categories more pleasant to work with, but does make the relation
+between vertical morphisms and morphisms in the fibre more involved.
+
+<!--
+```agda
+module _ {x : Ob} where
+  private
+    module Fibre = Cr (Fibre x)
+```
+-->
+
+To start, we note that there is an equivalence between vertical morphism
+and morphisms in fibre categories.
+
+```agda
+  to-vert : ∀ {a b} → Fibre-hom x a b → Hom[ id ] a b
+  to-vert f = hom[ f .is-id ] (f .vert)
+
+  from-vert : ∀ {a b} → Hom[ id ] a b → Fibre-hom x a b
+  from-vert x .base  = id
+  from-vert x .is-id = refl
+  from-vert x .vert  = x
+
+  to-vert-is-equiv : ∀ {a b} → is-equiv (to-vert {a} {b})
+  to-vert-is-equiv =
+    is-iso→is-equiv $ iso
+      from-vert
+      transport-refl
+      (λ f → Fibre-hom-path x
+        (sym (f .is-id))
+        (symP (transport-filler (λ i → Hom[ f .is-id i ] _ _) (f .vert))))
+
+  vert-equiv : ∀ {a b} → Fibre-hom x a b ≃ Hom[ id ] a b
+  vert-equiv = to-vert , to-vert-is-equiv
+
+  -- to-vertl : ∀ {a b} {f : Fibre-hom x a b} {v : Hom[ id ] a b} → to-vert f ≡ ? ∘′ ?
+```
+
+Furthermore, isomorphism in fibre categories correspond to vertical
+isomorphisms.
+
+```agda
+  fibre-iso→vert-iso : ∀ {a b} → a Fibre.≅ b → a ≅↓ b 
+  fibre-iso→vert-iso i = make-iso[ id-iso ]
+    (to-vert (Fibre.to i))
+    (to-vert (Fibre.from i))
+    (collapse (ap vert (Fibre.invl i)))
+    (collapse (ap vert (Fibre.invr i)))
+
+  vert-iso→fibre-iso : ∀ {a b} → a ≅↓ b → a Fibre.≅ b
+  vert-iso→fibre-iso i = Fibre.make-iso
+    (from-vert (i .to′))
+    (from-vert (i .from′))
+    (Fibre-hom-path x _ (i .invl′))
+    (Fibre-hom-path x _ (i .invr′))
 ```

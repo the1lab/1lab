@@ -85,3 +85,16 @@ We then use [univalence for $n$-types] to directly establish that $(A
     (∣ A ∣ ≃ ∣ B ∣) ≃⟨ equiv≃iso e⁻¹ ⟩
     (A Sets.≅ B)    ≃∎
 ```
+
+<!--
+```agda
+open Functor
+open Lift
+
+Lift-sets : ∀ {κ} → (κ' : Level) → Functor (Sets κ) (Sets (κ ⊔ κ'))
+Lift-sets κ' .F₀ X = el! (Lift κ' ∣ X ∣)
+Lift-sets κ' .F₁ f x = lift (f (lower x))
+Lift-sets κ' .F-id = refl
+Lift-sets κ' .F-∘ _ _ = refl
+```
+-->

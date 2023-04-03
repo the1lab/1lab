@@ -1,16 +1,13 @@
 ```agda
-open import Cat.Functor.Hom.Displayed
-open import Cat.Functor.Hom.Displayed
-open import Cat.Instances.Functor
-open import Cat.Instances.Functor
-open import Cat.Instances.Product
-open import Cat.Instances.Product
-open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
+open import Cat.Displayed.Fibre
 open import Cat.Functor.Hom
+open import Cat.Functor.Hom.Displayed
+open import Cat.Instances.Functor
+open import Cat.Instances.Product
+open import Cat.Instances.Sets
 open import Cat.Prelude
 
-import Cat.Displayed.Cartesian.Indexing as Indexing
 import Cat.Displayed.Cartesian.Indexing as Indexing
 import Cat.Displayed.Cartesian as Cart
 import Cat.Displayed.Reasoning as DR
@@ -77,9 +74,20 @@ record is-weak-cartesian
                 → (h′ : Hom[ id ] x′ a′)
                 → f′ ∘′ h′ ≡[ idr _ ] g′
                 → h′ ≡ universal g′
+```
+<!--
+```agda
+  uniquep
+      : ∀ {x′} {g′ : Hom[ f ] x′ b′} {u : Hom a a}
+      → (h′ : Hom[ u ] x′ a′) → (p : u ≡ id)
+      → f′ ∘′ h′ ≡[ elimr p ] g′
+      → h′ ≡[ p ] universal g′
+  uniquep h′ p q =
+    to-pathp (unique (hom[] h′) (to-pathp (smashr _ _ ∙ cancel _ _ q)))
 
 open is-weak-cartesian
 ```
+-->
 
 Like their stronger counterparts, weak cartesian lifts are unique
 up to vertical isomorphism.
@@ -526,24 +534,30 @@ between $\cE_{u}(-,y')$ and $\cE_{x}(-,u^{*}(y'))$.
 ```agda
   weak-fibration→hom-iso-into
     : ∀ {x y y′} (u : Hom x y)
-    → natural-iso (Hom-over-into ℰ u y′) (Hom-into (Fibre ℰ x) (weak-lift.x′ u y′))
-  weak-fibration→hom-iso-into {x} {y} {y′} u = to-natural-iso mi where
+    → natural-iso
+        (Lift-sets ℓ F∘ Hom-over-into ℰ u y′)
+        (Hom-into (Fibre ℰ x) (weak-lift.x′ u y′))
+  weak-fibration→hom-iso-into {x} {y} {y'} u = to-natural-iso mi where
     open make-natural-iso
+    open Lift
 
-    u*y′ : Ob[ x ]
-    u*y′ = weak-lift.x′ u y′
+    u*y' : Ob[ x ]
+    u*y' = weak-lift.x′ u y'
 
-    mi : make-natural-iso (Hom-over-into ℰ u y′) (Hom-into (Fibre ℰ x) u*y′)
-    mi .eta x u′ = weak-lift.universal u y′ u′
-    mi .inv x v′ = hom[ idr u ] (weak-lift.lifting u y′ ∘′ v′)
-    mi .eta∘inv x = funext λ v′ →
-      sym $ weak-lift.unique u _ _ (to-pathp refl)
-    mi .inv∘eta x = funext λ u′ →
-      from-pathp (weak-lift.commutes u _ _)
-    mi .natural x y v′ = funext λ u′ →
-      weak-lift.unique u _ _ $ to-pathp $
-        smashr _ _
-        ∙ weave _ (ap (u ∘_) (idl id)) _ (pulll′ _ (weak-lift.commutes _ _ _))
+    mi : make-natural-iso _ _
+    mi .eta x u' =
+      from-vert _ (weak-lift.universal u y' (lower u'))
+    mi .inv x v' =
+      lift (hom[ elimr (v' .is-id) ] (weak-lift.lifting u y' ∘′ v' .vert))
+    mi .eta∘inv x = funext λ v' →
+      sym $ Fibre-hom-path _ _ (v' .is-id) $
+      weak-lift.uniquep u _ _ _ (transport-filler _ _)
+    mi .inv∘eta x = funext λ u' →
+      ap lift (reindex _ _ ∙ from-pathp (weak-lift.commutes u _ _))
+    mi .natural x y v' = funext λ u' →
+      Fibre-hom-path _ _ (elimr (v' .is-id)) $
+      weak-lift.uniquep u _ _  _ $
+      to-pathp $ weave _ (ap (u ∘_) (idl _)) _ (pulll′ _ (weak-lift.commutes u _ _))
 ```
 
 An *extremely* useful fact is that the converse is true: if there is some
@@ -634,19 +648,63 @@ the equivalence is natural.
 ```agda
 module _ (U : ∀ {x y} → Hom x y → Functor (Fibre ℰ y) (Fibre ℰ x)) where
   open Functor
+  open Lift
   open _=>_
 
   hom-iso→weak-fibration
     : (∀ {x y y′} (u : Hom x y)
-       → natural-iso (Hom-over-into ℰ u y′) (Hom-into (Fibre ℰ x) (U u .F₀ y′)))
+       → natural-iso (Lift-sets ℓ F∘ Hom-over-into ℰ u y′) (Hom-into (Fibre ℰ x) (U u .F₀ y′)))
     → is-weak-cartesian-fibration
   hom-iso→weak-fibration hom-iso =
     vertical-equiv→weak-fibration
       (λ u → U u .F₀)
-      (λ u′ → natural-iso.to (hom-iso _) .η _ u′)
-      (natural-iso-to-is-equiv (hom-iso _) _)
-      λ f′ g′ → to-pathp⁻ $
-        happly (natural-iso.to (hom-iso _) .is-natural _ _ g′) f′
+      to*
+      (∙-is-equiv (∙-is-equiv lift-is-equiv (natural-iso-to-is-equiv (hom-iso _) _)) (to-vert-is-equiv ℰ))
+      (λ f' g' → to-pathp⁻ (reindex-to* _ _ _ ∙ from-pathp⁻ (to*-natural f' g')))
+      -- to*-natural
+
+   where
+     module hom-iso {x} {y} {y'} (u : Hom x y) = natural-iso (hom-iso {y′ = y'} u)
+     module Fibre {x} = Precategory (Fibre ℰ x)
+
+     to* : ∀ {x y x' y'} {f : Hom x y} → Hom[ f ] x' y' → Hom[ id ] x' (U f .F₀ y')
+     to* {x' = x'} {f = f} f' = to-vert _ (hom-iso.to f .η x' (lift f'))
+
+     reindex-to*
+      : ∀ {x y x' y'} {f g : Hom x y} (p q : f ≡ g)
+      → (f' : Hom[ f ] x' y') → to* (hom[ p ] f') ≡ to* (hom[ q ] f')
+     reindex-to* p q f' i = to* (hom[ Hom-set _ _ _ _ p q i ] f')
+
+     -- Naturality comes packaged in a *very* annoying to use form,
+     -- so we need to handle some nightmare coherences.
+     -- Using 'comp' is really the best way to do this :/
+     to*-natural
+      : ∀ {x y x′ x″ y′} {f : Hom x y}
+      → (f' : Hom[ f ] x″ y′) (g' : Hom[ id ] x′ x″)
+      → to* (hom[ elimr refl ] (f' ∘′ g')) ≡[ sym (idl id) ] to* f' ∘′ g'
+     to*-natural {x = x} {y = y} {x′ = x′} {y′ = y′} {f = f} f' g' i =
+       comp (λ j → Hom[ square j i ] x′ (U f .F₀ y′)) (∂ i) λ where
+         j (i = i0) →
+           transport-filler
+             (λ k → Hom[ hom-iso.to f .η _ (lift (hom[ elimr refl ] (f' ∘′ g'))) .is-id k ] _ _)
+             (hom-iso.to f .η _ (lift (hom[ elimr refl ] (f' ∘′ g'))) .vert) j
+         j (i = i1) →
+           transport-filler
+             (λ k → Hom[ hom-iso.to f .η _ (lift f') .is-id k ] _ _)
+             (hom-iso.to f .η _ (lift f') .vert) j
+           ∘′ g'
+         j (j = i0) →
+           hom-iso.to f .is-natural _ _ (from-vert _ g') i (lift f') .vert
+
+       where
+         square : I → I → Hom x x
+         square i j =
+           is-set→squarep (λ _ _ → Hom-set x x)
+             (hom-iso.to f .η x′ (lift (hom[ elimr refl ] (f' ∘′ g'))) .is-id)
+             (ap base (hom-iso.to _ .is-natural _ _ (from-vert _ g') $ₚ (lift f')))
+             (sym (idl id))
+             (ap₂ _∘_ (hom-iso.to f .η _ (lift f') .is-id) refl)
+             i j
 ```
 -->
 
@@ -666,27 +724,28 @@ module _ (fib : Cartesian-fibration) where
   fibration→hom-iso-from
     : ∀ {x y x′} (u : Hom x y)
     → natural-iso
-      (Hom-over-from ℰ u x′)
+      (Lift-sets ℓ F∘ Hom-over-from ℰ u x′)
       (Hom-from (Fibre ℰ x) x′ F∘ base-change u)
   fibration→hom-iso-from {x} {y} {x′} u = to-natural-iso mi where
     open make-natural-iso
+    open Lift
 
-    mi : make-natural-iso
-          (Hom-over-from ℰ u x′)
-          (Hom-from (Fibre ℰ x) x′ F∘ base-change u)
-    mi .eta x u′ = has-lift.universalv u x u′
-    mi .inv x v′ = hom[ idr u ] (has-lift.lifting u x ∘′ v′)
-    mi .eta∘inv x = funext λ v′ →
-      sym $ has-lift.uniquev u _ _ (to-pathp refl)
-    mi .inv∘eta x = funext λ u′ →
-      from-pathp (has-lift.commutesv u _ _)
-    mi .natural _ _ v′ = funext λ u′ →
-      has-lift.unique u _ _ $ to-pathp $
-        smashr _ _
-        ·· revive₁ (pulll[] _ (has-lift.commutesv u _ _))
-        ·· smashl _ _
-        ·· weave _ (pullr (idr u)) _ (pullr[] _ (has-lift.commutesv u _ _))
-        ·· duplicate id-comm-sym _ (idl u)
+    mi : make-natural-iso _ _
+    mi .eta x u' = from-vert _ (has-lift.universal′ u x (elimr refl) (lower u'))
+    mi .inv x v' = lift $ hom[ elimr (v' .is-id) ] (has-lift.lifting u x ∘′ v' .vert)
+    mi .eta∘inv x = funext λ v' →
+      Fibre-hom-path _ _ (sym (v' .is-id)) $ symP $
+      has-lift.uniquep u x (elimr (v' .is-id)) (v' .is-id) (elimr refl) _ (to-pathp refl)
+    mi .inv∘eta x = funext λ u' →
+      ap lift (from-pathp (has-lift.commutesp u x (elimr refl) (u' .lower)))
+    mi .natural _ _ v' = funext λ u' →
+      Fibre-hom-path _ _ (idl _) $
+      has-lift.uniquep u _ (elimr (idl _)) (idl _) (elimr refl) _ $ to-pathp $
+        revive₁ (pulll[] _ (has-lift.commutes u _ _ _))
+        ∙ smashl _ _
+        ∙ revive₁ (pullr[] _ (has-lift.commutes u _ _ _))
+        ∙ smashr _ _
+        ∙ reindex _ _
 ```
 
 <!--
@@ -708,7 +767,7 @@ module _ (fib : Cartesian-fibration) where
   fibration→hom-iso-into
     : ∀ {x y y′} (u : Hom x y)
     → natural-iso
-      (Hom-over-into ℰ u y′)
+      (Lift-sets ℓ F∘ Hom-over-into ℰ u y′)
       (Hom-into (Fibre ℰ x) (has-lift.x′ u y′))
   fibration→hom-iso-into u =
     weak-fibration→hom-iso-into (fibration→weak-fibration fib) u
@@ -721,23 +780,28 @@ a natural iso between $\cE_{u}(-,-)$ and $\cE_{id}(-,u^{*}(-))$.
 ```agda
   fibration→hom-iso
     : ∀ {x y} (u : Hom x y)
-    → natural-iso (Hom-over ℰ u) (Hom[-,-] (Fibre ℰ x) F∘ (Id F× base-change u))
+    → natural-iso (Lift-sets ℓ F∘ Hom-over ℰ u) (Hom[-,-] (Fibre ℰ x) F∘ (Id F× base-change u))
   fibration→hom-iso {x = x} u = to-natural-iso mi where
     open make-natural-iso
     open _=>_
+    open Lift
 
-    module into-iso {y′} = natural-iso (fibration→hom-iso-into {y′ = y′} u)
-    module from-iso {x′} = natural-iso (fibration→hom-iso-from {x′ = x′} u)
-
-    mi : make-natural-iso (Hom-over ℰ u) (Hom[-,-] (Fibre ℰ x) F∘ (Id F× base-change u))
-    mi .eta x u′ = has-lift.universalv u _ u′
-    mi .inv x v′ = hom[ idr u ] (has-lift.lifting u _ ∘′ v′)
-    mi .eta∘inv x = funext λ v′ →
-      sym $ has-lift.uniquev u _ _ (to-pathp refl)
-    mi .inv∘eta x = funext λ u′ →
-      from-pathp (has-lift.commutesv u _ _)
-    mi .natural _ _ (v₁′ , v₂′) = funext λ u′ →
-      sym (apr′ (happly (into-iso.to .is-natural _ _ v₁′) u′))
-      ·· sym (happly (from-iso.to .is-natural _ _ v₂′) (hom[ idr _ ] (u′ ∘′ v₁′)))
-      ·· ap (into-iso.to .η _) (smashr _ _ ∙ reindex _ _ )
+    mi : make-natural-iso _ _
+    mi .eta x u' = from-vert ℰ (has-lift.universal′ u _ (elimr refl) (u' .lower))
+    mi .inv x v' = lift (hom[ elimr (v' .is-id) ] (has-lift.lifting u _ ∘′ v' .vert))
+    mi .eta∘inv x = funext λ v' →
+      Fibre-hom-path _ _ (sym (v' .is-id)) $ symP $
+      has-lift.uniquep u _ (elimr (v' .is-id)) (v' .is-id) (elimr refl) _ (to-pathp refl)
+    mi .inv∘eta x = funext λ u' →
+      ap lift (from-pathp (has-lift.commutesp u _ (elimr refl) (u' .lower)))
+    mi .natural _ _ (v' , v'') = funext λ u' →
+      Fibre-hom-path _ _ (elimr (elimr (v' .is-id))) $ to-pathp $
+      has-lift.uniquep u _ (elimr refl) _ (elimr refl) _ $ to-pathp $
+      smashr _ _
+      ∙ revive₁ (pulll[] _ (has-lift.commutes _ _ _ _))
+      ∙ smashl _ _
+      ∙ revive₁ (pullr[] _ (pulll[] _ (has-lift.commutes _ _ _ _)))
+      ∙ ap hom[] (ap₂ _∘′_ refl (whisker-l _))
+      ∙ smashr _ _
+      ∙ reindex _ _
 ```

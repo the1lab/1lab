@@ -644,6 +644,9 @@ _∙e_ (f , e) (g , e') = (λ x → g (f x)) , eqv where
            → is-equiv (λ x → g (f x))
 ∙-is-equiv {f = f} {g = g} e e' = ((f , e) ∙e (g , e')) .snd
 
+lift-is-equiv : ∀ {ℓ ℓ'} {A : Type ℓ} → is-equiv (lift {ℓ = ℓ'} {A = A} )
+lift-is-equiv = is-iso→is-equiv (iso Lift.lower (λ _ → refl) λ _ → refl)
+
 module Equiv {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} (f : A ≃ B) where
   to = f .fst
   from = equiv→inverse (f .snd)

@@ -53,25 +53,26 @@ of base_ along $f$.
 ```agda
 module _ {𝒶 𝒷} (f : Hom 𝒶 𝒷) where
   base-change : Functor (Fibre E 𝒷) (Fibre E 𝒶)
-  base-change .F₀ ob = has-lift f ob .x′
-  base-change .F₁ {x} {y} vert = rebase f vert
+  base-change .F₀ ob = has-lift.x′ f ob
+  base-change .F₁ {x} {y} v .base = id
+  base-change .F₁ {x} {y} v .is-id = refl
+  base-change .F₁ {x} {y} v .vert =
+    has-lift.universal′ f _ (idr _ ∙ introl (v .is-id))
+      (v .vert ∘′ has-lift.lifting f _)
 ```
 
 <!--
 ```agda
-  base-change .F-id {x} =
-    sym $ has-lift.uniquev _ _ _ $ to-pathp $
-      idr[] ∙ (sym $ cancel _ _ (idl′ _))
-
-  base-change .F-∘ {x} {y} {z} f′ g′ =
-    sym $ has-lift.uniquev _ _ _ $ to-pathp $
-      smashr _ _
-      ·· revive₁ (pulll[] (idr f) (has-lift.commutesv _ _ _))
-      ·· smashl _ _
-      ·· revive₁ (pullr[] (idr f) (has-lift.commutesv _ _ _))
-      ·· smashr _ _
-      ·· assoc[]
-      ·· sym (smashl _ _)
+  base-change .F-id = Fibre-hom-path E 𝒶 refl $ sym $
+    has-lift.unique _ _ _ $
+      from-pathp⁻ (idr′ _)
+      ∙ sym (revive₁ (idl′ _) ∙ reindex _ _)
+  base-change .F-∘ g h = Fibre-hom-path E _ (sym (idl id)) $
+    symP $ has-lift.uniquep _ _
+      (elimr (idr _) ∙ introl (elimr (h .is-id) ∙ g .is-id)) (idl id) _ _
+       $ to-pathp (revive₁ (pulll[] (idr _ ∙ introl (g .is-id)) (has-lift.commutesp f _ _ _))
+      ·· revive₁ (pullr[] (idr _ ∙ introl (h .is-id)) (has-lift.commutesp f _ _ _))
+      ·· assoc[] ∙ liberate refl)
 ```
 -->
 
@@ -94,14 +95,20 @@ of heart. </summary>
   base-change-id = to-natural-iso mi where
     open make-natural-iso
     mi : make-natural-iso (base-change id) Id
-    mi .eta x = has-lift.lifting id x
-    mi .inv x = has-lift.universalv id x id′
-    mi .eta∘inv x = cancel _ _ (has-lift.commutesv _ _ _)
-    mi .inv∘eta x = sym $
-      has-lift.uniquev₂ id x Fa.id _ (cast[] $ idr′ _) $
-      to-pathp (smashr _ _ ∙ cancel _ _ (cancell[] _ (has-lift.commutesv _ _ _)))
-    mi .natural x y f = ap hom[] $ sym $
-      has-lift.commutes _ _ _ _ ·· hom[]-∙ _ _ ·· liberate _
+    mi .eta x = from-vert _ (has-lift.lifting id x)
+    mi .inv x = from-vert _ (has-lift.universal′ id x (idl _) id′)
+    mi .eta∘inv x =
+      Fibre-hom-path _ _ (idl _) $
+      has-lift.commutesp _ _ _ _
+    mi .inv∘eta x =
+      Fibre-hom-path _ _ (idr _) $
+      has-lift.uniquep₂ id x (idl _ ∙ idl _ ) _ _ _ _
+        (to-pathp $ cancel _ _ (cancell[] (idl _) (has-lift.commutesp _ _ _ _)))
+        (idr′ _) 
+    mi .natural x y f =
+      Fibre-hom-path _ _ (ap₂ _∘_ (f .is-id) refl) $
+      to-pathp⁻ $ sym $
+      cancel _ (idr _ ∙ introl (f .is-id)) (has-lift.commutesp _ _ _ _)
 ```
 </details>
 
@@ -126,75 +133,46 @@ properties and I recommend that nobody look at it, ever. </summary>.
     open make-natural-iso
     mi : make-natural-iso (base-change (f ∘ g)) (base-change g F∘ base-change f)
     mi .eta x =
-      has-lift.universalv g _ $ has-lift.universal f x g (has-lift.lifting (f ∘ g) x)
+      from-vert _ $
+      has-lift.universalv g _ (has-lift.universal f x g (has-lift.lifting (f ∘ g) x))
     mi .inv x =
+      from-vert _ $
       has-lift.universalv (f ∘ g) x (has-lift.lifting f _ ∘′ has-lift.lifting g _)
     mi .eta∘inv x =
-      has-lift.uniquev₂ g _ _ _
+      Fibre-hom-path _ _ (idr _) $
+      has-lift.uniquep₂ _ _ (elimr (idl _)) _ _ _ _
         (to-pathp $
-          smashr _ _
-          ·· revive₁ (pulll[] _ (has-lift.commutesv g _ _))
-          ·· has-lift.uniquep₂ f _ refl refl refl _ _
-            (pulll-indexr _ (has-lift.commutes f _ _ _)
-            ∙ cancel _ _ (has-lift.commutesv (f ∘ g) _ _))
-            refl)
+          revive₁ (pulll[] _ (has-lift.commutesv g _ _))
+          ∙ has-lift.uniquep₂ f x _ _ refl _ _
+              (whisker-r _ ∙ revive₁ (pulll[] _ (has-lift.commutes _ _ _ _))
+              ∙ cancel _ _ (has-lift.commutesv _ _ _))
+              refl)
         (idr′ _)
     mi .inv∘eta x =
-      has-lift.uniquev₂ (f ∘ g) _ _ _
+      Fibre-hom-path _ _ (idr _) $
+      has-lift.uniquep₂ _ _ (elimr (idr _)) _ _ _ _
         (to-pathp $
-          smashr _ _
-          ·· revive₁ (pulll[] _ (has-lift.commutesv (f ∘ g) _ _))
-          ·· revive₁ (pullr[] _ (has-lift.commutesv g _ _))
-          ∙ cancel _ _ (has-lift.commutes f _ _ _))
+          revive₁ (pulll[] _ (has-lift.commutesv _ _ _))
+          ∙ revive₁ (pullr[] _ (has-lift.commutesv _ _ _))
+          ∙ cancel _ _ (has-lift.commutes _ _ _ _))
         (idr′ _)
-    mi .natural x y f′ =
-      ap hom[] $ cartesian→weak-monic E (has-lift.cartesian g _) _ _ $
-        from-pathp⁻ (pulll[] _ (has-lift.commutes g _ _ _))
-        ·· smashl _ _ ·· smashl _ _
-        ·· revive₁ (pullr[] _ (has-lift.commutesv g _ _ ))
-        ·· (cartesian→weak-monic E (has-lift.cartesian f _) _ _ $
+    mi .natural x y f' =
+      Fibre-hom-path _ _ _ $
+      cartesian→weak-monic E (has-lift.cartesian g _) _ _ $
+      to-pathp $
+      revive₁ (pulll[] _ (has-lift.commutes _ _ _ _))
+      ∙ smashl _ _ 
+      ∙ revive₁ (pullr[] _ (has-lift.commutesv g _ _))
+      ∙ (cartesian→weak-monic E (has-lift.cartesian f _) _ _ $
           whisker-r _
-          ·· revive₁ (pulll[] _ (has-lift.commutesv f _ _))
-          ·· smashl _ _
-          ·· revive₁ (pullr[] _ (has-lift.commutes f _ _ _))
-          ·· duplicate _ (ap (f ∘_) (intror (idl id))) _
-          ·· revive₁ (symP (has-lift.commutesv (f ∘ g) _ _))
-          ·· revive₁ (pushl[] _ (symP $ has-lift.commutes f _ _ _))
-          ·· unwhisker-r _ (ap (g ∘_) (sym $ idl id))
-          ·· ap (has-lift.lifting f _ ∘′_) (expandl _ _ ∙ reindex _ _))
-        ∙ cancel (sym $ assoc _ _ _) _ (pushl[] _ (symP $ has-lift.commutes g _ _ _))
+          ∙ revive₁ (pulll[] _ (has-lift.commutes f _ _ _))
+          ∙ smashl _ _
+          ∙ revive₁ (pullr[] _ (has-lift.commutes f _ _ _))
+          ∙ revive₁ (symP (has-lift.commutesp (f ∘ g) _ _ _))
+          ∙ revive₁ (pushl[] _ (sym $ has-lift.commutes f _ _ _))
+          ∙ unwhisker-r _ (ap₂ _∘_ refl (sym (idl _)))
+          ∙ ap (has-lift.lifting f _ ∘′_) (expandl _ _))
+      ∙ cancel _ _ (pushl[] _ (sym (has-lift.commutes g _ _ _)))
+       
 ```
 </details>
-
-
-```agda
-module _ {𝒶 𝒷} (f : Hom 𝒶 𝒷) where
-  base-change-cps : Functor (Fibre-cps E 𝒷) (Fibre-cps E 𝒶)
-  base-change-cps .F₀ o = has-lift f o .x′
-  base-change-cps .F₁ hom .base  = id
-  base-change-cps .F₁ hom .is-id = refl
-  base-change-cps .F₁ hom .vert  =
-    has-lift.universal′ f _ (idr _ ∙ introl (hom .is-id))
-      (hom .vert ∘′ has-lift f _ .lifting)
-  base-change-cps .F-id = Fibre-hom-path E 𝒶 refl $ sym $
-    has-lift.unique _ _ _ $
-        from-pathp⁻ (idr′ _)
-      ∙ sym (cancel _ id-comm-sym (
-          to-pathp (revive₁ (from-pathp⁻ (idl′ _))
-        ·· hom[]-∙ _ _
-        ·· reindex _ _)))
-  base-change-cps .F-∘ g h = Fibre-hom-path E _ (sym (idl id)) $
-    symP $ has-lift.uniquep _ _
-      (elimr (idr _) ∙ introl (elimr (h .is-id) ∙ g .is-id)) (idl id) _ _
-       $ to-pathp (revive₁ (pulll[] (idr _ ∙ introl (g .is-id)) (has-lift.commutesp f _ _ _))
-      ·· revive₁ (pullr[] (idr _ ∙ introl (h .is-id)) (has-lift.commutesp f _ _ _))
-      ·· assoc[] ∙ liberate refl)
-
--- module _ {𝒶} where
---   private
---     module FC = Cat.Reasoning (Cat[ Fibre E 𝒶 , Fibre E 𝒶 ])
---     module Fa = Cat.Reasoning (Fibre E 𝒶)
-
---   base-change-id-cps : base-change-cps (id {𝒶}) ≡ Id
---   base-change-id-cps = Functor-path (λ _ → {!   !}) {!   !}
-```

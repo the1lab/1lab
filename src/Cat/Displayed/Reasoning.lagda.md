@@ -195,6 +195,15 @@ cancel
   → hom[ p ] f′ ≡ g′
 cancel p q r = reindex p q ∙ from-pathp r
 
+collapse
+  : ∀ {a b c a' b' c'}
+  → {f i : B.Hom b c} {g j : B.Hom a b} {h : B.Hom a c}
+  → {f' : E.Hom[ f ] b' c'} {g' : E.Hom[ g ] a' b'} {h' : E.Hom[ h ] a' c'}
+  → {p : f ≡ i} {q : g ≡ j} {r : i B.∘ j ≡ h} {s : f B.∘ g ≡ h}
+  → f' E.∘′ g' E.≡[ s ] h'
+  → hom[ p ] f' E.∘′ hom[ q ] g' E.≡[ r ] h'
+collapse p' = to-pathp (smashr _ _ ∙ smashl _ _ ∙ cancel _ _ p')
+
 kill₁
   : ∀ {a b} {a′ b′} {f g h : B.Hom a b} {h₁′ : E.Hom[ f ] a′ b′} {h₂′ : E.Hom[ g ] a′ b′}
   → (p : f ≡ g) (q : g ≡ h)

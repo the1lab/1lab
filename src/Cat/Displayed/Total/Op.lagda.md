@@ -147,46 +147,56 @@ Finally, we show that this extends to an equality of categories.
     (∫total-op≅∫^op ℰ)
 ```
 
-# Functors between fibres
+# Total Opposites and Fibre Categories
 
-If there is a functor between the fibres of a displayed category $\cE$,
-then we also obtain a functor between the fibres of the total opposite
-of $\cE$.
+As one would expect, the fibre categories of the total opposite of
+a displayed category $\cE$ are identical to the opposites of the fibre
+categories of $\cE$. The proof is quite straightforward, and boils
+down to eta-expanding morphisms of fibre categories.
 
 ```agda
-fibre-functor-total-op
-  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′} {x y}
-  → Functor (Fibre ℰ x) (Fibre ℰ y)
-  → Functor (Fibre (ℰ ^total-op) x) (Fibre (ℰ ^total-op) y)
-fibre-functor-total-op F .F₀ = F .F₀
-fibre-functor-total-op F .F₁ = F .F₁
-fibre-functor-total-op F .F-id = F .F-id
-fibre-functor-total-op {ℰ = ℰ} F .F-∘ f g =
-  ap (F .F₁) (DR.reindex ℰ _ _ ) ·· F .F-∘ g f ·· DR.reindex ℰ _ _
-```
+fibre-op→fibre-hom
+  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′}
+  → ∀ {x a b} → Fibre-hom (ℰ ^total-op) x a b → Fibre-hom ℰ x b a
+fibre-op→fibre-hom f .base = f .base
+fibre-op→fibre-hom f .is-id = f .is-id
+fibre-op→fibre-hom f .vert = f .vert
 
-<!--
-```agda
-fibre-functor-total-op-total-op
-  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′} {x y}
-  → {F : Functor (Fibre ℰ x) (Fibre ℰ y)}
-  → fibre-functor-total-op (fibre-functor-total-op F) ≡ F
-fibre-functor-total-op-total-op {F = F} i .F₀ = F .F₀
-fibre-functor-total-op-total-op {F = F} i .F₁ = F .F₁
-fibre-functor-total-op-total-op  {F = F} i .F-id = F .F-id
-fibre-functor-total-op-total-op {ℰ = ℰ} {y = y} {F = F} i .F-∘ f g =
-  is-prop→pathp (λ i → Hom-set  _ _ _ (F .F₁ f ∘ F .F₁ g))
-    ((fibre-functor-total-op (fibre-functor-total-op F)) .F-∘ f g)
-    (F .F-∘ f g)
-    i
-    where open Precategory (Fibre ℰ y)
+fibre-hom→fibre-op
+  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′}
+  → ∀ {x a b} → Fibre-hom ℰ x b a → Fibre-hom (ℰ ^total-op) x a b
+fibre-hom→fibre-op f .base = f .base
+fibre-hom→fibre-op f .is-id = f .is-id
+fibre-hom→fibre-op f .vert = f .vert
 
-private
-  fibre-functor-double-dual
-    : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′} {x y}
-    → {F : Functor (Fibre ℰ x) (Fibre ℰ y)}
-    → fibre-functor-total-op (fibre-functor-total-op F) ≡rw F
-  fibre-functor-double-dual = make-rewrite fibre-functor-total-op-total-op
-{-# REWRITE fibre-functor-double-dual #-}
+fibre-op→fibre-hom-is-equiv
+  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′} {x} {a} {b}
+  → is-equiv (fibre-op→fibre-hom {ℰ = ℰ} {x = x} {a = a} {b = b})
+fibre-op→fibre-hom-is-equiv =
+  is-iso→is-equiv $ iso
+    fibre-hom→fibre-op
+    (λ _ → Fibre-hom-path _ _ refl refl)
+    (λ _ → Fibre-hom-path _ _ refl refl)
+
+fibre-op→fibre^op
+  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o′ ℓ′) x
+  → Functor (Fibre (ℰ ^total-op) x) ((Fibre ℰ x) ^op)
+fibre-op→fibre^op _ _ .F₀ a = a
+fibre-op→fibre^op _ _ .F₁ = fibre-op→fibre-hom
+fibre-op→fibre^op _ _ .F-id = Fibre-hom-path _ _ refl refl
+fibre-op→fibre^op _ _ .F-∘ f g = Fibre-hom-path _ _ refl refl
+
+fibre-op≅fibre^op
+  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o′ ℓ′) x
+  → is-precat-iso (fibre-op→fibre^op ℰ x)
+fibre-op≅fibre^op _ _ .is-precat-iso.has-is-ff = fibre-op→fibre-hom-is-equiv
+fibre-op≅fibre^op _ _ .is-precat-iso.has-is-iso = id-equiv
+
+fibre-op≡fibre^op
+  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o′ ℓ′) x
+  → Fibre (ℰ ^total-op) x ≡ Fibre ℰ x ^op
+fibre-op≡fibre^op ℰ x =
+  Precategory-path
+    (fibre-op→fibre^op ℰ x)
+    (fibre-op≅fibre^op ℰ x)
 ```
--->
