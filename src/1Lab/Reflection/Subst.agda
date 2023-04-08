@@ -42,7 +42,7 @@ singletonS n u = map (λ i → var i []) (count (n - 1)) ++# u ∷ (raiseS n)
   where
     count : Nat → List Nat
     count zero = []
-    count (suc n) = 1 ∷ map suc (count n)
+    count (suc n) = 0 ∷ map suc (count n)
 
 {-# TERMINATING #-}
 subst-tm  : Subst → Term → Maybe Term
