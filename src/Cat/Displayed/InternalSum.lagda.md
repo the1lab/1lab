@@ -121,6 +121,38 @@ universal property of pullbacks can be explicitly defined as follows:
 ```
 
 This defines a fibred functor from $E$ to $\mathrm{Fam}$.
+To proof this we have to show that for every cartesian $f′ : a′ → b′$
+in $E$ we find a unique $φ$ to fill the following diagram such that
+everything commutes.
+
+~~~{.quiver}
+\[\begin{tikzcd}
+	{u^\prime} \\
+	& {a^\prime} &&& {b^\prime} \\
+	u \\
+	& a &&& b \\
+	z \\
+	& a &&& b
+	\arrow["{\exists! φ}"', dashed, from=1-1, to=2-2]
+	\arrow["{f^\prime}", from=2-2, to=2-5]
+	\arrow["{h^\prime}", curve={height=-6pt}, from=1-1, to=2-5]
+	\arrow[lies over, from=2-5, to=4-5]
+	\arrow[Rightarrow, no head, from=4-5, to=6-5]
+	\arrow[lies over, from=2-2, to=4-2]
+	\arrow[Rightarrow, no head, from=4-2, to=6-2]
+	\arrow["f", from=4-2, to=4-5]
+	\arrow["f", from=6-2, to=6-5]
+	\arrow[lies over, from=1-1, to=3-1]
+	\arrow["mv"{description}, from=3-1, to=4-2]
+	\arrow["v", from=3-1, to=5-1]
+	\arrow["m", from=5-1, to=6-2]
+\end{tikzcd}\]
+~~~
+
+Ignoring the lower half we have a diagram in $E$ above $\cB$ an we can
+use that $f′$ is cartesian to receive a $φ$. Now one only has to show
+that this choice is compatible with the whole diagram.
+
 ```agda
   ηE-fib : Fibred-functor E Fam Id
   ηE-fib .Fibred-functor.disp = ηE
