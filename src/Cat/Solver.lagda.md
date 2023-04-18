@@ -77,42 +77,26 @@ single morphism, we compute a _transformation of hom-spaces_:
 
   nf : Expr A B → Hom A B
   nf e = eval e id
-
-  eval-sound-k : (e : Expr B C) (f : Hom A B) → eval e id ∘ f ≡ eval e f
-  eval-sound-k `id f = idl _
-  eval-sound-k (x ↑) f = ap (_∘ f) (idr x)
-  eval-sound-k (f `∘ g) h =
-    eval f (eval g id) ∘ h      ≡⟨ ap (_∘ h) (sym (eval-sound-k f (eval g id))) ⟩
-    (eval f id ∘ eval g id) ∘ h ≡⟨ sym (assoc _ _ _) ⟩
-    eval f id ∘ eval g id ∘ h   ≡⟨ ap (_ ∘_) (eval-sound-k g h) ⟩
-    eval f id ∘ eval g h        ≡⟨ eval-sound-k f _ ⟩
-    eval (f `∘ g) h             ∎
 ```
 
 Working this out in a back-of-the-envelope calculation, one sees that
 `eval f id` should compute the same morphism as `embed f`. Indeed,
-that's the case! Since embed is the "intended semantics", and eval is an
+that's the case! Since `embed`{.Agda} is the "intended semantics", and `eval`{.Agda} is an
 "optimised evaluator", we call this result _soundness_. We can prove it
-by induction on the expression. Here are the two straightforward cases,
-and why they work:
+by induction on the expression, by first generalising over `id`{.Agda}:
 
 ```agda
-  eval-sound : (e : Expr A B) → eval e id ≡ embed e
-  eval-sound `id   = refl  -- eval `id computes away
-  eval-sound (x ↑) = idr _ -- must show f = f ∘ id
-```
+  eval-sound-k : (e : Expr B C) (f : Hom A B) → eval e f ≡ embed e ∘ f
+  eval-sound-k `id f = sym (idl _) -- f ≡ id ∘ f
+  eval-sound-k (f `∘ g) h =
+    eval f (eval g h)       ≡⟨ eval-sound-k f _ ⟩
+    embed f ∘ eval g h      ≡⟨ ap (embed f ∘_) (eval-sound-k g _) ⟩
+    embed f ∘ embed g ∘ h   ≡⟨ assoc _ _ _ ⟩
+    (embed f ∘ embed g) ∘ h ∎
+  eval-sound-k (x ↑) f = refl -- x ∘ f ≡ x ∘ f
 
-Now comes the complicated part. First, we'll factor out proving that
-nested `eval`{.Agda} is the same as `eval`{.Agda} of a composition to a
-helper lemma. Then comes the actual inductive argument: We apply our
-lemma (still to be defined!), then we can apply the induction
-hypothesis, getting us to our goal.
-
-```agda
-  eval-sound (f `∘ g) =
-    eval f (eval g id)    ≡⟨ sym (eval-sound-k f (eval g id)) ⟩
-    eval f id ∘ eval g id ≡⟨ ap₂ _∘_ (eval-sound f) (eval-sound g) ⟩
-    embed (f `∘ g)        ∎
+  eval-sound : (e : Expr A B) → nf e ≡ embed e
+  eval-sound e = eval-sound-k e id ∙ idr _
 ```
 
 We now have a general theorem for solving associativity and identity
@@ -121,10 +105,10 @@ hom-sets, then they represent the same morphism.
 
 ```agda
   abstract
-    solve : (f g : Expr A B) → eval f id ≡ eval g id → embed f ≡ embed g
+    solve : (f g : Expr A B) → nf f ≡ nf g → embed f ≡ embed g
     solve f g p = sym (eval-sound f) ·· p ·· (eval-sound g)
 
-    solve-filler : (f g : Expr A B) → (p : eval f id ≡ eval g id) → Square (eval-sound f) p (solve f g p) (eval-sound g)
+    solve-filler : (f g : Expr A B) → (p : nf f ≡ nf g) → Square (eval-sound f) p (solve f g p) (eval-sound g)
     solve-filler f g p j i = ··-filler (sym (eval-sound f)) p (eval-sound g) j i
 ```
 
