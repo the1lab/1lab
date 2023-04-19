@@ -615,7 +615,7 @@ macro
   expand! n = expand-macro n
 ```
 
-Now, finally, we have reached the summit. The `cat!` macro allows us
+Now, finally, we have reached the summit. The `nat!` macro allows us
 to automatically solve equations involving natural numbers.
 
 ```agda

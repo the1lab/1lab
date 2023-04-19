@@ -279,6 +279,8 @@ other words, it means that $e'$ is "independent of the choice of
 representative". This follows from algebraic manipulation of group
 homomorphisms + the assumed identity $0 = e' \circ \ker f$;
 
+[propositional truncation]: 1Lab.HIT.Truncation.html
+
 ```agda
       const′ : ∀ (x y : fibre (f #_) x)
              → e' # (x .fst) F.— e' # (y .fst) ≡ F.unit
