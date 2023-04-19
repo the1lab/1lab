@@ -1,8 +1,8 @@
 ```agda
 open import Cat.Displayed.NaturalTransformation
 open import Cat.Functor.Equivalence
-open import Cat.Instances.Functor
 open import Cat.Displayed.Functor
+open import Cat.Instances.Functor
 open import Cat.Functor.Adjoint
 open import Cat.Displayed.Base
 open import Cat.Prelude
