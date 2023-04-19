@@ -65,8 +65,8 @@ Suppose that we are given a $T$-algebra $(A, \nu)$. Note that $(TA,
 \mu)$ is also a $T$-algebra, namely the free $T$-algebra on the object
 $A$. Let us illustrate this with a concrete example: Suppose we have the
 cyclic group $\bb{Z}/n\bb{Z}$, for some natural number $n$, which we
-regard as a subgroup of $\bb{Z}$. The corresponding algebra $(TA, \mu)$
-would be the [free group] on one generator^[the group of integers]
+regard as a quotient group of $\bb{Z}$. The corresponding algebra $(TA, \mu)$
+would be the [free group] on $n$ generators
 whence^[I was feeling pretentious when I wrote this sentence] we
 conclude that, in general, this "free-on-underlying" $(TA, \mu)$ algebra
 is very far from being the $(A, \nu)$ algebra we started with.
