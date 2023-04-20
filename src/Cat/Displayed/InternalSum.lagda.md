@@ -24,7 +24,7 @@ One can describe the property of a [category][cat] to have sums as
 a purely fibrational property. This property can then be used to define
 what it means for a [displayed category][disp] to have **internal sums**.
 
-More precise let $\cB$ a category and $E$ a displayed
+More precisely let $\cB$ a category and $\cE$ be a displayed
 category over $\cB$. We say $E$ has internal sums if
 $η_E : \mathrm{Fam}(E) → E$ has a [fibered left adjoint][disadj] $\coprod_E$.
 
