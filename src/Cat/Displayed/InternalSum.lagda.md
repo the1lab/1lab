@@ -21,7 +21,7 @@ open import Cat.Displayed.Total
 # Internal sums
 
 One can describe the property of a [category][cat] to have sums as
-a purley fibrational property. This property can then be used to define
+a purely fibrational property. This property can then be used to define
 what it shall mean that a [displayed category][disp] has **internal sums**.
 
 More precise let $\cB$ a category and $E$ a displayed
