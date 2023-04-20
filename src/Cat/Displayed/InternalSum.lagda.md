@@ -22,7 +22,7 @@ open import Cat.Displayed.Total
 
 One can describe the property of a [category][cat] to have sums as
 a purely fibrational property. This property can then be used to define
-what it shall mean that a [displayed category][disp] has **internal sums**.
+what it means for a [displayed category][disp] to have **internal sums**.
 
 More precise let $\cB$ a category and $E$ a displayed
 category over $\cB$. We say $E$ has internal sums if
