@@ -19,7 +19,7 @@ displayed adjoint functors following the same pattern:
 
 Given [displayed categories][disc] $\cE$, $\cF$ over the base
 categories $\cA$, resp. $\cB$ and a [displayed functor][disf] $\mathbf{L} : \cE \to \cF$
-we call $\mathbf{R} : \cF \to \cE$ **displayed right adjoint** of $L$
+we call $\mathbf{R} : \cF \to \cE$ a **displayed right adjoint** of $L$
 
 [disc]: Cat.Displayed.Base.html
 
