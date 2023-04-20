@@ -118,7 +118,7 @@ module
       
     field
       η′ : ∀ {x} (x′ : ℰ.Ob[ x ]) → ℱ.Hom[ B.id ] (F′.₀′ x′) (G′.₀′ x′)
-      is-natural : ∀ {x y f} (x′ : ℰ.Ob[ x ]) (y′ : ℰ.Ob[ y ]) (f′ : ℰ.Hom[ f ] x′ y′)
+      is-natural′ : ∀ {x y f} (x′ : ℰ.Ob[ x ]) (y′ : ℰ.Ob[ y ]) (f′ : ℰ.Hom[ f ] x′ y′)
                     → PathP
                        (λ i → ℱ.Hom[ (B.idl f ∙ sym (B.idr  f)) i ]
                        (F′.₀′ x′) (G′.₀′ y′))
