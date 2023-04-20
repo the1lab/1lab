@@ -82,6 +82,11 @@ module
 ```
 
 If $\cE$ and $\cF$ are over the same base category $\cB$
+$\mathbf{L} : \cE \to \cF$, we say a pair of fibred functors 
+$\mathbf{R} : \cF \to \cE, \mathbf{L} : \cE \to \cF$
+form a **fibred adjoint functor pair** if $\mathbf{L}$ and
+$\mathbf{R}$ are displayed adjoint
+and unit and counit are [cartesian natural transformations][disnat].
 $\mathbf{L} : \cE \to \cF$ and $\mathbf{R} : \cF \to \cE$
 form a **fibred adjoint functor pair** if $\mathbf{L}$ and
 $\mathbf{R}$ are [fibred functors][disf], they are displayed adjoint
