@@ -25,15 +25,15 @@ a purely fibrational property. This property can then be used to define
 what it means for a [displayed category][disp] to have **internal sums**.
 
 More precisely let $\cB$ a category and $\cE$ be a displayed
-category over $\cB$. We say $E$ has internal sums if
-$η_E : \mathrm{Fam}(E) → E$ has a [fibered left adjoint][disadj] $\coprod_E$.
+category over $\cB$. We say $\cE$ has internal sums if
+$\eta_{\cE} : \mathrm{Fam}(\cE) → \cE$ has a [fibered left adjoint][disadj] $\coprod_{\cE}$.
 
 [cat]: Cat.Base.html
 [disp]: Cat.Displayed.Base.html
 [disadj]: Cat.Displayed.Adjoint.html
 
 Therefore we first have to define the [fibred functor][disfunc]
-$\eta_E : \mathrm{Fam}(E) → E$ as in the diagram
+$\eta_\cE : \mathrm{Fam}(\cE) → \cE$ as in the diagram
 
 [disfunc]: Cat.Displayed.Functor.html
 
@@ -76,8 +76,8 @@ dom .Functor.F-id = refl
 dom .Functor.F-∘ f g = refl
 ```
 
-Now $E↓\cB$ is the [pullback of the displayed category][disppb] $E$
-along $\mathrm{dom}
+Now $\cE \downarrow \cB$ is the [pullback of the displayed category][disppb] $\cE$
+along $\mathrm{dom}$
 
 [disppb]: Cat.Displayed.Instances.Pullback.html
 
@@ -89,23 +89,23 @@ E↓B = Change-of-base
 ```
 
 and $\mathrm{Fam}$ is the [composition of the displayed categories][comp]
-`Slices` (see [here][slice]) and $E↓\cB$. 
+`Slices` (see [here][slice]) and $\cE \downarrow \cB$. 
 
 [comp]: Cat.Displayed.Composition.html
 [slice]: Cat.Displayed.Instances.Slice.html
 
 ```agda
-Fam : Displayed B (o ⊔ ℓ ⊔ o′) (o ⊔ ℓ ⊔ ℓ′)
-Fam =  Slices D∘ E↓B
+FamDisp : Displayed B (o ⊔ ℓ ⊔ o′) (o ⊔ ℓ ⊔ ℓ′)
+FamDisp =  Slices D∘ E↓B
 ```
 
-One can easily check that $η_E$ from the diagram above, given by the
+One can easily check that $\eta_\cE$ from the diagram above, given by the
 universal property of pullbacks can be explicitly defined as follows:
 
 ```agda
 import Cat.Reasoning B as CR
 
-ηE : Displayed-functor E Fam Id
+ηE : Displayed-functor E FamDisp Id
 ηE .Displayed-functor.F₀′ {b} x .fst ./-Obj.domain = b
 ηE .Displayed-functor.F₀′ x .fst ./-Obj.map = id
 ηE .Displayed-functor.F₀′ x .snd = x
@@ -115,9 +115,9 @@ import Cat.Reasoning B as CR
 ηE .Displayed-functor.F-∘′ = Σ-path (Slice-pathp refl refl) refl
 ```
 
-This defines a fibred functor from $E$ to $\mathrm{Fam}$.
+This defines a fibred functor from $\cE$ to $\mathrm{Fam}$.
 To proof this we have to show that for every cartesian $f′ : a′ → b′$
-in $E$ we find a unique $φ$ to fill the following diagram such that
+in $\cE$ we find a unique $\varphi$ to fill the following diagram such that
 everything commutes.
 
 ~~~{.quiver}
@@ -144,35 +144,35 @@ everything commutes.
 \end{tikzcd}\]
 ~~~
 
-Ignoring the lower half we have a diagram in $E$ above $\cB$ an we can
-use that $f′$ is cartesian to receive a $φ$. Now one only has to show
+Ignoring the lower half we have a diagram in $\cE$ above $\cB$ an we can
+use that $f′$ is cartesian to receive a $\varphi$. Now one only has to show
 that this choice is compatible with the whole diagram.
 
 ```agda
-ηE-fib : Fibred-functor E Fam Id
+ηE-fib : Fibred-functor E FamDisp Id
 ηE-fib .Fibred-functor.disp = ηE
 ηE-fib .Fibred-functor.F-cartesian {a = a} {a′ = a′} {b′ = b′} {f = f} f′ f′-cart
   = ηf′-cart where
   module ηE = Displayed-functor ηE
   module f′ = is-cartesian f′-cart
   module E↓B = Displayed E↓B
-  module Fam = Displayed Fam
+  module FamDisp = Displayed FamDisp
   module E = Displayed E
   open import Cat.Displayed.Reasoning E
     
-  φ : {u : CR.Ob} {u′ : Fam.Ob[ u ]} (m : CR.Hom u a)
-      (h′ : Fam.Hom[ f ∘ m ] u′ (ηE.F₀′ b′))
+  φ : {u : CR.Ob} {u′ : FamDisp.Ob[ u ]} (m : CR.Hom u a)
+      (h′ : FamDisp.Hom[ f ∘ m ] u′ (ηE.F₀′ b′))
       → E.Hom[ m ∘ u′ .fst ./-Obj.map ] (u′ .snd) a′
   φ {u′ = u′} m h′ = f′.universal (m ∘ u′ .fst ./-Obj.map)
       (hom[ CR.assoc _ _ _ ∙ h′ .fst .Slice-hom.commute ∙ CR.idl _ ]⁻ (h′ .snd)) 
-  ηf′-cart : is-cartesian Fam f (ηE.₁′ f′)
+  ηf′-cart : is-cartesian FamDisp f (ηE.₁′ f′)
   ηf′-cart .is-cartesian.universal {u′ = u′} m h′
     = slice-hom (m ∘ u′ .fst ./-Obj.map) (sym (CR.idl _)) , φ m h′
   ηf′-cart .is-cartesian.commutes {u′ = u′} m h′
     = Σ-path (Slice-pathp refl
       (CR.assoc _ _ _ ∙ h′ .fst .Slice-hom.commute ∙ CR.idl _))
         (hom[ CR.assoc _ _ _ ∙ h′ .fst .Slice-hom.commute ∙ CR.idl _ ]
-          ((ηE.₁′ f′ Fam.∘′ ηf′-cart .is-cartesian.universal m h′) .snd) ≡⟨ hom[]⟩⟨ refl ⟩
+          ((ηE.₁′ f′ FamDisp.∘′ ηf′-cart .is-cartesian.universal m h′) .snd) ≡⟨ hom[]⟩⟨ refl ⟩
         hom[ CR.assoc _ _ _ ∙ h′ .fst .Slice-hom.commute ∙ CR.idl _ ]
           (hom[ refl ] (ηE.₁′ f′ .snd E.∘′ ηf′-cart .is-cartesian.universal m h′ .snd)) ≡⟨ hom[]⟩⟨ liberate _ ⟩
         hom[ CR.assoc _ _ _ ∙ h′ .fst .Slice-hom.commute ∙ CR.idl _ ]
@@ -193,21 +193,21 @@ that this choice is compatible with the whole diagram.
       hom[ ap (f ∘_) (m′ .fst .Slice-hom.commute ∙ CR.idl _) ]⁻
         (hom[ refl ] (f′ E.∘′ m′ .snd)) ≡⟨ hom[]⟩⟨ refl ⟩
       hom[ ap (f ∘_) (m′ .fst .Slice-hom.commute ∙ CR.idl _) ]⁻
-        ((ηE.₁′ f′ Fam.∘′ m′) .snd) ≡⟨ hom[]⟩⟨ from-pathp⁻ (ap (λ x → x .snd) f′m′≡h′) ⟩
+        ((ηE.₁′ f′ FamDisp.∘′ m′) .snd) ≡⟨ hom[]⟩⟨ from-pathp⁻ (ap (λ x → x .snd) f′m′≡h′) ⟩
       hom[ ap (f ∘_) (m′ .fst .Slice-hom.commute ∙ CR.idl _) ]⁻
         (hom[ ap (λ x → x .fst .Slice-hom.to) f′m′≡h′ ]⁻ (h′ .snd)) ≡⟨ hom[]-∙ _ _ ∙ reindex _ _ ⟩
       hom[ CR.assoc _ _ _ ∙ h′ .fst .Slice-hom.commute ∙ CR.idl _ ]⁻ (h′ .snd) ∎) 
 ```
 
-Finally we can give the definition that $E$ has internal sums
+Finally we can give the definition that $\cE$ has internal sums
 ```agda
-η-fib : Fibred-functor-single-base E Fam
+η-fib : Fibred-functor-single-base E FamDisp
 η-fib = Fibred-functor-over-id→over-single-base ηE-fib
 
 record Internal-sum : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′)
   where
   no-eta-equality
   field
-    ∐ : Fibred-functor-single-base Fam E
+    ∐ : Fibred-functor-single-base FamDisp E
     adjunction : ∐ ⊣′ η-fib
 ```

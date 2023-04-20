@@ -67,13 +67,13 @@ module
 ```
 
 Let $\bf{F}$ and $\bf{G}$ be fibred functors. A displayed natural transformation
-$\bf{\eta} : \bf{F} \To \bf{G}$ is called **cartesian** if
+$\bf{\eta} : \bf{F} \To \bf{G}$ is called **vertical natural transformation** if
 $\bf{\eta}_x : \bf{F}(x) \to \bf{G}(x)$ is a vertical morphism for every $x \in \cE$,
 i.e. the morphism lies over the identity. This makes only sense if $\bf{F} = \bf{G}$.
 This means that the underlying natural transformation $\eta$ is the
 identity natural transformation. 
 ```agda
-  record Cartesian-natural-transformation
+  record Vertical-natural-transformation
       {F : Functor A B} (F′ : Fibred-functor ℰ ℱ F) (G′ : Fibred-functor ℰ ℱ F)
       : Type (lvl ⊔ o₂ ⊔ ℓ₂ ⊔ o₂′) where
     no-eta-equality
@@ -94,7 +94,7 @@ identity natural transformation.
                        (η′ y′ ℱ.∘′ F′.₁′ f′) (G′.₁′ f′ ℱ.∘′ η′ x′)
 ``` 
 
-In many cases the cartesian natural transformation is between displayed functors
+In many cases the vertical natural transformation is between displayed functors
 between displayed categories living over the same base category.
 ```agda
 module

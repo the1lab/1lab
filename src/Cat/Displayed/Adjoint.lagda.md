@@ -23,6 +23,13 @@ we call $\mathbf{R} : \cF \to \cE$ a **displayed right adjoint** of $L$
 
 [disc]: Cat.Displayed.Base.html
 
+if we have [displayed natural transformations][disnat]
+$\bf{\eta} : \mathrm{id}_\cE \To \mathbf{R} \mathbf{L}$ and
+$\bf{\epsilon} : \mathbf{L} \mathbf{R} \To \mathrm{id}_\cF$ 
+called unit and counit, satisfying the usual triangular identities
+$\mathbf{R} \mathbf{\epsilon} \circ \mathbf{\eta} \mathbf{R} = \mathrm{id}$
+and $\mathbf{\epsilon} \mathbf{L} \circ \mathbf{L} \mathbf{\eta} = mathrm{id}$.
+
 ~~~{.quiver}
 \[\begin{tikzcd}
 	{\mathcal E} && {\mathcal F} \\
@@ -36,13 +43,6 @@ we call $\mathbf{R} : \cF \to \cE$ a **displayed right adjoint** of $L$
 	\arrow["{R}", curve={height=-12pt}, from=3-3, to=3-1]
 \end{tikzcd}\]
 ~~~
-
-if we have [displayed natural transformations][disnat]
-$\bf{\eta} : \mathrm{id}_\cE \To \mathbf{R} \mathbf{L}$ and
-$\bf{\epsilon} : \mathbf{L} \mathbf{R} \To \mathrm{id}_\cF$ 
-called unit and counit, satisfying the usual triangular identities
-$\mathbf{R} \mathbf{\epsilon} \circ \mathbf{\eta} \mathbf{R} = \mathrm{id}$
-and $\mathbf{\epsilon} \mathbf{L} \circ \mathbf{L} \mathbf{\eta} = mathrm{id}$.
 
 ```agda
 module
@@ -73,10 +73,10 @@ module
     module counit′ = _=>[_]_ counit′ renaming (η′ to ε′)
 
     field
-      zig : ∀ {x} {x′ : ℰ.Ob[ x ]}
+      zig′ : ∀ {x} {x′ : ℰ.Ob[ x ]}
            → PathP (λ i → ℱ.Hom[ adj.zig i ] (L′.₀′ x′) (L′.₀′ x′))
                         (counit′.ε′ (L′.₀′ x′) ℱ.∘′ L′.₁′ (unit′.η′ x′)) ℱ.id′
-      zag : ∀ {y} {y′ : ℱ.Ob[ y ]}
+      zag′ : ∀ {y} {y′ : ℱ.Ob[ y ]}
             → PathP (λ i → ℰ.Hom[ adj.zag i ] (R′.₀′ y′) (R′.₀′ y′))
                          (R′.₁′ (counit′.ε′ y′) ℰ.∘′ unit′.η′ (R′.₀′ y′)) ℰ.id′
 ```
@@ -86,11 +86,11 @@ $\mathbf{L} : \cE \to \cF$, we say a pair of fibred functors
 $\mathbf{R} : \cF \to \cE, \mathbf{L} : \cE \to \cF$
 form a **fibred adjoint functor pair** if $\mathbf{L}$ and
 $\mathbf{R}$ are displayed adjoint
-and unit and counit are [cartesian natural transformations][disnat].
+and unit and counit are [vertical natural transformations][disnat].
 $\mathbf{L} : \cE \to \cF$ and $\mathbf{R} : \cF \to \cE$
 form a **fibred adjoint functor pair** if $\mathbf{L}$ and
 $\mathbf{R}$ are [fibred functors][disf], they are displayed adjoint
-and unit and counit are [cartesian natural transformations][disnat].
+and unit and counit are [vertical natural transformations][disnat].
 
 [disf]: Cat.Displayed.Functor.html
 [disnat]: Cat.Displayed.NaturalTransformation.html
@@ -136,10 +136,10 @@ module
     module counit′ = _=>′_ counit′ renaming (η′ to ε′)
 
     field
-      zig : ∀ {x} {x′ : ℰ.Ob[ x ]}
+      zig′ : ∀ {x} {x′ : ℰ.Ob[ x ]}
            → PathP (λ i → ℱ.Hom[ B.idl B.id i ] (L.₀′ x′) (L.₀′ x′))
                         (counit′.ε′ (L.₀′ x′) ℱ.∘′ L.₁′ (unit′.η′ x′)) ℱ.id′
-      zag : ∀ {y} {y′ : ℱ.Ob[ y ]}
+      zag′ : ∀ {y} {y′ : ℱ.Ob[ y ]}
             → PathP (λ i → ℰ.Hom[ B.idl B.id i ] (R.₀′ y′) (R.₀′ y′))
                          (R.₁′ (counit′.ε′ y′) ℰ.∘′ unit′.η′ (R.₀′ y′)) ℰ.id′
 
