@@ -65,7 +65,7 @@ this family of sets into a map $\mathrm{fst} : \Sigma (i : I) P(i) \to I$ by
 taking the total space of $P$. Furthermore, $\Sigma (i : I) P(i)$
 is a set, so we can consider the space of objects $\cE_{\Sigma (i : I) P(i)}$.
 We can embed each $X(i) : E_{P(i)}$ into $\cE_{\Sigma (i : I) P(i)}$
-by reindexing along the second projection $\Sigma (i : I) P(i)} \to P(i)$
+by reindexing along the second projection $\Sigma (i : I) P(i) \to P(i)$
 
 To show the reverse direction, suppose we have some function $f : A \to I$,
 along with an object $\cE_{A}$. We can obtain a family of sets $f^{-1} : I \to \set$
