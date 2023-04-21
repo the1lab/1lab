@@ -86,7 +86,7 @@ the domain of a morphism in the arrow category (which **is** the total
 category of the codomain fibration).
 
 [codomain fibration]: Cat.Displayed.Instances.Slice.html
-[base change]: Cat.Displayed.Pullback.html
+[base change]: Cat.Displayed.Instances.Pullback.html
 
 ```agda
 Dom : Functor (∫ (Slices B)) B
