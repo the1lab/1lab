@@ -479,3 +479,108 @@ module _
   IdVf : Vertical-fibred-functor ℰ ℰ
   IdVf = Fibred→Vertical-fibred Idf′
 ```
+
+## Displayed Natural Transformations
+
+Just like we have defined a [displayed functor][disfct]
+$\bf{F} : \cE \to \cF$ lying over an ordinary functor $F : \cA \to \cB$
+we can define a displayed natural transformation.
+Assume $\bf{F}, \bf{G} : \cE \to \cF$ are [displayed functors][disfct]
+over $F : \cA \to \cB$ resp. $G : \cA \to \cB$ and we have a
+natural transformation $\eta : F \To G$. Than one can define a
+**displayed natural transformation** $\bf{\eta} : \bf{F} \To \bf{G}$
+lying over $\eta$.
+
+[disfct]: Cat.Displayed.Functor.html
+
+~~~{.quiver}
+\[\begin{tikzcd}
+	{\mathcal E} && {\mathcal F} \\
+	\\
+	\mathcal A && \mathcal B
+	\arrow[""{name=0, anchor=center, inner sep=0}, "{\mathbf{F}}", curve={height=-12pt}, from=1-1, to=1-3]
+	\arrow[""{name=1, anchor=center, inner sep=0}, "{\mathbf{G}}"', curve={height=12pt}, from=1-1, to=1-3]
+	\arrow[""{name=2, anchor=center, inner sep=0}, "F", curve={height=-12pt}, from=3-1, to=3-3]
+	\arrow[""{name=3, anchor=center, inner sep=0}, "G"', curve={height=12pt}, from=3-1, to=3-3]
+  \arrow[category over, from=1-1, to=3-1]
+	\arrow[category over, from=1-3, to=3-3]
+	\arrow["\eta", shorten <=3pt, shorten >=3pt, Rightarrow, from=2, to=3]
+	\arrow["{\eta^\prime}", shorten <=3pt, shorten >=3pt, Rightarrow, from=0, to=1]
+\end{tikzcd}\]
+~~~
+
+```agda
+module
+  _ {o ℓ o′ ℓ′ o₂ ℓ₂ o₂′ ℓ₂′}
+    {A : Precategory o ℓ}
+    {B : Precategory o₂ ℓ₂}
+    {ℰ : Displayed A o′ ℓ′}
+    {ℱ : Displayed B o₂′ ℓ₂′} 
+  where
+  private
+    module ℰ = Displayed ℰ
+    module ℱ = Displayed ℱ
+    open Displayed-functor
+    open _=>_
+
+    lvl : Level
+    lvl = o ⊔ o′ ⊔ ℓ ⊔ ℓ′ ⊔ ℓ₂′
+  infix 20 _=[_]=>_
+
+  record _=[_]=>_ {F : Functor A B} {G : Functor A B} (F′ : Displayed-functor ℰ ℱ F)
+                          (α : F => G) (G′ : Displayed-functor ℰ ℱ G)
+            : Type lvl where
+    no-eta-equality
+
+    field
+      η′ : ∀ {x} (x′ : ℰ.Ob[ x ]) → ℱ.Hom[ α .η x ] (F′ .F₀′ x′) (G′ .F₀′ x′)
+      is-natural′
+        : ∀ {x y f} (x′ : ℰ.Ob[ x ]) (y′ : ℰ.Ob[ y ]) (f′ : ℰ.Hom[ f ] x′ y′)
+        → η′ y′ ℱ.∘′ F′ .F₁′ f′ ℱ.≡[ α .is-natural x y f ] G′ .F₁′ f′ ℱ.∘′ η′ x′
+```
+
+Let $F, G : \cE \to \cF$ be two vertical functors. A displayed natural transformation
+between $F$ and $G$ is called a **vertical natural transformation** if all components
+of the natural transformation are vertical.
+
+<!--
+```agda
+module _
+  {ob ℓb oe ℓe of ℓf}
+  {B : Precategory ob ℓb}
+  {ℰ : Displayed B oe ℓe}
+  {ℱ : Displayed B of ℓf}
+  where
+  private
+    open CR B
+    module ℰ = Displayed ℰ
+    module ℱ = Displayed ℱ
+    open Vertical-functor
+
+    lvl : Level
+    lvl = ob ⊔ ℓb ⊔ oe ⊔ ℓe ⊔ ℓf
+
+  infix 20 _=>↓_
+  infix 20 _=>f↓_
+```
+-->
+
+```agda
+  record _=>↓_ (F′ G′ : Vertical-functor ℰ ℱ) : Type lvl where
+    no-eta-equality
+    field
+      η′ : ∀ {x} (x′ : ℰ.Ob[ x ]) → ℱ.Hom[ id ] (F′ .F₀′ x′) (G′ .F₀′ x′)
+      is-natural′
+        : ∀ {x y f} (x′ : ℰ.Ob[ x ]) (y′ : ℰ.Ob[ y ]) (f′ : ℰ.Hom[ f ] x′ y′)
+        → η′ y′ ℱ.∘′ F′ .F₁′ f′ ℱ.≡[ id-comm-sym ] G′ .F₁′ f′ ℱ.∘′ η′ x′
+```
+
+This notion of natural transformation is also the correct one for
+fibred vertical functors, as there is no higher structure that needs
+to be preserved.
+
+```agda
+  _=>f↓_ : (F′ G′ : Vertical-fibred-functor ℰ ℱ) → Type _
+  F′ =>f↓ G′ = F′ .vert =>↓ G′ .vert
+    where open Vertical-fibred-functor
+```
