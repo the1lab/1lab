@@ -628,6 +628,7 @@ their higher groupoid structure:
 ```agda
 open import Cat.Displayed.Path
 open import Cat.Displayed.Functor
+open import Cat.Displayed.Adjoint
 ```
 
 ### Cartesian fibrations
@@ -668,6 +669,8 @@ Cartesian fibrations:
 ```agda
 open import Cat.Displayed.Instances.Slice -- Canonical self-indexing
 open import Cat.Displayed.Instances.Family -- Family fibration
+open import Cat.Displayed.Instances.DisplayedFamilies
+-- Families internal to a fibration.
 open import Cat.Displayed.Instances.Pullback
   -- Pullback of a displayed category by a functor
 open import Cat.Displayed.Instances.Scone
@@ -703,7 +706,9 @@ open import Cat.Displayed.Instances.Identity
 -- The bifibration associated with the identity functor.
 ```
 
-
+### Structures in Fibrations
+open import Cat.Displayed.InternalSum
+-- The fibred equivalent of sigma types and existential quantifiers
 
 ## Bicategories
 
