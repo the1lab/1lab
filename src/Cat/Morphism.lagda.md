@@ -82,6 +82,7 @@ section-of-is-prop
 section-of-is-prop = Hom-set _ _ _ _
 
 record has-section (r : Hom a b) : Type h where
+  constructor make-section
   field
     section : Hom b a
     is-section : section section-of r
@@ -112,6 +113,7 @@ retract-of-is-prop
 retract-of-is-prop = Hom-set _ _ _ _
 
 record has-retract (s : Hom b a) : Type h where
+  constructor make-retract
   field
     retract : Hom a b
     is-retract : retract retract-of s

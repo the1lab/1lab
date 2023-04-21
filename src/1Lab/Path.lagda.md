@@ -1037,6 +1037,20 @@ setting the _right_ face to `refl`{.Agda}.
     k (k = i0) → p (i ∨ ~ j)
 ```
 
+We can use the filler and heterogeneous composition to define composition of `PathP`{.Agda}s
+in a given type family:
+
+```agda
+_∙P_ : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} {x y z : A} {x′ : B x} {y′ : B y} {z′ : B z} {p : x ≡ y} {q : y ≡ z}
+     → PathP (λ i → B (p i)) x′ y′ → PathP (λ i → B (q i)) y′ z′
+     → PathP (λ i → B ((p ∙ q) i)) x′ z′
+_∙P_ {B = B} {x′ = x′} {p = p} {q = q} p′ q′ i =
+  comp (λ j → B (∙-filler p q j i)) (∂ i) λ where
+    j (i = i0) → x′
+    j (i = i1) → q′ j
+    j (j = i0) → p′ i
+```
+
 ## Uniqueness
 
 A common characteristic of _geometric_ interpretations of higher
@@ -1286,7 +1300,7 @@ x ≡⟨⟩ x≡y = x≡y
 _∎ : ∀ {ℓ} {A : Type ℓ} (x : A) → x ≡ x
 x ∎ = refl
 
-infixr 30 _∙_
+infixr 30 _∙_ _∙P_
 infixr 2 _≡⟨⟩_ _≡˘⟨_⟩_
 infix  3 _∎
 
@@ -1724,6 +1738,9 @@ _▷_ : ∀ {ℓ} {A : I → Type ℓ} {a₀ : A i0} {a₁ a₁' : A i1}
   j (i = i0) → p i0
   j (i = i1) → q j
   j (j = i0) → p i
+
+infixr 31 _◁_
+infixl 32 _▷_
 
 Square≡double-composite-path : ∀ {ℓ} {A : Type ℓ}
           → {w x y z : A}

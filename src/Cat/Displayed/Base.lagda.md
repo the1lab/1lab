@@ -92,3 +92,27 @@ over the equalities in the base.
            → (f′ : Hom[ f ] y z) → (g′ : Hom[ g ] x y) → (h′ : Hom[ h ] w x)
            → f′ ∘′ (g′ ∘′ h′) ≡[ assoc f g h ] ((f′ ∘′ g′) ∘′ h′)
 ```
+
+For convenience, we also introduce displayed analogues for equational chain reasoning:
+
+```agda
+  _∙[]_ : ∀ {a b x y} {f g h : Hom a b} {p : f ≡ g} {q : g ≡ h}
+        → {f′ : Hom[ f ] x y} {g′ : Hom[ g ] x y} {h′ : Hom[ h ] x y}
+        → f′ ≡[ p ] g′ → g′ ≡[ q ] h′ → f′ ≡[ p ∙ q ] h′
+  _∙[]_ {x = x} {y = y} p′ q′ = _∙P_ {B = λ f → Hom[ f ] x y} p′ q′
+
+  ≡[]⟨⟩-syntax : ∀ {a b x y} {f g h : Hom a b} {p : f ≡ g} {q : g ≡ h}
+               → (f′ : Hom[ f ] x y) {g′ : Hom[ g ] x y} {h′ : Hom[ h ] x y}
+               → g′ ≡[ q ] h′ → f′ ≡[ p ] g′ → f′ ≡[ p ∙ q ] h′
+  ≡[]⟨⟩-syntax f′ q′ p′ = p′ ∙[] q′
+
+  _≡[]˘⟨_⟩_ : ∀ {a b x y} {f g h : Hom a b} {p : g ≡ f} {q : g ≡ h}
+            → (f′ : Hom[ f ] x y) {g′ : Hom[ g ] x y} {h′ : Hom[ h ] x y}
+            → g′ ≡[ p ] f′ → g′ ≡[ q ] h′ → f′ ≡[ sym p ∙ q ] h′
+  f′ ≡[]˘⟨ p′ ⟩ q′ = symP p′ ∙[] q′
+
+  syntax ≡[]⟨⟩-syntax f′ q′ p′ = f′ ≡[]⟨ p′ ⟩ q′
+
+  infixr 30 _∙[]_
+  infixr 2 ≡[]⟨⟩-syntax _≡[]˘⟨_⟩_
+```

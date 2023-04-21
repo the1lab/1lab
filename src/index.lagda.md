@@ -696,6 +696,11 @@ open import Cat.Displayed.Cocartesian.Weak
 ```agda
 open import Cat.Displayed.Bifibration
   -- Bifibrations, adjoints to base change
+open import Cat.Displayed.Instances.Chaotic
+-- The bifibration associated with the projection functor
+-- $\cB \times \cJ \to \cB$.
+open import Cat.Displayed.Instances.Identity
+-- The bifibration associated with the identity functor.
 ```
 
 
