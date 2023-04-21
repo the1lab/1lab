@@ -54,7 +54,7 @@ $\cB(a, x)$ to be a sort of "generalized family" over $x$, where $a$ is
 playing the role of the total space. Objects $a' : \cE_{a}$ over $a$
 then encode an $x$-indexed family of $\cE$ objects.
 
-[here]: 1Lab.Univalence#object-classifiers
+[here]: 1Lab.Univalence.html#object-classifiers
 
 This is all quite abstract, so let's look at an example. Consider
 some category $\cE$ fibred over $\Sets$. There is already a natural notion
@@ -81,7 +81,7 @@ $(k : \cB(a, b)) \times (u \circ f = g \circ k) \times \cE_{k}(a', b')$.
 The first portion of this data can be obtained by using the
 [codomain fibration] over $\cB$. The remaining data involving $\cE$ is
 then added by composing the codomain fibration with the [base change]
-of $\cE$ along the functor $Dom : \int B^{\to}} \to B$ that takes
+of $\cE$ along the functor $\mathrm{Dom} : \int B^{\to} \to B$ that takes
 the domain of a morphism in the arrow category (which **is** the total
 category of the codomain fibration).
 
