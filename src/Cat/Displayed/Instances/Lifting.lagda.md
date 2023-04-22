@@ -13,14 +13,8 @@ import Cat.Displayed.Reasoning
 import Cat.Functor.Reasoning
 
 module Cat.Displayed.Instances.Lifting
-  {o ℓ o' ℓ'}
-  {B : Precategory o ℓ}
-  (E : Displayed B o' ℓ')
   where
 
-open Cat.Reasoning B
-open Displayed E
-open Cat.Displayed.Reasoning E
 
 open Functor
 open _=>_
@@ -53,8 +47,17 @@ $\cB$.
 
 <!--
 ```agda
-module _ {oj ℓj} {J : Precategory oj ℓj} where
+module _
+  {o ℓ o' ℓ' oj ℓj}
+  {B : Precategory o ℓ}
+  {J : Precategory oj ℓj}
+  (E : Displayed B o' ℓ')
+  where
   private module J = Precategory J
+
+  open Cat.Reasoning B
+  open Displayed E
+  open Cat.Displayed.Reasoning E
 ```
 -->
 
@@ -144,10 +147,27 @@ A *natural transformation of liftings* between $F'$ and $G'$ over
 $\alpha$ is given by a family of morphisms $\eta_{j}$ between $F'(j)$ and
 $G'(j)$.
 
+<!--
+```agda
+module _
+  {o ℓ o' ℓ' oj ℓj}
+  {B : Precategory o ℓ}
+  {J : Precategory oj ℓj}
+  {E : Displayed B o' ℓ'}
+  where
+  private module J = Precategory J
+
+  open Cat.Reasoning B
+  open Displayed E
+  open Cat.Displayed.Reasoning E
+  open Lifting
+```
+-->
+
 ```agda
   record _=[_]=>l_
     {F G : Functor J B}
-    (F' : Lifting F) (α : F => G) (G' : Lifting G)
+    (F' : Lifting E F) (α : F => G) (G' : Lifting E G)
     : Type (ℓ' ⊔ oj ⊔ ℓj) where
     no-eta-equality
     field
@@ -161,7 +181,7 @@ $G'(j)$.
 <!--
 ```agda
   NatLift-pathp
-    : ∀ {F G : Functor J B} {F' : Lifting F} {G' : Lifting G}
+    : ∀ {F G : Functor J B} {F' : Lifting E F} {G' : Lifting E G}
     → {α : F => G} {β : F => G} {α' : F' =[ α ]=>l G'} {β' : F' =[ β ]=>l G'}
     → {p : α ≡ β}
     → (∀ j → α' .η′ j ≡[ p ηₚ j ] β' .η′ j)
@@ -177,7 +197,7 @@ $G'(j)$.
   private unquoteDecl eqv = declare-record-iso eqv (quote _=[_]=>l_)
 
   NatLift-is-set
-    : ∀ {F G : Functor J B} {F' : Lifting F} {G' : Lifting G}
+    : ∀ {F G : Functor J B} {F' : Lifting E F} {G' : Lifting E G}
     → {α : F => G} → is-set (F' =[ α ]=>l G')
   NatLift-is-set =
     Iso→is-hlevel 2 eqv $
@@ -210,8 +230,8 @@ transformations between the associated functors.
 
 ```agda
   NatLift→Nat
-    : ∀ {F G : Functor J B} {F' : Lifting F} {G' : Lifting G}
-    → {α : F => G} → F' =[ α ]=>l G' → Lifting→Functor F' => Lifting→Functor G'
+    : ∀ {F G : Functor J B} {F' : Lifting E F} {G' : Lifting E G}
+    → {α : F => G} → F' =[ α ]=>l G' → Lifting→Functor E F' => Lifting→Functor E G'
   NatLift→Nat {α = α} α' .η x .hom = α .η x
   NatLift→Nat {α = α} α' .η x .preserves = α' .η′ x
   NatLift→Nat {α = α} α' .is-natural x y f =
@@ -224,8 +244,8 @@ requires repacking some data due to the lack of some $\eta$-rules.
 
 ```agda
   Nat→NatLift
-    : ∀ {F G : Functor J B} (F' : Lifting F) (G' : Lifting G)
-    → F => G → πᶠ E F∘ Lifting→Functor F' => πᶠ E F∘ Lifting→Functor G'
+    : ∀ {F G : Functor J B} (F' : Lifting E F) (G' : Lifting E G)
+    → F => G → πᶠ E F∘ Lifting→Functor E F' => πᶠ E F∘ Lifting→Functor E G'
   Nat→NatLift F' G' α .η = α .η
   Nat→NatLift F' G' α .is-natural = α .is-natural
 ```
@@ -236,7 +256,7 @@ lie over their bases.
 
 ```agda
   NatLift-is-lifting
-    : ∀ {F G : Functor J B} {F' : Lifting F} {G' : Lifting G}
+    : ∀ {F G : Functor J B} {F' : Lifting E F} {G' : Lifting E G}
     → {α : F => G} → (α' : F' =[ α ]=>l G')
     → πᶠ E ▸ NatLift→Nat α' ≡ Nat→NatLift F' G' α
   NatLift-is-lifting α' = Nat-path (λ _ → refl)
@@ -246,12 +266,12 @@ The identity natural transformation is easy to define, as is vertical
 composition.
 
 ```agda
-  idntl : ∀ {F : Functor J B} {F' : Lifting F} → F' =[ idnt ]=>l F'
+  idntl : ∀ {F : Functor J B} {F' : Lifting E F} → F' =[ idnt ]=>l F'
   idntl .η′ j = id′
   idntl .is-natural′ i j f = idl′ _ ∙[] symP (idr′ _)
 
   _∘ntl_
-    : ∀ {F G H : Functor J B} {F' : Lifting F} {G' : Lifting G} {H' : Lifting H}
+    : ∀ {F G H : Functor J B} {F' : Lifting E F} {G' : Lifting E G} {H' : Lifting E H}
     → {α : G => H} {β : F => G}
     → G' =[ α ]=>l H' → F' =[ β ]=>l G' → F' =[ α ∘nt β ]=>l H'
   _∘ntl_ α' β' .η′ j = α' .η′ j ∘′ β' .η′ j
@@ -269,14 +289,27 @@ $\cE^{\cJ}$, as it is the displayed analog of the fibration
 $\pi \circ - : \cE^{\cJ} \to \cB^{\cJ}$, where $\pi : \cE \to \cB$ is a
 fibration.
 
+<!--
 ```agda
-module _ {oj ℓj} (J : Precategory oj ℓj) where
+module _
+  {o ℓ o' ℓ' oj ℓj}
+  {B : Precategory o ℓ}
+  (E : Displayed B o' ℓ')
+  (J : Precategory oj ℓj)
+  where
   private module J = Precategory J
+
+  open Cat.Reasoning B
+  open Displayed E
+  open Cat.Displayed.Reasoning E
   open Lifting
   open _=[_]=>l_
+```
+-->
 
+```agda
   Liftings : Displayed Cat[ J , B ] (o' ⊔ ℓ' ⊔ oj ⊔ ℓj) (ℓ' ⊔ oj ⊔ ℓj)
-  Liftings .Displayed.Ob[_] = Lifting
+  Liftings .Displayed.Ob[_] = Lifting E
   Liftings .Displayed.Hom[_] α F' G' = F' =[ α ]=>l G'
   Liftings .Displayed.Hom[_]-set _ _ _ = NatLift-is-set
   Liftings .Displayed.id′ = idntl
@@ -291,7 +324,7 @@ it is cartesian.
 
 ```agda
   pointwise-cartesian→Liftings-cartesian
-    : ∀ {F G : Functor J B} {F' : Lifting F} {G' : Lifting G}
+    : ∀ {F G : Functor J B} {F' : Lifting E F} {G' : Lifting E G}
     → {α : F => G} {α' : F' =[ α ]=>l G'}
     → (∀ x → is-cartesian E (α .η x) (α' .η′ x))
     → is-cartesian Liftings α α'
@@ -331,7 +364,7 @@ We begin by constructing the lifting over $F$; we can do this by
 reindexing $G'$ pointwise.
 
 ```agda
-    G'* : Lifting F
+    G'* : Lifting E F
     G'* .F₀′ j = has-lift.x′ (α .η j) (G' .F₀′ j)
     G'* .F₁′ f =
       has-lift.universal _ _ _
@@ -377,14 +410,14 @@ category $[\cJ, \int \cE]$. First, we shall need a heaping pile of
 repackaging lemmas.
 
 ```agda
-  ∫Functor→Lifting : (F : Functor J (∫ E)) → Lifting (πᶠ E F∘ F)
+  ∫Functor→Lifting : (F : Functor J (∫ E)) → Lifting E (πᶠ E F∘ F)
   ∫Functor→Lifting F .F₀′ j = F .F₀ j .snd
   ∫Functor→Lifting F .F₁′ f = F .F₁ f .preserves
   ∫Functor→Lifting F .F-id′ = cast[] (ap preserves (F .F-id))
   ∫Functor→Lifting F .F-∘′ f g = cast[] (ap preserves (F .F-∘ f g))
 
   Functor+Lifting→∫Functor
-    : (F : Functor J B) → Lifting F → Functor J (∫ E)
+    : (F : Functor J B) → Lifting E F → Functor J (∫ E)
   Functor+Lifting→∫Functor F F' .F₀ x .fst = F .F₀ x
   Functor+Lifting→∫Functor F F' .F₀ x .snd = F' .F₀′ x
   Functor+Lifting→∫Functor F F' .F₁ f .hom = F .F₁ f
@@ -451,7 +484,6 @@ in the way.
       iso (λ F → Functor+Lifting→∫Functor (F .fst) (F .snd))
         (λ _ →
           Functor-path (λ _ → refl) (λ _ → refl) ,ₚ
-          Lifting-pathp _ (λ _ → refl) (λ _ → refl))
+          Lifting-pathp E _ (λ _ → refl) (λ _ → refl))
         (λ _ → Functor-path (λ _ → refl ,ₚ refl) λ _ → refl)
 ```
-
