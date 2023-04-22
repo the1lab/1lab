@@ -1,20 +1,12 @@
 <!--
 ```agda
+open import Algebra.Group.Notation
 open import Algebra.Group.Ab
 open import Algebra.Group
 open import Algebra.Ring
 
 open import Cat.Displayed.Univalence.Thin
-open import Cat.Functor.FullSubcategory
-open import Cat.Displayed.Cartesian
-open import Cat.Functor.Adjoint.Hom
-open import Cat.Displayed.Fibre
-open import Cat.Displayed.Total
-open import Cat.Functor.Adjoint
-open import Cat.Displayed.Base
-open import Cat.Abelian.Base
-open import Cat.Abelian.Endo
-open import Cat.Prelude
+open import Cat.Prelude hiding (_+_)
 
 import Cat.Reasoning
 ```
@@ -26,10 +18,11 @@ module Algebra.Ring.Module where
 
 <!--
 ```agda
-open is-ring-hom
-open Displayed
-open Total-hom
-open Functor
+module _ {ℓ} (R : Ring ℓ) where
+  private module R = Ring-on (R .snd)
+  open Displayed
+  open Total-hom
+  open Functor
 ```
 -->
 
@@ -45,412 +38,193 @@ _specialise_ [functors]: specifically, functors into the category $\Ab$.
 
 For silly formalisation reasons, when defining modules, we do not take
 "an $\Ab$-functor into $\Ab$" as the definition: this correspondence is
-a theorem we prove later. Instead, we define a record packaging an
-$R$-module structure _on_ an abelian group:
+a theorem we prove later. Instead, we set up $R$-modules as typical
+algebraic structures, as data (and property) attached to a type.
 
 ```agda
-record Module-on {ℓ ℓ′} (R : Ring ℓ) (G : Abelian-group ℓ′) : Type (ℓ ⊔ lsuc ℓ′) where
-```
-
-<!--
-```agda
-  no-eta-equality
-
-  module R = Ring-on (R .snd)
-  module G = Abelian-group-on (G .snd) renaming (_*_ to _+_)
-  open G using (_+_) public
-```
--->
-
-Nicely typeset, the data of an $R$-module structure on a group $G$ is
-given by a _multiplication_ by $R$, a function $\star : R \to G \to
-G$^[We generally elide the star and write only $rx$ for $r \star x$.],
-such that:
-
-- For every $r : R$, the function $r \star -$ is a group homomorphism $G
-\to G$: We have $r(x + y) = rx + ry$;
-- Left multiplication is a ring homomorphism onto $G \to G$: We have
-equalities $1x = x$, $(r+s)x = rx + sx$, and $(rs)x$ = r(sx)$.
-
-**Note**: Even though we do not require all rings to be commutative, we
-only care about doing algebra with commutative rings. Because of this,
-we don't differentiate between left and right modules.
-
-```agda
-  field
-    _⋆_     : ⌞ R ⌟ → ⌞ G ⌟ → ⌞ G ⌟
-    ⋆-id    : ∀ x → R.1r ⋆ x ≡ x
-    ⋆-add-r : ∀ r x y → r ⋆ (x G.+ y) ≡ (r ⋆ x) G.+ (r ⋆ y)
-    ⋆-add-l : ∀ r s x → (r R.+ s) ⋆ x ≡ (r ⋆ x) G.+ (s ⋆ x)
-    ⋆-assoc : ∀ r s x → r ⋆ (s ⋆ x) ≡ (r R.* s) ⋆ x
-```
-
-<!--
-```agda
-  ⋆-group-hom : ∀ (r : ⌞ R ⌟) → is-group-hom (Abelian→Group-on (G .snd)) (Abelian→Group-on (G .snd)) (r ⋆_)
-  ⋆-group-hom r .is-group-hom.pres-⋆ = ⋆-add-r r
-  module ⋆-group-hom r = is-group-hom (⋆-group-hom r)
-
-  ⋆-group-homᵣ : ∀ (x : ⌞ G ⌟)
-    → is-group-hom
-        (record { has-is-group = is-abelian-group.has-is-group R.+-group })
-        (Abelian→Group-on (G .snd))
-        (_⋆ x)
-  ⋆-group-homᵣ x .is-group-hom.pres-⋆ y z = ⋆-add-l y z x
-  module ⋆-group-homᵣ x = is-group-hom (⋆-group-homᵣ x)
-  infixr 25 _⋆_
-
-Module : ∀ {ℓ} ℓ′ → Ring ℓ → Type (lsuc ℓ′ ⊔ ℓ)
-Module ℓ′ R = Σ (Abelian-group ℓ′) λ G → Module-on R G
-module Module {ℓ ℓ′} {R : Ring ℓ} (M : Module ℓ′ R) where
-  open Module-on (M .snd) public
-```
--->
-
-In much the same way that a monoid determines a 1-object category, a
-ring determines a 1-object $\Ab$-category, and a module in the above
-sense determines an $\Ab$-functor: so there should be a category of
-$R$-modules, in the same way that there is a category of $\Ab$-functors
-(between fixed domain/codomain categories).
-
-Modules can be considered in slightly more generality, however: Rather
-than considering only homomorphisms between $R$-modules $M \to N$, for a
-fixed $R$, we can define homomorphisms _between modules over different
-rings_, as long as we have a ring homomorphism to mediate the
-difference.
-
-We formalise this construction by defining a "big category of modules"
-as being [displayed over] the category $\Rings$. The objects over a ring
-$R$ are precisely the $R$-modules, and the homomorphisms $M \to N$ over
-a map $f : R \to S$ are given by $R$-module homomorphisms $M \to
-f^*(N)$, where $f^*(N)$ is the _restriction of scalars_, defined below.
-
-[displayed over]: Cat.Displayed.Base.html
-
-```agda
-Scalar-restriction
-  : ∀ {ℓ ℓ′} {G : Abelian-group ℓ′} {R S : Ring ℓ}
-  → Rings.Hom R S → Module-on S G → Module-on R G
-Scalar-restriction {G = G} f M = N where
-  module M = Module-on M
-  open Module-on
-```
-
-The idea behind restriction of scalars is much simpler than the fanciful
-name suggests: Given a map $f : R \to S$, we can transfer an $S$-action
-on $G$ to an $R$-action by precomposition with $f$. Since we're
-transporting it by _pre_composition, we get a little contravariance, as
-a treat.
-
-```agda
-  N : Module-on _ G
-  N ._⋆_ r m = f # r M.⋆ m
-
-  N .⋆-id x        = ap (M._⋆ x) (f .preserves .pres-id) ∙ M.⋆-id x
-  N .⋆-add-r r x y = M.⋆-add-r _ x y
-  N .⋆-add-l r s x = ap (M._⋆ x) (f .preserves .pres-+ _ _) ∙ M.⋆-add-l _ _ x
-  N .⋆-assoc r s x = M.⋆-assoc _ _ _ ∙ ap (M._⋆ x) (sym (f .preserves .pres-* r s))
-```
-
-<!--
-```agda
-module
-   _ {ℓ ℓ′ ℓ′′} {R S : Ring ℓ} (M : Module ℓ′ R) (N : Module ℓ′′ S)
-     (f : Rings.Hom R S)
-  where
-  private
-    module M = Module-on (M .snd)
-    module N = Module-on (Scalar-restriction f (N .snd))
-
-  is-R-S-bilinear : (f : ⌞ M ⌟ → ⌞ N ⌟) → Type _
-  is-R-S-bilinear f =
-    ∀ r m s n → f (r M.⋆ m M.+ s M.⋆ n) ≡ r N.⋆ f m N.+ s N.⋆ f n
-
-  record Linear-map : Type (ℓ ⊔ ℓ′ ⊔ ℓ′′) where
+  record is-module {ℓ′} {T : Type ℓ′} (_+_ : T → T → T) (_⋆_ : ⌞ R ⌟ → T → T) : Type (ℓ ⊔ ℓ′) where
     no-eta-equality
     field
-      map : ⌞ M ⌟ → ⌞ N ⌟
-      linear : is-R-S-bilinear map
+      has-is-ab  : is-abelian-group _+_
+      ⋆-distribl : ∀ r x y → r ⋆ (x + y)   ≡ (r ⋆ x) + (r ⋆ y)
+      ⋆-distribr : ∀ r s x → (r R.+ s) ⋆ x ≡ (r ⋆ x) + (s ⋆ x)
+      ⋆-assoc    : ∀ r s x → (r R.* s) ⋆ x ≡ r ⋆ (s ⋆ x)
+      ⋆-id       : ∀ x     → R.1r ⋆ x      ≡ x
 
-    linear-simple : ∀ x y → x N.⋆ map y ≡ map (x M.⋆ y)
-    linear-simple x y =
-      x N.⋆ map y                           ≡⟨ N.G.intror (N.⋆-group-homᵣ.pres-id _) ⟩
-      x N.⋆ map y N.+ N.R.0r N.⋆ map M.G.1g ≡˘⟨ linear _ _ _ _ ⟩
-      map (x M.⋆ y M.+ M.R.0r M.⋆ M.G.1g)   ≡⟨ ap map (M.G.elimr (M.⋆-group-homᵣ.pres-id _)) ⟩
-      map (x M.⋆ y)                         ∎
+    module ab = Additive-notation (record { has-is-group = is-abelian-group.has-is-group has-is-ab })
+    open ab using (-_ ; 0g ; +-invr ; +-invl ; +-assoc ; +-idl ; +-idr ; neg-0 ; neg-comm ; neg-neg ; has-is-set) public
 
-    has-group-hom : is-group-hom (Abelian→Group-on (M .fst .snd)) (Abelian→Group-on (N .fst .snd)) map
-    has-group-hom .is-group-hom.pres-⋆ x y =
-      map (x M.+ y)                         ≡⟨ ap map (ap₂ M._+_ (sym (M.⋆-id _)) (sym (M.⋆-id _))) ⟩
-      map (M.R.1r M.⋆ x M.+ M.R.1r M.⋆ y)   ≡⟨ linear M.R.1r x N.R.1r y ⟩
-      M.R.1r N.⋆ map x N.+ M.R.1r N.⋆ map y ≡⟨ ap₂ N._+_ (N.⋆-id _) (N.⋆-id _) ⟩
-      map x N.+ map y                       ∎
-    module has-group-hom = is-group-hom has-group-hom
+  private unquoteDecl eqv = declare-record-iso eqv (quote is-module)
 
-  open Linear-map public
+  abstract instance
+    H-Level-is-module
+      : ∀ {ℓ′} {T : Type ℓ′} {_+_ : T → T → T} {_⋆_ : ⌞ R ⌟ → T → T} {n}
+      → H-Level (is-module _+_ _⋆_) (suc n)
+    H-Level-is-module {T = T} = prop-instance $ λ x →
+      let
+        instance
+          _ : H-Level T 2
+          _ = basic-instance 2 (is-module.has-is-set x)
+      in Iso→is-hlevel 1 eqv (hlevel 1) x
 
-  abstract
-    is-R-S-bilinear-is-prop : ∀ f → is-prop (is-R-S-bilinear f)
-    is-R-S-bilinear-is-prop f a b i r m s n =
-      N.G.has-is-set _ _ (a r m s n) (b r m s n) i
+  record Module-on {ℓ′} (T : Type ℓ′) : Type (ℓ ⊔ ℓ′) where
+    no-eta-equality
+    field
+      _+_        : T → T → T
+      _⋆_        : ⌞ R ⌟ → T → T
+      has-is-mod : is-module _+_ _⋆_
 
-module
-   _ {ℓ ℓ′ ℓ′′} {R S : Ring ℓ}
-     {M : Module ℓ′ R} {N : Module ℓ′′ S} {f : I → Rings.Hom R S}
-  where
-  private module N i = Module-on (Scalar-restriction (f i) (N .snd))
+    infixl 25 _+_
+    infixr 27 _⋆_
 
-  Linear-map-path : ∀ {x y} → x .map ≡ y .map → PathP (λ i → Linear-map M N (f i)) x y
-  Linear-map-path {x} {y} p i .map = p i
-  Linear-map-path {x} {y} p i .linear r m s n =
-    is-prop→pathp
-      (λ i → N.G.has-is-set i
-        (p i _)
-        (N._+_ i (N._⋆_ i r (p i m)) (N._⋆_ i s (p i n))))
-      (x .linear r m s n)
-      (y .linear r m s n) i
+    open is-module has-is-mod public
 
-private unquoteDecl eqv = declare-record-iso eqv (quote Linear-map)
-Linear-map-is-set
-  : ∀ {ℓ ℓ′ ℓ′′} {R S : Ring ℓ} {x : Module ℓ′ R} {y : Module ℓ′′ S}
-  → {f : Rings.Hom R S}
-  → is-set (Linear-map x y f)
-Linear-map-is-set {x = x} {y} {f} =
-  Iso→is-hlevel 2 eqv $
-  Σ-is-hlevel 2 (fun-is-hlevel 2 (Module.G.has-is-set y)) λ g →
-    is-prop→is-set (is-R-S-bilinear-is-prop x y f g)
-```
--->
+  open Module-on ⦃ ... ⦄
 
-We abbreviate the sentence "a linear map $M \to N$ over a ring
-homomorphism $f : R \to S$" using the name **$R$-$S$-bilinear map**, even
-though this might not be perfectly accurate to existing literature on
-commutative algebra. Being explicit, this is a function between the sets
-$M \to f^*(N)$, satisfying the property
+  Module-on→Group-on
+    : ∀ {ℓm} {T : Type ℓm}
+    → Module-on T
+    → Group-on T
+  Module-on→Group-on M = record { has-is-group = is-abelian-group.has-is-group (Module-on.has-is-ab M) }
 
-$$
-f(rm + sn) = rf(m) + sf(n)\text{.}
-$$
+  Module : ∀ ℓm → Type (lsuc ℓm ⊔ ℓ)
+  Module ℓm = Σ (Set ℓm) λ X → Module-on ∣ X ∣
 
-Since our modules are unital, this compressed definition still implies
-that $f$ is a homomorphism of abelian groups $M \to N$, as the following
-calculation shows:
+  record is-linear-map {ℓm ℓn} {S : Type ℓm} {T : Type ℓn} (f : S → T) (M : Module-on S) (N : Module-on T) : Type (ℓ ⊔ ℓm ⊔ ℓn) where
+    no-eta-equality
+    private instance
+      _ = M
+      _ = N
 
-$$
-f(m + n) = f(1m + 1n) = 1f(m) + 1f(n) = f(m) + f(n)\text{.}
-$$
+    field
+      linear : ∀ r s t → f (r ⋆ s + t) ≡ r ⋆ f s + f t
 
-```agda
-Mods : ∀ ℓ ℓ′ → Displayed (Rings ℓ) (ℓ ⊔ lsuc ℓ′) (ℓ ⊔ ℓ′)
-Ob[ Mods ℓ ℓ′ ] R = Module ℓ′ R
-Hom[ Mods ℓ ℓ′ ] f M N = Linear-map M N f
-Hom[ Mods ℓ ℓ′ ]-set f x y = Linear-map-is-set
+    abstract
+      has-is-gh : is-group-hom (Module-on→Group-on M) (Module-on→Group-on N) f
+      has-is-gh .is-group-hom.pres-⋆ x y = ap f (ap₂ _+_ (sym (⋆-id _)) refl) ∙ linear _ _ _ ∙ ap₂ _+_ (⋆-id _) refl
 
-Mods _ _ .id′ .map x = x
-Mods _ _ .id′ .linear r m s n = refl
+    open is-group-hom has-is-gh
+      renaming ( pres-⋆    to pres-+
+              ; pres-id   to pres-0
+              ; pres-inv  to pres-neg
+              )
+      public
 
-Mods _ _ ._∘′_ f g .map x = f .map (g .map x)
-Mods _ _ ._∘′_ f g .linear r m s n =
-  ap (f .map) (g .linear r m s n) ∙ f .linear _ _ _ _
+    abstract
+      pres-⋆ : ∀ r s → f (r ⋆ s) ≡ r ⋆ f s
+      pres-⋆ r s = ap f (sym +-idr) ∙ linear _ _ _ ∙ ap (r ⋆ f s +_) pres-0 ∙ +-idr
 
-Mods _ _ .idr′ f′ = Linear-map-path refl
-Mods _ _ .idl′ f′ = Linear-map-path refl
-Mods _ _ .assoc′ f′ g′ h′ = Linear-map-path refl
-```
+  private unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-linear-map)
+  open is-linear-map using (linear) public
 
-The fibre of this displayed category over a ring $R$ is the _category of
-$R$-modules_.
+  R-Mod-structure : ∀ {ℓ} → Thin-structure _ Module-on
+  ∣ R-Mod-structure {ℓ} .is-hom f M N ∣    = is-linear-map {ℓ} {ℓ} f M N
+  R-Mod-structure {ℓ} .is-hom f M N .is-tr = Iso→is-hlevel 1 eqv′ $ Π-is-hlevel³ 1 λ _ _ _ → Module-on.ab.has-is-set N _ _
+  R-Mod-structure {ℓ} .id-is-hom .linear r s t = refl
+  R-Mod-structure {ℓ} .∘-is-hom f g α β .linear r s t = ap f (β .linear r s t) ∙ α .linear _ _ _
+  R-Mod-structure {ℓ} .id-hom-unique {s = s} {t = t} α _ = r where
+    module s = Module-on s
+    module t = Module-on t
 
-```agda
-R-Mod : ∀ {ℓ} ℓ′ (R : Ring ℓ) → Precategory (ℓ ⊔ lsuc ℓ′) (ℓ ⊔ ℓ′)
-R-Mod ℓ′ R = Fibre′ (Mods _ ℓ′) R fix coh where
-```
+    r : s ≡ t
+    r i .Module-on._+_ x y = is-linear-map.pres-+ α x y i
+    r i .Module-on._⋆_ x y = is-linear-map.pres-⋆ α x y i
+    r i .Module-on.has-is-mod =
+      is-prop→pathp (λ i → hlevel {T = is-module (λ x y → is-linear-map.pres-+ α x y i) (λ x y → is-linear-map.pres-⋆ α x y i)} 1)
+        (Module-on.has-is-mod s) (Module-on.has-is-mod t) i
 
-<!--
-```agda
-  -- For computation reasons we use a custom reindexing function to
-  -- define R-Mod. Since the definition of Linear-map depends only on
-  -- the map component of the ring homomorphism, for which id ∘ id is
-  -- definitionally id (and for which path coming from the definition of
-  -- Ring would be refl), we can omit a transport refl:
+  R-Mod : ∀ ℓm → Precategory (lsuc ℓm ⊔ ℓ) (ℓm ⊔ ℓ)
+  R-Mod ℓm = Structured-objects (R-Mod-structure {ℓm})
 
-  fix : ∀ {x y : Module ℓ′ R} → Linear-map x y (Rings.id Rings.∘ Rings.id)
-      → Linear-map x y Rings.id
-  fix x .map = x .map
-  fix x .linear = x .linear
+  private
+    _ : ∀ {ℓm} → Module ℓm ≡ Precategory.Ob (R-Mod ℓm)
+    _ = refl
 
-  abstract
-    coh : ∀ {x y : Module ℓ′ R} (f : Linear-map x y (Rings.id Rings.∘ Rings.id))
-        → fix f ≡ transport (λ i → Hom[_] (Mods _ ℓ′) (Rings.idl Rings.id i) x y) f
-    coh f = Linear-map-path $ funext λ x → Regularity.fast! refl
-```
--->
+  record make-module {ℓm} (M : Type ℓm) : Type (ℓm ⊔ ℓ) where
+    field
+      has-is-set : is-set M
+      _+_ : M → M → M
+      inv : M → M
+      0g  : M
 
-```agda
-module R-Mod {ℓ ℓ′} {R : Ring ℓ} = Cat.Reasoning (R-Mod ℓ′ R)
-```
+      +-assoc : ∀ x y z → (x + y) + z ≡ x + (y + z)
+      +-invl  : ∀ x → inv x + x ≡ 0g
+      +-idl   : ∀ x → 0g + x ≡ x
+      +-comm  : ∀ x y → x + y ≡ y + x
 
-<!--
-```agda
-Forget-module : ∀ {ℓ ℓ′} (R : Ring ℓ) → Functor (R-Mod ℓ′ R) (Sets ℓ′)
-Forget-module R .F₀ x = x .fst .fst
-Forget-module R .F₁ x = x .map
-Forget-module R .F-id = refl
-Forget-module R .F-∘ f g = refl
-```
--->
+      _⋆_ : ⌞ R ⌟ → M → M
 
-## As a fibration
+      ⋆-distribl : ∀ r x y → r ⋆ (x + y)   ≡ (r ⋆ x) + (r ⋆ y)
+      ⋆-distribr : ∀ r s x → (r R.+ s) ⋆ x ≡ (r ⋆ x) + (s ⋆ x)
+      ⋆-assoc    : ∀ r s x → (r R.* s) ⋆ x ≡ r ⋆ (s ⋆ x)
+      ⋆-id       : ∀ x     → R.1r ⋆ x      ≡ x
 
-Let us prove that `Mods`{.Agda} is not just displayed over the category
-of rings, but fibred over it, too. But this is essentially something we
-have already done: the data of a Cartesian fibration is essentially that
-of a functorial reindexing of the fibres by morphisms in the base, but
-this is given exactly by the restriction of scalars we defined above.
+  to-module-on : ∀ {ℓm} {M : Type ℓm} → make-module M → Module-on M
+  to-module-on m .Module-on._+_ = make-module._+_ m
+  to-module-on m .Module-on._⋆_ = make-module._⋆_ m
+  to-module-on m .Module-on.has-is-mod = mod where
+    gr : Group-on _
+    gr = to-group-on λ where
+      .make-group.group-is-set → make-module.has-is-set m
+      .make-group.unit → make-module.0g m
+      .make-group.mul → make-module._+_ m
+      .make-group.inv → make-module.inv m
+      .make-group.assoc → make-module.+-assoc m
+      .make-group.invl → make-module.+-invl m
+      .make-group.idl → make-module.+-idl m
 
-```agda
-Mods-fibration : ∀ ℓ ℓ′ → Cartesian-fibration (Mods ℓ ℓ′)
-Mods-fibration ℓ ℓ′ = mods where
-  open Cartesian-fibration
-  open Cartesian-lift
-  open is-cartesian
-```
+    mod : is-module _ _
+    mod .is-module.has-is-ab .is-abelian-group.has-is-group = gr .Group-on.has-is-group
+    mod .is-module.has-is-ab .is-abelian-group.commutes = make-module.+-comm m _ _
+    mod .is-module.⋆-distribl = make-module.⋆-distribl m
+    mod .is-module.⋆-distribr = make-module.⋆-distribr m
+    mod .is-module.⋆-assoc = make-module.⋆-assoc m
+    mod .is-module.⋆-id = make-module.⋆-id m
 
-So, given a map $f : R \to S$ and an $S$-module $N$, how do we find a
-universal $R$-module $X$ making the following diagram cartesian? Well,
-I've already explained the answer, but our hand is essentially forced by
-the definition of maps-over in `Mods`{.Agda}. Since $R$-$S$-bilinear maps
-over $f : R \to S$ are defined as maps $X \to f^*(N)$, the freest choice
-we can make is that which makes the identity function $R$-$S$-bilinear:
-simply take $X = f^*(N)$.
+  module _ {ℓm} (G : Abelian-group ℓm) where
+    private module G = Abelian-group-on (G .snd)
 
-~~~{.quiver}
-\[\begin{tikzcd}
-  {f^*(N)} && N \\
-  \\
-  R && S
-  \arrow["f"', from=3-1, to=3-3]
-  \arrow[lies over, from=1-3, to=3-3]
-  \arrow[from=1-1, to=1-3]
-  \arrow[lies over, from=1-1, to=3-1]
-  \arrow[dr, phantom, "\lrcorner", very near start, from=1-1, to=3-3]
-\end{tikzcd}\]
-~~~
+    action→module-on
+      : (_⋆_ : ⌞ R ⌟ → ⌞ G ⌟ → ⌞ G ⌟)
+      → (⋆-distribl : ∀ r x y → r ⋆ (x G.* y) ≡ (r ⋆ x) G.* (r ⋆ y))
+      → (⋆-distribr : ∀ r s x → (r R.+ s) ⋆ x ≡ (r ⋆ x) G.* (s ⋆ x))
+      → (⋆-assoc    : ∀ r s x → (r R.* s) ⋆ x ≡ r ⋆ (s ⋆ x))
+      → (⋆-idl      : ∀ x     → R.1r ⋆ x      ≡ x)
+      → Module-on ⌞ G ⌟
+    action→module-on s dl dr a i .Module-on._+_ = G._*_
+    action→module-on s dl dr a i .Module-on._⋆_ = s
+    action→module-on s dl dr a i .Module-on.has-is-mod .is-module.has-is-ab = G.has-is-ab
+    action→module-on s dl dr a i .Module-on.has-is-mod .is-module.⋆-distribl = dl
+    action→module-on s dl dr a i .Module-on.has-is-mod .is-module.⋆-distribr = dr
+    action→module-on s dl dr a i .Module-on.has-is-mod .is-module.⋆-assoc = a
+    action→module-on s dl dr a i .Module-on.has-is-mod .is-module.⋆-id = i
 
-```agda
-  mods : Cartesian-fibration (Mods ℓ ℓ′)
-  mods .has-lift f N = the-lift where
-    the-lift : Cartesian-lift (Mods ℓ ℓ′) f N
-    the-lift .x′ = N .fst , Scalar-restriction f (N .snd)
-    the-lift .lifting .map x = x
-    the-lift .lifting .linear r m s n = refl
-    the-lift .cartesian .universal m h′ .map = h′ .map
-    the-lift .cartesian .universal m h′ .linear = h′ .linear
-    the-lift .cartesian .commutes {u′ = u′} m h′ =
-      Linear-map-path refl
-    the-lift .cartesian .unique {u′ = u′} {m} m′ p =
-      Linear-map-path (ap map p)
-```
+    action→module
+      : (_⋆_ : ⌞ R ⌟ → ⌞ G ⌟ → ⌞ G ⌟)
+      → (⋆-distribl : ∀ r x y → r ⋆ (x G.* y) ≡ (r ⋆ x) G.* (r ⋆ y))
+      → (⋆-distribr : ∀ r s x → (r R.+ s) ⋆ x ≡ (r ⋆ x) G.* (s ⋆ x))
+      → (⋆-assoc    : ∀ r s x → (r R.* s) ⋆ x ≡ r ⋆ (s ⋆ x))
+      → (⋆-idl      : ∀ x     → R.1r ⋆ x      ≡ x)
+      → Module ℓm
+    action→module s dl dr a i .fst = G .fst
+    action→module s dl dr a i .snd = action→module-on s dl dr a i
 
-It is straightforward to calculate that this choice indeed furnishes a
-Cartesian lift of $f$.
+  representable-module : Module ℓ
+  representable-module .fst = R .fst
+  representable-module .snd = to-module-on record
+    { has-is-set = R.has-is-set
+    ; _+_ = R._+_
+    ; inv = R.-_
+    ; 0g = R.0r
+    ; +-assoc = λ x y z → sym R.+-associative
+    ; +-invl = λ x → R.+-invl
+    ; +-idl = λ x → R.+-idl
+    ; +-comm = λ x y → R.+-commutes
+    ; _⋆_ = R._*_
+    ; ⋆-distribl = λ x y z → R.*-distribl
+    ; ⋆-distribr = λ x y z → R.*-distribr
+    ; ⋆-assoc    = λ x y z → sym R.*-associative
+    ; ⋆-id       = λ x → R.*-idl
+    }
 
-## Representable modules
-
-Analogously to how groups act on themselves (Cayley's theorem) and how
-precategories act on themselves (the Yoneda lemma), rings _also_ act on
-themselves to give a notion of _representable modules_. $R$ can be
-regarded as an $R$-module with underlying group given by $R$'s additive
-group, and with multiplication exactly $R$'s multiplication.
-
-```agda
-representable-module : ∀ {ℓ} (R : Ring ℓ) → Module ℓ R
-representable-module R = _ , mod where
-  open Module-on hiding (module R ; module G)
-  module R = Ring-on (R .snd)
-  mod : Module-on R (R .fst , record { has-is-ab = R.+-group })
-  mod ._⋆_ = R._*_
-  mod .⋆-id x = R.*-idl
-  mod .⋆-add-r r x y = R.*-distribl
-  mod .⋆-add-l r s x = R.*-distribr
-  mod .⋆-assoc r s x = R.*-associative
-```
-
-The construction of representable modules extends from a functor from
-the category of rings to the (big) category of modules --- the total
-space of the fibration of modules.
-
-```agda
-Representable-modules : ∀ {ℓ} → Functor (Rings ℓ) (∫ (Mods ℓ ℓ))
-Representable-modules .F₀ R = R , representable-module R
-Representable-modules .F₁ {x} {y} f = total-hom f $ record
-  { map    = f #_
-  ; linear = λ r m s n →
-      f .preserves .pres-+ _ _
-    ∙ ap₂ (y .snd .Ring-on._+_)
-        (f .preserves .pres-* r m) (f .preserves .pres-* s n)
-  }
-Representable-modules .F-id {x} = total-hom-path _ refl $
-  Linear-map-path refl
-Representable-modules .F-∘ {x} {y} {z} f g = total-hom-path _ refl $
-  Linear-map-path refl
-```
-
-# As actions
-
-Another presentation of modules, which might make more sense to some, is
-the following: In the same way that a monoid can act on a category
-(resp. a group can act on a groupoid), a ring can act on a _ringoid_: an
-[$\Ab$-category]. And, as usual, we have an adjunction: an action of $R$
-on an $\Ab$-category $\cA$ can be described either as an
-$\Ab$-functor $\bf{B}(R) \to \cA$, or as a ring homomorphism $R \to
-\rm{Endo}_\cA(x)$, where $x$ is the object being acted on.
-
-[$\Ab$-category]: Cat.Abelian.Base.html#ab-enriched-categories
-
-In the particular case where $\cA = \Ab$ is the archetypal
-$\Ab$-category, these actions get a fancy name: **modules**. This is
-analogous to how _monoid actions_ and _group actions_ are fancy names
-for actions on the archetypal $\Sets$-category, which is $\Sets$ itself.
-
-```agda
-module _ {ℓ} (R : Ring ℓ) where
-  Module→Action : ∀ G (M : Module-on R G) → Rings.Hom R (Endo Ab-ab-category G)
-  Module→Action G M = rh where
-    module M = Module-on M
-    rh : Rings.Hom R (Endo Ab-ab-category G)
-    rh .hom x .hom g    = x M.⋆ g
-    rh .preserves .pres-id    = Homomorphism-path (λ x → M.⋆-id x)
-    rh .preserves .pres-+ x y = Homomorphism-path (λ x → M.⋆-add-l _ y x)
-    rh .preserves .pres-* x y = Homomorphism-path (λ x → sym (M.⋆-assoc _ _ _))
-    rh .hom x .preserves .is-group-hom.pres-⋆ g g′ = M.⋆-add-r x g g′
-
-  open Module-on
-  Action→Module : ∀ G → Rings.Hom R (Endo Ab-ab-category G) → Module-on R G
-  Action→Module G rh ._⋆_ r g       = (rh # r) .hom g
-  Action→Module G rh .⋆-id x        = rh .preserves .pres-id #ₚ x
-  Action→Module G rh .⋆-add-r x y z = (rh # x) .preserves .is-group-hom.pres-⋆ y z
-  Action→Module G rh .⋆-add-l x y z = rh .preserves .pres-+ x y #ₚ z
-  Action→Module G rh .⋆-assoc x y z = sym $ rh .preserves .pres-* x y #ₚ z
-```
-
-This correspondence between presentations --- shuffling of data --- is
-almost definitionally an equivalence, but in both cases, we need to
-appeal to some extensionality principles to "get at" the data, even if
-it is unchanging.
-
-```agda
-  Action≃Module : ∀ G → Module-on R G ≃ Rings.Hom R (Endo Ab-ab-category G)
-  Action≃Module G = Iso→Equiv morp where
-    open is-iso
-    morp : Iso (Module-on R G) (Rings.Hom R (Endo Ab-ab-category G))
-    morp .fst = Module→Action G
-    morp .snd .inv = Action→Module G
-
-    morp .snd .rinv x = Homomorphism-path λ x → Homomorphism-path λ y → refl
-    morp .snd .linv x i ._⋆_     = x ._⋆_
-    morp .snd .linv x i .⋆-id    = x .⋆-id
-    morp .snd .linv x i .⋆-add-r = x .⋆-add-r
-    morp .snd .linv x i .⋆-add-l = x .⋆-add-l
-    morp .snd .linv x i .⋆-assoc = x .⋆-assoc
-```
+module R-Mod {ℓ ℓm} {R : Ring ℓ} = Cat.Reasoning (R-Mod R ℓm)
