@@ -29,7 +29,7 @@ open _=>_
 
 # The Diagram Fibration
 
-THe appropriate notion of structure for a displayed category $\cE$ is
+The appropriate notion of structure for a displayed category $\cE$ is
 fibrewise structure; IE, some structure found in each [fibre category],
 that is preserved by reindexing if $\cE$ is an (op)fibration.
 For instance, the correct notion of limit is a *fibred limit* of shape
