@@ -681,7 +681,7 @@ open import Cat.Displayed.Instances.Trivial
 -- Any category can be displayed over the terminal category.
 open import Cat.Displayed.Instances.Lifting
 -- Liftings of functors along a fibration
-open import Cat.Displayed.Instances.Diagram
+open import Cat.Displayed.Instances.Diagrams
 -- The fibration of diagrams
 ```
 
