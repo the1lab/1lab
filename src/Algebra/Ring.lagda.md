@@ -229,7 +229,7 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
     -_      : R → R
     +-idl   : ∀ {x} → 0R + x ≡ x
     +-invr  : ∀ {x} → x + (- x) ≡ 0R
-    +-assoc : ∀ {x y z} → (x + y) + z ≡ x + (y + z)
+    +-assoc : ∀ {x y z} → x + (y + z) ≡ (x + y) + z
     +-comm  : ∀ {x y} → x + y ≡ y + x
 
     -- R is a commutative monoid:
@@ -237,7 +237,7 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
     _*_     : R → R → R
     *-idl   : ∀ {x} → 1R * x ≡ x
     *-idr   : ∀ {x} → x * 1R ≡ x
-    *-assoc : ∀ {x y z} → (x * y) * z ≡ x * (y * z)
+    *-assoc : ∀ {x y z} → x * (y * z) ≡ (x * y) * z
 
     -- Multiplication is bilinear:
     *-distribl : ∀ {x y z} → x * (y + z) ≡ (x * y) + (x * z)
@@ -256,12 +256,12 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
     ring .Ring-on._*_ = _*_
     ring .Ring-on._+_ = _+_
     ring .Ring-on.has-is-ring .*-monoid .has-is-semigroup .is-semigroup.has-is-magma = record { has-is-set = ring-is-set }
-    ring .Ring-on.has-is-ring .*-monoid .has-is-semigroup .is-semigroup.associative = sym *-assoc
+    ring .Ring-on.has-is-ring .*-monoid .has-is-semigroup .is-semigroup.associative = *-assoc
     ring .Ring-on.has-is-ring .*-monoid .idl = *-idl
     ring .Ring-on.has-is-ring .*-monoid .idr = *-idr
     ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.unit = 0R
     ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .has-is-semigroup .has-is-magma = record { has-is-set = ring-is-set }
-    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .has-is-semigroup .associative = sym +-assoc
+    ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .has-is-semigroup .associative = +-assoc
     ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .idl = +-idl
     ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.has-is-monoid .idr = +-comm ∙ +-idl
     ring .Ring-on.has-is-ring .+-group .is-abelian-group.has-is-group .is-group.inverse = -_

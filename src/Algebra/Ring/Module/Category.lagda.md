@@ -54,7 +54,7 @@ R-Mod-ab-category .Abelian-group-on-hom A B = to-abelian-group-on grp where
     f # (r ⋆ s + t) + g # (r ⋆ s + t)         ≡⟨ ap₂ _+_ (f .preserves .linear r s t) (g .preserves .linear r s t) ⟩
     (r ⋆ f # s + f # t) + (r ⋆ g # s + g # t) ≡⟨ sym +-assoc ∙ ap₂ _+_ refl (+-assoc ∙ ap₂ _+_ (+-comm _ _) refl ∙ sym +-assoc) ∙ +-assoc ∙ +-assoc ⟩
     ⌜ r ⋆ f # s + r ⋆ g # s ⌝ + f # t + g # t ≡˘⟨ ap¡ (⋆-distribl r (f # s) (g # s)) ⟩
-    r ⋆ (f # s + g # s) + f # t + g # t       ≡⟨ sym +-assoc ⟩
+    r ⋆ (f # s + g # s) + f # t + g # t       ≡˘⟨ +-assoc ⟩
     r ⋆ (f # s + g # s) + (f # t + g # t)     ∎
 ```
 
@@ -72,7 +72,7 @@ decency.</summary>
   grp .1g .hom x = 0g
   grp .1g .preserves .linear r s t = sym (+-idr ∙ Module-on.⋆-idr (B .snd))
   grp .idl f = Homomorphism-path λ x → +-idl
-  grp .assoc f g h = Homomorphism-path λ x → sym +-assoc
+  grp .assoc f g h = Homomorphism-path λ x → +-assoc
   grp .invl f = Homomorphism-path λ x → +-invl
   grp .comm f g = Homomorphism-path λ x → +-comm _ _
 R-Mod-ab-category .∘-linear-l f g h = Homomorphism-path λ x → refl

@@ -79,7 +79,7 @@ Abelian-group-on-hom A B = to-abelian-group-on make-ab-on-hom module Hom-ab wher
 <!--
 ```agda
   make-ab-on-hom .idl x       = Homomorphism-path λ x → B.idl
-  make-ab-on-hom .assoc x y z = Homomorphism-path λ _ → sym B.associative
+  make-ab-on-hom .assoc x y z = Homomorphism-path λ _ → B.associative
   make-ab-on-hom .invl x      = Homomorphism-path λ x → B.inversel
   make-ab-on-hom .comm x y    = Homomorphism-path λ x → B.commutes
 

@@ -102,11 +102,11 @@ natural.
       B.Hom.inverse (G.₁ g B.∘ f .η x)   ≡⟨ B.neg-∘-r ⟩
       G.₁ g B.∘ B.Hom.inverse (f .η x)   ∎
 
-    grp .assoc _ _ _ = Nat-path λ _ → sym B.Hom.associative
-    grp .idl _ = Nat-path λ x → B.Hom.idl
-    grp .invl _ = Nat-path λ x → B.Hom.inversel
-    grp .comm _ _ = Nat-path λ x → B.Hom.commutes
-    grp .ab-is-set = Nat-is-set
+    grp .assoc _ _ _ = Nat-path λ _ → B.Hom.associative
+    grp .idl _       = Nat-path λ x → B.Hom.idl
+    grp .invl _      = Nat-path λ x → B.Hom.inversel
+    grp .comm _ _    = Nat-path λ x → B.Hom.commutes
+    grp .ab-is-set   = Nat-is-set
 
   [_,_]Ab .∘-linear-l f g h = Nat-path λ x → B.∘-linear-l _ _ _
   [_,_]Ab .∘-linear-r f g h = Nat-path λ x → B.∘-linear-r _ _ _

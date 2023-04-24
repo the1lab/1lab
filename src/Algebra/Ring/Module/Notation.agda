@@ -19,7 +19,7 @@ record Module-notation {ℓ ℓm} (R : Ring ℓ) (T : Type ℓm) : Type (ℓ ⊔
     _⋆_        : ⌞ R ⌟ → T → T
     ⋆-distribl : ∀ r x y → r ⋆ (x + y)   ≡ (r ⋆ x) + (r ⋆ y)
     ⋆-distribr : ∀ r s x → (r R.+ s) ⋆ x ≡ (r ⋆ x) + (s ⋆ x)
-    ⋆-assoc    : ∀ r s x → (r R.* s) ⋆ x ≡ r ⋆ (s ⋆ x)
+    ⋆-assoc    : ∀ r s x → r ⋆ (s ⋆ x)   ≡ (r R.* s) ⋆ x
     ⋆-id       : ∀ x     → R.1r ⋆ x      ≡ x
 
   infixr 25 _⋆_

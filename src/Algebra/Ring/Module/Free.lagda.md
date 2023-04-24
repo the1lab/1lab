@@ -67,7 +67,7 @@ constructor, since modules must have an underlying set.
 
 ```agda
   +-comm  : ∀ x y   → x + y ≡ y + x
-  +-assoc : ∀ x y z → (x + y) + z ≡ x + (y + z)
+  +-assoc : ∀ x y z → x + (y + z) ≡ (x + y) + z
   +-invl  : ∀ x     → neg x + x ≡ 0m
   +-idl   : ∀ x     → 0m + x ≡ x
 
@@ -112,8 +112,8 @@ record Free-elim-prop {ℓ′ ℓ′′} {A : Type ℓ′} (P : Free-mod A → T
       (P-+ x y (elim x) (elim y)) (P-+ y x (elim y) (elim x)) i
   elim (+-assoc x y z i) =
     is-prop→pathp (λ j → has-is-prop (+-assoc x y z j))
-      (P-+ _ _ (P-+ _ _ (elim x) (elim y)) (elim z))
-      (P-+ _ _ (elim x) (P-+ _ _ (elim y) (elim z))) i
+      (P-+ _ _ (elim x) (P-+ _ _ (elim y) (elim z)))
+      (P-+ _ _ (P-+ _ _ (elim x) (elim y)) (elim z)) i
   elim (+-invl x i) =
     is-prop→pathp (λ j → has-is-prop (+-invl x j))
       (P-+ _ _ (P-neg _ (elim x)) (elim x)) P-0m i
@@ -167,7 +167,7 @@ Module-on-free-mod A = to-module-on R mk where
   mk ._⋆_ = _·_
   mk .⋆-distribl = Free-mod.·-distribl
   mk .⋆-distribr = Free-mod.·-distribr
-  mk .⋆-assoc x y z = sym (Free-mod.·-assoc x y z)
+  mk .⋆-assoc x y z = Free-mod.·-assoc x y z
   mk .⋆-id = Free-mod.·-id
 
 Free-Mod : ∀ {ℓ′} → Type ℓ′ → Module R (ℓ ⊔ ℓ′)
@@ -202,14 +202,14 @@ write, is definitionally a linear map --- saving us a bit of effort.
   go (x + y) = go x N.+ go y
   go (neg x) = N.- (go x)
   go 0m      = N.0g
-  go (+-comm x y i)    = N.+-comm {go x} {go y} i
-  go (+-assoc x y z i) = N.+-assoc {go x} {go y} {go z} (~ i)
-  go (+-invl x i)      = N.+-invl {go x} i
-  go (+-idl x i)       = N.+-idl {go x} i
-  go (·-id x i)        = N.⋆-id (go x) i
+  go (+-comm x y i)       = N.+-comm {go x} {go y} i
+  go (+-assoc x y z i)    = N.+-assoc {go x} {go y} {go z} i
+  go (+-invl x i)         = N.+-invl {go x} i
+  go (+-idl x i)          = N.+-idl {go x} i
+  go (·-id x i)           = N.⋆-id (go x) i
   go (·-distribl x y z i) = N.⋆-distribl x (go y) (go z) i
   go (·-distribr x y z i) = N.⋆-distribr x y (go z) i
-  go (·-assoc x y z i) = N.⋆-assoc x y (go z) (~ i)
+  go (·-assoc x y z i)    = N.⋆-assoc x y (go z) i
   go (squash a b p q i j) =
     N.has-is-set (go a) (go b) (λ i → go (p i)) (λ i → go (q i)) i j
 

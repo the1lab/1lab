@@ -26,11 +26,11 @@ numbers]. Since they're mostly simple inductive arguments written in
 ## Addition
 
 ```agda
-+-associative : (x y z : Nat) → (x + y) + z ≡ x + (y + z)
++-associative : (x y z : Nat) → x + (y + z) ≡ (x + y) + z
 +-associative zero y z = refl
 +-associative (suc x) y z =
-  suc ((x + y) + z) ≡⟨ ap suc (+-associative x y z) ⟩
-  suc (x + (y + z)) ∎
+  suc (x + (y + z)) ≡⟨ ap suc (+-associative x y z) ⟩
+  suc ((x + y) + z) ∎
 
 +-zeror : (x : Nat) → x + 0 ≡ x
 +-zeror zero = refl
@@ -61,7 +61,7 @@ numbers]. Since they're mostly simple inductive arguments written in
 *-distrib-+r zero y z = refl
 *-distrib-+r (suc x) y z =
   z + (x + y) * z     ≡⟨ ap₂ _+_ refl (*-distrib-+r x y z) ⟩
-  z + (x * z + y * z) ≡⟨ sym (+-associative z (x * z) (y * z)) ⟩
+  z + (x * z + y * z) ≡⟨ +-associative z (x * z) (y * z) ⟩
   z + x * z + y * z   ∎
 
 *-sucr : (m n : Nat) → m * suc n ≡ m + m * n
@@ -70,9 +70,9 @@ numbers]. Since they're mostly simple inductive arguments written in
   suc m * suc n         ≡⟨⟩
   suc n + m * suc n     ≡⟨ ap₂ _+_ refl (*-sucr m n) ⟩
   suc n + (m + m * n)   ≡⟨⟩
-  suc (n + (m + m * n)) ≡⟨ ap suc (sym (+-associative n m (m * n))) ⟩
+  suc (n + (m + m * n)) ≡⟨ ap suc (+-associative n m (m * n)) ⟩
   suc (n + m + m * n)   ≡⟨ ap (λ x → suc (x + m * n)) (+-commutative n m) ⟩
-  suc (m + n + m * n)   ≡⟨ ap suc (+-associative m n (m * n)) ⟩
+  suc (m + n + m * n)   ≡˘⟨ ap suc (+-associative m n (m * n)) ⟩
   suc (m + (n + m * n)) ≡⟨⟩
   suc m + suc m * n     ∎
 
@@ -160,9 +160,9 @@ numbers]. Since they're mostly simple inductive arguments written in
   x * x ^ y * (x ^ z * x ^ (y * z)) ≡⟨ ap (λ a → x * x ^ y * a) (sym (^-+-hom-*r x z (y * z))) ⟩
   x * x ^ y * (x ^ (z + (y * z)))   ≡⟨ *-associative x (x ^ y) (x ^ (z + y * z)) ⟩
   x * (x ^ y * (x ^ (z + (y * z)))) ≡⟨ ap (x *_) (sym (^-+-hom-*r x y (z + y * z))) ⟩
-  x * x ^ (y + (z + y * z))         ≡⟨ ap (λ a → x * x ^ a) (sym (+-associative y z (y * z))) ⟩
+  x * x ^ (y + (z + y * z))         ≡⟨ ap (λ a → x * x ^ a) (+-associative y z (y * z)) ⟩
   x * x ^ (y + z + y * z)           ≡⟨ ap (λ a → x * x ^ (a + y * z)) (+-commutative y z) ⟩
-  x * x ^ (z + y + y * z)           ≡⟨ ap (λ a → x * x ^ a) (+-associative z y (y * z)) ⟩
+  x * x ^ (z + y + y * z)           ≡˘⟨ ap (λ a → x * x ^ a) (+-associative z y (y * z)) ⟩
   x * x ^ (z + (y + y * z))         ≡⟨ ap (λ a → x * x ^ (z + a)) (sym (*-sucr y z))  ⟩
   x * x ^ (z + y * suc z) ∎
 ```

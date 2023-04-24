@@ -48,13 +48,13 @@ Fin-vec-module n = to-module R mk where
   mk .make-module.0g i = R.0r
   mk .make-module._⋆_ f g i = f R.* g i
 
-  mk .make-module.+-assoc f g h    = funext λ i → sym R.+-associative
+  mk .make-module.+-assoc f g h    = funext λ i → R.+-associative
   mk .make-module.+-invl f         = funext λ i → R.+-invl
   mk .make-module.+-idl f          = funext λ i → R.+-idl
   mk .make-module.+-comm f g       = funext λ i → R.+-commutes
   mk .make-module.⋆-distribl r x y = funext λ i → R.*-distribl
   mk .make-module.⋆-distribr r x y = funext λ i → R.*-distribr
-  mk .make-module.⋆-assoc r s x    = funext λ i → sym R.*-associative
+  mk .make-module.⋆-assoc r s x    = funext λ i → R.*-associative
   mk .make-module.⋆-id x           = funext λ i → R.*-idl
 ```
 
@@ -94,7 +94,7 @@ module _ {ℓ′} (S : Module R ℓ′) where
   linear-extension fun .has-is-linear .linear r m n =
     ∑ G′ (λ i → (r R.* m i R.+ n i) S.⋆ fun i)                            ≡⟨ ap (∑ G′)  (funext λ i → S.⋆-distribr (r R.* m i) (n i) (fun i)) ⟩
     ∑ G′ (λ i → (r R.* m i) S.⋆ fun i S.+ n i S.⋆ fun i)                  ≡⟨ ∑-split (Module-on→Abelian-group-on R (S .snd)) (λ i → (r R.* m i) S.⋆ fun i) _ ⟩
-    ⌜ ∑ G′ (λ i → (r R.* m i) S.⋆ fun i) ⌝ S.+ ∑ G′ (λ i → n i S.⋆ fun i) ≡⟨ ap! (ap (∑ G′) (funext λ i → S.⋆-assoc r (m i) _)) ⟩
+    ⌜ ∑ G′ (λ i → (r R.* m i) S.⋆ fun i) ⌝ S.+ ∑ G′ (λ i → n i S.⋆ fun i) ≡⟨ ap! (ap (∑ G′) (funext λ i → sym (S.⋆-assoc r (m i) _))) ⟩
     ⌜ ∑ G′ (λ i → r S.⋆ m i S.⋆ fun i) ⌝ S.+ ∑ G′ (λ i → n i S.⋆ fun i)   ≡˘⟨ ap¡ (∑-distr r λ i → m i S.⋆ fun i) ⟩
     (r S.⋆ ∑ G′ (λ i → m i S.⋆ fun i) S.+ ∑ G′ λ i → n i S.⋆ fun i)       ∎
 ```

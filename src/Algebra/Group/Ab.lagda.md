@@ -122,7 +122,7 @@ record make-abelian-group (T : Type ℓ) : Type ℓ where
     inv   : T → T
     1g    : T
     idl   : ∀ x → mul 1g x ≡ x
-    assoc : ∀ x y z → mul (mul x y) z ≡ mul x (mul y z)
+    assoc : ∀ x y z → mul x (mul y z) ≡ mul (mul x y) z
     invl  : ∀ x → mul (inv x) x ≡ 1g
     comm  : ∀ x y → mul x y ≡ mul y x
 

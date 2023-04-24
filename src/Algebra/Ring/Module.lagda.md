@@ -64,7 +64,7 @@ other words, we have:
       has-is-ab  : is-abelian-group _+_
       ⋆-distribl : ∀ r x y → r ⋆ (x + y)   ≡ (r ⋆ x) + (r ⋆ y)
       ⋆-distribr : ∀ r s x → (r R.+ s) ⋆ x ≡ (r ⋆ x) + (s ⋆ x)
-      ⋆-assoc    : ∀ r s x → (r R.* s) ⋆ x ≡ r ⋆ (s ⋆ x)
+      ⋆-assoc    : ∀ r s x → r ⋆ (s ⋆ x)   ≡ (r R.* s) ⋆ x
       ⋆-id       : ∀ x     → R.1r ⋆ x      ≡ x
 
     private
@@ -213,7 +213,7 @@ other words, we have:
       inv : M → M
       0g  : M
 
-      +-assoc : ∀ x y z → (x + y) + z ≡ x + (y + z)
+      +-assoc : ∀ x y z → x + (y + z) ≡ (x + y) + z
       +-invl  : ∀ x → inv x + x ≡ 0g
       +-idl   : ∀ x → 0g + x ≡ x
       +-comm  : ∀ x y → x + y ≡ y + x
@@ -222,7 +222,7 @@ other words, we have:
 
       ⋆-distribl : ∀ r x y → r ⋆ (x + y)   ≡ (r ⋆ x) + (r ⋆ y)
       ⋆-distribr : ∀ r s x → (r R.+ s) ⋆ x ≡ (r ⋆ x) + (s ⋆ x)
-      ⋆-assoc    : ∀ r s x → (r R.* s) ⋆ x ≡ r ⋆ (s ⋆ x)
+      ⋆-assoc    : ∀ r s x → r ⋆ (s ⋆ x)   ≡ ((r R.* s) ⋆ x)
       ⋆-id       : ∀ x     → R.1r ⋆ x      ≡ x
 
   to-module-on : ∀ {ℓm} {M : Type ℓm} → make-module M → Module-on M
@@ -264,7 +264,7 @@ other words, we have:
       : (_⋆_ : ⌞ R ⌟ → ⌞ G ⌟ → ⌞ G ⌟)
       → (⋆-distribl : ∀ r x y → r ⋆ (x G.* y) ≡ (r ⋆ x) G.* (r ⋆ y))
       → (⋆-distribr : ∀ r s x → (r R.+ s) ⋆ x ≡ (r ⋆ x) G.* (s ⋆ x))
-      → (⋆-assoc    : ∀ r s x → (r R.* s) ⋆ x ≡ r ⋆ (s ⋆ x))
+      → (⋆-assoc    : ∀ r s x → r ⋆ (s ⋆ x) ≡ (r R.* s) ⋆ x)
       → (⋆-idl      : ∀ x     → R.1r ⋆ x      ≡ x)
       → Module-on ⌞ G ⌟
     action→module-on s dl dr a i .Module-on._+_ = G._*_
@@ -279,7 +279,7 @@ other words, we have:
       : (_⋆_ : ⌞ R ⌟ → ⌞ G ⌟ → ⌞ G ⌟)
       → (⋆-distribl : ∀ r x y → r ⋆ (x G.* y) ≡ (r ⋆ x) G.* (r ⋆ y))
       → (⋆-distribr : ∀ r s x → (r R.+ s) ⋆ x ≡ (r ⋆ x) G.* (s ⋆ x))
-      → (⋆-assoc    : ∀ r s x → (r R.* s) ⋆ x ≡ r ⋆ (s ⋆ x))
+      → (⋆-assoc    : ∀ r s x → r ⋆ (s ⋆ x) ≡ (r R.* s) ⋆ x)
       → (⋆-idl      : ∀ x     → R.1r ⋆ x      ≡ x)
       → Module ℓm
     action→module s dl dr a i .fst = G .fst
@@ -292,14 +292,14 @@ other words, we have:
     ; _+_ = R._+_
     ; inv = R.-_
     ; 0g = R.0r
-    ; +-assoc = λ x y z → sym R.+-associative
+    ; +-assoc = λ x y z → R.+-associative
     ; +-invl = λ x → R.+-invl
     ; +-idl = λ x → R.+-idl
     ; +-comm = λ x y → R.+-commutes
     ; _⋆_ = R._*_
     ; ⋆-distribl = λ x y z → R.*-distribl
     ; ⋆-distribr = λ x y z → R.*-distribr
-    ; ⋆-assoc    = λ x y z → sym R.*-associative
+    ; ⋆-assoc    = λ x y z → R.*-associative
     ; ⋆-id       = λ x → R.*-idl
     }
 

@@ -100,7 +100,7 @@ carries a canonical $R$-module structure.
       (λ { r (a , b) → _ , has-*ₗ r b })
       (λ r x y → Σ-prop-path! R.*-distribl)
       (λ r x y → Σ-prop-path! R.*-distribr)
-      (λ r s x → Σ-prop-path! (sym R.*-associative))
+      (λ r s x → Σ-prop-path! R.*-associative)
       (λ x → Σ-prop-path! R.*-idl)
 ```
 
