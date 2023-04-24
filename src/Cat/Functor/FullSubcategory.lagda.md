@@ -66,8 +66,7 @@ morphisms in the full subcategory coincide with those of $\cC$, any
 iso in the subcategory is an iso in $\cC$, thus a path!
 
 ```agda
-module _ (P : C.Ob → Type ℓ) (pprop : ∀ x → is-prop (P x))
-  where
+module _ (P : C.Ob → Type ℓ) where
   import Cat.Reasoning (Restrict P) as R
 ```
 
@@ -85,6 +84,12 @@ reassembling:
     where module y = C._≅_ y
 ```
 
+```agda
+module _ (P : C.Ob → Type ℓ) (pprop : ∀ x → is-prop (P x))
+  where
+  import Cat.Reasoning (Restrict P) as R
+```
+
 We then prove that object-isomorphism pairs in the subcategory (i.e.
 inhabitants of $\sum_{B : \cR} (A \cong B)$) coincide with those in
 the supercategory; Hence, since $\cC$ is by assumption univalent, so
@@ -93,11 +98,11 @@ is $\cR$.
 ```agda
   Restrict-is-category : is-category C → is-category (Restrict P)
   Restrict-is-category cids = λ where
-    .to-path im i .object → Univalent.iso→path cids (sub-iso→super-iso im) i
+    .to-path im i .object → Univalent.iso→path cids (sub-iso→super-iso P im) i
     .to-path {a = a} {b = b} im i .witness → is-prop→pathp
-      (λ i → pprop (cids .to-path (sub-iso→super-iso im) i))
+      (λ i → pprop (cids .to-path (sub-iso→super-iso P im) i))
       (a .witness) (b .witness) i
-    .to-path-over p → R.≅-pathp _ _ λ i → cids .to-path-over (sub-iso→super-iso p) i .C.to
+    .to-path-over p → R.≅-pathp _ _ λ i → cids .to-path-over (sub-iso→super-iso P p) i .C.to
 ```
 
 ## From full inclusions
@@ -137,7 +142,7 @@ functor from $\cD$. This functor is actually just $F$ again:
 
   is-eso-domain→Full-subcat : is-eso Ff-domain→Full-subcat
   is-eso-domain→Full-subcat yo =
-    ∥-∥-map (λ (preimg , isom) → preimg , super-iso→sub-iso _ (λ _ → squash) isom)
+    ∥-∥-map (λ (preimg , isom) → preimg , super-iso→sub-iso _ isom)
       (yo .witness)
 ```
 
