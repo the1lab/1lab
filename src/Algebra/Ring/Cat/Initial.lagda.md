@@ -259,18 +259,3 @@ evaluates to on $n$. So we're done!
         R.1r R.+ (e n)                     ≡˘⟨ e-suc n ⟩
         e (suc n) ∎
 ```
-
-## Abelian groups as Z-modules
-
-A fun consequence of $\ZZ$ being the initial ring is that every abelian
-group admits a unique $\ZZ$-module structure. This is, if you ask me,
-rather amazing! The correspondence is as follows: Because of the
-delooping-endomorphism ring adjunction, we have a correspondence between
-"$R$-module structures on G" and "ring homomorphisms $R \to
-\rm{Endo}(G)$" --- and since the latter is contractible, so is the
-former!
-
-```agda
-ℤ-module-unique : ∀ (G : Abelian-group ℓ) → is-contr (Module-on Liftℤ G)
-ℤ-module-unique G = is-hlevel≃ 0 (Action≃Module Liftℤ G) (Int-is-initial _)
-```

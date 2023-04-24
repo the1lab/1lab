@@ -72,10 +72,10 @@ constructor, since modules must have an underlying set.
   +-idl   : ∀ x     → 0m + x ≡ x
 
 
-  ·-id    : ∀ x     → R.1r · x      ≡ x
-  ·-add-r : ∀ x y z → x · (y + z)   ≡ x · y + x · z
-  ·-add-l : ∀ x y z → (x R.+ y) · z ≡ x · z + y · z
-  ·-assoc : ∀ x y z → x · y · z     ≡ (x R.* y) · z
+  ·-id       : ∀ x     → R.1r · x      ≡ x
+  ·-distribl : ∀ x y z → x · (y + z)   ≡ x · y + x · z
+  ·-distribr : ∀ x y z → (x R.+ y) · z ≡ x · z + y · z
+  ·-assoc    : ∀ x y z → x · y · z     ≡ (x R.* y) · z
 
   squash : is-set (Free-mod A)
 ```
@@ -123,12 +123,12 @@ record Free-elim-prop {ℓ′ ℓ′′} {A : Type ℓ′} (P : Free-mod A → T
   elim (·-id x i)  =
     is-prop→pathp (λ j → has-is-prop (·-id x j))
       (P-· R.1r _ (elim x)) (elim x) i
-  elim (·-add-r x y z i) =
-    is-prop→pathp (λ j → has-is-prop (·-add-r x y z j))
+  elim (·-distribl x y z i) =
+    is-prop→pathp (λ j → has-is-prop (·-distribl x y z j))
       (P-· x _ (P-+ _ _ (elim y) (elim z)))
       (P-+ _ _ (P-· x _ (elim y)) (P-· x _ (elim z))) i
-  elim (·-add-l x y z i) =
-    is-prop→pathp (λ j → has-is-prop (·-add-l x y z j ))
+  elim (·-distribr x y z i) =
+    is-prop→pathp (λ j → has-is-prop (·-distribr x y z j ))
       (P-· (x R.+ y) _ (elim z))
       (P-+ _ _ (P-· x _ (elim z)) (P-· y _ (elim z))) i
   elim (·-assoc x y z i) =
@@ -148,38 +148,30 @@ they're not particularly interesting. For every operation _and_ law, we
 simply use the corresponding constructors.</summary>
 
 ```agda
-open Module-on using (_⋆_ ; ⋆-id ; ⋆-add-r ; ⋆-add-l ; ⋆-assoc)
-open make-abelian-group
-
-Abelian-group-on-free-mod : ∀ {ℓ′} {A : Type ℓ′} → Abelian-group-on (Free-mod A)
-Abelian-group-on-free-mod = to-abelian-group-on λ where
-  .ab-is-set → squash
-  .1g     → 0m
-  .mul    → _+_
-  .inv    → neg
-  .assoc  → +-assoc
-  .invl   → +-invl
-  .idl    → +-idl
-  .comm   → +-comm
-
-Free-mod-ab-group : ∀ {ℓ′} {A : Type ℓ′} → Ab.Ob
-∣ Free-mod-ab-group {A = A} .fst ∣ = Free-mod A
-Free-mod-ab-group .fst .is-tr = squash
-Free-mod-ab-group .snd = Abelian-group-on-free-mod
-
+open Module-on hiding (_+_)
+open make-module hiding (_+_)
 
 Module-on-free-mod
-  : ∀ {ℓ′} {A : Type ℓ′}
-  → Module-on R (Free-mod-ab-group {A = A})
-Module-on-free-mod ._⋆_ = _·_
-Module-on-free-mod .⋆-id = ·-id
-Module-on-free-mod .⋆-add-r = ·-add-r
-Module-on-free-mod .⋆-add-l = ·-add-l
-Module-on-free-mod .⋆-assoc = ·-assoc
+  : ∀ {ℓ′} (A : Type ℓ′)
+  → Module-on R (Free-mod A)
+Module-on-free-mod A = to-module-on R mk where
+  mk : make-module R (Free-mod A)
+  mk .has-is-set = squash
+  mk .make-module._+_ = _+_
+  mk .inv = neg
+  mk .0g = 0m
+  mk .make-module.+-assoc = Free-mod.+-assoc
+  mk .make-module.+-invl = Free-mod.+-invl
+  mk .make-module.+-idl = Free-mod.+-idl
+  mk .make-module.+-comm = Free-mod.+-comm
+  mk ._⋆_ = _·_
+  mk .⋆-distribl = Free-mod.·-distribl
+  mk .⋆-distribr = Free-mod.·-distribr
+  mk .⋆-assoc x y z = sym (Free-mod.·-assoc x y z)
+  mk .⋆-id = Free-mod.·-id
 
-Free-Mod : ∀ {ℓ′} → Type ℓ′ → Module (ℓ ⊔ ℓ′) R
-Free-Mod x .fst = Free-mod-ab-group {A = x}
-Free-Mod x .snd = Module-on-free-mod
+Free-Mod : ∀ {ℓ′} → Type ℓ′ → Module R (ℓ ⊔ ℓ′)
+Free-Mod T = from-module-on R (Module-on-free-mod T)
 
 open Functor
 ```
@@ -188,11 +180,11 @@ open Functor
 
 ```agda
 fold-free-mod
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {G : Abelian-group ℓ′} (N : Module-on R G)
-  → (A → ⌞ G ⌟)
-  → Linear-map (Free-Mod A) (_ , N) Rings.id
-fold-free-mod {A = A} {G} N f = go-linear module fold-free-mod where
-  private module N = Module (_ , N)
+  : ∀ {ℓ ℓ′} {A : Type ℓ} (N : Module R ℓ′)
+  → (A → ⌞ N ⌟)
+  → Linear-map R (Free-Mod A) N
+fold-free-mod {A = A} N f = go-linear module fold-free-mod where
+  private module N = Module-on (N .snd)
 ```
 
 The endless constructors of `Free-mod`{.Agda} are powerless in the face
@@ -204,26 +196,26 @@ write, is definitionally a linear map --- saving us a bit of effort.
 
 ```agda
   -- Rough:
-  go : Free-mod A → ⌞ G ⌟
+  go : Free-mod A → ⌞ N ⌟
   go (inc x) = f x
   go (x · y) = x N.⋆ go y
   go (x + y) = go x N.+ go y
-  go (neg x) = N.G._⁻¹ (go x)
-  go 0m      = N.G.1g
-  go (+-comm x y i)    = N.G.commutes {go x} {go y} i
-  go (+-assoc x y z i) = N.G.associative {go x} {go y} {go z} (~ i)
-  go (+-invl x i)      = N.G.inversel {go x} i
-  go (+-idl x i)       = N.G.idl {go x} i
+  go (neg x) = N.- (go x)
+  go 0m      = N.0g
+  go (+-comm x y i)    = N.+-comm {go x} {go y} i
+  go (+-assoc x y z i) = N.+-assoc {go x} {go y} {go z} (~ i)
+  go (+-invl x i)      = N.+-invl {go x} i
+  go (+-idl x i)       = N.+-idl {go x} i
   go (·-id x i)        = N.⋆-id (go x) i
-  go (·-add-r x y z i) = N.⋆-add-r x (go y) (go z) i
-  go (·-add-l x y z i) = N.⋆-add-l x y (go z) i
-  go (·-assoc x y z i) = N.⋆-assoc x y (go z) i
+  go (·-distribl x y z i) = N.⋆-distribl x (go y) (go z) i
+  go (·-distribr x y z i) = N.⋆-distribr x y (go z) i
+  go (·-assoc x y z i) = N.⋆-assoc x y (go z) (~ i)
   go (squash a b p q i j) =
-    N.G.has-is-set (go a) (go b) (λ i → go (p i)) (λ i → go (q i)) i j
+    N.has-is-set (go a) (go b) (λ i → go (p i)) (λ i → go (q i)) i j
 
-  go-linear : Linear-map (Free-Mod A) (G , N) Rings.id
+  go-linear : Linear-map R (Free-Mod A) N
   go-linear .map = go
-  go-linear .linear r m s n = refl
+  go-linear .has-is-linear .linear r s t = refl
 
 {-# DISPLAY fold-free-mod.go = fold-free-mod #-}
 ```
@@ -236,34 +228,33 @@ leave the computation here if you're interested:
 
 ```agda
 open make-left-adjoint
-make-free-module : ∀ {ℓ′} → make-left-adjoint (Forget-module {ℓ} {ℓ ⊔ ℓ′} R)
-make-free-module = go where
-  go : make-left-adjoint (Forget-module R)
+make-free-module : ∀ {ℓ′} → make-left-adjoint (Forget-module R (ℓ ⊔ ℓ′))
+make-free-module {ℓ′} = go where
+  go : make-left-adjoint (Forget-structure (R-Mod-structure R))
   go .free x = Free-Mod ∣ x ∣
   go .unit x = Free-mod.inc
-  go .universal {y = y} = fold-free-mod (y .snd)
+  go .universal {y = y} f = linear-map→hom (fold-free-mod {ℓ = ℓ ⊔ ℓ′} y f)
   go .commutes f = refl
-  go .unique {y = y} {f = f} {g = g} p =
-    Linear-map-path (funext (Free-elim-prop.elim m)) where
+  go .unique {y = y} {f = f} {g = g} p = Homomorphism-path {ℓ ⊔ ℓ′} (Free-elim-prop.elim m) where
     open Free-elim-prop
-    module g = Linear-map g
-    module y = Module y
-    fold = fold-free-mod (y .snd) f .map
-    m : Free-elim-prop (λ a → fold-free-mod (y .snd) f .map a ≡ g .map a)
+    module g = Linear-map (hom→linear-map g)
+    module y = Module-on (y .snd)
+    fold = fold-free-mod y f .map
+    m : Free-elim-prop (λ a → fold-free-mod y f .map a ≡ g.map a)
     m .has-is-prop x = hlevel!
     m .P-· x y p =
       x y.⋆ fold y   ≡⟨ ap (x y.⋆_) p ⟩
-      x y.⋆ g .map y ≡⟨ g.linear-simple _ _ ⟩
+      x y.⋆ g.map y  ≡˘⟨ g.pres-⋆ _ _ ⟩
       g.map (x · y)  ∎
-    m .P-0m = sym g.has-group-hom.pres-id
+    m .P-0m = sym g.pres-0
     m .P-+ x y p q =
       fold x y.+ fold y   ≡⟨ ap₂ y._+_ p q ⟩
-      g.map x y.+ g.map y ≡˘⟨ g.has-group-hom.pres-⋆ _ _ ⟩
+      g.map x y.+ g.map y ≡˘⟨ g.pres-+ _ _ ⟩
       g.map (x + y)       ∎
     m .P-neg x p =
-      y.G._⁻¹ (fold x)  ≡⟨ ap y.G._⁻¹ p ⟩
-      y.G._⁻¹ (g.map x) ≡˘⟨ g.has-group-hom.pres-inv ⟩
-      g.map (neg x)         ∎
+      y.- (fold x)  ≡⟨ ap y.-_ p ⟩
+      y.- (g.map x) ≡˘⟨ g.pres-neg ⟩
+      g.map (neg x) ∎
     m .P-inc x = p $ₚ x
 ```
 
@@ -272,11 +263,11 @@ After that calculation, we can ✨ just ✨ conclude that
 rearrange the proof above into the form of a functor and an adjunction.
 
 ```agda
-Free-module : ∀ {ℓ′} → Functor (Sets (ℓ ⊔ ℓ′)) (R-Mod (ℓ ⊔ ℓ′) R)
+Free-module : ∀ {ℓ′} → Functor (Sets (ℓ ⊔ ℓ′)) (R-Mod R (ℓ ⊔ ℓ′))
 Free-module {ℓ′ = ℓ′} =
   make-left-adjoint.to-functor (make-free-module {ℓ′ = ℓ′})
 
-Free⊣Forget : ∀ {ℓ′} → Free-module {ℓ′} ⊣ Forget-module R
+Free⊣Forget : ∀ {ℓ′} → Free-module {ℓ′} ⊣ Forget-module R (ℓ ⊔ ℓ′)
 Free⊣Forget {ℓ′} = make-left-adjoint.to-left-adjoint
   (make-free-module {ℓ′ = ℓ′})
 ```
