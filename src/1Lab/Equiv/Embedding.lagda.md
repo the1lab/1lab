@@ -50,7 +50,7 @@ To develop this correspondence, we note that, if a map is
 `injective`{.Agda} and its codomain is a [set], then all the
 `fibres`{.Agda} $f^*(x)$ of $f$ are [propositions].
 
-[sets]: 1Lab.HLevel.html#is-set
+[set]: 1Lab.HLevel.html#is-set
 [propositions]: 1Lab.HLevel.html#is-prop
 
 ```agda
