@@ -1,13 +1,17 @@
 <!--
 ```agda
+open import Algebra.Ring.Module.Notation
+open import Algebra.Group.Notation
 open import Algebra.Ring.Module
 open import Algebra.Group.Ab
 open import Algebra.Group
 open import Algebra.Ring
 
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Abelian.Instances.Ab
+open import Cat.Diagram.Terminal
 open import Cat.Abelian.Base
-open import Cat.Prelude
+open import Cat.Prelude hiding (_+_ ; _*_)
 ```
 -->
 
@@ -18,9 +22,10 @@ module Algebra.Ring.Module.Category {ℓ} (R : Ring ℓ) where
 <!--
 ```agda
 private module R = Ring-on (R .snd)
-open Ab-category
-open is-additive
+open Ab-category hiding (_+_ ; Terminal)
+open is-additive hiding (_+_ ; Terminal)
 open make-abelian-group
+open Total-hom
 ```
 -->
 
@@ -34,23 +39,23 @@ structure, but proving that the pointwise sum is a still a linear map
 is, ahem, very annoying. See for yourself:
 
 ```agda
-R-Mod-ab-category : ∀ {ℓ′} → Ab-category (R-Mod ℓ′ R)
+R-Mod-ab-category : ∀ {ℓ′} → Ab-category (R-Mod R ℓ′)
 R-Mod-ab-category .Abelian-group-on-hom A B = to-abelian-group-on grp where
-  module A = Module A
-  module B = Module B
+  open Module-notation ⦃ ... ⦄
+  open Additive-notation ⦃ ... ⦄
+  instance
+    _ = module-notation A
+    _ = module-notation B
+
   grp : make-abelian-group (R-Mod.Hom A B)
   grp .ab-is-set = R-Mod.Hom-set _ _
-
-  grp .mul f g .map x = f .map x B.+ g .map x
-  grp .mul f g .linear r m s n =
-    fₘ (r A.⋆ m A.+ s A.⋆ n) B.+ gₘ (r A.⋆ m A.+ s A.⋆ n)       ≡⟨ ap₂ B._+_ (f .linear _ _ _ _) (g .linear _ _ _ _) ⟩
-    (r B.⋆ fₘ m B.+ s B.⋆ fₘ n) B.+ (r B.⋆ gₘ m B.+ s B.⋆ gₘ n) ≡⟨ B.G.pullr (B.G.pulll B.G.commutes) ⟩
-    r B.⋆ fₘ m B.+ (r B.⋆ gₘ m B.+ s B.⋆ fₘ n) B.+ s B.⋆ gₘ n   ≡⟨ B.G.pulll (B.G.pulll (sym (B.⋆-add-r r _ _))) ⟩
-    (r B.⋆ (fₘ m B.+ gₘ m) B.+ (s B.⋆ fₘ n)) B.+ (s B.⋆ gₘ n)   ≡⟨ B.G.pullr (sym (B.⋆-add-r s _ _)) ⟩
-    r B.⋆ (fₘ m B.+ gₘ m) B.+ s B.⋆ (fₘ n B.+ gₘ n)             ∎
-    where
-      fₘ = f .map
-      gₘ = g .map
+  grp .mul f g .hom x = f # x + g # x
+  grp .mul f g .preserves .linear r s t =
+    f # (r ⋆ s + t) + g # (r ⋆ s + t)         ≡⟨ ap₂ _+_ (f .preserves .linear r s t) (g .preserves .linear r s t) ⟩
+    (r ⋆ f # s + f # t) + (r ⋆ g # s + g # t) ≡⟨ sym +-assoc ∙ ap₂ _+_ refl (+-assoc ∙ ap₂ _+_ (+-comm _ _) refl ∙ sym +-assoc) ∙ +-assoc ∙ +-assoc ⟩
+    ⌜ r ⋆ f # s + r ⋆ g # s ⌝ + f # t + g # t ≡˘⟨ ap¡ (⋆-distribl r (f # s) (g # s)) ⟩
+    r ⋆ (f # s + g # s) + f # t + g # t       ≡⟨ sym +-assoc ⟩
+    r ⋆ (f # s + g # s) + (f # t + g # t)     ∎
 ```
 
 <details>
@@ -58,31 +63,20 @@ R-Mod-ab-category .Abelian-group-on-hom A B = to-abelian-group-on grp where
 going to keep it in this `<details>`{.html} element out of
 decency.</summary>
 ```agda
-  grp .1g .map x    = B.G.1g
-  grp .1g .linear r m s n =
-    B.G.1g                        ≡˘⟨ B.⋆-group-hom.pres-id _ ⟩
-    s B.⋆ B.G.1g                  ≡˘⟨ B.G.eliml (B.⋆-group-hom.pres-id _) ⟩
-    r B.⋆ B.G.1g B.+ s B.⋆ B.G.1g ∎
-  grp .inv f .map x   = B.G._⁻¹ (f .map x)
-  grp .inv f .linear r m s n =
-       ap B.G._⁻¹ (f .linear r m s n)
-    ·· B.G.inv-comm
-    ·· B.G.commutes
-     ∙ ap₂ B._+_ (sym (B.⋆-group-hom.pres-inv _)) (sym (B.⋆-group-hom.pres-inv _))
-  grp .assoc x y z = Linear-map-path (funext λ x → sym B.G.associative)
-  grp .invl x = Linear-map-path (funext λ x → B.G.inversel)
-  grp .idl x = Linear-map-path (funext λ x → B.G.idl)
-  grp .comm x y = Linear-map-path (funext λ x → B.G.commutes)
-R-Mod-ab-category .∘-linear-l f g h = Linear-map-path refl
-R-Mod-ab-category .∘-linear-r {B = B} {C} f g h =
-  Linear-map-path $ funext λ x →
-    f .map (g .map x) C.+ f .map (h .map x)                     ≡⟨ ap₂ C._+_ (sym (C.⋆-id _)) (sym (C.⋆-id _)) ⟩
-    R.1r C.⋆ f .map (g .map x) C.+ (R.1r C.⋆ f .map (h .map x)) ≡⟨ sym (f .linear R.1r (g .map x) R.1r (h .map x)) ⟩
-    f .map (R.1r B.⋆ g .map x B.+ R.1r B.⋆ h .map x)            ≡⟨ ap (f .map) (ap₂ B._+_ (B.⋆-id _) (B.⋆-id _)) ⟩
-    f .map (g .map x B.+ h .map x)                              ∎
-  where
-    module C = Module C
-    module B = Module B
+  grp .inv f .hom x = - f # x
+  grp .inv f .preserves .linear r s t =
+    - f # (r ⋆ s + t)         ≡⟨ ap -_ (f .preserves .linear r s t) ⟩
+    - (r ⋆ f # s + f # t)     ≡⟨ neg-comm ∙ +-comm _ _ ⟩
+    - (r ⋆ f # s) + - (f # t) ≡⟨ ap₂ _+_ (sym (Module-on.⋆-negr (B .snd))) refl ⟩
+    r ⋆ - f # s + - f # t     ∎
+  grp .1g .hom x = 0g
+  grp .1g .preserves .linear r s t = sym (+-idr ∙ Module-on.⋆-idr (B .snd))
+  grp .idl f = Homomorphism-path λ x → +-idl
+  grp .assoc f g h = Homomorphism-path λ x → sym +-assoc
+  grp .invl f = Homomorphism-path λ x → +-invl
+  grp .comm f g = Homomorphism-path λ x → +-comm _ _
+R-Mod-ab-category .∘-linear-l f g h = Homomorphism-path λ x → refl
+R-Mod-ab-category .∘-linear-r {B = B} {C} f g h = Homomorphism-path λ x → sym (is-linear-map.pres-+ (f .preserves) _ _)
 ```
 </details>
 
@@ -99,23 +93,23 @@ The zero object is simple, because the unit type is so well-behaved^[and
 constantly the unit, including the paths, which are _all_ reflexivity.
 
 ```agda
-R-Mod-is-additive : is-additive (R-Mod _ R)
+R-Mod-is-additive : is-additive (R-Mod R _)
 R-Mod-is-additive .has-ab = R-Mod-ab-category
-R-Mod-is-additive .has-terminal = record
-  { top  = _ , ∅ᴹ
-  ; has⊤ = λ x → contr
-    (record { map    = λ _ → lift tt
-            ; linear = λ _ _ _ _ → refl
-            })
-    (λ _ → Linear-map-path refl)
-  }
-  where
-    ∅ᴹ : Module-on R (Ab-is-additive .has-terminal .Terminal.top)
-    ∅ᴹ .Module-on._⋆_ = λ _ _ → lift tt
-    ∅ᴹ .Module-on.⋆-id _        = refl
-    ∅ᴹ .Module-on.⋆-add-r _ _ _ = refl
-    ∅ᴹ .Module-on.⋆-add-l _ _ _ = refl
-    ∅ᴹ .Module-on.⋆-assoc _ _ _ = refl
+R-Mod-is-additive .has-terminal = term where
+  ∅ᴹ : Module R _
+  ∅ᴹ = from-module-on R $ action→module-on R
+    (Ab-is-additive .has-terminal .Terminal.top)
+      (λ _ _ → lift tt)
+      (λ _ _ _ → refl)
+      (λ _ _ _ → refl)
+      (λ _ _ _ → refl)
+      λ _ → refl
+
+  term : Terminal (R-Mod R _)
+  term .Terminal.top = ∅ᴹ
+  term .Terminal.has⊤ x .centre .hom _ = lift tt
+  term .Terminal.has⊤ x .centre .preserves .linear r s t = refl
+  term .Terminal.has⊤ x .paths r = Homomorphism-path λ _ → refl
 ```
 
 For the direct products, on the other hand, we have to do a bit more
@@ -126,18 +120,23 @@ defined pointwise using the $R$-module structures of $M$ and $N$:
 
 ```agda
 R-Mod-is-additive .has-prods M N = prod where
-  module P = is-additive.Product
-    Ab-is-additive
-    (Ab-is-additive .has-prods (M .fst) (N .fst))
-  module M = Module M
-  module N = Module N
+  module P = is-additive.Product Ab-is-additive (Ab-is-additive .has-prods
+    (M .fst , Module-on→Abelian-group-on R (M .snd))
+    (N .fst , Module-on→Abelian-group-on R (N .snd)))
 
-  M⊕ᵣN : Module-on R P.apex
-  M⊕ᵣN .Module-on._⋆_ r (a , b) = r M.⋆ a , r N.⋆ b
-  M⊕ᵣN .Module-on.⋆-id _        = Σ-pathp (M.⋆-id _)        (N.⋆-id _)
-  M⊕ᵣN .Module-on.⋆-add-r _ _ _ = Σ-pathp (M.⋆-add-r _ _ _) (N.⋆-add-r _ _ _)
-  M⊕ᵣN .Module-on.⋆-add-l _ _ _ = Σ-pathp (M.⋆-add-l _ _ _) (N.⋆-add-l _ _ _)
-  M⊕ᵣN .Module-on.⋆-assoc _ _ _ = Σ-pathp (M.⋆-assoc _ _ _) (N.⋆-assoc _ _ _)
+  open Module-notation ⦃ ... ⦄
+  instance
+    _ = module-notation M
+    _ = module-notation N
+
+  M⊕ᵣN : Module R _
+  M⊕ᵣN = from-module-on R $ action→module-on R
+    P.apex
+    (λ r (a , b) → r ⋆ a , r ⋆ b)
+    (λ r x y → Σ-pathp (⋆-distribl _ _ _) (⋆-distribl _ _ _))
+    (λ r x y → Σ-pathp (⋆-distribr _ _ _) (⋆-distribr _ _ _))
+    (λ r x y → Σ-pathp (⋆-assoc _ _ _) (⋆-assoc _ _ _))
+    (λ x → Σ-pathp (⋆-id _) (⋆-id _))
 ```
 
 We can readily define the universal cone: The projection maps are the
@@ -146,22 +145,22 @@ Proving that this cone is actually universal involves a bit of
 path-mangling, but it's nothing _too_ bad:
 
 ```agda
-  open Ab-category.is-product
   open Ab-category.Product
-  prod : Ab-category.Product R-Mod-ab-category M N
-  prod .apex = _ , M⊕ᵣN
-  prod .π₁ .map (a , _)    = a
-  prod .π₁ .linear r m s n = refl
-  prod .π₂ .map (_ , b)    = b
-  prod .π₂ .linear r m s n = refl
+  open Ab-category.is-product
 
-  prod .has-is-product .⟨_,_⟩ f g .map x = f .map x , g .map x
-  prod .has-is-product .⟨_,_⟩ f g .linear r m s n =
-    Σ-pathp (f .linear _ _ _ _) (g .linear _ _ _ _)
-  prod .has-is-product .π₁∘factor = Linear-map-path refl
-  prod .has-is-product .π₂∘factor = Linear-map-path refl
-  prod .has-is-product .unique other p q = Linear-map-path {ℓ′ = lzero} $ funext λ x →
-    Σ-pathp (ap map p $ₚ x) (ap map q $ₚ x)
+  prod : Ab-category.Product R-Mod-ab-category M N
+  prod .apex = M⊕ᵣN
+  prod .π₁ .hom = fst
+  prod .π₁ .preserves .linear r s t = refl
+  prod .π₂ .hom = snd
+  prod .π₂ .preserves .linear r s t = refl
+  prod .has-is-product .⟨_,_⟩ f g .hom x = f # x , g # x
+  prod .has-is-product .⟨_,_⟩ f g .preserves .linear r m s =
+    Σ-pathp (f .preserves .linear _ _ _) (g .preserves .linear _ _ _)
+  prod .has-is-product .π₁∘factor = Homomorphism-path λ _ → refl
+  prod .has-is-product .π₂∘factor = Homomorphism-path λ _ → refl
+  prod .has-is-product .unique other p q = Homomorphism-path {ℓ = lzero} λ x →
+    Σ-pathp (ap hom p $ₚ x) (ap hom q $ₚ x)
 ```
 
 <!-- TODO [Amy 2022-09-15]

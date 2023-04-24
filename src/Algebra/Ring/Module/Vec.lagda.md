@@ -25,7 +25,7 @@ module Algebra.Ring.Module.Vec {ℓ} (R : Ring ℓ) where
 ```agda
 private module R = Ring-on (R .snd)
 open make-abelian-group
-open Module hiding (module R ; module G)
+open Module-on
 ```
 -->
 
@@ -39,24 +39,23 @@ $\RR$. Here we prove a generalisation of that fact: lists of $n$
 elements of $R$ are a module over $R$.
 
 ```agda
-Fin-vec-group : ∀ n → Abelian-group ℓ
-Fin-vec-group n = to-ab mg where
-  mg : make-abelian-group (Fin n → ⌞ R ⌟)
-  mg .ab-is-set = hlevel!
-  mg .1g _ = R.0r
-  mg .mul f g i = f i R.+ g i
-  mg .inv f i = R.- (f i)
-  mg .assoc x y z = funext λ _ → sym R.+-associative
-  mg .invl x = funext λ _ → R.+-invl
-  mg .idl x = funext λ _ → R.+-idl
-  mg .comm x y = funext λ _ → R.+-commutes
+Fin-vec-module : ∀ n → Module R ℓ
+Fin-vec-module n = to-module R mk where
+  mk : make-module R (Fin n → ⌞ R ⌟)
+  mk .make-module.has-is-set = hlevel 2
+  mk .make-module._+_ f g i = f i R.+ g i
+  mk .make-module.inv f i = R.- f i
+  mk .make-module.0g i = R.0r
+  mk .make-module._⋆_ f g i = f R.* g i
 
-Fin-vec-module : ∀ n → Module-on R (Fin-vec-group n)
-Fin-vec-module n .Module-on._⋆_ r f i = r R.* f i
-Fin-vec-module n .Module-on.⋆-id x = funext λ i → R.*-idl
-Fin-vec-module n .Module-on.⋆-add-r r x y = funext λ i → R.*-distribl
-Fin-vec-module n .Module-on.⋆-add-l r s x = funext λ i → R.*-distribr
-Fin-vec-module n .Module-on.⋆-assoc r s x = funext λ i → R.*-associative
+  mk .make-module.+-assoc f g h    = funext λ i → sym R.+-associative
+  mk .make-module.+-invl f         = funext λ i → R.+-invl
+  mk .make-module.+-idl f          = funext λ i → R.+-idl
+  mk .make-module.+-comm f g       = funext λ i → R.+-commutes
+  mk .make-module.⋆-distribl r x y = funext λ i → R.*-distribl
+  mk .make-module.⋆-distribr r x y = funext λ i → R.*-distribr
+  mk .make-module.⋆-assoc r s x    = funext λ i → sym R.*-associative
+  mk .make-module.⋆-id x           = funext λ i → R.*-idl
 ```
 
 Furthermore, the module of $n$-ary vectors has the following nice
@@ -72,17 +71,17 @@ $$
 
 <!--
 ```agda
-module _ {ℓ′} (S : Module ℓ′ R) where
+module _ {ℓ′} (S : Module R ℓ′) where
   private
-    module S = Module S
-    G′ = Abelian→Group-on (S .fst .snd)
+    module S = Module-on (S .snd)
+    G′ = Module-on→Group-on _ (S .snd)
 
   ∑-distr : ∀ {n} r (f : Fin n → ⌞ S ⌟)
           → r S.⋆ ∑ G′ f
           ≡ ∑ G′ λ i → r S.⋆ f i
-  ∑-distr {n = zero} r f = S.⋆-group-hom.pres-id _
+  ∑-distr {n = zero} r f = S.⋆-idr
   ∑-distr {n = suc n} r f =
-    r S.⋆ (f fzero S.+ ∑ G′ (λ e → f (fsuc e)))            ≡⟨ S.⋆-add-r r (f fzero) _ ⟩
+    r S.⋆ (f fzero S.+ ∑ G′ (λ e → f (fsuc e)))            ≡⟨ S.⋆-distribl r (f fzero) _ ⟩
     (r S.⋆ f fzero) S.+ ⌜ r S.⋆ ∑ G′ (λ e → f (fsuc e)) ⌝  ≡⟨ ap! (∑-distr {n} r (λ e → f (fsuc e))) ⟩
     (r S.⋆ f fzero) S.+ ∑ G′ (λ i → r S.⋆ f (fsuc i))      ∎
 ```
@@ -90,14 +89,14 @@ module _ {ℓ′} (S : Module ℓ′ R) where
 
 ```agda
   linear-extension : ∀ {n} → (Fin n → ⌞ S ⌟)
-                   → Linear-map (_ , Fin-vec-module n) S Rings.id
+                   → Linear-map R (Fin-vec-module n) S
   linear-extension fun .map x = ∑ G′ λ i → x i S.⋆ fun i
-  linear-extension fun .linear r m s n =
-    ∑ G′ (λ i → (r R.* m i R.+ s R.* n i) S.⋆ fun i)                          ≡⟨ ap (∑ G′) (funext λ i → S.⋆-add-l (r R.* m i) (s R.* n i) (fun i)) ⟩
-    ∑ G′ (λ i → ((r R.* m i) S.⋆ fun i) S.+ ((s R.* n i) S.⋆ fun i))          ≡⟨ ∑-split (S .fst .snd) (λ i → (r R.* m i) S.⋆ fun i) (λ i → (s R.* n i) S.⋆ fun i) ⟩
-    (∑ G′ λ i → (r R.* m i) S.⋆ fun i) S.+ (∑ G′ λ i → (s R.* n i) S.⋆ fun i) ≡˘⟨ ap₂ S._+_ (ap (∑ G′) (funext λ i → S.⋆-assoc r (m i) (fun i))) (ap (∑ G′) (funext λ i → S.⋆-assoc s (n i) (fun i))) ⟩
-    (∑ G′ λ i → r S.⋆ (m i S.⋆ fun i)) S.+ (∑ G′ λ i → s S.⋆ (n i S.⋆ fun i)) ≡˘⟨ ap₂ S._+_ (∑-distr r λ i → m i S.⋆ fun i) (∑-distr s λ i → n i S.⋆ fun i) ⟩
-    (r S.⋆ ∑ G′ (λ i → m i S.⋆ fun i)) S.+ (s S.⋆ ∑ G′ (λ i → n i S.⋆ fun i)) ∎
+  linear-extension fun .has-is-linear .linear r m n =
+    ∑ G′ (λ i → (r R.* m i R.+ n i) S.⋆ fun i)                            ≡⟨ ap (∑ G′)  (funext λ i → S.⋆-distribr (r R.* m i) (n i) (fun i)) ⟩
+    ∑ G′ (λ i → (r R.* m i) S.⋆ fun i S.+ n i S.⋆ fun i)                  ≡⟨ ∑-split (Module-on→Abelian-group-on R (S .snd)) (λ i → (r R.* m i) S.⋆ fun i) _ ⟩
+    ⌜ ∑ G′ (λ i → (r R.* m i) S.⋆ fun i) ⌝ S.+ ∑ G′ (λ i → n i S.⋆ fun i) ≡⟨ ap! (ap (∑ G′) (funext λ i → S.⋆-assoc r (m i) _)) ⟩
+    ⌜ ∑ G′ (λ i → r S.⋆ m i S.⋆ fun i) ⌝ S.+ ∑ G′ (λ i → n i S.⋆ fun i)   ≡˘⟨ ap¡ (∑-distr r λ i → m i S.⋆ fun i) ⟩
+    (r S.⋆ ∑ G′ (λ i → m i S.⋆ fun i) S.+ ∑ G′ λ i → n i S.⋆ fun i)       ∎
 ```
 
 ## As products
@@ -113,15 +112,15 @@ open is-indexed-product
 open Indexed-product
 
 Fin-vec-is-product
-  : ∀ {n} → Indexed-product (R-Mod _ R) {Idx = Fin n} λ _ → representable-module R
-Fin-vec-is-product {n} .ΠF = _ , Fin-vec-module n
-Fin-vec-is-product .π i .map k = k i
-Fin-vec-is-product .π i .linear r m s n = refl
+  : ∀ {n} → Indexed-product (R-Mod R _) {Idx = Fin n} λ _ → representable-module R
+Fin-vec-is-product {n} .ΠF = Fin-vec-module n
+Fin-vec-is-product .π i .hom k = k i
+Fin-vec-is-product .π i .preserves .linear r m n = refl
 Fin-vec-is-product {n} .has-is-ip .tuple {Y} f = assemble where
-  assemble : Linear-map Y (_ , Fin-vec-module n) Rings.id
-  assemble .map yob ix = f ix .map yob
-  assemble .linear r m s n = funext λ i → f i .linear _ _ _ _
-Fin-vec-is-product .has-is-ip .commute = Linear-map-path (refl)
+  assemble : R-Mod.Hom Y (Fin-vec-module n)
+  assemble .hom yob ix = f ix .hom yob
+  assemble .preserves .linear r m n = funext λ i → f i .preserves .linear _ _ _
+Fin-vec-is-product .has-is-ip .commute = Homomorphism-path λ _ → refl
 Fin-vec-is-product .has-is-ip .unique {h = h} f ps =
-  Linear-map-path $ funext λ i → funext λ ix → ap map (ps ix) $ₚ i
+  Homomorphism-path λ i → funext λ ix → ap hom (ps ix) $ₚ i
 ```

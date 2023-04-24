@@ -67,11 +67,22 @@ other words, we have:
       ⋆-assoc    : ∀ r s x → (r R.* s) ⋆ x ≡ r ⋆ (s ⋆ x)
       ⋆-id       : ∀ x     → R.1r ⋆ x      ≡ x
 
-    module ab = Additive-notation (record { has-is-group = is-abelian-group.has-is-group has-is-ab })
+    private
+      ug : Group-on _
+      ug = record { has-is-group = is-abelian-group.has-is-group has-is-ab }
+
+    module ab = Additive-notation ug
     private module ab' = is-abelian-group has-is-ab renaming (commutes to +-comm)
 
     open ab using (-_ ; 0g ; +-invr ; +-invl ; +-assoc ; +-idl ; +-idr ; neg-0 ; neg-comm ; neg-neg ; has-is-set) public
     open ab' using (+-comm) public
+
+    abstract
+      ⋆-is-group-hom : ∀ {r} → is-group-hom ug ug (r ⋆_)
+      ⋆-is-group-hom .is-group-hom.pres-⋆ x y = ⋆-distribl _ x y
+
+    private module ⋆gh {r} = is-group-hom (⋆-is-group-hom {r}) renaming (pres-id to ⋆-idr ; pres-inv to ⋆-negr)
+    open ⋆gh public using (⋆-idr ; ⋆-negr)
 
   private unquoteDecl eqv = declare-record-iso eqv (quote is-module)
 
@@ -87,6 +98,18 @@ other words, we have:
 
     open is-module has-is-mod public
 
+  Module-on→Group-on
+    : ∀ {ℓm} {T : Type ℓm}
+    → Module-on T
+    → Group-on T
+  Module-on→Group-on M = record { has-is-group = is-abelian-group.has-is-group (Module-on.has-is-ab M) }
+
+  Module-on→Abelian-group-on
+    : ∀ {ℓm} {T : Type ℓm}
+    → Module-on T
+    → Abelian-group-on T
+  Module-on→Abelian-group-on M = record { has-is-ab = Module-on.has-is-ab M }
+
   abstract instance
     H-Level-is-module
       : ∀ {ℓ′} {T : Type ℓ′} {_+_ : T → T → T} {_⋆_ : ⌞ R ⌟ → T → T} {n}
@@ -99,12 +122,6 @@ other words, we have:
       in Iso→is-hlevel 1 eqv (hlevel 1) x
 
   open Module-on ⦃ ... ⦄ hiding (has-is-set)
-
-  Module-on→Group-on
-    : ∀ {ℓm} {T : Type ℓm}
-    → Module-on T
-    → Group-on T
-  Module-on→Group-on M = record { has-is-group = is-abelian-group.has-is-group (Module-on.has-is-ab M) }
 
   Module : ∀ ℓm → Type (lsuc ℓm ⊔ ℓ)
   Module ℓm = Σ (Set ℓm) λ X → Module-on ∣ X ∣
@@ -231,7 +248,14 @@ other words, we have:
     mod .is-module.⋆-id = make-module.⋆-id m
 
   from-module-on : ∀ {ℓ} {T : Type ℓ} → Module-on T → Module ℓ
-  from-module-on M = el _ (Module-on.has-is-set M) , M
+  ∣ from-module-on M .fst ∣    = _
+  from-module-on M .fst .is-tr = Module-on.has-is-set M
+  from-module-on M .snd = M
+
+  to-module : ∀ {ℓm} {M : Type ℓm} → make-module M → Module ℓm
+  ∣ to-module m .fst ∣ = _
+  to-module m .fst .is-tr = make-module.has-is-set m
+  to-module m .snd = to-module-on m
 
   module _ {ℓm} (G : Abelian-group ℓm) where
     private module G = Abelian-group-on (G .snd)
