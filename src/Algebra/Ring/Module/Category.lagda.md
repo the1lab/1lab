@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Algebra.Ring.Module.Notation
+open import Algebra.Ring.Module.Action
 open import Algebra.Group.Notation
 open import Algebra.Ring.Module
 open import Algebra.Group.Ab
@@ -96,14 +97,15 @@ constantly the unit, including the paths, which are _all_ reflexivity.
 R-Mod-is-additive : is-additive (R-Mod R _)
 R-Mod-is-additive .has-ab = R-Mod-ab-category
 R-Mod-is-additive .has-terminal = term where
+  act : Ring-action R _
+  act .Ring-action._⋆_ r _          = lift tt
+  act .Ring-action.⋆-distribl r x y = refl
+  act .Ring-action.⋆-distribr r x y = refl
+  act .Ring-action.⋆-assoc r s x    = refl
+  act .Ring-action.⋆-id x           = refl
+
   ∅ᴹ : Module R _
-  ∅ᴹ = from-module-on R $ action→module-on R
-    (Ab-is-additive .has-terminal .Terminal.top)
-      (λ _ _ → lift tt)
-      (λ _ _ _ → refl)
-      (λ _ _ _ → refl)
-      (λ _ _ _ → refl)
-      λ _ → refl
+  ∅ᴹ = Action→Module R (Ab-is-additive .has-terminal .Terminal.top) act
 
   term : Terminal (R-Mod R _)
   term .Terminal.top = ∅ᴹ
@@ -129,14 +131,15 @@ R-Mod-is-additive .has-prods M N = prod where
     _ = module-notation M
     _ = module-notation N
 
+  act : Ring-action R _
+  act .Ring-action._⋆_ r (a , b)    = r ⋆ a , r ⋆ b
+  act .Ring-action.⋆-distribl r x y = ap₂ _,_ (⋆-distribl _ _ _) (⋆-distribl _ _ _)
+  act .Ring-action.⋆-distribr r x y = ap₂ _,_ (⋆-distribr _ _ _) (⋆-distribr _ _ _)
+  act .Ring-action.⋆-assoc r s x    = ap₂ _,_ (⋆-assoc _ _ _) (⋆-assoc _ _ _)
+  act .Ring-action.⋆-id x           = ap₂ _,_ (⋆-id _) (⋆-id _)
+
   M⊕ᵣN : Module R _
-  M⊕ᵣN = from-module-on R $ action→module-on R
-    P.apex
-    (λ r (a , b) → r ⋆ a , r ⋆ b)
-    (λ r x y → Σ-pathp (⋆-distribl _ _ _) (⋆-distribl _ _ _))
-    (λ r x y → Σ-pathp (⋆-distribr _ _ _) (⋆-distribr _ _ _))
-    (λ r x y → Σ-pathp (⋆-assoc _ _ _) (⋆-assoc _ _ _))
-    (λ x → Σ-pathp (⋆-id _) (⋆-id _))
+  M⊕ᵣN = Action→Module R P.apex act
 ```
 
 We can readily define the universal cone: The projection maps are the

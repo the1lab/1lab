@@ -30,3 +30,10 @@ module Multiplicative-notation = Group-on renaming
   ; idr         to *-idr
   ; inv-unit    to inv-1
   )
+
+instance
+  Abelian-group-on→Group-on
+    : ∀ {ℓ} {T : Type ℓ} ⦃ A : Abelian-group-on T ⦄
+    → Group-on T
+  Abelian-group-on→Group-on ⦃ A ⦄ = record {
+    has-is-group = is-abelian-group.has-is-group (A .Abelian-group-on.has-is-ab) }
