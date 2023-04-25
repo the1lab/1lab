@@ -1,9 +1,13 @@
+<!--
 ```agda
 open import Cat.Prelude
 
 import Cat.Diagram.Equaliser
 import Cat.Diagram.Zero
+```
+-->
 
+```agda
 module Cat.Diagram.Equaliser.Kernel {o ℓ} (C : Precategory o ℓ) where
 ```
 

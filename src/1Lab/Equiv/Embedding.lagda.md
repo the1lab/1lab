@@ -5,6 +5,7 @@ description: |
   injective function between sets is an embedding, and that every
   equivalence is an embedding.
 ---
+<!--
 ```agda
 open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Retracts
@@ -17,7 +18,10 @@ open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+```
+-->
 
+```agda
 module 1Lab.Equiv.Embedding where
 ```
 

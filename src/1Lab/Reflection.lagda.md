@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Type.Sigma
 open import 1Lab.Equiv
@@ -8,7 +9,10 @@ open import Data.Product.NAry
 open import Data.Vec.Base
 open import Data.Bool
 open import Data.List
+```
+-->
 
+```agda
 module 1Lab.Reflection where
 
 open import Prim.Data.String public

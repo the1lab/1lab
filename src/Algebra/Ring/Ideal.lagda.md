@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Subgroup
 open import Algebra.Ring.Module
@@ -11,7 +12,10 @@ open import Cat.Functor.FullSubcategory
 open import Data.Power
 
 open import Meta.Bind
+```
+-->
 
+```agda
 module Algebra.Ring.Ideal where
 ```
 

@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Fibre
@@ -7,7 +8,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Displayed.Cartesian.Street where
 ```
 

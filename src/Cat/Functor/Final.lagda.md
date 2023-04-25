@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
@@ -5,7 +6,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning as Cr
+```
+-->
 
+```agda
 module Cat.Functor.Final where
 ```
 

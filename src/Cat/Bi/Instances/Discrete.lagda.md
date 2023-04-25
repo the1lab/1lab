@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Discrete
 open import Cat.Instances.Functor
@@ -6,7 +7,10 @@ open import Cat.Bi.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Bi.Instances.Discrete {o ℓ} (C : Precategory o ℓ) where
 ```
 

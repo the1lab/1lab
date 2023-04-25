@@ -1,8 +1,12 @@
+<!--
 ```agda
 open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type
+```
+-->
 
+```agda
 module Data.Wellfounded.Base where
 ```
 

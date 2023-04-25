@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Functor
@@ -6,7 +7,10 @@ open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning as DR
+```
+-->
 
+```agda
 module Cat.Displayed.Composition where
 ```
 

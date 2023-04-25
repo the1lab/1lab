@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
@@ -6,7 +7,10 @@ open import Algebra.Group
 open import Data.Int.Universal
 open import Data.Bool
 open import Data.Int
+```
+-->
 
+```agda
 module Homotopy.Space.Circle where
 ```
 

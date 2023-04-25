@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Functor
@@ -5,7 +6,10 @@ open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Instances.Functor.Duality where
 ```
 

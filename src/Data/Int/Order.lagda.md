@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
 open import Data.Int
 
 import Data.Nat as Nat
+```
+-->
 
+```agda
 module Data.Int.Order where
 ```
 

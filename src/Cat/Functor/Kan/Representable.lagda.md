@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Hom.Representable
 open import Cat.Instances.Functor.Compose
@@ -7,7 +8,10 @@ open import Cat.Functor.Hom
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Functor.Kan.Representable where
 ```
 

@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Instances.Functor
@@ -14,7 +15,10 @@ import Cat.Displayed.Cocartesian
 import Cat.Displayed.Cartesian
 import Cat.Displayed.Reasoning
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Displayed.Bifibration
   {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o′ ℓ′) where
 ```

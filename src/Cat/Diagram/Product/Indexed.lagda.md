@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Discrete
 open import Cat.Functor.Kan.Base
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Diagram.Product.Indexed {o ℓ} (C : Precategory o ℓ) where
 ```
 

@@ -1,6 +1,10 @@
+<!--
 ```
 open import 1Lab.Prelude
+```
+-->
 
+```agda
 module Homotopy.Space.Suspension where
 ```
 

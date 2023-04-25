@@ -1,8 +1,12 @@
+<!--
 ```agda
 open import 1Lab.Path.Groupoid
 open import 1Lab.Path
 open import 1Lab.Type
+```
+-->
 
+```agda
 module 1Lab.Path.Reasoning where
 ```
 

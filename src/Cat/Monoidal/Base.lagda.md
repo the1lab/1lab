@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
@@ -6,7 +7,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning as Cr
+```
+-->
 
+```agda
 module Cat.Monoidal.Base where
 ```
 

@@ -5,13 +5,17 @@ description: |
   *is*. We call these biinvertible maps.
 ---
 
+<!--
 ```agda
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+```
+-->
 
+```agda
 module 1Lab.Equiv.Biinv where
 ```
 

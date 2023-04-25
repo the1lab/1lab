@@ -1,7 +1,11 @@
+<!--
 ```agda
 open import Cat.Instances.Product
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Instances.Twisted where
 ```
 

@@ -5,6 +5,7 @@ description: |
   (left Kan extension along よ) adjunction given any functor.
 ---
 
+<!--
 ```agda
 {-# OPTIONS -vtc.decl:5 -WnoEmptyWhere #-}
 open import Cat.Instances.Functor.Compose
@@ -22,7 +23,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Functor.Kan.Nerve where
 ```
 

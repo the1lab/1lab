@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Algebra.Prelude
 open import Algebra.Group
 
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Algebra.Group.Cat.Base where
 ```
 

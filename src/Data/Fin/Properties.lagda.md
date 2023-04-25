@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
 open import Data.Fin.Base
 
 import Data.Nat as Nat
+```
+-->
 
+```agda
 module Data.Fin.Properties where
 
 ```

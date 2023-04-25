@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
@@ -8,7 +9,10 @@ open import Cat.Prelude
 import Cat.Displayed.Reasoning
 import Cat.Displayed.Morphism
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Displayed.Univalence
   {o ℓ o′ ℓ′}
   {B : Precategory o ℓ}

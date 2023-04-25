@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Reflection.Record
 open import 1Lab.Equiv.Fibrewise
@@ -9,7 +10,10 @@ open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type hiding (id ; _∘_)
+```
+-->
 
+```agda
 module Cat.Base where
 ```
 

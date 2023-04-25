@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Path.Groupoid
 open import 1Lab.HLevel
@@ -5,7 +6,10 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open is-contr
+```
+-->
 
+```agda
 module 1Lab.Equiv where
 ```
 

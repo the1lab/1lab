@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Coequaliser
 open import Cat.Prelude
 
 import Cat.Reasoning as Cr
+```
+-->
 
+```agda
 module Data.Set.Surjection where
 ```
 

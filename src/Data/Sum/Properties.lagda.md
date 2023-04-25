@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Retracts
@@ -9,7 +10,10 @@ open import 1Lab.Type
 
 open import Data.List.Base
 open import Data.Sum.Base
+```
+-->
 
+```agda
 module Data.Sum.Properties where
 ```
 

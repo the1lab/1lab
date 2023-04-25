@@ -1,7 +1,11 @@
+<!--
 ```agda
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Order.Base where
 ```
 

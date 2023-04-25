@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
@@ -6,7 +7,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.CartesianClosed.Base where
 ```
 

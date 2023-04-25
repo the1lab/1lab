@@ -3,6 +3,7 @@ description: |
   We establish the theory of amnestic functors, those which reflect
   univalence of categories.
 ---
+<!--
 ```agda
 open import Cat.Functor.Base
 open import Cat.Univalent
@@ -10,7 +11,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning as Cat
+```
+-->
 
+```agda
 module Cat.Functor.Amnestic where
 ```
 

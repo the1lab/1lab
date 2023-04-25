@@ -5,6 +5,7 @@ description: |
   conceptually clean (adjoints as "optimal solutions" --- initial
   objects in certain comma categories).
 ---
+<!--
 ```agda
 open import Cat.Diagram.Initial
 open import Cat.Instances.Comma
@@ -12,7 +13,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Functor.Adjoint where
 ```
 

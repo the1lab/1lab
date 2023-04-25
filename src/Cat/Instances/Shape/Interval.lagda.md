@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Diagram.Limit.Finite
 open import Cat.Instances.Functor
@@ -11,7 +12,10 @@ open import Order.Base
 open import Order.Cat
 
 import Order.Reasoning as Poset
+```
+-->
 
+```agda
 module Cat.Instances.Shape.Interval where
 ```
 

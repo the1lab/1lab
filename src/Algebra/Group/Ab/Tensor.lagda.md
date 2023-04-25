@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Ab.Hom
 open import Algebra.Group.Ab
@@ -11,7 +12,10 @@ open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bifunctor
+```
+-->
 
+```agda
 module Algebra.Group.Ab.Tensor where
 ```
 

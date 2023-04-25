@@ -1,7 +1,11 @@
+<!--
 ```agda
 open import Cat.Instances.Product
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Diagram.Product {o h} (C : Precategory o h) where
 ```
 

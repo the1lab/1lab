@@ -1,17 +1,16 @@
 <!--
 ```agda
-open import Cat.Displayed.Base
+open import Cat.Instances.Functor.Compose
 open import Cat.Displayed.Cartesian
-open import Cat.Displayed.Total
-
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Functor
-open import Cat.Instances.Functor.Compose
+open import Cat.Displayed.Total
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Reasoning
 import Cat.Displayed.Reasoning
 import Cat.Functor.Reasoning
+import Cat.Reasoning
 ```
 -->
 

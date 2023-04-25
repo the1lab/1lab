@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Prim.Data.Bool
 open import Prim.Extension
 open import Prim.Interval
 open import Prim.Type
 open import Prim.Kan
+```
+-->
 
+```agda
 module Prim.Data.Nat where
 ```
 

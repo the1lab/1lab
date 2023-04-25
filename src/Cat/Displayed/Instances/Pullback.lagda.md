@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Displayed.Cartesian
 open import Cat.Instances.Functor
@@ -6,7 +7,10 @@ open import Cat.Prelude
 
 import Cat.Displayed.Reasoning as Dr
 import Cat.Displayed.Solver as Ds
+```
+-->
 
+```agda
 module
   Cat.Displayed.Instances.Pullback
     {o ℓ o′ ℓ′ o′′ ℓ′′}

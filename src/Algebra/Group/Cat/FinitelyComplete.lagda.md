@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Algebra.Group.Cat.Base
 open import Algebra.Group
 
 open import Cat.Instances.Sets.Complete as SL
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Algebra.Group.Cat.FinitelyComplete {ℓ} where
 ```
 

@@ -1,3 +1,4 @@
+<!--
 ```agda
 {-# OPTIONS --lossy-unification -vtc.decl:5 #-}
 open import Algebra.Monoid
@@ -20,7 +21,10 @@ open import Order.Base
 
 import Order.Frame.Reasoning as Frm
 import Order.Reasoning as Poset
+```
+-->
 
+```agda
 module Order.Frame.Free where
 ```
 

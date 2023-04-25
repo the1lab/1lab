@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Displayed.Morphism
   {o ℓ o′ ℓ′}
   {ℬ : Precategory o ℓ}

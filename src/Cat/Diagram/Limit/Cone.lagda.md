@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Limit.Base
@@ -8,7 +9,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Diagram.Limit.Cone where
 ```
 

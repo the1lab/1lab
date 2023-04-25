@@ -1,8 +1,12 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
 open import Algebra.Magma
+```
+-->
 
+```agda
 module Algebra.Semigroup where
 ```
 

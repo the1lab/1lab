@@ -1,3 +1,4 @@
+<!--
 ```agda
 {-# OPTIONS --lossy-unification #-}
 open import 1Lab.Prelude
@@ -5,7 +6,10 @@ open import 1Lab.Prelude
 open import Data.Sum.Base
 open import Data.Image
 open import Data.Bool
+```
+-->
 
+```agda
 module Data.Set.Material where
 ```
 

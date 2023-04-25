@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Diagram.Product.Solver
 open import Cat.Displayed.Cartesian
@@ -6,7 +7,10 @@ open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Displayed.Instances.Simple
   {o ℓ} (B : Precategory o ℓ)
   (has-prods : ∀ X Y → Product B X Y)

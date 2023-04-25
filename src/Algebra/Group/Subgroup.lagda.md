@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
@@ -11,7 +12,10 @@ open import Data.Power
 open import Order.Instances.Subobjects
 
 import Order.Reasoning as Poset
+```
+-->
 
+```agda
 module Algebra.Group.Subgroup where
 ```
 

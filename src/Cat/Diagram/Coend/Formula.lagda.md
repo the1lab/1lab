@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Diagram.Colimit.Base
 open import Cat.Instances.Product
@@ -9,7 +10,10 @@ open import Cat.Prelude
 import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Functor.Reasoning as F-r
 import Cat.Reasoning as Cat
+```
+-->
 
+```agda
 module Cat.Diagram.Coend.Formula
   {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
   where

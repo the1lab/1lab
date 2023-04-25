@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import 1Lab.Type
 
 open import Meta.Idiom
 open import Meta.Bind
 open import Meta.Alt
+```
+-->
 
+```agda
 module Data.Maybe.Base where
 
 open import Prim.Data.Maybe public

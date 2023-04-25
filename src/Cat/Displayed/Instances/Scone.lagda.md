@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Displayed.Instances.Pullback
 open import Cat.Displayed.Instances.Slice
@@ -9,7 +10,10 @@ open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Functor.Hom as Hom
+```
+-->
 
+```agda
 module Cat.Displayed.Instances.Scone
   {o ℓ} (B : Precategory o ℓ)
   (terminal : Terminal B)

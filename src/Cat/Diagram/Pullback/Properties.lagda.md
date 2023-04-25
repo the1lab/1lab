@@ -1,9 +1,13 @@
+<!--
 ```agda
 open import Cat.Prelude
 
 import Cat.Diagram.Pullback
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Diagram.Pullback.Properties {o ℓ} {C : Precategory o ℓ} where
 ```
 

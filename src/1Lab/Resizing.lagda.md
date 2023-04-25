@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.Reflection.HLevel
@@ -14,7 +15,10 @@ open import Data.List.Base
 
 open import Meta.Idiom
 open import Meta.Bind
+```
+-->
 
+```agda
 module 1Lab.Resizing where
 ```
 

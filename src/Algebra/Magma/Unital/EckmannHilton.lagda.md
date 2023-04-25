@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
 open import Algebra.Magma.Unital
 open import Algebra.Semigroup
 open import Algebra.Monoid
+```
+-->
 
+```agda
 module Algebra.Magma.Unital.EckmannHilton where
 ```
 

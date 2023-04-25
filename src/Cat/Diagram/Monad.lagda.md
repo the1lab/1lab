@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
@@ -5,7 +6,10 @@ open import Cat.Prelude
 
 open Functor
 open _=>_
+```
+-->
 
+```agda
 module Cat.Diagram.Monad {o h : _} (C : Precategory o h) where
 
 import Cat.Reasoning C as C

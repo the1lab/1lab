@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Displayed.Cartesian.Weak
 open import Cat.Functor.Hom.Displayed
@@ -17,7 +18,10 @@ import Cat.Displayed.Cocartesian as Cocart
 import Cat.Displayed.Reasoning
 import Cat.Displayed.Morphism
 import Cat.Reasoning as CR
+```
+-->
 
+```agda
 module Cat.Displayed.Cocartesian.Weak
   {o ℓ o′ ℓ′}
   {ℬ : Precategory o ℓ}

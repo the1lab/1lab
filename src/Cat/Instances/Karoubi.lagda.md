@@ -1,9 +1,13 @@
+<!--
 ```agda
 open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Diagram.Idempotent as CI
+```
+-->
 
+```agda
 module Cat.Instances.Karoubi {o h} (C : Precategory o h) where
 ```
 

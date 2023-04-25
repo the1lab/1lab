@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Algebra.Monoid
 
 open import Cat.Prelude
 
 open import Data.List
+```
+-->
 
+```agda
 module Cat.Instances.Delooping where
 ```
 

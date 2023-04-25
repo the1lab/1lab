@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Prelude
 
@@ -9,7 +10,10 @@ open import Order.Diagram.Lub
 open import Order.Base
 
 import Order.Reasoning as Pr
+```
+-->
 
+```agda
 module Order.Instances.Lower where
 ```
 

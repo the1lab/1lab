@@ -1,8 +1,12 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
 open import Data.Dec
+```
+-->
 
+```agda
 module Data.Set.Coequaliser where
 ```
 

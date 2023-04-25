@@ -1,8 +1,12 @@
+<!--
 ```agda
 open import Prim.Data.Sigma
 open import Prim.Data.Nat
 open import Prim.Type
+```
+-->
 
+```agda
 module Prim.Literals where
 ```
 

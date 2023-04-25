@@ -1,7 +1,11 @@
+<!--
 ```agda
 open import Prim.Interval
 open import Prim.Type
+```
+-->
 
+```agda
 module Prim.Extension where
 ```
 

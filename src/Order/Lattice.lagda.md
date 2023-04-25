@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Prelude
@@ -7,7 +8,10 @@ open import Order.Semilattice
 open import Order.Base
 
 import Order.Reasoning as Pr
+```
+-->
 
+```agda
 module Order.Lattice where
 ```
 

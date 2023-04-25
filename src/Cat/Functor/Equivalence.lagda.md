@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Functor
 open import Cat.Functor.Adjoint
@@ -7,7 +8,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Functor.Equivalence where
 ```
 

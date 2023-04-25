@@ -1,3 +1,4 @@
+<!--
 ```agda
 {-# OPTIONS -vtactic.hlevel:10 #-}
 open import 1Lab.Prelude
@@ -10,7 +11,10 @@ open import Algebra.Magma
 open import Cat.Instances.Delooping
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Algebra.Group where
 ```
 

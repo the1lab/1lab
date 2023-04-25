@@ -4,6 +4,7 @@ description: |
   comparison functor into the Eilenberg-Moore category for the induced
   monad.
 ---
+<!--
 ```agda
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Functor.Equivalence
@@ -13,6 +14,10 @@ open import Cat.Prelude
 
 open Functor
 open _=>_
+```
+-->
+
+```agda
 ```
 
 # Monadic Adjunctions

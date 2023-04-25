@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Displayed.Cocartesian
 open import Cat.Displayed.Cocartesian
@@ -11,7 +12,10 @@ open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning as CR
+```
+-->
 
+```agda
 module Cat.Displayed.Instances.Slice {o ℓ} (B : Precategory o ℓ) where
 ```
 

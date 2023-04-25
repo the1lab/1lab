@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Displayed.Cocartesian
 open import Cat.Instances.Functor
@@ -7,7 +8,10 @@ open import Cat.Prelude
 
 import Cat.Displayed.Reasoning
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Displayed.Cocartesian.Indexing
   {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ}
   (ℰ : Displayed ℬ o′ ℓ′)

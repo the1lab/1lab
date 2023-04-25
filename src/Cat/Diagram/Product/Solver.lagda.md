@@ -1,13 +1,18 @@
+<!--
 ```agda
-module Cat.Diagram.Product.Solver where
+open import 1Lab.Reflection
 
 open import Cat.Diagram.Product
 open import Cat.Prelude
-import Cat.Reasoning
-
-open import 1Lab.Reflection
 
 open import Data.List
+
+import Cat.Reasoning
+```
+-->
+
+```agda
+module Cat.Diagram.Product.Solver where
 ```
 
 # A Solver for Categories with Binary Products

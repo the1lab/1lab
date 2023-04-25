@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Diagram.Pushout.Properties
 open import Cat.Diagram.Colimit.Base
@@ -8,7 +9,10 @@ open import Cat.Diagram.Pushout
 open import Cat.Prelude
 
 import Cat.Reasoning as Cat
+```
+-->
 
+```agda
 module Cat.Diagram.Colimit.Finite where
 ```
 

@@ -5,6 +5,7 @@ description: |
   half-adjoint equivalences as a stepping stone to show that
   isomorphisms are equivalences.
 ---
+<!--
 ```agda
 {-# OPTIONS -vtc.def.fun:10 #-}
 open import 1Lab.Reflection.Marker
@@ -17,7 +18,10 @@ open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+```
+-->
 
+```agda
 module 1Lab.Equiv.HalfAdjoint where
 ```
 

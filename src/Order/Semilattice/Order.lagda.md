@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Prelude
 
@@ -6,7 +7,10 @@ open import Order.Semilattice
 open import Order.Base
 
 import Order.Reasoning as Poset
+```
+-->
 
+```agda
 module Order.Semilattice.Order where
 ```
 

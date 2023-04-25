@@ -1,3 +1,4 @@
+<!--
 ```
 open import 1Lab.Prelude hiding (_∘_ ; id)
 
@@ -8,7 +9,10 @@ import Cat.Reasoning
 
 open Cat.Reasoning using (Isomorphism ; id-iso)
 open Precategory using (Ob)
+```
+-->
 
+```agda
 module Cat.Univalent where
 ```
 

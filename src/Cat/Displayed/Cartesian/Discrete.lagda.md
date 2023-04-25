@@ -3,6 +3,7 @@ description: |
   We define discrete fibrations,
   and explore their relations to presheaves.
 ---
+<!--
 ```agda
 open import Cat.Displayed.Instances.Elements
 open import Cat.Displayed.Cartesian
@@ -16,7 +17,10 @@ open import Cat.Prelude
 import Cat.Displayed.Reasoning
 import Cat.Displayed.Morphism
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Displayed.Cartesian.Discrete where
 ```
 

@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
@@ -10,7 +11,10 @@ open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Displayed.Instances.Family {o h} (C : Precategory o h) where
 ```
 

@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Adjoint.Reflective
 open import Cat.Diagram.Terminal
@@ -7,7 +8,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning as Cr
+```
+-->
 
+```agda
 module Cat.Morphism.Orthogonal where
 ```
 

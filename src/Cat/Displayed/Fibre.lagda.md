@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Displayed.Base
 open import Cat.Prelude
@@ -5,7 +6,10 @@ open import Cat.Prelude
 import Cat.Displayed.Reasoning as Dr
 import Cat.Displayed.Solver as Ds
 import Cat.Reasoning as Cr
+```
+-->
 
+```agda
 module Cat.Displayed.Fibre
   {o ℓ o′ ℓ′} {B : Precategory o ℓ}
   (E : Displayed B o′ ℓ′)

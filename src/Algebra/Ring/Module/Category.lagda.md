@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Ring.Module
 open import Algebra.Group.Ab
@@ -7,7 +8,10 @@ open import Algebra.Ring
 open import Cat.Abelian.Instances.Ab
 open import Cat.Abelian.Base
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Algebra.Ring.Module.Category {ℓ} (R : Ring ℓ) where
 ```
 

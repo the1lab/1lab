@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Equivalence.Path
 open import Cat.Instances.Shape.Terminal
@@ -9,7 +10,10 @@ open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
 open import Cat.Displayed.Base
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Displayed.Instances.Trivial
   {o ℓ} (𝒞 : Precategory o ℓ)
   where

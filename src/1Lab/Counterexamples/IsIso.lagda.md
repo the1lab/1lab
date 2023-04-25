@@ -2,6 +2,7 @@
 description: |
     By counter example we show that is-iso is not a proposition.
 ---
+<!--
 ```agda
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Path.Groupoid
@@ -12,7 +13,10 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Homotopy.Space.Circle
+```
+-->
 
+```agda
 module 1Lab.Counterexamples.IsIso where
 ```
 

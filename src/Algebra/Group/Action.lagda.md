@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Cat.Base
 open import Algebra.Prelude
@@ -6,7 +7,10 @@ open import Algebra.Group
 open import Cat.Instances.Delooping
 
 import Cat.Functor.Reasoning as Functor-kit
+```
+-->
 
+```agda
 module Algebra.Group.Action where
 ```
 

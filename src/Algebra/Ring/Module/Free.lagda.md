@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Algebra.Ring.Module
 open import Algebra.Group.Ab
 open import Algebra.Prelude
 open import Algebra.Group
 open import Algebra.Ring
+```
+-->
 
+```agda
 module Algebra.Ring.Module.Free {ℓ} (R : Ring ℓ) where
 ```
 

@@ -1,9 +1,13 @@
+<!--
 ```agda
 open import Algebra.Ring
 
 open import Cat.Abelian.Base
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Abelian.Endo {o ℓ} {C : Precategory o ℓ} (A : Ab-category C) where
 ```
 

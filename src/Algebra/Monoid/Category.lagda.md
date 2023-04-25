@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Semigroup
 open import Algebra.Monoid
@@ -12,7 +13,10 @@ open import Cat.Functor.Base
 open import Cat.Prelude
 
 open import Data.List
+```
+-->
 
+```agda
 module Algebra.Monoid.Category where
 ```
 

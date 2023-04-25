@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.Reflection.HLevel
@@ -8,7 +9,10 @@ open import 1Lab.Type
 
 open import Data.List.Base
 open import Data.Dec.Base
+```
+-->
 
+```agda
 module Data.Dec.Path where
 ```
 

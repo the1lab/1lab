@@ -1,9 +1,13 @@
+<!--
 ```agda
 open import Cat.Instances.Functor
 open import Cat.Functor.Base
 open import Cat.Univalent
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Functor.FullSubcategory {o h} {C : Precategory o h} where
 ```
 

@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Cat.Instances.Product
 open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning as Cat
+```
+-->
 
+```agda
 module Cat.Diagram.Coend where
 ```
 

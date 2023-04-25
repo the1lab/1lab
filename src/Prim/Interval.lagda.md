@@ -1,6 +1,10 @@
+<!--
 ```agda
 open import Prim.Type
+```
+-->
 
+```agda
 module Prim.Interval where
 ```
 

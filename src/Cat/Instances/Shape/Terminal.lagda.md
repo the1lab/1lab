@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
@@ -5,7 +6,10 @@ open import Cat.Instances.Functor
 open import Cat.Base
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Instances.Shape.Terminal where
 ```
 

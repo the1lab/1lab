@@ -1,9 +1,13 @@
+<!--
 ```agda
 open import 1Lab.Type
 
 open import Meta.Idiom
 open import Meta.Bind
+```
+-->
 
+```agda
 module Meta.Alt where
 ```
 

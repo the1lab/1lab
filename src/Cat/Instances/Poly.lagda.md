@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Reflection.Record
 
@@ -13,7 +14,10 @@ open import Cat.Instances.Sets
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Instances.Poly where
 ```
 

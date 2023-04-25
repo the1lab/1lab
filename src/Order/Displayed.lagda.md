@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Cat.Prelude
 
 open import Order.Base
 
 import Order.Reasoning as Pr
+```
+-->
 
+```agda
 module Order.Displayed where
 ```
 

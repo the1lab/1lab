@@ -3,6 +3,7 @@ description: |
   We establish the crude monadicity theorem, which establishes
   sufficient conditions for an adjunction to be monadic.
 ---
+<!--
 ```agda
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Adjoint.Monad
@@ -16,7 +17,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as F-r
 import Cat.Reasoning as C-r
+```
+-->
 
+```agda
 module
   Cat.Functor.Monadic.Crude
   {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}

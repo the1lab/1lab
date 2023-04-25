@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Semigroup
 open import Algebra.Magma
@@ -8,7 +9,10 @@ open import Cat.Prelude
 open import Order.Semilattice
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Order.Frame where
 ```
 

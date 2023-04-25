@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Prelude
 
@@ -6,7 +7,10 @@ open import Order.Displayed
 open import Order.Base
 
 import Order.Reasoning as Pr
+```
+-->
 
+```agda
 module Order.Instances.Pointwise where
 ```
 

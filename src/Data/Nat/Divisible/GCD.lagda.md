@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
@@ -9,7 +10,10 @@ open import Data.Nat.DivMod
 open import Data.Nat.Order
 open import Data.Nat.Base
 open import Data.Sum.Base
+```
+-->
 
+```agda
 module Data.Nat.Divisible.GCD where
 ```
 

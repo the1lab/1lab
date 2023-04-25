@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.FullSubcategory
 open import Cat.Diagram.Equaliser
@@ -9,7 +10,10 @@ open import Cat.Diagram.Image
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Diagram.Equaliser.RegularMono {o ℓ} (C : Precategory o ℓ) where
 ```
 

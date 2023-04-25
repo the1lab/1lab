@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Cat.Instances.Functor.Duality
 open import Cat.Instances.Functor
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Diagram.Duals {o h} (C : Precategory o h) where
 ```
 

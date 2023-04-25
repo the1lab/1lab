@@ -1,3 +1,4 @@
+<!--
 ```agda
 {-# OPTIONS -vtc.def.fun:10 #-}
 open import Algebra.Group.Cat.Base
@@ -13,7 +14,10 @@ open import Cat.Abelian.Base
 open import Data.Int
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Algebra.Ring where
 ```
 

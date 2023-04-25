@@ -1,8 +1,12 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
 open import Data.Sum
+```
+-->
 
+```agda
 module Data.Power where
 ```
 

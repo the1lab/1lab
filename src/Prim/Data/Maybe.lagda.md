@@ -1,7 +1,11 @@
+<!--
 ```agda
 open import Prim.Type
 open import Prim.Kan
+```
+-->
 
+```agda
 module Prim.Data.Maybe where
 ```
 

@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Shape.Parallel
 open import Cat.Instances.Shape.Terminal
@@ -8,7 +9,10 @@ open import Cat.Functor.Kan.Base
 open import Cat.Prelude
 
 open import Data.Bool
+```
+-->
 
+```agda
 module Cat.Diagram.Limit.Equaliser {o h} (C : Precategory o h) where
 ```
 

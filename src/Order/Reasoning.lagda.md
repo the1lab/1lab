@@ -1,9 +1,13 @@
+<!--
 ```agda
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Prelude
 
 open import Order.Base
+```
+-->
 
+```agda
 module Order.Reasoning {ℓ ℓ′} (P : Poset ℓ ℓ′) where
 ```
 

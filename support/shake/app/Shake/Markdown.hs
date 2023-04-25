@@ -10,6 +10,7 @@ import Control.Monad.Error.Class
 import Control.Monad.IO.Class
 import Control.Monad.Writer
 import Control.Monad.State
+import Control.Applicative
 
 import qualified Data.ByteString.Lazy as LazyBS
 import qualified Data.Map.Lazy as Map
@@ -33,7 +34,7 @@ import Text.DocTemplates
 import Text.HTML.TagSoup
 
 import Text.Collate.Lang (Lang (..))
-import Text.Pandoc.Builder (Inlines)
+import Text.Pandoc.Builder (Inlines, toMetaValue)
 import Text.Pandoc.Citeproc
 import Text.Pandoc.Shared
 import Text.Pandoc.Walk
@@ -88,15 +89,19 @@ buildMarkdown refs modname input output = do
   liftIO $ Dir.createDirectoryIfMissing False "_build/diagrams"
 
   let refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
+
   markdown <-
       walkM (patchInline refMap autorefs)
     . walk patchInlines
     . (if skipAgda then id else linkReferences modname)
+    . addPageTitle
     $ markdown
+
   (markdown, MarkdownState references dependencies) <- runWriterT (walkM patchBlock markdown)
   need dependencies
 
-  text <- liftIO $ either (fail . show) pure =<< runIO (renderMarkdown authors references modname markdown)
+  text <- liftIO $ either (fail . show) pure =<<
+    runIO (renderMarkdown authors references modname markdown)
 
   tags <- mapM (parseAgdaLink modname refs) . foldEquations False $ parseTags text
   traverse_ (checkMarkup input) tags
@@ -117,6 +122,17 @@ findModule modname = do
     then modfile <.> "lagda.md"
     else modfile <.> "agda"
 
+-- | Adds the first level-1 header as a page title, if one has not
+-- already been provided by the author.
+addPageTitle :: Pandoc -> Pandoc
+addPageTitle (Pandoc (Meta meta) m) = Pandoc (Meta meta') m where
+  search (Header 1 _ inl:xs) = Just (MetaInlines inl)
+  search (x:xs)              = search xs
+  search []                  = Nothing
+
+  meta' = case Map.lookup "pagetitle" meta <|> Map.lookup "customtitle" meta <|> search m of
+    Just m  -> Map.insert "pagetitle" m meta
+    Nothing -> meta
 
 -- | Patch a sequence of inline elements. `patchInline' should be preferred
 -- where possible, this is only useful when you cannot modify inlines in
@@ -222,9 +238,9 @@ patchBlock h = pure h
 
 -- | Render our Pandoc document using the given template variables.
 renderMarkdown :: PandocMonad m
-               => [Text] -- ^ List of authors
+               => [Text]     -- ^ List of authors
                -> [Val Text] -- ^ List of references
-               -> String -- ^ Name of the current module
+               -> String     -- ^ Name of the current module
                -> Pandoc -> m Text
 renderMarkdown authors references modname markdown = do
   template <- getTemplate templateName >>= runWithPartials . compileTemplate templateName
@@ -237,14 +253,16 @@ renderMarkdown authors references modname markdown = do
       _ -> Text.intercalate ", " (init authors) `Text.append` " and " `Text.append` last authors
 
     context = Context $ Map.fromList
-              [ ("is-index", toVal (modname == "index"))
-              , ("authors", toVal authors')
-              , ("reference", toVal references)
-              ]
+      [ ("is-index",  toVal (modname == "index"))
+      , ("authors",   toVal authors')
+      , ("reference", toVal references)
+      ]
+
     options = def { writerTemplate = Just template
                   , writerTableOfContents = True
                   , writerVariables = context
-                  , writerExtensions = getDefaultExtensions "html" }
+                  , writerExtensions = getDefaultExtensions "html"
+                  }
   setTranslations (Lang "en" Nothing Nothing [] [] [])
   writeHtml5String options markdown
 

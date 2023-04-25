@@ -1,8 +1,12 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
 open import Algebra.Semigroup
+```
+-->
 
+```agda
 module Algebra.Monoid where
 ```
 

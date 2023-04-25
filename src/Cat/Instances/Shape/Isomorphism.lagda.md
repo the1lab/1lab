@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Functor
 open import Cat.Functor.Base
@@ -6,7 +7,10 @@ open import Cat.Prelude
 open import Data.Bool
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Instances.Shape.Isomorphism where
 ```
 

@@ -1,6 +1,10 @@
+<!--
 ```agda
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Diagram.Equaliser {ℓ ℓ′} (C : Precategory ℓ ℓ′) where
 ```
 
