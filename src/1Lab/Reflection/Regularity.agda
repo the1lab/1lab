@@ -11,26 +11,22 @@ module 1Lab.Reflection.Regularity where
 A tactic for reducing "transport refl x" in other-wise normal terms. The
 implementation is actually surprisingly simple: A term of the form (e.g.)
 
-    transport refl (f (transport refl x))
+    transp (λ _ → A) i0 (f (transp (λ _ → B) i0 x))
 
 is already a blueprint for how to normalise it. We simply have to turn it into
 
-    λ i → transport-refl (f (transport-refl x i)) i
+    λ i → transp (λ _ → A) i (f (transp (λ _ → B) i x))
 
-The implementation presents itself: Raise the original term, and look
-through to find reflexive transports. These can be replaced by an
-application of transport-refl.
+so that the constant transports reduce away when (i = i1). Abstracting over i,
+this gives a path from the initial term to its "regular normal form", which
+may be the worst name ever.
+
+More generally, we replace terms of the form `transp Al φ x` with `transp Al (φ ∨ i) x`
+recursively (inside-out), on the condition that Al is constant when i = i1.
 -}
 
 private
-  -- Ahem, not transport-refl, but a tiny tiny wrapper around it. The
-  -- reason we have 'regular' is to mark terms we're *leaving*: The
-  -- translation proceeds inside out, so to have a way to stop, we mark
-  -- terms we have already visited entirely using `regular`.
-  regular : ∀ {ℓ} {A : Type ℓ} (x : A) → transport refl x ≡ x
-  regular x = transport-refl x
-
-  -- And we have a double composition operator that doesn't use the
+  -- We have a double composition operator that doesn't use the
   -- fancy hcomp syntax in its definition. This has better type
   -- inference for one of the macros since it guarantees that the base
   -- (q i) is independent of j without any reduction.
@@ -70,41 +66,41 @@ private
   go* : Regularity-precision → Nat → List (Arg Term) → TC (List (Arg Term))
   -- ^ Isn't the termination checker just lovely?
 
-  refl-transport n tm′@(def (quote transp) (ℓ h∷ Al v∷ phi v∷ x v∷ [])) =
+  refl-transport n tm@(def (quote transp) (ℓ h∷ Al v∷ φ v∷ x v∷ [])) =
     -- This match might make you wonder: Can't Al be a line of
     -- functions, so that the transport will have more arguments? No:
     -- The term is in normal form.
     (do
-      -- The way we check for regularity is simple: The line must have
-      -- been reduced to an abstraction, and it must unify with refl. We
-      -- use backtracking to fall back to the case where the transport
-      -- was legitimately interesting!
-      debugPrint "tactic.regularity:" 10 $ "Checking regularity of " ∷ termErr Al ∷ []
-      lam visible (abs v Ab) ← pure Al
-        where _ → typeError []
-      unify-loudly Al (def (quote refl) [])
-      unify phi (con (quote i0) [])
-      let tm′ = def (quote regular) (x v∷ var n [] v∷ [])
+      debugPrint "tactic.regularity" 10 $ "Checking regularity of " ∷ termErr tm ∷ []
+      let φ′ = def (quote _∨_) (φ v∷ var n [] v∷ [])
+      let tm′ = def (quote transp) (ℓ h∷ Al v∷ φ′ v∷ x v∷ [])
+      -- We simply ask Agda to check that the newly constructed term `transp Al (φ ∨ i) x`
+      -- is correct, i.e. that Al is constant on (i = i1).
+      -- If it isn't, we backtrack and leave the term unchanged.
+      -- Note that if Al itself contains constant transports, we have already processed those,
+      -- so they reduce away when (i = i1).
+      checkType tm′ unknown -- inferType doesn't trigger the constancy check https://github.com/agda/agda/issues/6585
       pure tm′) <|>
     (do
-      debugPrint "tactic.regularity" 10 $ "NOT a (transport refl): " ∷ termErr tm′ ∷ []
-      pure tm′)
-  refl-transport _ tm′ = pure tm′
+      debugPrint "tactic.regularity" 10 $ "NOT a (transport refl): " ∷ termErr tm ∷ []
+      pure tm)
+  refl-transport _ tm = pure tm
 
   -- Boring term traversal.
   go pre n (var x args) = var x <$> go* pre n args
   go pre n (con c args) = con c <$> go* pre n args
-  go fast n (def (quote transp) (_ ∷ _ ∷ _ ∷ x v∷ [])) = do
+  go fast n (def (quote transp) (ℓ h∷ Al v∷ φ v∷ x v∷ [])) = do
     x ← go fast n x
-    pure $ def (quote regular) (x v∷ var n [] v∷ [])
+    let φ′ = def (quote _∨_) (φ v∷ var n [] v∷ [])
+    pure $ def (quote transp) (ℓ h∷ Al v∷ φ′ v∷ x v∷ [])
   go pre n (def f args) = do
     as ← go* pre n args
     refl-transport n (def f as)
-  go pre k (lam v (abs n b)) = lam v ∘ abs n <$> go pre (suc k) b
+  go pre k t@(lam v (abs nm b)) = lam v ∘ abs nm <$> underAbs t (go pre (suc k) b)
   go pre n (pat-lam cs args) = typeError $ "regularity: Can not deal with pattern lambdas"
-  go pre n (pi (arg i a) (abs nm b)) = do
+  go pre n t@(pi (arg i a) (abs nm b)) = do
     a ← go pre n a
-    b ← go pre (suc n) b
+    b ← underAbs t (go pre (suc n) b)
     pure (pi (arg i a) (abs nm b))
   go pre n (agda-sort s) = pure (agda-sort s)
   go pre n (lit l) = pure (lit l)
@@ -128,7 +124,7 @@ private
     tm ← runSpeculative $ extendContext "i" (argN (quoteTerm I)) do
       tm ← go pre 0 tm
       pure (tm , false)
-    pure $ lam visible $ abs "i" $ tm
+    pure $ vlam "i" tm
 
   -- Extend a path x ≡ y to a path x′ ≡ y′, where x′ --> x and y′ --> y
   -- under the given regularity precision. Shorthand for composing
@@ -159,9 +155,7 @@ private
 module Regularity where
   open Regularity-precision public
   -- The reflection interface: Regularity.reduce! will, well, reduce a
-  -- term. The tactic is robust enough to grow terms, if you invert the
-  -- path, as well. There's a lot of blocking involved in making this
-  -- work.
+  -- term. There's a lot of blocking involved in making this work.
   macro
     reduce! : Term → TC ⊤
     reduce! goal = do

@@ -711,8 +711,11 @@ open import Cat.Displayed.Instances.Identity
 ```
 
 ### Structures in Fibrations
+
+```agda
 open import Cat.Displayed.InternalSum
 -- The fibred equivalent of sigma types and existential quantifiers
+```
 
 ## Bicategories
 
