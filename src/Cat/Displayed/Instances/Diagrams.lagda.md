@@ -186,33 +186,9 @@ functor categories $[\cJ, \cE_x]$.
   Fibrewise-diagram : ∀ {x} → Functor Cat[ J , Fibre E x ] (Fibre (Diagrams J) x)
   Fibrewise-diagram .F₀ = Diagram→ConstL
   Fibrewise-diagram .F₁ = Diagram-nat→ConstL-natl
+  Fibrewise-diagram .F-id = Nat-lift-pathp λ _ → sym Regularity.reduce!
+  Fibrewise-diagram .F-∘ _ _ = Nat-lift-pathp λ _ → sym Regularity.reduce!
 ```
-
-<details>
-<summary>The proof of functoriality is a nightmare of transports; only
-the brave should expand out the details.
-</summary>
-
-```agda
-  Fibrewise-diagram {x} .F-id {F} = Nat-lift-pathp λ jx i →
-    transp (λ j →
-      Hom[ id ] (F .F₀
-        (transp (λ _ → J.Ob) (~ i ∨ j) jx))
-        (F .F₀ (transp (λ _ → J.Ob) (~ i ∨ j) jx )))
-      (~ i) id′
-  Fibrewise-diagram .F-∘ {F} {G} {H} f g = Nat-lift-pathp λ jx i →
-    transp (λ j → Hom[ idl id j ]
-      (F .F₀ (transp (λ _ → J.Ob) (~ i ∨ j) jx))
-      (H .F₀ (transp (λ _ → J.Ob) (~ i ∨ j) jx)))
-      i0
-      (transp (λ j → Hom[ id ∘ id ]
-          (F .F₀ (transp (λ _ → J.Ob) (~ i ∨ j) (transp (λ _ → J.Ob) (~ i) jx)))
-          (H .F₀ (transp (λ _ → J.Ob) (~ i ∨ j) (transp (λ _ → J.Ob) (~ i) jx))))
-        (~ i)
-        (f .η (transp (λ _ → J.Ob) (~ i) (transp (λ _ → J.Ob) (~ i) jx))
-         ∘′ g .η (transp (λ _ → J.Ob) (~ i) (transp (λ _ → J.Ob) (~ i) jx))))
-```
-</details>
 
 Again, this isomorphism is *almost* definitional.
 
