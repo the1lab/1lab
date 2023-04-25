@@ -79,8 +79,7 @@ instance
   H-Level-□ = prop-instance squash
 
   open hlevel-projection
-  Ω-hlevel-proj : hlevel-projection
-  Ω-hlevel-proj .underlying-type = quote Ω.∣_∣
+  Ω-hlevel-proj : hlevel-projection (quote Ω.∣_∣)
   Ω-hlevel-proj .has-level = quote Ω.is-tr
   Ω-hlevel-proj .get-level x = pure (quoteTerm (suc zero))
   Ω-hlevel-proj .get-argument (arg _ t ∷ _) = pure t

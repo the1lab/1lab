@@ -751,6 +751,9 @@ object.
 open import Cat.Monoidal.Base
 open import Cat.Monoidal.Diagram.Monoid
 open import Cat.Monoidal.Instances.Cartesian
+
+open import Cat.Monoidal.Diagram.Monoid.Representable
+-- Internal monoids, representability, and the internal language of a category.
 ```
 
 ## Homological algebra

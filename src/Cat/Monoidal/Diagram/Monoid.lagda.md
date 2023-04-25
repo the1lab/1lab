@@ -52,6 +52,7 @@ monoidal category:
 
 ```agda
   record Monoid-on (M : C.Ob) : Type ℓ where
+    no-eta-equality
     field
       η : C.Hom C.Unit M
       μ : C.Hom (M C.⊗ M) M
