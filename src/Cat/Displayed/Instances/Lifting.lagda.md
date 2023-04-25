@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Displayed.Base
 open import Cat.Displayed.Cartesian
@@ -11,23 +12,28 @@ open import Cat.Prelude
 import Cat.Reasoning
 import Cat.Displayed.Reasoning
 import Cat.Functor.Reasoning
+```
+-->
 
-module Cat.Displayed.Instances.Lifting
-  where
+```agda
+module Cat.Displayed.Instances.Lifting where
+```
 
-
+<!--
+```agda
 open Functor
 open _=>_
 open Total-hom
 ```
+-->
 
 # Liftings
 
-A category $\cE$ displayed over $\cB$ contains the same data as a functor
-into $\cB$, just packaged in a way that makes it easier to talk about
-lifting properties. If we take this perspective, we can start considering
-diagrams of functors. In particular, we can consider lifts of a functor
-$F : \cJ \to \cB$, as in the following diagram:
+A category $\cE$ displayed over $\cB$ contains the same data as a
+functor into $\cB$, just packaged in a way that makes it easier to talk
+about lifting properties. If we take this perspective, we can start
+considering diagrams of functors. In particular, we can consider lifts
+of functors $F : \cJ \to \cB$, as in the following diagram:
 
 
 ~~~{.quiver}
@@ -35,15 +41,15 @@ $F : \cJ \to \cB$, as in the following diagram:
   \cJ && \cE \\
   \\
   && \cB
-  \arrow["\pi", from=1-3, to=3-3]
+  \arrow["\pi", lies over, from=1-3, to=3-3]
   \arrow["F"', from=1-1, to=3-3]
   \arrow[dashed, from=1-1, to=1-3]
 \end{tikzcd}
 ~~~
 
-If we unfold this in terms of displayed categories, such a lifting
-$L : \cJ \to \cE$ would give a diagram in $\cE$ *above* a diagram in
-$\cB$.
+If we unfold this in terms of displayed categories, such a lifting $L :
+\cJ \to \cE$ would give a $\cJ$-shaped diagram in $\cE$ *lying over* a
+corresponding diagram in $\cB$.
 
 <!--
 ```agda
@@ -65,13 +71,14 @@ module _
   record Lifting (F : Functor J B) : Type (o' ⊔ ℓ' ⊔ oj ⊔ ℓj) where
     no-eta-equality
     field
-      F₀′ : (j : J.Ob) → Ob[ F .F₀ j ]
-      F₁′ : ∀ {i j} → (f : J.Hom i j) → Hom[ F .F₁ f ] (F₀′ i) (F₀′ j)
-      F-id′ : ∀ {j} → F₁′ (J.id {j}) ≡[ F .F-id ] id′
-      F-∘′ : ∀ {i j k} (f : J.Hom j k) (g : J.Hom i j)
-           → F₁′ (f J.∘ g) ≡[ F .F-∘ f g ] F₁′ f ∘′ F₁′ g
+      F₀′   : (j : J.Ob) → Ob[ F .F₀ j ]
+      F₁′   : ∀ {i j} → (f : J.Hom i j) → Hom[ F .F₁ f ] (F₀′ i) (F₀′ j)
 
-  open Lifting 
+      F-id′ : ∀ {j} → F₁′ (J.id {j}) ≡[ F .F-id ] id′
+      F-∘′  : ∀ {i j k} (f : J.Hom j k) (g : J.Hom i j)
+            → F₁′ (f J.∘ g) ≡[ F .F-∘ f g ] F₁′ f ∘′ F₁′ g
+
+  open Lifting
 ```
 
 <!--
@@ -114,8 +121,8 @@ total category of $\cE$.
 Furthermore, such liftings commute *extremely strictly*. Not only are
 the two functors equal, the action on objects and morphisms are
 *definitionally* equal! This highlights the utility of the theory
-of displayed categories; by reorganizing our data, we can talk about
-a higher level of strictness than usual.
+of displayed categories; by reorganizing our data, we can talk about a
+higher level of strictness than usual.
 
 ```agda
   Lifting-is-lifting
@@ -140,12 +147,12 @@ a higher level of strictness than usual.
 ## Natural Transformations between Liftings
 
 As liftings are a reorganization of functors, it is reasonable to expect
-that we have some notion of natural transformation. Let
-$F, G : \cJ \to \cB$, and $F', G'$ be liftings of $F$ and $G$, respectively.
-Furthermore, let $\alpha : F \to G$ be a natural transformation.
-A *natural transformation of liftings* between $F'$ and $G'$ over
-$\alpha$ is given by a family of morphisms $\eta_{j}$ between $F'(j)$ and
-$G'(j)$.
+that we can express natural transformations between these. Fix functors
+$F, G : \cJ \to \cB$, and let $F', G'$ be their liftings along $\pi :
+\cE \liesover \cB$. Furthermore, let $\alpha : F \to G$ be a natural
+transformation. A **natural transformation of liftings** between $F'$
+and $G'$ over $\alpha$ is given by a family of morphisms $\eta_{j}$
+between $F'(j)$ and $G'(j)$.
 
 <!--
 ```agda
@@ -170,24 +177,26 @@ module _
     (F' : Lifting E F) (α : F => G) (G' : Lifting E G)
     : Type (ℓ' ⊔ oj ⊔ ℓj) where
     no-eta-equality
+
     field
       η′ : ∀ (j) → Hom[ α .η j ] (F' .F₀′ j) (G' .F₀′ j)
+
       is-natural′ : ∀ (i j : J.Ob) (f : J.Hom i j)
                   → η′ j ∘′ F' .F₁′ f ≡[ α .is-natural i j f ] G' .F₁′ f  ∘′ η′ i
-
-  open _=[_]=>l_
 ```
 
 <!--
 ```agda
-  NatLift-pathp
+  open _=[_]=>l_
+
+  Nat-lift-pathp
     : ∀ {F G : Functor J B} {F' : Lifting E F} {G' : Lifting E G}
     → {α : F => G} {β : F => G} {α' : F' =[ α ]=>l G'} {β' : F' =[ β ]=>l G'}
     → {p : α ≡ β}
     → (∀ j → α' .η′ j ≡[ p ηₚ j ] β' .η′ j)
     → PathP (λ i → F' =[ p i ]=>l G') α' β'
-  NatLift-pathp q i .η′ x = q x i
-  NatLift-pathp {F' = F'} {G'} {α' = α'} {β'} {p = p} q i .is-natural′ x y f =
+  Nat-lift-pathp q i .η′ x = q x i
+  Nat-lift-pathp {F' = F'} {G'} {α' = α'} {β'} {p = p} q i .is-natural′ x y f =
     is-set→squarep (λ i j → Hom[ p i .is-natural x y f j ]-set _ _)
       (λ j → q y j ∘′ F' .F₁′ f)
       (α' .is-natural′ x y f)
@@ -196,10 +205,10 @@ module _
 
   private unquoteDecl eqv = declare-record-iso eqv (quote _=[_]=>l_)
 
-  NatLift-is-set
+  Nat-lift-is-set
     : ∀ {F G : Functor J B} {F' : Lifting E F} {G' : Lifting E G}
     → {α : F => G} → is-set (F' =[ α ]=>l G')
-  NatLift-is-set =
+  Nat-lift-is-set =
     Iso→is-hlevel 2 eqv $
     Σ-is-hlevel 2 (Π-is-hlevel 2 λ _ → Hom[ _ ]-set _ _) λ _ →
     Π-is-hlevel 2 λ _ → Π-is-hlevel 2 λ _ → Π-is-hlevel 2 λ _ →
@@ -229,37 +238,37 @@ As expected natural transformations of liftings yield natural
 transformations between the associated functors.
 
 ```agda
-  NatLift→Nat
+  Nat-lift→Nat
     : ∀ {F G : Functor J B} {F' : Lifting E F} {G' : Lifting E G}
     → {α : F => G} → F' =[ α ]=>l G' → Lifting→Functor E F' => Lifting→Functor E G'
-  NatLift→Nat {α = α} α' .η x .hom = α .η x
-  NatLift→Nat {α = α} α' .η x .preserves = α' .η′ x
-  NatLift→Nat {α = α} α' .is-natural x y f =
+  Nat-lift→Nat {α = α} α' .η x .hom = α .η x
+  Nat-lift→Nat {α = α} α' .η x .preserves = α' .η′ x
+  Nat-lift→Nat {α = α} α' .is-natural x y f =
     total-hom-path E (α .is-natural x y f) (α' .is-natural′ x y f)
 ```
 
-As liftings are definitional, any natural transformation $F \to G$ is also
-a natural transformation $\pi \circ F' \to \pi \circ G'$; showing this
-requires repacking some data due to the lack of some $\eta$-rules.
+As liftings are definitional, any natural transformation $F \to G$ is
+also a natural transformation $\pi \circ F' \to \pi \circ G'$; showing
+this requires repacking some data due to the lack of some $\eta$-rules.
 
 ```agda
-  Nat→NatLift
+  Nat→Nat-lift
     : ∀ {F G : Functor J B} (F' : Lifting E F) (G' : Lifting E G)
     → F => G → πᶠ E F∘ Lifting→Functor E F' => πᶠ E F∘ Lifting→Functor E G'
-  Nat→NatLift F' G' α .η = α .η
-  Nat→NatLift F' G' α .is-natural = α .is-natural
+  Nat→Nat-lift F' G' α .η          = α .η
+  Nat→Nat-lift F' G' α .is-natural = α .is-natural
 ```
 
-This allows us to characterize natural transformations of liftings:
-they are precisely the natural transformations that *definitionally*
-lie over their bases.
+This allows us to characterize natural transformations of liftings: they
+are precisely the natural transformations that *definitionally* lie over
+their bases.
 
 ```agda
-  NatLift-is-lifting
+  Nat-lift-is-lifting
     : ∀ {F G : Functor J B} {F' : Lifting E F} {G' : Lifting E G}
     → {α : F => G} → (α' : F' =[ α ]=>l G')
-    → πᶠ E ▸ NatLift→Nat α' ≡ Nat→NatLift F' G' α
-  NatLift-is-lifting α' = Nat-path (λ _ → refl)
+    → πᶠ E ▸ Nat-lift→Nat α' ≡ Nat→Nat-lift F' G' α
+  Nat-lift-is-lifting α' = Nat-path (λ _ → refl)
 ```
 
 The identity natural transformation is easy to define, as is vertical
@@ -275,7 +284,7 @@ composition.
     → {α : G => H} {β : F => G}
     → G' =[ α ]=>l H' → F' =[ β ]=>l G' → F' =[ α ∘nt β ]=>l H'
   _∘ntl_ α' β' .η′ j = α' .η′ j ∘′ β' .η′ j
-  _∘ntl_  {F' = F'} {G'} {H'} α' β' .is-natural′ i j f' = 
+  _∘ntl_  {F' = F'} {G'} {H'} α' β' .is-natural′ i j f' =
     (α' .η′ j ∘′ β' .η′ j) ∘′ F' .F₁′ f' ≡[]⟨ pullr[] _ (β' .is-natural′ i j f') ⟩
     α' .η′ j ∘′ G' .F₁′ f' ∘′ β' .η′ i   ≡[]⟨ extendl[] _ (α' .is-natural′ i j f') ⟩
     H' .F₁′ f' ∘′ α' .η′ i ∘′ β' .η′ i   ∎
@@ -283,11 +292,11 @@ composition.
 
 ## The Fibration of Liftings
 
-The liftings of functors $\cJ \to \cB$ assemble into a displayed category
-over the functor category $[\cJ, \cB]$. We shall denote this category
-$\cE^{\cJ}$, as it is the displayed analog of the fibration
-$\pi \circ - : \cE^{\cJ} \to \cB^{\cJ}$, where $\pi : \cE \to \cB$ is a
-fibration.
+The liftings of functors $\cJ \to \cB$ assemble into a displayed
+category over the functor category $[\cJ, \cB]$. We shall denote this
+category $\cE^{\cJ}$, as it is the displayed analog of the fibration
+$\pi \circ - : \cE^{\cJ} \liesover \cB^{\cJ}$, where $\pi : \cE
+\liesover \cB$ is a fibration.
 
 <!--
 ```agda
@@ -311,12 +320,12 @@ module _
   Liftings : Displayed Cat[ J , B ] (o' ⊔ ℓ' ⊔ oj ⊔ ℓj) (ℓ' ⊔ oj ⊔ ℓj)
   Liftings .Displayed.Ob[_] = Lifting E
   Liftings .Displayed.Hom[_] α F' G' = F' =[ α ]=>l G'
-  Liftings .Displayed.Hom[_]-set _ _ _ = NatLift-is-set
+  Liftings .Displayed.Hom[_]-set _ _ _ = Nat-lift-is-set
   Liftings .Displayed.id′ = idntl
   Liftings .Displayed._∘′_ = _∘ntl_
-  Liftings .Displayed.idr′ _ = NatLift-pathp (λ _ → idr′ _)
-  Liftings .Displayed.idl′ _ = NatLift-pathp (λ _ → idl′ _)
-  Liftings .Displayed.assoc′ _ _ _ = NatLift-pathp (λ _ → assoc′ _ _ _)
+  Liftings .Displayed.idr′ _ = Nat-lift-pathp (λ _ → idr′ _)
+  Liftings .Displayed.idl′ _ = Nat-lift-pathp (λ _ → idl′ _)
+  Liftings .Displayed.assoc′ _ _ _ = Nat-lift-pathp (λ _ → assoc′ _ _ _)
 ```
 
 If a natural transformation of liftings is pointwise cartesian, then
@@ -340,9 +349,9 @@ it is cartesian.
         (pulll[] _ (α' .is-natural′ x y f)
         ∙[] pullr[] _ (pointwise.commutes _ _ _))
     cart .is-cartesian.commutes β γ' =
-      NatLift-pathp (λ _ → pointwise.commutes _ _ _)
+      Nat-lift-pathp (λ _ → pointwise.commutes _ _ _)
     cart .is-cartesian.unique γ' p =
-      NatLift-pathp (λ x → pointwise.unique _ _ λ i → p i .η′ x)
+      Nat-lift-pathp (λ x → pointwise.unique _ _ λ i → p i .η′ x)
 ```
 
 
@@ -369,12 +378,20 @@ reindexing $G'$ pointwise.
     G'* .F₁′ f =
       has-lift.universal _ _ _
         (hom[ α .is-natural _ _ f ]⁻ (G' .F₁′ f ∘′ has-lift.lifting _ _))
+```
+
+<details>
+<summary>The functoriality proofs are a bit gnarly, so we leave them in this `<details>` block.
+</summary>
+
+```agda
     G'* .F-id′ =
       symP $ has-lift.uniquep _ _ _ (sym (F .F-id)) (α .is-natural _ _ _) id′ $
         has-lift.lifting _ _ ∘′ id′          ≡[]⟨ idr′ _ ⟩
         has-lift.lifting _ _                 ≡[]⟨ symP (idl′ _) ⟩
         id′ ∘′ has-lift.lifting _ _          ≡[]⟨ (λ i → G' .F-id′ (~ i) ∘′ has-lift.lifting (α .η _) (G' .F₀′ _)) ⟩
         G' .F₁′ J.id ∘′ has-lift.lifting _ _ ∎
+
     G'* .F-∘′ f g =
       symP $ has-lift.uniquep _ _ _
         (sym (F .F-∘ f g)) (α .is-natural _ _ _ ) (G'* .F₁′ f ∘′ G'* .F₁′ g) $
@@ -386,6 +403,8 @@ reindexing $G'$ pointwise.
           G' .F₁′ (f J.∘ g) ∘′ has-lift.lifting _ _               ∎
 ```
 
+</details>
+
 As we have constructed the lift of $G$ via reindexing, we can use
 the existing cartesian lifts to build the lift of $\alpha$. This also
 implies that our natural transformation is cartesian.
@@ -394,7 +413,7 @@ implies that our natural transformation is cartesian.
     α'* : G'* =[ α ]=>l G'
     α'* .η′ x = has-lift.lifting (α .η x) (G' .F₀′ x)
     α'* .is-natural′ x y f = has-lift.commutesp (α .η y) (G' .F₀′ y) _ _
-  
+
     cart-lift : Cartesian-lift Liftings α G'
     cart-lift .Cartesian-lift.x′ = G'*
     cart-lift .Cartesian-lift.lifting = α'*
@@ -410,14 +429,31 @@ category $[\cJ, \int \cE]$. First, we shall need a heaping pile of
 repackaging lemmas.
 
 ```agda
-  ∫Functor→Lifting : (F : Functor J (∫ E)) → Lifting E (πᶠ E F∘ F)
+  ∫Functor→Lifting         : (F : Functor J (∫ E)) → Lifting E (πᶠ E F∘ F)
+  Functor+Lifting→∫Functor : (F : Functor J B) → Lifting E F → Functor J (∫ E)
+
+  ∫Nat→Nat : ∀ {F G : Functor J (∫ E)} → F => G → πᶠ E F∘ F => πᶠ E F∘ G
+  Nat+Nat-lift→∫Nat
+    : ∀ {F G : Functor J (∫ E)}
+    → (α : πᶠ E F∘ F => πᶠ E F∘ G)
+    → (α' : ∫Functor→Lifting F =[ α ]=>l ∫Functor→Lifting G)
+    → F => G
+
+  ∫Nat→Nat-lift
+    : ∀ {F G : Functor J (∫ E)} → (α : F => G)
+    → ∫Functor→Lifting F =[ ∫Nat→Nat α ]=>l ∫Functor→Lifting G
+```
+
+Since none of these constructions have deeper mathematical content than
+their types, we omit the definitions from the page entirely.
+
+<!--
+```
   ∫Functor→Lifting F .F₀′ j = F .F₀ j .snd
   ∫Functor→Lifting F .F₁′ f = F .F₁ f .preserves
   ∫Functor→Lifting F .F-id′ = cast[] (ap preserves (F .F-id))
   ∫Functor→Lifting F .F-∘′ f g = cast[] (ap preserves (F .F-∘ f g))
 
-  Functor+Lifting→∫Functor
-    : (F : Functor J B) → Lifting E F → Functor J (∫ E)
   Functor+Lifting→∫Functor F F' .F₀ x .fst = F .F₀ x
   Functor+Lifting→∫Functor F F' .F₀ x .snd = F' .F₀′ x
   Functor+Lifting→∫Functor F F' .F₁ f .hom = F .F₁ f
@@ -427,63 +463,56 @@ repackaging lemmas.
   Functor+Lifting→∫Functor F F' .F-∘ f g =
     total-hom-path E (F .F-∘ f g) (F' .F-∘′ f g)
 
-  ∫Nat→Nat : ∀ {F G : Functor J (∫ E)} → F => G → πᶠ E F∘ F => πᶠ E F∘ G
   ∫Nat→Nat α .η x = α .η x .hom
   ∫Nat→Nat α .is-natural x y f = ap hom (α .is-natural x y f)
 
-  Nat+NatLift→∫Nat
-    : ∀ {F G : Functor J (∫ E)}
-    → (α : πᶠ E F∘ F => πᶠ E F∘ G)
-    → (α' : ∫Functor→Lifting F =[ α ]=>l ∫Functor→Lifting G)
-    → F => G
-  Nat+NatLift→∫Nat α α' .η x .hom = α .η x
-  Nat+NatLift→∫Nat α α' .η x .preserves = α' .η′ x
-  Nat+NatLift→∫Nat α α' .is-natural x y f =
+  Nat+Nat-lift→∫Nat α α' .η x .hom = α .η x
+  Nat+Nat-lift→∫Nat α α' .η x .preserves = α' .η′ x
+  Nat+Nat-lift→∫Nat α α' .is-natural x y f =
     total-hom-path E (α .is-natural x y f) (α' .is-natural′ x y f)
 
-  ∫Nat→NatLift
-    : ∀ {F G : Functor J (∫ E)} → (α : F => G)
-    → ∫Functor→Lifting F =[ ∫Nat→Nat α ]=>l ∫Functor→Lifting G
-  ∫Nat→NatLift α .η′ x = α .η x .preserves
-  ∫Nat→NatLift α .is-natural′ x y f = ap preserves (α .is-natural x y f)
+  ∫Nat→Nat-lift α .η′ x = α .η x .preserves
+  ∫Nat→Nat-lift α .is-natural′ x y f = ap preserves (α .is-natural x y f)
 ```
+-->
 
-The actual functor from $[\cJ, \int \cE]$ to the total category just
-uses the repackagings from before.
+Using these repackagings, we can define the promised functor from $[\cJ,
+\int \cE]$ into the total category of the fibration of liftings.
 
 ```agda
   Functors→Liftings : Functor Cat[ J , ∫ E ] (∫ Liftings)
   Functors→Liftings .F₀ F .fst = πᶠ E F∘ F
   Functors→Liftings .F₀ F .snd = ∫Functor→Lifting F
-  Functors→Liftings .F₁ α .hom = ∫Nat→Nat α
-  Functors→Liftings .F₁ α .preserves = ∫Nat→NatLift α
-  Functors→Liftings .F-id =
-    total-hom-path Liftings
-      (Nat-path (λ _ → refl))
-      (NatLift-pathp (λ _ → refl))
-  Functors→Liftings .F-∘ f g =
-    total-hom-path Liftings
-      (Nat-path (λ _ → refl))
-      (NatLift-pathp (λ _ → refl))
+
+  Functors→Liftings .F₁ α .hom       = ∫Nat→Nat α
+  Functors→Liftings .F₁ α .preserves = ∫Nat→Nat-lift α
+
+  Functors→Liftings .F-id = total-hom-path Liftings
+    (Nat-path (λ _ → refl))
+    (Nat-lift-pathp (λ _ → refl))
+  Functors→Liftings .F-∘ f g = total-hom-path Liftings
+    (Nat-path (λ _ → refl))
+    (Nat-lift-pathp (λ _ → refl))
 ```
 
-This functor is almost a definitional iso, though $\eta$-laws get
-in the way.
+This functor has a remarkably strict inverse, regardless of univalence
+of the fibrations and/or categories involved. It's almost definitionally
+an isomorphism: because of our lack of $\eta$-laws, we must explicitly
+appeal to some extensionality lemmas.
 
 ```agda
   Functors→Liftings-is-iso : is-precat-iso Functors→Liftings
   Functors→Liftings-is-iso .is-precat-iso.has-is-ff =
     is-iso→is-equiv $
-      iso (λ α → Nat+NatLift→∫Nat (α .hom) (α .preserves))
+      iso (λ α → Nat+Nat-lift→∫Nat (α .hom) (α .preserves))
       (λ _ → total-hom-path Liftings
-        (Nat-path (λ _ → refl))
-        (NatLift-pathp (λ _ → refl)))
+        (Nat-path       λ _ → refl)
+        (Nat-lift-pathp λ _ → refl))
       (λ _ → Nat-path (λ _ → total-hom-path E refl refl))
   Functors→Liftings-is-iso .is-precat-iso.has-is-iso =
     is-iso→is-equiv $
       iso (λ F → Functor+Lifting→∫Functor (F .fst) (F .snd))
-        (λ _ →
-          Functor-path (λ _ → refl) (λ _ → refl) ,ₚ
-          Lifting-pathp E _ (λ _ → refl) (λ _ → refl))
+        (λ _ → Functor-path (λ _ → refl) (λ _ → refl) ,ₚ
+               Lifting-pathp E _ (λ _ → refl) (λ _ → refl))
         (λ _ → Functor-path (λ _ → refl ,ₚ refl) λ _ → refl)
 ```
