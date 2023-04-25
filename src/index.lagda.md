@@ -679,6 +679,10 @@ open import Cat.Displayed.Instances.Scone
 -- fibration by construction.
 open import Cat.Displayed.Instances.Trivial
 -- Any category can be displayed over the terminal category.
+open import Cat.Displayed.Instances.Lifting
+-- Liftings of functors along a fibration
+open import Cat.Displayed.Instances.Diagrams
+-- The fibration of diagrams
 ```
 
 ### Cocartesian fibrations
