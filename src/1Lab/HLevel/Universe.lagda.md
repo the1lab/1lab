@@ -165,7 +165,7 @@ Since h-levels are closed under equivalence, and we already have an
 upper bound on the h-level of $X \simeq Y$ when $Y$ is an $n$-type, we
 know that $n$-Type is a $(n+1)$-type:
 
-```
+```agda
 n-Type-is-hlevel : ∀ n → is-hlevel (n-Type ℓ n) (suc n)
 n-Type-is-hlevel zero x y = n-ua
   ((λ _ → y .is-tr .centre) , is-contr→is-equiv (x .is-tr) (y .is-tr))

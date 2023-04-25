@@ -442,7 +442,7 @@ implementation is indexed by the type of booleans, mapping (arbitrarily)
 The proof that $x \in \{A, B\} \simeq (x = A \lor x = B)$ is essentially
 the implementation of binary coproducts in terms of arbitrary sum types.
 
-```
+```agda
   pairing : ∀ {a b x} → x ∈ₛ pair a b ≃ ∥ (x ≡ a) ⊎ (x ≡ b) ∥
   pairing = prop-ext squash squash
     (∥-∥-rec squash λ where

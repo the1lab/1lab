@@ -182,7 +182,7 @@ macro
 As a quick demonstration (and sanity check/future proofing/integration
 testing/what have you):
 
-```
+```agda
 module _ (C : Precategory o h) where private
   module C = Precategory C
   variable

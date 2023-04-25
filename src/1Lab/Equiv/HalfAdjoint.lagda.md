@@ -127,7 +127,8 @@ fibre-paths : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : Type ℓ₂} {f : A →
 <summary>The proof of this is not very enlightening, but it's included
 here (rather than being completely invisible) for
 completeness:</summary>
-```
+
+```agda
 fibre-paths {f = f} {y} {f1} {f2} =
   Path (fibre f y) f1 f2                                                       ≃⟨ Iso→Equiv Σ-path-iso e⁻¹ ⟩
   (Σ[ γ ∈ f1 .fst ≡ f2 .fst ] (subst (λ x₁ → f x₁ ≡ _) γ (f1 .snd) ≡ f2 .snd)) ≃⟨ Σ-ap-snd (λ x → path→equiv (lemma x)) ⟩

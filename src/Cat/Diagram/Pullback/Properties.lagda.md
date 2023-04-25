@@ -53,7 +53,7 @@ through.
 \end{tikzcd}\]
 ~~~
 
-```
+```agda
 module _ {a b c d e f : Ob}
          {a→d : Hom a d} {a→b : Hom a b} {b→c : Hom b c}
          {d→e : Hom d e} {b→e : Hom b e} {e→f : Hom e f}

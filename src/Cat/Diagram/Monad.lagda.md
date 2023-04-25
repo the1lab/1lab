@@ -27,14 +27,17 @@ ident=mult} $(M \circ M) \To M$.
 
 [monoid]: Algebra.Monoid.html
 
-```
+```agda
 record Monad : Type (o ⊔ h) where
   no-eta-equality
   field
     M    : Functor C C
     unit : Id => M
     mult : (M F∘ M) => M
+```
 
+<!--
+```agda
   module unit = _=>_ unit
   module mult = _=>_ mult
 
@@ -43,17 +46,16 @@ record Monad : Type (o ⊔ h) where
   M-id = F-id M
   M-∘ = F-∘ M
 ```
+-->
 
 Furthermore, these natural transformations must satisfy identity and
 associativity laws exactly analogous to those of a monoid.
 
-```
+```agda
   field
     left-ident  : ∀ {x} → mult.η x C.∘ M₁ (unit.η x) ≡ C.id
     right-ident : ∀ {x} → mult.η x C.∘ unit.η (M₀ x) ≡ C.id
-
-  field
-    mult-assoc : ∀ {x} → mult.η x C.∘ M₁ (mult.η x) ≡ mult.η x C.∘ mult.η (M₀ x)
+    mult-assoc  : ∀ {x} → mult.η x C.∘ M₁ (mult.η x) ≡ mult.η x C.∘ mult.η (M₀ x)
 ```
 
 # Algebras over a monad
@@ -85,7 +87,7 @@ _effects_, then `v-unit`{.Agda} says that the `unit`{.Agda} has no
 effects, and `v-mult`{.Agda} says that, given two layers $M(M(A))$, it
 doesn't matter whether you first join then evaluate, or evaluate twice.
 
-```
+```agda
     ν-unit : ν C.∘ unit.η ob ≡ C.id
     ν-mult : ν C.∘ M₁ ν ≡ ν C.∘ mult.η ob
 
@@ -157,7 +159,7 @@ inhabits a proposition (because `Hom-sets are sets`{.Agda
 ident=C.Hom-set}), equality of algebra homomorphisms only depends on an
 equality of their underlying morphisms.
 
-```
+```agda
 Algebra-hom-path
   : {M : Monad} {X Y : Algebra M} {F G : Algebra-hom M X Y}
   → morphism F ≡ morphism G

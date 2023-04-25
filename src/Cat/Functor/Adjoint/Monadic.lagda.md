@@ -17,9 +17,6 @@ open _=>_
 ```
 -->
 
-```agda
-```
-
 # Monadic Adjunctions
 
 An adjunction $F \dashv G$ between functors $F : C \to D$ and $G : D \to
@@ -29,7 +26,7 @@ the `Eilenberg-Moore`{.Agda} category of the [monad of the
 adjunction](Cat.Functor.Adjoint.Monad.html)) is an equivalence of
 categories.
 
-```
+```agda
 module
   Cat.Functor.Adjoint.Monadic
   {o₁ h₁ o₂ h₂ : _}
@@ -38,7 +35,10 @@ module
   {L : Functor C D} {R : Functor D C}
   (L⊣R : L ⊣ R)
   where
+```
 
+<!--
+```agda
 private
   module C = Precategory C
   module D = Precategory D
@@ -51,13 +51,14 @@ L∘R = Adjunction→Monad L⊣R
 
 open Monad L∘R
 ```
+-->
 
 The composition of `R.₁`{.Agda} with the `adjunction counit`{.Agda
 ident="adj.counit.ε"} natural transformation gives `R`{.Agda} an
 `Algebra`{.Agda} structure, thus extending `R` to a functor $D \to C^{L
 \circ R}$.
 
-```
+```agda
 Comparison : Functor D (Eilenberg-Moore C L∘R)
 Comparison .F₀ x = R.₀ x , alg where
   alg : Algebra-on C L∘R (R.₀ x)
@@ -72,7 +73,8 @@ Comparison .F₀ x = R.₀ x , alg where
 
 <details>
 <summary> Construction of the functorial action of `Comparison`{.Agda} </summary>
-```
+
+```agda
 Comparison .F₁ x = hom where
   open Algebra-hom
   hom : Algebra-hom C _ _ _

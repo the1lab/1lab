@@ -32,7 +32,7 @@ private variable
 ```
 -->
 
-```
+```agda
 record is-indexed-coproduct (F : Idx → C.Ob) (ι : ∀ i → C.Hom (F i) S)
   : Type (o ⊔ ℓ ⊔ level-of Idx) where
   no-eta-equality

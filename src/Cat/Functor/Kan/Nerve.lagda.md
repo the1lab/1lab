@@ -281,7 +281,7 @@ These, by definition, come with (natural) functions $\hom_\cC(-, j) \to
 the map we want. That this assembles into a map from the colimit follows
 from that same naturality:
 
-```
+```agda
     adj .counit .η ob = ↓colim.universal _ (λ j → j .map .η _ C.id) comm
       where abstract
       comm

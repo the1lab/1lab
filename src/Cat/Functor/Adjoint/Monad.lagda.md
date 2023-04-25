@@ -13,9 +13,6 @@ open _=>_
 ```
 -->
 
-```agda
-```
-
 # The Monad from an Adjunction
 
 ```agda
@@ -27,7 +24,10 @@ module
   {L : Functor C D} {R : Functor D C}
   (L⊣R : L ⊣ R)
   where
+```
 
+<!--
+```agda
 private
   module C = Precategory C
   module D = Precategory D
@@ -35,6 +35,7 @@ private
   module R = Functor R
   module adj = _⊣_ L⊣R
 ```
+-->
 
 Every adjunction $L \dashv R$ gives rise to a monad, where the
 underlying functor is $R \circ L$.

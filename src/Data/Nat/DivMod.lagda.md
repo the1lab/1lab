@@ -68,7 +68,7 @@ $$
 (1 + a) = q'b + 1 + r
 $$
 
-```
+```agda
 divide-pos (suc a) b | divmod q′ r′ p s | inl r′+1<b =
   divmod q′ (suc r′) (ap suc p ∙ sym (+-sucr (q′ * b) r′)) r′+1<b
 ```

@@ -80,7 +80,8 @@ types _in the same universe_. Thus, we provide `Σ-ap-fst`{.Agda},
 <details>
 <summary> The proofs of these theorems are not very enlightening, but
 they are included for completeness. </summary>
-```
+
+```agda
 Σ-ap-snd {A = A} {P = P} {Q = Q} pointwise = Iso→Equiv morp where
   pwise : (x : A) → Iso (P x) (Q x)
   pwise x = _ , is-equiv→is-iso (pointwise x .snd)

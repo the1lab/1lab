@@ -95,7 +95,7 @@ The axioms for a displayed category are evident: all that matters are
 the maps in the total category $\cE$, since the rest of the data is
 property (rather than data).
 
-```
+```agda
   functor→displayed .Hom[_]-set f a b = hlevel 2
   functor→displayed .id′ = E.id , B.elimr P.F-id ∙ B.introl refl
   functor→displayed ._∘′_ (f , φ) (g , ψ) = f E.∘ g ,

@@ -101,7 +101,8 @@ is-equiv→post-is-equiv : {f : A → B} → is-equiv f → is-equiv {A = B → 
 <details>
 <summary> The proof is by `is-equiv→is-iso`{.Agda} and
 `is-iso→is-equiv`{.Agda}. Nothing too clever. </summary>
-```
+
+```agda
 is-equiv→pre-is-equiv {f = f} f-eqv = is-iso→is-equiv isiso where
   f-iso : is-iso f
   f-iso = is-equiv→is-iso f-eqv

@@ -255,7 +255,7 @@ it must preserve identity arrows. The converse direction (going functor
 Correspondingly, we _define_ the arrow category $\Arr{\cC}$ as the
 functor category $[ \intcat, \cC ]$.
 
-```
+```agda
 Arr : Precategory o ℓ → Precategory (o ⊔ ℓ) ℓ
 Arr C = Cat[ 0≤1 , C ]
 ```

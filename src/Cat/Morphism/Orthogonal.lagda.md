@@ -45,7 +45,7 @@ module _ {o ℓ} (C : Precategory o ℓ) where
 ```
 -->
 
-```
+```agda
   m⊥m : ∀ {a b c d} → C.Hom a b → C.Hom c d → Type _
   m⊥m {b = b} {c = c} f g =
     ∀ {u v} → v C.∘ f ≡ g C.∘ u

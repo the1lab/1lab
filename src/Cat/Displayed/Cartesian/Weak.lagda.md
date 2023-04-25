@@ -209,7 +209,7 @@ weak-cartesian→postcompose-equiv wcart =
 We can also define a notion of weak cartesian lifts, much like we can
 with their stronger cousins.
 
-```
+```agda
 record Weak-cartesian-lift
   {x y} (f : Hom x y) (y′ : Ob[ y ]) : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′)
   where
