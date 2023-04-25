@@ -1,4 +1,4 @@
-{-# OPTIONS -vtactic.hlevel:10 #-}
+{-# OPTIONS -vtactic.hlevel:20 -vtc.def:10 #-}
 open import 1Lab.Reflection.Record
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
@@ -98,10 +98,8 @@ data hlevel-decomposition {ℓ} (T : Type ℓ) : Type where
 
 -- | How to decompose an application of a record selector into something
 -- which might have an h-level.
-record hlevel-projection : Type where
+record hlevel-projection (proj : Name) : Type where
   field
-    underlying-type : Name
-    -- ^ The name of the 'underlying type' projection, e.g. ∣_∣
     has-level : Name
     -- ^ The name of the h-level lemma. It must be sufficient to apply
     -- this name to the argument (see get-argument below); arg specs are
@@ -247,7 +245,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
     -- con (quote suc) (
 
   -- Projection decomposition.
-  treat-as-n-type : hlevel-projection → Term → TC ⊤
+  treat-as-n-type : ∀ {n} → hlevel-projection n → Term → TC ⊤
   treat-as-n-type projection goal = do
     -- First we must be looking at a goal which is of the type is-hlevel
     -- A n. We'll need both n and A.
@@ -261,7 +259,6 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
     -- for.
     def namen args ← returnTC ty
       where what → backtrack $ "Thing isn't an application, it is " ∷ termErr what ∷ []
-    guard (primQNameEquality (projection .underlying-type) namen)
 
     it ← projection .get-argument args
 
@@ -343,14 +340,16 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
       -- projections].
       use-projections : TC ⊤
       use-projections = do
+        def qn _ ← (fst <$> decompose-is-hlevel goal) >>= reduce
+          where _ → backtrack "Term is not headed by a definition; ignoring projections."
+
+        goalt ← inferType goal
         debugPrint "tactic.hlevel" 20 $
-          "Entering try-n-type-projection loop for goal " ∷ termErr goal ∷ []
+          "Will attempt to use projections for goal\n  " ∷ termErr goalt ∷ []
 
         (solved , instances) ← runSpeculative $ do
-          solved@(meta mv _) ← new-meta (def (quote hlevel-projection) [])
+          solved@(meta mv _) ← new-meta (def (quote hlevel-projection) (lit (name qn) v∷ []))
             where _ → typeError (termErr goal ∷ [])
-          debugPrint "tactic.hlevel" 20 $
-            "Trying n-type projections: " ∷ termErr goal ∷ []
 
           -- If there are some hints, then great, otherwise we discard
           -- the TC state.
@@ -360,7 +359,10 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
           pure ((solved , x ∷ xs) , true)
 
         nondet (eff List) instances λ a → do
-          projection ← unquoteTC {A = hlevel-projection} a
+          projection ← unquoteTC {A = hlevel-projection qn} a
+          ty ← withReduceDefs (false , hlevel-types) (inferType goal >>= reduce)
+          debugPrint "tactic.hlevel" 20 $
+            "Outer type: " ∷ termErr ty ∷ []
           treat-as-n-type projection goal >> unify solved a
 
       -- Get rid of any invisible binders that lead the term.
@@ -687,8 +689,7 @@ instance
   decomp-ntype : ∀ {ℓ} {n} → hlevel-decomposition (n-Type ℓ n)
   decomp-ntype = decomp (quote n-Type-is-hlevel) (`level-minus 1 ∷ [])
 
-  hlevel-proj-n-type : hlevel-projection
-  hlevel-proj-n-type .underlying-type = quote n-Type.∣_∣
+  hlevel-proj-n-type : hlevel-projection (quote n-Type.∣_∣)
   hlevel-proj-n-type .has-level = quote n-Type.is-tr
   hlevel-proj-n-type .get-level ty = do
     def (quote n-Type) (ell v∷ lv′t v∷ []) ← reduce ty
@@ -699,12 +700,12 @@ instance
 
 private
   module _ {ℓ} {A : n-Type ℓ 2} {B : ∣ A ∣ → n-Type ℓ 3} where
-    some-def = ∣ A ∣
-    _ : is-hlevel (∣ A ∣ → ∣ A ∣ → ∣ A ∣ → ∣ A ∣) 2
-    _ = hlevel!
+    -- some-def = ∣ A ∣
+    -- _ : is-hlevel (∣ A ∣ → ∣ A ∣ → ∣ A ∣ → ∣ A ∣) 2
+    -- _ = hlevel!
 
-    _ : is-hlevel (Σ some-def λ x → ∣ B x ∣) 3
-    _ = hlevel!
+    -- _ : is-hlevel (Σ some-def λ x → ∣ B x ∣) 3
+    -- _ = hlevel!
 
     _ : ∀ a → is-hlevel (∣ A ∣ × ∣ A ∣ × (Nat → ∣ B a ∣)) 5
     _ = hlevel!

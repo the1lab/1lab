@@ -1,34 +1,41 @@
+<!--
 ```agda
-open import Algebra.Magma
-open import Algebra.Monoid renaming (idr to mon-idr; idl to mon-idl)
-open import Algebra.Semigroup
+{-# OPTIONS -vtc.def:10 #-}
 open import Algebra.Monoid.Category
+open import Algebra.Semigroup
+open import Algebra.Monoid renaming (idr to mon-idr; idl to mon-idl)
+open import Algebra.Magma
 
-open import Cat.Displayed.Total
-
-open import Cat.Diagram.Product
-open import Cat.Diagram.Product.Solver
-open import Cat.Diagram.Terminal
-open import Cat.Functor.Base
-open import Cat.Functor.Equivalence
-open import Cat.Functor.FullSubcategory
+open import Cat.Monoidal.Instances.Cartesian
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Hom.Representable
-open import Cat.Functor.Hom
+open import Cat.Functor.FullSubcategory
+open import Cat.Diagram.Product.Solver
+open import Cat.Functor.Equivalence
 open import Cat.Instances.Functor
+open import Cat.Diagram.Terminal
+open import Cat.Diagram.Product
+open import Cat.Displayed.Total
 open import Cat.Instances.Sets
-open import Cat.Monoidal.Diagram.Monoid
-  renaming (Monoid-on to Monoid-ob;
-            is-monoid-hom to internal-monoid-hom)
-open import Cat.Monoidal.Instances.Cartesian 
+open import Cat.Functor.Base
+open import Cat.Functor.Hom
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Monoidal.Diagram.Monoid.Representable where
 ```
 
 <!--
 ```agda
+-- Under the module header to prevent sorting from ruining the import list
+open import Cat.Monoidal.Diagram.Monoid
+  renaming (Monoid-on to Monoid-ob;
+            is-monoid-hom to internal-monoid-hom)
+
 module _
   {o ℓ} {C : Precategory o ℓ}
   (prod : has-products C)
@@ -51,14 +58,23 @@ module _
 # Monoid Objects as Representable Presheaves
 
 Let $\cC$ be a cartesian category, and let $(M,\eta,\mu)$ be an
-[internal monoid] in $\cC$. Note that the generalized elements of $M$
-have the structure of a monoid; for any $X$; we have the generalized
-element $\eta \circ !$. Furthermore, for any two generalized elements
-$x, y : \cC(X, M)$, we can multiply $x$ and $y$ via
-$\eta \circ \langle x , y \rangle$.
+[internal monoid] in $\cC$. Our first observation is that the
+diagrammatic definition implies that every **generalised element** $X
+\to M$ is a $\Sets$-monoid, with the identity element given by
+
+$$
+X \xto{!} 1 \xto{\eta} M\text{,}
+$$
+
+and the multiplication given by
+
+$$
+(X \times X) \xto{\langle f, g \rangle} (M \times M) \xto{\mu} M\text{.}
+$$
 
 [internal monoid]: Cat.Monoidal.Diagram.Monoid.html
 
+<!--
 ```agda
   private
     C-monoid : Ob → Type ℓ
@@ -67,12 +83,15 @@ $\eta \circ \langle x , y \rangle$.
     C-monoid-hom : ∀ {m n} → Hom m n → C-monoid m → C-monoid n → Type ℓ
     C-monoid-hom f m-mon n-mon =
       internal-monoid-hom (Cartesian-monoidal prod term) f m-mon n-mon
+```
+-->
 
+```agda
   Mon→Hom-mon : ∀ {m} (x : Ob) → C-monoid m → Monoid-on (Hom x m)
   Mon→Hom-mon {m} x mon = hom-mon where
 
     has-semigroup : is-semigroup λ f g → mon .μ ∘ ⟨ f , g ⟩
-    has-semigroup .has-is-magma .has-is-set = hlevel!
+    has-semigroup .has-is-magma .has-is-set = Hom-set _ _
     has-semigroup .associative {f} {g} {h} =
       mon .μ ∘ ⟨ f , mon .μ ∘ ⟨ g , h ⟩ ⟩                                            ≡⟨ products! C prod ⟩
       mon .μ ∘ (id ⊗₁ mon .μ) ∘ ⟨ f , ⟨ g , h ⟩ ⟩                                    ≡⟨ extendl (mon .μ-assoc) ⟩
@@ -138,15 +157,9 @@ presheaf of monoids.
   Mon→PshMon {m} mon .F₀ x .fst = el! (Hom x m)
   Mon→PshMon {m} mon .F₀ x .snd = Mon→Hom-mon x mon
   Mon→PshMon {m} mon .F₁ f .hom = _∘ f
-  Mon→PshMon {m} mon .F₁ f .preserves = precompose-hom-mon-hom f
-  Mon→PshMon {m} mon .F-id =
-    total-hom-path _
-      (funext λ f → idr f)
-      (is-prop→pathp (λ _ → hlevel!) _ _)
-  Mon→PshMon {m} mon .F-∘ f g =
-    total-hom-path _
-      (funext λ h → assoc h g f)
-      (is-prop→pathp (λ _ → hlevel!) _ _)
+  Mon→PshMon {m} mon .F₁ f .preserves = precompose-hom-mon-hom {mon = mon} f
+  Mon→PshMon {m} mon .F-id = Homomorphism-path idr
+  Mon→PshMon {m} mon .F-∘ f g = Homomorphism-path λ h → assoc h g f
 ```
 
 By definition, the constructed presheaf is representable.
@@ -189,17 +202,10 @@ of monoids on $\cC$.
   Mon→RepPShMon .F₁ f .η x .preserves =
     internal-mon-hom→hom-mon-hom (f .preserves)
   Mon→RepPShMon .F₁ f .is-natural x y g =
-    total-hom-path _
-      (funext λ h → assoc (f .hom) h g)
-      (is-prop→pathp hlevel! _ _)
-  Mon→RepPShMon .F-id = Nat-path λ x →
-    total-hom-path _
-      (funext λ f → idl f)
-      (is-prop→pathp hlevel! _ _)
-  Mon→RepPShMon .F-∘ f g = Nat-path λ x →
-    total-hom-path _
-      (funext λ h → sym (assoc (f .hom) (g .hom) h))
-      (is-prop→pathp hlevel! _ _)
+    Homomorphism-path λ h → assoc (f .hom) h g
+  Mon→RepPShMon .F-id = Nat-path λ x → Homomorphism-path λ f → idl f
+  Mon→RepPShMon .F-∘ f g = Nat-path λ x → Homomorphism-path λ h →
+    sym (assoc (f .hom) (g .hom) h)
 ```
 
 We can prove that this functor is fully faithful by using a Yoneda-style
@@ -232,7 +238,7 @@ argument.
         (funext λ f →
           sym (ap hom (α .is-natural _ _ _) $ₚ _)
           ∙ ap (α .η _ .hom) (idl _))
-        (is-prop→pathp (λ _ → hlevel!) _ _))
+        (is-prop→pathp (λ _ → hlevel 1) _ _))
       (λ α → total-hom-path _
         (idr _)
         (is-prop→pathp (λ _ → is-monoid-hom-is-prop _) _ _))
@@ -333,7 +339,7 @@ of $P$ and sections of $P$.
     gen {x} px = repr.to .η x px
 
     elt : ∀ {x} → Hom x m → PMon x
-    elt {x} f = repr.from .η x f 
+    elt {x} f = repr.from .η x f
 ```
 
 This isomorphism allows us to transfer the monoid structure on each
@@ -375,7 +381,7 @@ object.
     hom-mon x .Monoid-on.identity = η* x
     hom-mon x .Monoid-on._⋆_ = μ*
     hom-mon x .Monoid-on.has-is-monoid .has-is-semigroup .has-is-magma .has-is-set =
-      hlevel!
+      Hom-set x m
     hom-mon x .Monoid-on.has-is-monoid .has-is-semigroup .associative = μ*-assoc _ _ _
     hom-mon x .Monoid-on.has-is-monoid .mon-idl = η*-idl _
     hom-mon x .Monoid-on.has-is-monoid .mon-idr = η*-idr _
@@ -438,15 +444,9 @@ presheaves of monoids is [split eso], and thus an equivalence.
         μ* (gen f) (gen g)                                   ≡˘⟨ ap₂ μ* π₁∘⟨⟩ π₂∘⟨⟩ ⟩
         μ* (π₁ ∘ ⟨ gen f , gen g ⟩) (π₂ ∘ ⟨ gen f , gen g ⟩) ≡˘⟨ μ*-nat _ _ _ ⟩
         μ* π₁ π₂ ∘ ⟨ gen f , gen g ⟩                         ∎
-      ni .eta∘inv x =
-        total-hom-path _ (repr.invr ηₚ x)
-          (is-prop→pathp hlevel! _ _)
-      ni .inv∘eta x =
-        total-hom-path _ (repr.invl ηₚ x)
-          (is-prop→pathp hlevel! _ _)
-      ni .natural x y f =
-        total-hom-path _ (sym $ repr.from .is-natural _ _ _)
-          (is-prop→pathp hlevel! _ _)
+      ni .eta∘inv x = Homomorphism-path (repr.invr ηₚ x $ₚ_)
+      ni .inv∘eta x = Homomorphism-path (repr.invl ηₚ x $ₚ_)
+      ni .natural x y f = Homomorphism-path (sym (repr.from .is-natural _ _ _) $ₚ_)
 
   Mon→RepPShMon-is-equiv : is-equivalence Mon→RepPShMon
   Mon→RepPShMon-is-equiv =
