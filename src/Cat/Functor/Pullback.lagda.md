@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Pullback
@@ -9,7 +10,10 @@ open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Functor.Pullback
   {o ℓ} {C : Precategory o ℓ}
   where

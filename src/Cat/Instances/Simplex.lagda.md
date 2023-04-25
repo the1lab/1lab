@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Cat.Prelude
 
 open import Data.Fin
 
 import Data.Nat as Nat
+```
+-->
 
+```agda
 module Cat.Instances.Simplex where
 ```
 

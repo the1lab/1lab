@@ -1,6 +1,10 @@
+<!--
 ```agda
 open import 1Lab.Type
+```
+-->
 
+```agda
 module 1Lab.Path where
 ```
 
@@ -254,7 +258,7 @@ Since iterated paths are used _a lot_ in homotopy type theory, we
 introduce a shorthand for 2D non-dependent paths. A `Square`{.Agda} in a
 type is exactly what it says on the tin: a square.
 
-```
+```agda
 Square : ∀ {ℓ} {A : Type ℓ} {a00 a01 a10 a11 : A}
        → (p : a00 ≡ a01)
        → (q : a00 ≡ a10)
@@ -364,7 +368,7 @@ role of a _formula_, which specifies _where the transport is constant_:
 In `transp P i1`, `P` is required to be constant, and the transport is
 the identity function:
 
-  ```
+  ```agda
 _ : ∀ {ℓ} {A : Type ℓ} → transp (λ i → A) i1 ≡ id
 _ = refl
   ```
@@ -695,7 +699,7 @@ Note that if we _did_ have `(~i ∨ i) = i1` (i.e. our De Morgan algebra
 was a Boolean algebra), the partial element above would give us a
 contradiction, since any `I → Partial i1 T` extends to a path:
 
-```
+```agda
   _ : (f : I → Partial i1 Bool) → Path Bool (f i0 1=1) (f i1 1=1)
   _ = λ f i → f i 1=1
 ```
@@ -1156,7 +1160,7 @@ double composites `p ·· q ·· r` is a _proposition_, not that it is
 contractible. However, since it is inhabited (by `_··_··_`{.Agda} and
 its filler), it is contractible:
 
-```
+```agda
 ··-contract : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
             → (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
             → (β : Σ[ s ∈ (w ≡ z) ] Square (sym p) q s r)
@@ -1425,7 +1429,7 @@ coe1→i A i a = transp (λ j → A (i ∨ ~ j)) i a
 In the converse direction, we have "squeeze" operations, which take a
 value from $A(i)$ to $A(i0)$ or $A(i1)$.
 
-```
+```agda
 coei→0 : ∀ {ℓ : I → Level} (A : ∀ i → Type (ℓ i)) (i : I) → A i → A i0
 coei→0 A i a = transp (λ j → A (i ∧ ~ j)) (~ i) a
 

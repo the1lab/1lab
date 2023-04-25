@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Diagram.Colimit.Cocone
 open import Cat.Diagram.Colimit.Base
@@ -10,7 +11,10 @@ open import Cat.Prelude
 import Cat.Instances.Elements as El
 import Cat.Functor.Hom
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Functor.Hom.Coyoneda {o h} (C : Precategory o h) where
 ```
 

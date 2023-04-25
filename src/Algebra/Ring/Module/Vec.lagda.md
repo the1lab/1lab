@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Ring.Module
 open import Algebra.Group.NAry
@@ -13,7 +14,10 @@ open import Cat.Prelude
 
 open import Data.Dec
 open import Data.Fin
+```
+-->
 
+```agda
 module Algebra.Ring.Module.Vec {ℓ} (R : Ring ℓ) where
 ```
 

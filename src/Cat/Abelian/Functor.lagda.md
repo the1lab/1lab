@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Ab
 open import Algebra.Group
@@ -6,7 +7,10 @@ open import Cat.Functor.FullSubcategory
 open import Cat.Abelian.Base
 open import Cat.Diagram.Zero
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Abelian.Functor where
 ```
 

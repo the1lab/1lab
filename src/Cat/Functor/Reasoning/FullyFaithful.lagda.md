@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Cat.Functor.Base
 open import Cat.Prelude hiding (injective)
 
 import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning
+```
+-->
 
+```agda
 module
   Cat.Functor.Reasoning.FullyFaithful
   {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}

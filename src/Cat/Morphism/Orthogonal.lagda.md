@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Adjoint.Reflective
 open import Cat.Diagram.Terminal
@@ -7,7 +8,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning as Cr
+```
+-->
 
+```agda
 module Cat.Morphism.Orthogonal where
 ```
 
@@ -41,7 +45,7 @@ module _ {o ℓ} (C : Precategory o ℓ) where
 ```
 -->
 
-```
+```agda
   m⊥m : ∀ {a b c d} → C.Hom a b → C.Hom c d → Type _
   m⊥m {b = b} {c = c} f g =
     ∀ {u v} → v C.∘ f ≡ g C.∘ u

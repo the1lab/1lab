@@ -1,19 +1,22 @@
+<!--
 ```agda
-open import Cat.Displayed.Base
-open import Cat.Displayed.Cartesian
-open import Cat.Displayed.Composition
-open import Cat.Displayed.Functor
 open import Cat.Displayed.Instances.Pullback
 open import Cat.Displayed.Instances.Slice
-open import Cat.Displayed.Total
-
+open import Cat.Displayed.Composition
+open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Functor
 open import Cat.Diagram.Pullback
+open import Cat.Displayed.Total
 open import Cat.Instances.Slice
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Reasoning
 import Cat.Displayed.Reasoning
+import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Displayed.Instances.DisplayedFamilies
   {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ')
   where

@@ -1,3 +1,4 @@
+<!--
 ```agda
 {-# OPTIONS --lossy-unification #-}
 open import Cat.Instances.Functor.Compose
@@ -13,7 +14,10 @@ import Cat.Reasoning
 
 open Functor
 open _=>_
+```
+-->
 
+```agda
 module Cat.Univalent.Rezk.Universal where
 ```
 

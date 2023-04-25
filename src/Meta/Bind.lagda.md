@@ -1,8 +1,12 @@
+<!--
 ```agda
 open import 1Lab.Type
 
 open import Meta.Idiom
+```
+-->
 
+```agda
 module Meta.Bind where
 ```
 

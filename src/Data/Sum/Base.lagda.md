@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -5,7 +6,10 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Dec.Base
+```
+-->
 
+```agda
 module Data.Sum.Base where
 ```
 

@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Base
@@ -7,7 +8,10 @@ import Cat.Displayed.Univalence
 import Cat.Displayed.Reasoning
 import Cat.Displayed.Morphism
 import Cat.Reasoning as Cr
+```
+-->
 
+```agda
 module Cat.Displayed.Univalence.Reasoning
   {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′)
   where

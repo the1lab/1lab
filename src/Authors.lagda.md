@@ -10,7 +10,7 @@ themselves! Try to follow the format of existing profiles [in the source
 file], and keep the description short. Don't forget to mention your
 pronouns.
 
-[in the source file]: https://gitlab.com/plt_amy/cubical-1lab/-/blob/main/src/Authors.lagda.md
+[in the source file]: https://github.com/plt-amy/1lab/blob/main/src/Authors.lagda.md?plain=1
 
 <!-- KEEP THIS SVG HERE -->
 

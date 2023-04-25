@@ -1,7 +1,11 @@
+<!--
 ```agda
 open import 1Lab.Path
 open import 1Lab.Type
+```
+-->
 
+```agda
 module Data.Dec.Base where
 ```
 

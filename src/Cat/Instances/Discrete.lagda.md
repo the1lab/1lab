@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Univalent
 open import Cat.Prelude
@@ -5,7 +6,10 @@ open import Cat.Prelude
 open import Data.Dec
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Instances.Discrete where
 ```
 

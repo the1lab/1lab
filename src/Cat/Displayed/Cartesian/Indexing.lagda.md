@@ -1,3 +1,4 @@
+<!--
 ```agda
 {-# OPTIONS --lossy-unification #-}
 open import Cat.Bi.Instances.Discrete
@@ -12,7 +13,10 @@ open import Cat.Prelude
 import Cat.Displayed.Reasoning
 import Cat.Reasoning
 import Cat.Morphism as Mor
+```
+-->
 
+```agda
 module Cat.Displayed.Cartesian.Indexing
   {o ℓ o′ ℓ′} {B : Precategory o ℓ}
   (E : Displayed B o′ ℓ′)

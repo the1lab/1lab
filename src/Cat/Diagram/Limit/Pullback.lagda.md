@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Shape.Cospan
 open import Cat.Diagram.Limit.Base
@@ -8,7 +9,10 @@ open import Cat.Diagram.Terminal
 open import Cat.Prelude
 
 open import Data.Bool
+```
+-->
 
+```agda
 module Cat.Diagram.Limit.Pullback {o h} (Cat : Precategory o h) where
 ```
 

@@ -1233,7 +1233,7 @@ module _ {A B : Type} where private
 ```
 -->
 
-```
+```agda
   fibre : (A → B) → B → Type
   fibre f y = Σ[ x ∈ A ] (f x ≡ y)
 ```

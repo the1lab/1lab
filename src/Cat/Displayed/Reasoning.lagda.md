@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Cat.Instances.Functor
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Reasoning as Cat
+```
+-->
 
+```agda
 module
   Cat.Displayed.Reasoning
     {o′ ℓ′ o′′ ℓ′′}

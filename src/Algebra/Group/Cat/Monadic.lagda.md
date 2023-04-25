@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Free
@@ -14,7 +15,10 @@ open import Cat.Functor.Base
 import Algebra.Group.Cat.Base as Grp
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Algebra.Group.Cat.Monadic {ℓ} where
 ```
 

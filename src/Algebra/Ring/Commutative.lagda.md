@@ -1,9 +1,13 @@
+<!--
 ```agda
 open import 1Lab.Equiv.Embedding
 
 open import Algebra.Prelude
 open import Algebra.Ring
+```
+-->
 
+```agda
 module Algebra.Ring.Commutative where
 ```
 

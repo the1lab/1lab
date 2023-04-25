@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Instances.Functor.Duality
@@ -12,7 +13,10 @@ open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Diagram.Duals
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Instances.Functor.Limits where
 ```
 

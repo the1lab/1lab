@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Equivalence.Path
 open import Cat.Functor.Equivalence
@@ -5,7 +6,10 @@ open import Cat.Displayed.Functor
 open import Cat.Displayed.Total
 open import Cat.Displayed.Base
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Displayed.Path where
 
 open Precategory

@@ -1,9 +1,13 @@
+<!--
 ```
 open import 1Lab.Prelude
 
 open import Homotopy.Space.Suspension
 open import Homotopy.Space.Circle
+```
+-->
 
+```agda
 module Homotopy.Space.Sphere where
 ```
 

@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Diagram.Colimit.Base
@@ -6,7 +7,10 @@ open import Cat.Instances.Product
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Diagram.Coproduct.Copower where
 ```
 

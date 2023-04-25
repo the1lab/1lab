@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Ab
 open import Algebra.Group
@@ -6,7 +7,10 @@ open import Cat.Displayed.Univalence.Thin
 open import Cat.Instances.Product
 open import Cat.Displayed.Total
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Algebra.Group.Ab.Hom where
 ```
 

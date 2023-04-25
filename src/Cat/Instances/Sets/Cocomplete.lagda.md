@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Initial
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Instances.Sets.Cocomplete where
 ```
 

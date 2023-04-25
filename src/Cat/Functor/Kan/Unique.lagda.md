@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Functor.Compose
 open import Cat.Instances.Functor
@@ -7,7 +8,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Functor.Kan.Unique where
 ```
 

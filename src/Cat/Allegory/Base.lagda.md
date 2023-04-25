@@ -1,8 +1,12 @@
+<!--
 ```agda
 open import Cat.Prelude
 
 import Cat.Reasoning as Cr
+```
+-->
 
+```agda
 module Cat.Allegory.Base where
 ```
 

@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Prelude
 
@@ -11,7 +12,10 @@ open import Topoi.Base
 
 import Cat.Functor.Reasoning as Functor-kit
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Topoi.Classifying.Diaconescu where
 ```
 

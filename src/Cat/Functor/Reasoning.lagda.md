@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import 1Lab.Path
 
 open import Cat.Base
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Functor.Reasoning
   {o ℓ o′ ℓ′}
   {𝒞 : Precategory o ℓ} {𝒟 : Precategory o′ ℓ′}

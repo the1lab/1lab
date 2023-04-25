@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Cat.Prelude
 
 open import Data.Bool
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Instances.Shape.Parallel where
 ```
 

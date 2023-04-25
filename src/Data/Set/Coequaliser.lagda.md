@@ -1,8 +1,12 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
 open import Data.Dec
+```
+-->
 
+```agda
 module Data.Set.Coequaliser where
 ```
 
@@ -50,7 +54,7 @@ the diagram below.
 
 We refer to this unique factoring as `Coeq-rec`{.Agda}.
 
-```
+```agda
 Coeq-rec : ∀ {ℓ} {C : Type ℓ} {f g : A → B}
       → is-set C → (h : B → C)
       → (∀ x → h (f x) ≡ h (g x)) → Coeq f g → C
@@ -309,7 +313,7 @@ quot r = glue (_ , _ , r)
 Using `Coeq-elim`{.Agda}, we can recover the elimination principle for
 quotients:
 
-```
+```agda
 Quot-elim : ∀ {ℓ} {B : A / R → Type ℓ}
           → (∀ x → is-set (B x))
           → (f : ∀ x → B (inc x))

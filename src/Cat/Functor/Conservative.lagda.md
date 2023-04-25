@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Terminal
@@ -7,7 +8,10 @@ open import Cat.Prelude hiding (J)
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning as Cat
+```
+-->
 
+```agda
 module Cat.Functor.Conservative where
 ```
 

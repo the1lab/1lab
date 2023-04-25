@@ -1,6 +1,7 @@
 ---
 description: We establish that right adjoints preserve limits.
 ---
+<!--
 ```agda
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
@@ -20,7 +21,10 @@ open import Data.Bool
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning as Cat
+```
+-->
 
+```agda
 module Cat.Functor.Adjoint.Continuous where
 ```
 

@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Reflection.Variables
 open import 1Lab.Reflection
@@ -9,7 +10,10 @@ open import Data.Fin.Base
 open import Data.Nat.Base
 open import Data.Bool
 open import Data.List
+```
+-->
 
+```agda
 module Data.Nat.Solver where
 ```
 

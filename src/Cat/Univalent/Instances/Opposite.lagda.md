@@ -1,9 +1,13 @@
+<!--
 ```agda
 open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Univalent.Instances.Opposite
   {o ℓ} {C : Precategory o ℓ}
   where

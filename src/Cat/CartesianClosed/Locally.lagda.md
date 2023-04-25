@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Adjoint.Compose
 open import Cat.CartesianClosed.Base
@@ -12,7 +13,10 @@ open import Cat.Instances.Slice
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.CartesianClosed.Locally where
 ```
 

@@ -1,7 +1,11 @@
+<!--
 ```agda
 {-# OPTIONS --show-implicit #-}
 open import 1Lab.Prelude
+```
+-->
 
+```agda
 module Algebra.Magma where
 ```
 

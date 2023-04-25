@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Path.Cartesian
 
@@ -11,7 +12,10 @@ import Cat.Reasoning
 open Precategory
 open Functor
 open _=>_
+```
+-->
 
+```agda
 module Cat.Instances.Functor where
 
 private variable

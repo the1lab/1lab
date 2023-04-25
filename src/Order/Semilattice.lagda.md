@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Monoid.Category
 open import Algebra.Semigroup
@@ -15,7 +16,10 @@ open import Order.Base
 import Cat.Reasoning
 
 import Order.Reasoning as Poset
+```
+-->
 
+```agda
 module Order.Semilattice where
 ```
 

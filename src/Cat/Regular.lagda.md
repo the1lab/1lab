@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Pullback.Properties
@@ -17,7 +18,10 @@ open import Cat.Prelude
 open import Data.Set.Surjection
 
 import Cat.Reasoning as Cr
+```
+-->
 
+```agda
 module Cat.Regular where
 ```
 

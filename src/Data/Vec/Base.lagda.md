@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Path
 open import 1Lab.Type
@@ -5,7 +6,10 @@ open import 1Lab.Type
 open import Data.Product.NAry
 open import Data.Fin.Base
 open import Data.Nat.Base
+```
+-->
 
+```agda
 module Data.Vec.Base where
 ```
 

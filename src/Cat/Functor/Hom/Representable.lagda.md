@@ -1,3 +1,4 @@
+<!--
 ```agda
 {-# OPTIONS -vtc.def:10 #-}
 open import Cat.Univalent.Instances.Opposite
@@ -14,7 +15,10 @@ open import Cat.Functor.Hom
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Functor.Hom.Representable {o κ} {C : Precategory o κ} where
 ```
 

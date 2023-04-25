@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Product
 open import Cat.Displayed.Solver
@@ -7,7 +8,10 @@ open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning
+```
+-->
 
+```agda
 module Cat.Functor.Hom.Displayed
   {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o′ ℓ′)
   where

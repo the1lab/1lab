@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Ring.Module
 open import Algebra.Group.Ab
@@ -12,7 +13,10 @@ open import Data.Int
 import Data.Nat as Nat
 
 import Prim.Data.Nat as Nat
+```
+-->
 
+```agda
 module Algebra.Ring.Cat.Initial {ℓ} where
 ```
 

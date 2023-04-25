@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Shape.Terminal
 open import Cat.Instances.Shape.Join
@@ -15,7 +16,10 @@ open import Cat.Prelude
 open import Data.Sum
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Instances.Slice where
 ```
 

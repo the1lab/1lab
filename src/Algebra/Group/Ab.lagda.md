@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Cat.Base
 open import Algebra.Group
@@ -9,7 +10,10 @@ open import Cat.Prelude hiding (_*_ ; _+_)
 open import Data.Int
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Algebra.Group.Ab where
 ```
 

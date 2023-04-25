@@ -1,8 +1,12 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
 open import Cat.Base
+```
+-->
 
+```agda
 module Cat.Instances.Shape.Initial where
 ```
 

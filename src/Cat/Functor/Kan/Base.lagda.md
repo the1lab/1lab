@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Functor.Compose
 open import Cat.Instances.Shape.Terminal
@@ -7,7 +8,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning as Cat
+```
+-->
 
+```agda
 module Cat.Functor.Kan.Base where
 ```
 

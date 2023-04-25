@@ -1,3 +1,4 @@
+<!--
 ```agda
 {-# OPTIONS -WUnsupportedIndexedMatch #-}
 open import 1Lab.Path.IdentitySystem.Interface
@@ -9,7 +10,10 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Dec.Base
+```
+-->
 
+```agda
 module Data.Id.Base where
 ```
 

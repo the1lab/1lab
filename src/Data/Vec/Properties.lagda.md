@@ -1,9 +1,13 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
 open import Data.Fin.Base
 open import Data.Vec.Base
+```
+-->
 
+```agda
 module Data.Vec.Properties where
 ```
 

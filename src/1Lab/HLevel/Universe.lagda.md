@@ -1,6 +1,7 @@
 ---
 description: Using univalence, we compute the h-level of the universe of n types.
 ---
+<!--
 ```
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Type.Sigma
@@ -9,7 +10,10 @@ open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+```
+-->
 
+```agda
 module 1Lab.HLevel.Universe where
 ```
 
@@ -161,7 +165,7 @@ Since h-levels are closed under equivalence, and we already have an
 upper bound on the h-level of $X \simeq Y$ when $Y$ is an $n$-type, we
 know that $n$-Type is a $(n+1)$-type:
 
-```
+```agda
 n-Type-is-hlevel : ∀ n → is-hlevel (n-Type ℓ n) (suc n)
 n-Type-is-hlevel zero x y = n-ua
   ((λ _ → y .is-tr .centre) , is-contr→is-equiv (x .is-tr) (y .is-tr))

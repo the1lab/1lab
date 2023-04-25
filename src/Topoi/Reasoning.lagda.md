@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.CartesianClosed.Instances.PSh
 open import Cat.Diagram.Everything
@@ -9,7 +10,10 @@ open import Topoi.Base
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning as Cat
+```
+-->
 
+```agda
 module Topoi.Reasoning where
 ```
 

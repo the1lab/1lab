@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Adjoint.Continuous
 open import Cat.Functor.Equivalence
@@ -5,7 +6,10 @@ open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Functor
 open import Cat.Functor.Base
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Functor.Equivalence.Complete where
 ```
 

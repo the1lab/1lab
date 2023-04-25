@@ -1,8 +1,12 @@
+<!--
 ```agda
 open import Cat.Functor.Coherence
 open import Cat.Functor.Kan.Base
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Functor.Kan.Duality where
 ```
 

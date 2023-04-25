@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Ab.Tensor
 open import Algebra.Magma.Unital
@@ -11,7 +12,10 @@ open import Cat.Diagram.Equaliser.Kernel
 
 import Algebra.Group.Cat.Base as Grp
 import Algebra.Group.Ab.Hom as Ab
+```
+-->
 
+```agda
 module Cat.Abelian.Base where
 ```
 

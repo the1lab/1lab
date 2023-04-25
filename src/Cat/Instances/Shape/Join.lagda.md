@@ -1,8 +1,12 @@
+<!--
 ```agda
 open import Cat.Prelude
 
 open import Data.Sum
+```
+-->
 
+```agda
 module Cat.Instances.Shape.Join where
 ```
 

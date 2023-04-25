@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Equivalence.Complete
 open import Cat.Instances.Shape.Terminal
@@ -10,7 +11,10 @@ open import Cat.Diagram.Monad
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Diagram.Monad.Limits {o ℓ} {C : Precategory o ℓ} {M : Monad C} where
 ```
 

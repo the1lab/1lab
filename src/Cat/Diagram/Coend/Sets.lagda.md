@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
@@ -6,7 +7,10 @@ open import Cat.Diagram.Coend
 open import Cat.Prelude
 
 open import Data.Set.Coequaliser
+```
+-->
 
+```agda
 module Cat.Diagram.Coend.Sets where
 ```
 

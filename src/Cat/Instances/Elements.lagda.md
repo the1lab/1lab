@@ -1,6 +1,10 @@
+<!--
 ```agda
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Instances.Elements {o ℓ s} (C : Precategory o ℓ)
   (P : Functor (C ^op) (Sets s)) where
 ```

@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
@@ -6,7 +7,10 @@ open import Algebra.Prelude
 open import Algebra.Group
 
 open import Cat.Diagram.Product
+```
+-->
 
+```agda
 module Algebra.Group.Ab.Sum where
 ```
 

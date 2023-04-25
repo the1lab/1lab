@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
@@ -9,7 +10,10 @@ open import Algebra.Group
 open import Algebra.Magma
 
 open import Data.Set.Truncation
+```
+-->
 
+```agda
 module Algebra.Group.Homotopy where
 ```
 
@@ -359,7 +363,7 @@ of the full `Deloop-elim`{.Agda}, which reduces the goal to proving $1
 This completes the proof, and lets us establish that the fundamental
 group of `Deloop`{.Agda} is `G`, which is what we wanted.
 
-```
+```agda
   G≃ΩB : ⌞ G ⌟ ≃ (base ≡ base)
   G≃ΩB = Iso→Equiv (path , iso (encode base) encode→decode (decode→encode base))
 

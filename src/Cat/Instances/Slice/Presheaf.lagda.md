@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Elements
@@ -6,7 +7,10 @@ open import Cat.Instances.Slice
 open import Cat.Functor.Base
 open import Cat.Functor.Hom
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Instances.Slice.Presheaf {o ℓ} {C : Precategory o ℓ} where
 ```
 

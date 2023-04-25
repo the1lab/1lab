@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type hiding (id ; _∘_)
 
 open import Cat.Base
+```
+-->
 
+```agda
 module Cat.Displayed.Base where
 ```
 

@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
@@ -11,7 +12,10 @@ open import Data.Power
 open import Order.Instances.Subobjects
 
 import Order.Reasoning as Poset
+```
+-->
 
+```agda
 module Algebra.Group.Subgroup where
 ```
 
@@ -592,7 +596,7 @@ To show that these are equal as subgroups of $G$, we must show that the
 isomorphism above commutes with the inclusions; But this is immediate by
 computation, so we can conclude: Every normal subgroup is a kernel.
 
-```
+```agda
   Ker[incl]≡H↪G : Ker-sg ≡ H-sg
   Ker[incl]≡H↪G = ≤-antisym ker≤H H≤ker where
     SubG = Subobjects (Groups ℓ) Groups-is-category Grp

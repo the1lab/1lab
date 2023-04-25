@@ -1,8 +1,12 @@
+<!--
 ```agda
 open import 1Lab.Type
 
 open import Data.List.Base
+```
+-->
 
+```agda
 module Meta.Idiom where
 ```
 

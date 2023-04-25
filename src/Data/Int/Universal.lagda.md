@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
 open import Data.Int
 
 import Data.Int.Inductive as Ind
+```
+-->
 
+```agda
 module Data.Int.Universal where
 ```
 

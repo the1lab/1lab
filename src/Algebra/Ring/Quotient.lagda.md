@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Subgroup
@@ -8,7 +9,10 @@ open import Algebra.Ring
 
 open import Data.Power
 open import Data.Dec
+```
+-->
 
+```agda
 module Algebra.Ring.Quotient {ℓ} (R : Ring ℓ) where
 ```
 

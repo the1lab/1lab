@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
@@ -9,7 +10,10 @@ import Cat.Morphism
 
 open Functor
 open _=>_
+```
+-->
 
+```agda
 module Cat.Instances.Functor.Compose where
 ```
 

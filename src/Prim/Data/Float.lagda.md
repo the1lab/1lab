@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Type
 
@@ -7,7 +8,10 @@ open import Data.Bool
 open import Prim.Data.String
 open import Prim.Data.Maybe
 open import Prim.Data.Word
+```
+-->
 
+```agda
 module Prim.Data.Float where
 ```
 

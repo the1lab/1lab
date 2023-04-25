@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Ab
 open import Algebra.Group
@@ -5,7 +6,10 @@ open import Algebra.Group
 open import Cat.Prelude
 
 open import Data.Fin
+```
+-->
 
+```agda
 module Algebra.Group.NAry where
 ```
 

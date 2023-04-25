@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Ab
 open import Algebra.Monoid
@@ -8,7 +9,10 @@ open import Cat.Instances.Functor
 open import Cat.Abelian.Functor
 open import Cat.Abelian.Base
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Abelian.Instances.Functor
   where
 ```

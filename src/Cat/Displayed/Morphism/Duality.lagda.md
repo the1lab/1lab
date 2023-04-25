@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Displayed.Total.Op
 open import Cat.Displayed.Base
@@ -7,7 +8,10 @@ import Cat.Displayed.Reasoning
 import Cat.Displayed.Morphism
 import Cat.Morphism.Duality
 import Cat.Morphism
+```
+-->
 
+```agda
 module Cat.Displayed.Morphism.Duality
   {o ℓ o′ ℓ′}
   {ℬ : Precategory o ℓ}

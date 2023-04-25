@@ -1,6 +1,7 @@
 ---
 description: We define the monad associated to an adjunction.
 ---
+<!--
 ```agda
 open import Cat.Functor.Adjoint
 open import Cat.Diagram.Monad
@@ -10,6 +11,7 @@ open Functor
 open Monad
 open _=>_
 ```
+-->
 
 # The Monad from an Adjunction
 
@@ -22,7 +24,10 @@ module
   {L : Functor C D} {R : Functor D C}
   (L⊣R : L ⊣ R)
   where
+```
 
+<!--
+```agda
 private
   module C = Precategory C
   module D = Precategory D
@@ -30,6 +35,7 @@ private
   module R = Functor R
   module adj = _⊣_ L⊣R
 ```
+-->
 
 Every adjunction $L \dashv R$ gives rise to a monad, where the
 underlying functor is $R \circ L$.

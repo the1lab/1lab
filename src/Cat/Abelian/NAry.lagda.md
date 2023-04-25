@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.NAry
 open import Algebra.Group.Ab
@@ -7,7 +8,10 @@ open import Cat.Abelian.Base
 open import Cat.Prelude
 
 open import Data.Fin.Base
+```
+-->
 
+```agda
 module Cat.Abelian.NAry {o ℓ} {C : Precategory o ℓ} (A : Ab-category C) where
 ```
 

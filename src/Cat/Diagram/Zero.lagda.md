@@ -1,7 +1,11 @@
+<!--
 ```agda
 open import Cat.Univalent
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Diagram.Zero {o h} (C : Precategory o h) where
 
 open import Cat.Diagram.Initial C

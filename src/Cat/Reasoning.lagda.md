@@ -1,8 +1,12 @@
+<!--
 ```agda
 open import 1Lab.Path
 
 open import Cat.Base
+```
+-->
 
+```agda
 module Cat.Reasoning {o ℓ} (C : Precategory o ℓ) where
 
 open import Cat.Morphism C public

@@ -1,19 +1,22 @@
+<!--
 ```agda
-open import Cat.Displayed.Base
-open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Cartesian.Indexing
-open import Cat.Displayed.Fibre
-open import Cat.Displayed.Functor
-open import Cat.Displayed.Instances.Lifting
 open import Cat.Displayed.Instances.Pullback
-
+open import Cat.Displayed.Instances.Lifting
+open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
+open import Cat.Displayed.Functor
 open import Cat.Instances.Functor
+open import Cat.Displayed.Fibre
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Reasoning
 import Cat.Displayed.Reasoning
+import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Displayed.Instances.Diagrams
   {o ℓ o' ℓ'}
   {B : Precategory o ℓ}

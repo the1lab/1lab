@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Ab.Abelianisation
 open import Algebra.Group.Cat.Base
@@ -9,7 +10,10 @@ open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Adjoint.Compose
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Algebra.Group.Ab.Free where
 ```
 

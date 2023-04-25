@@ -3,12 +3,16 @@ description: |
   We show how to turn a path into an equivalence, in a computationally
   efficient manner, using cubical methods.
 ---
+<!--
 ```
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+```
+-->
 
+```agda
 module 1Lab.Equiv.FromPath {ℓ} (P : (i : I) → Type ℓ) where
 ```
 

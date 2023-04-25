@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Path
 open import 1Lab.Type
@@ -6,7 +7,10 @@ open import Data.Nat.Order
 open import Data.Dec.Base
 open import Data.Nat.Base
 open import Data.Sum
+```
+-->
 
+```agda
 module Data.Nat.Properties where
 ```
 

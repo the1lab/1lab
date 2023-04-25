@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Total.Op
@@ -8,7 +9,10 @@ import Cat.Displayed.Morphism.Duality
 import Cat.Displayed.Reasoning as DR
 import Cat.Displayed.Morphism
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Displayed.Cocartesian
   {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o′ ℓ′) where
 

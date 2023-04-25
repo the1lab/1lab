@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
@@ -5,7 +6,10 @@ open import Data.Nat.Solver
 open import Data.Dec
 open import Data.Nat
 open import Data.Sum
+```
+-->
 
+```agda
 module Data.Int where
 ```
 

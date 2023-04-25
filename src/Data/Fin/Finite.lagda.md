@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
@@ -10,7 +11,10 @@ open import Data.Nat
 open import Data.Sum
 
 open import Meta.Bind
+```
+-->
 
+```agda
 module Data.Fin.Finite where
 ```
 

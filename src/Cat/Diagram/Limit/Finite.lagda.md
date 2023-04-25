@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Diagram.Limit.Equaliser
@@ -17,7 +18,10 @@ open import Cat.Prelude
 open import Data.Bool
 
 import Cat.Reasoning as Cat
+```
+-->
 
+```agda
 module Cat.Diagram.Limit.Finite where
 ```
 
