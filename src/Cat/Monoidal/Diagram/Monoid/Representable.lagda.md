@@ -55,52 +55,54 @@ module _
 ```
 -->
 
-# Monoid Objects as Representable Presheaves
+# Externalising monoids as presheaves
 
-Let $\cC$ be a cartesian category, and let $(M,\eta,\mu)$ be an
-[internal monoid] in $\cC$. Our first observation is that the
-diagrammatic definition implies that every **generalised element** $X
-\to M$ is a $\Sets$-monoid, with the identity element given by
+Let $\cC$ be a Cartesian monoidal category, and consider a [monoid
+object] $(M, \eta, \mu)$ in it. Our first observation is that, despite
+the definition of monoid object only referring to (the monoidal
+structure on $\cC$) and the object $M$, each set of _generalised
+elements_ $X \to M$ also carries the structure of a monoid. The unit
+element is given by
 
 $$
 X \xto{!} 1 \xto{\eta} M\text{,}
 $$
 
-and the multiplication given by
+and the multiplication map is given by
 
 $$
 (X \times X) \xto{\langle f, g \rangle} (M \times M) \xto{\mu} M\text{.}
 $$
 
-[internal monoid]: Cat.Monoidal.Diagram.Monoid.html
+[monoid object]: Cat.Monoidal.Diagram.Monoid.html
 
 <!--
 ```agda
   private
-    C-monoid : Ob → Type ℓ
-    C-monoid m = Monoid-ob (Cartesian-monoidal prod term) m
+    C-Monoid : Ob → Type ℓ
+    C-Monoid m = Monoid-ob (Cartesian-monoidal prod term) m
 
-    C-monoid-hom : ∀ {m n} → Hom m n → C-monoid m → C-monoid n → Type ℓ
-    C-monoid-hom f m-mon n-mon =
+    C-Monoid-hom : ∀ {m n} → Hom m n → C-Monoid m → C-Monoid n → Type ℓ
+    C-Monoid-hom f m-mon n-mon =
       internal-monoid-hom (Cartesian-monoidal prod term) f m-mon n-mon
 ```
 -->
 
 ```agda
-  Mon→Hom-mon : ∀ {m} (x : Ob) → C-monoid m → Monoid-on (Hom x m)
+  Mon→Hom-mon : ∀ {m} (x : Ob) → C-Monoid m → Monoid-on (Hom x m)
   Mon→Hom-mon {m} x mon = hom-mon where
-
     has-semigroup : is-semigroup λ f g → mon .μ ∘ ⟨ f , g ⟩
-    has-semigroup .has-is-magma .has-is-set = Hom-set _ _
-    has-semigroup .associative {f} {g} {h} =
-      mon .μ ∘ ⟨ f , mon .μ ∘ ⟨ g , h ⟩ ⟩                                            ≡⟨ products! C prod ⟩
-      mon .μ ∘ (id ⊗₁ mon .μ) ∘ ⟨ f , ⟨ g , h ⟩ ⟩                                    ≡⟨ extendl (mon .μ-assoc) ⟩
-      mon .μ ∘ ((mon .μ ⊗₁ id) ∘ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩) ∘ ⟨ f , ⟨ g , h ⟩ ⟩ ≡⟨ products! C prod ⟩
-      mon .μ ∘ ⟨ mon .μ ∘ ⟨ f , g ⟩ , h ⟩                                            ∎
-
     hom-mon : Monoid-on (Hom x m)
+
     hom-mon .Monoid-on.identity = mon .η ∘ !
-    hom-mon .Monoid-on._⋆_ f g = mon .μ ∘ ⟨ f , g ⟩
+    hom-mon .Monoid-on._⋆_ f g  = mon .μ ∘ ⟨ f , g ⟩
+```
+
+<details>
+<summary>It's not very hard to show that the monoid laws from the
+diagram "relativize" to each $\hom$-set.</summary>
+
+```agda
     hom-mon .Monoid-on.has-is-monoid .has-is-semigroup = has-semigroup
     hom-mon .Monoid-on.has-is-monoid .mon-idl {f} =
       mon .μ ∘ ⟨ mon .η ∘ ! , f ⟩         ≡⟨ products! C prod ⟩
@@ -112,31 +114,95 @@ $$
       mon .μ ∘ (id ⊗₁ mon .η) ∘ ⟨ f , ! ⟩ ≡⟨ pulll (mon .μ-unitr) ⟩
       π₁ ∘ ⟨ f , ! ⟩                      ≡⟨ π₁∘⟨⟩ ⟩
       f                                   ∎
+
+    has-semigroup .has-is-magma .has-is-set = Hom-set _ _
+    has-semigroup .associative {f} {g} {h} =
+      mon .μ ∘ ⟨ f , mon .μ ∘ ⟨ g , h ⟩ ⟩                                            ≡⟨ products! C prod ⟩
+      mon .μ ∘ (id ⊗₁ mon .μ) ∘ ⟨ f , ⟨ g , h ⟩ ⟩                                    ≡⟨ extendl (mon .μ-assoc) ⟩
+      mon .μ ∘ ((mon .μ ⊗₁ id) ∘ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩) ∘ ⟨ f , ⟨ g , h ⟩ ⟩ ≡⟨ products! C prod ⟩
+      mon .μ ∘ ⟨ mon .μ ∘ ⟨ f , g ⟩ , h ⟩                                            ∎
 ```
 
-Note that precomposition by $f : x \to y$ also yields a
-monoid homomorphism between the monoids of generalized elements.
+</details>
+
+Thinking in terms of $M$'s _internal language_, where we think of the
+$\hom$-set $X \to M$ as being the set of "$M$-elements in context $X$",
+our observation means that $M$ is a monoid in _any_ context. Under this
+interpretation, pre-composition with a map $f : X \to Y$ corresponds to
+the _substitution_ operation, mapping terms from the context $Y$ to $X$.
+
+Following this line of thinking, the next thing to interrogate is
+whether the monoid operations on terms $Y \to M$ is preserved by
+substitution: is precomposition with $f$ a monoid homomorphism? The
+answer is yes!
 
 ```agda
   precompose-hom-mon-hom
-    : ∀ {x y m} {mon : C-monoid m}
+    : ∀ {x y m} {mon : C-Monoid m}
     → (f : Hom x y)
     → Monoid-hom (Mon→Hom-mon y mon) (Mon→Hom-mon x mon) (_∘ f)
   precompose-hom-mon-hom {mon = mon} f .pres-id =
     (mon .η ∘ !) ∘ f ≡⟨ pullr (sym (!-unique (! ∘ f))) ⟩
-    mon .η ∘ ! ∎
+    mon .η ∘ !       ∎
   precompose-hom-mon-hom {mon = mon} f .pres-⋆ g h =
     (mon .μ ∘ ⟨ g , h ⟩) ∘ f   ≡⟨ pullr (⟨⟩∘ f) ⟩
     mon .μ ∘ ⟨ g ∘ f , h ∘ f ⟩ ∎
 ```
 
-Furthermore, internal monoid homomorphisms $m \to n$ yield monoid
-homomorphisms between monoids of generalized elements.
+We've almost shown that a monoid object $M : \cC$ fits into a _presheaf
+of monoids_, a functor $\cC\op \to \thecat{Mon}$, mapping objects of
+$\cC$ to the monoid of generalised elements $X \to M$. All that remains
+is to show functoriality, which follows immediately:
+
+```agda
+  Mon→PshMon
+    : ∀ {m} → C-Monoid m
+    → Functor (C ^op) (Monoids ℓ)
+  Mon→PshMon {m} mon .F₀ x .fst = el! (Hom x m)
+  Mon→PshMon {m} mon .F₀ x .snd = Mon→Hom-mon x mon
+
+  Mon→PshMon {m} mon .F₁ f .hom       = _∘ f
+  Mon→PshMon {m} mon .F₁ f .preserves = precompose-hom-mon-hom {mon = mon} f
+
+  Mon→PshMon {m} mon .F-id    = Homomorphism-path idr
+  Mon→PshMon {m} mon .F-∘ f g = Homomorphism-path λ h → assoc h g f
+```
+
+And, since this presheaf is _by definition_ given by the set of maps
+into an object, it's representable!
+
+```agda
+  Mon→PshMon-rep
+    : ∀ {m} → (mon : C-Monoid m)
+    → Representation {C = C} (Forget F∘ Mon→PshMon mon)
+  Mon→PshMon-rep {m = m} mon .rep = m
+  Mon→PshMon-rep {m = m} mon .represents = to-natural-iso ni where
+    open make-natural-iso
+
+    ni : make-natural-iso (Forget F∘ Mon→PshMon mon) (Hom-into C m)
+    ni .eta _ f   = f
+    ni .inv _ f   = f
+    ni .eta∘inv _ = refl
+    ni .inv∘eta _ = refl
+    ni .natural _ _ _ = refl
+```
+
+Now, suppose we have a pair of monoid objects, $M$ and $N$, together
+with a homomorphism $f : M \to N$. We can now consider the
+*post*composition with $f$, a function of sets which maps between the
+relativizations of $M$ and $N$ to arbitrary contexts: it has type
+$$
+\hom(X, M) \to \hom(X, N)\text{.}
+$$
+Since we've equipped these sets with monoid structures using the
+internal structures on $M$ and $N$, and $f$ is a homomorphism between
+those, we would like for postcomposition with $f$ to _also_ be a monoid
+homomorphism.... which it is!
 
 ```agda
   internal-mon-hom→hom-mon-hom
-    : ∀ {x m n} {f : Hom m n} {m-mon : C-monoid m} {n-mon : C-monoid n}
-    → C-monoid-hom f m-mon n-mon
+    : ∀ {x m n} {f : Hom m n} {m-mon : C-Monoid m} {n-mon : C-Monoid n}
+    → C-Monoid-hom f m-mon n-mon
     → Monoid-hom (Mon→Hom-mon x m-mon) (Mon→Hom-mon x n-mon) (f ∘_)
   internal-mon-hom→hom-mon-hom {f = f} {m-mon} {n-mon} hom .pres-id =
     f ∘ m-mon .η ∘ ! ≡⟨ pulll (hom .pres-η) ⟩
@@ -147,43 +213,21 @@ homomorphisms between monoids of generalized elements.
     n-mon .μ ∘ ⟨ f ∘ g , f ∘ h ⟩   ∎
 ```
 
-The latter fact means that we can extend this construction to a
-presheaf of monoids.
+To recap, these are the facts:
 
-```agda
-  Mon→PshMon
-    : ∀ {m} → C-monoid m
-    → Functor (C ^op) (Monoids ℓ)
-  Mon→PshMon {m} mon .F₀ x .fst = el! (Hom x m)
-  Mon→PshMon {m} mon .F₀ x .snd = Mon→Hom-mon x mon
-  Mon→PshMon {m} mon .F₁ f .hom = _∘ f
-  Mon→PshMon {m} mon .F₁ f .preserves = precompose-hom-mon-hom {mon = mon} f
-  Mon→PshMon {m} mon .F-id = Homomorphism-path idr
-  Mon→PshMon {m} mon .F-∘ f g = Homomorphism-path λ h → assoc h g f
-```
+- A monoid object $M$ _externalises_ to a family of $\Sets$-monoids
+$\hom(X, M)$, where $X : \cC$ is an arbitrary object we affectionately
+refer to as the "context".
 
-By definition, the constructed presheaf is representable.
+- Maps $f : X \to Y$ act by precomposition, which, extending the
+analogy, corresponds to _substitution_. Substitution along arbitrary
+maps is a monoid homomorphism, so $\yo(M)$ extends to a functor $\cC\op
+\to \thecat{Mon}$, a **representable presheaf of monoids**;
 
-```agda
-  Mon→PshMon-rep
-    : ∀ {m} → (mon : C-monoid m)
-    → Representation {C = C} (Forget F∘ Mon→PshMon mon)
-  Mon→PshMon-rep {m = m} mon .rep = m
-  Mon→PshMon-rep {m = m} mon .represents = to-natural-iso ni where
-    open make-natural-iso
+- Monoid homomorphisms $f : M \to N$, when acting by postcomposition,
+externalise to $\Sets$-monoid homomorphisms $\hom(X, M) \to \hom(X, N)$.
 
-    ni : make-natural-iso (Forget F∘ Mon→PshMon mon) (Hom-into C m)
-    ni .eta _ f = f
-    ni .inv _ f = f
-    ni .eta∘inv _ = refl
-    ni .inv∘eta _ = refl
-    ni .natural _ _ _ = refl
-```
-
-We can extend this correspondence to a functor from the category of
-monoid objects in $\cC$ to the category of representable presheaves
-of monoids on $\cC$.
-
+<!--
 ```agda
   private
     Mon[C] : Precategory (o ⊔ ℓ) (ℓ ⊔ ℓ)
@@ -194,28 +238,49 @@ of monoids on $\cC$.
 
   RepPShMon : Precategory (o ⊔ lsuc ℓ) (o ⊔ ℓ)
   RepPShMon = Restrict {C = PShMon ℓ} (λ P → Representation {C = C} (Forget F∘ P))
+```
+-->
 
+To make this correspondence formal, we'll define the category of
+**representable presheaves of monoids** to be the full subcategory of
+$\cC\op \to \thecat{Mon}$ on the representable objects; for now, it will
+be denoted $\psh(\cC)_M$ --- a notation for which the author apologises.
+As usual, $\thecat{Mon}_\cC$ will denote the category of monoid objects
+on $\cC$.
+
+We have described most of a functor $\thecat{Mon}_\cC \to \psh(\cC)_M$.
+It only remains to verify that the action by postcomposition of a monoid
+homomorphism $f : M \to N$ is a natural transformation $\hom(-, M) \to
+\hom(-, N)$.
+
+```agda
   Mon→RepPShMon : Functor Mon[C] RepPShMon
-  Mon→RepPShMon .F₀ (m , mon) .object = Mon→PshMon mon
+  Mon→RepPShMon .F₀ (m , mon) .object  = Mon→PshMon mon
   Mon→RepPShMon .F₀ (m , mon) .witness = Mon→PshMon-rep mon
+
   Mon→RepPShMon .F₁ f .η x .hom = f .hom ∘_
   Mon→RepPShMon .F₁ f .η x .preserves =
     internal-mon-hom→hom-mon-hom (f .preserves)
   Mon→RepPShMon .F₁ f .is-natural x y g =
     Homomorphism-path λ h → assoc (f .hom) h g
+
   Mon→RepPShMon .F-id = Nat-path λ x → Homomorphism-path λ f → idl f
   Mon→RepPShMon .F-∘ f g = Nat-path λ x → Homomorphism-path λ h →
     sym (assoc (f .hom) (g .hom) h)
 ```
 
-We can prove that this functor is fully faithful by using a Yoneda-style
-argument.
+This functor is a simultaneous restriction and corestriction of the
+Yoneda embedding on $\cC$. After calculating that natural
+transformations between representable presheaves of monoids determine
+monoid homomorphisms^[Evaluating their components at the identity
+morphism, as usual!], the usual argument will suffice to show that this
+functor is also fully faithful.
 
 ```agda
   Nat→internal-mon-hom
-    : ∀ {m n} {m-mon : C-monoid m} {n-mon : C-monoid n}
+    : ∀ {m n} {m-mon : C-Monoid m} {n-mon : C-Monoid n}
     → (α : Mon→PshMon m-mon => Mon→PshMon n-mon)
-    → C-monoid-hom (α .η m .hom id) m-mon n-mon
+    → C-Monoid-hom (α .η m .hom id) m-mon n-mon
   Nat→internal-mon-hom {m} {n} {m-mon} {n-mon} α .pres-η =
     (α .η m .hom id) ∘ (m-mon .η) ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
     α .η top .hom (id ∘ m-mon .η) ≡⟨ ap (α .η _ .hom) (id-comm-sym ∙ ap (m-mon .η ∘_) (sym (!-unique _))) ⟩
@@ -230,45 +295,49 @@ argument.
     n-mon .μ ∘ ⟨ α .η _ .hom (id ∘ π₁) , α .η _ .hom (id ∘ π₂) ⟩ ≡⟨ ap (n-mon .μ ∘_) (ap₂ ⟨_,_⟩ (ap hom (α .is-natural _ _ _) $ₚ _) (ap hom (α .is-natural _ _ _) $ₚ _)) ⟩
     n-mon .μ ∘ (α .η m .hom id ⊗₁ α .η m .hom id)                ∎
 
+  open is-iso
+
   Mon→RepPShMon-is-ff : is-fully-faithful Mon→RepPShMon
-  Mon→RepPShMon-is-ff =
-    is-iso→is-equiv $ iso
-      (λ α → total-hom (α .η _ .hom id) (Nat→internal-mon-hom α))
-      (λ α → Nat-path λ _ → total-hom-path _
-        (funext λ f →
-          sym (ap hom (α .is-natural _ _ _) $ₚ _)
-          ∙ ap (α .η _ .hom) (idl _))
-        (is-prop→pathp (λ _ → hlevel 1) _ _))
-      (λ α → total-hom-path _
-        (idr _)
-        (is-prop→pathp (λ _ → is-monoid-hom-is-prop _) _ _))
+  Mon→RepPShMon-is-ff = is-iso→is-equiv λ where
+    .inv α .hom       → α .η _ .hom id
+    .inv α .preserves → Nat→internal-mon-hom α
+    .rinv α → Nat-path λ _ → Homomorphism-path λ f →
+      α .η _ .hom id ∘ f   ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
+      α .η _ .hom (id ∘ f) ≡⟨ ap (α .η _ .hom) (idl f) ⟩
+      α .η _ .hom f        ∎
+    .linv h → total-hom-path _
+      (idr _)
+      (is-prop→pathp (λ _ → is-monoid-hom-is-prop _) _ _)
 ```
 
 
-## Monoid Objects from Representable Presheaves
+# Internalizing presheaves of monoids
 
 Intuitively, what we have just shown is that monoids internal to $\cC$
-yield monoids in the internal language of $\cC$; in fact, we have a
-monoid in every single possible context $X$! However, the converse of
-this is also true: if $M$ is a monoid in every single context $X$ in the
-internal language of $\cC$, then $M$ is a monoid object, provided that
-$M$ is *naturally* a monoid in every context $X$. From a type theoretic
-point of view, this is akin to asking that the monoid structure be
-invariant under substitution.
+yield monoids in the internal language of $\cC$ --- giving monoids in
+_arbitrary_ contexts, in a manner compatible with substitution. We will
+now establish the converse: If $\hom(-, M)$ is always a monoid, then $M$
+is a monoid object, as long as the monoid structures are stable under
+substitution --- dropping the analogy, as long as the monoid structure
+is natural.
 
+<!--
 ```agda
   module _ {m : Ob} (mon : ∀ x → Monoid-on (Hom x m)) where
     private module mon {x} = Monoid-on (mon x)
     open mon using (identity; _⋆_)
+```
+-->
 
+```agda
     Hom-mon→Mon
-      : (∀ {x y} → (f : Hom x y) → identity ∘ f ≡ identity)
-      → (∀ {x y} → (f g : Hom y m) → (h : Hom x y) → (f ⋆ g) ∘ h ≡ f ∘ h ⋆ g ∘ h)
-      → C-monoid m
+      : (∀ {x y} (f : Hom x y) → identity ∘ f ≡ identity)
+      → (∀ {x y} (f g : Hom y m) (h : Hom x y) → (f ⋆ g) ∘ h ≡ f ∘ h ⋆ g ∘ h)
+      → C-Monoid m
 ```
 
 The monoid operations are defined in the smallest context possible. For
-identity this is the empty context (IE: the terminal object), for
+identity this is the empty context^[The terminal object.], for
 multiplication, this is the context $M \times M$.
 
 ```agda
@@ -276,8 +345,8 @@ multiplication, this is the context $M \times M$.
     Hom-mon→Mon id-nat ⋆-nat .μ = π₁ ⋆ π₂
 ```
 
-The laws follow directly from the fact that $\cC(X, M)$ is naturally a
-monoid.
+To establish the monoid laws, we'll use the naturality conditions we
+imposed on the monoids $\hom(-, M)$.
 
 ```agda
     Hom-mon→Mon id-nat ⋆-nat .μ-unitl =
@@ -286,12 +355,14 @@ monoid.
       (identity ∘ π₁) ⋆ (id ∘ π₂)                     ≡⟨ ap₂ _⋆_ (id-nat _) (idl _) ⟩
       identity ⋆ π₂                                   ≡⟨ mon.idl ⟩
       π₂                                              ∎
+
     Hom-mon→Mon id-nat ⋆-nat .μ-unitr =
       (π₁ ⋆ π₂) ∘ (id ⊗₁ identity)                  ≡⟨ ⋆-nat _ _ _ ⟩
       (π₁ ∘ id ⊗₁ identity) ⋆ (π₂ ∘ id ⊗₁ identity) ≡⟨ ap₂ _⋆_ π₁∘⟨⟩ π₂∘⟨⟩ ⟩
       (id ∘ π₁) ⋆ (identity ∘ π₂)                   ≡⟨ ap₂ _⋆_ (idl _) (id-nat _) ⟩
       π₁ ⋆ identity                                 ≡⟨ mon.idr ⟩
       π₁                                            ∎
+
     Hom-mon→Mon id-nat ⋆-nat .μ-assoc =
       (π₁ ⋆ π₂) ∘ (id ⊗₁ (π₁ ⋆ π₂))                                  ≡⟨ ⋆-nat _ _ _ ⟩
       (π₁ ∘ id ⊗₁ (π₁ ⋆ π₂)) ⋆ (π₂ ∘ id ⊗₁ (π₁ ⋆ π₂))                ≡⟨ ap₂ _⋆_ π₁∘⟨⟩ π₂∘⟨⟩ ⟩
@@ -304,25 +375,22 @@ monoid.
       (π₁ ⋆ π₂) ∘ ((π₁ ⋆ π₂) ⊗₁ id) ∘ ⟨ ⟨ π₁ , π₁ ∘ π₂ ⟩ , π₂ ∘ π₂ ⟩ ∎
 ```
 
-We can use the previous fact to show that every representable presheaf
-of monoids yields an internal monoid in $\cC$ on the representing object
-of the presheaf.
-
+We will use this construction to construct the inverse of our
+externalisation functor. If we have a representable presheaf of monoids
+$P$, then, by definition, we have substitution-stable monoid structures
+on $P(-)$, and natural isomorphisms $P(-) \cong \hom(-, M)$, for some
+object $M : \cC$.
 
 ```agda
   RepPshMon→Mon
     : ∀ (P : Functor (C ^op) (Monoids ℓ))
     → (P-rep : Representation {C = C} (Forget F∘ P))
-    → C-monoid (P-rep .rep)
+    → C-Monoid (P-rep .rep)
   RepPshMon→Mon P P-rep = Hom-mon→Mon hom-mon η*-nat μ*-nat
     module RepPshMon→Mon where
 ```
 
-Before proceeding with the construction, we shall investigate the
-representability condition further. Note that the natural isomorphism
-is an isomorphism between generalized elements of the representing object
-of $P$ and sections of $P$.
-
+<!--
 ```agda
     m : Ob
     m = P-rep .rep
@@ -341,10 +409,13 @@ of $P$ and sections of $P$.
     elt : ∀ {x} → Hom x m → PMon x
     elt {x} f = repr.from .η x f
 ```
+-->
 
-This isomorphism allows us to transfer the monoid structure on each
-$P(x)$ to monoid structure on generalized elements of the representing
-object.
+As noted, the representability condition means we have specified
+isomorphisms between the sets $P(x)$ --- the _sections_ of $P$ --- and
+generalised objects $x \to M$, where $M$ is the representing object. It
+follows, _even if this isomorphism is not natural_, that we can transfer
+the monoid structure $P(x)$ to a monoid structure on $x \to M$.
 
 ```agda
     η* : ∀ x → Hom x m
@@ -352,7 +423,12 @@ object.
 
     μ* : ∀ {x} → Hom x m → Hom x m → Hom x m
     μ* {x = x} f g = gen $ (elt f) ⋆ (elt g)
+```
 
+<details>
+<summary>There is no surprise to the calculation establishing the monoid laws, here.</summary>
+
+```agda
     η*-idl : ∀ {x} → (f : Hom x m) → μ* (η* x) f ≡ f
     η*-idl {x} f =
       gen (⌜ elt (gen identity) ⌝ ⋆ elt f) ≡⟨ ap! (repr.invr ηₚ _ $ₚ _) ⟩
@@ -374,6 +450,7 @@ object.
       gen (⌜ elt f ⋆ elt g ⌝ ⋆ elt h)             ≡⟨ ap! (sym $ repr.invr ηₚ _ $ₚ _) ⟩
       gen (elt (gen (elt f ⋆ elt g)) ⋆ elt h)     ∎
 ```
+</details>
 
 <!--
 ```agda
@@ -388,7 +465,10 @@ object.
 ```
 -->
 
-Naturality follows from naturality, as one would hope!
+It remains to show that this assignment is natural --- which is why we
+asked for a _natural_ isomorphism! A calculation mildly annoying
+establishes the stability of identity and multiplication under
+substitution.
 
 ```agda
     η*-nat
@@ -409,50 +489,65 @@ Naturality follows from naturality, as one would hope!
       μ* (f ∘ h) (g ∘ h) ∎
 ```
 
-This implies that the functor from internal monoids to representable
-presheaves of monoids is [split eso], and thus an equivalence.
-
-[split esp]: Cat.Functor.Base.html#essential-fibres
+We now have a construction mapping representable presheaves to monoid
+objects. The last bit of algebra in this module establishes that
+internalisation followed by externalisation produces a presheaf of
+monoids isomorphic to the one we started with.
 
 ```agda
   Mon→RepPShMon-is-split-eso : is-split-eso Mon→RepPShMon
   Mon→RepPShMon-is-split-eso P .fst =
     P .witness .rep , RepPshMon→Mon (P .object) (P .witness)
-  Mon→RepPShMon-is-split-eso P .snd =
-    super-iso→sub-iso _ (to-natural-iso ni)
-    where
-      open make-natural-iso
-      open RepPshMon→Mon (P .object) (P .witness)
-      open PMon using (identity; _⋆_)
-      module P = Functor (P .object)
+  Mon→RepPShMon-is-split-eso P .snd = super-iso→sub-iso _ $ to-natural-iso ni where
+    open make-natural-iso
+    open RepPshMon→Mon (P .object) (P .witness)
+    open PMon using (identity; _⋆_)
+    module P = Functor (P .object)
+```
 
-      ni : make-natural-iso (Mon→PshMon (RepPshMon→Mon (P .object) (P .witness))) (P .object)
-      ni .eta x .hom = repr.from .η x
-      ni .eta x .preserves .pres-id =
-        elt (η* top ∘ !)           ≡⟨ ap elt (η*-nat !) ⟩
-        elt (η* x)                 ≡⟨ repr.invr ηₚ _ $ₚ _ ⟩
-        identity                   ∎
-      ni .eta x .preserves .pres-⋆ f g =
-        elt (μ* π₁ π₂ ∘ ⟨ f , g ⟩)                 ≡⟨ ap elt (μ*-nat _ _ _) ⟩
-        elt (μ* (π₁ ∘ ⟨ f , g ⟩) (π₂ ∘ ⟨ f , g ⟩)) ≡⟨ ap elt (ap₂ μ* π₁∘⟨⟩ π₂∘⟨⟩) ⟩
-        elt (μ* f g)                               ≡⟨ repr.invr ηₚ _ $ₚ _ ⟩
-        (elt f ⋆ elt g) ∎
-      ni .inv x .hom = repr.to .η x
-      ni .inv x .preserves .pres-id = sym (η*-nat _)
-      ni .inv x .preserves .pres-⋆ f g =
-        gen (f ⋆ g)                                          ≡˘⟨ ap gen (ap₂ _⋆_ (repr.invr ηₚ _ $ₚ _) (repr.invr ηₚ _ $ₚ _)) ⟩
-        μ* (gen f) (gen g)                                   ≡˘⟨ ap₂ μ* π₁∘⟨⟩ π₂∘⟨⟩ ⟩
-        μ* (π₁ ∘ ⟨ gen f , gen g ⟩) (π₂ ∘ ⟨ gen f , gen g ⟩) ≡˘⟨ μ*-nat _ _ _ ⟩
-        μ* π₁ π₂ ∘ ⟨ gen f , gen g ⟩                         ∎
-      ni .eta∘inv x = Homomorphism-path (repr.invr ηₚ x $ₚ_)
-      ni .inv∘eta x = Homomorphism-path (repr.invl ηₚ x $ₚ_)
-      ni .natural x y f = Homomorphism-path (sym (repr.from .is-natural _ _ _) $ₚ_)
+<details>
+<summary>If you still have the patience for some more algebra, you can
+expand this `<details>` element.</summary>
 
+```agda
+    ni : make-natural-iso (Mon→PshMon (RepPshMon→Mon (P .object) (P .witness))) (P .object)
+    ni .eta x .hom = repr.from .η x
+    ni .inv x .hom = repr.to .η x
+
+    ni .eta x .preserves .pres-id =
+      elt (η* top ∘ !)           ≡⟨ ap elt (η*-nat !) ⟩
+      elt (η* x)                 ≡⟨ repr.invr ηₚ _ $ₚ _ ⟩
+      identity                   ∎
+    ni .eta x .preserves .pres-⋆ f g =
+      elt (μ* π₁ π₂ ∘ ⟨ f , g ⟩)                 ≡⟨ ap elt (μ*-nat _ _ _) ⟩
+      elt (μ* (π₁ ∘ ⟨ f , g ⟩) (π₂ ∘ ⟨ f , g ⟩)) ≡⟨ ap elt (ap₂ μ* π₁∘⟨⟩ π₂∘⟨⟩) ⟩
+      elt (μ* f g)                               ≡⟨ repr.invr ηₚ _ $ₚ _ ⟩
+      (elt f ⋆ elt g)                            ∎
+
+    ni .inv x .preserves .pres-id = sym (η*-nat _)
+    ni .inv x .preserves .pres-⋆ f g =
+      gen (f ⋆ g)                                          ≡˘⟨ ap gen (ap₂ _⋆_ (repr.invr ηₚ _ $ₚ _) (repr.invr ηₚ _ $ₚ _)) ⟩
+      μ* (gen f) (gen g)                                   ≡˘⟨ ap₂ μ* π₁∘⟨⟩ π₂∘⟨⟩ ⟩
+      μ* (π₁ ∘ ⟨ gen f , gen g ⟩) (π₂ ∘ ⟨ gen f , gen g ⟩) ≡˘⟨ μ*-nat _ _ _ ⟩
+      μ* π₁ π₂ ∘ ⟨ gen f , gen g ⟩                         ∎
+
+    ni .eta∘inv x = Homomorphism-path (repr.invr ηₚ x $ₚ_)
+    ni .inv∘eta x = Homomorphism-path (repr.invl ηₚ x $ₚ_)
+    ni .natural x y f = Homomorphism-path (sym (repr.from .is-natural _ _ _) $ₚ_)
+```
+</details>
+
+Put another way, our functor $\thecat{Mon}_\cC \to \psh(\cC)_M$ is a
+[split essential surjection] --- so, remembering that it was fully
+faithful, we conclude it's an equivalence.
+
+[split essential surjection]: Cat.Functor.Base.html#essential-fibres
+
+```agda
   Mon→RepPShMon-is-equiv : is-equivalence Mon→RepPShMon
-  Mon→RepPShMon-is-equiv =
-    ff+split-eso→is-equivalence
-      Mon→RepPShMon-is-ff
-      Mon→RepPShMon-is-split-eso
+  Mon→RepPShMon-is-equiv = ff+split-eso→is-equivalence
+    Mon→RepPShMon-is-ff
+    Mon→RepPShMon-is-split-eso
 ```
 
 ## The big picture
