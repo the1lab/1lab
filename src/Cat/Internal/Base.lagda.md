@@ -1,7 +1,6 @@
 <!--
 ```agda
-open import Cat.Instances.StrictCat
-open import Cat.Instances.Sets
+open import Cat.Diagram.Pullback
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -167,7 +166,9 @@ $$
 ```
 -->
 
-We also have an action of substitution on internal morphisms.
+We also must define the action of substitutions $\Delta \to \Gamma$ on
+internal morphisms. In the external view of $\cC$, substitutions are
+morphisms $\cC(\Gamma, \Delta)$, and act via precomposition.
 
 ```agda
   _[_] : ∀ {C₀ C₁ Γ Δ} {src tgt : Hom C₁ C₀} {x y : Hom Δ C₀}
@@ -211,7 +212,9 @@ The equations are *much* easier to state in this form.
              → f ∘i (g ∘i h) ≡ ((f ∘i g) ∘i h)
 ```
 
-However, we do need to add naturality conditions.
+However, we do need to add naturality conditions; from the perspective
+of the internal language, this requires that the category structure on
+$(C_0, C_1)$ be stable under substitution.
 
 ```agda
       idi-nat : ∀ {Γ Δ} {x : Hom Δ C₀}
@@ -233,4 +236,116 @@ We also provide a bundled definition.
       has-internal-cat : Internal-cat-on src tgt
 
     open Internal-cat-on has-internal-cat public
+
+    Homi : ∀ {Γ} (x y : Hom Γ C₀) → Type ℓ
+    Homi x y = Internal-hom src tgt x y
+```
+
+### Where did the pullbacks go?
+
+Note that the above definition doesn't reference pullbacks at all! This
+may seem somewhat alarming: how on earth is our definition the same
+as the traditional one? The catch is that $\cC$ must have pullbacks for
+us to actually internalize the external category structure. To start,
+we note that internalizing the identity morphism can be done by looking
+instantiating `idi`{.Agda} to the identity morphism.
+
+```agda
+  private module _ (pbs : has-pullbacks C) (ℂ : Internal-cat) where
+    open Internal-cat ℂ
+    open Pullbacks C pbs
+    open pullback
+
+    internal-id : Hom C₀ C₁
+    internal-id = idi id .ihom
+```
+
+Composition is where the pullbacks are required. First, we define
+$C_2$ to be the pullback mentioned above, where the source and target
+must agree. We can then internalize the composition operation by using
+the first and second projections of the pullback.
+
+```agda
+    C₂ : Ob
+    C₂ = Pb src tgt
+
+    internal-comp : Hom C₂ C₁
+    internal-comp = (f ∘i g) .ihom
+      where
+        f : Homi (src ∘ p₁ src tgt) (tgt ∘ p₁ src tgt)
+        f .ihom = p₁ src tgt
+        f .has-src = refl
+        f .has-tgt = refl
+
+        g : Homi (src ∘ p₂ src tgt) (src ∘ p₁ src tgt)
+        g .ihom = p₂ src tgt
+        g .has-src = refl
+        g .has-tgt = sym $ square src tgt
+```
+
+
+## Internal Functors
+
+Let $\ica{C}, \ica{D}$ be internal categories. An *internal functor*
+$\ica{C} \to \ica{D}$ consists of an internal mapping of objects,
+along with an internal mapping of internal morphisms.
+
+```agda
+  record Internal-functor (ℂ 𝔻 : Internal-cat) : Type (o ⊔ ℓ) where
+    no-eta-equality
+    private
+      module ℂ = Internal-cat ℂ
+      module 𝔻 = Internal-cat 𝔻
+    field
+      Fi₀ : ∀ {Γ} → Hom Γ ℂ.C₀ → Hom Γ 𝔻.C₀
+      Fi₁ : ∀ {Γ} {x y : Hom Γ ℂ.C₀} → ℂ.Homi x y → 𝔻.Homi (Fi₀ x) (Fi₀ y)
+```
+
+These mappings must satisfy internal versions of the functoriality
+conditions.
+
+```agda
+      Fi-id : ∀ {Γ} {x : Hom Γ ℂ.C₀} → Fi₁ (ℂ.idi x) ≡ 𝔻.idi (Fi₀ x)
+      Fi-∘  : ∀ {Γ} {x y z : Hom Γ ℂ.C₀}
+            → (f : ℂ.Homi y z) (g : ℂ.Homi x y)
+            → Fi₁ (f ℂ.∘i g) ≡ Fi₁ f 𝔻.∘i Fi₁ g
+```
+
+We also need naturality conditions.
+
+```agda
+      Fi₀-nat : ∀ {Γ Δ} {x : Hom Δ ℂ.C₀}
+              → (σ : Hom Γ Δ)
+              → Fi₀ x ∘ σ ≡ Fi₀ (x ∘ σ)
+      Fi₁-nat : ∀ {Γ Δ} {x y : Hom Δ ℂ.C₀}
+              → (f : ℂ.Homi x y)
+              → (σ : Hom Γ Δ)
+              → Fi₁ f .ihom ∘ σ ≡ Fi₁ (f [ σ ]) .ihom
+```
+
+## Internal natural transformations
+
+Internal natural transformations follow the same pattern: we replace
+objects with generalized objects, homs with internal homs, and tack
+on naturality conditions to ensure that the operations are stable under
+substitution.
+
+```agda
+  open Internal-functor
+
+  record _=>i_
+    {ℂ 𝔻 : Internal-cat}
+    (F G : Internal-functor ℂ 𝔻)
+    : Type (o ⊔ ℓ) where
+    no-eta-equality
+    private
+      module ℂ = Internal-cat ℂ
+      module 𝔻 = Internal-cat 𝔻
+    field
+      ηi : ∀ {Γ} (x : Hom Γ ℂ.C₀) → 𝔻.Homi (F .Fi₀ x) (G .Fi₀ x)
+      is-naturali : ∀ {Γ} (x y : Hom Γ ℂ.C₀) (f : ℂ.Homi x y)
+                  → ηi y 𝔻.∘i F .Fi₁ f ≡ G .Fi₁ f 𝔻.∘i ηi x
+      ηi-nat : ∀ {Γ Δ} {x : Hom Δ ℂ.C₀}
+             → (σ : Hom Γ Δ)
+             → ηi x .ihom ∘ σ ≡ ηi (x ∘ σ) .ihom
 ```
