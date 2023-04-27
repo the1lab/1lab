@@ -125,6 +125,7 @@ record Internal-hom
   {C₀ C₁ Γ : Ob}
   (src tgt : Hom C₁ C₀) (x y : Hom Γ C₀)
   : Type ℓ where
+  no-eta-equality
   field
     ihom : Hom Γ C₁
     has-src : src ∘ ihom ≡ x
@@ -162,6 +163,19 @@ Internal-hom-path {src = src} {f = f} {g = g} p i .has-src =
   is-prop→pathp (λ i → Hom-set _ _ (src ∘ p i) _) (f .has-src) (g .has-src) i
 Internal-hom-path {tgt = tgt} {f = f} {g = g} p i .has-tgt =
   is-prop→pathp (λ i → Hom-set _ _ (tgt ∘ p i) _) (f .has-tgt) (g .has-tgt) i
+
+private unquoteDecl eqv = declare-record-iso eqv (quote Internal-hom)
+
+Internal-hom-set 
+  : ∀ {Γ C₀ C₁} {src tgt : Hom C₁ C₀} {x y : Hom Γ C₀}
+  → is-set (Internal-hom src tgt x y)
+Internal-hom-set = Iso→is-hlevel 2 eqv hlevel!
+
+instance
+  H-Level-Internal-hom
+    : ∀ {Γ C₀ C₁} {src tgt : Hom C₁ C₀} {x y : Hom Γ C₀} {n}
+    → H-Level (Internal-hom src tgt x y) (2 + n)
+  H-Level-Internal-hom = basic-instance 2 Internal-hom-set
 ```
 -->
 
