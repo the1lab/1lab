@@ -153,16 +153,24 @@ $$
 
 <!--
 ```agda
+Internal-hom-pathp
+  : ∀ {C₀ C₁ Γ} {src tgt : Hom C₁ C₀} {x x′ y y′ : Hom Γ C₀}
+  → {f : Internal-hom src tgt x y} {g : Internal-hom src tgt x′ y′}
+  → (p : x ≡ x′) (q : y ≡ y′)
+  → f .ihom ≡ g .ihom
+  → PathP (λ i → Internal-hom src tgt (p i) (q i)) f g
+Internal-hom-pathp p q r i .ihom = r i
+Internal-hom-pathp {src = src} {f = f} {g = g} p q r i .has-src =
+  is-prop→pathp (λ i → Hom-set _ _ (src ∘ r i) (p i)) (f .has-src) (g .has-src) i
+Internal-hom-pathp {tgt = tgt} {f = f} {g = g} p q r i .has-tgt =
+  is-prop→pathp (λ i → Hom-set _ _ (tgt ∘ r i) (q i)) (f .has-tgt) (g .has-tgt) i
+
 Internal-hom-path
   : ∀ {C₀ C₁ Γ} {src tgt : Hom C₁ C₀} {x y : Hom Γ C₀}
   → {f g : Internal-hom src tgt x y}
   → f .ihom ≡ g .ihom
   → f ≡ g
-Internal-hom-path p i .ihom = p i
-Internal-hom-path {src = src} {f = f} {g = g} p i .has-src =
-  is-prop→pathp (λ i → Hom-set _ _ (src ∘ p i) _) (f .has-src) (g .has-src) i
-Internal-hom-path {tgt = tgt} {f = f} {g = g} p i .has-tgt =
-  is-prop→pathp (λ i → Hom-set _ _ (tgt ∘ p i) _) (f .has-tgt) (g .has-tgt) i
+Internal-hom-path p = Internal-hom-pathp refl refl p
 
 private unquoteDecl eqv = declare-record-iso eqv (quote Internal-hom)
 
@@ -432,6 +440,8 @@ module _ {ℂ 𝔻 𝔼 : Internal-cat} where
   (F Fi∘ G) .Fi₀-nat x σ = F .Fi₀-nat (G .Fi₀ x) σ ∙ ap (F .Fi₀) (G .Fi₀-nat x σ)
   (F Fi∘ G) .Fi₁-nat f σ =
     F .Fi₁-nat (G .Fi₁ f) σ 𝔼.∙i (λ i → F .Fi₁ (G .Fi₁-nat f σ i))
+
+  infixr 30 _Fi∘_
 ```
 
 There is also an internal version of the identity functor.
@@ -471,6 +481,7 @@ record _=>i_
            → PathP (λ i → 𝔻.Homi (F .Fi₀-nat x σ i) (G .Fi₀-nat x σ i))
                (ηi x [ σ ]) (ηi (x ∘ σ))
 
+infix 20 _=>i_
 open _=>i_
 ```
 

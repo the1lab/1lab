@@ -95,6 +95,9 @@ module _ (p : f ∘i h ≡ g ∘i i) where abstract
     sym (associ _ _ _)
     ·· ap (a ∘i_) p
     ·· associ _ _ _
+
+  extend-inneri : a ∘i f ∘i h ∘i b ≡ a ∘i g ∘i i ∘i b
+  extend-inneri {a = a} = ap (a ∘i_) extendli
 ```
 
 ## Cancellation
