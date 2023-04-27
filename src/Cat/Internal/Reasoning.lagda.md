@@ -39,18 +39,6 @@ private variable
 ```
 -->
 
-```agda
-casti : {x x' y y' : Hom Γ C₀} {f : Homi x y} {g : Homi x' y'}
-      → {p p' : x ≡ x'} {q q' : y ≡ y'}
-      → PathP (λ i → Homi (p i) (q i)) f g
-      → PathP (λ i → Homi (p' i) (q' i)) f g
-casti {Γ = Γ} {x} {x'} {y} {y'} {f} {g} {p} {p'} {q} {q'} r =
-  transport (λ i →
-    PathP
-      (λ j → Homi (Hom-set Γ C₀ x x' p p' i j) ( Hom-set Γ C₀ y y' q q' i j))
-      f g) r
-```
-
 ## Identity Morphisms
 
 ```agda
@@ -132,33 +120,3 @@ module _ (inv : h ∘i i ≡ idi _) where
   deleteri = pullri cancelri
 ```
 
-# Equational Reasoning
-
-```agda
-_∙i_
-  : ∀ {x x′ x″ y y′ y″ : Hom Γ C₀}
-  → {f : Homi x y} {g : Homi x′ y′} {h : Homi x″ y″}
-  → {p : x ≡ x′} {q : y ≡ y′} {p′ : x′ ≡ x″} {q′ : y′ ≡ y″}
-  → PathP (λ i → Homi (p i) (q i)) f g
-  → PathP (λ i → Homi (p′ i) (q′ i)) g h
-  → PathP (λ i → Homi ((p ∙ p′) i) ((q ∙ q′) i)) f h
-_∙i_ {x = x} {x′} {x″} {y} {y′} {y″} {f} {g} {h} {p} {q} {p′} {q′} r r′ i =
-  comp (λ j → Homi (∙-filler p p′ j i) (∙-filler q q′ j i)) (∂ i) λ where
-    j (i = i0) → f
-    j (i = i1) → r′ j
-    j (j = i0) → r i
-
-≡i⟨⟩-syntax
-  : ∀ {x x′ x″ y y′ y″ : Hom Γ C₀}
-  → (f : Homi x y) {g : Homi x′ y′} {h : Homi x″ y″}
-  → {p : x ≡ x′} {q : y ≡ y′} {p′ : x′ ≡ x″} {q′ : y′ ≡ y″}
-  → PathP (λ i → Homi (p′ i) (q′ i)) g h
-  → PathP (λ i → Homi (p i) (q i)) f g
-  → PathP (λ i → Homi ((p ∙ p′) i) ((q ∙ q′) i)) f h
-≡i⟨⟩-syntax f r′ r = r ∙i r′
-
-syntax ≡i⟨⟩-syntax f r′ r = f ≡i⟨ r ⟩ r′
-
-infixr 30 _∙i_
-infixr 2 ≡i⟨⟩-syntax
-```

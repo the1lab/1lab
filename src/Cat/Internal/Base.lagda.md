@@ -248,6 +248,7 @@ $(C_0, C_1)$ be stable under substitution.
            → (f ∘i g) [ σ ] ≡ (f [ σ ] ∘i g [ σ ])
 ```
 
+
 We also provide a bundled definition.
 
 ```agda
@@ -261,6 +262,68 @@ record Internal-cat : Type (o ⊔ ℓ) where
 
   Homi : ∀ {Γ} (x y : Hom Γ C₀) → Type ℓ
   Homi x y = Internal-hom src tgt x y
+```
+
+# Equational Reasoning
+
+Some of the naturality conditions required for later definitions will
+require the use of `PathP`{.agda}, which messes up our equational
+reasoning machinery. To work around this, we define some custom
+equational reasoning combinators for working with internal homs.
+
+```agda
+  casti : ∀ {Γ} {x x' y y' : Hom Γ C₀} {f : Homi x y} {g : Homi x' y'}
+        → {p p' : x ≡ x'} {q q' : y ≡ y'}
+        → PathP (λ i → Homi (p i) (q i)) f g
+        → PathP (λ i → Homi (p' i) (q' i)) f g
+  casti {Γ = Γ} {x} {x'} {y} {y'} {f} {g} {p} {p'} {q} {q'} r =
+    transport (λ i →
+      PathP
+        (λ j → Homi (Hom-set Γ C₀ x x' p p' i j) ( Hom-set Γ C₀ y y' q q' i j))
+        f g) r
+
+  begini_ : ∀ {Γ} {x x' y y' : Hom Γ C₀} {f : Homi x y} {g : Homi x' y'}
+        → {p p' : x ≡ x'} {q q' : y ≡ y'}
+        → PathP (λ i → Homi (p i) (q i)) f g
+        → PathP (λ i → Homi (p' i) (q' i)) f g
+  begini_ = casti
+
+  _∙i_
+    : ∀ {Γ} {x x′ x″ y y′ y″ : Hom Γ C₀}
+    → {f : Homi x y} {g : Homi x′ y′} {h : Homi x″ y″}
+    → {p : x ≡ x′} {q : y ≡ y′} {p′ : x′ ≡ x″} {q′ : y′ ≡ y″}
+    → PathP (λ i → Homi (p i) (q i)) f g
+    → PathP (λ i → Homi (p′ i) (q′ i)) g h
+    → PathP (λ i → Homi ((p ∙ p′) i) ((q ∙ q′) i)) f h
+  _∙i_ {x = x} {x′} {x″} {y} {y′} {y″} {f} {g} {h} {p} {q} {p′} {q′} r r′ i =
+    comp (λ j → Homi (∙-filler p p′ j i) (∙-filler q q′ j i)) (∂ i) λ where
+      j (i = i0) → f
+      j (i = i1) → r′ j
+      j (j = i0) → r i
+  
+  ≡i⟨⟩-syntax
+    : ∀ {Γ} {x x′ x″ y y′ y″ : Hom Γ C₀}
+    → (f : Homi x y) {g : Homi x′ y′} {h : Homi x″ y″}
+    → {p : x ≡ x′} {q : y ≡ y′} {p′ : x′ ≡ x″} {q′ : y′ ≡ y″}
+    → PathP (λ i → Homi (p′ i) (q′ i)) g h
+    → PathP (λ i → Homi (p i) (q i)) f g
+    → PathP (λ i → Homi ((p ∙ p′) i) ((q ∙ q′) i)) f h
+  ≡i⟨⟩-syntax f r′ r = r ∙i r′
+
+  _≡i˘⟨_⟩_ 
+    : ∀ {Γ} {x x′ x″ y y′ y″ : Hom Γ C₀}
+    → (f : Homi x y) {g : Homi x′ y′} {h : Homi x″ y″}
+    → {p : x′ ≡ x} {q : y′ ≡ y} {p′ : x′ ≡ x″} {q′ : y′ ≡ y″}
+    → PathP (λ i → Homi (p i) (q i)) g f
+    → PathP (λ i → Homi (p′ i) (q′ i)) g h
+    → PathP (λ i → Homi ((sym p ∙ p′) i) ((sym q ∙ q′) i)) f h
+  _≡i˘⟨_⟩_ f r r′  = symP r ∙i r′
+  
+  syntax ≡i⟨⟩-syntax f r′ r = f ≡i⟨ r ⟩ r′
+  
+  infixr 30 _∙i_
+  infix 1 begini_
+  infixr 2 ≡i⟨⟩-syntax _≡i˘⟨_⟩_
 ```
 
 ### Where did the pullbacks go?
@@ -345,6 +408,42 @@ We also need naturality conditions.
             → (σ : Hom Γ Δ)
             → PathP (λ i → 𝔻.Homi (Fi₀-nat x σ i) (Fi₀-nat y σ i))
                 (Fi₁ f [ σ ]) (Fi₁ (f [ σ ]))
+
+open Internal-functor
+```
+
+### Internal functor composition
+
+Internal functors are composable. This construction mirrors composition of functors,
+with the addition of naturality conditions.
+
+```agda
+module _ {ℂ 𝔻 𝔼 : Internal-cat} where
+  private
+    module ℂ = Internal-cat ℂ
+    module 𝔻 = Internal-cat 𝔻
+    module 𝔼 = Internal-cat 𝔼
+
+  _Fi∘_ : Internal-functor 𝔻 𝔼 → Internal-functor ℂ 𝔻 → Internal-functor ℂ 𝔼
+  (F Fi∘ G) .Fi₀ x = F .Fi₀ (G .Fi₀ x)
+  (F Fi∘ G) .Fi₁ f = F .Fi₁ (G .Fi₁ f)
+  (F Fi∘ G) .Fi-id = ap (F .Fi₁) (G .Fi-id) ∙ F .Fi-id
+  (F Fi∘ G) .Fi-∘ f g = ap (F .Fi₁) (G .Fi-∘ f g) ∙ F .Fi-∘ _ _
+  (F Fi∘ G) .Fi₀-nat x σ = F .Fi₀-nat (G .Fi₀ x) σ ∙ ap (F .Fi₀) (G .Fi₀-nat x σ)
+  (F Fi∘ G) .Fi₁-nat f σ =
+    F .Fi₁-nat (G .Fi₁ f) σ 𝔼.∙i (λ i → F .Fi₁ (G .Fi₁-nat f σ i))
+```
+
+There is also an internal version of the identity functor.
+
+```agda
+Idi : ∀ {ℂ : Internal-cat} → Internal-functor ℂ ℂ
+Idi .Fi₀ x = x
+Idi .Fi₁ f = f
+Idi .Fi-id = refl
+Idi .Fi-∘ _ _ = refl
+Idi .Fi₀-nat _ _ = refl
+Idi .Fi₁-nat _ _ = refl
 ```
 
 ## Internal natural transformations
@@ -355,8 +454,6 @@ on naturality conditions to ensure that the operations are stable under
 substitution.
 
 ```agda
-open Internal-functor
-
 record _=>i_
   {ℂ 𝔻 : Internal-cat}
   (F G : Internal-functor ℂ 𝔻)
