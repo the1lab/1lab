@@ -1,0 +1,140 @@
+<!--
+```agda
+open import Cat.Bi.Base
+
+open import Cat.Functor.Bifunctor
+open import Cat.Instances.Functor
+open import Cat.Instances.InternalFunctor
+open import Cat.Instances.InternalFunctor.Compose
+open import Cat.Instances.Product
+open import Cat.Prelude
+
+import Cat.Internal.Base
+import Cat.Reasoning
+import Cat.Internal.Reasoning
+```
+-->
+
+```agda
+module Cat.Bi.Instances.InternalCats
+  {o ℓ} (C : Precategory o ℓ)
+  where
+```
+
+<!--
+```agda
+open Cat.Reasoning C
+open Cat.Internal.Base C
+open Prebicategory
+open Internal-functor
+open _=>i_
+```
+-->
+
+# The bicategory of internal categories
+
+Let $\cC$ be some category. The collection of
+[internal categories] in $\cC$ forms a bicategory, where the 1-cells
+are internal functors, and the 2-cells are internal natural
+transformations.
+
+[internal categories]: Cat.Internal.Base.html
+
+```agda
+Internal-cats : Prebicategory (o ⊔ ℓ) (o ⊔ ℓ) (o ⊔ ℓ)
+Internal-cats = icats where
+  open make-natural-iso
+```
+
+The meat of this proof is constructing the unitors and the associators;
+these are all *almost* the identity internal natural transformation,
+but the lack of some definitional equalities gets in the way.
+
+```agda
+  ƛ : ∀ {A B : Internal-cat}
+    → natural-iso Id (Right (Fi∘-functor A B B) Idi)
+  ƛ {B = B} = to-natural-iso ni where
+    open Cat.Internal.Reasoning B
+    ni : make-natural-iso _ _
+    ni .make-natural-iso.eta F = record
+      { ηi = λ x → idi _
+      ; is-naturali = λ x y f → id-comm-symi
+      ; ηi-nat = λ x σ → casti $ (idi-nat σ ∙i ap idi (F .Fi₀-nat x σ))
+      }
+    ni .make-natural-iso.inv F = record
+      { ηi = λ x → idi _
+      ; is-naturali = λ x y f → id-comm-symi
+      ; ηi-nat = λ x σ → casti $ (idi-nat σ ∙i ap idi (F .Fi₀-nat x σ))
+      }
+    ni .make-natural-iso.eta∘inv F = Internal-nat-path λ x → idli _
+    ni .make-natural-iso.inv∘eta F = Internal-nat-path λ x → idli _
+    ni .make-natural-iso.natural F G α = Internal-nat-path λ x →
+      idri _ ∙ id-commi
+
+  ρ : ∀ {A B : Internal-cat}
+    → natural-iso Id (Left (Fi∘-functor A A B) Idi)
+  ρ {B = B} = to-natural-iso ni where
+    open Cat.Internal.Reasoning B
+    ni : make-natural-iso _ _
+    ni .make-natural-iso.eta F = record
+      { ηi = λ x → idi _
+      ; is-naturali = λ x y f → id-comm-symi
+      ; ηi-nat = λ x σ → casti $ (idi-nat σ ∙i ap idi (F .Fi₀-nat x σ))
+      }
+    ni .make-natural-iso.inv F = record
+      { ηi = λ x → idi _
+      ; is-naturali = λ x y f → id-comm-symi
+      ; ηi-nat = λ x σ → casti $ (idi-nat σ ∙i ap idi (F .Fi₀-nat x σ))
+      }
+    ni .make-natural-iso.eta∘inv F = Internal-nat-path λ x → idli _
+    ni .make-natural-iso.inv∘eta F = Internal-nat-path λ x → idli _
+    ni .make-natural-iso.natural F G α = Internal-nat-path λ x →
+      idri _ ∙ ap (_∘i _) (G .Fi-id)
+
+  α : {A B C D : Internal-cat}
+    → natural-iso
+       {C = Internal-functors _ C D ×ᶜ Internal-functors _ B C ×ᶜ Internal-functors _ A B}
+       (compose-assocˡ (λ {A} {B} {C} → Fi∘-functor A B C))
+       (compose-assocʳ λ {A} {B} {C} → Fi∘-functor A B C)
+  α {D = D} = to-natural-iso ni where
+    open Cat.Internal.Reasoning D
+    ni : make-natural-iso _ _
+    ni .eta (F , G , H) .ηi x = idi _
+    ni .eta (F , G , H) .is-naturali _ _ _ = id-comm-symi
+    ni .eta (F , G , H) .ηi-nat x σ = casti $
+      idi-nat σ
+      ∙i ap idi
+        (F .Fi₀-nat _ σ
+         ∙ ap (F .Fi₀) (G .Fi₀-nat _ σ ∙ ap (G .Fi₀) (H .Fi₀-nat _ σ)))
+    ni .inv (F , G , H) .ηi x = idi _
+    ni .inv (F , G , H) .is-naturali _ _ _ = id-comm-symi
+    ni .inv (F , G , H) .ηi-nat x σ = casti $
+      idi-nat σ
+      ∙i ap idi
+        (F .Fi₀-nat _ σ
+         ∙ ap (F .Fi₀) (G .Fi₀-nat _ σ ∙ ap (G .Fi₀) (H .Fi₀-nat _ σ)))
+    ni .eta∘inv _ = Internal-nat-path λ x → idli _
+    ni .inv∘eta _ = Internal-nat-path λ x → idli _
+    ni .natural (F , G , H) (J , K , L) α = Internal-nat-path λ x →
+      idri _ ·· pushli (J .Fi-∘ _ _) ·· sym (idli _)
+```
+
+Once we've got that tedium out of the way, the rest of the construction is a breeze.
+
+```agda
+  icats : Prebicategory _ _ _ 
+  icats .Ob = Internal-cat
+  icats .Hom 𝔸 𝔹 = Internal-functors C 𝔸 𝔹
+  icats .id = Idi
+  icats .compose = Fi∘-functor _ _ _
+  icats .unitor-l = ƛ
+  icats .unitor-r = ρ
+  icats .associator = α
+  icats .triangle {C = C} F G = Internal-nat-path λ x → idri _
+    where open Cat.Internal.Reasoning C
+  icats .pentagon {E = E} F G H J =
+    Internal-nat-path λ x → ap₂ _∘i_
+      (elimli (ap (F .Fi₁ ⊙ G .Fi₁) (H .Fi-id) ·· ap (F .Fi₁) (G .Fi-id) ·· F .Fi-id))
+      (elimri (elimli (F .Fi-id)))
+    where open Cat.Internal.Reasoning E
+```
