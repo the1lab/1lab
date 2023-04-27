@@ -1,4 +1,4 @@
-{-# LANGUAGE BlockArguments, OverloadedStrings, FlexibleContexts #-}
+{-# LANGUAGE BlockArguments, OverloadedStrings, FlexibleContexts, ViewPatterns #-}
 
 {-| Convert a markdown file to templated HTML, applying several
 post-processing steps and rendered to HTML using the
@@ -32,6 +32,8 @@ import Development.Shake
 import qualified Citeproc as Cite
 import Text.DocTemplates
 import Text.HTML.TagSoup
+import Text.HTML.TagSoup.Match
+import Text.HTML.TagSoup.Tree
 
 import Text.Collate.Lang (Lang (..))
 import Text.Pandoc.Builder (Inlines, toMetaValue)
@@ -94,6 +96,7 @@ buildMarkdown refs modname input output = do
       walkM (patchInline refMap autorefs)
     . walk patchInlines
     . (if skipAgda then id else linkReferences modname)
+    . walk uncommentAgda
     . addPageTitle
     $ markdown
 
@@ -133,6 +136,15 @@ addPageTitle (Pandoc (Meta meta) m) = Pandoc (Meta meta') m where
   meta' = case Map.lookup "pagetitle" meta <|> Map.lookup "customtitle" meta <|> search m of
     Just m  -> Map.insert "pagetitle" m meta
     Nothing -> meta
+
+-- | Rescue Agda code blocks from under HTML comments so we can show them if needed.
+uncommentAgda :: Block -> Block
+uncommentAgda (RawBlock "html" (parseTags -> [TagComment html])) | any isAgdaBlock (parseTree html) =
+  Div ("", ["commented-out"], []) [RawBlock "html" html]
+uncommentAgda b = b
+
+isAgdaBlock (TagBranch _ attrs _) = anyAttrLit ("class", "Agda") attrs
+isAgdaBlock _ = False
 
 -- | Patch a sequence of inline elements. `patchInline' should be preferred
 -- where possible, this is only useful when you cannot modify inlines in
