@@ -34,10 +34,11 @@ module, so we will not comment on them too much.
 ```agda
 private variable
   Γ : Ob
-  w x y z : Hom Γ C₀
+  w x x′ y y′ z z′ : Hom Γ C₀
   a b c d f g h i : Homi x y
 ```
 -->
+
 
 ## Identity Morphisms
 
@@ -123,3 +124,27 @@ module _ (inv : h ∘i i ≡ idi _) where
   deleteri = pullri cancelri
 ```
 
+## Substitutions
+
+```agda
+
+sub-id : ∀ {f : Homi x y} → PathP (λ i → Homi (idr x i) (idr y i)) (f [ id ]) f 
+sub-id = Internal-hom-pathp (idr _) (idr _) (idr _)
+```
+
+## Generalized Morphisms
+
+```agda
+∘i-ihom
+  : ∀ {f : Homi y z} {f' : Homi y′ z′} {g : Homi x y} {g' : Homi x′ y′}
+  → x ≡ x′ → y ≡ y′ → z ≡ z′
+  → f .ihom ≡ f' .ihom
+  → g .ihom ≡ g' .ihom
+  → (f ∘i g) .ihom ≡ (f' ∘i g') .ihom
+∘i-ihom {z = z} {x = x} {f = f} {f'} {g} {g'} px py pz q r i = ∘i-ihom-filler i .ihom
+  where
+    ∘i-ihom-filler : (i : I) → Homi (px i) (pz i)
+    ∘i-ihom-filler i =
+      (Internal-hom-pathp {f = f} {g = f'} py pz q i)
+      ∘i (Internal-hom-pathp {f = g} {g = g'} px py r i)
+```
