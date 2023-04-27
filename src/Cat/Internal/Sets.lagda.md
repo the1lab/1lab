@@ -126,7 +126,10 @@ are a bunch of transports we need to wade through.
 Naturality is (luckily) quite simple.
 
 ```agda
-  icat .has-internal-cat .idi-nat _ = refl
-  icat .has-internal-cat .∘i-nat f g σ = funext λ γ →
+  icat .has-internal-cat .idi-nat _ =
+    Internal-hom-path _ refl
+  icat .has-internal-cat .∘i-nat f g σ =
+    Internal-hom-path _ $
+    funext λ γ → 
     refl ,ₚ refl ,ₚ ap₂ _∘_ refl (recast-cod _ _)
 ```
