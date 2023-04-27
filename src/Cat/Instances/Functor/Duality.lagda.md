@@ -67,26 +67,10 @@ op-functor← : Functor Cat[ C ^op , D ^op ] (Cat[ C , D ] ^op)
 op-functor← = is-equivalence.F⁻¹ op-functor-is-equiv
 
 op-functor←→ : op-functor← {C = C} {D = D} F∘ op-functor→ ≡ Id
-op-functor←→ {C = C} {D = D} = Functor-path (λ x → refl) λ {X} {Y} f → Nat-path λ x →
-  (_ D.∘ f .η x) D.∘ _ ≡⟨ D.elimr (lemma {Y = Y}) ⟩
-  _ D.∘ f .η x         ≡⟨ D.eliml (lemma {Y = X}) ⟩
-  f .η x               ∎
+op-functor←→ {C = C} {D = D} = Functor-path (λ _ → refl) λ f → Nat-path λ x →
+  Regularity.precise! ((D.id D.∘ f .η x) D.∘ D.id ≡⟨ cat! D ⟩ f .η x ∎)
   where
     module D = Cat.Reasoning D
-    module C = Cat.Reasoning C
-
-    lemma : ∀ {Y : Functor C D} {x}
-      → coe0→1 (λ i → D.Hom (F₀ Y (transp (λ j → C.Ob) i x)) (F₀ Y (transp (λ j → C.Ob) i x))) D.id
-      ≡ D.id
-    lemma {Y} {x} =
-      from-pathp {A = λ i → D.Hom (F₀ Y (transp (λ j → C.Ob) i x)) (F₀ Y (transp (λ j → C.Ob) i x))}
-        λ i → hcomp (∂ i) λ where
-          j (i = i0) → D.id
-          j (i = i1) → transport-filler (λ j → D.Hom (F₀ Y x) (F₀ Y x)) D.id (~ j)
-          j (j = i0) → coe0→i
-            (λ j → D.Hom (F₀ Y (transp (λ j → C.Ob) (i ∨ j) x))
-                         (F₀ Y (transp (λ j → C.Ob) (i ∨ j) x)))
-            i D.id
 
 module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {F G : Functor C D} where
   private
