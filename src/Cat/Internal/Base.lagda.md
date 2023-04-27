@@ -176,6 +176,15 @@ instance
     : ∀ {Γ C₀ C₁} {src tgt : Hom C₁ C₀} {x y : Hom Γ C₀} {n}
     → H-Level (Internal-hom src tgt x y) (2 + n)
   H-Level-Internal-hom = basic-instance 2 Internal-hom-set
+
+_ihomₚ
+  : ∀ {C₀ C₁ Γ} {src tgt : Hom C₁ C₀} {x y : Hom Γ C₀}
+  → {f g : Internal-hom src tgt x y}
+  → f ≡ g
+  → f .ihom ≡ g .ihom
+_ihomₚ = ap ihom
+
+infix -1 _ihomₚ
 ```
 -->
 
@@ -215,14 +224,14 @@ The equations are *much* easier to state in this form.
 ```agda
   field
     idli : ∀ {Γ} {x y : Hom Γ C₀} → (f : Internal-hom src tgt x y)
-         → ((idi y) ∘i f) .ihom ≡ f .ihom
+         → ((idi y) ∘i f) ≡ f
     idri : ∀ {Γ} {x y : Hom Γ C₀} → (f : Internal-hom src tgt x y)
-         → (f ∘i (idi x)) .ihom ≡ f .ihom
+         → (f ∘i (idi x)) ≡ f
     associ : ∀ {Γ} {w x y z : Hom Γ C₀}
            → (f : Internal-hom src tgt y z)
            → (g : Internal-hom src tgt x y)
            → (h : Internal-hom src tgt w x)
-           → (f ∘i (g ∘i h)) .ihom ≡ ((f ∘i g) ∘i h) .ihom
+           → (f ∘i (g ∘i h)) ≡ ((f ∘i g) ∘i h)
 ```
 
 However, we do need to add naturality conditions; from the perspective
@@ -232,11 +241,11 @@ $(C_0, C_1)$ be stable under substitution.
 ```agda
     idi-nat : ∀ {Γ Δ} {x : Hom Δ C₀}
             → (σ : Hom Γ Δ)
-            → (idi x .ihom ∘ σ) ≡ idi (x ∘ σ) .ihom
+            → idi x [ σ ] ≡ idi (x ∘ σ)
     ∘i-nat : ∀ {Γ Δ} {x y z : Hom Δ C₀}
            → (f : Internal-hom src tgt y z) (g : Internal-hom src tgt x y)
            → (σ : Hom Γ Δ)
-           → (f ∘i g) .ihom ∘ σ ≡ (f [ σ ] ∘i g [ σ ]) .ihom
+           → (f ∘i g) [ σ ] ≡ (f [ σ ] ∘i g [ σ ])
 ```
 
 We also provide a bundled definition.
@@ -319,22 +328,23 @@ conditions.
 
 ```agda
     Fi-id : ∀ {Γ} {x : Hom Γ ℂ.C₀}
-          → Fi₁ (ℂ.idi x) .ihom ≡ 𝔻.idi (Fi₀ x) .ihom
+          → Fi₁ (ℂ.idi x) ≡ 𝔻.idi (Fi₀ x)
     Fi-∘  : ∀ {Γ} {x y z : Hom Γ ℂ.C₀}
           → (f : ℂ.Homi y z) (g : ℂ.Homi x y)
-          → Fi₁ (f ℂ.∘i g) .ihom ≡ (Fi₁ f 𝔻.∘i Fi₁ g) .ihom
+          → Fi₁ (f ℂ.∘i g) ≡ Fi₁ f 𝔻.∘i Fi₁ g
 ```
 
 We also need naturality conditions.
 
 ```agda
-    Fi₀-nat : ∀ {Γ Δ} {x : Hom Δ ℂ.C₀}
+    Fi₀-nat : ∀ {Γ Δ} (x : Hom Δ ℂ.C₀)
             → (σ : Hom Γ Δ)
             → Fi₀ x ∘ σ ≡ Fi₀ (x ∘ σ)
     Fi₁-nat : ∀ {Γ Δ} {x y : Hom Δ ℂ.C₀}
             → (f : ℂ.Homi x y)
             → (σ : Hom Γ Δ)
-            → Fi₁ f .ihom ∘ σ ≡ Fi₁ (f [ σ ]) .ihom
+            → PathP (λ i → 𝔻.Homi (Fi₀-nat x σ i) (Fi₀-nat y σ i))
+                (Fi₁ f [ σ ]) (Fi₁ (f [ σ ]))
 ```
 
 ## Internal natural transformations
@@ -358,8 +368,52 @@ record _=>i_
   field
     ηi : ∀ {Γ} (x : Hom Γ ℂ.C₀) → 𝔻.Homi (F .Fi₀ x) (G .Fi₀ x)
     is-naturali : ∀ {Γ} (x y : Hom Γ ℂ.C₀) (f : ℂ.Homi x y)
-                → (ηi y 𝔻.∘i F .Fi₁ f) .ihom ≡ (G .Fi₁ f 𝔻.∘i ηi x) .ihom
-    ηi-nat : ∀ {Γ Δ} {x : Hom Δ ℂ.C₀}
+                → ηi y 𝔻.∘i F .Fi₁ f ≡ G .Fi₁ f 𝔻.∘i ηi x
+    ηi-nat : ∀ {Γ Δ} (x : Hom Δ ℂ.C₀)
            → (σ : Hom Γ Δ)
-           → ηi x .ihom ∘ σ ≡ ηi (x ∘ σ) .ihom
+           → PathP (λ i → 𝔻.Homi (F .Fi₀-nat x σ i) (G .Fi₀-nat x σ i))
+               (ηi x [ σ ]) (ηi (x ∘ σ))
+
+open _=>i_
 ```
+
+<!--
+```agda
+module _ {ℂ 𝔻 : Internal-cat} {F G : Internal-functor ℂ 𝔻} where
+  private
+    module ℂ = Internal-cat ℂ
+    module 𝔻 = Internal-cat 𝔻
+
+  Internal-nat-path
+    : {α β : F =>i G}
+    → (∀ {Γ} (x : Hom Γ ℂ.C₀) → α .ηi x ≡ β .ηi x)
+    → α ≡ β
+  Internal-nat-path {α} {β} p i .ηi x = p x i
+  Internal-nat-path {α} {β} p i .is-naturali x y f =
+    is-prop→pathp (λ i → Internal-hom-set (p y i 𝔻.∘i F .Fi₁ f) (G .Fi₁ f 𝔻.∘i p x i))
+      (α .is-naturali x y f)
+      (β .is-naturali x y f) i
+  Internal-nat-path {α} {β} p i .ηi-nat x σ =
+    is-set→squarep (λ i j → Internal-hom-set)
+      (λ i → p x i [ σ ])
+      (α .ηi-nat x σ)
+      (β .ηi-nat x σ)
+      (λ i → p (x ∘ σ) i) i
+
+  private unquoteDecl nat-eqv = declare-record-iso nat-eqv (quote _=>i_)
+
+  Internal-nat-set : is-set (F =>i G)
+  Internal-nat-set = Iso→is-hlevel 2 nat-eqv $
+    Σ-is-hlevel 2 hlevel! $ λ _ →
+    Σ-is-hlevel 2 hlevel! $ λ _ →
+    Π-is-hlevel′ 2 λ _ → Π-is-hlevel′ 2 λ _ →
+    Π-is-hlevel 2 λ _ → Π-is-hlevel 2 λ _ →
+    PathP-is-hlevel 2 Internal-hom-set
+
+instance
+  H-Level-Internal-nat
+    : ∀ {ℂ 𝔻 : Internal-cat} {F G : Internal-functor ℂ 𝔻} {n}
+    → H-Level (F =>i G) (2 + n)
+  H-Level-Internal-nat = basic-instance 2 Internal-nat-set
+```
+-->

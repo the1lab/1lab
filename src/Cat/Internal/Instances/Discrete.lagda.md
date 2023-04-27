@@ -54,9 +54,10 @@ Disci-is-internal-cat I = icat where
     y            ≡˘⟨ f .has-src ⟩
     id ∘ f .ihom ≡⟨ f .has-tgt ⟩
     z ∎
-  icat .idli f = sym (f .has-tgt) ∙ idl _
-  icat .idri f = sym (f .has-src) ∙ idl _
+  icat .idli f = Internal-hom-path $ sym (f .has-tgt) ∙ idl _
+  icat .idri f = Internal-hom-path $ sym (f .has-src) ∙ idl _
   icat .associ {_} {w} {x} {y} {z} f g h =
+    Internal-hom-path $
     y            ≡˘⟨ g .has-tgt ⟩
     id ∘ g .ihom ≡⟨ g .has-src ⟩
     x ∎
@@ -82,8 +83,8 @@ lift-disci f .Internal-functor.Fi₁ g .has-src =
   extendl id-comm-sym ∙ ap (f ∘_) (g .has-src)
 lift-disci f .Internal-functor.Fi₁ g .has-tgt =
   extendl id-comm-sym ∙ ap (f ∘_) (g .has-tgt)
-lift-disci f .Internal-functor.Fi-id = refl
-lift-disci f .Internal-functor.Fi-∘ _ _ = refl
+lift-disci f .Internal-functor.Fi-id = Internal-hom-path refl
+lift-disci f .Internal-functor.Fi-∘ _ _ = Internal-hom-path refl
 lift-disci f .Internal-functor.Fi₀-nat _ = sym (assoc _ _ _)
 lift-disci f .Internal-functor.Fi₁-nat _ _ = sym (assoc _ _ _)
 ```

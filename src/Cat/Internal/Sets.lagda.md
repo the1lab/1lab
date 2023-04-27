@@ -37,9 +37,9 @@ Internal-cat→Precategory {κ} ℂ = cat where
   cat .Hom-set _ _ = Internal-hom-set (Sets κ)
   cat .id = idi _
   cat ._∘_ = _∘i_
-  cat .idr f = Internal-hom-path _ (idri f)
-  cat .idl f = Internal-hom-path _ (idli f)
-  cat .assoc f g h = Internal-hom-path _ (associ f g h)
+  cat .idr f = Internal-hom-path _ (ap ihom (idri f))
+  cat .idl f = Internal-hom-path _ (ap ihom (idli f))
+  cat .assoc f g h = Internal-hom-path _ (ap ihom (associ f g h))
 ```
 
 The other direction is... not so easy.
@@ -107,13 +107,19 @@ The internal category laws follow from the category laws, though there
 are a bunch of transports we need to wade through.
 
 ```agda
-  icat .has-internal-cat .idli f = funext λ γ →
+  icat .has-internal-cat .idli f =
+    Internal-hom-path _ $
+    funext λ γ →
     refl ,ₚ ap lower (sym (f .has-tgt $ₚ γ)) ,ₚ
     to-pathp⁻ (idl _ ∙ recast-cod _ _)
-  icat .has-internal-cat .idri f = funext λ γ →
+  icat .has-internal-cat .idri f =
+    Internal-hom-path _ $
+    funext λ γ →
     ap lower (sym (f .has-src $ₚ γ)) ,ₚ refl ,ₚ
     to-pathp⁻ (cast-cod-idr _ _ ∙ recast-dom _ _)
-  icat .has-internal-cat .associ f g h = funext λ γ →
+  icat .has-internal-cat .associ f g h =
+    Internal-hom-path _ $
+    funext λ γ →
     refl ,ₚ refl ,ₚ ap₂ _∘_ refl (cast-cod-∘ _) ∙ assoc _ _ _
 ```
 
