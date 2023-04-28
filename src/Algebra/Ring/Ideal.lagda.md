@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Algebra.Ring.Module.Action
 open import Algebra.Group.Subgroup
 open import Algebra.Ring.Module
 open import Algebra.Group.Ab
@@ -88,7 +89,7 @@ carries a canonical $R$-module structure.
 ```agda
   ideal→module : (𝔞 : ℙ ⌞ R ⌟) → is-ideal 𝔞 → Module R ℓ
   ideal→module 𝔞 x = g .fst , mod where
-    open make-group
+    open Ring-action
     open is-ideal x
     gr : Group-on _
     gr = rep-subgroup→group-on 𝔞 has-rep-subgroup
@@ -96,12 +97,12 @@ carries a canonical $R$-module structure.
     g = from-commutative-group (el! _ , gr) λ x y → Σ-prop-path! R.+-commutes
 
     mod : Module-on R ⌞ g ⌟
-    mod = action→module-on R g
-      (λ { r (a , b) → _ , has-*ₗ r b })
-      (λ r x y → Σ-prop-path! R.*-distribl)
-      (λ r x y → Σ-prop-path! R.*-distribr)
-      (λ r s x → Σ-prop-path! R.*-associative)
-      (λ x → Σ-prop-path! R.*-idl)
+    mod = Action→Module-on R {G = g .snd} λ where
+      ._⋆_ r (a , b) → _ , has-*ₗ r b
+      .⋆-distribl r x y → Σ-prop-path! R.*-distribl
+      .⋆-distribr r s x → Σ-prop-path! R.*-distribr
+      .⋆-assoc r s x    → Σ-prop-path! R.*-associative
+      .⋆-id x           → Σ-prop-path! R.*-idl
 ```
 
 Since a map between modules is [a monomorphism] when its underlying
