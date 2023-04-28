@@ -172,7 +172,7 @@ internal-iso→cartesian {Γ} {Δ} {u} {x} {y} f f-inv = cart where
 ```
 
 The reverse direction also mirrors the family fibration; we use the same
-trick of factorizating the identity morphism.
+trick of factorising the identity morphism.
 
 ```agda
 cartesian→internal-iso
