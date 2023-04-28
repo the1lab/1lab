@@ -2,6 +2,8 @@
 ```agda
 open import Cat.Internal.Functor.Outer
 
+open import Cat.Diagram.Product
+open import Cat.Diagram.Product.Solver
 open import Cat.Prelude
 
 import Cat.Internal.Base
@@ -20,6 +22,7 @@ module Cat.Instances.OuterFunctor
 ```agda
 open Cat.Reasoning C
 open Cat.Internal.Base C
+open Functor
 open Outer-functor
 open _=>o_
 
@@ -82,3 +85,29 @@ module _ (ℂ : Internal-cat) where
   Outer-functors .Precategory.assoc α β γ = Outer-nat-path (λ _ → refl)
 ```
 
+<!--
+```agda
+module _ (prods : has-products C) (ℂ : Internal-cat) where
+  open Internal-cat ℂ
+  open Binary-products C prods
+```
+-->
+
+## The constant functor functor
+
+There is a functor from $\cC$ to the category of outer functors on
+$\ica{C}$ that maps every object $X : \cC$ to the constant outer functor
+on $X$.
+
+```agda
+  Δo : Functor C (Outer-functors ℂ)
+  Δo .F₀ = ConstO prods
+  Δo .F₁ = const-nato prods
+  Δo .F-id = Outer-nat-path λ px →
+    ap₂ ⟨_,_⟩ (idl _) refl
+    ∙ sym (⟨⟩∘ px)
+    ∙ eliml ⟨⟩-η
+  Δo .F-∘ f g = Outer-nat-path λ px →
+    ⟨ (f ∘ g) ∘ π₁ ∘ px , π₂ ∘ px ⟩                                        ≡⟨ products! C prods ⟩
+    ⟨ f ∘ π₁ ∘ ⟨ g ∘ π₁ ∘ px , π₂ ∘ px ⟩ , π₂ ∘ ⟨ g ∘ π₁ ∘ px , π₂ ∘ px ⟩ ⟩ ∎
+```

@@ -1,5 +1,7 @@
 <!--
 ```agda
+open import Cat.Diagram.Product
+open import Cat.Diagram.Product.Solver
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Prelude
@@ -342,3 +344,59 @@ instance
   H-Level-Outer-nat = basic-instance 2 Outer-nat-is-set
 ```
 -->
+
+## Some other outer functors
+
+One important outer functor is the *constant outer functor* on an object
+$X : \cC$; this is the internalized version of the [chaotic bifibration].
+
+[chaotic bifibration]: Cat.Displayed.Instances.Chaotic.html
+
+<!--
+```agda
+module _ (prods : has-products C) {ℂ : Internal-cat} where
+  open Binary-products C prods
+  open Internal-cat ℂ
+  open _=>o_
+```
+-->
+
+The total space of this functor is the product $X \times C_0$, and the
+projection map is simply the second projection.
+
+```agda
+  ConstO : (X : Ob) → Outer-functor ℂ
+  ConstO X .∫P = X ⊗₀ C₀
+  ConstO X .P₀ f = π₂ ∘ f
+```
+
+Lifting is given by the universal map into the product.
+
+```agda
+  ConstO X .P₁ px {y} f = ⟨ π₁ ∘ px , y ⟩
+  ConstO X .P₁-tgt px {y = y} f = sym $ π₂∘⟨⟩
+```
+
+
+<details>
+<summary>Functoriality and naturality all follow from basic facts about products.
+</summary>
+
+```agda
+  ConstO X .P-id px = products! C prods
+  ConstO X .P-∘ px f g = products! C prods
+  ConstO X .P₀-nat px σ = sym (assoc _ _ _)
+  ConstO X .P₁-nat px f σ = products! C prods
+```
+</details>
+
+Outer natural transformations between constant outer functors are easy
+to characterize.
+
+```agda
+  const-nato : ∀ {X Y : Ob} → Hom X Y → ConstO X =>o ConstO Y
+  const-nato f .ηo g = ⟨ f ∘ π₁ ∘ g , π₂ ∘ g ⟩
+  const-nato f .ηo-fib px = products! C prods
+  const-nato f .is-naturalo px y g = products! C prods
+  const-nato f .ηo-nat px σ = products! C prods
+```
