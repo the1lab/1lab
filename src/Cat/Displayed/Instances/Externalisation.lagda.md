@@ -1,12 +1,15 @@
 <!--
 ```agda
 open import Cat.Displayed.Base
+open import Cat.Displayed.Cartesian
+
 open import Cat.Prelude
 
 open import Cat.Internal.Base using (Internal-cat)
 
 import Cat.Internal.Base
 import Cat.Internal.Reasoning
+import Cat.Internal.Morphism
 import Cat.Reasoning
 ```
 -->
@@ -25,6 +28,7 @@ module Cat.Displayed.Instances.Externalisation
 open Cat.Reasoning B
 open Cat.Internal.Base B
 open Cat.Internal.Reasoning ℂ
+open Cat.Internal.Morphism ℂ
 open Displayed
 open Internal-hom
 ```
@@ -38,8 +42,9 @@ known as the *externalisation* of the internal category.
 [internal category]: Cat.Internal.Base.html
 
 ```agda
-Externalize : Displayed B ℓ ℓ
-Externalize = disp where
+Externalise : Displayed B ℓ ℓ
+Externalise = disp
+  module Externalisation where
 ```
 
 The core idea of externalisation is that the space of objects over
@@ -139,3 +144,105 @@ Associativity is particularly nasty!
         (f [ v ] ∘i g) .ihom ∘ w           ∎
 ```
 </details>
+
+## Cartesian Maps
+
+To really hammer home that point that the externalisation of an
+internal category is the internal version of the family fibration,
+we show that the cartesian morphisms are *precisely* the internal
+isomorphisms.
+
+The forward direction looks almost identical to the proof that
+pointwise isomorphisms are cartesian morphisms in the family fibration.
+
+```agda
+internal-iso→cartesian
+  : ∀ {Γ Δ : Ob} {u : Hom Γ Δ} {x : Hom Γ C₀} {y : Hom Δ C₀}
+  → (f : Homi x (y ∘ u))
+  → is-invertiblei f
+  → is-cartesian Externalise u f
+internal-iso→cartesian {Γ} {Δ} {u} {x} {y} f f-inv = cart where
+  open is-cartesian
+  module f-inv = is-invertiblei f-inv
+  open f-inv using (invi)
+
+  cart : is-cartesian _ _ _
+  cart .universal {u′ = u′} m h′ =
+    invi [ m ] ∘i coe0→1 (λ i → Homi u′ (assoc y u m i)) h′
+  cart .commutes {u′ = u′} m h′ = Internal-hom-path $
+    (f [ m ] ∘i invi [ m ] ∘i _) .ihom                ≡⟨ ap ihom (pullli (sym (∘i-nat f invi m))) ⟩
+    (⌜ f ∘i invi ⌝ [ m ] ∘i _) .ihom                  ≡⟨ ap! f-inv.invli ⟩
+    (⌜ idi _ [ m ] ⌝ ∘i _) .ihom                      ≡⟨ ap! (idi-nat m) ⟩
+    (idi _ ∘i _) .ihom                                ≡⟨ ap ihom (idli _) ⟩
+    (coe0→1 (λ i → Homi u′ (assoc y u m i)) h′) .ihom ≡⟨ transport-refl _ ⟩
+    h′ .ihom ∎
+  cart .unique {u′ = u′} {m = m} {h′ = h′} m′ p =
+    Internal-hom-path $
+    m′ .ihom                                                        ≡⟨ ap ihom (introli (Internal-hom-path (ap ihom (idi-nat m)))) ⟩
+    (⌜ idi _ [ m ] ⌝ ∘i m′) .ihom                                   ≡⟨ ap! (ap (λ e → e [ m ]) (sym (f-inv.invri)) ∙ ∘i-nat _ _ _) ⟩
+    ((invi [ m ] ∘i f [ m ]) ∘i m′) .ihom                           ≡⟨ ap ihom (pullri (Internal-hom-path (ap ihom p ∙ sym (transport-refl _)))) ⟩
+    (invi [ m ] ∘i coe0→1 (λ i → Homi u′ (assoc y u m i)) h′) .ihom ∎
+```
+
+The reverse direction also mirrors the family fibration; we use the same
+trick of factorizating the identity morphism.
+
+```agda
+cartesian→internal-iso
+  : ∀ {Γ Δ : Ob} {u : Hom Γ Δ} {x : Hom Γ C₀} {y : Hom Δ C₀}
+  → (f : Homi x (y ∘ u))
+  → is-cartesian Externalise u f
+  → is-invertiblei f
+cartesian→internal-iso {Γ} {Δ} {u} {x} {y} f f-cart = f-inv where
+  open is-cartesian f-cart
+  open is-invertiblei
+  open Inversesi
+  open Externalisation
+
+  f-inv : is-invertiblei f
+  f-inv .invi =
+    coe0→1 (λ i → Homi (y ∘ (idr u i)) (idr x i)) (universal id (idi _))
+  f-inv .inversesi .invli =
+    Internal-hom-path $
+      (f ∘i f-inv .invi) .ihom                 ≡⟨ ∘i-ihom (ap (_ ∘_) (sym (idr _))) (sym (idr _)) (sym (idr _)) (sym (idr _)) (transport-refl _) ⟩
+      (f [ id ] ∘i universal id (idi _)) .ihom ≡⟨ ap ihom (commutes id (idi _)) ⟩
+      idi (y ∘ ⌜ u ∘ id ⌝) .ihom               ≡⟨ ap! (idr _) ⟩
+      idi (y ∘ u) .ihom ∎
+```
+
+Unfortunately, the right inverse requires some nightmare transports.
+
+```agda
+  f-inv .inversesi .invri =
+    Internal-hom-path $ {!!}
+      -- (f-inv .invi ∘i f) .ihom                                     ≡⟨ ∘i-ihom refl refl (sym (idr _)) refl refl ⟩
+      -- (f⁻¹∘f) .ihom                                                ≡⟨ ap ihom (unique f⁻¹∘f unique1) ⟩
+      -- universal id f* .ihom ≡˘⟨ ap ihom (unique idi′ {!!}) ⟩
+      -- idi x .ihom ∎
+    where
+      f⁻¹∘f : Homi x (x ∘ id)
+      f⁻¹∘f = {!!}
+      -- coe0→1 (λ i → Homi (y ∘ idr u i) (x ∘ id)) (universal id (idi _)) ∘i f
+
+      -- f* : Homi x (y ∘ u ∘ id)
+      -- f* = coe1→0 (λ i → Homi x (y ∘ (idr u i))) f
+
+      -- id* : Homi (y ∘ u) (y ∘ u ∘ id)
+      -- id* = coe1→0 (λ i → Homi (y ∘ u) (y ∘ idr u i)) (idi _)
+
+      -- id*-ihom : id* .ihom ≡ idi (y ∘ u ∘ id) .ihom
+      -- id*-ihom =
+      --   id* .ihom                  ≡⟨ transport-refl _ ⟩
+      --   idi (y ∘ u) .ihom          ≡˘⟨ idr _ ⟩
+      --   idi (y ∘ u) .ihom ∘ id     ≡⟨ ap ihom (idi-nat id) ⟩
+      --   idi ⌜ (y ∘ u) ∘ id ⌝ .ihom ≡⟨ ap! (sym (assoc _ _ _)) ⟩
+      --   idi (y ∘ u ∘ id) .ihom ∎
+
+      -- unique1 : f ∘i′ f⁻¹∘f ≡ f*
+      -- unique1 = Internal-hom-path $
+      --   (f [ id ] ∘i f⁻¹∘f) .ihom             ≡⟨ ∘i-ihom refl {!!} {!!} {!!} {!!} ⟩
+      --   ((f ∘i′ universal id id*) ∘i f) .ihom  ≡⟨ ap (λ e → (e ∘i f) .ihom) (commutes _ _) ⟩
+      --   (id* ∘i f) .ihom                       ≡⟨ ∘i-ihom refl (sym (ap (y ∘_) (idr u))) refl id*-ihom (sym (transport-refl _)) ⟩
+      --   (idi _ ∘i f*) .ihom                    ≡⟨ ap ihom (idli _) ⟩
+      --   f* .ihom ∎
+```
