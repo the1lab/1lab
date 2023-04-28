@@ -301,4 +301,44 @@ in the internal language of $\cC$.
 
 ```agda
       ηo-nat : ∀ {Γ Δ} (px : Hom Δ (P .∫P)) (σ : Hom Γ Δ) → ηo px ∘ σ ≡ ηo (px ∘ σ)
+
+  open _=>o_
 ```
+
+<!--
+```agda
+  Outer-nat-path
+    : ∀ {F G : Outer-functor ℂ} {α β : F =>o G}
+    → (∀ {Γ} (px : Hom Γ (F .∫P)) → α .ηo px ≡ β .ηo px)
+    → α ≡ β
+  Outer-nat-path p i .ηo px = p px i
+  Outer-nat-path {G = G} {α = α} {β = β} p i .ηo-fib px =
+    is-prop→pathp (λ i → Hom-set _ _ (G .P₀ (p px i)) _)
+      (α .ηo-fib px)
+      (β .ηo-fib px) i
+  Outer-nat-path {F = F} {G = G} {α = α} {β = β} p i .is-naturalo px y f j =
+    is-set→squarep (λ i j → Hom-set _ _)
+      (p (F .P₁ px f))
+      (α .is-naturalo px y f)
+      (β .is-naturalo px y f)
+      (λ i → G .P₁ (p px i)
+        (adjusti (sym (Outer-nat-path {α = α} {β = β} p i .ηo-fib px)) refl f))
+      i j
+  Outer-nat-path {α = α} {β = β} p i .ηo-nat px σ =
+    is-prop→pathp (λ i → Hom-set _ _ (p px i ∘ σ) (p (px ∘ σ) i))
+      (α .ηo-nat px σ)
+      (β .ηo-nat px σ) i
+
+  private unquoteDecl nat-eqv = declare-record-iso nat-eqv (quote _=>o_)
+
+  Outer-nat-is-set
+    : ∀ {F G : Outer-functor ℂ} → is-set (F =>o G)
+  Outer-nat-is-set = Iso→is-hlevel 2 nat-eqv hlevel!
+
+instance
+  H-Level-Outer-nat
+    : ∀ {ℂ : Internal-cat} {F G : Outer-functor ℂ} {n}
+    → H-Level (F =>o G) (2 + n)
+  H-Level-Outer-nat = basic-instance 2 Outer-nat-is-set
+```
+-->
