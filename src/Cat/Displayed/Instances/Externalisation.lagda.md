@@ -84,25 +84,12 @@ issues aren't too hard to work around.
 [family fibration]: Cat.Displayed.Instances.Family.html
 
 ```agda
-  idi′ : ∀ {Γ} {x : Hom Γ C₀} → Homi x (x ∘ id)
-  idi′ {x = x} .ihom = idi x .ihom
-  idi′ {x = x} .has-src = idi x .has-src
-  idi′ {x = x} .has-tgt = idi x .has-tgt ∙ sym (idr _)
-
-  _∘i′_
-    : ∀ {Γ Δ Ψ} {x : Hom Γ C₀} {y : Hom Δ C₀} {z : Hom Ψ C₀}
-    → {u : Hom Δ Ψ} {v : Hom Γ Δ}
-    → Homi y (z ∘ u) → Homi x (y ∘ v) → Homi x (z ∘ u ∘ v)
-  _∘i′_ {u = u} {v = v} f g .ihom =  (f [ v ] ∘i g) .ihom
-  _∘i′_ {u = u} {v = v} f g .has-src = (f [ v ] ∘i g) .has-src
-  _∘i′_ {u = u} {v = v} f g .has-tgt = (f [ v ] ∘i g) .has-tgt ∙ sym (assoc _ _ _)
-
   disp : Displayed B ℓ ℓ
   disp .Ob[_] Γ = Hom Γ C₀
   disp .Hom[_] u x y = Homi x (y ∘ u)
   disp .Hom[_]-set _ _ _ = Internal-hom-set
-  disp .id′ = idi′
-  disp ._∘′_ = _∘i′_
+  disp .id′ = adjusti refl (sym (idr _)) (idi _)
+  disp ._∘′_ {f = u} {g = v} f g = adjusti refl (sym (assoc _ _ _)) (f [ v ] ∘i g)
 ```
 
 <details>
@@ -113,20 +100,20 @@ Associativity is particularly nasty!
 ```agda
   disp .idr′ f =
     Internal-hom-pathp refl (ap (_ ∘_) (idr _)) $
-    (f [ id ] ∘i idi′) .ihom ≡⟨ ∘i-ihom refl (idr _) (idr _) (idr _) refl ⟩
-    (f ∘i idi _) .ihom       ≡⟨ ap ihom (idri _) ⟩
-    f .ihom                  ∎
+      (f [ id ] ∘i adjusti _ _ (idi _)) .ihom ≡⟨ ∘i-ihom refl (idr _) (idr _) (idr _) refl ⟩
+      (f ∘i idi _) .ihom                      ≡⟨ ap ihom (idri _) ⟩
+      f .ihom ∎
   disp .idl′ {f = u} f =
     Internal-hom-pathp refl (ap (_ ∘_) (idl _)) $
-      (idi′ [ u ] ∘i f) .ihom ≡⟨ ∘i-ihom refl refl (ap (_∘ _) (idr _)) (ap ihom (idi-nat u)) refl ⟩
-      (idi _ ∘i f) .ihom      ≡⟨ ap ihom (idli _) ⟩
-      f .ihom                 ∎
+      (adjusti _ _ (idi _) [ u ] ∘i f) .ihom ≡⟨ ∘i-ihom refl refl (ap (_∘ _) (idr _)) (ap ihom (idi-nat u)) refl ⟩
+      (idi _ ∘i f) .ihom                     ≡⟨ ap ihom (idli _) ⟩
+      f .ihom                                ∎
   disp .assoc′ {w = a} {b} {c} {d} {f = u} {g = v} {h = w} f g h =
     Internal-hom-pathp refl (ap (_ ∘_) (assoc _ _ _)) $
-    (f [ v ∘ w ] ∘i (g ∘i′ h)) .ihom ≡⟨ ∘i-ihom refl refl refl refl (∘i-ihom refl refl (sym (assoc _ _ _)) g-path refl) ⟩
-    (f [ v ∘ w ] ∘i g' ∘i h) .ihom   ≡⟨ ap ihom (associ _ _ _) ⟩
-    ((f [ v ∘ w ] ∘i g') ∘i h) .ihom ≡⟨ ∘i-ihom refl refl reassoc inner refl ⟩
-    ((f ∘i′ g) [ w ] ∘i h) .ihom     ∎
+    (f [ v ∘ w ] ∘i adjusti _ _ (g [ w ] ∘i h)) .ihom ≡⟨ ∘i-ihom refl refl refl refl (∘i-ihom refl refl (sym (assoc _ _ _)) g-path refl) ⟩
+    (f [ v ∘ w ] ∘i g' ∘i h) .ihom                    ≡⟨ ap ihom (associ _ _ _) ⟩
+    ((f [ v ∘ w ] ∘i g') ∘i h) .ihom                  ≡⟨ ∘i-ihom refl refl reassoc inner refl ⟩
+    (adjusti _ _ (f [ v ] ∘i g) [ w ] ∘i h) .ihom     ∎
     where
       g' : Homi (b ∘ w) (c ∘ v ∘ w)
       g' = coe1→0 (λ i → Homi (b ∘ w) (assoc c v w i)) (g [ w ])
@@ -168,20 +155,20 @@ internal-iso→cartesian {Γ} {Δ} {u} {x} {y} f f-inv = cart where
 
   cart : is-cartesian _ _ _
   cart .universal {u′ = u′} m h′ =
-    invi [ m ] ∘i coe0→1 (λ i → Homi u′ (assoc y u m i)) h′
-  cart .commutes {u′ = u′} m h′ = Internal-hom-path $
+    invi [ m ] ∘i adjusti refl (assoc y u m) h′
+  cart .commutes {u′ = u′} m h′ =
+    Internal-hom-path $
     (f [ m ] ∘i invi [ m ] ∘i _) .ihom                ≡⟨ ap ihom (pullli (sym (∘i-nat f invi m))) ⟩
     (⌜ f ∘i invi ⌝ [ m ] ∘i _) .ihom                  ≡⟨ ap! f-inv.invli ⟩
     (⌜ idi _ [ m ] ⌝ ∘i _) .ihom                      ≡⟨ ap! (idi-nat m) ⟩
     (idi _ ∘i _) .ihom                                ≡⟨ ap ihom (idli _) ⟩
-    (coe0→1 (λ i → Homi u′ (assoc y u m i)) h′) .ihom ≡⟨ transport-refl _ ⟩
-    h′ .ihom ∎
+    h′ .ihom                                          ∎
   cart .unique {u′ = u′} {m = m} {h′ = h′} m′ p =
     Internal-hom-path $
     m′ .ihom                                                        ≡⟨ ap ihom (introli (Internal-hom-path (ap ihom (idi-nat m)))) ⟩
     (⌜ idi _ [ m ] ⌝ ∘i m′) .ihom                                   ≡⟨ ap! (ap (λ e → e [ m ]) (sym (f-inv.invri)) ∙ ∘i-nat _ _ _) ⟩
-    ((invi [ m ] ∘i f [ m ]) ∘i m′) .ihom                           ≡⟨ ap ihom (pullri (Internal-hom-path (ap ihom p ∙ sym (transport-refl _)))) ⟩
-    (invi [ m ] ∘i coe0→1 (λ i → Homi u′ (assoc y u m i)) h′) .ihom ∎
+    ((invi [ m ] ∘i f [ m ]) ∘i m′) .ihom                           ≡⟨ ap ihom (pullri (Internal-hom-path (ap ihom p))) ⟩
+    (invi [ m ] ∘i adjusti _ _ h′) .ihom                            ∎
 ```
 
 The reverse direction also mirrors the family fibration; we use the same
@@ -201,48 +188,43 @@ cartesian→internal-iso {Γ} {Δ} {u} {x} {y} f f-cart = f-inv where
 
   f-inv : is-invertiblei f
   f-inv .invi =
-    coe0→1 (λ i → Homi (y ∘ (idr u i)) (idr x i)) (universal id (idi _))
+    adjusti (ap (y ∘_) (idr u)) (idr x) (universal id (idi _))
   f-inv .inversesi .invli =
     Internal-hom-path $
-      (f ∘i f-inv .invi) .ihom                 ≡⟨ ∘i-ihom (ap (_ ∘_) (sym (idr _))) (sym (idr _)) (sym (idr _)) (sym (idr _)) (transport-refl _) ⟩
+      (f ∘i f-inv .invi) .ihom                 ≡⟨ ∘i-ihom (ap (_ ∘_) (sym (idr _))) (sym (idr _)) (sym (idr _)) (sym (idr _)) refl ⟩
       (f [ id ] ∘i universal id (idi _)) .ihom ≡⟨ ap ihom (commutes id (idi _)) ⟩
       idi (y ∘ ⌜ u ∘ id ⌝) .ihom               ≡⟨ ap! (idr _) ⟩
       idi (y ∘ u) .ihom ∎
+  f-inv .inversesi .invri =
+    Internal-hom-path $
+      (f-inv .invi ∘i f) .ihom               ≡⟨ ∘i-ihom refl refl (sym (idr _)) refl refl ⟩
+      (adjusti _ _ (f-inv .invi) ∘i f) .ihom ≡⟨ ap ihom (unique (adjusti refl (sym (idr _)) (f-inv .invi) ∘i f) f∘f⁻¹∘f≡f*) ⟩
+      universal id (adjusti _ _ f) .ihom     ≡˘⟨ ap ihom (unique (adjusti refl (sym (idr _)) (idi _)) f∘id≡f*) ⟩
+      idi x .ihom ∎
 ```
-
-Unfortunately, the right inverse requires some nightmare transports.
+<details>
+<summary>The right inverse case needs some nightmare adjustments. Proceed at your
+own risk!
+</summary>
 
 ```agda
-  f-inv .inversesi .invri =
-    Internal-hom-path $ {!!}
-      -- (f-inv .invi ∘i f) .ihom                                     ≡⟨ ∘i-ihom refl refl (sym (idr _)) refl refl ⟩
-      -- (f⁻¹∘f) .ihom                                                ≡⟨ ap ihom (unique f⁻¹∘f unique1) ⟩
-      -- universal id f* .ihom ≡˘⟨ ap ihom (unique idi′ {!!}) ⟩
-      -- idi x .ihom ∎
-    where
-      f⁻¹∘f : Homi x (x ∘ id)
-      f⁻¹∘f = {!!}
-      -- coe0→1 (λ i → Homi (y ∘ idr u i) (x ∘ id)) (universal id (idi _)) ∘i f
-
-      -- f* : Homi x (y ∘ u ∘ id)
-      -- f* = coe1→0 (λ i → Homi x (y ∘ (idr u i))) f
-
-      -- id* : Homi (y ∘ u) (y ∘ u ∘ id)
-      -- id* = coe1→0 (λ i → Homi (y ∘ u) (y ∘ idr u i)) (idi _)
-
-      -- id*-ihom : id* .ihom ≡ idi (y ∘ u ∘ id) .ihom
-      -- id*-ihom =
-      --   id* .ihom                  ≡⟨ transport-refl _ ⟩
-      --   idi (y ∘ u) .ihom          ≡˘⟨ idr _ ⟩
-      --   idi (y ∘ u) .ihom ∘ id     ≡⟨ ap ihom (idi-nat id) ⟩
-      --   idi ⌜ (y ∘ u) ∘ id ⌝ .ihom ≡⟨ ap! (sym (assoc _ _ _)) ⟩
-      --   idi (y ∘ u ∘ id) .ihom ∎
-
-      -- unique1 : f ∘i′ f⁻¹∘f ≡ f*
-      -- unique1 = Internal-hom-path $
-      --   (f [ id ] ∘i f⁻¹∘f) .ihom             ≡⟨ ∘i-ihom refl {!!} {!!} {!!} {!!} ⟩
-      --   ((f ∘i′ universal id id*) ∘i f) .ihom  ≡⟨ ap (λ e → (e ∘i f) .ihom) (commutes _ _) ⟩
-      --   (id* ∘i f) .ihom                       ≡⟨ ∘i-ihom refl (sym (ap (y ∘_) (idr u))) refl id*-ihom (sym (transport-refl _)) ⟩
-      --   (idi _ ∘i f*) .ihom                    ≡⟨ ap ihom (idli _) ⟩
-      --   f* .ihom ∎
+      where
+        f∘f⁻¹∘f≡f*
+          : adjusti _ _ (f [ id ] ∘i adjusti _ _ (f-inv .invi) ∘i f)
+          ≡ adjusti refl (ap (_ ∘_) (sym (idr _))) f
+        f∘f⁻¹∘f≡f* = Internal-hom-path $
+          (f [ id ] ∘i adjusti _ _ (f-inv .invi) ∘i f) .ihom
+            ≡⟨ ap ihom (associ _ _ _) ⟩
+          ((f [ id ] ∘i adjusti _ _ (f-inv .invi)) ∘i f) .ihom
+            ≡⟨ ∘i-ihom refl (ap (y ∘_) (sym (idr _))) (sym (assoc _ _ _)) (∘i-ihom (ap (y ∘_) (sym (idr _))) refl refl refl refl) refl ⟩
+          (adjusti refl (sym (assoc _ _ _)) (f [ id ] ∘i universal id (idi _)) ∘i adjusti refl (ap (y ∘_) (sym (idr _))) f) .ihom
+            ≡⟨ ∘i-ihom refl refl refl (ap ihom (commutes id (idi _))) refl ⟩
+          (idi _ ∘i adjusti refl (ap (y ∘_) (sym (idr _))) f) .ihom ≡⟨ ap ihom (idli _) ⟩
+          f .ihom                                                                       ∎
+        f∘id≡f* : adjusti _ _ (f [ id ] ∘i adjusti _ _ (idi x)) ≡ adjusti _ _ f
+        f∘id≡f* = Internal-hom-path $
+          (f [ id ] ∘i adjusti _ _ (idi x)) .ihom ≡⟨ ∘i-ihom refl (idr _) (idr _) (idr _) refl ⟩
+          (f ∘i idi _) .ihom                      ≡⟨ ap ihom (idri _) ⟩
+          f .ihom ∎
 ```
+</details>
