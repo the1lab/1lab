@@ -1,10 +1,16 @@
 <!--
 ```agda
+open import Algebra.Ring.Commutative
 open import Algebra.Ring.Module
 open import Algebra.Group.Ab
 open import Algebra.Prelude
 open import Algebra.Group
 open import Algebra.Ring
+
+open import Data.Fin.Product
+open import Data.Fin.Base
+
+import Algebra.Ring.Module.Multilinear
 ```
 -->
 
@@ -154,7 +160,7 @@ open make-module hiding (_+_)
 Module-on-free-mod
   : ∀ {ℓ′} (A : Type ℓ′)
   → Module-on R (Free-mod A)
-Module-on-free-mod A = to-module-on R mk where
+Module-on-free-mod A = to-module-on mk module Module-on-free-mod where
   mk : make-module R (Free-mod A)
   mk .has-is-set = squash
   mk .make-module._+_ = _+_
@@ -171,7 +177,7 @@ Module-on-free-mod A = to-module-on R mk where
   mk .⋆-id = Free-mod.·-id
 
 Free-Mod : ∀ {ℓ′} → Type ℓ′ → Module R (ℓ ⊔ ℓ′)
-Free-Mod T = from-module-on R (Module-on-free-mod T)
+Free-Mod T = to-module (Module-on-free-mod.mk T)
 
 open Functor
 ```
@@ -182,7 +188,7 @@ open Functor
 fold-free-mod
   : ∀ {ℓ ℓ′} {A : Type ℓ} (N : Module R ℓ′)
   → (A → ⌞ N ⌟)
-  → Linear-map R (Free-Mod A) N
+  → Linear-map (Free-Mod A) N
 fold-free-mod {A = A} N f = go-linear module fold-free-mod where
   private module N = Module-on (N .snd)
 ```
@@ -213,11 +219,12 @@ write, is definitionally a linear map --- saving us a bit of effort.
   go (squash a b p q i j) =
     N.has-is-set (go a) (go b) (λ i → go (p i)) (λ i → go (q i)) i j
 
-  go-linear : Linear-map R (Free-Mod A) N
+  go-linear : Linear-map (Free-Mod A) N
   go-linear .map = go
-  go-linear .has-is-linear .linear r s t = refl
+  go-linear .lin .linear r s t = refl
 
 {-# DISPLAY fold-free-mod.go = fold-free-mod #-}
+{-# DISPLAY fold-free-mod.go-linear = fold-free-mod #-}
 ```
 
 To prove that free modules have the expected universal property, it
@@ -271,3 +278,65 @@ Free⊣Forget : ∀ {ℓ′} → Free-module {ℓ′} ⊣ Forget-module R (ℓ �
 Free⊣Forget {ℓ′} = make-left-adjoint.to-left-adjoint
   (make-free-module {ℓ′ = ℓ′})
 ```
+
+<!--
+```agda
+open Free-elim-prop
+
+equal-on-basis
+  : ∀ {ℓb ℓg} {T : Type ℓb} (M : Module R ℓg)
+  → {f g : Linear-map (Free-Mod T) M}
+  → ((x : T) → f .map (inc x) ≡ g .map (inc x))
+  → f ≡ g
+equal-on-basis M {f} {g} p =
+  Linear-map-path $ Free-elim-prop.elim λ where
+    .has-is-prop x → M .fst .is-tr _ _
+    .P-0m        → f.pres-0 ∙ sym g.pres-0
+    .P-neg x α   → f.pres-neg ·· ap M.-_ α ·· sym g.pres-neg
+    .P-inc       → p
+    .P-· x y α   → f.pres-⋆ _ _ ·· ap (x M.⋆_) α ·· sym (g.pres-⋆ _ _)
+    .P-+ x y α β → f.pres-+ _ _ ·· ap₂ M._+_ α β ·· sym (g.pres-+ _ _)
+  where
+    module f = Linear-map f
+    module g = Linear-map g
+    module M = Module-on (M .snd)
+
+equal-on-basis′
+  : ∀ {ℓb ℓg} {T : Type ℓb} {G : Type ℓg} (M : Module-on R G)
+  → (let module M = Module-on M)
+  → {f : Free-mod T → G}
+  → (∀ r x y → f (r · x + y) ≡ r M.⋆ f x M.+ f y)
+  → {g : Free-mod T → G}
+  → (∀ r x y → g (r · x + y) ≡ r M.⋆ g x M.+ g y)
+  → ((x : T) → f (inc x) ≡ g (inc x))
+  → f ≡ g
+equal-on-basis′ M l1 l2 p = ap map $
+  equal-on-basis (el _ (Module-on.has-is-set M) , M)
+    {f = record { lin = record { linear = l1 } }}
+    {g = record { lin = record { linear = l2 } }}
+    p
+
+module _ (cring : is-commutative-ring R) where
+  open Algebra.Ring.Module.Multilinear R cring
+
+  multilinear-extension
+    : ∀ {n} {ℓₙ}
+      {ℓₘ : Fin (suc n) → Level} {Ms : (i : Fin (suc n)) → Type (ℓₘ i)} {N : Module R ℓₙ}
+    → (f : Arrᶠ Ms ⌞ N ⌟)
+    → Multilinear-map (suc n) (λ i → Free-Mod (Ms i)) N
+  multilinear-extension {zero} {N = N} f = 1-linear-map (fold-free-mod N f)
+  multilinear-extension {suc n} f = Uncurry.from $
+    fold-free-mod _ λ x → multilinear-extension (f x)
+
+  multi-equal-on-bases
+    : ∀ {n} {ℓₙ} {ℓₘ : Fin n → Level} {Ms : (i : Fin n) → Type (ℓₘ i)} {N : Module R ℓₙ}
+    → {f g : Multilinear-map n (λ i → Free-Mod (Ms i)) N}
+    → (∀ (as : Πᶠ Ms) → applyᶠ (f .map) (mapₚ (λ _ → inc) as) ≡ applyᶠ (g .map) (mapₚ (λ _ → inc) as))
+    → f ≡ g
+  multi-equal-on-bases {n = zero} p = Multilinear-map-path (p tt)
+  multi-equal-on-bases {n = suc n} {f = f} {g} p =
+    Uncurry.injective $ equal-on-basis _ λ x →
+      multi-equal-on-bases λ as →
+        p (x , as)
+```
+-->

@@ -8,8 +8,8 @@ open import Algebra.Ring
 
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Abelian.Instances.Ab
-open import Cat.Abelian.Endo
 open import Cat.Abelian.Base
+open import Cat.Abelian.Endo
 open import Cat.Prelude hiding (_+_)
 ```
 -->

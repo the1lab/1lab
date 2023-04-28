@@ -2,6 +2,7 @@
 ```agda
 open import Algebra.Ring.Module.Notation
 open import Algebra.Ring.Module.Action
+open import Algebra.Ring.Commutative
 open import Algebra.Group.Notation
 open import Algebra.Ring.Module
 open import Algebra.Group.Ab
@@ -27,6 +28,9 @@ open Ab-category hiding (_+_ ; Terminal)
 open is-additive hiding (_+_ ; Terminal)
 open make-abelian-group
 open Total-hom
+
+open Module-notation ⦃ ... ⦄
+open Additive-notation ⦃ ... ⦄
 ```
 -->
 
@@ -39,11 +43,124 @@ admits an $\Ab$-enrichment. This is the usual "pointwise" group
 structure, but proving that the pointwise sum is a still a linear map
 is, ahem, very annoying. See for yourself:
 
+<!--
+```agda
+module _ {ℓm ℓn} (M : Module R ℓm) (N : Module R ℓn) where
+  instance
+    _ = module-notation M
+    _ = module-notation N
+```
+-->
+
+```agda
+  +-is-linear-map
+    : ∀ {f g : ⌞ M ⌟ → ⌞ N ⌟}
+    → is-linear-map f (M .snd) (N .snd)
+    → is-linear-map g (M .snd) (N .snd)
+    → is-linear-map (λ x → f x + g x) (M .snd) (N .snd)
+  +-is-linear-map {f = f} {g} fp gp .linear r s t =
+    f (r ⋆ s + t) + g (r ⋆ s + t)      ≡⟨ ap₂ _+_ (fp .linear r s t) (gp .linear r s t) ⟩
+    (r ⋆ f s + f t) + (r ⋆ g s + g t)  ≡⟨ sym +-assoc ∙ ap₂ _+_ refl (+-assoc ∙ ap₂ _+_ (+-comm _ _) refl ∙ sym +-assoc) ∙ +-assoc ∙ +-assoc ⟩
+    ⌜ r ⋆ f s + r ⋆ g s ⌝ + f t + g t  ≡˘⟨ ap¡ (⋆-distribl r (f s) (g s)) ⟩
+    r ⋆ (f s + g s) + f t + g t        ≡˘⟨ +-assoc ⟩
+    r ⋆ (f s + g s) + (f t + g t)      ∎
+```
+
+Doing some further algebra will let us prove that linear maps are also
+closed under pointwise inverse, and contain the zero map. The
+calculations speak for themselves:
+
+```agda
+  neg-is-linear-map
+    : ∀ {f : ⌞ M ⌟ → ⌞ N ⌟}
+    → is-linear-map f (M .snd) (N .snd)
+    → is-linear-map (λ x → - f x) (M .snd) (N .snd)
+  neg-is-linear-map {f = f} fp .linear r s t =
+    - f (r ⋆ s + t)        ≡⟨ ap -_ (fp .linear r s t) ⟩
+    - (r ⋆ f s + f t)      ≡⟨ neg-comm ∙ +-comm _ _ ⟩
+    - (r ⋆ f s) + - (f t)  ≡⟨ ap₂ _+_ (sym (Module-on.⋆-invr (N .snd))) refl ⟩
+    r ⋆ - f s + - f t      ∎
+
+  0-is-linear-map : is-linear-map (λ x → 0g) (M .snd) (N .snd)
+  0-is-linear-map .linear r s t = sym (+-idr ∙ Module-on.⋆-idr (N .snd))
+```
+
+Finally, if the base ring $R$ is commutative, then linear maps are also
+closed under pointwise scalar multiplication:
+
+```agda
+  ⋆-is-linear-map
+    : ∀ {f : ⌞ M ⌟ → ⌞ N ⌟} {r : ⌞ R ⌟}
+    → is-commutative-ring R
+    → is-linear-map f (M .snd) (N .snd)
+    → is-linear-map (λ x → r ⋆ f x) (M .snd) (N .snd)
+  ⋆-is-linear-map {f = f} {r} cring fp .linear s x y =
+    r ⋆ f (s ⋆ x + y)      ≡⟨ ap (r ⋆_) (fp .linear _ _ _) ⟩
+    r ⋆ (s ⋆ f x + f y)    ≡⟨ ⋆-distribl r (s ⋆ f x) (f y) ⟩
+    r ⋆ s ⋆ f x + r ⋆ f y  ≡⟨ ap (_+ r ⋆ f y) (⋆-assoc _ _ _ ∙ ap (_⋆ f x) cring ∙ sym (⋆-assoc _ _ _)) ⟩
+    s ⋆ r ⋆ f x + r ⋆ f y  ∎
+```
+
+<!--
+```agda
+
+  Linear-map-group : Abelian-group (ℓ ⊔ ℓm ⊔ ℓn)
+  ∣ Linear-map-group .fst ∣ = Linear-map M N
+  Linear-map-group .fst .is-tr = Linear-map-is-set R
+  Linear-map-group .snd = to-abelian-group-on grp where
+    grp : make-abelian-group (Linear-map M N)
+    grp .ab-is-set = Linear-map-is-set R
+
+    grp .mul f g .map x = f .map x + g .map x
+    grp .mul f g .lin = +-is-linear-map (f .lin) (g .lin)
+
+    grp .inv f .map x = - f .map x
+    grp .inv f .lin = neg-is-linear-map (f .lin)
+
+    grp .1g .map x = 0g
+    grp .1g .lin = 0-is-linear-map
+
+    grp .idl f       = Linear-map-path λ x → +-idl
+    grp .assoc f g h = Linear-map-path λ x → +-assoc
+    grp .invl f      = Linear-map-path λ x → +-invl
+    grp .comm f g    = Linear-map-path λ x → +-comm _ _
+
+module _ (cring : is-commutative-ring R) {ℓm ℓn} (M : Module R ℓm) (N : Module R ℓn) where
+  private instance
+    _ = module-notation M
+    _ = module-notation N
+
+  Action-on-hom : Ring-action R (Linear-map-group M N .snd)
+  Action-on-hom .Ring-action._⋆_ r f .map z = r ⋆ f .map z
+  Action-on-hom .Ring-action._⋆_ r f .lin =
+    ⋆-is-linear-map M N cring (f .lin)
+  Action-on-hom .Ring-action.⋆-distribl f g h =
+    Linear-map-path λ x → ⋆-distribl _ _ _
+  Action-on-hom .Ring-action.⋆-distribr f g h =
+    Linear-map-path λ x → ⋆-distribr _ _ _
+  Action-on-hom .Ring-action.⋆-assoc f g h =
+    Linear-map-path λ x → ⋆-assoc _ _ _
+  Action-on-hom .Ring-action.⋆-id f =
+    Linear-map-path λ x → ⋆-id _
+
+  Hom-Mod : Module R (level-of ⌞ R ⌟ ⊔ ℓm ⊔ ℓn)
+  Hom-Mod .fst = Action→Module R (Linear-map-group M N) Action-on-hom .fst
+  Hom-Mod .snd = Action→Module R (Linear-map-group M N) Action-on-hom .snd
+```
+-->
+
+Since we've essentially equipped the set of linear maps $M \to N$ with
+an $R$-module structure, which certainly includes an abelian group
+structure, we can conclude that $\Mod[R]$ is not only a category, but an
+$\Ab$-category to boot!
+
 ```agda
 R-Mod-ab-category : ∀ {ℓ′} → Ab-category (R-Mod R ℓ′)
+```
+
+<!--
+```agda
 R-Mod-ab-category .Abelian-group-on-hom A B = to-abelian-group-on grp where
-  open Module-notation ⦃ ... ⦄
-  open Additive-notation ⦃ ... ⦄
   instance
     _ = module-notation A
     _ = module-notation B
@@ -51,35 +168,21 @@ R-Mod-ab-category .Abelian-group-on-hom A B = to-abelian-group-on grp where
   grp : make-abelian-group (R-Mod.Hom A B)
   grp .ab-is-set = R-Mod.Hom-set _ _
   grp .mul f g .hom x = f # x + g # x
-  grp .mul f g .preserves .linear r s t =
-    f # (r ⋆ s + t) + g # (r ⋆ s + t)         ≡⟨ ap₂ _+_ (f .preserves .linear r s t) (g .preserves .linear r s t) ⟩
-    (r ⋆ f # s + f # t) + (r ⋆ g # s + g # t) ≡⟨ sym +-assoc ∙ ap₂ _+_ refl (+-assoc ∙ ap₂ _+_ (+-comm _ _) refl ∙ sym +-assoc) ∙ +-assoc ∙ +-assoc ⟩
-    ⌜ r ⋆ f # s + r ⋆ g # s ⌝ + f # t + g # t ≡˘⟨ ap¡ (⋆-distribl r (f # s) (g # s)) ⟩
-    r ⋆ (f # s + g # s) + f # t + g # t       ≡˘⟨ +-assoc ⟩
-    r ⋆ (f # s + g # s) + (f # t + g # t)     ∎
-```
-
-<details>
-<summary>The rest of the construction is also _Just Like That_, so I'm
-going to keep it in this `<details>`{.html} element out of
-decency.</summary>
-```agda
+  grp .mul f g .preserves = +-is-linear-map A B (f .preserves) (g .preserves)
   grp .inv f .hom x = - f # x
-  grp .inv f .preserves .linear r s t =
-    - f # (r ⋆ s + t)         ≡⟨ ap -_ (f .preserves .linear r s t) ⟩
-    - (r ⋆ f # s + f # t)     ≡⟨ neg-comm ∙ +-comm _ _ ⟩
-    - (r ⋆ f # s) + - (f # t) ≡⟨ ap₂ _+_ (sym (Module-on.⋆-negr (B .snd))) refl ⟩
-    r ⋆ - f # s + - f # t     ∎
+  grp .inv f .preserves = neg-is-linear-map A B (f .preserves)
   grp .1g .hom x = 0g
-  grp .1g .preserves .linear r s t = sym (+-idr ∙ Module-on.⋆-idr (B .snd))
-  grp .idl f = Homomorphism-path λ x → +-idl
+  grp .1g .preserves = 0-is-linear-map A B
+
+  grp .idl f       = Homomorphism-path λ x → +-idl
   grp .assoc f g h = Homomorphism-path λ x → +-assoc
-  grp .invl f = Homomorphism-path λ x → +-invl
-  grp .comm f g = Homomorphism-path λ x → +-comm _ _
+  grp .invl f      = Homomorphism-path λ x → +-invl
+  grp .comm f g    = Homomorphism-path λ x → +-comm _ _
+
 R-Mod-ab-category .∘-linear-l f g h = Homomorphism-path λ x → refl
 R-Mod-ab-category .∘-linear-r {B = B} {C} f g h = Homomorphism-path λ x → sym (is-linear-map.pres-+ (f .preserves) _ _)
 ```
-</details>
+-->
 
 ## Finite biproducts
 
@@ -123,10 +226,9 @@ defined pointwise using the $R$-module structures of $M$ and $N$:
 ```agda
 R-Mod-is-additive .has-prods M N = prod where
   module P = is-additive.Product Ab-is-additive (Ab-is-additive .has-prods
-    (M .fst , Module-on→Abelian-group-on R (M .snd))
-    (N .fst , Module-on→Abelian-group-on R (N .snd)))
+    (M .fst , Module-on→Abelian-group-on (M .snd))
+    (N .fst , Module-on→Abelian-group-on (N .snd)))
 
-  open Module-notation ⦃ ... ⦄
   instance
     _ = module-notation M
     _ = module-notation N

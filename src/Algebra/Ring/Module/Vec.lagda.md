@@ -40,7 +40,7 @@ elements of $R$ are a module over $R$.
 
 ```agda
 Fin-vec-module : ∀ n → Module R ℓ
-Fin-vec-module n = to-module R mk where
+Fin-vec-module n = to-module mk where
   mk : make-module R (Fin n → ⌞ R ⌟)
   mk .make-module.has-is-set = hlevel 2
   mk .make-module._+_ f g i = f i R.+ g i
@@ -74,7 +74,7 @@ $$
 module _ {ℓ′} (S : Module R ℓ′) where
   private
     module S = Module-on (S .snd)
-    G′ = Module-on→Group-on _ (S .snd)
+    G′ = Module-on→Group-on (S .snd)
 
   ∑-distr : ∀ {n} r (f : Fin n → ⌞ S ⌟)
           → r S.⋆ ∑ G′ f
@@ -89,11 +89,11 @@ module _ {ℓ′} (S : Module R ℓ′) where
 
 ```agda
   linear-extension : ∀ {n} → (Fin n → ⌞ S ⌟)
-                   → Linear-map R (Fin-vec-module n) S
+                   → Linear-map (Fin-vec-module n) S
   linear-extension fun .map x = ∑ G′ λ i → x i S.⋆ fun i
-  linear-extension fun .has-is-linear .linear r m n =
+  linear-extension fun .lin .linear r m n =
     ∑ G′ (λ i → (r R.* m i R.+ n i) S.⋆ fun i)                            ≡⟨ ap (∑ G′)  (funext λ i → S.⋆-distribr (r R.* m i) (n i) (fun i)) ⟩
-    ∑ G′ (λ i → (r R.* m i) S.⋆ fun i S.+ n i S.⋆ fun i)                  ≡⟨ ∑-split (Module-on→Abelian-group-on R (S .snd)) (λ i → (r R.* m i) S.⋆ fun i) _ ⟩
+    ∑ G′ (λ i → (r R.* m i) S.⋆ fun i S.+ n i S.⋆ fun i)                  ≡⟨ ∑-split (Module-on→Abelian-group-on (S .snd)) (λ i → (r R.* m i) S.⋆ fun i) _ ⟩
     ⌜ ∑ G′ (λ i → (r R.* m i) S.⋆ fun i) ⌝ S.+ ∑ G′ (λ i → n i S.⋆ fun i) ≡⟨ ap! (ap (∑ G′) (funext λ i → sym (S.⋆-assoc r (m i) _))) ⟩
     ⌜ ∑ G′ (λ i → r S.⋆ m i S.⋆ fun i) ⌝ S.+ ∑ G′ (λ i → n i S.⋆ fun i)   ≡˘⟨ ap¡ (∑-distr r λ i → m i S.⋆ fun i) ⟩
     (r S.⋆ ∑ G′ (λ i → m i S.⋆ fun i) S.+ ∑ G′ λ i → n i S.⋆ fun i)       ∎

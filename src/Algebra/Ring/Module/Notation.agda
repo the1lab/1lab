@@ -30,7 +30,7 @@ record Module-notation {ℓ ℓm} (R : Ring ℓ) (T : Type ℓm) : Type (ℓ ⊔
   infixr 25 _⋆_
 
 module-notation : ∀ {ℓ ℓm} {R : Ring ℓ} (M : Module R ℓm) → Module-notation R ⌞ M ⌟
-module-notation M .Module-notation.additive-group = Module-on→Abelian-group-on _ (M .snd)
+module-notation M .Module-notation.additive-group = Module-on→Abelian-group-on (M .snd)
 module-notation M .Module-notation.+-comm a b = Module-on.+-comm (M .snd)
 module-notation M .Module-notation._⋆_        = Module-on._⋆_ (M .snd)
 module-notation M .Module-notation.⋆-distribl = Module-on.⋆-distribl (M .snd)
