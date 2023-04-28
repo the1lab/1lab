@@ -149,35 +149,3 @@ sub-id = Internal-hom-pathp (idr _) (idr _) (idr _)
       (Internal-hom-pathp {f = f} {g = f'} py pz q i)
       ∘i (Internal-hom-pathp {f = g} {g = g'} px py r i)
 ```
-
-## Coercing source and target
-
-```agda
-adjusti : x ≡ x′ → y ≡ y′ → Homi x y → Homi x′ y′
-adjusti p q f .ihom = f .ihom
-adjusti p q f .has-src = f .has-src ∙ p
-adjusti p q f .has-tgt = f .has-tgt ∙ q
-
--- adjust-obs : x ≡ x′ → y ≡ y′ → Homi x y → Homi x′ y′
--- adjust-obs p q f = coe0→1 (λ i → Homi (p i) (q i)) f
-
--- adjust-cod-∘l
---   : {f : Homi y z} {g : Homi x y}
---   → (p : z ≡ z′)
---   → adjust-cod p (f ∘i g) ≡ adjust-cod p f ∘i g
--- adjust-cod-∘l {f = f} {g = g} p =
---   J (λ _ p → adjust-cod p (f ∘i g) ≡ adjust-cod p f ∘i g)
---     (transport-refl _ ∙ ap (_∘i g) (sym (transport-refl _)))
---     p
-
--- adjust-cod-∘r
---   : {f : Homi y z} {g : Homi x y}
---   → (p : z ≡ z ∘ σ)
---   → (q : y ≡ y ∘ σ)
---   → (r : f .ihom ≡ f .ihom ∘ σ)
---   → adjust-cod p (f ∘i g) ≡ f [ σ ] ∘i adjust-cod q g 
--- adjust-cod-∘r {f = f} {g = g} p q r =
---   Internal-hom-path $
---     transport-refl _
---     ∙ ∘i-ihom refl q p r (sym (transport-refl _))
--- ```

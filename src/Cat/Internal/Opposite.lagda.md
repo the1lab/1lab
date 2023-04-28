@@ -9,7 +9,7 @@ import Cat.Internal.Base
 -->
 
 ```agda
-module Cat.Internal.Instances.Opposite {o ℓ} {C : Precategory o ℓ} where
+module Cat.Internal.Opposite {o ℓ} {C : Precategory o ℓ} where
 ```
 
 <!--

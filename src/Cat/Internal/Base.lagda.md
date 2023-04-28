@@ -196,6 +196,16 @@ infix -1 _ihomₚ
 ```
 -->
 
+```agda
+adjusti
+    : ∀ {Γ C₀ C₁} {src tgt : Hom C₁ C₀} {x x′ y y′ : Hom Γ C₀}
+  → x ≡ x′ → y ≡ y′ → Internal-hom src tgt x y → Internal-hom src tgt x′ y′
+adjusti p q f .ihom = f .ihom
+adjusti p q f .has-src = f .has-src ∙ p
+adjusti p q f .has-tgt = f .has-tgt ∙ q
+```
+
+
 We also must define the action of substitutions $\Delta \to \Gamma$ on
 internal morphisms. In the external view of $\cC$, substitutions are
 morphisms $\cC(\Gamma, \Delta)$, and act via precomposition.
@@ -270,6 +280,15 @@ record Internal-cat : Type (o ⊔ ℓ) where
 
   Homi : ∀ {Γ} (x y : Hom Γ C₀) → Type ℓ
   Homi x y = Internal-hom src tgt x y
+
+  homi : ∀ {Γ} (f : Hom Γ C₁) → Homi (src ∘ f) (tgt ∘ f)
+  homi f .ihom = f
+  homi f .has-src = refl
+  homi f .has-tgt = refl
+
+  homi-nat : ∀ {Γ Δ} (f : Hom Δ C₁) → (σ : Hom Γ Δ)
+    → homi f [ σ ] ≡ adjusti (assoc _ _ _) (assoc _ _ _) (homi (f ∘ σ))
+  homi-nat f σ = Internal-hom-path refl
 ```
 
 # Equational Reasoning
