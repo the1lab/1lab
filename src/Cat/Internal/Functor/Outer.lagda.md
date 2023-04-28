@@ -58,8 +58,8 @@ objects; in $\thecat{Sets}$, this is simply the first projection.
 
 ```agda
     field
-      P : Ob
-      P₀ : ∀ {Γ} → Hom Γ P → Hom Γ C₀
+      ∫P : Ob
+      P₀ : ∀ {Γ} → Hom Γ ∫P → Hom Γ C₀
 ```
 
 We proceed by defining the action of morphisms. Intuitively, this just
@@ -70,16 +70,16 @@ indexing, along with a proof that ensures that the result lands in the
 correct fibre.
 
 ```agda
-      P₁ : ∀ {Γ} (px : Hom Γ P) {y : Hom Γ C₀} → Homi (P₀ px) y → Hom Γ P
-      P₁-tgt : ∀ {Γ} (px : Hom Γ P) {y : Hom Γ C₀}
+      P₁ : ∀ {Γ} (px : Hom Γ ∫P) {y : Hom Γ C₀} → Homi (P₀ px) y → Hom Γ ∫P
+      P₁-tgt : ∀ {Γ} (px : Hom Γ ∫P) {y : Hom Γ C₀}
              → (f : Homi (P₀ px) y) → y ≡ P₀ (P₁ px f)
 ```
 
 Next, we have the functoriality conditions; nothing here is too surprising.
 
 ```agda
-      P-id : ∀ {Γ} (px : Hom Γ P) → P₁ px (idi (P₀ px)) ≡ px
-      P-∘ : ∀ {Γ} (px : Hom Γ P) {y z : Hom Γ C₀} (f : Homi y z) (g : Homi (P₀ px) y)
+      P-id : ∀ {Γ} (px : Hom Γ ∫P) → P₁ px (idi (P₀ px)) ≡ px
+      P-∘ : ∀ {Γ} (px : Hom Γ ∫P) {y z : Hom Γ C₀} (f : Homi y z) (g : Homi (P₀ px) y)
           → P₁ px (f ∘i g) ≡ P₁ (P₁ px g) (adjusti (P₁-tgt px g) refl f)
 ```
 
@@ -87,8 +87,8 @@ Finally, the naturality conditions that allow us to work using
 generalized objects.
 
 ```agda
-      P₀-nat : ∀ {Γ Δ} → (px : Hom Δ P) → (σ : Hom Γ Δ) → P₀ px ∘ σ ≡ P₀ (px ∘ σ)
-      P₁-nat : ∀ {Γ Δ} (px : Hom Δ P) {y : Hom Δ C₀} (f : Homi (P₀ px) y) (σ : Hom Γ Δ)
+      P₀-nat : ∀ {Γ Δ} → (px : Hom Δ ∫P) → (σ : Hom Γ Δ) → P₀ px ∘ σ ≡ P₀ (px ∘ σ)
+      P₁-nat : ∀ {Γ Δ} (px : Hom Δ ∫P) {y : Hom Δ C₀} (f : Homi (P₀ px) y) (σ : Hom Γ Δ)
         → P₁ px f ∘ σ ≡ P₁ (px ∘ σ) (adjusti (P₀-nat px σ) refl (f [ σ ]))
 
 open Outer-functor
@@ -155,7 +155,7 @@ using the fact that $C_x$ is a pullback.
     open Pullback (pb src x) renaming (apex to Cₓ)
 
     outf : Outer-functor ℂ
-    outf .P = Cₓ
+    outf .∫P = Cₓ
     outf .P₀ fₓ = tgt ∘ p₁ ∘ fₓ
     outf .P₁ fₓ {y = y} g = universal coh
       module hom-from-action where abstract
@@ -222,7 +222,7 @@ covariant internal hom functor.
 
 ```agda
     outf : Outer-functor (ℂ ^opi)
-    outf .P = Cₓ
+    outf .∫P = Cₓ
     outf .P₀ fₓ = src ∘ p₁ ∘ fₓ
     outf .P₁ fₓ g = universal coh
       module hom-into-action where abstract
@@ -262,3 +262,43 @@ covariant internal hom functor.
         (sym (!-unique _))
 ```
 </details>
+
+## Outer Natural Transformations
+
+Let $\cC$ be a category, $\ica{C}$ an internal category in $\cC$, and $P, Q$ be
+two outer functors on $\ica{C}$. An outer natural transformation $P \to Q$ is given
+by maps between the total spaces of $P$ and $Q$, along with some naturality and
+coherence conditions.
+
+```agda
+module _ {ℂ : Internal-cat} where
+  open Internal-cat ℂ
+  record _=>o_ (P Q : Outer-functor ℂ) : Type (o ⊔ ℓ) where
+    no-eta-equality
+    field
+      ηo : ∀ {Γ} → Hom Γ (P .∫P) → Hom Γ (Q .∫P)
+```
+
+The first condition ensures that the natural transformation is takes
+elements of $P$ in the fibre over $x$ to elements of $Q$ over $x$.
+
+```agda
+      ηo-fib : ∀ {Γ} (px : Hom Γ (P .∫P)) → Q .P₀ (ηo px) ≡ P .P₀ px
+```
+
+With this little bit of coherence out of the way, we can state the
+naturality condition; this is the familiar condition from natural
+transformations, just mangled a bit.
+
+```agda
+      is-naturalo : ∀ {Γ : Ob} (px : Hom Γ (P .∫P)) (y : Hom Γ C₀)
+        → (f : Homi (P .P₀ px) y)
+        → ηo (P .P₁ px f) ≡ Q .P₁ (ηo px) (adjusti (sym (ηo-fib px)) refl f)
+```
+
+Finally, we require the naturality condition that allows us to work
+in the internal language of $\cC$.
+
+```agda
+      ηo-nat : ∀ {Γ Δ} (px : Hom Δ (P .∫P)) (σ : Hom Γ Δ) → ηo px ∘ σ ≡ ηo (px ∘ σ)
+```
