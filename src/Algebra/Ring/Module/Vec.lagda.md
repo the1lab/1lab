@@ -6,14 +6,11 @@ open import Algebra.Group.Ab
 open import Algebra.Group
 open import Algebra.Ring
 
-open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Diagram.Product.Indexed
-open import Cat.Functor.FullSubcategory
 open import Cat.Prelude
 
-open import Data.Dec
-open import Data.Fin
+open import Data.Fin.Base
 ```
 -->
 

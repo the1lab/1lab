@@ -213,7 +213,7 @@ However, to keep the interface of `Multilinear-map`{.Agda} simple to
 use, we must submit to the conservation of frustration, and power
 through some nighmarish computations by hand.
 
-[internal homs in $R$-Mod]: Algebra.Ring.Module.Hom.html
+[internal homs in $R$-Mod]: Algebra.Ring.Module.Category.html
 
 ```agda
   add : Multilinear-map n Ms N → Multilinear-map n Ms N → Multilinear-map n Ms N
