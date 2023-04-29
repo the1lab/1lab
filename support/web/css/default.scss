@@ -427,6 +427,20 @@ details.text {
   }
 }
 
+.commented-out {
+  display: none;
+  opacity: 0.6;
+}
+
+.commented-out > pre.Agda {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+body.show-hidden-code .commented-out {
+  display: revert;
+}
+
 
 div.profile {
   &.pfp-left {
