@@ -157,7 +157,7 @@ map $A \to B \to A \otimes B$.
     squash   : is-set Tensor
     t-invl   : ∀ {x} → :inv x :* x ≡ :1
     t-idl    : ∀ {x} → :1 :* x ≡ x
-    t-assoc  : ∀ {x y z} → (x :* y) :* z ≡ x :* (y :* z)
+    t-assoc  : ∀ {x y z} → x :* (y :* z) ≡ (x :* y) :* z
     t-comm   : ∀ {x y} → x :* y ≡ y :* x
 
     _,_       : ⌞ A ⌟ → ⌞ B ⌟ → Tensor
@@ -213,8 +213,9 @@ it's the initial object equipped with these data.
     go (t-idl {x} i) = is-prop→pathp (λ i → pprop (t-idl i)) (padd pz (go x)) (go x) i
     go (t-assoc {x} {y} {z} i) =
       is-prop→pathp (λ i → pprop (t-assoc i))
+        (padd (go x) (padd (go y) (go z)))
         (padd (padd (go x) (go y)) (go z))
-        (padd (go x) (padd (go y) (go z))) i
+        i
     go (t-comm {x} {y} i) =
       is-prop→pathp (λ i → pprop (t-comm i)) (padd (go x) (go y)) (padd (go y) (go x)) i
     go (t-pres-*r {x} {y} {z} i) = is-prop→pathp (λ i → pprop (t-pres-*r i)) (ppair x (y B.* z)) (padd (ppair x y) (ppair x z)) i
@@ -245,7 +246,7 @@ _definitionally_ a group homomorphism.
     go (squash x y p q i j)      = C.has-is-set (go x) (go y) (λ i → go (p i)) (λ i → go (q i)) i j
     go (t-invl {x} i)            = C.inversel {x = go x} i
     go (t-idl {x} i)             = C.idl {x = go x} i
-    go (t-assoc {x} {y} {z} i)   = C.associative {x = go x} {go y} {go z} (~ i)
+    go (t-assoc {x} {y} {z} i)   = C.associative {x = go x} {go y} {go z} i
     go (t-comm {x} {y} i)        = C.commutes {x = go x} {y = go y} i
     go (t-pres-*r {a} {b} {c} i) = Bilinear.pres-*r bilin a b c i
     go (t-pres-*l {a} {b} {c} i) = Bilinear.pres-*l bilin a b c i

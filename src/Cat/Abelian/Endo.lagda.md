@@ -41,11 +41,11 @@ Endo x = to-ring mr where
   mr .make-ring._*_ = A._∘_
   mr .+-idl = A.Hom.idl
   mr .+-invr = A.Hom.inverser
-  mr .+-assoc = sym A.Hom.associative
+  mr .+-assoc = A.Hom.associative
   mr .+-comm = A.Hom.commutes
   mr .*-idl = A.idl _
   mr .*-idr = A.idr _
-  mr .*-assoc = sym (A.assoc _ _ _)
+  mr .*-assoc = A.assoc _ _ _
   mr .*-distribl = sym (A.∘-linear-r _ _ _)
   mr .*-distribr = sym (A.∘-linear-l _ _ _)
 ```

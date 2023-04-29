@@ -1318,11 +1318,11 @@ is done in equational reasoning style:
 
 ```agda
 private
-  +-associative : (x y z : Nat) → (x + y) + z ≡ x + (y + z)
+  +-associative : (x y z : Nat) → x + (y + z) ≡ (x + y) + z
   +-associative zero y z = refl
   +-associative (suc x) y z =
-    suc ((x + y) + z) ≡⟨ ap suc (+-associative x y z) ⟩
-    suc (x + (y + z)) ∎
+    suc (x + (y + z)) ≡⟨ ap suc (+-associative x y z) ⟩
+    suc ((x + y) + z) ∎
 ```
 
 If your browser runs JavaScript, these equational reasoning chains, by
