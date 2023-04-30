@@ -71,7 +71,7 @@ record
   Slice-hom
     {x y} (f : Hom x y)
     (px : /-Obj {C = B} x) (py : /-Obj {C = B} y)
-    : Type (o ⊔ ℓ)
+    : Type ℓ
   where
   constructor slice-hom
   field
@@ -126,7 +126,7 @@ slice category and our displayed maps `Slice-hom`{.Agda} into a category
 displayed over $\cB$.
 
 ```agda
-Slices : Displayed B (o ⊔ ℓ) (o ⊔ ℓ)
+Slices : Displayed B (o ⊔ ℓ) ℓ
 Slices .Ob[_] = /-Obj {C = B}
 Slices .Hom[_] = Slice-hom
 Slices .Hom[_]-set = Slice-is-set

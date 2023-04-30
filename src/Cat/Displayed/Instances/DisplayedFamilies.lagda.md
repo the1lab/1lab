@@ -98,7 +98,7 @@ Dom .F₁ sq = sq .preserves .to
 Dom .F-id = refl
 Dom .F-∘ _ _ = refl
 
-Disp-family : Displayed B (o ⊔ ℓ ⊔ o') (o ⊔ ℓ ⊔ ℓ') 
+Disp-family : Displayed B (o ⊔ ℓ ⊔ o') (ℓ ⊔ ℓ')
 Disp-family = Slices B D∘ Change-of-base Dom E
 
 private
