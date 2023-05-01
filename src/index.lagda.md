@@ -758,7 +758,7 @@ with an arbitrary category $\cC$ with pullbacks.
 ```agda
 open import Cat.Internal.Base
 -- Internal categories, internal functors, and internal natural
-transformations.
+-- transformations.
 open import Cat.Internal.Morphism
 -- Internal monos, epis, and isos.
 open import Cat.Internal.Reasoning
