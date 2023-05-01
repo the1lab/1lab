@@ -544,6 +544,17 @@ open import Cat.Instances.Functor.Compose
 -- transformations)
 ```
 
+The internal versions of functor categories:
+```agda
+-- Internal functor categories:
+open import Cat.Instances.InternalFunctor
+open import Cat.Instances.InternalFunctor.Compose
+-- Composition of internal functors is functorial (also whiskering internal
+-- natural transformations)
+open import Cat.Instances.OuterFunctor
+-- The category of functors from an internal category to it's base.
+```
+
 Properties of the category of sets:
 
 ```agda
@@ -702,6 +713,8 @@ open import Cat.Displayed.Instances.Diagrams
 -- The fibration of diagrams
 open import Cat.Displayed.Instances.Objects
 -- The fibration of objects.
+open import Cat.Displayed.Instances.Externalisation
+-- Internal categories as fibrations.
 ```
 
 ### Cocartesian fibrations
@@ -736,6 +749,37 @@ open import Cat.Displayed.InternalSum
 -- The fibred equivalent of sigma types and existential quantifiers
 ```
 
+## Internal Categories
+
+The theory of internal categories. Internal category theory generalizes
+strict category theory by replacing the ambient category $\thecat{Sets}$
+with an arbitrary category $\cC$ with pullbacks.
+
+```agda
+open import Cat.Internal.Base
+-- Internal categories, internal functors, and internal natural
+transformations.
+open import Cat.Internal.Morphism
+-- Internal monos, epis, and isos.
+open import Cat.Internal.Reasoning
+-- Reasoning combinators for internal categories.
+open import Cat.Internal.Opposite
+-- The opposite of an internal category.
+open import Cat.Internal.Functor.Outer
+-- Internal functors from an internal category to its base.
+open import Cat.Internal.Sets
+-- Categories internal to sets are strict categories.
+```
+
+### Examples of internal categories
+
+```agda
+open import Cat.Internal.Instances.Discrete
+-- Discrete internal categories.
+open import Cat.Internal.Instances.Congruence
+-- Internal equivalence relations are internal categories.
+```
+
 ## Bicategories
 
 The theory of bicategories, as isolated objects. Note that a
@@ -751,6 +795,8 @@ open import Cat.Bi.Instances.Spans
   -- The prebicategory of spans in a precategory with pullbacks
 open import Cat.Bi.Instances.Discrete
   -- The locally discrete prebicategory associated to a precategory
+open import Cat.Bi.Instances.InternalCats
+  -- The prebicategory of categories internal to a fixed base category.
 ```
 
 ### Diagrams in bicategories
