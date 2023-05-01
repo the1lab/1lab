@@ -36,12 +36,15 @@ sets still plays an important role in strict category theory, via functors
 $\cC \to \thecat{Sets}$.
 
 We wish to relativize this situation to an arbitrary base category $\cC$,
-not just $\thecat{Sets}$. To do this, we use the age-old trick of viewing
+not just $\thecat{Sets}$. Specifically, we aim to define a notion of
+functor from category internal to $\cC$ to $\cC$ itself, which we call
+an *outer functor*[^1]. To do this, we use the age-old trick of viewing
 a family of sets $X : I \to \set$ as a function *into* $I$. This is
-easy to internalize: just replace function with morphism! However,
-defining the action of morphisms is a bit more involved, as we shall see
-shortly. We shall call these functors from $\ica{C}$ to the base $\cC$
-*outer functors*.
+easy to internalize: just replace function with morphism!
+
+[^1]: The terminology here is somewhat inconsistent. Borceaux calls
+these functors "internal base-valued functors", Mac Lane and
+Moerdijk refer to them as "category actions".
 
 ```agda
 module _ (ℂ : Internal-cat) where
@@ -102,16 +105,15 @@ of the discrete opfibration, the mapping $P_0$ plays the role of the
 fibration, and the mapping $P_1$ encodes the lifting property.
 
 [total space]: Cat.Displayed.Total.html
+<!-- [TODO: Reed M, 28/04/2023]
+Link to the page on discrete opfibrations when it is written!
+-->
 
 We can obtain internal [discrete fibrations] by looking at outer functors
 from the [internal opposite category] of $\ica{C}$.
 
 [discrete fibrations]: Cat.Displayed.Cartesian.Discrete.html
 [internal opposite category]: Cat.Internal.Opposite.html
-
-<!-- [TODO: Reed M, 28/04/2023]
-Link to the page on discrete opfibrations when it is written!
--->
 
 ## Internal Hom Functors
 
@@ -131,7 +133,7 @@ module _ (pb : has-pullbacks C) (term : Terminal C) (ℂ : Internal-cat) where
   Internal-hom-from x = outf where
 ```
 
-Recall that defining an outer functor on $\ica{C}$ requires chosing
+Recall that defining an outer functor on $\ica{C}$ requires choosing
 some $P : \cC$ that will play the role of the total space; for
 hom functor, this ought to be the object of all morphisms with domain
 $x$. We can encode this internally with the following pullback:
@@ -267,10 +269,10 @@ covariant internal hom functor.
 
 ## Outer Natural Transformations
 
-Let $\cC$ be a category, $\ica{C}$ an internal category in $\cC$, and $P, Q$ be
-two outer functors on $\ica{C}$. An outer natural transformation $P \to Q$ is given
-by maps between the total spaces of $P$ and $Q$, along with some naturality and
-coherence conditions.
+Let $\cC$ be a category, $\ica{C}$ an internal category in $\cC$, and
+$P, Q$ be two outer functors on $\ica{C}$. An outer natural transformation
+$P \to Q$ is given by maps between the total spaces of $P$ and $Q$, along
+with some naturality and coherence conditions.
 
 ```agda
 module _ {ℂ : Internal-cat} where

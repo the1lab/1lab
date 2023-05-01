@@ -34,11 +34,11 @@ open _=>i_
 # The bicategory of internal categories
 
 Let $\cC$ be some category. The collection of
-[internal categories] in $\cC$ forms a bicategory, where the 1-cells
-are internal functors, and the 2-cells are internal natural
-transformations.
+[internal categories] in $\cC$ forms a [bicategory] with internal functors
+as 1-cells, and internal natural transformations as 2-cells.
 
 [internal categories]: Cat.Internal.Base.html
+[bicategory]: Cat.Bi.Base.html
 
 ```agda
 Internal-cats : Prebicategory (o ⊔ ℓ) (o ⊔ ℓ) (o ⊔ ℓ)
@@ -46,9 +46,14 @@ Internal-cats = icats where
   open make-natural-iso
 ```
 
-The meat of this proof is constructing the unitors and the associators;
-these are all *almost* the identity internal natural transformation,
-but the lack of some definitional equalities gets in the way.
+We have already shown that [internal functors] form a precategory, so
+all that remains is to construct the unitors and associator. These all
+are *almost* identity 2-cells, as internal functor composition is
+pointwise strictly unital and associative. Unfortunately, this does not
+extend to internal functor composition as a whole, so we cannot use the
+identity internal natural isomorphism as-is.
+
+[internal functors]: Cat.Instances.InternalFunctor.html
 
 ```agda
   ƛ : ∀ {A B : Internal-cat}
@@ -119,7 +124,8 @@ but the lack of some definitional equalities gets in the way.
       idri _ ·· pushli (J .Fi-∘ _ _) ·· sym (idli _)
 ```
 
-Once we've got that tedium out of the way, the rest of the construction is a breeze.
+Once we've got that tedium out of the way, the rest of the construction
+is a breeze.
 
 ```agda
   icats : Prebicategory _ _ _ 

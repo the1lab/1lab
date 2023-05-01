@@ -37,7 +37,7 @@ open Internal-hom
 # Externalisation of internal categories
 
 Every [internal category] in $\cB$ gives rise to a fibration over $\cB$,
-known as the *externalisation* of the internal category.
+known as the *externalisation* of an internal category.
 
 [internal category]: Cat.Internal.Base.html
 
@@ -229,9 +229,9 @@ own risk!
 ```
 </details>
 
-Finally, we shall show that the the externalisation is a fibration.
-The argument proceeds in the same manner as the family fibration:
-Given a generalized object $y : \cB(\Delta C_0)$ and a morphism
+Finally, we shall show that externalisation is a fibration.
+As per usual, the argument proceeds in the same manner as the family
+fibration. Given a generalized object $y : \cB(\Delta C_0)$ and a morphism
 $u : \cB(\Gamma, \Delta)$, we can take the pullback of $y$ to be
 $y \circ u$; the lift of $u$ is then simply the (internal) identity
 morphism.

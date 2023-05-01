@@ -26,23 +26,41 @@ open _=>i_
 
 # Internal functor categories
 
-Like 1-categorical natural transformations, there is an identity internal
-natural transformation, and internal natural transformations are
-composable.
+Internal functors $\ica{C} \to \ica{D}$ and internal natural
+transformations between them assemble into a category, known as the
+*internal functor category*. This category is the internalized version
+of the [functor category], and plays a similar role in the theory of
+internal categories.
 
+[functor category]: Cat.Instances.Functor.html
+
+Before we define the category, we need some simple facts about internal
+natural transformations. First, we note that there is an internal identity
+natural transformation.
+
+<!--
 ```agda
 module _ {ℂ 𝔻 : Internal-cat} where
   private
     module ℂ = Cat.Internal.Reasoning ℂ
     module 𝔻 = Cat.Internal.Reasoning 𝔻
+```
+-->
 
+```
   idnti : ∀ {F : Internal-functor ℂ 𝔻} → F =>i F
   idnti .ηi x = 𝔻.idi _
   idnti .is-naturali x y f =
     𝔻.idli _ ∙ sym (𝔻.idri _)
   idnti {F = F} .ηi-nat x σ = 𝔻.casti $
     𝔻.idi-nat σ 𝔻.∙i ap 𝔻.idi (F .Fi₀-nat x σ)
+```
 
+Next, we show that we can compose internal natural transformations
+$\alpha : G \To H$ and $\beta : F \To G$ to obtain an internal
+transformation $\alpha \circ \beta : F \To H$.
+
+```agda
   _∘nti_ : ∀ {F G H : Internal-functor ℂ 𝔻} → G =>i H → F =>i G → F =>i H
   (α ∘nti β) .ηi x = α .ηi x 𝔻.∘i β .ηi x
   (α ∘nti β) .is-naturali x y f =
@@ -54,10 +72,9 @@ module _ {ℂ 𝔻 : Internal-cat} where
     α .ηi (x ∘ σ) 𝔻.∘i β .ηi (x ∘ σ) ∎
 ```
 
-We can then show that internal functors and internal natural
-transformations form a category. This is due to the fact that paths
-between internal natural transformations are solely characterised by
-paths between the actions.
+Armed with these facts, we proceed to construct the internal functor
+category. Objects are internal functors $\ica{C} \to \ica{D}$, 
+morphisms are internal natural transformations $F \To G$. 
 
 ```agda
 module _ (ℂ 𝔻 : Internal-cat) where
@@ -68,9 +85,15 @@ module _ (ℂ 𝔻 : Internal-cat) where
   Internal-functors : Precategory (o ⊔ ℓ) (o ⊔ ℓ)
   Internal-functors .Precategory.Ob = Internal-functor ℂ 𝔻
   Internal-functors .Precategory.Hom F G = F =>i G
-  Internal-functors .Precategory.Hom-set _ _ = Internal-nat-set
   Internal-functors .Precategory.id = idnti
   Internal-functors .Precategory._∘_ = _∘nti_
+```
+
+The category equations all follow from the fact that equality of
+internal natural transformations is given by componentwise equality.
+
+```agda
+  Internal-functors .Precategory.Hom-set _ _ = Internal-nat-set
   Internal-functors .Precategory.idr α =
     Internal-nat-path λ x → 𝔻.idri _
   Internal-functors .Precategory.idl α =
