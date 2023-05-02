@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Displayed.Base
 open import Cat.Displayed.Cartesian
+open import Cat.Displayed.GenericObject
 
 open import Cat.Prelude
 
@@ -251,3 +252,53 @@ Externalisation-fibration .Cartesian-fibration.has-lift u y = cart-lift where
       (idi _ [ m ] ∘i m′) .ihom ≡⟨ ap ihom p ⟩
       h′ .ihom                  ∎
 ```
+
+## Generic Objects
+
+The externalisation is always globally small. We shall use the object of
+objects $C_0$ as the base for our generic object, and the identity
+morphism $id : C_0 \to C_0$ as the upstairs portion. Classifying maps
+in the base are given by interpreting using a object $\cC(\Gamma, C_0)$ in
+the externalisation as a morphism in the base, and the displayed
+classifying map is the internal identity morphism, which is always
+cartesian.
+
+```agda
+Externalisation-globally-small : Globally-small Externalise
+Externalisation-globally-small = small where
+  open Globally-small
+  open is-generic-object
+  open is-cartesian
+
+  small : Globally-small Externalise
+  small .U = C₀
+  small .Gen = id
+  small .has-generic-ob .classify x = x
+  small .has-generic-ob .classify′ x =
+    adjusti refl (sym (idl _)) (idi _)
+```
+
+<details>
+<summary>However, showing the internal identity morphism needs to
+be transported around a bit, so showing that it is cartesian requires
+some tedious calculations.
+</summary>
+
+```agda
+  small .has-generic-ob .classify-cartesian x′ .universal m h′ =
+    adjusti refl (idl _) h′
+  small .has-generic-ob .classify-cartesian x′ .commutes m h′ =
+    Internal-hom-path $
+      ∘i-ihom refl
+        (sym (idl _))
+        (sym (assoc _ _ _))
+        (ap ihom (idi-nat _) ∙ ap (λ ϕ → idi ϕ .ihom) (sym (idl _)))
+        refl
+      ∙ ap ihom (idli h′)
+  small .has-generic-ob .classify-cartesian x′ .unique {m = m} m′ p =
+    Internal-hom-path $
+      sym (ap ihom (idli m′))
+      ·· ∘i-ihom refl refl (ap (_∘ m) (sym (idl _))) (sym (ap ihom (idi-nat m))) refl
+      ·· ap ihom p
+```
+</details>
