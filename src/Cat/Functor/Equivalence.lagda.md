@@ -1,4 +1,3 @@
-<!--
 ```agda
 open import Cat.Instances.Functor
 open import Cat.Functor.Adjoint
@@ -8,10 +7,7 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning
-```
--->
 
-```agda
 module Cat.Functor.Equivalence where
 ```
 
@@ -608,5 +604,20 @@ module
       .inv → e.F⁻¹ .F₀
       .rinv x → d-cat .to-path (D.invertible→iso _ (e.counit-iso x))
       .linv x → sym $ c-cat .to-path (C.invertible→iso _ (e.unit-iso x))
+```
+-->
+
+<!--
+```agda
+record Equivalence
+  {o ℓ o′ ℓ′} (C : Precategory o ℓ) (D : Precategory o′ ℓ′)
+  : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′)
+  where
+  no-eta-equality
+  field
+    To : Functor C D
+    To-equiv : is-equivalence To
+
+  open is-equivalence To-equiv renaming (F⁻¹ to From; F⊣F⁻¹ to To⊣From) public
 ```
 -->

@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Displayed.Cartesian
+open import Cat.Displayed.GenericObject
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Discrete
 open import Cat.Instances.Functor
@@ -184,4 +185,129 @@ module _ {ℓ} (X : Set ℓ) where
       (happly (sym (transport-refl (λ y → im .F.from y ∘ im .F.to y)) ∙ im .F.invr) x)
   Families-are-categories isc .to-path-over im = F.≅-pathp refl _ $ funextP λ a →
     Hom-pathp-reflr C (elimr refl ∙ ap to (Univalent.iso→path→iso isc _))
+```
+
+## Generic Objects
+
+The family fibration on $\cC$ has a generic object if and only if $\cC$
+is equivalent to a strict, small category. We begin by showing the
+forward direction.
+
+```agda
+Family-generic-object→Strict-equiv
+  : Globally-small (Family {h})
+  → Σ[ Strict ∈ Precategory h h ]
+    (is-set (Precategory.Ob Strict) × Equivalence Strict C)
+Family-generic-object→Strict-equiv small =
+  Strict , hlevel! , eqv where
+  open Globally-small small
+```
+
+The main idea of the proof is that we can replace the type of objects
+of $\cC$ with the base component of the generic object $U$, which is a
+small set. The displayed component of the generic object gives us a
+family of objects over $U$, which we use to define morphisms of our
+strict category.
+
+```agda
+  Strict : Precategory h h
+  Strict .Precategory.Ob = ∣ U ∣
+  Strict .Precategory.Hom x y = Hom (Gen x) (Gen y)
+  Strict .Precategory.Hom-set _ _ = Hom-set _ _
+  Strict .Precategory.id = id
+  Strict .Precategory._∘_ = _∘_
+  Strict .Precategory.idr = idr
+  Strict .Precategory.idl = idl
+  Strict .Precategory.assoc = assoc
+```
+
+We can use the family of objects over $U$ to construct an embedding from
+the strict category into $\cC$.
+
+```agda
+  To : Functor Strict C
+  To .F₀ = Gen
+  To .F₁ f = f
+  To .F-id = refl
+  To .F-∘ _ _ = refl
+
+  To-ff : is-fully-faithful To
+  To-ff = id-equiv
+```
+
+Moreover, this embedding is split essentially surjective on objects.
+To show this, note that we can construct a map from the objects of
+$\cC$ back into $U$ by classifying the constant family $_ \mapsto x$
+that lies over the set of endomorphisms of $x$. This yields a map
+$\cC(x,x) \to U$, to which we apply the identity morphism.
+
+```agda
+  reflect : Ob → ∣ U ∣
+  reflect x = classify {x = el! (Hom x x)} (λ _ → x) id
+```
+
+Next, we note that we can construct a morphism from any object $x : \cC$
+to it's it's reflection in $U$, as seen through the generic object.
+Furthermore, this morphism is cartesian, and thus invertible.
+
+```agda
+  η* : (x : Ob) → Hom x (Gen (reflect x))
+  η* x = classify′ (λ _ → x) id
+
+  η*-invertible : ∀ {x} → is-invertible (η* x)
+  η*-invertible {x} =
+    cartesian→pointwise-iso (classify-cartesian λ _ → x) id
+```
+
+This implies that the embedding from our strict category into $\cC$ is
+split eso, and thus an equivalence of categories.
+
+```
+  To-split-eso : is-split-eso To
+  To-split-eso y =
+    reflect y , (invertible→iso (η* y) η*-invertible Iso⁻¹)
+
+  eqv : Equivalence Strict C
+  eqv .Equivalence.To = To
+  eqv .Equivalence.To-equiv =
+    ff+split-eso→is-equivalence id-equiv To-split-eso
+```
+
+On to the backwards direction! The key insight here is that we can use
+the set of objects of the strict category as the base of our generic
+object, and the forward direction of the equivalence as the displayed
+portion.
+
+```agda
+Strict-equiv→Family-generic-object
+  : ∀ (Small : Precategory h h)
+  → is-set (Precategory.Ob Small)
+  → Equivalence Small C
+  → Globally-small (Family {h})
+Strict-equiv→Family-generic-object Small ob-set eqv = gsmall where
+  module Small = Precategory Small
+  open Equivalence eqv
+  open Globally-small
+  open is-generic-object
+
+  gsmall : Globally-small Family
+  gsmall .U = el Small.Ob ob-set
+  gsmall .Gen = To .F₀
+```
+
+Classifying objects in the family fibration is just a matter of chasing
+the equivalence around.
+
+```agda
+  gsmall .has-generic-ob .classify f x = From .F₀ (f x)
+  gsmall .has-generic-ob .classify′ f x = counit⁻¹ .η (f x)
+  gsmall .has-generic-ob .classify-cartesian f .universal m h′ x =
+    counit .η (f (m x)) ∘ h′ x
+  gsmall .has-generic-ob .classify-cartesian f .commutes m h′ =
+    funext λ _ → cancell (is-invertible.invr (counit-iso _))
+  gsmall .has-generic-ob .classify-cartesian f .unique {m = m} {h′ = h′} m′ p =
+    funext λ x →
+      m′ x                                                 ≡⟨ introl (is-invertible.invl (counit-iso _)) ⟩
+      (counit .η (f (m x)) ∘ counit⁻¹ .η (f (m x))) ∘ m′ x ≡⟨ pullr (p $ₚ x) ⟩
+      counit .η (f (m x)) ∘ h′ x ∎
 ```
