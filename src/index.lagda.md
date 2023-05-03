@@ -486,6 +486,28 @@ open import Cat.Skeletal -- Categories where isomorphisms are automorphisms.
 open import Cat.Gaunt -- Strict univalent categories.
 ```
 
+Properties, constructions, and the category of strict categories:
+
+```agda
+-- Strict categories
+open import Cat.Instances.StrictCat
+open import Cat.Instances.StrictCat.Cohesive
+  -- ^ Strict category structure is a sort of "spatial" structure on a
+  -- set
+
+open import Cat.Instances.Free
+-- Free strict categories on a directed graph
+
+open import Cat.Instances.FinSet
+-- Skeleton of the category of finite sets
+
+open import Cat.Instances.Simplex
+-- Skeleton of the simplex category
+
+open import Cat.Instances.Discrete -- Discrete categories
+open import Cat.Instances.Delooping -- Delooping a monoid to give a category
+```
+
 ## Category instances
 
 Category "instances" are constructions of, and proofs associated to, the
@@ -558,28 +580,6 @@ open import Cat.Instances.Comma -- Comma categories
 open import Cat.Instances.Slice -- Slice categories
 open import Cat.Instances.Slice.Presheaf -- PSh(C)/X ≅ PSh(∫ X)
 open import Cat.Instances.Comma.Univalent
-```
-
-Properties, constructions, and the category of strict categories:
-
-```agda
--- Strict categories
-open import Cat.Instances.StrictCat
-open import Cat.Instances.StrictCat.Cohesive
-  -- ^ Strict category structure is a sort of "spatial" structure on a
-  -- set
-
-open import Cat.Instances.Free
--- Free strict categories on a directed graph
-
-open import Cat.Instances.FinSet
--- Skeleton of the category of finite sets
-
-open import Cat.Instances.Simplex
--- Skeleton of the simplex category
-
-open import Cat.Instances.Discrete -- Discrete categories
-open import Cat.Instances.Delooping -- Delooping a monoid to give a category
 ```
 
 ## Allegories

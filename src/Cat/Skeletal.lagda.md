@@ -4,8 +4,6 @@ open import Cat.Strict
 open import Cat.Instances.Discrete
 open import Cat.Prelude
 
-open import Homotopy.Space.Circle
-
 import Cat.Reasoning
 
 open Cat.Reasoning using (Isomorphism ; id-iso)

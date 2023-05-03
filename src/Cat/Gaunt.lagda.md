@@ -34,7 +34,7 @@ record is-gaunt {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ ℓ) where
   open StrictIds has-category has-strict renaming (K to K-iso) public
 ```
 
-As one would expect, gauntness is a proposition.
+As one would expect, being gaunt is property of a category.
 
 ```agda
 is-gaunt-is-prop
