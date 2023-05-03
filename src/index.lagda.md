@@ -182,6 +182,7 @@ open import 1Lab.Path -- Path types
 open import 1Lab.Path.Groupoid  -- Groupoid structure of types
 open import 1Lab.Path.Reasoning -- Combinators for reasoning with path composition
 open import 1Lab.Path.IdentitySystem -- Families R for which R(x,y) ≃ (x ≡ y)
+open import 1Lab.Path.IdentitySystem.Strict -- Identity systems on sets
 
 open import 1Lab.Equiv -- “Contractible fibres” equivalences
 open import 1Lab.Equiv.Biinv -- Biinvertible maps
@@ -472,6 +473,17 @@ open import Cat.Univalent.Rezk.Universal
   -- Universal property of the Rezk completion
 open import Cat.Univalent.Instances.Algebra
   -- Eilenberg-Moore categories preserve univalence
+```
+
+## Strict Categories
+
+In general, precategories do not have a set of objects. We call categories
+that do **strict**.
+
+```agda
+open import Cat.Strict -- Categories with a set of objects.
+open import Cat.Skeletal -- Categories where isomorphisms are automorphisms.
+open import Cat.Gaunt -- Strict univalent categories.
 ```
 
 ## Category instances
