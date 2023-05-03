@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Base
+open import Cat.Displayed.Fibre
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning as DR
@@ -528,6 +529,50 @@ module _
   IdVf = Fibred→Vertical-fibred Idf′
 ```
 
+### Restriction of vertical functors
+
+Vertical functors restrict to functors between fibre categories.
+
+<!--
+```agda
+module _
+  {ob ℓb oe ℓe of ℓf}
+  {B : Precategory ob ℓb}
+  {ℰ : Displayed B oe ℓe} {ℱ : Displayed B of ℓf}
+  where
+  open Precategory B
+  private module ℰ = Displayed ℰ
+  private module ℱ = Displayed ℱ
+
+  open Vertical-functor
+```
+-->
+
+```agda
+  Restrict↓ : Vertical-functor ℰ ℱ → ∀ x → Functor (Fibre ℰ x) (Fibre ℱ x)
+  Restrict↓ F' _ .Functor.F₀ = F' .F₀′
+  Restrict↓ F' _ .Functor.F₁ = F' .F₁′
+  Restrict↓ F' _ .Functor.F-id = F' .F-id′
+```
+
+As per usual, transports get in our way. This `comp`{.Agda} really is
+the best way to handle this.
+
+```agda
+  Restrict↓ F' _ .Functor.F-∘ {x} {y} {z} f g i =
+    comp (λ j → ℱ.Hom[ idl id j ] (F' .F₀′ x) (F' .F₀′ z)) (∂ i) λ where
+      j (i = i0) →
+        F' .F₁′ (transp (λ i → ℰ.Hom[ idl id (i ∧ j) ] x z) (~ j) (f ℰ.∘′ g))
+      j (i = i1) →
+        transp (λ i → ℱ.Hom[ idl id (i ∧ j) ] (F' .F₀′ x) (F' .F₀′ z)) (~ j)
+          (F' .F₁′ f ℱ.∘′ F' .F₁′ g)
+      j (j = i0) → F' .F-∘′ {f′ = f} {g′ = g} i
+
+  Restrict↓f : Vertical-fibred-functor ℰ ℱ → ∀ x → Functor (Fibre ℰ x) (Fibre ℱ x)
+  Restrict↓f F' = Restrict↓ (Vertical-fibred-functor.vert F')
+```
+
+
 ## Displayed Natural Transformations
 
 Just like we have defined a [displayed functor][disfct]
@@ -631,4 +676,39 @@ to be preserved.
   _=>f↓_ : (F′ G′ : Vertical-fibred-functor ℰ ℱ) → Type _
   F′ =>f↓ G′ = F′ .vert =>↓ G′ .vert
     where open Vertical-fibred-functor
+```
+
+Vertical natural transformations restrict to natural transformations
+between restrictions of vertical functors (what a mouthful!).
+
+<!--
+```agda
+  open _=>_
+  open _=>↓_
+```
+-->
+
+```agda
+  Vert-nat-restrict
+    : ∀ {F′ G′ : Vertical-functor ℰ ℱ}
+    → F′ =>↓ G′ → ∀ x → Restrict↓ F′ x => Restrict↓ G′ x
+  Vert-nat-restrict α′ x .η x′ = α′ .η′ x′
+  Vert-nat-restrict {F′ = F′} {G′ = G′} α′ x .is-natural x′ y′ f′ i =
+    comp (λ j → ℱ.Hom[ hom-filler i j ] (F′ .F₀′ x′) (G′ .F₀′ y′)) (∂ i) λ where
+      j (i = i0) →
+        transp (λ i → ℱ.Hom[ idl id (i ∧ j) ] (F′ .F₀′ x′) (G′ .F₀′ y′)) (~ j)
+          (α′ .η′ y′ ℱ.∘′ F′ .F₁′ f′)
+      j (i = i1) →
+        transp (λ i → ℱ.Hom[ idl id (i ∧ j) ] (F′ .F₀′ x′) (G′ .F₀′ y′)) (~ j)
+          (G′ .F₁′ f′  ℱ.∘′ α′ .η′ x′)
+      j (j = i0) → α′ .is-natural′ x′ y′ f′ i
+    where
+      hom-filler : I → I → Hom x x
+      hom-filler i j =
+        is-set→squarep (λ i j → Hom-set x x) (idl id) id-comm-sym refl (idl id) j i
+
+  Vert-fib-nat-restrict
+    : ∀ {F′ G′ : Vertical-fibred-functor ℰ ℱ}
+    → F′ =>f↓ G′ → ∀ x → Restrict↓f F′ x => Restrict↓f G′ x
+  Vert-fib-nat-restrict α′ x = Vert-nat-restrict α′ x
 ```
