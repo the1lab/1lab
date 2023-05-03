@@ -53,20 +53,38 @@ liftings along a constant functor $\Delta_{x} : \cJ \to \cB$, we get a
 diagram in $\cE$ that lies entirely in the fibre $\cE_{x}$: a fibrewise
 diagram!
 
-This allows us to concisely define the fibration of fibrewise diagrams
+we could concisely define the fibration of fibrewise diagrams
 as the base change of $\cE \to \cB$ along the functor $\cB \to [\cJ,
-\cB]$ that takes an object to the constant diagram on that object.
+\cB]$ that takes an object to the constant diagram on that object, but
+this runs into some annoying issues with transports. Therefore, we
+unfold the definition instead.
 
 [fibration of liftings]: Cat.Displayed.Instances.Lifting.html
+
+<!--
+```agda
+open Lifting
+open _=[_]=>l_
+```
+-->
 
 ```agda
 Diagrams
  : ∀ {oj ℓj} (J : Precategory oj ℓj)
  → Displayed B _ _
-Diagrams J = Change-of-base ConstD (Liftings E J)
+Diagrams J .Ob[_] b = Lifting {J = J} E (Const b)
+Diagrams J .Hom[_] u F G = F =[ const-nt u ]=>l G
+Diagrams J .Hom[_]-set _ _ _ = Nat-lift-is-set
+Diagrams J .id′ .η′ _ = id′
+Diagrams J .id′ .is-natural′ _ _ _ =
+  cast[] $ idl′ _ ∙[] symP (idr′ _)
+Diagrams J ._∘′_ α β .η′ j = α .η′ j ∘′ β .η′ j
+Diagrams J ._∘′_ α β .is-natural′ x y f =
+  cast[] $ pullr[] _ (β .is-natural′ x y f) ∙[] extendl[] _ (α .is-natural′ x y f)
+Diagrams J .idr′ α = Nat-lift-pathp λ _ → idr′ _
+Diagrams J .idl′ α = Nat-lift-pathp λ _ → idl′ _
+Diagrams J .assoc′ α β γ = Nat-lift-pathp λ _ → assoc′ _ _ _
 ```
-
-When $\cE$ is a fibration, then so is the fibration of diagrams.
 
 <!--
 ```agda
@@ -77,11 +95,52 @@ module _ {oj ℓj} (J : Precategory oj ℓj) where
 ```
 -->
 
+## As a fibration
+
+We begin by characterizing the cartesian maps in the diagram fibration.
+Like the fibration of liftings, these are the pointwise cartesian maps.
+This proof is identical to `pointwise-cartesian→Liftings-cartesian`{.Agda},
+but we are off by some definitional equalities, so we have to unfold
+some things.
+
+```agda
+  pointwise-cartesian→Diagram-cartesian
+    : ∀ {x y : Ob} {F : Lifting E (Const x)} {G : Lifting E (Const y)}
+    → {u : Hom x  y} {α : F =[ const-nt u ]=>l G}
+    → (∀ j → is-cartesian E u (α .η′ j))
+    → is-cartesian (Diagrams J) u α
+  pointwise-cartesian→Diagram-cartesian {u = u} {α = α} pointwise = cart where
+    module pointwise x = is-cartesian (pointwise x)
+
+    cart : is-cartesian (Diagrams J) u α
+    cart .is-cartesian.universal m β .η′ x =
+      pointwise.universal x m (β .η′ x)
+    cart .is-cartesian.universal m β .is-natural′ x y f =
+      pointwise.uniquep₂ _ _ _ _ _ _
+        (pulll[] _ (pointwise.commutes _ _ _) ∙[] β .is-natural′ _ _ _)
+        (pulll[] _ (α .is-natural′ x y f)
+        ∙[] pullr[] _ (pointwise.commutes _ _ _))
+    cart .is-cartesian.commutes m β =
+      Nat-lift-pathp (λ _ → pointwise.commutes _ _ _)
+    cart .is-cartesian.unique β' p =
+      Nat-lift-pathp (λ x → pointwise.unique _ _ λ i → p i .η′ x)
+```
+
+We can use the previous fact to show that the fibration of diagrams is
+actually a fibration. Luckily, we get to re-use a lot of the proof
+that the fibration of liftings is a fibration.
+
 ```agda
   Diagram-fibration : Cartesian-fibration E → Cartesian-fibration (Diagrams J)
-  Diagram-fibration fib =
-    Change-of-base-fibration ConstD (Liftings E _)
-      (Liftings-fibration E _ fib)
+  Diagram-fibration fib .Cartesian-fibration.has-lift f F = cart-lift where
+    module fib = Cartesian-fibration.has-lift fib
+    open Cartesian-fibration (Liftings-fibration E J fib)
+
+    cart-lift : Cartesian-lift _ f F
+    cart-lift .Cartesian-lift.x′ = has-lift.x′ (const-nt f) F
+    cart-lift .Cartesian-lift.lifting = has-lift.lifting (const-nt f) F
+    cart-lift .Cartesian-lift.cartesian =
+      pointwise-cartesian→Diagram-cartesian (λ _ → fib.cartesian _ _)
 ```
 
 ## The constant fibrewise diagram functor
@@ -116,9 +175,26 @@ of shape $\cJ$, which takes an $x'$ to the constant diagram.
   ConstFibD .Vertical-functor.F₀′ = ConstL
   ConstFibD .Vertical-functor.F₁′ = const-ntl
   ConstFibD .Vertical-functor.F-id′ =
-    Nat-lift-pathp (λ x → sym (transport-refl _))
+    Nat-lift-pathp (λ x → refl)
   ConstFibD .Vertical-functor.F-∘′ =
-    Nat-lift-pathp (λ x → sym (transport-refl _))
+    Nat-lift-pathp (λ x → refl)
+```
+
+Furthermore, this functor is fibred.
+
+```agda
+  ConstFibD-fibred : is-vertical-fibred ConstFibD
+  ConstFibD-fibred f′ cart =
+    pointwise-cartesian→Diagram-cartesian (λ _ → cart)
+```
+
+We will use the fibred version of this functor quite a bit, so we give
+it a nice short name.
+
+```agda
+  Δd : Vertical-fibred-functor E (Diagrams J)
+  Δd .Vertical-fibred-functor.vert = ConstFibD
+  Δd .Vertical-fibred-functor.F-cartesian = ConstFibD-fibred
 ```
 
 Next, we note that liftings of the constant functor correspond with
@@ -186,8 +262,8 @@ functor categories $[\cJ, \cE_x]$.
   Fibrewise-diagram : ∀ {x} → Functor Cat[ J , Fibre E x ] (Fibre (Diagrams J) x)
   Fibrewise-diagram .F₀ = Diagram→ConstL
   Fibrewise-diagram .F₁ = Diagram-nat→ConstL-natl
-  Fibrewise-diagram .F-id = Nat-lift-pathp λ _ → sym Regularity.reduce!
-  Fibrewise-diagram .F-∘ _ _ = Nat-lift-pathp λ _ → sym Regularity.reduce!
+  Fibrewise-diagram .F-id = Nat-lift-pathp λ _ → refl
+  Fibrewise-diagram .F-∘ _ _ = Nat-lift-pathp λ _ → sym (Regularity.reduce!)
 ```
 
 Again, this isomorphism is *almost* definitional.
