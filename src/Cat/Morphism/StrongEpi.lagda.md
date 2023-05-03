@@ -1,11 +1,17 @@
 <!--
 ```agda
+open import Cat.Diagram.Coequaliser.RegularEpi
+open import Cat.Diagram.Pullback.Properties
 open import Cat.Functor.FullSubcategory
 open import Cat.Morphism.Factorisation
+open import Cat.Diagram.Limit.Finite
 open import Cat.Morphism.Orthogonal
-open import Cat.Diagram.Everything
+open import Cat.Diagram.Equaliser
+open import Cat.Diagram.Pullback
+open import Cat.Diagram.Initial
 open import Cat.Instances.Comma
 open import Cat.Instances.Slice
+open import Cat.Diagram.Image
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -56,6 +62,15 @@ lifts→is-strong-epi epic lift-it = epic , λ {c} {d} mm sq →
   contr (lift-it mm sq) λ { (x , p , q) → Σ-prop-path (λ _ → hlevel 1)
     (mm .monic _ _ (sym (q ∙ sym (lift-it mm sq .snd .snd)))) }
 ```
+
+<!--
+```agda
+abstract
+  is-strong-epi-is-prop
+    : ∀ {a b} (f : Hom a b) → is-prop (is-strong-epi f)
+  is-strong-epi-is-prop f = hlevel!
+```
+-->
 
 To see that the uniqueness needed for orthogonality against a
 monomorphism is redundant, suppose you'd had two fillers $\alpha$,
@@ -395,10 +410,9 @@ epimorphism is strong; the converse is immediate.
 is-extremal-epi→is-strong-epi
   : ∀ {a b} {e : Hom a b}
   → Finitely-complete C
-  → is-epic e
   → (∀ {c} (m : c ↪ b) (g : Hom a c) → e ≡ m .mor ∘ g → is-invertible (m .mor))
   → is-strong-epi e
-is-extremal-epi→is-strong-epi {a} {b} {e} lex epi extremal =
+is-extremal-epi→is-strong-epi {a} {b} {e} lex extremal =
   equaliser-lifts→is-strong-epi lex.equalisers λ w → Mk.the-lift w where
     module lex = Finitely-complete lex
 ```
@@ -433,7 +447,7 @@ pulling back a monomorphism.
               (wit : v ∘ e ≡ m .mor ∘ u) where
       module P = Pullback (lex.pullbacks v (m .mor)) renaming (p₁ to q ; p₂ to p)
       r : Hom a P.apex
-      r = P.limiting {p₁' = e} {p₂' = u} wit
+      r = P.universal {p₁' = e} {p₂' = u} wit
 
       abstract
         q-mono : is-monic P.q
@@ -447,19 +461,33 @@ appropriately:
 
 ```agda
       q-iso : is-invertible P.q
-      q-iso = extremal record{ monic = q-mono } r (sym P.p₁∘limiting)
+      q-iso = extremal record{ monic = q-mono } r (sym P.p₁∘universal)
 
       q⁻¹ = q-iso .is-invertible.inv
 
       the-lift : Σ (Hom b c) λ w → (w ∘ e ≡ u) × (m .mor ∘ w ≡ v)
-      the-lift .fst = P.p ∘ q-iso .is-invertible.inv
+      the-lift .fst = P.p ∘ q⁻¹
       the-lift .snd .fst = m .monic _ _ $
         m .mor ∘ (P.p ∘ q⁻¹) ∘ e ≡⟨ extendl (pulll (sym P.square)) ⟩
         (v ∘ P.q) ∘ q⁻¹ ∘ e      ≡⟨ cancel-inner (q-iso .is-invertible.invl) ⟩
         v ∘ e                    ≡⟨ wit ⟩
         m .mor ∘ u               ∎
-      the-lift .snd .snd = epi _ _ $ sym $
-        v ∘ e                       ≡⟨ ap (v ∘_) (introl (q-iso .is-invertible.invl)) ⟩
-        v ∘ (P.q ∘ q⁻¹) ∘ e         ≡˘⟨ pushl (extendl (sym P.square)) ⟩
-        (m .mor ∘ P.p ∘ q⁻¹) ∘ e    ∎
+      the-lift .snd .snd = invertible→epic q-iso _ _ $
+        (m .mor ∘ (P.p ∘ q⁻¹)) ∘ P.q ≡⟨ pullr (cancelr (q-iso .is-invertible.invr)) ⟩
+        m .mor ∘ P.p                 ≡˘⟨ P.square ⟩
+        v ∘ P.q                      ∎
 ```
+
+<!--
+```agda
+is-strong-epi→is-extremal-epi
+  : ∀ {a b} {e : Hom a b}
+  → is-strong-epi e
+  → ∀ {c} (m : c ↪ b) (g : Hom a c) → e ≡ m .mor ∘ g → is-invertible (m .mor)
+is-strong-epi→is-extremal-epi (s , ortho) m g p =
+  make-invertible (inv′ .centre .fst) (inv′ .centre .snd .snd)
+    (m .monic _ _ (pulll (inv′ .centre .snd .snd) ∙ id-comm-sym))
+  where
+  inv′ = ortho m (idl _ ∙ p)
+```
+-->

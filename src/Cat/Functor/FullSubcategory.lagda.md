@@ -57,6 +57,19 @@ Restrict P .idl   = C.idl
 Restrict P .assoc = C.assoc
 ```
 
+<!--
+```agda
+Restrict-ob-path
+  : ∀ {P : C.Ob → Type ℓ}
+  → {x y : Restrict-ob P}
+  → (p : x .object ≡ y .object)
+  → PathP (λ i → P (p i)) (x .witness) (y .witness)
+  → x ≡ y
+Restrict-ob-path p q i .object = p i
+Restrict-ob-path p q i .witness = q i
+```
+-->
+
 A very important property of full subcategories (`Restrict`{.Agda}ions)
 is that _any full subcategory of a univalent category is univalent_. The
 argument is roughly as follows: Since $\cC$ is univalent, an

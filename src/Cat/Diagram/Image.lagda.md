@@ -171,19 +171,32 @@ the code below), and the canonical inclusion $\im f \mono B$ factors
 through $k$:
 
 ```agda
-  im≤other-image
+  universal
     : ∀ {c} (m : Hom c b) (M-m : M .fst m) (i : Hom a c)
     → m ∘ i ≡ f
     → Hom Im c
-  im≤other-image m M i p = im .has⊥ obj .centre .β .map where
+  universal m M i p = im .has⊥ obj .centre .β .map where
     obj : ↓Obj _ _
     obj .x = tt
     obj .y = restrict (cut m) M
     obj .map = record { map = i ; commutes = p }
 
-  im≤other-image-factors
+  universal-factors
     : ∀ {c} {m : Hom c b} {M : M .fst m} {i : Hom a c}
     → {p : m ∘ i ≡ f}
-    → m ∘ im≤other-image m M i p ≡ Im→codomain
-  im≤other-image-factors {m = m} {M} {i} {p} = im .has⊥ _ .centre .β .commutes
+    → m ∘ universal m M i p ≡ Im→codomain
+  universal-factors {m = m} {M} {i} {p} = im .has⊥ _ .centre .β .commutes
+
+  universal-commutes
+    : ∀ {c} {m : Hom c b} {M : M .fst m} {i : Hom a c}
+    → {p : m ∘ i ≡ f}
+    → universal m M i p ∘ corestrict ≡ i
+  universal-commutes {m = m} {ism} {i} {p} =
+    M .snd ism _ _ (pulll universal-factors ·· image-factors ·· sym p)
 ```
+
+<!--
+```agda
+module Image {a b} {f : Hom a b} (im : Image f) = M-Image {M = is-monic , λ x → x} im
+```
+-->

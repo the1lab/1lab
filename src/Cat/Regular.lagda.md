@@ -17,12 +17,7 @@ import Cat.Reasoning as Cr
 ```
 -->
 
-<<<<<<< HEAD
-```agda
-=======
-open Functor
-
->>>>>>> 0b184fa (wip: regular category refactor)
+```
 module Cat.Regular where
 ```
 
@@ -50,6 +45,8 @@ every strong epimorphism is regular.
 
 <!--
 ```agda
+open Functor
+
 module _ {o ℓ} (𝒞 : Precategory o ℓ) where
   private module C = Cr 𝒞
 
@@ -93,7 +90,6 @@ latter two names have a placeholder for the morphism we are factoring.
 ```agda
   module _ (r : is-regular) where
     private module r = is-regular r
-    open Cartesian 𝒞 r.lex.products
     open C
 
     mono→im-iso
@@ -136,7 +132,7 @@ of its kernel pair.
 <!--
 ```agda
       open kp using (R ; a ; b ; square)
-      open Cartesian 𝒞 r.lex.products
+      open Binary-products 𝒞 r.lex.products
       open C
 ```
 -->
@@ -157,7 +153,6 @@ We start by calculating the image factorisation of $(f,c) : A \to B
 $$
 A \xepi{d} D \xmono {(g, h)} B \times C \text{.}
 $$
-
 
 
 ```agda
@@ -222,7 +217,7 @@ hlp$ (`rem₁`{.Agda}).
 
 ```agda
         q : C.Hom P R
-        q = kp.limiting $
+        q = kp.universal $
           f ∘ m         ≡⟨ C.pushl (extend-π₁ dgh.factors ∙ C.pulll refl) ⟩
           g ∘ d ∘ m     ≡˘⟨ refl⟩∘⟨ by-π₁ sq′ ⟩
           g ∘ k ∘ p     ≡⟨ C.extendl w′ ⟩
@@ -232,9 +227,9 @@ hlp$ (`rem₁`{.Agda}).
 
         rem₁ = h ∘ k ∘ p     ≡⟨ refl⟩∘⟨ by-π₁ sq′ ⟩
                h ∘ d ∘ m     ≡⟨ pulll (pullr (sym dgh.factors) ∙ π₂∘⟨⟩) ⟩
-               c ∘ m         ≡˘⟨ refl⟩∘⟨ kp.p₁∘limiting ⟩
+               c ∘ m         ≡˘⟨ refl⟩∘⟨ kp.p₁∘universal ⟩
                c ∘ a ∘ q     ≡⟨ extendl w ⟩
-               c ∘ b ∘ q     ≡⟨ refl⟩∘⟨ kp.p₂∘limiting ⟩
+               c ∘ b ∘ q     ≡⟨ refl⟩∘⟨ kp.p₂∘universal ⟩
                c ∘ n         ≡˘⟨ pulll (pullr (sym dgh.factors) ∙ π₂∘⟨⟩) ⟩
                h ∘ d ∘ n     ≡˘⟨ refl⟩∘⟨ by-π₂ sq′ ⟩
                h ∘ l ∘ p     ∎
@@ -260,22 +255,22 @@ skip it.
         rem₂ : is-strong-epi 𝒞 (×-functor .F₁ (d , id))
         rem₂ = r.stable d π₁ {p2 = π₁} (out! dgh.mediate∈E) λ where
           .square → π₁∘⟨⟩
-          .limiting {p₁' = p₁'} {p₂'} p → ⟨ p₂' , π₂ ∘ p₁' ⟩
-          .p₁∘limiting {p₁' = p₁'} {p₂'} {p = p} → ⟨⟩∘ _
+          .universal {p₁' = p₁'} {p₂'} p → ⟨ p₂' , π₂ ∘ p₁' ⟩
+          .p₁∘universal {p₁' = p₁'} {p₂'} {p = p} → ⟨⟩∘ _
             ·· ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ sym p) (pullr π₂∘⟨⟩ ∙ idl _)
             ·· sym (⟨⟩-unique _ refl refl)
-          .p₂∘limiting → π₁∘⟨⟩
+          .p₂∘universal → π₁∘⟨⟩
           .unique {p = p} {lim'} q r → ⟨⟩-unique _ r $ sym $
             ap (π₂ ∘_) (sym q) ∙ pulll π₂∘⟨⟩ ∙ ap (_∘ lim') (idl _)
 
         rem₃ : is-strong-epi 𝒞 (×-functor .F₁ (id , d))
         rem₃ = r.stable d π₂ {p2 = π₂} (out! dgh.mediate∈E) λ where
           .square → π₂∘⟨⟩
-          .limiting {p₁' = p₁'} {p₂'} p → ⟨ π₁ ∘ p₁' , p₂' ⟩
-          .p₁∘limiting {p = p} → ⟨⟩∘ _
+          .universal {p₁' = p₁'} {p₂'} p → ⟨ π₁ ∘ p₁' , p₂' ⟩
+          .p₁∘universal {p = p} → ⟨⟩∘ _
             ·· ap₂ ⟨_,_⟩ (pullr π₁∘⟨⟩ ∙ idl _) (pullr π₂∘⟨⟩)
             ·· sym (⟨⟩-unique _ refl p)
-          .p₂∘limiting → π₂∘⟨⟩
+          .p₂∘universal → π₂∘⟨⟩
           .unique {p = p} {lim'} q r → ⟨⟩-unique _
             (sym (ap (π₁ ∘_) (sym q) ∙ pulll π₁∘⟨⟩ ∙ ap (_∘ lim') (idl _)))
             r
@@ -360,10 +355,10 @@ coequalises _some_ pair of maps.
       go .arr₁ = kp.a
       go .arr₂ = kp.b
       go .has-is-coeq .coequal = kp.square
-      go .has-is-coeq .coequalise w = Make.h w ∘ Make.g.from w
-      go .has-is-coeq .universal {e′ = e′} {p = w} = Make.compute w
-      go .has-is-coeq .unique {e′ = e′} {w} {colim} q = is-s .fst _ _ $
-        colim ∘ f                      ≡˘⟨ q ⟩
-        e′                             ≡˘⟨ Make.compute w ⟩
-        (Make.h w ∘ Make.g.from w) ∘ f ∎
+      go .has-is-coeq .universal w = Make.h w ∘ Make.g.from w
+      go .has-is-coeq .factors {e′ = e′} {p = w} = Make.compute w
+      go .has-is-coeq .unique {e′ = e′} {p = p} {colim} q = is-s .fst _ _ $
+        colim ∘ f                      ≡⟨ q ⟩
+        e′                             ≡˘⟨ Make.compute p ⟩
+        (Make.h p ∘ Make.g.from p) ∘ f ∎
 ```

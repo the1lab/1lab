@@ -123,14 +123,12 @@ has-pullbacks : Type _
 has-pullbacks = ∀ {A B X} (f : Hom A X) (g : Hom B X) → Pullback f g
 
 module Pullbacks (all-pullbacks : has-pullbacks) where
-
   module pullback {x y z} (f : Hom x z) (g : Hom y z) =
     Pullback (all-pullbacks f g)
 
   Pb : ∀ {x y z} → Hom x z → Hom y z → Ob
   Pb = pullback.apex
 ```
--->
 
 ## Stability
 
