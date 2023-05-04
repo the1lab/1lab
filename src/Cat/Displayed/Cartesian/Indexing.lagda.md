@@ -30,7 +30,6 @@ open Cartesian-fibration cartesian
 open Cat.Displayed.Reasoning E
 open Cat.Reasoning B
 open Cartesian-lift
-open Displayed E
 open is-cartesian
 open Functor
 ```

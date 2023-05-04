@@ -33,7 +33,6 @@ private
 open Cat.Displayed.Univalence.Reasoning E
 open Cat.Displayed.Univalence E
 open Cat.Displayed.Morphism E
-open Displayed E
 open Dr E
 open _≅[_]_
 ```

@@ -25,7 +25,6 @@ module Cat.Displayed.Instances.DisplayedFamilies
 <!--
 ```agda
 open Cat.Reasoning B
-open Displayed E
 open Cat.Displayed.Reasoning E
 open Functor
 

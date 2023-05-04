@@ -31,7 +31,6 @@ module Cat.Displayed.Cartesian.Weak
 <!--
 ```agda
 open CR ℬ
-open Displayed ℰ
 open Cart ℰ
 open DR ℰ
 open DM ℰ

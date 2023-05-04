@@ -61,7 +61,6 @@ module _
   private module J = Precategory J
 
   open Cat.Reasoning B
-  open Displayed E
   open Cat.Displayed.Reasoning E
 ```
 -->
@@ -164,7 +163,6 @@ module _
   private module J = Precategory J
 
   open Cat.Reasoning B
-  open Displayed E
   open Cat.Displayed.Reasoning E
   open Lifting
 ```
@@ -308,7 +306,6 @@ module _
   private module J = Precategory J
 
   open Cat.Reasoning B
-  open Displayed E
   open Cat.Displayed.Reasoning E
   open Lifting
   open _=[_]=>l_

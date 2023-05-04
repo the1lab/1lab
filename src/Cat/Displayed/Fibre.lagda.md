@@ -15,7 +15,6 @@ module Cat.Displayed.Fibre
   (E : Displayed B o′ ℓ′)
   where
 
-open Displayed E
 open Ds
 open Dr E
 open Cr B

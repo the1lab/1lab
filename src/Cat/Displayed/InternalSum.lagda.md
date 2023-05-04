@@ -43,5 +43,5 @@ record Internal-sum : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′)
   no-eta-equality
   field
     ∐ : Vertical-fibred-functor (Disp-family E) E
-    adjunction : ∐ ⊣↓ ConstDispFamVf E
+    adjunction : ∐ ⊣f↓ ConstDispFamVf E
 ```

@@ -37,7 +37,6 @@ private module B = Cr B
 open Cat.Displayed.Univalence E
 open Cat.Displayed.Reasoning E
 open Cat.Displayed.Morphism E
-open Displayed E
 open _≅[_]_
 ```
 -->

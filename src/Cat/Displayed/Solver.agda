@@ -19,7 +19,6 @@ module NbE {o′ ℓ′ o′′ ℓ′′}
            (E : Displayed B o′′ ℓ′′)
            where
 
-  open Displayed E
   module B = Precategory B
   open Dr E
   open Cat.Solver.NbE
@@ -227,7 +226,6 @@ macro
 
 private module Test {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′) where
   open Precategory B
-  open Displayed E
   open Dr E
 
   private variable

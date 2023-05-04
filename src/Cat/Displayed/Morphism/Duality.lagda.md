@@ -27,7 +27,6 @@ private
   module ℰ = Cat.Displayed.Morphism ℰ
   module ℰ^op = Cat.Displayed.Morphism (ℰ ^total-op)
 
-  open Displayed ℰ
   open Cat.Morphism.Duality ℬ
   open Cat.Displayed.Reasoning ℰ
 

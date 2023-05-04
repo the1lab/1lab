@@ -24,7 +24,6 @@ module Cat.Displayed.Instances.Diagrams
   where
 
 open Cat.Reasoning B
-open Displayed E
 open Cat.Displayed.Reasoning E
 open Functor
 open _=>_

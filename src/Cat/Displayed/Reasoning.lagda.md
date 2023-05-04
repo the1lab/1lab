@@ -21,10 +21,8 @@ module
 
 <!--
 ```agda
-private
-  module E = Displayed E
-  module B = Cat B
-  _ = Displayed.Hom[_] -- anchor for the reference below
+open Cat B
+open Displayed E public
 ```
 -->
 
@@ -45,10 +43,10 @@ shorthand syntax for that here. You can think of this as being an
 abbreviation for `subst`{.Agda} because... that's what it is.
 
 ```agda
-hom[_] : ∀ {a b x y} {f g : B.Hom a b} → f ≡ g → E.Hom[ f ] x y → E.Hom[ g ] x y
-hom[ p ] f′ = subst (λ h → E.Hom[ h ] _ _) p f′
+hom[_] : ∀ {a b x y} {f g : Hom a b} → f ≡ g → Hom[ f ] x y → Hom[ g ] x y
+hom[ p ] f′ = subst (λ h → Hom[ h ] _ _) p f′
 
-hom[_]⁻ : ∀ {a b x y} {f g : B.Hom a b} → g ≡ f → E.Hom[ f ] x y → E.Hom[ g ] x y
+hom[_]⁻ : ∀ {a b x y} {f g : Hom a b} → g ≡ f → Hom[ f ] x y → Hom[ g ] x y
 hom[ p ]⁻ f′ = hom[ sym p ] f′
 ```
 
@@ -57,17 +55,17 @@ adjust the path we're transporting over to get something more convenient.
 
 ```agda
 reindex
-  : ∀ {a b x y} {f g : B.Hom a b} (p q : f ≡ g) {f′ : E.Hom[ f ] x y}
+  : ∀ {a b x y} {f g : Hom a b} (p q : f ≡ g) {f′ : Hom[ f ] x y}
   → hom[ p ] f′ ≡ hom[ q ] f′
-reindex p q {f′} = ap (λ e → hom[ e ] f′) (B.Hom-set _ _ _ _ p q)
+reindex p q {f′} = ap (λ e → hom[ e ] f′) (Hom-set _ _ _ _ p q)
 
 cast[]
-  : ∀ {a b x y} {f g : B.Hom a b} {f′ : E.Hom[ f ] x y} {g′ : E.Hom[ g ] x y}
+  : ∀ {a b x y} {f g : Hom a b} {f′ : Hom[ f ] x y} {g′ : Hom[ g ] x y}
   → {p q : f ≡ g}
-  → f′ E.≡[ p ] g′
-  → f′ E.≡[ q ] g′
+  → f′ ≡[ p ] g′
+  → f′ ≡[ q ] g′
 cast[] {f = f} {g = g} {f′ = f′} {g′ = g′} {p = p} {q = q} r =
-  coe0→1 (λ i → f′ E.≡[ B.Hom-set _ _ f g p q i ] g′) r
+  coe0→1 (λ i → f′ ≡[ Hom-set _ _ f g p q i ] g′) r
 ```
 
 
@@ -79,14 +77,14 @@ composite unchanged.
 
 ```agda
 hom[]-∙
-  : ∀ {a b x y} {f g h : B.Hom a b} (p : f ≡ g) (q : g ≡ h)
-      {f′ : E.Hom[ f ] x y}
+  : ∀ {a b x y} {f g h : Hom a b} (p : f ≡ g) (q : g ≡ h)
+      {f′ : Hom[ f ] x y}
   → hom[ q ] (hom[ p ] f′) ≡ hom[ p ∙ q ] f′
-hom[]-∙ p q = sym (subst-∙ (λ h → E.Hom[ h ] _ _) _ _ _)
+hom[]-∙ p q = sym (subst-∙ (λ h → Hom[ h ] _ _) _ _ _)
 
 duplicate
-  : ∀ {a b x y} {f f' g : B.Hom a b} (p : f ≡ g) (q : f' ≡ g) (r : f ≡ f')
-      {f′ : E.Hom[ f ] x y}
+  : ∀ {a b x y} {f f' g : Hom a b} (p : f ≡ g) (q : f' ≡ g) (r : f ≡ f')
+      {f′ : Hom[ f ] x y}
   → hom[ p ] f′ ≡ hom[ q ] (hom[ r ] f′)
 duplicate p q r = reindex _ _ ∙ sym (hom[]-∙ r q)
 ```
@@ -105,42 +103,42 @@ we can't just get rid of the transport $p^*(-)$.
 
 ```agda
 whisker-r
-  : ∀ {a b c} {f : B.Hom b c} {g g' : B.Hom a b} {a′ b′ c′}
-      {f′ : E.Hom[ f ] b′ c′} {g′ : E.Hom[ g ] a′ b′}
+  : ∀ {a b c} {f : Hom b c} {g g' : Hom a b} {a′ b′ c′}
+      {f′ : Hom[ f ] b′ c′} {g′ : Hom[ g ] a′ b′}
   → (p : g ≡ g')
-  → f′ E.∘′ hom[ p ] g′ ≡ hom[ ap (f B.∘_) p ] (f′ E.∘′ g′)
+  → f′ ∘′ hom[ p ] g′ ≡ hom[ ap (f ∘_) p ] (f′ ∘′ g′)
 whisker-r {f = f} {a′ = a′} {_} {c′} {f′} {g′} p i =
-  comp (λ j → E.Hom[ f B.∘ p (i ∨ j) ] a′ c′) (∂ i) λ where
-    j (i = i0) → f′ E.∘′ transport-filler (λ i → E.Hom[ p i ] _ _) g′ j
-    j (i = i1) → hom[ ap (f B.∘_) p ] (f′ E.∘′ g′)
-    j (j = i0) → transport-filler (λ i → E.Hom[ f B.∘ p i ] _ _) (f′ E.∘′ g′) i
+  comp (λ j → Hom[ f ∘ p (i ∨ j) ] a′ c′) (∂ i) λ where
+    j (i = i0) → f′ ∘′ transport-filler (λ i → Hom[ p i ] _ _) g′ j
+    j (i = i1) → hom[ ap (f ∘_) p ] (f′ ∘′ g′)
+    j (j = i0) → transport-filler (λ i → Hom[ f ∘ p i ] _ _) (f′ ∘′ g′) i
 
 whisker-l
-  : ∀ {a b c} {f f' : B.Hom b c} {g : B.Hom a b} {a′ b′ c′}
-      {f′ : E.Hom[ f ] b′ c′} {g′ : E.Hom[ g ] a′ b′}
+  : ∀ {a b c} {f f' : Hom b c} {g : Hom a b} {a′ b′ c′}
+      {f′ : Hom[ f ] b′ c′} {g′ : Hom[ g ] a′ b′}
   → (p : f ≡ f')
-  → hom[ p ] f′ E.∘′ g′ ≡ hom[ ap (B._∘ g) p ] (f′ E.∘′ g′)
+  → hom[ p ] f′ ∘′ g′ ≡ hom[ ap (_∘ g) p ] (f′ ∘′ g′)
 whisker-l {g = g} {a′} {_} {c′} {f′ = f′} {g′ = g′} p i =
-  comp (λ j → E.Hom[ p (i ∨ j) B.∘ g ] a′ c′) (∂ i) λ where
-    j (i = i0) → transport-filler (λ i → E.Hom[ p i ] _ _) f′ j E.∘′ g′
-    j (i = i1) → hom[ ap (B._∘ g) p ] (f′ E.∘′ g′)
-    j (j = i0) → transport-filler (λ i → E.Hom[ p i B.∘ g ] _ _) (f′ E.∘′ g′) i
+  comp (λ j → Hom[ p (i ∨ j) ∘ g ] a′ c′) (∂ i) λ where
+    j (i = i0) → transport-filler (λ i → Hom[ p i ] _ _) f′ j ∘′ g′
+    j (i = i1) → hom[ ap (_∘ g) p ] (f′ ∘′ g′)
+    j (j = i0) → transport-filler (λ i → Hom[ p i ∘ g ] _ _) (f′ ∘′ g′) i
 ```
 
 <!--
 ```agda
 unwhisker-r
-  : ∀ {a b c} {f : B.Hom b c} {g g' : B.Hom a b} {a′ b′ c′}
-      {f′ : E.Hom[ f ] b′ c′} {g′ : E.Hom[ g ] a′ b′}
-  → (p : f B.∘ g ≡ f B.∘ g') (q : g ≡ g')
-  → hom[ p ] (f′ E.∘′ g′) ≡ f′ E.∘′ hom[ q ] g′
+  : ∀ {a b c} {f : Hom b c} {g g' : Hom a b} {a′ b′ c′}
+      {f′ : Hom[ f ] b′ c′} {g′ : Hom[ g ] a′ b′}
+  → (p : f ∘ g ≡ f ∘ g') (q : g ≡ g')
+  → hom[ p ] (f′ ∘′ g′) ≡ f′ ∘′ hom[ q ] g′
 unwhisker-r p q = reindex _ _ ∙ sym (whisker-r _)
 
 unwhisker-l
-  : ∀ {a b c} {f f' : B.Hom b c} {g : B.Hom a b} {a′ b′ c′}
-      {f′ : E.Hom[ f ] b′ c′} {g′ : E.Hom[ g ] a′ b′}
-  → (p : f B.∘ g ≡ f' B.∘ g) (q : f ≡ f')
-  → hom[ p ] (f′ E.∘′ g′) ≡ hom[ q ] f′ E.∘′ g′
+  : ∀ {a b c} {f f' : Hom b c} {g : Hom a b} {a′ b′ c′}
+      {f′ : Hom[ f ] b′ c′} {g′ : Hom[ g ] a′ b′}
+  → (p : f ∘ g ≡ f' ∘ g) (q : f ≡ f')
+  → hom[ p ] (f′ ∘′ g′) ≡ hom[ q ] f′ ∘′ g′
 unwhisker-l p q = reindex _ _ ∙ sym (whisker-l _)
 ```
 -->
@@ -150,67 +148,67 @@ lemmas above:
 
 ```agda
 smashr
-  : ∀ {a b c} {f : B.Hom b c} {g g' : B.Hom a b} {h : B.Hom a c} {a′ b′ c′}
-      {f′ : E.Hom[ f ] b′ c′} {g′ : E.Hom[ g ] a′ b′}
-  → (p : g ≡ g') (q : f B.∘ g' ≡ h)
-  → hom[ q ] (f′ E.∘′ hom[ p ] g′) ≡ hom[ ap (f B.∘_) p ∙ q ] (f′ E.∘′ g′)
+  : ∀ {a b c} {f : Hom b c} {g g' : Hom a b} {h : Hom a c} {a′ b′ c′}
+      {f′ : Hom[ f ] b′ c′} {g′ : Hom[ g ] a′ b′}
+  → (p : g ≡ g') (q : f ∘ g' ≡ h)
+  → hom[ q ] (f′ ∘′ hom[ p ] g′) ≡ hom[ ap (f ∘_) p ∙ q ] (f′ ∘′ g′)
 smashr p q = ap hom[ q ] (whisker-r p) ∙ hom[]-∙ _ _
 
 smashl
-  : ∀ {a b c} {f f' : B.Hom b c} {g : B.Hom a b} {h : B.Hom a c} {a′ b′ c′}
-      {f′ : E.Hom[ f ] b′ c′} {g′ : E.Hom[ g ] a′ b′}
-  → (p : f ≡ f') (q : f' B.∘ g ≡ h)
-  → hom[ q ] (hom[ p ] f′ E.∘′ g′) ≡ hom[ ap (B._∘ g) p ∙ q ] (f′ E.∘′ g′)
+  : ∀ {a b c} {f f' : Hom b c} {g : Hom a b} {h : Hom a c} {a′ b′ c′}
+      {f′ : Hom[ f ] b′ c′} {g′ : Hom[ g ] a′ b′}
+  → (p : f ≡ f') (q : f' ∘ g ≡ h)
+  → hom[ q ] (hom[ p ] f′ ∘′ g′) ≡ hom[ ap (_∘ g) p ∙ q ] (f′ ∘′ g′)
 smashl p q = ap hom[ q ] (whisker-l p) ∙ hom[]-∙ _ _
 
 expandl
-  : ∀ {a b c} {f f' : B.Hom b c} {g : B.Hom a b} {h : B.Hom a c} {a′ b′ c′}
-      {f′ : E.Hom[ f ] b′ c′} {g′ : E.Hom[ g ] a′ b′}
-  → (p : f ≡ f') (q : f B.∘ g ≡ h)
-  → hom[ q ] (f′ E.∘′ g′) ≡ hom[ ap (B._∘ g) (sym p) ∙ q ] (hom[ p ] f′ E.∘′ g′)
+  : ∀ {a b c} {f f' : Hom b c} {g : Hom a b} {h : Hom a c} {a′ b′ c′}
+      {f′ : Hom[ f ] b′ c′} {g′ : Hom[ g ] a′ b′}
+  → (p : f ≡ f') (q : f ∘ g ≡ h)
+  → hom[ q ] (f′ ∘′ g′) ≡ hom[ ap (_∘ g) (sym p) ∙ q ] (hom[ p ] f′ ∘′ g′)
 expandl p q = reindex q _ ∙ (sym $ smashl _ _)
 
 expandr
-  : ∀ {a b c} {f : B.Hom b c} {g g' : B.Hom a b} {h : B.Hom a c} {a′ b′ c′}
-      {f′ : E.Hom[ f ] b′ c′} {g′ : E.Hom[ g ] a′ b′}
-  → (p : g ≡ g') (q : f B.∘ g ≡ h)
-  → hom[ q ] (f′ E.∘′ g′) ≡ hom[ ap (f B.∘_) (sym p) ∙ q ] (f′ E.∘′ hom[ p ] g′)
+  : ∀ {a b c} {f : Hom b c} {g g' : Hom a b} {h : Hom a c} {a′ b′ c′}
+      {f′ : Hom[ f ] b′ c′} {g′ : Hom[ g ] a′ b′}
+  → (p : g ≡ g') (q : f ∘ g ≡ h)
+  → hom[ q ] (f′ ∘′ g′) ≡ hom[ ap (f ∘_) (sym p) ∙ q ] (f′ ∘′ hom[ p ] g′)
 expandr p q = reindex q _ ∙ (sym $ smashr _ _)
 
 yank
   : ∀ {a b c d}
-      {f : B.Hom c d} {g : B.Hom b c} {h : B.Hom a b} {i : B.Hom a c} {j : B.Hom b d}
+      {f : Hom c d} {g : Hom b c} {h : Hom a b} {i : Hom a c} {j : Hom b d}
       {a′ b′ c′ d′}
-      {f′ : E.Hom[ f ] c′ d′} {g′ : E.Hom[ g ] b′ c′} {h′ : E.Hom[ h ] a′ b′}
-      (p : g B.∘ h ≡ i) (q : f B.∘ g ≡ j) (r : f B.∘ i ≡ j B.∘ h)
-  → (f′ E.∘′ hom[ p ](g′ E.∘′ h′)) E.≡[ r ] hom[ q ] (f′ E.∘′ g′) E.∘′ h′
+      {f′ : Hom[ f ] c′ d′} {g′ : Hom[ g ] b′ c′} {h′ : Hom[ h ] a′ b′}
+      (p : g ∘ h ≡ i) (q : f ∘ g ≡ j) (r : f ∘ i ≡ j ∘ h)
+  → (f′ ∘′ hom[ p ](g′ ∘′ h′)) ≡[ r ] hom[ q ] (f′ ∘′ g′) ∘′ h′
 yank {f′ = f′} {g′ = g′} {h′ = h′} p q r = to-pathp $
-  hom[ r ] (f′ E.∘′ hom[ p ] (g′ E.∘′ h′))                                             ≡⟨ smashr p r ⟩
-  hom[ ap (B._∘_ _) p ∙ r ] (f′ E.∘′ g′ E.∘′ h′)                                       ≡⟨ ap hom[ _ ] (sym (from-pathp λ i → E.assoc′ f′ g′ h′ (~ i))) ⟩
-  hom[ ap (B._∘_ _) p ∙ r  ] (hom[ sym (B.assoc _ _ _) ] ((f′ E.∘′ g′) E.∘′ h′))       ≡⟨ hom[]-∙ _ _ ⟩
-  hom[ sym (B.assoc _ _ _) ∙ (ap (B .Precategory._∘_ _) p ∙ r)] ((f′ E.∘′ g′) E.∘′ h′) ≡⟨ reindex _ _ ⟩
-  hom[ (ap (B._∘ _) q) ] ((f′ E.∘′ g′) E.∘′ h′)                                        ≡˘⟨ whisker-l q ⟩
-  hom[ q ] (f′ E.∘′ g′) E.∘′ h′ ∎
+  hom[ r ] (f′ ∘′ hom[ p ] (g′ ∘′ h′))                                             ≡⟨ smashr p r ⟩
+  hom[ ap (_∘_ _) p ∙ r ] (f′ ∘′ g′ ∘′ h′)                                       ≡⟨ ap hom[ _ ] (sym (from-pathp λ i → assoc′ f′ g′ h′ (~ i))) ⟩
+  hom[ ap (_∘_ _) p ∙ r  ] (hom[ sym (assoc _ _ _) ] ((f′ ∘′ g′) ∘′ h′))       ≡⟨ hom[]-∙ _ _ ⟩
+  hom[ sym (assoc _ _ _) ∙ (ap (B .Precategory._∘_ _) p ∙ r)] ((f′ ∘′ g′) ∘′ h′) ≡⟨ reindex _ _ ⟩
+  hom[ (ap (_∘ _) q) ] ((f′ ∘′ g′) ∘′ h′)                                        ≡˘⟨ whisker-l q ⟩
+  hom[ q ] (f′ ∘′ g′) ∘′ h′ ∎
 
 cancel
-  : ∀ {a b} {f g : B.Hom a b} (p q : f ≡ g) {a′ b′}
-    {f′ : E.Hom[ f ] a′ b′} {g′ : E.Hom[ g ] a′ b′}
-  → PathP (λ i → E.Hom[ q i ] a′ b′) f′ g′
+  : ∀ {a b} {f g : Hom a b} (p q : f ≡ g) {a′ b′}
+    {f′ : Hom[ f ] a′ b′} {g′ : Hom[ g ] a′ b′}
+  → PathP (λ i → Hom[ q i ] a′ b′) f′ g′
   → hom[ p ] f′ ≡ g′
 cancel p q r = reindex p q ∙ from-pathp r
 
 kill₁
-  : ∀ {a b} {a′ b′} {f g h : B.Hom a b} {h₁′ : E.Hom[ f ] a′ b′} {h₂′ : E.Hom[ g ] a′ b′}
+  : ∀ {a b} {a′ b′} {f g h : Hom a b} {h₁′ : Hom[ f ] a′ b′} {h₂′ : Hom[ g ] a′ b′}
   → (p : f ≡ g) (q : g ≡ h)
-  → PathP (λ i → E.Hom[ p i ] a′ b′) h₁′ h₂′
+  → PathP (λ i → Hom[ p i ] a′ b′) h₁′ h₂′
   → hom[ p ∙ q ] h₁′ ≡ hom[ q ] h₂′
 kill₁ p q r = sym (hom[]-∙ _ _) ∙ ap hom[ q ] (from-pathp r)
 
 
-revive₁ : ∀ {a b} {f g h : B.Hom a b}
-           {a′ b′} {f′ : E.Hom[ f ] a′ b′} {g′ : E.Hom[ g ] a′ b′}
+revive₁ : ∀ {a b} {f g h : Hom a b}
+           {a′ b′} {f′ : Hom[ f ] a′ b′} {g′ : Hom[ g ] a′ b′}
        → {p : f ≡ g} {q : f ≡ h}
-       → f′ E.≡[ p ] g′
+       → f′ ≡[ p ] g′
        → hom[ q ] f′ ≡ hom[ sym p ∙ q ] g′
 revive₁ {f′ = f′} {g′ = g′} {p = p} {q = q} p′ =
   hom[ q ] f′             ≡⟨ reindex _ _ ⟩
@@ -221,93 +219,93 @@ revive₁ {f′ = f′} {g′ = g′} {p = p} {q = q} p′ =
 -- something. We combine the reindexing to fix the association and
 -- killing the first parameter to "weave" here.
 weave
-  : ∀ {a b} {a′ b′} {f g h : B.Hom a b} {h₁′ : E.Hom[ f ] a′ b′} {h₂′ : E.Hom[ g ] a′ b′}
+  : ∀ {a b} {a′ b′} {f g h : Hom a b} {h₁′ : Hom[ f ] a′ b′} {h₂′ : Hom[ g ] a′ b′}
   → (p : f ≡ h) (p′ : f ≡ g) (q : g ≡ h)
-  → PathP (λ i → E.Hom[ p′ i ] a′ b′) h₁′ h₂′
+  → PathP (λ i → Hom[ p′ i ] a′ b′) h₁′ h₂′
   → hom[ p ] h₁′ ≡ hom[ q ] h₂′
 weave p p′ q s =
     reindex p (p′ ∙ q)
   ∙ kill₁ p′ q s
 
 split
-  : ∀ {a b c} {f f' : B.Hom b c} {g g' : B.Hom a b} {a′ b′ c′}
-      {f′ : E.Hom[ f ] b′ c′} {g′ : E.Hom[ g ] a′ b′}
+  : ∀ {a b c} {f f' : Hom b c} {g g' : Hom a b} {a′ b′ c′}
+      {f′ : Hom[ f ] b′ c′} {g′ : Hom[ g ] a′ b′}
       (p : f ≡ f') (q : g ≡ g')
-  → hom[ ap₂ B._∘_ p q ] (f′ E.∘′ g′) ≡ hom[ p ] f′ E.∘′ hom[ q ] g′
+  → hom[ ap₂ _∘_ p q ] (f′ ∘′ g′) ≡ hom[ p ] f′ ∘′ hom[ q ] g′
 split p q =
-     reindex _ (ap₂ B._∘_ p refl ∙ ap₂ B._∘_ refl q)
+     reindex _ (ap₂ _∘_ p refl ∙ ap₂ _∘_ refl q)
   ·· sym (hom[]-∙ _ _)
   ·· ap hom[ _ ] (sym (whisker-l p)) ∙ sym (whisker-r q)
 
 liberate
-  : ∀ {a b x y} {f : B.Hom a b} {f′ : E.Hom[ f ] x y}
+  : ∀ {a b x y} {f : Hom a b} {f′ : Hom[ f ] x y}
       (p : f ≡ f)
     → hom[ p ] f′ ≡ f′
 liberate p = reindex p refl ∙ transport-refl _
 
 hom[]⟩⟨_
-  : ∀ {a b} {f f' : B.Hom a b} {a′ b′} {p : f ≡ f'}
-      {f′ g′ : E.Hom[ f ] a′ b′}
+  : ∀ {a b} {f f' : Hom a b} {a′ b′} {p : f ≡ f'}
+      {f′ g′ : Hom[ f ] a′ b′}
   → f′ ≡ g′
   → hom[ p ] f′ ≡ hom[ p ] g′
 hom[]⟩⟨_ = ap hom[ _ ]
 
 _⟩∘′⟨_
-  : ∀ {a b c} {f f' : B.Hom b c} {g g' : B.Hom a b} {a′ b′ c′}
-      {f₁′ : E.Hom[ f ] b′ c′} {f₂′ : E.Hom[ f' ] b′ c′}
-      {g₁′ : E.Hom[ g ] a′ b′} {g₂′ : E.Hom[ g' ] a′ b′}
+  : ∀ {a b c} {f f' : Hom b c} {g g' : Hom a b} {a′ b′ c′}
+      {f₁′ : Hom[ f ] b′ c′} {f₂′ : Hom[ f' ] b′ c′}
+      {g₁′ : Hom[ g ] a′ b′} {g₂′ : Hom[ g' ] a′ b′}
       {p : f ≡ f'} {q : g ≡ g'}
-  → PathP (λ i → E.Hom[ p i ] b′ c′) f₁′ f₂′
-  → PathP (λ i → E.Hom[ q i ] a′ b′) g₁′ g₂′
-  → hom[ p ] f₁′ E.∘′ hom[ q ] g₁′ ≡ f₂′ E.∘′ g₂′
-p ⟩∘′⟨ q = ap₂ E._∘′_ (from-pathp p) (from-pathp q)
+  → PathP (λ i → Hom[ p i ] b′ c′) f₁′ f₂′
+  → PathP (λ i → Hom[ q i ] a′ b′) g₁′ g₂′
+  → hom[ p ] f₁′ ∘′ hom[ q ] g₁′ ≡ f₂′ ∘′ g₂′
+p ⟩∘′⟨ q = ap₂ _∘′_ (from-pathp p) (from-pathp q)
 
 _⟩∘′⟨refl
-  : ∀ {a b c} {f f' : B.Hom b c} {g : B.Hom a b} {a′ b′ c′}
-      {f₁′ : E.Hom[ f ] b′ c′} {f₂′ : E.Hom[ f' ] b′ c′} {g′ : E.Hom[ g ] a′ b′}
+  : ∀ {a b c} {f f' : Hom b c} {g : Hom a b} {a′ b′ c′}
+      {f₁′ : Hom[ f ] b′ c′} {f₂′ : Hom[ f' ] b′ c′} {g′ : Hom[ g ] a′ b′}
       {p : f ≡ f'}
-  → PathP (λ i → E.Hom[ p i ] b′ c′) f₁′ f₂′
-  → hom[ p ] f₁′ E.∘′ g′ ≡ f₂′ E.∘′ g′
-p ⟩∘′⟨refl = ap₂ E._∘′_ (from-pathp p) refl
+  → PathP (λ i → Hom[ p i ] b′ c′) f₁′ f₂′
+  → hom[ p ] f₁′ ∘′ g′ ≡ f₂′ ∘′ g′
+p ⟩∘′⟨refl = ap₂ _∘′_ (from-pathp p) refl
 
 refl⟩∘′⟨_
-  : ∀ {a b c} {f : B.Hom b c} {g g' : B.Hom a b} {a′ b′ c′}
-      {f′ : E.Hom[ f ] b′ c′}
-      {g₁′ : E.Hom[ g ] a′ b′} {g₂′ : E.Hom[ g' ] a′ b′}
+  : ∀ {a b c} {f : Hom b c} {g g' : Hom a b} {a′ b′ c′}
+      {f′ : Hom[ f ] b′ c′}
+      {g₁′ : Hom[ g ] a′ b′} {g₂′ : Hom[ g' ] a′ b′}
       {q : g ≡ g'}
-  → PathP (λ i → E.Hom[ q i ] a′ b′) g₁′ g₂′
-  → f′ E.∘′ hom[ q ] g₁′ ≡ f′ E.∘′ g₂′
-refl⟩∘′⟨ p = ap₂ E._∘′_ refl (from-pathp p)
+  → PathP (λ i → Hom[ q i ] a′ b′) g₁′ g₂′
+  → f′ ∘′ hom[ q ] g₁′ ≡ f′ ∘′ g₂′
+refl⟩∘′⟨ p = ap₂ _∘′_ refl (from-pathp p)
 
 split⟩⟨_
-  : ∀ {a b c} {f f' : B.Hom b c} {g g' : B.Hom a b} {a′ b′ c′}
-      {f₁′ : E.Hom[ f ] b′ c′} {f₂′ : E.Hom[ f' ] b′ c′}
-      {g₁′ : E.Hom[ g ] a′ b′} {g₂′ : E.Hom[ g' ] a′ b′}
+  : ∀ {a b c} {f f' : Hom b c} {g g' : Hom a b} {a′ b′ c′}
+      {f₁′ : Hom[ f ] b′ c′} {f₂′ : Hom[ f' ] b′ c′}
+      {g₁′ : Hom[ g ] a′ b′} {g₂′ : Hom[ g' ] a′ b′}
       {p : f ≡ f'} {q : g ≡ g'}
-  → hom[ p ] f₁′ E.∘′ hom[ q ] g₁′ ≡ f₂′ E.∘′ g₂′
-  → hom[ ap₂ B._∘_ p q ] (f₁′ E.∘′ g₁′) ≡ f₂′ E.∘′ g₂′
+  → hom[ p ] f₁′ ∘′ hom[ q ] g₁′ ≡ f₂′ ∘′ g₂′
+  → hom[ ap₂ _∘_ p q ] (f₁′ ∘′ g₁′) ≡ f₂′ ∘′ g₂′
 split⟩⟨ p = split _ _ ∙ p
 
 infixr 5 _⟩∘′⟨_ refl⟩∘′⟨_ _⟩∘′⟨refl
 infixl 4 split⟩⟨_ hom[]⟩⟨_
 
-hom[] : ∀ {a b x y} {f g : B.Hom a b} {p : f ≡ g} → E.Hom[ f ] x y → E.Hom[ g ] x y
+hom[] : ∀ {a b x y} {f g : Hom a b} {p : f ≡ g} → Hom[ f ] x y → Hom[ g ] x y
 hom[] {p = p} f′ = hom[ p ] f′
 
 pulll-indexr
-  : ∀ {a b c d} {f : B.Hom c d} {g : B.Hom b c} {h : B.Hom a b} {ac : B.Hom a c}
-      {a′ : E.Ob[ a ]} {b′ : E.Ob[ b ]} {c′ : E.Ob[ c ]} {d′ : E.Ob[ d ]}
-      {f′ : E.Hom[ f ] c′ d′}
-      {g′ : E.Hom[ g ] b′ c′}
-      {h′ : E.Hom[ h ] a′ b′}
-      {fg′ : E.Hom[ f B.∘ g ] b′ d′}
-  → (p : g B.∘ h ≡ ac)
-  → (f′ E.∘′ g′ ≡ fg′)
-  → f′ E.∘′ hom[ p ] (g′ E.∘′ h′) ≡ hom[ B.pullr p ] (fg′ E.∘′ h′)
+  : ∀ {a b c d} {f : Hom c d} {g : Hom b c} {h : Hom a b} {ac : Hom a c}
+      {a′ : Ob[ a ]} {b′ : Ob[ b ]} {c′ : Ob[ c ]} {d′ : Ob[ d ]}
+      {f′ : Hom[ f ] c′ d′}
+      {g′ : Hom[ g ] b′ c′}
+      {h′ : Hom[ h ] a′ b′}
+      {fg′ : Hom[ f ∘ g ] b′ d′}
+  → (p : g ∘ h ≡ ac)
+  → (f′ ∘′ g′ ≡ fg′)
+  → f′ ∘′ hom[ p ] (g′ ∘′ h′) ≡ hom[ pullr p ] (fg′ ∘′ h′)
 pulll-indexr p q = whisker-r _ ∙
-  sym ( reindex _ (sym (B.assoc _ _ _) ∙ ap (_ B.∘_) p) ·· sym (hom[]-∙ _ _)
-    ·· ap hom[] ( ap hom[] (ap (E._∘′ _) (sym q))
-                ∙ from-pathp (symP (E.assoc′ _ _ _))))
+  sym ( reindex _ (sym (assoc _ _ _) ∙ ap (_ ∘_) p) ·· sym (hom[]-∙ _ _)
+    ·· ap hom[] ( ap hom[] (ap (_∘′ _) (sym q))
+                ∙ from-pathp (symP (assoc′ _ _ _))))
 ```
 
 Using these tools, we can define displayed versions of the usual category
@@ -315,9 +313,6 @@ reasoning combinators.
 
 <!--
 ```agda
-open Cat B
-open Displayed E
-
 private variable
   u w x y z : Ob
   a b c d f g h i : Hom x y
@@ -456,17 +451,29 @@ module _ {a′ : Hom[ a ] x′ x′}
     hom[ idl f ] (id′ ∘′ f′) ≡⟨ idl[] ⟩
     f′ ∎
 
+  eliml[] : ∀ {f′ : Hom[ f ] y′ x′} → a′ ∘′ f′ ≡[ eliml p ] f′
+  eliml[] = eliml′
+
   elimr′ : ∀ {f′ : Hom[ f ] x′ y′} → {q : f ∘ a ≡ f} → f′ ∘′ a′ ≡[ q ] f′
   elimr′ {f = f} {f′ = f′} {q = q} = to-pathp $
     hom[ q ] (f′ ∘′ a′)      ≡⟨ apr′ p′ ⟩
     hom[ idr f ] (f′ ∘′ id′) ≡⟨ idr[] ⟩
     f′ ∎
 
+  elimr[] : ∀ {f′ : Hom[ f ] x′ y′} → f′ ∘′ a′ ≡[ elimr p ] f′
+  elimr[] = elimr′
+
   introl′ : ∀ {f′ : Hom[ f ] y′ x′} → {q : f ≡ a ∘ f} → f′ ≡[ q ] a′ ∘′ f′
   introl′ {f′ = f′} {q = q} i = eliml′ {f′ = f′} {q = sym q} (~ i)
 
+  introl[] : ∀ {f′ : Hom[ f ] y′ x′} → f′ ≡[ introl p ] a′ ∘′ f′
+  introl[] = introl′
+
   intror′ : ∀ {f′ : Hom[ f ] x′ y′} → {q : f ≡ f ∘ a} → f′ ≡[ q ] f′ ∘′ a′
   intror′ {f′ = f′} {q = q} i = elimr′ {f′ = f′} {q = sym q} (~ i)
+
+  intror[] : ∀ {f′ : Hom[ f ] x′ y′} → f′ ≡[ intror p ] f′ ∘′ a′
+  intror[] = intror′
 ```
 
 ## Reassociations
