@@ -23,7 +23,7 @@ module Cat.Displayed.Functor.Vertical.Reasoning
 This module provides versions of the [functor reasoning combinators][func]
 that have been adapted to work with vertical functors.
 
-[func]: Cat.Functor.Reasoning
+[func]: Cat.Functor.Reasoning.html
 
 <!--
 ```agda
