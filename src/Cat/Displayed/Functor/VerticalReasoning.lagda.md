@@ -18,6 +18,13 @@ module Cat.Displayed.Functor.VerticalReasoning
   where
 ```
 
+# Reasoning Combinators for Vertical Functors
+
+This module provides versions of the [functor reasoning combinators][func]
+that have been adapted to work with vertical functors.
+
+[func]: Cat.Functor.Reasoning
+
 <!--
 ```agda
 open Cat.Reasoning B
