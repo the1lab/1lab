@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Displayed.Base
 open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Cocartesian
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Functor
 
@@ -255,10 +256,8 @@ If $L \dashv R$ is a vertical adjunction, then $R$ is a fibred functor.
     : {L : Vertical-functor ℰ ℱ} {R : Vertical-functor ℱ ℰ}
     → L ⊣↓ R
     → is-vertical-fibred R
-  Vert-right-adjoint-fibred {L = L} {R = R} adj {f = f} f′ cart = R-cart where
+  Vert-right-adjoint-fibred {L = L} {R = R} adj {f = f} f′ cart = R-cart where 
     open is-cartesian
-    open _⊣↓_ adj
-    open _=>↓_
     module L = Cat.Displayed.Functor.VerticalReasoning L
     module R = Cat.Displayed.Functor.VerticalReasoning R 
 ```
@@ -307,9 +306,9 @@ pushing around the adjuncts.
 
 ```agda
     R-cart .commutes m h′ =
-      (R.F₁′ f′ ℰ.∘′ L-adjunct′ adj (cart .universal m (R-adjunct′ adj h′))) ≡˘⟨ L-adjunct-naturalr′ adj _ _ ⟩
-      L-adjunct′ adj (f′ ℱ.∘′ cart .universal m (R-adjunct′ adj h′))         ≡⟨ ap (L-adjunct′ adj) (cart .commutes _ _) ⟩
-      L-adjunct′ adj (R-adjunct′ adj h′)                                     ≡⟨ L-R-adjunct′ adj h′ ⟩
+      R.F₁′ f′ ℰ.∘′ L-adjunct′ adj (cart .universal m (R-adjunct′ adj h′)) ≡˘⟨ L-adjunct-naturalr′ adj _ _ ⟩
+      L-adjunct′ adj (f′ ℱ.∘′ cart .universal m (R-adjunct′ adj h′))       ≡⟨ ap (L-adjunct′ adj) (cart .commutes _ _) ⟩
+      L-adjunct′ adj (R-adjunct′ adj h′)                                   ≡⟨ L-R-adjunct′ adj h′ ⟩
       h′ ∎
     R-cart .unique {m = m} {h′ = h′} m′ p =
       m′                                                                        ≡˘⟨ L-R-adjunct′ adj m′ ⟩
@@ -318,6 +317,41 @@ pushing around the adjuncts.
       L-adjunct′ adj (cart .universal m (R-adjunct′ adj h′))                    ∎
 ```
 </details>
+
+Dually, vertical left adjoints are opfibred.
+
+```agda
+  Vert-left-adjoint-opfibred
+    : {L : Vertical-functor ℰ ℱ} {R : Vertical-functor ℱ ℰ}
+    → L ⊣↓ R
+    → is-vertical-opfibred L
+```
+
+<details>
+<summary>The proof is entirely dual to the one for right adjoints.
+</summary>
+```agda
+  Vert-left-adjoint-opfibred {L = L} {R = R} adj {f = f} f′ cocart = L-cocart where
+    open is-cocartesian
+    module L = Cat.Displayed.Functor.VerticalReasoning L
+    module R = Cat.Displayed.Functor.VerticalReasoning R
+
+    L-cocart : is-cocartesian ℱ f (L.F₁′ f′)
+    L-cocart .universal m h′ =
+      R-adjunct′ adj (cocart .universal m (L-adjunct′ adj h′))
+    L-cocart .commutes m h′ =
+      R-adjunct′ adj (cocart .universal m (L-adjunct′ adj h′)) ℱ.∘′ L.F₁′ f′ ≡˘⟨ R-adjunct-naturall′ adj _ _ ⟩
+      R-adjunct′ adj (cocart .universal m (L-adjunct′ adj h′) ℰ.∘′ f′)       ≡⟨ ap (R-adjunct′ adj) (cocart .commutes _ _) ⟩
+      R-adjunct′ adj (L-adjunct′ adj h′)                                     ≡⟨ R-L-adjunct′ adj h′ ⟩
+      h′ ∎
+    L-cocart .unique {m = m} {h′ = h′} m′ p =
+      m′ ≡˘⟨ R-L-adjunct′ adj m′ ⟩
+      R-adjunct′ adj (L-adjunct′ adj m′)                                          ≡⟨ ap (R-adjunct′ adj) (cocart .unique _ (sym $ L-adjunct-naturall′ adj _ _)) ⟩
+      R-adjunct′ adj (cocart .universal m (L-adjunct′ adj ⌜ m′ ℱ.∘′ L .F₁′ f′ ⌝)) ≡⟨ ap! p ⟩
+      R-adjunct′ adj (cocart .universal m (L-adjunct′ adj h′))                    ∎
+```
+</details>
+
 
 ## Adjunctions between Fibre Categories
 
