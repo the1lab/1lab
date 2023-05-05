@@ -78,7 +78,7 @@ transformation $\eta : F \To \Lan_p F \circ p$ witnessing the
 ("directed") commutativity of the triangle (so that it need not commute
 on-the-nose) which is universal among such transformations; Meaning that
 if $M : \ca{C'} \to \cD$ is another functor with a transformation
-$\alpha : M \To M \circ p$, there is a unique natural transformation
+$\alpha : F \To M \circ p$, there is a unique natural transformation
 $\sigma : \Lan_p F \To M$ which commutes with $\alpha$.
 
 Note that in general the triangle commutes "weakly", but when $p$ is
