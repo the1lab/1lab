@@ -13,7 +13,7 @@ open import Cat.Prelude
 
 import Cat.Reasoning
 import Cat.Displayed.Reasoning
-import Cat.Displayed.Functor.VerticalReasoning
+import Cat.Displayed.Functor.Vertical.Reasoning
 ```
 -->
 
@@ -158,8 +158,8 @@ allows us to keep morphisms displayed over the same base.
 ```agda
   module _ {L : Vertical-functor ℰ ℱ} {R : Vertical-functor ℱ ℰ} (adj : L ⊣↓ R) where
     private
-      module L = Cat.Displayed.Functor.VerticalReasoning L
-      module R = Cat.Displayed.Functor.VerticalReasoning R
+      module L = Cat.Displayed.Functor.Vertical.Reasoning L
+      module R = Cat.Displayed.Functor.Vertical.Reasoning R
       open _⊣↓_ adj
 ```
 -->
@@ -258,8 +258,8 @@ If $L \dashv R$ is a vertical adjunction, then $R$ is a fibred functor.
     → is-vertical-fibred R
   Vert-right-adjoint-fibred {L = L} {R = R} adj {f = f} f′ cart = R-cart where 
     open is-cartesian
-    module L = Cat.Displayed.Functor.VerticalReasoning L
-    module R = Cat.Displayed.Functor.VerticalReasoning R 
+    module L = Cat.Displayed.Functor.Vertical.Reasoning L
+    module R = Cat.Displayed.Functor.Vertical.Reasoning R 
 ```
 
 Let $f : \cC(x,y)$ and $f' : \cF(x', y')_{f}$ be a cartesian morphism.
@@ -333,8 +333,8 @@ Dually, vertical left adjoints are opfibred.
 ```agda
   Vert-left-adjoint-opfibred {L = L} {R = R} adj {f = f} f′ cocart = L-cocart where
     open is-cocartesian
-    module L = Cat.Displayed.Functor.VerticalReasoning L
-    module R = Cat.Displayed.Functor.VerticalReasoning R
+    module L = Cat.Displayed.Functor.Vertical.Reasoning L
+    module R = Cat.Displayed.Functor.Vertical.Reasoning R
 
     L-cocart : is-cocartesian ℱ f (L.F₁′ f′)
     L-cocart .universal m h′ =

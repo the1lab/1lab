@@ -657,6 +657,9 @@ their higher groupoid structure:
 open import Cat.Displayed.Path
 open import Cat.Displayed.Functor
 open import Cat.Displayed.Adjoint
+
+open import Cat.Displayed.Functor.Vertical.Reasoning
+-- Reasoning Combinators for vertical functors.
 ```
 
 ### Cartesian fibrations

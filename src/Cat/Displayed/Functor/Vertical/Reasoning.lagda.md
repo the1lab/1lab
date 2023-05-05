@@ -10,7 +10,7 @@ import Cat.Displayed.Reasoning
 -->
 
 ```agda
-module Cat.Displayed.Functor.VerticalReasoning
+module Cat.Displayed.Functor.Vertical.Reasoning
   {ob ℓb oe ℓe of ℓf}
   {B : Precategory ob ℓb}
   {ℰ : Displayed B oe ℓe} {ℱ : Displayed B of ℓf}
