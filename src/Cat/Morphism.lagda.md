@@ -361,6 +361,18 @@ _∘Iso_ : a ≅ b → b ≅ c → a ≅ c
 (f ∘Iso g) .from = f .from ∘ g .from
 (f ∘Iso g) .inverses = Inverses-∘ (f .inverses) (g .inverses)
 
+invertible-∘
+  : ∀ {f : Hom b c} {g : Hom a b}
+  → is-invertible f → is-invertible g
+  → is-invertible (f ∘ g)
+invertible-∘ f-inv g-inv = record
+  { inv = g-inv.inv ∘ f-inv.inv
+  ; inverses = Inverses-∘ g-inv.inverses f-inv.inverses
+  }
+  where
+    module f-inv = is-invertible f-inv
+    module g-inv = is-invertible g-inv
+
 _Iso⁻¹ : a ≅ b → b ≅ a
 (f Iso⁻¹) .to = f .from
 (f Iso⁻¹) .from = f .to

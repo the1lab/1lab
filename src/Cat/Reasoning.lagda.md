@@ -84,12 +84,16 @@ module _ (ab≡c : a ∘ b ≡ c) where abstract
     f ∘ (a ∘ b) ≡⟨ ap (f ∘_) ab≡c ⟩
     f ∘ c ∎
 
+
 module _ (c≡ab : c ≡ a ∘ b) where abstract
   pushl : c ∘ f ≡ a ∘ (b ∘ f)
   pushl = sym (pulll (sym c≡ab))
 
   pushr : f ∘ c ≡ (f ∘ a) ∘ b
   pushr = sym (pullr (sym c≡ab))
+
+  push-inner : f ∘ c ∘ g ≡ (f ∘ a) ∘ (b ∘ g)
+  push-inner {f = f} = ap (f ∘_) pushl ∙ assoc _ _ _
 
 module _ (p : f ∘ h ≡ g ∘ i) where abstract
   extendl : f ∘ (h ∘ b) ≡ g ∘ (i ∘ b)
@@ -137,6 +141,9 @@ module _ (inv : h ∘ i ≡ id) where abstract
 
   cancel-inner : (f ∘ h) ∘ (i ∘ g) ≡ f ∘ g
   cancel-inner = pulll cancelr
+
+  insert-inner : f ∘ g ≡ (f ∘ h) ∘ (i ∘ g)
+  insert-inner = pushl insertr
 
   deleter : (f ∘ g ∘ h) ∘ i ≡ f ∘ g
   deleter = pullr cancelr
