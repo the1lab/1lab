@@ -289,11 +289,11 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
   open is-pseudomonic
 ```
 
-Somewhat surprisingly, pseudomonic functors are [conservative]. To
-see this, note that invertability is a property of morphisms, so we
-can eliminate out of the truncated isomorphism we obtain via
-pseudomonadicity. Once we have our hands on the isomorphism, we
-perfomr a simple calculation to note that it yields an inverse to $f$.
+Somewhat surprisingly, pseudomonic functors are [conservative].
+As $F$ is full on isos, there merely exists some iso $g$ in the fibre
+of $f$. However, Invertability is a property of morphisms, so we can
+untruncate the mere existence. Once we have our hands on the isomorphism,
+we perform a simple calculation to note that it yields an inverse to $f$.
 
 [conservative]: Cat.Functor.Conservative.html
 
