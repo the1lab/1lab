@@ -277,6 +277,7 @@ module
     ₁′ = F₁′
 ```
 
+
 This definition is equivalent to a displayed functor over the identity
 functor.
 
@@ -331,6 +332,30 @@ We also provide a specialized definition for vertical fibred functors.
     where open Vertical-functor F′
 ```
 
+
+<!--
+```agda
+  open Vertical-functor
+
+  Vertical-functor-path
+    : {F G : Vertical-functor ℰ ℱ}
+    → (p0 : ∀ {x} → (x′ : ℰ.Ob[ x ]) → F .F₀′ x′ ≡ G .F₀′ x′)
+    → (p1 : ∀ {x y x′ y′} {f : B.Hom x y} → (f′ : ℰ.Hom[ f ] x′ y′)
+            → PathP (λ i → ℱ.Hom[ f ] (p0 x′ i) (p0 y′ i)) (F .F₁′ f′) (G .F₁′ f′))
+    → F ≡ G
+  Vertical-functor-path {F = F} {G = G} p0 p1 i .F₀′ x′ = p0 x′ i
+  Vertical-functor-path {F = F} {G = G} p0 p1 i .F₁′ f′ = p1 f′ i
+  Vertical-functor-path {F = F} {G = G} p0 p1 i .F-id′ =
+    is-prop→pathp (λ i → ℱ.Hom[ B.id ]-set _ _ (p1 ℰ.id′ i) ℱ.id′)
+      (F .F-id′)
+      (G .F-id′) i
+  Vertical-functor-path {F = F} {G = G} p0 p1 i .F-∘′ {f′ = f′} {g′ = g′} =
+    is-prop→pathp
+      (λ i → ℱ.Hom[ _ ]-set _ _ (p1 (f′ ℰ.∘′ g′) i) (p1 f′ i ℱ.∘′ p1 g′ i))
+      (F .F-∘′ {f′ = f′} {g′ = g′})
+      (G .F-∘′ {f′ = f′} {g′ = g′}) i
+```
+-->
 
 <!--
 ```agda
@@ -408,6 +433,25 @@ it is a vertical fibred functor.
       (Vertical-fibred-functor.vert F')
       (Vertical-fibred-functor.F-cartesian F')
 ```
+
+<!--
+```agda
+  open Vertical-fibred-functor
+
+  Vertical-fibred-functor-path
+    : {F G : Vertical-fibred-functor ℰ ℱ}
+    → (p0 : ∀ {x} → (x′ : ℰ.Ob[ x ]) → F .F₀′ x′ ≡ G .F₀′ x′)
+    → (p1 : ∀ {x y x′ y′} {f : B.Hom x y} → (f′ : ℰ.Hom[ f ] x′ y′)
+            → PathP (λ i → ℱ.Hom[ f ] (p0 x′ i) (p0 y′ i)) (F .F₁′ f′) (G .F₁′ f′))
+    → F ≡ G
+  Vertical-fibred-functor-path {F = F} {G = G} p0 p1 i .vert =
+    Vertical-functor-path {F = F .vert} {G = G .vert} p0 p1 i
+  Vertical-fibred-functor-path {F = F} {G = G} p0 p1 i .F-cartesian f′ cart =
+    is-prop→pathp (λ i → is-cartesian-is-prop ℱ {f′ = p1 f′ i})
+      (F .F-cartesian f′ cart)
+      (G .F-cartesian f′ cart) i
+```
+-->
 
 As promised, composition of vertical functors is much simpler.
 
