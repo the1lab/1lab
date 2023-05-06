@@ -1,0 +1,92 @@
+<!--
+```agda
+open import Cat.Functor.Base
+open import Cat.Functor.WideSubcategory
+open import Cat.Groupoid
+open import Cat.Instances.Functor
+open import Cat.Prelude
+
+import Cat.Reasoning
+```
+-->
+
+```agda
+module Cat.Instances.Core where
+```
+
+<!--
+```agda
+open Functor
+```
+-->
+
+# The core of a category
+
+Let $\cC$ be a category. The *core* of $\cC$ is the [wide subcategory]
+of $\cC$ that contains only the isomorphisms.
+
+[wide subcategory]: Cat.Functor.WideSubcategory.html
+
+```agda
+Core : ∀ {o ℓ} → Precategory o ℓ → Precategory o ℓ
+Core C = Wide sub where
+  open Cat.Reasoning C
+
+  sub : Wide-subcat {C = C} _
+  sub .Wide-subcat.P = is-invertible
+  sub .Wide-subcat.P-prop _ = is-invertible-is-prop
+  sub .Wide-subcat.P-id = id-invertible
+  sub .Wide-subcat.P-∘ = invertible-∘
+```
+
+<!--
+```agda
+private module Core {o ℓ} (C : Precategory o ℓ) = Cat.Reasoning (Core C)
+```
+-->
+
+The core of a category is a [groupoid].
+
+[groupoid]: Cat.Groupoid.html
+
+```agda
+Core-is-groupoid : ∀ {o ℓ} {C : Precategory o ℓ} → is-pregroupoid (Core C)
+Core-is-groupoid {C = C} f =
+  Core.make-invertible _ (wide f-inv.inv ((f .witness) C.invertible⁻¹))
+    (Wide-hom-path f-inv.invl)
+    (Wide-hom-path f-inv.invr)
+  where
+    module C = Cat.Reasoning C
+    module f-inv = C.is-invertible (f .witness)
+```
+
+
+In fact, the core is a sort of **universal** groupoid, in the following
+sense: Let $\cC$ be a groupoid and $\cD$ be a category. Any functor
+$F : \cC \to \cD$ must factor through the core of $\cD$.
+
+<!--
+```agda
+module _
+  {oc ℓc od ℓd} {C : Precategory oc ℓc} {D : Precategory od ℓd}
+  (grpd : is-pregroupoid C)
+  where
+```
+-->
+
+```agda
+  Core-universal : (F : Functor C D) → Functor C (Core D)
+  Core-universal F .F₀ x = F .F₀ x
+  Core-universal F .F₁ f .hom = F .F₁ f
+  Core-universal F .F₁ f .witness = F-map-invertible F (grpd f)
+  Core-universal F .F-id = Wide-hom-path (F .F-id)
+  Core-universal F .F-∘ f g = Wide-hom-path (F .F-∘ f g)
+
+  Core-factor : (F : Functor C D) → F ≡ Forget-wide-subcat F∘ Core-universal F
+  Core-factor F = Functor-path (λ _ → refl) λ _ → refl
+```
+
+<!-- [TODO: Reed M, 05/05/2023] This is really part of a biadjunction
+between Cat and Grpd (in particular it's the right biadjoint to the
+inclusion Grpd ↪ Cat).
+-->

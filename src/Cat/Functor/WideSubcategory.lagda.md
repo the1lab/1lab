@@ -182,7 +182,6 @@ should be part of the definition of a wide subcategory, but it isn't
 ```agda
 module _
   {sub : Wide-subcat ℓ}
-  (P-invert : ∀ {x y} {f : C.Hom x y} → C.is-invertible f → sub .P f)
   where
   private module Wide = Cat.Reasoning (Wide sub)
 
@@ -195,10 +194,12 @@ module _
   is-faithful-Forget-wide-subcat : is-faithful Forget-wide-subcat
   is-faithful-Forget-wide-subcat = Wide-hom-path
 
-  is-pseudomonic-Forget-wide-subcat : is-pseudomonic Forget-wide-subcat
-  is-pseudomonic-Forget-wide-subcat .is-pseudomonic.faithful =
+  is-pseudomonic-Forget-wide-subcat
+    : (P-invert : ∀ {x y} {f : C.Hom x y} → C.is-invertible f → sub .P f)
+    → is-pseudomonic Forget-wide-subcat
+  is-pseudomonic-Forget-wide-subcat P-invert .is-pseudomonic.faithful =
     is-faithful-Forget-wide-subcat
-  is-pseudomonic-Forget-wide-subcat .is-pseudomonic.isos-full f =
+  is-pseudomonic-Forget-wide-subcat P-invert .is-pseudomonic.isos-full f =
     pure $
       Wide.make-iso
         (wide f.to (P-invert (C.iso→invertible f)))

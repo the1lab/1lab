@@ -373,6 +373,15 @@ invertible-∘ f-inv g-inv = record
     module f-inv = is-invertible f-inv
     module g-inv = is-invertible g-inv
 
+_invertible⁻¹
+  : ∀ {f : Hom a b} → (f-inv : is-invertible f)
+  → is-invertible (is-invertible.inv f-inv)
+_invertible⁻¹ {f = f} f-inv .is-invertible.inv = f
+_invertible⁻¹ f-inv .is-invertible.inverses .invl =
+  is-invertible.invr f-inv
+_invertible⁻¹ f-inv .is-invertible.inverses .invr =
+  is-invertible.invl f-inv
+
 _Iso⁻¹ : a ≅ b → b ≅ a
 (f Iso⁻¹) .to = f .from
 (f Iso⁻¹) .from = f .to
