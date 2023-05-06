@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
@@ -7,7 +8,10 @@ open import Data.Nat.Order
 open import Data.Dec.Base
 open import Data.Nat.Base
 open import Data.Sum.Base
+```
+-->
 
+```agda
 module Data.Nat.DivMod where
 ```
 
@@ -64,7 +68,7 @@ $$
 (1 + a) = q'b + 1 + r
 $$
 
-```
+```agda
 divide-pos (suc a) b | divmod q′ r′ p s | inl r′+1<b =
   divmod q′ (suc r′) (ap suc p ∙ sym (+-sucr (q′ * b) r′)) r′+1<b
 ```

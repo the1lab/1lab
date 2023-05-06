@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Diagram.Product.Solver
 open import Cat.Instances.Functor
@@ -8,7 +9,10 @@ open import Cat.Prelude
 import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Diagram.Product
 import Cat.Reasoning as Cr
+```
+-->
 
+```agda
 module Cat.Monoidal.Instances.Cartesian where
 ```
 

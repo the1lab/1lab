@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Path
 open import 1Lab.Type
@@ -7,7 +8,10 @@ open import Meta.Idiom
 open import Meta.Alt
 
 import Data.List.Base as L
+```
+-->
 
+```agda
 module Meta.Foldable where
 ```
 

@@ -3,6 +3,7 @@ description: |
   We define Beck's coequalisers, and establish their role in the crude
   monadicity theorem.
 ---
+<!--
 ```agda
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Adjoint.Monad
@@ -13,7 +14,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as F-r
 import Cat.Reasoning as C-r
+```
+-->
 
+```agda
 module
   Cat.Functor.Monadic.Beck
   {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}

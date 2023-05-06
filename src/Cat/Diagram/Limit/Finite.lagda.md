@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Diagram.Limit.Equaliser
@@ -17,7 +18,10 @@ open import Cat.Prelude
 open import Data.Bool
 
 import Cat.Reasoning as Cat
+```
+-->
 
+```agda
 module Cat.Diagram.Limit.Finite where
 ```
 
@@ -42,8 +46,8 @@ get away with only the following common shapes of limits:
 
 [terminal object]: Cat.Diagram.Terminal.html
 [Products]: Cat.Diagram.Product.html
-[Equalisers]: Cat.Diagram.Pullback.html
-[Pullbacks]: Cat.Diagram.Equaliser.html
+[Equalisers]: Cat.Diagram.Equaliser.html
+[Pullbacks]: Cat.Diagram.Pullback.html
 
 In reality, the list above has some redundancy. Since we can build
 products out of pullbacks and a terminal object, and conversely we can

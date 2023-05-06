@@ -1,6 +1,10 @@
+<!--
 ```agda
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Diagram.Idempotent {o h} (C : Precategory o h) where
 ```
 

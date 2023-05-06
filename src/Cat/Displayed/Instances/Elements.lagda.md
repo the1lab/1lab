@@ -2,10 +2,14 @@
 description: |
   We define the displayed category of elements.
 ---
+<!--
 ```agda
 open import Cat.Displayed.Base
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Displayed.Instances.Elements {o ℓ s} (B : Precategory o ℓ)
   (P : Functor (B ^op) (Sets s)) where
 ```

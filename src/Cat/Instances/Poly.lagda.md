@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Reflection.Record
 
@@ -13,13 +14,17 @@ open import Cat.Instances.Sets
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Instances.Poly where
 ```
 
 <!--
 ```agda
 open Functor
+open Total-hom
 ```
 -->
 
@@ -68,6 +73,20 @@ poly-maps : ∀ {ℓ} {A B} → Iso
   (Poly.Hom {ℓ} A B)
   (Σ[ f ∈ (⌞ A ⌟ → ⌞ B ⌟) ] ∀ x → ∣ B .snd (f x) ∣ → ∣ A .snd x ∣)
 unquoteDef poly-maps = define-record-iso poly-maps (quote Total-hom)
+```
+
+We also derive a convenient characterisation of paths between $\thecat{Poly}$ morphisms
+using regularity:
+
+```agda
+poly-map-path
+  : ∀ {ℓ A B} {f g : Poly.Hom {ℓ} A B}
+  → (hom≡ : f .hom ≡ g .hom)
+  → (pre≡ : ∀ a b → f .preserves a (subst (λ hom → ∣ B .snd (hom a) ∣) (sym hom≡) b)
+                  ≡ g .preserves a b)
+  → f ≡ g
+poly-map-path hom≡ pre≡ = total-hom-path _ hom≡
+  (to-pathp (funext λ a → funext λ b → Regularity.precise! (pre≡ a b)))
 ```
 
 ## Polynomials as functors

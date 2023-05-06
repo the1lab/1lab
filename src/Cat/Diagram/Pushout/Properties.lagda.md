@@ -1,9 +1,13 @@
+<!--
 ```agda
 open import Cat.Prelude
 
 import Cat.Diagram.Pushout
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Diagram.Pushout.Properties {o ℓ} {C : Precategory o ℓ} where
 ```
 

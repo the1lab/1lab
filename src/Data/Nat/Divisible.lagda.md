@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
 open import Data.Nat.Properties
 open import Data.Nat.Order
 open import Data.Nat.Base
+```
+-->
 
+```agda
 module Data.Nat.Divisible where
 ```
 

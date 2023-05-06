@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Algebra.Group.Cat.Base
 open import Algebra.Group
 
 open import Cat.Instances.Sets.Complete as SL
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Algebra.Group.Cat.FinitelyComplete {ℓ} where
 ```
 
@@ -107,7 +111,7 @@ Direct-product (G , Gg) (H , Hg) = to-group G×Hg where
   G×Hg .make-group.unit = G.unit , H.unit
   G×Hg .make-group.mul (a , x) (b , y) = a G.⋆ b , x H.⋆ y
   G×Hg .make-group.inv (a , x) = a G.⁻¹ , x H.⁻¹
-  G×Hg .make-group.assoc x y z = ap₂ _,_ (sym G.associative) (sym H.associative)
+  G×Hg .make-group.assoc x y z = ap₂ _,_ G.associative H.associative
   G×Hg .make-group.invl x = ap₂ _,_ G.inversel H.inversel
   G×Hg .make-group.idl x = ap₂ _,_ G.idl H.idl
 ```
@@ -216,7 +220,7 @@ Similar yoga must be done for the inverse maps and the group unit.
     equ-group .make-group.unit = G.unit , invs
     equ-group .make-group.mul = equ-⋆
     equ-group .make-group.inv = equ-inv
-    equ-group .make-group.assoc x y z = Σ-prop-path (λ _ → H.has-is-set _ _) (sym G.associative)
+    equ-group .make-group.assoc x y z = Σ-prop-path (λ _ → H.has-is-set _ _) G.associative
     equ-group .make-group.invl x = Σ-prop-path (λ _ → H.has-is-set _ _) G.inversel
     equ-group .make-group.idl x = Σ-prop-path (λ _ → H.has-is-set _ _) G.idl
 

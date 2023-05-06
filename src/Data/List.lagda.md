@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel
@@ -6,7 +7,10 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Bool
+```
+-->
 
+```agda
 module Data.List where
 
 open import Data.List.Base public

@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Cat.Bi.Base
 open import Cat.Prelude
 
 import Cat.Diagram.Monad as Cat
 import Cat.Reasoning as Cr
+```
+-->
 
+```agda
 module Cat.Bi.Diagram.Monad  where
 ```
 

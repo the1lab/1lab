@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Diagram.Colimit.Base
 open import Cat.Instances.Functor
@@ -6,7 +7,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Diagram.Colimit.Cocone where
 ```
 

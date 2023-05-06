@@ -1,6 +1,10 @@
+<!--
 ```agda
 open import 1Lab.Type
+```
+-->
 
+```agda
 module Prim.Data.Word where
 ```
 

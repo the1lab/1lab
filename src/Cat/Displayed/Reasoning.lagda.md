@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Cat.Instances.Functor
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Reasoning as Cat
+```
+-->
 
+```agda
 module
   Cat.Displayed.Reasoning
     {o′ ℓ′ o′′ ℓ′′}
@@ -317,7 +321,7 @@ open Displayed E
 private variable
   u w x y z : Ob
   a b c d f g h i : Hom x y
-  u′ w′ x′ y′ z′ : Ob[ x ]
+  u′ w′ x′ y′ y″ z′ : Ob[ x ]
   a′ b′ c′ d′ f′ g′ h′ i′ : Hom[ a ] x′ y′
 ```
 -->
@@ -480,7 +484,7 @@ module _ {a′ : Hom[ a ] y′ z′} {b′ : Hom[ b ] x′ y′} {c′ : Hom[ c 
   pushr[] = pushr′
 
 module _ {f′ : Hom[ f ] y′ z′} {h′ : Hom[ h ] x′ y′}
-         {g′ : Hom[ g ] y′ z′} {i′ : Hom[ i ] x′ y′}
+         {g′ : Hom[ g ] y″ z′} {i′ : Hom[ i ] x′ y″}
          (p : f ∘ h ≡ g ∘ i) (p′ : f′ ∘′ h′ ≡[ p ] g′ ∘′ i′) where abstract
 
   extendl′ : ∀ {b′ : Hom[ b ] w′ x′} {q : f ∘ (h ∘ b) ≡ g ∘ (i ∘ b)}
@@ -507,6 +511,14 @@ module _ {f′ : Hom[ f ] y′ z′} {h′ : Hom[ h ] x′ y′}
     hom[ ap (a ∘_) (sym (assoc f h b)) ∙ q ] (a′ ∘′ (f′ ∘′ h′) ∘′ b′) ≡⟨ apr′ (λ j → p′ j ∘′ b′) ⟩
     hom[ ap (a ∘_) (sym (assoc g i b)) ] (a′ ∘′ (g′ ∘′ i′) ∘′ b′)     ≡⟨ shiftl _ (λ j → a′ ∘′ assoc′ g′ i′ b′ (~ j)) ⟩
     a′ ∘′ g′ ∘′ i′ ∘′ b′ ∎
+
+  extendl[] : ∀ {b′ : Hom[ b ] w′ x′}
+             → f′ ∘′ (h′ ∘′ b′) ≡[ extendl p ] g′ ∘′ (i′ ∘′ b′)
+  extendl[] = extendl′
+
+  extendr[] : ∀ {a′ : Hom[ a ] z′ w′}
+             → (a′ ∘′ f′) ∘′ h′ ≡[ extendr p ] (a′ ∘′ g′) ∘′ i′
+  extendr[] = extendr′
 ```
 
 ## Cancellation

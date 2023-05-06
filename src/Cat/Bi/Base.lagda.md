@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Functor.Compose renaming (_◆_ to _◇_)
 open import Cat.Instances.Functor
@@ -8,7 +9,10 @@ open import Cat.Prelude
 import Cat.Functor.Bifunctor as Bi
 import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning as Cr
+```
+-->
 
+```agda
 module Cat.Bi.Base where
 ```
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="keywords" content="Agda,categories,topos" />
+  <meta name="keywords" content="Agda,category theory,homotopy type theory,type theory" />
 
   <title>$pagetitle$ - 1Lab</title>
 
@@ -102,6 +102,12 @@
           <input name=sidebar-fns type="checkbox" class="inline-footnotes" id=sidebar-fns>
           <label for=sidebar-fns>Inline Footnotes</label>
         </span>
+
+        <!-- Sidebar hidden code control -->
+        <span style="display: flex; align-items: center; gap: 0.25em; flex-wrap: nowrap;">
+          <input name=sidebar-hidden type="checkbox" autocomplete=off id=sidebar-hidden>
+          <label for=sidebar-hidden>Hidden Code</label>
+        </span>
       </div>
 
       <hr />
@@ -117,7 +123,7 @@
         <a href="/">back to index</a> <br />
       $endif$
         <a href="all-pages.html">view all pages</a> <br />
-        <a href="https://github.com/plt-amy/cubical-1lab/blob/$source$">link to source</a> <br />
+        <a href="https://github.com/plt-amy/1lab/blob/$source$">link to source</a> <br />
         $if(authors)$
         <hr /> <div class="author-list">Written by $authors$</div> <br />
         $endif$

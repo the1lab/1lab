@@ -1,9 +1,13 @@
+<!--
 ```agda
 open import Cat.Diagram.Monad
 open import Cat.Functor.Base
 open import Cat.Univalent
 open import Cat.Prelude
+```
+-->
 
+```agda
 module
   Cat.Univalent.Instances.Algebra
     {o ℓ} {C : Precategory o ℓ}

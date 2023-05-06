@@ -1,6 +1,10 @@
+<!--
 ```agda
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Instances.Sets where
 ```
 
@@ -78,7 +82,7 @@ the rearrangement `iso→equiv`{.Agda} is an equivalence:
 We then use [univalence for $n$-types] to directly establish that $(A
 \equiv B) \simeq (A \cong B)$:
 
-```
+```agda
   is-category′-Sets : ∀ {A B : Set ℓ} → (A ≡ B) ≃ (A Sets.≅ B)
   is-category′-Sets {A} {B} =
     (A ≡ B)         ≃⟨ n-univalence e⁻¹ ⟩

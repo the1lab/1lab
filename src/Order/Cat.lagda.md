@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Instances.StrictCat
@@ -7,7 +8,10 @@ open import Cat.Prelude
 open import Order.Base
 
 import Order.Reasoning as Poset
+```
+-->
 
+```agda
 module Order.Cat where
 ```
 

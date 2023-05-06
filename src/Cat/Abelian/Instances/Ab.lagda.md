@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
@@ -17,7 +18,10 @@ open import Cat.Diagram.Product
 open import Cat.Functor.Adjoint
 open import Cat.Abelian.Base
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Abelian.Instances.Ab {ℓ} where
 ```
 

@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.StrictCat
 open import Cat.Instances.Discrete hiding (Disc)
@@ -6,7 +7,10 @@ open import Cat.Instances.Product
 open import Cat.Functor.Adjoint
 open import Cat.Univalent
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Instances.StrictCat.Cohesive where
 ```
 

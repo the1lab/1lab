@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Path
 open import 1Lab.Type
@@ -7,7 +8,10 @@ open import Data.List.Base
 open import Meta.Idiom
 
 open import Prim.Data.Maybe
+```
+-->
 
+```agda
 module Meta.Traverse where
 ```
 

@@ -1,5 +1,6 @@
+<!--
 ```agda
-open import Algebra.Ring.Module
+open import Algebra.Ring.Module.Action
 open import Algebra.Group.Ab
 open import Algebra.Prelude
 open import Algebra.Group
@@ -12,7 +13,10 @@ open import Data.Int
 import Data.Nat as Nat
 
 import Prim.Data.Nat as Nat
+```
+-->
 
+```agda
 module Algebra.Ring.Cat.Initial {ℓ} where
 ```
 
@@ -267,6 +271,6 @@ delooping-endomorphism ring adjunction, we have a correspondence between
 former!
 
 ```agda
-ℤ-module-unique : ∀ (G : Abelian-group ℓ) → is-contr (Module-on Liftℤ G)
-ℤ-module-unique G = is-hlevel≃ 0 (Action≃Module Liftℤ G) (Int-is-initial _)
+ℤ-module-unique : ∀ (G : Abelian-group ℓ) → is-contr (Ring-action Liftℤ (G .snd))
+ℤ-module-unique G = is-hlevel≃ 0 (Action≃Hom Liftℤ G) (Int-is-initial _)
 ```

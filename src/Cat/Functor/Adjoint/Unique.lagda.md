@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Functor
@@ -8,7 +9,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning as Cr
+```
+-->
 
+```agda
 module
   Cat.Functor.Adjoint.Unique
   {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}

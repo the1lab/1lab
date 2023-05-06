@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Algebra.Monoid
 
 open import Cat.Prelude
 
 open import Data.List
+```
+-->
 
+```agda
 module Cat.Instances.Delooping where
 ```
 
@@ -18,7 +22,7 @@ private variable
 Given a monoid $M$, we build a pointed precategory $B(M)$, where the
 endomorphism monoid of the point recovers $M$.
 
-```
+```agda
 B : ∀ {ℓ} {M : Type ℓ} → Monoid-on M → Precategory lzero ℓ
 B {M = M} mm = r where
   module mm = Monoid-on mm

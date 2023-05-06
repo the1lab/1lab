@@ -1,6 +1,10 @@
+<!--
 ```agda
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Instances.Free where
 ```
 

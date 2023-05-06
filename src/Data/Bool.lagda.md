@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.HLevel.Retracts
@@ -12,7 +13,10 @@ open import Data.Dec.Base
 open is-equiv
 open is-contr
 open is-iso
+```
+-->
 
+```agda
 module Data.Bool where
 
 open import Prim.Data.Bool public

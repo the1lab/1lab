@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Diagram.Coproduct
 open import Cat.Prelude
@@ -8,7 +9,10 @@ open import Order.Base
 open import Order.Cat
 
 import Order.Reasoning as Poset
+```
+-->
 
+```agda
 module Order.Diagram.Lub where
 ```
 

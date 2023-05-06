@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
@@ -6,7 +7,10 @@ open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+```
+-->
 
+```agda
 module Data.Set.Truncation where
 ```
 

@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Diagram.Product.Indexed
 open import Cat.Diagram.Limit.Finite
@@ -10,7 +11,10 @@ open import Cat.Prelude
 open import Data.Fin
 
 import Cat.Reasoning as Cr
+```
+-->
 
+```agda
 module Cat.Diagram.Product.Finite
   {o ℓ} {C : Precategory o ℓ}
   (terminal : Terminal C)

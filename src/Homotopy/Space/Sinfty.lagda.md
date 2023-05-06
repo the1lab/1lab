@@ -1,8 +1,12 @@
+<!--
 ```
 open import 1Lab.Prelude
 
 open import Homotopy.Space.Circle
+```
+-->
 
+```agda
 module Homotopy.Space.Sinfty where
 ```
 

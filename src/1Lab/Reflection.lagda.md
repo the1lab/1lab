@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Type.Sigma
 open import 1Lab.Equiv
@@ -8,7 +9,10 @@ open import Data.Product.NAry
 open import Data.Vec.Base
 open import Data.Bool
 open import Data.List
+```
+-->
 
+```agda
 module 1Lab.Reflection where
 
 open import Prim.Data.String public
@@ -466,6 +470,11 @@ Fun A B = A → B
 idfun : ∀ {ℓ} (A : Type ℓ) → A → A
 idfun A x = x
 
+underAbs : ∀ {ℓ} {A : Type ℓ} → Term → TC A → TC A
+underAbs (lam v (abs nm _)) m = extendContext nm (arg (arginfo v (modality relevant quantity-ω)) unknown) m
+underAbs (pi a (abs nm _)) m = extendContext nm a m
+underAbs _ m = m
+
 new-meta : Term → TC Term
 new-meta ty = do
   mv ← checkType unknown ty
@@ -578,10 +587,10 @@ unapply-path red@(def (quote PathP) (l h∷ T v∷ x v∷ y v∷ [])) = do
   pure (just (domain , x , y))
 unapply-path tm = reduce tm >>= λ where
   tm@(meta _ _) → do
-    dom ← new-meta (def (quote Type) [])
+    dom ← new-meta (def (quote Type) (unknown v∷ []))
     l ← new-meta dom
     r ← new-meta dom
-    unify tm (def (quote Type) [ argN dom , argN l , argN r ])
+    unify tm (def (quote Path) (dom v∷ l v∷ r v∷ []))
     traverse wait-for-type (l ∷ r ∷ [])
     pure (just (dom , l , r))
   red@(def (quote PathP) (l h∷ T v∷ x v∷ y v∷ [])) → do

@@ -1,4 +1,6 @@
+<!--
 ```agda
+open import Algebra.Ring.Module.Action
 open import Algebra.Group.Subgroup
 open import Algebra.Ring.Module
 open import Algebra.Group.Ab
@@ -11,7 +13,10 @@ open import Cat.Functor.FullSubcategory
 open import Data.Power
 
 open import Meta.Bind
+```
+-->
 
+```agda
 module Algebra.Ring.Ideal where
 ```
 
@@ -42,7 +47,6 @@ addition.
 ```agda
 module _ {ℓ} (R : Ring ℓ) where
   private module R = Ring-on (R .snd)
-  open Module hiding (module R ; module G)
 
   record is-ideal (𝔞 : ℙ ⌞ R ⌟) : Type (lsuc ℓ) where
     no-eta-equality
@@ -83,21 +87,22 @@ carries a canonical $R$-module structure.
 [subgroup]: Algebra.Group.Subgroup.html
 
 ```agda
-  ideal→module : (𝔞 : ℙ ⌞ R ⌟) → is-ideal 𝔞 → Module ℓ R
-  ideal→module 𝔞 x = g , mod where
-    open make-group
+  ideal→module : (𝔞 : ℙ ⌞ R ⌟) → is-ideal 𝔞 → Module R ℓ
+  ideal→module 𝔞 x = g .fst , mod where
+    open Ring-action
     open is-ideal x
     gr : Group-on _
     gr = rep-subgroup→group-on 𝔞 has-rep-subgroup
 
     g = from-commutative-group (el! _ , gr) λ x y → Σ-prop-path! R.+-commutes
 
-    mod : Module-on R g
-    mod .Module-on._⋆_ x y = _ , has-*ₗ x (y .snd)
-    mod .Module-on.⋆-id x = Σ-prop-path (λ _ → 𝔞 _ .is-tr) R.*-idl
-    mod .Module-on.⋆-add-r r x y = Σ-prop-path (λ _ → 𝔞 _ .is-tr) R.*-distribl
-    mod .Module-on.⋆-add-l x r s = Σ-prop-path (λ _ → 𝔞 _ .is-tr) R.*-distribr
-    mod .Module-on.⋆-assoc r s x = Σ-prop-path (λ _ → 𝔞 _ .is-tr) R.*-associative
+    mod : Module-on R ⌞ g ⌟
+    mod = Action→Module-on R {G = g .snd} λ where
+      ._⋆_ r (a , b) → _ , has-*ₗ r b
+      .⋆-distribl r x y → Σ-prop-path! R.*-distribl
+      .⋆-distribr r s x → Σ-prop-path! R.*-distribr
+      .⋆-assoc r s x    → Σ-prop-path! R.*-associative
+      .⋆-id x           → Σ-prop-path! R.*-idl
 ```
 
 Since a map between modules is [a monomorphism] when its underlying
@@ -110,12 +115,11 @@ $\mathfrak{a}$ is a sub-$R$-module of $R$:
 ```agda
   ideal→submodule
     : {𝔞 : ℙ ⌞ R ⌟} (idl : is-ideal 𝔞)
-    → ideal→module _ idl R-Mod.↪ representable-module R
+    → ideal→module 𝔞 idl R-Mod.↪ representable-module R
   ideal→submodule {𝔞 = 𝔞} idl = record
-    { mor   = record { map = fst ; linear = λ r m s n → refl }
-    ; monic = λ {c = c} g h x → Linear-map-path $
-      embedding→monic (Subset-proj-embedding λ _ → 𝔞 _ .is-tr) (g .map) (h .map)
-        (ap map x)
+    { mor   = total-hom fst (record { linear = λ _ _ _ → refl })
+    ; monic = λ {c = c} g h x → Structured-hom-path (R-Mod-structure R) $
+      embedding→monic (Subset-proj-embedding λ _ → 𝔞 _ .is-tr) (g .hom) (h .hom) (ap hom x)
     }
 ```
 

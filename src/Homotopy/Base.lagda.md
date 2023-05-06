@@ -1,3 +1,4 @@
+<!--
 ```agda
 {-# OPTIONS -vtactic.hlevel:10 #-}
 open import 1Lab.Prelude
@@ -8,7 +9,10 @@ open import Data.List using (_∷_ ; [])
 
 open import Homotopy.Space.Suspension
 open import Homotopy.Space.Sphere
+```
+-->
 
+```agda
 module Homotopy.Base where
 ```
 

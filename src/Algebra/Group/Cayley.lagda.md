@@ -1,9 +1,13 @@
+<!--
 ```
 open import 1Lab.Prelude
 
 open import Algebra.Group.Cat.Base
 open import Algebra.Group
+```
+-->
 
+```agda
 module Algebra.Group.Cayley {ℓ} (G : Group ℓ) where
 
 open Group-on (G .snd) renaming (underlying-set to G-set)

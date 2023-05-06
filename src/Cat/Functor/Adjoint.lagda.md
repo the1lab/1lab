@@ -5,6 +5,7 @@ description: |
   conceptually clean (adjoints as "optimal solutions" --- initial
   objects in certain comma categories).
 ---
+<!--
 ```agda
 open import Cat.Diagram.Initial
 open import Cat.Instances.Comma
@@ -12,7 +13,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Functor.Adjoint where
 ```
 
@@ -506,7 +510,7 @@ Hence, we can safely say that having a functor $L$ and an adjunction $L
 \dashv R$ is the same thing as having a functor $R$ and a system of
 universal arrows into $R$:
 
-```
+```agda
   L⊣R→universal-maps : ∀ x → Universal-morphism x R
   L⊣R→universal-maps x .Initial.bot = L⊣R→map-to-R x
   L⊣R→universal-maps x .Initial.has⊥ = L⊣R→map-to-R-is-initial x

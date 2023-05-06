@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.CartesianClosed.Locally
 open import Cat.Instances.Sets.Complete
@@ -5,7 +6,10 @@ open import Cat.Functor.Pullback
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Slice
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Instances.Sets.CartesianClosed {ℓ} where
 ```
 

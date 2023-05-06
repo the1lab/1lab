@@ -1,13 +1,18 @@
+<!--
 ```agda
-module Cat.Diagram.Product.Solver where
+open import 1Lab.Reflection
 
 open import Cat.Diagram.Product
 open import Cat.Prelude
-import Cat.Reasoning
-
-open import 1Lab.Reflection
 
 open import Data.List
+
+import Cat.Reasoning
+```
+-->
+
+```agda
+module Cat.Diagram.Product.Solver where
 ```
 
 # A Solver for Categories with Binary Products
@@ -22,9 +27,6 @@ into our internal expression type.
 
 ```agda
 module NbE {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ A B → Product 𝒞 A B) where
-  -- This η-expands everything, which could make life difficult for agda.
-  -- Instead, what we want to do is perform type-directe
-
   open Cat.Reasoning 𝒞
   open Binary-products 𝒞 cartesian
 ```
@@ -174,7 +176,7 @@ As noted earlier, we obtain normal forms by evaluating then quoting.
 
 ```agda
   nf : ∀ X Y → Expr X Y → Hom ⟦ X ⟧ₒ ⟦ Y ⟧ₒ
-  nf X Y e = reflect X Y (eval e (vhom id))
+  nf X Y e = reflect X Y (eval e vid)
 ```
 
 ## Soundness
@@ -183,12 +185,12 @@ Before proving soundness, we need to prove the normal battery of random
 lemmas. The first states that quoting a `vhom f` gives us back `f`.
 
 ```agda
-  reflect-hom : ∀ X Y → (f : Hom ⟦ X ⟧ₒ ⟦ Y ⟧ₒ) → reflect X Y (vhom f) ≡ f
-  reflect-hom X (Y ‶⊗‶ Z) f =
-    ⟨ reflect X Y (vhom (π₁ ∘ f)) , reflect X Z (vhom (π₂ ∘ f)) ⟩ ≡⟨ ap₂ ⟨_,_⟩ (reflect-hom X Y (π₁ ∘ f)) (reflect-hom X Z (π₂ ∘ f)) ⟩
+  vhom-sound : ∀ X Y → (f : Hom ⟦ X ⟧ₒ ⟦ Y ⟧ₒ) → reflect X Y (vhom f) ≡ f
+  vhom-sound X (Y ‶⊗‶ Z) f =
+    ⟨ reflect X Y (vhom (π₁ ∘ f)) , reflect X Z (vhom (π₂ ∘ f)) ⟩ ≡⟨ ap₂ ⟨_,_⟩ (vhom-sound X Y (π₁ ∘ f)) (vhom-sound X Z (π₂ ∘ f)) ⟩
     ⟨ π₁ ∘ f , π₂ ∘ f ⟩                                           ≡˘⟨ ⟨⟩-unique f refl refl ⟩
     f                                                             ∎
-  reflect-hom X ‶ x ‶ f = refl
+  vhom-sound X ‶ x ‶ f = refl
 ```
 
 Next, some soundless lemmas for our eliminators. We want to show that
@@ -198,8 +200,8 @@ once interpreted into our category `𝒞`.
 ```agda
   vfst-sound : ∀ X Y Z → (v : Value X (Y ‶⊗‶ Z)) → reflect X Y (vfst v) ≡ π₁ ∘ reflect X (Y ‶⊗‶ Z) v
   vfst-sound X Y Z (vhom f) =
-    reflect X Y (vhom (π₁ ∘ f))       ≡⟨ reflect-hom X Y (π₁ ∘ f) ⟩
-    π₁ ∘ f                            ≡˘⟨ refl⟩∘⟨ reflect-hom X (Y ‶⊗‶ Z) f ⟩
+    reflect X Y (vhom (π₁ ∘ f))       ≡⟨ vhom-sound X Y (π₁ ∘ f) ⟩
+    π₁ ∘ f                            ≡˘⟨ refl⟩∘⟨ vhom-sound X (Y ‶⊗‶ Z) f ⟩
     π₁ ∘ reflect X (Y ‶⊗‶ Z) (vhom f) ∎
   vfst-sound X Y Z (vpair v1 v2) =
     reflect X Y v1                               ≡˘⟨ π₁∘⟨⟩ ⟩
@@ -207,8 +209,8 @@ once interpreted into our category `𝒞`.
 
   vsnd-sound : ∀ X Y Z → (v : Value X (Y ‶⊗‶ Z)) → reflect X Z (vsnd v) ≡ π₂ ∘ reflect X (Y ‶⊗‶ Z) v
   vsnd-sound X Y Z (vhom f) =
-    reflect X Z (vhom (π₂ ∘ f))       ≡⟨ reflect-hom X Z (π₂ ∘ f) ⟩
-    π₂ ∘ f                            ≡˘⟨ refl⟩∘⟨ reflect-hom X (Y ‶⊗‶ Z) f ⟩
+    reflect X Z (vhom (π₂ ∘ f))       ≡⟨ vhom-sound X Z (π₂ ∘ f) ⟩
+    π₂ ∘ f                            ≡˘⟨ refl⟩∘⟨ vhom-sound X (Y ‶⊗‶ Z) f ⟩
     π₂ ∘ reflect X (Y ‶⊗‶ Z) (vhom f) ∎
   vsnd-sound X Y Z (vpair v1 v2) =
     reflect X Z v2                               ≡˘⟨ π₂∘⟨⟩ ⟩
@@ -220,34 +222,21 @@ We handle composition of values by interpreting expressions as functions
 soundness for our interpretation of composition.
 
 ```agda
-  reflect-eval : ∀ X Y Z → (e : Expr Y Z) → (v : Value X Y) → reflect X Z (eval e v) ≡ nf Y Z e ∘ reflect X Y v
-  reflect-eval X Y Y ‶id‶ v =
-    reflect X Y v                   ≡⟨ introl (reflect-hom Y Y id) ⟩
-    reflect Y Y vid ∘ reflect X Y v ∎
-  reflect-eval X Y Z (e1 ‶∘‶ e2) v =
-    reflect X Z (eval e1 (eval e2 v))                   ≡⟨ reflect-eval X _ Z e1 (eval e2 v) ⟩
-    nf _ Z e1 ∘ reflect X _ (eval e2 v)                 ≡⟨ refl⟩∘⟨ reflect-eval X Y _ e2 v ⟩
-    nf _ Z e1 ∘ nf Y _ e2 ∘ reflect X Y v               ≡⟨ pulll (sym (reflect-eval Y _ Z e1 (eval e2 vid))) ⟩
-    reflect Y Z (eval e1 (eval e2 vid)) ∘ reflect X Y v ∎
-  reflect-eval X (Y ‶⊗‶ Z) Y ‶π₁‶ v =
-    reflect X Y (vfst v)                                         ≡⟨ vfst-sound X Y Z v ⟩
-    π₁ ∘ reflect X (Y ‶⊗‶ Z) v                                   ≡˘⟨ idr π₁ ⟩∘⟨refl ⟩
-    (π₁ ∘ id) ∘ reflect X (Y ‶⊗‶ Z) v                            ≡˘⟨ reflect-hom (Y ‶⊗‶ Z) Y (π₁ ∘ id) ⟩∘⟨refl ⟩
-    reflect (Y ‶⊗‶ Z) Y (vhom (π₁ ∘ id)) ∘ reflect X (Y ‶⊗‶ Z) v ∎
-  reflect-eval X (Y ‶⊗‶ Z) Z ‶π₂‶ v =
-    reflect X Z (vsnd v)                                         ≡⟨ vsnd-sound X Y Z v ⟩
-    π₂ ∘ reflect X (Y ‶⊗‶ Z) v                                   ≡˘⟨ idr π₂ ⟩∘⟨refl ⟩
-    (π₂ ∘ id) ∘ reflect X (Y ‶⊗‶ Z) v                            ≡˘⟨ reflect-hom (Y ‶⊗‶ Z) Z (π₂ ∘ id) ⟩∘⟨refl ⟩
-    reflect (Y ‶⊗‶ Z) Z (vhom (π₂ ∘ id)) ∘ reflect X (Y ‶⊗‶ Z) v ∎
-  reflect-eval X Y (W ‶⊗‶ Z) ‶⟨ e1 , e2 ⟩‶ v =
-    ⟨ (reflect X W (eval e1 v)) , (reflect X Z (eval e2 v)) ⟩ ≡⟨ ap₂ ⟨_,_⟩ (reflect-eval X Y W e1 v) (reflect-eval X Y Z e2 v) ⟩
-    ⟨ nf Y W e1 ∘ reflect X Y v , nf Y Z e2 ∘ reflect X Y v ⟩ ≡˘⟨ ⟨⟩∘ (reflect X Y v) ⟩
-    ⟨ nf Y W e1 , nf Y Z e2 ⟩ ∘ reflect X Y v                 ∎
-  reflect-eval X Y Z ‶ f ‶ v =
-    reflect X Z (vhom (f ∘ reflect X Y v))                   ≡⟨ reflect-hom X Z (f ∘ reflect X Y v) ⟩
-    f ∘ (reflect X Y v)                                      ≡⟨ intror (reflect-hom Y Y id) ⟩∘⟨refl ⟩
-    (f ∘ reflect Y Y vid) ∘ reflect X Y v                    ≡˘⟨ reflect-hom Y Z (f ∘ reflect Y Y vid) ⟩∘⟨refl  ⟩
-    reflect Y Z (vhom (f ∘ reflect Y Y vid)) ∘ reflect X Y v ∎
+  sound-k : ∀ X Y Z → (e : Expr Y Z) → (v : Value X Y)
+          → reflect X Z (eval e v) ≡ ⟦ e ⟧ₑ ∘ reflect X Y v
+  sound-k X Y Y ‶id‶ v = sym (idl _)
+  sound-k X Y Z (e1 ‶∘‶ e2) v =
+    reflect X Z (eval e1 (eval e2 v)) ≡⟨ sound-k X _ Z e1 (eval e2 v) ⟩
+    ⟦ e1 ⟧ₑ ∘ reflect X _ (eval e2 v) ≡⟨ refl⟩∘⟨ sound-k X Y _ e2 v ⟩
+    ⟦ e1 ⟧ₑ ∘ ⟦ e2 ⟧ₑ ∘ reflect X Y v ≡⟨ assoc _ _ _ ⟩
+    ⟦ e1 ‶∘‶ e2 ⟧ₑ ∘ reflect X Y v    ∎
+  sound-k X (Y ‶⊗‶ Z) Y ‶π₁‶ v = vfst-sound X Y Z v
+  sound-k X (Y ‶⊗‶ Z) Z ‶π₂‶ v = vsnd-sound X Y Z v
+  sound-k X Y (Z1 ‶⊗‶ Z2) ‶⟨ e1 , e2 ⟩‶ v =
+    ⟨ reflect X Z1 (eval e1 v) , reflect X Z2 (eval e2 v) ⟩ ≡⟨ ap₂ ⟨_,_⟩ (sound-k X Y Z1 e1 v) (sound-k X Y Z2 e2 v) ⟩
+    ⟨ ⟦ e1 ⟧ₑ ∘ reflect X Y v , ⟦ e2 ⟧ₑ ∘ reflect X Y v ⟩   ≡˘⟨ ⟨⟩∘ _ ⟩
+    ⟨ ⟦ e1 ⟧ₑ , ⟦ e2 ⟧ₑ ⟩ ∘ reflect X Y v                   ∎
+  sound-k X Y Z ‶ x ‶ v = vhom-sound X Z _
 ```
 
 The final soundness proof: normalizing an expression gives us the same
@@ -255,26 +244,7 @@ morphism as naively interpreting the expression.
 
 ```agda
   sound : ∀ X Y → (e : Expr X Y) → nf X Y e ≡ ⟦ e ⟧ₑ
-  sound X X ‶id‶ = reflect-hom X X id
-  sound X Z (e1 ‶∘‶ e2) =
-    reflect X Z (eval e1 (eval e2 (vhom id))) ≡⟨ reflect-eval X _ Z e1 (eval e2 (vhom id)) ⟩
-    nf _ Z e1 ∘ nf X _ e2                     ≡⟨ ap₂ _∘_ (sound _ Z e1) (sound X  _ e2) ⟩
-    ⟦ e1 ⟧ₑ ∘ ⟦ e2 ⟧ₑ                         ∎
-  sound (X ‶⊗‶ Y) X ‶π₁‶ =
-    nf (X ‶⊗‶ Y) X ‶π₁‶ ≡⟨ reflect-hom (X ‶⊗‶ Y) X (π₁ ∘ id) ⟩
-    π₁ ∘ id             ≡⟨ idr π₁ ⟩
-    π₁                  ∎
-  sound (X ‶⊗‶ Y) Y ‶π₂‶ =
-    nf (X ‶⊗‶ Y) Y ‶π₂‶ ≡⟨ reflect-hom (X ‶⊗‶ Y) Y (π₂ ∘ id) ⟩
-    π₂ ∘ id             ≡⟨ idr π₂ ⟩
-    π₂                  ∎
-  sound X (Y ‶⊗‶ Z) ‶⟨ e1 , e2 ⟩‶ =
-    ⟨ nf X Y e1 , nf X Z e2 ⟩ ≡⟨ ap₂ ⟨_,_⟩ (sound X Y e1) (sound X Z e2) ⟩
-    ⟨ ⟦ e1 ⟧ₑ , ⟦ e2 ⟧ₑ ⟩     ∎
-  sound X Y ‶ f ‶ =
-    nf X Y ‶ f ‶                ≡⟨ reflect-hom X Y (f ∘ reflect X X (vhom (𝒞 .Precategory.id))) ⟩
-    (f ∘ reflect X X (vhom id)) ≡⟨ elimr (reflect-hom X X id) ⟩
-    f ∎
+  sound X Y e = sound-k X X Y e vid ∙ elimr (vhom-sound X X id)
 ```
 
 ## Solver Interface

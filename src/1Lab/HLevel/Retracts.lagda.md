@@ -5,6 +5,7 @@ description: |
   these closure properties using Agda's instance resolution mechanism,
   automating "boring" h-level obligations.
 ---
+<!--
 ```agda
 {-# OPTIONS --no-projection-like #-}
 open import 1Lab.Path.Groupoid
@@ -13,7 +14,10 @@ open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+```
+-->
 
+```agda
 module 1Lab.HLevel.Retracts where
 ```
 

@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Kan.Duality
 open import Cat.Functor.Coherence
@@ -9,7 +10,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning as Cr
+```
+-->
 
+```agda
 module Cat.Functor.Adjoint.Kan where
 ```
 

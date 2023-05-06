@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Functor.Compose
 open import Cat.Functor.Adjoint.Hom
@@ -12,7 +13,10 @@ import Cat.Reasoning
 open Functor
 open _=>_
 open Lan
+```
+-->
 
+```agda
 module Cat.Functor.Kan.Global
 ```
 

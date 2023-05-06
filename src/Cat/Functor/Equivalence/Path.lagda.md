@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Adjoint.Unique
 open import Cat.Functor.Equivalence
@@ -11,7 +12,10 @@ import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning
 
 open Functor
+```
+-->
 
+```agda
 module Cat.Functor.Equivalence.Path where
 ```
 

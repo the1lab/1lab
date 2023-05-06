@@ -1,3 +1,4 @@
+<!--
 ```agda
 {-# OPTIONS --lossy-unification #-}
 open import 1Lab.Equiv.Embedding
@@ -13,7 +14,10 @@ open import Cat.Prelude
 
 import Cat.Displayed.Morphism
 import Cat.Morphism
+```
+-->
 
+```agda
 module Cat.Displayed.Univalence.Thin where
 
 ```

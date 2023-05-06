@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Prelude hiding (∫)
 
@@ -13,7 +14,10 @@ open import Cat.Instances.Lift
 
 import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Topoi.Base where
 ```
 

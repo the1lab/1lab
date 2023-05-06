@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Reflection.Record
 open import 1Lab.Equiv.Fibrewise
@@ -9,7 +10,10 @@ open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type hiding (id ; _∘_)
+```
+-->
 
+```agda
 module Cat.Base where
 ```
 
@@ -95,7 +99,7 @@ morphisms`{.Agda ident="_∘_"}. Unlike in the proof-irrelevant case, in
 which an inhabitant of $x \le y$ merely witnesses that two things are
 related, these operations _matter_, and thus must satisfy laws:
 
-```
+```agda
   field
     idr : ∀ {x y} (f : Hom x y) → f ∘ id ≡ f
     idl : ∀ {x y} (f : Hom x y) → id ∘ f ≡ f
@@ -107,7 +111,7 @@ right. The "two" associativity laws (below) say that both ways of writing
 parentheses around a composition of three morphisms is equal: $(f \circ
 g) \circ h = f \circ (g \circ h)$.
 
-```
+```agda
     assoc : ∀ {w x y z} (f : Hom y z) (g : Hom x y) (h : Hom w x)
           → f ∘ (g ∘ h) ≡ (f ∘ g) ∘ h
 ```

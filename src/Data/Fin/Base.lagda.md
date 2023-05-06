@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.HLevel.Retracts
@@ -12,7 +13,10 @@ open import Data.Sum.Base
 open import Data.Id.Base
 
 import Data.Nat.Base as Nat
+```
+-->
 
+```agda
 module Data.Fin.Base where
 ```
 

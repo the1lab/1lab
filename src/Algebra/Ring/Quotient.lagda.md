@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Subgroup
@@ -8,7 +9,10 @@ open import Algebra.Ring
 
 open import Data.Power
 open import Data.Dec
+```
+-->
 
+```agda
 module Algebra.Ring.Quotient {ℓ} (R : Ring ℓ) where
 ```
 
@@ -94,7 +98,7 @@ quotients into propositions, then applying $R$'s laws.</summary>
   make-R/I .-_ = R/I.inverse
   make-R/I .+-idl = R/I.idl
   make-R/I .+-invr {x} = R/I.inverser {x}
-  make-R/I .+-assoc {x} {y} {z} = sym $ R/I.associative {x} {y} {z}
+  make-R/I .+-assoc {x} {y} {z} = R/I.associative {x} {y} {z}
   make-R/I .1R = inc R.1r
   make-R/I ._*_ = quot-mul
   make-R/I .+-comm {x} {y} =
@@ -108,8 +112,8 @@ quotients into propositions, then applying $R$'s laws.</summary>
       (λ x → ap Coeq.inc R.*-idr) x
   make-R/I .*-assoc {x} {y} {z} =
     Coeq-elim-prop₃
-      {C = λ x y z → quot-mul (quot-mul x y) z ≡ quot-mul x (quot-mul y z)}
-      (λ _ _ _ → hlevel 1) (λ x y z → ap Coeq.inc (sym R.*-associative)) x y z
+      {C = λ x y z → quot-mul x (quot-mul y z) ≡ quot-mul (quot-mul x y) z}
+      (λ _ _ _ → hlevel 1) (λ x y z → ap Coeq.inc R.*-associative) x y z
   make-R/I .*-distribl {x} {y} {z} =
     Coeq-elim-prop₃
       {C = λ x y z → quot-mul x (y R/I.⋆ z) ≡ quot-mul x y R/I.⋆ quot-mul x z}

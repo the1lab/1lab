@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Ab
@@ -6,7 +7,10 @@ open import Algebra.Group
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Algebra.Group.Ab.Abelianisation where
 ```
 
@@ -156,9 +160,9 @@ all defined in terms of those of $G$, the group axioms are also
 inherited from $G$!
 
 ```agda
-  ab*-associative : ∀ x y z → (x ab* y) ab* z ≡ x ab* (y ab* z)
+  ab*-associative : ∀ x y z → x ab* (y ab* z) ≡ (x ab* y) ab* z
   ab*-associative = Coeq-elim-prop₃ (λ _ _ _ → squash _ _)
-    λ _ _ _ → ap inc^ab (sym associative)
+    λ _ _ _ → ap inc^ab associative
 
   open make-abelian-group
   Abelian-group-on-G^ab : make-abelian-group G^ab

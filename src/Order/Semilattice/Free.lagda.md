@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Monoid
 
@@ -13,7 +14,10 @@ open import Data.Sum.Base
 
 open import Order.Diagram.Glb
 open import Order.Semilattice
+```
+-->
 
+```agda
 module Order.Semilattice.Free where
 ```
 

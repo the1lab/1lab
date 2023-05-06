@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Prelude
 
@@ -5,7 +6,10 @@ open import Order.Diagram.Lub
 open import Order.Semilattice
 open import Order.Frame
 open import Order.Base
+```
+-->
 
+```agda
 module Order.Frame.Reasoning {ℓ} (B : Frame ℓ) where
 ```
 

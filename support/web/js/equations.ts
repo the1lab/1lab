@@ -79,6 +79,34 @@ window.addEventListener("DOMContentLoaded", () => {
       saveFontDisplay();
     };
   }
+
+  const showHiddenCode = document.getElementById("sidebar-hidden") as HTMLInputElement | null;
+  if (showHiddenCode) {
+    showHiddenCode.onchange = () => {
+      if (showHiddenCode.checked)
+        body.classList.add("show-hidden-code");
+      else
+        body.classList.remove("show-hidden-code");
+    };
+  }
+
+  scrollToHash();
 });
+
+window.addEventListener("hashchange", scrollToHash);
+
+function scrollToHash() {
+  if (window.location.hash != '') {
+    const id = window.location.hash.slice(1);
+    // #id doesn't work with numerical IDs
+    const elem = document.querySelector(`[id="${id}"]`) as HTMLInputElement | null;
+    const commentedOut = elem?.closest('.commented-out') as HTMLInputElement | null;
+    if (elem && commentedOut) {
+      // The element is in a commented-out block: unhide it and scroll to it.
+      commentedOut.style.display = 'revert';
+      elem.scrollIntoView();
+    }
+  }
+}
 
 export { };

@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Cat.Prelude
 
 open import Data.Fin
 
 import Cat.Reasoning as Cat
+```
+-->
 
+```agda
 module Cat.Instances.FinSet where
 ```
 

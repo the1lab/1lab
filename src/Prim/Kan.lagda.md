@@ -1,8 +1,12 @@
+<!--
 ```agda
 open import Prim.Extension
 open import Prim.Interval
 open import Prim.Type
+```
+-->
 
+```agda
 module Prim.Kan where
 ```
 

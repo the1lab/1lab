@@ -1,9 +1,13 @@
+<!--
 ```agda
 open import Cat.Allegory.Base
 open import Cat.Prelude
 
 import Cat.Allegory.Reasoning as Ar
+```
+-->
 
+```agda
 module Cat.Allegory.Maps where
 ```
 

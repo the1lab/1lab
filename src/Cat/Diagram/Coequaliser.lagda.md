@@ -1,6 +1,10 @@
+<!--
 ```agda
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Diagram.Coequaliser {o ℓ} (C : Precategory o ℓ) where
 
 ```

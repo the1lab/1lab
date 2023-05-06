@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Functor
 open import Cat.Functor.Hom
@@ -6,7 +7,10 @@ open import Cat.Prelude
 open import Data.Power
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Diagram.Sieve {o κ : _} (C : Precategory o κ) (c : Precategory.Ob C) where
 ```
 

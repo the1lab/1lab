@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Cat.Base
 open import Algebra.Prelude
@@ -6,7 +7,10 @@ open import Algebra.Group
 open import Cat.Instances.Delooping
 
 import Cat.Functor.Reasoning as Functor-kit
+```
+-->
 
+```agda
 module Algebra.Group.Action where
 ```
 
@@ -81,7 +85,7 @@ module _ {o ℓ} (C : Precategory o ℓ) where
     mg .make-group.unit = C.id-iso
     mg .make-group.mul g f = g C.∘Iso f
     mg .make-group.inv = C._Iso⁻¹
-    mg .make-group.assoc x y z = C.≅-pathp refl refl (C.assoc _ _ _)
+    mg .make-group.assoc x y z = C.≅-pathp refl refl (sym (C.assoc _ _ _))
     mg .make-group.invl x = C.≅-pathp refl refl (x .C.invl)
     mg .make-group.idl x = C.≅-pathp refl refl (C.idr _)
 ```

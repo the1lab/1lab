@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Diagram.Colimit.Representable
 open import Cat.Functor.Hom.Representable
@@ -18,7 +19,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Functor.Kan.Pointwise where
 ```
 

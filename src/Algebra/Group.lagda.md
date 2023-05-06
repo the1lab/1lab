@@ -1,3 +1,4 @@
+<!--
 ```agda
 {-# OPTIONS -vtactic.hlevel:10 #-}
 open import 1Lab.Prelude
@@ -10,7 +11,10 @@ open import Algebra.Magma
 open import Cat.Instances.Delooping
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Algebra.Group where
 ```
 
@@ -246,7 +250,7 @@ record make-group {ℓ} (G : Type ℓ) : Type ℓ where
     mul  : G → G → G
     inv  : G → G
 
-    assoc : ∀ x y z → mul (mul x y) z ≡ mul x (mul y z)
+    assoc : ∀ x y z → mul x (mul y z) ≡ mul (mul x y) z
     invl  : ∀ x → mul (inv x) x ≡ unit
     idl   : ∀ x → mul unit x ≡ x
 
@@ -255,8 +259,8 @@ record make-group {ℓ} (G : Type ℓ) : Type ℓ where
     inverser x =
       mul x (inv x)                                   ≡˘⟨ idl _ ⟩
       mul unit (mul x (inv x))                        ≡˘⟨ ap₂ mul (invl _) refl ⟩
-      mul (mul (inv (inv x)) (inv x)) (mul x (inv x)) ≡⟨ assoc _ _ _ ⟩
-      mul (inv (inv x)) (mul (inv x) (mul x (inv x))) ≡˘⟨ ap₂ mul refl (assoc _ _ _) ⟩
+      mul (mul (inv (inv x)) (inv x)) (mul x (inv x)) ≡˘⟨ assoc _ _ _ ⟩
+      mul (inv (inv x)) (mul (inv x) (mul x (inv x))) ≡⟨ ap₂ mul refl (assoc _ _ _) ⟩
       mul (inv (inv x)) (mul (mul (inv x) x) (inv x)) ≡⟨ ap₂ mul refl (ap₂ mul (invl _) refl) ⟩
       mul (inv (inv x)) (mul unit (inv x))            ≡⟨ ap₂ mul refl (idl _) ⟩
       mul (inv (inv x)) (inv x)                       ≡⟨ invl _ ⟩
@@ -271,13 +275,13 @@ record make-group {ℓ} (G : Type ℓ) : Type ℓ where
   to-group-on .Group-on.has-is-group .is-group.has-is-monoid .is-monoid.idl {x} = idl x
   to-group-on .Group-on.has-is-group .is-group.has-is-monoid .is-monoid.idr {x} =
     mul x ⌜ unit ⌝           ≡˘⟨ ap¡ (invl x) ⟩
-    mul x (mul (inv x) x)    ≡⟨ sym (assoc _ _ _) ⟩
+    mul x (mul (inv x) x)    ≡⟨ assoc _ _ _ ⟩
     mul ⌜ mul x (inv x) ⌝ x  ≡⟨ ap! (inverser x) ⟩
     mul unit x               ≡⟨ idl x ⟩
     x                        ∎
   to-group-on .Group-on.has-is-group .is-group.has-is-monoid .has-is-semigroup =
     record { has-is-magma = record { has-is-set = group-is-set }
-           ; associative = λ {x y z} → sym (assoc x y z)
+           ; associative = λ {x y z} → assoc x y z
            }
 
 open make-group using (to-group-on) public

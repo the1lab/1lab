@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Coequaliser
@@ -5,7 +6,10 @@ open import Cat.Diagram.Pullback
 open import Cat.Prelude
 
 import Cat.Diagram.Congruence
+```
+-->
 
+```agda
 module Cat.Instances.Sets.Congruences {ℓ} where
 ```
 

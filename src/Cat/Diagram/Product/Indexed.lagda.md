@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Discrete
 open import Cat.Functor.Kan.Base
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Diagram.Product.Indexed {o ℓ} (C : Precategory o ℓ) where
 ```
 
@@ -36,7 +40,7 @@ arbitrary map $F$ from $I$ to the space of objects of $\cC$. An
 _indexed product_ for this "diagram" is then an object admitting an
 universal family of maps $\pi_i : (\prod F) \to F_i$.
 
-```
+```agda
 record is-indexed-product (F : Idx → C.Ob) (π : ∀ i → C.Hom P (F i))
   : Type (o ⊔ ℓ ⊔ level-of Idx) where
   no-eta-equality

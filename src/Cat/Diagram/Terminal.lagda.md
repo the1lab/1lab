@@ -1,6 +1,10 @@
+<!--
 ```agda
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Diagram.Terminal {o h} (C : Precategory o h) where
 ```
 

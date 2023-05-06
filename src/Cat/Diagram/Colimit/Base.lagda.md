@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Kan.Unique
@@ -8,7 +9,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Diagram.Colimit.Base where
 ```
 

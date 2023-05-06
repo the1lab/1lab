@@ -684,6 +684,10 @@ open import Cat.Displayed.Instances.Scone
 -- fibration by construction.
 open import Cat.Displayed.Instances.Trivial
 -- Any category can be displayed over the terminal category.
+open import Cat.Displayed.Instances.Lifting
+-- Liftings of functors along a fibration
+open import Cat.Displayed.Instances.Diagrams
+-- The fibration of diagrams
 open import Cat.Displayed.Instances.Objects
 -- The fibration of objects.
 ```
@@ -714,8 +718,11 @@ open import Cat.Displayed.Instances.Identity
 ```
 
 ### Structures in Fibrations
+
+```agda
 open import Cat.Displayed.InternalSum
 -- The fibred equivalent of sigma types and existential quantifiers
+```
 
 ## Bicategories
 
@@ -751,6 +758,9 @@ object.
 open import Cat.Monoidal.Base
 open import Cat.Monoidal.Diagram.Monoid
 open import Cat.Monoidal.Instances.Cartesian
+
+open import Cat.Monoidal.Diagram.Monoid.Representable
+-- Internal monoids, representability, and the internal language of a category.
 ```
 
 ## Homological algebra

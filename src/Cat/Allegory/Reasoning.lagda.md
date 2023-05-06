@@ -1,10 +1,14 @@
+<!--
 ```agda
 {-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Allegory.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Allegory.Reasoning {o ℓ ℓ′} (A : Allegory o ℓ ℓ′) where
 ```
 

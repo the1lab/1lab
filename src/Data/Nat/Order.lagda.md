@@ -1,10 +1,14 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
 open import Data.Dec.Base
 open import Data.Nat.Base
 open import Data.Sum
+```
+-->
 
+```agda
 module Data.Nat.Order where
 ```
 

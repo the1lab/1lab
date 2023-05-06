@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Path.Cartesian
 
@@ -11,7 +12,10 @@ import Cat.Reasoning
 open Precategory
 open Functor
 open _=>_
+```
+-->
 
+```agda
 module Cat.Instances.Functor where
 
 private variable
@@ -390,6 +394,28 @@ Uncurry {C = C} {D = D} {E = E} F = uncurried where
       F.₁ f .η _ E.∘ (F₁ (F.₀ _) g E.∘ F.₁ f′ .η _) E.∘ F₁ (F.₀ _) g′     ≡⟨ cat! E ⟩
       ((F.₁ f .η _ E.∘ F₁ (F.₀ _) g) E.∘ (F.₁ f′ .η _ E.∘ F₁ (F.₀ _) g′)) ∎
 ```
+
+## Constant Diagrams
+
+There is a functor from $\cC$ to $[\cJ, \cC]$ that takes an object
+$x : \cC$ to the constant functor $j \mapsto x$.
+
+<!--
+```agda
+module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {J : Precategory o' ℓ'} where
+  private module C = Precategory C
+  private module J = Precategory J
+```
+-->
+
+```agda
+  ConstD : Functor C Cat[ J , C ]
+  ConstD .F₀ x = Const x
+  ConstD .F₁ f = const-nt f
+  ConstD .F-id = Nat-path (λ _ → refl)
+  ConstD .F-∘ f g = Nat-path (λ _ → refl)
+```
+
 
 <!--
 ```agda

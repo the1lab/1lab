@@ -1,7 +1,11 @@
+<!--
 ```agda
 {-# OPTIONS --show-implicit #-}
 open import 1Lab.Prelude
+```
+-->
 
+```agda
 module Algebra.Magma where
 ```
 
@@ -144,8 +148,8 @@ We show it is not commutative or associative by giving counterexamples:
   imp-not-commutative : ¬ ((x y : Bool) → imp x y ≡ imp y x)
   imp-not-commutative commutative = true≠false (commutative false true)
 
-  imp-not-associative : ¬ ((x y z : Bool) → imp (imp x y) z ≡ imp x (imp y z))
-  imp-not-associative associative = true≠false (sym (associative false false false))
+  imp-not-associative : ¬ ((x y z : Bool) → imp x (imp y z) ≡ imp (imp x y) z)
+  imp-not-associative associative = true≠false (associative false false false)
 ```
 
 It also has no two-sided unit, as can be shown by case-splitting

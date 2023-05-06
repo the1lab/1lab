@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Limit.Finite
@@ -7,7 +8,10 @@ open import Cat.Diagram.Product
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Diagram.Congruence {o ℓ} {C : Precategory o ℓ}
   (fc : Finitely-complete C) where
 ```

@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.FullSubcategory
 open import Cat.Morphism.Orthogonal
@@ -8,7 +9,10 @@ open import Cat.Prelude
 open import Data.Power
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Morphism.Factorisation where
 ```
 

@@ -1,9 +1,13 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
 open import Data.Wellfounded.Properties
 open import Data.Wellfounded.Base
+```
+-->
 
+```agda
 module Data.Wellfounded.W where
 ```
 

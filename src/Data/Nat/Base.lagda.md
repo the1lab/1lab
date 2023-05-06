@@ -1,3 +1,4 @@
+<!--
 ```
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.HLevel.Retracts
@@ -6,7 +7,10 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Dec.Base
+```
+-->
 
+```agda
 module Data.Nat.Base where
 ```
 

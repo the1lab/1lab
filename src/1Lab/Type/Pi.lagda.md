@@ -1,10 +1,14 @@
+<!--
 ```
 open import 1Lab.Path.Cartesian
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+```
+-->
 
+```agda
 module 1Lab.Type.Pi where
 ```
 

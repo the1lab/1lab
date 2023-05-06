@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Rewrite
 
@@ -14,7 +15,10 @@ open import Cat.Prelude
 
 import Cat.Displayed.Reasoning as DR
 import Cat.Displayed.Reasoning as DR
+```
+-->
 
+```agda
 module Cat.Displayed.Total.Op where
 
 open Functor

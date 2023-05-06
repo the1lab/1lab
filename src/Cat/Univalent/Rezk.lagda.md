@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.FullSubcategory
 open import Cat.Instances.Functor
@@ -10,7 +11,10 @@ open import Data.Image
 
 import Cat.Functor.Reasoning.FullyFaithful as Ffr
 import Cat.Reasoning as Cr
+```
+-->
 
+```agda
 module Cat.Univalent.Rezk where
 ```
 

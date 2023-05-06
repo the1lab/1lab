@@ -5,11 +5,15 @@ description: |
   function, but defined with Σ rather than ∃, fails to be different from
   the domain of the function.
 ---
+<!--
 ```
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+```
+-->
 
+```agda
 module 1Lab.Counterexamples.Sigma where
 ```
 

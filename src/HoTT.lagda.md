@@ -49,10 +49,12 @@ open import Order.Base
 
 import Algebra.Monoid.Category as Monoid
 import Algebra.Group.Free as Group
-
-module HoTT where
 ```
 -->
+
+```agda
+module HoTT where
+```
 
 # The HoTT Book?
 

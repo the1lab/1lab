@@ -1,9 +1,13 @@
+<!--
 ```agda
 open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Product.NAry
+```
+-->
 
+```agda
 module Data.List.Base where
 ```
 

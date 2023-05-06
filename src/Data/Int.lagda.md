@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
@@ -5,7 +6,10 @@ open import Data.Nat.Solver
 open import Data.Dec
 open import Data.Nat
 open import Data.Sum
+```
+-->
 
+```agda
 module Data.Int where
 ```
 
@@ -601,7 +605,7 @@ recursion helpers for props (`Int-elim-prop`{.Agda}) and the fact that
 equality of integers is a proposition.
 
 ```agda
-+ℤ-associative : (x y z : Int) → (x +ℤ y) +ℤ z ≡ x +ℤ (y +ℤ z)
++ℤ-associative : (x y z : Int) → x +ℤ (y +ℤ z) ≡ (x +ℤ y) +ℤ z
 +ℤ-zerol       : (x : Int)     → 0 +ℤ x ≡ x
 +ℤ-zeror       : (x : Int)     → x +ℤ 0 ≡ x
 +ℤ-commutative : (x y : Int)   → x +ℤ y ≡ y +ℤ x
@@ -729,7 +733,7 @@ essentially induction + calling the semiring solver.
 
 ```agda
 abstract
-  *ℤ-associative : ∀ x y z → (x *ℤ y) *ℤ z ≡ x *ℤ (y *ℤ z)
+  *ℤ-associative : ∀ x y z → x *ℤ (y *ℤ z) ≡ (x *ℤ y) *ℤ z
   *ℤ-commutative : ∀ x y → x *ℤ y ≡ y *ℤ x
   *ℤ-idl : ∀ x → 1 *ℤ x ≡ x
   *ℤ-idr : ∀ x → x *ℤ 1 ≡ x
@@ -741,7 +745,7 @@ abstract
 ```agda
   *ℤ-associative =
     Int-elim₃-prop (λ _ _ _ → hlevel 1)
-      λ a b c d e f → same-difference (lemma a b c d e f)
+      λ a b c d e f → sym (same-difference (lemma a b c d e f))
     where abstract
       lemma
         : ∀ a b c d e f

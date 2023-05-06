@@ -1,9 +1,13 @@
+<!--
 ```agda
 open import 1Lab.Equiv.Embedding
 
 open import Algebra.Prelude
 open import Algebra.Ring
+```
+-->
 
+```agda
 module Algebra.Ring.Commutative where
 ```
 
@@ -25,6 +29,7 @@ record CRing-on {ℓ} (R : Type ℓ) : Type ℓ where
     has-ring-on : Ring-on R
     *-commutes  : ∀ {x y} → has-ring-on ._*_ x y ≡ has-ring-on ._*_ y x
   open Ring-on has-ring-on public
+
 
 CRing-structure : ∀ ℓ → Thin-structure ℓ CRing-on
 CRing-structure ℓ = Full-substructure ℓ CRing-on Ring-on emb (Ring-structure ℓ) where
@@ -52,4 +57,8 @@ CRing ℓ = CRings ℓ .Precategory.Ob
 
 module CRing {ℓ} (R : CRing ℓ) where
   open CRing-on (R .snd) public
+
+is-commutative-ring : ∀ {ℓ} (R : Ring ℓ) → Type _
+is-commutative-ring R = ∀ {x y} → x R.* y ≡ y R.* x where
+  module R = Ring-on (R .snd)
 ```

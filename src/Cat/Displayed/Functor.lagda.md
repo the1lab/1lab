@@ -1,11 +1,15 @@
+<!--
 ```agda
 open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Reasoning as CR
 import Cat.Displayed.Reasoning as DR
+import Cat.Reasoning as CR
+```
+-->
 
+```agda
 module Cat.Displayed.Functor where
 ```
 

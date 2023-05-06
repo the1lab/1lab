@@ -1,7 +1,11 @@
+<!--
 ```agda
 open import Cat.Instances.Product
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Functor.Bifunctor
   {o₁ h₁ o₂ h₂ o₃ h₃ : _}
   {C : Precategory o₁ h₁}

@@ -6,6 +6,7 @@ description: |
   inclusion is a monadic functor.
 ---
 
+<!--
 ```agda
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Equivalence
@@ -17,7 +18,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Functor.Adjoint.Reflective where
 ```
 

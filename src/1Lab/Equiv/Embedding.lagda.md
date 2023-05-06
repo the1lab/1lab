@@ -5,6 +5,7 @@ description: |
   injective function between sets is an embedding, and that every
   equivalence is an embedding.
 ---
+<!--
 ```agda
 open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Retracts
@@ -17,7 +18,10 @@ open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+```
+-->
 
+```agda
 module 1Lab.Equiv.Embedding where
 ```
 
@@ -46,7 +50,7 @@ To develop this correspondence, we note that, if a map is
 `injective`{.Agda} and its codomain is a [set], then all the
 `fibres`{.Agda} $f^*(x)$ of $f$ are [propositions].
 
-[sets]: 1Lab.HLevel.html#is-set
+[set]: 1Lab.HLevel.html#is-set
 [propositions]: 1Lab.HLevel.html#is-prop
 
 ```agda

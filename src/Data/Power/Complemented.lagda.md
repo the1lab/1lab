@@ -1,3 +1,4 @@
+<!--
 ```agda
 {-# OPTIONS -vtactic.hlevel:10 #-}
 open import 1Lab.Prelude
@@ -6,7 +7,10 @@ open import Data.Power
 open import Data.Bool
 open import Data.Dec
 open import Data.Sum
+```
+-->
 
+```agda
 module Data.Power.Complemented where
 ```
 

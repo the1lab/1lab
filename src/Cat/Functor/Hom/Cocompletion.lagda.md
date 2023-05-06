@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.Kan.Pointwise
 open import Cat.Diagram.Colimit.Base
@@ -8,7 +9,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
+```
+-->
 
+```agda
 module
   Cat.Functor.Hom.Cocompletion
     {κ o} (C : Precategory κ κ) (D : Precategory o κ)

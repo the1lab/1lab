@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Functor.FullSubcategory
 open import Cat.Diagram.Initial
@@ -8,7 +9,10 @@ open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Diagram.Image {o ℓ} (C : Precategory o ℓ) where
 ```
 

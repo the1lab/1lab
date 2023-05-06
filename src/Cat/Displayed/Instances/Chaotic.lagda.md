@@ -1,16 +1,20 @@
+<!--
 ```agda
-open import Cat.Displayed.Base
 open import Cat.Displayed.Bifibration
-open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Cocartesian
-open import Cat.Displayed.Fibre
-open import Cat.Displayed.Total
+open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Product
+open import Cat.Displayed.Fibre
+open import Cat.Displayed.Total
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Displayed.Instances.Chaotic
   {o ℓ o' ℓ'} (B : Precategory o ℓ) (J : Precategory o' ℓ')
   where

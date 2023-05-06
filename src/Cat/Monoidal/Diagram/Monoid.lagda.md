@@ -1,3 +1,4 @@
+<!--
 ```agda
 {-# OPTIONS --lossy-unification #-}
 open import Cat.Monoidal.Instances.Cartesian
@@ -16,7 +17,10 @@ import Algebra.Monoid as Mon
 
 import Cat.Diagram.Monad as Mo
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Monoidal.Diagram.Monoid where
 ```
 
@@ -48,6 +52,7 @@ monoidal category:
 
 ```agda
   record Monoid-on (M : C.Ob) : Type ℓ where
+    no-eta-equality
     field
       η : C.Hom C.Unit M
       μ : C.Hom (M C.⊗ M) M

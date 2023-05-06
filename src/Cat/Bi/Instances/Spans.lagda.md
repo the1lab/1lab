@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
@@ -6,7 +7,10 @@ open import Cat.Bi.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Bi.Instances.Spans {o ℓ} (C : Precategory o ℓ) where
 ```
 

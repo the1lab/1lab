@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Prelude
 
@@ -9,7 +10,10 @@ open import Algebra.Group
 open import Algebra.Magma
 
 open import Data.Set.Truncation
+```
+-->
 
+```agda
 module Algebra.Group.Homotopy where
 ```
 
@@ -61,7 +65,7 @@ inverses are given by `inverting paths`{.Agda ident=sym}.
 ```agda
   omega .make-group.assoc =
     ∥-∥₀-elim₃ (λ _ _ _ → is-prop→is-set (squash _ _))
-      λ x y z i → inc (∙-assoc x y z (~ i))
+      λ x y z i → inc (∙-assoc x y z i)
   omega .make-group.invl =
     ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ x i → inc (∙-inv-l x i)
   omega .make-group.idl =
@@ -359,7 +363,7 @@ of the full `Deloop-elim`{.Agda}, which reduces the goal to proving $1
 This completes the proof, and lets us establish that the fundamental
 group of `Deloop`{.Agda} is `G`, which is what we wanted.
 
-```
+```agda
   G≃ΩB : ⌞ G ⌟ ≃ (base ≡ base)
   G≃ΩB = Iso→Equiv (path , iso (encode base) encode→decode (decode→encode base))
 

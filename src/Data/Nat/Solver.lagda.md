@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Reflection.Variables
 open import 1Lab.Reflection
@@ -9,7 +10,10 @@ open import Data.Fin.Base
 open import Data.Nat.Base
 open import Data.Bool
 open import Data.List
+```
+-->
 
+```agda
 module Data.Nat.Solver where
 ```
 
@@ -96,11 +100,11 @@ private variable
 -- some of the really involved proofs a lot less painful.
 commute-inner : ∀ w x y z → (w + x) + (y + z) ≡ (w + y) + (x + z)
 commute-inner w x y z =
-  (w + x) + (y + z) ≡⟨ +-associative w x (y + z) ⟩
-  w + (x + (y + z)) ≡˘⟨ ap (w +_) (+-associative x y z) ⟩
+  (w + x) + (y + z) ≡˘⟨ +-associative w x (y + z) ⟩
+  w + (x + (y + z)) ≡⟨ ap (w +_) (+-associative x y z) ⟩
   w + ((x + y) + z) ≡⟨ ap (λ ϕ → w + (ϕ + z)) (+-commutative x y) ⟩
-  w + (y + x + z)   ≡⟨ ap (w +_) (+-associative y x z) ⟩
-  w + (y + (x + z)) ≡˘⟨  +-associative w y (x + z) ⟩
+  w + (y + x + z)   ≡˘⟨ ap (w +_) (+-associative y x z) ⟩
+  w + (y + (x + z)) ≡⟨  +-associative w y (x + z) ⟩
   (w + y) + (x + z) ∎
 
 commute-last : ∀ x y z → (x * y) * z ≡ (x * z) * y
@@ -349,7 +353,7 @@ sound-*ₚ (p *X+ r) (q *X+ s) (x₀ ∷ env) =
   ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + (⟦r⟧ * ⟦s⟧)                            ≡⟨ ap (λ ϕ → ϕ * x₀ + ⟦r⟧ * ⟦s⟧) (sound-+ₚ (p *ₚ (q *X+ s)) (r *ₚ′ q) (x₀ ∷ env)) ⟩
   (⟦p*⟨qx+s⟩⟧ + ⟦r*q⟧) * x₀ + ⟦r⟧ * ⟦s⟧                        ≡⟨ ap₂ (λ ϕ ψ → (ϕ + ψ) * x₀ + ⟦r⟧ * ⟦s⟧) (sound-*ₚ p (q *X+ s) (x₀ ∷ env)) (sound-*ₚ′ r q x₀ env) ⟩
   (⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) + ⟦r⟧ * ⟦q⟧) * x₀ + ⟦r⟧ * ⟦s⟧        ≡⟨ ap (λ ϕ → ϕ + ⟦r⟧ * ⟦s⟧) (*-distrib-+r (⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧)) (⟦r⟧ * ⟦q⟧) x₀) ⟩
-  ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + ⟦r⟧ * ⟦q⟧ * x₀ + ⟦r⟧ * ⟦s⟧     ≡⟨ +-associative (⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀) (⟦r⟧ * ⟦q⟧ * x₀) (⟦r⟧ * ⟦s⟧) ⟩
+  ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + ⟦r⟧ * ⟦q⟧ * x₀ + ⟦r⟧ * ⟦s⟧     ≡˘⟨ +-associative (⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀) (⟦r⟧ * ⟦q⟧ * x₀) (⟦r⟧ * ⟦s⟧) ⟩
   ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + (⟦r⟧ * ⟦q⟧ * x₀ + ⟦r⟧ * ⟦s⟧)   ≡⟨ ap (λ ϕ →  ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + (ϕ + ⟦r⟧ * ⟦s⟧)) (*-associative ⟦r⟧ ⟦q⟧ x₀) ⟩
   ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + (⟦r⟧ * (⟦q⟧ * x₀) + ⟦r⟧ * ⟦s⟧) ≡˘⟨ ap (λ ϕ → ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + ϕ) (*-distrib-+l (⟦q⟧ * x₀) ⟦s⟧ ⟦r⟧) ⟩
   ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + ⟦r⟧ * (⟦q⟧ * x₀ + ⟦s⟧)         ≡⟨ ap (λ ϕ → ϕ + ⟦r⟧ * (⟦q⟧ * x₀ + ⟦s⟧)) (commute-last ⟦p⟧ (⟦q⟧ * x₀ + ⟦s⟧) x₀) ⟩

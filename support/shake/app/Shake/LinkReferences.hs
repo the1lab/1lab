@@ -56,13 +56,10 @@ data Reference =
 parseSymbolRefs :: [Block] -> HashMap Text Reference
 parseSymbolRefs = go mempty . concatMap getHTML where
   getHTML :: Block -> [Tag Text]
-  getHTML (RawBlock "html" xs) = parseTags xs >>= parseTags'
+  getHTML (RawBlock "html" xs) = parseTags xs
   getHTML (BlockQuote bs) = bs >>= getHTML
   getHTML (Div _ bs) = bs >>= getHTML
   getHTML _ = []
-
-  parseTags' (TagComment x) = parseTags x >>= parseTags'
-  parseTags' t = pure t
 
   go :: HashMap Text Reference -> [Tag Text] -> HashMap Text Reference
   go map (TagOpen "a" meta:TagText t:TagClose "a":xs)

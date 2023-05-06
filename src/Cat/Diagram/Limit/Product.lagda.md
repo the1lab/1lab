@@ -4,6 +4,7 @@ description: |
   diagrams and general limits of discrete diagrams.
 ---
 
+<!--
 ```agda
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Limit.Base
@@ -14,7 +15,10 @@ open import Cat.Diagram.Product
 open import Cat.Prelude
 
 open import Data.Bool
+```
+-->
 
+```agda
 module Cat.Diagram.Limit.Product {o h} (C : Precategory o h) where
 ```
 

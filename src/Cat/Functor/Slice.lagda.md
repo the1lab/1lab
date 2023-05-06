@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Terminal
@@ -8,7 +9,10 @@ open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Cat.Functor.Slice where
 ```
 

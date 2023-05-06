@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Free
@@ -14,7 +15,10 @@ open import Cat.Functor.Base
 import Algebra.Group.Cat.Base as Grp
 
 import Cat.Reasoning
+```
+-->
 
+```agda
 module Algebra.Group.Cat.Monadic {ℓ} where
 ```
 
@@ -85,11 +89,11 @@ is indeed a group structure, which is an incredibly boring calculation.
 
 ```agda
   abstract
-    assoc : ∀ x y z → mult (mult x y) z ≡ mult x (mult y z)
-    assoc x y z =
+    assoc : ∀ x y z → mult x (mult y z) ≡ mult (mult x y) z
+    assoc x y z = sym $
       ν (inc (ν (inc x ◆ inc y)) ◆ inc z)                ≡⟨ (λ i → ν (inc (ν (inc x ◆ inc y)) ◆ inc (ν-unit (~ i) z))) ⟩
       ν (inc (ν (inc x ◆ inc y)) ◆ inc (ν (inc z)))      ≡⟨ happly ν-mult (inc _ ◆ inc _) ⟩
-      ν (T.mult.η G (inc (inc x ◆ inc y) ◆ inc (inc z))) ≡⟨ ap ν (f-assoc _ _ _) ⟩
+      ν (T.mult.η G (inc (inc x ◆ inc y) ◆ inc (inc z))) ≡˘⟨ ap ν (f-assoc _ _ _) ⟩
       ν (T.mult.η G (inc (inc x) ◆ inc (inc y ◆ inc z))) ≡˘⟨ happly ν-mult (inc _ ◆ inc _) ⟩
       ν (inc (ν (inc x)) ◆ inc (ν (inc y ◆ inc z)))      ≡⟨ (λ i → ν (inc (ν-unit i x) ◆ inc (ν (inc y ◆ inc z)))) ⟩
       ν (inc x ◆ inc (ν (inc y ◆ inc z)))                ∎

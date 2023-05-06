@@ -5,13 +5,17 @@ description: |
   *is*. We call these biinvertible maps.
 ---
 
+<!--
 ```agda
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+```
+-->
 
+```agda
 module 1Lab.Equiv.Biinv where
 ```
 
@@ -97,7 +101,8 @@ is-equiv→post-is-equiv : {f : A → B} → is-equiv f → is-equiv {A = B → 
 <details>
 <summary> The proof is by `is-equiv→is-iso`{.Agda} and
 `is-iso→is-equiv`{.Agda}. Nothing too clever. </summary>
-```
+
+```agda
 is-equiv→pre-is-equiv {f = f} f-eqv = is-iso→is-equiv isiso where
   f-iso : is-iso f
   f-iso = is-equiv→is-iso f-eqv

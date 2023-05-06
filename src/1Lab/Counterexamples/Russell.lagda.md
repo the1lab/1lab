@@ -3,11 +3,15 @@ description: |
   We formalise Russell's paradox: It is impossible for the collection of
   all types to be a type.
 ---
+<!--
 ```agda
 {-# OPTIONS --type-in-type #-}
 open import 1Lab.Path
 open import 1Lab.Type
+```
+-->
 
+```agda
 module 1Lab.Counterexamples.Russell where
 ```
 

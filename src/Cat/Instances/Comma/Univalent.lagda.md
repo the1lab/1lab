@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Comma
 open import Cat.Functor.Base
@@ -6,7 +7,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
+```
+-->
 
+```agda
 module
   Cat.Instances.Comma.Univalent
   {xo xℓ yo yℓ zo zℓ}

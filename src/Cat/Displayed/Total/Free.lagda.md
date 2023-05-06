@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Cat.Instances.Functor
 open import Cat.Diagram.Initial
@@ -8,7 +9,10 @@ open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Reasoning as Cr
+```
+-->
 
+```agda
 module Cat.Displayed.Total.Free
   {o ℓ o′ ℓ′} {B : Precategory o ℓ}
   (E : Displayed B o′ ℓ′) where

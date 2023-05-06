@@ -4,6 +4,7 @@ description: |
   units and counits and in terms of satisfying a certain natural
   isomorphism of Hom-sets.
 ---
+<!--
 ```agda
 open import Cat.Instances.Functor
 open import Cat.Instances.Functor
@@ -15,7 +16,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning as Cat
+```
+-->
 
+```agda
 module Cat.Functor.Adjoint.Hom where
 
 module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}

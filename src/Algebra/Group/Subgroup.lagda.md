@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
@@ -11,7 +12,10 @@ open import Data.Power
 open import Order.Instances.Subobjects
 
 import Order.Reasoning as Poset
+```
+-->
 
+```agda
 module Algebra.Group.Subgroup where
 ```
 
@@ -69,7 +73,7 @@ rep-subgroup→group-on {G = G} H sg = to-group-on sg′ where
   sg′ .make-group.unit = unit , has-unit
   sg′ .make-group.mul (x , x∈) (y , y∈) = x ⋆ y , has-⋆ x∈ y∈
   sg′ .make-group.inv (x , x∈) = x ⁻¹ , has-inv x∈
-  sg′ .make-group.assoc x y z = Σ-prop-path (λ x → H x .is-tr) (sym associative)
+  sg′ .make-group.assoc x y z = Σ-prop-path (λ x → H x .is-tr) associative
   sg′ .make-group.invl x = Σ-prop-path (λ x → H x .is-tr) inversel
   sg′ .make-group.idl x = Σ-prop-path (λ x → H x .is-tr) idl
 
@@ -178,7 +182,7 @@ reader.</summary>
     grp .make-group.unit = unit
     grp .make-group.mul = mul
     grp .make-group.inv = inv
-    grp .make-group.assoc = λ x y z → Tpath (sym B.associative)
+    grp .make-group.assoc = λ x y z → Tpath B.associative
     grp .make-group.invl = λ x → Tpath B.inversel
     grp .make-group.idl = λ x → Tpath B.idl
 ```
@@ -508,7 +512,7 @@ rather directly:
     Group-on-G/H .make-group.inv = inverse
     Group-on-G/H .make-group.assoc =
       Coeq-elim-prop₃ (λ _ _ _ → squash _ _) λ x y z i →
-        inc (associative {x = x} {y} {z} (~ i))
+        inc (associative {x = x} {y} {z} i)
     Group-on-G/H .make-group.invl =
       Coeq-elim-prop (λ _ → squash _ _) λ x i → inc (inversel {x = x} i)
     Group-on-G/H .make-group.idl =
@@ -592,7 +596,7 @@ To show that these are equal as subgroups of $G$, we must show that the
 isomorphism above commutes with the inclusions; But this is immediate by
 computation, so we can conclude: Every normal subgroup is a kernel.
 
-```
+```agda
   Ker[incl]≡H↪G : Ker-sg ≡ H-sg
   Ker[incl]≡H↪G = ≤-antisym ker≤H H≤ker where
     SubG = Subobjects (Groups ℓ) Groups-is-category Grp

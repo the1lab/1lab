@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Algebra.Group.Cat.Base
 open import Algebra.Group
@@ -6,7 +7,10 @@ open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Comma
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Algebra.Group.Free where
 ```
 
@@ -53,7 +57,7 @@ of `Free-group`{.Agda} is most conveniently done using the universal
 property, and there, this redundancy doesn't matter.
 
 ```agda
-  f-assoc : ∀ x y z → (x ◆ y) ◆ z ≡ x ◆ (y ◆ z)
+  f-assoc : ∀ x y z → x ◆ (y ◆ z) ≡ (x ◆ y) ◆ z
   f-invl : ∀ x → inv x ◆ x ≡ nil
   f-idl  : ∀ x → nil ◆ x ≡ x
   squash : is-set (Free-group A)
@@ -107,8 +111,9 @@ Free-elim-prop B bp bi bd binv bnil = go where
   go nil = bnil
   go (f-assoc x y z i) =
     is-prop→pathp (λ i → bp (f-assoc x y z i))
+      (bd x (y ◆ z) (go x) (bd y z (go y) (go z)))
       (bd (x ◆ y) z (bd x y (go x) (go y)) (go z))
-      (bd x (y ◆ z) (go x) (bd y z (go y) (go z))) i
+      i
   go (f-invl x i) =
     is-prop→pathp (λ i → bp (f-invl x i)) (bd (inv x) x (binv x (go x)) (go x)) bnil i
   go (f-idl x i) = is-prop→pathp (λ i → bp (f-idl x i)) (bd nil x bnil (go x)) (go x) i
@@ -158,8 +163,7 @@ associativity, identity and inverse laws that provide the cases for
 `Free-group`{.Agda}'s higher constructors.
 
 ```agda
-  go (f-assoc x y z i) =
-    G.associative {x = go x} {y = go y} {z = go z} (~ i)
+  go (f-assoc x y z i) = G.associative {x = go x} {y = go y} {z = go z} i
   go (f-invl x i) = G.inversel {x = go x} i
   go (f-idl x i) = G.idl {x = go x} i
   go (squash x y p q i j) =

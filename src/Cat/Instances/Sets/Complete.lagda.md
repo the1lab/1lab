@@ -1,9 +1,13 @@
+<!--
 ```agda
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Terminal
 open import Cat.Prelude
+```
+-->
 
+```agda
 module Cat.Instances.Sets.Complete where
 ```
 

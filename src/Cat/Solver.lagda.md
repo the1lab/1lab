@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import 1Lab.Reflection.Solver
 open import 1Lab.Reflection
@@ -7,7 +8,10 @@ open import Cat.Base
 
 open import Data.Bool
 open import Data.List
+```
+-->
 
+```agda
 module Cat.Solver where
 ```
 
@@ -26,7 +30,7 @@ involving associativity and identity of composition in a precategory.
 The latter half, significantly more cursed, uses this infrastructure to
 automatically solve equality goals of this form.
 
-With a precategory in hand, we by defining a language of composition.
+With a precategory in hand, we start by defining a language of composition.
 
 ```agda
 module NbE (Cat : Precategory o h) where
@@ -178,7 +182,7 @@ macro
 As a quick demonstration (and sanity check/future proofing/integration
 testing/what have you):
 
-```
+```agda
 module _ (C : Precategory o h) where private
   module C = Precategory C
   variable
