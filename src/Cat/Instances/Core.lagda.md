@@ -65,16 +65,12 @@ In fact, the core is a sort of **universal** groupoid, in the following
 sense: Let $\cC$ be a groupoid and $\cD$ be a category. Any functor
 $F : \cC \to \cD$ must factor through the core of $\cD$.
 
-<!--
 ```agda
 module _
   {oc ℓc od ℓd} {C : Precategory oc ℓc} {D : Precategory od ℓd}
   (grpd : is-pregroupoid C)
   where
-```
--->
 
-```agda
   Core-universal : (F : Functor C D) → Functor C (Core D)
   Core-universal F .F₀ x = F .F₀ x
   Core-universal F .F₁ f .hom = F .F₁ f
