@@ -303,6 +303,7 @@ open import Cat.Base -- Precategories, functors, natural transformations
 open import Cat.Solver -- Automatic solver for associativity problems
 open import Cat.Morphism  -- Important classes of morphisms
 open import Cat.Reasoning -- Categorical reasoning combinators
+open import Cat.Groupoid -- Groupoids
 ```
 
 ### Diagrams
@@ -390,6 +391,7 @@ open import Cat.Functor.Amnestic -- Functors which reflect univalence
 open import Cat.Functor.Bifunctor -- Functors out of product categories
 open import Cat.Functor.Conservative -- Functors which reflect isomorphisms
 open import Cat.Functor.FullSubcategory -- Full subcategories
+open import Cat.Functor.WideSubcategory -- Wide subcategories
 ```
 
 Helpers for working with functions in equational reasoning:
@@ -491,6 +493,9 @@ open import Cat.Instances.Lift
 -- Lifting a category to higher universes
 
 open import Cat.Instances.Product -- Product categories
+
+open import Cat.Instances.Core
+-- The core of a category.
 ```
 
 The construction and properties of functor categories:
@@ -683,6 +688,8 @@ open import Cat.Displayed.Instances.Lifting
 -- Liftings of functors along a fibration
 open import Cat.Displayed.Instances.Diagrams
 -- The fibration of diagrams
+open import Cat.Displayed.Instances.Objects
+-- The fibration of objects.
 ```
 
 ### Cocartesian fibrations
