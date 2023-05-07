@@ -183,6 +183,76 @@ every cartesian map is [weakly cartesian].
     uniquep₂ (idr f) refl (idr f) h′ h″ p q
 ```
 
+As the name suggests, being cartesian is a property of a morphism.
+
+```agda
+is-cartesian-is-prop
+  : ∀ {x y x′ y′} {f : Hom x y} {f′ : Hom[ f ] x′ y′}
+  → is-prop (is-cartesian f f′)
+```
+
+<details>
+<summary>The proof of this fact is a bunch of cubical nonsense.
+</summary>
+
+```
+is-cartesian-is-prop {f′ = f′} cart cart′ = worker where
+  open is-cartesian
+
+  worker : cart ≡ cart′
+  worker i .universal m h′ =
+    cart′ .unique (cart .universal m h′) (cart .commutes _ _) i
+  worker i .commutes m h′ =
+    is-set→squarep (λ _ _ → Hom[ _ ]-set _ _)
+      (ap (f′ ∘′_) (cart′ .unique _ _))
+      (cart .commutes m h′)
+      (cart′ .commutes m h′)
+      refl i
+  worker i .unique m′ p =
+    is-set→squarep (λ _ _ → Hom[ _ ]-set _ _)
+      refl
+      (cart .unique m′ p)
+      (cart′ .unique m′ p)
+      (cart′ .unique _ _) i
+```
+</details>
+
+We also provide a bundled form of cartesian morphisms.
+
+```agda
+record Cartesian-morphism
+  {x y : Ob} (f : Hom x y) (x′ : Ob[ x ]) (y′ : Ob[ y ])
+  : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
+  no-eta-equality
+  field
+    hom′ : Hom[ f ] x′ y′
+    cartesian : is-cartesian f hom′
+```
+
+<!--
+```agda
+Cartesian-morphism-pathp
+  : ∀ {x y x′ y′} {f g : Hom x y}
+  → {f′ : Cartesian-morphism f x′ y′} {g′ : Cartesian-morphism g x′ y′}
+  → {p : f ≡ g}
+  → PathP (λ i → Hom[ p i ] x′ y′) (Cartesian-morphism.hom′ f′) (Cartesian-morphism.hom′ g′)
+  → PathP (λ i → Cartesian-morphism (p i) x′ y′) f′ g′
+Cartesian-morphism-pathp q i .Cartesian-morphism.hom′ = q i
+Cartesian-morphism-pathp {f′ = f′} {g′ = g′} {p = p} q i .Cartesian-morphism.cartesian =
+  is-prop→pathp (λ i → is-cartesian-is-prop {f = p i} {f′ = q i})
+    (Cartesian-morphism.cartesian f′)
+    (Cartesian-morphism.cartesian g′) i
+
+Cartesian-morphism-is-set
+  : ∀ {x y x′ y′} {f : Hom x y}
+  → is-set (Cartesian-morphism f x′ y′)
+Cartesian-morphism-is-set = Iso→is-hlevel 2 eqv $
+  Σ-is-hlevel 2 (Hom[ _ ]-set _ _) λ _ →
+  is-hlevel-suc 1 is-cartesian-is-prop
+  where unquoteDecl eqv = declare-record-iso eqv (quote Cartesian-morphism)
+```
+-->
+
 ## Properties of Cartesian Morphisms
 
 The composite of 2 cartesian morphisms is in turn cartesian.
@@ -211,6 +281,17 @@ cartesian-∘ {f = f} {g = g} {f′ = f′} {g′ = g′} f-cart g-cart = fg-car
       f′ ∘′ g′ ∘′ m′           ≡⟨ from-pathp⁻ (assoc′ f′ g′ m′) ⟩
       hom[] ((f′ ∘′ g′) ∘′ m′) ≡⟨ weave _ _ _ p ⟩
       hom[] h′ ∎
+
+_∘cart_
+  : ∀ {x y z x′ y′ z′} {f : Hom y z} {g : Hom x y}
+  → Cartesian-morphism f y′ z′ → Cartesian-morphism g x′ y′
+  → Cartesian-morphism (f ∘ g) x′ z′
+f′ ∘cart g′ = fg′ where
+  open Cartesian-morphism
+
+  fg′ : Cartesian-morphism _ _ _
+  fg′ .hom′ = f′ .hom′ ∘′ g′ .hom′
+  fg′ .cartesian = cartesian-∘ (f′ .cartesian) (g′ .cartesian)
 ```
 
 Furthermore, the identity morphism is cartesian.
@@ -222,6 +303,10 @@ cartesian-id .is-cartesian.commutes m h′ =
   from-pathp⁻ (idl′ _) ∙ hom[]-∙ _ _ ∙ liberate _
 cartesian-id .is-cartesian.unique m′ p =
   from-pathp⁻ (symP $ idl′ _) ∙ weave _ _ _ p
+
+idcart : ∀ {x} {x′ : Ob[ x ]} → Cartesian-morphism id x′ x′
+idcart .Cartesian-morphism.hom′ = id′
+idcart .Cartesian-morphism.cartesian = cartesian-id
 ```
 
 
@@ -402,6 +487,33 @@ cartesian-pasting {f = f} {g = g} {f′ = f′} {g′ = g′} f-cart fg-cart = g
     h′                                                       ∎
   g-cart .unique {m = m} {h′ = h′} m′ p =
     uniquep fg-cart (sym (assoc _ _ _)) refl (sym (assoc _ _ _)) m′ (pullr′ refl p)
+```
+
+We can prove a similar fact for bundled cartesian morphisms.
+
+```agda
+cart-paste
+  : ∀ {x y z x′ y′ z′} {f : Hom y z} {g : Hom x y}
+  → Cartesian-morphism f y′ z′
+  → Cartesian-morphism (f ∘ g) x′ z′
+  → Cartesian-morphism g x′ y′
+cart-paste {x′ = x′} {y′ = y′} {f = f} {g = g} f′ fg′ = g′ where
+  open Cartesian-morphism
+  open is-cartesian
+  module f′ = is-cartesian (f′ .cartesian)
+  module fg′ = is-cartesian (fg′ .cartesian)
+
+  g′ : Cartesian-morphism g x′ y′
+  g′ .hom′ = f′.universal g (fg′ .hom′)
+  g′ .cartesian .universal m h′ =
+    fg′.universal′ (sym (assoc _ _ _)) (f′ .hom′ ∘′ h′)
+  g′ .cartesian .commutes m h′ =
+    f′.uniquep₂ _ _ (assoc _ _ _) _ _
+      (pulll[] _ (f′.commutes _ _) ∙[] fg′.commutes _ _)
+      (to-pathp refl)
+  g′ .cartesian .unique m′ p =
+    fg′.uniquep _ refl (sym (assoc _ _ _)) m′
+      (ap (_∘′ m′) (symP (f′.commutes _ _)) ∙[] pullr[] _ p)
 ```
 
 If a morphism is both vertical and cartesian, then it must be an

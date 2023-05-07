@@ -30,7 +30,7 @@ involving associativity and identity of composition in a precategory.
 The latter half, significantly more cursed, uses this infrastructure to
 automatically solve equality goals of this form.
 
-With a precategory in hand, we by defining a language of composition.
+With a precategory in hand, we start by defining a language of composition.
 
 ```agda
 module NbE (Cat : Precategory o h) where

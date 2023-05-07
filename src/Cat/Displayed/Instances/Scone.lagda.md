@@ -79,7 +79,7 @@ global sections functor.
 ~~~
 
 ```agda
-Scones : Displayed B (lsuc ℓ) (lsuc ℓ)
+Scones : Displayed B (lsuc ℓ) ℓ
 Scones = Change-of-base Hom[ top ,-] (Slices (Sets ℓ))
 ```
 

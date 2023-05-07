@@ -64,6 +64,15 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
       (sym (F-∘ F _ _) ·· ap (F₁ F) x.invl ·· F-id F)
       (sym (F-∘ F _ _) ·· ap (F₁ F) x.invr ·· F-id F)
     where module x = C.is-invertible inv
+
+  faithful→iso-fibre-prop
+    : ∀ (F : Functor C D)
+    → is-faithful F
+    → ∀ {x y} → (f : F₀ F x D.≅ F₀ F y)
+    → is-prop (Σ[ g ∈ x C.≅ y ] (F-map-iso F g ≡ f))
+  faithful→iso-fibre-prop F faithful f (g , p) (g' , q) =
+    Σ-prop-path (λ _ → D.≅-is-set _ _) $
+    C.≅-pathp refl refl (faithful (ap D.to (p ∙ sym q)))
 ```
 -->
 
@@ -85,6 +94,9 @@ fully-faithful→faithful {F = F} ff {_} {_} {x} {y} p =
   equiv→inverse ff (F₁ F x) ≡⟨ ap (equiv→inverse ff) p ⟩
   equiv→inverse ff (F₁ F y) ≡⟨ equiv→unit ff y ⟩
   y                         ∎
+
+fully-faithful→full : {F : Functor C D} → is-fully-faithful F → is-full F
+fully-faithful→full {F = F} ff g = inc (equiv→inverse ff g , equiv→counit ff g)
 
 full+faithful→ff
   : (F : Functor C D) → is-full F → is-faithful F → is-fully-faithful F
@@ -251,3 +263,86 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
     isom .is-iso.linv x = C.≅-pathp refl refl (equiv→unit ff _)
 ```
 -->
+
+## Pseudomonic Functors
+
+A functor is **pseudomonic** if it is faithful and full on isomorphisms.
+Pseudomonic functors are arguably the correct notion of subcategory, as
+they ensure that we are not able to distinguish between isomorphic objects
+when creating a subcategory.
+
+<!--
+```agda
+module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
+  import Cat.Reasoning C as C
+  import Cat.Reasoning D as D
+```
+-->
+
+```agda
+  is-full-on-isos : Functor C D → Type (o ⊔ h ⊔ h₁)
+  is-full-on-isos F =
+    ∀ {x y} → (f : (F .F₀ x) D.≅ (F .F₀ y)) → ∃[ g ∈ x C.≅ y ] (F-map-iso F g ≡ f)
+
+  record is-pseudomonic (F : Functor C D) : Type (o ⊔ h ⊔ h₁) where
+    no-eta-equality
+    field
+      faithful : is-faithful F
+      isos-full : is-full-on-isos F
+
+  open is-pseudomonic
+```
+
+Somewhat surprisingly, pseudomonic functors are [conservative].
+As $F$ is full on isos, there merely exists some iso $g$ in the fibre
+of $f$. However, Invertability is a property of morphisms, so we can
+untruncate the mere existence. Once we have our hands on the isomorphism,
+we perform a simple calculation to note that it yields an inverse to $f$.
+
+[conservative]: Cat.Functor.Conservative.html
+
+```agda
+  pseudomonic→conservative
+    : ∀ {F : Functor C D}
+    → is-pseudomonic F
+    → ∀ {x y} (f : C.Hom x y) → D.is-invertible (F₁ F f)
+    → C.is-invertible f
+  pseudomonic→conservative {F = F} pseudo {x} {y} f inv =
+    ∥-∥-rec C.is-invertible-is-prop
+      (λ (g , p) →
+        C.make-invertible (C.from g)
+          (sym (ap (C._∘ _) (pseudo .faithful (ap D.to p))) ∙ C.invl g)
+          (sym (ap (_ C.∘_) (pseudo .faithful (ap D.to p))) ∙ C.invr g))
+      (pseudo .isos-full (D.invertible→iso _ inv))
+```
+
+In a similar vein, pseudomonic functors are essentially injective.
+The proof follows a similar path to the prior one, hinging on the
+fact that faithful functors are an embedding on isos.
+
+```agda
+  pseudomonic→essentially-injective
+    : ∀ {F : Functor C D}
+    → is-pseudomonic F
+    → ∀ {x y} → F₀ F x D.≅ F₀ F y
+    → x C.≅ y
+  pseudomonic→essentially-injective {F = F} pseudo f =
+    ∥-∥-rec (faithful→iso-fibre-prop F (pseudo .faithful) f)
+      (λ x → x)
+      (pseudo .isos-full f) .fst
+```
+
+Fully faithful functors are pseudomonic, as they are faithful and
+essentially injective.
+
+```agda
+  ff→pseudomonic
+    : ∀ {F : Functor C D}
+    → is-fully-faithful F
+    → is-pseudomonic F
+  ff→pseudomonic {F} ff .faithful = fully-faithful→faithful {F = F} ff
+  ff→pseudomonic {F} ff .isos-full f =
+    inc (is-ff→essentially-injective {F = F} ff f ,
+         D.≅-pathp refl refl (equiv→counit ff (D.to f)))
+```
+
