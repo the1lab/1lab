@@ -22,9 +22,12 @@ open Functor
 
 # The core of a category
 
-Let $\cC$ be a category. The *core* of $\cC$ is the [wide subcategory]
-of $\cC$ that contains only the isomorphisms.
+The **core** of a category $\cC$ is the maximal sub-[groupoid] of $\cC$:
+the category $\rm{Core}(\cC)$ constructed by keeping only the invertible
+morphisms. Since the identity is invertible, and invertibility is closed
+under composition, we can construct this as a [wide subcategory] of $\cC$.
 
+[groupoid]: Cat.Groupoid.html
 [wide subcategory]: Cat.Functor.WideSubcategory.html
 
 ```agda
@@ -45,10 +48,6 @@ private module Core {o ℓ} (C : Precategory o ℓ) = Cat.Reasoning (Core C)
 ```
 -->
 
-The core of a category is a [groupoid].
-
-[groupoid]: Cat.Groupoid.html
-
 ```agda
 Core-is-groupoid : ∀ {o ℓ} {C : Precategory o ℓ} → is-pregroupoid (Core C)
 Core-is-groupoid {C = C} f =
@@ -60,10 +59,11 @@ Core-is-groupoid {C = C} f =
     module f-inv = C.is-invertible (f .witness)
 ```
 
-
-In fact, the core is a sort of **universal** groupoid, in the following
-sense: Let $\cC$ be a groupoid and $\cD$ be a category. Any functor
-$F : \cC \to \cD$ must factor through the core of $\cD$.
+We have mentioned that the core is the _maximal_ sub-groupoid of $\cC$:
+we can regard it as the _cofree_ groupoid on a category, summarised by
+the following universal property. Suppose $\cC$ is a groupoid and $\cD$
+is some category. Any functor $F : \cC \to \cD$ must factor through the
+core of $\cD$.
 
 ```agda
 module _

@@ -23,51 +23,60 @@ module Cat.Displayed.Instances.Objects
 open Cat.Reasoning B
 open Displayed E
 open Cartesian-morphism
+open Vertical-fibred-functor
+open Vertical-functor
 ```
 -->
 
 # The Fibration of Objects
 
-Let $\cE$ be a fibration. The fibration of objects on $\cE$ consists of the
-wide subcategory of $E$ that only contains cartesian morphisms. The name
-is derived from the intuition that we've removed all of the interesting
-morphisms from $E$, leaving only morphisms that perform reindexing.
+Let $\cE \liesover \cB$ be a fibration. Its **fibration of objects** is
+the [wide subcategory] spanned by the [cartesian morphisms]. The idea
+behind the name is that we've kept all the objects in $\cE$, but removed
+all the interesting morphisms: all we've kept are the ones that witness
+changes-of-base.
 
+[wide subcategory]: Cat.Functor.WideSubcategory.html
+[cartesian morphisms]: Cat.Displayed.Cartesian.html
 
 ```agda
 Objects : Displayed B o′ (o ⊔ ℓ ⊔ o′ ⊔ ℓ′)
 Objects .Displayed.Ob[_] x = Ob[ x ]
-Objects .Displayed.Hom[_] f x′ y′ = Cartesian-morphism E f x′ y′
+Objects .Displayed.Hom[_] f x′ y′   = Cartesian-morphism E f x′ y′
 Objects .Displayed.Hom[_]-set _ _ _ = Cartesian-morphism-is-set E
-Objects .Displayed.id′ = idcart E
+Objects .Displayed.id′  = idcart E
 Objects .Displayed._∘′_ = _∘cart_ E
-Objects .Displayed.idr′ _ = Cartesian-morphism-pathp E (idr′ _)
-Objects .Displayed.idl′ _ = Cartesian-morphism-pathp E (idl′ _)
+Objects .Displayed.idr′ _       = Cartesian-morphism-pathp E (idr′ _)
+Objects .Displayed.idl′ _       = Cartesian-morphism-pathp E (idl′ _)
 Objects .Displayed.assoc′ _ _ _ = Cartesian-morphism-pathp E (assoc′ _ _ _)
 ```
 
-We have an evident forgetful functor from the fibration of objects on $\cE$
-to $\cE$.
+We have an evident forgetful [fibred] functor from the object fibration
+back to $\cE$.
+
+[fibred]: Cat.Displayed.Functor.html
 
 ```agda
 Objects-forget : Vertical-fibred-functor Objects E
-Objects-forget .Vertical-fibred-functor.vert .Vertical-functor.F₀′ x = x
-Objects-forget .Vertical-fibred-functor.vert .Vertical-functor.F₁′ f′ = f′ .hom′
-Objects-forget .Vertical-fibred-functor.vert .Vertical-functor.F-id′ = refl
-Objects-forget .Vertical-fibred-functor.vert .Vertical-functor.F-∘′ = refl
-Objects-forget .Vertical-fibred-functor.F-cartesian f′ _ = f′ .cartesian
+Objects-forget .vert .F₀′ x = x
+Objects-forget .vert .F₁′ f′ = f′ .hom′
+Objects-forget .vert .F-id′ = refl
+Objects-forget .vert .F-∘′ = refl
+Objects-forget .F-cartesian f′ _ = f′ .cartesian
 ```
 
 
 <!--
 ```agda
-private
-  module Objects = Displayed Objects
+private module Objects = Displayed Objects
 ```
 -->
 
-Unsurprisingly, every morphism in the fibration of objects is cartesian.
-This follows from the pasting law for cartesian morphisms.
+Since the object fibration only has Cartesian morphisms from $\cE$, we
+can prove that it consists entirely of Cartesian maps. This is not
+immediate, since to include the "universal" map, we must prove that it
+too is Cartesian; but that follows from the pasting law for Cartesian
+squares.
 
 ```agda
 Objects-cartesian
@@ -84,9 +93,9 @@ Objects-cartesian f′ = cart where
     Cartesian-morphism-pathp E (f′ .cartesian .unique (hom′ m′) (ap hom′ p))
 ```
 
-If $E$ is a fibration, then the object fibration is also a fibration.
-Furthermore, it is also a [right fibration], as every morphism is
-cartesian. This means that the fibration of objects is fibred in groupoids.
+If $E$ is a fibration, then its fibration of objects is a a [right
+fibration], by the preceding result. This means the fibres of the object
+fibration are groupoids.
 
 [right fibration]: Cat.Displayed.Cartesian.Right.html
 
@@ -108,14 +117,15 @@ Objects-right-fibration fib .Right-fibration.cartesian = Objects-cartesian
 
 ## The core of a fibration
 
-The fibration of objects ends up behaving like the fibred analog of the
-[core] of a category; in particular, it shares the same universal property.
-Let $\cR$ be some right fibration, and $F : \cR \to \cE$ be a
-fibred functor: $F$ must factor through the fibration of objects of
-$\cE$ as below.
+The fibration of objects is the relative analog of the [core] of a
+category, sharing its universal property.  Rather than a groupoid,
+suppose we have a right fibration $\cR$ and a fibred functor $F : \cR
+\to \cE$: to complete the analogy, we show $F$ factors through $\cE$'s
+fibration of objects.
 
 [core]: Cat.Instances.Core.html
 
+<!--
 ```agda
 module _
   {or ℓr} {R : Displayed B or ℓr}
@@ -124,18 +134,20 @@ module _
   private
     open Vertical-fibred-functor
     module R-right = Right-fibration R-right
+```
+-->
 
-
+```agda
   Objects-universal
     : (F : Vertical-fibred-functor R E)
     → Vertical-fibred-functor R Objects
-  Objects-universal F .vert .Vertical-functor.F₀′ x = F .F₀′ x
-  Objects-universal F .vert .Vertical-functor.F₁′ f′ .hom′ = F .F₁′ f′
-  Objects-universal F .vert .Vertical-functor.F₁′ f′ .cartesian =
+  Objects-universal F .vert .F₀′ x = F .F₀′ x
+  Objects-universal F .vert .F₁′ f′ .hom′ = F .F₁′ f′
+  Objects-universal F .vert .F₁′ f′ .cartesian =
     F .F-cartesian f′ (R-right.cartesian f′)
-  Objects-universal F .vert .Vertical-functor.F-id′ =
+  Objects-universal F .vert .F-id′ =
     Cartesian-morphism-pathp E (F .F-id′)
-  Objects-universal F .vert .Vertical-functor.F-∘′ =
+  Objects-universal F .vert .F-∘′ =
     Cartesian-morphism-pathp E (F .F-∘′)
   Objects-universal F .F-cartesian f′ cart =
     Objects-cartesian _
