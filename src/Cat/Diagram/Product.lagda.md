@@ -254,6 +254,27 @@ We also define a handful of common morphisms.
   swap = ⟨ π₂ , π₁ ⟩
 ```
 
+<!--
+```agda
+  swap-is-iso : ∀ {a b} → is-invertible (swap {a} {b})
+  swap-is-iso = make-invertible swap
+    (unique₂ (pulll π₁∘⟨⟩ ∙ π₂∘⟨⟩) ((pulll π₂∘⟨⟩ ∙ π₁∘⟨⟩)) (idr _) (idr _))
+    (unique₂ (pulll π₁∘⟨⟩ ∙ π₂∘⟨⟩) ((pulll π₂∘⟨⟩ ∙ π₁∘⟨⟩)) (idr _) (idr _))
+
+  by-π₁ : ∀ {f f' : Hom a b} {g g' : Hom a c} → ⟨ f , g ⟩ ≡ ⟨ f' , g' ⟩ → f ≡ f'
+  by-π₁ p = sym π₁∘⟨⟩ ∙ ap (π₁ ∘_) p ∙ π₁∘⟨⟩
+
+  extend-π₁ : ∀ {f : Hom a b} {g : Hom a c} {h} → ⟨ f , g ⟩ ≡ h → f ≡ π₁ ∘ h
+  extend-π₁ p = sym π₁∘⟨⟩ ∙ ap (π₁ ∘_) p
+
+  by-π₂ : ∀ {f f' : Hom a b} {g g' : Hom a c} → ⟨ f , g ⟩ ≡ ⟨ f' , g' ⟩ → g ≡ g'
+  by-π₂ p = sym π₂∘⟨⟩ ∙ ap (π₂ ∘_) p ∙ π₂∘⟨⟩
+
+  extend-π₂ : ∀ {f : Hom a b} {g : Hom a c} {h} → ⟨ f , g ⟩ ≡ h → g ≡ π₂ ∘ h
+  extend-π₂ p = sym π₂∘⟨⟩ ∙ ap (π₂ ∘_) p
+```
+-->
+
 ## Representability of products
 
 The collection of maps into a product $a \times b$ is equivalent to

@@ -25,7 +25,9 @@ M)$-factorisation of a morphism $f : a \to b$.
 
 <!--
 ```agda
-module _ {o ℓ} (C : Precategory o ℓ) (E M : ∀ {a b} → ℙ (Precategory.Hom C a b)) where
+module _ {o ℓ} (C : Precategory o ℓ)
+         (E : ∀ {a b} → Precategory.Hom C a b → Ω)
+         (M : ∀ {a b} → Precategory.Hom C a b → Ω) where
   private module C = Cat.Reasoning C
 ```
 -->
@@ -66,11 +68,13 @@ then $(g \circ f) \in E$ and the same for $M$
 
       is-iso→in-E : ∀ {a b} (f : C.Hom a b) → C.is-invertible f → f ∈ E
       E-is-stable
-        : ∀ {a b c} (g : C.Hom b c) (f : C.Hom a b) → f ∈ E → g ∈ E → (g C.∘ f) ∈ E
+        : ∀ {a b c} (g : C.Hom b c) (f : C.Hom a b) → f ∈ E → g ∈ E
+        → (g C.∘ f) ∈ E
 
       is-iso→in-M : ∀ {a b} (f : C.Hom a b) → C.is-invertible f → f ∈ M
       M-is-stable
-        : ∀ {a b c} (g : C.Hom b c) (f : C.Hom a b) → f ∈ M → g ∈ M → (g C.∘ f) ∈ M
+        : ∀ {a b c} (g : C.Hom b c) (f : C.Hom a b) → f ∈ M → g ∈ M
+        → (g C.∘ f) ∈ M
 ```
 
 Most importantly, the class $E$ is exactly the class of morphisms
@@ -79,7 +83,8 @@ every $g \in M$, we have $f \ortho g$. Conversely, a map has $g \in M$
 if, and only if, we have $f \ortho g$ for every $f \in E$.
 
 ```agda
-      E⊥M : ∀ {a b c d} (f : C.Hom a b) (g : C.Hom c d) → f ∈ E → g ∈ M → m⊥m C f g
+      E⊥M : ∀ {a b c d} (f : C.Hom a b) (g : C.Hom c d) → f ∈ E → g ∈ M
+          → m⊥m C f g
 ```
 
 <!--

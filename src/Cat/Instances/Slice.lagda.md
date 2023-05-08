@@ -69,7 +69,6 @@ serve as the domain, and a map $f : d \to c$.
 
 ```agda
   record /-Obj (c : C.Ob) : Type (o ⊔ ℓ) where
-    no-eta-equality
     constructor cut
     field
       {domain} : C.Ob

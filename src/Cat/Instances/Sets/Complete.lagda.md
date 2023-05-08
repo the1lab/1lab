@@ -138,7 +138,7 @@ Pullbacks are the same, but carving out a subset of $A \times B$.
 
 ```agda
   Sets-pullbacks : ∀ {A B C} (f : Hom A C) (g : Hom B C)
-                → Pullback {X = A} {Y = B} {Z = C} f g
+                 → Pullback {X = A} {Y = B} {Z = C} f g
   Sets-pullbacks {A = A} {B = B} {C = C} f g = pb where
     pb : Pullback f g
     pb .apex = el! $ Σ[ x ∈ ∣ A ∣ ] Σ[ y ∈ ∣ B ∣ ] (f x ≡ g y)

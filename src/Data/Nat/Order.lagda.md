@@ -209,7 +209,7 @@ an inhabited subset.
 
   ℕ-well-ordered
     : (∀ n → Dec ∣ P n ∣)
-    → (∃[ n ∈ Nat ] ∣ P n ∣)
+    → ∃[ n ∈ Nat ] ∣ P n ∣
     → Σ[ n ∈ Nat ] (∣ P n ∣ × (∀ k → ∣ P k ∣ → n ≤ k))
   ℕ-well-ordered P-dec wit = ∥-∥-rec minimal-solution-unique
     (λ { (n , p) → ℕ-minimal-solution _ P-dec n p }) wit

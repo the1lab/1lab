@@ -472,3 +472,14 @@ iso→from-has-retract : (f : a ≅ b) → has-retract (f .from)
 iso→from-has-retract f .retract = f .to
 iso→from-has-retract f .is-retract = f .invl
 ```
+
+<!--
+```agda
+∘-is-monic
+  : ∀ {a b c} {f : Hom a b} {g : Hom b c}
+  → is-monic f
+  → is-monic g
+  → is-monic (g ∘ f)
+∘-is-monic fm gm a b α = fm _ _ (gm _ _ (assoc _ _ _ ·· α ·· sym (assoc _ _ _)))
+```
+-->
