@@ -267,7 +267,7 @@ cartesian.
 Externalisation-globally-small : Globally-small Externalise
 Externalisation-globally-small = small where
   open Globally-small
-  open is-generic-object
+  open Generic-object
   open is-cartesian
 
   small : Globally-small Externalise
