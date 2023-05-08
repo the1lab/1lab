@@ -51,10 +51,7 @@ open is-regular
 open Functor
 open /-Obj
 open /-Hom
-```
--->
 
-```agda
 private
   C/y-lex : Finitely-complete C/y
   C/y-lex = with-pullbacks C/y (record { has⊤ = Slice-terminal-object }) pb where
@@ -80,19 +77,41 @@ private
     (record { commutes = refl })
     (record { commutes = pushl (sym (h .mor .commutes)) ·· ap₂ _∘_ refl (sym p) ·· pulll (h .mor .commutes) })
     (/-Hom-path p)
+```
+-->
 
+Other than finite limits, which we have already extensively investigated
+in slice categories (see [limits in slices][slilim]), what remains of
+the proof is a characterisation of the [strong epimorphisms] in a slice
+$\cC/y$. To do this, we will freely use that $\cC$ and $\cC/y$ are
+finitely complete, and instead characterise the _extremal_ epimorphisms.
+
+[slilim]: Cat.Instances.Slice.html#arbitrary-limits-in-slices
+[strong epimorphisms]: Cat.Morphism.StrongEpi.html
+
+For this, it will suffice to show that the inclusion functor $\cC/y
+\mono \cC$ both preserves and reflects extermal epimorphisms. Given an
+extremal epi $h : a \epi b$ over $y$, and a non-trivial factorisation of
+$h$ through a monomorphism $m$ in $\cC$, we can show that $m$ itself is
+a monomorphism $bm \to b$ over $y$, and that it factors $h$ in $\cC/y$.
+It follows that $m$ is invertible as a map over $y$, meaning it is
+invertible in $\cC$.
+
+```agda
   preserve-cover
     : ∀ {a b} (h : C/y.Hom a b)
     → is-strong-epi C/y h
     → is-strong-epi C (h .map)
   preserve-cover {b = B} h cover = is-extremal-epi→is-strong-epi C r.has-is-lex λ m g p →
     let
-      inv = extreme
-        {c = cut (B .map ∘ m .mor)}
-        (record
-          { mor   = record { commutes = refl }
-          ; monic = λ g h p → /-Hom-path (m .monic _ _ (ap map p))
-          })
+      mono : cut (B .map ∘ m .mor) C/y.↪ B
+      mono = record
+        { mor   = record { map = m .mor ; commutes = refl }
+        ; monic = λ g h p → /-Hom-path (m .monic _ _ (ap map p))
+        }
+
+      inv : C/y.is-invertible (record { map = m .mor ; commutes = refl })
+      inv = extreme mono
         (record { map = g ; commutes = pullr (sym p) ∙ h .commutes })
         (/-Hom-path p)
     in make-invertible
@@ -100,23 +119,42 @@ private
       (ap map (inv .C/y.is-invertible.invl))
       (ap map (inv .C/y.is-invertible.invr))
     where extreme = is-strong-epi→is-extremal-epi C/y cover
+```
 
+In the converse direction, suppose $a \to b$ is a map over $y$ which is
+a strong epimorphism in $\cC$. Since the projection functor $\cC/y \to
+\cC$ preserves monos (it preserves pullbacks), any non-trivial
+factorisation of $a \to b$ through a monomorphism $m$ over $y$ must
+still be a non-trivial factorisation when regarded in $\cC$. We can then
+calculate that the inverse to $m$ is still a map over $y$.
+
+```agda
   reflect-cover
     : ∀ {a b} (h : C/y.Hom a b)
     → is-strong-epi C (h .map)
     → is-strong-epi C/y h
   reflect-cover h cover = is-extremal-epi→is-strong-epi C/y C/y-lex λ m g p →
-    let
-      inv = ext (pres-mono m) (g .map) (ap map p)
+    let inv = ext (pres-mono m) (g .map) (ap map p)
     in C/y.make-invertible
-      (record { map      = inv .is-invertible.inv
-              ; commutes = invertible→epic inv _ _ (cancelr (inv .is-invertible.invr) ∙ sym (m .mor .commutes))
-              })
+      (record
+        { map      = inv .is-invertible.inv
+        ; commutes = invertible→epic inv _ _ $
+          cancelr (inv .is-invertible.invr) ∙ sym (m .mor .commutes)
+        })
       (/-Hom-path (inv .is-invertible.invl))
       (/-Hom-path (inv .is-invertible.invr))
     where
       ext = is-strong-epi→is-extremal-epi C cover
+```
 
+Since the projection functor preserves and reflects strong epimorphisms,
+we can compute image factorisations over $y$ as image factorisations in
+$\cC$. And since the projection functor additionally preserves
+pullbacks, by the same argument, it suffices for strong epimorphisms to
+be stable under pullback in $\cC$ for them to be stable under pullback
+in $\cC/y$, too.
+
+```agda
 slice-is-regular : is-regular (Slice C y)
 slice-is-regular .factor {a} {b} f = fact′ where
   fact = r.factor (f .map)
