@@ -15,12 +15,9 @@ import Cat.Reasoning
 -->
 
 ```agda
-
-
 module Cat.Displayed.Instances.Externalisation
   {o ℓ} (B : Precategory o ℓ) (ℂ : Internal-cat B)
   where
-
 ```
 
 <!--
@@ -36,21 +33,20 @@ open Internal-hom
 
 # Externalisation of internal categories
 
-Every [internal category] in $\cB$ gives rise to a fibration over $\cB$,
-known as the *externalisation* of an internal category.
+Every [internal category] $\bC$ in $\cB$ gives rise to a fibration over
+$\cB$, known as the **externalisation** of $\bC$. The core idea is
+almost the same as that of the [family fibration], but with $\bB$
+playing the role of $\Sets$: The space of objects over $\cB$ will be the
+_generalised objects_ $\cB(\Gamma, \bC_0)$.
 
 [internal category]: Cat.Internal.Base.html
 
 ```agda
 Externalise : Displayed B ℓ ℓ
-Externalise = disp
-  module Externalisation where
+Externalise = disp module Externalisation where
+  disp : Displayed B ℓ ℓ
+  disp .Ob[_] Γ = Hom Γ C₀
 ```
-
-The core idea of externalisation is that the space of objects over
-some $\Gamma : \cB$ will be the type of *generalized* objects
-$\cB(\Gamma, C_0)$. This is extremely similar to the [family fibration],
-but with $\cB$ playing the role of the category of sets.
 
 Morphisms over $u : \cB(\Delta, \Gamma)$ are given by commuting diagrams
 of the following form:
@@ -84,8 +80,6 @@ issues aren't too hard to work around.
 [family fibration]: Cat.Displayed.Instances.Family.html
 
 ```agda
-  disp : Displayed B ℓ ℓ
-  disp .Ob[_] Γ = Hom Γ C₀
   disp .Hom[_] u x y = Homi x (y ∘ u)
   disp .Hom[_]-set _ _ _ = Internal-hom-set
   disp .id′ = adjusti refl (sym (idr _)) (idi _)
@@ -93,8 +87,8 @@ issues aren't too hard to work around.
 ```
 
 <details>
-<summary>The equations are pretty painful due to Proof Assistant Reasons.
-Associativity is particularly nasty!
+<summary>Unfortunately, proof assistants make establishing the axioms
+fairly nasty. Associativity is especially bad.
 </summary>
 
 ```agda
@@ -132,15 +126,14 @@ Associativity is particularly nasty!
 ```
 </details>
 
-## Cartesian Maps
+## Cartesian maps
 
-To really hammer home that point that the externalisation of an
-internal category is the internal version of the family fibration,
-we show that the cartesian morphisms are *precisely* the internal
-isomorphisms.
+To really hammer home that point that the externalisation of an internal
+category is the internal version of the family fibration, we show that
+the cartesian morphisms are *precisely* the internal isomorphisms.
 
-The forward direction looks almost identical to the proof that
-pointwise isomorphisms are cartesian morphisms in the family fibration.
+The forward direction looks almost identical to the proof that pointwise
+isomorphisms are cartesian morphisms in the family fibration.
 
 ```agda
 internal-iso→cartesian
@@ -158,21 +151,22 @@ internal-iso→cartesian {Γ} {Δ} {u} {x} {y} f f-inv = cart where
     invi [ m ] ∘i adjusti refl (assoc y u m) h′
   cart .commutes {u′ = u′} m h′ =
     Internal-hom-path $
-    (f [ m ] ∘i invi [ m ] ∘i _) .ihom                ≡⟨ ap ihom (pullli (sym (∘i-nat f invi m))) ⟩
-    (⌜ f ∘i invi ⌝ [ m ] ∘i _) .ihom                  ≡⟨ ap! f-inv.invli ⟩
-    (⌜ idi _ [ m ] ⌝ ∘i _) .ihom                      ≡⟨ ap! (idi-nat m) ⟩
-    (idi _ ∘i _) .ihom                                ≡⟨ ap ihom (idli _) ⟩
-    h′ .ihom                                          ∎
+    (f [ m ] ∘i invi [ m ] ∘i _) .ihom      ≡⟨ ap ihom (pullli (sym (∘i-nat f invi m))) ⟩
+    (⌜ f ∘i invi ⌝ [ m ] ∘i _) .ihom        ≡⟨ ap! f-inv.invli ⟩
+    (⌜ idi _ [ m ] ⌝ ∘i _) .ihom            ≡⟨ ap! (idi-nat m) ⟩
+    (idi _ ∘i _) .ihom                      ≡⟨ ap ihom (idli _) ⟩
+    h′ .ihom                                ∎
   cart .unique {u′ = u′} {m = m} {h′ = h′} m′ p =
     Internal-hom-path $
-    m′ .ihom                                                        ≡⟨ ap ihom (introli (Internal-hom-path (ap ihom (idi-nat m)))) ⟩
-    (⌜ idi _ [ m ] ⌝ ∘i m′) .ihom                                   ≡⟨ ap! (ap (λ e → e [ m ]) (sym (f-inv.invri)) ∙ ∘i-nat _ _ _) ⟩
-    ((invi [ m ] ∘i f [ m ]) ∘i m′) .ihom                           ≡⟨ ap ihom (pullri (Internal-hom-path (ap ihom p))) ⟩
-    (invi [ m ] ∘i adjusti _ _ h′) .ihom                            ∎
+    m′ .ihom                                ≡⟨ ap ihom (introli (Internal-hom-path (ap ihom (idi-nat m)))) ⟩
+    (⌜ idi _ [ m ] ⌝ ∘i m′) .ihom           ≡⟨ ap! (ap (λ e → e [ m ]) (sym (f-inv.invri)) ∙ ∘i-nat _ _ _) ⟩
+    ((invi [ m ] ∘i f [ m ]) ∘i m′) .ihom   ≡⟨ ap ihom (pullri (Internal-hom-path (ap ihom p))) ⟩
+    (invi [ m ] ∘i adjusti _ _ h′) .ihom    ∎
 ```
 
-The reverse direction also mirrors the family fibration; we use the same
-trick of factorising the identity morphism.
+The reverse direction also mirrors the corresponding construction for
+the family fibration: we use the same trick of factoring the identity
+morphism.
 
 ```agda
 cartesian→internal-iso
@@ -203,39 +197,37 @@ cartesian→internal-iso {Γ} {Δ} {u} {x} {y} f f-cart = f-inv where
       idi x .ihom ∎
 ```
 <details>
-<summary>The right inverse case needs some nightmare adjustments. Proceed at your
-own risk!
+<summary>The right inverse case needs some nightmare re-adjustments.
+Unfold this at your own risk!
 </summary>
 
 ```agda
-      where
-        f∘f⁻¹∘f≡f*
-          : adjusti _ _ (f [ id ] ∘i adjusti _ _ (f-inv .invi) ∘i f)
-          ≡ adjusti refl (ap (_ ∘_) (sym (idr _))) f
-        f∘f⁻¹∘f≡f* = Internal-hom-path $
-          (f [ id ] ∘i adjusti _ _ (f-inv .invi) ∘i f) .ihom
-            ≡⟨ ap ihom (associ _ _ _) ⟩
-          ((f [ id ] ∘i adjusti _ _ (f-inv .invi)) ∘i f) .ihom
-            ≡⟨ ∘i-ihom refl (ap (y ∘_) (sym (idr _))) (sym (assoc _ _ _)) (∘i-ihom (ap (y ∘_) (sym (idr _))) refl refl refl refl) refl ⟩
-          (adjusti refl (sym (assoc _ _ _)) (f [ id ] ∘i universal id (idi _)) ∘i adjusti refl (ap (y ∘_) (sym (idr _))) f) .ihom
-            ≡⟨ ∘i-ihom refl refl refl (ap ihom (commutes id (idi _))) refl ⟩
-          (idi _ ∘i adjusti refl (ap (y ∘_) (sym (idr _))) f) .ihom ≡⟨ ap ihom (idli _) ⟩
-          f .ihom                                                                       ∎
-        f∘id≡f* : adjusti _ _ (f [ id ] ∘i adjusti _ _ (idi x)) ≡ adjusti _ _ f
-        f∘id≡f* = Internal-hom-path $
-          (f [ id ] ∘i adjusti _ _ (idi x)) .ihom ≡⟨ ∘i-ihom refl (idr _) (idr _) (idr _) refl ⟩
-          (f ∘i idi _) .ihom                      ≡⟨ ap ihom (idri _) ⟩
-          f .ihom ∎
+    where
+      f∘f⁻¹∘f≡f*
+        : adjusti _ _ (f [ id ] ∘i adjusti _ _ (f-inv .invi) ∘i f)
+        ≡ adjusti refl (ap (_ ∘_) (sym (idr _))) f
+      f∘f⁻¹∘f≡f* = Internal-hom-path $
+        (f [ id ] ∘i adjusti _ _ (f-inv .invi) ∘i f) .ihom
+          ≡⟨ ap ihom (associ _ _ _) ⟩
+        ((f [ id ] ∘i adjusti _ _ (f-inv .invi)) ∘i f) .ihom
+          ≡⟨ ∘i-ihom refl (ap (y ∘_) (sym (idr _))) (sym (assoc _ _ _)) (∘i-ihom (ap (y ∘_) (sym (idr _))) refl refl refl refl) refl ⟩
+        (adjusti refl (sym (assoc _ _ _)) (f [ id ] ∘i universal id (idi _)) ∘i adjusti refl (ap (y ∘_) (sym (idr _))) f) .ihom
+          ≡⟨ ∘i-ihom refl refl refl (ap ihom (commutes id (idi _))) refl ⟩
+        (idi _ ∘i adjusti refl (ap (y ∘_) (sym (idr _))) f) .ihom ≡⟨ ap ihom (idli _) ⟩
+        f .ihom                                                                       ∎
+      f∘id≡f* : adjusti _ _ (f [ id ] ∘i adjusti _ _ (idi x)) ≡ adjusti _ _ f
+      f∘id≡f* = Internal-hom-path $
+        (f [ id ] ∘i adjusti _ _ (idi x)) .ihom ≡⟨ ∘i-ihom refl (idr _) (idr _) (idr _) refl ⟩
+        (f ∘i idi _) .ihom                      ≡⟨ ap ihom (idri _) ⟩
+        f .ihom ∎
 ```
 </details>
 
-Finally, we shall show that externalisation is a fibration.
-As per usual, the argument proceeds in the same manner as the family
-fibration. Given a generalized object $y : \cB(\Delta C_0)$ and a morphism
-$u : \cB(\Gamma, \Delta)$, we can take the pullback of $y$ to be
-$y \circ u$; the lift of $u$ is then simply the (internal) identity
-morphism.
-
+Finally, we show that the externalisation is a fibration. As per usual,
+the argument proceeds in the same manner as for the family fibration.
+Given a generalized object $y : \cB(\Delta C_0)$ and a morphism $u :
+\cB(\Gamma, \Delta)$, we can take the pullback of $y$ to be $y \circ u$;
+the lift of $u$ is then simply the (internal) identity morphism.
 
 ```agda
 Externalisation-fibration : Cartesian-fibration Externalise

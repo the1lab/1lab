@@ -33,9 +33,9 @@ open _=>i_
 
 # The bicategory of internal categories
 
-Let $\cC$ be some category. The collection of
-[internal categories] in $\cC$ forms a [bicategory] with internal functors
-as 1-cells, and internal natural transformations as 2-cells.
+Let $\cC$ be some category. The collection of [internal categories] in
+$\cC$ forms a [bicategory], with internal functors as 1-cells, and
+internal natural transformations as 2-cells.
 
 [internal categories]: Cat.Internal.Base.html
 [bicategory]: Cat.Bi.Base.html
@@ -47,11 +47,11 @@ Internal-cats = icats where
 ```
 
 We have already shown that [internal functors] form a precategory, so
-all that remains is to construct the unitors and associator. These all
+all that remains is to construct the unitors and the associator. These
 are *almost* identity 2-cells, as internal functor composition is
 pointwise strictly unital and associative. Unfortunately, this does not
-extend to internal functor composition as a whole, so we cannot use the
-identity internal natural isomorphism as-is.
+extend to internal functor composition _as a whole_, so we cannot use
+the identity internal natural isomorphism as-is.
 
 [internal functors]: Cat.Instances.InternalFunctor.html
 
@@ -62,14 +62,14 @@ identity internal natural isomorphism as-is.
     open Cat.Internal.Reasoning B
     ni : make-natural-iso _ _
     ni .make-natural-iso.eta F = record
-      { ηi = λ x → idi _
+      { ηi          = λ x     → idi _
       ; is-naturali = λ x y f → id-comm-symi
-      ; ηi-nat = λ x σ → casti $ (idi-nat σ ∙i ap idi (F .Fi₀-nat x σ))
+      ; ηi-nat      = λ x σ   → casti $ idi-nat σ ∙i ap idi (F .Fi₀-nat x σ)
       }
     ni .make-natural-iso.inv F = record
-      { ηi = λ x → idi _
+      { ηi          = λ x     → idi _
       ; is-naturali = λ x y f → id-comm-symi
-      ; ηi-nat = λ x σ → casti $ (idi-nat σ ∙i ap idi (F .Fi₀-nat x σ))
+      ; ηi-nat      = λ x σ   → casti $ idi-nat σ ∙i ap idi (F .Fi₀-nat x σ)
       }
     ni .make-natural-iso.eta∘inv F = Internal-nat-path λ x → idli _
     ni .make-natural-iso.inv∘eta F = Internal-nat-path λ x → idli _
@@ -82,14 +82,14 @@ identity internal natural isomorphism as-is.
     open Cat.Internal.Reasoning B
     ni : make-natural-iso _ _
     ni .make-natural-iso.eta F = record
-      { ηi = λ x → idi _
+      { ηi          = λ x     → idi _
       ; is-naturali = λ x y f → id-comm-symi
-      ; ηi-nat = λ x σ → casti $ (idi-nat σ ∙i ap idi (F .Fi₀-nat x σ))
+      ; ηi-nat      = λ x σ   → casti $ idi-nat σ ∙i ap idi (F .Fi₀-nat x σ)
       }
     ni .make-natural-iso.inv F = record
-      { ηi = λ x → idi _
+      { ηi          = λ x     → idi _
       ; is-naturali = λ x y f → id-comm-symi
-      ; ηi-nat = λ x σ → casti $ (idi-nat σ ∙i ap idi (F .Fi₀-nat x σ))
+      ; ηi-nat      = λ x σ   → casti $ idi-nat σ ∙i ap idi (F .Fi₀-nat x σ)
       }
     ni .make-natural-iso.eta∘inv F = Internal-nat-path λ x → idli _
     ni .make-natural-iso.inv∘eta F = Internal-nat-path λ x → idli _
@@ -128,7 +128,7 @@ Once we've got that tedium out of the way, the rest of the construction
 is a breeze.
 
 ```agda
-  icats : Prebicategory _ _ _ 
+  icats : Prebicategory _ _ _
   icats .Ob = Internal-cat
   icats .Hom 𝔸 𝔹 = Internal-functors C 𝔸 𝔹
   icats .id = Idi

@@ -40,7 +40,6 @@ private variable
 ```
 -->
 
-
 ## Identity Morphisms
 
 ```agda
@@ -129,7 +128,7 @@ module _ (inv : h ∘i i ≡ idi _) where
 
 ```agda
 
-sub-id : ∀ {f : Homi x y} → PathP (λ i → Homi (idr x i) (idr y i)) (f [ id ]) f 
+sub-id : ∀ {f : Homi x y} → PathP (λ i → Homi (idr x i) (idr y i)) (f [ id ]) f
 sub-id = Internal-hom-pathp (idr _) (idr _) (idr _)
 ```
 

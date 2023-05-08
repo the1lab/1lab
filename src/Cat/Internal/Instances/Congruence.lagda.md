@@ -35,10 +35,11 @@ open Internal-hom
 
 # Internal categories from congruences
 
-Let $\cC$ be a [finitely complete category], and recall that a [congruence]
-in $\cC$ is an internalized notion of equivalence relation. Intuitively,
-we should be able to turn this into an internal category, where we have
-an internal morphism $x \to y$ if and only if $x \sim y$ in the congruence.
+Let $\cC$ be a [finitely complete category], and recall that a
+[congruence] in $\cC$ is an internalized notion of equivalence relation.
+Intuitively, we should be able to turn this into an internal category,
+where we have an internal morphism $x \to y$ if and only if $x$ and $y$
+are congruent.
 
 [finitely complete category]: Cat.Diagram.Limit.Finite.html
 [congruence]: Cat.Diagram.Congruence.html
@@ -50,10 +51,10 @@ EquivRel {A} cong = icat where
   private module R×R = Pullback (fc.pullbacks rel₁ rel₂)
 ```
 
-The object of objects of the internal category will simply be $A$,
-and the object of morphisms is given by the subobject of $A \times A$
-associated with the congruence. The source and target maps are given
-by projections from the aforementioned subobject.
+The object of objects of the internal category will simply be $A$, and
+the object of morphisms is given by the subobject of $A \times A$
+associated with the congruence. The source and target maps are given by
+projections from the aforementioned subobject.
 
 ```agda
   icat : Internal-cat
@@ -63,8 +64,8 @@ by projections from the aforementioned subobject.
   icat .tgt = rel₂
 ```
 
-As aluded to earlier, the identity morphism is given by reflexivity,
-and composition by transitivity.
+As aluded to earlier, the identity morphism is given by reflexivity, and
+composition by transitivity.
 
 ```agda
   icat .has-internal-cat .idi x .ihom = has-refl ∘ x
@@ -73,18 +74,18 @@ and composition by transitivity.
   icat .has-internal-cat ._∘i_ f g .ihom =
     has-trans ∘ pullback.universal _ _ (f .has-src ∙ sym (g .has-tgt))
   icat .has-internal-cat ._∘i_ f g .has-src =
-    pulll trans-p₁
-    ∙ pullr R×R.p₂∘universal
-    ∙ g .has-src
+       pulll trans-p₁
+    ·· pullr R×R.p₂∘universal
+    ·· g .has-src
   icat .has-internal-cat ._∘i_ f g .has-tgt =
-    pulll trans-p₂
-    ∙ pullr R×R.p₁∘universal
-    ∙ f .has-tgt
+       pulll trans-p₂
+    ·· pullr R×R.p₁∘universal
+    ·· f .has-tgt
 ```
 
 <details>
-<summary>Proving the category equations is an exercise in shuffling around
-products and pullbacks.
+<summary>Proving the category equations is an exercise in shuffling
+around products and pullbacks.
 </summary>
 
 ```agda

@@ -199,7 +199,10 @@ Here's the data of a congruence. Get ready, because there's a lot of it:
 
   field
     trans-factors : source-target ≡ m ∘ has-trans
+```
 
+<!--
+```agda
   trans-p₁ : rel₁ ∘ has-trans ≡ rel₁ ∘ A×A×A.p₂
   trans-p₁ =
     pullr (sym trans-factors)
@@ -218,7 +221,10 @@ Here's the data of a congruence. Get ready, because there's a lot of it:
     pulll (sym trans-factors)
     ·· A×A.⟨⟩∘ _
     ·· ap₂ A×A.⟨_,_⟩ (pullr R×R.p₂∘universal) (pullr R×R.p₁∘universal)
+```
+-->
 
+```agda
 record Congruence-on A : Type (o ⊔ ℓ) where
   no-eta-equality
   field

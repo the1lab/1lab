@@ -759,14 +759,19 @@ with an arbitrary category $\cC$ with pullbacks.
 open import Cat.Internal.Base
 -- Internal categories, internal functors, and internal natural
 -- transformations.
+
 open import Cat.Internal.Morphism
 -- Internal monos, epis, and isos.
+
 open import Cat.Internal.Reasoning
 -- Reasoning combinators for internal categories.
+
 open import Cat.Internal.Opposite
 -- The opposite of an internal category.
+
 open import Cat.Internal.Functor.Outer
 -- Internal functors from an internal category to its base.
+
 open import Cat.Internal.Sets
 -- Categories internal to sets are strict categories.
 ```
@@ -776,6 +781,7 @@ open import Cat.Internal.Sets
 ```agda
 open import Cat.Internal.Instances.Discrete
 -- Discrete internal categories.
+
 open import Cat.Internal.Instances.Congruence
 -- Internal equivalence relations are internal categories.
 ```

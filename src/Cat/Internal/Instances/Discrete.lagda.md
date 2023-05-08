@@ -21,16 +21,16 @@ open Internal-hom
 ```
 -->
 
-# Discrete Internal Categories
+# Discrete internal categories
 
-Every object $I : \cC$ induces an internal category of $\cC$, where the
-objects and morphisms are both taken to be $I$, and the source and
-target maps are the identity morphism. The identity morphism simply
-regards an object as a morphism, and composition takes the intermediate
-object as the morphism.
+Every object $I : \cC$ induces a category internal to $\cC$, where the
+object-of-objects and object-of-morphisms are both taken to be $I$, and
+the source/target maps are identities. The identity-assigning morphism
+is also given by the identity map, and the composition operator returns
+the intermediate map.
 
-Such internal categories are called *discrete internal categories*, and
-play the same role as [discrete categories] do in 1-category theory.
+These internal categories are called **discrete internal categories**,
+and play the same role as [discrete categories] do in 1-category theory.
 
 [discrete categories]: Cat.Instances.Discrete.html
 

@@ -22,13 +22,11 @@ open Internal-hom
 
 # Opposites of internal categories
 
-We can take the opposite of an [internal category] by simply flipping
-the source and target morphisms.
+We can take the opposite of an [internal category], by flipping the
+source and target morphisms. We begin by defining a little helper
+function that flips internal morphisms.
 
 [internal category]: Cat.Internal.Base.html
-
-We begin by defining a little helper function that flips internal
-morphisms.
 
 ```agda
 op-ihom
@@ -59,7 +57,8 @@ private
 ```
 -->
 
-Showing that this operation yields a category is a routine calculation.
+Showing that this operation yields an internal category is a routine
+calculation.
 
 ```agda
 Internal-cat-on-opi
@@ -95,5 +94,3 @@ _^opi : Internal-cat → Internal-cat
 
 infixl 60 _^opi
 ```
-
-

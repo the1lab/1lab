@@ -26,17 +26,16 @@ open _=>i_
 
 # Internal functor categories
 
-Internal functors $\ica{C} \to \ica{D}$ and internal natural
-transformations between them assemble into a category, known as the
-*internal functor category*. This category is the internalized version
-of the [functor category], and plays a similar role in the theory of
-internal categories.
+If $\cC$ and $\cD$ are categories internal to $\cB$, we can define the
+**internal functor category** $\cC \to \cD$, mirroring the construction
+of the ordinary [functor categories]. This relativisation plays a
+similar role in the theory of internal categories.
 
-[functor category]: Cat.Instances.Functor.html
+[functor categories]: Cat.Instances.Functor.html
 
-Before we define the category, we need some simple facts about internal
-natural transformations. First, we note that there is an internal identity
-natural transformation.
+Before we define the category, we need some simple constructions on
+internal natural transformations. First, we note that there is an
+internal identity natural transformation.
 
 <!--
 ```agda
@@ -73,8 +72,8 @@ transformation $\alpha \circ \beta : F \To H$.
 ```
 
 Armed with these facts, we proceed to construct the internal functor
-category. Objects are internal functors $\ica{C} \to \ica{D}$, 
-morphisms are internal natural transformations $F \To G$. 
+category. Objects are internal functors $\cC \to \cD$, morphisms are
+internal natural transformations $F \To G$.
 
 ```agda
 module _ (ℂ 𝔻 : Internal-cat) where
@@ -83,9 +82,10 @@ module _ (ℂ 𝔻 : Internal-cat) where
     module 𝔻 = Internal-cat 𝔻
 
   Internal-functors : Precategory (o ⊔ ℓ) (o ⊔ ℓ)
-  Internal-functors .Precategory.Ob = Internal-functor ℂ 𝔻
+  Internal-functors .Precategory.Ob      = Internal-functor ℂ 𝔻
   Internal-functors .Precategory.Hom F G = F =>i G
-  Internal-functors .Precategory.id = idnti
+
+  Internal-functors .Precategory.id  = idnti
   Internal-functors .Precategory._∘_ = _∘nti_
 ```
 
@@ -104,9 +104,9 @@ internal natural transformations is given by componentwise equality.
 
 ## Internal natural isomorphisms
 
-Continuing with the theme of replicating all of 1-category theory
-internally, we can define internal natural isomorphisms as isomorphisms
-in the internal functor category.
+To continue our relativisation project, we can define the **internal
+natural isomorphisms** to be the natural isomorphisms in an internal
+functor category.
 
 <!--
 ```agda

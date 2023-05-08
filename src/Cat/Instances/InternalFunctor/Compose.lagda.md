@@ -16,14 +16,14 @@ module Cat.Instances.InternalFunctor.Compose where
 
 # Functoriality of internal functor composition
 
-Internal functor composition is functorial when viewed as an operation
-on [internal functor categories]. This mirrors [a similar result] for
-composition of functors.
+Internal functor composition is functorial, when viewed as an operation
+on [internal functor categories]. This mirrors [the similar results] for
+composition of ordinary functors.
 
-[a similar result]: Cat.Instances.Functor.Compose.html
+[the similar results]: Cat.Instances.Functor.Compose.html
 
-To show this, we will need to define whiskering and horizontal composition
-of internal natural transformations.
+To show this, we will need to define whiskering and horizontal
+composition of internal natural transformations.
 
 <!--
 ```agda
@@ -54,8 +54,8 @@ module _ {o ℓ} {C : Precategory o ℓ} {𝔸 𝔹 ℂ : Internal.Internal-cat 
 ```
 
 <details>
-<summary> These are almost identical to their [1-categorical counterparts],
-so we omit their definitions.
+<summary>These are almost identical to their [1-categorical
+counterparts], so we omit their definitions.
 </summary>
 
 [1-categorical counterparts]: Cat.Instances.Functor.Compose.html
@@ -76,15 +76,15 @@ so we omit their definitions.
 
   _◆i_ {F} {G} {H} {K} α β .ηi x = G .Fi₁ (β .ηi x) ℂ.∘i α .ηi (H .Fi₀ x)
   _◆i_ {F} {G} {H} {K} α β .is-naturali x y f =
-    (G .Fi₁ (β .ηi _) ℂ.∘i α .ηi _) ℂ.∘i F .Fi₁ (H .Fi₁ f) ≡⟨ ℂ.pullri (α .is-naturali _ _ _) ⟩
-    G .Fi₁ (β .ηi _) ℂ.∘i (G .Fi₁ (H .Fi₁ f) ℂ.∘i α .ηi _) ≡⟨ ℂ.pullli (sym (G .Fi-∘ _ _) ∙ ap (G .Fi₁) (β .is-naturali _ _ _)) ⟩
-    G .Fi₁ (K .Fi₁ f 𝔹.∘i β .ηi _) ℂ.∘i α .ηi _            ≡⟨ ℂ.pushli (G .Fi-∘ _ _) ⟩
-    G .Fi₁ (K .Fi₁ f) ℂ.∘i (G .Fi₁ (β .ηi _) ℂ.∘i α .ηi _) ∎
+    (G .Fi₁ (β .ηi _) ℂ.∘i α .ηi _) ℂ.∘i F .Fi₁ (H .Fi₁ f)   ≡⟨ ℂ.pullri (α .is-naturali _ _ _) ⟩
+    G .Fi₁ (β .ηi _) ℂ.∘i (G .Fi₁ (H .Fi₁ f) ℂ.∘i α .ηi _)   ≡⟨ ℂ.pullli (sym (G .Fi-∘ _ _) ∙ ap (G .Fi₁) (β .is-naturali _ _ _)) ⟩
+    G .Fi₁ (K .Fi₁ f 𝔹.∘i β .ηi _) ℂ.∘i α .ηi _              ≡⟨ ℂ.pushli (G .Fi-∘ _ _) ⟩
+    G .Fi₁ (K .Fi₁ f) ℂ.∘i (G .Fi₁ (β .ηi _) ℂ.∘i α .ηi _)   ∎
   _◆i_ {F} {G} {H} {K} α β .ηi-nat x σ = ℂ.begini
-    (G .Fi₁ (β .ηi x) ℂ.∘i α .ηi (H .Fi₀ x)) [ σ ]     ℂ.≡i⟨ ℂ.∘i-nat _ _ _ ⟩
-    G .Fi₁ (β .ηi x) [ σ ] ℂ.∘i α .ηi (H .Fi₀ x) [ σ ] ℂ.≡i⟨ (λ i → G .Fi₁-nat (β .ηi x) σ i ℂ.∘i α .ηi-nat (H .Fi₀ x) σ i) ⟩
-    G .Fi₁ (β .ηi x [ σ ]) ℂ.∘i α .ηi (H .Fi₀ x ∘ σ)   ℂ.≡i⟨ (λ i → G .Fi₁ (β .ηi-nat x σ i) ℂ.∘i α .ηi (H .Fi₀-nat x σ i)) ⟩
-    G .Fi₁ (β .ηi (x ∘ σ)) ℂ.∘i α .ηi (H .Fi₀ (x ∘ σ)) ∎
+    (G .Fi₁ (β .ηi x) ℂ.∘i α .ηi (H .Fi₀ x)) [ σ ]       ℂ.≡i⟨ ℂ.∘i-nat _ _ _ ⟩
+    G .Fi₁ (β .ηi x) [ σ ] ℂ.∘i α .ηi (H .Fi₀ x) [ σ ]   ℂ.≡i⟨ (λ i → G .Fi₁-nat (β .ηi x) σ i ℂ.∘i α .ηi-nat (H .Fi₀ x) σ i) ⟩
+    G .Fi₁ (β .ηi x [ σ ]) ℂ.∘i α .ηi (H .Fi₀ x ∘ σ)     ℂ.≡i⟨ (λ i → G .Fi₁ (β .ηi-nat x σ i) ℂ.∘i α .ηi (H .Fi₀-nat x σ i)) ⟩
+    G .Fi₁ (β .ηi (x ∘ σ)) ℂ.∘i α .ηi (H .Fi₀ (x ∘ σ))   ∎
 ```
 </details>
 
@@ -114,9 +114,10 @@ module _ {o ℓ} {C : Precategory o ℓ} (𝔸 𝔹 ℂ : Internal.Internal-cat 
 ```
 
 <details>
-<summary>Much like whiskering and horizontal composition, this is identical to the
-result involving [functor composition]. The only difference is the addition of
-extra naturality conditions, which are easy to prove.
+<summary>Much like whiskering and horizontal composition, this is
+identical to the result involving [functor composition]. The only
+difference is the addition of extra naturality conditions, which are
+easy to prove.
 </summary>
 
 [functor composition]: Cat.Instances.Functor.Compose.html

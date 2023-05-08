@@ -32,8 +32,8 @@ private variable
 # Morphisms in internal categories
 
 This module defines the internal versions of monomorphisms,
-epimorphisms, and isomorphisms. These definitions mirror
-[their 1-categorical counterparts], so we do not comment on them further.
+epimorphisms, and isomorphisms. These definitions mirror [their
+1-categorical counterparts], so we do not comment on them further.
 
 [their 1-categorical counterparts]: Cat.Morphism.html
 

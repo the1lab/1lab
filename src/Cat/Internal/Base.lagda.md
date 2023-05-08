@@ -19,27 +19,27 @@ open Cat.Reasoning C
 
 # Internal Categories
 
-We often think of categories as "places where we can do mathematics".
+We often think of categories as _places where we can do mathematics_.
 This is done by translating definitions into the internal language of
 some suitably structured class of categories, and then working within
 that internal language to prove theorems.
 
-This is all fine and good, but there is an obvious question: what happens
-if we internalize the definition of a category? Such categories are
-(unsurprisingly) called *internal categories*, and are quite well-studied.
-The traditional definition goes as follows: Let $\cC$ have pullbacks,
-let $(C_0, C_1)$ be a pair of objects, and let $src, tgt : C_1 \to C_0$
-be a pair of parallel morphisms.
+This is all fine and good, but there is an obvious question: what
+happens if we internalize the definition of a category? Such categories
+are (unsurprisingly) called **internal categories**, and are quite
+well-studied. The traditional definition goes as follows: Suppose $\cC$
+is a category with [pullbacks], fix a pair of objects $\bC_0, \bC_1$ be
+a pair of objects, and parallel maps $\$1, \$1 : \bC_1 \to
+\bC_0$.
 
-The idea here is that $C_0$ and $C_1$ are meant to be the
-"object of objects" and "object of morphisms", resp. The $src$ and $tgt$
-maps do what their names suggest, mapping each morphism to it's domain
-and codomain. We say a diagram $(C_0, C_1, src, tgt)$ is an internal
-category in $\cC$ if it has an internal identity morphism
-$i : C_0 \to C_1$ and internal composition operator
-$c : C_1 \times_{C_0} C_1 \to C_1$. The pullback in the domain of the
-composite morphism ensures that the domain and codomain of the 2
-morphisms match, and is given by the following pullback square.
+The idea is that $\bC_0$ and $\bC_1$ are meant to be the "object of
+objects" and "object of morphisms", respectively, while the maps
+$\$1$ and $\$1$ maps assign each morphism to its domain and
+codomain. A diagram $(\bC_0, \bC_1, \$1, \$1)$ is a _category
+internal to $\cC$_ if it has an _identity-assigning morphism_ $i : \bC_0
+\to \bC_1$ a _composition morphism_ $c : \bC_1 \times_{C_0} \bC_1 \to
+\bC_1$, where the pullback --- given by the square below --- is the
+_object of composable pairs_.
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -54,11 +54,12 @@ morphisms match, and is given by the following pullback square.
 \end{tikzcd}
 ~~~
 
-We also impose equations for left/right identity and associativity,
-though we only show the associativity condition for reasons that shall
-become painfully clear.
+These must also satisfy left/right identity and associativity. The
+associativity condition is given by the square below, and we trust that
+the reader will understand why will not attempt to draw the identity
+constraints.
 
-~~~{.quiver}
+~~~{.quiver .tall-15}
 \begin{tikzcd}
   {C_1 \times_{C_0} (C_1 \times_{C_0} C_1)} &&& {C_1 \times_{C_0} C_1} \\
   \\
@@ -71,20 +72,21 @@ become painfully clear.
 \end{tikzcd}
 ~~~
 
-Encoding this diagram is a *nightmare* in a proof assistant; the we have
-a mountain of proof obligations to be able to form maps into
-$C_1 \times_{C_0} C_1$, and there are all sorts of horrifying
-reassociations required for iterated pullbacks. Clearly, we need a
-different definition.
+Encoding this diagram in a proof assistant is a *nightmare*. Even
+constructing the maps into $C_1 \times_{C_0} C_1$ we must speak about is
+a pile of painful proof obligations, and these scale atrociously when
+talking about iterated pullbacks.^[To be clear, we did not draw the
+identity constraints because they are trivial. Rather, speaking
+euphemistically, they are *highly nontrivial*.]
 
 To solve the problem, we look to a simpler case: [internal monoids] in
 $\cC$. These are straightforward to define in diagramatic language, but
-can also be defined [in terms of representability]! The core idea here is
+can also be defined [in terms of representability]! The core idea is
 that we can define internal structure in the category of presheaves on
-$\cC$ instead of in $\cC$ directly, letting us us use the structure of
+$\cC$, rather than directly in $\cC$, letting us us use the structure of
 the meta-language to our advantage. To ensure that the structure defined
 in presheaves can be internalized to $\cC$, we restrict ourselves to
-working with [representable] presheaves, which is equivalent to $\cC$
+working with [representable] presheaves --- which is equivalent to $\cC$
 by the [Yoneda lemma].
 
 [internal monoids]: Cat.Monoidal.Diagram.Monoid.html
@@ -94,19 +96,19 @@ by the [Yoneda lemma].
 
 From a type theoretic point of view, this is akin to defining structure
 relative to an arbitrary context $\Gamma$, rather than in the smallest
-context possible. However, we need to ensure that we have defined the
-same structure in every context, IE: it needs to be stable under
-substitutions. We encode this categorically via a naturality condition.
+context possible. This relativisation introduces a new proof obligation:
+stability under *substitution*. We have to ensure that we have defined
+the same structure in every context, which translates to a naturality
+condition.
 
-## Internal Morphisms
+## Representing internal morphisms
 
-Let $\cC$ be a category, and $(C_0, C_1, src, tgt)$ be a diagram as
-before. Furthermore, let $x, y: \Gamma \to C_0$ be 2 generalized objects
-of $C_0$. We define an internal morphism from $x$ to $y$ to be a
-generalized object $f : \Gamma \to C_1$ that makes the following diagram
-commute.
+Let $\cC$ be a category, and $(\bC_0, \bC_1, \src, \tgt)$ be a diagram
+as before. We will define **internal morphisms** between _generalised
+objects_ $x, y : \Gamma \to \bC_0$ to be morphisms $f : \Gamma \to C_1$
+making the following diagram commute.
 
-~~~{.quiver}
+~~~{.quiver .tall-15}
 \begin{tikzcd}
   & \Gamma \\
   \\
@@ -143,10 +145,10 @@ $$
   \Gamma \vdash x : C_0\quad
   \Gamma \vdash y : C_0\quad
   \Gamma \vdash f : C_1\quad
-  src(f) \equiv x\quad
-  tgt(f) \equiv y\quad
+  \src f \equiv x\quad
+  \tgt f \equiv y\quad
 }{
-  \Gamma \vdash f : Hom\ x\ y
+  \Gamma \vdash f : \hom\ x\ y
 }
 $$
 
@@ -174,7 +176,7 @@ Internal-hom-path p = Internal-hom-pathp refl refl p
 
 private unquoteDecl eqv = declare-record-iso eqv (quote Internal-hom)
 
-Internal-hom-set 
+Internal-hom-set
   : ∀ {Γ C₀ C₁} {src tgt : Hom C₁ C₀} {x y : Hom Γ C₀}
   → is-set (Internal-hom src tgt x y)
 Internal-hom-set = Iso→is-hlevel 2 eqv hlevel!
@@ -204,8 +206,9 @@ adjusti p q f .has-tgt = f .has-tgt ∙ q
 -->
 
 We also must define the action of substitutions $\Delta \to \Gamma$ on
-internal morphisms. In the external view of $\cC$, substitutions are
-morphisms $\cC(\Gamma, \Delta)$, and act via precomposition.
+internal morphisms. Zooming out to look at $\cC$, substitutions are
+morphisms $\cC(\Gamma, \Delta)$, and act on internal morphisms by
+precomposition.
 
 ```agda
 _[_] : ∀ {C₀ C₁ Γ Δ} {src tgt : Hom C₁ C₀} {x y : Hom Δ C₀}
@@ -219,8 +222,8 @@ _[_] : ∀ {C₀ C₁ Γ Δ} {src tgt : Hom C₁ C₀} {x y : Hom Δ C₀}
 infix 50 _[_]
 ```
 
-With this piece of machinery out of the way, we can proceed to define
-internal categories in terms of internal morphisms.
+That out of the way, we can define internal categories _in terms of_
+their internal morphisms.
 
 ```agda
 record Internal-cat-on {C₀ C₁} (src tgt : Hom C₁ C₀) : Type (o ⊔ ℓ) where
@@ -228,43 +231,44 @@ record Internal-cat-on {C₀ C₁} (src tgt : Hom C₁ C₀) : Type (o ⊔ ℓ) 
   field
     idi : ∀ {Γ} → (x : Hom Γ C₀) → Internal-hom src tgt x x
     _∘i_ : ∀ {Γ} {x y z : Hom Γ C₀}
-            → Internal-hom src tgt y z → Internal-hom src tgt x y
-            → Internal-hom src tgt x z
+         → Internal-hom src tgt y z → Internal-hom src tgt x y
+         → Internal-hom src tgt x z
 
   infixr 40 _∘i_
 ```
 
-The equations are *much* easier to state in this form.
+Having rewritten the pullbacks from before --- where the previous
+attempt at a definition ended --- in terms of dependency in the
+meta-language, we can state the laws of an internal category completely
+analogously to their external counterparts!
 
 ```agda
   field
-    idli : ∀ {Γ} {x y : Hom Γ C₀} → (f : Internal-hom src tgt x y)
-         → ((idi y) ∘i f) ≡ f
-    idri : ∀ {Γ} {x y : Hom Γ C₀} → (f : Internal-hom src tgt x y)
-         → (f ∘i (idi x)) ≡ f
+    idli : ∀ {Γ} {x y : Hom Γ C₀} (f : Internal-hom src tgt x y)
+         → idi y ∘i f ≡ f
+    idri : ∀ {Γ} {x y : Hom Γ C₀} (f : Internal-hom src tgt x y)
+         → f ∘i idi x ≡ f
     associ : ∀ {Γ} {w x y z : Hom Γ C₀}
            → (f : Internal-hom src tgt y z)
            → (g : Internal-hom src tgt x y)
            → (h : Internal-hom src tgt w x)
-           → (f ∘i (g ∘i h)) ≡ ((f ∘i g) ∘i h)
+           → f ∘i g ∘i h ≡ (f ∘i g) ∘i h
 ```
 
-However, we do need to add naturality conditions; from the perspective
-of the internal language, this requires that the category structure on
-$(C_0, C_1)$ be stable under substitution.
+However, we do need to add the stability conditions, ensuring that we
+have _the same_ internal category structure, even when moving between
+contexts.
 
 ```agda
-    idi-nat : ∀ {Γ Δ} {x : Hom Δ C₀}
-            → (σ : Hom Γ Δ)
+    idi-nat : ∀ {Γ Δ} {x : Hom Δ C₀} (σ : Hom Γ Δ)
             → idi x [ σ ] ≡ idi (x ∘ σ)
     ∘i-nat : ∀ {Γ Δ} {x y z : Hom Δ C₀}
            → (f : Internal-hom src tgt y z) (g : Internal-hom src tgt x y)
-           → (σ : Hom Γ Δ)
-           → (f ∘i g) [ σ ] ≡ (f [ σ ] ∘i g [ σ ])
+           → (σ : Hom Γ Δ) → (f ∘i g) [ σ ] ≡ (f [ σ ] ∘i g [ σ ])
 ```
 
-
-We also provide a bundled definition.
+We also provide a _bundled_ definition, letting us talk about arbitrary
+categories internal to $\cC$.
 
 ```agda
 record Internal-cat : Type (o ⊔ ℓ) where
@@ -289,17 +293,12 @@ record Internal-cat : Type (o ⊔ ℓ) where
   homi-nat : ∀ {Γ Δ} (f : Hom Δ C₁) → (σ : Hom Γ Δ)
     → homi f [ σ ] ≡ adjusti (assoc _ _ _) (assoc _ _ _) (homi (f ∘ σ))
   homi-nat f σ = Internal-hom-path refl
-```
--->
 
-# Equational Reasoning
+-- Some of the naturality conditions required for later definitions will
+-- require the use of `PathP`{.agda}, which messes up our equational
+-- reasoning machinery. To work around this, we define some custom
+-- equational reasoning combinators for working with internal homs.
 
-Some of the naturality conditions required for later definitions will
-require the use of `PathP`{.agda}, which messes up our equational
-reasoning machinery. To work around this, we define some custom
-equational reasoning combinators for working with internal homs.
-
-```agda
   casti : ∀ {Γ} {x x' y y' : Hom Γ C₀} {f : Homi x y} {g : Homi x' y'}
         → {p p' : x ≡ x'} {q q' : y ≡ y'}
         → PathP (λ i → Homi (p i) (q i)) f g
@@ -328,7 +327,7 @@ equational reasoning combinators for working with internal homs.
       j (i = i0) → f
       j (i = i1) → r′ j
       j (j = i0) → r i
-  
+
   ≡i⟨⟩-syntax
     : ∀ {Γ} {x x′ x″ y y′ y″ : Hom Γ C₀}
     → (f : Homi x y) {g : Homi x′ y′} {h : Homi x″ y″}
@@ -338,7 +337,7 @@ equational reasoning combinators for working with internal homs.
     → PathP (λ i → Homi ((p ∙ p′) i) ((q ∙ q′) i)) f h
   ≡i⟨⟩-syntax f r′ r = r ∙i r′
 
-  _≡i˘⟨_⟩_ 
+  _≡i˘⟨_⟩_
     : ∀ {Γ} {x x′ x″ y y′ y″ : Hom Γ C₀}
     → (f : Homi x y) {g : Homi x′ y′} {h : Homi x″ y″}
     → {p : x′ ≡ x} {q : y′ ≡ y} {p′ : x′ ≡ x″} {q′ : y′ ≡ y″}
@@ -346,22 +345,26 @@ equational reasoning combinators for working with internal homs.
     → PathP (λ i → Homi (p′ i) (q′ i)) g h
     → PathP (λ i → Homi ((sym p ∙ p′) i) ((sym q ∙ q′) i)) f h
   _≡i˘⟨_⟩_ f r r′  = symP r ∙i r′
-  
+
   syntax ≡i⟨⟩-syntax f r′ r = f ≡i⟨ r ⟩ r′
-  
+
   infixr 30 _∙i_
   infix 1 begini_
   infixr 2 ≡i⟨⟩-syntax _≡i˘⟨_⟩_
 ```
+-->
 
 ### Where did the pullbacks go?
 
-Note that the above definition doesn't reference pullbacks at all! This
-may seem somewhat alarming: how on earth is our definition the same
-as the traditional one? The catch is that $\cC$ must have pullbacks for
-us to actually internalize the external category structure. To start,
-we note that internalizing the identity morphism can be done by looking
-instantiating `idi`{.Agda} to the identity morphism.
+After seeing the definition above, the reader may be slightly concerned:
+we make no reference to pullbacks, or to limits in $\cC$, at all! How in
+the world can this be the same as the textbook definition?
+
+The pullbacks in $\cC$ enter the stage when we want to move our internal
+category structure, which is relative to arbitrary contexts $\Gamma$, to
+the _smallest possible context_. To start, we note that internalizing
+the identity morphism can be done by looking instantiating `idi`{.Agda}
+at the identity morphism.
 
 ```agda
 private module _ (pbs : has-pullbacks C) (ℂ : Internal-cat) where
@@ -373,51 +376,59 @@ private module _ (pbs : has-pullbacks C) (ℂ : Internal-cat) where
   internal-id = idi id .ihom
 ```
 
-Composition is where the pullbacks are required. First, we define
-$C_2$ to be the pullback mentioned above, where the source and target
-must agree. We can then internalize the composition operation by using
-the first and second projections of the pullback.
+Now let's see composition: enter, stage rights, the pullbacks. we define
+$\bC_2$ to be the _object of composable pairs_ --- the first pullback
+square we gave, intersecting on compatible source and target. By
+translating the (internal) pullback square to (external) indexing, we
+have a pair of internal morphisms that can be composed.
 
 ```agda
   C₂ : Ob
   C₂ = Pb src tgt
 
   internal-comp : Hom C₂ C₁
-  internal-comp = (f ∘i g) .ihom
-    where
-      f : Homi (src ∘ p₁ src tgt) (tgt ∘ p₁ src tgt)
-      f .ihom = p₁ src tgt
-      f .has-src = refl
-      f .has-tgt = refl
+  internal-comp = (f ∘i g) .ihom where
+    f : Homi (src ∘ p₁ src tgt) (tgt ∘ p₁ src tgt)
+    f .ihom = p₁ src tgt
+    f .has-src = refl
+    f .has-tgt = refl
 
-      g : Homi (src ∘ p₂ src tgt) (src ∘ p₁ src tgt)
-      g .ihom = p₂ src tgt
-      g .has-src = refl
-      g .has-tgt = sym $ square src tgt
+    g : Homi (src ∘ p₂ src tgt) (src ∘ p₁ src tgt)
+    g .ihom = p₂ src tgt
+    g .has-src = refl
+    g .has-tgt = sym $ square src tgt
 ```
 
+## Internal functors
 
-## Internal Functors
+We will now start our project of relativisng category theory to
+arbitrary bases. Suppose $\ica{C}, \ica{D}$ are internal categories:
+what are the maps between them? Reasoning diagramatically, they are the
+morphisms between object-objects and morphism-objects that preserve
+source, target, commute with identity, and commute with composition.
 
-Let $\ica{C}, \ica{D}$ be internal categories. An *internal functor*
-$\ica{C} \to \ica{D}$ consists of an internal mapping of objects,
-along with an internal mapping of internal morphisms.
 
+<!--
 ```agda
 record Internal-functor (ℂ 𝔻 : Internal-cat) : Type (o ⊔ ℓ) where
   no-eta-equality
   private
     module ℂ = Internal-cat ℂ
     module 𝔻 = Internal-cat 𝔻
+```
+-->
+
+Now thinking outside $\cC$, an **internal functor** $\ica{C} \to
+\ica{D}$ consists of a family of maps between internal objects, together
+with a dependent function between internal morphisms --- exactly as in
+the external case! With that indexing, the functoriality constraints
+_also_ look identical.
+
+```agda
   field
     Fi₀ : ∀ {Γ} → Hom Γ ℂ.C₀ → Hom Γ 𝔻.C₀
     Fi₁ : ∀ {Γ} {x y : Hom Γ ℂ.C₀} → ℂ.Homi x y → 𝔻.Homi (Fi₀ x) (Fi₀ y)
-```
 
-These mappings must satisfy internal versions of the functoriality
-conditions.
-
-```agda
     Fi-id : ∀ {Γ} {x : Hom Γ ℂ.C₀}
           → Fi₁ (ℂ.idi x) ≡ 𝔻.idi (Fi₀ x)
     Fi-∘  : ∀ {Γ} {x y z : Hom Γ ℂ.C₀}
@@ -425,7 +436,10 @@ conditions.
           → Fi₁ (f ℂ.∘i g) ≡ Fi₁ f 𝔻.∘i Fi₁ g
 ```
 
-We also need naturality conditions.
+However, do not forget the naturality conditions. Since we now have a
+"dependent function" between internal morphism spaces, _its_
+substitution stability depends on stability for the mapping between
+objects.
 
 ```agda
     Fi₀-nat : ∀ {Γ Δ} (x : Hom Δ ℂ.C₀)
@@ -442,16 +456,21 @@ open Internal-functor
 
 ### Internal functor composition
 
-Internal functors are composable. This construction mirrors composition of functors,
-with the addition of naturality conditions.
-
+<!--
 ```agda
 module _ {ℂ 𝔻 𝔼 : Internal-cat} where
   private
     module ℂ = Internal-cat ℂ
     module 𝔻 = Internal-cat 𝔻
     module 𝔼 = Internal-cat 𝔼
+```
+-->
 
+As a demonstration of the power of these definitions, we can define
+composition of internal functors, which --- at the risk of sounding like
+a broken record --- mirrors the external definition exactly.
+
+```agda
   _Fi∘_ : Internal-functor 𝔻 𝔼 → Internal-functor ℂ 𝔻 → Internal-functor ℂ 𝔼
   (F Fi∘ G) .Fi₀ x = F .Fi₀ (G .Fi₀ x)
   (F Fi∘ G) .Fi₁ f = F .Fi₁ (G .Fi₁ f)
@@ -479,10 +498,11 @@ Idi .Fi₁-nat _ _ = refl
 ## Internal natural transformations
 
 Internal natural transformations follow the same pattern: we replace
-objects with generalized objects, homs with internal homs, and tack
-on naturality conditions to ensure that the operations are stable under
-substitution.
+objects with generalized objects, morphisms with internal morphisms, and
+attach a condition encoding stability under substitution. Here again we
+must state stability _over_ another stability condition.
 
+<!--
 ```agda
 record _=>i_
   {ℂ 𝔻 : Internal-cat}
@@ -492,6 +512,10 @@ record _=>i_
   private
     module ℂ = Internal-cat ℂ
     module 𝔻 = Internal-cat 𝔻
+```
+-->
+
+```agda
   field
     ηi : ∀ {Γ} (x : Hom Γ ℂ.C₀) → 𝔻.Homi (F .Fi₀ x) (G .Fi₀ x)
     is-naturali : ∀ {Γ} (x y : Hom Γ ℂ.C₀) (f : ℂ.Homi x y)

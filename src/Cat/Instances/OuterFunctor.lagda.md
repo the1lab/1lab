@@ -31,10 +31,10 @@ open _=>o_
 
 # The category of outer functors
 
-Unsurprisingly, [outer functors] and outer natural transformations form
-a category. To show this, we must first prove that outer natural
-transformations are have composites and identities. Luckily, this
-is a rote calculation.
+Like most constructions in category theory, [outer functors], and outer
+natural transformations between them, can also be regarded as a
+category. By a rote calculation, we can define the identity and
+composite outer natural transformations.
 
 [outer functors]: Cat.Internal.Functor.Outer.html
 
@@ -64,7 +64,8 @@ module _ {ℂ : Internal-cat} where
     α .ηo-nat (β .ηo px) σ ∙ ap (α .ηo) (β .ηo-nat px σ)
 ```
 
-Assembling these into a category is also quite simple.
+These are almost definitionally a precategory, requiring only an appeal
+to extensionality to establish the laws.
 
 <!--
 ```agda
@@ -74,7 +75,7 @@ module _ (ℂ : Internal-cat) where
 -->
 
 ```agda
-  Outer-functors : Precategory (o ⊔ ℓ) (o ⊔ ℓ) 
+  Outer-functors : Precategory (o ⊔ ℓ) (o ⊔ ℓ)
   Outer-functors .Precategory.Ob = Outer-functor ℂ
   Outer-functors .Precategory.Hom = _=>o_
   Outer-functors .Precategory.Hom-set _ _ = Outer-nat-is-set
@@ -93,11 +94,11 @@ module _ (prods : has-products C) (ℂ : Internal-cat) where
 ```
 -->
 
-## The constant functor functor
+## The constant-functor functor
 
-There is a functor from $\cC$ to the category of outer functors on
-$\ica{C}$ that maps every object $X : \cC$ to the constant outer functor
-on $X$.
+If $\cC$ is a category with products, and $\bC$ is a category internal
+to $\cC$, then we can construct a _constant outer-functor functor_ $\cC
+\to \rm{Out}(\bC)$.
 
 ```agda
   Δo : Functor C (Outer-functors ℂ)

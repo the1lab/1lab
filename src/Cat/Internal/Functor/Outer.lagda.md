@@ -30,21 +30,25 @@ open Internal-hom
 
 # Outer Functors
 
-The category of sets is not strict, so it is not an internal category in
-any category of sets, regardless of universes. However, the category of
-sets still plays an important role in strict category theory, via functors
-$\cC \to \thecat{Sets}$.
+The category $\Sets$ is not [strict], so it is not [internal] to any
+category of sets, even setting aside size issues. However, $\Sets$ still
+plays an important role in (strict) category theory, by passing to the
+co[presheaf] categories $\cC \to \thecat{Sets}$.
 
-We wish to relativize this situation to an arbitrary base category $\cC$,
-not just $\thecat{Sets}$. Specifically, we aim to define a notion of
-functor from category internal to $\cC$ to $\cC$ itself, which we call
-an *outer functor*[^1]. To do this, we use the age-old trick of viewing
-a family of sets $X : I \to \set$ as a function *into* $I$. This is
-easy to internalize: just replace function with morphism!
+[strict]: Cat.Strict.html
+[internal]: Cat.Internal.Base.html
+[presheaf]: Cat.Instances.Functor.html
 
-[^1]: The terminology here is somewhat inconsistent. Borceaux calls
-these functors "internal base-valued functors", Mac Lane and
-Moerdijk refer to them as "category actions".
+We wish to relativize this to an arbitrary base category $\cC$, not just
+$\thecat{Sets}$. Specifically, if $\bC$ is a category internal to $\cC$,
+we want to define "functor from $\bC \to \cC$" --- which we call an
+**outer functor**[^1]. We will employ the fibration/family
+correspondence: a family of sets $B \to \Sets$ is the same as a function
+$E \to B$ --- and we know how to relativise functions!
+
+[^1]: The terminology here is somewhat inconsistent. [@Borceux:vol1]
+calls these functors _internal base-valued functors_, while in [@SIGL]
+they are referred to as _category actions_.
 
 ```agda
 module _ (ℂ : Internal-cat) where
@@ -54,12 +58,12 @@ module _ (ℂ : Internal-cat) where
     no-eta-equality
 ```
 
-The first piece of data we require is some object $P : \cC$ that will act
-like the disjoint union of the image of our functor. If the base was
-$\thecat{Sets}$, then this would simply be the type
-$\Sigma (x : \ica{C}) P(x)$. Next, we require a map that takes a
-generalized element of $P$ to a generalized element of the object of
-objects; in $\thecat{Sets}$, this is simply the first projection.
+The first piece of data we require is some object $P : \cC$ that will
+act like the disjoint union of the image of our functor. If the base
+category were $\Sets$, this would be the type $\Sigma_(x : \ica{C})
+P(x)$. The next piece of data, $P_0$, corresponds to the first
+projection morphism: it assigns (generalised) objects of $P$ to objects
+of $\bC$.
 
 ```agda
     field
@@ -67,12 +71,10 @@ objects; in $\thecat{Sets}$, this is simply the first projection.
       P₀ : ∀ {Γ} → Hom Γ ∫P → Hom Γ C₀
 ```
 
-We proceed by defining the action of morphisms. Intuitively, this just
-takes an internal morphism from $x$ to $y$ to an endomap on $P$.
-However, we need to ensure that this map takes the fibre of $P$ at
-$x$ to the fibre of $P$ at $y$. This is handled via a bit of clever
-indexing, along with a proof that ensures that the result lands in the
-correct fibre.
+The next data captures how $\bC$'s morphisms act on the fibres. Since
+the family-fibration correspondence takes dependency to sectioning, we
+require an assigment sending maps $f : P_0(x) \to y$ to maps $P_1(f) :
+\Gamma \to P$, which satisfy $y = P_0(P_1(f))$.
 
 ```agda
       P₁ : ∀ {Γ} (px : Hom Γ ∫P) {y : Hom Γ C₀} → Homi (P₀ px) y → Hom Γ ∫P
@@ -80,7 +82,8 @@ correct fibre.
              → (f : Homi (P₀ px) y) → y ≡ P₀ (P₁ px f)
 ```
 
-Next, we have the functoriality conditions; nothing here is too surprising.
+Next, we have the functoriality conditions, which are straightforward
+(modulo indexing).
 
 ```agda
       P-id : ∀ {Γ} (px : Hom Γ ∫P) → P₁ px (idi (P₀ px)) ≡ px
@@ -99,18 +102,19 @@ generalized objects.
 open Outer-functor
 ```
 
-Another perspective on outer functors is that they are internal discrete
-opfibrations over $\ica{C}$. The object $P$ is the [total space]
-of the discrete opfibration, the mapping $P_0$ plays the role of the
-fibration, and the mapping $P_1$ encodes the lifting property.
+Another perspective on outer functors is that they are the _internal
+discrete opfibrations_ over $\ica{C}$. The object $P$ is the [total
+space], the map $P_0$ is the fibration itself, and $P_1$ captures the
+lifting into opcartesian maps.
 
 [total space]: Cat.Displayed.Total.html
+
 <!-- [TODO: Reed M, 28/04/2023]
 Link to the page on discrete opfibrations when it is written!
 -->
 
-We can obtain internal [discrete fibrations] by looking at outer functors
-from the [internal opposite category] of $\ica{C}$.
+We can obtain internal [discrete fibrations] by looking at outer
+functors from the [internal opposite category] of $\ica{C}$.
 
 [discrete fibrations]: Cat.Displayed.Cartesian.Discrete.html
 [internal opposite category]: Cat.Internal.Opposite.html
@@ -118,10 +122,10 @@ from the [internal opposite category] of $\ica{C}$.
 ## Internal Hom Functors
 
 The canonical example of an outer functor is the internal analog of the
-hom functor $\cC(X,-)$. Let $\cC$ be a finitely complete category,
-$\ica{C}$ be an internal category in $\cC$, and let $x : \cC(\top, C_0)$
-be a *global* element of the object of objects, which should be thought
-of as an "external object" of $\ica{C}$.
+hom functor $\cC(X,-)$. We require the following data: $\cC$ is finitely
+complete, $\bC$ is a category internal to $\cC$, and $x : \cC(\top,
+\bC_0)$ is a _global_ object of $\bC$ --- an object of $\bC$ in the
+empty context.
 
 ```agda
 module _ (pb : has-pullbacks C) (term : Terminal C) (ℂ : Internal-cat) where
@@ -133,10 +137,11 @@ module _ (pb : has-pullbacks C) (term : Terminal C) (ℂ : Internal-cat) where
   Internal-hom-from x = outf where
 ```
 
-Recall that defining an outer functor on $\ica{C}$ requires choosing
-some $P : \cC$ that will play the role of the total space; for
-hom functor, this ought to be the object of all morphisms with domain
-$x$. We can encode this internally with the following pullback:
+Recall that defining an outer functor on $\ica{C}$ requires choosing an
+object $P : \cC$ to play the role of total space. For the outer functor
+corresponding to a Hom-functor, this ought to be the object of morphisms
+with domain $x$. We can encode this internally with the following
+pullback:
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -152,8 +157,8 @@ $x$. We can encode this internally with the following pullback:
 ~~~
 
 The projection from the total space to $C_0$ takes a generalized element
-of $C_x$ to it's codomain, and the lifting properties is obtained by
-using the fact that $C_x$ is a pullback.
+of $C_x$ to its codomain. The lifting morphism $P_1$ follows from the
+universal property of the pullback.
 
 ```agda
     open Pullback (pb src x) renaming (apex to Cₓ)
@@ -172,8 +177,10 @@ using the fact that $C_x$ is a pullback.
 ```
 
 <details>
-<summary>Functoriality follows the same general pattern as the ordinary
-hom functor, though it is somewhat obscured by the pullback.
+<summary>The functoriality constraint is analogous to that for the
+ordinary $\hom$-functors, though here it is obscured by all the
+pullbacks. The naturality constraints similarly follow from uniqueness
+of maps into a limit.
 </summary>
 
 ```agda
@@ -185,33 +192,29 @@ hom functor, though it is somewhat obscured by the pullback.
         tgt ∘ p₁ ∘ universal _            ∎
     outf .P-id fₓ =
       sym $ unique (sym (ap ihom (idli _))) (sym (!-unique _))
-    outf .P-∘ fₓ g h =
-      unique
-        (p₁∘universal
-        ∙ ap ihom (sym $ associ _ _ _)
+    outf .P-∘ fₓ g h = unique
+      (p₁∘universal
+      ∙ ap ihom (sym $ associ _ _ _)
+      ∙ ∘i-ihom
+          (sym (ap (src ∘_) p₁∘universal ∙ (h ∘i homi (p₁ ∘ fₓ)) .has-src))
+          (sym (ap (tgt ∘_) p₁∘universal ∙ (h ∘i homi (p₁ ∘ fₓ)) .has-tgt))
+          refl refl (sym p₁∘universal))
+      p₂∘universal
+    outf .P₀-nat fₓ σ = sym (assoc _ _ _) ∙ ap (tgt ∘_) (sym (assoc _ _ _))
+    outf .P₁-nat fₓ g σ = unique
+      (pulll p₁∘universal
+        ∙ ap ihom (∘i-nat g (homi (p₁ ∘ fₓ)) σ)
         ∙ ∘i-ihom
-            (sym (ap (src ∘_) p₁∘universal ∙ (h ∘i homi (p₁ ∘ fₓ)) .has-src))
-            (sym (ap (tgt ∘_) p₁∘universal ∙ (h ∘i homi (p₁ ∘ fₓ)) .has-tgt))
-            refl refl (sym p₁∘universal))
-        p₂∘universal
-    outf .P₀-nat fₓ σ =
-      sym (assoc _ _ _)
-      ∙ ap (tgt ∘_) (sym (assoc _ _ _))
-    outf .P₁-nat fₓ g σ =
-      unique
-        (pulll p₁∘universal
-         ∙ ap ihom (∘i-nat g (homi (p₁ ∘ fₓ)) σ)
-         ∙ ∘i-ihom
-             (sym (assoc _ _ _) ∙ ap (src ∘_) (sym (assoc _ _ _)))
-             (sym (assoc _ _ _) ∙ ap (tgt ∘_) (sym (assoc _ _ _)))
-             refl refl (sym (assoc _ _ _)))
-        (sym (!-unique _))
+            (sym (assoc _ _ _) ∙ ap (src ∘_) (sym (assoc _ _ _)))
+            (sym (assoc _ _ _) ∙ ap (tgt ∘_) (sym (assoc _ _ _)))
+            refl refl (sym (assoc _ _ _)))
+      (sym (!-unique _))
 ```
 </details>
 
-The contravariant internal hom functor is defined in an almost identical
-manner; the only difference is that we pull back along $tgt$ instead of
-$src$.
+The _contravariant_ internal $\hom$ functor is defined by duality, which
+carries "pullback along $\$1$" to "pullback along $\$1$.".
+This outer functor plays the role of the Yoneda embedding.
 
 ```agda
   Internal-hom-into : (x : Hom top C₀) → Outer-functor (ℂ ^opi)
@@ -220,8 +223,8 @@ $src$.
 ```
 
 <details>
-<summary>We omit the construction due to it's similarity with the
-covariant internal hom functor.
+<summary>We omit this construction due to its similarity with the
+covariant construction, performed above.
 </summary>
 
 ```agda
@@ -267,12 +270,13 @@ covariant internal hom functor.
 ```
 </details>
 
-## Outer Natural Transformations
+## Outer natural transformations
 
-Let $\cC$ be a category, $\ica{C}$ an internal category in $\cC$, and
-$P, Q$ be two outer functors on $\ica{C}$. An outer natural transformation
-$P \to Q$ is given by maps between the total spaces of $P$ and $Q$, along
-with some naturality and coherence conditions.
+If $\cC$ is a category, $\bC$ is internal to $\cC$, and $P, Q$ are two
+outer functors on $\bC$, we can define the **outer natural
+transformations** $P \to Q$: They are (mostly) given by transformations
+$\cC(-, \int P)$ to $\cC(-, \int Q)$, together with a bit of naturality
+data.
 
 ```agda
 module _ {ℂ : Internal-cat} where
@@ -283,16 +287,17 @@ module _ {ℂ : Internal-cat} where
       ηo : ∀ {Γ} → Hom Γ (P .∫P) → Hom Γ (Q .∫P)
 ```
 
-The first condition ensures that the natural transformation is takes
-elements of $P$ in the fibre over $x$ to elements of $Q$ over $x$.
+The first condition corresponds to indexing: Outer natural
+transformations map elements of $\int P$ over $x$ to elements of $\int
+Q$ over $x$.
 
 ```agda
       ηo-fib : ∀ {Γ} (px : Hom Γ (P .∫P)) → Q .P₀ (ηo px) ≡ P .P₀ px
 ```
 
-With this little bit of coherence out of the way, we can state the
-naturality condition; this is the familiar condition from natural
-transformations, just mangled a bit.
+Over this coherence, we can state the naturality condition. It should be
+familiar, since, modulo the aforementioned coherence, it says
+$\eta P_1(f) = Q_1(f\eta)$.
 
 ```agda
       is-naturalo : ∀ {Γ : Ob} (px : Hom Γ (P .∫P)) (y : Hom Γ C₀)
@@ -300,8 +305,8 @@ transformations, just mangled a bit.
         → ηo (P .P₁ px f) ≡ Q .P₁ (ηo px) (adjusti (sym (ηo-fib px)) refl f)
 ```
 
-Finally, we require the naturality condition that allows us to work
-in the internal language of $\cC$.
+The final naturality condition is stability under substitution, allowing
+us to work in the internal language of $\cC$.
 
 ```agda
       ηo-nat : ∀ {Γ Δ} (px : Hom Δ (P .∫P)) (σ : Hom Γ Δ) → ηo px ∘ σ ≡ ηo (px ∘ σ)
@@ -347,10 +352,11 @@ instance
 ```
 -->
 
-## Some other outer functors
+## Some outer functors
 
-One important outer functor is the *constant outer functor* on an object
-$X : \cC$; this is the internalized version of the [chaotic bifibration].
+One important outer functor is the **constant outer functor** on an
+object $X : \cC$, which can be constructed if $\cC$ has products. This
+is the internalized version of the [chaotic bifibration].
 
 [chaotic bifibration]: Cat.Displayed.Instances.Chaotic.html
 
@@ -363,7 +369,7 @@ module _ (prods : has-products C) {ℂ : Internal-cat} where
 ```
 -->
 
-The total space of this functor is the product $X \times C_0$, and the
+The total space of this functor is the product $X \times \bC_0$, and the
 projection map is simply the second projection.
 
 ```agda
@@ -376,13 +382,12 @@ Lifting is given by the universal map into the product.
 
 ```agda
   ConstO X .P₁ px {y} f = ⟨ π₁ ∘ px , y ⟩
-  ConstO X .P₁-tgt px {y = y} f = sym $ π₂∘⟨⟩
+  ConstO X .P₁-tgt px {y = y} f = sym π₂∘⟨⟩
 ```
 
 
-<details>
-<summary>Functoriality and naturality all follow from basic facts about products.
-</summary>
+For once, the naturality constraints are not egregious: In fact, since
+they are all facts about products, they can all be solved automatically.
 
 ```agda
   ConstO X .P-id px = products! C prods
@@ -392,13 +397,14 @@ Lifting is given by the universal map into the product.
 ```
 </details>
 
-Outer natural transformations between constant outer functors are easy
-to characterize.
+If $x \to y$ is a map in $\cC$, then it defines an outer natural
+transformation between the associated constant outer functors. Here too
+we can apply automation to satisfy the coherence constraints.
 
 ```agda
   const-nato : ∀ {X Y : Ob} → Hom X Y → ConstO X =>o ConstO Y
   const-nato f .ηo g = ⟨ f ∘ π₁ ∘ g , π₂ ∘ g ⟩
-  const-nato f .ηo-fib px = products! C prods
+  const-nato f .ηo-fib px          = products! C prods
   const-nato f .is-naturalo px y g = products! C prods
-  const-nato f .ηo-nat px σ = products! C prods
+  const-nato f .ηo-nat px σ        = products! C prods
 ```

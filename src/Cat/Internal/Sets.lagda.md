@@ -16,13 +16,12 @@ module Cat.Internal.Sets where
 
 # Internal categories in Set
 
-Categories that are internal to set are [strict categories], IE:
-precategories with a `Set`{.Agda ident=is-set} of objects.
+Categories that are internal to set are [strict categories]:
+precategories with a `Set`{.Agda ident=is-set} of objects. Starting from
+a category $\bC$ internal to $\Sets$ and ending up with a strict
+category is quite unremarkable:
 
-[strict categories]: Cat.Instances.StrictCat.html
-
-It is quite easy to show that internal categories yield strict
-categories; the proof is mostly just shuffling data around.
+[strict]: Cat.Strict.html
 
 ```agda
 Internal-cat→Precategory : ∀ {κ} → Internal-cat (Sets κ) → Precategory κ κ
@@ -42,7 +41,8 @@ Internal-cat→Precategory {κ} ℂ = cat where
   cat .assoc f g h = Internal-hom-path _ (ap ihom (associ f g h))
 ```
 
-The other direction is... not so easy.
+Defining an internal category from a strict category is a lot more
+annoying.
 
 ```agda
 Strict-cat→Internal-cat
@@ -50,26 +50,27 @@ Strict-cat→Internal-cat
   → (C : Precategory o ℓ) → is-set (Precategory.Ob C)
   → Internal-cat (Sets (o ⊔ ℓ))
 Strict-cat→Internal-cat {o} {ℓ} C ob-set = icat where
+```
+
+<!--
+```agda
   open Precategory C
   open Cat.Strict.Reasoning C ob-set
   open Internal-cat
   open Internal-cat-on
   open Internal-hom
   open Lift
-```
-
-<!--
-```agda
   instance
     H-Level-Ob : ∀ {n} → H-Level Ob (2 + n)
     H-Level-Ob = basic-instance 2 ob-set
 ```
 -->
 
-The set of objects is straightforward: it's just the set of objects
-(modulo universe levels). However, morphisms are a bit more tricky; we
-need to create the type of *all* morphisms, which is kind of a pain to
-work with.
+The object-of-objects is straightforward to define, since we already
+assumed that the category we're internalising has a set of objects.
+Morphisms are a bit more complicated. Since an internal category has a
+single object-of-morphisms, we have to work with the total space of
+$\cC(-,-)$, rather than any particular fibre.
 
 ```agda
   icat : Internal-cat (Sets (o ⊔ ℓ))
@@ -88,9 +89,10 @@ The internal identity morphism is simply the identity morphism.
   icat .has-internal-cat .idi x .has-tgt = refl
 ```
 
-Composition is much worse. Note that the two morphisms we are trying
-to compose are off by a path! This forces us to transport one of them,
-which makes reasoning about the composition extremely annoying.
+Composition is where the complication shows up. Rather than composing
+two arrows $f : x \to y$ and $g : y \to z$, we have to compose arrows $f
+: x \to y$, $g : y' \to z$, _and_ a path $y = y'$. This forces us to
+transport $f$, which gunks up the computations.
 
 ```agda
   icat .has-internal-cat ._∘i_ f g .ihom γ =
@@ -103,8 +105,8 @@ which makes reasoning about the composition extremely annoying.
   icat .has-internal-cat ._∘i_ f g .has-tgt = f .has-tgt
 ```
 
-The internal category laws follow from the category laws, though there
-are a bunch of transports we need to wade through.
+As mentioned, establishing the laws is slightly hampered by the stuck
+transports.
 
 ```agda
   icat .has-internal-cat .idli f =
@@ -123,13 +125,13 @@ are a bunch of transports we need to wade through.
     refl ,ₚ refl ,ₚ ap₂ _∘_ refl (cast-cod-∘ _) ∙ assoc _ _ _
 ```
 
-Naturality is (luckily) quite simple.
+Fortunately, naturality does not get too far in the way.
 
 ```agda
   icat .has-internal-cat .idi-nat _ =
     Internal-hom-path _ refl
   icat .has-internal-cat .∘i-nat f g σ =
     Internal-hom-path _ $
-    funext λ γ → 
+    funext λ γ →
     refl ,ₚ refl ,ₚ ap₂ _∘_ refl (recast-cod _ _)
 ```
