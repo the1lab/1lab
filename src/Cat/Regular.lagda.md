@@ -110,11 +110,80 @@ latter two names have a placeholder for the morphism we are factoring.
 ```
 -->
 
-# Strong epis are regular
+## Motivation
+
+Regular categories are interesting in the study of categorical logic
+since they have exactly the structure required for their [subobject
+fibrations] to interpret existential quantifiers, _and_ for these to
+commute with substitution which, in this case, is interpreted as
+pullback.
+
+[subobject fibrations]: Cat.Displayed.Instances.Subobjects.html
+
+We've already seen that, in a category with pullbacks, arbitrary
+morphisms $f : a \to b$ induce [an adjunction] $f_! \dashv f^*$ between
+$\cC/b \adj \cC/a$: the right adjoint models the substitution (base
+change) along $f$, and the left adjoint models the _dependent sum_ over
+$f$. Between subobject categories, though, pullbacks are not enough
+structure: this can be seen type-theoretically by noting that, even if
+$P : A \to \Omega$ is a family of propositions, the sum $\Sigma_(x : A)
+P(x)$ will generally not be.
+
+[an adjunction]: Cat.Functor.Pullback.html
+
+Instead, the existential quantifier must be _truncated_ to work
+correctly, and it is this truncation that the pullback-stable image
+factorisations in a regular category exist to model. In a category with
+pullbacks and images, we have adjunctions $\exists_f \dashv f^*$, now
+between $\Sub(a) \adj \Sub(b)$. However, the existence of images is not
+enough to guarantee they behave type-theoretically. In a regular
+category, since images are stable under pullback, the equation
+
+$$
+\exists_k h^*\phi \cong f^* \exists_g \phi\text{,}
+$$
+
+holds as long as $f$, $g$, $h$ and $k$ fit into a pullback square,
+expressing that existential quantification commutes with substitution.
+
+Another reason to be interested in regular categories is their
+well-behaved calculus of [relations]: any category with pullbacks has an
+associated [bicategory of spans], but images are precisely what's
+missing to interpret composition _of relations_. Indeed, the existential
+quantifier in a regular category allows us to interpret the formula for
+relational composition,
+
+[relations]: Cat.Bi.Instances.Relations.html
+[bicategory of spans]: Cat.Bi.Instances.Spans.html
+
+$$
+(R \circ S)(a, b) = \exists_{c : C} R(a, c) \land R(c, s)\text{,}
+$$
+
+internally to an arbitrary category. Regularity comes in when we want to
+show that composition of relations is _associative_: indeed,
+associativity in the formula above, modulo associativity of the
+conjunction $A \land B$, is exactly a question of _commutativity between
+$\exists$ and substitution_. It follows, but we do not establish here,
+that a category is regular _exactly when_ its composition of relations
+is associative.
+
+As a universe for interpreting logic, regular categories allow us to
+talk about formulae (in arbitrary contexts) consisting of conjunction,
+equality, truth, and existential quantification, and all of these
+connectives commute with substitution. This subset of logic is,
+unsurprisingly, called **regular logic**. For working with regular
+categories, one notes that [$\Sets$ is regular], and that [regularity is
+preserved by slicing].
+
+[$\Sets$ is regular]: Cat.Regular.Instances.Sets.html
+[regularity is preserved by slicing]: Cat.Regular.Slice.html
+
+## Strong epis are regular
 
 This section formalises the proof of A1.3.4 from [@Elephant], which says
 that every strong epimorphism^[Note: Johnstone prefers to work with
-"covers" instead, which in our lingo are _extremal_ epimorphism. In a
+"covers" instead, which in our lingo are _extremal_ epimorphisms. In a
 finitely complete category, strong and extremal epimorphisms coincide]
 in a regular category is regular. Actually, we'll show that every strong
 epimorphism in a regular category is **effective**: it's the coequaliser
