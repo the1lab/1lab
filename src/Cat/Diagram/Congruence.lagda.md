@@ -173,6 +173,7 @@ Here's the data of a congruence. Get ready, because there's a lot of it:
   rel₂ : Hom R A
   rel₂ = A×A.π₂ ∘ m
   private module R×R = Pullback (fc.pullbacks rel₁ rel₂)
+  private module A×A×A = Pullback (fc.pullbacks rel₁ rel₂)
 ```
 -->
 
@@ -198,7 +199,32 @@ Here's the data of a congruence. Get ready, because there's a lot of it:
 
   field
     trans-factors : source-target ≡ m ∘ has-trans
+```
 
+<!--
+```agda
+  trans-p₁ : rel₁ ∘ has-trans ≡ rel₁ ∘ A×A×A.p₂
+  trans-p₁ =
+    pullr (sym trans-factors)
+    ∙ A×A.π₁∘factor
+
+  trans-p₂ : rel₂ ∘ has-trans ≡ rel₂ ∘ A×A×A.p₁
+  trans-p₂ =
+    pullr (sym trans-factors)
+    ∙ A×A.π₂∘factor
+
+  unpair-trans
+    : ∀ {X} {p₁' p₂' : Hom X R}
+    → (sq : rel₁ ∘ p₁' ≡ rel₂ ∘ p₂')
+    → m ∘ has-trans ∘ R×R.universal sq ≡ A×A.⟨ rel₁ ∘ p₂' , rel₂ ∘ p₁' ⟩
+  unpair-trans sq =
+    pulll (sym trans-factors)
+    ·· A×A.⟨⟩∘ _
+    ·· ap₂ A×A.⟨_,_⟩ (pullr R×R.p₂∘universal) (pullr R×R.p₁∘universal)
+```
+-->
+
+```agda
 record Congruence-on A : Type (o ⊔ ℓ) where
   no-eta-equality
   field
