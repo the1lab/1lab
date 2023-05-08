@@ -15,9 +15,10 @@ module Cat.Instances.Shape.Involution where
 
 # The walking involution
 
-The walking involution is the category with one object, and two morphisms
-$id$ and $i$, such that $i \circ i = id$. We can encode this by defining
-morphisms as booleans, and using `xor`{.Agda} as our composition operation.
+The **walking involution** is the category with a single non-trivial
+morphism $i : x \to x$, satisfying $i \circ i = \id$.  We can encode
+this by defining morphisms as booleans, and using `xor`{.Agda} as our
+composition operation.
 
 ```agda
 ∙⤮∙ : Precategory lzero lzero
@@ -33,8 +34,7 @@ morphisms as booleans, and using `xor`{.Agda} as our composition operation.
 open Cat.Reasoning ∙⤮∙
 ```
 
-A useful feature of this category is that it is the smallest category
-with a non-trivial automorphism.
+This is the smallest precategory with a non-trivial isomorphism.
 
 ```agda
 Bool≃∙⤮∙-isos : Bool ≃ (tt ≅ tt)
@@ -43,7 +43,7 @@ Bool≃∙⤮∙-isos =
   where
     Bool→Iso : Bool → tt ≅ tt
     Bool→Iso true = make-iso true true refl refl
-    Bool→Iso false = id-iso 
+    Bool→Iso false = id-iso
 
     Iso→Bool : tt ≅ tt → Bool
     Iso→Bool i = i .to
@@ -60,7 +60,7 @@ Bool≃∙⤮∙-isos =
     left-inv false = refl
 ```
 
-## Skeletality and Univalence
+## Skeletality and (non)-univalence
 
 As the walking involution only has one object, it is trivially [skeletal].
 
@@ -73,11 +73,10 @@ As the walking involution only has one object, it is trivially [skeletal].
   is-prop→pathp (λ _ → squash) (inc id-iso) _
 ```
 
-However, it is *not* univalent, due to the mismatch between automorphisms
-and paths between objects. If the walking involution was univalent, then
-we would have an isomorphism between paths in the unit type and
-automorphisms. However, as we just saw, there are 2 distinct automorphisms,
-yet the unit type is a proposition.
+However, it is *not* univalent, since its only object has more internal
+automorphisms than it has loops. By definition, univalence for the
+walking involution would mean that there are two paths $\tt{tt} \equiv
+\tt{tt}$ in the booleans: but this contradicts the booleans being a set.
 
 ```agda
 ∙⤮∙-not-univalent : ¬ is-category ∙⤮∙

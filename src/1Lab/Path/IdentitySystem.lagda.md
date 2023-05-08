@@ -111,9 +111,9 @@ to-path-refl {r = r} {a = a} ids = ap (ap fst) $ to-path-refl-coh ids a
 
 If we have a relation $R$ together with reflexivity witness $r$, then
 any equivalence $f : R(a, b) \simeq (a \equiv b)$ which maps $f(r) =
-\rm{refl}$ equips $(R, r)$ with the structure of an identity system. Of
+\refl$ equips $(R, r)$ with the structure of an identity system. Of
 course if we do not particularly care about the specific reflexivity
-witness, we can simply define $r$ as $f^{-1}(\rm{refl})$.
+witness, we can simply define $r$ as $f^{-1}(\refl)$.
 
 ```agda
 equiv-path→identity-system

@@ -15,47 +15,54 @@ open import Data.Dec.Base
 module 1Lab.Path.IdentitySystem.Strict where
 ```
 
+<!--
+```agda
+private variable
+  ℓ ℓ′ ℓ′′ : Level
+  A : Type ℓ′
+  R : A → A → Type ℓ′
+  r : ∀ a → R a a
+```
+-->
+
 # Strict Identity Systems
 
-[Identity systems] on `Sets`{.Agda ident=is-set} not only have their
-own J eliminator, but also have their own version of the K eliminator!
-This eliminator is normally added as an axiom to MLTT to squash any
-homotopical content, but if the type already has no higher dimensional
-structure, then we get it as a theorem.
+Since [identity systems] are a tool for classifying identity _types_,
+the relation underlying an identity system enjoys any additional
+property that the type's own identity type enjoys. As a prominent
+example, if $(R, r)$ is an identity system on a [set], then $R$
+satisfies not only J, but also K: any property $P(x)$ for $x : R(a,a)$,
+for _fixed_ $a$, follows from $P(r)$.
 
-[Identity systems]: 1Lab.Path.IdentitySystem.html
+[identity systems]: 1Lab.Path.IdentitySystem.html
+[set]: 1Lab.HLevel.html#is-set
 
-We begin by noting that if $A$ is a set equipped with an identity system
-$R, r$, then the relation $R$ must be a proposition. We do this by
-constructing a `PathP`{.Agda} from $s$ to $t$ that lies over some loop
-$b = b$, and then using the fact that $A$ is a set to contract the loop
-down to the reflexive path.
+Since $(R, r)$ is equivalent to $(\equiv_A, \refl)$, if $A$ is a set,
+then $R$ must be a proposition as well.
 
 ```agda
-strict-identity-system→is-prop
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a} {a b : A}
+set-identity-is-prop
+  : ∀ {r : (a : A) → R a a} {a b : A}
   → is-identity-system R r
   → is-set A
   → is-prop (R a b)
-strict-identity-system→is-prop {R = R} {a = a} {b = b} ids set s t =
-  is-set→cast-pathp (λ b' → R a b') set $
-  _∙P_ {B = λ b' → R a b'} (symP (ids .to-path-over s)) (ids .to-path-over t)
+set-identity-is-prop {R = R} {a = a} {b = b} ids set =
+  is-hlevel≃ 1 (identity-system-gives-path ids) (set a b)
 ```
 
-This immediately gives us the K eliminator for an identity system over a set:
-given a family $P : A \to Type$, an element of that family at $r(a)$, and some
-$s : R(a, a)$, we can transport the $P(r(a))$ to $P(s)$, as $R$ must be a proposition.
+This immediately gives us the K eliminator for an identity system over a
+set: Given a type family $P : R(a, a) \to \ty$ and a witness $w :
+P(r(a))$, since $R(-,-)$ is a proposition, we can transport $w$ to
+$P(s)$ for an arbitrary $s : R(a,a)$.
 
 ```agda
 IdsK
-  : ∀ {ℓ ℓ′ ℓ′′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a} {a : A}
+  : {r : (a : A) → R a a} {a : A}
   → is-identity-system R r
   → is-set A
-  → (P : R a a → Type ℓ′′)
-  → P (r a)
-  → ∀ s → P s
+  → (P : R a a → Type ℓ′′) → P (r a) → ∀ s → P s
 IdsK {r = r} {a = a} ids set P pr s =
-  transport (λ i → P (strict-identity-system→is-prop ids set (r a) s i)) pr
+  transport (λ i → P (set-identity-is-prop ids set (r a) s i)) pr
 ```
 
 <!--
@@ -68,13 +75,13 @@ IdsK-refl
   → (x : P (r a))
   → IdsK ids set P x (r a) ≡ x
 IdsK-refl {R = R} {r = r} {a = a} ids set P x =
-  transport (λ i → P (strict-identity-system→is-prop ids set (r a) (r a) i)) x ≡⟨⟩
-  subst P (strict-identity-system→is-prop ids set (r a) (r a)) x               ≡⟨ ap (λ ϕ → subst P ϕ x) lemma ⟩
-  transport (λ i → P (r a)) x                                                  ≡⟨ transport-refl x ⟩
+  transport (λ i → P (set-identity-is-prop ids set (r a) (r a) i)) x ≡⟨⟩
+  subst P (set-identity-is-prop ids set (r a) (r a)) x               ≡⟨ ap (λ ϕ → subst P ϕ x) lemma ⟩
+  transport (λ i → P (r a)) x                                        ≡⟨ transport-refl x ⟩
   x ∎
   where
-    lemma : strict-identity-system→is-prop ids set (r a) (r a) ≡ refl
-    lemma = is-prop→is-set (strict-identity-system→is-prop ids set) (r a) (r a) _ _
+    lemma : set-identity-is-prop ids set (r a) (r a) ≡ refl
+    lemma = is-prop→is-set (set-identity-is-prop ids set) (r a) (r a) _ _
 ```
 -->
 
@@ -94,6 +101,6 @@ module StrictIds
 
   instance
     R-H-level : ∀ {a b} {n} → H-Level (R a b) (1 + n)
-    R-H-level = prop-instance (strict-identity-system→is-prop ids set)
+    R-H-level = prop-instance (set-identity-is-prop ids set)
 ```
 -->

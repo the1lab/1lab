@@ -17,11 +17,18 @@ module Cat.Skeletal where
 
 # Skeletal Precategories
 
-A precategory $\cC$ is skeletal if all of its isomorphisms are
-automorphisms, or in other words, if there is *any* isomorphism
-$X \cong Y$, then $X$ and $Y$ are equal. We can encode this condition
-by requiring that the propositional truncation of isomorphisms in $\cC$
-is an [identity system].
+A precategory $\cC$ is **skeletal** if objects having _the property of
+being isomorphic_ are identical. The clunky rephrasing is proposital: if
+we had merely said "isomorphic objects are identical", then skeletality
+sounds too much like [univalence], from which it is distinct. Instead,
+skeletality is defined as (equivalent to) the existence of a map
+
+$$
+\| a \cong b \| \to a \equiv b\text{,}
+$$
+
+which we can more concisely summarise as "$(\| - \cong - \|, \| \id \|)$
+is an identity system".
 
 [identity system]: 1Lab.Path.IdentitySystem.html
 
@@ -29,13 +36,20 @@ is an [identity system].
 is-skeletal : ∀ {o ℓ} → Precategory o ℓ → Type (o ⊔ ℓ)
 is-skeletal C =
   is-identity-system (λ x y → ∥ Isomorphism C x y ∥) (λ x → inc (id-iso C))
+
+path-from-has-iso→is-skeletal
+  : ∀ {o ℓ} (C : Precategory o ℓ)
+  → (∀ {a b} → ∥ Isomorphism C a b ∥ → a ≡ b)
+  → is-skeletal C
+path-from-has-iso→is-skeletal C sk = set-identity-system (λ _ _ → squash) sk
 ```
 
-Note that this is distinct from [univalence], which states that
-*untruncated* isomorphisms form an identity system. Univalence is a much
-more useful condition in practice; very few interesting categories are 
-skeletal. In fact, we only define skeletal categories to show that other
-conditions imply it, and therefore should be discounted.
+Skeletality is much rarer than [univalence] in practice, and univalence
+is the more useful condition, since it allows facts about isomorphism to
+transfer to identity^[Indeed, it also allows general facts about
+identity to transfer to isomorphism!]. Skeletality, in our sense, serves
+as a point of comparison for _other_ properties: if a property implies
+skeletality, we can safely regard it as unnatural.
 
 [univalence]: Cat.Univalent.html
 
@@ -45,8 +59,8 @@ module _ {o ℓ} (C : Precategory o ℓ) where
 ```
 -->
 
-One reason skeletality rules out a lot of interesting categories is that
-it implies that the category is [strict].
+One of the reasons skeletality is unnatural is it implies the category
+is [strict].
 
 [strict]: Cat.Strict.html
 
@@ -55,9 +69,10 @@ it implies that the category is [strict].
   skeletal→strict skel = identity-system→hlevel 1 skel (λ _ _ → squash)
 ```
 
-Furthermore, skeletality does *not* imply univalence, as $\cC$ may have
-non-trivial automorphisms. See [here] for an example of such a precategory.
+Furthermore, skeletality does *not* imply univalence, as objects in
+$\cC$ may have non-trivial automorphisms. The [walking involution] is
+the simplest example of a non-univalent, skeletal precategory. In
+general, we prefer to work with [gaunt], not skeletal, categories.
 
-[here]: Cat.Instances.Shape.Involution.html
-
-In general, the "correct" notion of skeletal in HoTT are [gaunt] categories.
+[walking involution]: Cat.Instances.Shape.Involution.html
+[gaunt]: Cat.Gaunt.html

@@ -112,8 +112,8 @@ The object part of the functor is the provided $f : X \to
 $f$ respects equality. This is why it's redundant: $f$ automatically
 respects equality, because it's a function! However, by using the
 decision procedure, we get better computational behaviour: Very often,
-$\rm{disc}(x,x)$ will be $\rm{yes}(\rm{refl})$, and
-substitution along $\rm{refl}$ is easy to deal with.
+$\rm{disc}(x,x)$ will be $\rm{yes}(\refl)$, and
+substitution along $\refl$ is easy to deal with.
 
 ```agda
   F : Functor _ _

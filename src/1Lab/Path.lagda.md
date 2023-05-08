@@ -193,8 +193,8 @@ faces.
   a && b
   \arrow["p", from=1-1, to=1-3]
   \arrow["p"', from=3-1, to=3-3]
-  \arrow["{\rm{refl}}"{description}, from=1-1, to=3-1]
-  \arrow["{\rm{refl}}"{description}, from=1-3, to=3-3]
+  \arrow["{\refl}"{description}, from=1-1, to=3-1]
+  \arrow["{\refl}"{description}, from=1-3, to=3-3]
 \end{tikzcd}\]
 ~~~
 
@@ -203,8 +203,8 @@ faces.
   a && a \\
   \\
   b && b
-  \arrow["{\rm{refl}}", from=1-1, to=1-3]
-  \arrow["{\rm{refl}}"', from=3-1, to=3-3]
+  \arrow["{\refl}", from=1-1, to=1-3]
+  \arrow["{\refl}"', from=3-1, to=3-3]
   \arrow["p"{description}, from=1-1, to=3-1]
   \arrow["p"{description}, from=1-3, to=3-3]
 \end{tikzcd}\]
@@ -233,9 +233,9 @@ These correspond to the following two squares:
   a && a \\
   \\
   a && b
-  \arrow["{\rm{refl}}", from=1-1, to=1-3]
+  \arrow["{\refl}", from=1-1, to=1-3]
   \arrow["p"', from=3-1, to=3-3]
-  \arrow["{\rm{refl}}"{description}, from=1-1, to=3-1]
+  \arrow["{\refl}"{description}, from=1-1, to=3-1]
   \arrow["{p}"{description}, from=1-3, to=3-3]
 \end{tikzcd}\]
 ~~~
@@ -246,9 +246,9 @@ These correspond to the following two squares:
   \\
   b && b
   \arrow["{p}", from=1-1, to=1-3]
-  \arrow["{\rm{refl}}"', from=3-1, to=3-3]
+  \arrow["{\refl}"', from=3-1, to=3-3]
   \arrow["p"{description}, from=1-1, to=3-1]
-  \arrow["{\rm{refl}}"{description}, from=1-3, to=3-3]
+  \arrow["{\refl}"{description}, from=1-3, to=3-3]
 \end{tikzcd}\]
 ~~~
 
@@ -729,7 +729,7 @@ the interval (in fact, it is `true`{.Agda} everywhere), so we say that
 ~~~{.quiver .short-1}
 \[\begin{tikzcd}
   \textcolor{rgb,255:red,214;green,92;blue,92}{\rm{true}} && {\rm{true}}
-  \arrow["{\rm{refl}}", from=1-1, to=1-3]
+  \arrow["{\refl}", from=1-1, to=1-3]
 \end{tikzcd}\]
 ~~~
 
@@ -999,7 +999,7 @@ be reflexivity. For definiteness, we chose the left face:
   \\
   x && z
   \arrow["{p}", from=1-1, to=1-3]
-  \arrow["{\rm{refl}}"', from=1-1, to=3-1]
+  \arrow["{\refl}"', from=1-1, to=3-1]
   \arrow["{q}", from=1-3, to=3-3]
   \arrow["{p \bullet q}"', from=3-1, to=3-3, dashed]
 \end{tikzcd}\]

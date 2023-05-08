@@ -1,6 +1,9 @@
 <!--
 ```agda
 open import Cat.Prelude
+open import Cat.Gaunt
+
+import Cat.Reasoning
 ```
 -->
 
@@ -195,6 +198,16 @@ conclude that paths between a pair of vertices live in a set!
     path-codep-is-prop λ i → a
 ```
 
+<!--
+```agda
+  path-decode
+    : ∀ {a b} {xs ys : Path-in a b}
+    → xs ≡ ys
+    → path-codep (λ _ → a) xs ys
+  path-decode = Equiv.from (identity-system-gives-path path-identity-system)
+```
+-->
+
 ## The path category
 
 By comparison, constructing the actual precategory of paths is almost
@@ -237,4 +250,39 @@ mismatched (they're reversed).
   Path-category .idr f = refl
   Path-category .idl f = ++-idr f
   Path-category .assoc f g h = ++-assoc h g f
+```
+
+Moreover, free categories are always _[gaunt]_: they are automatically
+strict and, as can be seen with a bit of work, univalent. Univalence
+follows because any non-trivial isomorphism would have to arise as a
+`cons`{.Agda}, but `cons`{.Agda} can never be `nil`{.Agda} --- which
+would be required for a composition to equal the identity.
+
+[gaunt]: Cat.Gaunt.html
+
+While types prevent us from directly stating "if a map is invertible, it
+is `nil`{.Agda}", we can nevertheless pass around some equalities to
+make this induction acceptable.
+
+```agda
+  Path-category-is-category : is-category Path-category
+  Path-category-is-category = r where
+    module Pc = Cat.Reasoning Path-category
+
+    rem₁ : ∀ {x y} (j : Pc.Isomorphism x y) → Σ (x ≡ y) λ p → PathP (λ i → Pc.Isomorphism x (p i)) Pc.id-iso j
+    rem₁ {x = x} im = go im (im .Pc.to) refl (path-decode (im .Pc.invr)) where
+      go : ∀ {y} (im : Pc.Isomorphism x y) (j′ : Path-in x y) → j′ ≡ im .Pc.to
+         → path-codep (λ _ → x) (j′ ++ im .Pc.from) nil
+         → Σ (x ≡ y) λ p → PathP (λ i → Pc.Isomorphism x (p i)) Pc.id-iso im
+      go im nil p q = refl , Pc.≅-pathp refl refl p
+
+    r : is-category Path-category
+    r .to-path i      = rem₁ i .fst
+    r .to-path-over i = rem₁ i .snd
+
+  Path-category-is-gaunt : is-gaunt Path-category
+  Path-category-is-gaunt = record
+    { has-category = Path-category-is-category
+    ; has-strict   = hlevel!
+    }
 ```

@@ -1085,7 +1085,7 @@ identity morphism. The rest of the groupoid structure is here too! Any
 path $p : x \equiv y$ has an inverse $p^{-1} : y \equiv x$, and for any
 $p : x \equiv_A y$ and $q : y \equiv_A z$, there is a composite path $p
 \bullet q : x \equiv_A z$. There are paths between paths which express
-the groupoid identities (e.g. $p \bullet p^{-1} \equiv \rm{refl}$),
+the groupoid identities (e.g. $p \bullet p^{-1} \equiv \refl$),
 and those paths satisfy their own identities (up to a path between paths
 between paths), and so on.
 
@@ -1358,7 +1358,7 @@ endpoints of a path --- so we will write it $(d_0,d_1) : A^\bb{I}
 \to A \times A$, since it is the pairing of the maps which evaluate a
 path at the left and right endpoints of the interval.
 
-As a very quick aside, there is a map $r : \lambda x.\ (x, x, \rm{refl}$
+As a very quick aside, there is a map $r : \lambda x.\ (x, x, \refl$
 making the diagram below commute. This diagram expresses that the
 diagonal $A \to A \times A$ can be factored as a weak equivalence
 followed by a fibration through $A^\bb{I}$, which is the defining
