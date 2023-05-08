@@ -173,7 +173,7 @@ loop, which we can picture as the boundary of a square.  Namely,
   {\rm{base}} && {\rm{base}}
   \arrow["{\rm{loop}^{1+n}}", from=1-3, to=3-3]
   \arrow["{\rm{loop}}"', from=3-1, to=3-3]
-  \arrow["{\rm{refl}}", from=1-1, to=1-3]
+  \arrow["{\refl}", from=1-1, to=1-3]
   \arrow["{\rm{loop}^n}"', from=1-1, to=3-1]
 \end{tikzcd}\]
 ~~~

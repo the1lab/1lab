@@ -29,7 +29,7 @@ private variable
 
 Given a `pointed type`{.Agda ident=Type∙} $(A, a)$ we refer to the type
 $a = a$ as the **loop space of $A$**, and refer to it in short as
-$\Omega A$. Since we always have $\rm{refl} : a = a$, $\Omega A$ is
+$\Omega A$. Since we always have $\refl : a = a$, $\Omega A$ is
 _itself_ a pointed type, the construction can be iterated, a process
 which we denote $\Omega^n A$.
 
@@ -99,20 +99,20 @@ have `p` and `q` slip by each other.
 
 ~~~{.quiver .tall-2}
 \[\begin{tikzcd}
-	{\rm{refl}} &&& {\rm{refl}} &&& {\rm{refl}} \\
-	& {\rm{refl} \cdot \rm{refl}} && {\rm{refl} \cdot \rm{refl}} && {\rm{refl} \cdot \rm{refl}} \\
+	{\refl} &&& {\refl} &&& {\refl} \\
+	& {\refl \cdot \refl} && {\refl \cdot \refl} && {\refl \cdot \refl} \\
 	\\
-	& {\rm{refl} \cdot \rm{refl}} && {\rm{refl} \cdot \rm{refl}} && {\rm{refl} \cdot \rm{refl}} \\
-	{\rm{refl}} &&& {\rm{refl}} &&& {\rm{refl}}
+	& {\refl \cdot \refl} && {\refl \cdot \refl} && {\refl \cdot \refl} \\
+	{\refl} &&& {\refl} &&& {\refl}
 	\arrow[from=2-2, to=4-2]
 	\arrow["{p\ \neg i \cdot q\ i}"{description}, color={rgb,255:red,214;green,92;blue,214}, from=2-4, to=4-4]
 	\arrow[from=2-6, to=4-6]
 	\arrow[from=1-1, to=5-1]
 	\arrow[from=1-7, to=5-7]
-	\arrow[""{name=0, anchor=center, inner sep=0}, "{p\ j \cdot \rm{refl}}"', color={rgb,255:red,214;green,92;blue,92}, from=2-2, to=2-4]
-	\arrow[""{name=1, anchor=center, inner sep=0}, "{\rm{refl} \cdot q\ j}"', color={rgb,255:red,153;green,92;blue,214}, from=2-4, to=2-6]
-	\arrow[""{name=2, anchor=center, inner sep=0}, "{\rm{refl} \cdot q\ j}", color={rgb,255:red,153;green,92;blue,214}, from=4-2, to=4-4]
-	\arrow[""{name=3, anchor=center, inner sep=0}, "{p\ j \cdot \rm{refl}}", color={rgb,255:red,214;green,92;blue,92}, from=4-4, to=4-6]
+	\arrow[""{name=0, anchor=center, inner sep=0}, "{p\ j \cdot \refl}"', color={rgb,255:red,214;green,92;blue,92}, from=2-2, to=2-4]
+	\arrow[""{name=1, anchor=center, inner sep=0}, "{\refl \cdot q\ j}"', color={rgb,255:red,153;green,92;blue,214}, from=2-4, to=2-6]
+	\arrow[""{name=2, anchor=center, inner sep=0}, "{\refl \cdot q\ j}", color={rgb,255:red,153;green,92;blue,214}, from=4-2, to=4-4]
+	\arrow[""{name=3, anchor=center, inner sep=0}, "{p\ j \cdot \refl}", color={rgb,255:red,214;green,92;blue,92}, from=4-4, to=4-6]
 	\arrow[""{name=4, anchor=center, inner sep=0}, "{p\ j}", color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-4]
 	\arrow[""{name=5, anchor=center, inner sep=0}, "{q\ j}", color={rgb,255:red,153;green,92;blue,214}, from=1-4, to=1-7]
 	\arrow[""{name=6, anchor=center, inner sep=0}, "{q\ j}"', color={rgb,255:red,153;green,92;blue,214}, from=5-1, to=5-4]
@@ -183,7 +183,7 @@ that `path`{.Agda} is a group homomorphism. More specifically,
   \bullet && \bullet \\
   \\
   \bullet && \bullet
-  \arrow["{\rm{refl}}"', from=1-1, to=3-1]
+  \arrow["{\refl}"', from=1-1, to=3-1]
   \arrow["{\rm{path}(x)}", from=1-1, to=1-3]
   \arrow["{\rm{path}(y)}", from=1-3, to=3-3]
   \arrow["{\rm{path}(x \star y)}"', from=3-1, to=3-3]

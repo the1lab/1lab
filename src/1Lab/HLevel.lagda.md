@@ -463,5 +463,13 @@ abstract
 _ : ∀ {A : Type} {a b c d : A} (p : a ≡ c) (q : a ≡ b) (s : c ≡ d) (r : b ≡ d)
   → Square p q s r ≡ SquareP (λ _ _ → A) p q s r
 _ = λ _ _ _ _ → refl
+
+is-set→cast-pathp
+  : ∀ {ℓ ℓ′} {A : Type ℓ} {x y : A} {p q : x ≡ y} (P : A → Type ℓ′) {px : P x} {py : P y}
+  → is-set A
+  → PathP (λ i → P (p i)) px py
+  → PathP (λ i → P (q i)) px py
+is-set→cast-pathp {p = p} {q = q} P {px} {py} set  r =
+  coe0→1 (λ i → PathP (λ j → P (set _ _ p q i j)) px py) r
 ```
 -->

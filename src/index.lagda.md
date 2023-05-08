@@ -182,6 +182,7 @@ open import 1Lab.Path -- Path types
 open import 1Lab.Path.Groupoid  -- Groupoid structure of types
 open import 1Lab.Path.Reasoning -- Combinators for reasoning with path composition
 open import 1Lab.Path.IdentitySystem -- Families R for which R(x,y) ≃ (x ≡ y)
+open import 1Lab.Path.IdentitySystem.Strict -- Identity systems on sets
 
 open import 1Lab.Equiv -- “Contractible fibres” equivalences
 open import 1Lab.Equiv.Biinv -- Biinvertible maps
@@ -474,6 +475,39 @@ open import Cat.Univalent.Instances.Algebra
   -- Eilenberg-Moore categories preserve univalence
 ```
 
+## Strict Categories
+
+In general, precategories do not have a set of objects. We call categories
+that do **strict**.
+
+```agda
+open import Cat.Strict -- Categories with a set of objects.
+open import Cat.Skeletal -- Categories where isomorphisms are automorphisms.
+open import Cat.Gaunt -- Strict univalent categories.
+```
+
+Properties, constructions, and the category of strict categories:
+
+```agda
+-- Strict categories
+open import Cat.Instances.StrictCat
+open import Cat.Instances.StrictCat.Cohesive
+  -- ^ Strict category structure is a sort of "spatial" structure on a
+  -- set
+
+open import Cat.Instances.Free
+-- Free strict categories on a directed graph
+
+open import Cat.Instances.FinSet
+-- Skeleton of the category of finite sets
+
+open import Cat.Instances.Simplex
+-- Skeleton of the simplex category
+
+open import Cat.Instances.Discrete -- Discrete categories
+open import Cat.Instances.Delooping -- Delooping a monoid to give a category
+```
+
 ## Category instances
 
 Category "instances" are constructions of, and proofs associated to, the
@@ -546,28 +580,6 @@ open import Cat.Instances.Comma -- Comma categories
 open import Cat.Instances.Slice -- Slice categories
 open import Cat.Instances.Slice.Presheaf -- PSh(C)/X ≅ PSh(∫ X)
 open import Cat.Instances.Comma.Univalent
-```
-
-Properties, constructions, and the category of strict categories:
-
-```agda
--- Strict categories
-open import Cat.Instances.StrictCat
-open import Cat.Instances.StrictCat.Cohesive
-  -- ^ Strict category structure is a sort of "spatial" structure on a
-  -- set
-
-open import Cat.Instances.Free
--- Free strict categories on a directed graph
-
-open import Cat.Instances.FinSet
--- Skeleton of the category of finite sets
-
-open import Cat.Instances.Simplex
--- Skeleton of the simplex category
-
-open import Cat.Instances.Discrete -- Discrete categories
-open import Cat.Instances.Delooping -- Delooping a monoid to give a category
 ```
 
 ## Allegories

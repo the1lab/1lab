@@ -265,7 +265,7 @@ identity equivalence, so nothing changes (for this example).
   A && B \\
   \\
   B && B
-  \arrow["{\rm{refl}}"', from=3-1, to=3-3]
+  \arrow["{\refl}"', from=3-1, to=3-3]
   \arrow["f"', "\text{\rotatebox[origin=c]{90}{$\sim$}}", from=1-1, to=3-1]
   \arrow["{\id}", "\text{\rotatebox[origin=c]{270}{$\sim$}}"', from=1-3, to=3-3]
   \arrow["{\rm{ua}(f)}", dashed, from=1-1, to=1-3]
