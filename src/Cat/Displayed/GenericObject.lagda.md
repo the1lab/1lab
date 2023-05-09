@@ -2,7 +2,11 @@
 ```agda
 open import Cat.Displayed.Base
 open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Cartesian.Indexing
 open import Cat.Prelude
+
+import Cat.Displayed.Morphism
+import Cat.Displayed.Reasoning
 ```
 -->
 
@@ -17,6 +21,9 @@ module Cat.Displayed.GenericObject
 ```agda
 open Precategory B
 open Displayed E
+open Cat.Displayed.Morphism E
+open Cat.Displayed.Reasoning E
+open Functor
 ```
 -->
 
@@ -90,6 +97,39 @@ record Globally-small : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
 
   open Generic-object has-generic-ob public
 ```
+
+```agda
+module _ (fib : Cartesian-fibration E) where
+  open Cartesian-fibration fib
+
+  vertical-iso→Generic-object
+    : ∀ {t} (t′ : Ob[ t ])
+    → (∀ {x} (x′ : Ob[ x ]) → Σ[ u ∈ Hom x t ] (base-change E fib u .F₀ t′ ≅↓ x′))
+    → Generic-object t′
+  vertical-iso→Generic-object {t} t′ viso = gobj where
+    open Generic-object
+    open has-lift
+
+    module viso {x} (x′ : Ob[ x ]) = _≅[_]_ (viso x′ .snd)
+
+    gobj : Generic-object t′
+    gobj .classify x′ = viso x′ .fst
+    gobj .classify′ x′ =
+      hom[ idr _ ] (has-lift.lifting _ t′ ∘′ viso.from′ x′)
+    gobj .classify-cartesian x′ .is-cartesian.universal m h′ =
+      hom[ idl _ ] (viso.to′ x′ ∘′ universal (viso x′ .fst) t′ m h′)
+    gobj .classify-cartesian x′ .is-cartesian.commutes m h′ =
+      hom[] (lifting _ _ ∘′ viso.from′ x′) ∘′ hom[] (viso.to′ x′ ∘′ universal _ _ _ _) ≡˘⟨ split _ _ ⟩
+      hom[] ((lifting _ _ ∘′ viso.from′ x′) ∘′ (viso.to′ x′ ∘′ universal _ _ _ _))     ≡⟨ weave _ _ refl (cancel-inner[] _ (viso.invr′ x′)) ⟩
+      hom[] (lifting _ _ ∘′ universal _ _ _ _)                                         ≡⟨ shiftl _ (has-lift.commutes _ _ _ _) ⟩
+      h′ ∎
+    gobj .classify-cartesian x′ .is-cartesian.unique {m = m} {h′ = h′} m′ p =
+      m′                                                            ≡⟨ shiftr (sym (idl _) ∙ sym (idl _)) (insertl′ _ (viso.invl′ x′)) ⟩
+      hom[] (viso.to′ x′ ∘′ viso.from′ x′ ∘′ m′)                    ≡⟨ reindex _ _ ∙ sym (hom[]-∙ (idl _) (idl _))  ∙ ap hom[] (unwhisker-r (idl _) (idl _)) ⟩
+      hom[] (viso.to′ x′ ∘′ ⌜ hom[ idl _ ] (viso.from′ x′ ∘′ m′) ⌝) ≡⟨ ap! (unique _ _ _ (whisker-r _ ∙ assoc[] ∙ unwhisker-l (ap (_∘ m) (idr _)) _ ∙ p)) ⟩
+      hom[] (viso.to′ x′ ∘′ universal _ _ _ h′) ∎
+```
+
 
 ## Skeletal Generic Objects
 

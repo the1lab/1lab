@@ -550,6 +550,15 @@ module _ {a′ : Hom[ a ] y′ x′} {b′ : Hom[ b ] x′ y′}
     hom[ assoc f a b ∙ q ] (f′ ∘′ a′ ∘′ b′) ≡⟨ shiftl _ (elimr′ p p′) ⟩
     f′ ∎
 
+  cancel-inner′ : ∀ {f′ : Hom[ f ] x′ z′} {g′ : Hom[ g ] w′ x′}
+    → {q : (f ∘ a) ∘ (b ∘ g) ≡ f ∘ g}
+    → (f′ ∘′ a′) ∘′ (b′ ∘′ g′) ≡[ q ] f′ ∘′ g′
+  cancel-inner′ = cast[] $ pullr[] _ cancell[]
+
+  cancel-inner[] : ∀ {f′ : Hom[ f ] x′ z′} {g′ : Hom[ g ] w′ x′}
+    → (f′ ∘′ a′) ∘′ (b′ ∘′ g′) ≡[ cancel-inner p ] f′ ∘′ g′
+  cancel-inner[] = cancel-inner′
+
   insertl′ : ∀ {f′ : Hom[ f ] z′ x′} {q : f ≡ a ∘ b ∘ f }
              → f′ ≡[ q ] a′ ∘′ b′ ∘′ f′
   insertl′ {f = f} {f′ = f′} {q = q} i = cancell′ {f′ = f′} {q = sym q} (~ i)
