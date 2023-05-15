@@ -1608,16 +1608,6 @@ funext : ∀ {a b} {A : Type a} {B : A → Type b}
 funext p i x = p x i
 ```
 
-<!--
-```agda
-funextp : ∀ {a b} {A : Type a} {B : A → I → Type b}
-         {f : (x : A) → B x i0} {g : (x : A) → B x i1}
-       → (∀ (x : A) → PathP (λ i → B x i) (f x) (g x))
-       → PathP (λ i → ∀ (x : A) → B x i) f g
-funextp p i x = p x i
-```
--->
-
 Furthermore, we know (since types are groupoids, and functions are
 functors) that, by analogy with 1-category theory, paths in a function
 type should behave like natural transformations (because they are arrows

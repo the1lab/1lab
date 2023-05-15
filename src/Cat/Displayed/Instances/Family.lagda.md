@@ -485,7 +485,7 @@ Gaunt→Family-gaunt-generic-object gaunt = gaunt-gobj where
     funext λ x → has-category .to-path $
       invertible→iso _ (cartesian→pointwise-iso cart x) Iso⁻¹
   gaunt-gobj .classify-unique′ {x′ = x′} {u = u} {f′ = f′} cart =
-    funextp λ x →
+    funextP λ x →
       IdsJ has-category
         (λ b h → PathP (λ i → Hom b (has-category .to-path h i)) (h .from) id)
         (is-set→cast-pathp {p = refl} (λ x' → Hom (u x) x') has-strict refl)
