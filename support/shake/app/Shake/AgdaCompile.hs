@@ -152,7 +152,7 @@ compileAgda stateVar = do
       resetState
 
       -- Force Cubical even if we've not got a --cubical header.
-      stPragmaOptions `modifyTCLens` \ o -> o { optCubical = Just CFull }
+      stPragmaOptions `modifyTCLens` \ o -> o { _optCubical = Just CFull }
       setCommandLineOptions' baseDir defaultOptions
 
       for_ target \source -> do
