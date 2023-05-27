@@ -114,6 +114,13 @@ module _ {x y} {f g : Hom x y} {px : /-Obj x} {py : /-Obj y}
       (g′ .commute)
       i
 
+Slice-path
+  : ∀ {x y} {f : Hom x y} {px : /-Obj x} {py : /-Obj y}
+  → {f′ g′ : Slice-hom f px py}
+  → (f′ .to ≡ g′ .to)
+  → f′ ≡ g′
+Slice-path = Slice-pathp refl
+
 module _ {x y} (f : Hom x y) (px : /-Obj x) (py : /-Obj y) where
   Slice-is-set : is-set (Slice-hom f px py)
   Slice-is-set = Iso→is-hlevel 2 eqv (hlevel 2)

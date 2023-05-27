@@ -1,10 +1,14 @@
 <!--
 ```agda
-open import Cat.Diagram.Product.Solver
-open import Cat.Displayed.Cartesian
-open import Cat.Diagram.Product
-open import Cat.Diagram.Product
 open import Cat.Displayed.Base
+open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Functor
+open import Cat.Displayed.Instances.Slice
+
+open import Cat.Diagram.Product.Solver
+open import Cat.Diagram.Product
+open import Cat.Diagram.Pullback
+open import Cat.Instances.Slice
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -107,29 +111,11 @@ We begin with the reverse direction, as it is slightly simpler to show.
   open is-cartesian
 ```
 
-We begin by proving some small lemmas, which show that postcomposing
-a projection with the inverse to $\langle \pi_1 , f' \rangle$ yields
-a projection.
-
-```agda
-  π₁∘inv : π₁ ∘ ⟨⟩-inv.inv ≡ π₁
-  π₁∘inv =
-    π₁ ∘ ⟨⟩-inv.inv               ≡⟨ pushl (sym π₁∘⟨⟩) ⟩
-    π₁ ∘ ⟨ π₁ , f′ ⟩ ∘ ⟨⟩-inv.inv ≡⟨ elimr ⟨⟩-inv.invl ⟩
-    π₁ ∎
-
-  f′∘inv : f′ ∘ ⟨⟩-inv.inv ≡ π₂
-  f′∘inv =
-    f′ ∘ ⟨⟩-inv.inv               ≡⟨ pushl (sym π₂∘⟨⟩) ⟩
-    π₂ ∘ ⟨ π₁ , f′ ⟩ ∘ ⟨⟩-inv.inv ≡⟨ elimr ⟨⟩-inv.invl ⟩
-    π₂                            ∎
-```
-
-With those lemmas out of the way, we proceed by constructing the
-universal map of $f'$. Let $m : \Psi \to \Gamma$, and
+Let $m : \Psi \to \Gamma$, and
 $h' : \Psi \times Z \to Y$ be a pair of morphisms; we need to construct
 some $m' : \Psi \times Z \to X$ that factorizes $h'$ through $f'$.
-We by constructing the map
+
+We begin by constructing the map
 $\langle m \circ \pi_1 , h' \rangle : \Psi \times Z \to \Gamma \times Y$,
 which we can then pre-compose with the inverse to $\langle \pi_1 , f' \rangle$
 to obtain a map $\Psi \times Z \to \Gamma \times X$. Finally, we can
@@ -147,8 +133,8 @@ $\langle \pi_1 , f' \rangle$ is, in fact, an inverse.
 
 ```agda
   cart .commutes m h′ =
-    f′ ∘ ⟨ m ∘ π₁ , π₂ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h′ ⟩ ⟩ ≡˘⟨ ap₂ _∘_ refl (⟨⟩-unique _ (pulll π₁∘inv ∙ π₁∘⟨⟩) refl) ⟩
-    f′ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h′ ⟩                   ≡⟨ pulll f′∘inv ⟩
+    f′ ∘ ⟨ m ∘ π₁ , π₂ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h′ ⟩ ⟩ ≡˘⟨ ap₂ _∘_ refl (⟨⟩-unique _ (pulll (π₁-inv ⟨⟩-inv) ∙ π₁∘⟨⟩) refl) ⟩
+    f′ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h′ ⟩                   ≡⟨ pulll (π₂-inv ⟨⟩-inv) ⟩
     π₂ ∘ ⟨ m ∘ π₁ , h′ ⟩                                ≡⟨ π₂∘⟨⟩ ⟩
     h′                                                  ∎
   cart .unique {m = m} {h′ = h′} m′ p =
@@ -268,7 +254,6 @@ a right inverse.
         id                                     ∎
 ```
 
-
 # Fibration Structure
 
 As suggested by it's name, the simple fibration is a fibration.
@@ -298,3 +283,84 @@ Simple-fibration .has-lift f Y .cartesian .unique {m = g} {h′ = h} h' p =
   π₂ ∘ ⟨ g ∘ π₁ , h' ⟩ ≡⟨ p ⟩
   h ∎
 ```
+
+# Comprehension Structure
+
+The simple fibration admits a fibred functor into the codomain fibration
+that maps an object $X$ over $\Gamma$ to the projection
+$\pi_1 : \Gamma \times X \to \Gamma$.
+
+```agda
+Simple→Slices
+  : Vertical-functor Simple (Slices B)
+Simple→Slices = func where
+  open Vertical-functor
+  open /-Obj
+  open Slice-hom
+
+  func : Vertical-functor _ _
+  func .F₀′ {x} x′ = cut {domain = x ⊗₀ x′} π₁
+  func .F₁′ {f = f} f′ = slice-hom ⟨ f ∘ π₁ , f′ ⟩ (sym π₁∘⟨⟩)
+  func .F-id′ =
+    Slice-path B $
+    ⟨ id ∘ π₁ , π₂ ⟩ ≡⟨ ap₂ ⟨_,_⟩ (idl _) refl ∙ ⟨⟩-η ⟩
+    id               ∎
+  func .F-∘′ {f = f} {g = g} {f′ = f′} {g′ = g′} =
+    Slice-path B $
+    ⟨ (f ∘ g) ∘ π₁ , f′ ∘ ⟨ g ∘ π₁ , g′ ⟩ ⟩ ≡⟨ products! B has-prods ⟩
+    ⟨ f ∘ π₁ , f′ ⟩ ∘ ⟨ g ∘ π₁ , g′ ⟩       ∎
+```
+
+Furthermore, this functor is fibred. The general sketch is that
+[cartesian morphisms in the codomain fibration are given by pullbacks][cart-pb],
+and cartesian maps in the simple fibration are given by inverses to
+$\langle \pi_1 , f' \rangle$, and we can use this inverse to construct the
+universal map for the pullback.
+
+[cart-pb]: Cat.Displayed.Instances.Slice.html#cartesian-maps
+
+```agda
+Simple→Slices-fibred
+  : is-vertical-fibred Simple→Slices
+Simple→Slices-fibred {f = f} f′ cart =
+  pullback→cartesian B pb
+  where
+    open is-pullback
+
+    ⟨⟩-inv : is-invertible ⟨ π₁ , f′ ⟩
+    ⟨⟩-inv = cartesian→⟨⟩-invertible cart
+
+    module ⟨⟩-inv = is-invertible ⟨⟩-inv
+
+    pb : is-pullback B π₁ f ⟨ f ∘ π₁ , f′ ⟩ π₁
+    pb .square = sym π₁∘⟨⟩
+    pb .universal {P′} {p₁'} {p₂'} p =
+      ⟨⟩-inv.inv ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩
+```
+
+<details>
+<summary>Showing that this map is universal involves a series of somewhat
+tedious calculations, so we omit them.
+</summary>
+
+```agda
+    pb .p₁∘universal {P} {p₁'} {p₂'} {p} =
+      π₁ ∘ ⟨⟩-inv.inv ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩ ≡⟨ pulll (π₁-inv ⟨⟩-inv) ⟩
+      π₁ ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩              ≡⟨ π₁∘⟨⟩ ⟩
+      p₁' ∎
+    pb .p₂∘universal {P} {p₁'} {p₂'} {p} =
+      ⟨ f ∘ π₁ , f′ ⟩ ∘ ⟨⟩-inv.inv ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩                ≡⟨ pulll (⟨⟩∘ _) ⟩
+      ⟨ (f ∘ π₁) ∘ ⟨⟩-inv.inv , f′ ∘ ⟨⟩-inv.inv ⟩ ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩ ≡⟨ ap₂ _∘_ (ap₂ ⟨_,_⟩ (pullr (π₁-inv ⟨⟩-inv)) (π₂-inv ⟨⟩-inv)) refl ⟩
+      ⟨ f ∘ π₁ , π₂ ⟩ ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩                             ≡⟨ products! B has-prods ⟩
+      ⟨ f ∘ p₁' , π₂ ∘ p₂' ⟩                                           ≡⟨ ap₂ ⟨_,_⟩ p refl ⟩
+      ⟨ π₁ ∘ p₂' , π₂ ∘ p₂' ⟩                                          ≡⟨ products! B has-prods ⟩
+      p₂' ∎
+    pb .unique {P} {p₁'} {p₂'} {p} {h'} q r =
+      h'                                                   ≡⟨ insertl ⟨⟩-inv.invr ⟩
+      ⟨⟩-inv.inv ∘ ⟨ π₁ , f′ ⟩ ∘ h'                        ≡⟨ ap₂ _∘_ refl (⟨⟩∘ h') ⟩
+      ⟨⟩-inv.inv ∘ ⟨ ⌜ π₁ ∘ h' ⌝ , f′ ∘ h' ⟩               ≡⟨ ap! q ⟩
+      ⟨⟩-inv.inv ∘ ⟨ p₁' , ⌜ f′ ∘ h' ⌝ ⟩                   ≡⟨ ap! (pushl (sym π₂∘⟨⟩)) ⟩
+      ⟨⟩-inv.inv ∘ ⟨ p₁' , π₂ ∘ ⌜ ⟨ f ∘ π₁ , f′ ⟩ ∘ h' ⌝ ⟩ ≡⟨ ap! r ⟩
+      ⟨⟩-inv.inv ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩                      ∎
+```
+</details>
