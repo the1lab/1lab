@@ -171,7 +171,60 @@ Fibre→slice-is-equiv = is-precat-iso→is-equivalence $
          }
 ```
 
+## Cartesian Maps
+
+A map $f' : x' \to y'$ over $f : x \to y$ in the codomain fibration is
+cartesian if and only if it forms a pullback square as below:
+
+~~~{.quiver}
+\begin{tikzcd}
+  {x'} && {y'} \\
+  \\
+  x && y
+  \arrow["f"', from=3-1, to=3-3]
+  \arrow["g"', from=1-1, to=3-1]
+  \arrow["{f'}", from=1-1, to=1-3]
+  \arrow["h", from=1-3, to=3-3]
+\end{tikzcd}
+~~~
+
+This follows by a series of relatively straightforward computations, so
+we do not comment too heavily on the proof.
+
+```agda
+cartesian→pullback
+  : ∀ {x y x′ y′} {f : Hom x y} {f′ : Slice-hom f x′ y′}
+  → is-cartesian Slices f f′
+  → is-pullback B (x′ .map) f (f′ .to) (y′ .map)
+cartesian→pullback {x} {y} {x′} {y′} {f} {f′} cart = pb where
+  pb : is-pullback B (x′ .map) f (f′ .to) (y′ .map)
+  pb .is-pullback.square = f′ .commute
+  pb .is-pullback.universal p =
+    cart .universal _ (slice-hom _ (idr _ ∙ p)) .to
+  pb .is-pullback.p₁∘universal =
+    sym (cart .universal _ _ .commute) ∙ idr _
+  pb .is-pullback.p₂∘universal =
+    ap Slice-hom.to (cart .commutes _ _)
+  pb .is-pullback.unique p q =
+    ap Slice-hom.to (cart .unique (slice-hom _ (idr _ ∙ sym p)) (Slice-pathp refl q))
+
+pullback→cartesian
+  : ∀ {x y x′ y′} {f : Hom x y} {f′ : Slice-hom f x′ y′}
+  → is-pullback B (x′ .map) f (f′ .to) (y′ .map)
+  → is-cartesian Slices f f′
+pullback→cartesian {x} {y} {x′} {y′} {f} {f′} pb = cart where
+  module pb = is-pullback pb
+
+  cart : is-cartesian Slices f f′
+  cart .universal m h′ .to = pb.universal (assoc _ _ _ ∙ h′ .commute)
+  cart .universal m h′ .commute = sym pb.p₁∘universal
+  cart .commutes m h′ = Slice-pathp refl pb.p₂∘universal
+  cart .unique m′ x = Slice-pathp refl $
+    pb.unique (sym (m′ .commute)) (ap to x)
+```
+
 ## As a fibration
+
 
 If (and only if) $\cB$ has all [pullbacks], then the self-indexing
 $\cB$ is a [Cartesian fibration]. This is almost by definition, and
@@ -194,11 +247,7 @@ Codomain-fibration pullbacks .has-lift f y′ = lift-f where
   lift-f .x′ = cut pb.p₁
   lift-f .lifting .to = pb.p₂
   lift-f .lifting .commute = pb.square
-  lift-f .cartesian .universal m h′ .to = pb.universal (assoc _ _ _ ∙ h′ .commute)
-  lift-f .cartesian .universal m h′ .commute = sym pb.p₁∘universal
-  lift-f .cartesian .commutes m h′ = Slice-pathp refl pb.p₂∘universal
-  lift-f .cartesian .unique m′ x = Slice-pathp refl $
-    Pullback.unique (pullbacks f (y′ .map)) (sym (m′ .commute)) (ap to x)
+  lift-f .cartesian = pullback→cartesian pb.has-is-pb
 ```
 
 [pullbacks]: Cat.Diagram.Pullback.html
