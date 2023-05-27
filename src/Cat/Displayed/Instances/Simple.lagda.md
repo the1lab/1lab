@@ -150,14 +150,13 @@ $f' : \Gamma \times X \to Y$ form a cartesian map in the simple fibration.
 We can construct an inverse to $\langle \pi_1 , f' \rangle$ by factorizing
 the map $\pi_2 : \Gamma \times Y \to Y$, as in the following diagram:
 
-~~~{.quiver}
+~~~{.quiver .tall-2}
 \begin{tikzcd}
   Y \\
   & X && Y \\
   \Gamma \\
   & \Gamma && \Delta \\
-  & \bullet
-  \arrow["{\exist! i}", dashed, from=1-1, to=2-2]
+  \arrow["{\exists ! i}", dashed, from=1-1, to=2-2]
   \arrow["{f'}", from=2-2, to=2-4]
   \arrow[lies over, from=2-2, to=4-2]
   \arrow[lies over, from=2-4, to=4-4]
@@ -198,15 +197,14 @@ involved. The key lemma is that
 $i \circ \langle \pi_1 , f' \rangle : \Gamma \times X \to X$ is equal
 to $\pi_2$. To see this, consider the following diagram
 
-~~~{.quiver}
+~~~{.quiver .tall-2}
 \begin{tikzcd}
   X \\
   & Y \\
   \Gamma && X && Y \\
   & \Gamma \\
   && \Gamma && \Delta \\
-  && \bullet
-  \arrow["{\exist! i}", dashed, from=2-2, to=3-3]
+  \arrow["{\exists ! i}", dashed, from=2-2, to=3-3]
   \arrow["{f'}", from=3-3, to=3-5]
   \arrow[lies over, from=3-3, to=5-3]
   \arrow[lies over, from=3-5, to=5-5]
@@ -218,7 +216,7 @@ to $\pi_2$. To see this, consider the following diagram
   \arrow["{f'}", curve={height=-18pt}, from=1-1, to=3-5]
   \arrow["id"', from=3-1, to=4-2]
   \arrow[lies over, from=1-1, to=3-1]
-  \arrow["{\langle \pi_1, f' \rangle}", from=1-1, to=2-2]
+  \arrow["{\langle \pi_1, f' \rangle}"{description}, from=1-1, to=2-2]
 \end{tikzcd}
 ~~~
 
