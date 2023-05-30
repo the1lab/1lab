@@ -253,7 +253,7 @@ Externalisation-fibration .Cartesian-fibration.has-lift u y = cart-lift where
       h′ .ihom                  ∎
 ```
 
-## Generic Objects
+## Generic objects
 
 The externalisation is always globally small. We shall use the object of
 objects $C_0$ as the base for our generic object, and the identity

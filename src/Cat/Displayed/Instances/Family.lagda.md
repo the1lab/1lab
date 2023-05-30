@@ -194,7 +194,7 @@ module _ {ℓ} (X : Set ℓ) where
     Hom-pathp-reflr C (elimr refl ∙ ap to (Univalent.iso→path→iso isc _))
 ```
 
-## Generic Objects
+## Generic objects
 
 The family fibration on $\cC$ has a generic object if and only if $\cC$
 is equivalent to a strict, small category. We begin by showing the
@@ -338,8 +338,7 @@ Strict→Family-generic-object ob-set = gobj where
     sym (idl _) ∙ p $ₚ x
 ```
 
-
-## Skeletal Generic Objects
+### Skeletal generic objects
 
 Let $\cC$ be a strict category, and recall that the set of objects of
 $\cC$ forms a generic object. This generic object is a [skeletal
@@ -419,7 +418,7 @@ Skeletal→Family-skeletal-generic-object skel {f′ = f′} cart =
       inc (invertible→iso (f′ x) (cartesian→pointwise-iso cart x) Iso⁻¹)
 ```
 
-## Gaunt Generic Objects
+### Gaunt generic objects
 
 Let $\cC$ be a strict category, and again recall that the set of objects
 of $\cC$ forms a generic object. This generic object is a [gaunt generic

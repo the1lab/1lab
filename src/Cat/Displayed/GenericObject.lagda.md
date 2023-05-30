@@ -29,8 +29,8 @@ open Functor
 
 # Generic Objects
 
-There are 2 perspectives one can take on generic objects. The first is
-a purely logical one: generic objects provide us a tool for giving
+There are 2 perspectives one can take on generic objects. The first is a
+purely logical one: generic objects provide us a tool for giving
 categorical models of higher order logics. The second perspective is
 that generic objects are a categorical way of describing the size of
 fibrations, and their ability to be internalized in the base category.
@@ -73,19 +73,20 @@ variables of type $\Gamma$. The classifying map in the base yields a
 substitution $\Gamma \to \mathrm{Prop}$, or in other words, a term of
 type $\mathrm{Prop}$ in context $\Gamma$.  Furthermore, the classifying
 map upstairs gives an implication between the original proposition in
-$\cE_{\Gamma}$ and a proof of the corresponding element of $\mathrm{Prop}$.
+$\cE_{\Gamma}$ and a proof of the corresponding element of
+$\mathrm{Prop}$.
 
-The size-based perspective on generic objects hinges on the
-fact that [the family fibration on $\cC$ has a generic object if and
-only if $\cC$ is equivalent to a small, strict category][fam-generic].
-Fibred structure in the family fibration corresponds to structure in
-$\cC$, so we can see the generic objects as a generalization of both
-a strictness and size condition.
+The size-based perspective on generic objects hinges on the fact that
+[the family fibration on $\cC$ has a generic object if and only if $\cC$
+is equivalent to a small, strict category][fam-generic].  Fibred
+structure in the family fibration corresponds to structure in $\cC$, so
+we can see the generic objects as a generalization of both a strictness
+and size condition.
 
 [fam-generic]: Cat.Displayed.Instances.Family.html#generic-objects
 
 With this size based perspective in mind, we say that a displayed
-category is globally small if it has a generic object.
+category is **globally small** if it has a generic object.
 
 ```agda
 record Globally-small : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
@@ -98,14 +99,31 @@ record Globally-small : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
   open Generic-object has-generic-ob public
 ```
 
+<!--
 ```agda
 module _ (fib : Cartesian-fibration E) where
   open Cartesian-fibration fib
+```
+-->
 
+We can also prove the aforementioned characterisation in terms of base
+changes: If there exists an object $t' \liesover t$, such that, for
+every $x' \liesover x$, there is a map $u : x \to t$ exhibiting $x'
+\cong u^*(t')$ --- then $t'$ is a generic object. The quantifier
+complexity of this sentence is a bit high, so please refer to the code:
+
+```agda
   vertical-iso→Generic-object
     : ∀ {t} (t′ : Ob[ t ])
-    → (∀ {x} (x′ : Ob[ x ]) → Σ[ u ∈ Hom x t ] (base-change E fib u .F₀ t′ ≅↓ x′))
+    → (∀ {x} (x′ : Ob[ x ])
+      → Σ[ u ∈ Hom x t ]
+         (base-change E fib u .F₀ t′ ≅↓ x′))
     → Generic-object t′
+
+```
+
+<!--
+```agda
   vertical-iso→Generic-object {t} t′ viso = gobj where
     open Generic-object
     open has-lift
@@ -129,14 +147,18 @@ module _ (fib : Cartesian-fibration E) where
       hom[] (viso.to′ x′ ∘′ ⌜ hom[ idl _ ] (viso.from′ x′ ∘′ m′) ⌝) ≡⟨ ap! (unique _ _ _ (whisker-r _ ∙ assoc[] ∙ unwhisker-l (ap (_∘ m) (idr _)) _ ∙ p)) ⟩
       hom[] (viso.to′ x′ ∘′ universal _ _ _ h′) ∎
 ```
-
+-->
 
 ## Skeletal Generic Objects
 
-We say that a generic object is **skeletal** if the classifying map in
-the base is unique. This condition is quite strong: for instance, the
-family fibration of a strict category $\cC$ has a skeletal generic object
-if and only if $\cC$ is [skeletal] (See [here] for a proof).
+We say that a generic object $t'$ is **skeletal** if the classifying map
+in the base category is unique: if $u : x \to t$ underlies a Cartesian
+map $x' \to_u t'$, then it must be the map coming from the generic object
+structure of $t'$.
+
+This condition is quite strong: for instance, the family fibration of a
+strict category $\cC$ has a skeletal generic object if and only if $\cC$
+is [skeletal] (See [here] for a proof).
 
 [skeletal]: Cat.Skeletal.html
 [here]: Cat.Displayed.Instances.Family.html#skeletal-generic-objects
@@ -150,7 +172,7 @@ is-skeletal-generic-object {t} {t′} gobj =
 ```
 
 ::: warning
-[@Jacobs:2001] refers to skeletal generic objects as generic objects.
+[@Jacobs:2001] refers to "skeletal generic objects" as simply "generic objects".
 :::
 
 <!--
@@ -164,14 +186,20 @@ is-skeletal-generic-object-is-prop = hlevel!
 
 ## Gaunt Generic Objects
 
-A generic object is **gaunt** if the classifying maps are unique.
-This condition is even stronger then skeletality: the family fibration
-of a strict category $\cC$ has a gaunt generic object if and only if
-$\cC$ is [gaunt] (See [here] for the proof).
+A generic object is **gaunt** if the classifying maps _themselves_ are
+unique. This condition expands on that of skeletality: if $u' : x' \to_u
+t'$ is a Cartesian map into the generic object $t'$, then not only must
+$u$ be generated by the structure we have equipped $t'$ with, but $u'$
+must, as well.
+
+We can also expand on what this means for the family fibration:
+$\rm{Fam}({\cC})$ has a gaunt generic object if and only if $\cC$ is itself
+[gaunt] (See [here] for the proof).
 
 [gaunt]: Cat.Gaunt.html
 [here]: Cat.Displayed.Instances.Family.html#gaunt-generic-objects
 
+<!--
 ```agda
 record is-gaunt-generic-object
   {t} {t′ : Ob[ t ]}
@@ -179,22 +207,30 @@ record is-gaunt-generic-object
   : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
   no-eta-equality
   open Generic-object gobj
-  field
-    classify-unique : ∀ {x} {x′ : Ob[ x ]} {u : Hom x t} {f′ : Hom[ u ] x′ t′}
-                    → is-cartesian E u f′ → u ≡ classify x′
-    classify-unique′ : ∀ {x} {x′ : Ob[ x ]} {u : Hom x t} {f′ : Hom[ u ] x′ t′}
-                    → (cart : is-cartesian E u f′)
-                    →  f′ ≡[ classify-unique cart ] classify′ x′
+```
+-->
 
+```agda
+  field
+    classify-unique : is-skeletal-generic-object gobj
+    classify-unique′
+      : ∀ {x} {x′ : Ob[ x ]} {u : Hom x t} {f′ : Hom[ u ] x′ t′}
+      → (cart : is-cartesian E u f′)
+      →  f′ ≡[ classify-unique cart ] classify′ x′
+```
+
+<!--
+```agda
 gaunt-generic-object→skeletal-generic-object
   : ∀ {t} {t′ : Ob[ t ]} {gobj : Generic-object t′}
   → is-gaunt-generic-object gobj → is-skeletal-generic-object gobj
 gaunt-generic-object→skeletal-generic-object =
   is-gaunt-generic-object.classify-unique
 ```
+-->
 
 ::: warning
-[@Jacobs:2001] refers to gaunt generic objects as strong generic objects.
+[@Jacobs:2001] refers to "gaunt generic objects" as "strong generic objects".
 :::
 
 <!--
