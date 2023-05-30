@@ -747,6 +747,8 @@ open import Cat.Displayed.Instances.Identity
 ```agda
 open import Cat.Displayed.InternalSum
 -- The fibred equivalent of sigma types and existential quantifiers
+open import Cat.Displayed.GenericObject
+-- Generic objects in fibrations.
 ```
 
 ## Internal Categories

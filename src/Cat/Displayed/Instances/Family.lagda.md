@@ -1,12 +1,20 @@
 <!--
 ```agda
+open import 1Lab.Path.IdentitySystem.Strict
+
+open import Cat.Displayed.Base
 open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Fibre
+open import Cat.Displayed.GenericObject
+
+open import Cat.Functor.Base
 open import Cat.Functor.Equivalence
+open import Cat.Gaunt
 open import Cat.Instances.Discrete
 open import Cat.Instances.Functor
-open import Cat.Displayed.Fibre
-open import Cat.Displayed.Base
-open import Cat.Functor.Base
+open import Cat.Skeletal
+open import Cat.Strict
 open import Cat.Univalent
 open import Cat.Prelude
 
@@ -184,4 +192,301 @@ module _ {ℓ} (X : Set ℓ) where
       (happly (sym (transport-refl (λ y → im .F.from y ∘ im .F.to y)) ∙ im .F.invr) x)
   Families-are-categories isc .to-path-over im = F.≅-pathp refl _ $ funextP λ a →
     Hom-pathp-reflr C (elimr refl ∙ ap to (Univalent.iso→path→iso isc _))
+```
+
+## Generic objects
+
+The family fibration on $\cC$ has a generic object if and only if $\cC$
+is equivalent to a strict, small category. We begin by showing the
+forward direction.
+
+```agda
+Family-generic-object→Strict-equiv
+  : Globally-small (Family {h})
+  → Σ[ Strict ∈ Precategory h h ]
+    (is-set (Precategory.Ob Strict) × Equivalence Strict C)
+Family-generic-object→Strict-equiv small =
+  Strict , hlevel! , eqv module Family-generic-object-strict where
+  open Globally-small small
+```
+
+The main idea of the proof is that we can replace the type of objects
+of $\cC$ with the base component of the generic object $U$, which is a
+small set. The displayed component of the generic object gives us a
+family of objects over $U$, which we use to define morphisms of our
+strict category.
+
+```agda
+  Strict : Precategory h h
+  Strict .Precategory.Ob = ∣ U ∣
+  Strict .Precategory.Hom x y = Hom (Gen x) (Gen y)
+  Strict .Precategory.Hom-set _ _ = Hom-set _ _
+  Strict .Precategory.id = id
+  Strict .Precategory._∘_ = _∘_
+  Strict .Precategory.idr = idr
+  Strict .Precategory.idl = idl
+  Strict .Precategory.assoc = assoc
+```
+
+We can use the family of objects over $U$ to construct an embedding from
+the strict category into $\cC$.
+
+```agda
+  To : Functor Strict C
+  To .F₀ = Gen
+  To .F₁ f = f
+  To .F-id = refl
+  To .F-∘ _ _ = refl
+
+  To-ff : is-fully-faithful To
+  To-ff = id-equiv
+```
+
+Moreover, this embedding is split essentially surjective on objects.
+To show this, note that we can construct a map from the objects of
+$\cC$ back into $U$ by classifying the constant family $_ \mapsto x$
+that lies over the set of endomorphisms of $x$. This yields a map
+$\cC(x,x) \to U$, to which we apply the identity morphism.
+
+```agda
+  reflect : Ob → ∣ U ∣
+  reflect x = classify {x = el! (Hom x x)} (λ _ → x) id
+```
+
+Next, we note that we can construct a morphism from any object $x : \cC$
+to it's it's reflection in $U$, as seen through the generic object.
+Furthermore, this morphism is cartesian, and thus invertible.
+
+```agda
+  η* : (x : Ob) → Hom x (Gen (reflect x))
+  η* x = classify′ (λ _ → x) id
+
+  η*-invertible : ∀ {x} → is-invertible (η* x)
+  η*-invertible {x} =
+    cartesian→pointwise-iso (classify-cartesian λ _ → x) id
+```
+
+This implies that the embedding from our strict category into $\cC$ is
+split eso, and thus an equivalence of categories.
+
+```
+  To-split-eso : is-split-eso To
+  To-split-eso y =
+    reflect y , (invertible→iso (η* y) η*-invertible Iso⁻¹)
+
+  eqv : Equivalence Strict C
+  eqv .Equivalence.To = To
+  eqv .Equivalence.To-equiv =
+    ff+split-eso→is-equivalence id-equiv To-split-eso
+```
+
+On to the backwards direction! The key insight here is that we can use
+the set of objects of the strict category as the base of our generic
+object, and the forward direction of the equivalence as the displayed
+portion.
+
+```agda
+Strict-equiv→Family-generic-object
+  : ∀ (Small : Precategory h h)
+  → is-strict Small
+  → Equivalence Small C
+  → Globally-small (Family {h})
+Strict-equiv→Family-generic-object Small ob-set eqv = gsmall where
+  module Small = Precategory Small
+  open Equivalence eqv
+  open Globally-small
+  open Generic-object
+
+  gsmall : Globally-small Family
+  gsmall .U = el Small.Ob ob-set
+  gsmall .Gen = To .F₀
+```
+
+Classifying objects in the family fibration is just a matter of chasing
+the equivalence around.
+
+```agda
+  gsmall .has-generic-ob .classify f x = From .F₀ (f x)
+  gsmall .has-generic-ob .classify′ f x = counit⁻¹ .η (f x)
+  gsmall .has-generic-ob .classify-cartesian f .universal m h′ x =
+    counit .η (f (m x)) ∘ h′ x
+  gsmall .has-generic-ob .classify-cartesian f .commutes m h′ =
+    funext λ _ → cancell (is-invertible.invr (counit-iso _))
+  gsmall .has-generic-ob .classify-cartesian f .unique {m = m} {h′ = h′} m′ p =
+    funext λ x →
+      m′ x                                                 ≡⟨ introl (is-invertible.invl (counit-iso _)) ⟩
+      (counit .η (f (m x)) ∘ counit⁻¹ .η (f (m x))) ∘ m′ x ≡⟨ pullr (p $ₚ x) ⟩
+      counit .η (f (m x)) ∘ h′ x ∎
+```
+
+If $\cC$ is itself strict, then the set of objects of $\cC$ forms a
+generic object.
+
+```agda
+Strict→Family-generic-object
+  : (ob-set : is-strict C)
+  → Generic-object (Family {o}) {el Ob ob-set} (λ x → x)
+Strict→Family-generic-object ob-set = gobj where
+  open Generic-object
+
+  gobj : Generic-object Family (λ x → x)
+  gobj .classify f = f
+  gobj .classify′ _ _ = id
+  gobj .classify-cartesian _ .universal _ h′ = h′
+  gobj .classify-cartesian _ .commutes _ h′ = funext λ _ → idl _
+  gobj .classify-cartesian _ .unique m′ p = funext λ x →
+    sym (idl _) ∙ p $ₚ x
+```
+
+### Skeletal generic objects
+
+Let $\cC$ be a strict category, and recall that the set of objects of
+$\cC$ forms a generic object. This generic object is a [skeletal
+generic object] if and only if $\cC$ is a [skeletal precategory].
+
+[skeletal generic object]: Cat.Displayed.GenericObject.html#skeletal-generic-objects
+[skeletal precategory]: Cat.Skeletal.html
+
+
+```agda
+Family-skeletal-generic-object→Skeletal
+  : (ob-set : is-strict C)
+  → is-skeletal-generic-object Family (Strict→Family-generic-object ob-set)
+  → is-skeletal C
+Family-skeletal-generic-object→Skeletal ob-set skel-gobj = skel where
+```
+
+We shall prove the forward direction first. Let $f : a \cong b$ be an
+isomorphism. From this, we can construct a pair of set maps
+$src, tgt : \top \to C_0$ that pick out the source and target
+of the isomorphism. We then construct a pair of cartesian morphisms
+$h_0, h_1 : \{ a \} \to Ob$ that lie over $src$ and $tgt$, resp.
+
+```agda
+  src : ∀ {a b} → a ≅ b → Ob
+  src {a = a} _ = a
+
+  tgt : ∀ {a b} → a ≅ b → Ob
+  tgt {b = b} _ = b
+
+  h₀ : ∀ {a b} → a ≅ b → Hom a a
+  h₀ _ = id
+
+  h₁ : ∀ {a b} → a ≅ b → Hom a b
+  h₁ f = f .to
+
+  h₀-cartesian
+    : ∀ {a b} → (f : a ≅ b)
+    → is-cartesian Family {a = el! (Lift _ ⊤)} (λ _ → src f) (λ _ → h₀ f)
+  h₀-cartesian f = pointwise-iso→cartesian λ _ → id-invertible
+
+  h₁-cartesian
+    : ∀ {a b} → (f : a ≅ b)
+    → is-cartesian Family {a = el! (Lift _ ⊤)} (λ _ → tgt f) (λ _ → h₁ f)
+  h₁-cartesian f = pointwise-iso→cartesian λ _ → iso→invertible f
+```
+
+Since $Ob$ is a skeletal generic object, any 2 cartesian morphisms into
+$Ob$ must have the same underlying map. Therefore, $src$ and $tgt$ must
+be equal, which in turn implies that $a = b$.
+
+```agda
+  skel : is-skeletal C
+  skel = path-from-has-iso→is-skeletal C λ f →
+    ∥-∥-rec (ob-set _ _)
+      (λ f →
+        skel-gobj (h₀-cartesian f) $ₚ _
+        ∙ sym (skel-gobj (h₁-cartesian f) $ₚ _))
+      f
+```
+
+The reverse direction is much simpler. Let $X_i$ be a family of objects,
+and $f'_i : X_i \to Ob$ be a cartesian map lying above some $u : I \to Ob$.
+cartesian map. Recall that every cartesian map in the family fibration
+is a pointwise isomorphism. However, $\cC$ is skeletal, so each of these
+isomorphisms must be an automorphism, yielding a path between the
+classifying map of the generic object and $u$.
+
+```agda
+Skeletal→Family-skeletal-generic-object
+  : (skel : is-skeletal C)
+  → is-skeletal-generic-object Family
+      (Strict→Family-generic-object (skeletal→strict C skel))
+Skeletal→Family-skeletal-generic-object skel {f′ = f′} cart =
+  funext λ x →
+    skel .to-path $
+      inc (invertible→iso (f′ x) (cartesian→pointwise-iso cart x) Iso⁻¹)
+```
+
+### Gaunt generic objects
+
+Let $\cC$ be a strict category, and again recall that the set of objects
+of $\cC$ forms a generic object. This generic object is a [gaunt generic
+object] if and only if $\cC$ is a [gaunt precategory].
+
+[gaunt generic object]: Cat.Displayed.GenericObject.html#gaunt-generic-objects
+[gaunt precategory]: Cat.Gaunt.html
+
+We begin with the forward direction. Recall that a category is gaunt
+if it is skeletal and all automorphisms are trivial. Gaunt generic
+objects are always skeletal, which in turn implies that $\cC$ is skeletal.
+
+```agda
+Family-gaunt-generic-object→Gaunt
+  : (ob-set : is-strict C)
+  → is-gaunt-generic-object Family (Strict→Family-generic-object ob-set)
+  → is-gaunt C
+Family-gaunt-generic-object→Gaunt ob-set gaunt-gobj =
+  skeletal+trivial-automorphisms→gaunt skel trivial-automorphism where
+  open is-gaunt-generic-object gaunt-gobj
+
+  skel : is-skeletal C
+  skel =
+    Family-skeletal-generic-object→Skeletal ob-set
+      (gaunt-generic-object→skeletal-generic-object Family gaunt-gobj)
+```
+
+To see that all automorphisms of $\cC$ are trivial, note that any automorphism
+$f : x \cong x$ induces a cartesian morphism $\{ x \} \to Ob$. Furthermore, this
+cartesian morphism must be unique, as $Ob$ is a gaunt generic object. However, $id$
+also yields a cartesian morphism $\{ x \} \to Ob$, so $f = id$.
+
+```agda
+  trivial-automorphism : ∀ {x} → (f : x ≅ x) → f ≡ id-iso
+  trivial-automorphism {x} f =
+    ≅-pathp refl refl (is-set→cast-pathp (λ x' → Hom x x') ob-set p) where
+
+   f-to-cart : is-cartesian Family {a = el! (Lift _ ⊤)} (λ _ → x) (λ _ → f .to)
+   f-to-cart = pointwise-iso→cartesian (λ _ → iso→invertible f)
+
+   p : PathP (λ i → Hom x (classify-unique f-to-cart i _)) (f .to) id
+   p i = classify-unique′ f-to-cart i _
+```
+
+To show the reverse direction, we can appeal to the fact that isomorphisms
+form an identity system to contract down cartesian maps to the identity
+morphism.
+
+```agda
+Gaunt→Family-gaunt-generic-object
+  : (gaunt : is-gaunt C)
+  → is-gaunt-generic-object Family
+      (Strict→Family-generic-object (is-gaunt.has-strict gaunt))
+Gaunt→Family-gaunt-generic-object gaunt = gaunt-gobj where
+  open is-gaunt gaunt hiding (from)
+  open is-gaunt-generic-object
+
+  Ob-set : Set o
+  Ob-set = el Ob has-strict
+
+  gaunt-gobj : is-gaunt-generic-object Family _
+  gaunt-gobj .classify-unique cart =
+    funext λ x → has-category .to-path $
+      invertible→iso _ (cartesian→pointwise-iso cart x) Iso⁻¹
+  gaunt-gobj .classify-unique′ {x′ = x′} {u = u} {f′ = f′} cart =
+    funextP λ x →
+      IdsJ has-category
+        (λ b h → PathP (λ i → Hom b (has-category .to-path h i)) (h .from) id)
+        (is-set→cast-pathp {p = refl} (λ x' → Hom (u x) x') has-strict refl)
+        (invertible→iso _ (cartesian→pointwise-iso cart x) Iso⁻¹)
 ```
