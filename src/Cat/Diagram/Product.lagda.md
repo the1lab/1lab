@@ -272,6 +272,20 @@ We also define a handful of common morphisms.
 
   extend-π₂ : ∀ {f : Hom a b} {g : Hom a c} {h} → ⟨ f , g ⟩ ≡ h → g ≡ π₂ ∘ h
   extend-π₂ p = sym π₂∘⟨⟩ ∙ ap (π₂ ∘_) p
+
+  π₁-inv
+    : ∀ {f : Hom (a ⊗₀ b) c} {g : Hom (a ⊗₀ b) d}
+    → (⟨⟩-inv : is-invertible ⟨ f , g ⟩)
+    → f ∘ is-invertible.inv ⟨⟩-inv ≡ π₁
+  π₁-inv {f = f} {g = g} ⟨⟩-inv =
+    pushl (sym π₁∘⟨⟩) ∙ elimr (is-invertible.invl ⟨⟩-inv)
+
+  π₂-inv
+    : ∀ {f : Hom (a ⊗₀ b) c} {g : Hom (a ⊗₀ b) d}
+    → (⟨⟩-inv : is-invertible ⟨ f , g ⟩)
+    → g ∘ is-invertible.inv ⟨⟩-inv ≡ π₂
+  π₂-inv {f = f} {g = g} ⟨⟩-inv =
+    pushl (sym π₂∘⟨⟩) ∙ elimr (is-invertible.invl ⟨⟩-inv)
 ```
 -->
 

@@ -56,19 +56,19 @@ CT-structure distinguishes as types.
 
 
 ```agda
-simple-ct : ∀ {s} → CT-Structure s → Displayed B (o ⊔ s) ℓ
-simple-ct ct .Displayed.Ob[_] Γ = Σ[ X ∈ Ob ] ∣ is-tp ct X ∣
-simple-ct ct .Displayed.Hom[_] {Γ} {Δ} u X Y = Hom (Γ ⊗₀ X .fst) (Y .fst)
-simple-ct ct .Displayed.Hom[_]-set {Γ} {Δ} u X Y = Hom-set (Γ ⊗₀ X .fst) (Y .fst)
-simple-ct ct .Displayed.id′ = π₂
-simple-ct ct .Displayed._∘′_ {f = u} {g = v} f g = f ∘ ⟨ v ∘ π₁ , g ⟩
-simple-ct ct .Displayed.idr′ {f = u} f =
+Simple-ct : ∀ {s} → CT-Structure s → Displayed B (o ⊔ s) ℓ
+Simple-ct ct .Displayed.Ob[_] Γ = Σ[ X ∈ Ob ] ∣ is-tp ct X ∣
+Simple-ct ct .Displayed.Hom[_] {Γ} {Δ} u X Y = Hom (Γ ⊗₀ X .fst) (Y .fst)
+Simple-ct ct .Displayed.Hom[_]-set {Γ} {Δ} u X Y = Hom-set (Γ ⊗₀ X .fst) (Y .fst)
+Simple-ct ct .Displayed.id′ = π₂
+Simple-ct ct .Displayed._∘′_ {f = u} {g = v} f g = f ∘ ⟨ v ∘ π₁ , g ⟩
+Simple-ct ct .Displayed.idr′ {f = u} f =
   f ∘ ⟨ (id ∘ π₁) , π₂ ⟩ ≡⟨ products! B has-prods ⟩
   f                      ∎
-simple-ct ct .Displayed.idl′ {f = u} f =
+Simple-ct ct .Displayed.idl′ {f = u} f =
   π₂ ∘ ⟨ u ∘ π₁ , f ⟩ ≡⟨ products! B has-prods ⟩
   f                   ∎
-simple-ct ct .Displayed.assoc′ {f = u} {g = v} {h = w} f g h =
+Simple-ct ct .Displayed.assoc′ {f = u} {g = v} {h = w} f g h =
   f ∘ ⟨ (v ∘ w) ∘ π₁ , g ∘ ⟨ w ∘ π₁ , h ⟩ ⟩ ≡⟨ products! B has-prods ⟩
   (f ∘ ⟨ v ∘ π₁ , g ⟩) ∘ ⟨ w ∘ π₁ , h ⟩     ∎
 ```
@@ -83,12 +83,12 @@ open Cartesian-fibration
 open Cartesian-lift
 open is-cartesian
 
-simple-ct-fibration : ∀ {s} (ct : CT-Structure s) → Cartesian-fibration (simple-ct ct)
-simple-ct-fibration ct .has-lift u Y .x′ = Y
-simple-ct-fibration ct .has-lift u Y .lifting = π₂
-simple-ct-fibration ct .has-lift u Y .cartesian .universal _ h = h
-simple-ct-fibration ct .has-lift u Y .cartesian .commutes g h = π₂∘⟨⟩
-simple-ct-fibration ct .has-lift u Y .cartesian .unique {m = g} {h′ = h} h' p =
+Simple-ct-fibration : ∀ {s} (ct : CT-Structure s) → Cartesian-fibration (Simple-ct ct)
+Simple-ct-fibration ct .has-lift u Y .x′ = Y
+Simple-ct-fibration ct .has-lift u Y .lifting = π₂
+Simple-ct-fibration ct .has-lift u Y .cartesian .universal _ h = h
+Simple-ct-fibration ct .has-lift u Y .cartesian .commutes g h = π₂∘⟨⟩
+Simple-ct-fibration ct .has-lift u Y .cartesian .unique {m = g} {h′ = h} h' p =
   h'                   ≡˘⟨ π₂∘⟨⟩ ⟩
   π₂ ∘ ⟨ g ∘ π₁ , h' ⟩ ≡⟨ p ⟩
   h ∎
@@ -100,13 +100,13 @@ There is an evident embedding of the simple fibration associated with a
 CT-structure into the simple fibration.
 
 ```agda
-simple-ct→simple
+Simple-ct→Simple
   : ∀ {s} → (ct : CT-Structure s)
-  → Displayed-functor (simple-ct ct) simple Id
-simple-ct→simple ct .Displayed-functor.F₀′ = fst
-simple-ct→simple ct .Displayed-functor.F₁′ f = f
-simple-ct→simple ct .Displayed-functor.F-id′ = refl
-simple-ct→simple ct .Displayed-functor.F-∘′ = refl
+  → Displayed-functor (Simple-ct ct) Simple Id
+Simple-ct→Simple ct .Displayed-functor.F₀′ = fst
+Simple-ct→Simple ct .Displayed-functor.F₁′ f = f
+Simple-ct→Simple ct .Displayed-functor.F-id′ = refl
+Simple-ct→Simple ct .Displayed-functor.F-∘′ = refl
 ```
 
 Furthermore, if $\cB$ is inhabited, then we can construct a
@@ -118,13 +118,13 @@ CT-Structure that considers every context a type.
 -->
 
 ```agda
-all-types : Ob → CT-Structure lzero
-all-types X .is-tp _ = el ⊤ (hlevel 1)
-all-types X .∃-tp = inc (X , tt)
+All-types : Ob → CT-Structure lzero
+All-types X .is-tp _ = el ⊤ (hlevel 1)
+All-types X .∃-tp = inc (X , tt)
 
-simple→simple-ct : ∀ {X} → Displayed-functor simple (simple-ct (all-types X)) Id
-simple→simple-ct .Displayed-functor.F₀′ X = X , tt
-simple→simple-ct .Displayed-functor.F₁′ f = f
-simple→simple-ct .Displayed-functor.F-id′ = refl
-simple→simple-ct .Displayed-functor.F-∘′ = refl
+Simple→Simple-ct : ∀ {X} → Displayed-functor Simple (Simple-ct (All-types X)) Id
+Simple→Simple-ct .Displayed-functor.F₀′ X = X , tt
+Simple→Simple-ct .Displayed-functor.F₁′ f = f
+Simple→Simple-ct .Displayed-functor.F-id′ = refl
+Simple→Simple-ct .Displayed-functor.F-∘′ = refl
 ```
