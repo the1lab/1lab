@@ -76,7 +76,7 @@ As the walking involution only has one object, it is trivially [skeletal].
 However, it is *not* univalent, since its only object has more internal
 automorphisms than it has loops. By definition, univalence for the
 walking involution would mean that there are two paths $\tt{tt} \equiv
-\tt{tt}$ in the booleans: but this contradicts the booleans being a set.
+\tt{tt}$ in the unit type: but this contradicts the unit type being a set.
 
 ```agda
 ∙⤮∙-not-univalent : ¬ is-category ∙⤮∙
