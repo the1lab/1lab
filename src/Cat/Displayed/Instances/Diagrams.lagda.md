@@ -52,11 +52,11 @@ liftings along a constant functor $\Delta_{x} : \cJ \to \cB$, we get a
 diagram in $\cE$ that lies entirely in the fibre $\cE_{x}$: a fibrewise
 diagram!
 
-we could concisely define the fibration of fibrewise diagrams
-as the base change of $\cE \to \cB$ along the functor $\cB \to [\cJ,
-\cB]$ that takes an object to the constant diagram on that object, but
-this runs into some annoying issues with transports. Therefore, we
-unfold the definition instead.
+We could concisely define the fibration of fibrewise diagrams as the
+base change of $\cE \to \cB$ along the functor $\cB \to [\cJ, \cB]$ that
+takes an object to the constant diagram on that object, but this runs
+into some annoying issues with transports. Therefore, we unfold the
+definition instead.
 
 [fibration of liftings]: Cat.Displayed.Instances.Lifting.html
 
