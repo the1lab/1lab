@@ -105,10 +105,12 @@ For convenience, we also introduce displayed analogues for equational chain reas
         → f′ ≡[ p ] g′ → g′ ≡[ q ] h′ → f′ ≡[ p ∙ q ] h′
   _∙[]_ {x = x} {y = y} p′ q′ = _∙P_ {B = λ f → Hom[ f ] x y} p′ q′
 
-  ∙[-]-syntax : ∀ {a b x y} {f g h : Hom a b} (p : f ≡ g) {q : g ≡ h}
+  _∙[_]_ : ∀ {a b x y} {f g h : Hom a b} {p : f ≡ g} {q : g ≡ h}
         → {f′ : Hom[ f ] x y} {g′ : Hom[ g ] x y} {h′ : Hom[ h ] x y}
-        → f′ ≡[ p ] g′ → g′ ≡[ q ] h′ → f′ ≡[ p ∙ q ] h′
-  ∙[-]-syntax {x = x} {y = y} p p′ q′ = _∙P_ {B = λ f → Hom[ f ] x y} p′ q′
+        → f′ ≡[ p ] g′ → (r : f ≡ h) → g′ ≡[ q ] h′ → f′ ≡[ r ] h′
+  _∙[_]_ {x = x} {y = y} {p = p} {q = q} {f′ = f′} {h′ = h′} p′ r q′ =
+    coe0→1 (λ i → f′ ≡[ Hom-set _ _ _ _ (p ∙ q) r i ] h′) $
+    _∙P_ {B = λ f → Hom[ f ] x y} p′ q′
 
   ≡[]⟨⟩-syntax : ∀ {a b x y} {f g h : Hom a b} {p : f ≡ g} {q : g ≡ h}
                → (f′ : Hom[ f ] x y) {g′ : Hom[ g ] x y} {h′ : Hom[ h ] x y}
@@ -117,18 +119,17 @@ For convenience, we also introduce displayed analogues for equational chain reas
 
   ≡[-]⟨⟩-syntax : ∀ {a b x y} {f g h : Hom a b} (p : f ≡ g) {q : g ≡ h}
                → (f′ : Hom[ f ] x y) {g′ : Hom[ g ] x y} {h′ : Hom[ h ] x y}
-               → g′ ≡[ q ] h′ → f′ ≡[ p ] g′ → f′ ≡[ p ∙ q ] h′
-  ≡[-]⟨⟩-syntax f′ p q′ p′ = p′ ∙[] q′
+               → g′ ≡[ q ] h′ → f′ ≡[ p ] g′ → (r : f ≡ h) → f′ ≡[ r ] h′
+  ≡[-]⟨⟩-syntax f′ p q′ p′ r = p′ ∙[ r ] q′
 
   _≡[]˘⟨_⟩_ : ∀ {a b x y} {f g h : Hom a b} {p : g ≡ f} {q : g ≡ h}
             → (f′ : Hom[ f ] x y) {g′ : Hom[ g ] x y} {h′ : Hom[ h ] x y}
             → g′ ≡[ p ] f′ → g′ ≡[ q ] h′ → f′ ≡[ sym p ∙ q ] h′
   f′ ≡[]˘⟨ p′ ⟩ q′ = symP p′ ∙[] q′
 
-  syntax ∙[-]-syntax p p′ q′ = p′ ∙[ p ] q′
   syntax ≡[]⟨⟩-syntax f′ q′ p′ = f′ ≡[]⟨ p′ ⟩ q′
-  syntax ≡[-]⟨⟩-syntax p f′ q′ p′ = f′ ≡[ p ]⟨ p′ ⟩ q′
+  syntax ≡[-]⟨⟩-syntax f′ q′ p′ r = f′ ≡[ r ]⟨ p′ ⟩ q′
 
-  infixr 30 _∙[]_ ∙[-]-syntax
+  infixr 30 _∙[]_ _∙[_]_
   infixr 2 ≡[]⟨⟩-syntax ≡[-]⟨⟩-syntax _≡[]˘⟨_⟩_
 ```
