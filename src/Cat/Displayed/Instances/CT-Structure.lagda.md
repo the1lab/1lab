@@ -140,7 +140,6 @@ CT-Structure that considers every context a type.
 All-types : ∥ Ob ∥ → CT-Structure lzero
 All-types X .is-tp _ = el ⊤ (hlevel 1)
 All-types X .∃-tp = ∥-∥-map (λ x → x , tt) X
--- inc (X , tt)
 
 Simple→Simple-ct : ∀ {X} → Vertical-functor Simple (Simple-ct (All-types X))
 Simple→Simple-ct .Vertical-functor.F₀′ X = X , tt
