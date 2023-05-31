@@ -1,5 +1,3 @@
-{-# OPTIONS -vtc.def.fun:10 #-}
-
 module Cat.Displayed.Solver where
 
 open import Data.List
@@ -12,6 +10,7 @@ open import Cat.Base
 open import Cat.Displayed.Base
 import Cat.Solver
 
+import Cat.Reasoning as Cr
 import Cat.Displayed.Reasoning as Dr
 
 module NbE {o′ ℓ′ o′′ ℓ′′}
@@ -20,7 +19,7 @@ module NbE {o′ ℓ′ o′′ ℓ′′}
            where
 
   open Displayed E
-  module B = Precategory B
+  module B = Cr B
   open Dr E
   open Cat.Solver.NbE
 
@@ -30,7 +29,7 @@ module NbE {o′ ℓ′ o′′ ℓ′′}
     a′ b′ c′ d′ e′ : Ob[ a ]
     f′ g′ h′ i′ j′ : Hom[ f ] a′ b′
 
-  data Expr[_] : ∀ {a b} (f : Expr B a b) (a′ : Ob[ a ]) (b′ : Ob[ b ]) → Type (o′ ⊔ ℓ′ ⊔ o′′ ⊔ ℓ′′) where
+  data Expr[_] : ∀ {a b} (f : Expr B a b) (a′ : Ob[ a ]) (b′ : Ob[ b ]) → Typeω where
     `id  : {a′ : Ob[ a ]} → Expr[ `id ] a′ a′
     _`∘_ : ∀ {a′ b′ c′} {f : Expr B b c} {g : Expr B a b}
            → Expr[ f ] b′ c′ → Expr[ g ] a′ b′ → Expr[ f `∘ g ] a′ c′
@@ -43,11 +42,11 @@ module NbE {o′ ℓ′ o′′ ℓ′′}
   unexpr[ d `∘ d₁ ] (e `∘ e₁) = unexpr[ d ] e ∘′ unexpr[ d₁ ] e₁
   unexpr[ _ ] (hom ↑)         = hom
 
-  data Stack[_] : ∀ {a b} → B.Hom a b → Ob[ a ] → Ob[ b ] → Type (o′ ⊔ ℓ′ ⊔ o′′ ⊔ ℓ′′) where
+  data Stack[_] : ∀ {a b} → B.Hom a b → Ob[ a ] → Ob[ b ] → Typeω where
     [] : ∀ {a} {a′ : Ob[ a ]} → Stack[ B.id ] a′ a′
     _∷_ : ∀ {a b c a′ b′ c′} {f : B.Hom b c} {g : B.Hom a b} → Hom[ f ] b′ c′ → Stack[ g ] a′ b′ → Stack[ f B.∘ g ] a′ c′
 
-  record Value[_] {a b} (f : B.Hom a b) (a′ : Ob[ a ]) (b′ : Ob[ b ]) : Type (o′ ⊔ ℓ′ ⊔ o′′ ⊔ ℓ′′) where
+  record Value[_] {a b} (f : B.Hom a b) (a′ : Ob[ a ]) (b′ : Ob[ b ]) : Typeω where
     constructor vsubst
     field
       {mor} : B.Hom a b
@@ -106,16 +105,14 @@ module NbE {o′ ℓ′ o′′ ℓ′′}
       → ⟦ eval′ e′ v ⟧ ≡[ eval-sound-k B e f ] unexpr[ e ] e′ ∘′ ⟦ v ⟧
     eval′-sound-k `id v = symP (idl′ ⟦ v ⟧)
     eval′-sound-k {e = f `∘ g} (f′ `∘ g′) v =
-      ⟦ eval′ f′ (eval′ g′ v) ⟧                 ≡[]⟨ eval′-sound-k f′ _ ⟩
-      unexpr[ f ] f′ ∘′ ⟦ eval′ g′ v ⟧          ≡[]⟨ (λ i → unexpr[ f ] f′ ∘′ eval′-sound-k g′ v i) ⟩
-      unexpr[ f ] f′ ∘′ unexpr[ g ] g′ ∘′ ⟦ v ⟧ ≡[]⟨ assoc′ _ _ _ ⟩
-      unexpr[ f `∘ g ] (f′ `∘ g′) ∘′ ⟦ v ⟧      ∎
+      eval′-sound-k f′ _
+      ∙[ eval-sound-k B (f `∘ g) _ ] ((λ i → unexpr[ f ] f′ ∘′ eval′-sound-k g′ v i))
+      ∙[ B.pushr (eval-sound-k B g _) ] assoc′ _ _ _
     eval′-sound-k (x ↑) v = vhom-sound _ (vcomp′ x v) ▷ vcomp′-sound x v
-    eval′-sound-k (`hom[_]_ {f = f} {g = g} p e′) v = cast[] $
-      ⟦ vhom[ adjust-k {f = f} {g = g} p ] (eval′ e′ v) ⟧ ≡[]⟨ vhom-sound (adjust-k {f = f} {g = g} p) (eval′ e′ v) ⟩
-      ⟦ eval′ e′ v ⟧                                      ≡[]⟨ eval′-sound-k e′ v ⟩
-      unexpr[ f ] e′ ∘′ ⟦ v ⟧                             ≡[]⟨ to-pathp (sym (whisker-l p)) ⟩
-      hom[ p ] (unexpr[ f ] e′) ∘′ ⟦ v ⟧                  ∎
+    eval′-sound-k (`hom[_]_ {f = f} {g = g} p e′) v =
+      vhom-sound (adjust-k {f = f} {g = g} p) (eval′ e′ v)
+      ∙[ eval-sound-k B g _ ] eval′-sound-k e′ v
+      ∙[ eval-sound-k B f _ ∙ ap₂ B._∘_ p refl ] to-pathp (sym (whisker-l p))
 
     eval′-sound
       : (e : Expr B a b) (e′ : Expr[ e ] a′ b′)
