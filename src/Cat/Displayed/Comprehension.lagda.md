@@ -296,6 +296,31 @@ projection.
     (idr′ _)
 ```
 
+From this, we can conclude that `δᶜ′`{.Agda} is cartesian. The
+factorisation of $h' : u \to \Gamma.x.x$ is given by $\pi \circ h'$. This
+is universal, as `δᶜ′`{.Agda} is given by the universal factorisation of
+$\pi$.
+
+```agda
+  δᶜ′-cartesian : ∀ {Γ x} → is-cartesian E (δᶜ {Γ} {x}) δᶜ′
+  δᶜ′-cartesian = cart where
+    open is-cartesian
+
+    cart : is-cartesian E _ _
+    cart .universal m h′ = hom[ cancell proj-dup ] (πᶜ′ ∘′ h′)
+    cart .commutes m h′ = cast[] $
+      unwrapr _
+      ∙[] has-lift.uniquep₂ πᶜ _ _ (ap₂ _∘_ refl (cancell proj-dup)) refl _ _
+        (cancell[] _ proj-dup′)
+        refl
+    cart .unique m′ p =
+      has-lift.uniquep₂ πᶜ _ refl refl _ _ _
+        refl
+        (unwrapr _
+        ∙[] ap₂ _∘′_ refl (ap₂ _∘′_ refl (sym p))
+        ∙[] λ i → πᶜ′ ∘′ cancell[] _  proj-dup′ {f′ = m′} i)
+```
+
 We can also characterize how duplication interacts with extension.
 
 ```agda
