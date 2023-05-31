@@ -964,27 +964,28 @@ face for the [square] at the start of this section.
 [square]: 1Lab.Path.html#composition
 
 ```agda
-_··_··_ : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
-        → w ≡ x → x ≡ y → y ≡ z
-        → w ≡ z
-(p ·· q ·· r) i = hcomp (∂ i) λ where
-  j (i = i0) → p (~ j)
-  j (i = i1) → r j
-  j (j = i0) → q i
+opaque
+  _··_··_ : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
+          → w ≡ x → x ≡ y → y ≡ z
+          → w ≡ z
+  (p ·· q ·· r) i = hcomp (∂ i) λ where
+    j (i = i0) → p (~ j)
+    j (i = i1) → r j
+    j (j = i0) → q i
 ```
 
 Since it will be useful later, we also give an explicit name for the
 filler of the double composition square.
 
 ```agda
-··-filler : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
-          → (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
-          → Square (sym p) q (p ·· q ·· r) r
-··-filler p q r i j =
-  hfill (∂ j) i λ where
-    k (j = i0) → p (~ k)
-    k (j = i1) → r k
-    k (k = i0) → q j
+  ··-filler : ∀ {ℓ} {A : Type ℓ} {w x y z : A}
+            → (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
+            → Square (sym p) q (p ·· q ·· r) r
+  ··-filler p q r i j =
+    hfill (∂ j) i λ where
+      k (j = i0) → p (~ k)
+      k (j = i1) → r k
+      k (k = i0) → q j
 ```
 
 We can define the ordinary, single composition by taking `p = refl`, as
@@ -1006,9 +1007,9 @@ be reflexivity. For definiteness, we chose the left face:
 ~~~
 
 ```agda
-_∙_ : ∀ {ℓ} {A : Type ℓ} {x y z : A}
-    → x ≡ y → y ≡ z → x ≡ z
-p ∙ q = refl ·· p ·· q
+  _∙_ : ∀ {ℓ} {A : Type ℓ} {x y z : A}
+      → x ≡ y → y ≡ z → x ≡ z
+  p ∙ q = refl ·· p ·· q
 ```
 
 The ordinary, “single composite” of $p$ and $q$ is the dashed face in
@@ -1017,10 +1018,10 @@ the diagram above.  Since we bound `··-filler`{.Agda} above, and defined
 filler to get one for the former:
 
 ```agda
-∙-filler : ∀ {ℓ} {A : Type ℓ} {x y z : A}
-         → (p : x ≡ y) (q : y ≡ z)
-         → Square refl p (p ∙ q) q
-∙-filler {x = x} {y} {z} p q = ··-filler refl p q
+  ∙-filler : ∀ {ℓ} {A : Type ℓ} {x y z : A}
+           → (p : x ≡ y) (q : y ≡ z)
+           → Square refl p (p ∙ q) q
+  ∙-filler {x = x} {y} {z} p q = ··-filler refl p q
 ```
 
 The single composition has a filler “in the other direction”, which
@@ -1030,15 +1031,15 @@ the definition of `_∙_`{.Agda}: we could just as well have gone with
 setting the _right_ face to `refl`{.Agda}.
 
 ```agda
-∙-filler' : ∀ {ℓ} {A : Type ℓ} {x y z : A}
-          → (p : x ≡ y) (q : y ≡ z)
-          → Square (sym p) q (p ∙ q) refl
-∙-filler' {x = x} {y} {z} p q j i =
-  hcomp (∂ i ∨ ~ j) λ where
-    k (i = i0) → p (~ j)
-    k (i = i1) → q k
-    k (j = i0) → q (i ∧ k)
-    k (k = i0) → p (i ∨ ~ j)
+  ∙-filler' : ∀ {ℓ} {A : Type ℓ} {x y z : A}
+            → (p : x ≡ y) (q : y ≡ z)
+            → Square (sym p) q (p ∙ q) refl
+  ∙-filler' {x = x} {y} {z} p q j i =
+    hcomp (∂ i ∨ ~ j) λ where
+      k (i = i0) → p (~ j)
+      k (i = i1) → q k
+      k (j = i0) → q (i ∧ k)
+      k (k = i0) → p (i ∨ ~ j)
 ```
 
 We can use the filler and heterogeneous composition to define composition of `PathP`{.Agda}s
@@ -1614,17 +1615,19 @@ type should behave like natural transformations (because they are arrows
 in a functor category). This is indeed the case:
 
 ```agda
-homotopy-natural : ∀ {a b} {A : Type a} {B : Type b}
-                 → {f g : A → B}
-                 → (H : (x : A) → f x ≡ g x)
-                 → {x y : A} (p : x ≡ y)
-                 → H x ∙ ap g p ≡ ap f p ∙ H y
-homotopy-natural {f = f} {g = g} H {x} {y} p = ∙-unique _ λ i j →
-  hcomp (~ i ∨ ∂ j) λ where
-    k (k = i0) → H x (j ∧ i)
-    k (i = i0) → f (p (j ∧ k))
-    k (j = i0) → f x
-    k (j = i1) → H (p k) i
+opaque
+  unfolding _∙_
+  homotopy-natural : ∀ {a b} {A : Type a} {B : Type b}
+                   → {f g : A → B}
+                   → (H : (x : A) → f x ≡ g x)
+                   → {x y : A} (p : x ≡ y)
+                   → H x ∙ ap g p ≡ ap f p ∙ H y
+  homotopy-natural {f = f} {g = g} H {x} {y} p = ∙-unique _ λ i j →
+    hcomp (~ i ∨ ∂ j) λ where
+      k (k = i0) → H x (j ∧ i)
+      k (i = i0) → f (p (j ∧ k))
+      k (j = i0) → f x
+      k (j = i1) → H (p k) i
 ```
 
 ## Paths
@@ -1637,27 +1640,27 @@ endpoints of a path is equivalent to a ternary composition:
 
 <!--
 ```agda
-double-composite
-  : ∀ {ℓ} {A : Type ℓ}
-  → {x y z w : A}
-  → (p : x ≡ y) (q : y ≡ z) (r : z ≡ w)
-  → p ·· q ·· r ≡ p ∙ q ∙ r
-double-composite p q r i j =
-  hcomp (i ∨ ∂ j) λ where
-    k (i = i1) → ∙-filler' p (q ∙ r) k j
-    k (j = i0) → p (~ k)
-    k (j = i1) → r (i ∨ k)
-    k (k = i0) → ∙-filler q r i j
+  double-composite
+    : ∀ {ℓ} {A : Type ℓ}
+    → {x y z w : A}
+    → (p : x ≡ y) (q : y ≡ z) (r : z ≡ w)
+    → p ·· q ·· r ≡ p ∙ q ∙ r
+  double-composite p q r i j =
+    hcomp (i ∨ ∂ j) λ where
+      k (i = i1) → ∙-filler' p (q ∙ r) k j
+      k (j = i0) → p (~ k)
+      k (j = i1) → r (i ∨ k)
+      k (k = i0) → ∙-filler q r i j
 ```
 -->
 
 ```agda
-transport-path : ∀ {ℓ} {A : Type ℓ} {x y x' y' : A}
-                → (p : x ≡ y)
-                → (left : x ≡ x') → (right : y ≡ y')
-                → transport (λ i → left i ≡ right i) p ≡ sym left ∙ p ∙ right
-transport-path {A = A} {x} {y} {x'} {y'} p left right =
-  lemma ∙ double-composite _ _ _
+  transport-path : ∀ {ℓ} {A : Type ℓ} {x y x' y' : A}
+                  → (p : x ≡ y)
+                  → (left : x ≡ x') → (right : y ≡ y')
+                  → transport (λ i → left i ≡ right i) p ≡ sym left ∙ p ∙ right
+  transport-path {A = A} {x} {y} {x'} {y'} p left right =
+    lemma ∙ double-composite _ _ _
 ```
 
 The argument is slightly indirect. First, we have a proof (omitted for
@@ -1672,16 +1675,16 @@ since Cubical Agda implements only composition **for `PathP`**, we need
 to adjust the path by a bunch of transports:
 
 ```agda
-  where
-    lemma : _ ≡ (sym left ·· p ·· right)
-    lemma i j = hcomp (~ i ∨ ∂ j) λ where
-      k (k = i0) → transp (λ j → A) i (p j)
-      k (i = i0) → hfill (∂ j) k λ where
-        k (k = i0) → transp (λ i → A) i0 (p j)
-        k (j = i0) → transp (λ j → A) k (left k)
-        k (j = i1) → transp (λ j → A) k (right k)
-      k (j = i0) → transp (λ j → A) (k ∨ i) (left k)
-      k (j = i1) → transp (λ j → A) (k ∨ i) (right k)
+    where
+      lemma : _ ≡ (sym left ·· p ·· right)
+      lemma i j = hcomp (~ i ∨ ∂ j) λ where
+        k (k = i0) → transp (λ j → A) i (p j)
+        k (i = i0) → hfill (∂ j) k λ where
+          k (k = i0) → transp (λ i → A) i0 (p j)
+          k (j = i0) → transp (λ j → A) k (left k)
+          k (j = i1) → transp (λ j → A) k (right k)
+        k (j = i0) → transp (λ j → A) (k ∨ i) (left k)
+        k (j = i1) → transp (λ j → A) (k ∨ i) (right k)
 ```
 
 Special cases can be proven about substitution. For example, if we hold
@@ -1784,8 +1787,11 @@ sym-∙-filler {A = A} {z = z} p q i j k =
     l (i = i1) → p (~ l ∧ j)
     l (l = i0) → invert-sides q (sym p) i j
 
-sym-∙ : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : y ≡ z) → sym (p ∙ q) ≡ sym q ∙ sym p
-sym-∙ p q i j = sym-∙-filler p q j i i1
+opaque
+  unfolding _∙_
+
+  sym-∙ : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : y ≡ z) → sym (p ∙ q) ≡ sym q ∙ sym p
+  sym-∙ p q i j = sym-∙-filler p q j i i1
 
 infixl 45 _$ₚ_
 

@@ -155,13 +155,15 @@ module _ where
 
 <!--
 ```agda
-  ∙-filler₂ : ∀ {ℓ} {A : Type ℓ} {x y z : A} (q : x ≡ y) (r : y ≡ z)
-            → Square q (q ∙ r) r refl
-  ∙-filler₂ q r k i = hcomp (k ∨ ∂ i) λ where
-    l (l = i0) → q (i ∨ k)
-    l (k = i1) → r (l ∧ i)
-    l (i = i0) → q k
-    l (i = i1) → r l
+  opaque
+    unfolding _∙_
+    ∙-filler₂ : ∀ {ℓ} {A : Type ℓ} {x y z : A} (q : x ≡ y) (r : y ≡ z)
+              → Square q (q ∙ r) r refl
+    ∙-filler₂ q r k i = hcomp (k ∨ ∂ i) λ where
+      l (l = i0) → q (i ∨ k)
+      l (k = i1) → r (l ∧ i)
+      l (i = i0) → q k
+      l (i = i1) → r l
 ```
 -->
 
@@ -169,19 +171,19 @@ The left and right identity laws follow directly from the two fillers
 for the composition operation.
 
 ```agda
-  ∙-id-r : (p : x ≡ y) → p ∙ refl ≡ p
-  ∙-id-r p = sym (∙-filler p refl)
+    ∙-id-r : (p : x ≡ y) → p ∙ refl ≡ p
+    ∙-id-r p = sym (∙-filler p refl)
 
-  ∙-id-l : (p : x ≡ y) → refl ∙ p ≡ p
-  ∙-id-l p = sym (∙-filler' refl p)
+    ∙-id-l : (p : x ≡ y) → refl ∙ p ≡ p
+    ∙-id-l p = sym (∙-filler' refl p)
 ```
 
 For associativity, we use both:
 
 ```agda
-  ∙-assoc : (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
-          → p ∙ (q ∙ r) ≡ (p ∙ q) ∙ r
-  ∙-assoc p q r i = ∙-filler p q i ∙ ∙-filler' q r (~ i)
+    ∙-assoc : (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
+            → p ∙ (q ∙ r) ≡ (p ∙ q) ∙ r
+    ∙-assoc p q r i = ∙-filler p q i ∙ ∙-filler' q r (~ i)
 ```
 
 For cancellation, we need to sketch an open cube where the missing
@@ -189,12 +191,12 @@ square expresses the equation we're looking for. Thankfully, we only
 have to do this once!
 
 ```agda
-  ∙-inv-r : ∀ {x y : A} (p : x ≡ y) → p ∙ sym p ≡ refl
-  ∙-inv-r {x = x} p i j = hcomp (∂ j ∨ i) λ where
-    k (k = i0) → p (j ∧ ~ i)
-    k (i = i1) → x
-    k (j = i0) → x
-    k (j = i1) → p (~ k ∧ ~ i)
+    ∙-inv-r : ∀ {x y : A} (p : x ≡ y) → p ∙ sym p ≡ refl
+    ∙-inv-r {x = x} p i j = hcomp (∂ j ∨ i) λ where
+      k (k = i0) → p (j ∧ ~ i)
+      k (i = i1) → x
+      k (j = i0) → x
+      k (j = i1) → p (~ k ∧ ~ i)
 ```
 
 For the other direction, we use the fact that `p` is definitionally
@@ -202,8 +204,8 @@ equal to `sym (sym p)`. In that case, we show that `sym p ∙ sym (sym p)
 ≡ refl` - which computes to the thing we want!
 
 ```agda
-  ∙-inv-l : (p : x ≡ y) → sym p ∙ p ≡ refl
-  ∙-inv-l p = ∙-inv-r (sym p)
+    ∙-inv-l : (p : x ≡ y) → sym p ∙ p ≡ refl
+    ∙-inv-l p = ∙-inv-r (sym p)
 ```
 
 In addition to the groupoid identities for paths in a type, it has been
