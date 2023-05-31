@@ -751,6 +751,17 @@ open import Cat.Displayed.GenericObject
 -- Generic objects in fibrations.
 ```
 
+### Logical Structure of Fibrations
+
+Fibrations serve as an excellent foundation for exploring various
+logical and type-theoretic phenomena.
+
+```agda
+open import Cat.Displayed.Comprehension
+-- A categorical model of context extension.
+```
+
+
 ## Internal Categories
 
 The theory of internal categories. Internal category theory generalizes
