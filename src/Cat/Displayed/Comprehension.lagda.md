@@ -89,7 +89,7 @@ map $t : X \to_{\sigma} Y$ over $\sigma$ to a map $\sigma.t$ in $\cB$,
 such that the following square commutes:
 
 [fibration]: Cat.Displayed.Cartesian.html
-[codomain fibration]: Cat.Displayed.Instances.Slices.html
+[codomain fibration]: Cat.Displayed.Instances.Slice.html
 
 ~~~{.quiver}
 \begin{tikzcd}
