@@ -326,6 +326,46 @@ private variable
 ```
 -->
 
+<!--
+```agda
+wrap
+  : ∀ {f g : Hom x y} {f′ : Hom[ f ] x′ y′}
+  → (p : f ≡ g)
+  → f′ ≡[ p ] hom[ p ] f′
+wrap p = to-pathp refl
+
+wrapl
+  : ∀ {f h : Hom y z} {g : Hom x y} {f′ : Hom[ f ] y′ z′} {g′ : Hom[ g ] x′ y′}
+  → (p : f ≡ h)
+  → f′ ∘′ g′ ≡[ ap (_∘ g) p ] hom[ p ] f′ ∘′ g′
+wrapl p = to-pathp (unwhisker-l (ap (_∘ _) p) p)
+
+unwrap
+  : ∀ {f g : Hom x y} {f′ : Hom[ f ] x′ y′}
+  → (p : f ≡ g)
+  → hom[ p ] f′ ≡[ sym p ] f′
+unwrap p = to-pathp⁻ refl
+
+wrapr
+  : ∀ {f : Hom y z} {g h : Hom x y} {f′ : Hom[ f ] y′ z′} {g′ : Hom[ g ] x′ y′}
+  → (p : g ≡ h)
+  → f′ ∘′ g′ ≡[ ap (f ∘_) p ] f′ ∘′ hom[ p ] g′
+wrapr p = to-pathp (unwhisker-r (ap (_ ∘_) p) p)
+
+unwrapl
+  : ∀ {f h : Hom y z} {g : Hom x y} {f′ : Hom[ f ] y′ z′} {g′ : Hom[ g ] x′ y′}
+  → (p : f ≡ h)
+  → hom[ p ] f′ ∘′ g′ ≡[ ap (_∘ g) (sym p) ] f′ ∘′ g′
+unwrapl p = to-pathp⁻ (whisker-l p)
+
+unwrapr
+  : ∀ {f : Hom y z} {g h : Hom x y} {f′ : Hom[ f ] y′ z′} {g′ : Hom[ g ] x′ y′}
+  → (p : g ≡ h)
+  → f′ ∘′ hom[ p ]  g′ ≡[ ap (f ∘_) (sym p) ] f′ ∘′ g′
+unwrapr p = to-pathp⁻ (whisker-r p)
+```
+-->
+
 ## Shiftings
 
 When working with displayed categories, we prefer to write all of our laws
@@ -549,6 +589,10 @@ module _ {a′ : Hom[ a ] y′ x′} {b′ : Hom[ b ] x′ y′}
     hom[ q ] ((f′ ∘′ a′) ∘′ b′)             ≡˘⟨ assoc[] ⟩
     hom[ assoc f a b ∙ q ] (f′ ∘′ a′ ∘′ b′) ≡⟨ shiftl _ (elimr′ p p′) ⟩
     f′ ∎
+
+  cancelr[] : ∀ {f′ : Hom[ f ] x′ z′}
+             → (f′ ∘′ a′) ∘′ b′ ≡[ cancelr p ] f′
+  cancelr[] = cancelr′
 
   cancel-inner′ : ∀ {f′ : Hom[ f ] x′ z′} {g′ : Hom[ g ] w′ x′}
     → {q : (f ∘ a) ∘ (b ∘ g) ≡ f ∘ g}
