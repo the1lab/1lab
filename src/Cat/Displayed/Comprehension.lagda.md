@@ -70,7 +70,9 @@ $\sigma. t : \Gamma.A \to \Delta.B$ such that the following square commutes.
 ~~~
 
 Furthermore, when the term $t$ is simply a variable from $\Gamma$, this
-square is a pullback square!
+square is a [pullback] square!
+
+[pullback]: Cat.Diagram.Pullback.html
 
 Now that we've got a general idea of how context extension ought to
 behave, we can begin to categorify. Our first step is to replace the
@@ -156,6 +158,9 @@ Furthermore, if $y$ is an object over $\Gamma$, then we have a map over
 ```agda
   πᶜ′ : ∀ {Γ} {x y : Ob[ Γ ]} → Hom[ πᶜ ] (weaken x y) y
   πᶜ′ = has-lift.lifting πᶜ _
+
+  πᶜ′-cartesian : ∀ {Γ x y} → is-cartesian E πᶜ (πᶜ′ {Γ} {x} {y})
+  πᶜ′-cartesian = has-lift.cartesian πᶜ _
 ```
 
 Next, we define extension of substitutions, and show that they commute
@@ -179,6 +184,11 @@ Crucially, when $f$ is cartesian, then the above square is a pullback.
     → is-cartesian E σ f
     → is-pullback B πᶜ σ (σ ⨾ˢ f) πᶜ
   sub-pullback {f = f} cart = cartesian→pullback B (F-cartesian f cart)
+
+  module sub-pullback
+    {Γ Δ x y} {σ : Hom Γ Δ} {f : Hom[ σ ] x y}
+    (cart : is-cartesian E σ f)
+    = is-pullback (sub-pullback cart)
 ```
 
 We also obtain a map over $\sigma.f$ between the weakenings of $x$ and
@@ -214,19 +224,118 @@ Furthermore, extending a substitution with a pair of composites is the
 same as composing the two extensions.
 
 ```agda
-  sub-comp
+  sub-∘
     : ∀ {Γ Δ Ψ x y z}
     → {σ : Hom Δ Ψ} {δ : Hom Γ Δ} {f : Hom[ σ ] y z} {g : Hom[ δ ] x y}
     → (σ ∘ δ) ⨾ˢ (f ∘′ g) ≡ (σ ⨾ˢ f) ∘ (δ ⨾ˢ g)
-  sub-comp {σ = σ} {δ = δ} {f = f} {g = g} = ap to F-∘′
+  sub-∘ {σ = σ} {δ = δ} {f = f} {g = g} = ap to F-∘′
 
-  sub-comp′
+  sub-∘′
     : ∀ {Γ Δ Ψ x y z}
     → {σ : Hom Δ Ψ} {δ : Hom Γ Δ} {f : Hom[ σ ] y z} {g : Hom[ δ ] x y}
-    → ((σ ∘ δ) ⨾ˢ′ (f ∘′ g)) ≡[ sub-comp ] (σ ⨾ˢ′ f) ∘′ (δ ⨾ˢ′ g)
-  sub-comp′ = symP $ has-lift.uniquep πᶜ _ _ (symP sub-comp) (sub-proj _) _ $
+    → ((σ ∘ δ) ⨾ˢ′ (f ∘′ g)) ≡[ sub-∘ ] (σ ⨾ˢ′ f) ∘′ (δ ⨾ˢ′ g)
+  sub-∘′ = symP $ has-lift.uniquep πᶜ _ _ (symP sub-∘) (sub-proj _) _ $
     pulll[] _ (sub-proj′ _)
     ∙[] extendr[] _ (sub-proj′ _)
+```
+
+We can also define the substitution $\Gamma.A \to \Gamma.A.A$ that
+duplicates the variable $A$ via the following pullback square.
+
+~~~{.quiver}
+\begin{tikzcd}
+  {\Gamma.A} \\
+  & {\Gamma.A.A} && {\Gamma.A} \\
+  \\
+  & {\Gamma.A} && \Gamma
+  \arrow["\pi", from=4-2, to=4-4]
+  \arrow["\pi"', from=2-2, to=4-2]
+  \arrow["\pi", from=2-2, to=2-4]
+  \arrow["\pi"', from=2-4, to=4-4]
+  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=2-2, to=4-4]
+  \arrow["id", curve={height=-12pt}, from=1-1, to=2-4]
+  \arrow["id", curve={height=12pt}, from=1-1, to=4-2]
+  \arrow["{\exists! \delta}", dashed, from=1-1, to=2-2]
+\end{tikzcd}
+~~~
+
+```agda
+  δᶜ : ∀ {Γ x} → Hom (Γ ⨾ x) (Γ ⨾ x ⨾ weaken x x)
+  δᶜ = sub-pullback.universal (has-lift.cartesian πᶜ _) {p₁' = id} {p₂' = id} refl
+```
+
+This lets us easily show that applying projection after duplication is
+the identity.
+
+```agda
+  proj-dup : ∀ {Γ x} → πᶜ ∘ δᶜ {Γ} {x} ≡ id
+  proj-dup = sub-pullback.p₁∘universal (has-lift.cartesian πᶜ _)
+
+  extend-proj-dup : ∀ {Γ x} → (πᶜ ⨾ˢ πᶜ′) ∘ δᶜ {Γ} {x} ≡ id
+  extend-proj-dup = sub-pullback.p₂∘universal (has-lift.cartesian πᶜ _)
+```
+
+We also obtain a substitution upstairs from the weakening of $x$ to the iterated
+weakening of $x$.
+
+```
+  δᶜ′ : ∀ {Γ} {x : Ob[ Γ ]} → Hom[ δᶜ ] (weaken x x) (weaken (weaken x x) (weaken x x))
+  δᶜ′ = has-lift.universal′ πᶜ (weaken _ _) proj-dup id′
+```
+
+We also obtain similar lemmas detailing how duplication upstairs interacts with
+projection.
+
+```agda
+  proj-dup′ : ∀ {Γ x} → πᶜ′ ∘′ δᶜ′ {Γ} {x} ≡[ proj-dup ] id′
+  proj-dup′ = has-lift.commutesp πᶜ _ proj-dup _
+
+  extend-proj-dup′ : ∀ {Γ x} → (πᶜ ⨾ˢ′ πᶜ′) ∘′ δᶜ′ {Γ} {x} ≡[ extend-proj-dup ] id′
+  extend-proj-dup′ = has-lift.uniquep₂ πᶜ _ _ _ _ _ _
+    (pulll[] _ (sub-proj′ _) ∙[] cancelr[] _ proj-dup′)
+    (idr′ _)
+```
+
+We can also characterize how duplication interacts with extension.
+
+```agda
+  dup-extend
+    : ∀ {Γ Δ x y} {σ : Hom Γ Δ} {f : Hom[ σ ] x y}
+    → δᶜ ∘ (σ ⨾ˢ f) ≡ (σ ⨾ˢ f ⨾ˢ (σ ⨾ˢ′ f)) ∘ δᶜ
+  dup-extend {σ = σ} {f = f} =
+    sub-pullback.unique₂ (has-lift.cartesian πᶜ _)
+      {p = refl}
+      (cancell proj-dup )
+      (cancell extend-proj-dup)
+      (pulll (sub-proj _)
+       ∙ cancelr proj-dup)
+      (pulll (sym sub-∘ ∙ ap₂ _⨾ˢ_ (sub-proj _) (sub-proj′ _) ∙ sub-∘)
+       ∙ cancelr extend-proj-dup)
+
+  dup-extend′
+    : ∀ {Γ Δ x y} {σ : Hom Γ Δ} {f : Hom[ σ ] x y}
+    → δᶜ′ ∘′ (σ ⨾ˢ′ f) ≡[ dup-extend ] (σ ⨾ˢ f ⨾ˢ′ (σ ⨾ˢ′ f)) ∘′ δᶜ′
+  dup-extend′ {σ = σ} {f = f} =
+    has-lift.uniquep₂ πᶜ _ _ _ _ _ _
+      (cancell[] _ proj-dup′)
+      (pulll[] _ (sub-proj′ (σ ⨾ˢ′ f)) ∙[] cancelr[] _ proj-dup′)
+```
+
+```agda
+  extend-dup² : ∀ {Γ x} → (δᶜ {Γ} {x} ⨾ˢ δᶜ′) ∘ δᶜ ≡ δᶜ ∘ δᶜ
+  extend-dup² =
+    sub-pullback.unique₂ (has-lift.cartesian πᶜ _)
+      {p = refl}
+      (pulll (sub-proj _) ∙ cancelr proj-dup)
+      (cancell (sym sub-∘ ∙ ap₂ _⨾ˢ_ proj-dup proj-dup′ ∙ sub-id))
+      (cancell proj-dup)
+      (cancell extend-proj-dup)
+
+  extend-dup²′ : ∀ {Γ x} → (δᶜ {Γ} {x} ⨾ˢ′ δᶜ′) ∘′ δᶜ′ ≡[ extend-dup² ] δᶜ′ ∘′ δᶜ′
+  extend-dup²′ = has-lift.uniquep₂ πᶜ
+    _ _ _ _ _ _
+    (pulll[] _ (sub-proj′ δᶜ′) ∙[] cancelr[] _ proj-dup′)
+    (cancell[] _ proj-dup′)
 ```
 
 Note that we can extend the operation of context extension to a functor
@@ -252,4 +361,164 @@ of is a projection $\Gamma.A \to \Gamma$.
   proj .η (Γ , x) = πᶜ
   proj .is-natural (Γ , x) (Δ , y) (total-hom σ f) =
     sub-proj f
+```
+
+## Comprehension structures as Comonads
+
+Comprehension structures on fibrations $\cE$ induce [comonads] on the
+[total category] of $\cE$. These comonads are particularly nice: all of
+the counits are cartesian morphisms, and every square of the following
+form is a pullback square, provided that $f$ is cartesian.
+
+[comonads]: Cat.Diagram.Comonad.html
+[total category]: Cat.Displayed.Total.html
+
+~~~{.quiver}
+\begin{tikzcd}
+  {W (\Gamma, X)} && {W (\Delta, Y)} \\
+  \\
+  {(\Gamma, X)} && {(\Delta, Y)}
+  \arrow["{(\sigma, f)}"', from=3-1, to=3-3]
+  \arrow["\varepsilon"', from=1-1, to=3-1]
+  \arrow["\varepsilon", from=1-3, to=3-3]
+  \arrow["{W (\sigma, f)}", from=1-1, to=1-3]
+  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=3-3]
+\end{tikzcd}
+~~~
+
+We call such comonads **comprehension comonads**.
+
+```agda
+record Comprehension-comonad : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
+  no-eta-equality
+  field
+    comonad : Comonad (∫ E)
+
+  open Comonad comonad public
+
+  field
+    counit-cartesian
+      : ∀ {Γ x} → is-cartesian E (counit.ε (Γ , x) .hom) (counit.ε (Γ , x) .preserves)
+    cartesian-pullback
+      : (∀ {Γ Δ x y} {σ : Hom Γ Δ} {f : Hom[ σ ] x y}
+      → is-cartesian E σ f
+      → is-pullback (∫ E)
+          (counit.ε (Γ , x)) (total-hom σ f)
+          (W₁ (total-hom σ f)) (counit.ε (Δ , y)))
+```
+
+As promised, comprehension structures on $\cE$ yield comprehension
+comonads.
+
+```agda
+Comprehension→comonad
+  : Cartesian-fibration E
+  → Comprehension
+  → Comprehension-comonad
+Comprehension→comonad fib P = comp-comonad where
+  open Comprehension fib P
+  open Comonad
+```
+
+We begin by constructing the endofunctor $\int E \to \int E$, which maps
+a pair $\Gamma, X$ to the extension $\Gamma.X$, along with the weakening
+of $X$.
+
+```agda
+  comonad : Comonad (∫ E)
+  comonad .W .F₀ (Γ , x) =
+    Γ ⨾ x , weaken x x
+  comonad .W .F₁ (total-hom σ f) =
+    total-hom (σ ⨾ˢ f) (σ ⨾ˢ′ f)
+  comonad .W .F-id =
+    total-hom-path E sub-id sub-id′
+  comonad .W .F-∘ (total-hom σ f) (total-hom δ g) =
+    total-hom-path E sub-∘ sub-∘′
+```
+
+The counit is given by the projection substitution, and comultiplication
+is given by duplication.
+
+```agda
+  comonad .counit .η (Γ , x) =
+    total-hom πᶜ πᶜ′
+  comonad .counit .is-natural (Γ , x) (Δ , g) (total-hom σ f) =
+    total-hom-path E (sub-proj f) (sub-proj′ f)
+  comonad .comult .η (Γ , x) =
+    total-hom δᶜ δᶜ′
+  comonad .comult .is-natural (Γ , x) (Δ , g) (total-hom σ f) =
+    total-hom-path E dup-extend dup-extend′
+  comonad .left-ident =
+    total-hom-path E extend-proj-dup extend-proj-dup′
+  comonad .right-ident =
+    total-hom-path E proj-dup proj-dup′
+  comonad .comult-assoc =
+    total-hom-path E extend-dup² extend-dup²′
+```
+
+To see that this comonad is a comprehension comonad, note that the
+projection substitution is cartesian. Furthermore, we can construct
+a pullback square in the total category of $\cE$ from one in the base,
+provided that two opposing sides are cartesian, which the projection
+morphism most certainly is!
+
+```agda
+  comp-comonad : Comprehension-comonad
+  comp-comonad .Comprehension-comonad.comonad = comonad
+  comp-comonad .Comprehension-comonad.counit-cartesian = πᶜ′-cartesian
+  comp-comonad .Comprehension-comonad.cartesian-pullback cart =
+    cartesian+pullback→total-pullback E
+      πᶜ′-cartesian πᶜ′-cartesian
+      (sub-pullback cart)
+      (cast[] (symP (sub-proj′ _)))
+```
+
+We also show that comprehension comonads yield comprehension structures.
+
+```agda
+Comonad→comprehension
+  : Cartesian-fibration E
+  → Comprehension-comonad
+  → Comprehension
+```
+
+We begin by constructing a [vertical functor] $\cE \to B^{\to}$ that maps
+an $x$ lying over $\Gamma$ to the base component of the counit
+$\varepsilon : W(\Gamma, X) \to (\Gamma, X)$.
+
+[vertical functor]: Cat.Displayed.Functor.html
+
+```agda
+Comonad→comprehension fib comp-comonad = comprehend where
+  open Comprehension-comonad comp-comonad
+  open Vertical-functor
+  open is-pullback
+
+  vert : Vertical-functor E (Slices B)
+  vert .F₀′ {Γ} x = cut (counit.ε (Γ , x) .hom)
+  vert .F₁′ {f = σ} f =
+    slice-hom (W₁ (total-hom σ f) .hom)
+      (sym (ap hom (counit.is-natural _ _ _)))
+  vert .F-id′ = Slice-path B (ap hom W-id)
+  vert .F-∘′ = Slice-path B (ap hom (W-∘ _ _))
+```
+
+To see that this functor is fibred, recall that pullbacks in the
+codomain fibration are given by pullbacks. Furthermore, if we
+have a pullback square in the total category of $\cE$ where two
+opposing sides are cartesian, then we have a corresponding pullback
+square in $\cB$. As the comonad is a comprehension comonad, counit is
+cartesian, which finishes off the proof.
+
+```agda
+  fibred : is-vertical-fibred vert
+  fibred {f = σ} f cart =
+    pullback→cartesian B $
+    cartesian+total-pullback→pullback E fib
+      counit-cartesian counit-cartesian
+      (cartesian-pullback cart)
+
+  comprehend : Comprehension
+  comprehend .Vertical-fibred-functor.vert = vert
+  comprehend .Vertical-fibred-functor.F-cartesian = fibred
 ```
