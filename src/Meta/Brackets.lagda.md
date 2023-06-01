@@ -11,7 +11,7 @@ module Meta.Brackets where
 # Brackets notation
 
 ```agda
-record ⟦-⟧-notation {ℓ} (Syn : Type ℓ) : Typeω where
+record ⟦-⟧-notation (Syn : Typeω) : Typeω where
   constructor has-⟦-⟧
   no-eta-equality
   field
@@ -21,6 +21,6 @@ record ⟦-⟧-notation {ℓ} (Syn : Type ℓ) : Typeω where
 
 open ⟦-⟧-notation
 
-⟦_⟧ : ∀ {ℓ} {Syn : Type ℓ} ⦃ not : ⟦-⟧-notation Syn ⦄ → Syn → not .Sem
+⟦_⟧ : ∀ {Syn : Typeω} ⦃ not : ⟦-⟧-notation Syn ⦄ → Syn → not .Sem
 ⟦_⟧ ⦃ not ⦄ = not .interpret
 ```
