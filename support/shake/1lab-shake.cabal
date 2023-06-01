@@ -23,7 +23,6 @@ common common
     mtl,
     SHA,
     split,
-    syb,
     text,
     transformers,
     unicode-collation,

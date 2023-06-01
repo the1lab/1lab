@@ -12,7 +12,7 @@ import qualified Data.Set as Set
 import Data.Char (isSpace, isDigit)
 import Data.Text (Text)
 import Data.List (sort)
-import Data.Generics
+import Data.Typeable
 
 import Development.Shake.Classes (Hashable, Binary, NFData)
 import Development.Shake
