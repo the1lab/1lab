@@ -180,8 +180,6 @@ module NbE
   _++d_ : ∀ {x y z} → DValue y z → DValue x y → DValue x z
   v1 ++d [] = v1
   v1 ++d (v2 ∷r k) = (v1 ++d v2) ∷r k
-  -- [] ++d v2 = v2
-  -- (v1 ∷ʳ v1) ++d v2 = k ∷ (v1 ++d v2)
 
 
   -- Apply R₁ to a value.
