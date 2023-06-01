@@ -1,3 +1,4 @@
+open import Meta.Brackets
 open import 1Lab.Prelude hiding (id; _∘_)
 open import 1Lab.Reflection hiding (_∷r_)
 
@@ -21,21 +22,6 @@ module NbE
     module L = Cat.Functor.Reasoning L
     module R = Cat.Functor.Reasoning R
     open _⊣_ adj
-
-  --------------------------------------------------------------------------------
-  -- Notation
-
-  record ⟦-⟧-notation {ℓ} (Syn : Type ℓ) : Typeω where
-    no-eta-equality
-    field
-      lvl : Level
-      Sem : Type lvl
-      interpret : Syn → Sem
-
-  open ⟦-⟧-notation
-
-  ⟦_⟧ : ∀ {ℓ} {Syn : Type ℓ} ⦃ not : ⟦-⟧-notation Syn ⦄ → Syn → not .Sem
-  ⟦_⟧ ⦃ not ⦄ = not .interpret
 
   --------------------------------------------------------------------------------
   -- Expressions
@@ -62,14 +48,10 @@ module NbE
 
   instance
     ‶C‶-⟦-⟧ : ⟦-⟧-notation ‶C‶
-    ‶C‶-⟦-⟧ .lvl = oc
-    ‶C‶-⟦-⟧ .Sem = C.Ob
-    ‶C‶-⟦-⟧ .interpret = C-ob
+    ‶C‶-⟦-⟧ = has-⟦-⟧ C.Ob C-ob
 
     ‶D‶-⟦-⟧ : ⟦-⟧-notation ‶D‶
-    ‶D‶-⟦-⟧ .lvl = od
-    ‶D‶-⟦-⟧ .Sem = D.Ob
-    ‶D‶-⟦-⟧ .interpret = D-ob
+    ‶D‶-⟦-⟧ = has-⟦-⟧ D.Ob D-ob
 
   data CExpr : ‶C‶ → ‶C‶ → Type (oc ⊔ od ⊔ ℓc ⊔ ℓd)
   data DExpr : ‶D‶ → ‶D‶ → Type (oc ⊔ od ⊔ ℓc ⊔ ℓd)
@@ -105,14 +87,10 @@ module NbE
 
   instance
     CExpr-⟦-⟧ : ∀ {x y} → ⟦-⟧-notation (CExpr x y)
-    CExpr-⟦-⟧ {x} {y} .lvl = ℓc
-    CExpr-⟦-⟧ {x} {y} .Sem = C.Hom ⟦ x ⟧ ⟦ y ⟧
-    CExpr-⟦-⟧ {x} {y} .interpret = C-hom
+    CExpr-⟦-⟧ {x} {y} = has-⟦-⟧ (C.Hom ⟦ x ⟧ ⟦ y ⟧) C-hom
 
     DExpr-⟦-⟧ : ∀ {x y} → ⟦-⟧-notation (DExpr x y)
-    DExpr-⟦-⟧ {x} {y} .lvl = ℓd
-    DExpr-⟦-⟧ {x} {y} .Sem = D.Hom ⟦ x ⟧ ⟦ y ⟧
-    DExpr-⟦-⟧ {x} {y} .interpret = D-hom
+    DExpr-⟦-⟧ {x} {y} = has-⟦-⟧ (D.Hom ⟦ x ⟧ ⟦ y ⟧) D-hom
 
   --------------------------------------------------------------------------------
   -- Values
@@ -158,14 +136,10 @@ module NbE
 
   instance
     CFrame-⟦-⟧ : ∀ {x y} → ⟦-⟧-notation (CFrame x y)
-    CFrame-⟦-⟧ {x} {y} .lvl = ℓc
-    CFrame-⟦-⟧ {x} {y} .Sem = C.Hom ⟦ x ⟧ ⟦ y ⟧
-    CFrame-⟦-⟧ {x} {y} .interpret = C-frame
+    CFrame-⟦-⟧ {x} {y} = has-⟦-⟧ (C.Hom ⟦ x ⟧ ⟦ y ⟧) C-frame
 
     DFrame-⟦-⟧ : ∀ {x y} → ⟦-⟧-notation (DFrame x y)
-    DFrame-⟦-⟧ {x} {y} .lvl = ℓd
-    DFrame-⟦-⟧ {x} {y} .Sem = D.Hom ⟦ x ⟧ ⟦ y ⟧
-    DFrame-⟦-⟧ {x} {y} .interpret = D-frame
+    DFrame-⟦-⟧ {x} {y} = has-⟦-⟧ (D.Hom ⟦ x ⟧ ⟦ y ⟧) D-frame
 
   C-value : ∀ {x y} → CValue x y → C.Hom ⟦ x ⟧ ⟦ y ⟧
   C-value [] = C.id
@@ -177,14 +151,10 @@ module NbE
 
   instance
     CValue-⟦-⟧ : ∀ {x y} → ⟦-⟧-notation (CValue x y)
-    CValue-⟦-⟧ {x} {y} .lvl = ℓc
-    CValue-⟦-⟧ {x} {y} .Sem = C.Hom ⟦ x ⟧ ⟦ y ⟧
-    CValue-⟦-⟧ {x} {y} .interpret = C-value
+    CValue-⟦-⟧ {x} {y} = has-⟦-⟧ (C.Hom ⟦ x ⟧ ⟦ y ⟧) C-value
 
     DValue-⟦-⟧ : ∀ {x y} → ⟦-⟧-notation (DValue x y)
-    DValue-⟦-⟧ {x} {y} .lvl = ℓd
-    DValue-⟦-⟧ {x} {y} .Sem = D.Hom ⟦ x ⟧ ⟦ y ⟧
-    DValue-⟦-⟧ {x} {y} .interpret = D-value
+    DValue-⟦-⟧ {x} {y} = has-⟦-⟧ (D.Hom ⟦ x ⟧ ⟦ y ⟧) D-value
 
   --------------------------------------------------------------------------------
   -- Evaluation
