@@ -151,7 +151,7 @@ relation containing $R$.
 Sym-rec
   : (S : A → A → Type ℓ)
   → (∀ {x y} → R x y → S x y)
-  → (∀ {x y} → R y x → S x y)
+  → (∀ {x y} → R x y → S y x)
   → (∀ {x y} → is-prop (S x y))
   → ∀ {x y} → Sym R x y → S x y
 Sym-rec {R = R} S prel psym pprop r+ = go r+ where
@@ -285,8 +285,8 @@ trans-clo-symmetric {R = R} is-sym r+ =
 
 ## Reflexive-Transitive Closure
 
-The transitive closure of a relation $R$ is the smallest reflexive and
-transitive relation $R^{*}$ that contains $R$.
+The reflexive-transitive closure of a relation $R$ is the smallest
+reflexive and transitive relation $R^{*}$ that contains $R$.
 
 ```agda
 data Refl-trans {A : Type ℓ} (R : A → A → Type ℓ') (x : A) : A → Type (ℓ ⊔ ℓ') where
@@ -299,7 +299,7 @@ data Refl-trans {A : Type ℓ} (R : A → A → Type ℓ') (x : A) : A → Type 
 <!--
 ```agda
 instance
-  Refl-trans-H-Level : ∀ {x y} {n} → H-Level (Trans R x y) (suc n)
+  Refl-trans-H-Level : ∀ {x y} {n} → H-Level (Refl-trans R x y) (suc n)
   Refl-trans-H-Level = prop-instance trunc
 
 Refl-trans-elim
@@ -323,7 +323,7 @@ Refl-trans-elim {R = R} P prel prefl ptrans pprop r+ = go r+ where
 
 Following the general theme, the recursion principle for the reflexive
 transitive closure witnesses it's universal property; it is the smallest
-transitive relation containing $R$.
+reflexive and transitive relation containing $R$.
 
 ```agda
 Refl-trans-rec
@@ -355,4 +355,106 @@ refl-trans-clo-symmetric {R = R} is-sym r+ =
     (λ r+ s+ → transitive s+ r+)
     trunc
     r+
+```
+
+## Reflexive-Symmetric-Transitive Closure
+
+Finally, the reflexive-symmetric-transitive closure of a relation $R$ is
+the smallest reflexive, symmetric, and transitive relation
+$R^{\leftrightarrow*}$ that contains $R$.
+
+```agda
+data Refl-sym-trans {A : Type ℓ} (R : A → A → Type ℓ') (x : A) : A → Type (ℓ ⊔ ℓ') where
+  [_] : ∀ {y} → R x y → Refl-sym-trans R x y
+  reflexive : Refl-sym-trans R x x
+  symmetric : ∀ {y} → Refl-sym-trans R y x → Refl-sym-trans R x y
+  transitive : ∀ {y z} → Refl-sym-trans R x y → Refl-sym-trans R y z → Refl-sym-trans R x z
+  trunc : ∀ {y} → is-prop (Refl-sym-trans R x y)
+```
+
+<!--
+```agda
+instance
+  Refl-sym-trans-H-Level : ∀ {x y} {n} → H-Level (Refl-sym-trans R x y) (suc n)
+  Refl-sym-trans-H-Level = prop-instance trunc
+
+Refl-sym-trans-elim
+  : (P : ∀ (x y : A) → Refl-sym-trans R x y → Type ℓ'')
+  → (∀ {x y} → (r : R x y) → P x y [ r ])
+  → (∀ {x} → P x x reflexive)
+  → (∀ {x y} → (r+ : Refl-sym-trans R x y)
+     → P x y r+ → P y x (symmetric r+))
+  → (∀ {x y z} → (r+ : Refl-sym-trans R x y) → (s+ : Refl-sym-trans R y z)
+     → P x y r+ → P y z s+
+     → P x z (transitive r+ s+))
+  → (∀ {x y} → (r+ : Refl-sym-trans R x y) → is-prop (P x y r+))
+  → ∀ {x y} → (r+ : Refl-sym-trans R x y) → P x y r+
+Refl-sym-trans-elim {R = R} P prel prefl psym ptrans pprop r+ = go r+ where
+  go : ∀ {x y} → (r+ : Refl-sym-trans R x y) → P x y r+
+  go [ r ] = prel r
+  go reflexive = prefl
+  go (symmetric r) = psym r (go r)
+  go (transitive r+ s+) = ptrans r+ s+ (go r+) (go s+)
+  go (trunc r+ r+' i) =
+    is-prop→pathp (λ i → pprop (trunc r+ r+' i)) (go r+) (go r+') i
+```
+-->
+
+Yet again, the recursion principle for the reflexive, symmetric,
+transitive closure witnesses it's universal property; it is the smallest
+reflexive, symmetric, transitive relation containing $R$.
+
+```agda
+Refl-sym-trans-rec
+  : (S : A → A → Type ℓ)
+  → (∀ {x y} → (r : R x y) → S x y)
+  → (∀ {x} → S x x)
+  → (∀ {x y} → S x y → S y x)
+  → (∀ {x y z} → S x y → S y z → S x z)
+  → (∀ {x y} → is-prop (S x y))
+  → ∀ {x y} → Refl-sym-trans R x y → S x y
+Refl-sym-trans-rec {R = R} S prel prefl psym ptrans pprop r+ = go r+ where
+  go : ∀ {x y} → Refl-sym-trans R x y → S x y
+  go [ r ] = prel r
+  go reflexive = prefl
+  go (symmetric r) = psym (go r)
+  go (transitive r+ s+) = ptrans (go r+) (go s+)
+  go (trunc r+ r+' i) = pprop (go r+) (go r+') i
+```
+
+We also define an alternative recursion principle for inducting down
+the length of the chain of relations.
+
+```agda
+Refl-sym-trans-rec-length
+  : (S : A → A → Type ℓ)
+  → (∀ {x} → S x x)
+  → (∀ {x y z} → R x y → S y z → S x z)
+  → (∀ {x y z} → R y x → S y z → S x z)
+  → (∀ {x y} → is-prop (S x y))
+  → ∀ {x y} → Refl-sym-trans R x y → S x y
+Refl-sym-trans-rec-length {R = R} S pnil pstep pinv pprop r+ = go r+ pnil where
+  go : ∀ {x y z} → Refl-sym-trans R x y → S y z → S x z
+  go-sym : ∀ {x y z} → Refl-sym-trans R y x → S y z → S x z
+
+  go [ r ] acc = pstep r acc
+  go reflexive acc = acc
+  go (symmetric r+) acc = go-sym r+ acc
+  go (transitive r+ s+) acc = go r+ (go s+ acc)
+  go (trunc r+ r+' i) acc = pprop (go r+ acc) (go r+' acc) i
+
+  go-sym [ r ] acc = pinv r acc
+  go-sym reflexive acc = acc
+  go-sym (symmetric r+) acc = go r+ acc
+  go-sym (transitive r+ s+) acc = go-sym s+ (go-sym r+ acc)
+  go-sym (trunc r+ r+' i) acc = pprop (go-sym r+ acc) (go-sym r+' acc) i
+```
+
+We
+
+```agda
+refl-trans→refl-sym-trans
+  : ∀ {x y} → Refl-trans R x y → Refl-sym-trans R x y
+refl-trans→refl-sym-trans =
+  Refl-trans-rec (Refl-sym-trans _) [_] reflexive transitive trunc
 ```
