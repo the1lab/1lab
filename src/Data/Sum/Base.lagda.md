@@ -45,10 +45,26 @@ One of the most important things about sum types is the following property:
 given two functions `A → C` and `B → C`, we can construct a function
 `A ⊎ B → C`.
 
+<!--
 ```agda
+⊎-elim
+  : ∀ {ℓ} (P : A ⊎ B → Type ℓ)
+  → (∀ (x : A) → P (inl x))
+  → (∀ (x : B) → P (inr x))
+  → (x : A ⊎ B) → P x
+⊎-elim P f g (inl x) = f x
+⊎-elim P f g (inr x) = g x
+```
+-->
+
+```agda
+⊎-rec : (A → C) → (B → C) → (A ⊎ B) → C
+⊎-rec f g (inl x) = f x
+⊎-rec f g (inr x) = g x
+
 [_,_] : (A → C) → (B → C) → (A ⊎ B) → C
-[ f , g ] (inl x) = f x
-[ f , g ] (inr x) = g x
+[_,_] = ⊎-rec
+{-# INLINE [_,_] #-}
 ```
 
 Furthermore, this function is "universal" in the following sense: if we
