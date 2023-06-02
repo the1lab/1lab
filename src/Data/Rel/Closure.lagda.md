@@ -341,6 +341,53 @@ Refl-trans-rec {R = R} S prel prefl ptrans pprop r+ = go r+ where
   go (trunc r+ r+' i) = pprop (go r+) (go r+') i
 ```
 
+We also provide a recursion principle that inducts down the length of the
+chain of relations.
+
+```agda
+Refl-trans-rec-chain
+  : (S : A → A → Type ℓ)
+  → (∀ {x} → S x x)
+  → (∀ {x y z} → R x y → Refl-trans R y z → S y z → S x z)
+  → (∀ {x y} → is-prop (S x y))
+  → ∀ {x y} → Refl-trans R x y → S x y
+Refl-trans-rec-chain {R = R} S pnil pstep pprop r+ = go r+ reflexive pnil where
+  go : ∀ {x y z} → Refl-trans R x y → Refl-trans R y z → S y z → S x z
+  go [ x→y ] y→*z acc = pstep x→y y→*z acc
+  go reflexive y→*z acc = acc
+  go (transitive x→*x' x'→*y) y→*z acc =
+    go x→*x' (transitive x'→*y y→*z) (go x'→*y y→*z acc)
+  go (trunc x→*y x→*y' i) y→*z acc =
+    pprop (go x→*y y→*z acc) (go x→*y' y→*z acc) i
+```
+
+We also provide an eliminator for inspecting forks.
+
+```agda
+Refl-trans-case-fork
+  : (S : A → A → A → Type ℓ)
+  → (∀ {a y} → Refl-trans R a y → S a a y)
+  → (∀ {a x} → Refl-trans R a x → S a x a)
+  → (∀ {a x y x' y'}
+     → R a x' → Refl-trans R x' x
+     → R a y' → Refl-trans R y' y
+     → S a x y)
+  → (∀ {a x y} → is-prop (S a x y))
+  → ∀ {a x y} → Refl-trans R a x → Refl-trans R a y → S a x y
+Refl-trans-case-fork {R = R} S refll reflr fork prop {a} {x} {y} a→*x a→*y =
+  Refl-trans-rec-chain (λ a x → Refl-trans R a y → S a x y)
+    refll
+    (λ {a} {a'} {x} a→a' a'→*x _ a→*y →
+      Refl-trans-rec-chain
+        (λ a y → R a a' → Refl-trans R a' x → S a x y)
+        (λ a→a' a'→*x → reflr (transitive [ a→a' ] a'→*x))
+        (λ a→a' a'→*y _ a→a'' a''→*x → fork a→a'' a''→*x a→a' a'→*y)
+        (Π-is-hlevel 1 (λ _ → Π-is-hlevel 1 λ _ → prop))
+        a→*y a→a' a'→*x)
+    (Π-is-hlevel 1 (λ _ → prop))
+    a→*x a→*y
+```
+
 If the underlying relation is symmetric, then so is the
 reflexive-transitive closure.
 
@@ -426,31 +473,36 @@ We also define an alternative recursion principle for inducting down
 the length of the chain of relations.
 
 ```agda
-Refl-sym-trans-rec-length
+Refl-sym-trans-rec-chain
   : (S : A → A → Type ℓ)
   → (∀ {x} → S x x)
-  → (∀ {x y z} → R x y → S y z → S x z)
-  → (∀ {x y z} → R y x → S y z → S x z)
+  → (∀ {x y z} → R x y → Refl-sym-trans R y z → S y z → S x z)
+  → (∀ {x y z} → R y x → Refl-sym-trans R y z → S y z → S x z)
   → (∀ {x y} → is-prop (S x y))
   → ∀ {x y} → Refl-sym-trans R x y → S x y
-Refl-sym-trans-rec-length {R = R} S pnil pstep pinv pprop r+ = go r+ pnil where
-  go : ∀ {x y z} → Refl-sym-trans R x y → S y z → S x z
-  go-sym : ∀ {x y z} → Refl-sym-trans R y x → S y z → S x z
+Refl-sym-trans-rec-chain {R = R} S pnil pstep pinv pprop r+ = go r+ reflexive pnil where
+  go : ∀ {x y z} → Refl-sym-trans R x y → Refl-sym-trans R y z → S y z → S x z
+  go-sym : ∀ {x y z} → Refl-sym-trans R y x → Refl-sym-trans R y z → S y z → S x z
 
-  go [ r ] acc = pstep r acc
-  go reflexive acc = acc
-  go (symmetric r+) acc = go-sym r+ acc
-  go (transitive r+ s+) acc = go r+ (go s+ acc)
-  go (trunc r+ r+' i) acc = pprop (go r+ acc) (go r+' acc) i
+  go [ x→y ] y→*z acc = pstep x→y y→*z acc
+  go reflexive y→*z acc = acc
+  go (symmetric y→*x) y→*z acc = go-sym y→*x y→*z acc
+  go (transitive x→*x' x'→*y) y→*z acc =
+    go x→*x' (transitive x'→*y y→*z) (go x'→*y y→*z acc)
+  go (trunc x→*y x→*y' i) y→*z acc =
+    pprop (go x→*y y→*z acc) (go x→*y' y→*z acc) i
 
-  go-sym [ r ] acc = pinv r acc
-  go-sym reflexive acc = acc
-  go-sym (symmetric r+) acc = go r+ acc
-  go-sym (transitive r+ s+) acc = go-sym s+ (go-sym r+ acc)
-  go-sym (trunc r+ r+' i) acc = pprop (go-sym r+ acc) (go-sym r+' acc) i
+  go-sym [ y→x ] y→*z acc = pinv y→x y→*z acc
+  go-sym reflexive y→*z acc = acc
+  go-sym (symmetric x→*y) y→*z acc = go x→*y y→*z acc
+  go-sym (transitive y→*y' y'→*x) y→*z acc =
+    go-sym y'→*x (transitive (symmetric y→*y') y→*z) (go-sym y→*y' y→*z acc)
+  go-sym (trunc y→*x y→*x' i) y→*z acc =
+    pprop (go-sym y→*x y→*z acc) (go-sym y→*x' y→*z acc) i
 ```
 
-We
+The reflexive-transitive closure embeds into the reflexive symmetric
+transitive closure.
 
 ```agda
 refl-trans→refl-sym-trans
