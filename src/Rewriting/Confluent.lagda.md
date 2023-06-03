@@ -1,3 +1,4 @@
+<!--
 ```agda
 open import Rewriting.StronglyNormalising
 
@@ -29,9 +30,9 @@ of terms in some language, along with a collection of rules that describe
 how we can simplify terms. As an example, the untyped $\lambda$-calculus
 can be naturally presented as a term rewriting system, where only
 reduction rule is $\beta$-reduction. More abstractly, a rewriting system
-on a type $A$ is simply a relation $\leadsto$ on $A$ which encodes the
+on a type $A$ is simply a relation $\to$ on $A$ which encodes the
 rewriting rules. Sequences of rewrites are then described using the
-[reflexive transitive closure] of $\leadsto$.
+[reflexive transitive closure] of $\to$.
 
 [reflexive transitive closure]: Data.Rel.Closure.html#reflexive-transitive-closure.html
 
@@ -42,20 +43,20 @@ quite problematic if we want to use the rewriting system to simplify
 expressions. It would be useful if we could prove *some* property of the
 relation that would guarantee that this situation does not occur.
 
-This leads us to the notion of **confluence**. We say a relation $\leadsto$
-is confluent if there for all pairs of reduction chains $a \leadsto^{*} x$
-and $a \leadsto^{*} y$, there exists some $z$ such that $x \leadsto^{*} z$
-and $y \leadsto^{*} z$, as in the following diagram.
+This leads us to the notion of **confluence**. We say a relation $\to$
+is confluent if for all pairs of reduction chains $a \to^{*} x$
+and $a \to^{*} y$, there exists some $z$ such that $x \to^{*} z$
+and $y \to^{*} z$, as in the following diagram.
 
 ~~~{.quiver}
 \begin{tikzcd}
   a && y \\
   \\
   x && {\exists z}
-  \arrow["{*}"', from=1-1, to=3-1]
-  \arrow["{*}"', dashed, from=3-1, to=3-3]
-  \arrow["{*}", dashed, from=1-3, to=3-3]
-  \arrow["{*}", from=1-1, to=1-3]
+  \arrow["{*}"{description}, from=1-1, to=3-1]
+  \arrow["{*}"{description}, dashed, from=3-1, to=3-3]
+  \arrow["{*}"{description}, dashed, from=1-3, to=3-3]
+  \arrow["{*}"{description}, from=1-1, to=1-3]
 \end{tikzcd}
 ~~~
 
@@ -93,11 +94,11 @@ diverging paths by rewriting to the term at the bottom of the diagram.
 
 ## The Church-Rosser Property
 
-A rewriting system $\leadsto$ yields an equivalence relation on terms via
-the [reflexive symmetric transitive closure] of $\leadsto$. This leads to
+A rewriting system $\to$ yields an equivalence relation on terms via
+the [reflexive symmetric transitive closure] of $\to$. This leads to
 a variant of confluence known as the **Church-Rosser Property**, which
 requires a $z$ for every pair of equivalent terms $x$ and $y$ such that
-$x \leadsto^{z}$ and $y \leadsto^{z}$.
+$x \to^{*} z$ and $y \to^{*} z$.
 
 [reflexive symmetric transitive closure]: Data.Rel.Closure.html#reflexive-symmetric-transitive-closure.html
 
@@ -105,9 +106,9 @@ $x \leadsto^{z}$ and $y \leadsto^{z}$.
 \begin{tikzcd}
   x && y \\
   & z
-  \arrow["{*}"', dashed, from=1-1, to=2-2]
-  \arrow["{*}", dashed, from=1-3, to=2-2]
-  \arrow["{*}", tail reversed, from=1-1, to=1-3]
+  \arrow["{*}"{description}, dashed, from=1-1, to=2-2]
+  \arrow["{*}"{description}, dashed, from=1-3, to=2-2]
+  \arrow["{*}"{description}, tail reversed, from=1-1, to=1-3]
 \end{tikzcd}
 ~~~
 
@@ -126,16 +127,16 @@ as Church-Rosser also gives us diamonds of the following shape:
   a && y \\
   \\
   x && {\exists z}
-  \arrow["{*}", from=3-1, to=1-1]
-  \arrow["{*}"', dashed, from=3-1, to=3-3]
-  \arrow["{*}", dashed, from=1-3, to=3-3]
-  \arrow["{*}"', from=1-3, to=1-1]
+  \arrow["{*}"{description}, from=3-1, to=1-1]
+  \arrow["{*}"{description}', dashed, from=3-1, to=3-3]
+  \arrow["{*}"{description}, dashed, from=1-3, to=3-3]
+  \arrow["{*}"{description}, from=1-3, to=1-1]
 \end{tikzcd}
 ~~~
 
 Somewhat surprisingly, it turns out that the two conditions are equivalent!
 Showing that Church-Rosser implies confluence is rather easy: if we
-have two reduction sequences $a \leadsto^{*} x$ and $a \leadsto^{*} y$,
+have two reduction sequences $a \to^{*} x$ and $a \to^{*} y$,
 we can invert one side to get an equivalence in the reflexive symmetric
 transitive closure, and then invoke Church-Rosser to get the desired
 pair of reductions.
@@ -150,7 +151,7 @@ church-rosser→confluent church-rosser a→*x a→*y =
 ```
 
 The converse is much more tricky, and requires introducing an intermediate
-notion of **semiconfluence**, which yields solutions to diamonds of the
+notion of **semi-confluence**, which yields solutions to diamonds of the
 following form.
 
 ~~~{.quiver}
@@ -158,9 +159,9 @@ following form.
   a && y \\
   \\
   x && {\exists z}
-  \arrow["{*}"', from=1-1, to=3-1]
-  \arrow["{*}"', dashed, from=3-1, to=3-3]
-  \arrow["{*}", dashed, from=1-3, to=3-3]
+  \arrow["{*}"{description}, from=1-1, to=3-1]
+  \arrow["{*}"{description}', dashed, from=3-1, to=3-3]
+  \arrow["{*}"{description}, dashed, from=1-3, to=3-3]
   \arrow[from=1-1, to=1-3]
 \end{tikzcd}
 ~~~
@@ -179,7 +180,7 @@ confluent→semiconfluent : is-confluent R → is-semi-confluent R
 confluent→semiconfluent conf a→*x a→y = conf a→*x [ a→y ]
 ```
 
-Furthermore, semi-confluence implies Church-Rosser. Let $\leadsto$ be a
+Furthermore, semi-confluence implies Church-Rosser. Let $\to$ be a
 semi-confluent rewriting system, and let $x \leftrightarrow^{*} y$ be a
 pair of convertible elements. We proceed by inducting over the reduction
 chain $x \leftrightarrow^{*} y$. If the chain is empty, then we can
@@ -226,7 +227,7 @@ to get some $w$ with reductions $x' \to^{*} w$ and $v \to^{*} w$.
 \begin{tikzcd}
   {x'} && x && {x'} && y \\
   \\
-  && v && v
+  w && v && v
   \arrow["{*}"{description}, from=1-5, to=3-5]
   \arrow["{*}"{description}, from=1-7, to=3-5]
   \arrow["{*}"{description}, tail reversed, from=1-5, to=1-7]
@@ -234,6 +235,8 @@ to get some $w$ with reductions $x' \to^{*} w$ and $v \to^{*} w$.
   \arrow[from=1-3, to=1-1]
   \arrow["{*}"{description}, from=1-3, to=3-3]
   \arrow["{*}"{description}, from=3-5, to=3-3]
+  \arrow["{*}"{description}, from=3-3, to=3-1]
+  \arrow["{*}"{description}, from=1-1, to=3-1]
 \end{tikzcd}
 ~~~
 
@@ -422,7 +425,7 @@ We can then apply local confluence to $a \to x'$ and $a \to y'$.
 
 Next, we can recurse on $x' \to^{*} x$ and $x' \to^{*} u$.
 
-~~~{.quiver}
+~~~{.quiver .tall-2}
 \begin{tikzcd}
   && a \\
   & {x'} && {y'} \\
@@ -441,7 +444,7 @@ Next, we can recurse on $x' \to^{*} x$ and $x' \to^{*} u$.
 
 We can recurse yet again on $y' \to^{*} v$ and $y' \to^{*} y$.
 
-~~~{.quiver}
+~~~{.quiver .tall-2}
 \begin{tikzcd}
   && a \\
   & {x'} && {y'} \\
@@ -464,8 +467,7 @@ We can recurse yet again on $y' \to^{*} v$ and $y' \to^{*} y$.
 The bottom half of the square yields the desired pair of reductions,
 finishing the proof.
 
-~~~{.quiver}
-\begin{tikzcd}
+~~~{.quiver .tall-2}
 \begin{tikzcd}
   && a \\
   & {x'} && {y'} \\
@@ -482,7 +484,7 @@ finishing the proof.
   \arrow["{*}"{description}, from=3-3, to=4-2]
   \arrow["{*}"{description}, color={rgb,255:red,214;green,92;blue,92}, from=3-5, to=5-3]
   \arrow["{*}"{description}, color={rgb,255:red,214;green,92;blue,92}, from=4-2, to=5-3]
-\end{tikzcd}\end{tikzcd}
+\end{tikzcd}
 ~~~
 
 ```agda
