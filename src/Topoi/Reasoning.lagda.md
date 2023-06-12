@@ -62,10 +62,12 @@ module Sheaf-topos {o ℓ} {𝒯 : Precategory o ℓ} (T : Topos ℓ 𝒯) where
   psh-equal = fully-faithful→faithful {F = T .Topos.ι} (T .Topos.has-ff)
 ```
 
-**Terminology**: We will refer to the objects of $\mathcal{C}$, the
-topos, as **sheaves**, and the objects of $[S\op,\Sets]$ as
-**presheaves**. Correspondingly, the [[left adjoint]] functor $[S\op, \Sets]
-\to \mathcal{C}$ is called **sheafification**.
+::: terminology
+We will refer to the objects of $\mathcal{C}$, the topos, as
+**sheaves**, and the objects of $[S\op,\Sets]$ as **presheaves**.
+Correspondingly, the [[left adjoint]] functor $[S\op, \Sets] \to
+\mathcal{C}$ is called **sheafification**.
+:::
 
 ## Limits
 

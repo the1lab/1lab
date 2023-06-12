@@ -1,6 +1,8 @@
 <!--
 ```agda
 open import Cat.Prelude
+
+import Cat.Reasoning
 ```
 -->
 
@@ -12,7 +14,7 @@ module Cat.Diagram.Pullback {ℓ ℓ′} (C : Precategory ℓ ℓ′) where
 
 <!--
 ```agda
-open Precategory C
+open Cat.Reasoning C
 private variable
   P′ X Y Z : Ob
   h p₁' p₂' : Hom X Y
@@ -72,6 +74,18 @@ overall square has to commute.
     → lim' ≡ lim''
   unique₂ {p = o} p q r s = unique {p = o} p q ∙ sym (unique r s)
 ```
+
+<!--
+```agda
+  pullback-univ
+    : ∀ {O} → Hom O P ≃ (Σ (Hom O X) λ h → Σ (Hom O Y) λ h' → f ∘ h ≡ g ∘ h')
+  pullback-univ .fst h = p₁ ∘ h , p₂ ∘ h , extendl square
+  pullback-univ .snd = is-iso→is-equiv λ where
+    .is-iso.inv (f , g , α) → universal α
+    .is-iso.rinv x → Σ-pathp p₁∘universal $ Σ-prop-pathp (λ _ _ → hlevel 1) p₂∘universal
+    .is-iso.linv x → sym (unique refl refl)
+```
+-->
 
 By universal, we mean that any other "square" (here the second "square"
 has corners $P'$, $X$, $Y$, $Z$ --- it's a bit bent) admits a unique

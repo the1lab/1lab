@@ -17,14 +17,28 @@ Agda.
 
 Prose **should** be kept to a width of 72 characters.
 
-The first time a concept is introduced, it **should** appear in bold. A
-single bolded word **may** appear at the start of a paragraph to call
-the reader's attention:
+The first time a concept is introduced, it **should** appear in bold.
 
-> **Warning**: The text below is subject to change! It's still very much a
-> document in flux. In particular, the type theory section doesn't talk
-> about induction, which is something that will be expanded on in the
-> future.
+If some text needs to call the reader's attention, it **should** use one
+of the "highlight" classes, which have names corresponding to each of the
+icons in [`support/web/highlights`]. These **should** use `:::`-fenced
+divs:
+
+[`support/web/highlights`]: https://github.com/plt-amy/1lab/blob/main/support/web/highlights
+
+    ::: warning
+    Warning text goes here.
+    :::
+
+A call-out is also supported in `<details>` elements, but using a plain
+attribute rather than a class:
+
+    <details warning>
+    <summary>The summary is mandatory.</summary>
+
+    ...
+
+    </details>
 
 ## Links
 

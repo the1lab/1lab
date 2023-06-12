@@ -65,7 +65,7 @@ const startSearch = (mirrorInput: HTMLInputElement | null) => {
 
           return <li>
             <a class="search-result" href={match.item.idAnchor}>
-              <h3 class="sourceCode search-header">
+              <h3 class="search-header">
                 <span>
                   {highlight(match)}
                 </span>

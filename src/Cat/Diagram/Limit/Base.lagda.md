@@ -21,10 +21,12 @@ module Cat.Diagram.Limit.Base where
 
 # Limits {defines=limit}
 
-**Note**: This page describes the general definition of limits, and
+:::{.note}
+This page describes the general definition of limits, and
 assumes some familiarity with some concrete examples, in particular
 [[terminal objects]], [[products]], [[equalisers]], and [[pullbacks]].
 It might be a good idea to check out those pages before continuing!
+:::
 
 ## Idea
 

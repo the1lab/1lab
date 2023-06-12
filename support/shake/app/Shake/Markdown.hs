@@ -1,4 +1,4 @@
-{-# LANGUAGE BlockArguments, OverloadedStrings, FlexibleContexts, ViewPatterns #-}
+{-# LANGUAGE BlockArguments, OverloadedStrings, FlexibleContexts, ViewPatterns, QuasiQuotes, LambdaCase #-}
 
 {-| Convert a markdown file to templated HTML, applying several
 post-processing steps and rendered to HTML using the
@@ -13,15 +13,17 @@ import Control.Monad.State
 import Control.Applicative
 
 import qualified Data.ByteString.Lazy as LazyBS
-import qualified Data.Map.Lazy as Map
-import qualified Data.Text as Text
 import qualified Data.Text.Encoding as Text
+import qualified Data.Map.Lazy as Map
 import qualified Data.Text.IO as Text
-import Data.Aeson (encodeFile)
+import qualified Data.Text as Text
 import Data.Digest.Pure.SHA
-import Data.Text (Text)
+import Data.Map.Lazy (Map)
 import Data.Foldable
+import Data.Function
+import Data.Aeson (encodeFile)
 import Data.Maybe
+import Data.Text (Text)
 
 import qualified System.Directory as Dir
 
@@ -43,6 +45,7 @@ import Text.Pandoc
 
 import Shake.LinkReferences
 import Shake.SearchData
+import Shake.Highlights
 import Shake.Options
 import Shake.KaTeX
 import Shake.Git
@@ -50,6 +53,8 @@ import Shake.Git
 import HTML.Emit
 
 import Definitions
+
+import Debug.Trace
 
 readLabMarkdown :: MonadIO m => FilePath -> m Pandoc
 readLabMarkdown fp = liftIO cont where
@@ -161,6 +166,7 @@ buildMarkdown modname input output = do
     runIO (renderMarkdown authors references modname baseUrl markdown)
 
   let tags = foldEquations False (parseTags text)
+  tags <- renderHighlights tags
   traverse_ (checkMarkup input) tags
 
   traced "writing" do
@@ -242,12 +248,16 @@ instance Monoid MarkdownState where
 
 
 -- | Patch a Pandoc block element.
-patchBlock :: (MonadIO f, MonadFail f, MonadWriter MarkdownState f) => Block -> f Block
+patchBlock
+  :: (MonadIO f, MonadFail f, MonadWriter MarkdownState f)
+  => Block
+  -> f Block
 -- Make all headers links, and add an anchor emoji.
 patchBlock (Header i a@(ident, _, _) inl) = pure $ Header i a
-  $ htmlInl (Text.concat ["<a href=\"#", ident, "\" class=\"header-link\">"])
+  $ htmlInl (Text.concat ["<a href=\"#", ident, "\" class=\"header-link\"><span>"])
   : inl
-  ++ [htmlInl "<span class=\"header-link-emoji\">🔗</span></a>"]
+  ++ [htmlInl "</span><span class=\"header-link-emoji\">🔗</span></a>"]
+
 -- Replace quiver code blocks with a link to an SVG file, and depend on the SVG file.
 patchBlock (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes = do
   let
@@ -265,6 +275,7 @@ patchBlock (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes =
     [ Plain [ Image (id, "diagram diagram-light":classes, attrs) [] (Text.pack ("light-" <> digest <.> "svg"), title) ]
     , Plain [ Image (id, "diagram diagram-dark":classes, attrs) [] (Text.pack ("dark-" <> digest <.> "svg"), title) ]
     ]
+
 -- Find the references block, parse the references, and remove it. We write
 -- the references as part of our template instead.
 patchBlock (Div ("refs", _, _) body) = do
@@ -286,15 +297,16 @@ patchBlock (Div ("refs", _, _) body) = do
 
     _ -> fail ("Unknown reference node " ++ show ref)
   pure $ Plain [] -- TODO: pandoc-types 1.23 removed Null
+
 patchBlock h = pure h
 
 
 -- | Render our Pandoc document using the given template variables.
 renderMarkdown :: PandocMonad m
-               => [Text]     -- ^ List of authors
-               -> [Val Text] -- ^ List of references
-               -> String     -- ^ Name of the current module
-               -> String     -- ^ Base URL
+               => [Text]       -- ^ List of authors
+               -> [Val Text]   -- ^ List of references
+               -> String       -- ^ Name of the current module
+               -> String       -- ^ Base URL
                -> Pandoc -> m Text
 renderMarkdown authors references modname baseUrl markdown = do
   template <- getTemplate templateName >>= runWithPartials . compileTemplate templateName
@@ -305,21 +317,20 @@ renderMarkdown authors references modname baseUrl markdown = do
       [x] -> x
       _ -> Text.intercalate ", " (init authors) `Text.append` " and " `Text.append` last authors
 
-    context = Context $ Map.fromList
-      [ ("is-index",  toVal (modname == "index"))
-      , ("authors",   toVal authors')
-      , ("reference", toVal references)
-      , ("base-url",  toVal (Text.pack baseUrl))
+    context = Context $ Map.fromList $
+      [ ("is-index",     toVal (modname == "index"))
+      , ("authors",      toVal authors')
+      , ("reference",    toVal references)
+      , ("base-url",     toVal (Text.pack baseUrl))
       ]
 
-    options = def { writerTemplate = Just template
+    options = def { writerTemplate        = Just template
                   , writerTableOfContents = True
-                  , writerVariables = context
-                  , writerExtensions = getDefaultExtensions "html"
+                  , writerVariables       = context
+                  , writerExtensions      = getDefaultExtensions "html"
                   }
   setTranslations (Lang "en" Nothing Nothing [] [] [])
   writeHtml5String options markdown
-
 
 -- | Removes the RHS of equation reasoning steps?? IDK, ask Amelia.
 foldEquations :: Bool -> [Tag Text] -> [Tag Text]
@@ -363,11 +374,16 @@ getHeaders module' markdown@(Pandoc (Meta meta) _) =
     , idDefines = Nothing
     }
 
+  hasRaw :: [Inline] -> Bool
+  hasRaw = any \case
+    RawInline{} -> True
+    _ -> False
+
   -- The state stores a path of headers in the document of the form (level,
   -- header), which is updated as we walk down the document.
   go :: [Block] -> State [(Int, Text)] [SearchTerm]
   go [] = pure []
-  go (Header level (hId, _, keys) hText:xs) = do
+  go (Header level (hId, _, keys) hText:xs) | not (hasRaw hText) = do
     path <- get
     let title = trimr (renderPlain hText)
     let path' = (level, title):dropWhile (\(l, _) -> l >= level) path

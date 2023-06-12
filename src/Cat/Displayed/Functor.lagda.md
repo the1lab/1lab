@@ -268,7 +268,7 @@ module
 ```
 -->
 
-```
+```agda
   record Vertical-functor : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′ ⊔ o′′ ⊔ ℓ′′) where
     no-eta-equality
     field

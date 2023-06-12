@@ -557,7 +557,7 @@ where $B$ is $A$, and $f$ is the identity function.
 $\id$, which is known to be `an equivalence`{.Agda ident=id-equiv}.
 <span class=qed>$\blacksquare$</span>
 
-## Object Classifiers
+## Object Classifiers {defines="object-classifier"}
 
 In category theory, the idea of _classifiers_ (or _classifying objects_)
 often comes up when categories applied to the study of logic. For

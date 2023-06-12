@@ -154,9 +154,9 @@ module _ {o ℓ} {D : DCPO o ℓ} where
 We begin by constructing a directed family $\NN \to D$ that maps $n$ to
 $f^n(\bot)$.
 
-```
+```agda
     fⁿ : Nat → Ob → Ob
-    fⁿ zero x = x 
+    fⁿ zero x = x
     fⁿ (suc n) x = f.hom (fⁿ n x)
 
     fⁿ-mono : ∀ {i j} → i Nat.≤ j → fⁿ i bot ≤ fⁿ j bot
@@ -313,7 +313,8 @@ module Pointed-dcpo {o ℓ} (D : Pointed-dcpo o ℓ) where
 <details>
 <summary>These proofs are all quite straightforward, so we omit them.
 </summary>
-```
+
+```agda
   open is-directed-family
 
   dcpo : DCPO o ℓ
@@ -331,13 +332,13 @@ module Pointed-dcpo {o ℓ} (D : Pointed-dcpo o ℓ) where
   bottom≤x = Bottom.has-bottom (D .snd)
 
   adjoin : ∀ {Ix : Type o} → (Ix → Ob) → Maybe Ix → Ob
-  adjoin = extend-bottom dcpo has-pointed 
+  adjoin = extend-bottom dcpo has-pointed
 
   adjoin-directed
     : ∀ (s : Ix → Ob) → is-semidirected-family poset s
     → is-directed-family poset (adjoin s)
   adjoin-directed = extend-bottom-directed dcpo has-pointed
- 
+
   lub→adjoin-lub : ∀ {s : Ix → Ob} {x : Ob} → is-lub poset s x → is-lub poset (adjoin s) x
   lub→adjoin-lub = lub→extend-bottom-lub dcpo has-pointed
 
@@ -373,6 +374,7 @@ module Pointed-dcpo {o ℓ} (D : Pointed-dcpo o ℓ) where
       (just i) → le i
       nothing → bottom≤x _
 ```
+
 </details>
 
 However, we do call attention to one extremely useful fact: if $D$ is
@@ -428,6 +430,7 @@ module Strict-scott {D E : Pointed-dcpo o ℓ} (f : Pointed-DCPOs.Hom D E) where
 <details>
 <summary>These proofs are all quite straightforward, so we omit them.
 </summary>
+
 ```agda
   private
     module D = Pointed-dcpo D
@@ -485,7 +488,7 @@ module Strict-scott {D E : Pointed-dcpo o ℓ} (f : Pointed-DCPOs.Hom D E) where
 </details>
 
 <!--
-```
+```agda
 module _ {o ℓ} {D E : Pointed-dcpo o ℓ} where
   private
     module D = Pointed-dcpo D

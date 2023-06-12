@@ -36,7 +36,7 @@ open ↓Hom
 ```
 -->
 
-# Comma categories preserve univalence
+# Comma categories preserve univalence {defines="univalence-of-comma-category"}
 
 **Theorem**. Let $\cY \xto{F} \cX \xot{G} \cZ$ be a [cospan] of
 functors between three [[univalent categories]]. Then the comma category

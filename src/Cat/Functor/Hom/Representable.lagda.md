@@ -34,7 +34,7 @@ open _=>_
 ```
 -->
 
-# Representable functors
+# Representable functors {defines="representable-functor"}
 
 A functor $F : \cC\op \to \Sets_\kappa$ (from a [locally
 $\kappa$-small category][univ]) is said to be **representable** when it

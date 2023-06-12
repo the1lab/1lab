@@ -195,7 +195,7 @@ is-cartesian-is-prop
 <summary>The proof of this fact is a bunch of cubical nonsense.
 </summary>
 
-```
+```agda
 is-cartesian-is-prop {f′ = f′} cart cart′ = worker where
   open is-cartesian
 

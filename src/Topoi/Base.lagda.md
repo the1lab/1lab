@@ -198,14 +198,12 @@ of" an edge.
 The definition of topos implies that any topos $\cT$ enjoys many of the
 same categorical properties of the category $\Sets$ (see
 [below](#properties-of-topoi)). Topoi are [complete] and [cocomplete],
-[cartesian closed] (even [locally so]) --- colimits are stable under
-pullback, coproducts are [disjoint], and [equivalence relations are
-effective].
+[[cartesian closed]] (even [[locally so|locally cartesian closed]]) ---
+colimits are stable under pullback, coproducts are [disjoint], and
+[equivalence relations are effective].
 
 [complete]: Cat.Diagram.Limit.Base.html#completeness
 [cocomplete]: Cat.Diagram.Colimit.Base.html#cocompleteness
-[cartesian closed]: Cat.CartesianClosed.Base.html
-[locally so]: Cat.CartesianClosed.Locally.html
 [disjoint]: Cat.Diagram.Coproduct.Indexed.html#disjoint-coproducts
 [equivalence relations are effective]: Cat.Diagram.Congruence.html#effective-congruences
 
@@ -228,7 +226,8 @@ very nice logically).
 
 [reflective subcategory]: Cat.Functor.Adjoint.Reflective.html
 
-**Terminology**: As was implicitly mentioned above, for a topos $L :
+::: terminology
+As was implicitly mentioned above, for a topos $L :
 \cT \xadj{}{} \psh(\cC)$, we call the category $\cC$ the **site
 of definition**. Objects in $\cT$ are called **sheaves**, and the
 functor $L$ is called **sheafification**. Maps between topoi are called
@@ -237,6 +236,7 @@ functor $L$ is called **sheafification**. Maps between topoi are called
 $\Topos$, following Johnstone. When $\psh(\cC)$ is regarded as a topos
 unto itself, rather than an indirection in the definition of a sheaf
 topos, we call it the **topos of $\cC$-sets**.
+:::
 
 # Examples
 
@@ -453,9 +453,7 @@ Since the reflector is [[left exact|lex functor]], and thus in
 particular preserves finite products, a theorem of Johnstone (Elephant
 A4.3.1) implies the topos $\cT$ is an _exponential ideal_ in
 $\psh(\cC)$: If $Y$ is a sheaf, and $X$ is any presheaf, then the
-internal hom $[X,Y]$ is a sheaf: topoi are [cartesian closed].
-
-[cartesian closed]: Cat.CartesianClosed.Base.html
+internal hom $[X,Y]$ is a sheaf: topoi are [[cartesian closed]].
 
 <!-- TODO [Amy 2022-04-02]
 prove all of the above lmao

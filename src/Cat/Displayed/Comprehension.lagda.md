@@ -272,7 +272,7 @@ the identity.
 We also obtain a substitution upstairs from the weakening of $x$ to the iterated
 weakening of $x$.
 
-```
+```agda
   δᶜ′ : ∀ {Γ} {x : Ob[ Γ ]} → Hom[ δᶜ ] (weaken x x) (weaken (weaken x x) (weaken x x))
   δᶜ′ = has-lift.universal′ πᶜ (weaken _ _) proj-dup id′
 ```

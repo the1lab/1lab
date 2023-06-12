@@ -19,7 +19,7 @@ open Functor
 ```
 -->
 
-# The core of a category
+# The core of a category {defines="core"}
 
 The **core** of a category $\cC$ is the maximal sub-[groupoid] of $\cC$:
 the category $\rm{Core}(\cC)$ constructed by keeping only the invertible

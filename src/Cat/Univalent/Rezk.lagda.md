@@ -28,7 +28,7 @@ open Functor
 ```
 -->
 
-# The Rezk completion
+# The Rezk completion {defines="rezk-completion"}
 
 In the same way that we can [freely] complete a proset into a poset, it
 is possible to, in a universal way, replace any precategory $\cA$ by a

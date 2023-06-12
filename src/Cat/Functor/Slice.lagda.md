@@ -124,10 +124,8 @@ $F(T)$, being isomorphic to the terminal object, is itself terminal!
     is-terminal-iso (Slice D (F .F₀ X))
       (subst (Dx._≅ cut (F .F₁ (T .map))) (ap cut (F .F-id))
         (F-map-iso (Sliced F X)
-          (⊤-unique (Slice C X)
-            (record { has⊤ = Slice-terminal-object })
-            (record { has⊤ = term }))))
-      Slice-terminal-object
+          (⊤-unique (Slice C X) Slice-terminal-object (record { has⊤ = term }))))
+      Slice-terminal-object′
 ```
 
 # Sliced adjoints

@@ -19,7 +19,7 @@ type_.
 
 <details>
 <summary>
-**Aside**: A brief comment on the meanings of "equal", "identical" and
+A brief comment on the meanings of "equal", "identical" and
 "identified", and how we refer to inhabitants of path types.
 </summary>
 
@@ -951,13 +951,15 @@ hfill φ i u =
     j (j = i0) → u i0 1=1
 ```
 
-**Note**: While every inhabitant of `Type`{.Agda} has a composition
-operation, not every _type_ (something that can be on the right of type
-signature `e : T`) does. We call the types that _do_ have a composition
-operation “fibrant”, since these are semantically the cubical sets
-which are Kan complices. Examples of types which are _not_ fibrant
-include the interval `I`{.Agda}, the partial elements `Partial`{.Agda},
-and the extensions `_[_↦_]`[^notfibrant].
+:::{.note}
+While every inhabitant of `Type`{.Agda} has a composition operation, not
+every _type_ (something that can be on the right of a type signature `e
+: T`) does. We call the types that _do_ have a composition operation
+“fibrant”, since these are semantically the cubical sets which are Kan
+complices. Examples of types which are _not_ fibrant include the
+interval `I`{.Agda}, the partial elements `Partial`{.Agda}, and the
+extensions `_[_↦_]`[^notfibrant].
+:::
 
 ::: {.definition #fibrant}
 > **Definition**: A type is _fibrant_ if it supports `hcomp`{.Agda}.

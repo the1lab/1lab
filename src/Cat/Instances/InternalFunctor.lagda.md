@@ -46,7 +46,7 @@ module _ {ℂ 𝔻 : Internal-cat} where
 ```
 -->
 
-```
+```agda
   idnti : ∀ {F : Internal-functor ℂ 𝔻} → F =>i F
   idnti .ηi x = 𝔻.idi _
   idnti .is-naturali x y f =

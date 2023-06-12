@@ -222,13 +222,15 @@ more categorically): The image of $f$ serves as a [quotient] for (the
 [quotient]: Cat.Diagram.Coequaliser.html
 [congruence]: Cat.Diagram.Congruence.html
 
-**Note**: In more classical texts, the first isomorphism theorem is
+:::{.note}
+In more classical texts, the first isomorphism theorem is
 phrased in terms of two _pre-existing_ objects $A/\ker(f)$ (defined as
 the set of _cosets_ of $\ker(f)$ regarded as a subgroup) and $\im f$
 (defined as above).  Here we have opted for a more categorical phrasing
 of that theorem: We know what the universal property of $A/\ker(f)$ is
 --- namely that it is a specific colimit --- so the specific
 construction used to implement it does not matter.
+:::
 
 ```agda
   1st-iso-theorem : Groups.is-coequaliser (Groups.Zero.zero→ ∅ᴳ) Kerf.kernel A→im

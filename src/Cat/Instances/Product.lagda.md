@@ -21,7 +21,7 @@ private variable
 ```
 -->
 
-# Product categories
+# Product categories {defines="product-category"}
 
 Let $\cC$ and $\cD$ be two precategories; we put no restrictions
 on their relative sizes. Their _product category_ $\cC \times^c

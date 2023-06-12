@@ -54,11 +54,13 @@ module _ {ℓ} (R : Ring ℓ) where
       has-*ᵣ : ∀ x {y} → y ∈ 𝔞 → (y R.* x) ∈ 𝔞
 ```
 
-**Note**: Since most of the rings over which we want to consider ideals
+:::{.note}
+Since most of the rings over which we want to consider ideals
 are _commutative_ rings, we will limit ourselves to the definition of
 _two-sided_ ideals: Those for which we have, for $y \in \mathfrak{a}$
 and any element $x : R$, $xy \in \mathfrak{a}$ and $yx \in
 \mathfrak{a}$.
+:::
 
 <!--
 ```agda

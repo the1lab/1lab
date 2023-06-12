@@ -31,7 +31,7 @@ open Displayed
 ```
 -->
 
-# The fibration of subobjects
+# The fibration of subobjects {defines="poset-of-subobjects"}
 
 Given a base category $\cB$, we can define the [[displayed category]] of
 _subobjects_ over $\cB$. This is, in essence, a restriction of the
@@ -164,6 +164,7 @@ Subobject-fibration
   : has-pullbacks B
   → Cartesian-fibration Subobjects
 Subobject-fibration pb .has-lift f y′ = l where
+  it : Pullback _ _ _
   it = pb (y′ .map) f
   l : Cartesian-lift Subobjects f y′
 
@@ -176,7 +177,7 @@ Subobject-fibration pb .has-lift f y′ = l where
 
   -- The dashed red arrow:
   l .cartesian .universal {u′ = u′} m h′ = λ where
-    .map → it .universal (sym (h′ .sq) ∙ sym (assoc f m (u′ .map)))
+    .map → it .Pullback.universal (sym (h′ .sq) ∙ sym (assoc f m (u′ .map)))
     .sq  → sym (it .p₂∘universal)
   l .cartesian .commutes _ _ = ≤-over-is-prop _ _
   l .cartesian .unique _ _   = ≤-over-is-prop _ _
@@ -355,7 +356,7 @@ Sub-products {y} pb a b = prod where
   prod .Product.π₂ .sq  = idl _ ∙ it .square
 
   prod .Product.has-is-product .is-product.⟨_,_⟩ q≤a q≤b .map =
-    it .universal {p₁' = q≤a .map} {p₂' = q≤b .map} (sym (q≤a .sq) ∙ q≤b .sq)
+    it .Pullback.universal {p₁' = q≤a .map} {p₂' = q≤b .map} (sym (q≤a .sq) ∙ q≤b .sq)
   prod .Product.has-is-product .is-product.⟨_,_⟩ q≤a q≤b .sq =
     idl _ ∙ sym (pullr (it .p₁∘universal) ∙ sym (q≤a .sq) ∙ idl _)
   prod .Product.has-is-product .is-product.π₁∘factor = hlevel 1 _ _
