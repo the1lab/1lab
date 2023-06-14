@@ -94,7 +94,7 @@ using existing objects!
 
 Luckily, we can! If we take a step back, we can notice that we are trying
 to construct a map into a functor. What are maps into functors? Natural
-transformations! Concretely, let $D : \cJ \to cC$ be some diagram.
+transformations! Concretely, let $D : \cJ \to \cC$ be some diagram.
 We can encode the same data as a cone in a natural transformation
 $\eta : {!x} \circ \mathord{!} \to D$, where $!x : \top \to \cC$ denotes
 the constant functor that maps object to $x$ and every morphism to $id$,
