@@ -268,7 +268,7 @@ together to establish `G ≡ (base ≡ base)`. First, to define
 ```agda
   Code : Deloop → Set ℓ
   Code =
-    Deloop-elim _ (λ _ → hlevel 3) (G .fst)
+    Deloop-elim _ (λ _ → hlevel!) (G .fst)
       (λ x → n-ua (map x))
       λ x y → n-Type-square (transport (sym Square≡double-composite-path) (lemma x y))
 ```

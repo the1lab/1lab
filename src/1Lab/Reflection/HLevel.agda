@@ -147,7 +147,7 @@ private
   -- an application of is-hlevel/is-prop/is-set into an 'underlying
   -- type' and level arguments.
   hlevel-types : List Name
-  hlevel-types = quote is-hlevel ∷ quote is-prop ∷ quote is-set ∷ []
+  hlevel-types = quote is-hlevel ∷ quote is-prop ∷ quote is-set ∷ quote _≃_ ∷ []
 
   pattern nat-lit n =
     def (quote Number.fromNat) (_ ∷ _ ∷ _ ∷ lit (nat n) v∷ _)
@@ -688,6 +688,9 @@ instance
   -- decomposition here is a bit more flexible.
   decomp-ntype : ∀ {ℓ} {n} → hlevel-decomposition (n-Type ℓ n)
   decomp-ntype = decomp (quote n-Type-is-hlevel) (`level-minus 1 ∷ [])
+
+  decomp-equiv : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → hlevel-decomposition (A ≃ B)
+  decomp-equiv = decomp (quote ≃-is-hlevel) (`level ∷ `search ∷ `search ∷ [] )
 
   hlevel-proj-n-type : hlevel-projection (quote n-Type.∣_∣)
   hlevel-proj-n-type .has-level = quote n-Type.is-tr

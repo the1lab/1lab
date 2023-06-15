@@ -198,9 +198,6 @@ n-Type-square {p = p} {q} {s} {r} sq i j .is-tr =
     (ap is-tr p) (ap is-tr q) (ap is-tr s) (ap is-tr r) i j
 
 instance
-  H-Level-nType : ∀ {n k} → H-Level (n-Type ℓ k) (1 + k + n)
-  H-Level-nType {k = k} = basic-instance (1 + k) (n-Type-is-hlevel k)
-
   H-Level-is-equiv
     : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} {f : A → B} {n}
     → H-Level (is-equiv f) (suc n)

@@ -1,4 +1,5 @@
 ```agda
+open import 1Lab.Reflection.HLevel
 open import Cat.Instances.Functor
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
@@ -568,7 +569,7 @@ instance
     : ∀ {o h o′ h′} {C : Precategory o h} {D : Precategory o′ h′}
         {F : Functor C D} {n}
     → H-Level (is-precat-iso F) (suc n)
-  H-Level-is-precat-iso = prop-instance (Iso→is-hlevel 1 eqv (hlevel 1))
+  H-Level-is-precat-iso = prop-instance (Iso→is-hlevel 1 eqv hlevel!)
 
 module
   _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
