@@ -8,6 +8,7 @@ open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+open import 1Lab.Underlying
 
 open import Data.Bool
 open import Data.List
@@ -702,7 +703,7 @@ instance
   hlevel-proj-n-type .get-argument _ = typeError []
 
 private
-  module _ {ℓ} {A : n-Type ℓ 2} {B : ∣ A ∣ → n-Type ℓ 3} where
+  module _ {ℓ} {A : n-Type ℓ 2} {B : ⌞ A ⌟ → n-Type ℓ 3} where
     -- some-def = ∣ A ∣
     -- _ : is-hlevel (∣ A ∣ → ∣ A ∣ → ∣ A ∣ → ∣ A ∣) 2
     -- _ = hlevel!
@@ -710,17 +711,17 @@ private
     -- _ : is-hlevel (Σ some-def λ x → ∣ B x ∣) 3
     -- _ = hlevel!
 
-    _ : ∀ a → is-hlevel (∣ A ∣ × ∣ A ∣ × (Nat → ∣ B a ∣)) 5
+    _ : ∀ a → is-hlevel (⌞ A ⌟ × ⌞ A ⌟ × (Nat → ⌞ B a ⌟)) 5
     _ = hlevel!
 
-    _ : ∀ a → is-hlevel (∣ A ∣ × ∣ A ∣ × (Nat → ∣ B a ∣)) 3
+    _ : ∀ a → is-hlevel (⌞ A ⌟ × ⌞ A ⌟ × (Nat → ⌞ B a ⌟)) 3
     _ = hlevel!
 
-    _ : is-hlevel ∣ A ∣ 2
+    _ : is-hlevel ⌞ A ⌟ 2
     _ = hlevel!
 
     _ : ∀ n → is-hlevel (n-Type ℓ n) (suc n)
     _ = hlevel!
 
-    _ : ∀ n (x : n-Type ℓ n) → is-hlevel ∣ x ∣ (2 + n)
+    _ : ∀ n (x : n-Type ℓ n) → is-hlevel ⌞ x ⌟ (2 + n)
     _ = λ n x → hlevel!

@@ -10,6 +10,7 @@ open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+open import 1Lab.Underlying
 
 open import Data.List.Base
 
@@ -74,6 +75,11 @@ universe.
 
 <!--
 ```agda
+instance
+  Underlying-prop : Underlying Ω
+  Underlying-prop .Underlying.ℓ-underlying = lzero
+  Underlying-prop .⌞_⌟ x = ∣ x ∣
+
 instance
   H-Level-□ : ∀ {ℓ} {T : Type ℓ} {n} → H-Level (□ T) (suc n)
   H-Level-□ = prop-instance squash

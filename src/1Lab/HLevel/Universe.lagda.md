@@ -10,6 +10,7 @@ open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+open import 1Lab.Underlying
 ```
 -->
 
@@ -202,6 +203,10 @@ instance
     : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} {f : A → B} {n}
     → H-Level (is-equiv f) (suc n)
   H-Level-is-equiv = prop-instance (is-equiv-is-prop _)
+
+  Underlying-n-Type : ∀ {ℓ n} → Underlying (n-Type ℓ n)
+  Underlying-n-Type {ℓ} .Underlying.ℓ-underlying = ℓ
+  Underlying-n-Type .⌞_⌟ x = ∣ x ∣
 
 ```
 -->
