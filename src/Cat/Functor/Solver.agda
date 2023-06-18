@@ -2,6 +2,7 @@ open import 1Lab.Reflection
 open import 1Lab.Prelude
 
 open import Cat.Base
+open import Cat.Reflection
 
 open import Data.List
 
@@ -20,12 +21,12 @@ module NbE {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h�
       A B C : 𝒞.Ob
       X Y Z : 𝒟.Ob
 
-  data CExpr : 𝒞.Ob → 𝒞.Ob → Type (o ⊔ h) where
+  data CExpr : 𝒞.Ob → 𝒞.Ob → Typeω where
     _‶∘‶_ : CExpr B C → CExpr A B → CExpr A C
     ‶id‶  : CExpr A A
     _↑    : 𝒞.Hom A B → CExpr A B
 
-  data DExpr : 𝒟.Ob → 𝒟.Ob → Type (o ⊔ h ⊔ o′ ⊔ h′) where
+  data DExpr : 𝒟.Ob → 𝒟.Ob → Typeω where
     ‶F₁‶  : CExpr A B → DExpr (F₀ A) (F₀ B)
     _‶∘‶_ : DExpr Y Z → DExpr X Y → DExpr X Z
     ‶id‶  : DExpr X X
@@ -45,15 +46,15 @@ module NbE {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h�
   --------------------------------------------------------------------------------
   -- Values
 
-  data CValue : 𝒞.Ob → 𝒞.Ob → Type (o ⊔ h) where
+  data CValue : 𝒞.Ob → 𝒞.Ob → Typeω where
     vid : CValue A A
     vcomp : 𝒞.Hom B C → CValue A B → CValue A C
 
-  data Frame : 𝒟.Ob → 𝒟.Ob → Type (o ⊔ h ⊔ o′ ⊔ h′) where
+  data Frame : 𝒟.Ob → 𝒟.Ob → Typeω where
     vhom : 𝒟.Hom X Y → Frame X Y
     vfmap : 𝒞.Hom A B → Frame (F₀ A) (F₀ B)
 
-  data DValue : 𝒟.Ob → 𝒟.Ob → Type (o ⊔ h ⊔ o′ ⊔ h′) where
+  data DValue : 𝒟.Ob → 𝒟.Ob → Typeω where
     vid   : DValue X X
     vcomp : Frame Y Z → DValue X Y → DValue X Z
 
@@ -138,62 +139,64 @@ module NbE {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h�
     solve e1 e2 p  = sym (deval-sound e1) ·· p ·· (deval-sound e2)
 
 module Reflection where
-
-  pattern category-args xs = _ hm∷ _ hm∷ _ v∷ xs
-
-  pattern functor-args functor xs =
-    _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ functor v∷ xs
-
-  pattern “id” =
-    def (quote Precategory.id) (category-args (_ h∷ []))
-
-  pattern “∘” f g =
-    def (quote Precategory._∘_) (category-args (_ h∷ _ h∷ _ h∷ f v∷ g v∷ []))
-
-  pattern “F₁” functor f =
-    def (quote Functor.F₁) (functor-args functor (_ h∷ _ h∷ f v∷ []))
-
-  mk-functor-args : Term → List (Arg Term) → List (Arg Term)
-  mk-functor-args functor args =
-    unknown h∷ unknown h∷ unknown h∷ unknown h∷ unknown h∷ unknown h∷ functor v∷ args
+  open Functor-terms
 
   “solve” : Term → Term → Term → Term
   “solve” functor lhs rhs =
     def (quote NbE.solve) (mk-functor-args functor $ infer-hidden 2 $ lhs v∷ rhs v∷ def (quote refl) [] v∷ [])
 
-  build-cexpr : Term → Term
-  build-cexpr “id” = con (quote NbE.CExpr.‶id‶) []
-  build-cexpr (“∘” f g) = con (quote NbE.CExpr._‶∘‶_) (build-cexpr f v∷ build-cexpr g v∷ [])
-  build-cexpr f = con (quote NbE.CExpr._↑) (f v∷ [])
+  {-# TERMINATING #-}
+  build-cexpr : Functor-terms → Term → TC Term
+  build-cexpr func tm =
+    (do
+       match-id (func .c-cat) tm
+       pure (con (quote NbE.CExpr.‶id‶) []))
+    <|>
+    (do
+       f , g ← match-∘ (func .c-cat) tm
+       f ← build-cexpr func f
+       g ← build-cexpr func g
+       pure (con (quote NbE.CExpr._‶∘‶_) (f v∷ g v∷ [])))
+    <|>
+    (pure (con (quote NbE.CExpr._↑) (tm v∷ [])))
 
-  build-dexpr : Term → Term → TC Term
-  build-dexpr functor “id” =
-    returnTC $ con (quote NbE.DExpr.‶id‶) []
-  build-dexpr functor (“∘” f g) = do
-    f ← build-dexpr functor f
-    g ← build-dexpr functor g
-    returnTC $ con (quote NbE.DExpr._‶∘‶_) (f v∷ g v∷ [])
-  build-dexpr functor (“F₁” functor' f) = do
-    unify functor functor'
-    returnTC $ con (quote NbE.DExpr.‶F₁‶) (build-cexpr f v∷ [])
-  build-dexpr functor f =
-    returnTC $ con (quote NbE.DExpr._↑) (f v∷ [])
+  {-# TERMINATING #-}
+  build-dexpr : Functor-terms → Term → TC Term
+  build-dexpr func tm =
+    (do
+       match-id (func .d-cat) tm
+       pure (con (quote NbE.DExpr.‶id‶) []))
+    <|>
+    (do
+       f , g ← match-∘ (func .d-cat) tm
+       f ← build-dexpr func f
+       g ← build-dexpr func g
+       pure (con (quote NbE.DExpr._‶∘‶_) (f v∷ g v∷ [])))
+    <|>
+    (do
+       f ← match-F₁ func tm
+       f ← build-cexpr func f
+       pure (con (quote NbE.DExpr.‶F₁‶) (f v∷ [])))
+    <|>
+    (pure (con (quote NbE.DExpr._↑) (tm v∷ [])))
 
-  dont-reduce : List Name
-  dont-reduce = quote Precategory.id ∷ quote Precategory._∘_ ∷ quote Functor.F₁ ∷ []
-
-  solve-macro : ∀ {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′} → Functor 𝒞 𝒟 → Term → TC ⊤
-  solve-macro functor hole =
-   withNormalisation false $
-   withReduceDefs (false , dont-reduce) $ do
-     functor-tm ← quoteTC functor
-     goal ← inferType hole >>= reduce
-     just (lhs , rhs) ← get-boundary goal
-       where nothing → typeError $ strErr "Can't determine boundary: " ∷
-                                   termErr goal ∷ []
-     elhs ← build-dexpr functor-tm lhs
-     erhs ← build-dexpr functor-tm rhs
-     noConstraints $ unify hole (“solve” functor-tm elhs erhs)
+  solve-macro : ∀ {o h o′ h′} {C : Precategory o h} {D : Precategory o′ h′} → Functor C D → Term → TC ⊤
+  solve-macro F hole = do
+    functor-tms ← quote-functor-terms F
+    goal ← inferType hole >>= reduce
+    just (lhs , rhs) ← get-boundary goal
+      where nothing → typeError $ strErr "Can't determine boundary: " ∷
+                                  termErr goal ∷ []
+    elhs ← build-dexpr functor-tms =<< normalise lhs
+    erhs ← build-dexpr functor-tms =<< normalise rhs
+    catchTC
+      (noConstraints $ unify hole (“solve” (functor-tms .functor) elhs erhs))
+      (typeError $
+        strErr "Could not solve functor equation:\n  "
+        ∷ termErr lhs ∷ strErr " ≡ " ∷ termErr rhs
+        ∷ "\nReflected representation:\nRHS: "
+        ∷ termErr elhs ∷ strErr "\nLHS: " ∷ termErr erhs
+        ∷ [])
 
 macro
   functor! : ∀ {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′} → Functor 𝒞 𝒟 → Term → TC ⊤
@@ -210,5 +213,11 @@ private module Test {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory
     a b c : 𝒞.Hom A B
     x y z : 𝒟.Hom X Y
 
+  simple-test : F₁ a ≡ F₁ a
+  simple-test = functor! F
+
   test : (x 𝒟.∘ F₁ (𝒞.id 𝒞.∘ 𝒞.id)) 𝒟.∘ F₁ a 𝒟.∘ F₁ (𝒞.id 𝒞.∘ b) ≡ 𝒟.id 𝒟.∘ x 𝒟.∘ F₁ (a 𝒞.∘ b)
   test = functor! F
+
+  test-F₀ : (f : 𝒟.Hom (F₀ A) (F₀ B)) → f 𝒟.∘ F₁ 𝒞.id ≡ f
+  test-F₀ f = functor! F

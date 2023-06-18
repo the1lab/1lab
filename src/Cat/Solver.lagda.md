@@ -5,6 +5,7 @@ open import 1Lab.Reflection
 open import 1Lab.Prelude hiding (id ; _∘_)
 
 open import Cat.Base
+open import Cat.Reflection
 
 open import Data.Bool
 open import Data.List
@@ -121,61 +122,49 @@ hom-sets, then they represent the same morphism.
 ```agda
 module Reflection where
 
-  pattern category-args xs =
-    _ hm∷ _ hm∷ _ v∷ xs
-
-  pattern “id” =
-    def (quote Precategory.id) (category-args (_ h∷ []))
-
-  pattern “∘” f g =
-    def (quote Precategory._∘_) (category-args (_ h∷ _ h∷ _ h∷ f v∷ g v∷ []))
-
-  mk-category-args : Term → List (Arg Term) → List (Arg Term)
-  mk-category-args cat xs = unknown h∷ unknown h∷ cat v∷ xs
-
   “solve” : Term → Term → Term → Term
   “solve” cat lhs rhs = def (quote NbE.solve) (mk-category-args cat $ infer-hidden 2 $ lhs v∷ rhs v∷ def (quote refl) [] v∷ [])
 
   “nf” : Term → Term → Term
   “nf” cat e = def (quote NbE.nf) (mk-category-args cat $ infer-hidden 2 $ e v∷ [])
 
-  build-expr : Term → Term
-  build-expr “id” = con (quote NbE.`id) []
-  build-expr (“∘” f g) = con (quote NbE._`∘_) (build-expr f v∷ build-expr g v∷ [] )
-  build-expr f = con (quote NbE._↑) (f v∷ [])
+  {-# TERMINATING #-}
+  build-expr : Term → Term → TC Term
+  build-expr cat tm =
+    (do
+       match-id cat tm
+       pure (con (quote NbE.`id) []))
+    <|>
+    (do
+       f , g ← match-∘ cat tm
+       f ← build-expr cat f
+       g ← build-expr cat g
+       pure (con (quote NbE._`∘_) (f v∷ g v∷ [])))
+    <|>
+    (pure (con (quote NbE._↑) (tm v∷ [])))
 
-  dont-reduce : List Name
-  dont-reduce = quote Precategory.id ∷ quote Precategory._∘_ ∷ []
-
-  cat-solver : Term → SimpleSolver
-  cat-solver cat .SimpleSolver.dont-reduce = dont-reduce
-  cat-solver cat .SimpleSolver.build-expr tm = returnTC $ build-expr tm
-  cat-solver cat .SimpleSolver.invoke-solver = “solve” cat
-  cat-solver cat .SimpleSolver.invoke-normaliser = “nf” cat
-
-  repr-macro : Term → Term → Term → TC ⊤
-  repr-macro cat f _ =
-    mk-simple-repr (cat-solver cat) f
-
-  simplify-macro : Term → Term → Term → TC ⊤
-  simplify-macro cat f hole =
-    mk-simple-normalise (cat-solver cat) f hole
-
-  solve-macro : Term → Term → TC ⊤
-  solve-macro cat hole =
-    mk-simple-solver (cat-solver cat) hole
+  solve-macro : ∀ {o ℓ} → Precategory o ℓ → Term → TC ⊤
+  solve-macro C hole = do
+    cat ← quoteTC C
+    goal ← inferType hole >>= reduce
+    just (lhs , rhs) ← get-boundary goal
+      where nothing → typeError $ strErr "Can't determine boundary: " ∷
+                                  termErr goal ∷ []
+    elhs ← build-expr cat =<< normalise lhs
+    erhs ← build-expr cat =<< normalise rhs
+    catchTC
+      (noConstraints $ unify hole (“solve” cat elhs erhs))
+      (typeError $
+        strErr "Could not solve category equation:\n  "
+        ∷ termErr lhs ∷ strErr " ≡ " ∷ termErr rhs
+        ∷ "\nReflected representation:\nRHS: "
+        ∷ termErr elhs ∷ strErr "\nLHS: " ∷ termErr erhs
+        ∷ [])
 
 macro
-  repr-cat! : Term → Term → Term → TC ⊤
-  repr-cat! cat f = Reflection.repr-macro cat f
-
-  simpl-cat! : Term → Term → Term → TC ⊤
-  simpl-cat! cat f = Reflection.simplify-macro cat f
-
-  cat! : Term → Term → TC ⊤
-  cat! = Reflection.solve-macro
+  cat! : ∀ {o ℓ} → Precategory o ℓ → Term → TC ⊤
+  cat! C = Reflection.solve-macro C
 ```
-
 
 ## Demo
 
