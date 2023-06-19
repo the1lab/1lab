@@ -122,11 +122,11 @@ hom-sets, then they represent the same morphism.
 ```agda
 module Reflection where
 
-  “solve” : Term → Term → Term → Term
-  “solve” cat lhs rhs = def (quote NbE.solve) (mk-category-args cat $ infer-hidden 2 $ lhs v∷ rhs v∷ def (quote refl) [] v∷ [])
+  invoke-solver : Term → Term → Term → Term
+  invoke-solver cat lhs rhs = def (quote NbE.solve) (category-args cat $ infer-hidden 2 $ lhs v∷ rhs v∷ “refl” v∷ [])
 
-  “nf” : Term → Term → Term
-  “nf” cat e = def (quote NbE.nf) (mk-category-args cat $ infer-hidden 2 $ e v∷ [])
+  invoke-normaliser : Term → Term → Term
+  invoke-normaliser cat e = def (quote NbE.nf) (category-args cat $ infer-hidden 2 $ e v∷ [])
 
   {-# TERMINATING #-}
   build-expr : Term → Term → TC Term
@@ -143,27 +143,32 @@ module Reflection where
     <|>
     (pure (con (quote NbE._↑) (tm v∷ [])))
 
-  solve-macro : ∀ {o ℓ} → Precategory o ℓ → Term → TC ⊤
-  solve-macro C hole = do
+  cat-solver : ∀ {o ℓ} → Precategory o ℓ → TC Simple-solver
+  cat-solver C = do
     cat ← quoteTC C
-    goal ← inferType hole >>= reduce
-    just (lhs , rhs) ← get-boundary goal
-      where nothing → typeError $ strErr "Can't determine boundary: " ∷
-                                  termErr goal ∷ []
-    elhs ← build-expr cat =<< normalise lhs
-    erhs ← build-expr cat =<< normalise rhs
-    catchTC
-      (noConstraints $ unify hole (“solve” cat elhs erhs))
-      (typeError $
-        strErr "Could not solve category equation:\n  "
-        ∷ termErr lhs ∷ strErr " ≡ " ∷ termErr rhs
-        ∷ "\nReflected representation:\nRHS: "
-        ∷ termErr elhs ∷ strErr "\nLHS: " ∷ termErr erhs
-        ∷ [])
+    pure (simple-solver [] (build-expr cat) (invoke-solver cat) (invoke-normaliser cat))
+
+  repr-macro : ∀ {o ℓ} → Precategory o ℓ → Term → Term → TC ⊤
+  repr-macro cat f _ = do
+    solver ← cat-solver cat
+    mk-simple-repr solver f
+
+  simplify-macro : ∀ {o ℓ} → Precategory o ℓ → Term → Term → TC ⊤
+  simplify-macro cat f hole = do
+    solver ← cat-solver cat
+    mk-simple-normalise solver f hole
+
+  solve-macro : ∀ {o ℓ} → Precategory o ℓ → Term → TC ⊤
+  solve-macro cat hole = do
+    solver ← cat-solver cat
+    mk-simple-solver solver hole
 
 macro
   cat! : ∀ {o ℓ} → Precategory o ℓ → Term → TC ⊤
-  cat! C = Reflection.solve-macro C
+  cat! = Reflection.solve-macro
+
+  simpl-cat! : ∀ {o ℓ} → Precategory o ℓ → Term → Term → TC ⊤
+  simpl-cat! = Reflection.simplify-macro
 ```
 
 ## Demo

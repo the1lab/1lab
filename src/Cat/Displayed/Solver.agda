@@ -1,5 +1,3 @@
-{-# OPTIONS -vtc.def.fun:10 #-}
-
 module Cat.Displayed.Solver where
 
 open import Data.List
@@ -9,9 +7,11 @@ open import 1Lab.Reflection.Solver
 open import 1Lab.Prelude hiding (id; _∘_)
 
 open import Cat.Base
+open import Cat.Reflection
 open import Cat.Displayed.Base
-import Cat.Solver
+open import Cat.Displayed.Reflection
 
+import Cat.Solver
 import Cat.Displayed.Reasoning as Dr
 
 module NbE {o′ ℓ′ o′′ ℓ′′}
@@ -30,7 +30,7 @@ module NbE {o′ ℓ′ o′′ ℓ′′}
     a′ b′ c′ d′ e′ : Ob[ a ]
     f′ g′ h′ i′ j′ : Hom[ f ] a′ b′
 
-  data Expr[_] : ∀ {a b} (f : Expr B a b) (a′ : Ob[ a ]) (b′ : Ob[ b ]) → Type (o′ ⊔ ℓ′ ⊔ o′′ ⊔ ℓ′′) where
+  data Expr[_] : ∀ {a b} (f : Expr B a b) (a′ : Ob[ a ]) (b′ : Ob[ b ]) → Typeω where
     `id  : {a′ : Ob[ a ]} → Expr[ `id ] a′ a′
     _`∘_ : ∀ {a′ b′ c′} {f : Expr B b c} {g : Expr B a b}
            → Expr[ f ] b′ c′ → Expr[ g ] a′ b′ → Expr[ f `∘ g ] a′ c′
@@ -43,11 +43,11 @@ module NbE {o′ ℓ′ o′′ ℓ′′}
   unexpr[ d `∘ d₁ ] (e `∘ e₁) = unexpr[ d ] e ∘′ unexpr[ d₁ ] e₁
   unexpr[ _ ] (hom ↑)         = hom
 
-  data Stack[_] : ∀ {a b} → B.Hom a b → Ob[ a ] → Ob[ b ] → Type (o′ ⊔ ℓ′ ⊔ o′′ ⊔ ℓ′′) where
+  data Stack[_] : ∀ {a b} → B.Hom a b → Ob[ a ] → Ob[ b ] → Typeω where
     [] : ∀ {a} {a′ : Ob[ a ]} → Stack[ B.id ] a′ a′
     _∷_ : ∀ {a b c a′ b′ c′} {f : B.Hom b c} {g : B.Hom a b} → Hom[ f ] b′ c′ → Stack[ g ] a′ b′ → Stack[ f B.∘ g ] a′ c′
 
-  record Value[_] {a b} (f : B.Hom a b) (a′ : Ob[ a ]) (b′ : Ob[ b ]) : Type (o′ ⊔ ℓ′ ⊔ o′′ ⊔ ℓ′′) where
+  record Value[_] {a b} (f : B.Hom a b) (a′ : Ob[ a ]) (b′ : Ob[ b ]) : Typeω where
     constructor vsubst
     field
       {mor} : B.Hom a b
@@ -138,91 +138,103 @@ module NbE {o′ ℓ′ o′′ ℓ′′}
 module Reflection where
   module Cat = Cat.Solver.Reflection
 
-  pattern displayed-field-args xs =
-    _ hm∷ _ hm∷ -- Base Levels
-    _ hm∷       -- Base Category
-    _ hm∷ _ hm∷ -- Displayed Levels
-    _ v∷ xs     -- Displayed Category
+  build-neu-expr : Displayed-terms → Term → TC Term
+  build-neu-expr dtm tm = do
+    f , x′ , y′ ← get-hom[]-objects dtm =<< inferType tm
+    debugPrint "tactic" 50
+      [ "Building neutral hom expression: " , termErr tm
+      , "\n  Has type: Hom[ " , termErr f , " ] (" , termErr x′ , ") (" , termErr y′ , ")"
+      ]
+    f ← Cat.build-expr cat f
+    pure (con (quote NbE._↑) (infer-hidden 8 (x′ h∷ y′ h∷ f h∷ tm v∷ [])))
+    where open Displayed-terms dtm
 
-  pattern displayed-fn-args xs =
-    _ h∷ _ h∷ _ h∷ _ h∷ _ h∷ _ v∷ xs
+  {-# TERMINATING #-}
+  build-expr : Displayed-terms → Term → TC Term
+  build-expr dtm tm =
+    (do
+       match-id′ dtm tm
+       pure $ con (quote NbE.`id) [])
+    <|>
+    (do
+       f , g , f′ , g′ ← match-∘′ dtm tm
+       f ← Cat.build-expr cat f
+       g ← Cat.build-expr cat g
+       f′ ← build-expr dtm f′
+       g′ ← build-expr dtm g′
+       pure $ con (quote NbE._`∘_) (infer-hidden 12 $ f h∷ g h∷ f′ v∷ g′ v∷ []))
+    <|>
+    (do
+       f , g , p , f′ ← match-hom[] dtm tm
+       f ← Cat.build-expr cat f
+       g ← Cat.build-expr cat g
+       f′ ← build-expr dtm f′
+       pure $ con (quote NbE.`hom[_]_) (infer-hidden 10 $ f h∷ g h∷ p v∷ f′ v∷ []))
+    <|>
+    (build-neu-expr dtm tm)
+    where open Displayed-terms dtm
 
-  pattern ob[]_ xs =
-    _ h∷ _ h∷ xs
+  invoke-solver : Displayed-terms → Term → Term → Term
+  invoke-solver dtm lhs rhs =
+    def (quote NbE.solve′) (displayed-args disp (infer-hidden 6 $ lhs v∷ rhs v∷ “refl” v∷ “reindex” v∷ []))
+    where
+      open Displayed-terms dtm
+      “reindex” = def (quote Dr.reindex) (disp v∷ unknown v∷ unknown v∷ [])
 
-  pattern “Hom[_]” f x y =
-    def (quote Displayed.Hom[_]) (displayed-field-args (ob[] (f v∷ x v∷ y v∷ [])))
+  invoke-normaliser : Displayed-terms → Term → Term
+  invoke-normaliser dtm tm =
+    def (quote NbE.nf′) (displayed-args disp (infer-hidden 5 $ tm v∷ []))
+    where open Displayed-terms dtm
 
-  pattern “id” =
-    def (quote Displayed.id′) (displayed-field-args (ob[] []))
+  displayed-solver
+    : ∀ {o′ ℓ′ o′′ ℓ′′} {B : Precategory o′ ℓ′}
+    → Displayed B o′′ ℓ′′
+    → TC Simple-solver
+  displayed-solver E = do
+    dtm ← quote-displayed-terms E
+    pure (simple-solver (quote Dr.hom[] ∷ []) (build-expr dtm) (invoke-solver dtm) (invoke-normaliser dtm))
 
-  pattern “∘” f g f′ g′ =
-    def (quote Displayed._∘′_) (displayed-field-args (ob[] ob[] ob[] (f h∷ g h∷ f′ v∷ g′ v∷ [])))
+  repr-macro
+    : ∀ {o′ ℓ′ o′′ ℓ′′} {B : Precategory o′ ℓ′}
+    → Displayed B o′′ ℓ′′
+    → Term → Term → TC ⊤
+  repr-macro E f _ = do
+    solver ← displayed-solver E
+    mk-simple-repr solver f
 
-  -- This p has type 'f ≡ g', but we need 'embed (build-expr f) ≡ embed (build-expr g)'
-  pattern “hom[]” f g p f′  =
-    def (quote Dr.hom[_]) (displayed-fn-args (ob[] ob[] (f h∷ g h∷ p v∷ f′ v∷ [])))
+  simplify-macro
+    : ∀ {o′ ℓ′ o′′ ℓ′′} {B : Precategory o′ ℓ′}
+    → Displayed B o′′ ℓ′′
+    → Term → Term → TC ⊤
+  simplify-macro E f hole = do
+    solver ← displayed-solver E
+    mk-simple-normalise solver f hole
 
-  mk-displayed-fn : Term → List (Arg Term) → List (Arg Term)
-  mk-displayed-fn disp args = unknown h∷ unknown h∷ unknown h∷ unknown h∷ unknown h∷ disp v∷ args
-
-  invoke-solver : Term → Term → Term → Term
-  invoke-solver disp lhs rhs =
-    def (quote NbE.solve′) (mk-displayed-fn disp (infer-hidden 6 $ lhs v∷ rhs v∷ “refl” v∷ “reindex” v∷ []))
-    where “reindex” = def (quote Dr.reindex) (disp v∷ unknown v∷ unknown v∷ [])
-
-  invoke-normaliser : Term → Term → Term
-  invoke-normaliser disp tm = def (quote NbE.nf′) (mk-displayed-fn disp (infer-hidden 5 $ tm v∷ []))
-
-  build-expr : Term → TC Term
-  build-expr “id” = returnTC $ con (quote NbE.`id) []
-  build-expr (“∘” f g f′ g′) = do
-    let f = Cat.build-expr f
-    let g = Cat.build-expr g
-    f′ ← build-expr f′
-    g′ ← build-expr g′
-    returnTC $ con (quote NbE._`∘_) (infer-hidden 12 $ f h∷ g h∷ f′ v∷ g′ v∷ [])
-  build-expr (“hom[]” f g p f′) = do
-    let f = Cat.build-expr f
-    let g = Cat.build-expr g
-    f′ ← build-expr f′
-    returnTC $ con (quote NbE.`hom[_]_) (infer-hidden 10 $ f h∷ g h∷ p v∷ f′ v∷ [])
-  build-expr f′ = do
-    “Hom[ f ]” x y ← inferType f′ >>= reduce
-      where tp → typeError $ strErr "Expected a displayed morphism: " ∷ termErr tp ∷ []
-    returnTC $ con (quote NbE._↑) (infer-hidden 8 $ x h∷ y h∷ Cat.build-expr f h∷ f′ v∷ [])
-
-  dont-reduce : List Name
-  dont-reduce =
-    quote Precategory.id ∷ quote Precategory._∘_ ∷
-    quote Displayed.id′ ∷ quote Displayed._∘′_ ∷ quote Dr.hom[_] ∷ []
-
-  displayed-solver : Term → SimpleSolver
-  displayed-solver disp .SimpleSolver.dont-reduce = dont-reduce
-  displayed-solver disp .SimpleSolver.build-expr tm = build-expr tm
-  displayed-solver disp .SimpleSolver.invoke-solver = invoke-solver disp
-  displayed-solver disp .SimpleSolver.invoke-normaliser = invoke-normaliser disp
-
-  repr-macro : Term → Term → Term → TC ⊤
-  repr-macro disp f _ =
-    mk-simple-repr (displayed-solver disp) f
-
-  simplify-macro : Term → Term → Term → TC ⊤
-  simplify-macro disp f hole =
-    mk-simple-normalise (displayed-solver disp) f hole
-
-  solve-macro : Term → Term → TC ⊤
-  solve-macro disp hole =
-    mk-simple-solver (displayed-solver disp) hole
+  solve-macro
+    : ∀ {o′ ℓ′ o′′ ℓ′′} {B : Precategory o′ ℓ′}
+    → Displayed B o′′ ℓ′′
+    → Term → TC ⊤
+  solve-macro E hole = do
+    solver ← displayed-solver E
+    mk-simple-solver solver hole
 
 macro
-  repr-disp! : Term → Term → Term → TC ⊤
+  repr-disp!
+    : ∀ {o′ ℓ′ o′′ ℓ′′} {B : Precategory o′ ℓ′}
+    → Displayed B o′′ ℓ′′
+    → Term → Term → TC ⊤
   repr-disp! = Reflection.repr-macro
 
-  simpl-disp! : Term → Term → Term → TC ⊤
+  simpl-disp!
+    : ∀ {o′ ℓ′ o′′ ℓ′′} {B : Precategory o′ ℓ′}
+    → Displayed B o′′ ℓ′′
+    → Term → Term → TC ⊤
   simpl-disp! = Reflection.simplify-macro
 
-  disp! : Term → Term → TC ⊤
+  disp!
+    : ∀ {o′ ℓ′ o′′ ℓ′′} {B : Precategory o′ ℓ′}
+    → Displayed B o′′ ℓ′′
+    → Term → TC ⊤
   disp! = Reflection.solve-macro
 
 private module Test {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′) where

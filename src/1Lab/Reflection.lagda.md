@@ -549,6 +549,10 @@ _ term=? _ = false
 “refl” : Term
 “refl” = def (quote refl) []
 
+“Path” : Term → Term → Term → Term
+“Path” A x y =
+  def (quote Path) (unknown h∷ A v∷ x v∷ y v∷ [])
+
 wait-for-args : List (Arg Term) → TC (List (Arg Term))
 wait-for-type : Term → TC Term
 

@@ -6,51 +6,51 @@ open import 1Lab.Reflection
 module Cat.Reflection where
 
 --------------------------------------------------------------------------------
--- Patterns for Category Reflection
+-- Helpers for constructing reflected fields.
 
-pattern category-args cat xs =
-  _ hm∷ _ hm∷ cat v∷ xs
+category-args : Term → List (Arg Term) → List (Arg Term)
+category-args cat xs = infer-hidden 2 $ cat v∷ xs
 
-mk-category-args : Term → List (Arg Term) → List (Arg Term)
-mk-category-args cat xs = infer-hidden 2 $ cat v∷ xs
+“id” : Term → Term → Term
+“id” cat x =
+  def (quote Precategory.id) (category-args cat (x h∷ []))
 
-pattern “id” cat =
-  def (quote Precategory.id) (category-args cat (_ h∷ []))
+“∘” : Term → Term → Term → Term
+“∘” cat f g =
+  def (quote Precategory._∘_) (category-args cat (infer-hidden 3 (f v∷ g v∷ [])))
 
-pattern “∘” cat f g =
-  def (quote Precategory._∘_) (category-args cat (_ h∷ _ h∷ _ h∷ f v∷ g v∷ []))
+“Ob” : Term → Term
+“Ob” cat =
+  def (quote Precategory.Ob) (category-args cat [])
 
-pattern “Hom” C x y =
-  def (quote Precategory.Hom) (category-args C (x v∷ y v∷ []))
+“Hom” : Term → Term → Term → Term
+“Hom” cat x y =
+  def (quote Precategory.Hom) (category-args cat (x v∷ y v∷ []))
 
-pattern functor-args functor xs =
-  _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ _ hm∷ functor v∷ xs
+functor-args : Term → List (Arg Term) → List (Arg Term)
+functor-args functor xs = infer-hidden 6 $ functor v∷ xs
 
-mk-functor-args : Term → List (Arg Term) → List (Arg Term)
-mk-functor-args functor xs = infer-hidden 6 $ functor v∷ xs
-
-pattern “F₀” functor x =
+“F₀” : Term → Term → Term
+“F₀” functor x =
   def (quote Functor.F₀) (functor-args functor (x v∷ []))
 
-pattern “F₁” functor f =
-  def (quote Functor.F₁) (functor-args functor (_ h∷ _ h∷ f v∷ []))
+“F₁” : Term → Term → Term
+“F₁” functor f =
+  def (quote Functor.F₁) (functor-args functor (infer-hidden 2 (f v∷ [])))
 
 “Id” : Term → Term
-“Id” cat = def (quote Id) (infer-hidden 2 $ cat h∷ [])
+“Id” cat =
+  def (quote Id) (infer-hidden 2 $ cat h∷ [])
 
 _“F∘”_ : Term → Term → Term
-F “F∘” G = def (quote _F∘_) (infer-hidden 9 $ F v∷ G v∷ [])
+F “F∘” G =
+  def (quote _F∘_) (infer-hidden 9 $ F v∷ G v∷ [])
 
-pattern nat-trans-args nt args =
-  _ hm∷ _ hm∷ _ hm∷ _ hm∷
-  _ hm∷ _ hm∷
-  _ hm∷ _ hm∷
-  nt v∷ args
+nat-trans-args : Term → List (Arg Term) → List (Arg Term)
+nat-trans-args nat-trans xs = infer-hidden 8 $ nat-trans v∷ xs
 
-mk-nat-trans-args : Term → List (Arg Term) → List (Arg Term)
-mk-nat-trans-args nat-trans xs = infer-hidden 8 $ nat-trans v∷ xs
-
-pattern “η” nat-trans x =
+“η” : Term → Term → Term
+“η” nat-trans x =
   def (quote _=>_.η) (nat-trans-args nat-trans (x v∷ []))
 
 --------------------------------------------------------------------------------
@@ -107,15 +107,7 @@ quote-nat-trans-terms {C = C} {D = D} {F = F} {G = G} α = do
          })
 
 --------------------------------------------------------------------------------
--- Name Matchers
-
-new-ob-meta : Term → TC Term
-new-ob-meta cat =
-  new-meta (def (quote Precategory.Ob) (mk-category-args cat []))
-
-new-hom-meta : Term → Term → Term → TC Term
-new-hom-meta cat x y =
-  new-meta (def (quote Precategory.Hom) (mk-category-args cat (x v∷ y v∷ [])))
+-- Term Matchers
 
 data Precategory-fields : Type where
   id-field : Precategory-fields
@@ -123,15 +115,15 @@ data Precategory-fields : Type where
 
 match-id : Term → Term → TC ⊤
 match-id cat tm = do
-  id ← normalise (def (quote Precategory.id) (mk-category-args cat (infer-hidden 1 [])))
+  id ← normalise (“id” cat unknown)
   unify tm id
   debugPrint "tactic" 50 [ "Matched id for " , termErr tm ]
 
 match-∘ : Term → Term → TC (Term × Term)
 match-∘ cat tm = do
-  f-meta ← new-hom-meta cat unknown unknown
-  g-meta ← new-hom-meta cat unknown unknown
-  comp ← normalise (def (quote Precategory._∘_) (mk-category-args cat (infer-hidden 3 $ f-meta v∷ g-meta v∷ [])))
+  f-meta ← new-meta (“Hom” cat unknown unknown)
+  g-meta ← new-meta (“Hom” cat unknown unknown)
+  comp ← normalise (“∘” cat f-meta g-meta)
   unify tm comp
   debugPrint "tactic" 50 [ "Matched ∘ for " , termErr tm ]
   f-meta ← reduce f-meta
@@ -140,8 +132,8 @@ match-∘ cat tm = do
 
 match-F₀ : Functor-terms → Term → TC Term
 match-F₀ func tm = do
-  x-meta ← new-ob-meta c-cat
-  F₀ ← normalise (def (quote Functor.F₀) (mk-functor-args functor (x-meta v∷ [])))
+  x-meta ← new-meta (“Ob” c-cat)
+  F₀ ← normalise (“F₀” functor x-meta)
   unify tm F₀
   debugPrint "tactic" 50 [ "Matched F₀ for " , termErr tm ]
   reduce x-meta
@@ -149,8 +141,8 @@ match-F₀ func tm = do
 
 match-F₁ : Functor-terms → Term → TC Term
 match-F₁ func tm = do
-  f-meta ← new-hom-meta c-cat unknown unknown
-  F₁ ← normalise (def (quote Functor.F₁) (mk-functor-args functor (infer-hidden 2 $ f-meta v∷ [])))
+  f-meta ← new-meta (“Hom” c-cat unknown unknown)
+  F₁ ← normalise (“F₁” functor f-meta)
   unify tm F₁
   debugPrint "tactic" 50 [ "Matched F₁ for " , termErr tm ]
   reduce f-meta
@@ -158,8 +150,8 @@ match-F₁ func tm = do
 
 match-η : Nat-trans-terms → Term → TC Term
 match-η nt tm = do
-  x-meta ← new-ob-meta d-cat
-  η ← normalise (def (quote _=>_.η) (mk-nat-trans-args nat-trans (x-meta v∷ [])))
+  x-meta ← new-meta (“Ob” d-cat)
+  η ← normalise (“η” nat-trans x-meta)
   unify tm η
   debugPrint "tactic" 50 [ "Matched η for " , termErr tm ]
   reduce x-meta
@@ -172,7 +164,9 @@ match-η nt tm = do
 get-hom-objects : Term → Term → TC (Term × Term)
 get-hom-objects cat tm = do
   tm ← normalise tm
-  x ← new-meta (def (quote Precategory.Ob) (infer-hidden 2 (cat v∷ [])))
-  y ← new-meta (def (quote Precategory.Ob) (infer-hidden 2 (cat v∷ [])))
-  unify tm (def (quote Precategory.Hom) (infer-hidden 2 (cat v∷ x v∷ y v∷ [])))
+  x ← new-meta (“Ob” cat)
+  y ← new-meta (“Ob” cat)
+  unify tm (“Hom” cat x y)
+  x ← reduce x
+  y ← reduce y
   pure (x , y)

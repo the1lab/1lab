@@ -220,7 +220,7 @@ module Reflection where
   dont-reduce : List Name
   dont-reduce = quote is-group.unit ∷ quote Group-on._⋆_ ∷ quote is-group.inverse ∷ []
 
-  group-solver : ∀ {ℓ} {A : Type ℓ} → Group-on A → TC (VariableSolver A)
+  group-solver : ∀ {ℓ} {A : Type ℓ} → Group-on A → TC (Variable-solver A)
   group-solver {A = A} grp = do
     grp-tm ← quoteTC grp
     returnTC (var-solver {A = A} dont-reduce build-expr (“solve” grp-tm) (“expand” grp-tm))

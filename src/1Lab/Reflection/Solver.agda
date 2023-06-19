@@ -39,7 +39,7 @@ print-var-repr tm repr env =
 --------------------------------------------------------------------------------
 -- Simple Solvers
 
-record SimpleSolver : Type where
+record Simple-solver : Type where
   constructor simple-solver
   field
     dont-reduce : List Name
@@ -47,8 +47,8 @@ record SimpleSolver : Type where
     invoke-solver : Term → Term → Term
     invoke-normaliser : Term → Term
 
-module _ (solver : SimpleSolver) where
-  open SimpleSolver solver
+module _ (solver : Simple-solver) where
+  open Simple-solver solver
 
   mk-simple-solver : Term → TC ⊤
   mk-simple-solver hole =
@@ -79,7 +79,7 @@ module _ (solver : SimpleSolver) where
 --------------------------------------------------------------------------------
 -- Solvers with Variables
 
-record VariableSolver {ℓ} (A : Type ℓ) : Type ℓ where
+record Variable-solver {ℓ} (A : Type ℓ) : Type ℓ where
   constructor var-solver
   field
     dont-reduce : List Name
@@ -87,8 +87,8 @@ record VariableSolver {ℓ} (A : Type ℓ) : Type ℓ where
     invoke-solver : Term → Term → Term → Term
     invoke-normaliser : Term → Term → Term
 
-module _ {ℓ} {A : Type ℓ} (solver : VariableSolver A) where
-  open VariableSolver solver
+module _ {ℓ} {A : Type ℓ} (solver : Variable-solver A) where
+  open Variable-solver solver
 
   mk-var-solver : Term → TC ⊤
   mk-var-solver hole =

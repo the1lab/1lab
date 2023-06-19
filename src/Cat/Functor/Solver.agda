@@ -1,4 +1,5 @@
 open import 1Lab.Reflection
+open import 1Lab.Reflection.Solver
 open import 1Lab.Prelude
 
 open import Cat.Base
@@ -138,12 +139,19 @@ module NbE {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h�
     solve : (e1 e2 : DExpr X Y) → undvalue (deval e1) ≡ undvalue (deval e2) → undexpr e1 ≡ undexpr e2
     solve e1 e2 p  = sym (deval-sound e1) ·· p ·· (deval-sound e2)
 
+  nf : DExpr X Y → 𝒟.Hom X Y
+  nf e = undvalue (deval e)
+
 module Reflection where
   open Functor-terms
 
-  “solve” : Term → Term → Term → Term
-  “solve” functor lhs rhs =
-    def (quote NbE.solve) (mk-functor-args functor $ infer-hidden 2 $ lhs v∷ rhs v∷ def (quote refl) [] v∷ [])
+  invoke-solver : Functor-terms → Term → Term → Term
+  invoke-solver func lhs rhs =
+    def (quote NbE.solve) (functor-args (func .functor) $ infer-hidden 2 $ lhs v∷ rhs v∷ “refl” v∷ [])
+
+  invoke-normaliser : Functor-terms → Term → Term
+  invoke-normaliser func e =
+    def (quote NbE.solve) (functor-args (func .functor) $ infer-hidden 2 $ e v∷ [])
 
   {-# TERMINATING #-}
   build-cexpr : Functor-terms → Term → TC Term
@@ -180,27 +188,50 @@ module Reflection where
     <|>
     (pure (con (quote NbE.DExpr._↑) (tm v∷ [])))
 
-  solve-macro : ∀ {o h o′ h′} {C : Precategory o h} {D : Precategory o′ h′} → Functor C D → Term → TC ⊤
+  functor-solver
+    : ∀ {o h o′ h′} {C : Precategory o h} {D : Precategory o′ h′}
+    → Functor C D
+    → TC Simple-solver
+  functor-solver F = do
+    func ← quote-functor-terms F
+    pure (simple-solver [] (build-dexpr func) (invoke-solver func) (invoke-normaliser func))
+
+  repr-macro
+    : ∀ {o h o′ h′} {C : Precategory o h} {D : Precategory o′ h′}
+    → Functor C D
+    → Term → Term → TC ⊤
+  repr-macro F tm _ = do
+    solver ← functor-solver F
+    mk-simple-repr solver tm
+
+  simplify-macro
+    : ∀ {o h o′ h′} {C : Precategory o h} {D : Precategory o′ h′}
+    → Functor C D
+    → Term → Term → TC ⊤
+  simplify-macro F tm hole = do
+    solver ← functor-solver F
+    mk-simple-normalise solver tm hole
+
+  solve-macro
+    : ∀ {o h o′ h′} {C : Precategory o h} {D : Precategory o′ h′}
+    → Functor C D
+    → Term → TC ⊤
   solve-macro F hole = do
-    functor-tms ← quote-functor-terms F
-    goal ← inferType hole >>= reduce
-    just (lhs , rhs) ← get-boundary goal
-      where nothing → typeError $ strErr "Can't determine boundary: " ∷
-                                  termErr goal ∷ []
-    elhs ← build-dexpr functor-tms =<< normalise lhs
-    erhs ← build-dexpr functor-tms =<< normalise rhs
-    catchTC
-      (noConstraints $ unify hole (“solve” (functor-tms .functor) elhs erhs))
-      (typeError $
-        strErr "Could not solve functor equation:\n  "
-        ∷ termErr lhs ∷ strErr " ≡ " ∷ termErr rhs
-        ∷ "\nReflected representation:\nRHS: "
-        ∷ termErr elhs ∷ strErr "\nLHS: " ∷ termErr erhs
-        ∷ [])
+    solver ← functor-solver F
+    mk-simple-solver solver hole
 
 macro
-  functor! : ∀ {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′} → Functor 𝒞 𝒟 → Term → TC ⊤
-  functor! functor = Reflection.solve-macro functor
+  functor!
+    : ∀ {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′}
+    → Functor 𝒞 𝒟
+    → Term → TC ⊤
+  functor! = Reflection.solve-macro
+
+  simpl-functor!
+    : ∀ {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′}
+    → Functor 𝒞 𝒟
+    → Term → Term → TC ⊤
+  simpl-functor! = Reflection.simplify-macro
 
 private module Test {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′} (F : Functor 𝒞 𝒟) where
   module 𝒞 = Cat 𝒞

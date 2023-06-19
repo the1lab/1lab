@@ -470,7 +470,7 @@ module Reflection where
     quote Ring-on._+_ ∷
     []
 
-  cring-solver : ∀ {ℓ} {A : Type ℓ} → CRing-on A → TC (VariableSolver A)
+  cring-solver : ∀ {ℓ} {A : Type ℓ} → CRing-on A → TC (Variable-solver A)
   cring-solver {A = A} cring = do
     cring-tm ← quoteTC cring
     returnTC $ var-solver dont-reduce (build-expr cring-tm) (“solve” cring-tm) (“expand” cring-tm)

@@ -2,6 +2,7 @@ module Cat.Diagram.Monad.Solver where
 
 open import 1Lab.Prelude hiding (id; _∘_)
 open import 1Lab.Reflection hiding (_++_)
+open import 1Lab.Reflection.Solver
 
 open import Cat.Base
 open import Cat.Reflection
@@ -220,27 +221,33 @@ module NbE {o h} {𝒞 : Precategory o h} (M : Monad 𝒞) where
     solve : ∀ (e1 e2 : ‶Hom‶ X Y) → ⟦ eval e1 ⟧ᵥ ≡ ⟦ eval e2 ⟧ᵥ → ⟦ e1 ⟧ₕ ≡ ⟦ e2 ⟧ₕ
     solve e1 e2 p = sym (eval-sound e1) ·· p ·· (eval-sound e2)
 
+  nf : ‶Hom‶ X Y → Hom ⟦ X ⟧ₒ ⟦ Y ⟧ₒ
+  nf e = ⟦ eval e ⟧ᵥ
+
 module Reflection where
 
-  pattern monad-args monad xs =
-    _ hm∷ _ hm∷ _ hm∷ monad v∷ xs
+  monad-args : Term → List (Arg Term) → List (Arg Term)
+  monad-args monad xs = infer-hidden 3 $ monad v∷ xs
 
-  mk-monad-args : Term → List (Arg Term) → List (Arg Term)
-  mk-monad-args monad xs = infer-hidden 3 $ monad v∷ xs
+  “M” : Term → Term
+  “M” monad = def (quote Monad.M) (monad-args monad [])
+
+  “unit” : Term → Term
+  “unit” monad = def (quote Monad.unit) (monad-args monad [])
+
+  “mult” : Term → Term
+  “mult” monad = def (quote Monad.mult) (monad-args monad [])
 
   record Monad-terms : Type where
     field
       cat : Term
       monad : Term
 
-    functor : Term
-    functor = def (quote Monad.M) (mk-monad-args monad [])
-
     functor-tms : Functor-terms
     functor-tms = record
       { c-cat = cat
       ; d-cat = cat
-      ; functor = functor
+      ; functor = “M” monad
       }
 
     unit-tms : Nat-trans-terms
@@ -248,17 +255,17 @@ module Reflection where
       { c-cat = cat
       ; d-cat = cat
       ; F-functor = “Id” cat
-      ; G-functor = functor
-      ; nat-trans = def (quote Monad.unit) (mk-monad-args monad [])
+      ; G-functor = “M” monad
+      ; nat-trans = “unit” monad
       }
 
     mult-tms : Nat-trans-terms
     mult-tms = record
       { c-cat = cat
       ; d-cat = cat
-      ; F-functor = functor “F∘” functor
-      ; G-functor = functor
-      ; nat-trans = def (quote Monad.mult) (mk-monad-args monad [])
+      ; F-functor = (“M” monad) “F∘” (“M” monad)
+      ; G-functor = “M” monad
+      ; nat-trans = “mult” monad
       }
 
   open Monad-terms
@@ -281,9 +288,13 @@ module Reflection where
   match-mult : Monad-terms → Term → TC Term
   match-mult m tm = match-η (mult-tms m) tm
 
-  “solve” : Term → Term → Term → Term
-  “solve” monad lhs rhs =
-    def (quote NbE.solve) (mk-monad-args monad $ infer-hidden 2 $ lhs v∷ rhs v∷ def (quote refl) [] v∷ [])
+  invoke-solver : Monad-terms → Term → Term → Term
+  invoke-solver m lhs rhs =
+    def (quote NbE.solve) (monad-args (m .monad) $ infer-hidden 2 $ lhs v∷ rhs v∷ “refl” v∷ [])
+
+  invoke-normaliser : Monad-terms → Term → Term
+  invoke-normaliser m e =
+    def (quote NbE.nf) (monad-args (m .monad) $ infer-hidden 2 $ e v∷ [])
 
   {-# TERMINATING #-}
   build-object-expr : Monad-terms → Term → TC Term
@@ -336,27 +347,32 @@ module Reflection where
     <|>
     (build-neu-hom-expr m tm)
 
+  monad-solver : ∀ {o h} {C : Precategory o h} → Monad C → TC Simple-solver
+  monad-solver M = do
+    monad ← quote-monad-terms M
+    pure (simple-solver [] (build-hom-expr monad) (invoke-solver monad) (invoke-normaliser monad))
+
+  repr-macro : ∀ {o h} {𝒞 : Precategory o h} → Monad 𝒞 → Term → Term → TC ⊤
+  repr-macro M tm _ = do
+    solver ← monad-solver M
+    mk-simple-repr solver tm
+
+  simplify-macro : ∀ {o h} {𝒞 : Precategory o h} → Monad 𝒞 → Term → Term → TC ⊤
+  simplify-macro M tm hole = do
+    solver ← monad-solver M
+    mk-simple-normalise solver tm hole
+
   solve-macro : ∀ {o h} {𝒞 : Precategory o h} → Monad 𝒞 → Term → TC ⊤
   solve-macro M hole = do
-    monad-tms ← quote-monad-terms M
-    goal ← inferType hole >>= reduce
-    just (lhs , rhs) ← get-boundary goal
-      where nothing → typeError $ strErr "Can't determine boundary: " ∷
-                                  termErr goal ∷ []
-    elhs ← build-hom-expr monad-tms =<< normalise lhs
-    erhs ← build-hom-expr monad-tms =<< normalise rhs
-    catchTC
-      (noConstraints $ unify hole (“solve” (monad-tms .monad) elhs erhs))
-      (typeError $
-        strErr "Could not solve monad equation:\n  "
-        ∷ termErr lhs ∷ strErr " ≡ " ∷ termErr rhs
-        ∷ "\nReflected representation:\nRHS: "
-        ∷ termErr elhs ∷ strErr "\nLHS: " ∷ termErr erhs
-        ∷ [])
+    solver ← monad-solver M
+    mk-simple-solver solver hole
 
 macro
   monad! : ∀ {o h} {C : Precategory o h} → Monad C → Term → TC ⊤
-  monad! M = Reflection.solve-macro M
+  monad! = Reflection.solve-macro
+
+  simpl-monad! : ∀ {o h} {C : Precategory o h} → Monad C → Term → Term → TC ⊤
+  simpl-monad! = Reflection.simplify-macro
 
 private module Test {o h} {𝒞 : Precategory o h} (monad : Monad 𝒞) where
   open Precategory 𝒞
