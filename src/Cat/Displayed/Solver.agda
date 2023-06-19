@@ -194,48 +194,24 @@ module Reflection where
     dtm ← quote-displayed-terms E
     pure (simple-solver (quote Dr.hom[] ∷ []) (build-expr dtm) (invoke-solver dtm) (invoke-normaliser dtm))
 
-  repr-macro
-    : ∀ {o′ ℓ′ o′′ ℓ′′} {B : Precategory o′ ℓ′}
-    → Displayed B o′′ ℓ′′
-    → Term → Term → TC ⊤
-  repr-macro E f _ = do
-    solver ← displayed-solver E
-    mk-simple-repr solver f
-
-  simplify-macro
-    : ∀ {o′ ℓ′ o′′ ℓ′′} {B : Precategory o′ ℓ′}
-    → Displayed B o′′ ℓ′′
-    → Term → Term → TC ⊤
-  simplify-macro E f hole = do
-    solver ← displayed-solver E
-    mk-simple-normalise solver f hole
-
-  solve-macro
-    : ∀ {o′ ℓ′ o′′ ℓ′′} {B : Precategory o′ ℓ′}
-    → Displayed B o′′ ℓ′′
-    → Term → TC ⊤
-  solve-macro E hole = do
-    solver ← displayed-solver E
-    mk-simple-solver solver hole
-
 macro
   repr-disp!
     : ∀ {o′ ℓ′ o′′ ℓ′′} {B : Precategory o′ ℓ′}
     → Displayed B o′′ ℓ′′
     → Term → Term → TC ⊤
-  repr-disp! = Reflection.repr-macro
+  repr-disp! E = mk-simple-repr (Reflection.displayed-solver E)
 
   simpl-disp!
     : ∀ {o′ ℓ′ o′′ ℓ′′} {B : Precategory o′ ℓ′}
     → Displayed B o′′ ℓ′′
     → Term → Term → TC ⊤
-  simpl-disp! = Reflection.simplify-macro
+  simpl-disp! E = mk-simple-normalise (Reflection.displayed-solver E)
 
   disp!
     : ∀ {o′ ℓ′ o′′ ℓ′′} {B : Precategory o′ ℓ′}
     → Displayed B o′′ ℓ′′
     → Term → TC ⊤
-  disp! = Reflection.solve-macro
+  disp! E = mk-simple-solver (Reflection.displayed-solver E)
 
 private module Test {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′) where
   open Precategory B

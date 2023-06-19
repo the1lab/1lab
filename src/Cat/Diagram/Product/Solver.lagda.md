@@ -1,8 +1,11 @@
 <!--
 ```agda
 open import 1Lab.Reflection
+open import 1Lab.Reflection.Solver
 
 open import Cat.Diagram.Product
+open import Cat.Diagram.Product.Reflection
+open import Cat.Reflection
 open import Cat.Prelude
 
 open import Data.List
@@ -256,8 +259,8 @@ a macro, which is critical for performance.
 
 ```agda
   abstract
-    solve : ∀ X Y → (e1 e2 : Expr X Y) → nf X Y e1 ≡ nf X Y e2 → ⟦ e1 ⟧ₑ ≡ ⟦ e2 ⟧ₑ
-    solve X Y e1 e2 p = sym (sound X Y e1) ·· p ·· sound X Y e2
+    solve : ∀ {X Y} → (e1 e2 : Expr X Y) → nf X Y e1 ≡ nf X Y e2 → ⟦ e1 ⟧ₑ ≡ ⟦ e2 ⟧ₑ
+    solve e1 e2 p = sym (sound _ _ e1) ·· p ·· sound _ _ e2
 ```
 
 # Reflection
@@ -266,255 +269,99 @@ As per usual, this is the hard part. Reflection is normally quite tricky, but th
 situation here is even harder than the category solver, as we need to reflect
 on objects as well as morphisms.
 
-We begin by defining a bunch of pattern synonyms for matching on various fields
-of precategories, as well as objects + morphisms that arise from the product structure.
-
-The situation here is extremely fiddly when it comes to implicit arguments, as
-we not only need to get the number correct, but also their multiplicity. Record
-projections always mark the records parameters as `hidden`{.Agda} and
-`quantity-0`{.Agda}, so we need to take care to do the same in these patterns.
-
 ```agda
 module Reflection where
-  private
-    pattern is-product-field X Y args =
-      _ hm∷ _ hm∷ _ hm∷ -- category args
-      X hm∷ Y hm∷       -- objects of product
-      _ hm∷             -- apex
-      _ hm∷ _ hm∷       -- projections
-      _ v∷              -- is-product record argument
-      args
-    pattern product-field X Y args =
-      _ hm∷ _ hm∷ _ hm∷ -- category args
-      X hm∷ Y hm∷       -- objects of product
-      _ v∷              -- product record argument
-      args
-    pattern category-field args = _ hm∷ _ hm∷ _ v∷ args
 
-    pattern “⊗” X Y =
-      def (quote Product.apex) (product-field X Y [])
-    pattern “id” X =
-      def (quote Precategory.id) (category-field (X h∷ []))
-    pattern “∘” X Y Z f g =
-      def (quote Precategory._∘_) (category-field (X h∷ Y h∷ Z h∷ f v∷ g v∷ []))
-    pattern “π₁” X Y =
-      def (quote (Product.π₁)) (product-field X Y [])
-    pattern “π₂” X Y =
-      def (quote (Product.π₂)) (product-field X Y [])
-    pattern “⟨⟩” X Y Z f g =
-      def (quote (is-product.⟨_,_⟩)) (is-product-field Y Z (X h∷ f v∷ g v∷ []))
-```
+  {-# TERMINATING #-}
+  build-object-expr : Product-terms → Term → TC Term
+  build-object-expr ptm tm =
+    (do
+       x , y ← match-⊗₀ ptm tm
+       x ← build-object-expr ptm x
+       y ← build-object-expr ptm y
+       pure (con (quote NbE._‶⊗‶_) (x v∷ y v∷ [])))
+    <|>
+    pure (con (quote NbE.‶Ob‶.‶_‶) (tm v∷ []))
+    where open Product-terms ptm
 
-Next, we define some helpers to make constructing things in the
-`NbE`{.Agda} module easier.
+  build-neu-hom-expr : Product-terms → Term → TC Term
+  build-neu-hom-expr ptm tm = do
+    x , y ← get-hom-objects cat =<< inferType tm
+    x ← build-object-expr ptm x
+    y ← build-object-expr ptm y
+    debugPrint "tactic" 50
+      [ "Building neutral hom expression: " , termErr tm
+      , "\n  Has type: Hom (" , termErr x , ") (" , termErr y , ")"
+      ]
+    pure (con (quote NbE.Expr.‶_‶) (infer-hidden 4 $ x h∷ y h∷ tm v∷ []))
+    where open Product-terms ptm
 
-```agda
-    mk-nbe-con : Name → List (Arg Term) → Term
-    mk-nbe-con con-name args =
-      con con-name (unknown h∷ unknown h∷ unknown h∷ unknown h∷ args)
+  {-# TERMINATING #-}
+  build-hom-expr : Product-terms → Term → TC Term
+  build-hom-expr ptm tm =
+    (do
+       match-id cat tm
+       pure (con (quote NbE.‶id‶) []))
+    <|>
+    (do
+       f , g ← match-∘ cat tm
+       f ← build-hom-expr ptm f
+       g ← build-hom-expr ptm g
+       pure (con (quote NbE._‶∘‶_) (f v∷ g v∷ [])))
+    <|>
+    (do
+       match-π₁ ptm tm
+       pure (con (quote NbE.‶π₁‶) []))
+    <|>
+    (do
+       match-π₂ ptm tm
+       pure (con (quote NbE.‶π₂‶) []))
+    <|>
+    (do
+       f , g ← match-⟨⟩ ptm tm
+       f ← build-hom-expr ptm f
+       g ← build-hom-expr ptm g
+       pure (con (quote NbE.‶⟨_,_⟩‶) (f v∷ g v∷ [])))
+    <|>
+    (build-neu-hom-expr ptm tm)
+    where open Product-terms ptm
 
-    mk-nbe-call : Term → Term → List (Arg Term) → List (Arg Term)
-    mk-nbe-call cat cart args = unknown h∷ unknown h∷ cat v∷ cart v∷ args
-```
+  invoke-solver : Product-terms → Term → Term → Term
+  invoke-solver ptm lhs rhs =
+    def (quote NbE.solve) (infer-hidden 2 $ cat v∷ prod v∷ lhs v∷ rhs v∷ “refl” v∷ [])
+    where open Product-terms ptm
 
-We also define some helpers for building quoted calls to
-`NbE.nf`{.Agda} and `NbE.solve`{.Agda}.
+  invoke-normaliser : Product-terms → Term → Term
+  invoke-normaliser ptm e =
+    def (quote NbE.solve) (infer-hidden 2 $ cat v∷ prod v∷ e v∷ [])
+    where open Product-terms ptm
 
-```agda
-  “nf” : Term → Term → Term → Term → Term → Term
-  “nf” cat cart x y e =
-    def (quote NbE.nf) (mk-nbe-call cat cart (x v∷ y v∷ e v∷ []))
-
-  “solve” : Term → Term → Term → Term → Term → Term → Term
-  “solve” cat cart x y lhs rhs =
-    def (quote NbE.solve) $
-      mk-nbe-call cat cart (x v∷ y v∷ lhs v∷ rhs v∷ “refl” v∷ [])
-```
-
-Now for the meat of the reflection. `build-obj-expr` will construct
-quoted terms of type `NbE.‶Ob‶`{.Agda} from quoted terms of type
-`Precategory.Ob`{.Agda}. `build-hom-expr` does the same thing, but for
-`NbE.Expr`{.Agda} and `Precategory.Hom`{.Agda}.
-
-Note that we apply all implicits to constructors in `build-hom-expr`.
-If we don't do this, Agda will get *very* upset.
-
-```agda
-  build-obj-expr : Term → Term
-  build-obj-expr (“⊗” X Y)  =
-    con (quote NbE.‶Ob‶._‶⊗‶_) (build-obj-expr X v∷ build-obj-expr Y v∷ [])
-  build-obj-expr X =
-    con (quote NbE.‶Ob‶.‶_‶) (X v∷ [])
-
-  build-hom-expr : Term → Term
-  build-hom-expr (“id” X) =
-    mk-nbe-con (quote NbE.Expr.‶id‶) $
-      build-obj-expr X h∷ []
-  build-hom-expr (“∘” X Y Z f g) =
-    mk-nbe-con (quote NbE.Expr._‶∘‶_) $
-      build-obj-expr X h∷ build-obj-expr Y h∷ build-obj-expr Z h∷
-      build-hom-expr f v∷ build-hom-expr g v∷ []
-  build-hom-expr (“π₁” X Y) =
-    mk-nbe-con (quote NbE.Expr.‶π₁‶) $
-      build-obj-expr X h∷ build-obj-expr Y h∷ []
-  build-hom-expr (“π₂” X Y) =
-    mk-nbe-con (quote NbE.Expr.‶π₂‶) $
-      build-obj-expr X h∷ build-obj-expr Y h∷ []
-  build-hom-expr (“⟨⟩” X Y Z f g) =
-    mk-nbe-con (quote NbE.Expr.‶⟨_,_⟩‶) $
-    build-obj-expr X h∷ build-obj-expr Y h∷ build-obj-expr Z h∷
-    build-hom-expr f v∷ build-hom-expr g v∷ []
-  build-hom-expr f =
-    con (quote NbE.Expr.‶_‶) (f v∷ [])
-```
-
-Now, for the solver interface. This follows the usual pattern: we create
-a list of names that we will pass to `withReduceDefs`{.Agda}, which will
-prevent Agda from normalizing away the things we want to reflect upon.
-
-```agda
-  dont-reduce : List Name
-  dont-reduce =
-    quote Precategory.Hom ∷
-    quote Precategory.id ∷
-    quote Precategory._∘_ ∷
-    quote Product.apex ∷
-    quote Product.π₁ ∷
-    quote Product.π₂ ∷
-    quote is-product.⟨_,_⟩ ∷ []
-```
-
-We will need to recover the objects from some quoted hom to make the
-calls to the solver/normaliser.
-
-```agda
-  get-objects : Term → TC (Term × Term)
-  get-objects tm = ((inferType tm >>= normalise) >>= wait-just-a-bit) >>= λ where
-    (def (quote Precategory.Hom) (category-field (x v∷ y v∷ []))) →
-      returnTC (x , y)
-    tp →
-      typeError $ strErr "Can't determine objects: " ∷ termErr tp ∷ []
-```
-
-We also make some debugging macros, which are very useful for when you
-want to examine the exact quoted representations of objects/homs.
-
-```agda
-  obj-repr-macro : ∀ {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) → Term → Term → TC ⊤
-  obj-repr-macro cat cart hom hole =
-    withReconstructed true $
-    withNormalisation false $
-    withReduceDefs (false , dont-reduce) $ do
-    (x , y) ← get-objects hom
-    “x” ← build-obj-expr <$> normalise x
-    “y” ← build-obj-expr <$> normalise y
-    typeError $ strErr "Determined objects of " ∷ termErr hom ∷ strErr " to be\n  " ∷
-                termErr x ∷ strErr "\nAnd\n  " ∷
-                termErr y ∷ strErr "\nWith quoted representations\n  " ∷
-                termErr “x” ∷ strErr "\nAnd\n  " ∷
-                termErr “y” ∷ []
-
-  hom-repr-macro : ∀ {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) → Term → Term → TC ⊤
-  hom-repr-macro cat cart hom hole =
-    withReconstructed true $
-    withNormalisation false $
-    withReduceDefs (false , dont-reduce) $ do
-    (x , y) ← get-objects hom
-    “x” ← build-obj-expr <$> normalise x
-    “y” ← build-obj-expr <$> normalise y
-    “hom” ← build-hom-expr <$> normalise hom
-    typeError $ strErr "The morphism\n  " ∷
-                termErr hom ∷ strErr "\nis represented by\n  " ∷
-                termErr “hom” ∷ strErr "\nwith objects\n  " ∷
-                termErr “x” ∷ strErr "\nAnd\n  " ∷
-                termErr “y” ∷ []
-```
-
-Now, the simplifier and solver reflection. This just puts together
-all of our bits from before.
-
-There is one subtlety here with regards to `withReconstructed`.
-We are reflecting on the record parameters to `Product`{.Agda} and
-`is-product`{.Agda} to determine the objects involved in things like `⟨_,_⟩`{.Agda},
-which Agda will mark as `unknown` by default. This will cause `build-obj-expr`{.Agda}
-to then fail when we have expressions involving nested `_⊗_`{.Agda}.
-Wrapping everything in `withReconstructed` causes Agda to fill in these arguments
-with their actual values, which then fixes the issue.
-
-```agda
-  simpl-macro : ∀ {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) → Term → Term → TC ⊤
-  simpl-macro cat cart hom hole =
-    withReconstructed true $
-    withNormalisation false $
-    withReduceDefs (false , dont-reduce) $ do
-    (x , y) ← get-objects hom
-    “x” ← build-obj-expr <$> normalise x
-    “y” ← build-obj-expr <$> normalise y
-    “hom” ← build-hom-expr <$> normalise hom
-    “cat” ← quoteTC cat
-    “cart” ← quoteTC cart
-    unify hole (“nf” “cat” “cart” “x” “y” “hom”)
-
-  solve-macro : ∀ {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y) → Term → TC ⊤
-  solve-macro cat cart hole =
-    noConstraints $
-    withReconstructed true $
-    withNormalisation false $
-    withReduceDefs (false , dont-reduce) $ do
-    goal ← inferType hole >>= reduce
-    just (lhs , rhs) ← get-boundary goal
-      where nothing → typeError $ strErr "Can't determine boundary: " ∷
-                                  termErr goal ∷ []
-    (x , y) ← get-objects lhs
-    (x' , y') ← get-objects rhs
-    unify x x'
-    unify y y'
-    “x” ← build-obj-expr <$> normalise x
-    “y” ← build-obj-expr <$> normalise y
-    “lhs” ← build-hom-expr <$> normalise lhs
-    “rhs” ← build-hom-expr <$> normalise rhs
-    “cat” ← quoteTC cat
-    “cart” ← quoteTC cart
-    (unify hole (“solve” “cat” “cart” “x” “y” “lhs” “rhs”)) <|> do
-      vlhs ← normalise $ (“nf” “cat” “cart” “x” “y” “lhs”)
-      vrhs ← normalise $ (“nf” “cat” “cart” “x” “y” “rhs”)
-      typeError $ strErr "Could not equate the following expressions:\n  " ∷
-                   termErr lhs ∷
-                 strErr "\nAnd\n  " ∷
-                   termErr rhs ∷
-                 strErr "\nReflected expressions\n  " ∷
-                   termErr “lhs” ∷
-                 strErr "\nAnd\n  " ∷
-                   termErr “rhs” ∷
-                 strErr "\nComputed normal forms\n  " ∷
-                   termErr vlhs ∷
-                 strErr "\nAnd\n  " ∷
-                   termErr vrhs ∷ []
+  product-solver
+    : ∀ {o ℓ} (C : Precategory o ℓ) (has-prods : has-products C)
+    → TC Simple-solver
+  product-solver C has-prods = do
+    ptm ← quote-product-terms C has-prods
+    pure (simple-solver [] (build-hom-expr ptm) (invoke-solver ptm) (invoke-normaliser ptm))
 ```
 
 Finally, we define the user-facing interface as a series of macros.
 
 ```agda
 macro
-  products-obj-repr! : ∀ {o ℓ}
-                       → (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y)
-                       → Term → Term → TC ⊤
-  products-obj-repr! = Reflection.obj-repr-macro
-
-  products-repr! : ∀ {o ℓ}
+  repr-products! : ∀ {o ℓ}
                    → (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y)
                    → Term → Term → TC ⊤
-  products-repr! = Reflection.hom-repr-macro
+  repr-products! C has-prods = mk-simple-repr (Reflection.product-solver C has-prods)
 
-  products-simpl! : ∀ {o ℓ}
+  simpl-products! : ∀ {o ℓ}
                     → (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y)
                     → Term → Term → TC ⊤
-  products-simpl! = Reflection.simpl-macro
+  simpl-products! C has-prods = mk-simple-normalise (Reflection.product-solver C has-prods)
 
   products! : ∀ {o ℓ}
               → (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y → Product 𝒞 X Y)
               → Term → TC ⊤
-  products! = Reflection.solve-macro
+  products! C has-prods = mk-simple-solver (Reflection.product-solver C has-prods)
 ```
 
 # Demo
@@ -526,6 +373,8 @@ private module Tests {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y →
   open Precategory 𝒞
   open Binary-products 𝒞 cartesian
   open NbE 𝒞 cartesian
+  --
+  --
 
   test-η : ∀ {X Y Z} → (f : Hom X (Y ⊗₀ Z))
            → f ≡ ⟨ π₁ ∘ f , π₂ ∘ f ⟩
@@ -543,7 +392,6 @@ private module Tests {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y →
              → ⟨ f ∘ h , g ∘ h ⟩ ≡ ⟨ f , g ⟩ ∘ h
   test-⟨⟩∘ f g h = products! 𝒞 cartesian
 
-  -- If you don't have 'withReconstructed' on, this test will fail!
   test-nested : ∀ {W X Y Z} → (f : Hom W X) → (g : Hom W Y) → (h : Hom W Z)
              → ⟨ ⟨ f , g ⟩ , h ⟩ ≡ ⟨ ⟨ f , g ⟩ , h ⟩
   test-nested {W} {X} {Y} {Z} f g h = products! 𝒞 cartesian
@@ -553,3 +401,4 @@ private module Tests {o ℓ} (𝒞 : Precategory o ℓ) (cartesian : ∀ X Y →
              → (π₁ ∘ ⟨ f , g ⟩) ∘ id ≡ id ∘ ⟨ π₁ , π₂ ⟩ ∘ f
   test-big f g = products! 𝒞 cartesian
 ```
+-- 

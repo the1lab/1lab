@@ -352,27 +352,15 @@ module Reflection where
     monad ← quote-monad-terms M
     pure (simple-solver [] (build-hom-expr monad) (invoke-solver monad) (invoke-normaliser monad))
 
-  repr-macro : ∀ {o h} {𝒞 : Precategory o h} → Monad 𝒞 → Term → Term → TC ⊤
-  repr-macro M tm _ = do
-    solver ← monad-solver M
-    mk-simple-repr solver tm
-
-  simplify-macro : ∀ {o h} {𝒞 : Precategory o h} → Monad 𝒞 → Term → Term → TC ⊤
-  simplify-macro M tm hole = do
-    solver ← monad-solver M
-    mk-simple-normalise solver tm hole
-
-  solve-macro : ∀ {o h} {𝒞 : Precategory o h} → Monad 𝒞 → Term → TC ⊤
-  solve-macro M hole = do
-    solver ← monad-solver M
-    mk-simple-solver solver hole
-
 macro
   monad! : ∀ {o h} {C : Precategory o h} → Monad C → Term → TC ⊤
-  monad! = Reflection.solve-macro
+  monad! M = mk-simple-solver (Reflection.monad-solver M)
 
   simpl-monad! : ∀ {o h} {C : Precategory o h} → Monad C → Term → Term → TC ⊤
-  simpl-monad! = Reflection.simplify-macro
+  simpl-monad! M = mk-simple-normalise (Reflection.monad-solver M)
+
+  repr-monad! : ∀ {o h} {C : Precategory o h} → Monad C → Term → Term → TC ⊤
+  repr-monad! M = mk-simple-repr (Reflection.monad-solver M)
 
 private module Test {o h} {𝒞 : Precategory o h} (monad : Monad 𝒞) where
   open Precategory 𝒞

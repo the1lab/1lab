@@ -117,6 +117,7 @@ match-id : Term → Term → TC ⊤
 match-id cat tm = do
   id ← normalise (“id” cat unknown)
   unify tm id
+  commitTC
   debugPrint "tactic" 50 [ "Matched id for " , termErr tm ]
 
 match-∘ : Term → Term → TC (Term × Term)

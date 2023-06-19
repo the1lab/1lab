@@ -149,19 +149,13 @@ module Reflection where
     pure (simple-solver [] (build-expr cat) (invoke-solver cat) (invoke-normaliser cat))
 
   repr-macro : ∀ {o ℓ} → Precategory o ℓ → Term → Term → TC ⊤
-  repr-macro cat f _ = do
-    solver ← cat-solver cat
-    mk-simple-repr solver f
+  repr-macro cat = mk-simple-repr (cat-solver cat)
 
   simplify-macro : ∀ {o ℓ} → Precategory o ℓ → Term → Term → TC ⊤
-  simplify-macro cat f hole = do
-    solver ← cat-solver cat
-    mk-simple-normalise solver f hole
+  simplify-macro cat f hole = mk-simple-normalise (cat-solver cat) f hole
 
   solve-macro : ∀ {o ℓ} → Precategory o ℓ → Term → TC ⊤
-  solve-macro cat hole = do
-    solver ← cat-solver cat
-    mk-simple-solver solver hole
+  solve-macro cat hole = mk-simple-solver (cat-solver cat) hole
 
 macro
   cat! : ∀ {o ℓ} → Precategory o ℓ → Term → TC ⊤

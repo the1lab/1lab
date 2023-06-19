@@ -195,43 +195,24 @@ module Reflection where
   functor-solver F = do
     func ← quote-functor-terms F
     pure (simple-solver [] (build-dexpr func) (invoke-solver func) (invoke-normaliser func))
-
-  repr-macro
-    : ∀ {o h o′ h′} {C : Precategory o h} {D : Precategory o′ h′}
-    → Functor C D
-    → Term → Term → TC ⊤
-  repr-macro F tm _ = do
-    solver ← functor-solver F
-    mk-simple-repr solver tm
-
-  simplify-macro
-    : ∀ {o h o′ h′} {C : Precategory o h} {D : Precategory o′ h′}
-    → Functor C D
-    → Term → Term → TC ⊤
-  simplify-macro F tm hole = do
-    solver ← functor-solver F
-    mk-simple-normalise solver tm hole
-
-  solve-macro
-    : ∀ {o h o′ h′} {C : Precategory o h} {D : Precategory o′ h′}
-    → Functor C D
-    → Term → TC ⊤
-  solve-macro F hole = do
-    solver ← functor-solver F
-    mk-simple-solver solver hole
-
 macro
-  functor!
+  repr-functor!
     : ∀ {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′}
     → Functor 𝒞 𝒟
-    → Term → TC ⊤
-  functor! = Reflection.solve-macro
+    → Term → Term → TC ⊤
+  repr-functor! F = mk-simple-repr (Reflection.functor-solver F)
 
   simpl-functor!
     : ∀ {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′}
     → Functor 𝒞 𝒟
     → Term → Term → TC ⊤
-  simpl-functor! = Reflection.simplify-macro
+  simpl-functor! F = mk-simple-normalise (Reflection.functor-solver F)
+
+  functor!
+    : ∀ {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′}
+    → Functor 𝒞 𝒟
+    → Term → TC ⊤
+  functor! F = mk-simple-solver (Reflection.functor-solver F)
 
 private module Test {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′} (F : Functor 𝒞 𝒟) where
   module 𝒞 = Cat 𝒞

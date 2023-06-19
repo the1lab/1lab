@@ -47,34 +47,52 @@ record Simple-solver : Type where
     invoke-solver : Term → Term → Term
     invoke-normaliser : Term → Term
 
-module _ (solver : Simple-solver) where
-  open Simple-solver solver
+mk-simple-solver : TC Simple-solver → Term → TC ⊤
+mk-simple-solver mk-solver hole =
+  mk-solver >>= λ (simple-solver dont-reduce build-expr invoke-solver _) →
+  withNormalisation false $
+  withReduceDefs (false , dont-reduce) $ do
+  goal ← inferType hole >>= reduce
+  just (lhs , rhs) ← get-boundary goal
+    where nothing → typeError $ strErr "Can't determine boundary: " ∷
+                                termErr goal ∷ []
+  elhs ← normalise lhs >>= build-expr
+  erhs ← normalise rhs >>= build-expr
+  (noConstraints $ unify hole (invoke-solver elhs erhs)) <|> solver-failed elhs erhs
 
-  mk-simple-solver : Term → TC ⊤
-  mk-simple-solver hole =
-    withNormalisation false $
-    withReduceDefs (false , dont-reduce) $ do
-    goal ← inferType hole >>= reduce
-    just (lhs , rhs) ← get-boundary goal
-      where nothing → typeError $ strErr "Can't determine boundary: " ∷
-                                  termErr goal ∷ []
-    elhs ← normalise lhs >>= build-expr
-    erhs ← normalise rhs >>= build-expr
-    (noConstraints $ unify hole (invoke-solver elhs erhs)) <|> solver-failed elhs erhs
+mk-simple-debug-solver : TC Simple-solver → Term → TC ⊤
+mk-simple-debug-solver mk-solver hole =
+  mk-solver >>= λ (simple-solver dont-reduce build-expr invoke-solver _) →
+  withNormalisation false $
+  withReduceDefs (false , dont-reduce) $ do
+  goal ← inferType hole >>= reduce
+  just (lhs , rhs) ← get-boundary goal
+    where nothing → typeError $ strErr "Can't determine boundary: " ∷
+                                termErr goal ∷ []
+  elhs ← normalise lhs >>= build-expr
+  erhs ← normalise rhs >>= build-expr
+  debugPrint "tactic" 50 
+    [ "Invoking solver:"
+    , "\n  LHS: " , termErr elhs
+    , "\n  RHS: " , termErr erhs
+    ]
+  unify hole (invoke-solver elhs erhs)
 
-  mk-simple-normalise : Term → Term → TC ⊤
-  mk-simple-normalise tm hole =
-    withNormalisation false $
-    withReduceDefs (false , dont-reduce) $ do
-    e ← normalise tm >>= build-expr
-    unify hole (invoke-normaliser e)
+mk-simple-normalise : TC Simple-solver → Term → Term → TC ⊤
+mk-simple-normalise mk-solver tm hole =
+  mk-solver >>= λ (simple-solver dont-reduce build-expr _ invoke-normaliser) →
+  withNormalisation false $
+  withReduceDefs (false , dont-reduce) $ do
+  e ← normalise tm >>= build-expr
+  unify hole (invoke-normaliser e)
 
-  mk-simple-repr : Term → TC ⊤
-  mk-simple-repr tm =
-    withNormalisation false $
-    withReduceDefs (false , dont-reduce) $ do
-    repr ← normalise tm >>= build-expr
-    print-repr tm repr
+mk-simple-repr : TC Simple-solver → Term → Term → TC ⊤
+mk-simple-repr mk-solver tm _ =
+  mk-solver >>= λ (simple-solver dont-reduce build-expr _ _) →
+  withNormalisation false $
+  withReduceDefs (false , dont-reduce) $ do
+  repr ← normalise tm >>= build-expr
+  print-repr tm repr
 
 --------------------------------------------------------------------------------
 -- Solvers with Variables
