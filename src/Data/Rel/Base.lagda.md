@@ -24,7 +24,7 @@ Rel A B ℓ = A → B → Type ℓ
 private variable
   ℓ ℓ' : Level
   A B C : Type ℓ
-  R S : Rel A B ℓ
+  R S T : Rel A B ℓ
 ```
 -->
 
@@ -80,6 +80,12 @@ if $R(x,y)$ implies $S(x,y)$ for every $x$ and $y$.
 _⊆r_ : Rel A B ℓ → Rel A B ℓ' → Type _
 R ⊆r S = ∀ {x y} → R x y → S x y
 ```
+
+```agda
+⊆r-trans : R ⊆r S → S ⊆r T → R ⊆r T 
+⊆r-trans p q Rxy = q (p Rxy)
+```
+
 
 Equality of propositional relations can be characterised in terms
 of containment.
