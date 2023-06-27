@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import 1Lab.Prelude
-open import Data.Dec
 open import Data.Rel.Closure
 open import Data.Wellfounded.Base
 ```
