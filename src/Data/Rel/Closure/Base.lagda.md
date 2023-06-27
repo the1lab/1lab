@@ -66,7 +66,7 @@ We can also derive an extension operator using the normal formulation
 for monads.
 
 ```agda
-  extend : ∀ {R S : Rel A A ℓ} → S ⊆r K R → K S ⊆r K R
+  extend : S ⊆r K R → K S ⊆r K R
   extend p kr = closed (monotone p kr)
 ```
 
@@ -74,7 +74,7 @@ We can leverage this to see that if $R \subseteq S \subseteq K R$, then
 $K R = K S$.
 
 ```agda
-  ⊆+⊆-clo→≡ : ∀ {R S : Rel A A ℓ} → R ⊆r S → S ⊆r K R → K R ≡ K S
-  ⊆+⊆-clo→≡ p q =
-    prop-rel-ext has-prop has-prop (monotone p) (extend q)
+  ⊆+⊆-clo→≃ : S ⊆r R → R ⊆r K S → K R ≃r K S
+  ⊆+⊆-clo→≃ p q =
+    prop-ext has-prop has-prop  (extend q) (monotone p)
 ```

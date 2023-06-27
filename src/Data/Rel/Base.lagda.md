@@ -79,6 +79,9 @@ if $R(x,y)$ implies $S(x,y)$ for every $x$ and $y$.
 ```agda
 _⊆r_ : Rel A B ℓ → Rel A B ℓ' → Type _
 R ⊆r S = ∀ {x y} → R x y → S x y
+
+_≃r_ : Rel A B ℓ → Rel A B ℓ' → Type _
+R ≃r S = ∀ {x y} → R x y ≃ S x y
 ```
 
 ```agda

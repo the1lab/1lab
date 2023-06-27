@@ -132,6 +132,35 @@ Refl-trans-case-fork {R' = R'} {R = R} S refll reflr fork prop {a} {x} {y} a→*
     a→*x a→*y
 ```
 
+## As a closure operator
+
+```agda
+refl-trans-clo-mono : R ⊆r S → Refl-trans R ⊆r Refl-trans S
+refl-trans-clo-mono {S = S} p =
+  Refl-trans-rec (Refl-trans S)
+      (λ r → [ p r ])
+      reflexive
+      transitive
+      trunc
+
+refl-trans-clo-closed : Refl-trans (Refl-trans R) ⊆r Refl-trans R
+refl-trans-clo-closed {R = R} =
+  Refl-trans-rec (Refl-trans R)
+    id
+    reflexive
+    transitive
+    trunc
+
+refl-trans-closure : is-rel-closure Refl-trans
+refl-trans-closure .is-rel-closure.monotone = refl-trans-clo-mono
+refl-trans-closure .is-rel-closure.extensive = [_]
+refl-trans-closure .is-rel-closure.closed = refl-trans-clo-closed
+refl-trans-closure .is-rel-closure.has-prop = trunc
+```
+
+
+## Properties
+
 If the underlying relation is symmetric, then so is the
 reflexive-transitive closure.
 
