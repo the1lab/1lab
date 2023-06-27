@@ -158,7 +158,6 @@ refl-trans-closure .is-rel-closure.closed = refl-trans-clo-closed
 refl-trans-closure .is-rel-closure.has-prop = trunc
 ```
 
-
 ## Properties
 
 If the underlying relation is symmetric, then so is the
@@ -238,4 +237,54 @@ trans-clo-refl-clo≡refl-trans-clo {R = R} =
   prop-rel-ext trunc trunc
     trans-clo-refl-clo⊆refl-trans-clo
     refl-trans-clo⊆trans-clo-refl-clo
+```
+
+The reflexive-transitive closures of $R$ and $S$ are contained in the
+transitive closure of $R \cup S$.
+
+```agda
+refl-trans-clo-inl : Refl-trans R ⊆r Refl-trans (R ∪r S)
+refl-trans-clo-inl =
+  refl-trans-clo-mono (λ r → inc (inl r))
+
+refl-trans-clo-inr : Refl-trans S ⊆r Refl-trans (R ∪r S)
+refl-trans-clo-inr =
+  refl-trans-clo-mono (λ s → inc (inr s))
+```
+
+
+The union of $R$ and $S$ is contained within $S^{*} \circ R^{*}$.
+
+```agda
+union⊆comp-trans-clo
+  : (R ∪r S) ⊆r (Refl-trans S ∘r Refl-trans R)
+union⊆comp-trans-clo {x = x} {y = y} =
+  ∥-∥-map
+    (⊎-rec
+      (λ x↝₁y → y , ([ x↝₁y ] , reflexive))
+      (λ x↝₂y → x , reflexive , [ x↝₂y ]))
+```
+
+The composition of the reflexive-transitive closures of $R$ and $S$ is
+contained within the reflexive-transitive closure of their union.
+
+```agda
+comp-trans-clo⊆trans-clo-union
+  : (Refl-trans S ∘r Refl-trans R) ⊆r Refl-trans (R ∪r S)
+comp-trans-clo⊆trans-clo-union {x = x} {y = y} =
+  ∥-∥-rec trunc
+    (λ { (w , x↝₁w , w↝₂y) →
+      transitive (refl-trans-clo-inl x↝₁w) (refl-trans-clo-inr w↝₂y) })
+```
+
+Therefore, the reflexive-transitive closure of the $R \cup S$
+the reflexive-transitive closure of $S^{*} \circ R^{*}$.
+
+```agda
+refl-trans-clo-union≃refl-trans-clo-comp-refl-trans-clo
+  : Refl-trans (Refl-trans S ∘r Refl-trans R) ≃r Refl-trans (R ∪r S)
+refl-trans-clo-union≃refl-trans-clo-comp-refl-trans-clo =
+  is-rel-closure.⊆+⊆-clo→≃ refl-trans-closure
+    union⊆comp-trans-clo
+    comp-trans-clo⊆trans-clo-union
 ```

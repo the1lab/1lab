@@ -4,8 +4,14 @@ open import Rewriting.StronglyNormalising
 
 open import 1Lab.Prelude
 
+open import Data.Rel.Base
 open import Data.Rel.Closure
+open import Data.Sum
 open import Data.Wellfounded.Base
+
+
+open import Rewriting.Base
+open import Rewriting.Commute
 ```
 -->
 
@@ -20,28 +26,18 @@ module Rewriting.Confluent where
 private variable
   ℓ ℓ' ℓ'' : Level
   A B X : Type ℓ
-  R : A → A → Type ℓ
+  R S : A → A → Type ℓ
 ```
 -->
 
-Many problems in computer science can be phrased in terms of
-**term rewriting systems**. Concretely, these are given by a collection
-of terms in some language, along with a collection of rules that describe
-how we can simplify terms. As an example, the untyped $\lambda$-calculus
-can be naturally presented as a term rewriting system, where only
-reduction rule is $\beta$-reduction. More abstractly, a rewriting system
-on a type $A$ is simply a relation $\to$ on $A$ which encodes the
-rewriting rules. Sequences of rewrites are then described using the
-[reflexive transitive closure] of $\to$.
-
-[reflexive transitive closure]: Data.Rel.Closure.html#reflexive-transitive-closure.html
-
-Note that term rewriting systems may be non-deterministic, as multiple
+Recall that [rewriting systems] may be non-deterministic, as multiple
 rewrite rules can apply to a term $t$. This means that multiple
 strategies of applying the rules may lead to different answers, which is
 quite problematic if we want to use the rewriting system to simplify
 expressions. It would be useful if we could prove *some* property of the
 relation that would guarantee that this situation does not occur.
+
+[rewriting systems]: Rewriting.Base.html
 
 This leads us to the notion of **confluence**. We say a relation $\to$
 is confluent if for all pairs of reduction chains $a \to^{*} x$
@@ -63,8 +59,7 @@ and $y \to^{*} z$, as in the following diagram.
 ```agda
 is-confluent : (A → A → Type ℓ) → Type _
 is-confluent {A = A} R =
-  ∀ {a x y} → Refl-trans R a x → Refl-trans R a y
-  → ∃[ z ∈ A ] (Refl-trans R x z × Refl-trans R y z)
+  commutes-with R R
 ```
 
 Note that this does *not* mean that all rewriting sequences terminate
@@ -91,6 +86,23 @@ so a bad strategy will never terminate. However, we can always reconcile
 diverging paths by rewriting to the term at the bottom of the diagram.
 
 <!-- [TODO: Reed M, 02/06/2023] Prove this using Maybe (Nat ^op) -->
+
+Before getting into the more complicated properties of confluence,
+we should get some minor lemmas out of the way. First, if $R^{*}$
+is equivalent to $S^{*}$ and $R^{*}$ is confluent, then so is $S^{*}$.
+This follows directly from properties of resolutions.
+
+```agda
+refl-trans-clo-equiv+confluent→confluent
+  : Refl-trans R ≃r Refl-trans S
+  → is-confluent R → is-confluent S
+refl-trans-clo-equiv+confluent→confluent eqv R-conf {x} {y} {z} =
+  resolvable-⊆
+    (Equiv.from (eqv {x} {y})) (Equiv.from (eqv {x} {z}))
+    (Equiv.to eqv) (Equiv.to eqv)
+    R-conf {x} {y} {z}
+```
+
 
 ## The Church-Rosser Property
 
@@ -146,8 +158,8 @@ church-rosser→confluent : has-church-rosser R → is-confluent R
 church-rosser→confluent church-rosser a→*x a→*y =
   church-rosser $
     transitive
-      (symmetric (refl-trans→refl-sym-trans a→*x))
-      (refl-trans→refl-sym-trans a→*y)
+      (symmetric (refl-trans⊆refl-sym-trans a→*x))
+      (refl-trans⊆refl-sym-trans a→*y)
 ```
 
 The converse is much more tricky, and requires introducing an intermediate
@@ -169,8 +181,7 @@ following form.
 ```agda
 is-semi-confluent : (A → A → Type ℓ) → Type _
 is-semi-confluent {A = A} R =
-  ∀ {a x y} → Refl-trans R a x → R a y
-  → ∃[ z ∈ A ] (Refl-trans R x z × Refl-trans R y z)
+  semi-commutes-with R R
 ```
 
 Confluence obviously implies semi-confluence.
@@ -514,4 +525,177 @@ strong-normalising+locally-confluent→confluent
         hlevel!
         a→*x a→*y ih)
       a a→*x a→*y
+```
+
+## The Commutative Union Lemma
+
+Confluence proofs can be very fiddly, so it would be useful to be able to
+modularise the proofs somewhat. Ideally, we would be able to split
+a rewriting system $R$ into a union $S \cup T$, and then prove confluence
+of $S$ and $T$ separately. This approach is too naïve, but can be repaired
+by requiring that $S$ and $T$ [commute].
+
+[commute]: Rewriting.Commute.html
+
+The proof of this fact requires some machinery. We say that a rewrite
+system is **strongly confluent** if we can resolve squares of shape (1),
+and that it has the **diamond property** if we can resolve squares of shape
+(2).
+
+~~~{.quiver}
+\begin{tikzcd}
+  & x &&&& x \\
+  y && z && y && z \\
+  & {\exists w} &&&& {\exists w} \\
+  & {(1)} &&&& {(2)}
+  \arrow[from=1-2, to=2-1]
+  \arrow[from=1-2, to=2-3]
+  \arrow[dashed, from=2-5, to=3-6]
+  \arrow[dashed, from=2-7, to=3-6]
+  \arrow[from=1-6, to=2-5]
+  \arrow[from=1-6, to=2-7]
+  \arrow["{*}", dashed, from=2-3, to=3-2]
+  \arrow["{=}"', dashed, from=2-1, to=3-2]
+\end{tikzcd}
+~~~
+
+```agda
+has-diamond : (R : Rel A A ℓ) → Type _
+has-diamond R = is-resolvable R R R R
+
+is-strongly-confluent : (R : Rel A A ℓ) → Type _
+is-strongly-confluent R = strongly-commutes-with R R
+```
+
+The diamond property implies strong confluence, which in turn implies
+confluence.
+
+```agda
+diamond→strongly-confluent : has-diamond R → is-strongly-confluent R
+diamond→strongly-confluent diamond x↝y x↝z = do
+  w , y↝w , x↝w ← diamond x↝y x↝z
+  pure (w , [ y↝w ] , [ x↝w ])
+
+strongly-confluent→confluent : is-strongly-confluent R → is-confluent R
+strongly-confluent→confluent = strongly-commutes→commutes
+
+diamond→confluent : has-diamond R → is-confluent R
+diamond→confluent = strongly-confluent→confluent ∘ diamond→strongly-confluent
+```
+
+With that bit of machinery out of the way, we can proceed with the
+proof.  Recall that if the reflexive-transitive closures of two
+relations are equivalent, then we can transfer confluence across the
+equivalence. Furthermore, the reflexive transitive-closure of $R \cup S$
+is equivalent to the reflexive-transitive closure of $S^{*} \circ
+R^{*}$, so it suffices to show that $S^{*} \circ R^{*}$ is confluent.
+
+We shall do so by establishing that $S^{*} \circ R^{*}$ has the diamond
+property. Doing so requires filling the following diagram:
+
+~~~{.quiver}
+\begin{tikzcd}
+  x & {z'} & z \\
+  {y'} && \bullet \\
+  y & \bullet & \bullet
+  \arrow["{R^{*}}"', from=1-1, to=2-1]
+  \arrow["{S^{*}}"', from=2-1, to=3-1]
+  \arrow["{R^{*}}", from=1-1, to=1-2]
+  \arrow["{S^{*}}", from=1-2, to=1-3]
+  \arrow["{R^{*}}"', dashed, from=3-1, to=3-2]
+  \arrow["{S^{*}}"', dashed, from=3-2, to=3-3]
+  \arrow["{R^{*}}", dashed, from=1-3, to=2-3]
+  \arrow["{S^{*}}", dashed, from=2-3, to=3-3]
+\end{tikzcd}
+~~~
+
+We can use confluence of $R^{*}$ to fill in the upper-left square.
+
+~~~{.quiver}
+\begin{tikzcd}
+  x & {z'} & z \\
+  {y'} & a & \bullet \\
+  y & \bullet & \bullet
+  \arrow["{R^{*}}"', from=1-1, to=2-1]
+  \arrow["{S^{*}}"', from=2-1, to=3-1]
+  \arrow["{R^{*}}", from=1-1, to=1-2]
+  \arrow["{S^{*}}", from=1-2, to=1-3]
+  \arrow["{R^{*}}"', dashed, from=3-1, to=3-2]
+  \arrow["{S^{*}}"', dashed, from=3-2, to=3-3]
+  \arrow["{R^{*}}", dashed, from=1-3, to=2-3]
+  \arrow["{S^{*}}", dashed, from=2-3, to=3-3]
+  \arrow["{R^{*}}"', from=2-1, to=2-2]
+  \arrow["{R^{*}}", from=1-2, to=2-2]
+  \arrow["Conf"{description}, color={rgb,255:red,92;green,92;blue,214}, draw=none, from=1-1, to=2-2]
+\end{tikzcd}
+~~~
+
+We can then use commutativity of $R$ and $S$ to fill in the upper-right
+and lower-left squares.
+
+~~~{.quiver}
+\begin{tikzcd}
+  x & {z'} & z \\
+  {y'} & a & c \\
+  y & b & \bullet
+  \arrow["{R^{*}}"', from=1-1, to=2-1]
+  \arrow["{S^{*}}"', from=2-1, to=3-1]
+  \arrow["{R^{*}}", from=1-1, to=1-2]
+  \arrow["{S^{*}}", from=1-2, to=1-3]
+  \arrow["{R^{*}}"', from=3-1, to=3-2]
+  \arrow["{S^{*}}"', dashed, from=3-2, to=3-3]
+  \arrow["{R^{*}}", from=1-3, to=2-3]
+  \arrow["{S^{*}}", dashed, from=2-3, to=3-3]
+  \arrow["{R^{*}}", from=2-1, to=2-2]
+  \arrow["{R^{*}}"', from=1-2, to=2-2]
+  \arrow["{S^{*}}", from=2-2, to=3-2]
+  \arrow["{S^{*}}"', from=2-2, to=2-3]
+  \arrow["Comm"{description}, color={rgb,255:red,92;green,92;blue,214}, draw=none, from=2-1, to=3-2]
+  \arrow["Comm"{description}, color={rgb,255:red,92;green,92;blue,214}, draw=none, from=1-2, to=2-3]
+\end{tikzcd}
+~~~
+
+Finally, we can use confluence of $S$ to fill in the lower-right square,
+finishing the proof.
+
+~~~{.quiver}
+\begin{tikzcd}
+  x & {z'} & z \\
+  {y'} & a & c \\
+  y & b & w
+  \arrow["{R^{*}}"', from=1-1, to=2-1]
+  \arrow["{S^{*}}"', from=2-1, to=3-1]
+  \arrow["{R^{*}}", from=1-1, to=1-2]
+  \arrow["{S^{*}}", from=1-2, to=1-3]
+  \arrow["{R^{*}}"', from=3-1, to=3-2]
+  \arrow["{S^{*}}"', from=3-2, to=3-3]
+  \arrow["{R^{*}}", from=1-3, to=2-3]
+  \arrow["{S^{*}}", from=2-3, to=3-3]
+  \arrow["{R^{*}}", from=2-1, to=2-2]
+  \arrow["{R^{*}}"', from=1-2, to=2-2]
+  \arrow["{S^{*}}"', from=2-2, to=3-2]
+  \arrow["{S^{*}}", from=2-2, to=2-3]
+  \arrow["Conf"{description}, color={rgb,255:red,92;green,92;blue,214}, draw=none, from=2-2, to=3-3]
+\end{tikzcd}
+~~~
+
+```agda
+commutes+confluent→union-confluent
+  : commutes-with R S
+  → is-confluent R → is-confluent S
+  → is-confluent (R ∪r S)
+commutes+confluent→union-confluent {R = R} {S = S} comm R-conf S-conf =
+  refl-trans-clo-equiv+confluent→confluent
+    refl-trans-clo-union≃refl-trans-clo-comp-refl-trans-clo
+    (diamond→confluent S*∘R*-diamond)
+  where
+    S*∘R*-diamond : has-diamond (Refl-trans S ∘r Refl-trans R)
+    S*∘R*-diamond {x} {y} {z} x↝*y x↝*z = do
+      y' , x↝₁y' , y'↝₂y ← x↝*y
+      z' , x↝₁z' , z'↝₂z ← x↝*z
+      a , y'↝₁a , z'↝₁a ← R-conf x↝₁y' x↝₁z'
+      b , a↝₂b , y↝₁b ← comm y'↝₁a y'↝₂y
+      c , a↝₂c , z↝₁c ← comm z'↝₁a z'↝₂z
+      w , b↝₂w , c↝₂w ← S-conf a↝₂b a↝₂c
+      pure (w , pure (b , y↝₁b , b↝₂w) , pure (c , z↝₁c , c↝₂w))
 ```

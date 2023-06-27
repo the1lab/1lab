@@ -84,8 +84,8 @@ semi-commutes-with R S =
 Commutativity obviously implies semi-commutativity.
 
 ```agda
-commute→semi-commute : commutes-with R S → semi-commutes-with R S
-commute→semi-commute comm x↝₁*y1 x↝₂y2 =
+commutes→semi-commutes : commutes-with R S → semi-commutes-with R S
+commutes→semi-commutes comm x↝₁*y1 x↝₂y2 =
   comm x↝₁*y1 [ x↝₂y2 ]
 ```
 
@@ -135,7 +135,7 @@ in the following diagram.
   \arrow["{S^*}", from=1-3, to=1-5]
   \arrow["{S^*}"', from=3-1, to=3-3]
   \arrow["{R^*}", from=1-3, to=3-3]
-  \arrow["{S.C.}"{description}, color={rgb,255:red,92;green,92;blue,214}, no body, from=1-1, to=3-3]
+  \arrow["{S.C.}"{description}, color={rgb,255:red,92;green,92;blue,214}, draw=none, from=1-1, to=3-3]
   \arrow[dashed, from=3-3, to=3-5]
 \end{tikzcd}
 ~~~
@@ -154,15 +154,15 @@ square, completing the proof.
   \arrow["{S^*}", from=1-3, to=1-5]
   \arrow["{S^*}"', from=3-1, to=3-3]
   \arrow["{R^*}", from=1-3, to=3-3]
-  \arrow["{S.C.}"{description}, color={rgb,255:red,92;green,92;blue,214}, no body, from=1-1, to=3-3]
+  \arrow["{S.C.}"{description}, color={rgb,255:red,92;green,92;blue,214}, draw=none, from=1-1, to=3-3]
   \arrow["{S^*}"', from=3-3, to=3-5]
-  \arrow["{I.H.}"{description}, color={rgb,255:red,92;green,92;blue,214}, no body, from=1-3, to=3-5]
+  \arrow["{I.H.}"{description}, color={rgb,255:red,92;green,92;blue,214}, draw=none, from=1-3, to=3-5]
 \end{tikzcd}
 ~~~
 
 ```agda
-semi-commute→commute : semi-commutes-with R S → commutes-with R S
-semi-commute→commute {R = R} {S = S}  semi-comm x↝₁*y1 x↝₂*y2 =
+semi-commutes→commutes : semi-commutes-with R S → commutes-with R S
+semi-commutes→commutes {R = R} {S = S}  semi-comm x↝₁*y1 x↝₂*y2 =
   Refl-trans-rec-chain
     (λ x y2 →
       ∀ y1 → Refl-trans R x y1
@@ -260,7 +260,7 @@ We can then apply strong commutativity to fill the upper square.
   \arrow["{S^{=}}"', from=3-1, to=3-3]
   \arrow[dashed, from=3-3, to=5-3]
   \arrow[dashed, from=5-1, to=5-3]
-  \arrow["{S.C.}"{description}, color={rgb,255:red,92;green,92;blue,214}, no body, from=1-1, to=3-3]
+  \arrow["{S.C.}"{description}, color={rgb,255:red,92;green,92;blue,214}, draw=none, from=1-1, to=3-3]
 \end{tikzcd}
 ~~~
 
@@ -300,7 +300,7 @@ diagram:
   \arrow["{R{*}}", from=1-3, to=3-3]
   \arrow["S"', from=3-1, to=3-3]
   \arrow[dashed, from=3-3, to=5-3]
-  \arrow["{S.C.}"{description}, color={rgb,255:red,92;green,92;blue,214}, no body, from=1-1, to=3-3]
+  \arrow["{S.C.}"{description}, color={rgb,255:red,92;green,92;blue,214}, draw=none, from=1-1, to=3-3]
 \end{tikzcd}
 ~~~
 
@@ -321,15 +321,15 @@ completing the proof.
   \arrow["{R{*}}", from=1-3, to=3-3]
   \arrow["S"', from=3-1, to=3-3]
   \arrow["{R^{*}}", from=3-3, to=5-3]
-  \arrow["{S.C.}"{description}, color={rgb,255:red,92;green,92;blue,214}, no body, from=1-1, to=3-3]
-  \arrow["{I.H}"{description}, color={rgb,255:red,92;green,92;blue,214}, no body, from=3-1, to=5-3]
+  \arrow["{S.C.}"{description}, color={rgb,255:red,92;green,92;blue,214}, draw=none, from=1-1, to=3-3]
+  \arrow["{I.H}"{description}, color={rgb,255:red,92;green,92;blue,214}, draw=none, from=3-1, to=5-3]
 \end{tikzcd}
 ~~~
 
 ```agda
-strongly-commute→semi-commute
+strongly-commutes→semi-commutes
   : strongly-commutes-with R S → semi-commutes-with R S
-strongly-commute→semi-commute {R = R} {S = S} strong-comm x↝₁*y1 x↝₂y2 =
+strongly-commutes→semi-commutes {R = R} {S = S} strong-comm x↝₁*y1 x↝₂y2 =
   Refl-trans-rec-chain
     (λ x y1 → ∀ y2 → S x y2 → is-joinable (Refl-trans S) (Refl-trans R) y1 y2)
     (λ {x} y2 x↝₂y2 → pure (y2 , [ x↝₂y2 ] , reflexive))
@@ -355,8 +355,8 @@ Strong commutativity implies commutativity, as semi-commutativity
 is equivalent to commutativity.
 
 ```agda
-strongly-commute→commute
+strongly-commutes→commutes
   : strongly-commutes-with R S → commutes-with R S
-strongly-commute→commute strong-comm =
-  semi-commute→commute $ strongly-commute→semi-commute strong-comm
+strongly-commutes→commutes strong-comm =
+  semi-commutes→commutes $ strongly-commutes→semi-commutes strong-comm
 ```

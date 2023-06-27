@@ -15,7 +15,7 @@ module Rewriting.Base where
 private variable
   ℓ ℓ' ℓ'' : Level
   A B X : Type ℓ
-  R S _↝₁_ _↝₂_ : Rel A A ℓ
+  P Q R S P' Q' R' S' : Rel A A ℓ
 ```
 -->
 
@@ -59,6 +59,18 @@ private
   ∘≡joinable = refl
 ```
 
+If $P \subseteq R$ and $Q \subseteq S$, then $R$ and $S$ are joinable
+if $P$ and $Q$ are.
+
+```agda
+joinable-⊆
+  : P ⊆r R → Q ⊆r S
+  → ∀ x y → is-joinable P Q x y → is-joinable R S x y
+joinable-⊆ P⊆R Q⊆S x y = ∥-∥-map λ where
+  (z , p , q) → z , P⊆R p , Q⊆S q
+```
+
+
 Let $P$, $Q$, $R$ and $S$ all be relations on $A$. We say that $P$ and
 $Q$ are resolvable by $R$ and $S$ if for all $x,y,z : A$, $P(x,y)$ and
 $Q(x,z)$ implies that $y$ and $z$ are joinable by $R$ and $S$.
@@ -101,4 +113,16 @@ private
       (λ diamond q∘p → do
         x , p , q ← q∘p
         diamond p q)
+```
+
+We also have the following useful lemma characterizing resolvability
+of subrelations.
+
+```agda
+resolvable-⊆
+  : P' ⊆r P → Q' ⊆r Q
+  → R ⊆r R' → S ⊆r S'
+  → is-resolvable P Q R S → is-resolvable P' Q' R' S'
+resolvable-⊆ p q r s sq {x = x} {y = y} x↝y x↝z =
+  joinable-⊆ r s x y (sq (p x↝y) (q x↝z))
 ```
