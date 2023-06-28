@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import 1Lab.Prelude
+open import Data.Maybe.Base
 open import Data.Sum
 
 open import Data.Rel.Base
@@ -104,6 +105,26 @@ Refl-trans-rec-chain {R = R} S pnil pstep pprop r+ = go r+ reflexive pnil where
   go (trunc x→*y x→*y' i) y→*z acc =
     pprop (go x→*y y→*z acc) (go x→*y' y→*z acc) i
 ```
+
+It's useful to be able to perform induction in the reverse direction, so
+we also provide a recursion principle for doing so.
+
+```agda
+Refl-trans-rec-chain-bwd
+  : (S : A → A → Type ℓ)
+  → (∀ {x} → S x x)
+  → (∀ {x y z} → Refl-trans R x y → R y z → S x y → S x z)
+  → (∀ {x y} → is-prop (S x y))
+  → ∀ {x y} → Refl-trans R x y → S x y
+Refl-trans-rec-chain-bwd {R = R} S pnil pstep pprop {x = x} r+ =
+  Refl-trans-rec-chain (λ y z → Refl-trans R x y → S x y → S x z)
+    (λ _ Sxx' → Sxx')
+    (λ {x'} {y} {z} x'→y y→*z ih x→*x' Sxx' →
+      ih (transitive x→*x' [ x'→y ]) (pstep x→*x' x'→y Sxx'))
+    (Π-is-hlevel 1 λ _ → Π-is-hlevel 1 λ _ → pprop)
+    r+ reflexive pnil
+```
+
 
 We also provide an eliminator for inspecting forks.
 

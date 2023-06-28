@@ -27,6 +27,8 @@ private variable
   ℓ ℓ' ℓ'' : Level
   A B X : Type ℓ
   R S : A → A → Type ℓ
+
+open Normal-form
 ```
 -->
 
@@ -108,7 +110,7 @@ has at most one normal form.
 
 ```agda
 confluent→unique-normal-forms
-  : ∀ {R : A → A → Type ℓ}
+  : ∀ {R : Rel A A ℓ}
   → is-set A
   → is-confluent R 
   → ∀ x → is-prop (Normal-form R x)
@@ -123,9 +125,76 @@ confluent→unique-normal-forms {R = R} A-set conf x y-nf z-nf =
          hlevel!
          y↝w z↝w (y-nf .has-normal-form) (z-nf .has-normal-form)
     pure (Normal-form-path y-nf z-nf p)
-    where open Normal-form
 ```
 
+<!--
+```agda
+-- Useful for local instances.
+H-Level-confluent-normal-form
+  : ∀ {R : Rel A A ℓ} {x} {n}
+  → is-set A
+  → is-confluent R
+  → H-Level (Normal-form R x) (suc n)
+H-Level-confluent-normal-form set conf =
+  prop-instance (confluent→unique-normal-forms set conf _)
+```
+-->
+
+If $\to$ is a confluent relation and $x \to^{*} w \leftarrow^{*} y$,
+then $y$ has a normal form if and only if $x$ does.
+
+To see this, note that we have the following pair of reductions
+out of $x$:
+
+~~~{.quiver}
+\begin{tikzcd}
+        x && w && y \\
+        \\
+        {x \downarrow}
+        \arrow["{*}", from=1-1, to=1-3]
+        \arrow["{*}"', from=1-1, to=3-1]
+        \arrow["{*}"', from=1-5, to=1-3]
+\end{tikzcd}
+~~~
+
+We can use confluence to fill in the left-hand square:
+
+~~~{.quiver}
+\begin{tikzcd}
+  x && w && y \\
+  \\
+  {x \downarrow} && {w'}
+  \arrow["{*}", from=1-1, to=1-3]
+  \arrow["{*}"', from=1-1, to=3-1]
+  \arrow["{*}"', from=1-5, to=1-3]
+  \arrow[from=1-3, to=3-3]
+  \arrow[from=3-1, to=3-3]
+  \arrow["Conf"{description}, color={rgb,255:red,92;green,92;blue,214}, draw=none, from=1-1, to=3-3]
+\end{tikzcd}
+~~~
+
+Note that $x \downarrow$ and $y$ both reduce to the same value; this
+means that $y$ reduces to $x \downarrow$, as $x \downarrow$ is a normal
+form.
+
+```agda
+confluent+wedge+normal-form→normal-form
+  : ∀ {x y w}
+  → is-confluent R
+  → Refl-trans R x w → Refl-trans R y w
+  → Normal-form R x → Normal-form R y
+confluent+wedge+normal-form→normal-form conf x↝w y↝w x↓ .nf =
+  x↓ .nf
+confluent+wedge+normal-form→normal-form conf x↝w y↝w x↓ .reduces =
+  ∥-∥-rec!
+    (λ where
+      (w' , x↓↝w' , w↝w') →
+        normal-form+reduces→reduces (x↓ .has-normal-form)
+          x↓↝w' (transitive y↝w w↝w'))
+    (conf (x↓ .reduces) x↝w)
+confluent+wedge+normal-form→normal-form conf x↝w y↝w x↓ .has-normal-form =
+  x↓ .has-normal-form
+```
 
 ## The Church-Rosser Property
 
@@ -378,6 +447,88 @@ church-rosser→semiconfluent : has-church-rosser R → is-semi-confluent R
 church-rosser→semiconfluent church-rosser =
   confluent→semiconfluent (church-rosser→confluent church-rosser)
 ```
+
+This theorem has some very useful consequences; first, if $R$ is
+confluent and $x$ and $y$ are convertible, then $x$ reduces to $y$
+if $y$ is in normal form.
+
+To see this, note that Church-rosser implies that gives us a $w$ such
+that $x \to^{*} w$ and $y \to^{*} w$. We can then perform induction
+on the $y \to^{*} w$; if it is empty, then we have $y = w$, and thus
+$x \to^{*} y$. If it is non-empty, then we have a contradiction, as
+$y$ is a normal form.
+
+```agda
+confluent+convertible→reduces-to-normal-form
+  : ∀ {x y}
+  → is-confluent R
+  → Refl-sym-trans R x y
+  → is-normal-form R y
+  → Refl-trans R x y
+confluent+convertible→reduces-to-normal-form {R = R} {x = x} {y = y} conf x↔y y-nf =
+  ∥-∥-rec!
+    (λ where
+      (w , x↝w , y↝w) →
+        Refl-trans-rec-chain
+          (λ y w → is-normal-form R y → Refl-trans R x w → Refl-trans R x y)
+          (λ _ x↝y → x↝y)
+          (λ y↝z _ _ y-nf _ → absurd (y-nf (_ , y↝z)))
+          hlevel!
+          y↝w y-nf x↝w)
+    (confluent→church-rosser conf x↔y)
+```
+
+Furthermore, if $R$ is a confluent relation on a set, and $x y : A$
+are convertible normal forms, then $x = y$. This follows via a
+straight-forward induction on the wedge produced via confluence.
+
+```agda
+confluent+convertible→unique-normal-form
+  : ∀ {R : Rel A A ℓ} {x y}
+  → is-set A
+  → is-confluent R
+  → Refl-sym-trans R x y
+  → is-normal-form R x → is-normal-form R y
+  → x ≡ y
+confluent+convertible→unique-normal-form {R = R} set conf x↔y x-nf y-nf =
+  ∥-∥-rec (set _ _)
+    (λ where
+      (w , x↝w , y↝w) →
+        Refl-trans-case-wedge
+          (λ x y w → is-normal-form R x → is-normal-form R y → x ≡ y)
+          (λ _ _ → refl)
+          (λ y↝y' _ _ y-nf → absurd (y-nf (_ , y↝y')))
+          (λ x↝x' _ x-nf _ → absurd (x-nf (_ , x↝x')))
+          (Π-is-hlevel² 1 λ _ _ → set _ _)
+          x↝w y↝w x-nf y-nf)
+    (confluent→church-rosser conf x↔y)
+```
+
+We can also show that if $R$ is a confluent relation on a set, and
+$x$ and $y$ are convertible, then the their types of normal forms are
+equivalent.
+
+```agda
+confluent+convertible→normal-form-equiv
+  : ∀ {R : Rel A A ℓ} {x y}
+  → is-set A
+  → is-confluent R
+  → Refl-sym-trans R x y
+  → Normal-form R x ≃ Normal-form R y
+confluent+convertible→normal-form-equiv {R = R} {x = x} {y = y} set conf x↔y =
+  ∥-∥-rec!
+    (λ where
+      (w , x↝w , y↝w) →
+        prop-ext!
+          (confluent+wedge+normal-form→normal-form conf x↝w y↝w)
+          (confluent+wedge+normal-form→normal-form conf y↝w x↝w))
+    (confluent→church-rosser conf x↔y)
+  where
+    instance
+      _ : ∀ {x} {n} → H-Level (Normal-form R x) (suc n)
+      _ = H-Level-confluent-normal-form set conf
+```
+
 
 ## Local Confluence and Newman's Lemma
 

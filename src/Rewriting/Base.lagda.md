@@ -138,6 +138,58 @@ is-normal-form : (R : Rel A A ℓ) → A → Type _
 is-normal-form {A = A} R x = ¬ Σ[ y ∈ A ] R x y
 ```
 
+This allows us to give a restricted form of elimination for the
+reflexive-transitive closure when the domain is a normal form.
+
+```agda
+Refl-trans-rec-normal-form
+  : (S : A → A → Type ℓ)
+  → (∀ {x} → S x x)
+  → (∀ {x y} → is-prop (S x y))
+  → ∀ {x y} → is-normal-form R x → Refl-trans R x y → S x y
+Refl-trans-rec-normal-form {R = R} S srefl sprop x-nf x↝y =
+  Refl-trans-rec-chain
+    (λ x y → is-normal-form R x → S x y)
+    (λ _ → srefl)
+    (λ x↝y _ _ x-nf → absurd (x-nf (_ , x↝y)))
+    (Π-is-hlevel 1 λ _ → sprop)
+    x↝y x-nf
+```
+
+
+If if $A$ is a set, $x : A$ is a normal form, and $x \to^{*} y$, then
+$x = y$.
+
+```agda
+normal-form+reduces→path
+  : ∀ {R : Rel A A ℓ} {x y}
+  → is-set A
+  → is-normal-form R x
+  → Refl-trans R x y
+  → x ≡ y
+normal-form+reduces→path {R = R} A-set =
+  Refl-trans-rec-normal-form _≡_ refl (A-set _ _)
+```
+
+<!-- [TODO: Reed M, 28/06/2023] Prove that this yields a pointed identity system -->
+
+If $x$ is a normal form, and $x \to^{*} z$ and $y \to^{*} z$, then
+$y$ must reduce to $x$.
+
+```agda
+normal-form+reduces→reduces
+  : ∀ {R : Rel A A ℓ} {x y z}
+  → is-normal-form R x
+  → Refl-trans R x z → Refl-trans R y z
+  → Refl-trans R y x
+normal-form+reduces→reduces {R = R} {y = y} x-nf x↝z y↝z =
+  Refl-trans-rec-normal-form
+    (λ x z → Refl-trans R y z → Refl-trans R y x)
+    id
+    hlevel!
+    x-nf x↝z y↝z
+```
+
 A normal form of $x : A$ is another $y : A$ such that $y$ is a normal form
 and $R^{*}(x,y)$. Note that this is untruncated; uniqueness of normal forms
 shall be derived from other properties of $R$.
