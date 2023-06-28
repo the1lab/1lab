@@ -56,7 +56,7 @@ step $a_0 \leadsto a_1$ of the sequence.
 ```agda
 strongly-normalising→terminating : is-strongly-normalising _↝_ → is-terminating _↝_
 strongly-normalising→terminating {_↝_ = _↝_} sn ∥chain∥ =
-  ∥-∥-proj $ do
+  ∥-∥-proj! $ do
     (aₙ , step) ← ∥chain∥
     inc $ Wf-induction _ sn
       (λ a → ∀ n → ¬ Trans _↝_ a (aₙ (suc n)))

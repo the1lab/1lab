@@ -126,3 +126,76 @@ resolvable-⊆
 resolvable-⊆ p q r s sq {x = x} {y = y} x↝y x↝z =
   joinable-⊆ r s x y (sq (p x↝y) (q x↝z))
 ```
+
+## Normal Forms
+
+Let $R$ be an abstract rewriting relation on a type $A$. We say
+that an element $x : A$ is a **normal form** if it cannot be reduced
+by $R$.
+
+```agda
+is-normal-form : (R : Rel A A ℓ) → A → Type _
+is-normal-form {A = A} R x = ¬ Σ[ y ∈ A ] R x y
+```
+
+A normal form of $x : A$ is another $y : A$ such that $y$ is a normal form
+and $R^{*}(x,y)$. Note that this is untruncated; uniqueness of normal forms
+shall be derived from other properties of $R$.
+
+```agda
+record Normal-form {A : Type ℓ} (R : Rel A A ℓ') (x : A) : Type (ℓ ⊔ ℓ') where
+  constructor normal-form
+  no-eta-equality
+  field
+    nf : A
+    reduces : Refl-trans R x nf
+    has-normal-form : is-normal-form R nf
+
+open Normal-form
+```
+
+If $A$ is a set, then the type of normal forms is also a set.
+
+```agda
+private unquoteDecl eqv = declare-record-iso eqv (quote Normal-form)
+
+Normal-form-is-hlevel
+  : ∀ {R : A → A → Type ℓ} {x}
+  → (n : Nat) → is-hlevel A (2 + n) → is-hlevel (Normal-form R x) (2 + n)
+Normal-form-is-hlevel n A-set =
+  Iso→is-hlevel (2 + n) eqv (Σ-is-hlevel (2 + n) A-set hlevel!)
+```
+
+<!--
+```agda
+instance
+  H-Level-normal-form
+    : ∀ {R : A → A → Type ℓ} {x} {n}
+    → ⦃ A-hlevel : ∀ {n} → H-Level A (2 + n) ⦄ → H-Level (Normal-form R x) (2 + n)
+  H-Level-normal-form ⦃ A-hlevel ⦄ =
+    basic-instance 2 (Normal-form-is-hlevel 0 (H-Level.has-hlevel {n = 2} A-hlevel))
+
+Normal-form-pathp
+  : ∀ {x y}
+  → (p : x ≡ y)
+  → (x-nf : Normal-form R x) → (y-nf : Normal-form R y)
+  → x-nf .nf ≡ y-nf. nf
+  → PathP (λ i → Normal-form R (p i)) x-nf y-nf
+Normal-form-pathp p x-nf y-nf nf-path i .nf = nf-path i
+Normal-form-pathp {R = R} p x-nf y-nf nf-path i .reduces =
+  is-prop→pathp {B = λ i → Refl-trans R (p i) (nf-path i)}
+    (λ i → trunc)
+    (x-nf .reduces) (y-nf .reduces) i
+Normal-form-pathp {R = R} p x-nf y-nf nf-path i .has-normal-form =
+  is-prop→pathp {B = λ i → is-normal-form R (nf-path i)}
+    (λ i → hlevel!)
+    (x-nf .has-normal-form) (y-nf .has-normal-form) i
+
+Normal-form-path
+  : ∀ {x}
+  → (x-nf x-nf' : Normal-form R x)
+  → x-nf .nf ≡ x-nf'. nf
+  → x-nf ≡ x-nf'
+Normal-form-path x-nf x-nf' p = Normal-form-pathp refl x-nf x-nf' p
+```
+-->

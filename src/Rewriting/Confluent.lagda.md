@@ -103,6 +103,29 @@ refl-trans-clo-equiv+confluent→confluent eqv R-conf {x} {y} {z} =
     R-conf {x} {y} {z}
 ```
 
+If a rewrite system on a set is confluent, then every element of $A$
+has at most one normal form.
+
+```agda
+confluent→unique-normal-forms
+  : ∀ {R : A → A → Type ℓ}
+  → is-set A
+  → is-confluent R 
+  → ∀ x → is-prop (Normal-form R x)
+confluent→unique-normal-forms {R = R} A-set conf x y-nf z-nf =
+  ∥-∥-proj (Normal-form-is-hlevel 0 A-set y-nf z-nf) $ do
+    w , y↝w , z↝w ← conf (y-nf .reduces) (z-nf .reduces)
+    p ← Refl-trans-case-wedge
+         (λ y z w → is-normal-form R y → is-normal-form R z → ∥ y ≡ z ∥)
+         (λ _ _ → inc refl)
+         (λ z→z' _ _ z-nf → absurd (z-nf (_ , z→z')))
+         (λ y→y' _ y-nf _ → absurd (y-nf (_ , y→y')))
+         hlevel!
+         y↝w z↝w (y-nf .has-normal-form) (z-nf .has-normal-form)
+    pure (Normal-form-path y-nf z-nf p)
+    where open Normal-form
+```
+
 
 ## The Church-Rosser Property
 

@@ -132,6 +132,29 @@ Refl-trans-case-fork {R' = R'} {R = R} S refll reflr fork prop {a} {x} {y} a→*
     a→*x a→*y
 ```
 
+Similarly, we provide an eliminator for inspecting wedges.
+
+```agda
+Refl-trans-case-wedge
+  : (S : A → A → A → Type ℓ)
+  → (∀ {z} → S z z z)
+  → (∀ {x y y' z} → R' y y' → Refl-trans R' y' z → S x y z)
+  → (∀ {x x' y z} → R x x' → Refl-trans R x' z → S x y z)
+  → (∀ {x y z} → is-prop (S x y z))
+  → ∀ {x y z} → Refl-trans R x z → Refl-trans R' y z → S x y z
+Refl-trans-case-wedge {R' = R'} {R = R} S refl2 wedgel wedger prop {x} {y} {z} x→*z y→*z =
+  Refl-trans-rec-chain (λ x z → Refl-trans R' y z → S x y z)
+    (λ y→*z → Refl-trans-rec-chain (λ y z → S z y z)
+      refl2
+      (λ y→y' y'→*z _ → wedgel y→y' y'→*z)
+      prop
+      y→*z)
+    (λ x→x' x'→z _ _ → wedger x→x' x'→z)
+    (Π-is-hlevel 1 λ _ → prop)
+    x→*z y→*z
+```
+
+
 ## As a closure operator
 
 ```agda
