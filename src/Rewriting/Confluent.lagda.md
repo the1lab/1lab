@@ -232,7 +232,7 @@ a variant of confluence known as the **Church-Rosser Property**, which
 requires a $z$ for every pair of equivalent terms $x$ and $y$ such that
 $x \to^{*} z$ and $y \to^{*} z$.
 
-[reflexive symmetric transitive closure]: Data.Rel.Closure.html#reflexive-symmetric-transitive-closure.html
+[reflexive symmetric transitive closure]: Data.Rel.Closure.ReflexiveSymmetricTransitive.html
 
 ~~~{.quiver}
 \begin{tikzcd}

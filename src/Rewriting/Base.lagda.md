@@ -32,7 +32,7 @@ rewriting rules. Sequences of rewrites are then described using the
 [reflexive transitive closure] of $\to$.
 
 [relation]: Data.Rel.Base.html
-[reflexive transitive closure]: Data.Rel.Closure.html#reflexive-transitive-closure.html
+[reflexive transitive closure]: Data.Rel.Closure.ReflexiveTransitive.html
 
 ## Basic Concepts
 

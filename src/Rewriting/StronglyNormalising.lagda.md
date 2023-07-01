@@ -24,7 +24,7 @@ private variable
 An abstract rewriting system is **strongly normalising** if its
 [transitive closure] is a [well-founded relation].
 
-[transitive closure]: Data.Rel.Closure.html#transitive-closure
+[transitive closure]: Data.Rel.Closure.Transitive.html
 [well-founded relation]: Data.Wellfounded.Base.html
 
 ```agda

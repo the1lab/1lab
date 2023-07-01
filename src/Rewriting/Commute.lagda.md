@@ -55,7 +55,7 @@ from $R$ and $S$ don't let us diverge; we can always reconcile the two
 by performing rewrites from $S$ and $R$, resp. This generalizes
 [confluence], which states that a relation commutes with itself.
 
-[confluence]: Rewriting.Confluence.html
+[confluence]: Rewriting.Confluent.html
 
 This condition can be somewhat difficult to work with, so we introduce
 an intermediate notion of **semi-commutation**, where one of the reflexive
