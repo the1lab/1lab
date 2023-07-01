@@ -167,9 +167,25 @@ normal-form+reduces→path
   → is-normal-form R x
   → Refl-trans R x y
   → x ≡ y
-normal-form+reduces→path {R = R} A-set =
+normal-form+reduces→path A-set =
   Refl-trans-rec-normal-form _≡_ refl (A-set _ _)
 ```
+
+As a corollary, if $x$ and $y$ are normal forms such that
+$x \to^{*} z \leftarrow^{*} y$, then $x = y$.
+
+```agda
+normal-forms+wedge→path
+  : ∀ {R : Rel A A ℓ} {x y z}
+  → is-set A
+  → is-normal-form R x → is-normal-form R y
+  → Refl-trans R x z → Refl-trans R y z
+  → x ≡ y
+normal-forms+wedge→path set x-nf y-nf x↝z y↝z =
+  normal-form+reduces→path set x-nf x↝z
+  ∙ (sym $ normal-form+reduces→path set y-nf y↝z)
+```
+
 
 <!-- [TODO: Reed M, 28/06/2023] Prove that this yields a pointed identity system -->
 

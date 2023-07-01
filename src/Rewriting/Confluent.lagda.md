@@ -108,6 +108,36 @@ refl-trans-clo-equiv+confluent→confluent eqv R-conf {x} {y} {z} =
 If a rewrite system on a set is confluent, then every element of $A$
 has at most one normal form.
 
+To show this, assume that $y$ and $z$ are both normal forms of $x$.
+This gives us the following fork:
+
+~~~{.quiver}
+\begin{tikzcd}
+  & x \\
+  y && z
+  \arrow["{*}"', from=1-2, to=2-1]
+  \arrow["{*}", from=1-2, to=2-3]
+\end{tikzcd}
+~~~
+
+We can apply confluence to obtain a wedge $y \to^{*} w \leftarrow^{*} z$.
+
+~~~{.quiver}
+\begin{tikzcd}
+  & x \\
+  y && z \\
+  & w
+  \arrow["{*}"', from=1-2, to=2-1]
+  \arrow["{*}", from=1-2, to=2-3]
+  \arrow["{*}"', from=2-1, to=3-2]
+  \arrow["{*}", from=2-3, to=3-2]
+  \arrow["Conf"{description}, color={rgb,255:red,92;green,92;blue,214}, draw=none, from=1-2, to=3-2]
+\end{tikzcd}
+~~~
+
+Both $y$ and $z$ are normal forms, so this gives us a pair of paths $y = w$ and
+$z = w$, which completes the proof.
+
 ```agda
 confluent→unique-normal-forms
   : ∀ {R : Rel A A ℓ}
@@ -115,16 +145,14 @@ confluent→unique-normal-forms
   → is-confluent R 
   → ∀ x → is-prop (Normal-form R x)
 confluent→unique-normal-forms {R = R} A-set conf x y-nf z-nf =
-  ∥-∥-proj (Normal-form-is-hlevel 0 A-set y-nf z-nf) $ do
-    w , y↝w , z↝w ← conf (y-nf .reduces) (z-nf .reduces)
-    p ← Refl-trans-case-wedge
-         (λ y z w → is-normal-form R y → is-normal-form R z → ∥ y ≡ z ∥)
-         (λ _ _ → inc refl)
-         (λ z→z' _ _ z-nf → absurd (z-nf (_ , z→z')))
-         (λ y→y' _ y-nf _ → absurd (y-nf (_ , y→y')))
-         hlevel!
-         y↝w z↝w (y-nf .has-normal-form) (z-nf .has-normal-form)
-    pure (Normal-form-path y-nf z-nf p)
+  ∥-∥-rec (Normal-form-is-hlevel 0 A-set y-nf z-nf)
+    (λ where
+      (w , y↝w , z↝w) →
+        Normal-form-path y-nf z-nf
+          (normal-forms+wedge→path A-set
+            (y-nf .has-normal-form) (z-nf .has-normal-form)
+            y↝w z↝w))
+    (conf (y-nf .reduces) (z-nf .reduces))
 ```
 
 <!--
@@ -479,8 +507,8 @@ confluent+convertible→reduces-to-normal-form {R = R} {x = x} {y = y} conf x↔
 ```
 
 Furthermore, if $R$ is a confluent relation on a set, and $x y : A$
-are convertible normal forms, then $x = y$. This follows via a
-straight-forward induction on the wedge produced via confluence.
+are convertible normal forms, then $x = y$. This follows from
+`normal-forms+wedge→path`{.Agda} and confluence.
 
 ```agda
 confluent+convertible→unique-normal-form
@@ -490,17 +518,11 @@ confluent+convertible→unique-normal-form
   → Refl-sym-trans R x y
   → is-normal-form R x → is-normal-form R y
   → x ≡ y
-confluent+convertible→unique-normal-form {R = R} set conf x↔y x-nf y-nf =
+confluent+convertible→unique-normal-form set conf x↔y x-nf y-nf =
   ∥-∥-rec (set _ _)
     (λ where
       (w , x↝w , y↝w) →
-        Refl-trans-case-wedge
-          (λ x y w → is-normal-form R x → is-normal-form R y → x ≡ y)
-          (λ _ _ → refl)
-          (λ y↝y' _ _ y-nf → absurd (y-nf (_ , y↝y')))
-          (λ x↝x' _ x-nf _ → absurd (x-nf (_ , x↝x')))
-          (Π-is-hlevel² 1 λ _ _ → set _ _)
-          x↝w y↝w x-nf y-nf)
+        normal-forms+wedge→path set x-nf y-nf x↝w y↝w)
     (confluent→church-rosser conf x↔y)
 ```
 
@@ -528,7 +550,6 @@ confluent+convertible→normal-form-equiv {R = R} {x = x} {y = y} set conf x↔y
       _ : ∀ {x} {n} → H-Level (Normal-form R x) (suc n)
       _ = H-Level-confluent-normal-form set conf
 ```
-
 
 ## Local Confluence and Newman's Lemma
 
