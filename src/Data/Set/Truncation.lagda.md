@@ -127,7 +127,7 @@ using `is-set→squarep`{.Agda}.
   prop-ext (squash _ _) squash (encode _ _) (decode _ (inc _))
   where
     code : ∀ x (y : ∥ A ∥₀) → Prop _
-    code x = ∥-∥₀-elim (λ y → hlevel!) λ y → el ∥ x ≡ y ∥ squash
+    code x = ∥-∥₀-elim hlevel! λ y → el ∥ x ≡ y ∥ squash
 
     encode : ∀ x y → inc x ≡ y → ∣ code x y ∣
     encode x y p = J (λ y p → ∣ code x y ∣) (inc refl) p

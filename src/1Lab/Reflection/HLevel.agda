@@ -554,8 +554,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
   -- solved using just hlevel!, rather than λ _ → hlevel!. Of course,
   -- the effect is the same.
   decompose-is-hlevel-top
-    : ∀ {ℓ} {A : Type ℓ}
-    → Term → TC (Term × Term × (TC A → TC A) × (Term → Term))
+    : Term → TC (Term × Term × Telescope)
   decompose-is-hlevel-top goal =
     do
       ty ← withReduceDefs (false , hlevel-types) $
@@ -564,18 +563,18 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
     where
       go : Term → TC _
       go (pi (arg as at) (abs vn cd)) = do
-        (inner , hlevel , enter , leave) ← go cd
-        pure $ inner , hlevel , extendContext vn (arg as at) , λ t → lam (ArgInfo.arg-vis as) (abs vn t)
+        (inner , hlevel , delta) ← go cd
+        pure $ inner , hlevel , (vn , arg as at) ∷ delta
       go tm = do
         (inner , hlevel) ← decompose-is-hlevel′ tm
-        pure $ inner , hlevel , (λ x → x) , (λ x → x)
+        pure $ inner , hlevel , []
 
 -- This is public so it's usable in tactic attributes. It decomposes the
 -- top-level goal type and enters the search loop.
 hlevel-tactic-worker : Term → TC ⊤
 hlevel-tactic-worker goal = do
   ty ← withReduceDefs (false , hlevel-types) $ inferType goal >>= reduce
-  (ty , lv , enter , leave) ← decompose-is-hlevel-top goal <|>
+  (ty , lv , delta) ← decompose-is-hlevel-top goal <|>
     typeError
       ( "hlevel tactic: goal type is not of the form ``is-hlevel A n'':\n"
       ∷ termErr ty
@@ -585,11 +584,19 @@ hlevel-tactic-worker goal = do
   -- use-case. Note the scope nonsense: we have to 'enter' to get under
   -- the Πs (extend the scope with their argument types), then 'leave'
   -- (wrap in lambdas) to get back out.
-  solved ← enter $ do
+  let delta = reverse delta
+  solved ← enter delta do
     goal′ ← new-meta (def (quote is-hlevel) (ty v∷ lv v∷ []))
     search false lv 10 goal′
     pure goal′
-  unify goal (leave solved)
+  unify goal (leave delta solved)
+  where
+    leave : Telescope → Term → Term
+    leave [] = id
+    leave ((na , arg as at) ∷ xs) = leave xs ∘ lam (ArgInfo.arg-vis as) ∘ abs na
+    enter : ∀{A} → Telescope → TC A → TC A
+    enter [] = id
+    enter ((na , ar) ∷ xs) = enter xs ∘ extendContext na ar
 
 -- Entry points to the macro
 ----------------------------
@@ -725,3 +732,6 @@ private
 
     _ : ∀ n (x : n-Type ℓ n) → is-hlevel ⌞ x ⌟ (2 + n)
     _ = λ n x → hlevel!
+
+    _ : (x y : ⌞ A ⌟) (w z : Nat) (u : Term) → is-prop (x ≡ y)
+    _ = hlevel!
