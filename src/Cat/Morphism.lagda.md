@@ -139,6 +139,7 @@ choice of map $A \to B$, together with a specified inverse.
 
 ```agda
 record Inverses (f : Hom a b) (g : Hom b a) : Type h where
+  no-eta-equality
   field
     invl : f ∘ g ≡ id
     invr : g ∘ f ≡ id
@@ -146,6 +147,7 @@ record Inverses (f : Hom a b) (g : Hom b a) : Type h where
 open Inverses
 
 record is-invertible (f : Hom a b) : Type h where
+  no-eta-equality
   field
     inv : Hom b a
     inverses : Inverses f inv
@@ -158,6 +160,7 @@ record is-invertible (f : Hom a b) : Type h where
   op .inverses .Inverses.invr = invl inverses
 
 record _≅_ (a b : Ob) : Type h where
+  no-eta-equality
   field
     to       : Hom a b
     from     : Hom b a
@@ -195,6 +198,76 @@ is-invertible-is-prop {a = a} {b = b} {f = f} g h = p where
 ```
 
 We note that the identity morphism is always iso, and that isos compose:
+
+```agda
+id-invertible : ∀ {a} → is-invertible (id {a})
+id-invertible .is-invertible.inv = id
+id-invertible .is-invertible.inverses .invl = idl id
+id-invertible .is-invertible.inverses .invr = idl id
+
+id-iso : a ≅ a
+id-iso .to = id
+id-iso .from = id
+id-iso .inverses .invl = idl id
+id-iso .inverses .invr = idl id
+
+Isomorphism = _≅_
+
+Inverses-∘ : {f : Hom a b} {f⁻¹ : Hom b a} {g : Hom b c} {g⁻¹ : Hom c b}
+           → Inverses f f⁻¹ → Inverses g g⁻¹ → Inverses (g ∘ f) (f⁻¹ ∘ g⁻¹)
+Inverses-∘ {f = f} {f⁻¹} {g} {g⁻¹} finv ginv = record { invl = l ; invr = r } where
+  module finv = Inverses finv
+  module ginv = Inverses ginv
+
+  abstract
+    l : (g ∘ f) ∘ f⁻¹ ∘ g⁻¹ ≡ id
+    l = (g ∘ f) ∘ f⁻¹ ∘ g⁻¹ ≡⟨ cat! C ⟩
+        g ∘ (f ∘ f⁻¹) ∘ g⁻¹ ≡⟨ (λ i → g ∘ finv.invl i ∘ g⁻¹) ⟩
+        g ∘ id ∘ g⁻¹        ≡⟨ cat! C ⟩
+        g ∘ g⁻¹             ≡⟨ ginv.invl ⟩
+        id                  ∎
+
+    r : (f⁻¹ ∘ g⁻¹) ∘ g ∘ f ≡ id
+    r = (f⁻¹ ∘ g⁻¹) ∘ g ∘ f ≡⟨ cat! C ⟩
+        f⁻¹ ∘ (g⁻¹ ∘ g) ∘ f ≡⟨ (λ i → f⁻¹ ∘ ginv.invr i ∘ f) ⟩
+        f⁻¹ ∘ id ∘ f        ≡⟨ cat! C ⟩
+        f⁻¹ ∘ f             ≡⟨ finv.invr ⟩
+        id                  ∎
+
+_∘Iso_ : a ≅ b → b ≅ c → a ≅ c
+(f ∘Iso g) .to = g .to ∘ f .to
+(f ∘Iso g) .from = f .from ∘ g .from
+(f ∘Iso g) .inverses = Inverses-∘ (f .inverses) (g .inverses)
+
+infixr 40 _∘Iso_
+
+invertible-∘
+  : ∀ {f : Hom b c} {g : Hom a b}
+  → is-invertible f → is-invertible g
+  → is-invertible (f ∘ g)
+invertible-∘ f-inv g-inv = record
+  { inv = g-inv.inv ∘ f-inv.inv
+  ; inverses = Inverses-∘ g-inv.inverses f-inv.inverses
+  }
+  where
+    module f-inv = is-invertible f-inv
+    module g-inv = is-invertible g-inv
+
+_invertible⁻¹
+  : ∀ {f : Hom a b} → (f-inv : is-invertible f)
+  → is-invertible (is-invertible.inv f-inv)
+_invertible⁻¹ {f = f} f-inv .is-invertible.inv = f
+_invertible⁻¹ f-inv .is-invertible.inverses .invl =
+  is-invertible.invr f-inv
+_invertible⁻¹ f-inv .is-invertible.inverses .invr =
+  is-invertible.invl f-inv
+
+_Iso⁻¹ : a ≅ b → b ≅ a
+(f Iso⁻¹) .to = f .from
+(f Iso⁻¹) .from = f .to
+(f Iso⁻¹) .inverses .invl = f .inverses .invr
+(f Iso⁻¹) .inverses .invr = f .inverses .invl
+```
 
 <!--
 ```agda
@@ -289,6 +362,18 @@ abstract
   → PathP (λ i → p i ≅ q i) f g
 ≅-pathp p q {f = f} {g = g} r = ≅-pathp-internal p q r (inverse-unique p q {f = f} {g = g} r)
 
+≅-pathp-from
+  : (p : a ≡ c) (q : b ≡ d) {f : a ≅ b} {g : c ≅ d}
+  → PathP (λ i → Hom (q i) (p i)) (f ._≅_.from) (g ._≅_.from)
+  → PathP (λ i → p i ≅ q i) f g
+≅-pathp-from p q {f = f} {g = g} r = ≅-pathp-internal p q (inverse-unique q p {f = f Iso⁻¹} {g = g Iso⁻¹} r) r
+
+≅-path : {f g : a ≅ b} → f ._≅_.to ≡ g ._≅_.to → f ≡ g
+≅-path = ≅-pathp refl refl
+
+≅-path-from : {f g : a ≅ b} → f ._≅_.from ≡ g ._≅_.from → f ≡ g
+≅-path-from = ≅-pathp-from refl refl
+
 ↪-pathp
   : {a : I → Ob} {b : I → Ob} {f : a i0 ↪ b i0} {g : a i1 ↪ b i1}
   → PathP (λ i → Hom (a i) (b i)) (f .mor) (g .mor)
@@ -325,73 +410,6 @@ abstract
 ```
 -->
 
-```agda
-id-invertible : ∀ {a} → is-invertible (id {a})
-id-invertible .is-invertible.inv = id
-id-invertible .is-invertible.inverses .invl = idl id
-id-invertible .is-invertible.inverses .invr = idl id
-
-id-iso : a ≅ a
-id-iso .to = id
-id-iso .from = id
-id-iso .inverses .invl = idl id
-id-iso .inverses .invr = idl id
-
-Isomorphism = _≅_
-
-Inverses-∘ : {f : Hom a b} {f⁻¹ : Hom b a} {g : Hom b c} {g⁻¹ : Hom c b}
-           → Inverses f f⁻¹ → Inverses g g⁻¹ → Inverses (g ∘ f) (f⁻¹ ∘ g⁻¹)
-Inverses-∘ {f = f} {f⁻¹} {g} {g⁻¹} finv ginv = record { invl = l ; invr = r } where
-  module finv = Inverses finv
-  module ginv = Inverses ginv
-
-  abstract
-    l : (g ∘ f) ∘ f⁻¹ ∘ g⁻¹ ≡ id
-    l = (g ∘ f) ∘ f⁻¹ ∘ g⁻¹ ≡⟨ cat! C ⟩
-        g ∘ (f ∘ f⁻¹) ∘ g⁻¹ ≡⟨ (λ i → g ∘ finv.invl i ∘ g⁻¹) ⟩
-        g ∘ id ∘ g⁻¹        ≡⟨ cat! C ⟩
-        g ∘ g⁻¹             ≡⟨ ginv.invl ⟩
-        id                  ∎
-
-    r : (f⁻¹ ∘ g⁻¹) ∘ g ∘ f ≡ id
-    r = (f⁻¹ ∘ g⁻¹) ∘ g ∘ f ≡⟨ cat! C ⟩
-        f⁻¹ ∘ (g⁻¹ ∘ g) ∘ f ≡⟨ (λ i → f⁻¹ ∘ ginv.invr i ∘ f) ⟩
-        f⁻¹ ∘ id ∘ f        ≡⟨ cat! C ⟩
-        f⁻¹ ∘ f             ≡⟨ finv.invr ⟩
-        id                  ∎
-
-_∘Iso_ : a ≅ b → b ≅ c → a ≅ c
-(f ∘Iso g) .to = g .to ∘ f .to
-(f ∘Iso g) .from = f .from ∘ g .from
-(f ∘Iso g) .inverses = Inverses-∘ (f .inverses) (g .inverses)
-
-invertible-∘
-  : ∀ {f : Hom b c} {g : Hom a b}
-  → is-invertible f → is-invertible g
-  → is-invertible (f ∘ g)
-invertible-∘ f-inv g-inv = record
-  { inv = g-inv.inv ∘ f-inv.inv
-  ; inverses = Inverses-∘ g-inv.inverses f-inv.inverses
-  }
-  where
-    module f-inv = is-invertible f-inv
-    module g-inv = is-invertible g-inv
-
-_invertible⁻¹
-  : ∀ {f : Hom a b} → (f-inv : is-invertible f)
-  → is-invertible (is-invertible.inv f-inv)
-_invertible⁻¹ {f = f} f-inv .is-invertible.inv = f
-_invertible⁻¹ f-inv .is-invertible.inverses .invl =
-  is-invertible.invr f-inv
-_invertible⁻¹ f-inv .is-invertible.inverses .invr =
-  is-invertible.invl f-inv
-
-_Iso⁻¹ : a ≅ b → b ≅ a
-(f Iso⁻¹) .to = f .from
-(f Iso⁻¹) .from = f .to
-(f Iso⁻¹) .inverses .invl = f .inverses .invr
-(f Iso⁻¹) .inverses .invr = f .inverses .invl
-```
 
 We also note that invertible morphisms are both epic and monic.
 

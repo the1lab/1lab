@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import 1Lab.Path
+open import 1Lab.Type hiding (id; _∘_)
 
 open import Cat.Base
 ```
@@ -26,7 +27,7 @@ Most of these helpers were taken from `agda-categories`.
 <!--
 ```agda
 private variable
-  x y : Ob
+  u v w x y z : Ob
   a a′ a″ b b′ b″ c c′ c″ : Hom x y
   f g h i : Hom x y
 ```
@@ -88,6 +89,8 @@ module _ (ab≡c : a ∘ b ≡ c) where abstract
     f ∘ (a ∘ b) ≡⟨ ap (f ∘_) ab≡c ⟩
     f ∘ c ∎
 
+  pull-inner : (f ∘ a) ∘ (b ∘ g) ≡ f ∘ c ∘ g
+  pull-inner {f = f} = sym (assoc _ _ _) ∙ ap (f ∘_) pulll
 
 module _ (c≡ab : c ≡ a ∘ b) where abstract
   pushl : c ∘ f ≡ a ∘ (b ∘ f)
@@ -209,6 +212,72 @@ module _ {y z} (f : y ≅ z) where abstract
     f .from ∘ f .to ∘ h   ≡⟨ cancell (f .invr) ⟩
     h                     ∎
 ```
+
+If we have a commuting triangle of isomorphisms, then we
+can flip one of the sides to obtain a new commuting triangle
+of isomorphisms.
+
+```agda
+Iso-swapr :
+  ∀ {a : x ≅ y} {b : y ≅ z} {c : x ≅ z}
+  → a ∘Iso b ≡ c
+  → a ≡ c ∘Iso (b Iso⁻¹)
+Iso-swapr {a = a} {b = b} {c = c} p = ≅-path $
+  a .to                     ≡⟨ introl (b .invr) ⟩
+  (b .from ∘ b .to) ∘ a .to ≡⟨ pullr (ap to p) ⟩
+  b .from ∘ c .to           ∎
+
+Iso-swapl :
+  ∀ {a : x ≅ y} {b : y ≅ z} {c : x ≅ z}
+  → a ∘Iso b ≡ c
+  → b ≡ (a Iso⁻¹) ∘Iso c
+Iso-swapl {a = a} {b = b} {c = c} p = ≅-path $
+  b .to                   ≡⟨ intror (a .invl) ⟩
+  b .to ∘ a .to ∘ a .from ≡⟨ pulll (ap to p) ⟩
+  c .to ∘ a .from         ∎
+```
+
+Assume we have a prism of isomorphisms, as in the following diagram:
+
+~~~{.quiver}
+\begin{tikzcd}
+  & v \\
+  u && w \\
+  & y \\
+  x && z
+  \arrow["c"{description, pos=0.7}, from=2-1, to=2-3]
+  \arrow["i"{description}, from=4-1, to=4-3]
+  \arrow["d"{description}, from=2-1, to=4-1]
+  \arrow["f"{description}, from=2-3, to=4-3]
+  \arrow["a"{description}, from=2-1, to=1-2]
+  \arrow["g"{description}, from=4-1, to=3-2]
+  \arrow["e"{description, pos=0.7}, from=1-2, to=3-2]
+  \arrow["b"{description}, from=1-2, to=2-3]
+  \arrow["h"{description}, from=3-2, to=4-3]
+\end{tikzcd}
+~~~
+
+If the top, front, left, and right faces all commute, then so does the
+bottom face.
+
+```agda
+Iso-prism : ∀ {a : u ≅ v} {b : v ≅ w} {c : u ≅ w}
+      → {d : u ≅ x} {e : v ≅ y} {f : w ≅ z}
+      → {g : x ≅ y} {h : y ≅ z} {i : x ≅ z}
+      → a ∘Iso b ≡ c
+      → a ∘Iso e ≡ d ∘Iso g
+      → b ∘Iso f ≡ e ∘Iso h
+      → c ∘Iso f ≡ d ∘Iso i
+      → g ∘Iso h ≡ i
+Iso-prism {a = a} {b} {c} {d} {e} {f} {g} {h} {i} top left right front =
+  ≅-path $
+    h .to ∘ g .to                                           ≡⟨ ap₂ _∘_ (ap to (Iso-swapl (sym right))) (ap to (Iso-swapl (sym left)) ∙ sym (assoc _ _ _)) ⟩
+    ((f .to ∘ b .to) ∘ e .from) ∘ (e .to ∘ a .to ∘ d .from) ≡⟨ cancel-inner (e .invr) ⟩
+    (f .to ∘ b .to) ∘ (a .to ∘ d .from)                     ≡⟨ pull-inner (ap to top) ⟩
+    f .to ∘ c .to ∘ d .from                                 ≡⟨ assoc _ _ _ ∙ sym (ap to (Iso-swapl (sym front))) ⟩
+    i .to ∎
+```
+
 
 ## Notation
 
