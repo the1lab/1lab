@@ -92,6 +92,7 @@ $\lambda$) are the **right unitor** (resp. **left unitor**).
   λ← : ∀ {X} → Hom (Unit ⊗ X) X
   λ← = unitor-l .Cr._≅_.from .η _
 
+
   λ→ : ∀ {X} → Hom X (Unit ⊗ X)
   λ→ = unitor-l .Cr._≅_.to .η _
 
@@ -114,6 +115,36 @@ $\lambda$) are the **right unitor** (resp. **left unitor**).
   -- whiskering on the left
   _◀_ : ∀ {A B} (g : Hom A B) C → Hom (A ⊗ C) (B ⊗ C)
   _◀_ f A = f ⊗₁ id
+
+  λ←-natural
+    : ∀ {x y} (f : Hom x y)
+    → λ← ∘ (Unit ▶ f) ≡ f ∘ λ←
+  λ←-natural =  unitor-l .Cr._≅_.from .is-natural _ _
+
+  λ→-natural
+    : ∀ {x y} (f : Hom x y)
+    → λ→ ∘ f ≡ (Unit ▶ f) ∘ λ→
+  λ→-natural = unitor-l .Cr._≅_.to .is-natural _ _
+ 
+  ρ←-natural
+    : ∀ {x y} (f : Hom x y)
+    → ρ← ∘ (f ◀ Unit) ≡ f ∘ ρ←
+  ρ←-natural = unitor-r .Cr._≅_.from .is-natural _ _
+
+  ρ→-natural
+    : ∀ {x y} (f : Hom x y)
+    → ρ→ ∘ f ≡ (f ◀ Unit) ∘ ρ→
+  ρ→-natural = unitor-r .Cr._≅_.to .is-natural _ _
+
+  α←-natural
+    : ∀ {a b c x y z} → (f : Hom a x) → (g : Hom b y) → (h : Hom c z)
+    → α← x y z ∘ (f ⊗₁ (g ⊗₁ h)) ≡ ((f ⊗₁ g) ⊗₁ h) ∘ α← a b c
+  α←-natural f g h = associator .Cr._≅_.from .is-natural _ _ (f , g , h)
+
+  α→-natural
+    : ∀ {a b c x y z} → (f : Hom a x) → (g : Hom b y) → (h : Hom c z)
+    → α→ x y z ∘ ((f ⊗₁ g) ⊗₁ h) ≡ (f ⊗₁ (g ⊗₁ h)) ∘ α→ a b c
+  α→-natural f g h = associator .Cr._≅_.to .is-natural _ _ (f , g , h)
 ```
 -->
 
