@@ -9,6 +9,8 @@ description: |
 ```agda
 open import Cat.Diagram.Initial
 open import Cat.Instances.Comma
+open import Cat.Instances.Functor
+open import Cat.Instances.Functor.Compose
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
@@ -732,7 +734,76 @@ record make-left-adjoint (R : Functor D C) : Type (adj-level C D) where
   to-left-adjoint : to-functor ⊣ R
   to-left-adjoint = universal-maps→L⊣R R to-universal-arrows
 
-open make-left-adjoint
 module Ml = make-left-adjoint
+```
+-->
+
+<!--
+```agda
+adjoint-natural-iso
+  : ∀ {L L' : Functor C D} {R R' : Functor D C}
+  → natural-iso L L' → natural-iso R R'
+  → L ⊣ R
+  → L' ⊣ R'
+adjoint-natural-iso {C = C} {D = D} {L} {L'} {R} {R'} α β L⊣R = L'⊣R' where
+  open _⊣_ L⊣R
+  module α = natural-iso α
+  module β = natural-iso β
+  open _=>_
+  module C = Cat.Reasoning C
+  module D = Cat.Reasoning D
+  module L = Func L
+  module L' = Func L'
+  module R = Func R
+  module R' = Func R'
+
+  -- Abbreviations for equational reasoning
+  α→ : ∀ {x} → D.Hom (L.₀ x) (L'.₀ x)
+  α→ {x} = α.to .η x
+
+  α← : ∀ {x} → D.Hom (L'.₀ x) (L.₀ x)
+  α← {x} = α.from .η x
+
+  β→ : ∀ {x} → C.Hom (R.₀ x) (R'.₀ x)
+  β→ {x} = β.to .η x
+
+  β← : ∀ {x} → C.Hom (R'.₀ x) (R.₀ x)
+  β← {x} = β.from .η x
+
+  L'⊣R' : L' ⊣ R'
+  L'⊣R' ._⊣_.unit =  (β.to ◆ α.to) ∘nt unit
+  L'⊣R' ._⊣_.counit = counit ∘nt (α.from ◆ β.from)
+  L'⊣R' ._⊣_.zig =
+    (counit.ε _ D.∘ (L.₁ β← D.∘ α←)) D.∘ L'.₁ (⌜ R'.₁ α→ C.∘ β→ ⌝ C.∘ unit.η _) ≡⟨ ap! (sym $ β.to .is-natural _ _ _) ⟩
+    (counit.ε _ D.∘ ⌜ L.₁ β← D.∘ α← ⌝) D.∘ L'.₁ ((β→ C.∘ R.₁ α→) C.∘ unit.η _)  ≡⟨ ap! (sym $ α.from .is-natural _ _ _) ⟩
+    (counit.ε _ D.∘ α← D.∘ L'.₁ β←) D.∘ L'.₁ ((β→ C.∘ R.₁ α→) C.∘ unit.η _)     ≡⟨ D.pullr (D.pullr (L'.collapse (C.pulll (C.cancell (β.invr ηₚ _))))) ⟩
+    counit.ε _ D.∘ α← D.∘ L'.₁ (R.₁ α→ C.∘ unit.η _)                            ≡⟨ ap (counit.ε _ D.∘_) (α.from .is-natural _ _ _) ⟩
+    counit.ε _ D.∘ L.₁ (R.₁ α→ C.∘ unit.η _) D.∘ α←                             ≡⟨ D.push-inner (L.F-∘ _ _) ⟩
+    (counit.ε _ D.∘ L.₁ (R.₁ α→)) D.∘ (L.₁ (unit.η _) D.∘ α←)                   ≡⟨ D.pushl (counit.is-natural _ _ _) ⟩
+    α→ D.∘ counit.ε _ D.∘ L.₁ (unit.η _) D.∘ α←                                 ≡⟨ ap (α→ D.∘_) (D.cancell zig) ⟩
+    α→ D.∘ α←                                                                   ≡⟨ α.invl ηₚ _ ⟩
+    D.id ∎
+  L'⊣R' ._⊣_.zag =
+    R'.₁ (counit.ε _ D.∘ L.₁ β← D.∘ α←) C.∘ ((R'.₁ α→ C.∘ β→) C.∘ unit.η _) ≡⟨ C.extendl (C.pulll (R'.collapse (D.pullr (D.cancelr (α.invr ηₚ _))))) ⟩
+    R'.₁ (counit.ε _ D.∘ L.₁ β←) C.∘ β→ C.∘ unit.η _                        ≡⟨ C.extendl (sym (β.to .is-natural _ _ _)) ⟩
+    β→ C.∘ R.₁ (counit.ε _ D.∘ L.₁ β←) C.∘ unit.η _                         ≡⟨ C.push-inner (R.F-∘ _ _) ⟩
+    ((β→ C.∘ R.₁ (counit.ε _)) C.∘ (R.₁ (L.₁ β←) C.∘ unit.η _))             ≡⟨ ap₂ C._∘_ refl (sym $ unit.is-natural _ _ _) ⟩
+    (β→ C.∘ R.₁ (counit.ε _)) C.∘ (unit.η _ C.∘ β←)                         ≡⟨ C.cancel-inner zag ⟩
+    β→ C.∘ β←                                                               ≡⟨ β.invl ηₚ _ ⟩
+    C.id ∎
+
+adjoint-natural-isol
+  : ∀ {L L' : Functor C D} {R : Functor D C}
+  → natural-iso L L'
+  → L ⊣ R
+  → L' ⊣ R
+adjoint-natural-isol α = adjoint-natural-iso α idni
+
+adjoint-natural-isor
+  : ∀ {L : Functor C D} {R R' : Functor D C}
+  → natural-iso R R'
+  → L ⊣ R
+  → L ⊣ R'
+adjoint-natural-isor β = adjoint-natural-iso idni β
 ```
 -->

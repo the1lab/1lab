@@ -778,3 +778,32 @@ As a corollary, equivalences preserve all families over hom sets.
       (λ c c' → Lift-is-hlevel n (C-hlevel c c')) d d'
 ```
 -->
+
+Equivalences are also invariant under natural isomorphisms.
+
+```agda
+is-equivalence-natural-iso
+  : ∀ {F G : Functor C D}
+  → natural-iso F G
+  → is-equivalence F → is-equivalence G
+is-equivalence-natural-iso {C = C} {D = D} {F = F} {G = G} α F-eqv = G-eqv where
+  open is-equivalence
+  module C = Cat.Reasoning C
+  module D = Cat.Reasoning D
+
+  G-eqv : is-equivalence G
+  G-eqv .F⁻¹ = F-eqv .F⁻¹
+  G-eqv .F⊣F⁻¹ = adjoint-natural-isol α (F-eqv .F⊣F⁻¹)
+  G-eqv .unit-iso x =
+    C.invertible-∘
+      (C.invertible-∘
+        (F-map-invertible (F-eqv .F⁻¹) (natural-iso→invertible α x))
+        C.id-invertible)
+      (F-eqv .unit-iso x)
+  G-eqv .counit-iso x =
+    D.invertible-∘
+      (F-eqv .counit-iso x)
+      (D.invertible-∘
+        (F-map-invertible F C.id-invertible)
+        (natural-iso→invertible α _ D.invertible⁻¹))
+```
