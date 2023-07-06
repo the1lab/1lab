@@ -5,6 +5,7 @@ open import 1Lab.Path
 open import Cat.Base
 
 import Cat.Reasoning
+import Cat.Functor.Morphism
 ```
 -->
 
@@ -16,7 +17,7 @@ module Cat.Functor.Reasoning
 
 module 𝒞 = Cat.Reasoning 𝒞
 module 𝒟 = Cat.Reasoning 𝒟
-open Functor F public
+open Cat.Functor.Morphism F public
 ```
 
 <!--
