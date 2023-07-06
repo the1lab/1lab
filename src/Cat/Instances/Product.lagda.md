@@ -151,3 +151,105 @@ module
       Σ-pathp-dep (Univalent.Hom-pathp-reflr-iso c-cat (C.idr _))
                   (Univalent.Hom-pathp-reflr-iso d-cat (D.idr _))
 ```
+
+## Morphisms in product categories
+
+<!--
+```agda
+module
+  _ {o ℓ o′ ℓ′}
+  {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module C×D = Cat.Reasoning (C ×ᶜ D)
+
+```
+-->
+
+Monomorphisms in product categories are given by pairs of monos.
+
+```agda
+  ×ᶜ-monic
+    : ∀ {a b x y}
+    → {f : C.Hom a b} {g : D.Hom x y}
+    → C.is-monic f → D.is-monic g
+    → C×D.is-monic (f , g)
+  ×ᶜ-monic c-monic d-monic (g1 , g2) (h1 , h2) p =
+    c-monic g1 h1 (ap fst p) ,ₚ d-monic g2 h2 (ap snd p)
+
+  ×ᶜ-↪ : ∀ {a b x y} → a C.↪ b → x D.↪ y → (a , x) C×D.↪ (b , y)
+  ×ᶜ-↪ f g = record
+    { mor = f.mor , g.mor
+    ; monic = ×ᶜ-monic f.monic g.monic
+    }
+    where
+      module f = C._↪_ f
+      module g = D._↪_ g
+```
+
+Epimorphisms in product categories are given by pairs of epis.
+
+```agda
+  ×ᶜ-epic
+    : ∀ {a b x y}
+    → {f : C.Hom a b} {g : D.Hom x y}
+    → C.is-epic f → D.is-epic g
+    → C×D.is-epic (f , g)
+  ×ᶜ-epic c-epic d-epic (g1 , g2) (h1 , h2) p =
+    c-epic g1 h1 (ap fst p) ,ₚ d-epic g2 h2 (ap snd p)
+
+  ×ᶜ-↠ : ∀ {a b x y} → a C.↠ b → x D.↠ y → (a , x) C×D.↠ (b , y)
+  ×ᶜ-↠ f g = record
+    { mor = f.mor , g.mor
+    ; epic = ×ᶜ-epic f.epic g.epic
+    }
+    where
+      module f = C._↠_ f
+      module g = D._↠_ g
+```
+
+
+Isomorphisms in product categories are given by pairs of isomorphisms.
+
+```agda
+  ×ᶜ-inverses
+    : ∀ {a b x y}
+    → {f : C.Hom a b} {g : C.Hom b a} {h : D.Hom x y} {i : D.Hom y x}
+    → C.Inverses f g → D.Inverses h i
+    → C×D.Inverses (f , h) (g , i)
+  ×ᶜ-inverses c-inv d-inv = record
+    { invl = c-inv.invl ,ₚ d-inv.invl
+    ; invr = c-inv.invr ,ₚ d-inv.invr
+    }
+    where
+      module c-inv = C.Inverses c-inv
+      module d-inv = D.Inverses d-inv
+
+  ×ᶜ-invertible
+    : ∀ {a b x y}
+    → {f : C.Hom a b} {g : D.Hom x y}
+    → C.is-invertible f → D.is-invertible g
+    → C×D.is-invertible (f , g)
+  ×ᶜ-invertible c-inv d-inv = record
+    { inv = c-inv.inv , d-inv.inv
+    ; inverses = ×ᶜ-inverses c-inv.inverses d-inv.inverses
+    }
+    where
+      module c-inv = C.is-invertible c-inv
+      module d-inv = D.is-invertible d-inv
+
+  ×ᶜ-≅
+    : ∀ {a b x y}
+    → a C.≅ b → x D.≅ y
+    → (a , x) C×D.≅ (b , y)
+  ×ᶜ-≅ f g = record
+    { to = f.to , g.to
+    ; from = f.from , g.from
+    ; inverses = ×ᶜ-inverses f.inverses g.inverses
+    }
+    where
+      module f = C._≅_ f
+      module g = D._≅_ g
+```
