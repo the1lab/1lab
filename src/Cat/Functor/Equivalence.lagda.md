@@ -579,6 +579,7 @@ module
     module C = Cat.Reasoning C
     module D = Cat.Reasoning D
     module F = Fr F
+    module F⁻¹ = Fr e.F⁻¹
 
   is-equivalence→is-ff : is-fully-faithful F
   is-equivalence→is-ff = is-iso→is-equiv λ where
@@ -592,6 +593,13 @@ module
     .is-iso.linv x →
         ap (_ C.∘_) (sym (e.unit .is-natural _ _ _))
       ∙ C.cancell (e.unit-iso _ .C.is-invertible.invr)
+
+  is-equivalence→is-split-eso : is-split-eso F
+  is-equivalence→is-split-eso y =
+    (F⁻¹.F₀ y) , D.invertible→iso (e.counit .η y) (e.counit-iso y)
+
+  is-equivalence→is-faithful : is-faithful F
+  is-equivalence→is-faithful = fully-faithful→faithful {F = F} is-equivalence→is-ff
 
   open is-precat-iso
   open is-iso

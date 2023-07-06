@@ -6,6 +6,7 @@ open import Cat.Bi.Base
 open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bifunctor
+import Cat.Functor.Reasoning as Func
 import Cat.Reasoning as Cr
 ```
 -->
@@ -53,12 +54,15 @@ respectively.
 
 <!--
 ```agda
-  private module -⊗- = Bifunctor -⊗-
+  module -⊗- = Bifunctor -⊗-
   _⊗_ : Ob → Ob → Ob
   A ⊗ B = -⊗- .Functor.F₀ (A , B)
 
   _⊗₁_ : ∀ {w x y z} → Hom w x → Hom y z → Hom (w ⊗ y) (x ⊗ z)
   f ⊗₁ g = -⊗- .Functor.F₁ (f , g)
+
+  _⊗Iso_ : ∀ {A B C D} → A ≅ C → B ≅ D → (A ⊗ B) ≅ (C ⊗ D)
+  f ⊗Iso g = Func.F-≅ -⊗- (×ᶜ-≅ f g)
 ```
 -->
 
@@ -79,34 +83,46 @@ $\lambda$) are the **right unitor** (resp. **left unitor**).
 
 ```agda
   field
-    unitor-l : Cr._≅_ Cat[ C , C ] Id (-⊗-.Right Unit)
-    unitor-r : Cr._≅_ Cat[ C , C ] Id (-⊗-.Left Unit)
+    unitor-l : natural-iso Id (-⊗-.Right Unit)
+    unitor-r : natural-iso Id (-⊗-.Left Unit)
 
-    associator : Cr._≅_ Cat[ C ×ᶜ C ×ᶜ C , C ]
+    associator : natural-iso
       (compose-assocˡ {O = ⊤} {H = λ _ _ → C} -⊗-)
       (compose-assocʳ {O = ⊤} {H = λ _ _ → C} -⊗-)
 ```
 
 <!--
 ```agda
-  λ← : ∀ {X} → Hom (Unit ⊗ X) X
-  λ← = unitor-l .Cr._≅_.from .η _
+  module unitor-l = natural-iso unitor-l
+  module unitor-r = natural-iso unitor-r
+  module associator = natural-iso associator
 
+  λ← : ∀ {X} → Hom (Unit ⊗ X) X
+  λ← = unitor-l.from .η _
 
   λ→ : ∀ {X} → Hom X (Unit ⊗ X)
-  λ→ = unitor-l .Cr._≅_.to .η _
+  λ→ = unitor-l.to .η _
+
+  λ≅ : ∀ {X} → X ≅ (Unit ⊗ X)
+  λ≅ = natural-iso→iso unitor-l _
 
   ρ← : ∀ {X} → Hom (X ⊗ Unit) X
-  ρ← = unitor-r .Cr._≅_.from .η _
+  ρ← = unitor-r.from .η _
 
   ρ→ : ∀ {X} → Hom X (X ⊗ Unit)
-  ρ→ = unitor-r .Cr._≅_.to .η _
+  ρ→ = unitor-r.to .η _
 
-  α→ : ∀ A B C → Hom ((A ⊗ B) ⊗ C) (A ⊗ (B ⊗ C))
-  α→ _ _ _ = associator .Cr._≅_.to .η _
+  ρ≅ : ∀ {X} → X ≅ (X ⊗ Unit)
+  ρ≅ = natural-iso→iso unitor-r _
 
   α← : ∀ A B C → Hom (A ⊗ (B ⊗ C)) ((A ⊗ B) ⊗ C)
-  α← _ _ _ = associator .Cr._≅_.from .η _
+  α← _ _ _ = associator.from .η _
+
+  α→ : ∀ A B C → Hom ((A ⊗ B) ⊗ C) (A ⊗ (B ⊗ C))
+  α→ _ _ _ = associator.to .η _
+
+  α≅ : ∀ A B C → ((A ⊗ B) ⊗ C) ≅ (A ⊗ (B ⊗ C))
+  α≅ A B C = natural-iso→iso associator (A , B , C)
 
   -- whiskering on the right
   _▶_ : ∀ A {B C} (g : Hom B C) → Hom (A ⊗ B) (A ⊗ C)
@@ -116,35 +132,20 @@ $\lambda$) are the **right unitor** (resp. **left unitor**).
   _◀_ : ∀ {A B} (g : Hom A B) C → Hom (A ⊗ C) (B ⊗ C)
   _◀_ f A = f ⊗₁ id
 
-  λ←-natural
-    : ∀ {x y} (f : Hom x y)
-    → λ← ∘ (Unit ▶ f) ≡ f ∘ λ←
-  λ←-natural =  unitor-l .Cr._≅_.from .is-natural _ _
+  _▶F : Ob → Functor C C
+  _▶F A = -⊗-.Right A
 
-  λ→-natural
-    : ∀ {x y} (f : Hom x y)
-    → λ→ ∘ f ≡ (Unit ▶ f) ∘ λ→
-  λ→-natural = unitor-l .Cr._≅_.to .is-natural _ _
- 
-  ρ←-natural
-    : ∀ {x y} (f : Hom x y)
-    → ρ← ∘ (f ◀ Unit) ≡ f ∘ ρ←
-  ρ←-natural = unitor-r .Cr._≅_.from .is-natural _ _
+  ◀F_ : Ob → Functor C C
+  ◀F_ A = -⊗-.Left A
 
-  ρ→-natural
-    : ∀ {x y} (f : Hom x y)
-    → ρ→ ∘ f ≡ (f ◀ Unit) ∘ ρ→
-  ρ→-natural = unitor-r .Cr._≅_.to .is-natural _ _
+  module ▶F {A} = Func (-⊗-.Right A)
+  module ◀F {B} = Func (-⊗-.Left B)
 
-  α←-natural
-    : ∀ {a b c x y z} → (f : Hom a x) → (g : Hom b y) → (h : Hom c z)
-    → α← x y z ∘ (f ⊗₁ (g ⊗₁ h)) ≡ ((f ⊗₁ g) ⊗₁ h) ∘ α← a b c
-  α←-natural f g h = associator .Cr._≅_.from .is-natural _ _ (f , g , h)
+  _▶Iso_ : ∀ A {B C} → B ≅ C → (A ⊗ B) ≅ (A ⊗ C)
+  A ▶Iso f = id-iso ⊗Iso f
 
-  α→-natural
-    : ∀ {a b c x y z} → (f : Hom a x) → (g : Hom b y) → (h : Hom c z)
-    → α→ x y z ∘ ((f ⊗₁ g) ⊗₁ h) ≡ (f ⊗₁ (g ⊗₁ h)) ∘ α→ a b c
-  α→-natural f g h = associator .Cr._≅_.to .is-natural _ _ (f , g , h)
+  _◀Iso_ : ∀ {A B} → A ≅ B → (C : Ob) → (A ⊗ C) ≅ (B ⊗ C)
+  f ◀Iso A = f ⊗Iso id-iso
 ```
 -->
 
