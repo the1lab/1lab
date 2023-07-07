@@ -50,7 +50,6 @@ natural isomorphisms to the identity functor.
   is-equivalence-natural-iso unitor-r Id-is-equivalence
 ```
 
-
 ## Variants of the Triangle Identity
 
 When writing out the definition of a monoidal category, we made a
