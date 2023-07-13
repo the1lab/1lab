@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Prelude
+import Cat.Reasoning
 ```
 -->
 
@@ -42,10 +43,10 @@ is-faithful F = ∀ {x y} → injective (F₁ F {x = x} {y})
 <!--
 ```agda
 module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
-  import Cat.Reasoning C as C
-  import Cat.Reasoning D as D
   private module _ where
-    open import Cat.Reasoning using (_≅_ ; Inverses)
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    open Cat.Reasoning using (_≅_ ; Inverses)
     open _≅_ public
     open Inverses public
 
@@ -346,3 +347,23 @@ essentially injective.
          D.≅-pathp refl refl (equiv→counit ff (D.to f)))
 ```
 
+## Equivalence on Objects Functors
+
+A functor $F : \cC \to \cD$ is an equivalence on objects if it's action
+on objects is an equivalence (shocking!).
+
+```agda
+is-equiv-on-objects : (F : Functor C D) → Type _
+is-equiv-on-objects F = is-equiv (F .F₀)
+```
+
+If $F$ is an equivalence-on-objects functor, then it is (split) essentially surjective.
+
+```agda
+equiv-on-objects→split-eso : ∀ (F : Functor C D) → is-equiv-on-objects F → is-split-eso F
+equiv-on-objects→split-eso {D = D} F eqv y =
+  equiv→inverse eqv y , path→iso (equiv→counit eqv y)
+
+equiv-on-objects→eso : ∀ (F : Functor C D) → is-equiv-on-objects F → is-eso F
+equiv-on-objects→eso F eqv y = inc (equiv-on-objects→split-eso F eqv y)
+```

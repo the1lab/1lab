@@ -42,6 +42,9 @@ abstract
   id-comm-sym : ∀ {a b} {f : Hom a b} → id ∘ f ≡ f ∘ id
   id-comm-sym {f = f} = idl f ∙ sym (idr f)
 
+  idr2 : ∀ {a b c} (f : Hom b c) (g : Hom a b) → f ∘ g ∘ id ≡ f ∘ g
+  idr2 f g = ap (f ∘_) (idr g)
+
 module _ (a≡id : a ≡ id) where abstract
   eliml : a ∘ f ≡ f
   eliml {f = f} =

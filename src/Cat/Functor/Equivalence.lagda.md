@@ -503,6 +503,32 @@ surjective functor between categories is an equivalence:
   ff+eso→is-equivalence eso = ff+split-eso→is-equivalence ff (Theorem-of-choice eso)
 ```
 
+Furthermore, if $F : \cC \to \cD$ is an equivalence between categories,
+then it's an equivalence-on-objects functor. The inverse functor
+$F^{-1} : \cD \to \cC$ gives us a way to turn objects of $\cD$ back
+into objects of $\cC$, and unit/counit of the equivalence ensure
+that $c \iso F^{-1}(F(c))$ and $d \iso F(F^{-1}(d))$, so all that remains
+is to use the fact that $\cC$ and $\cD$ are categories to get the
+requisite paths.
+
+```agda
+is-cat-equivalence→equiv-on-objects
+  : ∀ {F : Functor C D}
+  → (ccat : is-category C) (dcat : is-category D)
+  → is-equivalence F → is-equiv-on-objects F
+is-cat-equivalence→equiv-on-objects {C = C} {D = D} {F = F} ccat dcat eqv =
+  is-iso→is-equiv $
+    iso (e.F⁻¹ .F₀)
+      (λ d → dcat .to-path (D.invertible→iso _ (e.counit-iso d)))
+      (λ c → sym $ ccat .to-path (C.invertible→iso _ (e.unit-iso c)))
+  where
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module e = is-equivalence eqv
+```
+
+
+
 ## Isomorphisms
 
 Another, more direct way of proving that a functor is an equivalence of
@@ -607,12 +633,10 @@ module
 
   is-equivalence→is-precat-iso
     : is-category C → is-category D → is-precat-iso F
-  is-equivalence→is-precat-iso c-cat d-cat = λ where
-    .has-is-ff → is-equivalence→is-ff
-    .has-is-iso → is-iso→is-equiv λ where
-      .inv → e.F⁻¹ .F₀
-      .rinv x → d-cat .to-path (D.invertible→iso _ (e.counit-iso x))
-      .linv x → sym $ c-cat .to-path (C.invertible→iso _ (e.unit-iso x))
+  is-equivalence→is-precat-iso c-cat d-cat .has-is-ff =
+    is-equivalence→is-ff
+  is-equivalence→is-precat-iso c-cat d-cat .has-is-iso =
+    is-cat-equivalence→equiv-on-objects c-cat d-cat eqv
 ```
 -->
 
