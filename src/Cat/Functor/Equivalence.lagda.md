@@ -507,7 +507,7 @@ Furthermore, if $F : \cC \to \cD$ is an equivalence between categories,
 then it's an equivalence-on-objects functor. The inverse functor
 $F^{-1} : \cD \to \cC$ gives us a way to turn objects of $\cD$ back
 into objects of $\cC$, and unit/counit of the equivalence ensure
-that $c \iso F^{-1}(F(c))$ and $d \iso F(F^{-1}(d))$, so all that remains
+that $c \cong F^{-1}(F(c))$ and $d \cong F(F^{-1}(d))$, so all that remains
 is to use the fact that $\cC$ and $\cD$ are categories to get the
 requisite paths.
 
