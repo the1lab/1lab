@@ -396,7 +396,6 @@ choice of map $A \to B$, together with a specified inverse.
 
 ```agda
 record Inverses (f : Hom a b) (g : Hom b a) : Type h where
-  no-eta-equality
   field
     invl : f ∘ g ≡ id
     invr : g ∘ f ≡ id
@@ -404,7 +403,6 @@ record Inverses (f : Hom a b) (g : Hom b a) : Type h where
 open Inverses
 
 record is-invertible (f : Hom a b) : Type h where
-  no-eta-equality
   field
     inv : Hom b a
     inverses : Inverses f inv
@@ -417,7 +415,6 @@ record is-invertible (f : Hom a b) : Type h where
   op .inverses .Inverses.invr = invl inverses
 
 record _≅_ (a b : Ob) : Type h where
-  no-eta-equality
   field
     to       : Hom a b
     from     : Hom b a
