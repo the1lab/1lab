@@ -707,5 +707,37 @@ prop-ext pprop qprop p→q q→p .snd .is-eqv y .paths (p' , path) =
 ```agda
 sym-equiv : ∀ {ℓ} {A : Type ℓ} {x y : A} → (x ≡ y) ≃ (y ≡ x)
 sym-equiv = sym , is-iso→is-equiv (iso sym (λ _ → refl) (λ _ → refl))
+
+lift-inj
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {a b : A }
+  → lift {ℓ = ℓ'} a ≡ lift {ℓ = ℓ'} b
+  → a ≡ b
+lift-inj p = ap Lift.lower p
+
+Lift-pathp
+  : ∀ {ℓ ℓ'} {A B : Type ℓ} {a : Lift ℓ' A} {b : Lift ℓ' B}
+  → (p : A ≡ B)
+  → PathP (λ i → p i) (Lift.lower a) (Lift.lower b)
+  → PathP (λ i → Lift ℓ' (p i)) a b
+Lift-pathp p q i .Lift.lower = q i
+
+Lift-path
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {a a' : Lift ℓ' A}
+  → Lift.lower a ≡ Lift.lower a'
+  → a ≡ a'
+Lift-path = Lift-pathp refl
+
+Lift-≃
+  : ∀ {a b ℓ ℓ'} {A : Type a} {B : Type b}
+  → A ≃ B
+  → Lift ℓ A ≃ Lift ℓ' B
+Lift-≃ eqv .fst a .Lift.lower = Equiv.to eqv (Lift.lower a)
+Lift-≃ eqv .snd .is-eqv b .centre .fst .Lift.lower = Equiv.from eqv (Lift.lower b)
+Lift-≃ eqv .snd .is-eqv b .centre .snd i .Lift.lower =
+   Equiv.ε eqv (Lift.lower b) i
+Lift-≃ eqv .snd .is-eqv b .paths (a , p) i .fst .Lift.lower =
+  equiv-path eqv (Lift.lower b) (Lift.lower a , lift-inj p) i .fst 
+Lift-≃ eqv .snd .is-eqv b .paths (a , p) i .snd j .Lift.lower =
+  equiv-path eqv (Lift.lower b) (Lift.lower a , lift-inj p) i .snd j
 ```
 -->
