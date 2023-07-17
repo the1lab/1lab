@@ -593,6 +593,15 @@ module
         ap (_ C.∘_) (sym (e.unit .is-natural _ _ _))
       ∙ C.cancell (e.unit-iso _ .C.is-invertible.invr)
 
+  is-equivalence→is-split-eso : is-split-eso F
+  is-equivalence→is-split-eso y =
+    (e.F⁻¹ .F₀ y) ,
+    D.invertible→iso (e.counit .η y) (e.counit-iso y)
+
+  is-equivalence→is-eso : is-eso F
+  is-equivalence→is-eso y =
+    inc ((e.F⁻¹ .F₀ y) , D.invertible→iso (e.counit .η y) (e.counit-iso y))
+
   open is-precat-iso
   open is-iso
 
@@ -619,5 +628,129 @@ record Equivalence
     To-equiv : is-equivalence To
 
   open is-equivalence To-equiv renaming (F⁻¹ to From; F⊣F⁻¹ to To⊣From) public
+```
+-->
+
+## Properties of Equivalences
+
+If $F : \cC \to \cD$ is fully-faithfuly and essentially surjective, then
+for every hom-set $\cD(d,d')$ there (merely) exists an equivalent hom-set
+$\cC(c,c')$.
+
+<!--
+```agda
+module _
+  {oc ℓc od ℓd}
+  {C : Precategory oc ℓc}
+  {D : Precategory od ℓd}
+  where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+```
+-->
+
+```agda
+  ff+split-eso→hom-equiv
+    : (F : Functor C D)
+    → is-fully-faithful F
+    → is-split-eso F
+    → ∀ (d d' : D.Ob) → Σ[ c ∈ C.Ob ] Σ[ c' ∈ C.Ob ] (C.Hom c c' ≃ D.Hom d d')
+  ff+split-eso→hom-equiv F ff split-eso d d' =
+    d-fib .fst , d'-fib .fst ,
+    (F .F₁ , ff) ∙e D.iso→hom-equiv (d-fib .snd) (d'-fib .snd)
+    where
+      d-fib = split-eso d
+      d'-fib = split-eso d'
+
+  ff+eso→hom-equiv
+    : (F : Functor C D)
+    → is-fully-faithful F
+    → is-eso F
+    → ∀ (d d' : D.Ob) → ∥ Σ[ c ∈ C.Ob ] Σ[ c' ∈ C.Ob ] (C.Hom c c' ≃ D.Hom d d') ∥
+  ff+eso→hom-equiv F ff eso d d' = do
+      (c , Fc≅d) ← eso d
+      (c' , Fc'≅d') ← eso d'
+      pure (c , c' , (F .F₁ , ff) ∙e D.iso→hom-equiv Fc≅d Fc'≅d')
+```
+
+This allows us to prove a very useful little lemma: if $F : \cC \to \cD$ is a
+fully-faithful, essentially surjective functor, then any property of hom-sets
+of $\cC$ that holds for all hom-sets must also hold for all hom-sets of $\cD$.
+
+```agda
+  ff+eso→preserves-hom-props
+    : ∀ {ℓ} (F : Functor C D)
+    → is-fully-faithful F
+    → is-eso F
+    → (P : Type (ℓc ⊔ ℓd) → Type ℓ)
+    → (∀ A → is-prop (P A))
+    → (∀ c c' → P (Lift ℓd (C.Hom c c')))
+    → ∀ d d' → P (Lift ℓc (D.Hom d d'))
+  ff+eso→preserves-hom-props F ff eso P prop P-hom d d' =
+    ∥-∥-proj {ap = prop (Lift ℓc (D.Hom d d'))} $ do
+      (c , c' , eqv) ← ff+eso→hom-equiv F ff eso d d'
+      pure (transport (ap P (ua (Lift-≃ eqv))) (P-hom c c'))
+```
+
+As a corollary, we note that if $F : \cC \to \cD$ is a fully-faithful, essentially
+surjective functor, then if the hom-sets of $\cC$ are all $n$-types, then the hom-sets
+of $\cD$ must also be $n$-types.
+
+```agda
+  ff+eso→hom-hlevel
+    : ∀ {n} (F : Functor C D)
+    → is-fully-faithful F
+    → is-eso F
+    → (∀ c c' → is-hlevel (C.Hom c c') n)
+    → ∀ d d' → is-hlevel (D.Hom d d') n
+  ff+eso→hom-hlevel {n = n} F ff eso C-hlevel d d' =
+    Lift-is-hlevel' _ $
+    ff+eso→preserves-hom-props F ff eso
+      (λ A → is-hlevel A n) (λ _ → is-hlevel-is-prop n)
+      (λ c c' → Lift-is-hlevel n (C-hlevel c c')) d d'
+```
+
+Note that if $F$ is fully faithful and **split** essentially surjective, then
+we can drop the requirement that $P$ must be a prop.
+
+```agda
+  ff+split-eso→preserves-hom-fams
+    : ∀ {ℓ} (F : Functor C D)
+    → is-fully-faithful F
+    → is-split-eso F
+    → (P : Type (ℓc ⊔ ℓd) → Type ℓ)
+    → (∀ c c' → P (Lift ℓd (C.Hom c c')))
+    → ∀ d d' → P (Lift ℓc (D.Hom d d'))
+  ff+split-eso→preserves-hom-fams F ff split-eso P P-hom d d' =
+    transport
+      (ap P (ua (Lift-≃ (ff+split-eso→hom-equiv F ff split-eso d d' .snd .snd))))
+      (P-hom _ _)
+```
+
+As a corollary, equivalences preserve all families over hom sets.
+
+```agda
+  equivalence→preserves-hom-fams
+    : ∀ {ℓ} (E : Equivalence C D)
+    → (P : Type (ℓc ⊔ ℓd) → Type ℓ)
+    → (∀ c c' → P (Lift ℓd (C.Hom c c')))
+    → ∀ d d' → P (Lift ℓc (D.Hom d d'))
+  equivalence→preserves-hom-fams E =
+    ff+split-eso→preserves-hom-fams (Equivalence.To E)
+      (is-equivalence→is-ff _ (Equivalence.To-equiv E))
+      (is-equivalence→is-split-eso _ (Equivalence.To-equiv E))
+```
+
+<!--
+```agda
+  equivalence→hom-hlevel
+    : ∀ {n} (E : Equivalence C D)
+    → (∀ c c' → is-hlevel (C.Hom c c') n)
+    → ∀ d d' → is-hlevel (D.Hom d d') n
+  equivalence→hom-hlevel {n = n} E C-hlevel d d' =
+    Lift-is-hlevel' n $
+    equivalence→preserves-hom-fams E (λ A → is-hlevel A n)
+      (λ c c' → Lift-is-hlevel n (C-hlevel c c')) d d'
 ```
 -->
