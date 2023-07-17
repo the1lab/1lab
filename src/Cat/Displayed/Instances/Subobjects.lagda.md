@@ -349,7 +349,7 @@ Sub-products {y} pb a b = prod where
   prod : Product (Sub y) a b
   prod .Product.apex .domain = it .apex
   prod .Product.apex .map = a .map ∘ it .p₁
-  prod .Product.apex .monic = ∘-is-monic
+  prod .Product.apex .monic = monic-∘
     (is-monic→pullback-is-monic (b .monic) (rotate-pullback (it .has-is-pb)))
     (a .monic)
 
