@@ -1,6 +1,7 @@
 ```agda
 open import Cat.Instances.Functor
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Adjoint.Compose
 open import Cat.Functor.Base
 open import Cat.Univalent
 open import Cat.Prelude
@@ -15,7 +16,7 @@ module Cat.Functor.Equivalence where
 ```agda
 private variable
   o h : Level
-  C D : Precategory o h
+  C D E : Precategory o h
 open Functor hiding (op)
 open _=>_ hiding (op)
 ```
@@ -806,4 +807,47 @@ is-equivalence-natural-iso {C = C} {D = D} {F = F} {G = G} α F-eqv = G-eqv wher
       (D.invertible-∘
         (F-map-invertible F C.id-invertible)
         (natural-iso→invertible α _ D.invertible⁻¹))
+```
+
+Equivalences are invertible.
+
+```agda
+_Equivalence⁻¹
+  : Equivalence C D → Equivalence D C
+(E Equivalence⁻¹) .Equivalence.To = Equivalence.From E
+(E Equivalence⁻¹) .Equivalence.To-equiv = Equivalence.inverse-equivalence E
+```
+
+Equivalences are also composable, as [adjoints compose].
+
+[adjoints compose]: Cat.Functor.Adjoint.Compose.html
+
+```agda
+is-equivalence-∘
+  : ∀ {F : Functor D E} {G : Functor C D}
+  → is-equivalence F → is-equivalence G
+  → is-equivalence (F F∘ G)
+is-equivalence-∘ {E = E} {C = C}  {F = F} {G = G} F-eqv G-eqv = FG-eqv where
+  module F-eqv = is-equivalence F-eqv
+  module G-eqv = is-equivalence G-eqv
+  module C = Cat.Reasoning C
+  module E = Cat.Reasoning E
+
+  FG-eqv : is-equivalence (F F∘ G)
+  FG-eqv .F⁻¹ = G-eqv.F⁻¹ F∘ F-eqv.F⁻¹
+  FG-eqv .F⊣F⁻¹ = LF⊣GR G-eqv.F⊣F⁻¹ F-eqv.F⊣F⁻¹
+  FG-eqv .unit-iso x =
+    C.invertible-∘
+      (F-map-invertible G-eqv.F⁻¹ (F-eqv.unit-iso (G .F₀ x)))
+      (G-eqv.unit-iso x)
+  FG-eqv .counit-iso x =
+    E.invertible-∘
+      (F-eqv.counit-iso x)
+      (F-map-invertible F (G-eqv.counit-iso (F-eqv .F⁻¹ .F₀ x)))
+
+_∘Equivalence_ : Equivalence C D → Equivalence D E → Equivalence C E
+(F ∘Equivalence G) .Equivalence.To =
+  Equivalence.To G F∘ Equivalence.To F
+(F ∘Equivalence G) .Equivalence.To-equiv =
+  is-equivalence-∘ (Equivalence.To-equiv G) (Equivalence.To-equiv F)
 ```
