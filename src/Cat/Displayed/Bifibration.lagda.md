@@ -2,9 +2,9 @@
 ```agda
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Instances.Functor
-open import Cat.Displayed.Fibre
 open import Cat.Functor.Adjoint
 open import Cat.Displayed.Base
+open import Cat.Displayed.Fibre
 open import Cat.Prelude
 
 import Cat.Displayed.Cocartesian.Indexing
@@ -14,6 +14,7 @@ import Cat.Displayed.Cartesian.Weak
 import Cat.Displayed.Cocartesian
 import Cat.Displayed.Cartesian
 import Cat.Displayed.Reasoning
+import Cat.Displayed.Fibre.Reasoning
 import Cat.Reasoning
 ```
 -->
@@ -31,8 +32,13 @@ open Cat.Displayed.Cartesian ℰ
 open Cat.Displayed.Cartesian.Weak ℰ
 open Cat.Displayed.Reasoning ℰ
 
-open Precategory ℬ
+open Cat.Reasoning ℬ
 open Displayed ℰ
+open Functor
+open _⊣_
+open _=>_
+private
+  module Fib = Cat.Displayed.Fibre.Reasoning ℰ
 ```
 -->
 
@@ -134,3 +140,92 @@ With some repackaging, we can see that this yields a bifibration.
   left-adjoint-base-change→bifibration L adj .is-bifibration.opfibration =
     left-adjoint-base-change→opfibration L adj
 ```
+
+## Adjoints from cocartesian maps
+
+Let $f : X \to Y$ be a morphism in $\cB$, and let $L : \cE_{X} \to \cE_{Y}$
+be a functor. If there exists some natural transformation
+$\eta : Id \to f^{*} \circ L$ such that $\overline{f} \circ \eta$ is
+cocartesian, then $L$ is a left adjoint to $f^{*}$.
+
+```agda
+  cocartesian→left-adjoint-base-change
+    : ∀ {x y} {L : Functor (Fibre ℰ x) (Fibre ℰ y)} {f : Hom x y}
+    → (L-unit : Id => base-change f F∘ L)
+    → (∀ x → is-cocartesian (f ∘ id) (has-lift.lifting f (L .F₀ x) ∘′ L-unit .η x))
+    → L ⊣ base-change f
+```
+
+We shall construct the adjoint by showing that there is a natural
+equivalence of hom sets $\cE_{X}{L A, B} \simeq \cE_{Y}{A, f^{*}B}$.
+The map $v \mapsto f^{*}(v) \circ \eta$ gives us the forward direction
+of this equivalence, so all that remains is to find an inverse.
+
+However, we armed with a tool for building maps out of $L$, as
+$\overline{f} \circ \eta$ is cocartesian! Let $v : A \to f^{*} B$ be
+a vertical map in $\cE$. We can construct a vertical map $LA \to B$
+by factorizing $\overline{f} \circ v$ through the
+$\overline{f} \circ \eta$; cocartesian-ness of $\overline{f} \circ \eta$
+ensures that this is an equivalence.
+
+
+~~~{.quiver}
+\begin{tikzcd}
+  &&& B \\
+  A && LA \\
+  &&& Y \\
+  X && Y
+  \arrow["{\overline{f} \circ \eta}", from=2-1, to=2-3]
+  \arrow["f"', from=4-1, to=4-3]
+  \arrow[lies over, from=2-1, to=4-1]
+  \arrow[lies over, from=2-3, to=4-3]
+  \arrow[dashed, from=2-3, to=1-4]
+  \arrow["id"', from=4-3, to=3-4]
+  \arrow[lies over, from=1-4, to=3-4]
+  \arrow["{\overline{f} \circ v}", curve={height=-12pt}, from=2-1, to=1-4]
+  \arrow["f", curve={height=-12pt}, from=4-1, to=3-4]
+\end{tikzcd}
+~~~
+
+```agda
+  cocartesian→left-adjoint-base-change {x = x} {y = y} {L = L} {f = f} L-unit cocart =
+      hom-iso→adjoints (λ v → base-change f .F₁ v Fib.∘ L-unit .η _)
+        precompose-equiv
+        equiv-natural
+    where
+      module cocart x = is-cocartesian (cocart x)
+      module f* = Functor (base-change f)
+
+      precompose-equiv
+        : ∀ {x′ : Ob[ x ]} {y′ : Ob[ y ]}
+        → is-equiv {A = Hom[ id ] (F₀ L x′) y′} (λ v → f*.₁ v Fib.∘ L-unit .η x′)
+      precompose-equiv {x′} {y′} =
+        is-iso→is-equiv $
+        iso (λ v → cocart.universalv _ (has-lift.lifting f _ ∘′ v))
+          (λ v → has-lift.uniquep₂ _ _ _ _ refl _ _
+            (Fib.pulllf (has-lift.commutesp f _ id-comm _)
+            ∙[] symP (assoc′ _ _ _)
+            ∙[] cocart.commutesv x′ _)
+            refl)
+          (λ v → symP $ cocart.uniquep x′ _ _ _ _ $
+            assoc′ _ _ _
+            ∙[] Fib.pushlf (symP $ has-lift.commutesp f _ id-comm _))
+```
+
+<details>
+<summary>Futhermore, this equivalence is natural, but it's very tedious
+to prove!
+</summary>
+```agda
+      equiv-natural
+        : hom-iso-natural {L = L} {R = base-change f} (λ v → f*.₁ v Fib.∘ L-unit .η _)
+      equiv-natural g h k =
+        has-lift.uniquep₂ _ _ _ _ _ _ _
+          (Fib.pulllf (has-lift.commutesp f _ id-comm _)
+           ∙[] pushl[] _ (pushl[] _ (to-pathp⁻ (smashr _ _))))
+          (Fib.pulllf (has-lift.commutesp f _ id-comm _)
+           ∙[] extendr[] _ (Fib.pulllf (Fib.pulllf (has-lift.commutesp f _ id-comm _)))
+           ∙[] extendr[] _ (pullr[] _ (to-pathp (L-unit .is-natural _ _ h)))
+           ∙[] pullr[] _ (Fib.pulllf (extendr[] _ (has-lift.commutesp f _ id-comm _))))
+```
+</details>

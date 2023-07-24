@@ -272,8 +272,7 @@ it is extremely important categorically; it is an inverse of
       → π*.₁ x f D.∘′ ∐-transpose g D.≡[ idl _ ] ∐-transpose (f D↓.∘ g)
     ∐-transpose-naturalr {x = x} {a = a} {b = b} {c = c} f g =
       D-fib.uniquep πᶜ c _ _ _ (π*.F₁ x f D.∘′ ∐-transpose g) $
-        D-fib.lifting πᶜ c D.∘′ π*.₁ x f D.∘′ ∐-transpose g     D.≡[]⟨ Dr.pulll[] (idr _) (D-fib.commutesp πᶜ c _ _) ⟩
-        Dr.hom[] (f D.∘′ D-fib.lifting πᶜ b) D.∘′ ∐-transpose g D.≡[]⟨ to-pathp⁻ (Dr.whisker-l (idl _)) ⟩
+        D-fib.lifting πᶜ c D.∘′ π*.₁ x f D.∘′ ∐-transpose g     D.≡[]⟨ Dr.pulll[] _ (D-fib.commutesp πᶜ c id-comm _) ⟩
         (f D.∘′ D-fib.lifting πᶜ b) D.∘′ ∐-transpose g          D.≡[]⟨ Dr.extendr[] id-comm (D-fib.commutesp πᶜ b _ _) ⟩
         (f D.∘′ g) D.∘′ ⟨ x , a ⟩                               D.≡[ ap (_∘ πᶜ) (idl _) ]⟨ to-pathp (Dr.unwhisker-l (ap (_∘ πᶜ) (idl _)) (idl _)) ⟩
         Dr.hom[ idl id ] (f D.∘′ g) D.∘′ ⟨ x , a ⟩              ∎
@@ -334,11 +333,9 @@ cocartesian maps.
       → ⟨ g ⨾ b ⟩ D.∘′ D*.₁ (σ ⨾ˢ g) f D.≡[ id-comm ] D*.₁ σ ∐[ f ] D.∘′ ⟨ g ⨾ a ⟩
     ⟨⨾⟩-natural {x = x} {y = y} {σ = σ} {a = a} {b = b} f g =
       D-fib.uniquep₂ σ (∐ y b) _ _ _ _ _
-        (Dr.pulll[] _ (⟨⨾⟩-weaken g b)
-         D.∙[] Dr.pullr[] _ (D-fib.commutesv _ _ _)
-         D.∙[] to-pathp⁻ (Dr.whisker-r (idl _)))
-        (Dr.pulll[] _ (D-fib.commutesv _ _ _)
-         D.∙[] to-pathp⁻ (Dr.whisker-l (idl _))
+        (Dr.pulll[] _ (D-fib.commutesp σ (∐ y b) (sym (sub-proj g)) _)
+         D.∙[] Dr.pullr[] _ (D-fib.commutesp (σ ⨾ˢ g) b id-comm _))
+        (Dr.pulll[] _ (D-fib.commutesp σ (∐ y b) id-comm _)
          D.∙[] Dr.pullr[] _ (⟨⨾⟩-weaken g a)
          D.∙[] Dr.extendl[] _ (∐[]-natural f))
 ```
