@@ -169,3 +169,67 @@ properties and I recommend that nobody look at it, ever. </summary>.
         ∙ cancel (sym $ assoc _ _ _) _ (pushl[] _ (symP $ has-lift.commutes g _ _ _))
 ```
 </details>
+
+<!--
+```agda
+-- Optimized natural iso, avoids a bunch of junk from composition.
+base-change-square
+  : ∀ {Γ Δ Θ Ψ : Ob}
+  → {σ : Hom Γ Δ} {δ : Hom Γ Θ} {γ : Hom Δ Ψ} {τ : Hom Θ Ψ}
+  → γ ∘ σ ≡ τ ∘ δ
+  → natural-iso (base-change σ F∘ base-change γ) (base-change δ F∘ base-change τ)
+base-change-square {σ = σ} {δ = δ} {γ = γ} {τ = τ} p =
+  to-natural-iso ni where
+
+  open make-natural-iso
+  ni : make-natural-iso _ _ 
+  ni .eta x =
+    has-lift.universalv δ _ $
+    has-lift.universal′ τ _ (sym p) $
+    has-lift.lifting γ x ∘′ has-lift.lifting σ _
+  ni .inv x =
+    has-lift.universalv σ _ $
+    has-lift.universal′ γ _ p $
+    has-lift.lifting τ x ∘′ has-lift.lifting δ _
+  ni .eta∘inv x =
+    has-lift.uniquep₂ _ _ _ _ _ _ _
+      (to-pathp⁻ (whisker-r (idl _))
+       ∙[] pulll[] _ (has-lift.commutesv δ _ _)
+       ∙[] has-lift.uniquep₂ τ x _ (idr _) refl _ _
+         (pulll[] _ (has-lift.commutesp τ x (sym p) _)
+          ∙[] pullr[] _ (has-lift.commutesv σ _ _)
+          ∙[] has-lift.commutesp γ x p _)
+         refl)
+      (idr′ _)
+  ni .inv∘eta x =
+    has-lift.uniquep₂ _ _ _ _ _ _ _
+      (to-pathp⁻ (whisker-r (idl _))
+       ∙[] pulll[] _ (has-lift.commutesv σ _ _)
+       ∙[] has-lift.uniquep₂ γ x _ (idr _) refl _ _
+         (pulll[] _ (has-lift.commutesp γ _ p _)
+          ∙[] pullr[] _ (has-lift.commutesv δ _ _)
+          ∙[] has-lift.commutesp τ x (sym p) _)
+         refl)
+      (idr′ _)
+  ni .natural x y f =
+    has-lift.uniquep₂ _ _ _ _ _ _ _
+      (to-pathp⁻ (whisker-r (idl _))
+       ∙[] pulll[] _ (has-lift.commutesv δ _ _)
+       ∙[] to-pathp⁻ (whisker-l (idl _))
+       ∙[] pullr[] _ (has-lift.commutesv δ _ _)
+       ∙[] has-lift.uniquep τ y _ (idl _) (sym p ∙ (sym (idl _))) _
+         (pulll[] _ (has-lift.commutesv τ _ _)
+          ∙[] to-pathp⁻ (whisker-l (idl _))
+          ∙[] pullr[] _ (has-lift.commutesp τ _ (sym p) _)))
+      (to-pathp⁻ (whisker-r (idl _))
+       ∙[] pulll[] _ (has-lift.commutesv δ _ _)
+       ∙[] has-lift.uniquep₂ τ y _ (idr _) _ _ _
+         (pulll[] _ (has-lift.commutesp τ _ (sym p) _)
+          ∙[] pullr[] _ (has-lift.commutesv σ _ _)
+          ∙[] to-pathp⁻ (whisker-r (idl _))
+          ∙[] pulll[] _ (has-lift.commutesv γ _ _)
+          ∙[] to-pathp⁻ (whisker-l (idl _))
+          ∙[] symP (assoc′ _ _ _))
+         (has-lift.commutesp τ _ (sym p ∙ sym (idl _ )) _))
+```
+-->
