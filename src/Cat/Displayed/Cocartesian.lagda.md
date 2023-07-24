@@ -165,6 +165,20 @@ to a unique universal factorisation of $h'$ through a map $b' \to_{m} u'$
 ```
 -->
 
+We also provide a bundled form of cartesian morphisms.
+
+```agda
+record Cocartesian-morphism
+  {x y : Ob} (f : Hom x y) (x′ : Ob[ x ]) (y′ : Ob[ y ])
+  : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
+  no-eta-equality
+  field
+    hom′ : Hom[ f ] x′ y′
+    cocartesian : is-cocartesian f hom′
+
+  open is-cocartesian cocartesian public
+```
+
 ## Duality
 
 As noted before, cocartesian maps are dual to cartesian maps. We
@@ -338,6 +352,29 @@ vertical+cocartesian→invertible cocart =
     (cocartesian→co-cartesian cocart)
 ```
 </details>
+
+Furthermore, $f' : x' \to_{f} y'$ is cocartesian if and only if the
+function $- \cdot' f$ is an equivalence.
+
+```agda
+precompose-equiv→cocartesian
+  : ∀ {x y x′ y′} {f : Hom x y}
+  → (f′ : Hom[ f ] x′ y′)
+  → (∀ {z z′} {g : Hom y z} → is-equiv {A = Hom[ g ] y′ z′} (_∘′ f′))
+  → is-cocartesian f f′
+precompose-equiv→cocartesian f′ cocart =
+  co-cartesian→cocartesian $
+  postcompose-equiv→cartesian (ℰ ^total-op) f′ cocart
+
+cocartesian→precompose-equiv
+  : ∀ {x y z x′ y′ z′} {g : Hom y z} {f : Hom x y} {f′ : Hom[ f ] x′ y′}
+  → is-cocartesian f f′
+  → is-equiv {A = Hom[ g ] y′ z′} (_∘′ f′)
+cocartesian→precompose-equiv cocart =
+  cartesian→postcompose-equiv (ℰ ^total-op) $
+  cocartesian→co-cartesian cocart
+```
+
 
 ## Cocartesian Lifts
 

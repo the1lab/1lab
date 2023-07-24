@@ -1,10 +1,7 @@
 <!--
 ```agda
 open import Cat.Functor.Hom.Displayed
-open import Cat.Functor.Hom.Displayed
 open import Cat.Instances.Functor
-open import Cat.Instances.Functor
-open import Cat.Instances.Product
 open import Cat.Instances.Product
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
@@ -12,9 +9,9 @@ open import Cat.Functor.Hom
 open import Cat.Prelude
 
 import Cat.Displayed.Cartesian.Indexing as Indexing
-import Cat.Displayed.Cartesian.Indexing as Indexing
 import Cat.Displayed.Cartesian as Cart
 import Cat.Displayed.Reasoning as DR
+import Cat.Displayed.Fibre.Reasoning as FibR
 import Cat.Displayed.Morphism as DM
 import Cat.Reasoning as CR
 ```
@@ -37,6 +34,7 @@ open DR ℰ
 open DM ℰ
 open Functor
 open Functor
+private module Fib = FibR ℰ
 ```
 -->
 
@@ -203,6 +201,33 @@ weak-cartesian→postcompose-equiv wcart =
         (λ h′ → from-pathp⁻ (wcart .commutes _) ·· hom[]-∙ _ _ ·· liberate _)
         (λ h′ → sym $ wcart .unique _ (to-pathp refl))
 ```
+
+We also provide versions for precomposition in fibre categories.
+
+```agda
+weak-cartesian→fibre-postcompose-equiv
+  : ∀ {x} {x′ x″ x‴ : Ob[ x ]} {f′ : Hom[ id ] x″ x‴}
+  → is-weak-cartesian id f′
+  → is-equiv {A = Hom[ id ] x′ x″} (f′ Fib.∘_)
+weak-cartesian→fibre-postcompose-equiv wcart =
+  is-iso→is-equiv $
+    iso (λ v → wcart .universal v)
+      (λ v → from-pathp (cast[] $ wcart .commutes v))
+      (λ v → sym (wcart .unique _ (cast[] $ to-pathp refl)))
+
+fibre-postcompose-equiv→weak-cartesian
+  : ∀ {x} {x″ x‴ : Ob[ x ]}
+  → (f′ : Hom[ id ] x″ x‴)
+  → (∀ {x′} → is-equiv {A = Hom[ id ] x′ x″} (f′ Fib.∘_))
+  → is-weak-cartesian id f′
+fibre-postcompose-equiv→weak-cartesian f′ eqv .universal v =
+  equiv→inverse eqv v
+fibre-postcompose-equiv→weak-cartesian f′ eqv .commutes v =
+  cast[] $ to-pathp $ equiv→counit eqv v
+fibre-postcompose-equiv→weak-cartesian f′ eqv .unique m′ p =
+  sym (equiv→unit eqv m′) ∙ ap (equiv→inverse eqv) (from-pathp $ cast[] p)
+```
+
 
 ## Weak Cartesian Lifts
 
@@ -685,12 +710,10 @@ module _ (fib : Cartesian-fibration) where
     mi .inv∘eta x = funext λ u′ →
       from-pathp (has-lift.commutesv u _ _)
     mi .natural _ _ v′ = funext λ u′ →
-      has-lift.unique u _ _ $ to-pathp $
-        smashr _ _
-        ·· revive₁ (pulll[] _ (has-lift.commutesv u _ _))
-        ·· smashl _ _
-        ·· weave _ (pullr (idr u)) _ (pullr[] _ (has-lift.commutesv u _ _))
-        ·· duplicate id-comm-sym _ (idl u)
+      has-lift.uniquep u _ _ _ _ _ $
+        Fib.pulllf (has-lift.commutesp u _ id-comm _)
+        ∙[] pullr[] _ (has-lift.commutesv u _ _)
+        ∙[] to-pathp refl
 ```
 
 <!--

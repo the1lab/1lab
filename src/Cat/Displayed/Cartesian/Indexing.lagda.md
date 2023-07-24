@@ -13,6 +13,7 @@ open import Cat.Prelude
 import Cat.Displayed.Reasoning
 import Cat.Reasoning
 import Cat.Morphism as Mor
+import Cat.Displayed.Fibre.Reasoning
 ```
 -->
 
@@ -33,6 +34,8 @@ open Cartesian-lift
 open Displayed E
 open is-cartesian
 open Functor
+private
+  module Fib = Cat.Displayed.Fibre.Reasoning E
 ```
 -->
 
@@ -64,18 +67,14 @@ module _ {𝒶 𝒷} (f : Hom 𝒶 𝒷) where
 <!--
 ```agda
   base-change .F-id {x} =
-    sym $ has-lift.uniquev _ _ _ $ to-pathp $
-      idr[] ∙ (sym $ cancel _ _ (idl′ _))
+    sym $ has-lift.uniquep f x _ _ _ _ $
+      idr′ _ ∙[] symP (idl′ _)
 
   base-change .F-∘ {x} {y} {z} f′ g′ =
-    sym $ has-lift.uniquev _ _ _ $ to-pathp $
-      smashr _ _
-      ·· revive₁ (pulll[] (idr f) (has-lift.commutesv _ _ _))
-      ·· smashl _ _
-      ·· revive₁ (pullr[] (idr f) (has-lift.commutesv _ _ _))
-      ·· smashr _ _
-      ·· assoc[]
-      ·· sym (smashl _ _)
+    sym $ has-lift.uniquep f z _ _ _ _ $
+      Fib.pulllf (has-lift.commutesp f z id-comm _)
+      ∙[] pullr[] _ (has-lift.commutesp f y id-comm _)
+      ∙[] pulll[] _ Fib.to-fibre
 ```
 -->
 
@@ -102,10 +101,13 @@ of heart. </summary>
     mi .inv x = has-lift.universalv id x id′
     mi .eta∘inv x = cancel _ _ (has-lift.commutesv _ _ _)
     mi .inv∘eta x = sym $
-      has-lift.uniquev₂ id x Fa.id _ (cast[] $ idr′ _) $
-      to-pathp (smashr _ _ ∙ cancel _ _ (cancell[] _ (has-lift.commutesv _ _ _)))
-    mi .natural x y f = ap hom[] $ sym $
-      has-lift.commutes _ _ _ _ ·· hom[]-∙ _ _ ·· liberate _
+      has-lift.uniquep₂ id x _ _ _ _ _
+        (idr′ _)
+        (Fib.cancellf (has-lift.commutesv _ _ _))
+    mi .natural x y f =
+      sym $ from-pathp $ cast[] $
+        has-lift.commutesp id y id-comm _
+        ∙[] Fib.to-fibre
 ```
 </details>
 
@@ -134,39 +136,29 @@ properties and I recommend that nobody look at it, ever. </summary>.
     mi .inv x =
       has-lift.universalv (f ∘ g) x (has-lift.lifting f _ ∘′ has-lift.lifting g _)
     mi .eta∘inv x =
-      has-lift.uniquev₂ g _ _ _
-        (to-pathp $
-          smashr _ _
-          ·· revive₁ (pulll[] _ (has-lift.commutesv g _ _))
-          ·· has-lift.uniquep₂ f _ refl refl refl _ _
-            (pulll-indexr _ (has-lift.commutes f _ _ _)
-            ∙ cancel _ _ (has-lift.commutesv (f ∘ g) _ _))
-            refl)
+      has-lift.uniquep₂ _ _ _ _ _ _ _
+        (Fib.pulllf (has-lift.commutesv g _ _)
+         ∙[] has-lift.uniquep₂ _ _ _ (idr _) refl _ _
+           (pulll[] _ (has-lift.commutes _ _ _ _)
+            ∙[] has-lift.commutesv _ _ _)
+           refl)
         (idr′ _)
     mi .inv∘eta x =
-      has-lift.uniquev₂ (f ∘ g) _ _ _
-        (to-pathp $
-          smashr _ _
-          ·· revive₁ (pulll[] _ (has-lift.commutesv (f ∘ g) _ _))
-          ·· revive₁ (pullr[] _ (has-lift.commutesv g _ _))
-          ∙ cancel _ _ (has-lift.commutes f _ _ _))
+      has-lift.uniquep₂ _ _ _ _ _ _ _
+        (Fib.pulllf (has-lift.commutesv _ _ _)
+         ∙[] pullr[] _ (has-lift.commutesv _ _ _)
+         ∙[] has-lift.commutes _ _ _ _)
         (idr′ _)
     mi .natural x y f′ =
-      ap hom[] $ cartesian→weak-monic E (has-lift.cartesian g _) _ _ $
-        from-pathp⁻ (pulll[] _ (has-lift.commutes g _ _ _))
-        ·· smashl _ _ ·· smashl _ _
-        ·· revive₁ (pullr[] _ (has-lift.commutesv g _ _ ))
-        ·· (cartesian→weak-monic E (has-lift.cartesian f _) _ _ $
-          whisker-r _
-          ·· revive₁ (pulll[] _ (has-lift.commutesv f _ _))
-          ·· smashl _ _
-          ·· revive₁ (pullr[] _ (has-lift.commutes f _ _ _))
-          ·· duplicate _ (ap (f ∘_) (intror (idl id))) _
-          ·· revive₁ (symP (has-lift.commutesv (f ∘ g) _ _))
-          ·· revive₁ (pushl[] _ (symP $ has-lift.commutes f _ _ _))
-          ·· unwhisker-r _ (ap (g ∘_) (sym $ idl id))
-          ·· ap (has-lift.lifting f _ ∘′_) (expandl _ _ ∙ reindex _ _))
-        ∙ cancel (sym $ assoc _ _ _) _ (pushl[] _ (symP $ has-lift.commutes g _ _ _))
+      ap hom[] $ cartesian→weak-monic E (has-lift.cartesian g _) _ _ $ cast[] $
+        pulll[] _ (has-lift.commutesp g _ id-comm _)
+        ∙[] pullr[] _ (has-lift.commutesv g _ _)
+        ∙[] has-lift.uniquep₂ _ _ _ id-comm-sym _ _ _
+          (pulll[] _ (has-lift.commutesp _ _ id-comm _)
+           ∙[] pullr[] _ (has-lift.commutes _ _ _ _))
+          (pulll[] _ (has-lift.commutes _ _ _ _)
+           ∙[] has-lift.commutesp _ _ id-comm _)
+        ∙[] pushl[] _ (symP (has-lift.commutesv g _ _))
 ```
 </details>
 
@@ -193,8 +185,7 @@ base-change-square {σ = σ} {δ = δ} {γ = γ} {τ = τ} p =
     has-lift.lifting τ x ∘′ has-lift.lifting δ _
   ni .eta∘inv x =
     has-lift.uniquep₂ _ _ _ _ _ _ _
-      (to-pathp⁻ (whisker-r (idl _))
-       ∙[] pulll[] _ (has-lift.commutesv δ _ _)
+      (Fib.pulllf (has-lift.commutesv δ _ _)
        ∙[] has-lift.uniquep₂ τ x _ (idr _) refl _ _
          (pulll[] _ (has-lift.commutesp τ x (sym p) _)
           ∙[] pullr[] _ (has-lift.commutesv σ _ _)
@@ -203,8 +194,7 @@ base-change-square {σ = σ} {δ = δ} {γ = γ} {τ = τ} p =
       (idr′ _)
   ni .inv∘eta x =
     has-lift.uniquep₂ _ _ _ _ _ _ _
-      (to-pathp⁻ (whisker-r (idl _))
-       ∙[] pulll[] _ (has-lift.commutesv σ _ _)
+      (Fib.pulllf (has-lift.commutesv σ _ _)
        ∙[] has-lift.uniquep₂ γ x _ (idr _) refl _ _
          (pulll[] _ (has-lift.commutesp γ _ p _)
           ∙[] pullr[] _ (has-lift.commutesv δ _ _)
@@ -213,23 +203,16 @@ base-change-square {σ = σ} {δ = δ} {γ = γ} {τ = τ} p =
       (idr′ _)
   ni .natural x y f =
     has-lift.uniquep₂ _ _ _ _ _ _ _
-      (to-pathp⁻ (whisker-r (idl _))
-       ∙[] pulll[] _ (has-lift.commutesv δ _ _)
-       ∙[] to-pathp⁻ (whisker-l (idl _))
+      (Fib.pulllf (has-lift.commutesp δ _ id-comm _)
        ∙[] pullr[] _ (has-lift.commutesv δ _ _)
-       ∙[] has-lift.uniquep τ y _ (idl _) (sym p ∙ (sym (idl _))) _
-         (pulll[] _ (has-lift.commutesv τ _ _)
-          ∙[] to-pathp⁻ (whisker-l (idl _))
-          ∙[] pullr[] _ (has-lift.commutesp τ _ (sym p) _)))
-      (to-pathp⁻ (whisker-r (idl _))
-       ∙[] pulll[] _ (has-lift.commutesv δ _ _)
+       ∙[] has-lift.uniquep τ y _ (idl _) (sym p ∙ sym (idl _)) _
+         (pulll[] _ (has-lift.commutesp _ _ id-comm _ )
+          ∙[] pullr[] _ (has-lift.commutesp _ _ (sym p) _)))
+      (Fib.pulllf (has-lift.commutesv δ _ _)
        ∙[] has-lift.uniquep₂ τ y _ (idr _) _ _ _
          (pulll[] _ (has-lift.commutesp τ _ (sym p) _)
-          ∙[] pullr[] _ (has-lift.commutesv σ _ _)
-          ∙[] to-pathp⁻ (whisker-r (idl _))
-          ∙[] pulll[] _ (has-lift.commutesv γ _ _)
-          ∙[] to-pathp⁻ (whisker-l (idl _))
-          ∙[] symP (assoc′ _ _ _))
+          ∙[] pullr[] _ (has-lift.commutesp σ _ id-comm _)
+          ∙[] extendl[] _ (has-lift.commutesp γ _ id-comm _))
          (has-lift.commutesp τ _ (sym p ∙ sym (idl _ )) _))
 ```
 -->

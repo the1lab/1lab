@@ -628,7 +628,7 @@ uses the universal property that yields a vertical morphism.
            → Hom[ id ] y′ y″
            → Hom[ id ] (has-lift.x′ f y′) (has-lift.x′ f y″)
   rebase f vert =
-    has-lift.universalv f _ (hom[ idl _ ] (vert ∘′ has-lift.lifting f _))
+    has-lift.universal′ f _ id-comm (vert ∘′ has-lift.lifting f _)
 ```
 
 A Cartesian fibration is a displayed category having Cartesian lifts for
