@@ -349,18 +349,20 @@ essentially injective.
 
 ## Equivalence on Objects Functors
 
-A functor $F : \cC \to \cD$ is an equivalence on objects if it's action
-on objects is an equivalence (shocking!).
+A functor $F : \cC \to \cD$ is an equivalence on objects if its action
+on objects is an equivalence.
 
 ```agda
 is-equiv-on-objects : (F : Functor C D) → Type _
 is-equiv-on-objects F = is-equiv (F .F₀)
 ```
 
-If $F$ is an equivalence-on-objects functor, then it is (split) essentially surjective.
+If $F$ is an equivalence-on-objects functor, then it is (split)
+essentially surjective.
 
 ```agda
-equiv-on-objects→split-eso : ∀ (F : Functor C D) → is-equiv-on-objects F → is-split-eso F
+equiv-on-objects→split-eso
+  : ∀ (F : Functor C D) → is-equiv-on-objects F → is-split-eso F
 equiv-on-objects→split-eso {D = D} F eqv y =
   equiv→inverse eqv y , path→iso (equiv→counit eqv y)
 
