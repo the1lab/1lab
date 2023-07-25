@@ -216,6 +216,18 @@ of the introduction rule for coproducts, followed by reindexing.
       D-fib.universal′ πᶜ b id-comm (f D.∘′ ⟨ x , a ⟩)
 ```
 
+<!--
+```agda
+  opaque
+    unfolding ∐-transpose
+    ∐-transpose-weaken
+        : ∀ {Γ} {x : E.Ob[ Γ ]} {a : D.Ob[ Γ ⨾ x ]} {b : D.Ob[ Γ ]}
+        → (f : D.Hom[ id ] (∐ x a) b)
+        → D-fib.lifting πᶜ b D.∘′ ∐-transpose f D.≡[ id-comm ] f D.∘′ ⟨ x , a ⟩
+    ∐-transpose-weaken f = D-fib.commutesp πᶜ _ id-comm _
+```
+-->
+
 While `∐-transpose`{.Agda} may not play an obvious type-theoretic role,
 it is extremely important categorically; it is an inverse of
 `∐-elim`{.Agda}!

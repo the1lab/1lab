@@ -46,6 +46,11 @@ opaque
     : f′ ∘′ g′ ≡[ B.idl _ ] f′ Fib.∘ g′
   to-fibre = to-pathp refl
 
+  over-fibre
+    : f′ ∘′ g′ ≡[ p ] h′ ∘′ i′
+    → f′ Fib.∘ g′ ≡ h′ Fib.∘ i′
+  over-fibre p′ = ap hom[] (cast[] p′)
+
 opaque
   pullrf
     : g′ ∘′ h′ ≡[ p ] i′
