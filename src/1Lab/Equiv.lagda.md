@@ -714,19 +714,6 @@ lift-inj
   → a ≡ b
 lift-inj p = ap Lift.lower p
 
-Lift-pathp
-  : ∀ {ℓ ℓ'} {A B : Type ℓ} {a : Lift ℓ' A} {b : Lift ℓ' B}
-  → (p : A ≡ B)
-  → PathP (λ i → p i) (Lift.lower a) (Lift.lower b)
-  → PathP (λ i → Lift ℓ' (p i)) a b
-Lift-pathp p q i .Lift.lower = q i
-
-Lift-path
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {a a' : Lift ℓ' A}
-  → Lift.lower a ≡ Lift.lower a'
-  → a ≡ a'
-Lift-path = Lift-pathp refl
-
 Lift-≃
   : ∀ {a b ℓ ℓ'} {A : Type a} {B : Type b}
   → A ≃ B
