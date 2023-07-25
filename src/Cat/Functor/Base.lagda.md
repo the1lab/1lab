@@ -349,7 +349,7 @@ essentially injective.
 
 ## Equivalence on Objects Functors
 
-A functor $F : \cC \to \cD$ is an equivalence on objects if its action
+A functor $F : \cC \to \cD$ is an **equivalence on objects** if its action
 on objects is an equivalence.
 
 ```agda
