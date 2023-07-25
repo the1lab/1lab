@@ -8,7 +8,6 @@ open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Cartesian.Indexing
 open import Cat.Displayed.Cocartesian
 open import Cat.Displayed.Fibre
-open import Cat.Displayed.Instances.Slice
 
 import Cat.Reasoning
 import Cat.Displayed.Reasoning
@@ -17,12 +16,10 @@ import Cat.Displayed.Reasoning
 
 ```agda
 module Cat.Displayed.Comprehension.Coproduct
-  {o ℓ o' ℓ'} {B : Precategory o ℓ}
-  {E : Displayed B o' ℓ'}
-  (E-fib : Cartesian-fibration E)
+  {ob ℓb od ℓd oe ℓe} {B : Precategory ob ℓb}
+  {D : Displayed B od ℓd} {E : Displayed B oe ℓe}
+  (D-fib : Cartesian-fibration D) (E-fib : Cartesian-fibration E)
   (P : Comprehension E)
-  (D : Displayed B o' ℓ')
-  (D-fib : Cartesian-fibration D)
   where
 ```
 
@@ -95,14 +92,14 @@ of it!
 
 However, the last condition is somewhat mysterious at first glance.
 What does stability of cocartesian morphisms over projections have
-to do with coproducts!? Like many questions in category theory,
+to do with coproducts? Like many questions in category theory,
 this can be resolved by looking at things from a type-theoretic angle.
 Recall that cartesian morphisms act like substitutions; in this light,
 this condition is essentially asking that the introduction form for
 coproducts is stable under substitutions, which is of critical importance!
 
 ```agda
-record has-comprehension-coproducts : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
+record has-comprehension-coproducts : Type (ob ⊔ ℓb ⊔ od ⊔ ℓd ⊔ oe ⊔ ℓe) where
   no-eta-equality
   field
     ∐ : ∀ {Γ} → (x : E.Ob[ Γ ]) (a : D.Ob[ Γ ⨾ x ]) → D.Ob[ Γ ]
