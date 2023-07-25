@@ -42,7 +42,6 @@ of the pair of adjunctions.
 
 ~~~{.quiver}
 \begin{tikzcd}
-\begin{tikzcd}
   B && {B'} && A && B && {B'} && {B'} \\
   &&& \mapsto \\
   A && {A'} && A && A && {A'} && {B'} \\
@@ -85,7 +84,7 @@ of the pair of adjunctions.
   \arrow["Id"{description}, from=6-5, to=6-7]
   \arrow["\varepsilon"', shorten <=11pt, shorten >=11pt, Rightarrow, from=4-7, to=6-5]
   \arrow["\eta"', shorten <=11pt, shorten >=11pt, Rightarrow, from=4-11, to=6-9]
-\end{tikzcd}\end{tikzcd}
+\end{tikzcd}
 ~~~
 
 We call natural transformations $XU \to U'Y$ and $F'X\to YF$ **mates**
