@@ -340,6 +340,7 @@ invertible→cartesian
 ```
 
 If $f$ is cartesian, it's also a [weak monomorphism].
+
 [weak monomorphism]: Cat.Displayed.Morphism.html#weak-monos
 
 ```agda

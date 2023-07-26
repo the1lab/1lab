@@ -37,6 +37,7 @@ passing to arbitrary contexts.
 [pullback-stable]: Cat.Diagram.Pullback.html#stability
 [strong epi]: Cat.Morphism.StrongEpi.html
 [mono]: Cat.Morphism.html#monos
+[slice]: Cat.Instances.Slice.html
 [finitely complete]: Cat.Diagram.Limit.Finite.html
 
 <!--

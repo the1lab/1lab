@@ -188,7 +188,7 @@ epimorphism", we'd certainly like regular epis to be strong epis!
 
 This is fortunately the case. Suppose that $f : a \to b$ is the
 coequaliser of some maps $s, t : r \to a$^[If you care, $r$ is for
-"relation" --- the intution is that $r$ specifies the _relations_
+"relation" --- the intuition is that $r$ specifies the _relations_
 imposed on $a$ to get $b$], and that $z : c \mono b$ is a monomorphism
 we want to lift against.
 
@@ -437,6 +437,7 @@ along $m$ to obtain the square
   \arrow["e", curve={height=-12pt}, from=1-1, to=3-5]
   \arrow["u", curve={height=12pt}, from=1-1, to=5-3]
 \end{tikzcd}\]
+~~~
 
 and obtain the unique factorisation $A \to A \times_D B$. Note that the
 map $u : A \times_D B \mono B$ is a monomorphism since it results from

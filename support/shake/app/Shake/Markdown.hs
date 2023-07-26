@@ -185,6 +185,10 @@ patchInline _ autolinks (RawInline "tex" txt)
   , let key = Text.take (Text.length txt' - 1) txt'
   , Just target <- Map.lookup (Text.toLower key) autolinks
   = pure $ Link ("", [], []) (intersperse Space $ map Str (Text.words key)) (target, key)
+patchInline _ _ (Str s)
+  | "[" `Text.isPrefixOf` s
+  , s /= "[", s /= "[…]" -- "[" appears on its own before citations
+  = error ("possible broken link: " <> Text.unpack s)
 patchInline _ _ h = pure h
 
 

@@ -150,7 +150,7 @@ We can then rephrase the universality from the definition of left Kan
 extension by asking that a particular cocone be [initial] in the
 category we have just constructed.
 
-[initial object]: Cat.Diagram.Initial.html
+[initial]: Cat.Diagram.Initial.html
 
 ```agda
   is-initial-cocone→is-colimit

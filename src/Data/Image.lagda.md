@@ -165,6 +165,8 @@ should be
 3. With a constructor coherently mapping proofs of $f'(x) \sim f'(y)$ to
 $x \equiv y$.
 
+[identity system]: 1Lab.Path.IdentitySystem.html
+
 But, identity system or not, this is hopeless, right? We don't know how
 to specify $\im f$ without first defining $f'$; and it makes no sense to
 define $f'$ before its domain type. The only way forward would be to

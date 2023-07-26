@@ -38,7 +38,7 @@ fibrations.
 
 [Opfibrations]: Cat.Displayed.Cocartesian.html
 [fibrations]: Cat.Displayed.Cartesian.html
-[reindex along morphisms in the base] Cat.Displayed.Cartesian.Indexing.html
+[reindex along morphisms in the base]: Cat.Displayed.Cartesian.Indexing.html
 
 This difference in variance gives opfibrations a distinct character.
 Reindexing in fibrations can be thought of a sort of restriction map.
