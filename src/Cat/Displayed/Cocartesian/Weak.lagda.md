@@ -473,6 +473,9 @@ record is-weak-cocartesian-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) wher
 -->
 
 Weak opfibrations are dual to [weak fibrations].
+
+[weak fibrations]: Cat.Displayed.Cartesian.Weak.html#is-weak-cartesian-fibration
+
 ```agda
 weak-op-fibration→weak-opfibration
   : is-weak-cartesian-fibration (ℰ ^total-op)

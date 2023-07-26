@@ -32,6 +32,8 @@ is a category with [pullbacks], fix a pair of objects $\bC_0, \bC_1$ be
 a pair of objects, and parallel maps $\$1, \$1 : \bC_1 \to
 \bC_0$.
 
+[pullbacks]: Cat.Diagram.Pullback.html
+
 The idea is that $\bC_0$ and $\bC_1$ are meant to be the "object of
 objects" and "object of morphisms", respectively, while the maps
 $\$1$ and $\$1$ maps assign each morphism to its domain and

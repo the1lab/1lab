@@ -37,7 +37,7 @@ open _≅[_]_
 # Thinly displayed structures
 
 The HoTT Book's version of the structure identity principle can be seen
-as a very early example of displayed category theory. Their notion of
+as a very early example of displayed category theory. Their
 _standard notion of structure_ corresponds exactly to a displayed
 category, all of whose fibres are posets. Note that this is not a
 category _fibred in_ posets, since the displayed category will not
@@ -50,6 +50,8 @@ _thinly displayed structures_, or _thin structures_ for short. These are
 of note not only because they intersect the categorical SIP defined
 above with the [typal SIP] established in the prelude modules, but also
 because we can work with them very directly.
+
+[typal SIP]: 1Lab.Univalence.SIP.html
 
 ```agda
 record
