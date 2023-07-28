@@ -10,7 +10,8 @@ open import Cat.Instances.Sets.CartesianClosed
 open import Cat.Instances.Sets.Congruences
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Hom.Representable
-open import Cat.Instances.Functor.Compose
+open import Cat.Functor.Compose
+open import Cat.Functor.Properties
 open import Cat.Instances.Sets.Cocomplete
 open import Cat.Functor.Equivalence.Path
 open import Cat.Univalent.Rezk.Universal
@@ -638,8 +639,8 @@ _ = _=>_
 _ = Nat-path
 _ = Nat-is-set
 _ = Functor-path
-_ = componentwise-invertible→invertible
-_ = Nat-iso→Iso
+_ = invertible→invertibleⁿ
+_ = isoⁿ→iso
 _ = Functor-is-category
 _ = _F∘_
 _ = _◂_
@@ -657,7 +658,7 @@ _ = Cat
     `Nat-is-set`{.Agda}
   * The one after that is `Functor-path`{.Agda}.
 * Definition 9.2.3: `Cat[_,_]`{.Agda}
-* Lemma 9.2.4: If: `componentwise-invertible→invertible`{.Agda}; Only if: `Nat-iso→Iso`{.Agda}
+* Lemma 9.2.4: If: `invertible→invertibleⁿ`{.Agda}; Only if: `isoⁿ→iso`{.Agda}
 * Theorem 9.2.5: `Functor-is-category`{.Agda}
 * Theorem 9.2.6: `_F∘_`{.Agda}
 * Definition 9.2.7: `_◂_`{.Agda}, `_▸_`{.Agda}

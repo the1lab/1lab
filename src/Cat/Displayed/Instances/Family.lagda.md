@@ -8,7 +8,7 @@ open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.GenericObject
 
-open import Cat.Functor.Base
+open import Cat.Functor.Properties
 open import Cat.Functor.Equivalence
 open import Cat.Gaunt
 open import Cat.Instances.Discrete

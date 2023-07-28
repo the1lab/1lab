@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import Cat.Instances.Functor.Compose
+open import Cat.Functor.Compose
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Instances.Functor
 open import Cat.Instances.Product

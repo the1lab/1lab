@@ -2,8 +2,9 @@
 ```agda
 open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Kan.Unique
+open import Cat.Functor.Naturality
 open import Cat.Functor.Coherence
-open import Cat.Instances.Functor
+open import Cat.Functor.Base
 open import Cat.Functor.Kan.Base
 open import Cat.Prelude
 
@@ -509,7 +510,7 @@ with the 2 limits, then $f$ and $g$ are inverses.
     → (∀ {j : J.Ob} → Lx.ψ j C.∘ g ≡ Ly.ψ j)
     → C.Inverses f g
   limits→inversesp {f = f} {g = g} f-factor g-factor =
-    natural-inverses→inverses
+    inversesⁿ→inverses
       {α = hom→⊤-natural-trans f}
       {β = hom→⊤-natural-trans g}
       (Ran-unique.σ-inversesp Ly Lx
@@ -527,7 +528,7 @@ must be invertible.
     → (∀ {j : J.Ob} → Ly.ψ j C.∘ f ≡ Lx.ψ j)
     → C.is-invertible f
   limits→invertiblep {f = f} f-factor =
-    is-natural-invertible→invertible
+    is-invertibleⁿ→is-invertible
       {α = hom→⊤-natural-trans f}
       (Ran-unique.σ-is-invertiblep
         Ly
@@ -553,8 +554,7 @@ Finally, we can bundle this data up to show that the apexes are isomorphic.
 
 ```agda
   limits-unique : x C.≅ y
-  limits-unique =
-    Nat-iso→Iso (Ran-unique.unique Lx Ly) tt
+  limits-unique = isoⁿ→iso (Ran-unique.unique Lx Ly) tt
 ```
 
 
@@ -598,7 +598,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
     → is-ran !F D K' eps
   is-invertible→is-limitp {K' = K'} eta p q invert =
     generalize-limitp
-      (is-invertible→is-ran Ly $ componentwise-invertible→invertible _ (λ _ → invert))
+      (is-invertible→is-ran Ly $ invertible→invertibleⁿ _ (λ _ → invert))
       q
 ```
 
@@ -609,8 +609,8 @@ apex of $L$ is also a limit of $Dia'$.
 ```agda
   natural-iso-diagram→is-limitp
     : ∀ {D′ : Functor J C} {eps : K F∘ !F => D′}
-    → (isos : natural-iso D D′)
-    → (∀ {j} → natural-iso.to isos .η j C.∘ Ly.ψ j ≡ eps .η j)
+    → (isos : D ≅ⁿ D′)
+    → (∀ {j} → Isoⁿ.to isos .η j C.∘ Ly.ψ j ≡ eps .η j)
     → is-ran !F D′ K eps
   natural-iso-diagram→is-limitp {D′ = D′} isos p =
     generalize-limitp
@@ -624,12 +624,9 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
          {D D′ : Functor J C}
          where
 
-  natural-iso→limit
-    : natural-iso D D′
-    → Limit D
-    → Limit D′
+  natural-iso→limit : D ≅ⁿ D′ → Limit D → Limit D′
   natural-iso→limit isos L .Ran.Ext = Ran.Ext L
-  natural-iso→limit isos L .Ran.eps = natural-iso.to isos ∘nt Ran.eps L
+  natural-iso→limit isos L .Ran.eps = Isoⁿ.to isos ∘nt Ran.eps L
   natural-iso→limit isos L .Ran.has-ran = natural-iso-of→is-ran (Ran.has-ran L) isos
 ```
 -->
@@ -762,7 +759,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
     open _=>_
 
   natural-iso→preserves-limits
-    : natural-iso F F'
+    : F ≅ⁿ F'
     → preserves-limit F Dia
     → preserves-limit F' Dia
   natural-iso→preserves-limits α F-preserves {K = K} {eps} lim =
@@ -775,7 +772,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
           F' .F₁ (eps .η j)                                                         ∎)
         (F-preserves lim)
     where
-      module α = natural-iso α
+      module α = Isoⁿ α
 ```
 -->
 

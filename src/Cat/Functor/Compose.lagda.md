@@ -1,7 +1,8 @@
 <!--
 ```agda
-open import Cat.Instances.Functor
+open import Cat.Functor.Naturality
 open import Cat.Instances.Product
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
@@ -14,7 +15,7 @@ open _=>_
 -->
 
 ```agda
-module Cat.Instances.Functor.Compose where
+module Cat.Functor.Compose where
 ```
 
 # Functoriality of functor composition
@@ -140,17 +141,15 @@ module _ {F G : Functor C D} where
   open Cat.Morphism
   open Fr
 
-  _◂ni_ : natural-iso F G → (H : Functor B C) → natural-iso (F F∘ H) (G F∘ H)
-  (α ◂ni H) =
-    make-iso _ (α .to ◂ H) (α .from ◂ H)
-      (Nat-path λ _ → α .invl ηₚ _)
-      (Nat-path λ _ → α .invr ηₚ _)
+  _◂ni_ : F ≅ⁿ G → (H : Functor B C) → (F F∘ H) ≅ⁿ (G F∘ H)
+  (α ◂ni H) = make-iso _ (α .to ◂ H) (α .from ◂ H)
+    (Nat-path λ _ → α .invl ηₚ _)
+    (Nat-path λ _ → α .invr ηₚ _)
 
-  _▸ni_ : (H : Functor D E) → natural-iso F G → natural-iso (H F∘ F) (H F∘ G)
-  (H ▸ni α) =
-    make-iso _ (H ▸ α .to) (H ▸ α .from)
-      (Nat-path λ _ → annihilate H (α .invl ηₚ _))
-      (Nat-path λ _ → annihilate H (α .invr ηₚ _))
+  _▸ni_ : (H : Functor D E) → F ≅ⁿ G → (H F∘ F) ≅ⁿ (H F∘ G)
+  (H ▸ni α) = make-iso _ (H ▸ α .to) (H ▸ α .from)
+    (Nat-path λ _ → annihilate H (α .invl ηₚ _))
+    (Nat-path λ _ → annihilate H (α .invr ηₚ _))
 ```
 -->
 
@@ -161,5 +160,19 @@ module _ {F G : Functor C D} where
 
 ▸-distribr : F ▸ (α ∘nt β) ≡ (F ▸ α) ∘nt (F ▸ β)
 ▸-distribr {F = F} = Nat-path λ _ → F .F-∘ _ _
+
+module _ where
+  open Cat.Reasoning
+
+  -- [TODO: Reed M, 14/03/2023] Extend the coherence machinery to handle natural
+  -- isos.
+  ni-assoc : {F : Functor D E} {G : Functor C D} {H : Functor B C}
+         → (F F∘ G F∘ H) ≅ⁿ ((F F∘ G) F∘ H)
+  ni-assoc {E = E} = to-natural-iso λ where
+    .make-natural-iso.eta _ → E .id
+    .make-natural-iso.inv _ → E .id
+    .make-natural-iso.eta∘inv _ → E .idl _
+    .make-natural-iso.inv∘eta _ → E .idl _
+    .make-natural-iso.natural _ _ _ → E .idr _ ∙ sym (E .idl _)
 ```
 -->

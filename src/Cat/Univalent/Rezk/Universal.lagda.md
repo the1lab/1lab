@@ -1,10 +1,10 @@
 <!--
 ```agda
 {-# OPTIONS --lossy-unification #-}
-open import Cat.Instances.Functor.Compose
+open import Cat.Functor.Compose
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Functor
-open import Cat.Functor.Base
+open import Cat.Functor.Properties
 open import Cat.Univalent
 open import Cat.Prelude
 

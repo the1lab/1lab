@@ -8,8 +8,8 @@ open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Delooping
+open import Cat.Functor.Properties
 open import Cat.Functor.Adjoint
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 open import Data.List

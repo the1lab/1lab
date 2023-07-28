@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import Cat.Functor.Base
+open import Cat.Functor.Properties
 open import Cat.Prelude
 
 import Cat.Diagram.Idempotent as CI

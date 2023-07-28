@@ -8,7 +8,7 @@ description: |
 <!--
 ```agda
 {-# OPTIONS -vtc.decl:5 -WnoEmptyWhere #-}
-open import Cat.Instances.Functor.Compose
+open import Cat.Functor.Compose
 open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Kan.Pointwise
 open import Cat.Diagram.Colimit.Base

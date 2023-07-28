@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import Cat.Instances.Functor.Compose
+open import Cat.Functor.Compose
 open import Cat.Functor.Kan.Duality
 open import Cat.Functor.Kan.Global
 open import Cat.Instances.Functor

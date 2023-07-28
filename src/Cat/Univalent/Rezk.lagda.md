@@ -1,9 +1,10 @@
 <!--
 ```agda
+{-# OPTIONS -vtc.def.fun:10 #-}
 open import Cat.Functor.FullSubcategory
 open import Cat.Instances.Functor
 open import Cat.Instances.Sets
-open import Cat.Functor.Base
+open import Cat.Functor.Properties
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
@@ -161,9 +162,9 @@ functor is fully faithful, that's equivalent to what we want.
     Rezk-completion-is-category =
       transfer-identity-system
         (pullback-identity-system
-          PSh[A]-is-cat
-          (_ , よim.embed-is-embedding))
-        (λ _ _ → Rezk↪PSh.iso-equiv e⁻¹)
+          (Functor-is-category Sets-is-category)
+          (よim.embed , よim.embed-is-embedding))
+        (λ x y → Rezk↪PSh.iso-equiv e⁻¹)
         λ x → Cr.≅-pathp Rezk-completion refl refl refl
 ```
 

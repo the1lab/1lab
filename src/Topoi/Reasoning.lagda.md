@@ -2,7 +2,9 @@
 ```agda
 open import Cat.CartesianClosed.Instances.PSh
 open import Cat.Diagram.Everything
-open import Cat.Functor.Everything
+open import Cat.Functor.Adjoint
+open import Cat.Functor.Adjoint.Reflective
+open import Cat.Functor.Properties
 open import Cat.Instances.Functor
 open import Cat.Prelude
 

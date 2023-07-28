@@ -536,12 +536,12 @@ The construction and properties of functor categories:
 
 ```agda
 -- Functor categories:
-open import Cat.Instances.Functor
-open import Cat.Instances.Functor.Limits -- Co/limits in functor categories
-open import Cat.Instances.Functor.Duality -- 2-cell duality in Cat
-open import Cat.Instances.Functor.Compose
+open import Cat.Functor.Base
+open import Cat.Functor.Compose
 -- Composition of functors is functorial (also whiskering natural
 -- transformations)
+open import Cat.Instances.Functor.Limits -- Co/limits in functor categories
+open import Cat.Instances.Functor.Duality -- 2-cell duality in Cat
 ```
 
 The internal versions of functor categories:

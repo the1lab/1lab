@@ -10,10 +10,10 @@ description: |
 ```agda
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Equivalence
+open import Cat.Functor.Properties
 open import Cat.Instances.Functor
 open import Cat.Functor.Adjoint
 open import Cat.Diagram.Monad
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
@@ -112,7 +112,7 @@ module
 
   is-reflective→counit-iso : (F F∘ G) DD.≅ Id
   is-reflective→counit-iso = DD.invertible→iso counit invs where
-    invs = componentwise-invertible→invertible counit λ x →
+    invs = invertible→invertibleⁿ counit λ x →
       D.iso→invertible (is-reflective→counit-is-iso {o = x})
 ```
 

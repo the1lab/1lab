@@ -12,6 +12,7 @@ open import Cat.Functor.Hom.Representable
 open import Cat.Functor.FullSubcategory
 open import Cat.Diagram.Product.Solver
 open import Cat.Functor.Equivalence
+open import Cat.Functor.Properties
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
@@ -399,7 +400,7 @@ object $M : \cC$.
     PMon x = ∣ P .F₀ x .fst ∣
 
     module PMon {x} = Monoid-on (P .F₀ x .snd)
-    module repr = natural-iso (P-rep .represents)
+    module repr = Isoⁿ (P-rep .represents)
 
     open PMon hiding (idl; idr; associative)
 

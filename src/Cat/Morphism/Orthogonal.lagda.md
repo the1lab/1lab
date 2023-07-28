@@ -3,7 +3,7 @@
 open import Cat.Functor.Adjoint.Reflective
 open import Cat.Diagram.Terminal
 open import Cat.Functor.Adjoint
-open import Cat.Functor.Base
+open import Cat.Functor.Properties
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func

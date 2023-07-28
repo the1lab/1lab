@@ -1,8 +1,9 @@
 <!--
 ```agda
 open import Cat.Functor.Hom.Representable
-open import Cat.Instances.Functor.Compose
-open import Cat.Instances.Functor
+open import Cat.Functor.Compose
+open import Cat.Functor.Base
+open import Cat.Functor.Naturality
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Hom
 open import Cat.Prelude
@@ -41,7 +42,7 @@ module _
     open _=>_
     open is-lan
     open Corepresentation
-    open natural-iso
+    open Isoⁿ
 ```
 -->
 
@@ -77,7 +78,7 @@ left Kan extension of $F$ along $p$.
 ```agda
   represents→is-lan
     : (eta : F => G F∘ p)
-    → is-natural-invertible (Hom-from-precompose eta)
+    → is-invertibleⁿ (Hom-from-precompose eta)
     → is-lan p F G eta
   represents→is-lan eta nat-inv = lan where
 ```
@@ -89,7 +90,7 @@ factorization/uniqueness follow directly from the fact that we have
 a natural isomorphism.
 
 ```agda
-    module nat-inv = is-natural-invertible nat-inv
+    module nat-inv = is-invertibleⁿ nat-inv
 
     lan : is-lan p F G eta
     lan .σ {M} α = nat-inv.inv .η M α
@@ -105,9 +106,9 @@ exercise in moving data around.
   is-lan→represents
     : {eta : F => G F∘ p}
     → is-lan p F G eta
-    → is-natural-invertible (Hom-from-precompose eta)
+    → is-invertibleⁿ (Hom-from-precompose eta)
   is-lan→represents {eta} lan =
-    to-is-natural-invertible inv
+    to-is-invertibleⁿ inv
       (λ M → funext λ α → lan .σ-comm)
       (λ M → funext λ α → lan .σ-uniq refl)
     where
@@ -135,7 +136,7 @@ module _
     open Lan
     open is-lan
     open Corepresentation
-    open natural-iso
+    open Isoⁿ
 ```
 -->
 
@@ -143,14 +144,14 @@ module _
   lan→represents : Lan p F → Corepresentation (Hom-from Cat[ C , D ] F F∘ precompose p)
   lan→represents lan .corep = lan .Ext
   lan→represents lan .corepresents =
-    (is-natural-invertible→natural-iso (is-lan→represents (lan .has-lan))) ni⁻¹
+    (is-invertibleⁿ→isoⁿ (is-lan→represents (lan .has-lan))) ni⁻¹
 
   represents→lan : Corepresentation (Hom-from Cat[ C , D ] F F∘ precompose p) → Lan p F
   represents→lan has-corep .Ext = has-corep .corep
   represents→lan has-corep .eta = has-corep .corepresents .from .η _ idnt
   represents→lan has-corep .has-lan =
     represents→is-lan (Corep.to has-corep idnt) $
-    to-is-natural-invertible (has-corep .corepresents .to)
+    to-is-invertibleⁿ (has-corep .corepresents .to)
       (λ M → funext λ α →
         (Corep.from has-corep α ◂ p) ∘nt Corep.to has-corep idnt ≡˘⟨ has-corep .corepresents .from .is-natural _ _ _ $ₚ idnt ⟩
         Corep.to has-corep (Corep.from has-corep α ∘nt idnt)     ≡⟨ ap (Corep.to has-corep) ([C',D].idr _) ⟩

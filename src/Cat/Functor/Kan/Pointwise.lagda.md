@@ -3,14 +3,15 @@
 open import Cat.Diagram.Colimit.Representable
 open import Cat.Functor.Hom.Representable
 open import Cat.Functor.Kan.Representable
-open import Cat.Instances.Functor.Compose
-open import Cat.Instances.Functor.Compose
+open import Cat.Functor.Compose
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Base
 open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Coherence
-open import Cat.Instances.Functor
+open import Cat.Functor.Naturality
+open import Cat.Functor.Properties
+open import Cat.Functor.Base
 open import Cat.Functor.Kan.Base
 open import Cat.Instances.Comma
 open import Cat.Functor.Base
@@ -378,7 +379,7 @@ up not being very interesting.
       HF′ : Functor C' E
       HF′ = comma-colimits→lan.F′ F (H F∘ G) H-↓colim
 
-      HF′-cohere : natural-iso HF′ (H F∘ F′)
+      HF′-cohere : HF′ ≅ⁿ H F∘ F′
       HF′-cohere = to-natural-iso mi where
         mi : make-natural-iso HF′ (H F∘ F′)
         mi .eta c' = E.id
@@ -390,7 +391,7 @@ up not being very interesting.
           ∙ H-↓colim.unique _ _ _ _ (λ j → pulll H (↓colim.factors _ _ _))
           ∙ sym (E.idl _)
 
-      module HF′-cohere = natural-iso HF′-cohere
+      module HF′-cohere = Isoⁿ HF′-cohere
 
       abstract
         fixup : (HF′-cohere.to ◆ idnt) ∘nt comma-colimits→lan.eta F (H F∘ G) _ ∘nt idnt ≡ nat-assoc-to (H ▸ comma-colimits→lan.eta F G _)
@@ -547,7 +548,7 @@ A corollary is that if $(L, \eta)$ is a pointwise left extension along a
 fully faithful functor, then $\eta$ is a natural isomorphism.
 
 ```agda
-  ff→pointwise-lan-ext : is-fully-faithful p → is-natural-invertible eta
+  ff→pointwise-lan-ext : is-fully-faithful p → is-invertibleⁿ eta
 ```
 
 The idea is to use the fact that $L$ is computed via colimits to
@@ -557,7 +558,7 @@ construct the requisite cocone.
 
 ```agda
   ff→pointwise-lan-ext p-ff =
-     componentwise-invertible→invertible eta λ c →
+     invertible→invertibleⁿ eta λ c →
        D.make-invertible (inv c)
          (pointwise-colim.unique₂ _ _
            (λ f → D.pullr (eta .is-natural _ _ _)
@@ -613,7 +614,7 @@ module _
   ff→cocomplete-lan-ext
     : (cocompl : is-cocomplete ℓ ℓ D)
     → is-fully-faithful F
-    → natural-iso (cocomplete→lan F G cocompl .Ext F∘ F) G
+    → cocomplete→lan F G cocompl .Ext F∘ F ≅ⁿ G
   ff→cocomplete-lan-ext cocompl ff = (to-natural-iso ni) ni⁻¹ where
     open comma-colimits→lan F G (λ c' → cocompl (G F∘ Dom F (Const c')))
     open make-natural-iso renaming (eta to to)

@@ -9,8 +9,9 @@ description: |
 ```agda
 open import Cat.Diagram.Initial
 open import Cat.Instances.Comma
-open import Cat.Instances.Functor
-open import Cat.Instances.Functor.Compose
+open import Cat.Functor.Base
+open import Cat.Functor.Naturality
+open import Cat.Functor.Compose
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
@@ -668,10 +669,9 @@ module _ {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) where
 As well as adjunctions $L \circ - \dashv R \circ -$ and $- \circ R \dashv - \circ L$
 between [postcomposition and precomposition functors], respectively:
 
-[postcomposition and precomposition functors]: Cat.Instances.Functor.Compose.html
+[postcomposition and precomposition functors]: Cat.Functor.Compose.html
 
 ```agda
-  open import Cat.Instances.Functor.Compose
   open import Cat.Functor.Coherence
 
   postcomposite-adjunction : postcompose L {D = E} ⊣ postcompose R
@@ -742,13 +742,11 @@ module Ml = make-left-adjoint
 ```agda
 adjoint-natural-iso
   : ∀ {L L' : Functor C D} {R R' : Functor D C}
-  → natural-iso L L' → natural-iso R R'
-  → L ⊣ R
-  → L' ⊣ R'
+  → L ≅ⁿ L' → R ≅ⁿ R' → L ⊣ R → L' ⊣ R'
 adjoint-natural-iso {C = C} {D = D} {L} {L'} {R} {R'} α β L⊣R = L'⊣R' where
   open _⊣_ L⊣R
-  module α = natural-iso α
-  module β = natural-iso β
+  module α = Isoⁿ α
+  module β = Isoⁿ β
   open _=>_
   module C = Cat.Reasoning C
   module D = Cat.Reasoning D
@@ -794,16 +792,12 @@ adjoint-natural-iso {C = C} {D = D} {L} {L'} {R} {R'} α β L⊣R = L'⊣R' wher
 
 adjoint-natural-isol
   : ∀ {L L' : Functor C D} {R : Functor D C}
-  → natural-iso L L'
-  → L ⊣ R
-  → L' ⊣ R
+  → L ≅ⁿ L' → L ⊣ R → L' ⊣ R
 adjoint-natural-isol α = adjoint-natural-iso α idni
 
 adjoint-natural-isor
   : ∀ {L : Functor C D} {R R' : Functor D C}
-  → natural-iso R R'
-  → L ⊣ R
-  → L ⊣ R'
+  → R ≅ⁿ R' → L ⊣ R → L ⊣ R'
 adjoint-natural-isor β = adjoint-natural-iso idni β
 ```
 -->

@@ -1,7 +1,7 @@
 <!--
 ```agda
 open import Cat.Functor.Hom.Representable
-open import Cat.Instances.Functor.Compose
+open import Cat.Functor.Compose
 open import Cat.Instances.Shape.Terminal
 open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Colimit.Base
@@ -63,10 +63,10 @@ conditions.
 
   represents→is-colimit
     : ∀ {c : C.Ob} {eta : Dia => Const c}
-    → is-natural-invertible (Hom-into-inj eta)
+    → is-invertibleⁿ (Hom-into-inj eta)
     → is-colimit Dia c eta
   represents→is-colimit {c} {eta} nat-inv = colim where
-    module nat-inv = is-natural-invertible nat-inv
+    module nat-inv = is-invertibleⁿ nat-inv
 
     colim : is-colimit Dia c eta
     colim .σ {M} α =

@@ -1,7 +1,8 @@
 <!--
 ```agda
-open import Cat.Instances.Functor.Compose renaming (_◆_ to _◇_)
-open import Cat.Instances.Functor
+open import Cat.Functor.Compose renaming (_◆_ to _◇_)
+open import Cat.Functor.Naturality
+open import Cat.Functor.Base
 open import Cat.Instances.Product
 open import Cat.Functor.Hom
 open import Cat.Prelude

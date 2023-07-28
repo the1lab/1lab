@@ -10,7 +10,7 @@ open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
 open import Cat.Morphism.Duality
 open import Cat.Instances.Sets
-open import Cat.Functor.Base
+open import Cat.Functor.Properties
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
@@ -55,9 +55,9 @@ record Representation (F : Functor (C ^op) (Sets κ)) : Type (o ⊔ κ) where
   no-eta-equality
   field
     rep        : C.Ob
-    represents : natural-iso F (Hom-into C rep)
+    represents : F ≅ⁿ Hom-into C rep
 
-  module rep = natural-iso represents
+  module rep = Isoⁿ represents
 
   equiv : ∀ {a} → C.Hom a rep ≃ ∣ F .F₀ a ∣
   equiv = Iso→Equiv λ where
@@ -179,7 +179,7 @@ constitutes a natural isomorphism.
   f-rep : Representation F
   f-rep .rep = top .ob
   f-rep .represents = C^.invertible→iso nat $
-    componentwise-invertible→invertible nat inv
+    invertible→invertibleⁿ nat inv
 ```
 
 ## Universal constructions
@@ -215,9 +215,9 @@ record Corepresentation (F : Functor C (Sets κ)) : Type (o ⊔ κ) where
   no-eta-equality
   field
     corep : C.Ob
-    corepresents : natural-iso F (Hom-from C corep)
+    corepresents : F ≅ⁿ Hom-from C corep
 
-  module corep = natural-iso corepresents
+  module corep = Isoⁿ corepresents
 
   coequiv : ∀ {a} → C.Hom corep a ≃ ∣ F .F₀ a ∣
   coequiv = Iso→Equiv λ where
@@ -251,7 +251,7 @@ corepresentation-unique X Y =
     (よcov-is-fully-faithful C)
     (iso→co-iso (Cat[ C , Sets κ ]) ni)
   where
-    ni : natural-iso (Hom-from C (Y .corep)) (Hom-from C (X .corep))
+    ni : Hom-from C (Y .corep) ≅ⁿ Hom-from C (X .corep)
     ni = (Y .corepresents ni⁻¹) ni∘ X .corepresents
 ```
 </details>
