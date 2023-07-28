@@ -44,7 +44,7 @@ import Agda.Compiler.Common
 import Agda.Syntax.Position
 import Agda.Utils.FileName
 import Agda.Syntax.Common
-import Agda.Utils.Pretty
+import Agda.Syntax.Common.Pretty
 import Agda.Syntax.Info
 
 import System.FilePath
