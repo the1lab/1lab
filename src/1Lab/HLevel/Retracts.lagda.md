@@ -247,6 +247,19 @@ Lift-is-hlevel : ∀ {a b} {A : Type a}
 Lift-is-hlevel n a-hl = retract→is-hlevel n lift Lift.lower (λ _ → refl) a-hl
 ```
 
+Likewise, if the `Lift`{.Agda} of $A$ is an $n$-type, then $A$ must also
+be an n-type.
+
+```agda
+Lift-is-hlevel'
+  : ∀ {a b} {A : Type a}
+  → (n : Nat)
+  → is-hlevel (Lift b A) n
+  → is-hlevel A n
+Lift-is-hlevel' n lift-hl = retract→is-hlevel n Lift.lower lift (λ _ → refl) lift-hl
+```
+
+
 # Automation
 
 For the common case of proving that a composite type built out of pieces

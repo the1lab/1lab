@@ -574,6 +574,13 @@ module
       (CD.is-invertible.invl inv ηₚ x)
       (CD.is-invertible.invr inv ηₚ x)
 
+  natural-iso→iso
+    : natural-iso F G
+    → ∀ x → F .F₀ x D.≅ G .F₀ x
+  natural-iso→iso α x =
+    D.make-iso (α.to .η x) (α.from .η x) (α.invl ηₚ x) (α.invr ηₚ x)
+    where module α = natural-iso α
+
   is-natural-invertible→natural-iso
     : ∀ {α : F => G}
     → is-natural-invertible α
@@ -586,6 +593,13 @@ module
     → is-natural-invertible (natural-iso.to i)
   natural-iso→is-natural-invertible i =
     CD.iso→invertible i
+
+  natural-iso→invertible
+    : (α : natural-iso F G)
+    → ∀ x → D.is-invertible (α .CD._≅_.to .η x)
+  natural-iso→invertible α x =
+    is-natural-invertible→invertible (natural-iso→is-natural-invertible α) x
+
 
 open _=>_
 

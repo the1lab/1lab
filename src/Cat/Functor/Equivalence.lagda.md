@@ -1,6 +1,7 @@
 ```agda
 open import Cat.Instances.Functor
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Adjoint.Compose
 open import Cat.Functor.Base
 open import Cat.Univalent
 open import Cat.Prelude
@@ -15,7 +16,7 @@ module Cat.Functor.Equivalence where
 ```agda
 private variable
   o h : Level
-  C D : Precategory o h
+  C D E : Precategory o h
 open Functor hiding (op)
 open _=>_ hiding (op)
 ```
@@ -503,6 +504,32 @@ surjective functor between categories is an equivalence:
   ff+eso→is-equivalence eso = ff+split-eso→is-equivalence ff (Theorem-of-choice eso)
 ```
 
+Furthermore, if $F : \cC \to \cD$ is an equivalence between categories,
+then it's an equivalence-on-objects functor. The inverse functor
+$F^{-1} : \cD \to \cC$ gives us a way to turn objects of $\cD$ back
+into objects of $\cC$, and unit/counit of the equivalence ensure
+that $c \cong F^{-1}(F(c))$ and $d \cong F(F^{-1}(d))$, so all that remains
+is to use the fact that $\cC$ and $\cD$ are categories to get the
+requisite paths.
+
+```agda
+is-cat-equivalence→equiv-on-objects
+  : ∀ {F : Functor C D}
+  → (ccat : is-category C) (dcat : is-category D)
+  → is-equivalence F → is-equiv-on-objects F
+is-cat-equivalence→equiv-on-objects {C = C} {D = D} {F = F} ccat dcat eqv =
+  is-iso→is-equiv $
+    iso (e.F⁻¹ .F₀)
+      (λ d → dcat .to-path (D.invertible→iso _ (e.counit-iso d)))
+      (λ c → sym $ ccat .to-path (C.invertible→iso _ (e.unit-iso c)))
+  where
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    module e = is-equivalence eqv
+```
+
+
+
 ## Isomorphisms
 
 Another, more direct way of proving that a functor is an equivalence of
@@ -593,17 +620,24 @@ module
         ap (_ C.∘_) (sym (e.unit .is-natural _ _ _))
       ∙ C.cancell (e.unit-iso _ .C.is-invertible.invr)
 
+  is-equivalence→is-split-eso : is-split-eso F
+  is-equivalence→is-split-eso y =
+    (e.F⁻¹ .F₀ y) ,
+    D.invertible→iso (e.counit .η y) (e.counit-iso y)
+
+  is-equivalence→is-eso : is-eso F
+  is-equivalence→is-eso y =
+    inc ((e.F⁻¹ .F₀ y) , D.invertible→iso (e.counit .η y) (e.counit-iso y))
+
   open is-precat-iso
   open is-iso
 
   is-equivalence→is-precat-iso
     : is-category C → is-category D → is-precat-iso F
-  is-equivalence→is-precat-iso c-cat d-cat = λ where
-    .has-is-ff → is-equivalence→is-ff
-    .has-is-iso → is-iso→is-equiv λ where
-      .inv → e.F⁻¹ .F₀
-      .rinv x → d-cat .to-path (D.invertible→iso _ (e.counit-iso x))
-      .linv x → sym $ c-cat .to-path (C.invertible→iso _ (e.unit-iso x))
+  is-equivalence→is-precat-iso c-cat d-cat .has-is-ff =
+    is-equivalence→is-ff
+  is-equivalence→is-precat-iso c-cat d-cat .has-is-iso =
+    is-cat-equivalence→equiv-on-objects c-cat d-cat eqv
 ```
 -->
 
@@ -621,3 +655,199 @@ record Equivalence
   open is-equivalence To-equiv renaming (F⁻¹ to From; F⊣F⁻¹ to To⊣From) public
 ```
 -->
+
+## Properties of Equivalences
+
+If $F : \cC \to \cD$ is fully-faithfuly and essentially surjective, then
+for every hom-set $\cD(d,d')$ there (merely) exists an equivalent hom-set
+$\cC(c,c')$.
+
+<!--
+```agda
+module _
+  {oc ℓc od ℓd}
+  {C : Precategory oc ℓc}
+  {D : Precategory od ℓd}
+  where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+```
+-->
+
+```agda
+  ff+split-eso→hom-equiv
+    : (F : Functor C D)
+    → is-fully-faithful F
+    → is-split-eso F
+    → ∀ (d d' : D.Ob) → Σ[ c ∈ C.Ob ] Σ[ c' ∈ C.Ob ] (C.Hom c c' ≃ D.Hom d d')
+  ff+split-eso→hom-equiv F ff split-eso d d' =
+    d-fib .fst , d'-fib .fst ,
+    (F .F₁ , ff) ∙e D.iso→hom-equiv (d-fib .snd) (d'-fib .snd)
+    where
+      d-fib = split-eso d
+      d'-fib = split-eso d'
+
+  ff+eso→hom-equiv
+    : (F : Functor C D)
+    → is-fully-faithful F
+    → is-eso F
+    → ∀ (d d' : D.Ob) → ∥ Σ[ c ∈ C.Ob ] Σ[ c' ∈ C.Ob ] (C.Hom c c' ≃ D.Hom d d') ∥
+  ff+eso→hom-equiv F ff eso d d' = do
+      (c , Fc≅d) ← eso d
+      (c' , Fc'≅d') ← eso d'
+      pure (c , c' , (F .F₁ , ff) ∙e D.iso→hom-equiv Fc≅d Fc'≅d')
+```
+
+This allows us to prove a very useful little lemma: if $F : \cC \to \cD$ is a
+fully-faithful, essentially surjective functor, then any property of hom-sets
+of $\cC$ that holds for all hom-sets must also hold for all hom-sets of $\cD$.
+
+```agda
+  ff+eso→preserves-hom-props
+    : ∀ {ℓ} (F : Functor C D)
+    → is-fully-faithful F
+    → is-eso F
+    → (P : Type (ℓc ⊔ ℓd) → Type ℓ)
+    → (∀ A → is-prop (P A))
+    → (∀ c c' → P (Lift ℓd (C.Hom c c')))
+    → ∀ d d' → P (Lift ℓc (D.Hom d d'))
+  ff+eso→preserves-hom-props F ff eso P prop P-hom d d' =
+    ∥-∥-proj {ap = prop (Lift ℓc (D.Hom d d'))} $ do
+      (c , c' , eqv) ← ff+eso→hom-equiv F ff eso d d'
+      pure (transport (ap P (ua (Lift-≃ eqv))) (P-hom c c'))
+```
+
+As a corollary, we note that if $F : \cC \to \cD$ is a fully-faithful, essentially
+surjective functor, then if the hom-sets of $\cC$ are all $n$-types, then the hom-sets
+of $\cD$ must also be $n$-types.
+
+```agda
+  ff+eso→hom-hlevel
+    : ∀ {n} (F : Functor C D)
+    → is-fully-faithful F
+    → is-eso F
+    → (∀ c c' → is-hlevel (C.Hom c c') n)
+    → ∀ d d' → is-hlevel (D.Hom d d') n
+  ff+eso→hom-hlevel {n = n} F ff eso C-hlevel d d' =
+    Lift-is-hlevel' _ $
+    ff+eso→preserves-hom-props F ff eso
+      (λ A → is-hlevel A n) (λ _ → is-hlevel-is-prop n)
+      (λ c c' → Lift-is-hlevel n (C-hlevel c c')) d d'
+```
+
+Note that if $F$ is fully faithful and **split** essentially surjective, then
+we can drop the requirement that $P$ must be a prop.
+
+```agda
+  ff+split-eso→preserves-hom-fams
+    : ∀ {ℓ} (F : Functor C D)
+    → is-fully-faithful F
+    → is-split-eso F
+    → (P : Type (ℓc ⊔ ℓd) → Type ℓ)
+    → (∀ c c' → P (Lift ℓd (C.Hom c c')))
+    → ∀ d d' → P (Lift ℓc (D.Hom d d'))
+  ff+split-eso→preserves-hom-fams F ff split-eso P P-hom d d' =
+    transport
+      (ap P (ua (Lift-≃ (ff+split-eso→hom-equiv F ff split-eso d d' .snd .snd))))
+      (P-hom _ _)
+```
+
+As a corollary, equivalences preserve all families over hom sets.
+
+```agda
+  equivalence→preserves-hom-fams
+    : ∀ {ℓ} (E : Equivalence C D)
+    → (P : Type (ℓc ⊔ ℓd) → Type ℓ)
+    → (∀ c c' → P (Lift ℓd (C.Hom c c')))
+    → ∀ d d' → P (Lift ℓc (D.Hom d d'))
+  equivalence→preserves-hom-fams E =
+    ff+split-eso→preserves-hom-fams (Equivalence.To E)
+      (is-equivalence→is-ff _ (Equivalence.To-equiv E))
+      (is-equivalence→is-split-eso _ (Equivalence.To-equiv E))
+```
+
+<!--
+```agda
+  equivalence→hom-hlevel
+    : ∀ {n} (E : Equivalence C D)
+    → (∀ c c' → is-hlevel (C.Hom c c') n)
+    → ∀ d d' → is-hlevel (D.Hom d d') n
+  equivalence→hom-hlevel {n = n} E C-hlevel d d' =
+    Lift-is-hlevel' n $
+    equivalence→preserves-hom-fams E (λ A → is-hlevel A n)
+      (λ c c' → Lift-is-hlevel n (C-hlevel c c')) d d'
+```
+-->
+
+Equivalences are also invariant under natural isomorphisms.
+
+```agda
+is-equivalence-natural-iso
+  : ∀ {F G : Functor C D}
+  → natural-iso F G
+  → is-equivalence F → is-equivalence G
+is-equivalence-natural-iso {C = C} {D = D} {F = F} {G = G} α F-eqv = G-eqv where
+  open is-equivalence
+  module C = Cat.Reasoning C
+  module D = Cat.Reasoning D
+
+  G-eqv : is-equivalence G
+  G-eqv .F⁻¹ = F-eqv .F⁻¹
+  G-eqv .F⊣F⁻¹ = adjoint-natural-isol α (F-eqv .F⊣F⁻¹)
+  G-eqv .unit-iso x =
+    C.invertible-∘
+      (C.invertible-∘
+        (F-map-invertible (F-eqv .F⁻¹) (natural-iso→invertible α x))
+        C.id-invertible)
+      (F-eqv .unit-iso x)
+  G-eqv .counit-iso x =
+    D.invertible-∘
+      (F-eqv .counit-iso x)
+      (D.invertible-∘
+        (F-map-invertible F C.id-invertible)
+        (natural-iso→invertible α _ D.invertible⁻¹))
+```
+
+Equivalences are invertible.
+
+```agda
+_Equivalence⁻¹
+  : Equivalence C D → Equivalence D C
+(E Equivalence⁻¹) .Equivalence.To = Equivalence.From E
+(E Equivalence⁻¹) .Equivalence.To-equiv = Equivalence.inverse-equivalence E
+```
+
+Equivalences are also composable, as [adjoints compose].
+
+[adjoints compose]: Cat.Functor.Adjoint.Compose.html
+
+```agda
+is-equivalence-∘
+  : ∀ {F : Functor D E} {G : Functor C D}
+  → is-equivalence F → is-equivalence G
+  → is-equivalence (F F∘ G)
+is-equivalence-∘ {E = E} {C = C}  {F = F} {G = G} F-eqv G-eqv = FG-eqv where
+  module F-eqv = is-equivalence F-eqv
+  module G-eqv = is-equivalence G-eqv
+  module C = Cat.Reasoning C
+  module E = Cat.Reasoning E
+
+  FG-eqv : is-equivalence (F F∘ G)
+  FG-eqv .F⁻¹ = G-eqv.F⁻¹ F∘ F-eqv.F⁻¹
+  FG-eqv .F⊣F⁻¹ = LF⊣GR G-eqv.F⊣F⁻¹ F-eqv.F⊣F⁻¹
+  FG-eqv .unit-iso x =
+    C.invertible-∘
+      (F-map-invertible G-eqv.F⁻¹ (F-eqv.unit-iso (G .F₀ x)))
+      (G-eqv.unit-iso x)
+  FG-eqv .counit-iso x =
+    E.invertible-∘
+      (F-eqv.counit-iso x)
+      (F-map-invertible F (G-eqv.counit-iso (F-eqv .F⁻¹ .F₀ x)))
+
+_∘Equivalence_ : Equivalence C D → Equivalence D E → Equivalence C E
+(F ∘Equivalence G) .Equivalence.To =
+  Equivalence.To G F∘ Equivalence.To F
+(F ∘Equivalence G) .Equivalence.To-equiv =
+  is-equivalence-∘ (Equivalence.To-equiv G) (Equivalence.To-equiv F)
+```
