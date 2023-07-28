@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Displayed.Base
 open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Comprehension
 open import Cat.Displayed.Functor
 open import Cat.Displayed.Instances.Slice
 
@@ -362,3 +363,14 @@ tedious calculations, so we omit them.
       ⟨⟩-inv.inv ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩                      ∎
 ```
 </details>
+
+This yields a [comprehension structure] on the simple fibration, which
+encodes the structure of a non-dependent type theory.
+
+[comprehension structure]: Cat.Displayed.Comprehension.html
+
+```agda
+Simple-comprehension : Comprehension Simple
+Simple-comprehension .Vertical-fibred-functor.vert = Simple→Slices
+Simple-comprehension .Vertical-fibred-functor.F-cartesian = Simple→Slices-fibred
+```
