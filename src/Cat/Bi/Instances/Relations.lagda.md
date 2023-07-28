@@ -48,6 +48,7 @@ monic.], but in finite-products categories, the definition takes an
 especially pleasant form: A relation $\phi : a \rel b$ is a [subobject]
 of the [Cartesian product] $a \times b$.
 
+[bicategory]: Cat.Bi.Base.html
 [regular categories]: Cat.Regular.html
 [pullback-stable]: Cat.Diagram.Pullback.html#stability
 [image factorisations]: Cat.Diagram.Image.html

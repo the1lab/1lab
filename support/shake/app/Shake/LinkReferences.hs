@@ -43,7 +43,7 @@ linkReferences modname (Pandoc meta blocks) = Pandoc meta (walk link blocks)
 
 renderReference :: Reference -> Text -> Inline
 renderReference (Reference href cls) t =
-  Span ("", ["Agda"], []) [Link ("", [cls], []) [Str t] (href, "")]
+  Span ("", ["Agda"], []) [Link ("", [cls], []) [Code nullAttr t] (href, "")]
 
 data Reference =
   Reference { refHref  :: Text

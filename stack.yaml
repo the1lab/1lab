@@ -3,7 +3,7 @@ packages:
 - support/shake
 
 extra-deps:
-  - url: https://github.com/agda/agda/archive/c371cf6e8b36c7fda2ef37ba3208f4faa9303fc5.tar.gz
+  - url: https://github.com/agda/agda/archive/269204b682d87778ba1038193db05e728cfadbdb.tar.gz
   - vector-hashtables-0.1.1.1@sha256:cb4ba4af6b83b6956278bbfe8d0f779a40928728e82977e566c0103fe8d6c867,2725
 
 nix:

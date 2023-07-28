@@ -663,6 +663,8 @@ coproducts indexed by its class of morphisms, then it is automatically
 [thin]. Since excluded middle is independent of type theory, we can not
 prove that any non-thin categories have arbitrary colimits.
 
+[thin]: Order.Base.html
+
 Instead, categories are cocomplete _with respect to_ a pair of
 universes: A category is **$(o, \ell)$-cocomplete** if it has colimits
 for any diagram indexed by a precategory with objects in $\ty\ o$ and

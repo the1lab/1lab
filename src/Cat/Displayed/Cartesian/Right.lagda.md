@@ -35,6 +35,8 @@ open Cat.Displayed.Reasoning ℰ
 A [cartesian fibration] $\cE$ is said to be a **right fibration** if every
 morphism in $\cE$ is cartesian.
 
+[cartesian fibration]: Cat.Displayed.Cartesian.html
+
 ```agda
 record Right-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
   no-eta-equality

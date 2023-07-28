@@ -20,6 +20,7 @@ Internal functor composition is functorial, when viewed as an operation
 on [internal functor categories]. This mirrors [the similar results] for
 composition of ordinary functors.
 
+[internal functor categories]: Cat.Instances.InternalFunctor.html
 [the similar results]: Cat.Instances.Functor.Compose.html
 
 To show this, we will need to define whiskering and horizontal

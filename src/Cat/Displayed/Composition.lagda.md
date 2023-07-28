@@ -26,7 +26,7 @@ $\int \cE$, then we can construct a new category $\cE \cdot \cF$
 displayed over $\cB$ that contains the data of both $\cE$ and
 $\cF$.
 
-[total category] Cat.Displayed.Total.html
+[total category]: Cat.Displayed.Total.html
 
 To actually construct the composite, we bundle up the data of
 $\cE$ and $\cF$ into pairs, so an object in $\cE \cdot \cF$

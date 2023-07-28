@@ -158,10 +158,10 @@ structure of $t'$.
 
 This condition is quite strong: for instance, the family fibration of a
 strict category $\cC$ has a skeletal generic object if and only if $\cC$
-is [skeletal] (See [here] for a proof).
+is [skeletal] (See [here](Cat.Displayed.Instances.Family.html#skeletal-generic-objects)
+for a proof).
 
 [skeletal]: Cat.Skeletal.html
-[here]: Cat.Displayed.Instances.Family.html#skeletal-generic-objects
 
 ```agda
 is-skeletal-generic-object : ∀ {t} {t′ : Ob[ t ]} → Generic-object t′ → Type _
@@ -194,10 +194,10 @@ must, as well.
 
 We can also expand on what this means for the family fibration:
 $\rm{Fam}({\cC})$ has a gaunt generic object if and only if $\cC$ is itself
-[gaunt] (See [here] for the proof).
+[gaunt] (See [here](Cat.Displayed.Instances.Family.html#gaunt-generic-objects)
+for the proof).
 
 [gaunt]: Cat.Gaunt.html
-[here]: Cat.Displayed.Instances.Family.html#gaunt-generic-objects
 
 <!--
 ```agda
