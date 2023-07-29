@@ -7,8 +7,8 @@ standard finite sets, standard finite set: Data.Fin.Base.html
 adjunctions, adjoint functors, left adjoint, right adjoint: Cat.Functor.Adjoint.html#adjoint-functors
 reflective subcategory: Cat.Functor.Adjoint.Reflective.html
 identity system: 1Lab.Path.IdentitySystem.html#identity-systems
-fully faithful, fully faithful functor: Cat.Functor.Base.html#ff-functors
-essentially surjective, eso, essentially surjective on objects: Cat.Functor.Base.html#essential-fibres
+fully faithful, fully faithful functor: Cat.Functor.Properties.html#ff-functors
+essentially surjective, eso, essentially surjective on objects: Cat.Functor.Properties.html#essential-fibres
 colimit, colimits: Cat.Diagram.Colimit.Base.html
 limit, limits: Cat.Diagram.Limit.Base.html
 Ab-category: Cat.Abelian.Base.html#ab-enriched-categories
