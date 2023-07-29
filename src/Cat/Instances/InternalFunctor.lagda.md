@@ -31,7 +31,7 @@ If $\cC$ and $\cD$ are categories internal to $\cB$, we can define the
 of the ordinary [functor categories]. This relativisation plays a
 similar role in the theory of internal categories.
 
-[functor categories]: Cat.Instances.Functor.html
+[functor categories]: Cat.Functor.Base.html
 
 Before we define the category, we need some simple constructions on
 internal natural transformations. First, we note that there is an

@@ -48,7 +48,7 @@ the form $\hom(X, -)$, but we refer informally to both of these
 situations as "representables" and "representing objects".
 
 [univ]: 1Lab.intro.html#universes-and-size-issues
-[niso]: Cat.Instances.Functor.html#functor-categories
+[niso]: Cat.Functor.Naturality.html
 
 ```agda
 record Representation (F : Functor (C ^op) (Sets κ)) : Type (o ⊔ κ) where

@@ -542,7 +542,7 @@ Put another way, our functor $\thecat{Mon}_\cC \to \psh(\cC)_M$ is a
 [split essential surjection] --- so, remembering that it was fully
 faithful, we conclude it's an equivalence.
 
-[split essential surjection]: Cat.Functor.Base.html#essential-fibres
+[split essential surjection]: Cat.Functor.Properties.html#essential-fibres
 
 ```agda
   Mon→RepPShMon-is-equiv : is-equivalence Mon→RepPShMon

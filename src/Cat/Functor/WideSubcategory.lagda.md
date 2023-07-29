@@ -105,10 +105,10 @@ Wide sub .assoc _ _ _ = Wide-hom-path $ C.assoc _ _ _
 ## From split essentially surjective inclusions
 
 There is another way of representing wide subcategories: By giving a
-[pseudomonic] [split essentially surjection] $F : \cD \epi \cC$.
+[pseudomonic] [split essential surjection] $F : \cD \epi \cC$.
 
-[pseudomonic]: Cat.Functor.Base.html#pseudomonic-functors
-[split essentially surjection]: Cat.Functor.Base.html#essential-fibres
+[pseudomonic]: Cat.Functor.Properties.html#pseudomonic-functors
+[split essential surjection]: Cat.Functor.Properties.html#essential-fibres
 
 <!--
 ```agda

@@ -73,7 +73,7 @@ appealing to the details of a particular computation. Moreover, the left
 Kan extension functor _itself_ has a universal property: it is a left
 adjoint to the [precomposition] functor $- \circ p$.
 
-[precomposition]: Cat.Instances.Functor.Compose.html
+[precomposition]: Cat.Functor.Compose.html
 
 ```agda
   Lan⊣precompose : Lan-functor ⊣ precompose p

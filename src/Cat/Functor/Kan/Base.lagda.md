@@ -85,7 +85,7 @@ Note that in general the triangle commutes "weakly", but when $p$ is
 [fully faithful] and $\cD$ is [cocomplete], $\Lan_p F$ genuinely extends
 $p$, in that $\eta$ is a natural isomorphism.
 
-[fully faithful]: Cat.Functor.Base.html#ff-functors
+[fully faithful]: Cat.Functor.Properties.html#ff-functors
 [cocomplete]: Cat.Diagram.Colimit.Base.html#cocompleteness
 
 ```agda

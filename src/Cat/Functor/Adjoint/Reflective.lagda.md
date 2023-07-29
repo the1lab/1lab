@@ -44,7 +44,7 @@ all groups, or the inclusion $\Props \mono \Sets$) participate in an
 adjunction
 
 [full subcategory]: Cat.Functor.FullSubcategory.html
-[fully faithful functors]: Cat.Functor.Base.html#ff-functors
+[fully faithful functors]: Cat.Functor.Properties.html#ff-functors
 
 ~~~{.quiver .short-15}
 \[\begin{tikzcd}

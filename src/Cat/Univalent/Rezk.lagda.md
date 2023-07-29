@@ -38,8 +38,8 @@ a category $\widehat{\cA}$, such that there is a weak equivalence (a
 category] $\cC$ factors uniquely through $\widehat{\cA}$.
 
 [freely]: Cat.Functor.Adjoint.html
-[fully faithful]: Cat.Functor.Base.html#ff-functors
-[essentially surjective]: Cat.Functor.Base.html#essential-fibres
+[fully faithful]: Cat.Functor.Properties.html#ff-functors
+[essentially surjective]: Cat.Functor.Properties.html#essential-fibres
 [univalent category]: Cat.Univalent.html
 
 The construction is essentially piecing together a handful of
@@ -52,7 +52,7 @@ are univalent][fullu] --- so, like Grothendieck cracking the nut, the
 sea of theory has risen to the point where our result is trivial:
 
 [setu]: Cat.Instances.Sets.html
-[funcu]: Cat.Instances.Functor.html#functor-categories
+[funcu]: Cat.Functor.Univalence.html
 [Yoneda lemma]: Cat.Functor.Hom.html#the-yoneda-embedding
 [full inclusion]: Cat.Functor.FullSubcategory.html#from-full-inclusions
 [fullu]: Cat.Functor.FullSubcategory.html#Restrict-is-category

@@ -105,7 +105,7 @@ the _morphisms_ of a precategory. However, this characterisation will
 let us swiftly establish necessary conditions for [univalence of functor
 categories].
 
-[univalence of functor categories]: Cat.Instances.Functor.Univalent.html
+[univalence of functor categories]: Cat.Functor.Univalence.html
 
 <!--
 ```agda

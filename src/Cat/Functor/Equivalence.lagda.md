@@ -32,7 +32,7 @@ immediately implies that our adjoint pair $F \dashv G$ extends to an
 adjoint triple $F \dashv G \dashv F$.
 
 [right adjoint]: Cat.Functor.Adjoint.html
-[natural isomorphisms]: Cat.Instances.Functor.html#functor-categories
+[natural isomorphisms]: Cat.Functor.Naturality.html
 
 ```agda
 record is-equivalence (F : Functor C D) : Type (adj-level C D) where
@@ -128,8 +128,8 @@ picking out an essential fibre over any object $d : \cD$: an object
 $F^*(d) : \cC$ together with a specified isomorphism $F^*(d) \cong
 d$.
 
-[ff]: Cat.Functor.Base.html#ff-functors
-[eso]: Cat.Functor.Base.html#essential-fibres
+[ff]: Cat.Functor.Properties.html#ff-functors
+[eso]: Cat.Functor.Properties.html#essential-fibres
 
 ```agda
 module _ {F : Functor C D} (ff : is-fully-faithful F) (eso : is-split-eso F) where
@@ -403,7 +403,7 @@ between univalent categories has propositional [essential fibres], so a
 _both_ the domain _and_ codomain have to be categories for the argument
 to go through.
 
-[essential fibres]: Cat.Functor.Base.html#essential-fibres
+[essential fibres]: Cat.Functor.Properties.html#essential-fibres
 
 ```agda
 module

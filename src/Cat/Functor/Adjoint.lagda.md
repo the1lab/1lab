@@ -146,7 +146,7 @@ in a 1:1 way (precategories are strictly more general than posets), we
 _can_ still ponder whether there is some "most efficient" way to turn a
 category into a posets.
 
-[ff]: Cat.Functor.Base.html#ff-functors
+[ff]: Cat.Functor.Properties.html#ff-functors
 [posets]: Order.Base.html
 [strict precategories]: Cat.Instances.StrictCat.html#strict-precategories
 

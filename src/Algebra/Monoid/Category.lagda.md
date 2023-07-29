@@ -228,8 +228,8 @@ are equivalent to monoid homomorphisms) and that it is [split
 essentially surjective][eso].
 
 [monadic]: Cat.Functor.Adjoint.Monadic.html
-[ff]: Cat.Functor.Base.html#ff-functors
-[eso]: Cat.Functor.Base.html#essential-fibres
+[ff]: Cat.Functor.Properties.html#ff-functors
+[eso]: Cat.Functor.Properties.html#essential-fibres
 
 ```agda
 Monoid-is-monadic : ∀ {ℓ} → is-monadic (Free⊣Forget {ℓ})

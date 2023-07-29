@@ -336,7 +336,7 @@ tiny lemma stating that this isomorphism "sends $\eta_1$ to $\eta_2$" is
 precisely the data of a dependent identification $\eta_1 \equiv \eta_2$
 over $i'$.
 
-[Functor-is-category]: Cat.Instances.Functor.html#Functor-is-category
+[Functor-is-category]: Cat.Functor.Univalence.html#Functor-is-category
 
 ```agda
   functor-path : L₁.Ext ≡ L₂.Ext

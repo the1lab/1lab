@@ -62,7 +62,7 @@ category can be embedded, by a [full and faithful] functor, into an
 idempotent-complete category; This construction is called the [Karoubi
 envelope] of $\cC$.
 
-[full and faithful]: Cat.Functor.Base.html#ff-functors
+[full and faithful]: Cat.Functor.Properties.html#ff-functors
 [Karoubi envelope]: Cat.Instances.Karoubi.html
 
 ```agda
