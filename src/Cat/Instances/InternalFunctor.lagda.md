@@ -2,8 +2,8 @@
 ```agda
 open import Cat.Prelude
 
-import Cat.Internal.Base
 import Cat.Internal.Reasoning
+import Cat.Internal.Base
 import Cat.Reasoning
 ```
 -->

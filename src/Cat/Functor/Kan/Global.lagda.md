@@ -1,11 +1,11 @@
 <!--
 ```agda
-open import Cat.Functor.Compose
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Compose
 open import Cat.Prelude
 
 import Cat.Reasoning

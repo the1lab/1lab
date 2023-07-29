@@ -7,11 +7,11 @@ description: |
 ---
 <!--
 ```agda
+open import Cat.Functor.Naturality
 open import Cat.Diagram.Initial
+open import Cat.Functor.Compose
 open import Cat.Instances.Comma
 open import Cat.Functor.Base
-open import Cat.Functor.Naturality
-open import Cat.Functor.Compose
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func

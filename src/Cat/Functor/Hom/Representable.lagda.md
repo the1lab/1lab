@@ -5,12 +5,12 @@ open import Cat.Univalent.Instances.Opposite
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Base
 open import Cat.Functor.Kan.Unique
+open import Cat.Functor.Properties
 open import Cat.Instances.Elements
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
 open import Cat.Morphism.Duality
 open import Cat.Instances.Sets
-open import Cat.Functor.Properties
 open import Cat.Functor.Hom
 open import Cat.Prelude
 

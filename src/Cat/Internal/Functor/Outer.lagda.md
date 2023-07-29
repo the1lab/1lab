@@ -1,16 +1,15 @@
 <!--
 ```agda
-open import Cat.Diagram.Product
 open import Cat.Diagram.Product.Solver
+open import Cat.Internal.Opposite
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
+open import Cat.Diagram.Product
 open import Cat.Prelude
 
-open import Cat.Internal.Opposite
-
-import Cat.Reasoning
-import Cat.Internal.Base
 import Cat.Internal.Reasoning
+import Cat.Internal.Base
+import Cat.Reasoning
 ```
 -->
 

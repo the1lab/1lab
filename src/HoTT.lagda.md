@@ -10,8 +10,6 @@ open import Cat.Instances.Sets.CartesianClosed
 open import Cat.Instances.Sets.Congruences
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Hom.Representable
-open import Cat.Functor.Compose
-open import Cat.Functor.Properties
 open import Cat.Instances.Sets.Cocomplete
 open import Cat.Functor.Equivalence.Path
 open import Cat.Univalent.Rezk.Universal
@@ -21,9 +19,11 @@ open import Cat.Displayed.Univalence
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Congruence
+open import Cat.Functor.Properties
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Compose
 open import Cat.Instances.Slice
 open import Cat.Displayed.Base
 open import Cat.Instances.Sets

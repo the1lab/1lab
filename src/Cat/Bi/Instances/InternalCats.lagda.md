@@ -1,17 +1,16 @@
 <!--
 ```agda
-open import Cat.Bi.Base
-
+open import Cat.Instances.InternalFunctor.Compose
+open import Cat.Instances.InternalFunctor
 open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
-open import Cat.Instances.InternalFunctor
-open import Cat.Instances.InternalFunctor.Compose
 open import Cat.Instances.Product
+open import Cat.Bi.Base
 open import Cat.Prelude
 
+import Cat.Internal.Reasoning
 import Cat.Internal.Base
 import Cat.Reasoning
-import Cat.Internal.Reasoning
 ```
 -->
 

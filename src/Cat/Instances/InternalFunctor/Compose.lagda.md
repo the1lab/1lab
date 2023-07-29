@@ -3,10 +3,10 @@
 open import Cat.Instances.Product
 open import Cat.Prelude
 
-import Cat.Reasoning
-import Cat.Internal.Base as Internal
 import Cat.Instances.InternalFunctor
 import Cat.Internal.Reasoning
+import Cat.Internal.Base as Internal
+import Cat.Reasoning
 ```
 -->
 

@@ -5,8 +5,8 @@ open import Cat.Morphism.Factorisation
 open import Cat.Morphism.StrongEpi
 open import Cat.Diagram.Pullback
 open import Cat.Instances.Sets
-open import Cat.Regular
 open import Cat.Prelude
+open import Cat.Regular
 
 open import Data.Set.Surjection
 

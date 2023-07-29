@@ -1,15 +1,14 @@
 <!--
 ```agda
-open import Cat.Displayed.Base
-open import Cat.Displayed.Cartesian
-open import Cat.Displayed.Comprehension
-open import Cat.Displayed.Functor
 open import Cat.Displayed.Instances.Slice
-
+open import Cat.Displayed.Comprehension
 open import Cat.Diagram.Product.Solver
-open import Cat.Diagram.Product
+open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Functor
 open import Cat.Diagram.Pullback
+open import Cat.Diagram.Product
 open import Cat.Instances.Slice
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Reasoning

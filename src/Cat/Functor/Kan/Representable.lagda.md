@@ -1,10 +1,10 @@
 <!--
 ```agda
 open import Cat.Functor.Hom.Representable
-open import Cat.Functor.Compose
-open import Cat.Functor.Base
 open import Cat.Functor.Naturality
 open import Cat.Functor.Kan.Base
+open import Cat.Functor.Compose
+open import Cat.Functor.Base
 open import Cat.Functor.Hom
 open import Cat.Prelude
 

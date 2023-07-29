@@ -4,11 +4,11 @@ open import Cat.Displayed.Cocartesian
 open import Cat.Displayed.Cocartesian
 open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
+open import Cat.Functor.Properties
 open import Cat.Diagram.Pullback
 open import Cat.Displayed.Fibre
 open import Cat.Instances.Slice
 open import Cat.Displayed.Base
-open import Cat.Functor.Properties
 open import Cat.Prelude
 
 import Cat.Reasoning as CR

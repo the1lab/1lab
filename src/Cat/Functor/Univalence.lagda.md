@@ -29,7 +29,7 @@ invertibility], and general reasoning in univalent categories assemble
 into the following very straightforward proof that $[\cC,\cD]$ is
 univalent whenever $\cD$ is.
 
-[identity of functors]: Cat.Functor.Base.html#paths-between-functors
+[paths between functors]: Cat.Functor.Base.html#paths-between-functors
 [componentwise invertibility]: Cat.Functor.Naturality.html
 
 ```agda

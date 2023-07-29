@@ -2,9 +2,9 @@
 ```agda
 {-# OPTIONS -vtc.def.fun:10 #-}
 open import Cat.Functor.FullSubcategory
+open import Cat.Functor.Properties
 open import Cat.Instances.Functor
 open import Cat.Instances.Sets
-open import Cat.Functor.Properties
 open import Cat.Functor.Hom
 open import Cat.Prelude
 

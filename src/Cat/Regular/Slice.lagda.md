@@ -6,8 +6,8 @@ open import Cat.Morphism.Orthogonal
 open import Cat.Morphism.StrongEpi
 open import Cat.Diagram.Pullback
 open import Cat.Instances.Slice
-open import Cat.Regular
 open import Cat.Prelude
+open import Cat.Regular
 
 open import Data.Power
 

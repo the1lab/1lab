@@ -1,11 +1,11 @@
 <!--
 ```agda
 open import Cat.Diagram.Limit.Finite
+open import Cat.Functor.Properties
 open import Cat.Diagram.Terminal
 open import Cat.Functor.Pullback
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Slice
-open import Cat.Functor.Properties
 open import Cat.Functor.Base
 open import Cat.Prelude
 

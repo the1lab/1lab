@@ -2,10 +2,10 @@
 ```agda
 open import Algebra.Prelude
 
+open import Cat.Functor.Kan.Pointwise
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
 open import Cat.Functor.Kan.Nerve
-open import Cat.Functor.Kan.Pointwise
 open import Cat.Diagram.Initial
 open import Cat.Instances.Comma
 

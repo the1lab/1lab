@@ -4,8 +4,8 @@ open import Cat.Instances.Shape.Terminal
 open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Naturality
 open import Cat.Functor.Coherence
-open import Cat.Functor.Base
 open import Cat.Functor.Kan.Base
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func

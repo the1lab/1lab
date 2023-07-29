@@ -2,16 +2,16 @@
 ```agda
 {-# OPTIONS -vtc.def:20 #-}
 open import Cat.Diagram.Pullback.Properties
-open import Cat.Diagram.Pullback
-open import Cat.Diagram.Product
-open import Cat.Instances.Functor
-open import Cat.Diagram.Image
 open import Cat.Displayed.Cocartesian.Weak
 open import Cat.Displayed.Cocartesian
 open import Cat.Displayed.Univalence
 open import Cat.Displayed.Cartesian
-open import Cat.Displayed.Base
+open import Cat.Instances.Functor
+open import Cat.Diagram.Pullback
+open import Cat.Diagram.Product
 open import Cat.Displayed.Fibre
+open import Cat.Displayed.Base
+open import Cat.Diagram.Image
 open import Cat.Prelude
 
 import Cat.Reasoning as Cr
