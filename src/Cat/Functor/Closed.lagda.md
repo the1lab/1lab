@@ -28,6 +28,25 @@ private variable
 ```
 -->
 
+When taken as a [(bi)category][cat], the collection of (pre)categories
+is, in a suitably weak sense, [Cartesian closed]: there is an
+[equivalence] between the [functor categories] $[\cC \times \cD, \cE]$
+and $[\cC, [\cD, \cE]]$. We do not define the full equivalence here,
+leaving the natural isomorphisms aside and focusing on the inverse
+functors themselves: `Curry`{.Agda} and `Uncurry`{.Agda}.
+
+[cat]: Cat.Bi.Base.html#the-bicategory-of-categories
+[Cartesian closed]: Cat.CartesianClosed.Base.html
+[equivalence]: Cat.Functor.Equivalence.html
+[functor categories]: Cat.Functor.Base.html
+
+The two conversion functions act on objects essentially in the same way
+as currying and uncurrying behave on funct*ions*: the difference is that
+we must properly stage the action on morphisms. Currying a functor $F :
+\cC \times \cD \to \cE$ fixes a morphism $f : x \to y \in \cC$, and we
+must show that $g \mapsto F(f,g)$ is natural in $g$. It follows from a
+bit of calculation using the functoriality of $F$.
+
 ```agda
 Curry : Functor (C ×ᶜ D) E → Functor C Cat[ D , E ]
 Curry {C = C} {D = D} {E = E} F = curried where
@@ -53,7 +72,15 @@ Uncurry {C = C} {D = D} {E = E} F = uncurried where
   uncurried : Functor (C ×ᶜ D) E
   uncurried .F₀ (c , d) = F₀ (F.₀ c) d
   uncurried .F₁ (f , g) = F.₁ f .η _ E.∘ F₁ (F.₀ _) g
+```
 
+The other direction must do slightly more calculation: Given a functor
+into functor-categories, and a pair of arguments, we must apply it
+twice: but at the level of morphisms, this involves composition in the
+codomain category, which throws a fair bit of complication into the
+functoriality constraints.
+
+```agda
   uncurried .F-id {x = x , y} = path where abstract
     path : E ._∘_ (F.₁ (C .id) .η y) (F₁ (F.₀ x) (D .id)) ≡ E .id
     path =
