@@ -1,13 +1,12 @@
 <!--
 ```agda
-open import Cat.Internal.Functor.Outer
-
-open import Cat.Diagram.Product
 open import Cat.Diagram.Product.Solver
+open import Cat.Internal.Functor.Outer
+open import Cat.Diagram.Product
 open import Cat.Prelude
 
-import Cat.Internal.Base
 import Cat.Internal.Reasoning
+import Cat.Internal.Base
 import Cat.Reasoning
 ```
 -->

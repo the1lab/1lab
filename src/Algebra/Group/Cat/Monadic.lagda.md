@@ -9,8 +9,8 @@ open import Algebra.Group
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Functor.Equivalence
+open import Cat.Functor.Properties
 open import Cat.Diagram.Monad
-open import Cat.Functor.Base
 
 import Algebra.Group.Cat.Base as Grp
 

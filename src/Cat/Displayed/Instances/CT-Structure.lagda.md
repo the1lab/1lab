@@ -1,13 +1,12 @@
 <!--
 ```agda
-open import Cat.Displayed.Adjoint
-open import Cat.Displayed.Base
-open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Cartesian.Discrete
-open import Cat.Displayed.Functor
-
-open import Cat.Diagram.Product
 open import Cat.Diagram.Product.Solver
+open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Adjoint
+open import Cat.Displayed.Functor
+open import Cat.Diagram.Product
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Instances.Simple as Simple

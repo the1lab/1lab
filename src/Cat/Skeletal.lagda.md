@@ -1,8 +1,8 @@
 <!--
 ```agda
-open import Cat.Strict
 open import Cat.Instances.Discrete
 open import Cat.Prelude
+open import Cat.Strict
 
 import Cat.Reasoning
 

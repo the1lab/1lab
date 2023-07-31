@@ -1,10 +1,9 @@
 <!--
 ```agda
-open import Cat.Displayed.Base
-open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Cartesian.Right
+open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Functor
-
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Reasoning

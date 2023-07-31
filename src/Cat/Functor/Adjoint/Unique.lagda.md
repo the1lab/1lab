@@ -1,7 +1,8 @@
 <!--
 ```agda
 open import Cat.Functor.Equivalence
-open import Cat.Instances.Functor
+open import Cat.Functor.Naturality
+open import Cat.Functor.Univalence
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
 open import Cat.Univalent

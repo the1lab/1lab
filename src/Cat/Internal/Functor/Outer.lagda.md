@@ -1,16 +1,15 @@
 <!--
 ```agda
-open import Cat.Diagram.Product
 open import Cat.Diagram.Product.Solver
+open import Cat.Internal.Opposite
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
+open import Cat.Diagram.Product
 open import Cat.Prelude
 
-open import Cat.Internal.Opposite
-
-import Cat.Reasoning
-import Cat.Internal.Base
 import Cat.Internal.Reasoning
+import Cat.Internal.Base
+import Cat.Reasoning
 ```
 -->
 
@@ -33,11 +32,11 @@ open Internal-hom
 The category $\Sets$ is not [strict], so it is not [internal] to any
 category of sets, even setting aside size issues. However, $\Sets$ still
 plays an important role in (strict) category theory, by passing to the
-co[presheaf] categories $\cC \to \thecat{Sets}$.
+co[presheaf] categories $\cC \to \Sets$.
 
 [strict]: Cat.Strict.html
 [internal]: Cat.Internal.Base.html
-[presheaf]: Cat.Instances.Functor.html
+[presheaf]: Cat.Functor.Base.html#presheaf-precategories
 
 We wish to relativize this to an arbitrary base category $\cC$, not just
 $\thecat{Sets}$. Specifically, if $\bC$ is a category internal to $\cC$,

@@ -2,10 +2,10 @@
 ```agda
 open import Cat.Diagram.Colimit.Cocone
 open import Cat.Diagram.Colimit.Base
+open import Cat.Functor.Properties
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Diagram.Initial
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Instances.Elements as El

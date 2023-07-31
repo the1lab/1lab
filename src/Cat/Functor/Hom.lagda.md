@@ -1,9 +1,11 @@
 <!--
 ```agda
-open import Cat.Instances.Functor.Compose
-open import Cat.Instances.Functor
+open import Cat.Functor.Properties
 open import Cat.Instances.Product
 open import Cat.Diagram.Initial
+open import Cat.Functor.Compose
+open import Cat.Functor.Closed
+open import Cat.Functor.Base
 open import Cat.Functor.Base
 open import Cat.Prelude
 
@@ -60,7 +62,7 @@ ident=Flip} the `Hom[-,-]`{.Agda} [bifunctor]. However, this
 construction generates _awful_ terms, so in the interest of
 computational efficiency we build up the functor explicitly.
 
-[exponential transpose]: Cat.Instances.Functor.html#currying
+[exponential transpose]: Cat.Functor.Closed.html
 [bifunctor]: Cat.Functor.Bifunctor.html
 
 ```agda

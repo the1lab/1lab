@@ -183,7 +183,7 @@ ident=F-map-path}, and we can correct the source:
       same-mults′ =
         transport
           (λ j → PathP
-            (λ i → C.Hom (F-map-path (Monad.M M) A₀≅X₀ isc isc (~ j) i) (A₀≡X₀ i))
+            (λ i → C.Hom (F-map-path isc isc (Monad.M M) A₀≅X₀ (~ j) i) (A₀≡X₀ i))
             (Am .ν) (Xm .ν))
           same-mults
 

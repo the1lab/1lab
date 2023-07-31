@@ -1,7 +1,7 @@
 <!--
 ```agda
+open import Cat.Functor.Properties
 open import Cat.Functor.Adjoint
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 open Functor

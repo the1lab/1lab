@@ -2,7 +2,8 @@
 ```agda
 open import 1Lab.Prelude
 
-open import Cat.Instances.Functor
+open import Cat.Functor.Naturality
+open import Cat.Functor.Base
 open import Cat.Base
 
 import Cat.Reasoning
@@ -71,7 +72,7 @@ module _ {o ℓ} {𝒞 : Precategory o ℓ} {F G : Functor ⊤Cat 𝒞} where
   hom→⊤-natural-trans f .η _ = f
   hom→⊤-natural-trans f .is-natural _ _ _ = 𝒞.elimr (F .F-id) ∙ 𝒞.introl (G .F-id)
 
-  iso→⊤-natural-iso : F .F₀ tt 𝒞.≅ G .F₀ tt → natural-iso F G
+  iso→⊤-natural-iso : F .F₀ tt 𝒞.≅ G .F₀ tt → F ≅ⁿ G
   iso→⊤-natural-iso i = to-natural-iso mi where
     open make-natural-iso
     open 𝒞._≅_

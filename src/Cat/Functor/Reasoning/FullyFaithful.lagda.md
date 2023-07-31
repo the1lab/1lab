@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Properties
 open import Cat.Functor.Base
 open import Cat.Prelude hiding (injective)
 

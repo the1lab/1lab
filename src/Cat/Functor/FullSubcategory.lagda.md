@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import Cat.Instances.Functor
+open import Cat.Functor.Properties
 open import Cat.Functor.Base
 open import Cat.Univalent
 open import Cat.Prelude
@@ -126,7 +126,7 @@ _full inclusion_, i.e. a [fully faithful] functor $F : \cD \to
 of $\cC$, namely that consisting of the objects in $\cC$ merely in
 the image of $F$.
 
-[fully faithful]: Cat.Functor.Base.html#ff-functors
+[fully faithful]: Cat.Functor.Properties.html#ff-functors
 
 ```agda
 module _ {o' h'} {D : Precategory o' h'} {F : Functor D C} (ff : is-fully-faithful F) where
@@ -141,7 +141,7 @@ This canonical full subcategory is weakly equivalent to $\cD$,
 meaning that it admits a fully faithful, [essentially surjective]
 functor from $\cD$. This functor is actually just $F$ again:
 
-[essentially surjective]: Cat.Functor.Base.html#essential-fibres
+[essentially surjective]: Cat.Functor.Properties.html#essential-fibres
 
 ```agda
   Ff-domain→Full-subcat : Functor D Full-inclusion→Full-subcat

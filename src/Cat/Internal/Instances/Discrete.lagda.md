@@ -1,8 +1,8 @@
 <!--
 ```agda
-import Cat.Internal.Base
-
 open import Cat.Prelude
+
+import Cat.Internal.Base
 import Cat.Reasoning
 ```
 -->

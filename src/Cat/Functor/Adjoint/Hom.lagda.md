@@ -147,13 +147,13 @@ module _ {o ℓ o′} {C : Precategory o ℓ} {D : Precategory o′ ℓ}
 
 
   hom-natural-iso→adjoints
-    : natural-iso (Hom[-,-] C F∘ (Functor.op L F× Id)) (Hom[-,-] D F∘ (Id F× R))
+    : (Hom[-,-] C F∘ (Functor.op L F× Id)) ≅ⁿ (Hom[-,-] D F∘ (Id F× R))
     → L ⊣ R
   hom-natural-iso→adjoints eta =
     hom-iso→adjoints (to .η _) (natural-iso-to-is-equiv eta (_ , _)) λ g h x →
       happly (to .is-natural _ _ (h , g)) x
     where
-      open natural-iso eta
+      open Isoⁿ eta
       open _=>_
 
 module _ {o ℓ o′} {C : Precategory o ℓ} {D : Precategory o′ ℓ}
@@ -167,7 +167,7 @@ module _ {o ℓ o′} {C : Precategory o ℓ} {D : Precategory o′ ℓ}
     module R = Func R
 
   adjunct-hom-iso-from
-    : ∀ a → natural-iso (Hom-from C (L.₀ a)) (Hom-from D a F∘ R)
+    : ∀ a → (Hom-from C (L.₀ a)) ≅ⁿ (Hom-from D a F∘ R)
   adjunct-hom-iso-from a = to-natural-iso mi where
     open make-natural-iso
 
@@ -179,7 +179,7 @@ module _ {o ℓ o′} {C : Precategory o ℓ} {D : Precategory o′ ℓ}
     mi .natural _ _ f = funext λ g → sym (L-adjunct-naturalr adj f g)
 
   adjunct-hom-iso-into
-    : ∀ b → natural-iso (Hom-into C b F∘ Functor.op L) (Hom-into D (R.₀ b))
+    : ∀ b → (Hom-into C b F∘ Functor.op L) ≅ⁿ (Hom-into D (R.₀ b))
   adjunct-hom-iso-into b = to-natural-iso mi where
     open make-natural-iso
 
@@ -191,7 +191,7 @@ module _ {o ℓ o′} {C : Precategory o ℓ} {D : Precategory o′ ℓ}
     mi .natural _ _ f = funext λ g → sym $ L-adjunct-naturall adj g f
 
   adjunct-hom-iso
-    : natural-iso (Hom[-,-] C F∘ (Functor.op L F× Id)) (Hom[-,-] D F∘ (Id F× R))
+    : (Hom[-,-] C F∘ (Functor.op L F× Id)) ≅ⁿ (Hom[-,-] D F∘ (Id F× R))
   adjunct-hom-iso = to-natural-iso mi where
     open make-natural-iso
 

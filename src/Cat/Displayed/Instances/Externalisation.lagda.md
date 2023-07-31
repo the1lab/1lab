@@ -1,16 +1,14 @@
 <!--
 ```agda
-open import Cat.Displayed.Base
-open import Cat.Displayed.Cartesian
 open import Cat.Displayed.GenericObject
-
+open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Base
+open import Cat.Internal.Base using (Internal-cat)
 open import Cat.Prelude
 
-open import Cat.Internal.Base using (Internal-cat)
-
-import Cat.Internal.Base
 import Cat.Internal.Reasoning
 import Cat.Internal.Morphism
+import Cat.Internal.Base
 import Cat.Reasoning
 ```
 -->

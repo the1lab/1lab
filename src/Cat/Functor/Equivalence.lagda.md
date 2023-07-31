@@ -1,7 +1,8 @@
 ```agda
-open import Cat.Instances.Functor
-open import Cat.Functor.Adjoint
 open import Cat.Functor.Adjoint.Compose
+open import Cat.Functor.Naturality
+open import Cat.Functor.Properties
+open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
 open import Cat.Univalent
 open import Cat.Prelude
@@ -31,7 +32,7 @@ immediately implies that our adjoint pair $F \dashv G$ extends to an
 adjoint triple $F \dashv G \dashv F$.
 
 [right adjoint]: Cat.Functor.Adjoint.html
-[natural isomorphisms]: Cat.Instances.Functor.html#functor-categories
+[natural isomorphisms]: Cat.Functor.Naturality.html
 
 ```agda
 record is-equivalence (F : Functor C D) : Type (adj-level C D) where
@@ -59,12 +60,12 @@ morphisms gives isomorphisms in the respective functor categories:
   F∘F⁻¹≅Id : (F F∘ F⁻¹) [D,D].≅ Id
   F∘F⁻¹≅Id =
     [D,D].invertible→iso counit
-      (componentwise-invertible→invertible _ counit-iso)
+      (invertible→invertibleⁿ _ counit-iso)
 
   Id≅F⁻¹∘F : Id [C,C].≅ (F⁻¹ F∘ F)
   Id≅F⁻¹∘F =
     [C,C].invertible→iso unit
-      (componentwise-invertible→invertible _ unit-iso)
+      (invertible→invertibleⁿ _ unit-iso)
 
   unit⁻¹ = [C,C]._≅_.from Id≅F⁻¹∘F
   counit⁻¹ = [D,D]._≅_.from F∘F⁻¹≅Id
@@ -127,8 +128,8 @@ picking out an essential fibre over any object $d : \cD$: an object
 $F^*(d) : \cC$ together with a specified isomorphism $F^*(d) \cong
 d$.
 
-[ff]: Cat.Functor.Base.html#ff-functors
-[eso]: Cat.Functor.Base.html#essential-fibres
+[ff]: Cat.Functor.Properties.html#ff-functors
+[eso]: Cat.Functor.Properties.html#essential-fibres
 
 ```agda
 module _ {F : Functor C D} (ff : is-fully-faithful F) (eso : is-split-eso F) where
@@ -402,7 +403,7 @@ between univalent categories has propositional [essential fibres], so a
 _both_ the domain _and_ codomain have to be categories for the argument
 to go through.
 
-[essential fibres]: Cat.Functor.Base.html#essential-fibres
+[essential fibres]: Cat.Functor.Properties.html#essential-fibres
 
 ```agda
 module
@@ -474,7 +475,7 @@ _are_ indeed the same path:
     abstract
       square : ap (F₀ F) x≡y ≡ Fx≡Fy
       square =
-        ap (F₀ F) x≡y                     ≡⟨ F-map-path F x≅y ccat dcat ⟩
+        ap (F₀ F) x≡y                     ≡⟨ F-map-path ccat dcat F x≅y ⟩
         dcat .to-path ⌜ F-map-iso F x≅y ⌝ ≡⟨ ap! (equiv→counit (is-ff→F-map-iso-is-equiv {F = F} ff) _)  ⟩
         dcat .to-path Fx≅Fy               ∎
 
@@ -780,12 +781,12 @@ As a corollary, equivalences preserve all families over hom sets.
 ```
 -->
 
-Equivalences are also invariant under natural isomorphisms.
+Being an equivalence is also invariant under natural isomorphism.
 
 ```agda
 is-equivalence-natural-iso
   : ∀ {F G : Functor C D}
-  → natural-iso F G
+  → F ≅ⁿ G
   → is-equivalence F → is-equivalence G
 is-equivalence-natural-iso {C = C} {D = D} {F = F} {G = G} α F-eqv = G-eqv where
   open is-equivalence
@@ -798,7 +799,7 @@ is-equivalence-natural-iso {C = C} {D = D} {F = F} {G = G} α F-eqv = G-eqv wher
   G-eqv .unit-iso x =
     C.invertible-∘
       (C.invertible-∘
-        (F-map-invertible (F-eqv .F⁻¹) (natural-iso→invertible α x))
+        (F-map-invertible (F-eqv .F⁻¹) (isoⁿ→is-invertible α x))
         C.id-invertible)
       (F-eqv .unit-iso x)
   G-eqv .counit-iso x =
@@ -806,7 +807,7 @@ is-equivalence-natural-iso {C = C} {D = D} {F = F} {G = G} α F-eqv = G-eqv wher
       (F-eqv .counit-iso x)
       (D.invertible-∘
         (F-map-invertible F C.id-invertible)
-        (natural-iso→invertible α _ D.invertible⁻¹))
+        (isoⁿ→is-invertible α _ D.invertible⁻¹))
 ```
 
 Equivalences are invertible.
