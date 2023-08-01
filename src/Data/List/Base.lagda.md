@@ -4,6 +4,7 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Product.NAry
+open import Data.Bool
 ```
 -->
 
@@ -111,4 +112,42 @@ _++_ : ∀ {ℓ} {A : Type ℓ} → List A → List A → List A
 (x ∷ xs) ++ ys = x ∷ (xs ++ ys)
 
 infixr 5 _++_
+
+mapUp : (Nat → A → B) → Nat → List A → List B
+mapUp f _ [] = []
+mapUp f n (x ∷ xs) = f n x ∷ mapUp f (suc n) xs
+
+length : List A → Nat
+length [] = zero
+length (x ∷ x₁) = suc (length x₁)
+
+concat : List (List A) → List A
+concat [] = []
+concat (x ∷ xs) = x ++ concat xs
+
+reverse : List A → List A
+reverse = go [] where
+  go : List A → List A → List A
+  go acc [] = acc
+  go acc (x ∷ xs) = go (x ∷ acc) xs
+
+_∷r_ : List A → A → List A
+xs ∷r x = xs ++ (x ∷ [])
+
+all=? : (A → A → Bool) → List A → List A → Bool
+all=? eq=? [] [] = true
+all=? eq=? [] (x ∷ ys) = false
+all=? eq=? (x ∷ xs) [] = false
+all=? eq=? (x ∷ xs) (y ∷ ys) = and (eq=? x y) (all=? eq=? xs ys)
+
+enumerate : ∀ {ℓ} {A : Type ℓ} → List A → List (Nat × A)
+enumerate = go 0 where
+  go : Nat → List _ → List (Nat × _)
+  go x [] = []
+  go x (a ∷ b) = (x , a) ∷ go (suc x) b
+
+take : ∀ {ℓ} {A : Type ℓ} → Nat → List A → List A
+take 0 xs = []
+take (suc n) [] = []
+take (suc n) (x ∷ xs) = x ∷ take n xs
 ```

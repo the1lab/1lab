@@ -8,7 +8,7 @@ open import 1Lab.Type hiding (absurd)
 open import Data.Product.NAry
 open import Data.Vec.Base
 open import Data.Bool
-open import Data.List
+open import Data.List.Base
 ```
 -->
 
@@ -27,7 +27,7 @@ open import Meta.Alt public
 
 open Data.Vec.Base using (Vec ; [] ; _∷_ ; lookup ; tabulate) public
 open Data.Product.NAry using ([_]) public
-open Data.List public
+open Data.List.Base public
 open Data.Bool public
 ```
 
