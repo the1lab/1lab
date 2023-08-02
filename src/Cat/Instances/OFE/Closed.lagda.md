@@ -38,7 +38,7 @@ module _ {ℓa ℓb ℓa' ℓb'} {A : Type ℓa} {B : Type ℓb} (O : OFE-on ℓ
 ```
 
 ```agda
-  Function-OFE : OFE-on {!   !} (O →ⁿᵉ P)
+  Function-OFE : OFE-on (ℓa ⊔ ℓb') (O →ⁿᵉ P)
   Function-OFE .within n f g = ∀ x → f .map x ≈[ n ] g .map x
   Function-OFE .has-is-ofe .has-is-prop n x y = hlevel 1
     where open OFE-H-Level P
