@@ -35,13 +35,15 @@ module _ {ℓa ℓb ℓa' ℓb'} {A : Type ℓa} {B : Type ℓb} (O : OFE-on ℓ
       _ = P
     module O = OFE-on O
     module P = OFE-on P
+  open OFE-H-Level O
+  open OFE-H-Level P
 ```
 -->
 
 ```agda
   ×-OFE : OFE-on (ℓa' ⊔ ℓb') (A × B)
   ×-OFE .within n (x , y) (x' , y') = (x ≈[ n ] x') × (y ≈[ n ] y')
-  ×-OFE .has-is-ofe .has-is-prop n x y = ×-is-hlevel 1 (hlevel 1) (hlevel 1)
+  ×-OFE .has-is-ofe .has-is-prop n x y = hlevel 1
 
   ×-OFE .has-is-ofe .≈-refl  n = O.≈-refl n , P.≈-refl n
   ×-OFE .has-is-ofe .≈-sym   n (p , q) = O.≈-sym n p , P.≈-sym n q
@@ -96,6 +98,7 @@ module
       P-ofe : ∀ {i} → OFE-on ℓr (F i)
       P-ofe {i} = P i
     module P {i} = OFE-on (P i)
+    module _ {i} where open OFE-H-Level (P i) public
 ```
 -->
 
@@ -151,7 +154,7 @@ about to get the actual inhabitant of $(1)$ that we're interested in.
   Π-OFE .has-is-ofe .limit x y wit i j = P.limit (x j) (y j) (λ n → wit' n j) i
     where
       wit' : ∀ n i → within (P i) n (x i) (y i)
-      wit' n i = out! {pa = Π-is-hlevel 1 λ _ → hlevel 1} (wit n .Lift.lower) i
+      wit' n i = out! {pa = hlevel 1} (wit n .Lift.lower) i
 ```
 
 <!--
