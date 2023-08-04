@@ -451,6 +451,20 @@ domain-∘ {f = f} {g = g} =
   ≤-pushr (domain-universalr (domain-coreflexive g) ≤-refl)
 ```
 
+If $f \le g$, then $\rm{dom}(f) \le \rm{dom}(g)$.
+
+```agda
+domain-≤ : f ≤ g → domain f ≤ domain g
+domain-≤ w = ∩-pres-r (dual-≤ w ◆ w)
+```
+
+The domain of the identity morphism is simply the identity morphism.
+
+```agda
+domain-id : domain (id {x}) ≡ id
+domain-id = ≤-antisym ∩-le-l (∩-univ ≤-refl (≤-introl symmetric-id))
+```
+
 # Antisymmetric Morphisms
 
 A morphism is **anti-symmetric** if $f \cap f^o \le id$.
