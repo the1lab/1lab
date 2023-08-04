@@ -603,6 +603,7 @@ the extra coherence that is necessary for specifying a bicategory.
 ```agda
 open import Cat.Allegory.Base -- The definition
 open import Cat.Allegory.Maps -- Functional relations in an allegory
+open import Cat.Allegory.Morphism -- Morphisms in allegories
 open import Cat.Allegory.Reasoning -- Reasoning combinators
 ```
 
