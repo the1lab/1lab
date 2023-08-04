@@ -67,6 +67,22 @@ reflexive-dual {f = f} f-refl =
   f    ≤∎
 ```
 
+If $f \le g$ and $f$ is reflexive, then $g$ is reflexive.
+
+```agda
+reflexive-≤ : f ≤ g → is-reflexive f → is-reflexive g
+reflexive-≤ w f-refl = ≤-trans f-refl w
+```
+
+If $f$ is reflexive, then $id \le f \cap f^o$.
+
+```agda
+reflexive→diagonal
+  : is-reflexive f → id ≤ f ∩ f †
+reflexive→diagonal f-refl = ∩-univ f-refl (reflexive-dual f-refl)
+```
+
+
 # Symmetric Morphisms
 
 A morphism $f : X \to X$ is **symmetric** if $f \le f^o$.
@@ -82,7 +98,6 @@ The identity morphism is trivially symmetric.
 symmetric-id : is-symmetric (id {x})
 symmetric-id {x = x} = subst (id {x} ≤_) (sym $ dual-id A) (≤-refl {f = id {x}})
 ```
-
 
 The composition of symmetric morphisms $f$ and $g$ is symmetric if
 $g \circ f \le f \circ g$.
@@ -198,6 +213,9 @@ A morphism $f : X \to X$ is **cotransitive** if $f \le f \circ f$.
 stipulates that for all $x, y, z$, if $R(x,z)$, then either $R(x,y)$
 or $R(y,z)$. This is a poor choice of a name, as it is **not** a
 transitive relation in $\Rel^{co}$.
+
+Other sources call cotransitive morphisms "symmetric idempotents", though
+we avoid this terminology, as cotranstive morphisms are not symmetric.
 :::
 
 ```agda
@@ -305,6 +323,13 @@ coreflexive-dual {f = f} f-corefl = dual-≤ₗ A $
   id † ≤∎
 ```
 
+If $f \le g$ and $g$ is coreflexive, then $f$ is coreflexive.
+
+```agda
+coreflexive-≤ : f ≤ g → is-coreflexive g → is-coreflexive f
+coreflexive-≤ w g-corefl = ≤-trans w g-corefl
+```
+
 If $f$ is coreflexive, then it is transitive, cotransitive, and symmetric.
 
 ```agda
@@ -349,4 +374,44 @@ coreflexive-∘-∩ {f = f} {g = g} f-corefl g-corefl =
       cotransitive-∩-∘ $
       coreflexive→cotransitive $
       coreflexive-∩ f-corefl g-corefl
+```
+
+# Antisymmetric Morphisms
+
+A morphism is **anti-symmetric** if $f \cap f^o \le id$.
+
+```agda
+is-antisymmetric : Hom x x → Type _
+is-antisymmetric f = f ∩ f † ≤ id
+```
+
+Identity morphisms are anti-symmetric.
+
+```agda
+antisymmetric-id
+  : is-antisymmetric (id {x})
+antisymmetric-id =
+  id ∩ ⌜ id † ⌝ =⟨ ap! (dual-id A) ⟩
+  id ∩ id       =⟨ ∩-idempotent ⟩
+  id            ≤∎
+```
+
+If $f \le g$ and $g$ is anti-symmetric, then $f$ is anti-symmetric.
+
+```agda
+antisymmetric-≤
+  : f ≤ g → is-antisymmetric g → is-antisymmetric f
+antisymmetric-≤ {f = f} {g = g} w g-antisym =
+  f ∩ f † ≤⟨ ∩-pres w (dual-≤ w) ⟩
+  g ∩ g † ≤⟨ g-antisym ⟩
+  id      ≤∎
+```
+
+If $f$ is anti-symmetric and reflexive, then $f \cap f^o = id$.
+
+```agda
+reflexive+antisymmetric→diagonal
+  : is-reflexive f → is-antisymmetric f → f ∩ f † ≡ id
+reflexive+antisymmetric→diagonal f-refl f-antisym =
+  ≤-antisym f-antisym (reflexive→diagonal f-refl)
 ```
