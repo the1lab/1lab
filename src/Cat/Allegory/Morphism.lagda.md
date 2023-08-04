@@ -114,7 +114,7 @@ symmetric-∘ {f = f} {g = g} f-sym g-sym w =
   (f ∘ g) † ≤∎
 ```
 
-The dual of a symmetric morphisms is symmetric.
+The dual of a symmetric morphism is symmetric.
 
 ```agda
 symmetric-dual : is-symmetric f → is-symmetric (f †)
@@ -134,7 +134,7 @@ symmetric-∩ {f = f} {g = g} f-sym g-sym =
   (f ∩ g) † ≤∎
 ```
 
-If $f$ is symmetric, then it is equal to it's dual.
+If $f$ is symmetric, then it is equal to its dual.
 
 ```agda
 symmetric→self-dual
@@ -174,7 +174,7 @@ transitive-∘ {f = f} {g = g} f-trans g-trans w =
 ```
 
 A useful little lemma is that if $f$ is transitive, then
-$(f \cap g) \circ (f \cap h) = f$.
+$(f \cap g) \circ (f \cap h) \le f$.
 
 ```agda
 transitive-∩l : is-transitive f → (f ∩ g) ∘ (f ∩ h) ≤ f
@@ -194,7 +194,7 @@ transitive-∩ {f = f} {g = g} f-trans g-trans =
   ∩-univ (transitive-∩l f-trans) (transitive-∩r g-trans)
 ```
 
-If $f$ is transitive, then so is it's dual.
+If $f$ is transitive, then so is its dual.
 
 ```agda
 transitive-dual : is-transitive f → is-transitive (f †)
