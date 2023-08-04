@@ -376,6 +376,81 @@ coreflexive-∘-∩ {f = f} {g = g} f-corefl g-corefl =
       coreflexive-∩ f-corefl g-corefl
 ```
 
+## Domains
+
+The domain of a morphism $f : X \to Y$ is defined as
+$id \cap (f^o \circ f)$, denoted $\rm{dom}(f)$.
+In $\Rel$, the domain of a relation $R : X \times Y \to \Omega$ is a
+relation $X \times X \to \Omega$ that relates two elements $x, x' : X$
+whenever $x = x'$, and $R(x,y)$ for some $y$.
+
+```agda
+domain : Hom x y → Hom x x
+domain f = id ∩ f † ∘ f
+```
+
+The domain of a morphism is always coreflexive.
+
+```agda
+domain-coreflexive : ∀ (f : Hom x y) → is-coreflexive (domain f)
+domain-coreflexive f = ∩-le-l
+```
+
+Furthermore, the domain enjoys the following universal property:
+Let $f : X \to Y$ and $g : X \to X$ such that $g$ is coreflexive.
+Then $\rm{dom}(f) \le g$ if and only if $f \le f \circ g$.
+
+```agda
+domain-universalr : is-coreflexive g → domain f ≤ g → f ≤ f ∘ g
+domain-universalr {g = g} {f = f} g-corefl w =
+  f                  ≤⟨ ∩-univ (≤-intror ≤-refl) ≤-refl ⟩
+  (f ∘ id) ∩ f       ≤⟨ modular id f f ⟩
+  f ∘ (id ∩ f † ∘ f) ≤⟨ f ▶ w ⟩
+  f ∘ g              ≤∎
+
+domain-universall : is-coreflexive g → f ≤ f ∘ g → domain f ≤ g
+domain-universall {g = g} {f = f} g-corefl w =
+  id ∩ (f † ∘ f)           ≤⟨ ∩-pres-r (≤-pushr w) ⟩
+  id ∩ ((f † ∘ f) ∘ g)     =⟨ ∩-comm ⟩
+  ((f † ∘ f) ∘ g) ∩ id     ≤⟨ modular′ g (f † ∘ f) id ⟩
+  (f † ∘ f ∩ id ∘ g †) ∘ g ≤⟨ ≤-trans ∩-le-r (≤-eliml ≤-refl) ◀ g ⟩
+  g † ∘ g                  ≤⟨ ≤-eliml (coreflexive-dual g-corefl) ⟩
+  g                        ≤∎
+```
+
+We can nicely characterize the domain of an intersection.
+
+```agda
+domain-∩ : domain (f ∩ g) ≡ id ∩ f † ∘ g
+domain-∩ {f = f} {g = g} = ≤-antisym ≤-to ≤-from where
+  ≤-to : domain (f ∩ g) ≤ id ∩ f † ∘ g
+  ≤-to =
+    ∩-univ
+      (domain-coreflexive (f ∩ g))
+      (≤-trans ∩-le-r (dual-≤ ∩-le-l ◆ ∩-le-r))
+
+  ≤-from : id ∩ f † ∘ g ≤ domain (f ∩ g)
+  ≤-from =
+    id ∩ f † ∘ g                               ≤⟨ ∩-univ ∩-le-l (∩-univ (∩-univ ∩-le-r ∩-le-l) ∩-le-l ) ⟩
+    id ∩ (f † ∘ g ∩ id) ∩ id                   ≤⟨ ∩-pres-r (∩-pres-l (modular g (f †) id)) ⟩
+    id ∩ (f † ∘ (g ∩ ⌜ f † † ∘ id ⌝)) ∩ id     =⟨ ap! (idr _ ∙ dual f) ⟩
+    id ∩ (f † ∘ (g ∩ f)) ∩ id                  ≤⟨ ∩-pres-r (modular′ (g ∩ f) (f †) id) ⟩
+    id ∩ (f † ∩ ⌜ id ∘ (g ∩ f) † ⌝) ∘ (g ∩ f)  =⟨ ap! (idl _) ⟩
+    id ∩ (f † ∩ ⌜ g ∩ f ⌝ †) ∘ ⌜ g ∩ f ⌝       =⟨ ap! ∩-comm ⟩
+    id ∩ (f † ∩ (f ∩ g) †) ∘ (f ∩ g)           ≤⟨ ∩-pres-r (∩-le-r ◀ (f ∩ g)) ⟩
+    id ∩ (f ∩ g) † ∘ (f ∩ g)                   ≤∎
+```
+
+Furthermore, the domain of $f \circ g$ is contained in the domain of
+$g$.
+
+```agda
+domain-∘ : domain (f ∘ g) ≤ domain g
+domain-∘ {f = f} {g = g} =
+  domain-universall (domain-coreflexive g) $
+  ≤-pushr (domain-universalr (domain-coreflexive g) ≤-refl)
+```
+
 # Antisymmetric Morphisms
 
 A morphism is **anti-symmetric** if $f \cap f^o \le id$.

@@ -196,7 +196,7 @@ abstract
 ## Duals
 
 ```agda
-  ≤-conj : ∀ {x} (f : Hom x x) → f ≤ f ∘ f † ∘ f
+  ≤-conj : ∀ (f : Hom x x) → f ≤ f ∘ f † ∘ f
   ≤-conj f =
     f                    ≤⟨ ∩-univ (≤-introl ≤-refl) ≤-refl ⟩
     (id ∘ f) ∩ f         ≤⟨ modular′ f id f ⟩
