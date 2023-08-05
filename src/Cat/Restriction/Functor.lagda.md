@@ -63,7 +63,7 @@ Let $F : \cC \to \cD$ be a restriction functor. Note that $F$ preserves
 [total morphisms] and [restriction idempotents].
 
 [total morphisms]: Cat.Restriction.Reasoning.html#total-morphisms
-[domains]: Cat.Restriction.Reasoning.html#restriction-idempotents
+[restriction idempotents]: Cat.Restriction.Reasoning.html#restriction-idempotents
 
 <!--
 ```agda
