@@ -70,9 +70,9 @@ of sets and partial maps:
   don't modify their arguments; it doesn't matter which order they
   diverge in!
 - If we precompose $g$ with a domain map $f \downarrow : A \to A$ and then
-  takes it's domain of definition, we get to ignore the action of
-  $g$, and focus only on it's termination.
+  takes its domain of definition, we get to ignore the action of
+  $g$, and focus only on its termination.
 - If we postcompose $g$ with a domain map $f \downarrow$, then
-  we still need to take into account the action of $g$; furthermore, it's
+  we still need to take into account the action of $g$; furthermore, its
   domain of definition needs to be restricted to image of $g$.
 
