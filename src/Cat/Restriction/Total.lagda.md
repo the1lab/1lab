@@ -50,6 +50,8 @@ module _ {o ℓ} {C : Precategory o ℓ} {C↓ : Restriction-category C} where
 Furthermore, the injection from $\thecat{Total}(\cC)$ into $\cC$ is
 [pseudomonic], as all isomorphisms in $\cC$ are total.
 
+[pseudomonic]: Cat.Functor.Properties.html#pseudomonic-functors
+
 ```agda
 
   Forget-total : Functor (Total-maps C↓) C
