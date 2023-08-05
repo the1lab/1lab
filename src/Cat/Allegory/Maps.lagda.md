@@ -20,19 +20,23 @@ some category of "sets and relations", to recover the associated
 category of "sets and functions". So, let's start by thinking about $\Rel$!
 
 If you have a relation $R \mono A \times B$, when does it correspond to
-a function $A \to B$? Well, it must definitely be _functional_: if we
+a function $A \to B$? Well, it must definitely be [functional]: if we
 want $R(x, y)$ to represent "$f(x) = y$", then surely if $R(x, y) \land
 R(x, z)$, we must have $y = z$. In allegorical language, we would say
 $RR^o \le \id$, which we can calculate to mean (in $\Rel$) that, for
 all $x, y$,
 
+[functional]: Cat.Allegory.Morphism.html#functional-morphisms
+
 $$
 (\exists z, R(z, x) \land R(z, y)) \to (x = y)\text{.}
 $$
 
-It must also be an _entire_ relation: Every $x$ must at least one $y$ it
+It must also be an [entire] relation: Every $x$ must at least one $y$ it
 is related to, and by functionality, _exactly_ one $y$ it is related to.
 This is the "value of" the function at $y$.
+
+[entire]: Cat.Allegory.Morphism.html#entire-morphisms
 
 ```agda
 module _ {o ℓ h} (A : Allegory o ℓ h) where

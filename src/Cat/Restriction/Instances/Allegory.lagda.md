@@ -1,0 +1,70 @@
+<!--
+```agda
+open import Cat.Allegory.Base
+open import Cat.Functor.WideSubcategory
+open import Cat.Restriction.Base
+open import Cat.Prelude
+
+import Cat.Allegory.Morphism
+```
+-->
+
+```agda
+module Cat.Restriction.Instances.Allegory where
+```
+
+# Restriction Categories from Allegories
+
+Let $\cA$ be an [allegory], considered as a sort of generalized category
+of "sets and relations". Much like we can recover a category of "sets and
+functions" via the associated [category of maps], we can recover a category
+of "sets and partial functions" by only restricting to [functional]
+morphisms instead of functional _and_ [entire] relations.
+
+[allegory]: Cat.Allegory.Base.html
+[category of maps]: Cat.Allegory.Maps.html
+[functional]: Cat.Allegory.Morphism.html#functional-morphisms
+[entire]: Cat.Allegory.Morphism.html#entire-morphisms
+
+<!--
+```agda
+module _ {o ℓ ℓ'} (A : Allegory o ℓ ℓ') where
+  open Cat.Allegory.Morphism A
+  open Restriction-category
+  open Wide-hom
+```
+-->
+
+```agda
+  Partial-maps-subcat : Wide-subcat {C = cat} ℓ'
+  Partial-maps-subcat .Wide-subcat.P = is-functional
+  Partial-maps-subcat .Wide-subcat.P-prop f = ≤-thin
+  Partial-maps-subcat .Wide-subcat.P-id =
+    functional-id
+  Partial-maps-subcat .Wide-subcat.P-∘ f-partial g-partial =
+    functional-∘ f-partial g-partial
+
+  Partial-maps : Precategory o (ℓ ⊔ ℓ')
+  Partial-maps = Wide Partial-maps-subcat
+```
+
+This category can be equipped with a restriction structure by taking
+the [domain] of the partial maps. Note that the first 3 axioms don't
+actually require functionality; it's only the reverse direction of
+the 4th axiom where it is relevant!
+
+[domain]: Cat.Allegory.Morphism.html#domains
+
+```agda
+  Partial-maps-restriction : Restriction-category Partial-maps
+  Partial-maps-restriction ._↓ f .hom = domain (f .hom)
+  Partial-maps-restriction ._↓ f .witness = domain-functional (f .hom)
+  Partial-maps-restriction .↓-dom f =
+    Wide-hom-path $ domain-absorb (f .hom)
+  Partial-maps-restriction .↓-comm f g =
+    Wide-hom-path $ domain-comm
+  Partial-maps-restriction .↓-smashr f g =
+    Wide-hom-path $ domain-smashr (g .hom) (f .hom)
+  Partial-maps-restriction .↓-swap f g =
+    Wide-hom-path $ domain-swap (f .hom) (g .hom) (g .witness)
+```
