@@ -607,6 +607,30 @@ open import Cat.Allegory.Morphism -- Morphisms in allegories
 open import Cat.Allegory.Reasoning -- Reasoning combinators
 ```
 
+## Restriction Categories
+
+Restriction categories axiomatize categories of partial maps by adding
+an restriction operation $(-)\downarrow : \cC(X,Y) \to \cC(X,X)$ that
+takes a morphism $f$ to a subobject of the identity morphism that is
+defined precisely when $f$ is.
+
+```agda
+open import Cat.Restriction.Base
+  -- The definition
+open import Cat.Restriction.Functor
+  -- Functors between restriction categories
+open import Cat.Restriction.Reasoning
+  -- Reasoning combinators and morphism classes
+open import Cat.Restriction.Total
+  -- Categories of total maps
+```
+
+```agda
+open import Cat.Restriction.Instances.Allegory
+ -- Restriction structures on partial maps of an allegory.
+```
+
+
 ## Displayed categories
 
 A category displayed over $\cB$ is a particular concrete presentation
