@@ -3,7 +3,7 @@
 open import Cat.Allegory.Base
 open import Cat.Prelude
 
-import Cat.Allegory.Reasoning as Ar
+import Cat.Allegory.Morphism
 ```
 -->
 
@@ -36,12 +36,12 @@ This is the "value of" the function at $y$.
 
 ```agda
 module _ {o ℓ h} (A : Allegory o ℓ h) where
-  open Allegory A
+  open Cat.Allegory.Morphism A
   record is-map x y (f : Hom x y) : Type h where
     constructor mapping
     field
-      functional : f ∘ f † ≤ id
-      entire     : id ≤ f † ∘ f
+      functional : is-functional f
+      entire     : is-entire f
 
 module _ {o ℓ h} {A : Allegory o ℓ h} where
   open Allegory A
@@ -87,7 +87,7 @@ arbitrary relations).
 
 ```agda
 module _ {o ℓ h} (A : Allegory o ℓ h) where
-  private module A = Ar A
+  private module A = Cat.Allegory.Morphism A
   open is-map
   open Precategory hiding (_∘_ ; id)
   open A using (_† ; _∘_ ; id ; _◀_ ; _▶_)
@@ -106,21 +106,12 @@ using those words.
 
 ```agda
   Maps[_] .Precategory.id = A.id , mapping
-    (subst (A._≤ id) (sym (A.idl _ ∙ dual-id A)) A.≤-refl)
-    (subst (id A.≤_) (sym (A.idr _ ∙ dual-id A)) A.≤-refl)
-
-  Maps[_] .Precategory._∘_ (f , m) (g , m′) = f A.∘ g , mapping
-    ( (f ∘ g) ∘ (f ∘ g) †     A.=⟨ A.†-inner refl ⟩
-      f ∘ (g ∘ g †) ∘ f †     A.≤⟨ f ▶ m′ .functional ◀ f † ⟩
-      f ∘ id ∘ f †            A.=⟨ A.refl⟩∘⟨ A.idl _ ⟩
-      f ∘ f †                 A.≤⟨ m .functional ⟩
-      id                      A.≤∎ )
-    ( id                   A.≤⟨ m′ .entire ⟩
-      g † ∘ g              A.=⟨ ap (g † ∘_) (sym (A.idl _)) ⟩
-      g † ∘ id ∘ g         A.≤⟨ g † ▶ m .entire ◀ g ⟩
-      g † ∘ (f † ∘ f) ∘ g  A.=⟨ A.pulll (A.pulll (sym A.dual-∘)) ∙ A.pullr refl ⟩
-      (f ∘ g) † ∘ (f ∘ g)  A.≤∎ )
-
+    A.functional-id
+    A.entire-id
+  Maps[_] .Precategory._∘_ (f , m) (g , m′) =
+    f A.∘ g , mapping
+      (A.functional-∘ (m .functional) (m′ .functional))
+      (A.entire-∘ (m .entire) (m′ .entire))
   Maps[_] .idr f = Σ-prop-path (λ _ → hlevel 1) (A.idr _)
   Maps[_] .idl f = Σ-prop-path (λ _ → hlevel 1) (A.idl _)
   Maps[_] .assoc f g h = Σ-prop-path (λ _ → hlevel 1) (A.assoc _ _ _)
