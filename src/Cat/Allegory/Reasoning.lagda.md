@@ -32,7 +32,7 @@ inequality, and rewriting by an equality:
 ```agda
 private variable
   w x y z : Ob
-  a b c d f f′ g g′ h : Hom x y
+  a b c d f f′ g g′ h i : Hom x y
 
 _≤⟨_⟩_ : ∀ (f : Hom x y) → f ≤ g → g ≤ h → f ≤ h
 _=⟨_⟩_ : ∀ (f : Hom x y) → f ≡ g → g ≤ h → f ≤ h
@@ -72,6 +72,7 @@ ordering in both of its arguments.
 ∩-pres     : f ≤ f′ → g ≤ g′ → f ∩ g ≤ f′ ∩ g′
 ∩-distribl   : f ∘ (g ∩ h) ≤ (f ∘ g) ∩ (f ∘ h)
 ∩-distribr   : (g ∩ h) ∘ f ≤ (g ∘ f) ∩ (h ∘ f)
+∩-distrib   : (f ∩ g) ∘ (h ∩ i) ≤ (f ∘ h ∩ g ∘ h) ∩ (f ∘ i ∩ g ∘ i)
 ∩-assoc      : (f ∩ g) ∩ h ≡ f ∩ (g ∩ h)
 ∩-comm       : f ∩ g ≡ g ∩ f
 ∩-idempotent : f ∩ f ≡ f
@@ -84,6 +85,7 @@ ordering in both of its arguments.
 ∩-pres w v = ∩-univ (≤-trans ∩-le-l w) (≤-trans ∩-le-r v)
 ∩-distribl = ∩-univ (_ ▶ ∩-le-l) (_ ▶ ∩-le-r)
 ∩-distribr = ∩-univ (∩-le-l ◀ _) (∩-le-r ◀ _)
+∩-distrib = ≤-trans ∩-distribl (∩-pres ∩-distribr ∩-distribr)
 ∩-assoc = ≤-antisym
   (∩-univ (≤-trans ∩-le-l ∩-le-l)
           (∩-univ (≤-trans ∩-le-l ∩-le-r) ∩-le-r))
@@ -107,12 +109,6 @@ modular′ f g h =
   (g † ∩ (f † † ∘ h †)) † ∘ f † † =⟨ ap₂ _∘_ (dual-∩ A) (dual f) ⟩
   (g † † ∩ (f † † ∘ h †) †) ∘ f   =⟨ ap₂ _∘_ (ap₂ _∩_ (dual g) (ap _† (ap₂ _∘_ (dual f) refl) ·· dual-∘ ·· ap (_∘ f †) (dual h))) refl ⟩
   (g ∩ h ∘ f †) ∘ f               ≤∎
-```
-
-```agda
-†-inner : (p : g ∘ g′ † ≡ h) → (f ∘ g) ∘ (f′ ∘ g′) † ≡ f ∘ h ∘ f′ †
-†-inner p = ap₂ _∘_ refl dual-∘ ∙ sym (assoc _ _ _)
-          ∙ ap₂ _∘_ refl (assoc _ _ _ ∙ ap₂ _∘_ p refl)
 ```
 
 ## Identities
@@ -193,6 +189,17 @@ abstract
   ≤-extend-inner w = ≤-extendr (≤-extendl w)
 ```
 
+## Cancellations
+
+```agda
+  ≤-cancell : a ∘ b ≤ id → a ∘ b ∘ f ≤ f
+  ≤-cancell w = ≤-trans (≤-pulll w) (≤-eliml ≤-refl)
+
+  ≤-cancelr : a ∘ b ≤ id → (f ∘ a) ∘ b ≤ f
+  ≤-cancelr w = ≤-trans (≤-pullr w) (≤-elimr ≤-refl)
+```
+
+
 ## Duals
 
 ```agda
@@ -202,4 +209,29 @@ abstract
     (id ∘ f) ∩ f         ≤⟨ modular′ f id f ⟩
     (id ∩ (f ∘ f †)) ∘ f ≤⟨ ≤-pushl ∩-le-r ⟩
     f ∘ f † ∘ f ≤∎
+
+  †-pulll : a ∘ b † ≤ c → a ∘ (f ∘ b) † ≤ c ∘ f †
+  †-pulll {a = a} {b = b} {c = c} {f = f} w =
+    a ∘ (f ∘ b) † =⟨ ap (a ∘_) dual-∘ ⟩
+    a ∘ b † ∘ f † ≤⟨ ≤-pulll w ⟩
+    c ∘ f † ≤∎
+
+  †-pullr : a † ∘ b ≤ c → (a ∘ f) † ∘ b ≤ f † ∘ c
+  †-pullr {a = a} {b = b} {c = c} {f = f} w =
+    (a ∘ f) † ∘ b =⟨ ap (_∘ b) dual-∘ ⟩
+    (f † ∘ a †) ∘ b ≤⟨ ≤-pullr w ⟩
+    f † ∘ c ≤∎
+
+  †-inner : (p : g ∘ g′ † ≡ h) → (f ∘ g) ∘ (f′ ∘ g′) † ≡ f ∘ h ∘ f′ †
+  †-inner p = ap₂ _∘_ refl dual-∘ ∙ sym (assoc _ _ _)
+            ∙ ap₂ _∘_ refl (assoc _ _ _ ∙ ap₂ _∘_ p refl)
+
+  †-cancell : a ∘ b † ≤ id → a ∘ (f ∘ b) † ≤ f †
+  †-cancell w = ≤-trans (†-pulll w) (≤-eliml ≤-refl)
+
+  †-cancelr : a † ∘ b ≤ id → (a ∘ f) † ∘ b ≤ f †
+  †-cancelr w = ≤-trans (†-pullr w) (≤-elimr ≤-refl)
+
+  †-cancel-inner : a ∘ b † ≤ id → (f ∘ a) ∘ (g ∘ b) † ≤ f ∘ g †
+  †-cancel-inner w = †-pulll (≤-cancelr w)
 ```

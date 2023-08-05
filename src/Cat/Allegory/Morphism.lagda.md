@@ -402,6 +402,87 @@ coreflexive-comm f-corefl g-corefl =
   ·· sym (coreflexive-∘-∩ g-corefl f-corefl)
 ```
 
+# Functional Morphisms
+
+A morphism is **functional** when $f \circ f^o \le id$. Intuitively,
+these are the relations $R \mono A \times B$ where every element $x$ is
+related to at most one $y$.
+
+```agda
+is-functional : Hom x y → Type _
+is-functional f = f ∘ f † ≤ id
+```
+
+First, a useful lemma: coreflexive morphisms are always functional.
+
+```agda
+coreflexive→functional : is-coreflexive f → is-functional f
+coreflexive→functional f-corefl =
+  coreflexive-∘ f-corefl (coreflexive-dual f-corefl)
+```
+
+This immediately implies that the identity morphism is functional.
+
+```agda
+functional-id : is-functional (id {x})
+functional-id = coreflexive→functional coreflexive-id
+```
+
+Functional morphisms are closed under composition and intersection.
+
+```agda
+functional-∘ : is-functional f → is-functional g → is-functional (f ∘ g)
+functional-∘ {f = f} {g = g} f-func g-func =
+  (f ∘ g) ∘ (f ∘ g) † ≤⟨ †-cancel-inner g-func ⟩
+  f ∘ f †             ≤⟨ f-func ⟩
+  id                  ≤∎
+
+functional-∩ : is-functional f → is-functional g → is-functional (f ∩ g)
+functional-∩ {f = f} {g = g} f-func g-func =
+  (f ∩ g) ∘ (f ∩ g) †                       =⟨ ap ((f ∩ g) ∘_) (dual-∩ A) ⟩
+  (f ∩ g) ∘ (f † ∩ g †)                     ≤⟨ ∩-distrib ⟩
+  (f ∘ f † ∩ g ∘ f †) ∩ (f ∘ g † ∩ g ∘ g †) ≤⟨ ∩-pres ∩-le-l ∩-le-r ⟩
+  f ∘ f † ∩ g ∘ g †                         ≤⟨ ∩-pres f-func g-func ⟩
+  id ∩ id                                   =⟨ ∩-idempotent ⟩
+  id                                        ≤∎
+```
+
+# Entire Morphisms
+
+A morphism is **entire** when $id \le f^o \circ f$. These are the
+relations where each $x$ must be related to at least one $y$.
+
+```agda
+is-entire : Hom x y → Type _
+is-entire f = id ≤ f † ∘ f
+```
+
+Reflexive morphisms are always entire.
+
+```agda
+reflexive→entire : is-reflexive f → is-entire f
+reflexive→entire f-refl =
+  reflexive-∘ (reflexive-dual f-refl) f-refl
+```
+
+From this, we can deduce that the identity morphism is entire.
+
+```agda
+entire-id : is-entire (id {x})
+entire-id = reflexive→entire reflexive-id
+```
+
+Entire morphisms are closed under composition.
+
+```agda
+entire-∘ : is-entire f → is-entire g → is-entire (f ∘ g)
+entire-∘ {f = f} {g = g} f-entire g-entire =
+  id                  ≤⟨ g-entire ⟩
+  g † ∘ g             ≤⟨ g † ▶ ≤-introl f-entire ⟩
+  g † ∘ (f † ∘ f) ∘ g =⟨ extendl (pulll (sym dual-∘)) ⟩
+  (f ∘ g) † ∘ (f ∘ g) ≤∎
+```
+
 # Domains
 
 The domain of a morphism $f : X \to Y$ is defined as
@@ -522,6 +603,7 @@ domain-id = ≤-antisym ∩-le-l (∩-univ ≤-refl (≤-introl symmetric-id))
 
 Characterizing composition of domains is somewhat more difficult,
 though it is possible. Namely, we shall show the following:
+
 $$\rm{dom}(f \circ \rm{dom}(g)) = \rm{dom}(f) \circ \rm{dom}(g)$$
 
 ```agda
@@ -529,16 +611,42 @@ domain-smashr
   : ∀ (f : Hom x z) (g : Hom x y)
   → domain (f ∘ domain g) ≡ domain f ∘ domain g
 domain-smashr f g = ≤-antisym ≤-to ≤-from where
+```
+
+We begin by noting that the composition $\rm{dom}(f) \circ \rm{dom}(g)$
+is coreflexive.
+
+```agda
   fg-corefl : is-coreflexive (domain f ∘ domain g)
   fg-corefl = coreflexive-∘ (domain-coreflexive f) (domain-coreflexive g)
+```
 
+To show the forward direction, we can apply the universal property of
+domains to transform the goal into
+
+$$f \circ \rm{dom}(g) \le (f \circ \rm{dom}(g)) \circ (\rm{dom}(f) \circ \rm{dom}(g))$$
+
+We can then solve this goal by repeatedly appealing to the fact that
+domains are coreflexive.
+
+```agda
   ≤-to : domain (f ∘ domain g) ≤ domain f ∘ domain g
   ≤-to =
     domain-universall fg-corefl $
     f ∘ domain g                           =˘⟨ ap₂ _∘_ (domain-absorb f) domain-idempotent ⟩
     (f ∘ domain f) ∘ (domain g ∘ domain g) =⟨ extendl (extendr domain-comm) ⟩
     (f ∘ domain g) ∘ (domain f ∘ domain g) ≤∎
+```
 
+To show the reverse direction, we apply the universal property of the
+intersection, reducing the goal to
+
+$$\rm{dom}(f) \circ \rm{dom}(g) \le (f \circ \rm{dom}(g))^o \circ f \circ \rm{dom}(g)$$
+
+We then solve the goal by an extended series of appeals to the
+coreflexivity of domains.
+
+```agda
   ≤-from : domain f ∘ domain g ≤ domain (f ∘ domain g)
   ≤-from = ∩-univ fg-corefl $
     domain f ∘ domain g               =˘⟨ ap (domain f ∘_) domain-idempotent ⟩
@@ -547,6 +655,55 @@ domain-smashr f g = ≤-antisym ≤-to ≤-from where
     domain g † ∘ domain f ∘ domain g  ≤⟨ domain g † ▶ ∩-le-r ◀ domain g ⟩
     domain g † ∘ (f † ∘ f) ∘ domain g =⟨ extendl (pulll (sym dual-∘)) ⟩
     (f ∘ domain g) † ∘ f ∘ domain g   ≤∎
+```
+
+We can also characterize postcomposition by a domain, though this
+is restricted to an inequality in the general case.
+
+```agda
+domain-swapl
+  : ∀ (f : Hom y z) (g : Hom x y)
+  → domain f ∘ g ≤ g ∘ domain (f ∘ g)
+domain-swapl f g =
+  (id ∩ (f † ∘ f)) ∘ g             ≤⟨ ∩-distribr ⟩
+  (id ∘ g ∩ (f † ∘ f) ∘ g)         =⟨ ap₂ _∩_ id-comm-sym (sym (assoc (f †) f g)) ⟩
+  (g ∘ id ∩ f † ∘ f ∘ g)           ≤⟨ modular id g (f † ∘ f ∘ g) ⟩
+  g ∘ (id ∩ ⌜ g † ∘ f † ∘ f ∘ g ⌝) =⟨ ap! (pulll (sym dual-∘)) ⟩
+  g ∘ (id ∩ (f ∘ g) † ∘ (f ∘ g))   ≤∎
+```
+
+We can strengthen this to an equality when $g$ is functional.
+
+```agda
+domain-swap
+  : ∀ (f : Hom y z) (g : Hom x y)
+  → is-functional g
+  → domain f ∘ g ≡ g ∘ domain (f ∘ g)
+domain-swap f g w =
+  ≤-antisym (domain-swapl f g) $
+  g ∘ (id ∩ (f ∘ g) † ∘ (f ∘ g))   ≤⟨ ∩-distribl ⟩
+  g ∘ id ∩ g ∘ (f ∘ g) † ∘ (f ∘ g) ≤⟨ ∩-pres-r (≤-extendl (†-pulll w)) ⟩
+  g ∘ id ∩ id ∘ f † ∘ f ∘ g        =⟨ ap₂ _∩_ id-comm (idl _) ⟩
+  id ∘ g ∩ f † ∘ f ∘ g             ≤⟨ modular′ g id (f † ∘ f ∘ g) ⟩
+  (id ∩ (f † ∘ f ∘ g) ∘ g †) ∘ g   ≤⟨ ∩-pres-r (≤-pullr (≤-cancelr w)) ◀ g ⟩
+  (id ∩ f † ∘ f) ∘ g ≤∎
+```
+
+We also note that domains are always functional.
+
+```agda
+domain-functional : (f : Hom x y) → is-functional (domain f)
+domain-functional f = coreflexive→functional (domain-coreflexive f)
+```
+
+The domain of an entire morphism is identity.
+
+```agda
+domain-entire : is-entire f → domain f ≡ id
+domain-entire f-entire =
+  ≤-antisym
+    (domain-coreflexive _)
+    (∩-univ ≤-refl f-entire)
 ```
 
 # Antisymmetric Morphisms
