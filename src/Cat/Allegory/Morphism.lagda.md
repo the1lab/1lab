@@ -1,9 +1,11 @@
 <!--
 ```agda
 open import Cat.Allegory.Base
+import Cat.Diagram.Idempotent
 open import Cat.Prelude
 
 import Cat.Allegory.Reasoning
+import Cat.Diagram.Idempotent
 ```
 -->
 
@@ -14,6 +16,7 @@ module Cat.Allegory.Morphism {o ℓ ℓ'} (A : Allegory o ℓ ℓ') where
 <!--
 ```agda
 open Cat.Allegory.Reasoning A public
+open Cat.Diagram.Idempotent cat public
 
 private variable
   w x y z : Ob
@@ -355,6 +358,16 @@ coreflexive→symmetric {f = f} f-corefl =
   id ∘ f † ∘ id =⟨ idl _ ∙ idr _ ⟩
   f † ≤∎
 ```
+
+As coreflexive morphisms are both transitive and cotransitive, they
+are idempotent.
+
+```agda
+coreflexive→idempotent : is-coreflexive f → is-idempotent f
+coreflexive→idempotent f-corefl =
+  ≤-antisym (coreflexive→transitive f-corefl) (coreflexive→cotransitive f-corefl)
+```
+
 Furthermore, composition of coreflexive morphisms is equivalent to
 intersection.
 
@@ -376,7 +389,20 @@ coreflexive-∘-∩ {f = f} {g = g} f-corefl g-corefl =
       coreflexive-∩ f-corefl g-corefl
 ```
 
-## Domains
+This has a useful corollary: coreflexive morphisms always commute!
+
+```agda
+coreflexive-comm
+  : ∀ {x} {f g : Hom x x}
+  → is-coreflexive f → is-coreflexive g
+  → f ∘ g ≡ g ∘ f
+coreflexive-comm f-corefl g-corefl =
+  coreflexive-∘-∩ f-corefl g-corefl
+  ·· ∩-comm
+  ·· sym (coreflexive-∘-∩ g-corefl f-corefl)
+```
+
+# Domains
 
 The domain of a morphism $f : X \to Y$ is defined as
 $id \cap (f^o \circ f)$, denoted $\rm{dom}(f)$.
@@ -395,6 +421,25 @@ The domain of a morphism is always coreflexive.
 domain-coreflexive : ∀ (f : Hom x y) → is-coreflexive (domain f)
 domain-coreflexive f = ∩-le-l
 ```
+
+<!--
+```agda
+domain-elimr : f ∘ domain g ≤ f
+domain-elimr = ≤-elimr (domain-coreflexive _)
+
+domain-eliml : domain f ∘ g ≤ g
+domain-eliml = ≤-eliml (domain-coreflexive _)
+
+domain-idempotent : is-idempotent (domain f)
+domain-idempotent = coreflexive→idempotent (domain-coreflexive _)
+
+domain-dual : domain f † ≡ domain f
+domain-dual = sym (symmetric→self-dual (coreflexive→symmetric (domain-coreflexive _)))
+
+domain-comm : domain f ∘ domain g ≡ domain g ∘ domain f
+domain-comm = coreflexive-comm (domain-coreflexive _) (domain-coreflexive _)
+```
+-->
 
 Furthermore, the domain enjoys the following universal property:
 Let $f : X \to Y$ and $g : X \to X$ such that $g$ is coreflexive.
@@ -416,6 +461,16 @@ domain-universall {g = g} {f = f} g-corefl w =
   (f † ∘ f ∩ id ∘ g †) ∘ g ≤⟨ ≤-trans ∩-le-r (≤-eliml ≤-refl) ◀ g ⟩
   g † ∘ g                  ≤⟨ ≤-eliml (coreflexive-dual g-corefl) ⟩
   g                        ≤∎
+```
+
+This has a nice corollary: $f \circ \rm{dom}(f) = f$.
+
+```agda
+domain-absorb : ∀ (f : Hom x y) → f ∘ domain f ≡ f
+domain-absorb f =
+  ≤-antisym
+    domain-elimr
+    (domain-universalr (domain-coreflexive f) ≤-refl)
 ```
 
 We can nicely characterize the domain of an intersection.
@@ -463,6 +518,35 @@ The domain of the identity morphism is simply the identity morphism.
 ```agda
 domain-id : domain (id {x}) ≡ id
 domain-id = ≤-antisym ∩-le-l (∩-univ ≤-refl (≤-introl symmetric-id))
+```
+
+Characterizing composition of domains is somewhat more difficult,
+though it is possible. Namely, we shall show the following:
+$$\rm{dom}(f \circ \rm{dom}(g)) = \rm{dom}(f) \circ \rm{dom}(g)$$
+
+```agda
+domain-smashr
+  : ∀ (f : Hom x z) (g : Hom x y)
+  → domain (f ∘ domain g) ≡ domain f ∘ domain g
+domain-smashr f g = ≤-antisym ≤-to ≤-from where
+  fg-corefl : is-coreflexive (domain f ∘ domain g)
+  fg-corefl = coreflexive-∘ (domain-coreflexive f) (domain-coreflexive g)
+
+  ≤-to : domain (f ∘ domain g) ≤ domain f ∘ domain g
+  ≤-to =
+    domain-universall fg-corefl $
+    f ∘ domain g                           =˘⟨ ap₂ _∘_ (domain-absorb f) domain-idempotent ⟩
+    (f ∘ domain f) ∘ (domain g ∘ domain g) =⟨ extendl (extendr domain-comm) ⟩
+    (f ∘ domain g) ∘ (domain f ∘ domain g) ≤∎
+
+  ≤-from : domain f ∘ domain g ≤ domain (f ∘ domain g)
+  ≤-from = ∩-univ fg-corefl $
+    domain f ∘ domain g               =˘⟨ ap (domain f ∘_) domain-idempotent ⟩
+    domain f ∘ domain g ∘ domain g    =⟨ extendl domain-comm ⟩
+    domain g ∘ domain f ∘ domain g    =⟨ ap (_∘ domain f ∘ domain g) (sym domain-dual) ⟩
+    domain g † ∘ domain f ∘ domain g  ≤⟨ domain g † ▶ ∩-le-r ◀ domain g ⟩
+    domain g † ∘ (f † ∘ f) ∘ domain g =⟨ extendl (pulll (sym dual-∘)) ⟩
+    (f ∘ domain g) † ∘ f ∘ domain g   ≤∎
 ```
 
 # Antisymmetric Morphisms
