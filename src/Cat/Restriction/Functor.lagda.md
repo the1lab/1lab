@@ -19,8 +19,10 @@ open Functor
 
 # Restriction Functors
 
-A functor $F : \cC \to \cD$ is a **restriction functor** if
-$F (f \downarrow) = (F f) \downarrow$.
+A functor $F : \cC \to \cD$ between [restriction categories] is a
+**restriction functor** if $F (\restrict{f}) = \restrict{(F f)}$.
+
+[restriction categories]: Cat.Restriction.Base.html
 
 ```agda
 is-restriction-functor
