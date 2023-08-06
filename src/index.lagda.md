@@ -610,7 +610,7 @@ open import Cat.Allegory.Reasoning -- Reasoning combinators
 ## Restriction Categories
 
 Restriction categories axiomatize categories of partial maps by adding
-an restriction operation $(-)\downarrow : \cC(X,Y) \to \cC(X,X)$ that
+n restriction operation $(-)\downarrow : \cC(X,Y) \to \cC(X,X)$ that
 takes a morphism $f$ to a subobject of the identity morphism that is
 defined precisely when $f$ is.
 
