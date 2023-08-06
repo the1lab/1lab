@@ -103,7 +103,7 @@ symmetric-id {x = x} = subst (id {x} ≤_) (sym $ dual-id A) (≤-refl {f = id {
 ```
 
 The composition of symmetric morphisms $f$ and $g$ is symmetric if
-$g \circ f \le f \circ g$.
+$gf \le fg$.
 
 ```agda
 symmetric-∘
@@ -148,7 +148,7 @@ symmetric→self-dual f-sym =
 
 # Transitive Morphisms
 
-A morphism $f : X \to X$ is **transitive** if $f \circ f \le f$.
+A morphism $f : X \to X$ is **transitive** if $ff \le f$.
 
 ```agda
 is-transitive : Hom x x → Type _
@@ -163,7 +163,7 @@ transitive-id = ≤-eliml ≤-refl
 ```
 
 The composition of two transitive morphisms $f$ and $g$ is transitive
-if $g \circ f \le f \circ g$.
+if $gf \le fg$.
 
 ```agda
 transitive-∘
@@ -177,7 +177,7 @@ transitive-∘ {f = f} {g = g} f-trans g-trans w =
 ```
 
 A useful little lemma is that if $f$ is transitive, then
-$(f \cap g) \circ (f \cap h) \le f$.
+$(f \cap g)(f \cap h) \le f$.
 
 ```agda
 transitive-∩l : is-transitive f → (f ∩ g) ∘ (f ∩ h) ≤ f
@@ -209,7 +209,7 @@ transitive-dual {f = f} f-trans =
 
 # Cotransitive Morphisms
 
-A morphism $f : X \to X$ is **cotransitive** if $f \le f \circ f$.
+A morphism $f : X \to X$ is **cotransitive** if $f \le ff$.
 
 ::: warning
 **Warning**: There is another notion of cotransitive relation, which
@@ -234,7 +234,7 @@ cotransitive-id = ≤-introl ≤-refl
 ```
 
 The composition of two cotransitive morphisms $f$ and $g$ is cotransitive
-if $f \circ g \le g \circ f$.
+if $fg \le gf$.
 
 ```agda
 cotransitive-∘
@@ -248,7 +248,7 @@ cotransitive-∘ {f = f} {g = g} f-cotrans g-cotrans w =
 ```
 
 If the intersection of $f$ and $g$ is cotransitive, then
-$f \cap g \le f \circ g$.
+$f \cap g \le fg$.
 
 ```agda
 cotransitive-∩-∘
@@ -334,6 +334,7 @@ coreflexive-≤ w g-corefl = ≤-trans w g-corefl
 ```
 
 If $f$ is coreflexive, then it is transitive, cotransitive, and symmetric.
+Coreflexive morphisms are also anti-symmetric, see `coreflexive→antisymmetric`{.Agda}.
 
 ```agda
 coreflexive→transitive
@@ -359,8 +360,8 @@ coreflexive→symmetric {f = f} f-corefl =
   f † ≤∎
 ```
 
-As coreflexive morphisms are both transitive and cotransitive, they
-are idempotent.
+As coreflexive morphisms are both transitive ($ff \le f$) and
+cotransitive ($f \le ff$), they are idempotent.
 
 ```agda
 coreflexive→idempotent : is-coreflexive f → is-idempotent f
@@ -404,9 +405,13 @@ coreflexive-comm f-corefl g-corefl =
 
 # Functional Morphisms
 
-A morphism is **functional** when $f \circ f^o \le id$. Intuitively,
-these are the relations $R \mono A \times B$ where every element $x$ is
-related to at most one $y$.
+A morphism $$ is **functional** when $ff^o \le id$. In $\Rel$, these
+are the relations $R \mono X \times Y$ such that every $x$ is related to
+at most one $y$. To see this, note that $RR^o(y,y')$ is defined as
+$\exists (x : X). R(x,y) \times R(x,y')$. Therefore,
+$RR^o(y,y') \subseteq y = y'$ means that if there exists any $x$ such that
+$R(x,y)$ and $R(x,y')$, then $y$ and $y'$ must be equal. Put more plainly,
+every $x$ is related to at most one $y$!
 
 ```agda
 is-functional : Hom x y → Type _
@@ -449,8 +454,12 @@ functional-∩ {f = f} {g = g} f-func g-func =
 
 # Entire Morphisms
 
-A morphism is **entire** when $id \le f^o \circ f$. These are the
-relations where each $x$ must be related to at least one $y$.
+A morphism is **entire** when $id \le f^of$. In $\Rel$, these are the
+relations $R \mono X \times Y$ where each $x$ must be related to at least
+one $y$. To see this, recall that $R^oR(x,x')$ is defined as
+$\exists (y : Y). R(x,y) \times R(x',y)$. If $x = x' \subseteq R^oR(x,x')$,
+then we can reduce this statement down to $\forall (x : X). \exists (y : Y). R(x,y)$.
+
 
 ```agda
 is-entire : Hom x y → Type _
@@ -486,7 +495,7 @@ entire-∘ {f = f} {g = g} f-entire g-entire =
 # Domains
 
 The domain of a morphism $f : X \to Y$ is defined as
-$id \cap (f^o \circ f)$, denoted $\rm{dom}(f)$.
+$id \cap (f^of)$, denoted $\rm{dom}(f)$.
 In $\Rel$, the domain of a relation $R : X \times Y \to \Omega$ is a
 relation $X \times X \to \Omega$ that relates two elements $x, x' : X$
 whenever $x = x'$, and $R(x,y)$ for some $y$.
@@ -524,7 +533,7 @@ domain-comm = coreflexive-comm (domain-coreflexive _) (domain-coreflexive _)
 
 Furthermore, the domain enjoys the following universal property:
 Let $f : X \to Y$ and $g : X \to X$ such that $g$ is coreflexive.
-Then $\rm{dom}(f) \le g$ if and only if $f \le f \circ g$.
+Then $\rm{dom}(f) \le g$ if and only if $f \le fg$.
 
 ```agda
 domain-universalr : is-coreflexive g → domain f ≤ g → f ≤ f ∘ g
@@ -544,7 +553,7 @@ domain-universall {g = g} {f = f} g-corefl w =
   g                        ≤∎
 ```
 
-This has a nice corollary: $f \circ \rm{dom}(f) = f$.
+This has a nice corollary: $f\rm{dom}(f) = f$.
 
 ```agda
 domain-absorb : ∀ (f : Hom x y) → f ∘ domain f ≡ f
@@ -577,8 +586,7 @@ domain-∩ {f = f} {g = g} = ≤-antisym ≤-to ≤-from where
     id ∩ (f ∩ g) † ∘ (f ∩ g)                   ≤∎
 ```
 
-Furthermore, the domain of $f \circ g$ is contained in the domain of
-$g$.
+Furthermore, the domain of $fg$ is contained in the domain of $g$.
 
 ```agda
 domain-∘ : domain (f ∘ g) ≤ domain g
@@ -604,7 +612,7 @@ domain-id = ≤-antisym ∩-le-l (∩-univ ≤-refl (≤-introl symmetric-id))
 Characterizing composition of domains is somewhat more difficult,
 though it is possible. Namely, we shall show the following:
 
-$$\rm{dom}(f \circ \rm{dom}(g)) = \rm{dom}(f) \circ \rm{dom}(g)$$
+$$\rm{dom}(f\rm{dom}(g)) = \rm{dom}(f)\rm{dom}(g)$$
 
 ```agda
 domain-smashr
@@ -613,7 +621,7 @@ domain-smashr
 domain-smashr f g = ≤-antisym ≤-to ≤-from where
 ```
 
-We begin by noting that the composition $\rm{dom}(f) \circ \rm{dom}(g)$
+We begin by noting that the composition $\rm{dom}(f)\rm{dom}(g)$
 is coreflexive.
 
 ```agda
@@ -624,7 +632,7 @@ is coreflexive.
 To show the forward direction, we can apply the universal property of
 domains to transform the goal into
 
-$$f \circ \rm{dom}(g) \le (f \circ \rm{dom}(g)) \circ (\rm{dom}(f) \circ \rm{dom}(g))$$
+$$f\rm{dom}(g) \le (f\rm{dom}(g))(\rm{dom}(f)\rm{dom}(g))$$
 
 We can then solve this goal by repeatedly appealing to the fact that
 domains are coreflexive.
@@ -641,7 +649,7 @@ domains are coreflexive.
 To show the reverse direction, we apply the universal property of the
 intersection, reducing the goal to
 
-$$\rm{dom}(f) \circ \rm{dom}(g) \le (f \circ \rm{dom}(g))^o \circ f \circ \rm{dom}(g)$$
+$$\rm{dom}(f)\rm{dom}(g) \le (f\rm{dom}(g))^of\rm{dom}(g)$$
 
 We then solve the goal by an extended series of appeals to the
 coreflexivity of domains.
@@ -696,7 +704,7 @@ domain-functional : (f : Hom x y) → is-functional (domain f)
 domain-functional f = coreflexive→functional (domain-coreflexive f)
 ```
 
-The domain of an entire morphism is identity.
+The domain of an entire morphism is the identity.
 
 ```agda
 domain-entire : is-entire f → domain f ≡ id
@@ -744,4 +752,14 @@ reflexive+antisymmetric→diagonal
   : is-reflexive f → is-antisymmetric f → f ∩ f † ≡ id
 reflexive+antisymmetric→diagonal f-refl f-antisym =
   ≤-antisym f-antisym (reflexive→diagonal f-refl)
+```
+
+If $f$ is coreflexive, then it is anti-symmetric.
+
+```agda
+coreflexive→antisymmetric : is-coreflexive f → is-antisymmetric f
+coreflexive→antisymmetric {f = f} f-corefl =
+  f ∩ f † ≤⟨ ∩-pres f-corefl (coreflexive-dual f-corefl) ⟩
+  id ∩ id =⟨ ∩-idempotent ⟩
+  id ≤∎
 ```
