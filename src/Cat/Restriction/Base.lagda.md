@@ -12,26 +12,39 @@ module Cat.Restriction.Base where
 # Restriction Categories
 
 Much of computer science involves the study of partial functions.
-Unfortunately, partial functions are somewhat tedious to work with, as
-we constantly find ourselves incurring proof obligations, which
-immediately grinds any formalization effort to a halt. Furthermore,
+Unfortunately, partial functions are somewhat tedious to work with,
+as they aren't really functions; they're relations! Furthermore,
 we are often interested in *computable* partial functions; this means that
-we can not identify partial functions $A \to B$ with total functions
-$A \to \rm{Maybe}(B)$. **Restriction categories** aim to ease this burden
-by providing an algebraic account of categories of partial maps, which
-lets us transform massive termination obligations into slightly less
-annoying algebraic manipulations.
+we can not identify partial functions $A \rightharpoonup B$ with total functions
+$A \to \rm{Maybe}(B)$[^1]. This leaves us with a few possible approaches.
+The most first approach that may come to mind is to encode partial functions
+$A \rightharpoonup B$ as total functions from a subobject $X \mono A$.
+Alternatively, we could find some construction that classifies
+partial maps; this is what the naive `Maybe` approach attempted to do.
+We could also just work with functional relations directly, though this
+is ill-advised.
 
-We begin our path to generalization by studying the category of sets
-and partial functions. The key insight is that every partial function
+<!--[TODO: Reed M, 05/08/2023] Link to approaches once formalized -->
+
+[^1]: We can easily determine if functions into `Maybe` "diverge"
+by checking if they return `nothing`. If we identify partial functions
+with total functions into `Maybe`, we can decide if a partial function
+terminates, which is extremely uncomputable!
+
+Each of these approaches has its own benefits and drawbacks, which
+makes choosing one difficult. **Restriction categories** offer an
+alternative, algebraic approach to the problem, allowing us to neatly
+sidestep any questions about encodings.
+
+Our prototypical restriction category will be $\Par$, the category of
+sets and partial functions. The key insight is that every partial function
 $f : A \rightharpoonup B$ is defined on some domain $X \subseteq A$;
 this yields a partial function $f \downarrow : A \rightharpoonup A$
-that maps $x$ to itself if $f(x)$ is defined, and diverges otherwise.
+that maps $x$ to itself iff $f(x)$ is defined. We can generalize this
+insight to an arbitrary category $\cC$ by equipping $\cC$ with an operation
+$\restrict{(-)} : \cC(x,y) \to \cC(x,x)$.
 
-<!-- [TODO: Reed M, 01/08/2023] Add link to partial maps -->
-
-We can generalize this insight to an arbitrary category $\cC$ by equipping
-$\cC$ with an operation $(-)\downarrow : \cC(x,y) \to \cC(x,x)$.
+-- <!-- [TODO: Reed M, 01/08/2023] Add link to partial maps -->
 
 
 ```agda
@@ -46,32 +59,42 @@ record Restriction-category
   infix 50 _↓
 ```
 
-We require that $(-)\downarrow$ satisfies 4 axioms:
-- $f \circ f \downarrow = f$
-- $f \downarrow \circ g \downarrow = g \downarrow \circ f \downarrow$
-- $(g \circ f \downarrow$) \downarrow = g \downarrow \circ f \downarrow$
-- $f \downarrow$ \circ g = g \circ (f \circ g) \downarrow$
+We require that $\restrict{(-)}$ satisfies 4 axioms:
+- $f\restrict{f} = f$. In $\Par$, this corresponds to the fact that
+$\restrict{f}(x)$ is defined to be $x$ iff $f$ is defined, so
+precomposing with it does nothing.
 
 ```agda
   field
     ↓-dom : ∀ {x y} → (f : Hom x y) → f ∘ (f ↓) ≡ f
-    ↓-comm : ∀ {x y z} → (f : Hom x z) (g : Hom x y) → f ↓ ∘ g ↓ ≡ g ↓ ∘ f ↓
-    ↓-smashr : ∀ {x y z} → (f : Hom x z) (g : Hom x y) → (g ∘ f ↓) ↓ ≡ g ↓ ∘ f ↓
-    ↓-swap : ∀ {x y z} → (f : Hom y z) (g : Hom x y) → f ↓ ∘ g ≡ g ∘ (f ∘ g) ↓
 ```
 
-In order, these correspond to the following facts about the category
-of sets and partial maps:
-- If $f(x)$ terminates, then $f\downarrow(x)$ does nothing, so
-  $f (f\downarrow(x)) = f(x)$. If $f(x)$ diverges, then $f\downarrow(x)$
-  also diverges, so $f (f\downarrow(x)) = f(x)$ again!
-- It doesn't matter what order we compose restriction maps, as they
-  don't modify their arguments; it doesn't matter which order they
-  diverge in!
-- If we precompose $g$ with a domain map $f \downarrow : A \to A$ and then
-  takes its domain of definition, we get to ignore the action of
-  $g$, and focus only on its termination.
-- If we postcompose $g$ with a domain map $f \downarrow$, then
-  we still need to take into account the action of $g$; furthermore, its
-  domain of definition needs to be restricted to image of $g$.
+- $\restrict{f}\restrict{g} = \restrict{g}\restrict{f}$. In $\Par$,
+this falls out of the fact that restriction maps do not modify their
+arguments, and it doesn't matter if $f$ diverges first or $g$ does;
+all that matters is that it diverges!
 
+```agda
+  field
+    ↓-comm : ∀ {x y z} → (f : Hom x z) (g : Hom x y) → f ↓ ∘ g ↓ ≡ g ↓ ∘ f ↓
+```
+
+- $\restrict{(g\restrict{f})} = \restrict{g}\restrict{f}$. This axiom
+holds in the $\Par$, as $\restrict{(g\restrict{f})}(x)$ ignores the
+action of $g$ on $x$, and focuses only on its termination.
+
+```agda
+  field
+    ↓-smashr : ∀ {x y z} → (f : Hom x z) (g : Hom x y) → (g ∘ f ↓) ↓ ≡ g ↓ ∘ f ↓
+```
+
+- $\restrict{f} g = g  \restrict{(f g)}$. This is the trickiest of the
+bunch to understand in $\Par$. Note that if we postcompose $g$ with a
+domain map $\restrict{f}$, then we still need to take into account the
+action of $g$; furthermore, its domain of definition needs to be
+restricted to image of $g$.
+
+```agda
+  field
+    ↓-swap : ∀ {x y z} → (f : Hom y z) (g : Hom x y) → f ↓ ∘ g ≡ g ∘ (f ∘ g) ↓
+```
