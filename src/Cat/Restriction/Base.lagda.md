@@ -9,7 +9,6 @@ import Cat.Reasoning
 module Cat.Restriction.Base where
 ```
 
-
 # Restriction Categories
 
 Much of computer science involves the study of partial functions.
@@ -32,7 +31,7 @@ that maps $x$ to itself if $f(x)$ is defined, and diverges otherwise.
 <!-- [TODO: Reed M, 01/08/2023] Add link to partial maps -->
 
 We can generalize this insight to an arbitrary category $\cC$ by equipping
-the it with an operation $(-)\downarrow : \cC(x,y) \to \cC(x,x)$.
+$\cC$ with an operation $(-)\downarrow : \cC(x,y) \to \cC(x,x)$.
 
 
 ```agda

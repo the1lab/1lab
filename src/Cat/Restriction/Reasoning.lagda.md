@@ -240,7 +240,7 @@ restriction-idem-comm f-dom g-dom =
 
 A morphism $f : X \to Y$ is a **restricted monic** if for all
 $g, h : A \to X$, $f \circ g = f \circ h$ implies that
-$f \downarrow \circ g = f \downarrow \circ h$. Intuitvely, this is
+$f \downarrow \circ g = f \downarrow \circ h$. Intuitively, this is
 the correct notion of monic for a partial function; we cannot guarantee
 that $g$ and $h$ are equal if $f \circ g = f \circ h$, as $f$ may
 diverge on some inputs where $g$ and $h$ disagree.
