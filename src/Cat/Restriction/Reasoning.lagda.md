@@ -26,7 +26,7 @@ open Restriction-category C-restrict public
 # Reasoning in Restriction Categories
 
 This module provides some useful lemmas about restriction categories.
-We begin by noting that for every $f$, $f \downarrow$ is an [idempotent].
+We begin by noting that for every $f$, $\restrict{f}$ is an [idempotent].
 
 [idempotent]: Cat.Diagram.Idempotent.html
 
@@ -56,7 +56,7 @@ map.
   (f ∘ g) ↓        ∎
 ```
 
-We can use these to show that $(f \downarrow \circ g) \downarrow = (f \circ g) \downarrow$,
+We can use these to show that $\restrict{(\restrict{f}g)} = \restrict{(f \circ g)}$,
 which is somewhat hard to motivate, but ends up being a useful algebraic
 manipulation.
 
@@ -90,7 +90,7 @@ Next, we note that iterating $(-)downarrow$ does nothing.
 ## Total Morphisms
 
 We say that a morphism $f : X \to Y$ in a restriction category is **total**
-if its restriction $f \downarrow$ is the identity morphism.
+if its restriction $\restrict{f}$ is the identity morphism.
 
 ```agda
 is-total : ∀ {x y} → Hom x y → Type _
@@ -182,7 +182,7 @@ total-cancell {f = f} {g = g} fg-total =
   id ∎
 ```
 
-If $f$ is total, then $(f \circ g) \downarrow = g \downarrow$.
+If $f$ is total, then $\restrict{(fg)} = \restrict{g}$.
 
 ```agda
 total-smashl
@@ -197,7 +197,7 @@ total-smashl {f = f} {g = g} f-total =
 ## Restriction Idempotents
 
 We say that a morphism $f : X \to X$ is a **restriction idempotent** if
-$f \downarrow = f$.
+$\restrict{f} = f$.
 
 ```agda
 is-restriction-idempotent : ∀ {x} → (f : Hom x x) → Type _
@@ -216,7 +216,7 @@ restriction-idempotent→idempotent {f = f} f-dom =
   f ∎
 ```
 
-Furthermore, every morphism $f \downarrow$ is a restriction idempotent.
+Furthermore, every morphism $\restrict{f}$ is a restriction idempotent.
 
 ```agda
 ↓-restriction-idempotent : ∀ {x y} (f : Hom x y) → is-restriction-idempotent (f ↓)
@@ -239,10 +239,9 @@ restriction-idem-comm f-dom g-dom =
 ## Restricted Monics
 
 A morphism $f : X \to Y$ is a **restricted monic** if for all
-$g, h : A \to X$, $f \circ g = f \circ h$ implies that
-$f \downarrow \circ g = f \downarrow \circ h$. Intuitively, this is
-the correct notion of monic for a partial function; we cannot guarantee
-that $g$ and $h$ are equal if $f \circ g = f \circ h$, as $f$ may
+$g, h : A \to X$, $fg = fh$ implies that $\restrict{f}g = \restrict{f}h$.
+Intuitively, this is the correct notion of monic for a partial function;
+we cannot guarantee that $g$ and $h$ are equal if $fg = fh$, as $f$ may
 diverge on some inputs where $g$ and $h$ disagree.
 
 ```agda
@@ -289,7 +288,7 @@ restricted-monic-∘ {f = f} {g = g} f-rmonic g-rmonic h1 h2 p =
       g ∘ (f ∘ g) ↓ ∘ h2 ∎
 ```
 
-Furthermore, if $f \circ g$ is a restricted monic and $f$ is total,
+Furthermore, if $fg$ is a restricted monic and $f$ is total,
 then $g$ is a restricted monic.
 
 ```agda
@@ -307,8 +306,8 @@ restricted-monic-cancell {f = f} {g = g} fg-rmonic f-total h1 h2 p =
 
 ## Restricted Retracts
 
-Let $r : X \to Y$ and $s : Y \to X$ be a pair of morphisms. $r$ is a
-**restricted retract** of $s$ when $r \circ s = s \downarrow$.
+Let $r : X \to Y$ and $s : Y \to X$ be a pair of morphisms. The map
+$r$ is a **restricted retract** of $s$ when $rs = \restrict{s}$.
 
 ```agda
 _restricted-retract-of_ : ∀ {x y} (r : Hom x y) (s : Hom y x) → Type _
@@ -350,7 +349,7 @@ has-restricted-retract→restricted-monic {f = f} f-sect g1 g2 p =
   f ↓ ∘ g2 ∎
 ```
 
-If $f$ and $g$ have restricted retracts, then so does $f \circ g$.
+If $f$ and $g$ have restricted retracts, then so does $fg$.
 
 ```agda
 restricted-retract-∘
@@ -368,8 +367,8 @@ restricted-retract-∘ {f = f} {g = g} f-sect g-sect .is-restricted-retract =
 ```
 
 
-If $f \circ g$ has a restricted retract and $f$ is total, then $g$ has a restricted
-retract.
+If $fg$ has a restricted retract and $f$ is total, then $g$ has a
+restricted retract.
 
 ```agda
 has-restricted-retract-cancell
@@ -388,8 +387,8 @@ has-restricted-retract-cancell {f = f} {g = g} fg-sect f-total .is-restricted-re
 ## Restricted Isomorphisms
 
 Let $f : X \to Y$ and $g : Y \to X$ be a pair of morphisms. $f$ and $g$
-are **restricted inverses** if $f \circ g = g \downarrow$ and
-$g \circ f = f \downarrow$. 
+are **restricted inverses** if $fg = \restrict{g}$ and
+$gf = \restrict{f}$. 
 
 ```agda
 record restricted-inverses
@@ -479,7 +478,7 @@ restricted-inverses+total→inverses {f = f} {g = g} fg-inv f-total g-total = re
 ## Refining Morphisms
 
 Let $\cC$ be a restriction category, and $f, g : \cC(X,Y)$. We say that
-$g$ refines $f$ if $g$ agrees with $f$ when restricted to the domain of
+$g$ **refines** $f$ if $g$ agrees with $f$ when restricted to the domain of
 $f$.
 
 ```agda
@@ -514,7 +513,9 @@ The refinement relation is reflexive, transitive, and anti-symmetric.
 Furthermore, composition preserves refinement.
 
 ```agda
-∘-preserves-≤ : ∀ {x y z} {f g : Hom y z} {h i : Hom x y} → f ≤ g → h ≤ i → (f ∘ h) ≤ (g ∘ i)
+∘-preserves-≤
+  : ∀ {x y z} {f g : Hom y z} {h i : Hom x y}
+  → f ≤ g → h ≤ i → (f ∘ h) ≤ (g ∘ i)
 ∘-preserves-≤ {f = f} {g = g} {h = h} {i = i} p q =
   (g ∘ i) ∘ ⌜ f ∘ h ⌝ ↓          ≡⟨ ap! (pushr (sym q)) ⟩
   (g ∘ i) ∘ ((f ∘ i) ∘ (h ↓)) ↓  ≡⟨ ap ((g ∘ i) ∘_) (↓-smashr h (f ∘ i)) ⟩

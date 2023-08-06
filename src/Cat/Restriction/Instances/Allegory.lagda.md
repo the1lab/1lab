@@ -19,7 +19,7 @@ Let $\cA$ be an [allegory], considered as a sort of generalized category
 of "sets and relations". Much like we can recover a category of "sets and
 functions" via the associated [category of maps], we can recover a category
 of "sets and partial functions" by only restricting to [functional]
-morphisms instead of functional _and_ [entire] relations.
+relations instead of functional _and_ [entire] relations.
 
 [allegory]: Cat.Allegory.Base.html
 [category of maps]: Cat.Allegory.Maps.html
@@ -48,10 +48,10 @@ module _ {o ℓ ℓ'} (A : Allegory o ℓ ℓ') where
   Partial-maps = Wide Partial-maps-subcat
 ```
 
-This category can be equipped with a restriction structure by taking
-the [domain] of the partial maps. Note that the first 3 axioms don't
-actually require functionality; it's only the reverse direction of
-the 4th axiom where it is relevant!
+This category can be equipped with a restriction structure, defining
+$\restrict{f}$ to be the [domain] of the partial maps.
+Note that the first 3 axioms don't actually require the relation to be
+functional; it's only relevant in the converse direction of the 4th axiom!
 
 [domain]: Cat.Allegory.Morphism.html#domains
 
