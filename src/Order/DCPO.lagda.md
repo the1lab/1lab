@@ -8,10 +8,10 @@ open import Cat.Displayed.Univalence.Thin
 open import Cat.Prelude
 
 open import Order.Base
-open import Order.Diagram.Lub
 open import Order.Instances.Props
 
 import Order.Reasoning
+open import Order.Diagram.Lub
 ```
 -->
 
@@ -90,8 +90,8 @@ module _ {o ℓ} {P : Poset o ℓ} where
     lub-path
       : ∀ (f : Ix → Ob) → (fam : is-directed-family P f)
       → x .⋃ f fam ≡ y .⋃ f fam
-    lub-path f fam = ap fst $
-      lub-unique P (x .⋃ f fam , ⋃-lub x f fam) (y .⋃ f fam , ⋃-lub y f fam)
+    lub-path f fam = 
+      lub-unique P (⋃-lub x f fam) (⋃-lub y f fam)
 
     x≡y : x ≡ y
     x≡y i .⋃ f fam = lub-path f fam i
@@ -165,7 +165,6 @@ A function $f : P \to Q$ is **Scott-continuous** if it preserves all
 directed least upper bounds.
 
 ```agda
--- We put this in a record type to improve inference of implicits.
 record is-scott-continuous
   {A B : Type o}
   (f : A → B) (A-dcpo : DCPO-on ℓ A) (B-dcpo : DCPO-on ℓ B)
@@ -192,7 +191,10 @@ is-scott-continuous-is-prop
   → (f : A → B) → (A-dcpo : DCPO-on ℓ A) → (B-dcpo : DCPO-on ℓ B)
   → is-prop (is-scott-continuous f A-dcpo B-dcpo)
 is-scott-continuous-is-prop f A-dcpo B-dcpo =
-  Iso→is-hlevel 1 eqv (hlevel 1)
+  Iso→is-hlevel 1 eqv $
+  Π-is-hlevel′ 1 λ _ →
+  Π-is-hlevel³ 1 λ _ _ _ → Π-is-hlevel 1 λ _ _ _ →
+  is-lub-is-prop (poset B-dcpo) _ _
   where unquoteDecl eqv = declare-record-iso eqv (quote is-scott-continuous) 
 ```
 
@@ -303,8 +305,6 @@ scott-∘ {f = f} {g = g} f-scott g-scott .pres-lub s fam x lub =
     (g x)
     (g-scott .pres-lub s fam x lub)
 ```
-
-
 
 # The Category of DCPOs
 

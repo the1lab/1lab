@@ -67,9 +67,9 @@ saying that presheaves are computed as certain [coends].
 
 ```agda
   lower-set-∫ : Ls ≡ Lower-sets-cocomplete P diagram .fst
-  lower-set-∫ = ap fst $ lub-unique (Lower-sets P)
-    (Ls , lower-set-is-lub)
-    (Lower-sets-cocomplete P diagram)
+  lower-set-∫ = lub-unique (Lower-sets P)
+    (lower-set-is-lub)
+    (snd $ Lower-sets-cocomplete P diagram)
 ```
 
 <!--

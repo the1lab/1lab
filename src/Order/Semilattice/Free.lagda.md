@@ -220,7 +220,7 @@ the truncation.
     : ∀ {ℓ′} (B : Semilattice ℓ′)
     → (∣ A ∣ → ⌞ B ⌟)
     → K-finite-subset → ⌞ B ⌟
-  fold-K B f (P , P-fin) = ε′ .fst module fold-K where
+  fold-K B f (P , P-fin) = Glb.glb ε′ module fold-K where
     module B = Semilattice B
 
     fam : (Σ ∣ A ∣ λ x → ∣ P x ∣) → ⌞ B ⌟
@@ -233,20 +233,23 @@ using surjectivity of the first map.
 
 ```agda
     ε : Σ Nat (λ n → Σ (Fin n → Σ ∣ A ∣ λ x → x ∈ P) λ f → ∀ x → ∥ fibre f x ∥)
-      → Σ ⌞ B ⌟ (is-glb B.po fam)
-    ε (card , g , surj) =
-      B.⋂ (λ x → fam (g x)) , λ where
-        .is-glb.glb≤fam elt →
+      → Glb B.po fam
+    ε (card , g , surj) = glb 
+      where
+        module h = is-glb (B.⋂-is-glb (λ x → fam (g x)))
+        glb : Glb B.po fam
+        glb .Glb.glb = B.⋂ (λ x → fam (g x))
+        glb .Glb.has-glb .is-glb.glb≤fam elt =
           ∥-∥-rec B.≤-thin (λ { (ix , p) →
             B.⋂ (λ x → fam (g x)) B.≤⟨ h.glb≤fam ix ⟩
             fam (g ix)            B.=⟨ ap fam p ⟩
             fam elt               B.≤∎
-            }) (surj elt)
-        .is-glb.greatest lb′ lb′<subset → h.greatest lb′ λ i → lb′<subset (g i)
-      where module h = is-glb (B.⋂-is-glb (λ x → fam (g x)))
+          }) (surj elt)
+        glb .Glb.has-glb .is-glb.greatest lb′ lb′<subset =
+          h.greatest lb′ λ i → lb′<subset (g i)
 
-    ε′ : Σ ⌞ B ⌟ (is-glb B.po fam)
-    ε′ = ∥-∥-rec (glb-unique _) ε P-fin
+    ε′ : Glb B.po fam 
+    ε′ = ∥-∥-rec (Glb-is-prop B.po) ε P-fin
 
 open is-glb
 open make-left-adjoint
@@ -262,25 +265,26 @@ make-free-slat .universal {x} {y} f = total-hom go pres where
   pres : Monoid-hom (Semilattice-on.to-monoid (K[ x ] .snd)) (Semilattice-on.to-monoid (y .snd)) _
   pres .pres-id = refl
   pres .pres-⋆ (A , af) (B , bf) =
-    ap fst $
-      glb-unique y.po (go.ε′ (_∪_ x (A , af) (B , bf) .fst) (_∪_ x (A , af) (B , bf) .snd)) $ _ , λ where
+    glb-unique y.po
+      (Glb.has-glb (go.ε′ (_∪_ x (A , af) (B , bf) .fst) (_∪_ x (A , af) (B , bf) .snd)))
+      (λ where
         .glb≤fam (x , w) → ∥-∥-proj $ w >>= λ where
           (inl w) → pure $
-            g1 .fst y.∩ g2 .fst y.≤⟨ y.∩≤l ⟩
-            g1 .fst             y.≤⟨ g1.glb≤fam (x , w) ⟩
-            _                   y.≤∎
+            Glb.glb g1 y.∩ Glb.glb g2 y.≤⟨ y.∩≤l ⟩
+            Glb.glb g1                y.≤⟨ g1.glb≤fam (x , w) ⟩
+            _                         y.≤∎
           (inr w) → pure $
-            g1 .fst y.∩ g2 .fst y.≤⟨ y.∩≤r ⟩
-            g2 .fst             y.≤⟨ g2.glb≤fam (x , w) ⟩
-            _                   y.≤∎
+            Glb.glb g1 y.∩ Glb.glb g2 y.≤⟨ y.∩≤r ⟩
+            Glb.glb g2                y.≤⟨ g2.glb≤fam (x , w) ⟩
+            _                         y.≤∎
         .greatest lb′ f → y.∩-univ _
           (g1.greatest lb′ (λ i → f (_ , inc (inl (i .snd)))))
-          (g2.greatest lb′ (λ i → f (_ , inc (inr (i .snd)))))
+          (g2.greatest lb′ (λ i → f (_ , inc (inr (i .snd))))))
     where
       g1 = go.ε′ A af
       g2 = go.ε′ B bf
-      module g1 = is-glb (g1 .snd)
-      module g2 = is-glb (g2 .snd)
+      module g1 = is-glb (Glb.has-glb g1)
+      module g2 = is-glb (Glb.has-glb g2)
 make-free-slat .commutes {y = y} f = funext λ x → sym y.∩-idr
   where module y = Semilattice y
 make-free-slat .unique {x = x} {y = y} {f = f} {g = g} w =
@@ -288,7 +292,7 @@ make-free-slat .unique {x = x} {y = y} {f = f} {g = g} w =
     (card , diagram , glb) ← K-reduce x arg
     let
       path : arg ≡ KA.⋂ λ i → ηₛₗ x (diagram i)
-      path = ap fst $ glb-unique KA.po (_ , glb) (_ , KA.⋂-is-glb λ i → ηₛₗ x (diagram i))
+      path = glb-unique KA.po glb (KA.⋂-is-glb λ i → ηₛₗ x (diagram i))
       f′ = make-free-slat .universal {x = x} {y = y} f
     pure $
       f′ # arg                                 ≡⟨ ap (f′ #_) path ⟩

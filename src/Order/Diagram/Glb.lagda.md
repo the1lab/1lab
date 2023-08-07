@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Diagram.Product
+open import Cat.Diagram.Terminal
 open import Cat.Prelude
 
 open import Data.Bool
@@ -8,13 +9,19 @@ open import Data.Bool
 open import Order.Base
 open import Order.Cat
 
-import Order.Reasoning as Poset
+import Order.Reasoning
 ```
 -->
 
 ```agda
-module Order.Diagram.Glb where
+module Order.Diagram.Glb {o ℓ} (P : Poset o ℓ) where
 ```
+
+<!--
+```agda
+open Order.Reasoning P
+```
+-->
 
 # Greatest lower bounds
 
@@ -35,85 +42,146 @@ artificial, and it's just because we can't reuse the identifier
 us, a meet is a glb of two elements.
 
 ```agda
-module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
-  private module P = Poset P
+record is-glb {ℓᵢ} {I : Type ℓᵢ} (F : I → Ob) (glb : Ob)
+        : Type (o ⊔ ℓ ⊔ ℓᵢ) where
+  no-eta-equality
+  field
+    glb≤fam  : ∀ i → glb ≤ F i
+    greatest : (lb′ : Ob) → (∀ i → lb′ ≤ F i) → lb′ ≤ glb
 
-  record is-glb {ℓᵢ} {I : Type ℓᵢ} (F : I → P.Ob) (glb : P.Ob)
-          : Type (ℓ ⊔ ℓ′ ⊔ ℓᵢ) where
-    field
-      glb≤fam  : ∀ i → glb P.≤ F i
-      greatest : (lb′ : P.Ob) → (∀ i → lb′ P.≤ F i) → lb′ P.≤ glb
+record Glb {ℓᵢ} {I : Type ℓᵢ} (F : I → Ob) : Type (o ⊔ ℓ ⊔ ℓᵢ) where
+  no-eta-equality
+  field
+    glb : Ob
+    has-glb : is-glb F glb
+  open is-glb has-glb public
 ```
 
 <!--
 ```agda
-  open is-glb
+open is-glb
 
-  private unquoteDecl eqv = declare-record-iso eqv (quote is-glb)
+private unquoteDecl eqv = declare-record-iso eqv (quote is-glb)
 
-  instance
-    H-Level-is-glb
-      : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → P.Ob} {glb : P.Ob} {n}
-      → H-Level (is-glb F glb) (suc n)
-    H-Level-is-glb = prop-instance $ Iso→is-hlevel 1 eqv (hlevel 1)
+is-glb-is-prop
+  : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {glb : Ob}
+  → is-prop (is-glb F glb)
+is-glb-is-prop = Iso→is-hlevel 1 eqv (hlevel 1)
 
-  glb-unique : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → P.Ob}
-             → is-prop (Σ P.Ob (is-glb F))
-  glb-unique (glb , is) (glb′ , is′) = Σ-prop-path! $ P.≤-antisym
-    (is′ .greatest glb (is .glb≤fam))
-    (is .greatest glb′ (is′ .glb≤fam))
+instance
+  H-Level-is-glb
+    : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {glb : Ob} {n}
+    → H-Level (is-glb F glb) (suc n)
+  H-Level-is-glb = prop-instance is-glb-is-prop
+
+glb-unique
+  : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {x y}
+  → is-glb F x → is-glb F y
+  → x ≡ y
+glb-unique is is′ = ≤-antisym
+  (is′ .greatest _ (is .glb≤fam))
+  (is .greatest _ (is′ .glb≤fam))
+
+Glb-is-prop
+  : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob}
+  → is-prop (Glb F)
+Glb-is-prop p q i .Glb.glb =
+  glb-unique (Glb.has-glb p) (Glb.has-glb q) i
+Glb-is-prop {F = F} p q i .Glb.has-glb =
+  is-prop→pathp {B = λ i → is-glb F (glb-unique (Glb.has-glb p) (Glb.has-glb q) i)}
+    (λ i → hlevel 1)
+    (Glb.has-glb p) (Glb.has-glb q) i
+
+instance
+  H-Level-Glb
+    : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {n}
+    → H-Level (Glb F) (suc n)
+  H-Level-Glb = prop-instance Glb-is-prop
 ```
 -->
+
+## Meets
 
 As mentioned before, in the binary case, we refer to glbs as **meets**:
 The meet of $a$ and $b$ is, if it exists, the greatest element
 satisfying $(a \cap b) \le a$ and $(a \cap b) \le b$.
 
 ```agda
-  record is-meet (a b : P.Ob) (glb : P.Ob) : Type (ℓ ⊔ ℓ′) where
-    field
-      meet≤l   : glb P.≤ a
-      meet≤r   : glb P.≤ b
-      greatest : (lb′ : P.Ob) → lb′ P.≤ a → lb′ P.≤ b → lb′ P.≤ glb
+record is-meet (a b : Ob) (glb : Ob) : Type (o ⊔ ℓ) where
+  no-eta-equality
+  field
+    meet≤l   : glb ≤ a
+    meet≤r   : glb ≤ b
+    greatest : (lb′ : Ob) → lb′ ≤ a → lb′ ≤ b → lb′ ≤ glb
 
-  open is-meet
+record Meet (a b : Ob) : Type (o ⊔ ℓ) where
+  no-eta-equality
+  field
+    glb : Ob
+    has-meet : is-meet a b glb
+  open is-meet has-meet public
+
+open is-meet
 ```
 
 A shuffling of terms shows that being a meet is precisely being the
 greatest lower bound of a family of two elements.
 
 ```agda
-  is-meet→is-glb : ∀ {a b glb} → is-meet a b glb → is-glb (if_then a else b) glb
-  is-meet→is-glb meet .glb≤fam true = meet .meet≤l
-  is-meet→is-glb meet .glb≤fam false = meet .meet≤r
-  is-meet→is-glb meet .greatest glb′ x = meet .greatest glb′ (x true) (x false)
+is-meet→is-glb : ∀ {a b glb} → is-meet a b glb → is-glb (if_then a else b) glb
+is-meet→is-glb meet .glb≤fam true = meet .meet≤l
+is-meet→is-glb meet .glb≤fam false = meet .meet≤r
+is-meet→is-glb meet .greatest glb′ x = meet .greatest glb′ (x true) (x false)
 
-  is-glb→is-meet : ∀ {F : Bool → P.Ob} {glb} → is-glb F glb → is-meet (F true) (F false) glb
-  is-glb→is-meet glb .meet≤l = glb .glb≤fam true
-  is-glb→is-meet glb .meet≤r = glb .glb≤fam false
-  is-glb→is-meet glb .greatest lb′ lb′<a lb′<b = glb .greatest lb′ λ where
-    true  → lb′<a
-    false → lb′<b
+is-glb→is-meet : ∀ {F : Bool → Ob} {glb} → is-glb F glb → is-meet (F true) (F false) glb
+is-glb→is-meet glb .meet≤l = glb .glb≤fam true
+is-glb→is-meet glb .meet≤r = glb .glb≤fam false
+is-glb→is-meet glb .greatest lb′ lb′<a lb′<b = glb .greatest lb′ λ where
+  true  → lb′<a
+  false → lb′<b
 ```
 
 <!--
 ```agda
-  private unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-meet)
+private unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-meet)
 
-  instance
-    H-Level-is-meet
-      : ∀ {a b glb : P.Ob} {n}
-      → H-Level (is-meet a b glb) (suc n)
-    H-Level-is-meet = prop-instance $ Iso→is-hlevel 1 eqv′ (hlevel 1)
+instance
+  H-Level-is-meet
+    : ∀ {a b glb : Ob} {n}
+    → H-Level (is-meet a b glb) (suc n)
+  H-Level-is-meet = prop-instance $ Iso→is-hlevel 1 eqv′ (hlevel 1)
 
-  open is-iso
-  is-meet≃is-glb : ∀ {a b glb : P.Ob} → is-equiv (is-meet→is-glb {a} {b} {glb})
-  is-meet≃is-glb = prop-ext! _ is-glb→is-meet .snd
+meet-unique : ∀ {a b x y} → is-meet a b x → is-meet a b y → x ≡ y
+meet-unique x-meet y-meet =
+  glb-unique (is-meet→is-glb x-meet) (is-meet→is-glb y-meet)
 
-  meet-unique : ∀ {a b} → is-prop (Σ P.Ob (is-meet a b))
-  meet-unique {a} {b} = transport
-    (λ i → is-prop (Σ P.Ob λ x → ua (_ , is-meet≃is-glb {a} {b} {x}) (~ i)))
-    glb-unique
+Meet-is-prop : ∀ {a b} → is-prop (Meet a b)
+Meet-is-prop p q i .Meet.glb =
+  meet-unique (Meet.has-meet p) (Meet.has-meet q) i
+Meet-is-prop {a = a} {b = b} p q i .Meet.has-meet =
+  is-prop→pathp {B = λ i → is-meet a b (meet-unique (Meet.has-meet p) (Meet.has-meet q) i)}
+    (λ i → hlevel 1)
+    (Meet.has-meet p) (Meet.has-meet q) i
+
+instance
+  H-Level-Meet
+    : ∀ {a b} {n}
+    → H-Level (Meet a b) (suc n)
+  H-Level-Meet = prop-instance Meet-is-prop
+
+Meet→Glb : ∀ {a b} → Meet a b → Glb (if_then a else b)
+Meet→Glb meet .Glb.glb = Meet.glb meet
+Meet→Glb meet .Glb.has-glb = is-meet→is-glb (Meet.has-meet meet)
+
+Glb→Meet : ∀ {a b} → Glb (if_then a else b) → Meet a b
+Glb→Meet glb .Meet.glb = Glb.glb glb
+Glb→Meet glb .Meet.has-meet = is-glb→is-meet (Glb.has-glb glb)
+
+is-meet≃is-glb : ∀ {a b glb : Ob} → is-equiv (is-meet→is-glb {a} {b} {glb})
+is-meet≃is-glb = prop-ext! _ is-glb→is-meet .snd
+
+Meet≃Glb : ∀ {a b} → is-equiv (Meet→Glb {a} {b})
+Meet≃Glb = prop-ext! _ Glb→Meet .snd
 ```
 -->
 
@@ -121,32 +189,109 @@ An important lemma about meets is that, if $x \le y$, then the greatest
 lower bound of $x$ and $y$ is just $x$:
 
 ```agda
-  le→is-meet : ∀ {a b} → a P.≤ b → is-meet a b a
-  le→is-meet a≤b .meet≤l = P.≤-refl
-  le→is-meet a≤b .meet≤r = a≤b
-  le→is-meet a≤b .greatest lb′ lb′≤a _ = lb′≤a
+le→is-meet : ∀ {a b} → a ≤ b → is-meet a b a
+le→is-meet a≤b .meet≤l = ≤-refl
+le→is-meet a≤b .meet≤r = a≤b
+le→is-meet a≤b .greatest lb′ lb′≤a _ = lb′≤a
 
-  le-meet : ∀ {a b l} → a P.≤ b → is-meet a b l → a ≡ l
-  le-meet a≤b l = ap fst $ meet-unique (_ , le→is-meet a≤b) (_ , l)
+le-meet : ∀ {a b l} → a ≤ b → is-meet a b l → a ≡ l
+le-meet a≤b l = meet-unique (le→is-meet a≤b) l
 ```
 
-## As products
+### As products
 
 The categorification of meets is _products_: put another way, if our
 category has propositional homs, then being given a product diagram is
 the same as being given a meet.
 
 ```agda
-  open is-product
-  open Product
+open is-product
+open Product
 
-  is-meet→product : ∀ {a b glb : P.Ob} → is-meet a b glb → Product (poset→category P) a b
-  is-meet→product glb .apex = _
-  is-meet→product glb .π₁ = glb .is-meet.meet≤l
-  is-meet→product glb .π₂ = glb .is-meet.meet≤r
-  is-meet→product glb .has-is-product .⟨_,_⟩ q<a q<b =
-    glb .is-meet.greatest _ q<a q<b
-  is-meet→product glb .has-is-product .π₁∘factor = prop!
-  is-meet→product glb .has-is-product .π₂∘factor = prop!
-  is-meet→product glb .has-is-product .unique _ _ _ = prop!
+is-meet→product : ∀ {a b glb : Ob} → is-meet a b glb → Product (poset→category P) a b
+is-meet→product glb .apex = _
+is-meet→product glb .π₁ = glb .is-meet.meet≤l
+is-meet→product glb .π₂ = glb .is-meet.meet≤r
+is-meet→product glb .has-is-product .⟨_,_⟩ q<a q<b =
+  glb .is-meet.greatest _ q<a q<b
+is-meet→product glb .has-is-product .π₁∘factor = prop!
+is-meet→product glb .has-is-product .π₂∘factor = prop!
+is-meet→product glb .has-is-product .unique _ _ _ = prop!
+```
+
+## Tops
+
+A **top** in a partial order $(P, \le)$ is an element $\top : P$ that
+is larger than any other element in $P$. This is the same as being
+a greatest lower bound for the empty family $\bot \to P$.
+
+```agda
+is-top : Ob → Type _
+is-top top = ∀ x → x ≤ top
+
+record Top : Type (o ⊔ ℓ) where
+  field
+    top : Ob
+    has-top : is-top top
+
+is-top→is-glb : ∀ {glb} → is-top glb → is-glb absurd glb
+is-top→is-glb is-top .greatest x _ = is-top x
+
+is-glb→is-top : ∀ {glb} → is-glb absurd glb → is-top glb
+is-glb→is-top glb x = glb .greatest x λ ()
+```
+
+<!--
+```agda
+is-top-is-prop : ∀ x → is-prop (is-top x)
+is-top-is-prop _ = hlevel 1
+
+top-unique : ∀ {x y} → is-top x → is-top y → x ≡ y
+top-unique p q = ≤-antisym (q _) (p _)
+
+Top-is-prop : is-prop Top
+Top-is-prop p q i .Top.top =
+  top-unique (Top.has-top p) (Top.has-top q) i
+Top-is-prop p q i .Top.has-top =
+  is-prop→pathp
+    (λ i → is-top-is-prop (top-unique (Top.has-top p) (Top.has-top q) i))
+    (Top.has-top p) (Top.has-top q) i
+
+instance
+  H-Level-Top
+    : ∀ {n}
+    → H-Level Top (suc n)
+  H-Level-Top = prop-instance Top-is-prop
+
+Top→Glb : Top → Glb absurd
+Top→Glb top .Glb.glb = Top.top top
+Top→Glb top .Glb.has-glb = is-top→is-glb (Top.has-top top)
+
+Glb→Top : Glb absurd → Top
+Glb→Top glb .Top.top = Glb.glb glb
+Glb→Top glb .Top.has-top = is-glb→is-top (Glb.has-glb glb)
+
+is-top≃is-glb : ∀ {glb} → is-equiv (is-top→is-glb {glb})
+is-top≃is-glb = prop-ext! _ is-glb→is-top .snd
+
+Top≃Glb : is-equiv Top→Glb
+Top≃Glb = prop-ext! _ Glb→Top .snd
+```
+-->
+
+### As Terminal Objects
+
+Bottoms are the decategorifcation of [terminal objects]; we don't need to
+require the uniqueness of the universal morphism, as we've replaced our
+hom-sets with hom-props!
+
+[terminal objects]: Cat.Diagram.Terminal.html
+
+```agda
+is-top→terminal : ∀ {x} → is-top x → is-terminal (poset→category P) x
+is-top→terminal is-top x .centre = is-top x
+is-top→terminal is-top x .paths _ = ≤-thin _ _
+
+terminal→is-top : ∀ {x} → is-terminal (poset→category P) x → is-top x
+terminal→is-top terminal x = terminal x .centre
 ```
