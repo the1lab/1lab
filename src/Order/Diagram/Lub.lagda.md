@@ -43,6 +43,8 @@ module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
 
 <!--
 ```agda
+module _ {ℓ ℓ′} {P : Poset ℓ ℓ′} where
+  private module P = Poset P
   open is-lub
 
   private unquoteDecl eqv = declare-record-iso eqv (quote is-lub)
@@ -50,11 +52,15 @@ module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
   instance
     H-Level-is-lub
       : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → P.Ob} {lub : P.Ob} {n}
-      → H-Level (is-lub F lub) (suc n)
+      → H-Level (is-lub P F lub) (suc n)
     H-Level-is-lub = prop-instance $ Iso→is-hlevel 1 eqv (hlevel 1)
 
+module _ {ℓ ℓ′} (P : Poset ℓ ℓ′) where
+  private module P = Poset P
+  open is-lub
+
   lub-unique : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → P.Ob}
-             → is-prop (Σ P.Ob (is-lub F))
+             → is-prop (Σ P.Ob (is-lub P F))
   lub-unique (lub , is) (lub′ , is′) = Σ-prop-path! $ P.≤-antisym
     (is .least lub′ (is′ .fam≤lub))
     (is′ .least lub (is .fam≤lub))
@@ -74,12 +80,12 @@ family of two elements.
 
   open is-join
 
-  is-join→is-lub : ∀ {a b lub} → is-join a b lub → is-lub (if_then a else b) lub
+  is-join→is-lub : ∀ {a b lub} → is-join a b lub → is-lub P (if_then a else b) lub
   is-join→is-lub join .fam≤lub true = join .l≤join
   is-join→is-lub join .fam≤lub false = join .r≤join
   is-join→is-lub join .least ub′ x = join .least ub′ (x true) (x false)
 
-  is-lub→is-join : ∀ {F : Bool → P.Ob} {lub} → is-lub F lub → is-join (F true) (F false) lub
+  is-lub→is-join : ∀ {F : Bool → P.Ob} {lub} → is-lub P F lub → is-join (F true) (F false) lub
   is-lub→is-join lub .l≤join = lub .fam≤lub true
   is-lub→is-join lub .r≤join = lub .fam≤lub false
   is-lub→is-join lub .least ub′ a<ub′ b<ub′ = lub .least ub′ λ where

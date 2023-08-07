@@ -15,7 +15,7 @@ module 1Lab.Type.Sigma where
 ```
 private variable
   ℓ ℓ₁ : Level
-  A A' : Type ℓ
+  A A' X X' : Type ℓ
   B P Q : A → Type ℓ
 ```
 -->
@@ -252,10 +252,15 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
   the-iso .snd .is-iso.linv (a , b) i = a , bcontr a .paths b i
 ```
 
+<!--
 ```agda
 Σ-map₂ : ({x : A} → P x → Q x) → Σ _ P → Σ _ Q
 Σ-map₂ f (x , y) = (x , f y)
+
+×-map : (A → A') → (X → X') → A × X → A' × X'
+×-map f g (x , y) = (f x , g y)
 ```
+-->
 
 <!--
 ```agda

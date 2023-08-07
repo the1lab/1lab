@@ -99,6 +99,29 @@ record Poset-on {ℓ} ℓ′ (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ′) where
   open is-partial-order has-is-poset public
 ```
 
+<!--
+```agda
+Poset-on-pathp
+  : ∀ {o ℓ} {A B : Type o}
+  → {A-poset : Poset-on ℓ A} {B-poset : Poset-on ℓ B}
+  → (p : A ≡ B)
+  → PathP (λ i → p i → p i → Type ℓ) (Poset-on._≤_ A-poset) (Poset-on._≤_ B-poset)
+  → PathP (λ i → Poset-on ℓ (p i)) A-poset B-poset
+Poset-on-pathp p q i .Poset-on._≤_ = q i
+Poset-on-pathp {A-poset = A-poset} {B-poset = B-poset} p q i .Poset-on.has-is-poset =
+  is-prop→pathp (λ i → is-partial-order-is-prop (q i))
+    (Poset-on.has-is-poset A-poset)
+    (Poset-on.has-is-poset B-poset) i
+
+Poset-on-path
+  : ∀ {o ℓ} {A : Type o}
+  → {P Q : Poset-on ℓ A}
+  → (∀ x y → Poset-on._≤_ P x y ≡ Poset-on._≤_ Q x y)
+  → P ≡ Q
+Poset-on-path p = Poset-on-pathp refl (funext λ x → funext λ y → p x y)
+```
+-->
+
 We set up the category of posets using our [machinery for displaying]
 [univalent categories] over the category of sets. A map between posets
 is called a **monotone map**: it's the decategorification of a functor.
@@ -109,9 +132,16 @@ composites, since our "homs" are propositions!
 [univalent categories]: Cat.Univalent.html
 
 ```agda
+is-monotone
+  : ∀ {o o' ℓ ℓ'} {A : Type o} {B : Type o'}
+  → (f : A → B) → Poset-on ℓ A → Poset-on ℓ' B → Type _
+is-monotone f P Q = ∀ x y → x P.≤ y → f x Q.≤ f y
+  where
+    module P = Poset-on P
+    module Q = Poset-on Q
+
 Poset-structure : ∀ ℓ ℓ′ → Thin-structure {ℓ = ℓ} (ℓ ⊔ ℓ′) (Poset-on ℓ′)
-∣ Poset-structure ℓ ℓ′ .is-hom f P Q ∣ =
-  ∀ x y → Poset-on._≤_ P x y → Poset-on._≤_ Q (f x) (f y)
+∣ Poset-structure ℓ ℓ′ .is-hom f P Q ∣ = is-monotone f P Q
 
 Poset-structure ℓ ℓ′ .is-hom f P Q .is-tr =
   Π-is-hlevel³ 1 λ _ _ _ → Poset-on.≤-thin Q
@@ -128,19 +158,11 @@ Then, since equality of poset structures is controlled by equality of
 the relations, we have $s = t$!
 
 ```agda
-Poset-structure ℓ ℓ′ .id-hom-unique {s = s} {t = t} α β = q where
-  module s = Poset-on s
-  module t = Poset-on t
-  open is-iso
-
-  p : s._≤_ ≡ t._≤_
-  p i x y = ua (prop-ext s.≤-thin t.≤-thin (α x y) (β x y)) i
-
-  q : s ≡ t
-  q i .Poset-on._≤_ = p i
-  q i .Poset-on.has-is-poset = is-prop→pathp
-    (λ i → is-partial-order-is-prop (p i))
-    s.has-is-poset t.has-is-poset i
+Poset-structure ℓ ℓ′ .id-hom-unique {s = s} {t = t} α β =
+  Poset-on-path λ x y → ua (prop-ext s.≤-thin t.≤-thin (α x y) (β x y))
+  where
+    module s = Poset-on s
+    module t = Poset-on t
 ```
 
 <!--
