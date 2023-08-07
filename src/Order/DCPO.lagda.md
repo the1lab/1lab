@@ -280,7 +280,7 @@ monotone→scott {f = f} {A-dcpo} {B-dcpo} mono pres .pres-lub s fam x x-lub =
     (B.⋃-universal z lt)
 ```
 
-The identity function is scott-continuous.
+The identity function is Scott-continuous.
 
 ```agda
 scott-id
