@@ -95,6 +95,30 @@ instance
     : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {n}
     → H-Level (Lub F) (suc n)
   H-Level-Lub = prop-instance Lub-is-prop
+
+lift-is-lub
+  : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob} {lub}
+  → is-lub F lub → is-lub (F ⊙ Lift.lower {ℓ = ℓᵢ'}) lub
+lift-is-lub is .fam≤lub (lift ix) = is .fam≤lub ix
+lift-is-lub is .least ub′ le = is .least ub′ (le ⊙ lift)
+
+lift-lub
+  : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob}
+  → Lub F → Lub (F ⊙ Lift.lower {ℓ = ℓᵢ'})
+lift-lub lub .Lub.lub = Lub.lub lub
+lift-lub lub .Lub.has-lub = lift-is-lub (Lub.has-lub lub)
+
+lower-is-lub
+  : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob} {lub}
+  → is-lub (F ⊙ Lift.lower {ℓ = ℓᵢ'}) lub → is-lub F lub
+lower-is-lub is .fam≤lub ix = is .fam≤lub (lift ix)
+lower-is-lub is .least ub′ le = is .least ub′ (le ⊙ Lift.lower)
+
+lower-lub
+  : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob}
+  → Lub (F ⊙ Lift.lower {ℓ = ℓᵢ'}) → Lub F
+lower-lub lub .Lub.lub = Lub.lub lub
+lower-lub lub .Lub.has-lub = lower-is-lub (Lub.has-lub lub)
 ```
 -->
 
@@ -230,6 +254,9 @@ record Bottom : Type (o ⊔ ℓ) where
   field
     bot : Ob
     has-bottom : is-bottom bot
+
+  ¡ : ∀ {x} → bot ≤ x
+  ¡ = has-bottom _
 
 is-bottom→is-lub : ∀ {lub} → is-bottom lub → is-lub absurd lub
 is-bottom→is-lub is-bot .least x _ = is-bot x

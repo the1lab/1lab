@@ -57,14 +57,15 @@ record is-partial-order {ℓ ℓ′} {A : Type ℓ}
     ≤-trans   : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
     ≤-antisym : ∀ {x y} → x ≤ y → y ≤ x → x ≡ y
 
-  has-is-set : is-set A
-  has-is-set =
-    identity-system→hlevel 1
-      {r = λ _ → ≤-refl , ≤-refl}
-      (set-identity-system
+  opaque
+    has-is-set : is-set A
+    has-is-set =
+      identity-system→hlevel 1
+        {r = λ _ → ≤-refl , ≤-refl}
+        (set-identity-system
+          (λ a b → ×-is-hlevel 1 ≤-thin ≤-thin)
+          (λ {a} {b} (p , q) → ≤-antisym {a} {b} p q))
         (λ a b → ×-is-hlevel 1 ≤-thin ≤-thin)
-        (λ {a} {b} (p , q) → ≤-antisym {a} {b} p q))
-      (λ a b → ×-is-hlevel 1 ≤-thin ≤-thin)
 ```
 
 <!--
