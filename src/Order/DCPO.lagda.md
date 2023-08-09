@@ -1,19 +1,16 @@
 <!--
 ```agda
--- Required to get pathp in DCPO-on to go through.
-{-# OPTIONS --lossy-unification #-}
 open import Data.Bool
 
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Displayed.Total
+open import Cat.Functor.Subcategory
 open import Cat.Prelude
 
 open import Order.Base
-open import Order.Instances.Props
+open import Order.Diagram.Lub
 
 import Cat.Reasoning
-import Order.Reasoning
-open import Order.Diagram.Lub
+import Order.Reasoning as Poset
 ```
 -->
 
@@ -42,7 +39,7 @@ $f : I \to P$ is a **directed family** when $I$ is merely inhabited.
 
 ```agda
 module _ {o ℓ} (P : Poset o ℓ) where
-  open Order.Reasoning P
+  open Poset P
 
   is-semidirected-family : ∀ {Ix : Type o} → (Ix → Ob) → Type _
   is-semidirected-family {Ix = Ix} f = ∀ i j → ∃[ k ∈ Ix ] (f i ≤ f k × f j ≤ f k)
@@ -79,7 +76,7 @@ are unique.
 <!--
 ```agda
 module _ {o ℓ} {P : Poset o ℓ} where
-  open Order.Reasoning P
+  open Poset P
   open is-dcpo
 ```
 -->
@@ -92,284 +89,148 @@ module _ {o ℓ} {P : Poset o ℓ} where
     where unquoteDecl eqv = declare-record-iso eqv (quote is-dcpo) 
 ```
 
+# Scott-Continuous Maps
+
+Let $(P, \le)$ and $(Q, \lsq)$ be a pair of posets. 
+A monotone map $f : P \to Q$ is **Scott-continuous** if it preserves all
+directed least upper bounds.
+
 <!--
 ```agda
-record DCPO-on {o} (ℓ : Level) (A : Type o) : Type (lsuc (o ⊔ ℓ)) where
-  no-eta-equality
-  field
-    poset-on : Poset-on ℓ A
-  open Poset-on poset-on public
+module _ {P Q : Poset o ℓ} where
+  private
+    module P = Poset P
+    module Q = Poset Q
 
-  poset : Poset o ℓ
-  poset = el A has-is-set , poset-on
-
-  field
-    has-dcpo : is-dcpo (el A has-is-set , poset-on)
-  open is-dcpo has-dcpo public
-
-
-DCPO-on-pathp
-  : ∀ {A B : Type o}
-  → {A-dcpo : DCPO-on ℓ A} {B-dcpo : DCPO-on ℓ B}
-  → (p : A ≡ B)
-  → PathP (λ i → p i → p i → Type ℓ) (DCPO-on._≤_ A-dcpo) (DCPO-on._≤_ B-dcpo)
-  → PathP (λ i → DCPO-on ℓ (p i)) A-dcpo B-dcpo
-DCPO-on-pathp {o = o} {ℓ = ℓ} {A-dcpo = A-dcpo} {B-dcpo} p q = dcpo-path where
-  module A = DCPO-on A-dcpo
-  module B = DCPO-on B-dcpo
-
-  abstract
-    on-path : PathP (λ i → Poset-on ℓ (p i)) A.poset-on B.poset-on
-    on-path = Poset-on-pathp p q
-
-  poset-line : I → Poset o ℓ
-  poset-line i = el (p i) (Poset-on.has-is-set (on-path i)) , on-path i
-
-  dcpo-path : PathP (λ i → DCPO-on ℓ (p i)) A-dcpo B-dcpo
-  dcpo-path i .DCPO-on.poset-on = on-path i
-  dcpo-path i .DCPO-on.has-dcpo =
-    is-prop→pathp
-      (λ i → is-dcpo-is-prop {P = poset-line i})
-      A.has-dcpo B.has-dcpo i
-
-DCPO-on-path
-  : ∀ {A : Type o}
-  → {P Q : DCPO-on ℓ A}
-  → (∀ x y → DCPO-on._≤_ P x y ≡ DCPO-on._≤_ Q x y)
-  → P ≡ Q
-DCPO-on-path p = DCPO-on-pathp refl (funext λ x → funext λ y → p x y)
-
-open is-directed-family
+  open is-directed-family
 ```
 -->
 
-# Scott-Continuous Maps
-
-Let $(P, \le, \bigcup)$ and $(Q, \lsq, \bigsqcup)$ be a pair of DCPOs.
-A function $f : P \to Q$ is **Scott-continuous** if it preserves all
-directed least upper bounds.
-
 ```agda
-record is-scott-continuous
-  {A B : Type o}
-  (f : A → B) (A-dcpo : DCPO-on ℓ A) (B-dcpo : DCPO-on ℓ B)
-  : Type (lsuc o ⊔ ℓ)
-  where
-  private
-    module A = DCPO-on A-dcpo
-    module B = DCPO-on B-dcpo
-  field
-    pres-lub
-      : ∀ {Ix} (s : Ix → A) (fam : is-directed-family A.poset s)
-      → ∀ x → is-lub A.poset s x → is-lub B.poset (f ⊙ s) (f x)
+  is-scott-continuous : (f : Posets.Hom P Q) → Type _
+  is-scott-continuous f =
+    ∀ {Ix} (s : Ix → P.Ob) (fam : is-directed-family P s)
+    → ∀ x → is-lub P s x → is-lub Q (f .hom ⊙ s) (f .hom x)
 
-open is-scott-continuous
-open DCPO-on
+  is-scott-continuous-is-prop
+    : ∀ (f : Posets.Hom P Q) → is-prop (is-scott-continuous f)
+  is-scott-continuous-is-prop _ =
+    Π-is-hlevel′ 1 λ _ → Π-is-hlevel³ 1 λ _ _ _  → Π-is-hlevel 1 λ _ →
+    is-lub-is-prop Q
 ```
 
-
-
-Note that being Scott-continuous is a property of a function, as being
-a least upper bound is also a proposition.
-
-```agda
-is-scott-continuous-is-prop
-  : ∀ {A B : Type o}
-  → (f : A → B) → (A-dcpo : DCPO-on ℓ A) → (B-dcpo : DCPO-on ℓ B)
-  → is-prop (is-scott-continuous f A-dcpo B-dcpo)
-is-scott-continuous-is-prop f A-dcpo B-dcpo =
-  Iso→is-hlevel 1 eqv $
-  Π-is-hlevel′ 1 λ _ →
-  Π-is-hlevel³ 1 λ _ _ _ → Π-is-hlevel 1 λ _ _ _ →
-  is-lub-is-prop (poset B-dcpo) _ _
-  where unquoteDecl eqv = declare-record-iso eqv (quote is-scott-continuous) 
-```
-
-Every Scott-continuous function is monotone. Let $(P, \le, \bigcup)$ and
-$(Q, \lsq, \bigsqcup)$ be a pair of DCPOs, let $f : P \to Q$ be a
-Scott-continuous function, and let $x \le y$. We can then construct
-a directed family $s : \rm{Bool} \to P$ with $s(true) = x$ and
-$s(false) = y$. Note that $y$ is the least upper bound of this family,
+If $(P, \le)$ is a DCPO, then any function $f : P \to Q$ that preserves
+directed least upper bounds is monotone. Start by constructing a directed
+family $s : \rm{Bool} \to P$ with $s(true) = x$ and $s(false) = y$.
+Note that $y$ is the least upper bound of this family,
 so $f(y)$ must be an upper bound of $f \circ s$ in $Q$. From this,
 we can deduce that $f(x) \lsq f(y)$.
 
 ```agda
-scott→monotone
-  : ∀ {A B : Type o}
-  → {f : A → B} {A-dcpo : DCPO-on ℓ A} {B-dcpo : DCPO-on ℓ B}
-  → is-scott-continuous f A-dcpo B-dcpo
-  → is-monotone f (poset-on A-dcpo) (poset-on B-dcpo)
-scott→monotone {A = A} {B} {f} {A-dcpo} {B-dcpo} scott x y p =
-  is-lub.fam≤lub fs-lub (lift true)
-  where
-    module A = DCPO-on A-dcpo
-    module B = DCPO-on B-dcpo
+  dcpo+scott→monotone
+    : is-dcpo P
+    → (f : P.Ob → Q.Ob)
+    → (∀ {Ix} (s : Ix → Poset.Ob P) (fam : is-directed-family P s)
+       → ∀ x → is-lub P s x → is-lub Q (f ⊙ s) (f x))
+    → is-monotone f (P .snd) (Q .snd)
+  dcpo+scott→monotone is-dcpo f scott x y p =
+    is-lub.fam≤lub fs-lub (lift true)
+    where
 
-    s : Lift _ Bool → A
-    s (lift b) = if b then x else y
+      s : Lift _ Bool → P.Ob 
+      s (lift b) = if b then x else y
 
-    sx≤sfalse : ∀ b → s b A.≤ s (lift false)
-    sx≤sfalse (lift true) = p
-    sx≤sfalse (lift false) = A.≤-refl
+      sx≤sfalse : ∀ b → s b P.≤ s (lift false)
+      sx≤sfalse (lift true) = p
+      sx≤sfalse (lift false) = P.≤-refl
 
-    s-directed : is-directed-family A.poset s
-    s-directed .elt =
-      inc (lift true)
-    s-directed .semidirected i j =
-      inc (lift false , sx≤sfalse _ , sx≤sfalse _)
+      s-directed : is-directed-family P s
+      s-directed .elt =
+        inc (lift true)
+      s-directed .semidirected i j =
+        inc (lift false , sx≤sfalse _ , sx≤sfalse _)
 
-    s-lub : is-lub A.poset s y
-    s-lub .is-lub.fam≤lub = sx≤sfalse
-    s-lub .is-lub.least z lt = lt (lift false)
+      s-lub : is-lub P s y
+      s-lub .is-lub.fam≤lub = sx≤sfalse
+      s-lub .is-lub.least z lt = lt (lift false)
 
-    fs-lub : is-lub B.poset (f ⊙ s) (f y)
-    fs-lub = scott .pres-lub s s-directed y s-lub
+      fs-lub : is-lub Q (f ⊙ s) (f y)
+      fs-lub = scott s s-directed y s-lub
 ```
 
 Next, a small little lemma; if $f : P \to Q$ is monotone and $s : I \to P$
 is a directed family, then $fs : I \to Q$ is also a directed family.
 
 ```agda
-monotone∘directed
-  : ∀ {Ix : Type o} {P Q : Poset o ℓ}
-  → {f : ∣ P .fst ∣ → ∣ Q .fst ∣} {s : Ix → ∣ P .fst ∣}
-  → is-monotone f (P .snd) (Q .snd)
-  → is-directed-family P s
-  → is-directed-family Q (f ⊙ s)
-monotone∘directed mono fam .elt = fam .elt
-monotone∘directed mono fam .is-directed-family.semidirected i j =
-  ∥-∥-map (Σ-map₂ (×-map (mono _ _) (mono _ _)))
-    (fam .semidirected i j)
-```
-
-<!--
-```agda
-scott∘directed
-  : ∀ {Ix : Type o}
-  → {A B : Type o}{A-dcpo : DCPO-on ℓ A} {B-dcpo : DCPO-on ℓ B}
-  → {f : A → B} {s : Ix → A}
-  → is-scott-continuous f A-dcpo B-dcpo
-  → is-directed-family (DCPO-on.poset A-dcpo) s
-  → is-directed-family (DCPO-on.poset B-dcpo) (f ⊙ s)
-scott∘directed scott dir = monotone∘directed (scott→monotone scott) dir
-
-scott-⋃
-  : ∀ {A B : Type o} {A-dcpo : DCPO-on ℓ A} {B-dcpo : DCPO-on ℓ B}
-  → (let module A = DCPO-on A-dcpo) (let module B = DCPO-on B-dcpo)
-  → {f : A → B}
-  → (scott : is-scott-continuous f A-dcpo B-dcpo)
-  → ∀ (s : Ix → A) (dir : is-directed-family A.poset s)
-  → f (A.⋃ s dir) ≡ B.⋃ (f ⊙ s) (scott∘directed scott dir)
-scott-⋃ {A-dcpo = A-dcpo} {B-dcpo = B-dcpo} scott s dir =
-  B.≤-antisym
-    (is-lub.least (scott .pres-lub s dir _ (A.⋃.has-lub s dir)) _ (B.⋃.fam≤lub _ _))
-    (B.⋃.least _ _ _ λ ix → scott→monotone scott _ _ (A.⋃.fam≤lub _ _ ix))
-  where
-    module A = DCPO-on A-dcpo
-    module B = DCPO-on B-dcpo
-```
--->
-
-If $f : P \to Q$ is monotone, and $f (\bigcup s) \lsq \bigcup fs$ for
-every directed family $s$, then $f$ is Scott-continuous.
-
-```agda
-monotone→scott
-  : ∀ {A B : Type o}
-  → {f : A → B} {A-dcpo : DCPO-on ℓ A} {B-dcpo : DCPO-on ℓ B}
-  → (let module A = DCPO-on A-dcpo) (let module B = DCPO-on B-dcpo)
-  → (mono : is-monotone f A.poset-on B.poset-on)
-  → (∀ {Ix} (s : Ix → A) → (fam : is-directed-family A.poset s)
-     → f (A.⋃ s fam) B.≤ B.⋃ (f ⊙ s) (monotone∘directed mono fam))
-  → is-scott-continuous f A-dcpo B-dcpo
-monotone→scott {f = f} {A-dcpo} {B-dcpo} mono pres .pres-lub s fam x x-lub =
-  fx-lub where
-  module A = DCPO-on A-dcpo
-  module B = DCPO-on B-dcpo
-  open is-lub
-
-  fx-lub : is-lub B.poset (f ⊙ s) (f x)
-  fx-lub .fam≤lub ix =
-    mono _ _ (x-lub .fam≤lub ix)
-  fx-lub .least z lt =
-    B.≤-trans (mono _ _ (x-lub .least (A.⋃ s fam) (A.⋃.fam≤lub _ _))) $
-    B.≤-trans (pres s fam)
-    (B.⋃.least _ _ z lt)
+  monotone∘directed
+    : ∀ {Ix : Type o}
+    → {s : Ix → P.Ob}
+    → (f : Posets.Hom P Q)
+    → is-directed-family P s
+    → is-directed-family Q (f .hom ⊙ s)
+  monotone∘directed f dir .elt = dir .elt
+  monotone∘directed f dir .is-directed-family.semidirected i j =
+    ∥-∥-map (Σ-map₂ (×-map (f .preserves _ _) (f .preserves _ _)))
+      (dir .semidirected i j)
 ```
 
 The identity function is Scott-continuous.
 
 ```agda
 scott-id
-  : ∀ {A : Type o} {A-dcpo : DCPO-on ℓ A}
-  → is-scott-continuous (λ x → x) A-dcpo A-dcpo
-scott-id .pres-lub s fam x lub = lub
+  : ∀ {P : Poset o ℓ}
+  → is-scott-continuous (Posets.id {x = P})
+scott-id s fam x lub = lub
 ```
+
+Scott-continuous functions are closed under composition.
 
 ```agda
 scott-∘
-  : ∀ {A B C : Type o}
-  → {A-dcpo : DCPO-on ℓ A} {B-dcpo : DCPO-on ℓ B} {C-dcpo : DCPO-on ℓ C}
-  → {f : B → C} {g : A → B}
-  → is-scott-continuous f B-dcpo C-dcpo
-  → is-scott-continuous g A-dcpo B-dcpo
-  → is-scott-continuous (f ⊙ g) A-dcpo C-dcpo
-scott-∘ {f = f} {g = g} f-scott g-scott .pres-lub s fam x lub =
-  f-scott .pres-lub (g ⊙ s)
-    (monotone∘directed (scott→monotone g-scott) fam)
-    (g x)
-    (g-scott .pres-lub s fam x lub)
+  : ∀ {P Q R : Poset o ℓ}
+  → (f : Posets.Hom Q R) (g : Posets.Hom P Q)
+  → is-scott-continuous f → is-scott-continuous g
+  → is-scott-continuous (f Posets.∘ g)
+scott-∘ f g f-scott g-scott s dir x lub =
+  f-scott (g .hom ⊙ s)
+    (monotone∘directed g dir)
+    (g .hom x)
+    (g-scott s dir x lub)
 ```
+
 
 # The Category of DCPOs
 
-DCPOs and Scott-continuous maps can be organized into a [displayed category]
-over $\Sets$. We will use our usual [machinery for displaying]
-[univalent categories] over $\Sets$.
+DCPOs form a [subcategory] of the category of posets. Furthermore, the category
+of DCPOs is [univalent], as being a DPCO is a property of a poset.
 
-[displayed category]: Cat.Displayed.Base.html
-[machinery for displaying]: Cat.Displayed.Univalence.Thin.html
-[univalent categories]: Cat.Univalent.html
+[subcategory]: Cat.Functor.Subcategory.html
+[univalent]: Cat.Univalent.html
 
 ```agda
-DCPO-structure : ∀ o ℓ → Thin-structure {ℓ = o} (lsuc o ⊔ ℓ) (DCPO-on ℓ)
-DCPO-structure o ℓ .is-hom f A B .∣_∣ =
-  is-scott-continuous f A B
-DCPO-structure o ℓ .is-hom f A B .is-tr =
-  is-scott-continuous-is-prop f A B 
-DCPO-structure o ℓ .id-is-hom {s = A} = scott-id
-DCPO-structure o ℓ .∘-is-hom _ _ = scott-∘
-DCPO-structure o ℓ .id-hom-unique {s = s} {t = t} scott scott' =
-  DCPO-on-path λ x y →
-    ua $ prop-ext s.≤-thin t.≤-thin
-      (scott→monotone scott x y)
-      (scott→monotone scott' x y)
-  where
-    module s = DCPO-on s
-    module t = DCPO-on t
+DCPOs-subcat : ∀ (o ℓ : Level) → Subcat (Posets o ℓ) (lsuc o ⊔ ℓ) (lsuc o ⊔ ℓ)
+DCPOs-subcat o ℓ .Subcat.is-ob = is-dcpo
+DCPOs-subcat o ℓ .Subcat.is-hom f _ _ = is-scott-continuous f
+DCPOs-subcat o ℓ .Subcat.is-hom-prop f _ _ = is-scott-continuous-is-prop f
+DCPOs-subcat o ℓ .Subcat.is-hom-id _ = scott-id
+DCPOs-subcat o ℓ .Subcat.is-hom-∘ {f = f} {g = g} = scott-∘ f g
 
-DCPOs : ∀ o ℓ → Precategory _ _
-DCPOs o ℓ = Structured-objects (DCPO-structure o ℓ)
+DCPOs : ∀ (o ℓ : Level) → Precategory (lsuc (o ⊔ ℓ)) (lsuc o ⊔ ℓ)
+DCPOs o ℓ = Subcategory (DCPOs-subcat o ℓ)
 
-module DCPOs {o ℓ} = Cat.Reasoning (DCPOs o ℓ)
-DCPO : (o ℓ : Level) → Type (lsuc o ⊔ lsuc ℓ)
+DCPOs-is-category : ∀ {o ℓ} → is-category (DCPOs o ℓ)
+DCPOs-is-category = subcat-is-category Posets-is-category (λ _ → is-dcpo-is-prop)
+```
+
+<!--
+```agda
+module DCPOs {o ℓ : Level} = Cat.Reasoning (DCPOs o ℓ)
+
+DCPO : (o ℓ : Level) → Type _
 DCPO o ℓ = DCPOs.Ob {o} {ℓ}
+
+Forget-DCPO : ∀ {o ℓ} → Functor (DCPOs o ℓ) (Sets o)
+Forget-DCPO = πᶠ _ F∘ Forget-subcat
 ```
+-->
 
-We have a forgetful functor from the category of DCPOs to the category
-of posets.
-
-```agda
-Scott→Mono
-  : ∀ {o ℓ} {D E : DCPO o ℓ}
-  → DCPOs.Hom D E
-  → Posets.Hom (DCPO-on.poset (D .snd)) (DCPO-on.poset (E .snd))
-Scott→Mono f = total-hom (f .hom) (scott→monotone (f .preserves))
-
-DCPOs→Posets : ∀ {o ℓ} → Functor (DCPOs o ℓ) (Posets o ℓ)
-DCPOs→Posets .Functor.F₀ (A , A-dcpo) = A , DCPO-on.poset-on A-dcpo
-DCPOs→Posets .Functor.F₁ f = total-hom (f .hom) (scott→monotone (f .preserves))
-DCPOs→Posets .Functor.F-id = total-hom-path _ refl refl
-DCPOs→Posets .Functor.F-∘ {z = z} _ _  =
-  total-hom-path _ refl $ funext λ _ → funext λ _ → funext λ _ → ≤-thin (z .snd) _ _
-```

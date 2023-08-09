@@ -4,6 +4,7 @@ open import 1Lab.Path.IdentitySystem
 open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
+open import 1Lab.HIT.Truncation
 open import 1Lab.Reflection using (arg ; typeError)
 open import 1Lab.Univalence
 open import 1Lab.HLevel
@@ -143,6 +144,18 @@ elΩ T .is-tr = squash
 □-elim pprop go (inc x) = go x
 □-elim pprop go (squash x y i) =
   is-prop→pathp (λ i → pprop (squash x y i)) (□-elim pprop go x) (□-elim pprop go y) i
+
+□-rec-set
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → (f : A → B)
+  → (∀ x y → f x ≡ f y)
+  → is-set B
+  → □ A → B
+□-rec-set f f-const B-set a =
+  fst $ □-elim
+    (λ _ → is-constant→image-is-prop B-set f f-const)
+    (λ a → f a , inc (a , refl))
+    a
 
 □-idempotent : ∀ {ℓ} {A : Type ℓ} → is-prop A → □ A ≃ A
 □-idempotent aprop = prop-ext squash aprop (out! {pa = aprop}) inc

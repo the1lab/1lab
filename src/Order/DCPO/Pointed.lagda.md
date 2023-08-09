@@ -3,10 +3,13 @@
 open import Data.Maybe.Base
 
 open import Cat.Displayed.Total
+open import Cat.Functor.Subcategory
 open import Cat.Prelude
 
 open import Order.Base
+open import Order.Diagram.Fixpoint
 open import Order.DCPO
+open import Order.DCPO.Morphism
 
 import Order.DCPO.Reasoning as DCPO
 import Data.Nat as Nat
@@ -19,19 +22,24 @@ module Order.DCPO.Pointed where
 
 <!--
 ```agda
-open Total-hom
+private variable
+  o ℓ : Level
 ```
 -->
 
 # Pointed DCPOs
 
-A [DCPO] is **pointed** if it has a least element $\bot$.
+A [DCPO] is **pointed** if it has a least element $\bot$. This is a
+property of a DCPO, as bottom elements are unique.
 
 [DCPO]: Order.DCPO.html
 
 ```agda
-is-pointed-dcpo : ∀ {o ℓ} → DCPO o ℓ → Type _
+is-pointed-dcpo : DCPO o ℓ → Type _
 is-pointed-dcpo D = DCPO.Bottom D
+
+is-pointed-dcpo-is-prop : ∀ (D : DCPO o ℓ) → is-prop (is-pointed-dcpo D)
+is-pointed-dcpo-is-prop = DCPO.Bottom-is-prop
 ```
 
 A DCPO is pointed if and only if it has least upper bounds of all
@@ -106,9 +114,10 @@ module _ {o ℓ} {D : DCPO o ℓ} where
   pointed→least-fixpoint
     : is-pointed-dcpo D
     → (f : DCPOs.Hom D D)
-    → Least-fixpoint f
+    → Least-fixpoint poset (Scott.mono f)
   pointed→least-fixpoint pointed f = f-fix where
     open Bottom pointed
+    module f = Scott f
 ```
 
 We begin by constructing a directed family $\NN \to D$ that maps $n$ to
@@ -117,11 +126,11 @@ $f^n(\bot)$.
 ```
     fⁿ : Nat → Ob → Ob
     fⁿ zero x = x 
-    fⁿ (suc n) x = f .hom (fⁿ n x)
+    fⁿ (suc n) x = f.hom (fⁿ n x)
 
     fⁿ-mono : ∀ {i j} → i Nat.≤ j → fⁿ i bot ≤ fⁿ j bot
     fⁿ-mono Nat.0≤x = ¡
-    fⁿ-mono (Nat.s≤s p) = scott→monotone (f .preserves) _ _ (fⁿ-mono p)
+    fⁿ-mono (Nat.s≤s p) = f.monotone _ _ (fⁿ-mono p)
 
     fⁿ⊥ : Lift o Nat → Ob
     fⁿ⊥ (lift n) = fⁿ n bot
@@ -138,14 +147,14 @@ namely for any $y$ such that $f y \le y$, $\bigcup (f^{n}(\bot)) \le y$.
 This follows from som quick induction.
 
 ```agda
-    fⁿ⊥≤fix : ∀ (y : Ob) → f .hom y ≤ y → ∀ n → fⁿ⊥ n ≤ y
+    fⁿ⊥≤fix : ∀ (y : Ob) → f.hom y ≤ y → ∀ n → fⁿ⊥ n ≤ y
     fⁿ⊥≤fix y p (lift zero) = ¡
     fⁿ⊥≤fix y p (lift (suc n)) =
-      f .hom (fⁿ n bot) ≤⟨ scott→monotone (f .preserves) _ _ (fⁿ⊥≤fix y p (lift n)) ⟩
-      f .hom y          ≤⟨ p ⟩
-      y                 ≤∎
+      f.hom (fⁿ n bot) ≤⟨ f.monotone _ _ (fⁿ⊥≤fix y p (lift n)) ⟩
+      f.hom y          ≤⟨ p ⟩
+      y                ≤∎
 
-    least-fix : ∀ (y : Ob) → f .hom y ≤ y → ⋃ fⁿ⊥ fⁿ⊥-dir ≤ y
+    least-fix : ∀ (y : Ob) → f.hom y ≤ y → ⋃ fⁿ⊥ fⁿ⊥-dir ≤ y
     least-fix y p = ⋃.least _ _ _ (fⁿ⊥≤fix y p)
 ```
 
@@ -154,11 +163,11 @@ First, the forward direction: $\bigcup (f^{n}(\bot)) \le f (\bigcup (f^{n}(\bot)
 This follows directly from Scott-continuity of $f$.
 
 ```agda
-    roll : f .hom (⋃ fⁿ⊥ fⁿ⊥-dir) ≤ ⋃ fⁿ⊥ fⁿ⊥-dir
+    roll : f.hom (⋃ fⁿ⊥ fⁿ⊥-dir) ≤ ⋃ fⁿ⊥ fⁿ⊥-dir
     roll =
-      f .hom (⋃ fⁿ⊥ _)    =⟨ scott-⋃ (f .preserves) _ _ ⟩
-      ⋃ (f .hom ⊙ fⁿ⊥) _  ≤⟨ ⋃.least _ _ _ (λ (lift n) → ⋃.fam≤lub _ _ (lift (suc n))) ⟩
-      ⋃ fⁿ⊥ _             ≤∎
+      Scott.hom f (⋃ fⁿ⊥ _)    =⟨ f.pres-⋃ fⁿ⊥ fⁿ⊥-dir ⟩
+      ⋃ (Scott.hom f ⊙ fⁿ⊥) _  ≤⟨ ⋃.least _ _ _ (λ (lift n) → ⋃.fam≤lub _ _ (lift (suc n))) ⟩
+      ⋃ fⁿ⊥ _                  ≤∎
 ```
 
 To show the converse, we use universal property we proved earlier to
@@ -167,17 +176,84 @@ We can then apply monotonicity of $f$, and then use the forward direction
 to finish off the proof.
 
 ```agda
-    unroll : ⋃ fⁿ⊥ fⁿ⊥-dir ≤ f .hom (⋃ fⁿ⊥ fⁿ⊥-dir)
-    unroll = least-fix (f .hom (⋃ fⁿ⊥ fⁿ⊥-dir)) $
-      scott→monotone (f .preserves) _ _ roll
+    unroll : ⋃ fⁿ⊥ fⁿ⊥-dir ≤ f.hom (⋃ fⁿ⊥ fⁿ⊥-dir)
+    unroll = least-fix (Scott.hom f (⋃ fⁿ⊥ fⁿ⊥-dir)) $
+      f.monotone _ _ roll
 ```
 
 All that remains is to package up the data.
 
 ```agda
-    f-fix : Least-fixpoint f
-    f-fix .fixpoint = ⋃ fⁿ⊥ fⁿ⊥-dir
-    f-fix .has-least-fixpoint .DCPO.fixed = ≤-antisym roll unroll
-    f-fix .has-least-fixpoint .DCPO.least y y-fix =
+    f-fix : Least-fixpoint poset f.mono
+    f-fix .Least-fixpoint.fixpoint = ⋃ fⁿ⊥ fⁿ⊥-dir
+    f-fix .Least-fixpoint.has-least-fixpoint .is-least-fixpoint.fixed =
+      ≤-antisym roll unroll
+    f-fix .Least-fixpoint.has-least-fixpoint .is-least-fixpoint.least y y-fix =
       least-fix y (path→≤ y-fix)
+```
+
+## Strictly Scott-continuous maps
+
+A Scott-continuous map is **strictly continuous** if it preserves bottoms.
+
+<!--
+```agda
+module _ {o ℓ} {D E : DCPO o ℓ} where
+  private
+    module D = DCPO D
+    module E = DCPO E
+```
+-->
+
+```agda
+  is-strictly-scott-continuous : (f : DCPOs.Hom D E) → Type _
+  is-strictly-scott-continuous f =
+    ∀ (x : D.Ob) → D.is-bottom x → E.is-bottom (Scott.hom f x)
+```
+
+```agda
+  is-strictly-scott-is-prop
+    : (f : DCPOs.Hom D E) → is-prop (is-strictly-scott-continuous f)
+  is-strictly-scott-is-prop f = Π-is-hlevel² 1 λ x _ →
+    E.is-bottom-is-prop (Scott.hom f x)
+```
+
+
+Strictly Scott-continuous functions are closed under identities
+and composites.
+
+```agda
+strict-scott-id
+  : ∀ {D : DCPO o ℓ}
+  → is-strictly-scott-continuous (DCPOs.id {x = D})
+strict-scott-id x x-bot = x-bot
+
+strict-scott-∘
+  : ∀ {D E F : DCPO o ℓ}
+  → (f : DCPOs.Hom E F) (g : DCPOs.Hom D E)
+  → is-strictly-scott-continuous f → is-strictly-scott-continuous g
+  → is-strictly-scott-continuous (f DCPOs.∘ g)
+strict-scott-∘ f g f-strict g-strict x x-bot =
+  f-strict (Scott.hom g x) (g-strict x x-bot)
+```
+
+Pointed DCPOs and strictly Scott-continuous functions form a subcategory
+of the category of DCPOs.
+
+```agda
+Pointed-DCPOs-subcat : ∀ o ℓ → Subcat (DCPOs o ℓ) (o ⊔ ℓ) (o ⊔ ℓ)
+Pointed-DCPOs-subcat o ℓ .Subcat.is-ob = is-pointed-dcpo
+Pointed-DCPOs-subcat o ℓ .Subcat.is-hom f _ _ = is-strictly-scott-continuous f
+Pointed-DCPOs-subcat o ℓ .Subcat.is-hom-prop f _ _ =
+  is-strictly-scott-is-prop f
+Pointed-DCPOs-subcat o ℓ .Subcat.is-hom-id {D} _ = strict-scott-id {D = D}
+Pointed-DCPOs-subcat o ℓ .Subcat.is-hom-∘ {f = f} {g = g} f-strict g-strict =
+  strict-scott-∘ f g f-strict g-strict
+
+Pointed-DCPOs : ∀ o ℓ → Precategory (lsuc (o ⊔ ℓ)) (lsuc o ⊔ ℓ)
+Pointed-DCPOs o ℓ = Subcategory (Pointed-DCPOs-subcat o ℓ)
+
+Pointed-DCPOs-is-category : is-category (Pointed-DCPOs o ℓ)
+Pointed-DCPOs-is-category =
+  subcat-is-category DCPOs-is-category is-pointed-dcpo-is-prop
 ```

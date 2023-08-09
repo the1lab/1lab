@@ -64,7 +64,7 @@ module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} (subcat : Subcat C o' ℓ') whe
       hom : Hom (x .fst) (y .fst)
       witness : subcat .is-hom hom (x .snd) (y .snd)
 
-  open Subcat-hom public
+open Subcat-hom
 ```
 
 <!--

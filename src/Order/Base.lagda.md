@@ -141,11 +141,18 @@ is-monotone f P Q = ∀ x y → x P.≤ y → f x Q.≤ f y
     module P = Poset-on P
     module Q = Poset-on Q
 
+is-monotone-is-prop
+  : ∀ {o o' ℓ ℓ'} {A : Type o} {B : Type o'}
+  → (f : A → B) (P : Poset-on ℓ A) (Q : Poset-on ℓ' B)
+  → is-prop (is-monotone f P Q)
+is-monotone-is-prop f P Q = 
+  Π-is-hlevel³ 1 λ _ _ _ → Poset-on.≤-thin Q
+
 Poset-structure : ∀ ℓ ℓ′ → Thin-structure {ℓ = ℓ} (ℓ ⊔ ℓ′) (Poset-on ℓ′)
 ∣ Poset-structure ℓ ℓ′ .is-hom f P Q ∣ = is-monotone f P Q
 
 Poset-structure ℓ ℓ′ .is-hom f P Q .is-tr =
-  Π-is-hlevel³ 1 λ _ _ _ → Poset-on.≤-thin Q
+  is-monotone-is-prop f P Q
 
 Poset-structure ℓ ℓ′ .id-is-hom x y α = α
 Poset-structure ℓ ℓ′ .∘-is-hom f g α β x y γ = α (g x) (g y) (β x y γ)
@@ -174,6 +181,9 @@ Posets ℓ ℓ′ = Structured-objects (Poset-structure ℓ ℓ′)
 module Posets {ℓ ℓ′} = Precategory (Posets ℓ ℓ′)
 Poset : (ℓ ℓ′ : Level) → Type (lsuc (ℓ ⊔ ℓ′))
 Poset ℓ ℓ′ = Precategory.Ob (Posets ℓ ℓ′)
+
+Posets-is-category : ∀ {o ℓ} → is-category (Posets o ℓ)
+Posets-is-category = Structured-objects-is-category (Poset-structure _ _)
 
 record make-poset {ℓ} ℓ′ (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ′) where
   no-eta-equality
