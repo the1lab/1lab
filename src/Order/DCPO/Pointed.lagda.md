@@ -8,11 +8,11 @@ open import Cat.Prelude
 
 open import Order.Base
 open import Order.Diagram.Fixpoint
+open import Order.Diagram.Lub
 open import Order.DCPO
-open import Order.DCPO.Morphism
 
-import Order.DCPO.Reasoning as DCPO
 import Data.Nat as Nat
+import Cat.Reasoning
 ```
 -->
 
@@ -24,6 +24,7 @@ module Order.DCPO.Pointed where
 ```agda
 private variable
   o ℓ : Level
+  Ix : Type o
 ```
 -->
 
@@ -36,10 +37,10 @@ property of a DCPO, as bottom elements are unique.
 
 ```agda
 is-pointed-dcpo : DCPO o ℓ → Type _
-is-pointed-dcpo D = DCPO.Bottom D
+is-pointed-dcpo D = Bottom (DCPO.poset D)
 
 is-pointed-dcpo-is-prop : ∀ (D : DCPO o ℓ) → is-prop (is-pointed-dcpo D)
-is-pointed-dcpo-is-prop = DCPO.Bottom-is-prop
+is-pointed-dcpo-is-prop D = Bottom-is-prop (DCPO.poset D)
 ```
 
 A DCPO is pointed if and only if it has least upper bounds of all
@@ -49,6 +50,7 @@ semidirected families.
 ```agda
 module _ {o ℓ} (D : DCPO o ℓ) where
   open DCPO D
+  open Lub
 ```
 -->
 
@@ -58,46 +60,74 @@ is trivially semidirected.
 
 ```agda
   semidirected-lub→pointed
-    : (∀ {Ix : Type o} (s : Ix → Ob) → is-semidirected-family poset s → Lub s)
+    : (∀ {Ix : Type o} (s : Ix → Ob) → is-semidirected-family poset s → Lub poset s)
     → is-pointed-dcpo D
   semidirected-lub→pointed lub =
-    Lub→Bottom (lower-lub (lub (absurd ⊙ Lift.lower) (absurd ⊙ Lift.lower)))
+    Lub→Bottom poset (lower-lub poset (lub (absurd ⊙ Lift.lower) (absurd ⊙ Lift.lower)))
 ```
 
 Conversely, if $D$ has a bottom element $\bot$, then we can extend any semidirected
 family $I \to D$ to a directed family $\rm{Maybe}(I) \to D$ by sending `nothing`
-to the bottom element. This directed family has a least upper bound which is also
-a least upper bound for our original family.
+to the bottom element.
+
+<!--
+```agda
+module _ {o ℓ} (D : DCPO o ℓ) (pointed : is-pointed-dcpo D) where
+  open DCPO D
+  open Bottom pointed
+  open is-directed-family
+  open is-lub
+```
+-->
+
+```agda
+  extend-bottom : (Ix → Ob) → Maybe Ix → Ob
+  extend-bottom s nothing = bot
+  extend-bottom s (just i) = s i
+
+  extend-bottom-directed
+    : (s : Ix → Ob) → is-semidirected-family poset s
+    → is-directed-family poset (extend-bottom s)
+  extend-bottom-directed s semidir .elt = inc nothing
+  extend-bottom-directed s semidir .semidirected (just i) (just j) = do
+    (k , i≤k , j≤k) ← semidir i j
+    pure (just k , i≤k , j≤k)
+  extend-bottom-directed s semidir .semidirected (just x) nothing =
+    pure (just x , ≤-refl , ¡)
+  extend-bottom-directed s semidir .semidirected nothing (just y) =
+    pure (just y , ¡ , ≤-refl)
+  extend-bottom-directed s semidir .semidirected nothing nothing =
+   pure (nothing , ≤-refl , ≤-refl)
+```
+
+Furthermore, $s$ has a least upper bound only if the extended family does.
+
+```agda
+  lub→extend-bottom-lub
+    : ∀ {s : Ix → Ob} {x : Ob} → is-lub poset s x → is-lub poset (extend-bottom s) x
+  lub→extend-bottom-lub {s = s} {x = x} x-lub .fam≤lub (just i) = x-lub .fam≤lub i
+  lub→extend-bottom-lub {s = s} {x = x} x-lub .fam≤lub nothing = ¡
+  lub→extend-bottom-lub {s = s} {x = x} x-lub .least y le = x-lub .least y (le ⊙ just)
+
+  extend-bottom-lub→lub
+    : ∀ {s : Ix → Ob} {x : Ob} → is-lub poset (extend-bottom s) x → is-lub poset s x
+  extend-bottom-lub→lub x-lub .fam≤lub i = x-lub .fam≤lub (just i)
+  extend-bottom-lub→lub x-lub .least y le = x-lub .least y λ where
+    nothing → ¡
+    (just i) → le i
+```
+
+If we put this all together, we see that any semidirected family has a least
+upper bound in a pointed DCPO.
 
 ```agda
   pointed→semidirected-lub
     : is-pointed-dcpo D
-    → (∀ {Ix : Type o} (s : Ix → Ob) → is-semidirected-family poset s → Lub s)
-  pointed→semidirected-lub pointed {Ix = Ix} s semidir = s-lub where
-    open Bottom pointed
-
-    s' : Maybe Ix → Ob
-    s' (just ix) = s ix
-    s' nothing = bot
-
-    dir : is-directed-family poset s'
-    dir .is-directed-family.elt = inc nothing
-    dir .is-directed-family.semidirected (just i) (just j) = do
-      (k , i≤k , j≤k) ← semidir i j
-      pure (just k , i≤k , j≤k)
-    dir .is-directed-family.semidirected (just x) nothing =
-      pure (just x , ≤-refl , ¡)
-    dir .is-directed-family.semidirected nothing (just y) =
-      pure (just y , ¡ , ≤-refl)
-    dir .is-directed-family.semidirected nothing nothing =
-     pure (nothing , ≤-refl , ≤-refl)
-
-    s-lub : Lub s
-    s-lub .Lub.lub = ⋃ s' dir
-    s-lub .Lub.has-lub .is-lub.fam≤lub ix = ⋃.fam≤lub s' dir (just ix)
-    s-lub .Lub.has-lub .is-lub.least ub′ le = ⋃.least s' dir ub′ λ where
-      (just ix) → le ix
-      nothing → ¡
+    → ∀ {Ix : Type o} (s : Ix → Ob) → is-semidirected-family poset s → Lub poset s
+  pointed→semidirected-lub pointed {Ix = Ix} s semidir .Lub.lub =
+    ⋃ (extend-bottom s) (extend-bottom-directed s semidir)
+  pointed→semidirected-lub pointed {Ix = Ix} s semidir .Lub.has-lub =
+    extend-bottom-lub→lub (⋃.has-lub _ _)
 ```
 
 ## Fixpoints
@@ -208,14 +238,14 @@ module _ {o ℓ} {D E : DCPO o ℓ} where
 ```agda
   is-strictly-scott-continuous : (f : DCPOs.Hom D E) → Type _
   is-strictly-scott-continuous f =
-    ∀ (x : D.Ob) → D.is-bottom x → E.is-bottom (Scott.hom f x)
+    ∀ (x : D.Ob) → is-bottom D.poset x → is-bottom E.poset (Scott.hom f x)
 ```
 
 ```agda
   is-strictly-scott-is-prop
     : (f : DCPOs.Hom D E) → is-prop (is-strictly-scott-continuous f)
   is-strictly-scott-is-prop f = Π-is-hlevel² 1 λ x _ →
-    E.is-bottom-is-prop (Scott.hom f x)
+    is-bottom-is-prop E.poset (Scott.hom f x)
 ```
 
 
@@ -257,3 +287,194 @@ Pointed-DCPOs-is-category : is-category (Pointed-DCPOs o ℓ)
 Pointed-DCPOs-is-category =
   subcat-is-category DCPOs-is-category is-pointed-dcpo-is-prop
 ```
+
+<!--
+```agda
+module Pointed-DCPOs {o ℓ : Level} = Cat.Reasoning (Pointed-DCPOs o ℓ)
+
+Pointed-dcpo : ∀ o ℓ → Type _
+Pointed-dcpo o ℓ = Pointed-DCPOs.Ob {o} {ℓ}
+
+Forget-Pointed-dcpo : Functor (Pointed-DCPOs o ℓ) (Sets o)
+Forget-Pointed-dcpo = Forget-DCPO F∘ Forget-subcat
+
+module Pointed-dcpo {o ℓ} (D : Pointed-dcpo o ℓ) where
+  open is-directed-family
+
+  dcpo : DCPO o ℓ
+  dcpo = D .fst
+
+  has-pointed : is-pointed-dcpo dcpo
+  has-pointed = D .snd
+
+  open DCPO dcpo public
+
+  bottom : Ob
+  bottom = Bottom.bot (D .snd)
+
+  bottom≤x : ∀ x → bottom ≤ x
+  bottom≤x = Bottom.has-bottom (D .snd)
+
+  adjoin : ∀ {Ix : Type o} → (Ix → Ob) → Maybe Ix → Ob
+  adjoin = extend-bottom dcpo has-pointed 
+
+  adjoin-directed
+    : ∀ (s : Ix → Ob) → is-semidirected-family poset s
+    → is-directed-family poset (adjoin s)
+  adjoin-directed = extend-bottom-directed dcpo has-pointed
+ 
+  lub→adjoin-lub : ∀ {s : Ix → Ob} {x : Ob} → is-lub poset s x → is-lub poset (adjoin s) x
+  lub→adjoin-lub = lub→extend-bottom-lub dcpo has-pointed
+
+  adjoin-lub→lub : ∀ {s : Ix → Ob} {x : Ob} → is-lub poset (adjoin s) x → is-lub poset s x
+  adjoin-lub→lub = extend-bottom-lub→lub dcpo has-pointed
+
+  -- We put these behind 'opaque' to prevent blow ups in goals.
+  opaque
+    ⋃-semi : (s : Ix → Ob) → is-semidirected-family poset s → Ob
+    ⋃-semi s semidir = ⋃ (adjoin s) (adjoin-directed s semidir)
+
+    ⋃-semi-lub
+      : ∀ (s : Ix → Ob) (dir : is-semidirected-family poset s)
+      → is-lub poset s (⋃-semi s dir)
+    ⋃-semi-lub s dir = adjoin-lub→lub (⋃.has-lub (adjoin s) (adjoin-directed s dir))
+
+    ⋃-semi-le
+      : ∀ (s : Ix → Ob) (dir : is-semidirected-family poset s)
+      → ∀ i → s i ≤ ⋃-semi s dir
+    ⋃-semi-le s dir = is-lub.fam≤lub (⋃-semi-lub s dir)
+
+    ⋃-semi-least
+      : ∀ (s : Ix → Ob) (dir : is-semidirected-family poset s)
+      → ∀ x → (∀ i → s i ≤ x) → ⋃-semi s dir ≤ x
+    ⋃-semi-least s dir x le = is-lub.least (⋃-semi-lub s dir) x le
+
+    ⋃-semi-pointwise
+      : ∀ {Ix} {s s' : Ix → Ob}
+      → {fam : is-semidirected-family poset s} {fam' : is-semidirected-family poset s'}
+      → (∀ ix → s ix ≤ s' ix)
+      → ⋃-semi s fam ≤ ⋃-semi s' fam'
+    ⋃-semi-pointwise le = ⋃-pointwise λ where
+      (just i) → le i
+      nothing → bottom≤x _
+
+  opaque
+    ⋃-prop : ∀ {Ix : Type o} → (Ix → Ob) → is-prop Ix → Ob
+    ⋃-prop s ix-prop = ⋃-semi s sdir
+      module ⋃-prop-semidir where
+        sdir : is-semidirected-family poset s
+        sdir i j = inc (i , ≤-refl , path→≤ (ap s (ix-prop j i)))
+
+    ⋃-prop-le
+      : ∀ (s : Ix → Ob) (p : is-prop Ix)
+      → ∀ i → s i ≤ ⋃-prop s p
+    ⋃-prop-le s p i = ⋃-semi-le _ _ i
+
+    ⋃-prop-least
+      : ∀ (s : Ix → Ob) (p : is-prop Ix)
+      → ∀ x → (∀ i → s i ≤ x) → ⋃-prop s p ≤ x
+    ⋃-prop-least s p = ⋃-semi-least _ _
+
+module Strict-scott {D E : Pointed-dcpo o ℓ} (f : Pointed-DCPOs.Hom D E) where
+  private
+    module D = Pointed-dcpo D
+    module E = Pointed-dcpo E
+
+  scott : DCPOs.Hom D.dcpo E.dcpo
+  scott = Subcat-hom.hom f
+
+  open Scott scott public
+
+  opaque
+    pres-bottoms : ∀ x → is-bottom D.poset x → is-bottom E.poset (hom x)
+    pres-bottoms = Subcat-hom.witness f
+
+    pres-⊥ : hom D.bottom ≡ E.bottom
+    pres-⊥ = bottom-unique E.poset (pres-bottoms D.bottom D.bottom≤x) E.bottom≤x
+
+    pres-adjoin-lub
+      : ∀ {s : Ix → D.Ob} {x : D.Ob}
+      → is-semidirected-family D.poset s
+      → is-lub D.poset (D.adjoin s) x → is-lub E.poset (E.adjoin (hom ⊙ s)) (hom x)
+    pres-adjoin-lub {s = s} {x = x} sdir x-lub .is-lub.fam≤lub (just i) =
+      monotone _ _ (is-lub.fam≤lub x-lub (just i))
+    pres-adjoin-lub {s = s} {x = x} sdir x-lub .is-lub.fam≤lub nothing =
+      E.bottom≤x (hom x)
+    pres-adjoin-lub {s = s} {x = x} sdir x-lub .is-lub.least y le =
+      is-lub.least
+        (pres-directed-lub (D.adjoin s) (D.adjoin-directed s sdir) x x-lub) y λ where
+          (just i) → le (just i)
+          nothing → pres-bottoms _ D.bottom≤x y
+
+    pres-semidirected-lub
+      : ∀ {Ix} (s : Ix → D.Ob) → is-semidirected-family D.poset s
+      → ∀ x → is-lub D.poset s x → is-lub E.poset (hom ⊙ s) (hom x)
+    pres-semidirected-lub s sdir x x-lub =
+      E.adjoin-lub→lub (pres-adjoin-lub sdir (D.lub→adjoin-lub x-lub))
+
+module _ {o ℓ} {D E : Pointed-dcpo o ℓ} where
+  private
+    module D = Pointed-dcpo D
+    module E = Pointed-dcpo E
+  open Total-hom
+  open is-directed-family
+
+  strict-scott-path
+    : ∀ {f g : Pointed-DCPOs.Hom D E}
+    → (∀ x → Strict-scott.hom f x ≡ Strict-scott.hom g x)
+    → f ≡ g
+  strict-scott-path p = Subcat-hom-path (scott-path p)
+
+  to-strict-scott-⋃-semi
+    : (f : D.Ob → E.Ob)
+    → (∀ x y → x D.≤ y → f x E.≤ f y)
+    → (∀ {Ix} (s : Ix → D.Ob) → (dir : is-semidirected-family D.poset s)
+       → is-lub E.poset (f ⊙ s) (f (D.⋃-semi s dir)))
+    → Pointed-DCPOs.Hom D E
+  to-strict-scott-⋃-semi f monotone pres-⋃-semi =
+    sub-hom (to-scott f monotone pres-⋃) pres-bot
+    where
+      pres-⋃
+        : ∀ {Ix} (s : Ix → D.Ob) → (dir : is-directed-family D.poset s)
+        → is-lub E.poset (f ⊙ s) (f (D.⋃ s dir))
+      pres-⋃ s dir .is-lub.fam≤lub i =
+        monotone _ _ $ D.⋃.fam≤lub _ _ i
+      pres-⋃ s dir .is-lub.least y le =
+        f (D.⋃ s dir)                      E.=⟨ ap f (lub-unique D.poset (D.⋃.has-lub _ _) (D.⋃-semi-lub s (dir .semidirected))) ⟩
+        f (D.⋃-semi s (dir .semidirected)) E.≤⟨ is-lub.least (pres-⋃-semi _ _) y le ⟩
+        y E.≤∎
+
+      pres-bot : ∀ x → is-bottom D.poset x → is-bottom E.poset (f x)
+      pres-bot x x-bot y =
+        f x              E.≤⟨ monotone _ _ (x-bot _) ⟩
+        f (D.⋃-semi _ _) E.≤⟨ is-lub.least (pres-⋃-semi (absurd ⊙ Lift.lower) (absurd ⊙ Lift.lower)) y (absurd ⊙ Lift.lower) ⟩
+        y                E.≤∎
+
+  to-strict-scott-bottom
+    : (f : D.Ob → E.Ob)
+    → (∀ x y → x D.≤ y → f x E.≤ f y)
+    → (∀ {Ix} (s : Ix → D.Ob) → (dir : is-directed-family D.poset s)
+       → is-lub E.poset (f ⊙ s) (f (D.⋃ s dir)))
+    → is-bottom E.poset (f D.bottom)
+    → Pointed-DCPOs.Hom D E
+  to-strict-scott-bottom f monotone pres-⋃ pres-bot =
+    sub-hom (to-scott f monotone pres-⋃) λ x x-bot y →
+      f x        E.≤⟨ monotone _ _ (x-bot _) ⟩
+      f D.bottom E.≤⟨ pres-bot y ⟩
+      y          E.≤∎
+
+  to-strict-scott-semidirected
+    : (f : D.Ob → E.Ob)
+    → (∀ {Ix} (s : Ix → D.Ob) → (dir : is-semidirected-family D.poset s)
+       → ∀ x → is-lub D.poset s x → is-lub E.poset (f ⊙ s) (f x))
+    → Pointed-DCPOs.Hom D E
+  to-strict-scott-semidirected f pres =
+    sub-hom
+      (to-scott-directed f
+        (λ s dir x lub → pres s (is-directed-family.semidirected dir) x lub))
+      (λ x x-bot y → is-lub.least
+          (pres _ (absurd ⊙ Lift.lower) x (lift-is-lub D.poset (is-bottom→is-lub D.poset x-bot)))
+          y
+          (absurd ⊙ Lift.lower))
+```
+-->
