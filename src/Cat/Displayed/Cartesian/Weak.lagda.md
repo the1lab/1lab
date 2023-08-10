@@ -555,7 +555,7 @@ between $\cE_{u}(-,y')$ and $\cE_{x}(-,u^{*}(y'))$.
 ```agda
   weak-fibration→hom-iso-into
     : ∀ {x y y′} (u : Hom x y)
-    → natural-iso (Hom-over-into ℰ u y′) (Hom-into (Fibre ℰ x) (weak-lift.x′ u y′))
+    → Hom-over-into ℰ u y′ ≅ⁿ Hom-into (Fibre ℰ x) (weak-lift.x′ u y′)
   weak-fibration→hom-iso-into {x} {y} {y′} u = to-natural-iso mi where
     open make-natural-iso
 
@@ -667,15 +667,15 @@ module _ (U : ∀ {x y} → Hom x y → Functor (Fibre ℰ y) (Fibre ℰ x)) whe
 
   hom-iso→weak-fibration
     : (∀ {x y y′} (u : Hom x y)
-       → natural-iso (Hom-over-into ℰ u y′) (Hom-into (Fibre ℰ x) (U u .F₀ y′)))
+       → Hom-over-into ℰ u y′ ≅ⁿ Hom-into (Fibre ℰ x) (U u .F₀ y′))
     → is-weak-cartesian-fibration
   hom-iso→weak-fibration hom-iso =
     vertical-equiv→weak-fibration
       (λ u → U u .F₀)
-      (λ u′ → natural-iso.to (hom-iso _) .η _ u′)
+      (λ u′ → Isoⁿ.to (hom-iso _) .η _ u′)
       (natural-iso-to-is-equiv (hom-iso _) _)
       λ f′ g′ → to-pathp⁻ $
-        happly (natural-iso.to (hom-iso _) .is-natural _ _ g′) f′
+        happly (Isoⁿ.to (hom-iso _) .is-natural _ _ g′) f′
 ```
 -->
 
@@ -694,9 +694,7 @@ module _ (fib : Cartesian-fibration) where
 
   fibration→hom-iso-from
     : ∀ {x y x′} (u : Hom x y)
-    → natural-iso
-      (Hom-over-from ℰ u x′)
-      (Hom-from (Fibre ℰ x) x′ F∘ base-change u)
+    → Hom-over-from ℰ u x′ ≅ⁿ Hom-from (Fibre ℰ x) x′ F∘ base-change u
   fibration→hom-iso-from {x} {y} {x′} u = to-natural-iso mi where
     open make-natural-iso
 
@@ -734,9 +732,7 @@ module _ (fib : Cartesian-fibration) where
 
   fibration→hom-iso-into
     : ∀ {x y y′} (u : Hom x y)
-    → natural-iso
-      (Hom-over-into ℰ u y′)
-      (Hom-into (Fibre ℰ x) (has-lift.x′ u y′))
+    → Hom-over-into ℰ u y′ ≅ⁿ Hom-into (Fibre ℰ x) (has-lift.x′ u y′)
   fibration→hom-iso-into u =
     weak-fibration→hom-iso-into (fibration→weak-fibration fib) u
 ```
@@ -748,13 +744,13 @@ a natural iso between $\cE_{u}(-,-)$ and $\cE_{id}(-,u^{*}(-))$.
 ```agda
   fibration→hom-iso
     : ∀ {x y} (u : Hom x y)
-    → natural-iso (Hom-over ℰ u) (Hom[-,-] (Fibre ℰ x) F∘ (Id F× base-change u))
+    → Hom-over ℰ u ≅ⁿ Hom[-,-] (Fibre ℰ x) F∘ (Id F× base-change u)
   fibration→hom-iso {x = x} u = to-natural-iso mi where
     open make-natural-iso
     open _=>_
 
-    module into-iso {y′} = natural-iso (fibration→hom-iso-into {y′ = y′} u)
-    module from-iso {x′} = natural-iso (fibration→hom-iso-from {x′ = x′} u)
+    module into-iso {y′} = Isoⁿ (fibration→hom-iso-into {y′ = y′} u)
+    module from-iso {x′} = Isoⁿ (fibration→hom-iso-from {x′ = x′} u)
 
     mi : make-natural-iso (Hom-over ℰ u) (Hom[-,-] (Fibre ℰ x) F∘ (Id F× base-change u))
     mi .eta x u′ = has-lift.universalv u _ u′

@@ -2,7 +2,7 @@
 ```agda
 open import 1Lab.Type
 
-open import Data.List
+open import Data.List.Base
 
 open import Prim.Data.Maybe
 open import Prim.Literals

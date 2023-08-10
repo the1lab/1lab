@@ -1,10 +1,10 @@
 <!--
 ```agda
 {-# OPTIONS --lossy-unification #-}
-open import Cat.Instances.Functor.Compose
 open import Cat.Functor.Equivalence
+open import Cat.Functor.Properties
 open import Cat.Instances.Functor
-open import Cat.Functor.Base
+open import Cat.Functor.Compose
 open import Cat.Univalent
 open import Cat.Prelude
 
@@ -54,7 +54,7 @@ surjective functor]: A category $\cC$ is univalent _precisely_ if any
 weak equivalence $H : \cA \to \cB$ induces^[by [precomposition]]
 a proper equivalence of categories $- \circ H : [\cB,\cC] \to [\cA,\cC]$.
 
-[precomposition]: Cat.Instances.Functor.Compose.html
+[precomposition]: Cat.Functor.Compose.html
 
 The high-level overview of the proof is as follows:
 

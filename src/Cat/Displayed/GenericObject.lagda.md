@@ -1,12 +1,12 @@
 <!--
 ```agda
-open import Cat.Displayed.Base
-open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Cartesian.Indexing
+open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Displayed.Morphism
 import Cat.Displayed.Reasoning
+import Cat.Displayed.Morphism
 ```
 -->
 

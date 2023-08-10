@@ -3,7 +3,7 @@ open import 1Lab.Type
 
 open import Data.Fin.Base
 open import Data.Nat.Base
-open import Data.List hiding (reverse)
+open import Data.List.Base hiding (reverse)
 
 module 1Lab.Reflection.Variables where
 

@@ -466,6 +466,18 @@ Natural transformations also dualize. The opposite of $\eta : F
 
 <!--
 ```agda
+{-# INLINE NT #-}
+
+is-natural-transformation
+  : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  → (F G : Functor C D)
+  → (η : ∀ x → D .Precategory.Hom (F .Functor.F₀ x) (G .Functor.F₀ x))
+  → Type _
+is-natural-transformation {C = C} {D = D} F G η =
+  ∀ x y (f : C .Precategory.Hom x y) → η y D.∘ F .F₁ f ≡ G .F₁ f D.∘ η x
+  where module D = Precategory D
+        open Functor
+
 module _ where
   open Precategory
   open Functor

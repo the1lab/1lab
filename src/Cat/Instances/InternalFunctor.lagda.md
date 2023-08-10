@@ -2,8 +2,8 @@
 ```agda
 open import Cat.Prelude
 
-import Cat.Internal.Base
 import Cat.Internal.Reasoning
+import Cat.Internal.Base
 import Cat.Reasoning
 ```
 -->
@@ -31,7 +31,7 @@ If $\cC$ and $\cD$ are categories internal to $\cB$, we can define the
 of the ordinary [functor categories]. This relativisation plays a
 similar role in the theory of internal categories.
 
-[functor categories]: Cat.Instances.Functor.html
+[functor categories]: Cat.Functor.Base.html
 
 Before we define the category, we need some simple constructions on
 internal natural transformations. First, we note that there is an
@@ -119,11 +119,11 @@ module _ {ℂ 𝔻 : Internal-cat} where
 -->
 
 ```agda
-  Internal-natural-inverses
+  Internal-Inversesⁿ
     : {F G : Internal-functor ℂ 𝔻}
     → F =>i G → G =>i F
     → Type _
-  Internal-natural-inverses = ℂ𝔻.Inverses
+  Internal-Inversesⁿ = ℂ𝔻.Inverses
 
   is-internal-natural-invertible
     : {F G : Internal-functor ℂ 𝔻}
@@ -137,10 +137,10 @@ module _ {ℂ 𝔻 : Internal-cat} where
 
 <!--
 ```agda
-  module Internal-natural-inverses
+  module Internal-Inversesⁿ
     {F G : Internal-functor ℂ 𝔻}
     {α : F =>i G} {β : G =>i F}
-    (inv : Internal-natural-inverses α β) = ℂ𝔻.Inverses inv
+    (inv : Internal-Inversesⁿ α β) = ℂ𝔻.Inverses inv
   module is-internal-natural-invertible
     {F G : Internal-functor ℂ 𝔻}
     {α : F =>i G}
@@ -173,7 +173,7 @@ module _ {ℂ 𝔻 : Internal-cat} where
   to-internal-natural-iso {F = F} {G = G} mk = ni where
     open make-internal-natural-iso mk
     open Internal-natural-iso {F} {G}
-    open Internal-natural-inverses {F} {G}
+    open Internal-Inversesⁿ {F} {G}
 
     ni : Internal-natural-iso F G
     ni .to .ηi = etai

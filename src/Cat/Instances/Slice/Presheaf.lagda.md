@@ -1,8 +1,8 @@
 <!--
 ```agda
 open import Cat.Functor.Equivalence
+open import Cat.Functor.Properties
 open import Cat.Instances.Elements
-open import Cat.Instances.Functor
 open import Cat.Instances.Slice
 open import Cat.Functor.Base
 open import Cat.Functor.Hom

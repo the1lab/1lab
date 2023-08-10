@@ -279,5 +279,12 @@ infixr 4 _,ₚ_
 Σ-swap₂ .snd .is-eqv y = contr (f .fst) (f .snd) where
   f = strict-fibres _ y
   -- agda can actually infer the inverse here, which is neat
+
+×-swap
+  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+  → (A × B) ≃ (B × A)
+×-swap .fst (x , y) = y , x
+×-swap .snd .is-eqv y = contr (f .fst) (f .snd) where
+  f = strict-fibres _ y
 ```
 -->

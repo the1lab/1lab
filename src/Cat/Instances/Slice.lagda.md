@@ -4,12 +4,12 @@ open import Cat.Instances.Shape.Terminal
 open import Cat.Instances.Shape.Join
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Limit.Base
+open import Cat.Functor.Properties
 open import Cat.Instances.Discrete
 open import Cat.Instances.Functor
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
-open import Cat.Functor.Base
 open import Cat.Univalent
 open import Cat.Prelude
 

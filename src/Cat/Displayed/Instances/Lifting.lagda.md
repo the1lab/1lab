@@ -1,10 +1,10 @@
 <!--
 ```agda
-open import Cat.Instances.Functor.Compose
 open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Functor
 open import Cat.Displayed.Total
+open import Cat.Functor.Compose
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
@@ -131,7 +131,7 @@ higher level of strictness than usual.
 
   Lifting-nat-iso
     : ∀ {F : Functor J B} → (F' : Lifting F)
-    → natural-iso F (πᶠ E F∘ Lifting→Functor F')
+    → F ≅ⁿ πᶠ E F∘ Lifting→Functor F'
   Lifting-nat-iso F' = to-natural-iso ni where
     open make-natural-iso
 

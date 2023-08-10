@@ -28,6 +28,7 @@ disconnected from our theory of bicategories.
 
 ```agda
 record Allegory o ℓ ℓ′ : Type (lsuc (o ⊔ ℓ ⊔ ℓ′)) where
+  no-eta-equality
   field cat : Precategory o ℓ
   open Precategory cat public
 ```

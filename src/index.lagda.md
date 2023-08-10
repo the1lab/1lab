@@ -536,12 +536,12 @@ The construction and properties of functor categories:
 
 ```agda
 -- Functor categories:
-open import Cat.Instances.Functor
-open import Cat.Instances.Functor.Limits -- Co/limits in functor categories
-open import Cat.Instances.Functor.Duality -- 2-cell duality in Cat
-open import Cat.Instances.Functor.Compose
+open import Cat.Functor.Base
+open import Cat.Functor.Compose
 -- Composition of functors is functorial (also whiskering natural
 -- transformations)
+open import Cat.Instances.Functor.Limits -- Co/limits in functor categories
+open import Cat.Instances.Functor.Duality -- 2-cell duality in Cat
 ```
 
 The internal versions of functor categories:
@@ -603,8 +603,33 @@ the extra coherence that is necessary for specifying a bicategory.
 ```agda
 open import Cat.Allegory.Base -- The definition
 open import Cat.Allegory.Maps -- Functional relations in an allegory
+open import Cat.Allegory.Morphism -- Morphisms in allegories
 open import Cat.Allegory.Reasoning -- Reasoning combinators
 ```
+
+## Restriction Categories
+
+Restriction categories axiomatize categories of partial maps by adding
+n restriction operation $(-)\downarrow : \cC(X,Y) \to \cC(X,X)$ that
+takes a morphism $f$ to a subobject of the identity morphism that is
+defined precisely when $f$ is.
+
+```agda
+open import Cat.Restriction.Base
+  -- The definition
+open import Cat.Restriction.Functor
+  -- Functors between restriction categories
+open import Cat.Restriction.Reasoning
+  -- Reasoning combinators and morphism classes
+open import Cat.Restriction.Total
+  -- Categories of total maps
+```
+
+```agda
+open import Cat.Restriction.Instances.Allegory
+ -- Restriction structures on partial maps of an allegory.
+```
+
 
 ## Displayed categories
 

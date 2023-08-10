@@ -1,8 +1,10 @@
 <!--
 ```agda
-open import Cat.Instances.Functor.Compose
-open import Cat.Instances.Functor
+open import Cat.Functor.Naturality
+open import Cat.Functor.Univalence
 open import Cat.Functor.Kan.Base
+open import Cat.Functor.Compose
+open import Cat.Functor.Base
 open import Cat.Functor.Base
 open import Cat.Prelude
 
@@ -106,7 +108,7 @@ isomorphism.
     : ∀ {α : G₁ => G₂} {β : G₂ => G₁}
     → (α ◂ p) ∘nt η₁ ≡ η₂
     → (β ◂ p) ∘nt η₂ ≡ η₁
-    → natural-inverses α β
+    → Inversesⁿ α β
   σ-inversesp α-factor β-factor = C′D.make-inverses
     (l₂.σ-uniq₂ η₂
       (Nat-path λ j → sym (D.pullr (β-factor ηₚ j) ∙ α-factor ηₚ j))
@@ -121,17 +123,17 @@ isomorphism.
   σ-is-invertiblep
     : ∀ {α : G₁ => G₂}
     → (α ◂ p) ∘nt η₁ ≡ η₂
-    → is-natural-invertible α
+    → is-invertibleⁿ α
   σ-is-invertiblep {α = α} α-factor =
     C′D.inverses→invertible (σ-inversesp {α} α-factor l₂.σ-comm)
 
-  σ-inverses : natural-inverses (l₁.σ η₂) (l₂.σ η₁)
+  σ-inverses : Inversesⁿ (l₁.σ η₂) (l₂.σ η₁)
   σ-inverses = σ-inversesp l₁.σ-comm l₂.σ-comm
 
-  σ-is-invertible : is-natural-invertible (l₁.σ η₂)
+  σ-is-invertible : is-invertibleⁿ (l₁.σ η₂)
   σ-is-invertible = σ-is-invertiblep l₁.σ-comm
 
-  unique : natural-iso G₁ G₂
+  unique : G₁ ≅ⁿ G₂
   unique = C′D.invertible→iso (l₁.σ η₂) (σ-is-invertiblep l₁.σ-comm)
 ```
 -->
@@ -169,7 +171,7 @@ left extension of $F$ along $p$.
 ```agda
   is-invertible→is-lan
     : ∀ {G' : Functor C′ D} {eta' : F => G' F∘ p}
-    → is-natural-invertible (lan.σ eta')
+    → is-invertibleⁿ (lan.σ eta')
     → is-lan p F G' eta'
   is-invertible→is-lan {G' = G'} {eta'} invert = lan' where
     open is-lan
@@ -192,11 +194,11 @@ left extension of $F$ along $p$.
 ```agda
   natural-iso-of→is-lan
     : {F' : Functor C D}
-    → (isos : natural-iso F F')
-    → is-lan p F' G (eta ∘nt natural-iso.from isos)
+    → (isos : F ≅ⁿ F')
+    → is-lan p F' G (eta ∘nt Isoⁿ.from isos)
   natural-iso-of→is-lan {F' = F'} isos = lan' where
     open is-lan
-    module isos = natural-iso isos
+    module isos = Isoⁿ isos
 
     lan' : is-lan p F' G (eta ∘nt isos.from)
     lan' .σ α = lan.σ (α ∘nt isos.to)
@@ -212,11 +214,11 @@ left extension of $F$ along $p$.
 
   natural-iso-ext→is-lan
     : {G' : Functor C′ D}
-    → (isos : natural-iso G G')
-    → is-lan p F G' ((natural-iso.to isos ◂ p) ∘nt eta)
+    → (isos : G ≅ⁿ G')
+    → is-lan p F G' ((Isoⁿ.to isos ◂ p) ∘nt eta)
   natural-iso-ext→is-lan {G' = G'} isos = lan' where
     open is-lan
-    module isos = natural-iso isos
+    module isos = Isoⁿ isos
 
     lan' : is-lan p F G' ((isos.to ◂ p) ∘nt eta)
     lan' .σ α = lan.σ α ∘nt isos.from
@@ -231,14 +233,14 @@ left extension of $F$ along $p$.
 
   natural-iso-along→is-lan
     : {p' : Functor C C′}
-    → (isos : natural-iso p p')
-    → is-lan p' F G ((G ▸ natural-iso.to isos) ∘nt eta)
+    → (isos : p ≅ⁿ p')
+    → is-lan p' F G ((G ▸ Isoⁿ.to isos) ∘nt eta)
   natural-iso-along→is-lan {p'} isos = lan' where
     open is-lan
-    module isos = natural-iso isos
+    module isos = Isoⁿ isos
     open Cat.Functor.Reasoning
 
-    lan' : is-lan p' F G ((G ▸ natural-iso.to isos) ∘nt eta)
+    lan' : is-lan p' F G ((G ▸ Isoⁿ.to isos) ∘nt eta)
     lan' .σ {M} α = lan.σ ((M ▸ isos.from) ∘nt α)
     lan' .σ-comm {M = M} = Nat-path λ j →
       D.pulll ((lan.σ _ .is-natural _ _ _))
@@ -278,10 +280,10 @@ which is propositionally equal to the whiskering:
 
 ```agda
   natural-isos→is-lan
-    : (p-iso : natural-iso p p')
-    → (F-iso : natural-iso F F')
-    → (G-iso : natural-iso G G')
-    → (natural-iso.to G-iso ◆ natural-iso.to p-iso) ∘nt eps ∘nt natural-iso.from F-iso ≡ eps'
+    : (p-iso : p ≅ⁿ p')
+    → (F-iso : F ≅ⁿ F')
+    → (G-iso : G ≅ⁿ G')
+    → ((Isoⁿ.to G-iso ◆ Isoⁿ.to p-iso) ∘nt eps ∘nt Isoⁿ.from F-iso) ≡ eps'
     → is-lan p F G eps
     → is-lan p' F' G' eps'
 ```
@@ -291,16 +293,12 @@ which is propositionally equal to the whiskering:
   natural-isos→is-lan p-iso F-iso G-iso q lan =
     universal-path→is-lan
       (natural-iso-ext→is-lan
-        (natural-iso-of→is-lan
-          (natural-iso-along→is-lan
-            lan
-            p-iso)
-          F-iso)
+        (natural-iso-of→is-lan (natural-iso-along→is-lan lan p-iso) F-iso)
         G-iso)
       (Nat-path λ x →
         D.extendl (D.pulll (G-iso .to .is-natural _ _ _))
         ∙ q ηₚ _)
-    where open natural-iso
+    where open Isoⁿ
 ```
 -->
 
@@ -338,7 +336,7 @@ tiny lemma stating that this isomorphism "sends $\eta_1$ to $\eta_2$" is
 precisely the data of a dependent identification $\eta_1 \equiv \eta_2$
 over $i'$.
 
-[Functor-is-category]: Cat.Instances.Functor.html#Functor-is-category
+[Functor-is-category]: Cat.Functor.Univalence.html#Functor-is-category
 
 ```agda
   functor-path : L₁.Ext ≡ L₂.Ext
@@ -385,7 +383,7 @@ module
     : ∀ {α : G₂ => G₁} {β : G₁ => G₂}
     → (ε₁ ∘nt (α ◂ p)) ≡ ε₂
     → (ε₂ ∘nt (β ◂ p)) ≡ ε₁
-    → natural-inverses α β
+    → Inversesⁿ α β
   σ-inversesp α-factor β-factor =
     C′D.make-inverses
       (r₁.σ-uniq₂ ε₁
@@ -398,17 +396,17 @@ module
   σ-is-invertiblep
     : ∀ {α : G₂ => G₁}
     → (ε₁ ∘nt (α ◂ p)) ≡ ε₂
-    → is-natural-invertible α
+    → is-invertibleⁿ α
   σ-is-invertiblep {α} α-factor =
     C′D.inverses→invertible (σ-inversesp {α} α-factor r₂.σ-comm)
 
-  σ-inverses : natural-inverses (r₁.σ ε₂) (r₂.σ ε₁)
+  σ-inverses : Inversesⁿ (r₁.σ ε₂) (r₂.σ ε₁)
   σ-inverses = σ-inversesp r₁.σ-comm r₂.σ-comm
 
-  σ-is-invertible : is-natural-invertible (r₁.σ ε₂)
+  σ-is-invertible : is-invertibleⁿ (r₁.σ ε₂)
   σ-is-invertible = σ-is-invertiblep r₁.σ-comm
 
-  unique : natural-iso G₁ G₂
+  unique : G₁ ≅ⁿ G₂
   unique = C′D.invertible→iso (r₁.σ ε₂) (σ-is-invertiblep r₁.σ-comm) ni⁻¹
 
   counit : ε₁ ∘nt (r₁.σ ε₂ ◂ p) ≡ ε₂
@@ -430,7 +428,7 @@ module _
   -- due to the natural isos.
   is-invertible→is-ran
     : ∀ {G' : Functor C′ D} {eps'}
-    → is-natural-invertible (ran.σ eps')
+    → is-invertibleⁿ (ran.σ eps')
     → is-ran p F G' eps'
   is-invertible→is-ran {G' = G'} {eps'} invert = ran' where
     open is-ran
@@ -448,11 +446,11 @@ module _
 
   natural-iso-of→is-ran
     : {F' : Functor C D}
-    → (isos : natural-iso F F')
-    → is-ran p F' G (natural-iso.to isos ∘nt eps)
+    → (isos : F ≅ⁿ F')
+    → is-ran p F' G (Isoⁿ.to isos ∘nt eps)
   natural-iso-of→is-ran {F'} isos = ran' where
     open is-ran
-    module isos = natural-iso isos
+    module isos = Isoⁿ isos
 
     ran' : is-ran p F' G (isos.to ∘nt eps)
     ran' .σ β = ran.σ (isos.from ∘nt β)
@@ -466,11 +464,11 @@ module _
 
   natural-iso-ext→is-ran
     : {G' : Functor C′ D}
-    → (isos : natural-iso G G')
-    → is-ran p F G' (eps ∘nt (natural-iso.from isos ◂ p))
+    → (isos : G ≅ⁿ G')
+    → is-ran p F G' (eps ∘nt (Isoⁿ.from isos ◂ p))
   natural-iso-ext→is-ran {G'} isos = ran' where
     open is-ran
-    module isos = natural-iso isos
+    module isos = Isoⁿ isos
 
     ran' : is-ran p F G' (eps ∘nt (isos.from ◂ p))
     ran' .σ β = isos.to ∘nt ran.σ β
@@ -483,15 +481,15 @@ module _
 
   natural-iso-along→is-ran
     : {p' : Functor C C′}
-    → (isos : natural-iso p p')
-    → is-ran p' F G (eps ∘nt (G ▸ natural-iso.from isos))
+    → (isos : p ≅ⁿ p')
+    → is-ran p' F G (eps ∘nt (G ▸ Isoⁿ.from isos))
   natural-iso-along→is-ran {p'} isos = ran' where
     open is-ran
-    module isos = natural-iso isos
+    module isos = Isoⁿ isos
     open Cat.Functor.Reasoning
 
-    ran' : is-ran p' F G (eps ∘nt (G ▸ natural-iso.from isos))
-    ran' .σ {M} β = ran.σ (β ∘nt (M ▸ natural-iso.to isos))
+    ran' : is-ran p' F G (eps ∘nt (G ▸ Isoⁿ.from isos))
+    ran' .σ {M} β = ran.σ (β ∘nt (M ▸ Isoⁿ.to isos))
     ran' .σ-comm {M = M} = Nat-path λ j →
       D.pullr (sym (ran.σ _ .is-natural _ _ _))
       ∙ D.pulll (ran.σ-comm ηₚ _)
@@ -521,17 +519,16 @@ module _
     open _=>_
 
   natural-isos→is-ran
-    : (p-iso : natural-iso p p')
-    → (F-iso : natural-iso F F')
-    → (G-iso : natural-iso G G')
-    → (natural-iso.to F-iso ∘nt eps ∘nt (natural-iso.from G-iso ◆ natural-iso.from p-iso)) ≡ eps'
+    : (p-iso : p ≅ⁿ p')
+    → (F-iso : F ≅ⁿ F')
+    → (G-iso : G ≅ⁿ G')
+    → (Isoⁿ.to F-iso ∘nt eps ∘nt (Isoⁿ.from G-iso ◆ Isoⁿ.from p-iso)) ≡ eps'
     → is-ran p F G eps
     → is-ran p' F' G' eps'
   natural-isos→is-ran p-iso F-iso G-iso p ran =
     universal-path→is-ran
       (natural-iso-ext→is-ran
-        (natural-iso-of→is-ran
-          (natural-iso-along→is-ran ran p-iso)
+        (natural-iso-of→is-ran (natural-iso-along→is-ran ran p-iso)
         F-iso)
       G-iso)
     (Nat-path λ c →

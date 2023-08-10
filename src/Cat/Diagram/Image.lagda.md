@@ -88,7 +88,7 @@ of $\cC/b$ spanned by those maps in $M$ --- let us call it $M/b$
 --- admitting an evident [ff] inclusion $F : M/b \mono \cC/b$. An
 **$M$-image of $f$** is a universal morphism from $f$ to $F$.
 
-[ff]: Cat.Functor.Base.html#ff-functors
+[ff]: Cat.Functor.Properties.html#ff-functors
 
 ```agda
 Class-of-monos : ∀ ℓ → Type _

@@ -405,7 +405,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 <!--
 ```agda
   colimits→inversesp {f = f} {g = g} f-factor g-factor =
-    natural-inverses→inverses
+    inversesⁿ→inverses
       {α = hom→⊤-natural-trans f}
       {β = hom→⊤-natural-trans g}
       (Lan-unique.σ-inversesp Cx Cy
@@ -414,7 +414,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
       tt
 
   colimits→invertiblep {f = f} f-factor =
-    is-natural-invertible→invertible
+    is-invertibleⁿ→is-invertible
       {α = hom→⊤-natural-trans f}
       (Lan-unique.σ-is-invertiblep
         Cx
@@ -428,8 +428,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
   colimits→invertible =
     colimits→invertiblep (Cx.factors Cy.ψ Cy.commutes)
 
-  colimits-unique =
-    Nat-iso→Iso (Lan-unique.unique Cx Cy) tt
+  colimits-unique = isoⁿ→iso (Lan-unique.unique Cx Cy) tt
 ```
 -->
 
@@ -477,7 +476,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
     → is-lan !F D K' eta
   is-invertible→is-colimitp {K' = K'} {eta = eta} eps p q invert =
     generalize-colimitp
-      (is-invertible→is-lan Cy $ componentwise-invertible→invertible _ λ _ → invert)
+      (is-invertible→is-lan Cy $ invertible→invertibleⁿ _ λ _ → invert)
       q
 ```
 
@@ -488,8 +487,8 @@ coapex of $C$ is also a colimit of $Dia'$.
 ```agda
   natural-iso-diagram→is-colimitp
     : ∀ {D′ : Functor J C} {eta : D′ => K F∘ !F}
-    → (isos : natural-iso D D′)
-    → (∀ {j} →  Cy.ψ j C.∘ natural-iso.from isos .η j ≡ eta .η j)
+    → (isos : D ≅ⁿ D′)
+    → (∀ {j} →  Cy.ψ j C.∘ Isoⁿ.from isos .η j ≡ eta .η j)
     → is-lan !F D′ K eta
   natural-iso-diagram→is-colimitp {D′ = D′} isos q = generalize-colimitp
     (natural-iso-of→is-lan Cy isos)
@@ -501,11 +500,9 @@ coapex of $C$ is also a colimit of $Dia'$.
 module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
          {D D′ : Functor J C} where
   natural-iso→colimit
-    : natural-iso D D′
-    → Colimit D
-    → Colimit D′
+    : D ≅ⁿ D′ → Colimit D → Colimit D′
   natural-iso→colimit isos C .Lan.Ext = Lan.Ext C
-  natural-iso→colimit isos C .Lan.eta = Lan.eta C ∘nt natural-iso.from isos
+  natural-iso→colimit isos C .Lan.eta = Lan.eta C ∘nt Isoⁿ.from isos
   natural-iso→colimit isos C .Lan.has-lan = natural-iso-of→is-lan (Lan.has-lan C) isos
 ```
 -->
@@ -618,7 +615,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
     open _=>_
 
   natural-iso→preserves-colimits
-    : natural-iso F F'
+    : F ≅ⁿ F'
     → preserves-colimit F Dia
     → preserves-colimit F' Dia
   natural-iso→preserves-colimits α F-preserves {K = K} {eps} colim =
@@ -631,7 +628,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
         F' .F₁ (eps .η j) ∎)
       (F-preserves colim)
     where
-      module α = natural-iso α
+      module α = Isoⁿ α
 ```
 -->
 

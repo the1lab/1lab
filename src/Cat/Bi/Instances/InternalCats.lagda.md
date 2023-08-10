@@ -1,17 +1,16 @@
 <!--
 ```agda
-open import Cat.Bi.Base
-
+open import Cat.Instances.InternalFunctor.Compose
+open import Cat.Instances.InternalFunctor
 open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
-open import Cat.Instances.InternalFunctor
-open import Cat.Instances.InternalFunctor.Compose
 open import Cat.Instances.Product
+open import Cat.Bi.Base
 open import Cat.Prelude
 
+import Cat.Internal.Reasoning
 import Cat.Internal.Base
 import Cat.Reasoning
-import Cat.Internal.Reasoning
 ```
 -->
 
@@ -57,7 +56,7 @@ the identity internal natural isomorphism as-is.
 
 ```agda
   ƛ : ∀ {A B : Internal-cat}
-    → natural-iso Id (Right (Fi∘-functor A B B) Idi)
+    → Id ≅ⁿ Right (Fi∘-functor A B B) Idi
   ƛ {B = B} = to-natural-iso ni where
     open Cat.Internal.Reasoning B
     ni : make-natural-iso _ _
@@ -77,7 +76,7 @@ the identity internal natural isomorphism as-is.
       idri _ ∙ id-commi
 
   ρ : ∀ {A B : Internal-cat}
-    → natural-iso Id (Left (Fi∘-functor A A B) Idi)
+    → Id ≅ⁿ Left (Fi∘-functor A A B) Idi
   ρ {B = B} = to-natural-iso ni where
     open Cat.Internal.Reasoning B
     ni : make-natural-iso _ _
@@ -97,7 +96,7 @@ the identity internal natural isomorphism as-is.
       idri _ ∙ ap (_∘i _) (G .Fi-id)
 
   α : {A B C D : Internal-cat}
-    → natural-iso
+    → _≅ⁿ_
        {C = Internal-functors _ C D ×ᶜ Internal-functors _ B C ×ᶜ Internal-functors _ A B}
        (compose-assocˡ (λ {A} {B} {C} → Fi∘-functor A B C))
        (compose-assocʳ λ {A} {B} {C} → Fi∘-functor A B C)

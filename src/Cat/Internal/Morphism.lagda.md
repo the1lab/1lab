@@ -1,12 +1,11 @@
 <!--
 ```agda
+open import Cat.Internal.Base using (Internal-cat)
 open import Cat.Prelude
 
-open import Cat.Internal.Base using (Internal-cat)
-
+import Cat.Internal.Reasoning
 import Cat.Internal.Base
 import Cat.Reasoning
-import Cat.Internal.Reasoning
 ```
 -->
 

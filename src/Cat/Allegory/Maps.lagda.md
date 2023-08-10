@@ -3,7 +3,7 @@
 open import Cat.Allegory.Base
 open import Cat.Prelude
 
-import Cat.Allegory.Reasoning as Ar
+import Cat.Allegory.Morphism
 ```
 -->
 
@@ -20,28 +20,32 @@ some category of "sets and relations", to recover the associated
 category of "sets and functions". So, let's start by thinking about $\Rel$!
 
 If you have a relation $R \mono A \times B$, when does it correspond to
-a function $A \to B$? Well, it must definitely be _functional_: if we
+a function $A \to B$? Well, it must definitely be [functional]: if we
 want $R(x, y)$ to represent "$f(x) = y$", then surely if $R(x, y) \land
 R(x, z)$, we must have $y = z$. In allegorical language, we would say
 $RR^o \le \id$, which we can calculate to mean (in $\Rel$) that, for
 all $x, y$,
 
+[functional]: Cat.Allegory.Morphism.html#functional-morphisms
+
 $$
 (\exists z, R(z, x) \land R(z, y)) \to (x = y)\text{.}
 $$
 
-It must also be an _entire_ relation: Every $x$ must at least one $y$ it
+It must also be an [entire] relation: Every $x$ must at least one $y$ it
 is related to, and by functionality, _exactly_ one $y$ it is related to.
 This is the "value of" the function at $y$.
 
+[entire]: Cat.Allegory.Morphism.html#entire-morphisms
+
 ```agda
 module _ {o ℓ h} (A : Allegory o ℓ h) where
-  open Allegory A
+  open Cat.Allegory.Morphism A
   record is-map x y (f : Hom x y) : Type h where
     constructor mapping
     field
-      functional : f ∘ f † ≤ id
-      entire     : id ≤ f † ∘ f
+      functional : is-functional f
+      entire     : is-entire f
 
 module _ {o ℓ h} {A : Allegory o ℓ h} where
   open Allegory A
@@ -87,7 +91,7 @@ arbitrary relations).
 
 ```agda
 module _ {o ℓ h} (A : Allegory o ℓ h) where
-  private module A = Ar A
+  private module A = Cat.Allegory.Morphism A
   open is-map
   open Precategory hiding (_∘_ ; id)
   open A using (_† ; _∘_ ; id ; _◀_ ; _▶_)
@@ -106,21 +110,12 @@ using those words.
 
 ```agda
   Maps[_] .Precategory.id = A.id , mapping
-    (subst (A._≤ id) (sym (A.idl _ ∙ dual-id A)) A.≤-refl)
-    (subst (id A.≤_) (sym (A.idr _ ∙ dual-id A)) A.≤-refl)
-
-  Maps[_] .Precategory._∘_ (f , m) (g , m′) = f A.∘ g , mapping
-    ( (f ∘ g) ∘ (f ∘ g) †     A.=⟨ A.†-inner refl ⟩
-      f ∘ (g ∘ g †) ∘ f †     A.≤⟨ f ▶ m′ .functional ◀ f † ⟩
-      f ∘ id ∘ f †            A.=⟨ A.refl⟩∘⟨ A.idl _ ⟩
-      f ∘ f †                 A.≤⟨ m .functional ⟩
-      id                      A.≤∎ )
-    ( id                   A.≤⟨ m′ .entire ⟩
-      g † ∘ g              A.=⟨ ap (g † ∘_) (sym (A.idl _)) ⟩
-      g † ∘ id ∘ g         A.≤⟨ g † ▶ m .entire ◀ g ⟩
-      g † ∘ (f † ∘ f) ∘ g  A.=⟨ A.pulll (A.pulll (sym A.dual-∘)) ∙ A.pullr refl ⟩
-      (f ∘ g) † ∘ (f ∘ g)  A.≤∎ )
-
+    A.functional-id
+    A.entire-id
+  Maps[_] .Precategory._∘_ (f , m) (g , m′) =
+    f A.∘ g , mapping
+      (A.functional-∘ (m .functional) (m′ .functional))
+      (A.entire-∘ (m .entire) (m′ .entire))
   Maps[_] .idr f = Σ-prop-path (λ _ → hlevel 1) (A.idr _)
   Maps[_] .idl f = Σ-prop-path (λ _ → hlevel 1) (A.idl _)
   Maps[_] .assoc f g h = Σ-prop-path (λ _ → hlevel 1) (A.assoc _ _ _)

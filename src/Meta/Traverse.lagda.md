@@ -48,3 +48,4 @@ instance
   Traverse-Maybe : Traverse (eff Maybe)
   Traverse-Maybe .Traverse.traverse f (just x) = just <$> f x
   Traverse-Maybe .Traverse.traverse f nothing  = pure nothing
+```

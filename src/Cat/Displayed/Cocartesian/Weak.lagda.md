@@ -650,7 +650,7 @@ Furthermore, this equivalence is natural.
 ```agda
   weak-opfibration→hom-iso-from
     : ∀ {x y x′} (u : Hom x y)
-    → natural-iso (Hom-over-from ℰ u x′) (Hom-from (Fibre ℰ y) (weak-lift.y′ u x′))
+    → Hom-over-from ℰ u x′ ≅ⁿ Hom-from (Fibre ℰ y) (weak-lift.y′ u x′)
   weak-opfibration→hom-iso-from {y = y} {x′ = x′} u = to-natural-iso mi where
     open make-natural-iso
 
@@ -708,15 +708,15 @@ module _ (U : ∀ {x y} → Hom x y → Functor (Fibre ℰ x) (Fibre ℰ y)) whe
 
   hom-iso→weak-opfibration
     : (∀ {x y x′} (u : Hom x y)
-       → natural-iso (Hom-over-from ℰ u x′) (Hom-from (Fibre ℰ y) (U u .F₀ x′)))
+       → Hom-over-from ℰ u x′ ≅ⁿ Hom-from (Fibre ℰ y) (U u .F₀ x′))
     → is-weak-cocartesian-fibration
   hom-iso→weak-opfibration hom-iso =
     vertical-equiv→weak-opfibration
       (λ u → U u .F₀)
-      (λ u′ → natural-iso.to (hom-iso _) .η _ u′)
+      (λ u′ → Isoⁿ.to (hom-iso _) .η _ u′)
       (natural-iso-to-is-equiv (hom-iso _) _)
       λ f′ g′ → to-pathp⁻ $
-        happly (natural-iso.to (hom-iso _) .is-natural _ _ f′) g′
+        happly (Isoⁿ.to (hom-iso _) .is-natural _ _ f′) g′
 ```
 -->
 
@@ -728,15 +728,13 @@ module _ (opfib : Cocartesian-fibration) where
 
   opfibration→hom-iso-from
     : ∀ {x y x′} (u : Hom x y)
-    → natural-iso (Hom-over-from ℰ u x′) (Hom-from (Fibre ℰ y) (has-lift.y′ u x′))
+    → Hom-over-from ℰ u x′ ≅ⁿ Hom-from (Fibre ℰ y) (has-lift.y′ u x′)
   opfibration→hom-iso-from u =
     weak-opfibration→hom-iso-from (opfibration→weak-opfibration opfib) u
 
   opfibration→hom-iso-into
     : ∀ {x y y′} (u : Hom x y)
-    → natural-iso
-        (Hom-over-into ℰ u y′)
-        (Hom-into (Fibre ℰ y) y′ F∘ Functor.op (cobase-change u) )
+    → Hom-over-into ℰ u y′ ≅ⁿ Hom-into (Fibre ℰ y) y′ F∘ Functor.op (cobase-change u)
   opfibration→hom-iso-into {y = y} {y′ = y′} u = to-natural-iso mi where
     open make-natural-iso
 
@@ -759,16 +757,14 @@ module _ (opfib : Cocartesian-fibration) where
 
   opfibration→hom-iso
     : ∀ {x y} (u : Hom x y)
-    → natural-iso
-        (Hom-over ℰ u)
-        (Hom[-,-] (Fibre ℰ y) F∘ (Functor.op (cobase-change u) F× Id))
+    → Hom-over ℰ u ≅ⁿ Hom[-,-] (Fibre ℰ y) F∘ (Functor.op (cobase-change u) F× Id)
   opfibration→hom-iso {y = y} u = to-natural-iso mi where
     open make-natural-iso
     open _=>_
     open Functor
 
-    module into-iso {y′} = natural-iso (opfibration→hom-iso-into {y′ = y′} u)
-    module from-iso {x′} = natural-iso (opfibration→hom-iso-from {x′ = x′} u)
+    module into-iso {y′} = Isoⁿ (opfibration→hom-iso-into {y′ = y′} u)
+    module from-iso {x′} = Isoⁿ (opfibration→hom-iso-from {x′ = x′} u)
     module Fibre {x} = CR (Fibre ℰ x)
 
     mi : make-natural-iso

@@ -48,7 +48,7 @@ a group homomorphism.
 
 [$\Ab$-categories]: Cat.Abelian.Base.html#ab-enriched-categories
 [$\Ab$-functors]: Cat.Abelian.Functor.html#ab-enriched-functors
-[functor category]: Cat.Instances.Functor.html
+[functor category]: Cat.Functor.Base.html
 
 ```agda
   Ab-functors : Precategory _ _
