@@ -3,6 +3,7 @@
 open import Cat.Prelude
 
 open import Order.Diagram.Lub
+open import Order.Diagram.Glb
 open import Order.Semilattice
 open import Order.Frame
 open import Order.Base
@@ -74,4 +75,52 @@ But this result relies on the cocontinuity of meets.
   ⋃ (λ i → ⋃ F ∩ G i)               ≡⟨ ap ⋃ (funext λ i → ∩-commutative ∙ ⋃-distrib (G i) F) ⟩
   ⋃ (λ i → ⋃ λ j → G i ∩ F j)       ≡⟨ ⋃-product F G ⟩
   ⋃ (λ i → F (i .fst) ∩ G (i .snd)) ∎
+
+⋃-twice
+  : ∀ {I : Type ℓ} {J : I → Type ℓ} (F : (i : I) → J i → ⌞ B ⌟)
+  → ⋃ (λ i → ⋃ λ j → F i j)
+  ≡ ⋃ {I = Σ I J} (λ p → F (p .fst) (p .snd))
+⋃-twice F = ≤-antisym
+  (⋃-universal _ (λ i → ⋃-universal _ (λ j → ⋃-colimiting _ _)))
+  (⋃-universal _ λ (i , j) → ≤-trans (⋃-colimiting j _) (⋃-colimiting i _))
+
+⋃-ap
+  : ∀ {I I′ : Type ℓ} {f : I → ⌞ B ⌟} {g : I′ → ⌞ B ⌟}
+  → (e : I ≃ I′)
+  → (∀ i → f i ≡ g (e .fst i))
+  → ⋃ f ≡ ⋃ g
+⋃-ap e p = ap₂ (λ I f → ⋃ {I = I} f) (ua e) (ua→ p)
+
+-- raised i for "index", raised f for "family"
+⋃-apⁱ : ∀ {I I′ : Type ℓ} {f : I′ → ⌞ B ⌟} (e : I ≃ I′) → ⋃ (λ i → f (e .fst i)) ≡ ⋃ f
+⋃-apᶠ : ∀ {I : Type ℓ} {f g : I → ⌞ B ⌟} → (∀ i → f i ≡ g i) → ⋃ f ≡ ⋃ g
+
+⋃-apⁱ e = ⋃-ap e (λ i → refl)
+⋃-apᶠ p = ⋃-ap (_ , id-equiv) p
+
+⋃-singleton
+  : ∀ {I : Type ℓ} {f : I → ⌞ B ⌟}
+  → (p : is-contr I)
+  → ⋃ f ≡ f (p .centre)
+⋃-singleton {f = f} p = ≤-antisym
+  (⋃-universal _ (λ i → sym ∩-idempotent ∙ ap₂ _∩_ refl (ap f (sym (p .paths _)))))
+  (⋃-colimiting _ _)
+
+⋃-distribʳ
+  : ∀ {I : Type ℓ} {f : I → ⌞ B ⌟} {x}
+  → ⋃ f ∩ x ≡ ⋃ (λ i → f i ∩ x)
+⋃-distribʳ = ∩-commutative ∙ ⋃-distrib _ _ ∙ ap ⋃ (funext λ _ → ∩-commutative)
+
+⋃≤⋃
+  : ∀ {I : Type ℓ} {f g : I → ⌞ B ⌟}
+  → (∀ i → f i ≤ g i)
+  → ⋃ f ≤ ⋃ g
+⋃≤⋃ p = ⋃-universal _ (λ i → ≤-trans (p i) (⋃-colimiting _ _))
+
+∩≤∩
+  : ∀ {x y x' y'}
+  → x ≤ x'
+  → y ≤ y'
+  → (x ∩ y) ≤ (x' ∩ y')
+∩≤∩ p q = ∩-univ _ (≤-trans ∩≤l p) (≤-trans ∩≤r q)
 ```
