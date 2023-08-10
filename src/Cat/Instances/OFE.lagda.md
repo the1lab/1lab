@@ -14,10 +14,10 @@ open import Data.List hiding (map)
 module Cat.Instances.OFE where
 ```
 
-# Ordered families of equivalences
+# Ordered families of equivalence relations
 
-An **ordered family of equivalences** (OFE, for short) is a set $X$
-equipped with a family of equivalence relations, indexed by natural
+An **ordered family of equivalence relations** (OFE, for short) is a set
+$X$ equipped with a family of equivalence relations, indexed by natural
 numbers $n$ and written $x \within{n} y$, that _approximate_ the
 equality on $X$. The family of equivalence relations can be thought of
 as equipping $X$ with a notion of _fractional distance_: $x \within{n}
@@ -31,6 +31,16 @@ The axioms of an OFE are essentially that
 $d'$, for any $d' \le d$;
 
 - Arbitrarily close points are the same.
+
+::: warning
+We remark that the term OFE generally stands for ordered family of
+_equivalences_, rather than _equivalence relations_; However, this
+terminology is mathematically incorrect: there is no meaningful sense in
+which an OFE is a family $I \to (A \equiv B)$.
+
+To preserve the connection with the literature, we shall maintain the
+acronym "OFE"; Keep in mind that we do it with disapproval.
+:::
 
 Another perspective on OFEs, and indeed a large part for the
 justification of their study, is in the semantics of programming
