@@ -126,55 +126,6 @@ _↓_ : Part A → A → Type _
 x ↓ y = Σ[ d ∈ is-defined x ] (x .elt d ≡ y)
 ```
 
-We can embed $A$ into the type of partial elements by using $\top$
-as our choice of proposition.
-
-```agda
-always : A → Part A
-always a .def = el ⊤ (hlevel 1)
-always a .elt _ = a
-
-always-inj : ∀ {x y : Type ℓ} → always x ≡ always y → x ≡ y
-always-inj {x = x} p =
-  J (λ y p → (d : is-defined y) → x ≡ y .elt d) (λ _ → refl) p tt
-```
-
-Next, we note that the type of partial elements forms a [monad].
-
-[monad]: Cat.Diagram.Monad.html
-
-```agda
-part-map : (A → B) → Part A → Part B
-part-map f x .def = x .def
-part-map f x .elt px = f (x .elt px)
-
-part-ap : Part (A → B) → Part A → Part B
-part-ap f x .def = el (is-defined f × is-defined x) hlevel!
-part-ap f x .elt (pf , px) = f .elt pf (x .elt px)
-
-part-bind : Part A → (A → Part B) → Part B
-part-bind x f .def =
-  el (Σ[ px ∈ is-defined x ] is-defined (f (x .elt px))) hlevel!
-part-bind x f .elt (px , pfx) =
-  f (x .elt px) .elt pfx
-```
-
-<!--
-```agda
-instance
-  Part-Map : Map (eff Part)
-  Part-Map .Map._<$>_ = part-map
-
-  Part-Idiom : Idiom (eff Part)
-  Part-Idiom .Idiom.Map-idiom = Part-Map
-  Part-Idiom .Idiom.pure = always
-  Part-Idiom .Idiom._<*>_ = part-ap
-
-  Part-Bind : Bind (eff Part)
-  Part-Bind .Bind._>>=_ = part-bind
-  Part-Bind .Bind.Idiom-bind = Part-Idiom
-```
--->
 
 Paths between partial elements are given by bi-implications of their
 propositions, along with a path between their values, assuming that both
@@ -213,17 +164,6 @@ Part-is-hlevel n hl = Iso→is-hlevel (2 + n) eqv $
 Part-is-set : is-set A → is-set (Part A)
 Part-is-set = Part-is-hlevel 0
 
-part-map-id : ∀ (x : Part A) → part-map (λ a → a) x ≡ x
-part-map-id x =
-  part-ext (λ p → p) (λ p → p)
-    (λ _ _ → ap (x .elt) (x .def .is-tr _ _))
-
-part-map-∘
-  : ∀ (f : B → C) (g : A → B)
-  → ∀ (x : Part A) → part-map (f ⊙ g) x ≡ part-map f (part-map g x)
-part-map-∘ f g x =
-  part-ext (λ p → p) (λ p → p)
-    (λ _ _ → ap (f ⊙ g ⊙ x .elt) (x .def .is-tr _ _))
 ```
 -->
 
@@ -279,15 +219,6 @@ Parts A = to-poset (Part ∣ A ∣) mk-parts where
   mk-parts .make-poset.antisym = ⊑-antisym
 ```
 
-The monad structure defined earlier respects the refinement ordering.
-
-```agda
-part-map-⊑
-  : ∀ {f : A → B} {x y : Part A}
-  → x ⊑ y → part-map f x ⊑ part-map f y
-part-map-⊑ p .implies = p .implies
-part-map-⊑ {f = f} p .refines d = ap f (p .refines d)
-```
 
 Furthermore, the poset of partial elements has [least upper bounds] of all
 [semidirected families].
@@ -372,22 +303,6 @@ pretty straightforward, so we do not dwell on it too deeply.
  □-elim (λ _ → set _ _) λ (i , si) → le i .refines si
 ```
 
-<!--
-```agda
-part-map-lub
-  : ∀ {Ix : Type ℓ}
-  → {A : Set o} {B : Set o'}
-  → {s : Ix → Part ∣ A ∣}
-  → {dir : ∀ i j → ∃[ k ∈ Ix ] (s i ⊑ s k × s j ⊑ s k)}
-  → (f : ∣ A ∣ → ∣ B ∣)
-  → is-lub (Parts B) (part-map f ⊙ s) (part-map f (⊑-lub (A .is-tr) s dir))
-part-map-lub f .is-lub.fam≤lub i = part-map-⊑ (⊑-lub-le i)
-part-map-lub f .is-lub.least y le .implies =
-  □-rec! λ si → le (si .fst) .implies (si .snd)
-part-map-lub {B = B} f .is-lub.least y le .refines =
-  □-elim (λ _ → B .is-tr _ _) λ si → le (si .fst) .refines (si .snd)
-```
--->
 
 Therefore, the type of partial elements forms a DCPO.
 
@@ -416,11 +331,6 @@ never-⊑ : ∀ {x : Part A} → never ⊑ x
 never-⊑ .implies ()
 never-⊑ .refines ()
 
-
-part-map-never : ∀ {f : A → B} {x} → part-map f never ⊑ x
-part-map-never .implies ()
-part-map-never .refines ()
-
 Parts-is-pointed-dcpo : ∀ {A : Set ℓ} → is-pointed-dcpo (Parts-dcpo A)
 Parts-is-pointed-dcpo .Bottom.bot = never
 Parts-is-pointed-dcpo .Bottom.has-bottom _ = never-⊑
@@ -429,7 +339,54 @@ Parts-pointed-dcpo : ∀ (A : Set ℓ) → Pointed-dcpo ℓ ℓ
 Parts-pointed-dcpo A = Parts-dcpo A , Parts-is-pointed-dcpo
 ```
 
+Next, we shall construct a functor from $\Sets$ to the category of pointed
+DCPOs that maps a set $A$ to the pointed DCPO of partial elements of $A$.
+
 ```agda
+part-map : (A → B) → Part A → Part B
+part-map f x .def = x .def
+part-map f x .elt px = f (x .elt px)
+
+part-map-⊑
+  : ∀ {f : A → B} {x y : Part A}
+  → x ⊑ y → part-map f x ⊑ part-map f y
+part-map-⊑ p .implies = p .implies
+part-map-⊑ {f = f} p .refines d = ap f (p .refines d)
+
+part-map-id : ∀ (x : Part A) → part-map (λ a → a) x ≡ x
+part-map-id x =
+  part-ext (λ p → p) (λ p → p)
+    (λ _ _ → ap (x .elt) (x .def .is-tr _ _))
+
+part-map-∘
+  : ∀ (f : B → C) (g : A → B)
+  → ∀ (x : Part A) → part-map (f ⊙ g) x ≡ part-map f (part-map g x)
+part-map-∘ f g x =
+  part-ext (λ p → p) (λ p → p)
+    (λ _ _ → ap (f ⊙ g ⊙ x .elt) (x .def .is-tr _ _))
+```
+
+The mapping we just defined also preserves least upper bounds and
+bottom elements, and thus defines a functor.
+
+```agda
+part-map-lub
+  : ∀ {Ix : Type ℓ}
+  → {A : Set o} {B : Set o'}
+  → {s : Ix → Part ∣ A ∣}
+  → {dir : ∀ i j → ∃[ k ∈ Ix ] (s i ⊑ s k × s j ⊑ s k)}
+  → (f : ∣ A ∣ → ∣ B ∣)
+  → is-lub (Parts B) (part-map f ⊙ s) (part-map f (⊑-lub (A .is-tr) s dir))
+part-map-lub f .is-lub.fam≤lub i = part-map-⊑ (⊑-lub-le i)
+part-map-lub f .is-lub.least y le .implies =
+  □-rec! λ si → le (si .fst) .implies (si .snd)
+part-map-lub {B = B} f .is-lub.least y le .refines =
+  □-elim (λ _ → B .is-tr _ _) λ si → le (si .fst) .refines (si .snd)
+
+part-map-never : ∀ {f : A → B} {x} → part-map f never ⊑ x
+part-map-never .implies ()
+part-map-never .refines ()
+
 Free-Pointed-dcpo : Functor (Sets ℓ) (Pointed-DCPOs ℓ ℓ)
 Free-Pointed-dcpo .F₀ A =
   Parts-pointed-dcpo A
@@ -444,7 +401,23 @@ Free-Pointed-dcpo .F-∘ f g =
   strict-scott-path (part-map-∘ f g)
 ```
 
-<!--
+Finally, we shall show that this functor is left-adjoint to the
+forgetful functor into $\Sets$. We start by constructing the unit
+of the adjunction, which takes an element $a : A$ to $\top, \lambda tt. a$.
+
+```agda
+always : A → Part A
+always a .def = el ⊤ (hlevel 1)
+always a .elt _ = a
+
+always-inj : ∀ {x y : Type ℓ} → always x ≡ always y → x ≡ y
+always-inj {x = x} p =
+  J (λ y p → (d : is-defined y) → x ≡ y .elt d) (λ _ → refl) p tt
+```
+
+Next, we characterize refinements of `always`{.Agda}, and note that
+it is natural.
+
 ```agda
 always-⊑
   : ∀ {x : Part A} {y : A}
@@ -463,24 +436,51 @@ always-natural
   : ∀ {x : A} → (f : A → B) → part-map f (always x) ≡ always (f x)
 always-natural f = part-ext (λ _ → tt) (λ _ → tt) λ _ _ → refl
 ```
--->
 
-```
+With that out of the way, we proceed to define the counit of the
+adjunction. Let $x$ be a partial element of a pointed DCPO $D$.
+We can define an element of $D$ that approximates $x$ by taking a
+directed join over the proposition associated with $x$.
+
+<!--
+```agda
 module _ (D : Pointed-dcpo o ℓ) where
   open Pointed-dcpo D
+```
+-->
 
+```agda
   part-counit : Part Ob → Ob
   part-counit x = ⋃-prop (x .elt ⊙ Lift.lower) def-prop
     where abstract
       def-prop : is-prop (Lift o (is-defined x))
       def-prop = hlevel!
+```
 
+If $x$ is defined, then the counit simply extracts the value of $x$.
+
+```agda
   part-counit-elt : (x : Part Ob) → (p : is-defined x) → part-counit x ≡ x .elt p
   part-counit-elt x p =
     ≤-antisym
       (⋃-prop-least _ _ _ λ (lift p') → path→≤ (ap (x .elt) (x .def .is-tr _ _)))
       (⋃-prop-le _ _ (lift p))
+```
 
+Furthermore, if $x$ is not defined, then the counit return the bottom element.
+
+```agda
+  part-counit-¬elt : (x : Part Ob) → (is-defined x → ⊥) → part-counit x ≡ bottom
+  part-counit-¬elt x ¬def =
+    ≤-antisym
+      (⋃-prop-least _ _ _ (λ p → absurd (¬def (Lift.lower p))))
+      (bottom≤x _)
+```
+
+We also note that the counit preserves refinements, least upper bounds, and
+bottom elements.
+
+```agda
   part-counit-⊑ : (x y : Part Ob) → x ⊑ y → part-counit x ≤ part-counit y
   part-counit-⊑ x y p =
     ⋃-prop-least _ _ (part-counit y) λ (lift i) →
@@ -510,6 +510,7 @@ module _ (D : Pointed-dcpo o ℓ) where
   part-counit-never x = ⋃-prop-least _ _ x (absurd ⊙ Lift.lower)
 ```
 
+We can tie this all together to obtain the desired adjunction.
 
 ```agda
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo
@@ -538,3 +539,37 @@ Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zag {B} =
      sym $ lub-of-const-fam B.poset (λ _ _ → refl) (B.⋃-prop-lub _ _ ) (lift tt)
     where module B = Pointed-dcpo B
 ```
+
+## Monad Structure
+
+The adjunction from the previous section yields a monad on the category of sets,
+but we opt to define it by hand to get better computational behaviour.
+
+```agda
+part-ap : Part (A → B) → Part A → Part B
+part-ap f x .def = el (is-defined f × is-defined x) hlevel!
+part-ap f x .elt (pf , px) = f .elt pf (x .elt px)
+
+part-bind : Part A → (A → Part B) → Part B
+part-bind x f .def =
+  el (Σ[ px ∈ is-defined x ] is-defined (f (x .elt px))) hlevel!
+part-bind x f .elt (px , pfx) =
+  f (x .elt px) .elt pfx
+```
+
+<!--
+```agda
+instance
+  Part-Map : Map (eff Part)
+  Part-Map .Map._<$>_ = part-map
+
+  Part-Idiom : Idiom (eff Part)
+  Part-Idiom .Idiom.Map-idiom = Part-Map
+  Part-Idiom .Idiom.pure = always
+  Part-Idiom .Idiom._<*>_ = part-ap
+
+  Part-Bind : Bind (eff Part)
+  Part-Bind .Bind._>>=_ = part-bind
+  Part-Bind .Bind.Idiom-bind = Part-Idiom
+```
+-->
