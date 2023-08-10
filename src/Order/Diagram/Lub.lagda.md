@@ -122,6 +122,22 @@ lower-lub lub .Lub.has-lub = lower-is-lub (Lub.has-lub lub)
 ```
 -->
 
+If $x$ is the least upper bound of a constant family, then
+$x$ must be equal to every member of the family.
+
+```agda
+const-fam-lub
+  : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {x}
+  → (∀ i j → F i ≡ F j)
+  → is-lub F x
+  → ∀ i → F i ≡ x
+const-fam-lub {F = F} is-const x-lub i =
+  ≤-antisym
+    (fam≤lub x-lub i)
+    (least x-lub (F i) (λ j → path→≥ (is-const i j)))
+```
+
+
 ## Joins
 
 In the binary case, a least upper bound is called a **join**. A short

@@ -47,8 +47,19 @@ module _ {o ℓ} (P : Poset o ℓ) where
     field
       elt : ∥ Ix ∥
       semidirected : is-semidirected-family f
-
 ```
+
+Note that if the indexing type of a family is a proposition, then the
+family is semi-directed.
+
+```agda
+  prop-indexed→semidirected
+    : ∀ {Ix : Type o} → (s : Ix → Ob) → is-prop Ix
+    → is-semidirected-family s
+  prop-indexed→semidirected s prop i j =
+    inc (i , ≤-refl , path→≤ (ap s (prop j i)))
+```
+
 
 The poset $(P, \le)$ is a **directed-complete partial order**, or DCPO,
 if it has [least upper bounds] of all directed families.

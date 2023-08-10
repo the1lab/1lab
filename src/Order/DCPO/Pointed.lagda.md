@@ -360,10 +360,7 @@ module Pointed-dcpo {o ℓ} (D : Pointed-dcpo o ℓ) where
 
   opaque
     ⋃-prop : ∀ {Ix : Type o} → (Ix → Ob) → is-prop Ix → Ob
-    ⋃-prop s ix-prop = ⋃-semi s sdir
-      module ⋃-prop-semidir where
-        sdir : is-semidirected-family poset s
-        sdir i j = inc (i , ≤-refl , path→≤ (ap s (ix-prop j i)))
+    ⋃-prop s ix-prop = ⋃-semi s (prop-indexed→semidirected poset s ix-prop)
 
     ⋃-prop-le
       : ∀ (s : Ix → Ob) (p : is-prop Ix)
@@ -374,6 +371,11 @@ module Pointed-dcpo {o ℓ} (D : Pointed-dcpo o ℓ) where
       : ∀ (s : Ix → Ob) (p : is-prop Ix)
       → ∀ x → (∀ i → s i ≤ x) → ⋃-prop s p ≤ x
     ⋃-prop-least s p = ⋃-semi-least _ _
+
+    ⋃-prop-lub
+      : ∀ (s : Ix → Ob) (p : is-prop Ix)
+      → is-lub poset s (⋃-prop s p)
+    ⋃-prop-lub s p = ⋃-semi-lub _ _
 
 module Strict-scott {D E : Pointed-dcpo o ℓ} (f : Pointed-DCPOs.Hom D E) where
   private
@@ -411,6 +413,15 @@ module Strict-scott {D E : Pointed-dcpo o ℓ} (f : Pointed-DCPOs.Hom D E) where
       → ∀ x → is-lub D.poset s x → is-lub E.poset (hom ⊙ s) (hom x)
     pres-semidirected-lub s sdir x x-lub =
       E.adjoin-lub→lub (pres-adjoin-lub sdir (D.lub→adjoin-lub x-lub))
+
+    pres-⋃-prop
+      : ∀ {Ix} (s : Ix → D.Ob) (p q : is-prop Ix)
+      → hom (D.⋃-prop s p) ≡ E.⋃-prop (hom ⊙ s) q
+    pres-⋃-prop s p q =
+      lub-unique E.poset
+        (pres-semidirected-lub _
+          (prop-indexed→semidirected D.poset s p) (D.⋃-prop s p) (D.⋃-prop-lub s p))
+        (E.⋃-prop-lub _ _)
 
 module _ {o ℓ} {D E : Pointed-dcpo o ℓ} where
   private
