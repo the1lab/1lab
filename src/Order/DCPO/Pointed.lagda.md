@@ -288,6 +288,11 @@ Pointed-DCPOs-is-category =
   subcat-is-category DCPOs-is-category is-pointed-dcpo-is-prop
 ```
 
+# Reasoning with Pointed DCPOs
+
+The following module re-exports facts about pointed DCPOs, and also
+proves a bunch of useful lemma.s
+
 <!--
 ```agda
 module Pointed-DCPOs {o ℓ : Level} = Cat.Reasoning (Pointed-DCPOs o ℓ)
@@ -297,8 +302,17 @@ Pointed-dcpo o ℓ = Pointed-DCPOs.Ob {o} {ℓ}
 
 Forget-Pointed-dcpo : Functor (Pointed-DCPOs o ℓ) (Sets o)
 Forget-Pointed-dcpo = Forget-DCPO F∘ Forget-subcat
+```
+-->
 
+```agda
 module Pointed-dcpo {o ℓ} (D : Pointed-dcpo o ℓ) where
+```
+
+<details>
+<summary>These proofs are all quite straightforward, so we omit them.
+</summary>
+```
   open is-directed-family
 
   dcpo : DCPO o ℓ
@@ -357,7 +371,14 @@ module Pointed-dcpo {o ℓ} (D : Pointed-dcpo o ℓ) where
     ⋃-semi-pointwise le = ⋃-pointwise λ where
       (just i) → le i
       nothing → bottom≤x _
+```
+</details>
 
+However, we do call attention to one extremely useful fact: if $D$ is
+a pointed DCPO, then it has least upper bounds of families indexed by
+propositions.
+
+```agda
   opaque
     ⋃-prop : ∀ {Ix : Type o} → (Ix → Ob) → is-prop Ix → Ob
     ⋃-prop s ix-prop = ⋃-semi s (prop-indexed→semidirected poset s ix-prop)
@@ -376,8 +397,37 @@ module Pointed-dcpo {o ℓ} (D : Pointed-dcpo o ℓ) where
       : ∀ (s : Ix → Ob) (p : is-prop Ix)
       → is-lub poset s (⋃-prop s p)
     ⋃-prop-lub s p = ⋃-semi-lub _ _
+```
 
+This allows us to reflect the truth value of a proposition into $D$.
+
+```agda
+  opaque
+    ⋃-prop-false
+      : ∀ (s : Ix → Ob) (p : is-prop Ix)
+      → ¬ Ix → ⋃-prop s p ≡ bottom
+    ⋃-prop-false s p ¬i =
+      ≤-antisym
+        (⋃-prop-least s p bottom (absurd ⊙ ¬i))
+        (bottom≤x _)
+
+    ⋃-prop-true
+      : ∀ (s : Ix → Ob) (p : is-prop Ix)
+      → (i : Ix) → ⋃-prop s p ≡ s i
+    ⋃-prop-true s p i =
+      sym $ lub-of-const-fam poset (λ i j → ap s (p i j)) (⋃-prop-lub s p) i
+```
+
+We define a similar module for strictly Scott-continuous maps.
+
+```agda
 module Strict-scott {D E : Pointed-dcpo o ℓ} (f : Pointed-DCPOs.Hom D E) where
+```
+
+<details>
+<summary>These proofs are all quite straightforward, so we omit them.
+</summary>
+```agda
   private
     module D = Pointed-dcpo D
     module E = Pointed-dcpo E
@@ -423,6 +473,18 @@ module Strict-scott {D E : Pointed-dcpo o ℓ} (f : Pointed-DCPOs.Hom D E) where
           (prop-indexed→semidirected D.poset s p) (D.⋃-prop s p) (D.⋃-prop-lub s p))
         (E.⋃-prop-lub _ _)
 
+    bottom-bounded : ∀ {x y} → x D.≤ y → hom y ≡ E.bottom → hom x ≡ E.bottom
+    bottom-bounded {x = x} {y = y} p y-bot =
+      E.≤-antisym
+        (hom x    E.≤⟨ monotone _ _ p ⟩
+         hom y    E.=⟨ y-bot ⟩
+         E.bottom E.≤∎)
+        (E.bottom≤x _)
+```
+</details>
+
+<!--
+```
 module _ {o ℓ} {D E : Pointed-dcpo o ℓ} where
   private
     module D = Pointed-dcpo D
@@ -435,7 +497,15 @@ module _ {o ℓ} {D E : Pointed-dcpo o ℓ} where
     → (∀ x → Strict-scott.hom f x ≡ Strict-scott.hom g x)
     → f ≡ g
   strict-scott-path p = Subcat-hom-path (scott-path p)
+```
+-->
 
+We also provide a handful of ways of constructing strictly Scott-continuous
+maps. First, we note that if $f$ is monotonic and preserves the chosen
+least upper bound of _semidirected_ families, then $f$ is strictly
+Scott-continuous.
+
+```agda
   to-strict-scott-⋃-semi
     : (f : D.Ob → E.Ob)
     → (∀ x y → x D.≤ y → f x E.≤ f y)
@@ -460,7 +530,13 @@ module _ {o ℓ} {D E : Pointed-dcpo o ℓ} where
         f x              E.≤⟨ monotone _ _ (x-bot _) ⟩
         f (D.⋃-semi _ _) E.≤⟨ is-lub.least (pres-⋃-semi (absurd ⊙ Lift.lower) (absurd ⊙ Lift.lower)) y (absurd ⊙ Lift.lower) ⟩
         y                E.≤∎
+```
 
+Next, if $f$ is monotonic, preserves chosen least upper bounds of directed
+families, and preserves chosen bottoms, then $f$ is strictly
+Scott-continuous.
+
+```agda
   to-strict-scott-bottom
     : (f : D.Ob → E.Ob)
     → (∀ x y → x D.≤ y → f x E.≤ f y)
@@ -473,7 +549,12 @@ module _ {o ℓ} {D E : Pointed-dcpo o ℓ} where
       f x        E.≤⟨ monotone _ _ (x-bot _) ⟩
       f D.bottom E.≤⟨ pres-bot y ⟩
       y          E.≤∎
+```
 
+Finally, if $f$ preserves arbitrary least upper bounds of semidirected
+families, then $f$ must be monotonic, and thus strictly Scott-continuous.
+
+```agda
   to-strict-scott-semidirected
     : (f : D.Ob → E.Ob)
     → (∀ {Ix} (s : Ix → D.Ob) → (dir : is-semidirected-family D.poset s)
@@ -488,4 +569,3 @@ module _ {o ℓ} {D E : Pointed-dcpo o ℓ} where
           y
           (absurd ⊙ Lift.lower))
 ```
--->

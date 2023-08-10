@@ -249,8 +249,20 @@ DCPO o ℓ = DCPOs.Ob {o} {ℓ}
 
 Forget-DCPO : ∀ {o ℓ} → Functor (DCPOs o ℓ) (Sets o)
 Forget-DCPO = πᶠ _ F∘ Forget-subcat
+```
+-->
 
--- Helper module for re-exporting DCPO stuff.
+# Reasoning with DCPOs
+
+The following pair of modules re-export facts about underlying
+posets and underlying monotonic maps of DCPOs and Scott-continuous
+functions, resp. They also prove a handful of small lemmas, though
+these are not of particular interest.
+
+<details>
+<summary>These proofs are all quite straightforward, so we omit them.
+</summary>
+```agda
 module DCPO {o ℓ} (D : DCPO o ℓ) where
   poset : Poset o ℓ
   poset = D .fst
@@ -276,7 +288,6 @@ module DCPO {o ℓ} (D : DCPO o ℓ) where
   ⋃-pointwise p = ⋃.least _ _ (⋃ _ _) λ ix →
     ≤-trans (p ix) (⋃.fam≤lub _ _ ix)
 
--- Helper module for working with Scott-continuous maps.
 module Scott {o ℓ} {D E : DCPO o ℓ} (f : DCPOs.Hom D E) where
   private
     module D = DCPO D
@@ -312,7 +323,11 @@ module Scott {o ℓ} {D E : DCPO o ℓ} (f : DCPOs.Hom D E) where
           (E.⋃.fam≤lub (hom ⊙ s) (directed dir)))
         (E.⋃.least (hom ⊙ s) (directed dir) (hom (D.⋃ s dir)) λ i →
           monotone (s i) (D.⋃ s dir) (D.⋃.fam≤lub s dir i))
+```
+</details>
 
+<!--
+```
 module _ {o ℓ} {D E : DCPO o ℓ} where
   private
     module D = DCPO D
@@ -328,7 +343,14 @@ module _ {o ℓ} {D E : DCPO o ℓ} where
     Subcat-hom-path $
     total-hom-path _ (funext p) $
     is-prop→pathp (λ i → is-monotone-is-prop (λ x → p x i) D.poset-on E.poset-on) _ _
+```
+-->
 
+We also provide a couple of means of constructing Scott-continuous maps.
+First, we note that if a function is monotonic and preserves chosen
+least upper bounds, then it is Scott-continuous.
+
+```agda
   to-scott
     : (f : D.Ob → E.Ob)
     → (∀ x y → x D.≤ y → f x E.≤ f y)
@@ -347,7 +369,12 @@ module _ {o ℓ} {D E : DCPO o ℓ} where
         f (D.⋃ s dir)    E.=⟨ lub-unique E.poset (pres-⋃ s dir) (E.⋃.has-lub (f ⊙ s) (monotone∘directed (total-hom f monotone) dir)) ⟩
         E.⋃ (f ⊙ s) _    E.≤⟨ E.⋃.least _ _ y le ⟩
         y                E.≤∎
+```
 
+Furthermore, if $f$ preserves arbitrary least upper bounds, then it
+is monotonic, and thus Scott-continuous.
+
+```agda
   to-scott-directed
     : (f : D.Ob → E.Ob)
     → (∀ {Ix} (s : Ix → D.Ob) → (dir : is-directed-family D.poset s)
@@ -356,5 +383,4 @@ module _ {o ℓ} {D E : DCPO o ℓ} where
   to-scott-directed f pres =
     sub-hom (total-hom f (dcpo+scott→monotone D.has-dcpo f pres)) pres
 ```
--->
 
