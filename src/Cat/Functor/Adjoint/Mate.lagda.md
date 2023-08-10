@@ -2,7 +2,6 @@
 ```agda
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Functor
-open import Cat.Instances.Functor.Compose
 open import Cat.Prelude
 
 import Cat.Reasoning

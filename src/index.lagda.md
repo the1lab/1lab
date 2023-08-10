@@ -423,6 +423,7 @@ open import Cat.Functor.Adjoint.Monadic -- Monadic adjunctions
 open import Cat.Functor.Adjoint.Compose -- Adjunctions compose
 open import Cat.Functor.Adjoint.Continuous -- Right adjoints preserve limits
 open import Cat.Functor.Adjoint.Reflective -- Reflective subcategories
+open import Cat.Functor.Adjoint.Mates -- Mates of adjoints
 ```
 
 Monadicity theorems:
