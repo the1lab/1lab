@@ -176,3 +176,14 @@ hetero-homotopy≃homotopy {A = A} {B} {f} {g} = Iso→Equiv isom where
       j
       (h (SinglP-is-contr A x₀ .paths (x₁ , p) j .snd))
 ```
+
+<!--
+```agda
+funext²
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : ∀ x → B x → Type ℓ''}
+      {f g : ∀ x y → C x y}
+  → (∀ i j → f i j ≡ g i j)
+  → f ≡ g
+funext² p i x y = p x y i
+```
+-->
