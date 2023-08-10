@@ -40,6 +40,8 @@ The [discrete poset] on a set $A$ is a DCPO. To see this, note that
 every semi-directed family $f : I \to A$ in a discrete poset is constant.
 Furthermore, $f$ is directed, so it is merely inhabited.
 
+[discrete poset]: Order.Instances.Discrete.html
+
 ```agda
 Disc-is-dcpo : ∀ {ℓ} {A : Set ℓ} → is-dcpo (Disc A)
 Disc-is-dcpo {A = A} .is-dcpo.directed-lubs {Ix = Ix} f dir =
