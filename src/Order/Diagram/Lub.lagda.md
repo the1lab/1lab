@@ -122,19 +122,64 @@ lower-lub lub .Lub.has-lub = lower-is-lub (Lub.has-lub lub)
 ```
 -->
 
+Let $f : I \to P$ be a family. If there is some $i$ such that
+for all $j$, $f(j) < f(i)$, then $f(i)$ is the least upper bound of
+$f$.
+
+```agda
+fam-bound→is-lub
+  : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob}
+  → (i : I) → (∀ j → F j ≤ F i)
+  → is-lub F (F i)
+fam-bound→is-lub i ge .fam≤lub = ge
+fam-bound→is-lub i ge .least y le = le i
+```
+
+
 If $x$ is the least upper bound of a constant family, then
 $x$ must be equal to every member of the family.
 
 ```agda
-const-fam-lub
+lub-of-const-fam
   : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {x}
   → (∀ i j → F i ≡ F j)
   → is-lub F x
   → ∀ i → F i ≡ x
-const-fam-lub {F = F} is-const x-lub i =
+lub-of-const-fam {F = F} is-const x-lub i =
   ≤-antisym
     (fam≤lub x-lub i)
-    (least x-lub (F i) (λ j → path→≥ (is-const i j)))
+    (least x-lub (F i) λ j → path→≥ (is-const i j))
+```
+
+Furthermore, if $f : I \to A$ is a constant family and $I$ is merely
+inhabited, then $f$ has a least upper bound.
+
+```agda
+const-inhabited-fam→is-lub
+  : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {x}
+  → (∀ i → F i ≡ x)
+  → ∥ I ∥
+  → is-lub F x
+const-inhabited-fam→is-lub {I = I} {F = F} {x = x} is-const =
+  ∥-∥-rec is-lub-is-prop mk-is-lub where
+    mk-is-lub : I → is-lub F x
+    mk-is-lub i .is-lub.fam≤lub j = path→≤ (is-const j)
+    mk-is-lub i .is-lub.least y le =
+      x   =˘⟨ is-const i ⟩
+      F i ≤⟨ le i ⟩
+      y ≤∎
+
+const-inhabited-fam→lub
+  : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob}
+  → (∀ i j → F i ≡ F j)
+  → ∥ I ∥
+  → Lub F
+const-inhabited-fam→lub {I = I} {F = F} is-const =
+  ∥-∥-rec Lub-is-prop mk-lub where
+    mk-lub : I → Lub F
+    mk-lub i .Lub.lub = F i
+    mk-lub i .Lub.has-lub =
+      const-inhabited-fam→is-lub (λ j → is-const j i) (inc i)
 ```
 
 

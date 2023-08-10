@@ -43,7 +43,7 @@ Furthermore, $f$ is directed, so it is merely inhabited.
 ```agda
 Disc-is-dcpo : ∀ {ℓ} {A : Set ℓ} → is-dcpo (Disc A)
 Disc-is-dcpo {A = A} .is-dcpo.directed-lubs {Ix = Ix} f dir =
-  const→disc-lub disc-fam-const (dir .elt)
+  const-inhabited-fam→lub (Disc A) disc-fam-const (dir .elt)
   where
     disc-fam-const : ∀ i j → f i ≡ f j
     disc-fam-const i j =
@@ -61,7 +61,7 @@ Free-DCPO : ∀ {ℓ} → Functor (Sets ℓ) (DCPOs ℓ ℓ)
 Free-DCPO .F₀ = Disc-dcpo
 Free-DCPO .F₁ f =
   to-scott-directed f λ s dir x x-lub →
-  const→disc-is-lub
+  const-inhabited-fam→is-lub (Disc _)
     (λ ix → ap f (disc-is-lub→const x-lub ix))
     (dir .elt)
 Free-DCPO .F-id = scott-path (λ _ → refl)
@@ -535,6 +535,6 @@ Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zig {A} =
   where module A? = Pointed-dcpo (Parts-pointed-dcpo A)
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zag {B} =
    funext λ x →
-     sym $ const-fam-lub B.poset (λ _ _ → refl) (B.⋃-prop-lub _ _ ) (lift tt)
+     sym $ lub-of-const-fam B.poset (λ _ _ → refl) (B.⋃-prop-lub _ _ ) (lift tt)
     where module B = Pointed-dcpo B
 ```
