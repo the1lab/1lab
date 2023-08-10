@@ -10,7 +10,7 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Bool
-open import Data.List
+open import Data.List.Base
 
 open import Meta.Foldable
 
@@ -677,11 +677,6 @@ instance
 
   decomp-univalence : ∀ {ℓ} {A B : Type ℓ} → hlevel-decomposition (A ≡ B)
   decomp-univalence = decomp (quote ≡-is-hlevel) (`level ∷ `search ∷ `search ∷ [] )
-
-  -- List isn't really a type on the same footing as all the others, but
-  -- we're here, so we might as well, right?
-  decomp-list : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (List A)
-  decomp-list = decomp (quote ListPath.List-is-hlevel) (`level-minus 2 ∷ `search ∷ [])
 
   -- This one really ought to work with instance selection only, but
   -- Agda has trouble with the (1 + k + n) level in H-Level-n-Type. The

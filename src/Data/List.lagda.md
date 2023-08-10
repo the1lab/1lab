@@ -1,11 +1,13 @@
 <!--
 ```agda
+open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
+open import Data.Nat.Base
 open import Data.Bool
 ```
 -->
@@ -156,37 +158,23 @@ ap-∷ x≡y xs≡ys i = x≡y i ∷ xs≡ys i
 ⚠️ TODO: Explain these ⚠️
 
 ```agda
-mapUp : (Nat → A → B) → Nat → List A → List B
-mapUp f _ [] = []
-mapUp f n (x ∷ xs) = f n x ∷ mapUp f (suc n) xs
 
-length : List A → Nat
-length [] = zero
-length (x ∷ x₁) = suc (length x₁)
+take-length : ∀ {ℓ} {A : Type ℓ} (xs : List A) → take (length xs) xs ≡ xs
+take-length [] = refl
+take-length (x ∷ xs) = ap (x ∷_) (take-length xs)
 
-concat : List (List A) → List A
-concat [] = []
-concat (x ∷ xs) = x ++ concat xs
+take-length-more
+  : ∀ {ℓ} {A : Type ℓ} (xs : List A) (n : Nat)
+  → length xs ≤ n
+  → take n xs ≡ xs
+take-length-more [] zero wit = refl
+take-length-more [] (suc n) wit = refl
+take-length-more (x ∷ xs) (suc n) (s≤s wit) = ap (x ∷_) (take-length-more xs n wit)
 
-reverse : List A → List A
-reverse = go [] where
-  go : List A → List A → List A
-  go acc [] = acc
-  go acc (x ∷ xs) = go (x ∷ acc) xs
-
-_∷r_ : List A → A → List A
-xs ∷r x = xs ++ (x ∷ [])
-
-all=? : (A → A → Bool) → List A → List A → Bool
-all=? eq=? [] [] = true
-all=? eq=? [] (x ∷ ys) = false
-all=? eq=? (x ∷ xs) [] = false
-all=? eq=? (x ∷ xs) (y ∷ ys) = and (eq=? x y) (all=? eq=? xs ys)
-
-enumerate : ∀ {ℓ} {A : Type ℓ} → List A → List (Nat × A)
-enumerate = go 0 where
-  go : Nat → List _ → List (Nat × _)
-  go x [] = []
-  go x (a ∷ b) = (x , a) ∷ go (suc x) b
+instance
+  -- List isn't really a type on the same footing as all the others, but
+  -- we're here, so we might as well, right?
+  decomp-list : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (List A)
+  decomp-list = decomp (quote ListPath.List-is-hlevel) (`level-minus 2 ∷ `search ∷ [])
 ```
 -->
