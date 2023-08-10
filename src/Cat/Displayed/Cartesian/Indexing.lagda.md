@@ -229,7 +229,7 @@ base-change-square-ni
   : ∀ {Γ Δ Θ Ψ : Ob}
   → {σ : Hom Γ Δ} {δ : Hom Γ Θ} {γ : Hom Δ Ψ} {τ : Hom Θ Ψ}
   → γ ∘ σ ≡ τ ∘ δ
-  → natural-iso (base-change σ F∘ base-change γ) (base-change δ F∘ base-change τ)
+  → (base-change σ F∘ base-change γ) ≅ⁿ (base-change δ F∘ base-change τ)
 base-change-square-ni {σ = σ} {δ = δ} {γ = γ} {τ = τ} p =
   to-natural-iso ni where
 

@@ -784,6 +784,12 @@ logical and type-theoretic phenomena.
 ```agda
 open import Cat.Displayed.Comprehension
 -- A categorical model of context extension.
+open import Cat.Displayed.Comprehension.Coproduct
+-- Coproducts in comprehension categories
+open import Cat.Displayed.Comprehension.Coproduct.Strong
+-- Coproducts with a stronger elimination principle
+open import Cat.Displayed.Comprehension.Coproduct.VeryStrong
+-- Coproducts with a very strong elimination principle
 ```
 
 
