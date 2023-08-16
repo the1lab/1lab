@@ -72,17 +72,26 @@ buildMarkdown refs modname input output = do
       | length modname > 24 = '…':reverse (take 24 (reverse modname))
       | otherwise = modname
 
+    variables =
+      [ ("title", title)
+      , ("source", permalink)
+      ]
+
+    addVars :: (Text -> String -> b -> b) -> b -> b
+    addVars f a = foldl' (\a (k, v) -> f k v a) a variables
+
     mStr = MetaString . Text.pack
     patchMeta
       = Meta
-      . Map.insert "title" (mStr title)
-      . Map.insert "source" (mStr permalink)
+      . addVars (\k v -> Map.insert k (mStr v))
       . Map.insert "bibliography" (mStr bibliographyName)
       . Map.insert "link-citations" (MetaBool True)
       . unMeta
 
   (markdown, references) <- liftIO do
-    contents <- Text.readFile input
+    -- Perform a basic variable substitution on the file. We don't really want to use
+    -- Pandoc's full templating system, as the $xyz$ variable syntax conflicts with LaTeX.
+    contents <- addVars (\k v -> Text.replace ("$" <> k <> "$") (Text.pack v)) <$> Text.readFile input
     either (fail . show) pure =<< runIO do
       Pandoc meta markdown <- readMarkdown def { readerExtensions = getDefaultExtensions "markdown" } [(input, contents)]
       let pandoc = Pandoc (patchMeta meta) markdown
