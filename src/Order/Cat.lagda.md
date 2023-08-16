@@ -17,14 +17,12 @@ module Order.Cat where
 
 # Posets as categories
 
-We have already remarked a [poset] is a special kind of \r{category}. This
-module actually formalises that connection by constructing a fully
-faithful functor from the category of posets into the category of [strict
-categories]. The construction of a category from a poset is entirely
-unsurprising, but it is lengthy, thus ending up in this module.
-
-[poset]: Order.Base.html
-[strict categories]: Cat.Instances.StrictCat.html
+We have already remarked a [[poset]] is a special kind of [[category]].
+This module actually formalises that connection by constructing a
+[[fully faithful functor]] from the category of posets into the
+[[category of strict categories]]. The construction of a category from a
+poset is entirely unsurprising, but it is lengthy, thus ending up in
+this module.
 
 ```agda
 poset→category : ∀ {ℓ ℓ′} → Posets.Ob → Precategory ℓ ℓ′
@@ -45,9 +43,9 @@ poset→category P = cat module poset-to-category where
 {-# DISPLAY poset-to-category.cat P = poset→category P #-}
 ```
 
-Our functor into strict categories is similarly easy to describe:
-Monotonicity of a map _is_ functoriality when preservation of composites
-is automatic.
+Our functor into $\strcat$ is similarly easy to describe: Monotonicity
+of a map _is_ functoriality when preservation of composites is
+automatic.
 
 ```agda
 open Functor

@@ -16,18 +16,17 @@ open Precategory using (Ob)
 module Cat.Univalent where
 ```
 
-# (Univalent) Categories
+# (Univalent) Categories {defines="univalent-categories univalent-category"}
 
-In much the same way that a partial order is a preorder where $x \le y
-\land y \le x \to x = y$, a **category** is a precategory where
+In much the same way that a [[partial order]] is a preorder where $x \le
+y \land y \le x \to x = y$, a **category** is a precategory where
 isomorphic objects are identified. This is a generalisation of the
-univalence axiom to arbitrary categories, and, indeed, it's phrased in
-the same way: asking for a canonically defined map to be an equivalence.
+[[univalence axiom]] to arbitrary categories, and, indeed, it's phrased
+in the same way: asking for a canonically defined map to be an
+equivalence.
 
 We define a precategory to be univalent when it can be equipped when its
-family of isomorphisms is an [identity system].
-
-[identity system]: 1Lab.Path.IdentitySystem.html
+family of isomorphisms is an [[identity system]].
 
 ```agda
 is-category : ∀ {o h} (C : Precategory o h) → Type (o ⊔ h)

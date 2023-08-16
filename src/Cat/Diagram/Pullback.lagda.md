@@ -8,7 +8,7 @@ open import Cat.Prelude
 module Cat.Diagram.Pullback {ℓ ℓ′} (C : Precategory ℓ ℓ′) where
 ```
 
-# Pullbacks
+# Pullbacks {defines=pullback}
 
 <!--
 ```agda
@@ -20,12 +20,10 @@ private variable
 -->
 
 A **pullback** $X \times_Z Y$ of $f : X \to Z$ and $g : Y \to Z$ is the
-[product] of $f$ and $g$ in the category $\cC/Z$, the category of
+[[product]] of $f$ and $g$ in the category $\cC/Z$, the category of
 objects fibred over $Z$. We note that the fibre of $X \times_Z Y$ over
 some element $x$ of $Z$ is the product of the fibres of $f$ and $g$ over
 $x$; Hence the pullback is also called the **fibred product**.
-
-[product]: Cat.Diagram.Product.html
 
 ```agda
 record is-pullback {P} (p₁ : Hom P X) (f : Hom X Z) (p₂ : Hom P Y) (g : Hom Y Z)
@@ -130,7 +128,7 @@ module Pullbacks (all-pullbacks : has-pullbacks) where
   Pb = pullback.apex
 ```
 
-## Stability
+## Stability {defines="pullback-stability pullback-stable"}
 
 Pullbacks, in addition to their nature as limits, serve as the way of
 "changing the base" of a family of objects: if we think of an arrow
@@ -138,16 +136,14 @@ $f : A \to B$ as encoding the data of a family over $B$ (think of the
 special case where $A = \Sigma_{x : A} F(x)$, and $f = \pi_1$), then we
 can think of pulling back $f$ along $g : X \to B$ as "the universal
 solution to making $f$ a family over $X$, via $g$". One way of making
-this intuition formal is through the [fundamental fibration] of a
+this intuition formal is through the [[fundamental fibration]] of a
 category with pullbacks.
-
-[fundamental fibration]: Cat.Displayed.Instances.Slice.html
 
 In that framing, there is a canonical choice for "the" pullback of an
 arrow along another: We put the arrow $f$ we want to pullback on the
 right side of the diagram, and the pullback is the right arrow. Using
 the type `is-pullback`{.Agda} defined above, the arrow which results
-from pulling back is adjacent **to the adjustment**: `is-pullback f⁺ g _ f`.
+from pulling back is adjacent _to the adjustment_: `is-pullback f⁺ g _ f`.
 To help keep this straight, we define what it means for a class of
 arrows to be **stable under pullback**: If `f` has a given property,
 then so does `f⁺`, for any pullback of `f`.

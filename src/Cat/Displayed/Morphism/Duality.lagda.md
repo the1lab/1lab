@@ -44,7 +44,7 @@ private variable
 
 # Duality of Displayed Morphism Classes
 
-In this file we prove that morphism classes in a displayed category
+In this file we prove that morphism classes in a [[displayed category]]
 correspond to their duals in the total opposite displayed category.
 There is *even less* mathematical content here than the [non-displayed
 case], just mountains of boilerplate.

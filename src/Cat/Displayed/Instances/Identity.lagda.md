@@ -26,9 +26,9 @@ open Total-hom
 
 ## The Identity Bifibration
 
-Let $\cB$ be a precategory. We can define a displayed category
-$\mathrm{Id}(\cB)$ over $B$ whose total category is isomorphic to $B$,
-called the **identity bifibration**.
+Let $\cB$ be a precategory. We can define a [[displayed category]]
+$\mathrm{Id}(\cB)$ over $B$ whose [[total category]] is isomorphic to
+$B$, called the **identity bifibration**.
 
 ```agda
 IdD : Displayed B lzero lzero
@@ -97,8 +97,8 @@ IdD-bifibration .is-bifibration.opfibration = IdD-opfibration
 
 ## Fibre Categories
 
-The fibre categories of the identity bifibration are isomorphic to
-the terminal category.
+The [[fibre categories]] of the identity bifibration are isomorphic to
+the [[terminal category]].
 
 ```agda
 IdDFib : ∀ x → Functor ⊤Cat (Fibre IdD x)

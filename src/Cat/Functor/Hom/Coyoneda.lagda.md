@@ -223,9 +223,9 @@ _also_ a cocone homomorphism $X \to Y$; But $X$ is initial, so $f = g$!
 ```
 
 An immediate consequence is that, since any pair of maps $f, g : X \to
-Y$ in $\cC$ extend to maps $\yo(f), \yo(g) : \yo(X) \to \yo(Y)$, and
-the functor $\yo(-)$ is fully faithful, two maps in $\cC$ are equal
-iff. they agree on all generalised elements:
+Y$ in $\cC$ extend to maps $\yo(f), \yo(g) : \yo(X) \to \yo(Y)$, and the
+functor $\yo(-)$ is [[fully faithful]], two maps in $\cC$ are equal iff.
+they agree on all generalised elements:
 
 ```agda
 private module _ where private

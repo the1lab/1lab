@@ -27,10 +27,10 @@ open /-Obj
 
 ## Sierpinski cones
 
-Given a category $\cB$, we can construct a displayed category
-of "Sierpinski cones" over $\cB$, or "scones" for short.
-Scones provide a powerful set of tools for proving various properties
-of categories that we want to think of as somehow "syntactic".
+Given a category $\cB$, we can construct a [[displayed category]] of
+"Sierpinski cones" over $\cB$, or "scones" for short.  Scones provide a
+powerful set of tools for proving various properties of categories that
+we want to think of as somehow "syntactic".
 
 A scone over some object $X : \cB$ consists of a set $U$, along with
 a function $U \to B(\top, X)$. If we think about $\cB$ as some sort
@@ -57,13 +57,10 @@ we have $f \circ su(u) = sv (uv u)$.
 ~~~
 
 
-With the exposition out of the way, we can now define the
-category of scones by abstract nonsense: the category of scones
-over $\cB$ is the [pullback] of the [fundamental fibration] along the
+With the exposition out of the way, we can now define the category of
+scones by abstract nonsense: the category of scones over $\cB$ is the
+[[pullback|pullback fibration]] of the [[fundamental fibration]] along the
 global sections functor.
-
-[pullback]: Cat.Displayed.Instances.Pullback.html
-[fundamental fibration]: Cat.Displayed.Instances.Slice.html
 
 ~~~{.quiver}
 \[\begin{tikzcd}

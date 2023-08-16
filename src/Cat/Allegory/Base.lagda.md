@@ -118,9 +118,9 @@ monoids.^[as a hint: _joins_ in your lattice become composition]
 
 The first thing we observe about allegories is a Yoneda-type lemma for
 relations: Fixing $g$ and $h$, if $f \le g$ is equivalent to $f \le h$
-for every $f$, then $g = h$. Needless to say holds in any poset (and
-really any univalent category), but we emphasise it _here_ for
-allegories since it will be used to prove important laws.
+for every $f$, then $g = h$. Needless to say, this holds in any poset
+(and really any [[univalent category]]), but we emphasise it _here_, for
+allegories, since it will be used to prove important laws.
 
 ```agda
 module _ {o ℓ ℓ′} (A : Allegory o ℓ ℓ′) where

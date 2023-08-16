@@ -164,14 +164,13 @@ theory. For this, [**read the introduction here**](1Lab.intro.html).
 
 The first things to be explained are the foundational constructions in
 (cubical) type theory - things like types themselves, [universes],
-[paths], [equivalences], [glueing] and the [univalence] "axiom". These
+[paths], [equivalences], [glueing] and the [[univalence]] "axiom". These
 are developed under the `1Lab` namespace. Start here:
 
 [universes]: agda://1Lab.Type
 [paths]: agda://1Lab.Path
 [equivalences]: agda://1Lab.Equiv
 [glueing]: agda://1Lab.Univalence#Glue
-[univalence]: agda://1Lab.Univalence#univalence
 
 ```agda
 -- All of these module names are links you can click!
@@ -411,7 +410,7 @@ open import Cat.Functor.Equivalence.Path
 open import Cat.Functor.Equivalence.Complete -- Equivalences preserve completeness
 ```
 
-About adjoint functors, and their associated monads:
+About [[adjoint functors]], and their associated monads:
 
 ```agda
 open import Cat.Diagram.Monad -- Definition of monads
@@ -432,7 +431,7 @@ open import Cat.Functor.Monadic.Beck  -- Beck's coequalisers
 open import Cat.Functor.Monadic.Crude -- The crude monadicity theorem
 ```
 
-About Kan extensions:
+About [[Kan extensions]]:
 
 ```agda
 open import Cat.Functor.Kan.Base -- Kan extensions
@@ -463,8 +462,8 @@ open import Cat.Functor.Hom.Displayed
 In HoTT/UF, the word "category" is reserved for the precategories (what
 the rest of the world refers to as just "category") in which isomorphic
 objects are indistinguishable, i.e. the categories which satisfy a
-version of the univalence axiom. Sometimes we also refer to these as
-"univalent categories" to make the distinction clear.
+version of the [[univalence axiom]]. Sometimes we also refer to these as
+"[[univalent categories]]" to make the distinction clear.
 
 ```agda
 open import Cat.Univalent -- Basic properties of categories
@@ -486,7 +485,7 @@ open import Cat.Skeletal -- Categories where isomorphisms are automorphisms.
 open import Cat.Gaunt -- Strict univalent categories.
 ```
 
-Properties, constructions, and the category of strict categories:
+Properties, constructions, and the [[category of strict categories]]:
 
 ```agda
 -- Strict categories
@@ -638,7 +637,7 @@ of the bicategorical slice $\Cat/\cB$; that is, it is a better way of
 presenting the data of a category $\cE$ and a functor $\cE \to
 \cB$.
 
-In addition to the _extensive_ use of displayed categories to model
+In addition to the _extensive_ use of [[displayed categories]] to model
 "pre-indexing" in the 1Lab, we also contain an in-progress formalisation
 of [Foundations of Relative Category Theory][frct].
 
@@ -689,7 +688,7 @@ open import Cat.Displayed.Adjoint
 In the land of 1-categories, the notion of "indexed families of objects"
 is accurately captured by [slice categories]. But when we're talking
 about the 2-category $\Cat$, plain functors won't do. In terms of
-displayed categories, we need to talk about _Cartesian fibrations_
+displayed categories, we need to talk about [[_Cartesian fibrations_]]
 instead. These satisfy a property analogous to the existence of
 pullbacks, and they are precisely those which correspond to families
 $\cB \to \Cat$.
@@ -790,8 +789,8 @@ open import Cat.Displayed.Comprehension
 ## Internal Categories
 
 The theory of internal categories. Internal category theory generalizes
-strict category theory by replacing the ambient category $\thecat{Sets}$
-with an arbitrary category $\cC$ with pullbacks.
+[[strict category]] theory by replacing the ambient category
+$\thecat{Sets}$ with an arbitrary category $\cC$ with pullbacks.
 
 ```agda
 open import Cat.Internal.Base

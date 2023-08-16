@@ -13,13 +13,12 @@ import Cat.Reasoning as CR
 module Cat.Displayed.Functor where
 ```
 
-# Displayed and fibred functors
+# Displayed and fibred functors {defines=displayed-functor}
 
-If you have a pair of categories $\cE, \cF$ \r{displayed over} a
-common base \r{category} $\cB$, it makes immediate sense to talk
-about \r{functors} $F : \cE \to \cF$: you'd have an assignment of
-objects $F_x : \cE^*(x) \to \cF^*(x)$ and an assignment of
-morphisms
+If you have a pair of categories $\cE, \cF$ [[displayed over|displayed
+category]] a common base [[category]] $\cB$, it makes immediate sense to
+talk about [[functors]] $F : \cE \to \cF$: you'd have an assignment of
+objects $F_x : \cE^*(x) \to \cF^*(x)$ and an assignment of morphisms
 
 $$
 F_{a,b,f} : (a' \to_f b') \to (F_a(a') \to_f F_b(b'))\text{,}
@@ -94,10 +93,12 @@ functors", i.e., those lying over the identity functor.
     ₁′ = F₁′
 ```
 
-Note that, if $\cE$ and $\cF$ are \r{fibred categories} over their
-bases (rather than just _displayed_ categories), then the appropriate
-notion of 1-cell are displayed functors that take Cartesian morphisms to
+:::{.definition #fibred-functor}
+Note that, if $\cE$ and $\cF$ are [[fibred categories]] over their bases
+(rather than just _displayed_ categories), then the appropriate notion
+of 1-cell are displayed functors that take [[Cartesian morphisms]] to
 Cartesian morphisms:
+:::
 
 <!--
 ```agda
@@ -122,7 +123,7 @@ module
 
 ```agda
   is-fibred-functor : Displayed-functor ℰ ℱ F → Type _
-  is-fibred-functor F′ = 
+  is-fibred-functor F′ =
     ∀ {a b a′ b′} {f : A.Hom a b} (f′ : ℰ.Hom[ f ] a′ b′)
     → is-cartesian ℰ f f′ → is-cartesian ℱ (F.₁ f) (F₁′ f′)
     where open Displayed-functor F′
@@ -252,6 +253,7 @@ work with if we define them directly as such, as the composite of two
 identity functors is not **definitionally** equal to the identity functor!
 To avoid this problem, we provide the following specialized definition.
 
+<!--
 ```agda
 module
   _ {o ℓ o′ ℓ′ o′′ ℓ′′}
@@ -263,7 +265,10 @@ module
     module B = Precategory B
     module ℰ = Displayed ℰ
     module ℱ = Displayed ℱ
+```
+-->
 
+```
   record Vertical-functor : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′ ⊔ o′′ ⊔ ℓ′′) where
     no-eta-equality
     field
@@ -272,9 +277,9 @@ module
           → ℰ.Hom[ f ] a′ b′ → ℱ.Hom[ f ] (F₀′ a′) (F₀′ b′)
       F-id′ : ∀ {x} {o : ℰ.Ob[ x ]}
             → PathP ( λ _ →  ℱ.Hom[ B.id ] (F₀′ o) (F₀′ o))
-                         (F₁′ ℰ.id′) ℱ.id′ 
+                         (F₁′ ℰ.id′) ℱ.id′
       F-∘′ : ∀ {a b c} {f : B.Hom b c} {g : B.Hom a b} {a′ b′ c′}
-                 {f′ : ℰ.Hom[ f ] b′ c′} {g′ : ℰ.Hom[ g ] a′ b′} 
+                 {f′ : ℰ.Hom[ f ] b′ c′} {g′ : ℰ.Hom[ g ] a′ b′}
             → PathP (λ _ → ℱ.Hom[ f B.∘ g ] (F₀′ a′) (F₀′ c′)) (F₁′ (f′ ℰ.∘′ g′))
                          (F₁′ f′ ℱ.∘′ F₁′ g′)
     ₀′ = F₀′
@@ -563,7 +568,7 @@ module
     {A : Precategory o ℓ}
     {B : Precategory o₂ ℓ₂}
     {ℰ : Displayed A o′ ℓ′}
-    {ℱ : Displayed B o₂′ ℓ₂′} 
+    {ℱ : Displayed B o₂′ ℓ₂′}
   where
   private
     module ℰ = Displayed ℰ

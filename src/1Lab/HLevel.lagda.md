@@ -77,11 +77,13 @@ type.
   interval-contractible .paths (seg i) j = seg (i ∧ j)
 ```
 
+:::{.definition #proposition}
 A type is (n+1)-truncated if its path types are all n-truncated.
 However, if we directly take this as the definition, the types we end up
 with are very inconvenient! That's why we introduce this immediate step:
 An **h-proposition**, or **proposition** for short, is a type where any
 two elements are connected by a path.
+:::
 
 ```agda
 is-prop : ∀ {ℓ} → Type ℓ → Type _
@@ -98,12 +100,14 @@ is-hlevel A 1 = is-prop A
 is-hlevel A (suc n) = (x y : A) → is-hlevel (Path A x y) n
 ```
 
+:::{.definition #set}
 Since types of h-level 2 are very common, they get a special name:
 **h-sets**, or just **sets** for short. This is justified because we can
 think of classical sets as being equipped with an equality _proposition_
 $x = y$ - having propositional paths is exactly the definition of
 `is-set`{.Agda}.  The universe of all types that are sets, is,
 correspondingly, called **Set**.
+:::
 
 ```agda
 is-set : ∀ {ℓ} → Type ℓ → Type ℓ

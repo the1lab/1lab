@@ -13,7 +13,7 @@ open import 1Lab.Type
 module 1Lab.Univalence where
 ```
 
-# Univalence
+# Univalence {defines=univalence}
 
 In Homotopy Type Theory, **univalence** is the principle stating that
 [equivalent] types can be [identified]. When [the book] first came out,
@@ -384,7 +384,7 @@ ua-pathp≃path eqv .snd .is-eqv y .centre = strict-fibres (ua-pathp→path eqv)
 ua-pathp≃path eqv .snd .is-eqv y .paths = strict-fibres (ua-pathp→path eqv) y .snd
 ```
 
-# The “axiom”
+# The “axiom” {defines=univalence-axiom}
 
 The actual “univalence axiom”, as stated in the HoTT book, says that the
 canonical map `A ≡ B`, defined using `J`{.Agda}, is an equivalence. This

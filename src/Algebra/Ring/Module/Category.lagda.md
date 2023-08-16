@@ -150,7 +150,7 @@ module _ (cring : is-commutative-ring R) {ℓm ℓn} (M : Module R ℓm) (N : Mo
 -->
 
 Since we've essentially equipped the set of linear maps $M \to N$ with
-an $R$-module structure, which certainly includes an abelian group
+an $R$-module structure, which certainly includes an [[abelian group]]
 structure, we can conclude that $\Mod[R]$ is not only a category, but an
 $\Ab$-category to boot!
 

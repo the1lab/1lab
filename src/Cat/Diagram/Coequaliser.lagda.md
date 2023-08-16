@@ -75,10 +75,8 @@ record Coequaliser (f g : Hom A B) : Type (o ⊔ ℓ) where
 
 ## Coequalisers are epic
 
-Dually to the situation with [equalisers], coequaliser arrows are always
-
-[equalisers]: Cat.Diagram.Equaliser.html
-[epic]: Cat.Morphism.html#epis
+Dually to the situation with [[equalisers]], coequaliser arrows are
+always [[epic]].
 
 ```agda
 is-coequaliser→is-epic

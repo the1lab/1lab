@@ -34,11 +34,8 @@ impredicatively, then higher-inductively.
 
 The impredicative construction of $K(A)$ is as follows: $K(A)$ is the
 object of **K**uratowski-finite subsets of $A$, i.e., of predicates $P :
-A \to \Omega$ such that the total space $\sum S$ [merely] admits a
-surjection from some [finite ordinal] $[n] \epi \sum S$.
-
-[merely]: 1Lab.HIT.Truncation.html
-[finite ordinal]: Data.Fin.Base.html
+A \to \Omega$ such that the total space $\sum S$ [[merely]] admits a
+surjection from some [[standard finite set]] $[n] \epi \sum S$.
 
 ```agda
 module _ {ℓ} (A : Set ℓ) where

@@ -26,7 +26,7 @@ private
 ```
 -->
 
-# Coends
+# Coends {defines=coend}
 
 Let $F : \cC\op \times \cC \to \cD$ be a functor, which, by the
 general yoga of [bifunctors] we think of as combining a contravariant

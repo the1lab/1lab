@@ -28,9 +28,8 @@ This is all fine and good, but there is an obvious question: what
 happens if we internalize the definition of a category? Such categories
 are (unsurprisingly) called **internal categories**, and are quite
 well-studied. The traditional definition goes as follows: Suppose $\cC$
-is a category with [pullbacks], fix a pair of objects $\bC_0, \bC_1$ be
-a pair of objects, and parallel maps $\$1, \$1 : \bC_1 \to
-\bC_0$.
+is a category with [[pullbacks]], fix a pair of objects $\bC_0, \bC_1$
+be a pair of objects, and parallel maps $\$1, \$1 : \bC_1 \to \bC_0$.
 
 [pullbacks]: Cat.Diagram.Pullback.html
 

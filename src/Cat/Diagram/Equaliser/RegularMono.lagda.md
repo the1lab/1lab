@@ -32,17 +32,13 @@ private variable a b : Ob
 # Regular monomorphisms
 
 A **regular monomorphism** is a morphism that behaves like an
-_embedding_, i.e. it is an isomorphism onto its [image]. Since images of
-arbitrary morphisms do not exist in every category, we must find a
+_embedding_, i.e. it is an isomorphism onto its [[image]]. Since images
+of arbitrary morphisms do not exist in every category, we must find a
 definition which implies this property but only speaks diagramatically
 about objects directly involved in the definition.
 
-[image]: Cat.Diagram.Image.html
-
 The definition is as follows: A **regular monomorphism** $f : a \mono b$
-is an [equaliser] of some pair of arrows $g, h : b \to c$.
-
-[equaliser]: Cat.Diagram.Equaliser.html
+is an [[equaliser]] of some pair of arrows $g, h : b \to c$.
 
 ```agda
 record is-regular-mono (f : Hom a b) : Type (o ⊔ ℓ) where
@@ -181,7 +177,7 @@ equalises-cokernel-pair→is-effective-mono P eq = em where
 ## Images of regular monos
 
 Let $f : A \mono B$ be an effective mono, or, in a category with
-pushouts, a regular mono. We show that $f$ admits an [image] relative to
+pushouts, a regular mono. We show that $f$ admits an [[image]] relative to
 the class of regular monomorphisms. The construction of the image is as
 follows: We let $\im f = A$ and factor $f$ as
 
@@ -189,8 +185,6 @@ $$ A \xto{\id} A \xmono{f} B $$
 
 This factorisation is very straightforwardly shown to be universal, as
 the code below demonstrates.
-
-[image]: Cat.Diagram.Image.html
 
 ```agda
 is-effective-mono→image

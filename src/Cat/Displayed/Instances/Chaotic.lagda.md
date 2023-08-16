@@ -31,9 +31,9 @@ open Total-hom
 # The Chaotic Bifibration
 
 Let $\cB$ and $\cJ$ be precategories. We define the
-**chaotic bifibration** of $\cJ$ over $\cB$ to be the displayed category
-where trivially fibre $\cJ$ over $\cB$, disregarding the structure of
-$\cB$ entirely.
+**chaotic bifibration** of $\cJ$ over $\cB$ to be the [[displayed
+category]] where we trivially fibre $\cJ$ over $\cB$, disregarding the
+structure of $\cB$ entirely.
 
 ```agda
 Chaotic : Displayed B o' ℓ'
@@ -47,8 +47,8 @@ Chaotic .idl′ = J.idl
 Chaotic .assoc′ = J.assoc
 ```
 
-Note that the only cartesian morphisms in the chaotic bifibration are
-the isomorphisms in $\cJ$
+Note that the only [[cartesian morphisms]] in the chaotic bifibration are
+the isomorphisms in $\cJ$:
 
 ```agda
 chaotic-cartesian→is-iso
@@ -151,7 +151,7 @@ Chaotic-bifibration .is-bifibration.opfibration = Chaotic-opfibration
 
 ## Fibre Categories
 
-Unsurprisingly, the fibre categories of the chaotic bifibration are
+Unsurprisingly, the [[fibre categories]] of the chaotic bifibration are
 isomorphic to $\cJ$.
 
 ```agda
@@ -168,7 +168,7 @@ ChaoticFib-is-iso x .is-precat-iso.has-is-iso = id-equiv
 
 ## Total Category
 
-The total category of the chaotic bifibration is isomorphic to the
+The [[total category]] of the chaotic bifibration is isomorphic to the
 product of $\cB$ and $\cJ$.
 
 ```agda

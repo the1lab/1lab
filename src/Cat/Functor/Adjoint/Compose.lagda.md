@@ -16,7 +16,7 @@ import Cat.Reasoning
 module Cat.Functor.Adjoint.Compose
 ```
 
-# Composition of adjunctions
+# Composition of adjunctions {defines="composition-of-adjunctions adjunctions-compose"}
 
 Suppose we have four functors $F \dashv G$ and $L \dashv R$, such that
 they "fit together", i.e. the composites $LF$ and $GR$ both exist. What

@@ -922,13 +922,11 @@ include the interval `I`{.Agda}, the partial elements `Partial`{.Agda},
 and the extensions `_[_↦_]`[^notfibrant].
 
 ::: {#fibrant}
-> **Definition**: A type is _fibrant_ if it supports
-`hcomp`{.Agda}. This word comes up a lot when discussing not only the
-semantics of Cubical type theory, but also its practice! For instance,
-the fibrancy of `Type`{.Agda} is what powers [univalence].
+> **Definition**: A type is _fibrant_ if it supports `hcomp`{.Agda}.
+This word comes up a lot when discussing not only the semantics of
+Cubical type theory, but also its practice! For instance, the specific
+fibrancy structure of `Type`{.Agda} is what powers [[univalence]].
 :::
-
-[univalence]: 1Lab.Univalence.html
 
 [^notfibrant]: In Agda 2.6.2, function types `I → A` are _not_ fibrant,
 even though they correspond to paths with “unmarked” endpoints. In Agda

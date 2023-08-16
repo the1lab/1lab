@@ -16,13 +16,10 @@ module 1Lab.Equiv where
 # Equivalences
 
 The big idea of homotopy type theory is that isomorphic types can be
-identified: the [univalence axiom]. However, the notion of
+identified: the [[univalence axiom]]. However, the notion of
 `isomorphism`{.Agda ident=is-iso}, is, in a sense, not "coherent" enough
 to be used in the definition. For that, we need a coherent definition of
-_equivalence_, where "being an equivalence" is [a
-proposition](agda://1Lab.HLevel#is-prop).
-
-[univalence axiom]: 1Lab.Univalence.html
+_equivalence_, where "being an equivalence" is a [[proposition]].
 
 To be more specific, what we need for a notion of equivalence
 $\rm{is-equiv}(f)$ to be "coherent" is:
@@ -723,7 +720,7 @@ Lift-≃ eqv .snd .is-eqv b .centre .fst .Lift.lower = Equiv.from eqv (Lift.lowe
 Lift-≃ eqv .snd .is-eqv b .centre .snd i .Lift.lower =
    Equiv.ε eqv (Lift.lower b) i
 Lift-≃ eqv .snd .is-eqv b .paths (a , p) i .fst .Lift.lower =
-  equiv-path eqv (Lift.lower b) (Lift.lower a , lift-inj p) i .fst 
+  equiv-path eqv (Lift.lower b) (Lift.lower a , lift-inj p) i .fst
 Lift-≃ eqv .snd .is-eqv b .paths (a , p) i .snd j .Lift.lower =
   equiv-path eqv (Lift.lower b) (Lift.lower a , lift-inj p) i .snd j
 ```

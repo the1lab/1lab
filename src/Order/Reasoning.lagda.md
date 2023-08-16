@@ -14,7 +14,7 @@ module Order.Reasoning {ℓ ℓ′} (P : Poset ℓ ℓ′) where
 # Partial order syntax
 
 This module defines a syntax for reasoning with transitivity in a
-partial order. Simply speaking, it lets us write chains like
+[[partial order]]. Simply speaking, it lets us write chains like
 
 $$
 a \le b \le c

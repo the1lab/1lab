@@ -25,7 +25,7 @@ open is-regular
 We can prove that the category of $\Sets$ is regular by investigating
 the relationship between [surjections], regular epimorphisms, and
 arbitrary epimorphisms. Fortunately, they _all_ coincide, and we already
-[know] that $\Sets$ is finitely complete, so it only remains to show
+[know] that $\Sets$ is [[finitely complete]], so it only remains to show
 that morphisms have an epi-mono factorisation, and that epimorphy is
 stable under pullbacks.
 

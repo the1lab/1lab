@@ -24,19 +24,17 @@ private variable
 
 # Finite limits of groups
 
-We present explicit computations of [finite limits] in the category of
-groups, though do note that the [terminal] group is also [initial] (i.e.
-it is a [zero object]). Knowing that the category of groups admits a
-[right adjoint] functor into the category of sets (the [underlying set]
-functor) drives us in computing limits of groups as limits of sets,
-and equipping those with a group structure: we are _forced_ to do this
-since [right adjoints preserve limits].
+We present explicit computations of [[finite limits]] in the category of
+groups, though do note that the [[terminal|terminal object]] group is
+also [initial] (i.e.  it is a [zero object]). Knowing that the category
+of groups admits a [[right adjoint]] functor into the category of sets
+(the [underlying set] functor) drives us in computing limits of groups
+as limits of sets, and equipping those with a group structure: we are
+_forced_ to do this since [right adjoints preserve limits].
 
-[finite limits]: Cat.Diagram.Limit.Finite.html
 [terminal]: Cat.Diagram.Terminal.html
 [initial]: Cat.Diagram.Initial.html
 [zero object]: Cat.Diagram.Zero.html
-[right adjoint]: Cat.Functor.Adjoint.html
 [underlying set]: Algebra.Group.Cat.Base.html#the-underlying-set
 [right adjoints preserve limits]: Cat.Functor.Adjoint.Continuous.html
 

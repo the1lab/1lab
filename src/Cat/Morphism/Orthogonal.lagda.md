@@ -71,7 +71,7 @@ Thus, we define three distinct predicates expressing orthogonality:
 ("object-map"). If the ambient category $\cC$ has enough co/limits,
 being orthogonal to an object is equivalent to being orthogonal to an
 object. For example, $f \ortho X$ iff. $f \ortho \mathop{!}_X$, where
-$!_X : X \to 1$ is the unique map from $X$ into the terminal object.
+$!_X : X \to 1$ is the unique map from $X$ into the [[terminal object]].
 
 <!--
 ```agda
@@ -156,11 +156,11 @@ module
 ```
 -->
 
-Let $r \dashv \iota : \cD \adj \cC$ be an arbitrary
-\r{reflective subcategory}. Speaking abstractly, there is a "universal"
-choice of test for whether an object is "in" the subcategory: Whether
-the adjunction unit: $\eta_x : x \to \iota{}r(x)$ is an isomorphism.
-The theory of orthogonality gives a second way to detect this situation.
+Let $r \dashv \iota : \cD \adj \cC$ be an arbitrary [[reflective
+subcategory]]. Speaking abstractly, there is a "universal" choice of
+test for whether an object is "in" the subcategory: Whether the
+adjunction unit: $\eta_x : x \to \iota{}r(x)$ is an isomorphism.  The
+theory of orthogonality gives a second way to detect this situation.
 The proof here is from [@Borceux:vol1, §5.4].
 
 The first thing we observe is that any map $f$ such that $r(f)$ is an

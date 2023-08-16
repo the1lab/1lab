@@ -14,7 +14,7 @@ open import Cat.Reasoning C
 ```
 -->
 
-# Terminal objects
+# Terminal objects {defines=terminal-object}
 
 An object $\top$ of a category $\mathcal{C}$ is said to be **terminal**
 if it admits a _unique_ map from any other object:

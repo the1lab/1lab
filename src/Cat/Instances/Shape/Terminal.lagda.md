@@ -20,8 +20,10 @@ open Precategory
 ```
 -->
 
+:::{.definition #terminal-category}
 The **terminal category** is the category with a single object, and only
 trivial morphisms.
+:::
 
 ```agda
 ⊤Cat : Precategory lzero lzero

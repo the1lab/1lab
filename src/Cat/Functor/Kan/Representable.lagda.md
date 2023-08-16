@@ -19,11 +19,9 @@ module Cat.Functor.Kan.Representable where
 ## Representability of Kan extensions
 
 Like most constructions with a universal property, we can phrase the
-definition of [Kan extensions] in terms of an equivalence of $\hom$
+definition of [[Kan extensions]] in terms of an equivalence of $\hom$
 functors. This rephrasing lets us construct extensions in terms of
 chains of natural isomorphisms, which can be very handy!
-
-[Kan extensions]: Cat.Functor.Kan.Base.html
 
 <!--
 ```agda
@@ -86,7 +84,7 @@ left Kan extension of $F$ along $p$.
 This may seem somewhat difficult to prove at first glance, but it ends
 up being an exercise in shuffling data around. We can use the inverse
 to `Hom-from-precompose eta` to obtain the universal map of the extension, and
-factorization/uniqueness follow directly from the fact that we have
+factorisation/uniqueness follow directly from the fact that we have
 a natural isomorphism.
 
 ```agda

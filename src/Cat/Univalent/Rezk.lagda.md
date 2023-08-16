@@ -31,11 +31,11 @@ open Functor
 # The Rezk completion
 
 In the same way that we can [freely] complete a proset into a poset, it
-is possible to, in a universal way, replace any precategory $\cA$ by
-a category $\widehat{\cA}$, such that there is a weak equivalence (a
-[fully faithful], [essentially surjective] functor) $\cA \to
-\widehat{\cA}$, such that any map from $\cA$ to a [univalent
-category] $\cC$ factors uniquely through $\widehat{\cA}$.
+is possible to, in a universal way, replace any precategory $\cA$ by a
+category $\widehat{\cA}$, such that there is a weak equivalence (a
+[[fully faithful]], [[essentially surjective]] functor) $\cA \to
+\widehat{\cA}$, such that any map from $\cA$ to a [[univalent category]]
+$\cC$ factors uniquely through $\widehat{\cA}$.
 
 [freely]: Cat.Functor.Adjoint.html
 [fully faithful]: Cat.Functor.Properties.html#ff-functors
@@ -88,13 +88,12 @@ universe $\widehat{o}$ satisfying $(o \sqcup h) \le \widehat{o}$, since
 we want their identity type to be equivalent to something living in $h$,
 but going up a level is unfortunate. However, it's also avoidable!
 
-Since $\psh(\cA)$ is a category, isomorphism is an [identity system]
+Since $\psh(\cA)$ is a category, isomorphism is an [[identity system]]
 on its objects, which lives at the level of its morphisms --- $o \sqcup h$
 --- rather than of its objects, $o \sqcup (1 + h)$. Therefore, using the
 construction of [small images], we may take $\im \yo_{\cA}$ to be a
 $o \sqcup h$-type!
 
-[identity system]: 1Lab.Path.IdentitySystem.html
 [small images]: Data.Image.html
 
 ```agda

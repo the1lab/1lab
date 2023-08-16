@@ -32,22 +32,17 @@ module _ {ℓ ℓ'} (C : Precategory ℓ ℓ') where
 ```
 -->
 
-# Finitely Complete Categories
+# Finitely Complete Categories {defines="finite-limit finitely-complete finitely-complete-category finitely-complete-categories"}
 
 A category is said to be **finitely complete** if it admits limits for
 every diagram with a finite shape. While this condition might sound very
 strong, and thus that it would be hard to come by, it turns out we can
 get away with only the following common shapes of limits:
 
-* A [terminal object] (limit over the empty diagram)
-* Binary [products] (limits over diagrams of the form $\bullet\quad\bullet$, that is, two points)
-* Binary [equalisers] (limits over diagrams of the form $\bullet\tto\bullet$)
-* Binary [pullbacks] (limits over diagrams of the form $\bullet\to\bullet\ot\bullet$)
-
-[terminal object]: Cat.Diagram.Terminal.html
-[Products]: Cat.Diagram.Product.html
-[Equalisers]: Cat.Diagram.Equaliser.html
-[Pullbacks]: Cat.Diagram.Pullback.html
+* A [[terminal object]] (limit over the empty diagram)
+* Binary [[products]] (limits over diagrams of the form $\bullet\quad\bullet$, that is, two points)
+* Binary [[equalisers]] (limits over diagrams of the form $\bullet\tto\bullet$)
+* Binary [[pullbacks]] (limits over diagrams of the form $\bullet\to\bullet\ot\bullet$)
 
 In reality, the list above has some redundancy. Since we can build
 products out of pullbacks and a terminal object, and conversely we can
@@ -437,7 +432,7 @@ Putting it all together into a record we get our proof of finite completeness:
 ```
 -->
 
-# Lex functors
+# Lex functors {defines="left-exact-functor lex-functor"}
 
 A functor is said to be **left exact**, abbreviated **lex**, when it
 preserves finite limits. These functors aren't called

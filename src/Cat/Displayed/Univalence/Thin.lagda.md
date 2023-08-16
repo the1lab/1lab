@@ -37,11 +37,11 @@ open _≅[_]_
 # Thinly displayed structures
 
 The HoTT Book's version of the structure identity principle can be seen
-as a very early example of displayed category theory. Their
+as a very early example of [[displayed category]] theory. Their
 _standard notion of structure_ corresponds exactly to a displayed
 category, all of whose fibres are posets. Note that this is not a
 category _fibred in_ posets, since the displayed category will not
-necessarily be a Cartesian fibration.
+necessarily be a [[Cartesian fibration]].
 
 Here, we restrict our attention to an important special case: Categories
 of structures over the category of sets (for a given universe level).
@@ -98,9 +98,9 @@ laws are trivial since $H$ is valued in propositions.
 
 We recall that the $S$-structures can be made into a preorder by setting
 $\alpha \le \beta$ iff. the identity morphism is an $H$-homomorphism
-from $\alpha$ to $\beta$. And, if this preorder is in fact a partial
-order, then the total category of structures is univalent --- the type
-of identities between $S$-structured $\cB$-objects is equivalent to
+from $\alpha$ to $\beta$. And, if this preorder is in fact a [[partial
+order]], then the [[total category]] of structures is univalent --- the
+type of identities between $S$-structured $\cB$-objects is equivalent to
 the type of $H$-homomorphic $\cB$-isomorphisms.
 
 ```agda
@@ -114,8 +114,8 @@ the type of $H$-homomorphic $\cB$-isomorphisms.
         ∙ spec .id-hom-unique (y .snd .to′) (y .snd .from′))
 ```
 
-By construction, such a category of structured objects admits a faithful
-functor into the category of sets.
+By construction, such a category of structured objects admits a
+[[faithful functor]] into the category of sets.
 
 ```agda
   Forget-structure : Functor Structured-objects (Sets ℓ)

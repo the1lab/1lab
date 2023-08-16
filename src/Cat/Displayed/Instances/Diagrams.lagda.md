@@ -32,9 +32,9 @@ open _=>_
 
 # The Diagram Fibration
 
-The appropriate notion of structure for a displayed category $\cE
-\liesover \cB$ is fibrewise structure: structure found in each [fibre
-category], preserved by the reindexing functors when $\cE$ is an
+The appropriate notion of structure for a [[displayed category]] $\cE
+\liesover \cB$ is fibrewise structure: structure found in each [[fibre
+category]], preserved by the reindexing functors when $\cE$ is an
 (op)fibration.
 
 For instance, the correct notion of $\cJ$-shaped limit in $\cE$ are the
@@ -42,8 +42,6 @@ For instance, the correct notion of $\cJ$-shaped limit in $\cE$ are the
 and these are preserved by reindexing. Unfortunately, proof assistants:
 since none of the commutativity conditions for limits are definitional,
 this definition condemns the formaliser to transport hell.
-
-[fibre category]: Cat.Displayed.Fibre.html
 
 Instead, we opt for a more abstract approach, which starts with a
 reorganization of what a fibrewise diagram in $\cE$ is. Recall that the

@@ -77,14 +77,13 @@ $$
 \cC \xto{\yo} \psh(\cC) \xto{\Lan_\yo F} \cD\text{,}
 $$
 
-where $\Lan_\yo F$ is the [left Kan extension] of $F$ along the Yoneda
+where $\Lan_\yo F$ is the [[left Kan extension]] of $F$ along the Yoneda
 embedding, and furthermore this extension preserves colimits. While this
 may sound like a _lot_ to prove, it turns out that the tide has already
 risen above it: Everything claimed above follows from the general theory
 of Kan extensions.
 
 [Yoneda embedding]: Cat.Functor.Hom.html#the-yoneda-embedding
-[left Kan extension]: Cat.Functor.Kan.Base.html
 
 ```agda
 よ-extension : (F : Functor C D) → Lan (よ C) F

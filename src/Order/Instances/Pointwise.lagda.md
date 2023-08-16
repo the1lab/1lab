@@ -16,9 +16,9 @@ module Order.Instances.Pointwise where
 
 # The pointwise ordering
 
-If $(B, \le)$ is a partially ordered set, then so is $A \to B$, for any
-type $A$ which we might choose! There might be other ways of making $A
-\to B$ into a poset, of course, but the canonical way we're talking
+If $(B, \le)$ is a [[partially ordered set]], then so is $A \to B$, for
+any type $A$ which we might choose! There might be other ways of making
+$A \to B$ into a poset, of course, but the canonical way we're talking
 about here is the **pointwise ordering** on $A \to B$, where $f \le g$
 iff $f(x) \le g(x)$ for all $x$.
 

@@ -42,13 +42,11 @@ open Functor
 
 # Weak Cartesian Morphisms
 
-Some authors use a weaker notion of [cartesian morphism] when defining
+Some authors use a weaker notion of [[cartesian morphism]] when defining
 fibrations, referred to as a "weak cartesian" or "hypocartesian"
 morphism. Such morphisms only allow for the construction of universal
 maps when the morphism to be factored is displayed over the same morphism
 as the weak cartesian map. This situation is best understood graphically.
-
-[cartesian morphism]: Cat.Displayed.Cartesian.html
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -204,7 +202,7 @@ weak-cartesian→postcompose-equiv wcart =
         (λ h′ → sym $ wcart .unique _ (to-pathp refl))
 ```
 
-## Weak Cartesian Lifts
+## Weak Cartesian Lifts {defines=weak-cartesian-fibration}
 
 We can also define a notion of weak cartesian lifts, much like we can
 with their stronger cousins.
@@ -222,7 +220,7 @@ record Weak-cartesian-lift
   open is-weak-cartesian weak-cartesian public
 ```
 
-A displayed category that has weak cartesian lifts for all morphisms
+A [[displayed category]] that has weak cartesian lifts for all morphisms
 in the base is called a **weak cartesian fibration**, though we will
 often use the term **weak fibration**. Other authors call weak
 fibrations **prefibred categories**, though we avoid this name as it
@@ -390,7 +388,7 @@ to obtain the requisite map.
 
 <details>
 <summary> Showing that this commutes is mostly an exercise in cubical
-yoga; the only real mathematical content is that the factorization of
+yoga; the only real mathematical content is that the factorisation of
 $h'$ via $f^{*} \cdot m^{*}$ commutes.
 </summary>
 ```agda
@@ -556,11 +554,9 @@ in $\cB$, along with a natural equivalence of homs as above, then
 $\cE$ is a weak fibration.
 
 This result is the primary reason to care about weak fibrations, as we
-already have a toolkit for constructing natural equivalences of
-hom sets! Most notably, this allows us to use the theory of [adjuncts]
-to construct weak fibrations.
-
-[adjuncts]: Cat.Functor.Adjoint.html#adjuncts
+already have a toolkit for constructing natural equivalences of hom
+sets! Most notably, this allows us to use the theory of [[adjuncts]] to
+construct weak fibrations.
 
 ```agda
 module _ (_*₀_ : ∀ {x y} → Hom x y → Ob[ y ] → Ob[ x ]) where

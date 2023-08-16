@@ -21,23 +21,22 @@ open Dr E
 open Cr B
 ```
 
-## Fibre categories
+## Fibre categories {defines="fibre-category fibre-categories"}
 
-A displayed category can be thought of as representing data of a "family
-of categories"^[Though note that unless the displayed category is a
-[Cartesian fibration], this "family" might not be functorially-indexed].
-Given an object $x : \cB$ of the base category, the morphisms in the
-fibre over x, or **vertical morphisms**, are those in the set
-$\hom_{\id[x]}(x, y)$ of morphisms over the identity map (on $x$).
-
-[Cartesian fibration]: Cat.Displayed.Cartesian.html
+A [[displayed category]] can be thought of as representing data of a
+"family of categories"^[Though note that unless the displayed category
+is a [[Cartesian fibration]], this "family" might not be
+functorially-indexed].  Given an object $x : \cB$ of the base category,
+the morphisms in the fibre over x, or **vertical morphisms**, are those
+in the set $\hom_{\id[x]}(x, y)$ of morphisms over the identity map (on
+$x$).
 
 The intuition from the term _vertical_ comes from _literally_ thinking
 of a category $E$ displayed over $\cB$ as being a like a grab-bag of
-categories, admitting a map into $\cB$ (the [total space]
+categories, admitting a map into $\cB$ (the [[total category]]
 perspective), a situation examplified by the diagram below. Here, $\int
-E$ is the total space of a category $E$ displayed over $\cB$, and
-$\pi$ is the corresponding projection functor.
+E$ is the total space of a category $E$ displayed over $\cB$, and $\pi$
+is the corresponding projection functor.
 
 ~~~{.quiver .tall-2}
 \begin{tikzpicture}
@@ -75,8 +74,6 @@ This last observation, coupled with the equation
 $\id\circ\id=\id$ from the base category, implies that the
 set of vertical arrows over an object $x$ contain identities and are
 closed under composition, the **fibre (pre)category over $x$**.
-
-[total space]: Cat.Displayed.Total.html
 
 ```agda
 Fibre′

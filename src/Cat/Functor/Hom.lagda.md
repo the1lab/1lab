@@ -129,7 +129,7 @@ natural transformations is indeed functorial:
 
 The morphism mapping `よ₁`{.Agda} has an inverse, given by evaluating the
 natural transformation with the identity map; Hence, the Yoneda
-embedding functor is fully faithful.
+embedding functor is [[fully faithful]].
 
 ```agda
 よ-is-fully-faithful : is-fully-faithful よ

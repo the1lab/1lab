@@ -19,10 +19,8 @@ private variable
 # Coproducts
 
 The **coproduct** $P$ of two objects $A$ and $B$ (if it exists), is the
-smallest object equipped with "injection" maps $A \to P$, $B \to P$.
-It is dual to the [product].
-
-[product]: Cat.Diagram.Terminal.html
+smallest object equipped with "injection" maps $A \to P$, $B \to P$.  It
+is dual to the [[product]].
 
 We witness this notion of "smallest object" with a universal property;
 Given any other $Q$ that also admits injection maps from $A$ and $B$,

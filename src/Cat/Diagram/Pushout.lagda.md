@@ -21,13 +21,12 @@ private variable
 -->
 
 A **pushout** $Y +_X Z$ of $f : X \to Y$ and $g : X \to Z$ is the
-dual construction to the [pullback]. Much like the [pullback] is a
-subobject of the [product], the pushout is a quotient object of the
+dual construction to the [[pullback]]. Much like the [[pullback]] is a
+subobject of the [[product]], the pushout is a quotient object of the
 [coproduct]. The maps $f$ and $g$ tell us which parts of the [coproduct]
 to identify.
 
 [pullback]: Cat.Diagram.Pullback.html
-[product]: Cat.Diagram.Product.html
 [coproduct]: Cat.Diagram.Coproduct.html
 
 ```agda

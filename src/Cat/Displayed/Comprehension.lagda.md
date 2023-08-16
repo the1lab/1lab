@@ -26,7 +26,6 @@ module Cat.Displayed.Comprehension
 <!--
 ```agda
 open Cat.Reasoning B
-open Displayed E
 open Cat.Displayed.Reasoning E
 open Functor
 open _=>_
@@ -69,15 +68,13 @@ $\sigma. t : \Gamma.A \to \Delta.B$ such that the following square commutes.
 ~~~
 
 Furthermore, when the term $t$ is simply a variable from $\Gamma$, this
-square is a [pullback] square!
-
-[pullback]: Cat.Diagram.Pullback.html
+square is a [[pullback]] square!
 
 Now that we've got a general idea of how context extension ought to
 behave, we can begin to categorify. Our first step is to replace the
 category of contexts with an arbitrary category $\cB$, and the types
-with some [fibration] $\cE$. We can then encode context extension
-via a functor from $\cE$ to the [codomain fibration]. This is a somewhat
+with some [[fibration|fibred category]] $\cE$. We can then encode context extension
+via a functor from $\cE$ to the [[codomain fibration]]. This is a somewhat
 opaque definition, so it's worth unfolding somewhat. Note that the action
 of such a functor on objects takes some object $x$ over $\Gamma$ in $\cE$
 to a pair of an object we will suggestively name $\Gamma.A$ in $\cB$,
@@ -86,9 +83,6 @@ yields both the extended context *and* the projection substitution. If we
 inspect the action on morphisms of $\cE$, we see that it takes some
 map $t : X \to_{\sigma} Y$ over $\sigma$ to a map $\sigma.t$ in $\cB$,
 such that the following square commutes:
-
-[fibration]: Cat.Displayed.Cartesian.html
-[codomain fibration]: Cat.Displayed.Instances.Slice.html
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -110,7 +104,7 @@ pullback square.
 
 [fibred]: Cat.Displayed.Functor.html
 
-We call such a fibred functor a **comprehension structure** on $\cE$[^1].
+We call such a [[fibred functor]] a **comprehension structure** on $\cE$[^1].
 
 [^1]: Other sources call such fibrations **comprehension categories**,
 but this is a bit of a misnomer, as they are structures on fibrations!
@@ -363,10 +357,8 @@ We can also characterize how duplication interacts with extension.
 ```
 
 Note that we can extend the operation of context extension to a functor
-from the [total category] of $\cE$ to $\cB$, that takes every pair
+from the [[total category]] of $\cE$ to $\cB$, that takes every pair
 $(\Gamma, A)$ to $\Gamma.A$
-
-[total category]: Cat.Displayed.Total.html
 
 ```agda
   Extend : Functor (∫ E) B
@@ -390,12 +382,11 @@ of is a projection $\Gamma.A \to \Gamma$.
 ## Comprehension structures as Comonads
 
 Comprehension structures on fibrations $\cE$ induce [comonads] on the
-[total category] of $\cE$. These comonads are particularly nice: all of
-the counits are cartesian morphisms, and every square of the following
-form is a pullback square, provided that $f$ is cartesian.
+[[total category]] of $\cE$. These comonads are particularly nice: all
+of the counits are [[cartesian morphisms]], and every square of the
+following form is a pullback square, provided that $f$ is cartesian.
 
 [comonads]: Cat.Diagram.Comonad.html
-[total category]: Cat.Displayed.Total.html
 
 ~~~{.quiver}
 \begin{tikzcd}

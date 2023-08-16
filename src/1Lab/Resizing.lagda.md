@@ -27,7 +27,7 @@ module 1Lab.Resizing where
 Ordinarily, the collection of all $\kappa$-small predicates on
 $\kappa$-small types lives in the next universe up, $\kappa^+$. This is
 because _predicates_ are not special in type theory: they are ordinary
-type families, that just so happen to be valued in \r{propositions}. For
+type families, that just so happen to be valued in [[propositions]]. For
 most purposes we can work with this limitation: this is called
 **predicative mathematics**. But, for a few classes of theorems,
 predicativity is too restrictive: Even if we don't have a single
@@ -57,7 +57,7 @@ open Ω public
 This type, a priori, only contains the propositions whose underlying
 type lives in the first universe. However, we can populate it using a
 `NO_UNIVERSE_CHECK`-powered higher inductive type, the "small
-propositional truncation":
+[[propositional truncation]]":
 
 ```agda
 {-# NO_UNIVERSE_CHECK #-}

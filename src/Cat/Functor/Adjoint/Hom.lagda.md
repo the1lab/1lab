@@ -41,7 +41,7 @@ module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ�
 
 # Adjoints as hom-isomorphisms
 
-Recall from the page on [adjoint functors] that an adjoint pair $L
+Recall from the page on [[adjoint functors]] that an adjoint pair $L
 \dashv R$ induces an isomorphism
 
 $$
@@ -53,8 +53,6 @@ respectively. What that page does not mention is that any functors $L,
 R$ with such a correspondence --- as long as the isomorphism is natural
 --- actually generates an adjunction $L \dashv R$, with the unit and
 counit given by the adjuncts of each identity morphism.
-
-[adjoint functors]: Cat.Functor.Adjoint.html
 
 More precisely, the data we require is an equivalence (of sets) $f :
 \hom_\cC(Lx,y) \to \hom_\cD(x,Ry)$ such that the equation

@@ -12,13 +12,12 @@ module Cat.Instances.Shape.Cospan where
 
 A _cospan_ in a category $\cC$ is a pair of morphisms $a \xto{f} c
 \xot{g} b$ with a common codomain. A [limit] over a diagram with cospan
-shape is called a [pullback]. Correspondingly, to encode such diagrams,
-we have a "cospan category" $\bull \to \bull \ot \bull$. The dual of
-this category, which looks like $\bull \ot \bull \to \bull$, is the
-"span" category. Colimits over a span are called [pushouts].
+shape is called a [[pullback]]. Correspondingly, to encode such
+diagrams, we have a "cospan category" $\bull \to \bull \ot \bull$. The
+dual of this category, which looks like $\bull \ot \bull \to \bull$, is
+the "span" category. Colimits over a span are called [pushouts].
 
 [limit]: Cat.Diagram.Limit.Base.html
-[pullback]: Cat.Diagram.Pullback.html
 [pushouts]: Cat.Diagram.Pushout.html
 
 ```agda

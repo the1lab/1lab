@@ -18,7 +18,7 @@ import Cat.Reasoning
 module Algebra.Group where
 ```
 
-# Groups
+# Groups {defines=group}
 
 A **group** is a [monoid] that has inverses for every element. The
 inverse for an element is [necessarily, unique]; Thus, to say that "$(G,

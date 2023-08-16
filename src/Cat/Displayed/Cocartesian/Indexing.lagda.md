@@ -42,14 +42,13 @@ fibrations.
 
 This difference in variance gives opfibrations a distinct character.
 Reindexing in fibrations can be thought of a sort of restriction map.
-This can be seen clearly with [the canonical self-indexing], where the
-reindexing functors are given by [pullbacks]. On the other hand,
+This can be seen clearly with [[canonical self-indexing]], where the
+reindexing functors are given by [[pullbacks]]. On the other hand,
 opreindexing can be thought of as an extension map. We can again use the
 the canonical self-indexing as our example: opreindexing is given by
 postcomposition, which extends families over $X$ to families over $Y$ by
 adding in empty fibres.
 
-[the canonical self-indexing]: Cat.Displayed.Instances.Slice.html
 [pullbacks]: Cat.Diagram.Pullback.html
 
 ```agda

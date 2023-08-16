@@ -84,10 +84,8 @@ If $X$ is a `discrete type`{.Agda ident=Discrete}, then it is in
 particular in `Set`{.Agda}, and we can make diagrams of shape
 $\rm{Disc}(X)$ in some category $\cC$, using the decidable
 equality on $X$. We note that the decidable equality is _redundant_
-information: The construction `Disc′`{.Agda} above extends into a [left
-adjoint] to the `Ob`{.Agda} functor.
-
-[left adjoint]: Cat.Instances.StrictCat.Cohesive.html#disc-γ
+information: The construction `Disc′`{.Agda} above extends into a [[left
+adjoint]] to the `Ob`{.Agda} functor.
 
 ```agda
 Disc-diagram

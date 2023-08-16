@@ -35,9 +35,8 @@ $$
 $$
 
 Furthermore, the `embedding functor`{.Agda ident=Embed} $\cC \to
-\~\cC$ is [fully faithful].
+\~\cC$ is [[fully faithful]].
 
-[fully faithful]: Cat.Functor.Properties.html#ff-functors
 [idempotent]: Cat.Diagram.Idempotent.html
 
 The `objects` in $\~\cC$ are given by pairs of an object $c : \cC$

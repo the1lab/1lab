@@ -23,23 +23,19 @@ private variable
 ```
 -->
 
-# Idea
+# Idea {defines=colimit}
 
-Colimits are dual to limits [limit]; much like their cousins, they
-generalize constructions in several settings to arbitrary categories.  A
-colimit (if it exists), is the "best solution" to an "identification
-problem". This is in contrast to the limit, which acts as a solution to
-an "equational problem".
+Colimits are dual to [[limits]]; much like their duals, they generalize
+constructions in several settings to arbitrary categories. A colimit (if
+it exists), is the "best solution" to an "identification problem".  This
+is in contrast to the limit, which acts as a solution to an "equational
+problem".
 
-[limit]: Cat.Diagram.Limit.Base.html
-
-We define colimits in a similar way to limits; the only difference being
-that we define a colimits of a diagram $F$ as left [Kan extensions]
-instead of right [Kan extensions]. This gives us the expected "mapping
-out" universal property, as opposed to the "mapping in" property
-associated to limits.
-
-[Kan extensions]: Cat.Functor.Kan.Base.html
+Therefore, we define colimits in a similar way to limits. the only
+difference being that we define the colimit of a diagram $F$ as a
+[[_left_ Kan extension]] instead of a [[right Kan extension]]. This
+gives us the expected "mapping out" universal property, as opposed to
+the "mapping in" property associated to limits.
 
 Note that approach to colimits is not what normally presented in
 introductory material. Instead, most books opt to define colimits via
@@ -526,8 +522,8 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 -->
 
 Since `is-colimit`{.Agda} is a proposition, and the colimiting cocones
-are all unique (“up to isomorphism”), if we're talking about univalent
-categories, then `Colimit`{.Agda} _itself_ is a proposition.  This is
+are all unique (“up to isomorphism”), if we're talking about [[univalent
+categories]], then `Colimit`{.Agda} _itself_ is a proposition.  This is
 also an instance of the more general [uniqueness of Kan extensions].
 
 [uniqueness of Kan extensions]: Cat.Functor.Kan.Unique.html

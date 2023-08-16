@@ -21,10 +21,10 @@ module Data.Fin.Finite where
 # Finite types
 
 This module pieces together a couple of pre-existing constructions: In
-terms of the \r{standard finite sets} (which are defined for natural
-numbers $n$) and [deloopings of automorphism groups], we construct the
-type of finite types. [By univalence], the space of finite types
-classifies maps with finite fibres.
+terms of the [[standard finite sets|standard finite set]] (which are
+defined for natural numbers $n$) and [deloopings of automorphism
+groups], we construct the type of finite types. [By univalence], the
+space of finite types classifies maps with finite fibres.
 
 [deloopings of automorphism groups]: Algebra.Group.Homotopy.BAut.html
 [By univalence]: 1Lab.Univalence.html#object-classifiers
@@ -73,10 +73,10 @@ Fin-type-is-groupoid = Σ-is-hlevel 3 (hlevel 3) λ _ →
 ```
 
 Informed by this, we now express the correct definition of "being
-finite", namely, being _merely_ equivalent to some standard finite set.
-Rather than using Σ types for this, we can set up typeclass machinery
-for automatically deriving boring instances of finiteness, i.e. those
-that follow directly from the closure properties.
+finite", namely, being [[merely]] equivalent to some standard finite
+set.  Rather than using Σ types for this, we can set up typeclass
+machinery for automatically deriving boring instances of finiteness,
+i.e. those that follow directly from the closure properties.
 
 ```agda
 record Finite {ℓ} (T : Type ℓ) : Type ℓ where

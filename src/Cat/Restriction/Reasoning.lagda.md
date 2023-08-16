@@ -47,7 +47,7 @@ map.
   (f ∘ g) ↓ ∘ g ↓   ≡˘⟨ ↓-smashr g (f ∘ g) ⟩
   ((f ∘ g) ∘ g ↓) ↓ ≡⟨ ap _↓ (pullr (↓-dom g)) ⟩
   (f ∘ g) ↓         ∎
-  
+
 
 ↓-cancell : ∀ {x y z} (f : Hom y z) (g : Hom x y) → g ↓ ∘ (f ∘ g) ↓ ≡ (f ∘ g) ↓
 ↓-cancell f g =
@@ -129,7 +129,7 @@ instance
 -->
 
 
-If $f$ is [monic], then it is a total morphism.
+If $f$ is [[monic]], then it is a total morphism.
 
 [monic]: Cat.Morphism.html#monos
 
@@ -165,7 +165,7 @@ total-∘ {f = f} {g = g} f-total g-total =
   id          ∎
 
 _∘Total_ : ∀ {x y z} → Total y z → Total x y → Total x z
-(f ∘Total g) .mor = f .mor ∘ g .mor 
+(f ∘Total g) .mor = f .mor ∘ g .mor
 (f ∘Total g) .has-total = total-∘ (f .has-total) (g .has-total)
 ```
 
@@ -388,7 +388,7 @@ has-restricted-retract-cancell {f = f} {g = g} fg-sect f-total .is-restricted-re
 
 Let $f : X \to Y$ and $g : Y \to X$ be a pair of morphisms. $f$ and $g$
 are **restricted inverses** if $fg = \restrict{g}$ and
-$gf = \restrict{f}$. 
+$gf = \restrict{f}$.
 
 ```agda
 record restricted-inverses

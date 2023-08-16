@@ -16,16 +16,15 @@ module
   where
 ```
 
-# Eilenberg-Moore Categories
+# Univalence of Eilenberg-Moore Categories
 
-Given a base [univalent category] $\cC$, we can consider a [monad]
+Given a base [[univalent category]] $\cC$, we can consider a [monad]
 $M$ on $\cC$, and its associated [Eilenberg-Moore category]
 $\cC^M$, as a standard way of constructing categories of "algebraic
 gadgets" backed by objects of $\cC$. A concrete example is given by
 the [category of monoids]: A [monoid] (in [sets]) is equivalent to an
 algebra for the [list monad].
 
-[univalent category]: Cat.Univalent.html
 [monad]: Cat.Diagram.Monad.html
 [Eilenberg-Moore category]: Cat.Diagram.Monad.html#eilenberg-moore-category
 [category of monoids]: Algebra.Monoid.Category.html

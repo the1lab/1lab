@@ -23,11 +23,11 @@ import Order.Reasoning as Poset
 module Order.Semilattice where
 ```
 
-# Semilattices
+# Semilattices {defines=semilattice}
 
 A **semilattice**^[Really, either a _meet_ semilattice or a _join_
-semilattice, when considered ordered-theoretically] is a [partially
-ordered set] where every [finite] family of elements has a meet^[Or a
+semilattice, when considered ordered-theoretically] is a [[partially
+ordered set]] where every [finite] family of elements has a meet^[Or a
 join, depending]. But semilattices-in-general admit an _algebraic_
 presentation, as well as an order-theoretic presentation: a semilattice
 is a commutative idempotent monoid.

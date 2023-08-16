@@ -34,15 +34,13 @@ open is-cartesian
 
 # Discrete fibrations
 
-A **discrete fibration** is a displayed category whose [fibres] are all
-_discrete categories_: thin, univalent groupoids. Since thin, univalent
-groupoids are sets, a discrete fibration over $\cB$ is an alternate
-way of encoding a presheaf over $\cB$, i.e., a functor
-$\cB\op\to\Sets$. Here, we identify a purely fibrational property
-that picks out the discrete fibrations among the displayed categories,
-without talking about the fibres directly.
-
-[fibres]: Cat.Displayed.Fibre.html
+A **discrete fibration** is a [[displayed category]] whose [[fibre
+categories]] are all _discrete categories_: thin, univalent groupoids.
+Since thin, univalent groupoids are sets, a discrete fibration over
+$\cB$ is an alternate way of encoding a presheaf over $\cB$, i.e., a
+functor $\cB\op\to\Sets$. Here, we identify a purely fibrational
+property that picks out the discrete fibrations among the displayed
+categories, without talking about the fibres directly.
 
 A discrete fibration is a displayed category such that each type of
 displayed objects is a set, and such that, for each right corner
@@ -84,9 +82,10 @@ module _ {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ�
 ## Discrete fibrations are Cartesian
 
 To prove that discrete fibrations deserve the name discrete
-_fibrations_, we prove that any discrete fibration is a Cartesian
-fibration. By assumption, every right corner has a unique lift, which is
-in particular a lift: we just have to show that the lift is Cartesian.
+_fibrations_, we prove that any discrete fibration is a [[Cartesian
+fibration]]. By assumption, every right corner has a unique lift, which
+is in particular a lift: we just have to show that the lift is
+Cartesian.
 
 ```agda
   discrete→cartesian : Discrete-fibration → Cartesian-fibration E

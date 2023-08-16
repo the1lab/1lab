@@ -19,15 +19,14 @@ module Cat.Displayed.Univalence.Reasoning
 
 # Remarks about displayed univalence
 
-Note that, over a univalent base, [univalence of a displayed
-category][du] is equivalent to each fibre being univalent; Over a
-precategorical base, displayed univalence is a stronger condition, but
-it still implies that each fibre is univalent. Moreover, since
-isomorphisms in fibres are equivalent to [vertical isomorphisms], if
-$\cE$ is a displayed univalent category, then vertical isomorphism is
-an identity system on each type of objects-over.
+Note that, over a univalent base, [[univalence of displayed categories]]
+is equivalent to _fibrewise_ univalence; Over a precategorical base,
+displayed univalence is a stronger condition, but it still implies that
+each fibre is univalent. Moreover, since isomorphisms in fibres are
+equivalent to [vertical isomorphisms], if $\cE$ is a [[displayed
+univalent category]], then vertical isomorphism is an [[identity
+system]] on each type of objects-over.
 
-[du]: Cat.Displayed.Univalence.html
 [vertical isomorphisms]: Cat.Displayed.Morphism.html#isos
 
 <!--
@@ -37,7 +36,6 @@ private module B = Cr B
 open Cat.Displayed.Univalence E
 open Cat.Displayed.Reasoning E
 open Cat.Displayed.Morphism E
-open Displayed E
 open _≅[_]_
 ```
 -->

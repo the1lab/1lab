@@ -20,8 +20,8 @@ module Cat.Displayed.Cartesian.Identity
 
 # Identity of Cartesian lifts
 
-In this module, we prove that Cartesian morphisms are unique up to
-_vertical_ isomorphism, which, if the displayed category is univalent
+In this module, we prove that [[Cartesian morphisms]] are unique up to
+_vertical_ isomorphism, which, if the [[displayed category]] is univalent
 (regardless of univalence of the base), can be strengthened to show that
 the type of Cartesian lifts for a given "corner" is a proposition.
 

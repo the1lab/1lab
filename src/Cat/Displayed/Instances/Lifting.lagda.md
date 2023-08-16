@@ -28,12 +28,12 @@ open Total-hom
 
 # Liftings
 
-A category $\cE$ displayed over $\cB$ contains the same data as a
-functor into $\cB$, just packaged in a way that makes it easier to talk
-about lifting properties. If we take this perspective, we can start
-considering diagrams of functors. In particular, we can consider lifts
-of functors $F : \cJ \to \cB$, as in the following diagram:
-
+A category $\cE$ [[displayed over|displayed category]] $\cB$ contains
+the same data as a functor into $\cB$, just packaged in a way that makes
+it easier to talk about lifting properties. If we take this perspective,
+we can start considering diagrams of functors. In particular, we can
+consider lifts of functors $F : \cJ \to \cB$, as in the following
+diagram:
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -107,7 +107,7 @@ module _
 -->
 
 Liftings of a functor $F : \cJ \to \cB$ yield functors from $\cJ$ to the
-total category of $\cE$.
+[[total category]] of $\cE$.
 
 ```agda
   Lifting→Functor : ∀ {F : Functor J B} → Lifting F → Functor J (∫ E)

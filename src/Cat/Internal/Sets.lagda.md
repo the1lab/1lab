@@ -15,12 +15,10 @@ module Cat.Internal.Sets where
 
 # Internal categories in Set
 
-Categories that are internal to set are [strict categories]:
+Categories that are internal to set are [[strict categories]]:
 precategories with a `Set`{.Agda ident=is-set} of objects. Starting from
 a category $\bC$ internal to $\Sets$ and ending up with a strict
 category is quite unremarkable:
-
-[strict categories]: Cat.Strict.html
 
 ```agda
 Internal-cat→Precategory : ∀ {κ} → Internal-cat (Sets κ) → Precategory κ κ

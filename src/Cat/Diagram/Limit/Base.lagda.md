@@ -17,17 +17,12 @@ import Cat.Reasoning
 module Cat.Diagram.Limit.Base where
 ```
 
-# Idea
+# Idea {defines=limit}
 
 **Note**: This page describes the general definition of limits, and
 assumes some familiarity with some concrete examples, in particular
-[terminal objects], [products], [equalisers], and [pullbacks]. It might
-be a good idea to check out those pages before continuing!
-
-[terminal objects]: Cat.Diagram.Terminal.html
-[products]: Cat.Diagram.Product.html
-[equalisers]: Cat.Diagram.Equaliser.html
-[pullbacks]: Cat.Diagram.Pullback.html
+[[terminal objects]], [[products]], [[equalisers]], and [[pullbacks]].
+It might be a good idea to check out those pages before continuing!
 
 To motivate limits, note how all the above examples have roughly the
 same structure. They all consist of some object, a bunch of maps out
@@ -93,17 +88,17 @@ makes it more difficult to integrate results about limits into the larger
 body of work. It would be great if we could encode the data we needed
 using existing objects!
 
-Luckily, we can! If we take a step back, we can notice that we are trying
-to construct a map into a functor. What are maps into functors? Natural
-transformations! Concretely, let $D : \cJ \to cC$ be some diagram.
-We can encode the same data as a cone in a natural transformation
-$\eta : {!x} \circ \mathord{!} \to D$, where $!x : \top \to \cC$ denotes
-the constant functor that maps object to $x$ and every morphism to $id$,
-and $! : \cJ \to \top$ denotes the unique functor into the terminal
-category. The components of such a natural transformation yield maps from
-$x \to D(j)$ for every $j : \cJ$, and naturality ensures that these
-maps must commute with the rest of the diagram. We can describe this
-situation diagrammatically like so:
+Luckily, we can! If we take a step back, we can notice that we are
+trying to construct a map into a functor. What are maps into functors?
+Natural transformations! Concretely, let $D : \cJ \to cC$ be some
+diagram.  We can encode the same data as a cone in a natural
+transformation $\eta : {!x} \circ \mathord{!} \to D$, where $!x : \top
+\to \cC$ denotes the constant functor that maps object to $x$ and every
+morphism to $id$, and $! : \cJ \to \top$ denotes the unique functor into
+the [[terminal category]]. The components of such a natural
+transformation yield maps from $x \to D(j)$ for every $j : \cJ$, and
+naturality ensures that these maps must commute with the rest of the
+diagram. We can describe this situation diagrammatically like so:
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -141,12 +136,10 @@ instead.
 
 We might be tempted to stop here and call it a day, but we can go one
 step further. It turns out that these universal functors have a name:
-they are [right Kan extensions]. This allows for an extremely concise
+they are [[right Kan extensions]]. This allows for an extremely concise
 definition of limits: $x : \cC$ is the limit of a diagram
 $D : \cJ \to \cC$ when the constant functor $!x : \{*\} \to \cC$ is
 a right Kan extension of $! : \cJ \to \{*\}$ along $D$.
-
-[right Kan extensions]: Cat.Functor.Kan.Base.html
 
 <!--
 ```agda
@@ -187,7 +180,7 @@ $\mathord{!} : \cJ \to \{*\}$.
 
 The definition above is very concise, and it has the benefit of being
 abstract: We can re-use definitions and theorems originally stated for
-Kan extensions to limits. However, it has the downside of being
+right Kan extensions to limits. However, it has the downside of being
 abstract: it's good for working with _limits in general_, but working
 with a _specific_ limit is penalised, as the data we want to get at is
 "buried".
@@ -277,9 +270,9 @@ the apex by a single, _unique_ universal morphism:
 -->
 
 If we have this data, then we can make a value of `is-limit`{.Agda}. It
-might seem like naturality, required for a Kan extension, is missing
-from `make-is-limit`{.Agda}, but it can be derived from the other data
-we have been given:
+might seem like naturality, required for a right Kan extension, is
+missing from `make-is-limit`{.Agda}, but it can be derived from the
+other data we have been given:
 
 <!--
 ```agda
@@ -650,8 +643,8 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```
 -->
 
-Since limits are unique “up to isomorphism”, if $C$ is a univalent
-category, then `Limit`{.Agda} itself is a proposition! This is an
+Since limits are unique “up to isomorphism”, if $C$ is a [[univalent
+category]], then `Limit`{.Agda} itself is a proposition! This is an
 instance of the more general [uniqueness of Kan extensions].
 
 [uniqueness of Kan extensions]: Cat.Functor.Kan.Unique.html
@@ -813,3 +806,5 @@ indexed by a precategory with objects in $\ty\ o$ and morphisms in $\ty\
 is-complete : ∀ {oc ℓc} o ℓ → Precategory oc ℓc → Type _
 is-complete o ℓ C = ∀ {D : Precategory o ℓ} (F : Functor D C) → Limit F
 ```
+
+[[Kan extension]]

@@ -54,6 +54,9 @@ about type theory and the implementation of programming languages, and
 
 [my personal blog]: https://amelia.how
 [Amulet]: https://amulet.works
+
+Test: [[displayed over|displayed category]]
+
 </div>
 </div>
 

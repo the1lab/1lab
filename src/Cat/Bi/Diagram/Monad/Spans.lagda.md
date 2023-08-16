@@ -25,12 +25,11 @@ private module Sb = Prebicategory (Spanᵇ (Sets ℓ) Sets-pullbacks)
 
 # Monads in Spans(Sets)
 
-Let $\cC$ be a [strict category]. Whatever your favourite strict
+Let $\cC$ be a [[strict category]]. Whatever your favourite strict
 category might be --- it doesn't matter in this case. Let $\cC_0$
 denote its set of objects, and write $\cC(x, y)$ for its Hom-family.
 We know that families are equivalently [fibrations], so that we may define
 
-[strict category]: Cat.Instances.StrictCat.html
 [fibrations]: 1Lab.Univalence.html#object-classifiers
 
 $$
