@@ -318,6 +318,27 @@ module _ {ℓ} {A : Type ℓ} {x y : A} {p : x ≡ y} where
     sym-invol i = p
 ```
 
+Given a `Square`{.Agda}, we can "flip" it along either dimension, or along the main diagonal:
+
+```agda
+module _ {ℓ} {A : Type ℓ} {a00 a01 a10 a11 : A}
+  {p : a00 ≡ a01}
+  {q : a00 ≡ a10}
+  {s : a01 ≡ a11}
+  {r : a10 ≡ a11}
+  (α : Square p q s r)
+  where
+
+  flip₁ : Square (sym p) s q (sym r)
+  flip₁ = symP α
+
+  flip₂ : Square r (sym q) (sym s) p
+  flip₂ i j = α i (~ j)
+
+  transpose : Square q p r s
+  transpose i j = α j i
+```
+
 # Paths
 
 While the basic structure of the path type is inherited from its nature
