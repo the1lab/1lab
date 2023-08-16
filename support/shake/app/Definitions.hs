@@ -70,6 +70,7 @@ parseDefinitions anchor input = liftIO do
 data Definition = Definition
   { definitionModule :: FilePath
   , definitionAnchor :: Text
+  , definitionCopy   :: Bool
   }
   deriving (Show, Generic, NFData, Binary)
 
@@ -85,6 +86,7 @@ definitionBlock fp = go where
   add id v = Endo $ addDefinition (mangleLink v) Definition
     { definitionModule = mod
     , definitionAnchor = id
+    , definitionCopy   = False
     }
 
   addMany id = foldMap (add id) . Text.words
@@ -111,17 +113,18 @@ type instance RuleResult ModuleGlossaryQ = Glossary
 type instance RuleResult LinkTargetQ     = Text
 
 addDefinition :: Mangled -> Definition -> Glossary -> Glossary
-addDefinition key@(getMangled -> keyt) def (Glossary ge) = Glossary (go key (plural ge)) where
+addDefinition _ Definition{definitionCopy = True} ge = ge
+addDefinition key@(getMangled -> keyt) def (Glossary ge) = Glossary (go False key (plural ge)) where
   plural
-    | Text.last keyt == 'y' = go (Mangled (Text.init keyt <> "ies"))
-    | otherwise             = go (Mangled (keyt <> "s"))
-  go key ge = case Map.lookup key ge of
+    | Text.last keyt == 'y' = go True (Mangled (Text.init keyt <> "ies"))
+    | otherwise             = go True (Mangled (keyt <> "s"))
+  go c key ge = case Map.lookup key ge of
     Just def' | def' /= def -> error $ unlines
       [ "Conflict when building link map:"
       , "The files " ++ show (definitionModule def) ++ " and " ++ show (definitionModule def')
         ++ " both define the anchor " ++ show (definitionAnchor def)
       ]
-    _ -> Map.insert key def ge
+    _ -> Map.insert key def{definitionCopy = c} ge
 
 definitionTarget :: Definition -> Text
 definitionTarget def = "/" <> Text.pack (definitionModule def) <> ".html#" <> definitionAnchor def
