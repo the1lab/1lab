@@ -41,7 +41,7 @@ open Functor
 A [[cartesian fibration]] can be thought of as a [[displayed category]]
 $\cE$ whose [[fibre categories]] $\cE^*(b)$ depend ([pseudo])functorially
 on the object $b : \cB$ from the base category. A canonical example is
-the [[_canonical_ self-indexing]]: If $\cC$ is a
+the [[canonical self-indexing]]: If $\cC$ is a
 category with [[pullbacks]], then each $b \xto{f} a : \cC$ gives rise to
 [[a functor|pullback functor]] $\cC/a \to \cC/b$, the _change of base_
 along $f$.

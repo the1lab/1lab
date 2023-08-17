@@ -33,7 +33,7 @@ problem".
 
 Therefore, we define colimits in a similar way to limits. the only
 difference being that we define the colimit of a diagram $F$ as a
-[[_left_ Kan extension]] instead of a [[right Kan extension]]. This
+[[left Kan extension]] instead of a [[right Kan extension]]. This
 gives us the expected "mapping out" universal property, as opposed to
 the "mapping in" property associated to limits.
 

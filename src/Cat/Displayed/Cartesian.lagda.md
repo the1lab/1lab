@@ -644,10 +644,10 @@ $f^* : \cC/y \to \cC/x$ which exist in a category of pullbacks,
 hence the similarity in universal property!
 
 In fact, the quintessential example of a Cartesian fibration is the
-[[_codomain fibration_]], which is a category displayed over $\cC$, where
-the fibre over $x$ is the slice category $\cC/x$. We may investigate
-further (to uncover the name "codomain"): the total space of this
-fibration is the arrow category $\Arr{\cC}$, and the projection
+_[[codomain fibration]]_, which is a category displayed over $\cC$,
+where the fibre over $x$ is the slice category $\cC/x$. We may
+investigate further (to uncover the name "codomain"): the total space of
+this fibration is the arrow category $\Arr{\cC}$, and the projection
 functor is the codomain functor $\Arr{\cC} \to \cC$.
 
 This displayed category extends to a pseudofunctor exactly when $\cC$

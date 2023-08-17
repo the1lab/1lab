@@ -688,7 +688,7 @@ open import Cat.Displayed.Adjoint
 In the land of 1-categories, the notion of "indexed families of objects"
 is accurately captured by [slice categories]. But when we're talking
 about the 2-category $\Cat$, plain functors won't do. In terms of
-displayed categories, we need to talk about [[_Cartesian fibrations_]]
+displayed categories, we need to talk about _[[Cartesian fibrations]]_
 instead. These satisfy a property analogous to the existence of
 pullbacks, and they are precisely those which correspond to families
 $\cB \to \Cat$.
