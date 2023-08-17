@@ -37,6 +37,7 @@ open import Cat.Bi.Base
 open import Cat.Prelude
 
 open import Data.Set.Surjection
+open import Data.Wellfounded.W
 open import Data.Fin.Finite using (Finite-choice)
 open import Data.Dec
 open import Data.Nat using (ℕ-well-ordered ; Discrete-Nat)
@@ -410,6 +411,28 @@ _ = Map-classifier
 * Lemma 4.8.1: `Fibre-equiv`{.Agda}
 * Lemma 4.8.2: `Total-equiv`{.Agda}
 * Theorem 4.8.3: `Map-classifier`{.Agda}
+
+## Chapter 5 Induction
+
+### 5.3 W-types
+
+<!--
+```agda
+_ = W
+```
+-->
+
+* W-types: `W`{.Agda}
+
+### 5.4 Inductive types are initial algebras
+
+<!--
+```agda
+_ = W-initial
+```
+-->
+
+* Theorem 5.4.7: `W-initial`{.Agda}
 
 ## Chapter 6 Higher inductive types
 
