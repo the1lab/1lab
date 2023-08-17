@@ -22,6 +22,7 @@ module Cat.Displayed.GenericObject
 open Precategory B
 open Cat.Displayed.Morphism E
 open Cat.Displayed.Reasoning E
+open Displayed E
 open Functor
 ```
 -->

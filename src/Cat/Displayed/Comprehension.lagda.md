@@ -27,6 +27,7 @@ module Cat.Displayed.Comprehension
 ```agda
 open Cat.Reasoning B
 open Cat.Displayed.Reasoning E
+open Displayed E
 open Functor
 open _=>_
 open Total-hom

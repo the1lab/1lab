@@ -27,6 +27,7 @@ private
   module ∫E = Cat.Reasoning (∫ E)
   module E = Cat.Displayed.Reasoning E
 open Cat.Displayed.Morphism E
+open Displayed E
 open Total-hom
 open E
 ```
