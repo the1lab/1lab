@@ -20,11 +20,11 @@ module Cat.Displayed.Total.Free
 
 # Free objects in total categories
 
-When the \r{total category} of a \r{displayed category} $\cE
+When the [[total category]] of a [[displayed category]] $\cE
 \liesover \cB$ is being regarded as a _category of structured
 $\cB$-objects_, a natural question to consider is whether any object
 $x : \cB$ can be equipped with a _free_ $\cE$ structure --- in the
-sense of having a \r{left adjoint} to the projection functor $\pi^f :
+sense of having a [[left adjoint]] to the projection functor $\pi^f :
 \int\cE \to \cB$.
 
 The displayed formulation admits a particularly nice phrasing of the

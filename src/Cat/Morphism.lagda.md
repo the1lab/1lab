@@ -26,7 +26,7 @@ This module defines the three most important classes of morphisms that
 can be found in a category: **monomorphisms**, **epimorphisms**, and
 **isomorphisms**.
 
-## Monos
+## Monos {defines="monomorphism monic"}
 
 A morphism is said to be **monic** when it is left-cancellable. A
 **monomorphism** from $A$ to $B$, written $A \mono B$, is a monic
@@ -63,7 +63,7 @@ Conversely, a morphism is said to be **epic** when it is
 right-cancellable.  An **epimorphism** from $A$ to $B$, written $A \epi
 B$, is an epic morphism.
 
-## Epis
+## Epis {defines="epimorphism epic"}
 
 ```agda
 is-epic : Hom a b → Type _
@@ -99,7 +99,7 @@ id-monic : ∀ {a} → is-monic (id {a})
 id-monic g h p = sym (idl _) ·· p ·· idl _
 
 id-epic : ∀ {a} → is-epic (id {a})
-id-epic g h p = sym (idr _) ·· p ·· idr _ 
+id-epic g h p = sym (idr _) ·· p ·· idr _
 ```
 
 Both monos and epis are closed under composition.
@@ -802,9 +802,8 @@ has-section+monic→invertible f-sect monic .is-invertible.inverses =
 -->
 
 Hom-sets between isomorphic objects are equivalent. Crucially, this
-allows us to use [univalence] to transport properties of hom-sets.
-
-[univalence]: 1Lab.Univalence.html
+allows us to use [[univalence]] to transport properties between
+hom-sets.
 
 ```agda
 iso→hom-equiv

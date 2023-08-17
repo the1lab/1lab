@@ -29,22 +29,20 @@ the last by adding a new categorical property on top of a precategory.
 ## Ab-enriched categories
 
 An $\Ab$-enriched category is one where each $\hom$ set carries the
-structure of an [Abelian group], such that the composition map is
+structure of an [[Abelian group]], such that the composition map is
 _bilinear_, hence extending to an Abelian group homomorphism
 
 $$
 \hom(b, c) \otimes \hom(a, b) \to \hom(a, c)\text{,}
 $$
 
-where the term on the left is the [tensor product] of the corresponding
-$\hom$-groups. As the name implies, every such category has a canonical
-$\Ab$-enrichment (made monoidal using $- \otimes -$), but we do not use
-the language of enriched category theory in our development of Abelian
-categories.
+where the term on the left is the [[tensor product|tensor product of
+abelian groups]] of the corresponding $\hom$-groups. As the name
+implies, every such category has a canonical $\Ab$-enrichment (made
+monoidal using $- \otimes -$), but we do not use the language of
+enriched category theory in our development of Abelian categories.
 
 [zero object]: Cat.Diagram.Zero.html
-[Abelian group]: Algebra.Group.Ab.html
-[tensor product]: Algebra.Group.Ab.Tensor.html
 
 ```agda
 record Ab-category {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
@@ -183,9 +181,9 @@ module _ where
 # Additive categories
 
 An $\Ab$-category is **additive** when its underlying category has a
-terminal object and finite products; By the yoga above, this implies
-that the terminal object is also a zero object, and the finite products
-coincide with finite coproducts.
+[[terminal object]] and finite [[products]]; By the yoga above, this
+implies that the terminal object is also a zero object, and the finite
+products coincide with finite coproducts.
 
 ```agda
 record is-additive {o ℓ} (C : Precategory o ℓ) : Type (o ⊔ lsuc ℓ) where
@@ -279,11 +277,10 @@ desired equation. Check it out:
 # Pre-abelian & abelian categories
 
 An additive category is **pre-abelian** when it additionally has
-[kernels] and cokernels, hence binary [equalisers] and [coequalisers]
+[kernels] and cokernels, hence binary [[equalisers]] and [coequalisers]
 where one of the maps is zero.
 
 [kernels]: Cat.Diagram.Equaliser.Kernel.html
-[equalisers]: Cat.Diagram.Equaliser.html
 [coequalisers]: Cat.Diagram.Coequaliser.html
 
 ```agda

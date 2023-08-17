@@ -50,7 +50,7 @@ instance
   H-Level-∣ = prop-instance (∣-is-prop _ _)
 ```
 
-The type $x | y$ is, in fact, the propositional truncation of $(*
+The type $x | y$ is, in fact, the [[propositional truncation]] of $(*
 x)^{-1}(y)$ --- and it is logically equivalent to that type, too!
 
 ```agda
@@ -75,8 +75,8 @@ divides x p = fibre→∣ (x , p)
 ## As an ordering
 
 The notion of divisibility equips the type $\NN$ with yet another
-partial order, i.e., the relation $x | y$ is reflexive, transitive, and
-antisymmetric. We can establish the former two directly, but
+[[partial order]], i.e., the relation $x | y$ is reflexive, transitive,
+and antisymmetric. We can establish the former two directly, but
 antisymmetry will take a bit of working up to:
 
 ```agda

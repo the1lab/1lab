@@ -91,7 +91,7 @@ Span-hom-path {x = x} {y} {f} {g} p i .right j =
 -->
 
 The category $\rm{Spans}_\cC(A, B)$ of spans between $A$ and $B$
-admits a faithful functor to $\cC$ (projecting the vertex and the
+admits a [[faithful functor]] to $\cC$ (projecting the vertex and the
 "middle map", respectively), so that equality of maps of spans can be
 compared at the level of maps in $\cC$.
 

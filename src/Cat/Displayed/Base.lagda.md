@@ -12,7 +12,7 @@ open import Cat.Base
 module Cat.Displayed.Base where
 ```
 
-# Displayed Categories
+# Displayed Categories {defines=displayed-category}
 
 The core idea behind displayed categories is that we want to capture the
 idea of being able to place extra structure over some sort of "base"

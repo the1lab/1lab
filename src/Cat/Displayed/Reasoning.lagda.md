@@ -29,7 +29,7 @@ private
 -->
 
 Contrary to the [reasoning combinators for precategories][catr],
-reasoning in a displayed category is _much_ harder. The core of the
+reasoning in a [[displayed category]] is _much_ harder. The core of the
 problem is that the type `Displayed.Hom[_]`{.Agda} of displayed
 morphisms is _dependent_, so all but the most trivial paths over it will
 similarly be `dependent paths`{.Agda ident=PathP}. We prefer to work

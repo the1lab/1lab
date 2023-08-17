@@ -248,13 +248,11 @@ is-regular-epi→is-strong-epi {a} {b} f regular =
 
 # Images
 
-Now we come to the _raison d'être_ for strong epimorphisms: [Images].
+Now we come to the _raison d'être_ for strong epimorphisms: [[Images]].
 The definition of image we use is very complicated, and the
 justification is already present there, but the short of it is that the
 image of a morphism $f : a \to b$ is a monomorphism $\im(f) \mono b$ which is
 universal amongst those through which $f$ factors.
-
-[Images]: Cat.Diagram.Image.html
 
 Since images have a universal property, and one involving [comma
 categories] of [slice categories] at that, they are tricky to come by.
@@ -403,7 +401,7 @@ is epic, this means we have $u = v$ --- exactly what we wanted!
 Another well-behaved subclass of epimorphism are the **extremal**
 epimorphisms: An epimorphism $e : A \epi B$ is extremal if when, given a
 factorisation $e = mg$ through a monomorphism $m : C \mono B$, then $m$
-is an isomorphism. In a finitely complete category, every extremal
+is an isomorphism. In a [[finitely complete category]], every extremal
 epimorphism is strong; the converse is immediate.
 
 ```agda

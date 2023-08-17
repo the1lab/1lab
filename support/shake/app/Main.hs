@@ -38,7 +38,7 @@ import Shake.KaTeX
 import Shake.Git
 import Shake.Utils
 
-import Macros
+import Definitions
 import Timer
 
 {-
@@ -54,6 +54,7 @@ rules = do
   katexRules
   moduleRules
   linksRules
+  glossaryRules
 
   {-
     Write @_build/all-pages.agda@. This imports every module in the source tree

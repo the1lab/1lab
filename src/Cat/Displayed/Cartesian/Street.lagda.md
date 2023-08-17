@@ -26,13 +26,14 @@ open Displayed
 
 # Street fibrations
 
-In classical category theory, a fibration is defined to be a certain
-functor $P : \cE \to \cB$, the idea being that $\cE$ is really
-the total space of a certain displayed category, and $P$ is really the
-first projection functor $\pi^f$, which sends each displayed object to
-the object it is displayed over. But can we go the other way? If we have
-a functor $P : \cE \to \cB$, can we create a category displayed
-$\cE'$ over $\cB$, such that $\int \cE' \cong \cE$?
+In classical category theory, a [[fibration|cartesian fibration]] is
+defined to be a certain functor $P : \cE \to \cB$, the idea being that
+$\cE$ is really the [[total category]] of a certain [[displayed
+category]], and $P$ is really the first projection functor $\pi^f$,
+which sends each displayed object to the object it is displayed over.
+But can we go the other way? If we have a functor $P : \cE \to \cB$, can
+we create a category displayed $\cE'$ over $\cB$, such that $\int \cE'
+\cong \cE$?
 
 <!--
 ```agda

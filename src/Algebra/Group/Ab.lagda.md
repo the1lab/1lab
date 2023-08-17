@@ -17,9 +17,9 @@ import Cat.Reasoning
 module Algebra.Group.Ab where
 ```
 
-# Abelian groups
+# Abelian groups {defines=abelian-group}
 
-A very important class of [groups] (which includes most familiar
+A very important class of [[groups]] (which includes most familiar
 examples of groups: the integers, all finite cyclic groups, etc) are
 those with a _commutative_ group operation, that is, those for which $xy
 = yx$.  Accordingly, these have a name reflecting their importance and
@@ -28,7 +28,6 @@ named **abelian groups**, named after [a person], because nothing can
 have self-explicative names in mathematics. It's the law.
 
 [a person]: https://en.wikipedia.org/wiki/Niels_Henrik_Abel
-[groups]: Algebra.Group.html
 
 <!--
 ```agda

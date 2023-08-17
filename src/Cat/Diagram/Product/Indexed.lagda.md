@@ -24,21 +24,18 @@ private variable
 
 # Indexed products
 
-If a category admits a [terminal object] and [binary products], then it
-admits products of any finite cardinality: iterate the binary product,
-and use the terminal object when there aren't any objects. However,
-these two classes of limit do not let us speak of products of arbitrary
-cardinality, or, in the univalent context, indexed by types which are
-not sets.
-
-[terminal object]: Cat.Diagram.Terminal.html
-[binary products]: Cat.Diagram.Product.html
+If a category admits a [[terminal object]] and [[binary
+products|product]], then it admits products of any finite cardinality:
+iterate the binary product, and use the terminal object when there
+aren't any objects. However, these two classes of limit do not let us
+speak of products of arbitrary cardinality, or, in the univalent
+context, indexed by types which are not sets.
 
 That's where $I$-indexed products come in: Rather than having a
 _functor_ giving the objects to take the limit over, we have an
-arbitrary map $F$ from $I$ to the space of objects of $\cC$. An
-_indexed product_ for this "diagram" is then an object admitting an
-universal family of maps $\pi_i : (\prod F) \to F_i$.
+arbitrary map $F$ from $I$ to the space of objects of $\cC$. An _indexed
+product_ for this "diagram" is then an object admitting an universal
+family of maps $\pi_i : (\prod F) \to F_i$.
 
 ```agda
 record is-indexed-product (F : Idx → C.Ob) (π : ∀ i → C.Hom P (F i))
@@ -93,7 +90,7 @@ module _ {ℓ′} {I : Type ℓ′} (F : I → C .Precategory.Ob) (ip : Indexed-
 ## As limits
 
 In the particular case where $I$ is a groupoid, e.g. because it arises
-as the space of objects of a univalent category, an indexed product for
+as the space of objects of a [[univalent category]], an indexed product for
 $F : I \to \cC$ is the same thing as a limit over $F$, considered as
 a functor $\rm{Disc}{I} \to \cC$. We can not lift this restriction: If
 $I$ is not a groupoid, then its path spaces $x = y$ are not necessarily

@@ -15,10 +15,9 @@ module Cat.Instances.Shape.Parallel where
 # The "parallel arrows" category
 
 The parallel arrows category is the category with two objects, and two
-parallel arrows between them. It is the shape of [equaliser] and
+parallel arrows between them. It is the shape of [[equaliser]] and
 [coequaliser] diagrams.
 
-[equaliser]: Cat.Diagram.Equaliser.html
 [coequaliser]: Cat.Diagram.Coequaliser.html
 
 ```agda

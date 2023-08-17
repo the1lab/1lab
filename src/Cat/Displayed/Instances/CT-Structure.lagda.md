@@ -50,7 +50,7 @@ record CT-Structure (s : Level) : Type (o ⊔ lsuc s) where
 open CT-Structure
 ```
 
-We can construct a displayed category over our category of contexts in
+We can construct a [[displayed category]] over our category of contexts in
 much the same manner as the [simple fibration]; the only difference
 is that we restrict the displayed object to objects that the
 CT-structure distinguishes as types.
@@ -90,7 +90,7 @@ Simple-cartesian→Simple-ct-cartesian ct x-tp y-tp cart = ct-cart where
   open is-cartesian
 
   ct-cart : is-cartesian (Simple-ct ct) _ _
-  ct-cart .universal = cart .universal 
+  ct-cart .universal = cart .universal
   ct-cart .commutes = cart .commutes
   ct-cart .unique = cart .unique
 ```

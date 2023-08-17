@@ -61,7 +61,6 @@ import Text.Blaze.Html.Renderer.Text ( renderHtml )
 
 import Agda.Interaction.Highlighting.Precise hiding (toList)
 
-import qualified Agda.Syntax.Concrete as C
 import Agda.Syntax.TopLevelModuleName (TopLevelModuleName)
 import Agda.Syntax.Common.Pretty
 import Agda.Syntax.Common
@@ -96,6 +95,7 @@ highlightOnlyCode HighlightAll  _ = False
 highlightOnlyCode HighlightCode _ = True
 highlightOnlyCode HighlightAuto AgdaFileType = False
 highlightOnlyCode HighlightAuto MdFileType   = True
+highlightOnlyCode HighlightAuto _            = True
 
 -- | Determine the generated file extension
 
@@ -105,6 +105,7 @@ highlightedFileExt hh ft
   | otherwise = case ft of
       AgdaFileType -> "html"
       MdFileType   -> "md"
+      _            -> __IMPOSSIBLE__
 
 -- | Options for HTML generation
 

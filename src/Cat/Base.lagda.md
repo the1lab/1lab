@@ -17,22 +17,23 @@ open import 1Lab.Type hiding (id ; _∘_)
 module Cat.Base where
 ```
 
-# Precategories
+# Precategories {defines=category}
 
 In univalent mathematics, it makes sense to distinguish two stages in
 the construction of categories: A **precategory** is the object that
 directly corresponds to the definition of precategory as it is
-traditionally formalised, whereas a **category** (or univalent category)
-has an extra condition: Isomorphic objects must be identified.
+traditionally formalised, whereas a **category** (or [[univalent
+category]]) has an extra condition: Isomorphic objects must be
+identified.
 
 ```agda
 record Precategory (o h : Level) : Type (lsuc (o ⊔ h)) where
   no-eta-equality
 ```
 
-A _precategory_ is a "proof-relevant preorder". In a preordered set $(A,
-\le)$, the inhabitants of a set $A$ are related by a _proposition_ $a
-\le b$, which is
+A **precategory** is a "proof-relevant preorder". In a preordered set
+$(A, \le)$, the inhabitants of a set $A$ are related by a _proposition_
+$a \le b$, which is
 
 - _reflexive_: $a \le a$
 - _transitive_: $a \le b \land b \le c \to a \le c$
@@ -219,7 +220,7 @@ module _ where
   Sets o .assoc f g h = refl
 ```
 
-# Functors
+# Functors {defines=functor}
 
 <!--
 ```agda
@@ -382,10 +383,8 @@ both its object and morphism mappings. That functors have an identity
 and compose would seem to imply that categories form a category:
 However, since there is no upper bound on the h-level of `Ob`{.Agda}, we
 can not form a "category of categories". If we _do_ impose a bound,
-however, we can obtain a category of [strict categories], those which
+however, we can obtain a [[category of strict categories]], those which
 have a set of objects.
-
-[strict categories]: Cat.Instances.StrictCat.html
 
 ```agda
 Id : ∀ {o₁ h₁} {C : Precategory o₁ h₁} → Functor C C

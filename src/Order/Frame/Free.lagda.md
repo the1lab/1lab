@@ -72,7 +72,6 @@ frame, because meets and joins are computed pointwise in the [poset of
 propositions], $\Omega$.
 
 [poset of propositions]: Order.Instances.Props.html
-
 [low]: Order.Instances.Lower.html
 
 ```agda
@@ -119,13 +118,12 @@ The unit map $A \to D(A)$ sends an element of $A$ to its down-set,
 $\darr A$. By a decategorification of the similar arguments about the
 [Yoneda embedding], the map $A \mapsto \darr A$ preserves finite meets
 (really, it preserves _all_ glbs that exist in $A$); and for a complete
-lattice $B$, the [left Kan extension] $\Lan_{\darr}(f) : D(A) \to B$ of
+lattice $B$, the [[left Kan extension]] $\Lan_{\darr}(f) : D(A) \to B$ of
 a map $f : A \to B$ along $\darr$ is always cocontinuous, and left exact
 whenever $f$ is. Since we're extending semilattice homomorphisms, this
 means that $\Lan_{\darr}(f)$ is a frame homomorphism.
 
 [Yoneda embedding]: Cat.Functor.Hom.html#the-yoneda-embedding
-[left Kan extension]: Cat.Functor.Kan.Base.html
 
 Note the similarity between the construction of free frames outlined in
 the paragraph above and [Diaconescu's theorem]: “A map of frames $D(A)

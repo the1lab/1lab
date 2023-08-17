@@ -28,6 +28,7 @@ in
         JuicyPixels           = noJunk super.JuicyPixels;
         doctest               = noJunk super.doctest;
         shelly                = noJunk super.shelly;
+        hls-graph             = noJunk super.hls-graph;
 
         pandoc                = noJunk (self.callCabal2nix "pandoc" (thunkSource ./dep/pandoc) {});
         pandoc-types          = noJunk (self.callCabal2nix "pandoc-types" (thunkSource ./dep/pandoc-types) {});

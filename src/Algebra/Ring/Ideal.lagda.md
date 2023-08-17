@@ -25,23 +25,23 @@ module Algebra.Ring.Ideal where
 An **ideal** in a ring $R$ is the [$\Ab$-enriched] analogue of a
 [sieve], when $R$ is considered as an $\Ab$-category with a single
 object, in that it picks out a sub-[$R$-module] of $R$, considered as a
-[representable ring], in exactly the same way that a sieve on an object
-$x : \cC$ picks out a subfunctor of $\yo(x)$. Since we know that $\baut
-R$'s composition is given by $R$'s multiplication, and sieves are
+[representable module], in exactly the same way that a sieve on an
+object $x : \cC$ picks out a subfunctor of $\yo(x)$. Since we know that
+$\baut R$'s composition is given by $R$'s multiplication, and sieves are
 subsets closed under precomposition, we instantly deduce that ideals are
 closed under multiplication.
 
 [$\Ab$-enriched]: Cat.Abelian.Base.html#ab-enriched-categories
 [sieve]: Cat.Diagram.Sieve.html
 [$R$-module]: Algebra.Ring.Module.html#modules
-[representable ring]: Algebra.Ring.Module.html#representable-modules
+[representable module]: Algebra.Ring.Module.html#representable-modules
 
 In the $\Ab$-enriched setting, however, there are some more operations
 that leaves us in the same $\hom$-group: addition! More generally, the
-abelian group operations, i.e. addition, inverse, and the zero morphism.
-Putting these together we conclude that an ideal in $R$ is a subset of
-$R$ containing the identity, which is closed under multiplication and
-addition.
+[[abelian group]] operations, i.e. addition, inverse, and the zero
+morphism.  Putting these together we conclude that an ideal in $R$ is a
+subset of $R$ containing the identity, which is closed under
+multiplication and addition.
 
 
 ```agda
@@ -105,12 +105,10 @@ carries a canonical $R$-module structure.
       .⋆-id x           → Σ-prop-path! R.*-idl
 ```
 
-Since a map between modules is [a monomorphism] when its underlying
+Since a map between modules is a [[monomorphism]] when its underlying
 function is injective, and the first projection from a subset is always
 injective, we can quickly conclude that the module structure on
 $\mathfrak{a}$ is a sub-$R$-module of $R$:
-
-[a monomorphism]: Cat.Morphism.html#monos
 
 ```agda
   ideal→submodule

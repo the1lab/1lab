@@ -360,7 +360,7 @@ path acts on both `true` and `false`. There are four cases:
 ```
 
 In the case where the path quacks like reflexivity, we use the
-univalence axiom to show that we must be looking at the reflexivity
+[[univalence axiom]] to show that we must be looking at the reflexivity
 path. For this, we use `idLemma` to show that `path→equiv path` must be
 the identity equivalence.
 

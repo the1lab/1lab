@@ -29,14 +29,12 @@ module Cat.Functor.Kan.Pointwise where
 
 # Pointwise Kan extensions
 
-One useful perspective on [Kan extensions] is that they are
+One useful perspective on [[Kan extensions]] is that they are
 generalizations of (co)limits; in fact, we have defined (co)limits as a
 special case of Kan extensions! This means that many theorems involving
-(co)limits can be directly generalized to theorems of Kan extensions.
-A concrete example of this phenomena is the fact that right adjoints don't
+(co)limits can be directly generalized to theorems of Kan extensions.  A
+concrete example of this phenomena is the fact that [[right adjoints]] don't
 just preserve limits, they preserve *all* right extensions!
-
-[Kan extensions]: Cat.Functor.Kan.Base.html
 
 However, this pattern of generalization fails in one critical way:
 [corepresentable functors preserve limits], but corepresentable functors
@@ -545,7 +543,7 @@ _pointwise_, and remember that we're working with a Kan extension.
 </details>
 
 A corollary is that if $(L, \eta)$ is a pointwise left extension along a
-fully faithful functor, then $\eta$ is a natural isomorphism.
+[[fully faithful functor]], then $\eta$ is a natural isomorphism.
 
 ```agda
   ff→pointwise-lan-ext : is-fully-faithful p → is-invertibleⁿ eta

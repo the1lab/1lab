@@ -23,14 +23,13 @@ module Cat.Regular where
 
 # Regular categories
 
-A **regular category** is a category with [pullback]-stable [image]
-factorizations. To define regular categories, we use the theory of
+A **regular category** is a category with [[pullback]]-stable [[image
+factorisations]]. To define regular categories, we use the theory of
 [orthogonal morphisms], specifically [strong epimorphisms]: A regular
 category is one where every morphism factors as a strong epimorphism
 followed by a monomorphism, and strong epimorphisms are stable under
 pullback.
 
-[pullback]: Cat.Diagram.Pullback.html
 [image]: Cat.Diagram.Image.html
 [regular epi]: Cat.Diagram.Coequaliser.RegularEpi.html
 [orthogonal morphisms]: Cat.Morphism.Orthogonal.html
@@ -123,7 +122,7 @@ pullback.
 We've already seen that, in a category with pullbacks, arbitrary
 morphisms $f : a \to b$ induce [an adjunction] $f_! \dashv f^*$ between
 $\cC/b \adj \cC/a$: the right adjoint models the substitution (base
-change) along $f$, and the left adjoint models the _dependent sum_ over
+change) along $f$, and the [[left adjoint]] models the _dependent sum_ over
 $f$. Between subobject categories, though, pullbacks are not enough
 structure: this can be seen type-theoretically by noting that, even if
 $P : A \to \Omega$ is a family of propositions, the sum $\Sigma_(x : A)
@@ -184,7 +183,7 @@ preserved by slicing].
 This section formalises the proof of A1.3.4 from [@Elephant], which says
 that every strong epimorphism^[Note: Johnstone prefers to work with
 "covers" instead, which in our lingo are _extremal_ epimorphisms. In a
-finitely complete category, strong and extremal epimorphisms coincide]
+[[finitely complete]] category, strong and extremal epimorphisms coincide]
 in a regular category is regular. Actually, we'll show that every strong
 epimorphism in a regular category is **effective**: it's the coequaliser
 of its kernel pair.

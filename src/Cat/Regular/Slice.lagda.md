@@ -25,20 +25,19 @@ module Cat.Regular.Slice
 
 # Regular categories are stable under slicing
 
-Let $\cC$ be a [regular category]: a [finitely complete] category where
-maps have [pullback-stable] [strong epi]-[mono] factorisations. In this
-module, we'll establish that, for any object $y : \cC$, the [slice]
-$\cC/y$ is _also_ a regular category. If we motivate regular categories
-by the well-behaved calculus of relations of their internal language,
-stability under slicing means that relations _remain_ well-behaved under
-passing to arbitrary contexts.
+Let $\cC$ be a [regular category]: a [[finitely complete category]]
+where maps have [[pullback-stable]] [strong epi]-[mono] factorisations.
+In this module, we'll establish that, for any object $y : \cC$, the
+[slice] $\cC/y$ is _also_ a regular category. If we motivate regular
+categories by the well-behaved calculus of relations of their internal
+language, stability under slicing means that relations _remain_
+well-behaved under passing to arbitrary contexts.
 
 [regular category]: Cat.Regular.html
 [pullback-stable]: Cat.Diagram.Pullback.html#stability
 [strong epi]: Cat.Morphism.StrongEpi.html
 [mono]: Cat.Morphism.html#monos
 [slice]: Cat.Instances.Slice.html
-[finitely complete]: Cat.Diagram.Limit.Finite.html
 
 <!--
 ```agda
@@ -149,7 +148,7 @@ calculate that the inverse to $m$ is still a map over $y$.
 ```
 
 Since the projection functor preserves and reflects strong epimorphisms,
-we can compute image factorisations over $y$ as image factorisations in
+we can compute [[image factorisations]] over $y$ as image factorisations in
 $\cC$. And since the projection functor additionally preserves
 pullbacks, by the same argument, it suffices for strong epimorphisms to
 be stable under pullback in $\cC$ for them to be stable under pullback

@@ -22,18 +22,16 @@ open Functor
 
 # Comma categories
 
-The **comma category** of two functors $F : \cA \to \cC$ and $G :
-\cB \to \cC$ with common codomain, written $F \downarrow G$, is
-the directed, bicategorical analogue of a [pullback] square. It consists
+The **comma category** of two functors $F : \cA \to \cC$ and $G : \cB
+\to \cC$ with common codomain, written $F \downarrow G$, is the
+directed, bicategorical analogue of a [[pullback]] square. It consists
 of maps in $\cC$ which all have their domain in the image of $F$, and
 codomain in the image of $G$.
-
-[pullback]: Cat.Diagram.Pullback.html
 
 The comma category is the universal way of completing a [cospan] of
 functors $A \to C \ot B$ to a square, like the one below, which commutes
 _up to a natural transformation_ $\theta$. Note the similarity with a
-[pullback] square.
+[[pullback]] square.
 
 [cospan]: Cat.Instances.Shape.Cospan.html
 

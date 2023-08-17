@@ -77,14 +77,8 @@ functor (and of representing object) is _key_ to understanding the idea
 of **universal property**, which could be called the most important
 concept in category theory. Most constructions in category theory
 specified in terms of the existence of certain maps are really instances
-of representing objects for functors: [limits], [colimits], [coends],
-[adjoint functors], [Kan extensions], etc.
-
-[limits]: Cat.Diagram.Limit.Base.html
-[coends]: Cat.Diagram.Coend.html
-[colimits]: Cat.Diagram.Colimit.Base.html
-[Kan extensions]: Cat.Functor.Kan.Base.html
-[adjoint functors]: Cat.Functor.Adjoint.html
+of representing objects for functors: [[limits]], [[colimits]], [[coends]],
+[[adjoint functors]], [[Kan extensions]], etc.
 
 The first thing we will observe is an immediate consequence of the
 [Yoneda lemma]: representing objects are unique. Intuitively this is
@@ -104,8 +98,8 @@ representation-unique X Y =
     よX≅よY = (X .represents C^.Iso⁻¹) C^.∘Iso Y .represents
 ```
 
-Therefore, if $\cC$ is a univalent category, then the type of
-representations for a functor $F$ is a proposition. This does not follow
+Therefore, if $\cC$ is a [[univalent category]], then the type of
+representations for a functor $F$ is a [[proposition]]. This does not follow
 immediately from the lemma above: we also need to show that the
 isomorphism computed by the full-faithfulness of the Yoneda embedding
 commutes with the specified representation isomorphism.
@@ -143,7 +137,7 @@ We begin to connect the idea of representing objects to other universal
 constructions by proving this alternative characterisation of
 representations: A functor $F$ is representable if, and only if, its
 [category of elements](Cat.Instances.Elements.html) $\int F$ has a
-[terminal object](Cat.Diagram.Terminal.html).
+[[terminal object]].
 
 ```agda
 terminal-element→representation

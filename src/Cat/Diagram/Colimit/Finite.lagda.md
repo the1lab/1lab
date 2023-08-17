@@ -25,20 +25,19 @@ module _ {ℓ ℓ'} (C : Precategory ℓ ℓ') where
 
 # Finitely Cocomplete Categories
 
-Finitely **cocomplete** categories are dual to [finitely complete categories]
-in that they admit colimits for all diagrams of finite shape. A finitely
-cocomplete category has:
+Finitely **cocomplete** categories are dual to [[finitely complete
+categories]] in that they admit colimits for all diagrams of finite
+shape. A finitely cocomplete category has:
 
 * An [initial object] (colimit over the empty diagram)
 * All binary [coproducts] (colimits over any diagrams of shape $\bullet\quad\bullet$)
 * All binary [coequalisers] (colimits over any diagrams of shape $\bullet\tto\bullet$)
 * All binary [pushouts] (colimits over any diagrams of shape $\bullet\to\bullet\ot\bullet$)
 
-[finitely complete categories]: Cat.Diagram.Limit.Finite.html
 [initial object]: Cat.Diagram.Initial.html
-[coproducts]: Cat.Diagram.Product.html
-[coequalisers]: Cat.Diagram.Pullback.html
-[pushouts]: Cat.Diagram.Equaliser.html
+[coproducts]: Cat.Diagram.Coproduct.html
+[coequalisers]: Cat.Diagram.Coequaliser.html
+[pushouts]: Cat.Diagram.Pushout.html
 
 ```agda
   record Finitely-cocomplete : Type (ℓ ⊔ ℓ') where
@@ -185,10 +184,8 @@ A coproduct is a pushout under a span whose vertex is the initial object.
     mkcoeq {A = A} {B} f g = coequ where
 ```
 
-The construction of coequalisers from pushouts follows its
-[dual].
-
-[dual]: Cat.Diagram.Limit.Finite.html
+The construction of coequalisers from pushouts follows its [[dual|finite
+limits]].
 
 ~~~{.quiver}
 \[\begin{tikzcd}

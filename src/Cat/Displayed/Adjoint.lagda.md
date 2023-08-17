@@ -17,17 +17,15 @@ module Cat.Displayed.Adjoint where
 
 Following the general theme of defining displayed structure over
 1-categorical structure, we can define a notion of displayed
-[adjoint functors].
+[[adjoint functors]].
 
-[adjoint functors]: Cat.Functor.Adjoint.html
-
-Let $\cE, \cF$ be categories displayed over $\cA, \cB$, resp.
-Furthermore, let $L : \cA \to \cB$ and $R : \cB \to \cB$ be a pair of
-adjoint functors. We say 2 displayed functors $L', R'$ over $L$ and $R$
-resp. are **displayed adjoint functors** if we have displayed natural
-transformations $\eta' : \mathrm{Id} \to R' \circ L'$ and
-$\varepsilon' : L' \circ R' \to \mathrm{Id}$ displayed over the unit and
-counit of the adjunction in the base that satisfy the usual triangle
+Let $\cE, \cF$ be [[categories displayed over|displayed category]] $\cA,
+\cB$, resp.  Furthermore, let $L : \cA \to \cB$ and $R : \cB \to \cB$ be
+a pair of adjoint functors. We say 2 [[displayed functors]] $L', R'$ over
+$L$ and $R$ resp. are **displayed adjoint functors** if we have
+displayed natural transformations $\eta' : \mathrm{Id} \to R' \circ L'$
+and $\varepsilon' : L' \circ R' \to \mathrm{Id}$ displayed over the unit
+and counit of the adjunction in the base that satisfy the usual triangle
 identities.
 
 ~~~{.quiver}
@@ -86,13 +84,12 @@ module _
           → (R′ .F₁′ (counit′.ε′ x′) ℰ.∘′ unit′.η′ (R′ .F₀′ x′)) ℰ.≡[ zag ] ℰ.id′
 ```
 
-## Fibred Adjunctions
+## Fibred Adjunctions {defines="fibred-adjunction fibred-left-adjoint fibred-right-adjoint"}
 
-Let $\cE$ and $\cF$ be categories displayed over some $\cB$.
-We say that a pair of vertical fibred functors $L : \cE \to \cF$,
-$R : \cF \to cF$ are **fibred adjoint functors** if they are displayed
-adjoint functors, and the unit and counit are vertical natural
-transformations.
+Let $\cE$ and $\cF$ be categories displayed over some $\cB$.  We say
+that a pair of vertical [[fibred functors]] $L : \cE \to \cF$, $R : \cF
+\to cF$ are **fibred adjoint functors** if they are displayed adjoint
+functors, and the unit and counit are vertical natural transformations.
 
 <!--
 ```agda

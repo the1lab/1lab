@@ -31,19 +31,18 @@ open /-Obj
 ```
 -->
 
-# The canonical self-indexing
+# The canonical self-indexing {defines="canonical-self-indexing fundamental-fibration codomain-fibration"}
 
-There is a canonical way of viewing any category $\cB$ as displayed
-over _itself_, given [fibrewise] by taking [slice categories]. Following
-[@relativect], we refer to this construction as the **canonical-self
-indexing** of $\cB$ and denote it $\underline{\cB}$. Recall that
-the objects in the slice over $y$ are pairs consisting of an object $x$
-and a map $f : x \to y$. The core idea is that _any morphism_ lets us
-view an object $x$ as being "structure over" an object $y$; the
-collection of all possible such structures, then, is the set of
-morphisms $x \to y$, with domain allowed to vary.
+There is a canonical way of viewing any category $\cB$ as displayed over
+_itself_, given [[fibrewise|fibre categories]] by taking [slice
+categories]. Following [@relativect], we refer to this construction as
+the **canonical-self indexing** of $\cB$ and denote it
+$\underline{\cB}$. Recall that the objects in the slice over $y$ are
+pairs consisting of an object $x$ and a map $f : x \to y$. The core idea
+is that _any morphism_ lets us view an object $x$ as being "structure
+over" an object $y$; the collection of all possible such structures,
+then, is the set of morphisms $x \to y$, with domain allowed to vary.
 
-[fibrewise]: Cat.Displayed.Fibre.html
 [slice categories]: Cat.Instances.Slice.html
 
 Contrary to the maps in the slice category, the maps in the canonical
@@ -232,16 +231,15 @@ pullback→cartesian {x} {y} {x′} {y′} {f} {f′} pb = cart where
 
 ## As a fibration
 
-
-If (and only if) $\cB$ has all [pullbacks], then the self-indexing
-$\cB$ is a [Cartesian fibration]. This is almost by definition, and
-is in fact where the "Cartesian" in "Cartesian fibration" (recall that
-another term for "pullback square" is "cartesian square"). Since the
-total space $\int \underline{\cB}$ is equivalently the arrow category
-of $\cB$, with the projection functor $\pi : \int \underline{\cB}
-\to \cB$ corresponding under this equivalence to the codomain
-functor, we refer to $\underline{ca{B}}$ regarded as a Cartesian
-fibration as the **codomain fibration**.
+If (and only if) $\cB$ has all [[pullbacks]], then its self-indexing is
+a [[Cartesian fibration]]. This is almost by definition, and is in fact
+where the "Cartesian" in "Cartesian fibration" (recall that another term
+for "pullback square" is "cartesian square"). Since the total space
+$\int \underline{\cB}$ is equivalently the arrow category of $\cB$, with
+the projection functor $\pi : \int \underline{\cB} \to \cB$
+corresponding under this equivalence to the codomain functor, we refer
+to $\underline{ca{B}}$ regarded as a Cartesian fibration as the
+**codomain fibration**.
 
 ```agda
 Codomain-fibration
@@ -292,11 +290,9 @@ Codomain-fibration→pullbacks f g lifts = pb where
 
 Since the fibres of the codomain fibration are given by slice
 categories, then the interpretation of Cartesian fibrations as
-"displayed categories whose fibres vary functorially" leads us to
-reinterpret the above results as, essentially, giving the [pullback
-functors] between slice categories.
-
-[pullback functors]: Cat.Functor.Pullback.html
+"[[displayed categories]] whose fibres vary functorially" leads us to
+reinterpret the above results as, essentially, giving the [[pullback
+functors]] between slice categories.
 
 ## As an Opfibration
 

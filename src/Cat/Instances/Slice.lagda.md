@@ -200,7 +200,7 @@ commutativity for $g \circ f$).
 ## Limits
 
 We discuss some limits in the slice of $\cC$ over $c$. First, every
-slice category has a terminal object, given by the identity map
+slice category has a [[terminal object]], given by the identity map
 $\id : c \to c$.
 
 ```agda
@@ -414,8 +414,8 @@ module _ {I : Set ℓ} where
 ```
 
 We shall prove that the functor `Total-space`{.Agda}, defined below, is
-an equivalence of categories, i.e. that it is fully faithful and
-essentially surjective. But first, we must define the functor! Like its
+an equivalence of categories, i.e. that it is [[fully faithful]] and
+[[essentially surjective]]. But first, we must define the functor! Like its
 name implies, it maps the functor $F : I → \Sets$ to the first
 projection map $\rm{fst} : \sum F \to I$.
 
@@ -497,13 +497,12 @@ an isomorphism directly, though it does involve an appeal to univalence.
 # Slices preserve univalence
 
 An important property of slice categories is that they preserve
-[univalence]. This can be seen intuitively: If $\cC$ is a univalent
-category, then let $a, b, c$ be some objects, with the pairs $(a, f)$
-and $(b, g)$ objects in the slice $\cC/c$. An isomorphism $h : (a, f)
-\cong (b, g)$ induces an identification $a \equiv b$, which extends to
-an identification $(a, f) \equiv (b, g)$ since $h \circ g = f$.
-
-[univalence]: Cat.Univalent.html
+[[univalence|univalent categories]]. This can be seen intuitively: If
+$\cC$ is a univalent category, then let $a, b, c$ be some objects, with
+the pairs $(a, f)$ and $(b, g)$ objects in the slice $\cC/c$. An
+isomorphism $h : (a, f) \cong (b, g)$ induces an identification $a
+\equiv b$, which extends to an identification $(a, f) \equiv (b, g)$
+since $h \circ g = f$.
 
 ```agda
 module _ {C : Precategory o ℓ} {o : Precategory.Ob C} (isc : is-category C) where

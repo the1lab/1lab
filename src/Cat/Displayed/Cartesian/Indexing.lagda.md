@@ -38,21 +38,15 @@ open Functor
 
 # Reindexing for Cartesian fibrations
 
-A [cartesian fibration] can be thought of as a [displayed category]
-$\cE$ whose [fibre categories] $\cE^*(b)$ depend
-([pseudo])functorially on the object $b : \cB$ from the base
-category. A canonical example is [the canonical self-indexing]: If
-$\cC$ is a category with [pullbacks], then each $b \xto{f} a :
-\cC$ gives rise to [a functor] $\cC/a \to \cC/b$, the _change
-of base_ along $f$.
+A [[cartesian fibration]] can be thought of as a [[displayed category]]
+$\cE$ whose [[fibre categories]] $\cE^*(b)$ depend ([pseudo])functorially
+on the object $b : \cB$ from the base category. A canonical example is
+the [[canonical self-indexing]]: If $\cC$ is a
+category with [[pullbacks]], then each $b \xto{f} a : \cC$ gives rise to
+[[a functor|pullback functor]] $\cC/a \to \cC/b$, the _change of base_
+along $f$.
 
-[cartesian fibration]: Cat.Displayed.Cartesian.html
-[displayed category]: Cat.Displayed.Base.html
-[fibre categories]: Cat.Displayed.Fibre.html
 [pseudo]: Cat.Bi.Base.html#pseudofunctors
-[the canonical self-indexing]: Cat.Displayed.Instances.Slice.html
-[pullbacks]: Cat.Diagram.Pullback.html
-[a functor]: Cat.Functor.Pullback.html
 
 ```agda
 module _ {𝒶 𝒷} (f : Hom 𝒶 𝒷) where

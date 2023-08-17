@@ -18,7 +18,7 @@ module Order.Instances.Lower.Cocompletion where
 
 # Lower sets as cocompletions
 
-In this module we prove the universal property of $DA$, the [poset] of
+In this module we prove the universal property of $DA$, the [[poset]] of
 [lower sets] of a poset $A$: $DA$ is the free cocomplete poset on $A$,
 meaning that every map $A \to B$ into a cocomplete poset $B$ admits a
 unique **cocontinuous extension** $\widehat{f} : DA \to B$.

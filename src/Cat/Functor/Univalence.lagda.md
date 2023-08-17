@@ -25,9 +25,9 @@ open _=>_
 -->
 
 Our previous results about [paths between functors][pbf], [componentwise
-invertibility], and general reasoning in univalent categories assemble
-into the following very straightforward proof that $[\cC,\cD]$ is
-univalent whenever $\cD$ is.
+invertibility], and general reasoning in [[univalent categories]]
+assemble into the following very straightforward proof that $[\cC,\cD]$
+is univalent whenever $\cD$ is.
 
 [pbf]: Cat.Functor.Base.html#paths-between-functors
 [componentwise invertibility]: Cat.Functor.Naturality.html

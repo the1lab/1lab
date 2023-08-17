@@ -10,8 +10,6 @@ import Data.Text (Text)
 import Development.Shake.FilePath
 import Development.Shake
 
-import Macros (Preamble)
-
 -- | Render a LaTeX diagram to SVG. This renders the diagram using the
 -- @support/diagram.tex@ template, and then uses pdflatex and pdftocairo
 -- to convert it to SVG.

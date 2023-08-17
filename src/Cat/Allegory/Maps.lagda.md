@@ -104,7 +104,7 @@ module _ {o ℓ h} (A : Allegory o ℓ h) where
 
 Proving that maps compose is a bit annoying, but it follows from the
 properties of the duality involution. By the way: This is essentially
-the proof that adjunctions compose! This is because, sneakily, the
+the proof that [[adjunctions compose]]! This is because, sneakily, the
 property "being a map" is defined to be $f \dashv f^o$, but without
 using those words.
 

@@ -22,9 +22,9 @@ module Algebra.Ring.Module.Action where
 
 While the record `Module-on`{.Agda} expresses the possible $R$-module
 structures on a _type_ $T$, including the scalar multiplication _and_
-the addition making $T$ into an abelian group, it's sometimes fruitful
-to consider the $R$-module structures on an _abelian group_ $G$, which
-is then regarded as an indivisible unit.
+the addition making $T$ into an [[abelian group]], it's sometimes
+fruitful to consider the $R$-module structures on an _abelian group_
+$G$, which is then regarded as an indivisible unit.
 
 The difference is in the quantification: the latter perspective,
 developed in this module, allows us to "fix" the addition, and let only

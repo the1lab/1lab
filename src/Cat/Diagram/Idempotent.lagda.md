@@ -58,11 +58,10 @@ is-split→is-idempotent {f = f} spl =
 
 It's not the case that idempotents are split in every category. Those
 where this is the case are called **idempotent-complete**. Every
-category can be embedded, by a [full and faithful] functor, into an
+category can be embedded, by a [[fully faithful]] functor, into an
 idempotent-complete category; This construction is called the [Karoubi
 envelope] of $\cC$.
 
-[full and faithful]: Cat.Functor.Properties.html#ff-functors
 [Karoubi envelope]: Cat.Instances.Karoubi.html
 
 ```agda

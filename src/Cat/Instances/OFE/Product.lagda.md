@@ -15,7 +15,7 @@ module Cat.Instances.OFE.Product where
 
 # Products of OFEs
 
-The [category of OFEs][OFE] admits [products]: the relations are,
+The [category of OFEs][OFE] admits [[products]]: the relations are,
 levelwise, pairwise! That is, $(x, y) \within{n} (x', y')$ if $x
 \within{n} x'$ and $y \within{n} y'$.  Distributing the axioms over
 products is enough to establish that this is actually an OFE.

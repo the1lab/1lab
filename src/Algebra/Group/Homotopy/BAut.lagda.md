@@ -19,13 +19,12 @@ by the automorphisms $X \simeq X$. We also have a generic construction
 of [deloopings]: special spaces $K(G,1)$ (for a group $G$), where the
 [fundamental group] $\pi_1(K(G,1))$ recovers $G$. For the specific case
 of deloping automorphism groups, we can give an alternative
-construction: The type of small types [merely] equivalent to $X$ has a
+construction: The type of small types [[merely]] equivalent to $X$ has a
 fundamental group of $\rm{Sym}(X)$.
 
 [symg]: Algebra.Group.html#symmetric-groups
 [deloopings]: Algebra.Group.Homotopy.html#deloopings
 [fundamental group]: Algebra.Group.Homotopy.html#homotopy-groups
-[merely]: 1Lab.HIT.Truncation.html
 
 ```agda
 module _ {ℓ} (T : Type ℓ) where

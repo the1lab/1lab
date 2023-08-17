@@ -32,13 +32,11 @@ open import Cat.Functor.Base public
 
 ## Functor categories
 
-When the codomain category $D$ is [univalent], then so is the category
-of functors $[C,D]$. Essentially, this can be read as saying that
-"naturally isomorphic functors are identified". We begin by proving that
-the components of a natural isomorphism (a natural transformation with
-natural inverse) are themselves isomorphisms in $D$.
-
-[univalent]: Cat.Univalent.html
+When the codomain category $D$ is [[univalent|univalent category]], then
+so is the category of functors $[C,D]$. Essentially, this can be read as
+saying that "naturally isomorphic functors are identified". We begin by
+proving that the components of a natural isomorphism (a natural
+transformation with natural inverse) are themselves isomorphisms in $D$.
 
 ```agda
 open import Cat.Functor.Univalence public

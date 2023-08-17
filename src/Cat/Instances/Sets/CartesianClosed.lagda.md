@@ -27,11 +27,10 @@ open _=>_
 
 We show that the category of Sets is [locally cartesian closed], i.e.
 that every map $f : A \to B$ of Sets induces a functor $\prod_f :
-\Sets/A \to \Sets/B$, which is right adjoint to the [base change]
-functor $f^* : \Sets/B \to \Sets/A$.
+\Sets/A \to \Sets/B$, which is [[right adjoint]] to the [[pullback
+functor]] $f^* : \Sets/B \to \Sets/A$.
 
 [locally cartesian closed]: Cat.CartesianClosed.Locally.html
-[base change]: Cat.Functor.Pullback.html
 
 ⚠️⚠️⚠️
 

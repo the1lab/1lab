@@ -105,10 +105,7 @@ Wide sub .assoc _ _ _ = Wide-hom-path $ C.assoc _ _ _
 ## From split essentially surjective inclusions
 
 There is another way of representing wide subcategories: By giving a
-[pseudomonic] [split essential surjection] $F : \cD \epi \cC$.
-
-[pseudomonic]: Cat.Functor.Properties.html#pseudomonic-functors
-[split essential surjection]: Cat.Functor.Properties.html#essential-fibres
+[[pseudomonic]] [[split essential surjection]] $F : \cD \epi \cC$.
 
 <!--
 ```agda
@@ -124,7 +121,7 @@ module _ {o' h'} {D : Precategory o' h'} {F : Functor D C}
 -->
 
 We construct the wide subcategory by restricting to the morphisms in
-$\cC$ that lie in the image of $F$. Since $F$ is a faithful functor,
+$\cC$ that lie in the image of $F$. Since $F$ is a [[faithful functor]],
 this is indeed a proposition.
 
 ```agda

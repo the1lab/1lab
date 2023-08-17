@@ -14,7 +14,7 @@ open import Cat.Prelude
 module Algebra.Group.Ab.Abelianisation where
 ```
 
-# Abelianisations
+# Abelianisations {defines=abelianisation}
 
 <!--
 ```agda
@@ -183,7 +183,7 @@ inherited from $G$!
 
 ## Universal property
 
-This finishes the construction of _an_ abelian group from a group. To
+This finishes the construction of _an_ [[abelian group]] from a [[group]]. To
 show that this construction is correct, we'll show that it satisfies a
 universal property: The inclusion map $G \xto{i} G^{ab}$ from a group to
 its abelianisation is universal among maps from groups to abelian

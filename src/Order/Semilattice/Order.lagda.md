@@ -16,17 +16,14 @@ module Order.Semilattice.Order where
 
 # Semilattices from posets
 
-We have already established that [semilattices], which we define
-algebraically, have an underlying [poset]. The aim of this module is to
+We have already established that [[semilattices]], which we define
+algebraically, have an underlying [[poset]]. The aim of this module is to
 prove the converse: If you have a poset $(A, \le)$ such that any finite
 number of elements has a greatest lower bound, then $A$ is a
 semilattice. As usual, by induction, it suffices to have nullary and
 binary greatest lower bounds: A top element, and meets.
 
-[semilattices]: Order.Semilattice.html
-[poset]: Order.Base.html
-
-To this end, we define a type of finitely complete posets: Posets
+To this end, we define a type of [[finitely complete]] posets: Posets
 possessing meets and a top element.
 
 ```agda

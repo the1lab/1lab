@@ -18,12 +18,11 @@ module Cat.Functor.Dense where
 
 # Dense subcategories
 
-A $\kappa$-small subcategory $\cC \sube \cD$ of a locally
-$\kappa$-small category $\cD$ (hence a \r{fully faithful} functor $F
-: \cC \mono \cD$) is called **dense** if objects of $\cD$ are
-generated under \r{colimits} by those of $\cC$, in a certain
-canonical way. In particular, any functor $F$ and object $d : \cD$
-can be put into a diagram
+A $\kappa$-small subcategory $\cC \sube \cD$ of a locally $\kappa$-small
+category $\cD$ (hence a [[fully faithful functor]] $F : \cC \mono \cD$)
+is called **dense** if objects of $\cD$ are generated under [[colimits]]
+by those of $\cC$, in a certain canonical way. In particular, any
+functor $F$ and object $d : \cD$ can be put into a diagram
 
 $$
 J : (F \searrow d) \xto{\mathrm{pr}} C \xto{\iota} D\text{,}

@@ -29,15 +29,14 @@ module 1Lab.Equiv.HalfAdjoint where
 
 An **adjoint equivalence** is an [isomorphism] $(f, g, \eta,
 \varepsilon)$ where the [homotopies] ($\eta$, $\varepsilon$) satisfy the
-[triangle identities], thus witnessing $f$ and $g$ as [adjoint
-functors]. In Homotopy Type Theory, we can use a _half_ adjoint
+[triangle identities], thus witnessing $f$ and $g$ as [[adjoint
+functors]]. In Homotopy Type Theory, we can use a _half_ adjoint
 equivalence - satisfying only _one_ of the triangle identities - as a
 [good notion of equivalence].
 
 [isomorphism]: 1Lab.Equiv.html#isomorphisms-from-equivalences
 [homotopies]: 1Lab.Path.html#π-types
 [triangle identities]: https://ncatlab.org/nlab/show/triangle+identities
-[adjoint functors]: https://ncatlab.org/nlab/show/adjoint+functor
 [good notion of equivalence]: 1Lab.Equiv.html#equivalences
 
 ```agda

@@ -33,13 +33,11 @@ private variable
 This module defines the displayed analogs of monomorphisms, epimorphisms,
 and isomorphisms.
 
-## Monos
+## Monos {defines="displayed-monomorphism"}
 
-Displayed [monomorphisms] have the the same left-cancellation properties
+_Displayed_ [[monomorphisms]] have the the same left-cancellation properties
 as their non-displayed counterparts. However, they must be displayed over
 a monomorphism in the base.
-
-[monomorphisms]: Cat.Morphism.html#monos
 
 ```agda
 is-monic[_]

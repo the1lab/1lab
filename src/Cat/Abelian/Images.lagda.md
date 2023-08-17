@@ -30,21 +30,20 @@ $$
 A \xepi{p} \coker (\ker f) \cong \ker (\coker f) \xmono{i} B\text{,}
 $$
 
-where the map $p$ is [epic], $i$ is [monic], and the indicated
+where the map $p$ is [epic], $i$ is [[monic]], and the indicated
 isomorphism arises from $f$ in a canonical way, using the universal
 properties of kernels and cokernels. What we show in this section is
-that the arrow $\ker (\coker f) \mono B$ is an [image] for $f$: It is
-the largest monomorphism through which $f$ factors. Since this
-construction does not depend on any specificities of $f$, we conclude
-that every map in an abelian category factors as a [regular epi] followed
-by a [regular mono].
+that the arrow $\ker (\coker f) \mono B$ is an [[image factorisation]]
+for $f$: It is the largest monomorphism through which $f$ factors. Since
+this construction does not depend on any specificities of $f$, we
+conclude that every map in an abelian category factors as a [regular
+epi] followed by a [regular mono].
 
 [abelian category]: Cat.Abelian.Base.html#pre-abelian-abelian-categories
 [regular epi]: Cat.Diagram.Coequaliser.RegularEpi.html
 [regular mono]: Cat.Diagram.Equaliser.RegularMono.html
 [monic]: Cat.Morphism.html#monos
 [epic]: Cat.Morphism.html#epis
-[image]: Cat.Diagram.Image.html
 
 ## The image
 

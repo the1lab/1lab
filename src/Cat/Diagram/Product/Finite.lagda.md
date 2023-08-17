@@ -45,8 +45,8 @@ Right --- which is why we have to prove it.
 
 In this module, we prove the following theorem: If you have a sequence
 of objects in $\cC$ of length $n$, then its product exists as long as
-$\cC$ is Cartesian, and can be computed in terms of iterated binary
-products and terminal objects.
+$\cC$ is Cartesian, and can be computed in terms of iterated [[binary
+products|product]] and [[terminal objects]].
 
 We take an opportunity to complicate the definition while we're at it:
 Instead of computing the product of a one-object sequence to be $A

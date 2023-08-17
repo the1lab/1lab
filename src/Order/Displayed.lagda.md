@@ -14,12 +14,11 @@ module Order.Displayed where
 
 # Displayed posets
 
-As a special case of [displayed categories], we can construct displayed
-_posets_: a poset $P$ displayed over $A$, written $P \liesover A$, is a
-type-theoretic repackaging --- so that fibrewise information is easier
-to recover --- of the data of a poset $P$ and a monotone map $P \to A$.
-
-[displayed categories]: Cat.Displayed.Base.html
+As a special case of [[displayed categories]], we can construct
+displayed [[_posets_]]: a poset $P$ displayed over $A$, written $P
+\liesover A$, is a type-theoretic repackaging --- so that fibrewise
+information is easier to recover --- of the data of a poset $P$ and a
+monotone map $P \to A$.
 
 ```agda
 record Displayed {ℓₒ ℓᵣ} ℓ ℓ′ (P : Poset ℓₒ ℓᵣ) : Type (lsuc (ℓ ⊔ ℓ′) ⊔ ℓₒ ⊔ ℓᵣ) where

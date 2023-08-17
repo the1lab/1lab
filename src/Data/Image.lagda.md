@@ -15,7 +15,7 @@ module Data.Image where
 # Images and replacement
 
 The [image] of a function $f : A \to B$ is the subtype of $B$ where points
-are [merely] equipped with a fibre of $f$. This has the expected
+are [[merely]] equipped with a fibre of $f$. This has the expected
 universal property: we can factor any $f$ into
 
 $$
@@ -26,7 +26,6 @@ and $\im(f) \mono B$ is universal among factorisations of $f$ through a
 subtype of its codomain.
 
 [image]: 1Lab.HIT.Truncation.html#maps-into-sets
-[merely]: 1Lab.HIT.Truncation.html
 
 In general, we can consider images of arbitrary functions $f : A \to B$,
 where $A$ is a $\ell_1$-small type, and $B$ is a $\ell_2$-small type;
@@ -123,10 +122,9 @@ of the image is similar in spirit.
 But if we have _recursive_ higher inductive types, where the type being
 defined can appear in the _arguments_ to its own path constructors, we
 can sometimes do these constructions in a single big, recursive step.
-That's [the usual propositional truncation](1Lab.HIT.Truncation.html). A
-guiding, heuristic principle would be to avoid "green slime": do not
-mention the constructors of the type in the _endpoints_ of the path
-constructor.
+That's the usual [[propositional truncation]]. A guiding, heuristic
+principle would be to avoid "green slime": do not mention the
+constructors of the type in the _endpoints_ of the path constructor.
 
 Types without green slime are much more merciful than the judges of
 coherence hell, because you don't have to match to apply the path
@@ -157,15 +155,13 @@ to $x \equiv y$.
 
 Also, note that, since we were trying to get a _smaller_ image, we can't
 just use $B$'s path types: those live at the same universe as $B$. What
-we can do instead is parametrise over an [identity system] on $B$, a
+we can do instead is parametrise over an [[identity system]] on $B$, a
 reflexive family of types $x \sim y$ which is equivalent to $x \equiv y$
 but which might be smaller. So, our requirement on identifications
 should be
 
 3. With a constructor coherently mapping proofs of $f'(x) \sim f'(y)$ to
 $x \equiv y$.
-
-[identity system]: 1Lab.Path.IdentitySystem.html
 
 But, identity system or not, this is hopeless, right? We don't know how
 to specify $\im f$ without first defining $f'$; and it makes no sense to

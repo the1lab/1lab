@@ -21,12 +21,12 @@ module Cat.Functor.Equivalence.Path where
 
 # Paths between categories
 
-We know that, _in_ a univalent category, paths between objects are the
-same thing as isomorphisms. A natural question to follow up is: what are
-the paths _between_ univalent categories? We prove that the space of
-functors $F : \cC \to \cD$ whose mappings on objects and on
-morphisms are both equivalences ("isomorphisms of precategories") is an
-\r{identity system} on the space of precategories.
+We know that, _in_ a [[univalent category]], paths between objects are
+the same thing as isomorphisms. A natural question to follow up is: what
+are the paths _between_ univalent categories? We prove that the space of
+functors $F : \cC \to \cD$ whose mappings on objects and on morphisms
+are both equivalences ("isomorphisms of precategories") is an [[identity
+system]] on the space of precategories.
 
 The first thing we need to establish is that an isomorphism of
 precategories induces a path between its domain and codomain categories.
@@ -307,10 +307,10 @@ proposition), and the functor is definitionally preserved.
 ```
 -->
 
-And now the aforementioned tiny result: All equivalences are fully
-faithful, and if both categories are univalent, the natural isomorphisms
-$F^{-1}F \cong \rm{Id}$ and $FF^{-1} \cong \rm{Id}$ provide the
-necessary paths for showing that $F_0$ is an equivalence of types.
+And now the aforementioned tiny result: All equivalences are [[fully
+faithful]], and if both categories are univalent, the natural
+isomorphisms $F^{-1}F \cong \rm{Id}$ and $FF^{-1} \cong \rm{Id}$ provide
+the necessary paths for showing that $F_0$ is an equivalence of types.
 
 ```agda
       eqv→iso : is-precat-iso F

@@ -19,19 +19,17 @@ module Cat.Functor.Kan.Unique where
 
 # Uniqueness of Kan extensions
 
-[Kan extensions] (both left and [right]) are [universal constructions],
-so they are [unique when they exist]. To get a theorem out of this
-intuition, we must be careful about how the structure and the properties
-are separated: Informally, we refer to the _functor_ as "the Kan
-extension", but in reality, the data associated with "the Kan extension
-of $F$ along $p$" also includes the natural transformation. For
-accuracy, using the setup from the diagram below, we should say “$(G,
-\eta)$ is the Kan extension of $F$ along $p$".
+[[Kan extensions]] (both left and [[right|right Kan extension]]) are
+[universal constructions], so they are [[unique when they
+exist|proposition]]. To get a theorem out of this intuition, we must be
+careful about how the structure and the properties are separated:
+Informally, we refer to the _functor_ as "the Kan extension", but in
+reality, the data associated with "the Kan extension of $F$ along $p$"
+also includes the natural transformation. For accuracy, using the setup
+from the diagram below, we should say “$(G, \eta)$ is the Kan extension
+of $F$ along $p$".
 
-[Kan extensions]: Cat.Functor.Kan.Base.html
-[right]: Cat.Functor.Kan.Base.html#right-kan-extensions
 [universal constructions]: Cat.Functor.Hom.Representable.html
-[unique when they exist]: 1Lab.HLevel.html#is-prop
 
 ~~~{.quiver .tall-15}
 \[\begin{tikzcd}
@@ -305,10 +303,8 @@ which is propositionally equal to the whiskering:
 ## Into univalent categories
 
 As traditional with universal constructions, if $F : \cC \to \cD$ takes
-values in a [univalent category], we can sharpen our result: the type of
+values in a [[univalent category]], we can sharpen our result: the type of
 left extensions of $F$ along $p$ is a proposition.
-
-[univalent category]: Cat.Univalent.html#univalent-categories
 
 ```agda
 Lan-is-prop

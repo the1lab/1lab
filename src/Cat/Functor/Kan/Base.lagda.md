@@ -29,7 +29,7 @@ open _=>_
 ```
 -->
 
-# Left Kan extensions
+# Left Kan extensions {defines="left-kan-extension kan-extension"}
 
 Suppose we have a functor $F : \cC \to \cD$, and a functor $p :
 \cC \to \cC'$ --- perhaps to be thought of as a [full subcategory]
@@ -68,10 +68,8 @@ _universal_ such extension (we'll define what "universal" means in just
 a second), we call it the **left Kan extension** of $F$ along $p$, and
 denote it $\Lan_p F$. Such extensions do not come for free (in a sense
 they're pretty hard to come by), but concept of Kan extension can be
-used to rephrase the definition of both [limit] and [adjoint functor].
-
-[limit]: Cat.Diagram.Limit.Base.html
-[adjoint functor]: Cat.Functor.Adjoint.html
+used to rephrase the definition of both [[limit]] and [[adjoint
+functor]].
 
 A left Kan extension $\Lan_p F$ is equipped with a natural
 transformation $\eta : F \To \Lan_p F \circ p$ witnessing the
@@ -82,8 +80,9 @@ $\alpha : F \To M \circ p$, there is a unique natural transformation
 $\sigma : \Lan_p F \To M$ which commutes with $\alpha$.
 
 Note that in general the triangle commutes "weakly", but when $p$ is
-[fully faithful] and $\cD$ is [cocomplete], $\Lan_p F$ genuinely extends
-$p$, in that $\eta$ is a natural isomorphism.
+[[fully faithful|fully faithful functor]] and $\cD$ is [cocomplete],
+$\Lan_p F$ genuinely extends $p$, in that $\eta$ is a natural
+isomorphism.
 
 [fully faithful]: Cat.Functor.Properties.html#ff-functors
 [cocomplete]: Cat.Diagram.Colimit.Base.html#cocompleteness
@@ -152,12 +151,12 @@ record Lan (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
   open is-lan has-lan public
 ```
 
-# Right Kan extensions
+# Right Kan extensions {defines=right-kan-extension}
 
 Our choice of universal property in the section above isn't the only
-choice; we could instead require a [terminal] solution to the lifting
-problem, instead of an [initial] one. We can picture the terminal
-situation using the following diagram.
+choice; we could instead require a [[terminal|terminal object]] solution
+to the lifting problem, instead of an [initial] one. We can picture the
+terminal situation using the following diagram.
 
 [terminal]: Cat.Diagram.Terminal.html
 [initial]: Cat.Diagram.Initial.html
@@ -305,10 +304,8 @@ Unfortunately, proof assistants; our definition of whiskering lands in
 $H(Gp)$, but we requires a natural transformation to $(HG)p$.
 
 We say that a Kan extension is **absolute** if it is preserved by *all*
-functors out of $D$.  An important example of this is given by [adjoint
-functors].
-
-[adjoint functors]: Cat.Functor.Kan.Adjoint.html
+functors out of $D$. An important class of examples given by [[adjoint
+functors]].
 
 ```agda
   is-absolute-lan : is-lan p F G eta → Typeω

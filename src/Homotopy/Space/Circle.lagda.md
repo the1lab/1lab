@@ -19,8 +19,8 @@ module Homotopy.Space.Circle where
 The first example of nontrivial space one typically encounters when
 studying synthetic homotopy theory is the circle: it is, in a sense, the
 perfect space to start with, having exactly one nontrivial path space,
-which is a free group, and the simplest nontrivial free group at that:
-the integers.
+which is a [[free group|free group construction]], and the simplest
+nontrivial [[free group|free group construction]] at that: the integers.
 
 ```agda
 data S¹ : Type where

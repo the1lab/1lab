@@ -64,7 +64,7 @@ It's routine to check that the identity is a monoid homomorphism and
 that composites of homomorphisms are again homomorphisms; This means
 that `Monoid-on`{.Agda} assembles into a structure thinly displayed over
 the category of sets, so that we may appeal to general results about
-displayed categories to reason about the category of monoids.
+[[displayed categories]] to reason about the category of monoids.
 
 ```agda
 Monoid-structure : ∀ ℓ → Thin-structure ℓ Monoid-on
@@ -94,15 +94,15 @@ Monoids-is-category : ∀ {ℓ} → is-category (Monoids ℓ)
 Monoids-is-category = Structured-objects-is-category (Monoid-structure _)
 ```
 
-By standard nonsense, then, the category of monoids admits a faithful
-functor into the category of sets.
+By standard nonsense, then, the category of monoids admits a [[faithful
+functor]] into the category of sets.
 
 ```agda
 Forget : ∀ {ℓ} → Functor (Monoids ℓ) (Sets ℓ)
 Forget = Forget-structure (Monoid-structure _)
 ```
 
-## Free objects
+## Free objects {defines=free-monoid}
 
 We piece together some properties of `lists`{.Agda ident=List} to show
 that, if $A$ is a set, then $\rm{List}(A)$ is an object of
@@ -123,12 +123,9 @@ List-is-monoid aset .has-is-monoid .has-is-semigroup .associative {x} {y} {z} =
 ```
 
 We prove that the assignment $X \mapsto \rm{List}(X)$ is functorial;
-We call this functor `Free`{.Agda}, since it is a [left adjoint] to the
+We call this functor `Free`{.Agda}, since it is a [[left adjoint]] to the
 `Forget`{.Agda} functor defined above: it solves the problem of turning
 a `set`{.Agda ident=Set} into a monoid in the most efficient way.
-
-[left adjoint]: Cat.Functor.Adjoint.html
-
 
 ```agda
 map-id : ∀ {ℓ} {A : Type ℓ} (xs : List A) → map (λ x → x) xs ≡ xs
@@ -223,13 +220,11 @@ This concludes the proof that `Monoids`{.Agda} has free objects. We now
 prove that monoids are equivalently algebras for the `List`{.Agda}
 monad, i.e. that the `Free⊣Forget`{.Agda} adjunction is [monadic]. More
 specifically, we show that the canonically-defined `comparison`{.Agda
-ident=Comparison} functor is [fully faithful][ff] (list algebra homomoprhisms
-are equivalent to monoid homomorphisms) and that it is [split
-essentially surjective][eso].
+ident=Comparison} functor is [[fully faithful]] (list algebra homomoprhisms
+are equivalent to monoid homomorphisms) and that it is [[split
+essentially surjective]].
 
 [monadic]: Cat.Functor.Adjoint.Monadic.html
-[ff]: Cat.Functor.Properties.html#ff-functors
-[eso]: Cat.Functor.Properties.html#essential-fibres
 
 ```agda
 Monoid-is-monadic : ∀ {ℓ} → is-monadic (Free⊣Forget {ℓ})

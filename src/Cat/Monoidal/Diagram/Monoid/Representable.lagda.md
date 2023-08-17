@@ -275,7 +275,7 @@ Yoneda embedding on $\cC$. After calculating that natural
 transformations between representable presheaves of monoids determine
 monoid homomorphisms^[Evaluating their components at the identity
 morphism, as usual!], the usual argument will suffice to show that this
-functor is also fully faithful.
+functor is also [[fully faithful]].
 
 ```agda
   Nat→internal-mon-hom
@@ -338,7 +338,7 @@ is natural.
 ```
 
 The monoid operations are defined in the smallest context possible. For
-identity this is the empty context^[The terminal object.], for
+identity this is the empty context^[The [[terminal object]].], for
 multiplication, this is the context $M \times M$.
 
 ```agda

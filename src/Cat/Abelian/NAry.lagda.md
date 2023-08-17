@@ -18,7 +18,7 @@ module Cat.Abelian.NAry {o ℓ} {C : Precategory o ℓ} (A : Ab-category C) wher
 # n-Ary operations on Hom-groups
 
 We instantiate the theory of n-ary sums in a group to the special case
-of the $\hom$ abelian groups of an $\Ab$-enriched category. In
+of the $\hom$ [[abelian groups]] of an $\Ab$-enriched category. In
 particular, we show that the linearity of function composition extends
 to distribution over arbitrary sums.
 

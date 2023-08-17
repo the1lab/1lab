@@ -33,11 +33,9 @@ data _≡ᵢ_ {ℓ} {A : Type ℓ} (x : A) : A → Type ℓ where
 
 To show that $\rm{Id}_A(x,y)$ is equivalent to $x \equiv y$ for every
 type $A$, we'll show that `_≡ᵢ_`{.Agda} and `reflᵢ`{.Agda} form an
-[identity system] regardless of the underlying type. Since `Id`{.Agda}
+[[identity system]] regardless of the underlying type. Since `Id`{.Agda}
 is an inductive type, we can do so by pattern matching, which results in
 a very slick definition:
-
-[identity system]: 1Lab.Path.IdentitySystem.html
 
 ```agda
 Id-identity-system

@@ -34,10 +34,8 @@ private variable
 
 The homotopy n-types have many closure properties. A trivial example is
 that they are closed under equivalences, since any property of types is
-preserved by equivalence (This is the [univalence axiom]). More
+preserved by equivalence (This is the [[univalence axiom]]). More
 interesting is that they are closed under retractions:
-
-[univalence axiom]: 1Lab.Univalence.html#the-axiom
 
 ## Retractions
 

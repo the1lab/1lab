@@ -181,8 +181,8 @@ where we $f$'s epimorphy: we have a homotopy $| \rm{tip} | = |
 \rm{base}_{(f x)} |$, namely the `cone`{.Agda} --- and since we can
 write its left-hand-side as the composition of $f$ with a constant
 function, $f$ gives us a path $| \rm{tip} | = | \rm{base}_x |$ ---
-which, by the characterisation of paths in the set truncation, means we
-merely have $\| \rm{tip} = \rm{base}_x \|$.
+which, by the characterisation of paths in the [[set truncation]], means
+we merely have $\| \rm{tip} = \rm{base}_x \|$.
 
 ```agda
     go : ∀ x → ∥ tip ≡ base x ∥

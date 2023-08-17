@@ -564,7 +564,7 @@ case where we're actually talking about $(n,1)$-topoi.
 </details>
 
 [^subobjclass]: Let me make this more precise. In any (univalent)
-category with finite limits $\mathscr{E}$, we have a functor $\rm{Sub} :
+category with [[finite limits]] $\mathscr{E}$, we have a functor $\rm{Sub} :
 \mathscr{E}\op \to \set$, which takes $c$ to the full subcategory of
 $\mathscr{E}/c$ on the injections. We say that $\Omega \in \mathscr{E}$
 is a **subobject classifier** if there is a natural isomorphism
@@ -988,12 +988,12 @@ In HoTT, we can do better: We add a condition to the definition of
 category that says the paths of the type of objects _must_ correspond to
 the categorical isomorphisms --- which we call "univalence". While this
 condition might initially seem hard to fulfill, it's surprisingly common
-to come by univalent categories, since most constructions on categories
+to come by [[univalent categories]], since most constructions on categories
 preserve univalence! For instance:
 
 * If $A$ and $B$ are univalent categories, then so is the product $A
-\times B$ and the disjoint union $A \uplus B$; The initial and terminal
-categories are trivially univalent.
+\times B$ and the disjoint union $A \uplus B$; The initial and [[terminal
+categories]] are trivially univalent.
 
 * If $C$ is a univalent category, then so is the slice $C/c$ and the
 coslice $c/C$.
@@ -1015,7 +1015,7 @@ In addition to the benefit of univalent categories that will be
 presented outside the fold, they're also interesting in their own right
 because they are better constructively behaved than categories with a
 set of objects: For instance, in the last bullet point above we appealed
-to the statement "every fully faithful, essentially surjective functor
+to the statement "every [[fully faithful]], [[essentially surjective]] functor
 is an equivalence". For univalent categories, this is a theorem without
 any form of choice axiom!
 

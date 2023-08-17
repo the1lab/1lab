@@ -32,7 +32,7 @@ excellent setting to study logical and type-theoretical phenomena.
 When constructing models of type theories, the general pattern
 is to construct a category of contexts and substitutions, and then
 to study types and terms as structures over this category.
-The language of displayed categories allows us to capture this situation
+The language of [[displayed categories]] allows us to capture this situation
 quite succinctly by considering these extra pieces of equipment as
 being fibred over our category of contexts.
 
@@ -93,18 +93,17 @@ Simple .Displayed.assoc′ {f = u} {g = v} {h = w} f g h =
 # Cartesian Morphisms
 
 A morphism $f' : \Gamma \times X \to Y$ in the simple fibration is
-cartesian if and only if the morphism
-$\langle \pi_1 , f' \rangle : \Gamma \times X \to \Gamma \times Y$ is
-invertible. This means that the cartesian morphisms are the isomorphisms
-of types, as we are interpreting morphisms in the simple fibration as
-derivations.
+cartesian if and only if the morphism $\langle \pi_1 , f' \rangle :
+\Gamma \times X \to \Gamma \times Y$ is invertible. This means that the
+[[cartesian morphisms]] are the isomorphisms of types, as we are
+interpreting morphisms in the simple fibration as derivations.
 
 We begin with the reverse direction, as it is slightly simpler to show.
 
 ```agda
 ⟨⟩-invertible→cartesian
   : ∀ {Γ Δ x y} {f : Hom Γ Δ} {f′ : Hom (Γ ⊗₀ x) y}
-  → is-invertible ⟨ π₁ , f′ ⟩ 
+  → is-invertible ⟨ π₁ , f′ ⟩
   → is-cartesian Simple f f′
 ⟨⟩-invertible→cartesian {Γ} {Δ} {x} {y} {f} {f′} ⟨⟩-inv = cart where
   module ⟨⟩-inv = is-invertible ⟨⟩-inv
@@ -221,7 +220,7 @@ to $\pi_2$. To see this, consider the following diagram
 ~~~
 
 Note that $\pi_2$ factorizes $f'$, so it must be equal to the universal
-factorization of $f'$, as $f'$ is cartesian. Furthermore,
+factorisation of $f'$, as $f'$ is cartesian. Furthermore,
 $i \circ \langle \pi_1 , f' \rangle$ also factorizes $f'$, which lets us
 see that $i \circ \langle \pi_1 , f' \rangle = \pi_2$.
 
@@ -284,8 +283,8 @@ Simple-fibration .has-lift f Y .cartesian .unique {m = g} {h′ = h} h' p =
 
 # Comprehension Structure
 
-The simple fibration admits a fibred functor into the codomain fibration
-that maps an object $X$ over $\Gamma$ to the projection
+The simple fibration admits a [[fibred functor]] into the [[codomain
+fibration]] that maps an object $X$ over $\Gamma$ to the projection
 $\pi_1 : \Gamma \times X \to \Gamma$.
 
 ```agda
