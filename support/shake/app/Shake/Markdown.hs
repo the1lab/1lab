@@ -77,8 +77,6 @@ postParseInlines (m@Math{}:s@(Str txt):xs)
   | not (Text.isPrefixOf " " txt)
   = htmlInl "<span style=\"white-space: nowrap;\">" : m : s : htmlInl "</span>"
   : postParseInlines xs
-postParseInlines (l@(Link attr content target):Str txt:xs) | Just _ <- isWikiLink l =
-  Link attr (content ++ [Str txt]) target:postParseInlines xs
 postParseInlines (x:xs) = x:postParseInlines xs
 postParseInlines [] = []
 
