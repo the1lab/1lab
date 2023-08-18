@@ -38,8 +38,8 @@ open E
 We provide equivalent characterisations of univalence for categories
 $\cE$ which are displayed over a [[univalent category]] $\cB$.
 
-We say a [[displayed category]] $\cE$ is **univalent** when, for any $f
-: x \cong y$ in $\cB$ and object $A$ over $x$, the space of "objects
+We say a [[displayed category]] $\cE$ is **univalent** when, for any
+$f : x \cong y$ in $\cB$ and object $A$ over $x$, the space of "objects
 over $y$ isomorphic to $A$ over $f$" is a proposition.
 
 ```agda

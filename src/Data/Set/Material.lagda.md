@@ -643,8 +643,8 @@ The axiom of power sets also relies on propositional resizing in the
 ambient type theory. Let $a$ be a material set with $m_a : [a] \mono V$ its
 presentation --- I promise that's the last time I'll say this.
 
-To every predicate $p : [a] \to \Omega$, we can associate the class $p'
-: V \to \Omega$ given by
+To every predicate $p : [a] \to \Omega$, we can associate the class
+$p' : V \to \Omega$ given by
 
 $$
 x \mapsto \sum_{(i, _) : m_a^*(x)} p(i)\text{,}

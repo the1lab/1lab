@@ -173,9 +173,9 @@ universal property of $K(A)$.
     λ (y , p) → inc (fzero , Σ-prop-path (λ _ → squash) (out! p)))
 ```
 
-We can now prove the aforementioned reduction theorem: Every element $S
-: K(A)$ can be expressed (in a noncanonical way) as the finite union of
-a diagram of singletons. This is _almost_ a pure restatement of the
+We can now prove the aforementioned reduction theorem: Every element $S : K(A)$
+can be expressed (in a noncanonical way) as the finite union of a
+diagram of singletons. This is _almost_ a pure restatement of the
 $K$-finiteness condition, but it will be very useful!
 
 ```agda
