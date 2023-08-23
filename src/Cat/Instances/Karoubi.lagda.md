@@ -147,7 +147,7 @@ Hence $\~\cC$ is an idempotent-complete category which admits $C$ as
 a full subcategory.
 
 If $\cC$ was already idempotent-complete, then `Embed`{.Agda} is an
-[[equivalence of categories]] between $\cC$ and $~\cC$:
+[[equivalence of categories]] between $\cC$ and $\~\cC$:
 
 ```agda
 Karoubi-is-completion : is-idempotent-complete → is-equivalence Embed

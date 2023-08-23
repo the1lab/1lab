@@ -1,5 +1,7 @@
 <!--
 ```agda
+open import 1Lab.Connectedness
+
 open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Coequaliser
 open import Cat.Prelude
@@ -112,7 +114,7 @@ data Cofibre {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} (f : A → B) : Type 
   cone : ∀ a → tip ≡ base (f a)
 ```
 
-What's important here is that if a map $f$ has connected cofibre, then
+What's important here is that if a map $f$ has [[connected]] cofibre, then
 it is a surjection --- so our proof that epis are surjective will factor
 through showing that epis have connected cofibres^[note that all of
 these types are propositions, so we have a bunch of equivalences].
@@ -120,7 +122,7 @@ these types are propositions, so we have a bunch of equivalences].
 ```agda
 connected-cofibre→surjective
   : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} (f : A → B)
-  → is-contr ∥ Cofibre f ∥₀
+  → is-connected (Cofibre f)
   → ∀ x → ∥ fibre f x ∥
 connected-cofibre→surjective {A = A} {B = B} f conn x = transport cen (lift tt) where
 ```
@@ -169,7 +171,7 @@ inhabited), so it remains to show that any two points are merely equal.
 epi→connected-cofibre
   : ∀ {ℓ} (c d : n-Type ℓ 2) (f : ∣ c ∣ → ∣ d ∣)
   → Cr.is-epic (Sets ℓ) {c} {d} f
-  → is-contr ∥ Cofibre f ∥₀
+  → is-connected (Cofibre f)
 epi→connected-cofibre c d f epic = contr (inc tip) $
   ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ w →
     ∥-∥₀-path.from (hom w)

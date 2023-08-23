@@ -31,6 +31,7 @@ open import 1Lab.Univalence.SIP public
 
 open import 1Lab.Type.Pi public
 open import 1Lab.Type.Sigma public
+open import 1Lab.Type.Pointed public
 
 open import 1Lab.HIT.Truncation public
 

@@ -29,6 +29,14 @@ data ∥_∥₀ {ℓ} (A : Type ℓ) : Type ℓ where
   squash : is-set ∥ A ∥₀
 ```
 
+<!--
+```agda
+instance
+  H-Level-∥-∥₀ : ∀ {n} {ℓ} {A : Type ℓ} → H-Level ∥ A ∥₀ (suc (suc n))
+  H-Level-∥-∥₀ = basic-instance 2 squash
+```
+-->
+
 We begin by defining the induction principle. The (family of) type(s) we
 map into must be a set, as required by the `squash`{.Agda} constructor.
 

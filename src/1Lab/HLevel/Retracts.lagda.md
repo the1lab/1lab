@@ -352,9 +352,10 @@ instance
   H-Level-sigma {n = n} .H-Level.has-hlevel =
     Σ-is-hlevel n (hlevel n) λ _ → hlevel n
 
-  H-Level-path′
-    : ∀ {n} ⦃ s : H-Level S (suc n) ⦄ {x y} → H-Level (Path S x y) n
-  H-Level-path′ {n = n} .H-Level.has-hlevel = Path-is-hlevel' n (hlevel (suc n)) _ _
+  H-Level-PathP
+    : ∀ {n} {S : I → Type ℓ} ⦃ s : H-Level (S i1) (suc n) ⦄ {x y}
+    → H-Level (PathP S x y) n
+  H-Level-PathP {n = n} .H-Level.has-hlevel = PathP-is-hlevel' n (hlevel (suc n)) _ _
 
   H-Level-Lift
     : ∀ {n} ⦃ s : H-Level T n ⦄ → H-Level (Lift ℓ T) n

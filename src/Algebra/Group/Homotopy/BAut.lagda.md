@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import 1Lab.Connectedness
 open import 1Lab.Prelude
 
 open import Algebra.Group
@@ -35,12 +36,12 @@ module _ {ℓ} (T : Type ℓ) where
   base = T , inc (id , id-equiv)
 ```
 
-The first thing we note is that `BAut`{.Agda} is a _connected_ type,
+The first thing we note is that `BAut`{.Agda} is a _[[connected]]_ type,
 meaning that it only has "a single point", or, more precisely, that all
 of its interesting information is in its (higher) path spaces:
 
 ```agda
-  connected : ∀ b → ∥ b ≡ base ∥
+  connected : is-connected∙ (BAut , base)
   connected (b , x) =
     ∥-∥-elim {P = λ x → ∥ (b , x) ≡ base ∥} (λ _ → squash) (λ e → inc (p _ _)) x
     where

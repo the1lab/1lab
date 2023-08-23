@@ -48,7 +48,7 @@ is-prop-∥-∥ = squash
 ```agda
 instance
   H-Level-truncation : ∀ {n} {ℓ} {A : Type ℓ} → H-Level ∥ A ∥ (suc n)
-  H-Level-truncation = hlevel-instance (is-prop→is-hlevel-suc squash)
+  H-Level-truncation = prop-instance squash
 ```
 -->
 

@@ -176,7 +176,7 @@ another $(x, p)$ using a very boring calculation:
 
     path : ap f (ap g (sym p) ∙ η x) ∙ p ≡ ε y
     path =
-      ap f (ap g (sym p) ∙ η x) ∙ p                   ≡⟨ ap₂ _∙_ (ap-comp-path f (ap g (sym p)) (η x)) refl ∙ sym (∙-assoc _ _ _) ⟩
+      ap f (ap g (sym p) ∙ η x) ∙ p                   ≡⟨ ap₂ _∙_ (ap-∙ f (ap g (sym p)) (η x)) refl ∙ sym (∙-assoc _ _ _) ⟩
       ap (λ x → f (g x)) (sym p) ∙ ⌜ ap f (η x) ⌝ ∙ p ≡⟨ ap! (zig _) ⟩ -- by the triangle identity
       ap (f ∘ g) (sym p) ∙ ⌜ ε (f x) ∙ p ⌝            ≡⟨ ap! (homotopy-natural ε p)  ⟩ -- by naturality of ε
 ```
@@ -189,7 +189,7 @@ $\varepsilon$ lets us "push it past $p$" to get something we can cancel:
 
 ```agda
       ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p ∙ ε y     ≡⟨ ∙-assoc _ _ _ ⟩
-      ⌜ ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p ⌝ ∙ ε y ≡˘⟨ ap¡ (ap-comp-path (f ∘ g) (sym p) p) ⟩
+      ⌜ ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p ⌝ ∙ ε y ≡˘⟨ ap¡ (ap-∙ (f ∘ g) (sym p) p) ⟩
       ap (f ∘ g) ⌜ sym p ∙ p ⌝ ∙ ε y              ≡⟨ ap! (∙-inv-r _) ⟩
       ap (f ∘ g) refl ∙ ε y                       ≡⟨⟩
       refl ∙ ε y                                  ≡⟨ ∙-id-l (ε y) ⟩

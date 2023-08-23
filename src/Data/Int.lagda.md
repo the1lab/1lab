@@ -13,7 +13,7 @@ open import Data.Sum
 module Data.Int where
 ```
 
-# Integers
+# Integers {defines="integer"}
 
 The **integers** are what you get when you complete the additive monoid
 structure on the naturals into a [group]. In non-cubical Agda, a

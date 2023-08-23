@@ -14,7 +14,7 @@ open import Data.Int
 module Homotopy.Space.Circle where
 ```
 
-# Spaces: The circle
+# Spaces: The circle {defines="circle"}
 
 The first example of nontrivial space one typically encounters when
 studying synthetic homotopy theory is the circle: it is, in a sense, the
@@ -64,6 +64,15 @@ S¹-rec : ∀ {ℓ} {A : Type ℓ} (b : A) (l : b ≡ b) → S¹ → A
 S¹-rec b l base     = b
 S¹-rec b l (loop i) = l i
 ```
+
+<!--
+```agda
+S¹-elim : ∀ {ℓ} {A : S¹ → Type ℓ} (b : A base) (l : PathP (λ i → A (loop i)) b b)
+        → ∀ s → A s
+S¹-elim b l base     = b
+S¹-elim b l (loop i) = l i
+```
+-->
 
 We call the map `möbius`{.Agda} a _double cover_ of the circle, since
 the fibre at each point is a discrete space with two elements. It has an

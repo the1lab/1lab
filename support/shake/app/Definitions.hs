@@ -122,7 +122,7 @@ addDefinition key@(getMangled -> keyt) def (Glossary ge) = Glossary (go False ke
     Just def' | def' /= def -> error $ unlines
       [ "Conflict when building link map:"
       , "The files " ++ show (definitionModule def) ++ " and " ++ show (definitionModule def')
-        ++ " both define the anchor " ++ show (definitionAnchor def)
+        ++ " both define the term " ++ show key
       ]
     _ -> Map.insert key def{definitionCopy = c} ge
 

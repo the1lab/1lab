@@ -176,11 +176,11 @@ suffices to show that `is-biinv`{.Agda} is contractible when it is
 inhabited:
 
 [a proposition]: agda://1Lab.HLevel#is-prop
-[contractible if inhabited]: agda://1Lab.HLevel#contractible-if-inhabited
+[contractible if inhabited]: agda://1Lab.HLevel#is-contr-if-inhabited→is-prop
 
 ```agda
 is-biinv-is-prop : {f : A → B} → is-prop (is-biinv f)
-is-biinv-is-prop {f = f} = contractible-if-inhabited contract where
+is-biinv-is-prop {f = f} = is-contr-if-inhabited→is-prop contract where
   contract : is-biinv f → is-contr (is-biinv f)
   contract ibiinv =
     ×-is-hlevel 0 (is-iso→is-contr-linv iiso)
