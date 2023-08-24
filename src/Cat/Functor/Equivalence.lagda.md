@@ -23,7 +23,7 @@ open _=>_ hiding (op)
 ```
 -->
 
-# Equivalences
+# Equivalences {defines="equivalence-of-categories"}
 
 A functor $F : \cC \to \cD$ is an **equivalence of categories**
 when it has a [[right adjoint]] $G : \cD \to \cD$, with the unit and

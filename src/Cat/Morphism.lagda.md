@@ -257,7 +257,7 @@ instance
 A morphism $r : A \to B$ is a retract of another morphism $s : B \to A$
 when $r \cdot s = id$. Note that this is the same equation involved
 in the definition of a section; retracts and sections always come in
-pairs. If sections solve a sort of "curration problem" where we are
+pairs. If sections solve a sort of "curation problem" where we are
 asked to pick out canonical representatives, then retracts solve a
 sort of "classification problem".
 

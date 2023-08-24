@@ -56,6 +56,20 @@ is-split→is-idempotent {f = f} spl =
   where open is-split spl renaming (inject to s ; project to r)
 ```
 
+Identities are always trivially (split) idempotent:
+
+```agda
+id-is-idempotent : ∀ {A} → is-idempotent {A = A} id
+id-is-idempotent = idr _
+
+id-is-split : ∀ {A} → is-split {A = A} id
+id-is-split {A} .is-split.F = A
+id-is-split .is-split.project = id
+id-is-split .is-split.inject = id
+id-is-split .is-split.p∘i = idr _
+id-is-split .is-split.i∘p = idr _
+```
+
 It's not the case that idempotents are split in every category. Those
 where this is the case are called **idempotent-complete**. Every
 category can be embedded, by a [[fully faithful]] functor, into an
