@@ -383,7 +383,7 @@ needs an appeal to faithfulness (two, actually):
 
 ### Between categories
 
-Above, we made an equivalence out of any fully faithful and _split_
+Above, we made an equivalence out of any [[fully faithful]] and _split_
 essentially surjective functor. In set-theoretic mathematics (and indeed
 between [[strict categories]]), the splitting condition can not be
 lifted constructively: the statement "every (ff, eso) functor between
@@ -391,7 +391,7 @@ strict categories is an equivalence" is equivalent to the axiom of
 choice.
 
 However, between [[univalent categories]], the situation is different: Any
-essentially surjective functor splits. In particular, any functor
+essentially surjective [[fully faithful]] functor splits. In particular, any [[ff]] functor
 between univalent categories has propositional [[essential fibres]], so a
 "mere" essential surjection is automatically split. However, note that
 _both_ the domain _and_ codomain have to be categories for the argument

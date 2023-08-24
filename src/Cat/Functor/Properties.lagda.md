@@ -67,7 +67,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
 ```
 -->
 
-## Fully Faithful Functors {defines="fully-faithful-functor fully-faithful"}
+## Fully Faithful Functors {defines="fully-faithful-functor fully-faithful ff"}
 
 A functor is **fully faithful** (abbreviated **ff**) when its action on
 hom-sets is an equivalence. Since Hom-sets are sets, it suffices for the

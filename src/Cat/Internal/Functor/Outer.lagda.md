@@ -209,7 +209,7 @@ of maps into a limit.
 </details>
 
 The _contravariant_ internal $\hom$ functor is defined by duality, which
-carries "pullback along $\$1$" to "pullback along $\$1$.".
+carries "pullback along $\src$" to "pullback along $\tgt$.".
 This outer functor plays the role of the Yoneda embedding.
 
 ```agda
