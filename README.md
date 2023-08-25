@@ -1,5 +1,5 @@
 [![Discord](https://img.shields.io/discord/914172963157323776?label=Discord&logo=discord)](https://discord.gg/Zp2e8hYsuX)
-[![Build 1Lab](https://github.com/plt-amy/cubical-1lab/actions/workflows/build.yml/badge.svg)](https://github.com/plt-amy/cubical-1lab/actions/workflows/build.yml)
+[![Build 1Lab](https://github.com/plt-amy/1lab/actions/workflows/build.yml/badge.svg)](https://github.com/plt-amy/1lab/actions/workflows/build.yml)
 
 # [1Lab](https://1lab.dev)
 
