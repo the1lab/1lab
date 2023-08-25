@@ -283,8 +283,8 @@ Presentation-is-prop {ℓ} {A} f P1 P2 = done where
 
   eqv : ∀ x → fibre g x ≃ fibre h x
   eqv x = prop-ext (gm x) (hm x)
-    (λ fib → ∥-∥-proj {ap = hm x} (v' .fst x (u' .snd x (inc fib))))
-    (λ fib → ∥-∥-proj {ap = gm x} (u' .fst x (v' .snd x (inc fib))))
+    (λ fib → ∥-∥-proj (hm x) (v' .fst x (u' .snd x (inc fib))))
+    (λ fib → ∥-∥-proj (gm x) (u' .fst x (v' .snd x (inc fib))))
 ```
 
 This pointwise equivalence between fibres extends to an equivalence
@@ -384,7 +384,7 @@ module Members {ℓ} (X : V ℓ) where
 
   memb : ∀ {x} → x ∈ₛ X ≃ fibre elem x
   memb {x = x} = prop-ext (is-member _ X .is-tr) (embeds _)
-    (λ a → ∥-∥-proj {ap = embeds _} (subst (x ∈ₛ_) presents a))
+    (λ a → ∥-∥-proj (embeds _) (subst (x ∈ₛ_) presents a))
     (λ a → subst (x ∈ₛ_) (sym presents) (inc a))
 
   module memb {x} = Equiv (memb {x})
