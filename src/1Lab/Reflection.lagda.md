@@ -6,9 +6,9 @@ open import 1Lab.Path
 open import 1Lab.Type hiding (absurd)
 
 open import Data.Product.NAry
+open import Data.List.Base
 open import Data.Vec.Base
 open import Data.Bool
-open import Data.List.Base
 ```
 -->
 

@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Prelude
+
 import Cat.Reasoning
 ```
 -->

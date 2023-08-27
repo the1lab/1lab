@@ -2,8 +2,8 @@
 ```agda
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Diagram.Product.Indexed
-open import Cat.Displayed.Total
 open import Cat.Diagram.Product
+open import Cat.Displayed.Total
 open import Cat.Instances.OFE
 open import Cat.Prelude
 ```
