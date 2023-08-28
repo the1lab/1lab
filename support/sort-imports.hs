@@ -2,6 +2,7 @@
 {- stack --resolver lts-18.14 script
          --package text
          --package deepseq
+         --package filemanip
 -}
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
@@ -13,16 +14,22 @@ import Data.List (isSuffixOf, sortOn, groupBy, partition)
 import qualified Data.Text.IO as Text
 import qualified Data.Text as Text
 import Data.Function (on)
-import Data.Foldable
+import Data.Foldable hiding (find)
 import Data.Ord
 
 import Debug.Trace
 
 import System.Environment
+import System.FilePath.Find
 import System.IO
 
 main :: IO ()
-main = traverse_ sortImports =<< getArgs
+main = do
+  args <- getArgs
+  traverse_ sortImports =<< if null args then getAgdaFiles else pure args
+
+getAgdaFiles :: IO [FilePath]
+getAgdaFiles = find always (fileName ~~? "*.(agda|lagda.md)") "src"
 
 sortImports :: FilePath -> IO ()
 sortImports path
