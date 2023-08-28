@@ -109,7 +109,7 @@ Examples of pointed connected types include the [[circle]] and the [[delooping]]
 
 ```agda
 S¹-is-connected : is-connected∙ (S¹ , base)
-S¹-is-connected = S¹-elim (inc refl) (is-prop→pathp (λ _ → squash) _ _)
+S¹-is-connected = S¹-elim (inc refl) prop!
 
 Deloop-is-connected : ∀ {ℓ} {G : Group ℓ} → is-connected∙ (Deloop G , base)
 Deloop-is-connected = Deloop-elim-prop _ _ hlevel! (inc refl)

@@ -380,6 +380,13 @@ is-hlevel-is-prop (suc (suc n)) x y i a b =
   is-hlevel-is-prop (suc n) (x a b) (y a b) i
 ```
 
+<!--
+```agda
+is-hlevel-is-hlevel-suc : ∀ {ℓ} {A : Type ℓ} (k n : Nat) → is-hlevel (is-hlevel A n) (suc k)
+is-hlevel-is-hlevel-suc k n = is-prop→is-hlevel-suc (is-hlevel-is-prop n)
+```
+-->
+
 # Dependent h-Levels
 
 In cubical type theory, it's natural to consider a notion of _dependent_

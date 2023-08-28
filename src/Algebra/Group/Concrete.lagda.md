@@ -89,15 +89,13 @@ instance
   Underlying-ConcreteGroup .⌞_⌟ G = ⌞ B G ⌟
 
 ConcreteGroup-path : {G H : ConcreteGroup ℓ} → B G ≡ B H → G ≡ H
-ConcreteGroup-path {G = G} {H} p =
-  go (is-prop→pathp hlevel! _ _) (is-prop→pathp (λ _ → is-hlevel-is-prop 3) _ _)
-  where
-    go : PathP (λ i → is-connected∙ (p i)) (G .has-is-connected) (H .has-is-connected)
-       → PathP (λ i → is-groupoid ⌞ p i ⌟) (G .has-is-groupoid) (H .has-is-groupoid)
-       → G ≡ H
-    go c g i .B = p i
-    go c g i .has-is-connected = c i
-    go c g i .has-is-groupoid = g i
+ConcreteGroup-path {G = G} {H} p = go prop! prop! where
+  go : PathP (λ i → is-connected∙ (p i)) (G .has-is-connected) (H .has-is-connected)
+     → PathP (λ i → is-groupoid ⌞ p i ⌟) (G .has-is-groupoid) (H .has-is-groupoid)
+     → G ≡ H
+  go c g i .B = p i
+  go c g i .has-is-connected = c i
+  go c g i .has-is-groupoid = g i
 ```
 -->
 
@@ -105,10 +103,8 @@ A central example of a concrete group is the [[circle]]: the delooping of the [[
 
 ```agda
 S¹-is-groupoid : is-groupoid S¹
-S¹-is-groupoid = connected∙-elim-prop S¹-is-connected
-                 (Π-is-hlevel 1 λ _ → Π-is-hlevel² 1 λ _ _ → is-prop-is-prop)
-               $ connected∙-elim-prop S¹-is-connected
-                 (Π-is-hlevel² 1 λ _ _ → is-prop-is-prop)
+S¹-is-groupoid = connected∙-elim-prop S¹-is-connected hlevel!
+               $ connected∙-elim-prop S¹-is-connected hlevel!
                $ is-hlevel≃ 2 ΩS¹≃integers (hlevel 2)
 
 S¹-concrete : ConcreteGroup lzero
@@ -306,7 +302,7 @@ $(y, p(\refl) : \point{H} \equiv y)$, which means it is contractible.
     f≡p ω = ∙-filler (f # ω) (p refl) ▷ (sym (f-p ω refl) ∙ ap p (∙-id-r ω))
 
     □≡□ : PathP (λ i → ∀ ω α → f≡p (ω ∙ α) i ≡ f # ω ∙ f≡p α i) (f .preserves .pres-⋆) f-p
-    □≡□ = is-prop→pathp hlevel! _ _
+    □≡□ = prop!
 ```
 
 We can now apply the elimination principle and unpack our data:
@@ -376,7 +372,7 @@ This is a [[property]], and $\point{G}$ has it:
   C′-contr .centre .fst = f .snd ∙ sym (g .snd)
   C′-contr .centre .snd α = transport (sym Square≡double-composite-path) $
     ··-∙-assoc ∙ sym (f-p α refl) ∙ ap p (∙-id-r _)
-  C′-contr .paths (eq , eq-paths) = Σ-prop-path (λ _ → hlevel!) $
+  C′-contr .paths (eq , eq-paths) = Σ-prop-path! $
     sym (∙-unique _ (transpose (eq-paths refl)))
 ```
 
