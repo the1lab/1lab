@@ -18,7 +18,6 @@ module Cat.Displayed.Morphism
 
 <!--
 ```agda
-open Displayed ℰ
 open Cat.Reasoning ℬ
 open Cat.Displayed.Reasoning ℰ
 private variable

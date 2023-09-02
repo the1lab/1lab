@@ -32,7 +32,6 @@ module Cat.Displayed.Cocartesian.Weak
 <!--
 ```agda
 open CR ℬ
-open Displayed ℰ
 open Cocart ℰ
 open Cat.Displayed.Morphism ℰ
 open Cat.Displayed.Morphism.Duality ℰ

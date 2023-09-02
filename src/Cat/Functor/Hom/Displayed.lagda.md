@@ -20,7 +20,6 @@ module Cat.Functor.Hom.Displayed
 <!--
 ```agda
 open Precategory ℬ
-open Displayed ℰ
 open Cat.Displayed.Reasoning ℰ
 open Functor
 ```

@@ -3,7 +3,7 @@
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Displayed.Reasoning as DR
+import Cat.Displayed.Reasoning
 import Cat.Displayed.Morphism
 import Cat.Reasoning
 ```
@@ -13,11 +13,15 @@ import Cat.Reasoning
 module Cat.Displayed.Cartesian
   {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′) where
 
-open Cat.Reasoning B
-open Displayed E
-open Cat.Displayed.Morphism E
-open DR E
 ```
+
+<!--
+```agda
+open Cat.Reasoning B
+open Cat.Displayed.Reasoning E
+open Cat.Displayed.Morphism E
+```
+-->
 
 # Cartesian morphisms and Fibrations
 
