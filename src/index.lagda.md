@@ -990,6 +990,23 @@ open import Algebra.Ring.Module.Free -- Free R-modules as a HIT
 open import Algebra.Ring.Module.Category -- The bifibration of Mod over Ring
 ```
 
+# Homotopy theory
+
+Synthetic homotopy theory is the name given to studying
+$\infty$-groupoids in their own terms, i.e., the application of homotopy type
+theory to computing homotopy invariants of spaces.
+
+```agda
+open import Homotopy.Base -- Basic definitions
+open import Homotopy.Connectedness -- Connected types
+
+open import Homotopy.Space.Suspension -- Suspensions
+open import Homotopy.Space.Circle -- The circle
+open import Homotopy.Space.Sphere -- The n-spheres
+open import Homotopy.Space.Sinfty -- The ∞-sphere
+open import Homotopy.Space.Torus -- The torus
+```
+
 <!-- Mastodon author links: !-->
 <div style="display: none;">
 <a rel="me" href="https://types.pl/@amy"></a>
