@@ -14,6 +14,10 @@ open Underlying ⦃ ... ⦄ using (⌞_⌟) public
 open Underlying using (ℓ-underlying)
 
 instance
+  Underlying-Type : ∀ {ℓ} → Underlying (Type ℓ)
+  Underlying-Type {ℓ} .ℓ-underlying = ℓ
+  Underlying-Type .⌞_⌟ x = x
+
   Underlying-n-Type : ∀ {ℓ n} → Underlying (n-Type ℓ n)
   Underlying-n-Type {ℓ} .ℓ-underlying = ℓ
   Underlying-n-Type .⌞_⌟ x = ∣ x ∣

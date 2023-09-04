@@ -54,9 +54,6 @@ about type theory and the implementation of programming languages, and
 
 [my personal blog]: https://amelia.how
 [Amulet]: https://amulet.works
-
-Test: [[displayed over|displayed category]]
-
 </div>
 </div>
 
@@ -81,7 +78,7 @@ A cool project that I recently completed was formalising a
 </div>
 </div>
 
-<div class="profile pfp-right">
+<div class="profile pfp-left">
 <div class="profile-pfp">
 <span class="profile-name">Reed</span>
 <span class="profile-pronouns">he/him</span>
@@ -94,5 +91,20 @@ Hey! I'm Reed! I develop proof assistants for a living, and write a _lot_ of Agd
 I'm interested in how we can make our tools more human friendly. In that vein,
 I like writing various forms of automation, especially those with a more
 semantic flavor.
+</div>
+</div>
+
+<div class="profile pfp-right">
+<div class="profile-pfp">
+<img alt="Naïm's profile picture" src="https://www.gravatar.com/avatar/1fea7494d69948ab0a50d9ee9318ae50?s=128&r=g" />
+<span class="profile-name">Naïm</span>
+<span class="profile-pronouns">any</span>
+<span><a href="https://monade.li">monade.li</a></span>
+<span><a href="https://github.com/ncfavier">ncfavier</a></span>
+</div>
+
+<div class="profile-profile">
+I'm Naïm. I like the [computational trilogy](https://ncatlab.org/nlab/show/computational+trilogy)
+and arguing with Agda. I hate broken links and writing about myself.
 </div>
 </div>

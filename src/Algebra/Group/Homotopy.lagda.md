@@ -25,7 +25,7 @@ private variable
 ```
 -->
 
-# Homotopy Groups
+# Homotopy Groups {defines="homotopy-group fundamental-group"}
 
 Given a `pointed type`{.Agda ident=Type∙} $(A, a)$ we refer to the type
 $a = a$ as the **loop space of $A$**, and refer to it in short as
@@ -143,14 +143,14 @@ $\pi_{n+2}$ is an [[Abelian group]]:
              (λ x y i → inc (Ωⁿ⁺²-is-abelian-group n x y i))
 ```
 
-## Deloopings
+## Deloopings {defines="delooping"}
 
 A natural question to ask, given that all pointed types have a
 fundamental group, is whether every group arises as the fundamental
 group of some type. The answer to this question is "yes", but in the
 annoying way that questions like these tend to be answered: Given any
-group $G$, we construct a type $B(G)$ with $\pi_1(B(G)) \equiv G$. We
-call $B(G)$ the **delooping** of $G$.
+group $G$, we construct a type $\B{G}$ with $\pi_1(\B{G}) \equiv G$. We
+call $\B{G}$ the **delooping** of $G$.
 
 ```agda
 module _ {ℓ} (G : Group ℓ) where
@@ -172,7 +172,7 @@ The delooping is constructed as a higher inductive type. We have a
 generic `base`{.Agda} point, and a constructor expressing that
 `Deloop`{.Agda} is a groupoid; Since it is a groupoid, it has a set of
 loops `point ≡ point`: this is necessary, since otherwise we would not
-be able to prove that $\pi_1(B(G)) \equiv G$. We then have the
+be able to prove that $\pi_1(\B{G}) \equiv G$. We then have the
 "interesting" higher constructors: `path`{.Agda} lets us turn any
 element of $G$ to a path `point ≡ point`, and `path-sq`{.Agda} expresses
 that `path`{.Agda} is a group homomorphism. More specifically,
@@ -229,7 +229,7 @@ eliminator into propositions later, so we define that now.
 ```agda
   Deloop-elim
     : ∀ {ℓ'} (P : Deloop → Type ℓ')
-    → (∀ x → is-hlevel (P x) 3)
+    → (∀ x → is-groupoid (P x))
     → (p : P base)
     → (ploop : ∀ x → PathP (λ i → P (path x i)) p p)
     → ( ∀ x y

@@ -4,16 +4,11 @@ open import 1Lab.Rewrite
 
 open import Cat.Functor.Equivalence.Path
 open import Cat.Functor.Equivalence
-open import Cat.Functor.Equivalence
-open import Cat.Displayed.Fibre
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
-open import Cat.Displayed.Total
-open import Cat.Displayed.Base
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Displayed.Reasoning as DR
 import Cat.Displayed.Reasoning as DR
 ```
 -->

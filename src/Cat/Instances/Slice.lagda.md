@@ -3,7 +3,6 @@
 open import Cat.Instances.Shape.Terminal
 open import Cat.Instances.Shape.Join
 open import Cat.Diagram.Limit.Base
-open import Cat.Diagram.Limit.Base
 open import Cat.Functor.Properties
 open import Cat.Instances.Discrete
 open import Cat.Instances.Functor

@@ -20,23 +20,13 @@ module Homotopy.Base where
 
 This module contains the basic definitions for the study of synthetic
 homotopy theory. Synthetic homotopy theory is the name given to studying
-$\infty$-groupoids in their own terms, i.e., the application of homotopy
+$\infty$-groupoids in their own terms, i.e., the application of homotopy type
 theory to computing homotopy invariants of spaces. Central to the theory
-is the concept of _pointed type_ and _pointed map_. After all, [homotopy
+is the concept of [[pointed type]] and [[pointed map]]. After all, [homotopy
 groups] are no more than the set-truncations of n-fold iterated loop
 spaces, and loop spaces are always relative to a basepoint.
 
 [homotopy groups]: Algebra.Group.Homotopy.html
-
-If we have pointed types $(A, a)$ and $(B, b)$, the most natural notion
-of function between them is not simply the type of functions $A \to B$,
-but rather those functions $A \to B$ which _preserve the basepoint_,
-i.e. the functions $f : A \to B$ equipped with paths $f(a) \equiv b$.
-
-```agda
-_→∙_ : ∀ {ℓ ℓ′} → Type∙ ℓ → Type∙ ℓ′ → Type _
-(A , a) →∙ (B , b) = Σ[ f ∈ (A → B) ] (f a ≡ b)
-```
 
 A helper that will come in handy is `Σ∙`{.Agda}, which attaches the
 north pole as the basepoint of the suspended space.
@@ -299,13 +289,15 @@ hubs-and-spokes→hlevel {A = A} (suc n) spheres x y =
 ```
 -->
 
+:::{.definition #truncation}
 Using this idea, we can define a general _$n$-truncation_ type, as a
 joint generalisation of the [[propositional|propositional truncation]]
-and [set] truncations. While can not _directly_ build a type with a
+and [set] truncations. While we can not _directly_ build a type with a
 constructor saying the type is $n$-truncated, what we _can_ do is freely
 generate `hub`{.Agda}s and `spokes`{.Agda} for any $n$-sphere drawn on
-the $n$-truncation of $A$.  The result is the universal $n$-type
+the $n$-truncation of $A$. The result is the universal $n$-type
 admitting a map from $A$.
+:::
 
 [set]: Data.Set.Truncation.html
 

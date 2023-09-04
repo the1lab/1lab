@@ -208,7 +208,10 @@ into an equivalence:
              → {x y : Σ _ B}
              → (x .fst ≡ y .fst) ≃ (x ≡ y)
 Σ-prop-path≃ bp = Σ-prop-path bp , Σ-prop-path-is-equiv bp
+```
 
+<!--
+```agda
 Σ-prop-square
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
   → {w x y z : Σ _ B}
@@ -220,7 +223,20 @@ into an equivalence:
 Σ-prop-square Bprop {p} {q} {s} {r} sq i j .snd =
   is-prop→squarep (λ i j → Bprop (sq i j))
     (ap snd p) (ap snd q) (ap snd s) (ap snd r) i j
+
+Σ-set-square
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
+  → {w x y z : Σ _ B}
+  → (∀ x → is-set (B x))
+  → {p : x ≡ w} {q : x ≡ y} {s : w ≡ z} {r : y ≡ z}
+  → Square (ap fst p) (ap fst q) (ap fst s) (ap fst r)
+  → Square p q s r
+Σ-set-square Bset sq i j .fst = sq i j
+Σ-set-square Bset {p} {q} {s} {r} sq i j .snd =
+  is-set→squarep (λ i j → Bset (sq i j))
+    (ap snd p) (ap snd q) (ap snd s) (ap snd r) i j
 ```
+-->
 
 ## Dependent sums of contractibles
 

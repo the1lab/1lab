@@ -14,7 +14,6 @@ open import Cat.Prelude
 import Cat.Displayed.Cocartesian.Indexing as Indexing
 import Cat.Displayed.Morphism.Duality
 import Cat.Displayed.Cocartesian as Cocart
-import Cat.Displayed.Cocartesian as Cocart
 import Cat.Displayed.Reasoning
 import Cat.Displayed.Morphism
 import Cat.Reasoning as CR

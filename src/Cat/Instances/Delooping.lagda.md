@@ -19,7 +19,7 @@ private variable
 ```
 -->
 
-Given a monoid $M$, we build a pointed precategory $B(M)$, where the
+Given a monoid $M$, we build a pointed precategory $\B{M}$, where the
 endomorphism monoid of the point recovers $M$.
 
 ```agda

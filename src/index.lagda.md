@@ -176,6 +176,7 @@ are developed under the `1Lab` namespace. Start here:
 -- All of these module names are links you can click!
 
 open import 1Lab.Type -- Universes
+open import 1Lab.Type.Pointed -- Pointed types
 
 open import 1Lab.Path -- Path types
 open import 1Lab.Path.Groupoid  -- Groupoid structure of types
@@ -963,6 +964,7 @@ open import Algebra.Group.Cat.Base -- The category of groups
 open import Algebra.Group.Cat.Monadic -- ... is monadic over Sets
 open import Algebra.Group.Cat.FinitelyComplete -- Finite limits in Groups
 open import Algebra.Group.Subgroup -- Subgroups, images and kernels
+open import Algebra.Group.Concrete -- Concrete groups (pointed connected groupoids)
 
 open import Algebra.Group.Homotopy -- Homotopy groups
 open import Algebra.Group.Homotopy.BAut
@@ -986,6 +988,23 @@ open import Algebra.Ring.Commutative -- Commutative rings
 open import Algebra.Ring.Module.Vec -- Finite direct sums of R as an R-module
 open import Algebra.Ring.Module.Free -- Free R-modules as a HIT
 open import Algebra.Ring.Module.Category -- The bifibration of Mod over Ring
+```
+
+# Homotopy theory
+
+Synthetic homotopy theory is the name given to studying
+$\infty$-groupoids in their own terms, i.e., the application of homotopy type
+theory to computing homotopy invariants of spaces.
+
+```agda
+open import Homotopy.Base -- Basic definitions
+open import Homotopy.Connectedness -- Connected types
+
+open import Homotopy.Space.Suspension -- Suspensions
+open import Homotopy.Space.Circle -- The circle
+open import Homotopy.Space.Sphere -- The n-spheres
+open import Homotopy.Space.Sinfty -- The ∞-sphere
+open import Homotopy.Space.Torus -- The torus
 ```
 
 <!-- Mastodon author links: !-->

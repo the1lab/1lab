@@ -1,8 +1,8 @@
 <!--
 ```agda
-open import Cat.Allegory.Base
 open import Cat.Functor.WideSubcategory
 open import Cat.Restriction.Base
+open import Cat.Allegory.Base
 open import Cat.Prelude
 
 import Cat.Allegory.Morphism

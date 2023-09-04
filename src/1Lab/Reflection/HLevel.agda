@@ -9,8 +9,8 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
-open import Data.Bool
 open import Data.List.Base
+open import Data.Bool
 
 open import Meta.Foldable
 
@@ -25,7 +25,7 @@ support for arbitrary level offsets (`level-minus) and searching under
 binders (`search-under). Ambiguity is explicitly supported: the first
 goal for which we can complete a proof tree is the one we go with.
 
-The tactic works in a naÏve way, trying h-level lemmas until one
+The tactic works in a naïve way, trying h-level lemmas until one
 succeeds. There are three ways of making progress: Using a *projection
 hint*, using a *decomposition hint*, or by falling back to instance
 selection. The instance selection fallback is self-explanatory.
@@ -78,14 +78,15 @@ data Arg-spec : Type where
   -- lambdas. This is suitable for lemmas of type
   -- (∀ x y z → is-hlevel ...) → is-hlevel ...
 
-  `meta         : Arg-spec
-  -- ^ Insert a meta at this argument position. No search will be
-  -- performed for this meta, so it must be solved from the context in
+  `term         : Term → Arg-spec
+  -- ^ Insert a literal term at this argument position. No search will be
+  -- performed if this is a meta, so it must be solved from the context in
   -- which the lemma is used.
 
 -- Common patterns: Keep the level, search in the current scope.
 pattern `search = `search-under 0
 pattern `level = `level-minus 0
+pattern `meta = `term unknown
 
 -- | A specification for how to decompose the type @T@ into
 -- sub-components, to establish an h-level result.
@@ -147,7 +148,7 @@ private
   -- an application of is-hlevel/is-prop/is-set into an 'underlying
   -- type' and level arguments.
   hlevel-types : List Name
-  hlevel-types = quote is-hlevel ∷ quote is-prop ∷ quote is-set ∷ []
+  hlevel-types = quote is-hlevel ∷ quote is-prop ∷ quote is-set ∷ quote is-groupoid ∷ []
 
   pattern nat-lit n =
     def (quote Number.fromNat) (_ ∷ _ ∷ _ ∷ lit (nat n) v∷ _)
@@ -169,6 +170,10 @@ private
     def (quote is-hlevel) (_ ∷ ty v∷ lv v∷ []) ← pure ty
       where
         -- Handle the ones with special names:
+        def (quote is-groupoid) (_ ∷ ty v∷ []) → do
+          ty ← wait-just-a-bit ty
+          pure (ty , quoteTerm 3)
+
         def (quote is-set) (_ ∷ ty v∷ []) → do
           ty ← wait-just-a-bit ty
           pure (ty , quoteTerm 2)
@@ -242,7 +247,6 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
       let's-hope = do
         debugPrint "tactic.hlevel" 30 $ "Lifting loop: Trying " ∷ termErr (lift-sol solution l1 it) ∷ " for level " ∷ termErr l2 ∷ []
         unify goal (lift-sol solution l1 it)
-    -- con (quote suc) (
 
   -- Projection decomposition.
   treat-as-n-type : ∀ {n} → hlevel-projection n → Term → TC ⊤
@@ -453,9 +457,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
             debugPrint "tactic.hlevel" 10 $ "Dunno how to take 1 from " ∷ termErr tm ∷ []
             typeError []
 
-      -- Insert a metavariable, to be solved by Agda. It'd be sad if the
-      -- macro handled everything!
-      ... | `meta = gen-args has-alts level defn args (unknown v∷ accum) cont
+      ... | `term t = gen-args has-alts level defn args (t v∷ accum) cont
 
       ... | `search-under under = do
         -- To search under some variables, we work in a scope extended
@@ -558,13 +560,13 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
   decompose-is-hlevel-top goal =
     do
       ty ← withReduceDefs (false , hlevel-types) $
-        (inferType goal >>= reduce) >>= wait-just-a-bit
+        inferType goal >>= reduce >>= wait-just-a-bit
       go ty
     where
       go : Term → TC _
       go (pi (arg as at) (abs vn cd)) = do
         (inner , hlevel , enter , leave) ← go cd
-        pure $ inner , hlevel , extendContext vn (arg as at) , λ t → lam (ArgInfo.arg-vis as) (abs vn t)
+        pure $ inner , hlevel , extendContext vn (arg as at) ∘ enter , λ t → lam (ArgInfo.arg-vis as) (abs vn (leave t))
       go tm = do
         (inner , hlevel) ← decompose-is-hlevel′ tm
         pure $ inner , hlevel , (λ x → x) , (λ x → x)
@@ -636,6 +638,31 @@ instance
   decomp-lift : ∀ {ℓ ℓ′} {T : Type ℓ} → hlevel-decomposition (Lift ℓ′ T)
   decomp-lift = decomp (quote Lift-is-hlevel) (`level ∷ `search ∷ [])
 
+  -- h-level types themselves are propositions. These instances should be tried
+  -- before Π types.
+
+  decomp-is-prop : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (is-prop A)
+  decomp-is-prop = decomp (quote is-hlevel-is-hlevel-suc) (`level-minus 1 ∷ `term (quoteTerm 1) ∷ [])
+
+  decomp-is-set : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (is-set A)
+  decomp-is-set = decomp (quote is-hlevel-is-hlevel-suc) (`level-minus 1 ∷ `term (quoteTerm 2) ∷ [])
+
+  decomp-is-groupoid : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (is-groupoid A)
+  decomp-is-groupoid = decomp (quote is-hlevel-is-hlevel-suc) (`level-minus 1 ∷ `term (quoteTerm 3) ∷ [])
+
+  {-
+  Since `is-prop A` starts with a Π, the decomp-piⁿ instances below could "bite" into
+  it and make decomp-is-prop inapplicable. To avoid this, we handle those situations explicitly:
+  -}
+
+  decomp-pi²-is-prop : ∀ {ℓa ℓb ℓc} {A : Type ℓa} {B : A → Type ℓb} {C : ∀ a (b : B a) → Type ℓc}
+                     → hlevel-decomposition (∀ a b → is-prop (C a b))
+  decomp-pi²-is-prop = decomp (quote Π-is-hlevel²) (`level ∷ `search-under 2 ∷ [])
+
+  decomp-pi-is-prop : ∀ {ℓa ℓb} {A : Type ℓa} {B : A → Type ℓb}
+                    → hlevel-decomposition (∀ a → is-prop (B a))
+  decomp-pi-is-prop = decomp (quote Π-is-hlevel) (`level ∷ `search-under 1 ∷ [])
+
   -- -- Non-dependent Π and Σ for readability first:
 
   -- decomp-fun = decomp (quote fun-is-hlevel) (`level ∷ `search ∷ [])
@@ -644,6 +671,7 @@ instance
   -- decomp-prod = decomp (quote ×-is-hlevel) (`level ∷ `search ∷ `search ∷ [])
 
   -- Dependent type formers:
+
   decomp-pi³
     : ∀ {ℓa ℓb ℓc ℓd} {A : Type ℓa} {B : A → Type ℓb} {C : ∀ x (y : B x) → Type ℓc}
     → {D : ∀ x y (z : C x y) → Type ℓd}
@@ -715,4 +743,13 @@ private
     _ = hlevel!
 
     _ : ∀ n (x : n-Type ℓ n) → is-hlevel ∣ x ∣ (2 + n)
-    _ = λ n x → hlevel!
+    _ = hlevel!
+
+    _ : ∀ {ℓ} {A : Type ℓ} → is-prop ((x : A) → is-prop A)
+    _ = hlevel!
+
+    _ : ∀ {ℓ} {A : Type ℓ} → is-prop ((x y : A) → is-prop A)
+    _ = hlevel!
+
+    _ : ∀ {ℓ} {A : Type ℓ} → is-groupoid (is-hlevel A 5)
+    _ = hlevel!

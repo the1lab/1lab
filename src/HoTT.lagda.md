@@ -43,6 +43,7 @@ open import Data.Dec
 open import Data.Nat using (ℕ-well-ordered ; Discrete-Nat)
 open import Data.Sum
 
+open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
 open import Homotopy.Space.Torus
 open import Homotopy.Base
@@ -103,13 +104,13 @@ _ = Ωⁿ
 <!--
 ```agda
 _ = ap
-_ = ap-comp-path
+_ = ap-∙
 ```
 -->
 
 * Lemma 2.2.1: `ap`{.Agda}
 * Lemma 2.2.2:
-  i. `ap-comp-path`{.Agda}
+  i. `ap-∙`{.Agda}
   ii. _Definitional in cubical type theory_
   iii. _Definitional in cubical type theory_
   iv. _Definitional in cubical type theory_
@@ -321,7 +322,8 @@ _ = Singleton-is-contr
 _ = equiv→is-hlevel
 _ = ⊎-is-hlevel
 _ = Σ-is-hlevel
-_ = contractible-if-inhabited
+_ = is-contr-if-inhabited→is-prop
+_ = is-prop→is-contr-if-inhabited
 _ = H-Level-Dec
 _ = disjoint-⊎-is-prop
 _ = ℕ-well-ordered
@@ -333,7 +335,7 @@ _ = Finite-choice
 * Exercise 3.1: `equiv→is-hlevel`{.Agda}
 * Exercise 3.2: `⊎-is-hlevel`{.Agda}
 * Exercise 3.3: `Σ-is-hlevel`{.Agda}
-* Exercise 3.5: `contractible-if-inhabited`{.Agda}
+* Exercise 3.5: `is-contr-if-inhabited→is-prop`{.Agda}, `is-prop→is-contr-if-inhabited`{.Agda}
 * Exercise 3.6: `H-Level-Dec`{.Agda}
 * Exercise 3.7: `disjoint-⊎-is-prop`{.Agda}
 * Exercise 3.19: `ℕ-well-ordered`{.Agda}
@@ -581,6 +583,16 @@ _ = n-Tr-elim
 * Lemma 7.3.1: `n-Tr-is-hlevel`{.Agda}
 * Lemma 7.3.2: `n-Tr-elim`{.Agda}
 * Theorem 7.3.12: `n-Tr-path-equiv`{.Agda}
+
+### 7.5 Connectedness
+
+<!--
+```agda
+_ = is-n-connected
+```
+-->
+
+* Definition 7.5.1: `is-n-connected`{.Agda}
 
 # Part 2 Mathematics
 

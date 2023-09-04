@@ -61,7 +61,7 @@ lift-disc
 lift-disc f .F₀ = f
 lift-disc f .F₁ = ap f
 lift-disc f .F-id = refl
-lift-disc f .F-∘ p q = ap-comp-path f q p
+lift-disc f .F-∘ p q = ap-∙ f q p
 ```
 
 <!--

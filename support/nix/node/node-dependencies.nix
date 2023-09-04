@@ -906,8 +906,8 @@ let
     };
   };
   args = {
-    name = "cubical-1lab";
-    packageName = "cubical-1lab";
+    name = "1lab";
+    packageName = "1lab";
     version = "1.0.0";
     src = ../../..;
     dependencies = [
@@ -1018,7 +1018,7 @@ let
     buildInputs = globalBuildInputs;
     meta = {
       description = " A formalised, cross-linked reference resource for mathematics done in Homotopy Type Theory ";
-      homepage = "https://github.com/plt-amy/cubical-1lab#readme";
+      homepage = "https://github.com/plt-amy/1lab#readme";
       license = "AGPL-3.0";
     };
     production = false;
