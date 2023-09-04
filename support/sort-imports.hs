@@ -88,15 +88,20 @@ sortImpl lines = sorted ++ emptyLineBefore' mod where
   (imports, io'') = partition ("import" `Text.isPrefixOf`) io'
   (opens, prefix) = partition ("open" `Text.isPrefixOf`) io''
 
+  uniqueSortOn f = go . sortOn f where
+    go (x:x':xs) | x == x' = go (x':xs)
+    go (x:xs) = x : go xs
+    go [] = []
+
   sorted = filter (not . Text.null) prefix
         ++ sortItems "open import" open_imports
         ++ emptyLineBefore (sortItems "import" imports)
-        ++ emptyLineBefore (sortOn (Down . Text.length) opens)
+        ++ emptyLineBefore (uniqueSortOn (Down . Text.length) opens)
 
   findItem prefix line = head (Text.words (Text.drop (Text.length prefix) line))
 
   sortItems prefix =
       drop 1
-    . concatMap (("":) . sortOn (Down . Text.length . findItem prefix))
+    . concatMap (("":) . uniqueSortOn (Down . Text.length . findItem prefix))
     . groupBy ((==) `on` fst . Text.breakOn "." . findItem prefix)
     . sortOn (findItem prefix)

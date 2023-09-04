@@ -4,7 +4,6 @@ open import 1Lab.Path.IdentitySystem.Strict
 
 open import Cat.Displayed.GenericObject
 open import Cat.Displayed.Cartesian
-open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
 open import Cat.Functor.Properties
 open import Cat.Instances.Discrete

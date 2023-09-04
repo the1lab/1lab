@@ -6,7 +6,6 @@ open import Cat.Diagram.Initial
 open import Cat.Functor.Compose
 open import Cat.Functor.Closed
 open import Cat.Functor.Base
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning

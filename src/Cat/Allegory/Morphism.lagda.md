@@ -5,7 +5,6 @@ open import Cat.Prelude
 
 import Cat.Allegory.Reasoning
 import Cat.Diagram.Idempotent
-import Cat.Diagram.Idempotent
 ```
 -->
 
