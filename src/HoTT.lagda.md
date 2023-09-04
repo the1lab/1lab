@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import 1Lab.Connectedness
 open import 1Lab.Equiv.Biinv
 
 open import Algebra.Group.Homotopy
@@ -44,6 +43,7 @@ open import Data.Dec
 open import Data.Nat using (ℕ-well-ordered ; Discrete-Nat)
 open import Data.Sum
 
+open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
 open import Homotopy.Space.Torus
 open import Homotopy.Base
@@ -588,11 +588,11 @@ _ = n-Tr-elim
 
 <!--
 ```agda
-_ = is-n-2-connected
+_ = is-n-connected
 ```
 -->
 
-* Definition 7.5.1: `is-n-2-connected`{.Agda}
+* Definition 7.5.1: `is-n-connected`{.Agda}
 
 # Part 2 Mathematics
 

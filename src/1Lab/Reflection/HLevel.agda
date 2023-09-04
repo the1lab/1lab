@@ -650,6 +650,19 @@ instance
   decomp-is-groupoid : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (is-groupoid A)
   decomp-is-groupoid = decomp (quote is-hlevel-is-hlevel-suc) (`level-minus 1 ∷ `term (quoteTerm 3) ∷ [])
 
+  {-
+  Since `is-prop A` starts with a Π, the decomp-piⁿ instances below could "bite" into
+  it and make decomp-is-prop inapplicable. To avoid this, we handle those situations explicitly:
+  -}
+
+  decomp-pi²-is-prop : ∀ {ℓa ℓb ℓc} {A : Type ℓa} {B : A → Type ℓb} {C : ∀ a (b : B a) → Type ℓc}
+                     → hlevel-decomposition (∀ a b → is-prop (C a b))
+  decomp-pi²-is-prop = decomp (quote Π-is-hlevel²) (`level ∷ `search-under 2 ∷ [])
+
+  decomp-pi-is-prop : ∀ {ℓa ℓb} {A : Type ℓa} {B : A → Type ℓb}
+                    → hlevel-decomposition (∀ a → is-prop (B a))
+  decomp-pi-is-prop = decomp (quote Π-is-hlevel) (`level ∷ `search-under 1 ∷ [])
+
   -- -- Non-dependent Π and Σ for readability first:
 
   -- decomp-fun = decomp (quote fun-is-hlevel) (`level ∷ `search ∷ [])
@@ -659,25 +672,16 @@ instance
 
   -- Dependent type formers:
 
-  {-
-  Decomposing non-unary Π types can make us "skip" over h-level types that would be
-  solvable by the instances above, which is a problem because the search doesn't
-  actually backtrack after it's committed to decomp-piⁿ.
-  For example, the goal
-    (x : A) → is-prop B
-  would get decomp-pi²'d into
-    (b₂ : B) → b₁ ≡ b₂
-  which... we could still solve, but it's annoying.
-  -}
-  -- decomp-pi³
-  --   : ∀ {ℓa ℓb ℓc ℓd} {A : Type ℓa} {B : A → Type ℓb} {C : ∀ x (y : B x) → Type ℓc}
-  --   → {D : ∀ x y (z : C x y) → Type ℓd}
-  --   → hlevel-decomposition (∀ a b c → D a b c)
-  -- decomp-pi³ = decomp (quote Π-is-hlevel³) (`level ∷ `search-under 3 ∷ [])
-  -- decomp-pi²
-  --   : ∀ {ℓa ℓb ℓc} {A : Type ℓa} {B : A → Type ℓb} {C : ∀ x (y : B x) → Type ℓc}
-  --   → hlevel-decomposition (∀ a b → C a b)
-  -- decomp-pi² = decomp (quote Π-is-hlevel²) (`level ∷ `search-under 2 ∷ [])
+  decomp-pi³
+    : ∀ {ℓa ℓb ℓc ℓd} {A : Type ℓa} {B : A → Type ℓb} {C : ∀ x (y : B x) → Type ℓc}
+    → {D : ∀ x y (z : C x y) → Type ℓd}
+    → hlevel-decomposition (∀ a b c → D a b c)
+  decomp-pi³ = decomp (quote Π-is-hlevel³) (`level ∷ `search-under 3 ∷ [])
+
+  decomp-pi²
+    : ∀ {ℓa ℓb ℓc} {A : Type ℓa} {B : A → Type ℓb} {C : ∀ x (y : B x) → Type ℓc}
+    → hlevel-decomposition (∀ a b → C a b)
+  decomp-pi² = decomp (quote Π-is-hlevel²) (`level ∷ `search-under 2 ∷ [])
 
   decomp-pi : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} → hlevel-decomposition (∀ a → B a)
   decomp-pi = decomp (quote Π-is-hlevel) (`level ∷ `search-under 1 ∷ [])
@@ -742,6 +746,9 @@ private
     _ = hlevel!
 
     _ : ∀ {ℓ} {A : Type ℓ} → is-prop ((x : A) → is-prop A)
+    _ = hlevel!
+
+    _ : ∀ {ℓ} {A : Type ℓ} → is-prop ((x y : A) → is-prop A)
     _ = hlevel!
 
     _ : ∀ {ℓ} {A : Type ℓ} → is-groupoid (is-hlevel A 5)

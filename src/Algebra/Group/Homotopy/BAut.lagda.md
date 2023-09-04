@@ -1,11 +1,12 @@
 <!--
 ```agda
-open import 1Lab.Connectedness
 open import 1Lab.Prelude
 
 open import Algebra.Group
 
 open import Data.Set.Truncation
+
+open import Homotopy.Connectedness
 ```
 -->
 

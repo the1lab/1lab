@@ -22,7 +22,7 @@ open import Homotopy.Base
 -->
 
 ```agda
-module 1Lab.Connectedness where
+module Homotopy.Connectedness where
 ```
 
 # Connectedness {defines="connected connectedness connectivity simply-connected"}
@@ -34,24 +34,25 @@ being $n$-connected means that all homotopy *below* $n$ are trivial.
 A type that is both $n$-truncated and $n$-connected is contractible.
 
 We give definitions in terms of the [[propositional truncation]] and [[set truncation]]
-for the lower levels, and then defer to the general "hubs and spokes" truncation:
+for the lower levels, and then defer to the general "hubs and spokes" truncation.
+Note that our indices are offset by 2, just like [[h-levels]].
 
 ```agda
-is-n-2-connected : ∀ {ℓ} → Type ℓ → Nat → Type _
-is-n-2-connected A zero = Lift _ ⊤
-is-n-2-connected A (suc zero) = ∥ A ∥
-is-n-2-connected A (suc (suc zero)) = is-contr ∥ A ∥₀
-is-n-2-connected A n@(suc (suc (suc _))) = is-contr (n-Tr A n)
+is-n-connected : ∀ {ℓ} → Type ℓ → Nat → Type _
+is-n-connected A zero = Lift _ ⊤
+is-n-connected A (suc zero) = ∥ A ∥
+is-n-connected A (suc (suc zero)) = is-contr ∥ A ∥₀
+is-n-connected A n@(suc (suc (suc _))) = is-contr (n-Tr A n)
 ```
 
 Being $n$-connected is a proposition:
 
 ```agda
-is-n-2-connected-is-prop : ∀ {ℓ} {A : Type ℓ} (n : Nat) → is-prop (is-n-2-connected A n)
-is-n-2-connected-is-prop zero _ _ = refl
-is-n-2-connected-is-prop (suc zero) = is-prop-∥-∥
-is-n-2-connected-is-prop (suc (suc zero)) = is-contr-is-prop
-is-n-2-connected-is-prop (suc (suc (suc n))) = is-contr-is-prop
+is-n-connected-is-prop : ∀ {ℓ} {A : Type ℓ} (n : Nat) → is-prop (is-n-connected A n)
+is-n-connected-is-prop zero _ _ = refl
+is-n-connected-is-prop (suc zero) = is-prop-∥-∥
+is-n-connected-is-prop (suc (suc zero)) = is-contr-is-prop
+is-n-connected-is-prop (suc (suc (suc n))) = is-contr-is-prop
 ```
 
 For short, we say that a type is **connected** if it is $0$-connected, and
@@ -59,10 +60,10 @@ For short, we say that a type is **connected** if it is $0$-connected, and
 
 ```agda
 is-connected : ∀ {ℓ} → Type ℓ → Type _
-is-connected A = is-n-2-connected A 2
+is-connected A = is-n-connected A 2
 
 is-simply-connected : ∀ {ℓ} → Type ℓ → Type _
-is-simply-connected A = is-n-2-connected A 3
+is-simply-connected A = is-n-connected A 3
 ```
 
 ## Pointed connected types

@@ -20,9 +20,9 @@ module Homotopy.Base where
 
 This module contains the basic definitions for the study of synthetic
 homotopy theory. Synthetic homotopy theory is the name given to studying
-$\infty$-groupoids in their own terms, i.e., the application of homotopy
+$\infty$-groupoids in their own terms, i.e., the application of homotopy type
 theory to computing homotopy invariants of spaces. Central to the theory
-is the concept of _pointed type_ and _pointed map_. After all, [homotopy
+is the concept of [[pointed type]] and [[pointed map]]. After all, [homotopy
 groups] are no more than the set-truncations of n-fold iterated loop
 spaces, and loop spaces are always relative to a basepoint.
 

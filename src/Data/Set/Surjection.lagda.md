@@ -1,10 +1,10 @@
 <!--
 ```agda
-open import 1Lab.Connectedness
-
 open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Coequaliser
 open import Cat.Prelude
+
+open import Homotopy.Connectedness
 
 import Cat.Reasoning as Cr
 ```

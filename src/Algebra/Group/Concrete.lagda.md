@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import 1Lab.Path.Reasoning
-open import 1Lab.Connectedness
 open import 1Lab.Univalence
 
 open import Algebra.Group.Cat.Base
@@ -15,6 +14,7 @@ open import Cat.Prelude
 
 open import Data.Int
 
+open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
 open import Homotopy.Base
 
@@ -169,10 +169,7 @@ private
   iso→equiv : ∀ {a b} → Isomorphism (ConcreteGroups ℓ) a b → ⌞ a ⌟ ≃ ⌞ b ⌟
   iso→equiv im = Iso→Equiv (im .to .fst ,
     iso (im .from .fst) (happly (ap fst (im .invl))) (happly (ap fst (im .invr))))
-```
--->
 
-```agda
 ConcreteGroups-is-category : is-category (ConcreteGroups ℓ)
 ConcreteGroups-is-category .to-path im = ConcreteGroup-path $
   Σ-pathp (ua (iso→equiv im)) (path→ua-pathp _ (im .to .snd))
@@ -180,6 +177,7 @@ ConcreteGroups-is-category {ℓ} .to-path-over im = ≅-pathp (ConcreteGroups �
   Σ-pathp-dep (funextP λ _ → path→ua-pathp _ refl)
               (λ i j → path→ua-pathp (iso→equiv im) (λ i → im .to .snd (i ∧ j)) i)
 ```
+-->
 
 ## Concrete vs. abstract
 
@@ -189,7 +187,7 @@ and `Groups`{.Agda}.
 
 To make the following developments easier, we define a version of
 `πₙ₊₁ 0`{.Agda ident=πₙ₊₁} that does not use the set truncation. Indeed, there's no
-need since we're dealing with groupoids: loops already form a set.
+need since we're dealing with groupoids: each loop space is already a set.
 
 ```agda
 π₁B : ConcreteGroup ℓ → Group ℓ

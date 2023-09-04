@@ -176,7 +176,7 @@ are developed under the `1Lab` namespace. Start here:
 -- All of these module names are links you can click!
 
 open import 1Lab.Type -- Universes
-open import 1Lab.Type.Pointed -- Pointed Types
+open import 1Lab.Type.Pointed -- Pointed types
 
 open import 1Lab.Path -- Path types
 open import 1Lab.Path.Groupoid  -- Groupoid structure of types
@@ -194,8 +194,6 @@ open import 1Lab.Equiv.HalfAdjoint -- Half-adjoint equivalences
 open import 1Lab.HLevel -- h-levels
 open import 1Lab.HLevel.Retracts -- Closure of h-levels under retractions/isos
 open import 1Lab.HLevel.Universe -- The type of n-types is a (n+1)-type
-
-open import 1Lab.Connectedness -- Connectedness
 
 open import 1Lab.Univalence -- Equivalence is equivalent to identification
 open import 1Lab.Univalence.SIP -- Univalence + preservation of structure
