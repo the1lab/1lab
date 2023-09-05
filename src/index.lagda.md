@@ -393,6 +393,7 @@ open import Cat.Functor.Bifunctor -- Functors out of product categories
 open import Cat.Functor.Conservative -- Functors which reflect isomorphisms
 open import Cat.Functor.FullSubcategory -- Full subcategories
 open import Cat.Functor.WideSubcategory -- Wide subcategories
+open import Cat.Functor.Subcategory -- Subcategories, generally
 ```
 
 Helpers for working with functions in equational reasoning:
@@ -914,6 +915,7 @@ their generated categories:
 ```agda
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
+open import Order.Diagram.Fixpoint -- Least and Greatest fixpoints
 ```
 
 Some order-theoretic structures are equivalently presented as algebraic
@@ -931,6 +933,7 @@ open import Order.Semilattice.Order
 Examples of actual orders:
 
 ```agda
+open import Order.Instances.Discrete -- Discrete posets
 open import Order.Instances.Props -- Ω
 open import Order.Instances.Lower -- Lower sets
 open import Order.Instances.Subobjects -- Subobjects in a univalent category
@@ -938,6 +941,20 @@ open import Order.Instances.Subobjects -- Subobjects in a univalent category
 open import Order.Instances.Pointwise -- The pointwise ordering on A→B
 open import Order.Instances.Pointwise.Diagrams
 ```
+
+## Domain Theory
+
+Domain theory is the study of posets that are complete
+under various classes of least upper bounds. These posets are used
+to model notions of partiality, which makes them extremely useful
+in the search for semantics of various programming languages.
+
+```agda
+open import Order.DCPO -- Directed-complete partial orders
+open import Order.DCPO.Pointed -- Pointed directed-complete partial orders
+open import Order.DCPO.Free -- Free DCPOs and free pointed DCPOs
+```
+
 
 # Algebra
 
