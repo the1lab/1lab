@@ -200,9 +200,9 @@ le-meet a≤b l = meet-unique (le→is-meet a≤b) l
 
 ### As products
 
-The categorification of meets is _products_: put another way, if our
-category has propositional homs, then being given a product diagram is
-the same as being given a meet.
+When passing from posets to categories, meets become [[products]]:
+coming from the other direction, if a category $\cC$ has each
+$\hom(x,y)$ a [[proposition]], then products in $\cC$ are simply meets.
 
 ```agda
 open is-product
@@ -219,10 +219,10 @@ is-meet→product glb .has-is-product .π₂∘factor = prop!
 is-meet→product glb .has-is-product .unique _ _ _ = prop!
 ```
 
-## Tops
+## Top elements
 
-A **top** in a partial order $(P, \le)$ is an element $\top : P$ that
-is larger than any other element in $P$. This is the same as being
+A **top element** in a partial order $(P, \le)$ is an element $\top : P$
+that is larger than any other element in $P$. This is the same as being
 a greatest lower bound for the empty family $\bot \to P$.
 
 ```agda
@@ -281,11 +281,9 @@ Top≃Glb = prop-ext! _ Glb→Top .snd
 
 ### As Terminal Objects
 
-Bottoms are the decategorifcation of [terminal objects]; we don't need to
+Bottoms are the decategorifcation of [[terminal objects]]; we don't need to
 require the uniqueness of the universal morphism, as we've replaced our
 hom-sets with hom-props!
-
-[terminal objects]: Cat.Diagram.Terminal.html
 
 ```agda
 is-top→terminal : ∀ {x} → is-top x → is-terminal (poset→category P) x

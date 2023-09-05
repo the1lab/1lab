@@ -28,12 +28,10 @@ private variable
 
 # Directed-Complete Partial Orders
 
-Let $(P, \le)$ be a [partial order]. A family of elements $f : I \to P$ is
+Let $(P, \le)$ be a [[partial order]]. A family of elements $f : I \to P$ is
 a **semi-directed family** if for every $i, j$, there merely exists
 some $k$ such $f i \le f k$ and $f j \le f k$. A semidirected family
 $f : I \to P$ is a **directed family** when $I$ is merely inhabited.
-
-[partial order]: Order.Base.html
 
 ```agda
 module _ {o ℓ} (P : Poset o ℓ) where
@@ -49,8 +47,8 @@ module _ {o ℓ} (P : Poset o ℓ) where
       semidirected : is-semidirected-family f
 ```
 
-Note that if the indexing type of a family is a proposition, then the
-family is semi-directed.
+Note that any family whose indexing type is a proposition is
+automatically semi-directed:
 
 ```agda
   prop-indexed→semidirected
@@ -60,11 +58,8 @@ family is semi-directed.
     inc (i , ≤-refl , path→≤ (ap s (prop j i)))
 ```
 
-
 The poset $(P, \le)$ is a **directed-complete partial order**, or DCPO,
-if it has [least upper bounds] of all directed families.
-
-[least upper bounds]: Order.Diagram.Lub.html
+if it has [[least upper bounds]] of all directed families.
 
 ```agda
   record is-dcpo : Type (lsuc o ⊔ ℓ) where
@@ -79,8 +74,8 @@ if it has [least upper bounds] of all directed families.
     open ⋃ using () renaming (lub to ⋃; fam≤lub to fam≤⋃; least to ⋃-least) public
 ```
 
-Note that being a DCPO is a property of a poset, as least upper bounds
-are unique.
+Since least upper bounds are unique when they exist, being a DCPO is a
+[[property|proposition]] of a poset, and not structure on that poset.
 
 <!--
 ```agda
@@ -95,14 +90,14 @@ module _ {o ℓ} {P : Poset o ℓ} where
   is-dcpo-is-prop = Iso→is-hlevel 1 eqv $
     Π-is-hlevel′ 1 λ _ →
     Π-is-hlevel² 1 λ _ _ → Lub-is-prop P
-    where unquoteDecl eqv = declare-record-iso eqv (quote is-dcpo) 
+    where unquoteDecl eqv = declare-record-iso eqv (quote is-dcpo)
 ```
 
-# Scott-Continuous Maps
+# Scott-continuous functions
 
-Let $(P, \le)$ and $(Q, \lsq)$ be a pair of posets. 
-A monotone map $f : P \to Q$ is **Scott-continuous** if it preserves all
-directed least upper bounds.
+Let $(P, \le)$ and $(Q, \lsq)$ be a pair of posets. A monotone map $f :
+P \to Q$ is called **Scott-continuous** when it preserves all directed
+lubs.
 
 <!--
 ```agda
@@ -129,12 +124,19 @@ module _ {P Q : Poset o ℓ} where
     is-lub-is-prop Q
 ```
 
-If $(P, \le)$ is a DCPO, then any function $f : P \to Q$ that preserves
-directed least upper bounds is monotone. Start by constructing a directed
-family $s : \rm{Bool} \to P$ with $s(true) = x$ and $s(false) = y$.
-Note that $y$ is the least upper bound of this family,
-so $f(y)$ must be an upper bound of $f \circ s$ in $Q$. From this,
-we can deduce that $f(x) \lsq f(y)$.
+If $(P, \le)$ is a DCPO, then any function $f : P \to Q$ which preserves
+directed lubs is automatically a monotone map, and, consequently,
+Scott-continuous.
+
+To see this, suppose we're given $x, y : P$ with $x \le y$. The family
+$s : \rm{Bool} \to P$ that sends $\rm{true}$ to $x$ and $\rm{false}$ to
+$y$ is directed: $\rm{Bool}$ is inhabited, and $\rm{false}$ is a least
+upper bound for arbitrary values of the family. Since $f$ preserves
+lubs, we have
+
+$$
+f(x) \le (\sqcup f(s)) = f(\sqcup s) = f(y)
+$$
 
 ```agda
   opaque
@@ -148,7 +150,7 @@ we can deduce that $f(x) \lsq f(y)$.
       is-lub.fam≤lub fs-lub (lift true)
       where
 
-        s : Lift _ Bool → P.Ob 
+        s : Lift _ Bool → P.Ob
         s (lift b) = if b then x else y
 
         sx≤sfalse : ∀ b → s b P.≤ s (lift false)
@@ -169,8 +171,8 @@ we can deduce that $f(x) \lsq f(y)$.
         fs-lub = scott s s-directed y s-lub
 ```
 
-Next, a small little lemma; if $f : P \to Q$ is monotone and $s : I \to P$
-is a directed family, then $fs : I \to Q$ is also a directed family.
+Moreover, if $f : P \to Q$ is an arbitrary monotone map, and $s : I \to
+P$ is a directed family, then $fs : I \to Q$ is still a directed family.
 
 ```agda
   monotone∘directed
@@ -217,13 +219,12 @@ Scott-continuous functions are closed under composition.
 ```
 
 
-# The Category of DCPOs
+# The category of DCPOs
 
-DCPOs form a [subcategory] of the category of posets. Furthermore, the category
-of DCPOs is [univalent], as being a DPCO is a property of a poset.
-
-[subcategory]: Cat.Functor.Subcategory.html
-[univalent]: Cat.Univalent.html
+DCPOs form a [[subcategory]] of the category of posets. Furthermore,
+since being a DCPO is a property, identity of DCPOs is determined by
+identity of their underlying posets: thus, the category of DCPOs is
+[[univalent|univalent category]].
 
 ```agda
 DCPOs-subcat : ∀ (o ℓ : Level) → Subcat (Posets o ℓ) (lsuc o ⊔ ℓ) (lsuc o ⊔ ℓ)
@@ -254,14 +255,15 @@ Forget-DCPO = πᶠ _ F∘ Forget-subcat
 
 # Reasoning with DCPOs
 
-The following pair of modules re-export facts about underlying
-posets and underlying monotonic maps of DCPOs and Scott-continuous
-functions, resp. They also prove a handful of small lemmas, though
-these are not of particular interest.
+The following pair of modules re-exports facts about the underlying
+posets (resp. monotone maps) of DCPOs (resp. Scott-continuous
+functions). They also prove a plethora of small lemmas that are useful
+in formalisation but not for informal reading.
 
 <details>
 <summary>These proofs are all quite straightforward, so we omit them.
 </summary>
+
 ```agda
 module DCPO {o ℓ} (D : DCPO o ℓ) where
   poset : Poset o ℓ
@@ -269,15 +271,15 @@ module DCPO {o ℓ} (D : DCPO o ℓ) where
 
   set : Set o
   set = D .fst .fst
-  
+
   open Poset poset public
-  
+
   poset-on : Poset-on ℓ Ob
   poset-on = D .fst .snd
-  
+
   has-dcpo : is-dcpo poset
   has-dcpo = D .snd
-  
+
   open is-dcpo has-dcpo public
 
   ⋃-pointwise
@@ -346,9 +348,9 @@ module _ {o ℓ} {D E : DCPO o ℓ} where
 ```
 -->
 
-We also provide a couple of means of constructing Scott-continuous maps.
-First, we note that if a function is monotonic and preserves chosen
-least upper bounds, then it is Scott-continuous.
+We also provide a couple methods for constructing Scott-continuous maps.
+First, we note that if a function is monotonic and commutes with some
+chosen _assignment_ of least upper bounds, then it is Scott-continuous.
 
 ```agda
   to-scott
@@ -372,7 +374,7 @@ least upper bounds, then it is Scott-continuous.
 ```
 
 Furthermore, if $f$ preserves arbitrary least upper bounds, then it
-is monotonic, and thus Scott-continuous.
+is monotone, and thus Scott-continuous.
 
 ```agda
   to-scott-directed
@@ -383,4 +385,3 @@ is monotonic, and thus Scott-continuous.
   to-scott-directed f pres =
     sub-hom (total-hom f (dcpo+scott→monotone D.has-dcpo f pres)) pres
 ```
-

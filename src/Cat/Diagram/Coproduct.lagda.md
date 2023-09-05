@@ -16,7 +16,7 @@ private variable
 ```
 -->
 
-# Coproducts
+# Coproducts {defines="coproduct"}
 
 The **coproduct** $P$ of two objects $A$ and $B$ (if it exists), is the
 smallest object equipped with "injection" maps $A \to P$, $B \to P$.  It

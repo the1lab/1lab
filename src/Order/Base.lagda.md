@@ -145,7 +145,7 @@ is-monotone-is-prop
   : ∀ {o o' ℓ ℓ'} {A : Type o} {B : Type o'}
   → (f : A → B) (P : Poset-on ℓ A) (Q : Poset-on ℓ' B)
   → is-prop (is-monotone f P Q)
-is-monotone-is-prop f P Q = 
+is-monotone-is-prop f P Q =
   Π-is-hlevel³ 1 λ _ _ _ → Poset-on.≤-thin Q
 
 Poset-structure : ∀ ℓ ℓ′ → Thin-structure {ℓ = ℓ} (ℓ ⊔ ℓ′) (Poset-on ℓ′)

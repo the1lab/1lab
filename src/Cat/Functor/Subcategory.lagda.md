@@ -12,7 +12,7 @@ import Cat.Reasoning
 module Cat.Functor.Subcategory where
 ```
 
-# Subcategories
+# Subcategories {defines="subcategory"}
 
 A **subcategory** $\cD \mono \cC$ is specified by a [predicate]
 $P : C \to \prop$ on objects, and a predicate $Q : P(x) \to P(y) \to \cC(x,y) \to \prop$
@@ -97,7 +97,7 @@ module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {subcat : Subcat C o' ℓ'} whe
   Subcat-hom-is-set = Iso→is-hlevel 2 eqv $
     Σ-is-hlevel 2 (Hom-set _ _) λ _ →
     is-hlevel-suc 1 (is-hom-prop _ _ _)
-    where unquoteDecl eqv = declare-record-iso eqv (quote Subcat-hom) 
+    where unquoteDecl eqv = declare-record-iso eqv (quote Subcat-hom)
 ```
 -->
 
@@ -240,7 +240,7 @@ the forgetful functor is pseudomonic.
 ## Univalent Subcategories
 
 Let $\cC$ be a [univalent] category. A subcategory of $\cC$ is univalent
-when the predicate on objects is a proposition. 
+when the predicate on objects is a proposition.
 
 [univalent]: Cat.Univalent.html
 

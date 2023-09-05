@@ -40,8 +40,8 @@ record Least-fixpoint (f : Posets.Hom P P) : Type (o ⊔ ℓ) where
 open is-least-fixpoint
 ```
 
-Least fixpoints are unique, so the type of least fixpoints of $f$ is a
-proposition.
+Least fixed points are unique, so the type of least fixpoints of $f$ is
+a proposition.
 
 ```agda
 least-fixpoint-unique

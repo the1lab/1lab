@@ -17,10 +17,8 @@ module Order.Instances.Discrete where
 
 # Discrete Orders
 
-Every set $A$ can be turned into a [poset] by defining $x \le y$ to
+Every set $A$ can be turned into a [[poset]] by defining $x \le y$ to
 be $x = y$.
-
-[poset]: Order.Base.html
 
 ```agda
 Disc : ∀ {ℓ} → Set ℓ → Poset ℓ ℓ
@@ -43,7 +41,7 @@ DiscF .Functor.F-id = total-hom-path _ refl refl
 DiscF .Functor.F-∘ f g = total-hom-path _ refl refl
 ```
 
-Furthermore, this functor is left-adjoint to the forgetful functor
+Furthermore, this functor is a [[left adjoint]] to the forgetful functor
 into $\Sets$.
 
 ```agda
@@ -64,9 +62,8 @@ DiscF⊣Forget ._⊣_.zag = refl
 
 ## Least Upper Bounds
 
-If $f : I \to A$ has a least upper bound in the discrete poset on $A$,
-then $f$ must be a constant family.
-
+If $f : I \to A$ has a [[least upper bound]] in the discrete poset on
+$A$, then $f$ must be a constant family.
 
 ```agda
 disc-is-lub→const

@@ -23,7 +23,7 @@ open Order.Reasoning P
 ```
 -->
 
-# Least upper bounds
+# Least upper bounds {defines="least-upper-bound"}
 
 A **lub** $u$ (short for **least upper bound**) for a family of
 elements $(a_i)_{i : I}$ is, as the name implies, a least elemnet among
@@ -135,7 +135,6 @@ fam-bound→is-lub i ge .fam≤lub = ge
 fam-bound→is-lub i ge .least y le = le i
 ```
 
-
 If $x$ is the least upper bound of a constant family, then
 $x$ must be equal to every member of the family.
 
@@ -181,7 +180,6 @@ const-inhabited-fam→lub {I = I} {F = F} is-const =
     mk-lub i .Lub.has-lub =
       const-inhabited-fam→is-lub (λ j → is-const j i) (inc i)
 ```
-
 
 ## Joins
 
@@ -281,9 +279,9 @@ gt-join a≤b l = join-unique (gt→is-join a≤b) l
 
 ### As coproducts
 
-Joins are the “thinning” of coproducts; Put another way, when we allow a
-_set_ of relators rather than insisting on a propositional relation, the
-concept of join needs to be refined to that of coproduct.
+Joins are the “thinning” of [[coproducts]]; Put another way, when we
+allow a _set_ of relators, rather than insisting on a propositional
+relation, the concept of join needs to be refined to that of coproduct.
 
 ```agda
 open is-coproduct
@@ -300,14 +298,14 @@ is-join→coproduct lub .has-is-coproduct .in₁∘factor = prop!
 is-join→coproduct lub .has-is-coproduct .unique _ _ _ = prop!
 ```
 
-## Bottoms
+## Bottom elements
 
-A **bottom** in a partial order $(P, \le)$ is an element $\bot : P$
-that is smaller than any other element of $P$. This is the same as
+A **bottom element** in a partial order $(P, \le)$ is an element $\bot :
+P$ that is smaller than any other element of $P$. This is the same as
 being a least upper upper bound for the empty family $\bot \to P$.
 
 ```agda
-is-bottom : Ob → Type _ 
+is-bottom : Ob → Type _
 is-bottom bot = ∀ x → bot ≤ x
 
 record Bottom : Type (o ⊔ ℓ) where
@@ -366,11 +364,9 @@ Bottom≃Lub = prop-ext! _ Lub→Bottom .snd
 
 ### As initial objects
 
-Bottoms are the decategorifcation of [initial objects]; we don't need to
+Bottoms are the decategorifcation of [[initial objects]]; we don't need to
 require the uniqueness of the universal morphism, as we've replaced our
 hom-sets with hom-props!
-
-[initial objects]: Cat.Diagram.Initial.html
 
 ```agda
 is-bottom→initial : ∀ {x} → is-bottom x → is-initial (poset→category P) x
