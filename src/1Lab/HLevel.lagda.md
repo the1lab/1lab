@@ -298,6 +298,14 @@ is-prop→is-hlevel-suc {n = suc n} aprop =
   is-hlevel-suc (suc n) (is-prop→is-hlevel-suc aprop)
 ```
 
+<!--
+```agda
+is-contr→is-hlevel : ∀ {ℓ} {A : Type ℓ} n → is-contr A → is-hlevel A n
+is-contr→is-hlevel zero c = c
+is-contr→is-hlevel (suc n) c = is-prop→is-hlevel-suc (is-contr→is-prop c)
+```
+-->
+
 Furthermore, by the upwards closure of h-levels, we have that if $A$ is
 an n-type, then paths in $A$ are also $n$-types. This is because, by
 definition, the paths in a $n$-type are "$(n-1)$-types", which
@@ -333,6 +341,13 @@ PathP-is-hlevel' : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
                   → is-hlevel (PathP A x y) n
 PathP-is-hlevel' {A = A} n ahl x y =
   subst (λ e → is-hlevel e n) (sym (PathP≡Path A x y)) (Path-is-hlevel' n ahl _ _)
+
+Path-is-hlevel→is-hlevel
+  : ∀ {ℓ} {A : Type ℓ} n
+  → (p : (x y : A) → is-hlevel (x ≡ y) n)
+  → is-hlevel A (suc n)
+Path-is-hlevel→is-hlevel zero wit x y = wit x y .centre
+Path-is-hlevel→is-hlevel (suc n) wit = wit
 ```
 -->
 

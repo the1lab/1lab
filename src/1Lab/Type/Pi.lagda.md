@@ -196,5 +196,15 @@ funext-square
   → (∀ a → Square (p $ₚ a) (q $ₚ a) (s $ₚ a) (r $ₚ a))
   → Square p q s r
 funext-square p i j a = p a i j
+
+is-contr→points
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
+  → (c : is-contr A)
+  → (∀ x → B x) ≃ B (c .centre)
+is-contr→points {A = A} {B} c = Iso→Equiv λ where
+  .fst              f     → f _
+  .snd .is-iso.inv  x _   → subst B (c .paths _) x
+  .snd .is-iso.rinv x     → ap (λ e → subst B e x) (is-contr→is-set c _ _ _ _) ∙ transport-refl x
+  .snd .is-iso.linv f i z → transp (λ j → B (c .paths z (i ∨ j))) i (f (c .paths z i))
 ```
 -->

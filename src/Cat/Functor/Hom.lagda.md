@@ -51,7 +51,7 @@ Hom[ x ,-] .F-id = funext (λ f → idl f)
 Hom[ x ,-] .F-∘ f g = funext λ h → sym (assoc f g h)
 ```
 
-## The Yoneda embedding
+## The Yoneda embedding {defines="yoneda-embedding"}
 
 Abstractly and nonsensically, one could say that the Yoneda embedding
 `よ`{.Agda} is the [exponential transpose] of `flipping`{.Agda

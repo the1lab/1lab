@@ -13,6 +13,7 @@ open import Cat.Prelude
 
 open import Data.Int
 
+open import Homotopy.Space.Delooping
 open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
 

@@ -435,3 +435,15 @@ induction`{.Agda id=J} and the induction principle for $\|A\|_{n+2}$.
   isom = encode′ _ (inc _)
        , iso (decode′ _ (inc _)) (rinv _ (inc _)) (linv _ (inc _))
 ```
+
+```agda
+n-Tr-univ
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} n
+  → is-hlevel B (suc n)
+  → (n-Tr A (suc n) → B) ≃ (A → B)
+n-Tr-univ n b-hl = Iso→Equiv λ where
+  .fst              f → f ∘ inc
+  .snd .is-iso.inv  f → n-Tr-rec b-hl f
+  .snd .is-iso.rinv f → refl
+  .snd .is-iso.linv f → funext $ n-Tr-elim _ (λ x → Path-is-hlevel (suc n) b-hl) λ _ → refl
+```
