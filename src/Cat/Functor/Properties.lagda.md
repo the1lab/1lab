@@ -27,6 +27,7 @@ This module defines the most important clases of functors: Full,
 faithful, fully faithful (abbreviated ff), _split_ essentially
 surjective and ("_merely_") essentially surjective.
 
+:::{.definition #full-functor}
 A functor is **full** when its action on hom-sets is surjective:
 
 ```agda
@@ -34,13 +35,16 @@ is-full : Functor C D → Type _
 is-full {C = C} {D = D} F =
   ∀ {x y} (g : D .Hom (F₀ F x) (F₀ F y)) → ∃[ f ∈ C .Hom x y ] (F₁ F f ≡ g)
 ```
+:::
 
+:::{.definition #faithful-functor}
 A functor is **faithful** when its action on hom-sets is injective:
 
 ```agda
 is-faithful : Functor C D → Type _
 is-faithful F = ∀ {x y} → injective (F₁ F {x = x} {y})
 ```
+:::
 
 <!--
 ```agda
@@ -63,7 +67,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
 ```
 -->
 
-## ff Functors
+## Fully Faithful Functors {defines="fully-faithful-functor fully-faithful ff"}
 
 A functor is **fully faithful** (abbreviated **ff**) when its action on
 hom-sets is an equivalence. Since Hom-sets are sets, it suffices for the
@@ -167,7 +171,7 @@ the domain category to serve as an inverse for $f$:
     im′ .inverses .Cm.Inverses.invr = invr
 ```
 
-## Essential Fibres
+## Essential Fibres {defines="essential-fibre"}
 
 The **essential fibre** of a functor $F : C \to D$ over an object $y :
 D$ is the space of objects of $C$ which $F$ takes, up to isomorphism, to
@@ -179,10 +183,12 @@ Essential-fibre {D = D} F y = Σ[ x ∈ _ ] (F₀ F x ≅ y)
   where open import Cat.Morphism D
 ```
 
+:::{.definition #split-eso-functor alias="eso-functor essentially-surjective essential-surjection split-essential-surjection split-essentially-surjective"}
 A functor is **split essentially surjective** (abbreviated **split
 eso**) if there is a procedure for finding points in the essential fibre
 over any object. It's **essentially surjective** if the this procedure
 _merely_, i.e. truncatedly, finds a point:
+:::
 
 ```agda
 is-split-eso : Functor C D → Type _
@@ -215,7 +221,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
 ```
 -->
 
-## Pseudomonic Functors
+## Pseudomonic Functors {defines="pseudomonic pseudomonic-functor"}
 
 A functor is **pseudomonic** if it is faithful and full on isomorphisms.
 Pseudomonic functors are arguably the correct notion of subcategory, as

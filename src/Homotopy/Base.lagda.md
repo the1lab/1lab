@@ -20,23 +20,13 @@ module Homotopy.Base where
 
 This module contains the basic definitions for the study of synthetic
 homotopy theory. Synthetic homotopy theory is the name given to studying
-$\infty$-groupoids in their own terms, i.e., the application of homotopy
+$\infty$-groupoids in their own terms, i.e., the application of homotopy type
 theory to computing homotopy invariants of spaces. Central to the theory
-is the concept of _pointed type_ and _pointed map_. After all, [homotopy
+is the concept of [[pointed type]] and [[pointed map]]. After all, [homotopy
 groups] are no more than the set-truncations of n-fold iterated loop
 spaces, and loop spaces are always relative to a basepoint.
 
 [homotopy groups]: Algebra.Group.Homotopy.html
-
-If we have pointed types $(A, a)$ and $(B, b)$, the most natural notion
-of function between them is not simply the type of functions $A \to B$,
-but rather those functions $A \to B$ which _preserve the basepoint_,
-i.e. the functions $f : A \to B$ equipped with paths $f(a) \equiv b$.
-
-```agda
-_→∙_ : ∀ {ℓ ℓ′} → Type∙ ℓ → Type∙ ℓ′ → Type _
-(A , a) →∙ (B , b) = Σ[ f ∈ (A → B) ] (f a ≡ b)
-```
 
 A helper that will come in handy is `Σ∙`{.Agda}, which attaches the
 north pole as the basepoint of the suspended space.
@@ -52,9 +42,10 @@ north pole as the basepoint of the suspended space.
 ## The suspension-loop space adjunction
 
 An important stepping stone in calculating loop spaces of higher types
-is the _suspension-loop space_ [adjunction]: basepoint-preserving maps
+is the _suspension-loop space_ [[adjunction]]: basepoint-preserving maps
 _from_ a suspension are the same thing as basepoint-preserving maps
-_into_ a loop space. We construct the equivalence in two steps, but both halves are constructed in elementary terms.
+_into_ a loop space. We construct the equivalence in two steps, but both
+halves are constructed in elementary terms.
 
 First, we'll prove that
 
@@ -66,8 +57,6 @@ which is slightly involved, but not too much. The actual equivalence is
 very straightforward to construct, but proving that the two maps
 `Σ-map→loops` and `loops→Σ-map` are inverses involves nontrivial path
 algebra.
-
-[adjunction]: Cat.Functor.Adjoint.html
 
 ```agda
 module _ {ℓ ℓ′} {A : Type∙ ℓ} {B : Type∙ ℓ′} where
@@ -300,14 +289,16 @@ hubs-and-spokes→hlevel {A = A} (suc n) spheres x y =
 ```
 -->
 
+:::{.definition #truncation}
 Using this idea, we can define a general _$n$-truncation_ type, as a
-joint generalisation of the [propositional] and [set] truncations. While
-can not _directly_ build a type with a constructor saying the type is
-$n$-truncated, what we _can_ do is freely generate `hub`{.Agda}s and
-`spokes`{.Agda} for any $n$-sphere drawn on the $n$-truncation of $A$.
-The result is the universal $n$-type admitting a map from $A$.
+joint generalisation of the [[propositional|propositional truncation]]
+and [set] truncations. While we can not _directly_ build a type with a
+constructor saying the type is $n$-truncated, what we _can_ do is freely
+generate `hub`{.Agda}s and `spokes`{.Agda} for any $n$-sphere drawn on
+the $n$-truncation of $A$. The result is the universal $n$-type
+admitting a map from $A$.
+:::
 
-[propositional]: 1Lab.HIT.Truncation.html
 [set]: Data.Set.Truncation.html
 
 ```agda

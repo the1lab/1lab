@@ -4,16 +4,11 @@ open import 1Lab.Rewrite
 
 open import Cat.Functor.Equivalence.Path
 open import Cat.Functor.Equivalence
-open import Cat.Functor.Equivalence
-open import Cat.Displayed.Fibre
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
-open import Cat.Displayed.Total
-open import Cat.Displayed.Base
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Displayed.Reasoning as DR
 import Cat.Displayed.Reasoning as DR
 ```
 -->
@@ -27,11 +22,11 @@ open Total-hom
 
 # Total Opposites
 
-Opposites of displayed categories are somewhat subtle, as there are
+Opposites of [[displayed categories]] are somewhat subtle, as there are
 multiple constructions that one could reasonably call the "opposite".
-The most obvious construction is to construct a new
-displayed category over $\ca{B}op$; we call this category the
-**total opposite** of $\ca{E}$.
+The most obvious construction is to construct a new displayed category
+over $\ca{B}\op$; we call this category the **total opposite** of
+$\ca{E}$.
 
 ```agda
 module _ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o′ ℓ′) where
@@ -85,12 +80,12 @@ private
 ## The Total Opposites and Total Categories
 
 The reason we refer to this construction as the total opposite is that
-its total is **equal** to the opposite of the total category!
-To show this, we first need to prove some lemmas relating the morphisms
-of the total category of the total opposite to those in the opposite
-of the total category. These functions are essentially the identity
-function, but we can't convince Agda that this is the case due to
-definitional equality reasons.
+its total is **equal** to the opposite of the [[total category]]!  To
+show this, we first need to prove some lemmas relating the morphisms of
+the total category of the total opposite to those in the opposite of the
+total category. These functions are essentially the identity function,
+but we can't convince Agda that this is the case due to definitional
+equality reasons.
 
 ```agda
 total-op→total-hom

@@ -28,16 +28,15 @@ This is all fine and good, but there is an obvious question: what
 happens if we internalize the definition of a category? Such categories
 are (unsurprisingly) called **internal categories**, and are quite
 well-studied. The traditional definition goes as follows: Suppose $\cC$
-is a category with [pullbacks], fix a pair of objects $\bC_0, \bC_1$ be
-a pair of objects, and parallel maps $\$1, \$1 : \bC_1 \to
-\bC_0$.
+is a category with [[pullbacks]], fix a pair of objects $\bC_0, \bC_1$
+be a pair of objects, and parallel maps $\src, \tgt : \bC_1 \to \bC_0$.
 
 [pullbacks]: Cat.Diagram.Pullback.html
 
 The idea is that $\bC_0$ and $\bC_1$ are meant to be the "object of
 objects" and "object of morphisms", respectively, while the maps
-$\$1$ and $\$1$ maps assign each morphism to its domain and
-codomain. A diagram $(\bC_0, \bC_1, \$1, \$1)$ is a _category
+$\src$ and $\tgt$ assign each morphism to its domain and
+codomain. A diagram $(\bC_0, \bC_1, \src, \tgt)$ is a _category
 internal to $\cC$_ if it has an _identity-assigning morphism_ $i : \bC_0
 \to \bC_1$ a _composition morphism_ $c : \bC_1 \times_{C_0} \bC_1 \to
 \bC_1$, where the pullback --- given by the square below --- is the

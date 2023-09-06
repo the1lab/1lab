@@ -4,7 +4,6 @@ open import 1Lab.Path.IdentitySystem.Strict
 
 open import Cat.Displayed.GenericObject
 open import Cat.Displayed.Cartesian
-open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
 open import Cat.Functor.Properties
 open import Cat.Instances.Discrete
@@ -40,7 +39,7 @@ We can canonically treat any `Precategory`{.Agda} $\mathcal{C}$ as being
 displayed over `Sets`{.Agda}, regardless of the size of the object- and
 Hom-spaces of $\mathcal{C}$.
 
-In a neutral presentation of displayed category theory, the collection
+In a neutral presentation of [[displayed category]] theory, the collection
 of objects over $S$ would given by the space of functors
 $[\rm{Disc}(S),C]$, regarding $S$ as a discrete category.  This is
 essentially an $S$-indexed family of objects of $C$, hence the name
@@ -74,7 +73,7 @@ Family .idl′ _ = funext λ x → idl _
 Family .assoc′ _ _ _ = funext λ _ → assoc _ _ _
 ```
 
-The family fibration is a Cartesian fibration, essentially by solving an
+The family fibration is a [[Cartesian fibration]], essentially by solving an
 _associativity_ problem. Given a function $f : x \to y$ and a family $Y$
 over $y$, we must _define_ a family $X$ over $x$ and give a universal
 family of functions $X(a) \to Y(f(a))$. But we may simply take $X(a) :=
@@ -102,9 +101,9 @@ Family-is-cartesian = iscart where
 
 Morphisms in the family fibration are cartesian if and only if they are
 pointwise isomorphisms. Showing the forward direction is a matter of
-using the inverse to construct the factorization, and then applying
+using the inverse to construct the factorisation, and then applying
 the isomorphism equations to show that we've actually constructed
-the unique factorization.
+the unique factorisation.
 
 ```agda
 pointwise-iso→cartesian
@@ -126,7 +125,7 @@ pointwise-iso→cartesian {fₓ = fₓ} fₓ-inv = fₓ-cart where
 
 Showing the backwards direction requires using the usual trick of
 factorizing the identity morphism; this is an isomorphism due
-to the fact that the factorization is unique.
+to the fact that the factorisation is unique.
 
 ```agda
 cartesian→pointwise-iso
@@ -241,7 +240,7 @@ the strict category into $\cC$.
   To-ff = id-equiv
 ```
 
-Moreover, this embedding is split essentially surjective on objects.
+Moreover, this embedding is [[split essentially surjective]] on objects.
 To show this, note that we can construct a map from the objects of
 $\cC$ back into $U$ by classifying the constant family $_ \mapsto x$
 that lies over the set of endomorphisms of $x$. This yields a map
@@ -265,10 +264,10 @@ Furthermore, this morphism is cartesian, and thus invertible.
     cartesian→pointwise-iso (classify-cartesian λ _ → x) id
 ```
 
-This implies that the embedding from our strict category into $\cC$ is
+This implies that the embedding from our [[strict category]] into $\cC$ is
 split eso, and thus an equivalence of categories.
 
-```
+```agda
   To-split-eso : is-split-eso To
   To-split-eso y =
     reflect y , (invertible→iso (η* y) η*-invertible Iso⁻¹)
@@ -358,7 +357,7 @@ Family-skeletal-generic-object→Skeletal ob-set skel-gobj = skel where
 We shall prove the forward direction first. Let $f : a \cong b$ be an
 isomorphism. From this, we can construct a pair of set maps
 $src, tgt : \top \to C_0$ that pick out the source and target
-of the isomorphism. We then construct a pair of cartesian morphisms
+of the isomorphism. We then construct a pair of [[cartesian morphisms]]
 $h_0, h_1 : \{ a \} \to Ob$ that lie over $src$ and $tgt$, resp.
 
 ```agda
@@ -463,7 +462,7 @@ also yields a cartesian morphism $\{ x \} \to Ob$, so $f = id$.
 ```
 
 To show the reverse direction, we can appeal to the fact that isomorphisms
-form an identity system to contract down cartesian maps to the identity
+form an [[identity system]] to contract down cartesian maps to the identity
 morphism.
 
 ```agda

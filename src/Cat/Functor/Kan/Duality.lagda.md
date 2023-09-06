@@ -21,7 +21,7 @@ private
 
 # Duality for Kan extensions
 
-Left Kan extensions are dual to right Kan extensions. This is
+[[Left Kan extensions]] are dual to [[right Kan extensions]]. This is
 straightforward enough to prove, but does involve some bureaucracy
 involving opposite categories.
 

@@ -6,7 +6,6 @@ open import Cat.Diagram.Initial
 open import Cat.Functor.Compose
 open import Cat.Functor.Closed
 open import Cat.Functor.Base
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -129,7 +128,7 @@ natural transformations is indeed functorial:
 
 The morphism mapping `よ₁`{.Agda} has an inverse, given by evaluating the
 natural transformation with the identity map; Hence, the Yoneda
-embedding functor is fully faithful.
+embedding functor is [[fully faithful]].
 
 ```agda
 よ-is-fully-faithful : is-fully-faithful よ

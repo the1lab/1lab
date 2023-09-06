@@ -28,10 +28,9 @@ $M : \cC \to \cC$ and natural transformations $\mu : MM \To M$,
 $\eta : \rm{Id} \To M$. While the words "functor" and "natural
 transformation" are specific to the setup where $\cC$ is a category,
 if we replace those with "1-cell" and "2-cell", then the definition
-works in any [bicategory]!
+works in any [[bicategory]]!
 
 [monad]: Cat.Diagram.Monad.html
-[bicategory]: Cat.Bi.Base.html
 
 ```agda
   record Monad (a : B.Ob) : Type (ℓ ⊔ ℓ′) where

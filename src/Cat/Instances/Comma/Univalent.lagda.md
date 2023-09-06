@@ -40,10 +40,9 @@ open ↓Hom
 # Comma categories preserve univalence
 
 **Theorem**. Let $\cY \xto{F} \cX \xot{G} \cZ$ be a [cospan] of
-functors between three [univalent categories]. Then the comma category
+functors between three [[univalent categories]]. Then the comma category
 $F \downarrow G$ is also univalent.
 
-[univalent categories]: Cat.Univalent.html
 [cospan]: Cat.Instances.Shape.Cospan.html
 
 It suffices to establish that, given an isomorphism $f : o \cong o'$ in

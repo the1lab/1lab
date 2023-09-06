@@ -4,6 +4,8 @@ open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Coequaliser
 open import Cat.Prelude
 
+open import Homotopy.Connectedness
+
 import Cat.Reasoning as Cr
 ```
 -->
@@ -112,7 +114,7 @@ data Cofibre {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} (f : A → B) : Type 
   cone : ∀ a → tip ≡ base (f a)
 ```
 
-What's important here is that if a map $f$ has connected cofibre, then
+What's important here is that if a map $f$ has [[connected]] cofibre, then
 it is a surjection --- so our proof that epis are surjective will factor
 through showing that epis have connected cofibres^[note that all of
 these types are propositions, so we have a bunch of equivalences].
@@ -120,7 +122,7 @@ these types are propositions, so we have a bunch of equivalences].
 ```agda
 connected-cofibre→surjective
   : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} (f : A → B)
-  → is-contr ∥ Cofibre f ∥₀
+  → is-connected (Cofibre f)
   → ∀ x → ∥ fibre f x ∥
 connected-cofibre→surjective {A = A} {B = B} f conn x = transport cen (lift tt) where
 ```
@@ -169,7 +171,7 @@ inhabited), so it remains to show that any two points are merely equal.
 epi→connected-cofibre
   : ∀ {ℓ} (c d : n-Type ℓ 2) (f : ∣ c ∣ → ∣ d ∣)
   → Cr.is-epic (Sets ℓ) {c} {d} f
-  → is-contr ∥ Cofibre f ∥₀
+  → is-connected (Cofibre f)
 epi→connected-cofibre c d f epic = contr (inc tip) $
   ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ w →
     ∥-∥₀-path.from (hom w)
@@ -181,8 +183,8 @@ where we $f$'s epimorphy: we have a homotopy $| \rm{tip} | = |
 \rm{base}_{(f x)} |$, namely the `cone`{.Agda} --- and since we can
 write its left-hand-side as the composition of $f$ with a constant
 function, $f$ gives us a path $| \rm{tip} | = | \rm{base}_x |$ ---
-which, by the characterisation of paths in the set truncation, means we
-merely have $\| \rm{tip} = \rm{base}_x \|$.
+which, by the characterisation of paths in the [[set truncation]], means
+we merely have $\| \rm{tip} = \rm{base}_x \|$.
 
 ```agda
     go : ∀ x → ∥ tip ≡ base x ∥

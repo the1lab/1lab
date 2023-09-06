@@ -17,15 +17,12 @@ module Order.Lattice where
 
 # Lattices
 
-A **lattice** is a [poset] which is a [semilattice] in two compatible,
+A **lattice** is a [[poset]] which is a [[semilattice]] in two compatible,
 dual ways. We have a "meet" semilattice $(A, \cap, \top)$, and a "join"
 semilattice $(A, \cup, \bot)$ --- and we take the order on $A$ induced
 by, for definiteness, the $\cap$ semilattice. The question is then: how
 do we write, algebraically, a condition on $\cap$ and $\cup$ which
 guarantees that $\cup$ provides $(A, \le)$ with *joins*?
-
-[poset]: Order.Base.html
-[semilattice]: Order.Semilattice.html
 
 <!--
 ```agda
@@ -226,7 +223,8 @@ open is-lattice-hom
 -->
 
 Standard equational nonsense implies that (a) lattices and lattice
-homomorphisms form a precategory; and (b) this is a univalent category.
+homomorphisms form a precategory; and (b) this is a [[univalent
+category]].
 
 ```agda
 Lattice-structure : ∀ ℓ → Thin-structure ℓ Lattice-on

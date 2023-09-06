@@ -1,6 +1,8 @@
 <!--
 ```agda
+open import Cat.Functor.Equivalence
 open import Cat.Functor.Properties
+open import Cat.Morphism
 open import Cat.Prelude
 
 import Cat.Diagram.Idempotent as CI
@@ -35,9 +37,8 @@ $$
 $$
 
 Furthermore, the `embedding functor`{.Agda ident=Embed} $\cC \to
-\~\cC$ is [fully faithful].
+\~\cC$ is [[fully faithful]].
 
-[fully faithful]: Cat.Functor.Properties.html#ff-functors
 [idempotent]: Cat.Diagram.Idempotent.html
 
 The `objects` in $\~\cC$ are given by pairs of an object $c : \cC$
@@ -85,10 +86,10 @@ which absorbs $\id$ on either side; But this is just $f$ again.
 
 ```agda
 Embed : Functor C Karoubi
-Embed .F₀ x = x , C.id , C.idr _
+Embed .F₀ x = x , C.id , id-is-idempotent
 Embed .F₁ f = f , C.idr _ , C.idl _
-Embed .F-id = KH≡ {ai = C.idl _} {bi = C.idl _} refl
-Embed .F-∘ f g = KH≡ {ai = C.idl _} {bi = C.idl _} refl
+Embed .F-id = KH≡ {ai = id-is-idempotent} {bi = id-is-idempotent} refl
+Embed .F-∘ f g = KH≡ {ai = id-is-idempotent} {bi = id-is-idempotent} refl
 ```
 
 An elementary argument shows that the morphism part of `Embed`{.Agda}
@@ -144,3 +145,24 @@ assumption!
 
 Hence $\~\cC$ is an idempotent-complete category which admits $C$ as
 a full subcategory.
+
+If $\cC$ was already idempotent-complete, then `Embed`{.Agda} is an
+[[equivalence of categories]] between $\cC$ and $\~\cC$:
+
+```agda
+Karoubi-is-completion : is-idempotent-complete → is-equivalence Embed
+Karoubi-is-completion complete = ff+split-eso→is-equivalence Embed-is-fully-faithful eso where
+  eso : is-split-eso Embed
+  eso (c , e , ie) = c′ , same where
+    open is-split (complete e ie) renaming (F to c′; inject to i; project to p)
+    module Karoubi = Cat.Morphism Karoubi
+    open Inverses
+    same : (c′ , C.id , _) Karoubi.≅ (c , e , ie)
+    same .to = i , C.idr _ , C.rswizzle (sym i∘p) p∘i
+    same .from = p , C.lswizzle (sym i∘p) p∘i , C.idl _
+    same .inverses .invl = KH≡ {ai = ie} {bi = ie} i∘p
+    same .inverses .invr = KH≡ {ai = id-is-idempotent} {bi = id-is-idempotent} p∘i
+```
+
+This makes the Karoubi envelope an "idempotent completion" in two *different* technical
+senses^[it is a completion that *adds* splittings of idempotents, and a completion that *is* idempotent]!

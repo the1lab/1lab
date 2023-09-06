@@ -48,6 +48,7 @@ set of maps $x \to y$). Going further, we have structures at the level
 of 2-groupoids, which could be given an interesting _category_ of
 relations, etc.
 
+:::{.definition #adjunction alias="left-adjoint right-adjoint adjoint-functor"}
 A particularly important relationship is, of course, "sameness". Going
 up the ladder of category number, we have equality at the (-1)-level,
 isomorphism at the 0-level, and what's generally referred to as
@@ -55,6 +56,7 @@ isomorphism at the 0-level, and what's generally referred to as
 relations, by making some components directed: This starts at the level
 of categories, where "directing" an equivalence gives us the concept of
 **adjunction**.
+:::
 
 An _equivalence of categories_ between $\cC$ and $\cD$ is given by
 a pair of functors $L : \cC \leftrightarrows \cD : R$, equipped
@@ -140,26 +142,21 @@ module _
 
 Another perspective on adjoint functors is given by finding "most
 efficient solutions" to the "problem" posed by a functor. For instance,
-the ([ff]) inclusion of [posets] into [strict precategories] poses the
-problem of turning a precategory into a posets. While this can't be done
-in a 1:1 way (precategories are strictly more general than posets), we
-_can_ still ponder whether there is some "most efficient" way to turn a
-category into a posets.
-
-[ff]: Cat.Functor.Properties.html#ff-functors
-[posets]: Order.Base.html
-[strict precategories]: Cat.Instances.StrictCat.html#strict-precategories
+the ([[fully faithful]]) inclusion of [[posets]] into [[strict
+(pre)categories|strict category]] poses the problem of turning a
+precategory into a poset. While this can't be done in a 1:1 way
+(precategories are strictly more general than posets), we _can_ still
+ponder whether there is some "most efficient" way to turn a category
+into a poset.
 
 While we can't directly consider maps from precategories to posets, we
 _can_ consider maps from precategories to the inclusion of a poset; Let
-us write $\cC$ for a generic precategory, $\cP$ for a generic
-poset, and $U(\cP)$ for $\cP$ considered as a precategory. Any
-functor $\cC \to U(\cP)$ can be seen as "a way to turn $\cC$
-into a poset", but not all of these can be the "most efficient" way. In
-fact, there is a vast sea of uninteresting ways to turn a precategory
-into a poset: turn them all into the [terminal] poset!
-
-[terminal]: Cat.Diagram.Terminal.html
+us write $\cC$ for a generic precategory, $\cP$ for a generic poset, and
+$U(\cP)$ for $\cP$ considered as a precategory. Any functor $\cC \to
+U(\cP)$ can be seen as "a way to turn $\cC$ into a poset", but not all
+of these can be the "most efficient" way. In fact, there is a vast sea
+of uninteresting ways to turn a precategory into a poset: turn them all
+into the [[terminal|terminal object]] poset!
 
 A "most efficient" solution, then, would be one through which all others
 factor. A "universal" way of turning a strict precategory into a poset:
@@ -524,7 +521,7 @@ prove that we recover L by going L⊣R → universal maps → L⊣R. this is
 straightforward but I'm tired
 -->
 
-# Adjuncts
+# Adjuncts {defines=adjuncts}
 
 Another view on adjunctions, one which is productive when thinking about
 adjoint *endo*functors $L \dashv R$, is the concept of _adjuncts_. Any

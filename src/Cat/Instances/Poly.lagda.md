@@ -31,7 +31,7 @@ open Total-hom
 # Polynomial functors and lenses
 
 The category of _polynomial functors_ is the free coproduct completion
-of $\Sets\op$. Equivalently, it is the [total space] of the [family
+of $\Sets\op$. Equivalently, it is the [[total category]] of the [family
 fibration] of $\Sets\op$. More concretely, an object of $\thecat{Poly}$
 is given by a set $I$ and a family of sets $A : I \to \Sets$. The idea
 is that these data corresponds to the polynomial (set-valued, with set
@@ -41,7 +41,6 @@ $$
 p(y) = \sum_{i : I} y^{A_i}
 $$
 
-[total space]: Cat.Displayed.Total.html
 [family fibration]: Cat.Displayed.Instances.Family.html
 
 ```agda
@@ -51,9 +50,8 @@ Poly ℓ = ∫ {ℓ = ℓ} (Family (Sets ℓ ^op))
 module Poly {ℓ} = Cat.Reasoning (Poly ℓ)
 ```
 
-Our standard toolkit for showing [univalence of total spaces] applies here:
-
-[univalence of total spaces]: Cat.Displayed.Univalence.html
+Our standard toolkit for showing [[univalence of total categories]]
+applies here:
 
 ```agda
 Poly-is-category : ∀ {ℓ} → is-category (Poly ℓ)

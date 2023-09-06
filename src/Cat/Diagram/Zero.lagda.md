@@ -72,9 +72,9 @@ every hom set is inhabited!
 
 Most categories that have zero objects have enough structure to rule out
 *totally* trivial structures like the empty set, but not enough
-structure to cause the initial and terminal objects to "separate". The
-canonical example here is the category of groups: the unit rules out a
-completely trivial group, yet there's nothing else that would require
+structure to cause the initial and [[terminal objects]] to "separate".
+The canonical example here is the category of groups: the unit rules out
+a completely trivial group, yet there's nothing else that would require
 the initial object to have any more structure.
 
 Another point of interest is that any category with zero objects is

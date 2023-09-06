@@ -29,15 +29,14 @@ module 1Lab.Equiv.HalfAdjoint where
 
 An **adjoint equivalence** is an [isomorphism] $(f, g, \eta,
 \varepsilon)$ where the [homotopies] ($\eta$, $\varepsilon$) satisfy the
-[triangle identities], thus witnessing $f$ and $g$ as [adjoint
-functors]. In Homotopy Type Theory, we can use a _half_ adjoint
+[triangle identities], thus witnessing $f$ and $g$ as [[adjoint
+functors]]. In Homotopy Type Theory, we can use a _half_ adjoint
 equivalence - satisfying only _one_ of the triangle identities - as a
 [good notion of equivalence].
 
 [isomorphism]: 1Lab.Equiv.html#isomorphisms-from-equivalences
 [homotopies]: 1Lab.Path.html#π-types
 [triangle identities]: https://ncatlab.org/nlab/show/triangle+identities
-[adjoint functors]: https://ncatlab.org/nlab/show/adjoint+functor
 [good notion of equivalence]: 1Lab.Equiv.html#equivalences
 
 ```agda
@@ -177,7 +176,7 @@ another $(x, p)$ using a very boring calculation:
 
     path : ap f (ap g (sym p) ∙ η x) ∙ p ≡ ε y
     path =
-      ap f (ap g (sym p) ∙ η x) ∙ p                   ≡⟨ ap₂ _∙_ (ap-comp-path f (ap g (sym p)) (η x)) refl ∙ sym (∙-assoc _ _ _) ⟩
+      ap f (ap g (sym p) ∙ η x) ∙ p                   ≡⟨ ap₂ _∙_ (ap-∙ f (ap g (sym p)) (η x)) refl ∙ sym (∙-assoc _ _ _) ⟩
       ap (λ x → f (g x)) (sym p) ∙ ⌜ ap f (η x) ⌝ ∙ p ≡⟨ ap! (zig _) ⟩ -- by the triangle identity
       ap (f ∘ g) (sym p) ∙ ⌜ ε (f x) ∙ p ⌝            ≡⟨ ap! (homotopy-natural ε p)  ⟩ -- by naturality of ε
 ```
@@ -190,7 +189,7 @@ $\varepsilon$ lets us "push it past $p$" to get something we can cancel:
 
 ```agda
       ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p ∙ ε y     ≡⟨ ∙-assoc _ _ _ ⟩
-      ⌜ ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p ⌝ ∙ ε y ≡˘⟨ ap¡ (ap-comp-path (f ∘ g) (sym p) p) ⟩
+      ⌜ ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p ⌝ ∙ ε y ≡˘⟨ ap¡ (ap-∙ (f ∘ g) (sym p) p) ⟩
       ap (f ∘ g) ⌜ sym p ∙ p ⌝ ∙ ε y              ≡⟨ ap! (∙-inv-r _) ⟩
       ap (f ∘ g) refl ∙ ε y                       ≡⟨⟩
       refl ∙ ε y                                  ≡⟨ ∙-id-l (ε y) ⟩

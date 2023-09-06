@@ -4,7 +4,7 @@
 post-processing steps and rendered to HTML using the
 @support/web/template.html@ template.
 -}
-module Shake.Markdown (buildMarkdown) where
+module Shake.Markdown (buildMarkdown, readLabMarkdown) where
 
 import Control.Monad.Error.Class
 import Control.Monad.IO.Class
@@ -21,7 +21,6 @@ import Data.Aeson (encodeFile)
 import Data.Digest.Pure.SHA
 import Data.Text (Text)
 import Data.Foldable
-import Data.List (intersperse)
 import Data.Maybe
 
 import qualified System.Directory as Dir
@@ -36,7 +35,7 @@ import Text.HTML.TagSoup.Match
 import Text.HTML.TagSoup.Tree
 
 import Text.Collate.Lang (Lang (..))
-import Text.Pandoc.Builder (Inlines, toMetaValue)
+import Text.Pandoc.Builder (Inlines)
 import Text.Pandoc.Citeproc
 import Text.Pandoc.Shared
 import Text.Pandoc.Walk
@@ -51,6 +50,56 @@ import Shake.Git
 
 import HTML.Emit
 
+import Definitions
+
+readLabMarkdown :: MonadIO m => FilePath -> m Pandoc
+readLabMarkdown fp = liftIO cont where
+  ourExts :: [Extension]
+  ourExts = [ Ext_wikilinks_title_before_pipe ]
+
+  theExts :: Extensions
+  theExts = foldr enableExtension (getDefaultExtensions "markdown") ourExts
+
+  cont :: IO Pandoc
+  cont = do
+    contents <- mangleMarkdown <$> Text.readFile fp
+    either (fail . show) pure =<< runIO do
+      doc <- readMarkdown def { readerExtensions = theExts } [(fp, contents)]
+      pure $ walk postParseInlines doc
+
+-- | Patch a sequence of inline elements. `patchInline' should be preferred
+-- where possible, this is only useful when you cannot modify inlines in
+-- isolation.
+postParseInlines :: [Inline] -> [Inline]
+-- Replace any expression $foo$-bar with <span ...>$foo$-bar</span>, so that
+-- the equation is not split when word wrapping.
+postParseInlines (m@Math{}:s@(Str txt):xs)
+  | not (Text.isPrefixOf " " txt)
+  = htmlInl "<span style=\"white-space: nowrap;\">" : m : s : htmlInl "</span>"
+  : postParseInlines xs
+postParseInlines (x:xs) = x:postParseInlines xs
+postParseInlines [] = []
+
+-- | Pandoc's wiki-link extension does not support splitting the guts of
+-- a wikilink over multiple lines. The function 'mangleMarkdown'
+-- pre-processes the input file so that any invalid space characters
+-- inside a wikilink are replaced by the safe ASCII space @ @.
+mangleMarkdown :: Text -> Text
+mangleMarkdown = Text.pack . toplevel . Text.unpack where
+  toplevel ('[':'[':cs) = '[':'[':wikilink cs
+  toplevel (c:cs)       = c:toplevel cs
+  toplevel []           = []
+
+  wikilink (']':']':cs) = ']':']':toplevel cs
+
+  wikilink ('\n':cs)    = ' ':wikilink cs
+  wikilink ('\t':cs)    = ' ':wikilink cs
+  wikilink ('\f':cs)    = ' ':wikilink cs
+  wikilink ('\r':cs)    = ' ':wikilink cs
+
+  wikilink (c:cs)       = c:wikilink cs
+  wikilink []           = []
+
 buildMarkdown :: AgdaRefs -- ^ All Agda identifiers in the codebase.
               -> String   -- ^ The name of the Agda module.
               -> FilePath -- ^ Input markdown file, produced by the Agda compiler.
@@ -60,11 +109,10 @@ buildMarkdown refs modname input output = do
   gitCommit <- gitCommit
   skipAgda <- getSkipAgda
 
-  need [templateName, bibliographyName, autorefsName, input]
+  need [templateName, bibliographyName, input]
 
   modulePath <- findModule modname
   authors <- gitAuthors modulePath
-  autorefs <- liftIO $ readAutoRefs autorefsName
   let
     permalink = gitCommit </> modulePath
 
@@ -82,10 +130,9 @@ buildMarkdown refs modname input output = do
       . unMeta
 
   (markdown, references) <- liftIO do
-    contents <- Text.readFile input
+    Pandoc meta markdown <- readLabMarkdown input
+    let pandoc = Pandoc (patchMeta meta) markdown
     either (fail . show) pure =<< runIO do
-      Pandoc meta markdown <- readMarkdown def { readerExtensions = getDefaultExtensions "markdown" } [(input, contents)]
-      let pandoc = Pandoc (patchMeta meta) markdown
       (,) <$> processCitations pandoc <*> getReferences Nothing pandoc
 
   liftIO $ Dir.createDirectoryIfMissing False "_build/diagrams"
@@ -93,8 +140,7 @@ buildMarkdown refs modname input output = do
   let refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
 
   markdown <-
-      walkM (patchInline refMap autorefs)
-    . walk patchInlines
+      walkM (patchInline refMap)
     . (if skipAgda then id else linkReferences modname)
     . walk uncommentAgda
     . addPageTitle
@@ -129,9 +175,9 @@ findModule modname = do
 -- already been provided by the author.
 addPageTitle :: Pandoc -> Pandoc
 addPageTitle (Pandoc (Meta meta) m) = Pandoc (Meta meta') m where
-  search (Header 1 _ inl:xs) = Just (MetaInlines inl)
-  search (x:xs)              = search xs
-  search []                  = Nothing
+  search (Header 1 _ inl:_) = Just (MetaInlines inl)
+  search (_:xs)             = search xs
+  search []                 = Nothing
 
   meta' = case Map.lookup "pagetitle" meta <|> Map.lookup "customtitle" meta <|> search m of
     Just m  -> Map.insert "pagetitle" m meta
@@ -143,53 +189,35 @@ uncommentAgda (RawBlock "html" (parseTags -> [TagComment html])) | any isAgdaBlo
   Div ("", ["commented-out"], []) [RawBlock "html" html]
 uncommentAgda b = b
 
+isAgdaBlock :: TagTree Text -> Bool
 isAgdaBlock (TagBranch _ attrs _) = anyAttrLit ("class", "Agda") attrs
 isAgdaBlock _ = False
-
--- | Patch a sequence of inline elements. `patchInline' should be preferred
--- where possible, this is only useful when you cannot modify inlines in
--- isolation.
-patchInlines :: [Inline] -> [Inline]
--- Replace any expression $foo$-bar with <span ...>$foo$-bar</span>, so that
--- the equation is not split when word wrapping.
-patchInlines (m@Math{}:s@(Str txt):xs)
-  | not (Text.isPrefixOf " " txt)
-  = htmlInl "<span style=\"white-space: nowrap;\">" : m : s : htmlInl "</span>"
-  : patchInlines xs
-patchInlines (x:xs) = x:patchInlines xs
-patchInlines [] = []
-
 
 -- | Rewrite a single inline element.
 patchInline
   :: Map.Map Text (Cite.Reference Inlines)
   -- ^ A lookup of reference names to the actual reference.
-  -> Map.Map Text Text
-  -- ^ A lookup table of automatic <ref /> links. I hate this, but
-  -- Pandoc doesn't let me do any better.
   -> Inline
   -> Action Inline
 -- Pre-render latex equations.
-patchInline _ _ (Math DisplayMath contents) = htmlInl <$> getDisplayMath contents
-patchInline _ _ (Math InlineMath contents) = htmlInl <$> getInlineMath contents
+patchInline _ (Math DisplayMath contents) = htmlInl <$> getDisplayMath contents
+patchInline _ (Math InlineMath contents) = htmlInl <$> getInlineMath contents
+
+patchInline _ l@Link{} | Just wikil <- isWikiLink l = getWikiLink wikil
+
 -- Add the title to reference links.
-patchInline refMap _ (Link attrs contents (target, ""))
+patchInline refMap (Link attrs contents (target, ""))
   | Just citation <- Text.stripPrefix "#ref-" target
-  , Just ref <- Map.lookup citation refMap
-  , Just title <- Cite.valToText =<< Cite.lookupVariable "title" ref
+  , Just ref      <- Map.lookup citation refMap
+  , Just title    <- Cite.valToText =<< Cite.lookupVariable "title" ref
   = pure $ Link attrs contents (target, title)
-patchInline _ autolinks (RawInline "tex" txt)
-  | "\\r{" `Text.isPrefixOf` txt
-  , "}" `Text.isSuffixOf` txt
-  , let txt' = Text.strip $ Text.drop 3 txt
-  , let key = Text.take (Text.length txt' - 1) txt'
-  , Just target <- Map.lookup (Text.toLower key) autolinks
-  = pure $ Link ("", [], []) (intersperse Space $ map Str (Text.words key)) (target, key)
-patchInline _ _ (Str s)
+
+patchInline _ (Str s)
   | "[" `Text.isPrefixOf` s
   , s /= "[", s /= "[…]" -- "[" appears on its own before citations
   = error ("possible broken link: " <> Text.unpack s)
-patchInline _ _ h = pure h
+
+patchInline _ h = pure h
 
 
 data MarkdownState = MarkdownState
@@ -357,18 +385,6 @@ getHeaders module' = flip evalState [] . getAp . query (Ap . go) where
 htmlInl :: Text -> Inline
 htmlInl = RawInline "html"
 
-templateName, bibliographyName, autorefsName :: FilePath
+templateName, bibliographyName :: FilePath
 templateName = "support/web/template.html"
 bibliographyName = "src/bibliography.bibtex"
-autorefsName = "src/autorefs.txt"
-
-readAutoRefs :: FilePath -> IO (Map.Map Text Text)
-readAutoRefs file = do
-  ts <- Text.lines <$> Text.readFile file
-  let
-    go line
-      | (words, target) <- Text.breakOn ":" line
-      , let words' = Text.strip words
-      , let target' = Text.strip (Text.tail target)
-      = foldMap (flip Map.singleton target' . Text.strip) (Text.splitOn "," words')
-  pure $ foldMap go ts

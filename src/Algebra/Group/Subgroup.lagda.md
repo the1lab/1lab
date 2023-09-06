@@ -29,14 +29,13 @@ private variable
 
 # Subgroups
 
-A **subgroup** $m$ of a group $G$ is a [monomorphism] $H \xto{m} G$,
+A **subgroup** $m$ of a group $G$ is a [[monomorphism]] $H \xto{m} G$,
 that is, an object of the [poset of subobjects] $\Sub(G)$. Since group
 homomorphisms are injective exactly when their underlying function is an
 [embedding], we can alternatively describe this as a condition on a
 predicate $G \to \prop$.
 
 [poset of subobjects]: Order.Instances.Subobjects.html
-[monomorphism]: Cat.Morphism.html#monos
 [embedding]: 1Lab.Equiv.Embedding.html
 
 ```agda
@@ -91,15 +90,14 @@ predicate→subgroup {G = G} H p = _ , record { mor = map ; monic = ism } where
 # Kernels and Images
 
 To a group homomorphism $f : A \to B$ we can associate two canonical
-subgroups, one of $A$ and one of $B$: $f$'s [**image**], written $\im
-f$, is the subgroup of $B$ "reachable by mapping through $f$", and $f$'s
-[**kernel**], written $\ker f$, is the subgroup of $A$ which $f$ sends
-to the unit.
+subgroups, one of $A$ and one of $B$: $f$'s [[**image factorisation**]],
+written $\im f$, is the subgroup of $B$ "reachable by mapping through
+$f$", and $f$'s [**kernel**], written $\ker f$, is the subgroup of $A$
+which $f$ sends to the unit.
 
-[**image**]: Cat.Diagram.Image.html
 [**kernel**]: Cat.Diagram.Equaliser.Kernel.html
 
-The kernel can be cheapily described as a [limit]: It is the [equaliser]
+The kernel can be cheapily described as a [[limit]]: It is the [[equaliser]]
 of $f$ and the [zero morphism] --- which, recall, is the unique map $A
 \to B$ which breaks down as $A \to 0 \to B$.
 
@@ -115,19 +113,15 @@ module _ {ℓ} where
       open Kernel (Ker f)
 ```
 
-[limit]: Cat.Diagram.Limit.Base.html
 [zero morphism]: Cat.Diagram.Zero.html
-[equaliser]: Cat.Diagram.Equaliser.html
 
-Every group homomorphism $f : A \to B$ has an _image_ $\im f$, defined
-by equipping its set-theoretic `image`{.Agda} with a group structure
-inherited from $B$. More concretely, we can describe the elements of
-$\im f$ as the "mere fibres" of $f$: They consist of a point $y : B$,
-together with (the truncation of) a fibre of $f$ over $y$. We multiply
-$x$ (in the fibre over $a$) with $y$ (in the fibre over $b$), giving the
-element $xy$ in the fibre over $ab$.
-
-[image]: Cat.Diagram.Image.html
+Every group homomorphism $f : A \to B$ has an [[image factorisation]]
+$\im f$, defined by equipping its set-theoretic `image`{.Agda} with a
+group structure inherited from $B$. More concretely, we can describe the
+elements of $\im f$ as the "mere fibres" of $f$: They consist of a point
+$y : B$, together with (the truncation of) a fibre of $f$ over $y$. We
+multiply $x$ (in the fibre over $a$) with $y$ (in the fibre over $b$),
+giving the element $xy$ in the fibre over $ab$.
 
 <!--
 ```agda
@@ -277,13 +271,11 @@ elide the zero composite $e' \circ 0$.
       module F = Group-on (F .snd)
 ```
 
-To eliminate from under a [propositional truncation], we must prove that
-the map $e'$ is constant when thought of as a map $f^*(x) \to F$; In
-other words, it means that $e'$ is "independent of the choice of
+To eliminate from under a [[propositional truncation]], we must prove
+that the map $e'$ is constant when thought of as a map $f^*(x) \to F$;
+In other words, it means that $e'$ is "independent of the choice of
 representative". This follows from algebraic manipulation of group
 homomorphisms + the assumed identity $0 = e' \circ \ker f$;
-
-[propositional truncation]: 1Lab.HIT.Truncation.html
 
 ```agda
       const′ : ∀ (x y : fibre (f #_) x)

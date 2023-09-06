@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import Cat.Allegory.Base
-import Cat.Diagram.Idempotent
 open import Cat.Prelude
 
 import Cat.Allegory.Reasoning

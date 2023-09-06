@@ -45,7 +45,7 @@ in Homotopy Type Theory, which generically say that "paths on a
 structure are isomorphisms of that structure".
 
 For instance, the version in the HoTT Book says that if a structure `S`
-on the objects of a univalent category `S` can be described in a certain
+on the objects of a [[univalent category]] `S` can be described in a certain
 way, then the category of `S`-structured objects of `C` is univalent. As
 a benefit, the Book version of the SIP characterises the _homomorphisms_
 of `S`-structures, not just the _isomorphisms_. As a downside, it only
@@ -108,7 +108,7 @@ private variable
 
 A structure is said to be **univalent** if a homomorphic equivalence of
 structures `A`, `B` induces a path of the structures, over the
-univalence axiom --- that is, if `is-hom`{.Agda} agrees with what it
+[[univalence axiom]] --- that is, if `is-hom`{.Agda} agrees with what it
 means for "S X" and "S Y" to be identified, where this identification is
 dependent on one induced by univalence.
 

@@ -18,7 +18,7 @@ module Order.Instances.Lower.Cocompletion where
 
 # Lower sets as cocompletions
 
-In this module we prove the universal property of $DA$, the [poset] of
+In this module we prove the universal property of $DA$, the [[poset]] of
 [lower sets] of a poset $A$: $DA$ is the free cocomplete poset on $A$,
 meaning that every map $A \to B$ into a cocomplete poset $B$ admits a
 unique **cocontinuous extension** $\widehat{f} : DA \to B$.
@@ -67,9 +67,9 @@ saying that presheaves are computed as certain [coends].
 
 ```agda
   lower-set-∫ : Ls ≡ Lower-sets-cocomplete P diagram .fst
-  lower-set-∫ = ap fst $ lub-unique (Lower-sets P)
-    (Ls , lower-set-is-lub)
-    (Lower-sets-cocomplete P diagram)
+  lower-set-∫ = lub-unique (Lower-sets P)
+    (lower-set-is-lub)
+    (snd $ Lower-sets-cocomplete P diagram)
 ```
 
 <!--

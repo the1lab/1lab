@@ -6,7 +6,7 @@ Please include a quick description of the changes here.
 
 Before submitting a merge request, please check the items below:
 
-- [ ] The imports are sorted (use `find -type f -name \*.agda -or -name \*.lagda.md | xargs support/sort-imports.hs`)
+- [ ] The imports are sorted with `support/sort-imports.hs`
 
 - [ ] All code blocks have "agda" as their language. This is so that
 tools like Tokei can report accurate line counts for proofs vs. text.

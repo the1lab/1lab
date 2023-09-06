@@ -18,9 +18,8 @@ module 1Lab.Equiv.FromPath {ℓ} (P : (i : I) → Type ℓ) where
 
 # Equivs from Paths
 
-In [Cubical Type Theory: a constructive interpretation of the univalence
-axiom][1], Cohen et. al. give a direct _cubical_ construction of an
-equivalence `A ≃ B` from a path `A ≡ B`. This is in contrast with the
+In [@CCHM], a direct _cubical_ construction of an equivalence `A ≃ B`
+from a path `A ≡ B` is presented. This is in contrast with the
 _indirect_ definition, transporting the identity equivalence along the
 path:
 
@@ -34,8 +33,6 @@ While `is-equiv`{.Agda} is a proposition -- and thus the particular proof
 does not matter propositionally -- Agda is still a programming language,
 so we still need to _evaluate_ the proof. Cohen et. al.'s construction
 gives a much shorter normal form for `line→equiv`{.Agda}.
-
-[1]: https://arxiv.org/abs/1611.02108
 
 ```agda
 private

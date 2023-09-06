@@ -46,8 +46,8 @@ in $\ell$'s successor universe.
 [W-type]: Data.Wellfounded.W.html
 [Russell's paradox]: 1Lab.Counterexamples.Russell.html
 
-The [truncated] fibres in the extensionality constructor, as we'll see
-in a bit, are exactly the normal forms of the propositions $f(a) \in
+The [[mere]] fibres in the extensionality constructor, as we'll see in a
+bit, are exactly the normal forms of the propositions $f(a) \in
 \rm{set}(B,g)$ and $g(b) \in \rm{set}(A,f)$. You should think of
 `ext`{.Agda} as an instance of the axiom of extensionality, specialised
 for values which are "explicit" sets: If every element $f(a)$ is
@@ -58,8 +58,6 @@ As usual for higher inductive types, we have an elimination principle
 into families of propositions, which allows us to ignore all the higher
 constructors. If $P$ holds of $\rm{set}(A, f)$, assuming that it holds
 for every value of $f$, then it holds for any set.
-
-[truncated]: 1Lab.HIT.Truncation.html
 
 ```agda
 V-elim-prop
@@ -233,9 +231,9 @@ V-identity-system = set-identity-system (λ x y → hlevel!)
 
 Above, we have referred to an inhabitant $\rm{set}(A, f) : V$ as a
 _literal set_. Using our eliminator into propositions, we can establish
-that every set is _merely_ equal to one of the form $\rm{set}(A, f)$. In
-this section, we'll show that every set is a literal set, without the
-propositional truncation, by defining a notion of **presentation**, and
+that every set is [[merely]] equal to one of the form $\rm{set}(A, f)$.
+In this section, we'll show that every set is a literal set, without the
+[[propositional truncation]], by defining a notion of **presentation**, and
 showing that each set has exactly one presentation.
 
 Whereas any pair $(A, f)$ could be said to "present" a set --- the
@@ -326,7 +324,7 @@ uniqueness of presentations.
 
 We now construct a presentation for any given material set. We're free to
 assume $X = \rm{set}(A, f)$ is a literal set. Factor $f$ through its
-image as
+[[image]] as
 
 $$
 A \epi \im f \mono V\text{,}
@@ -645,8 +643,8 @@ The axiom of power sets also relies on propositional resizing in the
 ambient type theory. Let $a$ be a material set with $m_a : [a] \mono V$ its
 presentation --- I promise that's the last time I'll say this.
 
-To every predicate $p : [a] \to \Omega$, we can associate the class $p'
-: V \to \Omega$ given by
+To every predicate $p : [a] \to \Omega$, we can associate the class
+$p' : V \to \Omega$ given by
 
 $$
 x \mapsto \sum_{(i, _) : m_a^*(x)} p(i)\text{,}

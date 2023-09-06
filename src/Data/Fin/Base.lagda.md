@@ -20,15 +20,15 @@ import Data.Nat.Base as Nat
 module Data.Fin.Base where
 ```
 
-# Finite Sets
+# Finite Sets {defines=standard-finite-set}
 
-The type `Fin`{.Agda} is the type of size `n`.
-These are defined as an inductive family over `Nat`{.Agda},
-such that `Fin 0` has 0 elements, `Fin 1` has 1 element, and so on.
+The type `Fin`{.Agda} is the type of size `n`.  These are defined as an
+inductive family over `Nat`{.Agda}, such that `Fin 0` has 0 elements,
+`Fin 1` has 1 element, and so on.
 
-Another way to view `Fin`{.Agda} is that it's the type of numbers
-less than some upper bound. For instance, `fsuc fzero` is
-of type `Fin 3`, but will _not_ typecheck as a `Fin 1`!
+Another way to view `Fin`{.Agda} is as the type of numbers less than
+some upper bound. For instance, `fsuc fzero` is of type `Fin 3`, but
+will _not_ typecheck as a `Fin 1`!
 
 ```agda
 data Fin : Nat → Type where

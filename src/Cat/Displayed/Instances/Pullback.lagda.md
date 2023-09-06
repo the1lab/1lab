@@ -20,11 +20,11 @@ module
   where
 ```
 
-# Pullback of a displayed category
+# Pullback of a displayed category {defines=pullback-fibration}
 
-If we have a category $E$ displayed over $B$, then a functor $F : X \to
-B$ defines a (contravariant) "change-of-base" action, resulting in a
-category $F^*(E)$ displayed over $X$.
+If we have a category $E$ [[displayed over|displayed category]] $B$,
+then a functor $F : X \to B$ defines a (contravariant) "change-of-base"
+action, resulting in a category $F^*(E)$ displayed over $X$.
 
 <!--
 ```agda
@@ -81,7 +81,7 @@ Change-of-base .assoc′ f′ g′ h′ = to-pathp $
 
 ## As a fibration
 
-If $\cE$ is a cartesian fibration, then the base change of $\cE$
+If $\cE$ is a [[cartesian fibration]], then the base change of $\cE$
 along $F$ is also cartesian. To prove this, observe that the object and
 hom spaces of `Change-of-base`{.Agda} contain the same data as $\cE$,
 just restricted to objects and morphisms in the image of $F$. This means

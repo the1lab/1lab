@@ -29,11 +29,9 @@ private variable
 -->
 
 A function $f : F \to G \to H$, where all types involved are equipped
-with [abelian group] structures, is called **bilinear** when it
+with [[abelian group]] structures, is called **bilinear** when it
 satisfies $f(x + y, z) = f(x, z) + f(y, z)$ and $f(x, y + z) = f(x, y) +
 f(x, z)$: it is a group homomorphism in each of its arguments.
-
-[abelian group]: Algebra.Group.Ab.html
 
 ```agda
 record Bilinear (A : Abelian-group ℓ) (B : Abelian-group ℓ′) (C : Abelian-group ℓ′′) : Type (ℓ ⊔ ℓ′ ⊔ ℓ′′) where
@@ -122,7 +120,7 @@ homomorphisms $A \to [B,C]$.
     morp .is-iso.linv uc = Bilinear-path λ x y → refl
 ```
 
-## The tensor product
+## The tensor product {defines="tensor-product-of-abelian-groups"}
 
 Thinking about the currying isomorphism $A \to (B \to C) \simeq (A
 \times B) \to C$, we set out to search for an abelian group which lets
@@ -319,9 +317,7 @@ open Functor
 Since we have a construction $(A \otimes B)$ satisfying $(A \otimes B)
 \to C \simeq A \to [B, C]$, we're driven, being category theorists, to
 question its naturality: Is the tensor product a functor, and is this
-equivalence of Hom-sets an [adjunction]?
-
-[adjunction]: Cat.Functor.Adjoint.html
+equivalence of Hom-sets an [[adjunction]]?
 
 The answer is yes, and the proofs are essentially plugging together
 existing definitions, other than the construction of the functorial

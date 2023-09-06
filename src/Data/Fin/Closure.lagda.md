@@ -37,7 +37,7 @@ etc.
 ## Zero, one, successors
 
 The finite set $[0]$ is an initial object, and the finite set $[1]$ is a
-terminal object:
+[[terminal object]]:
 
 ```agda
 Finite-zero-is-initial : Fin 0 ≃ ⊥

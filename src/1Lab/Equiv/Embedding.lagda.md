@@ -146,7 +146,7 @@ monic→is-embedding {f = f} bset monic =
 
 # As ff morphisms
 
-A \r{fully faithful functor} is a functor whose action on morphisms is
+A [[fully faithful functor]] is a functor whose action on morphisms is
 an isomorphism everywhere. By the "types are higher groupoids" analogy,
 functors are functions, so we're left to consider: what is a fully
 faithful _function_? The answer turns out to be precisely "an

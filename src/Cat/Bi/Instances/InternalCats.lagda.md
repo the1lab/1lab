@@ -33,11 +33,10 @@ open _=>i_
 # The bicategory of internal categories
 
 Let $\cC$ be some category. The collection of [internal categories] in
-$\cC$ forms a [bicategory], with internal functors as 1-cells, and
+$\cC$ forms a [[bicategory]], with internal functors as 1-cells, and
 internal natural transformations as 2-cells.
 
 [internal categories]: Cat.Internal.Base.html
-[bicategory]: Cat.Bi.Base.html
 
 ```agda
 Internal-cats : Prebicategory (o ⊔ ℓ) (o ⊔ ℓ) (o ⊔ ℓ)

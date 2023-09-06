@@ -45,10 +45,11 @@ private
 
 # Bifibrations
 
-A displayed category $\cE \liesover \cB$ is a **bifibration** if is it
-both a fibration and an opfibration. This means that $\cE$ is equipped
-with both [reindexing] and [opreindexing] functors, which allows us to
-both restrict and extend along morphisms $X \to Y$ in the base.
+A [[displayed category]] $\cE \liesover \cB$ is a **bifibration** if is
+it both a [[fibration|cartesian fibration]] and an opfibration. This
+means that $\cE$ is equipped with both [reindexing] and [opreindexing]
+functors, which allows us to both restrict and extend along morphisms $X
+\to Y$ in the base.
 
 Note that a bifibration is *not* the same as a "profunctor of categories";
 these are called **two-sided fibrations**, and are a distinct concept.
@@ -74,16 +75,14 @@ record is-bifibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
 
 # Bifibrations and Adjoints
 
-If $\cE$ is a bifibration, then its opreindexing functors are [left
-adjoints] to its reindexing functors. To see this, note that we need to
+If $\cE$ is a bifibration, then its opreindexing functors are [[left
+adjoints]] to its reindexing functors. To see this, note that we need to
 construct a natural isomorphism between $\cE_{y}(u_{*}(-),-)$ and
 $\cE_{x}(-,u^{*}(-))$. However, we have already shown that
 $\cE_{y}(u_{*}(-),-)$ and $\cE_{x}(-,u^{*}(-))$ are both naturally
 isomorphic to $\cE_{u}(-,-)$ (see `opfibration→hom-iso`{.Agda} and
 `fibration→hom-iso`{.Agda}), so all we need to do is compose these
 natural isomorphisms!
-
-[left adjoints]: Cat.Functor.Adjoint.html
 
 ```agda
 module _ (bifib : is-bifibration) where

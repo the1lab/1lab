@@ -43,14 +43,13 @@ open is-lan
 # Nerve and realisation
 
 Let $F : \cC \to \cD$ be a functor from a [$\kappa$-small] category
-$\cC$ to a locally $\kappa$-small, $\kappa$-[cocomplete] category
-$\cD$. $F$ induces a pair of [adjoint functors], as in the diagram
-below, where $|-| \dashv \bf{N}$. In general, the left adjoint is called
+$\cC$ to a locally $\kappa$-small, $\kappa$-[cocomplete] category $\cD$.
+$F$ induces a pair of [[adjoint functors]], as in the diagram below,
+where $|-| \dashv \bf{N}$. In general, the left adjoint is called
 "realization", and the right adjoint is called "nerve".
 
 [$\kappa$-small]: 1Lab.intro.html#universes-and-size-issues
 [cocomplete]: Cat.Diagram.Colimit.Base.html#cocompleteness
-[adjoint functors]: Cat.Functor.Adjoint.html
 
 ~~~{.quiver .short-1}
 \[\begin{tikzcd}
@@ -62,24 +61,20 @@ below, where $|-| \dashv \bf{N}$. In general, the left adjoint is called
 ~~~
 
 An example to keep in mind is the inclusion $F : \Delta \mono \strcat$
-from the simplex category to [strict categories], which sends the
-$n$-simplex to the finite [poset] $[n]$. In this case, the left adjoint
-is the ordinary realisation of a simplicial set $[\Delta\op,\Sets]$ as a
-strict category, and the right adjoint gives the simplicial nerve of a
-strict category.
-
-[strict categories]: Cat.Instances.StrictCat.html
-[poset]: Order.Base.html
+from the simplex category to the [[category of strict categories]],
+which sends the $n$-simplex to the finite [[poset]] $[n]$. In this case,
+the left adjoint is the ordinary realisation of a simplicial set
+$[\Delta\op,\Sets]$ as a [[strict category]], and the right adjoint gives
+the simplicial nerve of a strict category.
 
 Since these adjunctions come for very cheap ($\kappa$-cocompleteness of
 the codomain category is all we need), they are built out of very thin
-abstract nonsense: The "realisation" left adjoint is given by the [left
-Kan extension] of $F$ along the [Yoneda embedding] $\yo$, which can be
+abstract nonsense: The "realisation" left adjoint is given by the [[left
+Kan extension]] of $F$ along the [Yoneda embedding] $\yo$, which can be
 [computed] as a particular colimit, and the "nerve" right adjoint is
 given by the _restricted_ Yoneda embedding functor $X \mapsto \hom(F(-),
 X)$.
 
-[left Kan extension]: Cat.Functor.Kan.Base.html
 [Yoneda embedding]: Cat.Functor.Hom.html
 [computed]: Cat.Functor.Kan.Pointwise.html
 
@@ -106,7 +101,7 @@ module _
 
 The action of $F$ on morphisms assembles into a natural transformation
 $\yo_\cC \To \rm{Nerve}(F)F$, which is universal in the following sense:
-the nerve functor associated to $F$ is the [left Kan extension] of $\cC$'s
+the nerve functor associated to $F$ is the [[left Kan extension]] of $\cC$'s
 [yoneda embedding] along $F$.
 
 ```agda

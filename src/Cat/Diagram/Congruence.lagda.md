@@ -19,16 +19,14 @@ module Cat.Diagram.Congruence {o ℓ} {C : Precategory o ℓ}
 # Congruences
 
 The idea of **congruence** is the categorical rephrasing of the idea of
-_equivalence relation_. Recall that an equivalence relation on a [set]
-is a family of [propositions] $R : A \times A \to \prop$ satisfying
+_equivalence relation_. Recall that an equivalence relation on a [[set]]
+is a family of [[propositions]] $R : A \times A \to \prop$ satisfying
 _reflexivity_ ($R(x,x)$ for all $x$), _transitivity_ ($R(x,y) \land
 R(y,z) \to R(x,z)$), and _symmetry_ ($R(x,y) \to R(y,x)$). Knowing that
 $\prop$ classifies [embeddings], we can equivalently talk about an
-equivalence relation $R$ as being _just some set_, equipped with a [mono]
-$m : R \mono A \times A$.
+equivalence relation $R$ as being _just some set_, equipped with a
+[[monomorphism]] $m : R \mono A \times A$.
 
-[set]: 1Lab.HLevel.html#is-set
-[propositions]: 1Lab.HLevel.html#is-prop
 [embeddings]: 1Lab.Equiv.Embedding.html
 [mono]: Cat.Morphism.html#monos
 
@@ -143,7 +141,7 @@ respectively --- factor _through_ $R$, somehow, i.e. we have a $t : (d
 Above, we have calculated the properties of a monomorphism $m : R \mono
 A \times A$ which identify $R$ as an equivalence relation on the object
 $A$. Note that, since the definition relies on both products and
-pullbacks, we go ahead and assume the category is finitely complete.
+pullbacks, we go ahead and assume the category is [[finitely complete]].
 
 <!--
 ```agda

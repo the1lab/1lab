@@ -23,15 +23,14 @@ open _=>_ hiding (op)
 ```
 -->
 
-# Equivalences
+# Equivalences {defines="equivalence-of-categories"}
 
 A functor $F : \cC \to \cD$ is an **equivalence of categories**
-when it has a [right adjoint] $G : \cD \to \cD$, with the unit and
+when it has a [[right adjoint]] $G : \cD \to \cD$, with the unit and
 counit natural transformations being [natural isomorphisms]. This
 immediately implies that our adjoint pair $F \dashv G$ extends to an
 adjoint triple $F \dashv G \dashv F$.
 
-[right adjoint]: Cat.Functor.Adjoint.html
 [natural isomorphisms]: Cat.Functor.Naturality.html
 
 ```agda
@@ -121,15 +120,12 @@ though, so we provide some alternatives:
 
 ## Fully faithful, essentially surjective
 
-Any [fully faithful][ff] and [(split!) essentially surjective][eso]
-functor determines an equivalence of precategories. Recall that "split
-essentially surjective" means we have some determined _procedure_ for
-picking out an essential fibre over any object $d : \cD$: an object
-$F^*(d) : \cC$ together with a specified isomorphism $F^*(d) \cong
-d$.
-
-[ff]: Cat.Functor.Properties.html#ff-functors
-[eso]: Cat.Functor.Properties.html#essential-fibres
+Any [[fully faithful]] and [[(split!) essentially surjective|eso
+functor]] functor determines an equivalence of precategories. Recall
+that "split essentially surjective" means we have some determined
+_procedure_ for picking out an essential fibre over any object $d :
+\cD$: an object $F^*(d) : \cC$ together with a specified isomorphism
+$F^*(d) \cong d$.
 
 ```agda
 module _ {F : Functor C D} (ff : is-fully-faithful F) (eso : is-split-eso F) where
@@ -387,23 +383,19 @@ needs an appeal to faithfulness (two, actually):
 
 ### Between categories
 
-Above, we made an equivalence out of any fully faithful and _split_
+Above, we made an equivalence out of any [[fully faithful]] and _split_
 essentially surjective functor. In set-theoretic mathematics (and indeed
-between [strict categories]), the splitting condition can not be lifted
-constructively: the statement "every (ff, eso) functor between strict
-categories is an equivalence" is equivalent to the axiom of choice.
+between [[strict categories]]), the splitting condition can not be
+lifted constructively: the statement "every (ff, eso) functor between
+strict categories is an equivalence" is equivalent to the axiom of
+choice.
 
-[univalent categories]: Cat.Univalent.html
-[strict categories]: Cat.Instances.StrictCat.html
-
-However, between [univalent categories], the situation is different: Any
-essentially surjective functor splits. In particular, any functor
-between univalent categories has propositional [essential fibres], so a
+However, between [[univalent categories]], the situation is different: Any
+essentially surjective [[fully faithful]] functor splits. In particular, any [[ff]] functor
+between univalent categories has propositional [[essential fibres]], so a
 "mere" essential surjection is automatically split. However, note that
 _both_ the domain _and_ codomain have to be categories for the argument
 to go through.
-
-[essential fibres]: Cat.Functor.Properties.html#essential-fibres
 
 ```agda
 module

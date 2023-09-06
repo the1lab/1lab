@@ -21,9 +21,9 @@ open DM E
 open CR B
 ```
 
-# The Total Category of a Displayed Category
+# The Total Category of a Displayed Category {defines=total-category}
 
-So far, we've been thinking of displayed categories as "categories of
+So far, we've been thinking of [[displayed categories]] as "categories of
 structures" over some base category. However, it's often useful to
 consider a more "bundled up" notion of structure, where the carrier and
 the structure are considered as a singular object. For instance, if we
@@ -141,10 +141,8 @@ total-iso→iso[] f = make-iso[ total-iso→iso f ]
 
 ## Pullbacks in the total category
 
-[Pullbacks] in the total category of $\cE$ have a particularly nice
+[[Pullbacks]] in the total category of $\cE$ have a particularly nice
 characterization. Consider the following pair of commuting squares.
-
-[Pullbacks]: Cat.Diagram.Pullback.html
 
 ~~~{.quiver .tall-2}
 \begin{tikzcd}
@@ -219,9 +217,7 @@ cartesian+pullback→total-pullback p₁-cart g-cart pb square′ = total-pb whe
       p₁′.uniquep _ _ (pb .p₁∘universal) _ (ap preserves p)
 ```
 
-We can also show the converse, provided that $\cE$ is a [fibration].
-
-[fibration]: Cat.Displayed.Cartesian.html
+We can also show the converse, provided that $\cE$ is a [[fibration|cartesian fibration]].
 
 ```agda
 cartesian+total-pullback→pullback

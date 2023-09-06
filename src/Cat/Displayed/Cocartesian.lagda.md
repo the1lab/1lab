@@ -25,13 +25,11 @@ open DR ℰ
 
 # Cocartesian morphisms and Opfibrations
 
-[Cartesian fibrations] provide a way of describing pseudofunctorial
+[[Cartesian fibrations]] provide a way of describing pseudofunctorial
 families of categories $\ca{B}^{op} \to \Cat$ purely in terms of
 displayed structure. It's then natural to ask: what about
 *covariant* pseudofunctorial families of categories? Such pseudofunctors
 can be encoded by dualising cartesian fibrations.
-
-[Cartesian fibrations]: Cat.Displayed.Cartesian.html
 
 To do this, we must first dualise the notion of a cartesian map to a
 **cocartesian map**. Fix a map $a \to b$ in $\ca{B}$, objects $a'$
@@ -307,7 +305,8 @@ vertical+cocartesian→invertible
 
 <details>
 <summary>The proofs are all applications of duality, as we have already
-done the hard work of proving these properties for cartesian morphisms.
+done the hard work of proving these properties for [[cartesian
+morphisms]].
 </summary>
 
 ```agda

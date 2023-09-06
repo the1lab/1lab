@@ -38,13 +38,12 @@ open _=>_
 
 # Reflective subcategories
 
-Occasionally, [full subcategory] inclusions (hence [fully faithful
-functors] --- like the inclusion of abelian groups into the category of
-all groups, or the inclusion $\Props \mono \Sets$) participate in an
+Occasionally, [full subcategory] inclusions (hence [[fully faithful
+functors]] --- like the inclusion of [[abelian groups]] into the category of
+all [[groups]], or the inclusion $\Props \mono \Sets$) participate in an
 adjunction
 
 [full subcategory]: Cat.Functor.FullSubcategory.html
-[fully faithful functors]: Cat.Functor.Properties.html#ff-functors
 
 ~~~{.quiver .short-15}
 \[\begin{tikzcd}
@@ -55,12 +54,14 @@ adjunction
 \end{tikzcd}\]
 ~~~
 
-When this is the case, we refer to the left adjoint functor $L$ as the
+:::{.definition #reflective-subcategory}
+When this is the case, we refer to the [[left adjoint]] functor $L$ as the
 **reflector**, and $\iota$ exhibits $\cC$ as a **reflective
 subcategory** of $\cD$. Reflective subcategory inclusions are of
 particular importance because they are [monadic functors]: They exhibit
 $\cC$ as the category of algebras for an (idempotent) monad on
 $\cD$.
+:::
 
 [monadic functors]: Cat.Functor.Adjoint.Monadic.html
 
@@ -164,7 +165,7 @@ is-reflective→is-monadic {C = C} {D = D} {F = F} {G} adj g-ff = eqv where
 -->
 
 It suffices to show that the comparison functor $D \to C^GF$ is fully
-faithful and split essentially surjective. For full faithfulness,
+faithful and [[split essentially surjective]]. For full faithfulness,
 observe that it's always faithful; The fullness comes from the
 assumption that $G$ is ff.
 

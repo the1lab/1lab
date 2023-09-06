@@ -154,11 +154,10 @@ children's drawing of a house, so that it fits on the page horizontally.
 
 Just as a monoid can be [promoted] to a 1-object category, with the
 underlying set of the monoid becoming the single $\hom$-set, we can
-deloop a monoidal category into a [bicategory] with a single object,
+deloop a monoidal category into a [[bicategory]] with a single object,
 where the sole $\hom$-_category_ is given by the monoidal category.
 
 [promoted]: Cat.Instances.Delooping.html
-[bicategory]: Cat.Bi.Base.html
 
 ```agda
 Deloop

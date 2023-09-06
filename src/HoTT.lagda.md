@@ -37,11 +37,13 @@ open import Cat.Bi.Base
 open import Cat.Prelude
 
 open import Data.Set.Surjection
+open import Data.Wellfounded.W
 open import Data.Fin.Finite using (Finite-choice)
 open import Data.Dec
 open import Data.Nat using (ℕ-well-ordered ; Discrete-Nat)
 open import Data.Sum
 
+open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
 open import Homotopy.Space.Torus
 open import Homotopy.Base
@@ -102,13 +104,13 @@ _ = Ωⁿ
 <!--
 ```agda
 _ = ap
-_ = ap-comp-path
+_ = ap-∙
 ```
 -->
 
 * Lemma 2.2.1: `ap`{.Agda}
 * Lemma 2.2.2:
-  i. `ap-comp-path`{.Agda}
+  i. `ap-∙`{.Agda}
   ii. _Definitional in cubical type theory_
   iii. _Definitional in cubical type theory_
   iv. _Definitional in cubical type theory_
@@ -320,7 +322,8 @@ _ = Singleton-is-contr
 _ = equiv→is-hlevel
 _ = ⊎-is-hlevel
 _ = Σ-is-hlevel
-_ = contractible-if-inhabited
+_ = is-contr-if-inhabited→is-prop
+_ = is-prop→is-contr-if-inhabited
 _ = H-Level-Dec
 _ = disjoint-⊎-is-prop
 _ = ℕ-well-ordered
@@ -332,7 +335,7 @@ _ = Finite-choice
 * Exercise 3.1: `equiv→is-hlevel`{.Agda}
 * Exercise 3.2: `⊎-is-hlevel`{.Agda}
 * Exercise 3.3: `Σ-is-hlevel`{.Agda}
-* Exercise 3.5: `contractible-if-inhabited`{.Agda}
+* Exercise 3.5: `is-contr-if-inhabited→is-prop`{.Agda}, `is-prop→is-contr-if-inhabited`{.Agda}
 * Exercise 3.6: `H-Level-Dec`{.Agda}
 * Exercise 3.7: `disjoint-⊎-is-prop`{.Agda}
 * Exercise 3.19: `ℕ-well-ordered`{.Agda}
@@ -410,6 +413,28 @@ _ = Map-classifier
 * Lemma 4.8.1: `Fibre-equiv`{.Agda}
 * Lemma 4.8.2: `Total-equiv`{.Agda}
 * Theorem 4.8.3: `Map-classifier`{.Agda}
+
+## Chapter 5 Induction
+
+### 5.3 W-types
+
+<!--
+```agda
+_ = W
+```
+-->
+
+* W-types: `W`{.Agda}
+
+### 5.4 Inductive types are initial algebras
+
+<!--
+```agda
+_ = W-initial
+```
+-->
+
+* Theorem 5.4.7: `W-initial`{.Agda}
 
 ## Chapter 6 Higher inductive types
 
@@ -558,6 +583,16 @@ _ = n-Tr-elim
 * Lemma 7.3.1: `n-Tr-is-hlevel`{.Agda}
 * Lemma 7.3.2: `n-Tr-elim`{.Agda}
 * Theorem 7.3.12: `n-Tr-path-equiv`{.Agda}
+
+### 7.5 Connectedness
+
+<!--
+```agda
+_ = is-n-connected
+```
+-->
+
+* Definition 7.5.1: `is-n-connected`{.Agda}
 
 # Part 2 Mathematics
 

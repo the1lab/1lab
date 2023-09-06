@@ -30,13 +30,12 @@ open Vertical-functor
 # The Fibration of Objects
 
 Let $\cE \liesover \cB$ be a fibration. Its **fibration of objects** is
-the [wide subcategory] spanned by the [cartesian morphisms]. The idea
+the [wide subcategory] spanned by the [[cartesian morphisms]]. The idea
 behind the name is that we've kept all the objects in $\cE$, but removed
 all the interesting morphisms: all we've kept are the ones that witness
 changes-of-base.
 
 [wide subcategory]: Cat.Functor.WideSubcategory.html
-[cartesian morphisms]: Cat.Displayed.Cartesian.html
 
 ```agda
 Objects : Displayed B o′ (o ⊔ ℓ ⊔ o′ ⊔ ℓ′)
@@ -118,7 +117,7 @@ Objects-right-fibration fib .Right-fibration.cartesian = Objects-cartesian
 
 The fibration of objects is the relative analog of the [core] of a
 category, sharing its universal property.  Rather than a groupoid,
-suppose we have a right fibration $\cR$ and a fibred functor $F : \cR
+suppose we have a right fibration $\cR$ and a [[fibred functor]] $F : \cR
 \to \cE$: to complete the analogy, we show $F$ factors through $\cE$'s
 fibration of objects.
 

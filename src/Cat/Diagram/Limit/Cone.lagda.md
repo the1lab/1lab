@@ -169,10 +169,10 @@ again preserve _all_ the commutativities.
 ## Terminal Cones as Limits
 
 Note that cones over some diagram $F$ contain the exact same data as
-natural transformations from a constant functor to $F$.
-To obtain a limit, all we need is a way of stating that a given cone is
-universal. In particular, the [terminal object] in the category of cones
-over a diagram $F$ (if it exists!) is the limit of $F$.
+natural transformations from a constant functor to $F$.  To obtain a
+limit, all we need is a way of stating that a given cone is universal.
+In particular, the [[terminal object]] in the category of cones over a
+diagram $F$ (if it exists!) is the limit of $F$.
 
 [terminal object]: Cat.Diagram.Terminal.html
 

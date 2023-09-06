@@ -24,7 +24,7 @@ module Topoi.Reasoning where
 As mentioned in the [overture on topos theory], categories of sheaves
 are incredibly nice categories to work in _logically_, mirroring many of
 the same properties of the category of Sets. This follows from the fact
-that they are reflective subcategories of presheaf categories, and
+that they are [[reflective subcategories]] of presheaf categories, and
 _those_ categories enjoy many of the exactness properties of $\Sets$ by
 virtue of being functor categories.
 
@@ -32,10 +32,10 @@ virtue of being functor categories.
 
 This module provides a companion to the overture which makes it more
 convenient to reason about a _particular_ sheaf topos by computing
-explicit descriptions of finite limits and colimits, and establishing
-the key exactness properties of a topos: Coproducts are disjoint,
-equivalence relations are effective, and colimits are stable under
-pullback.
+explicit descriptions of [[finite limits]] and [[colimits]], and
+establishing the key exactness properties of a topos: Coproducts are
+disjoint, equivalence relations are effective, and colimits are stable
+under pullback.
 
 ```agda
 module Sheaf-topos {o ℓ} {𝒯 : Precategory o ℓ} (T : Topos ℓ 𝒯) where
@@ -64,19 +64,19 @@ module Sheaf-topos {o ℓ} {𝒯 : Precategory o ℓ} (T : Topos ℓ 𝒯) where
 
 **Terminology**: We will refer to the objects of $\mathcal{C}$, the
 topos, as **sheaves**, and the objects of $[S\op,\Sets]$ as
-**presheaves**. Correspondingly, the left adjoint functor $[S\op, \Sets]
+**presheaves**. Correspondingly, the [[left adjoint]] functor $[S\op, \Sets]
 \to \mathcal{C}$ is called **sheafification**.
 
 ## Limits
 
 Since the sheafification functor is left exact and the inclusion functor
-is fully faithful (thus the adjunction counit is an isomorphism, c.f.
+is [[fully faithful]] (thus the adjunction counit is an isomorphism, c.f.
 `Lι-iso`{.Agda}), we can compute limits directly in the presheaf
 category and sheafify. Unfolding the result of this procedure, rather
 than appealing to the equivalence $\mathcal{C} \cong
 [S\op,\Sets]^{L\iota}$, yields much better computational properties. We
-do it by hand for the terminal object, binary products, and binary
-pullbacks.
+do it by hand for the [[terminal object]], binary [[products]], and binary
+[[pullbacks]].
 
 ```agda
   open Terminal

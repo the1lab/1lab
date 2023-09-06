@@ -161,8 +161,8 @@ module _ (inv : h ∘ i ≡ id) where abstract
   deletel = pulll cancell
 ```
 
-We also have a combinator which combines expanding on the right with a
-cancellation on the left:
+We also have combinators which combine expanding on one side with a
+cancellation on the other side:
 
 ```agda
 lswizzle : g ≡ h ∘ i → f ∘ h ≡ id → f ∘ g ≡ i
@@ -170,6 +170,12 @@ lswizzle {g = g} {h = h} {i = i} {f = f} p q =
   f ∘ g     ≡⟨ ap₂ _∘_ refl p ⟩
   f ∘ h ∘ i ≡⟨ cancell q ⟩
   i         ∎
+
+rswizzle : g ≡ i ∘ h → h ∘ f ≡ id → g ∘ f ≡ i
+rswizzle {g = g} {i = i} {h = h} {f = f} p q =
+  g ∘ f       ≡⟨ ap₂ _∘_ p refl ⟩
+  (i ∘ h) ∘ f ≡⟨ cancelr q ⟩
+  i           ∎
 ```
 
 ## Isomorphisms

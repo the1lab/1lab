@@ -20,7 +20,7 @@ open import Data.Dec.Base
 module 1Lab.Path.IdentitySystem where
 ```
 
-# Identity systems
+# Identity systems {defines=identity-system}
 
 An **identity system** is a way of characterising the path spaces of a
 particular type, without necessarily having to construct a full

@@ -47,15 +47,10 @@ module _
 
 # Continuity of adjoints
 
-We prove that every functor $R : \cD \to \cC$ admitting a left
-adjoint $L \dashv R$ preserves every limit which exists in $\cD$. We
+We prove that every functor $R : \cD \to \cC$ admitting a [[left
+adjoint]] $L \dashv R$ preserves every limit which exists in $\cD$. We
 then instantiate this theorem to the "canonical" shapes of limit:
-[terminal objects], [products], [pullbacks] and [equalisers].
-
-[terminal objects]: Cat.Diagram.Terminal.html
-[products]: Cat.Diagram.Product.html
-[pullbacks]: Cat.Diagram.Pullback.html
-[equalisers]: Cat.Diagram.Equaliser.html
+[[terminal objects]], [[products]], [[pullback]] and [[equalisers]].
 
 This follows directly from the fact that [adjoints preserve Kan
 extensions].

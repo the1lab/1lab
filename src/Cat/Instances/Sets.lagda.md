@@ -10,13 +10,12 @@ module Cat.Instances.Sets where
 
 # The category of Sets
 
-We prove that the category of Sets is [univalent]. Recall that this
-means that, fixing a set $A$, the type $\sum_{(B : \set)} (A \cong B)$
-is contractible. We first exhibit a contraction directly, using
-`ua`{.Agda}, and then provide an alternative proof in terms of
-[univalence for $n$-types].
+We prove that the category of Sets is [[univalent|univalent category]].
+Recall that this means that, fixing a set $A$, the type $\sum_{(B :
+\set)} (A \cong B)$ is contractible. We first exhibit a contraction
+directly, using `ua`{.Agda}, and then provide an alternative proof in
+terms of [univalence for $n$-types].
 
-[univalent]: Cat.Univalent.html
 [univalence for $n$-types]: 1Lab.HLevel.Universe.html
 
 ## Direct proof
@@ -47,7 +46,7 @@ only difference between these types can be patched by
 
 Using univalence for $n$-types, function extensionality and the
 computation rule for univalence, it is almost trivial to show that
-categorical isomorphisms of sets are an identity system.
+categorical isomorphisms of sets are an [[identity system]].
 
 ```agda
   Sets-is-category : is-category (Sets ℓ)

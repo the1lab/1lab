@@ -6,6 +6,7 @@ open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Diagram.Product
 open import Cat.Prelude
+open import Cat.Strict
 ```
 -->
 
@@ -25,13 +26,14 @@ private variable
 ```
 -->
 
-# Strict precategories
+# The category of strict categories {defines="category-of-strict-categories"}
 
-We call a precategory **strict** if its space of objects is a
-`Set`{.Agda ident=is-set}. While general precategories are too
-homotopically interesting to fit into a `Precategory`{.Agda} (because
-functor spaces will not, in general, be h-sets), the strict categories
-_do_ form a precategory, which we denote $\strcat$.
+Recall that a precategory is said [[**strict**|strict category]] if its
+space of objects is a `Set`{.Agda ident=is-set}. While general
+precategories are too homotopically interesting to fit into a
+`Precategory`{.Agda} (because functor spaces will not, in general, be
+h-sets), the strict categories _do_ form a precategory, which we denote
+$\strcat$.
 
 <!--
 ```agda
@@ -51,7 +53,7 @@ Functor-is-set {o = o} {h} {C} {D} dobset =
 
 ```agda
 Strict-cats : ∀ o h → Precategory _ _
-Strict-cats o h .Ob = Σ[ C ∈ Precategory o h ] (is-set (Ob C))
+Strict-cats o h .Ob = Σ[ C ∈ Precategory o h ] (is-strict C)
 Strict-cats o h .Hom (C , _) (D , _) = Functor C D
 Strict-cats o h .id  = Id
 Strict-cats o h ._∘_ = _F∘_

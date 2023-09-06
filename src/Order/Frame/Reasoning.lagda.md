@@ -2,8 +2,8 @@
 ```agda
 open import Cat.Prelude
 
-open import Order.Diagram.Lub
 open import Order.Diagram.Glb
+open import Order.Diagram.Lub
 open import Order.Semilattice
 open import Order.Frame
 open import Order.Base

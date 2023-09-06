@@ -29,20 +29,19 @@ open /-Hom
 
 # Locally Cartesian Closed Categories
 
-A [finitely complete] category $\cC$ is said to be **locally
+A [[finitely complete category]] $\cC$ is said to be **locally
 Cartesian closed** when each of its [slice categories] is [Cartesian
 closed]. In practice, though, it is easier to express this property in
 terms of a certain family of functors existing.
 
-[finitely complete]: Cat.Diagram.Limit.Finite.html
 [slice categories]: Cat.Instances.Slice.html
 [Cartesian closed]: Cat.CartesianClosed.Base.html
 
-A [finitely complete] category $\cC$ is **locally cartesian closed**
-when each of its [base change] functors $f^* : \cC/x \to \cC/y$
-admit a [right adjoint] $\prod_f : \cC/y \to \cC/x$, called the
-**dependent sum**, thus extending the existing dependent sum-base change
-adjunction to an adjoint triple
+We have the following theorem: $\cC$ is **locally cartesian closed**, in
+the previous sense, when each of its [[pullback functors]] $f^* : \cC/x
+\to \cC/y$ admit a [[right adjoint]] $\prod_f : \cC/y \to \cC/x$, called
+the **dependent product**, thus extending the existing dependent
+sum-base change adjunction to an adjoint triple
 
 $$
 \textstyle\sum_f \dashv f* \textstyle\prod_f
@@ -115,8 +114,8 @@ $$
   is-lcc→slice-is-cc .[_,-] f = hom f
 ```
 
-To prove that this is a right adjoint, we use that [adjunctions compose]
-and re-express the Cartesian product functor in $\cC/a$ as the
+To prove that this is a right adjoint, we use that [[adjunctions
+compose]] and re-express the Cartesian product functor in $\cC/a$ as the
 composite
 
 $$
@@ -125,8 +124,6 @@ $$
 
 We then have, since $\sum_f \dashv f^*$ and $f^* \dashv \prod_f$, the
 adjunction $(\sum_f f^*) \dashv (\prod_f f^*)$.
-
-[adjunctions compose]: Cat.Functor.Adjoint.Compose.html
 
 ```agda
   is-lcc→slice-is-cc {a = a} .tensor⊣hom f = adj where

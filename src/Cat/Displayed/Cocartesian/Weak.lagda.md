@@ -196,8 +196,8 @@ weak-cocartesian→fibre-precompose-equiv wcocart =
 ```
 </details>
 
-Notably, if $\ca{E}$ is a cartesian fibration, then all weak cocartesian
-morphisms are cocartesian.
+Notably, if $\ca{E}$ is a [[Cartesian fibration]], then all weak
+cocartesian morphisms are cocartesian.
 
 ```agda
 fibration+weak-cocartesian→cocartesian
@@ -211,7 +211,7 @@ fibration+weak-cocartesian→cocartesian {x} {y} {x′} {y′} {f} {f′} fib we
     module weak = is-weak-cocartesian weak
 ```
 
-To see show this, we need to construct a unique factorization of some
+To see show this, we need to construct a unique factorisation of some
 morphism $h' : x' \to_{mf} u'$, as depicted in the following diagram
 
 ~~~{.quiver .tall-2}
@@ -494,7 +494,7 @@ weak-cocartesian-lift→weak-co-cartesian-lift wlift .Weak-cartesian-lift.weak-c
 ```
 </details>
 
-A displayed category with all weak cocartesian lifts is called a
+A [[displayed category]] with all weak cocartesian lifts is called a
 **weak cocartesian fibration**, though we will often refer to them
 as **weak opfibrations** These are also sometimes called
 **preopfibred categories**, though we avoid this terminology, as it

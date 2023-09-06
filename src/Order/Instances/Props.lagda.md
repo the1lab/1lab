@@ -12,12 +12,11 @@ module Order.Instances.Props where
 
 # Propositions
 
-In the [posetal] world, what plays the role of the [category of sets] is
-the poset of _propositions_ --- our $\le$ relations take values in
-propositions, much like the category of sets is where the [$\hom$
+In the [[posetal|poset]] world, what plays the role of the [category of
+sets] is the poset of _propositions_ --- our $\le$ relations take values
+in propositions, much like the category of sets is where the [$\hom$
 functor] takes values.
 
-[posetal]: Order.Base.html
 [category of sets]: Cat.Base.html#the-precategory-of-sets
 [$\hom$ functor]: Cat.Functor.Hom.html
 

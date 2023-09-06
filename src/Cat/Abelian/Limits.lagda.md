@@ -26,17 +26,15 @@ module Cat.Abelian.Limits {o ℓ} {C : Precategory o ℓ} where
 Recall that every [pre-abelian] category admits [kernels] and cokernels,
 and is also [additive], so it additionally has products and
 coproducts^[We'll see in this very same module that they're actually the
-same thing!]. It sounds like we're missing some [finite limits] (dually,
+same thing!]. It sounds like we're missing some [[finite limits]] (dually,
 missing some finite colimits), but it turns out that this is enough: We
-can construct the [equaliser] of $f, g : A \to B$ as $\ker(f - g)$ ---
+can construct the [[equaliser]] of $f, g : A \to B$ as $\ker(f - g)$ ---
 whence the name **difference kernel**!
 
 [abelian]: Cat.Abelian.Base.html#pre-abelian-abelian-categories
 [pre-abelian]: Cat.Abelian.Base.html#pre-abelian-abelian-categories
 [kernels]: Cat.Diagram.Equaliser.Kernel.html
 [additive]: Cat.Abelian.Base.html#additive-categories
-[equaliser]: Cat.Diagram.Equaliser.html
-[finite limits]: Cat.Diagram.Limit.Finite.html
 
 The calculation is straightforward: To map out of $\ker f$, we must have
 $(fe' - ge') = 0$, but this is immediate assuming that $fe' = ge'$ ---

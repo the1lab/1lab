@@ -35,13 +35,12 @@ open Internal-hom
 
 # Internal categories from congruences
 
-Let $\cC$ be a [finitely complete category], and recall that a
+Let $\cC$ be a [[finitely complete category]], and recall that a
 [congruence] in $\cC$ is an internalized notion of equivalence relation.
 Intuitively, we should be able to turn this into an internal category,
 where we have an internal morphism $x \to y$ if and only if $x$ and $y$
 are congruent.
 
-[finitely complete category]: Cat.Diagram.Limit.Finite.html
 [congruence]: Cat.Diagram.Congruence.html
 
 ```agda

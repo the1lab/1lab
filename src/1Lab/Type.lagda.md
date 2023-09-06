@@ -49,6 +49,10 @@ data ⊥ : Type where
 
 absurd : ∀ {ℓ} {A : Type ℓ} → ⊥ → A
 absurd ()
+
+¬_ : ∀ {ℓ} → Type ℓ → Type ℓ
+¬ A = A → ⊥
+infix 3 ¬_
 ```
 
 The non-dependent product type `_×_`{.Agda} can be defined in terms of
@@ -112,12 +116,5 @@ f $ₛ x = f x
 <!--
 ```
 open import Prim.Literals public
-
-Type∙ : ∀ ℓ → Type (lsuc ℓ)
-Type∙ _ = Σ _ id
-
-¬_ : ∀ {ℓ} → Type ℓ → Type ℓ
-¬ A = A → ⊥
-infix 3 ¬_
 ```
 -->

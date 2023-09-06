@@ -144,7 +144,7 @@ module _ {I : Type ℓ'} (i-is-grpd : is-groupoid I) (F : I → C.Ob) where
 # Disjoint coproducts
 
 An indexed coproduct $\sum F$ is said to be **disjoint** if every one of
-its inclusions $F_i \to \sum F$ is [monic], and, for unequal $i \ne j$,
+its inclusions $F_i \to \sum F$ is [[monic]], and, for unequal $i \ne j$,
 the square below is a pullback with initial apex. Since the maps $F_i
 \to \sum F \ot F_j$ are monic, the pullback below computes the
 _intersection_ of $F_i$ and $F_j$ as subobjects of $\sum F$, hence the

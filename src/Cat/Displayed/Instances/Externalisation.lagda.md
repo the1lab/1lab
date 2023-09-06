@@ -129,7 +129,7 @@ fairly nasty. Associativity is especially bad.
 
 To really hammer home that point that the externalisation of an internal
 category is the internal version of the family fibration, we show that
-the cartesian morphisms are *precisely* the internal isomorphisms.
+the [[cartesian morphisms]] are *precisely* the internal isomorphisms.
 
 The forward direction looks almost identical to the proof that pointwise
 isomorphisms are cartesian morphisms in the family fibration.

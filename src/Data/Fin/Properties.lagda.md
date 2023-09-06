@@ -165,10 +165,11 @@ Fin≃ℕ< {n} = to-ℕ< , is-iso→is-equiv (iso from-ℕ< (to-from-ℕ< {n}) f
 
 # Finite choice
 
-An important fact about the (standard) finite sets in constructive
-mathematics is that they _always_ support choice, which we phrase below
-as a "search" operator: If $M$ is any extension system (for example, the
-propositional truncation monad), then $M$ commutes with finite products:
+An important fact about the [[(standard) finite sets|standard finite
+sets]] in constructive mathematics is that they _always_ support choice,
+which we phrase below as a "search" operator: If $M$ is any extension
+system (for example, the [[propositional truncation]] monad), then $M$
+commutes with finite products:
 
 ```agda
 finite-choice
@@ -186,12 +187,12 @@ finite-choice (suc n) k = do
 ```
 
 An immediate consequence is that surjections into a finite set (thus,
-_between_ finite sets) merely split:
+_between_ finite sets) [[merely]] split:
 
 ```agda
 finite-surjection-split
   : ∀ {ℓ} {n} {B : Type ℓ}
   → (f : B → Fin n) → (∀ x → ∥ fibre f x ∥)
-  → ∥ (∀ x → fibre f x) ∥
+  → ∥ (∀ x → fibre f x) ∥
 finite-surjection-split f = finite-choice _
 ```

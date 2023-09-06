@@ -6,7 +6,7 @@ Thanks for taking the time to contribute!
 This file holds the conventions we use around the codebase, but they're
 guidelines, and not strict rules: If you're unsure of something, hop on
 [the Discord](https://discord.gg/Zp2e8hYsuX) and ask there, or open [a
-discussion thread](https://github.com/plt-amy/cubical-1lab/discussions)
+discussion thread](https://github.com/plt-amy/1lab/discussions)
 if that's more your style.
 
 ### General guidelines
@@ -14,7 +14,8 @@ if that's more your style.
 Use British spelling everywhere that it differs from American: Homotopy
 fib**re**, fib**red** category, colo**u**red operad, etc --- both in
 prose and in Agda. Keep prose paragraphs limited to 72 characters of
-length. Prefer link anchors (Pandoc "reference links") to inline links.
+length. Prefer wikilinks or link anchors (Pandoc "reference links") to
+inline links.
 
 ### Agda code style
 
