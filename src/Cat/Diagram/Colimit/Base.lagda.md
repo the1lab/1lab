@@ -549,11 +549,6 @@ limits|preserved limit]], just dualised.
 ```agda
 module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
          (F : Functor C D) (Diagram : Functor J C) where
-  private
-    module D = Precategory D
-    module C = Precategory C
-    module J = Precategory J
-    module F = Func F
 ```
 -->
 

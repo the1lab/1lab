@@ -25,9 +25,7 @@ open _=>_
 -->
 
 We establish the correspondence between `Equaliser`{.Agda} and the
-`Limit`{.Agda} of a [parallel arrows] diagram.
-
-[parallel arrows]: Cat.Instances.Shape.Parallel.html
+`Limit`{.Agda} of a [[parallel arrows]] diagram.
 
 ```agda
 is-equaliser→is-limit

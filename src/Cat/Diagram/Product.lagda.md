@@ -67,23 +67,23 @@ the pairing $\langle f, g \rangle$ is a global element of the product $A
       ⟨_,_⟩     : ∀ {Q} (p1 : Hom Q A) (p2 : Hom Q B) → Hom Q P
       π₁∘factor : ∀ {Q} {p1 : Hom Q _} {p2} → π₁ ∘ ⟨ p1 , p2 ⟩ ≡ p1
       π₂∘factor : ∀ {Q} {p1 : Hom Q _} {p2} → π₂ ∘ ⟨ p1 , p2 ⟩ ≡ p2
-  
+
       unique : ∀ {Q} {p1 : Hom Q A} {p2}
              → (other : Hom Q P)
              → π₁ ∘ other ≡ p1
              → π₂ ∘ other ≡ p2
              → other ≡ ⟨ p1 , p2 ⟩
-  
+
     unique₂ : ∀ {Q} {pr1 : Hom Q A} {pr2}
             → ∀ {o1} (p1 : π₁ ∘ o1 ≡ pr1) (q1 : π₂ ∘ o1 ≡ pr2)
             → ∀ {o2} (p2 : π₁ ∘ o2 ≡ pr1) (q2 : π₂ ∘ o2 ≡ pr2)
             → o1 ≡ o2
     unique₂ p1 q1 p2 q2 = unique _ p1 q1 ∙ sym (unique _ p2 q2)
-  
+
     ⟨⟩∘ : ∀ {Q R} {p1 : Hom Q A} {p2 : Hom Q B} (f : Hom R Q)
         → ⟨ p1 , p2 ⟩ ∘ f ≡ ⟨ p1 ∘ f , p2 ∘ f ⟩
     ⟨⟩∘ f = unique _ (pulll π₁∘factor) (pulll π₂∘factor)
-  
+
     ⟨⟩-η : ⟨ π₁ , π₂ ⟩ ≡ id
     ⟨⟩-η = sym $ unique id (idr _) (idr _)
 ```
@@ -98,7 +98,7 @@ A product of $A$ and $B$ is an explicit choice of product diagram:
       π₁ : Hom apex A
       π₂ : Hom apex B
       has-is-product : is-product π₁ π₂
-  
+
     open is-product has-is-product public
 ```
 

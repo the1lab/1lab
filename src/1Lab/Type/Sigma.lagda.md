@@ -259,6 +259,9 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
 Σ-map₂ : ({x : A} → P x → Q x) → Σ _ P → Σ _ Q
 Σ-map₂ f (x , y) = (x , f y)
 
+⟨_,_⟩ : (X → Y) → (X → Z) → X → Y × Z
+⟨ f , g ⟩ x = f x , g x
+
 ×-map : (A → A') → (X → X') → A × X → A' × X'
 ×-map f g (x , y) = (f x , g y)
 

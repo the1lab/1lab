@@ -2,8 +2,11 @@
 ```agda
 open import 1Lab.Prelude
 
-open import Data.Dec.Base
 open import Data.Fin.Base
+open import Data.Dec
+open import Data.Sum
+
+open import Meta.Invariant
 
 import Data.Nat.Order as Nat
 import Data.Nat.Base as Nat
@@ -176,26 +179,78 @@ avoid-injective {suc n} (fsuc i) {fsuc j} {fsuc k} p =
   ap fsuc (avoid-injective {n} i {j} {k} (fsuc-inj p))
 ```
 
+## Iterated products and sums {defines="iterated-products"}
+
+We can break down $\Pi$-types and $\Sigma$-types over finite sets
+as iterated products and sums, respectively.
+
+```agda
+Fin-suc-Π
+  : ∀ {ℓ} {n} {A : Fin (suc n) → Type ℓ}
+  → (∀ x → A x) ≃ (A fzero × (∀ x → A (fsuc x)))
+Fin-suc-Π = Iso→Equiv λ where
+  .fst f → f fzero , (λ x → f (fsuc x))
+
+  .snd .is-iso.inv (z , f) fzero    → z
+  .snd .is-iso.inv (z , f) (fsuc x) → f x
+
+  .snd .is-iso.rinv x → refl
+
+  .snd .is-iso.linv k i fzero    → k fzero
+  .snd .is-iso.linv k i (fsuc n) → k (fsuc n)
+
+Fin-suc-Σ
+  : ∀ {ℓ} {n} {A : Fin (suc n) → Type ℓ}
+  → Σ (Fin (suc n)) A ≃ (A fzero ⊎ Σ (Fin n) (A ∘ fsuc))
+Fin-suc-Σ = Iso→Equiv λ where
+  .fst (fzero , a) → inl a
+  .fst (fsuc x , a) → inr (x , a)
+
+  .snd .is-iso.inv (inl a) → fzero , a
+  .snd .is-iso.inv (inr (x , a)) → fsuc x , a
+
+  .snd .is-iso.rinv (inl _) → refl
+  .snd .is-iso.rinv (inr _) → refl
+
+  .snd .is-iso.linv (fzero , a) → refl
+  .snd .is-iso.linv (fsuc x , a) → refl
+```
+
 ## Finite choice {defines="finite-choice"}
 
 An important fact about the [[(standard) finite sets|standard finite
 sets]] in constructive mathematics is that they _always_ support choice,
-which we phrase below as a "search" operator: If $M$ is any extension
-system (for example, the [[propositional truncation]] monad), then $M$
-commutes with finite products:
+which we phrase below as a "search" operator: if $M$ is any `Monoidal`{.Agda}
+functor on types, then it commutes with products. Since $\Pi$-types
+over $[n]$ are $n$-ary [[iterated products]], we have that $M$ commutes
+with $\Pi$.
+
+```agda
+Fin-Monoidal
+  : ∀ {ℓ} n {A : Fin n → Type ℓ} {M}
+      (let module M = Effect M)
+  → ⦃ Monoidal M ⦄
+  → (∀ x → M.₀ (A x)) → M.₀ (∀ x → A x)
+Fin-Monoidal zero _ = invmap (λ _ ()) _ munit
+Fin-Monoidal (suc n) k =
+  Fin-suc-Π e⁻¹ <≃> (k 0 <,> Fin-Monoidal n (k ∘ fsuc))
+```
+
+<!--
+```agda
+_ = Idiom
+```
+-->
+
+In particular, instantiating $M$ with the [[propositional truncation]]
+(which is an `Idiom`{.Agda} and hence `Monoidal`{.Agda}), we get a
+version of the [[axiom of choice]] for finite sets.
 
 ```agda
 finite-choice
-  : ∀ {ℓ} n {A : Fin n → Type ℓ} {M}
-      (let module M = Effect M)
-  → ⦃ Idiom M ⦄
-  → (∀ x → M.₀ (A x)) → M.₀ (∀ x → A x)
-finite-choice zero _        = pure λ ()
-finite-choice (suc n) {A} k = ⦇ elim (k fzero) (finite-choice n (k ∘ fsuc)) ⦈
-  where
-    elim : A fzero → (∀ x → A (fsuc x)) → ∀ x → A x
-    elim azero asuc fzero = azero
-    elim azero asuc (fsuc x) = asuc x
+  : ∀ {ℓ} n {A : Fin n → Type ℓ}
+  → (∀ x → ∥ A x ∥) → ∥ (∀ x → A x) ∥
+finite-choice n = Fin-Monoidal n
 ```
 
 An immediate consequence is that surjections into a finite set (thus,
@@ -207,6 +262,40 @@ finite-surjection-split
   → (f : B → Fin n) → is-surjective f
   → ∥ (∀ x → fibre f x) ∥
 finite-surjection-split f = finite-choice _
+```
+
+Dually, we have that any `Alternative`{.Agda} functor $M$ commutes with
+$\Sigma$-types on finite sets, since those are iterated sums.
+
+```agda
+Fin-Alternative
+  : ∀ {ℓ} n {A : Fin n → Type ℓ} {M}
+      (let module M = Effect M)
+  → ⦃ Alternative M ⦄
+  → (∀ x → M.₀ (A x)) → M.₀ (Σ (Fin n) A)
+Fin-Alternative zero _ = invmap (λ ()) (λ ()) empty
+Fin-Alternative (suc n) k =
+  Fin-suc-Σ e⁻¹ <≃> (k 0 <+> Fin-Alternative n (k ∘ fsuc))
+```
+
+::: {.definition #omniscience-of-finite-sets}
+As a consequence, instantiating $M$ with `Dec`{.Agda}, we get that
+finite sets are **exhaustible** and **omniscient**, which means that
+any family of decidable types indexed by a finite sets yields decidable
+$\Pi$-types and $\Sigma$-types, respectively.
+:::
+
+```agda
+instance
+  Fin-exhaustible
+    : ∀ {n ℓ} {A : Fin n → Type ℓ}
+    → ⦃ ∀ {x} → Dec (A x) ⦄ → Dec (∀ x → A x)
+  Fin-exhaustible {n} ⦃ d ⦄ = Fin-Monoidal n λ _ → d
+
+  Fin-omniscient
+    : ∀ {n ℓ} {A : Fin n → Type ℓ}
+    → ⦃ ∀ {x} → Dec (A x) ⦄ → Dec (Σ (Fin n) A)
+  Fin-omniscient {n} ⦃ d ⦄ = Fin-Alternative n λ _ → d
 ```
 
 ## Injections and surjections

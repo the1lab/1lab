@@ -71,4 +71,10 @@ ipushr p = injective (F-∘ _ _ ·· ap₂ D._∘_ (ε _) refl ·· D.pullr p �
 
 inv∘l : x D.∘ F₁ f ≡ y → from x C.∘ f ≡ from y
 inv∘l x = sym (ε-twist (D.eliml F-id ∙ sym x)) ∙ C.idl _
+
+whackl : x D.∘ F₁ f ≡ F₁ g → from x C.∘ f ≡ g
+whackl p = sym (ε-twist (D.idr _ ∙ sym p)) ∙ C.elimr (from-id refl)
+
+whackr : F₁ f D.∘ x ≡ F₁ g → f C.∘ from x ≡ g
+whackr p = ε-twist (p ∙ sym (D.idl _)) ∙ C.eliml (from-id refl)
 ```

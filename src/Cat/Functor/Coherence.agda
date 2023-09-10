@@ -92,11 +92,15 @@ define-dualiser nm  = do
   let tm = tel→lam tele (def dual (argN (var 0 []) ∷ []))
   make-copattern false nm tm tp
 
-nat-assoc-to    : f ⇒ g ⊗ h ⊗ i → f ⇒ (g ⊗ h) ⊗ i
-nat-assoc-from  : f ⊗ g ⊗ h ⇒ i → (f ⊗ g) ⊗ h ⇒ i
-op-compose-into : f ⇒ Functor.op (g ⊗ h) → f ⇒ Functor.op g ⊗ Functor.op h
+nat-assoc-to     : f ⇒ g ⊗ h ⊗ i → f ⇒ (g ⊗ h) ⊗ i
+nat-assoc-from   : f ⊗ g ⊗ h ⇒ i → (f ⊗ g) ⊗ h ⇒ i
+nat-unassoc-to   : f ⇒ (g ⊗ h) ⊗ i → f ⇒ g ⊗ h ⊗ i
+nat-unassoc-from : (f ⊗ g) ⊗ h ⇒ i → f ⊗ g ⊗ h ⇒ i
+op-compose-into  : f ⇒ Functor.op (g ⊗ h) → f ⇒ Functor.op g ⊗ Functor.op h
 
-unquoteDef nat-assoc-to nat-assoc-from op-compose-into = do
+unquoteDef nat-assoc-to nat-assoc-from nat-unassoc-to nat-unassoc-from op-compose-into = do
   define-eta-expansion nat-assoc-to
   define-eta-expansion nat-assoc-from
+  define-eta-expansion nat-unassoc-to
+  define-eta-expansion nat-unassoc-from
   define-eta-expansion op-compose-into

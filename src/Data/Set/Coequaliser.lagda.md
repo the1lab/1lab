@@ -1,8 +1,11 @@
 <!--
 ```agda
+open import 1Lab.Reflection.Induction
 open import 1Lab.Prelude
 
 open import Data.Dec
+
+open is-iso
 ```
 -->
 
@@ -18,7 +21,7 @@ private variable
 ```
 -->
 
-# Set coequalisers
+# Set coequalisers {defines="set-coequaliser"}
 
 In their most general form, colimits can be pictured as taking disjoint
 unions and then "gluing together" some parts. The "gluing together" part
@@ -249,7 +252,7 @@ coequalisers. Observe that, by taking the total space of a relation $R :
 A \to A \to \ty$, we obtain two projection maps which have as image all
 of the possible related elements in $A$. By coequalising these
 projections, we obtain a space where any related objects are identified:
-The **quotient** $A/R$.
+the **quotient** $A/R$.
 
 ```agda
 private
@@ -276,6 +279,8 @@ projections from the total space of $R$:
 _/_ : ∀ {ℓ ℓ'} (A : Type ℓ) (R : A → A → Type ℓ') → Type (ℓ ⊔ ℓ')
 A / R = Coeq (/-left {R = R}) /-right
 
+infixl 25 _/_
+
 quot : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {x y : A} → R x y
     → Path (A / R) (inc x) (inc y)
 quot r = glue (_ , _ , r)
@@ -291,6 +296,38 @@ Quot-elim : ∀ {ℓ} {B : A / R → Type ℓ}
           → (∀ x y (r : R x y) → PathP (λ i → B (quot r i)) (f x) (f y))
           → ∀ x → B x
 Quot-elim bset f r = Coeq-elim bset f λ { (x , y , w) → r x y w }
+```
+
+::: {.definition #coequalisers-as-quotients}
+Conversely, we can describe coequalisers in terms of quotients.
+In order to form the coequaliser of $f, g : A \to B$, we interpret the
+span formed by $f$ and $g$ as a binary relation on $B$: a witness
+that $x, y : B$ are related is an element of the [[fibre]] of
+$\langle f, g \rangle$ at $(x, y)$, that is an $a : A$ such that
+$f(a) = x$ and $g(a) = y$.
+:::
+
+```agda
+span→R
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f g : A → B)
+  → B → B → Type (ℓ ⊔ ℓ')
+span→R f g = curry (fibre ⟨ f , g ⟩)
+```
+
+We then recover the coequaliser of $f$ and $g$ as the quotient of $B$
+by this relation.
+
+```agda
+Coeq≃quotient
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f g : A → B)
+  → Coeq f g ≃ B / span→R f g
+Coeq≃quotient {B = B} f g = Iso→Equiv is where
+  is : Iso (Coeq f g) (B / span→R f g)
+  is .fst = Coeq-rec inc λ a → quot (a , refl)
+  is .snd .inv = Coeq-rec inc λ (_ , _ , a , p) →
+    sym (ap (inc ∘ fst) p) ·· glue a ·· ap (inc ∘ snd) p
+  is .snd .rinv = elim! λ _ → refl
+  is .snd .linv = elim! λ _ → refl
 ```
 
 <!--
@@ -325,6 +362,8 @@ record Congruence {ℓ} (A : Type ℓ) ℓ' : Type (ℓ ⊔ lsuc ℓ') where
     reflᶜ : ∀ {x} → x ∼ x
     _∙ᶜ_  : ∀ {x y z} → x ∼ y → y ∼ z → x ∼ z
     symᶜ  : ∀ {x y}   → x ∼ y → y ∼ x
+
+  infixr 30 _∙ᶜ_
 
   relation = _∼_
 
@@ -409,16 +448,24 @@ Discrete-quotient cong rdec {x} {y} =
   go x y with rdec x y
   ... | yes xRy = yes (quot xRy)
   ... | no ¬xRy = no λ p → ¬xRy (Congruence.effective cong p)
+
+open Congruence
+
+Congruence-pullback
+  : ∀ {ℓa ℓb ℓ} {A : Type ℓa} {B : Type ℓb}
+  → (A → B) → Congruence B ℓ → Congruence A ℓ
+Congruence-pullback {ℓ = ℓ} {A = A} f R = f*R where
+  module R = Congruence R
+  f*R : Congruence A ℓ
+  f*R ._∼_ x y = f x R.∼ f y
+  f*R .has-is-prop x y = R.has-is-prop _ _
+  f*R .reflᶜ = R.reflᶜ
+  f*R ._∙ᶜ_ f g = f R.∙ᶜ g
+  f*R .symᶜ f = R.symᶜ f
 ```
 -->
 
 ## Relation to surjections {defines="surjections-are-quotient-maps"}
-
-<!--
-```agda
-open Congruence
-```
--->
 
 As mentioned in the definition of [[surjection]], we can view a cover $f
 : A \to B$ as expressing a way of _gluing together_ the type $B$ by
@@ -506,7 +553,6 @@ is a set, that means it's an equivalence.
 
 <!--
 ```agda
-
 private module test where
   variable C : Type ℓ
 
@@ -518,5 +564,73 @@ private module test where
     → ((x : A) (y : B) → f (inc (x , y)) ≡ g (inc (x , y)))
     → f ≡ g
   _ = ext
+```
+-->
+
+## Closures {defines="congruence-closure"}
+
+We define the reflexive, transitive and symmetric closure of a relation
+$R$ and prove that it induces the same quotient as $R$.
+
+```agda
+module _ {ℓ ℓ'} {A : Type ℓ} (R : A → A → Type ℓ') where
+  data Closure : A → A → Type (ℓ ⊔ ℓ') where
+    inc : ∀ {x y} → R x y → Closure x y
+    Closure-refl : ∀ {x} → Closure x x
+    Closure-trans : ∀ {x y z} → Closure x y → Closure y z → Closure x z
+    Closure-sym : ∀ {x y} → Closure y x → Closure x y
+    squash : ∀ {x y} → is-prop (Closure x y)
+
+  Closure-congruence : Congruence A _
+  Closure-congruence .Congruence._∼_ = Closure
+  Closure-congruence .Congruence.has-is-prop _ _ = squash
+  Closure-congruence .Congruence.reflᶜ = Closure-refl
+  Closure-congruence .Congruence._∙ᶜ_ = Closure-trans
+  Closure-congruence .Congruence.symᶜ = Closure-sym
+```
+
+<!--
+```agda
+  unquoteDecl Closure-elim-prop = make-elim-n 1 Closure-elim-prop (quote Closure)
+
+  Closure-rec-congruence
+    : ∀ {ℓ''} (S : Congruence A ℓ'') (let module S = Congruence S)
+    → (∀ {x y} → R x y → x S.∼ y)
+    → ∀ {x y} → Closure x y → x S.∼ y
+  Closure-rec-congruence S h = Closure-elim-prop
+    {P = λ {x} {y} _ → x S.∼ y}
+    (λ _ → S.has-is-prop _ _)
+    h S.reflᶜ (λ _ q _ r → q S.∙ᶜ r) (λ _ r → S.symᶜ r)
+    where module S = Congruence S
+
+  Closure-rec-≡
+    : ∀ {ℓ'} {D : Type ℓ'}
+    → ⦃ H-Level D 2 ⦄
+    → (f : A → D)
+    → (∀ {x y} → R x y → f x ≡ f y)
+    → ∀ {x y} → Closure x y → f x ≡ f y
+  Closure-rec-≡ f = Closure-rec-congruence (Kernel-pair (hlevel 2) f)
+```
+-->
+
+```agda
+Closure-quotient
+  : ∀ {ℓ ℓ'} {A : Type ℓ} (R : A → A → Type ℓ')
+  → A / R ≃ A / Closure R
+Closure-quotient {A = A} R = Iso→Equiv is where
+  is : Iso (A / R) (A / Closure R)
+  is .fst = Coeq-rec inc λ (a , b , r) → quot (inc r)
+  is .snd .inv = Coeq-rec inc λ (a , b , r) → Closure-rec-≡ _ inc quot r
+  is .snd .rinv = elim! λ _ → refl
+  is .snd .linv = elim! λ _ → refl
+```
+
+<!--
+```agda
+instance
+  Closure-H-Level
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {x y} {n}
+    → H-Level (Closure R x y) (suc n)
+  Closure-H-Level = prop-instance squash
 ```
 -->

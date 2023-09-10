@@ -94,14 +94,14 @@ module _ {ℓ} where
 ## Finite set-limits
 
 For expository reasons, we present the computation of the most famous
-shapes of [[finite limit]] ([[terminal objects]], products, [[pullbacks]],
+shapes of [[finite limit]] ([[terminal objects]], [[products]], [[pullbacks]],
 and [[equalisers]]) in the category of sets. All the definitions below
 are redundant, since finite limits are always small, and thus the
 category of sets of _any_ level $\ell$ admits them.
 
 ```agda
   Sets-terminal : Terminal (Sets ℓ)
-  Sets-terminal .top = el! (Lift _  ⊤)
+  Sets-terminal .top = el! (Lift _ ⊤)
   Sets-terminal .has⊤ _ = hlevel 0
 ```
 

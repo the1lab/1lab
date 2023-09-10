@@ -18,7 +18,7 @@ open _=>_
 module Cat.Functor.Compose where
 ```
 
-# Functoriality of functor composition
+# Functoriality of functor composition {defines="precomposition-functor postcomposition-functor"}
 
 When the operation of functor composition, $(F, G) \mapsto F \circ G$,
 is seen as happening not only to functors but to whole functor

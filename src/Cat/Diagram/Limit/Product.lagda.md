@@ -8,9 +8,9 @@ description: |
 ```agda
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Product.Indexed
+open import Cat.Instances.Shape.Two
 open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Discrete
-open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Product
 open import Cat.Prelude
@@ -34,47 +34,21 @@ open _=>_
 ```
 -->
 
-# Products are limits
+# Products are limits {defines="products-as-limits"}
 
 We establish the correspondence between binary products $A \times B$ and
-limits over the functor out of $\rm{Disc}(\{0,1\})$ which maps $0$
-to $A$ and $1$ to $B$. We begin by defining the functor (reusing
-existing infrastructure):
+limits over the functor out of the [[two-object category]] which maps $0$
+to $A$ and $1$ to $B$.
 
-```agda
-2-object-category : Precategory _ _
-2-object-category = Disc' (el Bool Bool-is-set)
-
-2-object-diagram : Ob → Ob → Functor 2-object-category C
-2-object-diagram a b = Disc-diagram λ where
-  true  → a
-  false → b
-```
-
-With that out of the way, we can establish the claimed equivalence. We
-start by showing that any pair of morphisms $A \ot Q \to B$ defines a
-cone over the discrete diagram consisting of $A$ and $B$. This is
-essentially by _definition_ of what it means to be a cone in this case,
-but they're arranged in very different ways:
-
-```agda
-Pair→Cone
-  : ∀ {q a b} → Hom q a → Hom q b
-  → Const q => (2-object-diagram a b)
-Pair→Cone f g = Disc-natural λ where
-  true  → f
-  false → g
-```
-
-The two-way correspondence between products and terminal cones is then
+The two-way correspondence between products and terminal cones is
 simple enough to establish by appropriately shuffling the data.
 
 ```agda
 is-product→is-limit
-  : ∀ {x a b} {p1 : Hom x a} {p2 : Hom x b}
-  → is-product C p1 p2
-  → is-limit {C = C} (2-object-diagram a b) x (Pair→Cone p1 p2)
-is-product→is-limit {x = x} {a} {b} {p1} {p2} is-prod =
+  : ∀ {x} {F : Functor 2-object-category C} {eps : Const x => F}
+  → is-product C (eps .η true) (eps .η false)
+  → is-limit {C = C} F x eps
+is-product→is-limit {x = x} {F} {eps} is-prod =
   to-is-limitp ml λ where
     {true} → refl
     {false} → refl
@@ -82,15 +56,11 @@ is-product→is-limit {x = x} {a} {b} {p1} {p2} is-prod =
     module is-prod = is-product is-prod
     open make-is-limit
 
-    ml : make-is-limit (2-object-diagram a b) x
-    ml .ψ true = p1
-    ml .ψ false = p2
-    ml .commutes {true}  {true}  f = idl p1
-    ml .commutes {true}  {false} f = absurd (true≠false f)
-    ml .commutes {false} {true}  f = absurd (true≠false $ sym f)
-    ml .commutes {false} {false} f = idl p2
-    ml .universal       eps _ = is-prod.⟨ eps true , eps false ⟩
-    ml .factors {true}  eps _ = is-prod.π₁∘factor
+    ml : make-is-limit F x
+    ml .ψ j = eps .η j
+    ml .commutes f = sym (eps .is-natural _ _ _) ∙ idr _
+    ml .universal eps _ = is-prod.⟨ eps true , eps false ⟩
+    ml .factors {true} eps _ = is-prod.π₁∘factor
     ml .factors {false} eps _ = is-prod.π₂∘factor
     ml .unique eps p other q = is-prod.unique other (q true) (q false)
 
@@ -102,9 +72,12 @@ is-limit→is-product
 is-limit→is-product {a} {b} {K} {eps} lim = prod where
   module lim = is-limit lim
 
+  D : Functor 2-object-category C
+  D = 2-object-diagram a b
+
   pair
     : ∀ {y} → Hom y a → Hom y b
-    → ∀ (j : Bool) → Hom y (2-object-diagram a b .F₀ j)
+    → ∀ (j : Bool) → Hom y (D .F₀ j)
   pair p1 p2 true = p1
   pair p1 p2 false = p2
 
@@ -112,10 +85,10 @@ is-limit→is-product {a} {b} {K} {eps} lim = prod where
     : ∀ {y} {p1 : Hom y a} {p2 : Hom y b}
     → {i j : Bool}
     → (p : i ≡ j)
-    → 2-object-diagram a b .F₁ p ∘ pair p1 p2 i ≡ pair p1 p2 j
+    → D .F₁ p ∘ pair p1 p2 i ≡ pair p1 p2 j
   pair-commutes {p1 = p1} {p2 = p2} =
-      J (λ _ p → 2-object-diagram a b .F₁ p ∘ pair p1 p2 _ ≡ pair p1 p2 _)
-        (eliml (2-object-diagram a b .F-id))
+      J (λ _ p → D .F₁ p ∘ pair p1 p2 _ ≡ pair p1 p2 _)
+        (eliml (D .F-id))
 
   prod : is-product C (eps .η true) (eps .η false)
   prod .⟨_,_⟩ f g = lim.universal (pair f g) pair-commutes
@@ -125,8 +98,8 @@ is-limit→is-product {a} {b} {K} {eps} lim = prod where
     true → p
     false → q
 
-Product→Limit : ∀ {a b} → Product C a b → Limit (2-object-diagram a b)
-Product→Limit prod = to-limit (is-product→is-limit (has-is-product prod))
+Product→Limit : ∀ {F : Functor 2-object-category C} → Product C (F # true) (F # false) → Limit F
+Product→Limit prod = to-limit (is-product→is-limit {eps = 2-object-nat-trans _ _} (has-is-product prod))
 
 Limit→Product : ∀ {a b} → Limit (2-object-diagram a b) → Product C a b
 Limit→Product lim .apex = Limit.apex lim
@@ -134,32 +107,6 @@ Limit→Product lim .π₁ = Limit.cone lim .η true
 Limit→Product lim .π₂ = Limit.cone lim .η false
 Limit→Product lim .has-is-product =
   is-limit→is-product (Limit.has-limit lim)
-```
-
-We note that _any_ functor $F : \rm{Disc}(\{0,1\}) \to \cC$ is
-canonically _equal_, not just naturally isomorphic, to the one we
-defined above.
-
-```agda
-canonical-functors
-  : ∀ (F : Functor 2-object-category C)
-  → F ≡ 2-object-diagram (F # true) (F # false)
-canonical-functors F = Functor-path p q where
-  p : ∀ x → _
-  p false = refl
-  p true  = refl
-
-  q : ∀ {x y} (f : x ≡ y) → _
-  q {false} {false} p =
-    F .F₁ p           ≡⟨ ap (F .F₁) (Bool-is-set _ _ _ _) ⟩
-    F .F₁ refl        ≡⟨ F .F-id ⟩
-    id                ∎
-  q {true} {true} p =
-    F .F₁ p           ≡⟨ ap (F .F₁) (Bool-is-set _ _ _ _) ⟩
-    F .F₁ refl        ≡⟨ F .F-id ⟩
-    id                ∎
-  q {false} {true} p = absurd (true≠false (sym p))
-  q {true} {false} p = absurd (true≠false p)
 ```
 
 ## Indexed products as limits
