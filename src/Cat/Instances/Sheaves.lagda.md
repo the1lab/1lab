@@ -16,6 +16,7 @@ open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Monad.Limits
 open import Cat.Diagram.Exponential
 open import Cat.Functor.Equivalence
+open import Cat.Instances.Shape.Two
 open import Cat.Site.Sheafification
 open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Functor
@@ -137,6 +138,7 @@ finite cases:
     prod .has-is-product .unique    = prod' .unique
 
     prod .apex .snd = is-sheaf-limit
+      {F = 2-object-diagram _ _} {ψ = 2-object-nat-trans _ _}
       (is-product→is-limit (PSh ℓ C) (prod' .has-is-product))
       (λ { true → ashf ; false → bshf })
 ```

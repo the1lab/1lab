@@ -205,7 +205,7 @@ private
 ```
 -->
 
-## The precategory of Sets
+## The precategory of Sets {defines="category-of-sets"}
 
 Given a [[universe level|universe]], we can consider the collection of
 [[all sets|set]] of that level. This assembles into a

@@ -14,7 +14,7 @@ import Cat.Reasoning
 module Cat.Instances.Shape.Parallel where
 ```
 
-# The "parallel arrows" category
+# The "parallel arrows" category {defines="parallel-arrows"}
 
 The parallel arrows category is the category with two objects, and two
 parallel arrows between them. It is the shape of [[equaliser]] and
@@ -109,4 +109,17 @@ module _ {o ℓ} {C : Precategory o ℓ} where
     nt .is-natural false true true = idr _ ∙ equal
     nt .is-natural false true false = idr _
     nt .is-natural false false tt = idr _ ∙ introl (F .F-id)
+
+  Cofork→Cocone
+    : ∀ {e} (F : Functor ·⇉· C) {coequ : Hom (F .F₀ true) e}
+    → coequ ∘ forkl F ≡ coequ ∘ forkr F
+    → F => Const e
+  Cofork→Cocone {e = e} F {coequ} coequal = nt where
+    nt : F => Const e
+    nt .η true = coequ
+    nt .η false = coequ ∘ forkl F
+    nt .is-natural true true tt = elimr (F .F-id) ∙ sym (idl _)
+    nt .is-natural false true true = sym coequal ∙ sym (idl _)
+    nt .is-natural false true false = sym (idl _)
+    nt .is-natural false false tt = elimr (F .F-id) ∙ sym (idl _)
 ```

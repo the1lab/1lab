@@ -60,7 +60,7 @@ $X$ ranges over a universe is contractible, so we're left with the type
 of natural numbers.
 
 This simply won't do: we want the type of finite sets to be equivalent
-to the (core of the) _category_ of finite sets, where the automorphism
+to the ([[core]] of the) _category_ of finite sets, where the automorphism
 group of $n$ has $n!$ elements, not exactly one element. What we do is
 appeal to a basic intuition: A groupoid is the sum over its connected
 components, and we have representatives for every connected component
@@ -124,9 +124,7 @@ Finite→Discrete {A = A} ⦃ f ⦄ {x} {y} = rec! go (f .enumeration) where
   ... | no ¬p = no λ p → ¬p (ap (e .fst) p)
 
 Dec→Finite : ∀ {ℓ} {A : Type ℓ} → is-prop A → Dec A → Finite A
-Dec→Finite ap d with d
-... | yes p = fin (inc (is-contr→≃ (is-prop∙→is-contr ap p) Finite-one-is-contr))
-... | no ¬p = fin (inc (is-empty→≃⊥ ¬p ∙e Finite-zero-is-initial e⁻¹))
+Dec→Finite ap d = fin (inc (Dec→Fin ap d .snd e⁻¹))
 
 Discrete→Finite≡ : ∀ {ℓ} {A : Type ℓ} → Discrete A → {x y : A} → Finite (x ≡ y)
 Discrete→Finite≡ d = Dec→Finite (Discrete→is-set d _ _) d

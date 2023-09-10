@@ -1118,5 +1118,8 @@ fibre-∘-≃ {f = f} {g = g} c = Iso→Equiv (fwd , iso bwd invl invr)
       invr : ∀ x → bwd (fwd x) ≡ x
       invr (a , p) i .fst = a
       invr (a , p) i .snd = ∙-idl p i
+
+is-empty→≃ : ¬ A → ¬ B → A ≃ B
+is-empty→≃ ¬a ¬b = is-empty→≃⊥ ¬a ∙e is-empty→≃⊥ ¬b e⁻¹
 ```
 -->

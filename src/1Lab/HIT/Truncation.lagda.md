@@ -15,6 +15,8 @@ open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
+
+open import Data.Dec.Base
 ```
 -->
 
@@ -115,6 +117,10 @@ instance
     { methods = i .Inductive.methods
     ; from    = λ f → ∥-∥-elim (λ x → hlevel 1) (i .Inductive.from f)
     }
+
+  Dec-∥∥ : ∀ {ℓ} {A : Type ℓ} → ⦃ Dec A ⦄ → Dec ∥ A ∥
+  Dec-∥∥ ⦃ yes a ⦄ = yes (inc a)
+  Dec-∥∥ ⦃ no ¬a ⦄ = no (rec! ¬a)
 ```
 -->
 

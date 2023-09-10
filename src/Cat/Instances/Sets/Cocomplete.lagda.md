@@ -2,9 +2,15 @@
 ```agda
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Instances.Sets.Complete
+open import Cat.Diagram.Colimit.Finite
 open import Cat.Diagram.Colimit.Base
+open import Cat.Diagram.Coequaliser
+open import Cat.Diagram.Coproduct
 open import Cat.Diagram.Initial
+open import Cat.Diagram.Pushout
 open import Cat.Prelude
+
+open import Data.Sum
 ```
 -->
 
@@ -136,6 +142,96 @@ definition.
       x
 ```
 
+## Finite set-colimits
+
+<!--
+```agda
+module _ {ℓ} where
+  open Precategory (Sets ℓ)
+
+  private variable
+    A B : Set ℓ
+    f g : ⌞ A ⌟ → ⌞ B ⌟
+
+  open Initial
+  open is-coproduct
+  open Coproduct
+  open is-pushout
+  open Pushout
+  open is-coequaliser
+  open Coequaliser
+```
+-->
+
+For expository reasons, we present the computation of the most famous
+shapes of [[finite colimit]] ([[initial objects]], [[coproducts]], [[pushouts]],
+and [[coequalisers]]) in the category of sets. All the definitions below
+are redundant, since finite colimits are always small, and thus the
+category of sets of _any_ level $\ell$ admits them.
+
+```agda
+  Sets-initial : Initial (Sets ℓ)
+  Sets-initial .bot = el! (Lift _ ⊥)
+  Sets-initial .has⊥ _ .centre ()
+  Sets-initial .has⊥ _ .paths _ = ext λ ()
+```
+
+Coproducts are given by disjoint sums:
+
+```agda
+  Sets-coproducts : (A B : Set ℓ) → Coproduct (Sets ℓ) A B
+  Sets-coproducts A B .coapex = el! (∣ A ∣ ⊎ ∣ B ∣)
+  Sets-coproducts A B .in₀ = inl
+  Sets-coproducts A B .in₁ = inr
+  Sets-coproducts A B .has-is-coproduct .is-coproduct.[_,_] f g = Data.Sum.[ f , g ]
+  Sets-coproducts A B .has-is-coproduct .in₀∘factor = refl
+  Sets-coproducts A B .has-is-coproduct .in₁∘factor = refl
+  Sets-coproducts A B .has-is-coproduct .unique o p q = sym ([]-unique (sym p) (sym q))
+```
+
+[[Set coequalisers]] are described in their own module.
+
+```agda
+  Sets-coequalisers : (f g : Hom A B) → Coequaliser (Sets ℓ) {A = A} {B = B} f g
+  Sets-coequalisers f g .coapex .∣_∣ = Coeq f g
+  Sets-coequalisers f g .coapex .is-tr = hlevel 2
+  Sets-coequalisers f g .coeq = inc
+  Sets-coequalisers f g .has-is-coeq .coequal = ext λ x → glue _
+  Sets-coequalisers f g .has-is-coeq .universal {e' = e'} p = Coeq-rec e' (unext p)
+  Sets-coequalisers f g .has-is-coeq .factors = refl
+  Sets-coequalisers f g .has-is-coeq .unique q = reext! q
+```
+
+Pushouts are similar to coequalisers, but gluing together points of $A + B$.
+
+```agda
+  Sets-pushouts : ∀ {A B C} (f : Hom C A) (g : Hom C B)
+                → Pushout (Sets ℓ) {X = C} {Y = A} {Z = B} f g
+  Sets-pushouts f g .coapex .∣_∣   = Coeq (inl ⊙ f) (inr ⊙ g)
+  Sets-pushouts f g .coapex .is-tr = hlevel 2
+  Sets-pushouts f g .i₁ a = inc (inl a)
+  Sets-pushouts f g .i₂ b = inc (inr b)
+  Sets-pushouts f g .has-is-po .square = ext λ x → glue _
+  Sets-pushouts f g .has-is-po .universal {i₁' = i₁'} {i₂'} p =
+    Coeq-rec Data.Sum.[ i₁' , i₂' ] (unext p)
+  Sets-pushouts f g .has-is-po .i₁∘universal = refl
+  Sets-pushouts f g .has-is-po .i₂∘universal = refl
+  Sets-pushouts f g .has-is-po .unique q r =
+    ext (Equiv.from ⊎-universal (unext q , unext r))
+```
+
+Hence, `Sets`{.Agda} is finitely cocomplete:
+
+```agda
+  open Finitely-cocomplete
+
+  Sets-finitely-cocomplete : Finitely-cocomplete (Sets ℓ)
+  Sets-finitely-cocomplete .initial = Sets-initial
+  Sets-finitely-cocomplete .coproducts = Sets-coproducts
+  Sets-finitely-cocomplete .coequalisers = Sets-coequalisers
+  Sets-finitely-cocomplete .pushouts = Sets-pushouts
+```
+
 # Coproducts are disjoint
 
 As a final lemma, we prove that coproducts in $\Sets$, as constructed
@@ -163,7 +259,7 @@ F_j$.
 
 ```agda
     coprod : is-disjoint-coproduct _ _ _
-    coprod .is-coproduct = coprod.has-is-ic
+    coprod .has-is-ic = coprod.has-is-ic
     coprod .summands-intersect i j = Sets-pullbacks _ _
 ```
 
@@ -200,13 +296,3 @@ truncation --- to prove $\bot$ using the assumption that $i ≠ j$.
       uniq _ = funext λ where
         (_ , _ , p) → absurd (i≠j (ap (∥-∥₀-elim (λ _ → I .is-tr) fst) p))
 ```
-<!--
-```agda
-Sets-initial : ∀ {ℓ} → Initial (Sets ℓ)
-Sets-initial .Initial.bot = el! (Lift _ ⊥)
-Sets-initial .Initial.has⊥ x .centre ()
-Sets-initial .Initial.has⊥ x .paths _ = ext λ ()
-
-```
-
--->

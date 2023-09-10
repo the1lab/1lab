@@ -6,7 +6,6 @@ description: |
 
 <!--
 ```agda
-open import Cat.Instances.Shape.Terminal
 open import Cat.Instances.Shape.Initial
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Terminal
@@ -41,10 +40,10 @@ is-limit→is-terminal lim Y = contr (lim.universal (λ ()) (λ ()))
                                    (λ _ → sym (lim.unique _ _ _ λ ()))
   where module lim = is-limit lim
 
-is-terminal→is-limit : ∀ {T : Ob} → is-terminal C T → is-limit {C = C} ¡F T ¡nt
-is-terminal→is-limit {T} term = to-is-limitp ml λ {} where
+is-terminal→is-limit : ∀ {T : Ob} {F : Functor ⊥Cat C} → is-terminal C T → is-limit {C = C} F T ¡nt
+is-terminal→is-limit {T} {F} term = to-is-limitp ml λ {} where
   open make-is-limit
-  ml : make-is-limit ¡F T
+  ml : make-is-limit F T
   ml .ψ ()
   ml .commutes ()
   ml .universal _ _ = term _ .centre
@@ -55,6 +54,6 @@ Limit→Terminal : Limit {C = C} ¡F → Terminal C
 Limit→Terminal lim .top = Limit.apex lim
 Limit→Terminal lim .has⊤ = is-limit→is-terminal (Limit.has-limit lim)
 
-Terminal→Limit : Terminal C → Limit {C = C} ¡F
+Terminal→Limit : ∀ {F : Functor ⊥Cat C} → Terminal C → Limit {C = C} F
 Terminal→Limit term = to-limit (is-terminal→is-limit (term .has⊤))
 ```

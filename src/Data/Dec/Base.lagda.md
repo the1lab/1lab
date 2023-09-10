@@ -150,6 +150,9 @@ instance
 
   Dec-⊥ : Dec ⊥
   Dec-⊥ = no id
+
+  Dec-Lift : ∀ {ℓ ℓ'} {A : Type ℓ} → ⦃ Dec A ⦄ → Dec (Lift ℓ' A)
+  Dec-Lift ⦃ d ⦄ = Dec-≃ (Lift-≃ e⁻¹) d
 ```
 
 <!--

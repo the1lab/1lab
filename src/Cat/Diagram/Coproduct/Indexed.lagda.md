@@ -129,7 +129,7 @@ name _disjoint coproduct_: If $\bot$ is an initial object, then $F_i
 record is-disjoint-coproduct (F : Idx → C.Ob) (ι : ∀ i → C.Hom (F i) S)
   : Type (o ⊔ ℓ ⊔ level-of Idx) where
   field
-    is-coproduct         : is-indexed-coproduct F ι
+    has-is-ic            : is-indexed-coproduct F ι
     injections-are-monic : ∀ i → C.is-monic (ι i)
     summands-intersect   : ∀ i j → Pullback C (ι i) (ι j)
     different-images-are-disjoint
@@ -156,7 +156,7 @@ is-initial→is-disjoint-coproduct {F = F} {i = i} init = is-disjoint where
 
   open is-disjoint-coproduct
   is-disjoint : is-disjoint-coproduct F i
-  is-disjoint .is-coproduct = is-coprod
+  is-disjoint .has-is-ic = is-coprod
   is-disjoint .injections-are-monic i = absurd i
   is-disjoint .summands-intersect i j = absurd i
   is-disjoint .different-images-are-disjoint i j p = absurd i

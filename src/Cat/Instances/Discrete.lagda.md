@@ -143,7 +143,7 @@ computations with equalities and a whole waterfall of absurd cases:
 ```
 
 <!--
-```
+```agda
 Disc-adjunct
   : ∀ {iss : is-groupoid X}
   → (X → Ob C)

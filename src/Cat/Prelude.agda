@@ -12,7 +12,7 @@ open import 1Lab.Prelude
            ; _∘⟨_ to _⊙⟨_
            ; _⟩∘_ to _⟩⊙_
            )
-  hiding (id ; map ; _↠_)
+  hiding (id ; map ; _↠_ ; ⟨_,_⟩)
   public
 
 open import Data.Set.Truncation public
