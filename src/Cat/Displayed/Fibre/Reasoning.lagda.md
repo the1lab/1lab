@@ -30,7 +30,11 @@ open Fib public
 -->
 
 
-## Reasoning in Fibre Categories
+## Reasoning in fibre categories
+
+This module defines some helpers to help formalisation go smoother when
+we're working with fibre categories. Mathematically, it's not very
+interesting: it's pure engineering.
 
 ```agda
 private variable

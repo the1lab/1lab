@@ -41,19 +41,23 @@ private
 ```
 -->
 
-# Coproducts in Comprehension Categories
+# Coproducts in comprehension categories {defines="comprehension-coproduct"}
 
-Let $\cE$ be a [comprehension category] over $\cB$, and let $\cD$ be a
-[fibration] also over $\cB$. We say that $\cD$ has $\cE$-coproducts when:
+Let $\cE \liesover \cB$ be a [[comprehension category]] and $\cD
+\liesover \cB$ a [[fibration]] over the same base. We say that **$\cD$
+has $\cE$-coproducts** when:
+
 - For every $\Gamma : \cB$, $X : \cE_{\Gamma}$, and $A : \cD_{\Gamma, X}$,
-there exists an object $\coprod_{X} A : \cD{\Gamma}$
-- There exist cocartesian maps $\langle\rangle : A \to_{\pi} \coprod_{X} A$
-in $\cD$ over projections $\Gamma, X \to X$ in $\cB$.
-- For every diagram of following shape, if $f : X \to Y$ is cartesian in
+there exists an object $\coprod_{X} A : \cD_{\Gamma}$;
+
+- Every projection $\pi : \Gamma, X \to X$ induces a [[cocartesian map]]
+$\langle\rangle : A \to_{\pi} \coprod_{X} A$;
+
+- For every cubical diagram as below, if $f : X \to Y$ is cartesian in
 $\cE$, $g$ and $h$ are cartesian in $\cD$, and $s$ is cocartesian in
 $\cD$, then $r$ is cocartesian in $\cD$.
 
-~~~{.quiver}
+~~~{.quiver .tall-15}
 \begin{tikzcd}
 	A &&& B \\
 	&& {A'} &&& {B'} \\
@@ -73,10 +77,7 @@ $\cD$, then $r$ is cocartesian in $\cD$.
 	\arrow["s", from=1-4, to=2-6]
 	\arrow["h", from=2-3, to=2-6]
 \end{tikzcd}
-~~~      
-
-[comprehension category]: Cat.Displayed.Comprehension.html
-[fibration]: Cat.Displayed.Cartesian.html
+~~~
 
 From a type-theoretic perspective, the first two conditions are rather
 straightforward. The first condition establishes that we have a type
@@ -86,17 +87,17 @@ $$
 \frac{\Gamma, x : X \vdash a : A}{\Gamma \vdash \langle x, a \rangle : \coprod (x : X) A}
 $$
 
-Furthermore, cocartesianess of $\langle\rangle$ acts as an elimination
-rule for $\coprod_{X} A$, as it gives us a means of building maps out
-of it!
+The elimination rule comes from each $\langle\rangle$ being cocartesian,
+as cocartesian maps satisfy a mapping-out universal property, exactly
+like a coproduct should!
 
-However, the last condition is somewhat mysterious at first glance.
-What does stability of cocartesian morphisms over projections have
-to do with coproducts? Like many questions in category theory,
-this can be resolved by looking at things from a type-theoretic angle.
-Recall that cartesian morphisms act like substitutions; in this light,
-this condition is essentially asking that the introduction form for
-coproducts is stable under substitutions, which is of critical importance!
+However, at a glance, the last condition is somewhat mysterious.
+It says that cocartesian maps _over projections_ are stable: but what
+does that have to do with coproducts? This, like many other questions in
+category theory, is elucidated by thinking type-theoretically:
+A cartesian map in a comprehension category is essentially a
+substitution: the stability condition says that the introduction rule
+for coproducts is actually type-theoretic: stable under substitution.
 
 ```agda
 record has-comprehension-coproducts : Type (ob ⊔ ℓb ⊔ od ⊔ ℓd ⊔ oe ⊔ ℓe) where
@@ -124,8 +125,11 @@ record has-comprehension-coproducts : Type (ob ⊔ ℓb ⊔ od ⊔ ℓd ⊔ oe �
     is-cocartesian (⟨⟩-cocartesian x a)
 ```
 
-Now, some general facts about coproducts. To start, note that
-coproducts are functorial.
+Now, some general facts about coproducts. To start, note that forming
+coproducts is a functorial operation. The proof is very routine --- if
+you've seen one functoriality argument, you've seen them all --- so
+we've hidden it from the page.^[As a reminder, you can choose to toggle
+hidden code on the sidebar.]
 
 ```agda
   opaque
@@ -135,6 +139,15 @@ coproducts are functorial.
     ∐[_] {Γ} {x} {a} {b} f =
       ⟨⟩-cocartesian.universal′ x a id-comm-sym (⟨ x , b ⟩ D.∘′ f)
 
+    ∐[]-id : ∀ {Γ} {x : E.Ob[ Γ ]} {a : D.Ob[ Γ ⨾ x ]} → ∐[ D.id′ {x = a} ] ≡ D.id′
+    ∐[]-∘
+      : ∀ {Γ} {x : E.Ob[ Γ ]} {a b c : D.Ob[ Γ ⨾ x ]}
+      → (f : D.Hom[ id ] b c) (g : D.Hom[ id ] a b)
+      → ∐[ f D↓.∘ g ] D.≡[ sym (idl _) ] ∐[ f ] D.∘′ ∐[ g ]
+```
+
+<!--
+```agda
     ∐[]-natural
       : ∀ {Γ} {x : E.Ob[ Γ ]} {a b : D.Ob[ Γ ⨾ x ]}
       → (f : D.Hom[ id ] a b)
@@ -142,17 +155,12 @@ coproducts are functorial.
     ∐[]-natural {x = x} {a} {b} f =
       ⟨⟩-cocartesian.commutesp x a _ _
 
-    ∐[]-id : ∀ {Γ} {x : E.Ob[ Γ ]} {a : D.Ob[ Γ ⨾ x ]} → ∐[ D.id′ {x = a} ] ≡ D.id′
     ∐[]-id {x = x} {a = a} =
       sym $ ⟨⟩-cocartesian.unique _ _ _ $ from-pathp⁻ $ Dr.cast[] $
       D.id′ D.∘′ ⟨ x , a ⟩ D.≡[]⟨ D.idl′ _ ⟩
       ⟨ x , a ⟩            D.≡[]⟨ symP (D.idr′ _ ) ⟩
       ⟨ x , a ⟩ D.∘′ D.id′ ∎
-    
-    ∐[]-∘
-      : ∀ {Γ} {x : E.Ob[ Γ ]} {a b c : D.Ob[ Γ ⨾ x ]}
-      → (f : D.Hom[ id ] b c) (g : D.Hom[ id ] a b)
-      → ∐[ f D↓.∘ g ] D.≡[ sym (idl _) ] ∐[ f ] D.∘′ ∐[ g ]
+
     ∐[]-∘ {x = x} {a = a} {b = b} {c = c} f g =
       symP $ ⟨⟩-cocartesian.uniquep x a _ _ _ _ $
       (∐[ f ] D.∘′ ∐[ g ]) D.∘′ ⟨ x , a ⟩          D.≡[]⟨ Dr.pullr[] _ (∐[]-natural g) ⟩
@@ -160,10 +168,12 @@ coproducts are functorial.
       ⟨ x , c ⟩ D.∘′ f D.∘′ g                      D.≡[]⟨ to-pathp (Dr.unwhisker-r (ap (πᶜ ∘_) (idl _)) (idl _)) ⟩
       ⟨ x , c ⟩ D.∘′ (f D↓.∘ g) ∎
 ```
+-->
 
-We can construct maps out of coproducts $\coprod_{X} A \to B$ from
-maps $A \to \pi^{*}(B)$. Type theoretically, this gives us an elimination
-principle for coproducts!
+We can also re-package the cocartesianness of $\langle\rangle$ to give a
+method for constructing morphisms $\coprod_{X} A \to B$ given morphisms
+$A \to \pi^{*}(B)$. Type theoretically, this gives a much more familiar
+presentation of the elimination rule.
 
 ```agda
   opaque
@@ -181,9 +191,10 @@ principle for coproducts!
     ∐-elim-β f = ⟨⟩-cocartesian.commutesp _ _ _ _
 ```
 
-Coproduct elimination is also natural. If we put on our type theory
-goggles, we can see that this describes how to perform substitutions in
-coproducts.
+Putting on our type-theorist goggles, we're still missing one thing to
+call this a proper elimination rule: stability under substitution. In
+the categorical world, that's satisfied by the proof that the operation
+we just constructed is natural, given below.
 
 ```agda
     ∐-elim-natural
@@ -198,10 +209,10 @@ coproducts.
         D-fib.lifting πᶜ c D.∘′ Dr.hom[] (f D.∘′ g) ∎
 ```
 
-Conversely, we can make maps $A \to \pi^{*}(B)$ out of maps
-$\coprod_{X} A \to B$. This isn't quite as nice from a type theory
-point-of-view as the elimination principle; it's a weird mash-up
-of the introduction rule for coproducts, followed by reindexing.
+Conversely, we can make maps $A \to \pi^{*}(B)$ given maps $\coprod_{X}
+A \to B$. This isn't quite, type-theoretically, as the elimination
+principle: it's a weird mash-up of the introduction rule for coproducts,
+followed by substitution.
 
 ```agda
   opaque
@@ -226,8 +237,9 @@ of the introduction rule for coproducts, followed by reindexing.
 -->
 
 While `∐-transpose`{.Agda} may not play an obvious type-theoretic role,
-it is extremely important categorically; it is an inverse of
-`∐-elim`{.Agda}!
+it is extremely important categorically, since it is an inverse of
+`∐-elim`{.Agda}! Moreover, it's _also_ natural, but that proof is also
+hidden from the page for brevity.
 
 ```agda
   opaque
@@ -256,12 +268,7 @@ it is extremely important categorically; it is an inverse of
     → is-equiv (∐-transpose {a = a} {b = b})
   ∐-transpose-equiv = is-iso→is-equiv $
     iso ∐-elim ∐-transpose-elim ∐-elim-transpose
-```
--->
 
-`∐-transpose`{.Agda} is also natural.
-
-```agda
   opaque
     unfolding ∐-transpose
     ∐-transpose-naturall
@@ -286,10 +293,10 @@ it is extremely important categorically; it is an inverse of
         (f D.∘′ g) D.∘′ ⟨ x , a ⟩                               D.≡[ ap (_∘ πᶜ) (idl _) ]⟨ to-pathp (Dr.unwhisker-l (ap (_∘ πᶜ) (idl _)) (idl _)) ⟩
         Dr.hom[ idl id ] (f D.∘′ g) D.∘′ ⟨ x , a ⟩              ∎
 ```
+-->
 
-Next, we define an introduction form for coproducts that allows us
-to apply a substitution.
-
+Next, we define an introduction rule for coproducts that also lets us
+apply a mediating substitution:
 
 ```agda
   opaque
@@ -297,6 +304,7 @@ to apply a substitution.
       : ∀ {Γ Δ x y} {σ : Hom Γ Δ}
       → (f : E.Hom[ σ ] x y) (a : D.Ob[ Δ ⨾ y ])
       → D.Hom[ πᶜ ] (D*.₀ (σ ⨾ˢ f) a) (D*.₀ σ (∐ y a))
+
     ⟨_⨾_⟩ {x = x} {y = y} {σ = σ} f a =
       D-fib.universal′ σ (∐ y a) (sym (sub-proj f)) $
       ⟨ y , a ⟩ D.∘′ D-fib.lifting (σ ⨾ˢ f) a
@@ -306,12 +314,15 @@ to apply a substitution.
       → (f : E.Hom[ σ ] x y) (a : D.Ob[ Δ ⨾ y ])
       → D-fib.lifting σ (∐ y a) D.∘′ ⟨ f ⨾ a ⟩
       D.≡[ sym (sub-proj f) ] ⟨ y , a ⟩ D.∘′ D-fib.lifting (σ ⨾ˢ f) a
+
     ⟨⨾⟩-weaken {y = y} {σ = σ} f a =
        D-fib.commutesp σ (∐ y a) (symP (sub-proj f)) _
 ```
 
-Crucially, this map is also cocartesian due to stability of
-cocartesian maps.
+Because we have assumed that cocartesian maps are stable when pulled
+back along cartesian maps over projections^[what a mouthful!], this map
+is _also_ cocartesian --- and, you guessed it --- the spiced-up
+introduction rule is also natural.
 
 ```agda
   opaque
@@ -332,6 +343,7 @@ cocartesian maps.
     = is-cocartesian (⟨⨾⟩-cocartesian cart a)
 ```
 
+<!--
 ```agda
   opaque
     unfolding ⟨_⨾_⟩
@@ -348,9 +360,12 @@ cocartesian maps.
          D.∙[] Dr.pullr[] _ (⟨⨾⟩-weaken g a)
          D.∙[] Dr.extendl[] _ (∐[]-natural f))
 ```
+-->
 
 This lets us extend a substitution $\Gamma, X \to \Delta, Y$ into
-a substitution $\sigma^*(\coprod_{Y}A) \to \coprod_{(\sigma, f)^{*}(X)} A$.
+a substitution
+
+$$\sigma^*(\textstyle\coprod_{Y}A) \to \textstyle\coprod_{(\sigma, f)^{*}(X)} A\text{.}$$
 
 ```agda
   opaque

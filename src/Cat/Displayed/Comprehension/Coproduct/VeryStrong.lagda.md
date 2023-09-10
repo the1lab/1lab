@@ -21,21 +21,23 @@ import Cat.Displayed.Reasoning
 module Cat.Displayed.Comprehension.Coproduct.VeryStrong where
 ```
 
-# Very Strong Comprehension Coproducts
+# Very Strong Comprehension Coproducts {defines="very-strong-comprehension-coproduct"}
 
-As noted in [strong comprehension coproducts], the elimination principle
-for [comprehension coproducts] is quite weak; it's really more of a
-recursion principle. Strong coproducts model coproducts with a proper
-elimination principles, though we don't have any sort of large
-elimination. Very strong coproducts remove this restriction.
+As noted in [[strong comprehension coproducts]], the elimination
+principle for [[comprehension coproducts]] is quite weak, being more of
+a _recursion_ principle. Strong coproducts model coproducts with a
+proper _elimination_, but as also noted there, we're lacking large
+elimination. If we want that, we have to find **very strong
+comprehension coproducts**.
 
-[strong comprehension coproducts]: Cat.Displayed.Comprehension.Coproduct.Strong.html
-[comprehension coproducts]: Cat.Displayed.Comprehension.Coproduct.html
+Let $\cD$ and $\cE$ be [[comprehension categories]] over $\cB$.
+We say that $\cD$ has **very strong $\cE$-comprehension coproducts** if
+the canonical substitution
 
-Let $\cD$ and $\cE$ be a pair pair of comprehension categories
-over $\cB$. We say that $\cD$ has **very strong $\cE$-comprehension
-coproducts** if the canonical substitution
-$\pi_{\cE}, \langle x , a \rangle : \Gamma,_{\cE}X,_{\cD}A \to \Gamma,_{\cD}\coprod X A$
+$$
+\pi_{\cE}, \langle x , a \rangle : \Gamma,_{\cE}X,_{\cD}A \to \Gamma,_{\cD}\textstyle\coprod_X A
+$$
+
 is an isomorphism.
 
 <!--
@@ -103,9 +105,8 @@ coproduct.
     ∐-snd x a = vstrong.inv x a
 ```
 
-These come with corresponding $\beta$ rules, though they are a bit
-obfuscated by the fact that we are working with substitutions, not
-terms.
+These come with their respective $\beta$ rules, but they are slightly
+obfuscated due to having to work with _substitutions_ rather than terms.
 
 ```agda
   opaque
@@ -148,11 +149,14 @@ Note that very strong coproducts are always strong.
     mkstrong .∐-strong-η p other β η = intror (∐-very-strong-η _ _) ∙ pulll β
 ```
 
-## Strong Comprehension Coproducts over the same category are very strong
+## Strong coproducts over the same category are very strong
 
-Let $\cE$ be a comprehension category over $\cB$ that has comprehension
-coproducts over itself. If these coproducts are strong, then the are
-automatically very strong.
+Let $\cE$ be a comprehension category over $\cB$ having comprehension
+coproducts _over itself_. If these coproducts are strong, then they are
+automatically very strong. That should make sense: we have have been
+motivating *strong* comprehension coproducts as having elimination but
+no large elimination, but if we only have one "size" going around, then
+elimination _is_ large elimination!
 
 ```agda
 module _
@@ -183,9 +187,12 @@ module _
     → very-strong-comprehension-coproducts P coprods
 ```
 
-We begin by defining a first projection $\Gamma, \coprod X A \to \Gamma, X$
-by factorizing the following square. (Note that we can only do this when
-the two forms of context extension coincide)
+We begin by defining a first projection $\Gamma, \coprod X A \to \Gamma,
+X$ by factorizing the following square. This really is special: in the
+case of _strong_ comprehension coproducts, $\Gamma, X$ and $\Gamma, X,
+D$ correspond to _different_ context extensions (analogy: the first
+extends the context by a kind, the second by a type). But since we're
+dealing with _very strong_ coproducts, they're the same extension.
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -211,7 +218,7 @@ $\Gamma, \coprod X A \to \Gamma, X, A$ using the first.
   \arrow["{\pi,\langle X, A\rangle}"', from=1-1, to=3-1]
   \arrow["\pi", from=1-3, to=3-3]
   \arrow["{\mathit{fst}}"', from=3-1, to=3-3]
-  \arrow["id", from=1-1, to=1-3]
+  \arrow["\id", from=1-1, to=1-3]
   \arrow["{\mathit{snd}}", dashed, from=3-1, to=1-3]
 \end{tikzcd}
 ~~~

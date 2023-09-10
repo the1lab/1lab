@@ -25,29 +25,31 @@ module Cat.Displayed.Comprehension.Coproduct.Strong where
 ```
 -->
 
-# Strong Comprehension Coproducts
+# Strong comprehension coproducts {defines="strong-comprehension-coproduct"}
 
-Let $\cD$ and $\cE$ be a pair of [comprehension categories] over the same
-base category $\cB$, such that $\cD$ has [coproducts] over $\cE$.
-Type theoretically, this (roughly) corresponds to a type theory with
-a pair of syntactic constructs (for instance, types and kinds), along
-with mixed-mode sigma types.
+Let $\cD$ and $\cE$ be a pair of [[comprehension categories]] over the
+same base category $\cB$, such that $\cD$ has [[coproducts|comprehension
+coproducts]] over $\cE$. Type theoretically, this (roughly) corresponds
+to a type theory with a pair of syntactic categories (for instance,
+types and kinds), along with mixed-mode $\Sigma$ types.
 
-We can model this using coproducts over a comprehension category, though
-the elimination principle we get from this setup is pretty weak; we
-really only have a recursion principle, not an elimination principle.
-To model this, we need to add an extra condition. We say that a
-comprehension category has **strong comprehension coproducts** if
-the canonical substitution $\pi_{\cE}, \langle x , a \rangle$ forms an
-[orthogonal factorisation system] with weakenings $\pi_{\cD}$. In
-more elementary terms, this means that any diagram of the following form
-has a **unique** filler.
+We can model this using coproducts over a comprehension category, but
+the elimination principle we get from this setup is pretty weak: we
+really only have a _recursion_ principle, not an _elimination_
+principle. That has to be be captured through an extra condition.
+
+We say that a comprehension category has **strong comprehension
+coproducts** if (it has comprehension coproducts, and) the canonical
+substitution $\pi_{\cE}, \langle x , a \rangle$ forms an [[orthogonal
+factorisation system]] with the weakening maps $\pi_{\cD}$. In more
+elementary terms, this means that any square diagram, as below, has a
+*unique* diagonal filler.
 
 ~~~{.quiver}
 \begin{tikzcd}
   {\Gamma,_{\cE}X,_{\cD}A} && {\Delta,_{\cD}B} \\
   \\
-  {\Gamma,_{\cD}\coprod X A} && \Delta
+  {\Gamma,_{\cD}\coprod_X A} && \Delta
   \arrow["{\pi_{\cE},\langle X, A\rangle}"', from=1-1, to=3-1]
   \arrow["{\pi_{\cD}}", from=1-3, to=3-3]
   \arrow["\sigma"', from=3-1, to=3-3]
@@ -55,10 +57,6 @@ has a **unique** filler.
   \arrow["{\exists!}", dashed, from=3-1, to=1-3]
 \end{tikzcd}
 ~~~
-
-[comprehension categories]: Cat.Displayed.Comprehension.html
-[coproducts]: Cat.Displayed.Comprehension.Coproduct.html
-[orthogonal factorisation system]: Cat.Morphism.Orthogonal.html
 
 <!--
 ```agda
@@ -126,7 +124,7 @@ module _
 ```
 -->
 
-This definition is a bit dense, so let's unpack things a bit.
+That's a very concise definition: too concise. Let's dig a bit deeper.
 
 <!--
 ```agda
@@ -148,14 +146,22 @@ module strong-comprehension-coproducts
 ```
 -->
 
-The filler for the diagram gives us our elimination principle; note
-that we have access to the coproduct when forming the $B$! However,
-this elimination principle does **not** allow us to eliminate into
-anything from $\cE$; in type theoretic terms, we have an elimination
-principle, but no $\cE$-large elimination. This corresponds to
-[very strong coproducts], which are extremely rare.
+In the diagram, $B$ is a type in some context $\Delta$, and we have a
+substitution $\sigma : \Gamma , \coprod_X A \to \Delta$ --- but, for
+intuition, we might as well zap $\sigma$ to the identity: $B$ is a type
+in context $\Gamma, \coprod_X A$.
+In this simplified setting, the top morphism $\nu : \Gamma, X, A \to
+\Gamma, B$ must be entirely determined by a "term" $\Gamma, x : X, a : A
+\vdash \nu : B\langle x, a \rangle$, for the outer square to commute.
+Then, we see that the diagonal filler is exactly an elimination
+principle: since it too commutes with weakening, it must be determined
+by a "term" $\Gamma, v : \coprod_X A \vdash B(v)$!
 
-[very strong coproducts]: Cat.Displayed.Comprehension.Coproduct.VeryStrong.html
+However, note that this elimination principle does **not** allow us to
+eliminate an arbitrary object from $\cE$, which corresponds
+type-theoretically having _no_ $\cE$-large elimination. This large
+elimination is captured by [[very strong comprehension coproducts]],
+which are extremely rare.
 
 ```agda
   opaque
@@ -210,7 +216,7 @@ eliminator.
       → P.πᶜ ∘ other ≡ σ
       → other ≡ ∐-strong-elim σ ν p
     ∐-strong-η p other β sub =
-      ap fst (sym $ strong _ _ _ p .paths (other , β , sub)) 
+      ap fst (sym $ strong _ _ _ p .paths (other , β , sub))
 ```
 
 Now, for some useful lemmas. If we eliminate by simply packaging up

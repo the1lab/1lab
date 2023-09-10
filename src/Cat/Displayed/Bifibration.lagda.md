@@ -51,8 +51,9 @@ means that $\cE$ is equipped with both [reindexing] and [opreindexing]
 functors, which allows us to both restrict and extend along morphisms $X
 \to Y$ in the base.
 
-Note that a bifibration is *not* the same as a "profunctor of categories";
-these are called **two-sided fibrations**, and are a distinct concept.
+Note that a bifibration is *not* the same as a "profunctor valued in
+categories". Those are a distinct concept, called **two-sided
+fibrations**.
 
 [reindexing]: Cat.Displayed.Cartesian.Indexing.html
 [opreindexing]: Cat.Displayed.Cocartesian.Indexing.html
@@ -61,7 +62,6 @@ these are called **two-sided fibrations**, and are a distinct concept.
 [TODO: Reed M, 31/01/2023] Link to two-sided fibration
 when that page is written.
 -->
-
 
 ```agda
 record is-bifibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
@@ -76,13 +76,14 @@ record is-bifibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
 # Bifibrations and Adjoints
 
 If $\cE$ is a bifibration, then its opreindexing functors are [[left
-adjoints]] to its reindexing functors. To see this, note that we need to
-construct a natural isomorphism between $\cE_{y}(u_{*}(-),-)$ and
+adjoints]] to its reindexing functors.  To show this, it will suffice to
+construct natural isomorphism between $\cE_{y}(u_{*}(-),-)$ and
 $\cE_{x}(-,u^{*}(-))$. However, we have already shown that
 $\cE_{y}(u_{*}(-),-)$ and $\cE_{x}(-,u^{*}(-))$ are both naturally
-isomorphic to $\cE_{u}(-,-)$ (see `opfibration→hom-iso`{.Agda} and
-`fibration→hom-iso`{.Agda}), so all we need to do is compose these
+isomorphic to $\cE_{u}(-,-)$[^proof], so all we need to do is compose these
 natural isomorphisms!
+
+[^proof]: see `opfibration→hom-iso`{.Agda} and `fibration→hom-iso`{.Agda}.
 
 ```agda
 module _ (bifib : is-bifibration) where
@@ -98,19 +99,21 @@ module _ (bifib : is-bifibration) where
       (opfibration→hom-iso opfibration f ni⁻¹) ni∘ fibration→hom-iso fibration f
 ```
 
-In fact, if $\cE$ is a cartesian fibration where every reindexing
-functor has a left adjoint, then $\cE$ is a bifibration!
-To see this, note that we have a natural iso
-$\cE_{u}(x',-) \simeq \cE_{x}(x', u^{*}(-))$ for every $u : x \to y$ in
-the base. However, $u^{*}$ has a left adjoint $L_{u}$ for every $u$,
-so we also have a natural isomorphism
-$\cE_{x}(x', u^{*}(-)) \simeq \cE_{y}(L_{u}(x'),-)$. Composing these
-yields a natural iso $\cE_{u}(x',-) \simeq \cE_{y}(L_{u}(x'),-)$, which
-implies that $\cE$ is a weak opfibration due to
-`hom-iso→weak-opfibration`{.Agda}.
+In fact, if $\cE \liesover \cB$ is a cartesian fibration where every
+reindexing functor has a left adjoint, then $\cE$ is a bifibration!
 
-Furthermore, $\cE$ is a fibration, which allows us to upgrade the
-weak opfibration to an opfibration!
+Since $\cE$ is a fibration, every $u : x \to y$ in $\cB$ induces a
+natural isomorphism $\cE_{u}(x',-) \simeq \cE_{x}(x', u^{*}(-))$, by the
+universal property of [[cartesian lifts]]. If $u^{*}$ additionally has a
+left adjoint $L_{u}$, we have natural isomorphisms
+
+$$
+\cE_{u}(x',-) \simeq \cE_{x}(x',u^{*}(-)) \simeq \cE_{y}(L_{u}(x')-)\text{,}
+$$
+
+which implies $\cE$ `is a weak opfibration`{.Agda
+id=`hom-iso→weak-opfibration}; and any weak opfibration that's also a
+fibration is a proper opfibration.
 
 ```agda
 module _ (fib : Cartesian-fibration) where
@@ -127,8 +130,7 @@ module _ (fib : Cartesian-fibration) where
       fibration→hom-iso-from fib u ni∘ (adjunct-hom-iso-from (adj u) _ ni⁻¹)
 ```
 
-With some repackaging, we can see that this yields a bifibration.
-
+<!--
 ```agda
   left-adjoint-base-change→bifibration
     : (L : ∀ {x y} → (f : Hom x y) → Functor (Fibre ℰ x) (Fibre ℰ y))
@@ -139,13 +141,14 @@ With some repackaging, we can see that this yields a bifibration.
   left-adjoint-base-change→bifibration L adj .is-bifibration.opfibration =
     left-adjoint-base-change→opfibration L adj
 ```
+-->
 
 ## Adjoints from cocartesian maps
 
-Let $f : X \to Y$ be a morphism in $\cB$, and let $L : \cE_{X} \to \cE_{Y}$
-be a functor. If there exists some natural transformation
-$\eta : Id \to f^{*} \circ L$ such that $\overline{f} \circ \eta$ is
-cocartesian, then $L$ is a left adjoint to $f^{*}$.
+Let $f : X \to Y$ be a morphism in $\cB$, and let $L : \cE_{X} \to
+\cE_{Y}$ be a functor. If we are given a natural transformation $\eta :
+\rm{Id} \to f^{*} \circ L$ with $\overline{f} \circ \eta$ cocartesian,
+then $L$ is a left adjoint to $f^{*}$.
 
 ```agda
   cocartesian→left-adjoint-base-change
@@ -155,18 +158,19 @@ cocartesian, then $L$ is a left adjoint to $f^{*}$.
     → L ⊣ base-change f
 ```
 
-We shall construct the adjoint by showing that there is a natural
-equivalence of hom sets $\cE_{X}{L A, B} \simeq \cE_{Y}{A, f^{*}B}$.
+We will construct the adjunction by constructing a natural equivalence
+of $\hom$-sets
+
+$$\cE_{X}{L A, B} \simeq \cE_{Y}{A, f^{*}B}\text{.}$$
+
 The map $v \mapsto f^{*}(v) \circ \eta$ gives us the forward direction
-of this equivalence, so all that remains is to find an inverse.
-
-However, we armed with a tool for building maps out of $L$, as
-$\overline{f} \circ \eta$ is cocartesian! Let $v : A \to f^{*} B$ be
-a vertical map in $\cE$. We can construct a vertical map $LA \to B$
-by factorizing $\overline{f} \circ v$ through the
-$\overline{f} \circ \eta$; cocartesian-ness of $\overline{f} \circ \eta$
-ensures that this is an equivalence.
-
+of this equivalence, so all that remains is to find an inverse. Since
+$\overline{f}\circ\eta$ is cocartesian, it satisfies a _mapping-out_
+universal property: if $v : A \to f^{*} B$ is a vertical map in $\cE$,
+we can construct a vertical map $LA \to B$ by factoring $\overline{f}
+\circ v$ through the cocartesian $\overline{f} \circ \eta$; The actual
+_universal property_ says that this factorising process is an
+equivalence.
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -188,33 +192,30 @@ ensures that this is an equivalence.
 
 ```agda
   cocartesian→left-adjoint-base-change {x = x} {y = y} {L = L} {f = f} L-unit cocart =
-      hom-iso→adjoints (λ v → base-change f .F₁ v Fib.∘ L-unit .η _)
-        precompose-equiv
-        equiv-natural
-    where
+    hom-iso→adjoints (λ v → base-change f .F₁ v Fib.∘ L-unit .η _)
+      precompose-equiv equiv-natural where
       module cocart x = is-cocartesian (cocart x)
       module f* = Functor (base-change f)
 
       precompose-equiv
         : ∀ {x′ : Ob[ x ]} {y′ : Ob[ y ]}
         → is-equiv {A = Hom[ id ] (F₀ L x′) y′} (λ v → f*.₁ v Fib.∘ L-unit .η x′)
-      precompose-equiv {x′} {y′} =
-        is-iso→is-equiv $
-        iso (λ v → cocart.universalv _ (has-lift.lifting f _ ∘′ v))
-          (λ v → has-lift.uniquep₂ _ _ _ _ refl _ _
-            (Fib.pulllf (has-lift.commutesp f _ id-comm _)
-            ∙[] symP (assoc′ _ _ _)
-            ∙[] cocart.commutesv x′ _)
-            refl)
-          (λ v → symP $ cocart.uniquep x′ _ _ _ _ $
-            assoc′ _ _ _
-            ∙[] Fib.pushlf (symP $ has-lift.commutesp f _ id-comm _))
+      precompose-equiv {x′} {y′} = is-iso→is-equiv $ iso
+        (λ v → cocart.universalv _ (has-lift.lifting f _ ∘′ v))
+        (λ v → has-lift.uniquep₂ _ _ _ _ refl _ _
+          (Fib.pulllf (has-lift.commutesp f _ id-comm _)
+          ∙[] symP (assoc′ _ _ _)
+          ∙[] cocart.commutesv x′ _)
+          refl)
+        (λ v → symP $ cocart.uniquep x′ _ _ _ _ $
+          assoc′ _ _ _
+          ∙[] Fib.pushlf (symP $ has-lift.commutesp f _ id-comm _))
 ```
 
 <details>
-<summary>Futhermore, this equivalence is natural, but it's very tedious
-to prove!
+<summary>Futhermore, this equivalence is natural, but that's a very tedious proof.
 </summary>
+
 ```agda
       equiv-natural
         : hom-iso-natural {L = L} {R = base-change f} (λ v → f*.₁ v Fib.∘ L-unit .η _)

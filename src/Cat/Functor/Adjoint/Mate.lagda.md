@@ -16,14 +16,14 @@ module Cat.Functor.Adjoint.Mate where
 # Mates
 
 Let $F \dashv U : A \to B$, $F' \dashv U' : A' \to B'$ be a pair of
-adjunctions, and let $X : A \to A'$ and $Y : B \to B'$ be a pair
-of functors, as in the following (non-commutative) diagram.
+adjunctions, and let $X : A \to A'$ and $Y : B \to B'$ be a pair of
+functors, fitting together into a diagram
 
 ~~~{.quiver}
 \begin{tikzcd}
   A && B \\
   \\
-  {A'} && {B'}
+  {A'} && {B'\text{,}}
   \arrow[""{name=0, anchor=center, inner sep=0}, "U", curve={height=-6pt}, from=1-3, to=1-1]
   \arrow[""{name=1, anchor=center, inner sep=0}, "F", curve={height=-6pt}, from=1-1, to=1-3]
   \arrow[""{name=2, anchor=center, inner sep=0}, "{F'}", curve={height=-6pt}, from=3-1, to=3-3]
@@ -35,59 +35,48 @@ of functors, as in the following (non-commutative) diagram.
 \end{tikzcd}
 ~~~
 
-There is the an equivalence between natural transformations
-$XU \to U'Y$ and $F'X\to YF$, given by pasting the units and counits
-of the pair of adjunctions.
+which needn't necessarily commute. By pasting with the adjunction units
+and counits, there is an equivalence between the sets of natural
+transformations $XU \to U'Y$ and $F'X \to YF$, which in one direction
+sends
 
 ~~~{.quiver}
-\begin{tikzcd}
-  B && {B'} && A && B && {B'} && {B'} \\
-  &&& \mapsto \\
-  A && {A'} && A && A && {A'} && {B'} \\
-  A && {A'} && B && A && {A'} && {A'} \\
-  &&& \mapsto \\
-  B && {B'} && B && B && {B'} && {A'}
-  \arrow["Y"{description}, from=1-1, to=1-3]
-  \arrow["X"{description}, from=3-1, to=3-3]
-  \arrow["U"{description}, from=1-1, to=3-1]
-  \arrow["{U'}"{description}, from=1-3, to=3-3]
-  \arrow["U"{description}, from=1-7, to=3-7]
-  \arrow["{U'}"{description}, from=1-9, to=3-9]
-  \arrow["X"{description}, from=3-7, to=3-9]
-  \arrow["Y"{description}, from=1-7, to=1-9]
-  \arrow["Id"{description}, from=1-5, to=3-5]
-  \arrow["Id"{description}, from=1-11, to=3-11]
-  \arrow["Id"{description}, from=3-5, to=3-7]
-  \arrow["F"{description}, from=1-5, to=1-7]
-  \arrow["\alpha", shorten <=11pt, shorten >=11pt, Rightarrow, from=3-1, to=1-3]
-  \arrow["\alpha", shorten <=11pt, shorten >=11pt, Rightarrow, from=3-7, to=1-9]
-  \arrow["\eta", shorten <=11pt, shorten >=11pt, Rightarrow, from=3-5, to=1-7]
-  \arrow["{F'}"{description}, from=3-9, to=3-11]
-  \arrow["Id"{description}, from=1-9, to=1-11]
-  \arrow["\varepsilon", shorten <=11pt, shorten >=11pt, Rightarrow, from=3-9, to=1-11]
-  \arrow["F"{description}, from=4-1, to=6-1]
-  \arrow["{F'}"{description}, from=4-3, to=6-3]
-  \arrow["X"{description}, from=4-1, to=4-3]
-  \arrow["Y"{description}, from=6-1, to=6-3]
-  \arrow["\alpha"', shorten <=11pt, shorten >=11pt, Rightarrow, from=4-3, to=6-1]
-  \arrow["F"{description}, from=4-7, to=6-7]
-  \arrow["{F'}"{description}, from=4-9, to=6-9]
-  \arrow["Id"{description}, from=4-5, to=6-5]
-  \arrow["U"{description}, from=4-5, to=4-7]
-  \arrow["Id"{description}, from=4-11, to=6-11]
-  \arrow["{U'}"{description}, from=6-9, to=6-11]
-  \arrow["X"{description}, from=4-7, to=4-9]
-  \arrow["Y"{description}, from=6-7, to=6-9]
-  \arrow["\alpha"', shorten <=11pt, shorten >=11pt, Rightarrow, from=4-9, to=6-7]
-  \arrow["Id"{description}, from=4-9, to=4-11]
-  \arrow["Id"{description}, from=6-5, to=6-7]
-  \arrow["\varepsilon"', shorten <=11pt, shorten >=11pt, Rightarrow, from=4-7, to=6-5]
-  \arrow["\eta"', shorten <=11pt, shorten >=11pt, Rightarrow, from=4-11, to=6-9]
-\end{tikzcd}
+\[\begin{tikzcd}[ampersand replacement=\&]
+  B \&\& {B'} \\
+  \\
+  A \&\& {A'}
+  \arrow["Y", from=1-1, to=1-3]
+  \arrow["{U'}", from=1-3, to=3-3]
+  \arrow["X"', from=3-1, to=3-3]
+  \arrow["U"', from=1-1, to=3-1]
+  \arrow["\alpha", Rightarrow, from=3-1, to=1-3]
+\end{tikzcd}\]
 ~~~
 
-We call natural transformations $XU \to U'Y$ and $F'X\to YF$ **mates**
-with respect to the adjunctions $F \dashv U$ and $F' \dashv U'$.
+to
+
+~~~{.quiver}
+\[\begin{tikzcd}[ampersand replacement=\&]
+  \textcolor{rgb,255:red,92;green,92;blue,214}{A} \&\& \textcolor{rgb,255:red,92;green,92;blue,214}{B} \&\& \textcolor{rgb,255:red,92;green,92;blue,214}{B} \&\& \textcolor{rgb,255:red,214;green,92;blue,92}{B'} \\
+  \\
+  \&\& \textcolor{rgb,255:red,214;green,92;blue,92}{A} \&\& \textcolor{rgb,255:red,214;green,92;blue,92}{A'\text{.}}
+  \arrow["{\rm{Id}}", from=1-5, to=1-7]
+  \arrow["Y", color={rgb,255:red,92;green,92;blue,214}, from=1-3, to=1-5]
+  \arrow["F", color={rgb,255:red,92;green,92;blue,214}, from=1-1, to=1-3]
+  \arrow["U", from=1-3, to=3-3]
+  \arrow[""{name=0, anchor=center, inner sep=0}, "{\rm{Id}}"', from=1-1, to=3-3]
+  \arrow["{U'}"', from=1-5, to=3-5]
+  \arrow["X"', color={rgb,255:red,214;green,92;blue,92}, from=3-3, to=3-5]
+  \arrow[""{name=1, anchor=center, inner sep=0}, "{F'}"', color={rgb,255:red,214;green,92;blue,92}, from=3-5, to=1-7]
+  \arrow["\alpha", Rightarrow, from=3-3, to=1-5]
+  \arrow["\eta", shorten <=6pt, Rightarrow, from=0, to=1-3]
+  \arrow["\epsilon"', shorten >=6pt, Rightarrow, from=1-5, to=1]
+\end{tikzcd}\]
+~~~
+
+We call natural transformations $\alpha : XU \to U'Y$ and $\beta : F'X
+\to YF$ **mates**, with respect to the adjunctions $F \dashv U$ and $F'
+\dashv U'$, if they correspond under this equivalence.
 
 <!--
 ```agda
@@ -121,13 +110,7 @@ module _
     module B = Cat.Reasoning B
     module A' = Cat.Reasoning A'
     module B' = Cat.Reasoning B'
-```
--->
 
-We begin by establishing some shorthands for the unit and counits
-of the adjunctions.
-
-```agda
   private
     η : ∀ {x} → A.Hom x (U.₀ (F.₀ x))
     η = F⊣U.unit.η _
@@ -141,10 +124,12 @@ of the adjunctions.
     ε' : ∀ {x} → B'.Hom (F'.₀ (U'.₀ x)) x
     ε' = F'⊣U'.counit.ε _
 ```
+-->
 
-The mate of a natural transformation $\alpha : XU \to U'Y$ is defined
-by hand; doing it via pasting would insert a bunch of unnecessary
-identity morphisms from unitors and associators.
+Unfortunately, proof assistants: if we were to define mates by pasting,
+we would get a natural transformation with much worse _definitional_
+behaviour. Therefore, we calculate the mate of a transformation $\alpha
+: XU \to U'Y$ by hand.
 
 ```agda
   mate : (X F∘ U) => (U' F∘ Y) → (F' F∘ X) => (Y F∘ F)
@@ -161,7 +146,8 @@ identity morphisms from unitors and associators.
       Y.₁ (F.₁ f) B'.∘ (ε' B'.∘ F'.₁ (α.η _) B'.∘ F'.₁ (X.₁ η))               ∎
 ```
 
-The mate of a natural transformation $\alpha : F'X \to YF$ is defined similarly.
+By a very similar calculation, we can define the mate of $\beta : F'X
+\to YF$.
 
 ```agda
   mate-inv : (F' F∘ X) => (Y F∘ F) → (X F∘ U) => (U' F∘ Y)
@@ -178,8 +164,9 @@ The mate of a natural transformation $\alpha : F'X \to YF$ is defined similarly.
       U'.₁ (Y.₁ f) A'.∘ U'.₁ (Y.₁ ε) A'.∘ U'.₁ (α.η _) A'.∘ η'                      ∎
 ```
 
-`mate`{.Agda} and `mate-inv`{.Agda} form an equivalence. Proving this involves some
-rather tedious applications of the adjoint zig-zag laws.
+By some rather tedious applications of the triangle identities, we can
+calculate that the operations `mate`{.Agda} and `mate-inv`{.Agda} are
+inverse equivalences.
 
 ```agda
   mate-invl : ∀ (α : (F' F∘ X) => (Y F∘ F)) → mate (mate-inv α) ≡ α
@@ -205,12 +192,7 @@ rather tedious applications of the adjoint zig-zag laws.
     (α.η _ A'.∘ X.₁ (U.₁ ε)) A'.∘ X.₁ η                                                   ≡⟨ A'.cancelr (X.annihilate F⊣U.zag) ⟩
     α.η _                                                                                 ∎
     where module α = _=>_ α
-```
 
-As promised, this assembles into an equivalence between natural transformations
-$XU \to U'Y$ and $F'X \to YF$.
-
-```
   mate-is-equiv : is-equiv mate
-  mate-is-equiv = is-iso→is-equiv $ iso mate-inv mate-invl mate-invr
+  mate-is-equiv = is-iso→is-equiv (iso mate-inv mate-invl mate-invr)
 ```

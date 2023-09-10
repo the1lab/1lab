@@ -36,7 +36,7 @@ open Slice-hom
 ```
 -->
 
-# Comprehension Categories
+# Comprehension categories {defines="comprehension-category"}
 
 Fibrations provide an excellent categorical framework for studying logic
 and type theory, as they give us the tools required to describe objects

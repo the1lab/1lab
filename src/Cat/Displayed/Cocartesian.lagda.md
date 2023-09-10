@@ -23,7 +23,7 @@ open Cat.Displayed.Morphism.Duality ℰ
 open DR ℰ
 ```
 
-# Cocartesian morphisms and Opfibrations
+# Cocartesian morphisms and opfibrations
 
 [[Cartesian fibrations]] provide a way of describing pseudofunctorial
 families of categories $\ca{B}^{op} \to \Cat$ purely in terms of
@@ -31,12 +31,14 @@ displayed structure. It's then natural to ask: what about
 *covariant* pseudofunctorial families of categories? Such pseudofunctors
 can be encoded by dualising cartesian fibrations.
 
+:::{.definition #cocartesian-morphism alias="cocartesian-map"}
 To do this, we must first dualise the notion of a cartesian map to a
 **cocartesian map**. Fix a map $a \to b$ in $\ca{B}$, objects $a'$
 and $b'$ displayed over $a$ and $b$ resp., and a map $f' : a' \to_f b'$
 over $f$. We say that $f'$ is **cocartesian** if it has the shape of a
 "pushout diagram", in contrast to the "pullback diagrams" shape
 associated with cartesian maps.
+:::
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -160,12 +162,7 @@ to a unique universal factorisation of $h'$ through a map $b' \to_{m} u'$
     → h″ ∘′ f′ ≡[ idl _ ] g′
     → h′ ≡ h″
   uniquev₂ h′ h″ p q = uniquep₂ (idl _) refl (idl _) h′ h″ p q
-```
--->
 
-We also provide a bundled form of cartesian morphisms.
-
-```agda
 record Cocartesian-morphism
   {x y : Ob} (f : Hom x y) (x′ : Ob[ x ]) (y′ : Ob[ y ])
   : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
@@ -176,12 +173,14 @@ record Cocartesian-morphism
 
   open is-cocartesian cocartesian public
 ```
+-->
 
 ## Duality
 
-As noted before, cocartesian maps are dual to cartesian maps. We
-can make this correspondence precise by showing that cartesian maps
-in the [total opposite] of $\ca{E}$ are cocartesian maps, and vice versa.
+As noted before, cocartesian maps the are duals to [[cartesian maps]].
+We can make this correspondence precise by showing that cartesian maps
+in the [total opposite] of $\ca{E}$ are cocartesian maps, and vice
+versa.
 
 [total opposite]: Cat.Displayed.Total.Op.html
 
