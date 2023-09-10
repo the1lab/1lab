@@ -19,7 +19,7 @@ open Cat.Displayed.Morphism E
 open DR E
 ```
 
-# Cartesian morphisms and Fibrations
+# Cartesian morphisms and fibrations
 
 While [[displayed categories]] give the essential framework we need to
 express the idea of families of categories indexed by a category, they
@@ -34,7 +34,7 @@ $\Cat$ is a [[bicategory]] of categories. It turns out that we can
 characterise this assignment entirely in terms of the displayed objects
 and morphisms in $\cE$!
 
-:::{.definition #cartesian-morphism}
+:::{.definition #cartesian-morphism alias="cartesian-map"}
 Fix an arrow $f : a \to b$ in the base category $\cB$, an object $a'$
 over $a$ (resp. $b'$ over $b$), and an arrow $f' : a' \to_f b'$ over
 $f$. We say that $f'$ is **cartesian** if, up to very strong handwaving,
@@ -575,7 +575,7 @@ cartesian→postcompose-equiv cart =
 ```
 
 
-## Cartesian Lifts
+## Cartesian lifts {defines="cartesian-lift"}
 
 We call an object $a'$ over $a$ together with a Cartesian arrow $f' : a'
 \to b'$ a _Cartesian lift_ of $f$. Cartesian lifts, defined by universal
@@ -604,7 +604,7 @@ some choices to be made, and invoking the axiom of choice makes an
 there is exactly _one_ choice to be made, that is, no choice at all.
 Thus, we do not dwell on the distinction.
 
-:::{.definition #fibred-category alias="cartesian-fibration"}
+:::{.definition #fibred-category alias="cartesian-fibration fibration"}
 ```agda
 record Cartesian-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
   no-eta-equality
@@ -630,7 +630,7 @@ uses the universal property that yields a vertical morphism.
            → Hom[ id ] y′ y″
            → Hom[ id ] (has-lift.x′ f y′) (has-lift.x′ f y″)
   rebase f vert =
-    has-lift.universalv f _ (hom[ idl _ ] (vert ∘′ has-lift.lifting f _))
+    has-lift.universal′ f _ id-comm (vert ∘′ has-lift.lifting f _)
 ```
 
 A Cartesian fibration is a displayed category having Cartesian lifts for

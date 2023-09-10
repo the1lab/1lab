@@ -11,6 +11,7 @@ open import Cat.Prelude
 import Cat.Displayed.Cartesian.Indexing as Indexing
 import Cat.Displayed.Cartesian as Cart
 import Cat.Displayed.Reasoning as DR
+import Cat.Displayed.Fibre.Reasoning as FibR
 import Cat.Displayed.Morphism as DM
 import Cat.Reasoning as CR
 ```
@@ -33,6 +34,7 @@ open DR ℰ
 open DM ℰ
 open Functor
 open Functor
+private module Fib = FibR ℰ
 ```
 -->
 
@@ -675,12 +677,10 @@ module _ (fib : Cartesian-fibration) where
     mi .inv∘eta x = funext λ u′ →
       from-pathp (has-lift.commutesv u _ _)
     mi .natural _ _ v′ = funext λ u′ →
-      has-lift.unique u _ _ $ to-pathp $
-        smashr _ _
-        ·· revive₁ (pulll[] _ (has-lift.commutesv u _ _))
-        ·· smashl _ _
-        ·· weave _ (pullr (idr u)) _ (pullr[] _ (has-lift.commutesv u _ _))
-        ·· duplicate id-comm-sym _ (idl u)
+      has-lift.uniquep u _ _ _ _ _ $
+        Fib.pulllf (has-lift.commutesp u _ id-comm _)
+        ∙[] pullr[] _ (has-lift.commutesv u _ _)
+        ∙[] to-pathp refl
 ```
 
 <!--

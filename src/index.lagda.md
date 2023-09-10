@@ -424,6 +424,7 @@ open import Cat.Functor.Adjoint.Monadic -- Monadic adjunctions
 open import Cat.Functor.Adjoint.Compose -- Adjunctions compose
 open import Cat.Functor.Adjoint.Continuous -- Right adjoints preserve limits
 open import Cat.Functor.Adjoint.Reflective -- Reflective subcategories
+open import Cat.Functor.Adjoint.Mate -- Mates of adjoints
 ```
 
 Monadicity theorems:
@@ -785,6 +786,12 @@ logical and type-theoretic phenomena.
 ```agda
 open import Cat.Displayed.Comprehension
 -- A categorical model of context extension.
+open import Cat.Displayed.Comprehension.Coproduct
+-- Coproducts in comprehension categories
+open import Cat.Displayed.Comprehension.Coproduct.Strong
+-- Coproducts with a stronger elimination principle
+open import Cat.Displayed.Comprehension.Coproduct.VeryStrong
+-- Coproducts with a very strong elimination principle
 ```
 
 

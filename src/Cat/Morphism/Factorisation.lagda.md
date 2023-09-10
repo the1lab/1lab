@@ -16,6 +16,8 @@ import Cat.Reasoning
 module Cat.Morphism.Factorisation where
 ```
 
+# Orthogonal factorisation systems {defines="orthogonal-factorisation-system"}
+
 Suppose you have some category $\cC$ and you, inspired by the wisdom
 of King Solomon, want to chop every morphism in half. A **factorisation
 system** $(E, M)$ on $\cC$ will provide a tool for doing so, in a

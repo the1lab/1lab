@@ -36,6 +36,8 @@ open Cocart ℰ
 open Cat.Displayed.Morphism ℰ
 open Cat.Displayed.Morphism.Duality ℰ
 open Cat.Displayed.Reasoning ℰ
+private
+  module Fib {x} = Precategory (Fibre ℰ x)
 ```
 -->
 
@@ -60,6 +62,8 @@ record is-weak-cocartesian
               → (h′ : Hom[ id ] b′ x′)
               → h′ ∘′ f′ ≡[ idl _ ] g′
               → h′ ≡ universal g′
+
+open is-weak-cocartesian
 ```
 
 ## Duality
@@ -121,6 +125,29 @@ weak-cocartesian→cocartesian
   → Cocartesian-fibration
   → is-weak-cocartesian f f′
   → is-cocartesian f f′
+
+precompose-equiv→weak-cocartesian
+  : ∀ {x y x′ y′} {f : Hom x y}
+  → (f′ : Hom[ f ] x′ y′)
+  → (∀ {y″} → is-equiv {A = Hom[ id ] y′ y″} (_∘′ f′))
+  → is-weak-cocartesian f f′
+
+weak-cocartesian→precompose-equiv
+  : ∀ {x y x′ y′ y″} {f : Hom x y} {f′ : Hom[ f ] x′ y′}
+  → is-weak-cocartesian f f′
+  → is-equiv {A = Hom[ id ] y′ y″} (_∘′ f′)
+
+fibre-precompose-equiv→weak-cocartesian
+  : ∀ {x} {x′ x″ : Ob[ x ]}
+  → (f′ : Hom[ id ] x′ x″)
+  → (∀ {x‴} → is-equiv {A = Hom[ id ] x″ x‴} (Fib._∘ f′))
+  → is-weak-cocartesian id f′
+
+weak-cocartesian→fibre-precompose-equiv
+  : ∀ {x} {x′ x″ x‴ : Ob[ x ]} {f′ : Hom[ id ] x′ x″}
+  → is-weak-cocartesian id f′
+  → is-equiv {A = Hom[ id ] x″ x‴} (Fib._∘ f′)
+
 ```
 
 <details>
@@ -144,6 +171,28 @@ weak-cocartesian→cocartesian opfib wcocart =
   weak-cartesian→cartesian (ℰ ^total-op)
     (opfibration→op-fibration opfib)
     (weak-cocartesian→weak-co-cartesian wcocart)
+
+precompose-equiv→weak-cocartesian f eqv =
+  weak-co-cartesian→weak-cocartesian $
+  (postcompose-equiv→weak-cartesian (ℰ ^total-op) f eqv)
+
+weak-cocartesian→precompose-equiv cocart =
+  weak-cartesian→postcompose-equiv (ℰ ^total-op) $
+  weak-cocartesian→weak-co-cartesian cocart
+
+fibre-precompose-equiv→weak-cocartesian f′ eqv .universal v =
+  equiv→inverse eqv v
+fibre-precompose-equiv→weak-cocartesian f′ eqv .commutes v =
+  to-pathp $ equiv→counit eqv v
+fibre-precompose-equiv→weak-cocartesian f′ eqv .unique v p =
+  sym (equiv→unit eqv v) ∙ ap (equiv→inverse eqv) (from-pathp p)
+
+weak-cocartesian→fibre-precompose-equiv wcocart =
+  is-iso→is-equiv $
+    iso (wcocart .universal)
+      (λ v → from-pathp (wcocart .commutes v))
+      (λ v → sym (wcocart .unique v (to-pathp refl)))
+
 ```
 </details>
 
