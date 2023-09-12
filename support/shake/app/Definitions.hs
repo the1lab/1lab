@@ -127,7 +127,7 @@ addDefinition key@(getMangled -> keyt) def (Glossary ge) = Glossary (go False ke
     _ -> Map.insert key def{definitionCopy = c} ge
 
 definitionTarget :: Definition -> Text
-definitionTarget def = "/" <> Text.pack (definitionModule def) <> ".html#" <> definitionAnchor def
+definitionTarget def = Text.pack (definitionModule def) <> ".html#" <> definitionAnchor def
 
 glossaryRules :: Rules ()
 glossaryRules = do
