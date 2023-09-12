@@ -261,15 +261,18 @@ main = do
 
     -- | Watch config with 10ms (0.01 / 1e-12)
     watchConfig :: Watch.WatchConfig
-    watchConfig = Watch.defaultConfig { Watch.confDebounce = Watch.Debounce 1e-10 }
+    watchConfig = Watch.defaultConfig
+
+    isFile Watch.IsFile      = True
+    isFile Watch.IsDirectory = False
 
     buildMany :: ShakeDatabase -> [Action ()] -> Maybe String -> IO (Bool, [IO ()])
     buildMany db wanted cmd = Watch.withManagerConf watchConfig \mgr -> do
       (_, clean) <- buildOnce db wanted
 
       toRebuild <- atomically $ newTVar Set.empty
-      _ <- Watch.watchTree mgr "src" (not . Watch.eventIsDirectory) (logEvent toRebuild)
-      _ <- Watch.watchTree mgr "support" (not . Watch.eventIsDirectory) (logEvent toRebuild)
+      _ <- Watch.watchTree mgr "src" (isFile . Watch.eventIsDirectory) (logEvent toRebuild)
+      _ <- Watch.watchTree mgr "support" (isFile . Watch.eventIsDirectory) (logEvent toRebuild)
 
       root <- Dir.canonicalizePath "."
 

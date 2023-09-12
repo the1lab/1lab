@@ -1,7 +1,7 @@
 args: import (builtins.fetchTarball {
   name   = "1lab-nixpkgs";
-  url    = "https://github.com/nixos/nixpkgs/archive/cc4bb87f5457ba06af9ae57ee4328a49ce674b1b.tar.gz";
-  sha256 = "sha256:072q50x5p06qjf0cvz68gcrbkpv94bdl55h71j0rz6bgfhaqmiwy";
+  url    = "https://github.com/nixos/nixpkgs/archive/bf39054f8666a98196671269351e42db7e0db6bc.tar.gz";
+  sha256 = "sha256:0f9k3c6qjsn2aw5jhyz8pqs5saajgi4wkrbj0yrsp1k0vpx4yqx6";
 }) ({
   overlays = [ (import ./haskell-packages.nix) ];
 } // args)
