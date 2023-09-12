@@ -53,6 +53,7 @@ jobs:
             set -eu
             1lab-shake -j all --skip-agda
             eval "$installPhase"
+            cp -rv _build/site pr-${{ github.event.number }}
 
       - uses: GuillaumeFalourd/git-commit-push@v1.3
         with:
@@ -60,6 +61,6 @@ jobs:
           name:  ${{ github.actor }}
           commit_message: Preview for PR ${{ github.event.number }}
           target_branch: main
-          files: _build
+          files: pr-${{ github.event.number }}
           remote_repository: https://github.com/plt-amy/1lab-previews.git
           access_token: ${{ secrets.PREVIEW_TOKEN }}
