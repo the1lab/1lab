@@ -9,7 +9,7 @@ on:
       - closed
 
 jobs:
-  build:
+  pr-preview:
     runs-on: ubuntu-latest
 
     env:
