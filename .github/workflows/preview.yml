@@ -51,9 +51,9 @@ jobs:
           NIX_BUILD_SHELL: bash
           build_command: |
             set -eu
-            1lab-shake -j all --skip-agda
+            # 1lab-shake -j all --skip-agda
             eval "$installPhase"
-            cp -rv _build/site pr-${{ github.event.number }}
+            cp -rv src pr-${{ github.event.number }}
 
       - uses: GuillaumeFalourd/git-commit-push@v1.3
         with:
