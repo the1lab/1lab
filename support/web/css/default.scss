@@ -607,14 +607,14 @@ span.qed {
  * it; An arrow with #000 stroke in light theme and #ABB2BF stroke in
  * dark theme. */
 span.enclosing.liesover {
-  background: url('/static/lies-over-light.svg') no-repeat;
+  background: url('static/lies-over-light.svg') no-repeat;
   background-size: contain;
   background-position: center center;
 }
 
 @media (prefers-color-scheme: dark) {
   span.enclosing.liesover {
-    background: url('/static/lies-over-dark.svg') no-repeat;
+    background: url('static/lies-over-dark.svg') no-repeat;
     background-size: contain;
     background-position: center center;
   }

@@ -172,7 +172,7 @@ const startSearch = (mirrorInput: HTMLInputElement | null) => {
   // Fetch the search index if not available and start searching
   if (!loadingIndex) {
     loadingIndex = true;
-    fetch("/static/search.json")
+    fetch("static/search.json")
       .then(r => r.json())
       .then(entries => {
         index = new Searcher(entries, {
