@@ -54,8 +54,8 @@ jobs:
             1lab-shake -j all --skip-agda
             eval "$installPhase"
 
-     - uses: GuillaumeFalourd/git-commit-push@v1.3
-       with:
+      - uses: GuillaumeFalourd/git-commit-push@v1.3
+        with:
           email: ${{ github.actor }}@users.noreply.github.com
           name:  ${{ github.actor }}
           commit_message: Preview for PR ${{ github.event.number }}
