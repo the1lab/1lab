@@ -237,7 +237,7 @@ const modal = (close = () => { }) => {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const data = (await fetch("/static/links.json").then(r => r.json())).slice(0, -1);
+  const data = (await fetch("static/links.json").then(r => r.json())).slice(0, -1);
   const { nodes, edges } = nbhoodSubgraph(page, data);
   makeColours(nodes);
 

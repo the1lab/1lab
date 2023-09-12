@@ -149,8 +149,9 @@ buildMarkdown refs modname input output = do
   (markdown, MarkdownState references dependencies) <- runWriterT (walkM patchBlock markdown)
   need dependencies
 
+  baseUrl <- getBaseUrl
   text <- liftIO $ either (fail . show) pure =<<
-    runIO (renderMarkdown authors references modname markdown)
+    runIO (renderMarkdown authors references modname baseUrl markdown)
 
   tags <- mapM (parseAgdaLink modname refs) . foldEquations False $ parseTags text
   traverse_ (checkMarkup input) tags
@@ -285,11 +286,11 @@ renderMarkdown :: PandocMonad m
                => [Text]     -- ^ List of authors
                -> [Val Text] -- ^ List of references
                -> String     -- ^ Name of the current module
+               -> String     -- ^ Base URL
                -> Pandoc -> m Text
-renderMarkdown authors references modname markdown = do
+renderMarkdown authors references modname baseUrl markdown = do
   template <- getTemplate templateName >>= runWithPartials . compileTemplate templateName
                 >>= either (throwError . PandocTemplateError . Text.pack) pure
-
   let
     authors' = case authors of
       [] -> "Nobody"
@@ -300,6 +301,7 @@ renderMarkdown authors references modname markdown = do
       [ ("is-index",  toVal (modname == "index"))
       , ("authors",   toVal authors')
       , ("reference", toVal references)
+      , ("base-url",  toVal (Text.pack baseUrl))
       ]
 
     options = def { writerTemplate = Just template

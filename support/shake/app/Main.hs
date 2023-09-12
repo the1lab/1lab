@@ -8,7 +8,7 @@ import Control.Exception
 
 import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
-import Data.Aeson
+import Data.Aeson hiding (Options, defaultOptions)
 import Data.Bifunctor
 import Data.Foldable
 import Data.Either
@@ -183,11 +183,6 @@ rules = do
 
   -- Profit!
 
-data ArgOption
-  = AFlag Option
-  | AWatching (Maybe String)
-  deriving (Eq, Show)
-
 main :: IO ()
 main = do
   args <- getArgs
@@ -196,10 +191,13 @@ main = do
     exitFailure
 
   let (opts, extra, errs) = getOpt Permute optDescrs args
-      (shakeOpts, ourOpts) = partitionEithers opts
+      (shakeOpts, ourOpts_) = partitionEithers opts
       (errs', shakeOpts') = first (++errs) $ partitionEithers shakeOpts
-      (watchingCmd, ourOpts') = parseOptions ourOpts
-      rules' = setOptions ourOpts' >> rules
+      ourOpts = foldr (.) id ourOpts_ defaultOptions
+
+      rules' = do
+        setOptions ourOpts
+        rules
 
       shakeOptions' = foldl' (flip ($)) shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} shakeOpts'
       (shakeRules, wanted) = case extra of
@@ -210,12 +208,10 @@ main = do
     for_ errs' $ putStrLn . ("1lab-shake: " ++)
     exitFailure
 
-  let watching = Watching `elem` ourOpts'
-
   (ok, after) <- shakeWithDatabase shakeOptions' shakeRules \db -> do
-    case watching of
-      False -> buildOnce db wanted
-      True -> buildMany db wanted watchingCmd
+    case _optWatching ourOpts of
+      Nothing  -> buildOnce db wanted
+      Just cmd -> buildMany db wanted cmd
   shakeRunAfter shakeOptions' after
 
   reportTimes
@@ -223,25 +219,8 @@ main = do
   unless ok exitFailure
 
   where
-    optDescrs :: [OptDescr (Either (Either String (ShakeOptions -> ShakeOptions)) ArgOption)]
-    optDescrs = map (fmap Left) shakeOptDescrs ++ map (fmap Right) ourOptsDescrs
-
-    ourOptsDescrs =
-      [ Option "w" ["watch"] (OptArg AWatching "COMMAND")
-          "Start 1lab-shake in watch mode. Starts a persistent process which runs a subset of build tasks for \
-          \interactive editing. Implies --skip-types.\nOptionally takes a command to run after the build has finished."
-      , Option [] ["skip-types"] (NoArg (AFlag SkipTypes))
-          "Skip generating type tooltips when compiling Agda to HTML."
-      , Option [] ["skip-agda"] (NoArg (AFlag SkipAgda))
-          "Skip typechecking Agda. Markdown files are read from src/ directly."
-      ]
-
-    parseOptions :: [ArgOption] -> (Maybe String, [Option])
-    parseOptions [] = (Nothing, [])
-    parseOptions (AFlag f:xs) = (f:) <$> parseOptions xs
-    parseOptions (AWatching watching:xs) =
-      let (_, xs') = parseOptions xs
-      in (watching, Watching:xs')
+    optDescrs :: [OptDescr (Either (Either String (ShakeOptions -> ShakeOptions)) (Options -> Options))]
+    optDescrs = map (fmap Left) shakeOptDescrs ++ map (fmap Right) _1LabOptDescrs
 
     buildOnce :: ShakeDatabase -> [Action ()] -> IO (Bool, [IO ()])
     buildOnce db wanted = do

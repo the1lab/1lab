@@ -28,7 +28,7 @@ pronouns.
 
 <div class="profile pfp-left">
 <div class="profile-pfp">
-<img alt="Amélia's profile picture" src="/static/pfps/amelia.png" />
+<img alt="Amélia's profile picture" src="static/pfps/amelia.png" />
 <span class="profile-name">Amélia</span>
 <span class="profile-pronouns">they/them</span>
 <span><a href="https://twitter.com/plt_amy">\@plt_amy</a></span>
@@ -59,7 +59,7 @@ about type theory and the implementation of programming languages, and
 
 <div class="profile pfp-right">
 <div class="profile-pfp">
-<img alt="Astra's profile picture" src="/static/pfps/astra.png" />
+<img alt="Astra's profile picture" src="static/pfps/astra.png" />
 <span class="profile-name">Astra</span>
 <span class="profile-pronouns">she/her</span>
 <span><a href="https://twitter.com/astradiol">\@astradiol</a></span>
