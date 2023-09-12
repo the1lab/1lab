@@ -55,12 +55,13 @@ jobs:
             # eval "$installPhase"
             cp -rv src pr-${{ github.event.number }}
 
-      - uses: GuillaumeFalourd/git-commit-push@v1.3
+      - name: Upload 📦
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.PREVIEW_TOKEN }}
         with:
-          email: ${{ github.actor }}@users.noreply.github.com
-          name:  ${{ github.actor }}
-          commit_message: Preview for PR ${{ github.event.number }}
-          target_branch: main
-          files: pr-${{ github.event.number }}
-          remote_repository: https://github.com/plt-amy/1lab-previews
-          access_token: ${{ secrets.PREVIEW_TOKEN }}
+          source_file: pr-${{ github.event.number }}
+          destination_repo: 'plt-amy/1lab-previews'
+          user_email: 'me@amelia.how'
+          user_name: 'plt-amy'
+          commit_message: 'Preview of PR #${{ github.event.number }}'
