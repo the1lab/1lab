@@ -1,0 +1,65 @@
+name: PR Preview
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      mailmap: ${{ secrets.MAILMAP }}
+
+    steps:
+      - name: Checkout ⬇️
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # we need the commit history for authors
+
+      - name: Install Nix ❄️
+        uses: cachix/install-nix-action@v20
+
+      - name: Set up Cachix ♻️
+        uses: cachix/cachix-action@v12
+        with:
+          name: 1lab
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+      - name: Build the Shakefile 🧰
+        run: |
+          hash=$(nix-build -A shakefile --no-out-link)
+          hash=${hash#/nix/store/} hash=${hash%%-*}
+          echo "shake_version=$hash" >> "$GITHUB_ENV"
+
+      - name: Cache _build ♻️
+        uses: actions/cache@v3
+        with:
+          path: _build
+          key: prose-4-${{ env.shake_version }}-${{ github.run_id }}
+          restore-keys: prose-4-${{ env.shake_version }}-
+
+      - name: Build the prose ✍️
+        run: |
+          echo "$mailmap" > .mailmap
+          nix-shell --arg interactive false --run "$build_command"
+        env:
+          NIX_BUILD_SHELL: bash
+          build_command: |
+            set -eu
+            1lab-shake -j all --skip-agda
+            eval "$installPhase"
+
+     - uses: GuillaumeFalourd/git-commit-push@v1.3
+       with:
+          email: ${{ github.actor }}@users.noreply.github.com
+          name:  ${{ github.actor }}
+          commit_message: Preview for PR ${{ github.event.number }}
+          target_branch: main
+          files: _build
+          remote_repository: https://github.com/plt-amy/1lab-previews.git
+          access_token: ${{ secrets.PREVIEW_TOKEN }}
