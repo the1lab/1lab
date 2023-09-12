@@ -52,7 +52,7 @@ jobs:
           build_command: |
             set -eu
             # 1lab-shake -j all --skip-agda
-            eval "$installPhase"
+            # eval "$installPhase"
             cp -rv src pr-${{ github.event.number }}
 
       - uses: GuillaumeFalourd/git-commit-push@v1.3
