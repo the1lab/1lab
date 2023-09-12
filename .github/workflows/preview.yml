@@ -1,12 +1,15 @@
 name: PR Preview
 
 on:
-  pull_request:
+  pull_request_target:
     types:
       - opened
       - reopened
       - synchronize
       - closed
+
+permissions:
+  pull-requests: write
 
 jobs:
   pr-preview:
@@ -28,7 +31,7 @@ jobs:
         uses: cachix/cachix-action@v12
         with:
           name: 1lab
-          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skipPush: true
 
       - name: Build the Shakefile 🧰
         run: |
@@ -51,7 +54,7 @@ jobs:
           NIX_BUILD_SHELL: bash
           build_command: |
             set -eu
-            1lab-shake -j all --skip-agda -b https://plt-amy.github.io/1lab-previews/pr-256/
+            1lab-shake -j all --skip-agda -b "https://plt-amy.github.io/1lab-previews/pr-${{ github.event.number }}"
             eval "$installPhase"
             cp -rv _build/site pr-${{ github.event.number }}
 
@@ -65,3 +68,9 @@ jobs:
           user_email: 'me@amelia.how'
           user_name: 'plt-amy'
           commit_message: 'Preview of PR #${{ github.event.number }}'
+
+      - name: Inform ℹ️
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: |
+            [Rendered preview](https://plt-amy.github.io/1lab-previews/pr-${{ github.event.number }})
