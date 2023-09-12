@@ -13,7 +13,7 @@ let
     text containers uri-encode
     process aeson Agda pandoc SHA
     fsnotify
-  ] ++ (if inNixShell then [ haskell-language-server ] else [])));
+  ] ++ (if interactive then [ haskell-language-server ] else [])));
 
   our-texlive = pkgs.texlive.combine {
     inherit (pkgs.texlive)

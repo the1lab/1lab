@@ -135,12 +135,13 @@ coherences **should** be defined in an `abstract` block:
 There is a dedicated operator for projecting the "underlying type" of
 anything for which this concept makes sense: `⌞ T ⌟`; see
 [1Lab.Underlying](https://1lab.dev/1Lab.Underlying.html). Underlying
-instances are available for:
+instances are available for things like:
 
 - `Type` (no effect)
 - `n-Type` and `Ω` (projects the underlying type)
 - A type like `Σ U ...` (projects the underlying type of the first component)
 - Concrete groups (projects the delooping)
+- ... probably others ...
 
 ### Naming convention
 

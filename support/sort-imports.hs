@@ -2,7 +2,7 @@
 {- stack --resolver lts-18.14 script
          --package text
          --package deepseq
-         --package filemanip
+         --package shake
 -}
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
