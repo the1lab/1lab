@@ -1,16 +1,15 @@
 <!--
 ```agda
+open import Cat.Displayed.Cartesian.Indexing
+open import Cat.Displayed.Comprehension
+open import Cat.Displayed.Cocartesian
+open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Fibre
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
-open import Cat.Displayed.Base
-open import Cat.Displayed.Comprehension
-open import Cat.Displayed.Cartesian
-open import Cat.Displayed.Cartesian.Indexing
-open import Cat.Displayed.Cocartesian
-open import Cat.Displayed.Fibre
-
-import Cat.Reasoning
 import Cat.Displayed.Reasoning
+import Cat.Reasoning
 ```
 -->
 

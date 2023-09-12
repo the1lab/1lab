@@ -1,15 +1,16 @@
 <!--
 ```agda
-open import Data.Bool
-
-open import Cat.Displayed.Total
 open import Cat.Functor.Subcategory
+open import Cat.Displayed.Total
 open import Cat.Prelude
 
-open import Order.Base
+open import Data.Bool
+
 open import Order.Diagram.Lub
+open import Order.Base
 
 import Cat.Reasoning
+
 import Order.Reasoning as Poset
 ```
 -->

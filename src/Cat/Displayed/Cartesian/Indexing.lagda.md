@@ -10,10 +10,10 @@ open import Cat.Displayed.Base
 open import Cat.Bi.Base
 open import Cat.Prelude
 
+import Cat.Displayed.Fibre.Reasoning
 import Cat.Displayed.Reasoning
 import Cat.Reasoning
 import Cat.Morphism as Mor
-import Cat.Displayed.Fibre.Reasoning
 ```
 -->
 

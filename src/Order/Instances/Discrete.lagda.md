@@ -1,11 +1,11 @@
 <!--
 ```agda
-open import Cat.Functor.Adjoint
 open import Cat.Displayed.Total
+open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
-open import Order.Base
 open import Order.Diagram.Lub
+open import Order.Base
 
 import Order.Reasoning as Poset
 ```

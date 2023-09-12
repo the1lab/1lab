@@ -17,10 +17,11 @@ import Data.Function (on)
 import Data.Foldable hiding (find)
 import Data.Ord
 
+import Development.Shake.FilePath
+import Development.Shake
 import Debug.Trace
 
 import System.Environment
-import System.FilePath.Find
 import System.IO
 
 main :: IO ()
@@ -29,7 +30,7 @@ main = do
   traverse_ sortImports =<< if null args then getAgdaFiles else pure args
 
 getAgdaFiles :: IO [FilePath]
-getAgdaFiles = find always (fileName ~~? "*.(agda|lagda.md)") "src"
+getAgdaFiles = map ("src" </>) <$> getDirectoryFilesIO "src" ["**/*.lagda.md"]
 
 sortImports :: FilePath -> IO ()
 sortImports path
