@@ -22,12 +22,10 @@ module 1Lab.HIT.Truncation where
 # Propositional Truncation {defines="propositional-truncation"}
 
 Let $A$ be a type. The **propositional truncation** of $A$ is a type
-which represents the [proposition] "A is inhabited". In MLTT,
+which represents the [[proposition]] "A is inhabited". In MLTT,
 propositional truncations can not be constructed without postulates,
 even in the presence of impredicative prop. However, Cubical Agda
 provides a tool to define them: _higher inductive types_.
-
-[proposition]: agda://1Lab.HLevel#is-prop
 
 ```agda
 data ∥_∥ {ℓ} (A : Type ℓ) : Type ℓ where

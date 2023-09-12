@@ -76,7 +76,7 @@ record Coproduct (A B : Ob) : Type (o ⊔ h) where
 ## Uniqueness
 
 The uniqueness argument presented here is dual to the argument
-for the [Product](agda://Cat.Diagram.Product#×-Unique).
+for the [[product|uniqueness of products]].
 
 <!--
 ```agda

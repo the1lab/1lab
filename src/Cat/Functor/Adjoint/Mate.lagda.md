@@ -60,11 +60,11 @@ to
   \textcolor{rgb,255:red,92;green,92;blue,214}{A} \&\& \textcolor{rgb,255:red,92;green,92;blue,214}{B} \&\& \textcolor{rgb,255:red,92;green,92;blue,214}{B} \&\& \textcolor{rgb,255:red,214;green,92;blue,92}{B'} \\
   \\
   \&\& \textcolor{rgb,255:red,214;green,92;blue,92}{A} \&\& \textcolor{rgb,255:red,214;green,92;blue,92}{A'\text{.}}
-  \arrow["{\rm{Id}}", from=1-5, to=1-7]
+  \arrow["{\Id}", from=1-5, to=1-7]
   \arrow["Y", color={rgb,255:red,92;green,92;blue,214}, from=1-3, to=1-5]
   \arrow["F", color={rgb,255:red,92;green,92;blue,214}, from=1-1, to=1-3]
   \arrow["U", from=1-3, to=3-3]
-  \arrow[""{name=0, anchor=center, inner sep=0}, "{\rm{Id}}"', from=1-1, to=3-3]
+  \arrow[""{name=0, anchor=center, inner sep=0}, "{\Id}"', from=1-1, to=3-3]
   \arrow["{U'}"', from=1-5, to=3-5]
   \arrow["X"', color={rgb,255:red,214;green,92;blue,92}, from=3-3, to=3-5]
   \arrow[""{name=1, anchor=center, inner sep=0}, "{F'}"', color={rgb,255:red,214;green,92;blue,92}, from=3-5, to=1-7]

@@ -34,7 +34,7 @@ private variable
 ```
 -->
 
-# Embeddings
+# Embeddings {defines="embedding"}
 
 One of the most important observations leading to the development of
 categorical set theory is that injective maps _into_ a set $S$
@@ -132,6 +132,12 @@ embedding→monic
   → ∀ {C : Type ℓ′′} (g h : C → A) → f ∘ g ≡ f ∘ h → g ≡ h
 embedding→monic {f = f} emb g h p =
   funext λ x → ap fst (emb _ (g x , refl) (h x , happly (sym p) x))
+
+is-equiv→is-embedding
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B}
+  → is-equiv f
+  → is-embedding f
+is-equiv→is-embedding eqv x = is-contr→is-prop (eqv .is-eqv x)
 
 monic→is-embedding
   : ∀ {ℓ ℓ′ ℓ′′} {A : Type ℓ} {B : Type ℓ′} {f : A → B}

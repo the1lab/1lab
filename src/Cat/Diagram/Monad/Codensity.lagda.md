@@ -70,8 +70,8 @@ functor $G$), then this extends to a (unique) natural transformation $G
 \To \Ran_F F$.
 
 For example, the unit map $\eta$ is obtained by extending the identity
-natural transformation $\id : \rm{Id}F \To F$, which is implicit
-witnessing commutativity of the $F$ -- $\rm{Id}$ -- $F$ triangle below.
+natural transformation $\id : \Id F \To F$, which is implicit witnessing
+commutativity of the $F$ -- $\Id$ -- $F$ triangle below.
 
 ~~~{.quiver}
 \[\begin{tikzcd}

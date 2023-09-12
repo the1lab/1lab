@@ -61,24 +61,21 @@ module Univalent′ {o h} {C : Precategory o h} (r : is-category C) where
     public
 ```
 
-Furthermore, we have that this function is an equivalence, and so the
-type of objects in a univalent category is at most a [groupoid]. We use
-the fact that [h-levels are closed under equivalences] and that
-[dependent sums preserve h-levels].
-
-[h-levels are closed under equivalences]: agda://1Lab.HLevel.Retracts#equiv→is-hlevel
-[dependent sums preserve h-levels]: agda://1Lab.HLevel.Retracts#Σ-is-hlevel
-[groupoid]: agda://1Lab.HLevel#is-groupoid
+Furthermore, since the h-level of the relation behind an identity system
+determines the h-level of the type it applies to, we have that the space
+of objects in any univalent category is a proposition:
 
 ```agda
   Ob-is-groupoid : is-groupoid (C .Precategory.Ob)
   Ob-is-groupoid = path→iso.hlevel 2 λ _ _ → ≅-is-set
 ```
 
+:::{.definition #transport-in-hom}
 We can characterise transport in the Hom-sets of categories using the
 `path→iso`{.Agda} equivalence. Transporting in $\hom(p\ i, q\ i)$ is
 equivalent to turning the paths into isomorphisms and
 pre/post-composing:
+:::
 
 ```agda
 module _ {o h} (C : Precategory o h) where

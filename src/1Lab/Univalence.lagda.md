@@ -47,7 +47,7 @@ interpretations, i.e., make them definable in the theory, in terms of
 constructions that have computational behaviour. Let's see how this is
 done.
 
-## Glue
+## Glue {defines="glueing glue-type"}
 
 To even _state_ univalence, we first have to make sure that the concept
 of “paths between types” makes sense in the first place. In “Book HoTT”,
@@ -492,7 +492,7 @@ univalence-lift {ℓ = ℓ} = is-iso→is-equiv morp where
   morp .is-iso.linv x = Path≃Equiv .snd .is-iso.linv _
 ```
 
-## Equivalence Induction
+## Equivalence Induction {defines="equivalence-induction"}
 
 One useful consequence of $(A \equiv B) \simeq (A \simeq B)$[^2] is that
 the type of _equivalences_ satisfies [the same induction principle] as
@@ -533,30 +533,30 @@ EquivJ P pid eqv =
 
 Equivalence induction simplifies the proofs of many properties about
 equivalences. For example, if $f$ is an equivalence, then so is its
-`action on paths`{.Agda ident=ap} $\rm{ap}(f)$.
+`action on paths`{.Agda ident=ap} $\ap(f)$.
 
 ```agda
-is-equiv→is-embedding : ∀ {ℓ} {A B : Type ℓ}
-                      → (f : A → B) → is-equiv f
-                      → {x y : A}
-                      → is-equiv (ap f {x = x} {y = y})
-is-equiv→is-embedding f eqv =
-  EquivJ (λ B e → is-equiv (ap (e .fst))) id-equiv (f , eqv)
+private
+  is-equiv→is-embedding : ∀ {ℓ} {A B : Type ℓ}
+                        → (f : A → B) → is-equiv f
+                        → {x y : A}
+                        → is-equiv (ap f {x = x} {y = y})
+  is-equiv→is-embedding f eqv =
+    EquivJ (λ B e → is-equiv (ap (e .fst))) id-equiv (f , eqv)
 ```
 
 The proof can be rendered in English roughly as follows:
 
 > Suppose $f : A \to B$ `is an equivalence`{.Agda ident=is-equiv}. We
 want to show that, for any choice of $x, y : A$, the map
-$\rm{ap}(f)_{x,y} : x \equiv y \to f(x) \equiv f(y)$ is an equivalence.
+$\ap(f)_{x,y} : x \equiv y \to f(x) \equiv f(y)$ is an equivalence.
 >
 > By `induction`{.Agda ident=EquivJ}, it suffices to cover the case
 where $B$ is $A$, and $f$ is the identity function.
 >
-> But then, we have that $\rm{ap}(\id)$ is [definitionally
-equal](agda://1Lab.Path#ap-id) to $\id$, which is known to be `an
-equivalence`{.Agda ident=id-equiv}. <span
-class=qed>$\blacksquare$</span>
+> But then, we have that $\ap(\id)$ is definitionally equal to
+$\id$, which is known to be `an equivalence`{.Agda ident=id-equiv}.
+<span class=qed>$\blacksquare$</span>
 
 ## Object Classifiers
 

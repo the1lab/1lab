@@ -161,14 +161,11 @@ module _ {ℓ} {A : n-Type ℓ 2} where
 ```
 -->
 
-Note that, in general, [being a proposition] and [being contractible]
+Note that, in general, being a [[proposition]] and [[contractible]]
 are not preserved under coproducts. Consider the case where `(A, a)` and
 `(B, b)` are both contractible (this generalises to propositions): Then
 their coproduct has two distinct points, `in­l a` and `inr b`. However,
 the coproduct of _disjoint_ propositions is a proposition:
-
-[being a proposition]: agda://1Lab.HLevel#is-prop
-[being contractible]: agda://1Lab.HLevel#is-contr
 
 ```agda
 disjoint-⊎-is-prop

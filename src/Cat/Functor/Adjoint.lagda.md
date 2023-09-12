@@ -60,8 +60,8 @@ of categories, where "directing" an equivalence gives us the concept of
 
 An _equivalence of categories_ between $\cC$ and $\cD$ is given by
 a pair of functors $L : \cC \leftrightarrows \cD : R$, equipped
-with natural _isomorphisms_ $\eta : \rm{Id} \cong (R \circ L)$ (the
-"unit") and $\eps : (L \circ R) \cong \rm{Id}$ (the "counit"). We
+with natural _isomorphisms_ $\eta : \Id \cong (R \circ L)$ (the
+"unit") and $\eps : (L \circ R) \cong \Id$ (the "counit"). We
 still want the correspondence to be bidirectional, so we can't change
 the types of $R$, $L$; What we _can_ do is weaken the natural
 isomorphisms to natural _transformations_. The data of an **adjunction**
@@ -288,8 +288,8 @@ it defines a left adjoint to the $R$ we started with.
 ## Building the adjunction
 
 We now prove that $L \dashv R$, which, recall, means giving natural
-transformations $\eta : \rm{Id} \To (R F\circ L)$ (the
-_adjunction unit_) and $\eps : (L \circ R) \To \rm{Id}$ (the
+transformations $\eta : \Id \To (R F\circ L)$ (the
+_adjunction unit_) and $\eps : (L \circ R) \To \Id$ (the
 _adjunction counit_). We begin with the counit, since that's more
 involved.
 

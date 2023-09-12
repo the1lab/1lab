@@ -49,10 +49,7 @@ on the objects of a [[univalent category]] `S` can be described in a certain
 way, then the category of `S`-structured objects of `C` is univalent. As
 a benefit, the Book version of the SIP characterises the _homomorphisms_
 of `S`-structures, not just the _isomorphisms_. As a downside, it only
-applies to [set-level] structures.
-
-[set-level]: agda://1Lab.HLevel#is-set
-
+applies to [[set-level|set]] structures.
 
 ```agda
 record
@@ -245,14 +242,11 @@ Str-function-str-univalent {S = S} {T = T} {σ = σ} {τ} θ₁ θ₂ eqv =
 ## Example: $\infty$-magmas
 
 We provide an example of applying the SIP, and the structure
-combinators: **$\infty$-magmas**. Recall that a [magma] is a [Set]
+combinators: **$\infty$-magmas**. Recall that a [[magma]] is a [[set]]
 equipped with a binary operation, with no further conditions imposed. In
 HoTT, we can relax this even further: An $\infty$-magma is a
 `Type`{.Agda} - that is, an $\infty$-groupoid - equipped with a binary
 operation.
-
-[magma]: https://ncatlab.org/nlab/show/magma
-[Set]: agda://1Lab.HLevel.Universe#Set
 
 ```agda
 private
@@ -611,9 +605,7 @@ and c) the point acts as a left- and right- identity for the operation.
 Fortunately, the SIP again applies here: If you augment a standard
 notion of structure with _axioms_, then identification of structures
 with axioms is still isomorphism of the underlying structures. For this,
-we require that the axioms be [valued in propositions].
-
-[valued in propositions]: agda://1Lab.HLevel#is-prop
+we require that the axioms are valued in [[propositions]].
 
 ```agda
 module _

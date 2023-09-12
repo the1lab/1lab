@@ -2,7 +2,7 @@
 module 1Lab.Type where
 ```
 
-# Universes
+# Universes {defines="universe"}
 
 A **universe** is a type whose inhabitants are types. In Agda, there is
 a family of universes, which, by default, is called `Set`. Rather
@@ -16,10 +16,7 @@ open import Prim.Type hiding (Prop) public
 
 `Type`{.Agda} is a type itself, so it's a natural question to ask: does
 it belong to a universe? The answer is _yes_. However, Type can not
-belong to itself, or we could reproduce Russell's Paradox, as is done
-[in this module].
-
-[in this module]: agda://1Lab.Counterexamples.Russell
+belong to itself, or we could reproduce [[Russell's paradox]].
 
 To prevent this, the universes are parametrised by a _`Level`{.Agda}_,
 where the collection of all `ℓ`-sized types is `Type (lsuc ℓ)`:
@@ -55,8 +52,10 @@ absurd ()
 infix 3 ¬_
 ```
 
+:::{.definition #product-type}
 The non-dependent product type `_×_`{.Agda} can be defined in terms of
 the dependent sum type:
+:::
 
 ```agda
 _×_ : ∀ {a b} → Type a → Type b → Type _

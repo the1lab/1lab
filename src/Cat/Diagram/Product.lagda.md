@@ -102,7 +102,7 @@ record Product (A B : Ob) : Type (o ⊔ h) where
 
 ```
 
-## Uniqueness
+## Uniqueness {defines="uniqueness-of-products"}
 
 <!--
 ```agda

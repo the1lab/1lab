@@ -22,11 +22,10 @@ module 1Lab.Counterexamples.IsIso where
 
 # is-iso is not a proposition
 
-We show that if `is-iso`{.Agda} were a [proposition], then `(x : A) → x ≡
-x` would be contractible for any choice of `A`. Taking `A` to be
-`S¹`{.Agda}, we show that this can not be the case. Suppose that is-iso is a proposition.
-
-[proposition]: agda://1Lab.HLevel#is-prop
+We show that if `is-iso`{.Agda} were a [[proposition]], then `(x : A) →
+x ≡ x` would be contractible for any choice of `A`. Taking `A` to be
+`S¹`{.Agda}, we show that this can not be the case. Suppose that is-iso
+is a proposition.
 
 ```agda
 module

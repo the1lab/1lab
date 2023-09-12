@@ -9,63 +9,191 @@ guidelines, and not strict rules: If you're unsure of something, hop on
 discussion thread](https://github.com/plt-amy/1lab/discussions)
 if that's more your style.
 
-### General guidelines
+## General guidelines
 
-Use British spelling everywhere that it differs from American: Homotopy
-fib**re**, fib**red** category, colo**u**red operad, etc --- both in
-prose and in Agda. Keep prose paragraphs limited to 72 characters of
-length. Prefer wikilinks or link anchors (Pandoc "reference links") to
-inline links.
+British spelling **must** be used throughout: Homotopy fib**re**,
+fib**red** category, colo**u**red operad, etc --- both in prose and in
+Agda.
 
-### Agda code style
+Prose **should** be kept to a width of 72 characters.
 
-Agda code should be kept to less than 85 columns; This doesn't count
-lines that include equational reasoning combinators (anything that's
-delineated by a matching pair of `⟨⟩`), since those are folded away on
-the website; Length counting for those lines stops at the first `⟨`
-character.
+The first time a concept is introduced, it **should** appear in bold. A
+single bolded word **may** appear at the start of a paragraph to call
+the reader's attention:
 
-Identifiers should be `kebab-case`, though other separators are allowed
-when the context calls for them: `→` abbreviates the word "to" (and
-similar), `≃` abbreviates "is equivalent to", `≡`, etc.  The first word
-in type names should be capitalised; "Function" names should be all
-lower case. Exceptions are made for proper nouns (Type is a proper
-noun).
+> **Warning**: The text below is subject to change! It's still very much a
+> document in flux. In particular, the type theory section doesn't talk
+> about induction, which is something that will be expanded on in the
+> future.
 
-Prefer to write out identifiers longhand, rather than using
-abbreviations, other than the following:
+## Links
 
-* "Cat" abbreviates category;
-* "Iso" abbreviates isomorphism (either of types or of objects in a
-category)
-* "Equiv" abbreviates equivalence _of types_; Equivalence of
-(pre)categories should be written out longhand.
-* "hom" abbreviates homomorphism.
+For internal links, wikilinks **should** be used. A wikilink is written
+`[[title]]`, or `[[title|anchor]]`. The concrete anchor to which a
+wikilink points is determined by its anchor, which is globally unique.
 
-Type families valued in propositions, either defined as records,
-functions or as truncated inductive types, should start with the word
-`is`: `is-prop`, `is-set`, etc. Predicates should be written _after_
-what they apply to: `Nat-is-set`, `is-prop-is-prop`,
-`is-hlevel-is-prop`. Record fields indicating the truth of a predicate
-should be prefixed `has-is-`, since Agda doesn't allow you to shadow
-globals with record fields.
+Link targets, called definitions, can be introduced in two ways:
 
-If possible, prove that things are valued in h-level n separately,
-rather than defining maps into `n-Type`; This can't always be avoided
-because of truncated HITs.
+* In a header:
+  ```
+  # Foo {defines="anchor-1 anchor-2"}
+  ```
 
-When eliminating out of a HIT like `Data.Set.Coequaliser`, put the
-necessary equations in an `abstract` block; If everything defined for
-that function is abstract, put `where abstract` into a single line, like
-in `Algebra.Group.Ab.Free`:
+* As a div:
+  ```
+  ::: {.definition #anchor-1 alias="anchor-2"}
+  [the definition]
+  ```
+
+Wikilink targets are case insensitive, and get "mangled" for whitespace:
+the anchor `least-upper-bound` can be referred to as `[[least upper
+bound]]`, or `[[lub|least upper bound]]` if different textual content is
+required, or `[[lub|least-upper-bound]]`. White space **should** be used
+instead of dashes at use sites.
+
+**Warning**: A wikilink can not span multiple lines. If a wikilink would
+be broken by the line-wrapping rule, try to reword the text so that this
+doesn't happen; If that's not possible, the line-wrapping rule **may**
+be ignored.
+
+## Linking identifiers
+
+An Agda identifier that _has been referred to_ in the current module can
+be referred to in prose using `` `name`{.Agda} `` (an inline code block
+with class `Agda`). The [HoTT book comparison] uses this feature
+extensively.
+
+[HoTT book comparison]: https://github.com/plt-amy/1lab/blob/main/src/HoTT.lagda.md
+
+If the text needs to differ from the identifier, the `ident` attribute
+can be used: `` `is an equivalence`{.Agda ident=is-equiv} ``.
+
+Mixfix operators **must** use their "full name" to be picked up: ``
+`_∘_`{.Agda} `` is the proper way to refer to the composition operator,
+even if it only ever appears infix in the code.
+
+## The structure of a page
+
+Every literate Agda file on the 1Lab **must** follow the following
+general structure:
+
+- All import statements **must** appear at the top of the module, within
+  an HTML comment.
+
+  Imports **must** grouped by the first component of the module name,
+  with the groups sorted alphabetically, with modules _within_ the
+  groups sorted by length, longest-first. These rules apply separately
+  for `open import`, `import` and `open` statements, which
+  **must** appear in this order.
+
+  The tool `support/sort-imports.hs` **should** be used to update code
+  to comply to these rules. The modules to format are given as
+  command-line arguments.
+
+- The top-level module name, together with any parameters, **must**
+  appear before any prose (incl. the initial header), and **must not**
+  be commented.
+
+- Opening and defining private local modules **may** appear before the
+  initial header, but **must** appear in an HTML comment if so.
+
+- A level-1 heading **must** be present, with a readable page name. If
+  no title is provided, this will be used as the title for the page.
+
+A perfect example of these guidelines is [`Order.Semilattice.Free`],
+since it has four different import blocks.
+
+[`Order.Semilattice.Free`]: https://github.com/plt-amy/1lab/blob/main/src/Order/Semilattice/Free.lagda.md
+
+## Agda code style
+
+Agda code **should** be kept to less than 85 columns (this is informed
+by how much code can fit on a 1920x1080 screen without a scroll bar). In
+an equational reasoning block, anything between `⟨_⟩` does not count for
+the line length limit, since those spans can be removed by the user.
+(example: the [dual of the modular law] reaches column 136!)
+
+[dual of the modular law]: https://github.com/plt-amy/1lab/blob/main/src/Cat/Allegory/Reasoning.lagda.md#L110
+
+Types **should** be defined directly in `Type _`, if possible, then
+later shown to be of a particular truncation level. This rule **may** be
+ignored when defining a type out of a truncated HIT.
+
+When mapping from a higher inductive type, any proposition-valued
+coherences **should** be defined in an `abstract` block:
 
 ```agda
     fold : (f : G → G' .fst) → is-group-hom Grp G' f → G^ab → G' .fst
     fold f gh = Coeq-rec G'.has-is-set f l1
       where abstract
         l1 : ((x , y , z) : G × G × G) → f (x ⋆ y ⋆ z) ≡ f (x ⋆ z ⋆ y)
-        l1 (x , y , z) =
+        l1 (x , y , z) = ...
 ```
 
-**Everything should be literate**. Do not submit PRs with plain Agda
-files!
+### Things to know
+
+There is a dedicated operator for projecting the "underlying type" of
+anything for which this concept makes sense: `⌞ T ⌟`; see
+[1Lab.Underlying](https://1lab.dev/1Lab.Underlying.html). Underlying
+instances are available for:
+
+- `Type` (no effect)
+- `n-Type` and `Ω` (projects the underlying type)
+- A type like `Σ U ...` (projects the underlying type of the first component)
+- Concrete groups (projects the delooping)
+
+### Naming convention
+
+Identifiers **must** be `kebab-case`, though a context-appropriate
+separator **should** replace the dash:
+
+- An arrow `→` can replace "to", "implies", etc.:
+  `is-equiv→is-embedding`
+- The equivalence symbol `≃` can replace "is equivalent to",
+  "equivalence", etc.: `Ωⁿ≃Sⁿ-map`
+- The identity symbol `≡` can replace "is equal to", etc.: `hcomp≡Glue`,
+  `PathP≡Path`
+
+The names of propositions **should** start with the prefix `is-`:
+`is-equiv`, `is-group-hom`. The names of types **should** start with an
+uppercase letter: `Group-on`, `Glue`. In a theorem, the predicate
+**should** appear _after_ the thing it applies to: correct English, not
+a correct type. `Nat-is-set`, not `is-set-Nat`.
+
+Definitions **should** be named after what they prove:
+`is-equiv→is-embedding` has that name because its type is
+
+```agda
+is-equiv→is-embeding :
+  ...
+  → is-equiv f
+  → is-embedding f
+```
+
+Sometimes, this can result in verbose names. A bit of verbosity is
+preferrable to having a theorem whose name is not memorable. Deciding on
+a good name for your lemma can be very hard: don't hesitate to ask on
+Discord for help.
+
+Names of record fields whose type is proposition valued **should** start
+with the rather silly prefix `has-is`: `has-is-set` is the most common.
+
+When naming a duality lemma, the "concrete dual" (e.g. `Coproduct`)
+**should** be a single word, and the dual notion (e.g. `Product` in an
+opposite category) **should** have `co` appear as a separate prefix:
+hence `is-coproduct→is-co-product`.
+
+The types `PathP` and `SquareP` are the only exceptions to the
+kebab-case rule.
+
+### Literate vs code files
+
+All mathematically interesting notions **must** be defined in a literate
+Agda file. Non-literate Agda files **should** only be used to define
+code that fits under "unfortunately, proof assistants":
+
+- Metaprogramming. Solvers **may** be defined in a non-literate file,
+  but a literate explanation is preferred.
+- Prelude/re-export modules.
+- Modules that simply define more convenient notations
+  (e.g. `Algebra.Group.Notation`).

@@ -5,18 +5,13 @@ module index where
 # 1lab {style="margin-top: 0;"}
 
 A formalised, cross-linked reference resource for cubical methods in
-Homotopy Type Theory. Unlike the [HoTT book], the 1lab is not a "linear"
+Homotopy Type Theory. Unlike the [@HoTT], the 1lab is not a "linear"
 resource: Concepts are presented as a directed graph, with links
 indicating _dependencies_. For instance, the statement of the univalence
-principle depends on [universes], [identifications] and [equivalences].
-In addition to the hyperlinked "web of concepts" provided by the Agda
-code, there is a short introduction to homotopy type theory: **[Start
-here](1Lab.intro.html)**.
-
-[HoTT book]: https://homotopytypetheory.org/book/
-[universes]: agda://1Lab.Type
-[identifications]: agda://1Lab.Path
-[equivalences]: agda://1Lab.Equiv
+principle depends on [[universes]], [[identifications|path]] and
+[[equivalences]].  In addition to the hyperlinked "web of concepts"
+provided by the Agda code, there is a short introduction to homotopy
+type theory: **[Start here](1Lab.intro.html)**.
 
 <!--
 ```agda
@@ -163,14 +158,9 @@ theory. For this, [**read the introduction here**](1Lab.intro.html).
 :::
 
 The first things to be explained are the foundational constructions in
-(cubical) type theory - things like types themselves, [universes],
-[paths], [equivalences], [glueing] and the [[univalence]] "axiom". These
-are developed under the `1Lab` namespace. Start here:
-
-[universes]: agda://1Lab.Type
-[paths]: agda://1Lab.Path
-[equivalences]: agda://1Lab.Equiv
-[glueing]: agda://1Lab.Univalence#Glue
+(cubical) type theory - things like types themselves, [[universes]],
+[[paths]], [[equivalences]], [[glueing]] and the [[univalence]] "axiom".
+These are developed under the `1Lab` namespace. Start here:
 
 ```agda
 -- All of these module names are links you can click!

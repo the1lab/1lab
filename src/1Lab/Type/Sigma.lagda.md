@@ -193,11 +193,9 @@ aforementioned cubical argument:
                              refl refl j i
 ```
 
-Since `Σ-prop-path`{.Agda} is an equivalence, this implies that its inverse,
-`ap fst`{.Agda}, is also an equivalence; This is precisely what it means
-for `fst`{.Agda} to be an [embedding].
-
-[embedding]: agda://1Lab.Equiv.Embedding
+Since `Σ-prop-path`{.Agda} is an equivalence, this implies that its
+inverse, `ap fst`{.Agda}, is also an equivalence; This is precisely what
+it means for `fst`{.Agda} to be an [[embedding]].
 
 There is also a convenient packaging of the previous two definitions
 into an equivalence:

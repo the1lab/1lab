@@ -167,7 +167,7 @@ We now move onto the invertible 2-cells witnessing that the chosen
 identity map is a left- and right- unit element for the composition
 functor, and that composition is associative. In reality, to get a fully
 coherent structure, we need these invertible 2-cells to be given as
-natural isomorphisms, e.g. $(\id \circ -) \rm{Id}$, which witnesses
+natural isomorphisms, e.g. $(\id \circ -) \cong \id$, which witnesses
 that the functor "compose with the identity 1-cell on the left" is
 naturally isomorphic to the identity functor.
 
@@ -339,10 +339,10 @@ straightforward).
 ```
 
 The unitors and associator are almost, but not quite, given by the
-identity 2-cells, since componentwise the functor composition $\rm{Id}
-\circ F$ evaporates, leaving only $F$ behind. Unfortunately, this
-equation is not definitional, so we can not use the identity natural
-isomorphism directly:
+identity 2-cells, since componentwise the functor composition $\id \circ
+F$ evaporates, leaving only $F$ behind. Unfortunately, this equation is
+not definitional, so we can not use the identity natural isomorphism
+directly:
 
 ```agda
   pb .unitor-r {B = B} = to-natural-iso ni where

@@ -147,7 +147,7 @@ module _ (fib : Cartesian-fibration) where
 
 Let $f : X \to Y$ be a morphism in $\cB$, and let $L : \cE_{X} \to
 \cE_{Y}$ be a functor. If we are given a natural transformation $\eta :
-\rm{Id} \to f^{*} \circ L$ with $\overline{f} \circ \eta$ cocartesian,
+\Id \to f^{*} \circ L$ with $\overline{f} \circ \eta$ cocartesian,
 then $L$ is a left adjoint to $f^{*}$.
 
 ```agda

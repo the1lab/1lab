@@ -12,7 +12,7 @@ import Cat.Reasoning
 module Cat.Functor.Base where
 ```
 
-# Functor precategories
+# Functor precategories {defines="functor-category"}
 
 Fix a pair of (completely arbitrary!) precategories $\cC$ and $\cD$.
 We'll show how to make the type of functors $\cC \to \cD$ into a

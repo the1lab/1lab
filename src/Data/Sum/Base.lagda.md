@@ -15,10 +15,10 @@ module Data.Sum.Base where
 
 # Sum Types
 
-Sum types are one of the fundamental ingredients of type theory.
-They play a dual role to the [product type](agda://1Lab.Type#_×_);
-if products allow us to state that we have elements of two types simultaneously,
-sum types allow us to state that we have an element of _one_ of two types.
+Sum types are one of the fundamental ingredients of type theory. They
+play a dual role to the [[product type]]; if products allow us to state
+that we have elements of two types simultaneously, sum types allow us to
+state that we have an element of _one_ of two types.
 
 We use the notation `A ⊎ B` to hint at this type's set-theoretic analog:
 the disjoint union.
@@ -127,7 +127,7 @@ types.
 
 ## Decidablity
 
-This type has a very similar structure to [Dec](agda://Data.Dec.Base#Dec), so
+This type has a very similar structure to [[Dec|type of decisions]], so
 we provide some helpers to convert between the two.
 
 ```agda

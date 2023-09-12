@@ -43,7 +43,6 @@ import Text.Pandoc
 
 import Shake.LinkReferences
 import Shake.SearchData
-import Shake.AgdaRefs
 import Shake.Options
 import Shake.KaTeX
 import Shake.Git
@@ -57,8 +56,14 @@ readLabMarkdown fp = liftIO cont where
   ourExts :: [Extension]
   ourExts = [ Ext_wikilinks_title_before_pipe ]
 
+  badExts :: [Extension]
+  badExts = [Ext_definition_lists, Ext_compact_definition_lists]
+
   theExts :: Extensions
-  theExts = foldr enableExtension (getDefaultExtensions "markdown") ourExts
+  theExts =
+    foldr disableExtension
+      (foldr enableExtension (getDefaultExtensions "markdown") ourExts)
+      badExts
 
   cont :: IO Pandoc
   cont = do
@@ -100,12 +105,11 @@ mangleMarkdown = Text.pack . toplevel . Text.unpack where
   wikilink (c:cs)       = c:wikilink cs
   wikilink []           = []
 
-buildMarkdown :: AgdaRefs -- ^ All Agda identifiers in the codebase.
-              -> String   -- ^ The name of the Agda module.
+buildMarkdown :: String   -- ^ The name of the Agda module.
               -> FilePath -- ^ Input markdown file, produced by the Agda compiler.
               -> FilePath -- ^ Output HTML file.
               -> Action ()
-buildMarkdown refs modname input output = do
+buildMarkdown modname input output = do
   gitCommit <- gitCommit
   skipAgda <- getSkipAgda
 
@@ -156,7 +160,7 @@ buildMarkdown refs modname input output = do
   text <- liftIO $ either (fail . show) pure =<<
     runIO (renderMarkdown authors references modname baseUrl markdown)
 
-  tags <- mapM (parseAgdaLink modname refs) . foldEquations False $ parseTags text
+  let tags = foldEquations False (parseTags text)
   traverse_ (checkMarkup input) tags
 
   traced "writing" do

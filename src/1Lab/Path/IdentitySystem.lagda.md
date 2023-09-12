@@ -291,7 +291,7 @@ identity-system→hlevel (suc n) ids hl x y =
 ```
 -->
 
-## Sets and Hedberg's theorem
+## Sets and Hedberg's theorem {defines="hedberg's-theorem"}
 
 We now apply the general theory of identity systems to something a lot
 more mundane: recognising sets. An immediate consequence of having an

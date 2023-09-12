@@ -213,11 +213,11 @@ Rel ℓ .cat .id x y      = elΩ (x ≡ y)
 
 We can investigate the reason for this by working through e.g. the proof
 that relational composition is right-unital. We'll leave the identity
-relation written as just $\rm{Id}$, but in either case, what we want to
-show that $$(x, y) \mapsto \exists (a : A), \rm{Id}(x, a) \land R(a,
+relation written as just $\Id$, but in either case, what we want to
+show that $$(x, y) \mapsto \exists (a : A), \Id(x, a) \land R(a,
 y)$$ relates the same pairs as $R$. In the interesting direction, we're
 given some $a : A$ and a witness that $R(a, y)$: but what we wanted was
-to show $R(x, y)$! Fortunately if we we set $\rm{Id}(x, a)$, then $R(x,
+to show $R(x, y)$! Fortunately if we we set $\Id(x, a)$, then $R(x,
 y) \simeq R(a, y)$, and we're done.
 
 ```agda

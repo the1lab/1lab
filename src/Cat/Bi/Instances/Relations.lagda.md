@@ -52,8 +52,8 @@ of the [Cartesian product] $a \times b$.
 [subobject]: Cat.Displayed.Instances.Subobjects.html
 [Cartesian product]: Cat.Diagram.Product.html
 
-Unlike the more general [bicategory of spans] $\rm{Spans}_\cC$, which
-can be defined for an arbitrary category with [[pullbacks]] $\cC$, the
+Unlike the more general [bicategory of spans] $\Spans_\cC$, which can be
+defined for an arbitrary category with [[pullbacks]] $\cC$, the
 definition of a bicategory of _relations_ does need an honest regular
 category. Before we get into the details of the construction, let's
 introduce some notation:
