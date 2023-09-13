@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import Cat.Diagram.Product.Indexed
-open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Equaliser
 open import Cat.Diagram.Terminal
@@ -96,4 +95,25 @@ Cartesian→standard-finite-products F = prod where
   prod .has-is-ip .tuple      = F-mult F
   prod .has-is-ip .commute    = F-commute F _ _
   prod .has-is-ip .unique f p = F-unique F f p
+```
+
+If, in addition, $\cC$ is [[univalent|univalent category]], then we can strengthen
+this result to work with all [[finite types]], not just the standard $[n]$ types.
+
+To see why univalence is required, remember that finite types are *merely* equivalent
+to $[n]$, so any two enumerations should yield the same result. But two different
+permutations of the objects in a diagram would only yield *isomorphic* products
+in general; we need them to be equal, which is what univalence ensures.
+
+```agda
+Cartesian→finite-products
+  : is-category C
+  → ∀ {ℓ} {X : Type ℓ} → Finite X
+  → has-products-indexed-by C X
+Cartesian→finite-products cat {X = X} (fin {n} e) F =
+  ∥-∥-rec (Indexed-product-unique C _ cat) go e
+  where
+    go : X ≃ Fin n → Indexed-product C F
+    go e = Indexed-product-≃ C e
+      (Cartesian→standard-finite-products (F ⊙ Equiv.from e))
 ```

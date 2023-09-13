@@ -175,15 +175,14 @@ commutes with finite products:
 finite-choice
   : ∀ {ℓ} n {A : Fin n → Type ℓ} {M}
       (let module M = Effect M)
-  → ⦃ Bind M ⦄
+  → ⦃ Idiom M ⦄
   → (∀ x → M.₀ (A x)) → M.₀ (∀ x → A x)
-finite-choice zero _    = pure λ { () }
-finite-choice (suc n) k = do
-  azero ← k fzero
-  asuc  ← finite-choice n (k ∘ fsuc)
-  pure λ where
-    fzero    → azero
-    (fsuc x) → asuc x
+finite-choice zero _        = pure λ ()
+finite-choice (suc n) {A} k = ⦇ elim (k fzero) (finite-choice n (k ∘ fsuc)) ⦈
+  where
+    elim : A fzero → (∀ x → A (fsuc x)) → ∀ x → A x
+    elim azero asuc fzero = azero
+    elim azero asuc (fsuc x) = asuc x
 ```
 
 An immediate consequence is that surjections into a finite set (thus,

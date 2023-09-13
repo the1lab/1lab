@@ -116,5 +116,8 @@ f $ₛ x = f x
 <!--
 ```
 open import Prim.Literals public
+
+auto : ∀ {ℓ} {A : Type ℓ} → ⦃ A ⦄ → A
+auto ⦃ a ⦄ = a
 ```
 -->

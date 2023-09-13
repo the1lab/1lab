@@ -323,7 +323,7 @@ _ = equiv→is-hlevel
 _ = ⊎-is-hlevel
 _ = Σ-is-hlevel
 _ = is-contr-if-inhabited→is-prop
-_ = is-prop→is-contr-if-inhabited
+_ = is-prop∙→is-contr
 _ = H-Level-Dec
 _ = disjoint-⊎-is-prop
 _ = ℕ-well-ordered
@@ -335,7 +335,7 @@ _ = Finite-choice
 * Exercise 3.1: `equiv→is-hlevel`{.Agda}
 * Exercise 3.2: `⊎-is-hlevel`{.Agda}
 * Exercise 3.3: `Σ-is-hlevel`{.Agda}
-* Exercise 3.5: `is-contr-if-inhabited→is-prop`{.Agda}, `is-prop→is-contr-if-inhabited`{.Agda}
+* Exercise 3.5: `is-contr-if-inhabited→is-prop`{.Agda}, `is-prop∙→is-contr`{.Agda}
 * Exercise 3.6: `H-Level-Dec`{.Agda}
 * Exercise 3.7: `disjoint-⊎-is-prop`{.Agda}
 * Exercise 3.19: `ℕ-well-ordered`{.Agda}

@@ -227,8 +227,9 @@ Discrete-Bool false true = no (λ p → true≠false (sym p))
 Discrete-Bool true false = no true≠false
 Discrete-Bool true true = yes refl
 
-Bool-is-set : is-set Bool
-Bool-is-set = Discrete→is-set Discrete-Bool
+opaque
+  Bool-is-set : is-set Bool
+  Bool-is-set = Discrete→is-set Discrete-Bool
 
 instance
   H-Level-Bool : ∀ {n} → H-Level Bool (2 + n)

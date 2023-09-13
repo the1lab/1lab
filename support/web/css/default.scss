@@ -353,6 +353,11 @@ details {
   margin-top: 1em;
   margin-bottom: 1em;
 
+  pre.Agda {
+    /* Undo the indentation so that code stays aligned. */
+    padding-left : 0;
+    margin-left: -5px;
+  }
 }
 
 details:not(.text) {

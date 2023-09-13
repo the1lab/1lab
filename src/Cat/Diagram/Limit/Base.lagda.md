@@ -1,10 +1,13 @@
 <!--
 ```agda
 open import Cat.Instances.Shape.Terminal
+open import Cat.Diagram.Product.Indexed
 open import Cat.Functor.Kan.Unique
 open import Cat.Functor.Naturality
+open import Cat.Diagram.Equaliser
 open import Cat.Functor.Coherence
 open import Cat.Functor.Kan.Base
+open import Cat.Instances.Lift
 open import Cat.Functor.Base
 open import Cat.Prelude
 
@@ -17,12 +20,14 @@ import Cat.Reasoning
 module Cat.Diagram.Limit.Base where
 ```
 
-# Idea {defines=limit}
+# Limits {defines=limit}
 
 **Note**: This page describes the general definition of limits, and
 assumes some familiarity with some concrete examples, in particular
 [[terminal objects]], [[products]], [[equalisers]], and [[pullbacks]].
 It might be a good idea to check out those pages before continuing!
+
+## Idea
 
 To motivate limits, note how all the above examples have roughly the
 same structure. They all consist of some object, a bunch of maps out
@@ -665,9 +670,6 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 
 # Preservation of Limits
 
-Suppose you have a limit $L$ of a diagram $\rm{Dia}$. We say that $F$
-**preserves $L$** if $F(L)$ is also a limit of $F \circ \rm{Dia}$.
-
 <!--
 ```agda
 module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategory o₃ h₃}
@@ -789,9 +791,9 @@ is-continuous oshape hshape {C = C} F =
   → preserves-limit F Diagram
 ```
 
-# Completeness
+# Completeness {defines="complete-category"}
 
-A category is **complete** if admits for limits of arbitrary shape.
+A category is **complete** if it admits limits for diagrams of arbitrary shape.
 However, in the presence of excluded middle, if a category admits
 products indexed by its class of morphisms, then it is automatically a
 poset. Since excluded middle is independent of type theory, we can not
@@ -804,7 +806,132 @@ indexed by a precategory with objects in $\ty\ o$ and morphisms in $\ty\
 
 ```agda
 is-complete : ∀ {oc ℓc} o ℓ → Precategory oc ℓc → Type _
-is-complete o ℓ C = ∀ {D : Precategory o ℓ} (F : Functor D C) → Limit F
+is-complete oj ℓj C = ∀ {J : Precategory oj ℓj} (F : Functor J C) → Limit F
 ```
 
-[[Kan extension]]
+While this condition might sound very strong, and thus that it would be hard to come
+by, it turns out we can get away with only two fundamental types of limits:
+[[products]] and [[equalisers]]. In order to construct the limit for a diagram
+of shape $\cJ$, we will require products [[indexed|indexed product]] by $\cJ$'s type
+of objects *and* by its type of morphisms.
+
+<!--
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} where
+  private
+    module C = Cat.Reasoning C
+    open Indexed-product
+    open make-is-limit
+    open Equaliser
+```
+-->
+
+```agda
+  limit-as-equaliser-of-product
+    : ∀ {oj ℓj} {J : Precategory oj ℓj}
+    → has-products-indexed-by C (Precategory.Ob J)
+    → has-products-indexed-by C (Precategory.Mor J)
+    → has-equalisers C
+    → (F : Functor J C) → Limit F
+  limit-as-equaliser-of-product {oj} {ℓj} {J} has-Ob-prod has-Mor-prod has-eq F =
+    to-limit (to-is-limit lim) where
+```
+
+<!--
+```agda
+    module J = Cat.Reasoning J
+    open Functor F
+```
+-->
+
+Given a diagram $F : \ca{J} \to \ca{C}$, we start by building the product of all
+the objects appearing in the diagram.
+
+```agda
+    Obs : Indexed-product C λ o → F₀ o
+    Obs = has-Ob-prod _
+```
+
+Our limit will arise as a *subobject* of this product-of-objects,
+namely the [[equaliser]] of two carefully chosen morphisms.
+
+As a guiding example, the [[pullback]] of $f : A \to C$ and $g : B \to C$ should be
+the subobject of $A \times B \times C$ consisting of triples $(a, b, c)$ such that
+$f(a) = c = g(b)$. In full generality, for each arrow $f : A \to C$ in our diagram,
+we should have that projecting out the $C$th component of our product should give the same
+result as projecting out the $A$th component and postcomposing with $f$.
+
+This suggests to build another indexed product of all the *codomains* of arrows in
+the diagram, taking the first morphism to be the projection of the codomain
+and the second morphism to be the projection of the domain postcomposed with $f$:
+
+~~~{.quiver .short-1}
+\[\begin{tikzcd}
+	{\displaystyle \prod_{o : \text{Ob}(\mathcal J)} F(o)} & {\displaystyle \prod_{(f : a \to b) : \text{Mor}(\mathcal J)} F(b)}
+	\arrow["{\pi_b}", shift left, from=1-1, to=1-2]
+	\arrow["{F(f) \circ \pi_a}"', shift right, from=1-1, to=1-2]
+\end{tikzcd}\]
+~~~
+
+```agda
+    Cod : Indexed-product C {Idx = J.Mor} λ (a , b , f) → F₀ b
+    Cod = has-Mor-prod _
+
+    s t : C.Hom (Obs .ΠF) (Cod .ΠF)
+    s = Cod .tuple λ (a , b , f) → F₁ f C.∘ Obs .π a
+    t = Cod .tuple λ (a , b , f) → Obs .π b
+
+    eq : Equaliser C s t
+    eq = has-eq _ _
+
+    lim : make-is-limit F (eq .apex)
+```
+
+<details>
+<summary>
+The rest of the proof amounts to repackaging the data of the equaliser and products
+as the data for a limit.
+</summary>
+
+```agda
+    lim .ψ c = Obs .π c C.∘ eq .equ
+    lim .commutes {a} {b} f =
+      F₁ f C.∘ Obs .π a C.∘ eq .equ            ≡˘⟨ C.extendl (Cod .commute) ⟩
+      Cod .π (a , b , f) C.∘ ⌜ s C.∘ eq .equ ⌝ ≡⟨ ap! (eq .equal) ⟩
+      Cod .π (a , b , f) C.∘ t C.∘ eq .equ     ≡⟨ C.pulll (Cod .commute) ⟩
+      Obs .π b C.∘ eq .equ                     ∎
+    lim .universal {x} e comm = eq .universal comm′ where
+      e′ : C.Hom x (Obs .ΠF)
+      e′ = Obs .tuple e
+      comm′ : s C.∘ e′ ≡ t C.∘ e′
+      comm′ = Indexed-product.unique₂ Cod λ i@(a , b , f) →
+        Cod .π i C.∘ s C.∘ e′        ≡⟨ C.extendl (Cod .commute) ⟩
+        F₁ f C.∘ ⌜ Obs .π a C.∘ e′ ⌝ ≡⟨ ap! (Obs .commute) ⟩
+        F₁ f C.∘ e a                 ≡⟨ comm f ⟩
+        e b                          ≡˘⟨ Obs .commute ⟩
+        Obs .π b C.∘ e′              ≡˘⟨ C.pulll (Cod .commute) ⟩
+        Cod .π i C.∘ t C.∘ e′        ∎
+    lim .factors {j} e comm =
+      (Obs .π j C.∘ eq .equ) C.∘ lim .universal e comm ≡⟨ C.pullr (eq .factors) ⟩
+      Obs .π j C.∘ Obs .tuple e                        ≡⟨ Obs .commute ⟩
+      e j                                              ∎
+    lim .unique e comm u′ fac = eq .unique $ Obs .unique _
+      λ i → C.assoc _ _ _ ∙ fac i
+```
+</details>
+
+This implies that a category with equalisers and large enough indexed products has
+all limits.
+
+```agda
+  products+equalisers→complete
+    : ∀ {oj ℓj}
+    → has-indexed-products C (oj ⊔ ℓj)
+    → has-equalisers C
+    → is-complete oj ℓj C
+  products+equalisers→complete {oj} {ℓj} has-prod has-eq =
+    limit-as-equaliser-of-product
+      (λ _ → Lift-Indexed-product C ℓj (has-prod _))
+      (λ _ → has-prod _)
+      has-eq
+```

@@ -18,7 +18,7 @@ private variable
 ```
 -->
 
-# Coequalisers
+# Coequalisers {defines="coequaliser"}
 
 The **coequaliser** of two maps $f, g : A \to B$ (if it exists),
 represents the largest quotient object of $B$ that identifies $f$
@@ -101,4 +101,20 @@ coequaliser-unique {c1 = c1} {c2} co1 co2 =
     (unique₂ co2 (co2 .coequal) (pullr (co2 .factors) ∙ co1 .factors) (idl _))
     (unique₂ co1 (co1 .coequal) (pullr (co1 .factors) ∙ co2 .factors) (idl _))
   where open is-coequaliser
+```
+
+# Categories with all coequalisers
+
+We also define a helper module for working with categories that have
+coequalisers of all parallel pairs of morphisms.
+
+```agda
+has-coequalisers : Type _
+has-coequalisers = ∀ {a b} (f g : Hom a b) → Coequaliser f g
+
+module Coequalisers (all-coequalisers : has-coequalisers) where
+  module coequaliser {a b} (f g : Hom a b) = Coequaliser (all-coequalisers f g)
+
+  Coequ : ∀ {a b} (f g : Hom a b) → Ob
+  Coequ = coequaliser.coapex
 ```
