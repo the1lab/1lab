@@ -23,7 +23,7 @@ build a limit for it!
 
 ```agda
 Sets-is-complete : ∀ {ι κ o} → is-complete ι κ (Sets (ι ⊔ κ ⊔ o))
-Sets-is-complete {D = D} F = to-limit (to-is-limit lim) module Sets-is-complete where
+Sets-is-complete {J = D} F = to-limit (to-is-limit lim) module Sets-is-complete where
   module D = Precategory D
   module F = Functor F
   open make-is-limit

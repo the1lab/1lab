@@ -51,6 +51,10 @@ record is-contr {ℓ} (A : Type ℓ) : Type ℓ where
     paths : (x : A) → centre ≡ x
 
 open is-contr public
+
+⊤-is-contr : is-contr ⊤
+⊤-is-contr .centre = tt
+⊤-is-contr .paths _ = refl
 ```
 
 A contractible type is one for which the unique map `X → ⊤` is an
@@ -189,9 +193,9 @@ contractible when they are inhabited:
 is-contr-if-inhabited→is-prop : ∀ {ℓ} {A : Type ℓ} → (A → is-contr A) → is-prop A
 is-contr-if-inhabited→is-prop cont x y = is-contr→is-prop (cont x) x y
 
-is-prop→is-contr-if-inhabited : ∀ {ℓ} {A : Type ℓ} → is-prop A → A → is-contr A
-is-prop→is-contr-if-inhabited prop x .centre = x
-is-prop→is-contr-if-inhabited prop x .paths y = prop x y
+is-prop∙→is-contr : ∀ {ℓ} {A : Type ℓ} → is-prop A → A → is-contr A
+is-prop∙→is-contr prop x .centre = x
+is-prop∙→is-contr prop x .paths y = prop x y
 ```
 
 The proof that any contractible type is a proposition is not too

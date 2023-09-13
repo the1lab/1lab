@@ -164,8 +164,9 @@ has trivial paths.
 [set]: agda://1Lab.HLevel#is-set
 
 ```agda
-Fin-is-set : ∀ {n} → is-set (Fin n)
-Fin-is-set = Discrete→is-set Discrete-Fin
+opaque
+  Fin-is-set : ∀ {n} → is-set (Fin n)
+  Fin-is-set = Discrete→is-set Discrete-Fin
 
 instance
   H-Level-Fin : ∀ {n k} → H-Level (Fin n) (2 + k)

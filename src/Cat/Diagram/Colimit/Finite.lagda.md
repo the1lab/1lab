@@ -7,6 +7,7 @@ open import Cat.Diagram.Coproduct
 open import Cat.Diagram.Initial
 open import Cat.Diagram.Pushout
 open import Cat.Prelude
+open import Cat.Finite
 
 import Cat.Reasoning as Cat
 ```
@@ -23,21 +24,24 @@ module _ {ℓ ℓ'} (C : Precategory ℓ ℓ') where
 ```
 -->
 
-# Finitely Cocomplete Categories
+# Finitely Cocomplete Categories {defines="finite-colimit finitely-cocomplete finitely-cocomplete-category"}
 
 Finitely **cocomplete** categories are dual to [[finitely complete
-categories]] in that they admit colimits for all diagrams of finite
-shape. A finitely cocomplete category has:
+categories]] in that they admit colimits for all diagrams of
+[[finite|finite category]] shape.
 
-* An [initial object] (colimit over the empty diagram)
-* All binary [coproducts] (colimits over any diagrams of shape $\bullet\quad\bullet$)
-* All binary [coequalisers] (colimits over any diagrams of shape $\bullet\tto\bullet$)
-* All binary [pushouts] (colimits over any diagrams of shape $\bullet\to\bullet\ot\bullet$)
+```agda
+  is-finitely-cocomplete : Typeω
+  is-finitely-cocomplete = ∀ {o ℓ} {D : Precategory o ℓ} → is-finite-precategory D
+                         → (F : Functor D C) → Colimit F
+```
 
-[initial object]: Cat.Diagram.Initial.html
-[coproducts]: Cat.Diagram.Coproduct.html
-[coequalisers]: Cat.Diagram.Coequaliser.html
-[pushouts]: Cat.Diagram.Pushout.html
+Equivalently, a finitely cocomplete category has:
+
+* An [[initial object]] (colimit over the empty diagram)
+* All binary [[coproducts]] (colimits over any diagrams of shape $\bullet\quad\bullet$)
+* All binary [[coequalisers]] (colimits over any diagrams of shape $\bullet\tto\bullet$)
+* All binary [[pushouts]] (colimits over any diagrams of shape $\bullet\to\bullet\ot\bullet$)
 
 ```agda
   record Finitely-cocomplete : Type (ℓ ⊔ ℓ') where

@@ -1,11 +1,11 @@
 <!--
 ```agda
 open import Cat.Instances.Shape.Terminal
-open import Cat.Diagram.Colimit.Base
 open import Cat.Instances.Discrete
 open import Cat.Diagram.Pullback
 open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Initial
+open import Cat.Univalent
 open import Cat.Prelude
 ```
 -->
@@ -14,12 +14,11 @@ open import Cat.Prelude
 module Cat.Diagram.Coproduct.Indexed {o ℓ} (C : Precategory o ℓ) where
 ```
 
-# Indexed coproducts
+# Indexed coproducts {defines="indexed-coproduct"}
 
-Indexed coproducts are the [dual] notion to [indexed products], so see
+Indexed coproducts are the [dual] notion to [[indexed products]], so see
 there for motivation and exposition.
 
-[indexed products]: Cat.Diagram.Product.Indexed.html
 [dual]: Cat.Base.html#opposites
 
 <!--
@@ -46,6 +45,9 @@ record is-indexed-coproduct (F : Idx → C.Ob) (ι : ∀ i → C.Hom (F i) S)
   eta : ∀ {Y} (h : C.Hom S Y) → h ≡ match (λ i → h C.∘ ι i)
   eta h = unique _ λ _ → refl
 
+  unique₂ : ∀ {Y} {g h : C.Hom S Y} → (∀ i → g C.∘ ι i ≡ h C.∘ ι i) → g ≡ h
+  unique₂ {g = g} {h} eq = eta g ∙ ap match (funext eq) ∙ sym (eta h)
+
   hom-iso : ∀ {Y} → C.Hom S Y ≃ (∀ i → C.Hom (F i) Y)
   hom-iso = (λ z i → z C.∘ ι i) , is-iso→is-equiv λ where
     .is-iso.inv → match
@@ -66,80 +68,40 @@ record Indexed-coproduct (F : Idx → C.Ob) : Type (o ⊔ ℓ ⊔ level-of Idx) 
     has-is-ic : is-indexed-coproduct F ι
   open is-indexed-coproduct has-is-ic public
 
+has-coproducts-indexed-by : ∀ {ℓ} (I : Type ℓ) → Type _
+has-coproducts-indexed-by I = ∀ (F : I → C.Ob) → Indexed-coproduct F
+
 has-indexed-coproducts : ∀ ℓ → Type _
-has-indexed-coproducts ℓ = ∀ {I : Type ℓ} (F : I → C.Ob) → Indexed-coproduct F
+has-indexed-coproducts ℓ = ∀ {I : Type ℓ} → has-coproducts-indexed-by I
 ```
 
-## As colimits
-
-Similarly to the product case, when $I$ is a groupoid, indexed
-coproducts correspond to colimits of discrete diagrams of shape $I$.
-
+<!--
 ```agda
-module _ {I : Type ℓ'} (i-is-grpd : is-groupoid I) (F : I → C.Ob) where
-  open _=>_
-
-  Inj→Cocone : ∀ {x} → (∀ i → C.Hom (F i) x)
-             → Disc-adjunct {C = C} {iss = i-is-grpd} F => Const x
-  Inj→Cocone inj .η i = inj i
-  Inj→Cocone inj .is-natural i j p =
-    J (λ j p → inj j C.∘ subst (C.Hom (F i) ⊙ F) p C.id ≡ C.id C.∘ inj i)
-      (C.elimr (transport-refl C.id) ∙ sym (C.idl _)) p
-
-  is-indexed-coproduct→is-colimit
-    : ∀ {x} {inj : ∀ i → C.Hom (F i) x}
-    → is-indexed-coproduct F inj
-    → is-colimit (Disc-adjunct F) x (Inj→Cocone inj)
-  is-indexed-coproduct→is-colimit {x = x} {inj} ic =
-    to-is-colimitp mc refl
+Indexed-coproduct-≃
+  : ∀ {ℓ ℓ′} {I : Type ℓ} {J : Type ℓ′} → (e : I ≃ J)
+  → {F : I → C.Ob} → Indexed-coproduct (F ⊙ Equiv.from e) → Indexed-coproduct F
+Indexed-coproduct-≃ e {F} p = λ where
+  .ΣF → p .ΣF
+  .ι j → p .ι (e.to j) C.∘ C.from (path→iso (ap F (e.η _)))
+  .has-is-ic .match f → p .match (f ⊙ e.from)
+  .has-is-ic .commute {f = f} →
+    C.pulll (p .commute) ∙ from-pathp-to (C ^op) _ (ap f (e.η _))
+  .has-is-ic .unique f comm → p .unique _ λ j →
+      ap (_ C.∘_) (sym (from-pathp-to (C ^op) _ (ap (p .ι) (e.ε j)))
+                  ∙ ap (λ z → p .ι _ C.∘ C.from (path→iso (ap F z))) (e.zag j))
+    ∙ comm (e.from j)
     where
-      module ic = is-indexed-coproduct ic
-      open make-is-colimit
+      open Indexed-coproduct
+      open is-indexed-coproduct
+      module e = Equiv e
 
-      mc : make-is-colimit (Disc-adjunct F) x
-      mc .ψ i = inj i
-      mc .commutes {i} {j} p =
-        J (λ j p → inj j C.∘ subst (C.Hom (F i) ⊙ F) p C.id ≡ inj i)
-          (C.elimr (transport-refl C.id))
-          p
-      mc .universal eta p = ic.match eta
-      mc .factors eta p = ic.commute
-      mc .unique eta p other q = ic.unique eta q
-
-  is-colimit→is-indexed-coprduct
-    : ∀ {K : Functor ⊤Cat C}
-    → {eps : Disc-adjunct {iss = i-is-grpd} F => K F∘ !F}
-    → is-lan !F (Disc-adjunct F) K eps
-    → is-indexed-coproduct F (eps .η)
-  is-colimit→is-indexed-coprduct {K = K} {eps} colim = ic where
-    module colim = is-colimit colim
-    open is-indexed-coproduct
-
-    ic : is-indexed-coproduct F (eps .η)
-    ic .match k =
-      colim.universal k
-        (J (λ j p → k j C.∘ subst (C.Hom (F _) ⊙ F) p C.id ≡ k _)
-           (C.elimr (transport-refl _)))
-    ic .commute =
-      colim.factors _ _
-    ic .unique k comm =
-      colim.unique _ _ _ comm
-
-  IC→Colimit
-    : Indexed-coproduct F
-    → Colimit {C = C} (Disc-adjunct {iss = i-is-grpd} F)
-  IC→Colimit ic =
-    to-colimit (is-indexed-coproduct→is-colimit has-is-ic)
-    where open Indexed-coproduct ic
-
-  Colimit→IC
-    : Colimit {C = C} (Disc-adjunct {iss = i-is-grpd} F)
-    → Indexed-coproduct F
-  Colimit→IC colim .Indexed-coproduct.ΣF = _
-  Colimit→IC colim .Indexed-coproduct.ι = _
-  Colimit→IC colim .Indexed-coproduct.has-is-ic =
-    is-colimit→is-indexed-coprduct (Colimit.has-colimit colim)
+Lift-Indexed-coproduct
+  : ∀ {ℓ} ℓ′ → {I : Type ℓ} → {F : I → C.Ob}
+  → Indexed-coproduct {Idx = Lift ℓ′ I} (F ⊙ Lift.lower)
+  → Indexed-coproduct F
+Lift-Indexed-coproduct _ = Indexed-coproduct-≃ (Lift-≃ e⁻¹)
 ```
+-->
 
 # Disjoint coproducts
 

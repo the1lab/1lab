@@ -88,7 +88,7 @@ set-coequalisers already includes a truncation.
 
 ```agda
 Sets-is-cocomplete : ∀ {ι κ o} → is-cocomplete ι κ (Sets (ι ⊔ κ ⊔ o))
-Sets-is-cocomplete {ι} {κ} {o} {D = D} F = to-colimit (to-is-colimit colim) where
+Sets-is-cocomplete {ι} {κ} {o} {J = D} F = to-colimit (to-is-colimit colim) where
   module D = Precategory D
   module F = Functor F
   open _=>_

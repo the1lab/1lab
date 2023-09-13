@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --allow-unsolved-metas #-}
 open import Cat.Allegory.Base
 open import Cat.Prelude
 
@@ -16,7 +15,7 @@ module Cat.Allegory.Reasoning {o ℓ ℓ′} (A : Allegory o ℓ ℓ′) where
 ```agda
 open Allegory A public
 open Cat.Reasoning (A .Allegory.cat)
-  hiding (module HLevel-instance ; Ob ; Hom; Hom-set ; id ; idl ; idr ; assoc ; _∘_)
+  hiding (module HLevel-instance ; Ob ; Hom ; Hom-set ; id ; idl ; idr ; assoc ; _∘_ ; Mor ; Hom→Mor ; Mor-path)
   public
 ```
 

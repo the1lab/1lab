@@ -329,7 +329,7 @@ $\pi : x_0 ≡ x_1$ and $p_0 ≡ p_1$ _`over`{.Agda ident=PathP}_ $\pi$.
 As an intermediate step in proving that $p_0 ≡ p_1$, we _must_ show that
 $x_0 ≡ x_1$ - without this, we can't even _state_ that $p_0$ and $p_1$
 are identified, since they live in different types!  To this end, we
-will build $\pi : p_0 ≡ p_1$, parts of which will be required to
+will build $\pi : x_0 ≡ x_1$, parts of which will be required to
 assemble the overall proof that $p_0 ≡ p_1$.
 
 We'll detail the construction of $\pi_0$; for $\pi_1$, the same method
@@ -592,6 +592,19 @@ is-contr→≃ cA cB = (λ _ → cB .centre) , is-iso→is-equiv f-is-iso where
   is-iso.inv f-is-iso _ = cA .centre
   is-iso.rinv f-is-iso _ = is-contr→is-prop cB _ _
   is-iso.linv f-is-iso _ = is-contr→is-prop cA _ _
+
+is-contr→≃⊤ : ∀ {ℓ} {A : Type ℓ} → is-contr A → A ≃ ⊤
+is-contr→≃⊤ c = is-contr→≃ c ⊤-is-contr
+```
+
+...and so is any function into an empty type:
+
+```agda
+¬-is-equiv : ∀ {ℓ} {A : Type ℓ} (f : A → ⊥) → is-equiv f
+¬-is-equiv f .is-eqv ()
+
+is-empty→≃⊥ : ∀ {ℓ} {A : Type ℓ} → ¬ A → A ≃ ⊥
+is-empty→≃⊥ ¬a = _ , ¬-is-equiv ¬a
 ```
 
 # Equivalence Reasoning
@@ -638,6 +651,9 @@ _∙e_ (f , e) (g , e') = (λ x → g (f x)) , eqv where
   eqv : is-equiv (λ x → g (f x))
   eqv = is-iso→is-equiv (iso (λ x → f⁻¹ .is-iso.inv (g⁻¹ .is-iso.inv x)) right left)
 
+infixr 30 _∙e_
+infix 31 _e⁻¹
+
 ∙-is-equiv : ∀ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
            → {f : A → B} {g : B → C}
            → is-equiv f
@@ -679,7 +695,6 @@ x ≃⟨⟩ x≡y = x≡y
 _≃∎ : ∀ {ℓ} (A : Type ℓ) → A ≃ A
 x ≃∎ = _ , id-equiv
 
-infixr 30 _∙e_
 infixr 2 _≃⟨⟩_ _≃⟨_⟩_
 infix  3 _≃∎
 ```
@@ -711,17 +726,15 @@ lift-inj
   → a ≡ b
 lift-inj p = ap Lift.lower p
 
-Lift-≃
+Lift-≃ : ∀ {a ℓ} {A : Type a} → Lift ℓ A ≃ A
+Lift-≃ .fst (lift a) = a
+Lift-≃ .snd .is-eqv a .centre = lift a , refl
+Lift-≃ .snd .is-eqv a .paths f = Σ-pathp (ap lift (sym (f .snd))) λ i j → f .snd (~ i ∨ j)
+
+Lift-ap
   : ∀ {a b ℓ ℓ'} {A : Type a} {B : Type b}
   → A ≃ B
   → Lift ℓ A ≃ Lift ℓ' B
-Lift-≃ eqv .fst a .Lift.lower = Equiv.to eqv (Lift.lower a)
-Lift-≃ eqv .snd .is-eqv b .centre .fst .Lift.lower = Equiv.from eqv (Lift.lower b)
-Lift-≃ eqv .snd .is-eqv b .centre .snd i .Lift.lower =
-   Equiv.ε eqv (Lift.lower b) i
-Lift-≃ eqv .snd .is-eqv b .paths (a , p) i .fst .Lift.lower =
-  equiv-path eqv (Lift.lower b) (Lift.lower a , lift-inj p) i .fst
-Lift-≃ eqv .snd .is-eqv b .paths (a , p) i .snd j .Lift.lower =
-  equiv-path eqv (Lift.lower b) (Lift.lower a , lift-inj p) i .snd j
+Lift-ap eqv = Lift-≃ ∙e eqv ∙e (Lift-≃ e⁻¹)
 ```
 -->

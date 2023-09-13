@@ -71,8 +71,6 @@ record Coproduct (A B : Ob) : Type (o ⊔ h) where
     has-is-coproduct : is-coproduct in₀ in₁
 
   open is-coproduct has-is-coproduct public
-
-open Coproduct
 ```
 
 ## Uniqueness
@@ -80,32 +78,66 @@ open Coproduct
 The uniqueness argument presented here is dual to the argument
 for the [Product](agda://Cat.Diagram.Product#×-Unique).
 
+<!--
 ```agda
-+-Unique : (c1 c2 : Coproduct A B) → coapex c1 ≅ coapex c2
-+-Unique c1 c2 = make-iso c1→c2 c2→c1 c1→c2→c1 c2→c1→c2
-  where
-    module c1 = Coproduct c1
-    module c2 = Coproduct c2
+module _ where
+  open Coproduct
+```
+-->
 
-    c1→c2 : Hom (coapex c1) (coapex c2)
-    c1→c2 = c1.[ c2.in₀ , c2.in₁ ]
+```agda
+  +-Unique : (c1 c2 : Coproduct A B) → coapex c1 ≅ coapex c2
+  +-Unique c1 c2 = make-iso c1→c2 c2→c1 c1→c2→c1 c2→c1→c2
+    where
+      module c1 = Coproduct c1
+      module c2 = Coproduct c2
 
-    c2→c1 : Hom (coapex c2) (coapex c1)
-    c2→c1 = c2.[ c1.in₀ , c1.in₁ ]
+      c1→c2 : Hom (coapex c1) (coapex c2)
+      c1→c2 = c1.[ c2.in₀ , c2.in₁ ]
+
+      c2→c1 : Hom (coapex c2) (coapex c1)
+      c2→c1 = c2.[ c1.in₀ , c1.in₁ ]
 ```
 
 ```agda
-    c1→c2→c1 : c1→c2 ∘ c2→c1 ≡ id
-    c1→c2→c1 =
-      c2.unique₂ _
-        (pullr c2.in₀∘factor ∙ c1.in₀∘factor)
-        (pullr c2.in₁∘factor ∙ c1.in₁∘factor)
-        id (idl _) (idl _)
+      c1→c2→c1 : c1→c2 ∘ c2→c1 ≡ id
+      c1→c2→c1 =
+        c2.unique₂ _
+          (pullr c2.in₀∘factor ∙ c1.in₀∘factor)
+          (pullr c2.in₁∘factor ∙ c1.in₁∘factor)
+          id (idl _) (idl _)
 
-    c2→c1→c2 : c2→c1 ∘ c1→c2 ≡ id
-    c2→c1→c2 =
-      c1.unique₂ _
-        (pullr c1.in₀∘factor ∙ c2.in₀∘factor)
-        (pullr c1.in₁∘factor ∙ c2.in₁∘factor)
-        id (idl _) (idl _)
+      c2→c1→c2 : c2→c1 ∘ c1→c2 ≡ id
+      c2→c1→c2 =
+        c1.unique₂ _
+          (pullr c1.in₀∘factor ∙ c2.in₀∘factor)
+          (pullr c1.in₁∘factor ∙ c2.in₁∘factor)
+          id (idl _) (idl _)
+```
+
+# Categories with all binary coproducts
+
+Categories with all binary coproducts are quite common, so we define
+a module for working with them.
+
+```agda
+has-coproducts : Type _
+has-coproducts = ∀ a b → Coproduct a b
+
+module Binary-coproducts (all-coproducts : has-coproducts) where
+
+  module coproduct {a} {b} = Coproduct (all-coproducts a b)
+
+  open coproduct renaming
+    (unique to []-unique; in₀∘factor to in₀∘[]; in₁∘factor to in₁∘[]) public
+  open Functor
+
+  infixr 7 _⊕₀_
+  infix 50 _⊕₁_
+
+  _⊕₀_ : Ob → Ob → Ob
+  a ⊕₀ b = coproduct.coapex {a} {b}
+
+  _⊕₁_ : ∀ {a b x y} → Hom a x → Hom b y → Hom (a ⊕₀ b) (x ⊕₀ y)
+  f ⊕₁ g = [ in₀ ∘ f , in₁ ∘ g ]
 ```

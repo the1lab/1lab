@@ -87,6 +87,13 @@ window.addEventListener("DOMContentLoaded", () => {
         body.classList.add("show-hidden-code");
       else
         body.classList.remove("show-hidden-code");
+
+      document.querySelectorAll("details").forEach(d => {
+        if (showHiddenCode.checked)
+          d.setAttribute("open", "");
+        else
+          d.removeAttribute("open");
+      });
     };
   }
 
