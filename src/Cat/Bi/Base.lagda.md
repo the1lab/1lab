@@ -415,8 +415,7 @@ record
 
 The resulting structure has "directed functoriality", witnessed by the
 `compositor`{.Agda} and `unitor`{.Agda} natural transformations, which
-have components $F_1(f)F_1(g) \To F_1(fg)$ and $F_1(\id) \To
-\id$.
+have components $F_1(f)F_1(g) \To F_1(fg)$ and $\id \To F_1(\id)$.
 
 ```agda
     compositor

@@ -30,7 +30,7 @@ module Homotopy.Connectedness where
 We say that a type is **$n$-connected** if its $n$-[[truncation]] is [[contractible]].
 
 While being $n$-[[truncated]] expresses that all homotopy groups above $n$ are trivial,
-being $n$-connected means that all homotopy *below* $n$ are trivial.
+being $n$-connected means that all homotopy groups *below* $n$ are trivial.
 A type that is both $n$-truncated and $n$-connected is contractible.
 
 We give definitions in terms of the [[propositional truncation]] and [[set truncation]]

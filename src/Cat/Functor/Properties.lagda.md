@@ -186,7 +186,7 @@ Essential-fibre {D = D} F y = Σ[ x ∈ _ ] (F₀ F x ≅ y)
 :::{.definition #split-eso-functor alias="eso-functor essentially-surjective essential-surjection split-essential-surjection split-essentially-surjective"}
 A functor is **split essentially surjective** (abbreviated **split
 eso**) if there is a procedure for finding points in the essential fibre
-over any object. It's **essentially surjective** if the this procedure
+over any object. It's **essentially surjective** if this procedure
 _merely_, i.e. truncatedly, finds a point:
 :::
 
