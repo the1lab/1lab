@@ -12,16 +12,14 @@ html {
   max-width: 100%;
   margin: 0;
 
-  overflow-x: clip;
-
   background-color: var(--text-bg);
   color:            var(--text-fg);
 }
 
 :root {
   --serif: "EB Garamond", "Times New Roman", "serif";
-  --font-size: 22pt;
-  --code-font-size: 18pt;
+  --font-size: 1.4rem;
+  --code-font-size: calc(0.85 * var(--font-size));
 }
 
 body {
@@ -29,14 +27,13 @@ body {
 
   &.sans-serif {
     --serif: "";
-    --font-size: 18pt;
-    --code-font-size: calc(0.95 * var(--font-size));
+    --font-size: 1.3rem;
+    --code-font-size: calc(0.92 * var(--font-size));
   }
 
   width: 100%;
 
   font-size: var(--font-size);
-  overflow-x: clip;
 
   &.text-page {
     @include centered-contents;
@@ -85,7 +82,6 @@ main {
     }
 
     article {
-      grid-column: 2;
       line-height: 1.2;
 
       a[href].header-link {
@@ -265,7 +261,9 @@ table {
 
     div#post-toc-container {
       display: grid;
-      grid-template-columns: 0.5fr 2fr 0.5fr;
+
+      // The 0 minimum is required to avoid overflow, see https://css-tricks.com/preventing-a-grid-blowout/
+      grid-template-columns: 1fr minmax(0, 4fr) 1fr;
 
       aside#toc {
         display: block !important;
@@ -332,7 +330,6 @@ table {
       }
 
       article {
-        max-width: 80rem;
         margin-top: -100px;
         margin: auto;
       }
