@@ -1,12 +1,6 @@
 <!--
 ```agda
 open import 1Lab.Prelude
-
-open import Algebra.Group
-
-open import Data.Set.Truncation
-
-open import Homotopy.Connectedness
 ```
 -->
 
@@ -42,7 +36,7 @@ meaning that it only has "a single point", or, more precisely, that all
 of its interesting information is in its (higher) path spaces:
 
 ```agda
-  connected : is-connected∙ (BAut , base)
+  connected : (x : BAut) → ∥ x ≡ base ∥
   connected (b , x) =
     ∥-∥-elim {P = λ x → ∥ (b , x) ≡ base ∥} (λ _ → squash) (λ e → inc (p _ _)) x
     where

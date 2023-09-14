@@ -4,7 +4,8 @@ open import 1Lab.Prelude
 
 open import Data.Fin.Base
 
-import Data.Nat as Nat
+import Data.Nat.Order as Nat
+import Data.Nat.Base as Nat
 ```
 -->
 

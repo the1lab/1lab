@@ -6,8 +6,6 @@ open import Data.Fin.Base
 open import Data.Sum
 
 open import Prim.Data.Maybe
-
-import Data.Nat as Nat
 ```
 -->
 
