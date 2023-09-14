@@ -6,6 +6,7 @@ type SearchItem = {
   idAnchor: string,
   idType: string | null,
   idDesc: string | null,
+  idDefines: string[] | null,
 };
 
 const highlight = ({ match, original }: MatchData<SearchItem>): Content => {
@@ -178,7 +179,7 @@ const startSearch = (mirrorInput: HTMLInputElement | null) => {
         index = new Searcher(entries, {
           returnMatchData: true,
           ignoreSymbols: false,
-          keySelector: (x: SearchItem) => x.idIdent,
+          keySelector: (x: SearchItem) => [x.idIdent].concat(x.idDefines ?? []),
         });
 
         doSearch();
