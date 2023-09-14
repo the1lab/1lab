@@ -129,7 +129,7 @@ buildMarkdown refs modname input output = do
       . Map.insert "link-citations" (MetaBool True)
       . unMeta
 
-  (markdown, references) <- liftIO do
+  (markdown, references) <- traced "pandoc" do
     Pandoc meta markdown <- readLabMarkdown input
     let pandoc = addPageTitle (Pandoc (patchMeta meta) markdown)
     either (fail . show) pure =<< runIO do
@@ -139,13 +139,15 @@ buildMarkdown refs modname input output = do
 
   let refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
 
-  let search = query (getHeaders (Text.pack modname)) markdown
-
   markdown <-
       walkM (patchInline refMap)
     . (if skipAgda then id else linkReferences modname)
     . walk uncommentAgda
     $ markdown
+
+  -- Rendering the search data has to be done *here*, after running the
+  -- maths through KaTeX but before adding the emoji to headers.
+  let search = query (getHeaders (Text.pack modname)) markdown
 
   (markdown, MarkdownState references dependencies) <- runWriterT (walkM patchBlock markdown)
   need dependencies
@@ -156,10 +158,11 @@ buildMarkdown refs modname input output = do
 
   tags <- mapM (parseAgdaLink modname refs) . foldEquations False $ parseTags text
   traverse_ (checkMarkup input) tags
-  liftIO . Text.writeFile output $ renderHTML5 tags
 
-  liftIO $ Dir.createDirectoryIfMissing False "_build/search"
-  liftIO $ encodeFile ("_build/search" </> modname <.> "json") search
+  traced "writing" do
+    Text.writeFile output $ renderHTML5 tags
+    Dir.createDirectoryIfMissing False "_build/search"
+    encodeFile ("_build/search" </> modname <.> "json") search
 
 -- | Find the original Agda file from a 1Lab module name.
 findModule :: MonadIO m => String -> m FilePath
@@ -387,7 +390,12 @@ getHeaders module' markdown@(Pandoc (Meta meta) _) =
       } <$> go xs
   go (_:xs) = go xs
 
-  renderPlain inlines = either (error . show) id . runPure . writePlain def $ Pandoc mempty [Plain inlines]
+  -- writePlain won't render *markdown*, e.g. links, but it *will*
+  -- preserve raw HTML - as long as we tell it to. Since any mathematics
+  -- in the description will have been rendered to raw HTML by this
+  -- point, that's exactly what we want!
+  write = writePlain def{ writerExtensions = enableExtension Ext_raw_html (writerExtensions def) }
+  renderPlain inlines = either (error . show) id . runPure . write $ Pandoc mempty [Plain inlines]
 
   -- | Attempt to find the "description" of a heading. Effectively, if a header
   -- is followed by a paragraph, use its contents.
