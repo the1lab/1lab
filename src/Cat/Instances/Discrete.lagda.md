@@ -26,7 +26,7 @@ open _=>_
 ```
 -->
 
-# Discrete categories
+# Discrete categories {defines="discrete-category"}
 
 Given a groupoid $A$, we can build the category $\rm{Disc}(A)$ with
 space of objects $A$ and a single morphism $x \to y$ whenever $x \equiv

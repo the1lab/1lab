@@ -708,7 +708,7 @@ of $\cC$ that holds for all hom-sets must also hold for all hom-sets of $\cD$.
   ff+eso→preserves-hom-props F ff eso P prop P-hom d d' =
     ∥-∥-proj {ap = prop (Lift ℓc (D.Hom d d'))} $ do
       (c , c' , eqv) ← ff+eso→hom-equiv F ff eso d d'
-      pure (transport (ap P (ua (Lift-≃ eqv))) (P-hom c c'))
+      pure (transport (ap P (ua (Lift-ap eqv))) (P-hom c c'))
 ```
 
 As a corollary, we note that if $F : \cC \to \cD$ is a fully-faithful, essentially
@@ -742,7 +742,7 @@ we can drop the requirement that $P$ must be a prop.
     → ∀ d d' → P (Lift ℓc (D.Hom d d'))
   ff+split-eso→preserves-hom-fams F ff split-eso P P-hom d d' =
     transport
-      (ap P (ua (Lift-≃ (ff+split-eso→hom-equiv F ff split-eso d d' .snd .snd))))
+      (ap P (ua (Lift-ap (ff+split-eso→hom-equiv F ff split-eso d d' .snd .snd))))
       (P-hom _ _)
 ```
 

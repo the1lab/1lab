@@ -9,7 +9,7 @@ module Cat.Diagram.Pushout {o ℓ} (C : Precategory o ℓ) where
 
 ```
 
-# Pushouts
+# Pushouts {defines="pushout"}
 
 <!--
 ```agda

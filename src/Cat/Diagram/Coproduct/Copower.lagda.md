@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Diagram.Colimit.Coproduct
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Diagram.Colimit.Base
 open import Cat.Instances.Discrete
