@@ -121,10 +121,13 @@ Finite→Discrete {A = A} ⦃ f ⦄ x y = ∥-∥-rec! go (f .enumeration) where
   ... | yes p = yes (Equiv.injective e p)
   ... | no ¬p = no λ p → ¬p (ap (e .fst) p)
 
-Discrete→Finite≡ : ∀ {ℓ} {A : Type ℓ} → Discrete A → {x y : A} → Finite (x ≡ y)
-Discrete→Finite≡ d {x} {y} with d x y
-... | yes p = fin (inc (is-contr→≃ (is-prop∙→is-contr (Discrete→is-set d _ _) p) Finite-one-is-contr))
+Dec→Finite : ∀ {ℓ} {A : Type ℓ} → is-prop A → Dec A → Finite A
+Dec→Finite ap d with d
+... | yes p = fin (inc (is-contr→≃ (is-prop∙→is-contr ap p) Finite-one-is-contr))
 ... | no ¬p = fin (inc (is-empty→≃⊥ ¬p ∙e Finite-zero-is-initial e⁻¹))
+
+Discrete→Finite≡ : ∀ {ℓ} {A : Type ℓ} → Discrete A → {x y : A} → Finite (x ≡ y)
+Discrete→Finite≡ d = Dec→Finite (Discrete→is-set d _ _) (d _ _)
 
 Finite-choice
   : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′}
