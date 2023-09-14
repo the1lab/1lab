@@ -43,7 +43,7 @@ defaultOptions = Options
   { _optSkipTypes = False
   , _optSkipAgda  = False
   , _optWatching  = Nothing
-  , _optBaseUrl     = "https://1lab.dev"
+  , _optBaseUrl   = ""
   }
 
 data GetOptions = GetOptions deriving (Eq, Show, Typeable, Generic)

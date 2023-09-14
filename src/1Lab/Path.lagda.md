@@ -957,7 +957,7 @@ which are Kan complices. Examples of types which are _not_ fibrant
 include the interval `I`{.Agda}, the partial elements `Partial`{.Agda},
 and the extensions `_[_↦_]`[^notfibrant].
 
-::: {#fibrant}
+::: {.definition #fibrant}
 > **Definition**: A type is _fibrant_ if it supports `hcomp`{.Agda}.
 This word comes up a lot when discussing not only the semantics of
 Cubical type theory, but also its practice! For instance, the specific

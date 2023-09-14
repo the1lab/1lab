@@ -129,9 +129,9 @@ buildMarkdown refs modname input output = do
       . Map.insert "link-citations" (MetaBool True)
       . unMeta
 
-  (markdown, references) <- liftIO do
+  (markdown, references) <- traced "pandoc" do
     Pandoc meta markdown <- readLabMarkdown input
-    let pandoc = Pandoc (patchMeta meta) markdown
+    let pandoc = addPageTitle (Pandoc (patchMeta meta) markdown)
     either (fail . show) pure =<< runIO do
       (,) <$> processCitations pandoc <*> getReferences Nothing pandoc
 
@@ -143,8 +143,11 @@ buildMarkdown refs modname input output = do
       walkM (patchInline refMap)
     . (if skipAgda then id else linkReferences modname)
     . walk uncommentAgda
-    . addPageTitle
     $ markdown
+
+  -- Rendering the search data has to be done *here*, after running the
+  -- maths through KaTeX but before adding the emoji to headers.
+  let search = query (getHeaders (Text.pack modname)) markdown
 
   (markdown, MarkdownState references dependencies) <- runWriterT (walkM patchBlock markdown)
   need dependencies
@@ -155,10 +158,11 @@ buildMarkdown refs modname input output = do
 
   tags <- mapM (parseAgdaLink modname refs) . foldEquations False $ parseTags text
   traverse_ (checkMarkup input) tags
-  liftIO . Text.writeFile output $ renderHTML5 tags
 
-  liftIO $ Dir.createDirectoryIfMissing False "_build/search"
-  liftIO $ encodeFile ("_build/search" </> modname <.> "json") (query (getHeaders (Text.pack modname)) markdown)
+  traced "writing" do
+    Text.writeFile output $ renderHTML5 tags
+    Dir.createDirectoryIfMissing False "_build/search"
+    encodeFile ("_build/search" </> modname <.> "json") search
 
 -- | Find the original Agda file from a 1Lab module name.
 findModule :: MonadIO m => String -> m FilePath
@@ -344,12 +348,22 @@ foldEquations _ [] = []
 -- | Get all headers in the document, building a list of definitions for our
 -- search index.
 getHeaders :: Text -> Pandoc -> [SearchTerm]
-getHeaders module' = flip evalState [] . getAp . query (Ap . go) where
+getHeaders module' markdown@(Pandoc (Meta meta) _) =
+  (:) main . flip evalState [] . getAp . query (Ap . go) $ markdown
+  where
+  main = SearchTerm
+    { idIdent = module'
+    , idAnchor = module' <> ".html"
+    , idType = Nothing
+    , idDesc = stringify <$> (Map.lookup "description" meta <|> Map.lookup "pagetitle" meta)
+    , idDefines = Nothing
+    }
+
   -- The state stores a path of headers in the document of the form (level,
   -- header), which is updated as we walk down the document.
   go :: [Block] -> State [(Int, Text)] [SearchTerm]
   go [] = pure []
-  go (Header level (hId, _, _) hText:xs) = do
+  go (Header level (hId, _, keys) hText:xs) = do
     path <- get
     let title = trimr (renderPlain hText)
     let path' = (level, title):dropWhile (\(l, _) -> l >= level) path
@@ -362,8 +376,9 @@ getHeaders module' = flip evalState [] . getAp . query (Ap . go) where
         , idAnchor = module' <> ".html#" <> hId
         , idType   = Nothing
         , idDesc   = getDesc xs
+        , idDefines = Text.words <$> lookup "defines" keys
         } <$> go xs
-  go (Div (hId, _, _) blocks:xs) | hId /= "" = do
+  go (Div (hId, _, keys) blocks:xs) | hId /= "" = do
     path <- get
 
     (:) SearchTerm
@@ -371,10 +386,16 @@ getHeaders module' = flip evalState [] . getAp . query (Ap . go) where
       , idAnchor = module' <> ".html#" <> hId
       , idType   = Nothing
       , idDesc   = getDesc blocks
+      , idDefines = (:) hId . Text.words <$> lookup "alias" keys
       } <$> go xs
   go (_:xs) = go xs
 
-  renderPlain inlines = either (error . show) id . runPure . writePlain def $ Pandoc mempty [Plain inlines]
+  -- writePlain won't render *markdown*, e.g. links, but it *will*
+  -- preserve raw HTML - as long as we tell it to. Since any mathematics
+  -- in the description will have been rendered to raw HTML by this
+  -- point, that's exactly what we want!
+  write = writePlain def{ writerExtensions = enableExtension Ext_raw_html (writerExtensions def) }
+  renderPlain inlines = either (error . show) id . runPure . write $ Pandoc mempty [Plain inlines]
 
   -- | Attempt to find the "description" of a heading. Effectively, if a header
   -- is followed by a paragraph, use its contents.

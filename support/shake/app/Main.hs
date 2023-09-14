@@ -108,7 +108,7 @@ rules = do
     let searchFiles = (if skipAgda then [] else ["_build/all-types.json"])
                     ++ map (\(x, _) -> "_build/search" </> x <.> "json") modules
     searchData :: [[SearchTerm]] <- traverse readJSONFile searchFiles
-    liftIO $ encodeFile out (concat searchData)
+    traced "Writing search data" $ encodeFile out (concat searchData)
 
   -- Compile Quiver to SVG. This is used by 'buildMarkdown'.
   "_build/html/light-*.svg" %> \out -> do
