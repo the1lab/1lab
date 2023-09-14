@@ -306,5 +306,5 @@ what we need.
 ```agda
       work′ f⁻¹x .paths (i , α) = Σ-pathp (quot (ls.from (sym (ap fst α)))) $
         Σ-prop-square (λ _ → squash) $ commutes→square $
-          (ap₂ _∙_ (ls.ε (sym (ap fst α))) refl ∙ ∙-inv-l _ ∙ sym (∙-id-l _))
+          (ap₂ _∙_ (ls.ε (sym (ap fst α))) refl ∙ ∙-invl _ ∙ sym (∙-idl _))
 ```

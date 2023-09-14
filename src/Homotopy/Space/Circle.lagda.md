@@ -144,8 +144,8 @@ non-trivial path, $e = \rm{loop}$.
   post-loop : (base ≡ base) ≃ (base ≡ base)
   post-loop = Iso→Equiv $
     (_∙ loop) , iso (_∙ sym loop)
-      (λ p → sym (∙-assoc p _ _) ·· ap (p ∙_) (∙-inv-l loop) ·· ∙-id-r p)
-      (λ p → sym (∙-assoc p _ _) ·· ap (p ∙_) (∙-inv-r loop) ·· ∙-id-r p)
+      (λ p → sym (∙-assoc p _ _) ·· ap (p ∙_) (∙-invl loop) ·· ∙-idr p)
+      (λ p → sym (∙-assoc p _ _) ·· ap (p ∙_) (∙-invr loop) ·· ∙-idr p)
 
   loopⁿ : ℤ → base ≡ base
   loopⁿ n = map-out refl post-loop n
@@ -163,8 +163,8 @@ argument $x$.
     → Square refl (loopⁿ (Equiv.from rotate n)) (loopⁿ n) loop
   square-loopⁿ n = commutes→square $ sym $
     ⌜ loopⁿ (Equiv.from rotate n) ⌝ ∙ loop ≡⟨ ap! (map-out-rotate-inv _ _ _) ⟩
-    (loopⁿ n ∙ sym loop) ∙ loop            ≡⟨ ∙-cancel-r _ _ ⟩
-    loopⁿ n                                ≡⟨ sym (∙-id-l _) ⟩
+    (loopⁿ n ∙ sym loop) ∙ loop            ≡⟨ ∙-cancelr _ _ ⟩
+    loopⁿ n                                ≡⟨ sym (∙-idl _) ⟩
     refl ∙ loopⁿ n                         ∎
 ```
 -->

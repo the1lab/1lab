@@ -59,7 +59,7 @@ call `pathsS∞′ x`{.Agda}.
 
 ```agda
       (transport (λ j → N ≡ merid x j) refl ≡⟨ subst-path-right refl (merid x) ⟩
-      refl ∙ merid x                        ≡⟨ ∙-id-l (merid x) ⟩
+      refl ∙ merid x                        ≡⟨ ∙-idl (merid x) ⟩
       merid x                               ≡⟨ ap merid (sym (pathsS∞′ x)) ⟩
       merid N                               ∎) i
 

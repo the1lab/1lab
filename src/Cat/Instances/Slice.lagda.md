@@ -465,7 +465,7 @@ naturality, where we use path induction.
             ( sym (transport-∙ (ap (∣_∣ ⊙ F₀ f2) (happly (x .commutes) y))
                           (sym (ap (∣_∣ ⊙ F₀ f2) (happly (x .commutes) y)))
                           _)
-            ·· ap₂ transport (∙-inv-r (ap (∣_∣ ⊙ F₀ f2) (happly (x .commutes) y)))
+            ·· ap₂ transport (∙-invr (ap (∣_∣ ⊙ F₀ f2) (happly (x .commutes) y)))
                              refl
             ·· transport-refl _)))
 ```

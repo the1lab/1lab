@@ -100,7 +100,7 @@ cancel:
       ε' (f x)                                                    ≡⟨⟩
       sym (ε (f (g (f x))))  ∙ ap f ⌜ (η (g (f x))) ⌝ ∙ ε (f x)   ≡⟨ ap (λ e → sym (ε _) ∙ ap f e ∙ ε _) (homotopy-invert η) ⟩
       sym (ε (f (g (f x))))  ∙ ⌜ ap (f ∘ g ∘ f) (η x) ∙ ε (f x) ⌝ ≡˘⟨ ap¡ (homotopy-natural ε _) ⟩
-      sym (ε (f (g (f x))))  ∙ ε (f (g (f x)))      ∙ ap f (η x)  ≡⟨ ∙-cancel-l (ε (f (g (f x)))) (ap f (η x)) ⟩
+      sym (ε (f (g (f x))))  ∙ ε (f (g (f x)))      ∙ ap f (η x)  ≡⟨ ∙-cancell (ε (f (g (f x)))) (ap f (η x)) ⟩
       ap f (η x)                                                  ∎
 ```
 
@@ -139,7 +139,7 @@ fibre-paths {f = f} {y} {f1} {f2} =
     helper p' =
       subst (λ x → f x ≡ y) refl (f1 .snd) ≡ p' ≡⟨ ap₂ _≡_ (transport-refl _) refl ⟩
       (f1 .snd) ≡ p'                            ≡⟨ Iso→Path (sym , iso sym (λ x → refl) (λ x → refl)) ⟩
-      ⌜ p' ⌝ ≡ f1 .snd                          ≡˘⟨ ap¡ (∙-id-l _) ⟩
+      ⌜ p' ⌝ ≡ f1 .snd                          ≡˘⟨ ap¡ (∙-idl _) ⟩
       refl ∙ p' ≡ f1 .snd                       ≡⟨⟩
       ap f refl ∙ p' ≡ f1 .snd                  ∎
 
@@ -190,9 +190,9 @@ $\varepsilon$ lets us "push it past $p$" to get something we can cancel:
 ```agda
       ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p ∙ ε y     ≡⟨ ∙-assoc _ _ _ ⟩
       ⌜ ap (f ∘ g) (sym p) ∙ ap (f ∘ g) p ⌝ ∙ ε y ≡˘⟨ ap¡ (ap-∙ (f ∘ g) (sym p) p) ⟩
-      ap (f ∘ g) ⌜ sym p ∙ p ⌝ ∙ ε y              ≡⟨ ap! (∙-inv-r _) ⟩
+      ap (f ∘ g) ⌜ sym p ∙ p ⌝ ∙ ε y              ≡⟨ ap! (∙-invr _) ⟩
       ap (f ∘ g) refl ∙ ε y                       ≡⟨⟩
-      refl ∙ ε y                                  ≡⟨ ∙-id-l (ε y) ⟩
+      refl ∙ ε y                                  ≡⟨ ∙-idl (ε y) ⟩
       ε y                                         ∎
 ```
 

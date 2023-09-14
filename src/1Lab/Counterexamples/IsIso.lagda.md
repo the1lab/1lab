@@ -58,7 +58,7 @@ convenience.
       helper .fst iiso x =
         sym (iiso .is-iso.linv x) ∙ iiso .is-iso.rinv x
       helper .snd .is-iso.inv x = iso (λ x → x) x (λ _ → refl)
-      helper .snd .is-iso.rinv p = funext λ x → ∙-id-l _
+      helper .snd .is-iso.rinv p = funext λ x → ∙-idl _
       helper .snd .is-iso.linv x = iso-is-prop _ _
 ```
 

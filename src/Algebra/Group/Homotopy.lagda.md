@@ -67,9 +67,9 @@ inverses are given by `inverting paths`{.Agda ident=sym}.
     ∥-∥₀-elim₃ (λ _ _ _ → is-prop→is-set (squash _ _))
       λ x y z i → inc (∙-assoc x y z i)
   omega .make-group.invl =
-    ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ x i → inc (∙-inv-l x i)
+    ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ x i → inc (∙-invl x i)
   omega .make-group.idl =
-    ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ x i → inc (∙-id-l x i)
+    ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ x i → inc (∙-idl x i)
 ```
 
 A direct cubical transcription of the Eckmann-Hilton argument tells us
@@ -82,8 +82,8 @@ commutative, independent of $A$.
   → p ∙ q ≡ q ∙ p
 Ωⁿ⁺²-is-abelian-group n p q =
   transport
-    (λ k → ap (λ x → ∙-id-r x k) p ∙ ap (λ x → ∙-id-l x k) q
-         ≡ ap (λ x → ∙-id-l x k) q ∙ ap (λ x → ∙-id-r x k) p)
+    (λ k → ap (λ x → ∙-idr x k) p ∙ ap (λ x → ∙-idl x k) q
+         ≡ ap (λ x → ∙-idl x k) q ∙ ap (λ x → ∙-idr x k) p)
     (λ i → (λ j → p (j ∧ ~ i) ∙ q (j ∧ i))
          ∙ (λ j → p (~ i ∨ j) ∙ q (i ∨ j)))
 ```
@@ -91,8 +91,8 @@ commutative, independent of $A$.
 The proof can be visualized with the following diagram, where the
 vertices are in $\Omega^{n + 1} A$. The outer rectangle shows `p ∙ q ≡
 q ∙ p`, which is filled by transporting the two inner squares using
-`∙-id-r`{.Agda} on `p j` and `∙-id-l`{.Agda} on `q j`. Note that
-`∙-id-r refl` and `∙-id-l refl` are definitionally equal.  In the two
+`∙-idr`{.Agda} on `p j` and `∙-idl`{.Agda} on `q j`. Note that
+`∙-idr refl` and `∙-idl refl` are definitionally equal.  In the two
 inner squares, `p j` and `q j` are on different sides of the path
 composition, so we can use the De Morgan structure on the interval to
 have `p` and `q` slip by each other.
@@ -213,11 +213,11 @@ homomorphism, preserves the group identity.
 ```agda
     path-unit : path unit ≡ refl
     path-unit =
-      path unit                               ≡⟨ sym (∙-id-r _) ⟩
-      path unit ∙ ⌜ refl ⌝                    ≡˘⟨ ap¡ (∙-inv-r _)  ⟩
+      path unit                               ≡⟨ sym (∙-idr _) ⟩
+      path unit ∙ ⌜ refl ⌝                    ≡˘⟨ ap¡ (∙-invr _)  ⟩
       path unit ∙ path unit ∙ sym (path unit) ≡⟨ ∙-assoc _ _ _ ∙ ap₂ _∙_ (sym (path-∙ _ _)) refl ⟩
       path ⌜ unit ⋆ unit ⌝ ∙ sym (path unit)  ≡⟨ ap! G.idr ⟩
-      path unit ∙ sym (path unit)             ≡⟨ ∙-inv-r _  ⟩
+      path unit ∙ sym (path unit)             ≡⟨ ∙-invr _  ⟩
       refl                                    ∎
 ```
 </details>
