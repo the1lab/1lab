@@ -51,11 +51,6 @@ bound]]`, or `[[lub|least upper bound]]` if different textual content is
 required, or `[[lub|least-upper-bound]]`. White space **should** be used
 instead of dashes at use sites.
 
-**Warning**: A wikilink can not span multiple lines. If a wikilink would
-be broken by the line-wrapping rule, try to reword the text so that this
-doesn't happen; If that's not possible, the line-wrapping rule **may**
-be ignored.
-
 ## Linking identifiers
 
 An Agda identifier that _has been referred to_ in the current module can
@@ -65,12 +60,55 @@ extensively.
 
 [HoTT book comparison]: https://github.com/plt-amy/1lab/blob/main/src/HoTT.lagda.md
 
+If the definition does not naturally appear in the code, the following
+idiom can be used. The implementation of identifier links prevents their
+use in a mutually-recursive way, since it should only be used for things
+that the proof actually *depends* on. Cyclic links **should** be
+[wikilinks](#links) instead.
+
+    <!--
+    ```agda
+    _ = identifier-you-want-to-link
+    ```
+    -->
+
 If the text needs to differ from the identifier, the `ident` attribute
 can be used: `` `is an equivalence`{.Agda ident=is-equiv} ``.
 
 Mixfix operators **must** use their "full name" to be picked up: ``
 `_∘_`{.Agda} `` is the proper way to refer to the composition operator,
 even if it only ever appears infix in the code.
+
+## Commutative diagrams
+
+Our build process supports converting arbitrary bits of LaTeX to SVGs to
+be referred to from pages. [These LaTeX packages] are supported, but the
+recommended way of working out whether or not a diagram renders
+correctly is to actually build the website, since that lets you see
+whether or not the image has a reasonable size in the page.
+
+[These LaTeX packages]: https://github.com/plt-amy/1lab/blob/main/default.nix#L18-L27
+
+Diagrams are compiled if they appear in a *fenced* code block with class
+`quiver`. Accordingly, most of us use [q.uiver.app](https://q.uiver.app)
+to generate our diagrams, using the `tikz-cd` package. After creating
+your diagram with Quiver, copy the LaTeX export, sans the permalink
+comment, and paste it — maths delimiters and all — into a code block.
+The indentation **should** be changed from tabs to two spaces.
+
+    ~~~{.quiver .short-2}
+    \[\begin{tikzcd}
+      a && b
+      \arrow[from=1-1, to=1-3]
+    \end{tikzcd}\]
+    ~~~
+
+Any LaTeX commands defined in [the preamble] are available in diagrams.
+Note that the preamble is not directly loadable using Quiver's macros
+functionality since it relies on `\definealphabet`, which is implemented
+separately since it requires a shim to work on KaTeX.
+
+[the preamble]: https://github.com/plt-amy/1lab/blob/main/src/preamble.tex
 
 ## The structure of a page
 
@@ -156,20 +194,20 @@ separator **should** replace the dash:
   `PathP≡Path`
 
 The names of propositions **should** start with the prefix `is-`:
-`is-equiv`, `is-group-hom`. The names of types **should** start with an
-uppercase letter: `Group-on`, `Glue`. In a theorem, the predicate
-**should** appear _after_ the thing it applies to: correct English, not
-a correct type. `Nat-is-set`, not `is-set-Nat`.
+`is-equiv`, `is-group-hom`. The names of more general types **should**
+start with an uppercase letter: `Group-on`, `Glue`.
 
-Definitions **should** be named after what they prove:
-`is-equiv→is-embedding` has that name because its type is
+In a theorem, the predicate **should** appear _after_ the thing it
+applies to: correct English, not a correct type. `Nat-is-set`, not
+`is-set-Nat`. The object should only be named if it is another
+definition, and **must not** be included if it is universally
+quantified: `is-equiv→is-embedding`, not `f-is-equiv→f-is-embedding`.
 
-```agda
-is-equiv→is-embeding :
-  ...
-  → is-equiv f
-  → is-embedding f
-```
+Definitions **should** have their names informed by what they prove, but
+this process does not need to be entirely mechanic (don't turn the
+entire function's type into a name!). If a theorem has an accepted
+common name, that **can** be used instead of deriving a name based on
+its type.
 
 Sometimes, this can result in verbose names. A bit of verbosity is
 preferrable to having a theorem whose name is not memorable. Deciding on
