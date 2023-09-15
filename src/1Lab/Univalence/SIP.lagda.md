@@ -8,7 +8,6 @@ description: |
 
 <!--
 ```agda
-open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
 open import 1Lab.Type.Pi

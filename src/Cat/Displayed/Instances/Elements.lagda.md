@@ -16,7 +16,7 @@ module Cat.Displayed.Instances.Elements {o ℓ s} (B : Precategory o ℓ)
 
 <!--
 ```agda
-open import Cat.Reasoning B
+open Precategory B
 open Functor
 
 private

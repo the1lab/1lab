@@ -3,9 +3,6 @@
 open import Cat.Functor.Adjoint.Unique
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Functor
-open import Cat.Functor.Adjoint
-open import Cat.Functor.Base
-open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
@@ -261,7 +258,7 @@ module
     open is-equivalence eqv
     module C = Cat.Reasoning C
     module D = Cat.Reasoning D
-    module F = Fr F
+    module F = Functor F
   open _=>_
 
 ```

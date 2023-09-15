@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import Cat.Instances.Shape.Terminal
-open import Cat.Functor.Kan.Base
 open import Cat.Univalent
 open import Cat.Prelude
 ```

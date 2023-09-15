@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import Cat.Instances.Functor
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 open import Data.Bool

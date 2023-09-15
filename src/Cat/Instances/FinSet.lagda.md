@@ -3,8 +3,6 @@
 open import Cat.Prelude
 
 open import Data.Fin
-
-import Cat.Reasoning as Cat
 ```
 -->
 

@@ -2,9 +2,7 @@
 ```agda
 open import Cat.Functor.Hom.Representable
 open import Cat.Instances.Shape.Terminal
-open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Colimit.Base
-open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Compose

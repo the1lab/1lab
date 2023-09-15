@@ -2,7 +2,6 @@
 ```
 open import 1Lab.Prelude hiding (_∘_ ; id)
 
-open import Cat.Solver
 open import Cat.Base
 
 import Cat.Reasoning

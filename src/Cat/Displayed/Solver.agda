@@ -10,6 +10,7 @@ open import 1Lab.Prelude hiding (id; _∘_)
 
 open import Cat.Base
 open import Cat.Displayed.Base
+
 import Cat.Solver
 
 import Cat.Displayed.Reasoning as Dr

@@ -2,7 +2,6 @@
 ```agda
 open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Pullback
-open import Cat.Diagram.Initial
 open import Cat.Prelude
 
 import Cat.Reasoning

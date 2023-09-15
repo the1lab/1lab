@@ -9,7 +9,6 @@ open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning
-import Cat.Functor.Reasoning
 import Cat.Reasoning
 ```
 -->
@@ -361,8 +360,8 @@ When $\cE$ is a fibration, then so is the displayed category of liftings.
     : (fib : Cartesian-fibration E)
     → Cartesian-fibration Liftings
   Liftings-fibration fib .Cartesian-fibration.has-lift {F} {G} α G' = cart-lift where
-    module F = Cat.Functor.Reasoning F
-    module G = Cat.Functor.Reasoning G
+    module F = Functor F
+    module G = Functor G
     open Cartesian-fibration fib
     open Lifting
     open _=[_]=>l_

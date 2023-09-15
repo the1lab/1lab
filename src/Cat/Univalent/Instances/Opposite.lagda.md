@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Reasoning

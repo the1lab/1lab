@@ -6,9 +6,7 @@ open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
-open import Data.Nat.Properties
 open import Data.Fin.Closure
-open import Data.Nat.Order
 open import Data.Fin.Base
 open import Data.Sum.Base
 
@@ -234,7 +232,7 @@ using surjectivity of the first map.
 ```agda
     ε : Σ Nat (λ n → Σ (Fin n → Σ ∣ A ∣ λ x → x ∈ P) λ f → ∀ x → ∥ fibre f x ∥)
       → Glb B.po fam
-    ε (card , g , surj) = glb 
+    ε (card , g , surj) = glb
       where
         module h = is-glb (B.⋂-is-glb (λ x → fam (g x)))
         glb : Glb B.po fam
@@ -248,7 +246,7 @@ using surjectivity of the first map.
         glb .Glb.has-glb .is-glb.greatest lb′ lb′<subset =
           h.greatest lb′ λ i → lb′<subset (g i)
 
-    ε′ : Glb B.po fam 
+    ε′ : Glb B.po fam
     ε′ = ∥-∥-rec (Glb-is-prop B.po) ε P-fin
 
 open is-glb

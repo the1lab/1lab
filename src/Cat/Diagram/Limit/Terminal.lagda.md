@@ -20,7 +20,7 @@ module Cat.Diagram.Limit.Terminal {o h} (C : Precategory o h) where
 
 <!--
 ```agda
-open import Cat.Reasoning C
+open Precategory C
 
 open Terminal
 open Functor

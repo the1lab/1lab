@@ -12,7 +12,7 @@ module Cat.Diagram.Pullback {ℓ ℓ′} (C : Precategory ℓ ℓ′) where
 
 <!--
 ```agda
-open import Cat.Reasoning C
+open Precategory C
 private variable
   P′ X Y Z : Ob
   h p₁' p₂' : Hom X Y

@@ -5,7 +5,6 @@ open import Cat.Prelude
 
 import Cat.Displayed.Reasoning as Dr
 import Cat.Displayed.Solver as Ds
-import Cat.Reasoning as Cr
 ```
 -->
 
@@ -15,10 +14,10 @@ module Cat.Displayed.Fibre
   (E : Displayed B o′ ℓ′)
   where
 
+open Precategory B
 open Displayed E
 open Ds
 open Dr E
-open Cr B
 ```
 
 ## Fibre categories {defines="fibre-category fibre-categories"}

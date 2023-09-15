@@ -4,7 +4,6 @@ open import Cat.Functor.Naturality
 open import Cat.Functor.Properties
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
-open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr

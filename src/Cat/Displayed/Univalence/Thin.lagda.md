@@ -5,11 +5,9 @@ open import 1Lab.Equiv.Embedding
 
 open import Cat.Displayed.Univalence
 open import Cat.Functor.Properties
-open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
 open import Cat.Displayed.Base
 open import Cat.Instances.Sets
-open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Displayed.Morphism

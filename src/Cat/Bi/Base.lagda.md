@@ -4,7 +4,6 @@ open import Cat.Functor.Naturality
 open import Cat.Instances.Product
 open import Cat.Functor.Compose renaming (_◆_ to _◇_)
 open import Cat.Functor.Base
-open import Cat.Functor.Hom
 open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bi

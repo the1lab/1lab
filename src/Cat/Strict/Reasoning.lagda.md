@@ -1,14 +1,12 @@
 ```agda
 open import Cat.Prelude
 
-import Cat.Reasoning
-
 module Cat.Strict.Reasoning
   {o ℓ} (C : Precategory o ℓ)
   (ob-set : is-set (Precategory.Ob C))
   where
 
-open Cat.Reasoning C
+open Precategory C
 ```
 
 # Reasoning with strict categories

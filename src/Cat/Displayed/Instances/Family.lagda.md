@@ -1,7 +1,5 @@
 <!--
 ```agda
-open import 1Lab.Path.IdentitySystem.Strict
-
 open import Cat.Displayed.GenericObject
 open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
@@ -10,7 +8,6 @@ open import Cat.Instances.Discrete
 open import Cat.Instances.Functor
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
-open import Cat.Univalent
 open import Cat.Skeletal
 open import Cat.Prelude
 open import Cat.Strict

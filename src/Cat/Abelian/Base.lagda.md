@@ -1,13 +1,11 @@
 <!--
 ```agda
 open import Algebra.Group.Ab.Tensor
-open import Algebra.Magma.Unital
 open import Algebra.Group.Ab
 open import Algebra.Prelude
 open import Algebra.Monoid
 open import Algebra.Group
 
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Diagram.Equaliser.Kernel
 
 import Algebra.Group.Cat.Base as Grp

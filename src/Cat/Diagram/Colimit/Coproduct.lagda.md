@@ -12,8 +12,6 @@ open import Cat.Diagram.Colimit.Base
 open import Cat.Instances.Discrete
 open import Cat.Functor.Kan.Base
 open import Cat.Prelude
-
-open import Data.Bool
 ```
 -->
 

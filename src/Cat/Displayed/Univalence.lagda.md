@@ -3,7 +3,6 @@
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
 open import Cat.Displayed.Base
-open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning
@@ -25,11 +24,9 @@ module Cat.Displayed.Univalence
 private
   module B = Cat.Reasoning B
   module ∫E = Cat.Reasoning (∫ E)
-  module E = Cat.Displayed.Reasoning E
 open Cat.Displayed.Morphism E
 open Displayed E
 open Total-hom
-open E
 ```
 -->
 

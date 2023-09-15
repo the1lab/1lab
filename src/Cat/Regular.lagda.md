@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import Cat.Diagram.Coequaliser.RegularEpi
-open import Cat.Diagram.Pullback.Properties
 open import Cat.Morphism.Factorisation
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Coequaliser
@@ -10,9 +9,6 @@ open import Cat.Diagram.Pullback
 open import Cat.Diagram.Product
 open import Cat.Prelude
 
-open import Data.Power
-
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning as Cr
 ```
 -->

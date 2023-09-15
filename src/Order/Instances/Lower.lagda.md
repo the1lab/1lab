@@ -2,7 +2,6 @@
 ```agda
 open import Cat.Prelude
 
-open import Order.Instances.Pointwise.Diagrams
 open import Order.Instances.Pointwise
 open import Order.Instances.Props
 open import Order.Diagram.Glb

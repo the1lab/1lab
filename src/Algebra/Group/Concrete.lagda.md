@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import 1Lab.Path.Reasoning
-open import 1Lab.Univalence
 
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Homotopy
@@ -16,7 +15,6 @@ open import Data.Int
 
 open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
-open import Homotopy.Base
 
 open is-group-hom
 open Precategory

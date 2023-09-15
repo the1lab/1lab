@@ -1,8 +1,6 @@
 <!--
 ```agda
 open import Cat.Diagram.Limit.Base
-open import Cat.Diagram.Terminal
-open import Cat.Functor.Base
 open import Cat.Morphism
 open import Cat.Prelude hiding (J)
 

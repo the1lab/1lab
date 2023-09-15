@@ -3,7 +3,6 @@
 open import 1Lab.Equiv.Embedding
 open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Retracts
-open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
 open import 1Lab.Type.Pi

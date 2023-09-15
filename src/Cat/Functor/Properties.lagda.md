@@ -208,8 +208,6 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
     open _≅_ public
     open Inverses public
 
-  open import Cat.Univalent
-
   is-ff→F-map-iso-is-equiv
     : {F : Functor C D} → is-fully-faithful F
     → ∀ {X Y} → is-equiv (F-map-iso {x = X} {Y} F)

@@ -8,11 +8,7 @@ open import Algebra.Prelude
 open import Algebra.Group
 open import Algebra.Ring
 
-open import Cat.Functor.FullSubcategory
-
 open import Data.Power
-
-open import Meta.Bind
 ```
 -->
 

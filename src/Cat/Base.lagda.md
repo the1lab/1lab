@@ -1,10 +1,8 @@
 <!--
 ```agda
 open import 1Lab.Reflection.Record
-open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
-open import 1Lab.Univalence
 open import 1Lab.Rewrite
 open import 1Lab.HLevel
 open import 1Lab.Equiv

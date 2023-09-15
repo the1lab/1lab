@@ -21,7 +21,6 @@ open import Cat.Finite
 
 open import Data.Fin.Finite
 open import Data.Bool
-open import Data.Sum
 
 import Cat.Reasoning as Cat
 

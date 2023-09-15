@@ -1,8 +1,6 @@
 <!--
 ```agda
 open import Cat.Diagram.Product.Indexed
-open import Cat.Diagram.Limit.Base
-open import Cat.Diagram.Equaliser
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Prelude

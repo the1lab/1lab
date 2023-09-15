@@ -1,8 +1,6 @@
 <!--
 ```
 open import 1Lab.Prelude
-
-open import Homotopy.Space.Circle
 ```
 -->
 

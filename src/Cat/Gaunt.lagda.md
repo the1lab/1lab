@@ -2,7 +2,6 @@
 ```agda
 open import 1Lab.Path.IdentitySystem.Strict
 
-open import Cat.Univalent
 open import Cat.Skeletal
 open import Cat.Prelude
 open import Cat.Strict

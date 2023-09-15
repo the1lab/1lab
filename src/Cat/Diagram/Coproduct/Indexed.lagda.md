@@ -1,9 +1,7 @@
 <!--
 ```agda
 open import Cat.Instances.Shape.Terminal
-open import Cat.Instances.Discrete
 open import Cat.Diagram.Pullback
-open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Initial
 open import Cat.Univalent
 open import Cat.Prelude

@@ -10,8 +10,6 @@ open import Data.Fin.Base
 open import Data.Nat.Base
 open import Data.Dec
 open import Data.Sum
-
-open import Meta.Bind
 ```
 -->
 

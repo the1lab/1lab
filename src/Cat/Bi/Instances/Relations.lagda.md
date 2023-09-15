@@ -2,7 +2,6 @@
 ```agda
 {-# OPTIONS --lossy-unification -vtc.def:20 #-}
 open import Cat.Diagram.Pullback.Properties
-open import Cat.Diagram.Product.Solver
 open import Cat.Morphism.Factorisation
 open import Cat.Morphism.StrongEpi
 open import Cat.Instances.Functor

@@ -2,7 +2,6 @@
 ```agda
 open import Cat.Functor.WideSubcategory
 open import Cat.Instances.Functor
-open import Cat.Functor.Base
 open import Cat.Groupoid
 open import Cat.Prelude
 

@@ -1,13 +1,11 @@
 <!--
 ```agda
 open import Cat.Displayed.Cocartesian
-open import Cat.Instances.Functor
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning
-import Cat.Reasoning
 ```
 -->
 
@@ -21,7 +19,7 @@ module Cat.Displayed.Cocartesian.Indexing
 
 <!--
 ```agda
-open Cat.Reasoning ℬ
+open Precategory ℬ
 open Displayed ℰ
 open Cat.Displayed.Reasoning ℰ
 open Cocartesian-fibration opfibration
