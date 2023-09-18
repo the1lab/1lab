@@ -71,12 +71,11 @@ vertical-iso→path e = ≅↓-identity-system e .to-path
 ```
 
 The transport and dependent path lemmas are straightforward
-generalisations of [their non-displayed counterparts][univ]. Note that
-while we only need to talk about vertical isomorphisms, the proofs work
-over an arbitrary morphism in the base. They are also generalised over
-an arbitrary identification between e.g. $f = 1f1$ in the base.
-
-[univ]: agda://Cat.Univalent#Hom-transport
+generalisations of [[their non-displayed counterparts|transport in
+Hom]]. Note that while we only need to talk about vertical isomorphisms,
+the proofs work over an arbitrary morphism in the base. They are also
+generalised over an arbitrary identification between e.g. $f = 1f1$ in
+the base.
 
 <!--
 ```agda

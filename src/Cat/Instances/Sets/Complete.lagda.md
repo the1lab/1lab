@@ -75,11 +75,11 @@ module _ {ℓ} where
   open import Cat.Diagram.Equaliser (Sets ℓ)
   open import Cat.Diagram.Pullback (Sets ℓ)
   open import Cat.Diagram.Product (Sets ℓ)
-  open import Cat.Reasoning (Sets ℓ)
+  open Precategory (Sets ℓ)
 
   private variable
     A B : Set ℓ
-    f g : Hom A B
+    f g : ⌞ A ⌟ → ⌞ B ⌟
 
   open Terminal
   open is-product

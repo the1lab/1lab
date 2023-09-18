@@ -4,7 +4,6 @@ open import Cat.Functor.Naturality
 open import Cat.Functor.Properties
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
-open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
@@ -438,7 +437,7 @@ Furthermore, since we're working with categories, these isomorphisms
 restrict to _paths_ $x \equiv y$ and $F(x) \equiv F(y)$. We're
 half-done: we've shown that some $p : x \equiv y$ exists, and it remains to
 show that over this path we have $i \equiv j$. More specifically, we
-must give a path $i \equiv j$ laying over $\rm{ap}(F)(p)$.
+must give a path $i \equiv j$ laying over $\ap(F)(p)$.
 
 ```agda
     x≡y : x ≡ y
@@ -459,9 +458,9 @@ the result with far less computation:
       (Univalent.Hom-pathp-refll-iso dcat (D.cancell (i .D._≅_.invl)))
 ```
 
-We must then connect $\rm{ap}(F)(p)$ with this path $F(x) \cong
-F(y)$. But since we originally got $p$ by full faithfulness of $F$, they
-_are_ indeed the same path:
+We must then connect $\ap(F)(p)$ with this path $F(x) \cong F(y)$. But
+since we originally got $p$ by full faithfulness of $F$, they _are_
+indeed the same path:
 
 ```agda
     abstract

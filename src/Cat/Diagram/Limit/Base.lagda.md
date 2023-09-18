@@ -7,7 +7,6 @@ open import Cat.Functor.Naturality
 open import Cat.Diagram.Equaliser
 open import Cat.Functor.Coherence
 open import Cat.Functor.Kan.Base
-open import Cat.Instances.Lift
 open import Cat.Functor.Base
 open import Cat.Prelude
 

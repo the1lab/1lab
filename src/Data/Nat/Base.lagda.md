@@ -81,15 +81,13 @@ Discrete-Nat (suc x) (suc y) with Discrete-Nat x y
 ... | no ¬x≡y = no λ sucx≡sucy → ¬x≡y (suc-inj sucx≡sucy)
 ```
 
-[Hedberg's theorem] implies that `Nat`{.Agda} is a [set], i.e., it only
+[[Hedberg's theorem]] implies that `Nat`{.Agda} is a [[set]], i.e., it only
 has trivial paths.
-
-[Hedberg's theorem]: agda://1Lab.Path.IdentitySystem#Discrete→is-set
-[set]: agda://1Lab.HLevel#is-set
 
 ```agda
 Nat-is-set : is-set Nat
 Nat-is-set = Discrete→is-set Discrete-Nat
+
 instance
   H-Level-Nat : ∀ {n} → H-Level Nat (2 + n)
   H-Level-Nat = basic-instance 2 Nat-is-set

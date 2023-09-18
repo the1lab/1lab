@@ -648,7 +648,7 @@ $C$ that makes the following triangle (in $C$) commute:
 
 But for us to be able to represent $\rm{Core}(\mathscr{E}/-) : \mathscr{E}\op
 \to \Grpd$ as an object $\mathcal{U}$ of $\mathscr{E}$, we need
-the hom-space $\rm{Hom}_{\mathscr{E}}(x, \mathcal{U})$ to be a groupoid,
+the hom-space $\hom_{\mathscr{E}}(x, \mathcal{U})$ to be a groupoid,
 instead of just a set; Thus $\mathscr{E}$ was actually a 2-category!
 We're not in the clear though, since a slice of a n-category is another
 n-category, we now have a 2-category $\mathscr{E}/x$, so the core of

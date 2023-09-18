@@ -24,8 +24,8 @@ open _=>_
 # Comonads
 
 A **comonad on a category** $\cC$ is dual to a [monad] on $\cC$; instead
-of a unit $\rm{Id} \To M$ and multiplication $(M \circ M) \To M$, we have
-a counit $M \To \rm{Id}$ and comultiplication $M \To (M \circ M)$.
+of a unit $\Id \To M$ and multiplication $(M \circ M) \To M$, we have
+a counit $M \To \Id$ and comultiplication $M \To (M \circ M)$.
 
 [monad]: Cat.Diagram.Monad.html
 

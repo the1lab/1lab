@@ -7,7 +7,6 @@ open import Cat.Diagram.Terminal
 open import Cat.Functor.Kan.Base
 open import Cat.Prelude
 
-import Cat.Functor.Reasoning as Func
 import Cat.Reasoning
 ```
 -->

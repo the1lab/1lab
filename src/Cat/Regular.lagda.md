@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import Cat.Diagram.Coequaliser.RegularEpi
-open import Cat.Diagram.Pullback.Properties
 open import Cat.Morphism.Factorisation
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Coequaliser
@@ -10,9 +9,6 @@ open import Cat.Diagram.Pullback
 open import Cat.Diagram.Product
 open import Cat.Prelude
 
-open import Data.Power
-
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning as Cr
 ```
 -->
@@ -307,7 +303,7 @@ We want to show that $hl = hk$, for which it will suffice for $p$ to be
 an epimorphism. Since we're working in a regular category, we can show
 that $p$ is a _strong_ epimorphism by showing that $d \times d$ is a
 composite of strong epis. But $d \times d$ is the composite $(d \times
-\rm{id})(\rm{id} \times d)$, and both of those maps are pullbacks of
+\id)(\id \times d)$, and both of those maps are pullbacks of
 $d$, which _is_ a strong epimorphism since it arises from an image
 factorisation.
 

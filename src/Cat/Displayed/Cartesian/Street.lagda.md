@@ -1,8 +1,6 @@
 <!--
 ```agda
-open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Fibre
-open import Cat.Displayed.Total
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
@@ -17,9 +15,6 @@ module Cat.Displayed.Cartesian.Street where
 
 <!--
 ```agda
-open Cartesian-fibration
-open Cartesian-lift
-open is-cartesian
 open Displayed
 ```
 -->
@@ -41,7 +36,7 @@ module _ {o ℓ o′ ℓ′} {E : Precategory o ℓ} {B : Precategory o′ ℓ�
   private
     module E = Cat.Reasoning E
     module B = Cat.Reasoning B
-    module P = Cat.Functor.Reasoning P
+    module P = Functor P
   open B.HLevel-instance
   open E.HLevel-instance
 ```

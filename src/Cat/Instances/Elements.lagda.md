@@ -11,7 +11,7 @@ module Cat.Instances.Elements {o ℓ s} (C : Precategory o ℓ)
 
 <!--
 ```agda
-open import Cat.Reasoning C
+open Precategory C
 open Functor
 
 private

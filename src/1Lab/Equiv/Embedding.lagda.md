@@ -10,10 +10,8 @@ description: |
 open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
-open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
-open import 1Lab.Type.Pi
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -34,7 +32,7 @@ private variable
 ```
 -->
 
-# Embeddings
+# Embeddings {defines="embedding"}
 
 One of the most important observations leading to the development of
 categorical set theory is that injective maps _into_ a set $S$
@@ -132,6 +130,12 @@ embedding→monic
   → ∀ {C : Type ℓ′′} (g h : C → A) → f ∘ g ≡ f ∘ h → g ≡ h
 embedding→monic {f = f} emb g h p =
   funext λ x → ap fst (emb _ (g x , refl) (h x , happly (sym p) x))
+
+is-equiv→is-embedding
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B}
+  → is-equiv f
+  → is-embedding f
+is-equiv→is-embedding eqv x = is-contr→is-prop (eqv .is-eqv x)
 
 monic→is-embedding
   : ∀ {ℓ ℓ′ ℓ′′} {A : Type ℓ} {B : Type ℓ′} {f : A → B}

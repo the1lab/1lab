@@ -1,12 +1,11 @@
 <!--
 ```agda
+open import Cat.Displayed.Fibre
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
-open import Cat.Displayed.Base
-open import Cat.Displayed.Fibre
-
-import Cat.Reasoning
 import Cat.Displayed.Reasoning
+import Cat.Reasoning
 ```
 -->
 

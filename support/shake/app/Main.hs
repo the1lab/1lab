@@ -28,7 +28,6 @@ import System.Exit
 
 import Shake.Options
 import Shake.AgdaCompile
-import Shake.AgdaRefs (getAgdaRefs)
 import Shake.SearchData
 import Shake.LinkGraph
 import Shake.Markdown
@@ -49,7 +48,6 @@ import Timer
 rules :: Rules ()
 rules = do
   agdaRules
-  agdaRefs <- getAgdaRefs
   gitRules
   katexRules
   moduleRules
@@ -81,7 +79,6 @@ rules = do
     let modName = dropExtension (takeFileName out)
 
     modKind <- Map.lookup modName <$> getOurModules
-    agdaRefs <- agdaRefs
 
     skipAgda <- getSkipAgda
     if skipAgda
@@ -92,12 +89,12 @@ rules = do
           _ -> "src" </> map (\c -> if c == '.' then '/' else c) modName
       in
       case modKind of
-        Just WithText -> buildMarkdown agdaRefs modName (input <.> ".lagda.md") out
+        Just WithText -> buildMarkdown modName (input <.> ".lagda.md") out
         _ -> copyFile' (input <.> ".agda") out -- Wrong, but eh!
     else
       let input = "_build/html0" </> modName in
       case modKind of
-        Just WithText -> do buildMarkdown agdaRefs modName (input <.> ".md") out
+        Just WithText -> do buildMarkdown modName (input <.> ".md") out
         _ -> copyFile' (input <.> ".html") out
 
   "_build/search/*.json" %> \out -> need ["_build/html" </> takeFileName out -<.> "html"]

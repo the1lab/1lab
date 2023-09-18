@@ -1,8 +1,6 @@
 <!--
 ```agda
 open import Cat.Functor.Properties
-open import Cat.Functor.Base
-open import Cat.Univalent
 open import Cat.Prelude
 ```
 -->

@@ -4,10 +4,6 @@ open import 1Lab.Prelude
 
 open import Data.Fin.Base
 open import Data.Sum
-
-open import Prim.Data.Maybe
-
-import Data.Nat as Nat
 ```
 -->
 
@@ -50,7 +46,7 @@ Finite-one-is-contr .paths fzero = refl
 ```
 
 The successor operation on indices corresponds to taking coproducts with
-the unit set, which is concisely phrased using the `Maybe` type:
+the unit set.
 
 ```agda
 Finite-successor : Fin (suc n) ≃ (⊤ ⊎ Fin n)

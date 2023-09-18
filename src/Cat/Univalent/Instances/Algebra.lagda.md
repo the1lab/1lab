@@ -91,7 +91,7 @@ $\cC$, such that the diagram below commutes. By forgetting that the
 square commutes, algebra homomorphisms correspond [faithfully] to
 morphisms in the underlying category $\cC$.
 
-[faithfully]: agda://Cat.Diagram.Monad#Forget
+[faithfully]: Cat.Diagram.Monad.html#Forget
 
 ~~~{.quiver}
 \[\begin{tikzcd}

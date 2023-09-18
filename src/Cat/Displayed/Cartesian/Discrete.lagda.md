@@ -14,9 +14,7 @@ open import Cat.Displayed.Base
 open import Cat.Displayed.Path
 open import Cat.Prelude
 
-import Cat.Displayed.Reasoning
 import Cat.Displayed.Morphism
-import Cat.Reasoning
 ```
 -->
 
@@ -62,10 +60,10 @@ maps $x' \to_f y'$.
 ```agda
 module _ {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′) where
   private
-    module B = Cat.Reasoning B
+    module B = Precategory B
     module E = Displayed E
     open Cat.Displayed.Morphism E
-    open Cat.Displayed.Reasoning E
+    open Displayed E
 ```
 
 -->

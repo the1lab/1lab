@@ -147,17 +147,17 @@ things that are equal to `id`.
 
 ```agda
 module _ (inv : p ∙ q ≡ refl) where abstract
-  ∙-cancell : p ∙ (q ∙ r) ≡ r
-  ∙-cancell = ∙-pulll inv ∙ ∙-id-l _
+  ∙-cancelsl : p ∙ (q ∙ r) ≡ r
+  ∙-cancelsl = ∙-pulll inv ∙ ∙-idl _
 
-  ∙-cancelr : (r ∙ p) ∙ q ≡ r
-  ∙-cancelr = ∙-pullr inv ∙ ∙-id-r _
+  ∙-cancelsr : (r ∙ p) ∙ q ≡ r
+  ∙-cancelsr = ∙-pullr inv ∙ ∙-idr _
 
   ∙-insertl : r ≡ p ∙ (q ∙ r)
-  ∙-insertl = sym ∙-cancell
+  ∙-insertl = sym ∙-cancelsl
 
   ∙-insertr : r ≡ (r ∙ p) ∙ q
-  ∙-insertr = sym ∙-cancelr
+  ∙-insertr = sym ∙-cancelsr
 ```
 
 ## Notation

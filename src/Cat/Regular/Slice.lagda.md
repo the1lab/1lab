@@ -9,9 +9,6 @@ open import Cat.Instances.Slice
 open import Cat.Prelude
 open import Cat.Regular
 
-open import Data.Power
-
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning as Cr
 ```
 -->

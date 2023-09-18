@@ -3,7 +3,6 @@
 open import Cat.Instances.Product
 open import Cat.Displayed.Solver
 open import Cat.Displayed.Fibre
-open import Cat.Displayed.Total
 open import Cat.Displayed.Base
 open import Cat.Prelude
 

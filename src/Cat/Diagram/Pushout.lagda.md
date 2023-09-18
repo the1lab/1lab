@@ -13,7 +13,7 @@ module Cat.Diagram.Pushout {o ℓ} (C : Precategory o ℓ) where
 
 <!--
 ```agda
-open import Cat.Reasoning C
+open Precategory C
 private variable
   Q X Y Z : Ob
   h i₁′ i₂′ : Hom X Y

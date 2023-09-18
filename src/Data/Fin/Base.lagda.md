@@ -2,7 +2,6 @@
 ```agda
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.HLevel.Retracts
-open import 1Lab.Type.Sigma
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -157,11 +156,8 @@ Discrete-Fin : ∀ {n} → Discrete (Fin n)
 Discrete-Fin = Discreteᵢ→discrete Discreteᵢ-Fin
 ```
 
-[Hedberg's theorem] implies that `Fin`{.Agda} is a [set], i.e., it only
+[[Hedberg's theorem]] implies that `Fin`{.Agda} is a [[set]], i.e., it only
 has trivial paths.
-
-[Hedberg's theorem]: agda://1Lab.Path.IdentitySystem#Discrete→is-set
-[set]: agda://1Lab.HLevel#is-set
 
 ```agda
 opaque
@@ -199,10 +195,9 @@ Fin-elim P pfzero pfsuc (fsuc x) = pfsuc x (Fin-elim P pfzero pfsuc x)
 
 Keeping with the view that `Fin`{.Agda} represents the type of bounded
 natural numbers, we can re-use the ordering on `Nat`{.Agda} to induce an
-ordering on `Fin`{.Agda}.  This lets us repurpose any lemmas on [`≤`] to
-also operate on `Fin`{.Agda}.
-
-[`≤`]: agda://Data.Nat.Base#_≤_
+ordering on `Fin`{.Agda}. This means that any lemmas about the ordering
+on natural numbers apply immediately to the ordering on standard finite
+sets.
 
 ```agda
 _≤_ : ∀ {n} → Fin n → Fin n → Type

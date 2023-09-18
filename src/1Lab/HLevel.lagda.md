@@ -25,11 +25,10 @@ inhabited.
 * The interesting information about a set is the collection of its inhabitants.
 
 * The interesting information about a groupoid includes, in addition to
-its inhabitants, the way those are related by paths. As an extreme
-example, the delooping groupoid of a group -- for instance, [the circle] --
-has uninteresting points (there's only one), but interesting _loops_.
-
-[the circle]: agda://Homotopy.Space.Circle
+  its inhabitants, the way those are related by paths. As an extreme
+  example, the delooping groupoid of a group -- for instance, the
+  [[circle]] -- has uninteresting points (there's only one), but
+  interesting _loops_.
 
 For convenience, we refer to the collection of types of h-level $n$ as
 _homotopy $(n-2)$-types_. For instance: "The sets are the homotopy

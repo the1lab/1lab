@@ -1,19 +1,17 @@
 <!--
 ```agda
 {-# OPTIONS --lossy-unification #-}
-open import Cat.Bi.Instances.Discrete
 open import Cat.Displayed.Cartesian
 open import Cat.Instances.Discrete
 open import Cat.Instances.Functor
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
-open import Cat.Bi.Base
 open import Cat.Prelude
 
+import Cat.Displayed.Fibre.Reasoning
 import Cat.Displayed.Reasoning
 import Cat.Reasoning
 import Cat.Morphism as Mor
-import Cat.Displayed.Fibre.Reasoning
 ```
 -->
 
@@ -228,7 +226,7 @@ base-change-square-ni {σ = σ} {δ = δ} {γ = γ} {τ = τ} p =
   to-natural-iso ni where
 
   open make-natural-iso
-  ni : make-natural-iso _ _ 
+  ni : make-natural-iso _ _
   ni .eta = base-change-square p
   ni .inv = base-change-square (sym p)
   ni .eta∘inv x = from-pathp $ base-change-square-inv p x

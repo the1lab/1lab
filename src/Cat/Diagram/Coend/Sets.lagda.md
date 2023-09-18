@@ -2,7 +2,6 @@
 ```agda
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
-open import Cat.Instances.Sets
 open import Cat.Diagram.Coend
 open import Cat.Prelude
 

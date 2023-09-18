@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import Cat.Univalent
 open import Cat.Prelude
 
 open import Data.Dec
@@ -39,8 +38,8 @@ Disc A A-grpd .Hom = _≡_
 Disc A A-grpd .Hom-set = A-grpd
 Disc A A-grpd .id = refl
 Disc A A-grpd ._∘_ p q = q ∙ p
-Disc A A-grpd .idr _ = ∙-id-l _
-Disc A A-grpd .idl _ = ∙-id-r _
+Disc A A-grpd .idr _ = ∙-idl _
+Disc A A-grpd .idl _ = ∙-idr _
 Disc A A-grpd .assoc _ _ _ = sym (∙-assoc _ _ _)
 
 Disc′ : Set ℓ → Precategory ℓ ℓ

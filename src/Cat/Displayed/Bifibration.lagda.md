@@ -2,19 +2,19 @@
 ```agda
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Instances.Functor
+open import Cat.Displayed.Fibre
 open import Cat.Functor.Adjoint
 open import Cat.Displayed.Base
-open import Cat.Displayed.Fibre
 open import Cat.Prelude
 
 import Cat.Displayed.Cocartesian.Indexing
 import Cat.Displayed.Cartesian.Indexing
 import Cat.Displayed.Cocartesian.Weak
+import Cat.Displayed.Fibre.Reasoning
 import Cat.Displayed.Cartesian.Weak
 import Cat.Displayed.Cocartesian
 import Cat.Displayed.Cartesian
 import Cat.Displayed.Reasoning
-import Cat.Displayed.Fibre.Reasoning
 import Cat.Reasoning
 ```
 -->
@@ -147,7 +147,7 @@ module _ (fib : Cartesian-fibration) where
 
 Let $f : X \to Y$ be a morphism in $\cB$, and let $L : \cE_{X} \to
 \cE_{Y}$ be a functor. If we are given a natural transformation $\eta :
-\rm{Id} \to f^{*} \circ L$ with $\overline{f} \circ \eta$ cocartesian,
+\Id \to f^{*} \circ L$ with $\overline{f} \circ \eta$ cocartesian,
 then $L$ is a left adjoint to $f^{*}$.
 
 ```agda

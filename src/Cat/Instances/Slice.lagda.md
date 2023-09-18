@@ -9,7 +9,6 @@ open import Cat.Instances.Functor
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
-open import Cat.Univalent
 open import Cat.Prelude
 
 open import Data.Sum
@@ -465,7 +464,7 @@ naturality, where we use path induction.
             ( sym (transport-∙ (ap (∣_∣ ⊙ F₀ f2) (happly (x .commutes) y))
                           (sym (ap (∣_∣ ⊙ F₀ f2) (happly (x .commutes) y)))
                           _)
-            ·· ap₂ transport (∙-inv-r (ap (∣_∣ ⊙ F₀ f2) (happly (x .commutes) y)))
+            ·· ap₂ transport (∙-invr (ap (∣_∣ ⊙ F₀ f2) (happly (x .commutes) y)))
                              refl
             ·· transport-refl _)))
 ```

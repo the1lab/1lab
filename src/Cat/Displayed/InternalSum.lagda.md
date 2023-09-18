@@ -1,14 +1,12 @@
 <!--
 ```agda
 open import Cat.Displayed.Instances.DisplayedFamilies
-open import Cat.Instances.Shape.Interval using (Arr)
-open import Cat.Displayed.Composition
-open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Instances.Slice
 open import Cat.Displayed.Adjoint
 open import Cat.Displayed.Functor
-open import Cat.Instances.Slice
 open import Cat.Displayed.Base
 open import Cat.Prelude
+
 ```
 -->
 
@@ -20,9 +18,6 @@ module Cat.Displayed.InternalSum
 <!--
 ```agda
 open Precategory B
-
-open import Cat.Displayed.Instances.Slice B
-open import Cat.Displayed.Total
 ```
 -->
 

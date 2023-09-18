@@ -2,7 +2,6 @@
 ```agda
 open import Cat.Instances.Comma
 open import Cat.Functor.Base
-open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func

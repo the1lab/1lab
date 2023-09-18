@@ -7,11 +7,9 @@ open import Algebra.Group.Homotopy.BAut
 open import Data.Fin.Properties
 open import Data.Fin.Closure
 open import Data.Fin.Base
+open import Data.Nat.Base
 open import Data.Dec
-open import Data.Nat
 open import Data.Sum
-
-open import Meta.Bind
 ```
 -->
 

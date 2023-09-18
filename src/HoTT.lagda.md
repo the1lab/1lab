@@ -77,10 +77,10 @@ the 1Lab is material that was _not_ covered in the HoTT book.
 ```agda
 _ = sym
 _ = _∙_
-_ = ∙-id-l
-_ = ∙-id-r
-_ = ∙-inv-l
-_ = ∙-inv-r
+_ = ∙-idl
+_ = ∙-idr
+_ = ∙-invl
+_ = ∙-invr
 _ = ∙-assoc
 _ = Ωⁿ⁺²-is-abelian-group
 _ = Type∙
@@ -91,8 +91,8 @@ _ = Ωⁿ
 * Lemma 2.1.1: `sym`{.Agda}
 * Lemma 2.1.2: `_∙_`{.Agda}
 * Lemma 2.1.4:
-  i. `∙-id-l`{.Agda}, `∙-id-r`{.Agda}
-  ii. `∙-inv-l`{.Agda}, `∙-inv-r`{.Agda}
+  i. `∙-idl`{.Agda}, `∙-idr`{.Agda}
+  ii. `∙-invl`{.Agda}, `∙-invr`{.Agda}
   iii. _Definitional in cubical type theory_
   iv. `∙-assoc`{.Agda}
 * Theorem 2.1.6: `Ωⁿ⁺²-is-abelian-group`{.Agda}

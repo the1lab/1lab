@@ -1,7 +1,5 @@
 <!--
 ```agda
-open import Cat.Instances.StrictCat
-open import Cat.Instances.Sets
 open import Cat.Internal.Base
 open import Cat.Prelude
 

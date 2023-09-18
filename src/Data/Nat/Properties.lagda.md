@@ -6,7 +6,6 @@ open import 1Lab.Type
 open import Data.Nat.Order
 open import Data.Dec.Base
 open import Data.Nat.Base
-open import Data.Sum
 ```
 -->
 

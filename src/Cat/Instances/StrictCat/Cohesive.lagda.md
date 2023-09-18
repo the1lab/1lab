@@ -5,7 +5,6 @@ open import Cat.Instances.Discrete hiding (Disc)
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Functor.Adjoint
-open import Cat.Univalent
 open import Cat.Prelude
 ```
 -->

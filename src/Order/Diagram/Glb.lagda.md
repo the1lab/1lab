@@ -1,7 +1,7 @@
 <!--
 ```agda
-open import Cat.Diagram.Product
 open import Cat.Diagram.Terminal
+open import Cat.Diagram.Product
 open import Cat.Prelude
 
 open import Data.Bool

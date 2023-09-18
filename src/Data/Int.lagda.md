@@ -285,17 +285,17 @@ from this page. You can unfold it below if you dare:
     ... | inl x<y | inl (s≤s x<y') =
       Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡double-composite-path) $
           double-composite refl _ _
-        ·· ∙-id-l _
+        ·· ∙-idl _
         ·· ap (λ e → lemma₁ x y e ∙ Int.quot x y) (≤-is-prop x<y x<y')
     ... | inr (inl x>y) | inr (inl (s≤s x>y')) =
       Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡double-composite-path) $
           double-composite refl _ _
-        ·· ∙-id-l _
+        ·· ∙-idl _
         ·· ap (λ e → lemma₂ x y e ∙ Int.quot x y) (≤-is-prop x>y x>y')
     ... | inr (inr x≡y) | inr (inr x≡y') =
       Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡double-composite-path) $
           double-composite refl _ _
-        ·· ∙-id-l _
+        ·· ∙-idl _
         ·· ap (λ e → lemma₃ x y e ∙ Int.quot x y) (Nat-is-set _ _ _ _)
 
     -- This *barrage* of cases is to handle the cases where e.g. (x < y)

@@ -38,7 +38,6 @@ common common
     HTML.Base,
     HTML.Emit,
     Shake.AgdaCompile,
-    Shake.AgdaRefs,
     Shake.Git,
     Shake.KaTeX,
     Shake.LinkGraph,
@@ -76,7 +75,6 @@ executable shake
   other-modules:
       HTML.Emit
     , Shake.AgdaCompile
-    , Shake.AgdaRefs
     , Shake.Diagram
     , Shake.Git
     , Shake.KaTeX
@@ -89,8 +87,3 @@ executable shake
     , Shake.Utils
     , Timer
   ghc-options: -j -threaded -with-rtsopts -A128M -rtsopts
-
-executable agda-typed-html
-  import:           common
-  hs-source-dirs:   app
-  main-is:          Wrapper.hs

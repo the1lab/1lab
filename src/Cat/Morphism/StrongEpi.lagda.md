@@ -3,7 +3,6 @@
 open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Functor.FullSubcategory
-open import Cat.Morphism.Factorisation
 open import Cat.Diagram.Limit.Finite
 open import Cat.Morphism.Orthogonal
 open import Cat.Diagram.Equaliser

@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import Cat.Displayed.Cartesian.Indexing
 open import Cat.Displayed.Instances.Pullback
 open import Cat.Displayed.Instances.Lifting
 open import Cat.Displayed.Cartesian
@@ -12,7 +11,6 @@ open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning
-import Cat.Reasoning
 ```
 -->
 
@@ -23,7 +21,7 @@ module Cat.Displayed.Instances.Diagrams
   (E : Displayed B o' ℓ')
   where
 
-open Cat.Reasoning B
+open Precategory B
 open Displayed E
 open Cat.Displayed.Reasoning E
 open Functor

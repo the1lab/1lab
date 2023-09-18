@@ -119,7 +119,7 @@ abstract
     f ∘ g  ≤⟨ w ◀ g ⟩
     id ∘ g =⟨ idl _ ⟩
     g ≤∎
-  
+
   ≤-elimr : g ≤ id → f ∘ g ≤ f
   ≤-elimr {g = g} {f = f} w =
     f ∘ g  ≤⟨ f ▶ w ⟩
@@ -131,7 +131,7 @@ abstract
     g      =⟨ sym (idl _) ⟩
     id ∘ g ≤⟨ w ◀ g ⟩
     f ∘ g  ≤∎
-  
+
   ≤-intror : id ≤ g → f ≤ f ∘ g
   ≤-intror {g = g} {f = f} w =
     f      =⟨ sym (idr _) ⟩
@@ -147,7 +147,7 @@ abstract
     a ∘ f       ≤⟨ w ◀ f ⟩
     (b ∘ c) ∘ f =⟨ sym (assoc b c f) ⟩
     b ∘ c ∘ f   ≤∎
-  
+
   ≤-pushr : a ≤ b ∘ c → f ∘ a ≤ (f ∘ b) ∘ c
   ≤-pushr {a = a} {b = b} {c = c} {f = f}  w =
     f ∘ a       ≤⟨ f ▶ w ⟩

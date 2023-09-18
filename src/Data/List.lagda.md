@@ -8,7 +8,6 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Nat.Base
-open import Data.Bool
 ```
 -->
 

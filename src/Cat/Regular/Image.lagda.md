@@ -1,14 +1,12 @@
 <!--
 ```agda
 -- {-# OPTIONS --lossy-unification #-}
-open import Cat.Diagram.Pullback.Properties
 open import Cat.Functor.FullSubcategory
 open import Cat.Morphism.Factorisation
 open import Cat.Morphism.StrongEpi
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Product
 open import Cat.Instances.Slice
-open import Cat.Diagram.Image
 open import Cat.Prelude
 open import Cat.Regular
 

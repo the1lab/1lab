@@ -1,8 +1,6 @@
 <!--
 ```agda
 open import Cat.Prelude
-
-import Cat.Reasoning
 ```
 -->
 
@@ -53,7 +51,7 @@ record Restriction-category
   {o ℓ} (C : Precategory o ℓ)
   : Type (o ⊔ ℓ) where
   no-eta-equality
-  open Cat.Reasoning C
+  open Precategory C
   field
     _↓ : ∀ {x y} → Hom x y → Hom x x
 

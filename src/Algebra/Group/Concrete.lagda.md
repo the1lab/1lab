@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import 1Lab.Path.Reasoning
-open import 1Lab.Univalence
 
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Homotopy
@@ -16,7 +15,6 @@ open import Data.Int
 
 open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
-open import Homotopy.Base
 
 open is-group-hom
 open Precategory
@@ -151,8 +149,8 @@ straightforward way.
 ```agda
 ConcreteGroups _ .id = (λ x → x) , refl
 ConcreteGroups _ ._∘_ (f , ptf) (g , ptg) = f ⊙ g , ap f ptg ∙ ptf
-ConcreteGroups _ .idr f = Σ-pathp refl (∙-id-l _)
-ConcreteGroups _ .idl f = Σ-pathp refl (∙-id-r _)
+ConcreteGroups _ .idr f = Σ-pathp refl (∙-idl _)
+ConcreteGroups _ .idl f = Σ-pathp refl (∙-idr _)
 ConcreteGroups _ .assoc (f , ptf) (g , ptg) (h , pth) = Σ-pathp refl $
   ⌜ ap f (ap g pth ∙ ptg) ⌝ ∙ ptf   ≡⟨ ap! (ap-∙ f _ _) ⟩
   (ap (f ⊙ g) pth ∙ ap f ptg) ∙ ptf ≡⟨ sym (∙-assoc _ _ _) ⟩
@@ -199,8 +197,8 @@ need since we're dealing with groupoids: each loop space is already a set.
   mk .mul = _∙_
   mk .inv = sym
   mk .assoc = ∙-assoc
-  mk .invl = ∙-inv-l
-  mk .idl = ∙-id-l
+  mk .invl = ∙-invl
+  mk .idl = ∙-idl
 
 π₁≡π₀₊₁ : {G : ConcreteGroup ℓ} → π₁B G ≡ πₙ₊₁ 0 (B G)
 π₁≡π₀₊₁ {G = G} = ∫-Path Groups-equational
@@ -297,7 +295,7 @@ $(y, p(\refl) : \point{H} \equiv y)$, which means it is contractible.
     pt≡y = p refl
 
     f≡p : ∀ ω → Square refl (f # ω) (p ω) (p refl)
-    f≡p ω = ∙-filler (f # ω) (p refl) ▷ (sym (f-p ω refl) ∙ ap p (∙-id-r ω))
+    f≡p ω = ∙-filler (f # ω) (p refl) ▷ (sym (f-p ω refl) ∙ ap p (∙-idr ω))
 
     □≡□ : PathP (λ i → ∀ ω α → f≡p (ω ∙ α) i ≡ f # ω ∙ f≡p α i) (f .preserves .pres-⋆) f-p
     □≡□ = prop!
@@ -329,7 +327,7 @@ for free, by path induction, because $p(α)$ ends at $g(x)$ by definition.
   p-g : (α : pt G ≡ pt G) {x' : ⌞ G ⌟} (l : pt G ≡ x')
       → p (α ∙ l) ≡ p α ∙ ap (g .fst) l
   p-g α = J (λ _ l → p (α ∙ l) ≡ p α ∙ ap (g .fst) l)
-    (ap p (∙-id-r _) ∙ sym (∙-id-r _))
+    (ap p (∙-idr _) ∙ sym (∙-idr _))
 ```
 
 Since $g$ is pointed by $p(\refl)$, this lets us conclude that we have found a
@@ -369,7 +367,7 @@ This is a [[property]], and $\point{G}$ has it:
   C′-contr : is-contr (C′ (pt G))
   C′-contr .centre .fst = f .snd ∙ sym (g .snd)
   C′-contr .centre .snd α = transport (sym Square≡double-composite-path) $
-    ··-∙-assoc ∙ sym (f-p α refl) ∙ ap p (∙-id-r _)
+    ··-∙-assoc ∙ sym (f-p α refl) ∙ ap p (∙-idr _)
   C′-contr .paths (eq , eq-paths) = Σ-prop-path! $
     sym (∙-unique _ (transpose (eq-paths refl)))
 ```

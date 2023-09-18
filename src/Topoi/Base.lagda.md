@@ -431,7 +431,7 @@ we can compute the colimit of some diagram $F : J \to \cT$ as the
 colimit (in $\psh(\cC)$) of $\iota F$ --- which exists because
 $\Sets$ is cocomplete --- then apply $L$ to get a colimiting cocone for
 $L \iota F$. But the counit of the adjunction $\eps : L \iota \To
-\rm{Id}$ is a natural isomorphism, so we have a colimiting cocone for
+\Id$ is a natural isomorphism, so we have a colimiting cocone for
 $F$.
 
 ```agda

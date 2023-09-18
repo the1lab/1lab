@@ -8,7 +8,6 @@ open import Cat.Instances.Comma
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
-import Cat.Reasoning as Cr
 ```
 -->
 
@@ -45,8 +44,8 @@ module
   open _=>_
 
   private
-    module C = Cr C
-    module D = Cr D
+    module C = Precategory C
+    module D = Precategory D
     module F = Fr F
 ```
 -->

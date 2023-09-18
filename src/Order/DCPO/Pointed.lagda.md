@@ -1,18 +1,19 @@
 <!--
 ```agda
-open import Data.Maybe.Base
-
-open import Cat.Displayed.Total
 open import Cat.Functor.Subcategory
+open import Cat.Displayed.Total
 open import Cat.Prelude
 
-open import Order.Base
+open import Data.Maybe.Base
+
 open import Order.Diagram.Fixpoint
 open import Order.Diagram.Lub
+open import Order.Base
 open import Order.DCPO
 
-import Data.Nat as Nat
 import Cat.Reasoning
+
+import Data.Nat as Nat
 ```
 -->
 

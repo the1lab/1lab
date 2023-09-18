@@ -8,12 +8,12 @@ let
   pkgs = import ./support/nix/nixpkgs.nix { inherit system; };
   inherit (pkgs) lib;
 
-  our-ghc = pkgs.labHaskellPackages.ghcWithPackages (ps: with ps; [
+  our-ghc = pkgs.labHaskellPackages.ghcWithPackages (ps: with ps; ([
     shake directory tagsoup
     text containers uri-encode
     process aeson Agda pandoc SHA
     fsnotify
-  ]);
+  ] ++ (if interactive then [ haskell-language-server ] else [])));
 
   our-texlive = pkgs.texlive.combine {
     inherit (pkgs.texlive)
@@ -30,11 +30,6 @@ let
     inherit our-ghc;
     name = "1lab-shake";
     main = "Main.hs";
-  };
-  agda-typed-html = pkgs.callPackage ./support/nix/build-shake.nix {
-    inherit our-ghc;
-    name = "agda-typed-html";
-    main = "Wrapper.hs";
   };
 
   deps = with pkgs; [
@@ -87,7 +82,7 @@ in
     '';
 
     passthru = {
-      inherit deps shakefile agda-typed-html;
+      inherit deps shakefile;
       texlive = our-texlive;
       ghc = our-ghc;
     };

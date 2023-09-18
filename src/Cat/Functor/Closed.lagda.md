@@ -1,12 +1,9 @@
 <!--
 ```agda
-open import 1Lab.Path.Cartesian
-
 open import Cat.Instances.Product
 open import Cat.Functor.Base
 open import Cat.Prelude
 
-import Cat.Functor.Reasoning as Fr
 import Cat.Reasoning
 
 open Precategory

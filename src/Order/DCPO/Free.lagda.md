@@ -1,17 +1,16 @@
 <!--
 ```agda
-open import Data.Sum
-
-open import Cat.Displayed.Total
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
-open import Order.Base
-open import Order.DCPO
+open import Data.Sum
+
+open import Order.Instances.Discrete
 open import Order.DCPO.Pointed
 open import Order.Diagram.Lub
-open import Order.Instances.Discrete
+open import Order.Base
+open import Order.DCPO
 ```
 -->
 

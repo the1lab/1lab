@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import Cat.Diagram.Colimit.Base
-open import Cat.Instances.Functor
 open import Cat.Diagram.Initial
 open import Cat.Prelude
 
@@ -36,8 +35,8 @@ commutes".
 ```agda
 module _ {J : Precategory o ℓ} {C : Precategory o′ ℓ′} (F : Functor J C) where
   private
-    import Cat.Reasoning J as J
-    import Cat.Reasoning C as C
+    module C = Cat.Reasoning C
+    module J = Precategory J
     module F = Functor F
 ```
 -->

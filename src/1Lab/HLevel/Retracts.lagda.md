@@ -104,21 +104,20 @@ homotopy.
 ```agda
     inv : is-left-inverse sect (ap g)
     inv path =
-      sym (h x) ∙ ap f (ap g path) ∙ h y ∙ refl ≡⟨ ap (λ e → sym (h _) ∙ _ ∙ e) (∙-id-r (h _)) ⟩
+      sym (h x) ∙ ap f (ap g path) ∙ h y ∙ refl ≡⟨ ap (λ e → sym (h _) ∙ _ ∙ e) (∙-idr (h _)) ⟩
       sym (h x) ∙ ap f (ap g path) ∙ h y        ≡⟨ ap₂ _∙_ refl (sym (homotopy-natural h _)) ⟩
       sym (h x) ∙ h x ∙ path                    ≡⟨ ∙-assoc _ _ _ ⟩
-      (sym (h x) ∙ h x) ∙ path                  ≡⟨ ap₂ _∙_ (∙-inv-l (h x)) refl ⟩
-      refl ∙ path                               ≡⟨ ∙-id-l path ⟩
+      (sym (h x) ∙ h x) ∙ path                  ≡⟨ ap₂ _∙_ (∙-invl (h x)) refl ⟩
+      refl ∙ path                               ≡⟨ ∙-idl path ⟩
       path                                      ∎
 ```
 
 The proof that this function _does_ invert `ap g` on the left is boring,
 but it consists mostly of symbol pushing. The only non-trivial step, and
-the key to the proof, is the theorem that [homotopies are natural
-transformations]: We can flip `ap f (ap g path)` and `h y` to get a pair
-of paths that annihilates on the left, and `path` on the right.
-
-[homotopies are natural transformations]: agda://1Lab.Path#homotopy-natural
+the key to the proof, is the theorem that `homotopies behave like
+natural transformations`{.Agda ident=homotopy-natural}: We can flip `ap
+f (ap g path)` and `h y` to get a pair of paths that annihilates on the
+left, and `path` on the right.
 
 ### Equivalences
 
@@ -196,10 +195,9 @@ fun-is-hlevel n hl = Π-is-hlevel n (λ _ → hl)
 
 ## Sums of n-types
 
-A similar argument, using the fact that [paths of pairs are pairs of
-paths], shows that dependent sums are also closed under h-levels.
-
-[paths of pairs are pairs of paths]: agda://1Lab.Type.Sigma#Σ-path-iso
+A similar argument, using the fact that `paths between pairs are pairs
+of paths`{.Agda ident=Σ-path-iso}, shows that dependent sums are also
+closed under h-levels.
 
 ```agda
 Σ-is-hlevel : {A : Type ℓ} {B : A → Type ℓ'} (n : Nat)

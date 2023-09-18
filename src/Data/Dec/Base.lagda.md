@@ -9,7 +9,7 @@ open import 1Lab.Type
 module Data.Dec.Base where
 ```
 
-# Decidable types
+# Decidable types {defines="decidable type-of-decisions"}
 
 The type `Dec`{.Agda}, of **decisions** for a type `A`, is a renaming of
 the coproduct `A + ¬ A`. A value of `Dec A` witnesses not that `A`

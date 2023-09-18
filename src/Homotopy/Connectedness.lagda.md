@@ -14,9 +14,7 @@ open import Algebra.Group.Homotopy
 
 open import Data.Set.Truncation
 
-open import Homotopy.Space.Suspension
 open import Homotopy.Space.Circle
-open import Homotopy.Space.Sphere
 open import Homotopy.Base
 ```
 -->

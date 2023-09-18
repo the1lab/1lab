@@ -6,9 +6,6 @@ open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Hom
 open import Cat.Prelude
-
-import Cat.Functor.Reasoning as Func
-import Cat.Reasoning
 ```
 -->
 
@@ -23,11 +20,10 @@ module
 <!--
 ```agda
 private
-  module C = Cat.Reasoning C
-  module D = Cat.Reasoning D
+  module C = Precategory C
+  module D = Precategory D
 open import Cat.Morphism Cat[ C , D ] using (_≅_)
 
-open Func
 open _=>_
 ```
 -->

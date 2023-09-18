@@ -4,6 +4,7 @@ open import Cat.Displayed.Total
 open import Cat.Prelude
 
 open import Order.Base
+
 import Order.Reasoning as Poset
 ```
 -->

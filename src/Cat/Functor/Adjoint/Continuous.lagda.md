@@ -8,19 +8,12 @@ open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Finite
 open import Cat.Functor.Adjoint.Kan
 open import Cat.Diagram.Limit.Base
-open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
 open import Cat.Functor.Kan.Base
-open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
-open import Cat.Diagram.Duals
-open import Cat.Functor.Base
 open import Cat.Prelude
 
-open import Data.Bool
-
 import Cat.Functor.Reasoning as Func
-import Cat.Reasoning as Cat
 ```
 -->
 
@@ -38,8 +31,8 @@ module _
   private
     module L = Func L
     module R = Func R
-    module C = Cat C
-    module D = Cat D
+    module C = Precategory C
+    module D = Precategory D
     module adj = _⊣_ L⊣R
     open _=>_
 ```

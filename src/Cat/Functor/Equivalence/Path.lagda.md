@@ -3,9 +3,6 @@
 open import Cat.Functor.Adjoint.Unique
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Functor
-open import Cat.Functor.Adjoint
-open import Cat.Functor.Base
-open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
@@ -80,7 +77,7 @@ described above can indeed be built. The introduction rule for
 `hom`{.Agda} is `hom-glue`{.Agda}: If we have a partial element $\neg i
 \vdash f : \hom_\mathcal{C} x y$ together with an element $g$ of base
 type satisfying definitionally $\neg i \vdash F_1(f) = g$, we may glue
-$f$ along $g$ to get an element of $\rm{hom}_i(x, y)$.
+$f$ along $g$ to get an element of $\hom_i(x, y)$.
 
 ```agda
   hom-glue
@@ -116,7 +113,7 @@ preserves identity_.
 ```
 
 The last trick is extending a proposition $P$ along the line
-$\rm{hom}_i$, in a way that agrees with the original categories. We do
+$\hom_i$, in a way that agrees with the original categories. We do
 this by piecing together a square whose sides are the witness that $P$
 is a proposition, and where the base is given by spreading
 (`coe0→i`{.Agda}) the proposition from $\cC$ throughout the line. We
@@ -261,7 +258,7 @@ module
     open is-equivalence eqv
     module C = Cat.Reasoning C
     module D = Cat.Reasoning D
-    module F = Fr F
+    module F = Functor F
   open _=>_
 
 ```
@@ -309,7 +306,7 @@ proposition), and the functor is definitionally preserved.
 
 And now the aforementioned tiny result: All equivalences are [[fully
 faithful]], and if both categories are univalent, the natural
-isomorphisms $F^{-1}F \cong \rm{Id}$ and $FF^{-1} \cong \rm{Id}$ provide
+isomorphisms $F^{-1}F \cong \Id$ and $FF^{-1} \cong \Id$ provide
 the necessary paths for showing that $F_0$ is an equivalence of types.
 
 ```agda

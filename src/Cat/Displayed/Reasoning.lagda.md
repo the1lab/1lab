@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import Cat.Instances.Functor
 open import Cat.Displayed.Base
 open import Cat.Prelude
 

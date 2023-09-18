@@ -9,9 +9,9 @@ open import Cat.Functor.Hom
 open import Cat.Prelude
 
 import Cat.Displayed.Cartesian.Indexing as Indexing
+import Cat.Displayed.Fibre.Reasoning as FibR
 import Cat.Displayed.Cartesian as Cart
 import Cat.Displayed.Reasoning as DR
-import Cat.Displayed.Fibre.Reasoning as FibR
 import Cat.Displayed.Morphism as DM
 import Cat.Reasoning as CR
 ```

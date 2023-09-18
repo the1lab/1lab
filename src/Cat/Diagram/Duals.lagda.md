@@ -1,10 +1,6 @@
 <!--
 ```agda
-open import Cat.Instances.Functor.Duality
-open import Cat.Instances.Functor
 open import Cat.Prelude
-
-import Cat.Reasoning
 ```
 -->
 
@@ -14,7 +10,7 @@ module Cat.Diagram.Duals {o h} (C : Precategory o h) where
 
 <!--
 ```agda
-import Cat.Reasoning C as C
+private module C = Precategory C
 ```
 -->
 

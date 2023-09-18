@@ -3,7 +3,6 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Maybe.Base
-open import Data.List.Base
 
 open import Prim.Data.Nat
 

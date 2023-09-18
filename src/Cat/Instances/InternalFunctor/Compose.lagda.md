@@ -6,7 +6,6 @@ open import Cat.Prelude
 import Cat.Instances.InternalFunctor
 import Cat.Internal.Reasoning
 import Cat.Internal.Base as Internal
-import Cat.Reasoning
 ```
 -->
 
@@ -29,7 +28,7 @@ composition of internal natural transformations.
 <!--
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} {𝔸 𝔹 ℂ : Internal.Internal-cat C} where
-  open Cat.Reasoning C
+  open Precategory C
   open Internal C
   open Internal-functor
   open _=>i_
@@ -95,7 +94,7 @@ With that out of the way, we can prove the main result.
 <!--
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} (𝔸 𝔹 ℂ : Internal.Internal-cat C) where
-  open Cat.Reasoning C
+  open Precategory C
   open Internal C
   open Cat.Instances.InternalFunctor C
   open Functor

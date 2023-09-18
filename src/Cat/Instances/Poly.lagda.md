@@ -6,10 +6,7 @@ open import Cat.Univalent.Instances.Opposite
 open import Cat.Displayed.Instances.Family
 open import Cat.Displayed.Univalence
 open import Cat.Instances.Discrete
-open import Cat.Instances.Functor
-open import Cat.Displayed.Fibre
 open import Cat.Displayed.Total
-open import Cat.Displayed.Base
 open import Cat.Instances.Sets
 open import Cat.Prelude
 

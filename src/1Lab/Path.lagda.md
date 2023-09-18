@@ -66,6 +66,7 @@ the reals breaks down: There's no such thing as `i0.5` (much less
 `i1/π`). In reality, the interval type internalises an abstract interval
 _object_.
 
+:::{.definition #path}
 Regardless, since all functions definable in type theory are
 automatically continuous, we can take a path to be any value in the
 function type `I → A`. When working with paths, though, it's useful to
@@ -73,6 +74,7 @@ mention the endpoints of a path in its type --- that is, the values the
 function takes when applied to `i0` and to `i1`. We can "upgrade" any
 function `f : I → A` to a `Path`{.Agda}, using a definition that looks
 suspiciously like the identity function:
+:::
 
 ```agda
 private
@@ -564,7 +566,7 @@ type-correct, and b) get something with the right endpoints. `(λ i → B i
 The case for dependent products (i.e. general `Σ`{.Agda} types) is
 analogous, but without any inverse transports.
 
-## Path Induction
+## Path Induction {defines="path-induction"}
 
 The path induction principle, also known as "axiom J", essentially
 breaks down as the following two statements:
@@ -1634,7 +1636,7 @@ simpler in the case where the `Σ`{.Agda} represents a subset --- i.e.,
 Σ-path {A = A} {B} {x} {y} p q = Σ-pathp p (to-pathp q)
 ```
 
-## Π types
+## Π types {defines="funext function-extensionality homotopy"}
 
 For dependent functions, the paths are _homotopies_, in the topological
 sense: `Path ((x : A) → B x) f g` is the same thing as a function `I →

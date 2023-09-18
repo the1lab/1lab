@@ -6,7 +6,6 @@ open import Cat.Diagram.Terminal
 open import Cat.Monoidal.Base
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Diagram.Product
 import Cat.Reasoning as Cr
 ```
