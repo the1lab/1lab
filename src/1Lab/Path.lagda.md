@@ -566,7 +566,7 @@ type-correct, and b) get something with the right endpoints. `(λ i → B i
 The case for dependent products (i.e. general `Σ`{.Agda} types) is
 analogous, but without any inverse transports.
 
-## Path Induction {defines="path-induction"}
+## Path Induction {defines="path-induction contractibility-of-singletons"}
 
 The path induction principle, also known as "axiom J", essentially
 breaks down as the following two statements:

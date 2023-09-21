@@ -36,20 +36,16 @@ iteration!
 
 Fortunately, there's actually _no such thing_. The slice of $\cC/B$ over
 $f$ is isomorphic to the slice $\cC/A$, by a functor which is remarkably
-simple to define, too. We start by going in the opposite direction,
-sending a function $g : x \to a$ to an object over $f$. We have to
-choose a domain, a map $g' : x \to b$, _and_ a map $g' \to f$ over $b$.
-Using all the data we have on hand, we can choose the domain to be $x$,
-the map to $b$ to be
+simple to define, too. That's because the data of an object in
+$(\cC/B)/f$ consists of a morphism $h : X \to B$, a morphism $g : X \to
+A$, and a proof $p : h = fg$. But by [[contractibility of singletons]],
+the pair $(h, p)$ is redundant! The only part that actually matters is
+the morphism $g : X \to A$.
 
-$$
-x \xto{g} a \xto{f} b{\text{,}}
-$$
-
-and the map to $f$ to be $g$ itself, since we certainly have $fg = fg$.
-The rest of the construction has us faced with a few more non-choices,
-but it's so simple that there's no harm in including the whole thing
-here.
+One direction of the isomorphism inserts the extra (redundant!)
+information, by explicitly writing out $h = fg$ and setting $p = \refl$.
+Its inverse simply discards the redundant information. We construct both
+of the functors here, in components.
 
 ```agda
 Slice-twice : (f : Hom a b) → Functor (Slice C a) (Slice (Slice C b) (cut f))
@@ -65,12 +61,7 @@ Slice-twice f .F₁ h .commutes      = /-Hom-path (h .commutes)
 
 Slice-twice f .F-id    = /-Hom-path (/-Hom-path refl)
 Slice-twice f .F-∘ g h = /-Hom-path (/-Hom-path refl)
-```
 
-Showing that this is an isomorphism is similarly straightforward, but we
-detour through explicitly constructing the inverse, in components.
-
-```agda
 Twice-slice : (f : Hom a b) → Functor (Slice (Slice C b) (cut f)) (Slice C a)
 Twice-slice _ .F₀ x .domain = x .domain .domain
 Twice-slice _ .F₀ x .map    = x .map .map
