@@ -290,7 +290,7 @@ Cartesian closed structure.
 We also have to prove a few hateful lemmas about how renamings, and its
 action on variables, neutrals and normals, interact with the denotation
 brackets. These lemmas essentially say that $\sem{f[\rho]} =
-\sem{f}\sem{rho}$, so that it doesn't matter whether we first pass to
+\sem{f}\sem{\rho}$, so that it doesn't matter whether we first pass to
 the semantics in $\cC$ or apply a renaming.
 
 <!--
@@ -390,7 +390,7 @@ construction `Tyᵖ`{.Agda} has _three_ arguments: The type $\tau$, the
 context $\Gamma$ (over which it is functorial), and a _denotation_ $h :
 \sem{\Gamma} \to \sem{\tau}$ --- and in prose, we'll write `Tyᵖ`{.Agda}
 as $\cR^\tau_{h}(\Gamma)$; we say that $s$ **tracks** $h$ when $s :
-\cR^\tau_{h}(Gamma)$.
+\cR^\tau_{h}(\Gamma)$.
 
 Since all our operations on semantic values will be written against a
 type _indexed by_ their denotations, the core of the algorithm will
@@ -401,7 +401,7 @@ have $\sem{\reify s} = h$ in $\hom(\sem{\Gamma}, \sem{\tau})$.
 
 To summarize all the parts, we have:
 
-- **Expressions** $\Gamma \vdash e : tau$ --- the user writes these, and
+- **Expressions** $\Gamma \vdash e : \tau$ --- the user writes these, and
   they may have redices.
 
 - **Denotations** $\sem{e} : \sem{\Gamma} \to \sem{\tau}$. Since a CCC
@@ -428,7 +428,7 @@ value into a normal form, and $\reflect : \Ne(\Gamma, \tau) \to
 the neutrals.
 
 Our main objective is a normalisation function $\operatorname{expr}$
-such that, maps expressions $\Gamma \vdash e : \tau$ to semantic values
+that maps expressions $\Gamma \vdash e : \tau$ to semantic values
 $\operatorname{expr}(e) : \cR^\tau_{\sem{e}}(\Gamma)$. Let's get
 started.
 
@@ -464,7 +464,7 @@ Tyᵖ (τ `× σ) Γ h = Tyᵖ τ Γ (π₁ ∘ h) × Tyᵖ σ Γ (π₂ ∘ h)
 ```
 
 For a function type, we once again appeal to the construction in
-presheaves. The components of the exponential $(P^Q)(\Gamma)$ are
+presheaves. The components of the exponential $(Q^P)(\Gamma)$ are
 defined to be the natural transformations $\yo(\Gamma) \times P \To Q$,
 which, at the component, are given by maps $\hom(\Gamma, \Delta) \times
 P(\Delta) \to Q(\Delta)$. A function value must preserve tracking
@@ -493,7 +493,7 @@ tracking information: a neutral $n$ tracks $h$ iff. $\sem{n} = h$.
 Tyᵖ (` x)    Γ h = Σ (Ne Γ (` x)) λ n → ⟦ n ⟧ₛ ≡ h
 ```
 
-To work on open contexts, we can define (now by induction), the prehseaf
+To work on open contexts, we can define (now by induction), the presheaf
 of _parallel substitutions_, which are decorated sequences of terms.
 These also have a morphism of $\cC$ attached, but keep in mind that a
 parallel substitution $\Gamma \to \Delta$ interprets as an element of
