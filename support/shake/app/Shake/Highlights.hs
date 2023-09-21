@@ -45,22 +45,11 @@ renderHighlights stream = do
       case tree of
         (TagBranch _ attr _:_) | Just label <- lookup "aria-label" attr -> pure (tree, label)
         _ -> pure (tree, Text.cons (toUpper (Text.head icn)) (Text.tail icn))
-    iconSpan icn attr = do
+    iconSpan icn = do
       (icon, name') <- readIcon icn
-      let
-        name = TagText name'
-        extra
-          | icn == "definition", Just a <- lookup "id" attr = do
-            target <- getWikiLinkUrl a
-            pure $ pure $ TagBranch "span" []
-              [ TagLeaf (TagText " (")
-              , TagBranch "i" [] [TagBranch "a" [("href", target)] [TagLeaf (TagText ("“" <> a <> "”"))]]
-              , TagLeaf (TagText ")")
-              ]
-          | otherwise = pure []
-      extra <- extra
+      let name = TagText name'
       pure $ TagBranch "span" [("class", "highlight-icon")]
-        (icon ++ [ TagBranch "span" [] (TagLeaf name:extra) ])
+        (icon ++ [ TagBranch "span" [] [TagLeaf name] ])
 
     go :: TagTree Text -> Action (TagTree Text)
     go (TagBranch "div" attr children)
@@ -68,7 +57,7 @@ renderHighlights stream = do
         let clzs = Text.words clz,
         [icn] <- mapMaybe isIcon clzs
       = do
-      icon <- iconSpan icn attr
+      icon <- iconSpan icn
       children <- traverse go children
       pure $ TagBranch "div" attr $ icon:children
 
@@ -76,7 +65,7 @@ renderHighlights stream = do
       | Just (sattr, schild, rest) <- summary children
       , [icn] <- mapMaybe isHighlight attr
       = do
-      icon <- iconSpan icn mempty
+      icon <- iconSpan icn
       schild <- traverse go schild
       rest <- traverse go rest
       pure $ TagBranch "details" (("class", icn):attr) $

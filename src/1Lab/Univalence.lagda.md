@@ -53,9 +53,7 @@ of “paths between types” makes sense in the first place. In “Book HoTT”,
 paths between types are a well-formed concept because the path type is
 uniformly inductively defined for _everything_ --- including universes.
 This is not the case in Cubical type theory, where for paths in $T$ to
-be well-behaved, $T$ must [be _fibrant_].
-
-[be _fibrant_]: 1Lab.Path.html#fibrant
+be well-behaved, $T$ must be _fibrant_.
 
 Since there's no obvious choice for how to interpret `hcomp`{.Agda} in
 `Type`{.Agda}, a fine solution is to make `hcomp`{.Agda} its own type

@@ -119,7 +119,6 @@ main {
 @include highlight(warning,        var(--warning-bg),     var(--warning-icon));
 @include highlight(note,           var(--note-bg),        var(--note-icon));
 @include highlight(terminology,    var(--terminology-bg), var(--terminology-icon));
-@include highlight(definition,     var(--text-fg),        var(--text-fg));
 
 div.asides {
   * {

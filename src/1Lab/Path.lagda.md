@@ -958,25 +958,11 @@ every _type_ (something that can be on the right of a type signature `e
 “fibrant”, since these are semantically the cubical sets which are Kan
 complices. Examples of types which are _not_ fibrant include the
 interval `I`{.Agda}, the partial elements `Partial`{.Agda}, and the
-extensions `_[_↦_]`[^notfibrant].
+extensions `_[_↦_]`.
 :::
 
-::: {.definition #fibrant}
-> **Definition**: A type is _fibrant_ if it supports `hcomp`{.Agda}.
-This word comes up a lot when discussing not only the semantics of
-Cubical type theory, but also its practice! For instance, the specific
-fibrancy structure of `Type`{.Agda} is what powers [[univalence]].
-:::
-
-[^notfibrant]: In Agda 2.6.2, function types `I → A` are _not_ fibrant,
-even though they correspond to paths with “unmarked” endpoints. In Agda
-2.6.3 (in development at the time of writing), `I` was moved to its own
-universe, `IUniv`, with a typing rule for functions saying that `A → B`
-is fibrant whenever `B : Type` and `A : Type` _or_ `A : IUniv` - i.e.
-function types `I → A` were made fibrant whenever `A` is.
-
-Agda also provides a _heterogeneous_ version of composition (sometimes
-referred to as "CCHM composition"), called `comp`{.Agda}. It too has a
+Agda also provides a _heterogeneous_ version of composition (which we
+sometimes call "CCHM composition"), called `comp`{.Agda}. It too has a
 corresponding filling operation, called `fill`{.Agda}. The idea behind
 CCHM composition is --- by analogy with `hcomp`{.Agda} expressing that
 "paths preserve extensibility" --- that `PathP`{.Agda}s preserve
