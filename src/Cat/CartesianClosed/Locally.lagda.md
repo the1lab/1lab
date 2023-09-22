@@ -30,7 +30,7 @@ open /-Hom
 ```
 -->
 
-# Locally cartesian closed categories {defines="locally-cartesian-closed"}
+# Locally cartesian closed categories {defines="locally-cartesian-closed locally-cartesian-closed-category"}
 
 A [[finitely complete category]] $\cC$ is said to be **locally Cartesian
 closed** when each of its [[slice categories]] is [[Cartesian closed]].

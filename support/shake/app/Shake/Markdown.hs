@@ -1,4 +1,4 @@
-{-# LANGUAGE BlockArguments, OverloadedStrings, FlexibleContexts, ViewPatterns, QuasiQuotes, LambdaCase #-}
+{-# LANGUAGE BlockArguments, OverloadedStrings, FlexibleContexts, ViewPatterns, LambdaCase #-}
 
 {-| Convert a markdown file to templated HTML, applying several
 post-processing steps and rendered to HTML using the
@@ -17,10 +17,9 @@ import qualified Data.Text.Encoding as Text
 import qualified Data.Map.Lazy as Map
 import qualified Data.Text.IO as Text
 import qualified Data.Text as Text
+
 import Data.Digest.Pure.SHA
-import Data.Map.Lazy (Map)
 import Data.Foldable
-import Data.Function
 import Data.Aeson (encodeFile)
 import Data.Maybe
 import Data.Text (Text)
@@ -36,10 +35,10 @@ import Text.HTML.TagSoup
 import Text.HTML.TagSoup.Match
 import Text.HTML.TagSoup.Tree
 
-import Text.Collate.Lang (Lang (..))
 import Text.Pandoc.Builder (Inlines)
 import Text.Pandoc.Citeproc
 import Text.Pandoc.Shared
+import Text.Collate.Lang (Lang (..))
 import Text.Pandoc.Walk
 import Text.Pandoc
 
@@ -53,8 +52,6 @@ import Shake.Git
 import HTML.Emit
 
 import Definitions
-
-import Debug.Trace
 
 readLabMarkdown :: MonadIO m => FilePath -> m Pandoc
 readLabMarkdown fp = liftIO cont where
@@ -81,12 +78,50 @@ readLabMarkdown fp = liftIO cont where
 -- where possible, this is only useful when you cannot modify inlines in
 -- isolation.
 postParseInlines :: [Inline] -> [Inline]
+
 -- Replace any expression $foo$-bar with <span ...>$foo$-bar</span>, so that
 -- the equation is not split when word wrapping.
 postParseInlines (m@Math{}:s@(Str txt):xs)
   | not (Text.isPrefixOf " " txt)
   = htmlInl "<span style=\"white-space: nowrap;\">" : m : s : htmlInl "</span>"
   : postParseInlines xs
+
+-- Parse the contents of wikilinks as markdown. While Pandoc doesn't
+-- read the title part of a wikilink, it will always consist of a single
+-- Str span. We call the Pandoc parser in a pure context to read the
+-- title part as an actual list of inlines.
+postParseInlines (Link attr [Str contents] (url, "wikilink"):xs) =
+  link' `seq` link':postParseInlines xs where
+
+  try  = either (const Nothing) Just . runPure
+  fail = error $
+    "Failed to parse contents of wikilink as Markdown:" <> Text.unpack contents
+
+  link' = fromMaybe fail do
+    -- The contents of a link are valid if they consist of a single list
+    -- of inlines. Pandoc doesn't let us parse a list of inlines, but we
+    -- can still parse it as a document and ensure that (a) everything
+    -- got bunched in the same paragraph and (b) there was no metadata.
+    parsed@(Pandoc (Meta m) [Para is]) <- try (readMarkdown def contents)
+    guard (null m) -- I don't foresee this ever failing.
+
+    -- Rendering the contents as plain text will strip all the
+    -- decorations, thus recovering the "underlying page" that was meant
+    -- to be linked to. Of course, we should only try changing the
+    -- target if the link looks like [[foo]], rather than [[foo|bar]].
+    let
+      target = if url == contents
+        then stringify parsed
+        else url
+
+    -- Note that Pandoc doesn't distinguish between [[foo]] and
+    -- [[foo|foo]], so really the only way is checking whether the URL
+    -- is equal to the contents string. If that was the case, then
+    -- stripping formatting is the right thing, otherwise e.g. [[*path
+    -- induction*]] would fail since the target "*path-induction*"
+    -- doesn't exist.
+    pure (Link attr is (target, "wikilink"))
+
 postParseInlines (x:xs) = x:postParseInlines xs
 postParseInlines [] = []
 
