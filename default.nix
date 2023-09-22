@@ -12,7 +12,7 @@ let
     shake directory tagsoup
     text containers uri-encode
     process aeson Agda pandoc SHA
-    fsnotify
+    fsnotify lens
   ] ++ (if interactive then [ haskell-language-server ] else [])));
 
   our-texlive = pkgs.texlive.combine {
