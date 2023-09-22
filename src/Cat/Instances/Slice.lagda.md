@@ -1,14 +1,12 @@
 <!--
 ```agda
-open import Cat.Instances.Shape.Terminal
-open import Cat.Instances.Shape.Join
-open import Cat.Diagram.Limit.Base
-open import Cat.Functor.Properties
+open import Cat.Diagram.Limit.Finite
 open import Cat.Instances.Discrete
-open import Cat.Instances.Functor
+open import Cat.Functor.Properties
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 open import Data.Sum
@@ -35,7 +33,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 ```
 -->
 
-# Slice categories
+# Slice categories {defines="slice-category"}
 
 When working in $\Sets$, there is an evident notion of _family indexed
 by a set_: a family of sets $(F_i)_{i \in I}$ is equivalently a functor
@@ -79,7 +77,7 @@ $f$ and $g$ as _families indexed by $c$_, commutativity of the triangle
 says that the map $h$ "respects reindexing", or less obliquely
 "preserves fibres".
 
-~~~{.quiver}
+~~~{.quiver .short-1}
 \[\begin{tikzcd}
   a && b \\
   & c
@@ -195,11 +193,11 @@ commutativity for $g \circ f$).
   precat .assoc f g h = /-Hom-path (C.assoc _ _ _)
 ```
 
-## Limits
+## Finite limits
 
-We discuss some limits in the slice of $\cC$ over $c$. First, every
-slice category has a [[terminal object]], given by the identity map
-$\id : c \to c$.
+We discuss the construction of _finite_ limits in the slice of $\cC/c$.
+First, every slice category has a [[terminal object]], given by the
+identity map $\id : c \to c$.
 
 ```agda
 module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
@@ -208,17 +206,16 @@ module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
   open /-Hom
   open /-Obj
 
-  Slice-terminal-object : is-terminal (Slice C c) (cut C.id)
-  Slice-terminal-object obj .centre .map = obj .map
-  Slice-terminal-object obj .centre .commutes = C.idl _
-  Slice-terminal-object obj .paths other =
+  Slice-terminal-object′ : is-terminal (Slice C c) (cut C.id)
+  Slice-terminal-object′ obj .centre .map = obj .map
+  Slice-terminal-object′ obj .centre .commutes = C.idl _
+  Slice-terminal-object′ obj .paths other =
     /-Hom-path (sym (other .commutes) ∙ C.idl _)
-```
 
-Products in a slice category are slightly more complicated, but recall
-that another word for pullback is "fibred product". Indeed, in the
-pullback page we noted that the pullback of $X \to Z$ and $Y \to Z$ is
-exactly the product of those maps in the slice over $Z$.
+  Slice-terminal-object : Terminal (Slice C c)
+  Slice-terminal-object .Terminal.top  = _
+  Slice-terminal-object .Terminal.has⊤ = Slice-terminal-object′
+```
 
 <!--
 ```agda
@@ -232,6 +229,14 @@ module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
   open /-Obj
 ```
 -->
+
+:::{.definition #products-in-a-slice}
+Products in a slice category are slightly more complicated --- but if
+you've ever heard a pullback referred to as a "fibre(d) product", you
+already know what we're up to! Indeed, in defining [[pullback]]
+diagrams, we noted that the pullback of $f : X \to Z$ and $g : Y \to Z$
+is exactly the product $f \times g$ in the slice over $Z$.
+:::
 
 Suppose we have a pullback diagram like the one below, i.e., a limit of
 the diagram $a \xrightarrow{f} c \xleftarrow{g} b$, in the category
@@ -251,10 +256,14 @@ consisting of $f$ and $g$, but now in the slice category $\cC/c$.
 \end{tikzcd}\]
 ~~~
 
-For starters, note that we have seemingly "two" distinct choices for
-maps $a \times_c b \to c$, but since the square above commutes, either
-one will do. For definiteness, we go with the composite $f \circ \pi_1$.
+For starters, we have to define a map $a \times_c b \to c$, to serve as
+the actual object in the slice. It seems like there are _two_ choices,
+depending on how you trace out the square. But the square commutes,
+which by definition means that we don't really have a choice. We choose
+$f\pi_1$, i.e. following the top face then the right face, for
+definiteness.
 
+<!--
 ```agda
   module
     _ {f g : /-Obj c} {Pb : C.Ob} {π₁ : C.Hom Pb (f .domain)}
@@ -263,62 +272,86 @@ one will do. For definiteness, we go with the composite $f \circ \pi_1$.
         π₁ (map {_} {_} {C} {c} f) π₂ (map {_} {_} {C} {c} g))
     where
     private module pb = is-pullback pb
+```
+-->
 
+```agda
     is-pullback→product-over : C/c.Ob
     is-pullback→product-over = cut (f .map C.∘ π₁)
 ```
 
-Now, by commutativity of the square, the maps $\pi_1$ and $\pi_2$ in the
-diagram above extend to maps $(f \circ \pi_1) \to f$ and $(f \circ
-\pi_1) \to g$ in $\cC/c$. Indeed, note that by scribbling a red line
-across the diagonal of the diagram, we get the two needed triangles as
-the induced subdivisions.
-
-~~~{.quiver}
-\[\begin{tikzcd}
-  {X \times_Z Y} && X \\
-  \\
-  Y && Z
-  \arrow["{\pi_2}"', from=1-1, to=3-1]
-  \arrow["{\pi_1}", from=1-1, to=1-3]
-  \arrow["f", from=1-3, to=3-3]
-  \arrow["g"', from=3-1, to=3-3]
-  \arrow["{f \circ \pi_1}"{description}, color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=3-3]
-\end{tikzcd}\]
-~~~
+Let us turn to the projection maps. Again by commutativity of the
+square, the pullback projection maps $\pi_1$ and $\pi_2$ extend directly
+to maps from $f\pi_1$ into $f$ and $g$ over $c$. In the nontrivial case,
+we have to show that $g\pi_2 = f\pi_1$, which is _exactly_ what
+commutativity of the square gets us.
 
 ```agda
     is-pullback→π₁ : C/c.Hom is-pullback→product-over f
     is-pullback→π₁ .map      = π₁
-    is-pullback→π₁ .commutes i = f .map C.∘ π₁
+    is-pullback→π₁ .commutes = refl
 
     is-pullback→π₂ : C/c.Hom is-pullback→product-over g
-    is-pullback→π₂ .map        = π₂
-    is-pullback→π₂ .commutes i = pb.square (~ i)
+    is-pullback→π₂ .map      = π₂
+    is-pullback→π₂ .commutes = sym pb.square
 
     open is-product
 ```
 
-Unfolding what it means for a diagram to be a universal cone over the
-discrete diagram consisting of $f$ and $g$ in the category $\cC/c$,
-we see that it is exactly the data of the pullback of $f$ and $g$ in
-$\cC$, as below:
+Now we turn to showing that these projections are universal, in the
+slice $\cC/c$. Given a family $Q : Q \to c$, the data of maps $p : p \to
+f$ and $q : p \to g$ over $c$ is given precisely by evidence that $fq =
+gp$, meaning that they fit neatly around our pullback diagram, as shown
+in the square below.
+
+~~~{.quiver .tall-15}
+\[\begin{tikzcd}[ampersand replacement=\&]
+  Q \\
+  \& {a\times_bc} \&\& a \\
+  \\
+  \& b \&\& c
+  \arrow["g"', from=4-2, to=4-4]
+  \arrow["f", from=2-4, to=4-4]
+  \arrow["q", curve={height=-12pt}, from=1-1, to=2-4]
+  \arrow["p"', curve={height=12pt}, from=1-1, to=4-2]
+  \arrow["{\pi_1}"{description}, from=2-2, to=2-4]
+  \arrow["{\pi_2}"{description}, from=2-2, to=4-2]
+  \arrow["{l}"{description}, dashed, from=1-1, to=2-2]
+  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=2-2, to=4-4]
+\end{tikzcd}\]
+~~~
+
+And, as indicated in the diagram, since this square is a pullback, we
+can obtain the dashed map $l : Q \to a \times_c b$, which we can
+calculate satisfies
+
+$$
+f\pi_1l = fp = Q\text{,}
+$$
+
+so that it is indeed a map $Q \to f \times g$ over $c$, as required.
+Reading out the rest of $(a \times_c b)$'s universal property, we see
+that $l$ is the unique map which satisfies $\pi_1l = p$ and $\pi_2l =
+q$, exactly as required for the pairing $\langle p, q \rangle$ of a
+product in $\cC/c.$
 
 ```agda
     is-pullback→is-fibre-product
       : is-product (Slice C c) is-pullback→π₁ is-pullback→π₂
-    is-pullback→is-fibre-product .⟨_,_⟩ {Q} /f /g = factor
-      where
-        module f = /-Hom /f
-        module g = /-Hom /g
+    is-pullback→is-fibre-product .⟨_,_⟩ {Q} p q = factor where
+      module p = /-Hom p
+      module q = /-Hom q
 
-        factor : C/c.Hom Q _
-        factor .map = pb.universal (f.commutes ∙ sym g.commutes)
-        factor .commutes =
-          (f .map C.∘ π₁) C.∘ pb.universal _ ≡⟨ C.pullr pb.p₁∘universal ⟩
-          f .map C.∘ f.map                  ≡⟨ f.commutes ⟩
-          Q .map                            ∎
+      factor : C/c.Hom Q _
+      factor .map      = pb.universal (p.commutes ∙ sym q.commutes)
+      factor .commutes =
+        (f .map C.∘ π₁) C.∘ pb.universal _ ≡⟨ C.pullr pb.p₁∘universal ⟩
+        f .map C.∘ p.map                   ≡⟨ p.commutes ⟩
+        Q .map                             ∎
+```
 
+<!--
+```agda
     is-pullback→is-fibre-product .π₁∘factor = /-Hom-path pb.p₁∘universal
     is-pullback→is-fibre-product .π₂∘factor = /-Hom-path pb.p₂∘universal
     is-pullback→is-fibre-product .unique other p q =
@@ -333,11 +366,12 @@ $\cC$, as below:
   Pullback→Fibre-product pb .Product.has-is-product =
     is-pullback→is-fibre-product (pb .Pullback.has-is-pb)
 ```
+-->
 
 While products and terminal objects in $\cC/X$ do not correspond to
-those in $\cC$, _pullbacks_ (and equalisers) are precisely
-equivalent. A square is a pullback in $\cC/X$ iff. the square
-consisting of their underlying objects and maps is a square in $\cC$.
+those in $\cC$, _pullbacks_ (and equalisers) are precisely equivalent. A
+square is a pullback in $\cC/X$ _precisely if_ its image in $\cC$,
+forgetting the maps to $X$, is a pullback.
 
 The "if" direction (what is `pullback-above→pullback-below`{.Agda}) in
 the code is essentially an immediate consequence of the fact that
@@ -345,82 +379,142 @@ equality of morphisms in $\cC/X$ may be tested in $\cC$, but we do
 have to take some care when extending the "universal" morphism back down
 to the slice category (see the calculation marked `{- * -}`{.Agda}).
 
+<!--
 ```agda
-module _ where
+module _ {o ℓ} {C : Precategory o ℓ} {X : Precategory.Ob C}
+         {P A B c} {p1 f p2 g}
+  where
+  open Cat.Reasoning C
+  open is-pullback
   open /-Obj
   open /-Hom
+```
+-->
 
+```agda
   pullback-above→pullback-below
-    : ∀ {o ℓ} {C : Precategory o ℓ} {X : Precategory.Ob C}
-    → ∀ {P A B c} {p1 f p2 g}
-    → is-pullback C (p1 .map) (f .map) (p2 .map) (g .map)
+    : is-pullback C (p1 .map) (f .map) (p2 .map) (g .map)
     → is-pullback (Slice C X) {P} {A} {B} {c} p1 f p2 g
-  pullback-above→pullback-below {C = C} {P = P} {a} {b} {c} {p1} {f} {p2} {g} pb
-    = pb′ where
-      open is-pullback
-      open Cat.Reasoning C
-
-      pb′ : is-pullback (Slice _ _) _ _ _ _
-      pb′ .square = /-Hom-path (pb .square)
-      pb′ .universal p .map = pb .universal (ap map p)
-      pb′ .universal {P'} {p₁' = p₁'} p .commutes =
-        (c .map ∘ pb .universal (ap map p))           ≡˘⟨ (pulll (p1 .commutes)) ⟩
-        (P .map ∘ p1 .map ∘ pb .universal (ap map p)) ≡⟨ ap (_ ∘_) (pb .p₁∘universal) ⟩
-        (P .map ∘ p₁' .map)                          ≡⟨ p₁' .commutes ⟩
-        P' .map                                      ∎ {- * -}
-      pb′ .p₁∘universal = /-Hom-path (pb .p₁∘universal)
-      pb′ .p₂∘universal = /-Hom-path (pb .p₂∘universal)
-      pb′ .unique p q = /-Hom-path (pb .unique (ap map p) (ap map q))
+  pullback-above→pullback-below pb = pb′ where
+    pb′ : is-pullback (Slice _ _) _ _ _ _
+    pb′ .square = /-Hom-path (pb .square)
+    pb′ .universal p .map = pb .universal (ap map p)
+    pb′ .universal {P'} {p₁' = p₁'} p .commutes =
+      (c .map ∘ pb .universal (ap map p))           ≡˘⟨ pulll (p1 .commutes) ⟩
+      (P .map ∘ p1 .map ∘ pb .universal (ap map p)) ≡⟨ ap (_ ∘_) (pb .p₁∘universal) ⟩
+      (P .map ∘ p₁' .map)                           ≡⟨ p₁' .commutes ⟩
+      P' .map                                       ∎ {- * -}
+    pb′ .p₁∘universal = /-Hom-path (pb .p₁∘universal)
+    pb′ .p₂∘universal = /-Hom-path (pb .p₂∘universal)
+    pb′ .unique p q   = /-Hom-path (pb .unique (ap map p) (ap map q))
 
   pullback-below→pullback-above
-    : ∀ {o ℓ} {C : Precategory o ℓ} {X : Precategory.Ob C}
-    → ∀ {P A B c} {p1 f p2 g}
-    → is-pullback (Slice C X) {P} {A} {B} {c} p1 f p2 g
+    : is-pullback (Slice C X) {P} {A} {B} {c} p1 f p2 g
     → is-pullback C (p1 .map) (f .map) (p2 .map) (g .map)
-  pullback-below→pullback-above {C = C} {P = P} {p1 = p1} {f} {p2} {g} pb = pb′ where
-    open Cat.Reasoning C
-    open is-pullback
+  pullback-below→pullback-above pb = pb′ where
     pb′ : is-pullback _ _ _ _ _
     pb′ .square = ap map (pb .square)
-    pb′ .universal {P′ = P'} {p₁'} {p₂'} p =
-      pb .universal {P′ = cut (P .map ∘ p₁')}
-        {p₁' = record { map = p₁' ; commutes = refl }}
-        {p₂' = record { map = p₂' ; commutes = sym (pulll (g .commutes))
-                                             ∙ sym (ap (_ ∘_) p)
-                                             ∙ pulll (f .commutes)
-                      }}
-        (/-Hom-path p)
-        .map
+    pb′ .universal p = pb .universal
+      {p₁' = record { commutes = refl }}
+      {p₂' = record { commutes = sym (pulll (g .commutes))
+                              ·· sym (ap (_ ∘_) p)
+                              ·· pulll (f .commutes) }}
+      (/-Hom-path p) .map
     pb′ .p₁∘universal = ap map $ pb .p₁∘universal
     pb′ .p₂∘universal = ap map $ pb .p₂∘universal
-    pb′ .unique p q = ap map $ pb .unique
-      {lim' = record { map = _ ; commutes = sym (pulll (p1 .commutes)) ∙ ap (_ ∘_) p }}
+    pb′ .unique p q   = ap map $ pb .unique
+      {lim' = record { commutes = sym (pulll (p1 .commutes)) ∙ ap (_ ∘_) p }}
       (/-Hom-path p) (/-Hom-path q)
 ```
 
-# Slices of Sets
+It follows that any slice of a category with pullbacks is finitely
+complete. Note that we could have obtained the products abstractly,
+since any category with pullbacks and a terminal object has products,
+but expanding on the definition in components helps clarify both their
+construction _and_ the role of pullbacks.
 
-We now prove the correspondence between slices of $\Sets$ and functor
-categories into $\Sets$, i.e. the corresponding between indexing and
-slicing mentioned in the first paragraph.
+<!--
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} where
+  open Cat.Reasoning C
+  open Pullback
+  open /-Obj
+  open /-Hom
+```
+-->
 
 ```agda
+  Slice-pullbacks : ∀ {b} → has-pullbacks C → has-pullbacks (Slice C b)
+  Slice-products  : ∀ {b} → has-pullbacks C → has-products (Slice C b)
+  Slice-lex : ∀ {b} → has-pullbacks C → Finitely-complete (Slice C b)
+```
 
+<details>
+<summary>This is one of the rare moments when the sea of theory has
+already risen to meet our prose --- put another way, the proofs of the
+statements above are just putting things together. We leave them in this
+`<details>` block for the curious reader.
+</summary>
+
+```agda
+  Slice-pullbacks pullbacks {A = A} f g = pb where
+    pb : Pullback (Slice C _) _ _
+    pb .apex = cut (A .map ∘ pullbacks _ _ .p₁)
+    pb .p₁ = record { commutes = refl }
+    pb .p₂ = record { commutes =
+         sym (pushl (sym (f .commutes))
+      ·· ap₂ _∘_ refl (pullbacks _ _ .square)
+      ·· pulll (g .commutes)) }
+    pb .has-is-pb = pullback-above→pullback-below $
+      pullbacks (f .map) (g .map) .has-is-pb
+
+  Slice-products pullbacks f g = Pullback→Fibre-product (pullbacks _ _)
+
+  Slice-lex pb = with-pullbacks (Slice C _)
+    Slice-terminal-object
+    (Slice-pullbacks pb)
+```
+
+</details>
+
+## Slices of Sets
+
+<!--
+```agda
 module _ {I : Set ℓ} where
   open /-Obj
   open /-Hom
 ```
+-->
 
-We shall prove that the functor `Total-space`{.Agda}, defined below, is
-an equivalence of categories, i.e. that it is [[fully faithful]] and
-[[essentially surjective]]. But first, we must define the functor! Like its
-name implies, it maps the functor $F : I → \Sets$ to the first
-projection map $\rm{fst} : \sum F \to I$.
+Having tackled some properties of slice categories in general, we now
+turn to characterising the slice $\cC/x$ as the category of *families of
+$\cC$-objects indexed by $x$*, by formalising the aforementioned
+equivalence $\Sets/I \cong [I, \Sets]$. Let us trace our route before we
+depart, and write down an outline of the proof.
+
+- A functor $F : I \to \Sets$ is sent to the first projection $\pi_1 :
+  (\Sigma F) \to I$, functorially. Since $\Sigma F$ is the _total space_
+  of $F$, we refer to this as the `Total-space`{.Agda} functor.
+
+- We define a procedure that, given a morphism $\Sigma F \to \Sigma G$
+  over $I$, recovers a natural transformation $F \To G$; We then calculate
+  that this procedure is an inverse to the action on morphisms of
+  `Total-space`{.Agda}, so that it is [[fully faithful]].
+
+- Finally, we show that, given $p : X \to I$, the assignment $i \mapsto
+  p^{-1}(i)$, sending an index to the fibre of $p$ over it, gives a
+  functor $P$; and that $\int P \cong p$ over $I$, so that
+  `Total-space`{.Agda} is a [[split essential surjection]], hence an
+  equivalence of categories.
+
+Let's begin. The `Total-space`{.Agda} functor gets out of our way very
+fast:
 
 ```agda
   Total-space : Functor Cat[ Disc′ I , Sets ℓ ] (Slice (Sets ℓ) I)
   Total-space .F₀ F .domain = el (Σ _ (∣_∣ ⊙ F₀ F)) hlevel!
-  Total-space .F₀ F .map = fst
+  Total-space .F₀ F .map    = fst
 
   Total-space .F₁ nt .map (i , x) = i , nt .η _ x
   Total-space .F₁ nt .commutes    = refl
@@ -429,79 +523,81 @@ projection map $\rm{fst} : \sum F \to I$.
   Total-space .F-∘ _ _ = /-Hom-path refl
 ```
 
-To prove that the `Total-space`{.Agda} functor is `fully faithful`{.Agda
-ident=is-fully-faithful}, we will exhibit a quasi-inverse to its action
-on morphisms. Given a fibre-preserving map between $\rm{fst} : \sum
-F \to I$ and $\rm{fst} : \sum G \to I$, we recover a natural
-transformation between $F$ and $G$. The hardest part is showing
-naturality, where we use path induction.
+Since the construction of the functor itself is straightforward, we turn
+to showing it is fully faithful. The content of a morphism $h : \Sigma F
+\to \Sigma G$ over $I$ is a function
+
+$$
+h : (\Sigma F) \to (\Sigma G)
+$$
+
+which _preserves the first projection_, i.e. we have $\pi_1(h(i, x)) =
+i$. This means that it corresponds to a dependent function $h : F(i) \to
+G(i)$, and, since the morphisms in $I$-qua-category are trivial, this
+dependent function is automatically a natural transformation.
 
 ```agda
   Total-space-is-ff : is-fully-faithful Total-space
-  Total-space-is-ff {f1} {f2} = is-iso→is-equiv
-    (iso from linv (λ x → Nat-path (λ x → funext (λ _ → transport-refl _))))
-    where
-      from : /-Hom (Total-space .F₀ f1) (Total-space .F₀ f2) → f1 => f2
-      from mp = nt where
-        eta : ∀ i → ∣ F₀ f1 i ∣ → ∣ F₀ f2 i ∣
-        eta i j =
-          subst (∣_∣ ⊙ F₀ f2) (happly (mp .commutes) _) (mp .map (i , j) .snd)
+  Total-space-is-ff {F} {G} = is-iso→is-equiv $
+    iso from linv (λ x → Nat-path λ x → funext (λ _ → transport-refl _)) where
 
-        nt : f1 => f2
-        nt .η = eta
-        nt .is-natural _ _ f =
-          J (λ _ p → eta _ ⊙ F₁ f1 p ≡ F₁ f2 p ⊙ eta _)
-            (ap (eta _ ⊙_) (F-id f1) ∙ sym (ap (_⊙ eta _) (F-id f2)))
-            f
+    from : /-Hom (Total-space .F₀ F) (Total-space .F₀ G) → F => G
+    from mp = nt where
+      eta : ∀ i → ⌞ F .F₀ i ⌟ → ⌞ G .F₀ i ⌟
+      eta i j =
+        subst (∣_∣ ⊙ G .F₀) (happly (mp .commutes) _) (mp .map (i , j) .snd)
+
+      nt : F => G
+      nt .η = eta
+      nt .is-natural _ _ = J (λ _ p → eta _ ⊙ F .F₁ p ≡ G .F₁ p ⊙ eta _) $
+        eta _ ⊙ F .F₁ refl ≡⟨ ap (eta _ ⊙_) (F .F-id) ⟩
+        eta _              ≡˘⟨ ap (_⊙ eta _) (G .F-id) ⟩
+        G .F₁ refl ⊙ eta _ ∎
 ```
 
 <!--
 ```agda
-      linv : is-left-inverse (F₁ Total-space) from
-      linv x =
-        /-Hom-path (funext (λ y →
-          Σ-path (sym (happly (x .commutes) _))
-            ( sym (transport-∙ (ap (∣_∣ ⊙ F₀ f2) (happly (x .commutes) y))
-                          (sym (ap (∣_∣ ⊙ F₀ f2) (happly (x .commutes) y)))
-                          _)
-            ·· ap₂ transport (∙-invr (ap (∣_∣ ⊙ F₀ f2) (happly (x .commutes) y)))
-                             refl
-            ·· transport-refl _)))
+    linv : is-left-inverse (F₁ Total-space) from
+    linv x = /-Hom-path (funext (λ y → Σ-path (sym (happly (x .commutes) _))
+      ( sym (transport-∙ (ap (∣_∣ ⊙ G .F₀) (happly (x .commutes) y))
+                    (sym (ap (∣_∣ ⊙ G .F₀) (happly (x .commutes) y))) _)
+      ·· ap₂ transport (∙-invr (ap (∣_∣ ⊙ G .F₀) (happly (x .commutes) y))) refl
+      ·· transport-refl _)))
 ```
 -->
 
-For essential surjectivity, given a map $f : X \to I$, we recover a
-family of sets $(f^*i)_{i \in I}$ by taking the `fibre`{.Agda} of $f$
-over each point, which cleanly extends to a functor. To show that the
-`Total-space`{.Agda} of this functor is isomorphic to the map we started
-with, we use one of the auxiliary lemmas used in the construction of an
-object classifier: `Total-equiv`{.Agda}. This is cleaner than exhibiting
-an isomorphism directly, though it does involve an appeal to univalence.
+All that remains is showing that sending a map $p$ to the total space of
+its family of fibres gets us all the way back around to $p$.
+Fortunately, our proof that universes are [[object classifiers]]
+grappled with many of the same concerns, so we have a reusable
+equivalence `Total-equiv`{.Agda} which slots right in. By univalence, we
+can finish in style: not only is $\Sigma (x \mapsto p^{-1}(x))$
+_isomorphic_ to $p$ in $\Sets/I$, it's actually _identical_ to $p$!
 
 ```agda
   Total-space-is-eso : is-split-eso Total-space
-  Total-space-is-eso fam = functor , path→iso path
-    where
-      functor : Functor _ _
-      functor .F₀ i = el! (fibre (fam .map) i)
-      functor .F₁ p = subst (fibre (fam .map)) p
-      functor .F-id = funext transport-refl
-      functor .F-∘ f g = funext (subst-∙ (fibre (fam .map)) _ _)
+  Total-space-is-eso fam = functor , path→iso path where
+    functor : Functor _ _
+    functor .F₀ i    = el! (fibre (fam .map) i)
+    functor .F₁ p    = subst (fibre (fam .map)) p
+    functor .F-id    = funext transport-refl
+    functor .F-∘ f g = funext (subst-∙ (fibre (fam .map)) _ _)
 
-      path : F₀ Total-space functor ≡ fam
-      path = /-Obj-path (n-ua (Total-equiv _  e⁻¹)) (ua→ λ a → sym (a .snd .snd))
+    path : Total-space .F₀ functor ≡ fam
+    path = /-Obj-path (n-ua (Total-equiv _  e⁻¹)) (ua→ λ a → sym (a .snd .snd))
 ```
 
 # Slices preserve univalence
 
-An important property of slice categories is that they preserve
-[[univalence|univalent categories]]. This can be seen intuitively: If
-$\cC$ is a univalent category, then let $a, b, c$ be some objects, with
-the pairs $(a, f)$ and $(b, g)$ objects in the slice $\cC/c$. An
-isomorphism $h : (a, f) \cong (b, g)$ induces an identification $a
-\equiv b$, which extends to an identification $(a, f) \equiv (b, g)$
-since $h \circ g = f$.
+In passing, we can put together the following result: any slice of a
+[[univalent category]] is univalent again. That's because an
+_identification_ $p : (X, f) \equiv (Y, g) : \cC/x$ is given by an
+identification $p' : X \equiv Y$ and a proof that $f = g$ over $p$.  We
+already have a characterisation of dependent identifications in a space
+of morphisms, in terms of composition with the induced isomorphisms, so
+that this latter condition reduces to showing $p \circ f = g$.
 
+<!--
 ```agda
 module _ {C : Precategory o ℓ} {o : Precategory.Ob C} (isc : is-category C) where
   private
@@ -512,7 +608,15 @@ module _ {C : Precategory o ℓ} {o : Precategory.Ob C} (isc : is-category C) wh
     open /-Hom
     open C/o._≅_
     open C._≅_
+```
+-->
 
+Therefore, if we have an isomorphism $i : f \cong g$ over $x$, and its
+component in $\cC$ corresponds to an identification $X \equiv Y$, then
+the commutativity of $i$ is exactly the data we need to extend this to
+an identification $(X, f) \equiv (Y, g)$.
+
+```agda
   slice-is-category : is-category (Slice C o)
   slice-is-category .to-path x = /-Obj-path (isc .to-path $
     C.make-iso (x .to .map) (x .from .map)
@@ -522,145 +626,76 @@ module _ {C : Precategory o ℓ} {o : Precategory.Ob C} (isc : is-category C) wh
     /-Hom-pathp _ _ (Univalent.Hom-pathp-reflr-iso isc (C.idr _))
 ```
 
-# Arbitrary limits in slices
-
-Suppose we have some really weird diagram $F : \cJ \to \cC/c$,
-like the one below.  Well, alright, it's not that weird, but it's not a
-pullback or a terminal object, so we don't _a priori_ know how to
-compute it.
-
-~~~{.quiver}
-\[\begin{tikzcd}
-  & {(b,g)} && {(d,i)} \\
-  {(a,f)} && {(c,h)}
-  \arrow["x"', from=1-2, to=2-1]
-  \arrow["y", from=1-2, to=2-3]
-  \arrow["z"', from=1-4, to=2-3]
-\end{tikzcd}\]
-~~~
-
-The observation that will let us compute a limit for this diagram is
-inspecting the computation of products in slice categories, above. To
-compute the product of $(a, f)$ and $(b, g)$, we had to pass to a
-_pullback_ of $a \xto{f} c \xot{b}$ in $\cC$ --- which we had assumed
-exists. But! Take a look at what that diagram _looks like_:
-
-~~~{.quiver}
-\[\begin{tikzcd}
-  a && b \\
-  \\
-  & c
-  \arrow["f"', from=1-1, to=3-2]
-  \arrow["g", from=1-3, to=3-2]
-\end{tikzcd}\]
-~~~
-
-We "exploded" a diagram of shape $\bullet \quad \bullet$ to one of shape
-$\bullet \to \bullet \ot \bullet$. This process can be described in a
-way easier to generalise: We "exploded" our diagram $F : \{*,*\} \to
-\cC/c$ to one indexed by a category which contains $\{*,*\}$,
-contains an extra point, and has a unique map between each object of
-$\{*,*\}$ --- the [_join_] of these categories.
-
-[_join_]: Cat.Instances.Shape.Join.html
-
 <!--
 ```agda
-module
-  _ {C : Precategory o ℓ}
-    {J : Precategory o′ ℓ′}
-    {o : Precategory.Ob C}
-    (F : Functor J (Slice C o))
-    where
-
-  open Terminal
-  open /-Obj
-  open /-Hom
-
-  private
-    module C   = Cat.Reasoning C
-    module J   = Cat.Reasoning J
-    module C/o = Cat.Reasoning (Slice C o)
-    module F = Functor F
+open /-Obj
+open /-Hom
 ```
 -->
 
-Generically, if we have a diagram $F : J \to \cC/c$, we can "explode"
-this into a diagram $F' : (J \star \{*\}) \to \cC$, compute the limit
-in $\cC$, then pass back to the slice category.
+# Constant families {defines="constant-family"}
+
+If $\cC/B$ is the category of _families of $\cC$-objects indexed by
+$B$_, it stands to reason that we should be able to consider _any_
+object $A : \cC$ as a family over $B$, where each fibre of the family is
+isomorphic to $A$. Type-theoretically, this would correspond to taking a
+closed type and trivially regarding it as living in a context $\Gamma$
+by ignoring the context entirely.
+
+From the perspective of slice categories, the **constant families
+functor**, $\Delta : \cC \to \cC/B$, sends an object $A : \cC$ to the
+projection morphism $\pi_2 : A \times B \to B$.
 
 ```agda
-    F′ : Functor (J ⋆ ⊤Cat) C
-    F′ .F₀ (inl x) = F.₀ x .domain
-    F′ .F₀ (inr x) = o
-    F′ .F₁ {inl x} {inl y} (lift f) = F.₁ f .map
-    F′ .F₁ {inl x} {inr y} _ = F.₀ x .map
-    F′ .F₁ {inr x} {inr y} (lift h) = C.id
-    F′ .F-id {inl x} = ap map F.F-id
-    F′ .F-id {inr x} = refl
-    F′ .F-∘ {inl x} {inl y} {inl z} (lift f) (lift g) = ap map (F.F-∘ f g)
-    F′ .F-∘ {inl x} {inl y} {inr z} (lift f) (lift g) = sym (F.F₁ g .commutes)
-    F′ .F-∘ {inl x} {inr y} {inr z} (lift f) (lift g) = C.introl refl
-    F′ .F-∘ {inr x} {inr y} {inr z} (lift f) (lift g) = C.introl refl
+module _ {o ℓ} {C : Precategory o ℓ} {B} (prod : has-products C) where
+  open Binary-products C prod
+  open Cat.Reasoning C
 
-  limit-above→limit-in-slice : Limit F′ → Limit F
-  limit-above→limit-in-slice lims = to-limit (to-is-limit lim) where
-    module lims = Limit lims
-    open make-is-limit
-
-    apex : C/o.Ob
-    apex = cut (lims.ψ (inr tt))
-
-    nadir : (j : J.Ob) → /-Hom apex (F .F₀ j)
-    nadir j .map = lims.ψ (inl j)
-    nadir j .commutes = lims.commutes (lift tt)
-
-    module Cone
-      {x : C/o.Ob}
-      (eta : (j : J.Ob) → C/o.Hom x (F .F₀ j))
-      (p : ∀ {i j : J.Ob} → (f : J.Hom i j) → F .F₁ f C/o.∘ eta i ≡ eta j)
-      where
-
-        ϕ : (j : J.Ob ⊎ ⊤) → C.Hom (x .domain) (F′ .F₀ j)
-        ϕ (inl j) = eta j .map
-        ϕ (inr _) = x .map
-
-        ϕ-commutes
-          : ∀ {i j : J.Ob ⊎ ⊤}
-          → (f : ⋆Hom J ⊤Cat i j)
-          → F′ .F₁ f C.∘ ϕ i ≡ ϕ j
-        ϕ-commutes {inl i} {inl j} (lift f) = ap map (p f)
-        ϕ-commutes {inl i} {inr j} (lift f) = eta i .commutes
-        ϕ-commutes {inr i} {inr x} (lift f) = C.idl _
-
-        ϕ-factor
-          : ∀ (other : /-Hom x apex)
-          → (∀ j → nadir j C/o.∘ other ≡ eta j)
-          → (j : J.Ob ⊎ ⊤)
-          → lims.ψ j C.∘ other .map ≡ ϕ j
-        ϕ-factor other q (inl j) = ap map (q j)
-        ϕ-factor other q (inr tt) = other .commutes
-
-    lim : make-is-limit F apex
-    lim .ψ = nadir
-    lim .commutes f =
-      /-Hom-path (lims.commutes (lift f))
-    lim .universal {x} eta p .map =
-      lims.universal (Cone.ϕ eta p) (Cone.ϕ-commutes eta p)
-    lim .universal eta p .commutes =
-      lims.factors _ _
-    lim .factors eta p =
-      /-Hom-path (lims.factors _ _)
-    lim .unique eta p other q =
-      /-Hom-path $ lims.unique _ _ (other .map) (Cone.ϕ-factor eta p other q)
+  constant-family : Functor C (Slice C B)
+  constant-family .F₀ A = cut (π₂ {a = A})
+  constant-family .F₁ f .map      = ⟨ f ∘ π₁ , π₂ ⟩
+  constant-family .F₁ f .commutes = π₂∘⟨⟩
+  constant-family .F-id    = /-Hom-path (sym (⟨⟩-unique _ id-comm (idr _)))
+  constant-family .F-∘ f g = /-Hom-path $ sym $
+      ⟨⟩-unique _ (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)
 ```
 
-In particular, if a category $\cC$ is complete, then so are its slices:
+We can observe that this really is a _constant families_ functor by
+performing the following little calculation: If we have a map $h : Y \to
+B$, then the fibre of $\Delta_B(A)$ over $h$, given by the pullback
+
+~~~{.quiver}
+\[\begin{tikzcd}[ampersand replacement=\&]
+  {Y \times_B \Delta(A)} \&\& Y \\
+  \\
+  {A \times B} \&\& {B\text{.}}
+  \arrow[from=1-1, to=3-1]
+  \arrow["{\pi_2}"', from=3-1, to=3-3]
+  \arrow[from=1-1, to=1-3]
+  \arrow["h", from=1-3, to=3-3]
+  \arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=3-3]
+\end{tikzcd}\]
+~~~
+
+is isomorphic to $A \times Y$. The extra generality makes it a bit
+harder to see the constancy, but if $h$ were a point $h : \top \to B$,
+the fibre over $h$ would correspondingly be isomorphic to $A \times \top
+\cong A$.
 
 ```agda
-is-complete→slice-is-complete
-  : ∀ {ℓ o ℓ′} {C : Precategory o ℓ} {c : Precategory.Ob C}
-  → is-complete o′ ℓ′ C
-  → is-complete o′ ℓ′ (Slice C c)
-is-complete→slice-is-complete lims F = limit-above→limit-in-slice F (lims _)
+  constant-family-fibre
+    : (pb : has-pullbacks C)
+    → ∀ {A Y} (h : Hom Y B)
+    → pb (constant-family .F₀ A .map) h .Pullback.apex ≅ (A ⊗₀ Y)
+  constant-family-fibre pb {A} h = make-iso
+    ⟨ π₁ ∘ p₁ , p₂ ⟩ (universal {p₁' = ⟨ π₁ , h ∘ π₂ ⟩} {p₂' = π₂} π₂∘⟨⟩)
+    (⟨⟩∘ _ ∙ sym (Product.unique (prod _ _) _
+      (idr _ ∙ sym (pullr p₁∘universal ∙ π₁∘⟨⟩))
+      (idr _ ∙ sym p₂∘universal)))
+    (Pullback.unique₂ (pb _ _) {p = π₂∘⟨⟩ ∙ square}
+      (pulll p₁∘universal ∙ ⟨⟩∘ _ ∙ ap₂ ⟨_,_⟩ π₁∘⟨⟩ (pullr π₂∘⟨⟩ ∙ sym square))
+      (pulll p₂∘universal ∙ π₂∘⟨⟩)
+      (idr _ ∙ Product.unique (prod _ _) _ refl refl)
+      (idr _))
+    where open Pullback (pb (constant-family .F₀ A .map) h)
 ```

@@ -46,6 +46,7 @@ common common
     Shake.Modules,
     Shake.Options,
     Shake.SearchData,
+    Shake.Highlights,
     Shake.Utils,
     Agda,
     Macros,

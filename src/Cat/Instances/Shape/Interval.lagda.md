@@ -51,10 +51,12 @@ Bool-poset = to-poset Bool make-bool where
   R true  true  = ⊤
 ```
 
-**Note**: We define the relation by recursion, rather than by induction,
+:::{.note}
+We define the relation by recursion, rather than by induction,
 to avoid the issues with computational behaviour with indexed inductive
 types in Cubical Agda. The interval category is the category underlying
 the poset of booleans:
+:::
 
 <!--
 ```agda

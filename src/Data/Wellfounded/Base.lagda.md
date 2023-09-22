@@ -46,13 +46,19 @@ any relation supporting induction is well-founded, by taking the motive
 $P$ to be the proposition "$x$ is accessible".
 
 ```agda
+  Wf-induction'
+    : ∀ {ℓ′} (P : A → Type ℓ′)
+    → (∀ x → (∀ y → y < x → P y) → P x)
+    → ∀ x → Acc x → P x
+  Wf-induction' P work = go where
+    go : ∀ x → Acc x → P x
+    go x (acc w) = work x (λ y y<x → go y (w y y<x))
+
   Wf-induction
     : Wf → ∀ {ℓ′} (P : A → Type ℓ′)
     → (∀ x → (∀ y → y < x → P y) → P x)
     → ∀ x → P x
-  Wf-induction wf P work x = go x (wf x) where
-    go : ∀ x → Acc x → P x
-    go x (acc w) = work x (λ y y<x → go y (w y y<x))
+  Wf-induction wf P work x = Wf-induction' P work x (wf x)
 
   Induction-wf
     : (∀ {ℓ′} (P : A → Type ℓ′) → (∀ x → (∀ y → y < x → P y) → P x) → ∀ x → P x)

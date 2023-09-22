@@ -1,7 +1,7 @@
 open import Cat.Instances.Functor.Limits
 open import Cat.Instances.Sets.Complete
-open import Cat.CartesianClosed.Base
 open import Cat.Diagram.Everything
+open import Cat.Diagram.Exponential
 open import Cat.Instances.Functor
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Sets
@@ -178,7 +178,7 @@ module _ {κ} {C : Precategory κ κ} where
     module C = Cat.Reasoning C
     module PSh = Cat.Reasoning (PSh κ C)
 
-  PSh-closed : is-cc (PSh κ C) (PSh-products {C = C})
+  PSh-closed : Cartesian-closed (PSh κ C) (PSh-products {C = C}) (PSh-terminal {C = C})
   PSh-closed = cc where
     cat = PSh κ C
 
@@ -225,7 +225,6 @@ module _ {κ} {C : Precategory κ κ} where
       adj .zag {A} = Nat-path λ f → funext λ x → Nat-path λ g → funext λ y →
         ap (x .η _) (Σ-pathp (C.idr _) refl)
 
-    cc : is-cc _ (PSh-products {C = C})
-    cc .is-cc.terminal = PSh-terminal {C = C}
-    cc .is-cc.[_,-] = func
-    cc .is-cc.tensor⊣hom = adj
+    cc : Cartesian-closed _ (PSh-products {C = C}) (PSh-terminal {C = C})
+    cc = product-adjoint→cartesian-closed (PSh κ C)
+      (PSh-products {C = C}) (PSh-terminal {C = C}) func adj

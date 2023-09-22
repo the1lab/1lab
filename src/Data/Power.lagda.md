@@ -18,7 +18,7 @@ private variable
 ```
 -->
 
-# Power Sets
+# Power Sets {defines="power-set"}
 
 The **power set** of a type $X$ is the collection of all maps from $X$
 into the universe of `propositional types`{.Agda ident=Ω}. Since

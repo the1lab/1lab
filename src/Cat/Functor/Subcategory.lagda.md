@@ -176,7 +176,7 @@ to those that lie in the image of $F$.
 There is an equivalence between canonical subcategory associated
 with $F$ and $C$.
 
-```
+```agda
   Faithful-subcat-domain : Functor (Subcategory Faithful-subcat) C
   Faithful-subcat-domain .Functor.F₀ (x , x-es) = x-es .fst
   Faithful-subcat-domain .Functor.F₁ f = f .witness .fst

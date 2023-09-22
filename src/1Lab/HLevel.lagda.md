@@ -38,7 +38,6 @@ of the HoTT book.
 :::{.definition #contractible}
 The h-levels are defined by induction, where the base case are the
 _contractible types_.
-:::
 
 [truncated]: https://ncatlab.org/nlab/show/truncated+object
 
@@ -48,7 +47,10 @@ record is-contr {ℓ} (A : Type ℓ) : Type ℓ where
   field
     centre : A
     paths : (x : A) → centre ≡ x
+```
+:::
 
+```agda
 open is-contr public
 
 ⊤-is-contr : is-contr ⊤

@@ -5,7 +5,7 @@ module Definitions
   ( glossaryRules
   , WikiLink(..)
   , isWikiLink
-  , getWikiLink
+  , getWikiLink, getWikiLinkUrl
   , Glossary(getEntries), GlossaryQ(..)
   , Mangled(getMangled), mangleLink
   , Definition(..), definitionTarget
@@ -53,8 +53,7 @@ mangleLink = doit where
     = Mangled
     . Text.concat
     . intersperse (Text.singleton '-')
-    . map (Text.filter wordChar)
-    . map Text.toLower
+    . map (Text.filter wordChar . Text.toLower)
     . Text.words
 
   wordChar '-' = True
@@ -91,12 +90,14 @@ definitionBlock fp = go where
 
   addMany id = foldMap (add id) . Text.words
 
-  go (Div (id, [only], keys) _blocks) | "definition" == only =
+  go (Div (id, [only], keys) _blocks) | "definition" == only, not (Text.null id) =
     let aliases = foldMap (addMany id) (lookup "alias" keys)
     in add id id <> aliases
 
   go (Header _ (id, _, keys) _inline) =
     foldMap (addMany id) (lookup "defines" keys)
+
+  go (CodeBlock (_, [], _) _) = error $ "Code block without class in " ++ fp
 
   go _ = mempty
 
@@ -116,6 +117,7 @@ addDefinition :: Mangled -> Definition -> Glossary -> Glossary
 addDefinition _ Definition{definitionCopy = True} ge = ge
 addDefinition key@(getMangled -> keyt) def (Glossary ge) = Glossary (go False key (plural ge)) where
   plural
+    | Text.null keyt = error $ "Definition has empty key: " ++ show def
     | Text.last keyt == 'y' = go True (Mangled (Text.init keyt <> "ies"))
     | otherwise             = go True (Mangled (keyt <> "s"))
   go c key ge = case Map.lookup key ge of
@@ -199,7 +201,10 @@ isWikiLink (Link attr contents (url, title))
   | "wikilink" == title = pure $ WikiLink url contents attr
 isWikiLink _ = Nothing
 
+getWikiLinkUrl :: Text -> Action Text
+getWikiLinkUrl = askOracle . LinkTargetQ
+
 getWikiLink :: WikiLink -> Action Inline
 getWikiLink (WikiLink dest contents attr) = do
-  url <- askOracle (LinkTargetQ dest)
+  url <- getWikiLinkUrl dest
   pure $ Link attr contents (url, "")

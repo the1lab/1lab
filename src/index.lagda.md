@@ -585,6 +585,21 @@ open import Cat.Instances.Slice.Presheaf -- PSh(C)/X ≅ PSh(∫ X)
 open import Cat.Instances.Comma.Univalent
 ```
 
+## Cartesian closed categories
+
+A [[Cartesian closed]] category, or CCC for short, is one that has
+_internalisations_ for all its $\hom$-sets: [[exponential objects]]. Put
+another way, a CCC interprets the [[simply-typed lambda calculus]]. Also
+of interest are the [[*locally* Cartesian closed categories]], where we
+also have an interpretation for _dependent product_ types.
+
+```agda
+open import Cat.Diagram.Exponential
+open import Cat.CartesianClosed.Lambda
+open import Cat.CartesianClosed.Locally
+```
+
+
 ## Allegories
 
 Allegories are abstractions of the nice properties that the category of

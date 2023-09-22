@@ -64,7 +64,8 @@ map $Y \ortho f$.
   o⊥m {A} {B} Y f = (c : C.Hom Y B) → is-contr (Σ[ d ∈ C.Hom Y A ] (f C.∘ d ≡ c))
 ```
 
-**Note**: In the formalisation, we don't write $\bot$ infix, since it
+:::{.note}
+In the formalisation, we don't write $\bot$ infix, since it
 must be explicitly applied to the category in which the morphisms live.
 Thus, we define three distinct predicates expressing orthogonality:
 `m⊥m`{.Agda} ("map-map"), `m⊥o`{.Agda} ("map-object"), and `o⊥m`
@@ -72,6 +73,7 @@ Thus, we define three distinct predicates expressing orthogonality:
 being orthogonal to an object is equivalent to being orthogonal to an
 object. For example, $f \ortho X$ iff. $f \ortho \mathop{!}_X$, where
 $!_X : X \to 1$ is the unique map from $X$ into the [[terminal object]].
+:::
 
 <!--
 ```agda

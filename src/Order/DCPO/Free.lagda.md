@@ -171,7 +171,7 @@ Part-is-set = Part-is-hlevel 0
 We say that a partial element $y$ **refines** $x$ if $y$ is defined
 whenever $x$ is, and their values are equal whenever $x$ is defined.
 
-```
+```agda
 record _⊑_ {ℓ} {A : Type ℓ} (x y : Part A) : Type ℓ where
   no-eta-equality
   field
@@ -187,14 +187,14 @@ open _⊑_
 ⊑-is-hlevel {x = x} {y = y} n hl = Iso→is-hlevel (suc n) eqv $
   Σ-is-hlevel (suc n) (Π-is-hlevel (suc n) λ _ → is-prop→is-hlevel-suc (y .def .is-tr)) λ _ →
   Π-is-hlevel (suc n) λ _ → hl _ _
-  where unquoteDecl eqv = declare-record-iso eqv (quote _⊑_) 
+  where unquoteDecl eqv = declare-record-iso eqv (quote _⊑_)
 ```
 -->
 
 This ordering is reflexive, transitive, and anti-symmetric, so the type
 of partial elements forms a poset whenever $A$ is a set.
 
-```
+```agda
 ⊑-refl : ∀ {x : Part A} → x ⊑ x
 ⊑-refl .implies x-def = x-def
 ⊑-refl .refines _ = refl
@@ -251,9 +251,9 @@ though this is hindered by the fact that there only _merely_ exists an
 $i$. However, as $A$ is a set, it suffices to show that the map
 $(i , \varphi_i) \mapsto s(i)(\varphi_i)$ is constant.
 
-```
+```agda
 ⊑-lub {Ix = Ix} set s dir .elt =
-  □-rec-set 
+  □-rec-set
     (λ pi → s (fst pi) .elt (snd pi))
     (λ p q i →
       is-const p q i .elt $
@@ -426,7 +426,7 @@ always-⊑
 always-⊑ p .implies _ = tt
 always-⊑ p .refines d = sym (p d)
 
-always-⊒ 
+always-⊒
   : ∀ {x : A} {y : Part A}
   → (p : is-defined y) → x ≡ y .elt p
   → always x ⊑ y

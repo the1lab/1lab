@@ -393,8 +393,10 @@ _ = is-equiv-is-prop
 ```
 -->
 
-**Note**: This is our "default" definition of equivalence, but we
+:::{.note}
+This is our "default" definition of equivalence, but we
 generally use it through the interface of half-adjoint equivalences.
+:::
 
 * Definition 4.4.1: `is-equiv`{.Agda}
 * Theorem 4.4.3: `is-equiv→is-half-adjoint-equiv`{.Agda}

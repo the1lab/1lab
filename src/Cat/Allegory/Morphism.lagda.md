@@ -206,18 +206,19 @@ transitive-dual {f = f} f-trans =
   f †       ≤∎
 ```
 
-# Cotransitive Morphisms
+# Cotransitive morphisms
 
 A morphism $f : X \to X$ is **cotransitive** if $f \le ff$.
 
 ::: warning
-**Warning**: There is another notion of cotransitive relation, which
-stipulates that for all $x, y, z$, if $R(x,z)$, then either $R(x,y)$
-or $R(y,z)$. This is a poor choice of a name, as it is **not** a
-transitive relation in $\Rel^{co}$.
+There is another notion of cotransitive relation, which stipulates that
+for all $x, y, z$, if $R(x,z)$, then either $R(x,y)$ or $R(y,z)$. This
+is a poor choice of a name, as it is **not** a transitive relation in
+$\Rel^{co}$.
 
-Other sources call cotransitive morphisms "symmetric idempotents", though
-we avoid this terminology, as cotranstive morphisms are not symmetric.
+Other sources call cotransitive morphisms "symmetric idempotents",
+though we avoid this terminology, as cotranstive morphisms are not
+symmetric.
 :::
 
 ```agda
@@ -252,7 +253,7 @@ $f \cap g \le fg$.
 ```agda
 cotransitive-∩-∘
   : is-cotransitive (f ∩ g)
-  → f ∩ g ≤ f ∘ g 
+  → f ∩ g ≤ f ∘ g
 cotransitive-∩-∘ {f = f} {g = g} f∩g-cotrans =
   f ∩ g             ≤⟨ f∩g-cotrans ⟩
   (f ∩ g) ∘ (f ∩ g) ≤⟨ ∩-le-l ◆ ∩-le-r ⟩
@@ -318,7 +319,7 @@ coreflexive-∩ {f = f} {g = g} f-corefl g-corefl =
 Coreflexive morphisms are closed under duals.
 
 ```agda
-coreflexive-dual : is-coreflexive f → is-coreflexive (f †) 
+coreflexive-dual : is-coreflexive f → is-coreflexive (f †)
 coreflexive-dual {f = f} f-corefl = dual-≤ₗ A $
   f    ≤⟨ f-corefl ⟩
   id   =⟨ sym $ dual-id A ⟩

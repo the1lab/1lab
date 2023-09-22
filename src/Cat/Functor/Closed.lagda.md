@@ -26,14 +26,13 @@ private variable
 -->
 
 When taken as a [(bi)category][cat], the collection of (pre)categories
-is, in a suitably weak sense, [Cartesian closed]: there is an
+is, in a suitably weak sense, [[Cartesian closed]]: there is an
 [equivalence] between the [functor categories] $[\cC \times \cD, \cE]$
 and $[\cC, [\cD, \cE]]$. We do not define the full equivalence here,
 leaving the natural isomorphisms aside and focusing on the inverse
 functors themselves: `Curry`{.Agda} and `Uncurry`{.Agda}.
 
 [cat]: Cat.Bi.Base.html#the-bicategory-of-categories
-[Cartesian closed]: Cat.CartesianClosed.Base.html
 [equivalence]: Cat.Functor.Equivalence.html
 [functor categories]: Cat.Functor.Base.html
 

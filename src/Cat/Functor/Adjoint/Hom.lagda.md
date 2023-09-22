@@ -132,6 +132,24 @@ of adjunction units and co-units.
 
 <!--
 ```agda
+  hom-iso-inv-natural
+    : (f : ∀ {x y} → D.Hom x (R.₀ y) → C.Hom (L.₀ x) y)
+    → Type _
+  hom-iso-inv-natural f =
+    ∀ {a b c d} (g : C.Hom a b) (h : D.Hom c d) x
+    → f (R.₁ g D.∘ x D.∘ h) ≡ g C.∘ f x C.∘ L.₁ h
+
+  hom-iso-inv→adjoints
+    : (f : ∀ {x y} → D.Hom x (R.₀ y) → C.Hom (L.₀ x) y)
+    → (eqv : ∀ {x y} → is-equiv (f {x} {y}))
+    → hom-iso-inv-natural f
+    → L ⊣ R
+  hom-iso-inv→adjoints f f-equiv natural = hom-iso→adjoints f.from (f.inverse .snd) nat where
+    module f {x} {y} = Equiv (_ , f-equiv {x} {y})
+    abstract
+      nat : hom-iso-natural f.from
+      nat g h x = f.injective (f.ε _ ∙ sym (natural _ _ _ ∙ ap (g C.∘_) (ap (C._∘ L.₁ h) (f.ε _))))
+
 module _ {o ℓ o′} {C : Precategory o ℓ} {D : Precategory o′ ℓ}
          {L : Functor D C} {R : Functor C D}
          where

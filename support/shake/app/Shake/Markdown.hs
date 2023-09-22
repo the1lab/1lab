@@ -1,4 +1,4 @@
-{-# LANGUAGE BlockArguments, OverloadedStrings, FlexibleContexts, ViewPatterns #-}
+{-# LANGUAGE BlockArguments, OverloadedStrings, FlexibleContexts, ViewPatterns, LambdaCase #-}
 
 {-| Convert a markdown file to templated HTML, applying several
 post-processing steps and rendered to HTML using the
@@ -13,15 +13,16 @@ import Control.Monad.State
 import Control.Applicative
 
 import qualified Data.ByteString.Lazy as LazyBS
-import qualified Data.Map.Lazy as Map
-import qualified Data.Text as Text
 import qualified Data.Text.Encoding as Text
+import qualified Data.Map.Lazy as Map
 import qualified Data.Text.IO as Text
-import Data.Aeson (encodeFile)
+import qualified Data.Text as Text
+
 import Data.Digest.Pure.SHA
-import Data.Text (Text)
 import Data.Foldable
+import Data.Aeson (encodeFile)
 import Data.Maybe
+import Data.Text (Text)
 
 import qualified System.Directory as Dir
 
@@ -34,15 +35,16 @@ import Text.HTML.TagSoup
 import Text.HTML.TagSoup.Match
 import Text.HTML.TagSoup.Tree
 
-import Text.Collate.Lang (Lang (..))
 import Text.Pandoc.Builder (Inlines)
 import Text.Pandoc.Citeproc
 import Text.Pandoc.Shared
+import Text.Collate.Lang (Lang (..))
 import Text.Pandoc.Walk
 import Text.Pandoc
 
 import Shake.LinkReferences
 import Shake.SearchData
+import Shake.Highlights
 import Shake.Options
 import Shake.KaTeX
 import Shake.Git
@@ -76,12 +78,50 @@ readLabMarkdown fp = liftIO cont where
 -- where possible, this is only useful when you cannot modify inlines in
 -- isolation.
 postParseInlines :: [Inline] -> [Inline]
+
 -- Replace any expression $foo$-bar with <span ...>$foo$-bar</span>, so that
 -- the equation is not split when word wrapping.
 postParseInlines (m@Math{}:s@(Str txt):xs)
   | not (Text.isPrefixOf " " txt)
   = htmlInl "<span style=\"white-space: nowrap;\">" : m : s : htmlInl "</span>"
   : postParseInlines xs
+
+-- Parse the contents of wikilinks as markdown. While Pandoc doesn't
+-- read the title part of a wikilink, it will always consist of a single
+-- Str span. We call the Pandoc parser in a pure context to read the
+-- title part as an actual list of inlines.
+postParseInlines (Link attr [Str contents] (url, "wikilink"):xs) =
+  link' `seq` link':postParseInlines xs where
+
+  try  = either (const Nothing) Just . runPure
+  fail = error $
+    "Failed to parse contents of wikilink as Markdown:" <> Text.unpack contents
+
+  link' = fromMaybe fail do
+    -- The contents of a link are valid if they consist of a single list
+    -- of inlines. Pandoc doesn't let us parse a list of inlines, but we
+    -- can still parse it as a document and ensure that (a) everything
+    -- got bunched in the same paragraph and (b) there was no metadata.
+    parsed@(Pandoc (Meta m) [Para is]) <- try (readMarkdown def contents)
+    guard (null m) -- I don't foresee this ever failing.
+
+    -- Rendering the contents as plain text will strip all the
+    -- decorations, thus recovering the "underlying page" that was meant
+    -- to be linked to. Of course, we should only try changing the
+    -- target if the link looks like [[foo]], rather than [[foo|bar]].
+    let
+      target = if url == contents
+        then stringify parsed
+        else url
+
+    -- Note that Pandoc doesn't distinguish between [[foo]] and
+    -- [[foo|foo]], so really the only way is checking whether the URL
+    -- is equal to the contents string. If that was the case, then
+    -- stripping formatting is the right thing, otherwise e.g. [[*path
+    -- induction*]] would fail since the target "*path-induction*"
+    -- doesn't exist.
+    pure (Link attr is (target, "wikilink"))
+
 postParseInlines (x:xs) = x:postParseInlines xs
 postParseInlines [] = []
 
@@ -161,6 +201,7 @@ buildMarkdown modname input output = do
     runIO (renderMarkdown authors references modname baseUrl markdown)
 
   let tags = foldEquations False (parseTags text)
+  tags <- renderHighlights tags
   traverse_ (checkMarkup input) tags
 
   traced "writing" do
@@ -242,12 +283,16 @@ instance Monoid MarkdownState where
 
 
 -- | Patch a Pandoc block element.
-patchBlock :: (MonadIO f, MonadFail f, MonadWriter MarkdownState f) => Block -> f Block
+patchBlock
+  :: (MonadIO f, MonadFail f, MonadWriter MarkdownState f)
+  => Block
+  -> f Block
 -- Make all headers links, and add an anchor emoji.
 patchBlock (Header i a@(ident, _, _) inl) = pure $ Header i a
-  $ htmlInl (Text.concat ["<a href=\"#", ident, "\" class=\"header-link\">"])
+  $ htmlInl (Text.concat ["<a href=\"#", ident, "\" class=\"header-link\"><span>"])
   : inl
-  ++ [htmlInl "<span class=\"header-link-emoji\">🔗</span></a>"]
+  ++ [htmlInl "</span><span class=\"header-link-emoji\">🔗</span></a>"]
+
 -- Replace quiver code blocks with a link to an SVG file, and depend on the SVG file.
 patchBlock (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes = do
   let
@@ -265,6 +310,7 @@ patchBlock (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes =
     [ Plain [ Image (id, "diagram diagram-light":classes, attrs) [] (Text.pack ("light-" <> digest <.> "svg"), title) ]
     , Plain [ Image (id, "diagram diagram-dark":classes, attrs) [] (Text.pack ("dark-" <> digest <.> "svg"), title) ]
     ]
+
 -- Find the references block, parse the references, and remove it. We write
 -- the references as part of our template instead.
 patchBlock (Div ("refs", _, _) body) = do
@@ -286,15 +332,16 @@ patchBlock (Div ("refs", _, _) body) = do
 
     _ -> fail ("Unknown reference node " ++ show ref)
   pure $ Plain [] -- TODO: pandoc-types 1.23 removed Null
+
 patchBlock h = pure h
 
 
 -- | Render our Pandoc document using the given template variables.
 renderMarkdown :: PandocMonad m
-               => [Text]     -- ^ List of authors
-               -> [Val Text] -- ^ List of references
-               -> String     -- ^ Name of the current module
-               -> String     -- ^ Base URL
+               => [Text]       -- ^ List of authors
+               -> [Val Text]   -- ^ List of references
+               -> String       -- ^ Name of the current module
+               -> String       -- ^ Base URL
                -> Pandoc -> m Text
 renderMarkdown authors references modname baseUrl markdown = do
   template <- getTemplate templateName >>= runWithPartials . compileTemplate templateName
@@ -305,21 +352,20 @@ renderMarkdown authors references modname baseUrl markdown = do
       [x] -> x
       _ -> Text.intercalate ", " (init authors) `Text.append` " and " `Text.append` last authors
 
-    context = Context $ Map.fromList
-      [ ("is-index",  toVal (modname == "index"))
-      , ("authors",   toVal authors')
-      , ("reference", toVal references)
-      , ("base-url",  toVal (Text.pack baseUrl))
+    context = Context $ Map.fromList $
+      [ ("is-index",     toVal (modname == "index"))
+      , ("authors",      toVal authors')
+      , ("reference",    toVal references)
+      , ("base-url",     toVal (Text.pack baseUrl))
       ]
 
-    options = def { writerTemplate = Just template
+    options = def { writerTemplate        = Just template
                   , writerTableOfContents = True
-                  , writerVariables = context
-                  , writerExtensions = getDefaultExtensions "html"
+                  , writerVariables       = context
+                  , writerExtensions      = getDefaultExtensions "html"
                   }
   setTranslations (Lang "en" Nothing Nothing [] [] [])
   writeHtml5String options markdown
-
 
 -- | Removes the RHS of equation reasoning steps?? IDK, ask Amelia.
 foldEquations :: Bool -> [Tag Text] -> [Tag Text]
@@ -363,11 +409,16 @@ getHeaders module' markdown@(Pandoc (Meta meta) _) =
     , idDefines = Nothing
     }
 
+  hasRaw :: [Inline] -> Bool
+  hasRaw = any \case
+    RawInline{} -> True
+    _ -> False
+
   -- The state stores a path of headers in the document of the form (level,
   -- header), which is updated as we walk down the document.
   go :: [Block] -> State [(Int, Text)] [SearchTerm]
   go [] = pure []
-  go (Header level (hId, _, keys) hText:xs) = do
+  go (Header level (hId, _, keys) hText:xs) | not (hasRaw hText) = do
     path <- get
     let title = trimr (renderPlain hText)
     let path' = (level, title):dropWhile (\(l, _) -> l >= level) path

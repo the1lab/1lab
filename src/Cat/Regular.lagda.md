@@ -13,7 +13,7 @@ import Cat.Reasoning as Cr
 ```
 -->
 
-```
+```agda
 module Cat.Regular where
 ```
 

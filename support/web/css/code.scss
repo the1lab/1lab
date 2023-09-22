@@ -19,12 +19,14 @@ code, pre, .sourceCode {
   font-weight: 500;
 }
 
-div.sourceCode, pre {
+div.sourceCode {
+  @include material(var(--code-bg));
+}
+
+div.sourceCode > pre {
   background-color: var(--code-bg);
   color:            var(--code-fg);
   flex-grow: 0;
-
-  @include material;
 
   overflow-x: auto;
   line-height: 1.2;
@@ -46,14 +48,12 @@ div.sourceCode, pre {
 }
 
 pre.Agda {
-  border-radius: 0;
   box-shadow: none;
   overflow-y: clip;
 
-  margin:           0;
-  padding:          1em;
-  padding-top:      0.25em;
-  padding-bottom:   0.25em;
+  // The margin should be 1rem (the width of the padding for paragraphs
+  // with borders) *plus* 5px. This was measured empirically.
+  margin: 0.25rem calc(1rem + 5px) 0.25rem calc(1rem + 5px);
 
   background-color: var(--code-bg);
   color:            var(--code-fg);
@@ -164,4 +164,7 @@ code.cv, span.cv { color: var(--code-string); } /* CommentVar */
   font-size: 0.8em;
   color: var(--code-fg);
   background: var(--code-bg);
+
+  padding: 0.3em;
+  box-shadow: 2px 2px 6px var(--shadow);
 }

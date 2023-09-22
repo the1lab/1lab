@@ -98,7 +98,14 @@ $dark-code-cyan:   #56B6C2;
 
   --modal-bg: #ccccccaa;
 
-  --warning-bg: #{$yellow-200};
+  --warning-bg:   #{$yellow-400};
+  --warning-icon: #{$yellow-700};
+
+  --note-bg:   #{$violet-500};
+  --note-icon: #{$violet-600};
+
+  --terminology-bg:   #{$cyan-600};
+  --terminology-icon: #{$cyan-900};
 
   --code-bg: var(--text-bg);
   --code-fg: var(--text-fg);
@@ -111,7 +118,7 @@ $dark-code-cyan:   #56B6C2;
   --code-constructor: #{$light-code-green};
   --code-highlight: #F5DEB3;
 
-  --search-selected: #{$bluegray-200};
+  --search-selected: #{$violet-800};
 
   --details-summary: #{$cyan-100};
   --details-open:    #{$cyan-200};
@@ -136,7 +143,14 @@ $dark-code-cyan:   #56B6C2;
 
     --modal-bg: #282C34aa;
 
-    --warning-bg: #{$red-800};
+    --warning-bg: #{$yellow-500};
+    --warning-icon: #{$yellow-400};
+
+    --note-bg:   #{$violet-500};
+    --note-icon: #{$violet-400};
+
+    --terminology-bg:   #{$cyan-600};
+    --terminology-icon: #{$cyan-700};
 
     --code-keyword:     #{$dark-code-yellow};
     --code-string:      #{$dark-code-red};
@@ -146,10 +160,7 @@ $dark-code-cyan:   #56B6C2;
     --code-constructor: #{$dark-code-green};
     --code-highlight: #ef444499;
 
-    --search-selected: #{$bluegray-600};
-
-    --details-summary: #{$violet-800};
-    --details-open:    #{$violet-900};
+    --search-selected: #{$cyan-900};
 
     --depgraph-edge: #{$bluegray-600};
     --blockquote-bg: #{$bluegray-600};

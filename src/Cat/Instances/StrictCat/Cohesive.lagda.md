@@ -46,13 +46,15 @@ of connected components, which can be thought of as the "pieces" of the
 category. Two objects land in the same connected component if there is a
 path of morphisms connecting them, hence the name.
 
-**Note**: Generally, the term "cohesive" is applied to Grothendieck
+:::{.note}
+Generally, the term "cohesive" is applied to Grothendieck
 topoi, which `Strict-cats`{.Agda} is _very far_ from being. We're using it
 here by analogy: There's an adjoint quadruple, where the functor
 $\Gamma$ sends each category to its set of points: see [the last
 section]. Strictly speaking, the [[left adjoint]] to $\Gamma$ isn't defined
 by tensoring with `Sets`{.Agda}, but it _does_ have the effect of
 sending $S$ to the coproduct of $S$-many copies of the point category.
+:::
 
 [the last section]: #object-set-vs-global-sections
 

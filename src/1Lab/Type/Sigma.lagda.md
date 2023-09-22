@@ -305,5 +305,15 @@ infixr 4 _,ₚ_
 ×-swap .fst (x , y) = y , x
 ×-swap .snd .is-eqv y = contr (f .fst) (f .snd) where
   f = strict-fibres _ y
+
+Σ-contr-eqv
+  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′}
+  → (c : is-contr A)
+  → (Σ A B) ≃ B (c .centre)
+Σ-contr-eqv {B = B} c .fst (_ , p) = subst B (sym (c .paths _)) p
+Σ-contr-eqv {B = B} c .snd = is-iso→is-equiv λ where
+  .is-iso.inv x → _ , x
+  .is-iso.rinv x → ap (λ e → subst B e x) (is-contr→is-set c _ _ _ _) ∙ transport-refl x
+  .is-iso.linv x → Σ-path (c .paths _) (transport⁻transport (ap B (sym (c .paths (x .fst)))) (x .snd))
 ```
 -->
