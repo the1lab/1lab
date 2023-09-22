@@ -42,9 +42,9 @@ import Text.Collate.Lang (Lang (..))
 import Text.Pandoc.Walk
 import Text.Pandoc
 
+import Shake.Markdown.Filter
 import Shake.LinkReferences
 import Shake.SearchData
-import Shake.Highlights
 import Shake.Options
 import Shake.KaTeX
 import Shake.Git
@@ -183,12 +183,6 @@ buildMarkdown modname input output = do
 
   let refMap = Map.fromList $ map (\x -> (Cite.unItemId . Cite.referenceId $ x, x)) references
 
-  markdown <-
-      walkM (patchInline refMap)
-    . (if skipAgda then id else linkReferences modname)
-    . walk uncommentAgda
-    $ markdown
-
   -- Rendering the search data has to be done *here*, after running the
   -- maths through KaTeX but before adding the emoji to headers.
   let search = query (getHeaders (Text.pack modname)) markdown
@@ -201,7 +195,7 @@ buildMarkdown modname input output = do
     runIO (renderMarkdown authors references modname baseUrl markdown)
 
   let tags = foldEquations False (parseTags text)
-  tags <- renderHighlights tags
+  tags <- postProcessHtml modname refMap tags
   traverse_ (checkMarkup input) tags
 
   traced "writing" do
@@ -233,43 +227,6 @@ addPageTitle (Pandoc (Meta meta) m) = Pandoc (Meta meta') m where
     Just m  -> Map.insert "pagetitle" m meta
     Nothing -> meta
 
--- | Rescue Agda code blocks from under HTML comments so we can show them if needed.
-uncommentAgda :: Block -> Block
-uncommentAgda (RawBlock "html" (parseTags -> [TagComment html])) | any isAgdaBlock (parseTree html) =
-  Div ("", ["commented-out"], []) [RawBlock "html" html]
-uncommentAgda b = b
-
-isAgdaBlock :: TagTree Text -> Bool
-isAgdaBlock (TagBranch _ attrs _) = anyAttrLit ("class", "Agda") attrs
-isAgdaBlock _ = False
-
--- | Rewrite a single inline element.
-patchInline
-  :: Map.Map Text (Cite.Reference Inlines)
-  -- ^ A lookup of reference names to the actual reference.
-  -> Inline
-  -> Action Inline
--- Pre-render latex equations.
-patchInline _ (Math DisplayMath contents) = htmlInl <$> getDisplayMath contents
-patchInline _ (Math InlineMath contents) = htmlInl <$> getInlineMath contents
-
-patchInline _ l@Link{} | Just wikil <- isWikiLink l = getWikiLink wikil
-
--- Add the title to reference links.
-patchInline refMap (Link attrs contents (target, ""))
-  | Just citation <- Text.stripPrefix "#ref-" target
-  , Just ref      <- Map.lookup citation refMap
-  , Just title    <- Cite.valToText =<< Cite.lookupVariable "title" ref
-  = pure $ Link attrs contents (target, title)
-
-patchInline _ (Str s)
-  | "[" `Text.isPrefixOf` s
-  , s /= "[", s /= "[…]" -- "[" appears on its own before citations
-  = error ("possible broken link: " <> Text.unpack s)
-
-patchInline _ h = pure h
-
-
 data MarkdownState = MarkdownState
   { mdReferences :: [Val Text] -- ^ List of references extracted from Pandoc's "reference" div.
   , mdDependencies :: [String] -- ^ Additional files this markdown file depends on.
@@ -288,28 +245,10 @@ patchBlock
   => Block
   -> f Block
 -- Make all headers links, and add an anchor emoji.
-patchBlock (Header i a@(ident, _, _) inl) = pure $ Header i a
-  $ htmlInl (Text.concat ["<a href=\"#", ident, "\" class=\"header-link\"><span>"])
-  : inl
-  ++ [htmlInl "</span><span class=\"header-link-emoji\">🔗</span></a>"]
-
--- Replace quiver code blocks with a link to an SVG file, and depend on the SVG file.
-patchBlock (CodeBlock (id, classes, attrs) contents) | "quiver" `elem` classes = do
-  let
-    digest = showDigest . sha1 . LazyBS.fromStrict $ Text.encodeUtf8 contents
-    title = fromMaybe "commutative diagram" (lookup "title" attrs)
-  liftIO $ Text.writeFile ("_build/diagrams" </> digest <.> "tex") contents
-  tell mempty {
-    mdDependencies =
-      [ "_build/html/light-" <> digest <.> "svg"
-      , "_build/html/dark-" <> digest <.> "svg"
-      ]
-    }
-
-  pure $ Div ("", ["diagram-container"], [])
-    [ Plain [ Image (id, "diagram diagram-light":classes, attrs) [] (Text.pack ("light-" <> digest <.> "svg"), title) ]
-    , Plain [ Image (id, "diagram diagram-dark":classes, attrs) [] (Text.pack ("dark-" <> digest <.> "svg"), title) ]
-    ]
+-- patchBlock (Header i a@(ident, _, _) inl) = pure $ Header i a
+--   $ htmlInl (Text.concat ["<a href=\"#", ident, "\" class=\"header-link\"><span>"])
+--   : inl
+--   ++ [htmlInl "</span><span class=\"header-link-emoji\">🔗</span></a>"]
 
 -- Find the references block, parse the references, and remove it. We write
 -- the references as part of our template instead.
@@ -363,6 +302,7 @@ renderMarkdown authors references modname baseUrl markdown = do
                   , writerTableOfContents = True
                   , writerVariables       = context
                   , writerExtensions      = getDefaultExtensions "html"
+                  , writerHTMLMathMethod  = GladTeX
                   }
   setTranslations (Lang "en" Nothing Nothing [] [] [])
   writeHtml5String options markdown

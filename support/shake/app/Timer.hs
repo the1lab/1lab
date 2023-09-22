@@ -12,6 +12,7 @@ module Timer
   ) where
 
 import qualified Data.Map.Strict as Map
+import qualified Data.Text as Text
 import Data.Foldable
 import Data.Maybe
 import Data.IORef
@@ -64,8 +65,11 @@ reportTimes = liftIO do
 
     reportTimes :: Map.Map Text Integer -> IO ()
     reportTimes times = do
-      printf "%30s | %10s\n" "Label" "Time (s)"
-      printf "%30s | %10s\n" (replicate 30 '=') (replicate 10 '=')
+      let
+        max = maximum $ map Text.length $ Map.keys times
+        fmt x = "%" ++ show max ++ "s | " ++ x
+      printf (fmt "%10s\n") "Label" "Time (s)"
+      printf (fmt "%10s\n") (replicate max '=') (replicate 10 '=')
 
       for_ (Map.toList times) \(label, time) ->
-        printf "%30s | %10.2f\n" label (formatPico time)
+        printf (fmt "%10.2f\n") label (formatPico time)

@@ -27,6 +27,7 @@ common common
     transformers,
     unicode-collation,
     unordered-containers,
+    template-haskell,
     uri-encode,
     hashable,
     binary,
@@ -43,14 +44,19 @@ common common
     Shake.LinkGraph,
     Shake.LinkReferences,
     Shake.Markdown,
+    Shake.Markdown.Filter,
     Shake.Modules,
     Shake.Options,
     Shake.SearchData,
-    Shake.Highlights,
     Shake.Utils,
     Agda,
     Macros,
     Timer,
+    Filter,
+    Filter.TagSoup,
+    Filter.TagSoup.TH,
+    Filter.TagSoup.Attributes,
+    Filter.TagSoup.Elements,
     Definitions
   default-language: Haskell2010
   ghc-options: -Wextra -Wall -Wno-name-shadowing -Wno-implicit-prelude

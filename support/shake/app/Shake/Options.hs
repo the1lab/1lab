@@ -31,6 +31,8 @@ data Options = Options
     -- ^ Launch in watch mode. Prevents some build tasks running.
   , _optBaseUrl   :: String
     -- ^ Base URL for absolute paths
+  , _optTiming    :: !Bool
+    -- ^ Should the timers be printed at the end of a build?
   }
   deriving (Eq, Show, Typeable, Generic)
 
@@ -44,6 +46,7 @@ defaultOptions = Options
   , _optSkipAgda  = False
   , _optWatching  = Nothing
   , _optBaseUrl   = ""
+  , _optTiming    = False
   }
 
 data GetOptions = GetOptions deriving (Eq, Show, Typeable, Generic)
@@ -77,6 +80,12 @@ _1LabOptDescrs =
       "Skip generating type tooltips when compiling Agda to HTML."
   , Option [] ["skip-agda"] (NoArg (\r -> r { _optSkipAgda = True, _optSkipTypes = True }))
       "Skip typechecking Agda. Markdown files are read from src/ directly."
+
+  , Option [] ["timers"] (NoArg (\r -> r { _optTiming = True }))
+      "Print the timers at the end of the build."
+  , Option [] ["no-timers"] (NoArg (\r -> r { _optTiming = True }))
+      "Don't print the timers at the end of the build (default)."
+
   , Option "b" ["base-url"] (ReqArg (\s r -> r { _optBaseUrl = s }) "URL")
     "The base URL to use for absolute links. Should include the protocol."
   ]
