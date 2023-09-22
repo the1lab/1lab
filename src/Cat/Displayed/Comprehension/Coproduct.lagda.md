@@ -49,7 +49,7 @@ has $\cE$-coproducts** when:
 - For every $\Gamma : \cB$, $X : \cE_{\Gamma}$, and $A : \cD_{\Gamma, X}$,
 there exists an object $\coprod_{X} A : \cD_{\Gamma}$;
 
-- Every projection $\pi : \Gamma, X \to X$ induces a [[cocartesian map]]
+- Every projection $\pi : \Gamma, X \to \Gamma$ induces a [[cocartesian map]]
 $\langle\rangle : A \to_{\pi} \coprod_{X} A$;
 
 - For every cubical diagram as below, if $f : X \to Y$ is cartesian in

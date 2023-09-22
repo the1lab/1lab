@@ -15,11 +15,6 @@ import Cat.Reasoning
 module Cat.Displayed.Comprehension.Coproduct.Strong where
 ```
 
-<!--
-```agda
-```
--->
-
 # Strong comprehension coproducts {defines="strong-comprehension-coproduct"}
 
 Let $\cD$ and $\cE$ be a pair of [[comprehension categories]] over the
