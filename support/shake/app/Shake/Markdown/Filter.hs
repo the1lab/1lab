@@ -2,7 +2,9 @@
 module Shake.Markdown.Filter (postProcessHtml) where
 
 import Control.Applicative
+import Control.Exception
 import Control.Category
+import Control.DeepSeq
 import Control.Arrow
 import Control.Monad
 import Control.Lens hiding (element, children, (<.>))
@@ -100,17 +102,15 @@ postProcessHtml modname citations stream = do
       ] ++
       [ linkIdentifiers identifiers | not skipAgda ]
 
-  (out, diagrams) <- timedM (Text.pack modname) do
-    tree <- concatMapM (runFilter mod) tree
+  tree <- concatMapM (runFilter mod) tree
 
-    diagrams <- flip runFilter tree $ foldF $ explore >>> deepF (
-          _img ? A.class_ "diagram quiver"
-      >>> pick A._src
-      >>> arr Set.singleton)
+  diagrams <- flip runFilter tree $ foldF $ explore >>> deepF (
+        _img ? A.class_ "diagram quiver"
+    >>> pick A._src
+    >>> arr Set.singleton)
 
-    pure (flattenTree tree, diagrams)
-
-  out <$ need [ "_build/html/" </> Text.unpack path | path <- foldMap Set.toList diagrams ]
+  need [ "_build/html/" </> Text.unpack path | path <- foldMap Set.toList diagrams ]
+  pure (flattenTree tree)
 
 detailsHighlight, divHighlight
   :: Set Text
@@ -153,7 +153,7 @@ uncommentAgda = proc it -> do
   tree <- it >- collect $
         _comment
     >>> parseF
-    >>> _pre ? class_ "Agda"
+    >>> _pre ? class_ "agda"
 
   tree >- filterF (not . null)
     >>> H.div [explore] ! class_ "commented-out"
@@ -201,14 +201,14 @@ headerEmoji = asum
 
 linkIdentifiers :: HashMap Text (Text, Text) -> HtmlFilter Action Text
 linkIdentifiers identifiers = proc it -> do
-  elt <- it >- _code ? class_ "Agda"
+  elt <- it >- _code ? class_ "agda"
 
   (url, cls) <- it >- foldF (pick (attr "data-ident") <|> (_code /> _text))
     >>> isF (`HashMap.lookup` identifiers)
 
   () >>-
     H.span [ a [code [pure elt /> id]] ! class_ (pure cls) ! href (pure url) ]
-      ! class_ "Agda"
+      ! class_ "agda"
 
 addCitationTitles :: Map Text (Cite.Reference Inlines) -> HtmlFilter Action Text
 addCitationTitles refMap = proc it -> do

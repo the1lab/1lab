@@ -146,10 +146,6 @@ rules = do
     liftIO . print =<< getPreambleFor True
     liftIO . print =<< getParsedPreamble
 
-  phony "test" do
-    let input = "_build/html0/wip.demo"
-    buildMarkdown "wip.demo" (input <.> ".md") "_build/site/wip.demo.html"
-
   {-
     The final build step. This basically just finds all the files we actually
     need and kicks off the above job to build them.
@@ -194,7 +190,7 @@ main = do
   let (opts, extra, errs) = getOpt Permute optDescrs args
       (shakeOpts, ourOpts_) = partitionEithers opts
       (errs', shakeOpts') = first (++errs) $ partitionEithers shakeOpts
-      ourOpts = foldr (.) id ourOpts_ defaultOptions
+      ourOpts = foldr ($) defaultOptions ourOpts_
 
       rules' = do
         setOptions ourOpts
@@ -215,7 +211,8 @@ main = do
       Just cmd -> buildMany db wanted cmd
   shakeRunAfter shakeOptions' after
 
-  reportTimes
+  when (_optTiming ourOpts) do
+    reportTimes
 
   unless ok exitFailure
 

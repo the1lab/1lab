@@ -61,6 +61,18 @@ instance Ord a => Monoid (Attrs a) where
 
 makeLenses ''Attrs
 
+normalise :: StringLike a => a -> a
+normalise = fromString . map toLower . toString
+
+split :: StringLike a => a -> [a]
+split = map (fromString . map toLower) . words . toString
+
+unsplit :: StringLike a => [a] -> a
+unsplit = fromString . unwords . map (map toLower . toString)
+
+(~~) :: StringLike a => a -> a -> Bool
+x ~~ y = normalise x == normalise y
+
 type HtmlFilter m a = Filter m (TagTree a) (TagTree a)
 
 deepF :: Monad m => Filter m (TagTree a) b -> Filter m (TagTree a) b
@@ -72,8 +84,8 @@ everywhereF m = m <+> (pick (children . each) >>> everywhereF m)
 rewriteF :: forall m a. Monad m => Filter m (TagTree a) (TagTree a) -> Filter m (TagTree a) (TagTree a)
 rewriteF m = overF (children . each) (rewriteF m) >>> (m <|> arr id)
 
-el :: (Monad m, Eq a, Show a) => a -> HtmlFilter m a
-el x = guardF (pick (_TagBranch . _1) >>> arr (x ==))
+el :: (Monad m, StringLike a) => a -> HtmlFilter m a
+el x = guardF (pick (_TagBranch . _1) >>> arr (x ~~))
 
 (/>) :: Monad m => Filter m a (TagTree b) -> Filter m (TagTree b) c -> Filter m a c
 f /> g = f >>> pick (children . each) >>> g
@@ -85,17 +97,17 @@ _Attrs :: forall a. (StringLike a, Ord a) => Iso' [(a, a)] (Attrs a)
 _Attrs = iso fwd bwd where
   fwd :: [(a, a)] -> Attrs a
   fwd xs = Attrs
-    { _attrClasses    = foldMap (Set.fromList . map fromString . words . toString) (lookup "class" xs)
-    , _attrAttributes = Map.fromList xs
+    { _attrClasses    = foldMap (Set.fromList . split) (lookup "class" xs)
+    , _attrAttributes = Map.fromList (map (first normalise) xs)
     }
   bwd :: Attrs a -> [(a, a)]
   bwd (Attrs cls attr) = case Set.toList cls of
     [] -> Map.toList attr
     _ ->
       let
-        clz = unwords $ toList $
-          Set.map toString cls <> foldMap (Set.fromList . words . toString) (Map.lookup "class" attr)
-      in ("class", fromString clz):Map.toList (Map.delete "class" attr)
+        clz = toList $
+          cls <> foldMap (Set.fromList . split) (Map.lookup "class" attr)
+      in ("class", unsplit clz):Map.toList (Map.delete "class" attr)
 
 _attrs :: forall a. (Ord a, StringLike a) => Traversal' (TagTree a) (Attrs a)
 _attrs = _TagBranch . _2 . _Attrs
@@ -105,11 +117,11 @@ classes = _attrs . attrClasses
 
 addClass :: forall a m. (Ord a, StringLike a) => a -> Filter m (TagTree a) (TagTree a)
 addClass k =
-  let ws = Set.fromList (map fromString (words (toString k)))
+  let ws = Set.fromList (split k)
    in arr (classes %~ Set.union ws)
 
 hasClass :: forall a m. (Monad m, Ord a, StringLike a) => a -> Filter m (TagTree a) (TagTree a)
-hasClass k = filterF (anyOf (classes . folding id) ((== k) . fromString . map toLower . toString))
+hasClass k = filterF (anyOf (classes . folding id) (~~ k))
 
 hasAttribute :: forall a m. (Monad m, Ord a, StringLike a) => a -> a -> Filter m (TagTree a) (TagTree a)
 hasAttribute k v = filterF (\x -> v `elem` (x ^.. attr k))
@@ -142,12 +154,12 @@ infixl 7 !
 infixl 7 ?
 
 singletonAttrs :: forall a. (Ord a, StringLike a) => a -> a -> Attrs a
-singletonAttrs key val = if map toLower (toString key) == "class"
-  then Attrs (Set.fromList $ map fromString $ words $ toString val) mempty
-  else Attrs mempty (Map.singleton key val)
+singletonAttrs key val = if normalise key == "class"
+  then Attrs (Set.fromList (split val)) mempty
+  else Attrs mempty (Map.singleton (normalise key) val)
 
 attrs :: forall a. (Ord a, StringLike a) => Fold (TagTree a) (a, a)
-attrs = _attrs . attrAttributes . to Map.toList . each
+attrs = _attrs . attrAttributes . to Map.toList . each . to (first normalise)
 
 attr :: forall a. (Ord a, StringLike a) => a -> Traversal' (TagTree a) a
 attr k = _attrs . ix k
@@ -158,10 +170,10 @@ attr_ k = _attrs . at k
 type instance IxValue (Attrs a) = a
 type instance Index (Attrs a) = a
 
-instance Ord a => Ixed (Attrs a)
+instance (Ord a, StringLike a) => Ixed (Attrs a)
 
-instance Ord a => At (Attrs a) where
-  at ix f (Attrs cls attr) = Attrs cls <$> at ix f attr
+instance (Ord a, StringLike a) => At (Attrs a) where
+  at ix f (Attrs cls attr) = Attrs cls <$> at (normalise ix) f attr
 
 _text :: forall m s. (Monad m, Eq s) => Filter m (TagTree s) s
 _text = isF (^? _TagLeaf . _TagText)

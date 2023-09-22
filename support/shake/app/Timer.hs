@@ -19,6 +19,7 @@ import Data.IORef
 import Data.Text (Text)
 
 import Control.Monad.IO.Class
+import Control.Exception
 import Control.DeepSeq
 import Control.Monad
 
@@ -37,7 +38,7 @@ timedM :: (MonadIO m, NFData a) => Text -> m a -> m a
 timedM label val = do
   start <- liftIO getCPUTime
   val <- val
-  val `deepseq` pure ()
+  () <- liftIO (evaluate (rnf val))
   end <- liftIO getCPUTime
 
   let duration = end - start
