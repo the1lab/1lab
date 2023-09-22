@@ -125,7 +125,7 @@ variable is given by the second projection map $\Gamma \times A \to A$.
 ⟦ `π₁ p      ⟧ᵉ = π₁ ∘ ⟦ p ⟧ᵉ
 ⟦ `π₂ p      ⟧ᵉ = π₂ ∘ ⟦ p ⟧ᵉ
 ⟦ `⟨ a , b ⟩ ⟧ᵉ = ⟨ ⟦ a ⟧ᵉ , ⟦ b ⟧ᵉ ⟩
-⟦ `λ e       ⟧ᵉ = lambda ⟦ e ⟧ᵉ
+⟦ `λ e       ⟧ᵉ = ƛ ⟦ e ⟧ᵉ
 ⟦ `$ f x     ⟧ᵉ = ev ∘ ⟨ ⟦ f ⟧ᵉ , ⟦ x ⟧ᵉ ⟩
 ⟦ ` x        ⟧ᵉ = x
 ```
@@ -276,7 +276,7 @@ Cartesian closed structure.
 ⟦_⟧ₙ  : Nf Γ τ → Hom ⟦ Γ ⟧ᶜ ⟦ τ ⟧ᵗ
 ⟦_⟧ₛ  : Ne Γ τ → Hom ⟦ Γ ⟧ᶜ ⟦ τ ⟧ᵗ
 
-⟦ lam h    ⟧ₙ = lambda ⟦ h ⟧ₙ
+⟦ lam h    ⟧ₙ = ƛ ⟦ h ⟧ₙ
 ⟦ pair a b ⟧ₙ = ⟨ ⟦ a ⟧ₙ , ⟦ b ⟧ₙ ⟩
 ⟦ ne x     ⟧ₙ = ⟦ x ⟧ₛ
 
@@ -331,7 +331,7 @@ ren-⟦⟧ₛ ρ (sndₙ t) = pushr (ren-⟦⟧ₛ ρ t)
 ren-⟦⟧ₛ ρ (hom x) = refl
 
 ren-⟦⟧ₙ ρ (lam t) =
-    ap lambda (ren-⟦⟧ₙ (keep ρ) t)
+    ap ƛ (ren-⟦⟧ₙ (keep ρ) t)
   ∙ sym (unique _ (ap₂ _∘_ refl rem₁ ∙ pulll (commutes ⟦ t ⟧ₙ)))
   where
   rem₁ : (⟦ lam t ⟧ₙ ∘ ⟦ ρ ⟧ʳ) ⊗₁ id ≡ (⟦ lam t ⟧ₙ ⊗₁ id) ∘ ⟦ ρ ⟧ʳ ⊗₁ id
@@ -599,7 +599,7 @@ reifyᵖ-correct {τ = τ `⇒ σ} {h = h} ν =
   let
     p : ⟦ reifyᵖ (ν (drop stop) (reflectᵖ (var stop))) ⟧ₙ ≡ ev ∘ ⟨ h ∘ id ∘ π₁ , π₂ ⟩
     p = reifyᵖ-correct (ν (drop stop) (reflectᵖ (var stop)))
-  in ap lambda p
+  in ap ƛ p
    ∙ sym (unique _ (ap₂ _∘_ refl (ap₂ ⟨_,_⟩ (sym (pulll (elimr refl))) (eliml refl))))
 reifyᵖ-correct {τ = ` x} d = d .snd
 ```
@@ -728,10 +728,10 @@ module _ {a b : Ob} where private
   _ : nf e1 ≡ ne (var (pop stop))
   _ = refl
 
-  _ : π₂ ∘ π₁ ≡ π₁ ∘ ⟨ ev ∘ ⟨ lambda π₂ , π₂ ∘ π₁ ⟩ , π₂ ⟩
+  _ : π₂ ∘ π₁ ≡ π₁ ∘ ⟨ ev ∘ ⟨ ƛ π₂ , π₂ ∘ π₁ ⟩ , π₂ ⟩
   _ = nf-sound e1
   -- An attempt to normalise this proof produced 4 MiB of garbage, and
-  -- ran for over an hour until the author's patience ran out.
+  -- ran for over an hour before our patience ran out.
 ```
 
 <!--

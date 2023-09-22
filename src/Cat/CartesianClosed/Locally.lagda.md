@@ -40,8 +40,8 @@ terminal object.[^lh] With the extra condition, a locally Cartesian closed
 category is Cartesian closed.
 
 [^lh]: An example is the category of locales and local homeomorphisms,
-$\thecat{LH}$. Each slice $\thecat{LH}/X$ is Cartesian closed --- it's
-even a topos --- but $\thecat{LH}$ has no terminal object.
+$\thecat{LH}$. Each slice $\thecat{LH}/X$ is Cartesian closed ---
+they're even topoi --- but $\thecat{LH}$ has no terminal object.
 
 
 [base change]: Cat.Functor.Pullback.html

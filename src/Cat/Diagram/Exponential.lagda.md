@@ -58,11 +58,11 @@ form the "abstraction" $\lambda m : \Gamma \to B^A$.
 record is-exponential (B^A : Ob) (ev : Hom (B^A ⊗₀ A) B) : Type (o ⊔ ℓ) where
   no-eta-equality
   field
-    lambda   : ∀ {Γ} (m : Hom (Γ ⊗₀ A) B) → Hom Γ B^A
-    commutes : ∀ {Γ} (m : Hom (Γ ⊗₀ A) B) → ev ∘ lambda m ⊗₁ id ≡ m
+    ƛ        : ∀ {Γ} (m : Hom (Γ ⊗₀ A) B) → Hom Γ B^A
+    commutes : ∀ {Γ} (m : Hom (Γ ⊗₀ A) B) → ev ∘ ƛ m ⊗₁ id ≡ m
     unique   : ∀ {Γ} {m : Hom (Γ ⊗₀ _) _} m′
              → ev ∘ m′ ⊗₁ id ≡ m
-             → m′ ≡ lambda m
+             → m′ ≡ ƛ m
 ```
 
 The data above is an unpacked way of saying that the evaluation map
@@ -75,7 +75,7 @@ structure.
   unlambda : ∀ {C} (m : Hom C B^A) → Hom (C ⊗₀ A) B
   unlambda m = ev ∘ m ⊗₁ id
 
-  lambda-is-equiv : ∀ {C} → is-equiv (lambda {C})
+  lambda-is-equiv : ∀ {C} → is-equiv (ƛ {C})
   lambda-is-equiv = is-iso→is-equiv λ where
     .is-iso.inv    → unlambda
     .is-iso.rinv x → sym (unique x refl)
@@ -90,7 +90,7 @@ structure.
           → m₁ ≡ m₂
   unique₂ _ _ p q = unique _ p ∙ sym (unique _ q)
 
-  lambda-ev : lambda ev ≡ id
+  lambda-ev : ƛ ev ≡ id
   lambda-ev = sym (unique id (sym (intror (×-functor .F-id))))
 ```
 -->
@@ -113,7 +113,7 @@ and that this indeed interprets the $\beta$-reduction rule:
     app f x = ev ∘ f ⊗₁ id ∘ ⟨ id , x ⟩
 
     beta : ∀ {Γ} (f : Hom (Γ ⊗₀ A) B) (x : Hom Γ A)
-         → app (lambda f) x ≡ f ∘ ⟨ id , x ⟩
+         → app (ƛ f) x ≡ f ∘ ⟨ id , x ⟩
     beta f x = pulll (commutes _)
 ```
 
@@ -124,11 +124,11 @@ module _ where
 
   is-exponential-is-prop : ∀ {B^A} {ev : Hom (B^A ⊗₀ A) B} → is-prop (is-exponential B^A ev)
   is-exponential-is-prop {B^A = B^A} {ev} x y = q where
-    p : Path (∀ {C} m → Hom C B^A) (x .lambda) (y .lambda)
-    p i {C} m = y .unique (x .lambda m) (x .commutes m) i
+    p : Path (∀ {C} m → Hom C B^A) (x .ƛ) (y .ƛ)
+    p i {C} m = y .unique (x .ƛ m) (x .commutes m) i
 
     q : x ≡ y
-    q i .lambda = p i
+    q i .ƛ = p i
     q i .commutes m =
       is-prop→pathp (λ i → Hom-set _ _ (ev ∘ p i m ⊗₁ id) m) (x .commutes m) (y .commutes m) i
     q i .unique {m = m} m′ q =
@@ -177,24 +177,24 @@ closed category" to "CCC".
     → is-exponential B^A′ ev′
     → B^A ≅ B^A′
   exponential-unique {ev = ev} {ev′} exp1 exp2 =
-    make-iso (exp2 .lambda ev) (exp1 .lambda ev′)
-      (unique₂ exp2 (exp2 .lambda ev ∘ exp1 .lambda ev′) id
+    make-iso (exp2 .ƛ ev) (exp1 .ƛ ev′)
+      (unique₂ exp2 (exp2 .ƛ ev ∘ exp1 .ƛ ev′) id
         (  ap (ev′ ∘_) (ap₂ _⊗₁_ refl (sym (idl id)) ∙ ×-functor .F-∘ _ _)
         ·· pulll (exp2 .commutes _)
         ·· exp1 .commutes _)
         (elimr (×-functor .F-id)))
-      (unique₂ exp1 (exp1 .lambda ev′ ∘ exp2 .lambda ev) id
+      (unique₂ exp1 (exp1 .ƛ ev′ ∘ exp2 .ƛ ev) id
         (  ap (ev ∘_) (ap₂ _⊗₁_ refl (sym (idl id)) ∙ ×-functor .F-∘ _ _)
         ·· pulll (exp1 .commutes _)
         ·· exp2 .commutes _)
         (elimr (×-functor .F-id)))
 
-  lambda-∘
+  ƛ-∘
     : ∀ {A B C X A^X B^X} {evA : Hom (A^X ⊗₀ X) A} {evB : Hom (B^X ⊗₀ X) B}
     → {f : Hom A B} {g : Hom C A^X}
     → (exp : is-exponential B^X evB)
-    → exp .is-exponential.lambda (f ∘ evA) ∘ g ≡ exp .is-exponential.lambda (f ∘ evA ∘ g ⊗₁ id)
-  lambda-∘ exb = is-exponential.unique exb _
+    → exp .is-exponential.ƛ (f ∘ evA) ∘ g ≡ exp .is-exponential.ƛ (f ∘ evA ∘ g ⊗₁ id)
+  ƛ-∘ exb = is-exponential.unique exb _
     ( ap₂ _∘_ refl (ap₂ _⊗₁_ refl (sym (idl id)) ∙ ×-functor .F-∘ _ _)
     ∙ extendl (is-exponential.commutes exb _))
 ```
@@ -218,13 +218,13 @@ composition, they act on _internal_ homs, too, defining a mapping $B^A
 <!--
 ```agda
 module _ (cc : Cartesian-closed) where
-  open Cartesian-closed cc renaming (lambda to Λ)
+  open Cartesian-closed cc
 ```
 -->
 
 ```agda
   [-,-]₁ : ∀ {a a' b b'} → Hom b b' → Hom a' a → Hom (Exp.B^A a b) (Exp.B^A a' b')
-  [-,-]₁ f g = Λ (f ∘ ev ∘ ⟨ π₁ , g ∘ π₂ ⟩)
+  [-,-]₁ f g = ƛ (f ∘ ev ∘ ⟨ π₁ , g ∘ π₂ ⟩)
 
   [-,-] : Functor (C ^op ×ᶜ C) C
   [-,-] .F₀ (A , B) = Exp.B^A A B
@@ -240,27 +240,27 @@ characterise $-^A$ as the [[right adjoint]] to $- \times A$.
 
 ```agda
   [-,-] .F-id =
-    Λ (id ∘ ev ∘ ⟨ π₁ , id ∘ π₂ ⟩) ≡⟨ ap Λ (idl _ ∙ ap (ev ∘_) (sym (ap₂ ⟨_,_⟩ (idl _) refl))) ⟩
-    Λ (ev ∘ id ⊗₁ id)              ≡˘⟨ unique id refl ⟩
+    ƛ (id ∘ ev ∘ ⟨ π₁ , id ∘ π₂ ⟩) ≡⟨ ap ƛ (idl _ ∙ ap (ev ∘_) (sym (ap₂ ⟨_,_⟩ (idl _) refl))) ⟩
+    ƛ (ev ∘ id ⊗₁ id)              ≡˘⟨ unique id refl ⟩
     id                             ∎
   [-,-] .F-∘ (f , g) (f' , g') = sym $ unique _ $
-    ev ∘ ⟨ (Λ (g ∘ ev ∘ ⟨ π₁ , f ∘ π₂ ⟩) ∘ Λ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩)) ∘ π₁ , id ∘ π₂ ⟩ ≡⟨ refl⟩∘⟨ ap₂ _⊗₁_ refl (introl refl) ∙ ×-functor .F-∘ _ _ ⟩
-    ev ∘ Λ (g ∘ ev ∘ ⟨ π₁ , f ∘ π₂ ⟩) ⊗₁ id ∘ Λ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id          ≡⟨ pulll (commutes _) ⟩
-    (g ∘ ev ∘ ⟨ π₁ , f ∘ π₂ ⟩) ∘ Λ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id                       ≡⟨ pullr (pullr (ap₂ _∘_ (ap₂ ⟨_,_⟩ (introl refl) refl) refl ∙ sym (Bifunctor.first∘second ×-functor))) ⟩
-    g ∘ ev ∘ Λ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id ∘ id ⊗₁ f                                 ≡⟨ refl⟩∘⟨ pulll (commutes _) ⟩
+    ev ∘ ⟨ (ƛ (g ∘ ev ∘ ⟨ π₁ , f ∘ π₂ ⟩) ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩)) ∘ π₁ , id ∘ π₂ ⟩ ≡⟨ refl⟩∘⟨ ap₂ _⊗₁_ refl (introl refl) ∙ ×-functor .F-∘ _ _ ⟩
+    ev ∘ ƛ (g ∘ ev ∘ ⟨ π₁ , f ∘ π₂ ⟩) ⊗₁ id ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id          ≡⟨ pulll (commutes _) ⟩
+    (g ∘ ev ∘ ⟨ π₁ , f ∘ π₂ ⟩) ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id                       ≡⟨ pullr (pullr (ap₂ _∘_ (ap₂ ⟨_,_⟩ (introl refl) refl) refl ∙ sym (Bifunctor.first∘second ×-functor))) ⟩
+    g ∘ ev ∘ ƛ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ⊗₁ id ∘ id ⊗₁ f                                 ≡⟨ refl⟩∘⟨ pulll (commutes _) ⟩
     g ∘ (g' ∘ ev ∘ ⟨ π₁ , f' ∘ π₂ ⟩) ∘ id ⊗₁ f                                              ≡⟨ pulll refl ∙ extendr (pullr (pullr (Product.unique (fp _ _) _ (pulll π₁∘⟨⟩ ·· π₁∘⟨⟩ ·· idl _) (pulll π₂∘⟨⟩ ∙ extendr π₂∘⟨⟩)))) ⟩
     (g ∘ g') ∘ ev ∘ ⟨ π₁ , (f' ∘ f) ∘ π₂ ⟩                                                  ∎
 
   product⊣exponential : ∀ {A} → Bifunctor.Left ×-functor A ⊣ Bifunctor.Right [-,-] A
-  product⊣exponential {A} = hom-iso→adjoints Λ lambda-is-equiv nat where
+  product⊣exponential {A} = hom-iso→adjoints ƛ lambda-is-equiv nat where
     module _ {a b c d} (g : Hom a b) (h : Hom c d) (x : Hom (d ⊗₀ A) a) where
-      nat : Λ (g ∘ x ∘ ⟨ h ∘ π₁ , id ∘ π₂ ⟩) ≡ Λ (g ∘ ev ∘ ⟨ π₁ , id ∘ π₂ ⟩) ∘ Λ x ∘ h
+      nat : ƛ (g ∘ x ∘ ⟨ h ∘ π₁ , id ∘ π₂ ⟩) ≡ ƛ (g ∘ ev ∘ ⟨ π₁ , id ∘ π₂ ⟩) ∘ ƛ x ∘ h
       nat = sym $ unique _ $
-        ev ∘ (Λ (g ∘ ev ∘ ⟨ π₁ , id ∘ π₂ ⟩) ∘ Λ x ∘ h) ⊗₁ id        ≡⟨ refl⟩∘⟨ ap₂ _⊗₁_ refl (introl refl) ∙ ×-functor .F-∘ _ _ ⟩
-        ev ∘ Λ (g ∘ ev ∘ ⟨ π₁ , id ∘ π₂ ⟩) ⊗₁ id ∘ (Λ x ∘ h) ⊗₁ id  ≡⟨ pulll (commutes _) ⟩
-        (g ∘ ⌜ ev ∘ ⟨ π₁ , id ∘ π₂ ⟩ ⌝) ∘ (Λ x ∘ h) ⊗₁ id           ≡⟨ ap! (elimr (ap₂ ⟨_,_⟩ (introl refl) refl ∙ ×-functor .F-id)) ⟩
-        (g ∘ ev) ∘ (Λ x ∘ h) ⊗₁ id                                  ≡⟨ pullr (ap₂ _∘_ refl (Bifunctor.first∘first ×-functor)) ⟩
-        g ∘ ev ∘ Λ x ⊗₁ id ∘ h ⊗₁ id                                ≡⟨ refl⟩∘⟨ pulll (commutes _) ⟩
+        ev ∘ (ƛ (g ∘ ev ∘ ⟨ π₁ , id ∘ π₂ ⟩) ∘ ƛ x ∘ h) ⊗₁ id        ≡⟨ refl⟩∘⟨ ap₂ _⊗₁_ refl (introl refl) ∙ ×-functor .F-∘ _ _ ⟩
+        ev ∘ ƛ (g ∘ ev ∘ ⟨ π₁ , id ∘ π₂ ⟩) ⊗₁ id ∘ (ƛ x ∘ h) ⊗₁ id  ≡⟨ pulll (commutes _) ⟩
+        (g ∘ ⌜ ev ∘ ⟨ π₁ , id ∘ π₂ ⟩ ⌝) ∘ (ƛ x ∘ h) ⊗₁ id           ≡⟨ ap! (elimr (ap₂ ⟨_,_⟩ (introl refl) refl ∙ ×-functor .F-id)) ⟩
+        (g ∘ ev) ∘ (ƛ x ∘ h) ⊗₁ id                                  ≡⟨ pullr (ap₂ _∘_ refl (Bifunctor.first∘first ×-functor)) ⟩
+        g ∘ ev ∘ ƛ x ⊗₁ id ∘ h ⊗₁ id                                ≡⟨ refl⟩∘⟨ pulll (commutes _) ⟩
         g ∘ x ∘ h ⊗₁ id                                             ∎
 ```
 
@@ -284,7 +284,7 @@ product-adjoint→cartesian-closed A→ adj = cc where
   exp : ∀ A B → Exponential A B
   exp A B .B^A = A→ A .F₀ B
   exp A B .ev = adj A .counit.ε B
-  exp A B .has-is-exp .lambda     = L-adjunct (adj A)
+  exp A B .has-is-exp .ƛ          = L-adjunct (adj A)
   exp A B .has-is-exp .commutes m = R-L-adjunct (adj A) m
   exp A B .has-is-exp .unique m′ x = sym $
     Equiv.injective₂ (_ , R-adjunct-is-equiv (adj A))
@@ -303,8 +303,8 @@ open /-Hom
 open Pullback
 
 module _ B (exp : ∀ A → Exponential B A) where
-  private module _ A where open Exponential (exp A) renaming (B^A to -^B₀) hiding (lambda ; unlambda ; ev) public
-  private module _ {A} where open Exponential (exp A) renaming (lambda to Λ ; unlambda to app) using (ev) public
+  private module _ A where open Exponential (exp A) renaming (B^A to -^B₀) hiding (ƛ ; unlambda ; ev) public
+  private module _ {A} where open Exponential (exp A) renaming (unlambda to app) using (ev ; ƛ) public
 ```
 -->
 
@@ -317,8 +317,8 @@ exponentiability of $B$ by a condition on the slice category $C/B$.
 ```agda
   -^B : Functor C C
   -^B .F₀ = -^B₀
-  -^B .F₁ h = Λ (h ∘ ev)
-  -^B .F-id = ap Λ (idl ev) ∙ lambda-ev _
+  -^B .F₁ h = ƛ (h ∘ ev)
+  -^B .F-id = ap ƛ (idl ev) ∙ lambda-ev _
   -^B .F-∘ f g = sym $ Exponential.unique (exp _) _
     (  ap₂ _∘_ refl (ap₂ _⊗₁_ refl (introl refl) ∙ ×-functor .F-∘ _ _)
     ·· pulll (Exponential.commutes (exp _) _)
@@ -360,14 +360,14 @@ omit it from the page.
     → Functor (Slice C B) C
   exponentiable→product pb = f where
     f : Functor (Slice C B) C
-    f .F₀ h = pb {B = top} (-^B .F₁ (h .map)) (Λ π₂) .apex
+    f .F₀ h = pb {B = top} (-^B .F₁ (h .map)) (ƛ π₂) .apex
     f .F₁ {x} {y} h = pb _ _ .universal (sym p) where abstract
-      p : Λ π₂ ∘ !  ≡ -^B .F₁ (y .map) ∘ -^B .F₁ (h .map) ∘ pb {B = top} (-^B .F₁ (x .map)) (Λ π₂) .p₁
-      p = Λ π₂ ∘ !                                         ≡⟨ ap (Λ π₂ ∘_) (!-unique _) ⟩
-          Λ π₂ ∘ pb _ _ .p₂                                ≡˘⟨ pb _ _ .square ⟩
-          Λ (x .map ∘ ev) ∘ pb _ _ .p₁                     ≡˘⟨ ap (-^B .F₁) (h .commutes) ⟩∘⟨refl ⟩
-          Λ ((y .map ∘ h .map) ∘ ev) ∘ pb _ _ .p₁          ≡⟨ pushl (-^B .F-∘ _ _) ⟩
-          Λ (y .map ∘ ev) ∘ Λ (h .map ∘ ev) ∘ pb _ _ .p₁   ∎
+      p : ƛ π₂ ∘ !  ≡ -^B .F₁ (y .map) ∘ -^B .F₁ (h .map) ∘ pb {B = top} (-^B .F₁ (x .map)) (ƛ π₂) .p₁
+      p = ƛ π₂ ∘ !                                         ≡⟨ ap (ƛ π₂ ∘_) (!-unique _) ⟩
+          ƛ π₂ ∘ pb _ _ .p₂                                ≡˘⟨ pb _ _ .square ⟩
+          ƛ (x .map ∘ ev) ∘ pb _ _ .p₁                     ≡˘⟨ ap (-^B .F₁) (h .commutes) ⟩∘⟨refl ⟩
+          ƛ ((y .map ∘ h .map) ∘ ev) ∘ pb _ _ .p₁          ≡⟨ pushl (-^B .F-∘ _ _) ⟩
+          ƛ (y .map ∘ ev) ∘ ƛ (h .map ∘ ev) ∘ pb _ _ .p₁   ∎
 ```
 
 <!--
@@ -409,17 +409,17 @@ f$, over $B$.
 
 ```agda
     coh₁ : ∀ {X} (f : /-Obj B) (q : Hom X (-^B₀ (f .domain)))
-         → (Λ (f .map ∘ ev) ∘ q ≡ Λ π₂ ∘ !)
+         → (ƛ (f .map ∘ ev) ∘ q ≡ ƛ π₂ ∘ !)
          ≃ (f .map ∘ app q ≡ π₂)
     coh₁ f h = prop-ext!
-      (λ p → Equiv.injective (_ , lambda-is-equiv _) (sym (lambda-∘ (has-is-exp _)) ·· p ·· done))
-      (λ p → lambda-∘ (has-is-exp _) ·· ap Λ p ·· sym done)
+      (λ p → Equiv.injective (_ , lambda-is-equiv _) (sym (ƛ-∘ (has-is-exp _)) ·· p ·· done))
+      (λ p → ƛ-∘ (has-is-exp _) ·· ap ƛ p ·· sym done)
 ```
 
 <!--
 ```
       where
-        done : Λ π₂ ∘ ! ≡ Λ π₂
+        done : ƛ π₂ ∘ ! ≡ ƛ π₂
         done = Exponential.unique (exp _) _ $
              ap₂ _∘_ refl (ap₂ _⊗₁_ refl (sym (idl id)) ∙ ×-functor .F-∘ _ _)
           ·· pulll (Exponential.commutes (exp _) _)
@@ -449,10 +449,10 @@ $\Delta_B \dashv \Pi_B$ we've been chasing.
 ```agda
         Hom X (Π.₀ f)
           ≃⟨ Pullback.pullback-univ (pb _ _) ⟩
-        Σ (Hom X (-^B .F₀ (f .domain))) (λ h → Σ (Hom X top) λ h' → Λ (f .map ∘ ev) ∘ h ≡ Λ π₂ ∘ h')
+        Σ (Hom X (-^B .F₀ (f .domain))) (λ h → Σ (Hom X top) λ h' → ƛ (f .map ∘ ev) ∘ h ≡ ƛ π₂ ∘ h')
           ≃⟨ Σ-ap-snd (λ x → Σ-contr-eqv (has⊤ X)) ⟩
-        Σ (Hom X (-^B .F₀ (f .domain))) (λ h → Λ (f .map ∘ ev) ∘ h ≡ Λ π₂ ∘ !)
-          ≃⟨ Σ-ap (Equiv.inverse (Λ , lambda-is-equiv _)) (coh₁ f) ⟩
+        Σ (Hom X (-^B .F₀ (f .domain))) (λ h → ƛ (f .map ∘ ev) ∘ h ≡ ƛ π₂ ∘ !)
+          ≃⟨ Σ-ap (Equiv.inverse (ƛ , lambda-is-equiv _)) (coh₁ f) ⟩
         Σ (Hom (X ⊗₀ B) (f .domain)) (λ h → f .map ∘ h ≡ π₂)
           ≃⟨ Iso→Equiv ((λ x → record { commutes = x .snd }) , iso (λ x → _ , x .commutes) (λ _ → /-Hom-path refl) (λ _ → refl)) ⟩
         Slice C B .Precategory.Hom (b.₀ X) f
@@ -465,9 +465,9 @@ $\Delta_B \dashv \Pi_B$ we've been chasing.
     nat : hom-iso-inv-natural {L = constant-family fp} {R = exponentiable→product pb} (rem₁ _ .fst)
     nat g h x = /-Hom-path $
      rem₁ _ .fst (Π.₁ g ∘ x ∘ h) .map                           ≡⟨ rem₁-β _ _ ⟩
-     app (pb _ _ .p₁ ∘ Π.₁ g ∘ x ∘ h)                           ≡⟨ ap app (pulll (pb _ _ .p₁∘universal ∙ lambda-∘ {f = g .map} {g = pb _ _ .p₁} (has-is-exp _))) ⟩
-     app (Λ (g .map ∘ ev ∘ pb _ _ .p₁ ⊗₁ id) ∘ x ∘ h)           ≡⟨ ap₂ _∘_ refl (ap₂ _⊗₁_ refl (sym (idl id)) ∙ ×-functor .F-∘ _ _) ∙ pulll refl ⟩
-     app (Λ (g .map ∘ ev ∘ pb _ _ .p₁ ⊗₁ id)) ∘ (x ∘ h) ⊗₁ id   ≡⟨ ap₂ _∘_ (Equiv.η (_ , lambda-is-equiv _) _) refl ⟩
+     app (pb _ _ .p₁ ∘ Π.₁ g ∘ x ∘ h)                           ≡⟨ ap app (pulll (pb _ _ .p₁∘universal ∙ ƛ-∘ {f = g .map} {g = pb _ _ .p₁} (has-is-exp _))) ⟩
+     app (ƛ (g .map ∘ ev ∘ pb _ _ .p₁ ⊗₁ id) ∘ x ∘ h)           ≡⟨ ap₂ _∘_ refl (ap₂ _⊗₁_ refl (sym (idl id)) ∙ ×-functor .F-∘ _ _) ∙ pulll refl ⟩
+     app (ƛ (g .map ∘ ev ∘ pb _ _ .p₁ ⊗₁ id)) ∘ (x ∘ h) ⊗₁ id   ≡⟨ ap₂ _∘_ (Equiv.η (_ , lambda-is-equiv _) _) refl ⟩
      (g .map ∘ ev ∘ pb _ _ .p₁ ⊗₁ id) ∘ (x ∘ h) ⊗₁ id           ≡⟨ pullr (pullr (sym (×-functor .F-∘ _ _) ∙ ap₂ _⊗₁_ (assoc _ _ _) refl ∙ ×-functor .F-∘ _ _)) ⟩
      g .map ∘ ev ∘ (pb _ _ .p₁ ∘ x) ⊗₁ id ∘ h ⊗₁ id             ≡⟨ refl⟩∘⟨ (pulll refl ∙ ap₂ _∘_ refl (ap₂ ⟨_,_⟩ refl (idl _))) ⟩
      g .map ∘ (ev ∘ (pb _ _ .p₁ ∘ x) ⊗₁ id) ∘ b.₁ h .map        ≡⟨ ap₂ _∘_ refl (ap₂ _∘_ (sym (rem₁-β _ _)) refl) ⟩
