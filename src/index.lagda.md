@@ -649,7 +649,7 @@ In addition to the _extensive_ use of [[displayed categories]] to model
 "pre-indexing" in the 1Lab, we also contain an in-progress formalisation
 of [Foundations of Relative Category Theory][frct].
 
-[frct]: https://www.jonmsterling.com/math/lectures/categorical-foundations.html
+[frct]: https://www.jonmsterling.com/frct-003I.xml
 
 ```agda
 open import Cat.Displayed.Base -- Displayed categories
