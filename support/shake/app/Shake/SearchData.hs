@@ -3,6 +3,8 @@
 -- | Read and write data for site-wide search.
 module Shake.SearchData where
 
+import Control.DeepSeq
+
 import Data.Text (Text)
 import Data.Aeson
 import GHC.Generics (Generic)
@@ -16,4 +18,4 @@ data SearchTerm = SearchTerm
   , idDesc    :: Maybe Text
   , idDefines :: Maybe [Text]
   }
-  deriving (Eq, Show, Ord, Generic, ToJSON, FromJSON)
+  deriving (Eq, Show, Ord, Generic, ToJSON, FromJSON, NFData)

@@ -29,6 +29,7 @@ buildDiagram preamble input output isdark = do
   let
     diagram = maybeDarken isdark diagram'
     texPath = replaceBaseName input (takeBaseName input ++ "_full" ++ ['d' | isdark])
+         -<.> "tex"
 
   preamble <- preamble
 
@@ -40,8 +41,9 @@ buildDiagram preamble input output isdark = do
 
   -- TODO: Do we want to parse the errors here/in the log file? Might be
   -- nice to spit out warnings/errors, but also a lot of work.
-  Stdout (_ :: ByteString) <- command [] "pdflatex" ["-output-directory", takeDirectory input, "-synctex=1", "-interaction=nonstopmode", texPath]
-  command_ [] "pdftocairo" ["-svg", texPath -<.> "pdf", output]
+  let opts = [WithStdout False, WithStderr False, EchoStdout False, EchoStderr True]
+  command_ opts "pdflatex" ["-output-directory", takeDirectory input, "-synctex=1", "-interaction=nonstopmode", texPath]
+  command_ opts "pdftocairo" ["-svg", texPath -<.> "pdf", output]
 
 maybeDarken :: Bool -> Text -> Text
 maybeDarken False = id

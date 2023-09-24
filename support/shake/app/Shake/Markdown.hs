@@ -11,6 +11,9 @@ import Control.Monad.IO.Class
 import Control.Monad.Writer
 import Control.Monad.State
 import Control.Applicative
+import Control.Exception
+import Control.DeepSeq
+import Control.Lens hiding (Context, (<.>))
 
 import qualified Data.ByteString.Lazy as LazyBS
 import qualified Data.Text.Encoding as Text
@@ -42,6 +45,7 @@ import Text.Collate.Lang (Lang (..))
 import Text.Pandoc.Walk
 import Text.Pandoc
 
+import Shake.Markdown.Foresight
 import Shake.Markdown.Filter
 import Shake.LinkReferences
 import Shake.SearchData
@@ -51,7 +55,6 @@ import Shake.Git
 
 import HTML.Emit
 
-import Definitions
 
 readLabMarkdown :: MonadIO m => FilePath -> m Pandoc
 readLabMarkdown fp = liftIO cont where
@@ -145,17 +148,21 @@ mangleMarkdown = Text.pack . toplevel . Text.unpack where
   wikilink (c:cs)       = c:wikilink cs
   wikilink []           = []
 
-buildMarkdown :: String   -- ^ The name of the Agda module.
-              -> FilePath -- ^ Input markdown file, produced by the Agda compiler.
-              -> FilePath -- ^ Output HTML file.
-              -> Action ()
-buildMarkdown modname input output = do
+buildMarkdown
+  :: (FilePath -> Action ModuleInfo)
+  -- ^ Information about the module collected in the scan pass.
+  -> String     -- ^ The name of the Agda module.
+  -> FilePath   -- ^ Input markdown file, produced by the Agda compiler.
+  -> FilePath   -- ^ Output HTML file.
+  -> Action ()
+buildMarkdown moduleScan modname input output = do
   gitCommit <- gitCommit
   skipAgda <- getSkipAgda
-
-  need [templateName, bibliographyName, input]
-
   modulePath <- findModule modname
+
+  deps <- moduleScan modulePath
+  need $ [templateName, bibliographyName, input, "_build/katex/" <> modname <> ".bin"]
+
   authors <- gitAuthors modulePath
   let
     permalink = gitCommit </> modulePath
@@ -186,17 +193,21 @@ buildMarkdown modname input output = do
   -- Rendering the search data has to be done *here*, after running the
   -- maths through KaTeX but before adding the emoji to headers.
   let search = query (getHeaders (Text.pack modname)) markdown
+  () <- traced "forcing search data" (evaluate (rnf search))
 
   (markdown, MarkdownState references dependencies) <- runWriterT (walkM patchBlock markdown)
-  need dependencies
 
   baseUrl <- getBaseUrl
-  text <- liftIO $ either (fail . show) pure =<<
-    runIO (renderMarkdown authors references modname baseUrl markdown)
+  parsed <- traced "rendering" $ do
+    text <- either (fail . show) pure =<<
+      runIO (renderMarkdown authors references modname baseUrl markdown)
+    let parsed = tagTree $ foldEquations False (parseTags text)
+    () <- evaluate (rnf parsed)
+    pure parsed
 
-  let tags = foldEquations False (parseTags text)
-  tags <- postProcessHtml modname refMap tags
+  tags <- postProcessHtml modname refMap parsed
   traverse_ (checkMarkup input) tags
+  () <- liftIO (evaluate (rnf tags))
 
   traced "writing" do
     Text.writeFile output $ renderHTML5 tags
@@ -244,12 +255,6 @@ patchBlock
   :: (MonadIO f, MonadFail f, MonadWriter MarkdownState f)
   => Block
   -> f Block
--- Make all headers links, and add an anchor emoji.
--- patchBlock (Header i a@(ident, _, _) inl) = pure $ Header i a
---   $ htmlInl (Text.concat ["<a href=\"#", ident, "\" class=\"header-link\"><span>"])
---   : inl
---   ++ [htmlInl "</span><span class=\"header-link-emoji\">🔗</span></a>"]
-
 -- Find the references block, parse the references, and remove it. We write
 -- the references as part of our template instead.
 patchBlock (Div ("refs", _, _) body) = do

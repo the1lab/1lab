@@ -5,8 +5,12 @@ import Control.Concurrent.STM
 import Control.Monad.IO.Class
 import Control.Monad.Writer
 import Control.Exception
+import Control.DeepSeq
+import Control.Lens hiding ((<.>))
 
 import qualified Data.Map.Strict as Map
+import qualified Data.Binary as Binary
+import qualified Data.Text as Text
 import qualified Data.Set as Set
 import Data.Aeson hiding (Options, defaultOptions)
 import Data.Bifunctor
@@ -26,18 +30,18 @@ import System.Time.Extra
 import System.Process
 import System.Exit
 
-import Shake.Options
+import Shake.Markdown.Foresight
 import Shake.AgdaCompile
 import Shake.SearchData
 import Shake.LinkGraph
 import Shake.Markdown
 import Shake.Modules
 import Shake.Diagram
+import Shake.Options
 import Shake.KaTeX
 import Shake.Git
 import Shake.Utils
 
-import Definitions
 import Timer
 
 {-
@@ -47,12 +51,12 @@ import Timer
 -}
 rules :: Rules ()
 rules = do
+  moduleScan <- foresightRules
   agdaRules
   gitRules
-  katexRules
+  katexRules moduleScan
   moduleRules
   linksRules
-  glossaryRules
 
   {-
     Write @_build/all-pages.agda@. This imports every module in the source tree
@@ -89,12 +93,12 @@ rules = do
           _ -> "src" </> map (\c -> if c == '.' then '/' else c) modName
       in
       case modKind of
-        Just WithText -> buildMarkdown modName (input <.> ".lagda.md") out
+        Just WithText -> buildMarkdown moduleScan modName (input <.> ".lagda.md") out
         _ -> copyFile' (input <.> ".agda") out -- Wrong, but eh!
     else
       let input = "_build/html0" </> modName in
       case modKind of
-        Just WithText -> do buildMarkdown modName (input <.> ".md") out
+        Just WithText -> buildMarkdown moduleScan modName (input <.> ".md") out
         _ -> copyFile' (input <.> ".html") out
 
   "_build/search/*.json" %> \out -> need ["_build/html" </> takeFileName out -<.> "html"]
@@ -109,11 +113,11 @@ rules = do
 
   -- Compile Quiver to SVG. This is used by 'buildMarkdown'.
   "_build/html/light-*.svg" %> \out -> do
-    let inp = "_build/diagrams" </> drop (length ("light-" :: String)) (takeFileName out) -<.> "tex"
+    let inp = "_build/diagrams/" </> drop (length ("light-" :: String)) (takeFileName out) -<.> "part"
     buildDiagram (getPreambleFor False) inp out False
 
   "_build/html/dark-*.svg" %> \out -> do
-    let inp = "_build/diagrams" </> drop (length ("dark-" :: String)) (takeFileName out) -<.> "tex"
+    let inp = "_build/diagrams/" </> drop (length ("dark-" :: String)) (takeFileName out) -<.> "part"
     buildDiagram (getPreambleFor True) inp out True
 
   "_build/html/css/*.css" %> \out -> do
@@ -146,15 +150,26 @@ rules = do
     liftIO . print =<< getPreambleFor True
     liftIO . print =<< getParsedPreamble
 
+  "_build/diagrams/*.part" %> \out -> do
+    mods <- map fst . filter ((== WithText) . snd) . Map.toList <$> getOurModules
+    forM_ mods \m -> do
+      let p = "src" </> map (\c -> if c == '.' then '/' else c) m <.> "lagda.md"
+      mi <- moduleScan p
+      if Text.pack out `Set.member` (mi ^. modDiagrams)
+        then need ["_build/html" </> m <.> "html"]
+        else pure ()
+
   {-
     The final build step. This basically just finds all the files we actually
     need and kicks off the above job to build them.
   -}
   phony "all" do
     agda <- getAllModules >>= \modules ->
-      pure ["_build/html" </> f <.> "html" | (f, _) <- Map.toList modules]
+      pure ["_build/html" </> f <.> "html" | (f, _) <- Map.toList modules ]
+
     static <- getDirectoryFiles "support/static/" ["**/*"] >>= \files ->
       pure ["_build/html/static" </> f | f <- files]
+
     need $
       static ++ agda ++
         [ "_build/html/favicon.ico"
@@ -164,6 +179,16 @@ rules = do
         , "_build/html/main.js"
         , "_build/html/code-only.js"
         ]
+
+    mod <- map fst . filter ((== WithText) . snd) . Map.toList <$> getOurModules
+    void $ forP mod \m -> do
+      let p = "src" </> map (\c -> if c == '.' then '/' else c) m <.> "lagda.md"
+      mod <- moduleScan p
+      orderOnly $ map Text.unpack (toList (mod ^. modDiagrams))
+
+  phony "all-katex" do
+    mod <- map fst . filter ((== WithText) . snd) . Map.toList <$> getOurModules
+    need [ "_build/katex/" <> mod <> ".bin" | mod <- mod ]
 
   -- ???
 
@@ -196,7 +221,7 @@ main = do
         setOptions ourOpts
         rules
 
-      shakeOptions' = foldl' (flip ($)) shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest} shakeOpts'
+      shakeOptions' = foldl' (flip ($)) shakeOptions{shakeFiles="_build", shakeChange=ChangeDigest, shakeProgress=progressSimple} shakeOpts'
       (shakeRules, wanted) = case extra of
         [] -> (rules', [])
         files -> (withoutActions rules', [need files])

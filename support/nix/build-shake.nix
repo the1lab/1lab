@@ -36,7 +36,9 @@ stdenv.mkDerivation {
   propagatedBuildInputs = [ lua5_3 gmp ];
 
   buildPhase = ''
-  ghc -o ${main} app/${main} -threaded -with-rtsopts -A128M -rtsopts -iapp -O2 -split-sections -DNODE_BIN_PATH="\"${nodeDependencies}/bin\""
+  # ghc -o ${main} app/${main} -threaded -fexternal-interpreter -prof -fprof-auto -fprof-late -with-rtsopts -A128M -rtsopts -iapp -O2 -split-sections -DNODE_BIN_PATH="\"${nodeDependencies}/bin\""
+  ghc -o ${main} app/${main} -threaded -with-rtsopts=-"A128M -I0 -qg" -rtsopts -iapp -O2 -split-sections -DNODE_BIN_PATH="\"${nodeDependencies}/bin\""
+
   '';
 
   installPhase = ''

@@ -115,7 +115,7 @@ _attrs = _TagBranch . _2 . _Attrs
 classes :: forall a. (Ord a, StringLike a) => Traversal' (TagTree a) (Set a)
 classes = _attrs . attrClasses
 
-addClass :: forall a m. (Ord a, StringLike a) => a -> Filter m (TagTree a) (TagTree a)
+addClass :: forall a m. (Monad m, Ord a, StringLike a) => a -> Filter m (TagTree a) (TagTree a)
 addClass k =
   let ws = Set.fromList (split k)
    in arr (classes %~ Set.union ws)

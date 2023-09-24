@@ -40,47 +40,41 @@ import Prelude hiding (id, (.))
 import Filter.TagSoup.Attributes as A
 import Filter.TagSoup.Elements as H
 import Filter.TagSoup
-import Shake.Options
-import Definitions
-import Shake.KaTeX
 import Filter
+
+import Shake.Markdown.Foresight
+import Shake.Options
+import Shake.KaTeX
 
 import Timer
 
 postProcessHtml
   :: String
   -> Map Text (Cite.Reference Inlines)
-  -> [Tag Text]
+  -> [TagTree Text]
   -> Action [Tag Text]
-postProcessHtml modname citations stream = do
-  let tree = tagTree stream
-
+postProcessHtml modname citations tree = do
   skipAgda <- getSkipAgda
 
-  icons <- Set.fromList . fmap (Text.pack . map toLower . dropExtension)
+  icons <- fmap (Text.pack . map toLower . dropExtension)
     <$> getDirectoryFiles "support/web/highlights" ["*.svg"]
+  icons <- forM icons \icn -> do
+    tree <- parseTree . Text.pack <$> readFile' ("support/web/highlights" </> Text.unpack icn -<.> "svg")
+    let
+      fallback = Text.cons (toUpper (Text.head icn)) (Text.tail icn)
 
-  let
-    isIcon t
-      | Text.toLower t `elem` icons = pure t
-      | otherwise                   = Nothing
+    icon <- build $ pures tree
+      >>> _svg
+      >>> H.span [ id, H.span [text' (_svg >>>. attr_ "aria-label" . non fallback)] ]
+            ! class_ "highlight-icon"
+    () <- liftIO (evaluate (rnf icon))
+    pure (icn, icon)
+  icons <- pure (Map.fromList icons)
 
-    iconSpan icn = do
-      tree <- parseTree . Text.pack <$>
-        readFile' ("support/web/highlights" </> Text.unpack icn -<.> "svg")
-      let
-        fallback = Text.cons (toUpper (Text.head icn)) (Text.tail icn)
+  texCache <- getPrecompiled modname
 
-      build $ pures tree
-        >>> _svg
-        >>> H.span [ id, H.span [text' (_svg >>>. attr_ "aria-label" . non fallback)] ]
-              ! class_ "highlight-icon"
-
-    add icon = proc it -> do
-      icon <- eff (const (iconSpan icon)) -< ()
-      overF children (arr (icon:)) -<< it
-
-    [identifiers] = runIdentity . flip runFilter tree $
+  identifiers <- traced "collecting identifiers" do
+    [identifiers] <- flip runFilter tree $
       collect (explore >>> everywhereF proc elt -> do
         (href, cls) <- elt >- _a >>> (
           pick A._href &&& pick A._class)
@@ -88,12 +82,18 @@ postProcessHtml modname citations stream = do
           foldF (id /> _text) >>> filterF (not . Text.null)
         id -< HashMap.insertWith (\_ old -> old) text (href, cls))
         >>> arr (foldr ($) mempty)
+    () <- evaluate (rnf identifiers)
+    pure identifiers
+
+  let
+    add icon = proc it -> do
+      overF children (arr (icons Map.! icon:)) -<< it
 
     mod :: HtmlFilter Action Text
     mod = rewriteF $ asum $
-      [ detailsHighlight icons add
-      , divHighlight icons add
-      , renderKatex
+      [ detailsHighlight (Map.keysSet icons) add
+      , divHighlight     (Map.keysSet icons) add
+      , renderKatex texCache
       , resolveWikilink
       , uncommentAgda
       , addCitationTitles citations
@@ -102,15 +102,10 @@ postProcessHtml modname citations stream = do
       ] ++
       [ linkIdentifiers identifiers | not skipAgda ]
 
-  tree <- concatMapM (runFilter mod) tree
-
-  diagrams <- flip runFilter tree $ foldF $ explore >>> deepF (
-        _img ? A.class_ "diagram quiver"
-    >>> pick A._src
-    >>> arr Set.singleton)
-
-  need [ "_build/html/" </> Text.unpack path | path <- foldMap Set.toList diagrams ]
-  pure (flattenTree tree)
+  tree <- flattenTree <$> concatMapM (runFilter mod) tree
+  traced "postprocessing" do
+    () <- evaluate (rnf tree)
+    pure tree
 
 detailsHighlight, divHighlight
   :: Set Text
@@ -132,16 +127,7 @@ divHighlight icons add =
       _     -> () >>- empty
   where isIcon t = t <$ icons ^. at (Text.toLower t)
 
-renderKatex, resolveWikilink, uncommentAgda, renderDiagrams, headerEmoji :: HtmlFilter Action Text
-
-renderKatex = proc it -> do
-  it >- el "eq"
-  k <- () >>- case it ^? attr "env" of
-    Just "math"    -> pure getInlineMath
-    Just "display" -> pure getDisplayMath
-    _              -> empty
-  it >>- foldF (deepF _text) >>> eff k
-     >>> parseF
+resolveWikilink, uncommentAgda, renderDiagrams, headerEmoji :: HtmlFilter Action Text
 
 resolveWikilink = proc it -> do
   it >- _a ? A.title "wikilink"
@@ -178,11 +164,10 @@ renderDiagrams = proc it -> do
     ident :: Filter Action a (Attrs Text)
     ident = maybe (pure mempty) (A.id_ . pure) (it ^? A._id)
 
-  ()
-    >>- eff (\_ -> writeFile' ("_build/diagrams/" </> sha <.> "tex") (Text.unpack text))
-    >>> H.div [ diagram "light" , diagram "dark" ]
-          ! ident
-          ! A.class_ "diagram-container"
+  () >>-
+      H.div [ diagram "light" , diagram "dark" ]
+        ! ident
+        ! A.class_ "diagram-container"
     >>> id &> arr (_attrs <>~ propagate)
 
 headerEmoji = asum
@@ -217,3 +202,14 @@ addCitationTitles refMap = proc it -> do
     >>> isF (flip Map.lookup refMap <=< Text.stripPrefix "#ref-")
   (it >>- id)
     ! (| A.title (isF id -< Cite.valToText =<< Cite.lookupVariable "title" ref) |)
+
+renderKatex :: PrecompiledTex -> HtmlFilter Action Text
+renderKatex cache = proc it -> do
+  it >- el "eq"
+  k <- () >>- case it ^? attr "env" of
+    Just "math"    -> pure (getInline cache)
+    Just "display" -> pure (getDisplay cache)
+    _              -> empty
+  it >>- foldF (deepF _text)
+     >>> arr k
+     >>> parseF
