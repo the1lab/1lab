@@ -42,6 +42,38 @@ module _ {o ℓ} (X : Poset o ℓ) where
       ; has-meet to ∩-meet)
       public
 
+
+    ∩-idl : ∀ x → top ∩ x ≡ x
+    ∩-idl x =
+      ≤-antisym (∩≤r _ _) (∩-universal _ _ _ (top-universal _) ≤-refl)
+
+    ∩-idr : ∀ x → x ∩ top ≡ x
+    ∩-idr x =
+      ≤-antisym (∩≤l _ _) (∩-universal _ _ _ ≤-refl (top-universal _))
+
+    ∩-assoc : ∀ x y z → x ∩ (y ∩ z) ≡ (x ∩ y) ∩ z
+    ∩-assoc x y z =
+      ≤-antisym
+        (∩-universal _ _ _
+          (∩-universal _ _ _ (∩≤l _ _) (≤-trans (∩≤r _ _) (∩≤l _ _)))
+          (≤-trans (∩≤r _ _) (∩≤r _ _)))
+        (∩-universal _ _ _
+          (≤-trans (∩≤l _ _) (∩≤l _ _))
+          (∩-universal _ _ _ (≤-trans (∩≤l _ _) (∩≤r _ _)) (∩≤r _ _)))
+
+    ∩-commutative : ∀ x y → x ∩ y ≡ y ∩ x
+    ∩-commutative x y =
+      ≤-antisym
+        (∩-universal _ _ _ (∩≤r _ _) (∩≤l _ _))
+        (∩-universal _ _ _ (∩≤r _ _) (∩≤l _ _))
+
+    ∩-idempotent : ∀ x → x ∩ x ≡ x
+    ∩-idempotent x =
+      ≤-antisym
+        (∩≤l _ _)
+        (∩-universal _ _ _ ≤-refl ≤-refl)
+
+
   record is-join-semilattice : Type (o ⊔ ℓ) where
     no-eta-equality
     field
@@ -59,6 +91,36 @@ module _ {o ℓ} (X : Poset o ℓ) where
       ; r≤join to r≤∪
       ; has-join to ∪-join)
       public
+
+    ∪-idl : ∀ x → bot ∪ x ≡ x
+    ∪-idl x =
+      ≤-antisym (∪-universal _ _ _ (bottom-universal _) ≤-refl) (r≤∪ _ _)
+
+    ∪-idr : ∀ x → x ∪ bot ≡ x
+    ∪-idr x =
+      ≤-antisym (∪-universal _ _ _ ≤-refl (bottom-universal _)) (l≤∪ _ _)
+
+    ∪-assoc : ∀ x y z → x ∪ (y ∪ z) ≡ (x ∪ y) ∪ z
+    ∪-assoc x y z =
+      ≤-antisym
+        (∪-universal _ _ _
+          (≤-trans (l≤∪ _ _) (l≤∪ _ _))
+          (∪-universal _ _ _ (≤-trans (r≤∪ _ _) (l≤∪ _ _)) (r≤∪ _ _)))
+        (∪-universal _ _ _
+          (∪-universal _ _ _ (l≤∪ _ _) (≤-trans (l≤∪ _ _) (r≤∪ _ _)))
+          (≤-trans (r≤∪ _ _) (r≤∪ _ _)))
+
+    ∪-commutative : ∀ x y → x ∪ y ≡ y ∪ x
+    ∪-commutative x y =
+      ≤-antisym
+        (∪-universal _ _ _ (r≤∪ _ _) (l≤∪ _ _))
+        (∪-universal _ _ _ (r≤∪ _ _) (l≤∪ _ _))
+
+    ∪-idempotent : ∀ x → x ∪ x ≡ x
+    ∪-idempotent x =
+      ≤-antisym
+        (∪-universal _ _ _ ≤-refl ≤-refl)
+        (l≤∪ _ _)
 ```
 
 <!--
@@ -257,40 +319,6 @@ module Meet-semilattice {o ℓ} (L : Meet-semilattice o ℓ) where
   open is-meet-semilattice has-is-meet-semilattice public
 ```
 
-```agda
-  ∩-idl : ∀ x → top ∩ x ≡ x
-  ∩-idl x =
-    ≤-antisym (∩≤r _ _) (∩-universal _ _ _ (top-universal _) ≤-refl)
-
-  ∩-idr : ∀ x → x ∩ top ≡ x
-  ∩-idr x =
-    ≤-antisym (∩≤l _ _) (∩-universal _ _ _ ≤-refl (top-universal _))
-
-  ∩-assoc : ∀ x y z → x ∩ (y ∩ z) ≡ (x ∩ y) ∩ z
-  ∩-assoc x y z =
-    ≤-antisym
-      (∩-universal _ _ _
-        (∩-universal _ _ _ (∩≤l _ _) (≤-trans (∩≤r _ _) (∩≤l _ _)))
-        (≤-trans (∩≤r _ _) (∩≤r _ _)))
-      (∩-universal _ _ _
-        (≤-trans (∩≤l _ _) (∩≤l _ _))
-        (∩-universal _ _ _ (≤-trans (∩≤l _ _) (∩≤r _ _)) (∩≤r _ _)))
-```
-
-```agda
-  ∩-commutative : ∀ x y → x ∩ y ≡ y ∩ x
-  ∩-commutative x y =
-    ≤-antisym
-      (∩-universal _ _ _ (∩≤r _ _) (∩≤l _ _))
-      (∩-universal _ _ _ (∩≤r _ _) (∩≤l _ _))
-
-  ∩-idempotent : ∀ x → x ∩ x ≡ x
-  ∩-idempotent x =
-    ≤-antisym
-      (∩≤l _ _)
-      (∩-universal _ _ _ ≤-refl ≤-refl)
-```
-
 <!--
 ```agda
 module Join-semilattice {o ℓ} (L : Join-semilattice o ℓ) where
@@ -306,35 +334,5 @@ module Join-semilattice {o ℓ} (L : Join-semilattice o ℓ) where
   has-is-join-semilattice = L .snd
 
   open is-join-semilattice has-is-join-semilattice public
-
-  ∪-idl : ∀ x → bot ∪ x ≡ x
-  ∪-idl x =
-    ≤-antisym (∪-universal _ _ _ (bottom-universal _) ≤-refl) (r≤∪ _ _)
-
-  ∪-idr : ∀ x → x ∪ bot ≡ x
-  ∪-idr x =
-    ≤-antisym (∪-universal _ _ _ ≤-refl (bottom-universal _)) (l≤∪ _ _)
-
-  ∪-assoc : ∀ x y z → x ∪ (y ∪ z) ≡ (x ∪ y) ∪ z
-  ∪-assoc x y z =
-    ≤-antisym
-      (∪-universal _ _ _
-        (≤-trans (l≤∪ _ _) (l≤∪ _ _))
-        (∪-universal _ _ _ (≤-trans (r≤∪ _ _) (l≤∪ _ _)) (r≤∪ _ _)))
-      (∪-universal _ _ _
-        (∪-universal _ _ _ (l≤∪ _ _) (≤-trans (l≤∪ _ _) (r≤∪ _ _)))
-        (≤-trans (r≤∪ _ _) (r≤∪ _ _)))
-
-  ∪-commutative : ∀ x y → x ∪ y ≡ y ∪ x
-  ∪-commutative x y =
-    ≤-antisym
-      (∪-universal _ _ _ (r≤∪ _ _) (l≤∪ _ _))
-      (∪-universal _ _ _ (r≤∪ _ _) (l≤∪ _ _))
-
-  ∪-idempotent : ∀ x → x ∪ x ≡ x
-  ∪-idempotent x =
-    ≤-antisym
-      (∪-universal _ _ _ ≤-refl ≤-refl)
-      (l≤∪ _ _)
 ```
 -->
