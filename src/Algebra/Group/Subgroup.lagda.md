@@ -9,9 +9,7 @@ open import Cat.Diagram.Equaliser.Kernel
 
 open import Data.Power
 
-open import Order.Instances.Subobjects
-
-import Order.Reasoning as Poset
+import Cat.Displayed.Instances.Subobjects
 ```
 -->
 
@@ -24,23 +22,23 @@ module Algebra.Group.Subgroup where
 private variable
   ℓ ℓ' : Level
   G : Group ℓ
+private module _ {ℓ} where open Cat.Displayed.Instances.Subobjects (Groups ℓ) public
 ```
 -->
 
 # Subgroups
 
 A **subgroup** $m$ of a group $G$ is a [[monomorphism]] $H \xto{m} G$,
-that is, an object of the [poset of subobjects] $\Sub(G)$. Since group
+that is, an object of the [[poset of subobjects]] $\Sub(G)$. Since group
 homomorphisms are injective exactly when their underlying function is an
 [embedding], we can alternatively describe this as a condition on a
 predicate $G \to \prop$.
 
-[poset of subobjects]: Order.Instances.Subobjects.html
 [embedding]: 1Lab.Equiv.Embedding.html
 
 ```agda
 Subgroup : Group ℓ → Type (lsuc ℓ)
-Subgroup {ℓ = ℓ} G = Σ (Group ℓ) λ H → H Groups.↪ G
+Subgroup {ℓ = ℓ} G = Subobject G
 ```
 
 A proposition $H : G \to \prop$ of a group $(G, \star)$ **represents a
@@ -77,14 +75,13 @@ rep-subgroup→group-on {G = G} H sg = to-group-on sg′ where
   sg′ .make-group.idl x = Σ-prop-path (λ x → H x .is-tr) idl
 
 predicate→subgroup : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Subgroup G
-predicate→subgroup {G = G} H p = _ , record { mor = map ; monic = ism } where
-  map : Groups.Hom (el! (Σ _ (∣_∣ ⊙ H))
-    , rep-subgroup→group-on H p) G
-  map .hom = fst
-  map .preserves .is-group-hom.pres-⋆ x y = refl
+predicate→subgroup {G = G} H p = record { map = it ; monic = ism } where
+  it : Groups.Hom (el! (Σ _ (∣_∣ ⊙ H)) , rep-subgroup→group-on H p) G
+  it .hom = fst
+  it .preserves .is-group-hom.pres-⋆ x y = refl
 
-  ism : Groups.is-monic map
-  ism = Homomorphism-monic map (λ p → Σ-prop-path (λ _ → hlevel!) p)
+  ism : Groups.is-monic it
+  ism = Homomorphism-monic it (λ p → Σ-prop-path (λ _ → hlevel!) p)
 ```
 
 # Kernels and Images
@@ -107,8 +104,8 @@ module _ {ℓ} where
 
   Ker-subgroup : ∀ {A B : Group ℓ} → Groups.Hom A B → Subgroup A
   Ker-subgroup f =
-    ker , record { mor = kernel
-                 ; monic = Groups.is-equaliser→is-monic _ has-is-kernel }
+    record { map   = kernel
+           ; monic = Groups.is-equaliser→is-monic _ has-is-kernel }
     where
       open Kernel (Ker f)
 ```
@@ -206,7 +203,7 @@ $\im f$.
 
 ```agda
   Im[_] : Subgroup B
-  Im[_] = _ , record { mor = im→B ; monic = im↪B } where
+  Im[_] = record { map = im→B ; monic = im↪B } where
     im↪B : Groups.is-monic im→B
     im↪B = Homomorphism-monic im→B Tpath
 ```
@@ -360,7 +357,7 @@ there exists a group $H$ and a map $f : G \to H$, such that $\Sigma G
 We begin by assuming that we have a kernel and investigating some
 properties that the fibres of its inclusion have. Of course, the fibre
 over $0$ is inhabited, and they are closed under multiplication and
-inverses, though we shall not make note of that here).
+inverses, though we shall not make note of that here.
 
 ```agda
 module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where private
@@ -559,7 +556,7 @@ that, if $\rm{inc}(x) = \rm{inc}(y)$, then $(x - y) \in H$.
     module Ker[incl] = Kernel (Ker incl)
     Ker-sg = Ker-subgroup incl
     H-sg = predicate→subgroup H has-rep
-    H-g = H-sg .fst
+    H-g = H-sg .domain
 ```
 -->
 
@@ -592,16 +589,17 @@ computation, so we can conclude: Every normal subgroup is a kernel.
 
 ```agda
   Ker[incl]≡H↪G : Ker-sg ≡ H-sg
-  Ker[incl]≡H↪G = ≤-antisym ker≤H H≤ker where
-    SubG = Subobjects (Groups ℓ) Groups-is-category Grp
-    open Poset SubG
+  Ker[incl]≡H↪G = done where
+    open Precategory (Sub Grp)
     open Groups._≅_ Ker[incl]≅H-group
 
-    ker≤H : Ker-sg ≤ H-sg
-    ker≤H .fst = to
-    ker≤H .snd = Forget-is-faithful refl
+    ker≤H : Ker-sg ≤ₘ H-sg
+    ker≤H .map = to
+    ker≤H .sq = Forget-is-faithful refl
 
-    H≤ker : H-sg ≤ Ker-sg
-    H≤ker .fst = from
-    H≤ker .snd = Forget-is-faithful refl
+    H≤ker : H-sg ≤ₘ Ker-sg
+    H≤ker .map = from
+    H≤ker .sq = Forget-is-faithful refl
+
+    done = Sub-is-category Groups-is-category .to-path (Sub-antisym ker≤H H≤ker)
 ```

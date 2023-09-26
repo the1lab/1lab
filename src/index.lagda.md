@@ -728,6 +728,7 @@ Cartesian fibrations:
 
 ```agda
 open import Cat.Displayed.Instances.Slice -- Canonical self-indexing
+open import Cat.Displayed.Instances.Subobjects -- Fibration of subobjects
 open import Cat.Displayed.Instances.Family -- Family fibration
 open import Cat.Displayed.Instances.DisplayedFamilies
 -- Families internal to a fibration.
@@ -948,7 +949,6 @@ Examples of actual orders:
 open import Order.Instances.Discrete -- Discrete posets
 open import Order.Instances.Props -- Ω
 open import Order.Instances.Lower -- Lower sets
-open import Order.Instances.Subobjects -- Subobjects in a univalent category
 
 open import Order.Instances.Pointwise -- The pointwise ordering on A→B
 open import Order.Instances.Pointwise.Diagrams
