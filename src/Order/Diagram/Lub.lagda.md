@@ -219,13 +219,17 @@ is-lub→is-join lub .least ub′ a<ub′ b<ub′ = lub .least ub′ λ where
 
 <!--
 ```
-private unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-join)
+is-join-is-prop
+  : ∀ {a b glb}
+  → is-prop (is-join a b glb)
+is-join-is-prop = Iso→is-hlevel 1 eqv′ (hlevel 1)
+  where unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-join)
 
 instance
   H-Level-is-join
-    : ∀ {a b lub : Ob} {n}
-    → H-Level (is-join a b lub) (suc n)
-  H-Level-is-join = prop-instance $ Iso→is-hlevel 1 eqv′ (hlevel 1)
+    : ∀ {a b glb : Ob} {n}
+    → H-Level (is-join a b glb) (suc n)
+  H-Level-is-join = prop-instance $ is-join-is-prop
 
 join-unique
   : ∀ {a b x y}

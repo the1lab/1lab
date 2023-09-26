@@ -143,13 +143,17 @@ is-glb→is-meet glb .greatest lb′ lb′<a lb′<b = glb .greatest lb′ λ wh
 
 <!--
 ```agda
-private unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-meet)
+is-meet-is-prop
+  : ∀ {a b glb}
+  → is-prop (is-meet a b glb)
+is-meet-is-prop = Iso→is-hlevel 1 eqv′ (hlevel 1)
+  where unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-meet)
 
 instance
   H-Level-is-meet
     : ∀ {a b glb : Ob} {n}
     → H-Level (is-meet a b glb) (suc n)
-  H-Level-is-meet = prop-instance $ Iso→is-hlevel 1 eqv′ (hlevel 1)
+  H-Level-is-meet = prop-instance $ is-meet-is-prop
 
 meet-unique : ∀ {a b x y} → is-meet a b x → is-meet a b y → x ≡ y
 meet-unique x-meet y-meet =
