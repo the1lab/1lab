@@ -32,7 +32,7 @@ module _ {o ℓ} (X : Poset o ℓ) where
       has-is-meet-semilattice : is-meet-semilattice X
       has-joins : ∀ {I : Type ℓ} → (f : I → Ob) → Lub X f
 
-    open is-meet-semilattice has-is-meet-semilattice
+    open is-meet-semilattice has-is-meet-semilattice public
     module has-joins {I : Type ℓ} (f : I → Ob) = Lub (has-joins f)
 
     open has-joins
@@ -45,7 +45,7 @@ module _ {o ℓ} (X : Poset o ℓ) where
       public
 
     field
-      ⋃-distrib : ∀ {I} (x : Ob) (f : I → Ob) → x ∩ ⋃ f ≡ ⋃ λ i → x ∩ f i
+      ⋃-distrib-l : ∀ {I} (x : Ob) (f : I → Ob) → x ∩ ⋃ f ≡ ⋃ λ i → x ∩ f i
 ```
 
 <!--
@@ -151,4 +151,52 @@ module Frame {o ℓ} (X : Frame o ℓ) where
   has-is-frame = X .snd
 
   open is-frame has-is-frame public
+
+  ⋃-twice
+    : ∀ {I : Type ℓ} {J : I → Type ℓ} (F : (i : I) → J i → Ob)
+    → ⋃ (λ i → ⋃ λ j → F i j)
+    ≡ ⋃ {I = Σ I J} (λ ij → F (ij .fst) (ij .snd))
+  ⋃-twice F =
+    ≤-antisym
+      (⋃-universal _ _ λ i → ⋃-universal _ _ λ j → fam≤⋃ _ (i , j))
+      (⋃-universal _ _ λ (i , j) →
+        ≤-trans (fam≤⋃ (F i) j) (fam≤⋃ _ i))
+
+  ⋃-singleton
+    : ∀ {I : Type ℓ} → (F : I → Ob)
+    → (p : is-contr I)
+    → ⋃ F ≡ F (p .centre)
+  ⋃-singleton F p =
+    ≤-antisym
+      (⋃-universal F _ λ i →
+        subst (λ e → F e ≤ F (p .centre)) (p .paths i) ≤-refl)
+      (fam≤⋃ F (p .centre))
+
+  ⋃-ap
+    : ∀ {I I′ : Type ℓ} {f : I → Ob} {g : I′ → Ob}
+    → (e : I ≃ I′)
+    → (∀ i → f i ≡ g (Equiv.to e i))
+    → ⋃ f ≡ ⋃ g
+  ⋃-ap e p = ap₂ (λ I f → ⋃ {I = I} f) (ua e) (ua→ p)
+
+  -- raised i for "index", raised f for "family"
+  ⋃-apⁱ : ∀ {I I′ : Type ℓ} {f : I′ → Ob} (e : I ≃ I′) → ⋃ (λ i → f (e .fst i)) ≡ ⋃ f
+  ⋃-apᶠ : ∀ {I : Type ℓ} {f g : I → Ob} → (∀ i → f i ≡ g i) → ⋃ f ≡ ⋃ g
+  
+  ⋃-apⁱ e = ⋃-ap e (λ i → refl)
+  ⋃-apᶠ p = ⋃-ap (_ , id-equiv) p
+
+  ⋃-distrib-r
+    : ∀ {I : Type ℓ} {f : I → Ob} {x}
+    → ⋃ f ∩ x ≡ ⋃ (λ i → f i ∩ x)
+  ⋃-distrib-r =
+    ∩-commutative _ _
+    ·· ⋃-distrib-l _ _
+    ·· ap ⋃ (funext λ _ → ∩-commutative _ _)
+
+  ⋃-monotone
+    : ∀ {I : Type ℓ} {f g : I → Ob}
+    → (∀ i → f i ≤ g i)
+    → ⋃ f ≤ ⋃ g
+  ⋃-monotone p = ⋃-universal _ _ (λ i → ≤-trans (p i) (fam≤⋃ _ _))
 ```

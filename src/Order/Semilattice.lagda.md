@@ -73,6 +73,11 @@ module _ {o ℓ} (X : Poset o ℓ) where
         (∩≤l _ _)
         (∩-universal _ _ _ ≤-refl ≤-refl)
 
+    ∩-monotone : ∀ {x x′ y y′} → x ≤ x′ → y ≤ y′ → (x ∩ y) ≤ (x′ ∩ y′)
+    ∩-monotone p q =
+      ∩-universal _ _ _
+        (≤-trans (∩≤l _ _) p)
+        (≤-trans (∩≤r _ _) q)
 
   record is-join-semilattice : Type (o ⊔ ℓ) where
     no-eta-equality
