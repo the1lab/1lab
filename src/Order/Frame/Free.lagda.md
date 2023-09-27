@@ -11,7 +11,6 @@ open import Data.Bool
 
 open import Order.Instances.Lower.Cocompletion
 open import Order.Instances.Pointwise
-open import Order.Semilattice.Order
 open import Order.Instances.Lower
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
@@ -19,7 +18,6 @@ open import Order.Semilattice
 open import Order.Frame
 open import Order.Base
 
-import Order.Frame.Reasoning as Frm
 import Order.Reasoning as Poset
 ```
 -->
@@ -49,8 +47,8 @@ open Monoid-hom
 -->
 
 ```agda
-Frame↪SLat : ∀ {ℓ} → Functor (Frames ℓ) (Semilattices ℓ)
-Frame↪SLat .F₀ A = Frm.meets A
+Frame↪SLat : ∀ {ℓ} → Functor (Frames ℓ) (Meet-semilattices ℓ)
+Frame↪SLat .F₀ A = Frame.meets A
 
 Frame↪SLat .F₁ f .hom = f .hom
 Frame↪SLat .F₁ f .preserves .Monoid-hom.pres-id = f .preserves .is-frame-hom.pres-⊤

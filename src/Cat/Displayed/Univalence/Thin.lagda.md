@@ -130,8 +130,10 @@ module _ {ℓ o′ ℓ′} {S : Type ℓ → Type o′} {spec : Thin-structure �
 
   instance
     Funlike-Hom : Funlike So.Hom
-    Funlike-Hom .Funlike._#_ = Total-hom.hom
-    Funlike-Hom .Funlike.ext p = Structured-hom-path spec (funext p)
+    Funlike-Hom = record
+      { _#_ = Total-hom.hom
+      ; ext = λ p → Structured-hom-path spec (funext p)
+      }
 
   Homomorphism-path
     : ∀ {x y : So.Ob} {f g : So.Hom x y}

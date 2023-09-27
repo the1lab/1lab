@@ -131,7 +131,7 @@ calculate that the inverse to $m$ is still a map over $y$.
     → is-strong-epi C (h .map)
     → is-strong-epi C/y h
   reflect-cover h cover = is-extremal-epi→is-strong-epi C/y C/y-lex λ m g p →
-    let inv = ext (pres-mono m) (g .map) (ap map p)
+    let inv = extn (pres-mono m) (g .map) (ap map p)
     in C/y.make-invertible
       (record
         { map      = inv .is-invertible.inv
@@ -141,7 +141,7 @@ calculate that the inverse to $m$ is still a map over $y$.
       (/-Hom-path (inv .is-invertible.invl))
       (/-Hom-path (inv .is-invertible.invr))
     where
-      ext = is-strong-epi→is-extremal-epi C cover
+      extn = is-strong-epi→is-extremal-epi C cover
 ```
 
 Since the projection functor preserves and reflects strong epimorphisms,

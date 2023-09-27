@@ -92,9 +92,13 @@ module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {subcat : Subcat C o' ℓ'} whe
   Subcat-hom-path p = Subcat-hom-pathp refl refl p
 
   instance
-    Funlike-Subcat-hom : ⦃ uo : Underlying Ob ⦄ ⦃ _ : Funlike Hom ⦄ → Funlike (Subcat-hom subcat)
-    Funlike-Subcat-hom .Funlike._#_ f x = f .hom # x
-    Funlike-Subcat-hom .Funlike.ext x = Subcat-hom-path (ext x)
+    Funlike-Subcat-hom : ⦃ _ : Funlike Hom ⦄ → Funlike (Subcat-hom subcat)
+    Funlike-Subcat-hom ⦃ i ⦄ = record
+      { au = Underlying-Σ ⦃ i .Funlike.au ⦄
+      ; bu = Underlying-Σ ⦃ i .Funlike.bu ⦄
+      ; _#_ = λ f x → apply (f .hom) x
+      ; ext = λ x → Subcat-hom-path (ext x)
+      }
 
   Subcat-hom-is-set
     : {x y : Σ[ ob ∈ Ob ] (is-ob ob)}

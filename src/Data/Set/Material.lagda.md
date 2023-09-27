@@ -1,7 +1,7 @@
 <!--
 ```agda
 {-# OPTIONS --lossy-unification #-}
-open import 1Lab.Prelude
+open import 1Lab.Prelude hiding (ext)
 
 open import Data.Sum.Base
 open import Data.Image

@@ -1,5 +1,6 @@
 <!--
 ```agda
+{-# OPTIONS -vtc.def:10 #-}
 open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
 open import Algebra.Prelude
@@ -131,11 +132,11 @@ module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where
     module B = Group-on (B .snd)
     module f = is-group-hom (f .preserves)
 
-    Tpath : {x y : image (f #_)} → x .fst ≡ y .fst → x ≡ y
+    Tpath : {x y : image (apply f)} → x .fst ≡ y .fst → x ≡ y
     Tpath {x} {y} p = Σ-prop-path (λ _ → squash) p
 
     abstract
-      Tset : is-set (image (f #_))
+      Tset : is-set (image (apply f))
       Tset = hlevel 2
 
     module Kerf = Kernel (Ker f)
@@ -153,7 +154,7 @@ reader.</summary>
 
 ```agda
     T : Type ℓ
-    T = image (f #_)
+    T = image (apply f)
 
   A/ker[_] : Group ℓ
   A/ker[_] = to-group grp where
@@ -266,7 +267,7 @@ elide the zero composite $e' \circ 0$.
     elim
       : ∀ {F} {e' : Groups.Hom A F}
           (p : e' Groups.∘ Zero.zero→ ∅ᴳ ≡ e' Groups.∘ Kerf.kernel)
-      → ∀ {x} → ∥ fibre (f #_) x ∥ → _
+      → ∀ {x : ⌞ B ⌟} → ∥ fibre (apply f) x ∥ → _
     elim {F = F} {e' = e'} p {x} =
       ∥-∥-rec-set ((e' #_) ⊙ fst) const (F .snd .Group-on.has-is-set) where abstract
       module e' = is-group-hom (e' .preserves)
@@ -280,13 +281,13 @@ representative". This follows from algebraic manipulation of group
 homomorphisms + the assumed identity $0 = e' \circ \ker f$;
 
 ```agda
-      const′ : ∀ (x y : fibre (f #_) x)
+      const′ : ∀ (x y : fibre (apply f) x)
              → e' # (x .fst) F.— e' # (y .fst) ≡ F.unit
       const′ (y , q) (z , r) =
-        e' # y F.— e' # z  ≡˘⟨ e'.pres-diff ⟩
-        e' # (y A.— z)     ≡⟨ happly (sym (ap hom p)) (y A.— z , aux) ⟩
-        e' # A.unit        ≡⟨ e'.pres-id ⟩
-        F.unit             ∎
+        (e' # y) F.— (e' # z)  ≡˘⟨ e'.pres-diff ⟩
+        e' # (y A.— z)         ≡⟨ happly (sym (ap hom p)) (y A.— z , aux) ⟩
+        e' # A.unit            ≡⟨ e'.pres-id ⟩
+        F.unit                 ∎
         where
 ```
 
@@ -302,7 +303,7 @@ But that's just algebra, hence uninteresting:
             x B.— x           ≡⟨ B.inverser ⟩
             B.unit            ∎
 
-      const : ∀ (x y : fibre (f #_) x) → e' # (x .fst) ≡ e' # (y .fst)
+      const : ∀ (x y : fibre (apply f) x) → e' # (x .fst) ≡ e' # (y .fst)
       const a b = F.zero-diff (const′ a b)
 ```
 
@@ -333,14 +334,14 @@ will compute.
     coeq .factors = Forget-is-faithful refl
 
     coeq .unique {F} {p = p} {colim = colim} prf = Forget-is-faithful (funext path)
-      where abstract
+      where
         module F = Group-on (F .snd)
-        path : ∀ x → colim # x ≡ elim p (x .snd)
+        path : ∀ (x : image (apply f)) → colim # x ≡ elim p (x .snd)
         path (x , t) =
           ∥-∥-elim
             {P = λ q → colim # (x , q) ≡ elim p q}
             (λ _ → F.has-is-set _ _)
-            (λ { (f , fp) → ap (colim #_) (Σ-prop-path (λ _ → squash) (sym fp))
+            (λ { (f , fp) → ap (apply colim) (Σ-prop-path (λ _ → squash) (sym fp))
                           ∙ (happly (ap hom prf) f) })
             t
 ```
@@ -393,8 +394,8 @@ f(yy^{-1}) = f(1) = 1$$.
     path =
       f # (y A.⋆ (x A.— y))         ≡⟨ ap (f #_) A.associative ⟩
       f # ((y A.⋆ x) A.— y)         ≡⟨ f.pres-diff ⟩
-      ⌜ f # (y A.⋆ x) ⌝ B.— f # y   ≡⟨ ap! (f.pres-⋆ y x) ⟩
-      ⌜ f # y B.⋆ f # x ⌝ B.— f # y ≡⟨ ap! (ap (_ B.⋆_) (ap (f #_) (sym q) ∙ p) ∙ B.idr) ⟩
+      ⌜ f # (y A.⋆ x) ⌝ B.— f # y   ≡⟨ ap₂ B._—_ (f.pres-⋆ y x) refl ⟩
+      ⌜ f # y B.⋆ f # x ⌝ B.— f # y ≡⟨ ap₂ B._—_ (ap (_ B.⋆_) (ap (f #_) (sym q) ∙ p) ∙ B.idr) refl ⟩
       f # y B.— f # y               ≡˘⟨ f.pres-diff ⟩
       f # (y A.— y)                 ≡⟨ ap (f #_) A.inverser ∙ f.pres-id ⟩
       B.unit                        ∎

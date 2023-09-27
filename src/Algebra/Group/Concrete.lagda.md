@@ -298,7 +298,7 @@ $(y, p(\refl) : \point{H} \equiv y)$, which means it is contractible.
     f≡p ω = ∙-filler (f # ω) (p refl) ▷ (sym (f-p ω refl) ∙ ap p (∙-idr ω))
 
     □≡□ : PathP (λ i → ∀ ω α → f≡p (ω ∙ α) i ≡ f # ω ∙ f≡p α i) (f .preserves .pres-⋆) f-p
-    □≡□ = prop!
+    □≡□ = is-prop→pathp (λ i → hlevel 1) _ _
 ```
 
 We can now apply the elimination principle and unpack our data:

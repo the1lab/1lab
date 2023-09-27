@@ -40,26 +40,34 @@ instance
   {-# DISPLAY Underlying.⌞_⌟ f x = ⌞ x ⌟ #-}
 
 record
-  Funlike {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'}
-    ⦃ au : Underlying A ⦄ ⦃ bu : Underlying B ⦄
-    (F : A → B → Type ℓ'') : Typeω where
+  Funlike {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} (F : A → B → Type ℓ'') : Typeω where
   infixl 999 _#_
 
   field
+    overlap ⦃ au ⦄ : Underlying A
+    overlap ⦃ bu ⦄ : Underlying B
     _#_ : ∀ {A B} → F A B → ⌞ A ⌟ → ⌞ B ⌟
     ext : ∀ {A B} {f g : F A B} → (∀ x → f # x ≡ g # x) → f ≡ g
 
-open Funlike ⦃ ... ⦄ public
+open Funlike ⦃ ... ⦄ using ( _#_ ; ext ) public
 
 {-# DISPLAY Funlike._#_ p f x = f # x #-}
 
+apply
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {F : A → B → Type ℓ''}
+  → ⦃ _ : Funlike F ⦄
+  → ∀ {a b} → F a b → ⌞ a ⌟ → ⌞ b ⌟
+apply = _#_
+
 _#ₚ_
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {F : A → B → Type ℓ''}
-  → ⦃ _ : Underlying A ⦄ ⦃ _ : Underlying B ⦄ ⦃ _ : Funlike F ⦄
+  → ⦃ _ : Funlike F ⦄
   → {a : A} {b : B} {f g : F a b} → f ≡ g → ∀ (x : ⌞ a ⌟) → f # x ≡ g # x
 f #ₚ x = ap₂ _#_ f refl
 
 instance
   Funlike-Fun : ∀ {ℓ ℓ'} → Funlike {lsuc ℓ} {lsuc ℓ'} {ℓ ⊔ ℓ'} {Type ℓ} {Type ℓ'} λ x y → x → y
-  Funlike-Fun .Funlike._#_ = _$_
-  Funlike-Fun .Funlike.ext = funext
+  Funlike-Fun = record
+    { _#_ = _$_
+    ; ext = funext
+    }

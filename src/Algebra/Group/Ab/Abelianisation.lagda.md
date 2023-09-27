@@ -1,5 +1,6 @@
 <!--
 ```agda
+{-# OPTIONS --show-implicit #-}
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Ab
 open import Algebra.Group
@@ -197,9 +198,9 @@ for some $\hat f : G^{ab} \to H$ derived from $f$.
 
 ```agda
 make-free-abelian : ∀ {ℓ} → make-left-adjoint (Ab↪Grp {ℓ = ℓ})
-make-free-abelian = go where
+make-free-abelian {ℓ} = go where
   open make-left-adjoint
-  go : make-left-adjoint Ab↪Grp
+  go : make-left-adjoint (Ab↪Grp {ℓ = ℓ})
   go .free G = Abelianise G
 
   go .unit G .hom = inc^ab G
