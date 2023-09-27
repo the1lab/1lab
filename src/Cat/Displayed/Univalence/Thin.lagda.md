@@ -128,13 +128,12 @@ module _ {ℓ o′ ℓ′} {S : Type ℓ → Type o′} {spec : Thin-structure �
     module So = Precategory (Structured-objects spec)
     module Som = Cat.Morphism (Structured-objects spec)
 
-  _#_ : ∀ {a b : So.Ob} → So.Hom a b → ⌞ a ⌟ → ⌞ b ⌟
-  f # x = f .Total-hom.hom x
-
-  _#ₚ_ : ∀ {a b : So.Ob} {f g : So.Hom a b } → f ≡ g → ∀ x → f # x ≡ g # x
-  f #ₚ x = happly (ap hom f) x
-
-  infixl 999 _#_
+  instance
+    Funlike-Hom : Funlike So.Hom
+    Funlike-Hom = record
+      { _#_ = Total-hom.hom
+      ; ext = λ p → Structured-hom-path spec (funext p)
+      }
 
   Homomorphism-path
     : ∀ {x y : So.Ob} {f g : So.Hom x y}

@@ -56,7 +56,7 @@ is-decidable→is-complemented {A = A} p dec = inv , intersection , union where
   inv x = el (¬ (x ∈ p)) hlevel!
 
   intersection : (p ∩ inv) ⊆ minimal
-  intersection x (x∈p , x∉p) = lift (x∉p x∈p)
+  intersection x (x∈p , x∉p) = x∉p x∈p
 
   union : maximal ⊆ (p ∪ inv)
   union x wit with dec x
@@ -74,7 +74,7 @@ intersection $(p \cap p^{-1})$ is empty.
 is-complemented→is-decidable : (p : ℙ A) → is-complemented p → is-decidable p
 is-complemented→is-decidable p (p⁻¹ , intersection , union) elt =
   □-rec!  (λ { (inl x∈p)   → yes x∈p
-             ; (inr x∈p⁻¹) → no λ x∈p → Lift.lower $ intersection elt (x∈p , x∈p⁻¹)
+             ; (inr x∈p⁻¹) → no λ x∈p → intersection elt (x∈p , x∈p⁻¹)
              })
     (union elt tt)
 ```
