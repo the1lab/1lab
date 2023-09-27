@@ -5,7 +5,7 @@ open import Cat.Prelude
 
 open import Order.Base
 
-import Order.Reasoning as Poset
+import Order.Reasoning as Pos
 ```
 -->
 
@@ -16,7 +16,7 @@ module Order.Diagram.Fixpoint {o ℓ} (P : Poset o ℓ) where
 <!--
 ```agda
 open Total-hom
-open Poset P
+open Pos P
 ```
 -->
 

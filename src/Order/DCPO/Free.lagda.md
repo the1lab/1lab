@@ -393,13 +393,11 @@ Free-Pointed-dcpo .F₀ A =
   Parts-pointed-dcpo A
 Free-Pointed-dcpo .F₁ {x = A} f =
   to-strict-scott-bottom (part-map f)
-    (λ _ _ → part-map-⊑)
+    (part-map-⊑)
     (λ _ _ → part-map-lub {A = A} f)
     (λ _ → part-map-never)
-Free-Pointed-dcpo .F-id =
-  strict-scott-path part-map-id
-Free-Pointed-dcpo .F-∘ f g =
-  strict-scott-path (part-map-∘ f g)
+Free-Pointed-dcpo .F-id = strict-scott-path part-map-id
+Free-Pointed-dcpo .F-∘ f g = strict-scott-path (part-map-∘ f g)
 ```
 
 Finally, we shall show that this functor is left-adjoint to the
@@ -521,7 +519,7 @@ Free-Pointed-dcpo⊣Forget-Pointed-dcpo .unit .is-natural x y f =
   funext λ _ → sym (always-natural f)
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo .counit .η D =
   to-strict-scott-bottom (part-counit D)
-    (part-counit-⊑ D)
+    (part-counit-⊑ D _ _)
     (λ s dir → part-counit-lub D s (dir .semidirected))
     (part-counit-never D)
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo .counit .is-natural D E f =

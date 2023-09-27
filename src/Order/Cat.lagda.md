@@ -7,7 +7,7 @@ open import Cat.Prelude
 
 open import Order.Base
 
-import Order.Reasoning as Poset
+import Order.Reasoning as Pos
 ```
 -->
 
@@ -53,10 +53,19 @@ Posets↪Strict-cats : ∀ {ℓ ℓ′} → Functor (Posets ℓ ℓ′) (Strict-
 Posets↪Strict-cats .F₀ P = poset→category P , Poset.has-is-set P
 
 Posets↪Strict-cats .F₁ f .F₀ = f .hom
-Posets↪Strict-cats .F₁ f .F₁ = f .preserves _ _
+Posets↪Strict-cats .F₁ f .F₁ = f .pres
 Posets↪Strict-cats .F₁ {y = y} f .F-id    = Poset.≤-thin y _ _
 Posets↪Strict-cats .F₁ {y = y} f .F-∘ g h = Poset.≤-thin y _ _
 
 Posets↪Strict-cats .F-id    = Functor-path (λ _ → refl) λ _ → refl
 Posets↪Strict-cats .F-∘ f g = Functor-path (λ _ → refl) λ _ → refl
+```
+
+```agda
+Forget-poset : ∀ {o ℓ} → Functor (Posets o ℓ) (Sets o)
+∣ Forget-poset .F₀ P ∣    = Poset.Ob P
+Forget-poset .F₀ P .is-tr = Poset.has-is-set P
+Forget-poset .F₁ = apply
+Forget-poset .F-id = refl
+Forget-poset .F-∘ f g = refl
 ```

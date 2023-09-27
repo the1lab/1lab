@@ -160,8 +160,8 @@ make-free-slat .universal {x} {y} f = done module slat-universal where
   module go = fold-K x y f
   go = fold-K x y f
 
-  monotone : (P Q : ⌞ K[ x ] ⌟) → (∀ i → i ∈ P .fst → i ∈ Q .fst) → go P y.≤ go Q
-  monotone P Q P≤Q = fold-K.ε′ x y f (P .fst) (P .snd) .Lub.least (go Q)
+  monotone : {P Q : ⌞ K[ x ] ⌟} → (∀ i → i ∈ P .fst → i ∈ Q .fst) → go P y.≤ go Q
+  monotone {P} {Q} P≤Q = fold-K.ε′ x y f (P .fst) (P .snd) .Lub.least (go Q)
     λ (i , i∈P) → fold-K.ε′ x y f (Q .fst) (Q .snd) .Lub.fam≤lub (i , P≤Q i i∈P)
 
   opaque
@@ -190,7 +190,7 @@ make-free-slat .universal {x} {y} f = done module slat-universal where
 
   done : Join-semilattices.Hom (make-free-slat .free x) y
   done .Subcat-hom.hom .hom = go
-  done .Subcat-hom.hom .preserves = monotone
+  done .Subcat-hom.hom .pres {x} {y} = monotone {x} {y}
   done .Subcat-hom.witness .pres-bottoms = preserves-bottom Kx.has-bottom y.has-bottom go pres-⊥
   done .Subcat-hom.witness .pres-joins = preserves-join Kx.has-joins y.has-joins go pres-∪
 
@@ -203,7 +203,7 @@ make-free-slat .universal {x} {y} f = done module slat-universal where
 make-free-slat .commutes {x} {y} f = slat-universal.comm {x = x} {y} f
 
 make-free-slat .unique {x = x} {y = y} {f = f} {g = g} w =
-  Subcat-hom-path $ Homomorphism-path λ kf → ∥-∥-rec hlevel! (comm kf) (K-reduce x kf) where
+  ext λ kf → ∥-∥-rec (y.has-is-set _ _) (comm kf) (K-reduce x kf) where
   module Kx = Join-semilattice K[ x ]
   module y = Join-semilattice y
 

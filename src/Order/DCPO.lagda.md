@@ -8,10 +8,11 @@ open import Data.Bool
 
 open import Order.Diagram.Lub
 open import Order.Base
+open import Order.Cat
 
 import Cat.Reasoning
 
-import Order.Reasoning as Poset
+import Order.Reasoning as Pos
 ```
 -->
 
@@ -36,7 +37,7 @@ $f : I \to P$ is a **directed family** when $I$ is merely inhabited.
 
 ```agda
 module _ {o ℓ} (P : Poset o ℓ) where
-  open Poset P
+  open Pos P
 
   is-semidirected-family : ∀ {Ix : Type o} → (Ix → Ob) → Type _
   is-semidirected-family {Ix = Ix} f = ∀ i j → ∃[ k ∈ Ix ] (f i ≤ f k × f j ≤ f k)
@@ -146,8 +147,8 @@ $$
       → (f : P.Ob → Q.Ob)
       → (∀ {Ix} (s : Ix → Poset.Ob P) (fam : is-directed-family P s)
          → ∀ x → is-lub P s x → is-lub Q (f ⊙ s) (f x))
-      → is-monotone f (P .snd) (Q .snd)
-    dcpo+scott→monotone is-dcpo f scott x y p =
+      → is-monotone f (P .Poset.poset) (Q .Poset.poset)
+    dcpo+scott→monotone is-dcpo f scott {x} {y} p =
       is-lub.fam≤lub fs-lub (lift true)
       where
 
@@ -184,7 +185,7 @@ P$ is a directed family, then $fs : I \to Q$ is still a directed family.
     → is-directed-family Q (f .hom ⊙ s)
   monotone∘directed f dir .elt = dir .elt
   monotone∘directed f dir .is-directed-family.semidirected i j =
-    ∥-∥-map (Σ-map₂ (×-map (f .preserves _ _) (f .preserves _ _)))
+    ∥-∥-map (Σ-map₂ (×-map (f .pres) (f .pres)))
       (dir .semidirected i j)
 ```
 
@@ -250,7 +251,7 @@ DCPO : (o ℓ : Level) → Type _
 DCPO o ℓ = DCPOs.Ob {o} {ℓ}
 
 Forget-DCPO : ∀ {o ℓ} → Functor (DCPOs o ℓ) (Sets o)
-Forget-DCPO = πᶠ _ F∘ Forget-subcat
+Forget-DCPO = Forget-poset F∘ Forget-subcat
 ```
 -->
 
@@ -270,13 +271,10 @@ module DCPO {o ℓ} (D : DCPO o ℓ) where
   poset : Poset o ℓ
   poset = D .fst
 
-  set : Set o
-  set = D .fst .fst
-
-  open Poset poset public
+  open Pos poset hiding (poset) public
 
   poset-on : Poset-on ℓ Ob
-  poset-on = D .fst .snd
+  poset-on = D .fst .Poset.poset
 
   has-dcpo : is-dcpo poset
   has-dcpo = D .snd
@@ -299,33 +297,33 @@ module Scott {o ℓ} {D E : DCPO o ℓ} (f : DCPOs.Hom D E) where
   mono : Posets.Hom D.poset E.poset
   mono = Subcat-hom.hom f
 
-  hom : D.Ob → E.Ob
-  hom x = Total-hom.hom mono x
+  -- hom : D.Ob → E.Ob
+  -- hom x = Total-hom.hom mono x
 
-  monotone : ∀ x y → x D.≤ y → hom x E.≤ hom y
-  monotone = Total-hom.preserves mono
+  monotone : ∀ {x y} → x D.≤ y → (f # x) E.≤ (f # y)
+  monotone = Monotone.pres mono
 
   opaque
     pres-directed-lub
       : ∀ {Ix} (s : Ix → D.Ob) → is-directed-family D.poset s
-      → ∀ x → is-lub D.poset s x → is-lub E.poset (hom ⊙ s) (hom x)
+      → ∀ x → is-lub D.poset s x → is-lub E.poset (apply f ⊙ s) (f # x)
     pres-directed-lub = Subcat-hom.witness f
 
     directed
       : ∀ {Ix} {s : Ix → D.Ob} → is-directed-family D.poset s
-      → is-directed-family E.poset (hom ⊙ s)
+      → is-directed-family E.poset (apply f ⊙ s)
     directed dir = monotone∘directed (Subcat-hom.hom f) dir
 
     pres-⋃
       : ∀ {Ix} (s : Ix → D.Ob) → (dir : is-directed-family D.poset s)
-      → hom (D.⋃ s dir) ≡ E.⋃ (hom ⊙ s) (directed dir)
+      → f # (D.⋃ s dir) ≡ E.⋃ (apply f ⊙ s) (directed dir)
     pres-⋃ s dir =
       E.≤-antisym
         (is-lub.least (pres-directed-lub s dir (D.⋃ s dir) (D.⋃.has-lub s dir))
-          (E.⋃ (hom ⊙ s) (directed dir))
-          (E.⋃.fam≤lub (hom ⊙ s) (directed dir)))
-        (E.⋃.least (hom ⊙ s) (directed dir) (hom (D.⋃ s dir)) λ i →
-          monotone (s i) (D.⋃ s dir) (D.⋃.fam≤lub s dir i))
+          (E.⋃ (apply f ⊙ s) (directed dir))
+          (E.⋃.fam≤lub (apply f ⊙ s) (directed dir)))
+        (E.⋃.least (apply f ⊙ s) (directed dir) (mono # D.⋃ s dir) λ i →
+          monotone (D.⋃.fam≤lub s dir i))
 ```
 </details>
 
@@ -340,12 +338,12 @@ module _ {o ℓ} {D E : DCPO o ℓ} where
 
   scott-path
     : ∀ {f g : DCPOs.Hom D E}
-    → (∀ x → Scott.hom f x ≡ Scott.hom g x)
+    → (∀ x → f # x ≡ g # x)
     → f ≡ g
-  scott-path p =
-    Subcat-hom-path $
-    total-hom-path _ (funext p) $
-    is-prop→pathp (λ i → is-monotone-is-prop (λ x → p x i) D.poset-on E.poset-on) _ _
+  scott-path p = ext p
+    -- Subcat-hom-path $
+    -- total-hom-path _ (funext p) $
+    -- is-prop→pathp (λ i → is-monotone-is-prop (λ x → p x i) D.poset-on E.poset-on) _ _
 ```
 -->
 
@@ -356,20 +354,20 @@ chosen _assignment_ of least upper bounds, then it is Scott-continuous.
 ```agda
   to-scott
     : (f : D.Ob → E.Ob)
-    → (∀ x y → x D.≤ y → f x E.≤ f y)
+    → (∀ {x y} → x D.≤ y → f x E.≤ f y)
     → (∀ {Ix} (s : Ix → D.Ob) → (dir : is-directed-family D.poset s)
        → is-lub E.poset (f ⊙ s) (f (D.⋃ s dir)))
     → DCPOs.Hom D E
   to-scott f monotone pres-⋃ =
-    sub-hom (total-hom f monotone) pres-lub where
+    sub-hom (record { pres = monotone }) pres-lub where
       pres-lub
         : ∀ {Ix} (s : Ix → D.Ob) → (dir : is-directed-family D.poset s)
         → ∀ x → is-lub D.poset s x → is-lub E.poset (f ⊙ s) (f x)
       pres-lub s dir x x-lub .is-lub.fam≤lub i =
-        monotone _ _ (is-lub.fam≤lub x-lub i)
+        monotone (is-lub.fam≤lub x-lub i)
       pres-lub s dir x x-lub .is-lub.least y le =
-        f x              E.≤⟨ monotone _ _ (is-lub.least x-lub _ (D.⋃.fam≤lub s dir)) ⟩
-        f (D.⋃ s dir)    E.=⟨ lub-unique E.poset (pres-⋃ s dir) (E.⋃.has-lub (f ⊙ s) (monotone∘directed (total-hom f monotone) dir)) ⟩
+        f x              E.≤⟨ monotone (is-lub.least x-lub _ (D.⋃.fam≤lub s dir)) ⟩
+        f (D.⋃ s dir)    E.=⟨ lub-unique E.poset (pres-⋃ s dir) (E.⋃.has-lub (f ⊙ s) (monotone∘directed record { pres = monotone } dir)) ⟩
         E.⋃ (f ⊙ s) _    E.≤⟨ E.⋃.least _ _ y le ⟩
         y                E.≤∎
 ```
@@ -384,5 +382,5 @@ is monotone, and thus Scott-continuous.
        → ∀ x → is-lub D.poset s x → is-lub E.poset (f ⊙ s) (f x))
     → DCPOs.Hom D E
   to-scott-directed f pres =
-    sub-hom (total-hom f (dcpo+scott→monotone D.has-dcpo f pres)) pres
+    sub-hom (record { pres = dcpo+scott→monotone D.has-dcpo f pres }) pres
 ```

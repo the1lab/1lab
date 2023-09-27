@@ -11,10 +11,11 @@ open import Order.Diagram.Glb
 open import Order.Diagram.Lub
 open import Order.Subposet
 open import Order.Base
+open import Order.Cat
 
 import Cat.Reasoning
 
-import Order.Reasoning as Poset
+import Order.Reasoning as Pos
 ```
 -->
 
@@ -151,13 +152,13 @@ module _ {o ℓ} (X : Poset o ℓ) where
 # Morphisms of Semilattices
 
 ```agda
-module _ {o ℓ} {X Y : Poset o ℓ} where
+module _ {o ℓ o′ ℓ′} {X : Poset o ℓ} {Y : Poset o′ ℓ′} where
   private
-    module X = Poset X
-    module Y = Poset Y
+    module X = Pos X
+    module Y = Pos Y
     open Total-hom
 
-  record preserves-finite-meets (f : Posets.Hom X Y) : Type (o ⊔ ℓ) where
+  record preserves-finite-meets (f : Monotone X Y) : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
     no-eta-equality
     field
       pres-tops
@@ -169,7 +170,7 @@ module _ {o ℓ} {X Y : Poset o ℓ} where
         → is-meet X x y meet
         → is-meet Y (f .hom x) (f .hom y) (f .hom meet)
 
-  record preserves-finite-joins (f : Posets.Hom X Y) : Type (o ⊔ ℓ) where
+  record preserves-finite-joins (f : Monotone X Y) : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
     no-eta-equality
     field
       pres-bottoms
@@ -185,7 +186,7 @@ module _ {o ℓ} {X Y : Poset o ℓ} where
 <!--
 ```agda
   preserves-finite-meets-is-prop
-    : (f : Posets.Hom X Y)
+    : (f : Monotone X Y)
     → is-prop (preserves-finite-meets f)
   preserves-finite-meets-is-prop f =
     Iso→is-hlevel 1 eqv $
@@ -195,7 +196,7 @@ module _ {o ℓ} {X Y : Poset o ℓ} where
     where unquoteDecl eqv = declare-record-iso eqv (quote preserves-finite-meets)
 
   preserves-finite-joins-is-prop
-    : (f : Posets.Hom X Y)
+    : (f : Monotone X Y)
     → is-prop (preserves-finite-joins f)
   preserves-finite-joins-is-prop f =
     Iso→is-hlevel 1 eqv $
@@ -262,7 +263,7 @@ module _ where
 <!--
 ```agda
 module _ {o ℓ o′ ℓ'} {X : Poset o ℓ} {Y : Poset o′ ℓ'} where
-  private module Y = Poset Y
+  private module Y = Pos Y
 
   opaque
     preserves-bottom
@@ -326,8 +327,7 @@ Join-semilattice o ℓ = Join-semilattices.Ob {o} {ℓ}
 ```agda
 Forget-join-semilattice : ∀ o ℓ → Functor (Join-semilattices o ℓ) (Sets o)
 Forget-join-semilattice o ℓ =
-  Forget-structure (Poset-structure o ℓ)
-    F∘ Forget-subcat {subcat = Join-semilattices-subcat _ _}
+  Forget-poset F∘ Forget-subcat {subcat = Join-semilattices-subcat _ _}
 {-# DISPLAY Meet-semilattices.Ob {o} {ℓ} = Meet-semilattice o ℓ #-}
 {-# DISPLAY Join-semilattices.Ob {o} {ℓ} = Join-semilattice o ℓ #-}
 ```
@@ -351,10 +351,7 @@ module Meet-semilattice {o ℓ} (L : Meet-semilattice o ℓ) where
   poset : Poset o ℓ
   poset = L .fst
 
-  set : Set o
-  set = L .fst .fst
-
-  open Poset poset public
+  open Pos poset hiding (poset) public
 
   has-is-meet-semilattice : is-meet-semilattice poset
   has-is-meet-semilattice = L .snd
@@ -413,10 +410,7 @@ module Join-semilattice {o ℓ} (L : Join-semilattice o ℓ) where
   poset : Poset o ℓ
   poset = L .fst
 
-  set : Set o
-  set = L .fst .fst
-
-  open Poset poset public
+  open Pos poset hiding (poset) public
 
   has-is-join-semilattice : is-join-semilattice poset
   has-is-join-semilattice = L .snd

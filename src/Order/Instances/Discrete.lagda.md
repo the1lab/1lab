@@ -6,6 +6,8 @@ open import Cat.Prelude
 
 open import Order.Diagram.Lub
 open import Order.Base
+open import Order.Cat
+
 
 import Order.Reasoning as Poset
 ```
@@ -36,27 +38,28 @@ This extends to a functor from $\Sets$ into the category of posets.
 ```agda
 DiscF : ∀ {ℓ} → Functor (Sets ℓ) (Posets ℓ ℓ)
 DiscF .Functor.F₀ = Disc
-DiscF .Functor.F₁ f = total-hom f (λ _ _ p → ap f p)
-DiscF .Functor.F-id = total-hom-path _ refl refl
-DiscF .Functor.F-∘ f g = total-hom-path _ refl refl
+DiscF .Functor.F₁ f = record
+  { hom = f
+  ; pres = λ p → ap f p
+  }
+DiscF .Functor.F-id = ext λ _ → refl
+DiscF .Functor.F-∘ f g = ext λ _ → refl
 ```
 
 Furthermore, this functor is a [[left adjoint]] to the forgetful functor
 into $\Sets$.
 
 ```agda
-DiscF⊣Forget : ∀ {ℓ} → DiscF {ℓ} ⊣ πᶠ _
+DiscF⊣Forget : ∀ {ℓ} → DiscF {ℓ} ⊣ Forget-poset
 DiscF⊣Forget ._⊣_.unit ._=>_.η A x = x
 DiscF⊣Forget ._⊣_.unit ._=>_.is-natural _ _ _ = refl
-DiscF⊣Forget ._⊣_.counit ._=>_.η P =
-  total-hom (λ x → x) (λ _ _ → Poset.path→≤ P)
+DiscF⊣Forget ._⊣_.counit ._=>_.η P = record
+  { hom  = λ x → x
+  ; pres = Poset.path→≤ P
+  }
 DiscF⊣Forget ._⊣_.counit ._=>_.is-natural P Q f =
-  total-hom-path _ refl
-    (funext λ _ → funext λ _ → funext λ _ → Poset.≤-thin Q _ _)
-DiscF⊣Forget ._⊣_.zig {A = A} =
-  total-hom-path _ refl $
-  funext λ x → funext λ y → funext λ p →
-  J (λ y p → transport (λ i → p (~ i) ≡ y) refl ≡ p) (transport-refl _) p
+  ext λ _ → refl
+DiscF⊣Forget ._⊣_.zig {A = A} = ext λ _ → refl
 DiscF⊣Forget ._⊣_.zag = refl
 ```
 

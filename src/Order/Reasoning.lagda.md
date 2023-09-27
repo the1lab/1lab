@@ -26,10 +26,11 @@ the syntax, we intersperse the justification for _why_ $a \le b$ and $b
 c$ are supported, too.
 
 ```agda
-open Poset-on (P .snd) public
+open Poset P public
 
-Ob : Type ℓ
-Ob = ⌞ P ⌟
+set : Set ℓ
+∣ set ∣ = Ob
+set .is-tr = has-is-set
 
 private variable
   a b c d : ⌞ P ⌟

@@ -1,7 +1,8 @@
 <!--
 ```agda
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Prelude
+
+import Cat.Reasoning
 ```
 -->
 
@@ -120,6 +121,16 @@ Poset-on-path
   → (∀ x y → Poset-on._≤_ P x y ≡ Poset-on._≤_ Q x y)
   → P ≡ Q
 Poset-on-path p = Poset-on-pathp refl (funext λ x → funext λ y → p x y)
+
+record Poset o ℓ : Type (lsuc (o ⊔ ℓ)) where
+  field
+    Ob       : Type o
+    poset    : Poset-on ℓ Ob
+  open Poset-on poset public
+
+instance
+  Underlying-Poset : ∀ {o ℓ} → Underlying (Poset o ℓ)
+  Underlying-Poset = record { ⌞_⌟ = Poset.Ob }
 ```
 -->
 
@@ -136,55 +147,125 @@ composites, since our "homs" are propositions!
 is-monotone
   : ∀ {o o' ℓ ℓ'} {A : Type o} {B : Type o'}
   → (f : A → B) → Poset-on ℓ A → Poset-on ℓ' B → Type _
-is-monotone f P Q = ∀ x y → x P.≤ y → f x Q.≤ f y
-  where
-    module P = Poset-on P
-    module Q = Poset-on Q
+is-monotone f P Q = ∀ {x y} → x P.≤ y → f x Q.≤ f y where
+  module P = Poset-on P
+  module Q = Poset-on Q
 
 is-monotone-is-prop
   : ∀ {o o' ℓ ℓ'} {A : Type o} {B : Type o'}
   → (f : A → B) (P : Poset-on ℓ A) (Q : Poset-on ℓ' B)
   → is-prop (is-monotone f P Q)
 is-monotone-is-prop f P Q =
-  Π-is-hlevel³ 1 λ _ _ _ → Poset-on.≤-thin Q
+  Π-is-hlevel′ 1 λ _ →
+  Π-is-hlevel′ 1 λ _ →
+  fun-is-hlevel 1 (Poset-on.≤-thin Q)
 
-Poset-structure : ∀ ℓ ℓ′ → Thin-structure {ℓ = ℓ} (ℓ ⊔ ℓ′) (Poset-on ℓ′)
-∣ Poset-structure ℓ ℓ′ .is-hom f P Q ∣ = is-monotone f P Q
-
-Poset-structure ℓ ℓ′ .is-hom f P Q .is-tr =
-  is-monotone-is-prop f P Q
-
-Poset-structure ℓ ℓ′ .id-is-hom x y α = α
-Poset-structure ℓ ℓ′ .∘-is-hom f g α β x y γ = α (g x) (g y) (β x y γ)
-```
-
-The last thing we have to prove is "uniqueness of identity maps": If we
-have the identity being a monotone map $(a, t) \to (a, s)$ _and_ $(a, s)
-\to (a, t)$ --- that is, we have $(x \le_s y) \leftrightarrow (x \le_t
-y)$ --- then, by propositional extensionality, we have $\le_s = \le_t$.
-Then, since equality of poset structures is controlled by equality of
-the relations, we have $s = t$!
-
-```agda
-Poset-structure ℓ ℓ′ .id-hom-unique {s = s} {t = t} α β =
-  Poset-on-path λ x y → ua (prop-ext s.≤-thin t.≤-thin (α x y) (β x y))
-  where
-    module s = Poset-on s
-    module t = Poset-on t
+record Monotone {o ℓ o′ ℓ′} (P : Poset o ℓ) (Q : Poset o′ ℓ′) : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
+  field
+    hom  : ⌞ P ⌟ → ⌞ Q ⌟
+    pres : is-monotone hom (P .Poset.poset) (Q .Poset.poset)
 ```
 
 <!--
 ```agda
-Posets : ∀ ℓ ℓ′ → Precategory (lsuc (ℓ ⊔ ℓ′)) (ℓ ⊔ ℓ′)
-Posets ℓ ℓ′ = Structured-objects (Poset-structure ℓ ℓ′)
+open Monotone public
 
-module Posets {ℓ ℓ′} = Precategory (Posets ℓ ℓ′)
-Poset : (ℓ ℓ′ : Level) → Type (lsuc (ℓ ⊔ ℓ′))
-Poset ℓ ℓ′ = Precategory.Ob (Posets ℓ ℓ′)
+Monotone-pathp
+  : ∀ {o ℓ o′ ℓ′}
+  → (P : I → Poset o ℓ) (Q : I → Poset o′ ℓ′)
+  → {f : Monotone (P i0) (Q i0)} {g : Monotone (P i1) (Q i1)}
+  → (p : PathP (λ i → ⌞ P i ⌟ → ⌞ Q i ⌟) (f .hom) (g .hom))
+  → PathP (λ i → Monotone (P i) (Q i)) f g
+Monotone-pathp P Q {f} {g} p i .hom = p i
+Monotone-pathp P Q {f} {g} p i .pres =
+  is-prop→pathp
+    (λ i → is-monotone-is-prop (p i) (P i .Poset.poset) (Q i .Poset.poset))
+    (f .pres) (g .pres) i
 
+instance
+  Funlike-Monotone : ∀ {o ℓ o′ ℓ′} → Funlike (Monotone {o} {ℓ} {o′} {ℓ′})
+  Funlike-Monotone = record
+    { _#_ = hom
+    ; ext = λ x → Monotone-pathp _ _ (funext x)
+    }
+
+module _ where
+  private variable
+    o ℓ o′ ℓ′ : Level
+    P Q R : Poset o ℓ
+
+  Idᵐ : Monotone P P
+  Idᵐ .hom x = x
+  Idᵐ .pres α = α
+
+  _∘ᵐ_ : Monotone Q R → Monotone P Q → Monotone P R
+  _∘ᵐ_ f g .hom x  = f # (g # x)
+  _∘ᵐ_ f g .pres α = f .pres (g .pres α)
+
+  instance
+    H-Level-Monotone : ∀ {n} → H-Level (Monotone P Q) (2 + n)
+    H-Level-Monotone {P = P} {Q = Q} {n = n} = basic-instance 2 $ Iso→is-hlevel 2 eqv' $
+      Σ-is-hlevel 2
+        (fun-is-hlevel 2 (Poset.has-is-set Q))
+        λ f → is-prop→is-set (is-monotone-is-prop f (P .Poset.poset) (Q .Poset.poset))
+      where
+      private unquoteDecl eqv' = declare-record-iso eqv' (quote Monotone)
+
+  Monotone-path : {f g : Monotone P Q} → (∀ x → f .hom x ≡ g .hom x) → f ≡ g
+  Monotone-path p = Monotone-pathp _ _ (funext p)
+
+
+module _ where
+  open Precategory
+```
+-->
+
+```agda
+  Posets : ∀ o ℓ → Precategory (lsuc (o ⊔ ℓ)) (o ⊔ ℓ)
+  Posets o ℓ .Ob  = Poset o ℓ
+  Posets o ℓ .Hom = Monotone
+  Posets o ℓ .Hom-set x y = hlevel 2
+  Posets o ℓ .id = Idᵐ
+  Posets o ℓ ._∘_ = _∘ᵐ_
+  Posets o ℓ .idr f = Monotone-path λ _ → refl
+  Posets o ℓ .idl f = Monotone-path λ _ → refl
+  Posets o ℓ .assoc f g h = Monotone-path λ _ → refl
+
+module Posets {o} {ℓ} = Cat.Reasoning (Posets o ℓ)
+```
+
+```agda
 Posets-is-category : ∀ {o ℓ} → is-category (Posets o ℓ)
-Posets-is-category = Structured-objects-is-category (Poset-structure _ _)
+Posets-is-category .to-path {a} {b} p = q module Poset-path where
+  open Poset
+  open Poset-on
 
+  Ob-equiv : Iso (a .Ob) (b .Ob)
+  Ob-equiv .fst = apply (Posets.to p)
+  Ob-equiv .snd = iso (apply (Posets.from p)) (λ x → Posets.invl p #ₚ x) (λ x → Posets.invr p #ₚ x)
+
+  Ob-path : a .Ob ≡ b .Ob
+  Ob-path = Iso→Path Ob-equiv
+
+  opaque
+    ≤-path : PathP (λ i → Ob-path i → Ob-path i → Type _) (a .Poset._≤_) (b .Poset._≤_)
+    ≤-path = ua→2 λ x y → ua $ prop-ext (Poset.≤-thin a) (Poset.≤-thin b)
+      (Posets.to p .pres)
+      λ α → transport (ap₂ (Poset._≤_ a) (Posets.invr p #ₚ x) (Posets.invr p #ₚ y))
+              (Posets.from p .pres α)
+
+  q : a ≡ b
+  q i .Ob = Ob-path i
+  q i .poset ._≤_ = ≤-path i
+  q i .poset .has-is-poset = is-prop→pathp
+    (λ i → is-partial-order-is-prop (≤-path i))
+    (a .poset .has-is-poset) (b .poset .has-is-poset) i
+Posets-is-category .to-path-over p = Posets.≅-pathp _ _ $ Monotone-pathp _ _ $
+  funextP λ a → path→ua-pathp (Iso→Equiv (Poset-path.Ob-equiv p)) refl
+```
+
+<!--
+```agda
 record make-poset {ℓ} ℓ′ (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ′) where
   no-eta-equality
 
@@ -203,9 +284,8 @@ record make-poset {ℓ} ℓ′ (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ′) where
   to-poset-on .Poset-on.has-is-poset .is-partial-order.≤-antisym = antisym
 
 to-poset : ∀ {ℓ ℓ′} (A : Type ℓ) → make-poset ℓ′ A → Poset ℓ ℓ′
-∣ to-poset A mk .fst ∣ = A
-to-poset A mk .fst .is-tr = Poset-on.has-is-set (make-poset.to-poset-on mk)
-to-poset A mk .snd = make-poset.to-poset-on mk
+to-poset A mk .Poset.Ob    = A
+to-poset A mk .Poset.poset = make-poset.to-poset-on mk
 ```
 -->
 
@@ -223,5 +303,5 @@ P ^opp = to-poset ⌞ P ⌟ λ where
     .make-poset.id              → ≤-refl
     .make-poset.trans f<g g<h   → ≤-trans g<h f<g
     .make-poset.antisym f<g g<f → ≤-antisym g<f f<g
-  where open Poset-on (P .snd)
+  where open Poset P
 ```

@@ -6,7 +6,7 @@ open import Cat.Displayed.Total
 
 open import Order.Base
 
-import Order.Reasoning as Poset
+import Order.Reasoning as Pos
 ```
 -->
 
@@ -34,16 +34,14 @@ module _ {o ℓ} (X : Poset o ℓ) where
 
   Subposet'
     : ∀ {ℓ'} (P : X.Ob → Type ℓ') → (∀ x → is-prop (P x)) → Poset (o ⊔ ℓ') ℓ
-  Subposet' P pprop .fst .∣_∣ = Σ[ x ∈ X.Ob ] (P x)
-  Subposet' P pprop .fst .is-tr =
-    Σ-is-hlevel 2 (X .fst .is-tr) λ x → is-prop→is-set (pprop x)
+  Subposet' P pprop .Poset.Ob = Σ[ x ∈ X.Ob ] (P x)
 
-  Subposet' P _ .snd ._≤_ px py = (px .fst) X.≤ (py .fst)
-  Subposet' P _ .snd .has-is-poset .is-partial-order.≤-thin = X.≤-thin
-  Subposet' P _ .snd .has-is-poset .is-partial-order.≤-refl = X.≤-refl
-  Subposet' P _ .snd .has-is-poset .is-partial-order.≤-trans = X.≤-trans
+  Subposet' P _ .Poset.poset ._≤_ px py = (px .fst) X.≤ (py .fst)
+  Subposet' P _ .Poset.poset .has-is-poset .is-partial-order.≤-thin = X.≤-thin
+  Subposet' P _ .Poset.poset .has-is-poset .is-partial-order.≤-refl = X.≤-refl
+  Subposet' P _ .Poset.poset .has-is-poset .is-partial-order.≤-trans = X.≤-trans
 
-  Subposet' P pprop .snd .has-is-poset .is-partial-order.≤-antisym p q =
+  Subposet' P pprop .Poset.poset .has-is-poset .is-partial-order.≤-antisym p q =
     Σ-prop-path (λ x → pprop x) (X.≤-antisym p q)
 
   Subposet : (P : X.Ob → Ω) → Poset o ℓ
@@ -51,6 +49,6 @@ module _ {o ℓ} (X : Poset o ℓ) where
 
 module _ {o ℓ} {X : Poset o ℓ} {P : Poset.Ob X → Ω} where
   Forget-subposet : Posets.Hom (Subposet X P) X
-  Forget-subposet .Total-hom.hom = fst
-  Forget-subposet .Total-hom.preserves _ _ p = p
+  Forget-subposet .Monotone.hom = fst
+  Forget-subposet .Monotone.pres p = p
 ```

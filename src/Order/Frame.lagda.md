@@ -12,7 +12,7 @@ open import Order.Diagram.Lub
 
 import Cat.Reasoning
 
-import Order.Reasoning as Poset
+import Order.Reasoning as Pos
 ```
 -->
 
@@ -24,7 +24,7 @@ module Order.Frame where
 
 ```agda
 module _ {o ℓ} (X : Poset o ℓ) where
-  open Poset X
+  open Pos X
 
   record is-frame : Type (o ⊔ lsuc ℓ) where
     no-eta-equality
@@ -55,7 +55,7 @@ module _ {o ℓ} (X : Poset o ℓ) where
     Iso→is-hlevel 1 eqv $
     Σ-is-hlevel 1 (is-meet-semilattice-is-prop X) λ _ →
     Σ-is-hlevel 1 (Π-is-hlevel′ 1 λ _ → Π-is-hlevel 1 λ _ → Lub-is-prop X) λ _ →
-    Π-is-hlevel′ 1 λ _ → Π-is-hlevel² 1 λ _ _ →  X .fst .is-tr _ _
+    Π-is-hlevel′ 1 λ _ → Π-is-hlevel² 1 λ _ _ →  Poset.has-is-set X _ _
     where unquoteDecl eqv = declare-record-iso eqv (quote is-frame)
 ```
 -->
@@ -84,7 +84,7 @@ module _ {o ℓ} {X Y : Poset o ℓ} where
     Iso→is-hlevel 1 eqv $
     ×-is-hlevel 1 (preserves-finite-meets-is-prop f) $
     Π-is-hlevel′ 1 λ _ → Π-is-hlevel³ 1 λ _ _ _ → is-lub-is-prop Y
-    where unquoteDecl eqv = declare-record-iso eqv (quote is-frame-hom) 
+    where unquoteDecl eqv = declare-record-iso eqv (quote is-frame-hom)
 ```
 -->
 
@@ -142,15 +142,16 @@ module Frame {o ℓ} (X : Frame o ℓ) where
   poset : Poset o ℓ
   poset = X .fst
 
-  set : Set o
-  set = X .fst .fst
-
-  open Poset poset public
+  open Poset poset hiding (poset) public
 
   has-is-frame : is-frame poset
   has-is-frame = X .snd
 
   open is-frame has-is-frame public
+
+  meets : Meet-semilattice o ℓ
+  meets .fst = X .fst
+  meets .snd = has-is-meet-semilattice
 
   ⋃-twice
     : ∀ {I : Type ℓ} {J : I → Type ℓ} (F : (i : I) → J i → Ob)
@@ -182,7 +183,7 @@ module Frame {o ℓ} (X : Frame o ℓ) where
   -- raised i for "index", raised f for "family"
   ⋃-apⁱ : ∀ {I I′ : Type ℓ} {f : I′ → Ob} (e : I ≃ I′) → ⋃ (λ i → f (e .fst i)) ≡ ⋃ f
   ⋃-apᶠ : ∀ {I : Type ℓ} {f g : I → Ob} → (∀ i → f i ≡ g i) → ⋃ f ≡ ⋃ g
-  
+
   ⋃-apⁱ e = ⋃-ap e (λ i → refl)
   ⋃-apᶠ p = ⋃-ap (_ , id-equiv) p
 

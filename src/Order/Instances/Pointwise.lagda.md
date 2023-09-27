@@ -47,13 +47,20 @@ another poset, you might want to consider the full subposet of $P \to Q$
 consisting of the monotone maps:
 
 ```agda
-Monotone : ∀ {ℓₒ ℓᵣ ℓₒ′ ℓᵣ′}
-         → Poset ℓₒ ℓᵣ
-         → Poset ℓₒ′ ℓᵣ′
-         → Poset (ℓₒ ⊔ ℓᵣ ⊔ ℓₒ′ ⊔ ℓᵣ′) (ℓₒ ⊔ ℓᵣ′)
-Monotone P Q = Subposet' (Pointwise ⌞ P ⌟ Q)
-  (λ f → ∀ x y → x P.≤ y → f x Q.≤ f y)
-  (λ x → hlevel!)
-  where module P = Pr P
-        module Q = Pr Q
+Poset[_,_]
+  : ∀ {ℓₒ ℓᵣ ℓₒ′ ℓᵣ′}
+  → Poset ℓₒ ℓᵣ
+  → Poset ℓₒ′ ℓᵣ′
+  → Poset (ℓₒ ⊔ ℓᵣ ⊔ ℓₒ′ ⊔ ℓᵣ′) (ℓₒ ⊔ ℓᵣ′)
+Poset[ P , Q ] .Poset.Ob = Monotone P Q
+Poset[ P , Q ] .Poset.poset =
+  make-poset.to-poset-on λ where
+    .rel f g → (x : P.Ob) → f # x Q.≤ g # x
+    .id        x → Q.≤-refl
+    .thin  α β   → funext λ _ → Q.≤-thin _ _
+    .trans α β x → Q.≤-trans (α x) (β x)
+    .antisym α β → ext λ x → Q.≤-antisym (α x) (β x)
+  where open make-poset
+        module P = Poset P
+        module Q = Poset Q
 ```

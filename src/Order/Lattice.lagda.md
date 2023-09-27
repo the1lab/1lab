@@ -11,7 +11,7 @@ open import Order.Base
 
 import Cat.Reasoning
 
-import Order.Reasoning as Poset
+import Order.Reasoning as Pos
 ```
 -->
 
@@ -23,7 +23,7 @@ module Order.Lattice where
 
 ```agda
 module _ {o ℓ} (X : Poset o ℓ) where
-  open Poset X
+  open Pos X
 
   record is-lattice : Type (o ⊔ ℓ) where
     no-eta-equality
@@ -77,8 +77,8 @@ module _ {o ℓ} {X Y : Poset o ℓ} where
     → is-prop (preserves-finite-meets-and-joins f)
   preserves-finite-meets-and-joins-is-prop f = Iso→is-hlevel 1 eqv $
     ×-is-hlevel 1 (preserves-finite-meets-is-prop f) (preserves-finite-joins-is-prop f)
-    where unquoteDecl eqv = declare-record-iso eqv (quote preserves-finite-meets-and-joins) 
-    
+    where unquoteDecl eqv = declare-record-iso eqv (quote preserves-finite-meets-and-joins)
+
 ```
 -->
 
@@ -92,7 +92,7 @@ module _ where
     : ∀ {o ℓ} {X : Poset o ℓ}
     → preserves-finite-meets-and-joins (Posets.id {x = X})
   preserves-finite-meets-and-joins-id .pres-finite-meets =
-    preserves-finite-meets-id 
+    preserves-finite-meets-id
   preserves-finite-meets-and-joins-id .pres-finite-joins =
     preserves-finite-joins-id
 
@@ -144,10 +144,7 @@ module Lattice {o} {ℓ} (L : Lattice o ℓ) where
   poset : Poset o ℓ
   poset = L .fst
 
-  set : Set o
-  set = L .fst .fst
-
-  open Poset poset public
+  open Pos poset hiding (poset) public
 
   has-is-lattice : is-lattice poset
   has-is-lattice = L .snd
