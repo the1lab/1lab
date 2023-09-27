@@ -544,7 +544,7 @@ open import Cat.Instances.InternalFunctor.Compose
 -- Composition of internal functors is functorial (also whiskering internal
 -- natural transformations)
 open import Cat.Instances.OuterFunctor
--- The category of functors from an internal category to it's base.
+-- The category of functors from an internal category to its base.
 ```
 
 Properties of the category of sets:
