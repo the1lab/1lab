@@ -3,6 +3,7 @@
 open import Cat.Prelude
 
 open import Order.Instances.Pointwise
+open import Order.Instances.Props
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
 open import Order.Base
@@ -73,3 +74,34 @@ module
   is-glb-pointwise pwise .is-glb.greatest ub′ fi<ub′ j =
     pwise j .is-glb.greatest (ub′ j) λ i → fi<ub′ i j
 ```
+
+<!--
+```agda
+Subsets-lub : ∀ {ℓ ℓ'} {X : Type ℓ'} {I : Type ℓ} (F : I → X → Ω) → Lub (Subsets X) F
+Subsets-lub F .Lub.lub = _
+Subsets-lub F .Lub.has-lub = is-lub-pointwise Props F _ λ j →
+  Props-lub (λ i → F i j) .Lub.has-lub
+
+Subsets-glb : ∀ {ℓ ℓ'} {X : Type ℓ'} {I : Type ℓ} (F : I → X → Ω) → Glb (Subsets X) F
+Subsets-glb F .Glb.glb = _
+Subsets-glb F .Glb.has-glb = is-glb-pointwise Props F _ λ j →
+  Props-glb (λ i → F i j) .Glb.has-glb
+
+Subsets-join : ∀ {ℓ} {X : Type ℓ} (P Q : X → Ω) → Join (Subsets X) P Q
+Subsets-join P Q .Join.lub = _
+Subsets-join P Q .Join.has-join = is-join-pointwise Props _ _ _ λ i →
+  Props-join (P i) (Q i) .Join.has-join
+
+Subsets-meet : ∀ {ℓ} {X : Type ℓ} (P Q : X → Ω) → Meet (Subsets X) P Q
+Subsets-meet P Q .Meet.glb = _
+Subsets-meet P Q .Meet.has-meet = is-meet-pointwise Props _ _ _ λ i →
+  Props-meet (P i) (Q i) .Meet.has-meet
+
+Subsets-bottom : ∀ {ℓ} {X : Type ℓ} → Bottom (Subsets X)
+Subsets-bottom .Bottom.bot x = el ⊥ hlevel!
+
+Subsets-top : ∀ {ℓ} {X : Type ℓ} → Top (Subsets X)
+Subsets-top .Top.top x           = el ⊤ hlevel!
+Subsets-top .Top.has-top P x x∈P = tt
+```
+-->

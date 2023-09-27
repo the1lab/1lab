@@ -173,6 +173,14 @@ elΩ T .is-tr = squash
 □-bind (inc x) f = f x
 □-bind (squash x x′ i) f = squash (□-bind x f) (□-bind x′ f) i
 
+tr-□ : ∀ {ℓ} {A : Type ℓ} → ∥ A ∥ → □ A
+tr-□ (inc x) = inc x
+tr-□ (squash x y i) = squash (tr-□ x) (tr-□ y) i
+
+□-tr : ∀ {ℓ} {A : Type ℓ} → □ A → ∥ A ∥
+□-tr (inc x) = inc x
+□-tr (squash x y i) = squash (□-tr x) (□-tr y) i
+
 instance
   Map-□ : Map (eff □)
   Map-□ .Map._<$>_ = □-map
@@ -193,5 +201,8 @@ is-set→locally-small
   → is-identity-system {A = A} (λ x y → □ (x ≡ y)) (λ x → inc refl)
 is-set→locally-small a-set .to-path = out! {pa = a-set _ _}
 is-set→locally-small a-set .to-path-over p = is-prop→pathp (λ _ → squash) _ _
+
+∫ₚ : ∀ {ℓ} {X : Type ℓ} → (X → Ω) → Type _
+∫ₚ P = Σ _ (_∈ P)
 ```
 -->

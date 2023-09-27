@@ -14,6 +14,8 @@ import Cat.Reasoning as Cr
 module Data.Set.Surjection where
 ```
 
+# Surjections {defines=surjection-between-sets}
+
 <!--
 ```agda
 open is-coequaliser

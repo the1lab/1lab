@@ -3,15 +3,22 @@
 open import Algebra.Monoid
 
 open import Cat.Displayed.Univalence.Thin
+open import Cat.Functor.Subcategory
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
-open import Data.Fin.Closure
+open import Data.Fin.Finite.Indexed
 open import Data.Fin.Base
 open import Data.Sum.Base
+open import Data.Power
 
+open import Order.Instances.Pointwise.Diagrams
+open import Order.Instances.Pointwise
+open import Order.Diagram.Lub
 open import Order.Diagram.Glb
 open import Order.Semilattice
+open import Order.Subposet
+open import Order.Base
 ```
 -->
 
@@ -31,175 +38,68 @@ impredicatively, then higher-inductively.
 ## Impredicatively
 
 The impredicative construction of $K(A)$ is as follows: $K(A)$ is the
-object of **K**uratowski-finite subsets of $A$, i.e., of predicates $P :
-A \to \Omega$ such that the total space $\sum S$ [[merely]] admits a
-surjection from some [[standard finite set]] $[n] \epi \sum S$.
+object of [[**K**uratowski-finite subsets]] of $A$, i.e., of predicates
+$P : A \to \Omega$ such that the total space $\sum S$ [[merely]] admits
+a surjection from some [[standard finite set]] $[n] \epi \sum S$.
 
 ```agda
 module _ {ℓ} (A : Set ℓ) where
-  K-finite-subset : Type ℓ
-  K-finite-subset =
-    Σ (∣ A ∣ → Ω) λ P →
-    ∃ Nat λ n →
-    Σ (Fin n → (Σ ∣ A ∣ λ x → x ∈ P)) λ f →
-      ∀ x → ∥ fibre f x ∥
-```
-
-The operator we'll choose to make $K(A)$ into a semilattice is subset
-union. This is because, under subset union, the universal property of a
-free semilattice holds "almost for free": $K$-finite subsets admit a
-reduction theorem (which we will prove after we have defined the
-semilattice) into a join of singletons, and this theorem will be
-necessary to prove the universal property.
-
-```agda
-  {- TODO [Amy 2022-12-27] Refactor Data.Power.Lattice so we can "just" use that instead -}
-  _∪_ : K-finite-subset → K-finite-subset → K-finite-subset
-  (P , pf) ∪ (Q , qf) = (λ x → el ∥ x ∈ P ⊎ x ∈ Q ∥ squash) , do
-    (Pn , Pf , Ps) ← pf
-    (Qn , Qf , Qs) ← qf
-```
-
-Now, the astute reader has probably noticed that, unless $A$ is assumed
-to have decidable equality, we can not compute the cardinality of the
-union $P \cup Q$ --- and we have placed no such assumption on $A$.
-That's why we're using $K$-finite, rather than just "finite", subsets:
-since all we have to do is _cover_ the subset with a finite ordinal,
-it's not a problem to have duplicated elements.
-
-Put another way, the "size field" of a $K$-finite subset $S$ expresses a
-_possible upper bound_ on the size of $S$, and in that case, we do not
-need decidable equality: the size of $P \cup Q$ is bounded above by
-$s(P) + s(Q)$, where we will abusively write $s$ for "an arbitrary upper
-bound". Note that this definition does not require choice to.. choose..
-an upper bound, because we're really computing a proposition.
-
-```agda
-    let
-      cover : Fin Pn ⊎ Fin Qn → Σ ∣ A ∣ (λ x → ∥ x ∈ P ⊎ x ∈ Q ∥)
-      cover = λ where
-        (inl x) → Pf x .fst , inc (inl (Pf x .snd))
-        (inr x) → Qf x .fst , inc (inr (Qf x .snd))
-```
-
-Since $[n + k] = [n] \uplus [k]$, and we know how to cover $P$ and $Q$
-by $[n]$ and $[k]$ respectively, we can define an epimorphism
-
-$$
-[n + k] \simeq [n] \uplus [k] \epi P \cup Q\text{,}
-$$
-
-by^[Since we're _merely_ showing that fibres are inhabited, we can treat
-$P \cup Q$ as $P \uplus Q$] showing that $\rm{inl}(x)$ (resp.
-$\rm{inr}(x)$) is associated with an element in $[n]$ (resp. $[k]$).
-
-```agda
-    pure
-      $ Pn + Qn
-      , (λ x → cover (Equiv.from Finite-coproduct x))
-      , λ (elt , elt∈P∪Q) → elt∈P∪Q >>= λ where
-        (inl elt∈P) → do
-          (pix , path) ← Ps (elt , elt∈P)
-          pure ( Equiv.to Finite-coproduct (inl pix)
-               , ap cover (Equiv.η Finite-coproduct _)
-               ∙ Σ-prop-path hlevel! (ap fst path))
-        (inr elt∈Q) → do
-          (qix , path) ← Qs (elt , elt∈Q)
-          pure ( Equiv.to Finite-coproduct (inr qix)
-               , ap cover (Equiv.η Finite-coproduct _)
-               ∙ Σ-prop-path hlevel! (ap fst path))
 ```
 
 Since $K(A)$ is closed under unions (and contains the least element), it
 follows that it's a semilattice, being a sub-semilattice of the power
 set of $A$. In fact, a different characterisation of $K(A)$ is as the
-smallest sub-semilattice of $K(A)$ containing the singletons and closed
-under union.
+_smallest_ sub-semilattice of $K(A)$ containing the singletons and
+closed under union.
 
 <!--
 ```agda
-  K[_] : Semilattice ℓ
-  K[_] = to-semilattice make-ka where
-    open make-semilattice
-    make-ka : make-semilattice K-finite-subset
-    make-ka .has-is-set = hlevel!
-    make-ka .top = (λ _ → el ⊥ (λ x → absurd x)) , inc (0 , (λ { () }) , λ { () })
-    make-ka .op = _∪_
-    make-ka .idl = Σ-prop-path! $ funext λ i →
-      Ω-ua (∥-∥-rec! (λ { (inr x) → x ; (inl ()) })) (λ x → inc (inr x))
-    make-ka .idempotent = Σ-prop-path! $ funext λ i → Ω-ua
-      (∥-∥-rec! (λ { (inl x) → x ; (inr x) → x }))
-      (λ x → inc (inl x))
-    make-ka .commutative = Σ-prop-path! $ funext λ i → Ω-ua
-      (∥-∥-rec squash λ { (inl x) → inc (inr x) ; (inr x) → inc (inl x) })
-      (∥-∥-rec squash λ { (inl x) → inc (inr x) ; (inr x) → inc (inl x) })
-    make-ka .associative = Σ-prop-path! $ funext λ i → Ω-ua
-      (∥-∥-rec squash λ where
-        (inl x) → inc (inl (inc (inl x)))
-        (inr x) → ∥-∥-rec squash (λ where
-          (inl x) → inc (inl (inc (inr x)))
-          (inr x) → inc (inr x)) x)
-      (∥-∥-rec squash λ where
-        (inl x) → ∥-∥-rec squash (λ where
-          (inl x) → inc (inl x)
-          (inr x) → inc (inr (inc (inl x)))) x
-        (inr x) → inc (inr (inc (inr x))))
+  K[_] : Join-semilattice ℓ ℓ
+  K[_] .fst = Subposet (Subsets ⌞ A ⌟) λ x → el (is-K-finite x) squash
+  K[_] .snd = is-join-subsemilattice
+    (Subsets ⌞ A ⌟)
+    (record { has-bottom = Subsets-bottom
+            ; has-joins  = Subsets-join })
+    minimal-is-K-finite
+    λ x y → union-is-K-finite {P = x} {Q = y}
 
-  private module KA = Semilattice K[_]
-  K-fin-lt
-    : ∀ {x y : K-finite-subset}
-    → (∀ i → i ∈ y .fst → i ∈ x .fst)
-    → x KA.≤ y
-  K-fin-lt wit = Σ-prop-path! $ funext λ i →
-    Ω-ua (λ x → inc (inl x)) (∥-∥-rec! λ { (inl x) → x ; (inr y) → wit _ y })
-
-  K-fin-lt′
-    : ∀ {x y : K-finite-subset}
-    → x KA.≤ y
-    → ∀ i → i ∈ y .fst → i ∈ x .fst
-  K-fin-lt′ wit idx y′ = transport (λ i → idx ∈ wit (~ i) .fst) (inc (inr y′))
+  private module KA = Join-semilattice K[_]
 ```
 -->
 
-We shall refer to the singleton-assigning map $A \to K(A)$ as $\eta$,
-since it will play the role of our adjunction unit when we establish the
-universal property of $K(A)$.
-
 ```agda
-  ηₛₗ : ∣ A ∣ → K-finite-subset
-  ηₛₗ x = (λ y → elΩ (x ≡ y)) , inc (1 , (λ _ → x , inc refl) ,
-    λ (y , p) → inc (fzero , Σ-prop-path (λ _ → squash) (out! p)))
+  ηₛₗ : ∣ A ∣ → KA.Ob
+  ηₛₗ x .fst y = elΩ (x ≡ y)
+  ηₛₗ x .snd = singleton-is-K-finite hlevel! x
 ```
 
-We can now prove the aforementioned reduction theorem: Every element $S : K(A)$
-can be expressed (in a noncanonical way) as the finite union of a
-diagram of singletons. This is _almost_ a pure restatement of the
+We can now prove the aforementioned reduction theorem: Every element $S
+: K(A)$ can be expressed (in a noncanonical way) as the finite union of
+a diagram of singletons. This is _almost_ a pure restatement of the
 $K$-finiteness condition, but it will be very useful!
 
 ```agda
-  K-reduce
-    : (x : K-finite-subset)
-    → ∃ Nat λ n → Σ (Fin n → ∣ A ∣) λ f → is-glb KA.po (λ i → ηₛₗ (f i)) x
-  K-reduce (P , P-fin) = ∥-∥-map reduce P-fin where
-    open is-glb
+  K[]-coyoneda : (x : KA.Ob) → Type _
+  K[]-coyoneda x = Σ Nat λ n → Σ (Fin n → ⌞ A ⌟) λ f → is-lub KA.poset (ηₛₗ ⊙ f) x
 
-    reduce : Σ Nat (λ n → Σ (Fin n → Σ ∣ A ∣ λ x → x ∈ P) λ f → ∀ x → ∥ fibre f x ∥)
-           → Σ Nat λ n → Σ (Fin n → ∣ A ∣) λ f → is-glb KA.po (λ i → ηₛₗ (f i)) (P , P-fin)
-    reduce (card , cover , surj) = card , (λ x → cover x .fst) , λ where
-      .glb≤fam i →
-        K-fin-lt {P , P-fin} {ηₛₗ (cover i .fst)} λ j i=j →
-          subst (λ e → ∣ P e ∣) (out! i=j) (cover i .snd)
-      .greatest lb′ wit → K-fin-lt {lb′} {P , P-fin} λ i i∈p → ∥-∥-proj do
-        (idx , path) ← surj (i , i∈p)
-        pure (K-fin-lt′ {lb′} {ηₛₗ (cover idx .fst)} (wit idx) i (inc (ap fst path)))
+  K-reduce : (x : ⌞ K[_] ⌟) → ∥ K[]-coyoneda x ∥
+  K-reduce (P , P-fin) = □-tr (□-map reduce P-fin) where
+    open is-lub
+
+    reduce : Finite-cover (∫ₚ P) → K[]-coyoneda (P , P-fin)
+    reduce (cover cov surj) = _ , (λ x → cov x .fst) , λ where
+      .fam≤lub i a ci=a → subst (_∈ P) (out! ci=a) (cov i .snd)
+      .least lb′ wit a a∈P → ∥-∥-proj do
+        (ix , α) ← surj (a , a∈P)
+        pure (wit ix a (inc (ap fst α)))
 ```
 
 In a similar vein, given a map $f : A \to B$ and a semilattice structure
 on $B$, we can extend this to a semilattice homomorphism^[Here we
 construct the underlying map first, the proof that it's a semilattice
-homomorphism `follows`{.Agda ident=pres}] $K(A) \to B$ by first
-expressing $S : K(A)$ as $\bigcup_{i:[n]} \eta(a_i)$ for some $n$,
-$a_i$, then computing $\bigcap_{i:[n]} f(a_i)$.
+homomorphism follows.] $K(A) \to B$ by first expressing $S : K(A)$ as
+$\bigcup_{i:[n]} \eta(a_i)$ for some $n$, $a_i$, then computing
+$\bigcap_{i:[n]} f(a_i)$.
 
 Normally this would only let us compute a map $K(A) \to \| B \|$ into
 the support of $B$, since we had to choose an expression for $S$, but it
@@ -215,11 +115,11 @@ the truncation.
 
 ```agda
   fold-K
-    : ∀ {ℓ′} (B : Semilattice ℓ′)
+    : ∀ {ℓ′} (B : Join-semilattice ℓ ℓ′)
     → (∣ A ∣ → ⌞ B ⌟)
-    → K-finite-subset → ⌞ B ⌟
-  fold-K B f (P , P-fin) = Glb.glb ε′ module fold-K where
-    module B = Semilattice B
+    → KA.Ob → ⌞ B ⌟
+  fold-K B f (P , P-fin) = Lub.lub ε′ module fold-K where
+    module B = Join-semilattice B
 
     fam : (Σ ∣ A ∣ λ x → ∣ P x ∣) → ⌞ B ⌟
     fam (x , _) = f x
@@ -230,78 +130,94 @@ speak, the meet of our family $[n] \epi P \to B$ to a meet of $P \to B$,
 using surjectivity of the first map.
 
 ```agda
-    ε : Σ Nat (λ n → Σ (Fin n → Σ ∣ A ∣ λ x → x ∈ P) λ f → ∀ x → ∥ fibre f x ∥)
-      → Glb B.po fam
-    ε (card , g , surj) = glb
-      where
-        module h = is-glb (B.⋂-is-glb (λ x → fam (g x)))
-        glb : Glb B.po fam
-        glb .Glb.glb = B.⋂ (λ x → fam (g x))
-        glb .Glb.has-glb .is-glb.glb≤fam elt =
-          ∥-∥-rec B.≤-thin (λ { (ix , p) →
-            B.⋂ (λ x → fam (g x)) B.≤⟨ h.glb≤fam ix ⟩
-            fam (g ix)            B.=⟨ ap fam p ⟩
-            fam elt               B.≤∎
-          }) (surj elt)
-        glb .Glb.has-glb .is-glb.greatest lb′ lb′<subset =
-          h.greatest lb′ λ i → lb′<subset (g i)
+    opaque
+      ε : Finite-cover (∫ₚ P) → Lub B.poset fam
+      ε (cover {card} g surj) = lub where
+        module h = Lub (Fin-joins B.has-is-join-semilattice (λ x → fam (g x)))
+        lub : Lub B.poset fam
+        lub .Lub.lub = _
+        lub .Lub.has-lub .is-lub.fam≤lub elt = ∥-∥-proj do
+          (ix , p) ← surj elt
+          pure $ fam elt     B.=⟨ ap fam (sym p) ⟩
+                 fam (g ix)  B.≤⟨ h.fam≤lub ix ⟩
+                 h.lub       B.≤∎
+        lub .Lub.has-lub .is-lub.least lb′ subset<lb′ =
+          h.least lb′ λ i → subset<lb′ (g i)
 
-    ε′ : Glb B.po fam
-    ε′ = ∥-∥-rec (Glb-is-prop B.po) ε P-fin
+    ε′ : Lub B.poset fam
+    ε′ = □-rec! {pa = Lub-is-prop B.poset} ε P-fin
+```
 
+```agda
 open is-glb
 open make-left-adjoint
-make-free-slat : ∀ {ℓ} → make-left-adjoint (Forget-structure (Semilattice-structure ℓ))
+make-free-slat : ∀ {ℓ} → make-left-adjoint (Forget-join-semilattice ℓ ℓ)
 make-free-slat .free A = K[ A ]
 make-free-slat .unit x = ηₛₗ x
-make-free-slat .universal {x} {y} f = total-hom go pres where
-  module y = Semilattice y
-  open Monoid-hom
-  go = fold-K x y f
+make-free-slat .universal {x} {y} f = done module slat-universal where
+  module Kx = Join-semilattice K[ x ]
+  module y = Join-semilattice y
   module go = fold-K x y f
+  go = fold-K x y f
 
-  pres : Monoid-hom (Semilattice-on.to-monoid (K[ x ] .snd)) (Semilattice-on.to-monoid (y .snd)) _
-  pres .pres-id = refl
-  pres .pres-⋆ (A , af) (B , bf) =
-    glb-unique y.po
-      (Glb.has-glb (go.ε′ (_∪_ x (A , af) (B , bf) .fst) (_∪_ x (A , af) (B , bf) .snd)))
-      (λ where
-        .glb≤fam (x , w) → ∥-∥-proj $ w >>= λ where
-          (inl w) → pure $
-            Glb.glb g1 y.∩ Glb.glb g2 y.≤⟨ y.∩≤l ⟩
-            Glb.glb g1                y.≤⟨ g1.glb≤fam (x , w) ⟩
-            _                         y.≤∎
-          (inr w) → pure $
-            Glb.glb g1 y.∩ Glb.glb g2 y.≤⟨ y.∩≤r ⟩
-            Glb.glb g2                y.≤⟨ g2.glb≤fam (x , w) ⟩
-            _                         y.≤∎
-        .greatest lb′ f → y.∩-univ _
-          (g1.greatest lb′ (λ i → f (_ , inc (inl (i .snd)))))
-          (g2.greatest lb′ (λ i → f (_ , inc (inr (i .snd))))))
-    where
-      g1 = go.ε′ A af
-      g2 = go.ε′ B bf
-      module g1 = is-glb (Glb.has-glb g1)
-      module g2 = is-glb (Glb.has-glb g2)
-make-free-slat .commutes {y = y} f = funext λ x → sym y.∩-idr
-  where module y = Semilattice y
+  monotone : (P Q : ⌞ K[ x ] ⌟) → (∀ i → i ∈ P .fst → i ∈ Q .fst) → go P y.≤ go Q
+  monotone P Q P≤Q = fold-K.ε′ x y f (P .fst) (P .snd) .Lub.least (go Q)
+    λ (i , i∈P) → fold-K.ε′ x y f (Q .fst) (Q .snd) .Lub.fam≤lub (i , P≤Q i i∈P)
+
+  opaque
+    unfolding minimal-is-K-finite fold-K.ε
+    pres-⊥ : go Kx.bot ≡ y.bot
+    pres-⊥ = refl
+
+  module _ (P Q : ⌞ K[ x ] ⌟) where
+    private
+      gou = fold-K.ε′ x y f ((P Kx.∪ Q) .fst) ((P Kx.∪ Q) .snd)
+      gop = fold-K.ε′ x y f (P .fst) (P .snd)
+      goq = fold-K.ε′ x y f (Q .fst) (Q .snd)
+
+    pres-∪ : go (P Kx.∪ Q) ≡ go P y.∪ go Q
+    pres-∪ = y.≤-antisym
+      (gou .Lub.least _ λ (i , i∈cup) → □-rec!
+        [ (λ i∈P → y.≤-trans (gop .Lub.fam≤lub (i , i∈P)) (y.l≤∪ _ _))
+        , (λ i∈Q → y.≤-trans (goq .Lub.fam≤lub (i , i∈Q)) (y.r≤∪ _ _))
+        ]
+        i∈cup)
+      (y.∪-universal _ _ _
+        (gop .Lub.least _ λ (i , i∈P) → gou .Lub.fam≤lub (i , inc (inl i∈P)))
+        (goq .Lub.least _ λ (i , i∈Q) → gou .Lub.fam≤lub (i , inc (inr i∈Q))))
+
+  open preserves-finite-joins
+
+  done : Join-semilattices.Hom (make-free-slat .free x) y
+  done .Subcat-hom.hom .hom = go
+  done .Subcat-hom.hom .preserves = monotone
+  done .Subcat-hom.witness .pres-bottoms = preserves-bottom Kx.has-bottom y.has-bottom go pres-⊥
+  done .Subcat-hom.witness .pres-joins = preserves-join Kx.has-joins y.has-joins go pres-∪
+
+  opaque
+    unfolding fold-K.ε singleton-is-K-finite
+
+    comm : f ≡ (λ i → go (ηₛₗ x i))
+    comm = funext λ x → sym (y.∪-idr _)
+
+make-free-slat .commutes {x} {y} f = slat-universal.comm {x = x} {y} f
+
 make-free-slat .unique {x = x} {y = y} {f = f} {g = g} w =
-  Homomorphism-path λ arg → ∥-∥-proj {ap = y.has-is-set _ _} do
-    (card , diagram , glb) ← K-reduce x arg
-    let
-      path : arg ≡ KA.⋂ λ i → ηₛₗ x (diagram i)
-      path = glb-unique KA.po glb (KA.⋂-is-glb λ i → ηₛₗ x (diagram i))
-      f′ = make-free-slat .universal {x = x} {y = y} f
-    pure $
-      f′ # arg                                 ≡⟨ ap (f′ #_) path ⟩
-      f′ # KA.⋂ (λ i → ηₛₗ x (diagram i))      ≡⟨ slat-pres-⋂ (K[ x ] .snd) (y .snd) _ (f′ .preserves) {card} _ ⟩
-      y.⋂ (λ i → f′ # ηₛₗ x (diagram i))       ≡⟨ ap (y.⋂ {card}) (funext λ i → y.∩-idr) ⟩
-      y.⋂ (λ i → f (diagram i))                ≡⟨ ap (y.⋂ {card}) (funext λ i → happly w (diagram i)) ⟩
-      y.⋂ {card} (λ i → g # ηₛₗ x (diagram i)) ≡˘⟨ slat-pres-⋂ (K[ x ] .snd) (y .snd) _ (g .preserves) {card} _ ⟩
-      g # KA.⋂ (λ i → ηₛₗ x (diagram i))       ≡˘⟨ ap (g #_) path ⟩
-      g # arg                                  ∎
-  where
-    module y = Semilattice y
-    module KA = Semilattice K[ x ]
-    module go = fold-K x y f
+  Subcat-hom-path $ Homomorphism-path λ kf → ∥-∥-rec hlevel! (comm kf) (K-reduce x kf) where
+  module Kx = Join-semilattice K[ x ]
+  module y = Join-semilattice y
+
+  comm : (kf : ⌞ K[ x ] ⌟) (red : K[]-coyoneda x kf)
+       → fold-K x y f kf ≡ g # kf
+  comm kf (card , dia , lub) =
+    fh # kf                          ≡⟨ ap (fh #_) (lub-unique Kx.poset lub h.has-lub) ⟩
+    fh # Kx.⋃ (λ i → ηₛₗ x (dia i))  ≡⟨ preserves-fin-joins (K[ x ] .snd) (y .snd) _ (fh .Subcat-hom.witness) (λ i → ηₛₗ x (dia i)) ⟩
+    y.⋃ (λ i → fh # ηₛₗ x (dia i))   ≡⟨ ap (y.⋃ {n = card}) (funext λ i → sym (slat-universal.comm {x = x} {y} f) $ₚ dia i) ⟩
+    y.⋃ (λ i → f (dia i))            ≡⟨ ap (y.⋃ {n = card}) (funext λ i → w $ₚ dia i) ⟩
+    y.⋃ (λ i → g # ηₛₗ x (dia i))    ≡⟨ sym (preserves-fin-joins (K[ x ] .snd) (y .snd) _ (g .Subcat-hom.witness) (λ i → ηₛₗ x (dia i))) ⟩
+    g # Kx.⋃ (λ i → ηₛₗ x (dia i))   ≡˘⟨ ap (g #_) (lub-unique Kx.poset lub h.has-lub) ⟩
+    g # kf                           ∎
+    where
+    module h = Lub (Fin-joins Kx.has-is-join-semilattice (λ i → ηₛₗ x (dia i)))
+    fh   = slat-universal.done {x = x} {y} f
 ```

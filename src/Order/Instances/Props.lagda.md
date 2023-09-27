@@ -2,6 +2,10 @@
 ```agda
 open import Cat.Prelude
 
+open import Data.Sum.Base
+
+open import Order.Diagram.Lub
+open import Order.Diagram.Glb
 open import Order.Base
 ```
 -->
@@ -39,4 +43,38 @@ Props = to-poset Ω mk-Ω where
   mk-Ω .make-poset.thin        = hlevel!
   mk-Ω .make-poset.trans g f x = f (g x)
   mk-Ω .make-poset.antisym     = Ω-ua
+```
+
+```agda
+open Meet
+open Join
+open Glb
+open Lub
+open is-meet
+open is-join
+open is-lub
+open is-glb
+
+Props-lub : ∀ {ℓ} {I : Type ℓ} → (F : I → Ω) → Lub Props F
+Props-lub {I = I} F .lub = elΩ (Σ[ i ∈ I ] ⌞ F i ⌟)
+Props-lub F .has-lub .fam≤lub i α = inc (i , α)
+Props-lub F .has-lub .least ub′ f = □-rec! λ (x , y) → f x y
+
+Props-glb : ∀ {ℓ} {I : Type ℓ} → (F : I → Ω) → Glb Props F
+Props-glb {I = I} F .glb               = elΩ ((i : I) → ⌞ F i ⌟)
+Props-glb F .has-glb .glb≤fam i α      = out! α i
+Props-glb F .has-glb .greatest ub′ f x = inc λ i → f i x
+
+Props-meet : ∀ (a b : Ω) → Meet Props a b
+∣ Props-meet a b .glb ∣ = ⌞ a ⌟ × ⌞ b ⌟
+Props-meet a b .glb .is-tr = hlevel!
+Props-meet a b .has-meet .meet≤l = fst
+Props-meet a b .has-meet .meet≤r = snd
+Props-meet a b .has-meet .greatest lb′ f g x = f x , g x
+
+Props-join : ∀ (a b : Ω) → Join Props a b
+Props-join a b .lub = elΩ (⌞ a ⌟ ⊎ ⌞ b ⌟)
+Props-join a b .has-join .l≤join = □.inc ⊙ inl
+Props-join a b .has-join .r≤join = □.inc ⊙ inr
+Props-join a b .has-join .least ub′ f g = □-rec! [ f , g ]
 ```

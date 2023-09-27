@@ -3,7 +3,7 @@
 open import Cat.Prelude
 
 open import Order.Instances.Props
-open import Order.Displayed
+open import Order.Subposet
 open import Order.Base
 
 import Order.Reasoning as Pr
@@ -32,7 +32,6 @@ Pointwise A B = to-poset (A → ⌞ B ⌟) mk-pwise where
   mk-pwise .make-poset.id x            = ≤-refl
   mk-pwise .make-poset.trans f<g g<h x = ≤-trans (f<g x) (g<h x)
   mk-pwise .make-poset.antisym f<g g<f = funext λ x → ≤-antisym (f<g x) (g<f x)
-
 ```
 
 A very important particular case of the pointwise ordering is the poset
@@ -52,9 +51,9 @@ Monotone : ∀ {ℓₒ ℓᵣ ℓₒ′ ℓᵣ′}
          → Poset ℓₒ ℓᵣ
          → Poset ℓₒ′ ℓᵣ′
          → Poset (ℓₒ ⊔ ℓᵣ ⊔ ℓₒ′ ⊔ ℓᵣ′) (ℓₒ ⊔ ℓᵣ′)
-Monotone P Q =
-  Full-subposet (Pointwise ⌞ P ⌟ Q) λ f →
-    el! (∀ x y → x P.≤ y → f x Q.≤ f y)
+Monotone P Q = Subposet' (Pointwise ⌞ P ⌟ Q)
+  (λ f → ∀ x y → x P.≤ y → f x Q.≤ f y)
+  (λ x → hlevel!)
   where module P = Pr P
         module Q = Pr Q
 ```

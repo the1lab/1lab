@@ -1,11 +1,15 @@
 <!--
 ```agda
-open import Cat.Displayed.Total
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Subcategory
+open import Cat.Displayed.Total
 open import Cat.Prelude
+
+open import Data.Fin.Base using (Fin ; fzero ; fsuc)
 
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
+open import Order.Subposet
 open import Order.Base
 
 import Cat.Reasoning
@@ -198,7 +202,7 @@ module _ {o ℓ} {X Y : Poset o ℓ} where
     Σ-is-hlevel 1 (hlevel 1) λ x →
     Π-is-hlevel³ 1 λ _ _ _ →
     Π-is-hlevel 1 λ _ → is-join-is-prop Y
-    where unquoteDecl eqv = declare-record-iso eqv (quote preserves-finite-joins) 
+    where unquoteDecl eqv = declare-record-iso eqv (quote preserves-finite-joins)
 ```
 -->
 
@@ -255,6 +259,36 @@ module _ where
 ```
 -->
 
+<!--
+```agda
+module _ {o ℓ o′ ℓ'} {X : Poset o ℓ} {Y : Poset o′ ℓ'} where
+  private module Y = Poset Y
+
+  opaque
+    preserves-bottom
+      : (b : Bottom X) (b' : Bottom Y)
+      → (f : ⌞ X ⌟ → ⌞ Y ⌟)
+      → (f (b .Bottom.bot) ≡ b' .Bottom.bot)
+      → ∀ b' (is-b : is-bottom X b') → is-bottom Y (f b')
+    preserves-bottom b b' f p b'' is-b'' x =
+      f b''             Y.=⟨ ap f (bottom-unique X is-b'' (b .Bottom.has-bottom)) ⟩
+      f (b .Bottom.bot) Y.=⟨ p ⟩
+      b' .Bottom.bot    Y.≤⟨ b' .Bottom.has-bottom x ⟩
+      x                 Y.≤∎
+
+    preserves-join
+      : (j : ∀ x y → Join X x y) (j' : ∀ x y → Join Y x y)
+      → (f : ⌞ X ⌟ → ⌞ Y ⌟)
+      → (∀ x y → f (j x y .Join.lub) ≡ j' (f x) (f y) .Join.lub)
+      → ∀ x y b' → is-join X x y b' → is-join Y (f x) (f y) (f b')
+    preserves-join j j' f p x y b' is-j =
+      let
+        q = join-unique X is-j (j x y .Join.has-join)
+        r = subst (is-join Y (f x) (f y)) (sym (ap f q ∙ p x y)) (j' (f x) (f y) .Join.has-join)
+      in r
+```
+-->
+
 # Categories of Semilattices
 
 ```agda
@@ -290,6 +324,10 @@ Join-semilattice o ℓ = Join-semilattices.Ob {o} {ℓ}
 
 <!--
 ```agda
+Forget-join-semilattice : ∀ o ℓ → Functor (Join-semilattices o ℓ) (Sets o)
+Forget-join-semilattice o ℓ =
+  Forget-structure (Poset-structure o ℓ)
+    F∘ Forget-subcat {subcat = Join-semilattices-subcat _ _}
 {-# DISPLAY Meet-semilattices.Ob {o} {ℓ} = Meet-semilattice o ℓ #-}
 {-# DISPLAY Join-semilattices.Ob {o} {ℓ} = Join-semilattice o ℓ #-}
 ```
@@ -326,6 +364,51 @@ module Meet-semilattice {o ℓ} (L : Meet-semilattice o ℓ) where
 
 <!--
 ```agda
+Fin-joins
+  : ∀ {o ℓ} {X : Poset o ℓ}
+  → is-join-semilattice X
+  → ∀ {n} (F : Fin n → ⌞ X ⌟)
+  → Lub X F
+Fin-joins {X = X} sl = go _ module Fin-joins where
+  open is-join-semilattice sl
+  open Lub
+  open is-lub
+
+  go : ∀ n → (fam : Fin n → ⌞ X ⌟) → Lub X fam
+  go zero fam .lub = bot
+  go zero fam .has-lub .fam≤lub ()
+  go zero fam .has-lub .least ub′ _ = bottom-universal ub′
+  go (suc n) fam = record
+    { lub     = fam fzero ∪ ih .lub
+    ; has-lub = record
+      { fam≤lub = λ where
+          fzero    → l≤∪ _ _
+          (fsuc i) → Poset.≤-trans X (ih .fam≤lub i) (r≤∪ _ _)
+      ; least   = λ ub′ f → ∪-universal _ _ ub′ (f fzero) (ih .least ub′ (f ⊙ fsuc))
+      }
+    } where ih = go n (fam ⊙ fsuc)
+
+preserves-fin-joins
+  : ∀ {o ℓ} {X Y : Poset o ℓ}
+  → (sl : is-join-semilattice X) (sl' : is-join-semilattice Y)
+  → (f : Posets.Hom X Y)
+  → preserves-finite-joins {X = X} {Y} f
+  → ∀ {n} (F : Fin n → ⌞ X ⌟)
+  → f # Fin-joins sl F .Lub.lub ≡ Fin-joins sl' (λ i → f # F i) .Lub.lub
+preserves-fin-joins {X = X} {Y} sl sl' f rex F = go _ F where
+  module X = is-join-semilattice sl
+  module Y = is-join-semilattice sl'
+  open preserves-finite-joins rex
+  go : ∀ n (fam : Fin n → ⌞ X ⌟)
+     → f # Fin-joins.go sl {n} n fam .Lub.lub
+     ≡ Fin-joins.go sl' {n} n (λ i → f # fam i) .Lub.lub
+  go zero fam    = bottom-unique Y (pres-bottoms _ X.bottom-universal) Y.bottom-universal
+  go (suc n) fam =
+    join-unique Y
+      (pres-joins _ _ _ (X.has-joins _ _ .Join.has-join))
+      (Y.has-joins _ _ .Join.has-join)
+    ∙ ap₂ Y._∪_ refl (go n (fam ⊙ fsuc))
+
 module Join-semilattice {o ℓ} (L : Join-semilattice o ℓ) where
   poset : Poset o ℓ
   poset = L .fst
@@ -339,5 +422,68 @@ module Join-semilattice {o ℓ} (L : Join-semilattice o ℓ) where
   has-is-join-semilattice = L .snd
 
   open is-join-semilattice has-is-join-semilattice public
+
+  ⋃ : ∀ {n} (F : Fin n → ⌞ L ⌟) → ⌞ L ⌟
+  ⋃ F = Fin-joins (L .snd) F .Lub.lub
 ```
 -->
+
+```agda
+is-meet-subsemilattice
+  : ∀ {o ℓ ℓ'} (X : Poset o ℓ) {P : ⌞ X ⌟ → Type ℓ'} {pprop : ∀ x → is-prop (P x)}
+  → (sl : is-meet-semilattice X)
+  → P (is-meet-semilattice.top sl)
+  → (∀ x y → P x → P y → P (is-meet-semilattice._∩_ sl x y))
+  → is-meet-semilattice (Subposet' X P pprop)
+is-meet-subsemilattice X sl top cap = record
+  { has-top   = record
+    { top     = _ , top
+    ; has-top = λ (x , _) → is-meet-semilattice.top-universal sl x
+    }
+  ; has-meets = λ (x , px) (y , py) → record
+    { glb      = _ , cap _ _ px py
+    ; has-meet = record
+      { meet≤l = is-meet-semilattice.∩≤l sl x y
+      ; meet≤r = is-meet-semilattice.∩≤r sl x y
+      ; greatest = λ (lb' , _) p q → is-meet-semilattice.∩-universal sl x y lb' p q
+      }
+    }
+  }
+
+is-join-subsemilattice
+  : ∀ {o ℓ ℓ'} (X : Poset o ℓ) {P : ⌞ X ⌟ → Type ℓ'} {pprop : ∀ x → is-prop (P x)}
+  → (sl : is-join-semilattice X)
+  → P (is-join-semilattice.bot sl)
+  → (∀ x y → P x → P y → P (is-join-semilattice._∪_ sl x y))
+  → is-join-semilattice (Subposet' X P pprop)
+is-join-subsemilattice X sl bot cup = mk module is-join-subsemilattice where
+  open is-join-semilattice using (has-bottom ; has-joins)
+  open is-join-semilattice sl hiding (bot)
+  module B = Bottom
+  open is-join
+  open Join
+
+  mk : is-join-semilattice (Subposet' X _ _)
+  mk .has-bottom .B.bot = _ , bot
+  mk .has-bottom .B.has-bottom (x , _) = bottom-universal x
+  mk .has-joins (x , px) (y , py) .lub = _ , (cup _ _ px py)
+  mk .has-joins (x , px) (y , py) .has-join .l≤join = l≤∪ x y
+  mk .has-joins (x , px) (y , py) .has-join .r≤join = r≤∪ x y
+  mk .has-joins (x , px) (y , py) .has-join .least (u , _) p q = ∪-universal _ _ u p q
+
+{-# DISPLAY is-join-subsemilattice.mk a b c d = is-join-subsemilattice a b c d #-}
+  -- record
+  -- { has-bottom = record
+  --   { bot        = _ , bot
+  --   ; has-bottom = λ (x , _) → is-join-semilattice.bottom-universal sl x
+  --   }
+  -- ; has-joins = λ (x , px) (y , py) → record
+  --   { lub      = _ , cup _ _ px py
+  --   ; has-join = record
+  --     { l≤join = is-join-semilattice.l≤∪ sl x y
+  --     ; r≤join = is-join-semilattice.r≤∪ sl x y
+  --     ; least = λ (lb' , _) p q → is-join-semilattice.∪-universal sl x y lb' p q
+  --     }
+  --   }
+  -- }
+```

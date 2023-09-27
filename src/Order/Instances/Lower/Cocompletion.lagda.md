@@ -52,10 +52,10 @@ in Agda and play with it themselves!
 
 ```agda
   lower-set-is-lub : is-lub (Lower-sets P) diagram Ls
-  lower-set-is-lub .is-lub.fam≤lub (j , j∈Ls) =
-    (λ i □i≤j → Ls .snd _ _ (out! □i≤j) j∈Ls) , tt
-  lower-set-is-lub .is-lub.least ub′ fam≤ub′ =
-    (λ i i∈Ls → fam≤ub′ (i , i∈Ls) .fst i (inc P.≤-refl)) , tt
+  lower-set-is-lub .is-lub.fam≤lub (j , j∈Ls) i □i≤j =
+    Ls .snd _ _ (out! □i≤j) j∈Ls
+  lower-set-is-lub .is-lub.least ub′ fam≤ub′ i i∈Ls =
+    fam≤ub′ (i , i∈Ls) i (inc P.≤-refl)
 ```
 
 A quick note on notation: The result saying that $L$ is the lub of the
@@ -102,7 +102,7 @@ It is readily computed that this procedure results in a monotone map.
   Lan↓₀ (S , is-lower) = B-cocomplete {I = Σ ⌞ A ⌟ λ i → i ∈ S} (λ i → f .fst (i .fst)) .fst
 
   Lan↓₁ : ∀ x y → x DA.≤ y → Lan↓₀ x B.≤ Lan↓₀ y
-  Lan↓₁ (S , s-lower) (T , t-lower) (S⊆T , _) = B-cocomplete _ .snd .is-lub.least _ λ {
+  Lan↓₁ (S , s-lower) (T , t-lower) S⊆T = B-cocomplete _ .snd .is-lub.least _ λ {
     (i , i∈S) → B-cocomplete _ .snd .is-lub.fam≤lub (i , S⊆T i i∈S) }
 ```
 
