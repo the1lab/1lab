@@ -29,7 +29,7 @@ import Data.Maybe
 import Data.Aeson
 import qualified Data.IntMap as IntMap
 import qualified Data.List   as List
-import Data.List.Split (splitWhen, chunksOf)
+import Data.List.Split (splitWhen)
 import Data.Text.Lazy (Text)
 import qualified Data.Text.Lazy as T
 import qualified Data.Text as Ts
@@ -275,7 +275,7 @@ code
   -> FileType -- ^ Source file type
   -> [TokenInfo]
   -> Html
-code types _onlyCode _fileType = mconcat . map mkMd . chunksOf 2 . splitByMarkup
+code types _onlyCode _fileType = mconcat . map mkMd . splitByMarkup
   where
   trd (_, _, a) = a
 
@@ -288,20 +288,21 @@ code types _onlyCode _fileType = mconcat . map mkMd . chunksOf 2 . splitByMarkup
     -- Do not create anchors for whitespace.
     applyUnless (mi == mempty) (annotate pos mi) $ toHtml s
 
-  -- Proposed in #3137, implemented in #3313
-  -- Improvement proposed in #3366, implemented in #3367
-  mkMd :: [[TokenInfo]] -> Html
-  mkMd = mconcat . go
+  backgroundOrAgdaToHtml :: TokenInfo -> Html
+  backgroundOrAgdaToHtml token@(_, s, mi) = case aspect mi of
+    Just Background -> preEscapedToHtml s
+    Just Markup     -> __IMPOSSIBLE__
+    _               -> mkHtml token
+
+  -- The assumption here is that Background tokens and Agda tokens are always
+  -- separated by Markup tokens, so these runs only contain one kind.
+  mkMd :: [TokenInfo] -> Html
+  mkMd tokens = if containsCode then formatCode else formatNonCode
     where
-      work token@(_, s, mi) = case aspect mi of
-        Just Background -> preEscapedToHtml s
-        Just Markup     -> __IMPOSSIBLE__
-        _               -> mkHtml token
-      go [a, b] = [ mconcat $ work <$> a
-                  , Html5.pre ! Attr.class_ "Agda" $ mconcat $ work <$> b
-                  ]
-      go [a]    = work <$> a
-      go _      = __IMPOSSIBLE__
+      containsCode = any ((/= Just Background) . aspect . trd) tokens
+
+      formatCode = Html5.pre ! Attr.class_ "Agda" $ mconcat $ backgroundOrAgdaToHtml <$> tokens
+      formatNonCode = mconcat $ backgroundOrAgdaToHtml <$> tokens
 
   -- Put anchors that enable referencing that token.
   -- We put a fail safe numeric anchor (file position) for internal references
