@@ -505,25 +505,26 @@ object, then a lex functor $F : \cC \to \cD$ also preserves
 products.
 
 ```agda
-    pres-product
-      : ∀ {P A B T} {p1 : C.Hom P A} {p2 : C.Hom P B}
-      → is-terminal C T
-      → is-product C p1 p2
-      → is-product D (F.₁ p1) (F.₁ p2)
-    pres-product term pr = terminal-pullback→product D (pres-⊤ term)
-      (pres-pullback {f = term _ .centre} {g = term _ .centre}
-        (product→terminal-pullback C term pr))
+    opaque
+      pres-product
+        : ∀ {P A B T} {p1 : C.Hom P A} {p2 : C.Hom P B}
+        → is-terminal C T
+        → is-product C p1 p2
+        → is-product D (F.₁ p1) (F.₁ p2)
+      pres-product term pr = terminal-pullback→product D (pres-⊤ term)
+        (pres-pullback {f = term _ .centre} {g = term _ .centre}
+          (product→terminal-pullback C term pr))
 ```
 
 Since $f : A \to B$ being a monomorphism is equivalent to certain squares
 being pullbacks, a lex functor $F : \cC \to \cD$ preserves monomorphisms.
 
 ```agda
-    pres-monos : ∀ {A B} {f : C.Hom A B} → C.is-monic f → D.is-monic (F.₁ f)
-    pres-monos {f = f} mono = is-pullback→is-monic
-      (subst (λ x → is-pullback D x _ x _) F.F-id
-        (pres-pullback
-          (is-monic→is-pullback mono)))
+      pres-monos : ∀ {A B} {f : C.Hom A B} → C.is-monic f → D.is-monic (F.₁ f)
+      pres-monos {f = f} mono = is-pullback→is-monic
+        (subst (λ x → is-pullback D x _ x _) F.F-id
+          (pres-pullback
+            (is-monic→is-pullback mono)))
 ```
 
 <!--

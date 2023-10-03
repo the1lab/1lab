@@ -4,6 +4,7 @@ open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning
 import Cat.Reasoning
 ```
 -->
@@ -21,7 +22,7 @@ open _=>_
 ```
 -->
 
-# Comonads
+# Comonads {defines=comonad}
 
 A **comonad on a category** $\cC$ is dual to a [monad] on $\cC$; instead
 of a unit $\Id \To M$ and multiplication $(M \circ M) \To M$, we have
@@ -41,6 +42,7 @@ record Comonad : Type (o ⊔ ℓ) where
 ```agda
   module counit = _=>_ counit renaming (η to ε)
   module comult = _=>_ comult
+  module W = Cat.Functor.Reasoning W
 
   W₀ = F₀ W
   W₁ = F₁ W
@@ -54,7 +56,7 @@ Unsurprisingly, these are dual to the equations of a monad.
 
 ```agda
   field
-    left-ident : ∀ {x} → W₁ (counit.ε x) ∘ comult.η x ≡ id
-    right-ident : ∀ {x} → counit.ε (W₀ x) ∘ comult.η x ≡ id
+    left-ident   : ∀ {x} → W₁ (counit.ε x) ∘ comult.η x ≡ id
+    right-ident  : ∀ {x} → counit.ε (W₀ x) ∘ comult.η x ≡ id
     comult-assoc : ∀ {x} → W₁ (comult.η x) ∘ comult.η x ≡ comult.η (W₀ x) ∘ comult.η x
 ```

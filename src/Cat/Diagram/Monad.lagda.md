@@ -118,7 +118,7 @@ doesn't matter whether you first join then evaluate, or evaluate twice.
 ```
 -->
 
-# Eilenberg-Moore category
+# Eilenberg-Moore category {defines="eilenberg-moore-category"}
 
 If we take a monad $M$ as the signature of an (algebraic) theory, and
 $M$-algebras as giving _models_ of that theory, then we can ask (like
