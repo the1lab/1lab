@@ -53,26 +53,25 @@ import HTML.Emit
 
 import Definitions
 
-readLabMarkdown :: MonadIO m => FilePath -> m Pandoc
-readLabMarkdown fp = liftIO cont where
+ourReaderOptions :: ReaderOptions
+ourReaderOptions = def { readerExtensions = theExts } where
   ourExts :: [Extension]
   ourExts = [ Ext_wikilinks_title_before_pipe ]
 
   badExts :: [Extension]
   badExts = [Ext_definition_lists, Ext_compact_definition_lists]
 
-  theExts :: Extensions
   theExts =
     foldr disableExtension
       (foldr enableExtension (getDefaultExtensions "markdown") ourExts)
       badExts
 
-  cont :: IO Pandoc
-  cont = do
-    contents <- mangleMarkdown <$> Text.readFile fp
-    either (fail . show) pure =<< runIO do
-      doc <- readMarkdown def { readerExtensions = theExts } [(fp, contents)]
-      pure $ walk postParseInlines doc
+readLabMarkdown :: MonadIO m => FilePath -> m Pandoc
+readLabMarkdown fp = liftIO do
+  contents <- mangleMarkdown <$> Text.readFile fp
+  either (fail . show) pure =<< runIO do
+    doc <- readMarkdown ourReaderOptions [(fp, contents)]
+    pure $ walk postParseInlines doc
 
 -- | Patch a sequence of inline elements. `patchInline' should be preferred
 -- where possible, this is only useful when you cannot modify inlines in
@@ -102,7 +101,7 @@ postParseInlines (Link attr [Str contents] (url, "wikilink"):xs) =
     -- of inlines. Pandoc doesn't let us parse a list of inlines, but we
     -- can still parse it as a document and ensure that (a) everything
     -- got bunched in the same paragraph and (b) there was no metadata.
-    parsed@(Pandoc (Meta m) [Para is]) <- try (readMarkdown def contents)
+    parsed@(Pandoc (Meta m) [Para is]) <- try (readMarkdown ourReaderOptions contents)
     guard (null m) -- I don't foresee this ever failing.
 
     -- Rendering the contents as plain text will strip all the
