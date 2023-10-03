@@ -39,7 +39,7 @@ open Pullback
 ```
 -->
 
-# Finite limits in categories of coalgebras
+# Finite limits in categories of coalgebras {defines="finite-limits-of-coalgebras"}
 
 If $(W, \eps, \delta)$ is an arbitrary [[comonad]] on a category $\cC$,
 there's not much we can say about general limits in the [[category of
