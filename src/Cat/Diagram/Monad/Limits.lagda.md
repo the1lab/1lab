@@ -32,17 +32,14 @@ open Algebra-on
 
 # Limits in categories of algebras
 
-Suppose that $\cC$ be a category, $M$ be a [monad] on $\cC$, and
+Suppose that $\cC$ be a category, $M$ be a [[monad]] on $\cC$, and
 $F$ be a $\cJ$-shaped diagram of [$M$-algebras][malg] (that is, a
-functor $F : \cJ \to \cC^M$ into the [Eilenberg-Moore category] of
-M). Suppose that an evil wizard has given you a [limit] for the diagram
+functor $F : \cJ \to \cC^M$ into the [[Eilenberg-Moore category]] of
+M). Suppose that an evil wizard has given you a [[limit]] for the diagram
 in $\cC$ which underlies $F$, but they have not (being evil and all)
 told you whether $\lim F$ admits an algebra structure at all.
 
-[monad]: Cat.Diagram.Monad.html#monads
 [malg]: Cat.Diagram.Monad.html#algebras-over-a-monad
-[Eilenberg-Moore category]: Cat.Diagram.Monad.html#eilenberg-moore-category
-[limit]: Cat.Diagram.Limit.Base.html
 
 Perhaps we can make this situation slightly more concrete, by working in
 a category _equivalent to_ an Eilenberg-Moore category: If we have two

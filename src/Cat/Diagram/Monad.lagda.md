@@ -22,7 +22,7 @@ module _ {o h : _} (C : Precategory o h) where
 ```
 -->
 
-# Monads
+# Monads {defines=monad}
 
 A **monad on a category** $\cC$ is one way of categorifying the
 concept of [monoid]. Specifically, rather than living in a monoidal

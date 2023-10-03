@@ -71,9 +71,11 @@ module
 In this module, we're interested in the specific case where $W$ is a
 [[left exact functor]], i.e., it preserves [[finite limits]].
 Accordingly, $\cC_W$ will have all finite limits, and they will be
-computed as in $\cC$. We start by showing that $U$ _reflects_
-[[pullbacks]], since that's what we'll use to construct pullbacks in
-$\cC_W$.
+computed as in $\cC$. The more general computation can be found in
+[`Cat.Instances.Coalgebras.Limits`](Cat.Instances.Coalgebras.Limits.html).
+
+We start by showing that $U$ _reflects_ [[pullbacks]], since that's what
+we'll use to construct pullbacks in $\cC_W$.
 
 ```agda
   is-pullback-coalgebra
