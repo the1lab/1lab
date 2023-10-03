@@ -67,12 +67,11 @@ elementary topoi, but carried out in full generality.
 Recall our setup. We have a [[left adjoint]] functor $F : \cC \to
 \cD$ (call its right adjoint $U$), and we're interested in
 characterising exactly when the [comparison functor][comp] $K : \cD
-\to \cC^{UF}$ into the [Eilenberg-Moore category][emc] of the [monad
+\to \cC^{UF}$ into the [[Eilenberg-Moore category]] of the [monad
 from the adjunction][madj] is an equivalence. Our refinement here gives
 a _sufficient_ condition.
 
 [comp]: Cat.Functor.Adjoint.Monadic.html#Comparison
-[emc]: Cat.Diagram.Monad.html#eilenberg-moore-category
 [madj]: Cat.Functor.Adjoint.Monad.html
 
 **Theorem** (Crude monadicity). Let the functors $F$, $U$ be as in the
