@@ -31,7 +31,7 @@ open Displayed
 ```
 -->
 
-# The fibration of subobjects {defines="poset-of-subobjects"}
+# The fibration of subobjects {defines="poset-of-subobjects subobject"}
 
 Given a base category $\cB$, we can define the [[displayed category]] of
 _subobjects_ over $\cB$. This is, in essence, a restriction of the
