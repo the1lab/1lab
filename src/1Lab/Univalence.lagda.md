@@ -668,6 +668,7 @@ _ = is-prop
 ```
 -->
 
+:::{.definition #map-classifier}
 Since the type of "maps into B with variable domain and P fibres" has a
 very unwieldy description --- both in words or in Agda syntax --- we
 abbreviate it by $\ell /_{[P]} B$. The notation is meant to evoke the
@@ -676,6 +677,7 @@ category $C$ equipped with choices of maps into $c$. Similarly, the
 objects of $\ell/_{[P]}B$ are objects of the universe $\ty\
 \ell$, with a choice of map $f$ into $B$, such that $P$ holds for all
 the fibres of $f$.
+:::
 
 ```agda
 _/[_]_ : ∀ {ℓ' ℓ''} (ℓ : Level) → (Type (ℓ ⊔ ℓ') → Type ℓ'') → Type ℓ' → Type _

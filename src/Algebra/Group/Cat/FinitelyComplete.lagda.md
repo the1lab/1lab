@@ -127,7 +127,7 @@ proj₂ .hom = snd
 proj₂ .preserves .pres-⋆ x y = refl
 
 factor : Groups.Hom G H → Groups.Hom G K → Groups.Hom G (Direct-product H K)
-factor f g .hom x = f .hom x , g .hom x
+factor f g .hom x = f # x , g # x
 factor f g .preserves .pres-⋆ x y = ap₂ _,_ (f .preserves .pres-⋆ _ _) (g .preserves .pres-⋆ _ _)
 
 Direct-product-is-product : is-product {G} {H} proj₁ proj₂
@@ -151,12 +151,12 @@ a coproduct.
 inj₁ : G Groups.↪ Direct-product G H
 inj₁ {G} {H} .mor .hom x = x , H .snd .unit
 inj₁ {G} {H} .mor .preserves .pres-⋆ x y = ap (_ ,_) (sym (H .snd .idl))
-inj₁ {G} {H} .monic g h x = Forget-is-faithful (funext λ e i → x i .hom e .fst)
+inj₁ {G} {H} .monic g h x = Forget-is-faithful (funext λ e i → (x i # e) .fst)
 
 inj₂ : H Groups.↪ Direct-product G H
 inj₂ {H} {G} .mor .hom x = G .snd .unit , x
 inj₂ {H} {G} .mor .preserves .pres-⋆ x y = ap (_, _) (sym (G .snd .idl))
-inj₂ {H} {G} .monic g h x = Forget-is-faithful (funext λ e i → x i .hom e .snd)
+inj₂ {H} {G} .monic g h x = Forget-is-faithful (funext λ e i → (x i # e) .snd)
 ```
 
 ## Equalisers
@@ -197,16 +197,16 @@ follows from $f$ and $g$ being group homomorphisms:
   Equaliser-group = to-group equ-group where
     equ-⋆ : ∣ seq.apex ∣ → ∣ seq.apex ∣ → ∣ seq.apex ∣
     equ-⋆ (a , p) (b , q) = (a G.⋆ b) , r where abstract
-      r : f .hom (G .snd ._⋆_ a b) ≡ g .hom (G .snd ._⋆_ a b)
+      r : f # (G .snd ._⋆_ a b) ≡ g # (G .snd ._⋆_ a b)
       r = f.pres-⋆ a b ·· ap₂ H._⋆_ p q ·· sym (g.pres-⋆ _ _)
 
     equ-inv : ∣ seq.apex ∣ → ∣ seq.apex ∣
     equ-inv (x , p) = x G.⁻¹ , q where abstract
-      q : f .hom (G.inverse x) ≡ g .hom (G.inverse x)
+      q : f # (G.inverse x) ≡ g # (G.inverse x)
       q = f.pres-inv ·· ap H._⁻¹ p ·· sym g.pres-inv
 
     abstract
-      invs : f .hom G.unit ≡ g .hom G.unit
+      invs : f # G.unit ≡ g # G.unit
       invs = f.pres-id ∙ sym g.pres-id
 ```
 

@@ -113,9 +113,9 @@ homomorphisms $A \to [B,C]$.
   curry-bilinear-is-equiv : is-equiv curry-bilinear
   curry-bilinear-is-equiv = is-iso→is-equiv morp where
     morp : is-iso curry-bilinear
-    morp .is-iso.inv uc .Bilinear.map x y = uc .hom x .hom y
+    morp .is-iso.inv uc .Bilinear.map x y = uc # x # y
     morp .is-iso.inv uc .Bilinear.pres-*l x y z = ap (_# _) (uc .preserves .is-group-hom.pres-⋆ _ _)
-    morp .is-iso.inv uc .Bilinear.pres-*r x y z = uc .hom _ .preserves .is-group-hom.pres-⋆ _ _
+    morp .is-iso.inv uc .Bilinear.pres-*r x y z = (uc # _) .preserves .is-group-hom.pres-⋆ _ _
     morp .is-iso.rinv uc = Homomorphism-path λ x → Homomorphism-path λ y → refl
     morp .is-iso.linv uc = Bilinear-path λ x y → refl
 ```
@@ -277,11 +277,11 @@ an equivalence requires appealing to an induction principle of
 
 ```agda
   to-bilinear-map : Ab.Hom (A ⊗ B) C → Bilinear A B C
-  to-bilinear-map gh .Bilinear.map x y = gh .hom (x , y)
+  to-bilinear-map gh .Bilinear.map x y = gh # (x , y)
   to-bilinear-map gh .Bilinear.pres-*l x y z =
-    ap (gh .hom) t-pres-*l ∙ gh .preserves .is-group-hom.pres-⋆ _ _
+    ap (apply gh) t-pres-*l ∙ gh .preserves .is-group-hom.pres-⋆ _ _
   to-bilinear-map gh .Bilinear.pres-*r x y z =
-    ap (gh .hom) t-pres-*r ∙ gh .preserves .is-group-hom.pres-⋆ _ _
+    ap (apply gh) t-pres-*r ∙ gh .preserves .is-group-hom.pres-⋆ _ _
 
   from-bilinear-map-is-equiv : is-equiv from-bilinear-map
   from-bilinear-map-is-equiv = is-iso→is-equiv morp where
@@ -328,9 +328,9 @@ Ab-tensor-functor : Functor (Ab ℓ ×ᶜ Ab ℓ) (Ab ℓ)
 Ab-tensor-functor .F₀ (A , B) = A ⊗ B
 Ab-tensor-functor .F₁ (f , g) = from-bilinear-map _ _ _ bilin where
   bilin : Bilinear _ _ _
-  bilin .Bilinear.map x y       = f .hom x , g .hom y
-  bilin .Bilinear.pres-*l x y z = ap (_, g .hom z) (f .preserves .is-group-hom.pres-⋆ _ _) ∙ t-pres-*l
-  bilin .Bilinear.pres-*r x y z = ap (f .hom x ,_) (g .preserves .is-group-hom.pres-⋆ _ _) ∙ t-pres-*r
+  bilin .Bilinear.map x y       = f # x , g # y
+  bilin .Bilinear.pres-*l x y z = ap (_, g # z) (f .preserves .is-group-hom.pres-⋆ _ _) ∙ t-pres-*l
+  bilin .Bilinear.pres-*r x y z = ap (f # x ,_) (g .preserves .is-group-hom.pres-⋆ _ _) ∙ t-pres-*r
 Ab-tensor-functor .F-id    = Hom≃Bilinear.injective _ _ _ (Bilinear-path λ x y → refl)
 Ab-tensor-functor .F-∘ f g = Hom≃Bilinear.injective _ _ _ (Bilinear-path λ x y → refl)
 

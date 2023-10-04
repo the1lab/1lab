@@ -76,7 +76,7 @@ maximal : ℙ X
 maximal _ = el ⊤ hlevel!
 
 minimal : ℙ X
-minimal _ = el (Lift _ ⊥) hlevel!
+minimal _ = el ⊥ hlevel!
 
 _∩_ : ℙ X → ℙ X → ℙ X
 (A ∩ B) x = el (x ∈ A × x ∈ B) hlevel!

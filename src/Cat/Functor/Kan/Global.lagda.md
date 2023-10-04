@@ -102,17 +102,17 @@ adjoint-precompose→Lan
   → (adj : F ⊣ precompose p)
   → (G : Functor C D)
   → is-lan p G (F .F₀ G) (adj ._⊣_.unit .η G)
-adjoint-precompose→Lan F adj G = ext where
+adjoint-precompose→Lan F adj G = extn where
   open Lan
   open is-lan
   module adj = _⊣_ adj
 
-  ext : is-lan p G _ _
-  ext .σ α = R-adjunct adj α
-  ext .σ-comm {M = M} {α = α} = Nat-path λ a →
+  extn : is-lan p G _ _
+  extn .σ α = R-adjunct adj α
+  extn .σ-comm {M = M} {α = α} = Nat-path λ a →
       D.pullr   (sym (adj.unit .is-natural _ _ _) ηₚ a)
     ∙ D.cancell (adj.zag ηₚ a)
-  ext .σ-uniq x = Equiv.injective (_ , L-adjunct-is-equiv adj)
+  extn .σ-uniq x = Equiv.injective (_ , L-adjunct-is-equiv adj)
     (L-R-adjunct adj _ ∙ x)
 ```
 
