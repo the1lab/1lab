@@ -159,6 +159,10 @@ commutativity condition we remarked was sufficient above; we're done!
   Coalgebra-on-limit F L = coalg module Coalgebra-on-limit where
 ```
 
+It remains to show that, if $F$ and $L$ are as before, then the
+coalgebra structures on $F(-)$ assemble into a coalgebra structure on
+$L$. Fundamentally, this amounts to construct a map $L \to WL$.
+
 <!--
 ```agda
     private
@@ -166,56 +170,89 @@ commutativity condition we remarked was sufficient above; we're done!
       module L'  = is-limit (pres (πᶠ _ F∘ F) L.has-limit)
       module L'' = is-limit (pres _ (pres (πᶠ _ F∘ F) L.has-limit))
       module F   = Functor F
+      open counit using (ε)
 ```
 -->
+
+Since $W$ preserves $L$, we may treat maps $X \to WL$ as “tuplings” of
+morphisms $X \to Fj$, and test equality componentwise. Tupling the maps
+$L \xto{\psi} Fj \to WFj$, where the map $\psi_j$ is the projection from
+the limit, we obtain a morphism $\nu : L \to WL$, uniquely characterised
+by having $W(\psi_j) \circ \nu = F(j) \circ \psi_j$ for every $j$.
 
 ```agda
     opaque
       ν : Hom L.apex (W₀ L.apex)
       ν = L'.universal (λ j → F.₀ j .snd .ρ ∘ L.ψ j) λ {x} {y} h →
-        W₁ (F.₁ h .hom) ∘ F.₀ x .snd .ρ ∘ L.eps .η x ≡⟨ pulll (F.₁ h .preserves) ⟩
-        (F.₀ y .snd .ρ ∘ F.₁ h .hom) ∘ L.eps .η x    ≡⟨ pullr (sym (L.eps .is-natural _ _ _) ∙ elimr L.Ext.F-id) ⟩
-        F.₀ y .snd .ρ ∘ L.eps .η y                   ∎
+        W₁ (F.₁ h .hom) ∘ F.₀ x .snd .ρ ∘ L.ψ x ≡⟨ pulll (F.₁ h .preserves) ⟩
+        (F.₀ y .snd .ρ ∘ F.₁ h .hom) ∘ L.ψ x    ≡⟨ pullr (sym (L.eps .is-natural _ _ _) ∙ elimr L.Ext.F-id) ⟩
+        F.₀ y .snd .ρ ∘ L.ψ y                   ∎
 
-      ν-β : ∀ {j} → W₁ (L.eps .η j) ∘ ν ≡ F.₀ j .snd .ρ ∘ L.eps .η j
+      ν-β : ∀ {j} → W₁ (L.ψ j) ∘ ν ≡ F.₀ j .snd .ρ ∘ L.ψ j
       ν-β = L'.factors _ _
 ```
+
+Since we may again reason componentwise to establish compatibility of
+$\nu$ with $\eps$ and $\delta$, these will follow from the naturality of
+each of $W$'s structural transformations, and from compatibility of each
+of the $Fj$'s coalgebra maps. We comment on compatibility with the
+counit, and omit the rest of the proof for space.
 
 ```agda
     coalg : Coalgebra-on W (Limit.apex L)
     coalg .ρ = ν
     coalg .ρ-counit = L.unique₂ _
       (λ f → sym (L.eps .is-natural _ _ f) ∙ elimr L.Ext.F-id)
-      (λ j → pulll (sym (counit.is-natural _ _ _))
-          ·· pullr ν-β
-          ·· cancell (F.₀ j .snd .ρ-counit))
-      (λ j → idr (L.eps .η j))
+```
+
+To show that $\eps \nu = \id$, it will suffice to show that $\psi_j \eps
+\nu = \psi_j$. But we have
+
+```agda
+      (λ j → L.ψ j ∘ ε _ ∘ ν             ≡⟨ pulll (sym (counit.is-natural _ _ _)) ⟩
+             (ε _ ∘ W₁ (L.ψ j)) ∘ ν      ≡⟨ pullr ν-β ⟩
+             ε _ ∘ F.₀ j .snd .ρ ∘ L.ψ j ≡⟨ cancell (F.₀ j .snd .ρ-counit) ⟩
+             L.ψ j                       ∎)
+      (λ j → idr (L.ψ j))
+```
+
+<!--
+```agda
     coalg .ρ-comult = L''.unique₂ _
       (λ f → W.extendl (F.₁ f .preserves) ∙ ap₂ _∘_ refl
         ( pulll (F.₁ f .preserves)
         ∙ pullr (sym (L.eps .is-natural _ _ f) ∙ elimr L.Ext.F-id)))
       (λ j → W.extendl ν-β ∙ ap₂ _∘_ refl ν-β)
-      λ j → pulll (sym (comult.is-natural _ _ _))
-         ·· pullr ν-β
-         ·· extendl (sym (F.₀ j .snd .ρ-comult))
-```
+      (λ j → pulll (sym (comult.is-natural _ _ _))
+          ·· pullr ν-β
+          ·· extendl (sym (F.₀ j .snd .ρ-comult)))
 
-```agda
   open Ran
   open is-ran
+```
+-->
 
+```agda
   Coalgebra-limit
     : (F : Functor I (Coalgebras W))
     → Limit (πᶠ (Coalgebras-over W) F∘ F)
     → Limit F
   Coalgebra-limit F lim .Ext = const! (_ , Coalgebra-on-limit F lim)
+```
 
+It remains to show that the projection maps $\psi_j : L \to Fj$ are
+coalgebra homomorphisms for the "lifted" structure defined above. But
+this condition is precisely $W(\psi_j) \circ \nu = Fj \circ \psi_j$,
+i.e., the defining property of $\nu$!
+
+```agda
   Coalgebra-limit F lim .eps .η x .hom       = lim .eps .η x
   Coalgebra-limit F lim .eps .η x .preserves = Coalgebra-on-limit.ν-β F lim
   Coalgebra-limit F lim .eps .is-natural x y f = coalgebra-hom-path W $
     ap₂ _∘_ refl (sym (lim .Ext .Functor.F-id)) ∙ lim .eps .is-natural x y f
 ```
 
+<!--
 ```agda
   Coalgebra-limit F lim .has-ran = is-limit-coalgebra F $ natural-isos→is-ran
     idni idni rem₁
@@ -233,3 +270,4 @@ commutativity condition we remarked was sufficient above; we're done!
       .inv∘eta x → idl id
       .natural x y f → eliml refl ∙ intror (lim .Ext .Functor.F-id)
 ```
+-->
