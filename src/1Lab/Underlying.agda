@@ -1,5 +1,8 @@
 open import 1Lab.HLevel.Universe
+open import 1Lab.HLevel.Retracts
 open import 1Lab.Resizing
+open import 1Lab.HLevel
+open import 1Lab.Path
 open import 1Lab.Type
 
 module 1Lab.Underlying where
@@ -30,10 +33,25 @@ instance
     : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′}
     → ⦃ ua : Underlying A ⦄
     → Underlying (Σ A B)
-  Underlying-Σ ⦃ ua ⦄ .ℓ-underlying = ua .Underlying.ℓ-underlying
+  Underlying-Σ ⦃ ua ⦄ .ℓ-underlying = ua .ℓ-underlying
   Underlying-Σ .⌞_⌟ x               = ⌞ x .fst ⌟
+
+  Underlying-Lift
+    : ∀ {ℓ ℓ′} {A : Type ℓ} ⦃ ua : Underlying A ⦄
+    → Underlying (Lift ℓ′ A)
+  Underlying-Lift ⦃ ua ⦄ .ℓ-underlying = ua .ℓ-underlying
+  Underlying-Lift .⌞_⌟ x = ⌞ x .Lift.lower ⌟
 
   -- Workaround for Agda bug https://github.com/agda/agda/issues/6588 —
   -- the principal (instance) argument is reified as visible, so we can
   -- drop it using a display form.
   {-# DISPLAY Underlying.⌞_⌟ f x = ⌞ x ⌟ #-}
+
+from-is-true
+  : ∀ {ℓ} {A : Type ℓ} ⦃ _ : Underlying A ⦄ {P Q : A} ⦃ _ : H-Level ⌞ Q ⌟ 0 ⦄
+  → P ≡ Q
+  → ⌞ P ⌟
+from-is-true prf = subst ⌞_⌟ (sym prf) (hlevel 0 .centre)
+
+_∈_ : ∀ {ℓ ℓ′} {A : Type ℓ} {P : Type ℓ′} ⦃ u : Underlying P ⦄ → A → (A → P) → Type (u .ℓ-underlying)
+x ∈ P = ⌞ P x ⌟
