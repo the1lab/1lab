@@ -13,7 +13,7 @@ import Cat.Reasoning
 module Cat.Diagram.Subobject where
 ```
 
-# Subobject classifiers
+# Subobject classifiers {defines="generic-subobject subobject-classifier"}
 
 In an arbitrary category $\cC$, a [[subobject]] of $X$ is, colloquially
 speaking, given by a monomorphism $m : A \mono X$. Formally, though, we
