@@ -120,6 +120,8 @@ a[href].hover-highlight {
     animation: highlight 2.5s;
   }
 
+  overflow-x: auto;
+
   // background-color: $code-bg;
   font-family: 'Julia Mono', 'Iosevka', 'Fantasque Sans Mono', 'Roboto Mono', monospace;
   font-weight: 400;
