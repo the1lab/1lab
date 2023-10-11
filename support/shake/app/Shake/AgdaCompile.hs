@@ -30,7 +30,8 @@ import Agda.Interaction.Options
 import Agda.Syntax.Common (Cubical(CFull))
 import Agda.Syntax.Common.Pretty
 import Agda.Syntax.TopLevelModuleName
-  ( TopLevelModuleName(..)
+  ( TopLevelModuleName'(..)
+  , TopLevelModuleName
   , RawTopLevelModuleName(..)
   , hashRawTopLevelModuleName
   )

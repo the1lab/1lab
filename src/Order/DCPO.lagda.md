@@ -151,7 +151,7 @@ $$
       is-lub.fam≤lub fs-lub (lift true)
       where
 
-        s : Lift _ Bool → P.Ob
+        s : Lift o Bool → P.Ob
         s (lift b) = if b then x else y
 
         sx≤sfalse : ∀ b → s b P.≤ s (lift false)
