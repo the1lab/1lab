@@ -297,10 +297,10 @@ $\pi$.
 
 ```agda
   δᶜ′-cartesian : ∀ {Γ x} → is-cartesian E (δᶜ {Γ} {x}) δᶜ′
-  δᶜ′-cartesian = cart where
+  δᶜ′-cartesian {Γ = Γ} {x = x} = cart where
     open is-cartesian
 
-    cart : is-cartesian E _ _
+    cart : is-cartesian E (δᶜ {Γ} {x}) δᶜ′
     cart .universal m h′ = hom[ cancell proj-dup ] (πᶜ′ ∘′ h′)
     cart .commutes m h′ = cast[] $
       unwrapr _
