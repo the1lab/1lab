@@ -84,32 +84,6 @@ module
 
 ```agda
 
-  rem₂
-    : ∀ {ℓ ℓ'} {A∙@(A , a₀) : Type∙ ℓ} {P : A → A → Type ℓ'} n
-    → is-n-connected A (2 + n)
-    → (∀ x y → is-hlevel (P x y) (2 + n))
-    → (f : (x : A) → P x a₀)
-    → (g : (x : A) → P a₀ x)
-    → f a₀ ≡ g a₀
-    → ∀ x y → P x y
-  rem₂ {A∙ = A , a₀} {P} n a-conn p-hl f g coh x y = extension x .fst y
-    where
-    Q : A → Type _
-    Q a = Σ (∀ b → P a b) (λ k → k a₀ ≡ f a)
-
-    pt : (x y : A) → is-n-connected (fibre {A = ⊤} (λ _ → x) y) (suc n)
-    pt x y = retract→is-n-connected (suc n)
-      (tt ,_) snd (λ _ → refl) (Path-is-connected (suc n) a-conn)
-
-    rem₂' : (x : A) → is-hlevel (fibre (λ section → section ∘ (λ _ → a₀)) (λ _ → f x)) 1
-    rem₂' a = connected-elim-relative {A = ⊤} {B = A}
-      (λ b → P a b) (λ _ → a₀) (suc n) 1 (pt a₀) (λ _ → p-hl _ _) (λ _ → f a)
-
-    extension = Equiv.from
-      (_ , connected-elim {A = ⊤} Q (λ _ → a₀) (suc n) (pt a₀) λ x →
-        retract→is-hlevel (suc n) (λ (p , q) → p , happly q tt) (λ (p , q) → p , funext λ _ → q) (λ _ → refl) (is-prop→is-hlevel-suc (rem₂' x)))
-      λ _ → g , sym coh
-
   -- rem₁ : (a a' : A) → Path (n-Tr (Path (Susp A) N S) 3)
   --         (inc (merid (a ⊙ a')))
   --         (inc (merid a ∙ sym (merid a₀) ∙ merid a'))

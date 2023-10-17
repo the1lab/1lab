@@ -101,6 +101,9 @@ ConcreteGroup-path {G = G} {H} p = go prop! prop! where
 A central example of a concrete group is the [[circle]]: the delooping of the [[integers]].
 
 ```agda
+S¹-is-connected : is-connected∙ (S¹ , base)
+S¹-is-connected = S¹-elim (inc refl) prop!
+
 S¹-is-groupoid : is-groupoid S¹
 S¹-is-groupoid = connected∙-elim-prop S¹-is-connected hlevel!
                $ connected∙-elim-prop S¹-is-connected hlevel!

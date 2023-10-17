@@ -2,8 +2,9 @@
 ```agda
 open import 1Lab.Prelude
 
-open import Homotopy.Connectedness
 open import Homotopy.Space.Suspension
+open import Homotopy.Connectedness
+open import Homotopy.Truncation
 open import Homotopy.Base
 
 open import Data.Set.Truncation
@@ -45,7 +46,7 @@ Susp-is-connected {A = A} (suc (suc n)) a-conn =
 
     rem₁ : is-equiv λ b a → b
     rem₁ = is-n-connected→n-type-const
-      {A = A} {B = n-Tr.inc {n = 3 + n} N ≡ inc S}
+      {B = n-Tr.inc {n = 3 + n} N ≡ inc S} {A = A}
       (suc n) hlevel! a-conn
 
     rem₂ : Σ (inc N ≡ inc S) (λ p → ∀ x → ap n-Tr.inc (merid x) ≡ p)

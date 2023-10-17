@@ -11,6 +11,9 @@ open import Algebra.Group
 open import Cat.Base
 
 open import Data.Set.Truncation
+
+open import Homotopy.Connectedness
+open import Homotopy.Conjugation
 ```
 -->
 
@@ -237,28 +240,27 @@ to `Code`{.Agda}. For decoding, we do induction on `Deloop`{.Agda} with
     encode : ∀ x → base ≡ x → ∣ Code x ∣
     encode x p = subst (λ x → ∣ Code x ∣) p unit
 
-    decode : ∀ x → ∣ Code x ∣ → base ≡ x
-    decode = Deloop-elim (λ x → ⌞ Code x ⌟ → base ≡ x) (λ _ → hlevel 3)
-```
+  decode : ∀ x → ∣ Code x ∣ → base ≡ x
+  decode = go where
+    coh : ∀ x → PathP (λ i → path x i ∈ Code → base ≡ path x i) path path
+    coh x i c j = hcomp (∂ i ∨ ∂ j) λ where
+      k (k = i0) → path (ua-unglue (Code.path-case.eqv x) i c) j
+      k (i = i0) → path-sq c x (~ k) j
+      k (i = i1) → path c j
+      k (j = i0) → base
+      k (j = i1) → path x (i ∨ ~ k)
 
-With this motive, the type of what we must give for `base`{.Agda}
-reduces to `G → base ≡ base`, for which `path`{.Agda} suffices; The
-`path`{.Agda} case is handled by `path-sq`{.Agda}, and the
-`path-sq`{.Agda} case is automatic.
-
-```agda
-      path
-      (λ x   → ua→ λ a → path-sq _ _)
-      (λ x y → is-set→squarep (λ i j → hlevel 2) _ _ _ _)
+    go : ∀ x → ∣ Code x ∣ → base ≡ x
+    go base c = path c
+    go (path x i) c = coh x i c
+    go (path-sq x y i j) = is-set→squarep
+      (λ i j → fun-is-hlevel {A = path-sq x y i j ∈ Code} 2 (Deloop.squash base (path-sq x y i j)) )
+      (λ i → path) (coh x) (coh (x ⋆ y)) (coh y) i j
+    go (squash x y p q α β i j k) =
+      is-hlevel→is-hlevel-dep {B = λ x → x ∈ Code → base ≡ x} 2 (λ x → hlevel 3)
+        (go x) (go y) (λ i → go (p i)) (λ i → go (q i))
+        (λ i j → go (α i j)) (λ i j → go (β i j)) (squash x y p q α β) i j k
 ```
-
-<!--
-```agda
-    decode-base : decode base ≡rw path
-    decode-base = make-rewrite refl
-    {-# REWRITE decode-base #-}
-```
--->
 
 Proving that these are inverses finishes the proof. For one direction,
 we use path induction to reduce to the case `decode base (encode base
@@ -268,7 +270,7 @@ we have `path unit = refl`, as required.
 
 ```agda
   opaque
-    unfolding encode decode
+    unfolding encode
 
     encode→decode : ∀ {x} (p : base ≡ x) → decode x (encode x p) ≡ p
     encode→decode p =
@@ -305,23 +307,28 @@ group of `Deloop`{.Agda} is `G`, which is what we wanted.
     (∙-is-equiv (G≃ΩB .snd) (∥-∥₀-idempotent (squash base base)))
 ```
 
+Since `Deloop`{.Agda} is a groupoid, each of its loop spaces is
+automatically a set, so we do not _necessarily_ need the truncation when
+taking its fundamental group. This alternative construction is worth
+mentioning since it allows us to trade a proof that `encode`{.Agda}
+preserves multiplication for proofs that it also preserves the identity,
+inverses, differences, etc.
+
+```agda
+  encode-is-group-hom
+    : is-group-hom (π₁Groupoid {T = Deloop} {base} squash) (G .snd) (encode base)
+  encode-is-group-hom .is-group-hom.pres-⋆ x y = eqv.injective₂ (eqv.ε _) $
+    path (encode base x ⋆ encode base y)          ≡⟨ path-∙ (encode base x) (encode base y) ⟩
+    path (encode base x) ∙ path (encode base y)   ≡⟨ ap₂ _∙_ (eqv.ε _) (eqv.ε _) ⟩
+    x ∙ y                                         ∎
+    where module eqv = Equiv G≃ΩB
+```
+
 <!--
 ```agda
-  opaque
-    inc-path-is-group-hom
-      : is-group-hom (G .snd) (πₙ₊₁ 0 (Deloop , base) .snd) (λ x → inc (path x))
-    inc-path-is-group-hom .is-group-hom.pres-⋆ x y = ap ∥_∥₀.inc (path-∙ _ _)
-
-    encode-proj-is-group-hom
-      : is-group-hom (πₙ₊₁ 0 (Deloop , base) .snd) (G .snd)
-          (λ x → encode base (∥-∥₀-idempotent.proj (squash base base) x))
-    encode-proj-is-group-hom = equiv-hom→inverse-hom Groups-equational {a = G} {b = πₙ₊₁ 0 (Deloop , base)}
-        (_ , ∙-is-equiv (G≃ΩB .snd) (∥-∥₀-idempotent (squash base base)))
-        (record { pres-⋆ = λ x y → ap ∥_∥₀.inc (path-∙ x y) })
-
-  encode-is-group-hom : is-group-hom (π₁Groupoid {T = Deloop} {base} squash) (G .snd) (encode base)
-  encode-is-group-hom .is-group-hom.pres-⋆ x y =
-    encode-proj-is-group-hom .is-group-hom.pres-⋆ (inc x) (inc y)
+  module encode where
+    open is-group-hom encode-is-group-hom public
+    open Equiv (Equiv.inverse G≃ΩB) public
 
 instance
   H-Level-Deloop : ∀ {n} {ℓ} {G : Group ℓ} → H-Level (Deloop G) (3 + n)
@@ -332,49 +339,147 @@ instance
 
 ## For abelian groups
 
+<!--
 ```agda
 module _ {ℓ} (G : Group ℓ) (ab : is-commutative-group G) where
   open Group-on (G .snd)
   open is-group-hom
 
-  private
-    opaque
-      ∙-comm : (p q : Path (Deloop G) base base) → p ∙ q ≡ q ∙ p
-      ∙-comm p q = Equiv.injective (Equiv.inverse (G≃ΩB G))
-        (encode-is-group-hom G .pres-⋆ _ _ ·· ab _ _ ·· sym (encode-is-group-hom G .pres-⋆ _ _))
+  private opaque
+```
+-->
 
+If $G$ is an abelian group, then we can characterise the loop spaces of
+$\B G$ based at totally arbitrary points, rather than the above
+characterisation which only applies for the loop space at `base`{.Agda}.
+Our proof starts with the following immediate observation:
+multiplication in $\pi_1(\B G)$ is commutative as well.
+
+```agda
+    ∙-comm : (p q : Path (Deloop G) base base) → p ∙ q ≡ q ∙ p
+    ∙-comm p q = encode.injective G
+      (encode.pres-⋆ G _ _ ·· ab _ _ ·· sym (encode.pres-⋆ G _ _))
+```
+
+We'll construct a function that computes the "`winding`{.Agda} number"
+of a loop with arbitrary base.
+
+```agda
   winding : {x : Deloop G} → x ≡ x → ⌞ G ⌟
   winding {x = x} = go x module windingⁱ where
+```
+
+<!--
+```agda
     hl : (x : Deloop G) → is-set (x ≡ x → ⌞ G ⌟)
     hl _ = hlevel!
 
-    abstract
-      coh : (x : ⌞ G ⌟) → PathP (λ i → path {G = G} x i ≡ path x i → ⌞ G ⌟) (encode G base) (encode G base)
-      coh x = to-pathp $ funext λ p → transport-refl _ ∙ ap (encode G base) (
-          transport-path p (sym (path x)) (sym (path x))
-        ·· ap (path x ∙_) (∙-comm _ _)
-        ·· ∙-cancell (sym (path x)) p)
+    interleaved mutual
+      go   : (x : Deloop G) → x ≡ x → ⌞ G ⌟
 
-    go : (x : Deloop G) → x ≡ x → ⌞ G ⌟
-    go base       loop = encode G base loop
-    go (path x i) loop = coh x i loop
-    go (path-sq x y i j) loop = sq i j loop where
-      sq : SquareP (λ i j → path-sq {G = G} x y i j ≡ path-sq x y i j → ⌞ G ⌟)
-            (λ i → encode G base) (coh x) (coh (x ⋆ y)) (coh y)
-      sq = is-set→squarep (λ _ _ → hl _) _ _ _ _
-    go (squash x y p q α β i j k) loop =
-      is-hlevel→is-hlevel-dep 2 (λ x → is-hlevel-suc 2 (hl x))
-        (go x) (go y) (λ i → go (p i)) (λ j → go (q j))
-        (λ i j → go (α i j)) (λ i j → go (β i j))
-        (squash x y p q α β) i j k loop
+      coherence : Type _ [ i1 ↦ (λ ._ → (x : ⌞ G ⌟) → PathP (λ i → path {G = G} x i ≡ path x i → ⌞ G ⌟) (encode G base) (encode G base)) ]
+      coh : outS coherence
+```
+-->
+
+```agda
+      deg : base ≡ base → ⌞ G ⌟
+      deg = encode G base
+
+      go base loop = deg loop
+```
+
+If the loop is indeed based at the `base`{.Agda}point constructor, then
+we can appeal to the existing construction; We'll abbreviate it as
+`deg`{.Agda} for this construction.
+
+Since our codomain is a set, the higher cases are both handled
+mechanically; We omit them from the page in the interest of parsimony.
+We're left with tackling the `path`{.Agda} case, which means
+constructing a term exhibiting the `coherence`{.Agda} below:
+
+```agda
+      coherence = inS ( ∀ b →
+        PathP (λ i → path b i ≡ path b i → ⌞ G ⌟) deg deg)
+```
+
+This condition is a bit funky, since at first glance it looks like all
+we must do is equate `deg` with itself. However, we're doing this over a
+non-trivial identification in the domain. By extensionality for
+dependent functions, the above is equivalent to showing that
+`deg`{.Agda} produces identical results given an element $b : G$ and
+loops $x_0$, $x_1$ fiting into a commutative square
+
+~~~{.quiver .short-05}
+\[\begin{tikzcd}[ampersand replacement=\&]
+  {\rm{base}} \&\& {\rm{base}} \\
+  \\
+  {\rm{base}} \&\& {\rm{base}}
+  \arrow["{x_1}", from=1-1, to=1-3]
+  \arrow["{\rm{path}(b)}"', from=1-1, to=3-1]
+  \arrow["{x_0}"', from=3-1, to=3-3]
+  \arrow["{\rm{path}(b)}", from=1-3, to=3-3]
+\end{tikzcd}\]
+~~~
+
+Since commutativity of the diagram above says precisely that $x_1$ is
+the [[conjugate|conjugation of paths]] of $x_0$ by $\rm{path}(b)$, we
+can reason about conjugation instead; And since we've shown that
+$x_0\rm{path}(b) = \rm{path}(b)x_0$, this conjugation is just $x_1$
+again. That finishes the construction:
+
+```agda
+      abstract
+        coh b = funext-dep λ {x₀} {x₁} p → ap deg $ sym $
+          x₁               ≡˘⟨ pathp→conj p ⟩
+          conj (path b) x₀ ≡⟨ conj-commutative (∙-comm x₀ (path b)) ⟩
+          x₀               ∎
+
+      go (path x i) loop = coh x i loop
+```
+
+<!--
+```agda
+      go (path-sq x y i j) = is-set→squarep (λ i j → hl (path-sq x y i j))
+        (λ j → encode G base) (coh x) (coh (x ⋆ y)) (coh y)
+        i j
+      go (squash x y p q α β i j k) =
+        is-hlevel→is-hlevel-dep 2 (λ x → is-hlevel-suc 2 (hl x))
+          (go x) (go y) (λ i → go (p i)) (λ j → go (q j))
+          (λ i j → go (α i j)) (λ i j → go (β i j))
+          (squash x y p q α β) i j k
 
   {-# DISPLAY windingⁱ.go x p = winding p #-}
+```
+-->
 
+We could go on to define the inverse to `winding`{.Agda} similar to how
+we constructed `decode`{.Agda}, but there's a trick: since being an
+equivalence is a proposition, if we want to show $\rm{winding}_x$ is an
+equivalence for arbitrary $x$, it suffices to do so for
+$\rm{winding}_{\rm{base}} = \rm{encode}$; but we've already shown
+_that's_ an equivalence! A similar remark allows us to conclude that
+$\rm{winding}_x$ is a group homomorphism $\Omega (\B G, x) \to G$.
+
+```agda
   opaque
     winding-is-equiv : ∀ x → is-equiv (winding {x})
-    winding-is-equiv = Deloop-elim-prop G _ (λ _ → is-equiv-is-prop _) (Equiv.inverse (G≃ΩB G) .snd)
+    winding-is-equiv = Deloop-elim-prop G _ (λ _ → hlevel 1) $
+      Equiv.inverse (G≃ΩB G) .snd
 
-  module winding {x} = Equiv (winding , winding-is-equiv x)
+    winding-is-group-hom : ∀ x →
+      is-group-hom (π₁Groupoid {T = Deloop G} {x} (hlevel 3))
+        (G .snd) (winding {x})
+    winding-is-group-hom = Deloop-elim-prop G _ (λ x → hlevel 1) λ where
+      .pres-⋆ x y → encode.pres-⋆ G x y
+```
+
+We can then obtain a nice interface for working with `winding`{.Agda}.
+
+```agda
+  module winding {x} where
+    open Equiv (winding , winding-is-equiv x) public
+    open is-group-hom (winding-is-group-hom x) public
 
   pathᵇ : (x : Deloop G) → ⌞ G ⌟ → x ≡ x
   pathᵇ _ = winding.from
@@ -395,13 +500,14 @@ module _ {ℓ} (G : Group ℓ) (ab : is-commutative-group G) where
 
   _ : pathᵇ base ≡ path
   _ = refl -- MUST check!
-```
--->
 
-```agda
   pathᵇ-sq : ∀ (x : Deloop G) g h → Square refl (pathᵇ x g) (pathᵇ x (g ⋆ h)) (pathᵇ x h)
   pathᵇ-sq = Deloop-elim-prop G _
     (λ x → Π-is-hlevel² 1 λ g h → PathP-is-hlevel' {A = λ i → x ≡ pathᵇ x h i} 1
       (squash _ _) _ _)
     λ g h → path-sq g h
+
+Deloop-is-connected : ∀ {ℓ} {G : Group ℓ} → is-connected∙ (Deloop G , base)
+Deloop-is-connected = Deloop-elim-prop _ _ hlevel! (inc refl)
 ```
+-->

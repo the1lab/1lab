@@ -137,3 +137,11 @@ using `is-set→squarep`{.Agda}.
 module ∥-∥₀-path {ℓ} {A : Type ℓ} {x} {y}
   = Equiv (∥-∥₀-path-equiv {A = A} {x} {y})
 ```
+
+<!--
+```agda
+instance
+  H-Level-∥-∥₀ : ∀ {ℓ} {A : Type ℓ} {n : Nat} → H-Level ∥ A ∥₀ (2 + n)
+  H-Level-∥-∥₀ {n = n} = basic-instance 2 squash
+```
+-->
