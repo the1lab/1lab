@@ -135,7 +135,7 @@ embedding functor is [[fully faithful]].
 
   isom : is-iso よ₁
   isom .inv nt = nt .η _ id
-  isom .rinv nt = Nat-path λ c → funext λ g →
+  isom .rinv nt = ext λ c g →
     happly (sym (nt .is-natural _ _ _)) _ ∙ ap (nt .η c) (idl g)
   isom .linv _ = idr _
 ```
@@ -157,8 +157,8 @@ though we define it anyways for posterity.
 よcov : Functor (C ^op) Cat[ C , Sets h ]
 よcov .F₀ = Hom-from
 よcov .F₁ = よcov₁
-よcov .F-id = Nat-path λ _ → funext λ g → idr g
-よcov .F-∘ f g = Nat-path λ _ → funext λ h → (assoc h g f)
+よcov .F-id = ext λ _ g → idr g
+よcov .F-∘ f g = ext λ _ h → (assoc h g f)
 ```
 
 As expected, the covariant yoneda embedding is also fully faithful.
@@ -170,7 +170,7 @@ As expected, the covariant yoneda embedding is also fully faithful.
 
   isom : is-iso よcov₁
   isom .inv nt = nt .η _ id
-  isom .rinv nt = Nat-path λ c → funext λ g →
+  isom .rinv nt = ext λ c g →
     sym (nt .is-natural _ _ _) $ₚ _ ∙ ap (nt .η c) (idr g)
   isom .linv _ = idl _
 ```

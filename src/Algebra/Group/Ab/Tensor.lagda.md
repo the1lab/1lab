@@ -116,7 +116,7 @@ homomorphisms $A \to [B,C]$.
     morp .is-iso.inv uc .Bilinear.map x y = uc # x # y
     morp .is-iso.inv uc .Bilinear.pres-*l x y z = ap (_# _) (uc .preserves .is-group-hom.pres-⋆ _ _)
     morp .is-iso.inv uc .Bilinear.pres-*r x y z = (uc # _) .preserves .is-group-hom.pres-⋆ _ _
-    morp .is-iso.rinv uc = Homomorphism-path λ x → Homomorphism-path λ y → refl
+    morp .is-iso.rinv uc = trivialᵉ
     morp .is-iso.linv uc = Bilinear-path λ x y → refl
 ```
 
@@ -345,5 +345,5 @@ Tensor⊣Hom A = hom-iso→adjoints to to-eqv nat where
     (curry-bilinear-is-equiv _ _ _)
 
   nat : hom-iso-natural {L = Bifunctor.Left Ab-tensor-functor A} {R = Bifunctor.Right Ab-hom-functor A} to
-  nat f g h = Homomorphism-path λ x → Homomorphism-path λ y → refl
+  nat f g h = trivialᵉ
 ```

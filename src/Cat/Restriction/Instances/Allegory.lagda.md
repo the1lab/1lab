@@ -60,11 +60,11 @@ functional; it's only relevant in the converse direction of the 4th axiom!
   Partial-maps-restriction ._↓ f .hom = domain (f .hom)
   Partial-maps-restriction ._↓ f .witness = domain-functional (f .hom)
   Partial-maps-restriction .↓-dom f =
-    Wide-hom-path $ domain-absorb (f .hom)
+    ext $ domain-absorb (f .hom)
   Partial-maps-restriction .↓-comm f g =
-    Wide-hom-path $ domain-comm
+    ext $ domain-comm
   Partial-maps-restriction .↓-smashr f g =
-    Wide-hom-path $ domain-smashr (g .hom) (f .hom)
+    ext $ domain-smashr (g .hom) (f .hom)
   Partial-maps-restriction .↓-swap f g =
-    Wide-hom-path $ domain-swap (f .hom) (g .hom) (g .witness)
+    ext $ domain-swap (f .hom) (g .hom) (g .witness)
 ```

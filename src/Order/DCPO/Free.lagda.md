@@ -1,5 +1,7 @@
 <!--
 ```agda
+open import Cat.Displayed.Univalence.Thin using (extensionality-hom)
+open import Cat.Functor.Subcategory using (extensionality-subcat-hom)
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
@@ -65,8 +67,8 @@ Free-DCPO .F₁ f =
   const-inhabited-fam→is-lub (Disc _)
     (λ ix → ap f (disc-is-lub→const x-lub ix))
     (dir .elt)
-Free-DCPO .F-id = scott-path (λ _ → refl)
-Free-DCPO .F-∘ _ _ = scott-path (λ _ → refl)
+Free-DCPO .F-id = trivialᵉ
+Free-DCPO .F-∘ _ _ = trivialᵉ
 ```
 
 Furthermore, this functor is left adjoint to the forgetful functor
@@ -87,9 +89,8 @@ Free-DCPO⊣Forget-DCPO .counit .η D =
           y   ≤∎)
         (dir .elt)
    where open DCPO D
-Free-DCPO⊣Forget-DCPO .counit .is-natural x y f =
-  scott-path (λ _ → refl)
-Free-DCPO⊣Forget-DCPO .zig = scott-path (λ _ → refl)
+Free-DCPO⊣Forget-DCPO .counit .is-natural x y f = trivialᵉ
+Free-DCPO⊣Forget-DCPO .zig = trivialᵉ
 Free-DCPO⊣Forget-DCPO .zag = refl
 ```
 
@@ -396,10 +397,8 @@ Free-Pointed-dcpo .F₁ {x = A} f =
     (λ _ _ → part-map-⊑)
     (λ _ _ → part-map-lub {A = A} f)
     (λ _ → part-map-never)
-Free-Pointed-dcpo .F-id =
-  strict-scott-path part-map-id
-Free-Pointed-dcpo .F-∘ f g =
-  strict-scott-path (part-map-∘ f g)
+Free-Pointed-dcpo .F-id = ext (part-map-id $_)
+Free-Pointed-dcpo .F-∘ f g = ext (part-map-∘ f g $_)
 ```
 
 Finally, we shall show that this functor is left-adjoint to the
@@ -525,9 +524,9 @@ Free-Pointed-dcpo⊣Forget-Pointed-dcpo .counit .η D =
     (λ s dir → part-counit-lub D s (dir .semidirected))
     (part-counit-never D)
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo .counit .is-natural D E f =
-  strict-scott-path λ x → sym $ Strict-scott.pres-⋃-prop f _ _ _
+  ext λ x → sym $ Strict-scott.pres-⋃-prop f _ _ _
 Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zig {A} =
-  strict-scott-path λ x →
+  ext λ x →
     part-ext
       (A?.⋃-prop-least _ _ x (λ p → always-⊒ (Lift.lower p) refl) .implies)
       (λ p → A?.⋃-prop-le _ _ (lift p) .implies tt)

@@ -56,8 +56,8 @@ Frame↪SLat .F₁ f .hom = f .hom
 Frame↪SLat .F₁ f .preserves .Monoid-hom.pres-id = f .preserves .is-frame-hom.pres-⊤
 Frame↪SLat .F₁ f .preserves .Monoid-hom.pres-⋆ = f .preserves .is-frame-hom.pres-∩
 
-Frame↪SLat .F-id = Homomorphism-path λ _ → refl
-Frame↪SLat .F-∘ f g = Homomorphism-path λ _ → refl
+Frame↪SLat .F-id = trivialᵉ
+Frame↪SLat .F-∘ f g = trivialᵉ
 ```
 
 The question this module seeks to answer is: is there a way to freely
@@ -162,7 +162,7 @@ performing this construction. Let's abbreviate it:
 ```
 
 The easy part is an appeal to the existing machinery for free
-cocompletions: Any monotone map $A \to B$ extneds to a _cocontinuous_
+cocompletions: Any monotone map $A \to B$ exteds to a _cocontinuous_
 map $DA \to B$, because $B$, being a frame, is cocomplete.
 
 ```agda

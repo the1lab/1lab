@@ -140,8 +140,7 @@ calculate that the inverse to $m$ is still a map over $y$.
         })
       (/-Hom-path (inv .is-invertible.invl))
       (/-Hom-path (inv .is-invertible.invr))
-    where
-      extn = is-strong-epi→is-extremal-epi C cover
+    where extn = is-strong-epi→is-extremal-epi C cover
 ```
 
 Since the projection functor preserves and reflects strong epimorphisms,

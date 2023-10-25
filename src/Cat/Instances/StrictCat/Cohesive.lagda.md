@@ -255,10 +255,10 @@ using our path helpers: `Nat-path`{.Agda}, `funext`{.Agda}, and
     g .is-natural x y f = refl
 
     f∘g : f ∘nt g ≡ idnt
-    f∘g = Nat-path λ c → funext λ x → Functor-path (λ x → refl) λ f → sym (F-id x)
+    f∘g = ext λ c x → Functor-path (λ x → refl) λ f → sym (F-id x)
 
     g∘f : g ∘nt f ≡ idnt
-    g∘f = Nat-path λ _ i x → x
+    g∘f = trivialᵉ
 ```
 
 # Connected components

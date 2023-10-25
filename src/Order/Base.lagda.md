@@ -119,7 +119,7 @@ Poset-on-path
   → {P Q : Poset-on ℓ A}
   → (∀ x y → Poset-on._≤_ P x y ≡ Poset-on._≤_ Q x y)
   → P ≡ Q
-Poset-on-path p = Poset-on-pathp refl (funext λ x → funext λ y → p x y)
+Poset-on-path p = Poset-on-pathp refl (ext p)
 ```
 -->
 

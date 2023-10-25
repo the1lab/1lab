@@ -227,8 +227,8 @@ functorial:
   (sym ptf ·· ap f x ∙ ap f y ·· ptf)                     ≡˘⟨ ··-chain ⟩
   (sym ptf ·· ap f x ·· ptf) ∙ (sym ptf ·· ap f y ·· ptf) ∎
 
-Π₁ .F-id = Homomorphism-path λ _ → sym (··-filler _ _ _)
-Π₁ .F-∘ (f , ptf) (g , ptg) = Homomorphism-path λ x →
+Π₁ .F-id = ext λ _ → sym (··-filler _ _ _)
+Π₁ .F-∘ (f , ptf) (g , ptg) = ext λ x →
   (sym (ap f ptg ∙ ptf) ·· ap (f ⊙ g) x ·· (ap f ptg ∙ ptf))         ≡˘⟨ ··-stack ⟩
   (sym ptf ·· ⌜ ap f (sym ptg) ·· ap (f ⊙ g) x ·· ap f ptg ⌝ ·· ptf) ≡˘⟨ ap¡ (ap-·· f _ _ _) ⟩
   (sym ptf ·· ap f (sym ptg ·· ap g x ·· ptg) ·· ptf)                ∎
@@ -342,7 +342,7 @@ right inverse to $\Pi_1$:
     f # ω ∙ p refl         ∎
 
   rinv : Π₁ .F₁ g ≡ f
-  rinv = Homomorphism-path λ ω → sym (··-unique' (symP (f≡apg ω)))
+  rinv = ext λ ω → sym (··-unique' (symP (f≡apg ω)))
 ```
 
 We are most of the way there. In order to get a proper equivalence, we must check that

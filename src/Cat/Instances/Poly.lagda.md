@@ -81,7 +81,7 @@ poly-map-path
                   ≡ g .preserves a b)
   → f ≡ g
 poly-map-path hom≡ pre≡ = total-hom-path _ hom≡
-  (to-pathp (funext λ a → funext λ b → Regularity.precise! (pre≡ a b)))
+  (to-pathp (ext λ a b → Regularity.precise! (pre≡ a b)))
 ```
 
 ## Polynomials as functors

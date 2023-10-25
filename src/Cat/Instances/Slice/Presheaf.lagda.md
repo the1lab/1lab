@@ -148,12 +148,12 @@ without comment.
       ∙ ap fst (happly (nt .is-natural _ _
           (elem-hom f (happly (sym (x .map .is-natural _ _ _)) _))) _)
 
-    inv nt .commutes = Nat-path λ z → funext λ w →
+    inv nt .commutes = ext λ z w →
       nt .η (elem _ (x .map .η _ _)) (w , refl) .snd
 
     rinv : is-right-inverse inv (F₁ slice→total)
-    rinv nt = Nat-path λ o → funext λ where
-      (z , p) → Σ-prop-path (λ _ → P.₀ _ .is-tr _ _)
+    rinv nt = ext λ where
+      o (z , p) → Σ-prop-path (λ _ → P.₀ _ .is-tr _ _)
         (λ i → nt .η (elem (o .ob) (p i)) (z , (λ j → p (i ∧ j))) .fst)
 
     linv : is-left-inverse inv (F₁ slice→total)

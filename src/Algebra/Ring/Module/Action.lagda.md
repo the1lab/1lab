@@ -109,6 +109,6 @@ and ring morphisms $R \to [G,G]$ into the [endomorphism ring] of $G$.
     : (G : Abelian-group ℓ)
     → Ring-action (G .snd) ≃ Rings.Hom R (Endo Ab-ab-category G)
   Action≃Hom G = Iso→Equiv $ Action→Hom G , iso (Hom→Action G)
-    (λ x → Homomorphism-path λ _ → refl)
+    (λ x → trivialᵉ)
     (λ x → refl)
 ```

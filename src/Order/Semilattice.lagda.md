@@ -240,8 +240,8 @@ semilattice homomorphism is a monotone map under the induced ordering.
 ```agda
 Meet-semi-lattice .F₁ f .hom = f .hom
 Meet-semi-lattice .F₁ f .preserves x y p = ap (f .hom) p ∙ f .preserves .Monoid-hom.pres-⋆ _ _
-Meet-semi-lattice .F-id    = Homomorphism-path λ _ → refl
-Meet-semi-lattice .F-∘ f g = Homomorphism-path λ _ → refl
+Meet-semi-lattice .F-id    = trivialᵉ
+Meet-semi-lattice .F-∘ f g = trivialᵉ
 ```
 
 ## The interface

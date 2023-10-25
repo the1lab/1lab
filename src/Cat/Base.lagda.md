@@ -1,8 +1,10 @@
 <!--
 ```agda
+open import 1Lab.Path.IdentitySystem
 open import 1Lab.Reflection.Record
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
+open import 1Lab.Extensionality
 open import 1Lab.Rewrite
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -575,3 +577,35 @@ is a proposition:
 
   infixl 45 _ηₚ_
 ```
+
+<!--
+```agda
+open Precategory
+open _=>_
+
+Extensional-natural-transformation
+  : ∀ {o ℓ o' ℓ' ℓr} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
+  → {F G : Functor C D}
+  → {@(tactic extensionalᶠ {A = Precategory.Ob C → Type _}
+        (λ x → D .Hom (F .Functor.F₀ x) (G .Functor.F₀ x)))
+      sa : ∀ x → Extensional (D .Hom (F .Functor.F₀ x) (G .Functor.F₀ x)) ℓr}
+  → Extensional (F => G) (o ⊔ ℓr)
+Extensional-natural-transformation {sa = sa} .Pathᵉ f g = ∀ i → Pathᵉ (sa i) (f .η i) (g .η i)
+Extensional-natural-transformation {sa = sa} .reflᵉ x i = reflᵉ (sa i) (x .η i)
+Extensional-natural-transformation {sa = sa} .idsᵉ .to-path x = Nat-path λ i →
+  sa _ .idsᵉ .to-path (x i)
+Extensional-natural-transformation {D = D} {sa = sa} .idsᵉ .to-path-over h =
+  is-prop→pathp
+    (λ i → Π-is-hlevel 1
+      (λ _ → is-hlevel≃ 1 (identity-system-gives-path (sa _ .idsᵉ)) (D .Hom-set _ _ _ _)))
+    _ _
+
+instance
+  extensionality-natural-transformation
+    : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
+        {F G : Functor C D}
+    → Extensionality (F => G)
+  extensionality-natural-transformation = record
+    { lemma = quote Extensional-natural-transformation }
+```
+-->
