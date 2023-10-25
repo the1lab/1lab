@@ -1,15 +1,14 @@
 <!--
 ```agda
-open import Cat.Instances.Functor.Compose
 open import Cat.Displayed.Cartesian
 open import Cat.Functor.Equivalence
 open import Cat.Instances.Functor
 open import Cat.Displayed.Total
+open import Cat.Functor.Compose
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning
-import Cat.Functor.Reasoning
 import Cat.Reasoning
 ```
 -->
@@ -28,12 +27,12 @@ open Total-hom
 
 # Liftings
 
-A category $\cE$ displayed over $\cB$ contains the same data as a
-functor into $\cB$, just packaged in a way that makes it easier to talk
-about lifting properties. If we take this perspective, we can start
-considering diagrams of functors. In particular, we can consider lifts
-of functors $F : \cJ \to \cB$, as in the following diagram:
-
+A category $\cE$ [[displayed over|displayed category]] $\cB$ contains
+the same data as a functor into $\cB$, just packaged in a way that makes
+it easier to talk about lifting properties. If we take this perspective,
+we can start considering diagrams of functors. In particular, we can
+consider lifts of functors $F : \cJ \to \cB$, as in the following
+diagram:
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -107,7 +106,7 @@ module _
 -->
 
 Liftings of a functor $F : \cJ \to \cB$ yield functors from $\cJ$ to the
-total category of $\cE$.
+[[total category]] of $\cE$.
 
 ```agda
   Lifting→Functor : ∀ {F : Functor J B} → Lifting F → Functor J (∫ E)
@@ -131,7 +130,7 @@ higher level of strictness than usual.
 
   Lifting-nat-iso
     : ∀ {F : Functor J B} → (F' : Lifting F)
-    → natural-iso F (πᶠ E F∘ Lifting→Functor F')
+    → F ≅ⁿ πᶠ E F∘ Lifting→Functor F'
   Lifting-nat-iso F' = to-natural-iso ni where
     open make-natural-iso
 
@@ -361,8 +360,8 @@ When $\cE$ is a fibration, then so is the displayed category of liftings.
     : (fib : Cartesian-fibration E)
     → Cartesian-fibration Liftings
   Liftings-fibration fib .Cartesian-fibration.has-lift {F} {G} α G' = cart-lift where
-    module F = Cat.Functor.Reasoning F
-    module G = Cat.Functor.Reasoning G
+    module F = Functor F
+    module G = Functor G
     open Cartesian-fibration fib
     open Lifting
     open _=[_]=>l_

@@ -1,9 +1,9 @@
 <!--
 ```agda
 open import Cat.Functor.Adjoint.Reflective
+open import Cat.Functor.Properties
 open import Cat.Diagram.Terminal
 open import Cat.Functor.Adjoint
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
@@ -64,14 +64,16 @@ map $Y \ortho f$.
   o⊥m {A} {B} Y f = (c : C.Hom Y B) → is-contr (Σ[ d ∈ C.Hom Y A ] (f C.∘ d ≡ c))
 ```
 
-**Note**: In the formalisation, we don't write $\bot$ infix, since it
+:::{.note}
+In the formalisation, we don't write $\bot$ infix, since it
 must be explicitly applied to the category in which the morphisms live.
 Thus, we define three distinct predicates expressing orthogonality:
 `m⊥m`{.Agda} ("map-map"), `m⊥o`{.Agda} ("map-object"), and `o⊥m`
 ("object-map"). If the ambient category $\cC$ has enough co/limits,
 being orthogonal to an object is equivalent to being orthogonal to an
 object. For example, $f \ortho X$ iff. $f \ortho \mathop{!}_X$, where
-$!_X : X \to 1$ is the unique map from $X$ into the terminal object.
+$!_X : X \to 1$ is the unique map from $X$ into the [[terminal object]].
+:::
 
 <!--
 ```agda
@@ -156,11 +158,11 @@ module
 ```
 -->
 
-Let $r \dashv \iota : \cD \adj \cC$ be an arbitrary
-\r{reflective subcategory}. Speaking abstractly, there is a "universal"
-choice of test for whether an object is "in" the subcategory: Whether
-the adjunction unit: $\eta_x : x \to \iota{}r(x)$ is an isomorphism.
-The theory of orthogonality gives a second way to detect this situation.
+Let $r \dashv \iota : \cD \adj \cC$ be an arbitrary [[reflective
+subcategory]]. Speaking abstractly, there is a "universal" choice of
+test for whether an object is "in" the subcategory: Whether the
+adjunction unit: $\eta_x : x \to \iota{}r(x)$ is an isomorphism.  The
+theory of orthogonality gives a second way to detect this situation.
 The proof here is from [@Borceux:vol1, §5.4].
 
 The first thing we observe is that any map $f$ such that $r(f)$ is an

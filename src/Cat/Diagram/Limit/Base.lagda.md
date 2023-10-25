@@ -1,10 +1,13 @@
 <!--
 ```agda
 open import Cat.Instances.Shape.Terminal
+open import Cat.Diagram.Product.Indexed
 open import Cat.Functor.Kan.Unique
+open import Cat.Functor.Naturality
+open import Cat.Diagram.Equaliser
 open import Cat.Functor.Coherence
-open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
@@ -16,17 +19,16 @@ import Cat.Reasoning
 module Cat.Diagram.Limit.Base where
 ```
 
-# Idea
+# Limits {defines=limit}
 
-**Note**: This page describes the general definition of limits, and
+:::{.note}
+This page describes the general definition of limits, and
 assumes some familiarity with some concrete examples, in particular
-[terminal objects], [products], [equalisers], and [pullbacks]. It might
-be a good idea to check out those pages before continuing!
+[[terminal objects]], [[products]], [[equalisers]], and [[pullbacks]].
+It might be a good idea to check out those pages before continuing!
+:::
 
-[terminal objects]: Cat.Diagram.Terminal.html
-[products]: Cat.Diagram.Product.html
-[equalisers]: Cat.Diagram.Equaliser.html
-[pullbacks]: Cat.Diagram.Pullback.html
+## Idea
 
 To motivate limits, note how all the above examples have roughly the
 same structure. They all consist of some object, a bunch of maps out
@@ -92,17 +94,17 @@ makes it more difficult to integrate results about limits into the larger
 body of work. It would be great if we could encode the data we needed
 using existing objects!
 
-Luckily, we can! If we take a step back, we can notice that we are trying
-to construct a map into a functor. What are maps into functors? Natural
-transformations! Concretely, let $D : \cJ \to \cC$ be some diagram.
-We can encode the same data as a cone in a natural transformation
-$\eta : {!x} \circ \mathord{!} \to D$, where $!x : \top \to \cC$ denotes
-the constant functor that maps object to $x$ and every morphism to $id$,
-and $! : \cJ \to \top$ denotes the unique functor into the terminal
-category. The components of such a natural transformation yield maps from
-$x \to D(j)$ for every $j : \cJ$, and naturality ensures that these
-maps must commute with the rest of the diagram. We can describe this
-situation diagrammatically like so:
+Luckily, we can! If we take a step back, we can notice that we are
+trying to construct a map into a functor. What are maps into functors?
+Natural transformations! Concretely, let $D : \cJ \to \cC$ be some
+diagram.  We can encode the same data as a cone in a natural
+transformation $\eta : {!x} \circ \mathord{!} \to D$, where $!x : \top
+\to \cC$ denotes the constant functor that maps object to $x$ and every
+morphism to $id$, and $! : \cJ \to \top$ denotes the unique functor into
+the [[terminal category]]. The components of such a natural
+transformation yield maps from $x \to D(j)$ for every $j : \cJ$, and
+naturality ensures that these maps must commute with the rest of the
+diagram. We can describe this situation diagrammatically like so:
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -140,12 +142,10 @@ instead.
 
 We might be tempted to stop here and call it a day, but we can go one
 step further. It turns out that these universal functors have a name:
-they are [right Kan extensions]. This allows for an extremely concise
+they are [[right Kan extensions]]. This allows for an extremely concise
 definition of limits: $x : \cC$ is the limit of a diagram
 $D : \cJ \to \cC$ when the constant functor $!x : \{*\} \to \cC$ is
 a right Kan extension of $! : \cJ \to \{*\}$ along $D$.
-
-[right Kan extensions]: Cat.Functor.Kan.Base.html
 
 <!--
 ```agda
@@ -186,7 +186,7 @@ $\mathord{!} : \cJ \to \{*\}$.
 
 The definition above is very concise, and it has the benefit of being
 abstract: We can re-use definitions and theorems originally stated for
-Kan extensions to limits. However, it has the downside of being
+right Kan extensions to limits. However, it has the downside of being
 abstract: it's good for working with _limits in general_, but working
 with a _specific_ limit is penalised, as the data we want to get at is
 "buried".
@@ -276,9 +276,9 @@ the apex by a single, _unique_ universal morphism:
 -->
 
 If we have this data, then we can make a value of `is-limit`{.Agda}. It
-might seem like naturality, required for a Kan extension, is missing
-from `make-is-limit`{.Agda}, but it can be derived from the other data
-we have been given:
+might seem like naturality, required for a right Kan extension, is
+missing from `make-is-limit`{.Agda}, but it can be derived from the
+other data we have been given:
 
 <!--
 ```agda
@@ -509,7 +509,7 @@ with the 2 limits, then $f$ and $g$ are inverses.
     → (∀ {j : J.Ob} → Lx.ψ j C.∘ g ≡ Ly.ψ j)
     → C.Inverses f g
   limits→inversesp {f = f} {g = g} f-factor g-factor =
-    natural-inverses→inverses
+    inversesⁿ→inverses
       {α = hom→⊤-natural-trans f}
       {β = hom→⊤-natural-trans g}
       (Ran-unique.σ-inversesp Ly Lx
@@ -527,7 +527,7 @@ must be invertible.
     → (∀ {j : J.Ob} → Ly.ψ j C.∘ f ≡ Lx.ψ j)
     → C.is-invertible f
   limits→invertiblep {f = f} f-factor =
-    is-natural-invertible→invertible
+    is-invertibleⁿ→is-invertible
       {α = hom→⊤-natural-trans f}
       (Ran-unique.σ-is-invertiblep
         Ly
@@ -553,8 +553,7 @@ Finally, we can bundle this data up to show that the apexes are isomorphic.
 
 ```agda
   limits-unique : x C.≅ y
-  limits-unique =
-    Nat-iso→Iso (Ran-unique.unique Lx Ly) tt
+  limits-unique = isoⁿ→iso (Ran-unique.unique Lx Ly) tt
 ```
 
 
@@ -598,7 +597,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
     → is-ran !F D K' eps
   is-invertible→is-limitp {K' = K'} eta p q invert =
     generalize-limitp
-      (is-invertible→is-ran Ly $ componentwise-invertible→invertible _ (λ _ → invert))
+      (is-invertible→is-ran Ly $ invertible→invertibleⁿ _ (λ _ → invert))
       q
 ```
 
@@ -609,8 +608,8 @@ apex of $L$ is also a limit of $Dia'$.
 ```agda
   natural-iso-diagram→is-limitp
     : ∀ {D′ : Functor J C} {eps : K F∘ !F => D′}
-    → (isos : natural-iso D D′)
-    → (∀ {j} → natural-iso.to isos .η j C.∘ Ly.ψ j ≡ eps .η j)
+    → (isos : D ≅ⁿ D′)
+    → (∀ {j} → Isoⁿ.to isos .η j C.∘ Ly.ψ j ≡ eps .η j)
     → is-ran !F D′ K eps
   natural-iso-diagram→is-limitp {D′ = D′} isos p =
     generalize-limitp
@@ -624,12 +623,9 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
          {D D′ : Functor J C}
          where
 
-  natural-iso→limit
-    : natural-iso D D′
-    → Limit D
-    → Limit D′
+  natural-iso→limit : D ≅ⁿ D′ → Limit D → Limit D′
   natural-iso→limit isos L .Ran.Ext = Ran.Ext L
-  natural-iso→limit isos L .Ran.eps = natural-iso.to isos ∘nt Ran.eps L
+  natural-iso→limit isos L .Ran.eps = Isoⁿ.to isos ∘nt Ran.eps L
   natural-iso→limit isos L .Ran.has-ran = natural-iso-of→is-ran (Ran.has-ran L) isos
 ```
 -->
@@ -653,8 +649,8 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```
 -->
 
-Since limits are unique “up to isomorphism”, if $C$ is a univalent
-category, then `Limit`{.Agda} itself is a proposition! This is an
+Since limits are unique “up to isomorphism”, if $C$ is a [[univalent
+category]], then `Limit`{.Agda} itself is a proposition! This is an
 instance of the more general [uniqueness of Kan extensions].
 
 [uniqueness of Kan extensions]: Cat.Functor.Kan.Unique.html
@@ -674,9 +670,6 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 
 
 # Preservation of Limits
-
-Suppose you have a limit $L$ of a diagram $\rm{Dia}$. We say that $F$
-**preserves $L$** if $F(L)$ is also a limit of $F \circ \rm{Dia}$.
 
 <!--
 ```agda
@@ -762,7 +755,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
     open _=>_
 
   natural-iso→preserves-limits
-    : natural-iso F F'
+    : F ≅ⁿ F'
     → preserves-limit F Dia
     → preserves-limit F' Dia
   natural-iso→preserves-limits α F-preserves {K = K} {eps} lim =
@@ -775,7 +768,7 @@ module _ {J : Precategory o₁ h₁} {C : Precategory o₂ h₂} {D : Precategor
           F' .F₁ (eps .η j)                                                         ∎)
         (F-preserves lim)
     where
-      module α = natural-iso α
+      module α = Isoⁿ α
 ```
 -->
 
@@ -799,9 +792,9 @@ is-continuous oshape hshape {C = C} F =
   → preserves-limit F Diagram
 ```
 
-# Completeness
+# Completeness {defines="complete-category"}
 
-A category is **complete** if admits for limits of arbitrary shape.
+A category is **complete** if it admits limits for diagrams of arbitrary shape.
 However, in the presence of excluded middle, if a category admits
 products indexed by its class of morphisms, then it is automatically a
 poset. Since excluded middle is independent of type theory, we can not
@@ -814,5 +807,132 @@ indexed by a precategory with objects in $\ty\ o$ and morphisms in $\ty\
 
 ```agda
 is-complete : ∀ {oc ℓc} o ℓ → Precategory oc ℓc → Type _
-is-complete o ℓ C = ∀ {D : Precategory o ℓ} (F : Functor D C) → Limit F
+is-complete oj ℓj C = ∀ {J : Precategory oj ℓj} (F : Functor J C) → Limit F
+```
+
+While this condition might sound very strong, and thus that it would be hard to come
+by, it turns out we can get away with only two fundamental types of limits:
+[[products]] and [[equalisers]]. In order to construct the limit for a diagram
+of shape $\cJ$, we will require products [[indexed|indexed product]] by $\cJ$'s type
+of objects *and* by its type of morphisms.
+
+<!--
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} where
+  private
+    module C = Cat.Reasoning C
+    open Indexed-product
+    open make-is-limit
+    open Equaliser
+```
+-->
+
+```agda
+  limit-as-equaliser-of-product
+    : ∀ {oj ℓj} {J : Precategory oj ℓj}
+    → has-products-indexed-by C (Precategory.Ob J)
+    → has-products-indexed-by C (Precategory.Mor J)
+    → has-equalisers C
+    → (F : Functor J C) → Limit F
+  limit-as-equaliser-of-product {oj} {ℓj} {J} has-Ob-prod has-Mor-prod has-eq F =
+    to-limit (to-is-limit lim) where
+```
+
+<!--
+```agda
+    module J = Cat.Reasoning J
+    open Functor F
+```
+-->
+
+Given a diagram $F : \ca{J} \to \ca{C}$, we start by building the product of all
+the objects appearing in the diagram.
+
+```agda
+    Obs : Indexed-product C λ o → F₀ o
+    Obs = has-Ob-prod _
+```
+
+Our limit will arise as a *subobject* of this product-of-objects,
+namely the [[equaliser]] of two carefully chosen morphisms.
+
+As a guiding example, the [[pullback]] of $f : A \to C$ and $g : B \to C$ should be
+the subobject of $A \times B \times C$ consisting of triples $(a, b, c)$ such that
+$f(a) = c = g(b)$. In full generality, for each arrow $f : A \to C$ in our diagram,
+we should have that projecting out the $C$th component of our product should give the same
+result as projecting out the $A$th component and postcomposing with $f$.
+
+This suggests to build another indexed product of all the *codomains* of arrows in
+the diagram, taking the first morphism to be the projection of the codomain
+and the second morphism to be the projection of the domain postcomposed with $f$:
+
+~~~{.quiver .short-1}
+\[\begin{tikzcd}
+	{\displaystyle \prod_{o : \text{Ob}(\mathcal J)} F(o)} & {\displaystyle \prod_{(f : a \to b) : \text{Mor}(\mathcal J)} F(b)}
+	\arrow["{\pi_b}", shift left, from=1-1, to=1-2]
+	\arrow["{F(f) \circ \pi_a}"', shift right, from=1-1, to=1-2]
+\end{tikzcd}\]
+~~~
+
+```agda
+    Cod : Indexed-product C {Idx = J.Mor} λ (a , b , f) → F₀ b
+    Cod = has-Mor-prod _
+
+    s t : C.Hom (Obs .ΠF) (Cod .ΠF)
+    s = Cod .tuple λ (a , b , f) → F₁ f C.∘ Obs .π a
+    t = Cod .tuple λ (a , b , f) → Obs .π b
+
+    eq : Equaliser C s t
+    eq = has-eq _ _
+
+    lim : make-is-limit F (eq .apex)
+```
+
+<details>
+<summary>
+The rest of the proof amounts to repackaging the data of the equaliser and products
+as the data for a limit.
+</summary>
+
+```agda
+    lim .ψ c = Obs .π c C.∘ eq .equ
+    lim .commutes {a} {b} f =
+      F₁ f C.∘ Obs .π a C.∘ eq .equ            ≡˘⟨ C.extendl (Cod .commute) ⟩
+      Cod .π (a , b , f) C.∘ ⌜ s C.∘ eq .equ ⌝ ≡⟨ ap! (eq .equal) ⟩
+      Cod .π (a , b , f) C.∘ t C.∘ eq .equ     ≡⟨ C.pulll (Cod .commute) ⟩
+      Obs .π b C.∘ eq .equ                     ∎
+    lim .universal {x} e comm = eq .universal comm′ where
+      e′ : C.Hom x (Obs .ΠF)
+      e′ = Obs .tuple e
+      comm′ : s C.∘ e′ ≡ t C.∘ e′
+      comm′ = Indexed-product.unique₂ Cod λ i@(a , b , f) →
+        Cod .π i C.∘ s C.∘ e′        ≡⟨ C.extendl (Cod .commute) ⟩
+        F₁ f C.∘ ⌜ Obs .π a C.∘ e′ ⌝ ≡⟨ ap! (Obs .commute) ⟩
+        F₁ f C.∘ e a                 ≡⟨ comm f ⟩
+        e b                          ≡˘⟨ Obs .commute ⟩
+        Obs .π b C.∘ e′              ≡˘⟨ C.pulll (Cod .commute) ⟩
+        Cod .π i C.∘ t C.∘ e′        ∎
+    lim .factors {j} e comm =
+      (Obs .π j C.∘ eq .equ) C.∘ lim .universal e comm ≡⟨ C.pullr (eq .factors) ⟩
+      Obs .π j C.∘ Obs .tuple e                        ≡⟨ Obs .commute ⟩
+      e j                                              ∎
+    lim .unique e comm u′ fac = eq .unique $ Obs .unique _
+      λ i → C.assoc _ _ _ ∙ fac i
+```
+</details>
+
+This implies that a category with equalisers and large enough indexed products has
+all limits.
+
+```agda
+  products+equalisers→complete
+    : ∀ {oj ℓj}
+    → has-indexed-products C (oj ⊔ ℓj)
+    → has-equalisers C
+    → is-complete oj ℓj C
+  products+equalisers→complete {oj} {ℓj} has-prod has-eq =
+    limit-as-equaliser-of-product
+      (λ _ → Lift-Indexed-product C ℓj (has-prod _))
+      (λ _ → has-prod _)
+      has-eq
 ```

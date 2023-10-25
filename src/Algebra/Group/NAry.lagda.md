@@ -15,12 +15,12 @@ module Algebra.Group.NAry where
 
 # n-Ary Sums
 
-An important property of abelian groups (really, of abelian _monoids_,
-but we will only need them for groups) is that their binary operation
-extends cleanly to an "n-ary" operation, where the niceness of the
-extension is guaranteed by associativity. For a group $G$, we define the
-sum of an $n$-ary sequence of $G$'s elements to be the sum "from the
-left": add the first element then keep going.
+An important property of [[abelian groups]] (really, of abelian
+_monoids_, but we will only need them for [[groups]]) is that their
+binary operation extends cleanly to an "n-ary" operation, where the
+niceness of the extension is guaranteed by associativity. For a group
+$G$, we define the sum of an $n$-ary sequence of $G$'s elements to be
+the sum "from the left": add the first element then keep going.
 
 ```agda
 ∑ : ∀ {n} {ℓ} {T : Type ℓ} (G : Group-on T) → (Fin n → T) → T

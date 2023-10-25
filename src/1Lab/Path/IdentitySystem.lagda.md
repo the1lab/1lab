@@ -3,7 +3,6 @@
 open import 1Lab.Equiv.Embedding
 open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Retracts
-open import 1Lab.Path.Groupoid
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
 open import 1Lab.Type.Pi
@@ -20,7 +19,7 @@ open import Data.Dec.Base
 module 1Lab.Path.IdentitySystem where
 ```
 
-# Identity systems
+# Identity systems {defines=identity-system}
 
 An **identity system** is a way of characterising the path spaces of a
 particular type, without necessarily having to construct a full
@@ -291,7 +290,7 @@ identity-system→hlevel (suc n) ids hl x y =
 ```
 -->
 
-## Sets and Hedberg's theorem
+## Sets and Hedberg's theorem {defines="hedberg's-theorem"}
 
 We now apply the general theory of identity systems to something a lot
 more mundane: recognising sets. An immediate consequence of having an

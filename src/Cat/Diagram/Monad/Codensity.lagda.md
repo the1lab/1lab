@@ -3,7 +3,6 @@
 open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
 open import Cat.Diagram.Monad
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
@@ -27,31 +26,26 @@ open _=>_
 
 # Codensity monads
 
-Let $F : \cA \to \cB$ be a functor with a [left adjoint] $G :
+Let $F : \cA \to \cB$ be a functor with a [[left adjoint]] $G :
 \cB \to \cA$. Some pretty [standard abstract nonsense][adjm] tells
 us that the composite $GF$ is a [monad] in $\cB$, with the unit and
 multiplication inherited from the adjunction $G \dashv F$. The easiest
 cases to picture are when $\cB$ is $\Sets_\kappa$, and $F$ is the
-"underlying set" functor from an algebraic category (like [monoids] or
-[groups]). What's slightly more interesting is that functors _without_
-left adjoints may also induce monads!
+"underlying set" functor from an algebraic category (like [[monoids|free
+monoid]] or [[groups|free group]]). What's slightly more interesting is
+that functors _without_ left adjoints may also induce monads!
 
-[left adjoint]: Cat.Functor.Adjoint.html
 [adjm]: Cat.Functor.Adjoint.Monad.html
 [monad]: Cat.Diagram.Monad.html
-[monoids]: Algebra.Monoid.Category.html#free-objects
-[groups]: Algebra.Group.Free.html#universal-property
 
 This is called the **codensity monad** of the functor $F$, and it exists
-whenever $\cB$ admits [limits] indexed by categories the [size] of
+whenever $\cB$ admits [[limits]] indexed by categories the [size] of
 $\cA$. When $F$ does have a left adjoint, its codensity monad
 coincides with the ordinary monad-from-an-adjunction construction.
 Rather than unfolding the necessary limits here, though, we defer to
-general categorical machinery: [right Kan extensions].
+general categorical machinery: [[right Kan extensions]].
 
-[limits]: Cat.Diagram.Limit.Base.html
 [size]: 1Lab.intro.html#universes-and-size-issues
-[right Kan extensions]: Cat.Functor.Kan.Base.html
 
 The really, really short of it is that the codensity monad of $F$ is the
 right Kan extension of $F$ along itself, $\Ran_F F$.
@@ -69,14 +63,14 @@ module _ (F : Functor A B) (R : Ran F F) where
 
 Constructing the monad structure on the $\Ran_F F$ functor is a bit
 involved, but it does serve as a very illustrative application of the
-universal property of Kan extensions. Recall that, by definition, if we
-have a natural transformation $GF \To F$ (for our choice of functor
-$G$), then this extends to a (unique) natural transformation $G \To
-\Ran_F F$.
+universal property of right Kan extensions. Recall that, by definition,
+if we have a natural transformation $GF \To F$ (for our choice of
+functor $G$), then this extends to a (unique) natural transformation $G
+\To \Ran_F F$.
 
 For example, the unit map $\eta$ is obtained by extending the identity
-natural transformation $\id : \rm{Id}F \To F$, which is implicit
-witnessing commutativity of the $F$ -- $\rm{Id}$ -- $F$ triangle below.
+natural transformation $\id : \Id F \To F$, which is implicit witnessing
+commutativity of the $F$ -- $\Id$ -- $F$ triangle below.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -125,7 +119,7 @@ $(\Lan_F(F))^2 \To \Lan_F(F)$.
 <details>
 <summary>Proving that these two extended natural transformations really
 do comprise a monad structure is a routine application of the uniqueness
-properties of Kan extensions. The real noise comes from having to
+properties of right Kan extensions. The real noise comes from having to
 construct auxiliary natural transformations representing each pair of
 maps we want to compute with.</summary>
 
@@ -191,6 +185,6 @@ adjoints can be understood as [efficient solutions] to "optimisation
 problems". But when a functor does _not_ admit a left adjoint, we
 conclude that there is no most efficient solution; This doesn't mean
 that we can't _approximate_ a solution, though! And indeed, this kind of
-approximation is exactly what Kan extensions are for.
+approximation is exactly what right Kan extensions are for.
 
 [efficient solutions]: Cat.Functor.Adjoint.html#universal-morphisms

@@ -6,17 +6,14 @@ open import Cat.Morphism.Orthogonal
 open import Cat.Morphism.StrongEpi
 open import Cat.Diagram.Pullback
 open import Cat.Instances.Slice
-open import Cat.Regular
 open import Cat.Prelude
+open import Cat.Regular
 
-open import Data.Power
-
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning as Cr
 ```
 -->
 
-```
+```agda
 module Cat.Regular.Slice
   {o ℓ} {C : Precategory o ℓ} (y : Precategory.Ob C)
   (reg : is-regular C)
@@ -25,19 +22,19 @@ module Cat.Regular.Slice
 
 # Regular categories are stable under slicing
 
-Let $\cC$ be a [regular category]: a [finitely complete] category where
-maps have [pullback-stable] [strong epi]-[mono] factorisations. In this
-module, we'll establish that, for any object $y : \cC$, the [slice]
-$\cC/y$ is _also_ a regular category. If we motivate regular categories
-by the well-behaved calculus of relations of their internal language,
-stability under slicing means that relations _remain_ well-behaved under
-passing to arbitrary contexts.
+Let $\cC$ be a [regular category]: a [[finitely complete category]]
+where maps have [[pullback-stable]] [strong epi]-[mono] factorisations.
+In this module, we'll establish that, for any object $y : \cC$, the
+[slice] $\cC/y$ is _also_ a regular category. If we motivate regular
+categories by the well-behaved calculus of relations of their internal
+language, stability under slicing means that relations _remain_
+well-behaved under passing to arbitrary contexts.
 
 [regular category]: Cat.Regular.html
 [pullback-stable]: Cat.Diagram.Pullback.html#stability
 [strong epi]: Cat.Morphism.StrongEpi.html
 [mono]: Cat.Morphism.html#monos
-[finitely complete]: Cat.Diagram.Limit.Finite.html
+[slice]: Cat.Instances.Slice.html
 
 <!--
 ```agda
@@ -54,7 +51,7 @@ open /-Hom
 
 private
   C/y-lex : Finitely-complete C/y
-  C/y-lex = with-pullbacks C/y (record { has⊤ = Slice-terminal-object }) pb where
+  C/y-lex = with-pullbacks C/y Slice-terminal-object pb where
     pb : ∀ {A B X} (f : C/y.Hom A X) (g : C/y.Hom B X) → Pullback C/y f g
     pb {A = A} f g = below where
       above = r.lex.pullbacks (f .map) (g .map)
@@ -86,7 +83,7 @@ the proof is a characterisation of the [strong epimorphisms] in a slice
 $\cC/y$. To do this, we will freely use that $\cC$ and $\cC/y$ are
 finitely complete, and instead characterise the _extremal_ epimorphisms.
 
-[slilim]: Cat.Instances.Slice.html#arbitrary-limits-in-slices
+[slilim]: Cat.Instances.Slice.Limit.html
 [strong epimorphisms]: Cat.Morphism.StrongEpi.html
 
 For this, it will suffice to show that the inclusion functor $\cC/y
@@ -134,7 +131,7 @@ calculate that the inverse to $m$ is still a map over $y$.
     → is-strong-epi C (h .map)
     → is-strong-epi C/y h
   reflect-cover h cover = is-extremal-epi→is-strong-epi C/y C/y-lex λ m g p →
-    let inv = ext (pres-mono m) (g .map) (ap map p)
+    let inv = extn (pres-mono m) (g .map) (ap map p)
     in C/y.make-invertible
       (record
         { map      = inv .is-invertible.inv
@@ -144,11 +141,11 @@ calculate that the inverse to $m$ is still a map over $y$.
       (/-Hom-path (inv .is-invertible.invl))
       (/-Hom-path (inv .is-invertible.invr))
     where
-      ext = is-strong-epi→is-extremal-epi C cover
+      extn = is-strong-epi→is-extremal-epi C cover
 ```
 
 Since the projection functor preserves and reflects strong epimorphisms,
-we can compute image factorisations over $y$ as image factorisations in
+we can compute [[image factorisations]] over $y$ as image factorisations in
 $\cC$. And since the projection functor additionally preserves
 pullbacks, by the same argument, it suffices for strong epimorphisms to
 be stable under pullback in $\cC$ for them to be stable under pullback

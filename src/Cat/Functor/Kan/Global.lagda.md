@@ -1,11 +1,11 @@
 <!--
 ```agda
-open import Cat.Instances.Functor.Compose
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Compose
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -33,14 +33,13 @@ module Cat.Functor.Kan.Global
 
 # Global Kan extensions
 
-Recall that a [left Kan extension] of $F : C \to D$ along $p : C \to C'$
+Recall that a [[left Kan extension]] of $F : C \to D$ along $p : C \to C'$
 is a universal solution $\Lan_p(F)$ to extending $F$ to a functor $C'
 \to D$. In particularly happy cases (e.g. when $C$ is [small] and $D$ is
 [cocomplete]), the left Kan extension $\Lan_p(F)$ along $p$ exists for
 **any** $F$; When this happens, the assignment $F \mapsto \Lan_p(F)$
 extends to a functor, which we call a **global Kan extension**.
 
-[left Kan extension]: Cat.Functor.Kan.Base.html
 [small]: 1Lab.intro.html#universes-and-size-issues
 [cocomplete]: Cat.Diagram.Colimit.Base.html#cocompleteness
 
@@ -73,7 +72,7 @@ appealing to the details of a particular computation. Moreover, the left
 Kan extension functor _itself_ has a universal property: it is a left
 adjoint to the [precomposition] functor $- \circ p$.
 
-[precomposition]: Cat.Instances.Functor.Compose.html
+[precomposition]: Cat.Functor.Compose.html
 
 ```agda
   Lan⊣precompose : Lan-functor ⊣ precompose p
@@ -94,8 +93,8 @@ adjoint to the [precomposition] functor $- \circ p$.
       ∙ ap₂ D._∘_ refl (D.pushr refl)
 ```
 
-And, since adjoints are unique, if $- \circ p$ has any left adjoint, then its
-values generate Kan extensions:
+And, since adjoints are unique, if $- \circ p$ has any [[left adjoint]],
+then its values generate Kan extensions:
 
 ```agda
 adjoint-precompose→Lan
@@ -103,17 +102,17 @@ adjoint-precompose→Lan
   → (adj : F ⊣ precompose p)
   → (G : Functor C D)
   → is-lan p G (F .F₀ G) (adj ._⊣_.unit .η G)
-adjoint-precompose→Lan F adj G = ext where
+adjoint-precompose→Lan F adj G = extn where
   open Lan
   open is-lan
   module adj = _⊣_ adj
 
-  ext : is-lan p G _ _
-  ext .σ α = R-adjunct adj α
-  ext .σ-comm {M = M} {α = α} = Nat-path λ a →
+  extn : is-lan p G _ _
+  extn .σ α = R-adjunct adj α
+  extn .σ-comm {M = M} {α = α} = Nat-path λ a →
       D.pullr   (sym (adj.unit .is-natural _ _ _) ηₚ a)
     ∙ D.cancell (adj.zag ηₚ a)
-  ext .σ-uniq x = Equiv.injective (_ , L-adjunct-is-equiv adj)
+  extn .σ-uniq x = Equiv.injective (_ , L-adjunct-is-equiv adj)
     (L-R-adjunct adj _ ∙ x)
 ```
 

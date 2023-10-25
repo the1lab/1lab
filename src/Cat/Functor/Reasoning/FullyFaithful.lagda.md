@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Properties
 open import Cat.Functor.Base
 open import Cat.Prelude hiding (injective)
 
@@ -23,7 +24,7 @@ Write something informative here
 -->
 
 This module contains a few short combinators for reasoning about the
-actions of fully faithful functors on morphisms and isomorphisms.
+actions of [[fully faithful functors]] on morphisms and isomorphisms.
 
 <!--
 ```agda

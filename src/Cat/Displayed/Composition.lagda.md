@@ -16,17 +16,15 @@ module Cat.Displayed.Composition where
 
 # Composition of Displayed Categories
 
-A displayed category $\cE$ over $\cB$ is equivalent to the data
+A [[displayed category]] $\cE$ over $\cB$ is equivalent to the data
 of a functor into $\cB$; the forward direction of this equivalence is
-witnessed by the [total category] of $\cE$, along with the canonical
+witnessed by the [[total category]] of $\cE$, along with the canonical
 projection functor from the total category into $\cB$. This suggests
 that we ought to be able to compose displayed categories. That is,
 if $\cE$ is displayed over $\cB$, and $\cF$ is displayed over
 $\int \cE$, then we can construct a new category $\cE \cdot \cF$
 displayed over $\cB$ that contains the data of both $\cE$ and
 $\cF$.
-
-[total category] Cat.Displayed.Total.html
 
 To actually construct the composite, we bundle up the data of
 $\cE$ and $\cF$ into pairs, so an object in $\cE \cdot \cF$
@@ -63,7 +61,7 @@ _D∘_ {ℬ = ℬ} ℰ ℱ = disp where
     (ℰ.assoc′ (f′ .fst) (g′ .fst) (h′ .fst)) ,ₚ (ℱ.assoc′ (f′ .snd) (g′ .snd) (h′ .snd))
 ```
 
-We also obtain a displayed functor from $\cE \cdot \cF$ to $\cE$
+We also obtain a [[displayed functor]] from $\cE \cdot \cF$ to $\cE$
 that projects out the data of $\cE$ from the composite.
 
 ```agda

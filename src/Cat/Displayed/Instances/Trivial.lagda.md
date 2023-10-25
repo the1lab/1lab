@@ -30,7 +30,7 @@ open Total-hom
 # The Trivial Bifibration
 
 Any category $\ca{C}$ can be regarded as being displayed over the
-terminal category $\top$.
+[[terminal category]] $\top$.
 
 ```agda
 Trivial : Displayed ⊤Cat o ℓ
@@ -44,9 +44,9 @@ Trivial .Displayed.idl′ = idl
 Trivial .Displayed.assoc′ = assoc
 ```
 
-All morphisms in the trivial displayed category are vertical over the same object,
-so producing cartesian lifts is extremely easy: just use the identity
-morphism!
+All morphisms in the trivial [[displayed category]] are vertical over
+the same object, so producing cartesian lifts is extremely easy: just
+use the identity morphism!
 
 ```agda
 open Cartesian-fibration
@@ -78,7 +78,7 @@ Trivial-bifibration .is-bifibration.fibration = Trivial-fibration
 Trivial-bifibration .is-bifibration.opfibration = Trivial-opfibration
 ```
 
-Furthermore, the total category of the trivial bifibration is *isomorphic*
+Furthermore, the [[total category]] of the trivial bifibration is *isomorphic*
 to the category we started with.
 
 ```agda

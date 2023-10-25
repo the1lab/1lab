@@ -6,6 +6,7 @@ type SearchItem = {
   idAnchor: string,
   idType: string | null,
   idDesc: string | null,
+  idDefines: string[] | null,
 };
 
 const highlight = ({ match, original }: MatchData<SearchItem>): Content => {
@@ -50,18 +51,31 @@ const startSearch = (mirrorInput: HTMLInputElement | null) => {
       searchResults.innerHTML = "";
 
       const list = <ul>
-        {results.slice(0, 20).map(match => <li>
-          <a class="search-result" href={`/${match.item.idAnchor}`}>
-            <h3 class="sourceCode search-header">
-              <span>
-                {highlight(match)}
-              </span>
-              <span class="search-module">{match.item.idAnchor.replace(/.html(#.+)?$/, "")}</span>
-            </h3>
-            {match.item.idType && <p class="search-type sourceCode">{match.item.idType}</p>}
-            {match.item.idDesc && <p class="search-desc">{match.item.idDesc}</p>}
-          </a>
-        </li>)}
+        {results.slice(0, 20).map(match => {
+          let desc: HTMLElement | null = null;
+
+          /* The item has a description which can't be handled as plain
+           * text, since it might include rendered markup. Therefore, we
+           * can't use a JSX splice to insert it.
+           */
+          if (match.item.idDesc) {
+            desc = <p class="search-desc"></p>
+            desc.insertAdjacentHTML('afterbegin', match.item.idDesc);
+          };
+
+          return <li>
+            <a class="search-result" href={match.item.idAnchor}>
+              <h3 class="search-header">
+                <span>
+                  {highlight(match)}
+                </span>
+                <span class="search-module">{match.item.idAnchor.replace(/.html(#.+)?$/, "")}</span>
+              </h3>
+              {match.item.idType && <p class="search-type sourceCode">{match.item.idType}</p>}
+              {desc}
+            </a>
+          </li>
+        })}
       </ul>;
 
 
@@ -172,13 +186,13 @@ const startSearch = (mirrorInput: HTMLInputElement | null) => {
   // Fetch the search index if not available and start searching
   if (!loadingIndex) {
     loadingIndex = true;
-    fetch("/static/search.json")
+    fetch("static/search.json")
       .then(r => r.json())
       .then(entries => {
         index = new Searcher(entries, {
           returnMatchData: true,
           ignoreSymbols: false,
-          keySelector: (x: SearchItem) => x.idIdent,
+          keySelector: (x: SearchItem) => [x.idIdent].concat(x.idDefines ?? []),
         });
 
         doSearch();

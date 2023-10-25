@@ -32,7 +32,7 @@ private module Mod {ℓ} (R : Ring ℓ) where
 
 # Modules
 
-A **module** over a \r{ring} $R$ is an \r{abelian group} $G$ equipped
+A **module** over a [[ring]] $R$ is an [[abelian group]] $G$ equipped
 with an [action by $R$]. Modules generalise the idea of vector spaces,
 which may be familiar from linear algebra, by replacing the field of
 scalars by a _ring_ of scalars. More pertinently, though, modules

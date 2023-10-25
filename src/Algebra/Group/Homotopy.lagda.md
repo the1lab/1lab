@@ -25,7 +25,7 @@ private variable
 ```
 -->
 
-# Homotopy Groups
+# Homotopy Groups {defines="homotopy-group fundamental-group"}
 
 Given a `pointed type`{.Agda ident=Type∙} $(A, a)$ we refer to the type
 $a = a$ as the **loop space of $A$**, and refer to it in short as
@@ -41,10 +41,10 @@ which we denote $\Omega^n A$.
 ```
 
 For positive $n$, we can give $\Omega^n A$ a `Group`{.Agda} structure,
-obtained by [truncating](Data.Set.Truncation.html) the higher
-groupoid structure that $A$ is equipped with. We call the sequence
-$\pi_n(A)$ the **homotopy groups** of $A$, but remark that the indexing
-used by `πₙ`{.Agda} is off by 1: `πₙ 0 A` is the **fundamental group**
+obtained by [[truncating|set-truncation]] the higher groupoid structure
+that $A$ is equipped with. We call the sequence $\pi_n(A)$ the
+**homotopy groups** of $A$, but remark that the indexing used by
+`πₙ`{.Agda} is off by 1: `πₙ 0 A` is the **fundamental group**
 $\pi_1(A)$.
 
 ```agda
@@ -67,9 +67,9 @@ inverses are given by `inverting paths`{.Agda ident=sym}.
     ∥-∥₀-elim₃ (λ _ _ _ → is-prop→is-set (squash _ _))
       λ x y z i → inc (∙-assoc x y z i)
   omega .make-group.invl =
-    ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ x i → inc (∙-inv-l x i)
+    ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ x i → inc (∙-invl x i)
   omega .make-group.idl =
-    ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ x i → inc (∙-id-l x i)
+    ∥-∥₀-elim (λ _ → is-prop→is-set (squash _ _)) λ x i → inc (∙-idl x i)
 ```
 
 A direct cubical transcription of the Eckmann-Hilton argument tells us
@@ -82,8 +82,8 @@ commutative, independent of $A$.
   → p ∙ q ≡ q ∙ p
 Ωⁿ⁺²-is-abelian-group n p q =
   transport
-    (λ k → ap (λ x → ∙-id-r x k) p ∙ ap (λ x → ∙-id-l x k) q
-         ≡ ap (λ x → ∙-id-l x k) q ∙ ap (λ x → ∙-id-r x k) p)
+    (λ k → ap (λ x → ∙-idr x k) p ∙ ap (λ x → ∙-idl x k) q
+         ≡ ap (λ x → ∙-idl x k) q ∙ ap (λ x → ∙-idr x k) p)
     (λ i → (λ j → p (j ∧ ~ i) ∙ q (j ∧ i))
          ∙ (λ j → p (~ i ∨ j) ∙ q (i ∨ j)))
 ```
@@ -91,8 +91,8 @@ commutative, independent of $A$.
 The proof can be visualized with the following diagram, where the
 vertices are in $\Omega^{n + 1} A$. The outer rectangle shows `p ∙ q ≡
 q ∙ p`, which is filled by transporting the two inner squares using
-`∙-id-r`{.Agda} on `p j` and `∙-id-l`{.Agda} on `q j`. Note that
-`∙-id-r refl` and `∙-id-l refl` are definitionally equal.  In the two
+`∙-idr`{.Agda} on `p j` and `∙-idl`{.Agda} on `q j`. Note that
+`∙-idr refl` and `∙-idl refl` are definitionally equal.  In the two
 inner squares, `p j` and `q j` are on different sides of the path
 composition, so we can use the De Morgan structure on the interval to
 have `p` and `q` slip by each other.
@@ -133,7 +133,7 @@ have `p` and `q` slip by each other.
 ~~~
 
 Lifting this result through the set truncation establishes that
-$\pi_{n+2}$ is an Abelian group:
+$\pi_{n+2}$ is an [[Abelian group]]:
 
 ```agda
 πₙ₊₂-is-abelian-group : ∀ {ℓ} {A : Type∙ ℓ} (n : Nat)
@@ -143,14 +143,14 @@ $\pi_{n+2}$ is an Abelian group:
              (λ x y i → inc (Ωⁿ⁺²-is-abelian-group n x y i))
 ```
 
-## Deloopings
+## Deloopings {defines="delooping"}
 
 A natural question to ask, given that all pointed types have a
 fundamental group, is whether every group arises as the fundamental
 group of some type. The answer to this question is "yes", but in the
 annoying way that questions like these tend to be answered: Given any
-group $G$, we construct a type $B(G)$ with $\pi_1(B(G)) \equiv G$. We
-call $B(G)$ the **delooping** of $G$.
+group $G$, we construct a type $\B{G}$ with $\pi_1(\B{G}) \equiv G$. We
+call $\B{G}$ the **delooping** of $G$.
 
 ```agda
 module _ {ℓ} (G : Group ℓ) where
@@ -172,7 +172,7 @@ The delooping is constructed as a higher inductive type. We have a
 generic `base`{.Agda} point, and a constructor expressing that
 `Deloop`{.Agda} is a groupoid; Since it is a groupoid, it has a set of
 loops `point ≡ point`: this is necessary, since otherwise we would not
-be able to prove that $\pi_1(B(G)) \equiv G$. We then have the
+be able to prove that $\pi_1(\B{G}) \equiv G$. We then have the
 "interesting" higher constructors: `path`{.Agda} lets us turn any
 element of $G$ to a path `point ≡ point`, and `path-sq`{.Agda} expresses
 that `path`{.Agda} is a group homomorphism. More specifically,
@@ -213,11 +213,11 @@ homomorphism, preserves the group identity.
 ```agda
     path-unit : path unit ≡ refl
     path-unit =
-      path unit                               ≡⟨ sym (∙-id-r _) ⟩
-      path unit ∙ ⌜ refl ⌝                    ≡˘⟨ ap¡ (∙-inv-r _)  ⟩
+      path unit                               ≡⟨ sym (∙-idr _) ⟩
+      path unit ∙ ⌜ refl ⌝                    ≡˘⟨ ap¡ (∙-invr _)  ⟩
       path unit ∙ path unit ∙ sym (path unit) ≡⟨ ∙-assoc _ _ _ ∙ ap₂ _∙_ (sym (path-∙ _ _)) refl ⟩
       path ⌜ unit ⋆ unit ⌝ ∙ sym (path unit)  ≡⟨ ap! G.idr ⟩
-      path unit ∙ sym (path unit)             ≡⟨ ∙-inv-r _  ⟩
+      path unit ∙ sym (path unit)             ≡⟨ ∙-invr _  ⟩
       refl                                    ∎
 ```
 </details>
@@ -229,7 +229,7 @@ eliminator into propositions later, so we define that now.
 ```agda
   Deloop-elim
     : ∀ {ℓ'} (P : Deloop → Type ℓ')
-    → (∀ x → is-hlevel (P x) 3)
+    → (∀ x → is-groupoid (P x))
     → (p : P base)
     → (ploop : ∀ x → PathP (λ i → P (path x i)) p p)
     → ( ∀ x y

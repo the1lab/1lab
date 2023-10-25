@@ -19,15 +19,14 @@ module Cat.Displayed.Univalence.Reasoning
 
 # Remarks about displayed univalence
 
-Note that, over a univalent base, [univalence of a displayed
-category][du] is equivalent to each fibre being univalent; Over a
-precategorical base, displayed univalence is a stronger condition, but
-it still implies that each fibre is univalent. Moreover, since
-isomorphisms in fibres are equivalent to [vertical isomorphisms], if
-$\cE$ is a displayed univalent category, then vertical isomorphism is
-an identity system on each type of objects-over.
+Note that, over a univalent base, [[univalence of displayed categories]]
+is equivalent to _fibrewise_ univalence; Over a precategorical base,
+displayed univalence is a stronger condition, but it still implies that
+each fibre is univalent. Moreover, since isomorphisms in fibres are
+equivalent to [vertical isomorphisms], if $\cE$ is a [[displayed
+univalent category]], then vertical isomorphism is an [[identity
+system]] on each type of objects-over.
 
-[du]: Cat.Displayed.Univalence.html
 [vertical isomorphisms]: Cat.Displayed.Morphism.html#isos
 
 <!--
@@ -72,12 +71,11 @@ vertical-iso→path e = ≅↓-identity-system e .to-path
 ```
 
 The transport and dependent path lemmas are straightforward
-generalisations of [their non-displayed counterparts][univ]. Note that
-while we only need to talk about vertical isomorphisms, the proofs work
-over an arbitrary morphism in the base. They are also generalised over
-an arbitrary identification between e.g. $f = 1f1$ in the base.
-
-[univ]: agda://Cat.Univalent#Hom-transport
+generalisations of [[their non-displayed counterparts|transport in
+Hom]]. Note that while we only need to talk about vertical isomorphisms,
+the proofs work over an arbitrary morphism in the base. They are also
+generalised over an arbitrary identification between e.g. $f = 1f1$ in
+the base.
 
 <!--
 ```agda

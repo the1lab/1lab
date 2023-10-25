@@ -3,19 +3,11 @@
 open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Subgroup
-open import Algebra.Group.Ab.Free
 open import Algebra.Group.Ab.Sum
 open import Algebra.Group.Ab
-open import Algebra.Group
 
-open import Cat.Functor.Adjoint.Continuous
-open import Cat.Diagram.Equaliser.Kernel
-open import Cat.Functor.FullSubcategory
-open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Equaliser
-open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
-open import Cat.Functor.Adjoint
 open import Cat.Abelian.Base
 open import Cat.Prelude
 ```
@@ -30,9 +22,7 @@ module Cat.Abelian.Instances.Ab {ℓ} where
 open is-additive.Coequaliser
 open is-additive.Terminal
 open is-pre-abelian
-open Ab-category
 open is-additive
-open make-group
 ```
 -->
 
@@ -40,16 +30,16 @@ open make-group
 
 The prototypal --- representative, even --- example of an
 [$\Ab$-enriched], and an [abelian] category at that, is the category of
-abelian groups, $\Ab$. For abstractly-nonsensical reasons, we could say
-$\Ab$ is $\Ab$-enriched by virtue of being monoidal closed, but we have
-a concrete construction at hand: `Ab-ab-category`{.Agda}
+[[abelian groups]], $\Ab$. For abstractly-nonsensical reasons, we could
+say $\Ab$ is $\Ab$-enriched by virtue of being monoidal closed, but we
+have a concrete construction at hand: `Ab-ab-category`{.Agda}
 
 [$\Ab$-enriched]: Cat.Abelian.Base.html#ab-enriched-categories
 [abelian]: Cat.Abelian.Base.html#pre-abelian-abelian-categories
 
 Let us show it is additive. The terminal group is given by the terminal
 set, equipped with its unique group structure, and we have already
-computed [products](Algebra.Group.Ab.Sum.html) --- they are given by
+computed [[products|direct sum abelian groups]] --- they are given by
 direct sums.
 
 ```agda

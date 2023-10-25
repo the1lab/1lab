@@ -37,6 +37,10 @@ map f nothing  = nothing
 extend : Maybe A → (A → Maybe B) → Maybe B
 extend (just x) k = k x
 extend nothing k  = nothing
+
+Maybe-rec : (A → B) → B → Maybe A → B
+Maybe-rec f b (just x) = f x
+Maybe-rec f b nothing = b
 ```
 
 <!--

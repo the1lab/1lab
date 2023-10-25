@@ -32,7 +32,7 @@ open Cat.Displayed.Reasoning ℰ
 
 # Right Fibrations
 
-A [cartesian fibration] $\cE$ is said to be a **right fibration** if every
+A [[cartesian fibration]] $\cE$ is said to be a **right fibration** if every
 morphism in $\cE$ is cartesian.
 
 ```agda
@@ -50,7 +50,7 @@ record Right-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
 
 One notable fact is every vertical morphism of a right fibrations is
 invertible. In other words, if $\cE$ is a right fibration, then all
-of its fibre categories are groupoids. This follows directly from the
+of its [[fibre categories]] are groupoids. This follows directly from the
 fact that vertical cartesian maps are invertible.
 
 ```agda
@@ -78,14 +78,14 @@ vertical-invertible+fibration→right-fibration fib vert-inv
     open Cartesian-lift renaming (x′ to x-lift)
 ```
 
-To see this, recall that cartesian morphisms are [stable under
+To see this, recall that [[cartesian morphisms]] are [stable under
 vertical retractions]. The cartesian lift $f^{*}$ of $f$ is obviously
 cartesian, so it suffices to show that there is a vertical retraction
 $x^{*} \to x'$. To construct this retraction, we shall factorize $f'$
 over $f \cdot id$; which yields a vertical morphism $i^{*} : x' \to x^{*}$.
 By our hypotheses, $i^{*}$ is invertible, and thus is a retraction.
 What remains to be shown is that the inverse to $i^{*}$ factors
-$f'$ and $f^{*}$; this follows from the factorization of $f'$ and
+$f'$ and $f^{*}$; this follows from the factorisation of $f'$ and
 the fact that $i^{*}$ is invertible.
 
 [stable under vertical retractions]: Cat.Displayed.Cartesian.html#cartesian-vertical-retraction-stable
@@ -135,7 +135,7 @@ discrete→right-fibration dfib =
 
 ## Fibred Functors and Right Fibrations
 
-As every map in a right fibration is cartesian, every displayed functor
+As every map in a right fibration is cartesian, every [[displayed functor]]
 into a right fibration is automatically fibred.
 
 ```agda

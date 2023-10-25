@@ -1,21 +1,19 @@
 ```agda
 open import Cat.Prelude
 
-import Cat.Reasoning
-
 module Cat.Strict.Reasoning
   {o ℓ} (C : Precategory o ℓ)
   (ob-set : is-set (Precategory.Ob C))
   where
 
-open Cat.Reasoning C
+open Precategory C
 ```
 
 # Reasoning with strict categories
 
-When working with strict categories, transports of morphisms along paths
-between objects is (annoyingly) common; this module puts all of the
-frustration in one place.
+When working with [[strict categories]], transports of morphisms along
+paths between objects is (annoyingly) common; this module puts all of
+the frustration in one place.
 
 We provide shorthand operators for transporting morphisms.
 
@@ -23,7 +21,7 @@ We provide shorthand operators for transporting morphisms.
 cast-hom : ∀ {x x' y y' : Ob} → x ≡ x' → y ≡ y' → Hom x y → Hom x' y'
 cast-hom p q f = transport (λ i → Hom (p i) (q i)) f
 
-cast-cod : ∀ {x y y' : Ob} → y ≡ y' → Hom x y → Hom x y' 
+cast-cod : ∀ {x y y' : Ob} → y ≡ y' → Hom x y → Hom x y'
 cast-cod p f = subst (λ y → Hom _ y) p f
 
 cast-dom : ∀ {x x' y : Ob} → x ≡ x' → Hom x y → Hom x' y

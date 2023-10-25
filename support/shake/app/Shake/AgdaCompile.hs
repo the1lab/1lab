@@ -28,15 +28,16 @@ import Agda.TypeChecking.Errors
 import Agda.Interaction.Imports
 import Agda.Interaction.Options
 import Agda.Syntax.Common (Cubical(CFull))
+import Agda.Syntax.Common.Pretty
 import Agda.Syntax.TopLevelModuleName
-  ( TopLevelModuleName(..)
+  ( TopLevelModuleName'(..)
+  , TopLevelModuleName
   , RawTopLevelModuleName(..)
   , hashRawTopLevelModuleName
   )
 import Agda.Syntax.Position (noRange)
 import Agda.Utils.FileName
 import Agda.Utils.Hash (Hash)
-import Agda.Utils.Pretty
 import Agda.Utils.Lens ((^.))
 
 import HTML.Backend
@@ -216,8 +217,8 @@ getInterface tcState name =
 runTCMPrettyErrors :: TCEnv -> TCState -> TCM a -> IO (a, TCState)
 runTCMPrettyErrors env state tcm = do
   (r, state) <- runTCM env state $ (Just <$> tcm) `catchError` \err -> do
-    warnings <- prettyTCWarnings' =<< getAllWarningsOfTCErr err
-    errors  <- prettyError err
+    warnings <- fmap (map show) . prettyTCWarnings' =<< getAllWarningsOfTCErr err
+    errors  <- show <$> prettyError err
     let everything = filter (not . null) $ warnings ++ [errors]
     unless (null errors) . liftIO . putStr $ unlines everything
     pure Nothing

@@ -19,29 +19,29 @@ open Cat.Displayed.Morphism E
 open DR E
 ```
 
-# Cartesian morphisms and Fibrations
+# Cartesian morphisms and fibrations
 
-While displayed categories give the essential framework we need to
+While [[displayed categories]] give the essential framework we need to
 express the idea of families of categories indexed by a category, they
 do not _quite_ capture the concept precisely. The problem is that while
 a category $\cE$ displayed over $\cB$ does indeed give a
-_collection_ of fibre categories $\cE^*(x)$, this assignment isn't
+_collection_ of [[fibre categories]] $\cE^*(x)$, this assignment isn't
 necessarily functorial!
 
 More precisely, we should have that a collection of categories, indexed
 by a category, should be a _pseudofunctor_ $\cB\op \to \Cat$, where
-$\Cat$ is a [bicategory] of categories. It turns out that we can
+$\Cat$ is a [[bicategory]] of categories. It turns out that we can
 characterise this assignment entirely in terms of the displayed objects
 and morphisms in $\cE$!
 
-[bicategory]: Cat.Bi.Base.html
-
+:::{.definition #cartesian-morphism alias="cartesian-map"}
 Fix an arrow $f : a \to b$ in the base category $\cB$, an object $a'$
 over $a$ (resp. $b'$ over $b$), and an arrow $f' : a' \to_f b'$ over
 $f$. We say that $f'$ is **cartesian** if, up to very strong handwaving,
 it fits into a "pullback diagram". The barred arrows with triangle tips
 here indicate the "projection" from a displayed object to its base, and
 so are implicit in the type dependency.
+:::
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -195,7 +195,7 @@ is-cartesian-is-prop
 <summary>The proof of this fact is a bunch of cubical nonsense.
 </summary>
 
-```
+```agda
 is-cartesian-is-prop {f′ = f′} cart cart′ = worker where
   open is-cartesian
 
@@ -311,7 +311,7 @@ idcart .Cartesian-morphism.cartesian = cartesian-id
 
 
 In fact, every invertible map is also cartesian, as we can use
-the inverse to construct the requisite factorization.
+the inverse to construct the requisite factorisation.
 
 ```agda
 invertible→cartesian
@@ -340,6 +340,7 @@ invertible→cartesian
 ```
 
 If $f$ is cartesian, it's also a [weak monomorphism].
+
 [weak monomorphism]: Cat.Displayed.Morphism.html#weak-monos
 
 ```agda
@@ -574,7 +575,7 @@ cartesian→postcompose-equiv cart =
 ```
 
 
-## Cartesian Lifts
+## Cartesian lifts {defines="cartesian-lift"}
 
 We call an object $a'$ over $a$ together with a Cartesian arrow $f' : a'
 \to b'$ a _Cartesian lift_ of $f$. Cartesian lifts, defined by universal
@@ -603,6 +604,7 @@ some choices to be made, and invoking the axiom of choice makes an
 there is exactly _one_ choice to be made, that is, no choice at all.
 Thus, we do not dwell on the distinction.
 
+:::{.definition #fibred-category alias="cartesian-fibration fibration"}
 ```agda
 record Cartesian-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
   no-eta-equality
@@ -612,6 +614,7 @@ record Cartesian-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
   module has-lift {x y} (f : Hom x y) (y′ : Ob[ y ]) =
     Cartesian-lift (has-lift f y′)
 ```
+:::
 
 Note that if $\cE$ is a fibration, we can define an operation that
 allows us to move vertical morphisms between fibres. This actually
@@ -627,7 +630,7 @@ uses the universal property that yields a vertical morphism.
            → Hom[ id ] y′ y″
            → Hom[ id ] (has-lift.x′ f y′) (has-lift.x′ f y″)
   rebase f vert =
-    has-lift.universalv f _ (hom[ idl _ ] (vert ∘′ has-lift.lifting f _))
+    has-lift.universal′ f _ id-comm (vert ∘′ has-lift.lifting f _)
 ```
 
 A Cartesian fibration is a displayed category having Cartesian lifts for
@@ -636,18 +639,16 @@ every right corner.
 ## Why?
 
 Admittedly, the notion of Cartesian morphism is slightly artificial. It
-arises from studying the specific properties of the pullback functors
+arises from studying the specific properties of the [[pullback functors]]
 $f^* : \cC/y \to \cC/x$ which exist in a category of pullbacks,
 hence the similarity in universal property!
 
 In fact, the quintessential example of a Cartesian fibration is the
-[_codomain fibration_], which is a category displayed over $\cC$, where
-the fibre over $x$ is the slice category $\cC/x$. We may investigate
-further (to uncover the name "codomain"): the total space of this
-fibration is the arrow category $\Arr{\cC}$, and the projection
+_[[codomain fibration]]_, which is a category displayed over $\cC$,
+where the fibre over $x$ is the slice category $\cC/x$. We may
+investigate further (to uncover the name "codomain"): the total space of
+this fibration is the arrow category $\Arr{\cC}$, and the projection
 functor is the codomain functor $\Arr{\cC} \to \cC$.
-
-[_codomain fibration_]: Cat.Displayed.Instances.Slice.html
 
 This displayed category extends to a pseudofunctor exactly when $\cC$
 has all pullbacks, because in a world where the vertical arrows are

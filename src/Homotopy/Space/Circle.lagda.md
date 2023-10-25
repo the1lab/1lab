@@ -14,13 +14,13 @@ open import Data.Int
 module Homotopy.Space.Circle where
 ```
 
-# Spaces: The circle
+# Spaces: The circle {defines="circle"}
 
 The first example of nontrivial space one typically encounters when
 studying synthetic homotopy theory is the circle: it is, in a sense, the
 perfect space to start with, having exactly one nontrivial path space,
-which is a free group, and the simplest nontrivial free group at that:
-the integers.
+which is a [[free group|free group construction]], and the simplest
+nontrivial [[free group|free group construction]] at that: the integers.
 
 ```agda
 data S¹ : Type where
@@ -64,6 +64,15 @@ S¹-rec : ∀ {ℓ} {A : Type ℓ} (b : A) (l : b ≡ b) → S¹ → A
 S¹-rec b l base     = b
 S¹-rec b l (loop i) = l i
 ```
+
+<!--
+```agda
+S¹-elim : ∀ {ℓ} {A : S¹ → Type ℓ} (b : A base) (l : PathP (λ i → A (loop i)) b b)
+        → ∀ s → A s
+S¹-elim b l base     = b
+S¹-elim b l (loop i) = l i
+```
+-->
 
 We call the map `möbius`{.Agda} a _double cover_ of the circle, since
 the fibre at each point is a discrete space with two elements. It has an
@@ -135,8 +144,8 @@ non-trivial path, $e = \rm{loop}$.
   post-loop : (base ≡ base) ≃ (base ≡ base)
   post-loop = Iso→Equiv $
     (_∙ loop) , iso (_∙ sym loop)
-      (λ p → sym (∙-assoc p _ _) ·· ap (p ∙_) (∙-inv-l loop) ·· ∙-id-r p)
-      (λ p → sym (∙-assoc p _ _) ·· ap (p ∙_) (∙-inv-r loop) ·· ∙-id-r p)
+      (λ p → sym (∙-assoc p _ _) ·· ap (p ∙_) (∙-invl loop) ·· ∙-idr p)
+      (λ p → sym (∙-assoc p _ _) ·· ap (p ∙_) (∙-invr loop) ·· ∙-idr p)
 
   loopⁿ : ℤ → base ≡ base
   loopⁿ n = map-out refl post-loop n
@@ -154,8 +163,8 @@ argument $x$.
     → Square refl (loopⁿ (Equiv.from rotate n)) (loopⁿ n) loop
   square-loopⁿ n = commutes→square $ sym $
     ⌜ loopⁿ (Equiv.from rotate n) ⌝ ∙ loop ≡⟨ ap! (map-out-rotate-inv _ _ _) ⟩
-    (loopⁿ n ∙ sym loop) ∙ loop            ≡⟨ ∙-cancel-r _ _ ⟩
-    loopⁿ n                                ≡⟨ sym (∙-id-l _) ⟩
+    (loopⁿ n ∙ sym loop) ∙ loop            ≡⟨ ∙-cancelr _ _ ⟩
+    loopⁿ n                                ≡⟨ sym (∙-idl _) ⟩
     refl ∙ loopⁿ n                         ∎
 ```
 -->

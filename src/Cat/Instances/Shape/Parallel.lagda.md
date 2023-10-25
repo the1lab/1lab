@@ -1,7 +1,9 @@
 <!--
 ```agda
 open import Cat.Prelude
+open import Cat.Finite
 
+open import Data.Fin.Finite
 open import Data.Bool
 
 import Cat.Reasoning
@@ -15,10 +17,9 @@ module Cat.Instances.Shape.Parallel where
 # The "parallel arrows" category
 
 The parallel arrows category is the category with two objects, and two
-parallel arrows between them. It is the shape of [equaliser] and
+parallel arrows between them. It is the shape of [[equaliser]] and
 [coequaliser] diagrams.
 
-[equaliser]: Cat.Diagram.Equaliser.html
 [coequaliser]: Cat.Diagram.Coequaliser.html
 
 ```agda
@@ -58,6 +59,13 @@ parallel arrows between them. It is the shape of [equaliser] and
   precat .assoc {false} {false} {true}  {true}  f g h = refl
   precat .assoc {false} {true}  {true}  {true}  f g h = refl
   precat .assoc {true}  {true}  {true}  {true}  f g h = refl
+
+·⇉·-finite : is-finite-precategory ·⇉·
+·⇉·-finite = finite-cat-hom λ where
+  true  true  → auto
+  true  false → auto
+  false true  → auto
+  false false → auto
 ```
 -->
 

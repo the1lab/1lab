@@ -1,10 +1,7 @@
 <!--
 ```agda
 open import Cat.Functor.Hom.Displayed
-open import Cat.Functor.Hom.Displayed
 open import Cat.Instances.Functor
-open import Cat.Instances.Functor
-open import Cat.Instances.Product
 open import Cat.Instances.Product
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
@@ -12,7 +9,7 @@ open import Cat.Functor.Hom
 open import Cat.Prelude
 
 import Cat.Displayed.Cartesian.Indexing as Indexing
-import Cat.Displayed.Cartesian.Indexing as Indexing
+import Cat.Displayed.Fibre.Reasoning as FibR
 import Cat.Displayed.Cartesian as Cart
 import Cat.Displayed.Reasoning as DR
 import Cat.Displayed.Morphism as DM
@@ -37,18 +34,17 @@ open DR ℰ
 open DM ℰ
 open Functor
 open Functor
+private module Fib = FibR ℰ
 ```
 -->
 
 # Weak Cartesian Morphisms
 
-Some authors use a weaker notion of [cartesian morphism] when defining
+Some authors use a weaker notion of [[cartesian morphism]] when defining
 fibrations, referred to as a "weak cartesian" or "hypocartesian"
 morphism. Such morphisms only allow for the construction of universal
 maps when the morphism to be factored is displayed over the same morphism
 as the weak cartesian map. This situation is best understood graphically.
-
-[cartesian morphism]: Cat.Displayed.Cartesian.html
 
 ~~~{.quiver}
 \begin{tikzcd}
@@ -204,7 +200,7 @@ weak-cartesian→postcompose-equiv wcart =
         (λ h′ → sym $ wcart .unique _ (to-pathp refl))
 ```
 
-## Weak Cartesian Lifts
+## Weak Cartesian Lifts {defines=weak-cartesian-fibration}
 
 We can also define a notion of weak cartesian lifts, much like we can
 with their stronger cousins.
@@ -222,7 +218,7 @@ record Weak-cartesian-lift
   open is-weak-cartesian weak-cartesian public
 ```
 
-A displayed category that has weak cartesian lifts for all morphisms
+A [[displayed category]] that has weak cartesian lifts for all morphisms
 in the base is called a **weak cartesian fibration**, though we will
 often use the term **weak fibration**. Other authors call weak
 fibrations **prefibred categories**, though we avoid this name as it
@@ -390,7 +386,7 @@ to obtain the requisite map.
 
 <details>
 <summary> Showing that this commutes is mostly an exercise in cubical
-yoga; the only real mathematical content is that the factorization of
+yoga; the only real mathematical content is that the factorisation of
 $h'$ via $f^{*} \cdot m^{*}$ commutes.
 </summary>
 ```agda
@@ -530,7 +526,7 @@ between $\cE_{u}(-,y')$ and $\cE_{x}(-,u^{*}(y'))$.
 ```agda
   weak-fibration→hom-iso-into
     : ∀ {x y y′} (u : Hom x y)
-    → natural-iso (Hom-over-into ℰ u y′) (Hom-into (Fibre ℰ x) (weak-lift.x′ u y′))
+    → Hom-over-into ℰ u y′ ≅ⁿ Hom-into (Fibre ℰ x) (weak-lift.x′ u y′)
   weak-fibration→hom-iso-into {x} {y} {y′} u = to-natural-iso mi where
     open make-natural-iso
 
@@ -556,11 +552,9 @@ in $\cB$, along with a natural equivalence of homs as above, then
 $\cE$ is a weak fibration.
 
 This result is the primary reason to care about weak fibrations, as we
-already have a toolkit for constructing natural equivalences of
-hom sets! Most notably, this allows us to use the theory of [adjuncts]
-to construct weak fibrations.
-
-[adjuncts]: Cat.Functor.Adjoint.html#adjuncts
+already have a toolkit for constructing natural equivalences of hom
+sets! Most notably, this allows us to use the theory of [[adjuncts]] to
+construct weak fibrations.
 
 ```agda
 module _ (_*₀_ : ∀ {x y} → Hom x y → Ob[ y ] → Ob[ x ]) where
@@ -642,15 +636,15 @@ module _ (U : ∀ {x y} → Hom x y → Functor (Fibre ℰ y) (Fibre ℰ x)) whe
 
   hom-iso→weak-fibration
     : (∀ {x y y′} (u : Hom x y)
-       → natural-iso (Hom-over-into ℰ u y′) (Hom-into (Fibre ℰ x) (U u .F₀ y′)))
+       → Hom-over-into ℰ u y′ ≅ⁿ Hom-into (Fibre ℰ x) (U u .F₀ y′))
     → is-weak-cartesian-fibration
   hom-iso→weak-fibration hom-iso =
     vertical-equiv→weak-fibration
       (λ u → U u .F₀)
-      (λ u′ → natural-iso.to (hom-iso _) .η _ u′)
+      (λ u′ → Isoⁿ.to (hom-iso _) .η _ u′)
       (natural-iso-to-is-equiv (hom-iso _) _)
       λ f′ g′ → to-pathp⁻ $
-        happly (natural-iso.to (hom-iso _) .is-natural _ _ g′) f′
+        happly (Isoⁿ.to (hom-iso _) .is-natural _ _ g′) f′
 ```
 -->
 
@@ -669,9 +663,7 @@ module _ (fib : Cartesian-fibration) where
 
   fibration→hom-iso-from
     : ∀ {x y x′} (u : Hom x y)
-    → natural-iso
-      (Hom-over-from ℰ u x′)
-      (Hom-from (Fibre ℰ x) x′ F∘ base-change u)
+    → Hom-over-from ℰ u x′ ≅ⁿ Hom-from (Fibre ℰ x) x′ F∘ base-change u
   fibration→hom-iso-from {x} {y} {x′} u = to-natural-iso mi where
     open make-natural-iso
 
@@ -685,12 +677,10 @@ module _ (fib : Cartesian-fibration) where
     mi .inv∘eta x = funext λ u′ →
       from-pathp (has-lift.commutesv u _ _)
     mi .natural _ _ v′ = funext λ u′ →
-      has-lift.unique u _ _ $ to-pathp $
-        smashr _ _
-        ·· revive₁ (pulll[] _ (has-lift.commutesv u _ _))
-        ·· smashl _ _
-        ·· weave _ (pullr (idr u)) _ (pullr[] _ (has-lift.commutesv u _ _))
-        ·· duplicate id-comm-sym _ (idl u)
+      has-lift.uniquep u _ _ _ _ _ $
+        Fib.pulllf (has-lift.commutesp u _ id-comm _)
+        ∙[] pullr[] _ (has-lift.commutesv u _ _)
+        ∙[] to-pathp refl
 ```
 
 <!--
@@ -711,9 +701,7 @@ module _ (fib : Cartesian-fibration) where
 
   fibration→hom-iso-into
     : ∀ {x y y′} (u : Hom x y)
-    → natural-iso
-      (Hom-over-into ℰ u y′)
-      (Hom-into (Fibre ℰ x) (has-lift.x′ u y′))
+    → Hom-over-into ℰ u y′ ≅ⁿ Hom-into (Fibre ℰ x) (has-lift.x′ u y′)
   fibration→hom-iso-into u =
     weak-fibration→hom-iso-into (fibration→weak-fibration fib) u
 ```
@@ -725,13 +713,13 @@ a natural iso between $\cE_{u}(-,-)$ and $\cE_{id}(-,u^{*}(-))$.
 ```agda
   fibration→hom-iso
     : ∀ {x y} (u : Hom x y)
-    → natural-iso (Hom-over ℰ u) (Hom[-,-] (Fibre ℰ x) F∘ (Id F× base-change u))
+    → Hom-over ℰ u ≅ⁿ Hom[-,-] (Fibre ℰ x) F∘ (Id F× base-change u)
   fibration→hom-iso {x = x} u = to-natural-iso mi where
     open make-natural-iso
     open _=>_
 
-    module into-iso {y′} = natural-iso (fibration→hom-iso-into {y′ = y′} u)
-    module from-iso {x′} = natural-iso (fibration→hom-iso-from {x′ = x′} u)
+    module into-iso {y′} = Isoⁿ (fibration→hom-iso-into {y′ = y′} u)
+    module from-iso {x′} = Isoⁿ (fibration→hom-iso-from {x′ = x′} u)
 
     mi : make-natural-iso (Hom-over ℰ u) (Hom[-,-] (Fibre ℰ x) F∘ (Id F× base-change u))
     mi .eta x u′ = has-lift.universalv u _ u′

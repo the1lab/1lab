@@ -1,14 +1,12 @@
 <!--
 ```agda
-open import 1Lab.Type.Sigma
-open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type hiding (absurd)
 
 open import Data.Product.NAry
+open import Data.List.Base
 open import Data.Vec.Base
 open import Data.Bool
-open import Data.List
 ```
 -->
 
@@ -27,7 +25,7 @@ open import Meta.Alt public
 
 open Data.Vec.Base using (Vec ; [] ; _∷_ ; lookup ; tabulate) public
 open Data.Product.NAry using ([_]) public
-open Data.List public
+open Data.List.Base public
 open Data.Bool public
 ```
 
@@ -99,6 +97,16 @@ primitive
   primMetaLess     : Meta → Meta → Bool
   primShowMeta     : Meta → String
   primMetaToNat    : Meta → Nat
+
+data Blocker : Type where
+  blockerAny  : List Blocker → Blocker
+  blockerAll  : List Blocker → Blocker
+  blockerMeta : Meta → Blocker
+
+{-# BUILTIN AGDABLOCKER     Blocker #-}
+{-# BUILTIN AGDABLOCKERANY  blockerAny #-}
+{-# BUILTIN AGDABLOCKERALL  blockerAll #-}
+{-# BUILTIN AGDABLOCKERMETA blockerMeta #-}
 ```
 
 ## Arguments
@@ -300,7 +308,7 @@ postulate
   defineFun        : Name → List Clause → TC ⊤
   getType          : Name → TC Term
   getDefinition    : Name → TC Definition
-  blockOnMeta      : ∀ {a} {A : Type a} → Meta → TC A
+  blockTC          : ∀ {a} {A : Type a} → Blocker → TC A
   commitTC         : TC ⊤
   isMacro          : Name → TC Bool
 
@@ -420,7 +428,7 @@ postulate
 {-# BUILTIN AGDATCMDEFINEFUN                  defineFun                  #-}
 {-# BUILTIN AGDATCMGETTYPE                    getType                    #-}
 {-# BUILTIN AGDATCMGETDEFINITION              getDefinition              #-}
-{-# BUILTIN AGDATCMBLOCKONMETA                blockOnMeta                #-}
+{-# BUILTIN AGDATCMBLOCK                      blockTC                    #-}
 {-# BUILTIN AGDATCMCOMMIT                     commitTC                   #-}
 {-# BUILTIN AGDATCMISMACRO                    isMacro                    #-}
 {-# BUILTIN AGDATCMWITHNORMALISATION          withNormalisation          #-}
@@ -489,6 +497,9 @@ new-meta′ ty = do
   debugPrint "tactic.meta" 70
     [ "Created new meta " , termErr tm , " of type " , termErr tm ]
   pure (mv , tm)
+
+blockOnMeta   : ∀ {a} {A : Type a} → Meta → TC A
+blockOnMeta m = blockTC (blockerMeta m)
 
 vlam : String → Term → Term
 vlam nam body = lam visible (abs nam body)

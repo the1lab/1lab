@@ -17,7 +17,7 @@ private variable
 ```
 -->
 
-# Equalisers
+# Equalisers {defines=equaliser}
 
 The **equaliser** of two maps $f, g : A \to B$, when it exists,
 represents the largest subobject of $A$ where $f$ and $g$ agree. In this
@@ -81,9 +81,7 @@ record Equaliser (f g : Hom A B) : Type (ℓ ⊔ ℓ′) where
 ## Equalisers are monic
 
 As a small initial application, we prove that equaliser arrows are
-always [monic]:
-
-[monic]: Cat.Morphism.html#monos
+always [[monic]]:
 
 ```agda
 is-equaliser→is-monic

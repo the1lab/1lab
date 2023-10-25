@@ -18,7 +18,7 @@ private variable
 ```
 -->
 
-# Power Sets
+# Power Sets {defines="power-set"}
 
 The **power set** of a type $X$ is the collection of all maps from $X$
 into the universe of `propositional types`{.Agda ident=Ω}. Since
@@ -76,7 +76,7 @@ maximal : ℙ X
 maximal _ = el ⊤ hlevel!
 
 minimal : ℙ X
-minimal _ = el (Lift _ ⊥) hlevel!
+minimal _ = el ⊥ hlevel!
 
 _∩_ : ℙ X → ℙ X → ℙ X
 (A ∩ B) x = el (x ∈ A × x ∈ B) hlevel!

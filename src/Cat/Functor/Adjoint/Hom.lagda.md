@@ -7,8 +7,6 @@ description: |
 <!--
 ```agda
 open import Cat.Instances.Functor
-open import Cat.Instances.Functor
-open import Cat.Instances.Product
 open import Cat.Instances.Product
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Hom
@@ -41,7 +39,7 @@ module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ�
 
 # Adjoints as hom-isomorphisms
 
-Recall from the page on [adjoint functors] that an adjoint pair $L
+Recall from the page on [[adjoint functors]] that an adjoint pair $L
 \dashv R$ induces an isomorphism
 
 $$
@@ -53,8 +51,6 @@ respectively. What that page does not mention is that any functors $L,
 R$ with such a correspondence --- as long as the isomorphism is natural
 --- actually generates an adjunction $L \dashv R$, with the unit and
 counit given by the adjuncts of each identity morphism.
-
-[adjoint functors]: Cat.Functor.Adjoint.html
 
 More precisely, the data we require is an equivalence (of sets) $f :
 \hom_\cC(Lx,y) \to \hom_\cD(x,Ry)$ such that the equation
@@ -136,6 +132,24 @@ of adjunction units and co-units.
 
 <!--
 ```agda
+  hom-iso-inv-natural
+    : (f : ∀ {x y} → D.Hom x (R.₀ y) → C.Hom (L.₀ x) y)
+    → Type _
+  hom-iso-inv-natural f =
+    ∀ {a b c d} (g : C.Hom a b) (h : D.Hom c d) x
+    → f (R.₁ g D.∘ x D.∘ h) ≡ g C.∘ f x C.∘ L.₁ h
+
+  hom-iso-inv→adjoints
+    : (f : ∀ {x y} → D.Hom x (R.₀ y) → C.Hom (L.₀ x) y)
+    → (eqv : ∀ {x y} → is-equiv (f {x} {y}))
+    → hom-iso-inv-natural f
+    → L ⊣ R
+  hom-iso-inv→adjoints f f-equiv natural = hom-iso→adjoints f.from (f.inverse .snd) nat where
+    module f {x} {y} = Equiv (_ , f-equiv {x} {y})
+    abstract
+      nat : hom-iso-natural f.from
+      nat g h x = f.injective (f.ε _ ∙ sym (natural _ _ _ ∙ ap (g C.∘_) (ap (C._∘ L.₁ h) (f.ε _))))
+
 module _ {o ℓ o′} {C : Precategory o ℓ} {D : Precategory o′ ℓ}
          {L : Functor D C} {R : Functor C D}
          where
@@ -147,13 +161,13 @@ module _ {o ℓ o′} {C : Precategory o ℓ} {D : Precategory o′ ℓ}
 
 
   hom-natural-iso→adjoints
-    : natural-iso (Hom[-,-] C F∘ (Functor.op L F× Id)) (Hom[-,-] D F∘ (Id F× R))
+    : (Hom[-,-] C F∘ (Functor.op L F× Id)) ≅ⁿ (Hom[-,-] D F∘ (Id F× R))
     → L ⊣ R
   hom-natural-iso→adjoints eta =
     hom-iso→adjoints (to .η _) (natural-iso-to-is-equiv eta (_ , _)) λ g h x →
       happly (to .is-natural _ _ (h , g)) x
     where
-      open natural-iso eta
+      open Isoⁿ eta
       open _=>_
 
 module _ {o ℓ o′} {C : Precategory o ℓ} {D : Precategory o′ ℓ}
@@ -167,7 +181,7 @@ module _ {o ℓ o′} {C : Precategory o ℓ} {D : Precategory o′ ℓ}
     module R = Func R
 
   adjunct-hom-iso-from
-    : ∀ a → natural-iso (Hom-from C (L.₀ a)) (Hom-from D a F∘ R)
+    : ∀ a → (Hom-from C (L.₀ a)) ≅ⁿ (Hom-from D a F∘ R)
   adjunct-hom-iso-from a = to-natural-iso mi where
     open make-natural-iso
 
@@ -179,7 +193,7 @@ module _ {o ℓ o′} {C : Precategory o ℓ} {D : Precategory o′ ℓ}
     mi .natural _ _ f = funext λ g → sym (L-adjunct-naturalr adj f g)
 
   adjunct-hom-iso-into
-    : ∀ b → natural-iso (Hom-into C b F∘ Functor.op L) (Hom-into D (R.₀ b))
+    : ∀ b → (Hom-into C b F∘ Functor.op L) ≅ⁿ (Hom-into D (R.₀ b))
   adjunct-hom-iso-into b = to-natural-iso mi where
     open make-natural-iso
 
@@ -191,7 +205,7 @@ module _ {o ℓ o′} {C : Precategory o ℓ} {D : Precategory o′ ℓ}
     mi .natural _ _ f = funext λ g → sym $ L-adjunct-naturall adj g f
 
   adjunct-hom-iso
-    : natural-iso (Hom[-,-] C F∘ (Functor.op L F× Id)) (Hom[-,-] D F∘ (Id F× R))
+    : (Hom[-,-] C F∘ (Functor.op L F× Id)) ≅ⁿ (Hom[-,-] D F∘ (Id F× R))
   adjunct-hom-iso = to-natural-iso mi where
     open make-natural-iso
 

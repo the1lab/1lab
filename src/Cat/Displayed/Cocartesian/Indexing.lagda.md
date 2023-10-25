@@ -1,13 +1,11 @@
 <!--
 ```agda
 open import Cat.Displayed.Cocartesian
-open import Cat.Instances.Functor
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning
-import Cat.Reasoning
 ```
 -->
 
@@ -21,7 +19,7 @@ module Cat.Displayed.Cocartesian.Indexing
 
 <!--
 ```agda
-open Cat.Reasoning ℬ
+open Precategory ℬ
 open Displayed ℰ
 open Cat.Displayed.Reasoning ℰ
 open Cocartesian-fibration opfibration
@@ -38,18 +36,17 @@ fibrations.
 
 [Opfibrations]: Cat.Displayed.Cocartesian.html
 [fibrations]: Cat.Displayed.Cartesian.html
-[reindex along morphisms in the base] Cat.Displayed.Cartesian.Indexing.html
+[reindex along morphisms in the base]: Cat.Displayed.Cartesian.Indexing.html
 
 This difference in variance gives opfibrations a distinct character.
 Reindexing in fibrations can be thought of a sort of restriction map.
-This can be seen clearly with [the canonical self-indexing], where the
-reindexing functors are given by [pullbacks]. On the other hand,
+This can be seen clearly with [[canonical self-indexing]], where the
+reindexing functors are given by [[pullbacks]]. On the other hand,
 opreindexing can be thought of as an extension map. We can again use the
 the canonical self-indexing as our example: opreindexing is given by
 postcomposition, which extends families over $X$ to families over $Y$ by
 adding in empty fibres.
 
-[the canonical self-indexing]: Cat.Displayed.Instances.Slice.html
 [pullbacks]: Cat.Diagram.Pullback.html
 
 ```agda

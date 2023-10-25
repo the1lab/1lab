@@ -18,11 +18,11 @@ We establish the basic properties of ordering on the natural numbers.
 These are properties of the order itself, and not how it interacts with
 the semiring structure. For that, see
 [`Data.Nat.Properties`](Data.Nat.Properties.html). The first thing we
-establish is that $x \le y$ is a partial order, so it deserves the name
-$\le$: It is reflexive, transitive, antisymmetric, and takes values in
-propositions. In all cases, save for reflexivity, the induction happens
-on the witnesses of ordering, and Agda handles inducting on the naturals
-automatically.
+establish is that $x \le y$ is a [[partial order]], so it deserves the
+name $\le$: It is reflexive, transitive, antisymmetric, and takes values
+in propositions. In all cases, save for reflexivity, the induction
+happens on the witnesses of ordering, and Agda handles inducting on the
+naturals automatically.
 
 ```agda
 ≤-refl : ∀ {x : Nat} → x ≤ x
@@ -152,12 +152,11 @@ In classical mathematics, the well-ordering principle states that every
 nonempty subset of the natural numbers has a minimal element. In
 constructive mathematics, there are subsets of $\bb{N}$ which only have
 a minimal elements if excluded middle holds. The LEM-agnostic statement
-is that every [inhabited] [_complemented_] subset of the natural numbers
-has a minimal element. Note that for a complemented subset, inhabitation
-is the same as nonemptiness, but we prefer the stronger phrasing since
-it makes the proof one step shorter.
+is that every [[inhabited|propositional truncation]] [_complemented_]
+subset of the natural numbers has a minimal element. Note that for a
+complemented subset, inhabitation is the same as nonemptiness, but we
+prefer the stronger phrasing since it makes the proof one step shorter.
 
-[inhabited]: 1Lab.HIT.Truncation.html
 [_complemented_]: Data.Power.Complemented.html
 
 The "subset" part only comes in at the start: To get out from under the

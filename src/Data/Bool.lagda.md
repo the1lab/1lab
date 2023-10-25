@@ -227,8 +227,9 @@ Discrete-Bool false true = no (λ p → true≠false (sym p))
 Discrete-Bool true false = no true≠false
 Discrete-Bool true true = yes refl
 
-Bool-is-set : is-set Bool
-Bool-is-set = Discrete→is-set Discrete-Bool
+opaque
+  Bool-is-set : is-set Bool
+  Bool-is-set = Discrete→is-set Discrete-Bool
 
 instance
   H-Level-Bool : ∀ {n} → H-Level Bool (2 + n)
@@ -360,7 +361,7 @@ path acts on both `true` and `false`. There are four cases:
 ```
 
 In the case where the path quacks like reflexivity, we use the
-univalence axiom to show that we must be looking at the reflexivity
+[[univalence axiom]] to show that we must be looking at the reflexivity
 path. For this, we use `idLemma` to show that `path→equiv path` must be
 the identity equivalence.
 

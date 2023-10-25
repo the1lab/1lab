@@ -2,13 +2,12 @@
 ```agda
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Colimit.Base
+open import Cat.Functor.Properties
 open import Cat.Functor.Kan.Nerve
 open import Cat.Instances.Comma
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
-import Cat.Reasoning as Cr
 ```
 -->
 
@@ -18,12 +17,11 @@ module Cat.Functor.Dense where
 
 # Dense subcategories
 
-A $\kappa$-small subcategory $\cC \sube \cD$ of a locally
-$\kappa$-small category $\cD$ (hence a \r{fully faithful} functor $F
-: \cC \mono \cD$) is called **dense** if objects of $\cD$ are
-generated under \r{colimits} by those of $\cC$, in a certain
-canonical way. In particular, any functor $F$ and object $d : \cD$
-can be put into a diagram
+A $\kappa$-small subcategory $\cC \sube \cD$ of a locally $\kappa$-small
+category $\cD$ (hence a [[fully faithful functor]] $F : \cC \mono \cD$)
+is called **dense** if objects of $\cD$ are generated under [[colimits]]
+by those of $\cC$, in a certain canonical way. In particular, any
+functor $F$ and object $d : \cD$ can be put into a diagram
 
 $$
 J : (F \searrow d) \xto{\mathrm{pr}} C \xto{\iota} D\text{,}
@@ -46,8 +44,8 @@ module
   open _=>_
 
   private
-    module C = Cr C
-    module D = Cr D
+    module C = Precategory C
+    module D = Precategory D
     module F = Fr F
 ```
 -->

@@ -1,12 +1,10 @@
 <!--
 ```agda
+open import Cat.Internal.Base using (Internal-cat)
 open import Cat.Prelude
 
-open import Cat.Internal.Base using (Internal-cat)
-
-import Cat.Internal.Base
-import Cat.Reasoning
 import Cat.Internal.Reasoning
+import Cat.Internal.Base
 ```
 -->
 
@@ -19,7 +17,7 @@ module Cat.Internal.Morphism
 
 <!--
 ```agda
-open Cat.Reasoning C
+open Precategory C
 open Cat.Internal.Base C
 open Cat.Internal.Reasoning ℂ
 

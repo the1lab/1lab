@@ -21,8 +21,6 @@ import Data.HashMap.Strict (HashMap)
 import Data.List.NonEmpty (NonEmpty((:|)))
 import Data.Aeson
 import Data.IORef
-import Data.Maybe
-import Data.Data (Data)
 import Data.Text (Text)
 import Data.List
 import Data.Map (Map)
@@ -30,11 +28,9 @@ import qualified Data.Map as Map
 
 import Agda.Syntax.Translation.AbstractToConcrete (abstractToConcrete_)
 import Agda.Syntax.Translation.InternalToAbstract ( Reify(reify) )
-import Agda.Syntax.Internal (Type, Dom, domName)
+import Agda.Syntax.Internal (Type, domName)
 import Agda.TypeChecking.Reduce (instantiateFull)
 import qualified Agda.Syntax.Internal.Generic as I
-import qualified Agda.Utils.Maybe.Strict as S
-import qualified Agda.Syntax.Concrete as Con
 import qualified Agda.Syntax.Internal as I
 import Agda.Syntax.TopLevelModuleName
 import Agda.Syntax.Abstract.Views
@@ -44,7 +40,7 @@ import Agda.Compiler.Common
 import Agda.Syntax.Position
 import Agda.Utils.FileName
 import Agda.Syntax.Common
-import Agda.Utils.Pretty
+import Agda.Syntax.Common.Pretty
 import Agda.Syntax.Info
 
 import System.FilePath
@@ -54,7 +50,6 @@ data HtmlCompileEnv = HtmlCompileEnv
   , htmlCompileTypes       :: IORef (HashMap Text Identifier)
     -- ^ Hashmap from anchor→identifier for finding types while emitting
     -- HTML, and for search after
-  , htmlCompileBasePath    :: FilePath
   }
 
 data HtmlModuleEnv = HtmlModuleEnv
@@ -98,9 +93,9 @@ preCompileHtml
   :: (MonadIO m, MonadDebug m)
   => (FilePath, HtmlOptions)
   -> m HtmlCompileEnv
-preCompileHtml (pn, opts) = do
+preCompileHtml (_pn, opts) = do
   types <- liftIO (newIORef mempty)
-  runLogHtmlWithMonadDebug $ pure $ HtmlCompileEnv opts types pn
+  runLogHtmlWithMonadDebug $ pure $ HtmlCompileEnv opts types
 
 preModuleHtml
   :: (MonadIO m, ReadTCState m)
@@ -200,9 +195,9 @@ compileOneModule
   -> HashMap Text Identifier -- ^ Existing map of identifiers to their types.
   -> Interface -- ^ The interface to compile.
   -> TCM ()
-compileOneModule pn opts types iface = do
+compileOneModule _pn opts types iface = do
   types <- liftIO (newIORef types)
-  let cEnv = HtmlCompileEnv opts types pn
+  let cEnv = HtmlCompileEnv opts types
       mEnv = HtmlModuleEnv cEnv (iTopLevelModuleName iface)
 
   setInterface iface
@@ -249,8 +244,7 @@ makePi (b:bs) = Pi exprNoRange (b :| bs)
 
 definitionAnchor :: HtmlCompileEnv -> Definition -> Maybe Text
 definitionAnchor _ def | defCopy def = Nothing
-definitionAnchor htmlenv def = f =<< go where
-  basepn = htmlCompileBasePath htmlenv
+definitionAnchor _ def = f =<< go where
   go :: Maybe FilePath
   go = do
     let name = defName def

@@ -49,7 +49,7 @@ open Algebra-on
 
 # Beck's coequaliser
 
-Let $F : \cC \to \cD$ be a functor admitting a [right adjoint]
+Let $F : \cC \to \cD$ be a functor admitting a [[right adjoint]]
 $U : \cD \to \cC$. Recall that every adjunction [induces] a
 [monad] $UF$ (which we will call $T$ for short) on the category
 $\cC$, and a "[comparison]" functor $K : \cD \to \cC^{T}$ into
@@ -60,7 +60,6 @@ the presentation of $T$-[algebras] by "generators and relations".
 
 [monad]: Cat.Diagram.Monad.html
 [induces]: Cat.Functor.Adjoint.Monad.html
-[right adjoint]: Cat.Functor.Adjoint.html
 [comparison]: Cat.Functor.Adjoint.Monadic.html
 [algebras]: Cat.Diagram.Monad.html#algebras-over-a-monad
 [Eilenberg-Moore category]: Cat.Diagram.Monad.html#eilenberg-moore-category

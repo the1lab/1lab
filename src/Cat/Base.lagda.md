@@ -1,10 +1,8 @@
 <!--
 ```agda
 open import 1Lab.Reflection.Record
-open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
-open import 1Lab.Univalence
 open import 1Lab.Rewrite
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -17,30 +15,31 @@ open import 1Lab.Type hiding (id ; _∘_)
 module Cat.Base where
 ```
 
-# Precategories
+# Precategories {defines=category}
 
 In univalent mathematics, it makes sense to distinguish two stages in
 the construction of categories: A **precategory** is the object that
 directly corresponds to the definition of precategory as it is
-traditionally formalised, whereas a **category** (or univalent category)
-has an extra condition: Isomorphic objects must be identified.
+traditionally formalised, whereas a **category** (or [[univalent
+category]]) has an extra condition: Isomorphic objects must be
+identified.
 
 ```agda
 record Precategory (o h : Level) : Type (lsuc (o ⊔ h)) where
   no-eta-equality
 ```
 
-A _precategory_ is a "proof-relevant preorder". In a preordered set $(A,
-\le)$, the inhabitants of a set $A$ are related by a _proposition_ $a
-\le b$, which is
+A **precategory** is a "proof-relevant preorder". In a preordered set
+$(A, \le)$, the inhabitants of a set $A$ are related by a _proposition_
+$a \le b$, which is
 
 - _reflexive_: $a \le a$
 - _transitive_: $a \le b \land b \le c \to a \le c$
 
 In a precategory, the condition that $a \le b$ be a proposition is
-relaxed: A precategory has a `type of objects`{.Agda ident=Ob} and, between
-each $x, y$, a **set** $\rm{Hom}(x, y)$ of relations (or maps). The
-name Hom is historical and it betrays the original context in which
+relaxed: A precategory has a `type of objects`{.Agda ident=Ob} and,
+between each $x, y$, a **set** $\hom(x, y)$ of relations (or maps). The
+name "$\hom$" is historical and it betrays the original context in which
 categories where employed: algebra(ic topology), where the maps in
 question are **hom**omorphisms.
 
@@ -51,10 +50,9 @@ question are **hom**omorphisms.
 ```
 
 Whereas reading a classical definition into a type theory where equality
-is a proposition, the word **set** may be read to mean [inhabitant of a
-universe](agda://1Lab.Type). But in HoTT, if we want categories to be
-well-behaved, we do actually mean _set_: A type of
-[h-level](agda://1Lab.HLevel) 2.
+is a proposition, the word **set** may be read to mean inhabitant of a
+[[universe]]. But in HoTT, if we want categories to be well-behaved, we
+do actually mean _set_: A type of [[h-level 2|set]]
 
 ```agda
   field
@@ -116,6 +114,28 @@ g) \circ h = f \circ (g \circ h)$.
           → f ∘ (g ∘ h) ≡ (f ∘ g) ∘ h
 ```
 
+We can define the type of *all* morphisms in a precategory as the total space of
+`Hom`{.Agda}:
+
+```agda
+  Mor : Type (o ⊔ h)
+  Mor = Σ[ a ∈ Ob ] Σ[ b ∈ Ob ] Hom a b
+```
+
+<!--
+```agda
+  Hom→Mor : {a b : Ob} → Hom a b → Mor
+  Hom→Mor f = _ , _ , f
+
+  Mor-path : {a b : Mor}
+           → (p : a .fst ≡ b .fst)
+           → (q : a .snd .fst ≡ b .snd .fst)
+           → PathP (λ i → Hom (p i) (q i)) (a .snd .snd) (b .snd .snd)
+           → a ≡ b
+  Mor-path p q r i = p i , q i , r i
+```
+-->
+
 <!--
 ```agda
   module HLevel-instance where
@@ -131,8 +151,8 @@ A common theme throughout precategory theory is that of _duality_: The dual
 of a categorical concept is same concept, with "all the arrows
 inverted". To make this formal, we introduce the idea of _opposite
 categories_: The opposite of $C$, written $C\op$, has the same
-`objects`{.Agda}, but with $\rm{Hom}_{C\op}(x, y) =
-\rm{Hom}_{C}(y, x)$.
+`objects`{.Agda}, but with $\hom_{C\op}(x, y) =
+\hom_{C}(y, x)$.
 
 ```agda
 infixl 60 _^op
@@ -158,7 +178,7 @@ Agda computes, is called _definitional_.
 The left and right identity laws are swapped for the construction of the
 opposite precategory: For `idr`{.Agda} one has to show $f \circ_{op}
 \id = f$, which computes into having to show that $\id
-\circ_op{f} = f$. The case for `idl`{.Agda} is symmetric.
+\circ_{op}{f} = f$. The case for `idl`{.Agda} is symmetric.
 
 ```agda
 (C ^op) .Precategory.assoc f g h i = Precategory.assoc C h g f (~ i)
@@ -196,12 +216,10 @@ private
 
 ## The precategory of Sets
 
-Given a [universe level], we can consider the collection of [all sets]
-of that level. This assembles into a `precategory`{.Agda
-ident=Precategory} quite nicely, since functions preserve h-levels.
-
-[universe level]: agda://1Lab.Type
-[all sets]: agda://1Lab.HLevel.Universe#Set
+Given a [[universe level|universe]], we can consider the collection of
+[[all sets|set]] of that level. This assembles into a
+`precategory`{.Agda ident=Precategory} quite nicely, since _taking
+function types_ is an operation that preserves h-level.
 
 ```agda
 module _ where
@@ -219,7 +237,7 @@ module _ where
   Sets o .assoc f g h = refl
 ```
 
-# Functors
+# Functors {defines=functor}
 
 <!--
 ```agda
@@ -382,10 +400,8 @@ both its object and morphism mappings. That functors have an identity
 and compose would seem to imply that categories form a category:
 However, since there is no upper bound on the h-level of `Ob`{.Agda}, we
 can not form a "category of categories". If we _do_ impose a bound,
-however, we can obtain a category of [strict categories], those which
+however, we can obtain a [[category of strict categories]], those which
 have a set of objects.
-
-[strict categories]: Cat.Instances.StrictCat.html
 
 ```agda
 Id : ∀ {o₁ h₁} {C : Precategory o₁ h₁} → Functor C C
@@ -395,14 +411,12 @@ Functor.F-id Id = refl
 Functor.F-∘ Id f g = refl
 ```
 
-# Natural Transformations
+# Natural transformations {defines="natural-transformation"}
 
 Another common theme in category theory is that roughly _every_ concept
 can be considered the objects of a category. This is the case for
 functors, as well! The functors between $C$ and $D$ assemble into a
-category, notated $[C, D]$ - the [functor category] between $C$ and $D$.
-
-[functor category]: agda://Cat.Instances.Functor
+category, notated $[C, D]$ - the [[functor category]] between $C$ and $D$.
 
 ```agda
 record _=>_ {o₁ h₁ o₂ h₂}
@@ -416,9 +430,8 @@ record _=>_ {o₁ h₁ o₂ h₂}
 ```
 
 The morphisms between functors are called **natural transformations**. A
-natural transformation $F \To G$ can be thought of as a way of
-turning $F(x)$s into $G(x)$s that doesn't involve any "arbitrary
-choices".
+natural transformation $F \To G$ can be thought of as a way of turning
+$F(x)$s into $G(x)$s that doesn't involve any "arbitrary choices".
 
 ```agda
   private
@@ -466,6 +479,18 @@ Natural transformations also dualize. The opposite of $\eta : F
 
 <!--
 ```agda
+{-# INLINE NT #-}
+
+is-natural-transformation
+  : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  → (F G : Functor C D)
+  → (η : ∀ x → D .Precategory.Hom (F .Functor.F₀ x) (G .Functor.F₀ x))
+  → Type _
+is-natural-transformation {C = C} {D = D} F G η =
+  ∀ x y (f : C .Precategory.Hom x y) → η y D.∘ F .F₁ f ≡ G .F₁ f D.∘ η x
+  where module D = Precategory D
+        open Functor
+
 module _ where
   open Precategory
   open Functor

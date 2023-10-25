@@ -57,10 +57,8 @@ familiar with some of the connections that HoTT has to other areas of
 mathematics, like higher category theory and topology, I recommend that
 you read the type theory section anyway!
 
-<details class=text>
-<summary>
-**Aside**: A note on terminology.
-</summary>
+<details terminology>
+<summary>On the term "homotopy type theory".</summary>
 
 The text below refers to the foundational system that it is presenting
 as "homotopy type theory", while it would be technically more correct to
@@ -82,7 +80,7 @@ structure on the category of cubical sets, referred to as a
 # Type theory
 
 ::: warning
-**Warning**: The text below is subject to change! It's still very much a
+The text below is subject to change! It's still very much a
 document in flux. In particular, the type theory section doesn't talk
 about induction, which is something that will be expanded on in the
 future.
@@ -515,10 +513,8 @@ call $\Omega$ a **subobject classifier**, following in the tradition of
 it means you can talk about logical propositions --- and, in the
 presence of functions, predicates --- as if they were points of a type.
 
-<details class=text>
-<summary>
-**Aside**: More on general classifying objects.
-</summary>
+<details>
+<summary>More on general classifying objects.</summary>
 
 A **classifying object** for some data is an object --- normally written
 $B(\text{data})$ --- such that maps $X \to B(\text{data})$ correspond to
@@ -530,22 +526,24 @@ correspond to maps into $X$ with "propositional data".
 To find another example in category theory, we pass to higher category
 theory, i.e. $n$-category theory for high values of $n$, such as $n =
 2$. As a 1-dimensional structure, we can consider the data of a category
-$E$ _lying over_ another category $B$ to be a functor $E \to B$ which
-has certain lifting properties - some sort of categorical _fibration_.
+$E$ _[[lying over|displayed category]]_ another category $B$ to be a
+functor $E \to B$ which has certain [[lifting properties|cartesian map]]
+- some sort of categorical _[[fibration|cartesian fibration]]_.
 
 One would like to find a correspondence between these "categories over
 categories" and some data that we already know how to conceptualise; It
-turns out that Grothendieck fibrations over $B$ --- i.e., the functors $F
-: E \to B$ satisfying a certain lifting property --- correspond to
-weak 2-functors into $\rm{Cat}$.
+turns out that Grothendieck fibrations over $B$ --- i.e., the functors
+$F : E \to B$ satisfying said "certain lifting properties" ---
+[correspond](Cat.Displayed.Cartesian.Indexing.html) to weak 2-functors
+into $\rm{Cat}$.
 
 Conversely, this equivalence lets us think of a family of categories
 indexed by $B$ --- a 2-dimensional concept --- corresponds precisely to
 1-dimensional data (a special class of functors between ordinary
 categories). Furthermore, the equivalence is induced by a
-construction on (weak 2-)functors --- the Grothendieck construction,
-written $\int F$ --- that exactly mirrors the disjoint union $\sum F$
-that we used above!
+construction on (weak 2-)functors --- the [[Grothendieck
+construction|total category]], written $\int F$ --- that exactly mirrors
+the disjoint union $\sum F$ that we used above!
 
 To summarise:
 
@@ -554,17 +552,17 @@ B(\text{data})$ corresponds to data over ("pointing towards") $X$.
 
 - The kind of classifying objects that we care about here are ubiquitous
 in all levels of $n$-category theory, but especially in $(n,1)$-category
-theory, they behave like universes of truncated types.
+theory, where some behave like universes of a given truncation level.
 
 - Since the objects in a $n$-category act like $(n-1)$-categories, the
-"most complex" classifier that a $n$-topos can have is for the
-$(n-1)$-category of $(n-2)$-categories, and this all works better in the
-case where we're actually talking about $(n,1)$-topoi.
+"most complex" classifier that a $n$-topos can have is for internal the
+$(n-1)$-category of internal $(n-2)$-categories, and this all works
+better in the case where we're actually talking about $(n,1)$-topoi.
 
 </details>
 
 [^subobjclass]: Let me make this more precise. In any (univalent)
-category with finite limits $\mathscr{E}$, we have a functor $\rm{Sub} :
+category with [[finite limits]] $\mathscr{E}$, we have a functor $\rm{Sub} :
 \mathscr{E}\op \to \set$, which takes $c$ to the full subcategory of
 $\mathscr{E}/c$ on the injections. We say that $\Omega \in \mathscr{E}$
 is a **subobject classifier** if there is a natural isomorphism
@@ -580,8 +578,8 @@ one dimension higher: we'd have a classifier for "sets", but our other
 objects would look like "categories", and we wouldn't be able to
 classify those!
 
-<details class=text>
-<summary> **Take a moment** to convince yourself that the interpretation
+<details>
+<summary>**Take a moment** to convince yourself that the interpretation
 of a discrete object classifier as a type of sets makes sense.</summary>
 
 Note that we defined "proposition" to mean "at most one element". We can
@@ -606,64 +604,42 @@ could have a general **object classifier**, an object $\ty$ such that
 maps $B \to \ty$ correspond to _arbitrary_ maps $A \to B$. Let's specify
 this notion better using the language of higher category theory:
 
-A **subobject classifier** is a [representing object] for the functor
-$\rm{Sub} : \mathscr{E}\op \to \set$ which takes an object to its
-poset of subobjects. Since the subobjects of $x$ can be described as
-(isomorphism classes of) objects of a subcategory of $\mathscr{E}/x$, we
-would hope that an **object classifier** would classify the entire
-groupoid $\rm{Core}(\mathscr{E}/x)$, keeping around _all_ of the maps
-into $x$, and keeping track of the isomorphisms between them.
+A **subobject classifier** is a [[representing object|representable
+functor]] for the functor $\rm{Sub} : \cE\op \to \Sets$ which takes an
+object to its [[poset of subobjects]]. Since $\Sub(x)$ is a subcategory
+of $\cE/x$, restricted to the objects which are (-1)-truncated, an
+**object classifier** would be a representing object for $\cE/-$, the
+functor which sends an object $X$ to the category of _arbitrary_
+"$X$-indexed families", the [[slice category]] over $X$. If capturing
+the directed structure isn't possible, then, at the very least, it
+should represent $\rm{Core}(\cE/-)$ --- the [[core]] of $\cE$, so that
+the isomorphisms between families are accurately represented.
 
-<details class=text>
-<summary>**Aside**: Slice categories and cores, if you haven't heard of
-them</summary>
+However, there is an issue here: there is, a priori, an entire
+*category* $\cE/x$, but only a *set* $\hom_{\cE}(x, U)$. Objects in a
+category can have non-trivial isomorphisms, but there's no such notion
+between elements in a set! Let's suppose that we had such an
+equivalence, in the context $\cE = \Sets$, setting aside the _size_
+issues for now: we have an object $U$ equipped with an isomorphism $r :
+\hom(*, U) \cong \Sets/* \cong \Sets$. There's an element $b = r^{-1}(2)
+: U$ classifying the type of booleans, which should have a non-trivial
+identification $b = b$ corresponding to the involution on $2$. However,
+this is not possible, since a set ([[by definition|set]]) only has
+trivial identifications.
 
-Giving a _precise_ definition of slice categories and cores would take us
-further afield than is appropriate here, so let me give a quick summary
-and point you towards the nLab for further details. Fix a category $C$
-that we may talk about:
+One might attempt to remedy the issue by looking for an object
+classifier in a [[bicategory]], where $\hom(-, U)$ would be a genuine
+category. However, this didn't actually fix anything, since we only
+shifted the issue one level up: we now have an entire *bicategory*
+$\cE/x$, which can't be classified by the mere *category* of maps
+$\hom_{\cE}(-, U)$!
 
-The core of $C$, written.. well, $\rm{Core}(C)$, is the largest
-groupoid inside $C$. It has all the same objects, but only keeps around
-the isomorphisms.
-
-The slice over an object $c$, written $C/c$, is a category where the
-_objects are arrows_ $a \to c$ in $C$, and a morphism between $f : a \to
-c$ and $g : b \to c$ _in the slice over $c$_ is a morphism $a \to b$ in
-$C$ that makes the following triangle (in $C$) commute:
-
-~~~{.quiver}
-\[\begin{tikzcd}
-  a && b \\
-  & c
-  \arrow["f", from=1-1, to=2-2]
-  \arrow["h", from=1-1, to=1-3]
-  \arrow["g"', from=1-3, to=2-2]
-\end{tikzcd}\]
-~~~
-
-</details>
-
-[representing object]: https://ncatlab.org/nlab/show/representable+functor#idea
-
-But for us to be able to represent $\rm{Core}(\mathscr{E}/-) : \mathscr{E}\op
-\to \Grpd$ as an object $\mathcal{U}$ of $\mathscr{E}$, we need
-the hom-space $\rm{Hom}_{\mathscr{E}}(x, \mathcal{U})$ to be a groupoid,
-instead of just a set; Thus $\mathscr{E}$ was actually a 2-category!
-We're not in the clear though, since a slice of a n-category is another
-n-category, we now have a 2-category $\mathscr{E}/x$, so the core of
-that is a 2-groupoid, so our $\mathscr{E}$ was, in reality, a
-3-category. This process goes on forever, from which we conclude that
-the only category that can have a fully general object classifier is a
-$\infty$-category. However, since we're always taking cores, we don't
-need mapping _categories_, only mapping _groupoids_, so we can weaken
-this to a $\io$-category: a $\infty$-category where every map above
-dimension 1 is invertible.
-
-Using the proper higher-categorical jargon, we can define an object
-classifier $\ty$ in an $\io$-category $\cH$ to be a representing
-object for the $\io$-presheaf $\rm{Core}(\cH/-) : \cH\op \to
-\igpd$.
+The issue does eventually resolve itself, if we're very persistent: if
+we have an $\infty$-category $\cE$, where $\hom(-,-)$ can be a genuine
+$\infty$-groupoid, then it's actually perfectly possible for there to be
+an object $\ty$ with an isomorphism $\cE/- \cong \hom(-, \ty)$ --- well,
+at least as long as we restrict ourselves to $\rm{Core}(\cE/-)$. We've
+finally found a setting where object classifiers can exist: $\io$-categories!
 
 Again, the importance of object classifiers is that they let us talk
 about arbitrary objects as if they were points of an object $\ty$.
@@ -804,8 +780,8 @@ index our structures by their universe level. For example,
 $\Sets_\kappa$ is the ($(1+\kappa)$-small, locally $\kappa$-small)
 category of $\kappa$-small sets.
 
-<details class=text>
-<summary>**Aside**: Small (hah!) note on small categories</summary>
+<details>
+<summary>Small (hah!) note on small categories.</summary>
 
 For those familiar with the notions of _internal_ and _enriched_
 categories, we might rephrase the _classical_ definitions of
@@ -825,16 +801,18 @@ $\lambda$-small categories".
 
 </details>
 
-**Warning**: Note that our use of the term "$\kappa$-small" is
-nonstandard. In set-theoretic foundations, where the only objects are
-sets anyway, this means "category internal to $\Sets_\kappa$", as
-mentioned in the infobox above. In the 1Lab, the objects we manipulate
-are _higher groupoids_ rather than sets, and so very few categories will
-be internal to a category of sets. Instead, when we describe a category
-$\cC$ is $\kappa$-small, we mean that the type of objects of $\cC$
-is an inhabitant of the universe $\ty_\kappa$, and that the
-$\hom_\cC(-,-)$ family is valued in $\Sets_\kappa$. Our shorthand for
-the traditional notion is a "**[strict] $\kappa$-small**" category.
+::: warning
+Note that our use of the term "$\kappa$-small" is nonstandard. In
+set-theoretic foundations, where the only objects are sets anyway, this
+means "category internal to $\Sets_\kappa$", as mentioned in the infobox
+above. In the 1Lab, the objects we manipulate are _higher groupoids_
+rather than sets, and so very few categories will be internal to a
+category of sets. Instead, when we describe a category $\cC$ is
+$\kappa$-small, we mean that the type of objects of $\cC$ is an
+inhabitant of the universe $\ty_\kappa$, and that the $\hom_\cC(-,-)$
+family is valued in $\Sets_\kappa$. Our shorthand for the traditional
+notion is a "**[strict] $\kappa$-small**" category.
+:::
 
 [strict]: Cat.Instances.StrictCat.html
 
@@ -879,7 +857,7 @@ only one of the many possible interpretations of paths in those types.
 The ideas presented below are grouped in blue `<details>` elements, but
 not because they aren't important; You **should** read all of them.
 
-<details class=text>
+<details>
 <summary>
 **Idea #1**: Some types behave like sets, providing an embedding of
 "classical" equality behaviour into homotopy type theory. While these
@@ -889,16 +867,16 @@ important!
 
 Contradicting the big bold warning up there, **in a very restricted
 class of types**, paths _do_ behave like the equality relation! We call
-these types **sets**, and their defining property is that they only have
-identity paths --- hence they could also be called "discrete types", by
-analogy with "discrete category", but this terminology is not employed
-because "discrete" already has a distinct type-theoretic
+these types **[[sets]]**, and their defining property is that they "only
+have identity paths" --- hence they could also be called "discrete
+types", by analogy with "[[discrete category]]", but this terminology is
+not employed because "discrete" already has a distinct type-theoretic
 meaning.[^deceq]
 
-Types in this class include the natural numbers, the integers, the
-rationals and the reals; Also included is every finite type, and the
-powerset of any type at all. The type of functions $A \to B$, where
-$B$ is a set, is again a set. We can generalise this and say that
+Types in this class include the [[natural numbers]], the [[integers]],
+the rationals and the reals; Also included is every [[finite type]], and
+the [[power set]] of any type at all. The type of functions $A \to B$,
+where $B$ is a set, is again a set. We can generalise this and say that
 "most" type formers preserve set-ness.
 
 Note that the meaning of "is a set"/"is not a set" in HoTT is distinct
@@ -925,7 +903,7 @@ sequences of natural numbers are not discrete, because an algorithm can
 not run forever. Any discrete type is a set, and assuming excluded
 middle, any set is discrete.
 
-<details class=text>
+<details>
 <summary>
 **Idea #2**: Some types are best understood as representing spaces, with
 intrinsic homotopic information, which we can investigate using
@@ -949,14 +927,14 @@ we compute them in HoTT has a distinctly more "typey" flavour.
 
 This interpretation of types as spaces leads us to look at the
 statement "there is a type $X$ with $\pi_1(X) \cong \bb{Z}$" and
-rightly call $X$ "the circle", even though a topologist might object
+rightly call $X$ "the [[circle]]", even though a topologist might object
 that our circle is not any subset of $\bb{R}^2$. Similarly, we
 might take the integer $2$ and apply the isomorphism above, to get a
 path in $X$ which "walks clockwise around the circle twice".
 
 </details>
 
-<details class=text>
+<details>
 <summary>
 **Idea #3**: HoTT provides a setting for doing category theory where all
 constructions are intrinsically isomorphism-invariant. Under this light,
@@ -988,34 +966,37 @@ In HoTT, we can do better: We add a condition to the definition of
 category that says the paths of the type of objects _must_ correspond to
 the categorical isomorphisms --- which we call "univalence". While this
 condition might initially seem hard to fulfill, it's surprisingly common
-to come by univalent categories, since most constructions on categories
+to come by [[univalent categories]], since most constructions on categories
 preserve univalence! For instance:
 
-* If $A$ and $B$ are univalent categories, then so is the product $A
-\times B$ and the disjoint union $A \uplus B$; The initial and terminal
-categories are trivially univalent.
+* If $A$ and $B$ are univalent categories, then so is the
+  [[product|product category]] $A \times B$ and the disjoint union $A
+  \uplus B$; The initial and [[terminal categories]] are trivially
+  univalent.
 
-* If $C$ is a univalent category, then so is the slice $C/c$ and the
-coslice $c/C$.
+* If $C$ is a univalent category, then so is the [[slice category]]
+  $C/c$, and the coslice $c/C$. More general [[comma categories]] are
+  [[also univalent|univalence of comma category]].
 
-* If $C$ is a univalent category, then for any $D$, so is the functor
-category $[D,C]$; This implies that a very large class of categories is
-univalent, e.g. the models of any Lawvere theory in a univalent
-category.
+* If $C$ is a univalent category, then for any $D$, so is the [[functor
+  category]] $[D,C]$; This implies that a very large class of categories
+  is univalent, e.g. the models of any Lawvere theory in a univalent
+  category.
 
-  Further, since $\set$ is a univalent category, the Yoneda lemma
+  Further, since $\Sets$ is a univalent category, the Yoneda lemma
   implies that every $C$ can be embedded into a univalent category - the
-  functor category $[C\op,\set]$. If we restrict to the subcategory of
-  representable presheaves, we have that every $C$ admits a full,
-  faithful and essentially surjective functor into a univalent category,
-  called the Rezk completion of $C$; If $C$ was already univalent, this
-  functor is an equivalence.
+  functor category $[C\op,\Sets]$. If we restrict to the subcategory of
+  representable presheaves, we have that every $C$ admits a [[full|full
+  functor]], [[faithful|faithful functor]] and [[essentially
+  surjective]] functor into a univalent category, called the [[Rezk
+  completion]] of $C$; If $C$ was already univalent, this functor is an
+  equivalence.
 
 In addition to the benefit of univalent categories that will be
 presented outside the fold, they're also interesting in their own right
 because they are better constructively behaved than categories with a
 set of objects: For instance, in the last bullet point above we appealed
-to the statement "every fully faithful, essentially surjective functor
+to the statement "every [[fully faithful]], [[essentially surjective]] functor
 is an equivalence". For univalent categories, this is a theorem without
 any form of choice axiom!
 

@@ -35,8 +35,8 @@ $(n+1)$-category in the successor universe $1+\ell$:
 * The collection of all (1-)categories is a 2-category;
 * The collection of all 2-categories is a 3-category;
 
-Because of the univalence axiom, the same phenomenon can be observed in
-homotopy type theory: The subuniverse of $\ell$ consisting of all
+Because of the [[univalence axiom]], the same phenomenon can be observed
+in homotopy type theory: The subuniverse of $\ell$ consisting of all
 $n$-types is a $(n+1)$-type in $1+\ell$. That means: the universe of
 propositions is a set, the universe of sets is a groupoid, the universe
 of groupoids is a bigroupoid, and so on.

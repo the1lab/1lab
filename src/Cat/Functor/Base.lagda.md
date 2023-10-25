@@ -1,6 +1,10 @@
 <!--
 ```agda
+open import 1Lab.Path.Cartesian
+
 open import Cat.Prelude
+
+import Cat.Reasoning
 ```
 -->
 
@@ -8,47 +12,189 @@ open import Cat.Prelude
 module Cat.Functor.Base where
 ```
 
+# Functor precategories {defines="functor-category"}
+
+Fix a pair of (completely arbitrary!) precategories $\cC$ and $\cD$.
+We'll show how to make the type of functors $\cC \to \cD$ into a
+precategory on its own right, with the _natural transformations_ $F \To
+G$ as the morphisms. First, given $F : \cC \to \cD$, we construct the
+identity natural transformation by having every component be the
+identity:
+
 <!--
 ```agda
 private variable
-  o h o₁ h₁ : Level
-  C D : Precategory o h
-open Precategory
+  o o₁ o₂ ℓ ℓ₁ ℓ₂ : Level
+  B C D E : Precategory o ℓ
+  F G : Functor C D
+
+private module Pc = Precategory
 open Functor
+open _=>_
+
+module _ {C : Precategory o ℓ} {D : Precategory o₁ ℓ₁} where
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
 ```
 -->
 
-# Functors
-
-This module defines the most important clases of functors: Full,
-faithful, fully faithful (abbreviated ff), _split_ essentially
-surjective and ("_merely_") essentially surjective.
-
-A functor is **full** when its action on hom-sets is surjective:
-
 ```agda
-is-full : Functor C D → Type _
-is-full {C = C} {D = D} F =
-  ∀ {x y} (g : D .Hom (F₀ F x) (F₀ F y)) → ∃[ f ∈ C .Hom x y ] (F₁ F f ≡ g)
+  idnt : {F : Functor C D} → F => F
+  idnt .η _              = D.id
+  idnt .is-natural _ _ _ = D.id-comm-sym
 ```
 
-A functor is **faithful** when its action on hom-sets is injective:
+Moreover, if we have a pair of composable-looking natural
+transformations $\alpha : G \To H$ and $\beta : F \To G$, then we can
+indeed make their pointwise composite into a natural transformation:
 
 ```agda
-is-faithful : Functor C D → Type _
-is-faithful F = ∀ {x y} → injective (F₁ F {x = x} {y})
+  _∘nt_ : ∀ {F G H : Functor C D} → G => H → F => G → F => H
+  (f ∘nt g) .η x = f .η x D.∘ g .η x
+  _∘nt_ {F} {G} {H} f g .is-natural x y h =
+    (f .η y D.∘ g .η y) D.∘ F .F₁ h ≡⟨ D.pullr (g .is-natural x y h) ⟩
+    f .η y D.∘ G .F₁ h D.∘ g .η x   ≡⟨ D.extendl (f .is-natural x y h) ⟩
+    H .F₁ h D.∘ f .η x D.∘ g .η x   ∎
+
+  infixr 40 _∘nt_
 ```
+
+Since we already know that identity of natural transformations is
+determined by identity of the underlying family of morphisms, and the
+identities and composition we've just defined are _componentwise_ just
+identity and composition in $\cD$, then the category laws we have to
+prove are, once again, those of $\cD$:
+
+```agda
+Cat[_,_]
+  : Precategory o ℓ → Precategory o₁ ℓ₁
+  → Precategory (o ⊔ ℓ ⊔ o₁ ⊔ ℓ₁) (o ⊔ ℓ ⊔ ℓ₁)
+Cat[ C , D ] .Pc.Ob          = Functor C D
+Cat[ C , D ] .Pc.Hom         = _=>_
+Cat[ C , D ] .Pc.Hom-set F G = Nat-is-set
+
+Cat[ C , D ] .Pc.id  = idnt
+Cat[ C , D ] .Pc._∘_ = _∘nt_
+
+Cat[ C , D ] .Pc.idr f       = Nat-path λ x → Pc.idr D _
+Cat[ C , D ] .Pc.idl f       = Nat-path λ x → Pc.idl D _
+Cat[ C , D ] .Pc.assoc f g h = Nat-path λ x → Pc.assoc D _ _ _
+```
+
+We'll also need the following foundational tool, characterising paths
+between functors. It says that, given a homotopy $p_0$ between the
+object-parts of functors $F, G : \cC \to \cD$, and, over this, an
+identification between the actions of $F$ and $G$ on morphisms, we can
+construct a path $F \equiv G$.
+
+## Paths between functors
+
+```agda
+Functor-path
+  : {F G : Functor C D}
+  → (p0 : ∀ x → F₀ F x ≡ F₀ G x)
+  → (p1 : ∀ {x y} (f : C .Pc.Hom x y)
+        → PathP (λ i → D .Pc.Hom (p0 x i) (p0 y i)) (F .F₁ f) (G .F₁ f))
+  → F ≡ G
+```
+
+Note that this lemma is a bit unusual: we're characterising the identity
+type of the _objects_ of a precategory, rather than, as is more common,
+the _morphisms_ of a precategory. However, this characterisation will
+let us swiftly establish necessary conditions for [univalence of functor
+categories].
+
+[univalence of functor categories]: Cat.Functor.Univalence.html
 
 <!--
 ```agda
-module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
-  import Cat.Reasoning C as C
-  import Cat.Reasoning D as D
+Functor-pathp
+  : {C : I → Precategory o ℓ} {D : I → Precategory o₁ ℓ₁}
+    {F : Functor (C i0) (D i0)} {G : Functor (C i1) (D i1)}
+  → (p0 : ∀ (p : ∀ i → C i .Pc.Ob) → PathP (λ i → D i .Pc.Ob) (F₀ F (p i0)) (F₀ G (p i1)))
+  → (p1 : ∀ {x y : ∀ i → _}
+        → (r : ∀ i → C i .Pc.Hom (x i) (y i))
+        → PathP (λ i → D i .Pc.Hom (p0 x i) (p0 y i))
+                (F₁ F (r i0)) (F₁ G (r i1)))
+  → PathP (λ i → Functor (C i) (D i)) F G
+Functor-pathp {C = C} {D} {F} {G} p0 p1 = fn where
+  open Pc
+  cob : I → Type _
+  cob = λ i → C i .Ob
+
+  exth
+    : ∀ i j (x y : C i .Ob) (f : C i .Hom x y)
+    → C i .Hom (coe cob i i x) (coe cob i i y)
+  exth i j x y f =
+    comp (λ j → C i .Hom (coei→i cob i x (~ j ∨ i)) (coei→i cob i y (~ j ∨ i)))
+    ((~ i ∧ ~ j) ∨ (i ∧ j))
+    λ where
+      k (k = i0) → f
+      k (i = i0) (j = i0) → f
+      k (i = i1) (j = i1) → f
+
+  actm
+    : ∀ i (x y : C i .Ob) f
+    → D i .Hom (p0 (λ j → coe cob i j x) i) (p0 (λ j → coe cob i j y) i)
+  actm i x y f =
+    p1 {λ j → coe cob i j x} {λ j → coe cob i j y}
+      (λ j → coe (λ j → C j .Hom (coe cob i j x) (coe cob i j y)) i j (exth i j x y f))
+      i
+
+  fn : PathP (λ i → Functor (C i) (D i)) F G
+  fn i .F₀ x =
+    p0 (λ j → coe cob i j x)
+      i
+  fn i .F₁ {x} {y} f = actm i x y f
+  fn i .F-id {x} =
+    hcomp (∂ i) λ where
+      j (i = i0) → D i .Hom-set (F .F₀ x) (F .F₀ x) (F .F₁ (C i .id)) (D i .id) base (F .F-id) j
+      j (i = i1) → D i .Hom-set (G .F₀ x) (G .F₀ x) (G .F₁ (C i .id)) (D i .id) base (G .F-id) j
+      j (j = i0) → base
+    where
+      base = coe0→i (λ i → (x : C i .Ob) → actm i x x (C i .id) ≡ D i .id) i
+        (λ _ → F .F-id) x
+  fn i .F-∘ {x} {y} {z} f g =
+    hcomp (∂ i) λ where
+      j (i = i0) → D i .Hom-set (F .F₀ x) (F .F₀ z) _ _ base (F .F-∘ f g) j
+      j (i = i1) → D i .Hom-set (G .F₀ x) (G .F₀ z) _ _ base (G .F-∘ f g) j
+      j (j = i0) → base
+    where
+      base = coe0→i (λ i → (x y z : C i .Ob) (f : C i .Hom y z) (g : C i .Hom x y)
+                         → actm i x z (C i ._∘_ f g)
+                         ≡ D i ._∘_ (actm i y z f) (actm i x y g)) i
+        (λ _ _ _ → F .F-∘) x y z f g
+
+Functor-path p0 p1 i .F₀ x = p0 x i
+Functor-path p0 p1 i .F₁ f = p1 f i
+Functor-path {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-id =
+  is-prop→pathp (λ j → D .Pc.Hom-set _ _ (p1 (C .Pc.id) j) (D .Pc.id))
+    (F-id F) (F-id G) i
+Functor-path {C = C} {D = D} {F = F} {G = G} p0 p1 i .F-∘ f g =
+  is-prop→pathp (λ i → D .Pc.Hom-set _ _ (p1 (C .Pc._∘_ f g) i) (D .Pc._∘_ (p1 f i) (p1 g i)))
+    (F-∘ F f g) (F-∘ G f g) i
+```
+-->
+
+## Action on isomorphisms
+
+<!--
+```agda
+module _ {C : Precategory o ℓ} {D : Precategory o₁ ℓ₁} where
   private module _ where
-    open import Cat.Reasoning using (_≅_ ; Inverses)
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    open Cat.Reasoning using (_≅_ ; Inverses)
     open _≅_ public
     open Inverses public
+```
+-->
 
+We have also to make note of the following fact: absolutely all functors
+preserve isomorphisms, and, more generally, preserve invertibility.
+
+```agda
   F-map-iso : ∀ {x y} (F : Functor C D) → x C.≅ y → F₀ F x D.≅ F₀ F y
   F-map-iso F x .to       = F .F₁ (x .to)
   F-map-iso F x .from     = F .F₁ (x .from)
@@ -64,183 +210,37 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
       (sym (F-∘ F _ _) ·· ap (F₁ F) x.invl ·· F-id F)
       (sym (F-∘ F _ _) ·· ap (F₁ F) x.invr ·· F-id F)
     where module x = C.is-invertible inv
-
-  faithful→iso-fibre-prop
-    : ∀ (F : Functor C D)
-    → is-faithful F
-    → ∀ {x y} → (f : F₀ F x D.≅ F₀ F y)
-    → is-prop (Σ[ g ∈ x C.≅ y ] (F-map-iso F g ≡ f))
-  faithful→iso-fibre-prop F faithful f (g , p) (g' , q) =
-    Σ-prop-path (λ _ → D.≅-is-set _ _) $
-    C.≅-pathp refl refl (faithful (ap D.to (p ∙ sym q)))
-```
--->
-
-## ff Functors
-
-A functor is **fully faithful** (abbreviated **ff**) when its action on
-hom-sets is an equivalence. Since Hom-sets are sets, it suffices for the
-functor to be full and faithful; Rather than taking this conjunction as
-a definition, we use the more directly useful data as a definition and
-prove the conjunction as a theorem.
-
-```agda
-is-fully-faithful : Functor C D → Type _
-is-fully-faithful F = ∀ {x y} → is-equiv (F₁ F {x = x} {y})
-
-fully-faithful→faithful : {F : Functor C D} → is-fully-faithful F → is-faithful F
-fully-faithful→faithful {F = F} ff {_} {_} {x} {y} p =
-  x                         ≡⟨ sym (equiv→unit ff x) ⟩
-  equiv→inverse ff (F₁ F x) ≡⟨ ap (equiv→inverse ff) p ⟩
-  equiv→inverse ff (F₁ F y) ≡⟨ equiv→unit ff y ⟩
-  y                         ∎
-
-fully-faithful→full : {F : Functor C D} → is-fully-faithful F → is-full F
-fully-faithful→full {F = F} ff g = inc (equiv→inverse ff g , equiv→counit ff g)
-
-full+faithful→ff
-  : (F : Functor C D) → is-full F → is-faithful F → is-fully-faithful F
-full+faithful→ff {C = C} {D = D} F surj inj .is-eqv = p where
-  img-is-prop : ∀ {x y} f → is-prop (fibre (F₁ F {x = x} {y}) f)
-  img-is-prop f (g , p) (h , q) = Σ-prop-path (λ _ → D .Hom-set _ _ _ _) (inj (p ∙ sym q))
-
-  p : ∀ {x y} f → is-contr (fibre (F₁ F {x = x} {y}) f)
-  p f .centre = ∥-∥-elim (λ _ → img-is-prop f) (λ x → x) (surj f)
-  p f .paths = img-is-prop f _
 ```
 
-A very important property of fully faithful functors (like $F$) is that
-they are **conservative**: If the image of $f : x \to y$ under $F$ is an
-isomorphism $Fx \cong Fy$, then $f$ was really an isomorphism $f : x
-\cong y$.
+If the categories the functor maps between are univalent, there is a
+competing notion of preserving isomorphisms: the action on paths of the
+object-part of the functor. We first turn the isomorphism into a path
+(using univalence of the domain), run it through the functor, then turn
+the resulting path back into an isomorphism. Fortunately, functors are
+already coherent enough to ensure that these actions agree:
 
 ```agda
-module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
-  private
-    module C = Precategory C
-    module D = Precategory D
+  F-map-path
+    : (ccat : is-category C) (dcat : is-category D)
+    → ∀ (F : Functor C D) {x y} (i : x C.≅ y)
+    → ap (F₀ F) (Univalent.iso→path ccat i) ≡ Univalent.iso→path dcat (F-map-iso F i)
+  F-map-path ccat dcat F {x} = Univalent.J-iso ccat P pr where
+    P : (b : C.Ob) → C.Isomorphism x b → Type _
+    P b im = ap (F₀ F) (Univalent.iso→path ccat im)
+           ≡ Univalent.iso→path dcat (F-map-iso F im)
 
-  import Cat.Morphism C as Cm
-  import Cat.Morphism D as Dm
-
-  is-ff→is-conservative
-    : {F : Functor C D} → is-fully-faithful F
-    → ∀ {X Y} (f : C.Hom X Y) → Dm.is-invertible (F₁ F f)
-    → Cm.is-invertible f
-  is-ff→is-conservative {F = F} ff f isinv = i where
-    open Cm.is-invertible
-    open Cm.Inverses
-```
-
-Since the functor is ff, we can find a map "$F_1^{-1}(f) : y \to x$" in
-the domain category to serve as an inverse for $f$:
-
-```agda
-    g : C.Hom _ _
-    g = equiv→inverse ff (isinv .Dm.is-invertible.inv)
-    module ff {a} {b} = Equiv (_ , ff {a} {b})
-
-    Ffog =
-      F₁ F (f C.∘ g)    ≡⟨ F-∘ F _ _ ⟩
-      F₁ F f D.∘ F₁ F g ≡⟨ ap₂ D._∘_ refl (ff.ε _) ∙ isinv .Dm.is-invertible.invl ⟩
-      D.id              ∎
-
-    Fgof =
-      F₁ F (g C.∘ f)    ≡⟨ F-∘ F _ _ ⟩
-      F₁ F g D.∘ F₁ F f ≡⟨ ap₂ D._∘_ (ff.ε _) refl ∙ isinv .Dm.is-invertible.invr ⟩
-      D.id              ∎
-
-    i : Cm.is-invertible _
-    i .inv = g
-    i .inverses .invl =
-      f C.∘ g                    ≡⟨ sym (ff.η _) ⟩
-      ff.from ⌜ F₁ F (f C.∘ g) ⌝ ≡⟨ ap! (Ffog ∙ sym (F-id F)) ⟩
-      ff.from (F₁ F C.id)        ≡⟨ ff.η _ ⟩
-      C.id                       ∎
-    i .inverses .invr =
-      g C.∘ f                    ≡⟨ sym (ff.η _) ⟩
-      ff.from ⌜ F₁ F (g C.∘ f) ⌝ ≡⟨ ap! (Fgof ∙ sym (F-id F)) ⟩
-      ff.from (F₁ F C.id)        ≡⟨ ff.η _ ⟩
-      C.id                       ∎
-
-  is-ff→essentially-injective
-    : {F : Functor C D} → is-fully-faithful F
-    → ∀ {X Y} → F₀ F X Dm.≅ F₀ F Y
-    → X Cm.≅ Y
-  is-ff→essentially-injective {F = F} ff im = im′ where
-    -- Cm.make-iso (equiv→inverse ff to) inv invl invr
-    open Dm._≅_ im using (to ; from ; inverses)
-    D-inv′ : Dm.is-invertible (F₁ F (equiv→inverse ff to))
-    D-inv′ .Dm.is-invertible.inv = from
-    D-inv′ .Dm.is-invertible.inverses =
-      subst (λ e → Dm.Inverses e from) (sym (equiv→counit ff _)) inverses
-
-    open Cm.is-invertible (is-ff→is-conservative {F = F} ff (equiv→inverse ff to) D-inv′)
-
-    im′ : _ Cm.≅ _
-    im′ .to   = equiv→inverse ff to
-    im′ .from = inv
-    im′ .inverses .Cm.Inverses.invl = invl
-    im′ .inverses .Cm.Inverses.invr = invr
-```
-
-## Essential Fibres
-
-The **essential fibre** of a functor $F : C \to D$ over an object $y :
-D$ is the space of objects of $C$ which $F$ takes, up to isomorphism, to
-$y$.
-
-```agda
-Essential-fibre : Functor C D → D .Ob → Type _
-Essential-fibre {D = D} F y = Σ[ x ∈ _ ] (F₀ F x ≅ y)
-  where open import Cat.Morphism D
-```
-
-A functor is **split essentially surjective** (abbreviated **split
-eso**) if there is a procedure for finding points in the essential fibre
-over any object. It's **essentially surjective** if the this procedure
-_merely_, i.e. truncatedly, finds a point:
-
-```agda
-is-split-eso : Functor C D → Type _
-is-split-eso F = ∀ y → Essential-fibre F y
-
-is-eso : Functor C D → Type _
-is-eso F = ∀ y → ∥ Essential-fibre F y ∥
+    pr : P x C.id-iso
+    pr =
+      ap (F₀ F) (Univalent.iso→path ccat C.id-iso) ≡⟨ ap (ap (F₀ F)) (Univalent.iso→path-id ccat) ⟩
+      ap (F₀ F) refl                               ≡˘⟨ Univalent.iso→path-id dcat ⟩
+      dcat .to-path D.id-iso                       ≡⟨ ap (dcat .to-path) (D.≅-path (sym (F .F-id))) ⟩
+      dcat .to-path (F-map-iso F C.id-iso)         ∎
 ```
 
 <!--
 ```agda
-module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
-  import Cat.Reasoning C as C
-  import Cat.Reasoning D as D
-  private module _ where
-    open import Cat.Reasoning using (_≅_ ; Inverses)
-    open _≅_ public
-    open Inverses public
-
-  open import Cat.Univalent
-
-  F-map-path : ∀ {x y} (F : Functor C D) (i : x C.≅ y)
-             → (ccat : is-category C)
-             → (dcat : is-category D)
-             → ap (F₀ F) (Univalent.iso→path ccat i) ≡ Univalent.iso→path dcat (F-map-iso F i)
-  F-map-path F i ccat dcat =
-    Univalent.J-iso ccat
-      (λ B p → ap (F₀ F) (Univalent.iso→path ccat p) ≡ Univalent.iso→path dcat (F-map-iso F p))
-      idc
-      i
-    where abstract
-      idc : ∀ {x} → ap (F₀ F) (Univalent.iso→path ccat (C.id-iso {x}) )
-          ≡ Univalent.iso→path dcat (F-map-iso F C.id-iso)
-      idc =
-        ap (F₀ F) ⌜ Univalent.iso→path ccat C.id-iso ⌝ ≡⟨ ap! (Univalent.iso→path-id ccat) ⟩
-        ap (F₀ F) refl                                 ≡˘⟨ Univalent.path→iso→path dcat _ ⟩
-        Univalent.iso→path dcat ⌜ path→iso refl ⌝      ≡⟨ ap! (D.≅-pathp refl refl (transport-refl _ ∙ sym (F-id F))) ⟩
-        Univalent.iso→path dcat (F-map-iso F C.id-iso) ∎
-
   ap-F₀-to-iso
-    : ∀ (F : Functor C D) {y z : C .Ob}
+    : ∀ (F : Functor C D) {y z}
     → (p : y ≡ z) → path→iso (ap (F₀ F) p) ≡ F-map-iso F (path→iso p)
   ap-F₀-to-iso F {y} =
     J (λ _ p → path→iso (ap (F₀ F) p) ≡ F-map-iso F (path→iso p))
@@ -252,97 +252,15 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
     → (p : y C.≅ z) → path→iso (ap (F .F₀) (cc .to-path p)) ≡ F-map-iso F p
   ap-F₀-iso cc F p = ap-F₀-to-iso F (cc .to-path p)
                    ∙ ap (F-map-iso F) (Univalent.iso→path→iso cc p)
-
-  is-ff→F-map-iso-is-equiv
-    : {F : Functor C D} → is-fully-faithful F
-    → ∀ {X Y} → is-equiv (F-map-iso {x = X} {Y} F)
-  is-ff→F-map-iso-is-equiv {F = F} ff = is-iso→is-equiv isom where
-    isom : is-iso _
-    isom .is-iso.inv = is-ff→essentially-injective {F = F} ff
-    isom .is-iso.rinv x = D.≅-pathp refl refl (equiv→counit ff _)
-    isom .is-iso.linv x = C.≅-pathp refl refl (equiv→unit ff _)
 ```
 -->
 
-## Pseudomonic Functors
+# Presheaf precategories
 
-A functor is **pseudomonic** if it is faithful and full on isomorphisms.
-Pseudomonic functors are arguably the correct notion of subcategory, as
-they ensure that we are not able to distinguish between isomorphic objects
-when creating a subcategory.
-
-<!--
-```agda
-module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
-  import Cat.Reasoning C as C
-  import Cat.Reasoning D as D
-```
--->
+Of principal importance among the functor categories are those to the
+category $\Sets$: these are the _presheaf categories_.
 
 ```agda
-  is-full-on-isos : Functor C D → Type (o ⊔ h ⊔ h₁)
-  is-full-on-isos F =
-    ∀ {x y} → (f : (F .F₀ x) D.≅ (F .F₀ y)) → ∃[ g ∈ x C.≅ y ] (F-map-iso F g ≡ f)
-
-  record is-pseudomonic (F : Functor C D) : Type (o ⊔ h ⊔ h₁) where
-    no-eta-equality
-    field
-      faithful : is-faithful F
-      isos-full : is-full-on-isos F
-
-  open is-pseudomonic
+PSh : ∀ κ {o ℓ} → Precategory o ℓ → Precategory _ _
+PSh κ C = Cat[ C ^op , Sets κ ]
 ```
-
-Somewhat surprisingly, pseudomonic functors are [conservative].
-As $F$ is full on isos, there merely exists some iso $g$ in the fibre
-of $f$. However, Invertability is a property of morphisms, so we can
-untruncate the mere existence. Once we have our hands on the isomorphism,
-we perform a simple calculation to note that it yields an inverse to $f$.
-
-[conservative]: Cat.Functor.Conservative.html
-
-```agda
-  pseudomonic→conservative
-    : ∀ {F : Functor C D}
-    → is-pseudomonic F
-    → ∀ {x y} (f : C.Hom x y) → D.is-invertible (F₁ F f)
-    → C.is-invertible f
-  pseudomonic→conservative {F = F} pseudo {x} {y} f inv =
-    ∥-∥-rec C.is-invertible-is-prop
-      (λ (g , p) →
-        C.make-invertible (C.from g)
-          (sym (ap (C._∘ _) (pseudo .faithful (ap D.to p))) ∙ C.invl g)
-          (sym (ap (_ C.∘_) (pseudo .faithful (ap D.to p))) ∙ C.invr g))
-      (pseudo .isos-full (D.invertible→iso _ inv))
-```
-
-In a similar vein, pseudomonic functors are essentially injective.
-The proof follows a similar path to the prior one, hinging on the
-fact that faithful functors are an embedding on isos.
-
-```agda
-  pseudomonic→essentially-injective
-    : ∀ {F : Functor C D}
-    → is-pseudomonic F
-    → ∀ {x y} → F₀ F x D.≅ F₀ F y
-    → x C.≅ y
-  pseudomonic→essentially-injective {F = F} pseudo f =
-    ∥-∥-rec (faithful→iso-fibre-prop F (pseudo .faithful) f)
-      (λ x → x)
-      (pseudo .isos-full f) .fst
-```
-
-Fully faithful functors are pseudomonic, as they are faithful and
-essentially injective.
-
-```agda
-  ff→pseudomonic
-    : ∀ {F : Functor C D}
-    → is-fully-faithful F
-    → is-pseudomonic F
-  ff→pseudomonic {F} ff .faithful = fully-faithful→faithful {F = F} ff
-  ff→pseudomonic {F} ff .isos-full f =
-    inc (is-ff→essentially-injective {F = F} ff f ,
-         D.≅-pathp refl refl (equiv→counit ff (D.to f)))
-```
-

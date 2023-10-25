@@ -11,6 +11,8 @@ open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
 import Cat.Reasoning as Cat
+
+open Precategory
 ```
 -->
 
@@ -45,27 +47,12 @@ _functor_ $F$. So, we define:
 An isomorphism $f : a \cong b$ **is an identity** if it is an identity
 in the total space of `Hom`{.Agda}, i.e. if there is an object $c : \cC$
 s.t. $(c, c, \id) = (a, b, f)$ in the type $\Sigma_a \Sigma_b (a \to b)$.
-Every isomorphism in a univalent category is an identity, since we can
+Every isomorphism in a [[univalent category]] is an identity, since we can
 take $c = a$, and the identification in `Mor`{.Agda} follows from
 univalence.
 
-```agda
-Mor : Precategory o ℓ → Type (o ⊔ ℓ)
-Mor C = Σ[ a ∈ Cat.Ob C ] Σ[ b ∈ Cat.Ob C ] Cat.Hom C a b
-```
-
 <!--
 ```agda
-Hom→Mor : (C : Precategory o ℓ) {x y : Cat.Ob C} → Cat.Hom C x y → Mor C
-Hom→Mor _ f = _ , _ , f
-
-Mor-path : (C : Precategory o ℓ) {a b : Mor C}
-         → (p : a .fst ≡ b .fst)
-         → (q : a .snd .fst ≡ b .snd .fst)
-         → PathP (λ i → Cat.Hom C (p i) (q i)) (a .snd .snd) (b .snd .snd)
-         → a ≡ b
-Mor-path C p q r i = p i , q i , r i
-
 module _ (F : Functor C D) where
   private
     module C = Cat C

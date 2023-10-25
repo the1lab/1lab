@@ -12,6 +12,7 @@ open import Cat.Functor.Hom.Representable
 open import Cat.Functor.FullSubcategory
 open import Cat.Diagram.Product.Solver
 open import Cat.Functor.Equivalence
+open import Cat.Functor.Properties
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
@@ -274,37 +275,37 @@ Yoneda embedding on $\cC$. After calculating that natural
 transformations between representable presheaves of monoids determine
 monoid homomorphisms^[Evaluating their components at the identity
 morphism, as usual!], the usual argument will suffice to show that this
-functor is also fully faithful.
+functor is also [[fully faithful]].
 
 ```agda
   Nat→internal-mon-hom
     : ∀ {m n} {m-mon : C-Monoid m} {n-mon : C-Monoid n}
     → (α : Mon→PshMon m-mon => Mon→PshMon n-mon)
-    → C-Monoid-hom (α .η m .hom id) m-mon n-mon
+    → C-Monoid-hom (α .η m # id) m-mon n-mon
   Nat→internal-mon-hom {m} {n} {m-mon} {n-mon} α .pres-η =
-    (α .η m .hom id) ∘ (m-mon .η) ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
-    α .η top .hom (id ∘ m-mon .η) ≡⟨ ap (α .η _ .hom) (id-comm-sym ∙ ap (m-mon .η ∘_) (sym (!-unique _))) ⟩
-    α .η top .hom (m-mon .η ∘ !)  ≡⟨ α .η _ .preserves .pres-id ⟩
-    n-mon .η ∘ !                  ≡⟨ elimr (!-unique _) ⟩
-    n-mon .η                      ∎
+    (α .η m # id) ∘ (m-mon .η) ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
+    α .η top # (id ∘ m-mon .η) ≡⟨ ap (α .η _ #_) (id-comm-sym ∙ ap (m-mon .η ∘_) (sym (!-unique _))) ⟩
+    α .η top # (m-mon .η ∘ !)  ≡⟨ α .η _ .preserves .pres-id ⟩
+    n-mon .η ∘ !               ≡⟨ elimr (!-unique _) ⟩
+    n-mon .η                   ∎
   Nat→internal-mon-hom {m} {n} {m-mon} {n-mon} α .pres-μ =
-    α .η m .hom id ∘ (m-mon .μ)                                  ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
-    α .η (m ⊗₀ m) .hom (id ∘ m-mon .μ)                           ≡⟨ ap (α .η _ .hom) (id-comm-sym ∙ ap (m-mon .μ ∘_) (sym ⟨⟩-η)) ⟩
-    α .η (m ⊗₀ m) .hom (m-mon .μ ∘ ⟨ π₁ , π₂ ⟩)                  ≡⟨ α .η _ .preserves .pres-⋆ _ _ ⟩
-    n-mon .μ ∘ ⟨ α .η _ .hom π₁ , α .η _ .hom π₂ ⟩               ≡˘⟨ ap (n-mon .μ ∘_) (ap₂ ⟨_,_⟩ (ap (α .η _ .hom) (idl _)) (ap (α .η _ .hom) (idl _))) ⟩
-    n-mon .μ ∘ ⟨ α .η _ .hom (id ∘ π₁) , α .η _ .hom (id ∘ π₂) ⟩ ≡⟨ ap (n-mon .μ ∘_) (ap₂ ⟨_,_⟩ (ap hom (α .is-natural _ _ _) $ₚ _) (ap hom (α .is-natural _ _ _) $ₚ _)) ⟩
-    n-mon .μ ∘ (α .η m .hom id ⊗₁ α .η m .hom id)                ∎
+    α .η m # id ∘ (m-mon .μ)                               ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
+    α .η (m ⊗₀ m) # (id ∘ m-mon .μ)                        ≡⟨ ap (α .η _ #_) (id-comm-sym ∙ ap (m-mon .μ ∘_) (sym ⟨⟩-η)) ⟩
+    α .η (m ⊗₀ m) # (m-mon .μ ∘ ⟨ π₁ , π₂ ⟩)               ≡⟨ α .η _ .preserves .pres-⋆ _ _ ⟩
+    n-mon .μ ∘ ⟨ α .η _ # π₁ , α .η _ # π₂ ⟩               ≡˘⟨ ap (n-mon .μ ∘_) (ap₂ ⟨_,_⟩ (ap (α .η _ #_) (idl _)) (ap (α .η _ #_) (idl _))) ⟩
+    n-mon .μ ∘ ⟨ α .η _ # (id ∘ π₁) , α .η _ # (id ∘ π₂) ⟩ ≡⟨ ap (n-mon .μ ∘_) (ap₂ ⟨_,_⟩ (ap hom (α .is-natural _ _ _) $ₚ _) (ap hom (α .is-natural _ _ _) $ₚ _)) ⟩
+    n-mon .μ ∘ (α .η m # id ⊗₁ α .η m # id)                ∎
 
   open is-iso
 
   Mon→RepPShMon-is-ff : is-fully-faithful Mon→RepPShMon
   Mon→RepPShMon-is-ff = is-iso→is-equiv λ where
-    .inv α .hom       → α .η _ .hom id
+    .inv α .hom       → α .η _ # id
     .inv α .preserves → Nat→internal-mon-hom α
     .rinv α → Nat-path λ _ → Homomorphism-path λ f →
-      α .η _ .hom id ∘ f   ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
-      α .η _ .hom (id ∘ f) ≡⟨ ap (α .η _ .hom) (idl f) ⟩
-      α .η _ .hom f        ∎
+      α .η _ # id ∘ f   ≡˘⟨ ap hom (α .is-natural _ _ _) $ₚ _ ⟩
+      α .η _ # (id ∘ f) ≡⟨ ap (α .η _ #_) (idl f) ⟩
+      α .η _ # f        ∎
     .linv h → total-hom-path _
       (idr _)
       (is-prop→pathp (λ _ → is-monoid-hom-is-prop _) _ _)
@@ -337,7 +338,7 @@ is natural.
 ```
 
 The monoid operations are defined in the smallest context possible. For
-identity this is the empty context^[The terminal object.], for
+identity this is the empty context^[The [[terminal object]].], for
 multiplication, this is the context $M \times M$.
 
 ```agda
@@ -399,7 +400,7 @@ object $M : \cC$.
     PMon x = ∣ P .F₀ x .fst ∣
 
     module PMon {x} = Monoid-on (P .F₀ x .snd)
-    module repr = natural-iso (P-rep .represents)
+    module repr = Isoⁿ (P-rep .represents)
 
     open PMon hiding (idl; idr; associative)
 
@@ -541,7 +542,7 @@ Put another way, our functor $\thecat{Mon}_\cC \to \psh(\cC)_M$ is a
 [split essential surjection] --- so, remembering that it was fully
 faithful, we conclude it's an equivalence.
 
-[split essential surjection]: Cat.Functor.Base.html#essential-fibres
+[split essential surjection]: Cat.Functor.Properties.html#essential-fibres
 
 ```agda
   Mon→RepPShMon-is-equiv : is-equivalence Mon→RepPShMon

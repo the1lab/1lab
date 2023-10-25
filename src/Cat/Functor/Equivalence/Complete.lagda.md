@@ -4,7 +4,6 @@ open import Cat.Functor.Adjoint.Continuous
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Limit.Base
 open import Cat.Instances.Functor
-open import Cat.Functor.Base
 open import Cat.Prelude
 ```
 -->
@@ -29,11 +28,11 @@ module
   open is-equivalence eqv
 ```
 
-This is a very short theorem: If $\cC$ admits $\cJ$-shaped limits,
-then for any diagram $K : \cJ \to \cD$, the composite $F^{-1}K$
-has a limit. But since equivalences are right adjoints, $F$ preserves
-this limit, so $FF^{-1}K$ has a limit in $\cD$; But that composite is
-naturally isomorphic to $K$, so $K$ also has a limit.
+This is a very short theorem: If $\cC$ admits $\cJ$-shaped limits, then
+for any diagram $K : \cJ \to \cD$, the composite $F^{-1}K$ has a limit.
+But since equivalences are [[right adjoints]], $F$ preserves this limit,
+so $FF^{-1}K$ has a limit in $\cD$; But that composite is naturally
+isomorphic to $K$, so $K$ also has a limit.
 
 ```agda
   equivalence→complete : ∀ {co cℓ} → is-complete co cℓ C → is-complete co cℓ D

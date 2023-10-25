@@ -2,7 +2,6 @@
 ```agda
 open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Pullback
-open import Cat.Diagram.Initial
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -62,12 +61,10 @@ open is-regular-epi using (is-regular-epi→is-epic) public
 ## Effective epis
 
 Again by duality, we have a pair of canonical choices of maps which $f$
-may coequalise: Its _kernel pair_, that is, the [pullback] of $f$ along
+may coequalise: Its _kernel pair_, that is, the [[pullback]] of $f$ along
 itself. An epimorphism which coequalises its kernel pair is called an
 **effective epi**, and effective epis are immediately seen to be regular
 epis:
-
-[pullback]: Cat.Diagram.Pullback.html
 
 ```agda
 record is-effective-epi (f : Hom a b) : Type (o ⊔ ℓ) where

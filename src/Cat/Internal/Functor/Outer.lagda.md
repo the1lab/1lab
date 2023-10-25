@@ -1,16 +1,15 @@
 <!--
 ```agda
-open import Cat.Diagram.Product
 open import Cat.Diagram.Product.Solver
+open import Cat.Internal.Opposite
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
+open import Cat.Diagram.Product
 open import Cat.Prelude
 
-open import Cat.Internal.Opposite
-
-import Cat.Reasoning
-import Cat.Internal.Base
 import Cat.Internal.Reasoning
+import Cat.Internal.Base
+import Cat.Reasoning
 ```
 -->
 
@@ -30,14 +29,13 @@ open Internal-hom
 
 # Outer Functors
 
-The category $\Sets$ is not [strict], so it is not [internal] to any
-category of sets, even setting aside size issues. However, $\Sets$ still
-plays an important role in (strict) category theory, by passing to the
-co[presheaf] categories $\cC \to \thecat{Sets}$.
+The category $\Sets$ is not [[strict|strict category]], so it is not
+[internal] to any category of sets, even setting aside size issues.
+However, $\Sets$ still plays an important role in (strict) category
+theory, by passing to the co[presheaf] categories $\cC \to \Sets$.
 
-[strict]: Cat.Strict.html
 [internal]: Cat.Internal.Base.html
-[presheaf]: Cat.Instances.Functor.html
+[presheaf]: Cat.Functor.Base.html#presheaf-precategories
 
 We wish to relativize this to an arbitrary base category $\cC$, not just
 $\thecat{Sets}$. Specifically, if $\bC$ is a category internal to $\cC$,
@@ -103,11 +101,9 @@ open Outer-functor
 ```
 
 Another perspective on outer functors is that they are the _internal
-discrete opfibrations_ over $\ica{C}$. The object $P$ is the [total
-space], the map $P_0$ is the fibration itself, and $P_1$ captures the
+discrete opfibrations_ over $\ica{C}$. The object $P$ is the [[total
+category]], the map $P_0$ is the fibration itself, and $P_1$ captures the
 lifting into opcartesian maps.
-
-[total space]: Cat.Displayed.Total.html
 
 <!-- [TODO: Reed M, 28/04/2023]
 Link to the page on discrete opfibrations when it is written!
@@ -122,10 +118,10 @@ functors from the [internal opposite category] of $\ica{C}$.
 ## Internal Hom Functors
 
 The canonical example of an outer functor is the internal analog of the
-hom functor $\cC(X,-)$. We require the following data: $\cC$ is finitely
-complete, $\bC$ is a category internal to $\cC$, and $x : \cC(\top,
-\bC_0)$ is a _global_ object of $\bC$ --- an object of $\bC$ in the
-empty context.
+hom functor $\cC(X,-)$. We require the following data: $\cC$ is
+[[finitely complete]], $\bC$ is a category internal to $\cC$, and $x :
+\cC(\top, \bC_0)$ is a _global_ object of $\bC$ --- an object of $\bC$
+in the empty context.
 
 ```agda
 module _ (pb : has-pullbacks C) (term : Terminal C) (ℂ : Internal-cat) where
@@ -213,7 +209,7 @@ of maps into a limit.
 </details>
 
 The _contravariant_ internal $\hom$ functor is defined by duality, which
-carries "pullback along $\$1$" to "pullback along $\$1$.".
+carries "pullback along $\src$" to "pullback along $\tgt$.".
 This outer functor plays the role of the Yoneda embedding.
 
 ```agda

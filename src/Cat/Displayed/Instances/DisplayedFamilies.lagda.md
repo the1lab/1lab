@@ -50,7 +50,7 @@ a version of the family fibration that represents families
 **internal** to a fibration, where objects should be $\cB$-indexed
 families of $\cE$ objects. To construct such a fibration, we recall
 that every family $P : X \to \ty$ is equivalent to the total space
-of it's fibres (see [here] for more details). It's quite rare for
+of its fibres (see [here] for more details). It's quite rare for
 $\cB$ to have something that looks like a universe, but it **does**
 have enough structure to talk about fibres! We can consider a morphism
 $\cB(a, x)$ to be a sort of "generalized family" over $x$, where $a$ is
@@ -82,13 +82,12 @@ $(a : \cB) \times \cB(a, x) \times \cE_{a}$, and morphisms
 $f : (a, f, a') \to (b, g, b')$ over $u : x \to y$ are given by triples
 $(k : \cB(a, b)) \times (u \circ f = g \circ k) \times \cE_{k}(a', b')$.
 The first portion of this data can be obtained by using the
-[codomain fibration] over $\cB$. The remaining data involving $\cE$ is
+[[codomain fibration]] over $\cB$. The remaining data involving $\cE$ is
 then added by composing the codomain fibration with the [base change]
-of $\cE$ along the functor $\mathrm{Dom} : \int B^{\to} \to B$ that takes
-the domain of a morphism in the arrow category (which **is** the total
-category of the codomain fibration).
+of $\cE$ along the functor $\mathrm{Dom} : \int B^{\to} \to B$ that
+takes the domain of a morphism in the arrow category (which **is** the
+[[total category]] of the codomain fibration).
 
-[codomain fibration]: Cat.Displayed.Instances.Slice.html
 [base change]: Cat.Displayed.Instances.Pullback.html
 
 ```agda
@@ -219,7 +218,7 @@ Next, a short yet crucial lemma: if we have a displayed family
 over $x$, a map $m : \cB(x, a)$, and a morphism of displayed families
 from $P$ to the constant family on $b'$, then we can construct a map
 from the displayed total space of $P$ to $a'$. This is constructed via
-the universal map of the cartesian morphism $f'$.
+the universal map of the [[cartesian morphism]] $f'$.
 
 ```agda
   coh : ∀ {x : Ob} {P : Disp-family.Ob[ x ]}

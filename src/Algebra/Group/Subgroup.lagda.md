@@ -1,5 +1,6 @@
 <!--
 ```agda
+{-# OPTIONS -vtc.def:10 #-}
 open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Group.Cat.Base
 open import Algebra.Prelude
@@ -9,9 +10,7 @@ open import Cat.Diagram.Equaliser.Kernel
 
 open import Data.Power
 
-open import Order.Instances.Subobjects
-
-import Order.Reasoning as Poset
+import Cat.Displayed.Instances.Subobjects
 ```
 -->
 
@@ -24,24 +23,23 @@ module Algebra.Group.Subgroup where
 private variable
   ℓ ℓ' : Level
   G : Group ℓ
+private module _ {ℓ} where open Cat.Displayed.Instances.Subobjects (Groups ℓ) public
 ```
 -->
 
 # Subgroups
 
-A **subgroup** $m$ of a group $G$ is a [monomorphism] $H \xto{m} G$,
-that is, an object of the [poset of subobjects] $\Sub(G)$. Since group
+A **subgroup** $m$ of a group $G$ is a [[monomorphism]] $H \xto{m} G$,
+that is, an object of the [[poset of subobjects]] $\Sub(G)$. Since group
 homomorphisms are injective exactly when their underlying function is an
 [embedding], we can alternatively describe this as a condition on a
 predicate $G \to \prop$.
 
-[poset of subobjects]: Order.Instances.Subobjects.html
-[monomorphism]: Cat.Morphism.html#monos
 [embedding]: 1Lab.Equiv.Embedding.html
 
 ```agda
 Subgroup : Group ℓ → Type (lsuc ℓ)
-Subgroup {ℓ = ℓ} G = Σ (Group ℓ) λ H → H Groups.↪ G
+Subgroup {ℓ = ℓ} G = Subobject G
 ```
 
 A proposition $H : G \to \prop$ of a group $(G, \star)$ **represents a
@@ -78,28 +76,26 @@ rep-subgroup→group-on {G = G} H sg = to-group-on sg′ where
   sg′ .make-group.idl x = Σ-prop-path (λ x → H x .is-tr) idl
 
 predicate→subgroup : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Subgroup G
-predicate→subgroup {G = G} H p = _ , record { mor = map ; monic = ism } where
-  map : Groups.Hom (el! (Σ _ (∣_∣ ⊙ H))
-    , rep-subgroup→group-on H p) G
-  map .hom = fst
-  map .preserves .is-group-hom.pres-⋆ x y = refl
+predicate→subgroup {G = G} H p = record { map = it ; monic = ism } where
+  it : Groups.Hom (el! (Σ _ (∣_∣ ⊙ H)) , rep-subgroup→group-on H p) G
+  it .hom = fst
+  it .preserves .is-group-hom.pres-⋆ x y = refl
 
-  ism : Groups.is-monic map
-  ism = Homomorphism-monic map (λ p → Σ-prop-path (λ _ → hlevel!) p)
+  ism : Groups.is-monic it
+  ism = Homomorphism-monic it (λ p → Σ-prop-path (λ _ → hlevel!) p)
 ```
 
 # Kernels and Images
 
 To a group homomorphism $f : A \to B$ we can associate two canonical
-subgroups, one of $A$ and one of $B$: $f$'s [**image**], written $\im
-f$, is the subgroup of $B$ "reachable by mapping through $f$", and $f$'s
-[**kernel**], written $\ker f$, is the subgroup of $A$ which $f$ sends
-to the unit.
+subgroups, one of $A$ and one of $B$: $f$'s [[**image factorisation**]],
+written $\im f$, is the subgroup of $B$ "reachable by mapping through
+$f$", and $f$'s [**kernel**], written $\ker f$, is the subgroup of $A$
+which $f$ sends to the unit.
 
-[**image**]: Cat.Diagram.Image.html
 [**kernel**]: Cat.Diagram.Equaliser.Kernel.html
 
-The kernel can be cheapily described as a [limit]: It is the [equaliser]
+The kernel can be cheapily described as a [[limit]]: It is the [[equaliser]]
 of $f$ and the [zero morphism] --- which, recall, is the unique map $A
 \to B$ which breaks down as $A \to 0 \to B$.
 
@@ -109,25 +105,21 @@ module _ {ℓ} where
 
   Ker-subgroup : ∀ {A B : Group ℓ} → Groups.Hom A B → Subgroup A
   Ker-subgroup f =
-    ker , record { mor = kernel
-                 ; monic = Groups.is-equaliser→is-monic _ has-is-kernel }
+    record { map   = kernel
+           ; monic = Groups.is-equaliser→is-monic _ has-is-kernel }
     where
       open Kernel (Ker f)
 ```
 
-[limit]: Cat.Diagram.Limit.Base.html
 [zero morphism]: Cat.Diagram.Zero.html
-[equaliser]: Cat.Diagram.Equaliser.html
 
-Every group homomorphism $f : A \to B$ has an _image_ $\im f$, defined
-by equipping its set-theoretic `image`{.Agda} with a group structure
-inherited from $B$. More concretely, we can describe the elements of
-$\im f$ as the "mere fibres" of $f$: They consist of a point $y : B$,
-together with (the truncation of) a fibre of $f$ over $y$. We multiply
-$x$ (in the fibre over $a$) with $y$ (in the fibre over $b$), giving the
-element $xy$ in the fibre over $ab$.
-
-[image]: Cat.Diagram.Image.html
+Every group homomorphism $f : A \to B$ has an [[image factorisation]]
+$\im f$, defined by equipping its set-theoretic `image`{.Agda} with a
+group structure inherited from $B$. More concretely, we can describe the
+elements of $\im f$ as the "mere fibres" of $f$: They consist of a point
+$y : B$, together with (the truncation of) a fibre of $f$ over $y$. We
+multiply $x$ (in the fibre over $a$) with $y$ (in the fibre over $b$),
+giving the element $xy$ in the fibre over $ab$.
 
 <!--
 ```agda
@@ -137,11 +129,11 @@ module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where
     module B = Group-on (B .snd)
     module f = is-group-hom (f .preserves)
 
-    Tpath : {x y : image (f #_)} → x .fst ≡ y .fst → x ≡ y
+    Tpath : {x y : image (apply f)} → x .fst ≡ y .fst → x ≡ y
     Tpath {x} {y} p = Σ-prop-path (λ _ → squash) p
 
     abstract
-      Tset : is-set (image (f #_))
+      Tset : is-set (image (apply f))
       Tset = hlevel 2
 
     module Kerf = Kernel (Ker f)
@@ -159,7 +151,7 @@ reader.</summary>
 
 ```agda
     T : Type ℓ
-    T = image (f #_)
+    T = image (apply f)
 
   A/ker[_] : Group ℓ
   A/ker[_] = to-group grp where
@@ -212,7 +204,7 @@ $\im f$.
 
 ```agda
   Im[_] : Subgroup B
-  Im[_] = _ , record { mor = im→B ; monic = im↪B } where
+  Im[_] = record { map = im→B ; monic = im↪B } where
     im↪B : Groups.is-monic im→B
     im↪B = Homomorphism-monic im→B Tpath
 ```
@@ -228,13 +220,15 @@ more categorically): The image of $f$ serves as a [quotient] for (the
 [quotient]: Cat.Diagram.Coequaliser.html
 [congruence]: Cat.Diagram.Congruence.html
 
-**Note**: In more classical texts, the first isomorphism theorem is
+:::{.note}
+In more classical texts, the first isomorphism theorem is
 phrased in terms of two _pre-existing_ objects $A/\ker(f)$ (defined as
 the set of _cosets_ of $\ker(f)$ regarded as a subgroup) and $\im f$
 (defined as above).  Here we have opted for a more categorical phrasing
 of that theorem: We know what the universal property of $A/\ker(f)$ is
 --- namely that it is a specific colimit --- so the specific
 construction used to implement it does not matter.
+:::
 
 ```agda
   1st-iso-theorem : Groups.is-coequaliser (Groups.Zero.zero→ ∅ᴳ) Kerf.kernel A→im
@@ -270,29 +264,27 @@ elide the zero composite $e' \circ 0$.
     elim
       : ∀ {F} {e' : Groups.Hom A F}
           (p : e' Groups.∘ Zero.zero→ ∅ᴳ ≡ e' Groups.∘ Kerf.kernel)
-      → ∀ {x} → ∥ fibre (f #_) x ∥ → _
+      → ∀ {x : ⌞ B ⌟} → ∥ fibre (apply f) x ∥ → _
     elim {F = F} {e' = e'} p {x} =
       ∥-∥-rec-set ((e' #_) ⊙ fst) const (F .snd .Group-on.has-is-set) where abstract
       module e' = is-group-hom (e' .preserves)
       module F = Group-on (F .snd)
 ```
 
-To eliminate from under a [propositional truncation], we must prove that
-the map $e'$ is constant when thought of as a map $f^*(x) \to F$; In
-other words, it means that $e'$ is "independent of the choice of
+To eliminate from under a [[propositional truncation]], we must prove
+that the map $e'$ is constant when thought of as a map $f^*(x) \to F$;
+In other words, it means that $e'$ is "independent of the choice of
 representative". This follows from algebraic manipulation of group
 homomorphisms + the assumed identity $0 = e' \circ \ker f$;
 
-[propositional truncation]: 1Lab.HIT.Truncation.html
-
 ```agda
-      const′ : ∀ (x y : fibre (f #_) x)
+      const′ : ∀ (x y : fibre (apply f) x)
              → e' # (x .fst) F.— e' # (y .fst) ≡ F.unit
       const′ (y , q) (z , r) =
-        e' # y F.— e' # z  ≡˘⟨ e'.pres-diff ⟩
-        e' # (y A.— z)     ≡⟨ happly (sym (ap hom p)) (y A.— z , aux) ⟩
-        e' # A.unit        ≡⟨ e'.pres-id ⟩
-        F.unit             ∎
+        (e' # y) F.— (e' # z)  ≡˘⟨ e'.pres-diff ⟩
+        e' # (y A.— z)         ≡⟨ happly (sym (ap hom p)) (y A.— z , aux) ⟩
+        e' # A.unit            ≡⟨ e'.pres-id ⟩
+        F.unit                 ∎
         where
 ```
 
@@ -308,7 +300,7 @@ But that's just algebra, hence uninteresting:
             x B.— x           ≡⟨ B.inverser ⟩
             B.unit            ∎
 
-      const : ∀ (x y : fibre (f #_) x) → e' # (x .fst) ≡ e' # (y .fst)
+      const : ∀ (x y : fibre (apply f) x) → e' # (x .fst) ≡ e' # (y .fst)
       const a b = F.zero-diff (const′ a b)
 ```
 
@@ -339,14 +331,14 @@ will compute.
     coeq .factors = Forget-is-faithful refl
 
     coeq .unique {F} {p = p} {colim = colim} prf = Forget-is-faithful (funext path)
-      where abstract
+      where
         module F = Group-on (F .snd)
-        path : ∀ x → colim # x ≡ elim p (x .snd)
+        path : ∀ (x : image (apply f)) → colim # x ≡ elim p (x .snd)
         path (x , t) =
           ∥-∥-elim
             {P = λ q → colim # (x , q) ≡ elim p q}
             (λ _ → F.has-is-set _ _)
-            (λ { (f , fp) → ap (colim #_) (Σ-prop-path (λ _ → squash) (sym fp))
+            (λ { (f , fp) → ap (apply colim) (Σ-prop-path (λ _ → squash) (sym fp))
                           ∙ (happly (ap hom prf) f) })
             t
 ```
@@ -366,7 +358,7 @@ there exists a group $H$ and a map $f : G \to H$, such that $\Sigma G
 We begin by assuming that we have a kernel and investigating some
 properties that the fibres of its inclusion have. Of course, the fibre
 over $0$ is inhabited, and they are closed under multiplication and
-inverses, though we shall not make note of that here).
+inverses, though we shall not make note of that here.
 
 ```agda
 module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where private
@@ -399,8 +391,8 @@ f(yy^{-1}) = f(1) = 1$$.
     path =
       f # (y A.⋆ (x A.— y))         ≡⟨ ap (f #_) A.associative ⟩
       f # ((y A.⋆ x) A.— y)         ≡⟨ f.pres-diff ⟩
-      ⌜ f # (y A.⋆ x) ⌝ B.— f # y   ≡⟨ ap! (f.pres-⋆ y x) ⟩
-      ⌜ f # y B.⋆ f # x ⌝ B.— f # y ≡⟨ ap! (ap (_ B.⋆_) (ap (f #_) (sym q) ∙ p) ∙ B.idr) ⟩
+      ⌜ f # (y A.⋆ x) ⌝ B.— f # y   ≡⟨ ap₂ B._—_ (f.pres-⋆ y x) refl ⟩
+      ⌜ f # y B.⋆ f # x ⌝ B.— f # y ≡⟨ ap₂ B._—_ (ap (_ B.⋆_) (ap (f #_) (sym q) ∙ p) ∙ B.idr) refl ⟩
       f # y B.— f # y               ≡˘⟨ f.pres-diff ⟩
       f # (y A.— y)                 ≡⟨ ap (f #_) A.inverser ∙ f.pres-id ⟩
       B.unit                        ∎
@@ -565,7 +557,7 @@ that, if $\rm{inc}(x) = \rm{inc}(y)$, then $(x - y) \in H$.
     module Ker[incl] = Kernel (Ker incl)
     Ker-sg = Ker-subgroup incl
     H-sg = predicate→subgroup H has-rep
-    H-g = H-sg .fst
+    H-g = H-sg .domain
 ```
 -->
 
@@ -598,16 +590,17 @@ computation, so we can conclude: Every normal subgroup is a kernel.
 
 ```agda
   Ker[incl]≡H↪G : Ker-sg ≡ H-sg
-  Ker[incl]≡H↪G = ≤-antisym ker≤H H≤ker where
-    SubG = Subobjects (Groups ℓ) Groups-is-category Grp
-    open Poset SubG
+  Ker[incl]≡H↪G = done where
+    open Precategory (Sub Grp)
     open Groups._≅_ Ker[incl]≅H-group
 
-    ker≤H : Ker-sg ≤ H-sg
-    ker≤H .fst = to
-    ker≤H .snd = Forget-is-faithful refl
+    ker≤H : Ker-sg ≤ₘ H-sg
+    ker≤H .map = to
+    ker≤H .sq = Forget-is-faithful refl
 
-    H≤ker : H-sg ≤ Ker-sg
-    H≤ker .fst = from
-    H≤ker .snd = Forget-is-faithful refl
+    H≤ker : H-sg ≤ₘ Ker-sg
+    H≤ker .map = from
+    H≤ker .sq = Forget-is-faithful refl
+
+    done = Sub-is-category Groups-is-category .to-path (Sub-antisym ker≤H H≤ker)
 ```

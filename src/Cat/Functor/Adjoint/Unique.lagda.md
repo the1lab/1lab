@@ -1,10 +1,10 @@
 <!--
 ```agda
 open import Cat.Functor.Equivalence
-open import Cat.Instances.Functor
+open import Cat.Functor.Naturality
+open import Cat.Functor.Univalence
 open import Cat.Functor.Adjoint
 open import Cat.Functor.Base
-open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
@@ -29,12 +29,12 @@ private
 
 # Uniqueness of adjoints
 
-Let $F : \cC \to \cD$ be a functor participating in two
-\r{adjunctions} $F \dashv G$ and $F \dashv G'$. Using the data from both
-adjunctions, we can exhibit a natural isomorphism $G \cong G'$, which
-additionally preserves the unit and counit: Letting $\gamma$, $\delta$
-be the components of the natural isomorphism, we have $\gamma\eta =
-\eta'$, idem for $\eps$.
+Let $F : \cC \to \cD$ be a functor participating in two [[adjunctions]]
+$F \dashv G$ and $F \dashv G'$. Using the data from both adjunctions, we
+can exhibit a natural isomorphism $G \cong G'$, which additionally
+preserves the unit and counit: Letting $\gamma$, $\delta$ be the
+components of the natural isomorphism, we have $\gamma\eta = \eta'$,
+idem for $\eps$.
 
 <!--
 ```agda
@@ -114,8 +114,8 @@ natural transformations is a matter of calculating:
       ε′ _                                   ∎
 ```
 
-If the codomain category $\cC$ is furthermore univalent, so that
-natural isomorphisms are an identity system on the functor category $[D,
+If the codomain category $\cC$ is furthermore univalent, so that natural
+isomorphisms are an [[identity system]] on the functor category $[D,
 C]$, we can upgrade the isomorphism $G \cong G'$ to an identity $G
 \equiv G$, and preservation of the adjunction data means this identity
 can be improved to an identification between _pairs of_ the functors and
@@ -169,9 +169,9 @@ is-left-adjoint-is-prop cc F (G , a) (G′ , a′) i = G≡G′ cd i , a≡a′ 
 ```
 -->
 
-As a corollary, we conclude that, for a functor $F : \cC \to \cD$
-from a univalent category $\cC$, "being an equivalence of categories"
-is a proposition.
+As a corollary, we conclude that, for a functor $F : \cC \to \cD$ from a
+[[univalent category]] $\cC$, "being an equivalence of categories" is a
+proposition.
 
 ```agda
 open is-equivalence

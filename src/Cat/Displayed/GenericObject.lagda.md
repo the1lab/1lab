@@ -1,12 +1,12 @@
 <!--
 ```agda
-open import Cat.Displayed.Base
-open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Cartesian.Indexing
+open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Base
 open import Cat.Prelude
 
-import Cat.Displayed.Morphism
 import Cat.Displayed.Reasoning
+import Cat.Displayed.Morphism
 ```
 -->
 
@@ -20,9 +20,9 @@ module Cat.Displayed.GenericObject
 <!--
 ```agda
 open Precategory B
-open Displayed E
 open Cat.Displayed.Morphism E
 open Cat.Displayed.Reasoning E
+open Displayed E
 open Functor
 ```
 -->
@@ -85,8 +85,8 @@ and size condition.
 
 [fam-generic]: Cat.Displayed.Instances.Family.html#generic-objects
 
-With this size based perspective in mind, we say that a displayed
-category is **globally small** if it has a generic object.
+With this size-based perspective in mind, we say that a [[displayed
+category]] is **globally small** if it has a generic object.
 
 ```agda
 record Globally-small : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
@@ -157,11 +157,11 @@ map $x' \to_u t'$, then it must be the map coming from the generic object
 structure of $t'$.
 
 This condition is quite strong: for instance, the family fibration of a
-strict category $\cC$ has a skeletal generic object if and only if $\cC$
-is [skeletal] (See [here] for a proof).
+[[strict category]] $\cC$ has a skeletal generic object if and only if
+$\cC$ is [skeletal].^[See [here][skeletal-generic-object] for a proof.]
 
+[skeletal-generic-object]: Cat.Displayed.Instances.Family.html#skeletal-generic-objects
 [skeletal]: Cat.Skeletal.html
-[here]: Cat.Displayed.Instances.Family.html#skeletal-generic-objects
 
 ```agda
 is-skeletal-generic-object : ∀ {t} {t′ : Ob[ t ]} → Generic-object t′ → Type _
@@ -194,10 +194,10 @@ must, as well.
 
 We can also expand on what this means for the family fibration:
 $\rm{Fam}({\cC})$ has a gaunt generic object if and only if $\cC$ is itself
-[gaunt] (See [here] for the proof).
+[gaunt] (See [here](Cat.Displayed.Instances.Family.html#gaunt-generic-objects)
+for the proof).
 
 [gaunt]: Cat.Gaunt.html
-[here]: Cat.Displayed.Instances.Family.html#gaunt-generic-objects
 
 <!--
 ```agda

@@ -1,9 +1,6 @@
 <!--
 ```agda
-open import Cat.Functor.FullSubcategory
 open import Cat.Morphism.Orthogonal
-open import Cat.Diagram.Terminal
-open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
 open import Data.Power
@@ -15,6 +12,8 @@ import Cat.Reasoning
 ```agda
 module Cat.Morphism.Factorisation where
 ```
+
+# Orthogonal factorisation systems {defines="orthogonal-factorisation-system"}
 
 Suppose you have some category $\cC$ and you, inspired by the wisdom
 of King Solomon, want to chop every morphism in half. A **factorisation

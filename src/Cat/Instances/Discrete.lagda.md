@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import Cat.Univalent
 open import Cat.Prelude
 
 open import Data.Dec
@@ -26,7 +25,7 @@ open _=>_
 ```
 -->
 
-# Discrete categories
+# Discrete categories {defines="discrete-category"}
 
 Given a groupoid $A$, we can build the category $\rm{Disc}(A)$ with
 space of objects $A$ and a single morphism $x \to y$ whenever $x \equiv
@@ -39,8 +38,8 @@ Disc A A-grpd .Hom = _≡_
 Disc A A-grpd .Hom-set = A-grpd
 Disc A A-grpd .id = refl
 Disc A A-grpd ._∘_ p q = q ∙ p
-Disc A A-grpd .idr _ = ∙-id-l _
-Disc A A-grpd .idl _ = ∙-id-r _
+Disc A A-grpd .idr _ = ∙-idl _
+Disc A A-grpd .idl _ = ∙-idr _
 Disc A A-grpd .assoc _ _ _ = sym (∙-assoc _ _ _)
 
 Disc′ : Set ℓ → Precategory ℓ ℓ
@@ -61,7 +60,7 @@ lift-disc
 lift-disc f .F₀ = f
 lift-disc f .F₁ = ap f
 lift-disc f .F-id = refl
-lift-disc f .F-∘ p q = ap-comp-path f q p
+lift-disc f .F-∘ p q = ap-∙ f q p
 ```
 
 <!--
@@ -84,10 +83,8 @@ If $X$ is a `discrete type`{.Agda ident=Discrete}, then it is in
 particular in `Set`{.Agda}, and we can make diagrams of shape
 $\rm{Disc}(X)$ in some category $\cC$, using the decidable
 equality on $X$. We note that the decidable equality is _redundant_
-information: The construction `Disc′`{.Agda} above extends into a [left
-adjoint] to the `Ob`{.Agda} functor.
-
-[left adjoint]: Cat.Instances.StrictCat.Cohesive.html#disc-γ
+information: The construction `Disc′`{.Agda} above extends into a [[left
+adjoint]] to the `Ob`{.Agda} functor.
 
 ```agda
 Disc-diagram

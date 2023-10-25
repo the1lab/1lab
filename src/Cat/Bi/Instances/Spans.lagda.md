@@ -90,10 +90,10 @@ Span-hom-path {x = x} {y} {f} {g} p i .right j =
 ```
 -->
 
-The category $\rm{Spans}_\cC(A, B)$ of spans between $A$ and $B$
-admits a faithful functor to $\cC$ (projecting the vertex and the
-"middle map", respectively), so that equality of maps of spans can be
-compared at the level of maps in $\cC$.
+The category $\Spans_\cC(A, B)$ of spans between $A$ and $B$ admits a
+[[faithful functor]] to $\cC$ (projecting the vertex and the "middle
+map", respectively), so that equality of maps of spans can be compared
+at the level of maps in $\cC$.
 
 ```agda
 Spans : Ob → Ob → Precategory _ _
@@ -172,12 +172,11 @@ module _ (pb : ∀ {a b c} (f : Hom a b) (g : Hom c b) → Pullback C f g) where
 
 What we'll show in the rest of this module is that `Span-∘`{.Agda} lets
 us make `Spans`{.Agda} into the categories of 1-cells of a
-_prebicategory_, the **(pre)bicategory of spans** (of $\cC$)
-$\rm{Span}(\cC)$. As mentioned before, this prebicategory has (a
-priori) no upper bound on the h-levels of its 1-cells, so it is not
-locally strict. We remark that when $\cC$ is univalent, then
-$\rm{Span}(\cC)$ is locally so, and when $\cC$ is gaunt, then
-$\rm{Span}(\cC)$ is strict.
+_prebicategory_, the **(pre)bicategory of spans** (of $\cC$),
+$\Spans(\cC)$. As mentioned before, this prebicategory has (a priori) no
+upper bound on the h-levels of its 1-cells, so it is not locally strict.
+We remark that when $\cC$ is univalent, then $\Spans(\cC)$ is locally
+so, and when $\cC$ is gaunt, then $\Spans(\cC)$ is strict.
 
 Since the details of the full construction are _grueling_, we will
 present only an overview of the unitors and the associator. For the left

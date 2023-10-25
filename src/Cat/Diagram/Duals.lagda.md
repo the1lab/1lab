@@ -1,10 +1,6 @@
 <!--
 ```agda
-open import Cat.Instances.Functor.Duality
-open import Cat.Instances.Functor
 open import Cat.Prelude
-
-import Cat.Reasoning
 ```
 -->
 
@@ -14,7 +10,7 @@ module Cat.Diagram.Duals {o h} (C : Precategory o h) where
 
 <!--
 ```agda
-import Cat.Reasoning C as C
+private module C = Precategory C
 ```
 -->
 
@@ -26,10 +22,10 @@ particular, we have the following pairs of "redundant" definitions:
 
 [agda-categories]: https://arxiv.org/abs/2005.07059
 
-- Products and coproducts
-- Pullbacks and pushouts
-- Equalisers and coequalisers
-- Terminal objects and initial objects
+- [[Products]] and coproducts
+- [[Pullbacks]] and pushouts
+- [[Equalisers]] and coequalisers
+- [[Terminal objects]] and initial objects
 
 For all four of the above pairs, we have that one in $C$ is the other in
 $C\op$. We prove these correspondences here:
@@ -201,13 +197,12 @@ module _ {o ℓ} {J : Precategory o ℓ} {F : Functor J C} where
 
 ## Co/limits
 
-Limits and colimits are defined via [Kan extensions], so it's reasonable
+Limits and colimits are defined via [[Kan extensions]], so it's reasonable
 to expect that [duality of Kan extensions] would apply to (co)limits.
 Unfortunately, proof assistants: (co)limits are extensions of
 `!F`{.Agda}, but duality of Kan extensions inserts an extra `Functor.op`.
 We could work around this, but it's easier to just do the proofs by hand.
 
-[Kan extensions]: Cat.Functor.Kan.Base.html
 [duality of Kan extensions]: Cat.Functor.Kan.Duality.html
 
 ```agda

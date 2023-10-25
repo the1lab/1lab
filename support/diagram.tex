@@ -11,7 +11,38 @@
 \usetikzlibrary{fit}
 \usetikzlibrary{decorations.pathmorphing}
 
-\definecolor{diagrambg}{HTML}{ffffff}
+\ExplSyntaxOn
+\NewDocumentCommand{\definealphabet}{mmmm}
+ {% #1 = prefix, #2 = command, #3 = start, #4 = end
+  \int_step_inline:nnn { `#3 } { `#4 }
+   {
+    \cs_new_protected:cpx { #1 \char_generate:nn { ##1 }{ 11 } }
+     {
+      \exp_not:N #2 { \char_generate:nn { ##1 } { 11 } }
+     }
+   }
+ }
+
+\ExplSyntaxOff
+
+__PREAMBLE__
+
+\ifdefined\labdark
+\definecolor{diagrambg}{HTML}{282C34}
+\definecolor{diagramfg}{HTML}{ABB2BF}
+
+\definecolor{diagramshaded}{HTML}{2b6253}
+\definecolor{diagramshadedtext}{HTML}{ABB2BF}
+\else
+\definecolor{diagrambg}{HTML}{FFFFFF}
+\definecolor{diagramfg}{HTML}{000000}
+
+\definecolor{diagramshaded}{HTML}{CCFFCC}
+\definecolor{diagramshadedtext}{HTML}{000000}
+\fi
+
+\pagecolor{diagrambg}
+\color{diagramfg}
 
 \tikzset{curve/.style={settings={#1},to path={(\tikztostart)
     .. controls ($(\tikztostart)!\pv{pos}!(\tikztotarget)!\pv{height}!270:(\tikztotarget)$)
@@ -32,29 +63,11 @@
   category over/.style = {
     -{Triangle[open, length=1.875mm, width=1.875mm]}
   },
+  3cell/.style={-,preaction={draw,Rightarrow}},
+  2cell/.style={double=diagrambg,-Implies},
+  Rightarrow/.style={double equal sign distance, >={Implies}, ->},
+  commutative diagrams/background color=diagrambg
 }
-
-\tikzset{
-    Rightarrow/.style={double={diagrambg},double equal sign distance,>={Implies},->},
-    3cell/.style={-,preaction={draw,Rightarrow}},
-    2cell/.style={double=diagrambg,-Implies}
-}
-
-\ExplSyntaxOn
-\NewDocumentCommand{\definealphabet}{mmmm}
- {% #1 = prefix, #2 = command, #3 = start, #4 = end
-  \int_step_inline:nnn { `#3 } { `#4 }
-   {
-    \cs_new_protected:cpx { #1 \char_generate:nn { ##1 }{ 11 } }
-     {
-      \exp_not:N #2 { \char_generate:nn { ##1 } { 11 } }
-     }
-   }
- }
-
-\ExplSyntaxOff
-
-__PREAMBLE__
 
 \begin{document}
 \begin{page}

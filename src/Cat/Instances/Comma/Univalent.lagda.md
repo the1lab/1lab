@@ -2,7 +2,6 @@
 ```agda
 open import Cat.Instances.Comma
 open import Cat.Functor.Base
-open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Func
@@ -37,13 +36,12 @@ open ↓Hom
 ```
 -->
 
-# Comma categories preserve univalence
+# Comma categories preserve univalence {defines="univalence-of-comma-category"}
 
 **Theorem**. Let $\cY \xto{F} \cX \xot{G} \cZ$ be a [cospan] of
-functors between three [univalent categories]. Then the comma category
+functors between three [[univalent categories]]. Then the comma category
 $F \downarrow G$ is also univalent.
 
-[univalent categories]: Cat.Univalent.html
 [cospan]: Cat.Instances.Shape.Cospan.html
 
 It suffices to establish that, given an isomorphism $f : o \cong o'$ in
@@ -96,8 +94,8 @@ an identification $o \equiv o'$.
       lemma′ : PathP (λ i → X.Hom (F.₀ (objs i .x)) (G.₀ (objs i .y)))
                 (ob .map) (ob′ .map)
       lemma′ = transport
-        (λ i → PathP (λ j → X.Hom (F-map-path F x-is-x yuniv xuniv (~ i) j)
-                                  (F-map-path G y-is-y zuniv xuniv (~ i) j))
+        (λ i → PathP (λ j → X.Hom (F-map-path yuniv xuniv F x-is-x (~ i) j)
+                                  (F-map-path zuniv xuniv G y-is-y (~ i) j))
                     (ob .map) (ob′ .map)) $
         Univalent.Hom-pathp-iso xuniv $
           X.pulll   (sym (isom.to .sq)) ∙

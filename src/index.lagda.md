@@ -5,18 +5,13 @@ module index where
 # 1lab {style="margin-top: 0;"}
 
 A formalised, cross-linked reference resource for cubical methods in
-Homotopy Type Theory. Unlike the [HoTT book], the 1lab is not a "linear"
+Homotopy Type Theory. Unlike the [@HoTT], the 1lab is not a "linear"
 resource: Concepts are presented as a directed graph, with links
 indicating _dependencies_. For instance, the statement of the univalence
-principle depends on [universes], [identifications] and [equivalences].
-In addition to the hyperlinked "web of concepts" provided by the Agda
-code, there is a short introduction to homotopy type theory: **[Start
-here](1Lab.intro.html)**.
-
-[HoTT book]: https://homotopytypetheory.org/book/
-[universes]: agda://1Lab.Type
-[identifications]: agda://1Lab.Path
-[equivalences]: agda://1Lab.Equiv
+principle depends on [[universes]], [[identifications|path]] and
+[[equivalences]].  In addition to the hyperlinked "web of concepts"
+provided by the Agda code, there is a short introduction to homotopy
+type theory: **[Start here](1Lab.intro.html)**.
 
 <!--
 ```agda
@@ -163,20 +158,15 @@ theory. For this, [**read the introduction here**](1Lab.intro.html).
 :::
 
 The first things to be explained are the foundational constructions in
-(cubical) type theory - things like types themselves, [universes],
-[paths], [equivalences], [glueing] and the [univalence] "axiom". These
-are developed under the `1Lab` namespace. Start here:
-
-[universes]: agda://1Lab.Type
-[paths]: agda://1Lab.Path
-[equivalences]: agda://1Lab.Equiv
-[glueing]: agda://1Lab.Univalence#Glue
-[univalence]: agda://1Lab.Univalence#univalence
+(cubical) type theory - things like types themselves, [[universes]],
+[[paths]], [[equivalences]], [[glueing]] and the [[univalence]] "axiom".
+These are developed under the `1Lab` namespace. Start here:
 
 ```agda
 -- All of these module names are links you can click!
 
 open import 1Lab.Type -- Universes
+open import 1Lab.Type.Pointed -- Pointed types
 
 open import 1Lab.Path -- Path types
 open import 1Lab.Path.Groupoid  -- Groupoid structure of types
@@ -393,6 +383,7 @@ open import Cat.Functor.Bifunctor -- Functors out of product categories
 open import Cat.Functor.Conservative -- Functors which reflect isomorphisms
 open import Cat.Functor.FullSubcategory -- Full subcategories
 open import Cat.Functor.WideSubcategory -- Wide subcategories
+open import Cat.Functor.Subcategory -- Subcategories, generally
 ```
 
 Helpers for working with functions in equational reasoning:
@@ -411,7 +402,7 @@ open import Cat.Functor.Equivalence.Path
 open import Cat.Functor.Equivalence.Complete -- Equivalences preserve completeness
 ```
 
-About adjoint functors, and their associated monads:
+About [[adjoint functors]], and their associated monads:
 
 ```agda
 open import Cat.Diagram.Monad -- Definition of monads
@@ -423,6 +414,7 @@ open import Cat.Functor.Adjoint.Monadic -- Monadic adjunctions
 open import Cat.Functor.Adjoint.Compose -- Adjunctions compose
 open import Cat.Functor.Adjoint.Continuous -- Right adjoints preserve limits
 open import Cat.Functor.Adjoint.Reflective -- Reflective subcategories
+open import Cat.Functor.Adjoint.Mate -- Mates of adjoints
 ```
 
 Monadicity theorems:
@@ -432,7 +424,7 @@ open import Cat.Functor.Monadic.Beck  -- Beck's coequalisers
 open import Cat.Functor.Monadic.Crude -- The crude monadicity theorem
 ```
 
-About Kan extensions:
+About [[Kan extensions]]:
 
 ```agda
 open import Cat.Functor.Kan.Base -- Kan extensions
@@ -463,8 +455,8 @@ open import Cat.Functor.Hom.Displayed
 In HoTT/UF, the word "category" is reserved for the precategories (what
 the rest of the world refers to as just "category") in which isomorphic
 objects are indistinguishable, i.e. the categories which satisfy a
-version of the univalence axiom. Sometimes we also refer to these as
-"univalent categories" to make the distinction clear.
+version of the [[univalence axiom]]. Sometimes we also refer to these as
+"[[univalent categories]]" to make the distinction clear.
 
 ```agda
 open import Cat.Univalent -- Basic properties of categories
@@ -486,7 +478,7 @@ open import Cat.Skeletal -- Categories where isomorphisms are automorphisms.
 open import Cat.Gaunt -- Strict univalent categories.
 ```
 
-Properties, constructions, and the category of strict categories:
+Properties, constructions, and the [[category of strict categories]]:
 
 ```agda
 -- Strict categories
@@ -536,12 +528,12 @@ The construction and properties of functor categories:
 
 ```agda
 -- Functor categories:
-open import Cat.Instances.Functor
-open import Cat.Instances.Functor.Limits -- Co/limits in functor categories
-open import Cat.Instances.Functor.Duality -- 2-cell duality in Cat
-open import Cat.Instances.Functor.Compose
+open import Cat.Functor.Base
+open import Cat.Functor.Compose
 -- Composition of functors is functorial (also whiskering natural
 -- transformations)
+open import Cat.Instances.Functor.Limits -- Co/limits in functor categories
+open import Cat.Instances.Functor.Duality -- 2-cell duality in Cat
 ```
 
 The internal versions of functor categories:
@@ -552,7 +544,7 @@ open import Cat.Instances.InternalFunctor.Compose
 -- Composition of internal functors is functorial (also whiskering internal
 -- natural transformations)
 open import Cat.Instances.OuterFunctor
--- The category of functors from an internal category to it's base.
+-- The category of functors from an internal category to its base.
 ```
 
 Properties of the category of sets:
@@ -593,6 +585,21 @@ open import Cat.Instances.Slice.Presheaf -- PSh(C)/X ≅ PSh(∫ X)
 open import Cat.Instances.Comma.Univalent
 ```
 
+## Cartesian closed categories
+
+A [[Cartesian closed]] category, or CCC for short, is one that has
+_internalisations_ for all its $\hom$-sets: [[exponential objects]]. Put
+another way, a CCC interprets the [[simply-typed lambda calculus]]. Also
+of interest are the [[*locally* Cartesian closed categories]], where we
+also have an interpretation for _dependent product_ types.
+
+```agda
+open import Cat.Diagram.Exponential
+open import Cat.CartesianClosed.Lambda
+open import Cat.CartesianClosed.Locally
+```
+
+
 ## Allegories
 
 Allegories are abstractions of the nice properties that the category of
@@ -603,8 +610,33 @@ the extra coherence that is necessary for specifying a bicategory.
 ```agda
 open import Cat.Allegory.Base -- The definition
 open import Cat.Allegory.Maps -- Functional relations in an allegory
+open import Cat.Allegory.Morphism -- Morphisms in allegories
 open import Cat.Allegory.Reasoning -- Reasoning combinators
 ```
+
+## Restriction Categories
+
+Restriction categories axiomatize categories of partial maps by adding
+n restriction operation $(-)\downarrow : \cC(X,Y) \to \cC(X,X)$ that
+takes a morphism $f$ to a subobject of the identity morphism that is
+defined precisely when $f$ is.
+
+```agda
+open import Cat.Restriction.Base
+  -- The definition
+open import Cat.Restriction.Functor
+  -- Functors between restriction categories
+open import Cat.Restriction.Reasoning
+  -- Reasoning combinators and morphism classes
+open import Cat.Restriction.Total
+  -- Categories of total maps
+```
+
+```agda
+open import Cat.Restriction.Instances.Allegory
+ -- Restriction structures on partial maps of an allegory.
+```
+
 
 ## Displayed categories
 
@@ -613,11 +645,11 @@ of the bicategorical slice $\Cat/\cB$; that is, it is a better way of
 presenting the data of a category $\cE$ and a functor $\cE \to
 \cB$.
 
-In addition to the _extensive_ use of displayed categories to model
+In addition to the _extensive_ use of [[displayed categories]] to model
 "pre-indexing" in the 1Lab, we also contain an in-progress formalisation
 of [Foundations of Relative Category Theory][frct].
 
-[frct]: https://www.jonmsterling.com/math/lectures/categorical-foundations.html
+[frct]: https://www.jonmsterling.com/frct-003I.xml
 
 ```agda
 open import Cat.Displayed.Base -- Displayed categories
@@ -664,7 +696,7 @@ open import Cat.Displayed.Adjoint
 In the land of 1-categories, the notion of "indexed families of objects"
 is accurately captured by [slice categories]. But when we're talking
 about the 2-category $\Cat$, plain functors won't do. In terms of
-displayed categories, we need to talk about _Cartesian fibrations_
+displayed categories, we need to talk about _[[Cartesian fibrations]]_
 instead. These satisfy a property analogous to the existence of
 pullbacks, and they are precisely those which correspond to families
 $\cB \to \Cat$.
@@ -696,6 +728,7 @@ Cartesian fibrations:
 
 ```agda
 open import Cat.Displayed.Instances.Slice -- Canonical self-indexing
+open import Cat.Displayed.Instances.Subobjects -- Fibration of subobjects
 open import Cat.Displayed.Instances.Family -- Family fibration
 open import Cat.Displayed.Instances.DisplayedFamilies
 -- Families internal to a fibration.
@@ -751,11 +784,28 @@ open import Cat.Displayed.GenericObject
 -- Generic objects in fibrations.
 ```
 
+### Logical Structure of Fibrations
+
+Fibrations serve as an excellent foundation for exploring various
+logical and type-theoretic phenomena.
+
+```agda
+open import Cat.Displayed.Comprehension
+-- A categorical model of context extension.
+open import Cat.Displayed.Comprehension.Coproduct
+-- Coproducts in comprehension categories
+open import Cat.Displayed.Comprehension.Coproduct.Strong
+-- Coproducts with a stronger elimination principle
+open import Cat.Displayed.Comprehension.Coproduct.VeryStrong
+-- Coproducts with a very strong elimination principle
+```
+
+
 ## Internal Categories
 
 The theory of internal categories. Internal category theory generalizes
-strict category theory by replacing the ambient category $\thecat{Sets}$
-with an arbitrary category $\cC$ with pullbacks.
+[[strict category]] theory by replacing the ambient category
+$\thecat{Sets}$ with an arbitrary category $\cC$ with pullbacks.
 
 ```agda
 open import Cat.Internal.Base
@@ -878,6 +928,7 @@ their generated categories:
 ```agda
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
+open import Order.Diagram.Fixpoint -- Least and Greatest fixpoints
 ```
 
 Some order-theoretic structures are equivalently presented as algebraic
@@ -895,13 +946,27 @@ open import Order.Semilattice.Order
 Examples of actual orders:
 
 ```agda
+open import Order.Instances.Discrete -- Discrete posets
 open import Order.Instances.Props -- Ω
 open import Order.Instances.Lower -- Lower sets
-open import Order.Instances.Subobjects -- Subobjects in a univalent category
 
 open import Order.Instances.Pointwise -- The pointwise ordering on A→B
 open import Order.Instances.Pointwise.Diagrams
 ```
+
+## Domain Theory
+
+Domain theory is the study of posets that are complete
+under various classes of least upper bounds. These posets are used
+to model notions of partiality, which makes them extremely useful
+in the search for semantics of various programming languages.
+
+```agda
+open import Order.DCPO -- Directed-complete partial orders
+open import Order.DCPO.Pointed -- Pointed directed-complete partial orders
+open import Order.DCPO.Free -- Free DCPOs and free pointed DCPOs
+```
+
 
 # Algebra
 
@@ -928,6 +993,7 @@ open import Algebra.Group.Cat.Base -- The category of groups
 open import Algebra.Group.Cat.Monadic -- ... is monadic over Sets
 open import Algebra.Group.Cat.FinitelyComplete -- Finite limits in Groups
 open import Algebra.Group.Subgroup -- Subgroups, images and kernels
+open import Algebra.Group.Concrete -- Concrete groups (pointed connected groupoids)
 
 open import Algebra.Group.Homotopy -- Homotopy groups
 open import Algebra.Group.Homotopy.BAut
@@ -951,6 +1017,23 @@ open import Algebra.Ring.Commutative -- Commutative rings
 open import Algebra.Ring.Module.Vec -- Finite direct sums of R as an R-module
 open import Algebra.Ring.Module.Free -- Free R-modules as a HIT
 open import Algebra.Ring.Module.Category -- The bifibration of Mod over Ring
+```
+
+# Homotopy theory
+
+Synthetic homotopy theory is the name given to studying
+$\infty$-groupoids in their own terms, i.e., the application of homotopy type
+theory to computing homotopy invariants of spaces.
+
+```agda
+open import Homotopy.Base -- Basic definitions
+open import Homotopy.Connectedness -- Connected types
+
+open import Homotopy.Space.Suspension -- Suspensions
+open import Homotopy.Space.Circle -- The circle
+open import Homotopy.Space.Sphere -- The n-spheres
+open import Homotopy.Space.Sinfty -- The ∞-sphere
+open import Homotopy.Space.Torus -- The torus
 ```
 
 <!-- Mastodon author links: !-->

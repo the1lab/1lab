@@ -1,8 +1,11 @@
 <!--
 ```agda
 open import Cat.Diagram.Pullback.Properties
+open import Cat.Instances.Shape.Parallel
 open import Cat.Diagram.Limit.Equaliser
 open import Cat.Diagram.Limit.Pullback
+open import Cat.Diagram.Limit.Terminal
+open import Cat.Diagram.Product.Finite
 open import Cat.Instances.Shape.Cospan
 open import Cat.Diagram.Limit.Product
 open import Cat.Diagram.Limit.Base
@@ -14,10 +17,14 @@ open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Instances.Lift
 open import Cat.Prelude
+open import Cat.Finite
 
+open import Data.Fin.Finite
 open import Data.Bool
 
 import Cat.Reasoning as Cat
+
+open is-finite-precategory
 ```
 -->
 
@@ -32,22 +39,24 @@ module _ {ℓ ℓ'} (C : Precategory ℓ ℓ') where
 ```
 -->
 
-# Finitely Complete Categories
+# Finitely Complete Categories {defines="finite-limit finitely-complete finitely-complete-category"}
 
 A category is said to be **finitely complete** if it admits limits for
-every diagram with a finite shape. While this condition might sound very
-strong, and thus that it would be hard to come by, it turns out we can
-get away with only the following common shapes of limits:
+every diagram with a [[finite|finite category]] shape.
 
-* A [terminal object] (limit over the empty diagram)
-* Binary [products] (limits over diagrams of the form $\bullet\quad\bullet$, that is, two points)
-* Binary [equalisers] (limits over diagrams of the form $\bullet\tto\bullet$)
-* Binary [pullbacks] (limits over diagrams of the form $\bullet\to\bullet\ot\bullet$)
+```agda
+  is-finitely-complete : Typeω
+  is-finitely-complete = ∀ {o ℓ} {D : Precategory o ℓ} → is-finite-precategory D
+                       → (F : Functor D C) → Limit F
+```
 
-[terminal object]: Cat.Diagram.Terminal.html
-[Products]: Cat.Diagram.Product.html
-[Equalisers]: Cat.Diagram.Equaliser.html
-[Pullbacks]: Cat.Diagram.Pullback.html
+Similarly to the case with [[arbitrary limits|complete category]], we can get away with
+only the following common shapes of limits:
+
+* A [[terminal object]] (limit over the empty diagram)
+* Binary [[products]] (limits over diagrams of the form $\bullet\quad\bullet$, that is, two points)
+* Binary [[equalisers]] (limits over diagrams of the form $\bullet\tto\bullet$)
+* Binary [[pullbacks]] (limits over diagrams of the form $\bullet\to\bullet\ot\bullet$)
 
 In reality, the list above has some redundancy. Since we can build
 products out of pullbacks and a terminal object, and conversely we can
@@ -81,6 +90,30 @@ to give a terminal object and binary products.
     open Products using (_⊗₀_) public
 
   open Finitely-complete
+```
+
+As promised, the two definitions imply each other, assuming that $\cC$ is a
+[[univalent category]] (which is required to go from binary products to *finite*
+products).
+
+```agda
+  Finitely-complete→is-finitely-complete
+    : is-category C
+    → Finitely-complete → is-finitely-complete
+  Finitely-complete→is-finitely-complete cat Flim finite =
+    limit-as-equaliser-of-product
+      (Cartesian→finite-products (Flim .terminal) (Flim .products) cat (finite .has-finite-Ob))
+      (Cartesian→finite-products (Flim .terminal) (Flim .products) cat (finite .has-finite-Mor))
+      (Flim .equalisers)
+
+  is-finitely-complete→Finitely-complete
+    : is-finitely-complete → Finitely-complete
+  is-finitely-complete→Finitely-complete flim = Flim where
+    Flim : Finitely-complete
+    Flim .terminal = Limit→Terminal C (flim finite-cat _)
+    Flim .products a b = Limit→Product C (flim Disc-finite _)
+    Flim .equalisers f g = Limit→Equaliser C (flim ·⇉·-finite _)
+    Flim .pullbacks f g = Limit→Pullback C {lzero} {lzero} (flim ·→·←·-finite _)
 ```
 
 ## With equalisers
@@ -437,7 +470,7 @@ Putting it all together into a record we get our proof of finite completeness:
 ```
 -->
 
-# Lex functors
+# Lex functors {defines="left-exact-functor lex-functor"}
 
 A functor is said to be **left exact**, abbreviated **lex**, when it
 preserves finite limits. These functors aren't called

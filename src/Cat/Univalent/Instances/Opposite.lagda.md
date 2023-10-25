@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -23,9 +22,9 @@ private
 
 # Opposites of univalent categories
 
-A simple case of closure of univalence is the duality involution: Since
-isomorphisms in $\cC\op$ are the same as isomorphisms in $\cC$,
-the former is univalent iff the latter is.
+A simple case of closure of [[univalence|univalent categories]] is the
+duality involution: Since isomorphisms in $\cC\op$ are the same as
+isomorphisms in $\cC$, the former is univalent iff the latter is.
 
 ```agda
 opposite-is-category : is-category C → is-category (C ^op)

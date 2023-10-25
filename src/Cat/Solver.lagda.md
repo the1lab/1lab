@@ -6,7 +6,6 @@ open import 1Lab.Prelude hiding (id ; _∘_)
 
 open import Cat.Base
 
-open import Data.Bool
 open import Data.List
 ```
 -->

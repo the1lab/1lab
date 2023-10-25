@@ -3,7 +3,6 @@
 open import Cat.Instances.Product
 open import Cat.Displayed.Solver
 open import Cat.Displayed.Fibre
-open import Cat.Displayed.Total
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
@@ -28,14 +27,13 @@ open Functor
 
 # Displayed Hom Functors
 
-Let $\cE$ be a displayed category over $\cB$. For every $u : x \to y$
+Let $\cE$ be a [[displayed category]] over $\cB$. For every $u : x \to y$
 in the base, we can obtain a bifunctor from $\cE_{x}\op \times \cE_{y}$
-to $\Sets$, where $\cE_{x}$ denotes the [fibre category] of $\cE$ at $x$.
+to $\Sets$, where $\cE_{x}$ denotes the [[fibre category]] of $\cE$ at $x$.
 The action of $(f, h)$ on $g$ is given by $h \circ g \circ f$, just as
 in the [non-displayed case].
 
 [bifunctor]: Cat.Functor.Bifunctor.html
-[fibre category]: Cat.Displayed.Fibre.html
 [non-displayed case]: Cat.Functor.Hom.html
 
 ```agda

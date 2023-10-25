@@ -32,14 +32,14 @@ private variable
 Recall the three conditions that make up the notion of [equivalence].
 
 > To be more specific, what we need for a notion of equivalence
-$\rm{is-equiv}(f)$ to be "coherent" is:
+$\isequiv(f)$ to be "coherent" is:
 >
 > - Being an `isomorphism`{.Agda ident=is-iso} implies being an
-`equivalence`{.Agda ident=is-equiv} ($\rm{is-iso}(f) \to
-\rm{is-equiv}(f)$)
+`equivalence`{.Agda ident=is-equiv} ($\isiso(f) \to
+\isequiv(f)$)
 >
-> - Being an equivalence implies being an isomorphism ($\rm{is-equiv}(f)
-\to \rm{is-iso}(f)$); Taken together with the first point we may
+> - Being an equivalence implies being an isomorphism ($\isequiv(f)
+\to \isiso(f)$); Taken together with the first point we may
 summarise: "Being an equivalence and being an isomorphism are logically
 equivalent."
 >
@@ -48,20 +48,16 @@ equivalent."
 [equivalence]: 1Lab.Equiv.html#equivalences
 
 The "blessed" definition of equivalence is that of a map with
-[contractible fibres]. However, this definition is highly abstract, so
-it begs the question: Is it possible to describe a simpler notion of
-equivalence that still satisfies the three conditions? The answer is
-yes! Paradoxically, adding _more_ data to `is-iso`{.Agda} leaves us with
-a good notion of equivalence.
-
-[contractible fibres]: agda://1Lab.Equiv#is-equiv
+[[contractible fibres|equivalence]]. However, this definition is highly
+abstract, so it begs the question: Is it possible to describe a simpler
+notion of equivalence that still satisfies the three conditions? The
+answer is yes! Paradoxically, adding _more_ data to `is-iso`{.Agda}
+leaves us with a good notion of equivalence.
 
 A **left inverse** to a function $f : A \to B$ is a function $g : B \to
-A$ equipped with a [homotopy] $g \circ f \sim \id$. Symmetrically, a
+A$ equipped with a [[homotopy]] $g \circ f \sim \id$. Symmetrically, a
 **right inverse** to $f$ is a function $h : B \to A$ equipped with a
 homotopy $f \circ h \sim \id$.
-
-[homotopy]: agda://1Lab.Path#funext
 
 ```agda
 linv : (A → B) → Type _
@@ -83,11 +79,9 @@ is-biinv f = linv f × rinv f
 ```
 
 If $f$ is an equivalence, then so are pre- and post- composition with
-$f$. This can be proven using [equivalence induction], but a more
+$f$. This can be proven using [[equivalence induction]], but a more
 elementary argument --- directly constructing quasi-inverses ---
 suffices, and doesn't use the sledgehammer that is univalence.
-
-[equivalence induction]: agda://1Lab.Univalence#EquivJ
 
 The proof is as follows: If $f : A \to B$ has inverse $f^{-1} : B → A$,
 then $(f^{-1} \circ -)$ and $(- \circ f^{-1})$ are inverses to $(f \circ
@@ -170,17 +164,14 @@ is-biinv→is-iso {f = f} ((g , g∘f≡id) , h , h∘f≡id) = iso h (happly h�
       x               ∎
 ```
 
-Finally, we can show that being biinvertible is [a proposition]. Since
-propositions are those types which are [contractible if inhabited]
-suffices to show that `is-biinv`{.Agda} is contractible when it is
-inhabited:
-
-[a proposition]: agda://1Lab.HLevel#is-prop
-[contractible if inhabited]: agda://1Lab.HLevel#contractible-if-inhabited
+Finally, we can show that being biinvertible is [[proposition]]. Since
+propositions are those types which are `contractible if inhabited`{.Agda
+ident=is-contr-if-inhabited→is-prop} suffices to show that
+`is-biinv`{.Agda} is contractible when it is inhabited:
 
 ```agda
 is-biinv-is-prop : {f : A → B} → is-prop (is-biinv f)
-is-biinv-is-prop {f = f} = contractible-if-inhabited contract where
+is-biinv-is-prop {f = f} = is-contr-if-inhabited→is-prop contract where
   contract : is-biinv f → is-contr (is-biinv f)
   contract ibiinv =
     ×-is-hlevel 0 (is-iso→is-contr-linv iiso)
@@ -190,9 +181,9 @@ is-biinv-is-prop {f = f} = contractible-if-inhabited contract where
 ```
 
 Since `is-biinv`{.Agda} is a product of contractibles whenever it is
-inhabited, then it is contractible. Finally, we have that
-$\rm{is-iso}(f) \to \rm{is-biinv}(f)$: pick the given inverse as both a
-left- and right- inverse.
+inhabited, then it is contractible. Finally, we have that $\isiso(f) \to
+\operatorname{is-biinv}(f)$: pick the given inverse as both a left- and
+right- inverse.
 
 ```agda
 is-iso→is-biinv : {f : A → B} → is-iso f → is-biinv f

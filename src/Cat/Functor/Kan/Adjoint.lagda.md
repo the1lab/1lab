@@ -1,11 +1,11 @@
 <!--
 ```agda
-open import Cat.Instances.Functor.Compose
 open import Cat.Functor.Kan.Duality
 open import Cat.Functor.Kan.Global
 open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Compose
 open import Cat.Prelude
 ```
 -->
@@ -28,7 +28,7 @@ private
 
 # Adjoints are Kan extensions
 
-One way to think about [Kan extensions] is that, when they exist, they
+One way to think about [[Kan extensions]] is that, when they exist, they
 allow us to "compose" two functors when one of them is going the wrong
 way: given a span
 
@@ -40,16 +40,14 @@ we get a "composite" $\Lan_F(H) : D \to E$. With this perspective in
 mind, it's reasonable to expect that, if $F$ has an [inverse] $G : D \to
 C$, the composite we get should be the actual composite $H \circ G$.
 
-In fact, we can do better: if $F$ only has a [right adjoint] $F \dashv
+In fact, we can do better: if $F$ only has a [[right adjoint]] $F \dashv
 G$ (which we can think of as a directed inverse), then the induced
 `precomposite adjunction`{.Agda ident=precomposite-adjunction} $- \circ
 G \dashv - \circ F$ means that *left* ([global]) Kan extensions along
-$F$ are given by precomposition with $G$ (and, dually, right Kan
-extensions along $G$ are given by precomposition with $F$).
+$F$ are given by precomposition with $G$ (and, dually, [[right Kan
+extensions]] along $G$ are given by precomposition with $F$).
 
-[Kan extensions]: Cat.Functor.Kan.Base.html
 [inverse]: Cat.Functor.Equivalence.html
-[right adjoint]: Cat.Functor.Adjoint.html
 [global]: Cat.Functor.Kan.Global.html
 
 ```agda

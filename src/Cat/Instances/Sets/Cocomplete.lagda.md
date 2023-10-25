@@ -88,7 +88,7 @@ set-coequalisers already includes a truncation.
 
 ```agda
 Sets-is-cocomplete : ∀ {ι κ o} → is-cocomplete ι κ (Sets (ι ⊔ κ ⊔ o))
-Sets-is-cocomplete {ι} {κ} {o} {D = D} F = to-colimit (to-is-colimit colim) where
+Sets-is-cocomplete {ι} {κ} {o} {J = D} F = to-colimit (to-is-colimit colim) where
   module D = Precategory D
   module F = Functor F
   open _=>_
@@ -157,7 +157,7 @@ We already know that the coproduct is a coproduct (who would have
 guessed, honestly) --- so it remains to show that the `injections are
 monic`{.Agda ident=injections-are-monic}, the `summands intersect`{.Agda
 ident=summands-intersect}, and the intersections of different summands
-are empty. The intersections are cheap: Sets is finitely complete, so
+are empty. The intersections are cheap: Sets is [[finitely complete]], so
 all pullbacks exist, in particular the pullback of $F_i \to \sum F \ot
 F_j$.
 

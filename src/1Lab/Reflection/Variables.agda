@@ -2,8 +2,6 @@ open import 1Lab.Reflection hiding (reverse)
 open import 1Lab.Type
 
 open import Data.Fin.Base
-open import Data.Nat.Base
-open import Data.List hiding (reverse)
 
 module 1Lab.Reflection.Variables where
 

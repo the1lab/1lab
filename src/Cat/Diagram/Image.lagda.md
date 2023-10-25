@@ -5,7 +5,6 @@ open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Comma
 open import Cat.Instances.Slice
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -31,7 +30,7 @@ private variable
 ```
 -->
 
-# Images
+# Images {defines="image image-factorisation"}
 
 Let $f : A \to B$ be an ordinary function between sets (or, indeed,
 arbitrary types). Its **image** $\im f$ can be computed as the subset
@@ -63,15 +62,13 @@ of $f = m' \circ e'$, we must have $m \sube m'$ in the proset of
 subobjects of $B$, i.e. there exists some $k$ such that $m = m' \circ
 k$.
 
-In general categories, [monomorphisms] of $\cC$ may be the wrong notion
+In general categories, [[monomorphisms]] of $\cC$ may be the wrong notion
 of "subobject" to use. For example, in topology, we'd rather talk about
 the image which admits a _subspace inclusion_ onto $B$. We may expand
 the definition above to work for an arbitrary subclass $M \sube
 \rm{Mono}(\cC)$ of the monomorphisms of $C$, by requiring that the
 $M$-image of $f$ be the smallest $M$-subobject through which $f$
 factors.
-
-[monomorphisms]: Cat.Morphism.html#monos
 
 Since keeping track of all the factorisations by hand would be fiddly,
 we formalise the idea of image here using [comma categories], namely the
@@ -85,10 +82,8 @@ category] $\cC/b$.
 
 For a given subclass of monomorphisms $M$, there is a full subcategory
 of $\cC/b$ spanned by those maps in $M$ --- let us call it $M/b$
---- admitting an evident [ff] inclusion $F : M/b \mono \cC/b$. An
+--- admitting an evident [[fully faithful]] inclusion $F : M/b \mono \cC/b$. An
 **$M$-image of $f$** is a universal morphism from $f$ to $F$.
-
-[ff]: Cat.Functor.Base.html#ff-functors
 
 ```agda
 Class-of-monos : ∀ ℓ → Type _

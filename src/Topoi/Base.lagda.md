@@ -2,15 +2,25 @@
 ```agda
 open import Algebra.Prelude hiding (∫)
 
+open import Cat.Functor.Equivalence.Complete
+open import Cat.Functor.Adjoint.Continuous
+open import Cat.Functor.Adjoint.Reflective
 open import Cat.Instances.Sets.Cocomplete
 open import Cat.Instances.Functor.Limits
 open import Cat.Instances.Slice.Presheaf
+open import Cat.Functor.Adjoint.Compose
+open import Cat.Functor.Adjoint.Monadic
 open import Cat.Instances.Sets.Complete
+open import Cat.Functor.Adjoint.Monad
+open import Cat.Functor.Hom.Coyoneda
+open import Cat.Functor.Equivalence
 open import Cat.Diagram.Everything
-open import Cat.Functor.Everything
+open import Cat.Functor.Properties
 open import Cat.Instances.Elements
+open import Cat.Functor.Pullback
 open import Cat.Instances.Slice
 open import Cat.Instances.Lift
+open import Cat.Functor.Slice
 
 import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning
@@ -49,12 +59,11 @@ defining the notion of site, we will leave it implicitly, and define a
 **topos** as follows:
 
 A **topos** $\cT$ is a [full subcategory] of a [presheaf category]
-$[\cC\op,\Sets]$ (the category $\cC$ is part of the definition)
-such that the inclusion functor $\iota : \cT \mono [\cC\op,\Sets]$
-admits a [left adjoint], and this left adjoint preserves [finite
-limits]. We summarise this situation in the diagram below, where "lex"
-(standing for "**l**eft **ex**act") is old-timey speak for "finite limit
-preserving".
+$[\cC\op,\Sets]$ (the category $\cC$ is part of the definition) such
+that the inclusion functor $\iota : \cT \mono [\cC\op,\Sets]$ admits a
+[[left adjoint]], and this left adjoint preserves [[finite limits]]. We
+summarise this situation in the diagram below, where "lex" (standing for
+"**l**eft **ex**act") is old-timey speak for "finite limit preserving".
 
 ~~~{.quiver .short-15}
 \[\begin{tikzcd}
@@ -66,8 +75,6 @@ preserving".
 
 [full subcategory]: Cat.Functor.FullSubcategory.html
 [presheaf category]: Cat.Functor.Hom.html#the-yoneda-embedding
-[left adjoint]: Cat.Functor.Adjoint.html
-[finite limits]: Cat.Diagram.Limit.Finite.html
 
 In type theory, we must take care about the specific [universes] in
 which everything lives. Now, much of Grothendieck topos theory
@@ -188,16 +195,15 @@ of" an edge.
 
 ## As "logically nice" categories
 
-The definition of topos implies that any topos $\cT$ enjoys many of
-the same categorical properties of the category $\Sets$ (see
-[below](#properties-of-topoi)). Topoi are [complete] and [cocomplete], [cartesian
-closed] (even [locally so]) --- colimits are stable under pullback,
-coproducts are [disjoint], and [equivalence relations are effective].
+The definition of topos implies that any topos $\cT$ enjoys many of the
+same categorical properties of the category $\Sets$ (see
+[below](#properties-of-topoi)). Topoi are [complete] and [cocomplete],
+[[cartesian closed]] (even [[locally so|locally cartesian closed]]) ---
+colimits are stable under pullback, coproducts are [disjoint], and
+[equivalence relations are effective].
 
 [complete]: Cat.Diagram.Limit.Base.html#completeness
 [cocomplete]: Cat.Diagram.Colimit.Base.html#cocompleteness
-[cartesian closed]: Cat.CartesianClosed.Base.html
-[locally so]: Cat.CartesianClosed.Locally.html
 [disjoint]: Cat.Diagram.Coproduct.Indexed.html#disjoint-coproducts
 [equivalence relations are effective]: Cat.Diagram.Congruence.html#effective-congruences
 
@@ -220,7 +226,8 @@ very nice logically).
 
 [reflective subcategory]: Cat.Functor.Adjoint.Reflective.html
 
-**Terminology**: As was implicitly mentioned above, for a topos $L :
+::: terminology
+As was implicitly mentioned above, for a topos $L :
 \cT \xadj{}{} \psh(\cC)$, we call the category $\cC$ the **site
 of definition**. Objects in $\cT$ are called **sheaves**, and the
 functor $L$ is called **sheafification**. Maps between topoi are called
@@ -229,17 +236,15 @@ functor $L$ is called **sheafification**. Maps between topoi are called
 $\Topos$, following Johnstone. When $\psh(\cC)$ is regarded as a topos
 unto itself, rather than an indirection in the definition of a sheaf
 topos, we call it the **topos of $\cC$-sets**.
+:::
 
 # Examples
 
 The "trivial" example of topoi is the category $\Sets$, which is
-equivalently the category $[*\op,\Sets]$ of presheaves on the [terminal
-category]. This is, in fact, the [terminal object] in the 2-category
+equivalently the category $[*\op,\Sets]$ of presheaves on the [[terminal
+category]]. This is, in fact, the [[terminal object]] in the 2-category
 $\Topos$ of topoi (morphisms are described
 [below](#geometric-morphisms)), so we denote it by `𝟙`.
-
-[terminal category]: Cat.Instances.Shape.Terminal.html
-[terminal object]: Cat.Diagram.Terminal.html
 
 ```agda
 𝟙 : ∀ {κ} → Topos κ (Sets κ)
@@ -426,7 +431,7 @@ we can compute the colimit of some diagram $F : J \to \cT$ as the
 colimit (in $\psh(\cC)$) of $\iota F$ --- which exists because
 $\Sets$ is cocomplete --- then apply $L$ to get a colimiting cocone for
 $L \iota F$. But the counit of the adjunction $\eps : L \iota \To
-\rm{Id}$ is a natural isomorphism, so we have a colimiting cocone for
+\Id$ is a natural isomorphism, so we have a colimiting cocone for
 $F$.
 
 ```agda
@@ -444,13 +449,11 @@ $F$.
         left-adjoint-colimit L⊣ι psh-colim
 ```
 
-Since the reflector is left exact, and thus in particular preserves
-finite products, a theorem of Johnstone (Elephant A4.3.1) implies the
-topos $\cT$ is an _exponential ideal_ in $\psh(\cC)$: If $Y$ is a
-sheaf, and $X$ is any presheaf, then the internal hom $[X,Y]$ is a
-sheaf: topoi are [cartesian closed].
-
-[cartesian closed]: Cat.CartesianClosed.Base.html
+Since the reflector is [[left exact|lex functor]], and thus in
+particular preserves finite products, a theorem of Johnstone (Elephant
+A4.3.1) implies the topos $\cT$ is an _exponential ideal_ in
+$\psh(\cC)$: If $Y$ is a sheaf, and $X$ is any presheaf, then the
+internal hom $[X,Y]$ is a sheaf: topoi are [[cartesian closed]].
 
 <!-- TODO [Amy 2022-04-02]
 prove all of the above lmao
@@ -562,7 +565,7 @@ module _ {o ℓ} {C : Precategory o ℓ} (T : Topos ℓ C) (X : Precategory.Ob C
 We build the geometric embedding presenting $\cT/X$ as a topos by
 composing the adjunctions $\epsilon_!(L/\iota(X)) \dashv \iota/X$
 and $F \dashv F^{-1}$ --- where $F$ is the equivalence $\psh(\cC)/X
-\to \psh(\int X)$. The right adjoint is fully faithful because it
+\to \psh(\int X)$. The right adjoint is [[fully faithful]] because it
 composes two fully faithful functors (a slice of $\iota$ and an
 equivalence), the left adjoint preserves finite limits because it is a
 composite of two equivalences (hence two right adjoints) and a lex
@@ -658,12 +661,10 @@ Idg {E = E} = record { Inv[_] = Id ; Dir[_] = Id
 ```
 -->
 
-Since [adjunctions compose], geometric morphisms do, too. Observe that
+Since [[adjunctions compose]], geometric morphisms do, too. Observe that
 the composite of inverse images and the composite of direct images go in
 different directions! Fortunately, this matches the convention for
 composing adjunctions, where the functors "swap sides": $LF \dashv GR$.
-
-[adjunctions compose]: Cat.Functor.Adjoint.Compose.html
 
 ```agda
 _G∘_ : Geom[ F , G ] → Geom[ E , F ] → Geom[ E , G ]

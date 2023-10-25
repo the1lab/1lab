@@ -25,9 +25,7 @@ private variable
 
 # Properties of pullbacks
 
-This module chronicles some general properties of [pullbacks].
-
-[pullbacks]: Cat.Diagram.Pullback.html
+This module chronicles some general properties of [[pullbacks]].
 
 ## Pasting law
 

@@ -17,7 +17,7 @@ private variable
 ```
 -->
 
-# ∞-Magmas
+# ∞-Magmas {defines="magma ∞-magma"}
 
 In common mathematical parlance, a **magma** is a set equipped with a
 binary operation. In HoTT, we free ourselves from considering sets as a
@@ -72,7 +72,7 @@ binary operation `⋆`, on which no further laws are imposed.
 open is-magma public
 ```
 
-Note that we do not generally benefit from the set truncation of
+Note that we do not generally benefit from the [[set truncation]] of
 arbitrary magmas - however, practically all structures built upon
 `is-magma`{.Agda} do, since they contain paths which would require
 complicated, if not outright undefinable, coherence conditions.

@@ -2,7 +2,6 @@
 ```agda
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.HLevel.Retracts
-open import 1Lab.Type.Sigma
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
@@ -20,15 +19,15 @@ import Data.Nat.Base as Nat
 module Data.Fin.Base where
 ```
 
-# Finite Sets
+# Finite Sets {defines=standard-finite-set}
 
-The type `Fin`{.Agda} is the type of size `n`.
-These are defined as an inductive family over `Nat`{.Agda},
-such that `Fin 0` has 0 elements, `Fin 1` has 1 element, and so on.
+The type `Fin`{.Agda} is the type of size `n`.  These are defined as an
+inductive family over `Nat`{.Agda}, such that `Fin 0` has 0 elements,
+`Fin 1` has 1 element, and so on.
 
-Another way to view `Fin`{.Agda} is that it's the type of numbers
-less than some upper bound. For instance, `fsuc fzero` is
-of type `Fin 3`, but will _not_ typecheck as a `Fin 1`!
+Another way to view `Fin`{.Agda} is as the type of numbers less than
+some upper bound. For instance, `fsuc fzero` is of type `Fin 3`, but
+will _not_ typecheck as a `Fin 1`!
 
 ```agda
 data Fin : Nat → Type where
@@ -157,15 +156,13 @@ Discrete-Fin : ∀ {n} → Discrete (Fin n)
 Discrete-Fin = Discreteᵢ→discrete Discreteᵢ-Fin
 ```
 
-[Hedberg's theorem] implies that `Fin`{.Agda} is a [set], i.e., it only
+[[Hedberg's theorem]] implies that `Fin`{.Agda} is a [[set]], i.e., it only
 has trivial paths.
 
-[Hedberg's theorem]: agda://1Lab.Path.IdentitySystem#Discrete→is-set
-[set]: agda://1Lab.HLevel#is-set
-
 ```agda
-Fin-is-set : ∀ {n} → is-set (Fin n)
-Fin-is-set = Discrete→is-set Discrete-Fin
+opaque
+  Fin-is-set : ∀ {n} → is-set (Fin n)
+  Fin-is-set = Discrete→is-set Discrete-Fin
 
 instance
   H-Level-Fin : ∀ {n k} → H-Level (Fin n) (2 + k)
@@ -198,10 +195,9 @@ Fin-elim P pfzero pfsuc (fsuc x) = pfsuc x (Fin-elim P pfzero pfsuc x)
 
 Keeping with the view that `Fin`{.Agda} represents the type of bounded
 natural numbers, we can re-use the ordering on `Nat`{.Agda} to induce an
-ordering on `Fin`{.Agda}.  This lets us repurpose any lemmas on [`≤`] to
-also operate on `Fin`{.Agda}.
-
-[`≤`]: agda://Data.Nat.Base#_≤_
+ordering on `Fin`{.Agda}. This means that any lemmas about the ordering
+on natural numbers apply immediately to the ordering on standard finite
+sets.
 
 ```agda
 _≤_ : ∀ {n} → Fin n → Fin n → Type

@@ -6,7 +6,6 @@ open import Algebra.Group.Free
 open import Algebra.Group.Ab
 open import Algebra.Group
 
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Adjoint.Compose
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
@@ -19,13 +18,13 @@ module Algebra.Group.Ab.Free where
 
 # Free abelian groups
 
-We have already constructed the [free group on a set] and the [free
-abelian group on a group]; [Composing these adjunctions], we obtain the
-free abelian group on a set.
+We have already constructed the [[free group|free group construction]]
+on a [[set]] and the [[free abelian group on a group|abelianisation]];
+[[Composing these adjunctions|adjunctions compose]], we obtain the free
+[[abelian group]] on a set.
 
 [free group on a set]: Algebra.Group.Free.html
 [free abelian group on a group]: Algebra.Group.Ab.Abelianisation.html
-[Composing these adjunctions]: Cat.Functor.Adjoint.Compose.html
 
 ```agda
 Free-abelian : ∀ {ℓ} → Type ℓ → Abelian-group ℓ

@@ -17,8 +17,8 @@ module Data.Vec.Base where
 
 The type `Vec`{.Agda} is a representation of n-ary tuples with
 coordinates drawn from A. Therefore, it is equivalent to the type
-$\rm{Fin}(n) \to A$, i.e., the functions from the \r{standard finite
-set} with $n$ elements to the type $A$. The halves of this equivalence
+$\rm{Fin}(n) \to A$, i.e., the functions from the [[standard finite
+set]] with $n$ elements to the type $A$. The halves of this equivalence
 are called `lookup`{.Agda} and `tabulate`{.Agda}.
 
 ```agda

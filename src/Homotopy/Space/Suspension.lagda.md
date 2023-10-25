@@ -22,7 +22,6 @@ data Susp {ℓ} (A : Type ℓ) : Type ℓ where
 
 *TODO*: Draw a picture and explain!
 
-Suspension is an operation that increases the
-[connectivity](https://ncatlab.org/nlab/show/n-connected+space) of a type;
+Suspension is an operation that increases the [[connectivity]] of a type:
 suspending an empty type makes it inhabited, suspending an inhabited type
 makes it connected, suspending a connected type makes it 1-connected, etc.

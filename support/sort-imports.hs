@@ -2,6 +2,7 @@
 {- stack --resolver lts-18.14 script
          --package text
          --package deepseq
+         --package shake
 -}
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
@@ -13,16 +14,23 @@ import Data.List (isSuffixOf, sortOn, groupBy, partition)
 import qualified Data.Text.IO as Text
 import qualified Data.Text as Text
 import Data.Function (on)
-import Data.Foldable
+import Data.Foldable hiding (find)
 import Data.Ord
 
+import Development.Shake.FilePath
+import Development.Shake
 import Debug.Trace
 
 import System.Environment
 import System.IO
 
 main :: IO ()
-main = traverse_ sortImports =<< getArgs
+main = do
+  args <- getArgs
+  traverse_ sortImports =<< if null args then getAgdaFiles else pure args
+
+getAgdaFiles :: IO [FilePath]
+getAgdaFiles = map ("src" </>) <$> getDirectoryFilesIO "src" ["**/*.lagda.md"]
 
 sortImports :: FilePath -> IO ()
 sortImports path
@@ -81,15 +89,20 @@ sortImpl lines = sorted ++ emptyLineBefore' mod where
   (imports, io'') = partition ("import" `Text.isPrefixOf`) io'
   (opens, prefix) = partition ("open" `Text.isPrefixOf`) io''
 
+  uniqueSortOn f = go . sortOn f where
+    go (x:x':xs) | x == x' = go (x':xs)
+    go (x:xs) = x : go xs
+    go [] = []
+
   sorted = filter (not . Text.null) prefix
         ++ sortItems "open import" open_imports
         ++ emptyLineBefore (sortItems "import" imports)
-        ++ emptyLineBefore (sortOn (Down . Text.length) opens)
+        ++ emptyLineBefore (uniqueSortOn (Down . Text.length) opens)
 
   findItem prefix line = head (Text.words (Text.drop (Text.length prefix) line))
 
   sortItems prefix =
       drop 1
-    . concatMap (("":) . sortOn (Down . Text.length . findItem prefix))
+    . concatMap (("":) . uniqueSortOn (Down . Text.length . findItem prefix))
     . groupBy ((==) `on` fst . Text.breakOn "." . findItem prefix)
     . sortOn (findItem prefix)

@@ -16,16 +16,15 @@ module
   where
 ```
 
-# Eilenberg-Moore Categories
+# Univalence of Eilenberg-Moore Categories
 
-Given a base [univalent category] $\cC$, we can consider a [monad]
+Given a base [[univalent category]] $\cC$, we can consider a [monad]
 $M$ on $\cC$, and its associated [Eilenberg-Moore category]
 $\cC^M$, as a standard way of constructing categories of "algebraic
 gadgets" backed by objects of $\cC$. A concrete example is given by
 the [category of monoids]: A [monoid] (in [sets]) is equivalent to an
 algebra for the [list monad].
 
-[univalent category]: Cat.Univalent.html
 [monad]: Cat.Diagram.Monad.html
 [Eilenberg-Moore category]: Cat.Diagram.Monad.html#eilenberg-moore-category
 [category of monoids]: Algebra.Monoid.Category.html
@@ -92,7 +91,7 @@ $\cC$, such that the diagram below commutes. By forgetting that the
 square commutes, algebra homomorphisms correspond [faithfully] to
 morphisms in the underlying category $\cC$.
 
-[faithfully]: agda://Cat.Diagram.Monad#Forget
+[faithfully]: Cat.Diagram.Monad.html#Forget
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -183,7 +182,7 @@ ident=F-map-path}, and we can correct the source:
       same-mults′ =
         transport
           (λ j → PathP
-            (λ i → C.Hom (F-map-path (Monad.M M) A₀≅X₀ isc isc (~ j) i) (A₀≡X₀ i))
+            (λ i → C.Hom (F-map-path isc isc (Monad.M M) A₀≅X₀ (~ j) i) (A₀≡X₀ i))
             (Am .ν) (Xm .ν))
           same-mults
 

@@ -1,0 +1,76 @@
+name: PR Preview
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed
+
+permissions:
+  pull-requests: write
+
+jobs:
+  pr-preview:
+    runs-on: ubuntu-latest
+
+    env:
+      mailmap: ${{ secrets.MAILMAP }}
+
+    steps:
+      - name: Checkout ⬇️
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # we need the commit history for authors
+
+      - name: Install Nix ❄️
+        uses: cachix/install-nix-action@v20
+
+      - name: Set up Cachix ♻️
+        uses: cachix/cachix-action@v12
+        with:
+          name: 1lab
+          skipPush: true
+
+      - name: Build the Shakefile 🧰
+        run: |
+          hash=$(nix-build -A shakefile --no-out-link)
+          hash=${hash#/nix/store/} hash=${hash%%-*}
+          echo "shake_version=$hash" >> "$GITHUB_ENV"
+
+      - name: Cache _build ♻️
+        uses: actions/cache@v3
+        with:
+          path: _build
+          key: prose-4-${{ env.shake_version }}-${{ github.run_id }}
+          restore-keys: prose-4-${{ env.shake_version }}-
+
+      - name: Build the prose ✍️
+        run: |
+          echo "$mailmap" > .mailmap
+          nix-shell --arg interactive false --run "$build_command"
+        env:
+          NIX_BUILD_SHELL: bash
+          build_command: |
+            set -eu
+            1lab-shake -j all --skip-agda -b "https://plt-amy.github.io/1lab-previews/pr-${{ github.event.number }}"
+            eval "$installPhase"
+            cp -rv _build/site pr-${{ github.event.number }}
+
+      - name: Upload 📦
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.PREVIEW_TOKEN }}
+        with:
+          source_file: pr-${{ github.event.number }}
+          destination_repo: 'plt-amy/1lab-previews'
+          user_email: 'me@amelia.how'
+          user_name: 'plt-amy'
+          commit_message: 'Preview of PR #${{ github.event.number }}'
+
+      - name: Inform ℹ️
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: |
+            [Rendered preview](https://plt-amy.github.io/1lab-previews/pr-${{ github.event.number }})

@@ -48,7 +48,7 @@ a group homomorphism.
 
 [$\Ab$-categories]: Cat.Abelian.Base.html#ab-enriched-categories
 [$\Ab$-functors]: Cat.Abelian.Functor.html#ab-enriched-functors
-[functor category]: Cat.Instances.Functor.html
+[functor category]: Cat.Functor.Base.html
 
 ```agda
   Ab-functors : Precategory _ _
@@ -63,7 +63,7 @@ a group homomorphism.
 ```
 
 We can calculate that the natural transformations $F \To G$ between
-$\Ab$-functors have a pointwise abelian group structure. The most
+$\Ab$-functors have a pointwise [[abelian group]] structure. The most
 important thing to verify is that the pointwise sum of natural
 transformations is natural, which follows from multilinearity of the
 composition operation.

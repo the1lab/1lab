@@ -4,11 +4,8 @@ open import Cat.Instances.Shape.Parallel
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Equaliser
-open import Cat.Instances.Functor
 open import Cat.Functor.Kan.Base
 open import Cat.Prelude
-
-open import Data.Bool
 ```
 -->
 
@@ -102,9 +99,9 @@ is-limit→is-equaliser F {K} {eta} lim = eq where
 Equaliser→Limit : ∀ {F : Functor ·⇉· C} → Equaliser C (forkl F) (forkr F) → Limit F
 Equaliser→Limit {F = F} eq = to-limit (is-equaliser→is-limit F (has-is-eq eq))
 
-Limit→Equaliser : ∀ {F : Functor ·⇉· C} → Limit F → Equaliser C (forkl F) (forkr F)
+Limit→Equaliser : ∀ {a b} {f g : Hom a b} → Limit {C = C} (Fork f g) → Equaliser C f g
 Limit→Equaliser lim .apex = _
 Limit→Equaliser lim .equ = _
-Limit→Equaliser {F = F} lim .has-is-eq =
-  is-limit→is-equaliser F (Limit.has-limit lim)
+Limit→Equaliser {f = f} {g} lim .has-is-eq =
+  is-limit→is-equaliser (Fork f g) (Limit.has-limit lim)
 ```

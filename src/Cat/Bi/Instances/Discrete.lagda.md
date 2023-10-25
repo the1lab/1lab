@@ -44,22 +44,22 @@ Locally-discrete .unitor-l = to-natural-iso ni where
   ni : make-natural-iso _ _
   ni .make-natural-iso.eta x = sym (C.idl x)
   ni .make-natural-iso.inv x = C.idl x
-  ni .make-natural-iso.eta∘inv x = ∙-inv-r (C.idl x)
-  ni .make-natural-iso.inv∘eta x = ∙-inv-l (C.idl x)
+  ni .make-natural-iso.eta∘inv x = ∙-invr (C.idl x)
+  ni .make-natural-iso.inv∘eta x = ∙-invl (C.idl x)
   ni .make-natural-iso.natural x y f = C.Hom-set _ _ _ _ _ _
 Locally-discrete .unitor-r = to-natural-iso ni where
   ni : make-natural-iso _ _
   ni .make-natural-iso.eta x = sym (C.idr x)
   ni .make-natural-iso.inv x = C.idr x
-  ni .make-natural-iso.eta∘inv x = ∙-inv-r (C.idr x)
-  ni .make-natural-iso.inv∘eta x = ∙-inv-l (C.idr x)
+  ni .make-natural-iso.eta∘inv x = ∙-invr (C.idr x)
+  ni .make-natural-iso.inv∘eta x = ∙-invl (C.idr x)
   ni .make-natural-iso.natural x y f = C.Hom-set _ _ _ _ _ _
 Locally-discrete .associator = to-natural-iso ni where
   ni : make-natural-iso _ _
   ni .make-natural-iso.eta x = sym (C.assoc _ _ _)
   ni .make-natural-iso.inv x = C.assoc _ _ _
-  ni .make-natural-iso.eta∘inv x = ∙-inv-r (C.assoc _ _ _)
-  ni .make-natural-iso.inv∘eta x = ∙-inv-l (C.assoc _ _ _)
+  ni .make-natural-iso.eta∘inv x = ∙-invr (C.assoc _ _ _)
+  ni .make-natural-iso.inv∘eta x = ∙-invl (C.assoc _ _ _)
   ni .make-natural-iso.natural x y f = C.Hom-set _ _ _ _ _ _
 Locally-discrete .triangle f g = C.Hom-set _ _ _ _ _ _
 Locally-discrete .pentagon f g h i = C.Hom-set _ _ _ _ _ _

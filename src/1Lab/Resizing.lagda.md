@@ -4,6 +4,7 @@ open import 1Lab.Path.IdentitySystem
 open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
+open import 1Lab.HIT.Truncation
 open import 1Lab.Reflection using (arg ; typeError)
 open import 1Lab.Univalence
 open import 1Lab.HLevel
@@ -27,7 +28,7 @@ module 1Lab.Resizing where
 Ordinarily, the collection of all $\kappa$-small predicates on
 $\kappa$-small types lives in the next universe up, $\kappa^+$. This is
 because _predicates_ are not special in type theory: they are ordinary
-type families, that just so happen to be valued in \r{propositions}. For
+type families, that just so happen to be valued in [[propositions]]. For
 most purposes we can work with this limitation: this is called
 **predicative mathematics**. But, for a few classes of theorems,
 predicativity is too restrictive: Even if we don't have a single
@@ -57,7 +58,7 @@ open Ω public
 This type, a priori, only contains the propositions whose underlying
 type lives in the first universe. However, we can populate it using a
 `NO_UNIVERSE_CHECK`-powered higher inductive type, the "small
-propositional truncation":
+[[propositional truncation]]":
 
 ```agda
 {-# NO_UNIVERSE_CHECK #-}
@@ -144,6 +145,18 @@ elΩ T .is-tr = squash
 □-elim pprop go (squash x y i) =
   is-prop→pathp (λ i → pprop (squash x y i)) (□-elim pprop go x) (□-elim pprop go y) i
 
+□-rec-set
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → (f : A → B)
+  → (∀ x y → f x ≡ f y)
+  → is-set B
+  → □ A → B
+□-rec-set f f-const B-set a =
+  fst $ □-elim
+    (λ _ → is-constant→image-is-prop B-set f f-const)
+    (λ a → f a , inc (a , refl))
+    a
+
 □-idempotent : ∀ {ℓ} {A : Type ℓ} → is-prop A → □ A ≃ A
 □-idempotent aprop = prop-ext squash aprop (out! {pa = aprop}) inc
 
@@ -171,14 +184,17 @@ instance
   Bind-□ : Bind (eff □)
   Bind-□ .Bind._>>=_ = □-bind
 
-_∈_ : ∀ {ℓ} {A : Type ℓ} → A → (A → Ω) → Type
-x ∈ P = ∣ P x ∣
-
 is-set→locally-small
   : ∀ {ℓ} {A : Type ℓ}
   → is-set A
   → is-identity-system {A = A} (λ x y → □ (x ≡ y)) (λ x → inc refl)
 is-set→locally-small a-set .to-path = out! {pa = a-set _ _}
 is-set→locally-small a-set .to-path-over p = is-prop→pathp (λ _ → squash) _ _
+
+to-is-true
+  : ∀ {P Q : Ω} ⦃ _ : H-Level ∣ Q ∣ 0 ⦄
+  → ∣ P ∣
+  → P ≡ Q
+to-is-true prf = Ω-ua (λ _ → hlevel 0 .centre) (λ _ → prf)
 ```
 -->

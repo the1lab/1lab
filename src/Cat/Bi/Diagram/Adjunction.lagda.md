@@ -2,14 +2,11 @@
 ```agda
 open import Cat.Bi.Base
 open import Cat.Prelude
-
-import Cat.Diagram.Monad as Cat
-import Cat.Reasoning as Cr
 ```
 -->
 
 ```agda
-module Cat.Bi.Diagram.Adjunction  where
+module Cat.Bi.Diagram.Adjunction where
 ```
 
 <!--
@@ -72,7 +69,7 @@ identities** (because it sounds cool).
 
 Working in a fully weak bicategory means the triangle identities, rather
 than simply expressing a compatibility relation between $\eta$ and
-$\eps$ as is the case for adjoint functors, instead exhibit a
+$\eps$ as is the case for [[adjoint functors]], instead exhibit a
 complicated compatibility relation between $\eta$, $\eps$, and the
 structural isomorphisms (the unitors and associator) of the ambient
 bicategory.

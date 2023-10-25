@@ -4,6 +4,7 @@ open import Algebra.Prelude
 open import Algebra.Group
 
 open import Cat.Displayed.Univalence.Thin
+open import Cat.Functor.Properties
 open import Cat.Prelude
 ```
 -->

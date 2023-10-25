@@ -14,7 +14,6 @@ open import Cat.Prelude
 import Cat.Displayed.Cocartesian.Indexing as Indexing
 import Cat.Displayed.Morphism.Duality
 import Cat.Displayed.Cocartesian as Cocart
-import Cat.Displayed.Cocartesian as Cocart
 import Cat.Displayed.Reasoning
 import Cat.Displayed.Morphism
 import Cat.Reasoning as CR
@@ -37,6 +36,8 @@ open Cocart ℰ
 open Cat.Displayed.Morphism ℰ
 open Cat.Displayed.Morphism.Duality ℰ
 open Cat.Displayed.Reasoning ℰ
+private
+  module Fib {x} = Precategory (Fibre ℰ x)
 ```
 -->
 
@@ -61,6 +62,8 @@ record is-weak-cocartesian
               → (h′ : Hom[ id ] b′ x′)
               → h′ ∘′ f′ ≡[ idl _ ] g′
               → h′ ≡ universal g′
+
+open is-weak-cocartesian
 ```
 
 ## Duality
@@ -122,6 +125,29 @@ weak-cocartesian→cocartesian
   → Cocartesian-fibration
   → is-weak-cocartesian f f′
   → is-cocartesian f f′
+
+precompose-equiv→weak-cocartesian
+  : ∀ {x y x′ y′} {f : Hom x y}
+  → (f′ : Hom[ f ] x′ y′)
+  → (∀ {y″} → is-equiv {A = Hom[ id ] y′ y″} (_∘′ f′))
+  → is-weak-cocartesian f f′
+
+weak-cocartesian→precompose-equiv
+  : ∀ {x y x′ y′ y″} {f : Hom x y} {f′ : Hom[ f ] x′ y′}
+  → is-weak-cocartesian f f′
+  → is-equiv {A = Hom[ id ] y′ y″} (_∘′ f′)
+
+fibre-precompose-equiv→weak-cocartesian
+  : ∀ {x} {x′ x″ : Ob[ x ]}
+  → (f′ : Hom[ id ] x′ x″)
+  → (∀ {x‴} → is-equiv {A = Hom[ id ] x″ x‴} (Fib._∘ f′))
+  → is-weak-cocartesian id f′
+
+weak-cocartesian→fibre-precompose-equiv
+  : ∀ {x} {x′ x″ x‴ : Ob[ x ]} {f′ : Hom[ id ] x′ x″}
+  → is-weak-cocartesian id f′
+  → is-equiv {A = Hom[ id ] x″ x‴} (Fib._∘ f′)
+
 ```
 
 <details>
@@ -145,11 +171,33 @@ weak-cocartesian→cocartesian opfib wcocart =
   weak-cartesian→cartesian (ℰ ^total-op)
     (opfibration→op-fibration opfib)
     (weak-cocartesian→weak-co-cartesian wcocart)
+
+precompose-equiv→weak-cocartesian f eqv =
+  weak-co-cartesian→weak-cocartesian $
+  (postcompose-equiv→weak-cartesian (ℰ ^total-op) f eqv)
+
+weak-cocartesian→precompose-equiv cocart =
+  weak-cartesian→postcompose-equiv (ℰ ^total-op) $
+  weak-cocartesian→weak-co-cartesian cocart
+
+fibre-precompose-equiv→weak-cocartesian f′ eqv .universal v =
+  equiv→inverse eqv v
+fibre-precompose-equiv→weak-cocartesian f′ eqv .commutes v =
+  to-pathp $ equiv→counit eqv v
+fibre-precompose-equiv→weak-cocartesian f′ eqv .unique v p =
+  sym (equiv→unit eqv v) ∙ ap (equiv→inverse eqv) (from-pathp p)
+
+weak-cocartesian→fibre-precompose-equiv wcocart =
+  is-iso→is-equiv $
+    iso (wcocart .universal)
+      (λ v → from-pathp (wcocart .commutes v))
+      (λ v → sym (wcocart .unique v (to-pathp refl)))
+
 ```
 </details>
 
-Notably, if $\ca{E}$ is a cartesian fibration, then all weak cocartesian
-morphisms are cocartesian.
+Notably, if $\ca{E}$ is a [[Cartesian fibration]], then all weak
+cocartesian morphisms are cocartesian.
 
 ```agda
 fibration+weak-cocartesian→cocartesian
@@ -163,7 +211,7 @@ fibration+weak-cocartesian→cocartesian {x} {y} {x′} {y′} {f} {f′} fib we
     module weak = is-weak-cocartesian weak
 ```
 
-To see show this, we need to construct a unique factorization of some
+To see show this, we need to construct a unique factorisation of some
 morphism $h' : x' \to_{mf} u'$, as depicted in the following diagram
 
 ~~~{.quiver .tall-2}
@@ -446,7 +494,7 @@ weak-cocartesian-lift→weak-co-cartesian-lift wlift .Weak-cartesian-lift.weak-c
 ```
 </details>
 
-A displayed category with all weak cocartesian lifts is called a
+A [[displayed category]] with all weak cocartesian lifts is called a
 **weak cocartesian fibration**, though we will often refer to them
 as **weak opfibrations** These are also sometimes called
 **preopfibred categories**, though we avoid this terminology, as it
@@ -473,6 +521,9 @@ record is-weak-cocartesian-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) wher
 -->
 
 Weak opfibrations are dual to [weak fibrations].
+
+[weak fibrations]: Cat.Displayed.Cartesian.Weak.html#is-weak-cartesian-fibration
+
 ```agda
 weak-op-fibration→weak-opfibration
   : is-weak-cartesian-fibration (ℰ ^total-op)
@@ -599,7 +650,7 @@ Furthermore, this equivalence is natural.
 ```agda
   weak-opfibration→hom-iso-from
     : ∀ {x y x′} (u : Hom x y)
-    → natural-iso (Hom-over-from ℰ u x′) (Hom-from (Fibre ℰ y) (weak-lift.y′ u x′))
+    → Hom-over-from ℰ u x′ ≅ⁿ Hom-from (Fibre ℰ y) (weak-lift.y′ u x′)
   weak-opfibration→hom-iso-from {y = y} {x′ = x′} u = to-natural-iso mi where
     open make-natural-iso
 
@@ -657,15 +708,15 @@ module _ (U : ∀ {x y} → Hom x y → Functor (Fibre ℰ x) (Fibre ℰ y)) whe
 
   hom-iso→weak-opfibration
     : (∀ {x y x′} (u : Hom x y)
-       → natural-iso (Hom-over-from ℰ u x′) (Hom-from (Fibre ℰ y) (U u .F₀ x′)))
+       → Hom-over-from ℰ u x′ ≅ⁿ Hom-from (Fibre ℰ y) (U u .F₀ x′))
     → is-weak-cocartesian-fibration
   hom-iso→weak-opfibration hom-iso =
     vertical-equiv→weak-opfibration
       (λ u → U u .F₀)
-      (λ u′ → natural-iso.to (hom-iso _) .η _ u′)
+      (λ u′ → Isoⁿ.to (hom-iso _) .η _ u′)
       (natural-iso-to-is-equiv (hom-iso _) _)
       λ f′ g′ → to-pathp⁻ $
-        happly (natural-iso.to (hom-iso _) .is-natural _ _ f′) g′
+        happly (Isoⁿ.to (hom-iso _) .is-natural _ _ f′) g′
 ```
 -->
 
@@ -677,15 +728,13 @@ module _ (opfib : Cocartesian-fibration) where
 
   opfibration→hom-iso-from
     : ∀ {x y x′} (u : Hom x y)
-    → natural-iso (Hom-over-from ℰ u x′) (Hom-from (Fibre ℰ y) (has-lift.y′ u x′))
+    → Hom-over-from ℰ u x′ ≅ⁿ Hom-from (Fibre ℰ y) (has-lift.y′ u x′)
   opfibration→hom-iso-from u =
     weak-opfibration→hom-iso-from (opfibration→weak-opfibration opfib) u
 
   opfibration→hom-iso-into
     : ∀ {x y y′} (u : Hom x y)
-    → natural-iso
-        (Hom-over-into ℰ u y′)
-        (Hom-into (Fibre ℰ y) y′ F∘ Functor.op (cobase-change u) )
+    → Hom-over-into ℰ u y′ ≅ⁿ Hom-into (Fibre ℰ y) y′ F∘ Functor.op (cobase-change u)
   opfibration→hom-iso-into {y = y} {y′ = y′} u = to-natural-iso mi where
     open make-natural-iso
 
@@ -708,16 +757,14 @@ module _ (opfib : Cocartesian-fibration) where
 
   opfibration→hom-iso
     : ∀ {x y} (u : Hom x y)
-    → natural-iso
-        (Hom-over ℰ u)
-        (Hom[-,-] (Fibre ℰ y) F∘ (Functor.op (cobase-change u) F× Id))
+    → Hom-over ℰ u ≅ⁿ Hom[-,-] (Fibre ℰ y) F∘ (Functor.op (cobase-change u) F× Id)
   opfibration→hom-iso {y = y} u = to-natural-iso mi where
     open make-natural-iso
     open _=>_
     open Functor
 
-    module into-iso {y′} = natural-iso (opfibration→hom-iso-into {y′ = y′} u)
-    module from-iso {x′} = natural-iso (opfibration→hom-iso-from {x′ = x′} u)
+    module into-iso {y′} = Isoⁿ (opfibration→hom-iso-into {y′ = y′} u)
+    module from-iso {x′} = Isoⁿ (opfibration→hom-iso-from {x′ = x′} u)
     module Fibre {x} = CR (Fibre ℰ x)
 
     mi : make-natural-iso

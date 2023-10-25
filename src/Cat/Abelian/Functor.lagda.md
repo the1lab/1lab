@@ -17,12 +17,12 @@ module Cat.Abelian.Functor where
 # Ab-enriched Functors
 
 Since [$\Ab$-categories] are additionally equipped with the structure of
-abelian groups on their $\hom$-sets, it's natural that we ask that
+[[abelian groups]] on their $\hom$-sets, it's natural that we ask that
 functors between $\Ab$-categories preserve this structure. In
-particular, since every functor $F : \cC \to \cD$ has an action
-$F(-) : \hom(a,b) \to \hom(Fa,Fb)$ which is a map of sets, when $\cC$
-and $\cD$ are considered to be abelian groups, we should require that
-the action $F(-)$ be a group homomorphism.
+particular, since every functor $F : \cC \to \cD$ has an action $F(-) :
+\hom(a,b) \to \hom(Fa,Fb)$ which is a map of sets, when $\cC$ and $\cD$
+are considered to be abelian groups, we should require that the action
+$F(-)$ be a group homomorphism.
 
 [$\Ab$-categories]: Cat.Abelian.Base.html#ab-enriched-categories
 

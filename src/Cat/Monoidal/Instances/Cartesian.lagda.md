@@ -6,7 +6,6 @@ open import Cat.Diagram.Terminal
 open import Cat.Monoidal.Base
 open import Cat.Prelude
 
-import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Diagram.Product
 import Cat.Reasoning as Cr
 ```
@@ -50,7 +49,7 @@ module _ {o ℓ} {C : Precategory o ℓ} where
 
 There's nothing much to say about this result: It's pretty much just
 banging out the calculation. Our tensor product functor is the Cartesian
-product functor, and the tensor unit is the terminal object (the empty
+product functor, and the tensor unit is the [[terminal object]] (the empty
 product). Associators and units are the evident maps, which are coherent
 by the properties of limits. Translating this intuitive explanation to a
 formal proof requires a _lot_ of calculation, however:

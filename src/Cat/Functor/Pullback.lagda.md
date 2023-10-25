@@ -1,12 +1,12 @@
 <!--
 ```agda
 open import Cat.Functor.Equivalence
+open import Cat.Functor.Properties
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Comma
 open import Cat.Instances.Slice
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -31,14 +31,12 @@ open /-Hom
 ```
 -->
 
-# Base change
+# Base change {defines="pullback-functor"}
 
-Let $\cC$ be a category with all [pullbacks], and $f : Y \to X$ a
-morphism in $\cC$. Then we have a functor $f* : \cC/X \to
-\cC/Y$, called the **base change**, where the action on objects is
-given by pulling back along $f$.
-
-[pullbacks]: Cat.Diagram.Pullback.html
+Let $\cC$ be a category with all [[pullbacks]], and $f : Y \to X$ a
+morphism in $\cC$. Then we have a functor $f* : \cC/X \to \cC/Y$, called
+the **base change**, where the action on objects is given by pulling
+back along $f$.
 
 On objects, the functor maps as in the diagram below. It's a bit busy,
 so look at it in parts: On the left we have the object $K \xto{g} X$ of
@@ -119,7 +117,7 @@ The base change functor is a right adjoint. We construct the left
 adjoint directly, then give the unit and counit, and finally prove the
 triangle identities.
 
-The left adjoint, called _dependent sum_ and written $\sum_f$, is given
+The [[left adjoint]], called _dependent sum_ and written $\sum_f$, is given
 on objects by precomposition with $f$, and on morphisms by what is
 essentially the identity function --- only the witness of commutativity
 must change.

@@ -1,7 +1,7 @@
 <!--
 ```agda
+open import Cat.Functor.Properties
 open import Cat.Functor.Adjoint
-open import Cat.Functor.Base
 open import Cat.Prelude
 
 open Functor
@@ -22,7 +22,7 @@ concept of [monoid]. Specifically, rather than living in a monoidal
 category, a monad lives in a bicategory. Here, we concern ourselves with
 the case of monads in the bicategory of categories, so that we may say:
 A monad is an endofunctor $M$, equipped with a `unit`{.Agda} natural
-transformation $\rm{Id} \To M$, and a `multiplication`{.Agda
+transformation $\Id \To M$, and a `multiplication`{.Agda
 ident=mult} $(M \circ M) \To M$.
 
 [monoid]: Algebra.Monoid.html
@@ -61,16 +61,14 @@ associativity laws exactly analogous to those of a monoid.
 # Algebras over a monad
 
 One way of interpreting a monad $M$ is as giving a _signature_ for an
-algebraic theory. For instance, the free monoid monad describes the
-signature for the theory of monoids, and the [free group] monad
-describes the theory of groups.
+algebraic theory. For instance, the [[free monoid]] monad describes the
+signature for the theory of monoids, and the [[free group|free group
+construction]] monad describes the theory of groups.
 
 Under this light, an **algebra over a monad** is a way of _evaluating_
 the abstract operations given by a monadic expression to a concrete
 value. Formally, an algebra for $M$ is given by a choice of object $A$
 and a morphism $\nu : M(A) \to A$.
-
-[free group]: Algebra.Group.Free.html
 
 ```agda
 record Algebra-on (M : Monad) (ob : C.Ob) : Type (o ⊔ h) where

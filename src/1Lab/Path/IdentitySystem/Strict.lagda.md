@@ -3,11 +3,8 @@
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel
-open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
-
-open import Data.Dec.Base
 ```
 -->
 
@@ -27,15 +24,12 @@ private variable
 
 # Strict Identity Systems
 
-Since [identity systems] are a tool for classifying identity _types_,
+Since [[identity systems]] are a tool for classifying identity _types_,
 the relation underlying an identity system enjoys any additional
 property that the type's own identity type enjoys. As a prominent
-example, if $(R, r)$ is an identity system on a [set], then $R$
+example, if $(R, r)$ is an identity system on a [[set]], then $R$
 satisfies not only J, but also K: any property $P(x)$ for $x : R(a,a)$,
 for _fixed_ $a$, follows from $P(r)$.
-
-[identity systems]: 1Lab.Path.IdentitySystem.html
-[set]: 1Lab.HLevel.html#is-set
 
 Since $(R, r)$ is equivalent to $(\equiv_A, \refl)$, if $A$ is a set,
 then $R$ must be a proposition as well.

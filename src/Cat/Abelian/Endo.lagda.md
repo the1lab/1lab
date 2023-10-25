@@ -19,12 +19,12 @@ private module A = Ab-category A
 
 # Endomorphism rings
 
-Fix an [$\Ab$-category] $\cA$: It can be the category of abelian
-groups $\Ab$ itself, for example, or $R$-Mod for your favourite ring^[We
-tacitly assume the reader has a favourite ring.]. Because composition in
-$\cA$ distributes over addition, the collection of endomorphisms of
-any particular object $x : \cA$ is not only a monoid, but a _ring_:
-the **endomorphism ring** of $x$.
+Fix an [$\Ab$-category] $\cA$: It can be the category of [[abelian
+groups]] $\Ab$ itself, for example, or $R$-Mod for your favourite
+ring^[We tacitly assume the reader has a favourite ring.]. Because
+composition in $\cA$ distributes over addition, the collection of
+endomorphisms of any particular object $x : \cA$ is not only a monoid,
+but a _ring_: the **endomorphism ring** of $x$.
 
 [$\Ab$-category]: Cat.Abelian.Base.html#ab-enriched-categories
 

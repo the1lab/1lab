@@ -19,15 +19,13 @@ open import 1Lab.Type
 module 1Lab.HIT.Truncation where
 ```
 
-# Propositional Truncation
+# Propositional Truncation {defines="propositional-truncation"}
 
 Let $A$ be a type. The **propositional truncation** of $A$ is a type
-which represents the [proposition] "A is inhabited". In MLTT,
+which represents the [[proposition]] "A is inhabited". In MLTT,
 propositional truncations can not be constructed without postulates,
 even in the presence of impredicative prop. However, Cubical Agda
 provides a tool to define them: _higher inductive types_.
-
-[proposition]: agda://1Lab.HLevel#is-prop
 
 ```agda
 data ∥_∥ {ℓ} (A : Type ℓ) : Type ℓ where
@@ -48,7 +46,7 @@ is-prop-∥-∥ = squash
 ```agda
 instance
   H-Level-truncation : ∀ {n} {ℓ} {A : Type ℓ} → H-Level ∥ A ∥ (suc n)
-  H-Level-truncation = hlevel-instance (is-prop→is-hlevel-suc squash)
+  H-Level-truncation = prop-instance squash
 ```
 -->
 
@@ -112,8 +110,8 @@ whenever it is a family of propositions, by providing a case for
 -->
 
 The propositional truncation can be called the **free proposition** on a
-type, because it satisfies the universal property that a left adjoint
-would have. Specifically, let `B` be a proposition. We have:
+type, because it satisfies the universal property that a [[left
+adjoint]] would have. Specifically, let `B` be a proposition. We have:
 
 ```agda
 ∥-∥-univ : ∀ {ℓ} {A : Type ℓ} {B : Type ℓ}
@@ -185,6 +183,13 @@ is-prop≃equiv∥-∥ {P = P} =
                           (is-equiv-is-prop _ _ _)
 ```
 
+:::{.definition #merely alias="mere"}
+Throughout the 1Lab, we use the words "mere" and "merely" to modify a
+type to mean its propositional truncation. This terminology is adopted
+from the HoTT book. For example, a type $X$ is said _merely equivalent_
+to $Y$ if the type $\| X \equiv Y \|$ is inhabited.
+:::
+
 ## Maps into Sets
 
 The elimination principle for $\| A \|$ says that we can only use the
@@ -196,8 +201,8 @@ slightly: Can we map out of $\| A \|$ using a _constant_ function?
 The answer is yes! However, the witness of  constancy we use must be
 very coherent indeed. In particular, we need enough coherence on top of
 a family of paths $(x\ y : A) \to f x \equiv_B f y$ to ensure that the
-image of $f$ is a proposition; Then we can map from $\| A \| \to \im f
-\to B$.
+[[image]] of $f$ is a proposition; Then we can map from $\| A \| \to \im
+f \to B$.
 
 From the discussion in [1Lab.Counterexamples.Sigma], we know the
 definition of image, or more properly of $(-1)$-image:

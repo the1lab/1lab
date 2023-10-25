@@ -4,13 +4,11 @@
 open import Cat.Univalent.Instances.Opposite
 open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Base
-open import Cat.Functor.Kan.Unique
+open import Cat.Functor.Properties
 open import Cat.Instances.Elements
 open import Cat.Instances.Functor
 open import Cat.Diagram.Terminal
 open import Cat.Morphism.Duality
-open import Cat.Instances.Sets
-open import Cat.Functor.Base
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
@@ -36,7 +34,7 @@ open _=>_
 ```
 -->
 
-# Representable functors
+# Representable functors {defines="representable-functor"}
 
 A functor $F : \cC\op \to \Sets_\kappa$ (from a [locally
 $\kappa$-small category][univ]) is said to be **representable** when it
@@ -48,16 +46,16 @@ the form $\hom(X, -)$, but we refer informally to both of these
 situations as "representables" and "representing objects".
 
 [univ]: 1Lab.intro.html#universes-and-size-issues
-[niso]: Cat.Instances.Functor.html#functor-categories
+[niso]: Cat.Functor.Naturality.html
 
 ```agda
 record Representation (F : Functor (C ^op) (Sets κ)) : Type (o ⊔ κ) where
   no-eta-equality
   field
     rep        : C.Ob
-    represents : natural-iso F (Hom-into C rep)
+    represents : F ≅ⁿ Hom-into C rep
 
-  module rep = natural-iso represents
+  module rep = Isoⁿ represents
 
   equiv : ∀ {a} → C.Hom a rep ≃ ∣ F .F₀ a ∣
   equiv = Iso→Equiv λ where
@@ -77,14 +75,8 @@ functor (and of representing object) is _key_ to understanding the idea
 of **universal property**, which could be called the most important
 concept in category theory. Most constructions in category theory
 specified in terms of the existence of certain maps are really instances
-of representing objects for functors: [limits], [colimits], [coends],
-[adjoint functors], [Kan extensions], etc.
-
-[limits]: Cat.Diagram.Limit.Base.html
-[coends]: Cat.Diagram.Coend.html
-[colimits]: Cat.Diagram.Colimit.Base.html
-[Kan extensions]: Cat.Functor.Kan.Base.html
-[adjoint functors]: Cat.Functor.Adjoint.html
+of representing objects for functors: [[limits]], [[colimits]], [[coends]],
+[[adjoint functors]], [[Kan extensions]], etc.
 
 The first thing we will observe is an immediate consequence of the
 [Yoneda lemma]: representing objects are unique. Intuitively this is
@@ -104,8 +96,8 @@ representation-unique X Y =
     よX≅よY = (X .represents C^.Iso⁻¹) C^.∘Iso Y .represents
 ```
 
-Therefore, if $\cC$ is a univalent category, then the type of
-representations for a functor $F$ is a proposition. This does not follow
+Therefore, if $\cC$ is a [[univalent category]], then the type of
+representations for a functor $F$ is a [[proposition]]. This does not follow
 immediately from the lemma above: we also need to show that the
 isomorphism computed by the full-faithfulness of the Yoneda embedding
 commutes with the specified representation isomorphism.
@@ -143,7 +135,7 @@ We begin to connect the idea of representing objects to other universal
 constructions by proving this alternative characterisation of
 representations: A functor $F$ is representable if, and only if, its
 [category of elements](Cat.Instances.Elements.html) $\int F$ has a
-[terminal object](Cat.Diagram.Terminal.html).
+[[terminal object]].
 
 ```agda
 terminal-element→representation
@@ -179,7 +171,7 @@ constitutes a natural isomorphism.
   f-rep : Representation F
   f-rep .rep = top .ob
   f-rep .represents = C^.invertible→iso nat $
-    componentwise-invertible→invertible nat inv
+    invertible→invertibleⁿ nat inv
 ```
 
 ## Universal constructions
@@ -215,9 +207,9 @@ record Corepresentation (F : Functor C (Sets κ)) : Type (o ⊔ κ) where
   no-eta-equality
   field
     corep : C.Ob
-    corepresents : natural-iso F (Hom-from C corep)
+    corepresents : F ≅ⁿ Hom-from C corep
 
-  module corep = natural-iso corepresents
+  module corep = Isoⁿ corepresents
 
   coequiv : ∀ {a} → C.Hom corep a ≃ ∣ F .F₀ a ∣
   coequiv = Iso→Equiv λ where
@@ -251,7 +243,7 @@ corepresentation-unique X Y =
     (よcov-is-fully-faithful C)
     (iso→co-iso (Cat[ C , Sets κ ]) ni)
   where
-    ni : natural-iso (Hom-from C (Y .corep)) (Hom-from C (X .corep))
+    ni : Hom-from C (Y .corep) ≅ⁿ Hom-from C (X .corep)
     ni = (Y .corepresents ni⁻¹) ni∘ X .corepresents
 ```
 </details>

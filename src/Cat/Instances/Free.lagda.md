@@ -28,14 +28,12 @@ record Graph o ℓ : Type (lsuc o ⊔ lsuc ℓ) where
     edge : ∣ vert ∣ → ∣ vert ∣ → Set ℓ
 ```
 
-Given a graph $G$, we construct a [strict category] $\rm{Path}(G)$ in
+Given a graph $G$, we construct a [[strict category]] $\rm{Path}(G)$ in
 the following manner:
 
 - The objects of $\rm{Path}(G)$ are the vertices of $G$
 - The morphisms in $\rm{Path}(G)$ are given by _finite paths_ in $G$.
 Finite paths are defined by the following indexed-inductive type
-
-[strict category]: Cat.Instances.StrictCat.html
 
 <!--
 ```agda
@@ -176,7 +174,7 @@ inductive.
 ```
 
 And finally, by proving that there is a code for the reflexivity path,
-we can show that we have an identity system in the type of paths from
+we can show that we have an [[identity system]] in the type of paths from
 $a$ to $b$ given by their codes. Since these codes are propositions, and
 identity systems give a characterisation of a type's identity types, we
 conclude that paths between a pair of vertices live in a set!

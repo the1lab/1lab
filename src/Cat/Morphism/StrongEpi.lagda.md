@@ -3,7 +3,6 @@
 open import Cat.Diagram.Coequaliser.RegularEpi
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Functor.FullSubcategory
-open import Cat.Morphism.Factorisation
 open import Cat.Diagram.Limit.Finite
 open import Cat.Morphism.Orthogonal
 open import Cat.Diagram.Equaliser
@@ -188,7 +187,7 @@ epimorphism", we'd certainly like regular epis to be strong epis!
 
 This is fortunately the case. Suppose that $f : a \to b$ is the
 coequaliser of some maps $s, t : r \to a$^[If you care, $r$ is for
-"relation" --- the intution is that $r$ specifies the _relations_
+"relation" --- the intuition is that $r$ specifies the _relations_
 imposed on $a$ to get $b$], and that $z : c \mono b$ is a monomorphism
 we want to lift against.
 
@@ -248,13 +247,11 @@ is-regular-epi→is-strong-epi {a} {b} f regular =
 
 # Images
 
-Now we come to the _raison d'être_ for strong epimorphisms: [Images].
+Now we come to the _raison d'être_ for strong epimorphisms: [[Images]].
 The definition of image we use is very complicated, and the
 justification is already present there, but the short of it is that the
 image of a morphism $f : a \to b$ is a monomorphism $\im(f) \mono b$ which is
 universal amongst those through which $f$ factors.
-
-[Images]: Cat.Diagram.Image.html
 
 Since images have a universal property, and one involving [comma
 categories] of [slice categories] at that, they are tricky to come by.
@@ -403,7 +400,7 @@ is epic, this means we have $u = v$ --- exactly what we wanted!
 Another well-behaved subclass of epimorphism are the **extremal**
 epimorphisms: An epimorphism $e : A \epi B$ is extremal if when, given a
 factorisation $e = mg$ through a monomorphism $m : C \mono B$, then $m$
-is an isomorphism. In a finitely complete category, every extremal
+is an isomorphism. In a [[finitely complete category]], every extremal
 epimorphism is strong; the converse is immediate.
 
 ```agda
@@ -437,6 +434,7 @@ along $m$ to obtain the square
   \arrow["e", curve={height=-12pt}, from=1-1, to=3-5]
   \arrow["u", curve={height=12pt}, from=1-1, to=5-3]
 \end{tikzcd}\]
+~~~
 
 and obtain the unique factorisation $A \to A \times_D B$. Note that the
 map $u : A \times_D B \mono B$ is a monomorphism since it results from

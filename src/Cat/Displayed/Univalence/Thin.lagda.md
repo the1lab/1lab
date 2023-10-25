@@ -4,12 +4,10 @@
 open import 1Lab.Equiv.Embedding
 
 open import Cat.Displayed.Univalence
-open import Cat.Displayed.Fibre
+open import Cat.Functor.Properties
 open import Cat.Displayed.Total
 open import Cat.Displayed.Base
 open import Cat.Instances.Sets
-open import Cat.Functor.Base
-open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Displayed.Morphism
@@ -37,11 +35,11 @@ open _≅[_]_
 # Thinly displayed structures
 
 The HoTT Book's version of the structure identity principle can be seen
-as a very early example of displayed category theory. Their notion of
+as a very early example of [[displayed category]] theory. Their
 _standard notion of structure_ corresponds exactly to a displayed
 category, all of whose fibres are posets. Note that this is not a
 category _fibred in_ posets, since the displayed category will not
-necessarily be a Cartesian fibration.
+necessarily be a [[Cartesian fibration]].
 
 Here, we restrict our attention to an important special case: Categories
 of structures over the category of sets (for a given universe level).
@@ -50,6 +48,8 @@ _thinly displayed structures_, or _thin structures_ for short. These are
 of note not only because they intersect the categorical SIP defined
 above with the [typal SIP] established in the prelude modules, but also
 because we can work with them very directly.
+
+[typal SIP]: 1Lab.Univalence.SIP.html
 
 ```agda
 record
@@ -96,9 +96,9 @@ laws are trivial since $H$ is valued in propositions.
 
 We recall that the $S$-structures can be made into a preorder by setting
 $\alpha \le \beta$ iff. the identity morphism is an $H$-homomorphism
-from $\alpha$ to $\beta$. And, if this preorder is in fact a partial
-order, then the total category of structures is univalent --- the type
-of identities between $S$-structured $\cB$-objects is equivalent to
+from $\alpha$ to $\beta$. And, if this preorder is in fact a [[partial
+order]], then the [[total category]] of structures is univalent --- the
+type of identities between $S$-structured $\cB$-objects is equivalent to
 the type of $H$-homomorphic $\cB$-isomorphisms.
 
 ```agda
@@ -112,8 +112,8 @@ the type of $H$-homomorphic $\cB$-isomorphisms.
         ∙ spec .id-hom-unique (y .snd .to′) (y .snd .from′))
 ```
 
-By construction, such a category of structured objects admits a faithful
-functor into the category of sets.
+By construction, such a category of structured objects admits a
+[[faithful functor]] into the category of sets.
 
 ```agda
   Forget-structure : Functor Structured-objects (Sets ℓ)
@@ -128,13 +128,12 @@ module _ {ℓ o′ ℓ′} {S : Type ℓ → Type o′} {spec : Thin-structure �
     module So = Precategory (Structured-objects spec)
     module Som = Cat.Morphism (Structured-objects spec)
 
-  _#_ : ∀ {a b : So.Ob} → So.Hom a b → ⌞ a ⌟ → ⌞ b ⌟
-  f # x = f .Total-hom.hom x
-
-  _#ₚ_ : ∀ {a b : So.Ob} {f g : So.Hom a b } → f ≡ g → ∀ x → f # x ≡ g # x
-  f #ₚ x = happly (ap hom f) x
-
-  infixl 999 _#_
+  instance
+    Funlike-Hom : Funlike So.Hom
+    Funlike-Hom = record
+      { _#_ = Total-hom.hom
+      ; ext = λ p → Structured-hom-path spec (funext p)
+      }
 
   Homomorphism-path
     : ∀ {x y : So.Ob} {f g : So.Hom x y}

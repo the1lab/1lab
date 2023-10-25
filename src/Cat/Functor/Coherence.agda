@@ -2,11 +2,12 @@ open import 1Lab.Reflection
 
 open import Cat.Prelude
 
-import Cat.Instances.Functor.Compose
+import Cat.Functor.Compose
 
 module Cat.Functor.Coherence where
 
-open Cat.Instances.Functor.Compose public
+open Cat.Functor.Compose public
+
 private
   variable
     o ℓ : Level

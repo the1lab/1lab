@@ -1,16 +1,14 @@
 <!--
 ```agda
-open import Cat.Displayed.Base
-open import Cat.Displayed.Cartesian
 open import Cat.Displayed.GenericObject
-
+open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Base
+open import Cat.Internal.Base using (Internal-cat)
 open import Cat.Prelude
 
-open import Cat.Internal.Base using (Internal-cat)
-
-import Cat.Internal.Base
 import Cat.Internal.Reasoning
 import Cat.Internal.Morphism
+import Cat.Internal.Base
 import Cat.Reasoning
 ```
 -->
@@ -131,7 +129,7 @@ fairly nasty. Associativity is especially bad.
 
 To really hammer home that point that the externalisation of an internal
 category is the internal version of the family fibration, we show that
-the cartesian morphisms are *precisely* the internal isomorphisms.
+the [[cartesian morphisms]] are *precisely* the internal isomorphisms.
 
 The forward direction looks almost identical to the proof that pointwise
 isomorphisms are cartesian morphisms in the family fibration.

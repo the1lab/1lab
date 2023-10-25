@@ -3,7 +3,6 @@
 open import 1Lab.Type
 
 open import Data.Int.Inductive
-open import Data.Bool
 
 open import Prim.Data.String
 open import Prim.Data.Maybe

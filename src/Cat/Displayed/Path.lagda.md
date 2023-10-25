@@ -3,7 +3,6 @@
 open import Cat.Functor.Equivalence.Path
 open import Cat.Functor.Equivalence
 open import Cat.Displayed.Functor
-open import Cat.Displayed.Total
 open import Cat.Displayed.Base
 open import Cat.Prelude
 ```
@@ -18,12 +17,12 @@ open Displayed
 
 # Paths of displayed categories
 
-If you have a pair of displayed categories $\cE \liesover \cB_0$
-and $\cF \liesover \cB_1$ over a line of precategories
-$\cB_i, i : \II$, it might be interesting --- if you, like me, are a
-lunatic --- to know when they can be connected by a `PathP`{.Agda} over
-$\cB$. This module answers that! A path between displayed categories,
-over a path of their corresponding bases, is a displayed functor
+If you have a pair of [[displayed categories]] $\cE \liesover \cB_0$ and
+$\cF \liesover \cB_1$ over a line of precategories $\cB_i, i : \II$, it
+might be interesting --- if you, like me, are a lunatic --- to know when
+they can be connected by a `PathP`{.Agda} over $\cB$. This module
+answers that! A path between displayed categories, over a path of their
+corresponding bases, is a [[displayed functor]]
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -168,7 +167,7 @@ Suppose that we have $\cE \liesover \cB$ and $\cF \liesover
 \cC$, together with a functor $F : \cB \to \cC$ which is an
 [isomorphism of precategories], and a functor $G : \cE \to \cF$
 over $F$. This is the situation in the introduction, but where the line
-$\cB_i$ comes from the identity system on precategories given by
+$\cB_i$ comes from the [[identity system]] on precategories given by
 isomorphisms of precategories.
 
 [isomorphism of precategories]: Cat.Functor.Equivalence.html#isomorphisms

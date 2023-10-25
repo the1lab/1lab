@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import Cat.Univalent
 open import Cat.Prelude
 ```
 -->
@@ -15,7 +14,7 @@ open import Cat.Morphism C
 ```
 -->
 
-# Initial objects
+# Initial objects {defines="initial-object"}
 
 An object $\bot$ of a category $\mathcal{C}$ is said to be **initial**
 if there exists a _unique_ map to any other object:

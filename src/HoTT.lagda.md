@@ -10,7 +10,6 @@ open import Cat.Instances.Sets.CartesianClosed
 open import Cat.Instances.Sets.Congruences
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Hom.Representable
-open import Cat.Instances.Functor.Compose
 open import Cat.Instances.Sets.Cocomplete
 open import Cat.Functor.Equivalence.Path
 open import Cat.Univalent.Rezk.Universal
@@ -20,9 +19,11 @@ open import Cat.Displayed.Univalence
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Congruence
+open import Cat.Functor.Properties
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Functor.Adjoint
+open import Cat.Functor.Compose
 open import Cat.Instances.Slice
 open import Cat.Displayed.Base
 open import Cat.Instances.Sets
@@ -36,11 +37,13 @@ open import Cat.Bi.Base
 open import Cat.Prelude
 
 open import Data.Set.Surjection
+open import Data.Wellfounded.W
 open import Data.Fin.Finite using (Finite-choice)
 open import Data.Dec
 open import Data.Nat using (ℕ-well-ordered ; Discrete-Nat)
 open import Data.Sum
 
+open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
 open import Homotopy.Space.Torus
 open import Homotopy.Base
@@ -74,10 +77,10 @@ the 1Lab is material that was _not_ covered in the HoTT book.
 ```agda
 _ = sym
 _ = _∙_
-_ = ∙-id-l
-_ = ∙-id-r
-_ = ∙-inv-l
-_ = ∙-inv-r
+_ = ∙-idl
+_ = ∙-idr
+_ = ∙-invl
+_ = ∙-invr
 _ = ∙-assoc
 _ = Ωⁿ⁺²-is-abelian-group
 _ = Type∙
@@ -88,8 +91,8 @@ _ = Ωⁿ
 * Lemma 2.1.1: `sym`{.Agda}
 * Lemma 2.1.2: `_∙_`{.Agda}
 * Lemma 2.1.4:
-  i. `∙-id-l`{.Agda}, `∙-id-r`{.Agda}
-  ii. `∙-inv-l`{.Agda}, `∙-inv-r`{.Agda}
+  i. `∙-idl`{.Agda}, `∙-idr`{.Agda}
+  ii. `∙-invl`{.Agda}, `∙-invr`{.Agda}
   iii. _Definitional in cubical type theory_
   iv. `∙-assoc`{.Agda}
 * Theorem 2.1.6: `Ωⁿ⁺²-is-abelian-group`{.Agda}
@@ -101,13 +104,13 @@ _ = Ωⁿ
 <!--
 ```agda
 _ = ap
-_ = ap-comp-path
+_ = ap-∙
 ```
 -->
 
 * Lemma 2.2.1: `ap`{.Agda}
 * Lemma 2.2.2:
-  i. `ap-comp-path`{.Agda}
+  i. `ap-∙`{.Agda}
   ii. _Definitional in cubical type theory_
   iii. _Definitional in cubical type theory_
   iv. _Definitional in cubical type theory_
@@ -319,7 +322,8 @@ _ = Singleton-is-contr
 _ = equiv→is-hlevel
 _ = ⊎-is-hlevel
 _ = Σ-is-hlevel
-_ = contractible-if-inhabited
+_ = is-contr-if-inhabited→is-prop
+_ = is-prop∙→is-contr
 _ = H-Level-Dec
 _ = disjoint-⊎-is-prop
 _ = ℕ-well-ordered
@@ -331,7 +335,7 @@ _ = Finite-choice
 * Exercise 3.1: `equiv→is-hlevel`{.Agda}
 * Exercise 3.2: `⊎-is-hlevel`{.Agda}
 * Exercise 3.3: `Σ-is-hlevel`{.Agda}
-* Exercise 3.5: `contractible-if-inhabited`{.Agda}
+* Exercise 3.5: `is-contr-if-inhabited→is-prop`{.Agda}, `is-prop∙→is-contr`{.Agda}
 * Exercise 3.6: `H-Level-Dec`{.Agda}
 * Exercise 3.7: `disjoint-⊎-is-prop`{.Agda}
 * Exercise 3.19: `ℕ-well-ordered`{.Agda}
@@ -389,8 +393,10 @@ _ = is-equiv-is-prop
 ```
 -->
 
-**Note**: This is our "default" definition of equivalence, but we
+:::{.note}
+This is our "default" definition of equivalence, but we
 generally use it through the interface of half-adjoint equivalences.
+:::
 
 * Definition 4.4.1: `is-equiv`{.Agda}
 * Theorem 4.4.3: `is-equiv→is-half-adjoint-equiv`{.Agda}
@@ -409,6 +415,28 @@ _ = Map-classifier
 * Lemma 4.8.1: `Fibre-equiv`{.Agda}
 * Lemma 4.8.2: `Total-equiv`{.Agda}
 * Theorem 4.8.3: `Map-classifier`{.Agda}
+
+## Chapter 5 Induction
+
+### 5.3 W-types
+
+<!--
+```agda
+_ = W
+```
+-->
+
+* W-types: `W`{.Agda}
+
+### 5.4 Inductive types are initial algebras
+
+<!--
+```agda
+_ = W-initial
+```
+-->
+
+* Theorem 5.4.7: `W-initial`{.Agda}
 
 ## Chapter 6 Higher inductive types
 
@@ -558,6 +586,16 @@ _ = n-Tr-elim
 * Lemma 7.3.2: `n-Tr-elim`{.Agda}
 * Theorem 7.3.12: `n-Tr-path-equiv`{.Agda}
 
+### 7.5 Connectedness
+
+<!--
+```agda
+_ = is-n-connected
+```
+-->
+
+* Definition 7.5.1: `is-n-connected`{.Agda}
+
 # Part 2 Mathematics
 
 ## Chapter 8 Homotopy theory
@@ -638,8 +676,8 @@ _ = _=>_
 _ = Nat-path
 _ = Nat-is-set
 _ = Functor-path
-_ = componentwise-invertible→invertible
-_ = Nat-iso→Iso
+_ = invertible→invertibleⁿ
+_ = isoⁿ→iso
 _ = Functor-is-category
 _ = _F∘_
 _ = _◂_
@@ -657,7 +695,7 @@ _ = Cat
     `Nat-is-set`{.Agda}
   * The one after that is `Functor-path`{.Agda}.
 * Definition 9.2.3: `Cat[_,_]`{.Agda}
-* Lemma 9.2.4: If: `componentwise-invertible→invertible`{.Agda}; Only if: `Nat-iso→Iso`{.Agda}
+* Lemma 9.2.4: If: `invertible→invertibleⁿ`{.Agda}; Only if: `isoⁿ→iso`{.Agda}
 * Theorem 9.2.5: `Functor-is-category`{.Agda}
 * Theorem 9.2.6: `_F∘_`{.Agda}
 * Definition 9.2.7: `_◂_`{.Agda}, `_▸_`{.Agda}

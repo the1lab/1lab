@@ -19,6 +19,7 @@ private variable
 
 # Products
 
+:::{.definition #product}
 The **product** $P$ of two objects $A$ and $B$, if it exists, is the
 smallest object equipped with "projection" maps $P \to A$ and $P \to B$.
 This situation can be visualised by putting the data of a product into a
@@ -26,6 +27,7 @@ commutative diagram, as the one below: To express that $P$ is the
 _smallest_ object with projections to $A$ and $B$, we ask that any other
 object $Q$ with projections through $A$ and $B$ factors uniquely through
 $P$:
+:::
 
 ~~~{.quiver}
 \[\begin{tikzcd}
@@ -39,10 +41,11 @@ $P$:
 \end{tikzcd}\]
 ~~~
 
-In the sense that (univalent) categories generalise posets, the product
-of $A$ and $B$ --- if it exists --- generalises the binary meet
-$A \wedge B$. Since products are [unique](#uniqueness) when they exist,
-we may safely denote any product of $A$ and $B$ by $A \times B$.
+In the sense that [[(univalent) categories|univalent category]]
+generalise posets, the product of $A$ and $B$ --- if it exists ---
+generalises the binary meet $A \wedge B$. Since products are
+[unique](#uniqueness) when they exist, we may safely denote any product
+of $A$ and $B$ by $A \times B$.
 
 For a diagram $A \ot A \times B \to B$ to be a product diagram, it must
 be able to cough up an arrow $Q \to P$ given the data of another span $A
@@ -50,9 +53,9 @@ be able to cough up an arrow $Q \to P$ given the data of another span $A
 unique among the arrows that do so.
 
 This factoring is called the **pairing** of the arrows $f : Q \to A$ and
-$g : Q \to B$, since in the special case where $Q$ is the [terminal
-object] (hence the two arrows are global elements of $A$ resp. $B$), the
-pairing $\langle f, g \rangle$ is a global element of the product $A
+$g : Q \to B$, since in the special case where $Q$ is the [[terminal
+object]] (hence the two arrows are global elements of $A$ resp. $B$),
+the pairing $\langle f, g \rangle$ is a global element of the product $A
 \times B$.
 
 [terminal object]: Cat.Diagram.Terminal.html
@@ -99,7 +102,7 @@ record Product (A B : Ob) : Type (o ⊔ h) where
 
 ```
 
-## Uniqueness
+## Uniqueness {defines="uniqueness-of-products"}
 
 <!--
 ```agda

@@ -22,8 +22,12 @@ record Bind (M : Effect) : Typeω where
   _>>_ : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → M.₀ A → M.₀ B → M.₀ B
   _>>_ f g = f >>= λ _ → g
 
+  infixl 1 _>>=_
+
   _=<<_ : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → (A → M.₀ B) → M.₀ A → M.₀ B
   _=<<_ f x = x >>= f
+
+  infixr 1 _=<<_
 
 open Bind ⦃ ... ⦄ public
 ```

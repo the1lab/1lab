@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import Cat.Diagram.Colimit.Base
-open import Cat.Instances.Functor
 open import Cat.Diagram.Initial
 open import Cat.Prelude
 
@@ -25,12 +24,9 @@ open _=>_
 
 # Colimits via Cocones
 
-As noted in the main page on [colimits], most introductory texts opt
-to define colimits via categorical gadgets called **cocones**.
-
-[colimits]: Cat.Diagram.Colimit.Base.html
-
-A `Cocone`{.Agda} over $F$ is given by an object (the `coapex`{.agda})
+As noted in the main page on [[colimits]], most introductory texts opt
+to define colimits via categorical gadgets called **cocones**. A
+`Cocone`{.Agda} over $F$ is given by an object (the `coapex`{.agda})
 together with a family of maps `ψ`{.Agda} --- one for each object in the
 indexing category `J`{.Agda} --- such that "everything in sight
 commutes".
@@ -39,8 +35,8 @@ commutes".
 ```agda
 module _ {J : Precategory o ℓ} {C : Precategory o′ ℓ′} (F : Functor J C) where
   private
-    import Cat.Reasoning J as J
-    import Cat.Reasoning C as C
+    module C = Cat.Reasoning C
+    module J = Precategory J
     module F = Functor F
 ```
 -->
@@ -146,11 +142,11 @@ defined here and those considered in the definition of colimit.
   Cocone→cocone K .is-natural x y f = K .Cocone.commutes f ∙ sym (C.idl _)
 ```
 
-We can then rephrase the universality from the definition of left Kan
-extension by asking that a particular cocone be [initial] in the
+We can then rephrase the universality from the definition of [[left Kan
+extension]] by asking that a particular cocone be [initial] in the
 category we have just constructed.
 
-[initial object]: Cat.Diagram.Initial.html
+[initial]: Cat.Diagram.Initial.html
 
 ```agda
   is-initial-cocone→is-colimit

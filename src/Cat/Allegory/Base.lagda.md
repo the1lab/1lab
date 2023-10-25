@@ -1,8 +1,6 @@
 <!--
 ```agda
 open import Cat.Prelude
-
-import Cat.Reasoning as Cr
 ```
 -->
 
@@ -28,6 +26,7 @@ disconnected from our theory of bicategories.
 
 ```agda
 record Allegory o ℓ ℓ′ : Type (lsuc (o ⊔ ℓ ⊔ ℓ′)) where
+  no-eta-equality
   field cat : Precategory o ℓ
   open Precategory cat public
 ```
@@ -117,9 +116,9 @@ monoids.^[as a hint: _joins_ in your lattice become composition]
 
 The first thing we observe about allegories is a Yoneda-type lemma for
 relations: Fixing $g$ and $h$, if $f \le g$ is equivalent to $f \le h$
-for every $f$, then $g = h$. Needless to say holds in any poset (and
-really any univalent category), but we emphasise it _here_ for
-allegories since it will be used to prove important laws.
+for every $f$, then $g = h$. Needless to say, this holds in any poset
+(and really any [[univalent category]]), but we emphasise it _here_, for
+allegories, since it will be used to prove important laws.
 
 ```agda
 module _ {o ℓ ℓ′} (A : Allegory o ℓ ℓ′) where
@@ -212,11 +211,11 @@ Rel ℓ .cat .id x y      = elΩ (x ≡ y)
 
 We can investigate the reason for this by working through e.g. the proof
 that relational composition is right-unital. We'll leave the identity
-relation written as just $\rm{Id}$, but in either case, what we want to
-show that $$(x, y) \mapsto \exists (a : A), \rm{Id}(x, a) \land R(a,
+relation written as just $\Id$, but in either case, what we want to
+show that $$(x, y) \mapsto \exists (a : A), \Id(x, a) \land R(a,
 y)$$ relates the same pairs as $R$. In the interesting direction, we're
 given some $a : A$ and a witness that $R(a, y)$: but what we wanted was
-to show $R(x, y)$! Fortunately if we we set $\rm{Id}(x, a)$, then $R(x,
+to show $R(x, y)$! Fortunately if we we set $\Id(x, a)$, then $R(x,
 y) \simeq R(a, y)$, and we're done.
 
 ```agda

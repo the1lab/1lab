@@ -1,9 +1,8 @@
 <!--
 ```agda
-open import Cat.Functor.Base
 open import Cat.Functor.WideSubcategory
-open import Cat.Groupoid
 open import Cat.Instances.Functor
+open import Cat.Groupoid
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -20,7 +19,7 @@ open Functor
 ```
 -->
 
-# The core of a category
+# The core of a category {defines="core"}
 
 The **core** of a category $\cC$ is the maximal sub-[groupoid] of $\cC$:
 the category $\rm{Core}(\cC)$ constructed by keeping only the invertible

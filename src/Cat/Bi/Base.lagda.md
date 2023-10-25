@@ -1,9 +1,9 @@
 <!--
 ```agda
-open import Cat.Instances.Functor.Compose renaming (_◆_ to _◇_)
-open import Cat.Instances.Functor
+open import Cat.Functor.Naturality
 open import Cat.Instances.Product
-open import Cat.Functor.Hom
+open import Cat.Functor.Compose renaming (_◆_ to _◇_)
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bi
@@ -16,7 +16,7 @@ import Cat.Reasoning as Cr
 module Cat.Bi.Base where
 ```
 
-# Prebicategories
+# Prebicategories {defines=bicategory}
 
 <!--
 ```agda
@@ -166,7 +166,7 @@ We now move onto the invertible 2-cells witnessing that the chosen
 identity map is a left- and right- unit element for the composition
 functor, and that composition is associative. In reality, to get a fully
 coherent structure, we need these invertible 2-cells to be given as
-natural isomorphisms, e.g. $(\id \circ -) \rm{Id}$, which witnesses
+natural isomorphisms, e.g. $(\id \circ -) \cong \id$, which witnesses
 that the functor "compose with the identity 1-cell on the left" is
 naturally isomorphic to the identity functor.
 
@@ -338,10 +338,10 @@ straightforward).
 ```
 
 The unitors and associator are almost, but not quite, given by the
-identity 2-cells, since componentwise the functor composition $\rm{Id}
-\circ F$ evaporates, leaving only $F$ behind. Unfortunately, this
-equation is not definitional, so we can not use the identity natural
-isomorphism directly:
+identity 2-cells, since componentwise the functor composition $\id \circ
+F$ evaporates, leaving only $F$ behind. Unfortunately, this equation is
+not definitional, so we can not use the identity natural isomorphism
+directly:
 
 ```agda
   pb .unitor-r {B = B} = to-natural-iso ni where
@@ -414,8 +414,7 @@ record
 
 The resulting structure has "directed functoriality", witnessed by the
 `compositor`{.Agda} and `unitor`{.Agda} natural transformations, which
-have components $F_1(f)F_1(g) \To F_1(fg)$ and $F_1(\id) \To
-\id$.
+have components $F_1(f)F_1(g) \To F_1(fg)$ and $\id \To F_1(\id)$.
 
 ```agda
     compositor

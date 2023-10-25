@@ -5,7 +5,6 @@ open import Cat.Instances.Discrete hiding (Disc)
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Functor.Adjoint
-open import Cat.Univalent
 open import Cat.Prelude
 ```
 -->
@@ -42,18 +41,20 @@ and right- adjoints to $\rm{Ob}$ equip sets with the "discrete" and
 "codiscrete" spatial structures, where nothing is stuck together, or
 everything is stuck together.
 
-The extra right adjoint to $\rm{Ob}$ assigns a category to its set
+The extra [[right adjoint]] to $\rm{Ob}$ assigns a category to its set
 of connected components, which can be thought of as the "pieces" of the
 category. Two objects land in the same connected component if there is a
 path of morphisms connecting them, hence the name.
 
-**Note**: Generally, the term "cohesive" is applied to Grothendieck
+:::{.note}
+Generally, the term "cohesive" is applied to Grothendieck
 topoi, which `Strict-cats`{.Agda} is _very far_ from being. We're using it
 here by analogy: There's an adjoint quadruple, where the functor
 $\Gamma$ sends each category to its set of points: see [the last
-section]. Strictly speaking, the left adjoint to $\Gamma$ isn't defined
+section]. Strictly speaking, the [[left adjoint]] to $\Gamma$ isn't defined
 by tensoring with `Sets`{.Agda}, but it _does_ have the effect of
 sending $S$ to the coproduct of $S$-many copies of the point category.
+:::
 
 [the last section]: #object-set-vs-global-sections
 
@@ -157,7 +158,7 @@ Fortunately the triangle identities are straightforwardly checked.
 
 # Γ ⊣ Codisc
 
-The _codiscrete_ category on a set $X$ is the strict category with
+The _codiscrete_ category on a set $X$ is the [[strict category]] with
 object space $X$, and _all_ hom-spaces contractible. The assignment of
 codiscrete categories extends to a functor $\Sets \to \strcat$, where we
 lift functions to act on object parts and the action on morphisms is
@@ -198,11 +199,11 @@ both directions:
 Above, we defined the functor $\Gamma$ by directly projecting the
 underlying set of each category. Normally in the definition of a
 cohesion structure, we use the _global sections_ functor which maps
-$x \mapsto \hom(*,x)$ (where $*$ is the terminal object). Here we prove
+$x \mapsto \hom(*,x)$ (where $*$ is the [[terminal object]]). Here we prove
 that these functors are naturally isomorphic, so our abbreviation above
 is harmless.
 
-Below, we represent the terminal category $*$ as the codiscrete category
+Below, we represent the [[terminal category]] $*$ as the codiscrete category
 on the terminal set. Using the codiscrete category here is equivalent to
 using the discrete category, but it is more convenient since the
 $\hom$-sets are definitionally contractible.

@@ -47,7 +47,7 @@ CRing-structure ℓ = Full-substructure ℓ CRing-on Ring-on emb (Ring-structure
                   (λ i → (p ∙ sym q) i ._*_ y x)
                   i j
               })
-      (commutes→square (∙-cancel-r p q ∙ sym (∙-id-r p)))
+      (commutes→square (∙-cancelr p q ∙ sym (∙-idr p)))
 
 CRings : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 CRings ℓ = Structured-objects (CRing-structure ℓ)

@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Diagram.Limit.Finite
+open import Cat.Functor.Properties
 open import Cat.Diagram.Terminal
 open import Cat.Functor.Pullback
 open import Cat.Functor.Adjoint
@@ -64,9 +65,9 @@ module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ�
     module D = Cat.Reasoning D
 ```
 
-However, if $F$ is faithful, then so are any of its slices $F/X$, and
-additionally, if $F$ is full, then the sliced functors are also fully
-faithful.
+However, if $F$ is [[faithful|faithful functor]], then so are any of its
+slices $F/X$, and additionally, if $F$ is [[full|full functor]], then
+the sliced functors are also [[fully faithful]].
 
 ```agda
   Sliced-faithful : is-faithful F → is-faithful (Sliced F X)
@@ -86,11 +87,12 @@ faithful.
 
 # Left exactness
 
-If $F$ is lex (meaning it preserves pullbacks and the terminal object),
-then $F/X$ is lex as well. We note that it (by definition) preserves
-products, since products in $\cC/X$ are equivalently pullbacks in
-$\cC/X$. Pullbacks are also immediately shown to be preserved, since
-a square in $\cC/X$ is a pullback iff it is a pullback in $\cC$.
+If $F$ is [[left exact|left exact functor]] (meaning it preserves
+[[pullbacks]] and the [[terminal object]]), then $F/X$ is lex as well.
+We note that it (by definition) preserves [[products]], since products
+in $\cC/X$ are equivalently pullbacks in $\cC/X$. Pullbacks are also
+immediately shown to be preserved, since a square in $\cC/X$ is a
+pullback iff it is a pullback in $\cC$.
 
 ```agda
 Sliced-lex
@@ -122,16 +124,14 @@ $F(T)$, being isomorphic to the terminal object, is itself terminal!
     is-terminal-iso (Slice D (F .F₀ X))
       (subst (Dx._≅ cut (F .F₁ (T .map))) (ap cut (F .F-id))
         (F-map-iso (Sliced F X)
-          (⊤-unique (Slice C X)
-            (record { has⊤ = Slice-terminal-object })
-            (record { has⊤ = term }))))
-      Slice-terminal-object
+          (⊤-unique (Slice C X) Slice-terminal-object (record { has⊤ = term }))))
+      Slice-terminal-object′
 ```
 
 # Sliced adjoints
 
 A _very_ important property of sliced functors is that, if $L \dashv R$,
-then $R/X$ is also a right adjoint. The left adjoint isn't quite $L/X$,
+then $R/X$ is also a right adjoint. The [[left adjoint]] isn't quite $L/X$,
 because the types there don't match, nor is it $L/R(x)$ --- but it's
 quite close. We can adjust that functor by postcomposition with the
 counit $\eps : LR(x) \to x$A to get a functor left adjoint to $R/X$.

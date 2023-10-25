@@ -26,8 +26,11 @@
   &-contents {
     width: 60%;
     height: 60%;
+
     background-color: var(--text-bg);
-    @include material;
+    padding: 1em 0em 0em 0em;
+    box-shadow: 2px 2px 6px var(--shadow);
+
     text-align: center;
     display: flex;
     flex-direction: column;

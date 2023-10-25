@@ -34,7 +34,7 @@ the _functions_ $G \to H$, and more interested in the homomorphisms $G
 It turns out that the answer is no: if you try to make $\hom$ into a
 functor on [$\Grp$], equipping $A \to B$ the pointwise group structure,
 you find out that the sum of group homomorphisms can not be shown to be
-a homomorphism. But when considering _abelian_ groups, i.e. the category
+a homomorphism. But when considering [[abelian groups]], i.e. the category
 [$\Ab$], this _does_ work:
 
 [$\Grp$]: Algebra.Group.Cat.Base.html
@@ -57,20 +57,20 @@ Abelian-group-on-hom A B = to-abelian-group-on make-ab-on-hom module Hom-ab wher
 -->
 
 ```agda
-  make-ab-on-hom .mul f g .hom x = f .hom x B.* g .hom x
+  make-ab-on-hom .mul f g .hom x = f # x B.* g # x
   make-ab-on-hom .mul f g .preserves .pres-⋆ x y =
-    f .hom (x A.* y) B.* g .hom (x A.* y)                ≡⟨ ap₂ B._*_ (f .preserves .pres-⋆ x y) (g .preserves .pres-⋆ x y) ⟩
-    (f .hom x B.* f .hom y) B.* (g .hom x B.* g .hom y)  ≡⟨ B.pullr (B.pulll refl)  ⟩
-    f .hom x B.* (f .hom y B.* g .hom x) B.* g .hom y    ≡⟨ (λ i → f .hom x B.* B.commutes {x = f .hom y} {y = g .hom x} i B.* (g .hom y)) ⟩
-    f .hom x B.* (g .hom x B.* f .hom y) B.* g .hom y    ≡⟨ B.pushr (B.pushl refl) ⟩
-    (f .hom x B.* g .hom x) B.* (f .hom y B.* g .hom y)  ∎
+    f # (x A.* y) B.* g # (x A.* y)          ≡⟨ ap₂ B._*_ (f .preserves .pres-⋆ x y) (g .preserves .pres-⋆ x y) ⟩
+    (f # x B.* f # y) B.* (g # x B.* g # y)  ≡⟨ B.pullr (B.pulll refl)  ⟩
+    f # x B.* (f # y B.* g # x) B.* g # y    ≡⟨ (λ i → f # x B.* B.commutes {x = f # y} {y = g # x} i B.* (g # y)) ⟩
+    f # x B.* (g # x B.* f # y) B.* g # y    ≡⟨ B.pushr (B.pushl refl) ⟩
+    (f # x B.* g # x) B.* (f # y B.* g # y)  ∎
 
-  make-ab-on-hom .inv f .hom x = B._⁻¹ (f .hom x)
+  make-ab-on-hom .inv f .hom x = B._⁻¹ (f # x)
   make-ab-on-hom .inv f .preserves .pres-⋆ x y =
-    f .hom (x A.* y) B.⁻¹               ≡⟨ ap B._⁻¹ (f .preserves .pres-⋆ x y) ⟩
-    (f .hom x B.* f .hom y) B.⁻¹        ≡⟨ B.inv-comm ⟩
-    (f .hom y B.⁻¹) B.* (f .hom x B.⁻¹) ≡⟨ B.commutes ⟩
-    (f .hom x B.⁻¹) B.* (f .hom y B.⁻¹) ∎
+    f # (x A.* y) B.⁻¹            ≡⟨ ap B._⁻¹ (f .preserves .pres-⋆ x y) ⟩
+    (f # x B.* f # y) B.⁻¹        ≡⟨ B.inv-comm ⟩
+    (f # y B.⁻¹) B.* (f # x B.⁻¹) ≡⟨ B.commutes ⟩
+    (f # x B.⁻¹) B.* (f # y B.⁻¹) ∎
 
   make-ab-on-hom .1g .hom x = B.1g
   make-ab-on-hom .1g .preserves .pres-⋆ x y = B.introl refl

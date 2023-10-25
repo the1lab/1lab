@@ -7,8 +7,6 @@ open import 1Lab.Type
 
 open import Data.Nat.Properties
 open import Data.Fin.Base
-open import Data.Nat.Base
-open import Data.Bool
 open import Data.List
 ```
 -->

@@ -9,8 +9,8 @@ open import Algebra.Group
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Functor.Equivalence
+open import Cat.Functor.Properties
 open import Cat.Diagram.Monad
-open import Cat.Functor.Base
 
 import Algebra.Group.Cat.Base as Grp
 
@@ -45,26 +45,25 @@ private
 # Monadicity of the category of groups
 
 We prove that the category $\thecat{Groups}_\kappa$ is monadic over
-$\Sets_\kappa$, or more specifically that the [free group] adjunction $F
-\dashv U$ is [monadic]. Rather than appealing to a monadicity theorem,
-we show this directly by calculation. This actually gives us a slightly
-sharper result, too: rather than showing that the [comparison functor]
-is an equivalence, we show directly that it is an isomorphism of
-categories. This doesn't exactly matter since $\Sets_\kappa$ and
-$\thecat{Groups}_\kappa$ are both [univalent categories], but it's
-interesting that it's easier to construct an isomorphism than it is to
-construct an equivalence.
+$\Sets_\kappa$, or more specifically that the [[free group|free group
+construction]] adjunction $F \dashv U$ is [monadic]. Rather than
+appealing to a monadicity theorem, we show this directly by calculation.
+This actually gives us a slightly sharper result, too: rather than
+showing that the [comparison functor] is an equivalence, we show
+directly that it is an isomorphism of categories. This doesn't exactly
+matter since $\Sets_\kappa$ and $\thecat{Groups}_\kappa$ are both
+[[univalent categories]], but it's interesting that it's easier to
+construct an isomorphism than it is to construct an equivalence.
 
-[free group]: Algebra.Group.Free.html
 [monadic]: Cat.Functor.Adjoint.Monadic.html
 [comparison functor]: Cat.Functor.Adjoint.Monadic.html#Comparison
-[univalent categories]: Cat.Univalent.html
 
-Let us abbreviate the [monad induced] by the free group adjunction by
-$T$. What we must show is that any $T$-algebra structure on a set $G$
-gives rise to a group structure on $G$, and that this process is
-reversible: If $\nu$ is our original algebra, applying our process then
-applying the comparison functor has to give $\nu$ back.
+Let us abbreviate the [monad induced] by the [[free group|free group
+construction]] adjunction by $T$. What we must show is that any
+$T$-algebra structure on a set $G$ gives rise to a group structure on
+$G$, and that this process is reversible: If $\nu$ is our original
+algebra, applying our process then applying the comparison functor has
+to give $\nu$ back.
 
 [monad induced]: Cat.Functor.Adjoint.Monad.html
 
@@ -130,7 +129,7 @@ is indeed a group structure, which is an incredibly boring calculation.
 
 We now show that this construction fits into defining an inverse (on the
 nose!) to the comparison functor. This is slightly easier than it sounds
-like: We must show that the functor is fully faithful, and that our
+like: We must show that the functor is [[fully faithful]], and that our
 mapping above is indeed invertible.
 
 Fully faithfulness is almost immediate: a homomorphism of $T$-algebras

@@ -1,10 +1,10 @@
 <!--
 ```agda
 {-# OPTIONS --lossy-unification #-}
-open import Cat.Instances.Functor.Compose
 open import Cat.Functor.Equivalence
+open import Cat.Functor.Properties
 open import Cat.Instances.Functor
-open import Cat.Functor.Base
+open import Cat.Functor.Compose
 open import Cat.Univalent
 open import Cat.Prelude
 
@@ -54,23 +54,22 @@ surjective functor]: A category $\cC$ is univalent _precisely_ if any
 weak equivalence $H : \cA \to \cB$ induces^[by [precomposition]]
 a proper equivalence of categories $- \circ H : [\cB,\cC] \to [\cA,\cC]$.
 
-[precomposition]: Cat.Instances.Functor.Compose.html
+[precomposition]: Cat.Functor.Compose.html
 
 The high-level overview of the proof is as follows:
 
-- For any \r{eso} $H : \cA \to \cB$, and for any $\cC$, all
-precategories, the functor $- \circ H : [\cA,\cB] \to [\cB,\cC]$
-is faithful. This is the least technical part of the proof, so we do it
+- For any [[eso functor]] $H : \cA \to \cB$, and for any $\cC$, all
+precategories, the functor $- \circ H : [\cA,\cB] \to [\cB,\cC]$ is
+faithful. This is the least technical part of the proof, so we do it
 first.
 
-- If $H$ is additionally full, then $- \circ H$ is \r{fully faithful}.
+- If $H$ is additionally full, then $- \circ H$ is [[fully
+faithful|fully faithful functor]].
 
-- If $H$ is a weak equivalence, and $\cC$ is [univalent], then $- \circ H$
-is essentially surjective. By the principle of unique choice, it is an
-equivalence, and thus^[since both its domain and codomain are univalent]
-an isomorphism.
-
-[univalent]: Cat.Univalent.html#univalent-categories
+- If $H$ is a weak equivalence, and $\cC$ is [[univalent|univalent
+category]], then $- \circ H$ is essentially surjective. By the principle
+of unique choice, it is an equivalence, and thus^[since both its domain
+and codomain are univalent] an isomorphism.
 
 ## Faithfulness
 
@@ -148,7 +147,7 @@ isomorphisms $Ha \cong b$.
 ```
 -->
 
-In more detail, if we're given an essential fibre $(a,f)$ of $H$ over
+In more detail, if we're given an [[essential fibre]] $(a,f)$ of $H$ over
 $b$, we can use $f$ to "match up" our component $g$ with the components
 of the natural transformation $\gamma$: since $\gamma_a : FH(a) \to
 FG(a)$, we've claimed to have a $Fb \to Gb$, and someone has just handed
@@ -223,7 +222,7 @@ over $b$ is a proposition.
             (sym (coh a₀ h) ∙ coh′ a₀ h))
 ```
 
-Given any $b$, $H$ being eso means that we _merely_ have an essential
+Given any $b$, $H$ being eso means that we [[merely]] have an essential
 fibre $(a,h)$ of $H$ over $b$. But since the type of components over $b$
 is a proposition, if we're going to use it to construct a component over
 $b$, then we are granted the honour of actually getting hold of an

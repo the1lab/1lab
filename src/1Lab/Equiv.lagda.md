@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import 1Lab.Path.Groupoid
 open import 1Lab.HLevel
 open import 1Lab.Path
 open import 1Lab.Type
@@ -13,26 +12,23 @@ open is-contr
 module 1Lab.Equiv where
 ```
 
-# Equivalences
+# Equivalences {defines=equivalence}
 
 The big idea of homotopy type theory is that isomorphic types can be
-identified: the [univalence axiom]. However, the notion of
+identified: the [[univalence axiom]]. However, the notion of
 `isomorphism`{.Agda ident=is-iso}, is, in a sense, not "coherent" enough
 to be used in the definition. For that, we need a coherent definition of
-_equivalence_, where "being an equivalence" is [a
-proposition](agda://1Lab.HLevel#is-prop).
-
-[univalence axiom]: 1Lab.Univalence.html
+_equivalence_, where "being an equivalence" is a [[proposition]].
 
 To be more specific, what we need for a notion of equivalence
-$\rm{is-equiv}(f)$ to be "coherent" is:
+$\isequiv(f)$ to be "coherent" is:
 
 - Being an `isomorphism`{.Agda ident=is-iso} implies being an
-`equivalence`{.Agda ident=is-equiv} ($\rm{is-iso}(f) \to
-\rm{is-equiv}(f)$)
+`equivalence`{.Agda ident=is-equiv} ($\isiso(f) \to
+\isequiv(f)$)
 
-- Being an equivalence implies being an isomorphism ($\rm{is-equiv}(f)
-\to \rm{is-iso}(f)$); Taken together with the first point we may
+- Being an equivalence implies being an isomorphism ($\isequiv(f)
+\to \isiso(f)$); Taken together with the first point we may
 summarise: "Being an equivalence and being an isomorphism are logically
 equivalent."
 
@@ -66,10 +62,10 @@ fibre f y = Σ _ λ x → f x ≡ y
 ```
 
 A function `f` is an equivalence if every one of its fibres is
-[contractible](agda://1Lab.HLevel#is-contr) - that is, for any element
-`y` in the range, there is exactly one element in the domain which `f`
-maps to `y`. Using set-theoretic language, `f` is an equivalence if the
-preimage of every element of the codomain is a singleton.
+[[contractible]] - that is, for any element `y` in the range, there is
+exactly one element in the domain which `f` maps to `y`. Using
+set-theoretic language, `f` is an equivalence if the preimage of every
+element of the codomain is a singleton.
 
 ```agda
 record is-equiv (f : A → B) : Type (level-of A ⊔ level-of B) where
@@ -332,7 +328,7 @@ $\pi : x_0 ≡ x_1$ and $p_0 ≡ p_1$ _`over`{.Agda ident=PathP}_ $\pi$.
 As an intermediate step in proving that $p_0 ≡ p_1$, we _must_ show that
 $x_0 ≡ x_1$ - without this, we can't even _state_ that $p_0$ and $p_1$
 are identified, since they live in different types!  To this end, we
-will build $\pi : p_0 ≡ p_1$, parts of which will be required to
+will build $\pi : x_0 ≡ x_1$, parts of which will be required to
 assemble the overall proof that $p_0 ≡ p_1$.
 
 We'll detail the construction of $\pi_0$; for $\pi_1$, the same method
@@ -450,8 +446,7 @@ filler for the square above.
 ```
 
 Observe that we can coherently alter $\theta$ to get $\iota$ below,
-which expresses that $\rm{ap}\ g\ p_0$ and $\rm{ap}\ g\ p_1$ are
-identified.
+which expresses that $\ap g\ p_0$ and $\ap g\ p_1$ are identified.
 
 ```agda
     ι : Square (ap (g ∘ f) π) (ap g p0) (ap g p1) refl
@@ -481,11 +476,11 @@ the $j = \rm{i0}$ (top) face is `t (π i) (~ k)`, and similarly for $i =
   \arrow[""{name=2, anchor=center, inner sep=0}, "{\pi_0}", color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=4-2]
   \arrow[""{name=3, anchor=center, inner sep=0}, "{\pi_1}"', color={rgb,255:red,92;green,92;blue,214}, from=2-4, to=4-4]
   \arrow[from=4-4, to=5-5]
-  \arrow[""{name=4, anchor=center, inner sep=0}, "{\rm{ap}\ (g \circ f)\ \pi}", color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-5]
+  \arrow[""{name=4, anchor=center, inner sep=0}, "{\ap (g \circ f)\ \pi}", color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-5]
   \arrow[""{name=5, anchor=center, inner sep=0}, "{g\ y}"', color={rgb,255:red,214;green,92;blue,92}, from=5-1, to=5-5]
   \arrow[from=2-4, to=1-5]
-  \arrow[""{name=6, anchor=center, inner sep=0}, "{\rm{ap}\ g\ p_1}", color={rgb,255:red,214;green,92;blue,92}, from=1-5, to=5-5]
-  \arrow[""{name=7, anchor=center, inner sep=0}, "{\rm{ap}\ g\ p_0}"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=5-1]
+  \arrow[""{name=6, anchor=center, inner sep=0}, "{\ap g\ p_1}", color={rgb,255:red,214;green,92;blue,92}, from=1-5, to=5-5]
+  \arrow[""{name=7, anchor=center, inner sep=0}, "{\ap g\ p_0}"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=5-1]
   \arrow[from=2-2, to=1-1]
   \arrow[from=4-2, to=5-1]
   \arrow["{\theta\ i\ (\neg\ j)}"{description}, color={rgb,255:red,92;green,92;blue,214}, Rightarrow, draw=none, from=1, to=0]
@@ -526,13 +521,13 @@ cubical diagram below. Once more, left is $i = \rm{i0}$, right is $i =
   & \textcolor{rgb,255:red,92;green,92;blue,214}{f\ (g\ y)} && \textcolor{rgb,255:red,92;green,92;blue,214}{f\ (g\ y)} \\
   \textcolor{rgb,255:red,214;green,92;blue,92}{y} &&&& \textcolor{rgb,255:red,214;green,92;blue,92}{y}
   \arrow[""{name=0, anchor=center, inner sep=0}, "{p_1}", from=1-5, to=5-5]
-  \arrow[""{name=1, anchor=center, inner sep=0}, "{\rm{ap}\ f\ \pi}", color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-5]
+  \arrow[""{name=1, anchor=center, inner sep=0}, "{\ap f\ \pi}", color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=1-5]
   \arrow[""{name=2, anchor=center, inner sep=0}, "{p_0}"', color={rgb,255:red,214;green,92;blue,92}, from=1-1, to=5-1]
   \arrow[""{name=3, anchor=center, inner sep=0}, "y"', color={rgb,255:red,214;green,92;blue,92}, from=5-1, to=5-5]
-  \arrow[""{name=4, anchor=center, inner sep=0}, "{\rm{ap}\ (f \circ g\circ f)\ \pi}"', color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=2-4]
+  \arrow[""{name=4, anchor=center, inner sep=0}, "{\ap (f \circ g\circ f)\ \pi}"', color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=2-4]
   \arrow[""{name=5, anchor=center, inner sep=0}, "{f(g\ y)}", color={rgb,255:red,92;green,92;blue,214}, from=4-2, to=4-4]
-  \arrow[""{name=6, anchor=center, inner sep=0}, "{\rm{ap}\ f\ p_1}"', color={rgb,255:red,92;green,92;blue,214}, from=2-4, to=4-4]
-  \arrow[""{name=7, anchor=center, inner sep=0}, "{\rm{ap}\ f\ p_0}", color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=4-2]
+  \arrow[""{name=6, anchor=center, inner sep=0}, "{\ap f\ p_1}"', color={rgb,255:red,92;green,92;blue,214}, from=2-4, to=4-4]
+  \arrow[""{name=7, anchor=center, inner sep=0}, "{\ap f\ p_0}", color={rgb,255:red,92;green,92;blue,214}, from=2-2, to=4-2]
   \arrow[from=2-2, to=1-1]
   \arrow[from=2-4, to=1-5]
   \arrow[from=4-4, to=5-5]
@@ -595,6 +590,19 @@ is-contr→≃ cA cB = (λ _ → cB .centre) , is-iso→is-equiv f-is-iso where
   is-iso.inv f-is-iso _ = cA .centre
   is-iso.rinv f-is-iso _ = is-contr→is-prop cB _ _
   is-iso.linv f-is-iso _ = is-contr→is-prop cA _ _
+
+is-contr→≃⊤ : ∀ {ℓ} {A : Type ℓ} → is-contr A → A ≃ ⊤
+is-contr→≃⊤ c = is-contr→≃ c ⊤-is-contr
+```
+
+...and so is any function into an empty type:
+
+```agda
+¬-is-equiv : ∀ {ℓ} {A : Type ℓ} (f : A → ⊥) → is-equiv f
+¬-is-equiv f .is-eqv ()
+
+is-empty→≃⊥ : ∀ {ℓ} {A : Type ℓ} → ¬ A → A ≃ ⊥
+is-empty→≃⊥ ¬a = _ , ¬-is-equiv ¬a
 ```
 
 # Equivalence Reasoning
@@ -641,6 +649,9 @@ _∙e_ (f , e) (g , e') = (λ x → g (f x)) , eqv where
   eqv : is-equiv (λ x → g (f x))
   eqv = is-iso→is-equiv (iso (λ x → f⁻¹ .is-iso.inv (g⁻¹ .is-iso.inv x)) right left)
 
+infixr 30 _∙e_
+infix 31 _e⁻¹
+
 ∙-is-equiv : ∀ {ℓ ℓ₁ ℓ₂} {A : Type ℓ} {B : Type ℓ₁} {C : Type ℓ₂}
            → {f : A → B} {g : B → C}
            → is-equiv f
@@ -682,7 +693,6 @@ x ≃⟨⟩ x≡y = x≡y
 _≃∎ : ∀ {ℓ} (A : Type ℓ) → A ≃ A
 x ≃∎ = _ , id-equiv
 
-infixr 30 _∙e_
 infixr 2 _≃⟨⟩_ _≃⟨_⟩_
 infix  3 _≃∎
 ```
@@ -707,5 +717,22 @@ prop-ext pprop qprop p→q q→p .snd .is-eqv y .paths (p' , path) =
 ```agda
 sym-equiv : ∀ {ℓ} {A : Type ℓ} {x y : A} → (x ≡ y) ≃ (y ≡ x)
 sym-equiv = sym , is-iso→is-equiv (iso sym (λ _ → refl) (λ _ → refl))
+
+lift-inj
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {a b : A }
+  → lift {ℓ = ℓ'} a ≡ lift {ℓ = ℓ'} b
+  → a ≡ b
+lift-inj p = ap Lift.lower p
+
+Lift-≃ : ∀ {a ℓ} {A : Type a} → Lift ℓ A ≃ A
+Lift-≃ .fst (lift a) = a
+Lift-≃ .snd .is-eqv a .centre = lift a , refl
+Lift-≃ .snd .is-eqv a .paths f = Σ-pathp (ap lift (sym (f .snd))) λ i j → f .snd (~ i ∨ j)
+
+Lift-ap
+  : ∀ {a b ℓ ℓ'} {A : Type a} {B : Type b}
+  → A ≃ B
+  → Lift ℓ A ≃ Lift ℓ' B
+Lift-ap eqv = Lift-≃ ∙e eqv ∙e (Lift-≃ e⁻¹)
 ```
 -->

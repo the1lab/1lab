@@ -2,7 +2,6 @@
 ```agda
 {-# OPTIONS --lossy-unification -vtc.def:20 #-}
 open import Cat.Diagram.Pullback.Properties
-open import Cat.Diagram.Product.Solver
 open import Cat.Morphism.Factorisation
 open import Cat.Morphism.StrongEpi
 open import Cat.Instances.Functor
@@ -39,29 +38,26 @@ open Img reg
 
 # Relations in a regular category
 
-This module defines the [bicategory] of relations in arbitrary [regular
-categories] --- categories with [pullback-stable] [image
-factorisations]. **Relations** $\phi : a \rel b$ between objects $a, b :
-\cC$ can be defined in arbitrary categories^[A relation $\phi : a \rel
+This module defines the [[bicategory]] of relations in arbitrary [regular
+categories] --- categories with [[pullback-stable]] [[image
+factorisations]]. **Relations** $\phi : a \rel b$ between objects $a, b
+: \cC$ can be defined in arbitrary categories^[A relation $\phi : a \rel
 b$ is a span $a \xot{f} r \xto{g} b$ such that $f, g$ are jointly
 monic.], but in finite-products categories, the definition takes an
 especially pleasant form: A relation $\phi : a \rel b$ is a [subobject]
 of the [Cartesian product] $a \times b$.
 
 [regular categories]: Cat.Regular.html
-[pullback-stable]: Cat.Diagram.Pullback.html#stability
-[image factorisations]: Cat.Diagram.Image.html
 [subobject]: Cat.Displayed.Instances.Subobjects.html
 [Cartesian product]: Cat.Diagram.Product.html
 
-Unlike the more general [bicategory of spans] $\rm{Spans}_\cC$, which
-can be defined for an arbitrary category with [pullbacks] $\cC$, the
+Unlike the more general [bicategory of spans] $\Spans_\cC$, which can be
+defined for an arbitrary category with [[pullbacks]] $\cC$, the
 definition of a bicategory of _relations_ does need an honest regular
 category. Before we get into the details of the construction, let's
 introduce some notation:
 
 [bicategory of spans]: Cat.Bi.Instances.Spans.html
-[pullbacks]: Cat.Diagram.Pullback.html
 
 Following [@Elephant], relations will be denoted using lowercase Greek
 letters: we will write a relation $\phi : R \mono A \times B$ as $\phi :
