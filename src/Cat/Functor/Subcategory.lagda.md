@@ -200,7 +200,7 @@ with $F$ and $C$.
     is-iso→is-equiv $ iso
     (λ f → sub-hom (D.to y-es D.∘ F₁ f D.∘ D.from x-es) (f , refl))
     (λ _ → refl)
-    (λ f → ext {A = Subcat-hom Faithful-subcat _ _} (f .witness .snd))
+    (λ f → ext (f .witness .snd))
 
   Faithful-subcat-domain-is-split-eso : is-split-eso Faithful-subcat-domain
   Faithful-subcat-domain-is-split-eso x =

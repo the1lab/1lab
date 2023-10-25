@@ -85,13 +85,8 @@ record
     -- The underlying function (infix).
     _#_ : ∀ {A B} → F A B → ⌞ A ⌟ → ⌞ B ⌟
 
-    -- -- _#_ must be an injection. Really this should ask for an
-    -- -- embedding, but the most common use-cases have F valued in sets.
-    -- ext : ∀ {A B} {f g : F A B} → (∀ x → f # x ≡ g # x) → f ≡ g
-
 open Funlike ⦃ ... ⦄ using (_#_) public
 {-# DISPLAY Funlike._#_ p f x = f # x #-}
--- {-# DISPLAY Funlike.ext p q = ext q #-}
 
 -- Sections of the _#_ operator tend to be badly-behaved since they
 -- introduce an argument x : ⌞ ?0 ⌟ whose Underlying instance meta
