@@ -487,8 +487,8 @@ can make a map into $B$ with subsingleton fibres by carefully choosing
 the domain. We take the domain to be the disjoint union of the family
 $\chi$, that is, the set $\sum_{(x : B)} \chi(x)$. The elements of this
 set can be described, moving closer to type-theoretic language, as pairs
-$(i, p)$ where $i \in B$ and $p \in \chi(i)$ is a witness that $i$
-holds.
+$(i, p)$ where $i \in B$ and $p \in \chi(i)$ is a witness that the
+subset predicate holds of $i$.
 
 I claim: the map $\pi_1 : (\sum_{(x : B)} \chi(x)) \to B$ which takes
 $(i, p) \mapsto i$ has subsingleton fibres. This is because an element
