@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --show-implicit #-}
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Ab
 open import Algebra.Group

@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtactic.extensionality:10 #-}
 open import Cat.Functor.Properties
 open import Cat.Univalent
 open import Cat.Prelude
@@ -87,9 +86,10 @@ module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {subcat : Subcat C o' ℓ'} whe
 
   Extensional-subcat-hom
     : ∀ {ℓr} {x y : Σ[ ob ∈ Ob ] (is-ob ob)}
-    → {@(tactic extensionalᶠ Hom) sa : ∀ x y → Extensional (Hom x y) ℓr}
+    → ⦃ sa : Extensional (Hom (x .fst) (y .fst)) ℓr ⦄
     → Extensional (Subcat-hom subcat x y) ℓr
-  Extensional-subcat-hom {sa = sa} = injection→extensional! (Subcat-hom-pathp refl refl) (sa _ _)
+  Extensional-subcat-hom ⦃ sa ⦄ = injection→extensional!
+    (Subcat-hom-pathp refl refl) sa
 
   instance
     extensionality-subcat-hom

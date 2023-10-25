@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtactic.extensionality:10 --show-implicit #-}
 open import Algebra.Ring.Module.Notation
 open import Algebra.Ring.Module.Action
 open import Algebra.Ring.Commutative

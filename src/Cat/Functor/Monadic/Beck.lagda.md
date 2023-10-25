@@ -171,16 +171,15 @@ from the algebra laws.
     (e' .morphism C.∘ T.mult .η A) C.∘ T.M₁ (unit.η A)    ≡⟨ C.pushl (e' .commutes) ⟩
     F .snd .ν C.∘ T.M₁ (e' .morphism) C.∘ T.M₁ (unit.η A) ≡˘⟨ C.refl⟩∘⟨ T.M-∘ _ _ ⟩
     F .snd .ν C.∘ T.M₁ (e' .morphism C.∘ unit.η A)        ∎
-  algebra-is-coequaliser .factors {F = F} {e'} {p} = Algebra-hom-path C $
+  algebra-is-coequaliser .factors {F = F} {e'} {p} = ext $
     (e' .morphism C.∘ unit.η _) C.∘ A.ν          ≡⟨ C.extendr (unit.is-natural _ _ _) ⟩
     (e' .morphism C.∘ T.M₁ A.ν) C.∘ unit.η  _    ≡˘⟨ ap morphism p C.⟩∘⟨refl ⟩
     (e' .morphism C.∘ T.mult .η _) C.∘ unit.η  _ ≡⟨ C.cancelr T.right-ident ⟩
     e' .morphism                                 ∎
-  algebra-is-coequaliser .unique {F = F} {e'} {p} {colim} q =
-    Algebra-hom-path C $ sym $
-      e' .morphism C.∘ unit.η A              ≡⟨ ap morphism (sym q) C.⟩∘⟨refl ⟩
-      (colim .morphism C.∘ A.ν) C.∘ unit.η A ≡⟨ C.cancelr A.ν-unit ⟩
-      colim .morphism                        ∎
+  algebra-is-coequaliser .unique {F = F} {e'} {p} {colim} q = ext $ sym $
+    e' .morphism C.∘ unit.η A              ≡⟨ ap morphism (sym q) C.⟩∘⟨refl ⟩
+    (colim .morphism C.∘ A.ν) C.∘ unit.η A ≡⟨ C.cancelr A.ν-unit ⟩
+    colim .morphism                        ∎
 ```
 
 # Presented algebras
@@ -268,7 +267,7 @@ readers.
     ∙ C.elimr (F⊣G .zag)
     ∙ G.intror (F⊣G .zig)
     ∙ G.weave (D.pulll (sym (F⊣G .counit.is-natural _ _ _)) ∙ D.pullr (sym (F.F-∘ _ _)))
-  Comparison⁻¹⊣Comparison .unit .is-natural x y f = Algebra-hom-path C $
+  Comparison⁻¹⊣Comparison .unit .is-natural x y f = ext $
     (G.₁ (has-coeq y .coeq) C.∘ T.unit.η _) C.∘ f .morphism                    ≡⟨ C.pullr (T.unit.is-natural _ _ _) ⟩
     G.₁ (has-coeq y .coeq) C.∘ T.M₁ (f .morphism) C.∘ T.unit .η (x .fst)       ≡⟨ C.pulll (sym (G.F-∘ _ _)) ⟩
     G.₁ (has-coeq y .coeq D.∘ F.₁ (f .morphism)) C.∘ T.unit .η (x .fst)        ≡⟨ ap G.₁ (sym (has-coeq _ .factors)) C.⟩∘⟨refl ⟩
@@ -290,7 +289,7 @@ readers.
       ∙ D.pulll (F⊣G .counit.is-natural _ _ _)
       ∙ D.cancelr (F⊣G .zig))
       (D.idl _)
-  Comparison⁻¹⊣Comparison .zag = Algebra-hom-path C $
+  Comparison⁻¹⊣Comparison .zag = ext $
     G.pulll (has-coeq _ .factors) ∙ F⊣G .zag
 ```
 

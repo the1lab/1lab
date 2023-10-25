@@ -448,7 +448,7 @@ $\cA$, thus assemble into an isomorphism in the slice.
     mono→kernel : cut f m.≅ cut (Ker.kernel (Coker.coeq f))
     mono→kernel = m.make-iso f→kercoker kercoker→f f→kc→f kc→f→kc where
       f→kc→f : f→kercoker m.∘ kercoker→f ≡ m.id
-      f→kc→f = /-Hom-path $
+      f→kc→f = ext $
         (decompose f .fst ∘ Coker.coeq _) ∘ Coker.universal _ _ ∘ _  ≡⟨ cancel-inner lemma ⟩
         decompose f .fst ∘ _                                         ≡⟨ coker-ker≃ker-coker f .is-invertible.invl ⟩
         id                                                           ∎
@@ -460,8 +460,8 @@ $\cA$, thus assemble into an isomorphism in the slice.
             (eliml refl)
 
       kc→f→kc : kercoker→f m.∘ f→kercoker ≡ m.id
-      kc→f→kc = /-Hom-path $
+      kc→f→kc = ext $
         (Coker.universal _ _ ∘ _) ∘ decompose f .fst ∘ Coker.coeq _ ≡⟨ cancel-inner (coker-ker≃ker-coker f .is-invertible.invr) ⟩
         Coker.universal _ _ ∘ Coker.coeq _                          ≡⟨ Coker.factors _ ⟩
-        id                                                           ∎
+        id                                                          ∎
 ```

@@ -203,10 +203,10 @@ module _ {o ℓ} {C : Precategory o ℓ} {M : Monad C} where
 
   Extensional-Algebra-Hom
     : ∀ {ℓr} {a b} {A : Algebra-on C M a} {B : Algebra-on C M b}
-    → {@(tactic extensionalᶠ C.Hom) sa : ∀ x y → Extensional (C.Hom x y) ℓr}
+    → ⦃ sa : Extensional (C.Hom a b) ℓr ⦄
     → Extensional (Algebra-hom C M (a , A) (b , B)) ℓr
-  Extensional-Algebra-Hom {sa = sa} = injection→extensional!
-    (Algebra-hom-path C) (sa _ _)
+  Extensional-Algebra-Hom ⦃ sa ⦄ = injection→extensional!
+    (Algebra-hom-path C) sa
 
   instance
     extensionality-algebra-hom

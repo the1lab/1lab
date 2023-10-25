@@ -129,9 +129,9 @@ module _ {ℓ o' ℓ'} {S : Type ℓ → Type o'} {spec : Thin-structure ℓ' S}
     module Som = Cat.Morphism (Structured-objects spec)
 
   Extensional-Hom
-    : ∀ {a b ℓr} {@(tactic extensional (⌞ a ⌟ → ⌞ b ⌟)) sa : Extensional (⌞ a ⌟ → ⌞ b ⌟) ℓr}
+    : ∀ {a b ℓr} ⦃ sa : Extensional (⌞ a ⌟ → ⌞ b ⌟) ℓr ⦄
     → Extensional (So.Hom a b) ℓr
-  Extensional-Hom {sa = sa} = injection→extensional!
+  Extensional-Hom ⦃ sa ⦄ = injection→extensional!
     (Structured-hom-path spec) sa
 
   instance

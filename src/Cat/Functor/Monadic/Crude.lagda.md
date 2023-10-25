@@ -137,7 +137,7 @@ module _
   -- by "prcoeq".
   prcoeq→unit-is-iso : ∀ {o} → C^T.is-invertible (adj.unit.η o)
   prcoeq→unit-is-iso {o} = C^T.make-invertible inverse
-    (Algebra-hom-path C η⁻¹η) (Algebra-hom-path C ηη⁻¹) where
+    (ext η⁻¹η) (ext ηη⁻¹) where
 ```
 
 The first thing we note is that Beck's coequaliser is reflexive: The

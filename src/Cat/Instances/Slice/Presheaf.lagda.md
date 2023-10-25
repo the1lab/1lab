@@ -157,7 +157,7 @@ without comment.
         (λ i → nt .η (elem (o .ob) (p i)) (z , (λ j → p (i ∧ j))) .fst)
 
     linv : is-left-inverse inv (F₁ slice→total)
-    linv sh = /-Hom-path (Nat-path (λ z → refl))
+    linv sh = trivialᵉ
 
   open is-precat-iso
   slice→total-is-iso : is-precat-iso slice→total

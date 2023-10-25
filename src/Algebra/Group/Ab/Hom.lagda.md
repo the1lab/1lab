@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtactic.extensionality:10 #-}
 open import Algebra.Group.Ab
 open import Algebra.Group
 

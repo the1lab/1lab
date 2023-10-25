@@ -205,11 +205,11 @@ is-effective-mono→image {f = f} mon = im where
     hom : ↓Hom _ _ itself other
     hom .α = tt
     hom .β = other .map
-    hom .sq = /-Hom-path refl
+    hom .sq = trivialᵉ
 
     unique : ∀ x → hom ≡ x
     unique x = ↓Hom-path _ _ refl
-      (/-Hom-path (intror refl ∙ ap map (x .sq) ∙ elimr refl))
+      (ext (intror refl ∙ ap map (x .sq) ∙ elimr refl))
 ```
 
 Hence the characterisation of regular monomorphisms given in the

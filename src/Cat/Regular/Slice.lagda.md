@@ -73,7 +73,7 @@ private
     {c = cut (A .map ∘ a)}
     (record { commutes = refl })
     (record { commutes = pushl (sym (h .mor .commutes)) ·· ap₂ _∘_ refl (sym p) ·· pulll (h .mor .commutes) })
-    (/-Hom-path p)
+    (ext p)
 ```
 -->
 
@@ -104,13 +104,13 @@ invertible in $\cC$.
       mono : cut (B .map ∘ m .mor) C/y.↪ B
       mono = record
         { mor   = record { map = m .mor ; commutes = refl }
-        ; monic = λ g h p → /-Hom-path (m .monic _ _ (ap map p))
+        ; monic = λ g h p → ext (m .monic _ _ (ap map p))
         }
 
       inv : C/y.is-invertible (record { map = m .mor ; commutes = refl })
       inv = extreme mono
         (record { map = g ; commutes = pullr (sym p) ∙ h .commutes })
-        (/-Hom-path p)
+        (ext p)
     in make-invertible
       (inv .C/y.is-invertible.inv .map)
       (ap map (inv .C/y.is-invertible.invl))
@@ -138,8 +138,8 @@ calculate that the inverse to $m$ is still a map over $y$.
         ; commutes = invertible→epic inv _ _ $
           cancelr (inv .is-invertible.invr) ∙ sym (m .mor .commutes)
         })
-      (/-Hom-path (inv .is-invertible.invl))
-      (/-Hom-path (inv .is-invertible.invr))
+      (ext (inv .is-invertible.invl))
+      (ext (inv .is-invertible.invr))
     where extn = is-strong-epi→is-extremal-epi C cover
 ```
 
@@ -164,8 +164,8 @@ slice-is-regular .factor {a} {b} f = fact' where
   fact' .mediate∈E = do
     c ← f.mediate∈E
     pure (reflect-cover (fact' .mediate) c)
-  fact' .forget∈M = inc λ g h p → /-Hom-path $ out! f.forget∈M (g .map) (h .map) (ap map p)
-  fact' .factors = /-Hom-path f.factors
+  fact' .forget∈M = inc λ g h p → ext $ out! f.forget∈M (g .map) (h .map) (ap map p)
+  fact' .factors = ext f.factors
 
 slice-is-regular .stable {B = B} f g {p1} {p2} cover is-pb =
   reflect-cover p1 $ r.stable _ _

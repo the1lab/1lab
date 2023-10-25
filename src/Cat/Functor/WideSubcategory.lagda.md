@@ -74,10 +74,10 @@ Wide-hom-path {sub = sub} {f = f} {g = g} p i .witness =
 
 Extensional-wide-hom
   : ∀ {ℓ ℓr} {sub : Wide-subcat ℓ} {x y : C.Ob}
-  → {@(tactic extensionalᶠ C.Hom) sa : ∀ x y → Extensional (C.Hom x y) ℓr}
+  → ⦃ sa : Extensional (C.Hom x y) ℓr ⦄
   → Extensional (Wide-hom sub x y) ℓr
-Extensional-wide-hom {sub = sub} {sa = sa} = injection→extensional!
-  Wide-hom-path (sa _ _)
+Extensional-wide-hom ⦃ sa ⦄ = injection→extensional!
+  Wide-hom-path sa
 
 instance
   extensionality-wide-hom

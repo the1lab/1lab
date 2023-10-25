@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS --show-implicit #-}
 open import 1Lab.Prelude
 ```
 -->

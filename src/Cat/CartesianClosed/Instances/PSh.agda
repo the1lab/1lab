@@ -1,3 +1,4 @@
+{-# OPTIONS -vtc.decl:5 #-}
 open import Cat.Instances.Functor.Limits
 open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Everything
@@ -10,6 +11,7 @@ open import Cat.Prelude
 
 open import Data.Sum
 
+import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning
 
 module Cat.CartesianClosed.Instances.PSh where
@@ -195,9 +197,9 @@ module _ {κ} {C : Precategory κ κ} where
         F .F₁ f nt .η i (g , x) = nt .η i (f C.∘ g , x)
         F .F₁ f nt .is-natural x y g = funext λ o →
           ap (nt .η y) (Σ-pathp (C.assoc _ _ _) refl) ∙ happly (nt .is-natural _ _ _) _
-        F .F-id = funext λ f → Nat-path $ λ i → funext $ λ (g , x) →
+        F .F-id = ext λ f i (g , x) →
           ap (f .η i) (Σ-pathp (C.idl _) refl)
-        F .F-∘ f g = funext λ h → Nat-path $ λ i → funext $ λ (j , x) →
+        F .F-∘ f g = ext λ h i (j , x) →
           ap (h .η i) (Σ-pathp (sym (C.assoc _ _ _)) refl)
 
       func : Functor (PSh κ C) (PSh κ C)
@@ -209,7 +211,7 @@ module _ {κ} {C : Precategory κ κ} where
       func .F-id = trivialᵉ
       func .F-∘ f g = trivialᵉ
 
-      adj : _ ⊣ func
+      adj : Bifunctor.Left ×-functor A ⊣ func
       adj .unit .η x .η i a =
         NT (λ j (h , b) → x .F₁ h a , b) λ _ _ _ →
           funext λ _ → Σ-pathp (happly (x .F-∘ _ _) _) refl
@@ -221,9 +223,8 @@ module _ {κ} {C : Precategory κ κ} where
         ap (h .fst .η _) (Σ-pathp C.id-comm refl) ∙ happly (h .fst .is-natural _ _ _) _
       adj .counit .is-natural x y f = Nat-path λ x → refl
       adj .zig {A} = ext λ x _ → happly (F-id A) _ , refl
-      adj .zag {A} = Nat-path λ f → funext λ x → Nat-path λ g → funext λ y →
-        ap (x .η _) (Σ-pathp (C.idr _) refl)
+      adj .zag {A} = ext λ _ x i (f , g) j → x .η i (C.idr f j , g)
 
-    cc : Cartesian-closed _ (PSh-products {C = C}) (PSh-terminal {C = C})
+    cc : Cartesian-closed (PSh κ C) (PSh-products {C = C}) (PSh-terminal {C = C})
     cc = product-adjoint→cartesian-closed (PSh κ C)
       (PSh-products {C = C}) (PSh-terminal {C = C}) func adj
