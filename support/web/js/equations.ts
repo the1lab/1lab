@@ -107,11 +107,17 @@ function scrollToHash() {
     const id = window.location.hash.slice(1);
     // #id doesn't work with numerical IDs
     const elem = document.querySelector(`[id="${id}"]`) as HTMLInputElement | null;
-    const commentedOut = elem?.closest('.commented-out') as HTMLInputElement | null;
-    if (elem && commentedOut) {
-      // The element is in a commented-out block: unhide it and scroll to it.
-      commentedOut.style.display = 'revert';
-      elem.scrollIntoView();
+    if (elem) {
+      // If the element is in a commented-out block or a <details> tag, unhide it
+      // and scroll to it.
+      const commentedOut = elem.closest('.commented-out') as HTMLInputElement | null;
+      if (commentedOut)
+        commentedOut.style.display = 'revert';
+      const details = elem.closest('details') as HTMLInputElement | null;
+      if (details)
+        details.setAttribute("open", "");
+      if (commentedOut || details)
+        elem.scrollIntoView();
     }
   }
 }
