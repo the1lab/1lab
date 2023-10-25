@@ -85,7 +85,7 @@ extensional A goal = do
   unify goal =<< find-extensionality `A
 
 {-
-Unlike extensionalᶠ, which is parametrised by a type, extensionalᶠ
+Unlike extensional, which is parametrised by a type, extensionalᶠ
 can be parametrised by a function (of arbitrary arity) into types,
 even though its type doesn't properly reflect this. It will discharge
 goals like
