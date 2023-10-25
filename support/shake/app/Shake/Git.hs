@@ -47,7 +47,7 @@ doGitAuthors (GitAuthors path) = do
   Stdout authors <- gitCommand
     [ "shortlog", "-ns"
     -- Exclude chore commits (for example, trivial reformattings or treewide changes).
-    , "--invert-grep", "--grep=^chore:", "--grep=NOAUTHOR"
+    , "--invert-grep", "--grep=^chore:", "--grep=^NOAUTHOR"
     -- Include both authors and coauthors.
     , "--group=author", "--group=trailer:co-authored-by"
     , "HEAD", "--", path
