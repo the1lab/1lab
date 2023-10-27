@@ -6,7 +6,7 @@ open import Cat.Functor.Adjoint
 -->
 
 ```agda
-module IsbellDuality.IsbellDuality where
+module Cat.Functor.Kan.Isbell where
 
 open import Cat.Functor.Base
 open import Cat.Functor.Kan.Nerve
