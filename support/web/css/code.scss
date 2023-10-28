@@ -49,6 +49,7 @@ div.sourceCode > pre {
 
 pre.Agda {
   box-shadow: none;
+  overflow-x: auto;
   overflow-y: clip;
 
   // The margin should be 1rem (the width of the padding for paragraphs
@@ -119,8 +120,6 @@ a[href].hover-highlight {
   a[href]:target {
     animation: highlight 2.5s;
   }
-
-  overflow-x: auto;
 
   // background-color: $code-bg;
   font-family: 'Julia Mono', 'Iosevka', 'Fantasque Sans Mono', 'Roboto Mono', monospace;

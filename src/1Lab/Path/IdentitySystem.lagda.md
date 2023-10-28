@@ -54,7 +54,7 @@ record
 open is-identity-system public
 ```
 
-As mentioned before, the data of an identity system gives is exactly
+As mentioned before, the data of an identity system gives us exactly
 what is required to prove J for the relation $R$. This is essentially
 the decomposition of J into _contractibility of singletons_, but with
 singletons replaced by $R$-singletons.
