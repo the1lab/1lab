@@ -58,9 +58,9 @@ module _ (has-lan : (G : Functor C D) → Lan p G) where
   Lan-functor .F₀ G = has-lan G .Ext
   Lan-functor .F₁ {x} {y} θ =
     has-lan x .σ (has-lan y .eta ∘nt θ)
-  Lan-functor .F-id {x} = has-lan x .σ-uniq (Nat-path λ _ → D.id-comm)
+  Lan-functor .F-id {x} = has-lan x .σ-uniq (ext λ _ → D.id-comm)
   Lan-functor .F-∘ {x} {y} {z} f g =
-    has-lan x .σ-uniq $ Nat-path λ a → sym $
+    has-lan x .σ-uniq $ ext λ a → sym $
         D.pullr   (has-lan x .σ-comm ηₚ a)
       ∙ D.extendl (has-lan y .σ-comm ηₚ a)
 ```
@@ -88,7 +88,7 @@ adjoint to the [precomposition] functor $- \circ p$.
     eqv {x} {y} .linv θ = has-lan _ .σ-uniq refl
 
     natural : hom-iso-natural {L = Lan-functor} {precompose p} f
-    natural {b = b} g h x = Nat-path λ a →
+    natural {b = b} g h x = ext λ a →
       D.pullr (D.pullr (has-lan _ .σ-comm ηₚ a))
       ∙ ap₂ D._∘_ refl (D.pushr refl)
 ```
@@ -109,7 +109,7 @@ adjoint-precompose→Lan F adj G = extn where
 
   extn : is-lan p G _ _
   extn .σ α = R-adjunct adj α
-  extn .σ-comm {M = M} {α = α} = Nat-path λ a →
+  extn .σ-comm {M = M} {α = α} = ext λ a →
       D.pullr   (sym (adj.unit .is-natural _ _ _) ηₚ a)
     ∙ D.cancell (adj.zag ηₚ a)
   extn .σ-uniq x = Equiv.injective (_ , L-adjunct-is-equiv adj)

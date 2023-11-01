@@ -226,6 +226,11 @@ univalence-identity-system .to-path-over p =
 
 <!--
 ```agda
+Path-identity-system
+  : ∀ {ℓ} {A : Type ℓ} → is-identity-system (Path A) (λ _ → refl)
+Path-identity-system .to-path p = p
+Path-identity-system .to-path-over p i j = p (i ∧ j)
+
 is-identity-system-is-prop
   : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a}
   → is-prop (is-identity-system R r)

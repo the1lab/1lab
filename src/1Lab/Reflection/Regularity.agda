@@ -140,8 +140,8 @@ private
     `x ← quoteTC x
     `y ← quoteTC y
     `p ← quoteTC p
-    just (_ , l , r) ← unapply-path =<< inferType goal
-      where _ → typeError []
+    just (_ , l , r) ← unapply-path =<< wait-for-type =<< inferType goal
+      where _ → typeError [ "goal type is not path type: " , termErr goal ]
     l ← normalise =<< wait-for-type l
     r ← normalise =<< wait-for-type r
     reg ← to-regularity-path pre l

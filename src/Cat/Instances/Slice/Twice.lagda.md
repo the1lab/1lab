@@ -57,10 +57,10 @@ Slice-twice f .F₀ g .map .commutes = refl
 
 Slice-twice f .F₁ h .map .map      = h .map
 Slice-twice f .F₁ h .map .commutes = pullr (h .commutes)
-Slice-twice f .F₁ h .commutes      = /-Hom-path (h .commutes)
+Slice-twice f .F₁ h .commutes      = ext (h .commutes)
 
-Slice-twice f .F-id    = /-Hom-path (/-Hom-path refl)
-Slice-twice f .F-∘ g h = /-Hom-path (/-Hom-path refl)
+Slice-twice f .F-id    = trivial!
+Slice-twice f .F-∘ g h = trivial!
 
 Twice-slice : (f : Hom a b) → Functor (Slice (Slice C b) (cut f)) (Slice C a)
 Twice-slice _ .F₀ x .domain = x .domain .domain
@@ -69,8 +69,8 @@ Twice-slice _ .F₀ x .map    = x .map .map
 Twice-slice _ .F₁ h .map      = h .map .map
 Twice-slice _ .F₁ h .commutes = ap map (h .commutes)
 
-Twice-slice _ .F-id = /-Hom-path refl
-Twice-slice _ .F-∘ _ _ = /-Hom-path refl
+Twice-slice _ .F-id = trivial!
+Twice-slice _ .F-∘ _ _ = trivial!
 ```
 
 We will also need the fact that these inverses are also adjoints.
@@ -81,13 +81,13 @@ Twice⊣Slice f = adj where
   adj : Twice-slice f ⊣ Slice-twice f
   adj .unit .η x .map .map      = id
   adj .unit .η x .map .commutes = idr _ ∙ x .map .commutes
-  adj .unit .η x .commutes      = /-Hom-path (idr _)
-  adj .unit .is-natural x y f   = /-Hom-path (/-Hom-path id-comm-sym)
+  adj .unit .η x .commutes      = ext (idr _)
+  adj .unit .is-natural x y f   = ext id-comm-sym
 
   adj .counit .η x .map         = id
   adj .counit .η x .commutes    = idr _
-  adj .counit .is-natural x y f = /-Hom-path id-comm-sym
+  adj .counit .is-natural x y f = ext id-comm-sym
 
-  adj .zig = /-Hom-path (idr _)
-  adj .zag = /-Hom-path (/-Hom-path (idr _))
+  adj .zig = ext (idr _)
+  adj .zag = ext (idr _)
 ```

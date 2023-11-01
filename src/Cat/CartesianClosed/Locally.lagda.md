@@ -187,9 +187,9 @@ isomorphic.
     Slice-product-functor .eta x .commutes = idr _ ∙ pullbacks _ _ .square
     Slice-product-functor .inv x .map      = id
     Slice-product-functor .inv x .commutes = idr _ ∙ sym (pullbacks _ _ .square)
-    Slice-product-functor .eta∘inv x     = /-Hom-path $ idl _
-    Slice-product-functor .inv∘eta x     = /-Hom-path $ idl _
-    Slice-product-functor .natural x y f = /-Hom-path $ id-comm ∙ ap (id ∘_) (pullbacks _ _ .unique
+    Slice-product-functor .eta∘inv x     = ext $ idl _
+    Slice-product-functor .inv∘eta x     = ext $ idl _
+    Slice-product-functor .natural x y f = ext $ id-comm ∙ ap (id ∘_) (pullbacks _ _ .unique
       (pullbacks _ _ .p₁∘universal) (pullbacks _ _ .p₂∘universal ∙ idl _))
 ```
 
@@ -278,9 +278,9 @@ equivalence $(\cC/B)/f \cong \cC/A$.
     rem₂ .eta x .commutes = idr _
     rem₂ .inv x .map      = id
     rem₂ .inv x .commutes = idr _
-    rem₂ .eta∘inv x = /-Hom-path (idr _)
-    rem₂ .inv∘eta x = /-Hom-path (idr _)
-    rem₂ .natural x y f = /-Hom-path $
+    rem₂ .eta∘inv x = ext (idr _)
+    rem₂ .inv∘eta x = ext (idr _)
+    rem₂ .natural x y f = ext $
          idr _
       ·· ap (pullbacks _ _ .universal) prop!
       ·· sym (idl _)

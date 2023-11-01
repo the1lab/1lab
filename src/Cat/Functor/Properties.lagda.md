@@ -63,7 +63,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
     → is-prop (Σ[ g ∈ x C.≅ y ] (F-map-iso F g ≡ f))
   faithful→iso-fibre-prop F faithful f (g , p) (g' , q) =
     Σ-prop-path (λ _ → D.≅-is-set _ _) $
-    C.≅-pathp refl refl (faithful (ap D.to (p ∙ sym q)))
+    ext (faithful (ap D.to (p ∙ sym q)))
 ```
 -->
 
@@ -214,8 +214,8 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
   is-ff→F-map-iso-is-equiv {F = F} ff = is-iso→is-equiv isom where
     isom : is-iso _
     isom .is-iso.inv    = is-ff→essentially-injective {F = F} ff
-    isom .is-iso.rinv x = D.≅-pathp refl refl (equiv→counit ff _)
-    isom .is-iso.linv x = C.≅-pathp refl refl (equiv→unit ff _)
+    isom .is-iso.rinv x = ext (equiv→counit ff _)
+    isom .is-iso.linv x = ext (equiv→unit ff _)
 ```
 -->
 
@@ -298,7 +298,7 @@ essentially injective.
   ff→pseudomonic {F} ff .faithful = fully-faithful→faithful {F = F} ff
   ff→pseudomonic {F} ff .isos-full f =
     inc (is-ff→essentially-injective {F = F} ff f ,
-         D.≅-pathp refl refl (equiv→counit ff (D.to f)))
+         ext (equiv→counit ff (D.to f)))
 ```
 
 ## Equivalence on Objects Functors

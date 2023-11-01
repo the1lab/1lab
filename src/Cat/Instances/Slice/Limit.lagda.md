@@ -138,16 +138,14 @@ in $\cC$, then pass back to the slice category.
 
     lim : make-is-limit F apex
     lim .ψ = nadir
-    lim .commutes f =
-      /-Hom-path (lims.commutes (lift f))
+    lim .commutes f = ext (lims.commutes (lift f))
     lim .universal {x} eta p .map =
       lims.universal (Cone.ϕ eta p) (Cone.ϕ-commutes eta p)
     lim .universal eta p .commutes =
       lims.factors _ _
-    lim .factors eta p =
-      /-Hom-path (lims.factors _ _)
-    lim .unique eta p other q =
-      /-Hom-path $ lims.unique _ _ (other .map) (Cone.ϕ-factor eta p other q)
+    lim .factors eta p = ext (lims.factors _ _)
+    lim .unique eta p other q = ext $
+      lims.unique _ _ (other .map) (Cone.ϕ-factor eta p other q)
 ```
 
 In particular, if a category $\cC$ is complete, then so are its slices:

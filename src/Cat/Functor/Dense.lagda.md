@@ -77,8 +77,7 @@ the induced [nerve] functor is fully faithful.
         λ f → sym (nt .is-natural _ _ _ $ₚ _) ∙ ap (nt .η _) (f .sq ∙ D.idl _)
 
     invr : ∀ {x y} (f : Nerve F .F₀ x => Nerve F .F₀ y) → Nerve F .F₁ (inv f) ≡ f
-    invr f = Nat-path λ x → funext λ i →
-      is-dense.factors _ {j = ↓obj i} _ _
+    invr f = ext λ x i → is-dense.factors _ {j = ↓obj i} _ _
 
     invl : ∀ {x y} (f : D.Hom x y) → inv (Nerve F .F₁ f) ≡ f
     invl f = sym $ is-dense.unique _ _ _ f (λ _ → refl)
@@ -95,5 +94,5 @@ enough to tell morphisms (and so objects) in the ambient category apart.
     → f ≡ g
   dense→separating dense h =
     fully-faithful→faithful {F = Nerve F} (is-dense→nerve-is-ff dense) $
-      Nat-path λ x → funext λ g → h g
+      ext λ x g → h g
 ```

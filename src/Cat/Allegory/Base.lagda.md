@@ -219,8 +219,8 @@ to show $R(x, y)$! Fortunately if we we set $\Id(x, a)$, then $R(x,
 y) \simeq R(a, y)$, and we're done.
 
 ```agda
-Rel ℓ .cat .idr {A} {B} R = funext λ x → funext λ y → Ω-ua
-  (□-rec! (λ { (a , b , w) → subst (λ e → ∣ R e y ∣)  (sym (out! b)) w }))
+Rel ℓ .cat .idr {A} {B} R = ext λ x y → Ω-ua
+  (□-rec! (λ { (a , b , w) → subst (λ e → ∣ R e y ∣) (sym (out! b)) w }))
   λ w → inc (x , inc refl , w)
 ```
 
@@ -251,11 +251,11 @@ automatic proof search: that speaks to how contentful it is.</summary>
 
 ```agda
 Rel ℓ .cat .Hom-set x y = hlevel 2
-Rel ℓ .cat .idl R = funext λ x → funext λ y → Ω-ua
+Rel ℓ .cat .idl R = ext λ x y → Ω-ua
   (□-rec! (λ { (a , b , w) → subst (λ e → ∣ R x e ∣) (out! w) b }))
   λ w → inc (y , w , inc refl)
 
-Rel ℓ .cat .assoc T S R = funext λ x → funext λ y → Ω-ua
+Rel ℓ .cat .assoc T S R = ext λ x y → Ω-ua
   (□-rec! λ { (a , b , w) → □-rec! (λ { (c , d , x) →
     inc (c , d , inc (a , x , w)) }) b })
   (□-rec! λ { (a , b , w) → □-rec! (λ { (c , d , x) →
@@ -264,13 +264,13 @@ Rel ℓ .cat .assoc T S R = funext λ x → funext λ y → Ω-ua
 Rel ℓ .≤-thin = hlevel!
 Rel ℓ .≤-refl x y w = w
 Rel ℓ .≤-trans x y p q z = y p q (x p q z)
-Rel ℓ .≤-antisym p q = funext λ x → funext λ y → Ω-ua (p x y) (q x y)
+Rel ℓ .≤-antisym p q = ext λ x y → Ω-ua (p x y) (q x y)
 
 Rel ℓ ._◆_ f g a b = □-map (λ { (x , y , w) → x , g a x y , f x b w })
 
 -- This is nice:
 Rel ℓ .dual R = refl
-Rel ℓ .dual-∘ = funext λ x → funext λ y → Ω-ua
+Rel ℓ .dual-∘ = ext λ x y → Ω-ua
   (□-map λ { (a , b , c) → a , c , b })
   (□-map λ { (a , b , c) → a , c , b })
 Rel ℓ .dual-≤ f≤g x y w = f≤g y x w

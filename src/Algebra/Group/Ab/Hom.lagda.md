@@ -78,10 +78,10 @@ Abelian-group-on-hom A B = to-abelian-group-on make-ab-on-hom module Hom-ab wher
 
 <!--
 ```agda
-  make-ab-on-hom .idl x       = Homomorphism-path λ x → B.idl
-  make-ab-on-hom .assoc x y z = Homomorphism-path λ _ → B.associative
-  make-ab-on-hom .invl x      = Homomorphism-path λ x → B.inversel
-  make-ab-on-hom .comm x y    = Homomorphism-path λ x → B.commutes
+  make-ab-on-hom .idl x       = ext λ x → B.idl
+  make-ab-on-hom .assoc x y z = ext λ _ → B.associative
+  make-ab-on-hom .invl x      = ext λ x → B.inversel
+  make-ab-on-hom .comm x y    = ext λ x → B.commutes
 
 open Functor
 
@@ -99,8 +99,8 @@ $\Ab\op \times \Ab \to \Ab$.
 Ab-hom-functor : ∀ {ℓ} → Functor (Ab ℓ ^op ×ᶜ Ab ℓ) (Ab ℓ)
 Ab-hom-functor .F₀ (A , B) = Ab[ A , B ]
 Ab-hom-functor .F₁ (f , g) .hom h = g Ab.∘ h Ab.∘ f
-Ab-hom-functor .F₁ (f , g) .preserves .pres-⋆ x y = Homomorphism-path λ z →
+Ab-hom-functor .F₁ (f , g) .preserves .pres-⋆ x y = ext λ z →
   g .preserves .pres-⋆ _ _
-Ab-hom-functor .F-id    = Homomorphism-path λ _ → Homomorphism-path λ x → refl
-Ab-hom-functor .F-∘ f g = Homomorphism-path λ _ → Homomorphism-path λ x → refl
+Ab-hom-functor .F-id    = trivial!
+Ab-hom-functor .F-∘ f g = trivial!
 ```

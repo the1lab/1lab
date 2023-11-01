@@ -70,12 +70,12 @@ Zero-group-is-initial (_ , G) .centre = total-hom (λ x → G.unit) gh where
     G.unit            ≡˘⟨ G.idl ⟩
     G.unit G.⋆ G.unit ∎
 Zero-group-is-initial (_ , G) .paths x =
-  Homomorphism-path λ _ → sym (is-group-hom.pres-id (x .preserves))
+  ext λ _ → sym (is-group-hom.pres-id (x .preserves))
 
 Zero-group-is-terminal : is-terminal Zero-group
 Zero-group-is-terminal _ .centre =
   total-hom (λ _ → lift tt) record { pres-⋆ = λ _ _ _ → lift tt }
-Zero-group-is-terminal _ .paths x = Homomorphism-path λ _ → refl
+Zero-group-is-terminal _ .paths x = trivial!
 
 Zero-group-is-zero : is-zero Zero-group
 Zero-group-is-zero = record

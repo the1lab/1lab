@@ -128,11 +128,19 @@ module _ {ℓ o' ℓ'} {S : Type ℓ → Type o'} {spec : Thin-structure ℓ' S}
     module So = Precategory (Structured-objects spec)
     module Som = Cat.Morphism (Structured-objects spec)
 
+  Extensional-Hom
+    : ∀ {a b ℓr} ⦃ sa : Extensional (⌞ a ⌟ → ⌞ b ⌟) ℓr ⦄
+    → Extensional (So.Hom a b) ℓr
+  Extensional-Hom ⦃ sa ⦄ = injection→extensional!
+    (Structured-hom-path spec) sa
+
   instance
+    extensionality-hom : ∀ {a b} → Extensionality (So.Hom a b)
+    extensionality-hom = record { lemma = quote Extensional-Hom }
+
     Funlike-Hom : Funlike So.Hom
     Funlike-Hom = record
       { _#_ = Total-hom.hom
-      ; ext = λ p → Structured-hom-path spec (funext p)
       }
 
   Homomorphism-path
@@ -166,9 +174,7 @@ record is-equational {ℓ o' ℓ'} {S : Type ℓ → Type o'} (spec : Thin-struc
         (λ st pres → to-pathp (ap (λ e → subst S e (a .snd)) ua-id-equiv
                   ·· transport-refl _
                   ·· spec .id-hom-unique pres (invert-id-hom pres)))
-        (f .hom , eqv)
-        (b .snd)
-        (f .preserves)
+        (f .hom , eqv) (b .snd) (f .preserves)
 
 open is-equational public
 ```

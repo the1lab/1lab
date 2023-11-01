@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Displayed.Univalence.Thin using (extensionality-hom)
 open import Cat.Functor.Subcategory
 open import Cat.Displayed.Total
 open import Cat.Prelude
@@ -337,15 +338,6 @@ module _ {o ℓ} {D E : DCPO o ℓ} where
     module E = DCPO E
   open is-directed-family
   open Total-hom
-
-  scott-path
-    : ∀ {f g : DCPOs.Hom D E}
-    → (∀ x → Scott.hom f x ≡ Scott.hom g x)
-    → f ≡ g
-  scott-path p =
-    Subcat-hom-path $
-    total-hom-path _ (funext p) $
-    is-prop→pathp (λ i → is-monotone-is-prop (λ x → p x i) D.poset-on E.poset-on) _ _
 ```
 -->
 

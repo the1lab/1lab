@@ -4,16 +4,23 @@ open import Cat.Functor.Properties
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
+import Cat.Reasoning
+
 open Functor
 open _=>_
 ```
 -->
 
 ```agda
-module Cat.Diagram.Monad {o h : _} (C : Precategory o h) where
-
-import Cat.Reasoning C as C
+module Cat.Diagram.Monad where
 ```
+
+<!--
+```
+module _ {o h : _} (C : Precategory o h) where
+  private module C = Cat.Reasoning C
+```
+-->
 
 # Monads
 
@@ -28,23 +35,23 @@ ident=mult} $(M \circ M) \To M$.
 [monoid]: Algebra.Monoid.html
 
 ```agda
-record Monad : Type (o ⊔ h) where
-  no-eta-equality
-  field
-    M    : Functor C C
-    unit : Id => M
-    mult : (M F∘ M) => M
+  record Monad : Type (o ⊔ h) where
+    no-eta-equality
+    field
+      M    : Functor C C
+      unit : Id => M
+      mult : (M F∘ M) => M
 ```
 
 <!--
 ```agda
-  module unit = _=>_ unit
-  module mult = _=>_ mult
+    module unit = _=>_ unit
+    module mult = _=>_ mult
 
-  M₀ = F₀ M
-  M₁ = F₁ M
-  M-id = F-id M
-  M-∘ = F-∘ M
+    M₀ = F₀ M
+    M₁ = F₁ M
+    M-id = F-id M
+    M-∘ = F-∘ M
 ```
 -->
 
@@ -52,10 +59,10 @@ Furthermore, these natural transformations must satisfy identity and
 associativity laws exactly analogous to those of a monoid.
 
 ```agda
-  field
-    left-ident  : ∀ {x} → mult.η x C.∘ M₁ (unit.η x) ≡ C.id
-    right-ident : ∀ {x} → mult.η x C.∘ unit.η (M₀ x) ≡ C.id
-    mult-assoc  : ∀ {x} → mult.η x C.∘ M₁ (mult.η x) ≡ mult.η x C.∘ mult.η (M₀ x)
+    field
+      left-ident  : ∀ {x} → mult.η x C.∘ M₁ (unit.η x) ≡ C.id
+      right-ident : ∀ {x} → mult.η x C.∘ unit.η (M₀ x) ≡ C.id
+      mult-assoc  : ∀ {x} → mult.η x C.∘ M₁ (mult.η x) ≡ mult.η x C.∘ mult.η (M₀ x)
 ```
 
 # Algebras over a monad
@@ -71,12 +78,12 @@ value. Formally, an algebra for $M$ is given by a choice of object $A$
 and a morphism $\nu : M(A) \to A$.
 
 ```agda
-record Algebra-on (M : Monad) (ob : C.Ob) : Type (o ⊔ h) where
-  no-eta-equality
-  open Monad M
+  record Algebra-on (M : Monad) (ob : C.Ob) : Type (o ⊔ h) where
+    no-eta-equality
+    open Monad M
 
-  field
-    ν : C.Hom (M₀ ob) ob
+    field
+      ν : C.Hom (M₀ ob) ob
 ```
 
 This morphism must satisfy equations categorifying those which define a
@@ -86,28 +93,28 @@ effects, and `v-mult`{.Agda} says that, given two layers $M(M(A))$, it
 doesn't matter whether you first join then evaluate, or evaluate twice.
 
 ```agda
-    ν-unit : ν C.∘ unit.η ob ≡ C.id
-    ν-mult : ν C.∘ M₁ ν ≡ ν C.∘ mult.η ob
+      ν-unit : ν C.∘ unit.η ob ≡ C.id
+      ν-mult : ν C.∘ M₁ ν ≡ ν C.∘ mult.η ob
 
-Algebra : Monad → Type (o ⊔ h)
-Algebra M = Σ _ (Algebra-on M)
+  Algebra : Monad → Type (o ⊔ h)
+  Algebra M = Σ _ (Algebra-on M)
 ```
 
 <!--
 ```agda
-Algebra-on-pathp
-  : ∀ {M} {X Y} (p : X ≡ Y) {A : Algebra-on M X} {B : Algebra-on M Y}
-  → PathP (λ i → C.Hom (Monad.M₀ M (p i)) (p i)) (A .Algebra-on.ν) (B .Algebra-on.ν)
-  → PathP (λ i → Algebra-on M (p i)) A B
-Algebra-on-pathp over mults i .Algebra-on.ν = mults i
-Algebra-on-pathp {M} over {A} {B} mults i .Algebra-on.ν-unit =
-  is-prop→pathp (λ i → C.Hom-set _ _ (mults i C.∘ M.unit.η _) (C.id {x = over i}))
-    (A .Algebra-on.ν-unit) (B .Algebra-on.ν-unit) i
-  where module M = Monad M
-Algebra-on-pathp {M} over {A} {B} mults i .Algebra-on.ν-mult =
-  is-prop→pathp (λ i → C.Hom-set _ _ (mults i C.∘ M.M₁ (mults i)) (mults i C.∘ M.mult.η _))
-    (A .Algebra-on.ν-mult) (B .Algebra-on.ν-mult) i
-  where module M = Monad M
+  Algebra-on-pathp
+    : ∀ {M} {X Y} (p : X ≡ Y) {A : Algebra-on M X} {B : Algebra-on M Y}
+    → PathP (λ i → C.Hom (Monad.M₀ M (p i)) (p i)) (A .Algebra-on.ν) (B .Algebra-on.ν)
+    → PathP (λ i → Algebra-on M (p i)) A B
+  Algebra-on-pathp over mults i .Algebra-on.ν = mults i
+  Algebra-on-pathp {M} over {A} {B} mults i .Algebra-on.ν-unit =
+    is-prop→pathp (λ i → C.Hom-set _ _ (mults i C.∘ M.unit.η _) (C.id {x = over i}))
+      (A .Algebra-on.ν-unit) (B .Algebra-on.ν-unit) i
+    where module M = Monad M
+  Algebra-on-pathp {M} over {A} {B} mults i .Algebra-on.ν-mult =
+    is-prop→pathp (λ i → C.Hom-set _ _ (mults i C.∘ M.M₁ (mults i)) (mults i C.∘ M.mult.η _))
+      (A .Algebra-on.ν-mult) (B .Algebra-on.ν-mult) i
+    where module M = Monad M
 ```
 -->
 
@@ -121,19 +128,19 @@ homomorphism`{.Agda ident=Algebra-hom} is a map of the underlying
 objects which "commutes with the algebras".
 
 ```agda
-record Algebra-hom (M : Monad) (X Y : Algebra M) : Type (o ⊔ h) where
-  no-eta-equality
-  private
-    module X = Algebra-on (X .snd)
-    module Y = Algebra-on (Y .snd)
+  record Algebra-hom (M : Monad) (X Y : Algebra M) : Type (o ⊔ h) where
+    no-eta-equality
+    private
+      module X = Algebra-on (X .snd)
+      module Y = Algebra-on (Y .snd)
 
-  open Monad M
+    open Monad M
 
-  field
-    morphism : C.Hom (X .fst) (Y .fst)
-    commutes : morphism C.∘ X.ν ≡ Y.ν C.∘ M₁ morphism
+    field
+      morphism : C.Hom (X .fst) (Y .fst)
+      commutes : morphism C.∘ X.ν ≡ Y.ν C.∘ M₁ morphism
 
-open Algebra-hom
+  open Algebra-hom
 ```
 
 We can be more specific about "commuting with the algebras" by drawing a
@@ -158,33 +165,58 @@ ident=C.Hom-set}), equality of algebra homomorphisms only depends on an
 equality of their underlying morphisms.
 
 ```agda
-Algebra-hom-path
-  : {M : Monad} {X Y : Algebra M} {F G : Algebra-hom M X Y}
-  → morphism F ≡ morphism G
-  → F ≡ G
-Algebra-hom-path x i .morphism = x i
-Algebra-hom-path {M = M} {X} {Y} {F} {G} x i .commutes =
-  is-prop→pathp (λ i → C.Hom-set _ _ (x i C.∘ X .snd .Algebra-on.ν)
-                                     (Y .snd .Algebra-on.ν C.∘ Monad.M₁ M (x i)))
-    (F .commutes) (G .commutes) i
+  Algebra-hom-path
+    : {M : Monad} {X Y : Algebra M} {F G : Algebra-hom M X Y}
+    → morphism F ≡ morphism G
+    → F ≡ G
+  Algebra-hom-path x i .morphism = x i
+  Algebra-hom-path {M = M} {X} {Y} {F} {G} x i .commutes =
+    is-prop→pathp (λ i → C.Hom-set _ _ (x i C.∘ X .snd .Algebra-on.ν)
+                                      (Y .snd .Algebra-on.ν C.∘ Monad.M₁ M (x i)))
+      (F .commutes) (G .commutes) i
 ```
 
 <!--
 ```agda
-private unquoteDecl eqv = declare-record-iso eqv (quote Algebra-hom)
-Algebra-hom-pathp
-  : {M : Monad} {W X Y Z : Algebra M}
-    {F : Algebra-hom M W X}
-    {G : Algebra-hom M Y Z}
-    (p : W ≡ Y)
-    (q : X ≡ Z)
-  → PathP _ (morphism F) (morphism G)
-  → PathP (λ i → Algebra-hom M (p i) (q i)) F G
-Algebra-hom-pathp p q r i .morphism = r i
-Algebra-hom-pathp {M = M} {W} {X} {Y} {Z} {F} {G} p q r i .commutes =
-  is-prop→pathp (λ i → C.Hom-set _ _ (r i C.∘ p i .snd .Algebra-on.ν)
-                                     (q i .snd .Algebra-on.ν C.∘ Monad.M₁ M (r i)))
-    (F .commutes) (G .commutes) i
+  Algebra-hom-pathp
+    : {M : Monad} {W X Y Z : Algebra M}
+      {F : Algebra-hom M W X}
+      {G : Algebra-hom M Y Z}
+      (p : W ≡ Y)
+      (q : X ≡ Z)
+    → PathP _ (morphism F) (morphism G)
+    → PathP (λ i → Algebra-hom M (p i) (q i)) F G
+  Algebra-hom-pathp p q r i .morphism = r i
+  Algebra-hom-pathp {M = M} {W} {X} {Y} {Z} {F} {G} p q r i .commutes =
+    is-prop→pathp (λ i → C.Hom-set _ _ (r i C.∘ p i .snd .Algebra-on.ν)
+                                      (q i .snd .Algebra-on.ν C.∘ Monad.M₁ M (r i)))
+      (F .commutes) (G .commutes) i
+```
+-->
+
+<!--
+```agda
+open Algebra-hom public
+
+module _ {o ℓ} {C : Precategory o ℓ} {M : Monad C} where
+  private module C = Cat.Reasoning C
+
+  Extensional-Algebra-Hom
+    : ∀ {ℓr} {a b} {A : Algebra-on C M a} {B : Algebra-on C M b}
+    → ⦃ sa : Extensional (C.Hom a b) ℓr ⦄
+    → Extensional (Algebra-hom C M (a , A) (b , B)) ℓr
+  Extensional-Algebra-Hom ⦃ sa ⦄ = injection→extensional!
+    (Algebra-hom-path C) sa
+
+  instance
+    extensionality-algebra-hom
+      : ∀ {a b} {A : Algebra-on C M a} {B : Algebra-on C M b}
+      → Extensionality (Algebra-hom C M (a , A) (b , B))
+    extensionality-algebra-hom = record { lemma = quote Extensional-Algebra-Hom }
+
+module _ {o ℓ} (C : Precategory o ℓ) where
+  private module C = Cat.Reasoning C
+  private unquoteDecl eqv = declare-record-iso eqv (quote Algebra-hom)
 ```
 -->
 
@@ -194,35 +226,35 @@ algebra homomorphism, they assemble into a category: The
 **Eilenberg-Moore** category of $M$.
 
 ```agda
-module _ (M : Monad) where
-  private
-    module M = Monad M
-  open M hiding (M)
-  open Precategory
-  open Algebra-on
+  module _ (M : Monad C) where
+    private
+      module M = Monad M
+    open M hiding (M)
+    open Precategory
+    open Algebra-on
 
-  Eilenberg-Moore : Precategory _ _
-  Eilenberg-Moore .Ob = Algebra M
-  Eilenberg-Moore .Hom X Y = Algebra-hom M X Y
+    Eilenberg-Moore : Precategory _ _
+    Eilenberg-Moore .Ob = Algebra C M
+    Eilenberg-Moore .Hom X Y = Algebra-hom C M X Y
 ```
 
 Defining the identity and composition maps is mostly an exercise in
 categorical yoga:
 
 ```agda
-  Eilenberg-Moore .id {o , x} .morphism = C.id
-  Eilenberg-Moore .id {o , x} .commutes =
-    C.id C.∘ ν x     ≡⟨ C.id-comm-sym ⟩
-    ν x C.∘ C.id     ≡⟨ ap (C._∘_ _) (sym M-id) ⟩
-    ν x C.∘ M₁ C.id  ∎
+    Eilenberg-Moore .id {o , x} .morphism = C.id
+    Eilenberg-Moore .id {o , x} .commutes =
+      C.id C.∘ ν x     ≡⟨ C.id-comm-sym ⟩
+      ν x C.∘ C.id     ≡⟨ ap (C._∘_ _) (sym M-id) ⟩
+      ν x C.∘ M₁ C.id  ∎
 
-  Eilenberg-Moore ._∘_ {_ , x} {_ , y} {_ , z} F G .morphism =
-    morphism F C.∘ morphism G
-  Eilenberg-Moore ._∘_ {_ , x} {_ , y} {_ , z} F G .commutes =
-    (morphism F C.∘ morphism G) C.∘ ν x            ≡⟨ C.extendr (commutes G) ⟩
-    ⌜ morphism F C.∘ ν y ⌝ C.∘ M₁ (morphism G)     ≡⟨ ap! (commutes F) ⟩
-    (ν z C.∘ M₁ (morphism F)) C.∘ M₁ (morphism G)  ≡⟨ C.pullr (sym (M-∘ _ _)) ⟩
-    ν z C.∘ M₁ (morphism F C.∘ morphism G)         ∎
+    Eilenberg-Moore ._∘_ {_ , x} {_ , y} {_ , z} F G .morphism =
+      morphism F C.∘ morphism G
+    Eilenberg-Moore ._∘_ {_ , x} {_ , y} {_ , z} F G .commutes =
+      (morphism F C.∘ morphism G) C.∘ ν x            ≡⟨ C.extendr (commutes G) ⟩
+      ⌜ morphism F C.∘ ν y ⌝ C.∘ M₁ (morphism G)     ≡⟨ ap! (commutes F) ⟩
+      (ν z C.∘ M₁ (morphism F)) C.∘ M₁ (morphism G)  ≡⟨ C.pullr (sym (M-∘ _ _)) ⟩
+      ν z C.∘ M₁ (morphism F C.∘ morphism G)         ∎
 ```
 
 <details>
@@ -233,11 +265,11 @@ the identity and associativity laws from its underlying category.
 </summary>
 
 ```agda
-  Eilenberg-Moore .idr f = Algebra-hom-path (C.idr (morphism f))
-  Eilenberg-Moore .idl f = Algebra-hom-path (C.idl (morphism f))
-  Eilenberg-Moore .assoc f g h = Algebra-hom-path (C.assoc _ _ _)
-  Eilenberg-Moore .Hom-set X Y = Iso→is-hlevel 2 eqv (hlevel 2)
-    where open C.HLevel-instance
+    Eilenberg-Moore .idr f = ext (C.idr _)
+    Eilenberg-Moore .idl f = ext (C.idl _)
+    Eilenberg-Moore .assoc f g h = ext (C.assoc _ _ _)
+    Eilenberg-Moore .Hom-set X Y = Iso→is-hlevel 2 eqv (hlevel 2)
+      where open C.HLevel-instance
 ```
 
 </details>
@@ -247,19 +279,19 @@ morphisms of the homomorphisms between them, we can define a functor
 from `Eilenberg-Moore`{.Agda} back to the underlying category:
 
 ```agda
-  Forget : Functor Eilenberg-Moore C
-  Forget .F₀ = fst
-  Forget .F₁ = Algebra-hom.morphism
-  Forget .F-id = refl
-  Forget .F-∘ f g = refl
+    Forget : Functor Eilenberg-Moore C
+    Forget .F₀ = fst
+    Forget .F₁ = Algebra-hom.morphism
+    Forget .F-id = refl
+    Forget .F-∘ f g = refl
 ```
 
 The lemma `Algebra-hom-path`{.Agda} says exactly that this functor is
 faithful.
 
 ```agda
-  Forget-is-faithful : is-faithful Forget
-  Forget-is-faithful = Algebra-hom-path
+    Forget-is-faithful : is-faithful Forget
+    Forget-is-faithful = ext
 ```
 
 ## Free Algebras
@@ -280,11 +312,11 @@ multiplication; The associativity and unit laws of the monad _itself_
 become those of the $M$-action.
 
 ```agda
-  Free : Functor C Eilenberg-Moore
-  Free .F₀ A .fst = M₀ A
-  Free .F₀ A .snd .ν = mult .η A
-  Free .F₀ A .snd .ν-mult = mult-assoc
-  Free .F₀ A .snd .ν-unit = right-ident
+    Free : Functor C Eilenberg-Moore
+    Free .F₀ A .fst = M₀ A
+    Free .F₀ A .snd .ν = mult .η A
+    Free .F₀ A .snd .ν-mult = mult-assoc
+    Free .F₀ A .snd .ν-unit = right-ident
 ```
 
 The construction of free $M$-algebras is furthermore functorial on the
@@ -306,10 +338,10 @@ algebraic action:
 ~~~
 
 ```agda
-  Free .F₁ f .morphism = M₁ f
-  Free .F₁ f .commutes = sym $ mult.is-natural _ _ _
-  Free .F-id = Algebra-hom-path M-id
-  Free .F-∘ f g = Algebra-hom-path (M-∘ f g)
+    Free .F₁ f .morphism = M₁ f
+    Free .F₁ f .commutes = sym $ mult.is-natural _ _ _
+    Free .F-id = ext M-id
+    Free .F-∘ f g = ext (M-∘ f g)
 ```
 
 This is a free construction in the precise sense of the word: it's the
@@ -321,16 +353,16 @@ $\cC^M$.
 [universal]: Cat.Functor.Adjoint.html#universal-morphisms
 
 ```agda
-  open _⊣_
+    open _⊣_
 
-  Free⊣Forget : Free ⊣ Forget
-  Free⊣Forget .unit = NT M.unit.η M.unit.is-natural
-  Free⊣Forget .counit .η x =
-    record { morphism = x .snd .ν
-           ; commutes = sym (x .snd .ν-mult)
-           }
-  Free⊣Forget .counit .is-natural x y f =
-    Algebra-hom-path (sym (commutes f))
-  Free⊣Forget .zig = Algebra-hom-path left-ident
-  Free⊣Forget .zag {x} = x .snd .ν-unit
+    Free⊣Forget : Free ⊣ Forget
+    Free⊣Forget .unit = NT M.unit.η M.unit.is-natural
+    Free⊣Forget .counit .η x =
+      record { morphism = x .snd .ν
+             ; commutes = sym (x .snd .ν-mult)
+             }
+    Free⊣Forget .counit .is-natural x y f =
+      ext (sym (commutes f))
+    Free⊣Forget .zig = ext left-ident
+    Free⊣Forget .zag {x} = x .snd .ν-unit
 ```
