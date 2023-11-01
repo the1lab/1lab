@@ -15,7 +15,7 @@ import Cat.Reasoning as Cat
 
 ```agda
 module Cat.Diagram.Coend.Formula
-  {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
   where
 ```
 
@@ -86,16 +86,16 @@ colimits: $\cD$ has a coend for $F$ if it has a colimit for $F\pi_t$.
     module W = Colimit colim
     coend : Coend F
     coend .cowedge = cocone→cowedge W.cocone
-    coend .factor W′ =
+    coend .factor W' =
       W.universal
-        (cowedge→cocone W′ .η)
-        (λ f → cowedge→cocone W′ .is-natural _ _ f ∙ D.idl _)
-    coend .commutes {W = W′} =
+        (cowedge→cocone W' .η)
+        (λ f → cowedge→cocone W' .is-natural _ _ f ∙ D.idl _)
+    coend .commutes {W = W'} =
       W.factors _ _ ∙ D.elimr (Bifunctor.second-id F)
-    coend .unique {W = W′} comm =
+    coend .unique {W = W'} comm =
       W.unique _ _ _ $ λ j →
         sym $
-          W′ .extranatural _
+          W' .extranatural _
           ·· D.pushl (sym comm)
           ·· (D.refl⟩∘⟨ (W.commutes (twist _ _ (C.cancelr (C.idl _)))))
 

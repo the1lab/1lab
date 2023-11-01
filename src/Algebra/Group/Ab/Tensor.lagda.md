@@ -24,7 +24,7 @@ module Algebra.Group.Ab.Tensor where
 <!--
 ```agda
 private variable
-  ℓ ℓ′ ℓ′′ : Level
+  ℓ ℓ' ℓ'' : Level
 ```
 -->
 
@@ -34,7 +34,7 @@ satisfies $f(x + y, z) = f(x, z) + f(y, z)$ and $f(x, y + z) = f(x, y) +
 f(x, z)$: it is a group homomorphism in each of its arguments.
 
 ```agda
-record Bilinear (A : Abelian-group ℓ) (B : Abelian-group ℓ′) (C : Abelian-group ℓ′′) : Type (ℓ ⊔ ℓ′ ⊔ ℓ′′) where
+record Bilinear (A : Abelian-group ℓ) (B : Abelian-group ℓ') (C : Abelian-group ℓ'') : Type (ℓ ⊔ ℓ' ⊔ ℓ'') where
   private
     module A = Abelian-group-on (A .snd)
     module B = Abelian-group-on (B .snd)
@@ -75,7 +75,7 @@ record Bilinear (A : Abelian-group ℓ) (B : Abelian-group ℓ′) (C : Abelian-
     public
 
 Bilinear-path
-  : ∀ {A : Abelian-group ℓ} {B : Abelian-group ℓ′} {C : Abelian-group ℓ′′}
+  : ∀ {A : Abelian-group ℓ} {B : Abelian-group ℓ'} {C : Abelian-group ℓ''}
   → {ba bb : Bilinear A B C}
   → (∀ x y → Bilinear.map ba x y ≡ Bilinear.map bb x y)
   → ba ≡ bb
@@ -132,7 +132,7 @@ such that $P(A, B) \to C$ is _also_ the type of bilinear maps $A \to B
 
 <!--
 ```agda
-module _ {ℓ ℓ′} (A : Abelian-group ℓ) (B : Abelian-group ℓ′) where
+module _ {ℓ ℓ'} (A : Abelian-group ℓ) (B : Abelian-group ℓ') where
   private
     module A = Abelian-group-on (A .snd)
     module B = Abelian-group-on (B .snd)
@@ -148,7 +148,7 @@ operation we want, and for the equations these should satisfy: $A
 map $A \to B \to A \otimes B$.
 
 ```agda
-  data Tensor : Type (ℓ ⊔ ℓ′) where
+  data Tensor : Type (ℓ ⊔ ℓ') where
     :1       : Tensor
     _:*_     : Tensor → Tensor → Tensor
     :inv     : Tensor → Tensor
@@ -180,7 +180,7 @@ it's the initial object equipped with these data.
   make-abelian-tensor .invl x      = t-invl
   make-abelian-tensor .comm x y    = t-comm
 
-  _⊗_ : Abelian-group (ℓ ⊔ ℓ′)
+  _⊗_ : Abelian-group (ℓ ⊔ ℓ')
   _⊗_ = to-ab make-abelian-tensor
 
   to-tensor : Bilinear A B _⊗_
@@ -192,7 +192,7 @@ it's the initial object equipped with these data.
 <!--
 ```agda
   Tensor-elim-prop
-    : ∀ {ℓ′} {P : Tensor → Type ℓ′}
+    : ∀ {ℓ'} {P : Tensor → Type ℓ'}
     → (∀ x → is-prop (P x))
     → (∀ x y → P (x , y))
     → (∀ {x y} → P x → P y → P (x :* y))
@@ -219,7 +219,7 @@ it's the initial object equipped with these data.
     go (t-pres-*r {x} {y} {z} i) = is-prop→pathp (λ i → pprop (t-pres-*r i)) (ppair x (y B.* z)) (padd (ppair x y) (ppair x z)) i
     go (t-pres-*l {x} {y} {z} i) = is-prop→pathp (λ i → pprop (t-pres-*l i)) (ppair (x A.* y) z) (padd (ppair x z) (ppair y z)) i
 
-module _ {ℓ ℓ′ ℓ′′} (A : Abelian-group ℓ) (B : Abelian-group ℓ′) (C : Abelian-group ℓ′′) where
+module _ {ℓ ℓ' ℓ''} (A : Abelian-group ℓ) (B : Abelian-group ℓ') (C : Abelian-group ℓ'') where
   private
     module A = Abelian-group-on (A .snd)
     module B = Abelian-group-on (B .snd)

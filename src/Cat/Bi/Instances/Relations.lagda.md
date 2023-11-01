@@ -454,8 +454,8 @@ construct these three maps:
 
 ```agda
 ∘-rel-monotone
-  : ∀ {b c d} {r r′ : c ↬ d} {s s′ : b ↬ c}
-  → r ≤ₘ r′ → s ≤ₘ s′ → ∘-rel r s ≤ₘ ∘-rel r′ s′
+  : ∀ {b c d} {r r' : c ↬ d} {s s' : b ↬ c}
+  → r ≤ₘ r' → s ≤ₘ s' → ∘-rel r s ≤ₘ ∘-rel r' s'
 
 ∘-rel-idr : ∀ {a b} (f : a ↬ b) → ∘-rel f id-rel Sub.≅ f
 ∘-rel-idl : ∀ {a b} (f : a ↬ b) → ∘-rel id-rel f Sub.≅ f
@@ -473,9 +473,9 @@ but keep in mind that they are not commented.
 
 <!--
 ```agda
-∘-rel-monotone {r = r} {r′} {s} {s′} α β =
+∘-rel-monotone {r = r} {r'} {s} {s'} α β =
   Im-universal (∘-rel.it r s) _
-    {e = factor _ .mediate ∘ ∘-rel.inter r′ s′ .universal
+    {e = factor _ .mediate ∘ ∘-rel.inter r' s' .universal
       {p₁' = β .map ∘ ∘-rel.inter _ _ .p₁}
       {p₂' = α .map ∘ ∘-rel.inter _ _ .p₂}
       ( pullr (pulll (sym (β .sq) ∙ idl _))
@@ -485,10 +485,10 @@ but keep in mind that they are not commented.
       (π₁∘⟨⟩ ∙ pullr refl)
       (π₂∘⟨⟩ ∙ pullr refl)
       (  ap₂ _∘_ refl (pulll (sym (factor _ .factors)))
-      ·· pulll π₁∘⟨⟩ ∙ pullr (∘-rel.inter r′ s′ .p₁∘universal)
+      ·· pulll π₁∘⟨⟩ ∙ pullr (∘-rel.inter r' s' .p₁∘universal)
       ·· pullr (pulll (sym (β .sq) ∙ idl _)))
       (  ap₂ _∘_ refl (pulll (sym (factor _ .factors)))
-      ·· pulll π₂∘⟨⟩ ∙ pullr (∘-rel.inter r′ s′ .p₂∘universal)
+      ·· pulll π₂∘⟨⟩ ∙ pullr (∘-rel.inter r' s' .p₂∘universal)
       ·· pullr (pulll (sym (α .sq) ∙ idl _))))
 
 ∘-rel-idr f = Sub-antisym fid≤f f≤fid where

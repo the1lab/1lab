@@ -195,17 +195,17 @@ differently.
 
     isl : is-ran _ F _ (cone→counit F (Cone→cone K))
     isl .σ {M = M} α = nt where
-      α′ : Cone
-      α′ .apex = M .Functor.F₀ tt
-      α′ .ψ x = α .η x
-      α′ .commutes f = sym (α .is-natural _ _ f) ∙ C.elimr (M .Functor.F-id)
+      α' : Cone
+      α' .apex = M .Functor.F₀ tt
+      α' .ψ x = α .η x
+      α' .commutes f = sym (α .is-natural _ _ f) ∙ C.elimr (M .Functor.F-id)
 
       nt : M => const! (K .apex)
-      nt .η x = term α′ .centre .hom
+      nt .η x = term α' .centre .hom
       nt .is-natural tt tt tt = C.elimr (M .Functor.F-id) ∙ C.introl refl
     isl .σ-comm = Nat-path λ x → term _ .centre .commutes _
-    isl .σ-uniq {σ′ = σ′} x = Nat-path λ _ → ap hom $ term _ .paths λ where
-      .hom        → σ′ .η _
+    isl .σ-uniq {σ' = σ'} x = Nat-path λ _ → ap hom $ term _ .paths λ where
+      .hom        → σ' .η _
       .commutes _ → sym (x ηₚ _)
 ```
 

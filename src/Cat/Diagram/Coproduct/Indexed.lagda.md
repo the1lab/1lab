@@ -76,7 +76,7 @@ has-indexed-coproducts ℓ = ∀ {I : Type ℓ} → has-coproducts-indexed-by I
 <!--
 ```agda
 Indexed-coproduct-≃
-  : ∀ {ℓ ℓ′} {I : Type ℓ} {J : Type ℓ′} → (e : I ≃ J)
+  : ∀ {ℓ ℓ'} {I : Type ℓ} {J : Type ℓ'} → (e : I ≃ J)
   → {F : I → C.Ob} → Indexed-coproduct (F ⊙ Equiv.from e) → Indexed-coproduct F
 Indexed-coproduct-≃ e {F} p = λ where
   .ΣF → p .ΣF
@@ -94,8 +94,8 @@ Indexed-coproduct-≃ e {F} p = λ where
       module e = Equiv e
 
 Lift-Indexed-coproduct
-  : ∀ {ℓ} ℓ′ → {I : Type ℓ} → {F : I → C.Ob}
-  → Indexed-coproduct {Idx = Lift ℓ′ I} (F ⊙ Lift.lower)
+  : ∀ {ℓ} ℓ' → {I : Type ℓ} → {F : I → C.Ob}
+  → Indexed-coproduct {Idx = Lift ℓ' I} (F ⊙ Lift.lower)
   → Indexed-coproduct F
 Lift-Indexed-coproduct _ = Indexed-coproduct-≃ (Lift-≃ e⁻¹)
 ```

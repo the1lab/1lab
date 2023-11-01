@@ -155,7 +155,7 @@ structure, we can conclude that $\Mod[R]$ is not only a category, but an
 $\Ab$-category to boot!
 
 ```agda
-R-Mod-ab-category : ∀ {ℓ′} → Ab-category (R-Mod R ℓ′)
+R-Mod-ab-category : ∀ {ℓ'} → Ab-category (R-Mod R ℓ')
 ```
 
 <!--

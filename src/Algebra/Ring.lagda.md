@@ -140,9 +140,9 @@ with a monoid structure".
 
 ```agda
 record is-ring-hom
-  {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} (R : Ring-on A) (S : Ring-on B)
+  {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (R : Ring-on A) (S : Ring-on B)
   (f : A → B)
-  : Type (ℓ ⊔ ℓ′) where
+  : Type (ℓ ⊔ ℓ') where
   private
     module A = Ring-on R
     module B = Ring-on S
@@ -163,7 +163,7 @@ record is-ring-hom
 
 private unquoteDecl eqv = declare-record-iso eqv (quote is-ring-hom)
 
-module _ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} {R : Ring-on A} {S : Ring-on B} where
+module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {R : Ring-on A} {S : Ring-on B} where
   open Ring-on R using (magma-hlevel)
   open Ring-on S using (magma-hlevel)
 

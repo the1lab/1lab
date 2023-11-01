@@ -61,7 +61,7 @@ for every value of $f$, then it holds for any set.
 
 ```agda
 V-elim-prop
-  : ∀ {ℓ ℓ′} (P : V ℓ → Type ℓ′)
+  : ∀ {ℓ ℓ'} (P : V ℓ → Type ℓ')
   → (∀ x → is-prop (P x))
   → (∀ {A} (f : A → V ℓ) → (∀ x → P (f x)) → P (set A f))
   → ∀ x → P x
@@ -88,14 +88,14 @@ V-elim-prop P p-prop p-set (squash x y p q i j) =
 
 <!--
 ```agda
-V-elim-prop′
-  : ∀ {ℓ ℓ′} (P : V ℓ → Type ℓ′)
+V-elim-prop'
+  : ∀ {ℓ ℓ'} (P : V ℓ → Type ℓ')
   → (∀ {A} (f : A → V ℓ) → is-prop (P (set A f)))
   → (∀ {A} (f : A → V ℓ) → (∀ x → P (f x)) → P (set A f))
   → ∀ x → P x
-V-elim-prop′ P pprop pset = V-elim-prop P pprop′ pset where abstract
-  pprop′ : ∀ x → is-prop (P x)
-  pprop′ = V-elim-prop _ (λ _ → is-prop-is-prop) (λ f _ → pprop f)
+V-elim-prop' P pprop pset = V-elim-prop P pprop' pset where abstract
+  pprop' : ∀ x → is-prop (P x)
+  pprop' = V-elim-prop _ (λ _ → is-prop-is-prop) (λ f _ → pprop f)
 ```
 -->
 
@@ -216,7 +216,7 @@ $i = a$!
     V-elim-prop _ (λ A → Π-is-hlevel³ 1 λ _ _ _ → squash _ _) λ {A} f ext B a<b b<a →
       V-elim-prop (λ B → set A f ⊆ B → B ⊆ set A f → (set A f) ≡ B)
       (λ _ → Π-is-hlevel² 1 λ _ _ → squash _ _)
-      (λ g ext′ a<b b<a → worker f g a<b b<a)
+      (λ g ext' a<b b<a → worker f g a<b b<a)
       B a<b b<a
 
 V-identity-system
@@ -342,7 +342,7 @@ members of a set.
 ```agda
 presentation : ∀ {ℓ} (X : V ℓ) → Presentation X
 presentation {ℓ} =
-  V-elim-prop′ Presentation Presentation-is-prop λ f _ → present f
+  V-elim-prop' Presentation Presentation-is-prop λ f _ → present f
   where
 ```
 
@@ -392,8 +392,8 @@ module Members {ℓ} (X : V ℓ) where
   contains : ∀ {i} → elem i ∈ₛ X
   contains = memb.from (_ , refl)
 
-  contains′ : ∀ {i x} → x ≡ elem i → x ∈ₛ X
-  contains′ p = subst (_∈ₛ X) (sym p) contains
+  contains' : ∀ {i x} → x ≡ elem i → x ∈ₛ X
+  contains' p = subst (_∈ₛ X) (sym p) contains
 ```
 
 # Modelling IZF
@@ -477,7 +477,7 @@ F \simeq m_F^*(x)$.
   union {x} {F} = prop-ext hlevel! squash
     (∥-∥-map λ { ((i , j) , p) →
         Members.elem F i
-      , Members.contains′ (Members.elem F i) (sym p)
+      , Members.contains' (Members.elem F i) (sym p)
       , Members.contains F
       })
 ```
@@ -498,11 +498,11 @@ which we can transport to a fibre $m_{m_{F(i)}}^*(x)$, i.e. an index $j
 ```agda
     (∥-∥-map λ { (u , x-u , u-F) →
       let
-        s′ : fibre _ x
-        s′ = subst (λ e → fibre (Members.elem e) x)
+        s' : fibre _ x
+        s' = subst (λ e → fibre (Members.elem e) x)
               (sym (Members.memb.to F u-F .snd))
               (Members.memb.to u x-u)
-      in (Members.memb.to F u-F .fst , s′ .fst) , s′ .snd })
+      in (Members.memb.to F u-F .fst , s' .fst) , s' .snd })
 ```
 
 ## Infinity & the natural numbers
@@ -629,7 +629,7 @@ $p$, a proof that $C$ holds of $x$.
   separation : ∀ a C x → (x ∈ₛ subset a C) ≃ (x ∈ₛ a × x ∈ C)
   separation a C x = prop-ext squash hlevel!
     (∥-∥-rec hlevel! λ { ((j , w) , p) →
-      Members.contains′ a (sym p) , subst (λ e → ∣ C e ∣) p w })
+      Members.contains' a (sym p) , subst (λ e → ∣ C e ∣) p w })
     (λ { (i∈a , Ci) → inc (
       ( Members.memb.to a i∈a .fst
       , subst (λ e → ∣ C e ∣) (sym (Members.memb.to a i∈a .snd)) Ci)
@@ -758,7 +758,7 @@ as it holds for every $x \in a$, then $P$ holds of any material set.
 
 ```agda
   ∈-induction
-    : ∀ {ℓ′} (P : V ℓ → Prop ℓ′)
+    : ∀ {ℓ'} (P : V ℓ → Prop ℓ')
     → (∀ {a} → (∀ {x} → x ∈ₛ a → ∣ P x ∣) → ∣ P a ∣)
     → ∀ x → ∣ P x ∣
   ∈-induction P ps = V-elim-prop (λ z → ∣ P z ∣) (λ _ → P _ .is-tr) $ λ f i →

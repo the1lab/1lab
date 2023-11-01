@@ -63,17 +63,17 @@ group homormophism.
 ```agda
 rep-subgroup→group-on
   : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Group-on (Σ[ x ∈ ⌞ G ⌟ ] x ∈ H)
-rep-subgroup→group-on {G = G} H sg = to-group-on sg′ where
+rep-subgroup→group-on {G = G} H sg = to-group-on sg' where
   open Group-on (G .snd)
   open represents-subgroup sg
-  sg′ : make-group (Σ[ x ∈ ⌞ G ⌟ ] x ∈ H)
-  sg′ .make-group.group-is-set = hlevel!
-  sg′ .make-group.unit = unit , has-unit
-  sg′ .make-group.mul (x , x∈) (y , y∈) = x ⋆ y , has-⋆ x∈ y∈
-  sg′ .make-group.inv (x , x∈) = x ⁻¹ , has-inv x∈
-  sg′ .make-group.assoc x y z = Σ-prop-path (λ x → H x .is-tr) associative
-  sg′ .make-group.invl x = Σ-prop-path (λ x → H x .is-tr) inversel
-  sg′ .make-group.idl x = Σ-prop-path (λ x → H x .is-tr) idl
+  sg' : make-group (Σ[ x ∈ ⌞ G ⌟ ] x ∈ H)
+  sg' .make-group.group-is-set = hlevel!
+  sg' .make-group.unit = unit , has-unit
+  sg' .make-group.mul (x , x∈) (y , y∈) = x ⋆ y , has-⋆ x∈ y∈
+  sg' .make-group.inv (x , x∈) = x ⁻¹ , has-inv x∈
+  sg' .make-group.assoc x y z = Σ-prop-path (λ x → H x .is-tr) associative
+  sg' .make-group.invl x = Σ-prop-path (λ x → H x .is-tr) inversel
+  sg' .make-group.idl x = Σ-prop-path (λ x → H x .is-tr) idl
 
 predicate→subgroup : (H : ℙ ⌞ G ⌟) → represents-subgroup G H → Subgroup G
 predicate→subgroup {G = G} H p = record { map = it ; monic = ism } where
@@ -278,9 +278,9 @@ representative". This follows from algebraic manipulation of group
 homomorphisms + the assumed identity $0 = e' \circ \ker f$;
 
 ```agda
-      const′ : ∀ (x y : fibre (apply f) x)
+      const' : ∀ (x y : fibre (apply f) x)
              → e' # (x .fst) F.— e' # (y .fst) ≡ F.unit
-      const′ (y , q) (z , r) =
+      const' (y , q) (z , r) =
         (e' # y) F.— (e' # z)  ≡˘⟨ e'.pres-diff ⟩
         e' # (y A.— z)         ≡⟨ happly (sym (ap hom p)) (y A.— z , aux) ⟩
         e' # A.unit            ≡⟨ e'.pres-id ⟩
@@ -301,7 +301,7 @@ But that's just algebra, hence uninteresting:
             B.unit            ∎
 
       const : ∀ (x y : fibre (apply f) x) → e' # (x .fst) ≡ e' # (y .fst)
-      const a b = F.zero-diff (const′ a b)
+      const a b = F.zero-diff (const' a b)
 ```
 
 The rest of the construction is almost tautological: By _definition_, if
@@ -317,7 +317,7 @@ will compute.
       path : (x : ⌞ Kerf.ker ⌟) → A→im # A.unit ≡ A→im # (x .fst)
       path (x* , p) = Tpath (f.pres-id ∙ sym p)
 
-    coeq .universal {F = F} {e′ = e'} p = gh where
+    coeq .universal {F = F} {e' = e'} p = gh where
       module F = Group-on (F .snd)
       module e' = is-group-hom (e' .preserves)
 

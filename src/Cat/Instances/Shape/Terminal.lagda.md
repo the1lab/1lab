@@ -89,7 +89,7 @@ module _ {o ℓ} {𝒞 : Precategory o ℓ} {F G : Functor ⊤Cat 𝒞} where
 
 <!--
 ```agda
-module _ {o ℓ o′ ℓ′} {𝒞 : Precategory o ℓ} {𝒟 : Precategory o′ ℓ′} where
+module _ {o ℓ o' ℓ'} {𝒞 : Precategory o ℓ} {𝒟 : Precategory o' ℓ'} where
   private
     module 𝒟 = Precategory 𝒟
     open Functor

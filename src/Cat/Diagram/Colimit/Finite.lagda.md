@@ -124,12 +124,12 @@ of $in_0f$ and $in_1g$.
 
     po : is-pushout C _ _ _ _
     po .square = sym (assoc _ _ _) ∙ cq.coequal ∙ assoc _ _ _
-    po .universal {i₁′ = i₁′} {i₂′} p =
-      cq.universal {e′ = cp.[ i₁′ , i₂′ ]} (
-        cp.[ i₁′ , i₂′ ] ∘ (in1 ∘ f) ≡⟨ pulll cp.in₀∘factor ⟩
-        i₁′ ∘ f                      ≡⟨ p ⟩
-        i₂′ ∘ g                      ≡˘⟨ pulll cp.in₁∘factor ⟩
-        cp.[ i₁′ , i₂′ ] ∘ (in2 ∘ g) ∎
+    po .universal {i₁' = i₁'} {i₂'} p =
+      cq.universal {e' = cp.[ i₁' , i₂' ]} (
+        cp.[ i₁' , i₂' ] ∘ (in1 ∘ f) ≡⟨ pulll cp.in₀∘factor ⟩
+        i₁' ∘ f                      ≡⟨ p ⟩
+        i₂' ∘ g                      ≡˘⟨ pulll cp.in₁∘factor ⟩
+        cp.[ i₁' , i₂' ] ∘ (in2 ∘ g) ∎
       )
     po .i₁∘universal = pulll cq.factors ∙ cp.in₀∘factor
     po .i₂∘universal = pulll cq.factors ∙ cp.in₁∘factor
@@ -168,8 +168,8 @@ A coproduct is a pushout under a span whose vertex is the initial object.
       module Po = is-pushout po
 
       coprod : is-coproduct C in1 in2
-      coprod .is-coproduct.[_,_] in1′ in2′ =
-        Po.universal {i₁′ = in1′} {i₂′ = in2′} (is-contr→is-prop (init _) _ _)
+      coprod .is-coproduct.[_,_] in1' in2' =
+        Po.universal {i₁' = in1'} {i₂' = in2'} (is-contr→is-prop (init _) _ _)
       coprod .is-coproduct.in₀∘factor = Po.i₁∘universal
       coprod .is-coproduct.in₁∘factor = Po.i₂∘universal
       coprod .is-coproduct.unique other p q = Po.unique p q
@@ -181,8 +181,8 @@ A coproduct is a pushout under a span whose vertex is the initial object.
   with-pushouts bot po = fcc where
     module bot = Initial bot
     mkcoprod : ∀ A B → Coproduct C A B
-    mkcoprod A B = record { has-is-coproduct = initial-pushout→coproduct bot.has⊥ po′ }
-      where po′ = po (bot.has⊥ A .centre) (bot.has⊥ B .centre) .Pushout.has-is-po
+    mkcoprod A B = record { has-is-coproduct = initial-pushout→coproduct bot.has⊥ po' }
+      where po' = po (bot.has⊥ A .centre) (bot.has⊥ B .centre) .Pushout.has-is-po
 
     mkcoeq : ∀ {A B} (f g : Hom A B) → Coequaliser C f g
     mkcoeq {A = A} {B} f g = coequ where
@@ -231,33 +231,33 @@ limits]].
         (Po.i₂ ∘ [id,id]) ∘ A+A.in₁ ≡⟨ ap (_∘ A+A.in₁) (sym Po.square) ⟩
         (Po.i₁ ∘ [f,g]) ∘ A+A.in₁   ≡⟨ sym (assoc _ _ _) ∙ ap (Po.i₁ ∘_) A+A.in₁∘factor ⟩
         Po.i₁ ∘ g                 ∎
-      coequ .has-is-coeq .universal {e′ = e′} p =
+      coequ .has-is-coeq .universal {e' = e'} p =
         Po.universal (A+A.unique₂ _ refl refl _ (in1) (in2))
         where
-          in1 : ((e′ ∘ f) ∘ [id,id]) ∘ A+A.in₀ ≡ (e′ ∘ [f,g]) ∘ A+A.in₀
+          in1 : ((e' ∘ f) ∘ [id,id]) ∘ A+A.in₀ ≡ (e' ∘ [f,g]) ∘ A+A.in₀
           in1 =
-            ((e′ ∘ f) ∘ [id,id]) ∘ A+A.in₀ ≡⟨ cancelr A+A.in₀∘factor ⟩ -- ≡⟨ cancell A+A.in₀∘factor ⟩
-            e′ ∘ f                     ≡˘⟨ pullr A+A.in₀∘factor ⟩ -- ≡˘⟨ pulll A+A.in₀∘factor ⟩
-            (e′ ∘ [f,g]) ∘ A+A.in₀       ∎
+            ((e' ∘ f) ∘ [id,id]) ∘ A+A.in₀ ≡⟨ cancelr A+A.in₀∘factor ⟩ -- ≡⟨ cancell A+A.in₀∘factor ⟩
+            e' ∘ f                     ≡˘⟨ pullr A+A.in₀∘factor ⟩ -- ≡˘⟨ pulll A+A.in₀∘factor ⟩
+            (e' ∘ [f,g]) ∘ A+A.in₀       ∎
 
-          in2 : ((e′ ∘ f) ∘ [id,id]) ∘ A+A.in₁ ≡ (e′ ∘ [f,g]) ∘ A+A.in₁
+          in2 : ((e' ∘ f) ∘ [id,id]) ∘ A+A.in₁ ≡ (e' ∘ [f,g]) ∘ A+A.in₁
           in2 =
-            ((e′ ∘ f) ∘ [id,id]) ∘ A+A.in₁  ≡⟨ cancelr A+A.in₁∘factor ⟩
-            e′ ∘ f                     ≡⟨ p ⟩
-            e′ ∘ g                     ≡˘⟨ pullr A+A.in₁∘factor ⟩
-            (e′ ∘ [f,g]) ∘ A+A.in₁        ∎
+            ((e' ∘ f) ∘ [id,id]) ∘ A+A.in₁  ≡⟨ cancelr A+A.in₁∘factor ⟩
+            e' ∘ f                     ≡⟨ p ⟩
+            e' ∘ g                     ≡˘⟨ pullr A+A.in₁∘factor ⟩
+            (e' ∘ [f,g]) ∘ A+A.in₁        ∎
 
       coequ .has-is-coeq .factors = Po.i₁∘universal
-      coequ .has-is-coeq .unique {F} {e′ = e′} {colim = colim} e′=col∘i₁ =
-        Po.unique e′=col∘i₁ path
+      coequ .has-is-coeq .unique {F} {e' = e'} {colim = colim} e'=col∘i₁ =
+        Po.unique e'=col∘i₁ path
         where
-          path : colim ∘ Po.i₂ ≡ e′ ∘ f
+          path : colim ∘ Po.i₂ ≡ e' ∘ f
           path =
             colim ∘ Po.i₂                         ≡⟨ insertr A+A.in₀∘factor ⟩
             ((colim ∘ Po.i₂) ∘ [id,id]) ∘ A+A.in₀ ≡⟨ ap (_∘ A+A.in₀) (extendr (sym Po.square)) ⟩
-            ((colim ∘ Po.i₁) ∘ [f,g]) ∘ A+A.in₀   ≡⟨ ap (_∘ A+A.in₀) (ap (_∘ [f,g]) e′=col∘i₁) ⟩
-            (e′ ∘ [f,g]) ∘ A+A.in₀                ≡⟨ pullr A+A.in₀∘factor ⟩
-            e′ ∘ f           ∎
+            ((colim ∘ Po.i₁) ∘ [f,g]) ∘ A+A.in₀   ≡⟨ ap (_∘ A+A.in₀) (ap (_∘ [f,g]) e'=col∘i₁) ⟩
+            (e' ∘ [f,g]) ∘ A+A.in₀                ≡⟨ pullr A+A.in₀∘factor ⟩
+            e' ∘ f           ∎
 
     fcc : Finitely-cocomplete
     fcc .initial      = bot
@@ -289,14 +289,14 @@ finite colimits.
 
 <!--
 ```agda
-module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} where
+module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
   private module C = Cat C
   private module D = Cat D
 ```
 -->
 
 ```agda
-  record is-rex (F : Functor C D) : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
+  record is-rex (F : Functor C D) : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
     private module F = Functor F
 
     field

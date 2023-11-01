@@ -21,7 +21,7 @@ module Cat.Diagram.Colimit.Base where
 <!--
 ```agda
 private variable
-  o ℓ o′ ℓ′ : Level
+  o ℓ o' ℓ' : Level
 ```
 -->
 
@@ -187,8 +187,8 @@ the rest of the data.
        C.idr _ ∙ C.introl (M .F-id)
     colim .σ-comm {α = α} = Nat-path λ j →
       factors (α .η) _
-    colim .σ-uniq {α = α} {σ′ = σ′} p = Nat-path λ _ →
-      sym $ unique (α .η) _ (σ′ .η _) (λ j → sym (p ηₚ j))
+    colim .σ-uniq {α = α} {σ' = σ'} p = Nat-path λ _ →
+      sym $ unique (α .η) _ (σ' .η _) (λ j → sym (p ηₚ j))
 ```
 
 <!--
@@ -214,8 +214,8 @@ the rest of the data.
     lan' .σ-comm {M} {α} = Nat-path λ j →
       ap (_ C.∘_) (sym q)
       ∙ lan.σ-comm {α = α} ηₚ _
-    lan' .σ-uniq {M} {α} {σ′} r = Nat-path λ j →
-      lan.σ-uniq {σ′ = hom→⊤-natural-trans (σ′ .η tt)}
+    lan' .σ-uniq {M} {α} {σ'} r = Nat-path λ j →
+      lan.σ-uniq {σ' = hom→⊤-natural-trans (σ' .η tt)}
         (Nat-path (λ j → r ηₚ j ∙ ap (_ C.∘_) (sym q))) ηₚ j
 
   to-is-colimitp
@@ -262,7 +262,7 @@ function which **un**makes a colimit.
     mc .universal = hom
     mc .factors e p = σ-comm {α = eps-nt e p} ηₚ _
     mc .unique {x = x} eta p other q =
-      sym $ σ-uniq {σ′ = other-nt} (Nat-path λ j → sym (q j)) ηₚ tt
+      sym $ σ-uniq {σ' = other-nt} (Nat-path λ j → sym (q j)) ηₚ tt
       where
         other-nt : F => const! x
         other-nt .η _ = other
@@ -344,12 +344,12 @@ computation.
     ap (_ C.∘_) (sym (Ext .F-id)) ∙ σ α .is-natural tt tt tt
   has-colimit .is-lan.σ-comm =
     Nat-path (λ _ → σ-comm ηₚ _)
-  has-colimit .is-lan.σ-uniq {M = M} {σ′ = σ′} p =
-    Nat-path (λ _ → σ-uniq {σ′ = nt} (Nat-path (λ j → p ηₚ j)) ηₚ _)
+  has-colimit .is-lan.σ-uniq {M = M} {σ' = σ'} p =
+    Nat-path (λ _ → σ-uniq {σ' = nt} (Nat-path (λ j → p ηₚ j)) ηₚ _)
     where
       nt : Ext => M
-      nt .η = σ′ .η
-      nt .is-natural x y f = ap (_ C.∘_) (Ext .F-id) ∙ σ′ .is-natural x y f
+      nt .η = σ' .η
+      nt .is-natural x y f = ap (_ C.∘_) (Ext .F-id) ∙ σ' .is-natural x y f
 
   open is-colimit has-colimit public
 ```
@@ -486,11 +486,11 @@ coapex of $C$ is also a colimit of $Dia'$.
 
 ```agda
   natural-iso-diagram→is-colimitp
-    : ∀ {D′ : Functor J C} {eta : D′ => K F∘ !F}
-    → (isos : D ≅ⁿ D′)
+    : ∀ {D' : Functor J C} {eta : D' => K F∘ !F}
+    → (isos : D ≅ⁿ D')
     → (∀ {j} →  Cy.ψ j C.∘ Isoⁿ.from isos .η j ≡ eta .η j)
-    → is-lan !F D′ K eta
-  natural-iso-diagram→is-colimitp {D′ = D′} isos q = generalize-colimitp
+    → is-lan !F D' K eta
+  natural-iso-diagram→is-colimitp {D' = D'} isos q = generalize-colimitp
     (natural-iso-of→is-lan Cy isos)
     q
 ```
@@ -498,9 +498,9 @@ coapex of $C$ is also a colimit of $Dia'$.
 <!--
 ```agda
 module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
-         {D D′ : Functor J C} where
+         {D D' : Functor J C} where
   natural-iso→colimit
-    : D ≅ⁿ D′ → Colimit D → Colimit D′
+    : D ≅ⁿ D' → Colimit D → Colimit D'
   natural-iso→colimit isos C .Lan.Ext = Lan.Ext C
   natural-iso→colimit isos C .Lan.eta = Lan.eta C ∘nt Isoⁿ.from isos
   natural-iso→colimit isos C .Lan.has-lan = natural-iso-of→is-lan (Lan.has-lan C) isos
@@ -764,22 +764,22 @@ as the data for a colimit.
       ⌜ coequ .coeq C.∘ s ⌝ C.∘ Dom .ι (a , b , f) ≡⟨ ap! (coequ .coequal) ⟩
       (coequ .coeq C.∘ t) C.∘ Dom .ι (a , b , f)   ≡⟨ C.pullr (Dom .commute) ⟩
       coequ .coeq C.∘ Obs .ι a                     ∎
-    colim .universal {x} e comm = coequ .universal comm′ where
-      e′ : C.Hom (Obs .ΣF) x
-      e′ = Obs .match e
-      comm′ : e′ C.∘ s ≡ e′ C.∘ t
-      comm′ = Indexed-coproduct.unique₂ Dom λ i@(a , b , f) →
-        (e′ C.∘ s) C.∘ Dom .ι i      ≡⟨ C.extendr (Dom .commute) ⟩
-        ⌜ e′ C.∘ Obs .ι b ⌝ C.∘ F₁ f ≡⟨ ap! (Obs .commute) ⟩
+    colim .universal {x} e comm = coequ .universal comm' where
+      e' : C.Hom (Obs .ΣF) x
+      e' = Obs .match e
+      comm' : e' C.∘ s ≡ e' C.∘ t
+      comm' = Indexed-coproduct.unique₂ Dom λ i@(a , b , f) →
+        (e' C.∘ s) C.∘ Dom .ι i      ≡⟨ C.extendr (Dom .commute) ⟩
+        ⌜ e' C.∘ Obs .ι b ⌝ C.∘ F₁ f ≡⟨ ap! (Obs .commute) ⟩
         e b C.∘ F₁ f                 ≡⟨ comm f ⟩
         e a                          ≡˘⟨ Obs .commute ⟩
-        e′ C.∘ Obs .ι a              ≡˘⟨ C.pullr (Dom .commute) ⟩
-        (e′ C.∘ t) C.∘ Dom .ι i      ∎
+        e' C.∘ Obs .ι a              ≡˘⟨ C.pullr (Dom .commute) ⟩
+        (e' C.∘ t) C.∘ Dom .ι i      ∎
     colim .factors {j} e comm =
       colim .universal e comm C.∘ (coequ .coeq C.∘ Obs .ι j) ≡⟨ C.pulll (coequ .factors) ⟩
       Obs .match e C.∘ Obs .ι j                              ≡⟨ Obs .commute ⟩
       e j                                                    ∎
-    colim .unique e comm u′ fac = coequ .unique $ Obs .unique _
+    colim .unique e comm u' fac = coequ .unique $ Obs .unique _
       λ i → sym (C.assoc _ _ _) ∙ fac i
 ```
 </details>

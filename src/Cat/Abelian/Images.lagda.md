@@ -114,7 +114,7 @@ commutes.
     factor : ↓Hom (const! (cut f)) Forget-full-subcat the-img other
     factor .α = tt
     factor .β ./-Hom.map =
-        Coker.universal (Ker.kernel f) {e′ = other .map .map} path
+        Coker.universal (Ker.kernel f) {e' = other .map .map} path
       ∘ coker-ker≃ker-coker f .is-invertible.inv
 ```
 

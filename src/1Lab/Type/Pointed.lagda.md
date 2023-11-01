@@ -21,7 +21,7 @@ Type∙ ℓ = Σ (Type ℓ) (λ A → A)
 <!--
 ```agda
 private variable
-  ℓ ℓ′ : Level
+  ℓ ℓ' : Level
   A B : Type∙ ℓ
 ```
 -->
@@ -32,7 +32,7 @@ but rather those functions $A \to B$ which _preserve the basepoint_,
 i.e. the functions $f : A \to B$ equipped with paths $f(a) \equiv b$.
 
 ```agda
-_→∙_ : Type∙ ℓ → Type∙ ℓ′ → Type _
+_→∙_ : Type∙ ℓ → Type∙ ℓ' → Type _
 (A , a) →∙ (B , b) = Σ[ f ∈ (A → B) ] (f a ≡ b)
 ```
 

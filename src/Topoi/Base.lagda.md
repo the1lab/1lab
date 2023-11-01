@@ -322,17 +322,17 @@ limits directly for efficiency concerns. </summary>
     func = incl .F₀ set
     cent = psh-terminal func .centre
     uniq : ∀ f → cent .η _ ≡ f
-    uniq f = psh-terminal func .paths f′ ηₚ _ where
-      f′ : _ => _
-      f′ .η _ = f
-      f′ .is-natural _ _ _ = funext λ x → happly (sym (F-id T)) _
+    uniq f = psh-terminal func .paths f' ηₚ _ where
+      f' : _ => _
+      f' .η _ = f
+      f' .is-natural _ _ _ = funext λ x → happly (sym (F-id T)) _
 
-  sets .L-lex .pres-pullback {P} {X} {Y} {Z} pb = pb′ where
+  sets .L-lex .pres-pullback {P} {X} {Y} {Z} pb = pb' where
     open is-pullback
-    pb′ : is-pullback (Sets κ) _ _ _ _
-    pb′ .square = pb .square ηₚ _
-    pb′ .universal {P'} {p₁' = p₁'} {p₂' = p₂'} p =
-      η (pb .universal {P′ = incl .F₀ P'} {p₁' = p1'} {p₂' = p2'}
+    pb' : is-pullback (Sets κ) _ _ _ _
+    pb' .square = pb .square ηₚ _
+    pb' .universal {P'} {p₁' = p₁'} {p₂' = p₂'} p =
+      η (pb .universal {P' = incl .F₀ P'} {p₁' = p1'} {p₂' = p2'}
           (Nat-path λ _ → p)) _
       where
         p1' : _ => _
@@ -341,14 +341,14 @@ limits directly for efficiency concerns. </summary>
         p2' : _ => _
         p2' .η _ = p₂'
         p2' .is-natural x y f i o = F-id Y (~ i) (p₂' o)
-    pb′ .p₁∘universal = pb .p₁∘universal ηₚ _
-    pb′ .p₂∘universal = pb .p₂∘universal ηₚ _
-    pb′ .unique {P′} {lim' = lim'} p1 p2 =
-      pb .unique {lim' = l′} (Nat-path λ _ → p1) (Nat-path λ _ → p2) ηₚ _
+    pb' .p₁∘universal = pb .p₁∘universal ηₚ _
+    pb' .p₂∘universal = pb .p₂∘universal ηₚ _
+    pb' .unique {P'} {lim' = lim'} p1 p2 =
+      pb .unique {lim' = l'} (Nat-path λ _ → p1) (Nat-path λ _ → p2) ηₚ _
       where
-        l′ : incl .F₀ P′ => P
-        l′ .η _ = lim'
-        l′ .is-natural x y f i o = F-id P (~ i) (lim' o)
+        l' : incl .F₀ P' => P
+        l' .η _ = lim'
+        l' .is-natural x y f i o = F-id P (~ i) (lim' o)
 ```
 </details>
 
@@ -613,15 +613,15 @@ left exactness.
 ```agda
 private
   variable
-    o ℓ o′ ℓ′ κ κ′ κ′′ s s′ : Level
+    o ℓ o' ℓ' κ κ' κ'' s s' : Level
     E F G : Precategory o ℓ
-  lvl : ∀ {o ℓ o′ ℓ′} → Precategory o ℓ → Precategory o′ ℓ′ → Level
-  lvl {o} {ℓ} {o′} {ℓ′} _ _ = o ⊔ ℓ ⊔ ℓ′ ⊔ o′
+  lvl : ∀ {o ℓ o' ℓ'} → Precategory o ℓ → Precategory o' ℓ' → Level
+  lvl {o} {ℓ} {o'} {ℓ'} _ _ = o ⊔ ℓ ⊔ ℓ' ⊔ o'
 ```
 -->
 
 ```agda
-record Geom[_,_] (E : Precategory o ℓ) (F : Precategory o′ ℓ′) : Type (lvl E F) where
+record Geom[_,_] (E : Precategory o ℓ) (F : Precategory o' ℓ') : Type (lvl E F) where
   no-eta-equality
   field
     Inv[_]  : Functor F E
@@ -696,7 +696,7 @@ embedding $\cC \to \cT$, where $\cT$ is some topos which is
 convenient for this application.
 
 ```agda
-record Geom[_↪_] (E : Precategory o ℓ) (F : Precategory o′ ℓ′) : Type (lvl E F) where
+record Geom[_↪_] (E : Precategory o ℓ) (F : Precategory o' ℓ') : Type (lvl E F) where
   field
     morphism : Geom[ E , F ]
     has-ff : is-fully-faithful Dir[ morphism ]

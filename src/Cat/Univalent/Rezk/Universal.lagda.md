@@ -86,11 +86,11 @@ eso→pre-faithful
   → (∀ b → γ .η (H .F₀ b) ≡ δ .η (H .F₀ b)) → γ ≡ δ
 eso→pre-faithful {A = A} {B = B} {C = C} H {F} {G} h-eso γ δ p =
   Nat-path λ b → ∥-∥-proj {ap = C.Hom-set _ _ _ _} do
-  (b′ , m) ← h-eso b
+  (b' , m) ← h-eso b
   ∥_∥.inc $
     γ .η b                                      ≡⟨ C.intror (F-map-iso F m .invl) ⟩
     γ .η b C.∘ F.₁ (m .to) C.∘ F.₁ (m .from)    ≡⟨ C.extendl (γ .is-natural _ _ _) ⟩
-    G.₁ (m .to) C.∘ γ .η _ C.∘ F.₁ (m .from)    ≡⟨ ap₂ C._∘_ refl (ap₂ C._∘_ (p b′) refl) ⟩
+    G.₁ (m .to) C.∘ γ .η _ C.∘ F.₁ (m .from)    ≡⟨ ap₂ C._∘_ refl (ap₂ C._∘_ (p b') refl) ⟩
     G.₁ (m .to) C.∘ δ .η _ C.∘ F.₁ (m .from)    ≡⟨ C.extendl (sym (δ .is-natural _ _ _)) ⟩
     δ .η b C.∘ F.₁ (m .to) C.∘ F.₁ (m .from)    ≡⟨ C.elimr (F-map-iso F m .invl) ⟩
     δ .η b                                      ∎
@@ -197,8 +197,8 @@ this file in Agda and poke around the proof.
              C.intror (F.annihilate
                (ap₂ B._∘_ q p ·· B.cancel-inner h.invl ·· f .invr))
           ·· C.extendl (γ.is-natural _ _ _)
-          ·· ap₂ (λ e e′ → G.₁ e C.∘ γ.η a₀ C.∘ F.₁ e′) q p
-          ·· ap₂ (λ e e′ → e C.∘ γ.η a₀ C.∘ e′) (G.F-∘ _ _) (F.F-∘ _ _)
+          ·· ap₂ (λ e e' → G.₁ e C.∘ γ.η a₀ C.∘ F.₁ e') q p
+          ·· ap₂ (λ e e' → e C.∘ γ.η a₀ C.∘ e') (G.F-∘ _ _) (F.F-∘ _ _)
           ·· C.pullr (ap (G.₁ h.to C.∘_) (C.pulll refl) ∙ C.pulll refl)
 ```
 
@@ -213,13 +213,13 @@ over $b$ is a proposition.
 
 ```agda
     T-prop : ∀ b → is-prop (T b)
-    T-prop b (g , coh) (g′ , coh′) =
+    T-prop b (g , coh) (g' , coh') =
       Σ-prop-path (λ x → Π-is-hlevel² 1 λ _ _ → C.Hom-set _ _ _ _) $
         ∥-∥-proj {ap = C.Hom-set _ _ _ _} do
         (a₀ , h) ← H-eso b
         pure $ C.iso→epic (F-map-iso F h) _ _
           (C.iso→monic (F-map-iso G (h B.Iso⁻¹)) _ _
-            (sym (coh a₀ h) ∙ coh′ a₀ h))
+            (sym (coh a₀ h) ∙ coh' a₀ h))
 ```
 
 Given any $b$, $H$ being eso means that we [[merely]] have an essential
@@ -229,13 +229,13 @@ $b$, then we are granted the honour of actually getting hold of an
 $(a,h)$ pair.
 
 ```agda
-    mkT′ : ∀ b → ∥ Essential-fibre H b ∥ → ∥ T b ∥
-    mkT′ b he = do
+    mkT' : ∀ b → ∥ Essential-fibre H b ∥ → ∥ T b ∥
+    mkT' b he = do
       (a₀ , h) ← he
       ∥_∥.inc (Mk.g b a₀ h , Mk.lemma b a₀ h)
 
     mkT : ∀ b → T b
-    mkT b = ∥-∥-proj {ap = T-prop b} (mkT′ b (H-eso b))
+    mkT b = ∥-∥-proj {ap = T-prop b} (mkT' b (H-eso b))
 ```
 
 Another calculation shows that, since $H$ is full, given any pair of
@@ -251,20 +251,20 @@ the transformation we're defining, too.
 
 ```agda
     module
-      _ {b b′} (f : B.Hom b b′) (a a′ : A.Ob)
-        (h : H.₀ a B.≅ b) (h′ : H.₀ a′ B.≅ b′)
+      _ {b b'} (f : B.Hom b b') (a a' : A.Ob)
+        (h : H.₀ a B.≅ b) (h' : H.₀ a' B.≅ b')
       where
       private
-        module h′ = B._≅_ h′
+        module h' = B._≅_ h'
         module h = B._≅_ h
 
       naturality : _
       naturality = ∥-∥-proj {ap = C.Hom-set _ _ _ _} do
-        (k , p) ← H-full (h′.from B.∘ f B.∘ h.to)
+        (k , p) ← H-full (h'.from B.∘ f B.∘ h.to)
         pure $ C.pullr (C.pullr (F.weave (sym
                   (B.pushl p ∙ ap₂ B._∘_ refl (B.cancelr h.invl)))))
             ·· ap₂ C._∘_ refl (C.extendl (γ.is-natural _ _ _))
-            ·· C.extendl (G.weave (B.lswizzle p h′.invl))
+            ·· C.extendl (G.weave (B.lswizzle p h'.invl))
 ```
 
 </details>
@@ -279,17 +279,17 @@ $- \circ H$ is faithful, and now we've shown it is full, it is fully faithful.
 ```agda
     δ : F => G
     δ .η b = mkT b .fst
-    δ .is-natural b b′ f = ∥-∥-elim₂
-      {P = λ α β → ∥-∥-proj {ap = T-prop b′} (mkT′ b′ α) .fst C.∘ F.₁ f
-                 ≡ G.₁ f C.∘ ∥-∥-proj {ap = T-prop b} (mkT′ b β) .fst}
+    δ .is-natural b b' f = ∥-∥-elim₂
+      {P = λ α β → ∥-∥-proj {ap = T-prop b'} (mkT' b' α) .fst C.∘ F.₁ f
+                 ≡ G.₁ f C.∘ ∥-∥-proj {ap = T-prop b} (mkT' b β) .fst}
       (λ _ _ → C.Hom-set _ _ _ _)
-      (λ (a′ , h′) (a , h) → naturality f a a′ h h′) (H-eso b′) (H-eso b)
+      (λ (a' , h') (a , h) → naturality f a a' h h') (H-eso b') (H-eso b)
 
   full : is-full (precompose H)
   full {x = x} {y = y} γ = pure (δ _ _ γ , Nat-path p) where
     p : ∀ b → δ _ _ γ .η (H.₀ b) ≡ γ .η b
     p b = subst
-      (λ e → ∥-∥-proj {ap = T-prop _ _ γ (H.₀ b)} (mkT′ _ _ γ (H.₀ b) e) .fst
+      (λ e → ∥-∥-proj {ap = T-prop _ _ γ (H.₀ b)} (mkT' _ _ γ (H.₀ b) e) .fst
            ≡ γ .η b)
       (squash (inc (b , B.id-iso)) (H-eso (H.₀ b)))
       (C.eliml (y .F-id) ∙ C.elimr (x .F-id))
@@ -339,9 +339,9 @@ additionally require a naturality condition for these isomorphisms.
     Obs b =
       Σ C.Ob λ c →
       Σ ((a : A.Ob) (h : H.₀ a B.≅ b) → F.₀ a C.≅ c) λ k →
-      ((a , h) (a′ , h′) : Essential-fibre H b) (f : A.Hom a a′) →
-      h′ .to B.∘ H.₁ f ≡ h .to →
-      k a′ h′ .to C.∘ F.₁ f ≡ k a h .to
+      ((a , h) (a' , h') : Essential-fibre H b) (f : A.Hom a a') →
+      h' .to B.∘ H.₁ f ≡ h .to →
+      k a' h' .to C.∘ F.₁ f ≡ k a h .to
 ```
 
 Note that we can _derive_ an object candidate over $b$ from a fibre
@@ -351,26 +351,26 @@ that $H$ is eso to conclude that every $b : \cB$ has an object
 candidate over it.
 
 ```agda
-    obj′ : ∀ {b} → Essential-fibre H b → Obs b
-    obj′ (a₀ , h₀) .fst = F.₀ a₀
-    obj′ (a₀ , h₀) .snd .fst a h = F-map-iso F (H.iso.from (h B.∘Iso (h₀ B.Iso⁻¹)))
-    obj′ (a₀ , h₀) .snd .snd (a , h) (a′ , h′) f p = F.collapse (H.ipushr p)
+    obj' : ∀ {b} → Essential-fibre H b → Obs b
+    obj' (a₀ , h₀) .fst = F.₀ a₀
+    obj' (a₀ , h₀) .snd .fst a h = F-map-iso F (H.iso.from (h B.∘Iso (h₀ B.Iso⁻¹)))
+    obj' (a₀ , h₀) .snd .snd (a , h) (a' , h') f p = F.collapse (H.ipushr p)
 
-    Obs-is-prop : ∀ {b} (f : Essential-fibre H b) (c : Obs b) → obj′ f ≡ c
-    Obs-is-prop (a₀ , h₀) (c′ , k′ , β) =
-      Σ-pathp (Univalent.iso→path c-cat c≅c′) $
+    Obs-is-prop : ∀ {b} (f : Essential-fibre H b) (c : Obs b) → obj' f ≡ c
+    Obs-is-prop (a₀ , h₀) (c' , k' , β) =
+      Σ-pathp (Univalent.iso→path c-cat c≅c') $
       Σ-prop-pathp
         (λ i x → Π-is-hlevel³ 1 λ _ _ _ → Π-is-hlevel 1 λ _ → C.Hom-set _ _ _ _) $
         funextP λ a → funextP λ h → C.≅-pathp _ _ $
-          Univalent.Hom-pathp-reflr-iso c-cat {q = c≅c′}
+          Univalent.Hom-pathp-reflr-iso c-cat {q = c≅c'}
             ( C.pullr (F.eliml (H.from-id (h₀ .invr)))
             ∙ β _ _ _ (H.ε-lswizzle (h₀ .invl)))
       where
-        ckα = obj′ (a₀ , h₀)
+        ckα = obj' (a₀ , h₀)
         c = ckα .fst
         k = ckα .snd .fst
         α = ckα .snd .snd
-        c≅c′ = (k a₀ h₀ C.Iso⁻¹) C.∘Iso k′ a₀ h₀
+        c≅c' = (k a₀ h₀ C.Iso⁻¹) C.∘Iso k' a₀ h₀
 ```
 
 <!--
@@ -378,7 +378,7 @@ candidate over it.
     summon : ∀ {b} → ∥ Essential-fibre H b ∥ → is-contr (Obs b)
     summon f = ∥-∥-proj {ap = is-contr-is-prop} do
       f ← f
-      pure $ contr (obj′ f) (Obs-is-prop f)
+      pure $ contr (obj' f) (Obs-is-prop f)
 
     G₀ : B.Ob → C.Ob
     G₀ b = summon {b = b} (H-eso b) .centre .fst
@@ -387,8 +387,8 @@ candidate over it.
     k {b = b} a h = summon {b = b} (H-eso b) .centre .snd .fst a h
 
     kcomm
-      : ∀ {b} ((a , h) (a′ , h′) : Essential-fibre H b) (f : A.Hom a a′)
-      → h′ .to B.∘ H.₁ f ≡ h .to → k a′ h′ .to C.∘ F.₁ f ≡ k a h .to
+      : ∀ {b} ((a , h) (a' , h') : Essential-fibre H b) (f : A.Hom a a')
+      → h' .to B.∘ H.₁ f ≡ h .to → k a' h' .to C.∘ F.₁ f ≡ k a h .to
     kcomm {b} f1 f2 f w = summon {b = b} (H-eso b) .centre .snd .snd f1 f2 f w
 ```
 -->
@@ -401,19 +401,19 @@ any essential fibre $(a,h)$ over $b$, $(a',h')$ over $b'$, and map $l : a
 \to a'$ satisfying $h'H(l) = fh$.
 
 ```agda
-    compat : ∀ {b b′} (f : B.Hom b b′) → C.Hom (G₀ b) (G₀ b′) → Type _
-    compat {b} {b′} f g =
-      ∀ a (h : H.₀ a B.≅ b) a′ (h′ : H.₀ a′ B.≅ b′) (l : A.Hom a a′)
-      → h′ .to B.∘ H.₁ l ≡ f B.∘ h .to
-      → k a′ h′ .to C.∘ F.₁ l ≡ g C.∘ k a h .to
+    compat : ∀ {b b'} (f : B.Hom b b') → C.Hom (G₀ b) (G₀ b') → Type _
+    compat {b} {b'} f g =
+      ∀ a (h : H.₀ a B.≅ b) a' (h' : H.₀ a' B.≅ b') (l : A.Hom a a')
+      → h' .to B.∘ H.₁ l ≡ f B.∘ h .to
+      → k a' h' .to C.∘ F.₁ l ≡ g C.∘ k a h .to
 
-    Homs : ∀ {b b′} (f : B.Hom b b′) → Type _
-    Homs {b = b} {b′} f = Σ (C.Hom (G₀ b) (G₀ b′)) (compat f)
+    Homs : ∀ {b b'} (f : B.Hom b b') → Type _
+    Homs {b = b} {b'} f = Σ (C.Hom (G₀ b) (G₀ b')) (compat f)
 ```
 
 <!--
 ```agda
-    compat-prop : ∀ {b b′} (f : B.Hom b b′) {g : C.Hom (G₀ b) (G₀ b′)}
+    compat-prop : ∀ {b b'} (f : B.Hom b b') {g : C.Hom (G₀ b) (G₀ b')}
                 → is-prop (compat f g)
     compat-prop f = Π-is-hlevel³ 1 λ _ _ _ →
                     Π-is-hlevel³ 1 λ _ _ _ → C.Hom-set _ _ _ _
@@ -429,67 +429,67 @@ candidates is a proposition.</summary>
 This proof _really_ isn't commented. I'm sorry.
 
 ```agda
-    module _ {b b′} (f : B.Hom b b′)
+    module _ {b b'} (f : B.Hom b b')
              a₀ (h₀ : H.₀ a₀ B.≅ b)
-             a₀′ (h₀′ : H.₀ a₀′ B.≅ b′) where
-      l₀ : A.Hom a₀ a₀′
-      l₀ = H.from (h₀′ .from B.∘ f B.∘ h₀ .to)
+             a₀' (h₀' : H.₀ a₀' B.≅ b') where
+      l₀ : A.Hom a₀ a₀'
+      l₀ = H.from (h₀' .from B.∘ f B.∘ h₀ .to)
 
-      p : h₀′ .to B.∘ H.₁ l₀ ≡ (f B.∘ h₀ .to)
-      p = H.ε-lswizzle (h₀′ .invl)
+      p : h₀' .to B.∘ H.₁ l₀ ≡ (f B.∘ h₀ .to)
+      p = H.ε-lswizzle (h₀' .invl)
 
-      g₀ : C.Hom (G₀ b) (G₀ b′)
-      g₀ = k a₀′ h₀′ .to C.∘ F.₁ l₀ C.∘ k a₀ h₀ .from
+      g₀ : C.Hom (G₀ b) (G₀ b')
+      g₀ = k a₀' h₀' .to C.∘ F.₁ l₀ C.∘ k a₀ h₀ .from
 
-      module _ a (h : H.₀ a B.≅ b) a′ (h′ : H.₀ a′ B.≅ b′)
-                (l : A.Hom a a′) (w : h′ .to B.∘ H.₁ l ≡ f B.∘ h .to) where
+      module _ a (h : H.₀ a B.≅ b) a' (h' : H.₀ a' B.≅ b')
+                (l : A.Hom a a') (w : h' .to B.∘ H.₁ l ≡ f B.∘ h .to) where
         m : a₀ A.≅ a
         m = H.iso.from (h₀ B.∘Iso (h B.Iso⁻¹))
 
-        m′ : a₀′ A.≅ a′
-        m′ = H.iso.from (h₀′ B.∘Iso (h′ B.Iso⁻¹))
+        m' : a₀' A.≅ a'
+        m' = H.iso.from (h₀' B.∘Iso (h' B.Iso⁻¹))
 
         α : k a₀ h₀ .from ≡ F.₁ (m .from) C.∘ k a h .from
         α = C.inverse-unique _ _ {f = k a₀ h₀} {g = F-map-iso F m C.∘Iso k a h} $
           sym (kcomm _ _ _ (H.ε-lswizzle (h .invl)))
 
-        γ : H.₁ (m′ .to) B.∘ H.₁ l₀ ≡ H.₁ l B.∘ H.₁ (m .to)
+        γ : H.₁ (m' .to) B.∘ H.₁ l₀ ≡ H.₁ l B.∘ H.₁ (m .to)
         γ =  B.pushl (H.ε _)
           ·· ap₂ B._∘_ refl (p ∙
               B.pushl (B.insertr (h .invl) ∙ ap₂ B._∘_ (sym w) refl))
-          ·· B.deletel (h′ .invr)
+          ·· B.deletel (h' .invr)
           ∙ ap₂ B._∘_ refl (sym (H.ε _))
 
-        γ′ : l₀ A.∘ m .from ≡ m′ .from A.∘ l
-        γ′ = A.iso→monic m′ _ _ $ A.extendl (H.injective (H.swap γ))
+        γ' : l₀ A.∘ m .from ≡ m' .from A.∘ l
+        γ' = A.iso→monic m' _ _ $ A.extendl (H.injective (H.swap γ))
                                ·· A.elimr (m .invl)
-                               ·· A.insertl (m′ .invl)
+                               ·· A.insertl (m' .invl)
 
-        δ : g₀ C.∘ k a h .to ≡ k a′ h′ .to C.∘ F.₁ l
+        δ : g₀ C.∘ k a h .to ≡ k a' h' .to C.∘ F.₁ l
         δ = C.pullr ( C.pullr refl ·· ap₂ C._∘_ refl (C.pushl α)
                    ·· C.pulll refl ∙ C.elimr (k a h .invr))
-          ·· ap₂ C._∘_ refl (F.weave γ′)
-          ·· C.pulll (C.pushl (sym (kcomm _ _ _ (H.ε-lswizzle (h′ .invl))))
-              ∙ C.elimr (F.annihilate (m′ .invl)))
+          ·· ap₂ C._∘_ refl (F.weave γ')
+          ·· C.pulll (C.pushl (sym (kcomm _ _ _ (H.ε-lswizzle (h' .invl))))
+              ∙ C.elimr (F.annihilate (m' .invl)))
 
       Homs-pt : Homs f
-      Homs-pt = g₀ , λ a h a′ h′ l w → sym (δ a h a′ h′ l w)
+      Homs-pt = g₀ , λ a h a' h' l w → sym (δ a h a' h' l w)
 
-      Homs-prop′ : (h′ : Homs f) → h′ .fst ≡ g₀
-      Homs-prop′ (g₁ , w) = C.iso→epic (k a₀ h₀) _ _
-        (sym (δ a₀ h₀ a₀′ h₀′ l₀ p ∙ w a₀ h₀ a₀′ h₀′ l₀ p))
+      Homs-prop' : (h' : Homs f) → h' .fst ≡ g₀
+      Homs-prop' (g₁ , w) = C.iso→epic (k a₀ h₀) _ _
+        (sym (δ a₀ h₀ a₀' h₀' l₀ p ∙ w a₀ h₀ a₀' h₀' l₀ p))
 
-    Homs-contr′ : ∀ {b b′} (f : B.Hom b b′) → ∥ is-contr (Homs f) ∥
-    Homs-contr′ {b = b} {b′} f = do
+    Homs-contr' : ∀ {b b'} (f : B.Hom b b') → ∥ is-contr (Homs f) ∥
+    Homs-contr' {b = b} {b'} f = do
       (a₀ , h)   ← H-eso b
-      (a₀′ , h′) ← H-eso b′
-      inc (contr (Homs-pt f a₀ h a₀′ h′) λ h′ → Σ-prop-path
-        (λ _ → compat-prop f) (sym (Homs-prop′ f _ _ _ _ h′)))
+      (a₀' , h') ← H-eso b'
+      inc (contr (Homs-pt f a₀ h a₀' h') λ h' → Σ-prop-path
+        (λ _ → compat-prop f) (sym (Homs-prop' f _ _ _ _ h')))
 
-    Homs-contr : ∀ {b b′} (f : B.Hom b b′) → is-contr (Homs f)
-    Homs-contr f = ∥-∥-proj (Homs-contr′ f)
+    Homs-contr : ∀ {b b'} (f : B.Hom b b') → is-contr (Homs f)
+    Homs-contr f = ∥-∥-proj (Homs-contr' f)
 
-    G₁ : ∀ {b b′} → B.Hom b b′ → C.Hom (G₀ b) (G₀ b′)
+    G₁ : ∀ {b b'} → B.Hom b b' → C.Hom (G₀ b) (G₀ b')
     G₁ f = Homs-contr f .centre .fst
 ```
 
@@ -512,13 +512,13 @@ functor.</summary>
       ag : A.Hom ax ay
       ag = H.from (hy .from B.∘ g B.∘ hx .to)
 
-      h′ : H.₁ (af A.∘ ag) ≡ hz .from B.∘ f B.∘ g B.∘ hx .to
-      h′ = H.ε-expand refl ∙ B.pullr (B.cancel-inner (hy .invl))
+      h' : H.₁ (af A.∘ ag) ≡ hz .from B.∘ f B.∘ g B.∘ hx .to
+      h' = H.ε-expand refl ∙ B.pullr (B.cancel-inner (hy .invl))
 
       commutes : G₁ (f B.∘ g) ≡ G₁ f C.∘ G₁ g
       commutes = C.iso→epic (k ax hx) _ _ $
           sym (Homs-contr (f B.∘ g) .centre .snd ax hx az hz (af A.∘ ag)
-                (ap₂ B._∘_ refl h′ ·· B.cancell (hz .invl) ·· B.pulll refl))
+                (ap₂ B._∘_ refl h' ·· B.cancell (hz .invl) ·· B.pulll refl))
         ∙ sym ( C.pullr (sym (Homs-contr g .centre .snd ax hx ay hy ag
                   (H.ε-lswizzle (hy .invl))))
               ∙ C.pulll (sym (Homs-contr f .centre .snd ay hy az hz af
@@ -540,8 +540,8 @@ give $F$_.
     G .F₀ b = G₀ b
     G .F₁ f = G₁ f
 
-    G .F-id = ap fst $ Homs-contr B.id .paths $ C.id , λ a h a′ h′ l w →
-      sym (C.idl _ ∙ sym (kcomm (a , h) (a′ , h′) l (w ∙ B.idl _)))
+    G .F-id = ap fst $ Homs-contr B.id .paths $ C.id , λ a h a' h' l w →
+      sym (C.idl _ ∙ sym (kcomm (a , h) (a' , h') l (w ∙ B.idl _)))
 ```
 
 Note that we proved^[in the second `<details>`{.Agda} tag above] that
@@ -569,7 +569,7 @@ $GH(x)$.  That's half of $GH = F$ established right off the bat!
       hf-obs : Obs (H.₀ x)
       hf-obs .fst = F.F₀ x
       hf-obs .snd .fst a h = F-map-iso F (H.iso.from h)
-      hf-obs .snd .snd (a , h) (a′ , h′) f α = F.collapse (H.inv∘l α)
+      hf-obs .snd .snd (a , h) (a' , h') f α = F.collapse (H.inv∘l α)
 
       abstract
         objp : G₀ (H.₀ x) ≡ F.₀ x
@@ -595,18 +595,18 @@ hubris, invoke a lot of technical lemmas about the characterisation of
 
 ```agda
     module _ {x y} (f : A.Hom x y) where
-      hom′ : Homs (H.₁ f)
-      hom′ .fst = transport (λ i → C.Hom (objp x (~ i)) (objp y (~ i))) (F.₁ f)
-      hom′ .snd a h a′ h′ l w = sym $
+      hom' : Homs (H.₁ f)
+      hom' .fst = transport (λ i → C.Hom (objp x (~ i)) (objp y (~ i))) (F.₁ f)
+      hom' .snd a h a' h' l w = sym $
         C.pushl (Hom-transport C (sym (objp x)) (sym (objp y)) (F.₁ f))
         ·· ap₂ C._∘_ refl
           ( C.pullr (from-pathp-from C (objp x) (λ i → kp x a h i .to))
           ∙ F.weave (H.ε-twist (sym w)))
-        ·· C.pulll (from-pathp-to C (sym (objp y)) λ i → kp y a′ h′ (~ i) .to)
+        ·· C.pulll (from-pathp-to C (sym (objp y)) λ i → kp y a' h' (~ i) .to)
 
       homp : transport (λ i → C.Hom (objp x (~ i)) (objp y (~ i))) (F.₁ f)
            ≡ Homs-contr (H.₁ f) .centre .fst
-      homp = ap fst $ sym $ Homs-contr (H.₁ f) .paths hom′
+      homp = ap fst $ sym $ Homs-contr (H.₁ f) .paths hom'
 
     correct : G F∘ H ≡ F
     correct = Functor-path objp λ {x} {y} f → symP

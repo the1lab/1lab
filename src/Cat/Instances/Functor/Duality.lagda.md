@@ -71,7 +71,7 @@ op-functor←→ {C = C} {D = D} = Functor-path (λ _ → refl) λ f → Nat-pat
   where
     module D = Cat.Reasoning D
 
-module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {F G : Functor C D} where
+module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} {F G : Functor C D} where
   private
     module CD = Cat.Reasoning Cat[ C , D ]
     module CopDop = Cat.Reasoning Cat[ C ^op , D ^op ]

@@ -21,7 +21,7 @@ $\cC$ is complete, then so is $\cD$.
 
 ```agda
 module
-  _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     {F : Functor C D} (eqv : is-equivalence F)
   where
 

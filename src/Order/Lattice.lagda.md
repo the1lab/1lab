@@ -166,11 +166,11 @@ can prove that cups give a join in that case, too!
     y             ≡˘⟨ ∩-absorbs-∪ ⟩
     y ∩ ⌜ y ∪ x ⌝ ≡⟨ ap! ∪-commutative ⟩
     y ∩ (x ∪ y)   ∎
-  ∪-is-join {x} {y} .is-join.least ub′ x=x∩ub′ y=y∩ub′ = ∪-order→∩-order $ sym $
-    (x ∪ y) ∪ ub′   ≡˘⟨ ∪-associative ⟩
-    x ∪ ⌜ y ∪ ub′ ⌝ ≡˘⟨ ap¡ (∩-order→∪-order y=y∩ub′) ⟩
-    x ∪ ub′         ≡˘⟨ ∩-order→∪-order x=x∩ub′ ⟩
-    ub′             ∎
+  ∪-is-join {x} {y} .is-join.least ub' x=x∩ub' y=y∩ub' = ∪-order→∩-order $ sym $
+    (x ∪ y) ∪ ub'   ≡˘⟨ ∪-associative ⟩
+    x ∪ ⌜ y ∪ ub' ⌝ ≡˘⟨ ap¡ (∩-order→∪-order y=y∩ub') ⟩
+    x ∪ ub'         ≡˘⟨ ∩-order→∪-order x=x∩ub' ⟩
+    ub'             ∎
 
   ⊥-is-bottom : ∀ {x} → bot P.≤ x
   ⊥-is-bottom = ∪-order→∩-order (sym ∪-idl)
@@ -187,10 +187,10 @@ finite joins.
 ```agda
 record
   is-lattice-hom
-    {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+    {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
     (f : A → B)
     (S : Lattice-on A) (T : Lattice-on B)
-    : Type (ℓ ⊔ ℓ′)
+    : Type (ℓ ⊔ ℓ')
   where
 
   private
@@ -206,17 +206,17 @@ record
 
 <!--
 ```agda
-private unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-lattice-hom)
+private unquoteDecl eqv' = declare-record-iso eqv' (quote is-lattice-hom)
 
 instance
   H-Level-is-lattice-hom
-    : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
     → {S : Lattice-on A} {T : Lattice-on B}
     → ∀ {f : A → B} {n}
     → H-Level (is-lattice-hom f S T) (suc n)
   H-Level-is-lattice-hom {T = T} = prop-instance $
     let open is-lattice (T .Lattice-on.has-is-lattice)
-     in Iso→is-hlevel 1 eqv′ (hlevel 1)
+     in Iso→is-hlevel 1 eqv' (hlevel 1)
 
 open is-lattice-hom
 ```

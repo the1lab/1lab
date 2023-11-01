@@ -85,12 +85,12 @@ module _ {P : Functor (C ^op) (Sets κ)} where
   private abstract
     lemma
       : ∀ (y : Functor (∫ C P ^op) (Sets κ))
-          {o o′} {s} {s′} {el : ∣ y .F₀ (elem o s) ∣}
-          {f : C .Hom o′ o} (p : F₁ P f s ≡ s′)
-      → subst (λ e → ∣ y .F₀ (elem o′ e) ∣) p (y .F₁ (elem-hom f refl) el)
+          {o o'} {s} {s'} {el : ∣ y .F₀ (elem o s) ∣}
+          {f : C .Hom o' o} (p : F₁ P f s ≡ s')
+      → subst (λ e → ∣ y .F₀ (elem o' e) ∣) p (y .F₁ (elem-hom f refl) el)
       ≡ y .F₁ (elem-hom f p) el
-    lemma y {o = o} {o′ = o′} {el = it} {f = f} =
-      J (λ s′ p → subst (λ e → ∣ y .F₀ (elem o′ e) ∣) p (y .F₁ (elem-hom f refl) it)
+    lemma y {o = o} {o' = o'} {el = it} {f = f} =
+      J (λ s' p → subst (λ e → ∣ y .F₀ (elem o' e) ∣) p (y .F₁ (elem-hom f refl) it)
                 ≡ y .F₁ (elem-hom f p) it)
         (transport-refl _)
 ```
@@ -177,16 +177,16 @@ algebra, so we omit the proof.
     isom .rinv x =
       Functor-path
         (λ i → n-ua (Fibre-equiv (λ a → ∣ x .F₀ (elem (i .ob) a) ∣) (i .section)))
-        λ f → ua→ λ { ((a , b) , p) → path→ua-pathp _ (lemma x _ ∙ lemma′ _ _ _) }
+        λ f → ua→ λ { ((a , b) , p) → path→ua-pathp _ (lemma x _ ∙ lemma' _ _ _) }
       where abstract
-        lemma′
-          : ∀ {o o′} {sect : ∣ P.₀ (o .ob) ∣}
-              (f : Hom (∫ C P ^op) o o′)
+        lemma'
+          : ∀ {o o'} {sect : ∣ P.₀ (o .ob) ∣}
+              (f : Hom (∫ C P ^op) o o')
               (b : ∣ x .F₀ (elem (o .ob) sect) ∣)
               (p : sect ≡ o .section)
           → x .F₁ (elem-hom (f .hom) (ap (P.₁ (f .hom)) p ∙ f .commute)) b
           ≡ x .F₁ f (subst (λ e → ∣ x .F₀ (elem (o .ob) e) ∣) p b)
-        lemma′ {o = o} {o′ = o′} f b p =
+        lemma' {o = o} {o' = o'} f b p =
           J (λ _ p → ∀ f b → x .F₁ (elem-hom (f .hom) (ap (P.₁ (f .hom)) p ∙ f .commute)) b
                            ≡ x .F₁ f (subst (λ e → ∣ x .F₀ (elem (o .ob) e) ∣) p b))
             (λ f b → ap₂ (x .F₁) (Element-hom-path _ _ refl) (sym (transport-refl b)))

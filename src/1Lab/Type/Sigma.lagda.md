@@ -263,7 +263,7 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
 <!--
 ```agda
 Σ-pathp-dep
-  : ∀ {ℓ ℓ′} {A : I → Type ℓ} {B : ∀ i → A i → Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : I → Type ℓ} {B : ∀ i → A i → Type ℓ'}
   → {x : Σ _ (B i0)} {y : Σ _ (B i1)}
   → (p : PathP A (x .fst) (y .fst))
   → PathP (λ i → B i (p i)) (x .snd) (y .snd)
@@ -274,7 +274,7 @@ _,ₚ_ = Σ-pathp-dep
 infixr 4 _,ₚ_
 
 Σ-prop-pathp
-  : ∀ {ℓ ℓ′} {A : I → Type ℓ} {B : ∀ i → A i → Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : I → Type ℓ} {B : ∀ i → A i → Type ℓ'}
   → (∀ i x → is-prop (B i x))
   → {x : Σ (A i0) (B i0)} {y : Σ (A i1) (B i1)}
   → PathP A (x .fst) (y .fst)
@@ -283,7 +283,7 @@ infixr 4 _,ₚ_
   p i , is-prop→pathp (λ i → bp i (p i)) (x .snd) (y .snd) i
 
 Σ-inj-set
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} {x y z}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {x y z}
   → is-set A
   → Path (Σ A B) (x , y) (x , z)
   → y ≡ z
@@ -292,7 +292,7 @@ infixr 4 _,ₚ_
     (from-pathp (ap snd path))
 
 Σ-swap₂
-  : ∀ {ℓ ℓ′ ℓ′′} {A : Type ℓ} {B : Type ℓ′} {C : A → B → Type ℓ′′}
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : A → B → Type ℓ''}
   → (Σ[ x ∈ A ] Σ[ y ∈ B ] (C x y)) ≃ (Σ[ y ∈ B ] Σ[ x ∈ A ] (C x y))
 Σ-swap₂ .fst (x , y , f) = y , x , f
 Σ-swap₂ .snd .is-eqv y = contr (f .fst) (f .snd) where
@@ -300,14 +300,14 @@ infixr 4 _,ₚ_
   -- agda can actually infer the inverse here, which is neat
 
 ×-swap
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → (A × B) ≃ (B × A)
 ×-swap .fst (x , y) = y , x
 ×-swap .snd .is-eqv y = contr (f .fst) (f .snd) where
   f = strict-fibres _ y
 
 Σ-contr-eqv
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
   → (c : is-contr A)
   → (Σ A B) ≃ B (c .centre)
 Σ-contr-eqv {B = B} c .fst (_ , p) = subst B (sym (c .paths _)) p

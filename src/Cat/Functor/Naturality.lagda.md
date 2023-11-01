@@ -21,7 +21,7 @@ module collects some notation that will help us with that task.
 
 <!--
 ```agda
-module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} where
+module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
   private
     module DD = Cat.Reasoning Cat[ D , D ]
     module CD = Cat.Reasoning Cat[ C , D ]
@@ -94,7 +94,7 @@ We can then create a natural isomorphism $F \cong^n G$ from the
 following data:
 
 ```agda
-  record make-natural-iso (F G : Functor C D) : Type (o ⊔ ℓ ⊔ ℓ′) where
+  record make-natural-iso (F G : Functor C D) : Type (o ⊔ ℓ ⊔ ℓ') where
     no-eta-equality
     field
       eta : ∀ x → D.Hom (F .F₀ x) (G .F₀ x)

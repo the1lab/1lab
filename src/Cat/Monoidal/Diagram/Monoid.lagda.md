@@ -201,19 +201,19 @@ composition. However, even in the point-free setting of an arbitrary
 category $\cC$, the reasoning isn't _that_ painful:
 
 ```agda
-  Mon[ .id′ ] .pres-η = C.idl _
-  Mon[ .id′ ] .pres-μ = C.idl _ ∙ C.intror (C.-⊗- .F-id)
+  Mon[ .id' ] .pres-η = C.idl _
+  Mon[ .id' ] .pres-μ = C.idl _ ∙ C.intror (C.-⊗- .F-id)
 
-  Mon[_] ._∘′_ fh gh .pres-η = C.pullr (gh .pres-η) ∙ fh .pres-η
-  Mon[_] ._∘′_ {x = x} {y} {z} {f} {g} fh gh .pres-μ =
+  Mon[_] ._∘'_ fh gh .pres-η = C.pullr (gh .pres-η) ∙ fh .pres-η
+  Mon[_] ._∘'_ {x = x} {y} {z} {f} {g} fh gh .pres-μ =
     (f C.∘ g) C.∘ x .Monoid-on.μ                ≡⟨ C.pullr (gh .pres-μ) ⟩
     f C.∘ y .Monoid-on.μ C.∘ (g C.⊗₁ g)         ≡⟨ C.extendl (fh .pres-μ) ⟩
     Monoid-on.μ z C.∘ (f C.⊗₁ f) C.∘ (g C.⊗₁ g) ≡˘⟨ C.refl⟩∘⟨ C.-⊗- .F-∘ _ _ ⟩
     Monoid-on.μ z C.∘ (f C.∘ g C.⊗₁ f C.∘ g)    ∎
 
-  Mon[_] .idr′ f = is-prop→pathp (λ i → is-monoid-hom-is-prop) _ _
-  Mon[_] .idl′ f = is-prop→pathp (λ i → is-monoid-hom-is-prop) _ _
-  Mon[_] .assoc′ f g h = is-prop→pathp (λ i → is-monoid-hom-is-prop) _ _
+  Mon[_] .idr' f = is-prop→pathp (λ i → is-monoid-hom-is-prop) _ _
+  Mon[_] .idl' f = is-prop→pathp (λ i → is-monoid-hom-is-prop) _ _
+  Mon[_] .assoc' f g h = is-prop→pathp (λ i → is-monoid-hom-is-prop) _ _
 ```
 
 <!--
@@ -254,22 +254,22 @@ into an identification.
 
 ```agda
   F : Displayed-functor Mon[ Setsₓ ] Mon Id
-  F .F₀′ o .identity = o .η (lift tt)
-  F .F₀′ o ._⋆_ x y = o .μ (x , y)
-  F .F₀′ o .has-is-monoid .Mon.has-is-semigroup =
+  F .F₀' o .identity = o .η (lift tt)
+  F .F₀' o ._⋆_ x y = o .μ (x , y)
+  F .F₀' o .has-is-monoid .Mon.has-is-semigroup =
     record { has-is-magma = record { has-is-set = hlevel! }
            ; associative  = o .μ-assoc $ₚ _
            }
-  F .F₀′ o .has-is-monoid .Mon.idl = o .μ-unitl $ₚ _
-  F .F₀′ o .has-is-monoid .Mon.idr = o .μ-unitr $ₚ _
-  F .F₁′ wit .pres-id = wit .pres-η $ₚ _
-  F .F₁′ wit .pres-⋆ x y = wit .pres-μ $ₚ _
-  F .F-id′ = prop!
-  F .F-∘′ = prop!
+  F .F₀' o .has-is-monoid .Mon.idl = o .μ-unitl $ₚ _
+  F .F₀' o .has-is-monoid .Mon.idr = o .μ-unitr $ₚ _
+  F .F₁' wit .pres-id = wit .pres-η $ₚ _
+  F .F₁' wit .pres-⋆ x y = wit .pres-μ $ₚ _
+  F .F-id' = prop!
+  F .F-∘' = prop!
 
   open is-iso
 
-  fiso : ∀ a → is-iso (F .F₀′ {a})
+  fiso : ∀ a → is-iso (F .F₀' {a})
   fiso T .inv m .η _ = m .identity
   fiso T .inv m .μ (a , b) = m ._⋆_ a b
   fiso T .inv m .μ-unitl = funext λ _ → m .idl
@@ -280,14 +280,14 @@ into an identification.
     (record { pres-id = refl ; pres-⋆ = λ _ _ → refl })
   fiso T .linv m = Monoid-pathp Setsₓ refl refl
 
-  ff : ∀ {a b : Set _} {f : ∣ a ∣ → ∣ b ∣} {a′ b′}
-     → is-equiv (F₁′ F {a} {b} {f} {a′} {b′})
-  ff {a} {b} {f} {a′} {b′} =
+  ff : ∀ {a b : Set _} {f : ∣ a ∣ → ∣ b ∣} {a' b'}
+     → is-equiv (F₁' F {a} {b} {f} {a'} {b'})
+  ff {a} {b} {f} {a'} {b'} =
     prop-ext (is-monoid-hom-is-prop Setsₓ) (hlevel 1)
-             (λ z → F₁′ F z) invs .snd
+             (λ z → F₁' F z) invs .snd
     where
-      invs : Mon.Monoid-hom (F .F₀′ a′) (F .F₀′ b′) f
-           → is-monoid-hom Setsₓ f a′ b′
+      invs : Mon.Monoid-hom (F .F₀' a') (F .F₀' b') f
+           → is-monoid-hom Setsₓ f a' b'
       invs m .pres-η = funext λ _ → m .pres-id
       invs m .pres-μ = funext λ _ → m .pres-⋆ _ _
 ```

@@ -100,9 +100,9 @@ updateₚ xs fzero x    = x , xs .snd
 updateₚ xs (fsuc k) x = xs .fst , updateₚ (xs .snd) k x
 
 mapₚ
-  : ∀ {n} {ℓ ℓ′ : Fin n → Level}
+  : ∀ {n} {ℓ ℓ' : Fin n → Level}
       {P : (i : Fin n) → Type (ℓ i)}
-      {Q : (i : Fin n) → Type (ℓ′ i)}
+      {Q : (i : Fin n) → Type (ℓ' i)}
   → (∀ i → P i → Q i) → Πᶠ P → Πᶠ Q
 mapₚ {0}     f xs = xs
 mapₚ {suc n} f xs = f fzero (xs .fst) , mapₚ (λ i → f (fsuc i)) (xs .snd)
@@ -140,7 +140,7 @@ non-dependent functions of type $(\Pi^f P) \to X$. Rather than taking
 their arguments as tuples, finitary curried functions are... curried.
 
 ```agda
-Arrᶠ : ∀ {n ℓ ℓ′} (P : (i : Fin n) → Type (ℓ i)) → Type ℓ′ → Type (ℓ-maxᶠ ℓ ⊔ ℓ′)
+Arrᶠ : ∀ {n ℓ ℓ'} (P : (i : Fin n) → Type (ℓ i)) → Type ℓ' → Type (ℓ-maxᶠ ℓ ⊔ ℓ')
 Arrᶠ {0} P x     = x
 Arrᶠ {suc n} P x = P fzero → Arrᶠ (λ i → P (fsuc i)) x
 ```
@@ -151,13 +151,13 @@ a finitary dependent product; Moreover, curried functions are
 
 ```agda
 applyᶠ
-  : ∀ {n ℓ′} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} {X : Type ℓ′}
+  : ∀ {n ℓ'} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} {X : Type ℓ'}
   → Arrᶠ P X → Πᶠ P → X
 applyᶠ {0} f as           = f
 applyᶠ {suc n} f (a , as) = applyᶠ (f a) as
 
 funextᶠ
-  : ∀ {n ℓ′} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} {X : Type ℓ′}
+  : ∀ {n ℓ'} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} {X : Type ℓ'}
   → {f g : Arrᶠ P X} → (∀ (as : Πᶠ P) → applyᶠ f as ≡ applyᶠ g as)
   → f ≡ g
 funextᶠ {n = 0}     ps = ps tt
@@ -167,7 +167,7 @@ funextᶠ {n = suc n} ps = funext λ x → funextᶠ λ r → ps (x , r)
 <!--
 ```agda
 Arrᶠ-is-hlevel
-  : ∀ {n ℓ′} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} {X : Type ℓ′}
+  : ∀ {n ℓ'} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} {X : Type ℓ'}
   → ∀ k → is-hlevel X k → is-hlevel (Arrᶠ P X) k
 Arrᶠ-is-hlevel {n = zero}          k hl = hl
 Arrᶠ-is-hlevel {n = suc n} {P = P} k hl = fun-is-hlevel k $
@@ -182,21 +182,21 @@ functions together (applying a binary operation pointwise).
 
 ```agda
 zipᶠ
-  : ∀ {n ℓ′ ℓ′′ ℓ′′′} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)}
-      {X : Type ℓ′} {Y : Type ℓ′′} {Z : Type ℓ′′′}
+  : ∀ {n ℓ' ℓ'' ℓ'''} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)}
+      {X : Type ℓ'} {Y : Type ℓ''} {Z : Type ℓ'''}
   → (X → Y → Z) → Arrᶠ P X → Arrᶠ P Y → Arrᶠ P Z
 zipᶠ {n = zero}  f g h   = f g h
 zipᶠ {n = suc n} f g h a = zipᶠ f (g a) (h a)
 
 mapᶠ
-  : ∀ {n ℓ′ ℓ′′} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)}
-      {X : Type ℓ′} {Y : Type ℓ′′}
+  : ∀ {n ℓ' ℓ''} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)}
+      {X : Type ℓ'} {Y : Type ℓ''}
   → (X → Y) → Arrᶠ P X → Arrᶠ P Y
 mapᶠ {n = 0}     f g   = f g
 mapᶠ {n = suc n} f g x = mapᶠ f (g x)
 
 constᶠ
-  : ∀ {n ℓ′} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} {X : Type ℓ′}
+  : ∀ {n ℓ'} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} {X : Type ℓ'}
   → X → Arrᶠ P X
 constᶠ {n = 0}     x   = x
 constᶠ {n = suc n} x _ = constᶠ x
@@ -210,23 +210,23 @@ prove them.
 
 ```agda
 apply-constᶠ
-  : ∀ {n ℓ′} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} {X : Type ℓ′}
+  : ∀ {n ℓ'} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} {X : Type ℓ'}
     (x : X) (as : Πᶠ P)
   → applyᶠ (constᶠ x) as ≡ x
 apply-constᶠ {n = 0}     x as = refl
 apply-constᶠ {n = suc n} x as = apply-constᶠ x (as .snd)
 
 apply-zipᶠ
-  : ∀ {n ℓ′ ℓ′′ ℓ′′′} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)}
-      {X : Type ℓ′} {Y : Type ℓ′′} {Z : Type ℓ′′′}
+  : ∀ {n ℓ' ℓ'' ℓ'''} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)}
+      {X : Type ℓ'} {Y : Type ℓ''} {Z : Type ℓ'''}
     (f : X → Y → Z) (g : Arrᶠ P X) (h : Arrᶠ P Y) (as : Πᶠ P)
   → applyᶠ (zipᶠ f g h) as ≡ f (applyᶠ g as) (applyᶠ h as)
 apply-zipᶠ {n = 0}     f g h as = refl
 apply-zipᶠ {n = suc n} f g h as = apply-zipᶠ f (g (as .fst)) (h (as .fst)) (as .snd)
 
 apply-mapᶠ
-  : ∀ {n ℓ′ ℓ′′} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)}
-      {X : Type ℓ′} {Y : Type ℓ′′}
+  : ∀ {n ℓ' ℓ''} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)}
+      {X : Type ℓ'} {Y : Type ℓ''}
     (f : X → Y) (g : Arrᶠ P X) (as : Πᶠ P)
   → applyᶠ (mapᶠ f g) as ≡ f (applyᶠ g as)
 apply-mapᶠ {n = 0}     f g as = refl

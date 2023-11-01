@@ -44,7 +44,7 @@ the sum "from the left": add the first element then keep going.
 module _ {ℓ} {T : Type ℓ} (G : Abelian-group-on T) where
   private
     module G = Abelian-group-on G
-    G′ = Abelian→Group-on G
+    G' = Abelian→Group-on G
 ```
 -->
 
@@ -53,13 +53,13 @@ $(\sum f) + (\sum g) = \sum (f + g)$:
 
 ```agda
   ∑-split : ∀ {n} (f : Fin n → T) (g : Fin n → T)
-          → ∑ G′ (λ i → f i G.* g i) ≡ (∑ G′ f G.* ∑ G′ g)
+          → ∑ G' (λ i → f i G.* g i) ≡ (∑ G' f G.* ∑ G' g)
   ∑-split {zero} f g = sym G.idl
   ∑-split {suc n} f g =
-    (f fzero G.* g fzero) G.* ∑ G′ (λ i → f (fsuc i) G.* g (fsuc i))              ≡⟨ ap₂ G._*_ refl (∑-split (λ e → f (fsuc e)) (λ e → g (fsuc e))) ⟩
-    (f fzero G.* g fzero) G.* ∑ G′ (λ e → f (fsuc e)) G.* ∑ G′ (λ e → g (fsuc e)) ≡⟨ G.pullr (G.extendl G.commutes) ⟩
-    f fzero G.* ∑ G′ (λ e → f (fsuc e)) G.* g fzero G.* ∑ G′ (λ e → g (fsuc e))   ≡⟨ G.associative ⟩
-    (f fzero G.* ∑ G′ (λ e → f (fsuc e))) G.* g fzero G.* ∑ G′ (λ e → g (fsuc e)) ∎
+    (f fzero G.* g fzero) G.* ∑ G' (λ i → f (fsuc i) G.* g (fsuc i))              ≡⟨ ap₂ G._*_ refl (∑-split (λ e → f (fsuc e)) (λ e → g (fsuc e))) ⟩
+    (f fzero G.* g fzero) G.* ∑ G' (λ e → f (fsuc e)) G.* ∑ G' (λ e → g (fsuc e)) ≡⟨ G.pullr (G.extendl G.commutes) ⟩
+    f fzero G.* ∑ G' (λ e → f (fsuc e)) G.* g fzero G.* ∑ G' (λ e → g (fsuc e))   ≡⟨ G.associative ⟩
+    (f fzero G.* ∑ G' (λ e → f (fsuc e))) G.* g fzero G.* ∑ G' (λ e → g (fsuc e)) ∎
 ```
 
 A trivial-looking, but very convenient result^[which, additionally, is

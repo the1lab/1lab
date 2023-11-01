@@ -17,19 +17,19 @@ obtained by "bridging" the disjoint union $\cC \coprod \cD$ with a
 _unique_ morphism between each object of $\cC$ and each object of $\cD$.
 
 ```agda
-module _ {o ℓ o′ ℓ′} (C : Precategory o ℓ) (D : Precategory o′ ℓ′) where
+module _ {o ℓ o' ℓ'} (C : Precategory o ℓ) (D : Precategory o' ℓ') where
   private
     module C = Precategory C
     module D = Precategory D
     open Precategory
 
-  ⋆Ob : Type (o ⊔ o′)
+  ⋆Ob : Type (o ⊔ o')
   ⋆Ob = C.Ob ⊎ D.Ob
 
-  ⋆Hom : (A B : ⋆Ob) → Type (ℓ ⊔ ℓ′)
-  ⋆Hom (inl x) (inl y) = Lift ℓ′ (C.Hom x y)
-  ⋆Hom (inl x) (inr y) = Lift (ℓ ⊔ ℓ′) ⊤
-  ⋆Hom (inr x) (inl y) = Lift (ℓ ⊔ ℓ′) ⊥
+  ⋆Hom : (A B : ⋆Ob) → Type (ℓ ⊔ ℓ')
+  ⋆Hom (inl x) (inl y) = Lift ℓ' (C.Hom x y)
+  ⋆Hom (inl x) (inr y) = Lift (ℓ ⊔ ℓ') ⊤
+  ⋆Hom (inr x) (inl y) = Lift (ℓ ⊔ ℓ') ⊥
   ⋆Hom (inr x) (inr y) = Lift ℓ (D.Hom x y)
 
   ⋆compose : ∀ {A B C : ⋆Ob} → ⋆Hom B C → ⋆Hom A B → ⋆Hom A C

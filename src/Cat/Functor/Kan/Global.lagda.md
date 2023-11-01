@@ -22,11 +22,11 @@ module Cat.Functor.Kan.Global
 
 <!--
 ```agda
-  {o ℓ o′ ℓ′ o′′ ℓ′′}
+  {o ℓ o' ℓ' o'' ℓ''}
   {C : Precategory o ℓ}
-  {C′ : Precategory o′ ℓ′}
-  {D : Precategory o′′ ℓ′′}
-  (p : Functor C C′)
+  {C' : Precategory o' ℓ'}
+  {D : Precategory o'' ℓ''}
+  (p : Functor C C')
   where
 ```
 -->
@@ -48,13 +48,13 @@ extends to a functor, which we call a **global Kan extension**.
 private
   module D = Cat.Reasoning D
   module C = Cat.Reasoning C
-  module C′ = Cat.Reasoning C′
+  module C' = Cat.Reasoning C'
 ```
 -->
 
 ```agda
 module _ (has-lan : (G : Functor C D) → Lan p G) where
-  Lan-functor : Functor Cat[ C , D ] Cat[ C′ , D ]
+  Lan-functor : Functor Cat[ C , D ] Cat[ C' , D ]
   Lan-functor .F₀ G = has-lan G .Ext
   Lan-functor .F₁ {x} {y} θ =
     has-lan x .σ (has-lan y .eta ∘nt θ)
@@ -77,7 +77,7 @@ adjoint to the [precomposition] functor $- \circ p$.
 ```agda
   Lan⊣precompose : Lan-functor ⊣ precompose p
   Lan⊣precompose = hom-iso→adjoints f (is-iso→is-equiv eqv) natural where
-    f : ∀ {x : Functor C D} {y : Functor C′ D} → has-lan x .Ext => y → x => y F∘ p
+    f : ∀ {x : Functor C D} {y : Functor C' D} → has-lan x .Ext => y → x => y F∘ p
     f {x} {y} θ = (θ ◂ p) ∘nt has-lan x .eta
 
     open is-iso
@@ -98,7 +98,7 @@ then its values generate Kan extensions:
 
 ```agda
 adjoint-precompose→Lan
-  : (F : Functor Cat[ C , D ] Cat[ C′ , D ])
+  : (F : Functor Cat[ C , D ] Cat[ C' , D ])
   → (adj : F ⊣ precompose p)
   → (G : Functor C D)
   → is-lan p G (F .F₀ G) (adj ._⊣_.unit .η G)

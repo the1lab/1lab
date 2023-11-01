@@ -165,11 +165,11 @@ it `preserves the multiplication`{.Agda ident=pres-⋆}.
 ```agda
 record
   is-group-hom
-    {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
-    (G : Group-on A) (G′ : Group-on B) (e : A → B) : Type (ℓ ⊔ ℓ′) where
+    {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+    (G : Group-on A) (G' : Group-on B) (e : A → B) : Type (ℓ ⊔ ℓ') where
   private
     module A = Group-on G
-    module B = Group-on G′
+    module B = Group-on G'
 
   field
     pres-⋆ : (x y : A) → e (x A.⋆ y) ≡ e x B.⋆ e y
@@ -208,7 +208,7 @@ identity:
 <!--
 ```agda
 is-group-hom-is-prop
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
       {G : Group-on A} {H : Group-on B} {f}
   → is-prop (is-group-hom G H f)
 is-group-hom-is-prop {H = H} a b i .is-group-hom.pres-⋆ x y =
@@ -216,7 +216,7 @@ is-group-hom-is-prop {H = H} a b i .is-group-hom.pres-⋆ x y =
 
 instance
   H-Level-group-hom
-    : ∀ {n} {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+    : ∀ {n} {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
       {G : Group-on A} {H : Group-on B} {f}
     → H-Level (is-group-hom G H f) (suc n)
   H-Level-group-hom = prop-instance is-group-hom-is-prop

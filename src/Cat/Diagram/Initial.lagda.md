@@ -71,8 +71,8 @@ One important fact about initial objects is that they are **unique** up
 to isomorphism:
 
 ```agda
-⊥-unique : (i i′ : Initial) → bot i ≅ bot i′
-⊥-unique i i′ = make-iso (¡ i) (¡ i′) (¡-unique₂ i′ _ _) (¡-unique₂ i _ _)
+⊥-unique : (i i' : Initial) → bot i ≅ bot i'
+⊥-unique i i' = make-iso (¡ i) (¡ i') (¡-unique₂ i' _ _) (¡-unique₂ i _ _)
 ```
 
 Additionally, if $C$ is a category, then the space of initial objects is

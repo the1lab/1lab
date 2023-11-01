@@ -36,15 +36,15 @@ open _⊣_
 -->
 
 ```agda
-Sliced : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+Sliced : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
        → (F : Functor C D)
        → (X : Precategory.Ob C)
        → Functor (Slice C X) (Slice D (F .F₀ X))
 Sliced F X .F₀ ob = cut (F .F₁ (ob .map))
-Sliced F X .F₁ sh = sh′ where
-  sh′ : /-Hom _ _
-  sh′ .map = F .F₁ (sh .map)
-  sh′ .commutes = sym (F .F-∘ _ _) ∙ ap (F .F₁) (sh .commutes)
+Sliced F X .F₁ sh = sh' where
+  sh' : /-Hom _ _
+  sh' .map = F .F₁ (sh .map)
+  sh' .commutes = sym (F .F-∘ _ _) ∙ ap (F .F₁) (sh .commutes)
 Sliced F X .F-id = /-Hom-path (F .F-id)
 Sliced F X .F-∘ f g = /-Hom-path (F .F-∘ _ _)
 ```
@@ -59,7 +59,7 @@ $F(y)h=F(x)$ and $h=F(f)$ implies $yf=x$, which is possible only if $F$
 is faithful.
 
 ```agda
-module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
          {F : Functor C D} {X : Precategory.Ob C} where
   private
     module D = Cat.Reasoning D
@@ -96,7 +96,7 @@ pullback iff it is a pullback in $\cC$.
 
 ```agda
 Sliced-lex
-  : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
   → {F : Functor C D} {X : Precategory.Ob C}
   → is-lex F
   → is-lex (Sliced F X)
@@ -125,7 +125,7 @@ $F(T)$, being isomorphic to the terminal object, is itself terminal!
       (subst (Dx._≅ cut (F .F₁ (T .map))) (ap cut (F .F-id))
         (F-map-iso (Sliced F X)
           (⊤-unique (Slice C X) Slice-terminal-object (record { has⊤ = term }))))
-      Slice-terminal-object′
+      Slice-terminal-object'
 ```
 
 # Sliced adjoints
@@ -138,24 +138,24 @@ counit $\eps : LR(x) \to x$A to get a functor left adjoint to $R/X$.
 
 ```agda
 Sliced-adjoints
-  : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
   → {L : Functor C D} {R : Functor D C} (adj : L ⊣ R) {X : Precategory.Ob D}
   → (Σf (adj .counit .η _) F∘ Sliced L (R .F₀ X)) ⊣ Sliced R X
-Sliced-adjoints {C = C} {D} {L} {R} adj {X} = adj′ where
+Sliced-adjoints {C = C} {D} {L} {R} adj {X} = adj' where
   module adj = _⊣_ adj
   module L = Functor L
   module R = Functor R
   module C = Cat.Reasoning C
   module D = Cat.Reasoning D
 
-  adj′ : (Σf (adj .counit .η _) F∘ Sliced L (R .F₀ X)) ⊣ Sliced R X
-  adj′ .unit .η x .map = adj.unit.η _
-  adj′ .unit .is-natural x y f = /-Hom-path (adj.unit.is-natural _ _ _)
-  adj′ .counit .η x .map = adj.counit.ε _
-  adj′ .counit .η x .commutes = sym (adj.counit.is-natural _ _ _)
-  adj′ .counit .is-natural x y f = /-Hom-path (adj.counit.is-natural _ _ _)
-  adj′ .zig = /-Hom-path adj.zig
-  adj′ .zag = /-Hom-path adj.zag
+  adj' : (Σf (adj .counit .η _) F∘ Sliced L (R .F₀ X)) ⊣ Sliced R X
+  adj' .unit .η x .map = adj.unit.η _
+  adj' .unit .is-natural x y f = /-Hom-path (adj.unit.is-natural _ _ _)
+  adj' .counit .η x .map = adj.counit.ε _
+  adj' .counit .η x .commutes = sym (adj.counit.is-natural _ _ _)
+  adj' .counit .is-natural x y f = /-Hom-path (adj.counit.is-natural _ _ _)
+  adj' .zig = /-Hom-path adj.zig
+  adj' .zag = /-Hom-path adj.zag
 ```
 
 80% of the adjunction transfers as-is (I didn't quite count, but the
@@ -164,7 +164,7 @@ The hard part is proving that the adjunction unit restricts to a map in
 slice categories, which we can compute:
 
 ```agda
-  adj′ .unit .η x .commutes =
+  adj' .unit .η x .commutes =
     R.₁ (adj.counit.ε _ D.∘ L.₁ (x .map)) C.∘ adj.unit.η _         ≡⟨ C.pushl (R.F-∘ _ _) ⟩
     R.₁ (adj.counit.ε _) C.∘ R.₁ (L.₁ (x .map)) C.∘ adj.unit.η _   ≡˘⟨ ap (R.₁ _ C.∘_) (adj.unit.is-natural _ _ _) ⟩
     R.₁ (adj.counit.ε _) C.∘ adj.unit.η _ C.∘ x .map               ≡⟨ C.cancell adj.zag ⟩

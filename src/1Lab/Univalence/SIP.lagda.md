@@ -529,11 +529,11 @@ Let's rewrite `∞-Magma`{.Agda} using `Function-str`{.Agda} to see how it
 compares:
 
 ```agda
-  ∞-Magma′ : Structure lzero binop
-  ∞-Magma′ = Function-str id (Function-str id Pointed-str)
+  ∞-Magma' : Structure lzero binop
+  ∞-Magma' = Function-str id (Function-str id Pointed-str)
 
   _ : {A B : Type-with ∞-Magma} {f : A .fst ≃ B .fst}
-    → ∞-Magma′ .is-hom A B f
+    → ∞-Magma' .is-hom A B f
     ≡ ( (x y : A .fst) → f .fst (A .snd x y) ≡ B .snd (f .fst x) (f .fst y))
   _ = refl
 ```

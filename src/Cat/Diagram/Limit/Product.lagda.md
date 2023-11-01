@@ -43,7 +43,7 @@ existing infrastructure):
 
 ```agda
 2-object-category : Precategory _ _
-2-object-category = Disc′ (el Bool Bool-is-set)
+2-object-category = Disc' (el Bool Bool-is-set)
 
 2-object-diagram : Ob → Ob → Functor 2-object-category C
 2-object-diagram a b = Disc-diagram Discrete-Bool λ where

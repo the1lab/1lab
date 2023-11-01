@@ -314,7 +314,7 @@ C\op \to D\op$.
 
 <!--
 ```agda
-F^op^op≡F : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {F : Functor C D}
+F^op^op≡F : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} {F : Functor C D}
           → Functor.op (Functor.op F) ≡ F
 F^op^op≡F {F = F} i .Functor.F₀ = F .Functor.F₀
 F^op^op≡F {F = F} i .Functor.F₁ = F .Functor.F₁
@@ -323,7 +323,7 @@ F^op^op≡F {F = F} i .Functor.F-∘ = F .Functor.F-∘
 
 private
   functor-double-dual
-    : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {F : Functor C D}
+    : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} {F : Functor C D}
     → Functor.op (Functor.op F) ≡rw F
   functor-double-dual = make-rewrite F^op^op≡F
 {-# REWRITE functor-double-dual #-}
@@ -482,7 +482,7 @@ Natural transformations also dualize. The opposite of $\eta : F
 {-# INLINE NT #-}
 
 is-natural-transformation
-  : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
   → (F G : Functor C D)
   → (η : ∀ x → D .Precategory.Hom (F .Functor.F₀ x) (G .Functor.F₀ x))
   → Type _
@@ -495,14 +495,14 @@ module _ where
   open Precategory
   open Functor
 
-  Const : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  Const : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
         → Ob D → Functor C D
   Const {D = D} x .F₀ _ = x
   Const {D = D} x .F₁ _ = id D
   Const {D = D} x .F-id = refl
   Const {D = D} x .F-∘ _ _ = sym (idr D _)
 
-  const-nt : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  const-nt : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
            → {x y : Ob D} → Hom D x y
            → Const {C = C} {D = D} x => Const {C = C} {D = D} y
   const-nt f ._=>_.η _ = f

@@ -51,7 +51,7 @@ theory: they are initial objects in certain categories of algebras, so
 they can be presented as^[truncated, higher] inductive types.
 
 ```agda
-data Free-mod {ℓ′} (A : Type ℓ′) : Type (ℓ ⊔ ℓ′) where
+data Free-mod {ℓ'} (A : Type ℓ') : Type (ℓ ⊔ ℓ') where
   inc  : A → Free-mod A
 
   _+_ : Free-mod A → Free-mod A → Free-mod A
@@ -92,8 +92,8 @@ something for all of $R^A$ by treating the group operations, the ring
 action, and the generators.
 
 ```agda
-record Free-elim-prop {ℓ′ ℓ′′} {A : Type ℓ′} (P : Free-mod A → Type ℓ′′)
-          : Type (ℓ ⊔ ℓ′ ⊔ ℓ′′) where
+record Free-elim-prop {ℓ' ℓ''} {A : Type ℓ'} (P : Free-mod A → Type ℓ'')
+          : Type (ℓ ⊔ ℓ' ⊔ ℓ'') where
   no-eta-equality
   field
     has-is-prop : ∀ x → is-prop (P x)
@@ -158,7 +158,7 @@ open Module-on hiding (_+_)
 open make-module hiding (_+_)
 
 Module-on-free-mod
-  : ∀ {ℓ′} (A : Type ℓ′)
+  : ∀ {ℓ'} (A : Type ℓ')
   → Module-on R (Free-mod A)
 Module-on-free-mod A = to-module-on mk module Module-on-free-mod where
   mk : make-module R (Free-mod A)
@@ -176,7 +176,7 @@ Module-on-free-mod A = to-module-on mk module Module-on-free-mod where
   mk .⋆-assoc x y z = Free-mod.·-assoc x y z
   mk .⋆-id = Free-mod.·-id
 
-Free-Mod : ∀ {ℓ′} → Type ℓ′ → Module R (ℓ ⊔ ℓ′)
+Free-Mod : ∀ {ℓ'} → Type ℓ' → Module R (ℓ ⊔ ℓ')
 Free-Mod T = to-module (Module-on-free-mod.mk T)
 
 open Functor
@@ -186,7 +186,7 @@ open Functor
 
 ```agda
 fold-free-mod
-  : ∀ {ℓ ℓ′} {A : Type ℓ} (N : Module R ℓ′)
+  : ∀ {ℓ ℓ'} {A : Type ℓ} (N : Module R ℓ')
   → (A → ⌞ N ⌟)
   → Linear-map (Free-Mod A) N
 fold-free-mod {A = A} N f = go-linear module fold-free-mod where
@@ -235,14 +235,14 @@ leave the computation here if you're interested:
 
 ```agda
 open make-left-adjoint
-make-free-module : ∀ {ℓ′} → make-left-adjoint (Forget-module R (ℓ ⊔ ℓ′))
-make-free-module {ℓ′} = go where
+make-free-module : ∀ {ℓ'} → make-left-adjoint (Forget-module R (ℓ ⊔ ℓ'))
+make-free-module {ℓ'} = go where
   go : make-left-adjoint (Forget-structure (R-Mod-structure R))
   go .free x = Free-Mod ∣ x ∣
   go .unit x = Free-mod.inc
-  go .universal {y = y} f = linear-map→hom (fold-free-mod {ℓ = ℓ ⊔ ℓ′} y f)
+  go .universal {y = y} f = linear-map→hom (fold-free-mod {ℓ = ℓ ⊔ ℓ'} y f)
   go .commutes f = refl
-  go .unique {y = y} {f = f} {g = g} p = Homomorphism-path {ℓ ⊔ ℓ′} (Free-elim-prop.elim m) where
+  go .unique {y = y} {f = f} {g = g} p = Homomorphism-path {ℓ ⊔ ℓ'} (Free-elim-prop.elim m) where
     open Free-elim-prop
     module g = Linear-map (hom→linear-map g)
     module y = Module-on (y .snd)
@@ -270,13 +270,13 @@ After that calculation, we can ✨ just ✨ conclude that
 rearrange the proof above into the form of a functor and an adjunction.
 
 ```agda
-Free-module : ∀ {ℓ′} → Functor (Sets (ℓ ⊔ ℓ′)) (R-Mod R (ℓ ⊔ ℓ′))
-Free-module {ℓ′ = ℓ′} =
-  make-left-adjoint.to-functor (make-free-module {ℓ′ = ℓ′})
+Free-module : ∀ {ℓ'} → Functor (Sets (ℓ ⊔ ℓ')) (R-Mod R (ℓ ⊔ ℓ'))
+Free-module {ℓ' = ℓ'} =
+  make-left-adjoint.to-functor (make-free-module {ℓ' = ℓ'})
 
-Free⊣Forget : ∀ {ℓ′} → Free-module {ℓ′} ⊣ Forget-module R (ℓ ⊔ ℓ′)
-Free⊣Forget {ℓ′} = make-left-adjoint.to-left-adjoint
-  (make-free-module {ℓ′ = ℓ′})
+Free⊣Forget : ∀ {ℓ'} → Free-module {ℓ'} ⊣ Forget-module R (ℓ ⊔ ℓ')
+Free⊣Forget {ℓ'} = make-left-adjoint.to-left-adjoint
+  (make-free-module {ℓ' = ℓ'})
 ```
 
 <!--
@@ -301,7 +301,7 @@ equal-on-basis M {f} {g} p =
     module g = Linear-map g
     module M = Module-on (M .snd)
 
-equal-on-basis′
+equal-on-basis'
   : ∀ {ℓb ℓg} {T : Type ℓb} {G : Type ℓg} (M : Module-on R G)
   → (let module M = Module-on M)
   → {f : Free-mod T → G}
@@ -310,7 +310,7 @@ equal-on-basis′
   → (∀ r x y → g (r · x + y) ≡ r M.⋆ g x M.+ g y)
   → ((x : T) → f (inc x) ≡ g (inc x))
   → f ≡ g
-equal-on-basis′ M l1 l2 p = ap map $
+equal-on-basis' M l1 l2 p = ap map $
   equal-on-basis (el _ (Module-on.has-is-set M) , M)
     {f = record { lin = record { linear = l1 } }}
     {g = record { lin = record { linear = l2 } }}

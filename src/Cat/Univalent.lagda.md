@@ -44,7 +44,7 @@ path→iso
   → A ≡ B → Isomorphism C A B
 path→iso {C = C} {A} p = transport (λ i → Isomorphism C A (p i)) (id-iso C)
 
-module Univalent′ {o h} {C : Precategory o h} (r : is-category C) where
+module Univalent' {o h} {C : Precategory o h} (r : is-category C) where
   module path→iso = Ids r
     renaming ( to            to iso→path
              ; J             to J-iso
@@ -88,14 +88,14 @@ module _ {o h} (C : Precategory o h) where
       j (i = i1) → path→iso q .to ∘ h ∘ path→iso p .from
       j (j = i0) → hcomp (∂ i) λ where
         j (i = i0) → idl (idr h j) j
-        j (i = i1) → q′ i1 ∘ h ∘ p′ i1
-        j (j = i0) → q′ i ∘ h ∘ p′ i
+        j (i = i1) → q' i1 ∘ h ∘ p' i1
+        j (j = i0) → q' i ∘ h ∘ p' i
     where
-      p′ : PathP _ id (path→iso p .from)
-      p′ i = coe0→i (λ j → Hom (p (i ∧ j)) A) i id
+      p' : PathP _ id (path→iso p .from)
+      p' i = coe0→i (λ j → Hom (p (i ∧ j)) A) i id
 
-      q′ : PathP _ id (path→iso q .to)
-      q′ i = coe0→i (λ j → Hom B (q (i ∧ j))) i id
+      q' : PathP _ id (path→iso q .to)
+      q' i = coe0→i (λ j → Hom B (q (i ∧ j))) i id
 ```
 
 This lets us quickly turn paths between compositions into dependent
@@ -147,7 +147,7 @@ paths in `Hom`{.Agda}-sets.
     → PathP (λ i → Hom (p i) (q i)) (id {B}) h'
     → path→iso q .to ∘ path→iso p .from ≡ h'
   Hom-pathp-id {p = p} {q} {h} prf =
-    J′ (λ B A p → ∀ {C} (q : B ≡ C) {h' : Hom A C}
+    J' (λ B A p → ∀ {C} (q : B ≡ C) {h' : Hom A C}
                 → PathP (λ i → Hom (p i) (q i)) (id {B}) h'
                 → path→iso q .to ∘ path→iso p .from ≡ h')
       (λ x q prf → ap₂ _∘_ refl (transport-refl _) ·· idr _ ·· from-pathp prf)
@@ -195,19 +195,19 @@ paths in `Hom`{.Agda}-sets.
                               ∙ from-pathp-to p q
 
 module Univalent {o h} {C : Precategory o h} (r : is-category C) where
-  open Univalent′ r public
+  open Univalent' r public
 
   Hom-pathp-refll-iso :
-    ∀ {A B C} {p : A ≅ C} {h : Hom A B} {h′ : Hom C B}
-    → h ∘ p .from ≡ h′
-    → PathP (λ i → Hom (iso→path p i) B) h h′
+    ∀ {A B C} {p : A ≅ C} {h : Hom A B} {h' : Hom C B}
+    → h ∘ p .from ≡ h'
+    → PathP (λ i → Hom (iso→path p i) B) h h'
   Hom-pathp-refll-iso prf =
     Hom-pathp-refll C (ap₂ _∘_ refl (ap from (iso→path→iso _)) ∙ prf)
 
   Hom-pathp-reflr-iso
-    : ∀ {A B D} {q : B ≅ D} {h : Hom A B} {h′ : Hom A D}
-    → q .to ∘ h ≡ h′
-    → PathP (λ i → Hom A (iso→path q i)) h h′
+    : ∀ {A B D} {q : B ≅ D} {h : Hom A B} {h' : Hom A D}
+    → q .to ∘ h ≡ h'
+    → PathP (λ i → Hom A (iso→path q i)) h h'
   Hom-pathp-reflr-iso prf =
     Hom-pathp-reflr C (ap₂ _∘_ (ap to (iso→path→iso _)) refl ∙ prf)
 

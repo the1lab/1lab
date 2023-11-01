@@ -45,7 +45,7 @@ record is-lub
   no-eta-equality
   field
     fam≤lub : ∀ i → F i ≤ lub
-    least   : (ub′ : Ob) → (∀ i → F i ≤ ub′) → lub ≤ ub′
+    least   : (ub' : Ob) → (∀ i → F i ≤ ub') → lub ≤ ub'
 
 record Lub {ℓᵢ} {I : Type ℓᵢ} (F : I → Ob) : Type (o ⊔ ℓ ⊔ ℓᵢ) where
   no-eta-equality
@@ -100,7 +100,7 @@ lift-is-lub
   : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob} {lub}
   → is-lub F lub → is-lub (F ⊙ Lift.lower {ℓ = ℓᵢ'}) lub
 lift-is-lub is .fam≤lub (lift ix) = is .fam≤lub ix
-lift-is-lub is .least ub′ le = is .least ub′ (le ⊙ lift)
+lift-is-lub is .least ub' le = is .least ub' (le ⊙ lift)
 
 lift-lub
   : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob}
@@ -112,7 +112,7 @@ lower-is-lub
   : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob} {lub}
   → is-lub (F ⊙ Lift.lower {ℓ = ℓᵢ'}) lub → is-lub F lub
 lower-is-lub is .fam≤lub ix = is .fam≤lub (lift ix)
-lower-is-lub is .least ub′ le = is .least ub′ (le ⊙ Lift.lower)
+lower-is-lub is .least ub' le = is .least ub' (le ⊙ Lift.lower)
 
 lower-lub
   : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob}
@@ -193,7 +193,7 @@ record is-join (a b : Ob) (lub : Ob) : Type (o ⊔ ℓ) where
   field
     l≤join : a ≤ lub
     r≤join : b ≤ lub
-    least  : (ub′ : Ob) → a ≤ ub′ → b ≤ ub′ → lub ≤ ub′
+    least  : (ub' : Ob) → a ≤ ub' → b ≤ ub' → lub ≤ ub'
 
 record Join (a b : Ob) : Type (o ⊔ ℓ) where
   no-eta-equality
@@ -207,25 +207,25 @@ open is-join
 is-join→is-lub : ∀ {a b lub} → is-join a b lub → is-lub (if_then a else b) lub
 is-join→is-lub join .fam≤lub true = join .l≤join
 is-join→is-lub join .fam≤lub false = join .r≤join
-is-join→is-lub join .least ub′ x = join .least ub′ (x true) (x false)
+is-join→is-lub join .least ub' x = join .least ub' (x true) (x false)
 
 is-lub→is-join : ∀ {F : Bool → Ob} {lub} → is-lub F lub → is-join (F true) (F false) lub
 is-lub→is-join lub .l≤join = lub .fam≤lub true
 is-lub→is-join lub .r≤join = lub .fam≤lub false
-is-lub→is-join lub .least ub′ a<ub′ b<ub′ = lub .least ub′ λ where
-  true  → a<ub′
-  false → b<ub′
+is-lub→is-join lub .least ub' a<ub' b<ub' = lub .least ub' λ where
+  true  → a<ub'
+  false → b<ub'
 ```
 
 <!--
 ```
-private unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-join)
+private unquoteDecl eqv' = declare-record-iso eqv' (quote is-join)
 
 instance
   H-Level-is-join
     : ∀ {a b lub : Ob} {n}
     → H-Level (is-join a b lub) (suc n)
-  H-Level-is-join = prop-instance $ Iso→is-hlevel 1 eqv′ (hlevel 1)
+  H-Level-is-join = prop-instance $ Iso→is-hlevel 1 eqv' (hlevel 1)
 
 join-unique
   : ∀ {a b x y}
@@ -271,7 +271,7 @@ upper bound of $x$ and $y$ is just $y$:
 gt→is-join : ∀ {a b} → a ≤ b → is-join a b b
 gt→is-join a≤b .l≤join = a≤b
 gt→is-join a≤b .r≤join = ≤-refl
-gt→is-join a≤b .least ub′ _ b≤ub′ = b≤ub′
+gt→is-join a≤b .least ub' _ b≤ub' = b≤ub'
 
 gt-join : ∀ {a b l} → a ≤ b → is-join a b l → b ≡ l
 gt-join a≤b l = join-unique (gt→is-join a≤b) l

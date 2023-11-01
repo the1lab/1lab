@@ -263,15 +263,15 @@ obtaining
 
 ```agda
       g-monic : C.is-monic g
-      g-monic {e} k l w′ = out! dgh.forget∈M _ _ rem₈ where
+      g-monic {e} k l w' = out! dgh.forget∈M _ _ rem₈ where
         d×d = ×-functor .F₁ (d , d)
         module pb = Pullback (r.lex.pullbacks ⟨ k , l ⟩ d×d)
-          renaming (p₁ to p ; apex to P ; p₂ to mn ; square to sq′-)
-        open pb using (p ; P ; mn ; sq′-)
+          renaming (p₁ to p ; apex to P ; p₂ to mn ; square to sq'-)
+        open pb using (p ; P ; mn ; sq'-)
         m = π₁ C.∘ mn
         n = π₂ C.∘ mn
-        sq′ : ⟨ k C.∘ p , l C.∘ p ⟩ ≡ ⟨ d C.∘ m , d C.∘ n ⟩
-        sq′ = sym (⟨⟩∘ _) ∙ sq′- ∙ ⟨⟩-unique _ (C.pulll π₁∘⟨⟩ ∙ C.pullr refl)
+        sq' : ⟨ k C.∘ p , l C.∘ p ⟩ ≡ ⟨ d C.∘ m , d C.∘ n ⟩
+        sq' = sym (⟨⟩∘ _) ∙ sq'- ∙ ⟨⟩-unique _ (C.pulll π₁∘⟨⟩ ∙ C.pullr refl)
                                                (C.pulll π₂∘⟨⟩ ∙ C.pullr refl)
 ```
 
@@ -283,19 +283,19 @@ hlp$ (`rem₁`{.Agda}).
         q : C.Hom P R
         q = kp.universal $
           f ∘ m         ≡⟨ C.pushl (extend-π₁ dgh.factors ∙ C.pulll refl) ⟩
-          g ∘ d ∘ m     ≡˘⟨ refl⟩∘⟨ by-π₁ sq′ ⟩
-          g ∘ k ∘ p     ≡⟨ C.extendl w′ ⟩
-          g ∘ l ∘ p     ≡⟨ refl⟩∘⟨ by-π₂ sq′ ⟩
+          g ∘ d ∘ m     ≡˘⟨ refl⟩∘⟨ by-π₁ sq' ⟩
+          g ∘ k ∘ p     ≡⟨ C.extendl w' ⟩
+          g ∘ l ∘ p     ≡⟨ refl⟩∘⟨ by-π₂ sq' ⟩
           g ∘ d ∘ n     ≡˘⟨ C.pushl (extend-π₁ dgh.factors ∙ C.pulll refl) ⟩
           f ∘ n         ∎
 
-        rem₁ = h ∘ k ∘ p     ≡⟨ refl⟩∘⟨ by-π₁ sq′ ⟩
+        rem₁ = h ∘ k ∘ p     ≡⟨ refl⟩∘⟨ by-π₁ sq' ⟩
                h ∘ d ∘ m     ≡⟨ pulll (pullr (sym dgh.factors) ∙ π₂∘⟨⟩) ⟩
                c ∘ m         ≡˘⟨ refl⟩∘⟨ kp.p₁∘universal ⟩
                c ∘ a ∘ q     ≡⟨ extendl w ⟩
                c ∘ b ∘ q     ≡⟨ refl⟩∘⟨ kp.p₂∘universal ⟩
                c ∘ n         ≡˘⟨ pulll (pullr (sym dgh.factors) ∙ π₂∘⟨⟩) ⟩
-               h ∘ d ∘ n     ≡˘⟨ refl⟩∘⟨ by-π₂ sq′ ⟩
+               h ∘ d ∘ n     ≡˘⟨ refl⟩∘⟨ by-π₂ sq' ⟩
                h ∘ l ∘ p     ∎
 ```
 
@@ -367,7 +367,7 @@ construction, so $k = l$ --- so $g$ is _also_ monic.
         rem₈ =
           gh ∘ k              ≡⟨ ⟨⟩-unique _ refl refl ⟩∘⟨refl ⟩
           ⟨ g , h ⟩ ∘ k       ≡⟨ ⟨⟩∘ _ ⟩
-          ⟨ g ∘ k , h ∘ k ⟩   ≡⟨ ap₂ ⟨_,_⟩ w′ rem₇ ⟩
+          ⟨ g ∘ k , h ∘ k ⟩   ≡⟨ ap₂ ⟨_,_⟩ w' rem₇ ⟩
           ⟨ g ∘ l , h ∘ l ⟩   ≡˘⟨ ⟨⟩∘ _ ⟩
           ⟨ g , h ⟩ ∘ l       ≡˘⟨ ⟨⟩-unique _ refl refl ⟩∘⟨refl ⟩
           gh ∘ l              ∎
@@ -420,9 +420,9 @@ coequalises _some_ pair of maps.
       go .arr₂ = kp.b
       go .has-is-coeq .coequal = kp.square
       go .has-is-coeq .universal w = Make.h w ∘ Make.g.from w
-      go .has-is-coeq .factors {e′ = e′} {p = w} = Make.compute w
-      go .has-is-coeq .unique {e′ = e′} {p = p} {colim} q = is-s .fst _ _ $
+      go .has-is-coeq .factors {e' = e'} {p = w} = Make.compute w
+      go .has-is-coeq .unique {e' = e'} {p = p} {colim} q = is-s .fst _ _ $
         colim ∘ f                      ≡⟨ q ⟩
-        e′                             ≡˘⟨ Make.compute p ⟩
+        e'                             ≡˘⟨ Make.compute p ⟩
         (Make.h p ∘ Make.g.from p) ∘ f ∎
 ```

@@ -15,9 +15,9 @@ module 1Lab.Path.IdentitySystem.Strict where
 <!--
 ```agda
 private variable
-  ℓ ℓ′ ℓ′′ : Level
-  A : Type ℓ′
-  R : A → A → Type ℓ′
+  ℓ ℓ' ℓ'' : Level
+  A : Type ℓ'
+  R : A → A → Type ℓ'
   r : ∀ a → R a a
 ```
 -->
@@ -54,7 +54,7 @@ IdsK
   : {r : (a : A) → R a a} {a : A}
   → is-identity-system R r
   → is-set A
-  → (P : R a a → Type ℓ′′) → P (r a) → ∀ s → P s
+  → (P : R a a → Type ℓ'') → P (r a) → ∀ s → P s
 IdsK {r = r} {a = a} ids set P pr s =
   transport (λ i → P (set-identity-is-prop ids set (r a) s i)) pr
 ```
@@ -62,10 +62,10 @@ IdsK {r = r} {a = a} ids set P pr s =
 <!--
 ```agda
 IdsK-refl
-  : ∀ {ℓ ℓ′ ℓ′′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a} {a : A}
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a} {a : A}
   → (ids : is-identity-system R r)
   → (set : is-set A)
-  → (P : R a a → Type ℓ′′)
+  → (P : R a a → Type ℓ'')
   → (x : P (r a))
   → IdsK ids set P x (r a) ≡ x
 IdsK-refl {R = R} {r = r} {a = a} ids set P x =
@@ -82,15 +82,15 @@ IdsK-refl {R = R} {r = r} {a = a} ids set P x =
 <!--
 ```agda
 module StrictIds
-  {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a}
+  {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a}
   (ids : is-identity-system R r)
   (set : is-set A)
   where
 
-  K : ∀ {ℓ′′} {a} → (P : R a a → Type ℓ′′) → P (r a) → ∀ s → P s
+  K : ∀ {ℓ''} {a} → (P : R a a → Type ℓ'') → P (r a) → ∀ s → P s
   K = IdsK ids set
 
-  K-refl : ∀ {ℓ′′} {a} → (P : R a a → Type ℓ′′) → (x : P (r a)) → K P x (r a) ≡ x
+  K-refl : ∀ {ℓ''} {a} → (P : R a a → Type ℓ'') → (x : P (r a)) → K P x (r a) ≡ x
   K-refl = IdsK-refl ids set
 
   instance

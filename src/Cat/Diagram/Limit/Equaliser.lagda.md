@@ -69,14 +69,14 @@ is-limit→is-equaliser F {K} {eta} lim = eq where
   parallel
     : ∀ {x} → Hom x (F .F₀ false)
     → (j : Bool) → Hom x (F .F₀ j)
-  parallel e′ true = forkl F ∘ e′
-  parallel e′ false = e′
+  parallel e' true = forkl F ∘ e'
+  parallel e' false = e'
 
   parallel-commutes
-    : ∀ {x} {e′ : Hom x (F .F₀ false)}
-    → forkl F ∘ e′ ≡ forkr F ∘ e′
+    : ∀ {x} {e' : Hom x (F .F₀ false)}
+    → forkl F ∘ e' ≡ forkr F ∘ e'
     → ∀ i j → (h : Precategory.Hom ·⇉· i j)
-    → F .F₁ {i} {j} h ∘ parallel e′ i ≡ parallel e′ j
+    → F .F₁ {i} {j} h ∘ parallel e' i ≡ parallel e' j
   parallel-commutes p true true tt = eliml (F .F-id)
   parallel-commutes p false true true = sym p
   parallel-commutes p false true false = refl
@@ -85,8 +85,8 @@ is-limit→is-equaliser F {K} {eta} lim = eq where
   eq : is-equaliser C (forkl F) (forkr F) (eta .η false)
   eq .equal =
     sym (eta .is-natural false true false) ∙ eta .is-natural false true true
-  eq .universal {e′ = e′} p =
-    lim.universal (parallel e′) (λ {i} {j} h → parallel-commutes p i j h)
+  eq .universal {e' = e'} p =
+    lim.universal (parallel e') (λ {i} {j} h → parallel-commutes p i j h)
   eq .factors = lim.factors {j = false} _ _
   eq .unique {p = p} {other = other} q =
     lim.unique _ _ _ λ where

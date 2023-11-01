@@ -59,7 +59,7 @@ instance
   H-Level-is-abelian-group
     : ∀ {n} {* : G → G → G} → H-Level (is-abelian-group *) (suc n)
   H-Level-is-abelian-group = prop-instance $ Iso→is-hlevel 1 eqv $
-    Σ-is-hlevel 1 (hlevel 1) λ x → Π-is-hlevel′ 1 λ _ → Π-is-hlevel′ 1 λ _ →
+    Σ-is-hlevel 1 (hlevel 1) λ x → Π-is-hlevel' 1 λ _ → Π-is-hlevel' 1 λ _ →
       is-group.has-is-set x _ _
 ```
 -->

@@ -8,7 +8,7 @@ import Cat.Reasoning
 -->
 
 ```agda
-module Cat.Allegory.Reasoning {o ℓ ℓ′} (A : Allegory o ℓ ℓ′) where
+module Cat.Allegory.Reasoning {o ℓ ℓ'} (A : Allegory o ℓ ℓ') where
 ```
 
 <!--
@@ -31,7 +31,7 @@ inequality, and rewriting by an equality:
 ```agda
 private variable
   w x y z : Ob
-  a b c d f f′ g g′ h i : Hom x y
+  a b c d f f' g g' h i : Hom x y
 
 _≤⟨_⟩_ : ∀ (f : Hom x y) → f ≤ g → g ≤ h → f ≤ h
 _=⟨_⟩_ : ∀ (f : Hom x y) → f ≡ g → g ≤ h → f ≤ h
@@ -66,9 +66,9 @@ a commutative, associative idempotent binary operation, which preserves
 ordering in both of its arguments.
 
 ```agda
-∩-pres-r     : g ≤ g′ → f ∩ g ≤ f ∩ g′
-∩-pres-l     : f ≤ f′ → f ∩ g ≤ f′ ∩ g
-∩-pres     : f ≤ f′ → g ≤ g′ → f ∩ g ≤ f′ ∩ g′
+∩-pres-r     : g ≤ g' → f ∩ g ≤ f ∩ g'
+∩-pres-l     : f ≤ f' → f ∩ g ≤ f' ∩ g
+∩-pres     : f ≤ f' → g ≤ g' → f ∩ g ≤ f' ∩ g'
 ∩-distribl   : f ∘ (g ∩ h) ≤ (f ∘ g) ∩ (f ∘ h)
 ∩-distribr   : (g ∩ h) ∘ f ≤ (g ∘ f) ∩ (h ∘ f)
 ∩-distrib   : (f ∩ g) ∘ (h ∩ i) ≤ (f ∘ h ∩ g ∘ h) ∩ (f ∘ i ∩ g ∘ i)
@@ -96,10 +96,10 @@ ordering in both of its arguments.
 -->
 
 ```agda
-modular′
+modular'
   : ∀ {x y z} (f : Hom x y) (g : Hom y z) (h : Hom x z)
   → (g ∘ f) ∩ h ≤ (g ∩ (h ∘ f †)) ∘ f
-modular′ f g h =
+modular' f g h =
   (g ∘ f) ∩ h                     =˘⟨ dual _ ⟩
   ⌜ ((g ∘ f) ∩ h) † ⌝ †           =⟨ ap! (dual-∩ A) ⟩
   (⌜ (g ∘ f) † ⌝ ∩ h †) †         =⟨ ap! dual-∘ ⟩
@@ -205,7 +205,7 @@ abstract
   ≤-conj : ∀ (f : Hom x x) → f ≤ f ∘ f † ∘ f
   ≤-conj f =
     f                    ≤⟨ ∩-univ (≤-introl ≤-refl) ≤-refl ⟩
-    (id ∘ f) ∩ f         ≤⟨ modular′ f id f ⟩
+    (id ∘ f) ∩ f         ≤⟨ modular' f id f ⟩
     (id ∩ (f ∘ f †)) ∘ f ≤⟨ ≤-pushl ∩-le-r ⟩
     f ∘ f † ∘ f ≤∎
 
@@ -221,7 +221,7 @@ abstract
     (f † ∘ a †) ∘ b ≤⟨ ≤-pullr w ⟩
     f † ∘ c ≤∎
 
-  †-inner : (p : g ∘ g′ † ≡ h) → (f ∘ g) ∘ (f′ ∘ g′) † ≡ f ∘ h ∘ f′ †
+  †-inner : (p : g ∘ g' † ≡ h) → (f ∘ g) ∘ (f' ∘ g') † ≡ f ∘ h ∘ f' †
   †-inner p = ap₂ _∘_ refl dual-∘ ∙ sym (assoc _ _ _)
             ∙ ap₂ _∘_ refl (assoc _ _ _ ∙ ap₂ _∘_ p refl)
 

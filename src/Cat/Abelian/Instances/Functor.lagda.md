@@ -20,8 +20,8 @@ module Cat.Abelian.Instances.Functor
 <!--
 ```agda
 module _
-  {o o′ ℓ ℓ′} {A : Precategory o ℓ}   (𝒜 : Ab-category A)
-              {B : Precategory o′ ℓ′} (ℬ : Ab-category B)
+  {o o' ℓ ℓ'} {A : Precategory o ℓ}   (𝒜 : Ab-category A)
+              {B : Precategory o' ℓ'} (ℬ : Ab-category B)
   where
   private
     module A = Ab-category 𝒜

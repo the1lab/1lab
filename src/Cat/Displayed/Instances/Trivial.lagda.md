@@ -37,11 +37,11 @@ Trivial : Displayed ⊤Cat o ℓ
 Trivial .Displayed.Ob[_] _ = Ob
 Trivial .Displayed.Hom[_] _ = Hom
 Trivial .Displayed.Hom[_]-set _ _ _ = Hom-set _ _
-Trivial .Displayed.id′ = id
-Trivial .Displayed._∘′_ = _∘_
-Trivial .Displayed.idr′ = idr
-Trivial .Displayed.idl′ = idl
-Trivial .Displayed.assoc′ = assoc
+Trivial .Displayed.id' = id
+Trivial .Displayed._∘'_ = _∘_
+Trivial .Displayed.idr' = idr
+Trivial .Displayed.idl' = idl
+Trivial .Displayed.assoc' = assoc
 ```
 
 All morphisms in the trivial [[displayed category]] are vertical over
@@ -55,19 +55,19 @@ open Cartesian-lift
 open Cocartesian-lift
 
 Trivial-fibration : Cartesian-fibration Trivial
-Trivial-fibration .has-lift f y′ .x′ = y′
-Trivial-fibration .has-lift f y′ .lifting = id
-Trivial-fibration .has-lift f y′ .cartesian = cartesian-id Trivial
+Trivial-fibration .has-lift f y' .x' = y'
+Trivial-fibration .has-lift f y' .lifting = id
+Trivial-fibration .has-lift f y' .cartesian = cartesian-id Trivial
 ```
 
 We can use a similar line of argument to deduce that it is also an opfibration.
 
 ```agda
 Trivial-opfibration : Cocartesian-fibration Trivial
-Trivial-opfibration .has-lift f x′ .y′ =
-  x′
-Trivial-opfibration .has-lift f x′ .lifting = id
-Trivial-opfibration .has-lift f x′ .cocartesian = cocartesian-id Trivial
+Trivial-opfibration .has-lift f x' .y' =
+  x'
+Trivial-opfibration .has-lift f x' .lifting = id
+Trivial-opfibration .has-lift f x' .cocartesian = cocartesian-id Trivial
 ```
 
 Therefore, it is also a bifibration.

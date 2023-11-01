@@ -13,7 +13,7 @@ module Cat.Bi.Diagram.Adjunction where
 ```agda
 open _=>_
 
-module _ {o ℓ ℓ′} (B : Prebicategory o ℓ ℓ′) where
+module _ {o ℓ ℓ'} (B : Prebicategory o ℓ ℓ') where
   private module B = Prebicategory B
 ```
 -->
@@ -58,7 +58,7 @@ called the **triangle identities** (because of their shape) or **zigzag
 identities** (because it sounds cool).
 
 ```agda
-  record _⊣_ {a b : B.Ob} (f : a B.↦ b) (g : b B.↦ a) : Type ℓ′ where
+  record _⊣_ {a b : B.Ob} (f : a B.↦ b) (g : b B.↦ a) : Type ℓ' where
     field
       η : B.id B.⇒ (g B.⊗ f)
       ε : (f B.⊗ g) B.⇒ B.id

@@ -195,7 +195,7 @@ We predeclare their types to make Agda happy:
 
 ```agda
 _*ₚ_ : Poly Nat n → Poly Nat n → Poly Nat n
-_*ₚ′_ : Poly Nat n → Poly Nat (suc n) → Poly Nat (suc n)
+_*ₚ'_ : Poly Nat n → Poly Nat (suc n) → Poly Nat (suc n)
 ```
 
 First, the homogeneous multiplication. The first two cases are pretty
@@ -210,15 +210,15 @@ $X_0$). When multiplying `p` and `r`, we need to add on a `0ₚ` under the
 ```agda
 const c₁  *ₚ const c₂ = const (c₁ * c₂)
 zerop     *ₚ q        = zerop
-(p *X+ q) *ₚ r        = ((p *ₚ r) *X+ 0ₚ) +ₚ (q *ₚ′ r)
+(p *X+ q) *ₚ r        = ((p *ₚ r) *X+ 0ₚ) +ₚ (q *ₚ' r)
 ```
 
 For the heterogeneous case, the call graph is simpler, as we can fall
 back to the homogeneous operator.
 
 ```agda
-r *ₚ′ zerop     = zerop
-r *ₚ′ (p *X+ q) = (r *ₚ′ p) *X+ (r *ₚ q)
+r *ₚ' zerop     = zerop
+r *ₚ' (p *X+ q) = (r *ₚ' p) *X+ (r *ₚ q)
 ```
 
 ### Evaluation of Horner Normal Forms
@@ -317,9 +317,9 @@ of soundness as well.
 sound-*ₚ
   : ∀ p q → (env : Vec Nat n)
   → ⟦ p *ₚ q ⟧ₚ env ≡ ⟦ p ⟧ₚ env * ⟦ q ⟧ₚ env
-sound-*ₚ′
+sound-*ₚ'
   : ∀ p q → (x₀ : Nat) → (env : Vec Nat n)
-  → ⟦ p *ₚ′ q ⟧ₚ (x₀ ∷ env) ≡ ⟦ p ⟧ₚ env * ⟦ q ⟧ₚ (x₀ ∷ env)
+  → ⟦ p *ₚ' q ⟧ₚ (x₀ ∷ env) ≡ ⟦ p ⟧ₚ env * ⟦ q ⟧ₚ (x₀ ∷ env)
 ```
 
 The first couple of cases of homogeneous multiplication don't look so
@@ -348,8 +348,8 @@ on.
 sound-*ₚ (p *X+ r) (q *X+ s) (x₀ ∷ env) =
   ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + ⟦ 0ₚ +ₚ (r *ₚ s) ⟧ₚ env                ≡⟨ ap (λ ϕ → ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + ϕ) (sound-+ₚ 0ₚ (r *ₚ s) env) ⟩
   ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + (⟦ 0ₚ ⟧ₚ env + ⟦ r *ₚ s ⟧ₚ env)        ≡⟨ ap₂ (λ ϕ ψ → ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + (ϕ + ψ)) (sound-0ₚ env) (sound-*ₚ r s env) ⟩
-  ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + (⟦r⟧ * ⟦s⟧)                            ≡⟨ ap (λ ϕ → ϕ * x₀ + ⟦r⟧ * ⟦s⟧) (sound-+ₚ (p *ₚ (q *X+ s)) (r *ₚ′ q) (x₀ ∷ env)) ⟩
-  (⟦p*⟨qx+s⟩⟧ + ⟦r*q⟧) * x₀ + ⟦r⟧ * ⟦s⟧                        ≡⟨ ap₂ (λ ϕ ψ → (ϕ + ψ) * x₀ + ⟦r⟧ * ⟦s⟧) (sound-*ₚ p (q *X+ s) (x₀ ∷ env)) (sound-*ₚ′ r q x₀ env) ⟩
+  ⟦p*⟨qx+s⟩+r*q⟧ * x₀ + (⟦r⟧ * ⟦s⟧)                            ≡⟨ ap (λ ϕ → ϕ * x₀ + ⟦r⟧ * ⟦s⟧) (sound-+ₚ (p *ₚ (q *X+ s)) (r *ₚ' q) (x₀ ∷ env)) ⟩
+  (⟦p*⟨qx+s⟩⟧ + ⟦r*q⟧) * x₀ + ⟦r⟧ * ⟦s⟧                        ≡⟨ ap₂ (λ ϕ ψ → (ϕ + ψ) * x₀ + ⟦r⟧ * ⟦s⟧) (sound-*ₚ p (q *X+ s) (x₀ ∷ env)) (sound-*ₚ' r q x₀ env) ⟩
   (⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) + ⟦r⟧ * ⟦q⟧) * x₀ + ⟦r⟧ * ⟦s⟧        ≡⟨ ap (λ ϕ → ϕ + ⟦r⟧ * ⟦s⟧) (*-distrib-+r (⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧)) (⟦r⟧ * ⟦q⟧) x₀) ⟩
   ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + ⟦r⟧ * ⟦q⟧ * x₀ + ⟦r⟧ * ⟦s⟧     ≡˘⟨ +-associative (⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀) (⟦r⟧ * ⟦q⟧ * x₀) (⟦r⟧ * ⟦s⟧) ⟩
   ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + (⟦r⟧ * ⟦q⟧ * x₀ + ⟦r⟧ * ⟦s⟧)   ≡⟨ ap (λ ϕ →  ⟦p⟧ * (⟦q⟧ * x₀ + ⟦s⟧) * x₀ + (ϕ + ⟦r⟧ * ⟦s⟧)) (*-associative ⟦r⟧ ⟦q⟧ x₀) ⟩
@@ -358,9 +358,9 @@ sound-*ₚ (p *X+ r) (q *X+ s) (x₀ ∷ env) =
   ⟦p⟧ * x₀ * (⟦q⟧ * x₀ + ⟦s⟧) + ⟦r⟧ * (⟦q⟧ * x₀ + ⟦s⟧)         ≡˘⟨ *-distrib-+r (⟦p⟧ * x₀) ⟦r⟧ (⟦q⟧ * x₀ + ⟦s⟧) ⟩
   (⟦p⟧ * x₀ + ⟦r⟧) * (⟦q⟧ * x₀ + ⟦s⟧)                          ∎
   where
-    ⟦p*⟨qx+s⟩+r*q⟧ = ⟦ (p *ₚ (q *X+ s)) +ₚ (r *ₚ′ q) ⟧ₚ (x₀ ∷ env)
+    ⟦p*⟨qx+s⟩+r*q⟧ = ⟦ (p *ₚ (q *X+ s)) +ₚ (r *ₚ' q) ⟧ₚ (x₀ ∷ env)
     ⟦p*⟨qx+s⟩⟧ = ⟦ p *ₚ (q *X+ s) ⟧ₚ (x₀ ∷ env)
-    ⟦r*q⟧ = ⟦ r *ₚ′ q ⟧ₚ (x₀ ∷ env)
+    ⟦r*q⟧ = ⟦ r *ₚ' q ⟧ₚ (x₀ ∷ env)
     ⟦p⟧ = ⟦ p ⟧ₚ (x₀ ∷ env)
     ⟦r⟧ = ⟦ r ⟧ₚ env
     ⟦q⟧ = ⟦ q ⟧ₚ (x₀ ∷ env)
@@ -371,9 +371,9 @@ As a nice palate cleanser, the proofs for heterogeneous multiplication
 are nowhere near as bad.
 
 ```agda
-sound-*ₚ′ p zerop x₀ env = sym (*-zeror (⟦ p ⟧ₚ env))
-sound-*ₚ′ r (p *X+ q) x₀ env =
-  ⟦ r *ₚ′ p ⟧ₚ (x₀ ∷ env) * x₀ + ⟦ r *ₚ q ⟧ₚ env ≡⟨ ap₂ (λ ϕ ψ → ϕ * x₀ + ψ) (sound-*ₚ′ r p x₀ env) (sound-*ₚ r q env) ⟩
+sound-*ₚ' p zerop x₀ env = sym (*-zeror (⟦ p ⟧ₚ env))
+sound-*ₚ' r (p *X+ q) x₀ env =
+  ⟦ r *ₚ' p ⟧ₚ (x₀ ∷ env) * x₀ + ⟦ r *ₚ q ⟧ₚ env ≡⟨ ap₂ (λ ϕ ψ → ϕ * x₀ + ψ) (sound-*ₚ' r p x₀ env) (sound-*ₚ r q env) ⟩
   ⟦r⟧ * ⟦p⟧ * x₀ + ⟦r⟧ * ⟦q⟧                     ≡⟨ ap (λ ϕ → ϕ + ⟦r⟧ * ⟦q⟧) (*-associative ⟦r⟧ ⟦p⟧ x₀) ⟩
   ⟦r⟧ * (⟦p⟧ * x₀) + ⟦r⟧ * ⟦q⟧                   ≡˘⟨ *-distrib-+l  (⟦p⟧ * x₀) ⟦q⟧ ⟦r⟧ ⟩
   ⟦r⟧ * (⟦p⟧ * x₀ + ⟦q⟧)                         ∎
@@ -503,13 +503,13 @@ into our `Expr`{.Agda} type.
 private
   pattern nat-lit n =
     def (quote Number.fromNat) (_ ∷ _ ∷ _ ∷ (lit (nat n)) v∷ _)
-  pattern ″zero″ =
+  pattern “zero” =
     con (quote zero) []
-  pattern ″suc″ x =
+  pattern “suc” x =
     con (quote suc) (x v∷ [])
-  pattern _″+″_ x y =
+  pattern _“+”_ x y =
     def (quote _+_) (x v∷ y v∷ _)
-  pattern _″*″_ x y =
+  pattern _“*”_ x y =
     def (quote _*_) (x v∷ y v∷ _)
 ```
 
@@ -525,22 +525,22 @@ private
   build-expr vs (nat-lit n) = do
     ‵n ← quoteTC n
     returnTC $ con (quote ‵lit) (‵n v∷ []) , vs
-  build-expr vs ″zero″ = do
+  build-expr vs “zero” = do
     returnTC $ con (quote ‵0) (unknown h∷ []) , vs
-  build-expr vs (″suc″ t) = do
+  build-expr vs (“suc” t) = do
     e , vs ← build-expr vs t
     returnTC $ con (quote ‵1+_) (unknown h∷ e v∷ []) , vs
-  build-expr vs (t₁ ″+″ t₂) = do
+  build-expr vs (t₁ “+” t₂) = do
     e₁ , vs ← build-expr vs t₁
     e₂ , vs ← build-expr vs t₂
     returnTC $ con (quote _‵+_) (unknown h∷ e₁ v∷ e₂ v∷ []) , vs
-  build-expr vs (t₁ ″*″ t₂) = do
+  build-expr vs (t₁ “*” t₂) = do
     e₁ , vs ← build-expr vs t₁
     e₂ , vs ← build-expr vs t₂
     returnTC $ con (quote _‵*_) (unknown h∷ e₁ v∷ e₂ v∷ []) , vs
   build-expr vs tm = do
-    (v , vs′) ← bind-var vs tm
-    returnTC $ con (quote ‵_) (v v∷ []) , vs′
+    (v , vs') ← bind-var vs tm
+    returnTC $ con (quote ‵_) (v v∷ []) , vs'
 ```
 
 Next, let's define the quoted forms of some terms that we will use to
@@ -548,11 +548,11 @@ interface with the solver.
 
 ```agda
 private
-  ″expand″ : Term → Term → Term
-  ″expand″ e env = def (quote expand) (unknown h∷ e v∷ env v∷ [])
+  “expand” : Term → Term → Term
+  “expand” e env = def (quote expand) (unknown h∷ e v∷ env v∷ [])
 
-  ″solve″ : Term → Term → Term → Term
-  ″solve″ lhs rhs env =
+  “solve” : Term → Term → Term → Term
+  “solve” lhs rhs env =
     def (quote solve)
         (unknown h∷ lhs v∷ rhs v∷ env v∷ def (quote refl) [] v∷ [])
 ```
@@ -609,7 +609,7 @@ expand-macro n hole =
   tm ← quoteTC n
   e , vs ← build-expr empty-vars tm
   size , env ← environment vs
-  expanded ← reduce (″expand″ e env)
+  expanded ← reduce (“expand” e env)
   unify hole expanded
 
 macro
@@ -633,9 +633,9 @@ solve-macro hole =
   elhs , vs ← build-expr empty-vars lhs
   erhs , vs ← build-expr vs rhs
   size , env ← environment vs
-  (noConstraints $ unify hole (″solve″ elhs erhs env)) <|> do
-    nf-lhs ← normalise (″expand″ elhs env)
-    nf-rhs ← normalise (″expand″ erhs env)
+  (noConstraints $ unify hole (“solve” elhs erhs env)) <|> do
+    nf-lhs ← normalise (“expand” elhs env)
+    nf-rhs ← normalise (“expand” erhs env)
     typeError (strErr "Could not solve the following goal:\n  " ∷
                  termErr lhs ∷ strErr " ≡ " ∷ termErr rhs ∷
                strErr "\nComputed normal forms:\n  LHS: " ∷

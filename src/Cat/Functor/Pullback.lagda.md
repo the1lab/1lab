@@ -83,13 +83,13 @@ diagram below is a cone over $K' \to X \ot Y$.
 ~~~
 
 ```agda
-  Base-change .F₁ {x} {y} dh = dh′ where
+  Base-change .F₁ {x} {y} dh = dh' where
     module ypb = Pullback (pullbacks (y .map) f)
     module xpb = Pullback (pullbacks (x .map) f)
-    dh′ : /-Hom _ _
-    dh′ .map = ypb.universal {p₁' = dh .map ∘ xpb.p₁}
+    dh' : /-Hom _ _
+    dh' .map = ypb.universal {p₁' = dh .map ∘ xpb.p₁}
       (pulll (dh .commutes) ∙ xpb.square)
-    dh′ .commutes = ypb.p₂∘universal
+    dh' .commutes = ypb.p₂∘universal
 ```
 
 <details>
@@ -153,15 +153,15 @@ module _ {X Y : Ob} (f : Hom Y X) where
 
   Σ-seso : is-split-eso func
   Σ-seso y = cut (isom.inv ∘ y .map)
-           , Sl.make-iso into from′ (/-Hom-path (eliml refl)) (/-Hom-path (eliml refl))
+           , Sl.make-iso into from' (/-Hom-path (eliml refl)) (/-Hom-path (eliml refl))
     where
     into : /-Hom _ _
     into .map = id
     into .commutes = id-comm ∙ sym (pulll isom.invl)
 
-    from′ : /-Hom _ _
-    from′ .map = id
-    from′ .commutes = elimr refl ∙ cancell isom.invl
+    from' : /-Hom _ _
+    from' .map = id
+    from' .commutes = elimr refl ∙ cancell isom.invl
 ```
 -->
 
@@ -188,11 +188,11 @@ module _ (pullbacks : ∀ {X Y Z} f g → Pullback C {X} {Y} {Z} f g) {X Y : Ob}
       {p = (f ∘ y .map) ∘ id ∘ g .map ≡⟨ cat! C ⟩ f ∘ y .map ∘ g .map ∎}
       (pulll pb.p₁∘universal)
       (pulll pb.p₂∘universal)
-      (pulll pb.p₁∘universal ∙ pullr pb′.p₁∘universal ∙ id-comm)
-      (pulll pb.p₂∘universal ∙ pb′.p₂∘universal ∙ sym (g .commutes)))
+      (pulll pb.p₁∘universal ∙ pullr pb'.p₁∘universal ∙ id-comm)
+      (pulll pb.p₂∘universal ∙ pb'.p₂∘universal ∙ sym (g .commutes)))
     where
       module pb = Pullback (pullbacks (f ∘ y .map) f)
-      module pb′ = Pullback (pullbacks (f ∘ x .map) f)
+      module pb' = Pullback (pullbacks (f ∘ x .map) f)
 
   Σf⊣f* .counit .η obj = dh where
     module pb = Pullback (pullbacks (obj .map) f)
@@ -208,8 +208,8 @@ module _ (pullbacks : ∀ {X Y Z} f g → Pullback C {X} {Y} {Z} f g) {X Y : Ob}
   Σf⊣f* .zag {B} = /-Hom-path
     (sym (pb.unique₂ {p = pb.square}
       (idr _) (idr _)
-      (pulll pb.p₁∘universal ∙ pullr pb′.p₁∘universal ∙ idr _)
-      (pulll pb.p₂∘universal ∙ pb′.p₂∘universal))) where
+      (pulll pb.p₁∘universal ∙ pullr pb'.p₁∘universal ∙ idr _)
+      (pulll pb.p₂∘universal ∙ pb'.p₂∘universal))) where
     module pb = Pullback (pullbacks (B .map) f)
-    module pb′ = Pullback (pullbacks (f ∘ pb.p₂) f)
+    module pb' = Pullback (pullbacks (f ∘ pb.p₂) f)
 ```

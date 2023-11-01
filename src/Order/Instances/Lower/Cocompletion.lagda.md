@@ -54,8 +54,8 @@ in Agda and play with it themselves!
   lower-set-is-lub : is-lub (Lower-sets P) diagram Ls
   lower-set-is-lub .is-lub.fam≤lub (j , j∈Ls) =
     (λ i □i≤j → Ls .snd _ _ (out! □i≤j) j∈Ls) , tt
-  lower-set-is-lub .is-lub.least ub′ fam≤ub′ =
-    (λ i i∈Ls → fam≤ub′ (i , i∈Ls) .fst i (inc P.≤-refl)) , tt
+  lower-set-is-lub .is-lub.least ub' fam≤ub' =
+    (λ i i∈Ls → fam≤ub' (i , i∈Ls) .fst i (inc P.≤-refl)) , tt
 ```
 
 A quick note on notation: The result saying that $L$ is the lub of the
@@ -75,7 +75,7 @@ saying that presheaves are computed as certain [coends].
 <!--
 ```agda
 module
-  _ {o ℓ ℓ′} (A : Poset o ℓ) (B : Poset o ℓ′)
+  _ {o ℓ ℓ'} (A : Poset o ℓ) (B : Poset o ℓ')
     (B-cocomplete
       : ∀ {I : Type o} (F : I → ⌞ B ⌟) → Σ _ (is-lub B F))
     (f : ⌞ Monotone A B ⌟)

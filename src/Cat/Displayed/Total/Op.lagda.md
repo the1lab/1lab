@@ -29,19 +29,19 @@ over $\ca{B}\op$; we call this category the **total opposite** of
 $\ca{E}$.
 
 ```agda
-module _ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o′ ℓ′) where
+module _ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o' ℓ') where
   open Precategory ℬ
   open Displayed ℰ
 
-  _^total-op : Displayed (ℬ ^op) o′ ℓ′
+  _^total-op : Displayed (ℬ ^op) o' ℓ'
   _^total-op .Displayed.Ob[_] x = Ob[ x ]
   _^total-op .Displayed.Hom[_] f x y = Hom[ f ] y x
   _^total-op .Displayed.Hom[_]-set f x y = Hom[ f ]-set y x
-  _^total-op .Displayed.id′ = id′
-  _^total-op .Displayed._∘′_ f′ g′ = g′ ∘′ f′
-  _^total-op .Displayed.idr′ f′ = idl′ f′
-  _^total-op .Displayed.idl′ f′ = idr′ f′
-  _^total-op .Displayed.assoc′ f′ g′ h′ = symP $ assoc′ h′ g′ f′
+  _^total-op .Displayed.id' = id'
+  _^total-op .Displayed._∘'_ f' g' = g' ∘' f'
+  _^total-op .Displayed.idr' f' = idl' f'
+  _^total-op .Displayed.idl' f' = idr' f'
+  _^total-op .Displayed.assoc' f' g' h' = symP $ assoc' h' g' f'
 ```
 
 Much like the opposite of categories, the total opposite is an involution
@@ -49,7 +49,7 @@ on displayed categories.
 
 ```agda
 total-op-involution
-  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′}
+  : ∀ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o' ℓ'}
   → (ℰ ^total-op) ^total-op ≡ ℰ
 total-op-involution {ℰ = ℰ} = path where
   open Displayed
@@ -58,11 +58,11 @@ total-op-involution {ℰ = ℰ} = path where
   path i .Ob[_] = ℰ .Ob[_]
   path i .Hom[_] = ℰ .Hom[_]
   path i .Hom[_]-set = ℰ .Hom[_]-set
-  path i .id′ = ℰ .id′
-  path i ._∘′_ = ℰ ._∘′_
-  path i .idr′ = ℰ .idr′
-  path i .idl′ = ℰ .idl′
-  path i .assoc′ = ℰ .assoc′
+  path i .id' = ℰ .id'
+  path i ._∘'_ = ℰ ._∘'_
+  path i .idr' = ℰ .idr'
+  path i .idl' = ℰ .idl'
+  path i .assoc' = ℰ .assoc'
 
 ```
 
@@ -70,7 +70,7 @@ total-op-involution {ℰ = ℰ} = path where
 ```agda
 private
   displayed-double-dual
-    : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′}
+    : ∀ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o' ℓ'}
     → ((ℰ ^total-op) ^total-op) ≡rw ℰ
   displayed-double-dual {ℰ = ℰ} = make-rewrite (total-op-involution {ℰ = ℰ})
   {-# REWRITE displayed-double-dual #-}
@@ -89,12 +89,12 @@ equality reasons.
 
 ```agda
 total-op→total-hom
-  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′}
+  : ∀ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o' ℓ'}
   → ∀ {x y} → Total-hom (ℰ ^total-op) x y → Total-hom ℰ y x
 total-op→total-hom f = total-hom (f .hom) (f .preserves)
 
 total-hom→total-op
-  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′}
+  : ∀ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o' ℓ'}
   → ∀ {x y} → Total-hom ℰ y x → Total-hom (ℰ ^total-op) x y
 total-hom→total-op f = total-hom (f .hom) (f .preserves)
 ```
@@ -104,13 +104,13 @@ an equality of types via univalence.
 
 ```agda
 total-op→total-hom-is-equiv
-  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′}
+  : ∀ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o' ℓ'}
   → ∀ {x y} → is-equiv (total-op→total-hom {ℰ = ℰ} {x = x} {y = y})
 total-op→total-hom-is-equiv =
   is-iso→is-equiv $ iso total-hom→total-op (λ _ → refl) (λ _ → refl)
 
 total-op≡total-hom
-  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′}
+  : ∀ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o' ℓ'}
   → ∀ {x y} → Total-hom (ℰ ^total-op) x y ≡ Total-hom ℰ y x
 total-op≡total-hom = ua $ total-op→total-hom , total-op→total-hom-is-equiv
 ```
@@ -120,7 +120,7 @@ to construct an isomorphism of precategories.
 
 ```agda
 ∫total-op→∫^op
-  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o′ ℓ′)
+  : ∀ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o' ℓ')
   → Functor (∫ (ℰ ^total-op)) ((∫ ℰ) ^op)
 ∫total-op→∫^op _ .F₀ x = x
 ∫total-op→∫^op _ .F₁ f = total-op→total-hom f
@@ -128,7 +128,7 @@ to construct an isomorphism of precategories.
 ∫total-op→∫^op _ .F-∘ _ _ = refl
 
 ∫total-op≅∫^op
-  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o′ ℓ′)
+  : ∀ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o' ℓ')
   → is-precat-iso (∫total-op→∫^op ℰ)
 ∫total-op≅∫^op ℰ .is-precat-iso.has-is-ff = total-op→total-hom-is-equiv
 ∫total-op≅∫^op ℰ .is-precat-iso.has-is-iso = id-equiv
@@ -138,7 +138,7 @@ Finally, we show that this extends to an equality of categories.
 
 ```agda
 ∫total-op≡∫^op
-  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o′ ℓ′)
+  : ∀ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o' ℓ')
   → ∫ (ℰ ^total-op) ≡ (∫ ℰ) ^op
 ∫total-op≡∫^op ℰ =
   Precategory-path
@@ -154,7 +154,7 @@ of $\cE$.
 
 ```agda
 fibre-functor-total-op
-  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′} {x y}
+  : ∀ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o' ℓ'} {x y}
   → Functor (Fibre ℰ x) (Fibre ℰ y)
   → Functor (Fibre (ℰ ^total-op) x) (Fibre (ℰ ^total-op) y)
 fibre-functor-total-op F .F₀ = F .F₀
@@ -167,7 +167,7 @@ fibre-functor-total-op {ℰ = ℰ} F .F-∘ f g =
 <!--
 ```agda
 fibre-functor-total-op-total-op
-  : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′} {x y}
+  : ∀ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o' ℓ'} {x y}
   → {F : Functor (Fibre ℰ x) (Fibre ℰ y)}
   → fibre-functor-total-op (fibre-functor-total-op F) ≡ F
 fibre-functor-total-op-total-op {F = F} i .F₀ = F .F₀
@@ -182,7 +182,7 @@ fibre-functor-total-op-total-op {ℰ = ℰ} {y = y} {F = F} i .F-∘ f g =
 
 private
   fibre-functor-double-dual
-    : ∀ {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o′ ℓ′} {x y}
+    : ∀ {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} {ℰ : Displayed ℬ o' ℓ'} {x y}
     → {F : Functor (Fibre ℰ x) (Fibre ℰ y)}
     → fibre-functor-total-op (fibre-functor-total-op F) ≡rw F
   fibre-functor-double-dual = make-rewrite fibre-functor-total-op-total-op

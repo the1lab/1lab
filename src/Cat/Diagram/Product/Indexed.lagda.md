@@ -81,7 +81,7 @@ has-indexed-products ℓ = ∀ {I : Type ℓ} → has-products-indexed-by I
 
 <!--
 ```agda
-module _ {ℓ′} {I : Type ℓ′} (F : I → C .Precategory.Ob) (ip : Indexed-product F) where
+module _ {ℓ'} {I : Type ℓ'} (F : I → C .Precategory.Ob) (ip : Indexed-product F) where
   private module ip = Indexed-product ip
 
   tuple∘ : ∀ {A B} (f : ∀ i → C.Hom B (F i))
@@ -90,7 +90,7 @@ module _ {ℓ′} {I : Type ℓ′} (F : I → C .Precategory.Ob) (ip : Indexed-
   tuple∘ f = ip.unique _ λ i → C.pulll ip.commute
 
 Indexed-product-≃
-  : ∀ {ℓ ℓ′} {I : Type ℓ} {J : Type ℓ′} → (e : I ≃ J)
+  : ∀ {ℓ ℓ'} {I : Type ℓ} {J : Type ℓ'} → (e : I ≃ J)
   → {F : I → C.Ob} → Indexed-product (F ⊙ Equiv.from e) → Indexed-product F
 Indexed-product-≃ e {F} p = λ where
   .ΠF → p .ΠF
@@ -108,8 +108,8 @@ Indexed-product-≃ e {F} p = λ where
       module e = Equiv e
 
 Lift-Indexed-product
-  : ∀ {ℓ} ℓ′ → {I : Type ℓ} → {F : I → C.Ob}
-  → Indexed-product {Idx = Lift ℓ′ I} (F ⊙ Lift.lower)
+  : ∀ {ℓ} ℓ' → {I : Type ℓ} → {F : I → C.Ob}
+  → Indexed-product {Idx = Lift ℓ' I} (F ⊙ Lift.lower)
   → Indexed-product F
 Lift-Indexed-product _ = Indexed-product-≃ (Lift-≃ e⁻¹)
 ```
@@ -126,7 +126,7 @@ surprisingly straightforward!
 
 ```agda
 Indexed-product-unique
-  : ∀ {ℓ′} {I : Type ℓ′} (F : I → C.Ob)
+  : ∀ {ℓ'} {I : Type ℓ'} (F : I → C.Ob)
   → is-category C → is-prop (Indexed-product F)
 Indexed-product-unique {I = I} F c-cat x y = p where
   module x = Indexed-product x
@@ -157,9 +157,9 @@ between the projection maps and the product maps:
     pres : ∀ j → PathP (λ i → C.Hom (c-cat .to-path apices i) (F j)) (x.π j) (y.π j)
     pres j = Univalent.Hom-pathp-refll-iso c-cat x.commute
 
-    pres′ : ∀ {Y} (f : ∀ j → C.Hom Y (F j))
+    pres' : ∀ {Y} (f : ∀ j → C.Hom Y (F j))
       → PathP (λ i → C.Hom Y (c-cat .to-path apices i)) (x.tuple f) (y.tuple f)
-    pres′ f =
+    pres' f =
       Univalent.Hom-pathp-reflr-iso c-cat (y.unique f λ j → C.pulll y.commute ∙ x.commute)
 ```
 
@@ -172,15 +172,15 @@ need to prove that indexed products are unique.
   p : x ≡ y
   p i .ΠF = c-cat .to-path apices i
   p i .π j = pres j i
-  p i .has-is-ip .tuple f = pres′ f i
+  p i .has-is-ip .tuple f = pres' f i
   p i .has-is-ip .commute {i = j} {f = f} =
-    is-prop→pathp (λ i → C.Hom-set _ (F j) (pres j i C.∘ pres′ f i) _)
+    is-prop→pathp (λ i → C.Hom-set _ (F j) (pres j i C.∘ pres' f i) _)
      (x .has-is-ip .commute) (y .has-is-ip .commute) i
   p i .has-is-ip .unique {h = h} f =
     is-prop→pathp
       (λ i → Π-is-hlevel {A = C.Hom _ (c-cat .to-path apices i)} 1
        λ h → Π-is-hlevel {A = ∀ j → pres j i C.∘ h ≡ f j} 1
-       λ p → C.Hom-set _ (c-cat .to-path apices i) h (pres′ f i))
+       λ p → C.Hom-set _ (c-cat .to-path apices i) h (pres' f i))
       (λ h → x.unique {h = h} f) (λ h → y.unique {h = h} f) i h
 ```
 

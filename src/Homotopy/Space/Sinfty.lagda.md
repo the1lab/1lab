@@ -34,10 +34,10 @@ different ways.
 open is-contr
 
 private
-  pathsS∞′ : (x : S∞) → N ≡ x
-  pathsS∞′ N = refl
-  pathsS∞′ S = merid N
-  pathsS∞′ (merid x i) =
+  pathsS∞' : (x : S∞) → N ≡ x
+  pathsS∞' N = refl
+  pathsS∞' S = merid N
+  pathsS∞' (merid x i) =
 ```
 
 First we reduce the problem from constructing a dependent path over
@@ -53,17 +53,17 @@ The proof goes as follows: by the characterisation of transport in path
 types the LHS is identified with `refl ∙ merid x`{.Agda}. We get rid of
 the `refl`{.Agda} and then a a path between `merid x`{.Agda} and `merid
 N`{.Agda} can be obtained from applying `merid`{.Agda} to the recursive
-call `pathsS∞′ x`{.Agda}.
+call `pathsS∞' x`{.Agda}.
 
 ```agda
       (transport (λ j → N ≡ merid x j) refl ≡⟨ subst-path-right refl (merid x) ⟩
       refl ∙ merid x                        ≡⟨ ∙-idl (merid x) ⟩
-      merid x                               ≡⟨ ap merid (sym (pathsS∞′ x)) ⟩
+      merid x                               ≡⟨ ap merid (sym (pathsS∞' x)) ⟩
       merid N                               ∎) i
 
-is-contrS∞′ : is-contr S∞
-is-contrS∞′ .centre = N
-is-contrS∞′ .paths = pathsS∞′
+is-contrS∞' : is-contr S∞
+is-contrS∞' .centre = N
+is-contrS∞' .paths = pathsS∞'
 ```
 
 ## The Cubical Approach

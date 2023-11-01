@@ -17,7 +17,7 @@ The dependent sum type, total space, or type of dependent pairs, is
 defined as a record, so that it enjoys definitional η.
 
 ```agda
-record Σ {ℓ ℓ′} (A : Type ℓ) (B : A → Type ℓ′) : Type (ℓ ⊔ ℓ′) where
+record Σ {ℓ ℓ'} (A : Type ℓ) (B : A → Type ℓ') : Type (ℓ ⊔ ℓ') where
   constructor _,_
   field
     fst : A

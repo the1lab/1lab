@@ -10,8 +10,8 @@ import Cat.Reasoning
 
 ```agda
 module Cat.Functor.Reasoning
-  {o ℓ o′ ℓ′}
-  {𝒞 : Precategory o ℓ} {𝒟 : Precategory o′ ℓ′}
+  {o ℓ o' ℓ'}
+  {𝒞 : Precategory o ℓ} {𝒟 : Precategory o' ℓ'}
   (F : Functor 𝒞 𝒟) where
 
 module 𝒞 = Cat.Reasoning 𝒞

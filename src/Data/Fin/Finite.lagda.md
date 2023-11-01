@@ -128,7 +128,7 @@ Discrete→Finite≡ : ∀ {ℓ} {A : Type ℓ} → Discrete A → {x y : A} →
 Discrete→Finite≡ d = Dec→Finite (Discrete→is-set d _ _) (d _ _)
 
 Finite-choice
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
   → ⦃ Finite A ⦄
   → (∀ x → ∥ B x ∥) → ∥ (∀ x → B x) ∥
 Finite-choice {B = B} ⦃ fin {sz} e ⦄ k = do
@@ -136,8 +136,8 @@ Finite-choice {B = B} ⦃ fin {sz} e ⦄ k = do
   choose ← finite-choice sz λ x → k (equiv→inverse (e .snd) x)
   pure $ λ x → subst B (equiv→unit (e .snd) x) (choose (e .fst x))
 
-Finite-≃ : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → ⦃ Finite A ⦄ → A ≃ B → Finite B
-Finite-≃ ⦃ fin {n} e ⦄ e′ = fin (∥-∥-map (e′ e⁻¹ ∙e_) e)
+Finite-≃ : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → ⦃ Finite A ⦄ → A ≃ B → Finite B
+Finite-≃ ⦃ fin {n} e ⦄ e' = fin (∥-∥-map (e' e⁻¹ ∙e_) e)
 
 private variable
   ℓ : Level
@@ -171,7 +171,7 @@ instance
 ```agda
 private
   finite-pi-fin
-    : ∀ {ℓ′} n {B : Fin n → Type ℓ′}
+    : ∀ {ℓ'} n {B : Fin n → Type ℓ'}
     → (∀ x → Finite (B x))
     → Finite ((x : Fin n) → B x)
   finite-pi-fin zero fam = fin {cardinality = 1} $ pure $ Iso→Equiv λ where
@@ -200,8 +200,8 @@ Finite-⊎ {A = A} {B = B} = fin $ do
 Finite-Π {A = A} {P = P} ⦃ fin {sz} en ⦄ ⦃ fam ⦄ = ∥-∥-proj $ do
   eqv ← en
   let count = finite-pi-fin sz λ x → fam {equiv→inverse (eqv .snd) x}
-  eqv′ ← count .Finite.enumeration
-  pure $ fin $ pure $ Π-dom≃ (eqv e⁻¹) ∙e eqv′
+  eqv' ← count .Finite.enumeration
+  pure $ fin $ pure $ Π-dom≃ (eqv e⁻¹) ∙e eqv'
 
 Finite-Σ {A = A} {P = P} ⦃ afin ⦄ ⦃ fam ⦄ = ∥-∥-proj $ do
   aeq ← afin .Finite.enumeration
