@@ -89,7 +89,7 @@ module _ {o ℓ} {P : Poset o ℓ} where
 ```agda
   is-dcpo-is-prop : is-prop (is-dcpo P)
   is-dcpo-is-prop = Iso→is-hlevel 1 eqv $
-    Π-is-hlevel′ 1 λ _ →
+    Π-is-hlevel' 1 λ _ →
     Π-is-hlevel² 1 λ _ _ → Lub-is-prop P
     where unquoteDecl eqv = declare-record-iso eqv (quote is-dcpo)
 ```
@@ -121,7 +121,7 @@ module _ {P Q : Poset o ℓ} where
   is-scott-continuous-is-prop
     : ∀ (f : Posets.Hom P Q) → is-prop (is-scott-continuous f)
   is-scott-continuous-is-prop _ =
-    Π-is-hlevel′ 1 λ _ → Π-is-hlevel³ 1 λ _ _ _  → Π-is-hlevel 1 λ _ →
+    Π-is-hlevel' 1 λ _ → Π-is-hlevel³ 1 λ _ _ _  → Π-is-hlevel 1 λ _ →
     is-lub-is-prop Q
 ```
 

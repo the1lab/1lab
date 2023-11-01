@@ -26,7 +26,7 @@ here.
 <!--
 ```agda
 module
-  _ {o ℓ o′ ℓ′} {𝒞 : Precategory o ℓ} {𝒟 : Precategory o′ ℓ′}
+  _ {o ℓ o' ℓ'} {𝒞 : Precategory o ℓ} {𝒟 : Precategory o' ℓ'}
     (F : Functor 𝒞 𝒟)
   where
 
@@ -69,7 +69,7 @@ a map $f : a \to b$, such that the triangle
 commutes.
 
 ```agda
-  record is-final : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
+  record is-final : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
     field
       point : 𝒟.Ob → 𝒞.Ob
       map   : ∀ d → 𝒟.Hom d (F.₀ (point d))
@@ -84,7 +84,7 @@ commutes.
 <!--
 ```agda
   module
-    _ {o′′ ℓ′′} {ℰ : Precategory o′′ ℓ′′} {D : Functor 𝒟 ℰ} (final : is-final)
+    _ {o'' ℓ''} {ℰ : Precategory o'' ℓ''} {D : Functor 𝒟 ℰ} (final : is-final)
     where
     private
       module fin = is-final final
@@ -200,8 +200,8 @@ it in this `<details>`{.html} tag for the curious reader only.
 <!--
 ```agda
 module
-  _ {o ℓ o′ ℓ′ o′′ ℓ′′}
-    {𝒞 : Precategory o ℓ} {𝒟 : Precategory o′ ℓ′} {ℰ : Precategory o′′ ℓ′′}
+  _ {o ℓ o' ℓ' o'' ℓ''}
+    {𝒞 : Precategory o ℓ} {𝒟 : Precategory o' ℓ'} {ℰ : Precategory o'' ℓ''}
     (F : Functor 𝒞 𝒟) (G : Functor 𝒟 ℰ)
     (f-fin : is-final F) (g-fin : is-final G)
   where

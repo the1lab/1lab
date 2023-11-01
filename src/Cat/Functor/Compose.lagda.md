@@ -43,7 +43,7 @@ opposite direction to $p$.
 ```agda
 private variable
   o ℓ : Level
-  A B C C′ D E : Precategory o ℓ
+  A B C C' D E : Precategory o ℓ
   F G H K : Functor C D
   α β γ : F => G
 ```
@@ -95,14 +95,14 @@ _▸_ H nt .is-natural x y f =
 With the whiskerings already defined, defining $- \circ p$ and $p \circ -$ is easy:
 
 ```agda
-module _ (p : Functor C C′) where
-  precompose : Functor Cat[ C′ , D ] Cat[ C , D ]
+module _ (p : Functor C C') where
+  precompose : Functor Cat[ C' , D ] Cat[ C , D ]
   precompose .F₀ G    = G F∘ p
   precompose .F₁ θ    = θ ◂ p
   precompose .F-id    = Nat-path λ _ → refl
   precompose .F-∘ f g = Nat-path λ _ → refl
 
-  postcompose : Functor Cat[ D , C ] Cat[ D , C′ ]
+  postcompose : Functor Cat[ D , C ] Cat[ D , C' ]
   postcompose .F₀ G    = p F∘ G
   postcompose .F₁ θ    = p ▸ θ
   postcompose .F-id    = Nat-path λ _ → p .F-id

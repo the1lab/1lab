@@ -47,7 +47,7 @@ record is-glb {ℓᵢ} {I : Type ℓᵢ} (F : I → Ob) (glb : Ob)
   no-eta-equality
   field
     glb≤fam  : ∀ i → glb ≤ F i
-    greatest : (lb′ : Ob) → (∀ i → lb′ ≤ F i) → lb′ ≤ glb
+    greatest : (lb' : Ob) → (∀ i → lb' ≤ F i) → lb' ≤ glb
 
 record Glb {ℓᵢ} {I : Type ℓᵢ} (F : I → Ob) : Type (o ⊔ ℓ ⊔ ℓᵢ) where
   no-eta-equality
@@ -78,9 +78,9 @@ glb-unique
   : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {x y}
   → is-glb F x → is-glb F y
   → x ≡ y
-glb-unique is is′ = ≤-antisym
-  (is′ .greatest _ (is .glb≤fam))
-  (is .greatest _ (is′ .glb≤fam))
+glb-unique is is' = ≤-antisym
+  (is' .greatest _ (is .glb≤fam))
+  (is .greatest _ (is' .glb≤fam))
 
 Glb-is-prop
   : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob}
@@ -112,7 +112,7 @@ record is-meet (a b : Ob) (glb : Ob) : Type (o ⊔ ℓ) where
   field
     meet≤l   : glb ≤ a
     meet≤r   : glb ≤ b
-    greatest : (lb′ : Ob) → lb′ ≤ a → lb′ ≤ b → lb′ ≤ glb
+    greatest : (lb' : Ob) → lb' ≤ a → lb' ≤ b → lb' ≤ glb
 
 record Meet (a b : Ob) : Type (o ⊔ ℓ) where
   no-eta-equality
@@ -131,25 +131,25 @@ greatest lower bound of a family of two elements.
 is-meet→is-glb : ∀ {a b glb} → is-meet a b glb → is-glb (if_then a else b) glb
 is-meet→is-glb meet .glb≤fam true = meet .meet≤l
 is-meet→is-glb meet .glb≤fam false = meet .meet≤r
-is-meet→is-glb meet .greatest glb′ x = meet .greatest glb′ (x true) (x false)
+is-meet→is-glb meet .greatest glb' x = meet .greatest glb' (x true) (x false)
 
 is-glb→is-meet : ∀ {F : Bool → Ob} {glb} → is-glb F glb → is-meet (F true) (F false) glb
 is-glb→is-meet glb .meet≤l = glb .glb≤fam true
 is-glb→is-meet glb .meet≤r = glb .glb≤fam false
-is-glb→is-meet glb .greatest lb′ lb′<a lb′<b = glb .greatest lb′ λ where
-  true  → lb′<a
-  false → lb′<b
+is-glb→is-meet glb .greatest lb' lb'<a lb'<b = glb .greatest lb' λ where
+  true  → lb'<a
+  false → lb'<b
 ```
 
 <!--
 ```agda
-private unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-meet)
+private unquoteDecl eqv' = declare-record-iso eqv' (quote is-meet)
 
 instance
   H-Level-is-meet
     : ∀ {a b glb : Ob} {n}
     → H-Level (is-meet a b glb) (suc n)
-  H-Level-is-meet = prop-instance $ Iso→is-hlevel 1 eqv′ (hlevel 1)
+  H-Level-is-meet = prop-instance $ Iso→is-hlevel 1 eqv' (hlevel 1)
 
 meet-unique : ∀ {a b x y} → is-meet a b x → is-meet a b y → x ≡ y
 meet-unique x-meet y-meet =
@@ -192,7 +192,7 @@ lower bound of $x$ and $y$ is just $x$:
 le→is-meet : ∀ {a b} → a ≤ b → is-meet a b a
 le→is-meet a≤b .meet≤l = ≤-refl
 le→is-meet a≤b .meet≤r = a≤b
-le→is-meet a≤b .greatest lb′ lb′≤a _ = lb′≤a
+le→is-meet a≤b .greatest lb' lb'≤a _ = lb'≤a
 
 le-meet : ∀ {a b l} → a ≤ b → is-meet a b l → a ≡ l
 le-meet a≤b l = meet-unique (le→is-meet a≤b) l

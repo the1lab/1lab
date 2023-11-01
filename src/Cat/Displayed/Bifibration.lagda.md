@@ -21,7 +21,7 @@ import Cat.Reasoning
 
 ```agda
 module Cat.Displayed.Bifibration
-  {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o′ ℓ′) where
+  {o ℓ o' ℓ'} {ℬ : Precategory o ℓ} (ℰ : Displayed ℬ o' ℓ') where
 ```
 
 <!--
@@ -64,7 +64,7 @@ when that page is written.
 -->
 
 ```agda
-record is-bifibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
+record is-bifibration : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
   field
     fibration : Cartesian-fibration
     opfibration : Cocartesian-fibration
@@ -154,7 +154,7 @@ then $L$ is a left adjoint to $f^{*}$.
   cocartesian→left-adjoint-base-change
     : ∀ {x y} {L : Functor (Fibre ℰ x) (Fibre ℰ y)} {f : Hom x y}
     → (L-unit : Id => base-change f F∘ L)
-    → (∀ x → is-cocartesian (f ∘ id) (has-lift.lifting f (L .F₀ x) ∘′ L-unit .η x))
+    → (∀ x → is-cocartesian (f ∘ id) (has-lift.lifting f (L .F₀ x) ∘' L-unit .η x))
     → L ⊣ base-change f
 ```
 
@@ -198,17 +198,17 @@ equivalence.
       module f* = Functor (base-change f)
 
       precompose-equiv
-        : ∀ {x′ : Ob[ x ]} {y′ : Ob[ y ]}
-        → is-equiv {A = Hom[ id ] (F₀ L x′) y′} (λ v → f*.₁ v Fib.∘ L-unit .η x′)
-      precompose-equiv {x′} {y′} = is-iso→is-equiv $ iso
-        (λ v → cocart.universalv _ (has-lift.lifting f _ ∘′ v))
+        : ∀ {x' : Ob[ x ]} {y' : Ob[ y ]}
+        → is-equiv {A = Hom[ id ] (F₀ L x') y'} (λ v → f*.₁ v Fib.∘ L-unit .η x')
+      precompose-equiv {x'} {y'} = is-iso→is-equiv $ iso
+        (λ v → cocart.universalv _ (has-lift.lifting f _ ∘' v))
         (λ v → has-lift.uniquep₂ _ _ _ _ refl _ _
           (Fib.pulllf (has-lift.commutesp f _ id-comm _)
-          ∙[] symP (assoc′ _ _ _)
-          ∙[] cocart.commutesv x′ _)
+          ∙[] symP (assoc' _ _ _)
+          ∙[] cocart.commutesv x' _)
           refl)
-        (λ v → symP $ cocart.uniquep x′ _ _ _ _ $
-          assoc′ _ _ _
+        (λ v → symP $ cocart.uniquep x' _ _ _ _ $
+          assoc' _ _ _
           ∙[] Fib.pushlf (symP $ has-lift.commutesp f _ id-comm _))
 ```
 

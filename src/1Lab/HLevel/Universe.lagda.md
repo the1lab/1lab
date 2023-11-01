@@ -202,7 +202,7 @@ instance
   H-Level-nType {k = k} = basic-instance (1 + k) (n-Type-is-hlevel k)
 
   H-Level-is-equiv
-    : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} {f : A → B} {n}
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} {n}
     → H-Level (is-equiv f) (suc n)
   H-Level-is-equiv = prop-instance (is-equiv-is-prop _)
 

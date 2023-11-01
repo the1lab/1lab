@@ -28,7 +28,7 @@ the "span" category. Colimits over a span are called [pushouts].
 data Cospan-ob ℓ : Type ℓ where
   cs-a cs-b cs-c : Cospan-ob ℓ
 
-Cospan-hom : ∀ {ℓ ℓ′} → Cospan-ob ℓ → Cospan-ob ℓ → Type ℓ′
+Cospan-hom : ∀ {ℓ ℓ'} → Cospan-ob ℓ → Cospan-ob ℓ → Type ℓ'
 Cospan-hom cs-a cs-a = Lift _ ⊤ -- identity on a
 Cospan-hom cs-a cs-b = Lift _ ⊥ -- no maps a → b
 Cospan-hom cs-a cs-c = Lift _ ⊤ -- one map a → c

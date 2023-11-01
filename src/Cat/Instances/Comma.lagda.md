@@ -117,8 +117,8 @@ page: `↓Hom-path`{.Agda} and `↓Hom-set`{.Agda}.
 
 <!--
 ```agda
-  ↓Hom-pathp : ∀ {x x′ y y′} {p : x ≡ x′} {q : y ≡ y′}
-             → {f : ↓Hom x y} {g : ↓Hom x′ y′}
+  ↓Hom-pathp : ∀ {x x' y y'} {p : x ≡ x'} {q : y ≡ y'}
+             → {f : ↓Hom x y} {g : ↓Hom x' y'}
              → (PathP _ (f .↓Hom.α) (g .↓Hom.α))
              → (PathP _ (f .↓Hom.β) (g .↓Hom.β))
              → PathP (λ i → ↓Hom (p i) (q i)) f g

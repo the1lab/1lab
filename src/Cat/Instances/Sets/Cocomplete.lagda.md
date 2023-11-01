@@ -174,16 +174,16 @@ coproduct.
 
 ```agda
     coprod .injections-are-monic _ g h path = funext go where abstract
-      path′ : Path (∀ c → Σ _ (λ x → ∣ F x ∣)) (λ c → _ , g c) (λ c → _ , h c)
-      path′ i c = ∥-∥₀-elim {B = λ _ → Σ _ (∣_∣ ⊙ F)} (λ x → hlevel!)
+      path' : Path (∀ c → Σ _ (λ x → ∣ F x ∣)) (λ c → _ , g c) (λ c → _ , h c)
+      path' i c = ∥-∥₀-elim {B = λ _ → Σ _ (∣_∣ ⊙ F)} (λ x → hlevel!)
         (λ x → x) (path i c)
 
-      q : ∀ {c} → ap fst (happly path′ c) ≡ refl
+      q : ∀ {c} → ap fst (happly path' c) ≡ refl
       q = I .is-tr _ _ _ _
 
       go : ∀ c → g c ≡ h c
       go c = subst (λ e → PathP (λ i → ∣ F (e i) ∣) (g c) (h c)) q
-        (ap snd (happly path′ c))
+        (ap snd (happly path' c))
 ```
 
 The same thing happens in proving that different injections have

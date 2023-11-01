@@ -165,10 +165,10 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     coequ .coeq .η i = incq
     coequ .coeq .is-natural x y f = refl
     coequ .has-is-coeq .coequal = Nat-path λ _ → funext λ x → glue x
-    coequ .has-is-coeq .universal {F = F} {e′ = e′} p .η x =
-      Coeq-rec (F .F₀  x .is-tr) (e′ .η x) (p ηₚ x $ₚ_)
-    coequ .has-is-coeq .universal {F = F} {e′ = e′} p .is-natural x y f = funext $
-      Coeq-elim-prop (λ _ → F .F₀ _ .is-tr _ _) λ _ → happly (e′ .is-natural _ _ _) _
+    coequ .has-is-coeq .universal {F = F} {e' = e'} p .η x =
+      Coeq-rec (F .F₀  x .is-tr) (e' .η x) (p ηₚ x $ₚ_)
+    coequ .has-is-coeq .universal {F = F} {e' = e'} p .is-natural x y f = funext $
+      Coeq-elim-prop (λ _ → F .F₀ _ .is-tr _ _) λ _ → happly (e' .is-natural _ _ _) _
     coequ .has-is-coeq .factors = Nat-path λ _ → refl
     coequ .has-is-coeq .unique {F = F} p = Nat-path λ i → funext $
       Coeq-elim-prop (λ _ → F .F₀ _ .is-tr _ _) λ x → p ηₚ i $ₚ x

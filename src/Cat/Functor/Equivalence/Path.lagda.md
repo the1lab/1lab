@@ -249,7 +249,7 @@ Category-identity-system-pre =
 <!--
 ```agda
 module
-  _ {o o′ ℓ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     (F : Functor C D)
     (eqv : is-equivalence F)
   where

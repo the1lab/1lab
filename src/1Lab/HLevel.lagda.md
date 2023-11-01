@@ -489,7 +489,7 @@ _ : ∀ {A : Type} {a b c d : A} (p : a ≡ c) (q : a ≡ b) (s : c ≡ d) (r : 
 _ = λ _ _ _ _ → refl
 
 is-set→cast-pathp
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {x y : A} {p q : x ≡ y} (P : A → Type ℓ′) {px : P x} {py : P y}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {x y : A} {p q : x ≡ y} (P : A → Type ℓ') {px : P x} {py : P y}
   → is-set A
   → PathP (λ i → P (p i)) px py
   → PathP (λ i → P (q i)) px py

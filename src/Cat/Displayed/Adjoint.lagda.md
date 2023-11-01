@@ -64,24 +64,24 @@ module _
 
 ```agda
   record _⊣[_]_
-    (L′ : Displayed-functor ℰ ℱ L)
+    (L' : Displayed-functor ℰ ℱ L)
     (adj : L ⊣ R)
-    (R′ : Displayed-functor ℱ ℰ R )
+    (R' : Displayed-functor ℱ ℰ R )
     : Type lvl where
     no-eta-equality
     open _⊣_ adj
     field
-      unit′ : Id′ =[ unit ]=> R′ F∘′ L′
-      counit′ : L′ F∘′ R′ =[ counit ]=> Id′
+      unit' : Id' =[ unit ]=> R' F∘' L'
+      counit' : L' F∘' R' =[ counit ]=> Id'
 
-    module unit′ = _=[_]=>_ unit′
-    module counit′ = _=[_]=>_ counit′ renaming (η′ to ε′)
+    module unit' = _=[_]=>_ unit'
+    module counit' = _=[_]=>_ counit' renaming (η' to ε')
 
     field
-      zig′ : ∀ {x} {x′ : ℰ.Ob[ x ]}
-          → (counit′.ε′ (L′ .F₀′ x′) ℱ.∘′ L′ .F₁′ (unit′.η′ x′)) ℱ.≡[ zig ] ℱ.id′
-      zag′ : ∀ {x} {x′ : ℱ.Ob[ x ]}
-          → (R′ .F₁′ (counit′.ε′ x′) ℰ.∘′ unit′.η′ (R′ .F₀′ x′)) ℰ.≡[ zag ] ℰ.id′
+      zig' : ∀ {x} {x' : ℰ.Ob[ x ]}
+          → (counit'.ε' (L' .F₀' x') ℱ.∘' L' .F₁' (unit'.η' x')) ℱ.≡[ zig ] ℱ.id'
+      zag' : ∀ {x} {x' : ℱ.Ob[ x ]}
+          → (R' .F₁' (counit'.ε' x') ℰ.∘' unit'.η' (R' .F₀' x')) ℰ.≡[ zag ] ℰ.id'
 ```
 
 ## Fibred Adjunctions {defines="fibred-adjunction fibred-left-adjoint fibred-right-adjoint"}
@@ -119,15 +119,15 @@ module _
     : Type lvl where
     no-eta-equality
     field
-      unit′ : IdVf =>f↓ R Vf∘ L
-      counit′ : L Vf∘ R =>f↓ IdVf
+      unit' : IdVf =>f↓ R Vf∘ L
+      counit' : L Vf∘ R =>f↓ IdVf
 
-    module unit′ = _=>↓_ unit′
-    module counit′ = _=>↓_ counit′ renaming (η′ to ε′)
+    module unit' = _=>↓_ unit'
+    module counit' = _=>↓_ counit' renaming (η' to ε')
 
     field
-      zig′ : ∀ {x} {x′ : ℰ.Ob[ x ]}
-           → counit′.ε′ (L .F₀′ x′) ℱ.∘′ L .F₁′ (unit′.η′ x′) ℱ.≡[ idl id ] ℱ.id′
-      zag′ : ∀ {x} {x′ : ℱ.Ob[ x ]}
-           → R .F₁′ (counit′.ε′ x′) ℰ.∘′ unit′.η′ (R .F₀′ x′) ℰ.≡[ idl id ] ℰ.id′
+      zig' : ∀ {x} {x' : ℰ.Ob[ x ]}
+           → counit'.ε' (L .F₀' x') ℱ.∘' L .F₁' (unit'.η' x') ℱ.≡[ idl id ] ℱ.id'
+      zag' : ∀ {x} {x' : ℱ.Ob[ x ]}
+           → R .F₁' (counit'.ε' x') ℰ.∘' unit'.η' (R .F₀' x') ℰ.≡[ idl id ] ℰ.id'
 ```

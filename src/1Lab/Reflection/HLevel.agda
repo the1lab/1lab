@@ -156,17 +156,17 @@ private
   -- Decompose an application of is-hlevel and/or one of the other
   -- 'hlevel-types' into its constituent parts. Invariant:
   --
-  --    decompose-is-hlevel′ t = (a , n) ⊢ t = is-hlevel a n
-  decompose-is-hlevel′ : Term → TC (Term × Term)
+  --    decompose-is-hlevel' t = (a , n) ⊢ t = is-hlevel a n
+  decompose-is-hlevel' : Term → TC (Term × Term)
 
   -- Infer the type of the given term, and decompose it according to
-  -- decompose-is-hlevel′.
+  -- decompose-is-hlevel'.
   decompose-is-hlevel : Term → TC (Term × Term)
   decompose-is-hlevel goal = do
     ty ← withReduceDefs (false , hlevel-types) $ inferType goal >>= reduce
-    decompose-is-hlevel′ ty
+    decompose-is-hlevel' ty
 
-  decompose-is-hlevel′ ty = do
+  decompose-is-hlevel' ty = do
     def (quote is-hlevel) (_ ∷ ty v∷ lv v∷ []) ← pure ty
       where
         -- Handle the ones with special names:
@@ -221,8 +221,8 @@ essentially, a loop: If w doesn't work, then try
   is-hlevel-suc n w : is-hlevel T (suc n)
 
 until you reach a sucᵏ n = k + n. Actually, slightly more efficient, we
-keep around a counter k′ for the number of tries, and transfer successors
-from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
+keep around a counter k' for the number of tries, and transfer successors
+from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
 -}
   lift-sol : Term → Term → Nat → Term
   lift-sol tm _ 0 = tm
@@ -239,9 +239,9 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
   lifting-loop : Nat → Term → Term → Term → Term → TC ⊤
   lifting-loop it solution goal l1 l2 =
     let's-hope <|> do
-      (just l2′) ← pred-term <$> normalise l2 where
+      (just l2') ← pred-term <$> normalise l2 where
         nothing → backtrack "Lifting loop reached its end with no success"
-      lifting-loop (suc it) solution goal l1 l2′
+      lifting-loop (suc it) solution goal l1 l2'
     where
       let's-hope : TC ⊤
       let's-hope = do
@@ -274,8 +274,8 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
       "... but it's actually a(n) " ∷ termErr actual-level ∷ "-Type" ∷ []
 
     lv ← normalise wanted-level
-    lv′ ← normalise actual-level
-    lifting-loop 0 (def (projection .has-level) (it v∷ [])) goal lv′ lv
+    lv' ← normalise actual-level
+    lifting-loop 0 (def (projection .has-level) (it v∷ [])) goal lv' lv
 
     commitTC
 
@@ -436,9 +436,9 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
           level ← normalise level
           debugPrint "tactic.hlevel" 10 $
             "Hint demands offset, performing symbolic monus, subtracting from\n  " ∷ termErr level ∷ []
-          level′′ ← monus level n
+          level'' ← monus level n
           -- Reduce otherwise we get Number.fromNat as the term
-          gen-args has-alts level defn args (level′′ v∷ accum) cont
+          gen-args has-alts level defn args (level'' v∷ accum) cont
         where
           -- A 'symbolic' monus function. If we're looking at an actual
           -- number, then we can just do the computation in TC, but
@@ -487,8 +487,8 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
       use-decomp-hints : (Term × Term) → Term → List Term → TC (⊤ × Bool)
       use-decomp-hints (goal-ty , lv) solved (c1 ∷ cs) = do
         ty ← inferType c1
-        c1′ ← reduce c1
-        (remove-invisible c1′ ty >>= λ where
+        c1' ← reduce c1
+        (remove-invisible c1' ty >>= λ where
 
           -- If we have an actual decomp constructor, then we can try
           -- using its argument specification to construct a little
@@ -498,11 +498,11 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
               "Using " ∷ termErr nm ∷ " decomposition for:\n  "
               ∷ termErr (def (quote is-hlevel) (goal-ty v∷ lv v∷ [])) ∷ []
 
-            nm′ ← unquoteTC nm
+            nm' ← unquoteTC nm
             argsp ← unquoteTC argspec
             -- Generate the argument spine, and discard the instance
             -- search meta.
-            gen-args (not (length cs == 0)) lv nm′ argsp [] (returnTC tt)
+            gen-args (not (length cs == 0)) lv nm' argsp [] (returnTC tt)
             unify solved c1
 
             pure (tt , true)
@@ -568,7 +568,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ′ n) w works.
         (inner , hlevel , enter , leave) ← go cd
         pure $ inner , hlevel , extendContext vn (arg as at) ∘ enter , λ t → lam (ArgInfo.arg-vis as) (abs vn (leave t))
       go tm = do
-        (inner , hlevel) ← decompose-is-hlevel′ tm
+        (inner , hlevel) ← decompose-is-hlevel' tm
         pure $ inner , hlevel , (λ x → x) , (λ x → x)
 
 -- This is public so it's usable in tactic attributes. It decomposes the
@@ -587,9 +587,9 @@ hlevel-tactic-worker goal = do
   -- the Πs (extend the scope with their argument types), then 'leave'
   -- (wrap in lambdas) to get back out.
   solved ← enter $ do
-    goal′ ← new-meta (def (quote is-hlevel) (ty v∷ lv v∷ []))
-    search false lv 10 goal′
-    pure goal′
+    goal' ← new-meta (def (quote is-hlevel) (ty v∷ lv v∷ []))
+    search false lv 10 goal'
+    pure goal'
   unify goal (leave solved)
 
 -- Entry points to the macro
@@ -605,7 +605,7 @@ el! : ∀ {ℓ} (A : Type ℓ) {n} {@(tactic hlevel-tactic-worker) hl : is-hleve
 el! A {hl = hl} .is-tr = hl
 
 prop-ext!
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
     {@(tactic hlevel-tactic-worker) aprop : is-hlevel A 1}
     {@(tactic hlevel-tactic-worker) bprop : is-hlevel B 1}
   → (A → B) → (B → A)
@@ -613,7 +613,7 @@ prop-ext!
 prop-ext! {aprop = aprop} {bprop = bprop} = prop-ext aprop bprop
 
 Σ-prop-path!
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
   → {@(tactic hlevel-tactic-worker) bxprop : ∀ x → is-hlevel (B x) 1}
   → {x y : Σ A B}
   → x .fst ≡ y .fst
@@ -635,7 +635,7 @@ open hlevel-projection
 -- defined in the dependencies of this module.
 
 instance
-  decomp-lift : ∀ {ℓ ℓ′} {T : Type ℓ} → hlevel-decomposition (Lift ℓ′ T)
+  decomp-lift : ∀ {ℓ ℓ'} {T : Type ℓ} → hlevel-decomposition (Lift ℓ' T)
   decomp-lift = decomp (quote Lift-is-hlevel) (`level ∷ `search ∷ [])
 
   -- h-level types themselves are propositions. These instances should be tried
@@ -667,7 +667,7 @@ instance
 
   -- decomp-fun = decomp (quote fun-is-hlevel) (`level ∷ `search ∷ [])
 
-  -- decomp-prod : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → hlevel-decomposition (A × B)
+  -- decomp-prod : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → hlevel-decomposition (A × B)
   -- decomp-prod = decomp (quote ×-is-hlevel) (`level ∷ `search ∷ `search ∷ [])
 
   -- Dependent type formers:
@@ -683,13 +683,13 @@ instance
     → hlevel-decomposition (∀ a b → C a b)
   decomp-pi² = decomp (quote Π-is-hlevel²) (`level ∷ `search-under 2 ∷ [])
 
-  decomp-pi : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} → hlevel-decomposition (∀ a → B a)
+  decomp-pi : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} → hlevel-decomposition (∀ a → B a)
   decomp-pi = decomp (quote Π-is-hlevel) (`level ∷ `search-under 1 ∷ [])
 
-  decomp-impl-pi : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} → hlevel-decomposition (∀ {a} → B a)
-  decomp-impl-pi = decomp (quote Π-is-hlevel′) (`level ∷ `search-under 1 ∷ [])
+  decomp-impl-pi : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} → hlevel-decomposition (∀ {a} → B a)
+  decomp-impl-pi = decomp (quote Π-is-hlevel') (`level ∷ `search-under 1 ∷ [])
 
-  decomp-sigma : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} → hlevel-decomposition (Σ A B)
+  decomp-sigma : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} → hlevel-decomposition (Σ A B)
   decomp-sigma = decomp (quote Σ-is-hlevel) (`level ∷ `search ∷ `search-under 1 ∷ [])
 
   -- Path decomposition rules we have in scope. Note the use of
@@ -697,8 +697,8 @@ instance
   -- solving the same goals --- but generally only one will be
   -- applicable. That way we don't have to juggle h-levels quite as
   -- much.
-  decomp-path′ : ∀ {ℓ} {A : Type ℓ} {a b : A} → hlevel-decomposition (a ≡ b)
-  decomp-path′ = decomp (quote Path-is-hlevel') (`level ∷ `search ∷ `meta ∷ `meta ∷ [])
+  decomp-path' : ∀ {ℓ} {A : Type ℓ} {a b : A} → hlevel-decomposition (a ≡ b)
+  decomp-path' = decomp (quote Path-is-hlevel') (`level ∷ `search ∷ `meta ∷ `meta ∷ [])
 
   decomp-path : ∀ {ℓ} {A : Type ℓ} {a b : A} → hlevel-decomposition (a ≡ b)
   decomp-path = decomp (quote Path-is-hlevel) (`level ∷ `search ∷ [])
@@ -715,9 +715,9 @@ instance
   hlevel-proj-n-type : hlevel-projection (quote n-Type.∣_∣)
   hlevel-proj-n-type .has-level = quote n-Type.is-tr
   hlevel-proj-n-type .get-level ty = do
-    def (quote n-Type) (ell v∷ lv′t v∷ []) ← reduce ty
+    def (quote n-Type) (ell v∷ lv't v∷ []) ← reduce ty
       where _ → backtrack $ "Type of thing isn't n-Type, it is " ∷ termErr ty ∷ []
-    normalise lv′t
+    normalise lv't
   hlevel-proj-n-type .get-argument (_ ∷ _ ∷ it v∷ []) = pure it
   hlevel-proj-n-type .get-argument _ = typeError []
 

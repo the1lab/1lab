@@ -67,7 +67,7 @@ by arbitrarily large types:
 
 ```agda
   Lower-sets-complete
-    : ∀ {ℓ′} {I : Type ℓ′} (F : I → Lower-set P) → Σ _ (is-glb (Lower-sets P) F)
+    : ∀ {ℓ'} {I : Type ℓ'} (F : I → Lower-set P) → Σ _ (is-glb (Lower-sets P) F)
   Lower-sets-complete F = (fun , monotone) , glib where
     fun : ⌞ Pointwise ⌞ P ^opp ⌟ Props ⌟
     fun i = elΩ (∀ j → i ∈ F j .fst)
@@ -77,8 +77,8 @@ by arbitrarily large types:
 
     glib : is-glb (Lower-sets P) F (fun , monotone)
     glib .is-glb.glb≤fam i = (λ x x∈Fj → out! x∈Fj i) , tt
-    glib .is-glb.greatest lb′ lb′<Fi =
-      (λ y y∈lb′ → inc (λ j → lb′<Fi j .fst y y∈lb′)) , tt
+    glib .is-glb.greatest lb' lb'<Fi =
+      (λ y y∈lb' → inc (λ j → lb'<Fi j .fst y y∈lb')) , tt
 ```
 
 The same thing happens for joins, which are given by an existential
@@ -87,7 +87,7 @@ operator automatically propositionally truncates.
 
 ```agda
   Lower-sets-cocomplete
-    : ∀ {ℓ′} {I : Type ℓ′} (F : I → Lower-set P) → Σ _ (is-lub (Lower-sets P) F)
+    : ∀ {ℓ'} {I : Type ℓ'} (F : I → Lower-set P) → Σ _ (is-lub (Lower-sets P) F)
   Lower-sets-cocomplete F = (fun , monotone) , lub where
     fun : ⌞ Pointwise ⌞ P ^opp ⌟ Props ⌟
     fun i = elΩ (Σ _ λ j → i ∈ F j .fst)
@@ -97,8 +97,8 @@ operator automatically propositionally truncates.
 
     lub : is-lub (Lower-sets P) F (fun , monotone)
     lub .is-lub.fam≤lub i = (λ _ i → inc (_ , i)) , tt
-    lub .is-lub.least lb′ lb′<Fi =
-      (λ x → □-rec! (λ { (i , x∈Fi) → lb′<Fi i .fst x x∈Fi })) , tt
+    lub .is-lub.least lb' lb'<Fi =
+      (λ x → □-rec! (λ { (i , x∈Fi) → lb'<Fi i .fst x x∈Fi })) , tt
 ```
 
 <!--
@@ -108,7 +108,7 @@ operator automatically propositionally truncates.
   Lower-sets-meets a b .fst .snd x y y<x (x∈a , x∈b) = a .snd _ _ y<x x∈a , b .snd _ _ y<x x∈b
   Lower-sets-meets a b .snd .is-meet.meet≤l = (λ _ → fst) , tt
   Lower-sets-meets a b .snd .is-meet.meet≤r = (λ _ → snd) , tt
-  Lower-sets-meets a b .snd .is-meet.greatest lb′ (f , tt) (g , tt) =
-    (λ x x∈lb′ → f x x∈lb′ , (g x x∈lb′)) , tt
+  Lower-sets-meets a b .snd .is-meet.greatest lb' (f , tt) (g , tt) =
+    (λ x x∈lb' → f x x∈lb' , (g x x∈lb')) , tt
 ```
 -->

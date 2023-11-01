@@ -44,15 +44,15 @@ elements, as we obtain the more traditional definition by taking the
 Displayed.Ob[ ∫ ] X = ∣ P.₀ X ∣
 Displayed.Hom[ ∫ ] f P[X] P[Y] = P.₁ f P[Y] ≡ P[X]
 Displayed.Hom[ ∫ ]-set _ _ _ = hlevel!
-∫ .Displayed.id′ = happly P.F-id _
-∫ .Displayed._∘′_ {x = x} {y = y} {z = z} {f = f} {g = g} p q = pf where abstract
+∫ .Displayed.id' = happly P.F-id _
+∫ .Displayed._∘'_ {x = x} {y = y} {z = z} {f = f} {g = g} p q = pf where abstract
   pf : P.₁ (f ∘ g) z ≡ x
   pf =
     P.₁ (f ∘ g) z   ≡⟨ happly (P.F-∘ g f) z ⟩
     P.₁ g (P.₁ f z) ≡⟨ ap (P.₁ g) p ⟩
     P.₁ g y         ≡⟨ q ⟩
     x               ∎
-∫ .Displayed.idr′ _ = to-pathp (P.₀ _ .is-tr _ _ _ _)
-∫ .Displayed.idl′ _ = to-pathp (P.₀ _ .is-tr _ _ _ _)
-∫ .Displayed.assoc′ _ _ _ = to-pathp (P.₀ _ .is-tr _ _ _ _)
+∫ .Displayed.idr' _ = to-pathp (P.₀ _ .is-tr _ _ _ _)
+∫ .Displayed.idl' _ = to-pathp (P.₀ _ .is-tr _ _ _ _)
+∫ .Displayed.assoc' _ _ _ = to-pathp (P.₀ _ .is-tr _ _ _ _)
 ```

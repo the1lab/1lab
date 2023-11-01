@@ -90,16 +90,16 @@ redo-undo-clauses = go where
       ∷ go xs
 
 pi-term→sigma : Term → TC Term
-pi-term→sigma (pi (arg _ x) (abs n (def n′ _))) = returnTC x
+pi-term→sigma (pi (arg _ x) (abs n (def n' _))) = returnTC x
 pi-term→sigma (pi (arg _ x) (abs n y)) = do
   sig ← pi-term→sigma y
   returnTC $ def (quote S.Σ) (x v∷ lam visible (abs n sig) v∷ [])
 pi-term→sigma _ = typeError (strErr "Not a record type constructor! " ∷ [])
 
-instantiate′ : Term → Term → Term
-instantiate′ (pi _ (abs _ xs)) (pi _ (abs _ b)) = instantiate′ xs b
-instantiate′ (agda-sort _) tm = tm
-instantiate′ _ tm = tm
+instantiate' : Term → Term → Term
+instantiate' (pi _ (abs _ xs)) (pi _ (abs _ b)) = instantiate' xs b
+instantiate' (agda-sort _) tm = tm
+instantiate' _ tm = tm
 
 make-record-iso-sigma : Bool → TC Name → Name → TC Name
 make-record-iso-sigma declare? getName `R = do
@@ -111,7 +111,7 @@ make-record-iso-sigma declare? getName `R = do
   `R-ty ← getType `R
   con-ty ← getType `R-con
   ty ← record→iso `R λ args → do
-    let con-ty = instantiate′ `R-ty con-ty
+    let con-ty = instantiate' `R-ty con-ty
     `S ← pi-term→sigma con-ty
     returnTC `S
 

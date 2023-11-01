@@ -192,7 +192,7 @@ Multilinear-maps {n = n} {Ms = Ms} {N = N} = to-module-on mk where
     _⟨_⟩ f {xs} {i} x = applyᶠ (f .map) (updateₚ xs i x)
 
     _⟨_⟩ᵤ
-      : ∀ {n ℓ′} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} {X : Type ℓ′}
+      : ∀ {n ℓ'} {ℓ : Fin n → Level} {P : (i : Fin n) → Type (ℓ i)} {X : Type ℓ'}
       → Arrᶠ P X → {_ : Πᶠ P} {i : Fin n} → P i → X
     _⟨_⟩ᵤ f {xs} {i} x = applyᶠ f (updateₚ xs i x)
 

@@ -153,20 +153,20 @@ in $\cC/y$, too.
 
 ```agda
 slice-is-regular : is-regular (Slice C y)
-slice-is-regular .factor {a} {b} f = fact′ where
+slice-is-regular .factor {a} {b} f = fact' where
   fact = r.factor (f .map)
   private module f = Factorisation fact
 
-  fact′ : Factorisation C/y (StrongEpi C/y) (Mono C/y) f
-  fact′ .mediating = cut (b .map ∘ f.forget)
-  fact′ .mediate = record { commutes = pullr (sym f.factors) ∙ f .commutes }
-  fact′ .forget .map      = f.forget
-  fact′ .forget .commutes = refl
-  fact′ .mediate∈E = do
+  fact' : Factorisation C/y (StrongEpi C/y) (Mono C/y) f
+  fact' .mediating = cut (b .map ∘ f.forget)
+  fact' .mediate = record { commutes = pullr (sym f.factors) ∙ f .commutes }
+  fact' .forget .map      = f.forget
+  fact' .forget .commutes = refl
+  fact' .mediate∈E = do
     c ← f.mediate∈E
-    pure (reflect-cover (fact′ .mediate) c)
-  fact′ .forget∈M = inc λ g h p → /-Hom-path $ out! f.forget∈M (g .map) (h .map) (ap map p)
-  fact′ .factors = /-Hom-path f.factors
+    pure (reflect-cover (fact' .mediate) c)
+  fact' .forget∈M = inc λ g h p → /-Hom-path $ out! f.forget∈M (g .map) (h .map) (ap map p)
+  fact' .factors = /-Hom-path f.factors
 
 slice-is-regular .stable {B = B} f g {p1} {p2} cover is-pb =
   reflect-cover p1 $ r.stable _ _

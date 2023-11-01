@@ -58,7 +58,7 @@ injective f = ∀ {x y} → f x ≡ f y → x ≡ y
 injective→is-embedding
   : is-set B → (f : A → B) → injective f
   → ∀ x → is-prop (fibre f x)
-injective→is-embedding bset f inj x (f*x , p) (f*x′ , q) =
+injective→is-embedding bset f inj x (f*x , p) (f*x' , q) =
   Σ-prop-path (λ x → bset _ _) (inj (p ∙ sym q))
 ```
 
@@ -125,9 +125,9 @@ Subset-proj-embedding {B = B} Bprop x = is-hlevel≃ 1 (Fibre-equiv B x) (Bprop 
 <!--
 ```agda
 embedding→monic
-  : ∀ {ℓ ℓ′ ℓ′′} {A : Type ℓ} {B : Type ℓ′} {f : A → B}
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {f : A → B}
   → is-embedding f
-  → ∀ {C : Type ℓ′′} (g h : C → A) → f ∘ g ≡ f ∘ h → g ≡ h
+  → ∀ {C : Type ℓ''} (g h : C → A) → f ∘ g ≡ f ∘ h → g ≡ h
 embedding→monic {f = f} emb g h p =
   funext λ x → ap fst (emb _ (g x , refl) (h x , happly (sym p) x))
 
@@ -138,9 +138,9 @@ is-equiv→is-embedding
 is-equiv→is-embedding eqv x = is-contr→is-prop (eqv .is-eqv x)
 
 monic→is-embedding
-  : ∀ {ℓ ℓ′ ℓ′′} {A : Type ℓ} {B : Type ℓ′} {f : A → B}
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {f : A → B}
   → is-set B
-  → (∀ {C : Set ℓ′′} (g h : ∣ C ∣ → A) → f ∘ g ≡ f ∘ h → g ≡ h)
+  → (∀ {C : Set ℓ''} (g h : ∣ C ∣ → A) → f ∘ g ≡ f ∘ h → g ≡ h)
   → is-embedding f
 monic→is-embedding {f = f} bset monic =
   injective→is-embedding bset _ λ {x} {y} p →
@@ -158,7 +158,7 @@ embedding", as long as we interpret "fully faithful" to mean "action on
 morphisms is an _equivalence_" everywhere.
 
 ```agda
-module _ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} {f : A → B} where
+module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
   embedding-lemma : (∀ x → is-contr (fibre f (f x))) → is-embedding f
   embedding-lemma cffx y (x , p) q =
     is-contr→is-prop (subst is-contr (ap (fibre f) p) (cffx x)) (x , p) q

@@ -180,24 +180,24 @@ Coeq-elim-prop₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'}
 Coeq-elim-prop₂ prop f (inc x) (inc y) = f x y
 Coeq-elim-prop₂ {f' = f'} {g'} prop f (inc x) (glue y i) =
   is-prop→pathp (λ i → prop (inc x) (glue y i)) (f x (f' y)) (f x (g' y)) i
-Coeq-elim-prop₂ prop f (inc x) (squash y y′ p q i j) =
-  is-prop→squarep (λ i j → prop (inc x) (squash y y′ p q i j))
+Coeq-elim-prop₂ prop f (inc x) (squash y y' p q i j) =
+  is-prop→squarep (λ i j → prop (inc x) (squash y y' p q i j))
     (λ i → Coeq-elim-prop₂ prop f (inc x) y)
     (λ i → Coeq-elim-prop₂ prop f (inc x) (p i))
     (λ i → Coeq-elim-prop₂ prop f (inc x) (q i))
-    (λ i → Coeq-elim-prop₂ prop f (inc x) y′)
+    (λ i → Coeq-elim-prop₂ prop f (inc x) y')
     i j
 Coeq-elim-prop₂ {f = f'} {g = g'} prop f (glue x i) y =
   is-prop→pathp (λ i → prop (glue x i) y)
     (Coeq-elim-prop₂ prop f (inc (f' x)) y)
     (Coeq-elim-prop₂ prop f (inc (g' x)) y)
     i
-Coeq-elim-prop₂ prop f (squash x x′ p q i j) y =
-  is-prop→squarep (λ i j → prop (squash x x′ p q i j) y)
+Coeq-elim-prop₂ prop f (squash x x' p q i j) y =
+  is-prop→squarep (λ i j → prop (squash x x' p q i j) y)
     (λ i → Coeq-elim-prop₂ prop f x y)
     (λ i → Coeq-elim-prop₂ prop f (p i) y)
     (λ i → Coeq-elim-prop₂ prop f (q i) y)
-    (λ i → Coeq-elim-prop₂ prop f x′ y)
+    (λ i → Coeq-elim-prop₂ prop f x' y)
     i j
 
 Coeq-elim-prop₃ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {f'' g'' : A'' → B''}
@@ -212,12 +212,12 @@ Coeq-elim-prop₃ cprop f (glue x i) y z =
   Coeq-elim-prop₂ (λ x y → Π-is-hlevel 1 λ z → cprop z x y)
     (λ x y → Coeq-elim-prop (λ z → cprop z (inc x) (inc y)) λ z → f z x y) y z
     (glue x i)
-Coeq-elim-prop₃ cprop f (squash x x′ p q i j) y z =
-  is-prop→squarep (λ i j → cprop (squash x x′ p q i j) y z)
+Coeq-elim-prop₃ cprop f (squash x x' p q i j) y z =
+  is-prop→squarep (λ i j → cprop (squash x x' p q i j) y z)
     (λ i → Coeq-elim-prop₃ cprop f x y z)
     (λ i → Coeq-elim-prop₃ cprop f (p i) y z)
     (λ i → Coeq-elim-prop₃ cprop f (q i) y z)
-    (λ i → Coeq-elim-prop₃ cprop f x′ y z)
+    (λ i → Coeq-elim-prop₃ cprop f x' y z)
     i j
 
 Coeq-rec₂ : ∀ {ℓ} {f g : A → B} {f' g' : A' → B'} {C : Type ℓ}
@@ -330,9 +330,9 @@ equivalence relation). In this case, we have that the quotient $A / R$
 is **effective**: The map `quot`{.Agda} is an equivalence.
 
 ```agda
-record Congruence {ℓ} (A : Type ℓ) ℓ′ : Type (ℓ ⊔ lsuc ℓ′) where
+record Congruence {ℓ} (A : Type ℓ) ℓ' : Type (ℓ ⊔ lsuc ℓ') where
   field
-    _∼_         : A → A → Type ℓ′
+    _∼_         : A → A → Type ℓ'
     has-is-prop : ∀ x y → is-prop (x ∼ y)
     reflᶜ : ∀ {x} → x ∼ x
     _∙ᶜ_  : ∀ {x y z} → x ∼ y → y ∼ z → x ∼ z

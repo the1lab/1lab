@@ -41,15 +41,15 @@ instance
   -- B-structure", so the underlying type is that of A; For Lift, there
   -- is no choice.
   Underlying-Σ
-    : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′}
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
     → ⦃ ua : Underlying A ⦄
     → Underlying (Σ A B)
   Underlying-Σ ⦃ ua ⦄ .ℓ-underlying = ua .ℓ-underlying
   Underlying-Σ .⌞_⌟ x               = ⌞ x .fst ⌟
 
   Underlying-Lift
-    : ∀ {ℓ ℓ′} {A : Type ℓ} ⦃ ua : Underlying A ⦄
-    → Underlying (Lift ℓ′ A)
+    : ∀ {ℓ ℓ'} {A : Type ℓ} ⦃ ua : Underlying A ⦄
+    → Underlying (Lift ℓ' A)
   Underlying-Lift ⦃ ua ⦄ .ℓ-underlying = ua .ℓ-underlying
   Underlying-Lift .⌞_⌟ x = ⌞ x .Lift.lower ⌟
 
@@ -65,7 +65,7 @@ from-is-true
 from-is-true prf = subst ⌞_⌟ (sym prf) (hlevel 0 .centre)
 
 -- Generalised "membership" notation.
-_∈_ : ∀ {ℓ ℓ′} {A : Type ℓ} {P : Type ℓ′} ⦃ u : Underlying P ⦄
+_∈_ : ∀ {ℓ ℓ'} {A : Type ℓ} {P : Type ℓ'} ⦃ u : Underlying P ⦄
     → A → (A → P) → Type (u .ℓ-underlying)
 x ∈ P = ⌞ P x ⌟
 

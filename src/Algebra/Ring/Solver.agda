@@ -110,7 +110,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   ... | nothing  = nothing
 
   _*x+ₙ_ : ∀ {n} → Poly (suc n) → Normal n → Poly (suc n)
-  (p *x+ c′) *x+ₙ c = (p *x+ c′) *x+ c
+  (p *x+ c') *x+ₙ c = (p *x+ c') *x+ c
   ∅          *x+ₙ c with c ==ₙ 0n
   ... | just c≈0 = ∅
   ... | nothing  = ∅ *x+ c
@@ -320,14 +320,14 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
       a R.* x R.* (c R.* x R.+ d) R.+ b R.* (c R.* x R.+ d)                       ≡˘⟨ R.*-distribr ⟩
       (a R.* x R.+ b) R.* (c R.* x R.+ d)                                         ∎
       where
-      lem₁′ =
+      lem₁' =
         a R.* c R.* x     ≡˘⟨ R.*-associative ⟩
         a R.* ⌜ c R.* x ⌝ ≡⟨ ap! R.*-commutes ⟩
         a R.* (x R.* c)   ≡⟨ R.*-associative ⟩
         a R.* x R.* c     ∎
 
       lem₁ =
-        a R.* c R.* x R.* x    ≡⟨ ap₂ R._*_ lem₁′ refl ⟩
+        a R.* c R.* x R.* x    ≡⟨ ap₂ R._*_ lem₁' refl ⟩
         a R.* x R.* c R.* x    ≡˘⟨ R.*-associative ⟩
         a R.* x R.* (c R.* x)  ∎
 

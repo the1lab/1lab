@@ -76,7 +76,7 @@ _recursors_, called "folds":
 
 ```agda
 List-elim
-  : ∀ {ℓ ℓ′} {A : Type ℓ} (P : List A → Type ℓ′)
+  : ∀ {ℓ ℓ'} {A : Type ℓ} (P : List A → Type ℓ')
   → P []
   → (∀ x xs → P xs → P (x ∷ xs))
   → ∀ x → P x

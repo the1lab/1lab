@@ -72,15 +72,15 @@ private
     -- The term is in normal form.
     (do
       debugPrint "tactic.regularity" 10 $ "Checking regularity of " ∷ termErr tm ∷ []
-      let φ′ = def (quote _∨_) (φ v∷ var n [] v∷ [])
-      let tm′ = def (quote transp) (ℓ h∷ Al v∷ φ′ v∷ x v∷ [])
+      let φ' = def (quote _∨_) (φ v∷ var n [] v∷ [])
+      let tm' = def (quote transp) (ℓ h∷ Al v∷ φ' v∷ x v∷ [])
       -- We simply ask Agda to check that the newly constructed term `transp Al (φ ∨ i) x`
       -- is correct, i.e. that Al is constant on (i = i1).
       -- If it isn't, we backtrack and leave the term unchanged.
       -- Note that if Al itself contains constant transports, we have already processed those,
       -- so they reduce away when (i = i1).
-      checkType tm′ unknown -- inferType doesn't trigger the constancy check https://github.com/agda/agda/issues/6585
-      pure tm′) <|>
+      checkType tm' unknown -- inferType doesn't trigger the constancy check https://github.com/agda/agda/issues/6585
+      pure tm') <|>
     (do
       debugPrint "tactic.regularity" 10 $ "NOT a (transport refl): " ∷ termErr tm ∷ []
       pure tm)
@@ -91,8 +91,8 @@ private
   go pre n (con c args) = con c <$> go* pre n args
   go fast n (def (quote transp) (ℓ h∷ Al v∷ φ v∷ x v∷ [])) = do
     x ← go fast n x
-    let φ′ = def (quote _∨_) (φ v∷ var n [] v∷ [])
-    pure $ def (quote transp) (ℓ h∷ Al v∷ φ′ v∷ x v∷ [])
+    let φ' = def (quote _∨_) (φ v∷ var n [] v∷ [])
+    pure $ def (quote transp) (ℓ h∷ Al v∷ φ' v∷ x v∷ [])
   go pre n (def f args) = do
     as ← go* pre n args
     refl-transport n (def f as)
@@ -126,7 +126,7 @@ private
       pure (tm , false)
     pure $ vlam "i" tm
 
-  -- Extend a path x ≡ y to a path x′ ≡ y′, where x′ --> x and y′ --> y
+  -- Extend a path x ≡ y to a path x' ≡ y', where x' --> x and y' --> y
   -- under the given regularity precision. Shorthand for composing
   --    regularity! ∙ p ∙ sym regularity!.
   regular!-worker :
@@ -145,11 +145,11 @@ private
     l ← normalise =<< wait-for-type l
     r ← normalise =<< wait-for-type r
     reg ← to-regularity-path pre l
-    reg′ ← to-regularity-path pre r
+    reg' ← to-regularity-path pre r
     unify-loudly goal $ def (quote double-comp) $
          `x v∷ `y v∷ reg
       v∷ `p
-      v∷ def (quote sym) (reg′ v∷ [])
+      v∷ def (quote sym) (reg' v∷ [])
       v∷ []
 
 module Regularity where
@@ -188,7 +188,7 @@ module Regularity where
 
 -- Test cases.
 module
-  _ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} (f g : A → B) (x : A)
+  _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f g : A → B) (x : A)
     (a-loop : (i : I) → Type ℓ [ (i ∨ ~ i) ↦ (λ ._ → A) ])
   where private
 
@@ -203,8 +203,8 @@ module
   -- Imprecise/fast reduction: According to it, the normal form of the
   -- transport below is refl. That's.. not the case, at least we don't
   -- know so. Precise regularity handles it, though.
-  q′ : ⊤
-  q′ = {! Regularity.reduct Regularity.fast (transp (λ i → outS (a-loop i)) i0 x) !}
+  q' : ⊤
+  q' = {! Regularity.reduct Regularity.fast (transp (λ i → outS (a-loop i)) i0 x) !}
 
   r : (h : ∀ x → f x ≡ g x) → transport refl (f x) ≡ transport refl (g x)
   r h = Regularity.precise! (h x)

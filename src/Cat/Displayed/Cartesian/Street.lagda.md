@@ -32,7 +32,7 @@ we create a category displayed $\cE'$ over $\cB$, such that $\int \cE'
 
 <!--
 ```agda
-module _ {o ℓ o′ ℓ′} {E : Precategory o ℓ} {B : Precategory o′ ℓ′} (P : Functor E B) where
+module _ {o ℓ o' ℓ'} {E : Precategory o ℓ} {B : Precategory o' ℓ'} (P : Functor E B) where
   private
     module E = Cat.Reasoning E
     module B = Cat.Reasoning B
@@ -43,7 +43,7 @@ module _ {o ℓ o′ ℓ′} {E : Precategory o ℓ} {B : Precategory o′ ℓ�
 -->
 
 ```agda
-  functor→displayed : Displayed B (o ⊔ ℓ′) (ℓ ⊔ ℓ′)
+  functor→displayed : Displayed B (o ⊔ ℓ') (ℓ ⊔ ℓ')
   functor→displayed .Ob[_] x = Σ[ u ∈ E.Ob ] (P.₀ u B.≅ x)
 ```
 
@@ -93,14 +93,14 @@ property (rather than data).
 
 ```agda
   functor→displayed .Hom[_]-set f a b = hlevel 2
-  functor→displayed .id′ = E.id , B.elimr P.F-id ∙ B.introl refl
-  functor→displayed ._∘′_ (f , φ) (g , ψ) = f E.∘ g ,
+  functor→displayed .id' = E.id , B.elimr P.F-id ∙ B.introl refl
+  functor→displayed ._∘'_ (f , φ) (g , ψ) = f E.∘ g ,
     ap₂ B._∘_ refl (P.F-∘ f g) ∙ B.pulll φ ∙ B.pullr ψ ∙ B.assoc _ _ _
-  functor→displayed .idr′ f′ = Σ-pathp-dep (E.idr _) $
+  functor→displayed .idr' f' = Σ-pathp-dep (E.idr _) $
     is-set→squarep (λ _ _ → hlevel 2) _ _ _ _
-  functor→displayed .idl′ f′ = Σ-pathp-dep (E.idl _) $
+  functor→displayed .idl' f' = Σ-pathp-dep (E.idl _) $
     is-set→squarep (λ _ _ → hlevel 2) _ _ _ _
-  functor→displayed .assoc′ f′ g′ h′ = Σ-pathp-dep (E.assoc _ _ _) $
+  functor→displayed .assoc' f' g' h' = Σ-pathp-dep (E.assoc _ _ _) $
     is-set→squarep (λ _ _ → hlevel 2) _ _ _ _
 ```
 

@@ -187,7 +187,7 @@ funext²
 funext² p i x y = p x y i
 
 funext-square
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
       {f00 f01 f10 f11 : (a : A) → B a}
       {p : f00 ≡ f01}
       {q : f00 ≡ f10}

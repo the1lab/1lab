@@ -25,7 +25,7 @@ poset is entirely unsurprising, but it is lengthy, thus ending up in
 this module.
 
 ```agda
-poset→category : ∀ {ℓ ℓ′} → Posets.Ob → Precategory ℓ ℓ′
+poset→category : ∀ {ℓ ℓ'} → Posets.Ob → Precategory ℓ ℓ'
 poset→category P = cat module poset-to-category where
   module P = Poset P
   open Precategory
@@ -49,7 +49,7 @@ automatic.
 
 ```agda
 open Functor
-Posets↪Strict-cats : ∀ {ℓ ℓ′} → Functor (Posets ℓ ℓ′) (Strict-cats ℓ ℓ′)
+Posets↪Strict-cats : ∀ {ℓ ℓ'} → Functor (Posets ℓ ℓ') (Strict-cats ℓ ℓ')
 Posets↪Strict-cats .F₀ P = poset→category P , Poset.has-is-set P
 
 Posets↪Strict-cats .F₁ f .F₀ = f .hom

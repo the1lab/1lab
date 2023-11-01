@@ -30,8 +30,8 @@ private
   module D = Displayed D
   module D↓ {Γ} = Cat.Reasoning (Fibre D Γ)
   module Dr = Cat.Displayed.Reasoning D
-  module D-fib {x y} (f : Hom x y) (y′ : D.Ob[ y ]) =
-    Cartesian-lift (Cartesian-fibration.has-lift D-fib f y′)
+  module D-fib {x y} (f : Hom x y) (y' : D.Ob[ y ]) =
+    Cartesian-lift (Cartesian-fibration.has-lift D-fib f y')
   open Comprehension E E-fib P
   module D* {Γ Δ : Ob} (σ : Hom Γ Δ) = Functor (base-change D D-fib σ)
   module π* {Γ : Ob} (x : E.Ob[ Γ ]) = Functor (base-change D D-fib (πᶜ {x = x}))
@@ -114,7 +114,7 @@ record has-comprehension-coproducts : Type (ob ⊔ ℓb ⊔ od ⊔ ℓd ⊔ oe �
       → {r : D.Hom[ πᶜ ] a a'} {h : D.Hom[ σ ] a' b'}
       → {g : D.Hom[ σ ⨾ˢ f ] a b} {s : D.Hom[ πᶜ ] b b'}
       → is-cartesian E σ f
-      → s D.∘′ g D.≡[ sub-proj f ] h D.∘′ r
+      → s D.∘' g D.≡[ sub-proj f ] h D.∘' r
       → is-cocartesian D πᶜ s
       → is-cartesian D (σ ⨾ˢ f) g
       → is-cartesian D σ h
@@ -136,13 +136,13 @@ hidden code on the sidebar.]
       : ∀ {Γ} {x : E.Ob[ Γ ]} {a b : D.Ob[ Γ ⨾ x ]}
       → D.Hom[ id ] a b → D.Hom[ id ] (∐ x a) (∐ x b)
     ∐[_] {Γ} {x} {a} {b} f =
-      ⟨⟩-cocartesian.universal′ x a id-comm-sym (⟨ x , b ⟩ D.∘′ f)
+      ⟨⟩-cocartesian.universal' x a id-comm-sym (⟨ x , b ⟩ D.∘' f)
 
-    ∐[]-id : ∀ {Γ} {x : E.Ob[ Γ ]} {a : D.Ob[ Γ ⨾ x ]} → ∐[ D.id′ {x = a} ] ≡ D.id′
+    ∐[]-id : ∀ {Γ} {x : E.Ob[ Γ ]} {a : D.Ob[ Γ ⨾ x ]} → ∐[ D.id' {x = a} ] ≡ D.id'
     ∐[]-∘
       : ∀ {Γ} {x : E.Ob[ Γ ]} {a b c : D.Ob[ Γ ⨾ x ]}
       → (f : D.Hom[ id ] b c) (g : D.Hom[ id ] a b)
-      → ∐[ f D↓.∘ g ] D.≡[ sym (idl _) ] ∐[ f ] D.∘′ ∐[ g ]
+      → ∐[ f D↓.∘ g ] D.≡[ sym (idl _) ] ∐[ f ] D.∘' ∐[ g ]
 ```
 
 <!--
@@ -150,22 +150,22 @@ hidden code on the sidebar.]
     ∐[]-natural
       : ∀ {Γ} {x : E.Ob[ Γ ]} {a b : D.Ob[ Γ ⨾ x ]}
       → (f : D.Hom[ id ] a b)
-      → ∐[ f ] D.∘′ ⟨ x , a ⟩ D.≡[ id-comm-sym ] ⟨ x , b ⟩ D.∘′ f
+      → ∐[ f ] D.∘' ⟨ x , a ⟩ D.≡[ id-comm-sym ] ⟨ x , b ⟩ D.∘' f
     ∐[]-natural {x = x} {a} {b} f =
       ⟨⟩-cocartesian.commutesp x a _ _
 
     ∐[]-id {x = x} {a = a} =
       sym $ ⟨⟩-cocartesian.unique _ _ _ $ from-pathp⁻ $ Dr.cast[] $
-      D.id′ D.∘′ ⟨ x , a ⟩ D.≡[]⟨ D.idl′ _ ⟩
-      ⟨ x , a ⟩            D.≡[]⟨ symP (D.idr′ _ ) ⟩
-      ⟨ x , a ⟩ D.∘′ D.id′ ∎
+      D.id' D.∘' ⟨ x , a ⟩ D.≡[]⟨ D.idl' _ ⟩
+      ⟨ x , a ⟩            D.≡[]⟨ symP (D.idr' _ ) ⟩
+      ⟨ x , a ⟩ D.∘' D.id' ∎
 
     ∐[]-∘ {x = x} {a = a} {b = b} {c = c} f g =
       symP $ ⟨⟩-cocartesian.uniquep x a _ _ _ _ $
-      (∐[ f ] D.∘′ ∐[ g ]) D.∘′ ⟨ x , a ⟩          D.≡[]⟨ Dr.pullr[] _ (∐[]-natural g) ⟩
-      ∐[ f ] D.∘′ ⟨ x , b ⟩ D.∘′ g                 D.≡[]⟨ Dr.extendl[] _ (∐[]-natural f) ⟩
-      ⟨ x , c ⟩ D.∘′ f D.∘′ g                      D.≡[]⟨ to-pathp (Dr.unwhisker-r (ap (πᶜ ∘_) (idl _)) (idl _)) ⟩
-      ⟨ x , c ⟩ D.∘′ (f D↓.∘ g) ∎
+      (∐[ f ] D.∘' ∐[ g ]) D.∘' ⟨ x , a ⟩          D.≡[]⟨ Dr.pullr[] _ (∐[]-natural g) ⟩
+      ∐[ f ] D.∘' ⟨ x , b ⟩ D.∘' g                 D.≡[]⟨ Dr.extendl[] _ (∐[]-natural f) ⟩
+      ⟨ x , c ⟩ D.∘' f D.∘' g                      D.≡[]⟨ to-pathp (Dr.unwhisker-r (ap (πᶜ ∘_) (idl _)) (idl _)) ⟩
+      ⟨ x , c ⟩ D.∘' (f D↓.∘ g) ∎
 ```
 -->
 
@@ -181,12 +181,12 @@ presentation of the elimination rule.
       → D.Hom[ id ] a (π*.F₀ x b)
       → D.Hom[ id ] (∐ x a) b
     ∐-elim {x = x} {a = a} {b = b} f =
-      ⟨⟩-cocartesian.universal′ x a id-comm-sym (D-fib.lifting πᶜ b D.∘′ f)
+      ⟨⟩-cocartesian.universal' x a id-comm-sym (D-fib.lifting πᶜ b D.∘' f)
 
     ∐-elim-β
       : ∀ {Γ} {x : E.Ob[ Γ ]} {a : D.Ob[ Γ ⨾ x ]} {b : D.Ob[ Γ ]}
       → (f : D.Hom[ id ] a (π*.F₀ x b))
-      → ∐-elim f D.∘′ ⟨ x , a ⟩ D.≡[ id-comm-sym ] D-fib.lifting πᶜ b D.∘′ f
+      → ∐-elim f D.∘' ⟨ x , a ⟩ D.≡[ id-comm-sym ] D-fib.lifting πᶜ b D.∘' f
     ∐-elim-β f = ⟨⟩-cocartesian.commutesp _ _ _ _
 ```
 
@@ -199,13 +199,13 @@ we just constructed is natural, given below.
     ∐-elim-natural
       : ∀ {Γ} {x : E.Ob[ Γ ]} {a b : D.Ob[ Γ ⨾ x ]} {c : D.Ob[ Γ ]}
       → (f : D.Hom[ id ] b (π*.₀ x c)) (g : D.Hom[ id ] a b)
-      → ∐-elim f D.∘′ ∐[ g ] D.≡[ idl _ ] ∐-elim (f D↓.∘ g)
+      → ∐-elim f D.∘' ∐[ g ] D.≡[ idl _ ] ∐-elim (f D↓.∘ g)
     ∐-elim-natural {x = x} {a = a} {b = b} {c = c} f g =
-      ⟨⟩-cocartesian.uniquep x a _ _ _ (∐-elim f D.∘′ ∐[ g ]) $
-        ((∐-elim f) D.∘′ ∐[ g ]) D.∘′ ⟨ x , a ⟩     D.≡[]⟨ Dr.pullr[] _ (∐[]-natural g) ⟩
-        ∐-elim f D.∘′ ⟨ x , b ⟩ D.∘′ g              D.≡[]⟨ Dr.extendl[] id-comm-sym (⟨⟩-cocartesian.commutesp x b _ _) ⟩
-        D-fib.lifting πᶜ c D.∘′ f D.∘′ g            D.≡[]⟨ to-pathp (Dr.unwhisker-r (ap (πᶜ ∘_) (idl _)) (idl _)) ⟩
-        D-fib.lifting πᶜ c D.∘′ Dr.hom[] (f D.∘′ g) ∎
+      ⟨⟩-cocartesian.uniquep x a _ _ _ (∐-elim f D.∘' ∐[ g ]) $
+        ((∐-elim f) D.∘' ∐[ g ]) D.∘' ⟨ x , a ⟩     D.≡[]⟨ Dr.pullr[] _ (∐[]-natural g) ⟩
+        ∐-elim f D.∘' ⟨ x , b ⟩ D.∘' g              D.≡[]⟨ Dr.extendl[] id-comm-sym (⟨⟩-cocartesian.commutesp x b _ _) ⟩
+        D-fib.lifting πᶜ c D.∘' f D.∘' g            D.≡[]⟨ to-pathp (Dr.unwhisker-r (ap (πᶜ ∘_) (idl _)) (idl _)) ⟩
+        D-fib.lifting πᶜ c D.∘' Dr.hom[] (f D.∘' g) ∎
 ```
 
 Conversely, we can make maps $A \to \pi^{*}(B)$ given maps $\coprod_{X}
@@ -220,7 +220,7 @@ followed by substitution.
       → D.Hom[ id ] (∐ x a) b
       → D.Hom[ id ] a (π*.₀ x b)
     ∐-transpose {x = x} {a = a} {b = b} f =
-      D-fib.universal′ πᶜ b id-comm (f D.∘′ ⟨ x , a ⟩)
+      D-fib.universal' πᶜ b id-comm (f D.∘' ⟨ x , a ⟩)
 ```
 
 <!--
@@ -230,7 +230,7 @@ followed by substitution.
     ∐-transpose-weaken
         : ∀ {Γ} {x : E.Ob[ Γ ]} {a : D.Ob[ Γ ⨾ x ]} {b : D.Ob[ Γ ]}
         → (f : D.Hom[ id ] (∐ x a) b)
-        → D-fib.lifting πᶜ b D.∘′ ∐-transpose f D.≡[ id-comm ] f D.∘′ ⟨ x , a ⟩
+        → D-fib.lifting πᶜ b D.∘' ∐-transpose f D.≡[ id-comm ] f D.∘' ⟨ x , a ⟩
     ∐-transpose-weaken f = D-fib.commutesp πᶜ _ id-comm _
 ```
 -->
@@ -249,7 +249,7 @@ hidden from the page for brevity.
       → ∐-elim (∐-transpose f) ≡ f
     ∐-elim-transpose {x = x} {a = a} {b = b} f = sym $
       ⟨⟩-cocartesian.uniquep x a _ _ _ f $ symP $
-      D-fib.commutesp πᶜ b id-comm (f D.∘′ ⟨ x , a ⟩)
+      D-fib.commutesp πᶜ b id-comm (f D.∘' ⟨ x , a ⟩)
 
     ∐-transpose-elim
       : ∀ {Γ} {x : E.Ob[ Γ ]} {a : D.Ob[ Γ ⨾ x ]} {b : D.Ob[ Γ ]}
@@ -257,7 +257,7 @@ hidden from the page for brevity.
       → ∐-transpose (∐-elim f) ≡ f
     ∐-transpose-elim {x = x} {a = a} {b = b} f = sym $
       D-fib.uniquep πᶜ b _ _ _ f $ symP $
-      ⟨⟩-cocartesian.commutesp x a id-comm-sym (D-fib.lifting πᶜ b D.∘′ f)
+      ⟨⟩-cocartesian.commutesp x a id-comm-sym (D-fib.lifting πᶜ b D.∘' f)
 ```
 
 <!--
@@ -273,24 +273,24 @@ hidden from the page for brevity.
     ∐-transpose-naturall
       : ∀ {Γ} {x : E.Ob[ Γ ]} {a b : D.Ob[ Γ ⨾ x ]} {c : D.Ob[ Γ ]}
       → (f : D.Hom[ id ] (∐ x b) c) (g : D.Hom[ id ] a b)
-      → ∐-transpose f D.∘′ g D.≡[ idl _ ] ∐-transpose (f D↓.∘ ∐[ g ])
+      → ∐-transpose f D.∘' g D.≡[ idl _ ] ∐-transpose (f D↓.∘ ∐[ g ])
     ∐-transpose-naturall {x = x} {a = a} {b = b} {c = c} f g =
-      D-fib.uniquep πᶜ c _ _ _ (∐-transpose f D.∘′ g) $
-        D-fib.lifting πᶜ c D.∘′ ∐-transpose f D.∘′ g D.≡[]⟨ Dr.pulll[] id-comm (D-fib.commutesp πᶜ c _ _) ⟩
-        (f D.∘′ ⟨ x , b ⟩) D.∘′ g                    D.≡[]⟨ Dr.extendr[] _ (symP (∐[]-natural g)) ⟩
-        (f D.∘′ ∐[ g ]) D.∘′ ⟨ x , a ⟩               D.≡[ ap (_∘ πᶜ) (idl _) ]⟨ to-pathp (Dr.unwhisker-l (ap (_∘ πᶜ) (idl _)) (idl _)) ⟩
-        (f D↓.∘ ∐[ g ]) D.∘′ ⟨ x , a ⟩               ∎
+      D-fib.uniquep πᶜ c _ _ _ (∐-transpose f D.∘' g) $
+        D-fib.lifting πᶜ c D.∘' ∐-transpose f D.∘' g D.≡[]⟨ Dr.pulll[] id-comm (D-fib.commutesp πᶜ c _ _) ⟩
+        (f D.∘' ⟨ x , b ⟩) D.∘' g                    D.≡[]⟨ Dr.extendr[] _ (symP (∐[]-natural g)) ⟩
+        (f D.∘' ∐[ g ]) D.∘' ⟨ x , a ⟩               D.≡[ ap (_∘ πᶜ) (idl _) ]⟨ to-pathp (Dr.unwhisker-l (ap (_∘ πᶜ) (idl _)) (idl _)) ⟩
+        (f D↓.∘ ∐[ g ]) D.∘' ⟨ x , a ⟩               ∎
 
     ∐-transpose-naturalr
       : ∀ {Γ} {x : E.Ob[ Γ ]} {a : D.Ob[ Γ ⨾ x ]} {b c : D.Ob[ Γ ]}
       → (f : D.Hom[ id ] b c) (g : D.Hom[ id ] (∐ x a) b)
-      → π*.₁ x f D.∘′ ∐-transpose g D.≡[ idl _ ] ∐-transpose (f D↓.∘ g)
+      → π*.₁ x f D.∘' ∐-transpose g D.≡[ idl _ ] ∐-transpose (f D↓.∘ g)
     ∐-transpose-naturalr {x = x} {a = a} {b = b} {c = c} f g =
-      D-fib.uniquep πᶜ c _ _ _ (π*.F₁ x f D.∘′ ∐-transpose g) $
-        D-fib.lifting πᶜ c D.∘′ π*.₁ x f D.∘′ ∐-transpose g     D.≡[]⟨ Dr.pulll[] _ (D-fib.commutesp πᶜ c id-comm _) ⟩
-        (f D.∘′ D-fib.lifting πᶜ b) D.∘′ ∐-transpose g          D.≡[]⟨ Dr.extendr[] id-comm (D-fib.commutesp πᶜ b _ _) ⟩
-        (f D.∘′ g) D.∘′ ⟨ x , a ⟩                               D.≡[ ap (_∘ πᶜ) (idl _) ]⟨ to-pathp (Dr.unwhisker-l (ap (_∘ πᶜ) (idl _)) (idl _)) ⟩
-        Dr.hom[ idl id ] (f D.∘′ g) D.∘′ ⟨ x , a ⟩              ∎
+      D-fib.uniquep πᶜ c _ _ _ (π*.F₁ x f D.∘' ∐-transpose g) $
+        D-fib.lifting πᶜ c D.∘' π*.₁ x f D.∘' ∐-transpose g     D.≡[]⟨ Dr.pulll[] _ (D-fib.commutesp πᶜ c id-comm _) ⟩
+        (f D.∘' D-fib.lifting πᶜ b) D.∘' ∐-transpose g          D.≡[]⟨ Dr.extendr[] id-comm (D-fib.commutesp πᶜ b _ _) ⟩
+        (f D.∘' g) D.∘' ⟨ x , a ⟩                               D.≡[ ap (_∘ πᶜ) (idl _) ]⟨ to-pathp (Dr.unwhisker-l (ap (_∘ πᶜ) (idl _)) (idl _)) ⟩
+        Dr.hom[ idl id ] (f D.∘' g) D.∘' ⟨ x , a ⟩              ∎
 ```
 -->
 
@@ -305,14 +305,14 @@ apply a mediating substitution:
       → D.Hom[ πᶜ ] (D*.₀ (σ ⨾ˢ f) a) (D*.₀ σ (∐ y a))
 
     ⟨_⨾_⟩ {x = x} {y = y} {σ = σ} f a =
-      D-fib.universal′ σ (∐ y a) (sym (sub-proj f)) $
-      ⟨ y , a ⟩ D.∘′ D-fib.lifting (σ ⨾ˢ f) a
+      D-fib.universal' σ (∐ y a) (sym (sub-proj f)) $
+      ⟨ y , a ⟩ D.∘' D-fib.lifting (σ ⨾ˢ f) a
 
     ⟨⨾⟩-weaken
       : ∀ {Γ Δ x y} {σ : Hom Γ Δ}
       → (f : E.Hom[ σ ] x y) (a : D.Ob[ Δ ⨾ y ])
-      → D-fib.lifting σ (∐ y a) D.∘′ ⟨ f ⨾ a ⟩
-      D.≡[ sym (sub-proj f) ] ⟨ y , a ⟩ D.∘′ D-fib.lifting (σ ⨾ˢ f) a
+      → D-fib.lifting σ (∐ y a) D.∘' ⟨ f ⨾ a ⟩
+      D.≡[ sym (sub-proj f) ] ⟨ y , a ⟩ D.∘' D-fib.lifting (σ ⨾ˢ f) a
 
     ⟨⨾⟩-weaken {y = y} {σ = σ} f a =
        D-fib.commutesp σ (∐ y a) (symP (sub-proj f)) _
@@ -350,7 +350,7 @@ introduction rule is also natural.
       : ∀ {Γ Δ x y} {σ : Hom Γ Δ}
       → {a b : D.Ob[ Δ ⨾ y ]}
       → (f : D.Hom[ id ] a b) (g : E.Hom[ σ ] x y)
-      → ⟨ g ⨾ b ⟩ D.∘′ D*.₁ (σ ⨾ˢ g) f D.≡[ id-comm ] D*.₁ σ ∐[ f ] D.∘′ ⟨ g ⨾ a ⟩
+      → ⟨ g ⨾ b ⟩ D.∘' D*.₁ (σ ⨾ˢ g) f D.≡[ id-comm ] D*.₁ σ ∐[ f ] D.∘' ⟨ g ⨾ a ⟩
     ⟨⨾⟩-natural {x = x} {y = y} {σ = σ} {a = a} {b = b} f g =
       D-fib.uniquep₂ σ (∐ y b) _ _ _ _ _
         (Dr.pulll[] _ (D-fib.commutesp σ (∐ y b) (sym (sub-proj g)) _)
@@ -378,7 +378,7 @@ $$\sigma^*(\textstyle\coprod_{Y}A) \to \textstyle\coprod_{(\sigma, f)^{*}(X)} A\
     ∐-sub-⟨⨾⟩
       : ∀ {Γ Δ x y} {σ : Hom Γ Δ} {f : E.Hom[ σ ] x y}
       → (cart : is-cartesian E σ f) → (a : D.Ob[ Δ ⨾ y ])
-      → ∐-sub cart a D.∘′ ⟨ f ⨾ a ⟩ D.≡[ idl _ ] ⟨ x , (D*.₀ (σ ⨾ˢ f) a) ⟩
+      → ∐-sub cart a D.∘' ⟨ f ⨾ a ⟩ D.≡[ idl _ ] ⟨ x , (D*.₀ (σ ⨾ˢ f) a) ⟩
     ∐-sub-⟨⨾⟩ cart a =
       ⟨⨾⟩-cocartesian.commutesv cart a _
 
@@ -387,7 +387,7 @@ $$\sigma^*(\textstyle\coprod_{Y}A) \to \textstyle\coprod_{(\sigma, f)^{*}(X)} A\
       → {a b : D.Ob[ Δ ⨾ y ]}
       → (cart : is-cartesian E σ f)
       → (g : D.Hom[ id ] a b)
-      → ∐-sub cart b D.∘′ D*.₁ σ ∐[ g ] ≡ ∐[ D*.₁ (σ ⨾ˢ f) g ] D.∘′ ∐-sub cart a
+      → ∐-sub cart b D.∘' D*.₁ σ ∐[ g ] ≡ ∐[ D*.₁ (σ ⨾ˢ f) g ] D.∘' ∐-sub cart a
     ∐-sub-natural {x = x} {y = y} {σ = σ} {f = f} {a = a} {b = b} cart g =
       ⟨⨾⟩-cocartesian.uniquep₂ cart a _ _ _ _ _
         (Dr.pullr[] _ (symP (⟨⨾⟩-natural g f))

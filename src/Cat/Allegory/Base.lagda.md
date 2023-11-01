@@ -25,7 +25,7 @@ disconnected from our theory of bicategories.
 [bicategories]: Cat.Bi.Base.html
 
 ```agda
-record Allegory o ℓ ℓ′ : Type (lsuc (o ⊔ ℓ ⊔ ℓ′)) where
+record Allegory o ℓ ℓ' : Type (lsuc (o ⊔ ℓ ⊔ ℓ')) where
   no-eta-equality
   field cat : Precategory o ℓ
   open Precategory cat public
@@ -41,7 +41,7 @@ Hom-categories being posets.
 
 ```agda
   field
-    _≤_       : ∀ {x y} → Hom x y → Hom x y → Type ℓ′
+    _≤_       : ∀ {x y} → Hom x y → Hom x y → Type ℓ'
     ≤-thin    : ∀ {x y} {f g : Hom x y} → is-prop (f ≤ g)
     ≤-refl    : ∀ {x y} {f : Hom x y} → f ≤ f
     ≤-trans   : ∀ {x y} {f g h : Hom x y} → f ≤ g → g ≤ h → f ≤ h
@@ -54,8 +54,8 @@ f'g'$. We have to include this explicitly since we are unpacking the
 data of a bicategory.
 
 ```agda
-    _◆_ : ∀ {w x y} {f f′ : Hom x y} {g g′ : Hom w x}
-        → f ≤ f′ → g ≤ g′ → (f ∘ g) ≤ (f′ ∘ g′)
+    _◆_ : ∀ {w x y} {f f' : Hom x y} {g g' : Hom w x}
+        → f ≤ f' → g ≤ g' → (f ∘ g) ≤ (f' ∘ g')
 ```
 
 <!--
@@ -121,7 +121,7 @@ for every $f$, then $g = h$. Needless to say, this holds in any poset
 allegories, since it will be used to prove important laws.
 
 ```agda
-module _ {o ℓ ℓ′} (A : Allegory o ℓ ℓ′) where
+module _ {o ℓ ℓ'} (A : Allegory o ℓ ℓ') where
   open Allegory A
   ≤-yoneda
     : ∀ {x y} {g h : Hom x y}

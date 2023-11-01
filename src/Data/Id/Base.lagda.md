@@ -52,7 +52,7 @@ sets it apart from paths: **regularity.** Transport along the
 reflexivity path is definitionally the identity:
 
 ```agda
-substᵢ : ∀ {ℓ ℓ′} {A : Type ℓ} (P : A → Type ℓ′) {x y : A}
+substᵢ : ∀ {ℓ ℓ'} {A : Type ℓ} (P : A → Type ℓ') {x y : A}
        → x ≡ᵢ y → P x → P y
 substᵢ P reflᵢ x = x
 

@@ -42,8 +42,8 @@ Disc A A-grpd .idr _ = ∙-idl _
 Disc A A-grpd .idl _ = ∙-idr _
 Disc A A-grpd .assoc _ _ _ = sym (∙-assoc _ _ _)
 
-Disc′ : Set ℓ → Precategory ℓ ℓ
-Disc′ A = Disc ∣ A ∣ h where abstract
+Disc' : Set ℓ → Precategory ℓ ℓ
+Disc' A = Disc ∣ A ∣ h where abstract
   h : is-groupoid ∣ A ∣
   h = is-hlevel-suc 2 (A .is-tr)
 ```
@@ -56,7 +56,7 @@ automatically respects equality in a functorial way.
 lift-disc
   : ∀ {A : Set ℓ} {B : Set ℓ'}
   → (∣ A ∣ → ∣ B ∣)
-  → Functor (Disc′ A) (Disc′ B)
+  → Functor (Disc' A) (Disc' B)
 lift-disc f .F₀ = f
 lift-disc f .F₁ = ap f
 lift-disc f .F-id = refl
@@ -65,15 +65,15 @@ lift-disc f .F-∘ p q = ap-∙ f q p
 
 <!--
 ```agda
-Codisc′ : ∀ {ℓ'} → Type ℓ → Precategory ℓ ℓ'
-Codisc′ x .Ob = x
-Codisc′ x .Hom _ _ = Lift _ ⊤
-Codisc′ x .Hom-set _ _ = is-prop→is-set (λ _ _ i → lift tt)
-Codisc′ x .id = lift tt
-Codisc′ x ._∘_ _ _ = lift tt
-Codisc′ x .idr _ = refl
-Codisc′ x .idl _ = refl
-Codisc′ x .assoc _ _ _ = refl
+Codisc' : ∀ {ℓ'} → Type ℓ → Precategory ℓ ℓ'
+Codisc' x .Ob = x
+Codisc' x .Hom _ _ = Lift _ ⊤
+Codisc' x .Hom-set _ _ = is-prop→is-set (λ _ _ i → lift tt)
+Codisc' x .id = lift tt
+Codisc' x ._∘_ _ _ = lift tt
+Codisc' x .idr _ = refl
+Codisc' x .idl _ = refl
+Codisc' x .assoc _ _ _ = refl
 ```
 -->
 
@@ -83,14 +83,14 @@ If $X$ is a `discrete type`{.Agda ident=Discrete}, then it is in
 particular in `Set`{.Agda}, and we can make diagrams of shape
 $\rm{Disc}(X)$ in some category $\cC$, using the decidable
 equality on $X$. We note that the decidable equality is _redundant_
-information: The construction `Disc′`{.Agda} above extends into a [[left
+information: The construction `Disc'`{.Agda} above extends into a [[left
 adjoint]] to the `Ob`{.Agda} functor.
 
 ```agda
 Disc-diagram
   : ∀ {X : Set ℓ} (disc : Discrete ∣ X ∣)
   → (∣ X ∣ → Ob C)
-  → Functor (Disc′ X) C
+  → Functor (Disc' X) C
 Disc-diagram {C = C} {X = X} disc f = F where
   module C = Precategory C
 
@@ -165,7 +165,7 @@ Disc-adjunct {C = C} {iss = iss} F .F-∘ {x} {y} {z} f g = path where
   abstract
     path : go (g ∙ f) ≡ C ._∘_ (go f) (go g)
     path =
-      J′ (λ y z f → ∀ {x} (g : x ≡ y) → go (g ∙ f) ≡ go f C.∘ go g)
+      J' (λ y z f → ∀ {x} (g : x ≡ y) → go (g ∙ f) ≡ go f C.∘ go g)
         (λ x g → subst-∙ (C .Hom (F _) ⊙ F) _ _ _
               ·· transport-refl _
               ·· C.introl (transport-refl _))
@@ -177,7 +177,7 @@ Disc-adjunct {C = C} {iss = iss} F .F-∘ {x} {y} {z} f g = path where
 ```agda
 Disc-natural
   : ∀ {X : Set ℓ}
-  → {F G : Functor (Disc′ X) C}
+  → {F G : Functor (Disc' X) C}
   → (∀ x → C .Hom (F .F₀ x) (G .F₀ x))
   → F => G
 Disc-natural fam .η = fam

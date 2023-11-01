@@ -101,22 +101,22 @@ reindexing given by $f$.
 <!--
 ```agda
 module _ {x y} {f g : Hom x y} {px : /-Obj x} {py : /-Obj y}
-         {f′ : Slice-hom f px py} {g′ : Slice-hom g px py} where
+         {f' : Slice-hom f px py} {g' : Slice-hom g px py} where
 
-  Slice-pathp : (p : f ≡ g) → (f′ .to ≡ g′ .to) → PathP (λ i → Slice-hom (p i) px py) f′ g′
-  Slice-pathp p p′ i .to = p′ i
-  Slice-pathp p p′ i .commute =
+  Slice-pathp : (p : f ≡ g) → (f' .to ≡ g' .to) → PathP (λ i → Slice-hom (p i) px py) f' g'
+  Slice-pathp p p' i .to = p' i
+  Slice-pathp p p' i .commute =
     is-prop→pathp
-      (λ i → Hom-set _ _ (p i ∘ px .map) (py .map ∘ (p′ i)))
-      (f′ .commute)
-      (g′ .commute)
+      (λ i → Hom-set _ _ (p i ∘ px .map) (py .map ∘ (p' i)))
+      (f' .commute)
+      (g' .commute)
       i
 
 Slice-path
   : ∀ {x y} {f : Hom x y} {px : /-Obj x} {py : /-Obj y}
-  → {f′ g′ : Slice-hom f px py}
-  → (f′ .to ≡ g′ .to)
-  → f′ ≡ g′
+  → {f' g' : Slice-hom f px py}
+  → (f' .to ≡ g' .to)
+  → f' ≡ g'
 Slice-path = Slice-pathp refl
 
 module _ {x y} (f : Hom x y) (px : /-Obj x) (py : /-Obj y) where
@@ -135,16 +135,16 @@ Slices : Displayed B (o ⊔ ℓ) ℓ
 Slices .Ob[_] = /-Obj {C = B}
 Slices .Hom[_] = Slice-hom
 Slices .Hom[_]-set = Slice-is-set
-Slices .id′ = slice-hom id id-comm-sym
-Slices ._∘′_ {x = x} {y = y} {z = z} {f = f} {g = g} px py =
+Slices .id' = slice-hom id id-comm-sym
+Slices ._∘'_ {x = x} {y = y} {z = z} {f = f} {g = g} px py =
   slice-hom (px .to ∘ py .to) $
     (f ∘ g) ∘ x .map           ≡⟨ pullr (py .commute) ⟩
     f ∘ (y .map ∘ py .to)      ≡⟨ extendl (px .commute) ⟩
     z .map ∘ (px .to ∘ py .to) ∎
-Slices .idr′ {f = f} f′ = Slice-pathp (idr f) (idr (f′ .to))
-Slices .idl′ {f = f} f′ = Slice-pathp (idl f) (idl (f′ .to))
-Slices .assoc′ {f = f} {g = g} {h = h} f′ g′ h′ =
-  Slice-pathp (assoc f g h) (assoc (f′ .to) (g′ .to) (h′ .to))
+Slices .idr' {f = f} f' = Slice-pathp (idr f) (idr (f' .to))
+Slices .idl' {f = f} f' = Slice-pathp (idl f) (idl (f' .to))
+Slices .assoc' {f = f} {g = g} {h = h} f' g' h' =
+  Slice-pathp (assoc f g h) (assoc (f' .to) (g' .to) (h' .to))
 ```
 
 It's only slightly more annoying to show that a vertical map in the
@@ -198,12 +198,12 @@ we do not comment too heavily on the proof.
 
 ```agda
 cartesian→pullback
-  : ∀ {x y x′ y′} {f : Hom x y} {f′ : Slice-hom f x′ y′}
-  → is-cartesian Slices f f′
-  → is-pullback B (x′ .map) f (f′ .to) (y′ .map)
-cartesian→pullback {x} {y} {x′} {y′} {f} {f′} cart = pb where
-  pb : is-pullback B (x′ .map) f (f′ .to) (y′ .map)
-  pb .is-pullback.square = f′ .commute
+  : ∀ {x y x' y'} {f : Hom x y} {f' : Slice-hom f x' y'}
+  → is-cartesian Slices f f'
+  → is-pullback B (x' .map) f (f' .to) (y' .map)
+cartesian→pullback {x} {y} {x'} {y'} {f} {f'} cart = pb where
+  pb : is-pullback B (x' .map) f (f' .to) (y' .map)
+  pb .is-pullback.square = f' .commute
   pb .is-pullback.universal p =
     cart .universal _ (slice-hom _ (idr _ ∙ p)) .to
   pb .is-pullback.p₁∘universal =
@@ -214,18 +214,18 @@ cartesian→pullback {x} {y} {x′} {y′} {f} {f′} cart = pb where
     ap Slice-hom.to (cart .unique (slice-hom _ (idr _ ∙ sym p)) (Slice-pathp refl q))
 
 pullback→cartesian
-  : ∀ {x y x′ y′} {f : Hom x y} {f′ : Slice-hom f x′ y′}
-  → is-pullback B (x′ .map) f (f′ .to) (y′ .map)
-  → is-cartesian Slices f f′
-pullback→cartesian {x} {y} {x′} {y′} {f} {f′} pb = cart where
+  : ∀ {x y x' y'} {f : Hom x y} {f' : Slice-hom f x' y'}
+  → is-pullback B (x' .map) f (f' .to) (y' .map)
+  → is-cartesian Slices f f'
+pullback→cartesian {x} {y} {x'} {y'} {f} {f'} pb = cart where
   module pb = is-pullback pb
 
-  cart : is-cartesian Slices f f′
-  cart .universal m h′ .to = pb.universal (assoc _ _ _ ∙ h′ .commute)
-  cart .universal m h′ .commute = sym pb.p₁∘universal
-  cart .commutes m h′ = Slice-pathp refl pb.p₂∘universal
-  cart .unique m′ x = Slice-pathp refl $
-    pb.unique (sym (m′ .commute)) (ap to x)
+  cart : is-cartesian Slices f f'
+  cart .universal m h' .to = pb.universal (assoc _ _ _ ∙ h' .commute)
+  cart .universal m h' .commute = sym pb.p₁∘universal
+  cart .commutes m h' = Slice-pathp refl pb.p₂∘universal
+  cart .unique m' x = Slice-pathp refl $
+    pb.unique (sym (m' .commute)) (ap to x)
 ```
 
 ## As a fibration
@@ -244,11 +244,11 @@ to $\underline{ca{B}}$ regarded as a Cartesian fibration as the
 Codomain-fibration
   : (∀ {x y z} (f : Hom x y) (g : Hom z y) → Pullback B f g)
   → Cartesian-fibration Slices
-Codomain-fibration pullbacks .has-lift f y′ = lift-f where
-  module pb = Pullback (pullbacks f (y′ .map))
+Codomain-fibration pullbacks .has-lift f y' = lift-f where
+  module pb = Pullback (pullbacks f (y' .map))
 
-  lift-f : Cartesian-lift Slices f y′
-  lift-f .x′ = cut pb.p₁
+  lift-f : Cartesian-lift Slices f y'
+  lift-f .x' = cut pb.p₁
   lift-f .lifting .to = pb.p₂
   lift-f .lifting .commute = pb.square
   lift-f .cartesian = pullback→cartesian pb.has-is-pb
@@ -273,12 +273,12 @@ Codomain-fibration→pullbacks f g lifts = pb where
   module the-lift = Cartesian-lift (lifts .has-lift f (cut g))
 
   pb : Pullback B f g
-  pb .apex = the-lift.x′ .domain
-  pb .p₁ = the-lift.x′ .map
+  pb .apex = the-lift.x' .domain
+  pb .p₁ = the-lift.x' .map
   pb .p₂ = the-lift.lifting .to
   pb .has-is-pb .square = the-lift.lifting .commute
   pb .has-is-pb .universal {p₁' = p₁'} {p₂'} p =
-    the-lift.cartesian .universal {u′ = cut id}
+    the-lift.cartesian .universal {u' = cut id}
       p₁' (slice-hom p₂' (pullr (idr _) ∙ p)) .to
   pb .has-is-pb .p₁∘universal =
     sym (the-lift.universal _ _ .commute) ∙ idr _
@@ -303,15 +303,15 @@ that do not lie in the image of $f$.
 
 ```agda
 Codomain-opfibration : Cocartesian-fibration Slices
-Codomain-opfibration .Cocartesian-fibration.has-lift f x′ = lift-f where
+Codomain-opfibration .Cocartesian-fibration.has-lift f x' = lift-f where
 
-  lift-f : Cocartesian-lift Slices f x′
-  lift-f .Cocartesian-lift.y′ = cut (f ∘ x′ .map)
+  lift-f : Cocartesian-lift Slices f x'
+  lift-f .Cocartesian-lift.y' = cut (f ∘ x' .map)
   lift-f .Cocartesian-lift.lifting = slice-hom id (sym (idr _))
-  lift-f .Cocartesian-lift.cocartesian .is-cocartesian.universal m h′ =
-    slice-hom (h′ .to) (assoc _ _ _ ∙ h′ .commute)
-  lift-f .Cocartesian-lift.cocartesian .is-cocartesian.commutes m h′ =
+  lift-f .Cocartesian-lift.cocartesian .is-cocartesian.universal m h' =
+    slice-hom (h' .to) (assoc _ _ _ ∙ h' .commute)
+  lift-f .Cocartesian-lift.cocartesian .is-cocartesian.commutes m h' =
     Slice-pathp refl (idr _)
-  lift-f .Cocartesian-lift.cocartesian .is-cocartesian.unique m′ p =
+  lift-f .Cocartesian-lift.cocartesian .is-cocartesian.unique m' p =
     Slice-pathp refl (sym (idr _) ∙ ap to p)
 ```

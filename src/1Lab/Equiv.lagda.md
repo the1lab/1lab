@@ -659,7 +659,7 @@ infix 31 _e⁻¹
            → is-equiv (λ x → g (f x))
 ∙-is-equiv {f = f} {g = g} e e' = ((f , e) ∙e (g , e')) .snd
 
-module Equiv {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} (f : A ≃ B) where
+module Equiv {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A ≃ B) where
   to = f .fst
   from = equiv→inverse (f .snd)
   η = equiv→unit (f .snd)

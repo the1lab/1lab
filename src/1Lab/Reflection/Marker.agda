@@ -77,13 +77,13 @@ macro
       where nothing → typeError (strErr "ap!: Goal type " ∷
                                  termErr goalt ∷
                                  strErr " is not a path type" ∷ [])
-    just l′ ← pure (abstract-marker l)
+    just l' ← pure (abstract-marker l)
       where _ → typeError $ "Failed to abstract over marker in term " ∷ termErr l ∷ []
-    let dm = lam visible (abs "x" l′)
-    path′ ← quoteTC path
+    let dm = lam visible (abs "x" l')
+    path' ← quoteTC path
     debugPrint "1lab.marked-ap" 10 $ strErr "original term " ∷ termErr l ∷ []
     debugPrint "1lab.marked-ap" 10 $ strErr "abstracted term " ∷ termErr dm ∷ []
-    unify goal (def (quote ap) (dm v∷ path′ v∷ []))
+    unify goal (def (quote ap) (dm v∷ path' v∷ []))
 
   -- Generalised ap. Automatically generates the function to apply to by
   -- abstracting over any markers in the RIGHT ENDPOINT of the path. Use
@@ -95,11 +95,11 @@ macro
       where nothing → typeError (strErr "ap¡: Goal type " ∷
                                  termErr goalt ∷
                                  strErr " is not a path type" ∷ [])
-    just r′ ← pure (abstract-marker r)
+    just r' ← pure (abstract-marker r)
       where _ → typeError $ "Failed to abstract over marker in term " ∷ termErr r ∷ []
-    path′ ← quoteTC path
+    path' ← quoteTC path
     unify goal $
-      def (quote ap) (lam visible (abs "x" r′) v∷ path′ v∷ [])
+      def (quote ap) (lam visible (abs "x" r') v∷ path' v∷ [])
 
 module _ {ℓ} {A : Type ℓ} {x y : A} {p : x ≡ y} {f : A → (A → A) → A} where
   private

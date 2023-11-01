@@ -10,8 +10,8 @@ import Cat.Displayed.Solver as Ds
 
 ```agda
 module Cat.Displayed.Fibre
-  {o ℓ o′ ℓ′} {B : Precategory o ℓ}
-  (E : Displayed B o′ ℓ′)
+  {o ℓ o' ℓ'} {B : Precategory o ℓ}
+  (E : Displayed B o' ℓ')
   where
 
 open Precategory B
@@ -75,19 +75,19 @@ set of vertical arrows over an object $x$ contain identities and are
 closed under composition, the **fibre (pre)category over $x$**.
 
 ```agda
-Fibre′
+Fibre'
   : (X : Ob)
   → (fix : {x y : Ob[ X ]} → Hom[ id ∘ id ] x y → Hom[ id ] x y)
   → (coh : ∀ {x y} (f : Hom[ id ∘ id ] x y) → fix f ≡ hom[ idl id ] f)
   → Precategory _ _
-Fibre′ X fix coh .Precategory.Ob = Ob[ X ]
-Fibre′ X fix coh .Precategory.Hom = Hom[ id ]
-Fibre′ X fix coh .Precategory.Hom-set = Hom[ id ]-set
-Fibre′ X fix coh .Precategory.id = id′
-Fibre′ X fix coh .Precategory._∘_ f g = fix (f ∘′ g)
+Fibre' X fix coh .Precategory.Ob = Ob[ X ]
+Fibre' X fix coh .Precategory.Hom = Hom[ id ]
+Fibre' X fix coh .Precategory.Hom-set = Hom[ id ]-set
+Fibre' X fix coh .Precategory.id = id'
+Fibre' X fix coh .Precategory._∘_ f g = fix (f ∘' g)
 ```
 
-The definition of `Fibre′`{.Agda} has an extra degree of freedom: it is
+The definition of `Fibre'`{.Agda} has an extra degree of freedom: it is
 parametrised over how to reindex a morphism from lying over $\id
 \circ \id$ to lying over $\id$. You don't get _that_ much
 freedom, however: there is a canonical way of doing this reindexing,
@@ -105,23 +105,23 @@ would still pile up.
 
 <!--
 ```agda
-Fibre′ X fix coh .Precategory.idr f =
-  fix (f ∘′ id′)           ≡⟨ coh (f ∘′ id′) ⟩
-  hom[ idl id ] (f ∘′ id′) ≡⟨ Ds.disp! E ⟩
+Fibre' X fix coh .Precategory.idr f =
+  fix (f ∘' id')           ≡⟨ coh (f ∘' id') ⟩
+  hom[ idl id ] (f ∘' id') ≡⟨ Ds.disp! E ⟩
   f                        ∎
-Fibre′ X fix coh .Precategory.idl f =
-  fix (id′ ∘′ f)           ≡⟨ coh (id′ ∘′ f) ⟩
-  hom[ idl id ] (id′ ∘′ f) ≡⟨ from-pathp (idl′ f) ⟩
+Fibre' X fix coh .Precategory.idl f =
+  fix (id' ∘' f)           ≡⟨ coh (id' ∘' f) ⟩
+  hom[ idl id ] (id' ∘' f) ≡⟨ from-pathp (idl' f) ⟩
   f                        ∎
-Fibre′ X fix coh .Precategory.assoc f g h =
-  fix (f ∘′ fix (g ∘′ h))                     ≡⟨ ap (λ e → fix (f ∘′ e)) (coh _) ∙ coh _ ⟩
-  hom[ idl id ] (f ∘′ hom[ idl id ] (g ∘′ h)) ≡⟨ Ds.disp! E ⟩
-  hom[ idl id ] (hom[ idl id ] (f ∘′ g) ∘′ h) ≡⟨ sym (coh _) ∙ ap (λ e → fix (e ∘′ h)) (sym (coh _)) ⟩
-  fix (fix (f ∘′ g) ∘′ h)                     ∎
+Fibre' X fix coh .Precategory.assoc f g h =
+  fix (f ∘' fix (g ∘' h))                     ≡⟨ ap (λ e → fix (f ∘' e)) (coh _) ∙ coh _ ⟩
+  hom[ idl id ] (f ∘' hom[ idl id ] (g ∘' h)) ≡⟨ Ds.disp! E ⟩
+  hom[ idl id ] (hom[ idl id ] (f ∘' g) ∘' h) ≡⟨ sym (coh _) ∙ ap (λ e → fix (e ∘' h)) (sym (coh _)) ⟩
+  fix (fix (f ∘' g) ∘' h)                     ∎
 ```
 -->
 
 ```agda
 Fibre : Ob → Precategory _ _
-Fibre X = Fibre′ X _ (λ f → refl)
+Fibre X = Fibre' X _ (λ f → refl)
 ```

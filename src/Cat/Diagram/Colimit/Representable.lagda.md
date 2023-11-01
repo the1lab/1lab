@@ -71,9 +71,9 @@ conditions.
       hom→⊤-natural-trans $ nat-inv.inv .η _ (idnat-constr ∘nt α)
     colim .σ-comm {M} {α} = Nat-path λ j →
       nat-inv.invl ηₚ _ $ₚ _ ηₚ j ∙ C.idl _
-    colim .σ-uniq {M} {α} {σ′} q = Nat-path λ j →
+    colim .σ-uniq {M} {α} {σ'} q = Nat-path λ j →
       nat-inv.inv .η _ (idnat-constr ∘nt ⌜ α ⌝)                               ≡⟨ ap! q ⟩
-      nat-inv.inv .η _ ⌜ idnat-constr ∘nt (σ′ ◂ !F) ∘nt cocone→unit Dia eta ⌝ ≡⟨ ap! (Nat-path λ _ → C.idl _) ⟩
-      nat-inv.inv .η (M .F₀ tt) (const-nt (σ′ .η j) ∘nt eta)                  ≡⟨ nat-inv.invr ηₚ _ $ₚ _ ⟩
-      σ′ .η tt ∎
+      nat-inv.inv .η _ ⌜ idnat-constr ∘nt (σ' ◂ !F) ∘nt cocone→unit Dia eta ⌝ ≡⟨ ap! (Nat-path λ _ → C.idl _) ⟩
+      nat-inv.inv .η (M .F₀ tt) (const-nt (σ' .η j) ∘nt eta)                  ≡⟨ nat-inv.invr ηₚ _ $ₚ _ ⟩
+      σ' .η tt ∎
 ```

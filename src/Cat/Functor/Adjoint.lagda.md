@@ -212,8 +212,8 @@ $L_0(x)$ to be the codomain of the universal morphism:
   L₀ : C.Ob → D.Ob
   L₀ x = universal-map-for x .bot .↓Obj.y
 
-  L₀′ : (c : C.Ob) → C.Hom c (R.₀ (L₀ c))
-  L₀′ x = universal-map-for x .bot .map
+  L₀' : (c : C.Ob) → C.Hom c (R.₀ (L₀ c))
+  L₀' x = universal-map-for x .bot .map
 ```
 
 Given an arrow $a \to b$ in $\cC$, we can send it to a
@@ -226,7 +226,7 @@ object in $a \swarrow R$ (see `lift↓`{.Agda} below).
 ```agda
   private
     to-ob : ∀ {a b} → C.Hom a b → (a ↙ R) .Precategory.Ob
-    to-ob {a} {b} h = record { map = L₀′ b C.∘ h }
+    to-ob {a} {b} h = record { map = L₀' b C.∘ h }
 
     lift↓ : ∀ {x y} (g : C.Hom x y)
           → Precategory.Hom (x ↙ R) (universal-map-for x .bot) (to-ob g)
@@ -252,13 +252,13 @@ object.
                                   ·· sym (C.eliml R.F-id) }))
 
     lemma : ∀ {x y z} (f : C.Hom y z) (g : C.Hom x y)
-          → R.₁ (L₁ f D.∘ L₁ g) C.∘ (L₀′ x)
+          → R.₁ (L₁ f D.∘ L₁ g) C.∘ (L₀' x)
           ≡ to-ob (f C.∘ g) .map C.∘ C.id
     lemma {x} {y} {z} f g =
-      R.₁ (lift↓ f .β D.∘ lift↓ g .β) C.∘ (L₀′ x)       ≡⟨ C.pushl (R.F-∘ _ _) ⟩
-      R.₁ (lift↓ f .β) C.∘ R.₁ (lift↓ g .β) C.∘ (L₀′ x) ≡⟨ ap (R.₁ (lift↓ f .β) C.∘_) (sym (lift↓ g .↓Hom.sq) ∙ C.idr _) ⟩
-      R.₁ (lift↓ f .β) C.∘ L₀′ y C.∘ g                  ≡⟨ C.extendl (sym (lift↓ f .↓Hom.sq) ∙ C.idr _) ⟩
-      L₀′ z C.∘ f C.∘ g                                 ≡˘⟨ C.idr _ ⟩
+      R.₁ (lift↓ f .β D.∘ lift↓ g .β) C.∘ (L₀' x)       ≡⟨ C.pushl (R.F-∘ _ _) ⟩
+      R.₁ (lift↓ f .β) C.∘ R.₁ (lift↓ g .β) C.∘ (L₀' x) ≡⟨ ap (R.₁ (lift↓ f .β) C.∘_) (sym (lift↓ g .↓Hom.sq) ∙ C.idr _) ⟩
+      R.₁ (lift↓ f .β) C.∘ L₀' y C.∘ g                  ≡⟨ C.extendl (sym (lift↓ f .↓Hom.sq) ∙ C.idr _) ⟩
+      L₀' z C.∘ f C.∘ g                                 ≡˘⟨ C.idr _ ⟩
       to-ob (f C.∘ g) .map C.∘ C.id                     ∎
 
     L-∘ : ∀ {x y z} (f : C.Hom y z) (g : C.Hom x y)
@@ -402,7 +402,7 @@ object:
         })
         (record { sq = C.id-comm ∙ ap (C._∘ _) (sym R.F-id) })
     )
-    where α = L₀′ x
+    where α = L₀' x
           L = universal-maps→L
 ```
 

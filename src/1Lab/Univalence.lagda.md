@@ -711,8 +711,8 @@ Map-classifier {ℓ = ℓ} {B = B} P =
 module ua {ℓ} {A B : Type ℓ} = Equiv (ua {A = A} {B} , univalence⁻¹)
 
 unglue-is-equiv
-  : ∀ {ℓ ℓ′} {A : Type ℓ} (φ : I)
-  → {B : Partial φ (Σ (Type ℓ′) (_≃ A))}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} (φ : I)
+  → {B : Partial φ (Σ (Type ℓ') (_≃ A))}
   → is-equiv {A = Glue A B} (unglue φ)
 unglue-is-equiv {A = A} φ {B = B} .is-eqv y = extend→is-contr ctr
   where module _ (ψ : I) (par : Partial ψ (fibre (unglue φ) y)) where
@@ -783,7 +783,7 @@ transport-∙ : ∀ {ℓ} {A B C : Type ℓ}
 transport-∙ p q x i =
   transport (∙-filler' p q (~ i)) (transport-filler-ext p i x)
 
-subst-∙ : ∀ {ℓ ℓ′} {A : Type ℓ} → (B : A → Type ℓ′)
+subst-∙ : ∀ {ℓ ℓ'} {A : Type ℓ} → (B : A → Type ℓ')
         → {x y z : A} (p : x ≡ y) (q : y ≡ z) (u : B x)
         → subst B (p ∙ q) u ≡ subst B q (subst B p u)
 subst-∙ B p q Bx i =

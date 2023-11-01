@@ -153,11 +153,11 @@ If $\cC$ was already idempotent-complete, then `Embed`{.Agda} is an
 Karoubi-is-completion : is-idempotent-complete → is-equivalence Embed
 Karoubi-is-completion complete = ff+split-eso→is-equivalence Embed-is-fully-faithful eso where
   eso : is-split-eso Embed
-  eso (c , e , ie) = c′ , same where
-    open is-split (complete e ie) renaming (F to c′; inject to i; project to p)
+  eso (c , e , ie) = c' , same where
+    open is-split (complete e ie) renaming (F to c'; inject to i; project to p)
     module Karoubi = Cat.Morphism Karoubi
     open Inverses
-    same : (c′ , C.id , _) Karoubi.≅ (c , e , ie)
+    same : (c' , C.id , _) Karoubi.≅ (c , e , ie)
     same .to = i , C.idr _ , C.rswizzle (sym i∘p) p∘i
     same .from = p , C.lswizzle (sym i∘p) p∘i , C.idl _
     same .inverses .invl = KH≡ {ai = ie} {bi = ie} i∘p

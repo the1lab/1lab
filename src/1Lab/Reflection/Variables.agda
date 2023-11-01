@@ -60,8 +60,8 @@ empty-vars = mk-variables [] (λ _ → nothing)
 
 private
   bind : Term → Term → (Term → Maybe Term) → Term → Maybe Term
-  bind tm tm-var lookup tm′ with lookup tm′ | tm term=? tm′
-  ... | just tm′-var | _ = just tm′-var
+  bind tm tm-var lookup tm' with lookup tm' | tm term=? tm'
+  ... | just tm'-var | _ = just tm'-var
   ... | nothing      | true = just tm-var
   ... | nothing      | false = nothing
 
@@ -91,9 +91,9 @@ bind-var vs tm with variables vs tm
 ... | nothing = do
   a ← unquoteTC tm
   let v = fin-term (nvars vs)
-  let vs′ = mk-variables (bound vs ▷ a)
+  let vs' = mk-variables (bound vs ▷ a)
                          (bind tm v (variables vs))
-  returnTC (v , vs′)
+  returnTC (v , vs')
 
 environment : Variables A → TC (Term × Term)
 environment vs = do

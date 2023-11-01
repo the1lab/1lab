@@ -50,7 +50,7 @@ raise the [h-level] of the Hom-sets.
 ```agda
 instance
   H-Level-Monoid-hom
-    : ∀ {ℓ ℓ′} {s : Type ℓ} {t : Type ℓ′}
+    : ∀ {ℓ ℓ'} {s : Type ℓ} {t : Type ℓ'}
     → ∀ {x : Monoid-on s} {y : Monoid-on t} {f} {n}
     → H-Level (Monoid-hom x y f) (suc n)
   H-Level-Monoid-hom {y = M} = prop-instance λ x y i →

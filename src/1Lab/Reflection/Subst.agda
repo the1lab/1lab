@@ -60,8 +60,8 @@ subst-tm* ρ (arg ι x ∷ ls) = do
 apply-tm* : Term → List (Arg Term) → Maybe Term
 apply-tm* tm [] = pure tm
 apply-tm* tm (x ∷ xs) = do
-  tm′ ← apply-tm tm x
-  apply-tm* tm′ xs
+  tm' ← apply-tm tm x
+  apply-tm* tm' xs
 
 lookup-tm : (σ : Subst) (i : Nat) → Maybe Term
 lookup-tm ids i = pure $ var i []

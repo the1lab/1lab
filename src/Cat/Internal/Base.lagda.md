@@ -157,9 +157,9 @@ $$
 <!--
 ```agda
 Internal-hom-pathp
-  : ∀ {C₀ C₁ Γ} {src tgt : Hom C₁ C₀} {x x′ y y′ : Hom Γ C₀}
-  → {f : Internal-hom src tgt x y} {g : Internal-hom src tgt x′ y′}
-  → (p : x ≡ x′) (q : y ≡ y′)
+  : ∀ {C₀ C₁ Γ} {src tgt : Hom C₁ C₀} {x x' y y' : Hom Γ C₀}
+  → {f : Internal-hom src tgt x y} {g : Internal-hom src tgt x' y'}
+  → (p : x ≡ x') (q : y ≡ y')
   → f .ihom ≡ g .ihom
   → PathP (λ i → Internal-hom src tgt (p i) (q i)) f g
 Internal-hom-pathp p q r i .ihom = r i
@@ -198,8 +198,8 @@ _ihomₚ = ap ihom
 infix -1 _ihomₚ
 
 adjusti
-    : ∀ {Γ C₀ C₁} {src tgt : Hom C₁ C₀} {x x′ y y′ : Hom Γ C₀}
-  → x ≡ x′ → y ≡ y′ → Internal-hom src tgt x y → Internal-hom src tgt x′ y′
+    : ∀ {Γ C₀ C₁} {src tgt : Hom C₁ C₀} {x x' y y' : Hom Γ C₀}
+  → x ≡ x' → y ≡ y' → Internal-hom src tgt x y → Internal-hom src tgt x' y'
 adjusti p q f .ihom = f .ihom
 adjusti p q f .has-src = f .has-src ∙ p
 adjusti p q f .has-tgt = f .has-tgt ∙ q
@@ -317,37 +317,37 @@ record Internal-cat : Type (o ⊔ ℓ) where
   begini_ = casti
 
   _∙i_
-    : ∀ {Γ} {x x′ x″ y y′ y″ : Hom Γ C₀}
-    → {f : Homi x y} {g : Homi x′ y′} {h : Homi x″ y″}
-    → {p : x ≡ x′} {q : y ≡ y′} {p′ : x′ ≡ x″} {q′ : y′ ≡ y″}
+    : ∀ {Γ} {x x' x'' y y' y'' : Hom Γ C₀}
+    → {f : Homi x y} {g : Homi x' y'} {h : Homi x'' y''}
+    → {p : x ≡ x'} {q : y ≡ y'} {p' : x' ≡ x''} {q' : y' ≡ y''}
     → PathP (λ i → Homi (p i) (q i)) f g
-    → PathP (λ i → Homi (p′ i) (q′ i)) g h
-    → PathP (λ i → Homi ((p ∙ p′) i) ((q ∙ q′) i)) f h
-  _∙i_ {x = x} {x′} {x″} {y} {y′} {y″} {f} {g} {h} {p} {q} {p′} {q′} r r′ i =
-    comp (λ j → Homi (∙-filler p p′ j i) (∙-filler q q′ j i)) (∂ i) λ where
+    → PathP (λ i → Homi (p' i) (q' i)) g h
+    → PathP (λ i → Homi ((p ∙ p') i) ((q ∙ q') i)) f h
+  _∙i_ {x = x} {x'} {x''} {y} {y'} {y''} {f} {g} {h} {p} {q} {p'} {q'} r r' i =
+    comp (λ j → Homi (∙-filler p p' j i) (∙-filler q q' j i)) (∂ i) λ where
       j (i = i0) → f
-      j (i = i1) → r′ j
+      j (i = i1) → r' j
       j (j = i0) → r i
 
   ≡i⟨⟩-syntax
-    : ∀ {Γ} {x x′ x″ y y′ y″ : Hom Γ C₀}
-    → (f : Homi x y) {g : Homi x′ y′} {h : Homi x″ y″}
-    → {p : x ≡ x′} {q : y ≡ y′} {p′ : x′ ≡ x″} {q′ : y′ ≡ y″}
-    → PathP (λ i → Homi (p′ i) (q′ i)) g h
+    : ∀ {Γ} {x x' x'' y y' y'' : Hom Γ C₀}
+    → (f : Homi x y) {g : Homi x' y'} {h : Homi x'' y''}
+    → {p : x ≡ x'} {q : y ≡ y'} {p' : x' ≡ x''} {q' : y' ≡ y''}
+    → PathP (λ i → Homi (p' i) (q' i)) g h
     → PathP (λ i → Homi (p i) (q i)) f g
-    → PathP (λ i → Homi ((p ∙ p′) i) ((q ∙ q′) i)) f h
-  ≡i⟨⟩-syntax f r′ r = r ∙i r′
+    → PathP (λ i → Homi ((p ∙ p') i) ((q ∙ q') i)) f h
+  ≡i⟨⟩-syntax f r' r = r ∙i r'
 
   _≡i˘⟨_⟩_
-    : ∀ {Γ} {x x′ x″ y y′ y″ : Hom Γ C₀}
-    → (f : Homi x y) {g : Homi x′ y′} {h : Homi x″ y″}
-    → {p : x′ ≡ x} {q : y′ ≡ y} {p′ : x′ ≡ x″} {q′ : y′ ≡ y″}
+    : ∀ {Γ} {x x' x'' y y' y'' : Hom Γ C₀}
+    → (f : Homi x y) {g : Homi x' y'} {h : Homi x'' y''}
+    → {p : x' ≡ x} {q : y' ≡ y} {p' : x' ≡ x''} {q' : y' ≡ y''}
     → PathP (λ i → Homi (p i) (q i)) g f
-    → PathP (λ i → Homi (p′ i) (q′ i)) g h
-    → PathP (λ i → Homi ((sym p ∙ p′) i) ((sym q ∙ q′) i)) f h
-  _≡i˘⟨_⟩_ f r r′  = symP r ∙i r′
+    → PathP (λ i → Homi (p' i) (q' i)) g h
+    → PathP (λ i → Homi ((sym p ∙ p') i) ((sym q ∙ q') i)) f h
+  _≡i˘⟨_⟩_ f r r'  = symP r ∙i r'
 
-  syntax ≡i⟨⟩-syntax f r′ r = f ≡i⟨ r ⟩ r′
+  syntax ≡i⟨⟩-syntax f r' r = f ≡i⟨ r ⟩ r'
 
   infixr 30 _∙i_
   infix 1 begini_
@@ -559,7 +559,7 @@ module _ {ℂ 𝔻 : Internal-cat} {F G : Internal-functor ℂ 𝔻} where
   Internal-nat-set = Iso→is-hlevel 2 nat-eqv $
     Σ-is-hlevel 2 hlevel! $ λ _ →
     Σ-is-hlevel 2 hlevel! $ λ _ →
-    Π-is-hlevel′ 2 λ _ → Π-is-hlevel′ 2 λ _ →
+    Π-is-hlevel' 2 λ _ → Π-is-hlevel' 2 λ _ →
     Π-is-hlevel 2 λ _ → Π-is-hlevel 2 λ _ →
     PathP-is-hlevel 2 Internal-hom-set
 

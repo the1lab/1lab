@@ -52,9 +52,9 @@ Functor-is-category {D = D} d-cat .to-path-over p =
 <!--
 ```agda
 module _
-  {o ℓ o′ ℓ′ o₂ ℓ₂}
+  {o ℓ o' ℓ' o₂ ℓ₂}
   {C : Precategory o ℓ}
-  {D : Precategory o′ ℓ′}
+  {D : Precategory o' ℓ'}
   {E : Precategory o₂ ℓ₂}
   where
   private
@@ -64,12 +64,12 @@ module _
   open Cat.Univalent
 
   whisker-path-left
-    : ∀ {G G′ : Functor D E} {F : Functor C D}
+    : ∀ {G G' : Functor D E} {F : Functor C D}
         (ecat : is-category de)
-    → (p : G ≅ⁿ G′) → ∀ {x}
+    → (p : G ≅ⁿ G') → ∀ {x}
     → path→iso {C = E} (λ i → (Univalent.iso→path ecat p i F∘ F) .F₀ x) .to
     ≡ p .to .η (F₀ F x)
-  whisker-path-left {G} {G′} {F} p =
+  whisker-path-left {G} {G'} {F} p =
     de.J-iso
       (λ B isom → ∀ {x} → path→iso {C = E} (λ i → F₀ (de.iso→path isom i F∘ F) x) .to ≡ isom .to .η (F₀ F x))
       λ {x} → ap (λ e → path→iso {C = E} e .to)
@@ -78,16 +78,16 @@ module _
     where module de = Univalent p
 
   whisker-path-right
-    : ∀ {G : Functor D E} {F F′ : Functor C D}
+    : ∀ {G : Functor D E} {F F' : Functor C D}
         (cdcat : is-category cd)
-    → (p : F ≅ⁿ F′) → ∀ {x}
+    → (p : F ≅ⁿ F') → ∀ {x}
     → path→iso {C = E} (λ i → F₀ G (Univalent.iso→path cdcat p i .F₀ x)) .from
     ≡ G .F₁ (p .from .η x)
-  whisker-path-right {G} {G′} {F} cdcat =
+  whisker-path-right {G} {G'} {F} cdcat =
     cd.J-iso
       (λ B isom → ∀ {x} → path→iso {C = E} (λ i → F₀ G (cd.iso→path isom i .F₀ x)) .from ≡ G .F₁ (isom .from .η x))
       λ {x} → ap (λ e → path→iso {C = E} e .from)
-        (λ i j → G .F₀ (cd.iso→path-id {a = G′} i j .F₀ x))
+        (λ i j → G .F₀ (cd.iso→path-id {a = G'} i j .F₀ x))
         ∙ transport-refl _ ∙ sym (G .F-id)
     where module cd = Univalent cdcat
 

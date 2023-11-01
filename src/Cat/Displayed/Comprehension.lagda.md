@@ -126,7 +126,7 @@ module Comprehension (fib : Cartesian-fibration E) (P : Comprehension) where opa
   open Cartesian-fibration fib
 
   _⨾_ : ∀ Γ → Ob[ Γ ] → Ob
-  Γ ⨾ x = F₀′ x .domain
+  Γ ⨾ x = F₀' x .domain
 
   infixl 5 _⨾_
 
@@ -134,7 +134,7 @@ module Comprehension (fib : Cartesian-fibration E) (P : Comprehension) where opa
   x [ σ ] =  base-change E fib σ .F₀ x
 
   πᶜ : ∀ {Γ x} → Hom (Γ ⨾ x) Γ
-  πᶜ {x = x} = F₀′ x .map
+  πᶜ {x = x} = F₀' x .map
 ```
 
 As $\cE$ is a fibration, we can reindex along the projection to obtain a
@@ -150,11 +150,11 @@ Furthermore, if $y$ is an object over $\Gamma$, then we have a map over
 
 
 ```agda
-  πᶜ′ : ∀ {Γ} {x y : Ob[ Γ ]} → Hom[ πᶜ ] (weaken x y) y
-  πᶜ′ = has-lift.lifting πᶜ _
+  πᶜ' : ∀ {Γ} {x y : Ob[ Γ ]} → Hom[ πᶜ ] (weaken x y) y
+  πᶜ' = has-lift.lifting πᶜ _
 
-  πᶜ′-cartesian : ∀ {Γ x y} → is-cartesian E πᶜ (πᶜ′ {Γ} {x} {y})
-  πᶜ′-cartesian = has-lift.cartesian πᶜ _
+  πᶜ'-cartesian : ∀ {Γ x y} → is-cartesian E πᶜ (πᶜ' {Γ} {x} {y})
+  πᶜ'-cartesian = has-lift.cartesian πᶜ _
 ```
 
 Next, we define extension of substitutions, and show that they commute
@@ -162,12 +162,12 @@ with projections.
 
 ```agda
   _⨾ˢ_ : ∀ {Γ Δ x y} (σ : Hom Γ Δ) → Hom[ σ ] x y → Hom (Γ ⨾ x) (Δ ⨾ y)
-  σ ⨾ˢ f = F₁′ f .to
+  σ ⨾ˢ f = F₁' f .to
 
   infixl 5 _⨾ˢ_
 
   sub-proj : ∀ {Γ Δ x y} {σ : Hom Γ Δ} → (f : Hom[ σ ] x y) → πᶜ ∘ (σ ⨾ˢ f) ≡ σ ∘ πᶜ
-  sub-proj f = sym $ F₁′ f .commute
+  sub-proj f = sym $ F₁' f .commute
 ```
 
 Crucially, when $f$ is cartesian, then the above square is a pullback.
@@ -189,29 +189,29 @@ We also obtain a map over $\sigma.f$ between the weakenings of $x$ and
 $y$, which also commutes with projections.
 
 ```agda
-  _⨾ˢ′_
+  _⨾ˢ'_
     : ∀ {Γ Δ x y} (σ : Hom Γ Δ) → (f : Hom[ σ ] x y)
     → Hom[ σ ⨾ˢ f ] (weaken x x) (weaken y y)
-  σ ⨾ˢ′ f = has-lift.universal′ πᶜ _ (sub-proj f) (f ∘′ πᶜ′)
+  σ ⨾ˢ' f = has-lift.universal' πᶜ _ (sub-proj f) (f ∘' πᶜ')
 
-  infixl 5 _⨾ˢ′_
+  infixl 5 _⨾ˢ'_
 
-  sub-proj′
+  sub-proj'
     : ∀ {Γ Δ x y} {σ : Hom Γ Δ} → (f : Hom[ σ ] x y)
-    → πᶜ′ ∘′ (σ ⨾ˢ′ f) ≡[ sub-proj f ] f ∘′ πᶜ′
-  sub-proj′ f = has-lift.commutesp πᶜ _ (sub-proj _) (f ∘′ πᶜ′)
+    → πᶜ' ∘' (σ ⨾ˢ' f) ≡[ sub-proj f ] f ∘' πᶜ'
+  sub-proj' f = has-lift.commutesp πᶜ _ (sub-proj _) (f ∘' πᶜ')
 ```
 
 If we extend the identity substitution with the identity morphism, we
 obtain the identity morphism.
 
 ```agda
-  sub-id : ∀ {Γ x} → id {Γ} ⨾ˢ id′ {Γ} {x} ≡ id
-  sub-id = ap to F-id′
+  sub-id : ∀ {Γ x} → id {Γ} ⨾ˢ id' {Γ} {x} ≡ id
+  sub-id = ap to F-id'
 
-  sub-id′ : ∀ {Γ x} → (id ⨾ˢ′ id′) ≡[ sub-id {Γ} {x} ] id′
-  sub-id′ = symP $ has-lift.uniquep πᶜ _ _ (symP sub-id) (sub-proj id′) id′ $
-    idr′ _ ∙[] symP (idl′ _)
+  sub-id' : ∀ {Γ x} → (id ⨾ˢ' id') ≡[ sub-id {Γ} {x} ] id'
+  sub-id' = symP $ has-lift.uniquep πᶜ _ _ (symP sub-id) (sub-proj id') id' $
+    idr' _ ∙[] symP (idl' _)
 ```
 
 Furthermore, extending a substitution with a pair of composites is the
@@ -221,16 +221,16 @@ same as composing the two extensions.
   sub-∘
     : ∀ {Γ Δ Ψ x y z}
     → {σ : Hom Δ Ψ} {δ : Hom Γ Δ} {f : Hom[ σ ] y z} {g : Hom[ δ ] x y}
-    → (σ ∘ δ) ⨾ˢ (f ∘′ g) ≡ (σ ⨾ˢ f) ∘ (δ ⨾ˢ g)
-  sub-∘ {σ = σ} {δ = δ} {f = f} {g = g} = ap to F-∘′
+    → (σ ∘ δ) ⨾ˢ (f ∘' g) ≡ (σ ⨾ˢ f) ∘ (δ ⨾ˢ g)
+  sub-∘ {σ = σ} {δ = δ} {f = f} {g = g} = ap to F-∘'
 
-  sub-∘′
+  sub-∘'
     : ∀ {Γ Δ Ψ x y z}
     → {σ : Hom Δ Ψ} {δ : Hom Γ Δ} {f : Hom[ σ ] y z} {g : Hom[ δ ] x y}
-    → ((σ ∘ δ) ⨾ˢ′ (f ∘′ g)) ≡[ sub-∘ ] (σ ⨾ˢ′ f) ∘′ (δ ⨾ˢ′ g)
-  sub-∘′ = symP $ has-lift.uniquep πᶜ _ _ (symP sub-∘) (sub-proj _) _ $
-    pulll[] _ (sub-proj′ _)
-    ∙[] extendr[] _ (sub-proj′ _)
+    → ((σ ∘ δ) ⨾ˢ' (f ∘' g)) ≡[ sub-∘ ] (σ ⨾ˢ' f) ∘' (δ ⨾ˢ' g)
+  sub-∘' = symP $ has-lift.uniquep πᶜ _ _ (symP sub-∘) (sub-proj _) _ $
+    pulll[] _ (sub-proj' _)
+    ∙[] extendr[] _ (sub-proj' _)
 ```
 
 We can also define the substitution $\Gamma.A \to \Gamma.A.A$ that
@@ -265,7 +265,7 @@ the identity.
   proj-dup : ∀ {Γ x} → πᶜ ∘ δᶜ {Γ} {x} ≡ id
   proj-dup = sub-pullback.p₁∘universal (has-lift.cartesian πᶜ _)
 
-  extend-proj-dup : ∀ {Γ x} → (πᶜ ⨾ˢ πᶜ′) ∘ δᶜ {Γ} {x} ≡ id
+  extend-proj-dup : ∀ {Γ x} → (πᶜ ⨾ˢ πᶜ') ∘ δᶜ {Γ} {x} ≡ id
   extend-proj-dup = sub-pullback.p₂∘universal (has-lift.cartesian πᶜ _)
 ```
 
@@ -273,46 +273,46 @@ We also obtain a substitution upstairs from the weakening of $x$ to the iterated
 weakening of $x$.
 
 ```agda
-  δᶜ′ : ∀ {Γ} {x : Ob[ Γ ]} → Hom[ δᶜ ] (weaken x x) (weaken (weaken x x) (weaken x x))
-  δᶜ′ = has-lift.universal′ πᶜ (weaken _ _) proj-dup id′
+  δᶜ' : ∀ {Γ} {x : Ob[ Γ ]} → Hom[ δᶜ ] (weaken x x) (weaken (weaken x x) (weaken x x))
+  δᶜ' = has-lift.universal' πᶜ (weaken _ _) proj-dup id'
 ```
 
 We also obtain similar lemmas detailing how duplication upstairs interacts with
 projection.
 
 ```agda
-  proj-dup′ : ∀ {Γ x} → πᶜ′ ∘′ δᶜ′ {Γ} {x} ≡[ proj-dup ] id′
-  proj-dup′ = has-lift.commutesp πᶜ _ proj-dup _
+  proj-dup' : ∀ {Γ x} → πᶜ' ∘' δᶜ' {Γ} {x} ≡[ proj-dup ] id'
+  proj-dup' = has-lift.commutesp πᶜ _ proj-dup _
 
-  extend-proj-dup′ : ∀ {Γ x} → (πᶜ ⨾ˢ′ πᶜ′) ∘′ δᶜ′ {Γ} {x} ≡[ extend-proj-dup ] id′
-  extend-proj-dup′ = has-lift.uniquep₂ πᶜ _ _ _ _ _ _
-    (pulll[] _ (sub-proj′ _) ∙[] cancelr[] _ proj-dup′)
-    (idr′ _)
+  extend-proj-dup' : ∀ {Γ x} → (πᶜ ⨾ˢ' πᶜ') ∘' δᶜ' {Γ} {x} ≡[ extend-proj-dup ] id'
+  extend-proj-dup' = has-lift.uniquep₂ πᶜ _ _ _ _ _ _
+    (pulll[] _ (sub-proj' _) ∙[] cancelr[] _ proj-dup')
+    (idr' _)
 ```
 
-From this, we can conclude that `δᶜ′`{.Agda} is cartesian. The
+From this, we can conclude that `δᶜ'`{.Agda} is cartesian. The
 factorisation of $h' : u \to \Gamma.x.x$ is given by $\pi \circ h'$. This
-is universal, as `δᶜ′`{.Agda} is given by the universal factorisation of
+is universal, as `δᶜ'`{.Agda} is given by the universal factorisation of
 $\pi$.
 
 ```agda
-  δᶜ′-cartesian : ∀ {Γ x} → is-cartesian E (δᶜ {Γ} {x}) δᶜ′
-  δᶜ′-cartesian {Γ = Γ} {x = x} = cart where
+  δᶜ'-cartesian : ∀ {Γ x} → is-cartesian E (δᶜ {Γ} {x}) δᶜ'
+  δᶜ'-cartesian {Γ = Γ} {x = x} = cart where
     open is-cartesian
 
-    cart : is-cartesian E (δᶜ {Γ} {x}) δᶜ′
-    cart .universal m h′ = hom[ cancell proj-dup ] (πᶜ′ ∘′ h′)
-    cart .commutes m h′ = cast[] $
+    cart : is-cartesian E (δᶜ {Γ} {x}) δᶜ'
+    cart .universal m h' = hom[ cancell proj-dup ] (πᶜ' ∘' h')
+    cart .commutes m h' = cast[] $
       unwrapr _
       ∙[] has-lift.uniquep₂ πᶜ _ _ (ap₂ _∘_ refl (cancell proj-dup)) refl _ _
-        (cancell[] _ proj-dup′)
+        (cancell[] _ proj-dup')
         refl
-    cart .unique m′ p =
+    cart .unique m' p =
       has-lift.uniquep₂ πᶜ _ refl refl _ _ _
         refl
         (unwrapr _
-        ∙[] ap₂ _∘′_ refl (ap₂ _∘′_ refl (sym p))
-        ∙[] λ i → πᶜ′ ∘′ cancell[] _  proj-dup′ {f′ = m′} i)
+        ∙[] ap₂ _∘'_ refl (ap₂ _∘'_ refl (sym p))
+        ∙[] λ i → πᶜ' ∘' cancell[] _  proj-dup' {f' = m'} i)
 ```
 
 We can also characterize how duplication interacts with extension.
@@ -320,7 +320,7 @@ We can also characterize how duplication interacts with extension.
 ```agda
   dup-extend
     : ∀ {Γ Δ x y} {σ : Hom Γ Δ} {f : Hom[ σ ] x y}
-    → δᶜ ∘ (σ ⨾ˢ f) ≡ (σ ⨾ˢ f ⨾ˢ (σ ⨾ˢ′ f)) ∘ δᶜ
+    → δᶜ ∘ (σ ⨾ˢ f) ≡ (σ ⨾ˢ f ⨾ˢ (σ ⨾ˢ' f)) ∘ δᶜ
   dup-extend {σ = σ} {f = f} =
     sub-pullback.unique₂ (has-lift.cartesian πᶜ _)
       {p = refl}
@@ -328,33 +328,33 @@ We can also characterize how duplication interacts with extension.
       (cancell extend-proj-dup)
       (pulll (sub-proj _)
        ∙ cancelr proj-dup)
-      (pulll (sym sub-∘ ∙ ap₂ _⨾ˢ_ (sub-proj _) (sub-proj′ _) ∙ sub-∘)
+      (pulll (sym sub-∘ ∙ ap₂ _⨾ˢ_ (sub-proj _) (sub-proj' _) ∙ sub-∘)
        ∙ cancelr extend-proj-dup)
 
-  dup-extend′
+  dup-extend'
     : ∀ {Γ Δ x y} {σ : Hom Γ Δ} {f : Hom[ σ ] x y}
-    → δᶜ′ ∘′ (σ ⨾ˢ′ f) ≡[ dup-extend ] (σ ⨾ˢ f ⨾ˢ′ (σ ⨾ˢ′ f)) ∘′ δᶜ′
-  dup-extend′ {σ = σ} {f = f} =
+    → δᶜ' ∘' (σ ⨾ˢ' f) ≡[ dup-extend ] (σ ⨾ˢ f ⨾ˢ' (σ ⨾ˢ' f)) ∘' δᶜ'
+  dup-extend' {σ = σ} {f = f} =
     has-lift.uniquep₂ πᶜ _ _ _ _ _ _
-      (cancell[] _ proj-dup′)
-      (pulll[] _ (sub-proj′ (σ ⨾ˢ′ f)) ∙[] cancelr[] _ proj-dup′)
+      (cancell[] _ proj-dup')
+      (pulll[] _ (sub-proj' (σ ⨾ˢ' f)) ∙[] cancelr[] _ proj-dup')
 ```
 
 ```agda
-  extend-dup² : ∀ {Γ x} → (δᶜ {Γ} {x} ⨾ˢ δᶜ′) ∘ δᶜ ≡ δᶜ ∘ δᶜ
+  extend-dup² : ∀ {Γ x} → (δᶜ {Γ} {x} ⨾ˢ δᶜ') ∘ δᶜ ≡ δᶜ ∘ δᶜ
   extend-dup² =
     sub-pullback.unique₂ (has-lift.cartesian πᶜ _)
       {p = refl}
       (pulll (sub-proj _) ∙ cancelr proj-dup)
-      (cancell (sym sub-∘ ∙ ap₂ _⨾ˢ_ proj-dup proj-dup′ ∙ sub-id))
+      (cancell (sym sub-∘ ∙ ap₂ _⨾ˢ_ proj-dup proj-dup' ∙ sub-id))
       (cancell proj-dup)
       (cancell extend-proj-dup)
 
-  extend-dup²′ : ∀ {Γ x} → (δᶜ {Γ} {x} ⨾ˢ′ δᶜ′) ∘′ δᶜ′ ≡[ extend-dup² ] δᶜ′ ∘′ δᶜ′
-  extend-dup²′ = has-lift.uniquep₂ πᶜ
+  extend-dup²' : ∀ {Γ x} → (δᶜ {Γ} {x} ⨾ˢ' δᶜ') ∘' δᶜ' ≡[ extend-dup² ] δᶜ' ∘' δᶜ'
+  extend-dup²' = has-lift.uniquep₂ πᶜ
     _ _ _ _ _ _
-    (pulll[] _ (sub-proj′ δᶜ′) ∙[] cancelr[] _ proj-dup′)
-    (cancell[] _ proj-dup′)
+    (pulll[] _ (sub-proj' δᶜ') ∙[] cancelr[] _ proj-dup')
+    (cancell[] _ proj-dup')
 ```
 
 Note that we can extend the operation of context extension to a functor
@@ -365,8 +365,8 @@ $(\Gamma, A)$ to $\Gamma.A$
   Extend : Functor (∫ E) B
   Extend .F₀ (Γ , x) = Γ ⨾ x
   Extend .F₁ (total-hom σ f) = σ ⨾ˢ f
-  Extend .F-id = ap to F-id′
-  Extend .F-∘ f g = ap to F-∘′
+  Extend .F-id = ap to F-id'
+  Extend .F-∘ f g = ap to F-∘'
 ```
 
 There is also a natural transformation from this functor into the
@@ -445,11 +445,11 @@ of $X$.
   comonad .W .F₀ (Γ , x) =
     Γ ⨾ x , weaken x x
   comonad .W .F₁ (total-hom σ f) =
-    total-hom (σ ⨾ˢ f) (σ ⨾ˢ′ f)
+    total-hom (σ ⨾ˢ f) (σ ⨾ˢ' f)
   comonad .W .F-id =
-    total-hom-path E sub-id sub-id′
+    total-hom-path E sub-id sub-id'
   comonad .W .F-∘ (total-hom σ f) (total-hom δ g) =
-    total-hom-path E sub-∘ sub-∘′
+    total-hom-path E sub-∘ sub-∘'
 ```
 
 The counit is given by the projection substitution, and comultiplication
@@ -457,19 +457,19 @@ is given by duplication.
 
 ```agda
   comonad .counit .η (Γ , x) =
-    total-hom πᶜ πᶜ′
+    total-hom πᶜ πᶜ'
   comonad .counit .is-natural (Γ , x) (Δ , g) (total-hom σ f) =
-    total-hom-path E (sub-proj f) (sub-proj′ f)
+    total-hom-path E (sub-proj f) (sub-proj' f)
   comonad .comult .η (Γ , x) =
-    total-hom δᶜ δᶜ′
+    total-hom δᶜ δᶜ'
   comonad .comult .is-natural (Γ , x) (Δ , g) (total-hom σ f) =
-    total-hom-path E dup-extend dup-extend′
+    total-hom-path E dup-extend dup-extend'
   comonad .left-ident =
-    total-hom-path E extend-proj-dup extend-proj-dup′
+    total-hom-path E extend-proj-dup extend-proj-dup'
   comonad .right-ident =
-    total-hom-path E proj-dup proj-dup′
+    total-hom-path E proj-dup proj-dup'
   comonad .comult-assoc =
-    total-hom-path E extend-dup² extend-dup²′
+    total-hom-path E extend-dup² extend-dup²'
 ```
 
 To see that this comonad is a comprehension comonad, note that the
@@ -481,12 +481,12 @@ morphism most certainly is!
 ```agda
   comp-comonad : Comprehension-comonad
   comp-comonad .Comprehension-comonad.comonad = comonad
-  comp-comonad .Comprehension-comonad.counit-cartesian = πᶜ′-cartesian
+  comp-comonad .Comprehension-comonad.counit-cartesian = πᶜ'-cartesian
   comp-comonad .Comprehension-comonad.cartesian-pullback cart =
     cartesian+pullback→total-pullback E
-      πᶜ′-cartesian πᶜ′-cartesian
+      πᶜ'-cartesian πᶜ'-cartesian
       (sub-pullback cart)
-      (cast[] (symP (sub-proj′ _)))
+      (cast[] (symP (sub-proj' _)))
 ```
 
 We also show that comprehension comonads yield comprehension structures.
@@ -511,12 +511,12 @@ Comonad→comprehension fib comp-comonad = comprehend where
   open is-pullback
 
   vert : Vertical-functor E (Slices B)
-  vert .F₀′ {Γ} x = cut (counit.ε (Γ , x) .hom)
-  vert .F₁′ {f = σ} f =
+  vert .F₀' {Γ} x = cut (counit.ε (Γ , x) .hom)
+  vert .F₁' {f = σ} f =
     slice-hom (W₁ (total-hom σ f) .hom)
       (sym (ap hom (counit.is-natural _ _ _)))
-  vert .F-id′ = Slice-path B (ap hom W-id)
-  vert .F-∘′ = Slice-path B (ap hom (W-∘ _ _))
+  vert .F-id' = Slice-path B (ap hom W-id)
+  vert .F-∘' = Slice-path B (ap hom (W-∘ _ _))
 ```
 
 To see that this functor is fibred, recall that pullbacks in the

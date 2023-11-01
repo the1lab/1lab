@@ -159,11 +159,11 @@ homotopy n-type is itself a homotopy n-type.
 
 <!--
 ```agda
-Π-is-hlevel′
+Π-is-hlevel'
   : ∀ {a b} {A : Type a} {B : A → Type b}
   → (n : Nat) (Bhl : (x : A) → is-hlevel (B x) n)
   → is-hlevel ({x : A} → B x) n
-Π-is-hlevel′ n bhl = retract→is-hlevel n
+Π-is-hlevel' n bhl = retract→is-hlevel n
   (λ f {x} → f x) (λ f x → f) (λ _ → refl)
   (Π-is-hlevel n bhl)
 
@@ -284,7 +284,6 @@ hlevel : ∀ {ℓ} {T : Type ℓ} n ⦃ x : H-Level T n ⦄ → is-hlevel T n
 hlevel n ⦃ x ⦄ = H-Level.has-hlevel x
 
 private variable
-  ℓ′ : Level
   S T : Type ℓ
 
 module _ where
@@ -337,11 +336,11 @@ instance
   H-Level-⊥ : ∀ {n} → H-Level ⊥ (suc n)
   H-Level-⊥ {n = n} = prop-instance λ x y → absurd x
 
-  H-Level-pi′
+  H-Level-pi'
     : ∀ {n} {S : T → Type ℓ}
     → ⦃ ∀ {x} → H-Level (S x) n ⦄
     → H-Level (∀ {x} → S x) n
-  H-Level-pi′ {n = n} .H-Level.has-hlevel = Π-is-hlevel′ n λ _ → hlevel n
+  H-Level-pi' {n = n} .H-Level.has-hlevel = Π-is-hlevel' n λ _ → hlevel n
 
   H-Level-sigma
     : ∀ {n} {S : T → Type ℓ}

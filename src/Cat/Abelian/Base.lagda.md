@@ -310,12 +310,12 @@ monomorphism].
 ```agda
   decompose
     : ∀ {A B} (f : Hom A B)
-    → Σ[ f′ ∈ Hom (Coker.coapex (Ker.kernel f)) (Ker.ker (Coker.coeq f)) ]
-       (f ≡ Ker.kernel (Coker.coeq f) ∘ f′ ∘ Coker.coeq (Ker.kernel f))
+    → Σ[ f' ∈ Hom (Coker.coapex (Ker.kernel f)) (Ker.ker (Coker.coeq f)) ]
+       (f ≡ Ker.kernel (Coker.coeq f) ∘ f' ∘ Coker.coeq (Ker.kernel f))
   decompose {A} {B} f = map , sym path
     where
-      proj′ : Hom (Coker.coapex (Ker.kernel f)) B
-      proj′ = Coker.universal (Ker.kernel f) {e′ = f} $ sym path
+      proj' : Hom (Coker.coapex (Ker.kernel f)) B
+      proj' = Coker.universal (Ker.kernel f) {e' = f} $ sym path
 ```
 
 <!--
@@ -331,7 +331,7 @@ monomorphism].
 
 ```agda
       map : Hom (Coker.coapex (Ker.kernel f)) (Ker.ker (Coker.coeq f))
-      map = Ker.universal (Coker.coeq f) {e′ = proj′} $ sym path
+      map = Ker.universal (Coker.coeq f) {e' = proj'} $ sym path
 ```
 
 The existence of the map $f'$, and indeed of the maps $p$ and $i$,
@@ -342,9 +342,9 @@ the canonical subobject inclusion $\ker(f) \to B$.
 <!--
 ```agda
         where abstract
-          path : ∅.zero→ ∘ proj′ ≡ Coker.coeq f ∘ proj′
+          path : ∅.zero→ ∘ proj' ≡ Coker.coeq f ∘ proj'
           path = Coker.unique₂ (Ker.kernel f)
-            {e′ = 0m} (∘-zero-r ∙ sym ∘-zero-l)
+            {e' = 0m} (∘-zero-r ∙ sym ∘-zero-l)
             (pushl (∅.zero-∘r _) ∙ pulll ( ap₂ _∘_ refl (∅.has⊤ _ .paths 0m)
                                                ∙ ∘-zero-r)
                  ∙ ∘-zero-l)
@@ -353,7 +353,7 @@ the canonical subobject inclusion $\ker(f) \to B$.
 
       path =
         Ker.kernel (Coker.coeq f) ∘ map ∘ Coker.coeq (Ker.kernel f) ≡⟨ pulll (Ker.factors _) ⟩
-        proj′ ∘ Coker.coeq (Ker.kernel f)                           ≡⟨ Coker.factors _ ⟩
+        proj' ∘ Coker.coeq (Ker.kernel f)                           ≡⟨ Coker.factors _ ⟩
         f                                                           ∎
 ```
 -->
@@ -409,7 +409,7 @@ $f$ is mono), we have $0 = \ker f$ from $f0 = f\ker f$.
 ```agda
       kercoker→f : m.Hom (cut (Ker.kernel (Coker.coeq f))) (cut f)
       kercoker→f ./-Hom.map =
-        Coker.universal (Ker.kernel f) {e′ = id} (monic _ _ path) ∘
+        Coker.universal (Ker.kernel f) {e' = id} (monic _ _ path) ∘
           coker-ker≃ker-coker f .is-invertible.inv
         where abstract
           path : f ∘ id ∘ 0m ≡ f ∘ id ∘ Ker.kernel f
@@ -454,7 +454,7 @@ $\cA$, thus assemble into an isomorphism in the slice.
         id                                                           ∎
         where
           lemma = Coker.unique₂ _
-            {e′ = Coker.coeq (Ker.kernel f)}
+            {e' = Coker.coeq (Ker.kernel f)}
             (∘-zero-r ∙ sym (sym (Coker.coequal _) ∙ ∘-zero-r))
             (pullr (Coker.factors (Ker.kernel f)) ∙ elimr refl)
             (eliml refl)

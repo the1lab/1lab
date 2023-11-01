@@ -54,7 +54,7 @@ applies here:
 Poly-is-category : ∀ {ℓ} → is-category (Poly ℓ)
 Poly-is-category =
   is-category-total _ Sets-is-category $
-    is-category-fibrewise′ _
+    is-category-fibrewise' _
       Sets-is-category
       (λ x → Families-are-categories _ x (opposite-is-category Sets-is-category))
 ```

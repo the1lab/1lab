@@ -39,7 +39,7 @@ indeed cocomplete:
 cocomplete : ∀ {I : Type ℓ} (F : I → ⌞ B ⌟) → Σ _ (is-lub po F)
 cocomplete F .fst = ⋃ F
 cocomplete F .snd .is-lub.fam≤lub i = ⋃-colimiting i F
-cocomplete F .snd .is-lub.least ub′ fam≤ub′ = ⋃-universal F fam≤ub′
+cocomplete F .snd .is-lub.least ub' fam≤ub' = ⋃-universal F fam≤ub'
 ```
 
 This module also has further lemmas about the interplay between meets
@@ -85,14 +85,14 @@ But this result relies on the cocontinuity of meets.
   (⋃-universal _ λ (i , j) → ≤-trans (⋃-colimiting j _) (⋃-colimiting i _))
 
 ⋃-ap
-  : ∀ {I I′ : Type ℓ} {f : I → ⌞ B ⌟} {g : I′ → ⌞ B ⌟}
-  → (e : I ≃ I′)
+  : ∀ {I I' : Type ℓ} {f : I → ⌞ B ⌟} {g : I' → ⌞ B ⌟}
+  → (e : I ≃ I')
   → (∀ i → f i ≡ g (e .fst i))
   → ⋃ f ≡ ⋃ g
 ⋃-ap e p = ap₂ (λ I f → ⋃ {I = I} f) (ua e) (ua→ p)
 
 -- raised i for "index", raised f for "family"
-⋃-apⁱ : ∀ {I I′ : Type ℓ} {f : I′ → ⌞ B ⌟} (e : I ≃ I′) → ⋃ (λ i → f (e .fst i)) ≡ ⋃ f
+⋃-apⁱ : ∀ {I I' : Type ℓ} {f : I' → ⌞ B ⌟} (e : I ≃ I') → ⋃ (λ i → f (e .fst i)) ≡ ⋃ f
 ⋃-apᶠ : ∀ {I : Type ℓ} {f g : I → ⌞ B ⌟} → (∀ i → f i ≡ g i) → ⋃ f ≡ ⋃ g
 
 ⋃-apⁱ e = ⋃-ap e (λ i → refl)
