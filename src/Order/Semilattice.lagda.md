@@ -65,6 +65,7 @@ record Semilattice-on {ℓ} (A : Type ℓ) : Type ℓ where
     _∩_ : A → A → A
     has-is-semilattice : is-semilattice top _∩_
   open is-semilattice has-is-semilattice public
+  infixr 25 _∩_
 ```
 
 <!--
@@ -240,8 +241,8 @@ semilattice homomorphism is a monotone map under the induced ordering.
 ```agda
 Meet-semi-lattice .F₁ f .hom = f .hom
 Meet-semi-lattice .F₁ f .preserves x y p = ap (f .hom) p ∙ f .preserves .Monoid-hom.pres-⋆ _ _
-Meet-semi-lattice .F-id    = trivialᵉ
-Meet-semi-lattice .F-∘ f g = trivialᵉ
+Meet-semi-lattice .F-id    = trivial!
+Meet-semi-lattice .F-∘ f g = trivial!
 ```
 
 ## The interface

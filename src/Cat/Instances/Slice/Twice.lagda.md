@@ -59,8 +59,8 @@ Slice-twice f .F₁ h .map .map      = h .map
 Slice-twice f .F₁ h .map .commutes = pullr (h .commutes)
 Slice-twice f .F₁ h .commutes      = ext (h .commutes)
 
-Slice-twice f .F-id    = trivialᵉ
-Slice-twice f .F-∘ g h = trivialᵉ
+Slice-twice f .F-id    = trivial!
+Slice-twice f .F-∘ g h = trivial!
 
 Twice-slice : (f : Hom a b) → Functor (Slice (Slice C b) (cut f)) (Slice C a)
 Twice-slice _ .F₀ x .domain = x .domain .domain
@@ -69,8 +69,8 @@ Twice-slice _ .F₀ x .map    = x .map .map
 Twice-slice _ .F₁ h .map      = h .map .map
 Twice-slice _ .F₁ h .commutes = ap map (h .commutes)
 
-Twice-slice _ .F-id = trivialᵉ
-Twice-slice _ .F-∘ _ _ = trivialᵉ
+Twice-slice _ .F-id = trivial!
+Twice-slice _ .F-∘ _ _ = trivial!
 ```
 
 We will also need the fact that these inverses are also adjoints.

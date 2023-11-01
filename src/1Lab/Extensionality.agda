@@ -241,7 +241,7 @@ private
       `x ← quoteTC x
       `y ← quoteTC y
       typeError
-        [ "trivialᵉ failed: the values\n  "
+        [ "trivial! failed: the values\n  "
         , termErr `x
         , "\nand\n  "
         , termErr `y
@@ -249,7 +249,7 @@ private
         ]
 
 {-
-trivialᵉ serves to replace proofs like
+trivial! serves to replace proofs like
 
   Nat-path λ x → funext λ y → Nat-path λ z → Homomorphism-path λ a → refl
 
@@ -263,12 +263,12 @@ up.
 -}
 
 opaque
-  trivialᵉ
+  trivial!
     : ∀ {ℓ ℓr} {A : Type ℓ} {x y : A}
     → ⦃ r : Extensional A ℓr ⦄
     → {@(tactic trivial-worker r x y) p : Pathᵉ r x y}
     → x ≡ y
-  trivialᵉ ⦃ r ⦄ {p = p} = r .idsᵉ .to-path p
+  trivial! ⦃ r ⦄ {p = p} = r .idsᵉ .to-path p
 
 Pathᵉ-is-hlevel
   : ∀ {ℓ ℓr} {A : Type ℓ} n (sa : Extensional A ℓr)

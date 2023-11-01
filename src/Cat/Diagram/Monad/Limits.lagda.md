@@ -124,7 +124,7 @@ functor $U$ reflects limits: We already had an algebra structure
   Forget-reflects-limits : reflects-limit (Forget C M) F
   Forget-reflects-limits {K} {eps} lim = to-is-limitp
     (make-algebra-limit lim (K .F₀ tt .snd) (λ j → eps .η j .commutes))
-    trivialᵉ
+    trivial!
 ```
 
 Having shown that $U$ reflects the property of _being a limit_, we now

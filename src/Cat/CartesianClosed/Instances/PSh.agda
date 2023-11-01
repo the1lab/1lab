@@ -82,8 +82,8 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     pb .has-is-pb .universal path .η idx arg = _ , _ , (path ηₚ idx $ₚ arg)
     pb .has-is-pb .universal {p₁' = p₁'} {p₂'} path .is-natural x y f =
       funext λ x → pb-path (happly (p₁' .is-natural _ _ _) _) (happly (p₂' .is-natural _ _ _) _)
-    pb .has-is-pb .p₁∘universal = trivialᵉ
-    pb .has-is-pb .p₂∘universal = trivialᵉ
+    pb .has-is-pb .p₁∘universal = trivial!
+    pb .has-is-pb .p₂∘universal = trivial!
     pb .has-is-pb .unique p q = Nat-path λ _ → funext λ _ →
       pb-path (p ηₚ _ $ₚ _) (q ηₚ _ $ₚ _)
 
@@ -104,8 +104,8 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     prod .has-is-product .⟨_,_⟩ f g =
       NT (λ i x → f .η i x , g .η i x) λ x y h i a →
         f .is-natural x y h i a , g .is-natural x y h i a
-    prod .has-is-product .π₁∘factor = trivialᵉ
-    prod .has-is-product .π₂∘factor = trivialᵉ
+    prod .has-is-product .π₁∘factor = trivial!
+    prod .has-is-product .π₂∘factor = trivial!
     prod .has-is-product .unique h p q = Nat-path (λ i j y → p j .η i y , q j .η i y)
 
   {-# TERMINATING #-}
@@ -135,8 +135,8 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     coprod .has-is-coproduct .is-coproduct.[_,_] f g .is-natural x y h = funext λ where
       (inl x) → f .is-natural _ _ _ $ₚ _
       (inr x) → g .is-natural _ _ _ $ₚ _
-    coprod .has-is-coproduct .in₀∘factor = trivialᵉ
-    coprod .has-is-coproduct .in₁∘factor = trivialᵉ
+    coprod .has-is-coproduct .in₀∘factor = trivial!
+    coprod .has-is-coproduct .in₁∘factor = trivial!
     coprod .has-is-coproduct .unique other p q = ext λ where
       a (inl x) → p ηₚ a $ₚ x
       a (inr x) → q ηₚ a $ₚ x
@@ -207,9 +207,9 @@ module _ {κ} {C : Precategory κ κ} where
       func .F₁ f .η i g .η j (h , x) = f .η _ (g .η _ (h , x))
       func .F₁ f .η i g .is-natural x y h = funext λ x →
         ap (f .η _) (happly (g .is-natural _ _ _) _) ∙ happly (f .is-natural _ _ _) _
-      func .F₁ nt .is-natural x y f = trivialᵉ
-      func .F-id = trivialᵉ
-      func .F-∘ f g = trivialᵉ
+      func .F₁ nt .is-natural x y f = trivial!
+      func .F-id = trivial!
+      func .F-∘ f g = trivial!
 
       adj : Bifunctor.Left ×-functor A ⊣ func
       adj .unit .η x .η i a =

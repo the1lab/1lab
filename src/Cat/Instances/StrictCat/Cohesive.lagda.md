@@ -258,7 +258,7 @@ using our path helpers: `Nat-path`{.Agda}, `funext`{.Agda}, and
     f∘g = ext λ c x → Functor-path (λ x → refl) λ f → sym (F-id x)
 
     g∘f : g ∘nt f ≡ idnt
-    g∘f = trivialᵉ
+    g∘f = trivial!
 ```
 
 # Connected components

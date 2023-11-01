@@ -205,7 +205,7 @@ is-effective-mono→image {f = f} mon = im where
     hom : ↓Hom _ _ itself other
     hom .α = tt
     hom .β = other .map
-    hom .sq = trivialᵉ
+    hom .sq = trivial!
 
     unique : ∀ x → hom ≡ x
     unique x = ↓Hom-path _ _ refl

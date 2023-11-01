@@ -263,10 +263,10 @@ properties of the underlying map.
 
 ```agda
     from∘to : is-right-inverse from comparison.₁
-    from∘to x = trivialᵉ
+    from∘to x = trivial!
 
     to∘from : is-left-inverse from comparison.₁
-    to∘from x = trivialᵉ
+    to∘from x = trivial!
 ```
 
 Showing that the functor is essentially surjective is significantly more

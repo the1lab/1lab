@@ -583,6 +583,22 @@ is a proposition:
 open Precategory
 open _=>_
 
+{-
+Set-up for using natural transformations with the extensionality tactic;
+See the docs in 1Lab.Extensionality for a more detailed explanation of
+how it works.
+
+This function is the actual worker which computes the preferred
+identity system for natural transformations. Its type asks for
+
+   ∀ x → Extensional (D.Hom (F # x) (G # x))
+
+instead of the more generic ∀ x y → Extensional (D.Hom x y) so that
+any specific *instances* for D.Hom involving the object parts of F and G
+have a chance to fire. E.g. if G is the product functor on Sets then
+(x → y) will only match the funext instance but (x → G # y) will
+match funext *and* product extensionality.
+-}
 Extensional-natural-transformation
   : ∀ {o ℓ o' ℓ' ℓr} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
   → {F G : Functor C D}
@@ -599,6 +615,10 @@ Extensional-natural-transformation {D = D} {sa = sa} .idsᵉ .to-path-over h =
     (λ i → Π-is-hlevel 1
       (λ _ → is-hlevel≃ 1 (identity-system-gives-path (sa _ .idsᵉ)) (D .Hom-set _ _ _ _)))
     _ _
+
+-- Actually define the loop-breaker instance which tells the
+-- extensionality tactic what lemma to use for a type of natural
+-- transformations.
 
 instance
   extensionality-natural-transformation

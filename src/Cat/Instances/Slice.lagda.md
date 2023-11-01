@@ -528,8 +528,8 @@ fast:
   Total-space .F₁ nt .map (i , x) = i , nt .η _ x
   Total-space .F₁ nt .commutes    = refl
 
-  Total-space .F-id    = trivialᵉ
-  Total-space .F-∘ _ _ = trivialᵉ
+  Total-space .F-id    = trivial!
+  Total-space .F-∘ _ _ = trivial!
 ```
 
 Since the construction of the functor itself is straightforward, we turn

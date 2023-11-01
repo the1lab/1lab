@@ -56,8 +56,8 @@ Frame↪SLat .F₁ f .hom = f .hom
 Frame↪SLat .F₁ f .preserves .Monoid-hom.pres-id = f .preserves .is-frame-hom.pres-⊤
 Frame↪SLat .F₁ f .preserves .Monoid-hom.pres-⋆ = f .preserves .is-frame-hom.pres-∩
 
-Frame↪SLat .F-id = trivialᵉ
-Frame↪SLat .F-∘ f g = trivialᵉ
+Frame↪SLat .F-id = trivial!
+Frame↪SLat .F-∘ f g = trivial!
 ```
 
 The question this module seeks to answer is: is there a way to freely

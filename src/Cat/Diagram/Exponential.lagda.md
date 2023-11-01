@@ -454,7 +454,7 @@ $\Delta_B \dashv \Pi_B$ we've been chasing.
         Σ (Hom X (-^B .F₀ (f .domain))) (λ h → ƛ (f .map ∘ ev) ∘ h ≡ ƛ π₂ ∘ !)
           ≃⟨ Σ-ap (Equiv.inverse (ƛ , lambda-is-equiv _)) (coh₁ f) ⟩
         Σ (Hom (X ⊗₀ B) (f .domain)) (λ h → f .map ∘ h ≡ π₂)
-          ≃⟨ Iso→Equiv ((λ x → record { commutes = x .snd }) , iso (λ x → _ , x .commutes) (λ _ → trivialᵉ) (λ _ → trivialᵉ)) ⟩
+          ≃⟨ Iso→Equiv ((λ x → record { commutes = x .snd }) , iso (λ x → _ , x .commutes) (λ _ → trivial!) (λ _ → trivial!)) ⟩
         Slice C B .Precategory.Hom (b.₀ X) f
           ≃∎
 

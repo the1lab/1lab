@@ -127,8 +127,8 @@ module _ {X Y : Ob} (f : Hom Y X) where
   Σf : Functor (Slice C Y) (Slice C X)
   Σf .F₀ o = cut (f ∘ o .map)
   Σf .F₁ dh = record { map = dh .map ; commutes = pullr (dh .commutes) }
-  Σf .F-id = trivialᵉ
-  Σf .F-∘ f g = trivialᵉ
+  Σf .F-id = trivial!
+  Σf .F-∘ f g = trivial!
 
   open _⊣_
   open _=>_
@@ -146,7 +146,7 @@ module _ {X Y : Ob} (f : Hom Y X) where
 
   func = Σf f
   Σ-ff : ∀ {x y} → is-equiv (func .F₁ {x} {y})
-  Σ-ff = is-iso→is-equiv (iso ∘inv (λ x → trivialᵉ) λ x → trivialᵉ) where
+  Σ-ff = is-iso→is-equiv (iso ∘inv (λ x → trivial!) λ x → trivial!) where
     ∘inv : /-Hom _ _ → /-Hom _ _
     ∘inv o .map = o .map
     ∘inv o .commutes = invertible→monic isom _ _ (assoc _ _ _ ∙ o .commutes)

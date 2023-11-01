@@ -180,7 +180,7 @@ R-Mod-ab-category .Abelian-group-on-hom A B = to-abelian-group-on grp where
   grp .invl f      = Homomorphism-path λ x → +-invl
   grp .comm f g    = Homomorphism-path λ x → +-comm _ _
 
-R-Mod-ab-category .∘-linear-l f g h = trivialᵉ
+R-Mod-ab-category .∘-linear-l f g h = trivial!
 R-Mod-ab-category .∘-linear-r {B = B} {C} f g h = Homomorphism-path λ x → sym (is-linear-map.pres-+ (f .preserves) _ _)
 ```
 -->
@@ -263,8 +263,8 @@ path-mangling, but it's nothing _too_ bad:
   prod .has-is-product .⟨_,_⟩ f g .hom x = f # x , g # x
   prod .has-is-product .⟨_,_⟩ f g .preserves .linear r m s =
     Σ-pathp (f .preserves .linear _ _ _) (g .preserves .linear _ _ _)
-  prod .has-is-product .π₁∘factor = trivialᵉ
-  prod .has-is-product .π₂∘factor = trivialᵉ
+  prod .has-is-product .π₁∘factor = trivial!
+  prod .has-is-product .π₂∘factor = trivial!
   prod .has-is-product .unique other p q = ext λ x → p #ₚ x , q #ₚ x
 ```
 

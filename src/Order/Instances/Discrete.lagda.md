@@ -38,8 +38,8 @@ This extends to a functor from $\Sets$ into the category of posets.
 DiscF : ∀ {ℓ} → Functor (Sets ℓ) (Posets ℓ ℓ)
 DiscF .Functor.F₀ = Disc
 DiscF .Functor.F₁ f = total-hom f (λ _ _ p → ap f p)
-DiscF .Functor.F-id = trivialᵉ
-DiscF .Functor.F-∘ f g = trivialᵉ
+DiscF .Functor.F-id = trivial!
+DiscF .Functor.F-∘ f g = trivial!
 ```
 
 Furthermore, this functor is a [[left adjoint]] to the forgetful functor
@@ -51,8 +51,8 @@ DiscF⊣Forget ._⊣_.unit ._=>_.η A x = x
 DiscF⊣Forget ._⊣_.unit ._=>_.is-natural _ _ _ = refl
 DiscF⊣Forget ._⊣_.counit ._=>_.η P =
   total-hom (λ x → x) (λ _ _ → Poset.path→≤ P)
-DiscF⊣Forget ._⊣_.counit ._=>_.is-natural P Q f = trivialᵉ
-DiscF⊣Forget ._⊣_.zig {A = A} = trivialᵉ
+DiscF⊣Forget ._⊣_.counit ._=>_.is-natural P Q f = trivial!
+DiscF⊣Forget ._⊣_.zig {A = A} = trivial!
 DiscF⊣Forget ._⊣_.zag = refl
 ```
 

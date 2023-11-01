@@ -101,6 +101,6 @@ Ab-hom-functor .F₀ (A , B) = Ab[ A , B ]
 Ab-hom-functor .F₁ (f , g) .hom h = g Ab.∘ h Ab.∘ f
 Ab-hom-functor .F₁ (f , g) .preserves .pres-⋆ x y = ext λ z →
   g .preserves .pres-⋆ _ _
-Ab-hom-functor .F-id    = trivialᵉ
-Ab-hom-functor .F-∘ f g = trivialᵉ
+Ab-hom-functor .F-id    = trivial!
+Ab-hom-functor .F-∘ f g = trivial!
 ```
