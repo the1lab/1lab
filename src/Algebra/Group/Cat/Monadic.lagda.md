@@ -105,8 +105,8 @@ is indeed a group structure, which is an incredibly boring calculation.
       ν (T.mult.η G (inc nil))                         ≡⟨⟩
       ν nil                                            ∎
 
-    idl′ : ∀ x → mult (ν nil) x ≡ x
-    idl′ x =
+    idl' : ∀ x → mult (ν nil) x ≡ x
+    idl' x =
       ν (inc (ν nil) ◆ inc x)            ≡⟨ (λ i → ν (inc (ν nil) ◆ inc (ν-unit (~ i) x))) ⟩
       ν (inc (ν nil) ◆ inc (ν (inc x)))  ≡⟨ happly ν-mult (inc _ ◆ inc _) ⟩
       ν (T.mult.η G (nil ◆ inc (inc x))) ≡⟨ ap ν (f-idl _) ⟩
@@ -123,7 +123,7 @@ is indeed a group structure, which is an incredibly boring calculation.
     fg .make-group.inv x = ν (inv (inc x))
     fg .make-group.assoc = assoc
     fg .make-group.invl = invl
-    fg .make-group.idl = idl′
+    fg .make-group.idl = idl'
 ```
 </details>
 

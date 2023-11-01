@@ -90,10 +90,10 @@ commute with the multiplication:
 
 ```agda
 record
-  Monoid-hom {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+  Monoid-hom {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
              (s : Monoid-on A) (t : Monoid-on B)
              (e : A → B)
-           : Type (ℓ ⊔ ℓ′) where
+           : Type (ℓ ⊔ ℓ') where
   private
     module A = Monoid-on s
     module B = Monoid-on t

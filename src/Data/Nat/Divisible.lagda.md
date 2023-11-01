@@ -43,7 +43,7 @@ this indirection, we can prove that divisibility is a mere property:
 ```agda
 ∣-is-prop : ∀ x y → is-prop (x ∣ y)
 ∣-is-prop zero y n k = prop!
-∣-is-prop (suc x) y (n , p) (n′ , q) = Σ-prop-path! (*-suc-inj x n n′ (p ∙ sym q))
+∣-is-prop (suc x) y (n , p) (n' , q) = Σ-prop-path! (*-suc-inj x n n' (p ∙ sym q))
 
 instance
   H-Level-∣ : ∀ {x y} {n} → H-Level (x ∣ y) (suc n)
@@ -87,10 +87,10 @@ antisymmetry will take a bit of working up to:
 ∣-trans {zero} {zero} p q = q
 ∣-trans {zero} {suc y} p q = absurd (zero≠suc (sym p))
 ∣-trans {suc x} {zero} p q = 0 , sym q
-∣-trans {suc x} {suc y} {z} (k , p) (k′ , q) = k′ * k , (
-  k′ * k * suc x   ≡⟨ *-associative k′ k (suc x) ⟩
-  k′ * (k * suc x) ≡⟨ ap (k′ *_) p ⟩
-  k′ * suc y       ≡⟨ q ⟩
+∣-trans {suc x} {suc y} {z} (k , p) (k' , q) = k' * k , (
+  k' * k * suc x   ≡⟨ *-associative k' k (suc x) ⟩
+  k' * (k * suc x) ≡⟨ ap (k' *_) p ⟩
+  k' * suc y       ≡⟨ q ⟩
   z                ∎)
 ```
 

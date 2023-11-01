@@ -21,13 +21,13 @@ the branching factor of such a node is given by $B(x)$. $W$-types can be
 defined inductively:
 
 ```agda
-data W {ℓ ℓ′} (A : Type ℓ) (B : A → Type ℓ′) : Type (ℓ ⊔ ℓ′) where
+data W {ℓ ℓ'} (A : Type ℓ) (B : A → Type ℓ') : Type (ℓ ⊔ ℓ') where
   sup : (x : A) (f : B x → W A B) → W A B
 ```
 
 <!--
 ```agda
-W-elim : ∀ {ℓ ℓ′ ℓ′′} {A : Type ℓ} {B : A → Type ℓ′} {C : W A B → Type ℓ′′}
+W-elim : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : W A B → Type ℓ''}
        → ({a : A} {f : B a → W A B} → (∀ ba → C (f ba)) → C (sup a f))
        → (w : W A B) → C w
 W-elim {C = C} ps (sup a f) = ps (λ ba → W-elim {C = C} ps (f ba))
@@ -41,7 +41,7 @@ question to ask, then, is: "supremum in _what_ order?". The order given
 by the "is a subtree of" relation!
 
 ```agda
-module _ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} where
+module _ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} where
   _<_ : W A B → W A B → Type _
   x < sup i f = ∃[ j ∈ B i ] (f j ≡ x)
 ```
@@ -62,7 +62,7 @@ subtree of $x$.
 
 <!--
 ```agda
-module _ {ℓ ℓ′} (A : Type ℓ) (B : A → Type ℓ′) where
+module _ {ℓ ℓ'} (A : Type ℓ) (B : A → Type ℓ') where
 ```
 -->
 
@@ -74,10 +74,10 @@ in the "ambient" $\io$-category of types and functions, and we are interested in
 [polynomial functor]: Cat.Instances.Poly.html
 
 ```agda
-  P : Type (ℓ ⊔ ℓ′) → Type (ℓ ⊔ ℓ′)
+  P : Type (ℓ ⊔ ℓ') → Type (ℓ ⊔ ℓ')
   P C = Σ A λ a → B a → C
 
-  P₁ : {C D : Type (ℓ ⊔ ℓ′)} → (C → D) → P C → P D
+  P₁ : {C D : Type (ℓ ⊔ ℓ')} → (C → D) → P C → P D
   P₁ f (a , h) = a , f ∘ h
 ```
 
@@ -85,7 +85,7 @@ A $P$-**algebra** (or $W$-**algebra**) is simply a type $C$ with a function $P\,
 
 ```agda
   WAlg : Type _
-  WAlg = Σ (Type (ℓ ⊔ ℓ′)) λ C → P C → C
+  WAlg = Σ (Type (ℓ ⊔ ℓ')) λ C → P C → C
 ```
 
 Algebras form a [category], where an **algebra homomorphism** is a function that respects

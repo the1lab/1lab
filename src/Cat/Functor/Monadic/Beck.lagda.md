@@ -20,7 +20,7 @@ import Cat.Reasoning as C-r
 ```agda
 module
   Cat.Functor.Monadic.Beck
-  {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
   {F : Functor C D} {G : Functor D C}
   (F⊣G : F ⊣ G)
   where
@@ -221,14 +221,14 @@ far $\cD$ is from being the category of $T$-algebras.
   Comparison⁻¹ : Functor (Eilenberg-Moore C T) D
   Comparison⁻¹ .F₀ = coapex ⊙ has-coeq
   Comparison⁻¹ .F₁ {X} {Y} alg-map =
-    has-coeq X .universal {e′ = e′} path where
-      e′ : D.Hom (F.F₀ (X .fst)) (Comparison⁻¹ .F₀ Y)
-      e′ = has-coeq Y .coeq D.∘ F.₁ (alg-map .morphism)
+    has-coeq X .universal {e' = e'} path where
+      e' : D.Hom (F.F₀ (X .fst)) (Comparison⁻¹ .F₀ Y)
+      e' = has-coeq Y .coeq D.∘ F.₁ (alg-map .morphism)
 ```
 <!--
 ```agda
       abstract
-        path : e′ D.∘ F.₁ (X .snd .ν) ≡ e′ D.∘ counit.ε (F.₀ (X .fst))
+        path : e' D.∘ F.₁ (X .snd .ν) ≡ e' D.∘ counit.ε (F.₀ (X .fst))
         path =
           (has-coeq Y .coeq D.∘ F.₁ (alg-map .morphism)) D.∘ F.₁ (X .snd .ν)      ≡⟨ D.pullr (F.weave (alg-map .commutes)) ⟩
           has-coeq Y .coeq D.∘ F.₁ (Y .snd .ν) D.∘ F.₁ (T.M₁ (alg-map .morphism)) ≡⟨ D.extendl (has-coeq Y .coequal) ⟩

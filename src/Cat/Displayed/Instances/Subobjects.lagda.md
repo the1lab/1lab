@@ -103,18 +103,18 @@ Subobjects .Ob[_] y = Subobject y
 Subobjects .Hom[_]  = ≤-over
 Subobjects .Hom[_]-set f a b = is-prop→is-set ≤-over-is-prop
 
-Subobjects .id′ .map = id
-Subobjects .id′ .sq  = id-comm-sym
+Subobjects .id' .map = id
+Subobjects .id' .sq  = id-comm-sym
 
-Subobjects ._∘′_ α β .map = α .map ∘ β .map
-Subobjects ._∘′_ α β .sq  = pullr (β .sq) ∙ extendl (α .sq)
+Subobjects ._∘'_ α β .map = α .map ∘ β .map
+Subobjects ._∘'_ α β .sq  = pullr (β .sq) ∙ extendl (α .sq)
 ```
 
 <!--
 ```agda
-Subobjects .idr′ _       = is-prop→pathp (λ i → hlevel 1) _ _
-Subobjects .idl′ _       = is-prop→pathp (λ i → hlevel 1) _ _
-Subobjects .assoc′ _ _ _ = is-prop→pathp (λ i → hlevel 1) _ _
+Subobjects .idr' _       = is-prop→pathp (λ i → hlevel 1) _ _
+Subobjects .idl' _       = is-prop→pathp (λ i → hlevel 1) _ _
+Subobjects .assoc' _ _ _ = is-prop→pathp (λ i → hlevel 1) _ _
 
 open is-weak-cocartesian-fibration
 open Weak-cocartesian-lift
@@ -163,21 +163,21 @@ is enough for its uniqueness.
 Subobject-fibration
   : has-pullbacks B
   → Cartesian-fibration Subobjects
-Subobject-fibration pb .has-lift f y′ = l where
+Subobject-fibration pb .has-lift f y' = l where
   it : Pullback _ _ _
-  it = pb (y′ .map) f
-  l : Cartesian-lift Subobjects f y′
+  it = pb (y' .map) f
+  l : Cartesian-lift Subobjects f y'
 
   -- The blue square:
-  l .x′ .domain = it .apex
-  l .x′ .map    = it .p₂
-  l .x′ .monic  = is-monic→pullback-is-monic (y′ .monic) (it .has-is-pb)
+  l .x' .domain = it .apex
+  l .x' .map    = it .p₂
+  l .x' .monic  = is-monic→pullback-is-monic (y' .monic) (it .has-is-pb)
   l .lifting .map = it .p₁
   l .lifting .sq  = sym (it .square)
 
   -- The dashed red arrow:
-  l .cartesian .universal {u′ = u′} m h′ = λ where
-    .map → it .Pullback.universal (sym (h′ .sq) ∙ sym (assoc f m (u′ .map)))
+  l .cartesian .universal {u' = u'} m h' = λ where
+    .map → it .Pullback.universal (sym (h' .sq) ∙ sym (assoc f m (u' .map)))
     .sq  → sym (it .p₂∘universal)
   l .cartesian .commutes _ _ = ≤-over-is-prop _ _
   l .cartesian .unique _ _   = ≤-over-is-prop _ _
@@ -194,8 +194,8 @@ fibration.
 Subobject-weak-opfibration
   : (∀ {x y} (f : Hom x y) → Image B f)
   → is-weak-cocartesian-fibration Subobjects
-Subobject-weak-opfibration ims .weak-lift f x′ = l where
-  module im = Image B (ims (f ∘ x′ .map))
+Subobject-weak-opfibration ims .weak-lift f x' = l where
+  module im = Image B (ims (f ∘ x' .map))
 ```
 
 To understand this result, we remind ourselves of the universal property
@@ -241,18 +241,18 @@ $x'$ and $f$), we see that this is exactly the kite-shaped universal
 property of $\im fx'$.
 
 ```agda
-  l : Weak-cocartesian-lift Subobjects f x′
-  l .y′ .domain = im.Im
-  l .y′ .map    = im.Im→codomain
-  l .y′ .monic  = im.Im→codomain-is-M
+  l : Weak-cocartesian-lift Subobjects f x'
+  l .y' .domain = im.Im
+  l .y' .map    = im.Im→codomain
+  l .y' .monic  = im.Im→codomain-is-M
 
   l .lifting .map = im.corestrict
   l .lifting .sq  = sym im.image-factors
 
-  l .weak-cocartesian .universal {x′ = y′} h .map = im.universal _ (y′ .monic) (h .map) (sym (h .sq))
+  l .weak-cocartesian .universal {x' = y'} h .map = im.universal _ (y' .monic) (h .map) (sym (h .sq))
   l .weak-cocartesian .universal h .sq = idl _ ∙ sym im.universal-factors
 
-  l .weak-cocartesian .commutes g′ = is-prop→pathp (λ _ → hlevel 1) _ _
+  l .weak-cocartesian .commutes g' = is-prop→pathp (λ _ → hlevel 1) _ _
   l .weak-cocartesian .unique _ _  = hlevel 1 _ _
 ```
 
@@ -278,7 +278,7 @@ $\Sub(y)$ at use-sites.
 
 ```agda
 Sub : Ob → Precategory (o ⊔ ℓ) ℓ
-Sub y = Fibre′ Subobjects y re coh where
+Sub y = Fibre' Subobjects y re coh where
   re : ∀ {a b} → ≤-over (id ∘ id) a b → ≤-over id a b
   re x .map = x .map
   re x .sq  = ap₂ _∘_ (introl refl) refl ∙ x .sq

@@ -24,7 +24,7 @@ module Cat.Functor.Adjoint.Continuous where
 <!--
 ```agda
 module _
-    {o o′ ℓ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+    {o o' ℓ ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     {L : Functor C D} {R : Functor D C}
     (L⊣R : L ⊣ R)
   where

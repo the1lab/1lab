@@ -154,7 +154,7 @@ calculation then shows that the square above commutes.
 
 ```agda
     Am≡Xm : PathP (λ i → Algebra-on C M (A₀≡X₀ i)) Am Xm
-    Am≡Xm = Algebra-on-pathp _ A₀≡X₀ same-mults′ where
+    Am≡Xm = Algebra-on-pathp _ A₀≡X₀ same-mults' where
       same-mults
         : PathP
           (λ i → C.Hom (isc .to-path (F-map-iso (Monad.M M) A₀≅X₀) i) (A₀≡X₀ i))
@@ -177,9 +177,9 @@ Or take a path in the domain category, and then use the canonical
 ident=F-map-path}, and we can correct the source:
 
 ```agda
-      same-mults′ : PathP (λ i → C.Hom (Monad.M₀ M (A₀≡X₀ i)) (A₀≡X₀ i))
+      same-mults' : PathP (λ i → C.Hom (Monad.M₀ M (A₀≡X₀ i)) (A₀≡X₀ i))
                       (Am .ν) (Xm .ν)
-      same-mults′ =
+      same-mults' =
         transport
           (λ j → PathP
             (λ i → C.Hom (F-map-path isc isc (Monad.M M) A₀≅X₀ (~ j) i) (A₀≡X₀ i))

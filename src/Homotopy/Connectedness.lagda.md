@@ -100,7 +100,7 @@ proposition.
 
 ```agda
 connected∙-elim-prop
-  : ∀ {ℓ ℓ′} {X : Type∙ ℓ} {P : ⌞ X ⌟ → Type ℓ′}
+  : ∀ {ℓ ℓ'} {X : Type∙ ℓ} {P : ⌞ X ⌟ → Type ℓ'}
   → is-connected∙ X
   → is-prop (P (X .snd))
   → P (X .snd)

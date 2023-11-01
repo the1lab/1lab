@@ -25,7 +25,7 @@ open _=>_
 module _ where
   open Functor
   compose-assocˡ
-    : ∀ {o ℓ ℓ′} {O : Type o} {H : O → O → Precategory ℓ ℓ′}
+    : ∀ {o ℓ ℓ'} {O : Type o} {H : O → O → Precategory ℓ ℓ'}
     → (C : ∀ {A B C} → Functor (H B C ×ᶜ H A B) (H A C))
     → ∀ {A B C D}
     → Functor (H C D ×ᶜ H B C ×ᶜ H A B) (H A D)
@@ -35,7 +35,7 @@ module _ where
   compose-assocˡ C .F-∘ f g = ap (C .F₁) (Σ-pathp (C .F-∘ _ _) refl) ∙ C .F-∘ _ _
 
   compose-assocʳ
-    : ∀ {o ℓ ℓ′} {O : Type o} {H : O → O → Precategory ℓ ℓ′}
+    : ∀ {o ℓ ℓ'} {O : Type o} {H : O → O → Precategory ℓ ℓ'}
     → (C : ∀ {A B C} → Functor (H B C ×ᶜ H A B) (H A C))
     → ∀ {A B C D}
     → Functor (H C D ×ᶜ H B C ×ᶜ H A B) (H A D)
@@ -44,7 +44,7 @@ module _ where
   compose-assocʳ C .F-id = ap (C .F₁) (Σ-pathp refl (C .F-id)) ∙ C .F-id
   compose-assocʳ C .F-∘ f g = ap (C .F₁) (Σ-pathp refl (C .F-∘ _ _)) ∙ C .F-∘ _ _
 
-private variable o ℓ ℓ′ o₁ ℓ₁ ℓ₁′ : Level
+private variable o ℓ ℓ' o₁ ℓ₁ ℓ₁' : Level
 ```
 -->
 
@@ -85,11 +85,11 @@ the form
 [category]: Cat.Base.html
 
 ```agda
-record Prebicategory o ℓ ℓ′ : Type (lsuc (o ⊔ ℓ ⊔ ℓ′)) where
+record Prebicategory o ℓ ℓ' : Type (lsuc (o ⊔ ℓ ⊔ ℓ')) where
   no-eta-equality
   field
     Ob  : Type o
-    Hom : Ob → Ob → Precategory ℓ ℓ′
+    Hom : Ob → Ob → Precategory ℓ ℓ'
 
   module Hom {A} {B} = Cr (Hom A B)
 ```
@@ -133,7 +133,7 @@ whence the name **horizontal composition**.
   _↦_ : Ob → Ob → Type ℓ
   A ↦ B = Precategory.Ob (Hom A B)
 
-  _⇒_ : ∀ {A B} (f g : A ↦ B) → Type ℓ′
+  _⇒_ : ∀ {A B} (f g : A ↦ B) → Type ℓ'
   _⇒_ {A} {B} f g = Hom.Hom f g
 
   -- 1-cell composition
@@ -199,21 +199,21 @@ abbreviations here too:
   ρ→ : ∀ {A B} (f : A ↦ B) → f ⇒ f ⊗ id
   ρ→ = unitor-r .Cr._≅_.to .η
 
-  ρ←nat : ∀ {A B} {f f′ : A ↦ B} (β : f ⇒ f′)
-        → Path ((f ⊗ id) ⇒ f′) (ρ← _ ∘ (β ◀ id)) (β ∘ ρ← _)
-  ρ←nat {A} {B} {f} {f′} β = unitor-r .Cr.from .is-natural f f′ β
+  ρ←nat : ∀ {A B} {f f' : A ↦ B} (β : f ⇒ f')
+        → Path ((f ⊗ id) ⇒ f') (ρ← _ ∘ (β ◀ id)) (β ∘ ρ← _)
+  ρ←nat {A} {B} {f} {f'} β = unitor-r .Cr.from .is-natural f f' β
 
-  λ←nat : ∀ {A B} {f f′ : A ↦ B} (β : f ⇒ f′)
-        → Path ((id ⊗ f) ⇒ f′) (λ← _ ∘ (id ▶ β)) (β ∘ λ← _)
-  λ←nat {A} {B} {f} {f′} β = unitor-l .Cr.from .is-natural f f′ β
+  λ←nat : ∀ {A B} {f f' : A ↦ B} (β : f ⇒ f')
+        → Path ((id ⊗ f) ⇒ f') (λ← _ ∘ (id ▶ β)) (β ∘ λ← _)
+  λ←nat {A} {B} {f} {f'} β = unitor-l .Cr.from .is-natural f f' β
 
-  ρ→nat : ∀ {A B} {f f′ : A ↦ B} (β : f ⇒ f′)
-        → Path (f ⇒ f′ ⊗ id) (ρ→ _ ∘ β) ((β ◀ id) ∘ ρ→ _)
-  ρ→nat {A} {B} {f} {f′} β = unitor-r .Cr.to .is-natural f f′ β
+  ρ→nat : ∀ {A B} {f f' : A ↦ B} (β : f ⇒ f')
+        → Path (f ⇒ f' ⊗ id) (ρ→ _ ∘ β) ((β ◀ id) ∘ ρ→ _)
+  ρ→nat {A} {B} {f} {f'} β = unitor-r .Cr.to .is-natural f f' β
 
-  λ→nat : ∀ {A B} {f f′ : A ↦ B} (β : f ⇒ f′)
-        → Path (f ⇒ id ⊗ f′) (λ→ _ ∘ β) ((id ▶ β) ∘ λ→ _)
-  λ→nat {A} {B} {f} {f′} β = unitor-l .Cr.to .is-natural f f′ β
+  λ→nat : ∀ {A B} {f f' : A ↦ B} (β : f ⇒ f')
+        → Path (f ⇒ id ⊗ f') (λ→ _ ∘ β) ((id ▶ β) ∘ λ→ _)
+  λ→nat {A} {B} {f} {f'} β = unitor-l .Cr.to .is-natural f f' β
 
   α→ : ∀ {A B C D} (f : C ↦ D) (g : B ↦ C) (h : A ↦ B)
      → (f ⊗ g) ⊗ h ⇒ f ⊗ (g ⊗ h)
@@ -223,20 +223,20 @@ abbreviations here too:
      → f ⊗ (g ⊗ h) ⇒ (f ⊗ g) ⊗ h
   α← f g h = associator .Cr._≅_.from .η (f , g , h)
 
-  α←nat : ∀ {A B C D} {f f′ : C ↦ D} {g g′ : B ↦ C} {h h′ : A ↦ B}
-        → (β : f ⇒ f′) (γ : g ⇒ g′) (δ : h ⇒ h′)
-        → Path (f ⊗ g ⊗ h ⇒ ((f′ ⊗ g′) ⊗ h′))
+  α←nat : ∀ {A B C D} {f f' : C ↦ D} {g g' : B ↦ C} {h h' : A ↦ B}
+        → (β : f ⇒ f') (γ : g ⇒ g') (δ : h ⇒ h')
+        → Path (f ⊗ g ⊗ h ⇒ ((f' ⊗ g') ⊗ h'))
           (α← _ _ _ ∘ (β ◆ (γ ◆ δ))) (((β ◆ γ) ◆ δ) ∘ α← _ _ _)
-  α←nat {A} {B} {C} {D} {f} {f′} {g} {g′} {h} {h′} β γ δ =
-    associator .Cr._≅_.from .is-natural (f , g , h) (f′ , g′ , h′) (β , γ , δ)
+  α←nat {A} {B} {C} {D} {f} {f'} {g} {g'} {h} {h'} β γ δ =
+    associator .Cr._≅_.from .is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
 
-  α→nat : ∀ {A B C D} {f f′ : C ↦ D} {g g′ : B ↦ C} {h h′ : A ↦ B}
-        → (β : f ⇒ f′) (γ : g ⇒ g′) (δ : h ⇒ h′)
-        → Path ((f ⊗ g) ⊗ h ⇒ (f′ ⊗ g′ ⊗ h′))
+  α→nat : ∀ {A B C D} {f f' : C ↦ D} {g g' : B ↦ C} {h h' : A ↦ B}
+        → (β : f ⇒ f') (γ : g ⇒ g') (δ : h ⇒ h')
+        → Path ((f ⊗ g) ⊗ h ⇒ (f' ⊗ g' ⊗ h'))
            (α→ _ _ _ ∘ ((β ◆ γ) ◆ δ))
            ((β ◆ (γ ◆ δ)) ∘ α→ _ _ _)
-  α→nat {A} {B} {C} {D} {f} {f′} {g} {g′} {h} {h′} β γ δ =
-    associator .Cr._≅_.to .is-natural (f , g , h) (f′ , g′ , h′) (β , γ , δ)
+  α→nat {A} {B} {C} {D} {f} {f'} {g} {g'} {h} {h'} β γ δ =
+    associator .Cr._≅_.to .is-natural (f , g , h) (f' , g' , h') (β , γ , δ)
 ```
 
 The final data we need are coherences relating the left and right
@@ -281,7 +281,7 @@ $\bf{B}$, $\bf{C}$.
 
 <!--
 ```agda
-module _ (B : Prebicategory o ℓ ℓ′) where
+module _ (B : Prebicategory o ℓ ℓ') where
   open Prebicategory B
   open Functor
 
@@ -400,8 +400,8 @@ When they _are_, we talk about **pseudofunctors** instead.
 
 ```agda
 record
-  Lax-functor (B : Prebicategory o ℓ ℓ′) (C : Prebicategory o₁ ℓ₁ ℓ₁′)
-    : Type (o ⊔ o₁ ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ′ ⊔ ℓ₁′) where
+  Lax-functor (B : Prebicategory o ℓ ℓ') (C : Prebicategory o₁ ℓ₁ ℓ₁')
+    : Type (o ⊔ o₁ ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ' ⊔ ℓ₁') where
 
   private
     module B = Prebicategory B
@@ -492,8 +492,8 @@ functors, not additional structure on lax functors.
 
 ```agda
 record
-  Pseudofunctor (B : Prebicategory o ℓ ℓ′) (C : Prebicategory o₁ ℓ₁ ℓ₁′)
-    : Type (o ⊔ o₁ ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ′ ⊔ ℓ₁′) where
+  Pseudofunctor (B : Prebicategory o ℓ ℓ') (C : Prebicategory o₁ ℓ₁ ℓ₁')
+    : Type (o ⊔ o₁ ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ' ⊔ ℓ₁') where
 
   private
     module B = Prebicategory B
@@ -530,7 +530,7 @@ transformation" for brevity.
 <!--
 ```agda
 module
-  _ {B : Prebicategory o ℓ ℓ′} {C : Prebicategory o₁ ℓ₁ ℓ₁′}
+  _ {B : Prebicategory o ℓ ℓ'} {C : Prebicategory o₁ ℓ₁ ℓ₁'}
     (F : Lax-functor B C) (G : Lax-functor B C)
   where
   private
@@ -562,7 +562,7 @@ and thus consists of a natural family of 2-cells $G(f)\sigma_a \To
 \sigma_bF(f)$.
 
 ```agda
-  record Lax-transfor : Type (o ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ′ ⊔ ℓ₁′) where
+  record Lax-transfor : Type (o ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ' ⊔ ℓ₁') where
     field
       σ : ∀ A → F.₀ A C.↦ G.₀ A
       naturator
@@ -600,7 +600,7 @@ A lax transformation with invertible naturator is called a
 **pseudonatural transformation**.
 
 ```agda
-  record Pseudonatural : Type (o ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ′ ⊔ ℓ₁′) where
+  record Pseudonatural : Type (o ⊔ ℓ ⊔ ℓ₁ ⊔ ℓ' ⊔ ℓ₁') where
     field
       lax : Lax-transfor
 
@@ -636,9 +636,9 @@ transformations. Since we are directly dealing with sets (the sets of
 <!--
 ```agda
 module
-  _ {B : Prebicategory o ℓ ℓ′} {C : Prebicategory o₁ ℓ₁ ℓ₁′}
+  _ {B : Prebicategory o ℓ ℓ'} {C : Prebicategory o₁ ℓ₁ ℓ₁'}
     {F : Lax-functor B C} {G : Lax-functor B C}
-    (σ σ′ : F =>ₗ G)
+    (σ σ' : F =>ₗ G)
   where
 
   private
@@ -647,18 +647,18 @@ module
     module F = Lax-functor F
     module G = Lax-functor G
     module σ = Lax-transfor σ
-    module σ′ = Lax-transfor σ′
+    module σ' = Lax-transfor σ'
 ```
 -->
 
 ```agda
-  record Modification : Type (o ⊔ ℓ ⊔ ℓ₁′) where
+  record Modification : Type (o ⊔ ℓ ⊔ ℓ₁') where
     field
-      Γ : ∀ a → σ.σ a C.⇒ σ′.σ a
+      Γ : ∀ a → σ.σ a C.⇒ σ'.σ a
 
       is-natural
         : ∀ {a b} {f : a B.↦ b}
-        → σ′.ν→ f C.∘ (G.₁ f C.▶ Γ a)
+        → σ'.ν→ f C.∘ (G.₁ f C.▶ Γ a)
         ≡ (Γ b C.◀ F.₁ f) C.∘ σ.ν→ f
 ```
 

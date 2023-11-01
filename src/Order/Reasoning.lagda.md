@@ -8,7 +8,7 @@ open import Order.Base
 -->
 
 ```agda
-module Order.Reasoning {ℓ ℓ′} (P : Poset ℓ ℓ′) where
+module Order.Reasoning {ℓ ℓ'} (P : Poset ℓ ℓ') where
 ```
 
 # Partial order syntax

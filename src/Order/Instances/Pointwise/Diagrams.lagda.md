@@ -36,16 +36,16 @@ module
     → is-meet (Pointwise I P) f g h
   is-meet-pointwise pwise .is-meet.meet≤l i = pwise i .is-meet.meet≤l
   is-meet-pointwise pwise .is-meet.meet≤r i = pwise i .is-meet.meet≤r
-  is-meet-pointwise pwise .is-meet.greatest lb′ lb′<f lb′<g i =
-    pwise i .is-meet.greatest (lb′ i) (lb′<f i) (lb′<g i)
+  is-meet-pointwise pwise .is-meet.greatest lb' lb'<f lb'<g i =
+    pwise i .is-meet.greatest (lb' i) (lb'<f i) (lb'<g i)
 
   is-join-pointwise
     : (∀ i → is-join P (f i) (g i) (h i))
     → is-join (Pointwise I P) f g h
   is-join-pointwise pwise .is-join.l≤join i = pwise i .is-join.l≤join
   is-join-pointwise pwise .is-join.r≤join i = pwise i .is-join.r≤join
-  is-join-pointwise pwise .is-join.least lb′ lb′<f lb′<g i =
-    pwise i .is-join.least (lb′ i) (lb′<f i) (lb′<g i)
+  is-join-pointwise pwise .is-join.least lb' lb'<f lb'<g i =
+    pwise i .is-join.least (lb' i) (lb'<f i) (lb'<g i)
 ```
 
 With a couple more variables, we see that the results above are a
@@ -63,13 +63,13 @@ module
     : (∀ j → is-lub P (λ i → F i j) (m j))
     → is-lub (Pointwise J P) F m
   is-lub-pointwise pwise .is-lub.fam≤lub i j = pwise j .is-lub.fam≤lub i
-  is-lub-pointwise pwise .is-lub.least ub′ fi<ub′ j =
-    pwise j .is-lub.least (ub′ j) λ i → fi<ub′ i j
+  is-lub-pointwise pwise .is-lub.least ub' fi<ub' j =
+    pwise j .is-lub.least (ub' j) λ i → fi<ub' i j
 
   is-glb-pointwise
     : (∀ j → is-glb P (λ i → F i j) (m j))
     → is-glb (Pointwise J P) F m
   is-glb-pointwise pwise .is-glb.glb≤fam i j = pwise j .is-glb.glb≤fam i
-  is-glb-pointwise pwise .is-glb.greatest ub′ fi<ub′ j =
-    pwise j .is-glb.greatest (ub′ j) λ i → fi<ub′ i j
+  is-glb-pointwise pwise .is-glb.greatest ub' fi<ub' j =
+    pwise j .is-glb.greatest (ub' j) λ i → fi<ub' i j
 ```

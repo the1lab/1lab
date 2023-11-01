@@ -18,7 +18,7 @@ private variable
   ℓ : Level
   A : Type ℓ
   x y : A
-  p p′ q q′ r r′ s s′ t u v : x ≡ y
+  p p' q q' r r' s s' t u v : x ≡ y
 
 ∙-filler''
   : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : y ≡ z)
@@ -31,15 +31,15 @@ private variable
     k (k = i0) → p (i ∨ ~ j)
 
 pasteP
-  : ∀ {ℓ} {A : Type ℓ} {w w′ x x′ y y′ z z′ : A}
-    {p p′ q q′ r r′ s s′}
+  : ∀ {ℓ} {A : Type ℓ} {w w' x x' y y' z z' : A}
+    {p p' q q' r r' s s'}
     {α β γ δ}
-  → Square α p p′ β
-  → Square α q q′ γ
-  → Square β r r′ δ
-  → Square γ s s′ δ
+  → Square α p p' β
+  → Square α q q' γ
+  → Square β r r' δ
+  → Square γ s s' δ
   → Square {a00 = w}  {x}  {y}  {z}  p  q  r  s
-  → Square {a00 = w′} {x′} {y′} {z′} p′ q′ r′ s′
+  → Square {a00 = w'} {x'} {y'} {z'} p' q' r' s'
 pasteP top left right bottom square i j = hcomp (∂ i ∨ ∂ j) λ where
   k (i = i0) → left k j
   k (i = i1) → right k j
@@ -48,9 +48,9 @@ pasteP top left right bottom square i j = hcomp (∂ i ∨ ∂ j) λ where
   k (k = i0) → square i j
 
 paste
-  : p ≡ p′ → q ≡ q′ → r ≡ r′ → s ≡ s′
+  : p ≡ p' → q ≡ q' → r ≡ r' → s ≡ s'
   → Square p q r s
-  → Square p′ q′ r′ s′
+  → Square p' q' r' s'
 paste p q r s = pasteP p q r s
 ```
 -->
@@ -118,14 +118,14 @@ module _ (pq≡rs : p ∙ q ≡ r ∙ s) where
   ∙-extendr : (t ∙ p) ∙ q ≡ (t ∙ r) ∙ s
   ∙-extendr {t = t} = sym (∙-assoc _ _ _) ·· ap (t ∙_) pq≡rs ·· ∙-assoc _ _ _
 
-··-stack : (sym p′ ·· (sym p ·· q ·· r) ·· r′) ≡ (sym (p ∙ p′) ·· q ·· (r ∙ r′))
+··-stack : (sym p' ·· (sym p ·· q ·· r) ·· r') ≡ (sym (p ∙ p') ·· q ·· (r ∙ r'))
 ··-stack = ··-unique' (··-filler _ _ _ ∙₂ ··-filler _ _ _)
 
-··-chain : (sym p ·· q ·· r) ∙ (sym r ·· q′ ·· s) ≡ sym p ·· (q ∙ q′) ·· s
-··-chain {p = p} {q = q} {r = r} {q′ = q′} {s = s} = sym (∙-unique _ square) where
-  square : Square refl (sym p ·· q ·· r) (sym p ·· (q ∙ q′) ·· s) (sym r ·· q′ ·· s)
+··-chain : (sym p ·· q ·· r) ∙ (sym r ·· q' ·· s) ≡ sym p ·· (q ∙ q') ·· s
+··-chain {p = p} {q = q} {r = r} {q' = q'} {s = s} = sym (∙-unique _ square) where
+  square : Square refl (sym p ·· q ·· r) (sym p ·· (q ∙ q') ·· s) (sym r ·· q' ·· s)
   square i j = hcomp (~ j ∨ (j ∧ (i ∨ ~ i))) λ where
-    k (k = i0) → ∙-filler q q′ i j
+    k (k = i0) → ∙-filler q q' i j
     k (j = i0) → p k
     k (j = i1) (i = i0) → r k
     k (j = i1) (i = i1) → s k

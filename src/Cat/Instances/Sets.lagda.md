@@ -82,8 +82,8 @@ We then use [univalence for $n$-types] to directly establish that $(A
 \equiv B) \simeq (A \cong B)$:
 
 ```agda
-  is-category′-Sets : ∀ {A B : Set ℓ} → (A ≡ B) ≃ (A Sets.≅ B)
-  is-category′-Sets {A} {B} =
+  is-category'-Sets : ∀ {A B : Set ℓ} → (A ≡ B) ≃ (A Sets.≅ B)
+  is-category'-Sets {A} {B} =
     (A ≡ B)         ≃⟨ n-univalence e⁻¹ ⟩
     (∣ A ∣ ≃ ∣ B ∣) ≃⟨ equiv≃iso e⁻¹ ⟩
     (A Sets.≅ B)    ≃∎

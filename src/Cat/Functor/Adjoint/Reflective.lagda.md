@@ -28,7 +28,7 @@ module Cat.Functor.Adjoint.Reflective where
 <!--
 ```agda
 private variable
-  o o′ ℓ ℓ′ : Level
+  o o' ℓ ℓ' : Level
   C D : Precategory o ℓ
   F G : Functor C D
 open Functor
@@ -78,7 +78,7 @@ inverse to $\eps$ applying the triangle identities.
 
 ```agda
 module
-  _ {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {F : Functor C D} {G : Functor D C}
+  _ {C : Precategory o ℓ} {D : Precategory o' ℓ'} {F : Functor C D} {G : Functor D C}
     (adj : F ⊣ G) (g-ff : is-reflective adj)
   where
   private

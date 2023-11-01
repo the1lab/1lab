@@ -58,7 +58,7 @@ maps $x' \to_f y'$.
 <!--
 
 ```agda
-module _ {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′) where
+module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
   private
     module B = Precategory B
     module E = Displayed E
@@ -69,12 +69,12 @@ module _ {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ�
 -->
 
 ```agda
-  record Discrete-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
+  record Discrete-fibration : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
     field
       fibre-set : ∀ x → is-set E.Ob[ x ]
       lifts
-        : ∀ {x y} (f : B.Hom x y) (y′ : E.Ob[ y ])
-        → is-contr (Σ[ x′ ∈ E.Ob[ x ] ] E.Hom[ f ] x′ y′)
+        : ∀ {x y} (f : B.Hom x y) (y' : E.Ob[ y ])
+        → is-contr (Σ[ x' ∈ E.Ob[ x ] ] E.Hom[ f ] x' y')
 ```
 
 ## Discrete fibrations are Cartesian
@@ -90,8 +90,8 @@ Cartesian.
   discrete→cartesian disc = r where
     open Discrete-fibration disc
     r : Cartesian-fibration E
-    r .has-lift f y′ .x′ = lifts f y′ .centre .fst
-    r .has-lift f y′ .lifting = lifts f y′ .centre .snd
+    r .has-lift f y' .x' = lifts f y' .centre .fst
+    r .has-lift f y' .lifting = lifts f y' .centre .snd
 ```
 
 So suppose we have an open diagram
@@ -122,16 +122,16 @@ but observe that $u' \xto{h'}_{f \circ m} b'$ and $u_2 \xto{l}_{u} a'
 map $u' \to a'$.
 
 ```agda
-    r .has-lift f y′ .cartesian .universal {u} {u′} m h′ =
-      subst (λ x → E.Hom[ m ] x (lifts f y′ .centre .fst))
-        (ap fst $ is-contr→is-prop (lifts (f B.∘ m) y′)
-          (_ , lifts f y′ .centre .snd E.∘′ lifts m _ .centre .snd)
-          (u′ , h′))
-        (lifts m (lifts f y′ .centre .fst) .centre .snd)
-    r .has-lift f y′ .cartesian .commutes m h′ =
-      Σ-inj-set (fibre-set _) $ is-contr→is-prop (lifts (f B.∘ m) y′) _ _
-    r .has-lift f y′ .cartesian .unique {u} {u′} {m} m′ x =
-      Σ-inj-set (fibre-set u) $ is-contr→is-prop (lifts m _) (u′ , m′) (u′ , _)
+    r .has-lift f y' .cartesian .universal {u} {u'} m h' =
+      subst (λ x → E.Hom[ m ] x (lifts f y' .centre .fst))
+        (ap fst $ is-contr→is-prop (lifts (f B.∘ m) y')
+          (_ , lifts f y' .centre .snd E.∘' lifts m _ .centre .snd)
+          (u' , h'))
+        (lifts m (lifts f y' .centre .fst) .centre .snd)
+    r .has-lift f y' .cartesian .commutes m h' =
+      Σ-inj-set (fibre-set _) $ is-contr→is-prop (lifts (f B.∘ m) y') _ _
+    r .has-lift f y' .cartesian .unique {u} {u'} {m} m' x =
+      Σ-inj-set (fibre-set u) $ is-contr→is-prop (lifts m _) (u' , m') (u' , _)
 ```
 
 ## Fibres of discrete fibrations
@@ -180,10 +180,10 @@ are identities. This follows directly from lifts being contractible.
 ```agda
   discrete→vertical-id
     : Discrete-fibration
-    → ∀ {x} {x″ : E.Ob[ x ]} (f′ : Σ[ x′ ∈ E.Ob[ x ] ] (E.Hom[ B.id ] x′ x″))
-    → (x″ , E.id′) ≡ f′
-  discrete→vertical-id disc {x″ = x″} f′ =
-    sym (lifts B.id _ .paths (x″ , E.id′)) ∙ lifts B.id x″ .paths f′
+    → ∀ {x} {x'' : E.Ob[ x ]} (f' : Σ[ x' ∈ E.Ob[ x ] ] (E.Hom[ B.id ] x' x''))
+    → (x'' , E.id') ≡ f'
+  discrete→vertical-id disc {x'' = x''} f' =
+    sym (lifts B.id _ .paths (x'' , E.id')) ∙ lifts B.id x'' .paths f'
     where open Discrete-fibration disc
 ```
 
@@ -193,15 +193,15 @@ that every vertical morphism in a discrete fibration is invertible.
 ```agda
   discrete→vertical-invertible
     : Discrete-fibration
-    → ∀ {x} {x′ x″ : E.Ob[ x ]} → (f′ : E.Hom[ B.id ] x′ x″) → is-invertible↓ f′
-  discrete→vertical-invertible disc {x′ = x′} {x″ = x″} f′ =
+    → ∀ {x} {x' x'' : E.Ob[ x ]} → (f' : E.Hom[ B.id ] x' x'') → is-invertible↓ f'
+  discrete→vertical-invertible disc {x' = x'} {x'' = x''} f' =
     make-invertible↓
-      (subst (λ x′ → E.Hom[ B.id ] x″ x′) x″≡x′ E.id′)
+      (subst (λ x' → E.Hom[ B.id ] x'' x') x''≡x' E.id')
       (to-pathp (discrete→thin-fibres _ disc _ _))
       (to-pathp (discrete→thin-fibres _ disc _ _))
     where
-      x″≡x′ : x″ ≡ x′
-      x″≡x′ = ap fst (discrete→vertical-id disc (x′ , f′))
+      x''≡x' : x'' ≡ x'
+      x''≡x' = ap fst (discrete→vertical-id disc (x' , f'))
 ```
 
 ## Discrete Fibrations are Presheaves
@@ -219,9 +219,9 @@ module _ {o ℓ} (B : Precategory o ℓ)  where
 -->
 
 ```agda
-  discrete→presheaf : ∀ {o′ ℓ′} (E : Displayed B o′ ℓ′) → Discrete-fibration E
-                    → Functor (B ^op) (Sets o′)
-  discrete→presheaf {o′ = o′} E disc = psh where
+  discrete→presheaf : ∀ {o' ℓ'} (E : Displayed B o' ℓ') → Discrete-fibration E
+                    → Functor (B ^op) (Sets o')
+  discrete→presheaf {o' = o'} E disc = psh where
     module E = Displayed E
     open Discrete-fibration disc
 ```
@@ -232,23 +232,23 @@ by taking the domain of the lift of `f`. Functoriality follows by
 uniqueness of the lifts.
 
 ```agda
-    psh : Functor (B ^op) (Sets o′)
+    psh : Functor (B ^op) (Sets o')
     psh .Functor.F₀ X = el E.Ob[ X ] (fibre-set X)
-    psh .Functor.F₁ f X′ = lifts f X′ .centre .fst
-    psh .Functor.F-id = funext λ X′ → ap fst (lifts B.id X′ .paths (X′ , E.id′))
-    psh .Functor.F-∘ {X} {Y} {Z} f g = funext λ X′ →
-      let Y′ : E.Ob[ Y ]
-          Y′ = lifts g X′ .centre .fst
+    psh .Functor.F₁ f X' = lifts f X' .centre .fst
+    psh .Functor.F-id = funext λ X' → ap fst (lifts B.id X' .paths (X' , E.id'))
+    psh .Functor.F-∘ {X} {Y} {Z} f g = funext λ X' →
+      let Y' : E.Ob[ Y ]
+          Y' = lifts g X' .centre .fst
 
-          g′ : E.Hom[ g ] Y′ X′
-          g′ = lifts g X′ .centre .snd
+          g' : E.Hom[ g ] Y' X'
+          g' = lifts g X' .centre .snd
 
-          Z′ : E.Ob[ Z ]
-          Z′ = lifts f Y′ .centre .fst
+          Z' : E.Ob[ Z ]
+          Z' = lifts f Y' .centre .fst
 
-          f′ : E.Hom[ f ] Z′ Y′
-          f′ = lifts f Y′ .centre .snd
-      in ap fst (lifts (g B.∘ f) X′ .paths (Z′ , (g′ E.∘′ f′ )))
+          f' : E.Hom[ f ] Z' Y'
+          f' = lifts f Y' .centre .snd
+      in ap fst (lifts (g B.∘ f) X' .paths (Z' , (g' E.∘' f' )))
 ```
 
 To construct a discrete fibration from a presheaf $P$, we take the
@@ -315,9 +315,9 @@ transport it over the given $a'' = a'$.
 
 ```agda
     pieces : Displayed-functor (∫ B (discrete→presheaf P p-disc)) P Id
-    pieces .F₀′ x = x
-    pieces .F₁′ {f = f} {a′} {b′} x =
-      subst (λ e → Hom[ f ] e b′) x $ lifts f b′ .centre .snd
+    pieces .F₀' x = x
+    pieces .F₁' {f = f} {a'} {b'} x =
+      subst (λ e → Hom[ f ] e b') x $ lifts f b' .centre .snd
 ```
 
 This transport _threatens_ to throw a spanner in the works, since it is
@@ -327,9 +327,9 @@ _can't_ ruin our day. Directly from the uniqueness of $(a', f')$ we
 conclude that we've put together a functor.
 
 ```agda
-    pieces .F-id′ = from-pathp (ap snd (lifts _ _ .paths _))
-    pieces .F-∘′ {f = f} {g} {a′} {b′} {c′} {f′} {g′} =
-      ap (λ e → subst (λ e → Hom[ f B.∘ g ] e c′) e
+    pieces .F-id' = from-pathp (ap snd (lifts _ _ .paths _))
+    pieces .F-∘' {f = f} {g} {a'} {b'} {c'} {f'} {g'} =
+      ap (λ e → subst (λ e → Hom[ f B.∘ g ] e c') e
             (lifts _ _ .centre .snd)) (fibre-set _ _ _ _ _)
       ∙ from-pathp (ap snd (lifts _ _ .paths _))
 ```
@@ -342,7 +342,7 @@ is immediate.
 ```agda
     ∫≡dx : ∫ B (discrete→presheaf P p-disc) ≡ P
     ∫≡dx = Displayed-path pieces (λ _ → id-equiv) (is-iso→is-equiv p) where
-      p : ∀ {a b} {f : B.Hom a b} {a′} {b′} → is-iso (pieces .F₁′ {f = f} {a′} {b′})
+      p : ∀ {a b} {f : B.Hom a b} {a'} {b'} → is-iso (pieces .F₁' {f = f} {a'} {b'})
       p .inv f  = ap fst $ lifts _ _ .paths (_ , f)
       p .rinv p = from-pathp (ap snd (lifts _ _ .paths _))
       p .linv p = fibre-set _ _ _ _ _

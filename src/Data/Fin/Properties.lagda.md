@@ -106,41 +106,41 @@ Fin-peel {l} {k} sl≃sk = (Iso→Equiv (l→k , (iso k→l b→a→b a→b→a)
 
   a→b→a : ∀ a → k→l (l→k a) ≡ a
   a→b→a a with inspect (sl≃sk.to (fsuc a))
-  a→b→a a | fsuc x , p′ with inspect (sk≃sl.to (fsuc x))
-  a→b→a a | fsuc x , p′ | fsuc y , q′ = fsuc-inj (
-    sym q′ ∙ ap (sk≃sl.to) (sym p′) ∙ sl≃sk.η _)
-  a→b→a a | fsuc x , p′ | fzero , q′ = absurd contra where
-    r = sl≃sk.injective₂ p′ (sl≃sk.ε (fsuc x))
-    contra = fzero≠fsuc (sym (r ∙ q′))
-  a→b→a a | fzero , p′ with inspect (sl≃sk.to fzero)
-  a→b→a a | fzero , p′ | fsuc x , q′ with inspect (sk≃sl.to (fsuc x))
-  a→b→a a | fzero , p′ | fsuc x , q′ | fsuc y , r′ = absurd $
-    fzero≠fsuc (sym (sym r′ ∙ ap sk≃sl.to (sym q′) ∙ sl≃sk.η fzero))
-  a→b→a a | fzero , p′ | fsuc x , q′ | fzero , r′ with inspect (sk≃sl.to fzero)
-  a→b→a a | fzero , p′ | fsuc x , q′ | fzero , r′ | fsuc z , s = fsuc-inj $
-    sym s ∙ ap sk≃sl.to (sym p′) ∙ sl≃sk.η (fsuc a)
-  a→b→a a | fzero , p′ | fsuc x , q′ | fzero , r′ | fzero , s = absurd-path
-  a→b→a a | fzero , p′ | fzero , q′ = absurd $ fzero≠fsuc $
-    sl≃sk.injective₂ q′ p′
+  a→b→a a | fsuc x , p' with inspect (sk≃sl.to (fsuc x))
+  a→b→a a | fsuc x , p' | fsuc y , q' = fsuc-inj (
+    sym q' ∙ ap (sk≃sl.to) (sym p') ∙ sl≃sk.η _)
+  a→b→a a | fsuc x , p' | fzero , q' = absurd contra where
+    r = sl≃sk.injective₂ p' (sl≃sk.ε (fsuc x))
+    contra = fzero≠fsuc (sym (r ∙ q'))
+  a→b→a a | fzero , p' with inspect (sl≃sk.to fzero)
+  a→b→a a | fzero , p' | fsuc x , q' with inspect (sk≃sl.to (fsuc x))
+  a→b→a a | fzero , p' | fsuc x , q' | fsuc y , r' = absurd $
+    fzero≠fsuc (sym (sym r' ∙ ap sk≃sl.to (sym q') ∙ sl≃sk.η fzero))
+  a→b→a a | fzero , p' | fsuc x , q' | fzero , r' with inspect (sk≃sl.to fzero)
+  a→b→a a | fzero , p' | fsuc x , q' | fzero , r' | fsuc z , s = fsuc-inj $
+    sym s ∙ ap sk≃sl.to (sym p') ∙ sl≃sk.η (fsuc a)
+  a→b→a a | fzero , p' | fsuc x , q' | fzero , r' | fzero , s = absurd-path
+  a→b→a a | fzero , p' | fzero , q' = absurd $ fzero≠fsuc $
+    sl≃sk.injective₂ q' p'
 
   b→a→b : ∀ b → l→k (k→l b) ≡ b
   b→a→b b with inspect (sk≃sl.to (fsuc b))
-  b→a→b b | fsuc x , p′ with inspect (sl≃sk.to (fsuc x))
-  b→a→b b | fsuc x , p′ | fsuc y , q′ = fsuc-inj $
-    sym q′ ∙ ap (sl≃sk.to) (sym p′) ∙ sk≃sl.η _
-  b→a→b b | fsuc x , p′ | fzero , q′ = absurd contra where
-    r = sk≃sl.injective₂ p′ (sk≃sl.ε (fsuc x))
-    contra = fzero≠fsuc (sym (r ∙ q′))
-  b→a→b b | fzero , p′ with inspect (sk≃sl.to fzero)
-  b→a→b b | fzero , p′ | fsuc x , q′ with inspect (sl≃sk.to (fsuc x))
-  b→a→b b | fzero , p′ | fsuc x , q′ | fsuc y , r′  = absurd $ fzero≠fsuc $
-    sym (sym r′ ∙ ap (sl≃sk.to) (sym q′) ∙ sk≃sl.η _)
-  b→a→b b | fzero , p′ | fsuc x , q′ | fzero , r′ with inspect (sl≃sk.to fzero)
-  b→a→b a | fzero , p′ | fsuc x , q′ | fzero , r′ | fsuc z , s = fsuc-inj $
-    sym s ∙ ap (sl≃sk.to) (sym p′) ∙ sk≃sl.η (fsuc a)
-  b→a→b a | fzero , p′ | fsuc x , q′ | fzero , r′ | fzero , s = absurd-path
-  b→a→b b | fzero , p′ | fzero , q′ = absurd $ fzero≠fsuc $
-    sk≃sl.injective₂ q′ p′
+  b→a→b b | fsuc x , p' with inspect (sl≃sk.to (fsuc x))
+  b→a→b b | fsuc x , p' | fsuc y , q' = fsuc-inj $
+    sym q' ∙ ap (sl≃sk.to) (sym p') ∙ sk≃sl.η _
+  b→a→b b | fsuc x , p' | fzero , q' = absurd contra where
+    r = sk≃sl.injective₂ p' (sk≃sl.ε (fsuc x))
+    contra = fzero≠fsuc (sym (r ∙ q'))
+  b→a→b b | fzero , p' with inspect (sk≃sl.to fzero)
+  b→a→b b | fzero , p' | fsuc x , q' with inspect (sl≃sk.to (fsuc x))
+  b→a→b b | fzero , p' | fsuc x , q' | fsuc y , r'  = absurd $ fzero≠fsuc $
+    sym (sym r' ∙ ap (sl≃sk.to) (sym q') ∙ sk≃sl.η _)
+  b→a→b b | fzero , p' | fsuc x , q' | fzero , r' with inspect (sl≃sk.to fzero)
+  b→a→b a | fzero , p' | fsuc x , q' | fzero , r' | fsuc z , s = fsuc-inj $
+    sym s ∙ ap (sl≃sk.to) (sym p') ∙ sk≃sl.η (fsuc a)
+  b→a→b a | fzero , p' | fsuc x , q' | fzero , r' | fzero , s = absurd-path
+  b→a→b b | fzero , p' | fzero , q' = absurd $ fzero≠fsuc $
+    sk≃sl.injective₂ q' p'
 
 Fin-injective : ∀ {l k} → Fin l ≃ Fin k → l ≡ k
 Fin-injective {zero} {zero} l≃k = refl

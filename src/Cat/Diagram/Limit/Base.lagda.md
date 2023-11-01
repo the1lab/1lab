@@ -96,7 +96,7 @@ using existing objects!
 
 Luckily, we can! If we take a step back, we can notice that we are
 trying to construct a map into a functor. What are maps into functors?
-Natural transformations! Concretely, let $D : \cJ \to cC$ be some
+Natural transformations! Concretely, let $D : \cJ \to \cC$ be some
 diagram.  We can encode the same data as a cone in a natural
 transformation $\eta : {!x} \circ \mathord{!} \to D$, where $!x : \top
 \to \cC$ denotes the constant functor that maps object to $x$ and every
@@ -309,8 +309,8 @@ other data we have been given:
       C.id C.∘ lim .σ α .η _     ∎
     lim .σ-comm {β = β} = Nat-path λ j →
       factors (β .η) _
-    lim .σ-uniq {β = β} {σ′ = σ′} p = Nat-path λ _ →
-      sym $ unique (β .η) _ (σ′ .η tt) (λ j → sym (p ηₚ j))
+    lim .σ-uniq {β = β} {σ' = σ'} p = Nat-path λ _ →
+      sym $ unique (β .η) _ (σ' .η tt) (λ j → sym (p ηₚ j))
 ```
 
 <!--
@@ -330,8 +330,8 @@ other data we have been given:
     ran' .σ α = hom→⊤-natural-trans (ran.σ α .η tt)
     ran' .σ-comm {M} {β} = Nat-path λ j →
       ap (C._∘ _) (sym q) ∙ ran.σ-comm {β = β} ηₚ _
-    ran' .σ-uniq {M} {β} {σ′} r = Nat-path λ j →
-      ran.σ-uniq {σ′ = hom→⊤-natural-trans (σ′ .η tt)}
+    ran' .σ-uniq {M} {β} {σ'} r = Nat-path λ j →
+      ran.σ-uniq {σ' = hom→⊤-natural-trans (σ' .η tt)}
         (Nat-path (λ j → r ηₚ j ∙ ap (C._∘ _) (sym q))) ηₚ j
 
   to-is-limitp
@@ -382,7 +382,7 @@ limit:
     ml .universal   = hom
     ml .factors e p = σ-comm {β = eta-nt e p} ηₚ _
     ml .unique {x = x} eta p other q =
-      sym $ σ-uniq {σ′ = other-nt} (Nat-path λ j → sym (q j)) ηₚ tt
+      sym $ σ-uniq {σ' = other-nt} (Nat-path λ j → sym (q j)) ηₚ tt
       where
         other-nt : const! x => F
         other-nt .η _ = other
@@ -461,11 +461,11 @@ computation.
     σ α .is-natural tt tt tt ∙ ap (C._∘ _) (Ext .F-id)
   has-limit .is-ran.σ-comm =
     Nat-path (λ _ → σ-comm ηₚ _)
-  has-limit .is-ran.σ-uniq {M = M} {σ′ = σ′} p =
-    Nat-path (λ _ → σ-uniq {σ′ = nt} (Nat-path (λ j → p ηₚ j)) ηₚ _) where
+  has-limit .is-ran.σ-uniq {M = M} {σ' = σ'} p =
+    Nat-path (λ _ → σ-uniq {σ' = nt} (Nat-path (λ j → p ηₚ j)) ηₚ _) where
       nt : M => Ext
-      nt .η = σ′ .η
-      nt .is-natural x y f = σ′ .is-natural x y f ∙ ap (C._∘ _) (sym $ Ext .F-id)
+      nt .η = σ' .η
+      nt .is-natural x y f = σ' .is-natural x y f ∙ ap (C._∘ _) (sym $ Ext .F-id)
 
   open is-limit has-limit public
 ```
@@ -607,11 +607,11 @@ apex of $L$ is also a limit of $Dia'$.
 
 ```agda
   natural-iso-diagram→is-limitp
-    : ∀ {D′ : Functor J C} {eps : K F∘ !F => D′}
-    → (isos : D ≅ⁿ D′)
+    : ∀ {D' : Functor J C} {eps : K F∘ !F => D'}
+    → (isos : D ≅ⁿ D')
     → (∀ {j} → Isoⁿ.to isos .η j C.∘ Ly.ψ j ≡ eps .η j)
-    → is-ran !F D′ K eps
-  natural-iso-diagram→is-limitp {D′ = D′} isos p =
+    → is-ran !F D' K eps
+  natural-iso-diagram→is-limitp {D' = D'} isos p =
     generalize-limitp
       (natural-iso-of→is-ran Ly isos)
       p
@@ -620,10 +620,10 @@ apex of $L$ is also a limit of $Dia'$.
 <!--
 ```agda
 module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory o₂ h₂}
-         {D D′ : Functor J C}
+         {D D' : Functor J C}
          where
 
-  natural-iso→limit : D ≅ⁿ D′ → Limit D → Limit D′
+  natural-iso→limit : D ≅ⁿ D' → Limit D → Limit D'
   natural-iso→limit isos L .Ran.Ext = Ran.Ext L
   natural-iso→limit isos L .Ran.eps = Isoⁿ.to isos ∘nt Ran.eps L
   natural-iso→limit isos L .Ran.has-ran = natural-iso-of→is-ran (Ran.has-ran L) isos
@@ -901,22 +901,22 @@ as the data for a limit.
       Cod .π (a , b , f) C.∘ ⌜ s C.∘ eq .equ ⌝ ≡⟨ ap! (eq .equal) ⟩
       Cod .π (a , b , f) C.∘ t C.∘ eq .equ     ≡⟨ C.pulll (Cod .commute) ⟩
       Obs .π b C.∘ eq .equ                     ∎
-    lim .universal {x} e comm = eq .universal comm′ where
-      e′ : C.Hom x (Obs .ΠF)
-      e′ = Obs .tuple e
-      comm′ : s C.∘ e′ ≡ t C.∘ e′
-      comm′ = Indexed-product.unique₂ Cod λ i@(a , b , f) →
-        Cod .π i C.∘ s C.∘ e′        ≡⟨ C.extendl (Cod .commute) ⟩
-        F₁ f C.∘ ⌜ Obs .π a C.∘ e′ ⌝ ≡⟨ ap! (Obs .commute) ⟩
+    lim .universal {x} e comm = eq .universal comm' where
+      e' : C.Hom x (Obs .ΠF)
+      e' = Obs .tuple e
+      comm' : s C.∘ e' ≡ t C.∘ e'
+      comm' = Indexed-product.unique₂ Cod λ i@(a , b , f) →
+        Cod .π i C.∘ s C.∘ e'        ≡⟨ C.extendl (Cod .commute) ⟩
+        F₁ f C.∘ ⌜ Obs .π a C.∘ e' ⌝ ≡⟨ ap! (Obs .commute) ⟩
         F₁ f C.∘ e a                 ≡⟨ comm f ⟩
         e b                          ≡˘⟨ Obs .commute ⟩
-        Obs .π b C.∘ e′              ≡˘⟨ C.pulll (Cod .commute) ⟩
-        Cod .π i C.∘ t C.∘ e′        ∎
+        Obs .π b C.∘ e'              ≡˘⟨ C.pulll (Cod .commute) ⟩
+        Cod .π i C.∘ t C.∘ e'        ∎
     lim .factors {j} e comm =
       (Obs .π j C.∘ eq .equ) C.∘ lim .universal e comm ≡⟨ C.pullr (eq .factors) ⟩
       Obs .π j C.∘ Obs .tuple e                        ≡⟨ Obs .commute ⟩
       e j                                              ∎
-    lim .unique e comm u′ fac = eq .unique $ Obs .unique _
+    lim .unique e comm u' fac = eq .unique $ Obs .unique _
       λ i → C.assoc _ _ _ ∙ fac i
 ```
 </details>

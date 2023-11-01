@@ -153,11 +153,11 @@ under union.
   K-fin-lt wit = Σ-prop-path! $ funext λ i →
     Ω-ua (λ x → inc (inl x)) (∥-∥-rec! λ { (inl x) → x ; (inr y) → wit _ y })
 
-  K-fin-lt′
+  K-fin-lt'
     : ∀ {x y : K-finite-subset}
     → x KA.≤ y
     → ∀ i → i ∈ y .fst → i ∈ x .fst
-  K-fin-lt′ wit idx y′ = transport (λ i → idx ∈ wit (~ i) .fst) (inc (inr y′))
+  K-fin-lt' wit idx y' = transport (λ i → idx ∈ wit (~ i) .fst) (inc (inr y'))
 ```
 -->
 
@@ -189,9 +189,9 @@ $K$-finiteness condition, but it will be very useful!
       .glb≤fam i →
         K-fin-lt {P , P-fin} {ηₛₗ (cover i .fst)} λ j i=j →
           subst (λ e → ∣ P e ∣) (out! i=j) (cover i .snd)
-      .greatest lb′ wit → K-fin-lt {lb′} {P , P-fin} λ i i∈p → ∥-∥-proj do
+      .greatest lb' wit → K-fin-lt {lb'} {P , P-fin} λ i i∈p → ∥-∥-proj do
         (idx , path) ← surj (i , i∈p)
-        pure (K-fin-lt′ {lb′} {ηₛₗ (cover idx .fst)} (wit idx) i (inc (ap fst path)))
+        pure (K-fin-lt' {lb'} {ηₛₗ (cover idx .fst)} (wit idx) i (inc (ap fst path)))
 ```
 
 In a similar vein, given a map $f : A \to B$ and a semilattice structure
@@ -215,10 +215,10 @@ the truncation.
 
 ```agda
   fold-K
-    : ∀ {ℓ′} (B : Semilattice ℓ′)
+    : ∀ {ℓ'} (B : Semilattice ℓ')
     → (∣ A ∣ → ⌞ B ⌟)
     → K-finite-subset → ⌞ B ⌟
-  fold-K B f (P , P-fin) = Glb.glb ε′ module fold-K where
+  fold-K B f (P , P-fin) = Glb.glb ε' module fold-K where
     module B = Semilattice B
 
     fam : (Σ ∣ A ∣ λ x → ∣ P x ∣) → ⌞ B ⌟
@@ -243,11 +243,11 @@ using surjectivity of the first map.
             fam (g ix)            B.=⟨ ap fam p ⟩
             fam elt               B.≤∎
           }) (surj elt)
-        glb .Glb.has-glb .is-glb.greatest lb′ lb′<subset =
-          h.greatest lb′ λ i → lb′<subset (g i)
+        glb .Glb.has-glb .is-glb.greatest lb' lb'<subset =
+          h.greatest lb' λ i → lb'<subset (g i)
 
-    ε′ : Glb B.po fam
-    ε′ = ∥-∥-rec (Glb-is-prop B.po) ε P-fin
+    ε' : Glb B.po fam
+    ε' = ∥-∥-rec (Glb-is-prop B.po) ε P-fin
 
 open is-glb
 open make-left-adjoint
@@ -264,7 +264,7 @@ make-free-slat .universal {x} {y} f = total-hom go pres where
   pres .pres-id = refl
   pres .pres-⋆ (A , af) (B , bf) =
     glb-unique y.po
-      (Glb.has-glb (go.ε′ (_∪_ x (A , af) (B , bf) .fst) (_∪_ x (A , af) (B , bf) .snd)))
+      (Glb.has-glb (go.ε' (_∪_ x (A , af) (B , bf) .fst) (_∪_ x (A , af) (B , bf) .snd)))
       (λ where
         .glb≤fam (x , w) → ∥-∥-proj $ w >>= λ where
           (inl w) → pure $
@@ -275,12 +275,12 @@ make-free-slat .universal {x} {y} f = total-hom go pres where
             Glb.glb g1 y.∩ Glb.glb g2 y.≤⟨ y.∩≤r ⟩
             Glb.glb g2                y.≤⟨ g2.glb≤fam (x , w) ⟩
             _                         y.≤∎
-        .greatest lb′ f → y.∩-univ _
-          (g1.greatest lb′ (λ i → f (_ , inc (inl (i .snd)))))
-          (g2.greatest lb′ (λ i → f (_ , inc (inr (i .snd))))))
+        .greatest lb' f → y.∩-univ _
+          (g1.greatest lb' (λ i → f (_ , inc (inl (i .snd)))))
+          (g2.greatest lb' (λ i → f (_ , inc (inr (i .snd))))))
     where
-      g1 = go.ε′ A af
-      g2 = go.ε′ B bf
+      g1 = go.ε' A af
+      g2 = go.ε' B bf
       module g1 = is-glb (Glb.has-glb g1)
       module g2 = is-glb (Glb.has-glb g2)
 make-free-slat .commutes {y = y} f = funext λ x → sym y.∩-idr
@@ -291,11 +291,11 @@ make-free-slat .unique {x = x} {y = y} {f = f} {g = g} w =
     let
       path : arg ≡ KA.⋂ λ i → ηₛₗ x (diagram i)
       path = glb-unique KA.po glb (KA.⋂-is-glb λ i → ηₛₗ x (diagram i))
-      f′ = make-free-slat .universal {x = x} {y = y} f
+      f' = make-free-slat .universal {x = x} {y = y} f
     pure $
-      f′ # arg                                 ≡⟨ ap (f′ #_) path ⟩
-      f′ # KA.⋂ (λ i → ηₛₗ x (diagram i))      ≡⟨ slat-pres-⋂ (K[ x ] .snd) (y .snd) _ (f′ .preserves) {card} _ ⟩
-      y.⋂ (λ i → f′ # ηₛₗ x (diagram i))       ≡⟨ ap (y.⋂ {card}) (funext λ i → y.∩-idr) ⟩
+      f' # arg                                 ≡⟨ ap (f' #_) path ⟩
+      f' # KA.⋂ (λ i → ηₛₗ x (diagram i))      ≡⟨ slat-pres-⋂ (K[ x ] .snd) (y .snd) _ (f' .preserves) {card} _ ⟩
+      y.⋂ (λ i → f' # ηₛₗ x (diagram i))       ≡⟨ ap (y.⋂ {card}) (funext λ i → y.∩-idr) ⟩
       y.⋂ (λ i → f (diagram i))                ≡⟨ ap (y.⋂ {card}) (funext λ i → happly w (diagram i)) ⟩
       y.⋂ {card} (λ i → g # ηₛₗ x (diagram i)) ≡˘⟨ slat-pres-⋂ (K[ x ] .snd) (y .snd) _ (g .preserves) {card} _ ⟩
       g # KA.⋂ (λ i → ηₛₗ x (diagram i))       ≡˘⟨ ap (g #_) path ⟩

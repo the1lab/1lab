@@ -16,7 +16,7 @@ module Cat.Bi.Diagram.Monad  where
 ```agda
 open _=>_
 
-module _ {o ℓ ℓ′} (B : Prebicategory o ℓ ℓ′) where
+module _ {o ℓ ℓ'} (B : Prebicategory o ℓ ℓ') where
   private module B = Prebicategory B
 ```
 -->
@@ -33,7 +33,7 @@ with "1-cell" and "2-cell", then the definition works in any
 [monad]: Cat.Diagram.Monad.html
 
 ```agda
-  record Monad (a : B.Ob) : Type (ℓ ⊔ ℓ′) where
+  record Monad (a : B.Ob) : Type (ℓ ⊔ ℓ') where
     field
       M : a B.↦ a
       μ : (M B.⊗ M) B.⇒ M
@@ -105,40 +105,40 @@ module _ {o ℓ} {C : Precategory o ℓ} where
   private module C = Cr C
 
   Bicat-monad→monad : Monad (Cat _ _) C → Cat.Monad C
-  Bicat-monad→monad monad = monad′ where
+  Bicat-monad→monad monad = monad' where
     private module M = Monad monad
 
-    monad′ : Cat.Monad C
-    monad′ .M = M.M
-    monad′ .unit = M.η
-    monad′ .mult = M.μ
-    monad′ .left-ident {x} =
+    monad' : Cat.Monad C
+    monad' .M = M.M
+    monad' .unit = M.η
+    monad' .mult = M.μ
+    monad' .left-ident {x} =
         ap (M.μ .η x C.∘_) (C.intror refl)
       ∙ M.μ-unitr ηₚ x
-    monad′ .right-ident {x} =
+    monad' .right-ident {x} =
         ap (M.μ .η x C.∘_) (C.introl (M.M .Functor.F-id))
       ∙ M.μ-unitl ηₚ x
-    monad′ .mult-assoc {x} =
+    monad' .mult-assoc {x} =
         ap (M.μ .η x C.∘_) (C.intror refl)
      ·· M.μ-assoc ηₚ x
      ·· ap (M.μ .η x C.∘_) (C.elimr refl ∙ C.eliml (M.M .Functor.F-id))
 
   Monad→bicat-monad : Cat.Monad C → Monad (Cat _ _) C
-  Monad→bicat-monad monad = monad′ where
+  Monad→bicat-monad monad = monad' where
     private module M = Cat.Monad monad
 
-    monad′ : Monad (Cat _ _) C
-    monad′ .M = M.M
-    monad′ .μ = M.mult
-    monad′ .η = M.unit
-    monad′ .μ-assoc = Nat-path λ _ →
+    monad' : Monad (Cat _ _) C
+    monad' .M = M.M
+    monad' .μ = M.mult
+    monad' .η = M.unit
+    monad' .μ-assoc = Nat-path λ _ →
         ap (M.mult .η _ C.∘_) (C.elimr refl)
      ·· M.mult-assoc
      ·· ap (M.mult .η _ C.∘_) (C.introl (M.M .Functor.F-id) ∙ C.intror refl)
-    monad′ .μ-unitr = Nat-path λ _ →
+    monad' .μ-unitr = Nat-path λ _ →
         ap (M.mult .η _ C.∘_) (C.elimr refl)
       ∙ M.left-ident
-    monad′ .μ-unitl = Nat-path λ _ →
+    monad' .μ-unitl = Nat-path λ _ →
         ap (M.mult .η _ C.∘_) (C.eliml (M.M .Functor.F-id))
       ∙ M.right-ident
 ```

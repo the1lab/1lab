@@ -18,12 +18,12 @@ of **accessibility**:
 
 <!--
 ```agda
-module _ {ℓ ℓ′} {A : Type ℓ} (_<_ : A → A → Type ℓ′) where
+module _ {ℓ ℓ'} {A : Type ℓ} (_<_ : A → A → Type ℓ') where
 ```
 -->
 
 ```agda
-  data Acc (x : A) : Type (ℓ ⊔ ℓ′) where
+  data Acc (x : A) : Type (ℓ ⊔ ℓ') where
     acc : (∀ y → y < x → Acc y) → Acc x
 ```
 
@@ -47,7 +47,7 @@ $P$ to be the proposition "$x$ is accessible".
 
 ```agda
   Wf-induction'
-    : ∀ {ℓ′} (P : A → Type ℓ′)
+    : ∀ {ℓ'} (P : A → Type ℓ')
     → (∀ x → (∀ y → y < x → P y) → P x)
     → ∀ x → Acc x → P x
   Wf-induction' P work = go where
@@ -55,13 +55,13 @@ $P$ to be the proposition "$x$ is accessible".
     go x (acc w) = work x (λ y y<x → go y (w y y<x))
 
   Wf-induction
-    : Wf → ∀ {ℓ′} (P : A → Type ℓ′)
+    : Wf → ∀ {ℓ'} (P : A → Type ℓ')
     → (∀ x → (∀ y → y < x → P y) → P x)
     → ∀ x → P x
   Wf-induction wf P work x = Wf-induction' P work x (wf x)
 
   Induction-wf
-    : (∀ {ℓ′} (P : A → Type ℓ′) → (∀ x → (∀ y → y < x → P y) → P x) → ∀ x → P x)
+    : (∀ {ℓ'} (P : A → Type ℓ') → (∀ x → (∀ y → y < x → P y) → P x) → ∀ x → P x)
     → Wf
   Induction-wf ind = ind Acc (λ _ → acc)
 ```

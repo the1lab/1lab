@@ -48,8 +48,8 @@ reflexive relation] on $A$; and, being a product of propositions, it's
 also a proposition, so $A$ is automatically a set.
 
 ```agda
-record is-partial-order {ℓ ℓ′} {A : Type ℓ}
-          (_≤_ : A → A → Type ℓ′) : Type (ℓ ⊔ ℓ′) where
+record is-partial-order {ℓ ℓ'} {A : Type ℓ}
+          (_≤_ : A → A → Type ℓ') : Type (ℓ ⊔ ℓ') where
   no-eta-equality
   field
     ≤-thin    : ∀ {x y} → is-prop (x ≤ y)
@@ -73,7 +73,7 @@ record is-partial-order {ℓ ℓ′} {A : Type ℓ}
 private unquoteDecl eqv = declare-record-iso eqv (quote is-partial-order)
 
 is-partial-order-is-prop
-  : ∀ {ℓ ℓ′} {A : Type ℓ} (R : A → A → Type ℓ′) → is-prop (is-partial-order R)
+  : ∀ {ℓ ℓ'} {A : Type ℓ} (R : A → A → Type ℓ') → is-prop (is-partial-order R)
 is-partial-order-is-prop {A = A} R x y = go x x y where
   go : is-partial-order R → is-prop (is-partial-order R)
   go x = Iso→is-hlevel 1 eqv (hlevel 1) where instance
@@ -92,10 +92,10 @@ thus determined by identity _of the relations_, since being a partial
 order is a proposition.
 
 ```agda
-record Poset-on {ℓ} ℓ′ (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ′) where
+record Poset-on {ℓ} ℓ' (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ') where
   no-eta-equality
   field
-    _≤_          : A → A → Type ℓ′
+    _≤_          : A → A → Type ℓ'
     has-is-poset : is-partial-order _≤_
   open is-partial-order has-is-poset public
 ```
@@ -148,14 +148,14 @@ is-monotone-is-prop
 is-monotone-is-prop f P Q =
   Π-is-hlevel³ 1 λ _ _ _ → Poset-on.≤-thin Q
 
-Poset-structure : ∀ ℓ ℓ′ → Thin-structure {ℓ = ℓ} (ℓ ⊔ ℓ′) (Poset-on ℓ′)
-∣ Poset-structure ℓ ℓ′ .is-hom f P Q ∣ = is-monotone f P Q
+Poset-structure : ∀ ℓ ℓ' → Thin-structure {ℓ = ℓ} (ℓ ⊔ ℓ') (Poset-on ℓ')
+∣ Poset-structure ℓ ℓ' .is-hom f P Q ∣ = is-monotone f P Q
 
-Poset-structure ℓ ℓ′ .is-hom f P Q .is-tr =
+Poset-structure ℓ ℓ' .is-hom f P Q .is-tr =
   is-monotone-is-prop f P Q
 
-Poset-structure ℓ ℓ′ .id-is-hom x y α = α
-Poset-structure ℓ ℓ′ .∘-is-hom f g α β x y γ = α (g x) (g y) (β x y γ)
+Poset-structure ℓ ℓ' .id-is-hom x y α = α
+Poset-structure ℓ ℓ' .∘-is-hom f g α β x y γ = α (g x) (g y) (β x y γ)
 ```
 
 The last thing we have to prove is "uniqueness of identity maps": If we
@@ -166,7 +166,7 @@ Then, since equality of poset structures is controlled by equality of
 the relations, we have $s = t$!
 
 ```agda
-Poset-structure ℓ ℓ′ .id-hom-unique {s = s} {t = t} α β =
+Poset-structure ℓ ℓ' .id-hom-unique {s = s} {t = t} α β =
   Poset-on-path λ x y → ua (prop-ext s.≤-thin t.≤-thin (α x y) (β x y))
   where
     module s = Poset-on s
@@ -175,34 +175,34 @@ Poset-structure ℓ ℓ′ .id-hom-unique {s = s} {t = t} α β =
 
 <!--
 ```agda
-Posets : ∀ ℓ ℓ′ → Precategory (lsuc (ℓ ⊔ ℓ′)) (ℓ ⊔ ℓ′)
-Posets ℓ ℓ′ = Structured-objects (Poset-structure ℓ ℓ′)
+Posets : ∀ ℓ ℓ' → Precategory (lsuc (ℓ ⊔ ℓ')) (ℓ ⊔ ℓ')
+Posets ℓ ℓ' = Structured-objects (Poset-structure ℓ ℓ')
 
-module Posets {ℓ ℓ′} = Precategory (Posets ℓ ℓ′)
-Poset : (ℓ ℓ′ : Level) → Type (lsuc (ℓ ⊔ ℓ′))
-Poset ℓ ℓ′ = Precategory.Ob (Posets ℓ ℓ′)
+module Posets {ℓ ℓ'} = Precategory (Posets ℓ ℓ')
+Poset : (ℓ ℓ' : Level) → Type (lsuc (ℓ ⊔ ℓ'))
+Poset ℓ ℓ' = Precategory.Ob (Posets ℓ ℓ')
 
 Posets-is-category : ∀ {o ℓ} → is-category (Posets o ℓ)
 Posets-is-category = Structured-objects-is-category (Poset-structure _ _)
 
-record make-poset {ℓ} ℓ′ (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ′) where
+record make-poset {ℓ} ℓ' (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ') where
   no-eta-equality
 
   field
-    rel     : A → A → Type ℓ′
+    rel     : A → A → Type ℓ'
     id      : ∀ {x} → rel x x
     thin    : ∀ {x y} → is-prop (rel x y)
     trans   : ∀ {x y z} → rel x y → rel y z → rel x z
     antisym : ∀ {x y} → rel x y → rel y x → x ≡ y
 
-  to-poset-on : Poset-on ℓ′ A
+  to-poset-on : Poset-on ℓ' A
   to-poset-on .Poset-on._≤_ = rel
   to-poset-on .Poset-on.has-is-poset .is-partial-order.≤-thin = thin
   to-poset-on .Poset-on.has-is-poset .is-partial-order.≤-refl = id
   to-poset-on .Poset-on.has-is-poset .is-partial-order.≤-trans = trans
   to-poset-on .Poset-on.has-is-poset .is-partial-order.≤-antisym = antisym
 
-to-poset : ∀ {ℓ ℓ′} (A : Type ℓ) → make-poset ℓ′ A → Poset ℓ ℓ′
+to-poset : ∀ {ℓ ℓ'} (A : Type ℓ) → make-poset ℓ' A → Poset ℓ ℓ'
 ∣ to-poset A mk .fst ∣ = A
 to-poset A mk .fst .is-tr = Poset-on.has-is-set (make-poset.to-poset-on mk)
 to-poset A mk .snd = make-poset.to-poset-on mk
@@ -216,7 +216,7 @@ correspondence between posets and thin categories, these are the same
 construction.
 
 ```agda
-_^opp : ∀ {ℓ ℓ′} → Poset ℓ ℓ′ → Poset ℓ ℓ′
+_^opp : ∀ {ℓ ℓ'} → Poset ℓ ℓ' → Poset ℓ ℓ'
 P ^opp = to-poset ⌞ P ⌟ λ where
     .make-poset.rel x y         → y ≤ x
     .make-poset.thin            → ≤-thin

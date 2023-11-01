@@ -59,10 +59,10 @@ very straightforward to construct, but proving that the two maps
 algebra.
 
 ```agda
-module _ {ℓ ℓ′} {A∙@(A , a₀) : Type∙ ℓ} {B∙@(B , b₀) : Type∙ ℓ′} where
+module _ {ℓ ℓ'} {A∙@(A , a₀) : Type∙ ℓ} {B∙@(B , b₀) : Type∙ ℓ'} where
   Σ-map∙→loops : (Σ∙ A∙ →∙ B∙) → (Σ _ λ bs → A → b₀ ≡ bs)
-  Σ-map∙→loops (f , _) .fst   = f S
-  Σ-map∙→loops (f , p) .snd a = sym p ∙ ap f (merid a)
+  Σ-map∙→loops f .fst   = f .fst S
+  Σ-map∙→loops f .snd a = sym (f .snd) ∙ ap (f .fst) (merid a)
 
   loops→Σ-map∙ : (Σ _ λ bs → A → b₀ ≡ bs) → (Σ∙ A∙ →∙ B∙)
   loops→Σ-map∙ pair .fst N           = b₀
@@ -104,10 +104,10 @@ equivalences is not very interesting, so I've kept it hidden.</summary>
 
   loops≃map∙-Ω : (Σ _ λ bs → A → b₀ ≡ bs) ≃ (A∙ →∙ Ω∙ B∙)
   loops≃map∙-Ω = Iso→Equiv (loops→map∙-Ω , iso map∙-Ω→loops invr invl) where
-    lemma′ : ∀ {ℓ} {A : Type ℓ} {x : A} (q : x ≡ x) (r : refl ≡ q)
+    lemma' : ∀ {ℓ} {A : Type ℓ} {x : A} (q : x ≡ x) (r : refl ≡ q)
            → ap (λ p → q ∙ sym p) r ∙ ∙-invr q ≡ ∙-idr q ∙ sym r
-    lemma′ q r =
-      J (λ q′ r → ap (λ p → q′ ∙ sym p) r ∙ ∙-invr q′ ≡ ∙-idr q′ ∙ sym r)
+    lemma' q r =
+      J (λ q' r → ap (λ p → q' ∙ sym p) r ∙ ∙-invr q' ≡ ∙-idr q' ∙ sym r)
         (∙-idl _ ∙ sym (∙-idr _))
         r
 
@@ -116,7 +116,7 @@ equivalences is not very interesting, so I've kept it hidden.</summary>
       lemma =
         ⌜ sym (ap₂ _∙_ refl (ap sym x) ∙ ∙-idr (b a₀)) ⌝ ∙ ∙-invr (b a₀)          ≡⟨ ap! (sym-∙ (sym _) _) ⟩
         (sym (∙-idr (b a₀)) ∙ ap (b a₀ ∙_) (ap sym (sym x))) ∙ ∙-invr (b a₀)      ≡⟨ sym (∙-assoc _ _ _) ⟩
-        sym (∙-idr (b a₀)) ∙ ⌜ ap (λ p → b a₀ ∙ sym p) (sym x) ∙ ∙-invr (b a₀) ⌝  ≡⟨ ap! (lemma′ (b a₀) (sym x)) ⟩
+        sym (∙-idr (b a₀)) ∙ ⌜ ap (λ p → b a₀ ∙ sym p) (sym x) ∙ ∙-invr (b a₀) ⌝  ≡⟨ ap! (lemma' (b a₀) (sym x)) ⟩
         sym (∙-idr (b a₀)) ∙ ∙-idr (b a₀) ∙ x                                     ≡⟨ ∙-cancell _ _ ⟩
         x                                                                         ∎
 

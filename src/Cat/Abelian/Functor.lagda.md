@@ -29,7 +29,7 @@ $F(-)$ be a group homomorphism.
 <!--
 ```agda
 module
-  _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     (A : Ab-category C) (B : Ab-category D)
   where
   private
@@ -39,7 +39,7 @@ module
 -->
 
 ```agda
-  record Ab-functor : Type (o ⊔ o′ ⊔ ℓ ⊔ ℓ′) where
+  record Ab-functor : Type (o ⊔ o' ⊔ ℓ ⊔ ℓ') where
     field
       functor : Functor C D
 
@@ -79,7 +79,7 @@ We say that the zero object, considered as a colimit, is
 
 ```agda
 Ab-functor-pres-∅
-  : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     {A : Ab-category C} {B : Ab-category D}
   → (F : Ab-functor A B) (∅A : Zero C)
   → is-zero D (Ab-functor.F₀ F (Zero.∅ ∅A))

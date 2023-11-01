@@ -307,7 +307,7 @@ It's reduced to a bit of algebra:
 
   ⋂-is-glb : ∀ {n} (f : Fin n → ⌞ A ⌟) → is-glb po f (⋂ f)
   ⋂-is-glb {zero} f .is-glb.glb≤fam ()
-  ⋂-is-glb {zero} f .is-glb.greatest lb′ x = sym ∩-idr
+  ⋂-is-glb {zero} f .is-glb.greatest lb' x = sym ∩-idr
   ⋂-is-glb {suc n} f = go where
     those : is-glb po (λ i → f (fsuc i)) _
     those = ⋂-is-glb _
@@ -318,11 +318,11 @@ It's reduced to a bit of algebra:
       f fzero ∩ ⋂ (λ i → f (fsuc i))   ≤⟨ ∩≤r ⟩
       ⋂ (λ i → f (fsuc i))             ≤⟨ those .is-glb.glb≤fam i ⟩
       f (fsuc i)                       ≤∎
-    go .is-glb.greatest lb′ f≤lb′ =
-      ∩-univ lb′ (f≤lb′ fzero) (those .is-glb.greatest lb′ (λ i → f≤lb′ (fsuc i)))
+    go .is-glb.greatest lb' f≤lb' =
+      ∩-univ lb' (f≤lb' fzero) (those .is-glb.greatest lb' (λ i → f≤lb' (fsuc i)))
 
 module
-  _ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+  _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
     (S : Semilattice-on A) (T : Semilattice-on B)
     (f : A → B)
     (fh : Monoid-hom (Semilattice-on.to-monoid S) (Semilattice-on.to-monoid T) f)

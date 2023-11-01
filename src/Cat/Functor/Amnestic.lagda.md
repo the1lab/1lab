@@ -23,7 +23,7 @@ module Cat.Functor.Amnestic where
 <!--
 ```agda
 private variable
-  o ℓ o′ ℓ′ : Level
+  o ℓ o' ℓ' : Level
   C D : Precategory o ℓ
 ```
 -->
@@ -97,7 +97,7 @@ $\cC$ is univalent, too!
   reflect-category : is-category D → is-amnestic → is-category C
   reflect-category d-cat forget = record { to-path = A≡B ; to-path-over = q } where
     module _ {A} {B} isom where
-      isom′ = F-map-iso F isom
+      isom' = F-map-iso F isom
 ```
 
 For suppose that $i : a \cong b \in \cC$ is an isomorphism. $F$
@@ -108,7 +108,7 @@ an identity, and by $F$'s amnesia, so is $i$.
 ```agda
       p : Σ[ c ∈ C.Ob ] Path (Mor C) (c , c , C.id) (A , B , isom .C.to)
       p = equiv→inverse (forget (isom .C.to) (C.iso→invertible isom)) $
-            F.₀ A , Mor-path D refl (d-cat .to-path isom′)
+            F.₀ A , Mor-path D refl (d-cat .to-path isom')
                       (Univalent.Hom-pathp-reflr-iso d-cat (D.idr _))
 ```
 

@@ -84,14 +84,14 @@ functoriality constraints.
       F.₁ C.id .η y                     ≡⟨ (λ i → F.F-id i .η y) ⟩
       E.id                              ∎
 
-  uncurried .F-∘ (f , g) (f′ , g′) = path where abstract
-    path : uncurried .F₁ (f C.∘ f′ , g D.∘ g′)
-         ≡ uncurried .F₁ (f , g) E.∘ uncurried .F₁ (f′ , g′)
+  uncurried .F-∘ (f , g) (f' , g') = path where abstract
+    path : uncurried .F₁ (f C.∘ f' , g D.∘ g')
+         ≡ uncurried .F₁ (f , g) E.∘ uncurried .F₁ (f' , g')
     path =
-      F.₁ (f C.∘ f′) .η _ E.∘ F₁ (F.₀ _) (g D.∘ g′)                       ≡˘⟨ E.pulll (λ i → F.F-∘ f f′ (~ i) .η _) ⟩
-      F.₁ f .η _ E.∘ F.₁ f′ .η _ E.∘ ⌜ F₁ (F.₀ _) (g D.∘ g′) ⌝            ≡⟨ ap! (F-∘ (F.₀ _) _ _) ⟩
-      F.₁ f .η _ E.∘ F.₁ f′ .η _ E.∘ F₁ (F.₀ _) g E.∘ F₁ (F.₀ _) g′       ≡⟨ cat! E ⟩
-      F.₁ f .η _ E.∘ ⌜ F.₁ f′ .η _ E.∘ F₁ (F.₀ _) g ⌝ E.∘ F₁ (F.₀ _) g′   ≡⟨ ap! (F.₁ f′ .is-natural _ _ _) ⟩
-      F.₁ f .η _ E.∘ (F₁ (F.₀ _) g E.∘ F.₁ f′ .η _) E.∘ F₁ (F.₀ _) g′     ≡⟨ cat! E ⟩
-      ((F.₁ f .η _ E.∘ F₁ (F.₀ _) g) E.∘ (F.₁ f′ .η _ E.∘ F₁ (F.₀ _) g′)) ∎
+      F.₁ (f C.∘ f') .η _ E.∘ F₁ (F.₀ _) (g D.∘ g')                       ≡˘⟨ E.pulll (λ i → F.F-∘ f f' (~ i) .η _) ⟩
+      F.₁ f .η _ E.∘ F.₁ f' .η _ E.∘ ⌜ F₁ (F.₀ _) (g D.∘ g') ⌝            ≡⟨ ap! (F-∘ (F.₀ _) _ _) ⟩
+      F.₁ f .η _ E.∘ F.₁ f' .η _ E.∘ F₁ (F.₀ _) g E.∘ F₁ (F.₀ _) g'       ≡⟨ cat! E ⟩
+      F.₁ f .η _ E.∘ ⌜ F.₁ f' .η _ E.∘ F₁ (F.₀ _) g ⌝ E.∘ F₁ (F.₀ _) g'   ≡⟨ ap! (F.₁ f' .is-natural _ _ _) ⟩
+      F.₁ f .η _ E.∘ (F₁ (F.₀ _) g E.∘ F.₁ f' .η _) E.∘ F₁ (F.₀ _) g'     ≡⟨ cat! E ⟩
+      ((F.₁ f .η _ E.∘ F₁ (F.₀ _) g) E.∘ (F.₁ f' .η _ E.∘ F₁ (F.₀ _) g')) ∎
 ```

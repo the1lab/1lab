@@ -154,21 +154,21 @@ the domain category to serve as an inverse for $f$:
     : {F : Functor C D} → is-fully-faithful F
     → ∀ {X Y} → F₀ F X Dm.≅ F₀ F Y
     → X Cm.≅ Y
-  is-ff→essentially-injective {F = F} ff im = im′ where
+  is-ff→essentially-injective {F = F} ff im = im' where
     -- Cm.make-iso (equiv→inverse ff to) inv invl invr
     open Dm._≅_ im using (to ; from ; inverses)
-    D-inv′ : Dm.is-invertible (F₁ F (equiv→inverse ff to))
-    D-inv′ .Dm.is-invertible.inv = from
-    D-inv′ .Dm.is-invertible.inverses =
+    D-inv' : Dm.is-invertible (F₁ F (equiv→inverse ff to))
+    D-inv' .Dm.is-invertible.inv = from
+    D-inv' .Dm.is-invertible.inverses =
       subst (λ e → Dm.Inverses e from) (sym (equiv→counit ff _)) inverses
 
-    open Cm.is-invertible (is-ff→is-conservative {F = F} ff (equiv→inverse ff to) D-inv′)
+    open Cm.is-invertible (is-ff→is-conservative {F = F} ff (equiv→inverse ff to) D-inv')
 
-    im′ : _ Cm.≅ _
-    im′ .to   = equiv→inverse ff to
-    im′ .from = inv
-    im′ .inverses .Cm.Inverses.invl = invl
-    im′ .inverses .Cm.Inverses.invr = invr
+    im' : _ Cm.≅ _
+    im' .to   = equiv→inverse ff to
+    im' .from = inv
+    im' .inverses .Cm.Inverses.invl = invl
+    im' .inverses .Cm.Inverses.invr = invr
 ```
 
 ## Essential Fibres {defines="essential-fibre"}

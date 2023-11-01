@@ -70,16 +70,16 @@ Rel-map→function
   → ∣ x ∣ → ∣ y ∣
 Rel-map→function {x = x} {y} {rel} map elt =
   ∥-∥-rec {P = Σ ∣ y ∣ λ b → ∣ rel elt b ∣}
-    (λ { (x , p) (y , q) → Σ-prop-path (λ _ → hlevel!) (functional′ p q) })
+    (λ { (x , p) (y , q) → Σ-prop-path (λ _ → hlevel!) (functional' p q) })
     (λ x → x)
-    (entire′ elt) .fst
+    (entire' elt) .fst
   where
     module map = is-map map
-    functional′ : ∀ {a b c} → ∣ rel a b ∣ → ∣ rel a c ∣ → b ≡ c
-    functional′ r1 r2 = out! (map.functional _ _ (inc (_ , r1 , r2)))
+    functional' : ∀ {a b c} → ∣ rel a b ∣ → ∣ rel a c ∣ → b ≡ c
+    functional' r1 r2 = out! (map.functional _ _ (inc (_ , r1 , r2)))
 
-    entire′ : ∀ a → ∃ ∣ y ∣ λ b → ∣ rel a b ∣
-    entire′ a =
+    entire' : ∀ a → ∃ ∣ y ∣ λ b → ∣ rel a b ∣
+    entire' a =
       □-rec! (λ { (x , y , R) → inc (x , R) }) (map.entire a a (inc refl))
 ```
 
@@ -112,10 +112,10 @@ using those words.
   Maps[_] .Precategory.id = A.id , mapping
     A.functional-id
     A.entire-id
-  Maps[_] .Precategory._∘_ (f , m) (g , m′) =
+  Maps[_] .Precategory._∘_ (f , m) (g , m') =
     f A.∘ g , mapping
-      (A.functional-∘ (m .functional) (m′ .functional))
-      (A.entire-∘ (m .entire) (m′ .entire))
+      (A.functional-∘ (m .functional) (m' .functional))
+      (A.entire-∘ (m .entire) (m' .entire))
   Maps[_] .idr f = Σ-prop-path (λ _ → hlevel 1) (A.idr _)
   Maps[_] .idl f = Σ-prop-path (λ _ → hlevel 1) (A.idl _)
   Maps[_] .assoc f g h = Σ-prop-path (λ _ → hlevel 1) (A.assoc _ _ _)

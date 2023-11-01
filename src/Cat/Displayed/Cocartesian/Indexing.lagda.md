@@ -11,8 +11,8 @@ import Cat.Displayed.Reasoning
 
 ```agda
 module Cat.Displayed.Cocartesian.Indexing
-  {o ℓ o′ ℓ′} {ℬ : Precategory o ℓ}
-  (ℰ : Displayed ℬ o′ ℓ′)
+  {o ℓ o' ℓ'} {ℬ : Precategory o ℓ}
+  (ℰ : Displayed ℬ o' ℓ')
   (opfibration : Cocartesian-fibration ℰ)
   where
 ```
@@ -51,7 +51,7 @@ adding in empty fibres.
 
 ```agda
 cobase-change : ∀ {x y} (f : Hom x y) → Functor (Fibre ℰ x) (Fibre ℰ y)
-cobase-change f .F₀ ob = has-lift.y′ f ob
+cobase-change f .F₀ ob = has-lift.y' f ob
 cobase-change f .F₁ vert = rebase f vert
 ```
 
@@ -59,8 +59,8 @@ cobase-change f .F₁ vert = rebase f vert
 ```agda
 cobase-change f .F-id =
   sym $ has-lift.uniquev _ _ _ $ to-pathp $
-    idl[] ∙ (sym $ cancel _ _ (idr′ _))
-cobase-change f .F-∘ f′ g′ =
+    idl[] ∙ (sym $ cancel _ _ (idr' _))
+cobase-change f .F-∘ f' g' =
   sym $ has-lift.uniquev _ _ _ $ to-pathp $
     smashl _ _
     ·· revive₁ (pullr[] _ (has-lift.commutesv _ _ _))

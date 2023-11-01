@@ -162,13 +162,13 @@ computations using naturality. It's not very enlightening.
         α .η x .η y f                       ∎
       where module M = Functor M
 
-    Nerve-is-lan .σ-uniq {M = M} {α = α} {σ′ = σ′} p =
+    Nerve-is-lan .σ-uniq {M = M} {α = α} {σ' = σ'} p =
       Nat-path λ x → Nat-path λ y → funext λ f →
         M.₁ f .η y (α .η y .η y C.id)          ≡⟨ ap (M.₁ f .η y) (p ηₚ _ ηₚ _ $ₚ _) ⟩
-        M.₁ f .η y (σ′ .η _ .η y ⌜ F.₁ C.id ⌝) ≡⟨ ap! F.F-id ⟩
-        M.₁ f .η y (σ′ .η _ .η y D.id)         ≡˘⟨ σ′ .is-natural _ _ _ ηₚ _ $ₚ _ ⟩
-        σ′ .η x .η y (f D.∘ D.id)              ≡⟨ ap (σ′ .η x .η y) (D.idr _) ⟩
-        σ′ .η x .η y f                         ∎
+        M.₁ f .η y (σ' .η _ .η y ⌜ F.₁ C.id ⌝) ≡⟨ ap! F.F-id ⟩
+        M.₁ f .η y (σ' .η _ .η y D.id)         ≡˘⟨ σ' .is-natural _ _ _ ηₚ _ $ₚ _ ⟩
+        σ' .η x .η y (f D.∘ D.id)              ≡⟨ ap (σ' .η x .η y) (D.idr _) ⟩
+        σ' .η x .η y f                         ∎
       where module M = Functor M
 ```
 </summary>
@@ -177,7 +177,7 @@ computations using naturality. It's not very enlightening.
 <!--
 ```agda
 module _
-  {o κ κ′} {C : Precategory κ κ} {D : Precategory o κ′}
+  {o κ κ'} {C : Precategory κ κ} {D : Precategory o κ'}
   (F : Functor C D)
   (cocompl : is-cocomplete κ κ D)
   where

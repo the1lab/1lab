@@ -173,8 +173,8 @@ module _
     open Cat.Reasoning B
     module E = Displayed E
     module E* {Γ Δ : Ob} (σ : Hom Γ Δ) = Functor (base-change E E-fib σ)
-    module E-fib {x y} (f : Hom x y) (y′ : E.Ob[ y ]) =
-      Cartesian-lift (Cartesian-fibration.has-lift E-fib f y′)
+    module E-fib {x y} (f : Hom x y) (y' : E.Ob[ y ]) =
+      Cartesian-lift (Cartesian-fibration.has-lift E-fib f y')
     open Comprehension E E-fib P
     open has-comprehension-coproducts coprods
 ```

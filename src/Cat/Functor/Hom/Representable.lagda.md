@@ -300,9 +300,9 @@ equivalence).
 
 ```agda
 Hom-from-preserves-limits
-  : ∀ {o′ κ′}
+  : ∀ {o' κ'}
   → (c : C.Ob)
-  → is-continuous o′ κ′ (Hom-from C c)
+  → is-continuous o' κ' (Hom-from C c)
 Hom-from-preserves-limits c {Diagram = Dia} {K} {eps} lim =
   to-is-limitp ml (funext λ _ → refl) where
   open make-is-limit
@@ -327,9 +327,9 @@ naturally isomorphic to $F'$, then $F'$ must also preserve limits.
 
 ```agda
 corepresentable-preserves-limits
-  : ∀ {o′ κ′} {F}
+  : ∀ {o' κ'} {F}
   → Corepresentation F
-  → is-continuous o′ κ′ F
+  → is-continuous o' κ' F
 corepresentable-preserves-limits F-corep lim =
    natural-iso→preserves-limits
      (F-corep .corepresents ni⁻¹)
@@ -350,9 +350,9 @@ a pair of maps $a \to x$ and $b \to x$.
 
 ```agda
 よ-reverses-colimits
-  : ∀ {o′ κ′}
+  : ∀ {o' κ'}
   → (c : C.Ob)
-  → is-cocontinuous o′ κ′ (Functor.op (よ₀ C c))
+  → is-cocontinuous o' κ' (Functor.op (よ₀ C c))
 よ-reverses-colimits c {Diagram = Dia} {K} {eta} colim =
   to-is-colimitp mc (funext λ _ → refl) where
   open make-is-colimit
@@ -371,9 +371,9 @@ a pair of maps $a \to x$ and $b \to x$.
     colim.unique _ _ _ λ j → q j $ₚ x
 
 representable-reverses-colimits
-  : ∀ {o′ κ′} {F}
+  : ∀ {o' κ'} {F}
   → Representation F
-  → is-cocontinuous o′ κ′ (Functor.op F)
+  → is-cocontinuous o' κ' (Functor.op F)
 representable-reverses-colimits F-rep colim =
   natural-iso→preserves-colimits
     ((F-rep .represents ni^op) ni⁻¹)

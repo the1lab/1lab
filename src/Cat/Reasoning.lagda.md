@@ -28,7 +28,7 @@ Most of these helpers were taken from `agda-categories`.
 ```agda
 private variable
   u v w x y z : Ob
-  a a′ a″ b b′ b″ c c′ c″ : Hom x y
+  a a' a'' b b' b'' c c' c'' : Hom x y
   f g h i : Hom x y
 ```
 -->

@@ -26,8 +26,8 @@ chains of natural isomorphisms, which can be very handy!
 <!--
 ```agda
 module _
-  {o ℓ o′ ℓ′}
-  {C : Precategory o ℓ} {C' : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  {o ℓ o' ℓ'}
+  {C : Precategory o ℓ} {C' : Precategory o ℓ} {D : Precategory o' ℓ'}
   {p : Functor C C'} {F : Functor C D} {G : Functor C' D}
   where
   private
@@ -93,7 +93,7 @@ a natural isomorphism.
     lan : is-lan p F G eta
     lan .σ {M} α = nat-inv.inv .η M α
     lan .σ-comm {M} {α} = nat-inv.invl ηₚ M $ₚ α
-    lan .σ-uniq {M} {α} {σ′} q = ap (nat-inv.inv .η M) q ∙ nat-inv.invr ηₚ M $ₚ σ′
+    lan .σ-uniq {M} {α} {σ'} q = ap (nat-inv.inv .η M) q ∙ nat-inv.invr ηₚ M $ₚ σ'
 ```
 
 Furthermore, if $(G, \eta)$ is a left extension, then we can show that
@@ -119,8 +119,8 @@ exercise in moving data around.
 <!--
 ```agda
 module _
-  {o ℓ o′ ℓ′}
-  {C : Precategory o ℓ} {C' : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  {o ℓ o' ℓ'}
+  {C : Precategory o ℓ} {C' : Precategory o ℓ} {D : Precategory o' ℓ'}
   {p : Functor C C'} {F : Functor C D}
   where
   private

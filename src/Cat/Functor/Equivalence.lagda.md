@@ -72,33 +72,33 @@ morphisms gives isomorphisms in the respective functor categories:
 <!--
 ```agda
   F⁻¹⊣F : F⁻¹ ⊣ F
-  F⁻¹⊣F = adj′ where
+  F⁻¹⊣F = adj' where
     module adj = _⊣_ F⊣F⁻¹
     open _⊣_
-    adj′ : F⁻¹ ⊣ F
-    adj′ .unit   = counit⁻¹
-    adj′ .counit = unit⁻¹
-    adj′ .zig {a} = zig′ where abstract
+    adj' : F⁻¹ ⊣ F
+    adj' .unit   = counit⁻¹
+    adj' .counit = unit⁻¹
+    adj' .zig {a} = zig' where abstract
       p : η unit⁻¹ (F₀ F⁻¹ a) ≡ F₁ F⁻¹ (adj.counit.ε _)
       p =
         η unit⁻¹ (F₀ F⁻¹ a)                                                ≡⟨ C.introl adj.zag ⟩
         (F₁ F⁻¹ (adj.counit.ε _) C.∘ adj.unit.η _) C.∘ η unit⁻¹ (F₀ F⁻¹ a) ≡⟨ C.cancelr (unit-iso _ .C.is-invertible.invl) ⟩
         F₁ F⁻¹ (adj.counit.ε _)                                            ∎
 
-      zig′ : η unit⁻¹ (F₀ F⁻¹ a) C.∘ F⁻¹ .F₁ (counit⁻¹ .η a) ≡ C.id
-      zig′ = ap₂ C._∘_ p refl
+      zig' : η unit⁻¹ (F₀ F⁻¹ a) C.∘ F⁻¹ .F₁ (counit⁻¹ .η a) ≡ C.id
+      zig' = ap₂ C._∘_ p refl
         ·· sym (F-∘ F⁻¹ _ _)
         ·· ap (F₁ F⁻¹) (counit-iso _ .D.is-invertible.invl) ∙ F-id F⁻¹
 
-    adj′ .zag {b} = zag′ where abstract
+    adj' .zag {b} = zag' where abstract
       p : counit⁻¹ .η (F₀ F b) ≡ F .F₁ (adj.unit.η b)
       p =
         counit⁻¹ .η _                                                     ≡⟨ D.intror adj.zig ⟩
         counit⁻¹ .η _ D.∘ adj.counit.ε (F₀ F b) D.∘ (F₁ F (adj.unit.η b)) ≡⟨ D.cancell (counit-iso _ .D.is-invertible.invr) ⟩
         F .F₁ (adj.unit.η b)                                              ∎
 
-      zag′ : F .F₁ (unit⁻¹ .η b) D.∘ counit⁻¹ .η (F₀ F b) ≡ D.id
-      zag′ = ap₂ D._∘_ refl p
+      zag' : F .F₁ (unit⁻¹ .η b) D.∘ counit⁻¹ .η (F₀ F b) ≡ D.id
+      zag' = ap₂ D._∘_ refl p
         ·· sym (F .F-∘ _ _)
         ·· (ap (F .F₁) (unit-iso _ .C.is-invertible.invr) ∙ F .F-id)
 
@@ -453,8 +453,8 @@ because we can use the helper `Hom-pathp-reflr-iso`{.Agda} to establish
 the result with far less computation:
 
 ```agda
-    over′ : PathP (λ i → Fx≡Fy i D.≅ z) i j
-    over′ = D.≅-pathp Fx≡Fy refl
+    over' : PathP (λ i → Fx≡Fy i D.≅ z) i j
+    over' = D.≅-pathp Fx≡Fy refl
       (Univalent.Hom-pathp-refll-iso dcat (D.cancell (i .D._≅_.invl)))
 ```
 
@@ -471,7 +471,7 @@ indeed the same path:
         dcat .to-path Fx≅Fy               ∎
 
     over : PathP (λ i → F₀ F (x≡y i) D.≅ z) i j
-    over = transport (λ l → PathP (λ m → square (~ l) m D.≅ z) i j) over′
+    over = transport (λ l → PathP (λ m → square (~ l) m D.≅ z) i j) over'
 ```
 
 Hence --- blink and you'll miss it --- the essential fibres of $F$ over
@@ -584,13 +584,13 @@ Id-is-equivalence {C = C} .counit-iso x =
 private unquoteDecl eqv = declare-record-iso eqv (quote is-precat-iso)
 instance
   H-Level-is-precat-iso
-    : ∀ {o h o′ h′} {C : Precategory o h} {D : Precategory o′ h′}
+    : ∀ {o h o' h'} {C : Precategory o h} {D : Precategory o' h'}
         {F : Functor C D} {n}
     → H-Level (is-precat-iso F) (suc n)
   H-Level-is-precat-iso = prop-instance (Iso→is-hlevel 1 eqv (hlevel 1))
 
 module
-  _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     (F : Functor C D) (eqv : is-equivalence F)
   where
   private
@@ -636,8 +636,8 @@ module
 <!--
 ```agda
 record Equivalence
-  {o ℓ o′ ℓ′} (C : Precategory o ℓ) (D : Precategory o′ ℓ′)
-  : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′)
+  {o ℓ o' ℓ'} (C : Precategory o ℓ) (D : Precategory o' ℓ')
+  : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ')
   where
   no-eta-equality
   field

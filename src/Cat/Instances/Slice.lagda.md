@@ -22,7 +22,7 @@ module Cat.Instances.Slice where
 <!--
 ```agda
 private variable
-  o ℓ o′ ℓ′ : Level
+  o ℓ o' ℓ' : Level
 open Functor
 open _=>_
 
@@ -107,8 +107,8 @@ says that the map $h$ "respects reindexing", or less obliquely
   /-Obj-path p q i ./-Obj.domain = p i
   /-Obj-path p q i ./-Obj.map = q i
 
-  /-Hom-pathp : ∀ {c a a′ b b′} (p : a ≡ a′) (q : b ≡ b′)
-                {x : /-Hom {c = c} a b} {y : /-Hom a′ b′}
+  /-Hom-pathp : ∀ {c a a' b b'} (p : a ≡ a') (q : b ≡ b')
+                {x : /-Hom {c = c} a b} {y : /-Hom a' b'}
               → PathP (λ i → C.Hom (p i ./-Obj.domain) (q i ./-Obj.domain))
                         (x ./-Hom.map) (y ./-Hom.map)
               → PathP (λ i → /-Hom (p i) (q i)) x y
@@ -206,15 +206,15 @@ module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
   open /-Hom
   open /-Obj
 
-  Slice-terminal-object′ : is-terminal (Slice C c) (cut C.id)
-  Slice-terminal-object′ obj .centre .map = obj .map
-  Slice-terminal-object′ obj .centre .commutes = C.idl _
-  Slice-terminal-object′ obj .paths other =
+  Slice-terminal-object' : is-terminal (Slice C c) (cut C.id)
+  Slice-terminal-object' obj .centre .map = obj .map
+  Slice-terminal-object' obj .centre .commutes = C.idl _
+  Slice-terminal-object' obj .paths other =
     /-Hom-path (sym (other .commutes) ∙ C.idl _)
 
   Slice-terminal-object : Terminal (Slice C c)
   Slice-terminal-object .Terminal.top  = _
-  Slice-terminal-object .Terminal.has⊤ = Slice-terminal-object′
+  Slice-terminal-object .Terminal.has⊤ = Slice-terminal-object'
 ```
 
 <!--
@@ -395,34 +395,34 @@ module _ {o ℓ} {C : Precategory o ℓ} {X : Precategory.Ob C}
   pullback-above→pullback-below
     : is-pullback C (p1 .map) (f .map) (p2 .map) (g .map)
     → is-pullback (Slice C X) {P} {A} {B} {c} p1 f p2 g
-  pullback-above→pullback-below pb = pb′ where
-    pb′ : is-pullback (Slice _ _) _ _ _ _
-    pb′ .square = /-Hom-path (pb .square)
-    pb′ .universal p .map = pb .universal (ap map p)
-    pb′ .universal {P'} {p₁' = p₁'} p .commutes =
+  pullback-above→pullback-below pb = pb' where
+    pb' : is-pullback (Slice _ _) _ _ _ _
+    pb' .square = /-Hom-path (pb .square)
+    pb' .universal p .map = pb .universal (ap map p)
+    pb' .universal {P'} {p₁' = p₁'} p .commutes =
       (c .map ∘ pb .universal (ap map p))           ≡˘⟨ pulll (p1 .commutes) ⟩
       (P .map ∘ p1 .map ∘ pb .universal (ap map p)) ≡⟨ ap (_ ∘_) (pb .p₁∘universal) ⟩
       (P .map ∘ p₁' .map)                           ≡⟨ p₁' .commutes ⟩
       P' .map                                       ∎ {- * -}
-    pb′ .p₁∘universal = /-Hom-path (pb .p₁∘universal)
-    pb′ .p₂∘universal = /-Hom-path (pb .p₂∘universal)
-    pb′ .unique p q   = /-Hom-path (pb .unique (ap map p) (ap map q))
+    pb' .p₁∘universal = /-Hom-path (pb .p₁∘universal)
+    pb' .p₂∘universal = /-Hom-path (pb .p₂∘universal)
+    pb' .unique p q   = /-Hom-path (pb .unique (ap map p) (ap map q))
 
   pullback-below→pullback-above
     : is-pullback (Slice C X) {P} {A} {B} {c} p1 f p2 g
     → is-pullback C (p1 .map) (f .map) (p2 .map) (g .map)
-  pullback-below→pullback-above pb = pb′ where
-    pb′ : is-pullback _ _ _ _ _
-    pb′ .square = ap map (pb .square)
-    pb′ .universal p = pb .universal
+  pullback-below→pullback-above pb = pb' where
+    pb' : is-pullback _ _ _ _ _
+    pb' .square = ap map (pb .square)
+    pb' .universal p = pb .universal
       {p₁' = record { commutes = refl }}
       {p₂' = record { commutes = sym (pulll (g .commutes))
                               ·· sym (ap (_ ∘_) p)
                               ·· pulll (f .commutes) }}
       (/-Hom-path p) .map
-    pb′ .p₁∘universal = ap map $ pb .p₁∘universal
-    pb′ .p₂∘universal = ap map $ pb .p₂∘universal
-    pb′ .unique p q   = ap map $ pb .unique
+    pb' .p₁∘universal = ap map $ pb .p₁∘universal
+    pb' .p₂∘universal = ap map $ pb .p₂∘universal
+    pb' .unique p q   = ap map $ pb .unique
       {lim' = record { commutes = sym (pulll (p1 .commutes)) ∙ ap (_ ∘_) p }}
       (/-Hom-path p) (/-Hom-path q)
 ```
@@ -512,7 +512,7 @@ Let's begin. The `Total-space`{.Agda} functor gets out of our way very
 fast:
 
 ```agda
-  Total-space : Functor Cat[ Disc′ I , Sets ℓ ] (Slice (Sets ℓ) I)
+  Total-space : Functor Cat[ Disc' I , Sets ℓ ] (Slice (Sets ℓ) I)
   Total-space .F₀ F .domain = el (Σ _ (∣_∣ ⊙ F₀ F)) hlevel!
   Total-space .F₀ F .map    = fst
 

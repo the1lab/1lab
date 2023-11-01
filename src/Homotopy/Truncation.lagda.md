@@ -132,8 +132,8 @@ instance
   n-tr-decomp = decomp (quote n-Tr-is-hlevel) (`level-minus 1 ∷ [])
 
 n-Tr-elim
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {n}
-  → (P : n-Tr A (suc n) → Type ℓ′)
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {n}
+  → (P : n-Tr A (suc n) → Type ℓ')
   → (∀ x → is-hlevel (P x) (suc n))
   → (∀ x → P (inc x))
   → ∀ x → P x
@@ -144,30 +144,30 @@ n-Tr-elim {A = A} {n} P ptrunc pbase = go where
       circle : Sⁿ⁻¹ (1 + n) → P (hub r)
       circle x = subst P (spokes r x) (w x)
 
-      hub′ = hlevel→hubs-and-spokes n (ptrunc (hub r)) circle .fst
+      hub' = hlevel→hubs-and-spokes n (ptrunc (hub r)) circle .fst
 
-      spokes′ : ∀ x → PathP (λ i → P (spokes r x i)) (w x) hub′
-      spokes′ x = to-pathp $
+      spokes' : ∀ x → PathP (λ i → P (spokes r x i)) (w x) hub'
+      spokes' x = to-pathp $
         hlevel→hubs-and-spokes n (ptrunc (hub r)) circle .snd x
 
   go : ∀ x → P x
   go (inc x)        = pbase x
-  go (hub r)        = hub′ r (λ x → go (r x))
-  go (spokes r x i) = spokes′ r (λ x → go (r x)) x i
+  go (hub r)        = hub' r (λ x → go (r x))
+  go (spokes r x i) = spokes' r (λ x → go (r x)) x i
 ```
 
 <!--
 ```agda
 n-Tr-elim!
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {n}
-  → (P : n-Tr A (suc n) → Type ℓ′)
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {n}
+  → (P : n-Tr A (suc n) → Type ℓ')
   → {@(tactic hlevel-tactic-worker) hl : ∀ x → is-hlevel (P x) (suc n)}
   → (∀ x → P (inc x))
   → ∀ x → P x
 n-Tr-elim! P {hl} f = n-Tr-elim P hl f
 
 n-Tr-rec!
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} {n}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {n}
   → {@(tactic hlevel-tactic-worker) hl : is-hlevel B (suc n)}
   → (A → B) → n-Tr A (suc n) → B
 n-Tr-rec! {hl = hl} = n-Tr-elim (λ _ → _) (λ _ → hl)
@@ -179,7 +179,7 @@ principle, where the type we are eliminating into is constant.
 
 ```agda
 n-Tr-rec
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} {n}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {n}
   → is-hlevel B (suc n) → (A → B) → n-Tr A (suc n) → B
 n-Tr-rec hl = n-Tr-elim (λ _ → _) (λ _ → hl)
 ```
@@ -213,37 +213,37 @@ definition by instead mapping into $(1+n)\text{-}\ty$, which _is_ a
 $(2+n)$-type.
 
 ```agda
-  code : (x : A) (y′ : n-Tr A (2 + n)) → n-Type _ (suc n)
+  code : (x : A) (y' : n-Tr A (2 + n)) → n-Type _ (suc n)
   code x =
     n-Tr-elim!
-      (λ y′ → n-Type _ (suc n))
-      (λ y′ → el! (n-Tr (Path A x y′) (suc n)))
+      (λ y' → n-Type _ (suc n))
+      (λ y' → el! (n-Tr (Path A x y') (suc n)))
 ```
 
 The rest of the proof boils down to applications of `path
 induction`{.Agda id=J} and the induction principle for $\|A\|_{n+2}$.
 
 ```agda
-  encode′ : ∀ x y → inc x ≡ y → ∣ code x y ∣
-  encode′ x _ = J (λ y _ → ∣ code x y ∣) (inc refl)
+  encode' : ∀ x y → inc x ≡ y → ∣ code x y ∣
+  encode' x _ = J (λ y _ → ∣ code x y ∣) (inc refl)
 
-  decode′ : ∀ x y → ∣ code x y ∣ → inc x ≡ y
-  decode′ x =
+  decode' : ∀ x y → ∣ code x y ∣ → inc x ≡ y
+  decode' x =
     n-Tr-elim! _ λ x → n-Tr-rec hlevel! (ap inc)
 
-  rinv : ∀ x y → is-right-inverse (decode′ x y) (encode′ x y)
+  rinv : ∀ x y → is-right-inverse (decode' x y) (encode' x y)
   rinv x = n-Tr-elim _
     (λ y → Π-is-hlevel (2 + n)
       (λ c → Path-is-hlevel (2 + n) (is-hlevel-suc (suc n) (code x y .is-tr))))
     λ x → n-Tr-elim! _ λ p → ap n-Tr.inc (subst-path-right _ _ ∙ ∙-idl _)
 
-  linv : ∀ x y → is-left-inverse (decode′ x y) (encode′ x y)
-  linv x _ = J (λ y p → decode′ x y (encode′ x y p) ≡ p)
-    (ap (decode′ x (inc x)) (transport-refl (inc refl)) ∙ refl)
+  linv : ∀ x y → is-left-inverse (decode' x y) (encode' x y)
+  linv x _ = J (λ y p → decode' x y (encode' x y p) ≡ p)
+    (ap (decode' x (inc x)) (transport-refl (inc refl)) ∙ refl)
 
   isom : Iso (inc x ≡ inc y) (n-Tr (x ≡ y) (suc n))
-  isom = encode′ _ (inc _)
-       , iso (decode′ _ (inc _)) (rinv _ (inc _)) (linv _ (inc _))
+  isom = encode' _ (inc _)
+       , iso (decode' _ (inc _)) (rinv _ (inc _)) (linv _ (inc _))
 ```
 
 ```agda

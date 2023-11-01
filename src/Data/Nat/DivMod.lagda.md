@@ -57,7 +57,7 @@ $(1 + r') < b$.
 
 ```agda
 divide-pos (suc a) b with divide-pos a b
-divide-pos (suc a) b | divmod q′ r′ p s with ≤-split (suc r′) b
+divide-pos (suc a) b | divmod q' r' p s with ≤-split (suc r') b
 ```
 
 First, suppose that $1 + r' < b$, i.e., $1 + r'$ _can_ serve as a
@@ -69,8 +69,8 @@ $$
 $$
 
 ```agda
-divide-pos (suc a) b | divmod q′ r′ p s | inl r′+1<b =
-  divmod q′ (suc r′) (ap suc p ∙ sym (+-sucr (q′ * b) r′)) r′+1<b
+divide-pos (suc a) b | divmod q' r' p s | inl r'+1<b =
+  divmod q' (suc r') (ap suc p ∙ sym (+-sucr (q' * b) r')) r'+1<b
 ```
 
 The other case --- that in which $1 + r' = b$ --- is more interesting.
@@ -80,13 +80,13 @@ in this case, $q = 1 + q'$ and $r = 0$, which works out because ($0 < b$
 and) of some arithmetic. See for yourself:
 
 ```agda
-divide-pos (suc a) (suc b′) | divmod q′ r′ p s | inr (inr r′+1=b) =
-  divmod (suc q′) 0
+divide-pos (suc a) (suc b') | divmod q' r' p s | inr (inr r'+1=b) =
+  divmod (suc q') 0
     ( suc a                           ≡⟨ ap suc p ⟩
-      suc (q′ * (suc b′) + r′)        ≡˘⟨ ap (λ e → suc (q′ * e + r′)) r′+1=b ⟩
-      suc (q′ * (suc r′) + r′)        ≡⟨ nat! ⟩
-      suc (r′ + q′ * (suc r′) + zero) ≡⟨ ap (λ e → e + q′ * e + 0) r′+1=b ⟩
-      (suc b′) + q′ * (suc b′) + 0    ∎ )
+      suc (q' * (suc b') + r')        ≡˘⟨ ap (λ e → suc (q' * e + r')) r'+1=b ⟩
+      suc (q' * (suc r') + r')        ≡⟨ nat! ⟩
+      suc (r' + q' * (suc r') + zero) ≡⟨ ap (λ e → e + q' * e + 0) r'+1=b ⟩
+      (suc b') + q' * (suc b') + 0    ∎ )
     (s≤s 0≤x)
 ```
 
@@ -95,9 +95,9 @@ discard -- that in which $b < 1 + r'$. It's impossible because, by the
 definition of division, we have $r' < b$, meaning $(1 + r') \le b$.
 
 ```agda
-divide-pos (suc a) (suc b′) | divmod q′ r′ p s | inr (inl b<r′+1) =
-  absurd $ <-not-equal b<r′+1
-    (≤-antisym (≤-sucr (≤-peel b<r′+1)) (recover (≤-dec _ _) s))
+divide-pos (suc a) (suc b') | divmod q' r' p s | inr (inl b<r'+1) =
+  absurd $ <-not-equal b<r'+1
+    (≤-antisym (≤-sucr (≤-peel b<r'+1)) (recover (≤-dec _ _) s))
 ```
 
 As a finishing touch, we define short operators to produce the result of

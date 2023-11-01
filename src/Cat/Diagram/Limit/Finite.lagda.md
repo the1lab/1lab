@@ -192,7 +192,7 @@ equalisers to factor _that_ as a unique arrow $P' \to X \times_Z Y$.
 
 ```agda
     pb .universal {p₁' = p₁'} {p₂' = p₂'} p =
-      eq.universal {e′ = pr.⟨ p₁' , p₂' ⟩} (
+      eq.universal {e' = pr.⟨ p₁' , p₂' ⟩} (
         (f ∘ p1) ∘ pr.⟨ p₁' , p₂' ⟩ ≡⟨ pullr pr.π₁∘factor ⟩
         f ∘ p₁'                     ≡⟨ p ⟩
         g ∘ p₂'                     ≡˘⟨ pullr pr.π₂∘factor ⟩
@@ -291,8 +291,8 @@ object $*$.
   with-pullbacks top pb = fc where
     module top = Terminal top
     mkprod : ∀ A B → Product C A B
-    mkprod A B = record { has-is-product = terminal-pullback→product top.has⊤ pb′ }
-      where pb′ = pb (top.has⊤ A .centre) (top.has⊤ B .centre) .Pullback.has-is-pb
+    mkprod A B = record { has-is-product = terminal-pullback→product top.has⊤ pb' }
+      where pb' = pb (top.has⊤ A .centre) (top.has⊤ B .centre) .Pullback.has-is-pb
 
     mkeq : ∀ {A B} (f g : Hom A B) → Equaliser C f g
     mkeq {A = A} {B} f g = eq where
@@ -386,33 +386,33 @@ top face $\rm{equ} : \rm{eq}(f,g) \to A$ in our pullback diagram
 is indeed the equaliser of $f$ and $g$.
 
 ```agda
-      eq .has-is-eq .universal {e′ = e′} p =
+      eq .has-is-eq .universal {e' = e'} p =
         Pb.universal (Bb.unique₂ refl refl (sym p1) (sym p2))
         where
-          p1 : Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e′ ≡ Bb.π₁ ∘ ⟨f,g⟩ ∘ e′
+          p1 : Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e' ≡ Bb.π₁ ∘ ⟨f,g⟩ ∘ e'
           p1 =
-            Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e′   ≡⟨ cancell Bb.π₁∘factor ⟩
-            f ∘ e′                     ≡˘⟨ pulll Bb.π₁∘factor ⟩
-            Bb.π₁ ∘ ⟨f,g⟩ ∘ e′         ∎
+            Bb.π₁ ∘ ⟨id,id⟩ ∘ f ∘ e'   ≡⟨ cancell Bb.π₁∘factor ⟩
+            f ∘ e'                     ≡˘⟨ pulll Bb.π₁∘factor ⟩
+            Bb.π₁ ∘ ⟨f,g⟩ ∘ e'         ∎
 
-          p2 : Bb.π₂ ∘ ⟨id,id⟩ ∘ f ∘ e′ ≡ Bb.π₂ ∘ ⟨f,g⟩ ∘ e′
+          p2 : Bb.π₂ ∘ ⟨id,id⟩ ∘ f ∘ e' ≡ Bb.π₂ ∘ ⟨f,g⟩ ∘ e'
           p2 =
-            Bb.π₂ ∘ ⟨id,id⟩ ∘ f ∘ e′   ≡⟨ cancell Bb.π₂∘factor ⟩
-            f ∘ e′                     ≡⟨ p ⟩
-            g ∘ e′                     ≡˘⟨ pulll Bb.π₂∘factor ⟩
-            Bb.π₂ ∘ ⟨f,g⟩ ∘ e′         ∎
+            Bb.π₂ ∘ ⟨id,id⟩ ∘ f ∘ e'   ≡⟨ cancell Bb.π₂∘factor ⟩
+            f ∘ e'                     ≡⟨ p ⟩
+            g ∘ e'                     ≡˘⟨ pulll Bb.π₂∘factor ⟩
+            Bb.π₂ ∘ ⟨f,g⟩ ∘ e'         ∎
 
       eq .has-is-eq .factors = Pb.p₂∘universal
-      eq .has-is-eq .unique {F} {e′ = e′} {other = other} p₂∘l=e′ =
-        Pb.unique path p₂∘l=e′
+      eq .has-is-eq .unique {F} {e' = e'} {other = other} p₂∘l=e' =
+        Pb.unique path p₂∘l=e'
         where
-          path : Pb.p₁ ∘ other ≡ f ∘ e′
+          path : Pb.p₁ ∘ other ≡ f ∘ e'
           path =
             Pb.p₁ ∘ other                   ≡⟨ insertl Bb.π₁∘factor ⟩
             Bb.π₁ ∘ ⟨id,id⟩ ∘ Pb.p₁ ∘ other ≡⟨ ap (Bb.π₁ ∘_) (extendl Pb.square) ⟩
-            Bb.π₁ ∘ ⟨f,g⟩ ∘ Pb.p₂ ∘ other   ≡⟨ ap (Bb.π₁ ∘_) (ap (⟨f,g⟩ ∘_) p₂∘l=e′) ⟩
-            Bb.π₁ ∘ ⟨f,g⟩ ∘ e′              ≡⟨ pulll Bb.π₁∘factor ⟩
-            f ∘ e′                          ∎
+            Bb.π₁ ∘ ⟨f,g⟩ ∘ Pb.p₂ ∘ other   ≡⟨ ap (Bb.π₁ ∘_) (ap (⟨f,g⟩ ∘_) p₂∘l=e') ⟩
+            Bb.π₁ ∘ ⟨f,g⟩ ∘ e'              ≡⟨ pulll Bb.π₁∘factor ⟩
+            f ∘ e'                          ∎
 ```
 
 Putting it all together into a record we get our proof of finite completeness:
@@ -441,7 +441,7 @@ Putting it all together into a record we get our proof of finite completeness:
 
   is-complete→finitely
     : ∀ {a b} → is-complete a b C → Finitely-complete
-  is-complete→finitely {a} {b} compl = with-pullbacks term′ pb
+  is-complete→finitely {a} {b} compl = with-pullbacks term' pb
     where
       pb : ∀ {x y z} (f : Hom x z) (g : Hom y z) → Pullback C f g
       pb f g = Limit→Pullback C (compl (cospan→cospan-diagram _ _ f g))
@@ -461,8 +461,8 @@ Putting it all together into a record we get our proof of finite completeness:
       open Cone-hom
       open Cone
 
-      term′ : Terminal C
-      term′ = record { top = Limit.apex limF ; has⊤ = limiting } where
+      term' : Terminal C
+      term' = record { top = Limit.apex limF ; has⊤ = limiting } where
         limiting : ∀ x → is-contr _
         limiting x =
           contr (Limit.universal limF (λ { () }) (λ { {()} })) λ h →
@@ -480,14 +480,14 @@ preserve the terminal object and pullbacks.
 
 <!--
 ```agda
-module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} where
+module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
   private module C = Cat C
   private module D = Cat D
 ```
 -->
 
 ```agda
-  record is-lex (F : Functor C D) : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
+  record is-lex (F : Functor C D) : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
     private module F = Functor F
 
     field
@@ -528,11 +528,11 @@ being pullbacks, a lex functor $F : \cC \to \cD$ preserves monomorphisms.
 
 <!--
 ```agda
-module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} where
+module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
   open is-lex
 
   F∘-is-lex
-    : ∀ {o′′ ℓ′′} {E : Precategory o′′ ℓ′′}
+    : ∀ {o'' ℓ''} {E : Precategory o'' ℓ''}
         {F : Functor D E} {G : Functor C D}
     → is-lex F → is-lex G → is-lex (F F∘ G)
   F∘-is-lex f g .pres-⊤ = f .pres-⊤ ⊙ g .pres-⊤

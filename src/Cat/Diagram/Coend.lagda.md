@@ -16,13 +16,13 @@ module Cat.Diagram.Coend where
 ```agda
 private
   variable
-    o ℓ o′ ℓ′ : Level
-    C D : Precategory o′ ℓ′
+    o ℓ o' ℓ' : Level
+    C D : Precategory o' ℓ'
   coend-level
-    : {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+    : {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     → Functor (C ^op ×ᶜ C) D
     → Level
-  coend-level {o = o} {ℓ} {o′} {ℓ′} _ = o ⊔ o′ ⊔ ℓ ⊔ ℓ′
+  coend-level {o = o} {ℓ} {o'} {ℓ'} _ = o ⊔ o' ⊔ ℓ ⊔ ℓ'
 ```
 -->
 
@@ -128,8 +128,8 @@ and contravariant in the other.
 
 ```agda
     extranatural
-      : ∀ {c c′} (f : C.Hom c c′)
-      → ψ c′ D.∘ F.second f ≡ ψ c D.∘ F.first f
+      : ∀ {c c'} (f : C.Hom c c')
+      → ψ c' D.∘ F.second f ≡ ψ c D.∘ F.first f
 ```
 
 A coend, then, is a universal cowedge. In particular, we say that

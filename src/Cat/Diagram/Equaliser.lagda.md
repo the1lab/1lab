@@ -5,7 +5,7 @@ open import Cat.Prelude
 -->
 
 ```agda
-module Cat.Diagram.Equaliser {ℓ ℓ′} (C : Precategory ℓ ℓ′) where
+module Cat.Diagram.Equaliser {ℓ ℓ'} (C : Precategory ℓ ℓ') where
 ```
 
 <!--
@@ -27,14 +27,14 @@ of the domain (i.e. what the variable ranges over) where the left- and
 right-hand-sides agree.
 
 ```agda
-record is-equaliser {E} (f g : Hom A B) (equ : Hom E A) : Type (ℓ ⊔ ℓ′) where
+record is-equaliser {E} (f g : Hom A B) (equ : Hom E A) : Type (ℓ ⊔ ℓ') where
   field
     equal     : f ∘ equ ≡ g ∘ equ
-    universal : ∀ {F} {e′ : Hom F A} (p : f ∘ e′ ≡ g ∘ e′) → Hom F E
-    factors   : ∀ {F} {e′ : Hom F A} {p : f ∘ e′ ≡ g ∘ e′} → equ ∘ universal p ≡ e′
+    universal : ∀ {F} {e' : Hom F A} (p : f ∘ e' ≡ g ∘ e') → Hom F E
+    factors   : ∀ {F} {e' : Hom F A} {p : f ∘ e' ≡ g ∘ e'} → equ ∘ universal p ≡ e'
     unique
-      : ∀ {F} {e′ : Hom F A} {p : f ∘ e′ ≡ g ∘ e′} {other : Hom F E}
-      → equ ∘ other ≡ e′
+      : ∀ {F} {e' : Hom F A} {p : f ∘ e' ≡ g ∘ e'} {other : Hom F E}
+      → equ ∘ other ≡ e'
       → other ≡ universal p
 
   equal-∘ : f ∘ equ ∘ h ≡ g ∘ equ ∘ h
@@ -43,10 +43,10 @@ record is-equaliser {E} (f g : Hom A B) (equ : Hom E A) : Type (ℓ ⊔ ℓ′) 
     g ∘ equ ∘ h ∎
 
   unique₂
-    : ∀ {F} {e′ : Hom F A}  {o1 o2 : Hom F E}
-    → f ∘ e′ ≡ g ∘ e′
-    → equ ∘ o1 ≡ e′
-    → equ ∘ o2 ≡ e′
+    : ∀ {F} {e' : Hom F A}  {o1 o2 : Hom F E}
+    → f ∘ e' ≡ g ∘ e'
+    → equ ∘ o1 ≡ e'
+    → equ ∘ o2 ≡ e'
     → o1 ≡ o2
   unique₂ p q r = unique {p = p} q ∙ sym (unique r)
 ```
@@ -69,7 +69,7 @@ There is also a convenient bundling of an equalising arrow together with
 its domain:
 
 ```agda
-record Equaliser (f g : Hom A B) : Type (ℓ ⊔ ℓ′) where
+record Equaliser (f g : Hom A B) : Type (ℓ ⊔ ℓ') where
   field
     {apex}  : Ob
     equ     : Hom apex A

@@ -51,7 +51,7 @@ suc-wf = Induction-wf (λ x y → y ≡ suc x) λ P m →
 <-wf x = go x x ≤-refl where
   go : (x y : Nat) → .(y ≤ x) → Acc _<_ y
   go x zero w = acc λ _ ()
-  go (suc x) (suc y) w = acc k′ where
-    k′ : ∀ x → x < suc y → Acc _<_ x
-    k′ x′ w′ = go x x′ (≤-trans (≤-peel w′) (≤-peel w))
+  go (suc x) (suc y) w = acc k' where
+    k' : ∀ x → x < suc y → Acc _<_ x
+    k' x' w' = go x x' (≤-trans (≤-peel w') (≤-peel w))
 ```

@@ -30,7 +30,7 @@ module Algebra.Group.Concrete where
 <!--
 ```agda
 private variable
-  ℓ ℓ′ : Level
+  ℓ ℓ' : Level
 ```
 -->
 
@@ -67,7 +67,7 @@ Concrete groups are pointed connected types, so they enjoy the following elimina
 principle, which will be useful later:
 
 ```agda
-  B-elim-contr : {P : ⌞ B ⌟ → Type ℓ′}
+  B-elim-contr : {P : ⌞ B ⌟ → Type ℓ'}
                → is-contr (P pt)
                → ∀ x → P x
   B-elim-contr {P = P} c = connected∙-elim-prop {P = P} has-is-connected
@@ -360,19 +360,19 @@ module Deloop-Hom-Π₁ {G H : ConcreteGroup ℓ} (f : B G →∙ B H) where
   open Deloop-Hom {G = G} {H} (Π₁ .F₁ f) public
   open ConcreteGroup H using (H-Level-B)
 
-  C′ : ∀ x → Type _
-  C′ x = Σ (f .fst x ≡ g .fst x) λ eq
+  C' : ∀ x → Type _
+  C' x = Σ (f .fst x ≡ g .fst x) λ eq
        → (α : pt G ≡ x) → Square (f .snd) (ap (f .fst) α) (p α) eq
 ```
 
 This is a [[property]], and $\point{G}$ has it:
 
 ```agda
-  C′-contr : is-contr (C′ (pt G))
-  C′-contr .centre .fst = f .snd ∙ sym (g .snd)
-  C′-contr .centre .snd α = transport (sym Square≡double-composite-path) $
+  C'-contr : is-contr (C' (pt G))
+  C'-contr .centre .fst = f .snd ∙ sym (g .snd)
+  C'-contr .centre .snd α = transport (sym Square≡double-composite-path) $
     ··-∙-assoc ∙ sym (f-p α refl) ∙ ap p (∙-idr _)
-  C′-contr .paths (eq , eq-paths) = Σ-prop-path! $
+  C'-contr .paths (eq , eq-paths) = Σ-prop-path! $
     sym (∙-unique _ (transpose (eq-paths refl)))
 ```
 
@@ -380,19 +380,19 @@ Using the elimination principle again, we get enough information about `g` to co
 that it is equal to `f`, so that we have a left inverse.
 
 ```agda
-  c′ : ∀ x → C′ x
-  c′ = B-elim-contr G C′-contr
+  c' : ∀ x → C' x
+  c' = B-elim-contr G C'-contr
 
   g≡f : ∀ x → g .fst x ≡ f .fst x
-  g≡f x = sym (c′ x .fst)
+  g≡f x = sym (c' x .fst)
 ```
 
-The homotopy `g≡f` is [[pointed]] by `definition`{.Agda ident=C′-contr}, but we
+The homotopy `g≡f` is [[pointed]] by `definition`{.Agda ident=C'-contr}, but we
 need to bend the path into a `Square`{.Agda}:
 
 ```agda
   β : g≡f (pt G) ≡ sym (f .snd ∙ sym (g .snd))
-  β = ap (sym ⊙ fst) (sym (C′-contr .paths (c′ (pt G))))
+  β = ap (sym ⊙ fst) (sym (C'-contr .paths (c' (pt G))))
 
   ptg≡ptf : Square (g≡f (pt G)) (g .snd) (f .snd) refl
   ptg≡ptf i j = hcomp (∂ i ∨ ∂ j) λ where

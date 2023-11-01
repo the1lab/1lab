@@ -54,11 +54,11 @@ o_y \equiv o'_y$.
 ```agda
 Comma-is-category : is-category (F ↓ G)
 Comma-is-category = record { to-path = objs ; to-path-over = maps } where
-  module _ {ob ob′} (isom : F↓G.Isomorphism ob ob′) where
+  module _ {ob ob'} (isom : F↓G.Isomorphism ob ob') where
     module isom = F↓G._≅_ isom
 
-    x-is-x : ob .x Y.≅ ob′ .x
-    y-is-y : ob .y Z.≅ ob′ .y
+    x-is-x : ob .x Y.≅ ob' .x
+    y-is-y : ob .y Z.≅ ob' .y
 
     x-is-x = Y.make-iso (isom.to .α) (isom.from .α) (ap α isom.invl) (ap α isom.invr)
     y-is-y = Z.make-iso (isom.to .β) (isom.from .β) (ap β isom.invl) (ap β isom.invr)
@@ -87,16 +87,16 @@ so over these isomorphisms the map parts become equal, thus establishing
 an identification $o \equiv o'$.
 
 ```agda
-    objs : ob ≡ ob′
+    objs : ob ≡ ob'
     objs i .x = yuniv .to-path x-is-x i
     objs i .y = zuniv .to-path y-is-y i
-    objs i .map = lemma′ i where
-      lemma′ : PathP (λ i → X.Hom (F.₀ (objs i .x)) (G.₀ (objs i .y)))
-                (ob .map) (ob′ .map)
-      lemma′ = transport
+    objs i .map = lemma' i where
+      lemma' : PathP (λ i → X.Hom (F.₀ (objs i .x)) (G.₀ (objs i .y)))
+                (ob .map) (ob' .map)
+      lemma' = transport
         (λ i → PathP (λ j → X.Hom (F-map-path yuniv xuniv F x-is-x (~ i) j)
                                   (F-map-path zuniv xuniv G y-is-y (~ i) j))
-                    (ob .map) (ob′ .map)) $
+                    (ob .map) (ob' .map)) $
         Univalent.Hom-pathp-iso xuniv $
           X.pulll   (sym (isom.to .sq)) ∙
           X.cancelr (F.annihilate (ap α isom.invl))

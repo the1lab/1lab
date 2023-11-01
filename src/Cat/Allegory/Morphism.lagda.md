@@ -547,7 +547,7 @@ domain-universall : is-coreflexive g → f ≤ f ∘ g → domain f ≤ g
 domain-universall {g = g} {f = f} g-corefl w =
   id ∩ (f † ∘ f)           ≤⟨ ∩-pres-r (≤-pushr w) ⟩
   id ∩ ((f † ∘ f) ∘ g)     =⟨ ∩-comm ⟩
-  ((f † ∘ f) ∘ g) ∩ id     ≤⟨ modular′ g (f † ∘ f) id ⟩
+  ((f † ∘ f) ∘ g) ∩ id     ≤⟨ modular' g (f † ∘ f) id ⟩
   (f † ∘ f ∩ id ∘ g †) ∘ g ≤⟨ ≤-trans ∩-le-r (≤-eliml ≤-refl) ◀ g ⟩
   g † ∘ g                  ≤⟨ ≤-eliml (coreflexive-dual g-corefl) ⟩
   g                        ≤∎
@@ -579,7 +579,7 @@ domain-∩ {f = f} {g = g} = ≤-antisym ≤-to ≤-from where
     id ∩ f † ∘ g                               ≤⟨ ∩-univ ∩-le-l (∩-univ (∩-univ ∩-le-r ∩-le-l) ∩-le-l ) ⟩
     id ∩ (f † ∘ g ∩ id) ∩ id                   ≤⟨ ∩-pres-r (∩-pres-l (modular g (f †) id)) ⟩
     id ∩ (f † ∘ (g ∩ ⌜ f † † ∘ id ⌝)) ∩ id     =⟨ ap! (idr _ ∙ dual f) ⟩
-    id ∩ (f † ∘ (g ∩ f)) ∩ id                  ≤⟨ ∩-pres-r (modular′ (g ∩ f) (f †) id) ⟩
+    id ∩ (f † ∘ (g ∩ f)) ∩ id                  ≤⟨ ∩-pres-r (modular' (g ∩ f) (f †) id) ⟩
     id ∩ (f † ∩ ⌜ id ∘ (g ∩ f) † ⌝) ∘ (g ∩ f)  =⟨ ap! (idl _) ⟩
     id ∩ (f † ∩ ⌜ g ∩ f ⌝ †) ∘ ⌜ g ∩ f ⌝       =⟨ ap! ∩-comm ⟩
     id ∩ (f † ∩ (f ∩ g) †) ∘ (f ∩ g)           ≤⟨ ∩-pres-r (∩-le-r ◀ (f ∩ g)) ⟩
@@ -692,7 +692,7 @@ domain-swap f g w =
   g ∘ (id ∩ (f ∘ g) † ∘ (f ∘ g))   ≤⟨ ∩-distribl ⟩
   g ∘ id ∩ g ∘ (f ∘ g) † ∘ (f ∘ g) ≤⟨ ∩-pres-r (≤-extendl (†-pulll w)) ⟩
   g ∘ id ∩ id ∘ f † ∘ f ∘ g        =⟨ ap₂ _∩_ id-comm (idl _) ⟩
-  id ∘ g ∩ f † ∘ f ∘ g             ≤⟨ modular′ g id (f † ∘ f ∘ g) ⟩
+  id ∘ g ∩ f † ∘ f ∘ g             ≤⟨ modular' g id (f † ∘ f ∘ g) ⟩
   (id ∩ (f † ∘ f ∘ g) ∘ g †) ∘ g   ≤⟨ ∩-pres-r (≤-pullr (≤-cancelr w)) ◀ g ⟩
   (id ∩ f † ∘ f) ∘ g ≤∎
 ```

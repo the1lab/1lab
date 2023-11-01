@@ -35,10 +35,10 @@ native support for paths-over-paths:
 
 ```agda
 record
-  is-identity-system {ℓ ℓ′} {A : Type ℓ}
-    (R : A → A → Type ℓ′)
+  is-identity-system {ℓ ℓ'} {A : Type ℓ}
+    (R : A → A → Type ℓ')
     (refl : ∀ a → R a a)
-    : Type (ℓ ⊔ ℓ′)
+    : Type (ℓ ⊔ ℓ')
   where
   no-eta-equality
   field
@@ -54,16 +54,16 @@ record
 open is-identity-system public
 ```
 
-As mentioned before, the data of an identity system gives is exactly
+As mentioned before, the data of an identity system gives us exactly
 what is required to prove J for the relation $R$. This is essentially
 the decomposition of J into _contractibility of singletons_, but with
 singletons replaced by $R$-singletons.
 
 ```agda
 IdsJ
-  : ∀ {ℓ ℓ′ ℓ′′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a} {a : A}
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a} {a : A}
   → is-identity-system R r
-  → (P : ∀ b → R a b → Type ℓ′′)
+  → (P : ∀ b → R a b → Type ℓ'')
   → P a (r a)
   → ∀ {b} s → P b s
 IdsJ ids P pr s =
@@ -73,25 +73,25 @@ IdsJ ids P pr s =
 <!--
 ```agda
 IdsJ-refl
-  : ∀ {ℓ ℓ′ ℓ′′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a} {a : A}
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a} {a : A}
   → (ids : is-identity-system R r)
-  → (P : ∀ b → R a b → Type ℓ′′)
+  → (P : ∀ b → R a b → Type ℓ'')
   → (x : P a (r a))
   → IdsJ ids P x (r a) ≡ x
 IdsJ-refl {R = R} {r = r} {a = a} ids P x =
   transport (λ i → P (ids .to-path (r a) i) (ids .to-path-over (r a) i)) x ≡⟨⟩
-  subst P′ (λ i → ids .to-path (r a) i , ids .to-path-over (r a) i) x      ≡⟨ ap (λ e → subst P′ e x) lemma ⟩
-  subst P′ refl x                                                          ≡⟨ transport-refl x ⟩
+  subst P' (λ i → ids .to-path (r a) i , ids .to-path-over (r a) i) x      ≡⟨ ap (λ e → subst P' e x) lemma ⟩
+  subst P' refl x                                                          ≡⟨ transport-refl x ⟩
   x ∎
   where
-    P′ : Σ _ (R a) → Type _
-    P′ (b , r) = P b r
+    P' : Σ _ (R a) → Type _
+    P' (b , r) = P b r
 
     lemma : Σ-pathp (ids .to-path (r a)) (ids .to-path-over (r a)) ≡ refl
     lemma = is-contr→is-set (is-contr-ΣR ids) _ _ _ _
 
 to-path-refl-coh
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a}
   → (ids : is-identity-system R r)
   → ∀ a
   → (Σ-pathp (ids .to-path (r a)) (ids .to-path-over (r a))) ≡ refl
@@ -101,7 +101,7 @@ to-path-refl-coh {r = r} ids a =
     refl
 
 to-path-refl
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a} {a : A}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a} {a : A}
   → (ids : is-identity-system R r)
   → ids .to-path (r a) ≡ refl
 to-path-refl {r = r} {a = a} ids = ap (ap fst) $ to-path-refl-coh ids a
@@ -116,17 +116,17 @@ witness, we can simply define $r$ as $f^{-1}(\refl)$.
 
 ```agda
 equiv-path→identity-system
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a}
   → (eqv : ∀ {a b} → R a b ≃ (a ≡ b))
   → (∀ a → Equiv.from eqv refl ≡ r a)
   → is-identity-system R r
-equiv-path→identity-system {R = R} {r = r} eqv pres′ = ids where
+equiv-path→identity-system {R = R} {r = r} eqv pres' = ids where
   contract : ∀ {a} → is-contr (Σ _ (R a))
   contract = is-hlevel≃ 0 ((total (λ _ → eqv .fst) , equiv→total (eqv .snd)))
     (contr _ Singleton-is-contr)
 
   pres : ∀ {a} → eqv .fst (r a) ≡ refl
-  pres {a = a} = Equiv.injective₂ (eqv e⁻¹) (Equiv.η eqv _) (pres′ _)
+  pres {a = a} = Equiv.injective₂ (eqv e⁻¹) (Equiv.η eqv _) (pres' _)
 
   ids : is-identity-system R r
   ids .to-path = eqv .fst
@@ -145,7 +145,7 @@ by standard results.
 
 ```agda
 identity-system-gives-path
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a}
   → is-identity-system R r
   → ∀ {a b} → R a b ≃ (a ≡ b)
 identity-system-gives-path {R = R} {r = r} ids =
@@ -172,8 +172,8 @@ $A$.
 
 ```agda
 module
-  _ {ℓ ℓ′ ℓ′′} {A : Type ℓ} {B : Type ℓ′}
-    {R : B → B → Type ℓ′′} {r : ∀ a → R a a}
+  _ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'}
+    {R : B → B → Type ℓ''} {r : ∀ a → R a a}
     (ids : is-identity-system R r)
     (f : A ↪ B)
   where
@@ -194,8 +194,8 @@ module
 <!--
 ```agda
 module
-  _ {ℓ ℓ′} {A : Type ℓ}
-    {R S : A → A → Type ℓ′}
+  _ {ℓ ℓ'} {A : Type ℓ}
+    {R S : A → A → Type ℓ'}
     {r : ∀ a → R a a} {s : ∀ a → S a a}
     (ids : is-identity-system R r)
     (eqv : ∀ x y → R x y ≃ S x y)
@@ -227,7 +227,7 @@ univalence-identity-system .to-path-over p =
 <!--
 ```agda
 is-identity-system-is-prop
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a}
   → is-prop (is-identity-system R r)
 is-identity-system-is-prop {A = A} {R} {r} =
   retract→is-hlevel 1 from to cancel λ x y i a → is-contr-is-prop (x a) (y a) i
@@ -258,29 +258,29 @@ is-identity-system-is-prop {A = A} {R} {r} =
       k (j = i0) → to-path-refl-coh {R = R} {r = r} x a (~ k) i
       k (j = i1) → b , s
 
-    sys′ : ∀ (x : is-identity-system R r) a b (s : R a b) i j k
+    sys' : ∀ (x : is-identity-system R r) a b (s : R a b) i j k
          → Partial (∂ i ∨ ∂ j ∨ ~ k) (Σ A (R a))
-    sys′ x a b s i j k (k = i0) = x .to-path (r a) i , x .to-path-over (r a) i
-    sys′ x a b s i j k (i = i0) = hfill (∂ j) k (sys (to x) a b s j)
-    sys′ x a b s i j k (i = i1) =
+    sys' x a b s i j k (k = i0) = x .to-path (r a) i , x .to-path-over (r a) i
+    sys' x a b s i j k (i = i0) = hfill (∂ j) k (sys (to x) a b s j)
+    sys' x a b s i j k (i = i1) =
         x .to-path (x .to-path-over s (k ∨ j)) (k ∧ j)
       , x .to-path-over (x .to-path-over s (k ∨ j)) (k ∧ j)
-    sys′ x a b s i j k (j = i0) =
+    sys' x a b s i j k (j = i0) =
         x .to-path (r a) (k ∨ i) , x .to-path-over (r a) (k ∨ i)
-    sys′ x a b s i j k (j = i1) = square x a b s i k
+    sys' x a b s i j k (j = i1) = square x a b s i k
 
     cancel : is-left-inverse from to
-    cancel x i .to-path {a} {b} s j      = hcomp (∂ i ∨ ∂ j) (sys′ x a b s i j) .fst
-    cancel x i .to-path-over {a} {b} s j = hcomp (∂ i ∨ ∂ j) (sys′ x a b s i j) .snd
+    cancel x i .to-path {a} {b} s j      = hcomp (∂ i ∨ ∂ j) (sys' x a b s i j) .fst
+    cancel x i .to-path-over {a} {b} s j = hcomp (∂ i ∨ ∂ j) (sys' x a b s i j) .snd
 
 instance
   H-Level-is-identity-system
-    : ∀ {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ a → R a a} {n}
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a} {n}
     → H-Level (is-identity-system R r) (suc n)
   H-Level-is-identity-system = prop-instance is-identity-system-is-prop
 
 identity-system→hlevel
-  : ∀ {ℓ ℓ′} {A : Type ℓ} n {R : A → A → Type ℓ′} {r : ∀ x → R x x}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} n {R : A → A → Type ℓ'} {r : ∀ x → R x x}
   → is-identity-system R r
   → (∀ x y → is-hlevel (R x y) n)
   → is-hlevel A (suc n)
@@ -302,7 +302,7 @@ $A$ is a set.
 
 ```agda
 set-identity-system
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {R : A → A → Type ℓ′} {r : ∀ x → R x x}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ x → R x x}
   → (∀ x y → is-prop (R x y))
   → (∀ {x y} → R x y → x ≡ y)
   → is-identity-system R r
