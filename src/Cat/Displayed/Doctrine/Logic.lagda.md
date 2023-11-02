@@ -48,10 +48,11 @@ fiddly, it's _quite_ long.
 The first thing we'll do is strictify $\cB$ a bit. Instead of working
 directly with arbitrary morphisms, it's slightly better --- for the
 computational behaviour of substitution --- to have a syntactic
-presentation the terms of our logic. We start with the **types**, built
-inductively using `` _`×_ ``{.Agda}, and with an injection from the
-objects of $\cB$. We also single out a class of objects which are built
-from repeated pairing onto the terminal object to be the **contexts**.
+presentation fo the terms of our logic. We start with the **types**,
+built inductively using `` _`×_ ``{.Agda}, and with an injection from
+the objects of $\cB$. We also single out a class of objects which are
+built from repeated pairing onto the terminal object to be the
+**contexts**.
 
 ```agda
 data Ty : Typeω where
@@ -117,6 +118,7 @@ data Tm : Cx → Ty → Typeω where
 
   fun : Hom ⟦ τ ⟧ᵗ ⟦ σ ⟧ᵗ → Tm Γ τ → Tm Γ σ
 
+-- Superscript n for "name", e for "expression"
 ⟦_⟧ⁿ : Γ ∋ τ → Hom ⟦ Γ ⟧ᶜ ⟦ τ ⟧ᵗ
 ⟦ stop ⟧ⁿ  = π₂
 ⟦ pop x ⟧ⁿ = ⟦ x ⟧ⁿ ∘ π₁
@@ -132,7 +134,7 @@ data Tm : Cx → Ty → Typeω where
 ## Renamings and substitutions
 
 Even after we have a good grasp on the morphisms in $\cB$ that we want
-to call _terms_, there are still two classes of map, now between pairs
+to call _terms_, there are still two classes of maps, now between pairs
 of contexts, that we must single out. A **renaming** $\rho : \Gamma \to
 \Delta$ maps variables in $\Delta$ to variables in $\Gamma$: there's an
 identity renaming, and you can either choose to keep or drop variables
@@ -155,7 +157,7 @@ data Sub : Cx → Cx → Typeω where
 ```
 
 ```agda
--- Superscript n for "name"
+-- Superscript r for "renaming", s for "substitution"
 ⟦_⟧ʳ : Ren Γ Δ → Hom ⟦ Γ ⟧ᶜ ⟦ Δ ⟧ᶜ
 ⟦ stop ⟧ʳ = id
 ⟦ drop r ⟧ʳ = ⟦ r ⟧ʳ ∘ π₁
