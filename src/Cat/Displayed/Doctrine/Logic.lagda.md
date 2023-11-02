@@ -402,7 +402,7 @@ sub-prop-correct ρ (s =ᵖ t) =
 ```
 
 <!--
-```
+```agda
 sub-prop-∘
   : ∀ {Φ} (ρ : Sub Γ Δ) (σ : Sub Δ Φ) (φ : Formula Φ)
   → ⟦ sub-prop ρ (sub-prop σ φ) ⟧ᵖ ≡  ⟦ φ ⟧ᵖ [ ⟦ σ ⟧ˢ ∘ ⟦ ρ ⟧ˢ ]
@@ -501,7 +501,7 @@ of fibrewise meets:
 <div class=mathpar>
 
 $$
-\frac{\Phi \vDash \phi \quad \Phi \vDash \psi}{\Phi \vdash \phi \land \psi}[\land\text{-intro}]
+\frac{\Phi \vDash \phi \quad \Phi \vDash \psi}{\Phi \vdash \phi \land \psi}\land\text{-intro}
 $$
 
 $$

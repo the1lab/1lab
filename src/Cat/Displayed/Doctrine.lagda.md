@@ -33,7 +33,7 @@ open Cat B
 
 A **regular hyperdoctrine** is a generalisation of the defining features
 of the [[poset of subobjects]] of a [[regular category]]; More
-abstractly, it axiomatises exactly what is necesary to interpret
+abstractly, it axiomatises exactly what is necessary to interpret
 first-order (regular) logic _over_ a [[finitely complete category]].
 There is quite a lot of data involved, so we'll present it in stages.
 
@@ -103,7 +103,7 @@ fibres. This condition is fortunately very easy to state: it suffices to
 ask that $\bP$ be a [[Cartesian fibration]].
 
 ```agda
-    cartesian   : Cartesian-fibration ℙ
+    cartesian : Cartesian-fibration ℙ
 ```
 
 We're almost done with the structure. To handle existential
@@ -132,6 +132,14 @@ a left adjoint to that: in other words, $\bP$ must also be a
 ```agda
     cocartesian : Cocartesian-fibration ℙ
 ```
+
+Note that we have assumed the existence of left adjoints to arbitrary
+substitutions, which correspond to forms of existential quantification
+more general than quantification over the latest variable. For example,
+if the base category $\cB$ has finite products, then existential
+quantification of a predicate $\phi : \bP(A)$ over $\delta : A \to A
+\times A$ corresponds to the predicate "$(i, j) \mapsto (i = j) \land
+\phi(i)$".
 
 <details>
 <summary>That concludes the _data_ of a regular hyperdoctrine. We will
@@ -286,6 +294,5 @@ the Beck-Chevalley condition.
   subst-! : ∀ {x y} (f : Hom y x) {α} → ℙ.Hom[ id ] α (aye [ f ])
   subst-! f {α} = subst (λ e → ℙ.Hom[ id ] α e) (sym (subst-aye f))
     (Terminal.! (fibrewise-top _))
-
 ```
 -->
