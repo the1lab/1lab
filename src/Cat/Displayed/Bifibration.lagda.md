@@ -43,7 +43,7 @@ private
 -->
 
 
-# Bifibrations
+# Bifibrations {defines="bifibration"}
 
 A [[displayed category]] $\cE \liesover \cB$ is a **bifibration** if is
 it both a [[fibration|cartesian fibration]] and an opfibration. This

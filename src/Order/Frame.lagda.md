@@ -16,7 +16,7 @@ import Cat.Reasoning
 module Order.Frame where
 ```
 
-# Frames
+# Frames {defines="frame"}
 
 <!--
 ```agda
