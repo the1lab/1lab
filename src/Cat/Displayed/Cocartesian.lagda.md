@@ -425,6 +425,8 @@ cocartesian-lift→co-cartesian-lift cocart .Cartesian-lift.cartesian =
 ```
 </details>
 
+:::{.definition #cocartesian-fibration}
+
 We can use this notion to define cocartesian fibrations (sometimes
 referred to as **opfibrations**).
 
@@ -437,6 +439,8 @@ record Cocartesian-fibration : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
   module has-lift {x y} (f : Hom x y) (x' : Ob[ x ]) =
     Cocartesian-lift (has-lift f x')
 ```
+
+:::
 
 <!--
 
