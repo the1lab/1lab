@@ -114,13 +114,13 @@ and contravariant in the other.
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  w && {F(c',c')} \\
+  {F(c',c)} && {F(c',c')} \\
   \\
-  {F(c,c)} && {F(c',c)}
-  \arrow["{\psi_{c'}}", from=1-1, to=1-3]
-  \arrow["{F(\mathrm{id}_{c'},f)}", from=1-3, to=3-3]
-  \arrow["{F(f,\mathrm{id}_{c})}"', from=3-1, to=3-3]
-  \arrow["{\psi_c}"', from=1-1, to=3-1]
+  {F(c,c)} && w
+  \arrow["{F(\mathrm{id}_{c'},f)}", from=1-1, to=1-3]
+  \arrow["{\psi_{c'}}", from=1-3, to=3-3]
+  \arrow["{\psi_c}"', from=3-1, to=3-3]
+  \arrow["{F(f,\mathrm{id}_{c})}"', from=1-1, to=3-1]
 \end{tikzcd}\]
 ~~~
 
