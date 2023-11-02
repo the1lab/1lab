@@ -48,7 +48,7 @@ fiddly, it's _quite_ long.
 The first thing we'll do is strictify $\cB$ a bit. Instead of working
 directly with arbitrary morphisms, it's slightly better --- for the
 computational behaviour of substitution --- to have a syntactic
-presentation fo the terms of our logic. We start with the **types**,
+presentation of the terms of our logic. We start with the **types**,
 built inductively using `` _`×_ ``{.Agda}, and with an injection from
 the objects of $\cB$. We also single out a class of objects which are
 built from repeated pairing onto the terminal object to be the
