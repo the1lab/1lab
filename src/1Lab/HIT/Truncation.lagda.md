@@ -250,7 +250,9 @@ and $(b, y)$ in the image. We know, morally, that $x$ (respectively $y$) give us
 some $f^*(a) : A$ and $p : f(f^*a) = a$ (resp $q : f(f^*(b)) = b$) ---
 which would establish that $a \equiv b$, as we need, since we have $a =
 f(f^*(a)) = f(f^*(b)) = b$, where the middle equation is by constancy of
-$f$ --- but crucially, the
+$f$ --- but $p$ and $q$ are hidden under propositional truncations, so
+we crucially need to use the fact that $B$ is a set so that $a = b$ is a
+proposition.
 
 ```agda
 is-constant→image-is-prop bset f f-const (a , x) (b , y) =

@@ -221,7 +221,7 @@ square.
 module _ {A : Precategory ao ah} {B : Precategory bo bh} where
   private module A = Precategory A
 
-  infix 4 _↙_ _↘_
+  infix 5 _↙_ _↘_
   _↙_ : A.Ob → Functor B A → Precategory _ _
   X ↙ T = const! X ↓ T
 

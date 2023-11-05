@@ -147,7 +147,7 @@ We can define the type of *all* morphisms in a precategory as the total space of
 ```
 -->
 
-## Opposites
+## Opposites {defines="opposite-category"}
 
 A common theme throughout precategory theory is that of _duality_: The dual
 of a categorical concept is same concept, with "all the arrows

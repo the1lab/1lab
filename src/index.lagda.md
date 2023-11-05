@@ -408,6 +408,7 @@ About [[adjoint functors]], and their associated monads:
 open import Cat.Diagram.Monad -- Definition of monads
 open import Cat.Functor.Adjoint -- Unit-counit adjunctions and universal arrows
 open import Cat.Functor.Adjoint.Hom -- Adjoints in terms of Hom-isomorphisms
+open import Cat.Functor.Adjoint.Representable -- Adjoints in terms of representables
 open import Cat.Functor.Adjoint.Monad -- Monad from an adjunction
 open import Cat.Functor.Adjoint.Unique -- Uniqueness of adjoints
 open import Cat.Functor.Adjoint.Monadic -- Monadic adjunctions
@@ -445,6 +446,7 @@ open import Cat.Functor.Hom -- Hom functor, Yoneda embedding
 open import Cat.Functor.Hom.Cocompletion -- Universal property of PSh(C)
 open import Cat.Functor.Hom.Coyoneda -- The Coyoneda lemma
 open import Cat.Functor.Hom.Representable -- Representable functors
+open import Cat.Functor.Hom.Duality -- Duality of Hom functors
 
 open import Cat.Functor.Hom.Displayed
   -- Hom functors of displayed categories

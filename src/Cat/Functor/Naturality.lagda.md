@@ -57,11 +57,14 @@ morphisms by a superscript `ⁿ`:
   idni : ∀ {F} → F ≅ⁿ F
   idni = CD.id-iso
 
-  _ni∘_ : ∀ {F G H} → F ≅ⁿ G → G ≅ⁿ H → F ≅ⁿ H
-  _ni∘_ = CD._∘Iso_
+  _∘ni_ : ∀ {F G H} → F ≅ⁿ G → G ≅ⁿ H → F ≅ⁿ H
+  _∘ni_ = CD._∘Iso_
 
   _ni⁻¹ : ∀ {F G} → F ≅ⁿ G → G ≅ⁿ F
   _ni⁻¹ = CD._Iso⁻¹
+
+  infixr 30 _∘ni_
+  infix 31 _ni⁻¹
 
   ≅ⁿ-pathp : ∀ {a c b d : Functor C D} (p : a ≡ c) (q : b ≡ d) {f : a ≅ⁿ b} {g : c ≅ⁿ d}
            → (∀ x → PathP (λ i → D.Hom (p i .F₀ x) (q i .F₀ x)) (Isoⁿ.to f .η x) (Isoⁿ.to g .η x))
@@ -137,6 +140,19 @@ to an invertible natural transformation, resp. natural isomorphism.
   isoⁿ→iso α x =
     D.make-iso (α.to .η x) (α.from .η x) (α.invl ηₚ x) (α.invr ηₚ x)
     where module α = Isoⁿ α
+
+  iso→isoⁿ
+    : ∀ {F G}
+    → (is : ∀ x → F .F₀ x D.≅ G .F₀ x)
+    → (∀ {x y} f → G .F₁ f D.∘ is x .D.to ≡ is y .D.to D.∘ F .F₁ f)
+    → F ≅ⁿ G
+  iso→isoⁿ {F} {G} is nat = to-natural-iso mk where
+    mk : make-natural-iso F G
+    mk .eta x = is x .D.to
+    mk .inv x = is x .D.from
+    mk .eta∘inv x = is x .D.invl
+    mk .inv∘eta x = is x .D.invr
+    mk .natural _ _ = nat
 
   is-invertibleⁿ→isoⁿ : ∀ {F G} {α : F => G} → is-invertibleⁿ α → F ≅ⁿ G
   is-invertibleⁿ→isoⁿ nat-inv = CD.invertible→iso _ nat-inv

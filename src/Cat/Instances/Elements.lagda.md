@@ -19,10 +19,11 @@ private
 ```
 -->
 
-# The Category of Elements
+# The category of elements {defines="category-of-elements contravariant-category-of-elements"}
 
-The category of elements of a presheaf $P : \cC\op \to \Sets$ is a means
-of unpacking the data of the presheaf. Its objects are pairs of an
+The (contravariant^[there is a separate [[covariant category of elements]] for
+covariant functors]) category of elements of a presheaf $P : \cC\op \to \Sets$
+is a means of unpacking the data of the presheaf. Its objects are pairs of an
 object $x$, and a section $s : P x$.
 
 ```agda

@@ -124,7 +124,7 @@ commutative diagrams:
 
 </div>
 
-# Universal morphisms
+# Universal morphisms {defines="universal-morphism"}
 
 <!--
 ```agda
@@ -516,10 +516,13 @@ universal arrows into $R$:
   L⊣R→universal-maps x .Initial.has⊥ = L⊣R→map-to-R-is-initial x
 ```
 
-<!-- TODO [Amy 2022-03-02]
-prove that we recover L by going L⊣R → universal maps → L⊣R. this is
-straightforward but I'm tired
--->
+By going from the adjunction to universal maps and then back to an adjunction, we
+recover $L$:
+
+```agda
+  L→universal-maps→L : universal-maps→L R L⊣R→universal-maps ≡ L
+  L→universal-maps→L = Functor-path (λ _ → refl) λ f → L.pushr refl ∙ D.eliml adj.zig
+```
 
 # Adjuncts {defines=adjuncts}
 

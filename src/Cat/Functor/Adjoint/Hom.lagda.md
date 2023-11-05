@@ -9,6 +9,7 @@ description: |
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Functor.Adjoint
+open import Cat.Instances.Sets
 open import Cat.Functor.Hom
 open import Cat.Prelude
 
@@ -37,9 +38,9 @@ module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
 ```
 -->
 
-# Adjoints as hom-isomorphisms
+# Adjoints as hom-isomorphisms {defines="adjoints-as-hom-isomorphisms"}
 
-Recall from the page on [[adjoint functors]] that an adjoint pair $L
+Recall from the page on [[adjoint functors|adjuncts]] that an adjoint pair $L
 \dashv R$ induces an isomorphism
 
 $$
@@ -48,7 +49,8 @@ $$
 
 of $\hom$-sets, sending each morphism to its left and right _adjuncts_,
 respectively. What that page does not mention is that any functors $L,
-R$ with such a correspondence --- as long as the isomorphism is natural
+R$ with such a correspondence --- as long as the isomorphism is
+[[natural|natural transformation]]
 --- actually generates an adjunction $L \dashv R$, with the unit and
 counit given by the adjuncts of each identity morphism.
 
@@ -60,7 +62,7 @@ f(g \circ x \circ Lh) = Rg \circ fx \circ h
 $$
 
 holds. While this may seem un-motivated, it's really a naturality square
-for a transformation between the functors $\hom_\cC(L-,-)$ and
+for a transformation between the bifunctors $\hom_\cC(L-,-)$ and
 $\hom_\cD(-,R-)$ whose data has been "unfolded" into elementary
 terms.
 
@@ -159,7 +161,6 @@ module _ {o ℓ o'} {C : Precategory o ℓ} {D : Precategory o' ℓ}
     module L = Func L
     module R = Func R
 
-
   hom-natural-iso→adjoints
     : (Hom[-,-] C F∘ (Functor.op L F× Id)) ≅ⁿ (Hom[-,-] D F∘ (Id F× R))
     → L ⊣ R
@@ -180,40 +181,22 @@ module _ {o ℓ o'} {C : Precategory o ℓ} {D : Precategory o' ℓ}
     module L = Func L
     module R = Func R
 
-  adjunct-hom-iso-from
-    : ∀ a → (Hom-from C (L.₀ a)) ≅ⁿ (Hom-from D a F∘ R)
-  adjunct-hom-iso-from a = to-natural-iso mi where
-    open make-natural-iso
+    hom-equiv : ∀ {a b} → C.Hom (L.₀ a) b ≃ D.Hom a (R.₀ b)
+    hom-equiv = _ , L-adjunct-is-equiv adj
 
-    mi : make-natural-iso (Hom-from C (L.₀ a)) (Hom-from D a F∘ R)
-    mi .eta x = L-adjunct adj
-    mi .inv x = R-adjunct adj
-    mi .eta∘inv _ = funext λ _ → L-R-adjunct adj _
-    mi .inv∘eta _ = funext λ _ → R-L-adjunct adj _
-    mi .natural _ _ f = funext λ g → sym (L-adjunct-naturalr adj f g)
+  adjunct-hom-iso-from
+    : ∀ a → Hom-from C (L.₀ a) ≅ⁿ Hom-from D a F∘ R
+  adjunct-hom-iso-from a = iso→isoⁿ (λ _ → equiv→iso hom-equiv)
+    λ f → funext λ g → sym (L-adjunct-naturalr adj _ _)
 
   adjunct-hom-iso-into
-    : ∀ b → (Hom-into C b F∘ Functor.op L) ≅ⁿ (Hom-into D (R.₀ b))
-  adjunct-hom-iso-into b = to-natural-iso mi where
-    open make-natural-iso
-
-    mi : make-natural-iso (Hom-into C b F∘ Functor.op L) (Hom-into D (R.₀ b))
-    mi .eta x = L-adjunct adj
-    mi .inv x = R-adjunct adj
-    mi .eta∘inv _ = funext λ _ → L-R-adjunct adj _
-    mi .inv∘eta _ = funext λ _ → R-L-adjunct adj _
-    mi .natural _ _ f = funext λ g → sym $ L-adjunct-naturall adj g f
+    : ∀ b → Hom-into C b F∘ Functor.op L ≅ⁿ Hom-into D (R.₀ b)
+  adjunct-hom-iso-into b = iso→isoⁿ (λ _ → equiv→iso hom-equiv)
+    λ f → funext λ g → sym (L-adjunct-naturall adj _ _)
 
   adjunct-hom-iso
-    : (Hom[-,-] C F∘ (Functor.op L F× Id)) ≅ⁿ (Hom[-,-] D F∘ (Id F× R))
-  adjunct-hom-iso = to-natural-iso mi where
-    open make-natural-iso
-
-    mi : make-natural-iso (Hom[-,-] C F∘ (Functor.op L F× Id)) (Hom[-,-] D F∘ (Id F× R))
-    mi .eta x = L-adjunct adj
-    mi .inv x = R-adjunct adj
-    mi .eta∘inv _ = funext λ _ → L-R-adjunct adj _
-    mi .inv∘eta _ = funext λ _ → R-L-adjunct adj _
-    mi .natural _ _ (f , h) = funext λ g → sym $ L-adjunct-natural₂ adj h f g
+    : Hom[-,-] C F∘ (Functor.op L F× Id) ≅ⁿ Hom[-,-] D F∘ (Id F× R)
+  adjunct-hom-iso = iso→isoⁿ (λ _ → equiv→iso hom-equiv)
+    λ (f , h) → funext λ g → sym (L-adjunct-natural₂ adj _ _ _)
 ```
 -->
