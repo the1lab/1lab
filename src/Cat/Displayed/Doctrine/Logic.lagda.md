@@ -2,15 +2,16 @@
 ```agda
 open import Cat.Diagram.Limit.Finite
 open import Cat.Displayed.Doctrine
-open import Cat.Diagram.Product
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
+open import Cat.Diagram.Product
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning as Disp
-import Order.Reasoning
 import Cat.Reasoning as Cat
+
+import Order.Reasoning
 ```
 -->
 

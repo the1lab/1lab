@@ -1,8 +1,8 @@
 <!--
 ```agda
 open import Cat.Diagram.Limit.Finite
-open import Cat.Instances.Discrete
 open import Cat.Functor.Properties
+open import Cat.Instances.Discrete
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
