@@ -1,7 +1,7 @@
 <!--
 ```agda
-open import Cat.Instances.Slice
 open import Cat.Functor.Adjoint
+open import Cat.Instances.Slice
 open import Cat.Prelude
 
 import Cat.Reasoning

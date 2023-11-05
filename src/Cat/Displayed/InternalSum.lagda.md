@@ -6,7 +6,6 @@ open import Cat.Displayed.Adjoint
 open import Cat.Displayed.Functor
 open import Cat.Displayed.Base
 open import Cat.Prelude
-
 ```
 -->
 

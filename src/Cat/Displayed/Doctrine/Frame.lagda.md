@@ -1,30 +1,31 @@
 <!--
 ```agda
-open import Cat.Displayed.Doctrine
-open import Cat.Diagram.Product
-open import Cat.Diagram.Terminal
+open import Cat.Instances.Sets.Complete
 open import Cat.Displayed.Cocartesian
 open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Doctrine
+open import Cat.Diagram.Pullback
+open import Cat.Diagram.Terminal
+open import Cat.Diagram.Product
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
-open import Cat.Diagram.Pullback
 open import Cat.Prelude
 
-open import Cat.Instances.Sets.Complete
 open import Order.Frame
 
-import Order.Frame.Reasoning as Frm
 import Cat.Reasoning as Cat
 
+import Order.Frame.Reasoning as Frm
+
 open Regular-hyperdoctrine
-open Displayed
-open Cartesian-fibration
-open Cartesian-lift
-open is-cartesian
 open Cocartesian-fibration
+open Cartesian-fibration
 open Cocartesian-lift
+open Cartesian-lift
 open is-cocartesian
+open is-cartesian
 open is-product
+open Displayed
 open Terminal
 open Product
 ```

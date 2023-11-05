@@ -4,9 +4,9 @@ open import Cat.Functor.Adjoint.Hom
 open import Cat.Instances.Product
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
-open import Cat.Instances.Slice
-open import Cat.Functor.Adjoint
 open import Cat.Diagram.Product
+open import Cat.Functor.Adjoint
+open import Cat.Instances.Slice
 open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bifunctor

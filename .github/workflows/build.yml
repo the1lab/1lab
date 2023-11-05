@@ -29,6 +29,15 @@ jobs:
           name: 1lab
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
+      - name: Check that imports are sorted
+        if: github.event_name == 'pull_request'
+        run: |
+          nix run -f . sort-imports
+          if ! git diff --quiet; then
+            echo 'Imports are not sorted. Please run `support/sort-imports.hs`.'
+            exit 1
+          fi
+
       - name: Build the Shakefile 🧰
         run: |
           hash=$(nix-build -A shakefile --no-out-link)
