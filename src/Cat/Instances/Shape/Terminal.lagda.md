@@ -75,16 +75,7 @@ module _ {o ℓ} {𝒞 : Precategory o ℓ} {F G : Functor ⊤Cat 𝒞} where
   hom→⊤-natural-trans f .is-natural _ _ _ = 𝒞.elimr (F .F-id) ∙ 𝒞.introl (G .F-id)
 
   iso→⊤-natural-iso : F .F₀ tt 𝒞.≅ G .F₀ tt → F ≅ⁿ G
-  iso→⊤-natural-iso i = to-natural-iso mi where
-    open make-natural-iso
-    open 𝒞._≅_
-
-    mi : make-natural-iso F G
-    mi .eta _ = i .to
-    mi .inv _ = i .from
-    mi .eta∘inv _ = i .invl
-    mi .inv∘eta _ = i .invr
-    mi .natural _ _ _ = 𝒞.eliml (G .F-id) ∙ 𝒞.intror (F .F-id)
+  iso→⊤-natural-iso i = iso→isoⁿ (λ _ → i) λ _ → 𝒞.eliml (G .F-id) ∙ 𝒞.intror (F .F-id)
 ```
 
 <!--

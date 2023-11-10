@@ -652,9 +652,9 @@ is-cocontinuous oshape hshape {C = C} F =
   → preserves-colimit F Diagram
 ```
 
-## Cocompleteness
+# Cocompleteness
 
-A category is **cocomplete** if admits for limits of arbitrary shape.
+A category is **cocomplete** if it admits colimits for diagrams of arbitrary shape.
 However, in the presence of excluded middle, if a category admits
 coproducts indexed by its class of morphisms, then it is automatically
 [thin]. Since excluded middle is independent of type theory, we can not

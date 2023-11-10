@@ -97,14 +97,24 @@ is-coequaliser→is-co-equaliser coeq =
 ```agda
 import Cat.Diagram.Terminal (C ^op) as Coterm
 import Cat.Diagram.Initial C as Init
-
-is-initial→is-coterminal
-  : ∀ {A} → Coterm.is-terminal A → Init.is-initial A
-is-initial→is-coterminal x = x
+open Coterm.Terminal
+open Init.Initial
 
 is-coterminal→is-initial
-  : ∀ {A} → Init.is-initial A → Coterm.is-terminal A
+  : ∀ {A} → Coterm.is-terminal A → Init.is-initial A
 is-coterminal→is-initial x = x
+
+is-initial→is-coterminal
+  : ∀ {A} → Init.is-initial A → Coterm.is-terminal A
+is-initial→is-coterminal x = x
+
+Coterminal→Initial : Coterm.Terminal → Init.Initial
+Coterminal→Initial term .bot = term .top
+Coterminal→Initial term .has⊥ = is-coterminal→is-initial (term .has⊤)
+
+Initial→Coterminal : Init.Initial → Coterm.Terminal
+Initial→Coterminal init .top = init .bot
+Initial→Coterminal init .has⊤ = is-initial→is-coterminal (init .has⊥)
 ```
 
 ## Pullback/pushout
@@ -147,16 +157,12 @@ open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Colimit.Cocone
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Limit.Cone
-open import Cat.Diagram.Terminal
-open import Cat.Diagram.Initial
 
 module _ {o ℓ} {J : Precategory o ℓ} {F : Functor J C} where
   open Functor F renaming (op to F^op)
 
   open Cocone-hom
   open Cone-hom
-  open Terminal
-  open Initial
   open Cocone
   open Cone
 

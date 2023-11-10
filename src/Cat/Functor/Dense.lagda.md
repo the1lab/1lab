@@ -24,10 +24,10 @@ by those of $\cC$, in a certain canonical way. In particular, any
 functor $F$ and object $d : \cD$ can be put into a diagram
 
 $$
-J : (F \searrow d) \xto{\mathrm{pr}} C \xto{\iota} D\text{,}
+J : (F \searrow d) \xto{\mathrm{pr}} C \xto{F} D\text{,}
 $$
 
-where $(\iota \searrow d) \to C$ is the projection functor from the
+where $(F \searrow d) \to C$ is the projection functor from the
 corresponding [comma category], in such a way that the object $d$ is the
 nadir of a cocone over $J$.
 
@@ -60,7 +60,7 @@ module
 ```
 
 The functor $F$ is called _dense_ if this cocone is colimiting for every
-$d : \cD$. The important of density is that, for a dense functor $F$,
+$d : \cD$. The importance of density is that, for a dense functor $F$,
 the induced [nerve] functor is fully faithful.
 
 [nerve]: Cat.Functor.Kan.Nerve.html
