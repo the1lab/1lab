@@ -6,13 +6,12 @@ open import Cat.Displayed.Adjoint
 open import Cat.Displayed.Functor
 open import Cat.Displayed.Base
 open import Cat.Prelude
-
 ```
 -->
 
 ```agda
 module Cat.Displayed.InternalSum
-  {o ℓ o′ ℓ′} {B : Precategory o ℓ} (E : Displayed B o′ ℓ′)  where
+  {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ')  where
 ```
 
 <!--
@@ -35,7 +34,7 @@ displayed family functor has a [[fibred left adjoint]].
 [fibration of displayed families]: Cat.Displayed.Instances.DisplayedFamilies.html
 
 ```agda
-record Internal-sum : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′)
+record Internal-sum : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ')
   where
   no-eta-equality
   field

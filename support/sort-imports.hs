@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
-{- stack --resolver lts-18.14 script
+{- stack --resolver lts-21.11 script
          --package text
          --package deepseq
          --package shake

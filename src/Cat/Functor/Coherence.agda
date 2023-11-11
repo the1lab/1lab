@@ -31,7 +31,7 @@ open Dualises
 
 instance
   Dualises-nat-trans
-    : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+    : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
         {F G : Functor C D}
     → Dualises (F => G)
   Dualises-nat-trans .dualiser = quote _=>_.op
@@ -48,7 +48,7 @@ private
   get-dual : Bool → Term → TC (Term → Term)
   get-dual false _ = pure (λ t → t)
   get-dual true T = runSpeculative do
-    (mv , _) ← new-meta′ (def (quote Dualises) [ argN T ])
+    (mv , _) ← new-meta' (def (quote Dualises) [ argN T ])
     (qn ∷ []) ← getInstances mv
       where _ → typeError [ "Don't know how to dualise type " , termErr T ]
     du ← normalise (def (quote dualiser) [ argN qn ])
@@ -67,7 +67,7 @@ cohere-dualise is-dual tm hole = do
 
   unify hole (con c args)
 
-cohere-dualise-into : Bool → ∀ {ℓ ℓ′} {S : Type ℓ′} → Name → (T : Type ℓ) → S → TC ⊤
+cohere-dualise-into : Bool → ∀ {ℓ ℓ'} {S : Type ℓ'} → Name → (T : Type ℓ) → S → TC ⊤
 cohere-dualise-into is-dual nam T tm = do
   `tm ← quoteTC tm
   `T ← quoteTC T

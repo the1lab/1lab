@@ -59,12 +59,12 @@ module _ (A : is-pre-abelian C) where
       (f - g) ∘ Ker.kernel (f - g)                        ≡⟨ Ker.equal (f - g) ⟩
       ∅.zero→ ∘ Ker.kernel (f - g)                        ≡⟨ ∅.zero-∘r _ ∙ 0m-unique ⟩
       0m                                                  ∎
-    equ .universal {e′ = e′} p = Ker.universal (f - g) {e′ = e′} $
-      (f - g) ∘ e′         ≡˘⟨ ∘-minus-l _ _ _ ⟩
-      f ∘ e′ - g ∘ e′      ≡⟨ ap (f ∘ e′ -_) (sym p) ⟩
-      f ∘ e′ - f ∘ e′      ≡⟨ Hom.inverser ⟩
+    equ .universal {e' = e'} p = Ker.universal (f - g) {e' = e'} $
+      (f - g) ∘ e'         ≡˘⟨ ∘-minus-l _ _ _ ⟩
+      f ∘ e' - g ∘ e'      ≡⟨ ap (f ∘ e' -_) (sym p) ⟩
+      f ∘ e' - f ∘ e'      ≡⟨ Hom.inverser ⟩
       0m                   ≡˘⟨ ∅.zero-∘r _ ∙ 0m-unique ⟩
-      Zero.zero→ ∅ ∘ e′    ∎
+      Zero.zero→ ∅ ∘ e'    ∎
     equ .factors = Ker.factors _
     equ .unique = Ker.unique (f - g)
 ```
@@ -133,19 +133,19 @@ identity on the diagonal.
 
 ```agda
   private
-    δ′ : (i j : Fin I) → Dec (i ≡ᵢ j) → A.Hom (F i) (F j)
-    δ′ i j (yes reflᵢ) = A.id
-    δ′ i j (no x) = A.0m
+    δ' : (i j : Fin I) → Dec (i ≡ᵢ j) → A.Hom (F i) (F j)
+    δ' i j (yes reflᵢ) = A.id
+    δ' i j (no x) = A.0m
 
     δ : ∀ i j → A.Hom (F i) (F j)
-    δ i j = δ′ i j (Discreteᵢ-Fin i j)
+    δ i j = δ' i j (Discreteᵢ-Fin i j)
 
-    δᵢᵢ : ∀ i d → δ′ i i d ≡ A.id
-    δᵢᵢ i (yes x) = ap (δ′ i i) $
+    δᵢᵢ : ∀ i d → δ' i i d ≡ A.id
+    δᵢᵢ i (yes x) = ap (δ' i i) $
       ap yes (is-set→is-setᵢ Fin-is-set i i x reflᵢ)
     δᵢᵢ i (no ¬x=x) = absurd (¬x=x reflᵢ)
 
-    δᵢⱼ : ∀ i j → ¬ i ≡ j → (d : Dec (i ≡ᵢ j)) → δ′ i j d ≡ A.0m
+    δᵢⱼ : ∀ i j → ¬ i ≡ j → (d : Dec (i ≡ᵢ j)) → δ' i j d ≡ A.0m
     δᵢⱼ i j i≠j (yes i=j) = absurd (i≠j (Id≃path.to i=j))
     δᵢⱼ i j i≠j (no _)    = refl
 ```

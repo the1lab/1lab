@@ -236,7 +236,7 @@ is-regular-epi→is-strong-epi {a} {b} f regular =
     module _ {c} {d} (z : c ↪ d) {u} {v} (vf=zu : v ∘ f ≡ z .mor ∘ u) where
       module z = _↪_ z
       map : Hom b c
-      map = r.universal {e′ = u} $ z.monic _ _ $
+      map = r.universal {e' = u} $ z.monic _ _ $
         z .mor ∘ u ∘ r.s ≡⟨ extendl (sym vf=zu) ⟩
         v ∘ f ∘ r.s      ≡⟨ refl⟩∘⟨ r.coequal ⟩
         v ∘ f ∘ r.t      ≡˘⟨ extendl (sym vf=zu) ⟩
@@ -308,10 +308,10 @@ in the relevant comma categories.
     dh .α = tt
     dh .β .map = the-lifting .centre .fst
     dh .β .commutes = the-lifting .centre .snd .snd
-    dh .sq = /-Hom-path (idr _ ∙ sym (the-lifting .centre .snd .fst))
+    dh .sq = ext (idr _ ∙ sym (the-lifting .centre .snd .fst))
 
     unique : ∀ om → dh ≡ om
-    unique om = ↓Hom-path _ _ refl $ /-Hom-path $ ap fst $ the-lifting .paths $
+    unique om = ↓Hom-path _ _ refl $ ext $ ap fst $ the-lifting .paths $
       om .β .map , sym (ap map (om .sq)) ∙ idr _ , om .β .commutes
 ```
 
@@ -483,9 +483,9 @@ is-strong-epi→is-extremal-epi
   → is-strong-epi e
   → ∀ {c} (m : c ↪ b) (g : Hom a c) → e ≡ m .mor ∘ g → is-invertible (m .mor)
 is-strong-epi→is-extremal-epi (s , ortho) m g p =
-  make-invertible (inv′ .centre .fst) (inv′ .centre .snd .snd)
-    (m .monic _ _ (pulll (inv′ .centre .snd .snd) ∙ id-comm-sym))
+  make-invertible (inv' .centre .fst) (inv' .centre .snd .snd)
+    (m .monic _ _ (pulll (inv' .centre .snd .snd) ∙ id-comm-sym))
   where
-  inv′ = ortho m (idl _ ∙ p)
+  inv' = ortho m (idl _ ∙ p)
 ```
 -->

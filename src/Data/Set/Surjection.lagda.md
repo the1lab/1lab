@@ -57,9 +57,9 @@ elimination principle for $\| f^*x \| \to F$, since $F$ is a set.
 
 ```agda
 surjective→regular-epi c d f surj .has-is-coeq = coeqs where
-  go : ∀ {F} (e′ : ∣ c ∣ → ∣ F ∣) p (x : ∣ d ∣) → ∥ fibre f x ∥ → ∣ F ∣
-  go e′ p x =
-    ∥-∥-rec-set (λ x → e′ (x .fst))
+  go : ∀ {F} (e' : ∣ c ∣ → ∣ F ∣) p (x : ∣ d ∣) → ∥ fibre f x ∥ → ∣ F ∣
+  go e' p x =
+    ∥-∥-rec-set (λ x → e' (x .fst))
       (λ x y → p $ₚ (x .fst , y .fst , x .snd ∙ sym (y .snd)))
       hlevel!
 ```
@@ -70,12 +70,12 @@ surjectivity out of the way, we get what we wanted.
 ```agda
   coeqs : is-coequaliser (Sets _) _ _ _
   coeqs .coequal i (x , y , p) = p i
-  coeqs .universal {F} {e′} p x = go {F = F} e′ p x (surj x)
-  coeqs .factors {F} {e′} {p = p} = funext λ x →
-    ∥-∥-elim {P = λ e → go {F} e′ p (f x) e ≡ e′ x}
+  coeqs .universal {F} {e'} p x = go {F = F} e' p x (surj x)
+  coeqs .factors {F} {e'} {p = p} = funext λ x →
+    ∥-∥-elim {P = λ e → go {F} e' p (f x) e ≡ e' x}
       (λ x → hlevel!) (λ e → p $ₚ (e .fst , x , e .snd)) (surj (f x))
-  coeqs .unique {F} {e′} {p} {colim} comm = funext λ a →
-    ∥-∥-elim {P = λ e → colim a ≡ go {F} e′ p a e} (λ x → hlevel!)
+  coeqs .unique {F} {e'} {p} {colim} comm = funext λ a →
+    ∥-∥-elim {P = λ e → colim a ≡ go {F} e' p a e} (λ x → hlevel!)
       (λ x → ap colim (sym (x .snd)) ∙ comm $ₚ x .fst)
       (surj a)
 ```
@@ -108,7 +108,7 @@ the `base`{.Agda} is the circle, and the `cone`{.Agda} is the triangular
 side which we have rotated around the vertical axis.
 
 ```agda
-data Cofibre {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} (f : A → B) : Type (ℓ ⊔ ℓ′) where
+data Cofibre {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B) : Type (ℓ ⊔ ℓ') where
   tip  : Cofibre f
   base : B → Cofibre f
   cone : ∀ a → tip ≡ base (f a)
@@ -121,7 +121,7 @@ these types are propositions, so we have a bunch of equivalences].
 
 ```agda
 connected-cofibre→surjective
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} (f : A → B)
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B)
   → is-connected (Cofibre f)
   → ∀ x → ∥ fibre f x ∥
 connected-cofibre→surjective {A = A} {B = B} f conn x = transport cen (lift tt) where
@@ -140,8 +140,8 @@ $P' : \| \rm{Cofibre}(f) \|_0 \to \rm{Prop}$.
     n-ua {X = el (Lift _ ⊤) hlevel!} {Y = el ∥ fibre f (f a) ∥ hlevel!}
       (prop-ext hlevel! hlevel! (λ _ → inc (a , refl)) λ _ → lift tt) i
 
-  P′ : ∥ Cofibre f ∥₀ → Prop _
-  P′ = ∥-∥₀-elim (λ _ → hlevel!) P
+  P' : ∥ Cofibre f ∥₀ → Prop _
+  P' = ∥-∥₀-elim (λ _ → hlevel!) P
 ```
 
 Letting $x$ be an element of the codomain, and since by assumption $f$'s
@@ -156,7 +156,7 @@ over $x$: $f$ is surjective.
 
 ```agda
   cen : Lift _ ⊤ ≡ ∥ fibre f x ∥
-  cen = ap ∣_∣ (ap P′ (is-contr→is-prop conn (inc tip) (inc (base x))))
+  cen = ap ∣_∣ (ap P' (is-contr→is-prop conn (inc tip) (inc (base x))))
 ```
 
 ## Epis have connected cofibre

@@ -101,7 +101,7 @@ strict-category→span-monad C cset = m where
   homs .right (_ , y , _) = y
 
   mult : _ Sb.⇒ _
-  mult .map ((x , y , f) , (z , x′ , g) , p) =
+  mult .map ((x , y , f) , (z , x' , g) , p) =
     z , y , subst (λ e → C.Hom e y) p f C.∘ g
   mult .left = refl
   mult .right = refl
@@ -126,11 +126,11 @@ instruct the curious reader to check the proof on GitHub.
 ```agda
   m .μ-assoc = Span-hom-path (Sets ℓ) $ funext λ where
     ((w , x , f) , ((y , z , g) , (a , b , h) , p) , q) →
-      J′ (λ w z q → ∀ (f : C.Hom w x) {y b} (p : y ≡ b) (g : C .Hom y z)
+      J' (λ w z q → ∀ (f : C.Hom w x) {y b} (p : y ≡ b) (g : C .Hom y z)
                       (h : C.Hom a b)
                   → (mult Sb.∘ (homs Sb.▶ mult)) .map ((w , x , f) , ((y , z , g) , (a , b , h) , p) , q)
                   ≡ (mult Sb.∘ (mult Sb.◀ homs) Sb.∘ Sb.α← homs homs homs) .map ((w , x , f) , ((y , z , g) , (a , b , h) , p) , q))
-         (λ w f → J′ (λ y b p → (g : C.Hom y w) (h : C.Hom a b) →
+         (λ w f → J' (λ y b p → (g : C.Hom y w) (h : C.Hom a b) →
             (mult Sb.∘ (homs Sb.▶ mult)) .map ((w , x , f) , ((y , w , g) , (a , b , h) , p) , refl)
           ≡ (mult Sb.∘ (mult Sb.◀ homs) Sb.∘ Sb.α← homs homs homs) .map ((w , x , f) , ((y , w , g) , (a , b , h) , p) , refl))
           λ y g h → Σ-pathp refl (Σ-pathp refl (C.assoc _ _ _
@@ -143,7 +143,7 @@ instruct the curious reader to check the proof on GitHub.
          q f p g h
   m .μ-unitr = Span-hom-path (Sets ℓ) $ funext λ where
     ((x , y , f) , z , p) →
-      J′ (λ x z p → (f : C .Hom x y) → (mult Sb.∘ (homs Sb.▶ unit)) .map ((x , y , f) , z , p)
+      J' (λ x z p → (f : C .Hom x y) → (mult Sb.∘ (homs Sb.▶ unit)) .map ((x , y , f) , z , p)
                                      ≡ (x , y , f))
          (λ x f → Σ-pathp refl
             (Σ-pathp refl (ap₂ C._∘_ (ap (λ p → subst (λ e → C.Hom e y) p f) (hlevel 2 _ _ _ _) ∙ transport-refl _) refl
@@ -151,7 +151,7 @@ instruct the curious reader to check the proof on GitHub.
          p f
   m .μ-unitl = Span-hom-path (Sets ℓ) $ funext λ where
     (x , (y , z , f) , p) →
-      J′ (λ x z p → (f : C .Hom y z)
+      J' (λ x z p → (f : C .Hom y z)
            → (mult Sb.∘ (unit Sb.◀ homs)) .map (x , (y , z , f) , p)
            ≡ (y , z , f))
          (λ x f → Σ-pathp refl

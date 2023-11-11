@@ -16,12 +16,12 @@ import Cat.Reasoning
 module Order.Frame where
 ```
 
-# Frames
+# Frames {defines="frame"}
 
 <!--
 ```agda
 private variable
-  ℓ ℓ′ : Level
+  ℓ ℓ' : Level
   A B : Type ℓ
 ```
 -->
@@ -105,7 +105,7 @@ record
 <!--
 ```agda
 private unquoteDecl eqv = declare-record-iso eqv (quote is-frame-hom)
-private unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-frame)
+private unquoteDecl eqv' = declare-record-iso eqv' (quote is-frame)
 
 open Thin-structure
 open is-frame-hom
@@ -141,7 +141,7 @@ Frame-str ℓ .id-hom-unique {s = s} {t} α β i .Frame-on.has-is-frame =
     (t .Frame-on.has-is-frame) i
   where
   lemma : ∀ top a (b : ∀ {I} → (I → A) → A) → is-prop (is-frame top a b)
-  lemma {A = A} top a b x = Iso→is-hlevel 1 eqv′ (hlevel 1) x where instance
+  lemma {A = A} top a b x = Iso→is-hlevel 1 eqv' (hlevel 1) x where instance
     ahl : H-Level A 2
     ahl = hlevel-instance (is-frame.has-is-set x)
 
@@ -174,19 +174,19 @@ $P$**.
 ```agda
 module _ {ℓ} (F : Frames.Ob ℓ) where
   private module F = Frame-on (F .snd)
-  subset-cup : ∀ {ℓ′} (P : ⌞ F ⌟ → Prop ℓ′) → ⌞ F ⌟
+  subset-cup : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') → ⌞ F ⌟
   subset-cup P = F.⋃
     {I = Σ[ t ∈ ⌞ F ⌟ ] (□ ∣ P t ∣)}
     λ { (x , _) → x }
 
   subset-cup-colimiting
-    : ∀ {ℓ′} (P : ⌞ F ⌟ → Prop ℓ′) {x}
+    : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') {x}
     → ∣ P x ∣ → x F.≤ subset-cup P
   subset-cup-colimiting P x =
     F.⋃-colimiting (_ , inc x) λ { (f , w) → f }
 
   subset-cup-universal
-    : ∀ {ℓ′} (P : ⌞ F ⌟ → Prop ℓ′) {x}
+    : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') {x}
     → (∀ i → ∣ P i ∣ → i F.≤ x)
     → subset-cup P F.≤ x
   subset-cup-universal P f =
@@ -198,11 +198,11 @@ meet for it? Yes! By taking the join of all possible upper bounds for
 $P$, we get the a lower bound among upper bounds of $P$: a meet for $P$.
 
 ```agda
-  subset-cap : ∀ {ℓ′} (P : ⌞ F ⌟ → Prop ℓ′) → ⌞ F ⌟
+  subset-cap : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') → ⌞ F ⌟
   subset-cap P = subset-cup λ x → el! (∀ a → ∣ P a ∣ → x F.≤ a)
 
   subset-cap-limiting
-    : ∀ {ℓ′} (P : ⌞ F ⌟ → Prop ℓ′) {x} → ∣ P x ∣ → subset-cap P F.≤ x
+    : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') {x} → ∣ P x ∣ → subset-cap P F.≤ x
   subset-cap-limiting P x∈P =
     subset-cup-universal (λ x → el _ hlevel!) λ i a∈P→i≤a → a∈P→i≤a _ x∈P
 

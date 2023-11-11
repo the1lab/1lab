@@ -1,8 +1,8 @@
 <!--
 ```agda
 open import Cat.Diagram.Limit.Finite
-open import Cat.Instances.Discrete
 open import Cat.Functor.Properties
+open import Cat.Instances.Discrete
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
@@ -22,7 +22,7 @@ module Cat.Instances.Slice where
 <!--
 ```agda
 private variable
-  o ℓ o′ ℓ′ : Level
+  o ℓ o' ℓ' : Level
 open Functor
 open _=>_
 
@@ -107,8 +107,8 @@ says that the map $h$ "respects reindexing", or less obliquely
   /-Obj-path p q i ./-Obj.domain = p i
   /-Obj-path p q i ./-Obj.map = q i
 
-  /-Hom-pathp : ∀ {c a a′ b b′} (p : a ≡ a′) (q : b ≡ b′)
-                {x : /-Hom {c = c} a b} {y : /-Hom a′ b′}
+  /-Hom-pathp : ∀ {c a a' b b'} (p : a ≡ a') (q : b ≡ b')
+                {x : /-Hom {c = c} a b} {y : /-Hom a' b'}
               → PathP (λ i → C.Hom (p i ./-Obj.domain) (q i ./-Obj.domain))
                         (x ./-Hom.map) (y ./-Hom.map)
               → PathP (λ i → /-Hom (p i) (q i)) x y
@@ -127,6 +127,15 @@ says that the map $h$ "respects reindexing", or less obliquely
              → x ./-Hom.map ≡ y ./-Hom.map
              → x ≡ y
   /-Hom-path = /-Hom-pathp refl refl
+
+  Extensional-/-Hom
+    : ∀ {c a b ℓ} ⦃ sa : Extensional (C.Hom (/-Obj.domain a) (/-Obj.domain b)) ℓ ⦄
+    → Extensional (/-Hom {c = c} a b) ℓ
+  Extensional-/-Hom ⦃ sa ⦄ = injection→extensional! (/-Hom-pathp refl refl) sa
+
+  instance
+    extensionality-/-hom : ∀ {c a b} → Extensionality (/-Hom {c = c} a b)
+    extensionality-/-hom = record { lemma = quote Extensional-/-Hom }
 
   private unquoteDecl eqv = declare-record-iso eqv (quote /-Hom)
 
@@ -188,9 +197,9 @@ commutativity for $g \circ f$).
       z .map C.∘ f.map C.∘ g.map ≡⟨ C.pulll f.commutes ⟩
       y .map C.∘ g.map           ≡⟨ g.commutes ⟩
       x .map                     ∎
-  precat .idr f = /-Hom-path (C.idr _)
-  precat .idl f = /-Hom-path (C.idl _)
-  precat .assoc f g h = /-Hom-path (C.assoc _ _ _)
+  precat .idr f = ext (C.idr _)
+  precat .idl f = ext (C.idl _)
+  precat .assoc f g h = ext (C.assoc _ _ _)
 ```
 
 ## Finite limits
@@ -206,15 +215,15 @@ module _ {o ℓ} {C : Precategory o ℓ} {c : Precategory.Ob C} where
   open /-Hom
   open /-Obj
 
-  Slice-terminal-object′ : is-terminal (Slice C c) (cut C.id)
-  Slice-terminal-object′ obj .centre .map = obj .map
-  Slice-terminal-object′ obj .centre .commutes = C.idl _
-  Slice-terminal-object′ obj .paths other =
-    /-Hom-path (sym (other .commutes) ∙ C.idl _)
+  Slice-terminal-object' : is-terminal (Slice C c) (cut C.id)
+  Slice-terminal-object' obj .centre .map = obj .map
+  Slice-terminal-object' obj .centre .commutes = C.idl _
+  Slice-terminal-object' obj .paths other =
+    ext (sym (other .commutes) ∙ C.idl _)
 
   Slice-terminal-object : Terminal (Slice C c)
   Slice-terminal-object .Terminal.top  = _
-  Slice-terminal-object .Terminal.has⊤ = Slice-terminal-object′
+  Slice-terminal-object .Terminal.has⊤ = Slice-terminal-object'
 ```
 
 <!--
@@ -352,10 +361,10 @@ product in $\cC/c.$
 
 <!--
 ```agda
-    is-pullback→is-fibre-product .π₁∘factor = /-Hom-path pb.p₁∘universal
-    is-pullback→is-fibre-product .π₂∘factor = /-Hom-path pb.p₂∘universal
+    is-pullback→is-fibre-product .π₁∘factor = ext pb.p₁∘universal
+    is-pullback→is-fibre-product .π₂∘factor = ext pb.p₂∘universal
     is-pullback→is-fibre-product .unique other p q =
-      /-Hom-path (pb.unique (ap map p) (ap map q))
+      ext (pb.unique (ap map p) (ap map q))
 
   Pullback→Fibre-product
     : ∀ {f g : /-Obj c}
@@ -395,36 +404,36 @@ module _ {o ℓ} {C : Precategory o ℓ} {X : Precategory.Ob C}
   pullback-above→pullback-below
     : is-pullback C (p1 .map) (f .map) (p2 .map) (g .map)
     → is-pullback (Slice C X) {P} {A} {B} {c} p1 f p2 g
-  pullback-above→pullback-below pb = pb′ where
-    pb′ : is-pullback (Slice _ _) _ _ _ _
-    pb′ .square = /-Hom-path (pb .square)
-    pb′ .universal p .map = pb .universal (ap map p)
-    pb′ .universal {P'} {p₁' = p₁'} p .commutes =
+  pullback-above→pullback-below pb = pb' where
+    pb' : is-pullback (Slice _ _) _ _ _ _
+    pb' .square           = ext (pb .square)
+    pb' .universal p .map = pb .universal (ap map p)
+    pb' .universal {P'} {p₁' = p₁'} p .commutes =
       (c .map ∘ pb .universal (ap map p))           ≡˘⟨ pulll (p1 .commutes) ⟩
       (P .map ∘ p1 .map ∘ pb .universal (ap map p)) ≡⟨ ap (_ ∘_) (pb .p₁∘universal) ⟩
       (P .map ∘ p₁' .map)                           ≡⟨ p₁' .commutes ⟩
       P' .map                                       ∎ {- * -}
-    pb′ .p₁∘universal = /-Hom-path (pb .p₁∘universal)
-    pb′ .p₂∘universal = /-Hom-path (pb .p₂∘universal)
-    pb′ .unique p q   = /-Hom-path (pb .unique (ap map p) (ap map q))
+    pb' .p₁∘universal = ext (pb .p₁∘universal)
+    pb' .p₂∘universal = ext (pb .p₂∘universal)
+    pb' .unique p q   = ext (pb .unique (ap map p) (ap map q))
 
   pullback-below→pullback-above
     : is-pullback (Slice C X) {P} {A} {B} {c} p1 f p2 g
     → is-pullback C (p1 .map) (f .map) (p2 .map) (g .map)
-  pullback-below→pullback-above pb = pb′ where
-    pb′ : is-pullback _ _ _ _ _
-    pb′ .square = ap map (pb .square)
-    pb′ .universal p = pb .universal
+  pullback-below→pullback-above pb = pb' where
+    pb' : is-pullback _ _ _ _ _
+    pb' .square = ap map (pb .square)
+    pb' .universal p = pb .universal
       {p₁' = record { commutes = refl }}
       {p₂' = record { commutes = sym (pulll (g .commutes))
                               ·· sym (ap (_ ∘_) p)
                               ·· pulll (f .commutes) }}
-      (/-Hom-path p) .map
-    pb′ .p₁∘universal = ap map $ pb .p₁∘universal
-    pb′ .p₂∘universal = ap map $ pb .p₂∘universal
-    pb′ .unique p q   = ap map $ pb .unique
+      (ext p) .map
+    pb' .p₁∘universal = ap map $ pb .p₁∘universal
+    pb' .p₂∘universal = ap map $ pb .p₂∘universal
+    pb' .unique p q   = ap map $ pb .unique
       {lim' = record { commutes = sym (pulll (p1 .commutes)) ∙ ap (_ ∘_) p }}
-      (/-Hom-path p) (/-Hom-path q)
+      (ext p) (ext q)
 ```
 
 It follows that any slice of a category with pullbacks is finitely
@@ -512,15 +521,15 @@ Let's begin. The `Total-space`{.Agda} functor gets out of our way very
 fast:
 
 ```agda
-  Total-space : Functor Cat[ Disc′ I , Sets ℓ ] (Slice (Sets ℓ) I)
+  Total-space : Functor Cat[ Disc' I , Sets ℓ ] (Slice (Sets ℓ) I)
   Total-space .F₀ F .domain = el (Σ _ (∣_∣ ⊙ F₀ F)) hlevel!
   Total-space .F₀ F .map    = fst
 
   Total-space .F₁ nt .map (i , x) = i , nt .η _ x
   Total-space .F₁ nt .commutes    = refl
 
-  Total-space .F-id    = /-Hom-path refl
-  Total-space .F-∘ _ _ = /-Hom-path refl
+  Total-space .F-id    = trivial!
+  Total-space .F-∘ _ _ = trivial!
 ```
 
 Since the construction of the functor itself is straightforward, we turn
@@ -558,11 +567,11 @@ dependent function is automatically a natural transformation.
 <!--
 ```agda
     linv : is-left-inverse (F₁ Total-space) from
-    linv x = /-Hom-path (funext (λ y → Σ-path (sym (happly (x .commutes) _))
+    linv x = ext λ y → Σ-path (sym (happly (x .commutes) _))
       ( sym (transport-∙ (ap (∣_∣ ⊙ G .F₀) (happly (x .commutes) y))
                     (sym (ap (∣_∣ ⊙ G .F₀) (happly (x .commutes) y))) _)
       ·· ap₂ transport (∙-invr (ap (∣_∣ ⊙ G .F₀) (happly (x .commutes) y))) refl
-      ·· transport-refl _)))
+      ·· transport-refl _)
 ```
 -->
 
@@ -655,8 +664,8 @@ module _ {o ℓ} {C : Precategory o ℓ} {B} (prod : has-products C) where
   constant-family .F₀ A = cut (π₂ {a = A})
   constant-family .F₁ f .map      = ⟨ f ∘ π₁ , π₂ ⟩
   constant-family .F₁ f .commutes = π₂∘⟨⟩
-  constant-family .F-id    = /-Hom-path (sym (⟨⟩-unique _ id-comm (idr _)))
-  constant-family .F-∘ f g = /-Hom-path $ sym $
+  constant-family .F-id    = ext (sym (⟨⟩-unique _ id-comm (idr _)))
+  constant-family .F-∘ f g = ext $ sym $
       ⟨⟩-unique _ (pulll π₁∘⟨⟩ ∙ extendr π₁∘⟨⟩) (pulll π₂∘⟨⟩ ∙ π₂∘⟨⟩)
 ```
 

@@ -28,7 +28,7 @@ private variable
 ```agda
 Acc-is-prop : ∀ x → is-prop (Acc R x)
 Acc-is-prop x (acc s) (acc t) =
-  ap acc (funext λ y → funext λ y<x → Acc-is-prop y (s y y<x) (t y y<x))
+  ap acc (ext λ y y<x → Acc-is-prop y (s y y<x) (t y y<x))
 
 Wf-is-prop : is-prop (Wf R)
 Wf-is-prop = Π-is-hlevel 1 Acc-is-prop
@@ -51,7 +51,7 @@ suc-wf = Induction-wf (λ x y → y ≡ suc x) λ P m →
 <-wf x = go x x ≤-refl where
   go : (x y : Nat) → .(y ≤ x) → Acc _<_ y
   go x zero w = acc λ _ ()
-  go (suc x) (suc y) w = acc k′ where
-    k′ : ∀ x → x < suc y → Acc _<_ x
-    k′ x′ w′ = go x x′ (≤-trans (≤-peel w′) (≤-peel w))
+  go (suc x) (suc y) w = acc k' where
+    k' : ∀ x → x < suc y → Acc _<_ x
+    k' x' w' = go x x' (≤-trans (≤-peel w') (≤-peel w))
 ```

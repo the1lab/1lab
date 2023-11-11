@@ -34,7 +34,7 @@ module, so we will not comment on them too much.
 ```agda
 private variable
   Γ Δ : Ob
-  x x′ y y′ z z′ : Hom Γ C₀
+  x x' y y' z z' : Hom Γ C₀
   a b c d f g h i : Homi x y
   σ : Hom Γ Δ
 ```
@@ -136,8 +136,8 @@ sub-id = Internal-hom-pathp (idr _) (idr _) (idr _)
 
 ```agda
 ∘i-ihom
-  : ∀ {f : Homi y z} {f' : Homi y′ z′} {g : Homi x y} {g' : Homi x′ y′}
-  → x ≡ x′ → y ≡ y′ → z ≡ z′
+  : ∀ {f : Homi y z} {f' : Homi y' z'} {g : Homi x y} {g' : Homi x' y'}
+  → x ≡ x' → y ≡ y' → z ≡ z'
   → f .ihom ≡ f' .ihom
   → g .ihom ≡ g' .ihom
   → (f ∘i g) .ihom ≡ (f' ∘i g') .ihom

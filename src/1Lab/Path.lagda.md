@@ -1071,23 +1071,23 @@ We can use the filler and heterogeneous composition to define composition of `Pa
 and `Square`{.Agda}s:
 
 ```agda
-_∙P_ : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′} {x y z : A} {x′ : B x} {y′ : B y} {z′ : B z} {p : x ≡ y} {q : y ≡ z}
-     → PathP (λ i → B (p i)) x′ y′
-     → PathP (λ i → B (q i)) y′ z′
-     → PathP (λ i → B ((p ∙ q) i)) x′ z′
-_∙P_ {B = B} {x′ = x′} {p = p} {q = q} p′ q′ i =
+_∙P_ : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'} {x y z : A} {x' : B x} {y' : B y} {z' : B z} {p : x ≡ y} {q : y ≡ z}
+     → PathP (λ i → B (p i)) x' y'
+     → PathP (λ i → B (q i)) y' z'
+     → PathP (λ i → B ((p ∙ q) i)) x' z'
+_∙P_ {B = B} {x' = x'} {p = p} {q = q} p' q' i =
   comp (λ j → B (∙-filler p q j i)) (∂ i) λ where
-    j (i = i0) → x′
-    j (i = i1) → q′ j
-    j (j = i0) → p′ i
+    j (i = i0) → x'
+    j (i = i1) → q' j
+    j (j = i0) → p' i
 
 _∙₂_ : ∀ {ℓ} {A : Type ℓ} {a00 a01 a02 a10 a11 a12 : A}
-       {p : a00 ≡ a01} {p′ : a01 ≡ a02}
+       {p : a00 ≡ a01} {p' : a01 ≡ a02}
        {q : a00 ≡ a10} {s : a01 ≡ a11} {t : a02 ≡ a12}
-       {r : a10 ≡ a11} {r′ : a11 ≡ a12}
+       {r : a10 ≡ a11} {r' : a11 ≡ a12}
      → Square p q s r
-     → Square p′ s t r′
-     → Square (p ∙ p′) q t (r ∙ r′)
+     → Square p' s t r'
+     → Square (p ∙ p') q t (r ∙ r')
 (α ∙₂ β) i j = ((λ i → α i j) ∙ (λ i → β i j)) i
 
 infixr 30 _∙P_ _∙₂_
@@ -1273,7 +1273,7 @@ apd : ∀ {a b} {A : I → Type a} {B : (i : I) → A i → Type b}
 apd f p i = f i (p i)
 
 ap-square
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
       {a00 a01 a10 a11 : A}
       {p : a00 ≡ a01}
       {q : a00 ≡ a10}
@@ -1795,12 +1795,12 @@ Square≡double-composite-path {p = p} {q} {s} {r} k =
   PathP (λ i → p (i ∨ k) ≡ r (i ∨ k))
     (··-filler (sym p) q r k) s
 
-J′ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁}
+J' : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁}
      (P : (x y : A) → x ≡ y → Type ℓ₂)
    → (∀ x → P x x refl)
    → {x y : A} (p : x ≡ y)
    → P x y p
-J′ P prefl {x} p = transport (λ i → P x (p i) λ j → p (i ∧ j)) (prefl x)
+J' P prefl {x} p = transport (λ i → P x (p i) λ j → p (i ∧ j)) (prefl x)
 
 J₂
   : ∀ {ℓa ℓb ℓp} {A : Type ℓa} {B : Type ℓb} {xa : A} {xb : B}

@@ -153,9 +153,9 @@ maps we want to compute with.</summary>
         (Nat-path λ _ → B.intror refl)
 
   Codensity .mult-assoc {x = x} = path ηₚ x where
-    mult′ : (Ext F∘ Ext F∘ Ext) F∘ F => F
-    mult′ .η x = eps .η x B.∘ Ext.₁ (mult-nt .η x)
-    mult′ .is-natural x y f = Ext.extendr (mult-nt .is-natural _ _ _)
+    mult' : (Ext F∘ Ext F∘ Ext) F∘ F => F
+    mult' .η x = eps .η x B.∘ Ext.₁ (mult-nt .η x)
+    mult' .is-natural x y f = Ext.extendr (mult-nt .is-natural _ _ _)
                             ∙ B.pushl (eps .is-natural _ _ _)
 
     sig₁ : Ext F∘ Ext F∘ Ext => Ext
@@ -170,7 +170,7 @@ maps we want to compute with.</summary>
 
     abstract
       path : sig₁ ≡ sig₂
-      path = σ-uniq₂ {M = Ext F∘ Ext F∘ Ext} mult′
+      path = σ-uniq₂ {M = Ext F∘ Ext F∘ Ext} mult'
         (Nat-path λ x → sym (B.pulll (σ-comm ηₚ x)
                            ∙ Ext.pullr (σ-comm ηₚ x)))
         (Nat-path λ x → sym (B.pulll (σ-comm ηₚ x)

@@ -182,22 +182,22 @@ the projections.
           (idr _) (idr _)
 
   is-product-iso
-    : ∀ {A A′ B B′ P} {π₁ : Hom P A} {π₂ : Hom P B}
-        {f : Hom A A′} {g : Hom B B′}
+    : ∀ {A A' B B' P} {π₁ : Hom P A} {π₂ : Hom P B}
+        {f : Hom A A'} {g : Hom B B'}
     → is-invertible f
     → is-invertible g
     → is-product π₁ π₂
     → is-product (f ∘ π₁) (g ∘ π₂)
-  is-product-iso f-iso g-iso prod = prod′ where
+  is-product-iso f-iso g-iso prod = prod' where
     module fi = is-invertible f-iso
     module gi = is-invertible g-iso
 
     open is-product
-    prod′ : is-product _ _
-    prod′ .⟨_,_⟩ qa qb = prod .⟨_,_⟩ (fi.inv ∘ qa) (gi.inv ∘ qb)
-    prod′ .π₁∘factor = pullr (prod .π₁∘factor) ∙ cancell fi.invl
-    prod′ .π₂∘factor = pullr (prod .π₂∘factor) ∙ cancell gi.invl
-    prod′ .unique other p q = prod .unique other
+    prod' : is-product _ _
+    prod' .⟨_,_⟩ qa qb = prod .⟨_,_⟩ (fi.inv ∘ qa) (gi.inv ∘ qb)
+    prod' .π₁∘factor = pullr (prod .π₁∘factor) ∙ cancell fi.invl
+    prod' .π₂∘factor = pullr (prod .π₂∘factor) ∙ cancell gi.invl
+    prod' .unique other p q = prod .unique other
       (sym (ap (_ ∘_) (sym p) ∙ pulll (cancell fi.invr)))
       (sym (ap (_ ∘_) (sym q) ∙ pulll (cancell gi.invr)))
 ```

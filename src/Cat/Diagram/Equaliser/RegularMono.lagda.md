@@ -143,13 +143,13 @@ universal map $E \to a$ which commutes with "everything in sight":
     open is-equaliser
     eq : is-equaliser _ _ _ _
     eq .equal     = f⊔f.square
-    eq .universal {F = F} {e′ = e′} p = reg.universal p′ where
-      p′ : reg.arr₁ ∘ e′ ≡ reg.arr₂ ∘ e′
-      p′ =
-        reg.arr₁ ∘ e′       ≡˘⟨ ap (_∘ e′) f⊔f.i₁∘universal ⟩
-        (phi ∘ f⊔f.i₁) ∘ e′ ≡⟨ extendr p ⟩
-        (phi ∘ f⊔f.i₂) ∘ e′ ≡⟨ ap (_∘ e′) f⊔f.i₂∘universal ⟩
-        reg.arr₂ ∘ e′       ∎
+    eq .universal {F = F} {e' = e'} p = reg.universal p' where
+      p' : reg.arr₁ ∘ e' ≡ reg.arr₂ ∘ e'
+      p' =
+        reg.arr₁ ∘ e'       ≡˘⟨ ap (_∘ e') f⊔f.i₁∘universal ⟩
+        (phi ∘ f⊔f.i₁) ∘ e' ≡⟨ extendr p ⟩
+        (phi ∘ f⊔f.i₂) ∘ e' ≡⟨ ap (_∘ e') f⊔f.i₂∘universal ⟩
+        reg.arr₂ ∘ e'       ∎
     eq .factors = reg.factors
     eq .unique = reg.unique
 ```
@@ -205,11 +205,11 @@ is-effective-mono→image {f = f} mon = im where
     hom : ↓Hom _ _ itself other
     hom .α = tt
     hom .β = other .map
-    hom .sq = /-Hom-path refl
+    hom .sq = trivial!
 
     unique : ∀ x → hom ≡ x
     unique x = ↓Hom-path _ _ refl
-      (/-Hom-path (intror refl ∙ ap map (x .sq) ∙ elimr refl))
+      (ext (intror refl ∙ ap map (x .sq) ∙ elimr refl))
 ```
 
 Hence the characterisation of regular monomorphisms given in the

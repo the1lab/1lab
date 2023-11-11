@@ -12,8 +12,8 @@ import Cat.Reasoning
 
 ```agda
 module Cat.Displayed.Instances.Objects
-  {o ℓ o′ ℓ′} {B : Precategory o ℓ}
-  (E : Displayed B o′ ℓ′)
+  {o ℓ o' ℓ'} {B : Precategory o ℓ}
+  (E : Displayed B o' ℓ')
   where
 ```
 
@@ -38,15 +38,15 @@ changes-of-base.
 [wide subcategory]: Cat.Functor.WideSubcategory.html
 
 ```agda
-Objects : Displayed B o′ (o ⊔ ℓ ⊔ o′ ⊔ ℓ′)
+Objects : Displayed B o' (o ⊔ ℓ ⊔ o' ⊔ ℓ')
 Objects .Displayed.Ob[_] x = Ob[ x ]
-Objects .Displayed.Hom[_] f x′ y′   = Cartesian-morphism E f x′ y′
+Objects .Displayed.Hom[_] f x' y'   = Cartesian-morphism E f x' y'
 Objects .Displayed.Hom[_]-set _ _ _ = Cartesian-morphism-is-set E
-Objects .Displayed.id′  = idcart E
-Objects .Displayed._∘′_ = _∘cart_ E
-Objects .Displayed.idr′ _       = Cartesian-morphism-pathp E (idr′ _)
-Objects .Displayed.idl′ _       = Cartesian-morphism-pathp E (idl′ _)
-Objects .Displayed.assoc′ _ _ _ = Cartesian-morphism-pathp E (assoc′ _ _ _)
+Objects .Displayed.id'  = idcart E
+Objects .Displayed._∘'_ = _∘cart_ E
+Objects .Displayed.idr' _       = Cartesian-morphism-pathp E (idr' _)
+Objects .Displayed.idl' _       = Cartesian-morphism-pathp E (idl' _)
+Objects .Displayed.assoc' _ _ _ = Cartesian-morphism-pathp E (assoc' _ _ _)
 ```
 
 We have an evident forgetful [fibred] functor from the object fibration
@@ -56,11 +56,11 @@ back to $\cE$.
 
 ```agda
 Objects-forget : Vertical-fibred-functor Objects E
-Objects-forget .vert .F₀′ x = x
-Objects-forget .vert .F₁′ f′ = f′ .hom′
-Objects-forget .vert .F-id′ = refl
-Objects-forget .vert .F-∘′ = refl
-Objects-forget .F-cartesian f′ _ = f′ .cartesian
+Objects-forget .vert .F₀' x = x
+Objects-forget .vert .F₁' f' = f' .hom'
+Objects-forget .vert .F-id' = refl
+Objects-forget .vert .F-∘' = refl
+Objects-forget .F-cartesian f' _ = f' .cartesian
 ```
 
 
@@ -78,17 +78,17 @@ squares.
 
 ```agda
 Objects-cartesian
-  : ∀ {x y x′ y′} {f : Hom x y} (f′ : Cartesian-morphism E f x′ y′)
-  → is-cartesian Objects f f′
-Objects-cartesian f′ = cart where
+  : ∀ {x y x' y'} {f : Hom x y} (f' : Cartesian-morphism E f x' y')
+  → is-cartesian Objects f f'
+Objects-cartesian f' = cart where
   open is-cartesian
 
   cart : is-cartesian _ _ _
-  cart .universal m h′ = cart-paste E f′ h′
-  cart .commutes m h′ =
-    Cartesian-morphism-pathp E (f′ .cartesian .commutes m (h′ .hom′))
-  cart .unique m′ p =
-    Cartesian-morphism-pathp E (f′ .cartesian .unique (hom′ m′) (ap hom′ p))
+  cart .universal m h' = cart-paste E f' h'
+  cart .commutes m h' =
+    Cartesian-morphism-pathp E (f' .cartesian .commutes m (h' .hom'))
+  cart .unique m' p =
+    Cartesian-morphism-pathp E (f' .cartesian .unique (hom' m') (ap hom' p))
 ```
 
 If $E$ is a fibration, then its fibration of objects is a a [right
@@ -99,13 +99,13 @@ fibration are groupoids.
 
 ```agda
 Objects-fibration : Cartesian-fibration E → Cartesian-fibration Objects
-Objects-fibration fib .Cartesian-fibration.has-lift f y′ = cart-lift where
+Objects-fibration fib .Cartesian-fibration.has-lift f y' = cart-lift where
   open Cartesian-fibration fib
 
-  cart-lift : Cartesian-lift Objects f y′
-  cart-lift .Cartesian-lift.x′ = has-lift.x′ f y′
-  cart-lift .Cartesian-lift.lifting .hom′ = has-lift.lifting f y′
-  cart-lift .Cartesian-lift.lifting .cartesian = has-lift.cartesian f y′
+  cart-lift : Cartesian-lift Objects f y'
+  cart-lift .Cartesian-lift.x' = has-lift.x' f y'
+  cart-lift .Cartesian-lift.lifting .hom' = has-lift.lifting f y'
+  cart-lift .Cartesian-lift.lifting .cartesian = has-lift.cartesian f y'
   cart-lift .Cartesian-lift.cartesian = Objects-cartesian _
 
 Objects-right-fibration : Cartesian-fibration E → Right-fibration Objects
@@ -139,15 +139,15 @@ module _
   Objects-universal
     : (F : Vertical-fibred-functor R E)
     → Vertical-fibred-functor R Objects
-  Objects-universal F .vert .F₀′ x = F .F₀′ x
-  Objects-universal F .vert .F₁′ f′ .hom′ = F .F₁′ f′
-  Objects-universal F .vert .F₁′ f′ .cartesian =
-    F .F-cartesian f′ (R-right.cartesian f′)
-  Objects-universal F .vert .F-id′ =
-    Cartesian-morphism-pathp E (F .F-id′)
-  Objects-universal F .vert .F-∘′ =
-    Cartesian-morphism-pathp E (F .F-∘′)
-  Objects-universal F .F-cartesian f′ cart =
+  Objects-universal F .vert .F₀' x = F .F₀' x
+  Objects-universal F .vert .F₁' f' .hom' = F .F₁' f'
+  Objects-universal F .vert .F₁' f' .cartesian =
+    F .F-cartesian f' (R-right.cartesian f')
+  Objects-universal F .vert .F-id' =
+    Cartesian-morphism-pathp E (F .F-id')
+  Objects-universal F .vert .F-∘' =
+    Cartesian-morphism-pathp E (F .F-∘')
+  Objects-universal F .F-cartesian f' cart =
     Objects-cartesian _
 
   Objects-factors

@@ -78,7 +78,7 @@ record Lift {a} ℓ (A : Type a) : Type (a ⊔ ℓ) where
 <!--
 ```agda
 instance
-  Lift-instance : ∀ {ℓ ℓ′} {A : Type ℓ} → ⦃ A ⦄ → Lift ℓ′ A
+  Lift-instance : ∀ {ℓ ℓ'} {A : Type ℓ} → ⦃ A ⦄ → Lift ℓ' A
   Lift-instance ⦃ x ⦄ = lift x
 ```
 -->

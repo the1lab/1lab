@@ -60,8 +60,8 @@ subst-tm* ρ (arg ι x ∷ ls) = do
 apply-tm* : Term → List (Arg Term) → Maybe Term
 apply-tm* tm [] = pure tm
 apply-tm* tm (x ∷ xs) = do
-  tm′ ← apply-tm tm x
-  apply-tm* tm′ xs
+  tm' ← apply-tm tm x
+  apply-tm* tm' xs
 
 lookup-tm : (σ : Subst) (i : Nat) → Maybe Term
 lookup-tm ids i = pure $ var i []
@@ -111,3 +111,14 @@ subst-tm ρ (agda-sort s) with s
 … | propLit n = pure (agda-sort (propLit n))
 … | inf n     = pure (agda-sort (inf n))
 … | unknown   = pure unknown
+
+raiseTC : Nat → Term → TC Term
+raiseTC n tm with raise n tm
+... | just x = pure x
+... | nothing = typeError [ "Failed to raise term " , termErr tm ]
+
+applyTC : Term → Arg Term → TC Term
+applyTC f x with apply-tm f x
+applyTC f x         | just r  = pure r
+applyTC f (arg _ x) | nothing =
+  typeError [ "Failed to apply function " , termErr f , " to argument " , termErr x ]

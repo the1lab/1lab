@@ -64,7 +64,7 @@ $\{*,*\}$ --- the [_join_] of these categories.
 <!--
 ```agda
 module
-  _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {J : Precategory o′ ℓ′} {o : Precategory.Ob C}
+  _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {J : Precategory o' ℓ'} {o : Precategory.Ob C}
     (F : Functor J (Slice C o))
     where
 
@@ -85,20 +85,20 @@ this into a diagram $F' : (J \star \{*\}) \to \cC$, compute the limit
 in $\cC$, then pass back to the slice category.
 
 ```agda
-    F′ : Functor (J ⋆ ⊤Cat) C
-    F′ .F₀ (inl x) = F.₀ x .domain
-    F′ .F₀ (inr x) = o
-    F′ .F₁ {inl x} {inl y} (lift f) = F.₁ f .map
-    F′ .F₁ {inl x} {inr y} _ = F.₀ x .map
-    F′ .F₁ {inr x} {inr y} (lift h) = C.id
-    F′ .F-id {inl x} = ap map F.F-id
-    F′ .F-id {inr x} = refl
-    F′ .F-∘ {inl x} {inl y} {inl z} (lift f) (lift g) = ap map (F.F-∘ f g)
-    F′ .F-∘ {inl x} {inl y} {inr z} (lift f) (lift g) = sym (F.F₁ g .commutes)
-    F′ .F-∘ {inl x} {inr y} {inr z} (lift f) (lift g) = C.introl refl
-    F′ .F-∘ {inr x} {inr y} {inr z} (lift f) (lift g) = C.introl refl
+    F' : Functor (J ⋆ ⊤Cat) C
+    F' .F₀ (inl x) = F.₀ x .domain
+    F' .F₀ (inr x) = o
+    F' .F₁ {inl x} {inl y} (lift f) = F.₁ f .map
+    F' .F₁ {inl x} {inr y} _ = F.₀ x .map
+    F' .F₁ {inr x} {inr y} (lift h) = C.id
+    F' .F-id {inl x} = ap map F.F-id
+    F' .F-id {inr x} = refl
+    F' .F-∘ {inl x} {inl y} {inl z} (lift f) (lift g) = ap map (F.F-∘ f g)
+    F' .F-∘ {inl x} {inl y} {inr z} (lift f) (lift g) = sym (F.F₁ g .commutes)
+    F' .F-∘ {inl x} {inr y} {inr z} (lift f) (lift g) = C.introl refl
+    F' .F-∘ {inr x} {inr y} {inr z} (lift f) (lift g) = C.introl refl
 
-  limit-above→limit-in-slice : Limit F′ → Limit F
+  limit-above→limit-in-slice : Limit F' → Limit F
   limit-above→limit-in-slice lims = to-limit (to-is-limit lim) where
     module lims = Limit lims
     open make-is-limit
@@ -116,14 +116,14 @@ in $\cC$, then pass back to the slice category.
       (p : ∀ {i j : J.Ob} → (f : J.Hom i j) → F .F₁ f C/o.∘ eta i ≡ eta j)
       where
 
-        ϕ : (j : J.Ob ⊎ ⊤) → C.Hom (x .domain) (F′ .F₀ j)
+        ϕ : (j : J.Ob ⊎ ⊤) → C.Hom (x .domain) (F' .F₀ j)
         ϕ (inl j) = eta j .map
         ϕ (inr _) = x .map
 
         ϕ-commutes
           : ∀ {i j : J.Ob ⊎ ⊤}
           → (f : ⋆Hom J ⊤Cat i j)
-          → F′ .F₁ f C.∘ ϕ i ≡ ϕ j
+          → F' .F₁ f C.∘ ϕ i ≡ ϕ j
         ϕ-commutes {inl i} {inl j} (lift f) = ap map (p f)
         ϕ-commutes {inl i} {inr j} (lift f) = eta i .commutes
         ϕ-commutes {inr i} {inr x} (lift f) = C.idl _
@@ -138,24 +138,22 @@ in $\cC$, then pass back to the slice category.
 
     lim : make-is-limit F apex
     lim .ψ = nadir
-    lim .commutes f =
-      /-Hom-path (lims.commutes (lift f))
+    lim .commutes f = ext (lims.commutes (lift f))
     lim .universal {x} eta p .map =
       lims.universal (Cone.ϕ eta p) (Cone.ϕ-commutes eta p)
     lim .universal eta p .commutes =
       lims.factors _ _
-    lim .factors eta p =
-      /-Hom-path (lims.factors _ _)
-    lim .unique eta p other q =
-      /-Hom-path $ lims.unique _ _ (other .map) (Cone.ϕ-factor eta p other q)
+    lim .factors eta p = ext (lims.factors _ _)
+    lim .unique eta p other q = ext $
+      lims.unique _ _ (other .map) (Cone.ϕ-factor eta p other q)
 ```
 
 In particular, if a category $\cC$ is complete, then so are its slices:
 
 ```agda
 is-complete→slice-is-complete
-  : ∀ {ℓ o o′ ℓ′} {C : Precategory o ℓ} {c : Precategory.Ob C}
-  → is-complete o′ ℓ′ C
-  → is-complete o′ ℓ′ (Slice C c)
+  : ∀ {ℓ o o' ℓ'} {C : Precategory o ℓ} {c : Precategory.Ob C}
+  → is-complete o' ℓ' C
+  → is-complete o' ℓ' (Slice C c)
 is-complete→slice-is-complete lims F = limit-above→limit-in-slice F (lims _)
 ```

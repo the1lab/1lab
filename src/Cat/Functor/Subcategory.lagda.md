@@ -84,20 +84,23 @@ module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {subcat : Subcat C o' ℓ'} whe
   Subcat-hom-pathp {f = f} {g = g} p q r i .witness =
     is-prop→pathp (λ i → is-hom-prop (r i) (p i .snd) (q i .snd)) (f .witness) (g .witness) i
 
-  Subcat-hom-path
-    : {x y : Σ[ ob ∈ Ob ] (is-ob ob)}
-    → {f g : Subcat-hom subcat x y}
-    → f .hom ≡ g .hom
-    → f ≡ g
-  Subcat-hom-path p = Subcat-hom-pathp refl refl p
+  Extensional-subcat-hom
+    : ∀ {ℓr} {x y : Σ[ ob ∈ Ob ] (is-ob ob)}
+    → ⦃ sa : Extensional (Hom (x .fst) (y .fst)) ℓr ⦄
+    → Extensional (Subcat-hom subcat x y) ℓr
+  Extensional-subcat-hom ⦃ sa ⦄ = injection→extensional!
+    (Subcat-hom-pathp refl refl) sa
 
   instance
+    extensionality-subcat-hom
+      : ∀ {x y : Σ[ ob ∈ Ob ] (is-ob ob)} → Extensionality (Subcat-hom subcat x y)
+    extensionality-subcat-hom = record { lemma = quote Extensional-subcat-hom }
+
     Funlike-Subcat-hom : ⦃ _ : Funlike Hom ⦄ → Funlike (Subcat-hom subcat)
     Funlike-Subcat-hom ⦃ i ⦄ = record
       { au = Underlying-Σ ⦃ i .Funlike.au ⦄
       ; bu = Underlying-Σ ⦃ i .Funlike.bu ⦄
       ; _#_ = λ f x → apply (f .hom) x
-      ; ext = λ x → Subcat-hom-path (ext x)
       }
 
   Subcat-hom-is-set
@@ -129,9 +132,9 @@ module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} (subcat : Subcat C o' ℓ') whe
   Subcategory .Precategory.id .witness = is-hom-id _
   Subcategory .Precategory._∘_ f g .hom = f .hom ∘ g .hom
   Subcategory .Precategory._∘_ f g .witness = is-hom-∘ (f .witness) (g .witness)
-  Subcategory .Precategory.idr f = Subcat-hom-path (idr (f .hom))
-  Subcategory .Precategory.idl f = Subcat-hom-path (idl (f .hom))
-  Subcategory .Precategory.assoc f g h = Subcat-hom-path (assoc (f .hom) (g .hom) (h .hom))
+  Subcategory .Precategory.idr f = ext (idr _)
+  Subcategory .Precategory.idl f = ext (idl _)
+  Subcategory .Precategory.assoc f g h = ext (assoc _ _ _)
 ```
 
 ## From pseudomonic functors
@@ -197,7 +200,7 @@ with $F$ and $C$.
     is-iso→is-equiv $ iso
     (λ f → sub-hom (D.to y-es D.∘ F₁ f D.∘ D.from x-es) (f , refl))
     (λ _ → refl)
-    (λ f → Subcat-hom-path (f .witness .snd))
+    (λ f → ext (f .witness .snd))
 
   Faithful-subcat-domain-is-split-eso : is-split-eso Faithful-subcat-domain
   Faithful-subcat-domain-is-split-eso x =
@@ -223,7 +226,7 @@ module _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {subcat : Subcat C o' ℓ'} whe
   Forget-subcat .Functor.F-∘ _ _ = refl
 
   is-faithful-Forget-subcat : is-faithful Forget-subcat
-  is-faithful-Forget-subcat = Subcat-hom-path
+  is-faithful-Forget-subcat = ext
 ```
 
 Furthermore, if the subcategory contains all of the isomorphisms of $\cC$, then
@@ -241,8 +244,8 @@ the forgetful functor is pseudomonic.
       Sub.make-iso
         (sub-hom (f .to) (invert (iso→invertible f)))
         (sub-hom (f .from) (invert (iso→invertible (f Iso⁻¹))))
-        (Subcat-hom-path (f .invl))
-        (Subcat-hom-path (f .invr))
+        (ext (f .invl))
+        (ext (f .invr))
       , ≅-path refl
 ```
 

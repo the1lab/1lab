@@ -134,7 +134,7 @@ product of [[univalent categories]] is itself a univalent category.
 <!--
 ```agda
 module
-  _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     (c-cat : is-category C) (d-cat : is-category D) where
     private
       module C   = Univalent c-cat

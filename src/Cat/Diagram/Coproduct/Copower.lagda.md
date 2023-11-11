@@ -3,8 +3,11 @@
 open import Cat.Diagram.Colimit.Coproduct
 open import Cat.Diagram.Coproduct.Indexed
 open import Cat.Diagram.Colimit.Base
+open import Cat.Functor.Naturality
 open import Cat.Instances.Discrete
 open import Cat.Instances.Product
+open import Cat.Instances.Sets
+open import Cat.Functor.Hom
 open import Cat.Prelude
 
 import Cat.Reasoning
@@ -15,7 +18,7 @@ import Cat.Reasoning
 module Cat.Diagram.Coproduct.Copower where
 ```
 
-# Copowers
+# Copowers {defines="copower copowered"}
 
 Let $\cC$ be a category admitting [$\kappa$-small] [indexed
 coproducts], for example a $\kappa$-[cocomplete] category. In the same
@@ -46,13 +49,12 @@ over $\Sets_\kappa$.
 
 <!--
 ```agda
-module
-  _ {o ℓ} {C : Precategory o ℓ}
-  (coprods : (S : Set ℓ) (F : ∣ S ∣ → Precategory.Ob C) → Indexed-coproduct C F)
+module Copowers
+  {o ℓ} {C : Precategory o ℓ}
+  (coprods : (S : Set ℓ) → has-coproducts-indexed-by C ∣ S ∣)
   where
 
   open Functor
-  open is-indexed-coproduct
   open Indexed-coproduct
   open Cat.Reasoning C
 ```
@@ -61,6 +63,20 @@ module
 ```agda
   _⊗_ : Set ℓ → Ob → Ob
   X ⊗ A = coprods X (λ _ → A) .ΣF
+```
+
+Copowers satisfy a universal property: $X \otimes A$ is a [[representing object]]
+for the functor that takes an object $B$ to the $X$th power of the set of morphisms
+from $A$ to $B$; in other words, we have a natural isomorphism
+$\hom_\cC(X \otimes A, -) \cong \hom_{\Sets}(X, \hom_\cC(A, -))$.
+
+```agda
+  copower-hom-iso
+    : ∀ {X A}
+    → Hom-from C (X ⊗ A) ≅ⁿ Hom-from (Sets ℓ) X F∘ Hom-from C A
+  copower-hom-iso {X} {A} = iso→isoⁿ
+    (λ _ → equiv→iso (hom-iso (coprods X (λ _ → A))))
+    (λ _ → ext λ _ _ → assoc _ _ _)
 ```
 
 The action of the copowering functor is given by simultaneously changing
@@ -82,6 +98,6 @@ uniqueness properties of colimiting maps.
 cocomplete→copowering
   : ∀ {o ℓ} {C : Precategory o ℓ}
   → is-cocomplete ℓ ℓ C → Functor (Sets ℓ ×ᶜ C) C
-cocomplete→copowering colim = Copowering λ S F →
+cocomplete→copowering colim = Copowers.Copowering λ S F →
   Colimit→IC _ (is-hlevel-suc 2 (S .is-tr)) F (colim _)
 ```

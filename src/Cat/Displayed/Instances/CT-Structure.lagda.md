@@ -61,15 +61,15 @@ Simple-ct : ∀ {s} → CT-Structure s → Displayed B (o ⊔ s) ℓ
 Simple-ct ct .Displayed.Ob[_] Γ = Σ[ X ∈ Ob ] ∣ is-tp ct X ∣
 Simple-ct ct .Displayed.Hom[_] {Γ} {Δ} u X Y = Hom (Γ ⊗₀ X .fst) (Y .fst)
 Simple-ct ct .Displayed.Hom[_]-set {Γ} {Δ} u X Y = Hom-set (Γ ⊗₀ X .fst) (Y .fst)
-Simple-ct ct .Displayed.id′ = π₂
-Simple-ct ct .Displayed._∘′_ {f = u} {g = v} f g = f ∘ ⟨ v ∘ π₁ , g ⟩
-Simple-ct ct .Displayed.idr′ {f = u} f =
+Simple-ct ct .Displayed.id' = π₂
+Simple-ct ct .Displayed._∘'_ {f = u} {g = v} f g = f ∘ ⟨ v ∘ π₁ , g ⟩
+Simple-ct ct .Displayed.idr' {f = u} f =
   f ∘ ⟨ (id ∘ π₁) , π₂ ⟩ ≡⟨ products! B has-prods ⟩
   f                      ∎
-Simple-ct ct .Displayed.idl′ {f = u} f =
+Simple-ct ct .Displayed.idl' {f = u} f =
   π₂ ∘ ⟨ u ∘ π₁ , f ⟩ ≡⟨ products! B has-prods ⟩
   f                   ∎
-Simple-ct ct .Displayed.assoc′ {f = u} {g = v} {h = w} f g h =
+Simple-ct ct .Displayed.assoc' {f = u} {g = v} {h = w} f g h =
   f ∘ ⟨ (v ∘ w) ∘ π₁ , g ∘ ⟨ w ∘ π₁ , h ⟩ ⟩ ≡⟨ products! B has-prods ⟩
   (f ∘ ⟨ v ∘ π₁ , g ⟩) ∘ ⟨ w ∘ π₁ , h ⟩     ∎
 ```
@@ -85,7 +85,7 @@ Simple-cartesian→Simple-ct-cartesian
   → (ct : CT-Structure s)
   → (x-tp : ∣ is-tp ct x ∣) → (y-tp : ∣ is-tp ct y ∣)
   → is-cartesian Simple σ f
-  → is-cartesian (Simple-ct ct) {a′ = x , x-tp} {b′ = y , y-tp} σ f
+  → is-cartesian (Simple-ct ct) {a' = x , x-tp} {b' = y , y-tp} σ f
 Simple-cartesian→Simple-ct-cartesian ct x-tp y-tp cart = ct-cart where
   open is-cartesian
 
@@ -107,11 +107,11 @@ open Cartesian-lift
 open is-cartesian
 
 Simple-ct-fibration : ∀ {s} (ct : CT-Structure s) → Cartesian-fibration (Simple-ct ct)
-Simple-ct-fibration ct .has-lift u Y .x′ = Y
+Simple-ct-fibration ct .has-lift u Y .x' = Y
 Simple-ct-fibration ct .has-lift u Y .lifting = π₂
 Simple-ct-fibration ct .has-lift u Y .cartesian .universal _ h = h
 Simple-ct-fibration ct .has-lift u Y .cartesian .commutes g h = π₂∘⟨⟩
-Simple-ct-fibration ct .has-lift u Y .cartesian .unique {m = g} {h′ = h} h' p =
+Simple-ct-fibration ct .has-lift u Y .cartesian .unique {m = g} {h' = h} h' p =
   h'                   ≡˘⟨ π₂∘⟨⟩ ⟩
   π₂ ∘ ⟨ g ∘ π₁ , h' ⟩ ≡⟨ p ⟩
   h ∎
@@ -126,10 +126,10 @@ CT-structure into the simple fibration.
 Simple-ct→Simple
   : ∀ {s} → (ct : CT-Structure s)
   → Vertical-functor (Simple-ct ct) Simple
-Simple-ct→Simple ct .Vertical-functor.F₀′ = fst
-Simple-ct→Simple ct .Vertical-functor.F₁′ f = f
-Simple-ct→Simple ct .Vertical-functor.F-id′ = refl
-Simple-ct→Simple ct .Vertical-functor.F-∘′ = refl
+Simple-ct→Simple ct .Vertical-functor.F₀' = fst
+Simple-ct→Simple ct .Vertical-functor.F₁' f = f
+Simple-ct→Simple ct .Vertical-functor.F-id' = refl
+Simple-ct→Simple ct .Vertical-functor.F-∘' = refl
 ```
 
 Furthermore, if $\cB$ is (merely) inhabited, then we can construct a
@@ -141,8 +141,8 @@ All-types X .is-tp _ = el ⊤ (hlevel 1)
 All-types X .∃-tp = ∥-∥-map (λ x → x , tt) X
 
 Simple→Simple-ct : ∀ {X} → Vertical-functor Simple (Simple-ct (All-types X))
-Simple→Simple-ct .Vertical-functor.F₀′ X = X , tt
-Simple→Simple-ct .Vertical-functor.F₁′ f = f
-Simple→Simple-ct .Vertical-functor.F-id′ = refl
-Simple→Simple-ct .Vertical-functor.F-∘′ = refl
+Simple→Simple-ct .Vertical-functor.F₀' X = X , tt
+Simple→Simple-ct .Vertical-functor.F₁' f = f
+Simple→Simple-ct .Vertical-functor.F-id' = refl
+Simple→Simple-ct .Vertical-functor.F-∘' = refl
 ```

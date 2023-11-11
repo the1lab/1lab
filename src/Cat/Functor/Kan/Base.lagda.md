@@ -19,9 +19,9 @@ module Cat.Functor.Kan.Base where
 private
   variable
     o ℓ : Level
-    C C′ D E : Precategory o ℓ
-  kan-lvl : ∀ {o ℓ o′ ℓ′ o′′ ℓ′′} {C : Precategory o ℓ} {C′ : Precategory o′ ℓ′} {D : Precategory o′′ ℓ′′}
-          → Functor C D → Functor C C′ → Level
+    C C' D E : Precategory o ℓ
+  kan-lvl : ∀ {o ℓ o' ℓ' o'' ℓ''} {C : Precategory o ℓ} {C' : Precategory o' ℓ'} {D : Precategory o'' ℓ''}
+          → Functor C D → Functor C C' → Level
   kan-lvl {a} {b} {c} {d} {e} {f} _ _ = a ⊔ b ⊔ c ⊔ d ⊔ e ⊔ f
 
 open _=>_
@@ -88,7 +88,7 @@ isomorphism.
 
 ```agda
 record
-  is-lan (p : Functor C C′) (F : Functor C D) (L : Functor C′ D) (eta : F => L F∘ p)
+  is-lan (p : Functor C C') (F : Functor C D) (L : Functor C' D) (eta : F => L F∘ p)
     : Type (kan-lvl p F) where
   field
 ```
@@ -112,21 +112,21 @@ that $\eta$ does for $\Lan_p F$), the 2-cell exists and is unique.
 ~~~
 
 ```agda
-    σ : {M : Functor C′ D} (α : F => M F∘ p) → L => M
-    σ-comm : {M : Functor C′ D} {α : F => M F∘ p} → (σ α ◂ p) ∘nt eta ≡ α
-    σ-uniq : {M : Functor C′ D} {α : F => M F∘ p} {σ′ : L => M}
-           → α ≡ (σ′ ◂ p) ∘nt eta
-           → σ α ≡ σ′
+    σ : {M : Functor C' D} (α : F => M F∘ p) → L => M
+    σ-comm : {M : Functor C' D} {α : F => M F∘ p} → (σ α ◂ p) ∘nt eta ≡ α
+    σ-uniq : {M : Functor C' D} {α : F => M F∘ p} {σ' : L => M}
+           → α ≡ (σ' ◂ p) ∘nt eta
+           → σ α ≡ σ'
 
   σ-uniq₂
-    : {M : Functor C′ D} (α : F => M F∘ p) {σ₁′ σ₂′ : L => M}
-    → α ≡ (σ₁′ ◂ p) ∘nt eta
-    → α ≡ (σ₂′ ◂ p) ∘nt eta
-    → σ₁′ ≡ σ₂′
+    : {M : Functor C' D} (α : F => M F∘ p) {σ₁' σ₂' : L => M}
+    → α ≡ (σ₁' ◂ p) ∘nt eta
+    → α ≡ (σ₂' ◂ p) ∘nt eta
+    → σ₁' ≡ σ₂'
   σ-uniq₂ β p q = sym (σ-uniq p) ∙ σ-uniq q
 
   σ-uniqp
-    : ∀ {M₁ M₂ : Functor C′ D}
+    : ∀ {M₁ M₂ : Functor C' D}
     → {α₁ : F => M₁ F∘ p} {α₂ : F => M₂ F∘ p}
     → (q : M₁ ≡ M₂)
     → PathP (λ i → F => q i F∘ p) α₁ α₂
@@ -140,9 +140,9 @@ that $\eta$ does for $\Lan_p F$), the 2-cell exists and is unique.
 We also provide a bundled form of this data.
 
 ```agda
-record Lan (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
+record Lan (p : Functor C C') (F : Functor C D) : Type (kan-lvl p F) where
   field
-    Ext     : Functor C′ D
+    Ext     : Functor C' D
     eta     : F => Ext F∘ p
     has-lan : is-lan p F Ext eta
 
@@ -180,31 +180,31 @@ their commutativity.
 
 ```agda
 record is-ran
-  (p : Functor C C′) (F : Functor C D) (Ext : Functor C′ D)
+  (p : Functor C C') (F : Functor C D) (Ext : Functor C' D)
   (eps : Ext F∘ p => F)
   : Type (kan-lvl p F) where
   no-eta-equality
 
   field
-    σ : {M : Functor C′ D} (α : M F∘ p => F) → M => Ext
-    σ-comm : {M : Functor C′ D} {β : M F∘ p => F} → eps ∘nt (σ β ◂ p) ≡ β
-    σ-uniq : {M : Functor C′ D} {β : M F∘ p => F} {σ′ : M => Ext}
-           → β ≡ eps ∘nt (σ′ ◂ p)
-           → σ β ≡ σ′
+    σ : {M : Functor C' D} (α : M F∘ p => F) → M => Ext
+    σ-comm : {M : Functor C' D} {β : M F∘ p => F} → eps ∘nt (σ β ◂ p) ≡ β
+    σ-uniq : {M : Functor C' D} {β : M F∘ p => F} {σ' : M => Ext}
+           → β ≡ eps ∘nt (σ' ◂ p)
+           → σ β ≡ σ'
 
   open _=>_ eps renaming (η to ε)
 
   σ-uniq₂
-    : {M : Functor C′ D} (β : M F∘ p => F) {σ₁′ σ₂′ : M => Ext}
-    → β ≡ eps ∘nt (σ₁′ ◂ p)
-    → β ≡ eps ∘nt (σ₂′ ◂ p)
-    → σ₁′ ≡ σ₂′
+    : {M : Functor C' D} (β : M F∘ p => F) {σ₁' σ₂' : M => Ext}
+    → β ≡ eps ∘nt (σ₁' ◂ p)
+    → β ≡ eps ∘nt (σ₂' ◂ p)
+    → σ₁' ≡ σ₂'
   σ-uniq₂ β p q = sym (σ-uniq p) ∙ σ-uniq q
 
-record Ran (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
+record Ran (p : Functor C C') (F : Functor C D) : Type (kan-lvl p F) where
   no-eta-equality
   field
-    Ext     : Functor C′ D
+    Ext     : Functor C' D
     eps     : Ext F∘ p => F
     has-ran : is-ran p F Ext eps
 
@@ -215,7 +215,7 @@ record Ran (p : Functor C C′) (F : Functor C D) : Type (kan-lvl p F) where
 <!--
 ```agda
 is-lan-is-prop
-  : {p : Functor C C′} {F : Functor C D} {G : Functor C′ D} {eta : F => G F∘ p}
+  : {p : Functor C C'} {F : Functor C D} {G : Functor C' D} {eta : F => G F∘ p}
   → is-prop (is-lan p F G eta)
 is-lan-is-prop {p = p} {F} {G} {eta} a b = path where
   private
@@ -238,7 +238,7 @@ is-lan-is-prop {p = p} {F} {G} {eta} a b = path where
       i
 
 is-ran-is-prop
-  : {p : Functor C C′} {F : Functor C D} {G : Functor C′ D} {eps : G F∘ p => F}
+  : {p : Functor C C'} {F : Functor C D} {G : Functor C' D} {eps : G F∘ p => F}
   → is-prop (is-ran p F G eps)
 is-ran-is-prop {p = p} {F} {G} {eps} a b = path where
   private
@@ -288,7 +288,7 @@ universal! If this diagram _is_ a left Kan extension, we say that $H$
 <!--
 ```agda
 module _
-  {p : Functor C C′} {F : Functor C D} {G : Functor C′ D} {eta : F => G F∘ p} where
+  {p : Functor C C'} {F : Functor C D} {G : Functor C' D} {eta : F => G F∘ p} where
 ```
 -->
 
@@ -328,7 +328,7 @@ if $G, \eta$ is a also a left extension of $F$ along $p$.
 <!--
 ```agda
 module _
-  {p : Functor C C′} {F : Functor C D} {G : Functor C′ D} {eps : G F∘ p => F} where
+  {p : Functor C C'} {F : Functor C D} {G : Functor C' D} {eps : G F∘ p => F} where
 ```
 -->
 
@@ -354,7 +354,7 @@ We can define dual notions for right Kan extensions as well.
 <!--
 ```agda
 to-lan
-  : ∀ {p : Functor C C′} {F : Functor C D} {L : Functor C′ D} {eta : F => L F∘ p}
+  : ∀ {p : Functor C C'} {F : Functor C D} {L : Functor C' D} {eta : F => L F∘ p}
   → is-lan p F L eta
   → Lan p F
 to-lan {L = L} lan .Lan.Ext = L

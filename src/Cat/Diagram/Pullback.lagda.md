@@ -7,7 +7,7 @@ import Cat.Reasoning
 -->
 
 ```agda
-module Cat.Diagram.Pullback {ℓ ℓ′} (C : Precategory ℓ ℓ′) where
+module Cat.Diagram.Pullback {ℓ ℓ'} (C : Precategory ℓ ℓ') where
 ```
 
 # Pullbacks {defines=pullback}
@@ -16,7 +16,7 @@ module Cat.Diagram.Pullback {ℓ ℓ′} (C : Precategory ℓ ℓ′) where
 ```agda
 open Cat.Reasoning C
 private variable
-  P′ X Y Z : Ob
+  P' X Y Z : Ob
   h p₁' p₂' : Hom X Y
 ```
 -->
@@ -29,7 +29,7 @@ $x$; Hence the pullback is also called the **fibred product**.
 
 ```agda
 record is-pullback {P} (p₁ : Hom P X) (f : Hom X Z) (p₂ : Hom P Y) (g : Hom Y Z)
-  : Type (ℓ ⊔ ℓ′) where
+  : Type (ℓ ⊔ ℓ') where
 
   no-eta-equality
   field
@@ -57,18 +57,18 @@ overall square has to commute.
 ~~~
 
 ```agda
-    universal : ∀ {P′} {p₁' : Hom P′ X} {p₂' : Hom P′ Y}
-             → f ∘ p₁' ≡ g ∘ p₂' → Hom P′ P
+    universal : ∀ {P'} {p₁' : Hom P' X} {p₂' : Hom P' Y}
+             → f ∘ p₁' ≡ g ∘ p₂' → Hom P' P
     p₁∘universal : {p : f ∘ p₁' ≡ g ∘ p₂'} → p₁ ∘ universal p ≡ p₁'
     p₂∘universal : {p : f ∘ p₁' ≡ g ∘ p₂'} → p₂ ∘ universal p ≡ p₂'
 
-    unique : {p : f ∘ p₁' ≡ g ∘ p₂'} {lim' : Hom P′ P}
+    unique : {p : f ∘ p₁' ≡ g ∘ p₂'} {lim' : Hom P' P}
            → p₁ ∘ lim' ≡ p₁'
            → p₂ ∘ lim' ≡ p₂'
            → lim' ≡ universal p
 
   unique₂
-    : {p : f ∘ p₁' ≡ g ∘ p₂'} {lim' lim'' : Hom P′ P}
+    : {p : f ∘ p₁' ≡ g ∘ p₂'} {lim' lim'' : Hom P' P}
     → p₁ ∘ lim' ≡ p₁' → p₂ ∘ lim' ≡ p₂'
     → p₁ ∘ lim'' ≡ p₁' → p₂ ∘ lim'' ≡ p₂'
     → lim' ≡ lim''
@@ -114,7 +114,7 @@ We provide a convenient packaging of the pullback and the projection
 maps:
 
 ```agda
-record Pullback {X Y Z} (f : Hom X Z) (g : Hom Y Z) : Type (ℓ ⊔ ℓ′) where
+record Pullback {X Y Z} (f : Hom X Z) (g : Hom Y Z) : Type (ℓ ⊔ ℓ') where
   no-eta-equality
   field
     {apex} : Ob
@@ -164,7 +164,7 @@ then so does `f⁺`, for any pullback of `f`.
 
 ```agda
 is-pullback-stable
-  : ∀ {ℓ′} → (∀ {a b} → Hom a b → Type ℓ′) → Type _
+  : ∀ {ℓ'} → (∀ {a b} → Hom a b → Type ℓ') → Type _
 is-pullback-stable P =
   ∀ {p A B X} (f : Hom A B) (g : Hom X B) {f⁺ : Hom p X} {p2}
   → P f → is-pullback f⁺ g p2 f → P f⁺

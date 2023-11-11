@@ -588,13 +588,13 @@ diff a b +ℤ diff c d = diff (a + c) (b + d)
 diff x y +ℤ quot m n i =
   (quot (x + m) (y + n) ∙ sym (ap₂ diff (+-sucr x m) (+-sucr y n))) i
 quot m n i +ℤ diff x y = quot (m + x) (n + y) i
-quot m n i +ℤ quot m′ n′ j =
+quot m n i +ℤ quot m' n' j =
   is-set→squarep (λ i j → hlevel 2)
-    (λ j → quot (m + m′) (n + n′) j)
-    (quot (m + m′) (n + n′) ∙ sym (ap₂ diff (+-sucr m m′) (+-sucr n n′)))
-    ( quot (suc (m + m′)) (suc (n + n′))
-    ∙ sym (ap₂ diff (ap suc (+-sucr m m′)) (ap suc (+-sucr n n′))))
-    (λ j → quot (m + suc m′) (n + suc n′) j)
+    (λ j → quot (m + m') (n + n') j)
+    (quot (m + m') (n + n') ∙ sym (ap₂ diff (+-sucr m m') (+-sucr n n')))
+    ( quot (suc (m + m')) (suc (n + n'))
+    ∙ sym (ap₂ diff (ap suc (+-sucr m m')) (ap suc (+-sucr n n'))))
+    (λ j → quot (m + suc m') (n + suc n') j)
     i j
 ```
 

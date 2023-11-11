@@ -68,32 +68,32 @@ $$
 
 <!--
 ```agda
-module _ {ℓ′} (S : Module R ℓ′) where
+module _ {ℓ'} (S : Module R ℓ') where
   private
     module S = Module-on (S .snd)
-    G′ = Module-on→Group-on (S .snd)
+    G' = Module-on→Group-on (S .snd)
 
   ∑-distr : ∀ {n} r (f : Fin n → ⌞ S ⌟)
-          → r S.⋆ ∑ G′ f
-          ≡ ∑ G′ λ i → r S.⋆ f i
+          → r S.⋆ ∑ G' f
+          ≡ ∑ G' λ i → r S.⋆ f i
   ∑-distr {n = zero} r f = S.⋆-idr
   ∑-distr {n = suc n} r f =
-    r S.⋆ (f fzero S.+ ∑ G′ (λ e → f (fsuc e)))            ≡⟨ S.⋆-distribl r (f fzero) _ ⟩
-    (r S.⋆ f fzero) S.+ ⌜ r S.⋆ ∑ G′ (λ e → f (fsuc e)) ⌝  ≡⟨ ap! (∑-distr {n} r (λ e → f (fsuc e))) ⟩
-    (r S.⋆ f fzero) S.+ ∑ G′ (λ i → r S.⋆ f (fsuc i))      ∎
+    r S.⋆ (f fzero S.+ ∑ G' (λ e → f (fsuc e)))            ≡⟨ S.⋆-distribl r (f fzero) _ ⟩
+    (r S.⋆ f fzero) S.+ ⌜ r S.⋆ ∑ G' (λ e → f (fsuc e)) ⌝  ≡⟨ ap! (∑-distr {n} r (λ e → f (fsuc e))) ⟩
+    (r S.⋆ f fzero) S.+ ∑ G' (λ i → r S.⋆ f (fsuc i))      ∎
 ```
 -->
 
 ```agda
   linear-extension : ∀ {n} → (Fin n → ⌞ S ⌟)
                    → Linear-map (Fin-vec-module n) S
-  linear-extension fun .map x = ∑ G′ λ i → x i S.⋆ fun i
+  linear-extension fun .map x = ∑ G' λ i → x i S.⋆ fun i
   linear-extension fun .lin .linear r m n =
-    ∑ G′ (λ i → (r R.* m i R.+ n i) S.⋆ fun i)                            ≡⟨ ap (∑ G′)  (funext λ i → S.⋆-distribr (r R.* m i) (n i) (fun i)) ⟩
-    ∑ G′ (λ i → (r R.* m i) S.⋆ fun i S.+ n i S.⋆ fun i)                  ≡⟨ ∑-split (Module-on→Abelian-group-on (S .snd)) (λ i → (r R.* m i) S.⋆ fun i) _ ⟩
-    ⌜ ∑ G′ (λ i → (r R.* m i) S.⋆ fun i) ⌝ S.+ ∑ G′ (λ i → n i S.⋆ fun i) ≡⟨ ap! (ap (∑ G′) (funext λ i → sym (S.⋆-assoc r (m i) _))) ⟩
-    ⌜ ∑ G′ (λ i → r S.⋆ m i S.⋆ fun i) ⌝ S.+ ∑ G′ (λ i → n i S.⋆ fun i)   ≡˘⟨ ap¡ (∑-distr r λ i → m i S.⋆ fun i) ⟩
-    (r S.⋆ ∑ G′ (λ i → m i S.⋆ fun i) S.+ ∑ G′ λ i → n i S.⋆ fun i)       ∎
+    ∑ G' (λ i → (r R.* m i R.+ n i) S.⋆ fun i)                            ≡⟨ ap (∑ G')  (funext λ i → S.⋆-distribr (r R.* m i) (n i) (fun i)) ⟩
+    ∑ G' (λ i → (r R.* m i) S.⋆ fun i S.+ n i S.⋆ fun i)                  ≡⟨ ∑-split (Module-on→Abelian-group-on (S .snd)) (λ i → (r R.* m i) S.⋆ fun i) _ ⟩
+    ⌜ ∑ G' (λ i → (r R.* m i) S.⋆ fun i) ⌝ S.+ ∑ G' (λ i → n i S.⋆ fun i) ≡⟨ ap! (ap (∑ G') (funext λ i → sym (S.⋆-assoc r (m i) _))) ⟩
+    ⌜ ∑ G' (λ i → r S.⋆ m i S.⋆ fun i) ⌝ S.+ ∑ G' (λ i → n i S.⋆ fun i)   ≡˘⟨ ap¡ (∑-distr r λ i → m i S.⋆ fun i) ⟩
+    (r S.⋆ ∑ G' (λ i → m i S.⋆ fun i) S.+ ∑ G' λ i → n i S.⋆ fun i)       ∎
 ```
 
 ## As products
@@ -117,7 +117,7 @@ Fin-vec-is-product {n} .has-is-ip .tuple {Y} f = assemble where
   assemble : R-Mod.Hom Y (Fin-vec-module n)
   assemble .hom yob ix = f ix # yob
   assemble .preserves .linear r m n = funext λ i → f i .preserves .linear _ _ _
-Fin-vec-is-product .has-is-ip .commute = Homomorphism-path λ _ → refl
+Fin-vec-is-product .has-is-ip .commute = trivial!
 Fin-vec-is-product .has-is-ip .unique {h = h} f ps =
-  Homomorphism-path λ i → funext λ ix → ap hom (ps ix) $ₚ i
+  ext λ i ix → ap hom (ps ix) $ₚ i
 ```

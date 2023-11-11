@@ -50,8 +50,8 @@ only the Kan extensions that _are_ preserved by arbitrary
 <!--
 ```agda
 module _
-  {o o′ o″ ℓ ℓ′ ℓ″}
-  {C : Precategory o ℓ} {C' : Precategory o′ ℓ′} {D : Precategory o″ ℓ″}
+  {o o' o'' ℓ ℓ' ℓ''}
+  {C : Precategory o ℓ} {C' : Precategory o' ℓ'} {D : Precategory o'' ℓ''}
   {F : Functor C C'} {G : Functor C D} {E : Functor C' D}
   where
 
@@ -100,8 +100,8 @@ preserved by *all* functors.
 <!--
 ```agda
 module _
-  {o o′ ℓ ℓ′}
-  {J : Precategory o′ ℓ′} {C : Precategory o ℓ}
+  {o o' ℓ ℓ'}
+  {J : Precategory o' ℓ'} {C : Precategory o ℓ}
   {Dia : Functor J C} {x : Precategory.Ob C}
   where
 
@@ -143,8 +143,8 @@ $\Lan_F(G)$ exists _and_ is pointwise.
 <!--
 ```agda
 module _
-  {o o′ ℓ ℓ′}
-  {C : Precategory ℓ ℓ} {C' : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  {o o' ℓ ℓ'}
+  {C : Precategory ℓ ℓ} {C' : Precategory o ℓ} {D : Precategory o' ℓ'}
   (F : Functor C C') (G : Functor C D)
   where
 
@@ -204,9 +204,9 @@ complicated, and universality of colimits guarantees the functoriality
 constraints are satisfied.
 
 ```agda
-      F′ : Functor C' D
-      F′ .F₀ c' = ↓colim.coapex c'
-      F′ .F₁ f = ↓colim.universal _
+      F' : Functor C' D
+      F' .F₀ c' = ↓colim.coapex c'
+      F' .F₁ f = ↓colim.universal _
         (λ j → ↓colim.ψ _ (↓obj (f C'.∘ j .map)))
         (λ f → ↓colim.commutes _ (↓hom {β = f .β} (C'.pullr (f .sq)
             ·· C'.elim-inner refl
@@ -214,11 +214,11 @@ constraints are satisfied.
 ```
 <!--
 ```agda
-      F′ .F-id =
+      F' .F-id =
         sym $ ↓colim.unique _ _ _ _ λ j →
           D.idl _
           ∙ ap (↓colim.ψ _) (↓Obj-path _ _ refl refl (sym (C'.idl _)))
-      F′ .F-∘ f g =
+      F' .F-∘ f g =
         sym $ ↓colim.unique _ _ _ _ λ j →
           D.pullr (↓colim.factors _ _ _)
           ∙ ↓colim.factors _ _ _
@@ -233,7 +233,7 @@ looking for maps $G(x) \to F'(F(x))$. Since each $F'(-)$ is a colimit,
 we can use the coprojections!
 
 ```agda
-      eta : G => F′ F∘ F
+      eta : G => F' F∘ F
       eta .η c = ↓colim.ψ (F .F₀ c) (↓obj C'.id)
 ```
 
@@ -254,7 +254,7 @@ transformation $F' \to M$? By "matching" on the colimit, with a slight
 adjustment to $\alpha$:
 
 ```agda
-      has-lan : is-lan F G F′ eta
+      has-lan : is-lan F G F' eta
       has-lan .σ {M = M} α .η c' = ↓colim.universal c'
         (λ j → M .F₁ (j .map) D.∘ α .η (j .x))
         (λ f → D.pullr (α .is-natural _ _ _)
@@ -276,12 +276,12 @@ properties of colimits.
 ```agda
       has-lan .σ-comm {M = M} = Nat-path λ c →
         ↓colim.factors _ _ _ ∙ D.eliml (M .F-id)
-      has-lan .σ-uniq {M = M} {α = α} {σ′ = σ′} p = Nat-path λ c' →
+      has-lan .σ-uniq {M = M} {α = α} {σ' = σ'} p = Nat-path λ c' →
         sym $ ↓colim.unique _ _ _ _ λ j →
-          σ′ .η c' D.∘ ↓colim.ψ c' j                                ≡⟨ ap (λ ϕ → σ′ .η c' D.∘ ↓colim.ψ c' ϕ) (↓Obj-path _ _ refl refl (sym (C'.idr _))) ⟩
-          (σ′ .η c' D.∘ ↓colim.ψ c' (↓obj (j .map C'.∘ C'.id)))     ≡⟨ D.pushr (sym $ ↓colim.factors _ _ _) ⟩
-          (σ′ .η c' D.∘ ↓colim.universal _ _ _) D.∘ ↓colim.ψ _ _    ≡⟨ D.pushl (σ′ .is-natural _ _ _) ⟩
-          M .F₁ (j .map) D.∘ (σ′ .η _ D.∘ ↓colim.ψ _ (↓obj C'.id))  ≡˘⟨ (D.refl⟩∘⟨ (p ηₚ j .x)) ⟩
+          σ' .η c' D.∘ ↓colim.ψ c' j                                ≡⟨ ap (λ ϕ → σ' .η c' D.∘ ↓colim.ψ c' ϕ) (↓Obj-path _ _ refl refl (sym (C'.idr _))) ⟩
+          (σ' .η c' D.∘ ↓colim.ψ c' (↓obj (j .map C'.∘ C'.id)))     ≡⟨ D.pushr (sym $ ↓colim.factors _ _ _) ⟩
+          (σ' .η c' D.∘ ↓colim.universal _ _ _) D.∘ ↓colim.ψ _ _    ≡⟨ D.pushl (σ' .is-natural _ _ _) ⟩
+          M .F₁ (j .map) D.∘ (σ' .η _ D.∘ ↓colim.ψ _ (↓obj C'.id))  ≡˘⟨ (D.refl⟩∘⟨ (p ηₚ j .x)) ⟩
           M .F₁ (j .map) D.∘ α .η (j .x)                            ∎
 ```
 
@@ -289,7 +289,7 @@ All that remains is to bundle up the data!
 
 ```agda
       lan : Lan F G
-      lan .Lan.Ext = F′
+      lan .Lan.Ext = F'
       lan .Lan.eta = eta
       lan .Lan.has-lan = has-lan
 ```
@@ -311,8 +311,8 @@ from" colimits.
 <!--
 ```agda
 module _
-  {o o′ ℓ ℓ′}
-  {C : Precategory ℓ ℓ} {C' : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  {o o' ℓ ℓ'}
+  {C : Precategory ℓ ℓ} {C' : Precategory o ℓ} {D : Precategory o' ℓ'}
   (F : Functor C C') (G : Functor C D)
   where
 
@@ -336,13 +336,13 @@ end up being off by a bunch of natural isomorphisms.
 
 ```agda
   preserves-colimits→preserves-pointwise-lan
-    : ∀ {o″ ℓ″} {E : Precategory o″ ℓ″}
+    : ∀ {o'' ℓ''} {E : Precategory o'' ℓ''}
     → (colimits : is-cocomplete ℓ ℓ D)
     → (H : Functor D E)
     → is-cocontinuous ℓ ℓ H
     → preserves-lan H (Lan.has-lan (cocomplete→lan F G colimits))
   preserves-colimits→preserves-pointwise-lan {E = E} colimits H cocont =
-    natural-isos→is-lan idni idni HF′-cohere fixup $
+    natural-isos→is-lan idni idni HF'-cohere fixup $
       comma-colimits→lan.has-lan F (H F∘ G) H-↓colim
     where
       module E = Cat.Reasoning E
@@ -370,15 +370,15 @@ up not being very interesting.
 </summary>
 
 ```agda
-      F′ : Functor C' D
-      F′ = comma-colimits→lan.F′ F G λ c' → colimits (G F∘ Dom F (Const c'))
+      F' : Functor C' D
+      F' = comma-colimits→lan.F' F G λ c' → colimits (G F∘ Dom F (Const c'))
 
-      HF′ : Functor C' E
-      HF′ = comma-colimits→lan.F′ F (H F∘ G) H-↓colim
+      HF' : Functor C' E
+      HF' = comma-colimits→lan.F' F (H F∘ G) H-↓colim
 
-      HF′-cohere : HF′ ≅ⁿ H F∘ F′
-      HF′-cohere = to-natural-iso mi where
-        mi : make-natural-iso HF′ (H F∘ F′)
+      HF'-cohere : HF' ≅ⁿ H F∘ F'
+      HF'-cohere = to-natural-iso mi where
+        mi : make-natural-iso HF' (H F∘ F')
         mi .eta c' = E.id
         mi .inv c' = E.id
         mi .eta∘inv _ = E.idl _
@@ -388,10 +388,10 @@ up not being very interesting.
           ∙ H-↓colim.unique _ _ _ _ (λ j → pulll H (↓colim.factors _ _ _))
           ∙ sym (E.idl _)
 
-      module HF′-cohere = Isoⁿ HF′-cohere
+      module HF'-cohere = Isoⁿ HF'-cohere
 
       abstract
-        fixup : (HF′-cohere.to ◆ idnt) ∘nt comma-colimits→lan.eta F (H F∘ G) _ ∘nt idnt ≡ nat-assoc-to (H ▸ comma-colimits→lan.eta F G _)
+        fixup : (HF'-cohere.to ◆ idnt) ∘nt comma-colimits→lan.eta F (H F∘ G) _ ∘nt idnt ≡ nat-assoc-to (H ▸ comma-colimits→lan.eta F G _)
         fixup = Nat-path λ j →
           (H .F₁ (↓colim.universal _ _ _)  E.∘ E.id) E.∘ (H-↓colim.ψ _ _ E.∘ E.id) ≡⟨ ap₂ E._∘_ (E.idr _) (E.idr _) ⟩
           H .F₁ (↓colim.universal _ _ _) E.∘ H-↓colim.ψ _ _                        ≡⟨ pulll H (↓colim.factors _ _ _) ⟩
@@ -507,8 +507,8 @@ the usual Yoneda-like argument.
       inv .η d α =
         pointwise-↓cocone d α .η c' C'.id
       inv .is-natural x y f = funext λ α →
-        pointwise.σ-uniq y {σ′ = pointwise-↓cocone x α ∘nt (_=>_.op (よ₁ D f) ◂ L)}
-          (Nat-path λ c → funext λ g → D.pushr (sym (pointwise.σ-comm x ηₚ _ $ₚ _))) ηₚ c' $ₚ C'.id
+        pointwise.σ-uniq y {σ' = pointwise-↓cocone x α ∘nt (_=>_.op (よ₁ D f) ◂ L)}
+          (ext λ c g → D.pushr (sym (pointwise.σ-comm x ηₚ _ $ₚ _))) ηₚ c' $ₚ C'.id
 ```
 
 <details>
@@ -519,7 +519,7 @@ _pointwise_, and remember that we're working with a Kan extension.
 
 ```agda
       invl : Hom-into-inj (↓cocone c') ∘nt inv ≡ idnt
-      invl = Nat-path λ d → funext λ α → Nat-path λ p↓c' →
+      invl = ext λ d α p↓c' →
         pointwise-↓cocone d α .η _ C'.id D.∘ L .Functor.F₁ (p↓c' .map) D.∘ eta .η _ ≡⟨ D.pulll (pointwise.σ d (represent-↓cocone d α) .is-natural _ _ _ $ₚ _) ⟩
         pointwise-↓cocone d α .η _ ⌜ C'.id C'.∘ p↓c' .map ⌝ D.∘ eta .η _            ≡⟨ ap! (C'.idl _) ⟩
         pointwise-↓cocone d α .η _ (p↓c' .map) D.∘ eta .η (x p↓c')                  ≡⟨ pointwise.σ-comm d ηₚ _ $ₚ p↓c' .map ⟩
@@ -535,8 +535,8 @@ _pointwise_, and remember that we're working with a Kan extension.
 
       invr : inv ∘nt Hom-into-inj (↓cocone c') ≡ idnt
       invr = Nat-path λ d → funext λ α →
-        pointwise.σ-uniq d {σ′ = vaguely-yoneda α}
-          (Nat-path λ c → funext λ f → D.assoc _ _ _) ηₚ c' $ₚ C'.id
+        pointwise.σ-uniq d {σ' = vaguely-yoneda α}
+          (ext λ c f → D.assoc _ _ _) ηₚ c' $ₚ C'.id
         ∙ D.elimr (L .F-id)
 ```
 </details>
@@ -591,8 +591,8 @@ construct the requisite cocone.
           (λ {x} {y} f → collapse F (fully-faithful→faithful {F = p} p-ff (path f)))
 
 module _
-  {o o′ ℓ ℓ′}
-  {C : Precategory ℓ ℓ} {C' : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  {o o' ℓ ℓ'}
+  {C : Precategory ℓ ℓ} {C' : Precategory o ℓ} {D : Precategory o' ℓ'}
   (F : Functor C C') (G : Functor C D)
   where
 
@@ -617,7 +617,7 @@ module _
     open make-natural-iso renaming (eta to to)
     module ff {x} {y} = Equiv (_ , ff {x} {y})
 
-    ni : make-natural-iso G (F′ F∘ F)
+    ni : make-natural-iso G (F' F∘ F)
     ni .to x = ↓colim.ψ _ (↓obj C'.id)
     ni .inv x = ↓colim.universal _
       (λ j → G .F₁ (ff.from (j .map)))

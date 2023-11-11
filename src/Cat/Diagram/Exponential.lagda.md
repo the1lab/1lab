@@ -4,9 +4,9 @@ open import Cat.Functor.Adjoint.Hom
 open import Cat.Instances.Product
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
-open import Cat.Instances.Slice
-open import Cat.Functor.Adjoint
 open import Cat.Diagram.Product
+open import Cat.Functor.Adjoint
+open import Cat.Instances.Slice
 open import Cat.Prelude
 
 import Cat.Functor.Bifunctor as Bifunctor
@@ -60,9 +60,9 @@ record is-exponential (B^A : Ob) (ev : Hom (B^A ⊗₀ A) B) : Type (o ⊔ ℓ) 
   field
     ƛ        : ∀ {Γ} (m : Hom (Γ ⊗₀ A) B) → Hom Γ B^A
     commutes : ∀ {Γ} (m : Hom (Γ ⊗₀ A) B) → ev ∘ ƛ m ⊗₁ id ≡ m
-    unique   : ∀ {Γ} {m : Hom (Γ ⊗₀ _) _} m′
-             → ev ∘ m′ ⊗₁ id ≡ m
-             → m′ ≡ ƛ m
+    unique   : ∀ {Γ} {m : Hom (Γ ⊗₀ _) _} m'
+             → ev ∘ m' ⊗₁ id ≡ m
+             → m' ≡ ƛ m
 ```
 
 The data above is an unpacked way of saying that the evaluation map
@@ -131,8 +131,8 @@ module _ where
     q i .ƛ = p i
     q i .commutes m =
       is-prop→pathp (λ i → Hom-set _ _ (ev ∘ p i m ⊗₁ id) m) (x .commutes m) (y .commutes m) i
-    q i .unique {m = m} m′ q =
-      is-prop→pathp (λ i → Hom-set _ _ m′ (p i m)) (x .unique m′ q) (y .unique m′ q) i
+    q i .unique {m = m} m' q =
+      is-prop→pathp (λ i → Hom-set _ _ m' (p i m)) (x .unique m' q) (y .unique m' q) i
 ```
 -->
 
@@ -172,18 +172,18 @@ closed category" to "CCC".
 <!--
 ```agda
   exponential-unique
-    : ∀ {A B B^A B^A′} {ev : Hom (B^A ⊗₀ A) B} {ev′ : Hom (B^A′ ⊗₀ A) B}
+    : ∀ {A B B^A B^A'} {ev : Hom (B^A ⊗₀ A) B} {ev' : Hom (B^A' ⊗₀ A) B}
     → is-exponential B^A ev
-    → is-exponential B^A′ ev′
-    → B^A ≅ B^A′
-  exponential-unique {ev = ev} {ev′} exp1 exp2 =
-    make-iso (exp2 .ƛ ev) (exp1 .ƛ ev′)
-      (unique₂ exp2 (exp2 .ƛ ev ∘ exp1 .ƛ ev′) id
-        (  ap (ev′ ∘_) (ap₂ _⊗₁_ refl (sym (idl id)) ∙ ×-functor .F-∘ _ _)
+    → is-exponential B^A' ev'
+    → B^A ≅ B^A'
+  exponential-unique {ev = ev} {ev'} exp1 exp2 =
+    make-iso (exp2 .ƛ ev) (exp1 .ƛ ev')
+      (unique₂ exp2 (exp2 .ƛ ev ∘ exp1 .ƛ ev') id
+        (  ap (ev' ∘_) (ap₂ _⊗₁_ refl (sym (idl id)) ∙ ×-functor .F-∘ _ _)
         ·· pulll (exp2 .commutes _)
         ·· exp1 .commutes _)
         (elimr (×-functor .F-id)))
-      (unique₂ exp1 (exp1 .ƛ ev′ ∘ exp2 .ƛ ev) id
+      (unique₂ exp1 (exp1 .ƛ ev' ∘ exp2 .ƛ ev) id
         (  ap (ev ∘_) (ap₂ _⊗₁_ refl (sym (idl id)) ∙ ×-functor .F-∘ _ _)
         ·· pulll (exp1 .commutes _)
         ·· exp2 .commutes _)
@@ -286,7 +286,7 @@ product-adjoint→cartesian-closed A→ adj = cc where
   exp A B .ev = adj A .counit.ε B
   exp A B .has-is-exp .ƛ          = L-adjunct (adj A)
   exp A B .has-is-exp .commutes m = R-L-adjunct (adj A) m
-  exp A B .has-is-exp .unique m′ x = sym $
+  exp A B .has-is-exp .unique m' x = sym $
     Equiv.injective₂ (_ , R-adjunct-is-equiv (adj A))
       (R-L-adjunct (adj A) _) x
 
@@ -454,7 +454,7 @@ $\Delta_B \dashv \Pi_B$ we've been chasing.
         Σ (Hom X (-^B .F₀ (f .domain))) (λ h → ƛ (f .map ∘ ev) ∘ h ≡ ƛ π₂ ∘ !)
           ≃⟨ Σ-ap (Equiv.inverse (ƛ , lambda-is-equiv _)) (coh₁ f) ⟩
         Σ (Hom (X ⊗₀ B) (f .domain)) (λ h → f .map ∘ h ≡ π₂)
-          ≃⟨ Iso→Equiv ((λ x → record { commutes = x .snd }) , iso (λ x → _ , x .commutes) (λ _ → /-Hom-path refl) (λ _ → refl)) ⟩
+          ≃⟨ Iso→Equiv ((λ x → record { commutes = x .snd }) , iso (λ x → _ , x .commutes) (λ _ → trivial!) (λ _ → trivial!)) ⟩
         Slice C B .Precategory.Hom (b.₀ X) f
           ≃∎
 
@@ -463,7 +463,7 @@ $\Delta_B \dashv \Pi_B$ we've been chasing.
       rem₁-β f h = refl
 
     nat : hom-iso-inv-natural {L = constant-family fp} {R = exponentiable→product pb} (rem₁ _ .fst)
-    nat g h x = /-Hom-path $
+    nat g h x = ext $
      rem₁ _ .fst (Π.₁ g ∘ x ∘ h) .map                           ≡⟨ rem₁-β _ _ ⟩
      app (pb _ _ .p₁ ∘ Π.₁ g ∘ x ∘ h)                           ≡⟨ ap app (pulll (pb _ _ .p₁∘universal ∙ ƛ-∘ {f = g .map} {g = pb _ _ .p₁} (has-is-exp _))) ⟩
      app (ƛ (g .map ∘ ev ∘ pb _ _ .p₁ ⊗₁ id) ∘ x ∘ h)           ≡⟨ ap₂ _∘_ refl (ap₂ _⊗₁_ refl (sym (idl id)) ∙ ×-functor .F-∘ _ _) ∙ pulll refl ⟩

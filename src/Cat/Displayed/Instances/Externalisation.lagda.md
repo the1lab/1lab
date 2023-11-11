@@ -81,8 +81,8 @@ issues aren't too hard to work around.
 ```agda
   disp .Hom[_] u x y = Homi x (y ∘ u)
   disp .Hom[_]-set _ _ _ = Internal-hom-set
-  disp .id′ = adjusti refl (sym (idr _)) (idi _)
-  disp ._∘′_ {f = u} {g = v} f g = adjusti refl (sym (assoc _ _ _)) (f [ v ] ∘i g)
+  disp .id' = adjusti refl (sym (idr _)) (idi _)
+  disp ._∘'_ {f = u} {g = v} f g = adjusti refl (sym (assoc _ _ _)) (f [ v ] ∘i g)
 ```
 
 <details>
@@ -91,17 +91,17 @@ fairly nasty. Associativity is especially bad.
 </summary>
 
 ```agda
-  disp .idr′ f =
+  disp .idr' f =
     Internal-hom-pathp refl (ap (_ ∘_) (idr _)) $
       (f [ id ] ∘i adjusti _ _ (idi _)) .ihom ≡⟨ ∘i-ihom refl (idr _) (idr _) (idr _) refl ⟩
       (f ∘i idi _) .ihom                      ≡⟨ ap ihom (idri _) ⟩
       f .ihom ∎
-  disp .idl′ {f = u} f =
+  disp .idl' {f = u} f =
     Internal-hom-pathp refl (ap (_ ∘_) (idl _)) $
       (adjusti _ _ (idi _) [ u ] ∘i f) .ihom ≡⟨ ∘i-ihom refl refl (ap (_∘ _) (idr _)) (ap ihom (idi-nat u)) refl ⟩
       (idi _ ∘i f) .ihom                     ≡⟨ ap ihom (idli _) ⟩
       f .ihom                                ∎
-  disp .assoc′ {w = a} {b} {c} {d} {f = u} {g = v} {h = w} f g h =
+  disp .assoc' {w = a} {b} {c} {d} {f = u} {g = v} {h = w} f g h =
     Internal-hom-pathp refl (ap (_ ∘_) (assoc _ _ _)) $
     (f [ v ∘ w ] ∘i adjusti _ _ (g [ w ] ∘i h)) .ihom ≡⟨ ∘i-ihom refl refl refl refl (∘i-ihom refl refl (sym (assoc _ _ _)) g-path refl) ⟩
     (f [ v ∘ w ] ∘i g' ∘i h) .ihom                    ≡⟨ ap ihom (associ _ _ _) ⟩
@@ -146,21 +146,21 @@ internal-iso→cartesian {Γ} {Δ} {u} {x} {y} f f-inv = cart where
   open f-inv using (invi)
 
   cart : is-cartesian _ _ _
-  cart .universal {u′ = u′} m h′ =
-    invi [ m ] ∘i adjusti refl (assoc y u m) h′
-  cart .commutes {u′ = u′} m h′ =
+  cart .universal {u' = u'} m h' =
+    invi [ m ] ∘i adjusti refl (assoc y u m) h'
+  cart .commutes {u' = u'} m h' =
     Internal-hom-path $
     (f [ m ] ∘i invi [ m ] ∘i _) .ihom      ≡⟨ ap ihom (pullli (sym (∘i-nat f invi m))) ⟩
     (⌜ f ∘i invi ⌝ [ m ] ∘i _) .ihom        ≡⟨ ap! f-inv.invli ⟩
     (⌜ idi _ [ m ] ⌝ ∘i _) .ihom            ≡⟨ ap! (idi-nat m) ⟩
     (idi _ ∘i _) .ihom                      ≡⟨ ap ihom (idli _) ⟩
-    h′ .ihom                                ∎
-  cart .unique {u′ = u′} {m = m} {h′ = h′} m′ p =
+    h' .ihom                                ∎
+  cart .unique {u' = u'} {m = m} {h' = h'} m' p =
     Internal-hom-path $
-    m′ .ihom                                ≡⟨ ap ihom (introli (Internal-hom-path (ap ihom (idi-nat m)))) ⟩
-    (⌜ idi _ [ m ] ⌝ ∘i m′) .ihom           ≡⟨ ap! (ap (λ e → e [ m ]) (sym (f-inv.invri)) ∙ ∘i-nat _ _ _) ⟩
-    ((invi [ m ] ∘i f [ m ]) ∘i m′) .ihom   ≡⟨ ap ihom (pullri (Internal-hom-path (ap ihom p))) ⟩
-    (invi [ m ] ∘i adjusti _ _ h′) .ihom    ∎
+    m' .ihom                                ≡⟨ ap ihom (introli (Internal-hom-path (ap ihom (idi-nat m)))) ⟩
+    (⌜ idi _ [ m ] ⌝ ∘i m') .ihom           ≡⟨ ap! (ap (λ e → e [ m ]) (sym (f-inv.invri)) ∙ ∘i-nat _ _ _) ⟩
+    ((invi [ m ] ∘i f [ m ]) ∘i m') .ihom   ≡⟨ ap ihom (pullri (Internal-hom-path (ap ihom p))) ⟩
+    (invi [ m ] ∘i adjusti _ _ h') .ihom    ∎
 ```
 
 The reverse direction also mirrors the corresponding construction for
@@ -234,21 +234,21 @@ Externalisation-fibration .Cartesian-fibration.has-lift u y = cart-lift where
   open Cartesian-lift
 
   cart-lift : Cartesian-lift Externalise u y
-  cart-lift .x′ = y ∘ u
+  cart-lift .x' = y ∘ u
   cart-lift .lifting = idi _
-  cart-lift .cartesian .is-cartesian.universal m h′ =
-    adjusti refl (assoc _ _ _) h′
-  cart-lift .cartesian .is-cartesian.commutes m h′ =
+  cart-lift .cartesian .is-cartesian.universal m h' =
+    adjusti refl (assoc _ _ _) h'
+  cart-lift .cartesian .is-cartesian.commutes m h' =
     Internal-hom-path $
       (⌜ idi _ [ m ] ⌝ ∘i _) .ihom ≡⟨ ap! (idi-nat m) ⟩
       (idi _ ∘i _) .ihom           ≡⟨ ap ihom (idli _) ⟩
-      h′ .ihom ∎
-  cart-lift .cartesian .is-cartesian.unique {m = m} {h′ = h′} m′ p =
+      h' .ihom ∎
+  cart-lift .cartesian .is-cartesian.unique {m = m} {h' = h'} m' p =
     Internal-hom-path $
-      m′ .ihom                  ≡˘⟨ ap ihom (idli _) ⟩
-      (⌜ idi _ ⌝ ∘i m′) .ihom   ≡⟨ ap! (sym (idi-nat m)) ⟩
-      (idi _ [ m ] ∘i m′) .ihom ≡⟨ ap ihom p ⟩
-      h′ .ihom                  ∎
+      m' .ihom                  ≡˘⟨ ap ihom (idli _) ⟩
+      (⌜ idi _ ⌝ ∘i m') .ihom   ≡⟨ ap! (sym (idi-nat m)) ⟩
+      (idi _ [ m ] ∘i m') .ihom ≡⟨ ap ihom p ⟩
+      h' .ihom                  ∎
 ```
 
 ## Generic objects
@@ -272,7 +272,7 @@ Externalisation-globally-small = small where
   small .U = C₀
   small .Gen = id
   small .has-generic-ob .classify x = x
-  small .has-generic-ob .classify′ x =
+  small .has-generic-ob .classify' x =
     adjusti refl (sym (idl _)) (idi _)
 ```
 
@@ -283,19 +283,19 @@ some tedious calculations.
 </summary>
 
 ```agda
-  small .has-generic-ob .classify-cartesian x′ .universal m h′ =
-    adjusti refl (idl _) h′
-  small .has-generic-ob .classify-cartesian x′ .commutes m h′ =
+  small .has-generic-ob .classify-cartesian x' .universal m h' =
+    adjusti refl (idl _) h'
+  small .has-generic-ob .classify-cartesian x' .commutes m h' =
     Internal-hom-path $
       ∘i-ihom refl
         (sym (idl _))
         (sym (assoc _ _ _))
         (ap ihom (idi-nat _) ∙ ap (λ ϕ → idi ϕ .ihom) (sym (idl _)))
         refl
-      ∙ ap ihom (idli h′)
-  small .has-generic-ob .classify-cartesian x′ .unique {m = m} m′ p =
+      ∙ ap ihom (idli h')
+  small .has-generic-ob .classify-cartesian x' .unique {m = m} m' p =
     Internal-hom-path $
-      sym (ap ihom (idli m′))
+      sym (ap ihom (idli m'))
       ·· ∘i-ihom refl refl (ap (_∘ m) (sym (idl _))) (sym (ap ihom (idi-nat m))) refl
       ·· ap ihom p
 ```

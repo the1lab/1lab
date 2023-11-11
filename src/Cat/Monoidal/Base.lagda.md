@@ -192,7 +192,7 @@ a choice of _monoidal category_, $\rm{Endo}_\bicat{B}(a)$.
 
 ```agda
 Endomorphisms
-  : ∀ {o ℓ ℓ′} (B : Prebicategory o ℓ ℓ′)
+  : ∀ {o ℓ ℓ'} (B : Prebicategory o ℓ ℓ')
   → (a : Prebicategory.Ob B)
   → Monoidal-category (Prebicategory.Hom B a a)
 Endomorphisms B a = mon where

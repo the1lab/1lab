@@ -53,11 +53,11 @@ because we can work with them very directly.
 
 ```agda
 record
-  Thin-structure {ℓ o′} ℓ′ (S : Type ℓ → Type o′)
-    : Type (lsuc ℓ ⊔ o′ ⊔ lsuc ℓ′) where
+  Thin-structure {ℓ o'} ℓ' (S : Type ℓ → Type o')
+    : Type (lsuc ℓ ⊔ o' ⊔ lsuc ℓ') where
   no-eta-equality
   field
-    is-hom    : ∀ {x y} → (x → y) → S x → S y → Prop ℓ′
+    is-hom    : ∀ {x y} → (x → y) → S x → S y → Prop ℓ'
     id-is-hom : ∀ {x} {s : S x} → ∣ is-hom (λ x → x) s s ∣
 
     ∘-is-hom  :
@@ -72,23 +72,23 @@ record
 open Thin-structure public
 
 module _
-  {ℓ o′ ℓ′} {S : Type ℓ → Type o′}
-  (spec : Thin-structure ℓ′ S) where
+  {ℓ o' ℓ'} {S : Type ℓ → Type o'}
+  (spec : Thin-structure ℓ' S) where
 ```
 
 The data above conspires to make a category displayed over $\cB$. The
 laws are trivial since $H$ is valued in propositions.
 
 ```agda
-  Thin-structure-over : Displayed (Sets ℓ) o′ ℓ′
+  Thin-structure-over : Displayed (Sets ℓ) o' ℓ'
   Thin-structure-over .Ob[_] x = S ∣ x ∣
   Thin-structure-over .Hom[_] f x y = ∣ spec .is-hom f x y ∣
   Thin-structure-over .Hom[_]-set f a b = is-prop→is-set hlevel!
-  Thin-structure-over .id′ = spec .id-is-hom
-  Thin-structure-over ._∘′_ f g = spec .∘-is-hom _ _ f g
-  Thin-structure-over .idr′ f′ = is-prop→pathp (λ _ → hlevel!) _ _
-  Thin-structure-over .idl′ f′ = is-prop→pathp (λ _ → hlevel!) _ _
-  Thin-structure-over .assoc′ f′ g′ h′ = is-prop→pathp (λ _ → hlevel!) _ _
+  Thin-structure-over .id' = spec .id-is-hom
+  Thin-structure-over ._∘'_ f g = spec .∘-is-hom _ _ f g
+  Thin-structure-over .idr' f' = is-prop→pathp (λ _ → hlevel!) _ _
+  Thin-structure-over .idl' f' = is-prop→pathp (λ _ → hlevel!) _ _
+  Thin-structure-over .assoc' f' g' h' = is-prop→pathp (λ _ → hlevel!) _ _
 
   Structured-objects : Precategory _ _
   Structured-objects = ∫ Thin-structure-over
@@ -108,8 +108,8 @@ the type of $H$-homomorphic $\cB$-isomorphisms.
       is-category-fibrewise _ Sets-is-category λ A x y →
       Σ-prop-path
         (λ _ _ _ → ≅[]-path _ (spec .is-hom _ _ _ .is-tr _ _))
-        ( spec .id-hom-unique (x .snd .from′) (x .snd .to′)
-        ∙ spec .id-hom-unique (y .snd .to′) (y .snd .from′))
+        ( spec .id-hom-unique (x .snd .from') (x .snd .to')
+        ∙ spec .id-hom-unique (y .snd .to') (y .snd .from'))
 ```
 
 By construction, such a category of structured objects admits a
@@ -123,16 +123,24 @@ By construction, such a category of structured objects admits a
   Structured-hom-path p =
     total-hom-path Thin-structure-over p (is-prop→pathp (λ _ → hlevel!) _ _)
 
-module _ {ℓ o′ ℓ′} {S : Type ℓ → Type o′} {spec : Thin-structure ℓ′ S} where
+module _ {ℓ o' ℓ'} {S : Type ℓ → Type o'} {spec : Thin-structure ℓ' S} where
   private
     module So = Precategory (Structured-objects spec)
     module Som = Cat.Morphism (Structured-objects spec)
 
+  Extensional-Hom
+    : ∀ {a b ℓr} ⦃ sa : Extensional (⌞ a ⌟ → ⌞ b ⌟) ℓr ⦄
+    → Extensional (So.Hom a b) ℓr
+  Extensional-Hom ⦃ sa ⦄ = injection→extensional!
+    (Structured-hom-path spec) sa
+
   instance
+    extensionality-hom : ∀ {a b} → Extensionality (So.Hom a b)
+    extensionality-hom = record { lemma = quote Extensional-Hom }
+
     Funlike-Hom : Funlike So.Hom
     Funlike-Hom = record
       { _#_ = Total-hom.hom
-      ; ext = λ p → Structured-hom-path spec (funext p)
       }
 
   Homomorphism-path
@@ -147,7 +155,7 @@ module _ {ℓ o′ ℓ′} {S : Type ℓ → Type o′} {spec : Thin-structure �
     → Som.is-monic f
   Homomorphism-monic f wit g h p = Homomorphism-path λ x → wit (ap hom p $ₚ x)
 
-record is-equational {ℓ o′ ℓ′} {S : Type ℓ → Type o′} (spec : Thin-structure ℓ′ S) : Type (lsuc ℓ ⊔ o′ ⊔ ℓ′) where
+record is-equational {ℓ o' ℓ'} {S : Type ℓ → Type o'} (spec : Thin-structure ℓ' S) : Type (lsuc ℓ ⊔ o' ⊔ ℓ') where
   field
     invert-id-hom : ∀ {x} {s t : S x} → ∣ spec .is-hom (λ x → x) s t ∣ → ∣ spec .is-hom (λ x → x) t s ∣
 
@@ -166,9 +174,7 @@ record is-equational {ℓ o′ ℓ′} {S : Type ℓ → Type o′} (spec : Thin
         (λ st pres → to-pathp (ap (λ e → subst S e (a .snd)) ua-id-equiv
                   ·· transport-refl _
                   ·· spec .id-hom-unique pres (invert-id-hom pres)))
-        (f .hom , eqv)
-        (b .snd)
-        (f .preserves)
+        (f .hom , eqv) (b .snd) (f .preserves)
 
 open is-equational public
 ```
@@ -176,10 +182,10 @@ open is-equational public
 <!--
 ```agda
 Full-substructure
-  : ∀ {ℓ o′} ℓ′ (R S : Type ℓ → Type o′)
+  : ∀ {ℓ o'} ℓ' (R S : Type ℓ → Type o')
   → (∀ X → R X ↪ S X)
-  → Thin-structure ℓ′ S
-  → Thin-structure ℓ′ R
+  → Thin-structure ℓ' S
+  → Thin-structure ℓ' R
 Full-substructure _ R S embed Sst .is-hom f x y =
   Sst .is-hom f (embed _ .fst x) (embed _ .fst y)
 Full-substructure _ R S embed Sst .id-is-hom = Sst .id-is-hom

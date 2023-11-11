@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
@@ -37,8 +38,8 @@ This extends to a functor from $\Sets$ into the category of posets.
 DiscF : ∀ {ℓ} → Functor (Sets ℓ) (Posets ℓ ℓ)
 DiscF .Functor.F₀ = Disc
 DiscF .Functor.F₁ f = total-hom f (λ _ _ p → ap f p)
-DiscF .Functor.F-id = total-hom-path _ refl refl
-DiscF .Functor.F-∘ f g = total-hom-path _ refl refl
+DiscF .Functor.F-id = trivial!
+DiscF .Functor.F-∘ f g = trivial!
 ```
 
 Furthermore, this functor is a [[left adjoint]] to the forgetful functor
@@ -50,13 +51,8 @@ DiscF⊣Forget ._⊣_.unit ._=>_.η A x = x
 DiscF⊣Forget ._⊣_.unit ._=>_.is-natural _ _ _ = refl
 DiscF⊣Forget ._⊣_.counit ._=>_.η P =
   total-hom (λ x → x) (λ _ _ → Poset.path→≤ P)
-DiscF⊣Forget ._⊣_.counit ._=>_.is-natural P Q f =
-  total-hom-path _ refl
-    (funext λ _ → funext λ _ → funext λ _ → Poset.≤-thin Q _ _)
-DiscF⊣Forget ._⊣_.zig {A = A} =
-  total-hom-path _ refl $
-  funext λ x → funext λ y → funext λ p →
-  J (λ y p → transport (λ i → p (~ i) ≡ y) refl ≡ p) (transport-refl _) p
+DiscF⊣Forget ._⊣_.counit ._=>_.is-natural P Q f = trivial!
+DiscF⊣Forget ._⊣_.zig {A = A} = trivial!
 DiscF⊣Forget ._⊣_.zag = refl
 ```
 

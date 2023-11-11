@@ -19,7 +19,7 @@ open import Prim.Data.Maybe public
 <!--
 ```agda
 private variable
-  ℓ ℓ′ : Level
+  ℓ ℓ' : Level
   A B C : Type ℓ
 ```
 -->

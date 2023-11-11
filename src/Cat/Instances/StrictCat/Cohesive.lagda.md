@@ -70,14 +70,14 @@ We begin by defining the object set functor.
 Γ .F-∘ _ _ = refl
 ```
 
-We must then prove that the assignment `Disc′`{.Agda} extends to a
+We must then prove that the assignment `Disc'`{.Agda} extends to a
 functor from `Sets`{.Agda}, and prove that it's left adjoint to the
 functor `Γ`{.Agda} we defined above. Then we define the adjunction
 `Disc⊣Γ`{.Agda}.
 
 ```agda
 Disc : Functor (Sets ℓ) (Strict-cats ℓ ℓ)
-Disc .F₀ S = Disc′ S , S .is-tr
+Disc .F₀ S = Disc' S , S .is-tr
 Disc .F₁ = lift-disc
 Disc .F-id = Functor-path (λ x → refl) λ f → refl
 Disc .F-∘ _ _ = Functor-path (λ x → refl) λ f → refl
@@ -96,7 +96,7 @@ Disc⊣Γ = adj where
             (subst (A .fst .Precategory.Hom _) f (A .fst .Precategory.id))
             (subst (A .fst .Precategory.Hom _) g (A .fst .Precategory.id))
     lemma {A = A} {x = x} =
-      J′ (λ y z f → (g : x ≡ y) → subst (X.Hom _) (g ∙ f) X.id
+      J' (λ y z f → (g : x ≡ y) → subst (X.Hom _) (g ∙ f) X.id
                   ≡ subst (X.Hom _) f X.id X.∘ subst (X.Hom _) g X.id)
         λ x g → (subst-∙ (X.Hom _) g refl _ ·· transport-refl _ ·· sym (X.idl _))
               ∙ ap₂ X._∘_ (sym (transport-refl _)) refl
@@ -123,7 +123,7 @@ identity map suffices.
 ```agda
   adj .counit = NT (λ x → F x) nat where
     F : (x : Precategory.Ob (Strict-cats ℓ ℓ))
-      → Functor (Disc′ (el _ (x .snd))) _
+      → Functor (Disc' (el _ (x .snd))) _
     F X .F₀ x = x
     F X .F₁ p = subst (X .fst .Hom _) p (X .fst .id) {- 1 -}
     F X .F-id = transport-refl _
@@ -138,7 +138,7 @@ identity map suffices.
           → (F y F∘ F₁ (Disc F∘ Γ) f) ≡ (f F∘ F x)
       nat x y f =
         Functor-path (λ x → refl)
-           (J′ (λ x y p → subst (Y.Hom _) (ap (F₀ f) p) Y.id
+           (J' (λ x y p → subst (Y.Hom _) (ap (F₀ f) p) Y.id
                         ≡ F₁ f (subst (X.Hom _) p X.id))
                λ _ → transport-refl _
                   ·· sym (F-id f)
@@ -166,7 +166,7 @@ trivial.
 
 ```agda
 Codisc : Functor (Sets ℓ) (Strict-cats ℓ ℓ)
-Codisc .F₀ S = Codisc′ ∣ S ∣ , S .is-tr
+Codisc .F₀ S = Codisc' ∣ S ∣ , S .is-tr
 
 Codisc .F₁ f .F₀ = f
 Codisc .F₁ f .F₁ = λ _ → lift tt
@@ -214,7 +214,7 @@ module _ {ℓ} where
 
   GlobalSections : Functor (Strict-cats ℓ ℓ) (Sets ℓ)
   GlobalSections .F₀ C =
-    el (Functor (Codisc′ (Lift _ ⊤)) (C .fst)) (Functor-is-set (C .snd))
+    el (Functor (Codisc' (Lift _ ⊤)) (C .fst)) (Functor-is-set (C .snd))
   GlobalSections .F₁ G F = G F∘ F
   GlobalSections .F-id = funext λ _ → Functor-path (λ _ → refl) λ _ → refl
   GlobalSections .F-∘ f g = funext λ _ → Functor-path (λ _ → refl) λ _ → refl
@@ -255,10 +255,10 @@ using our path helpers: `Nat-path`{.Agda}, `funext`{.Agda}, and
     g .is-natural x y f = refl
 
     f∘g : f ∘nt g ≡ idnt
-    f∘g = Nat-path λ c → funext λ x → Functor-path (λ x → refl) λ f → sym (F-id x)
+    f∘g = ext λ c x → Functor-path (λ x → refl) λ f → sym (F-id x)
 
     g∘f : g ∘nt f ≡ idnt
-    g∘f = Nat-path λ _ i x → x
+    g∘f = trivial!
 ```
 
 # Connected components

@@ -85,5 +85,16 @@ in
       inherit deps shakefile;
       texlive = our-texlive;
       ghc = our-ghc;
+
+      sort-imports = let
+        script = builtins.readFile support/sort-imports.hs;
+        # Extract the list of dependencies from the stack shebang comment.
+        deps = lib.concatLists (lib.filter (x: x != null)
+          (map (builtins.match ".*--package +([^[:space:]]*).*")
+            (lib.splitString "\n" script)));
+      in pkgs.writers.writeHaskellBin "sort-imports" {
+        ghc = pkgs.labHaskellPackages.ghc;
+        libraries = lib.attrVals deps pkgs.labHaskellPackages;
+      } script;
     };
   }

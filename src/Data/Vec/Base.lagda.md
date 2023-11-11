@@ -27,7 +27,7 @@ data Vec {ℓ} (A : Type ℓ) : Nat → Type ℓ where
   _∷_ : ∀ {n} → A → Vec A n → Vec A (suc n)
 
 Vec-elim
-  : ∀ {ℓ ℓ′} {A : Type ℓ} (P : ∀ {n} → Vec A n → Type ℓ′)
+  : ∀ {ℓ ℓ'} {A : Type ℓ} (P : ∀ {n} → Vec A n → Type ℓ')
   → P []
   → (∀ {n} x (xs : Vec A n) → P xs → P (x ∷ xs))
   → ∀ {n} (xs : Vec A n) → P xs
@@ -64,11 +64,11 @@ Vec-cast {A = A} {x = x} {y = y} p xs =
 lookup-safe : Vec A n → Fin n → A
 lookup-safe {A = A} xs n =
   Fin-elim (λ {n} _ → Vec A n → A)
-    (λ {k} xs → Vec-elim (λ {k′} _ → suc k ≡ k′ → A)
+    (λ {k} xs → Vec-elim (λ {k'} _ → suc k ≡ k' → A)
       (λ p → absurd (zero≠suc (sym p)))
       (λ x _ _ _ → x) xs refl)
     (λ {i} j cont vec →
-      Vec-elim (λ {k′} xs → suc i ≡ k′ → A)
+      Vec-elim (λ {k'} xs → suc i ≡ k' → A)
         (λ p → absurd (zero≠suc (sym p)))
         (λ {n} head tail _ si=sn → cont (Vec-cast (suc-inj (sym si=sn)) tail)) vec refl)
     n xs

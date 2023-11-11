@@ -13,9 +13,9 @@ import Cat.Reasoning
 
 ```agda
 module Cat.Displayed.Univalence
-  {o ℓ o′ ℓ′}
+  {o ℓ o' ℓ'}
   {B : Precategory o ℓ}
-  (E : Displayed B o′ ℓ′)
+  (E : Displayed B o' ℓ')
   where
 ```
 
@@ -64,9 +64,9 @@ module _ (base-c : is-category B) (disp-c : is-category-displayed) where
       : ∀ {x y} (p : x B.≅ y) {A : Ob[ x ]} {B : Ob[ y ]} (f : A ≅[ p ] B)
       → (x , A) ∫E.≅ (y , B)
     piece-together p f =
-      ∫E.make-iso (total-hom (p .B.to) (f .to′)) (total-hom (p .B.from) (f .from′))
-        (total-hom-path E (p .B.invl) (f .invl′))
-        (total-hom-path E (p .B.invr) (f .invr′))
+      ∫E.make-iso (total-hom (p .B.to) (f .to')) (total-hom (p .B.from) (f .from'))
+        (total-hom-path E (p .B.invl) (f .invl'))
+        (total-hom-path E (p .B.invr) (f .invr'))
 ```
 
 We first tackle the case where $f : A \cong B$ is vertical, i.e. $A$ and
@@ -82,7 +82,7 @@ looks like the identity (vertical) isomorphism.
           ((x , B) , piece-together B.id-iso f)
     contract-vertical-iso {x} {A} B f =
       Σ-pathp (λ i → x , pair i .fst)
-        (∫E.≅-pathp refl _ (total-hom-pathp E _ _ refl λ i → pair i .snd .to′))
+        (∫E.≅-pathp refl _ (total-hom-pathp E _ _ refl λ i → pair i .snd .to'))
       where
         pair = disp-c B.id-iso A
           (A , id-iso↓)
@@ -139,21 +139,21 @@ since a vertical isomorphism is no more than an isomorphism in a
 particular fibre category.
 
 ```agda
-is-category-fibrewise′
+is-category-fibrewise'
   : is-category B
   → (∀ x → is-category (Fibre E x))
   → is-category-displayed
-is-category-fibrewise′ b wit = is-category-fibrewise b wit′ where
-  wit′ : ∀ {x} (A : Ob[ x ]) → is-prop (Σ[ B ∈ Ob[ x ] ] (A ≅↓ B))
-  wit′ {x} A =
+is-category-fibrewise' b wit = is-category-fibrewise b wit' where
+  wit' : ∀ {x} (A : Ob[ x ]) → is-prop (Σ[ B ∈ Ob[ x ] ] (A ≅↓ B))
+  wit' {x} A =
     is-contr→is-prop $ retract→is-contr
       (λ (x , i) → x , make-iso[ B.id-iso ]
         (i .F.to)
         (i .F.from)
         (to-pathp (i .F.invl))
         (to-pathp (i .F.invr)))
-      (λ (x , i) → x , F.make-iso (i .to′) (i .from′)
-        (from-pathp (i .invl′)) (from-pathp (i .invr′)))
+      (λ (x , i) → x , F.make-iso (i .to') (i .from')
+        (from-pathp (i .invl')) (from-pathp (i .invr')))
       (λ (x , i) → Σ-pathp refl (≅[]-path refl))
       (is-contr-ΣR (wit x))
     where module F = Cat.Reasoning (Fibre E x)

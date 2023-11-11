@@ -17,8 +17,8 @@ import Cat.Morphism as Mor
 
 ```agda
 module Cat.Displayed.Cartesian.Indexing
-  {o ℓ o′ ℓ′} {B : Precategory o ℓ}
-  (E : Displayed B o′ ℓ′)
+  {o ℓ o' ℓ'} {B : Precategory o ℓ}
+  (E : Displayed B o' ℓ')
   (cartesian : Cartesian-fibration E)
   where
 ```
@@ -52,7 +52,7 @@ along $f$.
 ```agda
 module _ {𝒶 𝒷} (f : Hom 𝒶 𝒷) where
   base-change : Functor (Fibre E 𝒷) (Fibre E 𝒶)
-  base-change .F₀ ob = has-lift f ob .x′
+  base-change .F₀ ob = has-lift f ob .x'
   base-change .F₁ {x} {y} vert = rebase f vert
 ```
 
@@ -60,9 +60,9 @@ module _ {𝒶 𝒷} (f : Hom 𝒶 𝒷) where
 ```agda
   base-change .F-id {x} =
     sym $ has-lift.uniquep f x _ _ _ _ $
-      idr′ _ ∙[] symP (idl′ _)
+      idr' _ ∙[] symP (idl' _)
 
-  base-change .F-∘ {x} {y} {z} f′ g′ =
+  base-change .F-∘ {x} {y} {z} f' g' =
     sym $ has-lift.uniquep f z _ _ _ _ $
       Fib.pulllf (has-lift.commutesp f z id-comm _)
       ∙[] pullr[] _ (has-lift.commutesp f y id-comm _)
@@ -90,11 +90,11 @@ of heart. </summary>
     open make-natural-iso
     mi : make-natural-iso (base-change id) Id
     mi .eta x = has-lift.lifting id x
-    mi .inv x = has-lift.universalv id x id′
+    mi .inv x = has-lift.universalv id x id'
     mi .eta∘inv x = cancel _ _ (has-lift.commutesv _ _ _)
     mi .inv∘eta x = sym $
       has-lift.uniquep₂ id x _ _ _ _ _
-        (idr′ _)
+        (idr' _)
         (Fib.cancellf (has-lift.commutesv _ _ _))
     mi .natural x y f =
       sym $ from-pathp $ cast[] $
@@ -126,7 +126,7 @@ properties and I recommend that nobody look at it, ever. </summary>.
     mi .eta x =
       has-lift.universalv g _ $ has-lift.universal f x g (has-lift.lifting (f ∘ g) x)
     mi .inv x =
-      has-lift.universalv (f ∘ g) x (has-lift.lifting f _ ∘′ has-lift.lifting g _)
+      has-lift.universalv (f ∘ g) x (has-lift.lifting f _ ∘' has-lift.lifting g _)
     mi .eta∘inv x =
       has-lift.uniquep₂ _ _ _ _ _ _ _
         (Fib.pulllf (has-lift.commutesv g _ _)
@@ -134,14 +134,14 @@ properties and I recommend that nobody look at it, ever. </summary>.
            (pulll[] _ (has-lift.commutes _ _ _ _)
             ∙[] has-lift.commutesv _ _ _)
            refl)
-        (idr′ _)
+        (idr' _)
     mi .inv∘eta x =
       has-lift.uniquep₂ _ _ _ _ _ _ _
         (Fib.pulllf (has-lift.commutesv _ _ _)
          ∙[] pullr[] _ (has-lift.commutesv _ _ _)
          ∙[] has-lift.commutes _ _ _ _)
-        (idr′ _)
-    mi .natural x y f′ =
+        (idr' _)
+    mi .natural x y f' =
       ap hom[] $ cartesian→weak-monic E (has-lift.cartesian g _) _ _ $ cast[] $
         pulll[] _ (has-lift.commutesp g _ id-comm _)
         ∙[] pullr[] _ (has-lift.commutesv g _ _)
@@ -162,33 +162,33 @@ opaque
     : ∀ {Γ Δ Θ Ψ : Ob}
     → {σ : Hom Γ Δ} {δ : Hom Γ Θ} {γ : Hom Δ Ψ} {τ : Hom Θ Ψ}
     → γ ∘ σ ≡ τ ∘ δ
-    → ∀ x′ → Hom[ id ]
-      (base-change σ .F₀ (base-change γ .F₀ x′))
-      (base-change δ .F₀ (base-change τ .F₀ x′))
-  base-change-square {σ = σ} {δ = δ} {γ = γ} {τ = τ} p x′ =
+    → ∀ x' → Hom[ id ]
+      (base-change σ .F₀ (base-change γ .F₀ x'))
+      (base-change δ .F₀ (base-change τ .F₀ x'))
+  base-change-square {σ = σ} {δ = δ} {γ = γ} {τ = τ} p x' =
     has-lift.universalv δ _ $
-    has-lift.universal′ τ _ (sym p) $
-    has-lift.lifting γ x′ ∘′ has-lift.lifting σ _
+    has-lift.universal' τ _ (sym p) $
+    has-lift.lifting γ x' ∘' has-lift.lifting σ _
 
   base-change-square-lifting
     : ∀ {Γ Δ Θ Ψ : Ob}
     → {σ : Hom Γ Δ} {δ : Hom Γ Θ} {γ : Hom Δ Ψ} {τ : Hom Θ Ψ}
-    → (p : γ ∘ σ ≡ τ ∘ δ) (x′ : Ob[ Ψ ])
-    → has-lift.lifting τ x′ ∘′ has-lift.lifting δ (base-change τ .F₀ x′) ∘′ base-change-square p x′
-    ≡[ ap (τ ∘_) (idr _) ∙ sym p ] has-lift.lifting γ x′ ∘′ has-lift.lifting σ _
-  base-change-square-lifting {σ = σ} {δ = δ} {γ = γ} {τ = τ} p x′ =
+    → (p : γ ∘ σ ≡ τ ∘ δ) (x' : Ob[ Ψ ])
+    → has-lift.lifting τ x' ∘' has-lift.lifting δ (base-change τ .F₀ x') ∘' base-change-square p x'
+    ≡[ ap (τ ∘_) (idr _) ∙ sym p ] has-lift.lifting γ x' ∘' has-lift.lifting σ _
+  base-change-square-lifting {σ = σ} {δ = δ} {γ = γ} {τ = τ} p x' =
     cast[] $
-    apd (λ _ → has-lift.lifting τ x′ ∘′_) (has-lift.commutesv _ _ _)
-    ∙[] has-lift.commutesp τ x′ (sym p) _
+    apd (λ _ → has-lift.lifting τ x' ∘'_) (has-lift.commutesv _ _ _)
+    ∙[] has-lift.commutesp τ x' (sym p) _
 
   base-change-square-natural
     : ∀ {Γ Δ Θ Ψ : Ob}
     → {σ : Hom Γ Δ} {δ : Hom Γ Θ} {γ : Hom Δ Ψ} {τ : Hom Θ Ψ}
     → (p : γ ∘ σ ≡ τ ∘ δ)
-    → ∀ {x′ y′} (f′ : Hom[ id ] x′ y′)
-    → base-change-square p y′ ∘′ base-change σ .F₁ (base-change γ .F₁ f′)
-    ≡ base-change δ .F₁ (base-change τ .F₁ f′) ∘′ base-change-square p x′
-  base-change-square-natural {σ = σ} {δ = δ} {γ = γ} {τ = τ} p f′ =
+    → ∀ {x' y'} (f' : Hom[ id ] x' y')
+    → base-change-square p y' ∘' base-change σ .F₁ (base-change γ .F₁ f')
+    ≡ base-change δ .F₁ (base-change τ .F₁ f') ∘' base-change-square p x'
+  base-change-square-natural {σ = σ} {δ = δ} {γ = γ} {τ = τ} p f' =
     has-lift.uniquep₂ δ _ _ _ _ _ _
       (pulll[] _ (has-lift.commutesv δ _ _)
        ∙[] has-lift.uniquep₂ τ _ _ (idr _) _ _ _
@@ -206,8 +206,8 @@ opaque
     : ∀ {Γ Δ Θ Ψ : Ob}
     → {σ : Hom Γ Δ} {δ : Hom Γ Θ} {γ : Hom Δ Ψ} {τ : Hom Θ Ψ}
     → (p : γ ∘ σ ≡ τ ∘ δ)
-    → ∀ x′ → base-change-square p x′ ∘′ base-change-square (sym p) x′ ≡[ idl _ ] id′
-  base-change-square-inv {σ = σ} {δ = δ} {γ = γ} {τ = τ} p x′ =
+    → ∀ x' → base-change-square p x' ∘' base-change-square (sym p) x' ≡[ idl _ ] id'
+  base-change-square-inv {σ = σ} {δ = δ} {γ = γ} {τ = τ} p x' =
     has-lift.uniquep₂ _ _ _ _ _ _ _
       (pulll[] _ (has-lift.commutesv δ _ _)
        ∙[] has-lift.uniquep₂ τ _ _ (idr _) refl _ _
@@ -215,7 +215,7 @@ opaque
           ∙[] pullr[] _ (has-lift.commutesv σ _ _)
           ∙[] has-lift.commutesp γ _ p _)
          refl)
-      (idr′ _)
+      (idr' _)
 
 base-change-square-ni
   : ∀ {Γ Δ Θ Ψ : Ob}

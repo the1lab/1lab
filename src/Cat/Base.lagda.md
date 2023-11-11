@@ -1,8 +1,10 @@
 <!--
 ```agda
+open import 1Lab.Path.IdentitySystem
 open import 1Lab.Reflection.Record
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
+open import 1Lab.Extensionality
 open import 1Lab.Rewrite
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -145,7 +147,7 @@ We can define the type of *all* morphisms in a precategory as the total space of
 ```
 -->
 
-## Opposites
+## Opposites {defines="opposite-category"}
 
 A common theme throughout precategory theory is that of _duality_: The dual
 of a categorical concept is same concept, with "all the arrows
@@ -314,7 +316,7 @@ C\op \to D\op$.
 
 <!--
 ```agda
-F^op^op≡F : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {F : Functor C D}
+F^op^op≡F : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} {F : Functor C D}
           → Functor.op (Functor.op F) ≡ F
 F^op^op≡F {F = F} i .Functor.F₀ = F .Functor.F₀
 F^op^op≡F {F = F} i .Functor.F₁ = F .Functor.F₁
@@ -323,7 +325,7 @@ F^op^op≡F {F = F} i .Functor.F-∘ = F .Functor.F-∘
 
 private
   functor-double-dual
-    : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} {F : Functor C D}
+    : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} {F : Functor C D}
     → Functor.op (Functor.op F) ≡rw F
   functor-double-dual = make-rewrite F^op^op≡F
 {-# REWRITE functor-double-dual #-}
@@ -482,7 +484,7 @@ Natural transformations also dualize. The opposite of $\eta : F
 {-# INLINE NT #-}
 
 is-natural-transformation
-  : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
   → (F G : Functor C D)
   → (η : ∀ x → D .Precategory.Hom (F .Functor.F₀ x) (G .Functor.F₀ x))
   → Type _
@@ -495,14 +497,14 @@ module _ where
   open Precategory
   open Functor
 
-  Const : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  Const : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
         → Ob D → Functor C D
   Const {D = D} x .F₀ _ = x
   Const {D = D} x .F₁ _ = id D
   Const {D = D} x .F-id = refl
   Const {D = D} x .F-∘ _ _ = sym (idr D _)
 
-  const-nt : ∀ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  const-nt : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
            → {x y : Ob D} → Hom D x y
            → Const {C = C} {D = D} x => Const {C = C} {D = D} y
   const-nt f ._=>_.η _ = f
@@ -575,3 +577,55 @@ is a proposition:
 
   infixl 45 _ηₚ_
 ```
+
+<!--
+```agda
+open Precategory
+open _=>_
+
+{-
+Set-up for using natural transformations with the extensionality tactic;
+See the docs in 1Lab.Extensionality for a more detailed explanation of
+how it works.
+
+This function is the actual worker which computes the preferred
+identity system for natural transformations. Its type asks for
+
+   ∀ x → Extensional (D.Hom (F # x) (G # x))
+
+instead of the more generic ∀ x y → Extensional (D.Hom x y) so that
+any specific *instances* for D.Hom involving the object parts of F and G
+have a chance to fire. E.g. if G is the product functor on Sets then
+(x → y) will only match the funext instance but (x → G # y) will
+match funext *and* product extensionality.
+-}
+Extensional-natural-transformation
+  : ∀ {o ℓ o' ℓ' ℓr} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
+  → {F G : Functor C D}
+  → {@(tactic extensionalᶠ {A = Precategory.Ob C → Type _}
+        (λ x → D .Hom (F .Functor.F₀ x) (G .Functor.F₀ x)))
+      sa : ∀ x → Extensional (D .Hom (F .Functor.F₀ x) (G .Functor.F₀ x)) ℓr}
+  → Extensional (F => G) (o ⊔ ℓr)
+Extensional-natural-transformation {sa = sa} .Pathᵉ f g = ∀ i → Pathᵉ (sa i) (f .η i) (g .η i)
+Extensional-natural-transformation {sa = sa} .reflᵉ x i = reflᵉ (sa i) (x .η i)
+Extensional-natural-transformation {sa = sa} .idsᵉ .to-path x = Nat-path λ i →
+  sa _ .idsᵉ .to-path (x i)
+Extensional-natural-transformation {D = D} {sa = sa} .idsᵉ .to-path-over h =
+  is-prop→pathp
+    (λ i → Π-is-hlevel 1
+      (λ _ → is-hlevel≃ 1 (identity-system-gives-path (sa _ .idsᵉ)) (D .Hom-set _ _ _ _)))
+    _ _
+
+-- Actually define the loop-breaker instance which tells the
+-- extensionality tactic what lemma to use for a type of natural
+-- transformations.
+
+instance
+  extensionality-natural-transformation
+    : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
+        {F G : Functor C D}
+    → Extensionality (F => G)
+  extensionality-natural-transformation = record
+    { lemma = quote Extensional-natural-transformation }
+```
+-->

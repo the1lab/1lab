@@ -18,9 +18,9 @@ import Cat.Reasoning
 
 ```agda
 module Cat.Displayed.Cartesian.Right
-  {o ℓ o′ ℓ′}
+  {o ℓ o' ℓ'}
   {ℬ : Precategory o ℓ}
-  (ℰ : Displayed ℬ o′ ℓ′)
+  (ℰ : Displayed ℬ o' ℓ')
   where
 
 open Cat.Reasoning ℬ
@@ -36,14 +36,14 @@ A [[cartesian fibration]] $\cE$ is said to be a **right fibration** if every
 morphism in $\cE$ is cartesian.
 
 ```agda
-record Right-fibration : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
+record Right-fibration : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
   no-eta-equality
   field
     is-fibration : Cartesian-fibration
     cartesian
       : ∀ {x y} {f : Hom x y}
-      → ∀ {x′ y′} (f′ : Hom[ f ] x′ y′)
-      → is-cartesian f f′
+      → ∀ {x' y'} (f' : Hom[ f ] x' y')
+      → is-cartesian f f'
 
   open Cartesian-fibration is-fibration public
 ```
@@ -56,9 +56,9 @@ fact that vertical cartesian maps are invertible.
 ```agda
 right-fibration→vertical-invertible
   : Right-fibration
-  → ∀ {x} {x′ x″ : Ob[ x ]} → (f′ : Hom[ id ] x′ x″) → is-invertible↓ f′
-right-fibration→vertical-invertible rfib f′ =
-  vertical+cartesian→invertible (Right-fibration.cartesian rfib f′)
+  → ∀ {x} {x' x'' : Ob[ x ]} → (f' : Hom[ id ] x' x'') → is-invertible↓ f'
+right-fibration→vertical-invertible rfib f' =
+  vertical+cartesian→invertible (Right-fibration.cartesian rfib f')
 ```
 
 More notably, this is an exact characterization of categories fibred
@@ -68,14 +68,14 @@ morphisms are invertible, then it must be a right fibration.
 ```agda
 vertical-invertible+fibration→right-fibration
   : Cartesian-fibration
-  → (∀ {x} {x′ x″ : Ob[ x ]} → (f′ : Hom[ id ] x′ x″) → is-invertible↓ f′)
+  → (∀ {x} {x' x'' : Ob[ x ]} → (f' : Hom[ id ] x' x'') → is-invertible↓ f')
   → Right-fibration
 vertical-invertible+fibration→right-fibration fib vert-inv
   .Right-fibration.is-fibration = fib
 vertical-invertible+fibration→right-fibration fib vert-inv
-  .Right-fibration.cartesian {x = x} {f = f} {x′ = x′} {y′ = y′} f′ = f-cart where
+  .Right-fibration.cartesian {x = x} {f = f} {x' = x'} {y' = y'} f' = f-cart where
     open Cartesian-fibration fib
-    open Cartesian-lift renaming (x′ to x-lift)
+    open Cartesian-lift renaming (x' to x-lift)
 ```
 
 To see this, recall that [[cartesian morphisms]] are [stable under
@@ -92,31 +92,31 @@ the fact that $i^{*}$ is invertible.
 
 ```agda
     x* : Ob[ x ]
-    x* = has-lift f y′ .x-lift
+    x* = has-lift f y' .x-lift
 
-    f* : Hom[ f ] x* y′
-    f* = has-lift f y′ .lifting
+    f* : Hom[ f ] x* y'
+    f* = has-lift f y' .lifting
 
-    module f* = is-cartesian (has-lift f y′ .cartesian)
+    module f* = is-cartesian (has-lift f y' .cartesian)
 
-    i* : Hom[ id ] x′ x*
-    i* = f*.universal′ (idr f) f′
+    i* : Hom[ id ] x' x*
+    i* = f*.universal' (idr f) f'
 
     module i*-inv = is-invertible[_] (vert-inv i*)
 
-    i*⁻¹ : Hom[ id ] x* x′
-    i*⁻¹ = i*-inv.inv′
+    i*⁻¹ : Hom[ id ] x* x'
+    i*⁻¹ = i*-inv.inv'
 
-    factors : f′ ∘′ i*⁻¹ ≡[ idr f ] f*
+    factors : f' ∘' i*⁻¹ ≡[ idr f ] f*
     factors = to-pathp⁻ $
-      f′ ∘′ i*⁻¹               ≡⟨ shiftr _ (pushl′ _ (symP $ f*.commutesp (idr f) f′) {q = ap (f ∘_) (sym (idl _))}) ⟩
-      hom[] (f* ∘′ i* ∘′ i*⁻¹) ≡⟨ weave _ (elimr (idl id)) _ (elimr′ _ i*-inv.invl′) ⟩
+      f' ∘' i*⁻¹               ≡⟨ shiftr _ (pushl' _ (symP $ f*.commutesp (idr f) f') {q = ap (f ∘_) (sym (idl _))}) ⟩
+      hom[] (f* ∘' i* ∘' i*⁻¹) ≡⟨ weave _ (elimr (idl id)) _ (elimr' _ i*-inv.invl') ⟩
       hom[] f* ∎
 
-    f-cart : is-cartesian f f′
+    f-cart : is-cartesian f f'
     f-cart = cartesian-vertical-retraction-stable
-      (has-lift f y′ .cartesian)
-      (inverses[]→from-has-section[] i*-inv.inverses′)
+      (has-lift f y' .cartesian)
+      (inverses[]→from-has-section[] i*-inv.inverses')
       factors
 ```
 
@@ -140,18 +140,18 @@ into a right fibration is automatically fibred.
 
 ```agda
 functor+right-fibration→fibred
-  : ∀ {o₂ ℓ₂ o₂′ ℓ₂′}
+  : ∀ {o₂ ℓ₂ o₂' ℓ₂'}
   → {𝒟 : Precategory o₂ ℓ₂}
-  → {ℱ : Displayed 𝒟 o₂′ ℓ₂′}
+  → {ℱ : Displayed 𝒟 o₂' ℓ₂'}
   → {F : Functor 𝒟 ℬ}
   → Right-fibration
-  → (F′ : Displayed-functor ℱ ℰ F)
+  → (F' : Displayed-functor ℱ ℰ F)
   → Fibred-functor ℱ ℰ F
-functor+right-fibration→fibred rfib F′ .Fibred-functor.disp =
-  F′
-functor+right-fibration→fibred rfib F′ .Fibred-functor.F-cartesian f′ _ =
-  Right-fibration.cartesian rfib (F₁′ f′)
-  where open Displayed-functor F′
+functor+right-fibration→fibred rfib F' .Fibred-functor.disp =
+  F'
+functor+right-fibration→fibred rfib F' .Fibred-functor.F-cartesian f' _ =
+  Right-fibration.cartesian rfib (F₁' f')
+  where open Displayed-functor F'
 ```
 
 Specifically, this implies that all displayed functors into a discrete
@@ -160,13 +160,13 @@ when working with functors between discrete fibrations.
 
 ```agda
 functor+discrete→fibred
-  : ∀ {o₂ ℓ₂ o₂′ ℓ₂′}
+  : ∀ {o₂ ℓ₂ o₂' ℓ₂'}
   → {𝒟 : Precategory o₂ ℓ₂}
-  → {ℱ : Displayed 𝒟 o₂′ ℓ₂′}
+  → {ℱ : Displayed 𝒟 o₂' ℓ₂'}
   → {F : Functor 𝒟 ℬ}
   → Discrete-fibration ℰ
-  → (F′ : Displayed-functor ℱ ℰ F)
+  → (F' : Displayed-functor ℱ ℰ F)
   → Fibred-functor ℱ ℰ F
-functor+discrete→fibred disc F′ =
-  functor+right-fibration→fibred (discrete→right-fibration disc) F′
+functor+discrete→fibred disc F' =
+  functor+right-fibration→fibred (discrete→right-fibration disc) F'
 ```

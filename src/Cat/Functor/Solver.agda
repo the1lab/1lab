@@ -10,7 +10,7 @@ import Cat.Reasoning as Cat
 module Cat.Functor.Solver where
 
 
-module NbE {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′} (F : Functor 𝒞 𝒟) where
+module NbE {o h o' h'} {𝒞 : Precategory o h} {𝒟 : Precategory o' h'} (F : Functor 𝒞 𝒟) where
   private
     module 𝒞 = Cat 𝒞
     module 𝒟 = Cat 𝒟
@@ -25,7 +25,7 @@ module NbE {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h�
     ‶id‶  : CExpr A A
     _↑    : 𝒞.Hom A B → CExpr A B
 
-  data DExpr : 𝒟.Ob → 𝒟.Ob → Type (o ⊔ h ⊔ o′ ⊔ h′) where
+  data DExpr : 𝒟.Ob → 𝒟.Ob → Type (o ⊔ h ⊔ o' ⊔ h') where
     ‶F₁‶  : CExpr A B → DExpr (F₀ A) (F₀ B)
     _‶∘‶_ : DExpr Y Z → DExpr X Y → DExpr X Z
     ‶id‶  : DExpr X X
@@ -49,11 +49,11 @@ module NbE {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h�
     vid : CValue A A
     vcomp : 𝒞.Hom B C → CValue A B → CValue A C
 
-  data Frame : 𝒟.Ob → 𝒟.Ob → Type (o ⊔ h ⊔ o′ ⊔ h′) where
+  data Frame : 𝒟.Ob → 𝒟.Ob → Type (o ⊔ h ⊔ o' ⊔ h') where
     vhom : 𝒟.Hom X Y → Frame X Y
     vfmap : 𝒞.Hom A B → Frame (F₀ A) (F₀ B)
 
-  data DValue : 𝒟.Ob → 𝒟.Ob → Type (o ⊔ h ⊔ o′ ⊔ h′) where
+  data DValue : 𝒟.Ob → 𝒟.Ob → Type (o ⊔ h ⊔ o' ⊔ h') where
     vid   : DValue X X
     vcomp : Frame Y Z → DValue X Y → DValue X Z
 
@@ -182,7 +182,7 @@ module Reflection where
   dont-reduce : List Name
   dont-reduce = quote Precategory.id ∷ quote Precategory._∘_ ∷ quote Functor.F₁ ∷ []
 
-  solve-macro : ∀ {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′} → Functor 𝒞 𝒟 → Term → TC ⊤
+  solve-macro : ∀ {o h o' h'} {𝒞 : Precategory o h} {𝒟 : Precategory o' h'} → Functor 𝒞 𝒟 → Term → TC ⊤
   solve-macro functor hole =
    withNormalisation false $
    withReduceDefs (false , dont-reduce) $ do
@@ -196,10 +196,10 @@ module Reflection where
      noConstraints $ unify hole (“solve” functor-tm elhs erhs)
 
 macro
-  functor! : ∀ {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′} → Functor 𝒞 𝒟 → Term → TC ⊤
+  functor! : ∀ {o h o' h'} {𝒞 : Precategory o h} {𝒟 : Precategory o' h'} → Functor 𝒞 𝒟 → Term → TC ⊤
   functor! functor = Reflection.solve-macro functor
 
-private module Test {o h o′ h′} {𝒞 : Precategory o h} {𝒟 : Precategory o′ h′} (F : Functor 𝒞 𝒟) where
+private module Test {o h o' h'} {𝒞 : Precategory o h} {𝒟 : Precategory o' h'} (F : Functor 𝒞 𝒟) where
   module 𝒞 = Cat 𝒞
   module 𝒟 = Cat 𝒟
   open Functor F

@@ -41,15 +41,15 @@ instance
   -- B-structure", so the underlying type is that of A; For Lift, there
   -- is no choice.
   Underlying-Σ
-    : ∀ {ℓ ℓ′} {A : Type ℓ} {B : A → Type ℓ′}
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
     → ⦃ ua : Underlying A ⦄
     → Underlying (Σ A B)
   Underlying-Σ ⦃ ua ⦄ .ℓ-underlying = ua .ℓ-underlying
   Underlying-Σ .⌞_⌟ x               = ⌞ x .fst ⌟
 
   Underlying-Lift
-    : ∀ {ℓ ℓ′} {A : Type ℓ} ⦃ ua : Underlying A ⦄
-    → Underlying (Lift ℓ′ A)
+    : ∀ {ℓ ℓ'} {A : Type ℓ} ⦃ ua : Underlying A ⦄
+    → Underlying (Lift ℓ' A)
   Underlying-Lift ⦃ ua ⦄ .ℓ-underlying = ua .ℓ-underlying
   Underlying-Lift .⌞_⌟ x = ⌞ x .Lift.lower ⌟
 
@@ -65,7 +65,7 @@ from-is-true
 from-is-true prf = subst ⌞_⌟ (sym prf) (hlevel 0 .centre)
 
 -- Generalised "membership" notation.
-_∈_ : ∀ {ℓ ℓ′} {A : Type ℓ} {P : Type ℓ′} ⦃ u : Underlying P ⦄
+_∈_ : ∀ {ℓ ℓ'} {A : Type ℓ} {P : Type ℓ'} ⦃ u : Underlying P ⦄
     → A → (A → P) → Type (u .ℓ-underlying)
 x ∈ P = ⌞ P x ⌟
 
@@ -85,13 +85,8 @@ record
     -- The underlying function (infix).
     _#_ : ∀ {A B} → F A B → ⌞ A ⌟ → ⌞ B ⌟
 
-    -- _#_ must be an injection. Really this should ask for an
-    -- embedding, but the most common use-cases have F valued in sets.
-    ext : ∀ {A B} {f g : F A B} → (∀ x → f # x ≡ g # x) → f ≡ g
-
-open Funlike ⦃ ... ⦄ using ( _#_ ; ext ) public
+open Funlike ⦃ ... ⦄ using (_#_) public
 {-# DISPLAY Funlike._#_ p f x = f # x #-}
-{-# DISPLAY Funlike.ext p q = ext q #-}
 
 -- Sections of the _#_ operator tend to be badly-behaved since they
 -- introduce an argument x : ⌞ ?0 ⌟ whose Underlying instance meta
@@ -117,5 +112,4 @@ instance
     → Funlike {lsuc ℓ} {lsuc ℓ'} {ℓ ⊔ ℓ'} {Type ℓ} {Type ℓ'} λ x y → x → y
   Funlike-Fun = record
     { _#_ = _$_
-    ; ext = funext
     }

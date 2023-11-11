@@ -106,7 +106,7 @@ this inclusion functor is faithful, though it is not full.
   πₜ .F-id = refl
   πₜ .F-∘ f g = refl
 
-module _ {o ℓ o′ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′} where
+module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
   twistᵒᵖ : Functor (C ^op ×ᶜ C) D → Functor (Twisted {C = C ^op} ^op) D
   twistᵒᵖ F .Functor.F₀ ((a , b) , _) = F .Functor.F₀ (a , b)
   twistᵒᵖ F .Functor.F₁ arr = F .Functor.F₁ (Twist.before arr , Twist.after arr)

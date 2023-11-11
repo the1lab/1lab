@@ -120,8 +120,8 @@ vertices, and over that data, an identification between the added edges,
 and a code for an identification between the tails.
 
 ```agda
-  path-codep a {c} (cons {b = b} x xs) (cons {b = b′} y ys) =
-    Σ[ bs ∈ (b ≡ b′) ]
+  path-codep a {c} (cons {b = b} x xs) (cons {b = b'} y ys) =
+    Σ[ bs ∈ (b ≡ b') ]
       (PathP (λ i → ∣ G.edge (a i) (bs i) ∣) x y × path-codep (λ i → bs i) xs ys)
 ```
 
@@ -164,13 +164,13 @@ inductive.
   path-codep-is-prop a nil xs x y = is-nil-is-prop xs x y where
     is-nil-is-prop : ∀ {a b} (xs : Path-in a b) → is-prop (is-nil xs)
     is-nil-is-prop nil x y = refl
-  path-codep-is-prop a (cons h t) (cons h′ t′) (p , q , r) (p′ , q′ , r′) =
+  path-codep-is-prop a (cons h t) (cons h' t') (p , q , r) (p' , q' , r') =
     Σ-pathp (G.vert .is-tr _ _ _ _) $
     Σ-pathp-dep
-      (is-prop→pathp (λ i → PathP-is-hlevel' 1 (G.edge _ _ .is-tr) _ _) q q′)
+      (is-prop→pathp (λ i → PathP-is-hlevel' 1 (G.edge _ _ .is-tr) _ _) q q')
       (is-prop→pathp
-        (λ i → path-codep-is-prop (λ j → G.vert .is-tr _ _ p p′ i j) t t′)
-        r r′)
+        (λ i → path-codep-is-prop (λ j → G.vert .is-tr _ _ p p' i j) t t')
+        r r')
 ```
 
 And finally, by proving that there is a code for the reflexivity path,
@@ -269,8 +269,8 @@ make this induction acceptable.
 
     rem₁ : ∀ {x y} (j : Pc.Isomorphism x y) → Σ (x ≡ y) λ p → PathP (λ i → Pc.Isomorphism x (p i)) Pc.id-iso j
     rem₁ {x = x} im = go im (im .Pc.to) refl (path-decode (im .Pc.invr)) where
-      go : ∀ {y} (im : Pc.Isomorphism x y) (j′ : Path-in x y) → j′ ≡ im .Pc.to
-         → path-codep (λ _ → x) (j′ ++ im .Pc.from) nil
+      go : ∀ {y} (im : Pc.Isomorphism x y) (j' : Path-in x y) → j' ≡ im .Pc.to
+         → path-codep (λ _ → x) (j' ++ im .Pc.from) nil
          → Σ (x ≡ y) λ p → PathP (λ i → Pc.Isomorphism x (p i)) Pc.id-iso im
       go im nil p q = refl , Pc.≅-pathp refl refl p
 

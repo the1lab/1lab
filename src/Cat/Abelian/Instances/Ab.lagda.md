@@ -48,7 +48,7 @@ Ab-is-additive .has-ab = Ab-ab-category
 Ab-is-additive .has-terminal .top = from-commutative-group (Zero-group {ℓ}) (λ x y → refl)
 Ab-is-additive .has-terminal .has⊤ x =
   contr (total-hom (λ _ → lift tt) (record { pres-⋆ = λ x y i → lift tt }))
-    λ x → Homomorphism-path λ _ → refl
+    λ x → trivial!
 
 Ab-is-additive .has-prods A B .Product.apex = A ⊕ B
 Ab-is-additive .has-prods A B .Product.π₁ = _

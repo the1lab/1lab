@@ -21,7 +21,7 @@ module Meta.Foldable where
 record Foldable (F : Effect) : Typeω where
   private module F = Effect F
   field
-    foldr : ∀ {ℓ ℓ′} {a : Type ℓ} {b : Type ℓ′} → (a → b → b) → b → F.₀ a → b
+    foldr : ∀ {ℓ ℓ'} {a : Type ℓ} {b : Type ℓ'} → (a → b → b) → b → F.₀ a → b
 
 open Foldable ⦃ ... ⦄ public
 
@@ -39,7 +39,7 @@ asum = foldr _<|>_ fail
 nondet
   : ∀ (F : Effect) {M} ⦃ f : Foldable F ⦄ ⦃ t : Map F ⦄
       ⦃ a : Alt M ⦄ ⦃ i : Idiom M ⦄
-      {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+      {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → (let module F = Effect F)
   → (let module M = Effect M)
   → F.₀ A → (A → M.₀ B) → M.₀ B

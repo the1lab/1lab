@@ -23,7 +23,7 @@ open import Meta.Bind
 module 1Lab.Resizing where
 ```
 
-# Propositional Resizing
+# Propositional Resizing {defines="propositional-resizing"}
 
 Ordinarily, the collection of all $\kappa$-small predicates on
 $\kappa$-small types lives in the next universe up, $\kappa^+$. This is
@@ -111,13 +111,13 @@ supports a "map" operation), and can be projected from into propositions
 of any universe. These functions compute on `inc`{.Agda}s, as usual.
 
 ```agda
-□-map : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+□-map : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
       → (A → B) → □ A → □ B
 □-map f (inc x) = inc (f x)
 □-map f (squash x y i) = squash (□-map f x) (□-map f y) i
 
 □-rec!
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → {@(tactic hlevel-tactic-worker) pa : is-prop B}
   → (A → B) → □ A → B
 □-rec! {pa = pa} f (inc x) = f x
@@ -137,7 +137,7 @@ elΩ T .is-tr = squash
 <!--
 ```agda
 □-elim
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {P : □ A → Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {P : □ A → Type ℓ'}
   → (∀ x → is-prop (P x))
   → (∀ x → P (inc x))
   → ∀ x → P x
@@ -161,17 +161,17 @@ elΩ T .is-tr = squash
 □-idempotent aprop = prop-ext squash aprop (out! {pa = aprop}) inc
 
 □-ap
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → □ (A → B) → □ A → □ B
 □-ap (inc f) (inc g) = inc (f g)
-□-ap (inc f) (squash g g′ i) = squash (□-ap (inc f) g) (□-ap (inc f) g′) i
-□-ap (squash f f′ i) g = squash (□-ap f g) (□-ap f′ g) i
+□-ap (inc f) (squash g g' i) = squash (□-ap (inc f) g) (□-ap (inc f) g') i
+□-ap (squash f f' i) g = squash (□-ap f g) (□-ap f' g) i
 
 □-bind
-  : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
   → □ A → (A → □ B) → □ B
 □-bind (inc x) f = f x
-□-bind (squash x x′ i) f = squash (□-bind x f) (□-bind x′ f) i
+□-bind (squash x x' i) f = squash (□-bind x f) (□-bind x' f) i
 
 instance
   Map-□ : Map (eff □)

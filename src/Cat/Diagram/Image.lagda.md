@@ -26,7 +26,7 @@ open /-Hom
 
 private variable
   a b : Ob
-  ℓ′ : Level
+  ℓ' : Level
 ```
 -->
 
@@ -91,7 +91,7 @@ Class-of-monos ℓ =
   Σ[ M ∈ (∀ {a b} → Hom a b → Type ℓ) ]
     (∀ {a b} {f : Hom a b} → M f → is-monic f)
 
-M-image : ∀ {a b} → Class-of-monos ℓ′ → Hom a b → Type _
+M-image : ∀ {a b} → Class-of-monos ℓ' → Hom a b → Type _
 M-image {a = a} {b} M f = Universal-morphism (cut f)
   (Forget-full-subcat
     {C = Slice C b}
@@ -113,7 +113,7 @@ very thin wrapper module over `M-image`{.Agda} which unpacks the
 definition into friendlier terms.
 
 ```agda
-module M-Image {a b} {M : Class-of-monos ℓ′} {f : Hom a b} (im : M-image M f) where
+module M-Image {a b} {M : Class-of-monos ℓ'} {f : Hom a b} (im : M-image M f) where
 ```
 
 The first thing to notice is that, being an initial object in the comma

@@ -64,8 +64,8 @@ limits.
     F-uncurried : Functor (D ×ᶜ E) C
     F-uncurried = Uncurry {C = D} {D = E} {E = C} F
 
-    import Cat.Functor.Bifunctor {C = D} {D = E} {E = C} F-uncurried as F′
-    module D-lim x = Limit (has-D-lims (F′.Left x))
+    import Cat.Functor.Bifunctor {C = D} {D = E} {E = C} F-uncurried as F'
+    module D-lim x = Limit (has-D-lims (F'.Left x))
 ```
 
 Let us call the limit of $F(-, x)$ --- taken in $\cC$ ---
@@ -76,9 +76,9 @@ homomorphism $K \to \lim F(-, x)$ will be called `!-for`{.Agda}.
     !-for : ∀ {x y} (f : E.Hom x y) → C.Hom (D-lim.apex x) (D-lim.apex y)
     !-for {x} {y} f =
       D-lim.universal y
-        (λ j → F′.Right j .F₁ f C.∘ D-lim.ψ x j)
+        (λ j → F'.Right j .F₁ f C.∘ D-lim.ψ x j)
         (λ g →
-          C.extendl F′.first∘second
+          C.extendl F'.first∘second
           ∙ ap₂ C._∘_ refl (D-lim.commutes x g))
 
     functor-apex : Functor E C
@@ -91,7 +91,7 @@ homomorphism $K \to \lim F(-, x)$ will be called `!-for`{.Agda}.
       sym $ D-lim.unique _ _ _ _ λ j →
         C.pulll (D-lim.factors _ _ _)
         ∙ C.pullr (D-lim.factors _ _ _)
-        ∙ C.pulll (sym (F′.Right _ .F-∘ _ _))
+        ∙ C.pulll (sym (F'.Right _ .F-∘ _ _))
 
   functor-limit : Limit F
   functor-limit = to-limit $ to-is-limit ml
@@ -145,19 +145,19 @@ module _
 
   functor-colimit : Colimit F
   functor-colimit = colim where
-    F′ : Functor (D ^op) Cat[ E ^op , C ^op ]
-    F′ = op-functor→ F∘ Functor.op F
+    F' : Functor (D ^op) Cat[ E ^op , C ^op ]
+    F' = op-functor→ F∘ Functor.op F
 
-    F′-lim : Limit F′
-    F′-lim = functor-limit
+    F'-lim : Limit F'
+    F'-lim = functor-limit
       (λ f → subst Limit F^op^op≡F (Colimit→Co-limit _ (has-D-colims (Functor.op f))))
-      F′
+      F'
 
-    LF′′ : Limit (op-functor← {C = E} {D = C} F∘ (op-functor→ F∘ Functor.op F))
-    LF′′ = right-adjoint-limit (is-equivalence.F⊣F⁻¹ op-functor-is-equiv) F′-lim
+    LF'' : Limit (op-functor← {C = E} {D = C} F∘ (op-functor→ F∘ Functor.op F))
+    LF'' = right-adjoint-limit (is-equivalence.F⊣F⁻¹ op-functor-is-equiv) F'-lim
 
     LFop : Limit (Functor.op F)
-    LFop = subst Limit (F∘-assoc ∙ ap (_F∘ Functor.op F) op-functor←→ ∙ F∘-idl) LF′′
+    LFop = subst Limit (F∘-assoc ∙ ap (_F∘ Functor.op F) op-functor←→ ∙ F∘-idl) LF''
 
     colim : Colimit F
     colim = Co-limit→Colimit _ LFop

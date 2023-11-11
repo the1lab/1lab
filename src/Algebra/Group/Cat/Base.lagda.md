@@ -34,7 +34,7 @@ open Group-on
 open is-group-hom
 
 Group-structure : ∀ ℓ → Thin-structure ℓ Group-on
-Group-structure ℓ .is-hom f G G′ = el! (is-group-hom G G′ f)
+Group-structure ℓ .is-hom f G G' = el! (is-group-hom G G' f)
 
 Group-structure ℓ .id-is-hom        .pres-⋆ x y = refl
 Group-structure ℓ .∘-is-hom f g α β .pres-⋆ x y =

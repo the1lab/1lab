@@ -1,3 +1,4 @@
+{-# OPTIONS -vtc.decl:5 #-}
 open import Cat.Instances.Functor.Limits
 open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Everything
@@ -10,6 +11,7 @@ open import Cat.Prelude
 
 open import Data.Sum
 
+import Cat.Functor.Bifunctor as Bifunctor
 import Cat.Reasoning
 
 module Cat.CartesianClosed.Instances.PSh where
@@ -76,12 +78,12 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     pb .p₁ .is-natural _ _ _ = refl
     pb .p₂ .η x (a , b , _) = b
     pb .p₂ .is-natural _ _ _ = refl
-    pb .has-is-pb .square = Nat-path λ _ → funext λ (_ , _ , p) → p
+    pb .has-is-pb .square = ext λ _ (_ , _ , p) → p
     pb .has-is-pb .universal path .η idx arg = _ , _ , (path ηₚ idx $ₚ arg)
     pb .has-is-pb .universal {p₁' = p₁'} {p₂'} path .is-natural x y f =
       funext λ x → pb-path (happly (p₁' .is-natural _ _ _) _) (happly (p₂' .is-natural _ _ _) _)
-    pb .has-is-pb .p₁∘universal = Nat-path λ _ → refl
-    pb .has-is-pb .p₂∘universal = Nat-path λ _ → refl
+    pb .has-is-pb .p₁∘universal = trivial!
+    pb .has-is-pb .p₂∘universal = trivial!
     pb .has-is-pb .unique p q = Nat-path λ _ → funext λ _ →
       pb-path (p ηₚ _ $ₚ _) (q ηₚ _ $ₚ _)
 
@@ -102,8 +104,8 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     prod .has-is-product .⟨_,_⟩ f g =
       NT (λ i x → f .η i x , g .η i x) λ x y h i a →
         f .is-natural x y h i a , g .is-natural x y h i a
-    prod .has-is-product .π₁∘factor = Nat-path λ x → refl
-    prod .has-is-product .π₂∘factor = Nat-path λ x → refl
+    prod .has-is-product .π₁∘factor = trivial!
+    prod .has-is-product .π₂∘factor = trivial!
     prod .has-is-product .unique h p q = Nat-path (λ i j y → p j .η i y , q j .η i y)
 
   {-# TERMINATING #-}
@@ -133,11 +135,11 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     coprod .has-is-coproduct .is-coproduct.[_,_] f g .is-natural x y h = funext λ where
       (inl x) → f .is-natural _ _ _ $ₚ _
       (inr x) → g .is-natural _ _ _ $ₚ _
-    coprod .has-is-coproduct .in₀∘factor = Nat-path λ _ → refl
-    coprod .has-is-coproduct .in₁∘factor = Nat-path λ _ → refl
-    coprod .has-is-coproduct .unique other p q = Nat-path λ a → funext λ where
-      (inl x) → p ηₚ a $ₚ x
-      (inr x) → q ηₚ a $ₚ x
+    coprod .has-is-coproduct .in₀∘factor = trivial!
+    coprod .has-is-coproduct .in₁∘factor = trivial!
+    coprod .has-is-coproduct .unique other p q = ext λ where
+      a (inl x) → p ηₚ a $ₚ x
+      a (inr x) → q ηₚ a $ₚ x
 
   PSh-coequaliser
     : ∀ {X Y} (f g : PSh.Hom X Y)
@@ -165,10 +167,10 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     coequ .coeq .η i = incq
     coequ .coeq .is-natural x y f = refl
     coequ .has-is-coeq .coequal = Nat-path λ _ → funext λ x → glue x
-    coequ .has-is-coeq .universal {F = F} {e′ = e′} p .η x =
-      Coeq-rec (F .F₀  x .is-tr) (e′ .η x) (p ηₚ x $ₚ_)
-    coequ .has-is-coeq .universal {F = F} {e′ = e′} p .is-natural x y f = funext $
-      Coeq-elim-prop (λ _ → F .F₀ _ .is-tr _ _) λ _ → happly (e′ .is-natural _ _ _) _
+    coequ .has-is-coeq .universal {F = F} {e' = e'} p .η x =
+      Coeq-rec (F .F₀  x .is-tr) (e' .η x) (p ηₚ x $ₚ_)
+    coequ .has-is-coeq .universal {F = F} {e' = e'} p .is-natural x y f = funext $
+      Coeq-elim-prop (λ _ → F .F₀ _ .is-tr _ _) λ _ → happly (e' .is-natural _ _ _) _
     coequ .has-is-coeq .factors = Nat-path λ _ → refl
     coequ .has-is-coeq .unique {F = F} p = Nat-path λ i → funext $
       Coeq-elim-prop (λ _ → F .F₀ _ .is-tr _ _) λ x → p ηₚ i $ₚ x
@@ -195,9 +197,9 @@ module _ {κ} {C : Precategory κ κ} where
         F .F₁ f nt .η i (g , x) = nt .η i (f C.∘ g , x)
         F .F₁ f nt .is-natural x y g = funext λ o →
           ap (nt .η y) (Σ-pathp (C.assoc _ _ _) refl) ∙ happly (nt .is-natural _ _ _) _
-        F .F-id = funext λ f → Nat-path $ λ i → funext $ λ (g , x) →
+        F .F-id = ext λ f i (g , x) →
           ap (f .η i) (Σ-pathp (C.idl _) refl)
-        F .F-∘ f g = funext λ h → Nat-path $ λ i → funext $ λ (j , x) →
+        F .F-∘ f g = ext λ h i (j , x) →
           ap (h .η i) (Σ-pathp (sym (C.assoc _ _ _)) refl)
 
       func : Functor (PSh κ C) (PSh κ C)
@@ -205,26 +207,24 @@ module _ {κ} {C : Precategory κ κ} where
       func .F₁ f .η i g .η j (h , x) = f .η _ (g .η _ (h , x))
       func .F₁ f .η i g .is-natural x y h = funext λ x →
         ap (f .η _) (happly (g .is-natural _ _ _) _) ∙ happly (f .is-natural _ _ _) _
-      func .F₁ nt .is-natural x y f = funext λ h → Nat-path λ _ → refl
-      func .F-id = Nat-path λ x → funext λ _ → Nat-path λ _ → funext λ _ → refl
-      func .F-∘ f g = Nat-path λ x → funext λ _ → Nat-path λ _ → funext λ _ → refl
+      func .F₁ nt .is-natural x y f = trivial!
+      func .F-id = trivial!
+      func .F-∘ f g = trivial!
 
-      adj : _ ⊣ func
+      adj : Bifunctor.Left ×-functor A ⊣ func
       adj .unit .η x .η i a =
         NT (λ j (h , b) → x .F₁ h a , b) λ _ _ _ →
           funext λ _ → Σ-pathp (happly (x .F-∘ _ _) _) refl
       adj .unit .η x .is-natural _ _ _ = funext λ _ → Nat-path λ _ → funext λ _ →
         Σ-pathp (sym (happly (x .F-∘ _ _) _)) refl
-      adj .unit .is-natural x y f = Nat-path λ _ → funext λ _ → Nat-path λ _ → funext λ _ →
-        Σ-pathp (sym (happly (f .is-natural _ _ _) _)) refl
+      adj .unit .is-natural x y f = ext λ _ _ _ _ → sym (f .is-natural _ _ _ $ₚ _) , refl
       adj .counit .η _ .η _ x = x .fst .η _ (C.id , x .snd)
       adj .counit .η _ .is-natural x y f = funext λ h →
         ap (h .fst .η _) (Σ-pathp C.id-comm refl) ∙ happly (h .fst .is-natural _ _ _) _
       adj .counit .is-natural x y f = Nat-path λ x → refl
-      adj .zig {A} = Nat-path λ x → funext λ _ → Σ-pathp (happly (F-id A) _) refl
-      adj .zag {A} = Nat-path λ f → funext λ x → Nat-path λ g → funext λ y →
-        ap (x .η _) (Σ-pathp (C.idr _) refl)
+      adj .zig {A} = ext λ x _ → happly (F-id A) _ , refl
+      adj .zag {A} = ext λ _ x i (f , g) j → x .η i (C.idr f j , g)
 
-    cc : Cartesian-closed _ (PSh-products {C = C}) (PSh-terminal {C = C})
+    cc : Cartesian-closed (PSh κ C) (PSh-products {C = C}) (PSh-terminal {C = C})
     cc = product-adjoint→cartesian-closed (PSh κ C)
       (PSh-products {C = C}) (PSh-terminal {C = C}) func adj

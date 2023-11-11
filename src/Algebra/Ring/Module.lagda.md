@@ -67,7 +67,7 @@ other words, we have:
 [abelian group]: Algebra.Group.Ab.html
 
 ```agda
-  record is-module {ℓ′} {T : Type ℓ′} (_+_ : T → T → T) (_⋆_ : ⌞ R ⌟ → T → T) : Type (ℓ ⊔ ℓ′) where
+  record is-module {ℓ'} {T : Type ℓ'} (_+_ : T → T → T) (_⋆_ : ⌞ R ⌟ → T → T) : Type (ℓ ⊔ ℓ') where
     no-eta-equality
     field
       has-is-ab  : is-abelian-group _+_
@@ -105,7 +105,7 @@ scalar multiplication, and the proofs that these behave as we set above.
 A module is a type equipped with a module structure.
 
 ```agda
-  record Module-on {ℓ′} (T : Type ℓ′) : Type (ℓ ⊔ ℓ′) where
+  record Module-on {ℓ'} (T : Type ℓ') : Type (ℓ ⊔ ℓ') where
     no-eta-equality
     field
       _+_        : T → T → T
@@ -134,7 +134,7 @@ A module is a type equipped with a module structure.
 
   abstract instance
     H-Level-is-module
-      : ∀ {ℓ′} {T : Type ℓ′} {_+_ : T → T → T} {_⋆_ : ⌞ R ⌟ → T → T} {n}
+      : ∀ {ℓ'} {T : Type ℓ'} {_+_ : T → T → T} {_⋆_ : ⌞ R ⌟ → T → T} {n}
       → H-Level (is-module _+_ _⋆_) (suc n)
     H-Level-is-module {T = T} = prop-instance $ λ x →
       let
@@ -209,7 +209,7 @@ $$
       pres-⋆ : ∀ r s → f (r ⋆ s) ≡ r ⋆ f s
       pres-⋆ r s = ap f (sym +-idr) ∙ linear _ _ _ ∙ ap (r ⋆ f s +_) pres-0 ∙ +-idr
 
-  private unquoteDecl eqv′ = declare-record-iso eqv′ (quote is-linear-map)
+  private unquoteDecl eqv' = declare-record-iso eqv' (quote is-linear-map)
   open is-linear-map using (linear) public
 
   -- There are too many possible instances in scope for instance search
@@ -220,7 +220,7 @@ $$
       : ∀ {M : Module-on T} {N : Module-on S} {f : T → S}
       → is-prop (is-linear-map f M N)
     is-linear-map-is-prop {S = S} {N = N} =
-      Iso→is-hlevel 1 eqv′ $
+      Iso→is-hlevel 1 eqv' $
       Π-is-hlevel³ 1 λ _ _ _ →
       Module-on.ab.has-is-set N _ _
 
@@ -250,18 +250,18 @@ is univalent.
 
 <!--
 ```agda
-  private unquoteDecl eqv′′ = declare-record-iso eqv′′ (quote Linear-map)
+  private unquoteDecl eqv'' = declare-record-iso eqv'' (quote Linear-map)
   abstract
     Linear-map-is-set
-      : ∀ {ℓ′ ℓ′′} {M : Module ℓ′} {N : Module ℓ′′}
+      : ∀ {ℓ' ℓ''} {M : Module ℓ'} {N : Module ℓ''}
       → is-set (Linear-map M N)
     Linear-map-is-set {N = N} =
-      Iso→is-hlevel 2 eqv′′ $
+      Iso→is-hlevel 2 eqv'' $
         Σ-is-hlevel 2 (fun-is-hlevel 2 (N .fst .is-tr)) λ x → is-prop→is-set (hlevel 1)
 
     instance
       H-Level-Linear-map
-        : ∀ {ℓ′ ℓ′′} {M : Module ℓ′} {N : Module ℓ′′} {n}
+        : ∀ {ℓ' ℓ''} {M : Module ℓ'} {N : Module ℓ''} {n}
         → H-Level (Linear-map M N) (suc (suc n))
       H-Level-Linear-map {N = N} {n = n} = basic-instance (suc (suc zero)) Linear-map-is-set
 

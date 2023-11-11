@@ -56,9 +56,9 @@ subobjects.
 [$\kappa$-small]: 1Lab.intro.html#universes-and-size-issues
 
 ```agda
-maximal′ : Sieve
-maximal′ .arrows x = el ⊤ hlevel!
-maximal′ .closed g x = tt
+maximal' : Sieve
+maximal' .arrows x = el ⊤ hlevel!
+maximal' .closed g x = tt
 
 intersect : ∀ {I : Type κ} (F : I → Sieve) → Sieve
 intersect {I = I} F .arrows h = elΩ ((x : I) → h ∈ F x .arrows)

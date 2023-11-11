@@ -16,7 +16,7 @@ module Cat.Diagram.Colimit.Cocone where
 <!--
 ```agda
 private variable
-  o ℓ o′ ℓ′ : Level
+  o ℓ o' ℓ' : Level
 
 open _=>_
 ```
@@ -33,7 +33,7 @@ commutes".
 
 <!--
 ```agda
-module _ {J : Precategory o ℓ} {C : Precategory o′ ℓ′} (F : Functor J C) where
+module _ {J : Precategory o ℓ} {C : Precategory o' ℓ'} (F : Functor J C) where
   private
     module C = Cat.Reasoning C
     module J = Precategory J
@@ -42,7 +42,7 @@ module _ {J : Precategory o ℓ} {C : Precategory o′ ℓ′} (F : Functor J C)
 -->
 
 ```agda
-  record Cocone : Type (o ⊔ ℓ ⊔ o′ ⊔ ℓ′) where
+  record Cocone : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
     no-eta-equality
     constructor cocone
     field
@@ -75,7 +75,7 @@ cocone homomorphism to be a map between the coapices which commutes with
 the family $\psi$.
 
 ```agda
-  record Cocone-hom (x y : Cocone) : Type (o ⊔ ℓ′) where
+  record Cocone-hom (x y : Cocone) : Type (o ⊔ ℓ') where
     no-eta-equality
     constructor cocone-hom
     field

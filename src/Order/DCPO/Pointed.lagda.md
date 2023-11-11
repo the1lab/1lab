@@ -495,12 +495,6 @@ module _ {o ℓ} {D E : Pointed-dcpo o ℓ} where
     module E = Pointed-dcpo E
   open Total-hom
   open is-directed-family
-
-  strict-scott-path
-    : ∀ {f g : Pointed-DCPOs.Hom D E}
-    → (∀ x → Strict-scott.hom f x ≡ Strict-scott.hom g x)
-    → f ≡ g
-  strict-scott-path p = Subcat-hom-path (scott-path p)
 ```
 -->
 

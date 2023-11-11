@@ -261,7 +261,7 @@ variables and) satisfy the triangle and pentagon identities.
 ```agda
     sα← : ∀ {A B C D} ((f , g , h) : Span C D × Span B C × Span A B)
         → Span-hom ((f ¤ g) ¤ h) (f ¤ (g ¤ h))
-    sα← (f , g , h) .map = pb _ _ .universal resp′ where
+    sα← (f , g , h) .map = pb _ _ .universal resp' where
       abstract
         resp : g .left C.∘ pb (f .left) (g .right) .p₂
            C.∘ pb ((f ¤ g) .left) (h .right) .p₁
@@ -271,17 +271,17 @@ variables and) satisfy the triangle and pentagon identities.
       shuffle = pb _ _ .universal {p₁' = pb _ _ .p₂ C.∘ pb _ _ .p₁} {p₂' = pb _ _ .p₂} resp
 
       abstract
-        resp′ : f .left C.∘ pb (f .left) (g .right) .p₁
+        resp' : f .left C.∘ pb (f .left) (g .right) .p₁
             C.∘ pb ((f ¤ g) .left) (h .right) .p₁
               ≡ (g ¤ h) .right C.∘ shuffle
-        resp′ = sym $ pullr (pb _ _ .p₁∘universal) ∙ extendl (sym (pb _ _ .square))
+        resp' = sym $ pullr (pb _ _ .p₁∘universal) ∙ extendl (sym (pb _ _ .square))
 
     sα← (f , g , h) .left = sym $ pullr (pb _ _ .p₂∘universal) ∙ pullr (pb _ _ .p₂∘universal)
     sα← (f , g , h) .right = sym $ pullr (pb _ _ .p₁∘universal) ∙ assoc _ _ _
 
     sα→ : ∀ {A B C D} ((f , g , h) : Span C D × Span B C × Span A B)
         → Span-hom (f ¤ (g ¤ h)) ((f ¤ g) ¤ h)
-    sα→ (f , g , h) .map = pb _ _ .universal resp′ where
+    sα→ (f , g , h) .map = pb _ _ .universal resp' where
       abstract
         resp : f .left C.∘ pb (f .left) ((g ¤ h) .right) .p₁
              ≡ g .right C.∘ pb (g .left) (h .right) .p₁
@@ -291,10 +291,10 @@ variables and) satisfy the triangle and pentagon identities.
       shuffle = pb _ _ .universal {p₁' = pb _ _ .p₁} {p₂' = pb _ _ .p₁ C.∘ pb _ _ .p₂} resp
 
       abstract
-        resp′ : (f ¤ g) .left C.∘ shuffle
+        resp' : (f ¤ g) .left C.∘ shuffle
               ≡ h .right C.∘ pb (g .left) (h .right) .p₂
             C.∘ pb (f .left) ((g ¤ h) .right) .p₂
-        resp′ = pullr (pb _ _ .p₂∘universal) ∙ extendl (pb _ _ .square)
+        resp' = pullr (pb _ _ .p₂∘universal) ∙ extendl (pb _ _ .square)
 
     sα→ (f , g , h) .left = sym $ pullr (pb _ _ .p₂∘universal) ∙ assoc _ _ _
     sα→ (f , g , h) .right = sym $ pullr (pb _ _ .p₁∘universal) ∙ pullr (pb _ _ .p₁∘universal)

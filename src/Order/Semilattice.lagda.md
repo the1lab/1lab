@@ -65,6 +65,7 @@ record Semilattice-on {ℓ} (A : Type ℓ) : Type ℓ where
     _∩_ : A → A → A
     has-is-semilattice : is-semilattice top _∩_
   open is-semilattice has-is-semilattice public
+  infixr 25 _∩_
 ```
 
 <!--
@@ -240,8 +241,8 @@ semilattice homomorphism is a monotone map under the induced ordering.
 ```agda
 Meet-semi-lattice .F₁ f .hom = f .hom
 Meet-semi-lattice .F₁ f .preserves x y p = ap (f .hom) p ∙ f .preserves .Monoid-hom.pres-⋆ _ _
-Meet-semi-lattice .F-id    = Homomorphism-path λ _ → refl
-Meet-semi-lattice .F-∘ f g = Homomorphism-path λ _ → refl
+Meet-semi-lattice .F-id    = trivial!
+Meet-semi-lattice .F-∘ f g = trivial!
 ```
 
 ## The interface
@@ -307,7 +308,7 @@ It's reduced to a bit of algebra:
 
   ⋂-is-glb : ∀ {n} (f : Fin n → ⌞ A ⌟) → is-glb po f (⋂ f)
   ⋂-is-glb {zero} f .is-glb.glb≤fam ()
-  ⋂-is-glb {zero} f .is-glb.greatest lb′ x = sym ∩-idr
+  ⋂-is-glb {zero} f .is-glb.greatest lb' x = sym ∩-idr
   ⋂-is-glb {suc n} f = go where
     those : is-glb po (λ i → f (fsuc i)) _
     those = ⋂-is-glb _
@@ -318,11 +319,11 @@ It's reduced to a bit of algebra:
       f fzero ∩ ⋂ (λ i → f (fsuc i))   ≤⟨ ∩≤r ⟩
       ⋂ (λ i → f (fsuc i))             ≤⟨ those .is-glb.glb≤fam i ⟩
       f (fsuc i)                       ≤∎
-    go .is-glb.greatest lb′ f≤lb′ =
-      ∩-univ lb′ (f≤lb′ fzero) (those .is-glb.greatest lb′ (λ i → f≤lb′ (fsuc i)))
+    go .is-glb.greatest lb' f≤lb' =
+      ∩-univ lb' (f≤lb' fzero) (those .is-glb.greatest lb' (λ i → f≤lb' (fsuc i)))
 
 module
-  _ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′}
+  _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
     (S : Semilattice-on A) (T : Semilattice-on B)
     (f : A → B)
     (fh : Monoid-hom (Semilattice-on.to-monoid S) (Semilattice-on.to-monoid T) f)

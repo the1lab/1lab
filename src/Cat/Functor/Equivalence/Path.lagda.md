@@ -47,14 +47,14 @@ univalence it induces an equivalence $\cC_0 \equiv \cD_0$. The
 path between `Hom`{.Agda}-sets is slightly more complicated. It is,
 essentially, the dashed line in the diagram
 
-~~~{.quiver}
+~~~{.quiver .tall-1}
 \[\begin{tikzcd}
-  {\mathbf{Hom}_\mathcal{C}(x,y)} && {\mathbf{Hom}_\mathcal{D}(F_0x,F_0y)} \\
+  {\mathbf{Hom}_\mathcal{C}(x,y)} && {\mathbf{Hom}_\mathcal{D}(x,y)} \\
   \\
-  {\mathbf{Hom}_\mathcal{D}(F_0x,F_0y)} && {\mathbf{Hom}_\mathcal{D}(F_0x,F_0y)}
+  {\mathbf{Hom}_\mathcal{D}(F_0x,F_0y)} && {\mathbf{Hom}_\mathcal{D}(x,y)}
   \arrow["{\mathrm{id}}", from=1-3, to=3-3]
   \arrow["{F_1}"', from=1-1, to=3-1]
-  \arrow["{\mathrm{Hom}_\mathcal{D}(x, y)}"', from=3-1, to=3-3]
+  \arrow["{\mathrm{Hom}_\mathcal{D}(\unglue x, \unglue y)}"', from=3-1, to=3-3, outer sep=0.5em]
   \arrow[dashed, from=1-1, to=1-3]
 \end{tikzcd}\]
 ~~~
@@ -71,11 +71,12 @@ essentially, the dashed line in the diagram
   hom i x y = Glue (D.Hom (unglue (i ∨ ~ i) x) (unglue (i ∨ ~ i) y)) (sys i x y)
 ```
 
-Note that $\rm{unglue}_{i \lor \neg i}(x)$ is a term in $\cD_0$ which
-evaluates to $F_0(x)$ when $i = i1$ or $i = i0$, so that the system
+Note that $\unglue_{i \lor \neg i}x$ is a term in $\cD_0$ which
+evaluates to $F_0(x)$ when $i = i0$ (and thus $x$ has type $\cC_0$) and $x$
+when $i = i1$ (and thus $x$ has type $\cD_0$), so that the system
 described above can indeed be built. The introduction rule for
 `hom`{.Agda} is `hom-glue`{.Agda}: If we have a partial element $\neg i
-\vdash f : \hom_\mathcal{C} x y$ together with an element $g$ of base
+\vdash f : \hom_\cC(x, y)$ together with an element $g$ of base
 type satisfying definitionally $\neg i \vdash F_1(f) = g$, we may glue
 $f$ along $g$ to get an element of $\hom_i(x, y)$.
 
@@ -249,7 +250,7 @@ Category-identity-system-pre =
 <!--
 ```agda
 module
-  _ {o o′ ℓ ℓ′} {C : Precategory o ℓ} {D : Precategory o′ ℓ′}
+  _ {o o' ℓ ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'}
     (F : Functor C D)
     (eqv : is-equivalence F)
   where

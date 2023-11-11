@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import 1Lab.Prelude hiding (_∘_ ; id ; _↪_)
+open import 1Lab.Prelude hiding (_∘_ ; id ; _↪_ ; module Extensionality)
 
 open import Cat.Solver
 open import Cat.Base
@@ -602,10 +602,10 @@ abstract
     → PathP (λ i → Hom (p i) (q i)) (f .to) (g .to)
     → PathP (λ i → Hom (q i) (p i)) (f .from) (g .from)
   inverse-unique =
-    J′ (λ a c p → ∀ {b d} (q : b ≡ d) {f : a ≅ b} {g : c ≅ d}
+    J' (λ a c p → ∀ {b d} (q : b ≡ d) {f : a ≅ b} {g : c ≅ d}
       → PathP (λ i → Hom (p i) (q i)) (f .to) (g .to)
       → PathP (λ i → Hom (q i) (p i)) (f .from) (g .from))
-      λ x → J′ (λ b d q → {f : x ≅ b} {g : x ≅ d}
+      λ x → J' (λ b d q → {f : x ≅ b} {g : x ≅ d}
                 → PathP (λ i → Hom x (q i)) (f .to) (g .to)
                 → PathP (λ i → Hom (q i) x) (f .from) (g .from))
             λ y {f} {g} p →

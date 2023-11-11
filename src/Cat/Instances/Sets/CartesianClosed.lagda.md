@@ -52,10 +52,10 @@ module _ {A B : Set ℓ} (func : ∣ A ∣ → ∣ B ∣) where
 
 <!--
 ```agda
-  Sets-Π .F-id = /-Hom-path
-    (funext λ x → Σ-pathp refl (funext λ x → Σ-pathp refl (A .is-tr _ _ _ _)))
-  Sets-Π .F-∘ f g = /-Hom-path
-    (funext λ x → Σ-pathp refl (funext λ x → Σ-pathp refl (A .is-tr _ _ _ _)))
+  Sets-Π .F-id = ext λ x → Σ-pathp refl
+    (funext λ x → Σ-pathp refl (A .is-tr _ _ _ _))
+  Sets-Π .F-∘ f g = ext λ x → Σ-pathp refl
+    (funext λ x → Σ-pathp refl (A .is-tr _ _ _ _))
 ```
 -->
 

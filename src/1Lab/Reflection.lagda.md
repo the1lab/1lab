@@ -119,12 +119,12 @@ ident=Relevance}, and a `Quantity`{.Agda ident=Quantity}.
 ```agda
 -- Arguments can be (visible), {hidden}, or {{instance}}.
 data Visibility : Type where
-  visible hidden instance′ : Visibility
+  visible hidden instance' : Visibility
 
 {-# BUILTIN HIDING   Visibility #-}
 {-# BUILTIN VISIBLE  visible    #-}
 {-# BUILTIN HIDDEN   hidden     #-}
-{-# BUILTIN INSTANCE instance′  #-}
+{-# BUILTIN INSTANCE instance'  #-}
 
 -- Arguments can be relevant or irrelevant.
 data Relevance : Type where
@@ -459,7 +459,7 @@ instance
   Bind-TC .Bind._>>=_ = bindTC
 
   Alt-TC : Alt (eff TC)
-  Alt-TC .Alt.fail′ xs = typeError [ strErr xs ]
+  Alt-TC .Alt.fail' xs = typeError [ strErr xs ]
   Alt-TC .Alt._<|>_ = catchTC
 ```
 </details>
@@ -490,10 +490,10 @@ new-meta ty = do
     [ "Created new meta " , termErr mv , " of type " , termErr ty ]
   pure mv
 
-new-meta′ : Term → TC (Meta × Term)
-new-meta′ ty = do
+new-meta' : Term → TC (Meta × Term)
+new-meta' ty = do
   tm@(meta mv _) ← checkType unknown ty
-    where _ → typeError $ [ "impossible new-meta′" ]
+    where _ → typeError $ [ "impossible new-meta'" ]
   debugPrint "tactic.meta" 70
     [ "Created new meta " , termErr tm , " of type " , termErr tm ]
   pure (mv , tm)
@@ -525,7 +525,7 @@ x name=? y = primQNameEquality x y
 _visibility=?_ : Visibility → Visibility → Bool
 visible visibility=? visible = true
 hidden visibility=? hidden = true
-instance′ visibility=? instance′ = true
+instance' visibility=? instance' = true
 _ visibility=? _ = false
 
 -- [TODO: Reed M, 06/05/2022] We don't actually use any fancy modalities
@@ -639,7 +639,7 @@ quote-repr-macro a hole = do
     ∷ termErr repr ∷ []
 
 macro
-  quote-repr! : ∀ {ℓ ℓ′} {A : Type ℓ} {B : Type ℓ′} → A → Term → TC ⊤
+  quote-repr! : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → A → Term → TC ⊤
   quote-repr! a = quote-repr-macro a
 
 instance

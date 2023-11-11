@@ -54,7 +54,7 @@ applies here:
 Poly-is-category : ∀ {ℓ} → is-category (Poly ℓ)
 Poly-is-category =
   is-category-total _ Sets-is-category $
-    is-category-fibrewise′ _
+    is-category-fibrewise' _
       Sets-is-category
       (λ x → Families-are-categories _ x (opposite-is-category Sets-is-category))
 ```
@@ -81,7 +81,7 @@ poly-map-path
                   ≡ g .preserves a b)
   → f ≡ g
 poly-map-path hom≡ pre≡ = total-hom-path _ hom≡
-  (to-pathp (funext λ a → funext λ b → Regularity.precise! (pre≡ a b)))
+  (to-pathp (ext λ a b → Regularity.precise! (pre≡ a b)))
 ```
 
 ## Polynomials as functors

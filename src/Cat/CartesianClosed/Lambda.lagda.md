@@ -15,7 +15,7 @@ import Cat.Reasoning
 module Cat.CartesianClosed.Lambda
 ```
 
-# Simply-typed lambda calculus {defines="simply-typed-lambda-calculus"}
+# Simply-typed lambda calculus {defines="simply-typed-lambda-calculus STLC"}
 
 <!--
 ```agda
@@ -736,8 +736,8 @@ module _ {a b : Ob} where private
 
 <!--
 ```agda
-solve : (e e′ : Expr Γ τ) → nf e ≡ nf e′ → ⟦ e ⟧ᵉ ≡ ⟦ e′ ⟧ᵉ
-solve e e′ prf = sym (nf-sound e) ·· ap ⟦_⟧ₙ prf ·· nf-sound e′
+solve : (e e' : Expr Γ τ) → nf e ≡ nf e' → ⟦ e ⟧ᵉ ≡ ⟦ e' ⟧ᵉ
+solve e e' prf = sym (nf-sound e) ·· ap ⟦_⟧ₙ prf ·· nf-sound e'
 ```
 -->
 

@@ -77,15 +77,15 @@ Simple : Displayed B o ℓ
 Simple .Displayed.Ob[_] Γ = Ob
 Simple .Displayed.Hom[_] {Γ} {Δ} u X Y = Hom (Γ ⊗₀ X) Y
 Simple .Displayed.Hom[_]-set _ _ _ = Hom-set (_ ⊗₀ _) _
-Simple .Displayed.id′ = π₂
-Simple .Displayed._∘′_ {f = u} {g = v} f g = f ∘ ⟨ v ∘ π₁ , g ⟩
-Simple .Displayed.idr′ f =
+Simple .Displayed.id' = π₂
+Simple .Displayed._∘'_ {f = u} {g = v} f g = f ∘ ⟨ v ∘ π₁ , g ⟩
+Simple .Displayed.idr' f =
   f ∘ ⟨ (id ∘ π₁) , π₂ ⟩ ≡⟨ products! B has-prods ⟩
   f                      ∎
-Simple .Displayed.idl′ {f = u} f =
+Simple .Displayed.idl' {f = u} f =
   π₂ ∘ ⟨ u ∘ π₁ , f ⟩ ≡⟨ products! B has-prods ⟩
   f                   ∎
-Simple .Displayed.assoc′ {f = u} {g = v} {h = w} f g h =
+Simple .Displayed.assoc' {f = u} {g = v} {h = w} f g h =
   f ∘ ⟨ (v ∘ w) ∘ π₁ , g ∘ ⟨ w ∘ π₁ , h ⟩ ⟩ ≡⟨ products! B has-prods ⟩
   (f ∘ ⟨ v ∘ π₁ , g ⟩) ∘ ⟨ w ∘ π₁ , h ⟩     ∎
 ```
@@ -102,10 +102,10 @@ We begin with the reverse direction, as it is slightly simpler to show.
 
 ```agda
 ⟨⟩-invertible→cartesian
-  : ∀ {Γ Δ x y} {f : Hom Γ Δ} {f′ : Hom (Γ ⊗₀ x) y}
-  → is-invertible ⟨ π₁ , f′ ⟩
-  → is-cartesian Simple f f′
-⟨⟩-invertible→cartesian {Γ} {Δ} {x} {y} {f} {f′} ⟨⟩-inv = cart where
+  : ∀ {Γ Δ x y} {f : Hom Γ Δ} {f' : Hom (Γ ⊗₀ x) y}
+  → is-invertible ⟨ π₁ , f' ⟩
+  → is-cartesian Simple f f'
+⟨⟩-invertible→cartesian {Γ} {Δ} {x} {y} {f} {f'} ⟨⟩-inv = cart where
   module ⟨⟩-inv = is-invertible ⟨⟩-inv
   open is-cartesian
 ```
@@ -122,8 +122,8 @@ compose these two maps with the second projection, yielding the required
 map.
 
 ```agda
-  cart : is-cartesian Simple f f′
-  cart .universal m h′ = π₂ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h′ ⟩
+  cart : is-cartesian Simple f f'
+  cart .universal m h' = π₂ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h' ⟩
 ```
 
 Showing that this map uniquely factorises $f'$ boils down to pushing
@@ -131,17 +131,17 @@ around products and using that fact that the inverse to
 $\langle \pi_1 , f' \rangle$ is, in fact, an inverse.
 
 ```agda
-  cart .commutes m h′ =
-    f′ ∘ ⟨ m ∘ π₁ , π₂ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h′ ⟩ ⟩ ≡˘⟨ ap₂ _∘_ refl (⟨⟩-unique _ (pulll (π₁-inv ⟨⟩-inv) ∙ π₁∘⟨⟩) refl) ⟩
-    f′ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h′ ⟩                   ≡⟨ pulll (π₂-inv ⟨⟩-inv) ⟩
-    π₂ ∘ ⟨ m ∘ π₁ , h′ ⟩                                ≡⟨ π₂∘⟨⟩ ⟩
-    h′                                                  ∎
-  cart .unique {m = m} {h′ = h′} m′ p =
-    m′                                                      ≡˘⟨ π₂∘⟨⟩ ⟩
-    π₂ ∘ ⟨ m ∘ π₁ , m′ ⟩                                    ≡⟨ ap₂ _∘_ refl (introl ⟨⟩-inv.invr) ⟩
-    π₂ ∘ (⟨⟩-inv.inv ∘ ⟨ π₁ , f′ ⟩) ∘ ⟨ m ∘ π₁ , m′ ⟩       ≡⟨ products! B has-prods ⟩
-    π₂ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , ⌜ f′ ∘ ⟨ m ∘ π₁ , m′ ⟩ ⌝ ⟩ ≡⟨ ap! p ⟩
-    π₂ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h′ ⟩ ∎
+  cart .commutes m h' =
+    f' ∘ ⟨ m ∘ π₁ , π₂ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h' ⟩ ⟩ ≡˘⟨ ap₂ _∘_ refl (⟨⟩-unique _ (pulll (π₁-inv ⟨⟩-inv) ∙ π₁∘⟨⟩) refl) ⟩
+    f' ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h' ⟩                   ≡⟨ pulll (π₂-inv ⟨⟩-inv) ⟩
+    π₂ ∘ ⟨ m ∘ π₁ , h' ⟩                                ≡⟨ π₂∘⟨⟩ ⟩
+    h'                                                  ∎
+  cart .unique {m = m} {h' = h'} m' p =
+    m'                                                      ≡˘⟨ π₂∘⟨⟩ ⟩
+    π₂ ∘ ⟨ m ∘ π₁ , m' ⟩                                    ≡⟨ ap₂ _∘_ refl (introl ⟨⟩-inv.invr) ⟩
+    π₂ ∘ (⟨⟩-inv.inv ∘ ⟨ π₁ , f' ⟩) ∘ ⟨ m ∘ π₁ , m' ⟩       ≡⟨ products! B has-prods ⟩
+    π₂ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , ⌜ f' ∘ ⟨ m ∘ π₁ , m' ⟩ ⌝ ⟩ ≡⟨ ap! p ⟩
+    π₂ ∘ ⟨⟩-inv.inv ∘ ⟨ m ∘ π₁ , h' ⟩ ∎
 ```
 
 On to the forward direction! Let $f : \Gamma \to \Delta$ and
@@ -169,10 +169,10 @@ the map $\pi_2 : \Gamma \times Y \to Y$, as in the following diagram:
 
 ```agda
 cartesian→⟨⟩-invertible
-  : ∀ {Γ Δ x y} {f : Hom Γ Δ} {f′ : Hom (Γ ⊗₀ x) y}
-  → is-cartesian Simple f f′
-  → is-invertible ⟨ π₁ , f′ ⟩
-cartesian→⟨⟩-invertible {Γ} {Δ} {x} {y} {f} {f′} cart =
+  : ∀ {Γ Δ x y} {f : Hom Γ Δ} {f' : Hom (Γ ⊗₀ x) y}
+  → is-cartesian Simple f f'
+  → is-invertible ⟨ π₁ , f' ⟩
+cartesian→⟨⟩-invertible {Γ} {Δ} {x} {y} {f} {f'} cart =
   make-invertible ⟨ π₁ , universal id π₂ ⟩
     left-inv
     right-inv
@@ -183,10 +183,10 @@ cartesian→⟨⟩-invertible {Γ} {Δ} {x} {y} {f} {f′} cart =
 Showing that this map is a left inverse can be seen by a short computation.
 
 ```agda
-      left-inv : ⟨ π₁ , f′ ⟩ ∘ ⟨ π₁ , universal id π₂ ⟩ ≡ id
+      left-inv : ⟨ π₁ , f' ⟩ ∘ ⟨ π₁ , universal id π₂ ⟩ ≡ id
       left-inv =
-        ⟨ π₁ , f′ ⟩ ∘ ⟨ π₁ , universal id π₂ ⟩           ≡⟨ products! B has-prods ⟩
-        ⟨ π₁ , ⌜ f′ ∘ ⟨ id ∘ π₁ ,  universal id π₂ ⟩ ⌝ ⟩ ≡⟨ ap! (commutes id π₂) ⟩
+        ⟨ π₁ , f' ⟩ ∘ ⟨ π₁ , universal id π₂ ⟩           ≡⟨ products! B has-prods ⟩
+        ⟨ π₁ , ⌜ f' ∘ ⟨ id ∘ π₁ ,  universal id π₂ ⟩ ⌝ ⟩ ≡⟨ ap! (commutes id π₂) ⟩
         ⟨ π₁ , π₂ ⟩                                      ≡⟨ ⟨⟩-η ⟩
         id                                               ∎
 ```
@@ -225,17 +225,17 @@ $i \circ \langle \pi_1 , f' \rangle$ also factorizes $f'$, which lets us
 see that $i \circ \langle \pi_1 , f' \rangle = \pi_2$.
 
 ```agda
-      universal-π₂-unique : f′ ∘ ⟨ id ∘ π₁ , universal id π₂ ∘ ⟨ π₁ , f′ ⟩ ⟩ ≡ f′
+      universal-π₂-unique : f' ∘ ⟨ id ∘ π₁ , universal id π₂ ∘ ⟨ π₁ , f' ⟩ ⟩ ≡ f'
       universal-π₂-unique =
-        f′ ∘ ⟨ id ∘ π₁ , universal id π₂ ∘ ⟨ π₁ , f′ ⟩ ⟩ ≡⟨ products! B has-prods ⟩
-        f′ ∘ ⟨ id ∘ π₁ , universal id π₂ ⟩ ∘ ⟨ π₁ , f′ ⟩ ≡⟨ pulll (commutes id π₂) ⟩
-        π₂ ∘ ⟨ π₁ , f′ ⟩                                 ≡⟨ π₂∘⟨⟩ ⟩
-        f′                                               ∎
+        f' ∘ ⟨ id ∘ π₁ , universal id π₂ ∘ ⟨ π₁ , f' ⟩ ⟩ ≡⟨ products! B has-prods ⟩
+        f' ∘ ⟨ id ∘ π₁ , universal id π₂ ⟩ ∘ ⟨ π₁ , f' ⟩ ≡⟨ pulll (commutes id π₂) ⟩
+        π₂ ∘ ⟨ π₁ , f' ⟩                                 ≡⟨ π₂∘⟨⟩ ⟩
+        f'                                               ∎
 
-      universal-π₂∘f′ : universal id π₂ ∘ ⟨ π₁ , f′ ⟩ ≡ π₂
-      universal-π₂∘f′ =
-        universal id π₂ ∘ ⟨ π₁ , f′ ⟩ ≡⟨ unique _ universal-π₂-unique ⟩
-        universal id f′               ≡˘⟨ unique _ (elimr (ap₂ ⟨_,_⟩ (idl _) refl ∙ ⟨⟩-η)) ⟩
+      universal-π₂∘f' : universal id π₂ ∘ ⟨ π₁ , f' ⟩ ≡ π₂
+      universal-π₂∘f' =
+        universal id π₂ ∘ ⟨ π₁ , f' ⟩ ≡⟨ unique _ universal-π₂-unique ⟩
+        universal id f'               ≡˘⟨ unique _ (elimr (ap₂ ⟨_,_⟩ (idl _) refl ∙ ⟨⟩-η)) ⟩
         π₂                            ∎
 ```
 
@@ -243,10 +243,10 @@ We can then apply this lemma to see that $\langle \pi_1, i \rangle$ forms
 a right inverse.
 
 ```agda
-      right-inv : ⟨ π₁ ,  universal id π₂ ⟩ ∘ ⟨ π₁ , f′ ⟩ ≡ id
+      right-inv : ⟨ π₁ ,  universal id π₂ ⟩ ∘ ⟨ π₁ , f' ⟩ ≡ id
       right-inv =
-        ⟨ π₁ , universal id π₂ ⟩ ∘ ⟨ π₁ , f′ ⟩ ≡⟨ products! B has-prods ⟩
-        ⟨ π₁ , universal id π₂ ∘ ⟨ π₁ , f′ ⟩ ⟩ ≡⟨ ap₂ ⟨_,_⟩ refl universal-π₂∘f′ ⟩
+        ⟨ π₁ , universal id π₂ ⟩ ∘ ⟨ π₁ , f' ⟩ ≡⟨ products! B has-prods ⟩
+        ⟨ π₁ , universal id π₂ ∘ ⟨ π₁ , f' ⟩ ⟩ ≡⟨ ap₂ ⟨_,_⟩ refl universal-π₂∘f' ⟩
         ⟨ π₁ , π₂ ⟩                            ≡⟨ ⟨⟩-η ⟩
         id                                     ∎
 ```
@@ -271,11 +271,11 @@ open is-cartesian
 
 ```agda
 Simple-fibration : Cartesian-fibration Simple
-Simple-fibration .has-lift f Y .x′ = Y
+Simple-fibration .has-lift f Y .x' = Y
 Simple-fibration .has-lift f Y .lifting = π₂
 Simple-fibration .has-lift f Y .cartesian .universal _ h = h
 Simple-fibration .has-lift f Y .cartesian .commutes g h = π₂∘⟨⟩
-Simple-fibration .has-lift f Y .cartesian .unique {m = g} {h′ = h} h' p =
+Simple-fibration .has-lift f Y .cartesian .unique {m = g} {h' = h} h' p =
   h'                   ≡˘⟨ π₂∘⟨⟩ ⟩
   π₂ ∘ ⟨ g ∘ π₁ , h' ⟩ ≡⟨ p ⟩
   h ∎
@@ -296,16 +296,16 @@ Simple→Slices = func where
   open Slice-hom
 
   func : Vertical-functor _ _
-  func .F₀′ {x} x′ = cut {domain = x ⊗₀ x′} π₁
-  func .F₁′ {f = f} f′ = slice-hom ⟨ f ∘ π₁ , f′ ⟩ (sym π₁∘⟨⟩)
-  func .F-id′ =
+  func .F₀' {x} x' = cut {domain = x ⊗₀ x'} π₁
+  func .F₁' {f = f} f' = slice-hom ⟨ f ∘ π₁ , f' ⟩ (sym π₁∘⟨⟩)
+  func .F-id' =
     Slice-path B $
     ⟨ id ∘ π₁ , π₂ ⟩ ≡⟨ ap₂ ⟨_,_⟩ (idl _) refl ∙ ⟨⟩-η ⟩
     id               ∎
-  func .F-∘′ {f = f} {g = g} {f′ = f′} {g′ = g′} =
+  func .F-∘' {f = f} {g = g} {f' = f'} {g' = g'} =
     Slice-path B $
-    ⟨ (f ∘ g) ∘ π₁ , f′ ∘ ⟨ g ∘ π₁ , g′ ⟩ ⟩ ≡⟨ products! B has-prods ⟩
-    ⟨ f ∘ π₁ , f′ ⟩ ∘ ⟨ g ∘ π₁ , g′ ⟩       ∎
+    ⟨ (f ∘ g) ∘ π₁ , f' ∘ ⟨ g ∘ π₁ , g' ⟩ ⟩ ≡⟨ products! B has-prods ⟩
+    ⟨ f ∘ π₁ , f' ⟩ ∘ ⟨ g ∘ π₁ , g' ⟩       ∎
 ```
 
 Furthermore, this functor is fibred. The general sketch is that
@@ -319,19 +319,19 @@ universal map for the pullback.
 ```agda
 Simple→Slices-fibred
   : is-vertical-fibred Simple→Slices
-Simple→Slices-fibred {f = f} f′ cart =
+Simple→Slices-fibred {f = f} f' cart =
   pullback→cartesian B pb
   where
     open is-pullback
 
-    ⟨⟩-inv : is-invertible ⟨ π₁ , f′ ⟩
+    ⟨⟩-inv : is-invertible ⟨ π₁ , f' ⟩
     ⟨⟩-inv = cartesian→⟨⟩-invertible cart
 
     module ⟨⟩-inv = is-invertible ⟨⟩-inv
 
-    pb : is-pullback B π₁ f ⟨ f ∘ π₁ , f′ ⟩ π₁
+    pb : is-pullback B π₁ f ⟨ f ∘ π₁ , f' ⟩ π₁
     pb .square = sym π₁∘⟨⟩
-    pb .universal {P′} {p₁'} {p₂'} p =
+    pb .universal {P'} {p₁'} {p₂'} p =
       ⟨⟩-inv.inv ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩
 ```
 
@@ -346,18 +346,18 @@ tedious calculations, so we omit them.
       π₁ ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩              ≡⟨ π₁∘⟨⟩ ⟩
       p₁' ∎
     pb .p₂∘universal {P} {p₁'} {p₂'} {p} =
-      ⟨ f ∘ π₁ , f′ ⟩ ∘ ⟨⟩-inv.inv ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩                ≡⟨ pulll (⟨⟩∘ _) ⟩
-      ⟨ (f ∘ π₁) ∘ ⟨⟩-inv.inv , f′ ∘ ⟨⟩-inv.inv ⟩ ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩ ≡⟨ ap₂ _∘_ (ap₂ ⟨_,_⟩ (pullr (π₁-inv ⟨⟩-inv)) (π₂-inv ⟨⟩-inv)) refl ⟩
+      ⟨ f ∘ π₁ , f' ⟩ ∘ ⟨⟩-inv.inv ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩                ≡⟨ pulll (⟨⟩∘ _) ⟩
+      ⟨ (f ∘ π₁) ∘ ⟨⟩-inv.inv , f' ∘ ⟨⟩-inv.inv ⟩ ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩ ≡⟨ ap₂ _∘_ (ap₂ ⟨_,_⟩ (pullr (π₁-inv ⟨⟩-inv)) (π₂-inv ⟨⟩-inv)) refl ⟩
       ⟨ f ∘ π₁ , π₂ ⟩ ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩                             ≡⟨ products! B has-prods ⟩
       ⟨ f ∘ p₁' , π₂ ∘ p₂' ⟩                                           ≡⟨ ap₂ ⟨_,_⟩ p refl ⟩
       ⟨ π₁ ∘ p₂' , π₂ ∘ p₂' ⟩                                          ≡⟨ products! B has-prods ⟩
       p₂' ∎
     pb .unique {P} {p₁'} {p₂'} {p} {h'} q r =
       h'                                                   ≡⟨ insertl ⟨⟩-inv.invr ⟩
-      ⟨⟩-inv.inv ∘ ⟨ π₁ , f′ ⟩ ∘ h'                        ≡⟨ ap₂ _∘_ refl (⟨⟩∘ h') ⟩
-      ⟨⟩-inv.inv ∘ ⟨ ⌜ π₁ ∘ h' ⌝ , f′ ∘ h' ⟩               ≡⟨ ap! q ⟩
-      ⟨⟩-inv.inv ∘ ⟨ p₁' , ⌜ f′ ∘ h' ⌝ ⟩                   ≡⟨ ap! (pushl (sym π₂∘⟨⟩)) ⟩
-      ⟨⟩-inv.inv ∘ ⟨ p₁' , π₂ ∘ ⌜ ⟨ f ∘ π₁ , f′ ⟩ ∘ h' ⌝ ⟩ ≡⟨ ap! r ⟩
+      ⟨⟩-inv.inv ∘ ⟨ π₁ , f' ⟩ ∘ h'                        ≡⟨ ap₂ _∘_ refl (⟨⟩∘ h') ⟩
+      ⟨⟩-inv.inv ∘ ⟨ ⌜ π₁ ∘ h' ⌝ , f' ∘ h' ⟩               ≡⟨ ap! q ⟩
+      ⟨⟩-inv.inv ∘ ⟨ p₁' , ⌜ f' ∘ h' ⌝ ⟩                   ≡⟨ ap! (pushl (sym π₂∘⟨⟩)) ⟩
+      ⟨⟩-inv.inv ∘ ⟨ p₁' , π₂ ∘ ⌜ ⟨ f ∘ π₁ , f' ⟩ ∘ h' ⌝ ⟩ ≡⟨ ap! r ⟩
       ⟨⟩-inv.inv ∘ ⟨ p₁' , π₂ ∘ p₂' ⟩                      ∎
 ```
 </details>

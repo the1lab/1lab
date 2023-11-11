@@ -192,7 +192,7 @@ module Replacement
 
   data Image where
     inc  : A → Image
-    quot : ∀ {r r′} → embed r ∼ embed r′ → r ≡ r′
+    quot : ∀ {r r'} → embed r ∼ embed r' → r ≡ r'
     coh  : ∀ r → quot (rr (embed r)) ≡ refl
 
   embed (inc a)     = f a
@@ -237,7 +237,7 @@ As usual with these things, we can establish properties of
 
 ```agda
   Image-elim-prop
-    : ∀ {ℓ′} {P : Image → Type ℓ′}
+    : ∀ {ℓ'} {P : Image → Type ℓ'}
     → (∀ x → is-prop (P x))
     → (∀ x → P (inc x))
     → ∀ x → P x
@@ -290,11 +290,11 @@ first step, and deal only with untruncated data from then on.
       (λ _ → is-contr-is-prop)
       (λ { (i , p) → J
         (λ x p → is-contr (fibre Image→image (x , inc (i , p))))
-        (work′ i) p })
+        (work' i) p })
       p
     where
-      work′ : (f⁻¹x : A) → is-contr (fibre Image→image (f f⁻¹x , inc (_ , refl)))
-      work′ f⁻¹x .centre = inc f⁻¹x , refl -- inc f⁻¹x , refl
+      work' : (f⁻¹x : A) → is-contr (fibre Image→image (f f⁻¹x , inc (_ , refl)))
+      work' f⁻¹x .centre = inc f⁻¹x , refl -- inc f⁻¹x , refl
 ```
 
 Contracting the fibres is where we get some mileage out of having gotten
@@ -304,7 +304,7 @@ $\mathrm{embed}(i) = ff^{-1}(x)$, which, under `quot`{.agda}, is exactly
 what we need.
 
 ```agda
-      work′ f⁻¹x .paths (i , α) = Σ-pathp (quot (ls.from (sym (ap fst α)))) $
+      work' f⁻¹x .paths (i , α) = Σ-pathp (quot (ls.from (sym (ap fst α)))) $
         Σ-prop-square (λ _ → squash) $ commutes→square $
           (ap₂ _∙_ (ls.ε (sym (ap fst α))) refl ∙ ∙-invl _ ∙ sym (∙-idl _))
 ```
