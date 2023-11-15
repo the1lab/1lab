@@ -747,7 +747,7 @@ contradiction, since any `I → Partial i1 T` extends to a path:
 A partial element in a context with $n$-variables gives us a way of
 mapping some subobject of the $n$-cube into a type. A natural question
 to ask, then, is: Given a partial element $e$ of $A$, can we extend that
-to a honest-to-god _element_ of $A$, which agrees with $e$ where it is
+to an honest-to-god _element_ of $A$, which agrees with $e$ where it is
 defined?
 
 Specifically, when this is the case, we say that $x : A$ _extends_ $e :
