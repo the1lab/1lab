@@ -679,6 +679,9 @@ open import Cat.Displayed.Instances.Elements
 -- The category of elements of a presheaf, instantiated as being
 -- displayed over the domain.
 
+open import Cat.Displayed.Instances.TotalProduct
+-- The total product of two displayed categories.
+
 open import Cat.Displayed.Composition
   -- Composition of displayed categories
 ```
