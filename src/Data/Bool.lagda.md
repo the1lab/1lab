@@ -9,6 +9,7 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Dec.Base
+open import Data.Sum.Base
 
 open is-equiv
 open is-contr
@@ -134,6 +135,35 @@ or-idempotent false = refl
 or-idempotent true = refl
 ```
 
+<!--
+```agda
+and-reflect-true-l : ∀ {x y} → and x y ≡ true → x ≡ true
+and-reflect-true-l {x = true} p = refl
+and-reflect-true-l {x = false} p = p
+
+and-reflect-true-r : ∀ {x y} → and x y ≡ true → y ≡ true
+and-reflect-true-r {x = true} {y = true} p = refl
+and-reflect-true-r {x = false} {y = true} p = refl
+and-reflect-true-r {x = true} {y = false} p = p
+and-reflect-true-r {x = false} {y = false} p = p
+
+or-reflect-true : ∀ {x y} → or x y ≡ true → x ≡ true ⊎ y ≡ true
+or-reflect-true {x = true} {y = y} p = inl refl
+or-reflect-true {x = false} {y = true} p = inr refl
+or-reflect-true {x = false} {y = false} p = absurd (true≠false (sym p))
+
+or-reflect-false-l : ∀ {x y} → or x y ≡ false → x ≡ false
+or-reflect-false-l {x = true} p = absurd (true≠false p)
+or-reflect-false-l {x = false} p = refl
+
+or-reflect-false-r : ∀ {x y} → or x y ≡ false → y ≡ false
+or-reflect-false-r {x = true} {y = true} p = absurd (true≠false p)
+or-reflect-false-r {x = true} {y = false} p = refl
+or-reflect-false-r {x = false} {y = true} p = absurd (true≠false p)
+or-reflect-false-r {x = false} {y = false} p = refl
+```
+-->
+
 All the properties above hold both in classical and constructive mathematics, even in
 *[minimal logic][2]* that fails to validate both the law of the excluded middle as well
 as the law of noncontradiction. However, the boolean operations satisfy both of these laws:
@@ -162,6 +192,14 @@ and-complementl true = refl
 
 [1]: <https://en.wikipedia.org/wiki/Boolean_algebra_(structure)> "Boolean algebra"
 [2]: <https://en.wikipedia.org/wiki/Minimal_logic> "Minimal logic"
+
+Furthermore, note that `not` has no fixed points.
+
+```agda
+not-no-fixed : ∀ {x} → x ≡ not x → ⊥
+not-no-fixed {x = true} p = absurd (true≠false p)
+not-no-fixed {x = false} p = absurd (true≠false (sym p))
+```
 
 Exclusive disjunction (usually known as *XOR*) also yields additional structure -
 in particular, it can be viewed as an addition operator in a ring whose multiplication
@@ -213,6 +251,13 @@ imp-truer false = refl
 imp-truer true = refl
 ```
 
+Furthermore, material implication is equivalent to the classical definition.
+
+```agda
+imp-not-or : ∀ x y → or (not x) y ≡ imp x y
+imp-not-or false y = refl
+imp-not-or true y = refl
+```
 
 ## Discreteness
 
