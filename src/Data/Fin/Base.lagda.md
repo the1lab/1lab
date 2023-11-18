@@ -259,6 +259,24 @@ weaken-≤ : ∀ {m n} → m Nat.≤ n → Fin m → Fin n
 weaken-≤ {suc m} {suc n} m≤n fzero = fzero
 weaken-≤ {suc m} {suc n} (Nat.s≤s m≤n) (fsuc i) = fsuc (weaken-≤ m≤n i)
 
+shift-≤ : ∀ {m n} → m Nat.≤ n → Fin m → Fin n
+shift-≤ {n = suc zero} (Nat.s≤s 0≤x) i = i
+shift-≤ {n = suc (suc n)} (Nat.s≤s 0≤x) i = fsuc (shift-≤ (Nat.s≤s 0≤x) i)
+shift-≤ {n = n} (Nat.s≤s (Nat.s≤s m≤n)) fzero = weaken (shift-≤ (Nat.s≤s m≤n) fzero)
+shift-≤ {n = n} (Nat.s≤s (Nat.s≤s m≤n)) (fsuc i) = fsuc (shift-≤ (Nat.s≤s m≤n) i)
+
+split-+ : ∀ {m n} → Fin (m + n) → Fin m ⊎ Fin n
+split-+ {m = zero} i = inr i
+split-+ {m = suc m} fzero = inl fzero
+split-+ {m = suc m} (fsuc i) = ⊎-map fsuc id (split-+ i)
+
+avoid : ∀ {n} (i j : Fin (suc n)) → (¬ i ≡ j) → Fin n
+avoid {n = zero} fzero fzero i≠j = absurd (i≠j refl)
+avoid {n = suc n} fzero fzero i≠j = absurd (i≠j refl)
+avoid {n = suc n} fzero (fsuc j) i≠j = j
+avoid {n = suc n} (fsuc i) fzero i≠j = fzero
+avoid {n = suc n} (fsuc i) (fsuc j) i≠j = fsuc (avoid i j (i≠j ∘ ap fsuc))
+
 fshift : ∀ {n} (m : Nat) → Fin n → Fin (m + n)
 fshift zero i = i
 fshift (suc m) i = fsuc (fshift m i)
@@ -266,4 +284,23 @@ fshift (suc m) i = fsuc (fshift m i)
 opposite : ∀ {n} → Fin n → Fin n
 opposite {n = suc n} fzero = from-nat n
 opposite {n = suc n} (fsuc i) = weaken (opposite i)
+```
+
+## Vector Operations
+
+```agda
+_[_≔_]
+  : ∀ {ℓ} {A : Type ℓ} {n}
+  → (Fin n → A) → Fin (suc n) → A
+  → Fin (suc n) → A
+_[_≔_] {n = n} ρ fzero a fzero = a
+_[_≔_] {n = n} ρ fzero a (fsuc j) = ρ j
+_[_≔_] {n = suc n} ρ (fsuc i) a fzero = ρ fzero
+_[_≔_] {n = suc n} ρ (fsuc i) a (fsuc j) = ((ρ ∘ fsuc) [ i ≔ a ]) j
+
+delete
+  : ∀ {ℓ} {A : Type ℓ} {n}
+  → (Fin (suc n) → A) → Fin (suc n)
+  → Fin n → A
+delete ρ i j = ρ (skip i j)
 ```

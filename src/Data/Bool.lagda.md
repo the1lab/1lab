@@ -133,6 +133,16 @@ and-idempotent true = refl
 or-idempotent : (x : Bool) → or x x ≡ x
 or-idempotent false = refl
 or-idempotent true = refl
+
+and-distrib-orr : (x y z : Bool) → and (or x y) z ≡ or (and x z) (and y z)
+and-distrib-orr true y z =
+  sym (or-absorbs-andr z y) ∙ ap (or z) (and-commutative z y)
+and-distrib-orr false y z = refl
+
+or-distrib-andr : (x y z : Bool) → or (and x y) z ≡ and (or x z) (or y z)
+or-distrib-andr true y z = refl
+or-distrib-andr false y z =
+  sym (and-absorbs-orr z y) ∙ ap (and z) (or-commutative z y)
 ```
 
 <!--
@@ -306,6 +316,16 @@ equivalence:
 not-is-equiv : is-equiv not
 not-is-equiv = is-iso→is-equiv (iso not not-involutive not-involutive)
 ```
+
+<!--
+```agda
+not-inj : ∀ {x y} → not x ≡ not y → x ≡ y
+not-inj {x = true} {y = true} p = refl
+not-inj {x = true} {y = false} p = sym p
+not-inj {x = false} {y = true} p = sym p
+not-inj {x = false} {y = false} p = refl
+```
+-->
 
 ## Aut(Bool)
 
