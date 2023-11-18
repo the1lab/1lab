@@ -287,14 +287,15 @@ formulate in the language of type theory.
 However, when $B$ is an $n$-type, it is enough to ask for the first $n$
 levels of the tower. In the case of sets, we've [seen](#maps-into-sets)
 that the naïve notion of constancy is enough. We now deal with the case
-of groupoids, which requires an additional step: we ask for a function
+of [[groupoids]], which requires an additional step: we ask for a function
 $f : A \to B$ equipped with a witness of constancy $\rm{const}_{x,y} :
 f x \equiv f y$ *and* a coherence $\rm{coh}_{x,y,z} : \rm{const}_{x,y}
 \bullet \rm{const}_{y,z} \equiv \rm{const}_{x,z}$.
 
 This time, we cannot hope to show that the image of $f$ is a proposition:
 the image of a map $\top \to S^1$ is $S^1$. Instead, we use the following
-higher inductive type:
+higher inductive type, which can be thought of as the "codiscrete groupoid"
+on $A$:
 
 ```agda
 data ∥_∥³ {ℓ} (A : Type ℓ) : Type ℓ where
@@ -424,9 +425,9 @@ data ∥_∥⁴ {ℓ} (A : Type ℓ) : Type ℓ where
   inc : A → ∥ A ∥⁴
   iconst : ∀ a b → inc a ≡ inc b
   icoh : ∀ a b c → PathP (λ i → inc a ≡ iconst b c i) (iconst a b) (iconst a c)
-  icoh³ : ∀ a b c d → PathP (λ i → PathP (λ j → inc a ≡ icoh b c d i j)
-                                         (iconst a b) (icoh a c d i))
-                            (icoh a b c) (icoh a b d)
+  iassoc : ∀ a b c d → PathP (λ i → PathP (λ j → inc a ≡ icoh b c d i j)
+                                          (iconst a b) (icoh a c d i))
+                             (icoh a b c) (icoh a b d)
   squash : is-hlevel ∥ A ∥⁴ 4
 
 ∥-∥⁴-rec
@@ -439,12 +440,12 @@ data ∥_∥⁴ {ℓ} (A : Type ℓ) : Type ℓ where
                                     (fconst a b) (fcoh a c d i))
                        (fcoh a b c) (fcoh a b d))
   → ∥ A ∥⁴ → B
-∥-∥⁴-rec {A = A} {B} b4 f fconst fcoh fcoh³ = go where
+∥-∥⁴-rec {A = A} {B} b4 f fconst fcoh fassoc = go where
   go : ∥ A ∥⁴ → B
   go (inc x) = f x
   go (iconst a b i) = fconst a b i
   go (icoh a b c i j) = fcoh a b c i j
-  go (icoh³ a b c d i j k) = fcoh³ a b c d i j k
+  go (iassoc a b c d i j k) = fassoc a b c d i j k
   go (squash x y a b p q r s i j k l) = b4
     (go x) (go y)
     (λ i → go (a i)) (λ i → go (b i))
