@@ -191,7 +191,7 @@ module
       k (i = i1) → p
 ```
 
-This is actually part of a logical equivalence: if the equality identity
+This is actually part of an equivalence: if the equality identity
 system on $B$ (thus any identity system) can be pulled back along $f$,
 then $f$ is an embedding.
 
