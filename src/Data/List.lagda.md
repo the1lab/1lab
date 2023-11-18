@@ -264,9 +264,9 @@ any-one-of
   → (x : A) (xs : List A)
   → x ∈ₗ xs → f x ≡ true
   → any-of f xs ≡ true
-any-one-of f x (y ∷ xs) (inl x=y) x-true =
+any-one-of f x (y ∷ xs) (here x=y) x-true =
   ap₂ or (subst (λ e → f e ≡ true) x=y x-true) refl
-any-one-of f x (y ∷ xs) (inr x∈xs) x-true =
+any-one-of f x (y ∷ xs) (there x∈xs) x-true =
   ap₂ or refl (any-one-of f x xs x∈xs x-true) ∙ or-truer _
 ```
 -->

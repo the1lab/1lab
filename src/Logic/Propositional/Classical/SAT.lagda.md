@@ -85,26 +85,26 @@ delete-literals-sound
   → ⟦ ϕ ⟧ (ρ [ lit-var x ≔ lit-val x ]) ≡ ⟦ delete-literals (lit-var x) ϕ ⟧ ρ
 delete-literals-sound {zero} x [] x∉ϕ ρ = refl
 delete-literals-sound {zero} (lit fzero) (lit fzero ∷ ϕ) x∉ϕ ρ =
-  absurd (x∉ϕ (inl refl))
+  absurd (x∉ϕ (here refl))
 delete-literals-sound {zero} (lit fzero) (neg fzero ∷ ϕ) x∉ϕ ρ =
-  delete-literals-sound (lit fzero) ϕ (x∉ϕ ∘ inr) ρ
+  delete-literals-sound (lit fzero) ϕ (x∉ϕ ∘ there) ρ
 delete-literals-sound {zero} (neg fzero) (lit fzero ∷ ϕ) x∉ϕ ρ =
-  delete-literals-sound (neg fzero) ϕ (x∉ϕ ∘ inr) ρ
+  delete-literals-sound (neg fzero) ϕ (x∉ϕ ∘ there) ρ
 delete-literals-sound {zero} (neg fzero) (neg fzero ∷ ϕ) x∉ϕ ρ =
-  absurd (x∉ϕ (inl refl))
+  absurd (x∉ϕ (here refl))
 delete-literals-sound {suc Γ} x [] x∉ϕ ρ = refl
 delete-literals-sound {suc Γ} x (y ∷ ϕ) x∉ϕ ρ with Discrete-Fin (lit-var x) (lit-var y)
 ... | yes x=y =
   ap₂ or
     (subst (λ e → ⟦ y ⟧ (ρ [ lit-var e ≔ lit-val e ]) ≡ false)
-      (sym (literal-eq-negate x y (x∉ϕ ∘ inl) x=y))
+      (sym (literal-eq-negate x y (x∉ϕ ∘ here) x=y))
       (lit-assign-neg-false y ρ))
     refl
-  ∙ delete-literals-sound x ϕ (x∉ϕ ∘ inr) ρ
+  ∙ delete-literals-sound x ϕ (x∉ϕ ∘ there) ρ
 ... | no x≠y =
   ap₂ or
     (avoid-lit-insert x y x≠y ρ)
-    (delete-literals-sound x ϕ (x∉ϕ ∘ inr) ρ)
+    (delete-literals-sound x ϕ (x∉ϕ ∘ there) ρ)
 
 unit-propagate-sound
   : (x : Literal (suc Γ))
@@ -138,23 +138,23 @@ unit-propagate-complete x ϕs ρ x-true =
 
 ```agda
 has-unit-clause? : ∀ (ϕs : CNF Γ) → Dec (Σ[ x ∈ Literal Γ ] ((x ∷ []) ∈ₗ ϕs))
-has-unit-clause? [] = no (Lift.lower ∘ snd)
+has-unit-clause? [] = no (¬some-[] ∘ snd)
 has-unit-clause? ([] ∷ ϕs) =
   Dec-rec
-    (λ (x , x∈ϕs) → yes (x , inr x∈ϕs))
+    (λ (x , x∈ϕs) → yes (x , there x∈ϕs))
     (λ ¬ϕ-unit → no (λ (x , x∈ϕs) →
       [ ∷≠[]
       , (λ x∈ϕs → ¬ϕ-unit (x , x∈ϕs))
-      ] x∈ϕs))
+      ] (∷-some-⊎ x∈ϕs)))
     (has-unit-clause? ϕs)
-has-unit-clause? ((x ∷ []) ∷ ϕs) = yes (x , inl refl)
+has-unit-clause? ((x ∷ []) ∷ ϕs) = yes (x , here refl)
 has-unit-clause? ((x ∷ y ∷ ϕ) ∷ ϕs) =
   Dec-rec
-    (λ (x , x∈ϕs) → yes (x , inr x∈ϕs))
+    (λ (x , x∈ϕs) → yes (x , there x∈ϕs))
     (λ ¬ϕ-unit → no (λ (x , x∈ϕs) →
       [ ∷≠[] ∘ ∷-tail-inj ∘ sym
       , (λ x∈ϕs → ¬ϕ-unit (x , x∈ϕs))
-      ] x∈ϕs))
+      ] (∷-some-⊎ x∈ϕs)))
     (has-unit-clause? ϕs)
 
 unit-clause-sat
@@ -164,11 +164,11 @@ unit-clause-sat
   → (ρ : Fin Γ → Bool)
   → ⟦ ϕs ⟧ ρ ≡ true
   → ⟦ x ⟧ ρ ≡ true
-unit-clause-sat x (ϕ ∷ ϕs) (inl [x]=ϕ) ρ ϕs-sat =
+unit-clause-sat x (ϕ ∷ ϕs) (here [x]=ϕ) ρ ϕs-sat =
   sym (or-falser _)
   ∙ ap (λ e → (⟦ e ⟧ ρ)) [x]=ϕ
   ∙ and-reflect-true-l ϕs-sat
-unit-clause-sat x (y ∷ ϕs) (inr [x]∈ϕs) ρ ϕs-sat =
+unit-clause-sat x (y ∷ ϕs) (there [x]∈ϕs) ρ ϕs-sat =
   unit-clause-sat x ϕs [x]∈ϕs ρ (and-reflect-true-r ϕs-sat)
 ```
 
@@ -278,27 +278,21 @@ cnf-sat? {Γ = zero} [] =
   yes (((λ ()) , refl))
 cnf-sat? {Γ = zero} (ϕ ∷ ϕs) =
   no (λ (ρ , sat) → ¬empty-disj-sat ϕ ρ (and-reflect-true-l sat))
-cnf-sat? {Γ = suc Γ} ϕs =
-  Dec-rec
-    (λ (x , x∈ϕs) →
-      Dec-rec
-        (yes ∘ unit-propagate-sat x ϕs)
-        (λ ¬sat → no (λ (ρ , ρ-sat) → unit-propagate-unsat x ϕs ¬sat (ρ , ρ-sat , unit-clause-sat x ϕs x∈ϕs ρ ρ-sat)))
-        (cnf-sat? (unit-propagate x ϕs)))
-    (λ ¬ϕs-unit → -- TODO: pure literal elimination
-      Dec-rec
-        (yes ∘ unit-propagate-sat (lit fzero) ϕs)
-        (λ ¬sat-true →
-          Dec-rec
-            (yes ∘ unit-propagate-sat (neg fzero) ϕs)
-            (λ ¬sat-false → no λ (ρ , ρ-sat) →
-              Bool-elim (λ b → ρ fzero ≡ b → ⊥)
-                (λ ρ₀-true → unit-propagate-unsat (lit fzero) ϕs ¬sat-true (ρ , ρ-sat , ρ₀-true))
-                (λ ρ₀-false → unit-propagate-unsat (neg fzero) ϕs ¬sat-false (ρ , ρ-sat , ap not ρ₀-false))
-                (ρ fzero) refl)
-            (cnf-sat? (unit-propagate (neg fzero) ϕs)))
-        (cnf-sat? (unit-propagate (lit fzero) ϕs))) 
-    (has-unit-clause? ϕs)
+cnf-sat? {Γ = suc Γ} ϕs with has-unit-clause? ϕs
+... | yes (x , [x]∈ϕs) with cnf-sat? (unit-propagate x ϕs)
+...   | yes sat = yes (unit-propagate-sat x ϕs sat)
+...   | no ¬sat = no λ (ρ , ρ-sat) →
+        unit-propagate-unsat x ϕs ¬sat
+          (ρ , ρ-sat , unit-clause-sat x ϕs [x]∈ϕs ρ ρ-sat)
+cnf-sat? {Γ = suc Γ} ϕs | no ¬ϕs-unit with (cnf-sat? (unit-propagate (lit fzero) ϕs))
+... | yes sat-true = yes (unit-propagate-sat (lit fzero) ϕs sat-true)
+... | no ¬sat-true with cnf-sat? (unit-propagate (neg fzero) ϕs)
+...   | yes sat-false = yes (unit-propagate-sat (neg fzero) ϕs sat-false)
+...   | no ¬sat-false = no λ (ρ , ρ-sat) →
+        Bool-elim (λ b → ρ fzero ≡ b → ⊥)
+          (λ ρ₀-true → unit-propagate-unsat (lit fzero) ϕs ¬sat-true (ρ , ρ-sat , ρ₀-true))
+          (λ ρ₀-false → unit-propagate-unsat (neg fzero) ϕs ¬sat-false (ρ , ρ-sat , ap not ρ₀-false))
+          (ρ fzero) refl
 ```
 
 ```agda
