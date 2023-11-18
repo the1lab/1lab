@@ -266,7 +266,7 @@ elide the zero composite $e' \circ 0$.
           (p : e' Groups.∘ Zero.zero→ ∅ᴳ ≡ e' Groups.∘ Kerf.kernel)
       → ∀ {x : ⌞ B ⌟} → ∥ fibre (apply f) x ∥ → _
     elim {F = F} {e' = e'} p {x} =
-      ∥-∥-rec-set ((e' #_) ⊙ fst) const (F .snd .Group-on.has-is-set) where abstract
+      ∥-∥-rec-set (F .snd .Group-on.has-is-set) ((e' #_) ⊙ fst) const where abstract
       module e' = is-group-hom (e' .preserves)
       module F = Group-on (F .snd)
 ```
