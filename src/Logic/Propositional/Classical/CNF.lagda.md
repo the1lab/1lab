@@ -29,7 +29,7 @@ normal-form for logical and algebraic expressions, and
 possible choices of normal form, but we will be focusing on
 **conjunctive normal form**, or CNF for short.
 
-An statement in propositional logic is in conjunctive normal form if
+A statement in propositional logic is in conjunctive normal form if
 it is written as a conjunction of disjunctions of (potentially negated)
 atoms. As an example, something like $(P \vee \neg Q) \wedge (\neg R \vee P)$
 is in conjunctive normal form, yet something like $(P \wedge Q) \vee \neg R$
@@ -97,7 +97,7 @@ avoid-lit i (neg x) p = neg (avoid i x p)
 
 ## Semantics
 
-Like their non-normal form bretheren, expressions in CNF have a natural
+Like their non-normal form brethren, expressions in CNF have a natural
 semantics in booleans. However, evaluation is particularly easy!
 
 ```agda

@@ -514,7 +514,7 @@ if every provable theorem `ψ ⊢ P` is true. This definition obscures
 what is really going on: what we care about is that a provable theorem
 `ψ ⊢ P` is true **in some semantics**. For classical propositional logic,
 it just so happens that we only care about one semantics[^1] (the booleans),
-so authors often conflate "true" with "true in thhis particular semantics".
+so authors often conflate "true" with "true in this particular semantics".
 
 [^1]: We will see why this is the case in just a bit!
 
@@ -564,14 +564,14 @@ having a **single** semantics. This is largely due to the fact that
 if `ψ` semantically entails `P` in the booleans, then we can prove that
 `ψ ⊢ P`! In other words, classical propositional logic is **complete**.
 
-This somewhat miraculous is often taken for granted. Completeness is
+This somewhat miraculous is often taken for granted. Completeness
 is why truth-tables are a valid form of reasoning, yet this is rarely
 mentioned when teaching logic. As we shall soon see, this is not exactly
 a trivial theorem.
 
 First, let us lay out our general proof strategy. We shall start
 by building a context $\hat{\rho}$ from an assignment $\rho$ that contains only
-(potentially negated) atoms. If $rho$ assigns `true` to an atom $x$, we will
+(potentially negated) atoms. If $\rho$ assigns `true` to an atom $x$, we will
 add $x$ to $\hat{\rho}$. Conversely, if $\rho$ assigns false to $x$, we
 add $\neg x$ to $\hat{\rho}$.
 
@@ -605,14 +605,22 @@ assigns a truth value to $x$, then we should be able to prove this under
 the assumptions $\hat{\rho}$.
 
 ```agda
-tabulate-atom-true : (x : Fin Γ) (ρ : Fin Γ → Bool) → ρ x ≡ true → tabulate ρ ⊢ atom x
+tabulate-atom-true
+  : (x : Fin Γ)
+  → (ρ : Fin Γ → Bool)
+  → ρ x ≡ true
+  → tabulate ρ ⊢ atom x
 tabulate-atom-true {Γ = suc Γ} fzero ρ x-true with ρ 0
 ... | true = hyp here
 ... | false = absurd (true≠false $ sym x-true)
 tabulate-atom-true {Γ = suc Γ} (fsuc x) ρ x-true =
   rename (drop idrn) (bump-proof (tabulate-atom-true x (ρ ∘ fsuc) x-true))
 
-tabulate-atom-false : (x : Fin Γ) (ρ : Fin Γ → Bool) → ρ x ≡ false → tabulate ρ ⊢ “¬” atom x
+tabulate-atom-false
+  : (x : Fin Γ)
+  → (ρ : Fin Γ → Bool)
+  → ρ x ≡ false
+  → tabulate ρ ⊢ “¬” atom x
 tabulate-atom-false {Γ = suc Γ} fzero ρ x-false with ρ 0
 ... | false = hyp here
 ... | true = absurd (true≠false x-false)
@@ -626,8 +634,16 @@ and conversely $\hat{\rho} \vdash \neg P$ if $\llbracket P \rrbracket \rho$
 is false.
 
 ```agda
-tabulate-true : ∀ (P : Proposition Γ) (ρ : Fin Γ → Bool) → ⟦ P ⟧ ρ ≡ true → tabulate ρ ⊢ P
-tabulate-false : ∀ (P : Proposition Γ) (ρ : Fin Γ → Bool) → ⟦ P ⟧ ρ ≡ false → tabulate ρ ⊢ “¬” P
+tabulate-true
+  : ∀ (P : Proposition Γ)
+  → (ρ : Fin Γ → Bool)
+  → ⟦ P ⟧ ρ ≡ true
+  → tabulate ρ ⊢ P
+tabulate-false
+  : ∀ (P : Proposition Γ)
+  → (ρ : Fin Γ → Bool)
+  → ⟦ P ⟧ ρ ≡ false
+  → tabulate ρ ⊢ “¬” P
 
 tabulate-true (atom x) ρ P-true = tabulate-atom-true x ρ P-true
 tabulate-true “⊤” ρ P-true = ⊤-intro
