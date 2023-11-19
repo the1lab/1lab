@@ -31,7 +31,7 @@ private variable
 ```
 -->
 
-# SAT Solving
+# SAT Solving {defines="SAT-solving SAT"}
 
 SAT solving is the process of determining if we can find some assignment
 of variables $\rho$ that makes a given formula $\phi$ in classical propositional

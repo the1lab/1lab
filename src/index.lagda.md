@@ -972,6 +972,16 @@ open import Order.DCPO.Pointed -- Pointed directed-complete partial orders
 open import Order.DCPO.Free -- Free DCPOs and free pointed DCPOs
 ```
 
+# Logic
+
+```
+open import Logic.Propositional.Classical
+-- Classical logic, soundness, completeness
+open import Logic.Propositional.Classical.CNF
+-- Conjunctive normal forms
+open import Logic.Propositional.Classical.SAT
+-- DPLL SAT solver
+```
 
 # Algebra
 
