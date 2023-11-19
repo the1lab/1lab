@@ -180,18 +180,13 @@ disjoint-⊎-is-prop Ap Bp notab (inr x) (inr y) = ap inr (Bp x y)
 
 ## Decidability
 
-If `A` and `B` are [[decidable]] then so is `A ⊎ B`.
+If `A` and `B` are [[decidable]], then so is `A ⊎ B`.
 
 ```agda
 Dec-⊎ : Dec A → Dec B → Dec (A ⊎ B)
-Dec-⊎ a? b? =
-  Dec-rec
-    (yes ∘ inl)
-    (λ ¬a →
-      Dec-rec
-        (yes ∘ inr)
-        (λ ¬b → no [ ¬a , ¬b ])
-        b?)
-    a?
+Dec-⊎ (yes A) _       = yes (inl A)
+Dec-⊎ (no ¬A) (yes B) = yes (inr B)
+Dec-⊎ (no ¬A) (no ¬B) = no λ where
+  (inl A) → ¬A A
+  (inr B) → ¬B B
 ```
-
