@@ -173,7 +173,7 @@ $A$.
 ```agda
 module
   _ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'}
-    {R : B → B → Type ℓ''} {r : ∀ a → R a a}
+    {R : B → B → Type ℓ''} {r : ∀ b → R b b}
     (ids : is-identity-system R r)
     (f : A ↪ B)
   where
@@ -189,6 +189,20 @@ module
       k (k = i0) → ids .to-path-over p (~ k)
       k (i = i0) → ids .to-path-over p (~ k ∨ i)
       k (i = i1) → p
+```
+
+This is actually part of an equivalence: if the equality identity
+system on $B$ (thus any identity system) can be pulled back along $f$,
+then $f$ is an embedding.
+
+```agda
+identity-system→embedding
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → (f : A → B)
+  → is-identity-system (λ x y → f x ≡ f y) (λ _ → refl)
+  → is-embedding f
+identity-system→embedding f ids = cancellable→embedding
+  (identity-system-gives-path ids)
 ```
 
 <!--
