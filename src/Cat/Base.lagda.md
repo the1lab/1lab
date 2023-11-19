@@ -17,7 +17,7 @@ open import 1Lab.Type hiding (id ; _∘_)
 module Cat.Base where
 ```
 
-# Precategories {defines=category}
+# Precategories {defines="category precategory"}
 
 In univalent mathematics, it makes sense to distinguish two stages in
 the construction of categories: A **precategory** is the object that

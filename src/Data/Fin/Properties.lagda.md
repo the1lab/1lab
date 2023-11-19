@@ -196,3 +196,48 @@ finite-surjection-split
   → ∥ (∀ x → fibre f x) ∥
 finite-surjection-split f = finite-choice _
 ```
+
+## Vector Operations
+
+```agda
+avoid-insert
+  : ∀ {n} {ℓ} {A : Type ℓ}
+  → (ρ : Fin n → A)
+  → (i : Fin (suc n)) (a : A)
+  → (j : Fin (suc n))
+  → (i≠j : ¬ i ≡ j)
+  → (ρ [ i ≔ a ]) j ≡ ρ (avoid i j i≠j)
+avoid-insert {n = n} ρ fzero a fzero i≠j = absurd (i≠j refl)
+avoid-insert {n = suc n} ρ fzero a (fsuc j) i≠j = refl
+avoid-insert {n = suc n} ρ (fsuc i) a fzero i≠j = refl
+avoid-insert {n = suc n} ρ (fsuc i) a (fsuc j) i≠j =
+  avoid-insert (ρ ∘ fsuc) i a j (i≠j ∘ ap fsuc)
+
+insert-lookup
+  : ∀ {n} {ℓ} {A : Type ℓ}
+  → (ρ : Fin n → A)
+  → (i : Fin (suc n)) (a : A)
+  → (ρ [ i ≔ a ]) i ≡ a
+insert-lookup {n = n} ρ fzero a = refl
+insert-lookup {n = suc n} ρ (fsuc i) a = insert-lookup (ρ ∘ fsuc) i a
+
+delete-insert
+  : ∀ {n} {ℓ} {A : Type ℓ}
+  → (ρ : Fin n → A)
+  → (i : Fin (suc n)) (a : A)
+  → ∀ j → delete (ρ [ i ≔ a ]) i j ≡ ρ j
+delete-insert ρ fzero a j = refl
+delete-insert ρ (fsuc i) a fzero = refl
+delete-insert ρ (fsuc i) a (fsuc j) = delete-insert (ρ ∘ fsuc) i a j
+
+insert-delete
+  : ∀ {n} {ℓ} {A : Type ℓ}
+  → (ρ : Fin (suc n) → A)
+  → (i : Fin (suc n)) (a : A)
+  → ρ i ≡ a
+  → ∀ j → ((delete ρ i) [ i ≔ a ]) j ≡ ρ j
+insert-delete {n = n} ρ fzero a p fzero = sym p
+insert-delete {n = n} ρ fzero a p (fsuc j) = refl
+insert-delete {n = suc n} ρ (fsuc i) a p fzero = refl
+insert-delete {n = suc n} ρ (fsuc i) a p (fsuc j) = insert-delete (ρ ∘ fsuc) i a p j
+```
