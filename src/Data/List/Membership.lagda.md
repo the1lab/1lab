@@ -14,7 +14,7 @@ module Data.List.Membership where
 
 ## Pointwise Predicates
 
-```
+```agda
 data Some {ℓ ℓ'} {A : Type ℓ} (P : A → Type ℓ') : List A → Type (ℓ ⊔ ℓ') where
   here : ∀ {x xs} → P x → Some P (x ∷ xs)
   there : ∀ {x xs} → Some P xs → Some P (x ∷ xs)

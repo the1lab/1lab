@@ -170,7 +170,7 @@ all-of f (x ∷ xs) = and (f x) (all-of f xs)
 Dually, we can also define a function that determines if a boolean-valued
 predicate holds on some element of a list.
 
-```
+```agda
 any-of : ∀ {ℓ} {A : Type ℓ} → (A → Bool) → List A → Bool
 any-of f [] = false
 any-of f (x ∷ xs) = or (f x) (any-of f xs)
