@@ -974,7 +974,7 @@ open import Order.DCPO.Free -- Free DCPOs and free pointed DCPOs
 
 # Logic
 
-```
+```agda
 open import Logic.Propositional.Classical
 -- Classical logic, soundness, completeness
 open import Logic.Propositional.Classical.CNF
