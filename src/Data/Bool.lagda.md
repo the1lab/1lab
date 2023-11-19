@@ -171,6 +171,10 @@ or-reflect-false-r {x = true} {y = true} p = absurd (true≠false p)
 or-reflect-false-r {x = true} {y = false} p = refl
 or-reflect-false-r {x = false} {y = true} p = absurd (true≠false p)
 or-reflect-false-r {x = false} {y = false} p = refl
+
+and-reflect-false : ∀ {x y} → and x y ≡ false → x ≡ false ⊎ y ≡ false
+and-reflect-false {x = true} {y = y} p = inr p
+and-reflect-false {x = false} {y = y} p = inl refl
 ```
 -->
 

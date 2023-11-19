@@ -3,7 +3,7 @@
 open import 1Lab.Prelude hiding (_∈_)
 
 open import Data.Bool
-open import Data.Fin using (Fin; fzero; fsuc; weaken; inject)
+open import Data.Fin using (Fin; fzero; fsuc; weaken; inject; _[_≔_])
 open import Data.List hiding (_++_)
 open import Data.Nat
 open import Data.Sum
@@ -151,6 +151,14 @@ boilerplate.
 ¬weaken-suc-zero : Weakening (suc Γ) 0 → ⊥
 ¬weaken-suc-zero (weak σ) = ¬weaken-suc-zero σ
 
+wk-suc : Weakening Γ Δ → Weakening Γ (suc Δ)
+wk-suc done = weak done
+wk-suc (weak σ) = weak (wk-suc σ)
+
+!wk : Weakening 0 Γ
+!wk {Γ = zero} = done
+!wk {Γ = suc Γ} = wk-suc !wk
+
 inc-prop : Proposition Γ → Proposition (suc Γ)
 inc-prop (atom x) = atom (weaken x)
 inc-prop “⊤” = “⊤”
@@ -181,9 +189,39 @@ inc-proof (¬-intro p) = ¬-intro (inc-proof p)
 inc-proof (¬-elim p q) = ¬-elim (inc-proof p) (inc-proof q)
 inc-proof (dneg-elim p) = dneg-elim (inc-proof p)
 
+bump-prop : Proposition Γ → Proposition (suc Γ)
+bump-prop (atom x) = atom (fsuc x)
+bump-prop “⊤” = “⊤”
+bump-prop “⊥” = “⊥”
+bump-prop (p “∧” q) = bump-prop p “∧” bump-prop q
+bump-prop (p “∨” q) = bump-prop p “∨” bump-prop q
+bump-prop (“¬” p) = “¬” bump-prop p
+
+bump-ctx : Ctx Γ → Ctx (suc Γ)
+bump-ctx [] = []
+bump-ctx (ψ ⨾ P) = bump-ctx ψ ⨾ bump-prop P
+
+bump-atom : P ∈ ψ → bump-prop P ∈ bump-ctx ψ
+bump-atom here = here
+bump-atom (there p) = there (bump-atom p)
+
+bump-proof : ψ ⊢ P → bump-ctx ψ ⊢ bump-prop P
+bump-proof (hyp x) = hyp (bump-atom x)
+bump-proof ⊤-intro = ⊤-intro
+bump-proof (⊥-elim p) = ⊥-elim (bump-proof p)
+bump-proof (∧-intro p q) = ∧-intro (bump-proof p) (bump-proof q)
+bump-proof (∧-elim-l p) = ∧-elim-l (bump-proof p)
+bump-proof (∧-elim-r p) = ∧-elim-r (bump-proof p)
+bump-proof (∨-intro-l p) = ∨-intro-l (bump-proof p)
+bump-proof (∨-intro-r p) = ∨-intro-r (bump-proof p)
+bump-proof (∨-elim p q r) = ∨-elim (bump-proof p) (bump-proof q) (bump-proof r)
+bump-proof (¬-intro p) = ¬-intro (bump-proof p)
+bump-proof (¬-elim p q) = ¬-elim (bump-proof p) (bump-proof q)
+bump-proof (dneg-elim p) = dneg-elim (bump-proof p)
+
 wk-atom : Weakening Γ Δ → Fin Γ → Fin Δ
 wk-atom done x = x
-wk-atom (weak σ) x = wk-atom σ (fsuc x)
+wk-atom (weak σ) x = wk-atom σ (weaken x)
 
 wk-prop : Weakening Γ Δ → Proposition Γ → Proposition Δ
 wk-prop done P = P
@@ -196,6 +234,38 @@ wk-ctx (weak σ) ψ = wk-ctx σ (inc-ctx ψ)
 wk-proof : (σ : Weakening Γ Δ) → ψ ⊢ P → wk-ctx σ ψ ⊢ wk-prop σ P
 wk-proof done pf = pf
 wk-proof (weak σ) pf = wk-proof σ (inc-proof pf)
+
+shift-atom : Weakening Γ Δ → Fin Γ → Fin Δ
+shift-atom done i = i
+shift-atom (weak σ) i = shift-atom σ (fsuc i)
+
+shift-prop : Weakening Γ Δ → Proposition Γ → Proposition Δ
+shift-prop done p = p
+shift-prop (weak σ) p = shift-prop σ (bump-prop p)
+
+shift-ctx : Weakening Γ Δ → Ctx Γ → Ctx Δ
+shift-ctx done ψ = ψ
+shift-ctx (weak σ) ψ = shift-ctx σ (bump-ctx ψ)
+
+shift-ctx-[] 
+  : (σ : Weakening Γ Δ)
+  → shift-ctx σ [] ≡ []
+shift-ctx-[] done = refl
+shift-ctx-[] (weak σ) = shift-ctx-[] σ
+
+shift-ctx-⨾
+  : (σ : Weakening Γ Δ)
+  → (ψ : Ctx Γ) (P : Proposition Γ)
+  → shift-ctx σ (ψ ⨾ P) ≡ shift-ctx σ ψ ⨾ shift-prop σ P
+shift-ctx-⨾ done ψ P = refl
+shift-ctx-⨾ (weak σ) ψ P = shift-ctx-⨾ σ (bump-ctx ψ) (bump-prop P)
+
+shift-prop-“¬”
+  : (σ : Weakening Γ Δ)
+  → (P : Proposition Γ)
+  → shift-prop σ (“¬” P) ≡ “¬” (shift-prop σ P)
+shift-prop-“¬” done P = refl
+shift-prop-“¬” (weak σ) P = shift-prop-“¬” σ (bump-prop P)
 ```
 </details>
 
@@ -390,15 +460,6 @@ _“⇛”_ : Ctx Γ → Proposition Γ → Proposition Γ
 ⇛-elim {ψ = ψ} p q = ⇛-intro (⇒-elim (⇛-uncurry {ψ = ψ} p) (rename π₁-rn q))
 ```
 
-This connective has a very useful property: if `ψ “⇛” P` in
-an empty context, then `ψ ⊢ P`.
-
-```agda
-⇛-closed : [] ⊢ ψ “⇛” P → ψ ⊢ P
-⇛-closed {ψ = []} p = p
-⇛-closed {ψ = ψ ⨾ Q} p = ⇒-uncurry (⇛-closed p)
-```
-
 ## Semantics
 
 The most obvious way to interpret classical logic is as operations
@@ -495,3 +556,191 @@ sound (¬-elim {P = P} p q) ρ hyps-true =
 sound (dneg-elim {P = P} p) ρ hyps-true =
   sym (not-involutive (⟦ P ⟧ ρ)) ∙ sound p ρ hyps-true
 ```
+
+## Completeness
+
+As mentioned earlier, we often think of classical propositional logic as
+having a **single** semantics. This is largely due to the fact that
+if `ψ` semantically entails `P` in the booleans, then we can prove that
+`ψ ⊢ P`! In other words, classical propositional logic is **complete**.
+
+This somewhat miraculous is often taken for granted. Completeness is
+is why truth-tables are a valid form of reasoning, yet this is rarely
+mentioned when teaching logic. As we shall soon see, this is not exactly
+a trivial theorem.
+
+First, let us lay out our general proof strategy. We shall start
+by building a context $\hat{\rho}$ from an assignment $\rho$ that contains only
+(potentially negated) atoms. If $rho$ assigns `true` to an atom $x$, we will
+add $x$ to $\hat{\rho}$. Conversely, if $\rho$ assigns false to $x$, we
+add $\neg x$ to $\hat{\rho}$.
+
+We will then show that for any assignment $\rho$, if
+$\llbracket P \rrbracket \rho$ is true, then $\hat{\rho} \vdash P$;
+likewise, if $\llbracket P \rrbracket \rho$ is false, then
+$\hat{\rho} \vdash \neg P$.
+
+From this fact, we can deduce that $\vDash P$ entails $\vdash P$ by
+repeatedly applying excluded middle on every single atom in $P$, and
+applying our previous lemmas when we are done. Finally, we can transform
+any sequent $\psi \vdash P$ into an equivalent sequent in a closed context
+by repeatedly introducing functions, which lets us apply the argument
+involving excluded middle.
+
+With that sketch out of the way, let's dive into the details!
+First, we define a function `tabulate` that forms a context from an assignment;
+this is the $\hat{\rho}$ from the proof sketch. Some variable munging is
+required to make Agda happy, but it is more or less what one would expect.
+
+```agda
+tabulate : (Fin Γ → Bool) → Ctx Γ
+tabulate {Γ = zero} ρ = []
+tabulate {Γ = suc Γ} ρ =
+  bump-ctx (tabulate (ρ ∘ fsuc)) ⨾ (if ρ 0 then atom 0 else “¬” atom 0)
+```
+
+Next, some small helper lemmas that let us link assignments of atoms
+to proofs of those atoms. Essentially, these state that if $\rho x$
+assigns a truth value to $x$, then we should be able to prove this under
+the assumptions $\hat{\rho}$.
+
+```agda
+tabulate-atom-true : (x : Fin Γ) (ρ : Fin Γ → Bool) → ρ x ≡ true → tabulate ρ ⊢ atom x
+tabulate-atom-true {Γ = suc Γ} fzero ρ x-true with ρ 0
+... | true = hyp here
+... | false = absurd (true≠false $ sym x-true)
+tabulate-atom-true {Γ = suc Γ} (fsuc x) ρ x-true =
+  rename (drop idrn) (bump-proof (tabulate-atom-true x (ρ ∘ fsuc) x-true))
+
+tabulate-atom-false : (x : Fin Γ) (ρ : Fin Γ → Bool) → ρ x ≡ false → tabulate ρ ⊢ “¬” atom x
+tabulate-atom-false {Γ = suc Γ} fzero ρ x-false with ρ 0
+... | false = hyp here
+... | true = absurd (true≠false x-false)
+tabulate-atom-false {Γ = suc Γ} (fsuc x) ρ x-false =
+  rename (drop idrn) (bump-proof (tabulate-atom-false x (ρ ∘ fsuc) x-false))
+```
+
+On to the key lemmas. By performing mutual induction on $P$, we can note
+that if $\llbracket P \rrbracket \rho$ is true, then $\hat{\rho} \vdash P$,
+and conversely $\hat{\rho} \vdash \neg P$ if $\llbracket P \rrbracket \rho$
+is false.
+
+```agda
+tabulate-true : ∀ (P : Proposition Γ) (ρ : Fin Γ → Bool) → ⟦ P ⟧ ρ ≡ true → tabulate ρ ⊢ P
+tabulate-false : ∀ (P : Proposition Γ) (ρ : Fin Γ → Bool) → ⟦ P ⟧ ρ ≡ false → tabulate ρ ⊢ “¬” P
+
+tabulate-true (atom x) ρ P-true = tabulate-atom-true x ρ P-true
+tabulate-true “⊤” ρ P-true = ⊤-intro
+tabulate-true “⊥” ρ P-true = absurd (true≠false $ sym P-true)
+tabulate-true (P “∧” Q) ρ P∧Q-true =
+  ∧-intro
+    (tabulate-true P ρ (and-reflect-true-l P∧Q-true))
+    (tabulate-true Q ρ (and-reflect-true-r P∧Q-true))
+tabulate-true (P “∨” Q) ρ P∨Q-true with or-reflect-true P∨Q-true
+... | inl P-true = ∨-intro-l (tabulate-true P ρ P-true)
+... | inr Q-true = ∨-intro-r (tabulate-true Q ρ Q-true)
+tabulate-true (“¬” P) ρ P-true = tabulate-false P ρ (not-inj P-true)
+
+tabulate-false (atom x) ρ P-false = tabulate-atom-false x ρ P-false
+tabulate-false “⊤” ρ P-false = absurd (true≠false P-false)
+tabulate-false “⊥” ρ P-false = ¬-intro (hyp here)
+tabulate-false (P “∧” Q) ρ P∧Q-false with and-reflect-false P∧Q-false
+... | inl P-false = ¬∧-intro-l (tabulate-false P ρ P-false)
+... | inr Q-false = ¬∧-intro-r (tabulate-false Q ρ Q-false)
+tabulate-false (P “∨” Q) ρ P∨Q-false =
+  ¬∨-intro
+    (tabulate-false P ρ (or-reflect-false-l P∨Q-false))
+    (tabulate-false Q ρ (or-reflect-false-r P∨Q-false))
+tabulate-false (“¬” P) ρ P-false =
+  dneg-intro (tabulate-true P ρ (not-inj P-false))
+```
+
+Next, let $P$ be a proposition and let $\rho$ be an assignment for the
+first $n$ atoms in $P$. If $P$ is a tautology, then $\hat{\rho} \vdash P$.
+This follows from induction on the number of atoms not assigned by $\rho$.
+If $\rho$ assigns all of the atoms of $P$, then by our previous lemma we
+have $\hat{\rho} \vdash P$. For the inductive step, let $x$ be a atom
+not covered by $\rho$. Excluded middle lets us case on the truth value of
+$x$; if it is true, then we extend $\rho$ with $x := \top$, and induct.
+Likewise, if $x$ is false, then we extend $\rho$ with $x := \bot$.
+
+The Agda proof of this is somewhat gnarly due to variable nonsense,
+but it more or less follows the sketch outlined above.
+
+```agda
+tabulate-complete
+  : ∀ {Δ Γ} (P : Proposition Γ)
+  → (σ : Weakening Δ Γ)
+  → (ρ : Fin Δ → Bool) → [] ⊨ P → shift-ctx σ (tabulate ρ) ⊢ P
+tabulate-complete P done ρ P-taut = tabulate-true P ρ (P-taut ρ refl)
+tabulate-complete {Γ = Γ} P (weak σ) ρ P-taut =
+  ∨-elim (lem (shift-prop σ (atom 0)))
+    (subst (_⊢ P)
+      (shift-ctx-⨾ σ _ _)
+      (tabulate-complete P σ (ρ [ 0 ≔ true ]) P-taut))
+    (subst (_⊢ P)
+      (shift-ctx-⨾ σ _ _ ∙ ap₂ _⨾_ refl (shift-prop-“¬” σ (atom 0)))
+      (tabulate-complete P σ (ρ [ 0 ≔ false ]) P-taut))
+```
+
+If we start this with an empty assignment, we will construct a
+giant proof that applies excluded middle to every single atom in $P$, and
+then applies the relevant introduction rules at the leaves. This allows
+us to deduce that we have completeness for tautologies.
+
+```agda
+taut-complete : (P : Proposition Γ) → [] ⊨ P → [] ⊢ P
+taut-complete P taut =
+  subst (_⊢ P) (shift-ctx-[] !wk) (tabulate-complete P !wk (λ ()) taut)
+```
+
+
+Finally, we note that proofs of $P_1 \to \cdots \to P_n \to Q$
+yield proofs of $P_1, \cdots, P_n \vdash Q$, and likewise for semantic
+entailments.
+
+```agda
+⇛-closed : [] ⊢ ψ “⇛” P → ψ ⊢ P
+⇛-closed {ψ = []} p = p
+⇛-closed {ψ = ψ ⨾ Q} p = ⇒-uncurry (⇛-closed p)
+
+⇛-valid : ∀ (ψ : Ctx Γ) (P : Proposition Γ) → ψ ⊨ P → [] ⊨ (ψ “⇛” P)
+⇛-valid [] P valid = valid
+⇛-valid (ψ ⨾ Q) P valid ρ taut =
+  ap₂ and
+    refl
+    (⇛-valid ψ (Q “⇒” P)
+      (λ ρ' ψ-true →
+        Bool-elim (λ b → ⟦ Q ⟧ ρ' ≡ b → ⟦ Q “⇒” P ⟧ ρ' ≡ true)
+          (λ Q-true →
+            ⇒-sem ρ'
+            ∙ ap₂ imp refl (valid ρ' (ap₂ and ψ-true Q-true))
+            ∙ imp-truer _)
+          (λ Q-false →
+            ⇒-sem ρ'
+            ∙ ap₂ imp Q-false refl)
+          (⟦ Q ⟧ ρ') refl)
+      ρ taut)
+```
+
+This lets us generalize our result for tautologies to any
+proposition $P$!
+
+```agda
+complete : ψ ⊨ P → ψ ⊢ P
+complete {ψ = ψ} {P = P} valid =
+   ⇛-closed $ taut-complete (ψ “⇛” P) (⇛-valid ψ P valid)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
