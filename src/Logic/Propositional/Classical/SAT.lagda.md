@@ -52,7 +52,7 @@ pruning the search space, known as **unit propagation**. The idea
 behind this is as follows: if we see an clause that contains a single
 literal $P$ in our expression, then we know that $P$ must be true.
 Furthermore, any clause containing $P$ can be deleted, as we know it must
-be true! Even better, we can remove any occurance of $\neg P$ from
+be true! Even better, we can remove any occurrence of $\neg P$ from
 our expression, as we know that $\neg P$ must be false. This reduces
 the size of the search space considerably, and makes the problem a bit
 more tractable.
@@ -291,7 +291,7 @@ cnf-sat? {Γ = suc Γ} ϕs | no ¬ϕs-unit with (cnf-sat? (unit-propagate (lit f
 
 And that's it! Note that "classic" DPLL also includes a second rule
 known as "pure literal elimination". The idea here is that if a literal
-only shows up as negated or not negated, then we can delete all occurances
+only shows up as negated or not negated, then we can delete all occurrences
 of that literal. However, this operation is somewhat expensive to perform,
 and also rather annoying to program in Agda. Therefore, it has been omitted
 from this implementation.
