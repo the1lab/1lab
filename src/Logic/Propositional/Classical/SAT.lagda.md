@@ -31,29 +31,54 @@ private variable
 ```
 -->
 
+# SAT Solving
+
+SAT solving is the process of determining if we can find some assignment
+of variables $\rho$ that makes a given formula $\phi$ in classical propositional
+logic true. Such an assignment is called a **satisfying** assignment,
+hence the name SAT. This is a classic problem in Computer Science, and
+many other important and interesting problems can be reduced to finding
+satisfying assignments to huge formulae.
+
+Unfortunately, SAT solving is provably hard from a complexity standpoint.
+However, this will not stop us from writing a solver anyways! For the sake
+of efficiency, our solver will operate on expressions in [[CNF]].
+
 # Unit Propagation
 
+The algorithm we will use is a simplified version of the classic DPLL
+algorithm, which combines backtracking search with a mechanism for
+pruning the search space, known as **unit propagation**. The idea
+behind this is as follows: if we see an clause that contains a single
+literal $P$ in our expression, then we know that $P$ must be true.
+Furthermore, any clause containing $P$ can be deleted, as we know it must
+be true! Even better, we can remove any occurance of $\neg P$ from
+our expression, as we know that $\neg P$ must be false. This reduces
+the size of the search space considerably, and makes the problem a bit
+more tractable.
+
+Luckily, unit propagation is rather easy to implement.
+
 ```agda
-delete-literals
+delete-literal
   : (x : Fin (suc Γ))
-  → (ϕ : Disjunction (suc Γ))
-  → Disjunction Γ
-delete-literals {Γ = zero} i ϕ = []
-delete-literals {Γ = suc Γ} i [] = []
-delete-literals {Γ = suc Γ} i (x ∷ ϕ) =
-  Dec-rec
-    (λ _ → delete-literals i ϕ)
-    (λ i≠x → avoid-lit i x i≠x ∷ delete-literals i ϕ)
-    (Discrete-Fin i (lit-var x))
+  → (ϕ : Clause (suc Γ))
+  → Clause Γ
+delete-literal {Γ = zero} i ϕ = []
+delete-literal {Γ = suc Γ} i [] = []
+delete-literal {Γ = suc Γ} i (x ∷ ϕ) with Discrete-Fin i (lit-var x)
+... | yes _ = delete-literal i ϕ
+... | no i≠x = avoid-lit i x i≠x ∷ delete-literal i ϕ
 
 unit-propagate : Literal (suc Γ) → CNF (suc Γ) → CNF Γ
 unit-propagate x [] = []
-unit-propagate x (ϕ ∷ ϕs) =
-  Dec-rec
-    (λ _ → unit-propagate x ϕs)
-    (λ _ → delete-literals (lit-var x) ϕ ∷ unit-propagate x ϕs)
-    (elem? Discrete-Literal x ϕ)
+unit-propagate x (ϕ ∷ ϕs) with elem? Discrete-Literal x ϕ
+... | yes _ = unit-propagate x ϕs
+... | no _ = delete-literal (lit-var x) ϕ ∷ unit-propagate x ϕs
 ```
+
+However, it is slightly *less* trivial to prove correct. First,
+we will show a couple of quick lemmas regarding assignment of variables.
 
 ```agda
 avoid-lit-insert
@@ -70,42 +95,53 @@ lit-assign-neg-false
 lit-assign-neg-false (lit x) ρ = Fin.insert-lookup ρ x false
 lit-assign-neg-false (neg x) ρ = ap not (Fin.insert-lookup ρ x true)
 
+
 lit-assign-true
   : ∀ (x : Literal (suc Γ))
   → (ρ : Fin Γ → Bool)
   → ⟦ x ⟧ (ρ [ lit-var x ≔ lit-val x ]) ≡ true
 lit-assign-true (lit x) ρ = Fin.insert-lookup ρ x true
 lit-assign-true (neg x) ρ = ap not (Fin.insert-lookup ρ x false)
+```
 
-delete-literals-sound
+Next, we show that deleting literals preserves the truth value of
+a given assignment when the literal doesn't show up in the clause.
+This is not hard to show, just tedious.
+
+```agda
+delete-literal-sound
   : (x : Literal (suc Γ))
-  → (ϕ : Disjunction (suc Γ))
+  → (ϕ : Clause (suc Γ))
   → ¬ (x ∈ₗ ϕ)
   → ∀ (ρ : Fin Γ → Bool)
-  → ⟦ ϕ ⟧ (ρ [ lit-var x ≔ lit-val x ]) ≡ ⟦ delete-literals (lit-var x) ϕ ⟧ ρ
-delete-literals-sound {zero} x [] x∉ϕ ρ = refl
-delete-literals-sound {zero} (lit fzero) (lit fzero ∷ ϕ) x∉ϕ ρ =
+  → ⟦ ϕ ⟧ (ρ [ lit-var x ≔ lit-val x ]) ≡ ⟦ delete-literal (lit-var x) ϕ ⟧ ρ
+delete-literal-sound {zero} x [] x∉ϕ ρ = refl
+delete-literal-sound {zero} (lit fzero) (lit fzero ∷ ϕ) x∉ϕ ρ =
   absurd (x∉ϕ (here refl))
-delete-literals-sound {zero} (lit fzero) (neg fzero ∷ ϕ) x∉ϕ ρ =
-  delete-literals-sound (lit fzero) ϕ (x∉ϕ ∘ there) ρ
-delete-literals-sound {zero} (neg fzero) (lit fzero ∷ ϕ) x∉ϕ ρ =
-  delete-literals-sound (neg fzero) ϕ (x∉ϕ ∘ there) ρ
-delete-literals-sound {zero} (neg fzero) (neg fzero ∷ ϕ) x∉ϕ ρ =
+delete-literal-sound {zero} (lit fzero) (neg fzero ∷ ϕ) x∉ϕ ρ =
+  delete-literal-sound (lit fzero) ϕ (x∉ϕ ∘ there) ρ
+delete-literal-sound {zero} (neg fzero) (lit fzero ∷ ϕ) x∉ϕ ρ =
+  delete-literal-sound (neg fzero) ϕ (x∉ϕ ∘ there) ρ
+delete-literal-sound {zero} (neg fzero) (neg fzero ∷ ϕ) x∉ϕ ρ =
   absurd (x∉ϕ (here refl))
-delete-literals-sound {suc Γ} x [] x∉ϕ ρ = refl
-delete-literals-sound {suc Γ} x (y ∷ ϕ) x∉ϕ ρ with Discrete-Fin (lit-var x) (lit-var y)
+delete-literal-sound {suc Γ} x [] x∉ϕ ρ = refl
+delete-literal-sound {suc Γ} x (y ∷ ϕ) x∉ϕ ρ with Discrete-Fin (lit-var x) (lit-var y)
 ... | yes x=y =
   ap₂ or
     (subst (λ e → ⟦ y ⟧ (ρ [ lit-var e ≔ lit-val e ]) ≡ false)
       (sym (literal-eq-negate x y (x∉ϕ ∘ here) x=y))
       (lit-assign-neg-false y ρ))
     refl
-  ∙ delete-literals-sound x ϕ (x∉ϕ ∘ there) ρ
+  ∙ delete-literal-sound x ϕ (x∉ϕ ∘ there) ρ
 ... | no x≠y =
   ap₂ or
     (avoid-lit-insert x y x≠y ρ)
-    (delete-literals-sound x ϕ (x∉ϕ ∘ there) ρ)
+    (delete-literal-sound x ϕ (x∉ϕ ∘ there) ρ)
+```
 
+Soundness and completeness of unit propagation follows quickly.
+
+```agda
 unit-propagate-sound
   : (x : Literal (suc Γ))
   → (ϕs : CNF (suc Γ))
@@ -121,7 +157,7 @@ unit-propagate-sound x (ϕ ∷ ϕs) ρ with elem? Discrete-Literal x ϕ
     (unit-propagate-sound x ϕs ρ)
 ... | no ¬x∉ϕ =
   ap₂ and
-    (delete-literals-sound x ϕ ¬x∉ϕ ρ)
+    (delete-literal-sound x ϕ ¬x∉ϕ ρ)
     (unit-propagate-sound x ϕs ρ)
 
 unit-propagate-complete
@@ -135,6 +171,9 @@ unit-propagate-complete x ϕs ρ x-true =
     Fin.insert-delete ρ (lit-var x) (lit-val x) (literal-sat-val x ρ x-true))
   ∙ unit-propagate-sound x ϕs (delete ρ (lit-var x))
 ```
+
+We also have a decision procedure that determines if there are any
+unit clauses in an expression.
 
 ```agda
 has-unit-clause? : ∀ (ϕs : CNF Γ) → Dec (Σ[ x ∈ Literal Γ ] ((x ∷ []) ∈ₗ ϕs))
@@ -156,7 +195,12 @@ has-unit-clause? ((x ∷ y ∷ ϕ) ∷ ϕs) =
       , (λ x∈ϕs → ¬ϕ-unit (x , x∈ϕs))
       ] (∷-some-⊎ x∈ϕs)))
     (has-unit-clause? ϕs)
+```
 
+If $x$ is a unit clause in $\phi$, and an assignment $\rho$ satisfies
+$\phi$, then $\rho(x)$ must be true.
+
+```agda
 unit-clause-sat
   : (x : Literal Γ)
   → (ϕs : CNF Γ)
@@ -172,88 +216,22 @@ unit-clause-sat x (y ∷ ϕs) (there [x]∈ϕs) ρ ϕs-sat =
   unit-clause-sat x ϕs [x]∈ϕs ρ (and-reflect-true-r ϕs-sat)
 ```
 
-
-# Pure Literal Elimination
+We also note that it is impossible to find a satisfying assignment to a
+clause with no atoms.
 
 ```agda
-is-pure-literal : Fin Γ → CNF Γ → Type
-is-pure-literal {Γ = Γ} i ϕs =
-  Σ[ b ∈ Bool ] (∀ ϕ → ϕ ∈ₗ ϕs → (x : Literal Γ) → x ∈ₗ ϕ → lit-var x ≡ i → lit-val x ≡ b)
-  -- {!∀ ϕ → ϕ ∈ₗ !} ⊎ {!!}
-  -- (∀ ϕ → ϕ ∈ₗ ϕs → x ∈ₗ ϕ → ?) ⊎
-  -- (∀ ϕ → ϕ ∈ₗ ϕs → x ∈ₗ ϕ → ?)
-
--- is-pure-literal? : (x : Literal Γ) → (ϕs : CNF Γ) → Dec (is-pure-literal x ϕs)
--- is-pure-literal? x [] = yes (inl λ _ ff _ → absurd (Lift.lower ff))
--- is-pure-literal? x (y ∷ ϕs) = {!!}
--- data Polarity -- : Type where
---   pos : Polarity
---   neg : Polarity
---   mixed : Polarity
---   none : Polarity
-
--- _⊗p_ : Polarity → Polarity → Polarity
--- pos ⊗p pos = pos
--- pos ⊗p neg = mixed
--- pos ⊗p mixed = mixed
--- pos ⊗p none = pos
--- neg ⊗p pos = mixed
--- neg ⊗p neg = neg
--- neg ⊗p mixed = mixed
--- neg ⊗p none = neg
--- mixed ⊗p q = mixed
--- none ⊗p q = q
-
--- is-pos : Polarity → Type
--- is-pos pos = ⊤
--- is-pos neg = ⊥
--- is-pos mixed = ⊥
--- is-pos none = ⊥
-
--- pos≠neg : pos ≡ neg → ⊥
--- pos≠neg p = subst is-pos p tt 
-
--- Discrete-Polarity : Discrete Polarity
--- Discrete-Polarity pos pos = yes refl
--- Discrete-Polarity pos neg = no pos≠neg
--- Discrete-Polarity pos mixed = {!!}
--- Discrete-Polarity pos none = {!!}
--- Discrete-Polarity neg q = {!!}
--- Discrete-Polarity mixed q = {!!}
--- Discrete-Polarity none q = {!!}
-
--- lit-polarity : Literal Γ → Polarity
--- lit-polarity (lit _) = pos
--- lit-polarity (neg _) = neg
-
--- disj-polarity : Fin Γ → Disjunction Γ → Polarity
--- disj-polarity i [] = none
--- disj-polarity i (x ∷ ϕ) =
---   Dec-rec
---     (λ _ → lit-polarity x ⊗p disj-polarity i ϕ)
---     (λ _ → disj-polarity i ϕ)
---     (Discrete-Fin i (lit-var x))
-
--- cnf-polarity : Fin Γ → CNF Γ → Polarity
--- cnf-polarity i = foldr (λ ϕ p → disj-polarity i ϕ ⊗p p) none
-
--- pure-literal : Fin Γ → CNF Γ → Type
--- pure-literal i ϕs = cnf-polarity i ϕs ≡ pos ⊎ cnf-polarity i ϕs ≡ neg
-
--- pure-literal? : (i : Fin Γ) → (ϕs : CNF Γ) → Dec (pure-literal i ϕs)
--- pure-literal? i ϕs =
---   Dec-⊎
---     (Discrete-Polarity (cnf-polarity i ϕs) pos)
---     (Discrete-Polarity (cnf-polarity i ϕs) neg)
+¬empty-clause-sat : ∀ (ϕ : Clause 0) → (ρ : Fin 0 → Bool) → ⟦ ϕ ⟧ ρ ≡ true → ⊥
+¬empty-clause-sat [] ρ sat = true≠false (sym sat)
+¬empty-clause-sat (lit () ∷ ϕ) ρ sat
+¬empty-clause-sat (neg () ∷ ϕ) ρ sat
 ```
 
+Next, we observe that if the result of unit propagation is satisfiable,
+then the original expression must be satisfiable. Likewise, if
+the result of unit propagation is unsatisfiable, then the original
+expression is unsatisfiable.
 
 ```agda
-¬empty-disj-sat : ∀ (ϕ : Disjunction 0) → (ρ : Fin 0 → Bool) → ⟦ ϕ ⟧ ρ ≡ true → ⊥
-¬empty-disj-sat [] ρ sat = true≠false (sym sat)
-¬empty-disj-sat (lit () ∷ ϕ) ρ sat
-¬empty-disj-sat (neg () ∷ ϕ) ρ sat
-
 unit-propagate-sat
   : (x : Literal (suc Γ))
   → (ϕs : CNF (suc Γ))
@@ -272,12 +250,28 @@ unit-propagate-unsat x ϕs ¬sat (ρ , ρ-sat , x-sat) =
   delete ρ (lit-var x) ,
   sym (unit-propagate-complete x ϕs ρ x-sat)
   ∙ ρ-sat
+```
 
+Armed with these lemmas, we can finally write our SAT solver.
+We shall perform induction on the number of atoms in our CNF
+expression $\phi$. If $\phi$ contains no atoms, then we simply
+need to check if it has any clauses.
+
+```agda
 cnf-sat? : (ϕs : CNF Γ) → Dec (Σ[ ρ ∈ (Fin Γ → Bool) ] (⟦ ϕs ⟧ ρ ≡ true))
 cnf-sat? {Γ = zero} [] =
   yes (((λ ()) , refl))
 cnf-sat? {Γ = zero} (ϕ ∷ ϕs) =
-  no (λ (ρ , sat) → ¬empty-disj-sat ϕ ρ (and-reflect-true-l sat))
+  no (λ (ρ , sat) → ¬empty-clause-sat ϕ ρ (and-reflect-true-l sat))
+```
+
+If $\phi$ contains at least one atom, we first check to see if there
+are any unit clauses. If there are, we perform unit propagation, and
+recurse. If there aren't, then we perform backtracking search, first
+trying to see if the first atom is true, and then checking to see if
+it is false.
+
+```agda
 cnf-sat? {Γ = suc Γ} ϕs with has-unit-clause? ϕs
 ... | yes (x , [x]∈ϕs) with cnf-sat? (unit-propagate x ϕs)
 ...   | yes sat = yes (unit-propagate-sat x ϕs sat)
@@ -295,19 +289,9 @@ cnf-sat? {Γ = suc Γ} ϕs | no ¬ϕs-unit with (cnf-sat? (unit-propagate (lit f
           (ρ fzero) refl
 ```
 
-```agda
-test-cnf : CNF 4
-test-cnf =
-  (neg 0 ∷ lit 1 ∷ lit 2 ∷ []) ∷
-  (lit 0 ∷ lit 2 ∷ lit 3 ∷ []) ∷
-  (lit 0 ∷ lit 2 ∷ neg 3 ∷ []) ∷
-  (lit 0 ∷ neg 2 ∷ lit 3 ∷ []) ∷
-  (lit 0 ∷ neg 2 ∷ neg 3 ∷ []) ∷
-  (lit 1 ∷ neg 2 ∷ lit 3 ∷ []) ∷
-  (neg 0 ∷ lit 1 ∷ neg 2 ∷ []) ∷
-  (neg 0 ∷ neg 1 ∷ lit 2 ∷ []) ∷
-  []
-
-test-sat : Dec (Σ[ ρ ∈ (Fin 4 → Bool) ] (⟦ test-cnf ⟧ ρ ≡ true))
-test-sat = cnf-sat? test-cnf
-```
+And that's it! Note that "classic" DPLL also includes a second rule
+known as "pure literal elimination". The idea here is that if a literal
+only shows up as negated or not negated, then we can delete all occurances
+of that literal. However, this operation is somewhat expensive to perform,
+and also rather annoying to program in Agda. Therefore, it has been omitted
+from this implementation.
