@@ -3,14 +3,14 @@
 open import 1Lab.Prelude
 
 open import Data.Bool
+open import Data.List hiding (_++_)
 open import Data.Dec
 open import Data.Fin using (Fin; fzero; fsuc; Discrete-Fin; avoid; _[_≔_]; delete)
-open import Data.List hiding (_++_)
 open import Data.Nat
 open import Data.Sum
 
-open import Logic.Propositional.Classical
 open import Logic.Propositional.Classical.CNF
+open import Logic.Propositional.Classical
 
 open import Meta.Brackets
 

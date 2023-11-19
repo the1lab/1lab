@@ -3,9 +3,9 @@
 open import 1Lab.Prelude hiding (_∈_)
 
 open import Data.Bool
+open import Data.List hiding (_++_)
 open import Data.Dec
 open import Data.Fin using (Fin; fzero; fsuc; Discrete-Fin; avoid)
-open import Data.List hiding (_++_)
 open import Data.Nat
 open import Data.Sum
 

@@ -3,8 +3,8 @@
 open import 1Lab.Prelude hiding (_∈_)
 
 open import Data.Bool
-open import Data.Fin using (Fin; fzero; fsuc; weaken; inject; _[_≔_])
 open import Data.List hiding (_++_)
+open import Data.Fin using (Fin; fzero; fsuc; weaken; inject; _[_≔_])
 open import Data.Nat
 open import Data.Sum
 

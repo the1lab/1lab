@@ -1,9 +1,10 @@
 <!--
 ```agda
 open import 1Lab.Prelude
+
 open import Data.List.Base
-open import Data.Sum
 open import Data.Dec
+open import Data.Sum
 ```
 -->
 
