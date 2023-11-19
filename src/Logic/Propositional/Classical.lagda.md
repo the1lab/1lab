@@ -270,11 +270,11 @@ shift-prop-“¬” (weak σ) P = shift-prop-“¬” σ (bump-prop P)
 
 ## Context inclusions
 
-We also want to be able to modify our collection of hypotheses.
-We do this by defining a notion of context inclusion, where
-an inclusion $\Gamma \to \Delta$ denotes that we can obtain every
-hypotheses in $\Delta$ dropping some hypotheses in $\Gamma$. We call
-such context inclusions **renamings**.
+We also want to be able to modify our collection of hypotheses.  We do
+this by defining a notion of context inclusion, where an inclusion
+$\Gamma \to \Delta$ denotes that we can obtain every hypothesis in
+$\Delta$ by dropping hypotheses from $\Gamma$. We call such context
+inclusions **renamings**.
 
 ```agda
 data Rename {Γ} : Ctx Γ → Ctx Γ → Type where
@@ -568,9 +568,9 @@ sound (dneg-elim {P = P} p) ρ hyps-true =
 ## Completeness
 
 As mentioned earlier, we often think of classical propositional logic as
-having a *single* semantics. This is largely justified by to the fact
-that if `ψ` semantically entails `P` in the booleans, then we can prove
-that `ψ ⊢ P`! In other words, the Boolean semantics for classical
+having a *single* semantics. This is largely justified by the fact that
+if `ψ` semantically entails `P` in the booleans, then we can prove that
+`ψ ⊢ P`! In other words, the Boolean semantics for classical
 propositional logic is **complete**.
 
 This somewhat miraculous theorem is often taken for granted.
