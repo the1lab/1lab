@@ -112,10 +112,7 @@ _++_ : ∀ {ℓ} {A : Type ℓ} → List A → List A → List A
 (x ∷ xs) ++ ys = x ∷ (xs ++ ys)
 
 infixr 5 _++_
-```
 
-<!--
-```agda
 mapUp : (Nat → A → B) → Nat → List A → List B
 mapUp f _ [] = []
 mapUp f n (x ∷ xs) = f n x ∷ mapUp f (suc n) xs
@@ -153,25 +150,4 @@ take : ∀ {ℓ} {A : Type ℓ} → Nat → List A → List A
 take 0 xs = []
 take (suc n) [] = []
 take (suc n) (x ∷ xs) = x ∷ take n xs
-```
--->
-
-## Predicates
-
-We can define a function that determines if a boolean-valued
-predicate holds on every element of a list.
-
-```agda
-all-of : ∀ {ℓ} {A : Type ℓ} → (A → Bool) → List A → Bool
-all-of f [] = true
-all-of f (x ∷ xs) = and (f x) (all-of f xs)
-```
-
-Dually, we can also define a function that determines if a boolean-valued
-predicate holds on some element of a list.
-
-```agda
-any-of : ∀ {ℓ} {A : Type ℓ} → (A → Bool) → List A → Bool
-any-of f [] = false
-any-of f (x ∷ xs) = or (f x) (any-of f xs)
 ```

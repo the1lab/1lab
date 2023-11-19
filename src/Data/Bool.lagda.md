@@ -9,7 +9,6 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Dec.Base
-open import Data.Sum.Base
 
 open is-equiv
 open is-contr
@@ -133,50 +132,7 @@ and-idempotent true = refl
 or-idempotent : (x : Bool) → or x x ≡ x
 or-idempotent false = refl
 or-idempotent true = refl
-
-and-distrib-orr : (x y z : Bool) → and (or x y) z ≡ or (and x z) (and y z)
-and-distrib-orr true y z =
-  sym (or-absorbs-andr z y) ∙ ap (or z) (and-commutative z y)
-and-distrib-orr false y z = refl
-
-or-distrib-andr : (x y z : Bool) → or (and x y) z ≡ and (or x z) (or y z)
-or-distrib-andr true y z = refl
-or-distrib-andr false y z =
-  sym (and-absorbs-orr z y) ∙ ap (and z) (or-commutative z y)
 ```
-
-<!--
-```agda
-and-reflect-true-l : ∀ {x y} → and x y ≡ true → x ≡ true
-and-reflect-true-l {x = true} p = refl
-and-reflect-true-l {x = false} p = p
-
-and-reflect-true-r : ∀ {x y} → and x y ≡ true → y ≡ true
-and-reflect-true-r {x = true} {y = true} p = refl
-and-reflect-true-r {x = false} {y = true} p = refl
-and-reflect-true-r {x = true} {y = false} p = p
-and-reflect-true-r {x = false} {y = false} p = p
-
-or-reflect-true : ∀ {x y} → or x y ≡ true → x ≡ true ⊎ y ≡ true
-or-reflect-true {x = true} {y = y} p = inl refl
-or-reflect-true {x = false} {y = true} p = inr refl
-or-reflect-true {x = false} {y = false} p = absurd (true≠false (sym p))
-
-or-reflect-false-l : ∀ {x y} → or x y ≡ false → x ≡ false
-or-reflect-false-l {x = true} p = absurd (true≠false p)
-or-reflect-false-l {x = false} p = refl
-
-or-reflect-false-r : ∀ {x y} → or x y ≡ false → y ≡ false
-or-reflect-false-r {x = true} {y = true} p = absurd (true≠false p)
-or-reflect-false-r {x = true} {y = false} p = refl
-or-reflect-false-r {x = false} {y = true} p = absurd (true≠false p)
-or-reflect-false-r {x = false} {y = false} p = refl
-
-and-reflect-false : ∀ {x y} → and x y ≡ false → x ≡ false ⊎ y ≡ false
-and-reflect-false {x = true} {y = y} p = inr p
-and-reflect-false {x = false} {y = y} p = inl refl
-```
--->
 
 All the properties above hold both in classical and constructive mathematics, even in
 *[minimal logic][2]* that fails to validate both the law of the excluded middle as well
@@ -206,14 +162,6 @@ and-complementl true = refl
 
 [1]: <https://en.wikipedia.org/wiki/Boolean_algebra_(structure)> "Boolean algebra"
 [2]: <https://en.wikipedia.org/wiki/Minimal_logic> "Minimal logic"
-
-Furthermore, note that `not` has no fixed points.
-
-```agda
-not-no-fixed : ∀ {x} → x ≡ not x → ⊥
-not-no-fixed {x = true} p = absurd (true≠false p)
-not-no-fixed {x = false} p = absurd (true≠false (sym p))
-```
 
 Exclusive disjunction (usually known as *XOR*) also yields additional structure -
 in particular, it can be viewed as an addition operator in a ring whose multiplication
@@ -265,13 +213,6 @@ imp-truer false = refl
 imp-truer true = refl
 ```
 
-Furthermore, material implication is equivalent to the classical definition.
-
-```agda
-imp-not-or : ∀ x y → or (not x) y ≡ imp x y
-imp-not-or false y = refl
-imp-not-or true y = refl
-```
 
 ## Discreteness
 
@@ -320,16 +261,6 @@ equivalence:
 not-is-equiv : is-equiv not
 not-is-equiv = is-iso→is-equiv (iso not not-involutive not-involutive)
 ```
-
-<!--
-```agda
-not-inj : ∀ {x y} → not x ≡ not y → x ≡ y
-not-inj {x = true} {y = true} p = refl
-not-inj {x = true} {y = false} p = sym p
-not-inj {x = false} {y = true} p = sym p
-not-inj {x = false} {y = false} p = refl
-```
--->
 
 ## Aut(Bool)
 

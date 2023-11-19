@@ -28,13 +28,6 @@ Dec-elim
   → ∀ x → P x
 Dec-elim P f g (yes x) = f x
 Dec-elim P f g (no x)  = g x
-
-Dec-rec
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {X : Type ℓ'}
-  → (A → X)
-  → (¬ A → X)
-  → Dec A → X
-Dec-rec = Dec-elim _
 ```
 
 <!--
@@ -52,35 +45,4 @@ A type is _discrete_ if it has decidable equality.
 ```agda
 Discrete : ∀ {ℓ} → Type ℓ → Type ℓ
 Discrete A = (x y : A) → Dec (x ≡ y)
-```
-
-<!--
-```agda
-private variable
-  ℓ ℓ' : Level
-  A B : Type ℓ
-```
--->
-
-If we can construct a pair of maps $A \to B$ and $B \to A$,
-then we can deduce decidability of $B$ from decidability of $A$.
-
-```agda
-Dec-map
-  : (A → B) → (B → A)
-  → Dec A → Dec B
-Dec-map to from (yes a) = yes (to a)
-Dec-map to from (no ¬a) = no (¬a ∘ from)
-```
-
-This lets us show the following useful lemma: if $A$ injects into a
-discrete type, then $A$ is also discrete.
-
-```agda
-Discrete-inj
-  : (f : A → B)
-  → (∀ {x y} → f x ≡ f y → x ≡ y)
-  → Discrete B → Discrete A
-Discrete-inj f inj eq? x y =
-  Dec-map inj (ap f) (eq? (f x) (f y))
 ```
