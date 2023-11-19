@@ -29,7 +29,7 @@ private
   variable
     ℓ ℓ' : Level
     A : Type ℓ
-    P : A → Type ℓ'
+    P Q : A → Type ℓ'
     x y : A
     xs ys : List A
 ```
@@ -70,7 +70,6 @@ All-rec n e (everywhere p a) = e p (e p n)
 ```
 
 ```agda
-
 ∷-all-head : All P (x ∷ xs) → P x
 ∷-all-head (everywhere px _) = px
 
@@ -86,7 +85,31 @@ All-rec n e (everywhere p a) = e p (e p n)
 ∷-some-⊎ : Some P (x ∷ xs) → P x ⊎ Some P xs 
 ∷-some-⊎ (here px) = inl px
 ∷-some-⊎ (there pxs) = inr pxs
+
+∷-¬some-head : ¬ (Some P (x ∷ xs)) → ¬ (P x)
+∷-¬some-head ¬some px = ¬some (here px)
+
+∷-¬some-tail : ¬ (Some P (x ∷ xs)) → ¬ (Some P xs)
+∷-¬some-tail ¬some px = ¬some (there px)
 ```
+
+```agda
+some-map : (∀ {x} → P x → Q x) → Some P xs → Some Q xs
+some-map f (here px) = here (f px)
+some-map f (there pxs) = there (some-map f pxs)
+
+all-map : (∀ {x} → P x → Q x) → All P xs → All Q xs
+all-map f nowhere = nowhere
+all-map f (everywhere px pxs) = everywhere (f px) (all-map f pxs)
+
+not-some→all-not
+  : ¬ (Some P xs)
+  → All (λ x → ¬ (P x)) xs
+not-some→all-not {xs = []} ¬some = nowhere
+not-some→all-not {xs = x ∷ xs} ¬some =
+  everywhere (∷-¬some-head ¬some) (not-some→all-not (∷-¬some-tail ¬some))
+```
+
 
 
 ```agda
@@ -119,6 +142,15 @@ all? P? (x ∷ xs) with P? x | all? P? xs
 _∈ₗ_ : ∀ {ℓ} {A : Type ℓ} → A → List A → Type ℓ
 _∈ₗ_ x xs = Some (x ≡_) xs
 ```
+
+```agda
+all-∈ : All P xs → x ∈ₗ xs → P x
+all-∈ {P = P} (everywhere px pxs) (here p) =
+  subst P (sym p) px
+all-∈ (everywhere px pxs) (there x∈xs) =
+  all-∈ pxs x∈xs
+```
+
 
 ```agda
 elem? : Discrete A → (x : A) → (xs : List A) → Dec (x ∈ₗ xs)
