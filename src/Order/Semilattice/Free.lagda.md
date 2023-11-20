@@ -286,7 +286,7 @@ make-free-slat .universal {x} {y} f = total-hom go pres where
 make-free-slat .commutes {y = y} f = funext λ x → sym y.∩-idr
   where module y = Semilattice y
 make-free-slat .unique {x = x} {y = y} {f = f} {g = g} w =
-  Homomorphism-path λ arg → ∥-∥-proj! (y.has-is-set _ _) do
+  Homomorphism-path λ arg → ∥-∥-proj (y.has-is-set _ _) do
     (card , diagram , glb) ← K-reduce x arg
     let
       path : arg ≡ KA.⋂ λ i → ηₛₗ x (diagram i)
