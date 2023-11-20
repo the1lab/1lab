@@ -189,7 +189,7 @@ $K$-finiteness condition, but it will be very useful!
       .glb≤fam i →
         K-fin-lt {P , P-fin} {ηₛₗ (cover i .fst)} λ j i=j →
           subst (λ e → ∣ P e ∣) (out! i=j) (cover i .snd)
-      .greatest lb' wit → K-fin-lt {lb'} {P , P-fin} λ i i∈p → ∥-∥-proj do
+      .greatest lb' wit → K-fin-lt {lb'} {P , P-fin} λ i i∈p → ∥-∥-proj! do
         (idx , path) ← surj (i , i∈p)
         pure (K-fin-lt' {lb'} {ηₛₗ (cover idx .fst)} (wit idx) i (inc (ap fst path)))
 ```
@@ -266,7 +266,7 @@ make-free-slat .universal {x} {y} f = total-hom go pres where
     glb-unique y.po
       (Glb.has-glb (go.ε' (_∪_ x (A , af) (B , bf) .fst) (_∪_ x (A , af) (B , bf) .snd)))
       (λ where
-        .glb≤fam (x , w) → ∥-∥-proj $ w >>= λ where
+        .glb≤fam (x , w) → ∥-∥-proj! $ w >>= λ where
           (inl w) → pure $
             Glb.glb g1 y.∩ Glb.glb g2 y.≤⟨ y.∩≤l ⟩
             Glb.glb g1                y.≤⟨ g1.glb≤fam (x , w) ⟩
@@ -286,7 +286,7 @@ make-free-slat .universal {x} {y} f = total-hom go pres where
 make-free-slat .commutes {y = y} f = funext λ x → sym y.∩-idr
   where module y = Semilattice y
 make-free-slat .unique {x = x} {y = y} {f = f} {g = g} w =
-  Homomorphism-path λ arg → ∥-∥-proj {ap = y.has-is-set _ _} do
+  Homomorphism-path λ arg → ∥-∥-proj (y.has-is-set _ _) do
     (card , diagram , glb) ← K-reduce x arg
     let
       path : arg ≡ KA.⋂ λ i → ηₛₗ x (diagram i)
