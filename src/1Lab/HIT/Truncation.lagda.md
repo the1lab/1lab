@@ -109,7 +109,7 @@ whenever it is a family of propositions, by providing a case for
 ∥-∥-rec! {pprop = pprop} = ∥-∥-elim (λ _ → pprop)
 
 ∥-∥-proj! : ∀ {ℓ} {A : Type ℓ} → {@(tactic hlevel-tactic-worker) ap : is-prop A} → ∥ A ∥ → A
-∥-∥-proj! {ap = ap} = ∥-∥-rec ap λ x → x
+∥-∥-proj! {ap = ap} = ∥-∥-proj ap
 ```
 -->
 
@@ -167,7 +167,7 @@ nothing:
 
 ```agda
 is-prop→equiv∥-∥ : ∀ {ℓ} {P : Type ℓ} → is-prop P → P ≃ ∥ P ∥
-is-prop→equiv∥-∥ pprop = prop-ext pprop squash inc (∥-∥-elim (λ x → pprop) λ x → x)
+is-prop→equiv∥-∥ pprop = prop-ext pprop squash inc (∥-∥-proj pprop)
 ```
 
 In fact, an alternative definition of `is-prop`{.Agda} is given by "being
