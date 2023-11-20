@@ -271,7 +271,7 @@ refines both $s(i)$ and $s(j)$ to obtain the desired path.
     is-const
       : ∀ (p q : Σ[ i ∈ Ix ] is-defined (s i))
       → s (p .fst) ≡ s (q .fst)
-    is-const (i , si) (j , sj) = ∥-∥-proj {ap = Part-is-set set _ _} $ do
+    is-const (i , si) (j , sj) = ∥-∥-proj (Part-is-set set _ _) $ do
       (k , p , q) ← dir i j
       pure $ part-ext (λ _ → sj) (λ _ → si) λ si sj →
         s i .elt si              ≡˘⟨ p .refines si ⟩

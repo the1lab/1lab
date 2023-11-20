@@ -705,7 +705,7 @@ of $\cC$ that holds for all hom-sets must also hold for all hom-sets of $\cD$.
     → (∀ c c' → P (Lift ℓd (C.Hom c c')))
     → ∀ d d' → P (Lift ℓc (D.Hom d d'))
   ff+eso→preserves-hom-props F ff eso P prop P-hom d d' =
-    ∥-∥-proj {ap = prop (Lift ℓc (D.Hom d d'))} $ do
+    ∥-∥-proj (prop (Lift ℓc (D.Hom d d'))) $ do
       (c , c' , eqv) ← ff+eso→hom-equiv F ff eso d d'
       pure (transport (ap P (ua (Lift-ap eqv))) (P-hom c c'))
 ```

@@ -195,7 +195,7 @@ exactly what we want.
 
 ```agda
   banach : ∥ A ∥ → (f : P →ᶜᵒⁿ P) → Σ A λ x → f .map x ≡ x
-  banach inhab f = ∥-∥-proj {ap = fp-unique} fp' where
+  banach inhab f = ∥-∥-proj fp-unique fp' where
     fp-unique : is-prop (Σ A λ x → f .map x ≡ x)
     fp-unique (a , p) (b , q) =
       Σ-prop-path (λ x → from-ofe-on P .fst .is-tr _ _)
