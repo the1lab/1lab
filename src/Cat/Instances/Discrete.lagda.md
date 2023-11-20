@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Prelude
 
+open import Data.Id.Base
 open import Data.Dec
 
 import Cat.Reasoning
@@ -88,20 +89,18 @@ adjoint]] to the `Ob`{.Agda} functor.
 
 ```agda
 Disc-diagram
-  : ∀ {X : Set ℓ} (disc : Discrete ∣ X ∣)
+  : ∀ {X : Set ℓ} ⦃ _ : Discrete ∣ X ∣ ⦄
   → (∣ X ∣ → Ob C)
   → Functor (Disc' X) C
-Disc-diagram {C = C} {X = X} disc f = F where
+Disc-diagram {C = C} {X = X} ⦃ d ⦄ f = F where
   module C = Precategory C
 
   P : ∣ X ∣ → ∣ X ∣ → Type _
   P x y = C.Hom (f x) (f y)
 
-  map : ∀ {x y : ∣ X ∣} → x ≡ y → Dec (x ≡ y) → P x y
-  map {x} {y} p =
-    Dec-elim (λ _ → P x y)
-      (λ q → subst (P x) q C.id)
-      (λ ¬p → absurd (¬p p))
+  map : ∀ {x y : ∣ X ∣} → x ≡ y → Dec (x ≡ᵢ y) → P x y
+  map {x} {.x} p (yes reflᵢ) = C.id
+  map {x} {y}  p (no ¬p)     = absurd (¬p (Id≃path.from p))
 ```
 
 The object part of the functor is the provided $f : X \to
@@ -115,39 +114,18 @@ substitution along $\refl$ is easy to deal with.
 ```agda
   F : Functor _ _
   F .F₀ = f
-  F .F₁ {x} {y} p = map p (disc x y)
+  F .F₁ {x} {y} p = map p (x ≡ᵢ? y)
 ```
 
 Proving that our our $F_1$ is functorial involves a bunch of tedious
 computations with equalities and a whole waterfall of absurd cases:
 
 ```agda
-  F .F-id {x} with inspect (disc x x)
-  ... | yes p , q =
-    map refl (disc x x)   ≡⟨ ap (map refl) q ⟩
-    map refl (yes p)      ≡⟨ ap (map refl ⊙ yes) (X .is-tr _ _ p refl) ⟩
-    map refl (yes refl)   ≡⟨⟩
-    subst (P x) refl C.id ≡⟨ transport-refl _ ⟩
-    C.id                  ∎
-  ... | no ¬x≡x , _ = absurd (¬x≡x refl)
-
-  F .F-∘ {x} {y} {z} f g with inspect (disc x y) | inspect (disc x z) | inspect (disc y z)
-  ... | yes x=y , p1 | yes x=z , p2 | yes y=z , p3 =
-    map (g ∙ f) (disc x z)                 ≡⟨ ap (map (g ∙ f)) p2 ⟩
-    map (g ∙ f) (yes ⌜ x=z ⌝)              ≡⟨ ap! (X .is-tr _ _ _ _) ⟩
-    map (g ∙ f) (yes (x=y ∙ y=z))          ≡⟨⟩
-    subst (P x) (x=y ∙ y=z) C.id           ≡⟨ subst-∙ (P x) _ _ _ ⟩
-    subst (P x) y=z (subst (P _) x=y C.id) ≡⟨ from-pathp (Hom-pathp-reflr C refl) ⟩
-    map f (yes y=z) C.∘ map g (yes x=y)    ≡˘⟨ ap₂ C._∘_ (ap (map f) p3) (ap (map g) p1) ⟩
-    map f (disc y z) C.∘ map g (disc x y)  ∎
-
-  ... | yes x=y , _ | yes x=z , _ | no  y≠z , _ = absurd (y≠z f)
-  ... | yes x=y , _ | no  x≠z , _ | yes y=z , _ = absurd (x≠z (g ∙ f))
-  ... | yes x=y , _ | no  x≠z , _ | no  y≠z , _ = absurd (x≠z (g ∙ f))
-  ... | no x≠y , _  | yes x=z , _ | yes y=z , _ = absurd (x≠y g)
-  ... | no x≠y , _  | yes x=z , _ | no  y≠z , _ = absurd (y≠z f)
-  ... | no x≠y , _  | no  x≠z , _ | yes y=z , _ = absurd (x≠z (g ∙ f))
-  ... | no x≠y , _  | no  x≠z , _ | no  y≠z , _ = absurd (x≠z (g ∙ f))
+  F .F-id {x} = refl
+  F .F-∘  {x} {y} {z} f g =
+    J (λ y g → ∀ {z} (f : y ≡ z) → map (g ∙ f) (x ≡ᵢ? z) ≡ map f (y ≡ᵢ? z) C.∘ map g (x ≡ᵢ? y))
+      (λ f → J (λ z f → map (refl ∙ f) (x ≡ᵢ? z) ≡ map f (x ≡ᵢ? z) C.∘ C.id) (sym (C.idr _)) f)
+      g f
 ```
 
 <!--

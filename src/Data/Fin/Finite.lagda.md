@@ -112,10 +112,10 @@ instance
       (x .enumeration) (y .enumeration) i
 
 Finite→Discrete : ∀ {ℓ} {A : Type ℓ} → ⦃ Finite A ⦄ → Discrete A
-Finite→Discrete {A = A} ⦃ f ⦄ x y = ∥-∥-rec! go (f .enumeration) where
+Finite→Discrete {A = A} ⦃ f ⦄ {x} {y} = ∥-∥-rec! go (f .enumeration) where
   open Finite f using (Finite→H-Level)
   go : A ≃ Fin (f .cardinality) → Dec (x ≡ y)
-  go e with Discrete-Fin (Equiv.to e x) (Equiv.to e y)
+  go e with Equiv.to e x ≡? Equiv.to e y
   ... | yes p = yes (Equiv.injective e p)
   ... | no ¬p = no λ p → ¬p (ap (e .fst) p)
 
@@ -125,7 +125,7 @@ Dec→Finite ap d with d
 ... | no ¬p = fin (inc (is-empty→≃⊥ ¬p ∙e Finite-zero-is-initial e⁻¹))
 
 Discrete→Finite≡ : ∀ {ℓ} {A : Type ℓ} → Discrete A → {x y : A} → Finite (x ≡ y)
-Discrete→Finite≡ d = Dec→Finite (Discrete→is-set d _ _) (d _ _)
+Discrete→Finite≡ d = Dec→Finite (Discrete→is-set d _ _) d
 
 Finite-choice
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}

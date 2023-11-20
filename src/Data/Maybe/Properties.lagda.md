@@ -166,13 +166,12 @@ Maybe-reflect-hlevel n mhl =
 If `A` is [[discrete]], then so is `Maybe A`.
 
 ```agda
-Discrete-Maybe
-  : Discrete A
-  → Discrete (Maybe A)
-Discrete-Maybe eq? (just x) (just y) = Dec-map (ap just) just-inj (eq? x y)
-Discrete-Maybe eq? (just x) nothing = no just≠nothing
-Discrete-Maybe eq? nothing (just x) = no nothing≠just
-Discrete-Maybe eq? nothing nothing = yes refl
+instance
+  Discrete-Maybe : ⦃ d : Discrete A ⦄ → Discrete (Maybe A)
+  Discrete-Maybe {x = just x} {just y}   = Dec-map (ap just) just-inj (x ≡? y)
+  Discrete-Maybe {x = just x} {nothing}  = no just≠nothing
+  Discrete-Maybe {x = nothing} {just x}  = no nothing≠just
+  Discrete-Maybe {x = nothing} {nothing} = yes refl
 ```
 
 Conversely, if `Maybe A` is discrete, then `A` must also be discrete.

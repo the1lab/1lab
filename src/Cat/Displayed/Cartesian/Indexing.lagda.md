@@ -6,7 +6,11 @@ open import Cat.Instances.Discrete
 open import Cat.Instances.Functor
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
+open import Cat.Bi.Instances.Discrete
+open import Cat.Bi.Base
 open import Cat.Prelude
+
+open import Data.Id.Base
 
 import Cat.Displayed.Fibre.Reasoning
 import Cat.Displayed.Reasoning

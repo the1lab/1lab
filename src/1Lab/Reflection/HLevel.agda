@@ -9,7 +9,7 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
-open import Data.List.Base
+open import Data.List
 open import Data.Bool
 
 open import Meta.Foldable
@@ -711,6 +711,9 @@ instance
   -- decomposition here is a bit more flexible.
   decomp-ntype : ∀ {ℓ} {n} → hlevel-decomposition (n-Type ℓ n)
   decomp-ntype = decomp (quote n-Type-is-hlevel) (`level-minus 1 ∷ [])
+
+  decomp-list : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (List A)
+  decomp-list = decomp (quote ListPath.List-is-hlevel) (`level-minus 2 ∷ `search ∷ [])
 
   hlevel-proj-n-type : hlevel-projection (quote n-Type.∣_∣)
   hlevel-proj-n-type .has-level = quote n-Type.is-tr

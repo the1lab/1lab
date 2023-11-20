@@ -144,16 +144,14 @@ Finally, we pull everything together to show that `Fin`{.Agda} is
 is discrete), but it's useful nonetheless!
 
 ```agda
-Discreteᵢ-Fin : ∀ {n} → Discreteᵢ (Fin n)
-Discreteᵢ-Fin fzero fzero = yes reflᵢ
-Discreteᵢ-Fin fzero (fsuc j) = no λ ()
-Discreteᵢ-Fin (fsuc i) fzero = no λ ()
-Discreteᵢ-Fin (fsuc i) (fsuc j) with Discreteᵢ-Fin i j
-... | yes reflᵢ = yes reflᵢ
-... | no ¬i≡j = no λ { reflᵢ → ¬i≡j reflᵢ }
-
-Discrete-Fin : ∀ {n} → Discrete (Fin n)
-Discrete-Fin = Discreteᵢ→discrete Discreteᵢ-Fin
+instance
+  Discrete-Fin : ∀ {n} → Discrete (Fin n)
+  Discrete-Fin {x = fzero}  {fzero} = yes refl
+  Discrete-Fin {x = fzero}  {fsuc j} = no fzero≠fsuc
+  Discrete-Fin {x = fsuc i} {fzero} = no (fzero≠fsuc ∘ sym)
+  Discrete-Fin {x = fsuc i} {fsuc j} with Discrete-Fin {x = i} {j}
+  ... | yes p   = yes (ap fsuc p)
+  ... | no ¬i≡j = no λ si=sj → ¬i≡j (fsuc-inj si=sj)
 ```
 
 [[Hedberg's theorem]] implies that `Fin`{.Agda} is a [[set]], i.e., it only

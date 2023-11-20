@@ -48,13 +48,13 @@ module _ {ℓ} {A : Type ℓ} (G : Group-on A) where
   -- Evaluation
 
   push : Fin n → Value n → Value n
-  push n (vmul⁻¹ n' v) with Discrete-Fin n n'
+  push n (vmul⁻¹ n' v) with n ≡? n'
   ... | yes _ = v
   ... | no _  = vmul n (vmul⁻¹ n' v)
   push n v = vmul n v
 
   push-inv : Fin n → Value n → Value n
-  push-inv n (vmul n' v) with Discrete-Fin n n'
+  push-inv n (vmul n' v) with n ≡? n'
   ... | yes _ = v
   ... | no _  = vmul⁻¹ n (vmul n' v)
   push-inv n v = vmul⁻¹ n v
@@ -84,7 +84,7 @@ module _ {ℓ} {A : Type ℓ} (G : Group-on A) where
   push-sound : ∀ x v → (ρ : Vec A n) → ⟦ push x v ⟧ᵥ ρ ≡ lookup ρ x ⋆ ⟦ v ⟧ᵥ ρ
   push-sound x vunit ρ = refl
   push-sound x (vmul x' v) ρ = refl
-  push-sound x (vmul⁻¹ x' v) ρ with Discrete-Fin x x'
+  push-sound x (vmul⁻¹ x' v) ρ with x ≡? x'
   ... | yes x≡x' =
     ⟦ v ⟧ᵥ ρ                                  ≡˘⟨ idl ⟩
     unit ⋆ ⟦ v ⟧ᵥ ρ                           ≡˘⟨ ap (_⋆ ⟦ v ⟧ᵥ ρ) inverser ⟩
@@ -95,7 +95,7 @@ module _ {ℓ} {A : Type ℓ} (G : Group-on A) where
 
   push-inv-sound : ∀ x v → (ρ : Vec A n) → ⟦ push-inv x v ⟧ᵥ ρ ≡ lookup ρ x ⁻¹ ⋆ ⟦ v ⟧ᵥ ρ
   push-inv-sound x vunit ρ = refl
-  push-inv-sound x (vmul x' v) ρ with Discrete-Fin x x'
+  push-inv-sound x (vmul x' v) ρ with x ≡? x'
   ... | yes x≡x' =
     ⟦ v ⟧ᵥ ρ                                  ≡˘⟨ idl ⟩
     (unit ⋆ ⟦ v ⟧ᵥ ρ)                         ≡˘⟨ ap (_⋆ ⟦ v ⟧ᵥ ρ) inversel ⟩

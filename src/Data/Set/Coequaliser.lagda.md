@@ -411,11 +411,10 @@ Quot-op₂ Rr Sr op resp =
 
 Discrete-quotient
   : ∀ {A : Type ℓ} (R : Congruence A ℓ')
-  → Discrete A
   → (∀ x y → Dec (Congruence.relation R x y))
   → Discrete (Congruence.quotient R)
-Discrete-quotient cong adisc rdec =
-  Coeq-elim-prop₂ (λ x y → hlevel 1) go where
+Discrete-quotient cong rdec =
+  Coeq-elim-prop₂ {C = λ x y → Dec (x ≡ y)} (λ x y → hlevel 1) go _ _ where
   go : ∀ x y → Dec (inc x ≡ inc y)
   go x y with rdec x y
   ... | yes xRy = yes (quot xRy)

@@ -51,7 +51,7 @@ we have the empty set:
 
 ```agda
 Ø : V
-Ø = set ⊥ absurd
+Ø = set ⊥ λ ()
 
 X∉Ø : {X : V} → ¬ X ∈ Ø
 X∉Ø ()

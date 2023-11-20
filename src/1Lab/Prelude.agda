@@ -45,3 +45,5 @@ open import 1Lab.Resizing public
 
 open import 1Lab.Underlying public
 open import 1Lab.Extensionality public
+
+open import Data.Id.Base public

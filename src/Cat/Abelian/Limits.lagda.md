@@ -138,12 +138,7 @@ identity on the diagonal.
     δ' i j (no x) = A.0m
 
     δ : ∀ i j → A.Hom (F i) (F j)
-    δ i j = δ' i j (Discreteᵢ-Fin i j)
-
-    δᵢᵢ : ∀ i d → δ' i i d ≡ A.id
-    δᵢᵢ i (yes x) = ap (δ' i i) $
-      ap yes (is-set→is-setᵢ Fin-is-set i i x reflᵢ)
-    δᵢᵢ i (no ¬x=x) = absurd (¬x=x reflᵢ)
+    δ i j = δ' i j (i ≡ᵢ? j)
 
     δᵢⱼ : ∀ i j → ¬ i ≡ j → (d : Dec (i ≡ᵢ j)) → δ' i j d ≡ A.0m
     δᵢⱼ i j i≠j (yes i=j) = absurd (i≠j (Id≃path.to i=j))
@@ -170,11 +165,8 @@ $$
     split-remark = ip.unique ip.π (λ _ → A.idr _) ∙ sym (ip.unique _ πΣδπ) where
       sum-δ-π : ∀ i → ∑ {I} _ (λ j → δ j i A.∘ ip.π j) ≡ ip.π i
       sum-δ-π i = ∑-diagonal-lemma (Abelian→Group-on (A.Abelian-group-on-hom _ _)) {I} i _
-        (A.eliml (δᵢᵢ i (Discreteᵢ-Fin i i)))
-        λ j i≠j →
-            ap₂ A._∘_ (δᵢⱼ j i (λ e → i≠j (sym e)) (Discreteᵢ-Fin j i))
-                      refl
-          ∙ A.∘-zero-l
+        (A.eliml refl) λ j i≠j →
+          ap₂ A._∘_ (δᵢⱼ j i (λ e → i≠j (sym e)) (j ≡ᵢ? i)) refl ∙ A.∘-zero-l
 
       πΣδπ : ∀ i → ip.π i A.∘ split ≡ ip.π i
       πΣδπ i =
@@ -231,9 +223,10 @@ f\pi_i$, then we certainly have $(\sum_i f'_i) \iota_j$ = $f$!
 <!--
 ```agda
       where
-        remark = ∑-diagonal-lemma (Abelian→Group-on (A.Abelian-group-on-hom _ _)) {I} i _
-          (A.cancelr (ip.commute ∙ δᵢᵢ i (Discreteᵢ-Fin i i)))
-          λ j i≠j → A.pullr (ip.commute ∙ δᵢⱼ i j i≠j (Discreteᵢ-Fin i j))
+        remark = ∑-diagonal-lemma (Abelian→Group-on (A.Abelian-group-on-hom _ _)) {I} i
+          (λ j → (f j A.∘ ip.π j) A.∘ ip.tuple (λ v → δ i v))
+          (A.cancelr ip.commute)
+          λ j i≠j → A.pullr (ip.commute ∙ δᵢⱼ i j i≠j (i ≡ᵢ? j))
                   ∙ A.∘-zero-r
 ```
 -->

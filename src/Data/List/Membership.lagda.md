@@ -1,10 +1,11 @@
 <!--
 ```agda
-open import 1Lab.Prelude
+open import 1Lab.Path
+open import 1Lab.Type
 
 open import Data.List.Base
-open import Data.Dec
-open import Data.Sum
+open import Data.Dec.Base
+open import Data.Sum.Base
 ```
 -->
 
@@ -63,7 +64,7 @@ All-elim R n e (everywhere x a) = e x a (All-elim R n e a)
 
 All-rec
   : ∀ {P : A → Type ℓ} {X : Type ℓ'}
-  → X 
+  → X
   → (∀ {x} → P x → X → X)
   → ∀ {xs : List A} → All P xs → X
 All-rec n e nowhere = n
@@ -83,7 +84,7 @@ All-rec n e (everywhere p a) = e p (e p n)
 ¬some-[] : ¬ (Some P [])
 ¬some-[] ()
 
-∷-some-⊎ : Some P (x ∷ xs) → P x ⊎ Some P xs 
+∷-some-⊎ : Some P (x ∷ xs) → P x ⊎ Some P xs
 ∷-some-⊎ (here px) = inl px
 ∷-some-⊎ (there pxs) = inr pxs
 
@@ -136,6 +137,17 @@ all? P? (x ∷ xs) with P? x | all? P? xs
 ... | no ¬p | q = no (¬p ∘ ∷-all-head)
 ```
 
+<!--
+```agda
+instance
+  Dec-Some : ∀ {P : A → Type ℓ} → ⦃ ∀ {x} → Dec (P x) ⦄ → {xs : List A} → Dec (Some P xs)
+  Dec-Some {P = P} = some? (λ x → holds? (P x)) _
+
+  Dec-All : ∀ {P : A → Type ℓ} → ⦃ ∀ {x} → Dec (P x) ⦄ → {xs : List A} → Dec (All P xs)
+  Dec-All {P = P} = all? (λ x → holds? (P x)) _
+```
+-->
+
 
 ## Membership in Lists
 
@@ -154,6 +166,6 @@ all-∈ (everywhere px pxs) (there x∈xs) =
 
 
 ```agda
-elem? : Discrete A → (x : A) → (xs : List A) → Dec (x ∈ₗ xs)
-elem? eq? x xs = some? (eq? x) xs
+elem? : ⦃ _ : Discrete A ⦄ (x : A) (xs : List A) → Dec (x ∈ₗ xs)
+elem? x xs = some? (x ≡?_) xs
 ```

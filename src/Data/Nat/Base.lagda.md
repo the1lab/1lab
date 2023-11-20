@@ -7,6 +7,7 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Dec.Base
+open import Data.Bool
 ```
 -->
 
@@ -79,15 +80,43 @@ Furthermore, observe that the `successor`{.Agda} operation is injective,
 i.e., we can “cancel” it on paths. Putting these together, we get a
 proof that equality for the natural numbers is decidable:
 
+<!--
 ```agda
-Discrete-Nat : Discrete Nat
-Discrete-Nat zero zero    = yes refl
-Discrete-Nat zero (suc y) = no λ zero≡suc → absurd (zero≠suc zero≡suc)
-Discrete-Nat (suc x) zero = no λ suc≡zero → absurd (suc≠zero suc≡zero)
-Discrete-Nat (suc x) (suc y) with Discrete-Nat x y
-... | yes x≡y = yes (ap suc x≡y)
-... | no ¬x≡y = no λ sucx≡sucy → ¬x≡y (suc-inj sucx≡sucy)
+private module _ where private
 ```
+-->
+
+```agda
+  Discrete-Nat : Discrete Nat
+  Discrete-Nat {zero} {zero}  = yes refl
+  Discrete-Nat {zero} {suc y} = no λ zero≡suc → absurd (zero≠suc zero≡suc)
+  Discrete-Nat {suc x} {zero} = no λ suc≡zero → absurd (suc≠zero suc≡zero)
+  Discrete-Nat {suc x} {suc y} with Discrete-Nat {x} {y}
+  ... | yes x≡y = yes (ap suc x≡y)
+  ... | no ¬x≡y = no λ sucx≡sucy → ¬x≡y (suc-inj sucx≡sucy)
+```
+
+<!--
+```agda
+is-equal→path : ∀ {x y} → (x == y) ≡ true → x ≡ y
+is-equal→path {zero}  {zero}  p = refl
+is-equal→path {zero}  {suc y} p = absurd (true≠false (sym p))
+is-equal→path {suc x} {zero}  p = absurd (true≠false (sym p))
+is-equal→path {suc x} {suc y} p = ap suc (is-equal→path p)
+
+is-not-equal→not-path : ∀ {x y} → (x == y) ≡ false → ¬ (x ≡ y)
+is-not-equal→not-path {zero}  {zero}  p q = absurd (true≠false p)
+is-not-equal→not-path {zero}  {suc y} p q = absurd (zero≠suc q)
+is-not-equal→not-path {suc x} {zero}  p q = absurd (zero≠suc (sym q))
+is-not-equal→not-path {suc x} {suc y} p q = is-not-equal→not-path p (suc-inj q)
+
+instance
+  Discrete-Nat : Discrete Nat
+  Discrete-Nat {x} {y} with inspect (x == y)
+  ... | true  , p = yes (is-equal→path p)
+  ... | false , p = no  (is-not-equal→not-path p)
+```
+-->
 
 [[Hedberg's theorem]] implies that `Nat`{.Agda} is a [[set]], i.e., it only
 has trivial paths.

@@ -507,7 +507,7 @@ bottom elements.
 
   part-counit-never
     : ∀ x → part-counit never ≤ x
-  part-counit-never x = ⋃-prop-least _ _ x (absurd ⊙ Lift.lower)
+  part-counit-never x = ⋃-prop-least _ _ x (λ ())
 ```
 
 We can tie this all together to obtain the desired adjunction.

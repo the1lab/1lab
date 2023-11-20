@@ -1,6 +1,9 @@
 <!--
 ```agda
 open import 1Lab.Type
+open import 1Lab.Path
+
+open import Data.Dec.Base
 
 open import Meta.Idiom
 open import Meta.Bind
@@ -57,9 +60,8 @@ instance
 
   Idiom-Maybe : Idiom (eff Maybe)
   Idiom-Maybe .Idiom.pure = just
-  Idiom-Maybe .Idiom._<*>_ = λ where
-    (just f) (just x) → just (f x)
-    _ _ → nothing
+  Idiom-Maybe .Idiom._<*>_ (just f) (just x) = just (f x)
+  Idiom-Maybe .Idiom._<*>_ _ _ = nothing
 
   Bind-Maybe : Bind (eff Maybe)
   Bind-Maybe .Bind._>>=_ = extend
@@ -68,6 +70,9 @@ instance
   Alt-Maybe .Alt.fail' _ = nothing
   Alt-Maybe .Alt._<|>_ (just x) y = just x
   Alt-Maybe .Alt._<|>_ nothing y = y
+
+just-inj : ∀ {ℓ} {A : Type ℓ} {x y : A} → just x ≡ just y → x ≡ y
+just-inj {x = x} p = ap (λ { (just x) → x ; nothing → x }) p
 ```
 -->
 

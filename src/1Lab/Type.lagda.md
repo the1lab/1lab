@@ -44,7 +44,7 @@ Additionally, we define the empty type:
 ```agda
 data ⊥ : Type where
 
-absurd : ∀ {ℓ} {A : Type ℓ} → ⊥ → A
+absurd : ∀ {ℓ} {A : Type ℓ} → .⊥ → A
 absurd ()
 
 ¬_ : ∀ {ℓ} → Type ℓ → Type ℓ
@@ -118,5 +118,14 @@ open import Prim.Literals public
 
 auto : ∀ {ℓ} {A : Type ℓ} → ⦃ A ⦄ → A
 auto ⦃ a ⦄ = a
+
+case_of_ : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → A → (A → B) → B
+case x of f = f x
+
+case_return_of_ : ∀ {ℓ ℓ'} {A : Type ℓ} (x : A) (B : A → Type ℓ') (f : (x : A) → B x) → B x
+case x return P of f = f x
+
+{-# INLINE case_of_        #-}
+{-# INLINE case_return_of_ #-}
 ```
 -->

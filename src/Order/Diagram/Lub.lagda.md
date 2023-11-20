@@ -317,10 +317,10 @@ record Bottom : Type (o ⊔ ℓ) where
   ¡ : ∀ {x} → bot ≤ x
   ¡ = has-bottom _
 
-is-bottom→is-lub : ∀ {lub} → is-bottom lub → is-lub absurd lub
+is-bottom→is-lub : ∀ {lub} {f : ⊥ → _} → is-bottom lub → is-lub f lub
 is-bottom→is-lub is-bot .least x _ = is-bot x
 
-is-lub→is-bottom : ∀ {lub} → is-lub absurd lub → is-bottom lub
+is-lub→is-bottom : ∀ {lub} {f : ⊥ → _} → is-lub f lub → is-bottom lub
 is-lub→is-bottom lub x = lub .least x λ ()
 ```
 
@@ -346,18 +346,18 @@ instance
     → H-Level Bottom (suc n)
   H-Level-Bottom = prop-instance Bottom-is-prop
 
-Bottom→Lub : Bottom → Lub absurd
+Bottom→Lub : ∀ {f : ⊥ → _} → Bottom → Lub f
 Bottom→Lub bottom .Lub.lub = Bottom.bot bottom
 Bottom→Lub bottom .Lub.has-lub = is-bottom→is-lub (Bottom.has-bottom bottom)
 
-Lub→Bottom : Lub absurd → Bottom
+Lub→Bottom : ∀ {f : ⊥ → _} → Lub f → Bottom
 Lub→Bottom lub .Bottom.bot = Lub.lub lub
 Lub→Bottom lub .Bottom.has-bottom = is-lub→is-bottom (Lub.has-lub lub)
 
-is-bottom≃is-lub : ∀ {lub} → is-equiv (is-bottom→is-lub {lub})
+is-bottom≃is-lub : ∀ {lub} {f} → is-equiv (is-bottom→is-lub {lub} {f})
 is-bottom≃is-lub = prop-ext! _ is-lub→is-bottom .snd
 
-Bottom≃Lub : is-equiv Bottom→Lub
+Bottom≃Lub : ∀ {f} → is-equiv (Bottom→Lub {f})
 Bottom≃Lub = prop-ext! _ Lub→Bottom .snd
 ```
 -->

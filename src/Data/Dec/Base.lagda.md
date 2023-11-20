@@ -39,9 +39,9 @@ Dec-rec = Dec-elim _
 
 <!--
 ```agda
-recover : ∀ {ℓ} {A : Type ℓ} → Dec A → .A → A
-recover (yes x) _ = x
-recover {A = A} (no ¬x) x = go (¬x x) where
+recover : ∀ {ℓ} {A : Type ℓ} ⦃ d : Dec A ⦄ → .A → A
+recover ⦃ yes x ⦄ _ = x
+recover {A = A} ⦃ no ¬x ⦄ x = go (¬x x) where
   go : .⊥ → A
   go ()
 ```
@@ -51,7 +51,7 @@ A type is _discrete_ if it has decidable equality.
 
 ```agda
 Discrete : ∀ {ℓ} → Type ℓ → Type ℓ
-Discrete A = (x y : A) → Dec (x ≡ y)
+Discrete A = {x y : A} → Dec (x ≡ y)
 ```
 
 <!--
@@ -81,8 +81,52 @@ Discrete-inj
   : (f : A → B)
   → (∀ {x y} → f x ≡ f y → x ≡ y)
   → Discrete B → Discrete A
-Discrete-inj f inj eq? x y =
-  Dec-map inj (ap f) (eq? (f x) (f y))
+Discrete-inj f inj eq? {x} {y} =
+  Dec-map inj (ap f) (eq? {f x} {f y})
+```
+
+```agda
+holds? : ∀ {ℓ} (A : Type ℓ) ⦃ d : Dec A ⦄ → Dec A
+holds? A ⦃ d ⦄ = d
+
+_≡?_ : ∀ {ℓ} {A : Type ℓ} ⦃ d : Discrete A ⦄ → (x y : A) → Dec (x ≡ y)
+x ≡? y = holds? (x ≡ y)
+
+infix 3 _≡?_
+
+caseᵈ_of_ : ∀ {ℓ ℓ'} (A : Type ℓ) ⦃ d : Dec A ⦄ {B : Type ℓ'} → (Dec A → B) → B
+caseᵈ A of f = f (holds? A)
+
+caseᵈ_return_of_ : ∀ {ℓ ℓ'} (A : Type ℓ) ⦃ d : Dec A ⦄ (B : Dec A → Type ℓ') → (∀ x → B x) → B d
+caseᵈ A return P of f = f (holds? A)
+
+{-# INLINE case_of_        #-}
+{-# INLINE case_return_of_ #-}
+```
+
+<!--
+```agda
+private variable
+  P Q : Type ℓ
+```
+-->
+
+```agda
+instance
+  Dec-× : ⦃ _ : Dec P ⦄ ⦃ _ : Dec Q ⦄ → Dec (P × Q)
+  Dec-× {Q = _} ⦃ yes p ⦄ ⦃ yes q ⦄ = yes (p , q)
+  Dec-× {Q = _} ⦃ yes p ⦄ ⦃ no ¬q ⦄ = no λ z → ¬q (snd z)
+  Dec-× {Q = _} ⦃ no ¬p ⦄ ⦃ _ ⦄     = no λ z → ¬p (fst z)
+
+  Dec-⊤ : Dec ⊤
+  Dec-⊤ = yes tt
+
+  Dec-⊥ : Dec ⊥
+  Dec-⊥ = no id
+
+  Dec-¬ : ⦃ _ : Dec A ⦄ → Dec (A → ⊥)
+  Dec-¬ {A = _} ⦃ yes a ⦄ = no λ ¬a → ¬a a
+  Dec-¬ {A = _} ⦃ no ¬a ⦄ = yes ¬a
 ```
 
 <!--

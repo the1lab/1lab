@@ -69,25 +69,6 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   1n {zero} = con 1
   1n {suc n} = poly 1h
 
-  -- Nasty and evil decidable equality procedure for the higher
-  -- inductive integers based on the fast equality predicate for natural
-  -- numbers, using rewrite rules to make the postulate compute away.
-  private
-    postulate
-      believe-me : ∀ {ℓ} {A : Type ℓ} (x y : A) → x ≡ y
-      believe-me-refl : ∀ {ℓ} {A : Type ℓ} {x : A} → believe-me x x ≡rw refl
-
-    {-# REWRITE believe-me-refl #-}
-
-    evil-discrete-int : (x y : Int) → Dec (x ≡ y)
-    evil-discrete-int = Int-elim₂-prop (λ _ _ → hlevel 1) go
-      where
-        go : (a b x y : Nat) → Dec (diff a b ≡ diff x y)
-        go a b x y with a + y == b + x
-        ... | true = yes (believe-me (diff a b) (diff x y))
-        ... | false = no λ _ → nah
-          where postulate nah : ⊥
-
   -- The more cases that we can approximate here, the more powerful the
   -- solver becomes.
   _==ₕ_ : ∀ {n} (x y : Poly n) → Maybe (x ≡ y)
@@ -102,7 +83,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
   ... | nothing  | just _  = nothing
   ... | nothing  | nothing = nothing
 
-  con c ==ₙ con d with evil-discrete-int c d
+  con c ==ₙ con d with c ≡? d
   ... | yes c=d = just (ap con c=d)
   ... | no ¬c=d = nothing
   poly x ==ₙ poly y with x ==ₕ y

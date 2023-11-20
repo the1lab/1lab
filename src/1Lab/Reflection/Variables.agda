@@ -2,6 +2,7 @@ open import 1Lab.Reflection hiding (reverse)
 open import 1Lab.Type
 
 open import Data.Fin.Base
+open import Data.Dec.Base
 
 module 1Lab.Reflection.Variables where
 
@@ -60,10 +61,10 @@ empty-vars = mk-variables [] (λ _ → nothing)
 
 private
   bind : Term → Term → (Term → Maybe Term) → Term → Maybe Term
-  bind tm tm-var lookup tm' with lookup tm' | tm term=? tm'
-  ... | just tm'-var | _ = just tm'-var
-  ... | nothing      | true = just tm-var
-  ... | nothing      | false = nothing
+  bind tm tm-var lookup tm' with lookup tm' | tm ≡? tm'
+  ... | just tm'-var | _     = just tm'-var
+  ... | nothing      | yes _ = just tm-var
+  ... | nothing      | no _  = nothing
 
   fin-term : Nat → Term
   fin-term zero = con (quote fzero) (unknown h∷ [])

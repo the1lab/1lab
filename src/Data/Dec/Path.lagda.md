@@ -32,7 +32,7 @@ module Dec-path {ℓ} {A : Type ℓ} where
   decode (yes x) (yes y) p = ap yes p
   decode (yes x) (no ¬x) p = absurd (¬x x)
   decode (no ¬x) (yes x) p = absurd (¬x x)
-  decode (no ¬x) (no ¬y) p = ap no (funext (λ x → absurd (¬y x)))
+  decode (no ¬x) (no ¬y) p = ap no (funext λ x → absurd (¬x x))
 
   Code-ids : is-identity-system Code Code-refl
   Code-ids .to-path = decode _ _
@@ -51,16 +51,19 @@ module Dec-path {ℓ} {A : Type ℓ} where
   Code-hlevel {suc n} a-hl (no ¬x) (no ¬y) =
     is-prop→is-hlevel-suc (λ x y i → lift tt)
 
-Dec-is-hlevel : ∀ {ℓ} n {A : Type ℓ} → is-hlevel A (suc n) → is-hlevel (Dec A) (suc n)
-Dec-is-hlevel n ahl =
+Dec-is-hlevel : ∀ {ℓ} n {A : Type ℓ} → is-hlevel A n → is-hlevel (Dec A) n
+Dec-is-hlevel 0 ahl = contr (yes (ahl .centre)) λ where
+  (yes a) → ap yes (ahl .paths a)
+  (no ¬a) → absurd (¬a (ahl .centre))
+Dec-is-hlevel (suc n) ahl =
   identity-system→hlevel n Dec-path.Code-ids $
     Dec-path.Code-hlevel ahl
 
 instance
-  H-Level-Dec : ∀ {n} {ℓ} {A : Type ℓ} ⦃ hl : H-Level A (suc n) ⦄
-              → H-Level (Dec A) (suc n)
-  H-Level-Dec {n} = hlevel-instance (Dec-is-hlevel n (hlevel (suc n)))
+  H-Level-Dec : ∀ {n} {ℓ} {A : Type ℓ} ⦃ hl : H-Level A n ⦄
+              → H-Level (Dec A) n
+  H-Level-Dec {n} = hlevel-instance (Dec-is-hlevel n (hlevel n))
 
   decomp-dec : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (Dec A)
-  decomp-dec = decomp (quote Dec-is-hlevel) (`level-minus 1 ∷ `search ∷ [])
+  decomp-dec = decomp (quote Dec-is-hlevel) (`level ∷ `search ∷ [])
 ```

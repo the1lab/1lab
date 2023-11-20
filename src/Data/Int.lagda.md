@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import 1Lab.Prelude
+open import 1Lab.Rewrite
 
 open import Data.Nat.Solver
 open import Data.Dec
@@ -88,22 +89,23 @@ difference": the construction `same-difference`{.Agda} below packages
 everything together with a bow on the top.
 
 ```agda
-same-difference : {a b c d : Nat} → a + d ≡ b + c → diff a b ≡ diff c d
-same-difference {zero} {b} {c} {d} path = sym $
-  diff c ⌜ d ⌝     ≡⟨ ap! path ⟩
-  diff c ⌜ b + c ⌝ ≡⟨ ap! (+-commutative b c) ⟩
-  diff c (c + b)   ≡⟨ offset-negative _ _ ⟩
-  diff 0 b         ∎
-same-difference {suc a} {zero} {c} {d} path =
-  sym ( diff ⌜ c ⌝ d         ≡⟨ ap! (sym path) ⟩
-        diff ⌜ suc a + d ⌝ d ≡⟨ ap! (+-commutative (suc a) d) ⟩
-        diff (d + suc a) d   ≡⟨ offset-positive _ _ ⟩
-        diff (suc a) 0       ∎
-      )
-same-difference {suc a} {suc b} {c} {d} path =
-  diff (suc a) (suc b) ≡˘⟨ quot _ _ ⟩
-  diff a b             ≡⟨ same-difference (suc-inj path) ⟩
-  diff c d             ∎
+opaque
+  same-difference : {a b c d : Nat} → a + d ≡ b + c → diff a b ≡ diff c d
+  same-difference {zero} {b} {c} {d} path = sym $
+    diff c ⌜ d ⌝     ≡⟨ ap! path ⟩
+    diff c ⌜ b + c ⌝ ≡⟨ ap! (+-commutative b c) ⟩
+    diff c (c + b)   ≡⟨ offset-negative _ _ ⟩
+    diff 0 b         ∎
+  same-difference {suc a} {zero} {c} {d} path =
+    sym ( diff ⌜ c ⌝ d         ≡⟨ ap! (sym path) ⟩
+          diff ⌜ suc a + d ⌝ d ≡⟨ ap! (+-commutative (suc a) d) ⟩
+          diff (d + suc a) d   ≡⟨ offset-positive _ _ ⟩
+          diff (suc a) 0       ∎
+        )
+  same-difference {suc a} {suc b} {c} {d} path =
+    diff (suc a) (suc b) ≡˘⟨ quot _ _ ⟩
+    diff a b             ≡⟨ same-difference (suc-inj path) ⟩
+    diff c d             ∎
 ```
 
 <!--
@@ -791,11 +793,27 @@ canonicalise-injective = Int-elim₂-prop (λ _ _ → hlevel 1) λ a b x y p q �
   ·· ap₂ diff p q
   ·· canonicalise (diff x y) .snd .snd
 
-Discrete-Int : Discrete Int
-Discrete-Int = Int-elim₂-prop (λ _ _ → hlevel 1) λ a b x y →
-  Dec-elim (λ _ → Dec (diff a b ≡ diff x y))
-    (yes ∘ same-difference)
-    (λ ¬sd → no λ sd → ¬sd (ℤ-Path.encode a b (diff x y) sd))
-    (Discrete-Nat (a + y) (b + x))
+instance
+  Discrete-Int : Discrete Int
+  Discrete-Int = go _ _ where
+    go₀ : (a b x y : Nat) → Dec (diff a b ≡ diff x y)
+    go₀ a b x y with inspect (a + y == b + x)
+    ... | true , p  = yes (same-difference (is-equal→path {a + y} {b + x} p))
+    ... | false , p = no λ q → is-not-equal→not-path
+      {a + y} {b + x} p (ℤ-Path.encode a b (diff x y) q)
+
+    go₁ : (a b : Nat) (y : Int) → Dec (diff a b ≡ y)
+    go₁ a b (diff x y) = go₀ a b x y
+    go₁ a b (quot m n i) = is-prop→pathp
+      (λ i → Dec-is-hlevel 1 (hlevel {T = diff a b ≡ quot m n i} 1))
+      (go₀ a b m n)
+      (go₀ a b (suc m) (suc n)) i
+
+    go : ∀ x y → Dec (x ≡ y)
+    go (diff a b) y = go₁ a b y
+    go (quot m n i) y = is-prop→pathp
+      (λ i → Dec-is-hlevel 1 (hlevel {T = quot m n i ≡ y} 1))
+      (go₁ m n y)
+      (go₁ (suc m) (suc n) y) i
 ```
 -->

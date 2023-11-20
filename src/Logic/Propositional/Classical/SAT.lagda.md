@@ -5,7 +5,8 @@ open import 1Lab.Prelude
 open import Data.Bool
 open import Data.List hiding (_++_)
 open import Data.Dec
-open import Data.Fin using (Fin; fzero; fsuc; Discrete-Fin; avoid; _[_≔_]; delete)
+open import Data.Fin using (Fin; fzero; fsuc; avoid; _[_≔_]; delete)
+open import Data.Id.Base
 open import Data.Nat
 open import Data.Sum
 
@@ -78,7 +79,7 @@ delete-literal
   → Clause Γ
 delete-literal {Γ = zero}  i ϕ  = []
 delete-literal {Γ = suc Γ} i [] = []
-delete-literal {Γ = suc Γ} i (x ∷ ϕ) with Discrete-Fin i (lit-var x)
+delete-literal {Γ = suc Γ} i (x ∷ ϕ) with i ≡? lit-var x
 ... | yes _  = delete-literal i ϕ
 ... | no i≠x = avoid-lit i x i≠x ∷ delete-literal i ϕ
 ```
@@ -89,7 +90,7 @@ CNF expression.
 ```agda
 unit-propagate : Literal (suc Γ) → CNF (suc Γ) → CNF Γ
 unit-propagate x [] = []
-unit-propagate x (ϕ ∷ ϕs) with elem? Discrete-Literal x ϕ
+unit-propagate x (ϕ ∷ ϕs) with elem? x ϕ
 ... | yes _ = unit-propagate x ϕs
 ... | no _  = delete-literal (lit-var x) ϕ ∷ unit-propagate x ϕs
 ```
@@ -150,7 +151,7 @@ delete-literal-sound {zero} (neg fzero) (neg fzero ∷ ϕ) x∉ϕ ρ =
   absurd (x∉ϕ (here refl))
 
 delete-literal-sound {suc Γ} x []      x∉ϕ ρ = refl
-delete-literal-sound {suc Γ} x (y ∷ ϕ) x∉ϕ ρ with Discrete-Fin (lit-var x) (lit-var y)
+delete-literal-sound {suc Γ} x (y ∷ ϕ) x∉ϕ ρ with lit-var x ≡? lit-var y
 ... | yes x=y =
   ap₂ or
     (subst (λ e → ⟦ y ⟧ (ρ [ lit-var e ≔ lit-val e ]) ≡ false)
@@ -169,7 +170,7 @@ unit-propagate-sound
   : (x : Literal (suc Γ)) (ϕs : CNF (suc Γ)) (ρ : Fin Γ → Bool)
   → ⟦ ϕs ⟧ (ρ [ lit-var x ≔ lit-val x ]) ≡ ⟦ unit-propagate x ϕs ⟧ ρ
 unit-propagate-sound x []       ρ = refl
-unit-propagate-sound x (ϕ ∷ ϕs) ρ with elem? Discrete-Literal x ϕ
+unit-propagate-sound x (ϕ ∷ ϕs) ρ with elem? x ϕ
 ... | yes x∈ϕ = ap₂ and
   (any-one-of (λ l → ⟦ l ⟧ (ρ [ lit-var x ≔ lit-val x ]))
     x ϕ x∈ϕ (lit-assign-true x ρ))
@@ -336,3 +337,32 @@ only shows up as negated or not negated, then we can delete all
 occurrences of that literal. However, this operation is somewhat
 expensive to perform, and also rather annoying to program in Agda.
 Therefore, it has been omitted from this implementation.
+
+```agda
+ifᵈ_then_else_ : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → Dec A → (A → B) → (¬ A → B) → B
+ifᵈ (yes p) then k else ¬k = k p
+ifᵈ (no ¬p) then k else ¬k = ¬k ¬p
+```
+
+```agda
+sat : (ϕs : CNF Γ) → Dec (Σ[ ρ ∈ (Fin Γ → Bool) ] (⟦ ϕs ⟧ ρ ≡ true))
+sat {Γ = zero} []       = yes ((λ ()) , refl)
+sat {Γ = zero} (ϕ ∷ ϕs) = no λ where
+  (ρ , sat) → ¬empty-clause-sat ϕ ρ (and-reflect-true-l sat)
+
+sat {Γ = suc Γ} ϕs = case has-unit-clause? ϕs of λ where
+  (yes (x , [x]∈ϕs)) → case sat (unit-propagate x ϕs) of λ where
+    (yes sat) → yes (unit-propagate-sat x ϕs sat)
+    (no ¬sat) → no λ (ρ , ρ-sat) → unit-propagate-unsat x ϕs ¬sat
+      (ρ , ρ-sat , unit-clause-sat x ϕs [x]∈ϕs ρ ρ-sat)
+
+  (no ¬ϕs-unit) → case sat (unit-propagate (lit fzero) ϕs) of λ where
+    (yes sat-true) → yes (unit-propagate-sat (lit fzero) ϕs sat-true)
+
+    (no ¬sat-true) → case sat (unit-propagate (neg fzero) ϕs) of λ where
+      (yes sat-false) → yes (unit-propagate-sat (neg fzero) ϕs sat-false)
+
+      (no ¬sat-false) → no λ (ρ , ρ-sat) → caseⁱ (ρ fzero) of λ where
+        true  ρ₀-true  → unit-propagate-unsat (lit fzero) ϕs ¬sat-true  (ρ , ρ-sat , ρ₀-true)
+        false ρ₀-false → unit-propagate-unsat (neg fzero) ϕs ¬sat-false (ρ , ρ-sat , ap not ρ₀-false)
+```

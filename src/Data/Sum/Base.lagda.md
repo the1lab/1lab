@@ -147,12 +147,12 @@ and thus it can be shown they are equivalences:
 from-dec-is-equiv : {A : Type a} → is-equiv (from-dec {A = A})
 from-dec-is-equiv = is-iso→is-equiv (iso to-dec p q) where
   p : _
-  p (inl x) = refl
-  p (inr x) = refl
+  p (inl x)  = refl
+  p (inr ¬x) = refl
 
   q : _
   q (yes x) = refl
-  q (no x) = refl
+  q (no x)  = refl
 ```
 
 
