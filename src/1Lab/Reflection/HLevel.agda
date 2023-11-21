@@ -531,7 +531,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
           (meta m _) → do
             debugPrint "tactic.hlevel" 10
               "Type under is-hlevel is metavariable, blocking to avoid infinite loop"
-            blockOnMeta m
+            block-on-meta m
           _ → pure tt
 
         -- Create a meta of type hlevel-decomposition to find any possible hints..

@@ -176,7 +176,7 @@ elΩ T .is-tr = squash
 
 instance
   Map-□ : Map (eff □)
-  Map-□ .Map._<$>_ = □-map
+  Map-□ .Map.map = □-map
 
   Idiom-□ : Idiom (eff □)
   Idiom-□ .Idiom.pure = inc

@@ -1,8 +1,6 @@
 <!--
 ```agda
 open import 1Lab.Type
-
-open import Data.List.Base
 ```
 -->
 
@@ -35,16 +33,7 @@ constructor.
 record Map (M : Effect) : Typeω where
   private module M = Effect M
   field
-    _<$>_ : ∀ {ℓ} {ℓ'} {A : Type ℓ} {B : Type ℓ'} → (A → B) → M.₀ A → M.₀ B
-
-  infixl 4 _<$>_ _<&>_
-
-  _<&>_ : ∀ {ℓ} {ℓ'} {A : Type ℓ} {B : Type ℓ'} → M.₀ A → (A → B) → M.₀ B
-  x <&> f = f <$> x
-
-instance
-  Map-List : Map (eff List)
-  Map-List .Map._<$>_ = map
+    map : ∀ {ℓ} {ℓ'} {A : Type ℓ} {B : Type ℓ'} → (A → B) → M.₀ A → M.₀ B
 
 record Idiom (M : Effect) : Typeω where
   private module M = Effect M
@@ -55,7 +44,16 @@ record Idiom (M : Effect) : Typeω where
 
   infixl 4 _<*>_
 
-
-open Map ⦃ ... ⦄ public
 open Idiom ⦃ ... ⦄ public
+open Map   ⦃ ... ⦄ public
+
+infixl 4 _<$>_ _<&>_
+
+_<$>_ : ∀ {ℓ ℓ'} {M : Effect} ⦃ _ : Map M ⦄ {A : Type ℓ} {B : Type ℓ'}
+      → (A → B) → M .Effect.₀ A → M .Effect.₀ B
+f <$> x = map f x
+
+_<&>_ : ∀ {ℓ ℓ'} {M : Effect} ⦃ _ : Map M ⦄ {A : Type ℓ} {B : Type ℓ'}
+      → (A → B) → M .Effect.₀ A → M .Effect.₀ B
+f <&> x = map f x
 ```

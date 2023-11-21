@@ -2,11 +2,12 @@ open import 1Lab.Path.IdentitySystem
 open import 1Lab.Path
 open import 1Lab.Type
 
+open import Data.String.Base
 open import Data.Dec.Base
 open import Data.Id.Base
 open import Data.List
 
-module 1Lab.Reflection.Data.Abs where
+module Data.Reflection.Abs where
 
 record Abs {a} (A : Type a) : Type a where
   constructor abs

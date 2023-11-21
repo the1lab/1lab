@@ -3,7 +3,10 @@
 open import 1Lab.Prelude
 
 open import Data.Fin.Base
-open import Data.Vec.Base
+
+import Data.Vec.Base as Vec
+
+open Vec
 ```
 -->
 
@@ -38,19 +41,19 @@ lookup-is-equiv = is-iso→is-equiv $
 
 module Lookup {ℓ} {A : Type ℓ} {n : Nat} = Equiv (lookup {A = A} {n} , lookup-is-equiv)
 
-map-lookup : ∀ (f : A → B) (xs : Vec A n) i → lookup (map f xs) i ≡ f (lookup xs i)
+map-lookup : ∀ (f : A → B) (xs : Vec A n) i → lookup (Vec.map f xs) i ≡ f (lookup xs i)
 map-lookup f (x ∷ xs) fzero    = refl
 map-lookup f (x ∷ xs) (fsuc i) = map-lookup f xs i
 
-map-id : (xs : Vec A n) → map (λ x → x) xs ≡ xs
+map-id : (xs : Vec A n) → Vec.map (λ x → x) xs ≡ xs
 map-id xs = Lookup.injective₂ (funext λ i → map-lookup _ xs i) refl
 
 map-comp
   : (xs : Vec A n) (f : A → B) (g : B → C)
-  → map (λ x → g (f x)) xs ≡ map g (map f xs)
+  → Vec.map (λ x → g (f x)) xs ≡ Vec.map g (Vec.map f xs)
 map-comp xs f g = Lookup.injective $ funext λ i →
-  lookup (map (λ x → g (f x)) xs) i ≡⟨ map-lookup (λ x → g (f x)) xs i ⟩
-  g (f (lookup xs i))               ≡˘⟨ ap g (map-lookup f xs i) ⟩
-  g (lookup (map f xs) i)           ≡˘⟨ map-lookup g (map f xs) i ⟩
-  lookup (map g (map f xs)) i       ∎
+  lookup (Vec.map (λ x → g (f x)) xs) i ≡⟨ map-lookup (λ x → g (f x)) xs i ⟩
+  g (f (lookup xs i))                   ≡˘⟨ ap g (map-lookup f xs i) ⟩
+  g (lookup (Vec.map f xs) i)           ≡˘⟨ map-lookup g (Vec.map f xs) i ⟩
+  lookup (Vec.map g (Vec.map f xs)) i   ∎
 ```

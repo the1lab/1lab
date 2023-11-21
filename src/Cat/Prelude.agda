@@ -7,7 +7,7 @@ open import 1Lab.Prelude
   renaming ( _↪_ to _↣_
            ; _∘_ to _⊙_ -- \o.
            )
-  hiding (id)
+  hiding (id ; map)
   public
 
 open import Data.Set.Truncation public

@@ -98,9 +98,9 @@ Disc-diagram {C = C} {X = X} ⦃ d ⦄ f = F where
   P : ∣ X ∣ → ∣ X ∣ → Type _
   P x y = C.Hom (f x) (f y)
 
-  map : ∀ {x y : ∣ X ∣} → x ≡ y → Dec (x ≡ᵢ y) → P x y
-  map {x} {.x} p (yes reflᵢ) = C.id
-  map {x} {y}  p (no ¬p)     = absurd (¬p (Id≃path.from p))
+  go : ∀ {x y : ∣ X ∣} → x ≡ y → Dec (x ≡ᵢ y) → P x y
+  go {x} {.x} p (yes reflᵢ) = C.id
+  go {x} {y}  p (no ¬p)     = absurd (¬p (Id≃path.from p))
 ```
 
 The object part of the functor is the provided $f : X \to
@@ -114,7 +114,7 @@ substitution along $\refl$ is easy to deal with.
 ```agda
   F : Functor _ _
   F .F₀ = f
-  F .F₁ {x} {y} p = map p (x ≡ᵢ? y)
+  F .F₁ {x} {y} p = go p (x ≡ᵢ? y)
 ```
 
 Proving that our our $F_1$ is functorial involves a bunch of tedious
@@ -123,8 +123,8 @@ computations with equalities and a whole waterfall of absurd cases:
 ```agda
   F .F-id {x} = refl
   F .F-∘  {x} {y} {z} f g =
-    J (λ y g → ∀ {z} (f : y ≡ z) → map (g ∙ f) (x ≡ᵢ? z) ≡ map f (y ≡ᵢ? z) C.∘ map g (x ≡ᵢ? y))
-      (λ f → J (λ z f → map (refl ∙ f) (x ≡ᵢ? z) ≡ map f (x ≡ᵢ? z) C.∘ C.id) (sym (C.idr _)) f)
+    J (λ y g → ∀ {z} (f : y ≡ z) → go (g ∙ f) (x ≡ᵢ? z) ≡ go f (y ≡ᵢ? z) C.∘ go g (x ≡ᵢ? y))
+      (λ f → J (λ z f → go (refl ∙ f) (x ≡ᵢ? z) ≡ go f (x ≡ᵢ? z) C.∘ C.id) (sym (C.idr _)) f)
       g f
 ```
 

@@ -96,11 +96,11 @@ private
   go pre n (def f args) = do
     as ← go* pre n args
     refl-transport n (def f as)
-  go pre k t@(lam v (abs nm b)) = lam v ∘ abs nm <$> underAbs t (go pre (suc k) b)
+  go pre k t@(lam v (abs nm b)) = lam v ∘ abs nm <$> under-abs t (go pre (suc k) b)
   go pre n (pat-lam cs args) = typeError $ "regularity: Can not deal with pattern lambdas"
   go pre n t@(pi (arg i a) (abs nm b)) = do
     a ← go pre n a
-    b ← underAbs t (go pre (suc n) b)
+    b ← under-abs t (go pre (suc n) b)
     pure (pi (arg i a) (abs nm b))
   go pre n (agda-sort s) = pure (agda-sort s)
   go pre n (lit l) = pure (lit l)
@@ -117,7 +117,7 @@ private
   -- then wrap it in a lambda. Nice!
   to-regularity-path : Regularity-precision → Term → TC Term
   to-regularity-path pre tm = do
-    tm ← maybe→alt (raise 1 tm) <?> "Failed to raise term in regularity tactic"
+    tm ← raiseTC 1 tm
     -- Since we'll be comparing terms, Agda really wants them to be
     -- well-scoped. Since we shifted eeeverything up by one, we have to
     -- grow the context, too.

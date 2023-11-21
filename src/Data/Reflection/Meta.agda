@@ -7,14 +7,15 @@ open import Data.Nat.Base
 open import Data.Id.Base
 open import Data.Bool
 
-open import Prim.Data.String
+open import Data.String.Base
+open import Data.String.Show
 
-module 1Lab.Reflection.Data.Meta where
+module Data.Reflection.Meta where
 
 postulate Meta : Type
 {-# BUILTIN AGDAMETA Meta #-}
 
-primitive
+private module P where primitive
   primMetaEquality : Meta → Meta → Bool
   primMetaLess     : Meta → Meta → Bool
   primShowMeta     : Meta → String
@@ -23,14 +24,17 @@ primitive
 
 instance
   Discrete-Meta : Discrete Meta
-  Discrete-Meta = Discrete-inj' _ (primMetaToNatInjective _ _)
+  Discrete-Meta = Discrete-inj' _ (P.primMetaToNatInjective _ _)
+
+  Show-Meta : Show Meta
+  Show-Meta = default-show P.primShowMeta
 
 data Blocker : Type where
-  blockerAny  : List Blocker → Blocker
-  blockerAll  : List Blocker → Blocker
-  blockerMeta : Meta → Blocker
+  blocker-any  : List Blocker → Blocker
+  blocker-all  : List Blocker → Blocker
+  blocker-meta : Meta → Blocker
 
 {-# BUILTIN AGDABLOCKER     Blocker #-}
-{-# BUILTIN AGDABLOCKERANY  blockerAny #-}
-{-# BUILTIN AGDABLOCKERALL  blockerAll #-}
-{-# BUILTIN AGDABLOCKERMETA blockerMeta #-}
+{-# BUILTIN AGDABLOCKERANY  blocker-any #-}
+{-# BUILTIN AGDABLOCKERALL  blocker-all #-}
+{-# BUILTIN AGDABLOCKERMETA blocker-meta #-}

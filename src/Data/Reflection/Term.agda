@@ -7,17 +7,17 @@ open import Data.Id.Base
 open import Data.Nat.Base
 open import Data.List
 
-open import Prim.Data.Word
-open import Prim.Data.Float
-open import Prim.Data.String
+open import Data.Word.Base
+open import Data.Float.Base
+open import Data.String.Base
 
-open import 1Lab.Reflection.Data.Name
-open import 1Lab.Reflection.Data.Meta
-open import 1Lab.Reflection.Data.Argument
-open import 1Lab.Reflection.Data.Abs
-open import 1Lab.Reflection.Data.Literal
+open import Data.Reflection.Name
+open import Data.Reflection.Meta
+open import Data.Reflection.Argument
+open import Data.Reflection.Abs
+open import Data.Reflection.Literal
 
-module 1Lab.Reflection.Data.Term where
+module Data.Reflection.Term where
 
 data Term    : Type
 data Sort    : Type
@@ -105,27 +105,6 @@ data Definition : Type where
 
 {-# BUILTIN AGDACLAUSECLAUSE clause        #-}
 {-# BUILTIN AGDACLAUSEABSURD absurd-clause #-}
-
-data ErrorPart : Type where
-  strErr  : String → ErrorPart
-  termErr : Term → ErrorPart
-  pattErr : Pattern → ErrorPart
-  nameErr : Name → ErrorPart
-
-instance
-  IsString-ErrorPart : IsString ErrorPart
-  IsString-ErrorPart .IsString.Constraint _ = ⊤
-  IsString-ErrorPart .IsString.fromString s = strErr s
-
-  IsString-Error : IsString (List ErrorPart)
-  IsString-Error .IsString.Constraint _ = ⊤
-  IsString-Error .fromString s = fromString s ∷ []
-
-{-# BUILTIN AGDAERRORPART       ErrorPart #-}
-{-# BUILTIN AGDAERRORPARTSTRING strErr    #-}
-{-# BUILTIN AGDAERRORPARTTERM   termErr   #-}
-{-# BUILTIN AGDAERRORPARTPATT   pattErr   #-}
-{-# BUILTIN AGDAERRORPARTNAME   nameErr   #-}
 
 instance
   {-# TERMINATING #-}

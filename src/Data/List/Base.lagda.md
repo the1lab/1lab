@@ -4,7 +4,12 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Product.NAry
+open import Data.Dec.Base
 open import Data.Bool
+
+open import Meta.Foldable
+open import Meta.Append
+open import Meta.Idiom
 ```
 -->
 
@@ -82,14 +87,32 @@ List-elim
   → ∀ x → P x
 List-elim P p[] p∷ []       = p[]
 List-elim P p[] p∷ (x ∷ xs) = p∷ x xs (List-elim P p[] p∷ xs)
+```
 
-foldr : (A → B → B) → B → List A → B
-foldr f x = List-elim _ x (λ x _ → f x)
+<!--
+```agda
+instance
+  Foldable-List : Foldable (eff List)
+  Foldable-List .foldr f x = List-elim _ x (λ x _ → f x)
+
+traverse
+  : ∀ {M : Effect} ⦃ _ : Idiom M ⦄ (let module M = Effect M) {ℓ ℓ'}
+      {a : Type ℓ} {b : Type ℓ'}
+  → (a → M.₀ b) → List a → M.₀ (List b)
+traverse f []       = pure []
+traverse f (x ∷ xs) = ⦇ f x ∷ traverse f xs ⦈
+
+for
+  : ∀ {M : Effect} ⦃ _ : Idiom M ⦄ (let module M = Effect M) {ℓ ℓ'}
+      {a : Type ℓ} {b : Type ℓ'}
+  → List a → (a → M.₀ b) → M.₀ (List b)
+for f xs = traverse xs f
 
 foldl : (B → A → B) → B → List A → B
 foldl f x []       = x
 foldl f x (a ∷ as) = foldl f (f x a) as
 ```
+-->
 
 ## Functorial action
 
@@ -97,9 +120,12 @@ It's also possible to lift a function `A → B` to a function `List A →
 List B`.
 
 ```agda
-map : (A → B) → List A → List B
-map f []       = []
-map f (x ∷ xs) = f x ∷ map f xs
+instance
+  Map-List : Map (eff List)
+  Map-List = record { map = go } where
+    go : (A → B) → List A → List B
+    go f []       = []
+    go f (x ∷ xs) = f x ∷ go f xs
 ```
 
 ## Monoidal structure
@@ -112,17 +138,21 @@ _++_ : ∀ {ℓ} {A : Type ℓ} → List A → List A → List A
 (x ∷ xs) ++ ys = x ∷ (xs ++ ys)
 
 infixr 5 _++_
+
+instance
+  Append-List : ∀ {ℓ} {A : Type ℓ} → Append (List A)
+  Append-List = record { mempty = [] ; _<>_ = _++_ }
 ```
 
 <!--
 ```agda
-mapUp : (Nat → A → B) → Nat → List A → List B
-mapUp f _ [] = []
-mapUp f n (x ∷ xs) = f n x ∷ mapUp f (suc n) xs
+map-up : (Nat → A → B) → Nat → List A → List B
+map-up f _ []       = []
+map-up f n (x ∷ xs) = f n x ∷ map-up f (suc n) xs
 
 length : List A → Nat
-length [] = zero
-length (x ∷ x₁) = suc (length x₁)
+length []       = zero
+length (x ∷ xs) = suc (length xs)
 
 concat : List (List A) → List A
 concat [] = []
@@ -150,9 +180,14 @@ enumerate = go 0 where
   go x (a ∷ b) = (x , a) ∷ go (suc x) b
 
 take : ∀ {ℓ} {A : Type ℓ} → Nat → List A → List A
-take 0 xs = []
-take (suc n) [] = []
+take 0       xs       = []
+take (suc n) []       = []
 take (suc n) (x ∷ xs) = x ∷ take n xs
+
+drop : ∀ {ℓ} {A : Type ℓ} → Nat → List A → List A
+drop zero    xs       = xs
+drop (suc n) []       = []
+drop (suc n) (x ∷ xs) = drop n xs
 ```
 -->
 
@@ -175,3 +210,30 @@ any-of : ∀ {ℓ} {A : Type ℓ} → (A → Bool) → List A → Bool
 any-of f [] = false
 any-of f (x ∷ xs) = or (f x) (any-of f xs)
 ```
+
+<!--
+```agda
+∷-head-inj : ∀ {x y : A} {xs ys} → (x ∷ xs) ≡ (y ∷ ys) → x ≡ y
+∷-head-inj {x = x} p = ap (head x) p
+
+∷-tail-inj : ∀ {x y : A} {xs ys} → (x ∷ xs) ≡ (y ∷ ys) → xs ≡ ys
+∷-tail-inj p = ap tail p
+
+∷≠[] : ∀ {x : A} {xs} → ¬ (x ∷ xs) ≡ []
+∷≠[] {A = A} p = subst distinguish p tt where
+  distinguish : List A → Type
+  distinguish []     = ⊥
+  distinguish (_ ∷ _) = ⊤
+
+instance
+  Discrete-List : ∀ ⦃ d : Discrete A ⦄ → Discrete (List A)
+  Discrete-List {x = []}     {y = []}     = yes refl
+  Discrete-List {x = []}     {y = x ∷ y}  = no λ p → ∷≠[] (sym p)
+  Discrete-List {x = x ∷ xs} {y = []}     = no ∷≠[]
+  Discrete-List {x = x ∷ xs} {y = y ∷ ys} = case x ≡? y of λ where
+    (yes x=y) → case Discrete-List {x = xs} {ys} of λ where
+      (yes xs=ys) → yes (ap₂ _∷_ x=y xs=ys)
+      (no  xs≠ys) → no λ p → xs≠ys (∷-tail-inj p)
+    (no x≠y)      → no λ p → x≠y (∷-head-inj p)
+```
+-->

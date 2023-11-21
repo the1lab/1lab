@@ -5,16 +5,18 @@ open import 1Lab.Type
 open import Data.Dec.Base
 open import Data.Id.Base
 
-open import Prim.Data.Word
+open import Data.String.Base
+open import Data.String.Show
+open import Data.Word.Base
 
-open import 1Lab.Reflection.Data.Fixity
+open import Data.Reflection.Fixity
 
-module 1Lab.Reflection.Data.Name where
+module Data.Reflection.Name where
 
 postulate Name : Type
 {-# BUILTIN QNAME Name #-}
 
-primitive
+private module P where primitive
   primQNameEquality           : Name → Name → Bool
   primQNameLess               : Name → Name → Bool
   primShowQName               : Name → String
@@ -24,4 +26,7 @@ primitive
 
 instance
   Discrete-Name : Discrete Name
-  Discrete-Name = Discrete-inj' _ (primQNameToWord64sInjective _ _)
+  Discrete-Name = Discrete-inj' _ (P.primQNameToWord64sInjective _ _)
+
+  Show-Name : Show Name
+  Show-Name = default-show P.primShowQName

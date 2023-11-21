@@ -12,7 +12,7 @@ open import Data.Dec.Base
 open import Data.Id.Base
 open import Data.Bool
 
-open import Prim.Data.String
+open import Meta.Idiom
 ```
 -->
 
@@ -38,28 +38,6 @@ private variable
 -->
 
 ## Path Space
-
-We begin by characteristing the behaviour of paths of lists. For
-instance, `∷`{.Agda} is injective in both its arguments:
-
-```agda
-∷-head-inj : ∀ {x y : A} {xs ys} → (x ∷ xs) ≡ (y ∷ ys) → x ≡ y
-∷-head-inj {x = x} p = ap (head x) p
-
-∷-tail-inj : ∀ {x y : A} {xs ys} → (x ∷ xs) ≡ (y ∷ ys) → xs ≡ ys
-∷-tail-inj p = ap tail p
-```
-
-Similarly, it is possible to distinguish `_ ∷ _` from `[]`{.Agda}, so
-they are not identical:
-
-```agda
-∷≠[] : ∀ {x : A} {xs} → ¬ (x ∷ xs) ≡ []
-∷≠[] {A = A} p = subst distinguish p tt where
-  distinguish : List A → Type
-  distinguish []     = ⊥
-  distinguish (_ ∷ _) = ⊤
-```
 
 Using these lemmas, we can characterise the path space of `List A` in
 terms of the path space of `A`. For this, we define by induction a type
@@ -289,25 +267,3 @@ is-empty? : ∀ (xs : List A) → Dec (is-empty xs)
 is-empty? [] = yes tt
 is-empty? (x ∷ xs) = no id
 ```
-
-<!--
-```agda
-instance
-  Discrete-List : ∀ ⦃ d : Discrete A ⦄ → Discrete (List A)
-  Discrete-List {x = []}     {y = []}     = yes refl
-  Discrete-List {x = []}     {y = x ∷ y}  = no λ p → ∷≠[] (sym p)
-  Discrete-List {x = x ∷ xs} {y = []}     = no ∷≠[]
-  Discrete-List {x = x ∷ xs} {y = y ∷ ys} = case x ≡? y of λ where
-    (yes x=y) → case Discrete-List {x = xs} {ys} of λ where
-      (yes xs=ys) → yes (ap₂ _∷_ x=y xs=ys)
-      (no  xs≠ys) → no λ p → xs≠ys (∷-tail-inj p)
-    (no x≠y)      → no λ p → x≠y (∷-head-inj p)
-
-private primitive
-  primStringToListInjective   : ∀ a b → primStringToList a ≡ᵢ primStringToList b → a ≡ᵢ b
-
-instance
-  Discrete-String : Discrete String
-  Discrete-String = Discrete-inj' _ (primStringToListInjective _ _)
-```
--->

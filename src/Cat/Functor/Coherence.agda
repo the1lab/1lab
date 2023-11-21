@@ -4,6 +4,8 @@ open import Cat.Prelude
 
 import Cat.Functor.Compose
 
+open import Data.List.Base
+
 module Cat.Functor.Coherence where
 
 open Cat.Functor.Compose public

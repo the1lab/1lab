@@ -7,14 +7,15 @@ open import Data.Id.Base
 open import Data.Nat.Base
 open import Data.List
 
-open import Prim.Data.Word
-open import Prim.Data.Float
-open import Prim.Data.String
+open import Data.Word.Base
+open import Data.Char.Base
+open import Data.Float.Base
+open import Data.String.Base
 
-open import 1Lab.Reflection.Data.Name
-open import 1Lab.Reflection.Data.Meta
+open import Data.Reflection.Name
+open import Data.Reflection.Meta
 
-module 1Lab.Reflection.Data.Literal where
+module Data.Reflection.Literal where
 
 data Literal : Type where
   nat    : (n : Nat)    → Literal

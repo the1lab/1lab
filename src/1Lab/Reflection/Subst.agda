@@ -1,7 +1,9 @@
 open import 1Lab.Reflection
 open import 1Lab.Type
 
-open import Data.Maybe.Base hiding (map ; extend)
+open import Data.Maybe.Base
+
+open import Meta.Foldable
 
 open import Prim.Data.Nat
 

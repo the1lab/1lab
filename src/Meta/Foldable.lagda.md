@@ -1,13 +1,9 @@
 <!--
 ```agda
-open import 1Lab.Path
 open import 1Lab.Type
 
-open import Meta.Traverse
 open import Meta.Idiom
 open import Meta.Alt
-
-import Data.List.Base as L
 ```
 -->
 
@@ -25,14 +21,9 @@ record Foldable (F : Effect) : Typeω where
 
 open Foldable ⦃ ... ⦄ public
 
-instance
-  Foldable-List : Foldable (eff L.List)
-  Foldable-List .foldr = L.foldr
-
 asum
   : ∀ {F M : Effect} ⦃ f : Foldable F ⦄ ⦃ a : Alt M ⦄ {ℓ} {A : Type ℓ}
-  → (let module F = Effect F)
-  → (let module M = Effect M)
+    (let module F = Effect F) (let module M = Effect M)
   → F.₀ (M.₀ A) → M.₀ A
 asum = foldr _<|>_ fail
 

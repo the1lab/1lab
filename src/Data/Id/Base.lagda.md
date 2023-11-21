@@ -119,5 +119,12 @@ opaque
     (no ¬a) → absurd (¬a refl))
 
 {-# REWRITE ≡ᵢ?-default ≡ᵢ?-yes #-}
+
+Discrete-inj'
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B)
+  → (∀ {x y} → f x ≡ᵢ f y → x ≡ᵢ y)
+  → ⦃ _ : Discrete B ⦄
+  → Discrete A
+Discrete-inj' f inj {x} {y} =
+  Dec-map (λ p → Id≃path.to (inj p)) (λ x → Id≃path.from (ap f x)) (f x ≡ᵢ? f y)
 ```
--->

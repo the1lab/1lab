@@ -2,27 +2,25 @@
 ```agda
 open import 1Lab.Type
 
+open import Data.Maybe.Base
 open import Data.Int.Inductive
-
-open import Prim.Data.String
-open import Prim.Data.Maybe
-open import Prim.Data.Word
+open import Data.Dec.Base
+open import Data.Id.Base
+open import Data.Word.Base
 ```
 -->
 
 ```agda
-module Prim.Data.Float where
+module Data.Float.Base where
 ```
 
-# Primitive: IEEE754 floats
-
-Yes.
+# header
 
 ```agda
 postulate Float : Type
 {-# BUILTIN FLOAT Float #-}
 
-primitive
+private module P where primitive
   -- Relations
   primFloatInequality        : Float → Float → Bool
   primFloatEquality          : Float → Float → Bool
@@ -33,6 +31,7 @@ primitive
   primFloatIsSafeInteger     : Float → Bool
   -- Conversions
   primFloatToWord64          : Float → Maybe Word64
+  primFloatToWord64Injective : ∀ a b → primFloatToWord64 a ≡ᵢ primFloatToWord64 b → a ≡ᵢ b
   primNatToFloat             : Nat → Float
   primIntToFloat             : Int → Float
   primFloatRound             : Float → Maybe Int
@@ -42,7 +41,6 @@ primitive
   primRatioToFloat           : Int → Int → Float
   primFloatDecode            : Float → Maybe (Σ Int λ _ → Int)
   primFloatEncode            : Int → Int → Maybe Float
-  primShowFloat              : Float → String
   -- Operations
   primFloatPlus              : Float → Float → Float
   primFloatMinus             : Float → Float → Float
@@ -66,3 +64,32 @@ primitive
   primFloatASinh             : Float → Float
   primFloatACosh             : Float → Float
   primFloatATanh             : Float → Float
+
+open P public renaming
+  ( primFloatInequality to _float≠_
+  ; primFloatEquality   to _float=_
+  ; primFloatLess       to _float<_
+
+  ; primFloatIsInfinite     to is-infinite?
+  ; primFloatIsNaN          to is-nan?
+  ; primFloatIsNegativeZero to is-neg0?
+  ; primFloatIsSafeInteger  to is-integer?
+
+  ; primFloatToWord64       to float→word64
+  ; primNatToFloat          to float→nat
+  ; primIntToFloat          to int→float
+  ; primFloatRound          to round
+  ; primFloatFloor          to floor
+  ; primFloatCeiling        to ceiling
+  ; primFloatToRatio        to float→ratio
+  ; primRatioToFloat        to ratio→float
+
+  ; primFloatDecode         to decode-float
+  ; primFloatEncode         to encode-float
+  )
+  using ()
+
+instance
+  Discrete-Float : Discrete Float
+  Discrete-Float  = Discrete-inj' _ (P.primFloatToWord64Injective _ _)
+```

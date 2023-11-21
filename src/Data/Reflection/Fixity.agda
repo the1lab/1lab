@@ -1,12 +1,11 @@
 open import 1Lab.Path
 open import 1Lab.Type
 
+open import Data.Float.Base
 open import Data.Dec.Base
 open import Data.Id.Base
 
-open import Prim.Data.Float
-
-module 1Lab.Reflection.Data.Fixity where
+module Data.Reflection.Fixity where
 
 data Associativity : Type where
   left-assoc  : Associativity

@@ -7,6 +7,8 @@ open import 1Lab.Type
 import Prim.Data.Sigma as S
 import Prim.Data.Nat as N
 
+open import Meta.Foldable
+
 module 1Lab.Reflection.Record where
 
 field-names→sigma : ∀ {ℓ} {A : Type ℓ} → List A → Term
