@@ -80,12 +80,6 @@ get-record tm = reduce tm >>= λ where
   (def qn _) → get-record-type qn
   _          → typeError [ "get-record: " , termErr tm , " is not a record type." ]
 
-telescope→patterns : Telescope → List (Arg Pattern)
-telescope→patterns tel = go (length tel - 1) tel where
-  go : Nat → Telescope → List (Arg Pattern)
-  go n []                  = []
-  go n ((_ , arg i _) ∷ t) = arg i (var n) ∷ go (n - 1) t
-
 -- Get the argument telescope of something in the signature. NOTE: If
 -- the Name refers to a Constructor, the returned telescope *will*
 -- include the data/record parameters!

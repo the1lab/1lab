@@ -38,7 +38,7 @@ of $A$".
 Can we do better? It turns out that we can! This generally goes by the
 name of **type-theoretic replacement**, after Rijke [@Rijke:2017 §5]; in
 turn, the name _replacement_ comes from the axiom of material set theory
-sayings the image of a set under a function is again set.^[Keep in mind
+saying the image of a set under a function is again set.^[Keep in mind
 that material set theory says "is a set" in a very different way than we
 do; They mean it about size.] Here we implement a slight generalization
 of [Evan Cavallo's construction] in terms of higher induction-recursion.

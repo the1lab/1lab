@@ -215,5 +215,10 @@ funext-square p i j a = p a i j
   .is-iso.inv b a → subst B (c .paths a) b
   .is-iso.rinv b → ap (λ e → subst B e b) (is-contr→is-set c _ _ _ _) ∙ transport-refl b
   .is-iso.linv b → funext λ a → from-pathp (ap b (c .paths a))
+
+flip
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : A → B → Type ℓ''}
+  → (∀ a b → C a b) → (∀ b a → C a b)
+flip f b a = f a b
 ```
 -->
