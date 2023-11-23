@@ -1,6 +1,7 @@
 open import 1Lab.Reflection.Subst using (applyTC ; raiseTC)
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.Reflection.HLevel
+open import 1Lab.Equiv.Embedding
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Reflection
 open import 1Lab.Type.Sigma
@@ -278,12 +279,24 @@ Pathᵉ-is-hlevel
 Pathᵉ-is-hlevel n sa hl =
   is-hlevel≃ _ (identity-system-gives-path (sa .idsᵉ)) (Path-is-hlevel' _ hl _ _)
 
-{-
-Convenient wrapper to define an Extensional instance if we're given
-an injection 'f : A → B' into a set. It would be possible to take an
-embedding into an arbitrary type, but that hasn't come up yet. The
-relation this equips A with is "equal under f".
--}
+embedding→extensional
+  : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
+  → (f : A ↪ B)
+  → Extensional B ℓr
+  → Extensional A ℓr
+embedding→extensional f ext .Pathᵉ x y = Pathᵉ ext (f .fst x) (f .fst y)
+embedding→extensional f ext .reflᵉ x = reflᵉ ext (f .fst x)
+embedding→extensional f ext .idsᵉ =
+  pullback-identity-system (ext .idsᵉ) f
+
+iso→extensional
+  : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
+  → Iso A B
+  → Extensional B ℓr
+  → Extensional A ℓr
+iso→extensional f ext =
+  embedding→extensional (Iso→Embedding f) ext
+
 injection→extensional!
   : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
   → {@(tactic hlevel-tactic-worker) sb : is-set B}
@@ -291,9 +304,5 @@ injection→extensional!
   → (∀ {x y} → f x ≡ f y → x ≡ y)
   → Extensional B ℓr
   → Extensional A ℓr
-injection→extensional! {sb = b-set} {f} inj ext .Pathᵉ x y = Pathᵉ ext (f x) (f y)
-injection→extensional! {sb = b-set} {f} inj ext .reflᵉ x = reflᵉ ext (f x)
-injection→extensional! {sb = b-set} {f} inj ext .idsᵉ =
-  set-identity-system
-    (λ x y → Pathᵉ-is-hlevel 1 ext b-set)
-    (λ p → inj (ext .idsᵉ .to-path p))
+injection→extensional! {sb = b-set} {f} inj ext =
+  embedding→extensional (f , injective→is-embedding b-set f inj) ext
