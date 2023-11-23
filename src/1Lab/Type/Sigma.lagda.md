@@ -14,7 +14,7 @@ module 1Lab.Type.Sigma where
 ```
 private variable
   ℓ ℓ₁ : Level
-  A A' X X' : Type ℓ
+  A A' X X' Y Y' Z Z' : Type ℓ
   B P Q : A → Type ℓ
 ```
 -->
@@ -325,5 +325,15 @@ infixr 4 _,ₚ_
   .is-iso.inv x → _ , x
   .is-iso.rinv x → ap (λ e → subst B e x) (is-contr→is-set c _ _ _ _) ∙ transport-refl x
   .is-iso.linv x → Σ-path (c .paths _) (transport⁻transport (ap B (sym (c .paths (x .fst)))) (x .snd))
+```
+-->
+
+<!--
+```agda
+curry : ((X × Y) → Z) → X → Y → Z
+curry f a b = f (a , b)
+
+uncurry : (X → Y → Z) → (X × Y) → Z
+uncurry f (a , b) = f a b
 ```
 -->
