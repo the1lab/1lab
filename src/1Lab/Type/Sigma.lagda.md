@@ -6,7 +6,6 @@ open import 1Lab.Path
 open import 1Lab.Type
 ```
 -->
-
 ```agda
 module 1Lab.Type.Sigma where
 ```
@@ -252,11 +251,22 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
 
 <!--
 ```agda
+Σ-map
+  : (f : A → A')
+  → ({x : A} → P x → Q (f x)) → Σ _ P → Σ _ Q
+Σ-map f g (x , y) = f x , g y
+
 Σ-map₂ : ({x : A} → P x → Q x) → Σ _ P → Σ _ Q
 Σ-map₂ f (x , y) = (x , f y)
 
 ×-map : (A → A') → (X → X') → A × X → A' × X'
 ×-map f g (x , y) = (f x , g y)
+
+×-map₁ : (A → A') → A × X → A' × X
+×-map₁ f = ×-map f id
+
+×-map₂ : (X → X') → A × X → A × X'
+×-map₂ f = ×-map id f
 ```
 -->
 
