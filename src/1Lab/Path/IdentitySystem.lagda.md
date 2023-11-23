@@ -23,7 +23,7 @@ module 1Lab.Path.IdentitySystem where
 
 An **identity system** is a way of characterising the path spaces of a
 particular type, without necessarily having to construct a full
-encode-decode equaivalence. Essentially, the data of an identity system
+encode-decode equivalence. Essentially, the data of an identity system
 is precisely the data required to implement _path induction_, a.k.a. the
 J eliminator. Any type with the data of an identity system satisfies its
 own J, and conversely, if the type satisfies J, it is an identity
