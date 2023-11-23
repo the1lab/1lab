@@ -53,6 +53,13 @@ zero≠suc path = subst distinguish path tt where
   distinguish (suc x) = ⊥
 ```
 
+<!--
+```agda
+suc≠zero : {n : Nat} → ¬ suc n ≡ zero
+suc≠zero = zero≠suc ∘ sym
+```
+-->
+
 The idea behind this proof is that we can write a predicate which is
 `true`{.Agda ident=⊤} for zero, and `false`{.Agda ident=⊥} for any
 successor. Since we know that `⊤`{.Agda} is inhabited (by `tt`{.Agda}),
@@ -60,11 +67,12 @@ we can transport that along the claimed path to get an inhabitant of
 `⊥`{.Agda}, i.e., a contradiction.
 
 ```agda
+pred : Nat → Nat
+pred 0 = 0
+pred (suc n) = n
+
 suc-inj : {x y : Nat} → suc x ≡ suc y → x ≡ y
-suc-inj = ap pred where
-  pred : Nat → Nat
-  pred (suc x) = x
-  pred zero = zero
+suc-inj = ap pred
 ```
 
 Furthermore, observe that the `successor`{.Agda} operation is injective,
@@ -75,7 +83,7 @@ proof that equality for the natural numbers is decidable:
 Discrete-Nat : Discrete Nat
 Discrete-Nat zero zero    = yes refl
 Discrete-Nat zero (suc y) = no λ zero≡suc → absurd (zero≠suc zero≡suc)
-Discrete-Nat (suc x) zero = no λ suc≡zero → absurd (zero≠suc (sym suc≡zero))
+Discrete-Nat (suc x) zero = no λ suc≡zero → absurd (suc≠zero suc≡zero)
 Discrete-Nat (suc x) (suc y) with Discrete-Nat x y
 ... | yes x≡y = yes (ap suc x≡y)
 ... | no ¬x≡y = no λ sucx≡sucy → ¬x≡y (suc-inj sucx≡sucy)

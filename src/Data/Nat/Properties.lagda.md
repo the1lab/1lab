@@ -112,7 +112,7 @@ numbers]. Since they're mostly simple inductive arguments written in
 *-suc-inj : ∀ k x y → x * suc k ≡ y * suc k → x ≡ y
 *-suc-inj k zero zero p = refl
 *-suc-inj k zero (suc y) p = absurd (zero≠suc p)
-*-suc-inj k (suc x) zero p = absurd (zero≠suc (sym p))
+*-suc-inj k (suc x) zero p = absurd (suc≠zero p)
 *-suc-inj k (suc x) (suc y) p = ap suc (*-suc-inj k x y (+-inj _ _ _ p))
 
 *-suc-inj' : ∀ k x y → suc k * x ≡ suc k * y → x ≡ y
@@ -224,7 +224,7 @@ arithmetic operators:
 difference→≤ : ∀ {x z} y → x + y ≡ z → x ≤ z
 difference→≤ {x} {z} zero p            = subst (x ≤_) (sym (+-zeror x) ∙ p) ≤-refl
 difference→≤ {zero}  {z}     (suc y) p = 0≤x
-difference→≤ {suc x} {zero}  (suc y) p = absurd (zero≠suc (sym p))
+difference→≤ {suc x} {zero}  (suc y) p = absurd (suc≠zero p)
 difference→≤ {suc x} {suc z} (suc y) p = s≤s (difference→≤ (suc y) (suc-inj p))
 ```
 

@@ -265,7 +265,7 @@ from this page. You can unfold it below if you dare:
 
   lemma₃ zero zero p       = refl
   lemma₃ zero (suc y) p    = absurd (zero≠suc p)
-  lemma₃ (suc x) zero p    = absurd (zero≠suc (sym p))
+  lemma₃ (suc x) zero p    = absurd (suc≠zero p)
   lemma₃ (suc x) (suc y) p = lemma₃ x y (suc-inj p) ∙ Int.quot x y
 
   abstract
