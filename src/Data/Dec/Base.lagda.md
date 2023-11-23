@@ -9,7 +9,7 @@ open import 1Lab.Type
 module Data.Dec.Base where
 ```
 
-# Decidable types {defines="decidable type-of-decisions"}
+# Decidable types {defines="decidable type-of-decisions discrete"}
 
 The type `Dec`{.Agda}, of **decisions** for a type `A`, is a renaming of
 the coproduct `A + ¬ A`. A value of `Dec A` witnesses not that `A`
@@ -84,3 +84,13 @@ Discrete-inj
 Discrete-inj f inj eq? x y =
   Dec-map inj (ap f) (eq? (f x) (f y))
 ```
+
+<!--
+```agda
+infix 0 ifᵈ_then_else_
+
+ifᵈ_then_else_ : Dec A → B → B → B
+ifᵈ yes a then y else n = y
+ifᵈ no ¬a then y else n = n
+```
+-->
