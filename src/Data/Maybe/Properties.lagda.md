@@ -2,12 +2,12 @@
 ```agda
 open import 1Lab.Prelude
 
-open import Data.Dec.Base
-open import Data.Fin
-open import Data.Nat.Base
 open import Data.Fin.Finite
-open import Data.List.Base using (_∷_; [])
 open import Data.Maybe.Base
+open import Data.List.Base using (_∷_; [])
+open import Data.Dec.Base
+open import Data.Nat.Base
+open import Data.Fin
 ```
 -->
 
