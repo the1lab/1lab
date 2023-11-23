@@ -57,7 +57,7 @@ We can use these lemmas to characterise the path space of `Maybe A` in
 terms of the path space of `A`. This involves a standard encode-decode
 argument: for a more in-depth explanation, see [`Data.List`].
 
-[`Data.List`]: Data.List
+[`Data.List`]: Data.List.html
 
 ```agda
 module MaybePath {ℓ} {A : Type ℓ} where
