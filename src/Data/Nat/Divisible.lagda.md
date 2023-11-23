@@ -121,7 +121,7 @@ This will let us establish the antisymmetry we were looking for:
 ```agda
 ∣-antisym : ∀ {x y} → x ∣ y → y ∣ x → x ≡ y
 ∣-antisym {zero}  {y}     p q = sym p
-∣-antisym {suc x} {zero}  p q = absurd (suc≠zero (sym q))
+∣-antisym {suc x} {zero}  p q = absurd (suc≠zero q)
 ∣-antisym {suc x} {suc y} p q = ≤-antisym (m∣sn→m≤sn p) (m∣sn→m≤sn q)
 ```
 
