@@ -327,7 +327,7 @@ bottom for computational reasons.
 
 ```agda
 never : Part A
-never .def = el ⊥ (hlevel 1)
+never .def = ⊥Ω
 
 never-⊑ : ∀ {x : Part A} → never ⊑ x
 never-⊑ .implies ()
@@ -407,7 +407,7 @@ of the adjunction, which takes an element $a : A$ to $\top, \lambda tt. a$.
 
 ```agda
 always : A → Part A
-always a .def = el ⊤ (hlevel 1)
+always a .def = ⊤Ω
 always a .elt _ = a
 
 always-inj : ∀ {x y : Type ℓ} → always x ≡ always y → x ≡ y

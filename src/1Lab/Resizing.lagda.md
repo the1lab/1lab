@@ -13,6 +13,7 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.List.Base
+open import Data.Sum.Base
 
 open import Meta.Idiom
 open import Meta.Bind
@@ -198,3 +199,62 @@ to-is-true
 to-is-true prf = Ω-ua (λ _ → hlevel 0 .centre) (λ _ → prf)
 ```
 -->
+
+## Connectives
+
+The universe of small propositions contains true, false, conjunctions,
+disjunctions, and implications.
+
+<!--
+```agda
+infixr 6 _∧Ω_
+infixr 5 _∨Ω_
+infixr 4 _→Ω_
+```
+-->
+
+```agda
+⊤Ω : Ω
+∣ ⊤Ω ∣ = ⊤
+⊤Ω .is-tr = hlevel!
+
+⊥Ω : Ω
+∣ ⊥Ω ∣ = ⊥
+⊥Ω .is-tr = hlevel!
+
+_∧Ω_ : Ω → Ω → Ω
+∣ P ∧Ω Q ∣ = ∣ P ∣ × ∣ Q ∣
+(P ∧Ω Q) .is-tr = hlevel!
+
+_∨Ω_ : Ω → Ω → Ω
+∣ P ∨Ω Q ∣ = ∥ ∣ P ∣ ⊎ ∣ Q ∣ ∥
+(P ∨Ω Q) .is-tr = hlevel!
+
+_→Ω_ : Ω → Ω → Ω
+∣ P →Ω Q ∣ = ∣ P ∣ → ∣ Q ∣
+(P →Ω Q) .is-tr = hlevel!
+
+¬Ω_ : Ω → Ω
+¬Ω P = P →Ω ⊥Ω
+```
+
+Furthermore, we can quantify over types of arbitrary size and still
+land in `Ω`.
+
+```agda
+∃Ω : ∀ {ℓ} (A : Type ℓ) → (A → Ω) → Ω
+∣ ∃Ω A P ∣ = □ (Σ[ x ∈ A ] ∣ P x ∣)
+∃Ω A P .is-tr = squash
+
+∀Ω : ∀ {ℓ} (A : Type ℓ) → (A → Ω) → Ω
+∣ ∀Ω A P ∣ = □ (∀ (x : A) → ∣ P x ∣)
+∀Ω A P .is-tr = squash
+
+syntax ∃Ω A (λ x → B) = ∃Ω[ x ∈ A ] B
+syntax ∀Ω A (λ x → B) = ∀Ω[ x ∈ A ] B
+```
+
+These connectives and quantifiers are only provided for completeness;
+if you find yourself building nested propositions, it is generally a good
+idea to construct the large proposition by hand, and then use truncation
+to turn it into a small proposition.

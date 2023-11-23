@@ -73,10 +73,10 @@ ident=_∪_}**.
 
 ```agda
 maximal : ℙ X
-maximal _ = el ⊤ hlevel!
+maximal _ = ⊤Ω
 
 minimal : ℙ X
-minimal _ = el ⊥ hlevel!
+minimal _ = ⊥Ω
 
 _∩_ : ℙ X → ℙ X → ℙ X
 (A ∩ B) x = el (x ∈ A × x ∈ B) hlevel!
