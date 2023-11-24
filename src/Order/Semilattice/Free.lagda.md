@@ -123,7 +123,7 @@ under union.
     open make-semilattice
     make-ka : make-semilattice K-finite-subset
     make-ka .has-is-set = hlevel!
-    make-ka .top = (λ _ → el ⊥ (λ x → absurd x)) , inc (0 , (λ { () }) , λ { () })
+    make-ka .top = (λ _ → ⊥Ω) , inc (0 , (λ { () }) , λ { () })
     make-ka .op = _∪_
     make-ka .idl = Σ-prop-path! $ funext λ i →
       Ω-ua (∥-∥-rec! (λ { (inr x) → x ; (inl ()) })) (λ x → inc (inr x))

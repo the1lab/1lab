@@ -277,7 +277,7 @@ Power-frame {ℓ = ℓ} A .fst = el (A → Ω) (hlevel 2)
 Power-frame A .snd = to-frame-on go where
   go : make-frame (A → Ω)
   go .has-is-set = hlevel 2
-  go .top x = el ⊤ λ _ _ i → tt
+  go .top x = ⊤Ω
   go ._cap_ f g x .∣_∣   = ∣ f x ∣ × ∣ g x ∣
   go ._cap_ f g x .is-tr = hlevel!
   go .identity = funext λ i → Ω-ua snd (λ x → tt , x)

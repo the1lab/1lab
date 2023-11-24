@@ -105,6 +105,14 @@ to-path-refl
   → (ids : is-identity-system R r)
   → ids .to-path (r a) ≡ refl
 to-path-refl {r = r} {a = a} ids = ap (ap fst) $ to-path-refl-coh ids a
+
+to-path-over-refl
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a} {a : A}
+  → (ids : is-identity-system R r)
+  → PathP (λ i → PathP (λ j → R a (to-path-refl {a = a} ids i j)) (r a) (r a))
+      (ids .to-path-over (r a))
+      refl
+to-path-over-refl {a = a} ids = ap (ap snd) $ to-path-refl-coh ids a
 ```
 -->
 

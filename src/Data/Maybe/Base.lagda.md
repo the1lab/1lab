@@ -43,6 +43,12 @@ Maybe-rec f b (just x) = f x
 Maybe-rec f b nothing = b
 ```
 
+```agda
+from-just : A → Maybe A → A
+from-just def (just x) = x
+from-just def nothing = def
+```
+
 <!--
 ```agda
 instance
@@ -57,6 +63,11 @@ instance
 
   Bind-Maybe : Bind (eff Maybe)
   Bind-Maybe .Bind._>>=_ = extend
+
+  Alt-Maybe : Alt (eff Maybe)
+  Alt-Maybe .Alt.fail' _ = nothing
+  Alt-Maybe .Alt._<|>_ (just x) y = just x
+  Alt-Maybe .Alt._<|>_ nothing y = y
 ```
 -->
 

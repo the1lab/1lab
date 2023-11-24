@@ -55,9 +55,9 @@ the indices of `Fin`{.Agda}, rather than on the path.
 
 ```agda
 cast : ∀ {m n} → m ≡ n → Fin m → Fin n
-cast {suc m} {zero} p fzero = absurd (Nat.zero≠suc (sym p))
+cast {suc m} {zero} p fzero = absurd (Nat.suc≠zero p)
 cast {suc m} {suc n} p fzero = fzero
-cast {suc m} {zero} p (fsuc i) = absurd (Nat.zero≠suc (sym p))
+cast {suc m} {zero} p (fsuc i) = absurd (Nat.suc≠zero p)
 cast {suc m} {suc n} p (fsuc i) = fsuc (cast (Nat.suc-inj p) i)
 ```
 

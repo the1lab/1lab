@@ -78,15 +78,15 @@ private
 ... | negv x | negv y | posv z = Nat.0≤x
 ... | posv x | posv y | posv z = Nat.≤-trans p (subst (Nat._≤ z) (Nat.+-zeror y) q)
 ... | negv x | negv y | negv z = Nat.≤-trans q (subst (λ e → suc e Nat.≤ suc (x + 0)) (sym (Nat.+-zeror y)) p)
-... | posv x | posv y | negv z = absurd (Nat.zero≠suc (sym (sum≤0-r y (suc z) q)))
-... | posv x | negv y | posv z = absurd (Nat.zero≠suc (sym (sum≤0-r x (suc y) p)))
-... | posv x | negv y | negv z = absurd (Nat.zero≠suc (sym (sum≤0-r x (suc y) p)))
-... | negv x | posv y | negv z = absurd (Nat.zero≠suc (sym (sum≤0-r y (suc z) q)))
+... | posv x | posv y | negv z = absurd (Nat.suc≠zero (sum≤0-r y (suc z) q))
+... | posv x | negv y | posv z = absurd (Nat.suc≠zero (sum≤0-r x (suc y) p))
+... | posv x | negv y | negv z = absurd (Nat.suc≠zero (sum≤0-r x (suc y) p))
+... | negv x | posv y | negv z = absurd (Nat.suc≠zero (sum≤0-r y (suc z) q))
 
 ≤-antisym : ∀ {x y} → x ≤ y → y ≤ x → x ≡ y
 ≤-antisym {x} {y} p q with by-sign x | by-sign y
-... | posv x | negv y = absurd (Nat.zero≠suc (sym (sum≤0-r x (suc y) p)))
-... | negv x | posv y = absurd (Nat.zero≠suc (sym (sum≤0-r y (suc x) q)))
+... | posv x | negv y = absurd (Nat.suc≠zero (sum≤0-r x (suc y) p))
+... | negv x | posv y = absurd (Nat.suc≠zero (sum≤0-r y (suc x) q))
 ... | negv x | negv y = ap (λ e → diff 0 (suc e)) $
   Nat.≤-antisym
     (subst (x Nat.≤_) (Nat.+-zeror y) (Nat.≤-peel q))

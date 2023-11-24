@@ -479,6 +479,8 @@ if : ∀ {ℓ} {A : Type ℓ} → A → A → Bool → A
 if x y false = y
 if x y true = x
 
+infix 0 if_then_else_
+
 if_then_else_ : ∀ {ℓ} {A : Type ℓ} → Bool → A → A → A
 if false then t else f = f
 if true then t else f = t

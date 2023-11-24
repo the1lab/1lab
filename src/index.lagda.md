@@ -265,6 +265,7 @@ open import Data.Sum  -- Coproduct types
 open import Data.Dec  -- Decisions and decidable types
 open import Data.Bool -- The booleans
 open import Data.List -- Finite lists
+open import Data.Maybe -- The Maybe type
 ```
 
 We also consider "data types" to encompass properties of properties, or,

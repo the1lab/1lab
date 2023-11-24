@@ -116,7 +116,7 @@ their strict ordering:
 <-not-equal {suc x} (s≤s p) q = <-not-equal p (suc-inj q)
 
 <-irrefl : ∀ {x y} → x ≡ y → ¬ (x < y)
-<-irrefl {suc x} {zero}  p      q  = absurd (zero≠suc (sym p))
+<-irrefl {suc x} {zero}  p      q  = absurd (suc≠zero p)
 <-irrefl {zero}  {suc y} p      _  = absurd (zero≠suc p)
 <-irrefl {suc x} {suc y} p (s≤s q) = <-irrefl (suc-inj p) q
 

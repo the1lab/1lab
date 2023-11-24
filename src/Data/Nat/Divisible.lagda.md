@@ -85,7 +85,7 @@ antisymmetry will take a bit of working up to:
 
 ∣-trans : ∀ {x y z} → x ∣ y → y ∣ z → x ∣ z
 ∣-trans {zero} {zero} p q = q
-∣-trans {zero} {suc y} p q = absurd (zero≠suc (sym p))
+∣-trans {zero} {suc y} p q = absurd (suc≠zero p)
 ∣-trans {suc x} {zero} p q = 0 , sym q
 ∣-trans {suc x} {suc y} {z} (k , p) (k' , q) = k' * k , (
   k' * k * suc x   ≡⟨ *-associative k' k (suc x) ⟩
@@ -121,7 +121,7 @@ This will let us establish the antisymmetry we were looking for:
 ```agda
 ∣-antisym : ∀ {x y} → x ∣ y → y ∣ x → x ≡ y
 ∣-antisym {zero}  {y}     p q = sym p
-∣-antisym {suc x} {zero}  p q = absurd (zero≠suc (sym q))
+∣-antisym {suc x} {zero}  p q = absurd (suc≠zero q)
 ∣-antisym {suc x} {suc y} p q = ≤-antisym (m∣sn→m≤sn p) (m∣sn→m≤sn q)
 ```
 
