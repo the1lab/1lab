@@ -273,8 +273,8 @@ together to establish `G ≡ (base ≡ base)`. First, to define
       λ x y → n-Type-square (transport (sym Square≡double-composite-path) (lemma x y))
 ```
 
-Since we must act into a type which is known to be a groupoid, we act to
-the type of `Set`{.Agda}s; Since the collection of $n$-types is a
+Since we must map into a type which is known to be a groupoid, we map to
+the type of `Set`{.Agda}s: since the collection of $n$-types is a
 $(n+1)$-type, this is a groupoid. To arrange that the fibre over
 `base`{.Agda} is `G`, we give `G` as the argument for `base`{.Agda} in
 the elimination. This locks us into giving a family of automorphisms
