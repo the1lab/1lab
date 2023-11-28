@@ -3,9 +3,9 @@ open import 1Lab.Reflection
 
 open import Cat.Prelude
 
-import Cat.Functor.Compose
-
 open import Data.List.Base
+
+import Cat.Functor.Compose
 
 module Cat.Functor.Coherence where
 

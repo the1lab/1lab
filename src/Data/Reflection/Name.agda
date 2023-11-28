@@ -2,14 +2,12 @@ open import 1Lab.Path.IdentitySystem
 open import 1Lab.Path
 open import 1Lab.Type
 
-open import Data.Dec.Base
-open import Data.Id.Base
-
+open import Data.Reflection.Fixity
 open import Data.String.Base
 open import Data.String.Show
 open import Data.Word.Base
-
-open import Data.Reflection.Fixity
+open import Data.Dec.Base
+open import Data.Id.Base
 
 module Data.Reflection.Name where
 

@@ -1,7 +1,7 @@
 open import 1Lab.Type
 
-open import Data.Reflection.Term
 open import Data.Reflection.Name
+open import Data.Reflection.Term
 open import Data.String.Base
 open import Data.List.Base
 

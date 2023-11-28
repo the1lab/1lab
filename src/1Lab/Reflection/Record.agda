@@ -5,11 +5,11 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
-import Prim.Data.Sigma as S
-import Prim.Data.Nat as N
-
 open import Meta.Foldable
 open import Meta.Append
+
+import Prim.Data.Sigma as S
+import Prim.Data.Nat as N
 
 module 1Lab.Reflection.Record where
 

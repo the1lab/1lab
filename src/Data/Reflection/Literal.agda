@@ -2,18 +2,16 @@ open import 1Lab.Path.IdentitySystem
 open import 1Lab.Path
 open import 1Lab.Type
 
-open import Data.Dec.Base
-open import Data.Id.Base
-open import Data.Nat.Base
-open import Data.List
-
-open import Data.Word.Base
-open import Data.Char.Base
-open import Data.Float.Base
-open import Data.String.Base
-
-open import Data.Reflection.Name
 open import Data.Reflection.Meta
+open import Data.Reflection.Name
+open import Data.String.Base
+open import Data.Float.Base
+open import Data.Char.Base
+open import Data.Word.Base
+open import Data.Dec.Base
+open import Data.Nat.Base
+open import Data.Id.Base
+open import Data.List
 
 module Data.Reflection.Literal where
 
