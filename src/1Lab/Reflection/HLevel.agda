@@ -525,7 +525,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
 
         -- Note that if the type here is a metavariable, the tactic is..
         -- loopy.
-        pure ty >>= λ where
+        case ty of λ where
           (meta m _) → do
             debugPrint "tactic.hlevel" 10
               "Type under is-hlevel is metavariable, blocking to avoid infinite loop"

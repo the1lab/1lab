@@ -27,7 +27,7 @@ open import Meta.Alt public
 
 open Data.Vec.Base using (Vec ; [] ; _∷_ ; lookup ; tabulate) public
 open Data.Product.NAry using ([_]) public
-open Data.List.Base public
+open Data.List.Base hiding (lookup) public
 open Data.Dec.Base public
 open Data.Bool public
 

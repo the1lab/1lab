@@ -39,18 +39,24 @@ raiseS n = wk n ids
 raise-fromS : Nat → Nat → Subst
 raise-fromS n k = liftS n $ raiseS k
 
+--            Γ, Δ ⊢ u : A
+-- ---------------------------------
+-- Γ, Δ ⊢ singletonS |Δ| u : Γ, A, Δ
 singletonS : Nat → Term → Subst
-singletonS n u = map (λ i → var i []) (count (n - 1)) ++# u ∷ (raiseS n)
-  where
-    count : Nat → List Nat
-    count zero = []
-    count (suc n) = 0 ∷ map suc (count n)
+singletonS n u = map (λ i → var i []) (count n) ++# u ∷ raiseS n
+
+--           Γ, A, Δ ⊢ u : A
+-- ----------------------------------
+-- Γ, A, Δ ⊢ inplaceS |Δ| u : Γ, A, Δ
+inplaceS : Nat → Term → Subst
+inplaceS n u = map (λ i → var i []) (count n) ++# u ∷ raiseS (suc n)
 
 {-# TERMINATING #-}
 subst-clause : Subst → Clause → Clause
 subst-tm     : Subst → Term → Term
 subst-tm*    : Subst → List (Arg Term) → List (Arg Term)
 apply-tm     : Term → Arg Term → Term
+subst-tel    : Subst → Telescope → Telescope
 
 raise : Nat → Term → Term
 raise n = subst-tm (raiseS n)
@@ -105,8 +111,17 @@ subst-tm ρ (agda-sort s) with s
 … | inf n     = agda-sort (inf n)
 … | unknown   = unknown
 
-subst-clause σ (clause tel ps t)      = clause tel ps (subst-tm (wkS (length tel) σ) t)
-subst-clause σ (absurd-clause tel ps) = absurd-clause tel ps
+subst-tel ρ []                    = []
+subst-tel ρ ((x , arg ai t) ∷ xs) = (x , arg ai (subst-tm ρ t)) ∷ subst-tel (liftS 1 ρ) xs
+
+subst-clause σ (clause tel ps t)      = clause (subst-tel σ tel) ps (subst-tm (wkS (length tel) σ) t)
+subst-clause σ (absurd-clause tel ps) = absurd-clause (subst-tel σ tel) ps
+
+raise-tel : Nat → Telescope → Telescope
+raise-tel n = subst-tel (raiseS n)
+
+raise* : Nat → List (Arg Term) → List (Arg Term)
+raise* n = subst-tm* (raiseS n)
 
 _<#>_ : Term → Arg Term → Term
 f <#> x = apply-tm f x

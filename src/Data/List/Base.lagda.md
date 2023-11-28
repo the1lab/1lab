@@ -1,15 +1,19 @@
 <!--
 ```agda
+open import 1Lab.Type.Sigma
 open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Product.NAry
+open import Data.Maybe.Base
 open import Data.Dec.Base
 open import Data.Bool
 
 open import Meta.Foldable
 open import Meta.Append
 open import Meta.Idiom
+open import Meta.Bind
+open import Meta.Alt
 ```
 -->
 
@@ -164,6 +168,10 @@ concat : List (List A) → List A
 concat [] = []
 concat (x ∷ xs) = x ++ concat xs
 
+count : Nat → List Nat
+count zero = []
+count (suc n) = 0 ∷ map suc (count n)
+
 reverse : List A → List A
 reverse = go [] where
   go : List A → List A → List A
@@ -194,6 +202,23 @@ drop : ∀ {ℓ} {A : Type ℓ} → Nat → List A → List A
 drop zero    xs       = xs
 drop (suc n) []       = []
 drop (suc n) (x ∷ xs) = drop n xs
+
+split-at : ∀ {ℓ} {A : Type ℓ} → Nat → List A → List A × List A
+split-at 0       xs       = [] , xs
+split-at (suc n) []       = [] , []
+split-at (suc n) (x ∷ xs) = ×-map₁ (x ∷_) (split-at n xs)
+
+instance
+  Idiom-List : Idiom (eff List)
+  Idiom-List .pure a = a ∷ []
+  Idiom-List ._<*>_ f a = concat ((_<$> a) <$> f)
+
+  Bind-List : Bind (eff List)
+  Bind-List ._>>=_ a f = concat (f <$> a)
+
+  Alt-List : Alt (eff List)
+  Alt-List .Alt.fail  = []
+  Alt-List .Alt._<|>_ = _<>_
 ```
 -->
 
@@ -247,5 +272,11 @@ traverse-up
     {a : Type ℓ} {b : Type ℓ'}
   → (Nat → a → M.₀ b) → Nat → List a → M.₀ (List b)
 traverse-up f n xs = sequence (map-up f n xs)
+
+lookup : ⦃ _ : Discrete A ⦄ → A → List (A × B) → Maybe B
+lookup x [] = nothing
+lookup x ((k , v) ∷ xs) with x ≡? k
+... | yes _ = just v
+... | no  _ = lookup x xs
 ```
 -->
