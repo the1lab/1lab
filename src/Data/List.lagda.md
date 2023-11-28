@@ -6,9 +6,9 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
+open import Data.Dec.Base
 open import Data.Nat.Base
 open import Data.Sum.Base
-open import Data.Dec.Base
 open import Data.Id.Base
 open import Data.Bool
 

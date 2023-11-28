@@ -2,11 +2,11 @@
 ```agda
 open import 1Lab.Prelude
 
+open import Data.Id.Base
 open import Data.Bool
 open import Data.List hiding (_++_)
 open import Data.Dec
 open import Data.Fin using (Fin; fzero; fsuc; avoid; _[_≔_]; delete)
-open import Data.Id.Base
 open import Data.Nat
 open import Data.Sum
 

@@ -3,10 +3,9 @@
 open import 1Lab.Type
 
 open import Data.String.Base
-open import Data.List.Base
-open import Data.Char.Base
-
 open import Data.Float.Base
+open import Data.Char.Base
+open import Data.List.Base
 open import Data.Word.Base
 
 open import Meta.Append

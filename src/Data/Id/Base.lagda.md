@@ -3,8 +3,8 @@
 {-# OPTIONS -WUnsupportedIndexedMatch #-}
 open import 1Lab.Path.IdentitySystem.Interface
 open import 1Lab.Path.IdentitySystem
-open import 1Lab.Univalence
 open import 1Lab.Type.Sigma
+open import 1Lab.Univalence
 open import 1Lab.Rewrite
 open import 1Lab.HLevel
 open import 1Lab.Equiv

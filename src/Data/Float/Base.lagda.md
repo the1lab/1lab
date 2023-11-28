@@ -2,11 +2,11 @@
 ```agda
 open import 1Lab.Type
 
-open import Data.Maybe.Base
 open import Data.Int.Inductive
+open import Data.Maybe.Base
+open import Data.Word.Base
 open import Data.Dec.Base
 open import Data.Id.Base
-open import Data.Word.Base
 ```
 -->
 

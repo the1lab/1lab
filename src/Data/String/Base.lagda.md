@@ -2,9 +2,9 @@
 ```agda
 open import 1Lab.Type
 
-open import Data.List.Base
 open import Data.Maybe.Base
 open import Data.Char.Base
+open import Data.List.Base
 open import Data.Dec.Base
 open import Data.Id.Base
 
