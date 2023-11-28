@@ -61,3 +61,17 @@ instance
       (yes reflᵢ , yes reflᵢ) → yes reflᵢ
       (yes as , no ¬ps)       → no λ { reflᵢ → ¬ps reflᵢ }
       (no ¬as , _)            → no λ { reflᵢ → ¬as reflᵢ }
+
+  Number-Precedence : Number Precedence
+  Number-Precedence .Number.Constraint _ = ⊤
+  Number-Precedence .Number.fromNat s = related (fromNat s)
+
+suc-precedence : Precedence → Precedence
+suc-precedence (related x) = related (x +, 1)
+suc-precedence unrelated   = unrelated
+
+prec-parens : Precedence → Precedence → Bool
+prec-parens (related x) (related y) = y float< x
+prec-parens unrelated   (related y) = true
+prec-parens (related x) unrelated   = false
+prec-parens unrelated   unrelated   = true

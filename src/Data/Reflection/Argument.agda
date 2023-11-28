@@ -7,6 +7,9 @@ open import Data.Dec.Base
 open import Data.Id.Base
 open import Data.Bool
 
+open import Meta.Traversable
+open import Meta.Idiom
+
 module Data.Reflection.Argument where
 
 data Visibility : Type where
@@ -116,3 +119,9 @@ instance
     (λ (arg r q) → r , q)
     (λ p → ap₂ arg (ap fst p) (ap snd p))
     auto
+
+  Map-Arg : Map (eff Arg)
+  Map-Arg .Map.map f (arg ai x) = arg ai (f x)
+
+  Traversable-Arg : Traversable (eff Arg)
+  Traversable-Arg .Traversable.traverse f (arg ai x) = arg ai <$> f x

@@ -172,19 +172,19 @@ private
         -- Handle the ones with special names:
         def (quote is-groupoid) (_ ∷ ty v∷ []) → do
           ty ← wait-just-a-bit ty
-          pure (ty , quoteTerm 3)
+          pure (ty , lit (nat 3))
 
         def (quote is-set) (_ ∷ ty v∷ []) → do
           ty ← wait-just-a-bit ty
-          pure (ty , quoteTerm 2)
+          pure (ty , lit (nat 2))
 
         def (quote is-prop) (_ ∷ ty v∷ []) → do
           ty ← wait-just-a-bit ty
-          pure (ty , quoteTerm 1)
+          pure (ty , lit (nat 1))
 
         def (quote is-contr) (_ ∷ ty v∷ []) → do
           ty ← wait-just-a-bit ty
-          pure (ty , quoteTerm 0)
+          pure (ty , lit (nat 0))
 
         _ → backtrack "Goal type isn't is-hlevel"
 
@@ -639,13 +639,13 @@ instance
   -- before Π types.
 
   decomp-is-prop : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (is-prop A)
-  decomp-is-prop = decomp (quote is-hlevel-is-hlevel-suc) (`level-minus 1 ∷ `term (quoteTerm 1) ∷ [])
+  decomp-is-prop = decomp (quote is-hlevel-is-hlevel-suc) (`level-minus 1 ∷ `term (lit (nat 1)) ∷ [])
 
   decomp-is-set : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (is-set A)
-  decomp-is-set = decomp (quote is-hlevel-is-hlevel-suc) (`level-minus 1 ∷ `term (quoteTerm 2) ∷ [])
+  decomp-is-set = decomp (quote is-hlevel-is-hlevel-suc) (`level-minus 1 ∷ `term (lit (nat 2)) ∷ [])
 
   decomp-is-groupoid : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (is-groupoid A)
-  decomp-is-groupoid = decomp (quote is-hlevel-is-hlevel-suc) (`level-minus 1 ∷ `term (quoteTerm 3) ∷ [])
+  decomp-is-groupoid = decomp (quote is-hlevel-is-hlevel-suc) (`level-minus 1 ∷ `term (lit (nat 3)) ∷ [])
 
   {-
   Since `is-prop A` starts with a Π, the decomp-piⁿ instances below could "bite" into

@@ -83,6 +83,12 @@ instance
   Has-subst-Clause : Has-subst Clause
   Has-subst-Clause = record { applyS = subst-clause }
 
+  Has-subst-Args : Has-subst (List (Arg Term))
+  Has-subst-Args = record { applyS = subst-tm* }
+
+  Has-subst-Telescope : Has-subst Telescope
+  Has-subst-Telescope = record { applyS = subst-tel }
+
 subst-tm* ρ []             = []
 subst-tm* ρ (arg ι x ∷ ls) = arg ι (subst-tm ρ x) ∷ subst-tm* ρ ls
 

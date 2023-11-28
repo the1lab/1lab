@@ -24,6 +24,11 @@ private module P where primitive
   primQNameToWord64sInjective : ∀ x y → primQNameToWord64s x ≡ᵢ primQNameToWord64s y → x ≡ᵢ y
   primQNameFixity             : Name → Fixity
 
+open P
+  renaming (primQNameFixity to name→fixity)
+  using ()
+  public
+
 instance
   Discrete-Name : Discrete Name
   Discrete-Name = Discrete-inj' _ (P.primQNameToWord64sInjective _ _)

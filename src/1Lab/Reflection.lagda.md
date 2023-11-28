@@ -18,6 +18,7 @@ open import Meta.Append
 module 1Lab.Reflection where
 
 open import Data.String.Base public
+open import Meta.Traversable public
 open import Data.Float.Base public
 open import Data.Maybe.Base public
 open import Data.Word.Base public
@@ -223,6 +224,12 @@ infer-hidden (suc n) xs = unknown h∷ infer-hidden n xs
 
 “refl” : Term
 “refl” = def (quote refl) []
+
+-- Run a TC computation and reset the state after. If the returned value
+-- makes references to metas generated in the reset computation, you'll
+-- probably get __IMPOSSIBLE__s!
+resetting : ∀ {ℓ} {A : Type ℓ} → TC A → TC A
+resetting k = run-speculative ((_, false) <$> k)
 
 wait-for-args : List (Arg Term) → TC (List (Arg Term))
 wait-for-type : Term → TC Term

@@ -5,6 +5,7 @@ open import 1Lab.Type
 
 open import Data.String.Show
 
+open import Meta.Foldable
 open import Meta.Append
 
 module 1Lab.Reflection.Signature where
@@ -79,12 +80,6 @@ get-record tm = reduce tm >>= λ where
   (def qn _) → get-record-type qn
   _          → typeError [ "get-record: " , termErr tm , " is not a record type." ]
 
--- Run a TC computation and reset the state after. If the returned value
--- makes references to metas generated in the reset computation, you'll
--- probably get __IMPOSSIBLE__s!
-resetting : ∀ {ℓ} {A : Type ℓ} → TC A → TC A
-resetting k = run-speculative ((_, false) <$> k)
-
 telescope→patterns : Telescope → List (Arg Pattern)
 telescope→patterns tel = go (length tel - 1) tel where
   go : Nat → Telescope → List (Arg Pattern)
@@ -119,22 +114,30 @@ instance
   Has-def-Name : Has-def Name
   Has-def-Name = record { from-def = id }
 
+private
+  it-worker : Name → TC Term
+  it-worker n = get-definition n <&> λ where
+    (data-cons _) →
+      def₀ (quote Has-constr.from-constr) ##ₙ def₀ (quote auto) ##ₙ lit (name n)
+    _ →
+      def₀ (quote Has-def.from-def) ##ₙ def₀ (quote auto) ##ₙ lit (name n)
+
 macro
   -- Macro which turns a Name into its quoted Term/Pattern
   -- representation.
   --
   -- If the Name refers to a constructor, it's wrapped in con₀,
-  -- otherwise it's wrapped in def₀
+  -- otherwise, it's wrapped in def₀.
   --
   -- Since `it` is a macro, you can use this as `it Foo` rather than
   -- `def₀ (quote Foo)`.
   it : Name → Term → TC ⊤
-  it n g = get-definition n >>= λ where
-    (data-cons _) →
-      unify g (def₀ (quote Has-constr.from-constr) ##ₙ def₀ (quote auto) ##ₙ lit (name n))
-    _ →
-      unify g (def₀ (quote Has-def.from-def) ##ₙ def₀ (quote auto) ##ₙ lit (name n))
+  it n g = unify g =<< it-worker n
 
+_ : Path Term (it Σ) (def (quote Σ) [])
+_ = refl
+
+macro
   -- Macro which turns a *record name* into the quoted representation of
   -- its *constructor*, e.g. `constructor Σ` is `con₀ (quote _,_)`.
   `constructor : Name → Term → TC ⊤
@@ -145,9 +148,31 @@ macro
 _ : Path Term (`constructor Σ) (con₀ (quote _,_))
 _ = refl
 
+macro
+  -- Like 'it', but the quoted representation is additionally wrapped in
+  -- enough lambdas to apply the given definition to all of its visible
+  -- arguments.
+  itₙ : Name → Term → TC ⊤
+  itₙ n g = do
+    tm   ← it-worker n
+    args ← get-argument-tele n
+    let
+      args = filter (λ { (_ , arg (arginfo visible _) _) → true ; _ → false }) args
+
+      tm = def (quote applyⁿᵉ) (argN tm ∷ argN (list-term (reverse (map-up (λ i _ → it argN ##ₙ var₀ i) 0 args))) ∷ [])
+      tm = foldr (λ _ y → lam visible (abs "_" y)) tm args
+
+      ty = foldr (λ _ y → def (quote Fun) (argN (it Term) ∷ argN y ∷ [])) (it Term) args
+
+    check-type g ty
+    unify g tm
+
+_ : Path (Term → Term → Term) (itₙ Σ) (λ x y → def (quote Σ) (argN x ∷ argN y ∷ []))
+_ = refl
+
 -- Check whether a name is defined.
 is-defined : Name → TC Bool
-is-defined nm = (resetting (true <$ get-type nm)) <|> pure false
+is-defined nm = (true <$ get-type nm) <|> pure false
 
 -- Render a defined name as it would appear in the current scope.
 --
@@ -160,8 +185,9 @@ render-name : Name → TC String
 render-name def-nm = do
   d ← is-defined def-nm
   let
-    fancy = formatErrorParts [ termErr (def₀ def-nm) ]
-        <|> formatErrorParts [ termErr (con₀ def-nm) ]
+    fancy = get-definition def-nm >>= λ where
+      (data-cons _) → formatErrorParts [ termErr (con₀ def-nm) ]
+      _             → formatErrorParts [ termErr (def₀ def-nm) ]
     plain = show def-nm
   if d then fancy else pure plain
 

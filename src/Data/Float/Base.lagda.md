@@ -76,7 +76,7 @@ open P public renaming
   ; primFloatIsSafeInteger  to is-integer?
 
   ; primFloatToWord64       to float→word64
-  ; primNatToFloat          to float→nat
+  ; primNatToFloat          to nat→float
   ; primIntToFloat          to int→float
   ; primFloatRound          to round
   ; primFloatFloor          to floor
@@ -86,10 +86,19 @@ open P public renaming
 
   ; primFloatDecode         to decode-float
   ; primFloatEncode         to encode-float
+
+  ; primFloatPlus           to _+,_
+  ; primFloatMinus          to _-,_
+  ; primFloatTimes          to _*,_
+  ; primFloatDiv            to _/,_
   )
   using ()
 
 instance
   Discrete-Float : Discrete Float
   Discrete-Float  = Discrete-inj' _ (P.primFloatToWord64Injective _ _)
+
+  Number-Float : Number Float
+  Number-Float .Number.Constraint _ = ⊤
+  Number-Float .Number.fromNat s = nat→float s
 ```

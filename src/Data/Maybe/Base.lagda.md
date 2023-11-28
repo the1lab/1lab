@@ -5,6 +5,7 @@ open import 1Lab.Type
 
 open import Data.Dec.Base
 
+open import Meta.Traversable
 open import Meta.Idiom
 open import Meta.Bind
 open import Meta.Alt
@@ -62,6 +63,10 @@ instance
   Alt-Maybe .Alt.fail = nothing
   Alt-Maybe .Alt._<|>_ (just x) y = just x
   Alt-Maybe .Alt._<|>_ nothing y = y
+
+  Traversable-Maybe : Traversable (eff Maybe)
+  Traversable-Maybe .Traversable.traverse f nothing  = pure nothing
+  Traversable-Maybe .Traversable.traverse f (just x) = just <$> f x
 
 Maybe-rec : (A → B) → B → Maybe A → B
 Maybe-rec f b (just x) = f x

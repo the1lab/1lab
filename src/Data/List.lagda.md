@@ -255,10 +255,6 @@ any-one-of f x (y ∷ xs) (there x∈xs) x-true =
 -->
 
 ```agda
-filter : ∀ {ℓ} {A : Type ℓ} → (A → Bool) → List A → List A
-filter p [] = []
-filter p (x ∷ xs) = if p x then x ∷ filter p xs else filter p xs
-
 is-empty : List A → Type
 is-empty [] = ⊤
 is-empty (_ ∷ _) = ⊥

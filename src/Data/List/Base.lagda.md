@@ -9,6 +9,7 @@ open import Data.Maybe.Base
 open import Data.Dec.Base
 open import Data.Bool
 
+open import Meta.Traversable
 open import Meta.Foldable
 open import Meta.Append
 open import Meta.Idiom
@@ -99,24 +100,14 @@ instance
   Foldable-List : Foldable (eff List)
   Foldable-List .foldr f x = List-elim _ x (λ x _ → f x)
 
-traverse
-  : ∀ {M : Effect} ⦃ _ : Idiom M ⦄ (let module M = Effect M) {ℓ ℓ'}
-      {a : Type ℓ} {b : Type ℓ'}
-  → (a → M.₀ b) → List a → M.₀ (List b)
-traverse f []       = pure []
-traverse f (x ∷ xs) = ⦇ f x ∷ traverse f xs ⦈
-
-sequence
-  : ∀ {M : Effect} ⦃ _ : Idiom M ⦄ (let module M = Effect M) {ℓ}
-      {a : Type ℓ}
-  → List (M.₀ a) → M.₀ (List a)
-sequence = traverse id
-
-for
-  : ∀ {M : Effect} ⦃ _ : Idiom M ⦄ (let module M = Effect M) {ℓ ℓ'}
-      {a : Type ℓ} {b : Type ℓ'}
-  → List a → (a → M.₀ b) → M.₀ (List b)
-for f xs = traverse xs f
+  Traversable-List : Traversable (eff List)
+  Traversable-List = record { traverse = go } where
+    go
+      : ∀ {M : Effect} ⦃ _ : Idiom M ⦄ (let module M = Effect M) {ℓ ℓ'}
+          {a : Type ℓ} {b : Type ℓ'}
+      → (a → M.₀ b) → List a → M.₀ (List b)
+    go f []       = pure []
+    go f (x ∷ xs) = ⦇ f x ∷ go f xs ⦈
 
 foldl : (B → A → B) → B → List A → B
 foldl f x []       = x
@@ -207,6 +198,23 @@ split-at : ∀ {ℓ} {A : Type ℓ} → Nat → List A → List A × List A
 split-at 0       xs       = [] , xs
 split-at (suc n) []       = [] , []
 split-at (suc n) (x ∷ xs) = ×-map₁ (x ∷_) (split-at n xs)
+
+span : ∀ {ℓ} {A : Type ℓ} (p : A → Bool) → List A → List A × List A
+span p [] = [] , []
+span p (x ∷ xs) with p x
+... | true  = ×-map₁ (x ∷_) (span p xs)
+... | false = [] , x ∷ xs
+
+filter : ∀ {ℓ} {A : Type ℓ} (p : A → Bool) → List A → List A
+filter p [] = []
+filter p (x ∷ xs) with p x
+... | true  = x ∷ filter p xs
+... | false = filter p xs
+
+intercalate : ∀ {ℓ} {A : Type ℓ} (x : A) (xs : List A) → List A
+intercalate x []           = []
+intercalate x (y ∷ [])     = y ∷ []
+intercalate x (y ∷ z ∷ xs) = y ∷ x ∷ intercalate x (z ∷ xs)
 
 instance
   Idiom-List : Idiom (eff List)
