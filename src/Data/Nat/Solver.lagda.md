@@ -7,7 +7,7 @@ open import 1Lab.Type
 
 open import Data.Nat.Properties
 open import Data.Fin.Base
-open import Data.List
+open import Data.List hiding (lookup)
 ```
 -->
 
@@ -524,23 +524,23 @@ private
   build-expr : Variables Nat → Term → TC (Term × Variables Nat)
   build-expr vs (nat-lit n) = do
     ‵n ← quoteTC n
-    returnTC $ con (quote ‵lit) (‵n v∷ []) , vs
+    pure $ con (quote ‵lit) (‵n v∷ []) , vs
   build-expr vs “zero” = do
-    returnTC $ con (quote ‵0) (unknown h∷ []) , vs
+    pure $ con (quote ‵0) (unknown h∷ []) , vs
   build-expr vs (“suc” t) = do
     e , vs ← build-expr vs t
-    returnTC $ con (quote ‵1+_) (unknown h∷ e v∷ []) , vs
+    pure $ con (quote ‵1+_) (unknown h∷ e v∷ []) , vs
   build-expr vs (t₁ “+” t₂) = do
     e₁ , vs ← build-expr vs t₁
     e₂ , vs ← build-expr vs t₂
-    returnTC $ con (quote _‵+_) (unknown h∷ e₁ v∷ e₂ v∷ []) , vs
+    pure $ con (quote _‵+_) (unknown h∷ e₁ v∷ e₂ v∷ []) , vs
   build-expr vs (t₁ “*” t₂) = do
     e₁ , vs ← build-expr vs t₁
     e₂ , vs ← build-expr vs t₂
-    returnTC $ con (quote _‵*_) (unknown h∷ e₁ v∷ e₂ v∷ []) , vs
+    pure $ con (quote _‵*_) (unknown h∷ e₁ v∷ e₂ v∷ []) , vs
   build-expr vs tm = do
     (v , vs') ← bind-var vs tm
-    returnTC $ con (quote ‵_) (v v∷ []) , vs'
+    pure $ con (quote ‵_) (v v∷ []) , vs'
 ```
 
 Next, let's define the quoted forms of some terms that we will use to
@@ -625,7 +625,7 @@ solve-macro : Term → TC ⊤
 solve-macro hole =
   withNormalisation false $
   withReduceDefs (false , don't-reduce) $ do
-  goal ← inferType hole >>= reduce
+  goal ← infer-type hole >>= reduce
 
   just (lhs , rhs) ← get-boundary goal
     where nothing → typeError $ strErr "Can't determine boundary: " ∷

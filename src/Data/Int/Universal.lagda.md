@@ -98,9 +98,9 @@ difference of naturals $x - y$, then we can compute the power $f^n : X
         ≡ (n-power n e⁻¹) .fst (Equiv.from (l) (l .fst (n-power m .fst x)))
       lemma m n x = ap ((n-power n e⁻¹) .fst) (sym (Equiv.η l _))
 
-    map : Int → X ≃ X
-    map (diff x y) = n-power x ∙e (n-power y e⁻¹)
-    map (quot m n i) = Σ-prop-path is-equiv-is-prop
+    go : Int → X ≃ X
+    go (diff x y) = n-power x ∙e (n-power y e⁻¹)
+    go (quot m n i) = Σ-prop-path is-equiv-is-prop
       {x = n-power m ∙e (n-power n e⁻¹)}
       {y = n-power (suc m) ∙e (n-power (suc n) e⁻¹)}
       (funext (lemma m n)) i
@@ -125,9 +125,9 @@ cancelling the $f^{-1}f$ critical pair in the middle.
     negatives⁻¹ (suc k) x = negatives⁻¹ k _
 
     abstract
-      map-suc : ∀ i x → map (sucℤ i) .fst x ≡ l .fst (map i .fst x)
+      map-suc : ∀ i x → go (sucℤ i) .fst x ≡ l .fst (go i .fst x)
       map-suc = Int-elim-by-sign
-        (λ i → ∀ x → map (sucℤ i) .fst x ≡ l .fst (map i .fst x))
+        (λ i → ∀ x → go (sucℤ i) .fst x ≡ l .fst (go i .fst x))
         (λ _ _ → refl)
         negatives
         (λ _ → refl)
@@ -139,7 +139,7 @@ cancelling the $f^{-1}f$ critical pair in the middle.
   r .ℤ-is-set = hlevel 2
   r .point = 0
   r .rotate = sucℤ , sucℤ-is-equiv
-  r .map-out point rot int = map-out.map rot int .fst point
+  r .map-out point rot int = map-out.go rot int .fst point
   r .map-out-point p _ = refl
   r .map-out-rotate p rot i = map-out.map-suc rot i _
 ```

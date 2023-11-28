@@ -96,8 +96,8 @@ definition of division, we have $r' < b$, meaning $(1 + r') \le b$.
 
 ```agda
 divide-pos (suc a) (suc b') | divmod q' r' p s | inr (inl b<r'+1) =
-  absurd $ <-not-equal b<r'+1
-    (≤-antisym (≤-sucr (≤-peel b<r'+1)) (recover (≤-dec _ _) s))
+  absurd (<-not-equal b<r'+1
+    (≤-antisym (≤-sucr (≤-peel b<r'+1)) (recover s)))
 ```
 
 As a finishing touch, we define short operators to produce the result of
@@ -117,9 +117,9 @@ a /ₙ suc b = divide-pos a (suc b) .DivMod.quot
 
 is-divmod : ∀ x y → .⦃ _ : Positive y ⦄ → x ≡ (x /ₙ y) * y + x % y
 is-divmod x (suc y) with divide-pos x (suc y)
-... | divmod q r α β = recover (Discrete-Nat _ _) α
+... | divmod q r α β = recover α
 
 x%y<y : ∀ x y → .⦃ _ : Positive y ⦄ → (x % y) < y
 x%y<y x (suc y) with divide-pos x (suc y)
-... | divmod q r α β = recover (≤-dec _ _) β
+... | divmod q r α β = recover β
 ```

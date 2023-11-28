@@ -85,9 +85,9 @@ Lower-sets-frame A = Lower-sets A.po .fst , to-frame-on mk↓A where
   DA-meets .fcp.poset = Lower-sets A.po
   DA-meets .fcp._∩_ x y             = Lower-sets-meets A.po x y .fst
   DA-meets .fcp.has-is-meet {x} {y} = Lower-sets-meets A.po x y .snd
-  DA-meets .fcp.top = Lower-sets-complete A.po absurd .fst
+  DA-meets .fcp.top = Lower-sets-complete A.po (λ x → absurd x) .fst
   DA-meets .fcp.has-is-top {x} =
-    Lower-sets-complete A.po absurd .snd .is-glb.greatest x λ x → absurd x
+    Lower-sets-complete A.po (λ j → absurd j) .snd .is-glb.greatest x λ x → absurd x
   DAm = fc-poset→semilattice DA-meets
   module DAm = Semilattice DAm
 

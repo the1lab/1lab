@@ -3,7 +3,7 @@
 open import 1Lab.Prelude hiding (_∈_)
 
 open import Data.Bool
-open import Data.List hiding (_++_)
+open import Data.List hiding (_++_ ; drop)
 open import Data.Fin using (Fin; fzero; fsuc; weaken; inject; _[_≔_])
 open import Data.Nat
 open import Data.Sum
@@ -560,7 +560,7 @@ sound (¬-intro {P = P} p) ρ hyps-true =
     (λ _ → refl)
     (⟦ P ⟧ ρ) refl
 sound (¬-elim {P = P} p q) ρ hyps-true =
-  absurd $ not-no-fixed (sound q ρ hyps-true ∙ sym (sound p ρ hyps-true))
+  absurd (not-no-fixed (sound q ρ hyps-true ∙ sym (sound p ρ hyps-true)))
 sound (dneg-elim {P = P} p) ρ hyps-true =
   sym (not-involutive (⟦ P ⟧ ρ)) ∙ sound p ρ hyps-true
 ```

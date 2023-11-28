@@ -176,22 +176,22 @@ module Reflection where
   invoke-normaliser disp tm = def (quote NbE.nf') (mk-displayed-fn disp (infer-hidden 5 $ tm v∷ []))
 
   build-expr : Term → TC Term
-  build-expr “id” = returnTC $ con (quote NbE.`id) []
+  build-expr “id” = pure $ con (quote NbE.`id) []
   build-expr (“∘” f g f' g') = do
     let f = Cat.build-expr f
     let g = Cat.build-expr g
     f' ← build-expr f'
     g' ← build-expr g'
-    returnTC $ con (quote NbE._`∘_) (infer-hidden 12 $ f h∷ g h∷ f' v∷ g' v∷ [])
+    pure $ con (quote NbE._`∘_) (infer-hidden 12 $ f h∷ g h∷ f' v∷ g' v∷ [])
   build-expr (“hom[]” f g p f') = do
     let f = Cat.build-expr f
     let g = Cat.build-expr g
     f' ← build-expr f'
-    returnTC $ con (quote NbE.`hom[_]_) (infer-hidden 10 $ f h∷ g h∷ p v∷ f' v∷ [])
+    pure $ con (quote NbE.`hom[_]_) (infer-hidden 10 $ f h∷ g h∷ p v∷ f' v∷ [])
   build-expr f' = do
-    “Hom[ f ]” x y ← inferType f' >>= reduce
+    “Hom[ f ]” x y ← infer-type f' >>= reduce
       where tp → typeError $ strErr "Expected a displayed morphism: " ∷ termErr tp ∷ []
-    returnTC $ con (quote NbE._↑) (infer-hidden 8 $ x h∷ y h∷ Cat.build-expr f h∷ f' v∷ [])
+    pure $ con (quote NbE._↑) (infer-hidden 8 $ x h∷ y h∷ Cat.build-expr f h∷ f' v∷ [])
 
   dont-reduce : List Name
   dont-reduce =

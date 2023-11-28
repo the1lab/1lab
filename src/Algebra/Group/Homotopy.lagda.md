@@ -269,23 +269,23 @@ together to establish `G ≡ (base ≡ base)`. First, to define
   Code : Deloop → Set ℓ
   Code =
     Deloop-elim _ (λ _ → hlevel 3) (G .fst)
-      (λ x → n-ua (map x))
+      (λ x → n-ua (act x))
       λ x y → n-Type-square (transport (sym Square≡double-composite-path) (lemma x y))
 ```
 
 Since we must map into a type which is known to be a groupoid, we map to
-the type of `Set`{.Agda}s; Since the collection of $n$-types is a
+the type of `Set`{.Agda}s: since the collection of $n$-types is a
 $(n+1)$-type, this is a groupoid. To arrange that the fibre over
 `base`{.Agda} is `G`, we give `G` as the argument for `base`{.Agda} in
 the elimination. This locks us into giving a family of automorphisms
-`map : G → G ≡ G` for the `path`{.Agda} constructor; The constructor
-`path-sq`{.Agda} then requires that `map` be a homomorphism from $G$ to
+`act : G → G ≡ G` for the `path`{.Agda} constructor; The constructor
+`path-sq`{.Agda} then requires that `act` be a homomorphism from $G$ to
 $\rm{Aut}(G)$.
 
 ```agda
     where
-      map : ∀ x → ⌞ G ⌟ ≃ ⌞ G ⌟
-      map x = Iso→Equiv (_⋆ x , p) where
+      act : ∀ x → ⌞ G ⌟ ≃ ⌞ G ⌟
+      act x = Iso→Equiv (_⋆ x , p) where
         open is-iso
 
         p : is-iso (_⋆ x)
@@ -294,17 +294,17 @@ $\rm{Aut}(G)$.
         p .linv x = sym G.associative ·· ap₂ G._⋆_ refl G.inverser ·· G.idr
 ```
 
-We take $y \mapsto y \star x$ as the definition of the map, which is an
+We take $y \mapsto y \star x$ as the definition of the act, which is an
 automorphism of $G$ since it is invertible by $y \mapsto y \star
 x^{-1}$, and it preserves composition by associativity of $\star$, as is
 shown in the lemma below.
 
 ```agda
-      lemma : ∀ x y → ua (map x) ∙ ua (map y) ≡ ua (map (x ⋆ y))
+      lemma : ∀ x y → ua (act x) ∙ ua (act y) ≡ ua (act (x ⋆ y))
       lemma x y =
-        ua (map x) ∙ ua (map y) ≡⟨ sym ua∙ ⟩
-        ua (map x ∙e map y)     ≡⟨ ap ua (Σ-prop-path is-equiv-is-prop (funext λ z → sym (Group-on.associative (G .snd)))) ⟩
-        ua (map (x ⋆ y))        ∎
+        ua (act x) ∙ ua (act y) ≡⟨ sym ua∙ ⟩
+        ua (act x ∙e act y)     ≡⟨ ap ua (Σ-prop-path is-equiv-is-prop (funext λ z → sym (Group-on.associative (G .snd)))) ⟩
+        ua (act (x ⋆ y))        ∎
 ```
 
 We then define the encoding and decoding functions. The encoding

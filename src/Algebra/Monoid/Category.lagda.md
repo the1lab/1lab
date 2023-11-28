@@ -12,6 +12,8 @@ open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
 open import Data.List
+
+import Meta.Idiom
 ```
 -->
 
@@ -29,6 +31,10 @@ open Monoid-on
 open Functor
 open _=>_
 open _⊣_
+
+private
+  map : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → (A → B) → List A → List B
+  map = Meta.Idiom.map
 ```
 -->
 

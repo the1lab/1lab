@@ -2,10 +2,11 @@
 ```agda
 open import 1Lab.Prelude
 
+open import Data.Id.Base
 open import Data.Bool
 open import Data.List hiding (_++_)
 open import Data.Dec
-open import Data.Fin using (Fin; fzero; fsuc; Discrete-Fin; avoid; _[_≔_]; delete)
+open import Data.Fin using (Fin; fzero; fsuc; avoid; _[_≔_]; delete)
 open import Data.Nat
 open import Data.Sum
 
@@ -78,7 +79,7 @@ delete-literal
   → Clause Γ
 delete-literal {Γ = zero}  i ϕ  = []
 delete-literal {Γ = suc Γ} i [] = []
-delete-literal {Γ = suc Γ} i (x ∷ ϕ) with Discrete-Fin i (lit-var x)
+delete-literal {Γ = suc Γ} i (x ∷ ϕ) with i ≡? lit-var x
 ... | yes _  = delete-literal i ϕ
 ... | no i≠x = avoid-lit i x i≠x ∷ delete-literal i ϕ
 ```
@@ -89,7 +90,7 @@ CNF expression.
 ```agda
 unit-propagate : Literal (suc Γ) → CNF (suc Γ) → CNF Γ
 unit-propagate x [] = []
-unit-propagate x (ϕ ∷ ϕs) with elem? Discrete-Literal x ϕ
+unit-propagate x (ϕ ∷ ϕs) with elem? x ϕ
 ... | yes _ = unit-propagate x ϕs
 ... | no _  = delete-literal (lit-var x) ϕ ∷ unit-propagate x ϕs
 ```
@@ -150,7 +151,7 @@ delete-literal-sound {zero} (neg fzero) (neg fzero ∷ ϕ) x∉ϕ ρ =
   absurd (x∉ϕ (here refl))
 
 delete-literal-sound {suc Γ} x []      x∉ϕ ρ = refl
-delete-literal-sound {suc Γ} x (y ∷ ϕ) x∉ϕ ρ with Discrete-Fin (lit-var x) (lit-var y)
+delete-literal-sound {suc Γ} x (y ∷ ϕ) x∉ϕ ρ with lit-var x ≡? lit-var y
 ... | yes x=y =
   ap₂ or
     (subst (λ e → ⟦ y ⟧ (ρ [ lit-var e ≔ lit-val e ]) ≡ false)
@@ -169,7 +170,7 @@ unit-propagate-sound
   : (x : Literal (suc Γ)) (ϕs : CNF (suc Γ)) (ρ : Fin Γ → Bool)
   → ⟦ ϕs ⟧ (ρ [ lit-var x ≔ lit-val x ]) ≡ ⟦ unit-propagate x ϕs ⟧ ρ
 unit-propagate-sound x []       ρ = refl
-unit-propagate-sound x (ϕ ∷ ϕs) ρ with elem? Discrete-Literal x ϕ
+unit-propagate-sound x (ϕ ∷ ϕs) ρ with elem? x ϕ
 ... | yes x∈ϕ = ap₂ and
   (any-one-of (λ l → ⟦ l ⟧ (ρ [ lit-var x ≔ lit-val x ]))
     x ϕ x∈ϕ (lit-assign-true x ρ))

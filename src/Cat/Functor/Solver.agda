@@ -168,16 +168,16 @@ module Reflection where
 
   build-dexpr : Term → Term → TC Term
   build-dexpr functor “id” =
-    returnTC $ con (quote NbE.DExpr.‶id‶) []
+    pure $ con (quote NbE.DExpr.‶id‶) []
   build-dexpr functor (“∘” f g) = do
     f ← build-dexpr functor f
     g ← build-dexpr functor g
-    returnTC $ con (quote NbE.DExpr._‶∘‶_) (f v∷ g v∷ [])
+    pure $ con (quote NbE.DExpr._‶∘‶_) (f v∷ g v∷ [])
   build-dexpr functor (“F₁” functor' f) = do
     unify functor functor'
-    returnTC $ con (quote NbE.DExpr.‶F₁‶) (build-cexpr f v∷ [])
+    pure $ con (quote NbE.DExpr.‶F₁‶) (build-cexpr f v∷ [])
   build-dexpr functor f =
-    returnTC $ con (quote NbE.DExpr._↑) (f v∷ [])
+    pure $ con (quote NbE.DExpr._↑) (f v∷ [])
 
   dont-reduce : List Name
   dont-reduce = quote Precategory.id ∷ quote Precategory._∘_ ∷ quote Functor.F₁ ∷ []
@@ -187,7 +187,7 @@ module Reflection where
    withNormalisation false $
    withReduceDefs (false , dont-reduce) $ do
      functor-tm ← quoteTC functor
-     goal ← inferType hole >>= reduce
+     goal ← infer-type hole >>= reduce
      just (lhs , rhs) ← get-boundary goal
        where nothing → typeError $ strErr "Can't determine boundary: " ∷
                                    termErr goal ∷ []

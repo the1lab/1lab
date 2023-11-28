@@ -236,10 +236,10 @@ $g$.
   Groups-equalisers .apex = Equaliser-group
   Groups-equalisers .equ = total-hom fst record { pres-⋆ = λ x y → refl }
   Groups-equalisers .has-is-eq .equal = Forget-is-faithful seq.equal
-  Groups-equalisers .has-is-eq .universal {F = F} {e'} p = total-hom map lim-gh where
-    map = seq.universal {F = underlying-set (F .snd)} (ap hom p)
+  Groups-equalisers .has-is-eq .universal {F = F} {e'} p = total-hom go lim-gh where
+    go = seq.universal {F = underlying-set (F .snd)} (ap hom p)
 
-    lim-gh : is-group-hom _ _ map
+    lim-gh : is-group-hom _ _ go
     lim-gh .pres-⋆ x y = Σ-prop-path (λ _ → H.has-is-set _ _) (e' .preserves .pres-⋆ _ _)
 
   Groups-equalisers .has-is-eq .factors {F = F} {p = p} = Forget-is-faithful

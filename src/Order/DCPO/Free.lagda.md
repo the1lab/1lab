@@ -507,7 +507,7 @@ bottom elements.
 
   part-counit-never
     : ∀ x → part-counit never ≤ x
-  part-counit-never x = ⋃-prop-least _ _ x (absurd ⊙ Lift.lower)
+  part-counit-never x = ⋃-prop-least _ _ x (λ ())
 ```
 
 We can tie this all together to obtain the desired adjunction.
@@ -561,7 +561,7 @@ part-bind x f .elt (px , pfx) =
 ```agda
 instance
   Part-Map : Map (eff Part)
-  Part-Map .Map._<$>_ = part-map
+  Part-Map .Map.map = part-map
 
   Part-Idiom : Idiom (eff Part)
   Part-Idiom .Idiom.Map-idiom = Part-Map

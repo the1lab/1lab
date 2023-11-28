@@ -259,10 +259,10 @@ hlevel→hubs-and-spokes {A = A} (suc n) h =
        k (k = i0) → f (merid x (i ∧ j))
 
 hubs-and-spokes→hlevel {A = A} zero spheres x y
-  = spheres map .snd N ∙ sym (spheres map .snd S) where
-    map : Sⁿ⁻¹ 1 → A
-    map N = x
-    map S = y
+  = spheres go .snd N ∙ sym (spheres go .snd S) where
+    go : Sⁿ⁻¹ 1 → A
+    go N = x
+    go S = y
 hubs-and-spokes→hlevel {A = A} (suc n) spheres x y =
   hubs-and-spokes→hlevel n $ helper spheres x y where
   helper

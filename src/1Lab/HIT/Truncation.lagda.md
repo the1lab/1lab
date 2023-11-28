@@ -465,7 +465,7 @@ open import Meta.Bind
 
 instance
   Map-∥∥ : Map (eff ∥_∥)
-  Map-∥∥ .Map._<$>_ = ∥-∥-map
+  Map-∥∥ .Map.map = ∥-∥-map
 
   {-# TERMINATING #-}
   Idiom-∥∥ : Idiom (eff ∥_∥)

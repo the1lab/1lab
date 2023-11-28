@@ -356,7 +356,7 @@ Discrete→is-set {A = A} dec =
     funext λ h → absurd (g h)
   where
     stable : {x y : A} → ¬ ¬ x ≡ y → x ≡ y
-    stable {x = x} {y = y} ¬¬p with dec x y
+    stable {x = x} {y = y} ¬¬p with dec {x} {y}
     ... | yes p = p
     ... | no ¬p = absurd (¬¬p ¬p)
 ```

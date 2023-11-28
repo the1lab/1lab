@@ -41,8 +41,11 @@ inr-inj {B = B} {x = x} path = ap f path where
   f (inl _) = x
   f (inr x) = x
 
-⊎-disjoint : {A : Type a} {B : Type b} {x : A} {y : B} → ¬ inl x ≡ inr y
-⊎-disjoint path = subst (λ { (inl x) → ⊤ ; (inr x) → ⊥ }) path tt
+inl≠inr : {A : Type a} {B : Type b} {x : A} {y : B} → ¬ inl x ≡ inr y
+inl≠inr path = subst (λ { (inl x) → ⊤ ; (inr x) → ⊥ }) path tt
+
+inr≠inl : {A : Type a} {B : Type b} {x : A} {y : B} → ¬ inr x ≡ inl y
+inr≠inl path = inl≠inr (sym path)
 ```
 
 ## Closure under h-levels
@@ -56,8 +59,8 @@ definition:
 module ⊎Path where
   Code : A ⊎ B → A ⊎ B → Type (level-of A ⊔ level-of B)
   Code {B = B} (inl x) (inl y) = Lift (level-of B) (x ≡ y)
-  Code (inl x) (inr y) = Lift _ ⊥
-  Code (inr x) (inl y) = Lift _ ⊥
+  Code (inl x) (inr y)         = Lift _ ⊥
+  Code (inr x) (inl y)         = Lift _ ⊥
   Code {A = A} (inr x) (inr y) = Lift (level-of A) (x ≡ y)
 ```
 
@@ -77,8 +80,8 @@ codes:
 ```agda
   encode : {x y : A ⊎ B} → x ≡ y → Code x y
   encode {x = inl x} {y = inl y} path = lift (inl-inj path)
-  encode {x = inl x} {y = inr y} path = absurd (⊎-disjoint path)
-  encode {x = inr x} {y = inl y} path = absurd (⊎-disjoint (sym path))
+  encode {x = inl x} {y = inr y} path = absurd (inl≠inr path)
+  encode {x = inr x} {y = inl y} path = absurd (inr≠inl path)
   encode {x = inr x} {y = inr y} path = lift (inr-inj path)
 ```
 
@@ -183,10 +186,17 @@ disjoint-⊎-is-prop Ap Bp notab (inr x) (inr y) = ap inr (Bp x y)
 If `A` and `B` are [[decidable]], then so is `A ⊎ B`.
 
 ```agda
-Dec-⊎ : Dec A → Dec B → Dec (A ⊎ B)
-Dec-⊎ (yes A) _       = yes (inl A)
-Dec-⊎ (no ¬A) (yes B) = yes (inr B)
-Dec-⊎ (no ¬A) (no ¬B) = no λ where
-  (inl A) → ¬A A
-  (inr B) → ¬B B
+instance
+  Dec-⊎ : ⦃ _ : Dec A ⦄ ⦃ _ : Dec B ⦄ → Dec (A ⊎ B)
+  Dec-⊎ ⦃ yes A ⦄ = yes (inl A)
+  Dec-⊎ ⦃ no ¬A ⦄ ⦃ yes B ⦄ = yes (inr B)
+  Dec-⊎ ⦃ no ¬A ⦄ ⦃ no ¬B ⦄ = no λ where
+    (inl A) → ¬A A
+    (inr B) → ¬B B
+
+  Discrete-⊎ : ⦃ _ : Discrete A ⦄ ⦃ _ : Discrete B ⦄ → Discrete (A ⊎ B)
+  Discrete-⊎ {x = inl x} {inl y} = Dec-map (ap inl) inl-inj (x ≡? y)
+  Discrete-⊎ {x = inl x} {inr y} = no inl≠inr
+  Discrete-⊎ {x = inr x} {inl y} = no inr≠inl
+  Discrete-⊎ {x = inr x} {inr y} = Dec-map (ap inr) inr-inj (x ≡? y)
 ```

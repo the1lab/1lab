@@ -101,7 +101,7 @@ Fin-peel {l} {k} sl≃sk = (Iso→Equiv (l→k , (iso k→l b→a→b a→b→a)
   ... | fsuc y , _ = y
   ... | fzero , q = absurd (fzero≠fsuc (sk≃sl.injective₂ q p))
 
-  absurd-path : ∀ {ℓ} {A : Type ℓ} {y : A} {x : ⊥} → absurd x ≡ y
+  absurd-path : ∀ {ℓ} {A : Type ℓ} {y : A} .{x : ⊥} → absurd x ≡ y
   absurd-path {x = ()}
 
   a→b→a : ∀ a → k→l (l→k a) ≡ a
@@ -114,14 +114,14 @@ Fin-peel {l} {k} sl≃sk = (Iso→Equiv (l→k , (iso k→l b→a→b a→b→a)
     contra = fzero≠fsuc (sym (r ∙ q'))
   a→b→a a | fzero , p' with inspect (sl≃sk.to fzero)
   a→b→a a | fzero , p' | fsuc x , q' with inspect (sk≃sl.to (fsuc x))
-  a→b→a a | fzero , p' | fsuc x , q' | fsuc y , r' = absurd $
+  a→b→a a | fzero , p' | fsuc x , q' | fsuc y , r' = absurd do
     fzero≠fsuc (sym (sym r' ∙ ap sk≃sl.to (sym q') ∙ sl≃sk.η fzero))
   a→b→a a | fzero , p' | fsuc x , q' | fzero , r' with inspect (sk≃sl.to fzero)
   a→b→a a | fzero , p' | fsuc x , q' | fzero , r' | fsuc z , s = fsuc-inj $
     sym s ∙ ap sk≃sl.to (sym p') ∙ sl≃sk.η (fsuc a)
   a→b→a a | fzero , p' | fsuc x , q' | fzero , r' | fzero , s = absurd-path
-  a→b→a a | fzero , p' | fzero , q' = absurd $ fzero≠fsuc $
-    sl≃sk.injective₂ q' p'
+  a→b→a a | fzero , p' | fzero , q' = absurd (fzero≠fsuc $
+    sl≃sk.injective₂ q' p')
 
   b→a→b : ∀ b → l→k (k→l b) ≡ b
   b→a→b b with inspect (sk≃sl.to (fsuc b))
@@ -133,14 +133,14 @@ Fin-peel {l} {k} sl≃sk = (Iso→Equiv (l→k , (iso k→l b→a→b a→b→a)
     contra = fzero≠fsuc (sym (r ∙ q'))
   b→a→b b | fzero , p' with inspect (sk≃sl.to fzero)
   b→a→b b | fzero , p' | fsuc x , q' with inspect (sl≃sk.to (fsuc x))
-  b→a→b b | fzero , p' | fsuc x , q' | fsuc y , r'  = absurd $ fzero≠fsuc $
-    sym (sym r' ∙ ap (sl≃sk.to) (sym q') ∙ sk≃sl.η _)
+  b→a→b b | fzero , p' | fsuc x , q' | fsuc y , r'  = absurd (fzero≠fsuc $
+    sym (sym r' ∙ ap (sl≃sk.to) (sym q') ∙ sk≃sl.η _))
   b→a→b b | fzero , p' | fsuc x , q' | fzero , r' with inspect (sl≃sk.to fzero)
   b→a→b a | fzero , p' | fsuc x , q' | fzero , r' | fsuc z , s = fsuc-inj $
     sym s ∙ ap (sl≃sk.to) (sym p') ∙ sk≃sl.η (fsuc a)
   b→a→b a | fzero , p' | fsuc x , q' | fzero , r' | fzero , s = absurd-path
-  b→a→b b | fzero , p' | fzero , q' = absurd $ fzero≠fsuc $
-    sk≃sl.injective₂ q' p'
+  b→a→b b | fzero , p' | fzero , q' = absurd (fzero≠fsuc $
+    sk≃sl.injective₂ q' p')
 
 Fin-injective : ∀ {l k} → Fin l ≃ Fin k → l ≡ k
 Fin-injective {zero} {zero} l≃k = refl

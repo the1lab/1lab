@@ -64,7 +64,7 @@ is trivially semidirected.
     : (∀ {Ix : Type o} (s : Ix → Ob) → is-semidirected-family poset s → Lub poset s)
     → is-pointed-dcpo D
   semidirected-lub→pointed lub =
-    Lub→Bottom poset (lower-lub poset (lub (absurd ⊙ Lift.lower) (absurd ⊙ Lift.lower)))
+    Lub→Bottom poset (lower-lub poset (lub (λ ()) (λ ())))
 ```
 
 Conversely, if $D$ has a bottom element $\bot$, then we can extend any semidirected
@@ -411,7 +411,7 @@ This allows us to reflect the truth value of a proposition into $D$.
       → ¬ Ix → ⋃-prop s p ≡ bottom
     ⋃-prop-false s p ¬i =
       ≤-antisym
-        (⋃-prop-least s p bottom (absurd ⊙ ¬i))
+        (⋃-prop-least s p bottom (λ x → absurd (¬i x)))
         (bottom≤x _)
 
     ⋃-prop-true
@@ -526,7 +526,7 @@ Scott-continuous.
       pres-bot : ∀ x → is-bottom D.poset x → is-bottom E.poset (f x)
       pres-bot x x-bot y =
         f x              E.≤⟨ monotone _ _ (x-bot _) ⟩
-        f (D.⋃-semi _ _) E.≤⟨ is-lub.least (pres-⋃-semi (absurd ⊙ Lift.lower) (absurd ⊙ Lift.lower)) y (absurd ⊙ Lift.lower) ⟩
+        f (D.⋃-semi _ _) E.≤⟨ is-lub.least (pres-⋃-semi (λ x → absurd (x .Lift.lower)) (λ ())) y (λ ()) ⟩
         y                E.≤∎
 ```
 
@@ -563,7 +563,6 @@ families, then $f$ must be monotonic, and thus strictly Scott-continuous.
       (to-scott-directed f
         (λ s dir x lub → pres s (is-directed-family.semidirected dir) x lub))
       (λ x x-bot y → is-lub.least
-          (pres _ (absurd ⊙ Lift.lower) x (lift-is-lub D.poset (is-bottom→is-lub D.poset x-bot)))
-          y
-          (absurd ⊙ Lift.lower))
+          (pres _ (λ x → absurd (x .Lift.lower)) x (lift-is-lub D.poset (is-bottom→is-lub D.poset {f = λ ()} x-bot)))
+          y (λ ()))
 ```

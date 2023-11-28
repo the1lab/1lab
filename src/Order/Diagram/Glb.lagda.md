@@ -234,10 +234,10 @@ record Top : Type (o ⊔ ℓ) where
     top : Ob
     has-top : is-top top
 
-is-top→is-glb : ∀ {glb} → is-top glb → is-glb absurd glb
+is-top→is-glb : ∀ {glb} {f : ⊥ → _} → is-top glb → is-glb f glb
 is-top→is-glb is-top .greatest x _ = is-top x
 
-is-glb→is-top : ∀ {glb} → is-glb absurd glb → is-top glb
+is-glb→is-top : ∀ {glb} {f : ⊥ → _} → is-glb f glb → is-top glb
 is-glb→is-top glb x = glb .greatest x λ ()
 ```
 
@@ -263,18 +263,18 @@ instance
     → H-Level Top (suc n)
   H-Level-Top = prop-instance Top-is-prop
 
-Top→Glb : Top → Glb absurd
+Top→Glb : ∀ {f : ⊥ → _} → Top → Glb f
 Top→Glb top .Glb.glb = Top.top top
 Top→Glb top .Glb.has-glb = is-top→is-glb (Top.has-top top)
 
-Glb→Top : Glb absurd → Top
+Glb→Top : ∀ {f : ⊥ → _} → Glb f → Top
 Glb→Top glb .Top.top = Glb.glb glb
 Glb→Top glb .Top.has-top = is-glb→is-top (Glb.has-glb glb)
 
-is-top≃is-glb : ∀ {glb} → is-equiv (is-top→is-glb {glb})
+is-top≃is-glb : ∀ {glb} {f} → is-equiv (is-top→is-glb {glb} {f})
 is-top≃is-glb = prop-ext! _ is-glb→is-top .snd
 
-Top≃Glb : is-equiv Top→Glb
+Top≃Glb : ∀ {f} → is-equiv (Top→Glb {f})
 Top≃Glb = prop-ext! _ Glb→Top .snd
 ```
 -->

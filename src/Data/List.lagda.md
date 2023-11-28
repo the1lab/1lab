@@ -1,16 +1,18 @@
 <!--
 ```agda
-open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
+open import Data.Dec.Base
 open import Data.Nat.Base
 open import Data.Sum.Base
+open import Data.Id.Base
 open import Data.Bool
-open import Data.Dec
+
+open import Meta.Idiom
 ```
 -->
 
@@ -36,28 +38,6 @@ private variable
 -->
 
 ## Path Space
-
-We begin by characteristing the behaviour of paths of lists. For
-instance, `∷`{.Agda} is injective in both its arguments:
-
-```agda
-∷-head-inj : ∀ {x y : A} {xs ys} → (x ∷ xs) ≡ (y ∷ ys) → x ≡ y
-∷-head-inj {x = x} p = ap (head x) p
-
-∷-tail-inj : ∀ {x y : A} {xs ys} → (x ∷ xs) ≡ (y ∷ ys) → xs ≡ ys
-∷-tail-inj p = ap tail p
-```
-
-Similarly, it is possible to distinguish `_ ∷ _` from `[]`{.Agda}, so
-they are not identical:
-
-```agda
-∷≠[] : ∀ {x : A} {xs} → ¬ (x ∷ xs) ≡ []
-∷≠[] {A = A} p = subst distinguish p tt where
-  distinguish : List A → Type
-  distinguish []     = ⊥
-  distinguish (_ ∷ _) = ⊤
-```
 
 Using these lemmas, we can characterise the path space of `List A` in
 terms of the path space of `A`. For this, we define by induction a type
@@ -188,12 +168,6 @@ take-length-more
 take-length-more [] zero wit = refl
 take-length-more [] (suc n) wit = refl
 take-length-more (x ∷ xs) (suc n) (s≤s wit) = ap (x ∷_) (take-length-more xs n wit)
-
-instance
-  -- List isn't really a type on the same footing as all the others, but
-  -- we're here, so we might as well, right?
-  decomp-list : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (List A)
-  decomp-list = decomp (quote ListPath.List-is-hlevel) (`level-minus 2 ∷ `search ∷ [])
 ```
 -->
 
@@ -281,10 +255,6 @@ any-one-of f x (y ∷ xs) (there x∈xs) x-true =
 -->
 
 ```agda
-filter : ∀ {ℓ} {A : Type ℓ} → (A → Bool) → List A → List A
-filter p [] = []
-filter p (x ∷ xs) = if p x then x ∷ filter p xs else filter p xs
-
 is-empty : List A → Type
 is-empty [] = ⊤
 is-empty (_ ∷ _) = ⊥

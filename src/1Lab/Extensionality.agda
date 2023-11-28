@@ -1,6 +1,7 @@
-open import 1Lab.Reflection.Subst using (applyTC ; raiseTC)
+open import 1Lab.Reflection.Signature
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.Reflection.HLevel
+open import 1Lab.Reflection.Subst
 open import 1Lab.Equiv.Embedding
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Reflection
@@ -32,7 +33,7 @@ type with a preferred choice of identity system. The idea is that
 pointer to the 'Extensional' instance.
 
 We use tactic arguments to implement default instances: since Agda will
-happily call tactic arguments inside getInstances, if we had Extensional
+happily call tactic arguments inside get-instances, if we had Extensional
 instances with Extensional superclasses, this would lead to a
 super-exponential amount of work being done: *every Extensional
 instance*, including the "instance context", would have its full
@@ -59,30 +60,25 @@ find-extensionality tm = do
   -- situation where the default instance (or an incorrect instance!) is
   -- picked because the type is meta-headed.
   tm ← reduce =<< wait-for-type tm
-  let search = def (quote Extensionality) [ argN tm ]
+  let search = it Extensionality ##ₙ tm
   debugPrint "tactic.extensionality" 10 ("find-extensionality goal:\n  " ∷ termErr search ∷ [])
 
-  runSpeculative do
+  resetting $ do
     (mv , _) ← new-meta' search
-    soln ← getInstances mv >>= λ where
-      -- In a throw-away TC context, look for solutions to 'Extensionality'
-      -- tm, and choose the first instance if any are available.
+    get-instances mv >>= λ where
       (x ∷ _) → do
-        it ← unquoteTC {A = Name} =<< normalise (def (quote Extensionality.lemma) (argN x ∷ []))
-        debugPrint "tactic.extensionality" 10 (" ⇒ found lemma " ∷ termErr (def it []) ∷ [])
+        it ← unquoteTC {A = Name} =<< normalise (it Extensionality.lemma ##ₙ x)
+        debugPrint "tactic.extensionality" 10 (" ⇒ found lemma " ∷ nameErr it ∷ [])
         pure (def it [])
-
-      -- If nothing more specific is available, use paths.
       [] → do
         debugPrint "tactic.extensionality" 10 " ⇒ using default"
-        pure (def (quote Extensional-default) [])
-    pure (soln , false)
+        pure (it Extensional-default)
 
 -- Entry point for getting hold of an 'Extensional' instance:
 extensional : ∀ {ℓ} (A : Type ℓ) → Term → TC ⊤
 extensional A goal = do
   `A ← quoteTC A
-  checkType goal (def (quote Extensional) [ argN `A , argN unknown ])
+  check-type goal $ it Extensional ##ₙ `A ##ₙ unknown
   unify goal =<< find-extensionality `A
 
 {-
@@ -104,10 +100,8 @@ extensionalᶠ
 extensionalᶠ {A = A} fun goal = ⦇ wrap (quoteTC A) (quoteTC fun) ⦈ >>= id where
   work : Term → Term → TC Term
   work (pi dom@(arg ai _) (abs nm cod)) tm = do
-    prf ← extendContext nm dom do
-      tm ← raiseTC 1 tm
-      tm ← applyTC tm (arg ai (var 0 []))
-      work cod tm
+    prf ← extend-context nm dom $
+      work cod (raise 1 tm <#> arg ai (var 0 []))
     pure (lam (ai .ArgInfo.arg-vis) (abs nm prf))
   work _ tm = find-extensionality tm
 
@@ -171,7 +165,7 @@ Extensional-× ⦃ sa ⦄ ⦃ sb ⦄ .reflᵉ (x , y) = reflᵉ sa x , reflᵉ s
 Extensional-× ⦃ sa ⦄ ⦃ sb ⦄ .idsᵉ .to-path (p , q) = ap₂ _,_
   (sa .idsᵉ .to-path p)
   (sb .idsᵉ .to-path q)
-Extensional-× ⦃ sa ⦄ ⦃ sb ⦄ .idsᵉ .to-path-over (p , q) = Σ-pathp-dep
+Extensional-× ⦃ sa ⦄ ⦃ sb ⦄ .idsᵉ .to-path-over (p , q) = Σ-pathp
   (sa .idsᵉ .to-path-over p)
   (sb .idsᵉ .to-path-over q)
 
@@ -234,8 +228,7 @@ private
       `r ← wait-for-type =<< quoteωTC r
       ty ← quoteTC (Pathᵉ r x y)
       `x ← quoteTC x
-      `refl ← checkType (def (quote reflᵉ) [ argN `r , argN `x ]) ty
-        <|> error
+      `refl ← check-type (it reflᵉ ##ₙ `r ##ₙ `x) ty <|> error
       unify goal `refl
 
     error = do

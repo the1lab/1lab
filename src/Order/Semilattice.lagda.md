@@ -112,7 +112,7 @@ Semilattice-structure ℓ =
 ```agda
   SLat↪Mon : ∀ x → Semilattice-on x ↣ Monoid-on x
   SLat↪Mon x .fst = Semilattice-on.to-monoid
-  SLat↪Mon x .snd a (S , p) (T , q) = Σ-pathp {A = Semilattice-on x}
+  SLat↪Mon x .snd a (S , p) (T , q) = Σ-pathp {A = λ _ → Semilattice-on x}
     (λ { i .Semilattice-on.top → (p ∙ sym q) i .Monoid-on.identity
        ; i .Semilattice-on._∩_ → (p ∙ sym q) i .Monoid-on._⋆_
        ; i .Semilattice-on.has-is-semilattice → r i

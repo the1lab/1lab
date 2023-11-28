@@ -35,27 +35,11 @@ open Negative {{...}} public using (fromNeg)
 {-# BUILTIN FROMNEG fromNeg #-}
 {-# DISPLAY Negative.fromNeg _ n = fromNeg n #-}
 
-postulate String : Type
-{-# BUILTIN STRING String #-}
-
-record IsString {a} (A : Type a) : Type (lsuc a) where
-  field
-    Constraint : String → Type a
-    fromString : (s : String) {{_ : Constraint s}} → A
-
-open IsString {{...}} public using (fromString)
-
-{-# BUILTIN FROMSTRING fromString #-}
 {-# DISPLAY Number.fromNat _ n = fromNat n #-}
-{-# DISPLAY IsString.fromString _ s = fromString s #-}
 {-# DISPLAY Negative.fromNeg _ n = fromNeg n #-}
 
 instance
   Number-Nat : Number Nat
   Number-Nat .Number.Constraint _ = ⊤
   Number-Nat .Number.fromNat n = n
-
-  IsString-String : IsString String
-  IsString-String .IsString.Constraint _ = ⊤
-  IsString-String .IsString.fromString s = s
 ```
