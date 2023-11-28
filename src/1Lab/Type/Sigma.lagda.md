@@ -272,15 +272,7 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
 
 <!--
 ```agda
-Σ-pathp-dep
-  : ∀ {ℓ ℓ'} {A : I → Type ℓ} {B : ∀ i → A i → Type ℓ'}
-  → {x : Σ _ (B i0)} {y : Σ _ (B i1)}
-  → (p : PathP A (x .fst) (y .fst))
-  → PathP (λ i → B i (p i)) (x .snd) (y .snd)
-  → PathP (λ i → Σ (A i) (B i)) x y
-Σ-pathp-dep p q i = p i , q i
-
-_,ₚ_ = Σ-pathp-dep
+_,ₚ_ = Σ-pathp
 infixr 4 _,ₚ_
 
 Σ-prop-pathp

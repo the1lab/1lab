@@ -1618,11 +1618,12 @@ For `Σ`{.Agda} types, a path between `(a , b) ≡ (x , y)` consists of a
 path `p : a ≡ x`, and a path between `b` and `y` laying over `p`.
 
 ```agda
-Σ-pathp : ∀ {a b} {A : Type a} {B : A → Type b}
-        → {x y : Σ A B}
-        → (p : x .fst ≡ y .fst)
-        → PathP (λ i → B (p i)) (x .snd) (y .snd)
-        → x ≡ y
+Σ-pathp
+  : ∀ {ℓ ℓ'} {A : I → Type ℓ} {B : ∀ i → A i → Type ℓ'}
+  → {x : Σ _ (B i0)} {y : Σ _ (B i1)}
+  → (p : PathP A (x .fst) (y .fst))
+  → PathP (λ i → B i (p i)) (x .snd) (y .snd)
+  → PathP (λ i → Σ (A i) (B i)) x y
 Σ-pathp p q i = p i , q i
 ```
 

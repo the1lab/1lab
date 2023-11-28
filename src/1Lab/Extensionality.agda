@@ -60,25 +60,25 @@ find-extensionality tm = do
   -- situation where the default instance (or an incorrect instance!) is
   -- picked because the type is meta-headed.
   tm ← reduce =<< wait-for-type tm
-  let search = def (quote Extensionality) [ argN tm ]
+  let search = it Extensionality ##ₙ tm
   debugPrint "tactic.extensionality" 10 ("find-extensionality goal:\n  " ∷ termErr search ∷ [])
 
   resetting $ do
     (mv , _) ← new-meta' search
     get-instances mv >>= λ where
       (x ∷ _) → do
-        it ← unquoteTC {A = Name} =<< normalise (def (quote Extensionality.lemma) (argN x ∷ []))
-        debugPrint "tactic.extensionality" 10 (" ⇒ found lemma " ∷ termErr (def it []) ∷ [])
+        it ← unquoteTC {A = Name} =<< normalise (it Extensionality.lemma ##ₙ x)
+        debugPrint "tactic.extensionality" 10 (" ⇒ found lemma " ∷ nameErr it ∷ [])
         pure (def it [])
       [] → do
         debugPrint "tactic.extensionality" 10 " ⇒ using default"
-        pure (def (quote Extensional-default) [])
+        pure (it Extensional-default)
 
 -- Entry point for getting hold of an 'Extensional' instance:
 extensional : ∀ {ℓ} (A : Type ℓ) → Term → TC ⊤
 extensional A goal = do
   `A ← quoteTC A
-  check-type goal (def (quote Extensional) [ argN `A , argN unknown ])
+  check-type goal $ it Extensional ##ₙ `A ##ₙ unknown
   unify goal =<< find-extensionality `A
 
 {-
@@ -165,7 +165,7 @@ Extensional-× ⦃ sa ⦄ ⦃ sb ⦄ .reflᵉ (x , y) = reflᵉ sa x , reflᵉ s
 Extensional-× ⦃ sa ⦄ ⦃ sb ⦄ .idsᵉ .to-path (p , q) = ap₂ _,_
   (sa .idsᵉ .to-path p)
   (sb .idsᵉ .to-path q)
-Extensional-× ⦃ sa ⦄ ⦃ sb ⦄ .idsᵉ .to-path-over (p , q) = Σ-pathp-dep
+Extensional-× ⦃ sa ⦄ ⦃ sb ⦄ .idsᵉ .to-path-over (p , q) = Σ-pathp
   (sa .idsᵉ .to-path-over p)
   (sb .idsᵉ .to-path-over q)
 
@@ -228,8 +228,7 @@ private
       `r ← wait-for-type =<< quoteωTC r
       ty ← quoteTC (Pathᵉ r x y)
       `x ← quoteTC x
-      `refl ← check-type (def (quote reflᵉ) [ argN `r , argN `x ]) ty
-        <|> error
+      `refl ← check-type (it reflᵉ ##ₙ `r ##ₙ `x) ty <|> error
       unify goal `refl
 
     error = do

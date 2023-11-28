@@ -172,8 +172,8 @@ ConcreteGroups-is-category : is-category (ConcreteGroups ℓ)
 ConcreteGroups-is-category .to-path im = ConcreteGroup-path $
   Σ-pathp (ua (iso→equiv im)) (path→ua-pathp _ (im .to .snd))
 ConcreteGroups-is-category {ℓ} .to-path-over im = ≅-pathp (ConcreteGroups ℓ) _ _ $
-  Σ-pathp-dep (funextP λ _ → path→ua-pathp _ refl)
-              (λ i j → path→ua-pathp (iso→equiv im) (λ i → im .to .snd (i ∧ j)) i)
+  Σ-pathp (funextP λ _ → path→ua-pathp _ refl)
+    (λ i j → path→ua-pathp (iso→equiv im) (λ i → im .to .snd (i ∧ j)) i)
 ```
 -->
 

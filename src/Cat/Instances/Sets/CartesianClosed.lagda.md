@@ -68,7 +68,7 @@ Sets-lcc = dependent-product→lcc (Sets ℓ) Sets-finitely-complete Sets-Π adj
   adj f .unit .η x .commutes = refl
   adj {a} {b} f .unit .is-natural x y g =
     /-Hom-path (funext λ x → Σ-pathp (happly (g .commutes) _)
-      (funext-dep (λ p → Σ-pathp-dep (Σ-pathp refl (Σ-pathp (λ i → p i .fst)
+      (funext-dep (λ p → Σ-pathp (Σ-pathp refl (Σ-pathp (λ i → p i .fst)
         (is-set→squarep (λ i j → b .is-tr) _ _ _ _)))
         (is-set→squarep (λ i j → a .is-tr) _ _ _ _))))
   adj f .counit .η x .commutes = funext λ where
