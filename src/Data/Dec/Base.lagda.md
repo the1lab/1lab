@@ -85,23 +85,37 @@ Discrete-inj f inj eq? {x} {y} =
   Dec-map inj (ap f) (eq? {f x} {f y})
 ```
 
+## Programming with decisions
+
+Despite the failure of `Dec A` to be a [[proposition]] for general `A`,
+in the 1Lab, we like to work with decisions through instance search.
+This is facilitated by the following functions, which perform instance
+search:
+
 ```agda
+-- Searches for a type given explicitly.
 holds? : ∀ {ℓ} (A : Type ℓ) ⦃ d : Dec A ⦄ → Dec A
 holds? A ⦃ d ⦄ = d
 
-_≡?_ : ∀ {ℓ} {A : Type ℓ} ⦃ d : Discrete A ⦄ → (x y : A) → Dec (x ≡ y)
+-- Searches for equality of inhabitants of a discrete type.
+_≡?_ : ⦃ d : Discrete A ⦄ (x y : A) → Dec (x ≡ y)
 x ≡? y = holds? (x ≡ y)
 
 infix 3 _≡?_
+```
 
+And the following operators, which combine instance search with case
+analysis:
+
+```agda
 caseᵈ_of_ : ∀ {ℓ ℓ'} (A : Type ℓ) ⦃ d : Dec A ⦄ {B : Type ℓ'} → (Dec A → B) → B
 caseᵈ A of f = f (holds? A)
 
 caseᵈ_return_of_ : ∀ {ℓ ℓ'} (A : Type ℓ) ⦃ d : Dec A ⦄ (B : Dec A → Type ℓ') → (∀ x → B x) → B d
 caseᵈ A return P of f = f (holds? A)
 
-{-# INLINE case_of_        #-}
-{-# INLINE case_return_of_ #-}
+{-# INLINE caseᵈ_of_        #-}
+{-# INLINE caseᵈ_return_of_ #-}
 ```
 
 <!--
@@ -110,6 +124,10 @@ private variable
   P Q : Type ℓ
 ```
 -->
+
+We then have the following basic instances for combining decisions,
+expressing that the class of decidable types is closed under products
+and negation, and contains the empty type.
 
 ```agda
 instance

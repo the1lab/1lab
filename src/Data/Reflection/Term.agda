@@ -374,56 +374,65 @@ list-pattern : List (Arg Pattern) → Pattern
 list-pattern []       = con (quote List.[]) []
 list-pattern (x ∷ xs) = con (quote List._∷_) (x ∷ argN (list-pattern xs) ∷ [])
 
-record Apply {ℓ} (A : Type ℓ) : Type (lsuc ℓ) where
+-- Notation class for the reflected in reflected syntax which have a
+-- notion of neutrals, for which application is cheap. This is used to
+-- support the _##_ family of operators.
+record Has-neutrals {ℓ} (A : Type ℓ) : Type (lsuc ℓ) where
   field
-    applicable : A → Type ℓ
-    apply      : (d : A) ⦃ _ : applicable d ⦄ (arg : Arg A) → A
+    neutral : A → Type ℓ
+    applyⁿᵉ : (d : A) ⦃ _ : neutral d ⦄ (arg : List (Arg A)) → A
 
-_##_
-  : ∀ {ℓ} {A : Type ℓ} ⦃ a : Apply A ⦄ (d : A)
-  → ⦃ _ : Apply.applicable a d ⦄
-  → (arg : Arg A)
-  → A
-_##_ = Apply.apply auto
+open Has-neutrals ⦃ ... ⦄ using (applyⁿᵉ) public
+
+module _ {ℓ} {A : Type ℓ} ⦃ a : Has-neutrals A ⦄ (d : A) ⦃ _ : Has-neutrals.neutral a d ⦄ where
+  infixl 20 _##_ _##ₙ_ _##ᵢ_ _##ₕ_
+
+  -- Apply a neutral to an argument with specified information.
+  _##_ : (arg : Arg A) → A
+  _##_ x = Has-neutrals.applyⁿᵉ a d (x ∷ [])
+
+-- Apply a neutral to an argument with the default information.
+  _##ₙ_ : (arg : A) → A
+  _##ₙ_ x = _##_ (argN x)
+
+  -- Apply a neutral to a hidden argument with the default modality.
+  _##ₕ_ : (arg : A) → A
+  _##ₕ_ x = _##_ (argH x)
+
+  -- Apply a neutral to an instance argument with the default modality.
+  _##ᵢ_ : (arg : A) → A
+  _##ᵢ_ x = _##_ (argI x)
 
 instance
-  Apply-Term : Apply Term
-  Apply-Term = record { applicable = applicable ; apply = apply } where
-    applicable : Term → Type
-    applicable (def _ _)     = ⊤
-    applicable (con _ _)     = ⊤
-    applicable (meta _ _)    = ⊤
-    applicable (var _ _)     = ⊤
-    applicable (pat-lam _ _) = ⊤
-    applicable _             = ⊥
+  Has-neutrals-Term : Has-neutrals Term
+  Has-neutrals-Term = record { neutral = neutral ; applyⁿᵉ = apply } where
+    neutral : Term → Type
+    neutral (def _ _)     = ⊤
+    neutral (con _ _)     = ⊤
+    neutral (meta _ _)    = ⊤
+    neutral (var _ _)     = ⊤
+    neutral (pat-lam _ _) = ⊤
+    neutral _             = ⊥
 
-    apply : (d : Term) ⦃ _ : applicable d ⦄ (arg : Arg Term) → Term
-    apply (def v as)      a = def v  (as ++ (a ∷ []))
-    apply (con v as)      a = con v  (as ++ (a ∷ []))
-    apply (meta m as)     a = meta m (as ++ (a ∷ []))
-    apply (var v as)      a = var v  (as ++ (a ∷ []))
-    apply (pat-lam cs as) a = pat-lam cs (as ++ (a ∷ []))
+    apply : (d : Term) ⦃ _ : neutral d ⦄ (arg : List (Arg Term)) → Term
+    apply (def v as)      a = def v  (as ++ a)
+    apply (con v as)      a = con v  (as ++ a)
+    apply (meta m as)     a = meta m (as ++ a)
+    apply (var v as)      a = var v  (as ++ a)
+    apply (pat-lam cs as) a = pat-lam cs (as ++ a)
     apply (pi _ _)      ⦃ () ⦄ _
     apply (lam _ _)     ⦃ () ⦄ _
     apply (agda-sort _) ⦃ () ⦄ _
 
-  Apply-Pattern : Apply Pattern
-  Apply-Pattern = record { applicable = applicable ; apply = apply } where
-    applicable : Pattern → Type
-    applicable (con _ _) = ⊤
-    applicable _ = ⊥
+  Has-neutrals-Pattern : Has-neutrals Pattern
+  Has-neutrals-Pattern = record { neutral = neutral ; applyⁿᵉ = apply } where
+    neutral : Pattern → Type
+    neutral (con _ _) = ⊤
+    neutral _ = ⊥
 
-    apply : (d : Pattern) ⦃ _ : applicable d ⦄ (arg : Arg Pattern) → Pattern
-    apply (con c ps) a = con c (ps ++ (a ∷ []))
-
-_##ₙ_ : ∀ {ℓ} {A : Type ℓ} ⦃ a : Apply A ⦄ (d : A) ⦃ _ : Apply.applicable a d ⦄ (arg : A) → A
-f ##ₙ x = f ## argN x
-
-_##ᵢ_ : ∀ {ℓ} {A : Type ℓ} ⦃ a : Apply A ⦄ (d : A) ⦃ _ : Apply.applicable a d ⦄ (arg : A) → A
-f ##ᵢ x = f ## argI x
+    apply : (d : Pattern) ⦃ _ : neutral d ⦄ (arg : List (Arg Pattern)) → Pattern
+    apply (con c ps) a = con c (ps ++ a)
 
 pattern con₀ v = con v []
 pattern def₀ v = def v []
 pattern var₀ v = var v []
-
-infixl 20 _##_ _##ₙ_ _##ᵢ_

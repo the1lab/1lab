@@ -1,7 +1,7 @@
 module Algebra.Group.Solver where
 
 open import 1Lab.Prelude
-open import Data.List
+open import Data.List hiding (lookup)
 open import Data.Fin
 open import Data.Nat
 open import Data.Dec

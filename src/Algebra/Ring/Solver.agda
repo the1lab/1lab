@@ -22,7 +22,7 @@ open import Algebra.Group
 open import Algebra.Ring
 
 open import Data.Fin.Base
-open import Data.List
+open import Data.List hiding (lookup)
 open import Data.Dec
 open import Data.Int
 open import Data.Nat

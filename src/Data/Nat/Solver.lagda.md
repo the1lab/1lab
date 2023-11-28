@@ -7,7 +7,7 @@ open import 1Lab.Type
 
 open import Data.Nat.Properties
 open import Data.Fin.Base
-open import Data.List
+open import Data.List hiding (lookup)
 ```
 -->
 

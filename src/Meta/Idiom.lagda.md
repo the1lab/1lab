@@ -53,6 +53,10 @@ _<$>_ : ∀ {ℓ ℓ'} {M : Effect} ⦃ _ : Map M ⦄ {A : Type ℓ} {B : Type �
       → (A → B) → M .Effect.₀ A → M .Effect.₀ B
 f <$> x = map f x
 
+_<$_ : ∀ {ℓ ℓ'} {M : Effect} ⦃ _ : Map M ⦄ {A : Type ℓ} {B : Type ℓ'}
+      → B → M .Effect.₀ A → M .Effect.₀ B
+c <$ x = map (λ _ → c) x
+
 _<&>_ : ∀ {ℓ ℓ'} {M : Effect} ⦃ _ : Map M ⦄ {A : Type ℓ} {B : Type ℓ'}
       → M .Effect.₀ A → (A → B) → M .Effect.₀ B
 x <&> f = map f x

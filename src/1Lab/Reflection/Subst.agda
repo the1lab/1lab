@@ -51,6 +51,24 @@ singletonS n u = map (λ i → var i []) (count n) ++# u ∷ raiseS n
 inplaceS : Nat → Term → Subst
 inplaceS n u = map (λ i → var i []) (count n) ++# u ∷ raiseS (suc n)
 
+record Has-subst {ℓ} (A : Type ℓ) : Type (lsuc ℓ) where
+  field applyS : Subst → A → A
+
+open Has-subst ⦃ ... ⦄ using (applyS) public
+
+raise : ∀ {ℓ} {A : Type ℓ} ⦃ _ : Has-subst A ⦄ → Nat → A → A
+raise n = applyS (raiseS n)
+
+raise* : ∀ {ℓ} {A : Type ℓ} ⦃ _ : Has-subst A ⦄ → Nat → List A → List A
+raise* n = map (raise n)
+
+applyS* : ∀ {ℓ} {A : Type ℓ} ⦃ _ : Has-subst A ⦄ → Subst → List A → List A
+applyS* ρ = map (applyS ρ)
+
+instance
+  Has-subst-Arg : ∀ {ℓ} {A : Type ℓ} ⦃ _ : Has-subst A ⦄ → Has-subst (Arg A)
+  Has-subst-Arg .Has-subst.applyS ρ (arg ai x) = arg ai (applyS ρ x)
+
 {-# TERMINATING #-}
 subst-clause : Subst → Clause → Clause
 subst-tm     : Subst → Term → Term
@@ -58,8 +76,12 @@ subst-tm*    : Subst → List (Arg Term) → List (Arg Term)
 apply-tm     : Term → Arg Term → Term
 subst-tel    : Subst → Telescope → Telescope
 
-raise : Nat → Term → Term
-raise n = subst-tm (raiseS n)
+instance
+  Has-subst-Term : Has-subst Term
+  Has-subst-Term = record { applyS = subst-tm }
+
+  Has-subst-Clause : Has-subst Clause
+  Has-subst-Clause = record { applyS = subst-clause }
 
 subst-tm* ρ []             = []
 subst-tm* ρ (arg ι x ∷ ls) = arg ι (subst-tm ρ x) ∷ subst-tm* ρ ls
@@ -71,7 +93,7 @@ apply-tm* tm (x ∷ xs) = apply-tm* (apply-tm tm x) xs
 lookup-tm : (σ : Subst) (i : Nat) → Term
 lookup-tm ids i = var i []
 lookup-tm (wk n ids) i = var (i + n) []
-lookup-tm (wk n ρ) i = subst-tm (raiseS n) (lookup-tm ρ i)
+lookup-tm (wk n ρ) i = raise n (lookup-tm ρ i)
 lookup-tm (x ∷ ρ) i with (i == 0)
 … | true  = x
 … | false = lookup-tm ρ (i - 1)
@@ -116,12 +138,6 @@ subst-tel ρ ((x , arg ai t) ∷ xs) = (x , arg ai (subst-tm ρ t)) ∷ subst-te
 
 subst-clause σ (clause tel ps t)      = clause (subst-tel σ tel) ps (subst-tm (wkS (length tel) σ) t)
 subst-clause σ (absurd-clause tel ps) = absurd-clause (subst-tel σ tel) ps
-
-raise-tel : Nat → Telescope → Telescope
-raise-tel n = subst-tel (raiseS n)
-
-raise* : Nat → List (Arg Term) → List (Arg Term)
-raise* n = subst-tm* (raiseS n)
 
 _<#>_ : Term → Arg Term → Term
 f <#> x = apply-tm f x
