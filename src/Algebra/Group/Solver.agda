@@ -205,17 +205,17 @@ module Reflection where
 
   build-expr : ∀ {ℓ} {A : Type ℓ} → Variables A → Term → TC (Term × Variables A)
   build-expr vs “unit” =
-    returnTC $ con (quote ‶unit‶) [] , vs
+    pure $ con (quote ‶unit‶) [] , vs
   build-expr vs (“⋆” t1 t2) = do
     e1 , vs ← build-expr vs t1
     e2 , vs ← build-expr vs t2
-    returnTC $ con (quote _‶⋆‶_) (e1 v∷ e2 v∷ []) , vs
+    pure $ con (quote _‶⋆‶_) (e1 v∷ e2 v∷ []) , vs
   build-expr vs (“inverse” t) = do
     e , vs ← build-expr vs t
-    returnTC $ con (quote _‶⁻¹‶) (e v∷ []) , vs
+    pure $ con (quote _‶⁻¹‶) (e v∷ []) , vs
   build-expr vs tm = do
     (v , vs) ← bind-var vs tm
-    returnTC $ con (quote ‶_‶) (v v∷ []) , vs
+    pure $ con (quote ‶_‶) (v v∷ []) , vs
 
   dont-reduce : List Name
   dont-reduce = quote is-group.unit ∷ quote Group-on._⋆_ ∷ quote is-group.inverse ∷ []
@@ -223,7 +223,7 @@ module Reflection where
   group-solver : ∀ {ℓ} {A : Type ℓ} → Group-on A → TC (VariableSolver A)
   group-solver {A = A} grp = do
     grp-tm ← quoteTC grp
-    returnTC (var-solver {A = A} dont-reduce build-expr (“solve” grp-tm) (“expand” grp-tm))
+    pure (var-solver {A = A} dont-reduce build-expr (“solve” grp-tm) (“expand” grp-tm))
 
   repr-macro : ∀ {ℓ} {A : Type ℓ} → Group-on A → Term → Term → TC ⊤
   repr-macro {A = A} grp tm hole = do

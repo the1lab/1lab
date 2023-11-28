@@ -235,9 +235,9 @@ Canonical n = Σ[ x ∈ Nat ] Σ[ y ∈ Nat ] (diff x y ≡ n)
 
 canonicalise : (n : Int) → Canonical n
 canonicalise = go where
-  lemma₁ : ∀ x y → x < y → diff 0 (y - x) ≡ diff x y
-  lemma₂ : ∀ x y → y < x → diff (x - y) 0 ≡ diff x y
-  lemma₃ : ∀ x y → x ≡ y → diff 0 0       ≡ diff x y
+  lemma₁ : ∀ x y → .(x < y) → diff 0 (y - x) ≡ diff x y
+  lemma₂ : ∀ x y → .(y < x) → diff (x - y) 0 ≡ diff x y
+  lemma₃ : ∀ x y → .(x ≡ y) → diff 0 0       ≡ diff x y
 
   work : ∀ x y → Canonical (diff x y)
   work x y with ≤-split x y
@@ -259,11 +259,11 @@ from this page. You can unfold it below if you dare:
   -- lets us prove that the paths they return respect the Int quotient
   -- without using that Int is a set (because we don't know that yet!)
 
-  lemma₁ zero (suc y) p          = refl
-  lemma₁ (suc x) (suc y) (s≤s p) = lemma₁ x y p ∙ Int.quot x y
+  lemma₁ zero    (suc y) p = refl
+  lemma₁ (suc x) (suc y) p = lemma₁ x y (≤-peel p) ∙ Int.quot x y
 
-  lemma₂ (suc x) zero p          = refl
-  lemma₂ (suc x) (suc y) (s≤s p) = lemma₂ x y p ∙ Int.quot x y
+  lemma₂ (suc x) zero    p = refl
+  lemma₂ (suc x) (suc y) p = lemma₂ x y (≤-peel p) ∙ Int.quot x y
 
   lemma₃ zero zero p       = refl
   lemma₃ zero (suc y) p    = absurd (zero≠suc p)
@@ -273,41 +273,27 @@ from this page. You can unfold it below if you dare:
   abstract
     work-respects-quot
       : ∀ x y → PathP (λ i → Canonical (Int.quot x y i))
-        (work x y)
-        (work (suc x) (suc y))
+        (work x y) (work (suc x) (suc y))
     -- We split on (x, y) but also (1+x,1+y). This is obviously
     -- redundant to a human, but to Agda, we must do this: there is no
     -- link between these two splits.
 
-    -- These first three cases basically mirror the definition of
-    -- lemma₁, lemma₂, and lemma₃. They show that
-    --    lemma₁₂₃ (suc x) (suc y) p ≡ lemma₁₂₃ (suc x) (suc y) p' ∙ Int.quot x y
-    -- but mediating between SquareP, ··, and ∙.
     work-respects-quot x y with ≤-split x y | ≤-split (suc x) (suc y)
-    ... | inl x<y | inl (s≤s x<y') =
-      Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡double-composite-path) $
-          double-composite refl _ _
-        ·· ∙-idl _
-        ·· ap (λ e → lemma₁ x y e ∙ Int.quot x y) (≤-is-prop x<y x<y')
-    ... | inr (inl x>y) | inr (inl (s≤s x>y')) =
-      Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡double-composite-path) $
-          double-composite refl _ _
-        ·· ∙-idl _
-        ·· ap (λ e → lemma₂ x y e ∙ Int.quot x y) (≤-is-prop x>y x>y')
-    ... | inr (inr x≡y) | inr (inr x≡y') =
-      Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡double-composite-path) $
-          double-composite refl _ _
-        ·· ∙-idl _
-        ·· ap (λ e → lemma₃ x y e ∙ Int.quot x y) (Nat-is-set _ _ _ _)
+    ... | inl x<y | inl (s≤s x<y') = Σ-pathp-dep refl $ Σ-pathp-dep refl $
+      commutes→square (∙-idl _)
+    ... | inr (inl x>y) | inr (inl (s≤s x>y')) = Σ-pathp-dep refl $ Σ-pathp-dep refl $
+      commutes→square (∙-idl _)
+    ... | inr (inr x≡y) | inr (inr x≡y') = Σ-pathp-dep refl $ Σ-pathp-dep refl $
+      commutes→square (∙-idl _)
 
     -- This *barrage* of cases is to handle the cases where e.g. (x < y)
     -- but (1 + x > 1 + y), which is "obviously" impossible. But Agda
     -- doesn't care about what humans think is obvious.
-    ... | inl x<y | inr (inl (s≤s x>y)) = absurd (<-asym x<y x>y)
-    ... | inl x<y | inr (inr x≡y) = absurd (<-not-equal x<y (suc-inj x≡y))
-    ... | inr (inl x>y) | inl (s≤s x<y) = absurd (<-asym x>y x<y)
-    ... | inr (inr x≡y) | inl (s≤s x<y) = absurd (<-not-equal x<y x≡y)
-    ... | inr (inl x>y) | inr (inr x≡y) = absurd (<-not-equal x>y (sym (suc-inj x≡y)))
+    ... | inl x<y | inr (inl (s≤s x>y))       = absurd (<-asym x<y x>y)
+    ... | inl x<y | inr (inr x≡y)             = absurd (<-not-equal x<y (suc-inj x≡y))
+    ... | inr (inl x>y) | inl (s≤s x<y)       = absurd (<-asym x>y x<y)
+    ... | inr (inr x≡y) | inl (s≤s x<y)       = absurd (<-not-equal x<y x≡y)
+    ... | inr (inl x>y) | inr (inr x≡y)       = absurd (<-not-equal x>y (sym (suc-inj x≡y)))
     ... | inr (inr x≡y) | inr (inl (s≤s x>y)) = absurd (<-irrefl (sym x≡y) x>y)
 
   go : ∀ n → Canonical n
@@ -323,20 +309,17 @@ it's a retract of a set --- namely $\bb{N} \times \bb{N}$!
 ```agda
 instance abstract
   H-Level-Int : ∀ {n} → H-Level Int (2 + n)
-  H-Level-Int =
-    basic-instance 2 $
-      retract→is-hlevel 2 into from linv (hlevel 2)
-    where
-      into : (Nat × Nat) → Int
-      into (x , y) = diff x y
+  H-Level-Int = basic-instance 2 (retract→is-hlevel 2 into from linv (hlevel 2)) where
+    into : (Nat × Nat) → Int
+    into (x , y) = diff x y
 
-      from : Int → Nat × Nat
-      from x with canonicalise x
-      ... | a , b , p = a , b
+    from : Int → Nat × Nat
+    from x with canonicalise x
+    ... | a , b , p = a , b
 
-      linv : ∀ x → into (from x) ≡ x
-      linv x with canonicalise x
-      ... | a , b , p = p
+    linv : ∀ x → into (from x) ≡ x
+    linv x with canonicalise x
+    ... | a , b , p = p
 ```
 
 # Recursion

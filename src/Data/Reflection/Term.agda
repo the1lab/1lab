@@ -5,7 +5,7 @@ open import 1Lab.Type hiding (absurd)
 open import Data.Dec.Base
 open import Data.Id.Base
 open import Data.Nat.Base
-open import Data.List
+open import Data.List.Base
 
 open import Data.Word.Base
 open import Data.Float.Base
@@ -16,6 +16,8 @@ open import Data.Reflection.Meta
 open import Data.Reflection.Argument
 open import Data.Reflection.Abs
 open import Data.Reflection.Literal
+
+open import Meta.Append
 
 module Data.Reflection.Term where
 
@@ -354,3 +356,74 @@ instance
       (yes reflᵢ , yes reflᵢ) → yes reflᵢ
       (yes as , no ¬ps)       → no λ { reflᵢ → ¬ps reflᵢ }
       (no ¬as , _)            → no λ { reflᵢ → ¬as reflᵢ }
+
+pi-view : Term → Telescope × Term
+pi-view (pi a (abs n b)) with pi-view b
+... | tele , t = ((n , a) ∷ tele) , t
+pi-view t = [] , t
+
+unpi-view : Telescope → Term → Term
+unpi-view []            k = k
+unpi-view ((n , a) ∷ t) k = pi a (abs n (unpi-view t k))
+
+list-term : List Term → Term
+list-term []       = con (quote List.[]) []
+list-term (x ∷ xs) = con (quote List._∷_) (argN x ∷ argN (list-term xs) ∷ [])
+
+list-pattern : List (Arg Pattern) → Pattern
+list-pattern []       = con (quote List.[]) []
+list-pattern (x ∷ xs) = con (quote List._∷_) (x ∷ argN (list-pattern xs) ∷ [])
+
+record Apply {ℓ} (A : Type ℓ) : Type (lsuc ℓ) where
+  field
+    applicable : A → Type ℓ
+    apply      : (d : A) ⦃ _ : applicable d ⦄ (arg : Arg A) → A
+
+_##_
+  : ∀ {ℓ} {A : Type ℓ} ⦃ a : Apply A ⦄ (d : A)
+  → ⦃ _ : Apply.applicable a d ⦄
+  → (arg : Arg A)
+  → A
+_##_ = Apply.apply auto
+
+instance
+  Apply-Term : Apply Term
+  Apply-Term = record { applicable = applicable ; apply = apply } where
+    applicable : Term → Type
+    applicable (def _ _)     = ⊤
+    applicable (con _ _)     = ⊤
+    applicable (meta _ _)    = ⊤
+    applicable (var _ _)     = ⊤
+    applicable (pat-lam _ _) = ⊤
+    applicable _             = ⊥
+
+    apply : (d : Term) ⦃ _ : applicable d ⦄ (arg : Arg Term) → Term
+    apply (def v as)      a = def v  (as ++ (a ∷ []))
+    apply (con v as)      a = con v  (as ++ (a ∷ []))
+    apply (meta m as)     a = meta m (as ++ (a ∷ []))
+    apply (var v as)      a = var v  (as ++ (a ∷ []))
+    apply (pat-lam cs as) a = pat-lam cs (as ++ (a ∷ []))
+    apply (pi _ _)      ⦃ () ⦄ _
+    apply (lam _ _)     ⦃ () ⦄ _
+    apply (agda-sort _) ⦃ () ⦄ _
+
+  Apply-Pattern : Apply Pattern
+  Apply-Pattern = record { applicable = applicable ; apply = apply } where
+    applicable : Pattern → Type
+    applicable (con _ _) = ⊤
+    applicable _ = ⊥
+
+    apply : (d : Pattern) ⦃ _ : applicable d ⦄ (arg : Arg Pattern) → Pattern
+    apply (con c ps) a = con c (ps ++ (a ∷ []))
+
+_##ₙ_ : ∀ {ℓ} {A : Type ℓ} ⦃ a : Apply A ⦄ (d : A) ⦃ _ : Apply.applicable a d ⦄ (arg : A) → A
+f ##ₙ x = f ## argN x
+
+_##ᵢ_ : ∀ {ℓ} {A : Type ℓ} ⦃ a : Apply A ⦄ (d : A) ⦃ _ : Apply.applicable a d ⦄ (arg : A) → A
+f ##ᵢ x = f ## argI x
+
+pattern con₀ v = con v []
+pattern def₀ v = def v []
+pattern var₀ v = var v []
+
+infixl 20 _##_ _##ₙ_ _##ᵢ_

@@ -49,42 +49,42 @@ To drive meta computations, we have the TC monad, reflecting Agda's
 ```agda
 private module P where
   postulate
-    TC               : ∀ {a} → Type a → Type a
-    returnTC         : ∀ {a} {A : Type a} → A → TC A
-    bindTC           : ∀ {a b} {A : Type a} {B : Type b} → TC A → (A → TC B) → TC B
-    unify            : Term → Term → TC ⊤
-    inferType        : Term → TC Term
-    checkType        : Term → Term → TC Term
-    normalise        : Term → TC Term
-    reduce           : Term → TC Term
-    catchTC          : ∀ {a} {A : Type a} → TC A → TC A → TC A
-    quoteTC          : ∀ {a} {A : Type a} → A → TC Term
-    unquoteTC        : ∀ {a} {A : Type a} → Term → TC A
-    quoteωTC         : ∀ {A : Typeω} → A → TC Term
-    getContext       : TC Telescope
-    extendContext    : ∀ {a} {A : Type a} → String → Arg Term → TC A → TC A
-    inContext        : ∀ {a} {A : Type a} → Telescope → TC A → TC A
-    freshName        : String → TC Name
-    declareDef       : Arg Name → Term → TC ⊤
-    declarePostulate : Arg Name → Term → TC ⊤
-    defineFun        : Name → List Clause → TC ⊤
-    getType          : Name → TC Term
-    getDefinition    : Name → TC Definition
-    blockTC          : ∀ {a} {A : Type a} → Blocker → TC A
-    commitTC         : TC ⊤
-    isMacro          : Name → TC Bool
+    TC                : ∀ {a} → Type a → Type a
+    returnTC          : ∀ {a} {A : Type a} → A → TC A
+    bindTC            : ∀ {a b} {A : Type a} {B : Type b} → TC A → (A → TC B) → TC B
+    unify             : Term → Term → TC ⊤
+    infer-type        : Term → TC Term
+    check-type        : Term → Term → TC Term
+    normalise         : Term → TC Term
+    reduce            : Term → TC Term
+    catchTC           : ∀ {a} {A : Type a} → TC A → TC A → TC A
+    quoteTC           : ∀ {a} {A : Type a} → A → TC Term
+    unquoteTC         : ∀ {a} {A : Type a} → Term → TC A
+    quoteωTC          : ∀ {A : Typeω} → A → TC Term
+    getContext        : TC Telescope
+    extend-context    : ∀ {a} {A : Type a} → String → Arg Term → TC A → TC A
+    in-context        : ∀ {a} {A : Type a} → Telescope → TC A → TC A
+    freshName         : String → TC Name
+    declare           : Arg Name → Term → TC ⊤
+    declare-postulate : Arg Name → Term → TC ⊤
+    define-function   : Name → List Clause → TC ⊤
+    get-type          : Name → TC Term
+    get-definition    : Name → TC Definition
+    blockTC           : ∀ {a} {A : Type a} → Blocker → TC A
+    commitTC          : TC ⊤
+    isMacro           : Name → TC Bool
 
-    typeError        : ∀ {a} {A : Type a} → List ErrorPart → TC A
-    formatErrorParts : List ErrorPart → TC String
-    debugPrint       : String → Nat → List ErrorPart → TC ⊤
+    typeError         : ∀ {a} {A : Type a} → List ErrorPart → TC A
+    formatErrorParts  : List ErrorPart → TC String
+    debugPrint        : String → Nat → List ErrorPart → TC ⊤
 
   -- If 'true', makes the following primitives also normalise
-  -- their results: inferType, checkType, quoteTC, getType, and getContext
+  -- their results: infer-type, check-type, quoteTC, get-type, and getContext
     withNormalisation : ∀ {a} {A : Type a} → Bool → TC A → TC A
     askNormalisation  : TC Bool
 
   -- If 'true', makes the following primitives to reconstruct hidden arguments:
-  -- getDefinition, normalise, reduce, inferType, checkType and getContext
+  -- get-definition, normalise, reduce, infer-type, check-type and getContext
     withReconstructed : ∀ {a} {A : Type a} → Bool → TC A → TC A
     askReconstructed  : TC Bool
 
@@ -104,11 +104,11 @@ private module P where
   -- Run the given TC action and return the first component. Resets to
   -- the old TC state if the second component is 'false', or keep the
   -- new TC state if it is 'true'.
-    runSpeculative : ∀ {a} {A : Type a} → TC (Σ A λ _ → Bool) → TC A
+    run-speculative : ∀ {a} {A : Type a} → TC (Σ A λ _ → Bool) → TC A
 
   -- Get a list of all possible instance candidates for the given meta
   -- variable (it does not have to be an instance meta).
-    getInstances : Meta → TC (List Term)
+    get-instances : Meta → TC (List Term)
 
     declareData      : Name → Nat → Term → TC ⊤
     defineData       : Name → List (Σ Name (λ _ → Term)) → TC ⊤
@@ -125,8 +125,8 @@ private module P where
   {-# BUILTIN AGDATCMBIND              bindTC                     #-}
   {-# BUILTIN AGDATCMUNIFY             unify                      #-}
   {-# BUILTIN AGDATCMTYPEERROR         typeError                  #-}
-  {-# BUILTIN AGDATCMINFERTYPE         inferType                  #-}
-  {-# BUILTIN AGDATCMCHECKTYPE         checkType                  #-}
+  {-# BUILTIN AGDATCMINFERTYPE         infer-type                 #-}
+  {-# BUILTIN AGDATCMCHECKTYPE         check-type                 #-}
   {-# BUILTIN AGDATCMNORMALISE         normalise                  #-}
   {-# BUILTIN AGDATCMREDUCE            reduce                     #-}
   {-# BUILTIN AGDATCMCATCHERROR        catchTC                    #-}
@@ -134,14 +134,14 @@ private module P where
   {-# BUILTIN AGDATCMUNQUOTETERM       unquoteTC                  #-}
   {-# BUILTIN AGDATCMQUOTEOMEGATERM    quoteωTC                   #-}
   {-# BUILTIN AGDATCMGETCONTEXT        getContext                 #-}
-  {-# BUILTIN AGDATCMEXTENDCONTEXT     extendContext              #-}
-  {-# BUILTIN AGDATCMINCONTEXT         inContext                  #-}
+  {-# BUILTIN AGDATCMEXTENDCONTEXT     extend-context             #-}
+  {-# BUILTIN AGDATCMINCONTEXT         in-context                 #-}
   {-# BUILTIN AGDATCMFRESHNAME         freshName                  #-}
-  {-# BUILTIN AGDATCMDECLAREDEF        declareDef                 #-}
-  {-# BUILTIN AGDATCMDECLAREPOSTULATE  declarePostulate           #-}
-  {-# BUILTIN AGDATCMDEFINEFUN         defineFun                  #-}
-  {-# BUILTIN AGDATCMGETTYPE           getType                    #-}
-  {-# BUILTIN AGDATCMGETDEFINITION     getDefinition              #-}
+  {-# BUILTIN AGDATCMDECLAREDEF        declare                    #-}
+  {-# BUILTIN AGDATCMDECLAREPOSTULATE  declare-postulate          #-}
+  {-# BUILTIN AGDATCMDEFINEFUN         define-function            #-}
+  {-# BUILTIN AGDATCMGETTYPE           get-type                   #-}
+  {-# BUILTIN AGDATCMGETDEFINITION     get-definition             #-}
   {-# BUILTIN AGDATCMBLOCK             blockTC                    #-}
   {-# BUILTIN AGDATCMCOMMIT            commitTC                   #-}
   {-# BUILTIN AGDATCMISMACRO           isMacro                    #-}
@@ -156,27 +156,29 @@ private module P where
   {-# BUILTIN AGDATCMASKEXPANDLAST     askExpandLast              #-}
   {-# BUILTIN AGDATCMASKREDUCEDEFS     askReduceDefs              #-}
   {-# BUILTIN AGDATCMNOCONSTRAINTS     noConstraints              #-}
-  {-# BUILTIN AGDATCMRUNSPECULATIVE    runSpeculative             #-}
-  {-# BUILTIN AGDATCMGETINSTANCES      getInstances               #-}
+  {-# BUILTIN AGDATCMRUNSPECULATIVE    run-speculative            #-}
+  {-# BUILTIN AGDATCMGETINSTANCES      get-instances              #-}
   {-# BUILTIN AGDATCMDECLAREDATA       declareData                #-}
   {-# BUILTIN AGDATCMDEFINEDATA        defineData                 #-}
 
-open P public
+open P
+  hiding ( returnTC ; bindTC ; catchTC )
+  public
 
 instance
   Map-TC : Map (eff TC)
-  Map-TC .Map.map f x = bindTC x λ x → returnTC (f x)
+  Map-TC .Map.map f x = P.bindTC x λ x → P.returnTC (f x)
 
   Idiom-TC : Idiom (eff TC)
-  Idiom-TC .Idiom.pure = returnTC
-  Idiom-TC .Idiom._<*>_ f g = bindTC f λ f → bindTC g λ g → pure (f g)
+  Idiom-TC .Idiom.pure = P.returnTC
+  Idiom-TC .Idiom._<*>_ f g = P.bindTC f λ f → P.bindTC g λ g → pure (f g)
 
   Bind-TC : Bind (eff TC)
-  Bind-TC .Bind._>>=_ = bindTC
+  Bind-TC .Bind._>>=_ = P.bindTC
 
   Alt-TC : Alt (eff TC)
   Alt-TC .Alt.fail  = P.typeError mempty
-  Alt-TC .Alt._<|>_ = catchTC
+  Alt-TC .Alt._<|>_ = P.catchTC
 ```
 </details>
 
@@ -190,20 +192,20 @@ idfun : ∀ {ℓ} (A : Type ℓ) → A → A
 idfun A x = x
 
 under-abs : ∀ {ℓ} {A : Type ℓ} → Term → TC A → TC A
-under-abs (lam v (abs nm _)) m = extendContext nm (arg (arginfo v (modality relevant quantity-ω)) unknown) m
-under-abs (pi a (abs nm _))  m = extendContext nm a m
+under-abs (lam v (abs nm _)) m = extend-context nm (arg (arginfo v (modality relevant quantity-ω)) unknown) m
+under-abs (pi a (abs nm _))  m = extend-context nm a m
 under-abs _ m = m
 
 new-meta : Term → TC Term
 new-meta ty = do
-  mv ← checkType unknown ty
+  mv ← check-type unknown ty
   debugPrint "tactic.meta" 70
     [ "Created new meta " , termErr mv , " of type " , termErr ty ]
   pure mv
 
 new-meta' : Term → TC (Meta × Term)
 new-meta' ty = do
-  tm@(meta mv _) ← checkType unknown ty
+  tm@(meta mv _) ← check-type unknown ty
     where _ → typeError "impossible new-meta'"
   debugPrint "tactic.meta" 70
     [ "Created new meta " , termErr tm , " of type " , termErr tm ]

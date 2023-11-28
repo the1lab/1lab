@@ -74,6 +74,34 @@ from-just def (just x) = x
 from-just def nothing = def
 ```
 
+<!--
+```agda
+is-just : Maybe A → Type
+is-just (just _) = ⊤
+is-just nothing = ⊥
+
+is-nothing : Maybe A → Type
+is-nothing (just _) = ⊥
+is-nothing nothing = ⊤
+
+nothing≠just : {x : A} → ¬ (nothing ≡ just x)
+nothing≠just p = subst is-nothing p tt
+
+just≠nothing : {x : A} → ¬ (just x ≡ nothing)
+just≠nothing p = subst is-just p tt
+
+just-inj : ∀ {x y : A} → just x ≡ just y → x ≡ y
+just-inj {x = x} = ap (from-just x)
+
+instance
+  Discrete-Maybe : ⦃ d : Discrete A ⦄ → Discrete (Maybe A)
+  Discrete-Maybe {x = just x} {just y}   = Dec-map (ap just) just-inj (x ≡? y)
+  Discrete-Maybe {x = just x} {nothing}  = no just≠nothing
+  Discrete-Maybe {x = nothing} {just x}  = no nothing≠just
+  Discrete-Maybe {x = nothing} {nothing} = yes refl
+```
+-->
+
 ## Pointed types as Maybe-algebras
 
 ```agda

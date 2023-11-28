@@ -4,6 +4,7 @@
 open import 1Lab.Path.IdentitySystem.Interface
 open import 1Lab.Path.IdentitySystem
 open import 1Lab.Univalence
+open import 1Lab.Type.Sigma
 open import 1Lab.Rewrite
 open import 1Lab.HLevel
 open import 1Lab.Equiv
@@ -127,4 +128,17 @@ Discrete-inj'
   → Discrete A
 Discrete-inj' f inj {x} {y} =
   Dec-map (λ p → Id≃path.to (inj p)) (λ x → Id≃path.from (ap f x)) (f x ≡ᵢ? f y)
+
+instance
+  Dec-Σ-path
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
+    → ⦃ _ : Discrete A ⦄
+    → ⦃ _ : ∀ {x} → Discrete (B x) ⦄
+    → Discrete (Σ A B)
+  Dec-Σ-path {B = B} {x = a , b} {a' , b'} = case a ≡ᵢ? a' of λ where
+    (yes reflᵢ) → case b ≡? b' of λ where
+      (yes q) → yes (ap₂ _,_ refl q)
+      (no ¬q) → no λ p → ¬q (Σ-inj-set (Discrete→is-set auto) p)
+    (no ¬p) → no λ p → ¬p (Id≃path.from (ap fst p))
 ```
+-->

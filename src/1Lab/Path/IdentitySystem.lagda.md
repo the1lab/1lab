@@ -360,19 +360,3 @@ Discrete→is-set {A = A} dec =
     ... | yes p = p
     ... | no ¬p = absurd (¬¬p ¬p)
 ```
-
-<!--
-```agda
-instance
-  Dec-Σ-path
-    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
-    → ⦃ _ : Discrete A ⦄
-    → ⦃ _ : ∀ {x} → Discrete (B x) ⦄
-    → Discrete (Σ A B)
-  Dec-Σ-path {B = B} {x = a , b} {a' , b'} = case a ≡? a' of λ where
-    (yes p) → case subst B p b ≡? b' of λ where
-      (yes q) → yes (Σ-path p q)
-      (no ¬q) → no λ p → ¬q (ap₂ (subst B) (Discrete→is-set auto _ _ _ _) refl ∙ from-pathp (ap snd p))
-    (no ¬p) → no λ p → ¬p (ap fst p)
-```
--->

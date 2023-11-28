@@ -88,16 +88,16 @@ private
 bind-var : Variables A → Term → TC (Term × Variables A)
 bind-var vs tm with variables vs tm
 ... | just v = do
-  returnTC (v , vs)
+  pure (v , vs)
 ... | nothing = do
   a ← unquoteTC tm
   let v = fin-term (nvars vs)
   let vs' = mk-variables (bound vs ▷ a)
                          (bind tm v (variables vs))
-  returnTC (v , vs')
+  pure (v , vs')
 
 environment : Variables A → TC (Term × Term)
 environment vs = do
   env ← quoteTC (reverse (bound vs))
   size ← quoteTC (nvars vs)
-  returnTC (size , env)
+  pure (size , env)

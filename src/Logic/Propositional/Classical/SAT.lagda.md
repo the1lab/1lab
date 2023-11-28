@@ -337,32 +337,3 @@ only shows up as negated or not negated, then we can delete all
 occurrences of that literal. However, this operation is somewhat
 expensive to perform, and also rather annoying to program in Agda.
 Therefore, it has been omitted from this implementation.
-
-```agda
-ifᵈ_then_else_ : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → Dec A → (A → B) → (¬ A → B) → B
-ifᵈ (yes p) then k else ¬k = k p
-ifᵈ (no ¬p) then k else ¬k = ¬k ¬p
-```
-
-```agda
-sat : (ϕs : CNF Γ) → Dec (Σ[ ρ ∈ (Fin Γ → Bool) ] (⟦ ϕs ⟧ ρ ≡ true))
-sat {Γ = zero} []       = yes ((λ ()) , refl)
-sat {Γ = zero} (ϕ ∷ ϕs) = no λ where
-  (ρ , sat) → ¬empty-clause-sat ϕ ρ (and-reflect-true-l sat)
-
-sat {Γ = suc Γ} ϕs = case has-unit-clause? ϕs of λ where
-  (yes (x , [x]∈ϕs)) → case sat (unit-propagate x ϕs) of λ where
-    (yes sat) → yes (unit-propagate-sat x ϕs sat)
-    (no ¬sat) → no λ (ρ , ρ-sat) → unit-propagate-unsat x ϕs ¬sat
-      (ρ , ρ-sat , unit-clause-sat x ϕs [x]∈ϕs ρ ρ-sat)
-
-  (no ¬ϕs-unit) → case sat (unit-propagate (lit fzero) ϕs) of λ where
-    (yes sat-true) → yes (unit-propagate-sat (lit fzero) ϕs sat-true)
-
-    (no ¬sat-true) → case sat (unit-propagate (neg fzero) ϕs) of λ where
-      (yes sat-false) → yes (unit-propagate-sat (neg fzero) ϕs sat-false)
-
-      (no ¬sat-false) → no λ (ρ , ρ-sat) → caseⁱ (ρ fzero) of λ where
-        true  ρ₀-true  → unit-propagate-unsat (lit fzero) ϕs ¬sat-true  (ρ , ρ-sat , ρ₀-true)
-        false ρ₀-false → unit-propagate-unsat (neg fzero) ϕs ¬sat-false (ρ , ρ-sat , ap not ρ₀-false)
-```

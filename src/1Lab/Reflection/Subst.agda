@@ -47,80 +47,68 @@ singletonS n u = map (λ i → var i []) (count (n - 1)) ++# u ∷ (raiseS n)
     count (suc n) = 0 ∷ map suc (count n)
 
 {-# TERMINATING #-}
-subst-tm  : Subst → Term → Maybe Term
-subst-tm* : Subst → List (Arg Term) → Maybe (List (Arg Term))
-apply-tm  : Term → Arg Term → Maybe Term
+subst-clause : Subst → Clause → Clause
+subst-tm     : Subst → Term → Term
+subst-tm*    : Subst → List (Arg Term) → List (Arg Term)
+apply-tm     : Term → Arg Term → Term
 
-raise : Nat → Term → Maybe Term
+raise : Nat → Term → Term
 raise n = subst-tm (raiseS n)
 
-subst-tm* ρ [] = pure []
-subst-tm* ρ (arg ι x ∷ ls) = do
-  x ← subst-tm ρ x
-  (arg ι x ∷_) <$> subst-tm* ρ ls
+subst-tm* ρ []             = []
+subst-tm* ρ (arg ι x ∷ ls) = arg ι (subst-tm ρ x) ∷ subst-tm* ρ ls
 
-apply-tm* : Term → List (Arg Term) → Maybe Term
-apply-tm* tm [] = pure tm
-apply-tm* tm (x ∷ xs) = do
-  tm' ← apply-tm tm x
-  apply-tm* tm' xs
+apply-tm* : Term → List (Arg Term) → Term
+apply-tm* tm []       = tm
+apply-tm* tm (x ∷ xs) = apply-tm* (apply-tm tm x) xs
 
-lookup-tm : (σ : Subst) (i : Nat) → Maybe Term
-lookup-tm ids i = pure $ var i []
-lookup-tm (wk n ids) i = pure $ var (i + n) []
-lookup-tm (wk n ρ) i = lookup-tm ρ i >>= subst-tm (raiseS n)
+lookup-tm : (σ : Subst) (i : Nat) → Term
+lookup-tm ids i = var i []
+lookup-tm (wk n ids) i = var (i + n) []
+lookup-tm (wk n ρ) i = subst-tm (raiseS n) (lookup-tm ρ i)
 lookup-tm (x ∷ ρ) i with (i == 0)
-… | true  = pure x
+… | true  = x
 … | false = lookup-tm ρ (i - 1)
 lookup-tm (strengthen n ρ) i with (i < n)
-… | true = nothing
+… | true  = unknown
 … | false = lookup-tm ρ (i - n)
 lookup-tm (lift n σ) i with (i < n)
-… | true  = pure $ var i []
-… | false = lookup-tm σ (i - n) >>= raise n
+… | true  = var i []
+… | false = raise n (lookup-tm σ (i - n))
 
-apply-tm (var x args)      argu = pure $ var x (args ++ argu ∷ [])
-apply-tm (con c args)      argu = pure $ con c (args ++ argu ∷ [])
-apply-tm (def f args)      argu = pure $ def f (args ++ argu ∷ [])
+apply-tm (var x args)      argu = var x (args ++ argu ∷ [])
+apply-tm (con c args)      argu = con c (args ++ argu ∷ [])
+apply-tm (def f args)      argu = def f (args ++ argu ∷ [])
 apply-tm (lam v (abs n t)) (arg _ argu) = subst-tm (argu ∷ ids) t
-apply-tm (pat-lam cs args) argu = nothing
-apply-tm (pi a b)          argu = nothing
-apply-tm (agda-sort s)     argu = nothing
-apply-tm (lit l)           argu = nothing
-apply-tm (meta x args)     argu = pure $ meta x (args ++ argu ∷ [])
-apply-tm unknown           argu = pure unknown
+apply-tm (pat-lam cs args) argu = pat-lam cs (args ++ argu ∷ [])
+apply-tm (pi a b)          argu = pi a b
+apply-tm (agda-sort s)     argu = agda-sort s
+apply-tm (lit l)           argu = lit l
+apply-tm (meta x args)     argu = meta x (args ++ argu ∷ [])
+apply-tm unknown           argu = unknown
 
-subst-tm ids tm = pure tm
-subst-tm ρ (var i args) = do
-  r ← lookup-tm ρ i
-  es ← subst-tm* ρ args
-  apply-tm* r es
-subst-tm ρ (con c args)      = con c <$> subst-tm* ρ args
-subst-tm ρ (def f args)      = def f <$> subst-tm* ρ args
-subst-tm ρ (meta x args)     = meta x <$> subst-tm* ρ args
-subst-tm ρ (pat-lam cs args) = nothing
-subst-tm ρ (lam v (abs n b)) = lam v ∘ abs n <$> subst-tm (liftS 1 ρ) b
-subst-tm ρ (pi (arg ι a) (abs n b)) = do
-  a ← subst-tm ρ a
-  b ← subst-tm (liftS 1 ρ) b
-  pure (pi (arg ι a) (abs n b))
-subst-tm ρ (lit l) = pure (lit l)
-subst-tm ρ unknown = pure unknown
+subst-tm ids tm = tm
+subst-tm ρ (var i args)      = apply-tm* (lookup-tm ρ i) (subst-tm* ρ args)
+subst-tm ρ (con c args)      = con c $ subst-tm* ρ args
+subst-tm ρ (def f args)      = def f $ subst-tm* ρ args
+subst-tm ρ (meta x args)     = meta x $ subst-tm* ρ args
+subst-tm ρ (pat-lam cs args) = pat-lam (map (subst-clause ρ) cs) (subst-tm* ρ args)
+subst-tm ρ (lam v (abs n b)) = lam v (abs n (subst-tm (liftS 1 ρ) b))
+subst-tm ρ (pi (arg ι a) (abs n b)) = pi (arg ι (subst-tm ρ a)) (abs n (subst-tm (liftS 1 ρ)  b))
+subst-tm ρ (lit l) = (lit l)
+subst-tm ρ unknown = unknown
 subst-tm ρ (agda-sort s) with s
-… | set t     = agda-sort ∘ set <$> subst-tm ρ t
-… | lit n     = pure (agda-sort (lit n))
-… | prop t    = agda-sort ∘ prop <$> subst-tm ρ t
-… | propLit n = pure (agda-sort (propLit n))
-… | inf n     = pure (agda-sort (inf n))
-… | unknown   = pure unknown
+… | set t     = agda-sort (set (subst-tm ρ t))
+… | lit n     = agda-sort (lit n)
+… | prop t    = agda-sort (prop (subst-tm ρ t))
+… | propLit n = agda-sort (propLit n)
+… | inf n     = agda-sort (inf n)
+… | unknown   = unknown
 
-raiseTC : Nat → Term → TC Term
-raiseTC n tm with raise n tm
-... | just x = pure x
-... | nothing = typeError [ "Failed to raise term " , termErr tm ]
+subst-clause σ (clause tel ps t)      = clause tel ps (subst-tm (wkS (length tel) σ) t)
+subst-clause σ (absurd-clause tel ps) = absurd-clause tel ps
 
-applyTC : Term → Arg Term → TC Term
-applyTC f x with apply-tm f x
-applyTC f x         | just r  = pure r
-applyTC f (arg _ x) | nothing =
-  typeError [ "Failed to apply function " , termErr f , " to argument " , termErr x ]
+_<#>_ : Term → Arg Term → Term
+f <#> x = apply-tm f x
+
+infixl 7 _<#>_

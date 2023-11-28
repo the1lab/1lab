@@ -163,7 +163,7 @@ private
   -- decompose-is-hlevel'.
   decompose-is-hlevel : Term → TC (Term × Term)
   decompose-is-hlevel goal = do
-    ty ← withReduceDefs (false , hlevel-types) $ inferType goal >>= reduce
+    ty ← withReduceDefs (false , hlevel-types) $ infer-type goal >>= reduce
     decompose-is-hlevel' ty
 
   decompose-is-hlevel' ty = do
@@ -261,14 +261,14 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
     -- Reduce the type to whnf and check whether the outermost term
     -- constructor is an application of the projection we're looking
     -- for.
-    def namen args ← returnTC ty
+    def namen args ← pure ⦃ Idiom-TC ⦄ ty
       where what → backtrack $ "Thing isn't an application, it is " ∷ termErr what ∷ []
 
     it ← projection .get-argument args
 
     -- And compute the level of the projected thing, in addition to a
     -- numeral form of the wanted level.
-    actual-level ← inferType it >>= projection .get-level
+    actual-level ← infer-type it >>= projection .get-level
 
     debugPrint "tactic.hlevel" 10 $
       "... but it's actually a(n) " ∷ termErr actual-level ∷ "-Type" ∷ []
@@ -283,11 +283,10 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
   -- straightforward as just using the 'hlevel' function for a couple of
   -- reasons.
   use-instance-search : Bool → Term → TC ⊤
-  use-instance-search has-alts goal = runSpeculative $ do
+  use-instance-search has-alts goal = run-speculative $ do
     (ty , lv) ← decompose-is-hlevel goal
-    solved@(meta mv _) ←
-      new-meta (def (quote H-Level) (ty v∷ lv v∷ [])) where _ → backtrack []
-    instances ← getInstances mv
+    (mv , solved) ← new-meta' (def (quote H-Level) (ty v∷ lv v∷ []))
+    instances ← get-instances mv
 
     t ← quoteTC instances
     debugPrint "tactic.hlevel" 10 $
@@ -305,7 +304,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
         -- exactly one instance means Agda will solve using that
         -- instance!
         (x ∷ []) → do
-          -- Note that, since getInstances works by creating a new meta,
+          -- Note that, since get-instances works by creating a new meta,
           -- we have to commit to the instance ourselves.
           unify solved x
           withReduceDefs (false , quote hlevel ∷ []) $ withReconstructed true $
@@ -347,24 +346,23 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
         def qn _ ← (fst <$> decompose-is-hlevel goal) >>= reduce
           where _ → backtrack "Term is not headed by a definition; ignoring projections."
 
-        goalt ← inferType goal
+        goalt ← infer-type goal
         debugPrint "tactic.hlevel" 20 $
           "Will attempt to use projections for goal\n  " ∷ termErr goalt ∷ []
 
-        (solved , instances) ← runSpeculative $ do
-          solved@(meta mv _) ← new-meta (def (quote hlevel-projection) (lit (name qn) v∷ []))
-            where _ → typeError (termErr goal ∷ [])
+        (solved , instances) ← run-speculative $ do
+          (mv , solved) ← new-meta' (def (quote hlevel-projection) (lit (name qn) v∷ []))
 
           -- If there are some hints, then great, otherwise we discard
           -- the TC state.
-          (x ∷ xs) ← getInstances mv
+          (x ∷ xs) ← get-instances mv
             where [] → pure ((unknown , []) , false)
 
           pure ((solved , x ∷ xs) , true)
 
         nondet (eff List) instances λ a → do
           projection ← unquoteTC {A = hlevel-projection qn} a
-          ty ← withReduceDefs (false , hlevel-types) (inferType goal >>= reduce)
+          ty ← withReduceDefs (false , hlevel-types) (infer-type goal >>= reduce)
           debugPrint "tactic.hlevel" 20 $
             "Outer type: " ∷ termErr ty ∷ []
           treat-as-n-type projection goal >> unify solved a
@@ -394,7 +392,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
         rest ← extend-n n
         lift mv ← rest (Lift _ Term) $ lift <$> new-meta unknown
         let domain = arg (arginfo visible (modality relevant quantity-ω)) mv
-        pure λ a k → rest a $ extendContext "a" domain $ k
+        pure λ a k → rest a $ extend-context "a" domain $ k
 
       -- Given a list of argument specs, actually unify the goal with
       -- the solution of decomposition, and call a continuation to
@@ -486,7 +484,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
       -- last alternative.
       use-decomp-hints : (Term × Term) → Term → List Term → TC (⊤ × Bool)
       use-decomp-hints (goal-ty , lv) solved (c1 ∷ cs) = do
-        ty ← inferType c1
+        ty ← infer-type c1
         c1' ← reduce c1
         (remove-invisible c1' ty >>= λ where
 
@@ -502,7 +500,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
             argsp ← unquoteTC argspec
             -- Generate the argument spine, and discard the instance
             -- search meta.
-            gen-args (not (length cs == 0)) lv nm' argsp [] (returnTC tt)
+            gen-args (not (length cs == 0)) lv nm' argsp [] (pure tt)
             unify solved c1
 
             pure (tt , true)
@@ -522,7 +520,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
       -- Using the hints involving querying Agda for potential
       -- instances, then trying each in order.
       use-hints : TC ⊤
-      use-hints = runSpeculative $ do
+      use-hints = run-speculative $ do
         (ty , lv) ← decompose-is-hlevel goal
 
         -- Note that if the type here is a metavariable, the tactic is..
@@ -535,9 +533,8 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
           _ → pure tt
 
         -- Create a meta of type hlevel-decomposition to find any possible hints..
-        solved@(meta mv _) ← new-meta (def (quote hlevel-decomposition) (ty v∷ []))
-          where _ → typeError (termErr ty ∷ [])
-        instances ← getInstances mv
+        (mv , solved) ← new-meta' (def (quote hlevel-decomposition) (ty v∷ []))
+        instances ← get-instances mv
 
         t ← quoteTC instances
         debugPrint "tactic.hlevel" 10 $
@@ -560,13 +557,13 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
   decompose-is-hlevel-top goal =
     do
       ty ← withReduceDefs (false , hlevel-types) $
-        inferType goal >>= reduce >>= wait-just-a-bit
+        infer-type goal >>= reduce >>= wait-just-a-bit
       go ty
     where
       go : Term → TC _
       go (pi (arg as at) (abs vn cd)) = do
         (inner , hlevel , enter , leave) ← go cd
-        pure $ inner , hlevel , extendContext vn (arg as at) ∘ enter , λ t → lam (ArgInfo.arg-vis as) (abs vn (leave t))
+        pure $ inner , hlevel , extend-context vn (arg as at) ∘ enter , λ t → lam (ArgInfo.arg-vis as) (abs vn (leave t))
       go tm = do
         (inner , hlevel) ← decompose-is-hlevel' tm
         pure $ inner , hlevel , (λ x → x) , (λ x → x)
@@ -575,7 +572,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
 -- top-level goal type and enters the search loop.
 hlevel-tactic-worker : Term → TC ⊤
 hlevel-tactic-worker goal = do
-  ty ← withReduceDefs (false , hlevel-types) $ inferType goal >>= reduce
+  ty ← withReduceDefs (false , hlevel-types) $ infer-type goal >>= reduce
   (ty , lv , enter , leave) ← decompose-is-hlevel-top goal <|>
     typeError
       ( "hlevel tactic: goal type is not of the form ``is-hlevel A n'':\n"

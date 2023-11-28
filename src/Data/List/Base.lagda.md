@@ -102,6 +102,12 @@ traverse
 traverse f []       = pure []
 traverse f (x ∷ xs) = ⦇ f x ∷ traverse f xs ⦈
 
+sequence
+  : ∀ {M : Effect} ⦃ _ : Idiom M ⦄ (let module M = Effect M) {ℓ}
+      {a : Type ℓ}
+  → List (M.₀ a) → M.₀ (List a)
+sequence = traverse id
+
 for
   : ∀ {M : Effect} ⦃ _ : Idiom M ⦄ (let module M = Effect M) {ℓ ℓ'}
       {a : Type ℓ} {b : Type ℓ'}
@@ -235,5 +241,11 @@ instance
       (yes xs=ys) → yes (ap₂ _∷_ x=y xs=ys)
       (no  xs≠ys) → no λ p → xs≠ys (∷-tail-inj p)
     (no x≠y)      → no λ p → x≠y (∷-head-inj p)
+
+traverse-up
+  : ∀ {M : Effect} ⦃ _ : Idiom M ⦄ (let module M = Effect M) {ℓ ℓ'}
+    {a : Type ℓ} {b : Type ℓ'}
+  → (Nat → a → M.₀ b) → Nat → List a → M.₀ (List b)
+traverse-up f n xs = sequence (map-up f n xs)
 ```
 -->

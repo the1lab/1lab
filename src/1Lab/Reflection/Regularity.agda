@@ -79,7 +79,7 @@ private
       -- If it isn't, we backtrack and leave the term unchanged.
       -- Note that if Al itself contains constant transports, we have already processed those,
       -- so they reduce away when (i = i1).
-      checkType tm' unknown -- inferType doesn't trigger the constancy check https://github.com/agda/agda/issues/6585
+      check-type tm' unknown -- infer-type doesn't trigger the constancy check https://github.com/agda/agda/issues/6585
       pure tm') <|>
     (do
       debugPrint "tactic.regularity" 10 $ "NOT a (transport refl): " ∷ termErr tm ∷ []
@@ -117,11 +117,11 @@ private
   -- then wrap it in a lambda. Nice!
   to-regularity-path : Regularity-precision → Term → TC Term
   to-regularity-path pre tm = do
-    tm ← raiseTC 1 tm
+    let tm = raise 1 tm
     -- Since we'll be comparing terms, Agda really wants them to be
     -- well-scoped. Since we shifted eeeverything up by one, we have to
     -- grow the context, too.
-    tm ← runSpeculative $ extendContext "i" (argN (quoteTerm I)) do
+    tm ← run-speculative $ extend-context "i" (argN (quoteTerm I)) do
       tm ← go pre 0 tm
       pure (tm , false)
     pure $ vlam "i" tm
@@ -136,11 +136,11 @@ private
     → Term
     → TC ⊤
   regular!-worker {x = x} {y} pre p goal = do
-    gt ← inferType goal
+    gt ← infer-type goal
     `x ← quoteTC x
     `y ← quoteTC y
     `p ← quoteTC p
-    just (_ , l , r) ← unapply-path =<< wait-for-type =<< inferType goal
+    just (_ , l , r) ← unapply-path =<< wait-for-type =<< infer-type goal
       where _ → typeError [ "goal type is not path type: " , termErr goal ]
     l ← normalise =<< wait-for-type l
     r ← normalise =<< wait-for-type r
@@ -159,7 +159,7 @@ module Regularity where
   macro
     reduce! : Term → TC ⊤
     reduce! goal = do
-      just (_ , l , r) ← unapply-path =<< inferType goal
+      just (_ , l , r) ← unapply-path =<< infer-type goal
         where _ → typeError []
       reg ← to-regularity-path precise =<< (wait-for-type =<< normalise l)
       unify-loudly goal reg
@@ -179,7 +179,7 @@ module Regularity where
     reduct pres tm _ = do
       orig ← wait-for-type =<< normalise tm
       tm ← to-regularity-path pres orig
-      red ← maybe→alt (apply-tm tm (argN (con (quote i1) []))) >>= normalise
+      red ← normalise (apply-tm tm (argN (con (quote i1) [])))
       `pres ← quoteTC pres
       typeError $
         "The term\n\n  " ∷ termErr orig ∷ "\n\nreduces modulo " ∷ termErr `pres ∷ " regularity to\n\n  "

@@ -389,9 +389,9 @@ calls to the solver/normaliser.
 
 ```agda
   get-objects : Term → TC (Term × Term)
-  get-objects tm = ((inferType tm >>= normalise) >>= wait-just-a-bit) >>= λ where
+  get-objects tm = ((infer-type tm >>= normalise) >>= wait-just-a-bit) >>= λ where
     (def (quote Precategory.Hom) (category-field (x v∷ y v∷ []))) →
-      returnTC (x , y)
+      pure (x , y)
     tp →
       typeError $ strErr "Can't determine objects: " ∷ termErr tp ∷ []
 ```
@@ -461,7 +461,7 @@ with their actual values, which then fixes the issue.
     withReconstructed true $
     withNormalisation false $
     withReduceDefs (false , dont-reduce) $ do
-    goal ← inferType hole >>= reduce
+    goal ← infer-type hole >>= reduce
     just (lhs , rhs) ← get-boundary goal
       where nothing → typeError $ strErr "Can't determine boundary: " ∷
                                   termErr goal ∷ []

@@ -17,39 +17,13 @@ module Data.Maybe.Properties where
 
 <!--
 ```agda
-private
-  variable
-    ℓ ℓ' : Level
-    A B C : Type ℓ
+private variable
+  ℓ ℓ' : Level
+  A B C : Type ℓ
 ```
 -->
 
 # Properties of Maybe
-
-Note that the constructors of `Maybe`{.Agda} are disjoint.
-
-```agda
-is-just : Maybe A → Type
-is-just (just _) = ⊤
-is-just nothing = ⊥
-
-is-nothing : Maybe A → Type
-is-nothing (just _) = ⊥
-is-nothing nothing = ⊤
-
-nothing≠just : {x : A} → ¬ (nothing ≡ just x)
-nothing≠just p = subst is-nothing p tt
-
-just≠nothing : {x : A} → ¬ (just x ≡ nothing)
-just≠nothing p = subst is-just p tt
-```
-
-Furthermore, `just`{.Agda} is injective.
-
-```agda
-just-inj : ∀ {x y : A} → just x ≡ just y → x ≡ y
-just-inj {x = x} = ap (from-just x)
-```
 
 ## Path Space
 
@@ -63,9 +37,9 @@ argument: for a more in-depth explanation, see [`Data.List`].
 module MaybePath {ℓ} {A : Type ℓ} where
   Code : Maybe A → Maybe A → Type _
   Code (just x) (just y) = x ≡ y
-  Code (just x) nothing = Lift _ ⊥
-  Code nothing (just y) = Lift _ ⊥
-  Code nothing nothing = Lift _ ⊤
+  Code (just x) nothing  = Lift _ ⊥
+  Code nothing (just y)  = Lift _ ⊥
+  Code nothing nothing   = Lift _ ⊤
 ```
 
 <details>
@@ -83,8 +57,8 @@ module MaybePath {ℓ} {A : Type ℓ} where
 
   encode : ∀ x y → x ≡ y → Code x y
   encode (just x) (just y) p = just-inj p
-  encode (just x) nothing p = absurd $ just≠nothing p
-  encode nothing (just x) p = absurd $ nothing≠just p
+  encode (just x) nothing p = absurd (just≠nothing p)
+  encode nothing (just x) p = absurd (nothing≠just p)
   encode nothing nothing p = lift tt
 
   encode-refl : ∀ {x} → encode x x refl ≡ refl-code x
@@ -163,19 +137,8 @@ Maybe-reflect-hlevel n mhl =
 
 ## Discreteness
 
-If `A` is [[discrete]], then so is `Maybe A`.
-
-```agda
-instance
-  Discrete-Maybe : ⦃ d : Discrete A ⦄ → Discrete (Maybe A)
-  Discrete-Maybe {x = just x} {just y}   = Dec-map (ap just) just-inj (x ≡? y)
-  Discrete-Maybe {x = just x} {nothing}  = no just≠nothing
-  Discrete-Maybe {x = nothing} {just x}  = no nothing≠just
-  Discrete-Maybe {x = nothing} {nothing} = yes refl
-```
-
-Conversely, if `Maybe A` is discrete, then `A` must also be discrete.
-This follows from the fact that `just` is injective.
+If `Maybe A` is discrete, then `A` must also be discrete. This follows
+from the fact that `just` is injective.
 
 ```agda
 Maybe-reflect-discrete
@@ -194,17 +157,16 @@ Finite-Maybe
   → Finite (Maybe A)
 Finite-Maybe ⦃ fa ⦄ .cardinality = suc (fa .cardinality)
 Finite-Maybe {A = A} ⦃ fa ⦄ .enumeration =
-  ∥-∥-map (Iso→Equiv ∘ maybe-iso) (fa .enumeration)
-    where
-      maybe-iso : A ≃ Fin (fa .cardinality) → Iso (Maybe A) (Fin (suc (fa .cardinality)))
-      maybe-iso f .fst (just x) = fsuc (Equiv.to f x)
-      maybe-iso f .fst nothing = fzero
-      maybe-iso f .snd .is-iso.inv fzero = nothing
-      maybe-iso f .snd .is-iso.inv (fsuc i) = just (Equiv.from f i)
-      maybe-iso f .snd .is-iso.rinv fzero = refl
-      maybe-iso f .snd .is-iso.rinv (fsuc i) = ap fsuc (Equiv.ε f i)
-      maybe-iso f .snd .is-iso.linv (just x) = ap just (Equiv.η f x)
-      maybe-iso f .snd .is-iso.linv nothing = refl
+  ∥-∥-map (Iso→Equiv ∘ maybe-iso) (fa .enumeration) where
+    maybe-iso : A ≃ Fin (fa .cardinality) → Iso (Maybe A) (Fin (suc (fa .cardinality)))
+    maybe-iso f .fst (just x) = fsuc (Equiv.to f x)
+    maybe-iso f .fst nothing = fzero
+    maybe-iso f .snd .is-iso.inv fzero = nothing
+    maybe-iso f .snd .is-iso.inv (fsuc i) = just (Equiv.from f i)
+    maybe-iso f .snd .is-iso.rinv fzero = refl
+    maybe-iso f .snd .is-iso.rinv (fsuc i) = ap fsuc (Equiv.ε f i)
+    maybe-iso f .snd .is-iso.linv (just x) = ap just (Equiv.η f x)
+    maybe-iso f .snd .is-iso.linv nothing = refl
 ```
 
 # Misc. Properties
@@ -228,12 +190,12 @@ empty→maybe-is-contr ¬a .paths x = sym $ refute-just ¬a x
 Next, note that `map`{.Agda} is functorial.
 
 ```agda
-map-id : ∀ (x : Maybe A) → map id x ≡ x
+map-id : ∀ {ℓ} {A : Type ℓ} (x : Maybe A) → map id x ≡ x
 map-id (just x) = refl
 map-id nothing = refl
 
 map-∘
-  : ∀ {f : B → C} {g : A → B}
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''} {f : B → C} {g : A → B}
   → (x : Maybe A)
   → map (f ∘ g) x ≡ map f (map g x)
 map-∘ (just x) = refl

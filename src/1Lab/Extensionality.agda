@@ -1,7 +1,8 @@
-open import 1Lab.Reflection.Subst using (applyTC ; raiseTC)
 open import 1Lab.Path.IdentitySystem
+open import 1Lab.Reflection.Signature
 open import 1Lab.Reflection.HLevel
 open import 1Lab.Equiv.Embedding
+open import 1Lab.Reflection.Subst
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Reflection
 open import 1Lab.Type.Sigma
@@ -32,7 +33,7 @@ type with a preferred choice of identity system. The idea is that
 pointer to the 'Extensional' instance.
 
 We use tactic arguments to implement default instances: since Agda will
-happily call tactic arguments inside getInstances, if we had Extensional
+happily call tactic arguments inside get-instances, if we had Extensional
 instances with Extensional superclasses, this would lead to a
 super-exponential amount of work being done: *every Extensional
 instance*, including the "instance context", would have its full
@@ -62,27 +63,22 @@ find-extensionality tm = do
   let search = def (quote Extensionality) [ argN tm ]
   debugPrint "tactic.extensionality" 10 ("find-extensionality goal:\n  " ∷ termErr search ∷ [])
 
-  runSpeculative do
+  resetting $ do
     (mv , _) ← new-meta' search
-    soln ← getInstances mv >>= λ where
-      -- In a throw-away TC context, look for solutions to 'Extensionality'
-      -- tm, and choose the first instance if any are available.
+    get-instances mv >>= λ where
       (x ∷ _) → do
         it ← unquoteTC {A = Name} =<< normalise (def (quote Extensionality.lemma) (argN x ∷ []))
         debugPrint "tactic.extensionality" 10 (" ⇒ found lemma " ∷ termErr (def it []) ∷ [])
         pure (def it [])
-
-      -- If nothing more specific is available, use paths.
       [] → do
         debugPrint "tactic.extensionality" 10 " ⇒ using default"
         pure (def (quote Extensional-default) [])
-    pure (soln , false)
 
 -- Entry point for getting hold of an 'Extensional' instance:
 extensional : ∀ {ℓ} (A : Type ℓ) → Term → TC ⊤
 extensional A goal = do
   `A ← quoteTC A
-  checkType goal (def (quote Extensional) [ argN `A , argN unknown ])
+  check-type goal (def (quote Extensional) [ argN `A , argN unknown ])
   unify goal =<< find-extensionality `A
 
 {-
@@ -104,10 +100,8 @@ extensionalᶠ
 extensionalᶠ {A = A} fun goal = ⦇ wrap (quoteTC A) (quoteTC fun) ⦈ >>= id where
   work : Term → Term → TC Term
   work (pi dom@(arg ai _) (abs nm cod)) tm = do
-    prf ← extendContext nm dom do
-      tm ← raiseTC 1 tm
-      tm ← applyTC tm (arg ai (var 0 []))
-      work cod tm
+    prf ← extend-context nm dom $
+      work cod (raise 1 tm <#> arg ai (var 0 []))
     pure (lam (ai .ArgInfo.arg-vis) (abs nm prf))
   work _ tm = find-extensionality tm
 
@@ -234,7 +228,7 @@ private
       `r ← wait-for-type =<< quoteωTC r
       ty ← quoteTC (Pathᵉ r x y)
       `x ← quoteTC x
-      `refl ← checkType (def (quote reflᵉ) [ argN `r , argN `x ]) ty
+      `refl ← check-type (def (quote reflᵉ) [ argN `r , argN `x ]) ty
         <|> error
       unify goal `refl
 

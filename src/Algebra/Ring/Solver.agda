@@ -418,28 +418,28 @@ module Reflection where
   build-expr cring vs (“0” cring') = do
     unify cring cring'
     z ← quoteTC (diff 0 0)
-    returnTC $ con (quote Impl.Polynomial.con) (z v∷ []) , vs
+    pure $ con (quote Impl.Polynomial.con) (z v∷ []) , vs
   build-expr cring vs (“1” cring') = do
     unify cring cring'
     o ← quoteTC (diff 1 0)
-    returnTC $ con (quote Impl.Polynomial.con) (o v∷ []) , vs
+    pure $ con (quote Impl.Polynomial.con) (o v∷ []) , vs
   build-expr cring vs (“*” cring' t1 t2) = do
     unify cring cring'
     e1 , vs ← build-expr cring vs t1
     e2 , vs ← build-expr cring vs t2
-    returnTC $ def (quote Impl._:*_) (mk-cring-args cring $ e1 v∷ e2 v∷ []) , vs
+    pure $ def (quote Impl._:*_) (mk-cring-args cring $ e1 v∷ e2 v∷ []) , vs
   build-expr cring vs (“+” cring' t1 t2) = do
     unify cring cring'
     e1 , vs ← build-expr cring vs t1
     e2 , vs ← build-expr cring vs t2
-    returnTC $ def (quote Impl._:+_) (mk-cring-args cring $ e1 v∷ e2 v∷ []) , vs
+    pure $ def (quote Impl._:+_) (mk-cring-args cring $ e1 v∷ e2 v∷ []) , vs
   build-expr cring vs (“-” cring' tm) = do
     unify cring cring'
     e , vs ← build-expr cring vs tm
-    returnTC $ con (quote Impl.Polynomial.:-_) (e v∷ []) , vs
+    pure $ con (quote Impl.Polynomial.:-_) (e v∷ []) , vs
   build-expr cring vs tm = do
     (v , vs) ← bind-var vs tm
-    returnTC $ con (quote Impl.Polynomial.var) (v v∷ []) , vs
+    pure $ con (quote Impl.Polynomial.var) (v v∷ []) , vs
 
   dont-reduce : List Name
   dont-reduce =
@@ -454,7 +454,7 @@ module Reflection where
   cring-solver : ∀ {ℓ} {A : Type ℓ} → CRing-on A → TC (VariableSolver A)
   cring-solver {A = A} cring = do
     cring-tm ← quoteTC cring
-    returnTC $ var-solver dont-reduce (build-expr cring-tm) (“solve” cring-tm) (“expand” cring-tm)
+    pure $ var-solver dont-reduce (build-expr cring-tm) (“solve” cring-tm) (“expand” cring-tm)
 
   repr-macro : ∀ {ℓ} {A : Type ℓ} → CRing-on A → Term → Term → TC ⊤
   repr-macro cring tm hole = do
