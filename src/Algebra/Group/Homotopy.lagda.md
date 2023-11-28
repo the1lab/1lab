@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import 1Lab.Reflection.Induction
 open import 1Lab.Prelude
 
 open import Algebra.Group.Cat.Base
@@ -236,26 +237,16 @@ eliminator into propositions later, so we define that now.
         → SquareP (λ i j → P (path-sq x y i j))
                   (λ _ → p) (ploop x) (ploop (x ⋆ y)) (ploop y))
     → ∀ x → P x
-  Deloop-elim P grpd pp ploop psq base = pp
-  Deloop-elim P grpd pp ploop psq (path x i) = ploop x i
-  Deloop-elim P grpd pp ploop psq (path-sq x y i j) = psq x y i j
-  Deloop-elim P grpd pp ploop psq (squash a b p q r s i j k) =
-    is-hlevel→is-hlevel-dep 2 grpd
-      (g a) (g b) (λ i → g (p i)) (λ i → g (q i))
-      (λ i j → g (r i j)) (λ i j → g (s i j)) (squash a b p q r s) i j k
-    where
-      g = Deloop-elim P grpd pp ploop psq
+  unquoteDef Deloop-elim = make-elim-with true (just 3) false false false
+    Deloop-elim (quote Deloop)
 
   Deloop-elim-prop
     : ∀ {ℓ'} (P : Deloop → Type ℓ')
     → (∀ x → is-prop (P x))
     → P base
     → ∀ x → P x
-  Deloop-elim-prop P pprop p =
-    Deloop-elim P
-      (λ x → is-prop→is-hlevel-suc {n = 2} (pprop x)) p
-      (λ x → is-prop→pathp (λ i → pprop (path x i)) p p)
-      (λ x y → is-prop→squarep (λ i j → pprop (path-sq x y i j)) _ _ _ _)
+  unquoteDef Deloop-elim-prop = make-elim-with true (just 1) false false false
+    Deloop-elim-prop (quote Deloop)
 ```
 
 We can then proceed to characterise the type `point ≡ x` by an
