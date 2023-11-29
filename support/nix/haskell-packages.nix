@@ -16,7 +16,7 @@ in
     # somehow depends on mime-types
     labHaskellPackages = super.haskell.packages.ghc946.override (old: {
       overrides = self: super: {
-        Agda = noProfile (noJunk (super.callCabal2nixWithOptions "Agda" (thunkSource ./dep/Agda) "-f optimise-heavily -f debug" {}));
+        Agda = noJunk (super.callCabal2nixWithOptions "Agda" (thunkSource ./dep/Agda) "-f optimise-heavily -f debug" {});
       };
     });
   }
