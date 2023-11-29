@@ -1,6 +1,6 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification -vtc.decl:5 #-}
+{-# OPTIONS --lossy-unification -vtc.decl:5 -vtactic.hlevel:30 #-}
 open import Algebra.Monoid
 
 open import Cat.Displayed.Univalence.Thin
@@ -76,7 +76,7 @@ propositions], $\Omega$.
 
 ```agda
 Lower-sets-frame : ∀ {ℓ} → Semilattice ℓ → Frame ℓ
-Lower-sets-frame A = (el!  ⌞ Lower-sets A.po ⌟) , to-frame-on mk↓A where
+Lower-sets-frame A = el! ⌞ Lower-sets A.po ⌟ , to-frame-on mk↓A where
   module A = Semilattice A
   module DA = Order.Reasoning (Lower-sets A.po)
 
@@ -89,10 +89,10 @@ Lower-sets-frame A = (el!  ⌞ Lower-sets A.po ⌟) , to-frame-on mk↓A where
   DA-meets .fcp.has-is-top {x} =
     Lower-sets-complete A.po (λ j → absurd j) .snd .is-glb.greatest x λ x → absurd x
   DAm = fc-poset→semilattice DA-meets
-  module DAm = Semilattice DAm
+  module DAm = Semilattice DAm hiding (module HLevel-instance)
 
   mk↓A : make-frame (Lower-set A.po)
-  mk↓A .make-frame.has-is-set  = hlevel!
+  mk↓A .make-frame.has-is-set  = hlevel 2
   mk↓A .make-frame.top         = DAm.top
   mk↓A .make-frame._cap_       = DAm._∩_
   mk↓A .make-frame.cup {I} f   = Lower-sets-cocomplete A.po f .fst
@@ -109,7 +109,7 @@ Lower-sets-frame A = (el!  ⌞ Lower-sets A.po ⌟) , to-frame-on mk↓A where
     fcp.le→meet DA-meets {y = Lower-sets-cocomplete A.po f .fst} $
       Lower-sets-cocomplete A.po f .snd .is-lub.fam≤lub i
 
-  mk↓A .make-frame.distrib x f = Σ-prop-path! $ funext λ arg →
+  mk↓A .make-frame.distrib x f = ext λ arg →
     Ω-ua (λ { (x , box) → □-map (λ { (i , arg∈fi) → i , x , arg∈fi }) box })
          (□-rec! λ { (i , x , arg∈fi) → x , inc (i , arg∈fi) })
 ```
@@ -193,11 +193,11 @@ preserves meets, and the third step follows from the infinite
 distributive law in $B$.
 
 ```agda
-    mkhom .preserves .is-frame-hom.pres-∩ (S , s-lower) (T , t-lower) =
-      B.⋃ {I = Σ _ λ a → a ∈ S × a ∈ T} (λ i → f # i .fst)  ≡⟨ lemma ⟩
-      B.⋃ (λ i → f # (i .fst .fst A.∩ i .snd .fst))         ≡⟨ ap B.⋃ (funext λ i → f .preserves .pres-⋆ _ _) ⟩
-      B.⋃ (λ i → f # i .fst .fst B.∩ f # i .snd .fst)       ≡˘⟨ B.⋃-∩-product _ _ ⟩
-      B.⋃ (λ i → f # i .fst) B.∩ B.⋃ (λ i → f # i .fst)     ∎
+    mkhom .preserves .is-frame-hom.pres-∩ S T =
+      B.⋃ {I = Σ _ λ a → a ∈ apply S × a ∈ apply T} (λ i → f # i .fst)  ≡⟨ lemma ⟩
+      B.⋃ (λ i → f # (i .fst .fst A.∩ i .snd .fst))                     ≡⟨ ap B.⋃ (funext λ i → f .preserves .pres-⋆ _ _) ⟩
+      B.⋃ (λ i → f # i .fst .fst B.∩ f # i .snd .fst)                   ≡˘⟨ B.⋃-∩-product _ _ ⟩
+      B.⋃ (λ i → f # i .fst) B.∩ B.⋃ (λ i → f # i .fst)                 ∎
 ```
 
 <details>
@@ -207,8 +207,8 @@ an intersection of two lower sets as a join of their intersection.
 
 ```agda
       where
-        lemma : B.⋃ {I = Σ _ λ a → a ∈ S × a ∈ T} (λ i → f # i .fst)
-              ≡ B.⋃ {I = (Σ _ (_∈ S)) × (Σ _ (_∈ T))}
+        lemma : B.⋃ {I = Σ _ λ a → a ∈ apply S × a ∈ apply T} (λ i → f # i .fst)
+              ≡ B.⋃ {I = (Σ _ (_∈ apply S)) × (Σ _ (_∈ apply T))}
                     (λ i → f # (i .fst .fst A.∩ i .snd .fst))
         lemma = B.≤-antisym
           (B.⋃-universal _ (λ { (i , i∈S , i∈T) →
@@ -216,7 +216,7 @@ an intersection of two lower sets as a join of their intersection.
             f # (i A.∩ i)                                  B.≤⟨ B.⋃-colimiting ((i , i∈S) , i , i∈T) _ ⟩
             B.⋃ (λ i → f # (i .fst .fst A.∩ i .snd .fst))  B.≤∎}))
           (B.⋃-universal _ (λ { ((i , i∈S) , j , i∈T) →
-            B.⋃-colimiting (i A.∩ j , s-lower _ _ A.∩≤l i∈S , t-lower _ _ A.∩≤r i∈T) _
+            B.⋃-colimiting (i A.∩ j , S .pres-≤ A.∩≤l i∈S , T .pres-≤ A.∩≤r i∈T) _
             }))
 ```
 
@@ -247,11 +247,11 @@ $\land$.
     go : Precategory.Hom (Semilattices ℓ) S (Frame↪SLat .F₀ (Lower-sets-frame S))
     go .hom = ↓ (Semilattice.po S)
 
-    go .preserves .pres-id = Σ-prop-path! $ funext λ b →
+    go .preserves .pres-id = ext λ b →
       Ω-ua (λ _ → inc λ j → absurd j)
            (λ _ → inc (sym S.∩-idr))
 
-    go .preserves .pres-⋆ x y = Σ-prop-path! $ funext λ b → Ω-ua
+    go .preserves .pres-⋆ x y = ext λ b → Ω-ua
       (□-rec! {pa = Σ-is-hlevel 1 squash λ _ → squash} λ b≤x∩y →
           inc (S.≤-trans b≤x∩y S.∩≤l)
         , inc (S.≤-trans b≤x∩y S.∩≤r))
@@ -273,7 +273,7 @@ cocontinuous extensions to tie everything up:
   go .commutes {A} {B} f = Homomorphism-path (Mk.mkcomm A B f)
   go .unique {A} {B} {f = f} {g} wit = Homomorphism-path q where
     open Mk A B f
-     
+
     gᵐ : Monotone (Lower-sets A.po) B.po
     gᵐ .hom x = g # x
     gᵐ .pres-≤ {x} {y} w =
