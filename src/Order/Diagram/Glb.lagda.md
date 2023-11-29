@@ -234,6 +234,9 @@ record Top : Type (o ⊔ ℓ) where
     top : Ob
     has-top : is-top top
 
+  ! : ∀ {x} → x ≤ top
+  ! = has-top _
+
 is-top→is-glb : ∀ {glb} {f : ⊥ → _} → is-top glb → is-glb f glb
 is-top→is-glb is-top .greatest x _ = is-top x
 
