@@ -28,15 +28,11 @@ is a single poset of propositions --- this is the principle of
 [_propositional resizing_]: 1Lab.Resizing.html
 
 ```agda
-open is-partial-order
-open Poset-on
-
 Props : Poset lzero lzero
-Props = to-poset Ω mk-Ω where
-  mk-Ω : make-poset lzero Ω
-  mk-Ω .make-poset.rel P Q     = ∣ P ∣ → ∣ Q ∣
-  mk-Ω .make-poset.id x        = x
-  mk-Ω .make-poset.thin        = hlevel!
-  mk-Ω .make-poset.trans g f x = f (g x)
-  mk-Ω .make-poset.antisym     = Ω-ua
+Props .Poset.Ob = Ω
+Props .Poset._≤_ P Q = ∣ P ∣ → ∣ Q ∣
+Props .Poset.≤-thin = hlevel!
+Props .Poset.≤-refl x = x
+Props .Poset.≤-trans g f x = f (g x)
+Props .Poset.≤-antisym = Ω-ua
 ```
