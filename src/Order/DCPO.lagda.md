@@ -8,8 +8,8 @@ open import Cat.Prelude
 open import Data.Bool
 
 open import Order.Diagram.Lub
-open import Order.Base
 open import Order.Univalent
+open import Order.Base
 
 import Cat.Reasoning
 

@@ -1,9 +1,8 @@
 <!--
 ```agda
-open import Cat.Prelude
-
 open import Cat.Instances.Sets
 open import Cat.Functor.Base
+open import Cat.Prelude
 
 open import Order.Morphism
 open import Order.Base
