@@ -64,7 +64,7 @@ private unquoteDecl eqv = declare-record-iso eqv (quote is-lub)
 is-lub-is-prop
   : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {lub : Ob}
   → is-prop (is-lub F lub)
-is-lub-is-prop = Iso→is-hlevel 1 eqv (hlevel 1)
+is-lub-is-prop = Iso→is-hlevel 1 eqv hlevel!
 
 instance
   H-Level-is-lub
@@ -225,7 +225,7 @@ instance
   H-Level-is-join
     : ∀ {a b lub : Ob} {n}
     → H-Level (is-join a b lub) (suc n)
-  H-Level-is-join = prop-instance $ Iso→is-hlevel 1 eqv' (hlevel 1)
+  H-Level-is-join = prop-instance $ Iso→is-hlevel 1 eqv' hlevel!
 
 join-unique
   : ∀ {a b x y}
@@ -327,7 +327,7 @@ is-lub→is-bottom lub x = lub .least x λ ()
 <!--
 ```agda
 is-bottom-is-prop : ∀ x → is-prop (is-bottom x)
-is-bottom-is-prop _ = hlevel 1
+is-bottom-is-prop _ = hlevel!
 
 bottom-unique : ∀ {x y} → is-bottom x → is-bottom y → x ≡ y
 bottom-unique p q = ≤-antisym (p _) (q _)

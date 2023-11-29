@@ -12,7 +12,7 @@ open import Order.Base
 
 import Cat.Reasoning
 
-import Order.Reasoning as Poset
+import Order.Reasoning
 ```
 -->
 
@@ -37,7 +37,7 @@ $f : I \to P$ is a **directed family** when $I$ is merely inhabited.
 
 ```agda
 module _ {o ℓ} (P : Poset o ℓ) where
-  open Poset P
+  open Order.Reasoning P
 
   is-semidirected-family : ∀ {Ix : Type o} → (Ix → Ob) → Type _
   is-semidirected-family {Ix = Ix} f = ∀ i j → ∃[ k ∈ Ix ] (f i ≤ f k × f j ≤ f k)
