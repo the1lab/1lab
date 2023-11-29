@@ -43,7 +43,7 @@ ordering on them, with $\bot \le \top$.
 open Precategory
 
 Bool-poset : Poset lzero lzero
-Bool-poset = to-poset Bool make-bool where
+Bool-poset = po where
   R : Bool → Bool → Type
   R false false = ⊤
   R false true  = ⊤
@@ -86,12 +86,13 @@ the poset of booleans:
   Rprop {true}  {false} () ()
   Rprop {true}  {true}  tt tt = refl
 
-  make-bool : make-poset lzero Bool
-  make-bool .make-poset.rel = R
-  make-bool .make-poset.id = Rrefl
-  make-bool .make-poset.thin = Rprop
-  make-bool .make-poset.trans = Rtrans
-  make-bool .make-poset.antisym = Rantisym
+  po : Poset _ _
+  po .Poset.Ob = Bool
+  po .Poset._≤_ = R
+  po .Poset.≤-thin = Rprop
+  po .Poset.≤-refl = Rrefl
+  po .Poset.≤-trans = Rtrans
+  po .Poset.≤-antisym = Rantisym
 ```
 -->
 

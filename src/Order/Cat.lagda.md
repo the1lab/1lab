@@ -1,13 +1,12 @@
 <!--
 ```agda
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Instances.StrictCat
 open import Cat.Instances.Functor
 open import Cat.Prelude
 
 open import Order.Base
 
-import Order.Reasoning as Poset
+import Order.Reasoning
 ```
 -->
 
@@ -50,10 +49,10 @@ automatic.
 ```agda
 open Functor
 Posets↪Strict-cats : ∀ {ℓ ℓ'} → Functor (Posets ℓ ℓ') (Strict-cats ℓ ℓ')
-Posets↪Strict-cats .F₀ P = poset→category P , Poset.has-is-set P
+Posets↪Strict-cats .F₀ P = poset→category P , Poset.Ob-is-set P
 
 Posets↪Strict-cats .F₁ f .F₀ = f .hom
-Posets↪Strict-cats .F₁ f .F₁ = f .preserves _ _
+Posets↪Strict-cats .F₁ f .F₁ = f .pres-≤
 Posets↪Strict-cats .F₁ {y = y} f .F-id    = Poset.≤-thin y _ _
 Posets↪Strict-cats .F₁ {y = y} f .F-∘ g h = Poset.≤-thin y _ _
 
