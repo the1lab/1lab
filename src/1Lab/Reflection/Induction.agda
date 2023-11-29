@@ -29,6 +29,9 @@ When generating an eliminator into (n-2)-types, we automatically omit the method
 follow from h-level (i.e. those corresponding to constructors with at least n
 nested `PathP`s).
 
+Due to limitations of the reflection interface, path constructors between composites
+are not supported.
+
 See 1Lab.Reflection.Induction.Examples for examples.
 -}
 
@@ -190,7 +193,7 @@ private
       let c' = con c (hide ps)
       cT ← flip pi-applyTC ps =<< normalise =<< get-type c
       just (methodT , α) ← pure (display 1 ps P rs (var 0 []) [] c' cT)
-        where _ → typeError [ "the type of constructor " , nameErr c , " somehow does not end in " , termErr (def D ps) ]
+        where _ → typeError [ "The type of constructor " , nameErr c , " is not supported" ]
       try-hlevel methodT >>= λ where
         (just m) → do
           -- The type of the method is solvable by hlevel (i.e. contractible):
