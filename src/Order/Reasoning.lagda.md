@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import Cat.Displayed.Univalence.Thin
 open import Cat.Prelude
 
 open import Order.Base
@@ -26,10 +25,7 @@ the syntax, we intersperse the justification for _why_ $a \le b$ and $b
 c$ are supported, too.
 
 ```agda
-open Poset-on (P .snd) public
-
-Ob : Type ℓ
-Ob = ⌞ P ⌟
+open Poset P public
 
 private variable
   a b c d : ⌞ P ⌟
@@ -52,8 +48,4 @@ f ≤∎ = ≤-refl
 
 infixr 2 _=⟨_⟩_ _=˘⟨_⟩_ _≤⟨_⟩_
 infix  3 _≤∎
-
-instance
-  H-Level-≤ : ∀ {x y} {n} → H-Level (x ≤ y) (suc n)
-  H-Level-≤ = prop-instance ≤-thin
 ```

@@ -298,6 +298,14 @@ is-prop→is-hlevel-suc {n = suc n} aprop =
   is-hlevel-suc (suc n) (is-prop→is-hlevel-suc aprop)
 ```
 
+<!--
+```agda
+is-set→is-hlevel+2
+  : ∀ {ℓ} {A : Type ℓ} {n : Nat} → is-set A → is-hlevel A (2 + n)
+is-set→is-hlevel+2 aset x y = is-prop→is-hlevel-suc (aset x y)
+```
+-->
+
 Furthermore, by the upwards closure of h-levels, we have that if $A$ is
 an n-type, then paths in $A$ are also $n$-types. This is because, by
 definition, the paths in a $n$-type are "$(n-1)$-types", which

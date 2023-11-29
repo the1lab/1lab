@@ -1,7 +1,11 @@
 <!--
 ```agda
-open import Cat.Displayed.Univalence.Thin
+open import 1Lab.Path.Cartesian
+open import 1Lab.Reflection
+
 open import Cat.Prelude
+
+import Cat.Reasoning
 ```
 -->
 
@@ -48,18 +52,19 @@ reflexive relation] on $A$; and, being a product of propositions, it's
 also a proposition, so $A$ is automatically a set.
 
 ```agda
-record is-partial-order {ℓ ℓ'} {A : Type ℓ}
-          (_≤_ : A → A → Type ℓ') : Type (ℓ ⊔ ℓ') where
+record Poset o ℓ : Type (lsuc (o ⊔ ℓ)) where
   no-eta-equality
   field
+    Ob : Type o
+    _≤_ : Ob → Ob → Type ℓ
     ≤-thin    : ∀ {x y} → is-prop (x ≤ y)
     ≤-refl    : ∀ {x} → x ≤ x
     ≤-trans   : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
     ≤-antisym : ∀ {x y} → x ≤ y → y ≤ x → x ≡ y
 
   opaque
-    has-is-set : is-set A
-    has-is-set =
+    Ob-is-set : is-set Ob
+    Ob-is-set =
       identity-system→hlevel 1
         {r = λ _ → ≤-refl , ≤-refl}
         (set-identity-system
@@ -70,158 +75,141 @@ record is-partial-order {ℓ ℓ'} {A : Type ℓ}
 
 <!--
 ```agda
-private unquoteDecl eqv = declare-record-iso eqv (quote is-partial-order)
+instance
+  Underlying-Poset : ∀ {o ℓ} → Underlying (Poset o ℓ)
+  Underlying-Poset .Underlying.ℓ-underlying = _
+  Underlying-Poset .Underlying.⌞_⌟ = Poset.Ob
 
-is-partial-order-is-prop
-  : ∀ {ℓ ℓ'} {A : Type ℓ} (R : A → A → Type ℓ') → is-prop (is-partial-order R)
-is-partial-order-is-prop {A = A} R x y = go x x y where
-  go : is-partial-order R → is-prop (is-partial-order R)
-  go x = Iso→is-hlevel 1 eqv (hlevel 1) where instance
-    h-level-r : ∀ {x y} {n} → H-Level (R x y) (suc n)
-    h-level-r = prop-instance (x .is-partial-order.≤-thin)
+instance
+  Poset-ob-hlevel-proj : hlevel-projection (quote Poset.Ob)
+  Poset-ob-hlevel-proj .hlevel-projection.has-level = quote Poset.Ob-is-set
+  Poset-ob-hlevel-proj .hlevel-projection.get-level _ = pure (lit (nat 2))
+  Poset-ob-hlevel-proj .hlevel-projection.get-argument (_ ∷ _ ∷ arg _ t ∷ _) = pure t
+  Poset-ob-hlevel-proj .hlevel-projection.get-argument _ = typeError []
 
-    h-level-a : H-Level A 2
-    h-level-a = basic-instance 2 (is-partial-order.has-is-set x)
+  Poset-≤-hlevel-proj : hlevel-projection (quote Poset._≤_)
+  Poset-≤-hlevel-proj .hlevel-projection.has-level = quote Poset.≤-thin
+  Poset-≤-hlevel-proj .hlevel-projection.get-level _ = pure (lit (nat 1))
+  Poset-≤-hlevel-proj .hlevel-projection.get-argument (_ ∷ _ ∷ arg _ t ∷ _) = pure t
+  Poset-≤-hlevel-proj .hlevel-projection.get-argument _ = typeError []
 ```
 -->
 
-A po structure on a set --- okay, that joke _is_ getting old --- is
-given by tupling together the relation $x \le y$ together with a proof
-that it is a partial order relation. Identity of poset structures is
-thus determined by identity _of the relations_, since being a partial
-order is a proposition.
-
 ```agda
-record Poset-on {ℓ} ℓ' (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ') where
+record Monotone
+  {o o' ℓ ℓ'}
+  (P : Poset o ℓ) (Q : Poset o' ℓ')
+  : Type (o ⊔ o' ⊔ ℓ ⊔ ℓ')
+  where
   no-eta-equality
+  private
+    module P = Poset P
+    module Q = Poset Q
   field
-    _≤_          : A → A → Type ℓ'
-    has-is-poset : is-partial-order _≤_
-  open is-partial-order has-is-poset public
+    hom : P.Ob → Q.Ob
+    pres-≤ : ∀ {x y} → x P.≤ y → hom x Q.≤ hom y
+
+open Monotone public
 ```
 
 <!--
 ```agda
-Poset-on-pathp
-  : ∀ {o ℓ} {A B : Type o}
-  → {A-poset : Poset-on ℓ A} {B-poset : Poset-on ℓ B}
-  → (p : A ≡ B)
-  → PathP (λ i → p i → p i → Type ℓ) (Poset-on._≤_ A-poset) (Poset-on._≤_ B-poset)
-  → PathP (λ i → Poset-on ℓ (p i)) A-poset B-poset
-Poset-on-pathp p q i .Poset-on._≤_ = q i
-Poset-on-pathp {A-poset = A-poset} {B-poset = B-poset} p q i .Poset-on.has-is-poset =
-  is-prop→pathp (λ i → is-partial-order-is-prop (q i))
-    (Poset-on.has-is-poset A-poset)
-    (Poset-on.has-is-poset B-poset) i
+private
+  variable
+    o ℓ o' ℓ' o'' ℓ'' : Level
+    P Q R : Poset o ℓ
 
-Poset-on-path
-  : ∀ {o ℓ} {A : Type o}
-  → {P Q : Poset-on ℓ A}
-  → (∀ x y → Poset-on._≤_ P x y ≡ Poset-on._≤_ Q x y)
-  → P ≡ Q
-Poset-on-path p = Poset-on-pathp refl (ext p)
+Monotone-is-hlevel : ∀ n → is-hlevel (Monotone P Q) (2 + n)
+Monotone-is-hlevel {Q = Q} n =
+  Iso→is-hlevel (2 + n) eqv $
+  Σ-is-hlevel (2 + n) (Π-is-hlevel (2 + n) λ _ → is-set→is-hlevel+2 Q.Ob-is-set) λ _ →
+  Π-is-hlevel' (2 + n) λ _ → Π-is-hlevel' (2 + n) λ _ → Π-is-hlevel (2 + n) λ _ →
+  is-prop→is-hlevel-suc {n = suc n} Q.≤-thin
+  where
+    unquoteDecl eqv = declare-record-iso eqv (quote Monotone)
+    module Q = Poset Q
+
+instance
+  H-Level-Monotone
+    : ∀ {n}
+    → H-Level (Monotone P Q) (2 + n)
+  H-Level-Monotone = basic-instance 2 (Monotone-is-hlevel 0)
+
+instance
+  Funlike-Monotone : ∀ {o o' ℓ ℓ'} → Funlike (Monotone {o} {o'} {ℓ} {ℓ'})
+  Funlike-Monotone .Funlike.au = Underlying-Poset
+  Funlike-Monotone .Funlike.bu = Underlying-Poset
+  Funlike-Monotone .Funlike._#_ = hom
+
+Monotone-pathp
+  : ∀ {o ℓ o' ℓ'} {P : I → Poset o ℓ} {Q : I → Poset o' ℓ'}
+  → {f : Monotone (P i0) (Q i0)} {g : Monotone (P i1) (Q i1)}
+  → PathP (λ i → ⌞ P i ⌟ → ⌞ Q i ⌟) (apply f) (apply g)
+  → PathP (λ i → Monotone (P i) (Q i)) f g
+Monotone-pathp q i .hom a = q i a
+Monotone-pathp {P = P} {Q} {f} {g} q i .Monotone.pres-≤ {x} {y} α =
+  is-prop→pathp
+    (λ i → Π-is-hlevel³ {A = ⌞ P i ⌟} {B = λ _ → ⌞ P i ⌟} {C = λ x y → P i .Poset._≤_ x y} 1
+      λ x y _ → Q i .Poset.≤-thin {q i x} {q i y})
+    (λ _ _ α → f .Monotone.pres-≤ α)
+    (λ _ _ α → g .Monotone.pres-≤ α) i x y α      
+
+Extensional-Monotone
+  : ∀ {o ℓ o' ℓ' ℓr} {P : Poset o ℓ} {Q : Poset o' ℓ'}
+  → ⦃ sq : Extensional (⌞ Q ⌟) ℓr ⦄
+  → Extensional (Monotone P Q) (o ⊔ ℓr)
+Extensional-Monotone {Q = Q} ⦃ sq ⦄ =
+  injection→extensional! Monotone-pathp (Extensional-→ ⦃ sq ⦄)
+
+instance
+  Extensionality-Monotone 
+    : ∀ {o ℓ o' ℓ'} {P : Poset o ℓ} {Q : Poset o' ℓ'}
+    → Extensionality (Monotone P Q)
+  Extensionality-Monotone = record { lemma = quote Extensional-Monotone }
 ```
 -->
 
-We set up the category of posets using our [machinery for displaying]
-[univalent categories] over the category of sets. A map between posets
-is called a **monotone map**: it's the decategorification of a functor.
-We don't need preservation of identities _or_ preservation of
-composites, since our "homs" are propositions!
-
-[machinery for displaying]: Cat.Displayed.Univalence.Thin.html
-[univalent categories]: Cat.Univalent.html
-
 ```agda
-is-monotone
-  : ∀ {o o' ℓ ℓ'} {A : Type o} {B : Type o'}
-  → (f : A → B) → Poset-on ℓ A → Poset-on ℓ' B → Type _
-is-monotone f P Q = ∀ x y → x P.≤ y → f x Q.≤ f y
-  where
-    module P = Poset-on P
-    module Q = Poset-on Q
+idₘ : Monotone P P
+idₘ .hom x = x
+idₘ .pres-≤ x≤y = x≤y
 
-is-monotone-is-prop
-  : ∀ {o o' ℓ ℓ'} {A : Type o} {B : Type o'}
-  → (f : A → B) (P : Poset-on ℓ A) (Q : Poset-on ℓ' B)
-  → is-prop (is-monotone f P Q)
-is-monotone-is-prop f P Q =
-  Π-is-hlevel³ 1 λ _ _ _ → Poset-on.≤-thin Q
+_∘ₘ_ : Monotone Q R → Monotone P Q → Monotone P R
+(f ∘ₘ g) .hom x = f # (g # x)
+(f ∘ₘ g) .pres-≤ x≤y = f .pres-≤ (g .pres-≤ x≤y)
 
-Poset-structure : ∀ ℓ ℓ' → Thin-structure {ℓ = ℓ} (ℓ ⊔ ℓ') (Poset-on ℓ')
-∣ Poset-structure ℓ ℓ' .is-hom f P Q ∣ = is-monotone f P Q
-
-Poset-structure ℓ ℓ' .is-hom f P Q .is-tr =
-  is-monotone-is-prop f P Q
-
-Poset-structure ℓ ℓ' .id-is-hom x y α = α
-Poset-structure ℓ ℓ' .∘-is-hom f g α β x y γ = α (g x) (g y) (β x y γ)
-```
-
-The last thing we have to prove is "uniqueness of identity maps": If we
-have the identity being a monotone map $(a, t) \to (a, s)$ _and_ $(a, s)
-\to (a, t)$ --- that is, we have $(x \le_s y) \leftrightarrow (x \le_t
-y)$ --- then, by propositional extensionality, we have $\le_s = \le_t$.
-Then, since equality of poset structures is controlled by equality of
-the relations, we have $s = t$!
-
-```agda
-Poset-structure ℓ ℓ' .id-hom-unique {s = s} {t = t} α β =
-  Poset-on-path λ x y → ua (prop-ext s.≤-thin t.≤-thin (α x y) (β x y))
-  where
-    module s = Poset-on s
-    module t = Poset-on t
+Posets : ∀ (o ℓ : Level) → Precategory (lsuc o ⊔ lsuc ℓ) (o ⊔ ℓ)
+Posets o ℓ .Precategory.Ob = Poset o ℓ
+Posets o ℓ .Precategory.Hom = Monotone
+Posets o ℓ .Precategory.Hom-set = hlevel!
+Posets o ℓ .Precategory.id = idₘ
+Posets o ℓ .Precategory._∘_ = _∘ₘ_
+Posets o ℓ .Precategory.idr f = trivial!
+Posets o ℓ .Precategory.idl f = trivial!
+Posets o ℓ .Precategory.assoc f g h = trivial!
 ```
 
 <!--
 ```agda
-Posets : ∀ ℓ ℓ' → Precategory (lsuc (ℓ ⊔ ℓ')) (ℓ ⊔ ℓ')
-Posets ℓ ℓ' = Structured-objects (Poset-structure ℓ ℓ')
-
-module Posets {ℓ ℓ'} = Precategory (Posets ℓ ℓ')
-Poset : (ℓ ℓ' : Level) → Type (lsuc (ℓ ⊔ ℓ'))
-Poset ℓ ℓ' = Precategory.Ob (Posets ℓ ℓ')
-
-Posets-is-category : ∀ {o ℓ} → is-category (Posets o ℓ)
-Posets-is-category = Structured-objects-is-category (Poset-structure _ _)
-
-record make-poset {ℓ} ℓ' (A : Type ℓ) : Type (ℓ ⊔ lsuc ℓ') where
-  no-eta-equality
-
-  field
-    rel     : A → A → Type ℓ'
-    id      : ∀ {x} → rel x x
-    thin    : ∀ {x y} → is-prop (rel x y)
-    trans   : ∀ {x y z} → rel x y → rel y z → rel x z
-    antisym : ∀ {x y} → rel x y → rel y x → x ≡ y
-
-  to-poset-on : Poset-on ℓ' A
-  to-poset-on .Poset-on._≤_ = rel
-  to-poset-on .Poset-on.has-is-poset .is-partial-order.≤-thin = thin
-  to-poset-on .Poset-on.has-is-poset .is-partial-order.≤-refl = id
-  to-poset-on .Poset-on.has-is-poset .is-partial-order.≤-trans = trans
-  to-poset-on .Poset-on.has-is-poset .is-partial-order.≤-antisym = antisym
-
-to-poset : ∀ {ℓ ℓ'} (A : Type ℓ) → make-poset ℓ' A → Poset ℓ ℓ'
-∣ to-poset A mk .fst ∣ = A
-to-poset A mk .fst .is-tr = Poset-on.has-is-set (make-poset.to-poset-on mk)
-to-poset A mk .snd = make-poset.to-poset-on mk
+module Posets {o ℓ} = Cat.Reasoning (Posets o ℓ)
 ```
 -->
 
-The relationship between posets and [[(strict) categories]] is outlined
-in the module [`Order.Cat`](Order.Cat.html). Very similarly to
-categories, posets have a duality involution. In fact, under the
-correspondence between posets and thin categories, these are the same
-construction.
+```agda
+Forget-poset : ∀ {o ℓ} → Functor (Posets o ℓ) (Sets o)
+∣ Forget-poset .Functor.F₀ P ∣ = ⌞ P ⌟
+Forget-poset .Functor.F₀ P .is-tr = hlevel!
+Forget-poset .Functor.F₁ = hom
+Forget-poset .Functor.F-id = trivial!
+Forget-poset .Functor.F-∘ _ _ = trivial!
+```
 
 ```agda
 _^opp : ∀ {ℓ ℓ'} → Poset ℓ ℓ' → Poset ℓ ℓ'
-P ^opp = to-poset ⌞ P ⌟ λ where
-    .make-poset.rel x y         → y ≤ x
-    .make-poset.thin            → ≤-thin
-    .make-poset.id              → ≤-refl
-    .make-poset.trans f<g g<h   → ≤-trans g<h f<g
-    .make-poset.antisym f<g g<f → ≤-antisym g<f f<g
-  where open Poset-on (P .snd)
+(P ^opp) .Poset.Ob = Poset.Ob P
+(P ^opp) .Poset._≤_ x y = Poset._≤_ P y x
+(P ^opp) .Poset.≤-thin = Poset.≤-thin P
+(P ^opp) .Poset.≤-refl = Poset.≤-refl P
+(P ^opp) .Poset.≤-trans x≥y y≥z = Poset.≤-trans P y≥z x≥y
+(P ^opp) .Poset.≤-antisym x≥y y≥x = Poset.≤-antisym P y≥x x≥y
 ```
