@@ -79,31 +79,32 @@ instance
   Underlying-Poset .Underlying.ℓ-underlying = _
   Underlying-Poset .Underlying.⌞_⌟ = Poset.Ob
 
-instance
+  open hlevel-projection
+
   Poset-ob-hlevel-proj : hlevel-projection (quote Poset.Ob)
-  Poset-ob-hlevel-proj .hlevel-projection.has-level = quote Poset.Ob-is-set
-  Poset-ob-hlevel-proj .hlevel-projection.get-level _ = pure (lit (nat 2))
-  Poset-ob-hlevel-proj .hlevel-projection.get-argument (_ ∷ _ ∷ arg _ t ∷ _) = pure t
-  Poset-ob-hlevel-proj .hlevel-projection.get-argument _ = typeError []
+  Poset-ob-hlevel-proj .has-level   = quote Poset.Ob-is-set
+  Poset-ob-hlevel-proj .get-level _ = pure (lit (nat 2))
+  Poset-ob-hlevel-proj .get-argument (_ ∷ _ ∷ arg _ t ∷ _) = pure t
+  Poset-ob-hlevel-proj .get-argument _                     = typeError []
 
   Poset-≤-hlevel-proj : hlevel-projection (quote Poset._≤_)
-  Poset-≤-hlevel-proj .hlevel-projection.has-level = quote Poset.≤-thin
-  Poset-≤-hlevel-proj .hlevel-projection.get-level _ = pure (lit (nat 1))
-  Poset-≤-hlevel-proj .hlevel-projection.get-argument (_ ∷ _ ∷ arg _ t ∷ _) = pure t
-  Poset-≤-hlevel-proj .hlevel-projection.get-argument _ = typeError []
+  Poset-≤-hlevel-proj .has-level   = quote Poset.≤-thin
+  Poset-≤-hlevel-proj .get-level _ = pure (lit (nat 1))
+  Poset-≤-hlevel-proj .get-argument (_ ∷ _ ∷ arg _ t ∷ _) = pure t
+  Poset-≤-hlevel-proj .get-argument _                     = typeError []
 ```
 -->
 
 ```agda
-record Monotone
-  {o o' ℓ ℓ'}
-  (P : Poset o ℓ) (Q : Poset o' ℓ')
-  : Type (o ⊔ o' ⊔ ℓ ⊔ ℓ')
-  where
+record
+  Monotone {o o' ℓ ℓ'} (P : Poset o ℓ) (Q : Poset o' ℓ')
+    : Type (o ⊔ o' ⊔ ℓ ⊔ ℓ') where
   no-eta-equality
+
   private
     module P = Poset P
     module Q = Poset Q
+
   field
     hom : P.Ob → Q.Ob
     pres-≤ : ∀ {x y} → x P.≤ y → hom x Q.≤ hom y
@@ -120,25 +121,15 @@ private
 
 Monotone-is-hlevel : ∀ n → is-hlevel (Monotone P Q) (2 + n)
 Monotone-is-hlevel {Q = Q} n =
-  Iso→is-hlevel (2 + n) eqv $
-  Σ-is-hlevel (2 + n) (Π-is-hlevel (2 + n) λ _ → is-set→is-hlevel+2 Q.Ob-is-set) λ _ →
-  Π-is-hlevel' (2 + n) λ _ → Π-is-hlevel' (2 + n) λ _ → Π-is-hlevel (2 + n) λ _ →
-  is-prop→is-hlevel-suc {n = suc n} Q.≤-thin
-  where
-    unquoteDecl eqv = declare-record-iso eqv (quote Monotone)
-    module Q = Poset Q
+  Iso→is-hlevel (2 + n) eqv $ is-set→is-hlevel+2 $ hlevel!
+  where unquoteDecl eqv = declare-record-iso eqv (quote Monotone)
 
 instance
-  H-Level-Monotone
-    : ∀ {n}
-    → H-Level (Monotone P Q) (2 + n)
+  H-Level-Monotone : ∀ {n} → H-Level (Monotone P Q) (2 + n)
   H-Level-Monotone = basic-instance 2 (Monotone-is-hlevel 0)
 
-instance
   Funlike-Monotone : ∀ {o o' ℓ ℓ'} → Funlike (Monotone {o} {o'} {ℓ} {ℓ'})
-  Funlike-Monotone .Funlike.au = Underlying-Poset
-  Funlike-Monotone .Funlike.bu = Underlying-Poset
-  Funlike-Monotone .Funlike._#_ = hom
+  Funlike-Monotone = record { _#_ = hom }
 
 Monotone-pathp
   : ∀ {o ℓ o' ℓ'} {P : I → Poset o ℓ} {Q : I → Poset o' ℓ'}
@@ -151,17 +142,17 @@ Monotone-pathp {P = P} {Q} {f} {g} q i .Monotone.pres-≤ {x} {y} α =
     (λ i → Π-is-hlevel³ {A = ⌞ P i ⌟} {B = λ _ → ⌞ P i ⌟} {C = λ x y → P i .Poset._≤_ x y} 1
       λ x y _ → Q i .Poset.≤-thin {q i x} {q i y})
     (λ _ _ α → f .Monotone.pres-≤ α)
-    (λ _ _ α → g .Monotone.pres-≤ α) i x y α      
+    (λ _ _ α → g .Monotone.pres-≤ α) i x y α
 
 Extensional-Monotone
   : ∀ {o ℓ o' ℓ' ℓr} {P : Poset o ℓ} {Q : Poset o' ℓ'}
-  → ⦃ sq : Extensional (⌞ Q ⌟) ℓr ⦄
-  → Extensional (Monotone P Q) (o ⊔ ℓr)
+  → ⦃ sa : Extensional (⌞ P ⌟ → ⌞ Q ⌟) ℓr ⦄
+  → Extensional (Monotone P Q) ℓr
 Extensional-Monotone {Q = Q} ⦃ sq ⦄ =
-  injection→extensional! Monotone-pathp (Extensional-→ ⦃ sq ⦄)
+  injection→extensional! Monotone-pathp sq
 
 instance
-  Extensionality-Monotone 
+  Extensionality-Monotone
     : ∀ {o ℓ o' ℓ'} {P : Poset o ℓ} {Q : Poset o' ℓ'}
     → Extensionality (Monotone P Q)
   Extensionality-Monotone = record { lemma = quote Extensional-Monotone }
@@ -170,21 +161,23 @@ instance
 
 ```agda
 idₘ : Monotone P P
-idₘ .hom x = x
+idₘ .hom    x   = x
 idₘ .pres-≤ x≤y = x≤y
 
 _∘ₘ_ : Monotone Q R → Monotone P Q → Monotone P R
-(f ∘ₘ g) .hom x = f # (g # x)
+(f ∘ₘ g) .hom    x   = f # (g # x)
 (f ∘ₘ g) .pres-≤ x≤y = f .pres-≤ (g .pres-≤ x≤y)
 
 Posets : ∀ (o ℓ : Level) → Precategory (lsuc o ⊔ lsuc ℓ) (o ⊔ ℓ)
-Posets o ℓ .Precategory.Ob = Poset o ℓ
-Posets o ℓ .Precategory.Hom = Monotone
+Posets o ℓ .Precategory.Ob      = Poset o ℓ
+Posets o ℓ .Precategory.Hom     = Monotone
 Posets o ℓ .Precategory.Hom-set = hlevel!
-Posets o ℓ .Precategory.id = idₘ
+
+Posets o ℓ .Precategory.id  = idₘ
 Posets o ℓ .Precategory._∘_ = _∘ₘ_
-Posets o ℓ .Precategory.idr f = trivial!
-Posets o ℓ .Precategory.idl f = trivial!
+
+Posets o ℓ .Precategory.idr f       = trivial!
+Posets o ℓ .Precategory.idl f       = trivial!
 Posets o ℓ .Precategory.assoc f g h = trivial!
 ```
 
