@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import 1Lab.Path.Cartesian
 open import 1Lab.Reflection
 
 open import Cat.Prelude

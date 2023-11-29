@@ -4,8 +4,9 @@ open import Cat.Prelude
 
 open import Order.Base
 
-import Order.Reasoning
 import Cat.Reasoning
+
+import Order.Reasoning
 ```
 -->
 
