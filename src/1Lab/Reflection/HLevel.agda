@@ -196,6 +196,27 @@ private
     lv ← wait-just-a-bit lv
     pure (ty , lv)
 
+  -- Wait for the "principal argument" of a term, i.e. the (principal
+  -- argument of) the first visible argument in the spine of a
+  -- definition.
+  wait-principal-arg : Term → TC ⊤
+  wait-principal-arg topl = go topl where
+    go : Term → TC ⊤
+    go* : List (Arg Term) → TC ⊤
+
+    go mv@(meta m _) = do
+      debugPrint "tactic.hlevel" 30
+        [ "wait-principal-arg: blocking on meta " , termErr mv , " in principal arguments of\n  "
+        , termErr topl
+        ]
+      block-on-meta m
+    go (def d ds) = go* ds
+    go t          = pure tt
+
+    go* (arg (arginfo visible _) t ∷ as) = go t
+    go* (_ ∷ as)                         = go* as
+    go* []                               = pure tt
+
 {-
 Lifting n-Types
 ---------------
@@ -344,7 +365,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
       use-projections : TC ⊤
       use-projections = do
         def qn _ ← (fst <$> decompose-is-hlevel goal) >>= reduce
-          where _ → backtrack "Term is not headed by a definition; ignoring projections."
+          where tm → backtrack $ "Term " ∷ termErr tm ∷ " is not headed by a definition; ignoring projections."
 
         goalt ← infer-type goal
         debugPrint "tactic.hlevel" 20 $
@@ -523,14 +544,20 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
       use-hints = run-speculative $ do
         (ty , lv) ← decompose-is-hlevel goal
 
-        -- Note that if the type here is a metavariable, the tactic is..
-        -- loopy.
-        case ty of λ where
-          (meta m _) → do
-            debugPrint "tactic.hlevel" 10
-              "Type under is-hlevel is metavariable, blocking to avoid infinite loop"
-            block-on-meta m
-          _ → pure tt
+        -- We have to block on any metavariable here which is blocking
+        -- head-normalisation of the goal type. Unfortunately the
+        -- reflection interface does not let us reduce with a blocker.
+        --
+        -- The reason is twofold:
+        --
+        --    (a) if the type is a bare meta, the tactic may go into a tailspin.
+        --
+        --    (b) if the type a projection blocked on a meta,
+        --        e.g. .Pathᵉ (_123 ...) ...,
+        --        then we may commit to an incorrect solution too early,
+        --        preventing the extensionality tactic from doing *its*
+        --        job.
+        wait-principal-arg ty
 
         -- Create a meta of type hlevel-decomposition to find any possible hints..
         (mv , solved) ← new-meta' (def (quote hlevel-decomposition) (ty v∷ []))
