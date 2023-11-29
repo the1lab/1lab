@@ -98,12 +98,20 @@ apply
   → ∀ {a b} → F a b → ⌞ a ⌟ → ⌞ b ⌟
 apply = _#_
 
+-- Shortcut for ap (apply ...)
+ap#
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {F : A → B → Type ℓ''}
+  → ⦃ _ : Funlike F ⦄
+  → ∀ {a : A} {b : B} (f : F a b) → ∀ {x y : ⌞ a ⌟} → x ≡ y → f # x ≡ f # y
+ap# f = ap (apply f)
+
 -- Generalised happly.
 _#ₚ_
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {F : A → B → Type ℓ''}
   → ⦃ _ : Funlike F ⦄
   → {a : A} {b : B} {f g : F a b} → f ≡ g → ∀ (x : ⌞ a ⌟) → f # x ≡ g # x
 f #ₚ x = ap₂ _#_ f refl
+
 
 instance
   -- Agda really dislikes inferring the level parameters here.

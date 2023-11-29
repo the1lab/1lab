@@ -20,7 +20,7 @@ open import Order.Frame
 open import Order.Base
 
 import Order.Frame.Reasoning as Frm
-import Order.Reasoning as Poset
+import Order.Reasoning
 ```
 -->
 
@@ -76,9 +76,9 @@ propositions], $\Omega$.
 
 ```agda
 Lower-sets-frame : ∀ {ℓ} → Semilattice ℓ → Frame ℓ
-Lower-sets-frame A = Lower-sets A.po .fst , to-frame-on mk↓A where
+Lower-sets-frame A = (el!  ⌞ Lower-sets A.po ⌟) , to-frame-on mk↓A where
   module A = Semilattice A
-  module DA = Poset (Lower-sets A.po)
+  module DA = Order.Reasoning (Lower-sets A.po)
 
   module fcp = Finitely-complete-poset
   DA-meets : Finitely-complete-poset _ _
@@ -158,16 +158,17 @@ performing this construction. Let's abbreviate it:
 
 ```agda
     f-monotone : ⌞ Monotone A.po B.po ⌟
-    f-monotone = f .hom , Meet-semi-lattice .F₁ f .preserves
+    f-monotone .hom x = f # x
+    f-monotone .pres-≤ = Meet-semi-lattice .F₁ f .pres-≤
 ```
 
 The easy part is an appeal to the existing machinery for free
-cocompletions: Any monotone map $A \to B$ exteds to a _cocontinuous_
+cocompletions: Any monotone map $A \to B$ extends to a _cocontinuous_
 map $DA \to B$, because $B$, being a frame, is cocomplete.
 
 ```agda
     mkhom : Frames.Hom ℓ (Lower-sets-frame A) B
-    mkhom .hom = Lan↓₀ A.po B.po B.cocomplete f-monotone
+    mkhom .hom = apply (Lan↓ A.po B.po B.cocomplete f-monotone)
     mkhom .preserves .is-frame-hom.pres-⋃ g =
       Lan↓-cocontinuous A.po B.po B.cocomplete f-monotone g
 ```
@@ -226,7 +227,8 @@ map $\widehat{f}$ satisfies $\widehat{f}(\darr x) = f(x)$.
 
 ```agda
     mkcomm : ∀ x → f .hom x ≡ mkhom .hom (↓ A.po x)
-    mkcomm x = sym (Lan↓-commutes A.po B.po B.cocomplete f-monotone x)
+    mkcomm x =
+      sym (Lan↓-commutes A.po B.po B.cocomplete f-monotone x)
 ```
 
 Now we must define the unit map. We've already committed to defining
@@ -271,12 +273,17 @@ cocontinuous extensions to tie everything up:
   go .commutes {A} {B} f = Homomorphism-path (Mk.mkcomm A B f)
   go .unique {A} {B} {f = f} {g} wit = Homomorphism-path q where
     open Mk A B f
-    p = Lan↓-unique A.po B.po B.cocomplete f-monotone
-      (g .hom , λ x y w → Meet-semi-lattice .F₁ (Frame↪SLat .F₁ g) .preserves x y
-        (le-meet (Lower-sets A.po) w (Lower-sets-meets A.po x y .snd)))
+     
+    gᵐ : Monotone (Lower-sets A.po) B.po
+    gᵐ .hom x = g # x
+    gᵐ .pres-≤ {x} {y} w =
+      Meet-semi-lattice .F₁ (Frame↪SLat .F₁ g) .pres-≤ $
+        (le-meet (Lower-sets A.po) w (Lower-sets-meets A.po x y .snd))
+
+    p = Lan↓-unique A.po B.po B.cocomplete f-monotone gᵐ
       (g .preserves .is-frame-hom.pres-⋃)
       λ x → ap (_# x) (sym wit)
 
-    q : ∀ x → Lan↓₀ A.po B.po B.cocomplete f-monotone x ≡ g .hom x
-    q x = ap fst (sym p) $ₚ x
+    q : ∀ x → Lan↓ A.po B.po B.cocomplete f-monotone # x ≡ g .hom x
+    q x = sym p #ₚ x
 ```

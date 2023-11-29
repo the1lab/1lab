@@ -6,7 +6,7 @@ open import Order.Diagram.Glb
 open import Order.Semilattice
 open import Order.Base
 
-import Order.Reasoning as Poset
+import Order.Reasoning
 ```
 -->
 

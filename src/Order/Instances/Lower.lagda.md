@@ -31,7 +31,7 @@ monotone map $P' \to Q$.
 
 ```agda
 Lower-sets : ∀ {ℓₒ ℓᵣ} → Poset ℓₒ ℓᵣ → Poset (ℓₒ ⊔ ℓᵣ) ℓₒ
-Lower-sets P = Monotone (P ^opp) Props
+Lower-sets P = Pointwise-monotone (P ^opp) Props
 
 Lower-set : ∀ {ℓₒ ℓᵣ} (P : Poset ℓₒ ℓᵣ) → Type _
 Lower-set P = ⌞ Lower-sets P ⌟
@@ -52,7 +52,7 @@ module _ {ℓₒ ℓᵣ} (P : Poset ℓₒ ℓᵣ) where
   ↓ a .fst b = elΩ (b P.≤ a)
   ↓ a .snd x y y<x x<a = P.≤-trans y<x <$> x<a
 
-  よₚ : ⌞ Monotone P (Lower-sets P) ⌟
+  よₚ : ⌞ Pointwise-monotone P (Lower-sets P) ⌟
   よₚ .fst = ↓
   よₚ .snd x y x<y = (λ a a<x → ⦇ P.≤-trans a<x (pure x<y) ⦈) , tt
 ```
