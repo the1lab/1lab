@@ -17,7 +17,7 @@ open import Data.Sum.Base
 module Data.Nat.Divisible.GCD where
 ```
 
-# Greatest common divisors
+# Greatest common divisors {defines="greatest-common-divisor gcd"}
 
 The **greatest common divisor** $\gcd(a,b)$ of a pair of natural numbers
 is the largest number which [divides] them both. The definition we use
