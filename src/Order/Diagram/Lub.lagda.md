@@ -181,7 +181,7 @@ const-inhabited-fam→lub {I = I} {F = F} is-const =
       const-inhabited-fam→is-lub (λ j → is-const j i) (inc i)
 ```
 
-## Joins
+## Joins {defines="join"}
 
 In the binary case, a least upper bound is called a **join**. A short
 computation shows that being a join is _precisely_ being the lub of a

@@ -15,7 +15,7 @@ import Order.Reasoning as Pr
 module Order.Lattice where
 ```
 
-# Lattices
+# Lattices {defines=lattice}
 
 A **lattice** is a [[poset]] which is a [[semilattice]] in two compatible,
 dual ways. We have a "meet" semilattice $(A, \cap, \top)$, and a "join"

@@ -12,7 +12,7 @@ open import Data.Nat.Base
 module Data.Nat.Divisible where
 ```
 
-# Divisibility
+# Divisibility {defines="divisibility"}
 
 In the natural numbers, **divisibility**[^divide] is the property
 expressing that a given number can be expressed as a multiple of

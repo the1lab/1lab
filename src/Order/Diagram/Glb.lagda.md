@@ -23,7 +23,7 @@ open Order.Reasoning P
 ```
 -->
 
-# Greatest lower bounds
+# Greatest lower bounds {defines="greatest-lower-bound"}
 
 A **glb** $g$ (short for **greatest lower bound**) for a family of
 elements $(a_i)_{i : I}$ is, as the name implies, a greatest element
@@ -100,7 +100,7 @@ instance
 ```
 -->
 
-## Meets
+## Meets {defines="meet"}
 
 As mentioned before, in the binary case, we refer to glbs as **meets**:
 The meet of $a$ and $b$ is, if it exists, the greatest element

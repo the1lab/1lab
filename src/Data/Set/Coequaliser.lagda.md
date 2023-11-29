@@ -270,7 +270,7 @@ instance
 ```
 -->
 
-# Quotients
+# Quotients {defines=quotient}
 
 With dependent sums, we can recover quotients as a special case of
 coequalisers. Observe that, by taking the total space of a relation $R :
