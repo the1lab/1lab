@@ -1,12 +1,12 @@
 <!--
 ```agda
-open import Data.Sum
-
 open import Cat.Prelude
 
-open import Order.Base
+open import Data.Sum
+
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
+open import Order.Base
 ```
 -->
 

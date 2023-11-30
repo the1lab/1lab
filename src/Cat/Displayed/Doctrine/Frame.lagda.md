@@ -11,8 +11,8 @@ open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
-open import Order.Base
 open import Order.Frame
+open import Order.Base
 
 import Cat.Reasoning as Cat
 

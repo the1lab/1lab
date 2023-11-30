@@ -3,8 +3,8 @@
 open import Cat.Allegory.Base
 open import Cat.Prelude
 
-open import Order.Base
 open import Order.Frame
+open import Order.Base
 
 import Order.Frame.Reasoning
 ```
