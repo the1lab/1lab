@@ -1,5 +1,6 @@
 {-# OPTIONS -vtactic.hlevel:20 -vtc.def:10 #-}
 open import 1Lab.Reflection.Record
+open import 1Lab.Equiv.Embedding
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
 open import 1Lab.Reflection
@@ -650,6 +651,14 @@ prop!
   → PathP (λ i → A i) x y
 prop! {A = A} {aip = aip} {x} {y} =
   is-prop→pathp (λ i → coe0→i (λ j → is-prop (A j)) i aip) x y
+
+injective→is-embedding!
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+      {@(tactic hlevel-tactic-worker) bset : is-set B}
+  → ∀ {f : A → B}
+  → injective f
+  → is-embedding f
+injective→is-embedding! {bset = bset} {f} inj = injective→is-embedding bset f inj
 
 open hlevel-projection
 
