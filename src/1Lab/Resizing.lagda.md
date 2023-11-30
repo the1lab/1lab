@@ -258,3 +258,18 @@ These connectives and quantifiers are only provided for completeness;
 if you find yourself building nested propositions, it is generally a good
 idea to construct the large proposition by hand, and then use truncation
 to turn it into a small proposition.
+
+<!--
+```agda
+module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B) where
+  Ω-image : Type ℓ'
+  Ω-image = Σ[ b ∈ B ] □ (fibre f b)
+
+  Ω-corestriction : A → Ω-image
+  Ω-corestriction a = f a , inc (a , refl)
+
+  opaque
+    Ω-corestriction-is-surjective : is-surjective Ω-corestriction
+    Ω-corestriction-is-surjective (b , p) = □-rec! (λ (a , p) → inc (a , Σ-prop-path! p)) p
+```
+-->

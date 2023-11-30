@@ -48,7 +48,7 @@ module Joins (joins : ∀ x y → Join x y) where
 
 ```agda
   ∪-idem : ∀ {x} → x ∪ x ≡ x
-  ∪-idem = ≤-antisym (∪-universal _ ≤-refl ≤-refl) l≤∪ 
+  ∪-idem = ≤-antisym (∪-universal _ ≤-refl ≤-refl) l≤∪
 
   ∪-comm : ∀ {x y} → x ∪ y ≡ y ∪ x
   ∪-comm =
@@ -146,7 +146,7 @@ module Lubs (lubs : ∀ {I : Type o} → (f : I → Ob) → Lub f) where
 ```agda
   ∪-distrib-⋃-≤l
     : ∀ {I : Type o} {x : Ob} {f : I → Ob}
-    → ⋃ (λ i → x ∪ f i) ≤ x ∪ ⋃ f 
+    → ⋃ (λ i → x ∪ f i) ≤ x ∪ ⋃ f
   ∪-distrib-⋃-≤l =
     ⋃-universal _ λ i → ∪-universal _ l≤∪ (≤-trans (⋃-inj i) r≤∪)
 ```
@@ -155,7 +155,7 @@ module Lubs (lubs : ∀ {I : Type o} → (f : I → Ob) → Lub f) where
   ∪-distrib-nonempty-⋃-l
     : ∀ {I : Type o} {x : Ob} {f : I → Ob}
     → ∥ I ∥
-    → ⋃ (λ i → x ∪ f i) ≡ x ∪ ⋃ f 
+    → ⋃ (λ i → x ∪ f i) ≡ x ∪ ⋃ f
   ∪-distrib-nonempty-⋃-l i =
     ≤-antisym
       ∪-distrib-⋃-≤l
@@ -169,11 +169,49 @@ module Lubs (lubs : ∀ {I : Type o} → (f : I → Ob) → Lub f) where
     → (∀ i → f i ≡ g (e .fst i))
     → ⋃ f ≡ ⋃ g
   ⋃-ap e p = ap₂ (λ I f → ⋃ {I = I} f) (ua e) (ua→ p)
-  
+
   -- raised i for "index", raised f for "family"
   ⋃-apⁱ : ∀ {I I' : Type o} {f : I' → Ob} (e : I ≃ I') → ⋃ (λ i → f (e .fst i)) ≡ ⋃ f
   ⋃-apᶠ : ∀ {I : Type o} {f g : I → Ob} → (∀ i → f i ≡ g i) → ⋃ f ≡ ⋃ g
-  
+
   ⋃-apⁱ e = ⋃-ap e (λ i → refl)
   ⋃-apᶠ p = ⋃-ap (_ , id-equiv) p
+```
+
+```agda
+is-cocomplete→is-large-cocomplete
+  : (lubs : ∀ {I : Type o} (f : I → Ob) → Lub f)
+  → ∀ {ℓ} {I : Type ℓ} (F : I → Ob) → Lub F
+is-cocomplete→is-large-cocomplete lubs {I = I} F = cover-preserves-lub
+  (Ω-corestriction-is-surjective F)
+  (lubs fst)
+```
+
+```agda
+module Large (lubs : ∀ {I : Type o} (f : I → Ob) → Lub f) where
+  opaque
+    ⋃ᴸ : ∀ {ℓ} {I : Type ℓ} (F : I → Ob) → Ob
+    ⋃ᴸ F = is-cocomplete→is-large-cocomplete lubs F .Lub.lub
+
+    ⋃ᴸ-inj : ∀ {ℓ} {I : Type ℓ} {F : I → Ob} (i : I) → F i ≤ ⋃ᴸ F
+    ⋃ᴸ-inj = Lub.fam≤lub (is-cocomplete→is-large-cocomplete lubs _)
+
+    ⋃ᴸ-universal : ∀ {ℓ} {I : Type ℓ} {F : I → Ob} (x : Ob) → (∀ i → F i ≤ x) → ⋃ᴸ F ≤ x
+    ⋃ᴸ-universal = Lub.least (is-cocomplete→is-large-cocomplete lubs _)
+
+  ⋃ᴸ-ap
+    : ∀ {ℓ ℓ'} {I : Type ℓ} {I' : Type ℓ'} {f : I → Ob} {g : I' → Ob}
+    → (e : I ≃ I')
+    → (∀ i → f i ≡ g (e .fst i))
+    → ⋃ᴸ f ≡ ⋃ᴸ g
+  ⋃ᴸ-ap {g = g} e p = ≤-antisym
+    (⋃ᴸ-universal _ (λ i → ≤-trans (≤-refl' (p i)) (⋃ᴸ-inj _)))
+    (⋃ᴸ-universal _ (λ i → ≤-trans (≤-refl' (ap g (sym (Equiv.ε e i)) ∙ sym (p (Equiv.from e _)))) (⋃ᴸ-inj _)))
+
+  -- raised i for "index", raised f for "family"
+  ⋃ᴸ-apⁱ : ∀ {ℓ ℓ'} {I : Type ℓ} {I' : Type ℓ'} {f : I' → Ob} (e : I ≃ I') → ⋃ᴸ (λ i → f (e .fst i)) ≡ ⋃ᴸ f
+  ⋃ᴸ-apᶠ : ∀ {ℓ} {I : Type ℓ} {f g : I → Ob} → (∀ i → f i ≡ g i) → ⋃ᴸ f ≡ ⋃ᴸ g
+
+  ⋃ᴸ-apⁱ e = ⋃ᴸ-ap e (λ i → refl)
+  ⋃ᴸ-apᶠ p = ⋃ᴸ-ap (_ , id-equiv) p
 ```

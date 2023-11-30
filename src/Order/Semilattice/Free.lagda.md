@@ -42,7 +42,7 @@ module _ {ℓ} (A : Set ℓ) where
     Σ (∣ A ∣ → Ω) λ P →
     ∃ Nat λ n →
     Σ (Fin n → (Σ ∣ A ∣ λ x → x ∈ P)) λ f →
-      ∀ x → ∥ fibre f x ∥
+      is-surjective f
 ```
 
 The operator we'll choose to make $K(A)$ into a semilattice is subset
@@ -183,7 +183,7 @@ $K$-finiteness condition, but it will be very useful!
   K-reduce (P , P-fin) = ∥-∥-map reduce P-fin where
     open is-glb
 
-    reduce : Σ Nat (λ n → Σ (Fin n → Σ ∣ A ∣ λ x → x ∈ P) λ f → ∀ x → ∥ fibre f x ∥)
+    reduce : Σ Nat (λ n → Σ (Fin n → Σ ∣ A ∣ λ x → x ∈ P) λ f → is-surjective f)
            → Σ Nat λ n → Σ (Fin n → ∣ A ∣) λ f → is-glb KA.po (λ i → ηₛₗ (f i)) (P , P-fin)
     reduce (card , cover , surj) = card , (λ x → cover x .fst) , λ where
       .glb≤fam i →
@@ -230,7 +230,7 @@ speak, the meet of our family $[n] \epi P \to B$ to a meet of $P \to B$,
 using surjectivity of the first map.
 
 ```agda
-    ε : Σ Nat (λ n → Σ (Fin n → Σ ∣ A ∣ λ x → x ∈ P) λ f → ∀ x → ∥ fibre f x ∥)
+    ε : Σ Nat (λ n → Σ (Fin n → Σ ∣ A ∣ λ x → x ∈ P) λ f → is-surjective f)
       → Glb B.po fam
     ε (card , g , surj) = glb
       where
