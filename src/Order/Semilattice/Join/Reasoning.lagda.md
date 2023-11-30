@@ -2,10 +2,10 @@
 ```agda
 open import Algebra.Monoid
 
-open import Data.Fin.Base using (Fin; fzero; fsuc)
-
 open import Cat.Instances.Delooping
 open import Cat.Prelude
+
+open import Data.Fin.Base using (Fin; fzero; fsuc)
 
 open import Order.Semilattice.Join
 open import Order.Diagram.Lub

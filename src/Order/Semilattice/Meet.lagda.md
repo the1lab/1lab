@@ -10,6 +10,7 @@ open import Order.Diagram.Glb
 open import Order.Base
 
 import Cat.Reasoning
+
 import Order.Reasoning
 ```
 -->
