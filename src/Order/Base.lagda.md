@@ -236,8 +236,8 @@ Extensional-Monotone
   : ∀ {o ℓ o' ℓ' ℓr} {P : Poset o ℓ} {Q : Poset o' ℓ'}
   → ⦃ sa : Extensional (⌞ P ⌟ → ⌞ Q ⌟) ℓr ⦄
   → Extensional (Monotone P Q) ℓr
-Extensional-Monotone {Q = Q} ⦃ sq ⦄ =
-  injection→extensional! Monotone-pathp sq
+Extensional-Monotone {Q = Q} ⦃ sa ⦄ =
+  injection→extensional! Monotone-pathp sa
 
 instance
   Extensionality-Monotone
