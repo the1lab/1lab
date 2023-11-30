@@ -19,7 +19,7 @@ module Order.Diagram.Glb.Reasoning {o ℓ} (P : Poset o ℓ) where
 <!--
 ```agda
 open Order.Reasoning P
-open Order.Diagram.Glb P public
+open Order.Diagram.Glb P
 ```
 -->
 
