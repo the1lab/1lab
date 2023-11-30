@@ -3,6 +3,7 @@
 open import Cat.Allegory.Base
 open import Cat.Prelude
 
+open import Order.Base
 open import Order.Frame
 
 import Order.Frame.Reasoning
@@ -25,8 +26,8 @@ are given by $A \times B$-matrices valued in $L$.
 
 <!--
 ```agda
-module _ (o : Level) (L : Frame o) where
-  open Order.Frame.Reasoning L hiding (Ob ; Hom-set)
+module _ {o ℓ : Level} (L : Frame o ℓ) where
+  open Order.Frame.Reasoning L
   open Precategory
   private module A = Allegory
 ```
@@ -57,25 +58,25 @@ that this is, indeed, a category:
   Mat ._∘_ {y = y} M N i j = ⋃ λ k → N i k ∩ M k j
 
   Mat .idr M = funext² λ i j →
-    ⋃ (λ k → ⋃ (λ _ → top) ∩ M k j) ≡⟨ ⋃-apᶠ (λ k → ∩-commutative ∙ ⋃-distrib _ _) ⟩
-    ⋃ (λ k → ⋃ (λ _ → M k j ∩ top)) ≡⟨ ⋃-apᶠ (λ k → ap ⋃ (funext λ i → ∩-idr)) ⟩
+    ⋃ (λ k → ⋃ (λ _ → top) ∩ M k j) ≡⟨ ⋃-apᶠ (λ k → ∩-comm _ _ ∙ ⋃-distribl _ _) ⟩
+    ⋃ (λ k → ⋃ (λ _ → M k j ∩ top)) ≡⟨ ⋃-apᶠ (λ k → ap ⋃ (funext λ i → (∩-idr _))) ⟩
     ⋃ (λ k → ⋃ (λ _ → M k j))       ≡⟨ ⋃-twice _ ⟩
     ⋃ (λ (k , _) → M k j)           ≡⟨ ⋃-singleton (contr _ Singleton-is-contr) ⟩
     M i j                           ∎
   Mat .idl M = funext² λ i j →
-    ⋃ (λ k → M i k ∩ ⋃ (λ _ → top)) ≡⟨ ⋃-apᶠ (λ k → ⋃-distrib _ _) ⟩
-    ⋃ (λ k → ⋃ (λ _ → M i k ∩ top)) ≡⟨ ⋃-apᶠ (λ k → ⋃-apᶠ λ j → ∩-idr) ⟩
+    ⋃ (λ k → M i k ∩ ⋃ (λ _ → top)) ≡⟨ ⋃-apᶠ (λ k → ⋃-distribl _ _) ⟩
+    ⋃ (λ k → ⋃ (λ _ → M i k ∩ top)) ≡⟨ ⋃-apᶠ (λ k → ⋃-apᶠ λ j → (∩-idr _)) ⟩
     ⋃ (λ x → ⋃ (λ _ → M i x))       ≡⟨ ⋃-twice _ ⟩
     ⋃ (λ (k , _) → M i k)           ≡⟨ ⋃-singleton (contr _ (λ p i → p .snd (~ i) , λ j → p .snd (~ i ∨ j))) ⟩
     M i j                           ∎
 
   Mat .assoc M N O = funext² λ i j →
-    ⋃ (λ k → ⋃ (λ l → O i l ∩ N l k) ∩ M k j)   ≡⟨ ⋃-apᶠ (λ k → ⋃-distribʳ) ⟩
+    ⋃ (λ k → ⋃ (λ l → O i l ∩ N l k) ∩ M k j)   ≡⟨ ⋃-apᶠ (λ k → (⋃-distribr _ _)) ⟩
     ⋃ (λ k → ⋃ (λ l → (O i l ∩ N l k) ∩ M k j)) ≡⟨ ⋃-twice _ ⟩
-    ⋃ (λ (k , l) → (O i l ∩ N l k) ∩ M k j)     ≡⟨ ⋃-apᶠ (λ _ → sym ∩-assoc) ⟩
+    ⋃ (λ (k , l) → (O i l ∩ N l k) ∩ M k j)     ≡⟨ ⋃-apᶠ (λ _ → sym (∩-assoc _ _ _)) ⟩
     ⋃ (λ (k , l) → O i l ∩ (N l k ∩ M k j))     ≡⟨ ⋃-apⁱ ×-swap ⟩
     ⋃ (λ (l , k) → O i l ∩ (N l k ∩ M k j))     ≡˘⟨ ⋃-twice _ ⟩
-    ⋃ (λ l → ⋃ (λ k → O i l ∩ (N l k ∩ M k j))) ≡⟨ ap ⋃ (funext λ k → sym (⋃-distrib _ _)) ⟩
+    ⋃ (λ l → ⋃ (λ k → O i l ∩ (N l k ∩ M k j))) ≡⟨ ap ⋃ (funext λ k → sym (⋃-distribl _ _)) ⟩
     ⋃ (λ l → O i l ∩ ⋃ (λ k → N l k ∩ M k j))   ∎
 ```
 
@@ -87,7 +88,7 @@ a bit more algebra is the verification of the modular law:
 [semilattices]: Order.Semilattice.html
 
 ```agda
-  Matrices : Allegory (lsuc o) o o
+  Matrices : Allegory (lsuc o) o (o ⊔ ℓ)
   Matrices .A.cat = Mat
   Matrices .A._≤_ M N = ∀ i j → M i j ≤ N i j
 
@@ -100,16 +101,16 @@ a bit more algebra is the verification of the modular law:
   Matrices .A._† M i j     = M j i
   Matrices .A.dual-≤ x i j = x j i
   Matrices .A.dual M       = refl
-  Matrices .A.dual-∘       = funext² λ i j → ⋃-apᶠ λ k → ∩-commutative
+  Matrices .A.dual-∘       = funext² λ i j → ⋃-apᶠ λ k → ∩-comm _ _
 
   Matrices .A._∩_ M N i j    = M i j ∩ N i j
-  Matrices .A.∩-le-l i j     = ∩≤l
-  Matrices .A.∩-le-r i j     = ∩≤r
-  Matrices .A.∩-univ p q i j = ∩-univ _ (p i j) (q i j)
+  Matrices .A.∩-le-l i j     = ∩-≤l
+  Matrices .A.∩-le-r i j     = ∩-≤r
+  Matrices .A.∩-univ p q i j = ∩-universal _ (p i j) (q i j)
 
   Matrices .A.modular f g h i j =
-    ⋃ (λ k → f i k ∩ g k j) ∩ h i j                     =⟨ ⋃-distribʳ ∙ ⋃-apᶠ (λ _ → sym ∩-assoc) ⟩
-    ⋃ (λ k → f i k ∩ (g k j ∩ h i j))                   =⟨ ⋃-apᶠ (λ k → ap₂ _∩_ refl ∩-commutative) ⟩
-    ⋃ (λ k → f i k ∩ (h i j ∩ g k j))                   ≤⟨ ⋃≤⋃ (λ i → ∩-univ _ (∩-univ _ ∩≤l (≤-trans ∩≤r (⋃-colimiting _ _))) (≤-trans ∩≤r ∩≤r)) ⟩
+    ⋃ (λ k → f i k ∩ g k j) ∩ h i j                     =⟨ ⋃-distribr _ _ ∙ ⋃-apᶠ (λ _ → sym (∩-assoc _ _ _)) ⟩
+    ⋃ (λ k → f i k ∩ (g k j ∩ h i j))                   =⟨ ⋃-apᶠ (λ k → ap₂ _∩_ refl (∩-comm _ _)) ⟩
+    ⋃ (λ k → f i k ∩ (h i j ∩ g k j))                   ≤⟨ ⋃≤⋃ (λ i → ∩-universal _ (∩-universal _ ∩-≤l (≤-trans ∩-≤r (fam≤⋃ _))) (≤-trans ∩-≤r ∩-≤r)) ⟩
     ⋃ (λ k → (f i k ∩ ⋃ (λ l → h i l ∩ g k l)) ∩ g k j) ≤∎
 ```

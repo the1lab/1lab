@@ -395,10 +395,23 @@ Join-slat-subcat o ℓ .Subcat.is-hom-prop = hlevel!
 Join-slat-subcat o ℓ .Subcat.is-hom-id = id-join-slat-hom
 Join-slat-subcat o ℓ .Subcat.is-hom-∘ = ∘-join-slat-hom
 
-Meet-slat : ∀ o ℓ → Precategory (lsuc o ⊔ lsuc ℓ) (o ⊔ ℓ)
-Meet-slat o ℓ = Subcategory (Meet-slat-subcat o ℓ)
+Meet-slats : ∀ o ℓ → Precategory (lsuc o ⊔ lsuc ℓ) (o ⊔ ℓ)
+Meet-slats o ℓ = Subcategory (Meet-slat-subcat o ℓ)
 
-Join-slat : ∀ o ℓ → Precategory (lsuc o ⊔ lsuc ℓ) (o ⊔ ℓ)
-Join-slat o ℓ = Subcategory (Join-slat-subcat o ℓ)
+Join-slats : ∀ o ℓ → Precategory (lsuc o ⊔ lsuc ℓ) (o ⊔ ℓ)
+Join-slats o ℓ = Subcategory (Join-slat-subcat o ℓ)
+```
+
+```agda
+module Meet-slats {o} {ℓ} = Cat.Reasoning (Meet-slats o ℓ)
+module Join-slats {o} {ℓ} = Cat.Reasoning (Join-slats o ℓ)
+```
+
+```agda
+Meet-semilattice : ∀ o ℓ → Type _
+Meet-semilattice o ℓ = Meet-slats.Ob {o} {ℓ}
+
+Join-semilattice : ∀ o ℓ → Type _
+Join-semilattice o ℓ = Join-slats.Ob {o} {ℓ}
 ```
 
