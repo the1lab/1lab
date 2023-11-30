@@ -97,6 +97,30 @@ instance
     : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {n}
     → H-Level (Glb F) (suc n)
   H-Level-Glb = prop-instance Glb-is-prop
+
+lift-is-glb
+  : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob} {glb}
+  → is-glb F glb → is-glb (F ⊙ Lift.lower {ℓ = ℓᵢ'}) glb
+lift-is-glb is .glb≤fam (lift ix) = is .glb≤fam ix
+lift-is-glb is .greatest ub' le = is .greatest ub' (le ⊙ lift)
+
+lift-glb
+  : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob}
+  → Glb F → Glb (F ⊙ Lift.lower {ℓ = ℓᵢ'})
+lift-glb glb .Glb.glb = Glb.glb glb
+lift-glb glb .Glb.has-glb = lift-is-glb (Glb.has-glb glb)
+
+lower-is-glb
+  : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob} {glb}
+  → is-glb (F ⊙ Lift.lower {ℓ = ℓᵢ'}) glb → is-glb F glb
+lower-is-glb is .glb≤fam ix = is .glb≤fam (lift ix)
+lower-is-glb is .greatest ub' le = is .greatest ub' (le ⊙ Lift.lower)
+
+lower-glb
+  : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {F : I → Ob}
+  → Glb (F ⊙ Lift.lower {ℓ = ℓᵢ'}) → Glb F
+lower-glb glb .Glb.glb = Glb.glb glb
+lower-glb glb .Glb.has-glb = lower-is-glb (Glb.has-glb glb)
 ```
 -->
 
