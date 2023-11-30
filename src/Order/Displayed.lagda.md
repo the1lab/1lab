@@ -55,7 +55,7 @@ record Displayed {ℓₒ ℓᵣ} ℓ ℓ' (P : Poset ℓₒ ℓᵣ) : Type (lsuc
       λ r s → transport
         (λ i → {f g : x P.≤ x} {y' : Ob[ x ]}
              → Rel[ P.≤-thin P.≤-refl f i ] x' y' → Rel[ P.≤-thin P.≤-refl g i ] y' x'
-             → PathP (λ j → Ob[ P.has-is-set _ _ refl (P.≤-antisym f g) i j ]) x' y')
+             → PathP (λ j → Ob[ P.Ob-is-set _ _ refl (P.≤-antisym f g) i j ]) x' y')
         ≤-antisym' r s
     where p = P.≤-antisym f g
 ```
@@ -68,15 +68,18 @@ make a new poset.
 
 ```agda
 ∫ : ∀ {ℓ ℓ' ℓₒ ℓᵣ} {P : Poset ℓₒ ℓᵣ} → Displayed ℓ ℓ' P → Poset _ _
-∫ {P = P} D = to-poset (Σ ⌞ P ⌟ D.Ob[_]) mk-∫ where
+∫ {P = P} D = po where
+-- to-poset (Σ ⌞ P ⌟ D.Ob[_]) mk-∫ where
   module D = Displayed D
   module P = Pr P
-  mk-∫ : make-poset _ _
-  mk-∫ .make-poset.rel (x , x') (y , y') = Σ (x P.≤ y) λ f → D.Rel[ f ] x' y'
-  mk-∫ .make-poset.id = P.≤-refl , D.≤-refl'
-  mk-∫ .make-poset.thin = Σ-is-hlevel 1 P.≤-thin λ f → D.≤-thin' f
-  mk-∫ .make-poset.trans (p , p') (q , q') = P.≤-trans p q , D.≤-trans' p' q'
-  mk-∫ .make-poset.antisym (p , p') (q , q') =
+
+  po : Poset _ _
+  po .Poset.Ob = Σ ⌞ P ⌟ D.Ob[_]
+  po .Poset._≤_ (x , x') (y , y') = Σ (x P.≤ y) λ f → D.Rel[ f ] x' y'
+  po .Poset.≤-thin = Σ-is-hlevel 1 P.≤-thin λ f → D.≤-thin' f
+  po .Poset.≤-refl = P.≤-refl , D.≤-refl'
+  po .Poset.≤-trans (p , p') (q , q') = P.≤-trans p q , D.≤-trans' p' q'
+  po .Poset.≤-antisym (p , p') (q , q') =
     Σ-pathp (P.≤-antisym p q) (D.≤-antisym-over p' q')
 
 open Displayed

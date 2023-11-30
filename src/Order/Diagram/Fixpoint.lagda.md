@@ -5,7 +5,7 @@ open import Cat.Prelude
 
 open import Order.Base
 
-import Order.Reasoning as Poset
+import Order.Reasoning
 ```
 -->
 
@@ -15,8 +15,7 @@ module Order.Diagram.Fixpoint {o ℓ} (P : Poset o ℓ) where
 
 <!--
 ```agda
-open Total-hom
-open Poset P
+open Order.Reasoning P
 ```
 -->
 
@@ -56,7 +55,7 @@ is-least-fixpoint-is-prop
   : ∀ {f : Posets.Hom P P} {x}
   → is-prop (is-least-fixpoint f x)
 is-least-fixpoint-is-prop {f = f} {x = x} p q i .fixed =
-  has-is-set (f .hom x) x (p .fixed) (q .fixed) i
+  Ob-is-set (f .hom x) x (p .fixed) (q .fixed) i
 is-least-fixpoint-is-prop {f = f} {x = x} p q i .least y y-fix =
   is-prop→pathp
     (λ i → ≤-thin)

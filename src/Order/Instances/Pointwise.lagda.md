@@ -24,15 +24,16 @@ iff $f(x) \le g(x)$ for all $x$.
 
 ```agda
 Pointwise : ∀ {ℓ ℓₐ ℓᵣ} → Type ℓ → Poset ℓₐ ℓᵣ → Poset (ℓ ⊔ ℓₐ) (ℓ ⊔ ℓᵣ)
-Pointwise A B = to-poset (A → ⌞ B ⌟) mk-pwise where
+Pointwise A B = po where
   open Pr B
-  mk-pwise : make-poset _ _
-  mk-pwise .make-poset.rel f g         = ∀ x → f x ≤ g x
-  mk-pwise .make-poset.thin            = hlevel 1
-  mk-pwise .make-poset.id x            = ≤-refl
-  mk-pwise .make-poset.trans f<g g<h x = ≤-trans (f<g x) (g<h x)
-  mk-pwise .make-poset.antisym f<g g<f = funext λ x → ≤-antisym (f<g x) (g<f x)
 
+  po : Poset _ _
+  po .Poset.Ob = A → ⌞ B ⌟
+  po .Poset._≤_ f g = ∀ x → f x ≤ g x
+  po .Poset.≤-thin = hlevel!
+  po .Poset.≤-refl x = ≤-refl
+  po .Poset.≤-trans f≤g g≤h x = ≤-trans (f≤g x) (g≤h x)
+  po .Poset.≤-antisym f≤g g≤f = funext λ x → ≤-antisym (f≤g x) (g≤f x)
 ```
 
 A very important particular case of the pointwise ordering is the poset
@@ -48,13 +49,18 @@ another poset, you might want to consider the full subposet of $P \to Q$
 consisting of the monotone maps:
 
 ```agda
-Monotone : ∀ {ℓₒ ℓᵣ ℓₒ' ℓᵣ'}
+Poset[_,_] : ∀ {ℓₒ ℓᵣ ℓₒ' ℓᵣ'}
          → Poset ℓₒ ℓᵣ
          → Poset ℓₒ' ℓᵣ'
          → Poset (ℓₒ ⊔ ℓᵣ ⊔ ℓₒ' ⊔ ℓᵣ') (ℓₒ ⊔ ℓᵣ')
-Monotone P Q =
-  Full-subposet (Pointwise ⌞ P ⌟ Q) λ f →
-    el! (∀ x y → x P.≤ y → f x Q.≤ f y)
-  where module P = Pr P
-        module Q = Pr Q
+Poset[_,_] P Q = po where
+  open Pr Q
+
+  po : Poset _ _
+  po .Poset.Ob = Monotone P Q
+  po .Poset._≤_ f g = ∀ (x : ⌞ P ⌟) → f # x ≤ g # x
+  po .Poset.≤-thin = hlevel!
+  po .Poset.≤-refl _ = ≤-refl
+  po .Poset.≤-trans f≤g g≤h x = ≤-trans (f≤g x) (g≤h x)
+  po .Poset.≤-antisym f≤g g≤f = ext (λ x → ≤-antisym (f≤g x) (g≤f x))
 ```

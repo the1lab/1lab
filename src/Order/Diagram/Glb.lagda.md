@@ -23,7 +23,7 @@ open Order.Reasoning P
 ```
 -->
 
-# Greatest lower bounds
+# Greatest lower bounds {defines="greatest-lower-bound"}
 
 A **glb** $g$ (short for **greatest lower bound**) for a family of
 elements $(a_i)_{i : I}$ is, as the name implies, a greatest element
@@ -66,7 +66,7 @@ private unquoteDecl eqv = declare-record-iso eqv (quote is-glb)
 is-glb-is-prop
   : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {glb : Ob}
   → is-prop (is-glb F glb)
-is-glb-is-prop = Iso→is-hlevel 1 eqv (hlevel 1)
+is-glb-is-prop = Iso→is-hlevel 1 eqv hlevel!
 
 instance
   H-Level-is-glb
@@ -100,7 +100,7 @@ instance
 ```
 -->
 
-## Meets
+## Meets {defines="meet"}
 
 As mentioned before, in the binary case, we refer to glbs as **meets**:
 The meet of $a$ and $b$ is, if it exists, the greatest element
@@ -149,7 +149,7 @@ instance
   H-Level-is-meet
     : ∀ {a b glb : Ob} {n}
     → H-Level (is-meet a b glb) (suc n)
-  H-Level-is-meet = prop-instance $ Iso→is-hlevel 1 eqv' (hlevel 1)
+  H-Level-is-meet = prop-instance $ Iso→is-hlevel 1 eqv' hlevel!
 
 meet-unique : ∀ {a b x y} → is-meet a b x → is-meet a b y → x ≡ y
 meet-unique x-meet y-meet =
@@ -244,7 +244,7 @@ is-glb→is-top glb x = glb .greatest x λ ()
 <!--
 ```agda
 is-top-is-prop : ∀ x → is-prop (is-top x)
-is-top-is-prop _ = hlevel 1
+is-top-is-prop _ = hlevel!
 
 top-unique : ∀ {x y} → is-top x → is-top y → x ≡ y
 top-unique p q = ≤-antisym (q _) (p _)
