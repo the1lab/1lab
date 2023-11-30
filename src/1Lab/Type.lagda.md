@@ -101,11 +101,15 @@ id : ∀ {ℓ} {A : Type ℓ} → A → A
 id x = x
 {-# INLINE id #-}
 
-infixr -1 _$_ _$ₛ_
+infixr -1 _$_ _$ᵢ_ _$ₛ_
 
 _$_ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : A → Type ℓ₂} → ((x : A) → B x) → ((x : A) → B x)
 f $ x = f x
 {-# INLINE _$_ #-}
+
+_$ᵢ_ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : .A → Type ℓ₂} → (.(x : A) → B x) → (.(x : A) → B x)
+f $ᵢ x = f x
+{-# INLINE _$ᵢ_ #-}
 
 _$ₛ_ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : A → SSet ℓ₂} → ((x : A) → B x) → ((x : A) → B x)
 f $ₛ x = f x
