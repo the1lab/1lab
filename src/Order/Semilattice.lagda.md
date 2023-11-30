@@ -414,4 +414,3 @@ Meet-semilattice o ℓ = Meet-slats.Ob {o} {ℓ}
 Join-semilattice : ∀ o ℓ → Type _
 Join-semilattice o ℓ = Join-slats.Ob {o} {ℓ}
 ```
-

@@ -73,7 +73,7 @@ Poset[_,_] P Q = po where
 module _ {o ℓ ℓ'} {A : Type ℓ'} {P : Poset o ℓ} where
   open Pr P
 
-  Pointwise-has-top : Top P → Top (Pointwise A P) 
+  Pointwise-has-top : Top P → Top (Pointwise A P)
   Pointwise-has-top P-top .Top.top _ = Top.top P-top
   Pointwise-has-top P-top .Top.has-top f x =
     Top.has-top P-top (f x)

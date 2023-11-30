@@ -29,7 +29,7 @@ notions of "order" in mathematics:
   When ordering the naturals, the integers, and the rationals, we can
   say more: they are _linear_ orders. That is, in addition to the
   properties of $\le$ required to be a poset, we have, for any pair of
-  elements,
+  elements $x$ and $y$,
 
   $$(x \le y) \lor (y \le x)\text{.}$$
 
@@ -114,18 +114,18 @@ which, _a priori_, might not be a proposition: we have not included the
 assumption that `Ob`{.Agda} is actually a set. Therefore, it might be
 the case that an identification between posets does _not_ correspond to
 an identification of the underlying types and one of the relation.
-However, since the "symmetric part" of $\le$, the relation $x \sim y$
+However, since the "symmetric part" of $\le$, the relation
 iff.
 
 $$
-(x \le y) \land (y \le x)\text{,}
+x \sim y = (x \le y) \land (y \le x)\text{,}
 $$
 
 is a reflexive mere relation which implies identity, the type of objects
 is automatically a set.
 
 ```agda
-  opaque
+  abstract
     Ob-is-set : is-set Ob
     Ob-is-set =
       identity-system→hlevel 1
@@ -138,6 +138,10 @@ is automatically a set.
 
 <!--
 ```agda
+  abstract
+    ≤-refl' : ∀ {x y} → x ≡ y → x ≤ y
+    ≤-refl' {x = x} p = subst (x ≤_) p ≤-refl
+
 instance
   Underlying-Poset : ∀ {o ℓ} → Underlying (Poset o ℓ)
   Underlying-Poset .Underlying.ℓ-underlying = _
@@ -232,8 +236,8 @@ Extensional-Monotone
   : ∀ {o ℓ o' ℓ' ℓr} {P : Poset o ℓ} {Q : Poset o' ℓ'}
   → ⦃ sa : Extensional (⌞ P ⌟ → ⌞ Q ⌟) ℓr ⦄
   → Extensional (Monotone P Q) ℓr
-Extensional-Monotone {Q = Q} ⦃ sq ⦄ =
-  injection→extensional! Monotone-pathp sq
+Extensional-Monotone {Q = Q} ⦃ sa ⦄ =
+  injection→extensional! Monotone-pathp sa
 
 instance
   Extensionality-Monotone

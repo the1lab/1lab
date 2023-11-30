@@ -40,7 +40,8 @@ only difference between these types can be patched by
 
 ```agda
   iso→equiv : {A B : Set ℓ} → A Sets.≅ B → ∣ A ∣ ≃ ∣ B ∣
-  iso→equiv x = Iso→Equiv (x.to , iso x.from (happly x.invl) (happly x.invr))
+  iso→equiv x .fst = x .Sets.to
+  iso→equiv x .snd = is-iso→is-equiv $ iso x.from (happly x.invl) (happly x.invr)
     where module x = Sets._≅_ x
 ```
 
