@@ -16,19 +16,22 @@ module Order.Instances.Pointwise where
 
 # The pointwise ordering
 
-If $(B, \le)$ is a [[partially ordered set]], then so is $A \to B$, for
-any type $A$ which we might choose! There might be other ways of making
-$A \to B$ into a poset, of course, but the canonical way we're talking
-about here is the **pointwise ordering** on $A \to B$, where $f \le g$
-iff $f(x) \le g(x)$ for all $x$.
+The product of a family of [[partially ordered sets]] $\prod_{i : I} P_i$ is a
+poset, for any index type $I$ which we might choose! There might be other ways
+of making $\prod_{i : I} P_i$ into a poset, of course, but the canonical way
+we're talking about here is the **pointwise ordering** on $\prod_{i : I} P_i$,
+where $f \le g$ iff $f(x) \le g(x)$ for all $x$.
+
+[partially ordered sets]: Order.Base.html
 
 ```agda
-Pointwise : ∀ {ℓ ℓₐ ℓᵣ} → Type ℓ → Poset ℓₐ ℓᵣ → Poset (ℓ ⊔ ℓₐ) (ℓ ⊔ ℓᵣ)
-Pointwise A B = po where
-  open Pr B
+Pointwise : ∀ {ℓ ℓₐ ℓᵣ} (I : Type ℓ) (P : I → Poset ℓₐ ℓᵣ)
+  → Poset (ℓ ⊔ ℓₐ) (ℓ ⊔ ℓᵣ)
+Pointwise I P = po where
+  open module PrP {i : I} = Pr (P i)
 
   po : Poset _ _
-  po .Poset.Ob = A → ⌞ B ⌟
+  po .Poset.Ob = (i : I) → ⌞ P i ⌟
   po .Poset._≤_ f g = ∀ x → f x ≤ g x
   po .Poset.≤-thin = hlevel!
   po .Poset.≤-refl x = ≤-refl
@@ -41,7 +44,7 @@ of subsets of a fixed type, which has underlying set $A \to \Omega$.
 
 ```agda
 Subsets : ∀ {ℓ} → Type ℓ → Poset ℓ ℓ
-Subsets A = Pointwise A Props
+Subsets A = Pointwise A (λ _ → Props)
 ```
 
 Another important case: when your domain is not an arbitrary type but
