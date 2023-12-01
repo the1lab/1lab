@@ -41,7 +41,7 @@ private
 ```
 -->
 
-# Reindexing for Cartesian fibrations
+# Reindexing for cartesian fibrations
 
 A [[cartesian fibration]] can be thought of as a [[displayed category]]
 $\cE$ whose [[fibre categories]] $\cE^*(b)$ depend ([pseudo])functorially

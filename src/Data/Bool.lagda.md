@@ -23,7 +23,7 @@ module Data.Bool where
 open import Prim.Data.Bool public
 ```
 
-# The Booleans
+# The booleans
 
 The type of booleans is interesting in homotopy type theory because it
 is the simplest type where its automorphisms in `Type`{.Agda} are

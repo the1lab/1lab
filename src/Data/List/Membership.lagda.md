@@ -13,7 +13,7 @@ open import Data.Sum.Base
 module Data.List.Membership where
 ```
 
-## Pointwise Predicates
+## Pointwise predicates
 
 ```agda
 data Some {ℓ ℓ'} {A : Type ℓ} (P : A → Type ℓ') : List A → Type (ℓ ⊔ ℓ') where
@@ -149,7 +149,7 @@ instance
 -->
 
 
-## Membership in Lists
+## Membership in lists
 
 ```agda
 _∈ₗ_ : ∀ {ℓ} {A : Type ℓ} → A → List A → Type ℓ

@@ -41,7 +41,7 @@ private
 ```
 -->
 
-# Weak Cocartesian Morphisms
+# Weak cocartesian morphisms
 
 We can define a weaker notion of [cocartesian morphism] much like we can
 with their [cartesian counterparts].
@@ -616,7 +616,7 @@ cartesian+weak-opfibration→opfibration fib wlifts =
       (fibration+weak-cocartesian→cocartesian fib g-weak)
 ```
 
-# Weak Opfibrations and Equivalence of Hom Sets
+# Weak opfibrations and equivalence of Hom sets
 
 If $\cE$ is a weak opfibration, then the hom sets $x' \to_f y'$ and
 $f^{*}(x') \to_{id} y'$ are equivalent, where $f^{*}(x')$ is the codomain

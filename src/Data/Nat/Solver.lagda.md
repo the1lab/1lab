@@ -15,7 +15,7 @@ open import Data.List hiding (lookup)
 module Data.Nat.Solver where
 ```
 
-# The Nat Solver
+# The Nat solver
 
 This module defines a solver for equations in the commutative semiring
 of [natural numbers]. Our approach splits cleanly into 3 distinct parts:
@@ -26,7 +26,7 @@ of [natural numbers]. Our approach splits cleanly into 3 distinct parts:
 - Evaluation of reflected terms into polynomials
 - The reflection interface
 
-## Horner Normal Forms
+## Horner normal forms
 
 If we ignore the `suc`{.Agda} and `zero`{.Agda} constructors, and their
 respective equations, the core problem at hand is trying to compute
@@ -129,7 +129,7 @@ decidedly more difficult. As the solver is not expected to deal with
 polynomials with large degrees, this term blow-up will not be a problem
 in practice.
 
-### Operations on Horner Normal Forms
+### Operations on Horner normal forms
 
 Now, let's define a handful of functions for constructing and combining
 polynomials.  The naming here can get a bit confusing, so let's stick
@@ -221,7 +221,7 @@ r *ₚ' zerop     = zerop
 r *ₚ' (p *X+ q) = (r *ₚ' p) *X+ (r *ₚ q)
 ```
 
-### Evaluation of Horner Normal Forms
+### Evaluation of Horner normal forms
 
 Multivariate polynomials represent functions $A^n \to A$, so we should
 be able to interpret them as such. Luckily, Horner Normal Forms are
@@ -243,7 +243,7 @@ block x = x
 ⟦ p *X+ q ⟧ₚ (x₀ ∷ env) = ⟦ p ⟧ₚ (x₀ ∷ env) * x₀ + ⟦ q ⟧ₚ env
 ```
 
-### Soundness of the Operations
+### Soundness of the operations
 
 Now, it's important that the operations we defined actually denote the
 correct operations on natural numbers. As a warm up, let's show that the
@@ -385,7 +385,7 @@ sound-*ₚ' r (p *X+ q) x₀ env =
 
 This concludes phase one of the solver.
 
-## Evaluation into Polynomials
+## Evaluation into polynomials
 
 Now that we've gotten the first phase of the solver done, let's move on
 to expressions in the language of natural numbers. Our first move shall
@@ -443,7 +443,7 @@ handle literals separately.
 ↓ (e₁ ‵* e₂) = (↓ e₁) *ₚ (↓ e₂)
 ```
 
-### Soundness of Evaluation
+### Soundness of evaluation
 
 With all of that machinery in place, our final proof shall be to show
 that evaluating an expression into a polynomial has the same semantics
@@ -557,7 +557,7 @@ private
         (unknown h∷ lhs v∷ rhs v∷ env v∷ def (quote refl) [] v∷ [])
 ```
 
-### The Actual Macros
+### The actual macros
 
 Now, the actual reflection API calls. In order to keep drawing this file
 out, we start by defining some useful debugging macros. As we noted a

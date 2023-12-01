@@ -37,7 +37,7 @@ private variable
 ```
 -->
 
-## Path Space
+## Path space
 
 Using these lemmas, we can characterise the path space of `List A` in
 terms of the path space of `A`. For this, we define by induction a type

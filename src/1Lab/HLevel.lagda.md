@@ -400,7 +400,7 @@ is-hlevel-is-hlevel-suc k n = is-prop→is-hlevel-suc (is-hlevel-is-prop n)
 ```
 -->
 
-# Dependent h-Levels
+# Dependent h-levels
 
 In cubical type theory, it's natural to consider a notion of _dependent_
 h-level for a _family_ of types, where, rather than having (e.g.)

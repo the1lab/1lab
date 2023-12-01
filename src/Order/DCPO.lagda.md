@@ -29,7 +29,7 @@ private variable
 ```
 -->
 
-# Directed-Complete Partial Orders
+# Directed-complete partial orders
 
 Let $(P, \le)$ be a [[partial order]]. A family of elements $f : I \to P$ is
 a **semi-directed family** if for every $i, j$, there merely exists
@@ -299,7 +299,7 @@ module Scott {o ℓ} {D E : DCPO o ℓ} (f : DCPOs.Hom D E) where
   mono = Subcat-hom.hom f
 
   monotone : ∀ {x y} → x D.≤ y → f # x E.≤ f # y
-  monotone = mono .pres-≤ 
+  monotone = mono .pres-≤
 
   opaque
     pres-directed-lub

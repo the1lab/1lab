@@ -249,7 +249,7 @@ the forgetful functor is pseudomonic.
       , ≅-path refl
 ```
 
-## Univalent Subcategories
+## Univalent subcategories
 
 Let $\cC$ be a [univalent] category. A subcategory of $\cC$ is univalent
 when the predicate on objects is a proposition.

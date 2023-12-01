@@ -298,7 +298,7 @@ get-boundary tm = unapply-path tm >>= λ where
   nothing            → pure nothing
 ```
 
-## Debugging Tools
+## Debugging tools
 
 ```agda
 debug! : ∀ {ℓ} {A : Type ℓ} → Term → TC A

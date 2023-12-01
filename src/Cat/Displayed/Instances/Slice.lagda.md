@@ -176,7 +176,7 @@ Fibre→slice-is-equiv = is-precat-iso→is-equivalence $
          }
 ```
 
-## Cartesian Maps
+## Cartesian maps
 
 A map $f' : x' \to y'$ over $f : x \to y$ in the codomain fibration is
 cartesian if and only if it forms a pullback square as below:
@@ -293,7 +293,7 @@ categories, then the interpretation of Cartesian fibrations as
 reinterpret the above results as, essentially, giving the [[pullback
 functors]] between slice categories.
 
-## As an Opfibration
+## As an opfibration
 
 The canonical self-indexing is *always* an opfibration, where
 opreindexing is given by postcomposition. If we think about slices as

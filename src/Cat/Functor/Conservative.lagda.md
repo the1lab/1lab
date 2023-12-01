@@ -23,7 +23,7 @@ open Functor
 ```
 -->
 
-# Conservative Functors
+# Conservative functors
 
 We say a functor is _conservative_ if it reflects isomorphisms. More concretely,
 if $f : A \to B$ is some morphism $\cC$, and if $F(f)$ is an iso in $\cD$,

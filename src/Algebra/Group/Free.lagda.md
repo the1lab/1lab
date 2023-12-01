@@ -27,7 +27,7 @@ open ↓Hom
 ```
 -->
 
-# Free Groups {defines=free-group-construction}
+# Free groups {defines=free-group-construction}
 
 We give a direct, higher-inductive constructor of the **free group
 $F(A)$ on a type $A$ of generators**. While we allow the parameter to be
@@ -124,7 +124,7 @@ Free-elim-prop B bp bi bd binv bnil = go where
 
 </details>
 
-## Universal Property {defines=free-group}
+## Universal property {defines=free-group}
 
 We now prove the universal property of `Free-group`{.Agda}, or, more
 specifically, of the map `inc`{.Agda}: It gives a [universal way of

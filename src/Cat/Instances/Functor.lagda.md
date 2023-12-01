@@ -93,7 +93,7 @@ Uncurry {C = C} {D = D} {E = E} F = uncurried where
       ((F.₁ f .η _ E.∘ F₁ (F.₀ _) g) E.∘ (F.₁ f' .η _ E.∘ F₁ (F.₀ _) g')) ∎
 ```
 
-## Constant Diagrams
+## Constant diagrams
 
 There is a functor from $\cC$ to $[\cJ, \cC]$ that takes an object
 $x : \cC$ to the constant functor $j \mapsto x$.

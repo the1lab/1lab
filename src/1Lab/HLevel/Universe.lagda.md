@@ -41,7 +41,7 @@ $n$-types is a $(n+1)$-type in $1+\ell$. That means: the universe of
 propositions is a set, the universe of sets is a groupoid, the universe
 of groupoids is a bigroupoid, and so on.
 
-## h-Levels of Equivalences
+## h-Levels of equivalences
 
 As warmup, we prove that if $A$ and $B$ are $n$-types, then so is the
 type of equivalences $A \simeq B$. For the case where $n$ is a
@@ -91,7 +91,7 @@ proof that $A$ has the given h-level. This is because, for $n \ge 1$, $A
     λ f → is-prop→is-hlevel-suc (is-equiv-is-prop f)
 ```
 
-## h-Levels of Paths
+## h-Levels of paths
 
 Univalence states that the type $X ≡ Y$ is equivalent to $X \simeq Y$.
 Since the latter is of h-level $n$ when $X$ and $Y$ are $n$-types, then

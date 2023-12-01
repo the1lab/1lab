@@ -20,7 +20,7 @@ open Functor
 open Total-hom
 ```
 
-# Total Opposites
+# Total opposites
 
 Opposites of [[displayed categories]] are somewhat subtle, as there are
 multiple constructions that one could reasonably call the "opposite".
@@ -77,7 +77,7 @@ private
 ```
 -->
 
-## The Total Opposites and Total Categories
+## The total opposites and total categories
 
 The reason we refer to this construction as the total opposite is that
 its total is **equal** to the opposite of the [[total category]]!  To

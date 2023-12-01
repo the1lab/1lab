@@ -16,7 +16,7 @@ open import Meta.Brackets
 module Logic.Propositional.Classical where
 ```
 
-# Classical Propositional Logic {defines="classical-propositional-logic"}
+# Classical propositional logic {defines="classical-propositional-logic"}
 
 Classical propositional logic is a simple classical logic that only
 contains "atomic" propositions and connectives like "and", "or" and "not".
@@ -344,7 +344,7 @@ rename rn (¬-elim p q)   = ¬-elim (rename rn p) (rename rn q)
 rename rn (dneg-elim p)  = dneg-elim (rename rn p)
 ```
 
-## Some Elementary Theorems
+## Some elementary theorems
 
 With those bits of structural work completed, we can focus our attention
 to some theorems. First, note that we can prove the law of excluded middle.

@@ -118,7 +118,7 @@ doesn't matter whether you first join then evaluate, or evaluate twice.
 ```
 -->
 
-# Eilenberg-Moore Category
+# Eilenberg-Moore category
 
 If we take a monad $M$ as the signature of an (algebraic) theory, and
 $M$-algebras as giving _models_ of that theory, then we can ask (like
@@ -294,7 +294,7 @@ faithful.
     Forget-is-faithful = ext
 ```
 
-## Free Algebras
+## Free algebras
 
 In exactly the same way that we may construct a _[free group]_ by taking
 the inhabitants of some set $X$ as generating the "words" of a group, we

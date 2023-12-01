@@ -18,7 +18,7 @@ private variable
 ```
 -->
 
-# Unital Magmas
+# Unital magmas
 
 A **unital magma** is a `magma`{.Agda ident=is-magma} equipped with a
 _two-sided identity element_, that is, an element $e$ such that

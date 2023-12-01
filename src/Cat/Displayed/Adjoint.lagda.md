@@ -13,7 +13,7 @@ open import Cat.Prelude
 module Cat.Displayed.Adjoint where
 ```
 
-# Displayed Adjunctions
+# Displayed adjunctions
 
 Following the general theme of defining displayed structure over
 1-categorical structure, we can define a notion of displayed
@@ -84,7 +84,7 @@ module _
           → (R' .F₁' (counit'.ε' x') ℰ.∘' unit'.η' (R' .F₀' x')) ℰ.≡[ zag ] ℰ.id'
 ```
 
-## Fibred Adjunctions {defines="fibred-adjunction fibred-left-adjoint fibred-right-adjoint"}
+## Fibred adjunctions {defines="fibred-adjunction fibred-left-adjoint fibred-right-adjoint"}
 
 Let $\cE$ and $\cF$ be categories displayed over some $\cB$.  We say
 that a pair of vertical [[fibred functors]] $L : \cE \to \cF$, $R : \cF

@@ -289,7 +289,7 @@ Pointed-DCPOs-is-category =
   subcat-is-category DCPOs-is-category is-pointed-dcpo-is-prop
 ```
 
-# Reasoning with Pointed DCPOs
+# Reasoning with pointed DCPOs
 
 The following module re-exports facts about pointed DCPOs, and also
 proves a bunch of useful lemma.s

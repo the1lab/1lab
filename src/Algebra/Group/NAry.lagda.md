@@ -13,7 +13,7 @@ open import Data.Fin
 module Algebra.Group.NAry where
 ```
 
-# n-Ary Sums
+# n-Ary sums
 
 An important property of [[abelian groups]] (really, of abelian
 _monoids_, but we will only need them for [[groups]]) is that their

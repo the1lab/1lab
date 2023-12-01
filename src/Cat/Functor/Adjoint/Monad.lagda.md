@@ -13,7 +13,7 @@ open _=>_
 ```
 -->
 
-# The Monad from an Adjunction
+# The monad from an adjunction
 
 ```agda
 module

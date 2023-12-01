@@ -21,7 +21,7 @@ private variable
 ```
 -->
 
-# Solver for Categories
+# Solver for categories
 
 This module is split pretty cleanly into two halves: the first half
 implements an algorithm for reducing, in a systematic way, problems

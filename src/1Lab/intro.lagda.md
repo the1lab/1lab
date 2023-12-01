@@ -831,7 +831,7 @@ This is, however, an iterative process: For example, our definition of
 formalising more desirable properties of topoi, we have found that the
 definition only really mentions two levels.
 
-# Interlude: Basics of Paths
+# Interlude: Basics of paths
 
 Since the treatment of paths is the most important aspect of homotopy
 type theory, rest assured that we'll talk about it in more detail later.

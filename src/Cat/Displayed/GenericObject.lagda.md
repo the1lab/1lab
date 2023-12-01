@@ -27,7 +27,7 @@ open Functor
 ```
 -->
 
-# Generic Objects
+# Generic objects
 
 There are 2 perspectives one can take on generic objects. The first is a
 purely logical one: generic objects provide us a tool for giving
@@ -149,7 +149,7 @@ complexity of this sentence is a bit high, so please refer to the code:
 ```
 -->
 
-## Skeletal Generic Objects
+## Skeletal generic objects
 
 We say that a generic object $t'$ is **skeletal** if the classifying map
 in the base category is unique: if $u : x \to t$ underlies a Cartesian
@@ -184,7 +184,7 @@ is-skeletal-generic-object-is-prop = hlevel!
 ```
 -->
 
-## Gaunt Generic Objects
+## Gaunt generic objects
 
 A generic object is **gaunt** if the classifying maps _themselves_ are
 unique. This condition expands on that of skeletality: if $u' : x' \to_u

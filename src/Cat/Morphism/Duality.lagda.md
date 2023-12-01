@@ -22,7 +22,7 @@ private variable
 ```
 -->
 
-# Duality of Morphism Classes
+# Duality of morphism classes
 
 In this file we prove that morphisms classes in a category
 correspond to their duals in the opposite category. There is very

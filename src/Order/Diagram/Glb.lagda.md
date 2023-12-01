@@ -279,7 +279,7 @@ Top≃Glb = prop-ext! _ Glb→Top .snd
 ```
 -->
 
-### As Terminal Objects
+### As terminal objects
 
 Bottoms are the decategorifcation of [[terminal objects]]; we don't need to
 require the uniqueness of the universal morphism, as we've replaced our

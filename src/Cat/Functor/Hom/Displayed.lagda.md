@@ -25,7 +25,7 @@ open Functor
 ```
 -->
 
-# Displayed Hom Functors
+# Displayed Hom functors
 
 Let $\cE$ be a [[displayed category]] over $\cB$. For every $u : x \to y$
 in the base, we can obtain a bifunctor from $\cE_{x}\op \times \cE_{y}$
