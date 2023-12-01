@@ -237,7 +237,7 @@ eliminator into propositions later, so we define that now.
         → SquareP (λ i j → P (path-sq x y i j))
                   (λ _ → p) (ploop x) (ploop (x ⋆ y)) (ploop y))
     → ∀ x → P x
-  unquoteDef Deloop-elim = make-elim-with true (just 3) false false false
+  unquoteDef Deloop-elim = make-elim-with (default-elim-visible into 3)
     Deloop-elim (quote Deloop)
 
   Deloop-elim-prop
@@ -245,7 +245,7 @@ eliminator into propositions later, so we define that now.
     → (∀ x → is-prop (P x))
     → P base
     → ∀ x → P x
-  unquoteDef Deloop-elim-prop = make-elim-with true (just 1) false false false
+  unquoteDef Deloop-elim-prop = make-elim-with (default-elim-visible into 1)
     Deloop-elim-prop (quote Deloop)
 ```
 

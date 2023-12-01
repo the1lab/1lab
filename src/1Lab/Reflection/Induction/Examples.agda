@@ -1,9 +1,10 @@
 open import 1Lab.Reflection.Induction
-open import 1Lab.Prelude hiding (J)
+open import 1Lab.HLevel
+open import 1Lab.Path hiding (J)
+open import 1Lab.Type
 
 open import Data.Set.Truncation hiding (∥-∥₀-elim)
 open import Data.Wellfounded.W hiding (W-elim; P)
-open import Data.Maybe.Base
 open import Data.Fin.Base hiding (Fin-elim)
 open import Data.Id.Base
 
@@ -15,14 +16,14 @@ unquoteDecl Fin-elim = make-elim Fin-elim (quote Fin)
 
 _ : {ℓ : Level} {P : {n : Nat} (f : Fin n) → Type ℓ}
     (P0 : {n : Nat} → P fzero)
-    (Psuc : {n : Nat} {f : Fin n} (pf : P f) → P (fsuc f))
+    (Psuc : {n : Nat} (f : Fin n) (Pf : P f) → P (fsuc f))
     {n : Nat} (f : Fin n) → P f
 _ = Fin-elim
 
-unquoteDecl J = make-elim-with true nothing true false true J (quote _≡ᵢ_)
+unquoteDecl J = make-elim-with default-elim-visible J (quote _≡ᵢ_)
 
 _ : {ℓ : Level} {A : Type ℓ} {x : A} {ℓ₁ : Level}
-    {P : (z : A) (z₁ : x ≡ᵢ z) → Type ℓ₁}
+    (P : (z : A) (z₁ : x ≡ᵢ z) → Type ℓ₁)
     (Prefl : P x reflᵢ)
     (y : A) (p : x ≡ᵢ y) → P y p
 _ = J
@@ -31,7 +32,7 @@ unquoteDecl W-elim = make-elim W-elim (quote W)
 
 _ : {ℓ ℓ' : Level} {A : Type ℓ} {B : (z : A) → Type ℓ'}
     {ℓ₁ : Level} {P : (w : W A B) → Type ℓ₁}
-    (Psup : (x : A) {f : (z : B x) → W A B} (pf : (z : B x) → P (f z)) → P (sup x f))
+    (Psup : (x : A) (f : (z : B x) → W A B) (Pf : (z : B x) → P (f z)) → P (sup x f))
     (w : W A B) → P w
 _ = W-elim
 

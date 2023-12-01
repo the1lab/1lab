@@ -102,7 +102,7 @@ The proof of it is a direct (by which I mean repetitive) case analysis,
 so we let our reflection machinery handle it for us.
 
 ```agda
-unquoteDef Free-elim-prop = make-elim-with true (just 1) false false false
+unquoteDef Free-elim-prop = make-elim-with (default-elim-visible into 1)
   Free-elim-prop (quote Free-group)
 ```
 
