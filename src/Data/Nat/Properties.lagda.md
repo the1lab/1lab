@@ -15,7 +15,7 @@ open import Data.Bool
 module Data.Nat.Properties where
 ```
 
-# Natural Numbers - Properties
+# Natural numbers - properties
 
 This module contains proofs of arithmetic identities for [the natural
 numbers]. Since they're mostly simple inductive arguments written in

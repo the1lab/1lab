@@ -17,7 +17,7 @@ import Cat.Reasoning
 module Cat.Diagram.Colimit.Representable where
 ```
 
-## Representability of Colimits
+## Representability of colimits
 
 Since [colimits] are defined by universal property, we can also phrase
 the definition in terms of an equivalence between $\hom$-functors.

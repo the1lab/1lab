@@ -88,7 +88,7 @@ function≃ dom rng = Iso→Equiv the-iso where
 ```
 
 
-## Dependent Funext
+## Dependent funext
 
 When the domain and codomain are simple types (rather than a higher
 shape), paths in function spaces are characterised by `funext`{.Agda}.

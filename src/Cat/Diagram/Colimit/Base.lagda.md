@@ -546,7 +546,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```
 
 
-# Preservation of Colimits
+# Preservation of colimits
 
 The definitions here are the same idea as [preservation of limits], just
 dualized.

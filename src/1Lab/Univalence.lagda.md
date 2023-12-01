@@ -489,7 +489,7 @@ univalence-lift {ℓ = ℓ} = is-iso→is-equiv morp where
   morp .is-iso.linv x = Path≃Equiv .snd .is-iso.linv _
 ```
 
-## Equivalence Induction {defines="equivalence-induction"}
+## Equivalence induction {defines="equivalence-induction"}
 
 One useful consequence of $(A \equiv B) \simeq (A \simeq B)$[^2] is that
 the type of _equivalences_ satisfies [the same induction principle] as
@@ -555,7 +555,7 @@ where $B$ is $A$, and $f$ is the identity function.
 $\id$, which is known to be `an equivalence`{.Agda ident=id-equiv}.
 <span class=qed>$\blacksquare$</span>
 
-## Object Classifiers {defines="object-classifier"}
+## Object classifiers {defines="object-classifier"}
 
 In category theory, the idea of _classifiers_ (or _classifying objects_)
 often comes up when categories applied to the study of logic. For

@@ -40,7 +40,7 @@ private variable
 ```
 -->
 
-## Identity Morphisms
+## Identity morphisms
 
 ```agda
 abstract
@@ -132,7 +132,7 @@ sub-id : ∀ {f : Homi x y} → PathP (λ i → Homi (idr x i) (idr y i)) (f [ i
 sub-id = Internal-hom-pathp (idr _) (idr _) (idr _)
 ```
 
-## Generalized Morphisms
+## Generalized morphisms
 
 ```agda
 ∘i-ihom

@@ -134,7 +134,7 @@ instance
   H-Level-is-group = prop-instance is-group-is-prop
 ```
 
-# Group Homomorphisms
+# Group homomorphisms
 
 In contrast with monoid homomorphisms, for group homomorphisms, it is
 not necessary for the underlying map to explicitly preserve the unit
@@ -287,7 +287,7 @@ record make-group {ℓ} (G : Type ℓ) : Type ℓ where
 open make-group using (to-group-on) public
 ```
 
-# Symmetric Groups
+# Symmetric groups
 
 If $X$ is a set, then the type of all bijections $X \simeq X$ is also a
 set, and it forms the carrier for a group: The _symmetric group_ on $X$.

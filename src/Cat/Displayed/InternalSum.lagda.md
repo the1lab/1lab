@@ -20,7 +20,7 @@ open Precategory B
 ```
 -->
 
-# Internal Sums
+# Internal sums
 
 As has been noted before, fibrations are an excellent setting for studying
 logical and type-theoretic phenomena. Internal sums are an example of this;

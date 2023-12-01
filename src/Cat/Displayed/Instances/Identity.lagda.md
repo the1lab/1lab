@@ -24,7 +24,7 @@ open Functor
 open Total-hom
 ```
 
-## The Identity Bifibration
+## The identity bifibration
 
 Let $\cB$ be a precategory. We can define a [[displayed category]]
 $\mathrm{Id}(\cB)$ over $B$ whose [[total category]] is isomorphic to
@@ -95,7 +95,7 @@ IdD-bifibration .is-bifibration.opfibration = IdD-opfibration
 ```
 -->
 
-## Fibre Categories
+## Fibre categories
 
 The [[fibre categories]] of the identity bifibration are isomorphic to
 the [[terminal category]].
@@ -112,7 +112,7 @@ IdD-is-iso x .is-precat-iso.has-is-ff = id-equiv
 IdD-is-iso x .is-precat-iso.has-is-iso = id-equiv
 ```
 
-## Total Category
+## Total category
 
 The total category of the identity bifibration is isomorphic to $\cB$
 itself.

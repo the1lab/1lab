@@ -648,7 +648,7 @@ record Equivalence
 ```
 -->
 
-## Properties of Equivalences
+## Properties of equivalences
 
 If $F : \cC \to \cD$ is fully-faithfuly and essentially surjective, then
 for every hom-set $\cD(d,d')$ there (merely) exists an equivalent hom-set

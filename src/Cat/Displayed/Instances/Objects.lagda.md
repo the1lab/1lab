@@ -27,7 +27,7 @@ open Vertical-functor
 ```
 -->
 
-# The Fibration of Objects
+# The fibration of objects
 
 Let $\cE \liesover \cB$ be a fibration. Its **fibration of objects** is
 the [wide subcategory] spanned by the [[cartesian morphisms]]. The idea

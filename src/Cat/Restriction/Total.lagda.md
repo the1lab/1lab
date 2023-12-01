@@ -13,7 +13,7 @@ import Cat.Restriction.Reasoning
 module Cat.Restriction.Total where
 ```
 
-# The Subcategory of Total Maps
+# The subcategory of total maps
 
 Let $\cC$ be a restriction category. We can construct a
 [wide subcategory] of $\cC$ containing only the [total maps] of $\cC$,

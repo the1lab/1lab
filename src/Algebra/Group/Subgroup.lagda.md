@@ -85,7 +85,7 @@ predicate→subgroup {G = G} H p = record { map = it ; monic = ism } where
   ism = Homomorphism-monic it (λ p → Σ-prop-path (λ _ → hlevel!) p)
 ```
 
-# Kernels and Images
+# Kernels and images
 
 To a group homomorphism $f : A \to B$ we can associate two canonical
 subgroups, one of $A$ and one of $B$: $f$'s [[**image factorisation**]],

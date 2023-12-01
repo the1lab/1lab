@@ -23,12 +23,12 @@ private variable
 ```
 -->
 
-# Morphisms in an Allegory
+# Morphisms in an allegory
 
 This module defines a couple of important classes of morphisms that can
 be found in an allegory.
 
-# Reflexive Morphisms
+# Reflexive morphisms
 
 A morphism $f : X \to X$ in an allegory is **reflexive** if $id \le f$.
 
@@ -85,7 +85,7 @@ reflexive→diagonal f-refl = ∩-univ f-refl (reflexive-dual f-refl)
 ```
 
 
-# Symmetric Morphisms
+# Symmetric morphisms
 
 A morphism $f : X \to X$ is **symmetric** if $f \le f^o$.
 
@@ -145,7 +145,7 @@ symmetric→self-dual f-sym =
   ≤-antisym f-sym (dual-≤ₗ A f-sym)
 ```
 
-# Transitive Morphisms
+# Transitive morphisms
 
 A morphism $f : X \to X$ is **transitive** if $ff \le f$.
 
@@ -283,7 +283,7 @@ transitive+symmetric→cotransitive {f = f} f-trans f-sym =
   f ∘ f       ≤∎
 ```
 
-# Coreflexive Morphisms
+# Coreflexive morphisms
 
 ```agda
 is-coreflexive : Hom x x → Type _
@@ -403,7 +403,7 @@ coreflexive-comm f-corefl g-corefl =
   ·· sym (coreflexive-∘-∩ g-corefl f-corefl)
 ```
 
-# Functional Morphisms
+# Functional morphisms
 
 A morphism $$ is **functional** when $ff^o \le id$. In $\Rel$, these
 are the relations $R \mono X \times Y$ such that every $x$ is related to
@@ -452,7 +452,7 @@ functional-∩ {f = f} {g = g} f-func g-func =
   id                                        ≤∎
 ```
 
-# Entire Morphisms
+# Entire morphisms
 
 A morphism is **entire** when $id \le f^of$. In $\Rel$, these are the
 relations $R \mono X \times Y$ where each $x$ must be related to at least
@@ -714,7 +714,7 @@ domain-entire f-entire =
     (∩-univ ≤-refl f-entire)
 ```
 
-# Antisymmetric Morphisms
+# Antisymmetric morphisms
 
 A morphism is **anti-symmetric** if $f \cap f^o \le id$.
 

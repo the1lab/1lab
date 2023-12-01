@@ -253,7 +253,7 @@ Cartesian-morphism-is-set = Iso→is-hlevel 2 eqv $
 ```
 -->
 
-## Properties of Cartesian Morphisms
+## Properties of cartesian morphisms
 
 The composite of 2 cartesian morphisms is in turn cartesian.
 

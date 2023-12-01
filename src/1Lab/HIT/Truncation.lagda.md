@@ -20,7 +20,7 @@ open import 1Lab.Type
 module 1Lab.HIT.Truncation where
 ```
 
-# Propositional Truncation {defines="propositional-truncation"}
+# Propositional truncation {defines="propositional-truncation"}
 
 Let $A$ be a type. The **propositional truncation** of $A$ is a type
 which represents the [[proposition]] "A is inhabited". In MLTT,

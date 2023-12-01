@@ -15,7 +15,7 @@ open import 1Lab.Type
 module 1Lab.Counterexamples.Russell where
 ```
 
-# Russell's Paradox {defines="russell's-paradox"}
+# Russell's paradox {defines="russell's-paradox"}
 
 This page reproduces [Russell's paradox] from naïve set theory using an
 inductive type of `Type`{.Agda}-indexed trees. By default, Agda places

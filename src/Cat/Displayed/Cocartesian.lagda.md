@@ -249,7 +249,7 @@ co-cartesian≡cocartesian =
   ua (co-cartesian→cocartesian , co-cartesian→cocartesian-is-equiv)
 ```
 
-## Properties of Cocartesian Morphisms
+## Properties of cocartesian morphisms
 
 We shall now prove the following properties of cocartesian morphisms.
 
@@ -374,7 +374,7 @@ cocartesian→precompose-equiv cocart =
 ```
 
 
-## Cocartesian Lifts
+## Cocartesian lifts
 
 We call an object $b'$ over $b$ together with a cartesian arrow
 $f' : a \to_{f} b'$ a **cocartesian lift** of $f$.

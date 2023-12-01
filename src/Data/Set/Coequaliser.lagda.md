@@ -18,7 +18,7 @@ private variable
 ```
 -->
 
-# Set Coequalisers
+# Set coequalisers
 
 In their most general form, colimits can be pictured as taking disjoint
 unions and then "gluing together" some parts. The "gluing together" part

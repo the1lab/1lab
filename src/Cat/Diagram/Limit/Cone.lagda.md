@@ -15,7 +15,7 @@ import Cat.Reasoning
 module Cat.Diagram.Limit.Cone where
 ```
 
-# Limits via Cones
+# Limits via cones
 
 As noted in the main page on [limits], most introductory material defines
 limits via a mathematical widget called a **cone**.
@@ -165,7 +165,7 @@ again preserve _all_ the commutativities.
 ```
 -->
 
-## Terminal Cones as Limits
+## Terminal cones as limits
 
 Note that cones over some diagram $F$ contain the exact same data as
 natural transformations from a constant functor to $F$.  To obtain a

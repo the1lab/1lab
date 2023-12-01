@@ -8,7 +8,7 @@ open import 1Lab.Type
 module 1Lab.Path where
 ```
 
-# The Interval
+# The interval
 
 In HoTT, the inductively-defined identity type gets a new meaning
 explanation: continuous paths, in a topological sense. The "key idea" of
@@ -133,7 +133,7 @@ familiar description, a De Morgan algebra is a Boolean algebra that does
 not (necessarily) satisfy the law of excluded middle. This is necessary
 to maintain type safety.
 
-## Raising Dimension
+## Raising dimension
 
 To wit: In cubical type theory, a term in a context with $n$ interval
 variables expresses a way of mapping an $n$-cube into that type. One
@@ -566,7 +566,7 @@ type-correct, and b) get something with the right endpoints. `(λ i → B i
 The case for dependent products (i.e. general `Σ`{.Agda} types) is
 analogous, but without any inverse transports.
 
-## Path Induction {defines="path-induction contractibility-of-singletons"}
+## Path induction {defines="path-induction contractibility-of-singletons"}
 
 The path induction principle, also known as "axiom J", essentially
 breaks down as the following two statements:
@@ -698,7 +698,7 @@ The interpretation of types as _Kan_ cubical sets guarantees that the
 open box above extends to a complete square, and thus the line $w \equiv
 z$ exists.
 
-## Partial Elements
+## Partial elements
 
 The definition of Kan cubical sets as those having fillers for all open
 boxes is all well and good, but to use this from within type theory we
@@ -1239,7 +1239,7 @@ its filler), it is contractible:
 ```
 -->
 
-# Functorial Action
+# Functorial action
 
 This composition structure on paths makes every type into an
 $\infty$-groupoid, which is discussed in [a different module].
@@ -1345,7 +1345,7 @@ for the open box with sides `refl`, `ap f p` and `ap f q`, so they must be equal
   ap-∙ f p q = ap-·· f refl p q
 ```
 
-# Syntax Sugar
+# Syntax sugar
 
 When constructing long chains of identifications, it's rather helpful to
 be able to visualise _what_ is being identified with more "priority"
@@ -1411,7 +1411,7 @@ your convenience, it's here too:
 
 Try pressing it!
 
-# Dependent Paths
+# Dependent paths
 
 Surprisingly often, we want to compare inhabitants $a : A$ and $b : B$
 where the types $A$ and $B$ are not _definitionally_ equal, but only
@@ -1597,7 +1597,7 @@ from-to-pathp {A = A} {x} {y} p i j =
 
 </details>
 
-# Path Spaces
+# Path spaces
 
 A large part of the study of HoTT is the _characterisation of path
 spaces_. Given a type `A`, what does `Path A x y` look like? [Hedberg's
@@ -1612,7 +1612,7 @@ Most of these characterisations need machinery that is not in this
 module to be properly stated. Even then, we can begin to outline a few
 simple cases:
 
-## Σ Types
+## Σ types
 
 For `Σ`{.Agda} types, a path between `(a , b) ≡ (x , y)` consists of a
 path `p : a ≡ x`, and a path between `b` and `y` laying over `p`.

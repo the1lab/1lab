@@ -21,7 +21,7 @@ open DM E
 open CR B
 ```
 
-# The Total Category of a Displayed Category {defines=total-category}
+# The total category of a displayed category {defines=total-category}
 
 So far, we've been thinking of [[displayed categories]] as "categories of
 structures" over some base category. However, it's often useful to

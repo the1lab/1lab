@@ -35,7 +35,7 @@ open Slice-hom
 ```
 -->
 
-# The Displayed Family Fibration
+# The displayed family fibration
 
 The [family fibration] is a critical part of the theory of fibrations,
 as it acts as a stepping off point for generalizing structure found
@@ -180,7 +180,7 @@ module _
     fibration-∘ (Codomain-fibration B pb) (Change-of-base-fibration Dom E fib)
 ```
 
-## Constant Families
+## Constant families
 
 There is a vertical functor from $\cE$ to the category of $\cE$-valued
 families that takes each $\cE_{x}$ to the constant family.

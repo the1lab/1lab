@@ -28,7 +28,7 @@ private variable
 ```
 -->
 
-# Displayed Morphisms
+# Displayed morphisms
 
 This module defines the displayed analogs of monomorphisms, epimorphisms,
 and isomorphisms.
@@ -71,7 +71,7 @@ record _↪[_]_
 open _↪[_]_ public
 ```
 
-## Weak Monos
+## Weak monos
 
 When working in a displayed setting, we also have weaker versions of
 the morphism classes we are familiar with, wherein we can only left/right
@@ -147,7 +147,7 @@ record _↠[_]_
 open _↠[_]_ public
 ```
 
-## Weak Epis
+## Weak epis
 
 We can define a weaker notion of epis that is dual to the definition of
 a weak mono.
