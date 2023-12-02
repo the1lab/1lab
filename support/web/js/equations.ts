@@ -2,39 +2,40 @@ import { Setting } from "./lib/settings";
 
 const equationSetting = new Setting<boolean>("display of equations", false).registerToggle();
 
-equationSetting.onChange((t) => {
-  if (t) {
-    document.body.classList.add("show-equations");
-  } else {
-    document.body.classList.remove("show-equations");
-  }
-});
-
 const serifFontSetting = new Setting<boolean>("serif font", false)
   .registerToggle("Use serif font", "Use sans-serif font");
-
-serifFontSetting.onChange((t) => {
-  if (t) {
-    document.body.classList.remove("sans-serif");
-  } else {
-    document.body.classList.add("sans-serif");
-  }
-});
 
 const hiddenCodeSetting = new Setting<boolean>("hidden code", false)
   .registerToggle("Display hidden code", "Do not display hidden code");
 
-hiddenCodeSetting.onChange((t) => {
-  if (t) {
-    document.body.classList.add("show-hidden-code");
-    document.querySelectorAll("details").forEach(d => d.setAttribute("open", "true"))
-  } else {
-    document.body.classList.remove("show-hidden-code");
-    document.querySelectorAll("details").forEach(d => d.removeAttribute("open"))
-  }
-});
-
 window.addEventListener("DOMContentLoaded", () => {
+
+  equationSetting.onChange((t) => {
+    if (t) {
+      document.body.classList.add("show-equations");
+    } else {
+      document.body.classList.remove("show-equations");
+    }
+  });
+
+  serifFontSetting.onChange((t) => {
+    if (t) {
+      document.body.classList.remove("sans-serif");
+    } else {
+      document.body.classList.add("sans-serif");
+    }
+  });
+
+  hiddenCodeSetting.onChange((t) => {
+    if (t) {
+      document.body.classList.add("show-hidden-code");
+      document.querySelectorAll("details").forEach(d => d.setAttribute("open", "true"))
+    } else {
+      document.body.classList.remove("show-hidden-code");
+      document.querySelectorAll("details").forEach(d => d.removeAttribute("open"))
+    }
+  });
+
   const buttons: NodeListOf<HTMLInputElement> = document.querySelectorAll("input.equations");
 
   buttons.forEach(button => {

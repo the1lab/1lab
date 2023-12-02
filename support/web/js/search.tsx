@@ -53,7 +53,8 @@ const makeSearch = (e: SearchItem, thisp: boolean): PromptItem => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  let page = window.location.pathname.slice(1);
+  let path = window.location.pathname.split('/');
+  let page = path[path.length - 1];
   if (page.length === 0) { page = "index.html"; }
 
   let thisp = 0, done = false;
