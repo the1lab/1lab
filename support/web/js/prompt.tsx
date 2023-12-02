@@ -219,10 +219,10 @@ const doSearch = (search: string) => {
 
   if (search === "") {
     allSections.forEach(s => {
+      const es = s.defaultEntries();
+      if (es.length <= 0) return;
       rendered.push(s.header);
-      s.defaultEntries().forEach(i => {
-        rendered.push(renderItem(i));
-      })
+      es.forEach(i => rendered.push(renderItem(i)));
     });
   } else {
     const exacts: PromptItemResult[] = [];
@@ -318,12 +318,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       case "Left":
       case "ArrowLeft":
+        if (!e.ctrlKey) return;
         e.preventDefault();
         movePreviousSection();
         break;
 
       case "Right":
       case "ArrowRight":
+        if (!e.ctrlKey) return;
         e.preventDefault();
         moveNextSection();
         break;
