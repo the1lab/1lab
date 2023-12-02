@@ -358,8 +358,6 @@ document.addEventListener("DOMContentLoaded", () => {
       closeSearch();
     }
   });
-
-  startSearch();
 });
 
 export { };

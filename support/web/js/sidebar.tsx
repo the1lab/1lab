@@ -1,9 +1,4 @@
-import { JSX } from "./lib/jsx";
-
 document.addEventListener('DOMContentLoaded', () => {
-  const top = <div id="page-top-boundary"> </div>;
-  document.querySelector("main")?.append(top);
-
   const headers = Array.from(document.querySelectorAll("article a.header-link"))
     .map(x => x.parentElement)
     .filter((x): x is HTMLHeadingElement => !!x);
