@@ -1,100 +1,76 @@
-const lsItem = "1lab.eqn_display";
-let equations_displayed = false;
-if (window.localStorage.getItem(lsItem) === "displayed") {
-  equations_displayed = true;
-}
+import { Setting } from "./lib/settings";
 
-const sfItem = "1lab.serif_font";
-let serif_font = false;
-if (window.localStorage.getItem(sfItem) === "displayed") {
-  serif_font = true;
-}
+const equationSetting = new Setting<boolean>("display of equations", false).registerToggle();
 
-const saveEqnDisplay = () => {
-  window.localStorage.setItem(lsItem, equations_displayed ? "displayed" : "hidden");
-};
+equationSetting.onChange((t) => {
+  if (t) {
+    document.body.classList.add("show-equations");
+  } else {
+    document.body.classList.remove("show-equations");
+  }
+});
 
-const saveFontDisplay = () => {
-  window.localStorage.setItem(sfItem, serif_font ? "displayed" : "hidden");
-};
+const serifFontSetting = new Setting<boolean>("serif font", false)
+  .registerToggle("Use serif font", "Use sans-serif font");
+
+serifFontSetting.onChange((t) => {
+  if (t) {
+    document.body.classList.remove("sans-serif");
+  } else {
+    document.body.classList.add("sans-serif");
+  }
+});
+
+const hiddenCodeSetting = new Setting<boolean>("hidden code", false)
+  .registerToggle("Display hidden code", "Do not display hidden code");
+
+hiddenCodeSetting.onChange((t) => {
+  if (t) {
+    document.body.classList.add("show-hidden-code");
+    document.querySelectorAll("details").forEach(d => d.setAttribute("open", "true"))
+  } else {
+    document.body.classList.remove("show-hidden-code");
+    document.querySelectorAll("details").forEach(d => d.removeAttribute("open"))
+  }
+});
 
 window.addEventListener("DOMContentLoaded", () => {
   const buttons: NodeListOf<HTMLInputElement> = document.querySelectorAll("input.equations");
-  const body = document.body;
-
-  if (equations_displayed) {
-    body.classList.add("show-equations");
-  } else {
-    body.classList.remove("show-equations");
-  }
-
-  if (serif_font) {
-    body.classList.remove("sans-serif");
-  } else {
-    body.classList.add("sans-serif");
-  }
 
   buttons.forEach(button => {
     if (!button.classList.contains("narrow-only")) {
       button.style.display = "block";
     }
 
-    if (button.checked !== undefined) button.checked = equations_displayed;
+    equationSetting.onChange((t) => {
+      if (button.checked !== undefined) button.checked = t;
+      if (t) {
+        button.innerText = "Hide equations";
+      } else {
+        button.innerText = "Show equations";
+      }
+    });
 
     button.onclick = () => {
-      equations_displayed = !equations_displayed;
-
-      if (equations_displayed) {
-        body.classList.add("show-equations");
-      } else {
-        body.classList.remove("show-equations");
-      }
-
-      saveEqnDisplay();
-
-      buttons.forEach((button) => {
-        if (button.checked !== undefined) button.checked = equations_displayed;
-
-        if (equations_displayed) {
-          button.innerText = "Hide equations";
-        } else {
-          button.innerText = "Show equations";
-        }
-      });
+      equationSetting.toggle();
     };
   });
 
   const toggleFont = document.getElementById("toggle-fonts") as HTMLInputElement | null;
+
   if (toggleFont) {
-    toggleFont.checked = serif_font;
-    toggleFont.onclick = () => {
-      serif_font = toggleFont.checked;
-
-      if (serif_font) {
-        body.classList.remove("sans-serif");
-      } else {
-        body.classList.add("sans-serif");
-      }
-
-      saveFontDisplay();
-    };
+    serifFontSetting.onChange((t) => {
+      window.requestAnimationFrame(() => { toggleFont.checked = t });
+    });
+    toggleFont.onclick = () => serifFontSetting.toggle();
   }
 
   const showHiddenCode = document.getElementById("sidebar-hidden") as HTMLInputElement | null;
   if (showHiddenCode) {
-    showHiddenCode.onchange = () => {
-      if (showHiddenCode.checked)
-        body.classList.add("show-hidden-code");
-      else
-        body.classList.remove("show-hidden-code");
-
-      document.querySelectorAll("details").forEach(d => {
-        if (showHiddenCode.checked)
-          d.setAttribute("open", "");
-        else
-          d.removeAttribute("open");
-      });
-    };
+    showHiddenCode.onclick = () => hiddenCodeSetting.toggle();
+    hiddenCodeSetting.onChange((t) => {
+      window.requestAnimationFrame(() => { showHiddenCode.checked = t });
+    });
   }
 
   scrollToHash();

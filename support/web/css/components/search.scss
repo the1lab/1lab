@@ -1,14 +1,9 @@
-.search-form > input {
-  box-sizing: border-box;
-  font-size: 0.55em;
-  padding: 0.5em;
-  margin: 0 0 1em 0;
-  width: 100%;
-}
-
 #search-wrapper > .modal-contents {
   align-items: stretch;
   text-align: left;
+
+  font-family: var(--sans-serif);
+  --font-size: 1.3rem;
 }
 
 #search-results {
@@ -23,15 +18,26 @@
       margin: 0;
     }
   }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 input#search-box {
   width:     100%;
-  font-size: 125%;
+  font-size: 100%;
   border:    none;
 
   caret-color:      var(--search-selected);
   background-color: var(--text-bg);
+
+  padding: 1em 1.5em 1em 1.5em;
+
+  box-sizing: border-box;
+  width: 100%;
 
   &:focus {
     outline: none;
@@ -39,8 +45,7 @@ input#search-box {
 }
 
 a.search-result {
-  padding: 0.5em;
-  padding-right: 0.75em;
+  padding: 0.25em 0.75em 0.25em 0.75em;
   display: block;
   text-decoration: none;
 
@@ -51,14 +56,32 @@ a.search-result {
     color: inherit;
   }
 
-  &:hover, &:focus, li.active > & {
+  &:focus, li.active > & {
     border-left: 3px solid var(--search-selected);
   }
 
-  & h3 {
+  &:hover {
+    cursor: pointer;
+  }
+
+  h3 {
     margin: 0;
     font-weight: normal;
-    font-size: 1em;
+    font-size: 15px;
+    font-weight: bold;
+
+    span.search-module {
+      font-weight: normal;
+    }
+
+    &.search-identifier {
+      @include monospaced;
+      margin-bottom: 5px;
+    }
+  }
+
+  > p {
+    margin: 0;
   }
 
   > .search-header {
@@ -73,15 +96,25 @@ a.search-result {
       color: var(--text-fg-alt);
       font-style: italic;
     }
+
+    span.search-match-key {
+      padding-left: 1em;
+      font-size: 0.8em;
+      @include monospaced;
+    }
   }
 
-  & .search-type, & .search-desc {
-    font-size: 0.65em;
-  }
+  & .search-type { font-size: 0.5em; }
+  & .search-desc { font-size: 0.75em; }
 
   & .search-match {
     text-decoration: 2px var(--primary) underline;
   }
+}
+
+li.search-header {
+  font-size: 15px;
+  padding: 0em 0.75em 0em 0.75em;
 }
 
 .search-error {

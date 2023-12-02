@@ -1,5 +1,6 @@
-import { Searcher, MatchData } from "fast-fuzzy";
-import { JSX, Content } from "./lib/jsx";
+import { JSX, type Content } from "./lib/jsx";
+import { type MatchedSpan, type PromptItem, highlight, spanMaybe } from "./prompt/items";
+import { InThisPage, Miscellanea } from "./prompt/sections";
 
 type SearchItem = {
   idIdent: string,
@@ -9,216 +10,69 @@ type SearchItem = {
   idDefines: string[] | null,
 };
 
-const highlight = ({ match, original }: MatchData<SearchItem>): Content => {
-  if (match.length == 0) return original;
+const makeSearch = (e: SearchItem, thisp: boolean): PromptItem => {
+  const sel: string[] = [ e.idIdent, ...e.idDefines ?? [] ];
+  const original = e.idIdent;
 
-  if (match.index == 0 && match.length == original.length) return <span class="search-match">{original}</span>;
+  const desc: Content[] = [];
+  if (e.idType) {
+    desc.push(<p class="search-type sourceCode">{e.idType}</p>)
+  };
 
-  const out: Array<Content> = [];
-  if (match.index > 0) out.push(original.substring(0, match.index));
-  out.push(<span class="search-match">{original.substring(match.index, match.index + match.length)}</span>);
-  out.push(original.substring(match.index + match.length));
-  return out;
+  return {
+    selectors: sel,
+    activate: () => {
+      window.location.href = e.idAnchor;
+      return 'close';
+    },
+    onlySearch: !thisp && (`${e.idIdent}.html` !== e.idAnchor),
+    priority: e.idType ? -1 : 1,
+
+    render(key: string, matched?: MatchedSpan) {
+      let title;
+      if (original === key) {
+        title = highlight(original, matched)
+      } else {
+        title = <span class="search-nontrivial-key">
+          <span class="search-original-name">{original}</span>
+          <span class="search-match-key">
+            {highlight(key, matched)}
+          </span>
+        </span>
+      };
+
+      return [
+        <h3 class={`search-header ${e.idType && "search-identifier"}`}>
+          {spanMaybe(title)}
+          <span class="search-module">{e.idAnchor.replace(/.html(#.+)?$/, "")}</span>
+        </h3>,
+        ...desc
+      ];
+    },
+  };
 };
 
-let loadingIndex = false;
-let index: Searcher<SearchItem, { returnMatchData: true }> | null;
-
-const startSearch = (mirrorInput: HTMLInputElement | null) => {
-  if (document.getElementById("search-wrapper")) return;
-
-  const searchInput = <input id="search-box" type="text" placeholder="Search..." autocomplete="off" tabindex="0" /> as HTMLInputElement;
-  const searchResults = <div id="search-results"></div>;
-  const searchWrapper = <div id="search-wrapper" class="modal open">
-    <div class="modal-contents search-form" role="form">
-      {searchInput}
-      {searchResults}
-    </div>
-  </div>;
-
-  const setError = (contents: string) => {
-    searchResults.innerHTML = "";
-    searchResults.appendChild(<span class="search-error">{contents}</span>);
-  };
-
-  const doSearch = () => {
-    if (!index) return;
-
-    const results = index.search(searchInput.value);
-
-    if (results.length > 0) {
-      searchResults.scrollTo(0, 0);
-      searchResults.innerHTML = "";
-
-      const list = <ul>
-        {results.slice(0, 20).map(match => {
-          let desc: HTMLElement | null = null;
-
-          /* The item has a description which can't be handled as plain
-           * text, since it might include rendered markup. Therefore, we
-           * can't use a JSX splice to insert it.
-           */
-          if (match.item.idDesc) {
-            desc = <p class="search-desc"></p>
-            desc.insertAdjacentHTML('afterbegin', match.item.idDesc);
-          };
-
-          return <li>
-            <a class="search-result" href={match.item.idAnchor}>
-              <h3 class="search-header">
-                <span>
-                  {highlight(match)}
-                </span>
-                <span class="search-module">{match.item.idAnchor.replace(/.html(#.+)?$/, "")}</span>
-              </h3>
-              {match.item.idType && <p class="search-type sourceCode">{match.item.idType}</p>}
-              {desc}
-            </a>
-          </li>
-        })}
-      </ul>;
-
-
-      searchResults.appendChild(list);
-    } else if (searchInput.value.length === 0) {
-      searchResults.innerHTML = "";
-    } else {
-      searchResults.innerText = "No results found";
-    }
-  };
-
-  // Input handlers
-
-  searchInput.addEventListener("input", () => {
-    if (mirrorInput) mirrorInput.value = searchInput.value;
-    doSearch();
-  });
-
-  // While searchInputProxy should never be focused for long, let's process those events anyway.
-  const syncMirrorInput = () => {
-    if (mirrorInput) searchInput.value = mirrorInput.value;
-    searchInput.focus();
-    doSearch();
-  };
-  if (mirrorInput) mirrorInput.addEventListener("input", syncMirrorInput);
-
-  const closeSearch = () => {
-    searchWrapper.remove()
-    if (mirrorInput) mirrorInput.removeEventListener("input", syncMirrorInput);
-  };
-
-  searchWrapper.addEventListener("click", e => {
-    if (e.target !== searchInput) closeSearch();
-  });
-
-  // Keyboard navigation through search items
-
-  const removeActive = (elem: Element) => {
-    elem.classList.remove("active");
-    elem.ariaSelected = "false";
-  };
-  const addActive = (elem: Element) => {
-    elem.classList.add("active");
-    elem.ariaSelected = "true";
-    elem.scrollIntoView({
-      block: "nearest",
-    });
-  };
-
-  const moveNext = () => {
-    const active = searchResults.querySelector("li.active");
-    if (!active) {
-      const elem = searchResults.querySelector("li");
-      if (elem) addActive(elem);
-    } else if (active.nextElementSibling) {
-      removeActive(active);
-      addActive(active.nextElementSibling);
-    }
-  };
-
-  const movePrevious = () => {
-    const active = searchResults.querySelector("li.active");
-    if (active && active.previousElementSibling) {
-      removeActive(active);
-      addActive(active.previousElementSibling);
-    }
-  };
-
-  searchInput.addEventListener("keydown", (e) => {
-    switch (e.key) {
-      case "Tab":
-        e.preventDefault();
-        if (e.shiftKey) movePrevious(); else moveNext();
-        break;
-
-      case "Down":
-      case "ArrowDown":
-        e.preventDefault();
-        moveNext();
-        break;
-
-      case "Up":
-      case "ArrowUp":
-        e.preventDefault();
-        movePrevious();
-        break;
-
-      case "Enter": {
-        e.preventDefault();
-
-        const link: HTMLAnchorElement | null =
-          searchResults.querySelector("li.active > a") || searchResults.querySelector("li > a");
-        if (link) link.click();
-        break;
-      }
-
-      case "Escape": {
-        e.preventDefault();
-        closeSearch();
-        break;
-      }
-    }
-  });
-
-  document.body.appendChild(searchWrapper);
-  searchInput.focus();
-
-  // Fetch the search index if not available and start searching
-  if (!loadingIndex) {
-    loadingIndex = true;
-    fetch("static/search.json")
-      .then(r => r.json())
-      .then(entries => {
-        index = new Searcher(entries, {
-          returnMatchData: true,
-          ignoreSymbols: false,
-          keySelector: (x: SearchItem) => [x.idIdent].concat(x.idDefines ?? []),
-        });
-
-        doSearch();
-      })
-      .catch(e => {
-        console.error("Failed to load search index", e);
-        loadingIndex = false;
-        setError("Failed to load search index");
-      });
-  }
-
-  doSearch();
-}
-
 document.addEventListener("DOMContentLoaded", () => {
-  // Default pages have a "search" box which, when clicked, opens the main search box.
-  const searchInputProxy = document.getElementById("search-box-proxy") as HTMLInputElement | null;
-  if (searchInputProxy) {
-    searchInputProxy.addEventListener("focus", () => startSearch(searchInputProxy));
-  }
+  let page = window.location.pathname.slice(1);
+  if (page.length === 0) { page = "index.html"; }
 
-  // Allow pressing Ctrl+K to search anywhere.
-  document.addEventListener("keydown", e => {
-    if (e.key == "k" && e.ctrlKey && !e.altKey) {
-      e.preventDefault();
-      startSearch(searchInputProxy);
-    }
-  });
+  let thisp = 0, done = false;
+
+  fetch("static/search.json")
+    .then(r => r.json())
+    .then(entries => {
+      entries.filter((e: SearchItem) => !e.idIdent.startsWith(".")).forEach((e: SearchItem) => {
+        if (e.idAnchor.startsWith(page)) {
+          if (e.idAnchor !== page) {
+            InThisPage.pushPromptItems(makeSearch(e, true));
+          }
+        } else {
+          Miscellanea.pushPromptItems(makeSearch(e, false));
+        }
+        if (!done && (done = thisp++ > 32)) document.dispatchEvent(new Event("searchready"));
+      });
+    })
+    .catch(e => {
+      console.error("Failed to load search index", e);
+    });
 });

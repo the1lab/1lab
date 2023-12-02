@@ -18,12 +18,13 @@ html {
 
 :root {
   --serif: "EB Garamond", "Times New Roman", "serif";
+  --sans-serif: "Inria Sans", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   --font-size: 1.4rem;
   --code-font-size: calc(0.85 * var(--font-size));
 }
 
 body {
-  font-family: var(--serif), "Inria Sans", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: var(--serif), var(--sans-serif);
 
   &.sans-serif {
     --serif: "";
@@ -76,8 +77,19 @@ main {
   div#post-toc-container {
     aside#toc {
       display: none;
-      a[href].header-link span.header-link-emoji {
-        display: none;
+      a[href].header-link {
+        span.header-link-emoji {
+          display: none;
+        }
+
+        &, &:visited {
+          color: var(--primary)
+        };
+
+        &.current-heading {
+          font-weight: bold;
+          color: var(--text-fg);
+        }
       }
     }
 
@@ -584,4 +596,11 @@ span.enclosing.liesover {
     background-size: contain;
     background-position: center center;
   }
+}
+
+div#page-top-boundary {
+  position: absolute;
+  top: 0;
+  height: 75px;
+  width: 100%;
 }

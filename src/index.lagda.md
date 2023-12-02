@@ -2,7 +2,7 @@
 module index where
 ```
 
-# 1lab {style="margin-top: 0;"}
+# 1lab
 
 A formalised, cross-linked reference resource for cubical methods in
 Homotopy Type Theory. Unlike the [@HoTT], the 1lab is not a "linear"
