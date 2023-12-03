@@ -240,7 +240,7 @@ is-gaunt-generic-object-is-prop
   → is-prop (is-gaunt-generic-object gobj)
 is-gaunt-generic-object-is-prop = Iso→is-hlevel 1 eqv $
   Σ-is-hlevel 1 hlevel! λ _ →
-  Π-is-hlevel' 1 λ _ → Π-is-hlevel' 1 λ _ → Π-is-hlevel' 1 λ _ → Π-is-hlevel' 1 λ _ →
+  Π-is-hlevel' 1 λ _ → Π-is-hlevel³' 1 λ _ _ _ →
   Π-is-hlevel 1 λ _ →
   PathP-is-hlevel' 1 (Hom[ _ ]-set _ _) _ _
   where unquoteDecl eqv = declare-record-iso eqv (quote is-gaunt-generic-object)
