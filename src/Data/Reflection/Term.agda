@@ -364,6 +364,16 @@ unpi-view : Telescope → Term → Term
 unpi-view []            k = k
 unpi-view ((n , a) ∷ t) k = pi a (abs n (unpi-view t k))
 
+tel→lam : Telescope → Term → Term
+tel→lam []                               t = t
+tel→lam ((n , arg (arginfo v _) _) ∷ ts) t = lam v (abs n (tel→lam ts t))
+
+tel→args : Nat → Telescope → List (Arg Term)
+tel→args skip tel = map-up (λ i (_ , arg ai _) → arg ai (var (skip + length tel - i) [])) 1 tel
+
+tel→pats : Nat → Telescope → List (Arg Pattern)
+tel→pats skip tel = map-up (λ i (_ , arg ai _) → arg ai (var (skip + length tel - i))) 1 tel
+
 list-term : List Term → Term
 list-term []       = con (quote List.[]) []
 list-term (x ∷ xs) = con (quote List._∷_) (argN x ∷ argN (list-term xs) ∷ [])

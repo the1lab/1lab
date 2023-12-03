@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import 1Lab.Type.Sigma
 open import 1Lab.Path
 open import 1Lab.Type hiding (absurd)
 
@@ -186,6 +187,9 @@ instance
 # Reflection helpers
 
 ```agda
+Args : Type
+Args = List (Arg Term)
+
 Fun : ∀ {ℓ ℓ'} → Type ℓ → Type ℓ' → Type (ℓ ⊔ ℓ')
 Fun A B = A → B
 
@@ -218,9 +222,12 @@ block-on-meta m = blockTC (blocker-meta m)
 vlam : String → Term → Term
 vlam nam body = lam visible (abs nam body)
 
-infer-hidden : Nat → List (Arg Term) → List (Arg Term)
+infer-hidden : Nat → Args → Args
 infer-hidden zero    xs = xs
 infer-hidden (suc n) xs = unknown h∷ infer-hidden n xs
+
+infer-tel : Telescope → Args
+infer-tel tel = (λ (_ , arg ai _) → arg ai unknown) <$> tel
 
 “refl” : Term
 “refl” = def (quote refl) []
@@ -296,6 +303,10 @@ get-boundary : Term → TC (Maybe (Term × Term))
 get-boundary tm = unapply-path tm >>= λ where
   (just (_ , x , y)) → pure (just (x , y))
   nothing            → pure nothing
+
+instance
+  Has-visibility-Telescope : Has-visibility Telescope
+  Has-visibility-Telescope .set-visibility v tel = ×-map₂ (set-visibility v) <$> tel
 ```
 
 ## Debugging tools

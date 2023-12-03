@@ -172,6 +172,8 @@ reverse = go [] where
 _∷r_ : List A → A → List A
 xs ∷r x = xs ++ (x ∷ [])
 
+infixl 20 _∷r_
+
 all=? : (A → A → Bool) → List A → List A → Bool
 all=? eq=? [] [] = true
 all=? eq=? [] (x ∷ ys) = false
@@ -215,6 +217,15 @@ intercalate : ∀ {ℓ} {A : Type ℓ} (x : A) (xs : List A) → List A
 intercalate x []           = []
 intercalate x (y ∷ [])     = y ∷ []
 intercalate x (y ∷ z ∷ xs) = y ∷ x ∷ intercalate x (z ∷ xs)
+
+zip : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → List A → List B → List (A × B)
+zip [] _ = []
+zip _ [] = []
+zip (a ∷ as) (b ∷ bs) = (a , b) ∷ zip as bs
+
+unzip : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → List (A × B) → List A × List B
+unzip [] = [] , []
+unzip ((a , b) ∷ xs) = ×-map (a ∷_) (b ∷_) (unzip xs)
 
 instance
   Idiom-List : Idiom (eff List)

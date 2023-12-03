@@ -149,3 +149,16 @@ _<#>_ : Term → Arg Term → Term
 f <#> x = apply-tm f x
 
 infixl 7 _<#>_
+
+pi-apply : Term → List (Arg Term) → Maybe Term
+pi-apply ty as = go ty as ids where
+  go : Term → List (Arg Term) → Subst → Maybe Term
+  go (pi (arg _ x) (abs n y)) (arg _ a ∷ as) s = go y as (a ∷ s)
+  go _ (_ ∷ as) s = nothing
+  go t [] s = just (subst-tm s t)
+
+pi-applyTC : Term → List (Arg Term) → TC Term
+pi-applyTC f x with pi-apply f x
+pi-applyTC f x | just r  = pure r
+pi-applyTC f _ | nothing =
+  typeError [ "Failed to apply type " , termErr f ]
