@@ -98,7 +98,7 @@ module Joins (joins : ∀ x y → Join x y) where
 ```agda
 module Lubs (lubs : ∀ {I : Type o} → (f : I → Ob) → Lub f) where
   module lubs {I} {f : I → Ob} = Lub (lubs f)
-  open lubs using () renaming (fam≤lub to ⋃-inj; least to ⋃-universal)
+  open lubs using () renaming (fam≤lub to ⋃-inj; least to ⋃-universal) public
 
   ⋃ : ∀ {I : Type o} → (I → Ob) → Ob
   ⋃ f = lubs.lub {f = f}
