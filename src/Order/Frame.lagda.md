@@ -3,11 +3,14 @@
 open import Cat.Functor.Subcategory
 open import Cat.Prelude
 
+open import Order.Diagram.Glb.Reasoning
+open import Order.Diagram.Lub.Reasoning
 open import Order.Instances.Pointwise
+open import Order.Semilattice.Join
+open import Order.Semilattice.Meet
 open import Order.Instances.Props
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
-open import Order.Semilattice
 open import Order.Base
 
 import Cat.Reasoning
@@ -25,60 +28,28 @@ module Order.Frame where
 ```agda
 record is-frame {o ℓ} (P : Poset o ℓ) : Type (lsuc o ⊔ ℓ) where
   no-eta-equality
-  field
-    has-meet-slat : is-meet-semilattice P
-    has-lubs : ∀ {I : Type o} (k : I → ⌞ P ⌟) → Lub P k
-
-  module has-lubs {I} {k : I → ⌞ P ⌟} = Lub (has-lubs k)
-
   open Order.Reasoning P
-  open is-meet-semilattice has-meet-slat public
-  open has-lubs renaming (fam≤lub to fam≤⋃; least to ⋃-universal) public
+  field
+    has-meets : ∀ x y → Meet P x y
+    has-top : Top P
+    has-lubs : ∀ {I : Type o} (k : I → Ob) → Lub P k
 
-  ⋃ : ∀ {I : Type o} → (I → ⌞ P ⌟) → ⌞ P ⌟
-  ⋃ k = has-lubs.lub {k = k}
+  module has-lubs {I} {k : I → Ob} = Lub (has-lubs k)
+
+  open Meets P has-meets public
+  open Top has-top using (top; !) public
+  open Lubs P has-lubs public
 
   field
-    ⋃-distribl    : ∀ {I} x (f : I → ⌞ P ⌟) → x ∩ ⋃ f ≡ ⋃ λ i → x ∩ f i
+    ⋃-distribl    : ∀ {I} x (f : I → Ob) → x ∩ ⋃ f ≡ ⋃ λ i → x ∩ f i
 
-  ⋃-distribr : ∀ {I} (f : I → ⌞ P ⌟) x → (⋃ f) ∩ x ≡ ⋃ λ i → f i ∩ x
-  ⋃-distribr f x =
-    ∩-comm _ _
-    ·· ⋃-distribl x f
-    ·· ap ⋃ (funext λ _ → ∩-comm _ _)
+  has-meet-slat : is-meet-semilattice P
+  has-meet-slat .is-meet-semilattice.has-meets = has-meets
+  has-meet-slat .is-meet-semilattice.has-top = has-top
 
-  opaque
-    has-join-slat : is-join-semilattice P
-    has-join-slat .is-join-semilattice.has-bot .Bottom.bot =
-      ⋃ {I = Lift _ ⊥} λ ()
-    has-join-slat .is-join-semilattice.has-bot .Bottom.has-bottom x =
-      ⋃-universal _ (λ ())
-    has-join-slat .is-join-semilattice.has-joins x y .Join.lub =
-      ⋃ {I = Lift _ Bool} λ where
-        (lift true) → x
-        (lift false) → y
-    has-join-slat .is-join-semilattice.has-joins x y .Join.has-join .is-join.l≤join =
-      fam≤⋃ (lift true)
-    has-join-slat .is-join-semilattice.has-joins x y .Join.has-join .is-join.r≤join =
-      fam≤⋃ (lift false)
-    has-join-slat .is-join-semilattice.has-joins x y .Join.has-join .is-join.least ub' x≤ub' y≤ub' =
-      ⋃-universal _ λ where
-        (lift true) → x≤ub'
-        (lift false) → y≤ub'
-
-  open is-join-semilattice has-join-slat public
-
-  opaque
-    unfolding has-join-slat
-    ∪-distribl : ∀ x y z → x ∩ (y ∪ z) ≡ (x ∩ y) ∪ (x ∩ z)
-    ∪-distribl x y z =
-      ⋃-distribl x _
-      ∙ ap ⋃ (funext (λ { (lift true) → refl ; (lift false) → refl }))
-
-    ∪-distribr : ∀ x y z → (x ∪ y) ∩ z ≡ (x ∩ z) ∪ (y ∩ z)
-    ∪-distribr x y z =
-      ⋃-distribr _ z
-      ∙ ap ⋃ (funext (λ { (lift true) → refl ; (lift false) → refl }))
+  has-join-slat : is-join-semilattice P
+  has-join-slat .is-join-semilattice.has-joins = has-joins
+  has-join-slat .is-join-semilattice.has-bottom = has-bottom
 ```
 
 <!--
@@ -93,6 +64,7 @@ is-frame-is-prop {P = P} =
   Iso→is-hlevel 1 eqv hlevel!
   where
     open Order.Diagram.Lub P
+    open Order.Diagram.Glb P
     unquoteDecl eqv = declare-record-iso eqv (quote is-frame)
 
 instance
@@ -116,16 +88,21 @@ record
     module Qᶠ = is-frame Q-frame
     open is-lub
   field
-    has-meet-slat-hom : is-meet-slat-hom f Pᶠ.has-meet-slat Qᶠ.has-meet-slat
+    ∩-≤ : ∀ x y → (f # x) Qᶠ.∩ (f # y) Q.≤ f # (x Pᶠ.∩ y)
+    top-≤ : Qᶠ.top Q.≤ f # Pᶠ.top
     ⋃-≤ : ∀ {I : Type o} (k : I → ⌞ P ⌟) → (f # Pᶠ.⋃ k) Q.≤ Qᶠ.⋃ (apply f ⊙ k)
 
-  open is-meet-slat-hom has-meet-slat-hom public
+  has-meet-slat-hom : is-meet-slat-hom f Pᶠ.has-meet-slat Qᶠ.has-meet-slat
+  has-meet-slat-hom .is-meet-slat-hom.∩-≤ = ∩-≤
+  has-meet-slat-hom .is-meet-slat-hom.top-≤ = top-≤
+
+  open is-meet-slat-hom has-meet-slat-hom hiding (∩-≤; top-≤) public
 
   pres-⋃ : ∀ {I : Type o} (k : I → ⌞ P ⌟) → (f # Pᶠ.⋃ k) ≡ Qᶠ.⋃ (apply f ⊙ k)
   pres-⋃ k =
     Q.≤-antisym
       (⋃-≤ k)
-      (Qᶠ.⋃-universal _ (λ i → f .pres-≤ (Pᶠ.fam≤⋃ i)))
+      (Qᶠ.⋃-universal _ (λ i → f .pres-≤ (Pᶠ.⋃-inj i)))
 
   pres-lubs
     : ∀ {I : Type o} {k : I → ⌞ P ⌟} {l}
@@ -133,18 +110,19 @@ record
     → is-lub Q (apply f ⊙ k) (f # l)
   pres-lubs {k = k} {l = l} l-lub .fam≤lub i = f .pres-≤ (l-lub .fam≤lub i)
   pres-lubs {k = k} {l = l} l-lub .least ub p =
-    f # l              Q.≤⟨ f .pres-≤ (l-lub .least _ Pᶠ.fam≤⋃) ⟩
+    f # l              Q.≤⟨ f .pres-≤ (l-lub .least _ Pᶠ.⋃-inj) ⟩
     f # Pᶠ.⋃ k         Q.≤⟨ ⋃-≤ k ⟩
     Qᶠ.⋃ (apply f ⊙ k) Q.≤⟨ Qᶠ.⋃-universal ub p ⟩
     ub                 Q.≤∎
 
   opaque
-    unfolding is-frame.has-join-slat
+    unfolding Lubs.has-joins
+    unfolding Lubs.has-bottom
     has-join-slat-hom : is-join-slat-hom f Pᶠ.has-join-slat Qᶠ.has-join-slat
     has-join-slat-hom .is-join-slat-hom.∪-≤ x y =
       Q.≤-trans (⋃-≤ _) $ Qᶠ.⋃-universal _ λ where
-        (lift true) → Qᶠ.fam≤⋃ (lift true)
-        (lift false) → Qᶠ.fam≤⋃ (lift false)
+        (lift true) → Qᶠ.⋃-inj (lift true)
+        (lift false) → Qᶠ.⋃-inj (lift false)
     has-join-slat-hom .is-join-slat-hom.bot-≤ =
       Q.≤-trans (⋃-≤ _) (Qᶠ.⋃-universal _ (λ ()))
 
@@ -173,8 +151,10 @@ instance
 id-frame-hom
   : ∀ (Pᶠ : is-frame P)
   → is-frame-hom idₘ Pᶠ Pᶠ
-id-frame-hom {P = P} Pᶠ .has-meet-slat-hom =
-  id-meet-slat-hom (is-frame.has-meet-slat Pᶠ)
+id-frame-hom {P = P} Pᶠ .∩-≤ x y =
+  Poset.≤-refl P
+id-frame-hom {P = P} Pᶠ .top-≤ =
+  Poset.≤-refl P
 id-frame-hom {P = P} Pᶠ .⋃-≤ k =
   Poset.≤-refl P
 
@@ -186,8 +166,10 @@ id-frame-hom {P = P} Pᶠ .⋃-≤ k =
   → is-frame-hom f Qₗ Rₗ
   → is-frame-hom g Pₗ Qₗ
   → is-frame-hom (f ∘ₘ g) Pₗ Rₗ
-∘-frame-hom {R = R} {f = f} {g = g} f-pres g-pres .has-meet-slat-hom =
-  ∘-meet-slat-hom (f-pres .has-meet-slat-hom) (g-pres .has-meet-slat-hom)
+∘-frame-hom {R = R} {f = f} {g = g} f-pres g-pres .∩-≤ x y =
+  Poset.≤-trans R (f-pres .∩-≤ (g # x) (g # y)) (f .pres-≤ (g-pres .∩-≤ x y))
+∘-frame-hom {R = R} {f = f} {g = g} f-pres g-pres .top-≤ =
+  Poset.≤-trans R (f-pres .top-≤) (f .pres-≤ (g-pres .top-≤))
 ∘-frame-hom {R = R} {f = f} {g = g} f-pres g-pres .⋃-≤ k =
   Poset.≤-trans R (f .pres-≤ (g-pres .⋃-≤ k)) (f-pres .⋃-≤ (λ i → g # k i))
 
@@ -243,7 +225,7 @@ module _ {o ℓ} (F : Frame o ℓ) where
     : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') {x}
     → ∣ P x ∣ → x F.≤ subset-cup P
   subset-cup-colimiting P x =
-    F.fam≤⋃ (_ , (inc x))
+    F.⋃-inj (_ , (inc x))
 
   subset-cup-universal
     : ∀ {ℓ'} (P : ⌞ F ⌟ → Prop ℓ') {x}
@@ -287,9 +269,9 @@ open is-meet-semilattice
 
 Power-frame : ∀ {ℓ} (A : Type ℓ) → Frame ℓ ℓ
 Power-frame {ℓ = ℓ} A .fst = Subsets A
-Power-frame A .snd .has-meet-slat .has-meets =
+Power-frame A .snd .has-meets =
   Pointwise-has-meets Props-has-meets
-Power-frame A .snd .has-meet-slat .has-top =
+Power-frame A .snd .has-top =
   Pointwise-has-top Props-has-top
 Power-frame A .snd .has-lubs =
   Pointwise-has-lubs Props-has-lubs
