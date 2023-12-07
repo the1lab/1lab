@@ -1,7 +1,4 @@
-import { Setting } from "./lib/settings";
-
-const footnoteSetting = new Setting<boolean>("inline footnotes", false)
-  .registerToggle();
+import { footnoteSetting } from "./lib/settings";
 
 const createReturn = () => {
   const ret = document.createElement("a");

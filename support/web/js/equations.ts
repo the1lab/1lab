@@ -1,37 +1,23 @@
-import { Setting } from "./lib/settings";
-
-const equationSetting = new Setting<boolean>("display of equations", false).registerToggle();
-
-const serifFontSetting = new Setting<boolean>("serif font", false)
-  .registerToggle("Use serif font", "Use sans-serif font");
-
-const hiddenCodeSetting = new Setting<boolean>("hidden code", false)
-  .registerToggle("Display hidden code", "Do not display hidden code");
+import { equationSetting, hiddenCodeSetting, serifFontSetting } from "./lib/settings";
 
 window.addEventListener("DOMContentLoaded", () => {
 
-  equationSetting.onChange((t) => {
-    if (t) {
-      document.body.classList.add("show-equations");
-    } else {
-      document.body.classList.remove("show-equations");
-    }
-  });
+  /* I tried really hard to do this with only CSS but :first-of-type is
+   * only for *type*, and there'll be a div before the first comment (the
+   * narrow screen navigation). So this bit of JS adds the
+   * `first-comment` class to the first commented-out block so we can get
+   * rid of its top margin. */
+  const firstComment = Array.from(document.querySelector("article")?.children ?? [])
+    .filter(e => e instanceof HTMLDivElement && e.classList.contains("commented-out"));
 
-  serifFontSetting.onChange((t) => {
-    if (t) {
-      document.body.classList.remove("sans-serif");
-    } else {
-      document.body.classList.add("sans-serif");
-    }
-  });
+  if (firstComment.length >= 1) {
+    firstComment[0].classList.add("first-comment");
+  }
 
   hiddenCodeSetting.onChange((t) => {
     if (t) {
-      document.body.classList.add("show-hidden-code");
       document.querySelectorAll("details").forEach(d => d.setAttribute("open", "true"))
     } else {
-      document.body.classList.remove("show-hidden-code");
       document.querySelectorAll("details").forEach(d => d.removeAttribute("open"))
     }
   });
@@ -45,11 +31,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     equationSetting.onChange((t) => {
       if (button.checked !== undefined) button.checked = t;
-      if (t) {
-        button.innerText = "Hide equations";
-      } else {
-        button.innerText = "Show equations";
-      }
+      button.innerText = t ? "Hide equations" : "Show equations";
     });
 
     button.onclick = () => {
@@ -83,19 +65,18 @@ function scrollToHash() {
   if (window.location.hash != '') {
     const id = window.location.hash.slice(1);
     // #id doesn't work with numerical IDs
-    const elem = document.querySelector(`[id="${id}"]`) as HTMLInputElement | null;
-    if (elem) {
-      // If the element is in a commented-out block or a <details> tag, unhide it
-      // and scroll to it.
-      const commentedOut = elem.closest('.commented-out') as HTMLInputElement | null;
-      if (commentedOut)
-        commentedOut.style.display = 'revert';
-      const details = elem.closest('details') as HTMLInputElement | null;
-      if (details)
-        details.setAttribute("open", "");
-      if (commentedOut || details)
-        elem.scrollIntoView();
-    }
+    const elem = document.querySelector(`[id="${id}"]`);
+    if (!(elem instanceof HTMLInputElement)) return;
+    // If the element is in a commented-out block or a <details> tag, unhide it
+    // and scroll to it.
+    const commentedOut = elem.closest('.commented-out') as HTMLInputElement | null;
+    if (commentedOut)
+      commentedOut.style.display = 'revert';
+    const details = elem.closest('details') as HTMLInputElement | null;
+    if (details)
+      details.setAttribute("open", "");
+    if (commentedOut || details)
+      elem.scrollIntoView();
   }
 }
 

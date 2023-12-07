@@ -390,8 +390,8 @@ foldEquations _ (to@(TagOpen "a" attrs):tt@(TagText t):tc@(TagClose "a"):rest)
     go href (c:cs) = c:go href cs
     go _ [] = []
 foldEquations False (TagClose "html":cs) =
- [TagOpen "style" [], TagText ".equations { display: none !important; }", TagClose "style", TagClose "html"]
- ++ foldEquations True cs
+  [TagOpen "style" [], TagText ".equations { display: none !important; }", TagClose "style", TagClose "html"]
+  ++ foldEquations True cs
 foldEquations has_eqn (c:cs) = c:foldEquations has_eqn cs
 foldEquations _ [] = []
 
@@ -405,7 +405,6 @@ getHeaders module' markdown@(Pandoc (Meta meta) _) =
     { idIdent = module'
     , idAnchor = module' <> ".html"
     , idType = Nothing
-    , idDesc = stringify <$> (Map.lookup "description" meta <|> Map.lookup "pagetitle" meta)
     , idDefines = Nothing
     }
 
@@ -430,7 +429,6 @@ getHeaders module' markdown@(Pandoc (Meta meta) _) =
         { idIdent  = Text.intercalate " > " . reverse $ map snd path'
         , idAnchor = module' <> ".html#" <> hId
         , idType   = Nothing
-        , idDesc   = getDesc xs
         , idDefines = Text.words <$> lookup "defines" keys
         } <$> go xs
   go (Div (hId, _, keys) blocks:xs) | hId /= "" = do
@@ -440,7 +438,6 @@ getHeaders module' markdown@(Pandoc (Meta meta) _) =
       { idIdent  = Text.intercalate " > " . reverse $ hId:map snd path
       , idAnchor = module' <> ".html#" <> hId
       , idType   = Nothing
-      , idDesc   = getDesc blocks
       , idDefines = (:) hId . Text.words <$> lookup "alias" keys
       } <$> go xs
   go (_:xs) = go xs
@@ -451,14 +448,6 @@ getHeaders module' markdown@(Pandoc (Meta meta) _) =
   -- point, that's exactly what we want!
   write = writePlain def{ writerExtensions = enableExtension Ext_raw_html (writerExtensions def) }
   renderPlain inlines = either (error . show) id . runPure . write $ Pandoc mempty [Plain inlines]
-
-  -- | Attempt to find the "description" of a heading. Effectively, if a header
-  -- is followed by a paragraph, use its contents.
-  getDesc (Para x:_) = Just (renderPlain x)
-  getDesc (Plain x:_) = Just (renderPlain x)
-  getDesc (Div (_, cls, _) _:xs) | "warning" `elem` cls = getDesc xs
-  getDesc (BlockQuote blocks:_) = getDesc blocks
-  getDesc _ = Nothing
 
 htmlInl :: Text -> Inline
 htmlInl = RawInline "html"

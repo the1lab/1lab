@@ -1,6 +1,6 @@
 export type Content = HTMLElement | string | Content[] | undefined;
 
-const add = (element: HTMLElement, child: Content) => {
+const add = (element: Node, child: Content) => {
   if (typeof child === "string") {
     element.appendChild(document.createTextNode(child.toString()));
   } else if (child instanceof Array) {
@@ -28,12 +28,16 @@ export class JSX {
     ...content: Content[]
   ): Node {
     if (typeof name !== "string") {
-      return name(arg);
+      const elt = name(arg);
+      for (const c of content) {
+        add(elt, c);
+      }
+      return elt;
     } else {
       const element = document.createElement(name);
       const props = (arg as { [id: string]: string | boolean }) || {};
 
-      for (let name in props) {
+      for (const name in props) {
         if (name && props.hasOwnProperty(name)) {
           let value = props[name];
           if (value === true) {
@@ -44,8 +48,8 @@ export class JSX {
         }
       }
 
-      for (let i = 0; i < content.length; i++) {
-        add(element, content[i]);
+      for (const c of content) {
+        add(element, c);
       }
       return element;
     }

@@ -9,4 +9,4 @@ export const allSections: Section[] = [
   Settings,
   InThisPage,
   Miscellanea,
-]
+];

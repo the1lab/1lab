@@ -6,7 +6,6 @@ type SearchItem = {
   idIdent: string,
   idAnchor: string,
   idType: string | null,
-  idDesc: string | null,
   idDefines: string[] | null,
 };
 
@@ -52,28 +51,26 @@ const makeSearch = (e: SearchItem, thisp: boolean): PromptItem => {
   };
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-  let path = window.location.pathname.split('/');
-  let page = path[path.length - 1];
-  if (page.length === 0) { page = "index.html"; }
+let path = window.location.pathname.split('/');
+let page = path[path.length - 1];
+if (page.length === 0) { page = "index.html"; }
 
-  let thisp = 0, done = false;
+let thisp = 0, done = false;
 
-  fetch("static/search.json")
-    .then(r => r.json())
-    .then(entries => {
-      entries.filter((e: SearchItem) => !e.idIdent.startsWith(".")).forEach((e: SearchItem) => {
-        if (e.idAnchor.startsWith(page)) {
-          if (e.idAnchor !== page) {
-            InThisPage.pushPromptItems(makeSearch(e, true));
-          }
-        } else {
-          Miscellanea.pushPromptItems(makeSearch(e, false));
+fetch("static/search.json")
+  .then(r => r.json())
+  .then(entries => {
+    entries.filter((e: SearchItem) => !e.idIdent.startsWith(".")).forEach((e: SearchItem) => {
+      if (e.idAnchor.startsWith(page)) {
+        if (e.idAnchor !== page) {
+          InThisPage.pushPromptItems(makeSearch(e, true));
         }
-        if (!done && (done = thisp++ > 32)) document.dispatchEvent(new Event("searchready"));
-      });
-    })
-    .catch(e => {
-      console.error("Failed to load search index", e);
+      } else {
+        Miscellanea.pushPromptItems(makeSearch(e, false));
+      }
+      if (!done && (done = thisp++ > 32)) document.dispatchEvent(new Event("searchready"));
     });
-});
+  })
+  .catch(e => {
+    console.error("Failed to load search index", e);
+  });

@@ -1,9 +1,3 @@
-export const parseBool = (x: string) => x === 'true';
-
-import { JSX } from "./jsx";
-import { type PromptItem } from "../prompt/items";
-import { Settings } from "../prompt/sections";
-
 export class Setting<T> {
   private readonly key: string;
   private _value: T;
@@ -31,6 +25,7 @@ export class Setting<T> {
   }
 
   set value(to: T) {
+    if (this._value === to) return;
     this._value = to;
     window.localStorage.setItem(this.key, JSON.stringify(to));
     for (const listener of this._onChange) {
@@ -42,29 +37,40 @@ export class Setting<T> {
     return (this.value = !this.value);
   }
 
-  public registerToggle(this: Setting<boolean>, enable?: string, disable?: string): Setting<boolean> {
-    const t = this;
-
-    enable  = enable ?? `Enable ${this.name}`;
-    disable = disable ?? `Disable ${this.name}`;
-
-    const item: PromptItem = {
-      selectors: [this.name, enable, disable],
-      priority: 0,
-      render(_key, _matched) {
-        return <h3 class="search-header"> {t.value ? disable : enable} </h3>;
-      },
-      activate:  () => {
-        t.toggle();
-        return 'keep';
-      }
-    };
-    Settings.unshiftPromptItems(item);
-    return this;
-  }
-
-  onChange(listener: (value: T) => void) {
+  public onChange(listener: (value: T) => void) {
     this._onChange.push(listener);
     listener(this.value);
+    return this;
   }
 }
+
+const clz = document.documentElement.classList;
+
+export type Theme = 'light' | 'dark' | 'system';
+
+export const equationSetting   = new Setting<boolean>("equations",   false)
+  .onChange((v) => v ? clz.add("show-equations") : clz.remove("show-equations"));
+
+export const serifFontSetting  = new Setting<boolean>("sans_serif",  false)
+  .onChange((v) => v ? clz.remove("sans-serif") : clz.add("sans-serif"));
+
+export const hiddenCodeSetting = new Setting<boolean>("hidden_code", false)
+  .onChange((v) => v ? clz.add("show-hidden-code") : clz.remove("show-hidden-code"));
+
+export const footnoteSetting = new Setting<boolean>("inline_footnotes", false)
+
+export const themeSetting = new Setting<Theme>("prefer_theme", 'system').onChange((t) => {
+  switch(t) {
+    case "light":
+      clz.add("light-theme");
+      clz.remove("dark-theme");
+      break;
+    case "dark":
+      clz.remove("light-theme");
+      clz.add("dark-theme");
+      break;
+    case "system":
+      clz.remove("light-theme", "dark-theme");
+      break;
+  }
+});
