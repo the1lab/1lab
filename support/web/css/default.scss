@@ -80,20 +80,11 @@ main {
   box-sizing: border-box;
 
   div#post-toc-container {
-    aside#toc {
+    aside {
       display: none;
       a[href].header-link {
         span.header-link-emoji {
           display: none;
-        }
-
-        &, &:visited {
-          color: var(--primary)
-        };
-
-        &.current-heading {
-          font-weight: bold;
-          color: var(--text-fg);
         }
       }
     }
@@ -279,8 +270,11 @@ table {
       // The 0 minimum is required to avoid overflow, see https://css-tricks.com/preventing-a-grid-blowout/
       grid-template-columns: 1fr minmax(0, 4fr) 1fr;
 
-      aside#toc {
+      aside {
         display: block !important;
+      }
+
+      aside {
         margin-right: 1rem;
 
         h3 { @include centered-contents; }
@@ -308,6 +302,17 @@ table {
 
           a[href]#logo.hover-highlight {
             background-color: unset;
+          }
+
+          a[href].header-link {
+            &, &:visited {
+              color: var(--primary)
+            };
+
+            &.current-heading {
+              font-weight: bold;
+              color: var(--text-fg);
+            }
           }
 
           > hr {
