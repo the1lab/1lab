@@ -1,14 +1,20 @@
 import { JSX, type Content } from "./lib/jsx";
 import { type Theme, themeSetting, equationSetting, Setting, hiddenCodeSetting, footnoteSetting, serifFontSetting } from "./lib/settings";
 
-function Button(props: { label: Content, icon?: string, click: ((ev: MouseEvent) => void), ['class']?: string }): HTMLButtonElement {
+function Button(props: { label: Content, icon?: string, click: ((ev: MouseEvent) => void) | string, ['class']?: string }): HTMLButtonElement {
   const el: HTMLElement =
     <button class={`labelled-button ${props['class']}`}>
       <span class="icon" style={`background-image: url('/static/icons/${props.icon}.svg');`}></span>
       <span class="hover-label">{props.label}</span>
     </button>;
 
-  el.addEventListener("click", (ev) => props.click(ev));
+  el.addEventListener("click", (ev) => {
+    if (typeof props.click === 'string') {
+      window.location.href = props.click;
+      return;
+    }
+    props.click(ev)
+  });
 
   return el as HTMLButtonElement;
 }
@@ -86,9 +92,9 @@ document.addEventListener("DOMContentLoaded", () => {
             {serif}
           </ButtonRow>
 
-          <hr />
+          {/* <hr />
 
-          {/* <ButtonRow>
+          <ButtonRow>
             <Button label="Left-aligned text" icon="raggedright" class="button-large" click={console.log} />
             <Button label="Justified text"    icon="justified"   class="button-large" click={console.log} />
             <Button label="Right-aligned text" icon="raggedleft" class="button-large" click={console.log} />
@@ -111,11 +117,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       </div>
 
-      <Button icon="github" label="Link to source" click={() => window.location.href = `https://github.com/plt-amy/1lab/blob/${links.source}`} />
-
-      <Button icon="home" label="Return to index" click={() => window.location.href = `${links.baseURL}/index.html`} />
-
-      <Button icon="all-pages" label="View all pages" click={() => window.location.href = `${links.baseURL}/all-pages.html`} />
+      <Button icon="github" label="Link to source" click={`https://github.com/plt-amy/1lab/blob/${links.source}`} />
+      <Button icon="home" label="Return to index" click={`${links.baseURL}/index.html`} />
+      <Button icon="all-pages" label="View all pages" click={`${links.baseURL}/all-pages.html`} />
     </div>
   </aside>);
 
