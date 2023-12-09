@@ -160,6 +160,20 @@ Now given the data in red, we verify that the dashed arrow exists, which
 is enough for its uniqueness.
 
 ```agda
+pullback-subobject
+  : has-pullbacks B
+  → ∀ {A B} (f : Hom A B)
+  → Subobject B
+  → Subobject A
+pullback-subobject pb f y' = l where
+  it : Pullback _ _ _
+  it = pb (y' .map) f
+
+  l : Subobject _
+  l .domain = it .apex
+  l .map    = it .p₂
+  l .monic  = is-monic→pullback-is-monic (y' .monic) (it .has-is-pb)
+
 Subobject-fibration
   : has-pullbacks B
   → Cartesian-fibration Subobjects
@@ -169,9 +183,7 @@ Subobject-fibration pb .has-lift f y' = l where
   l : Cartesian-lift Subobjects f y'
 
   -- The blue square:
-  l .x' .domain = it .apex
-  l .x' .map    = it .p₂
-  l .x' .monic  = is-monic→pullback-is-monic (y' .monic) (it .has-is-pb)
+  l .x' = pullback-subobject pb f y'
   l .lifting .map = it .p₁
   l .lifting .sq  = sym (it .square)
 

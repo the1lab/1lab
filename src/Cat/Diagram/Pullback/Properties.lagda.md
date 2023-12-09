@@ -270,6 +270,16 @@ pullback-unique {f = f} {g} {p1} {p2} {p1'} {p2'} pb pb'
       (pulll (pb .p₂∘universal) ∙ pb' .p₂∘universal)
       (idr _) (idr _)
 
+subst-is-pullback
+  : ∀ {w x y z}
+  → {p1 p1' : Hom w x} (α : p1 ≡ p1')
+  → {f f' : Hom x z}   (β : f  ≡ f')
+  → {p2 p2' : Hom w y} (γ : p2 ≡ p2')
+  → {g g' : Hom y z}   (δ : g  ≡ g')
+  → is-pullback p1 f p2 g
+  → is-pullback p1' f' p2' g'
+subst-is-pullback α β γ δ = transport (λ i → is-pullback (α i) (β i) (γ i) (δ i))
+
 Pullback-unique
   : ∀ {x y z} {f : Hom x z} {g : Hom y z}
   → is-category C
@@ -278,6 +288,7 @@ Pullback-unique {x = X} {Y} {Z} {f} {g} c-cat x y = p where
   open Pullback
   module x = Pullback x
   module y = Pullback y
+
   apices = c-cat .to-path (pullback-unique (x .has-is-pb) (y .has-is-pb))
 
   abstract
@@ -287,36 +298,12 @@ Pullback-unique {x = X} {Y} {Z} {f} {g} c-cat x y = p where
     p2s : PathP (λ i → Hom (apices i) Y) x.p₂ y.p₂
     p2s = Univalent.Hom-pathp-refll-iso c-cat (x.p₂∘universal)
 
-    lims
-      : ∀ {P'} {p1' : Hom P' X} {p2' : Hom P' Y} (p : f ∘ p1' ≡ g ∘ p2')
-      → PathP (λ i → Hom P' (apices i)) (x.universal p) (y.universal p)
-    lims p = Univalent.Hom-pathp-reflr-iso c-cat $
-      y.unique (pulll y.p₁∘universal ∙ x.p₁∘universal)
-              (pulll y.p₂∘universal ∙ x.p₂∘universal)
-
   p : x ≡ y
   p i .apex = apices i
   p i .p₁ = p1s i
   p i .p₂ = p2s i
-  p i .has-is-pb .square =
-    is-prop→pathp (λ i → Hom-set (apices i) Z (f ∘ p1s i) (g ∘ p2s i))
-      x.square y.square i
-  p i .has-is-pb .universal p = lims p i
-  p i .has-is-pb .p₁∘universal {p = p} =
-    is-prop→pathp (λ i → Hom-set _ X (p1s i ∘ lims p i) _)
-      x.p₁∘universal y.p₁∘universal i
-  p i .has-is-pb .p₂∘universal {p = p} =
-    is-prop→pathp (λ i → Hom-set _ _ (p2s i ∘ lims p i) _)
-      x.p₂∘universal y.p₂∘universal i
-  p i .has-is-pb .unique {P' = P'} {p₁' = p₁'} {p₂' = p₂'} {p = p'} {lim' = lim'} =
-    is-prop→pathp
-      (λ i   → Π-is-hlevel {A = Hom P' (apices i)} 1
-       λ lim → Π-is-hlevel {A = p1s i ∘ lim ≡ p₁'} 1
-       λ p   → Π-is-hlevel {A = p2s i ∘ lim ≡ p₂'} 1
-       λ q   → Hom-set P' (apices i) lim (lims p' i))
-      (λ lim → x.unique {lim' = lim})
-      (λ lim → y.unique {lim' = lim})
-      i lim'
+  p i .has-is-pb = is-prop→pathp
+    (λ i → is-pullback-is-prop {p1 = p1s i} {p2 = p2s i}) x.has-is-pb y.has-is-pb i
 
 canonically-stable
   : ∀ {ℓ'} (P : ∀ {a b} → Hom a b → Type ℓ')

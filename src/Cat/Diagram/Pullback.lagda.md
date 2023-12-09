@@ -169,3 +169,45 @@ is-pullback-stable P =
   ∀ {p A B X} (f : Hom A B) (g : Hom X B) {f⁺ : Hom p X} {p2}
   → P f → is-pullback f⁺ g p2 f → P f⁺
 ```
+
+<!--
+```agda
+is-pullback-is-prop
+  : ∀ {w x y z : Ob} {p1 : Hom w x} {f : Hom x z} {p2 : Hom w y} {g : Hom y z}
+  → is-prop (is-pullback p1 f p2 g)
+is-pullback-is-prop {w = W} {X} {Y} {Z} {p1} {f} {p2} {g} x y = p where
+  module x = is-pullback x
+  module y = is-pullback y
+  open is-pullback
+
+  lims
+    : ∀ {P'} {p1' : Hom P' X} {p2' : Hom P' Y} (p : f ∘ p1' ≡ g ∘ p2')
+    → x.universal p ≡ y.universal p
+  lims p = y.unique x.p₁∘universal x.p₂∘universal
+
+  p : x ≡ y
+  p i .square = is-prop→pathp (λ i → Hom-set W Z (f ∘ p1) (g ∘ p2))
+    x.square y.square i
+  p i .universal p = lims p i
+  p i .p₁∘universal {p = p} = is-prop→pathp (λ i → Hom-set _ X (p1 ∘ lims p i) _)
+    x.p₁∘universal y.p₁∘universal i
+  p i .p₂∘universal {p = p} = is-prop→pathp (λ i → Hom-set _ _ (p2 ∘ lims p i) _)
+    x.p₂∘universal y.p₂∘universal i
+  p i .unique {P' = P'} {p₁' = p₁'} {p₂' = p₂'} {p = p'} {lim' = lim'} =
+    is-prop→pathp
+      (λ i   → Π-is-hlevel {A = Hom P' W} 1
+       λ lim → Π-is-hlevel {A = p1 ∘ lim ≡ p₁'} 1
+       λ p   → Π-is-hlevel {A = p2 ∘ lim ≡ p₂'} 1
+       λ q   → Hom-set P' W lim (lims p' i))
+      (λ lim → x.unique {lim' = lim})
+      (λ lim → y.unique {lim' = lim})
+      i lim'
+
+instance
+  H-Level-is-pullback
+    : ∀ {w x y z : Ob} {p1 : Hom w x} {f : Hom x z} {p2 : Hom w y} {g : Hom y z} {n}
+    → H-Level (is-pullback p1 f p2 g) (suc n)
+  H-Level-is-pullback = prop-instance is-pullback-is-prop
+
+```
+-->
