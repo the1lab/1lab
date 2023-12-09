@@ -1,3 +1,5 @@
+import { footnoteSetting } from "./lib/settings";
+
 const createReturn = () => {
   const ret = document.createElement("a");
   ret.innerText = "❌";
@@ -10,12 +12,6 @@ const createReturn = () => {
   ret.title = "Collapse this footnote";
   return ret;
 };
-
-const fiItem = "1lab.footnote_inline";
-let unfold_footnotes = false;
-if (window.localStorage.getItem(fiItem) === "displayed") {
-  unfold_footnotes = true;
-}
 
 document.addEventListener("DOMContentLoaded", () => {
   let footnotes = false;
@@ -35,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const ret = createReturn();
 
     link.onclick = (ev) => {
-      if (!unfold_footnotes) {
+      if (!footnoteSetting.value) {
         return;
       }
 
@@ -74,15 +70,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const selecteds = document.querySelectorAll("input.inline-footnotes") as NodeListOf<HTMLInputElement>;
     selecteds.forEach(selected => {
-      selected.checked = unfold_footnotes;
+      selected.checked = footnoteSetting.value;
       selected.onchange = () => {
-        unfold_footnotes = selected.checked;
-        window.localStorage.setItem(fiItem, selected.checked ? "displayed" : "hidden");
-        selecteds.forEach(selected => {
-          if (selected.checked !== undefined)
-            selected.checked = unfold_footnotes;
-        });
+        footnoteSetting.value = selected.checked;
       };
+    });
+    footnoteSetting.onChange(() => {
+      selecteds.forEach(selected => {
+        if (selected.checked !== undefined)
+          selected.checked = footnoteSetting.value;
+      });
     });
   }
 });

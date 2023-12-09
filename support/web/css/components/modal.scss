@@ -1,22 +1,23 @@
 @import "../mixins.scss";
 
+$modal-width: 820px;
+
 .modal {
   position: fixed;
   width: 100vw;
   height: 100vh;
   opacity: 0;
-  visibility: hidden;
   transition: all 0.3s ease;
 
   top: 0;
   left: 0;
 
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
 
   &.open {
-    visibility: visible;
+    display: flex;
     opacity: 1;
     transition-delay: 0s;
     background-color: var(--modal-bg);
@@ -24,11 +25,12 @@
   }
 
   &-contents {
-    width: 60%;
-    height: 60%;
+    width: $modal-width;
+    height: ($modal-width * 9 / 16);
+    max-width: 80%;
 
     background-color: var(--text-bg);
-    padding: 1em 0em 0em 0em;
+    padding: 0em;
     box-shadow: 2px 2px 6px var(--shadow);
 
     text-align: center;
