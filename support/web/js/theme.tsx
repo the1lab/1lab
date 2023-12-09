@@ -1,20 +1,28 @@
 import { JSX, type Content } from "./lib/jsx";
 import { type Theme, themeSetting, equationSetting, Setting, hiddenCodeSetting, footnoteSetting, serifFontSetting } from "./lib/settings";
 
+// This is pretty evil, but a loose <script> tag assigns these to the
+// window object in the HTML template.
+const links: { baseURL: string, source: string } = window as any;
+
 function Button(props: { label: Content, icon?: string, click: ((ev: MouseEvent) => void) | string, ['class']?: string }): HTMLButtonElement {
+  const style = `background-image: url('${links.baseURL}/static/icons/${props.icon}.svg');`;
+
+  const ic: HTMLElement = typeof props.click === 'string' ?
+    <a class="icon" style={style} href={props.click} /> :
+    <span class="icon" style={style} />;
+
   const el: HTMLElement =
-    <button class={`labelled-button ${props['class']}`}>
-      <span class="icon" style={`background-image: url('/static/icons/${props.icon}.svg');`}></span>
+    <button class={`labelled-button ${props['class'] ?? ''}`}>
+      {ic}
       <span class="hover-label">{props.label}</span>
     </button>;
 
-  el.addEventListener("click", (ev) => {
-    if (typeof props.click === 'string') {
-      window.location.href = props.click;
-      return;
-    }
-    props.click(ev)
-  });
+  if (typeof props.click !== 'string') {
+    el.addEventListener("click", (ev) => {
+      (props.click as any)(ev)
+    });
+  };
 
   return el as HTMLButtonElement;
 }
@@ -54,8 +62,6 @@ function Toggle(props: { label: string, sync: Setting<boolean> }): HTMLElement {
     </div>
   );
 }
-
-const links: { baseURL: string, source: string } = window as any;
 
 document.addEventListener("DOMContentLoaded", () => {
   const main = document.querySelector("div#post-toc-container");
