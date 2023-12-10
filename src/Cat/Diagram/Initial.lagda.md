@@ -79,11 +79,11 @@ Additionally, if $C$ is a category, then the space of initial objects is
 a proposition:
 
 ```agda
-⊥-contractible : is-category C → is-prop Initial
-⊥-contractible ccat x1 x2 i .bot =
+⊥-is-prop : is-category C → is-prop Initial
+⊥-is-prop ccat x1 x2 i .bot =
   Univalent.iso→path ccat (⊥-unique x1 x2) i
 
-⊥-contractible ccat x1 x2 i .has⊥ ob =
+⊥-is-prop ccat x1 x2 i .has⊥ ob =
   is-prop→pathp
     (λ i → is-contr-is-prop
       {A = Hom (Univalent.iso→path ccat (⊥-unique x1 x2) i) _})

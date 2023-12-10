@@ -200,3 +200,13 @@ truncation --- to prove $\bot$ using the assumption that $i ≠ j$.
       uniq _ = funext λ where
         (_ , _ , p) → absurd (i≠j (ap (∥-∥₀-elim (λ _ → I .is-tr) fst) p))
 ```
+<!--
+```agda
+Sets-initial : ∀ {ℓ} → Initial (Sets ℓ)
+Sets-initial .Initial.bot = el! (Lift _ ⊥)
+Sets-initial .Initial.has⊥ x .centre () 
+Sets-initial .Initial.has⊥ x .paths _ = ext λ ()
+
+```
+
+-->
