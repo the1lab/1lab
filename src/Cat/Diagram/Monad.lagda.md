@@ -215,10 +215,10 @@ module _ {o ℓ} {C : Precategory o ℓ} {M : Monad C} where
     extensionality-algebra-hom = record { lemma = quote Extensional-Algebra-Hom }
 
   instance
-    Funlike-algebra-hom : ⦃ i : Funlike C.Hom ⦄ → Funlike (Algebra-hom C M)
-    Funlike-algebra-hom ⦃ i ⦄ .Funlike.au = Underlying-Σ ⦃ ua = Funlike.au i ⦄
-    Funlike-algebra-hom ⦃ i ⦄ .Funlike.bu = Underlying-Σ ⦃ ua = Funlike.bu i ⦄
-    Funlike-algebra-hom ⦃ i ⦄ .Funlike._#_ f x = f .morphism # x
+    Funlike-Algebra-hom : ⦃ i : Funlike C.Hom ⦄ → Funlike (Algebra-hom C M)
+    Funlike-Algebra-hom ⦃ i ⦄ .Funlike.au = Underlying-Σ ⦃ ua = Funlike.au i ⦄
+    Funlike-Algebra-hom ⦃ i ⦄ .Funlike.bu = Underlying-Σ ⦃ ua = Funlike.bu i ⦄
+    Funlike-Algebra-hom ⦃ i ⦄ .Funlike._#_ f x = f .morphism # x
 
 module _ {o ℓ} (C : Precategory o ℓ) where
   private module C = Cat.Reasoning C
