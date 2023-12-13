@@ -2,7 +2,7 @@
 module index where
 ```
 
-# 1lab {style="margin-top: 0;"}
+# 1lab
 
 A formalised, cross-linked reference resource for cubical methods in
 Homotopy Type Theory. Unlike the [@HoTT], the 1lab is not a "linear"
@@ -150,7 +150,7 @@ project. No part of these projects is redistributed.
 And, of course, the formalisation would not be possible without
 [Agda](https://github.com/agda/agda).
 
-# Type Theory
+# Type theory
 
 ::: warning
 Most of the modules in the 1Lab assume a baseline knowledge of type
@@ -276,7 +276,7 @@ open import Data.Power -- Power sets
 open import Data.Power.Complemented -- Complemented or decidable subobjects
 ```
 
-# Category Theory
+# Category theory
 
 In addition to providing a framework for the synthetic study of higher
 groupoids, HoTT also provides a natural place to develop constructive
@@ -470,7 +470,7 @@ open import Cat.Univalent.Instances.Algebra
   -- Eilenberg-Moore categories preserve univalence
 ```
 
-## Strict Categories
+## Strict categories
 
 In general, precategories do not have a set of objects. We call categories
 that do **strict**.
@@ -617,7 +617,7 @@ open import Cat.Allegory.Morphism -- Morphisms in allegories
 open import Cat.Allegory.Reasoning -- Reasoning combinators
 ```
 
-## Restriction Categories
+## Restriction categories
 
 Restriction categories axiomatize categories of partial maps by adding
 n restriction operation $(-)\downarrow : \cC(X,Y) \to \cC(X,X)$ that
@@ -781,7 +781,7 @@ open import Cat.Displayed.Instances.Identity
 -- The bifibration associated with the identity functor.
 ```
 
-### Structures in Fibrations
+### Structures in fibrations
 
 ```agda
 open import Cat.Displayed.InternalSum
@@ -790,7 +790,7 @@ open import Cat.Displayed.GenericObject
 -- Generic objects in fibrations.
 ```
 
-### Logical Structure of Fibrations
+### Logical structure of fibrations
 
 Fibrations serve as an excellent foundation for exploring various
 logical and type-theoretic phenomena.
@@ -807,7 +807,7 @@ open import Cat.Displayed.Comprehension.Coproduct.VeryStrong
 ```
 
 
-## Internal Categories
+## Internal categories
 
 The theory of internal categories. Internal category theory generalizes
 [[strict category]] theory by replacing the ambient category
@@ -960,7 +960,7 @@ open import Order.Instances.Pointwise -- The pointwise ordering on A→B
 open import Order.Instances.Pointwise.Diagrams
 ```
 
-## Domain Theory
+## Domain theory
 
 Domain theory is the study of posets that are complete
 under various classes of least upper bounds. These posets are used

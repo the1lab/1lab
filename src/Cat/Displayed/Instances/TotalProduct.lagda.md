@@ -23,7 +23,7 @@ module Cat.Displayed.Instances.TotalProduct
   private module EC = Displayed EC
   private module ED = Displayed ED
 ```
-# The Total Product of Displayed Categories
+# The total product of displayed categories
 
 If $\cE\to \cB$ and $q :\cD \to \cC$ are
 displayed categories, then we can define their **total product**

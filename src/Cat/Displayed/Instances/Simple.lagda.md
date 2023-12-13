@@ -25,7 +25,7 @@ open Cat.Reasoning B
 open Binary-products B has-prods
 ```
 
-# Simple Fibrations
+# Simple fibrations
 
 One reason to be interested in fibrations is that they provide an
 excellent setting to study logical and type-theoretical phenomena.
@@ -90,7 +90,7 @@ Simple .Displayed.assoc' {f = u} {g = v} {h = w} f g h =
   (f ∘ ⟨ v ∘ π₁ , g ⟩) ∘ ⟨ w ∘ π₁ , h ⟩     ∎
 ```
 
-# Cartesian Morphisms
+# Cartesian morphisms
 
 A morphism $f' : \Gamma \times X \to Y$ in the simple fibration is
 cartesian if and only if the morphism $\langle \pi_1 , f' \rangle :
@@ -251,7 +251,7 @@ a right inverse.
         id                                     ∎
 ```
 
-# Fibration Structure
+# Fibration structure
 
 As suggested by it's name, the simple fibration is a fibration.
 given a map $\Gamma \to Delta$ in the base, and a $(\Delta , Y)$
@@ -281,7 +281,7 @@ Simple-fibration .has-lift f Y .cartesian .unique {m = g} {h' = h} h' p =
   h ∎
 ```
 
-# Comprehension Structure
+# Comprehension structure
 
 The simple fibration admits a [[fibred functor]] into the [[codomain
 fibration]] that maps an object $X$ over $\Gamma$ to the projection

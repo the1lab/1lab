@@ -30,7 +30,7 @@ open Cat.Displayed.Morphism ℰ
 open Cat.Displayed.Reasoning ℰ
 ```
 
-# Right Fibrations
+# Right fibrations
 
 A [[cartesian fibration]] $\cE$ is said to be a **right fibration** if every
 morphism in $\cE$ is cartesian.
@@ -133,7 +133,7 @@ discrete→right-fibration dfib =
     (discrete→vertical-invertible ℰ dfib)
 ```
 
-## Fibred Functors and Right Fibrations
+## Fibred functors and right fibrations
 
 As every map in a right fibration is cartesian, every [[displayed functor]]
 into a right fibration is automatically fibred.

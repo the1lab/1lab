@@ -23,7 +23,7 @@ open Restriction-category C-restrict public
 ```
 -->
 
-# Reasoning in Restriction Categories
+# Reasoning in restriction categories
 
 This module provides some useful lemmas about restriction categories.
 We begin by noting that for every $f$, $\restrict{f}$ is an [idempotent].
@@ -87,7 +87,7 @@ Next, we note that iterating $(-)downarrow$ does nothing.
   f ↓ ∎
 ```
 
-## Total Morphisms
+## Total morphisms
 
 We say that a morphism $f : X \to Y$ in a restriction category is **total**
 if its restriction $\restrict{f}$ is the identity morphism.
@@ -194,7 +194,7 @@ total-smashl {f = f} {g = g} f-total =
   g ↓ ∎
 ```
 
-## Restriction Idempotents
+## Restriction idempotents
 
 We say that a morphism $f : X \to X$ is a **restriction idempotent** if
 $\restrict{f} = f$.
@@ -236,7 +236,7 @@ restriction-idem-comm f-dom g-dom =
   ·· ap₂ _∘_ g-dom f-dom
 ```
 
-## Restricted Monics
+## Restricted monics
 
 A morphism $f : X \to Y$ is a **restricted monic** if for all
 $g, h : A \to X$, $fg = fh$ implies that $\restrict{f}g = \restrict{f}h$.
@@ -304,7 +304,7 @@ restricted-monic-cancell {f = f} {g = g} fg-rmonic f-total h1 h2 p =
   g ↓ ∘ h2           ∎
 ```
 
-## Restricted Retracts
+## Restricted retracts
 
 Let $r : X \to Y$ and $s : Y \to X$ be a pair of morphisms. The map
 $r$ is a **restricted retract** of $s$ when $rs = \restrict{s}$.
@@ -384,7 +384,7 @@ has-restricted-retract-cancell {f = f} {g = g} fg-sect f-total .is-restricted-re
   g ↓ ∎
 ```
 
-## Restricted Isomorphisms
+## Restricted isomorphisms
 
 Let $f : X \to Y$ and $g : Y \to X$ be a pair of morphisms. $f$ and $g$
 are **restricted inverses** if $fg = \restrict{g}$ and
@@ -475,7 +475,7 @@ restricted-inverses+total→inverses {f = f} {g = g} fg-inv f-total g-total = re
     }
 ```
 
-## Refining Morphisms
+## Refining morphisms
 
 Let $\cC$ be a restriction category, and $f, g : \cC(X,Y)$. We say that
 $g$ **refines** $f$ if $g$ agrees with $f$ when restricted to the domain of

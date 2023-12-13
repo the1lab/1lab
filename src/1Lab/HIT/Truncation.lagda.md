@@ -5,6 +5,7 @@ definition: |
 ---
 <!--
 ```agda
+open import 1Lab.Reflection.Induction
 open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Path.Reasoning
@@ -20,7 +21,7 @@ open import 1Lab.Type
 module 1Lab.HIT.Truncation where
 ```
 
-# Propositional Truncation {defines="propositional-truncation"}
+# Propositional truncation {defines="propositional-truncation"}
 
 Let $A$ be a type. The **propositional truncation** of $A$ is a type
 which represents the [[proposition]] "A is inhabited". In MLTT,
@@ -346,31 +347,19 @@ principles.
 <!--
 ```agda
 ∥-∥³-elim-set
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {P : ∥ A ∥³ → Type ℓ'}
+  : ∀ {ℓ} {A : Type ℓ} {ℓ'} {P : ∥ A ∥³ → Type ℓ'}
   → (∀ a → is-set (P a))
   → (f : (a : A) → P (inc a))
   → (∀ a b → PathP (λ i → P (iconst a b i)) (f a) (f b))
   → ∀ a → P a
-∥-∥³-elim-set {P = P} sets f fconst = go where
-  go : ∀ a → P a
-  go (inc x) = f x
-  go (iconst a b i) = fconst a b i
-  go (icoh a b c i j) = is-set→squarep (λ i j → sets (icoh a b c i j))
-    refl (λ i → go (iconst a b i)) (λ i → go (iconst a c i)) (λ i → go (iconst b c i))
-    i j
-  go (squash x y a b p q i j k) = is-hlevel→is-hlevel-dep 2 (λ _ → is-hlevel-suc 2 (sets _))
-    (go x) (go y)
-    (λ k → go (a k)) (λ k → go (b k))
-    (λ j k → go (p j k)) (λ j k → go (q j k))
-    (squash x y a b p q) i j k
+unquoteDef ∥-∥³-elim-set = make-elim-n 2 ∥-∥³-elim-set (quote ∥_∥³)
 
 ∥-∥³-elim-prop
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {P : ∥ A ∥³ → Type ℓ'}
+  : ∀ {ℓ} {A : Type ℓ} {ℓ'} {P : ∥ A ∥³ → Type ℓ'}
   → (∀ a → is-prop (P a))
   → (f : (a : A) → P (inc a))
   → ∀ a → P a
-∥-∥³-elim-prop props f = ∥-∥³-elim-set (λ _ → is-hlevel-suc 1 (props _)) f
-  (λ _ _ → is-prop→pathp (λ _ → props _) _ _)
+unquoteDef ∥-∥³-elim-prop = make-elim-n 1 ∥-∥³-elim-prop (quote ∥_∥³)
 ```
 -->
 
@@ -441,7 +430,7 @@ data ∥_∥⁴ {ℓ} (A : Type ℓ) : Type ℓ where
   squash : is-hlevel ∥ A ∥⁴ 4
 
 ∥-∥⁴-rec
-  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  : ∀ {ℓ} {A : Type ℓ} {ℓ'} {B : Type ℓ'}
   → is-hlevel B 4
   → (f : A → B)
   → (fconst : ∀ a b → f a ≡ f b)
@@ -450,18 +439,7 @@ data ∥_∥⁴ {ℓ} (A : Type ℓ) : Type ℓ where
                                     (fconst a b) (fcoh a c d i))
                        (fcoh a b c) (fcoh a b d))
   → ∥ A ∥⁴ → B
-∥-∥⁴-rec {A = A} {B} b4 f fconst fcoh fassoc = go where
-  go : ∥ A ∥⁴ → B
-  go (inc x) = f x
-  go (iconst a b i) = fconst a b i
-  go (icoh a b c i j) = fcoh a b c i j
-  go (iassoc a b c d i j k) = fassoc a b c d i j k
-  go (squash x y a b p q r s i j k l) = b4
-    (go x) (go y)
-    (λ i → go (a i)) (λ i → go (b i))
-    (λ i j → go (p i j)) (λ i j → go (q i j))
-    (λ i j k → go (r i j k)) (λ i j k → go (s i j k))
-    i j k l
+unquoteDef ∥-∥⁴-rec = make-rec-n 4 ∥-∥⁴-rec (quote ∥_∥⁴)
 ```
 </details>
 

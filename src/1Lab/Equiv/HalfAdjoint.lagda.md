@@ -24,7 +24,7 @@ open import 1Lab.Type
 module 1Lab.Equiv.HalfAdjoint where
 ```
 
-# Adjoint Equivalences
+# Adjoint equivalences
 
 An **adjoint equivalence** is an [isomorphism] $(f, g, \eta,
 \varepsilon)$ where the [homotopies] ($\eta$, $\varepsilon$) satisfy the

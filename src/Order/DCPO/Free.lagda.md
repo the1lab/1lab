@@ -94,7 +94,7 @@ Free-DCPO⊣Forget-DCPO .zig = trivial!
 Free-DCPO⊣Forget-DCPO .zag = refl
 ```
 
-# Free Pointed DCPOs
+# Free pointed DCPOs
 
 We construct the free [pointed DCPO] on a set $A$; IE a pointed
 DCPO $A_{\bot}$ with the property that for all pointed DCPOs $B$,
@@ -538,7 +538,7 @@ Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zag {B} =
     where module B = Pointed-dcpo B
 ```
 
-## Monad Structure
+## Monad structure
 
 The adjunction from the previous section yields a monad on the category of sets,
 but we opt to define it by hand to get better computational behaviour.

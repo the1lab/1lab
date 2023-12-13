@@ -67,7 +67,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
 ```
 -->
 
-## Fully Faithful Functors {defines="fully-faithful-functor fully-faithful ff"}
+## Fully faithful functors {defines="fully-faithful-functor fully-faithful ff"}
 
 A functor is **fully faithful** (abbreviated **ff**) when its action on
 hom-sets is an equivalence. Since Hom-sets are sets, it suffices for the
@@ -171,7 +171,7 @@ the domain category to serve as an inverse for $f$:
     im' .inverses .Cm.Inverses.invr = invr
 ```
 
-## Essential Fibres {defines="essential-fibre"}
+## Essential fibres {defines="essential-fibre"}
 
 The **essential fibre** of a functor $F : C \to D$ over an object $y :
 D$ is the space of objects of $C$ which $F$ takes, up to isomorphism, to
@@ -219,7 +219,7 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
 ```
 -->
 
-## Pseudomonic Functors {defines="pseudomonic pseudomonic-functor"}
+## Pseudomonic functors {defines="pseudomonic pseudomonic-functor"}
 
 A functor is **pseudomonic** if it is faithful and full on isomorphisms.
 Pseudomonic functors are arguably the correct notion of subcategory, as
@@ -301,7 +301,7 @@ essentially injective.
          ext (equiv→counit ff (D.to f)))
 ```
 
-## Equivalence on Objects Functors
+## Equivalence on objects functors
 
 A functor $F : \cC \to \cD$ is an **equivalence on objects** if its action
 on objects is an equivalence.

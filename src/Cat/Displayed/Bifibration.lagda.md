@@ -73,7 +73,7 @@ record is-bifibration : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
   module opfibration = Cocartesian-fibration opfibration
 ```
 
-# Bifibrations and Adjoints
+# Bifibrations and adjoints
 
 If $\cE$ is a bifibration, then its opreindexing functors are [[left
 adjoints]] to its reindexing functors.  To show this, it will suffice to

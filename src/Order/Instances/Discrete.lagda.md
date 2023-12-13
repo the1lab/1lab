@@ -16,7 +16,7 @@ import Order.Reasoning as Poset
 module Order.Instances.Discrete where
 ```
 
-# Discrete Orders
+# Discrete orders
 
 Every set $A$ can be turned into a [[poset]] by defining $x \le y$ to
 be $x = y$.
@@ -56,7 +56,7 @@ DiscF⊣Forget ._⊣_.zig {A = A} = trivial!
 DiscF⊣Forget ._⊣_.zag = refl
 ```
 
-## Least Upper Bounds
+## Least upper bounds
 
 If $f : I \to A$ has a [[least upper bound]] in the discrete poset on
 $A$, then $f$ must be a constant family.

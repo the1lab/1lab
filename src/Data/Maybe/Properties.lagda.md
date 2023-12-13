@@ -25,7 +25,7 @@ private variable
 
 # Properties of Maybe
 
-## Path Space
+## Path space
 
 We can use these lemmas to characterise the path space of `Maybe A` in
 terms of the path space of `A`. This involves a standard encode-decode
@@ -169,7 +169,7 @@ Finite-Maybe {A = A} ⦃ fa ⦄ .enumeration =
     maybe-iso f .snd .is-iso.linv nothing = refl
 ```
 
-# Misc. Properties
+# Misc. properties
 
 If `A` is empty, then a `Maybe A` must be `nothing`{.Agda}.
 

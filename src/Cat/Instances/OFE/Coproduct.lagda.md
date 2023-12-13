@@ -14,7 +14,7 @@ open import Data.Sum.Base
 module Cat.Instances.OFE.Coproduct where
 ```
 
-# Coroducts of OFEs
+# Coproducts of OFEs
 
 The [category of OFEs][OFE] admits binary [coproducts]. Unlike the
 [construction of products][ofe-prod], in which we could define the

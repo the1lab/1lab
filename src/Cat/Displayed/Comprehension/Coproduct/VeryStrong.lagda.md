@@ -20,7 +20,7 @@ import Cat.Reasoning
 module Cat.Displayed.Comprehension.Coproduct.VeryStrong where
 ```
 
-# Very Strong Comprehension Coproducts {defines="very-strong-comprehension-coproduct"}
+# Very strong comprehension coproducts {defines="very-strong-comprehension-coproduct"}
 
 As noted in [[strong comprehension coproducts]], the elimination
 principle for [[comprehension coproducts]] is quite weak, being more of

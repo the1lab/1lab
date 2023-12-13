@@ -38,7 +38,7 @@ of $A$".
 Can we do better? It turns out that we can! This generally goes by the
 name of **type-theoretic replacement**, after Rijke [@Rijke:2017 §5]; in
 turn, the name _replacement_ comes from the axiom of material set theory
-sayings the image of a set under a function is again set.^[Keep in mind
+saying the image of a set under a function is again set.^[Keep in mind
 that material set theory says "is a set" in a very different way than we
 do; They mean it about size.] Here we implement a slight generalization
 of [Evan Cavallo's construction] in terms of higher induction-recursion.
@@ -193,36 +193,39 @@ module Replacement
   data Image where
     inc  : A → Image
     quot : ∀ {r r'} → embed r ∼ embed r' → r ≡ r'
-    coh  : ∀ r → quot (rr (embed r)) ≡ refl
 
   embed (inc a)     = f a
   embed (quot p i)  = locally-small .to-path p i
-  embed (coh r i j) =
-    to-path-refl {a = embed r} locally-small i j
 ```
 
-Well, there's still a minor coherence quibble. To show that
-`image-embedding` is an embedding, we need `quot`{.Agda} to send the
-reflexivity of the identity system to the actual reflexivity path. But
-that's a single coherence constructor, not infinitely many, and it's
-satisfied by our projection function. We'll show that it's an embedding
-by showing that it's coherently cancellable, i.e. that we have an
-equivalence $(f'(x) \equiv f'(y)) \simeq (x \equiv y)$.
+And, having used inductive-recursion to tie the dependency knot, we're
+actually done: the construction above is coherent enough, _even if_ it
+looks like the `quot`{.Agda} constructor only says that `embed`{.Agda}
+is an injection. We can use the algebraic properties of identity systems
+to show that it's actually a proper embedding:
 
 ```agda
+  embed-is-embedding' : ∀ x → is-contr (fibre embed (embed x))
+  embed-is-embedding' x .centre = x , refl
+  embed-is-embedding' x .paths (y , q) =
+    Σ-pathp (quot (ls.from (sym q))) (commutes→square coh)
+    where abstract
+      coh : ls.to (ls.from (sym q)) ∙ q ≡ refl ∙ refl
+      coh = ap (_∙ q) (ls.ε (sym q)) ·· ∙-invl q ·· sym (∙-idl refl)
+
   embed-is-embedding : is-embedding embed
-  embed-is-embedding = cancellable→embedding λ {x y} →
-    Iso→Equiv (from , iso (ap embed) invr (invl {x} {y})) where
+  embed-is-embedding = embedding-lemma embed-is-embedding'
+```
 
-    from : ∀ {x y} → embed x ≡ embed y → x ≡ y
-    from path = quot (ls.from path)
+And it's possible to pull back the identity system on $b$ to one on $\im
+f$, to really drive home the point that points in the image are
+identified precisely through their identification, under $f$, in the
+codomain.
 
-    invr : ∀ {x y} → is-right-inverse (ap embed {x} {y}) from
-    invr = J (λ y p → from (ap embed p) ≡ p)
-             (ap quot (transport-refl _) ∙ coh _)
-
-    invl : ∀ {x y} → is-left-inverse (ap embed {x} {y}) from
-    invl p = ls.ε _
+```agda
+  Image-identity-system : is-identity-system (λ x y → embed x ∼ embed y) (λ _ → rr _)
+  Image-identity-system = pullback-identity-system locally-small
+    (embed , embed-is-embedding)
 ```
 
 <!--
@@ -246,12 +249,6 @@ As usual with these things, we can establish properties of
     is-prop→pathp (λ i → pprop (quot p i))
       (Image-elim-prop pprop pinc x)
       (Image-elim-prop pprop pinc y) i
-  Image-elim-prop pprop pinc (coh r i j) =
-    is-prop→squarep (λ i j → pprop (coh r i j))
-      (λ _ → Image-elim-prop pprop pinc r)
-      (is-prop→pathp (λ i → pprop _) _ _)
-      (λ _ → Image-elim-prop pprop pinc r)
-      (λ _ → Image-elim-prop pprop pinc r) i j
 ```
 
 From which surjectivity follows immediately:

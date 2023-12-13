@@ -142,7 +142,7 @@ higher level of strictness than usual.
     ni .natural _ _ _ = id-comm
 ```
 
-## Natural Transformations between Liftings
+## Natural transformations between liftings
 
 As liftings are a reorganization of functors, it is reasonable to expect
 that we can express natural transformations between these. Fix functors
@@ -288,7 +288,7 @@ composition.
     H' .F₁' f' ∘' α' .η' i ∘' β' .η' i   ∎
 ```
 
-## The Fibration of Liftings
+## The fibration of liftings
 
 The liftings of functors $\cJ \to \cB$ assemble into a displayed
 category over the functor category $[\cJ, \cB]$. We shall denote this
@@ -420,7 +420,7 @@ implies that our natural transformation is cartesian.
         (λ x → has-lift.cartesian (α .η x) (G' .F₀' x))
 ```
 
-## Total Category
+## Total category
 
 As noted earlier, the total category of $\cE^{\cJ}$ *is* the functor
 category $[\cJ, \int \cE]$. First, we shall need a heaping pile of

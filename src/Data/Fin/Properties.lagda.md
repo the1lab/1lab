@@ -14,7 +14,7 @@ module Data.Fin.Properties where
 
 ```
 
-# Finite Sets - Properties
+# Finite sets - properties
 
 ## Ordering
 
@@ -197,7 +197,7 @@ finite-surjection-split
 finite-surjection-split f = finite-choice _
 ```
 
-## Vector Operations
+## Vector operations
 
 ```agda
 avoid-insert

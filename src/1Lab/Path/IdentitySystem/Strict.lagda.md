@@ -22,7 +22,7 @@ private variable
 ```
 -->
 
-# Strict Identity Systems
+# Strict identity systems
 
 Since [[identity systems]] are a tool for classifying identity _types_,
 the relation underlying an identity system enjoys any additional

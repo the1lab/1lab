@@ -27,12 +27,12 @@ notation for clarity.], then $h = f \land g$ when $I \to P$ is given the
 
 ```agda
 module
-  _ {ℓₒ ℓᵣ ℓᵢ} {I : Type ℓᵢ} (P : Poset ℓₒ ℓᵣ)
-    (f g h : I → ⌞ P ⌟)
+  _ {ℓₒ ℓᵣ ℓᵢ} {I : Type ℓᵢ} (P : I → Poset ℓₒ ℓᵣ)
+    (f g h : (i : I) → ⌞ P i ⌟)
   where
 
   is-meet-pointwise
-    : (∀ i → is-meet P (f i) (g i) (h i))
+    : (∀ i → is-meet (P i) (f i) (g i) (h i))
     → is-meet (Pointwise I P) f g h
   is-meet-pointwise pwise .is-meet.meet≤l i = pwise i .is-meet.meet≤l
   is-meet-pointwise pwise .is-meet.meet≤r i = pwise i .is-meet.meet≤r
@@ -40,7 +40,7 @@ module
     pwise i .is-meet.greatest (lb' i) (lb'<f i) (lb'<g i)
 
   is-join-pointwise
-    : (∀ i → is-join P (f i) (g i) (h i))
+    : (∀ i → is-join (P i) (f i) (g i) (h i))
     → is-join (Pointwise I P) f g h
   is-join-pointwise pwise .is-join.l≤join i = pwise i .is-join.l≤join
   is-join-pointwise pwise .is-join.r≤join i = pwise i .is-join.r≤join
@@ -54,20 +54,20 @@ special case of both arbitrary lubs and glbs being pointwise:
 ```agda
 module
   _ {ℓₒ ℓᵣ ℓᵢ ℓⱼ} {I : Type ℓᵢ} {J : Type ℓⱼ}
-    (P : Poset ℓₒ ℓᵣ)
-    (F : I → J → ⌞ P ⌟)
-    (m : J → ⌞ P ⌟)
+    (P : J → Poset ℓₒ ℓᵣ)
+    (F : I → (j : J) → ⌞ P j ⌟)
+    (m : (j : J) → ⌞ P j ⌟)
   where
 
   is-lub-pointwise
-    : (∀ j → is-lub P (λ i → F i j) (m j))
+    : (∀ j → is-lub (P j) (λ i → F i j) (m j))
     → is-lub (Pointwise J P) F m
   is-lub-pointwise pwise .is-lub.fam≤lub i j = pwise j .is-lub.fam≤lub i
   is-lub-pointwise pwise .is-lub.least ub' fi<ub' j =
     pwise j .is-lub.least (ub' j) λ i → fi<ub' i j
 
   is-glb-pointwise
-    : (∀ j → is-glb P (λ i → F i j) (m j))
+    : (∀ j → is-glb (P j) (λ i → F i j) (m j))
     → is-glb (Pointwise J P) F m
   is-glb-pointwise pwise .is-glb.glb≤fam i j = pwise j .is-glb.glb≤fam i
   is-glb-pointwise pwise .is-glb.greatest ub' fi<ub' j =

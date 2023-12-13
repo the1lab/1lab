@@ -18,7 +18,7 @@ private variable
 ```
 -->
 
-# Power Sets {defines="power-set"}
+# Power sets {defines="power-set"}
 
 The **power set** of a type $X$ is the collection of all maps from $X$
 into the universe of `propositional types`{.Agda ident=Ω}. Since
@@ -64,7 +64,7 @@ propositions to each inhabitant of $X$.
   Ω-ua (A⊆B x) (B⊂A x)
 ```
 
-## Lattice Structure
+## Lattice structure
 
 The type $\bb{P}(X)$ has a lattice structure, with the order given
 by `subset inclusion`{.Agda ident=_⊆_}. We call the meets

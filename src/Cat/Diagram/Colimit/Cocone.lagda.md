@@ -22,7 +22,7 @@ open _=>_
 ```
 -->
 
-# Colimits via Cocones
+# Colimits via cocones
 
 As noted in the main page on [[colimits]], most introductory texts opt
 to define colimits via categorical gadgets called **cocones**. A
@@ -67,7 +67,7 @@ module _ {J : Precategory o ℓ} {C : Precategory o' ℓ'} (F : Functor J C) whe
 ```
 -->
 
-## Cocone Maps
+## Cocone maps
 
 To express the universal property of a colimit in terms of cocones, we
 now have to define the notion of **cocone homomorphism**. We define a
@@ -128,7 +128,7 @@ category, it's immediate that they form a category.
 -->
 
 
-## Initial Cocones as Colimits
+## Initial cocones as colimits
 
 A cocone over some diagram $F$ contains the same data as natural
 transformation from $F$ to a constant functor. Since we have defined a

@@ -64,7 +64,7 @@ record Arg {a} (A : Type a) : Type a where
 pattern _v∷_ t xs = arg (arginfo visible (modality relevant quantity-ω)) t ∷ xs
 pattern _h∷_ t xs = arg (arginfo hidden (modality relevant quantity-ω)) t ∷ xs
 pattern _hm∷_ t xs = arg (arginfo hidden (modality relevant _)) t ∷ xs
-infixr 30 _v∷_ _h∷_ _hm∷_
+infixr 20 _v∷_ _h∷_ _hm∷_
 
 argH0 argI argH argN : ∀ {ℓ} {A : Type ℓ} → A → Arg A
 argH  = arg (arginfo hidden (modality relevant quantity-ω))
@@ -125,3 +125,22 @@ instance
 
   Traversable-Arg : Traversable (eff Arg)
   Traversable-Arg .Traversable.traverse f (arg ai x) = arg ai <$> f x
+
+record Has-visibility {ℓ} (A : Type ℓ) : Type ℓ where
+  field set-visibility : Visibility → A → A
+
+open Has-visibility ⦃ ... ⦄ public
+
+instance
+  Has-visibility-Arg : ∀ {ℓ} {A : Type ℓ} → Has-visibility (Arg A)
+  Has-visibility-Arg .set-visibility v (arg (arginfo _ m) x) = arg (arginfo v m) x
+
+  Has-visibility-Args : ∀ {ℓ} {A : Type ℓ} → Has-visibility (List (Arg A))
+  Has-visibility-Args .set-visibility v l = set-visibility v <$> l
+
+hide : ∀ {ℓ} {A : Type ℓ} → ⦃ Has-visibility A ⦄ → A → A
+hide = set-visibility hidden
+
+hide-if : ∀ {ℓ} {A : Type ℓ} → ⦃ Has-visibility A ⦄ → Bool → A → A
+hide-if true a = hide a
+hide-if false a = a

@@ -29,7 +29,7 @@ level-of : {ℓ : Level} → Type ℓ → Level
 level-of {ℓ} _ = ℓ
 ```
 
-## Built-in Types
+## Built-in types
 
 We re-export the following very important types:
 

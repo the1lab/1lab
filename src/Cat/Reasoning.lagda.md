@@ -13,7 +13,7 @@ module Cat.Reasoning {o ℓ} (C : Precategory o ℓ) where
 open import Cat.Morphism C public
 ```
 
-# Reasoning Combinators for Categories
+# Reasoning combinators for categories
 
 When doing category theory, we often have to perform many "trivial"
 algebraic manipulations like reassociation, insertion of identity morphisms, etc.
@@ -33,7 +33,7 @@ private variable
 ```
 -->
 
-## Identity Morphisms
+## Identity morphisms
 
 ```agda
 id-comm : ∀ {a b} {f : Hom a b} → f ∘ id ≡ id ∘ f

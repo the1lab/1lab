@@ -28,7 +28,7 @@ open Functor
 open _=>_
 ```
 
-# The Diagram Fibration
+# The diagram fibration
 
 The appropriate notion of structure for a [[displayed category]] $\cE
 \liesover \cB$ is fibrewise structure: structure found in each [[fibre
@@ -173,7 +173,7 @@ functor.
 ```
 -->
 
-## Fibre Categories
+## Fibre categories
 
 The fibre category of the fibration of diagrams are equivalent to
 functor categories $[\cJ, \cE_x]$.

@@ -16,7 +16,7 @@ module
   where
 ```
 
-# Univalence of Eilenberg-Moore Categories
+# Univalence of Eilenberg-Moore categories
 
 Given a base [[univalent category]] $\cC$, we can consider a [monad]
 $M$ on $\cC$, and its associated [Eilenberg-Moore category]

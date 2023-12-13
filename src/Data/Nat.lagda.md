@@ -11,7 +11,7 @@ open import Prim.Data.Nat
   using (Nat ; _+_ ; _-_) public
 ```
 
-# Natural Numbers - Index
+# Natural numbers - index
 
 The natural numbers are constructed in the module
 [`Data.Nat.Base`]. Their arithmetical properties are proved in

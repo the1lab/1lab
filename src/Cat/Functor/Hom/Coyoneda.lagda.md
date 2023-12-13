@@ -28,7 +28,7 @@ open _=>_
 ```
 -->
 
-## The Coyoneda Lemma
+## The Coyoneda lemma
 
 The Coyoneda lemma is, like its dual, a statement about presheaves.  It
 states that "every presheaf is a colimit of representables", which, in

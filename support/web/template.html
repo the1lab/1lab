@@ -29,6 +29,7 @@
   <meta name="description" content="A formalised, explorable online resource for Homotopy Type Theory." />
   $endif$
 
+  <script src="$base-url$/start.js"></script>
   <script defer src="$base-url$/main.js"></script>
 
   <noscript>
@@ -47,6 +48,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
+
+  <script>
+    Object.assign(window, {
+      'baseURL': "$base-url$",
+      'source': "$source$",
+    });
+  </script>
 </head>
 
 <body class="text-page">
@@ -82,35 +90,6 @@
       $table-of-contents$
       <hr />
       $endif$
-
-      <!-- Sidebar controls -->
-      <div style="display: flex; gap: 0.25em; flex-flow: row wrap;">
-        <!-- Sidebar equations control -->
-        <span class="equations" style="display: flex; align-items: center; gap: 0.25em; flex-wrap: nowrap;">
-          <input name=sidebar-eqns type="checkbox" class="equations" id=sidebar-eqns>
-          <label for=sidebar-eqns>Equations</label>
-        </span>
-
-        <!-- Sidebar fonts control -->
-        <span style="display: flex; align-items: center; gap: 0.25em; flex-wrap: nowrap;">
-          <input name=sidebar-font type="checkbox" id="toggle-fonts">
-          <label for=toggle-fonts>Serif Font</label>
-        </span>
-
-        <!-- Sidebar footnotes control -->
-        <span class="inline-footnotes" style="display: none; align-items: center; gap: 0.25em; flex-wrap: nowrap;">
-          <input name=sidebar-fns type="checkbox" class="inline-footnotes" id=sidebar-fns>
-          <label for=sidebar-fns>Inline Footnotes</label>
-        </span>
-
-        <!-- Sidebar hidden code control -->
-        <span style="display: flex; align-items: center; gap: 0.25em; flex-wrap: nowrap;">
-          <input name=sidebar-hidden type="checkbox" autocomplete=off id=sidebar-hidden>
-          <label for=sidebar-hidden>Hidden Code</label>
-        </span>
-      </div>
-
-      <hr />
 
       <!-- Navbar navigation (lol) -->
       <div id="return" style="white-space: nowrap;">

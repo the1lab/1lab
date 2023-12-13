@@ -19,7 +19,7 @@ import Data.Nat.Base as Nat
 module Data.Fin.Base where
 ```
 
-# Finite Sets {defines=standard-finite-set}
+# Finite sets {defines=standard-finite-set}
 
 The type `Fin`{.Agda} is the type of size `n`.  These are defined as an
 inductive family over `Nat`{.Agda}, such that `Fin 0` has 0 elements,
@@ -284,7 +284,7 @@ opposite {n = suc n} fzero = from-nat n
 opposite {n = suc n} (fsuc i) = weaken (opposite i)
 ```
 
-## Vector Operations
+## Vector operations
 
 ```agda
 _[_≔_]

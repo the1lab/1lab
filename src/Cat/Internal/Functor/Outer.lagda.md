@@ -27,7 +27,7 @@ open Internal-hom
 ```
 -->
 
-# Outer Functors
+# Outer functors
 
 The category $\Sets$ is not [[strict|strict category]], so it is not
 [internal] to any category of sets, even setting aside size issues.
@@ -115,7 +115,7 @@ functors from the [internal opposite category] of $\ica{C}$.
 [discrete fibrations]: Cat.Displayed.Cartesian.Discrete.html
 [internal opposite category]: Cat.Internal.Opposite.html
 
-## Internal Hom Functors
+## Internal Hom functors
 
 The canonical example of an outer functor is the internal analog of the
 hom functor $\cC(X,-)$. We require the following data: $\cC$ is

@@ -21,7 +21,7 @@ import Data.List as List
 module Logic.Propositional.Classical.CNF where
 ```
 
-## Conjunctive Normal Forms {defines="conjunctive-normal-form CNF"}
+## Conjunctive normal forms {defines="conjunctive-normal-form CNF"}
 
 As a general theme, it is often very useful to have some notion of
 normal-form for logical and algebraic expressions, and
@@ -241,7 +241,7 @@ cnf-distrib-sound (P ∷ Ps) Q ρ =
 ```
 </details>
 
-## A Naive Algorithm
+## A naive algorithm
 
 Armed with these operations on CNFs, we can give a translation from
 propositions into CNF. However, note that this is extremely naive, and

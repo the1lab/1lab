@@ -15,7 +15,7 @@ import Cat.Reasoning
 module Cat.Diagram.Product.Solver where
 ```
 
-# A Solver for Categories with Binary Products
+# A solver for categories with binary products
 
 Much like the [category solver], this module is split into two halves.
 The first implements an algorithm for normalizing expressions in the
@@ -247,7 +247,7 @@ morphism as naively interpreting the expression.
   sound X Y e = sound-k X X Y e vid ∙ elimr (vhom-sound X X id)
 ```
 
-## Solver Interface
+## Solver interface
 
 In order to make the reflection easier later, we bundle up the soundness
 proof. Marking this as abstract is *very important*. This prevents
