@@ -48,6 +48,7 @@ open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
 open import Homotopy.Space.Torus
 open import Homotopy.Truncation
+open import Homotopy.Wedge
 open import Homotopy.Base
 
 open import Order.Base
@@ -652,10 +653,12 @@ _ = Susp-is-connected
 <!--
 ```agda
 _ = relative-n-type-const-plus
+_ = Wedge.elim
 ```
 -->
 
 * Lemma 8.6.1: `relative-n-type-const-plus`{.Agda}
+* Lemma 8.6.2: `Wedge.elim`{.Agda}
 
 ## Chapter 9 Category theory
 
