@@ -30,6 +30,7 @@ _ : Initial (Sets ℓ)
 _ = Sets-initial
 ```
 
+
 In `Sets`{.Agda} `^op`{.Agda}:
 ```agda
 Sets^op-initial : Initial (Sets ℓ ^op)
@@ -42,7 +43,7 @@ _ = ⊥
 ``` 
 -->
 Now we can observe an interesting property of the initial object of `Sets`{.Agda}: every morphism into it is in fact an *iso*morphism.
-Intuitively, if you can write a function `X → ⊥`{.Agda}, then `X` must itself be empty.
+Intuitively, if you can write a function $X \to \bot$  then $X$ must itself be empty.
 ```agda
 hom-into→iso : ∀ {o h} (C : Precategory o h) → C .Precategory.Ob → Type _
 hom-into→iso C A = ∀ X → Hom X A → X ≅ A
@@ -67,13 +68,13 @@ _ = true≠false
 -->
 
 Crucially, this is property is not shared by the initial object of `Sets`{.Agda} `^op`{.Agda}! Unfolding definitions, it says 
-that any function `⊤ → X`{.Agda} is an isomorphism, or equivalently, every inhabited set is contractible. But is this is certainly false:
+that any function $\top \to X$ is an isomorphism, or equivalently, every inhabited set is contractible. But is this is certainly false:
 `Bool`{.Agda} is inhabited, but not contractible, since `true≠false`{.Agda}.
 
 
 ```agda
 ¬holds-in-Sets^op : ¬ hom-into-initial→iso (Sets ℓ ^op)
-¬holds-in-Sets^op (I , mk-iso) = true≠false $ lift-inj $ true≡false
+¬holds-in-Sets^op (I , mk-iso) = true≠false $ true≡false
   where
     open Initial
     open import Cat.Morphism
@@ -86,8 +87,8 @@ that any function `⊤ → X`{.Agda} is an isomorphism, or equivalently, every i
     to-iso-⊤ : (A : Set ℓ) → (Lift ℓ ⊤ → ⌞ A ⌟) → A Sets^op.≅ el! (Lift ℓ ⊤)
     to-iso-⊤ = subst (λ I → hom-into→iso _ (I .bot)) I≡⊤ mk-iso
 ```
-Using our ill-fated hypothesis, we can construct an iso between `Bool`{.Agda} and `⊤`{.Agda} from a function `⊤ → Bool`{.Agda}. From this
-we conclude that `Bool`{.Agda} is contractible, from which we obtain a proof of `true ≡ false`{.Agda}.
+Using our ill-fated hypothesis, we can construct an iso between `Bool`{.Agda} and `⊤`{.Agda} from a function $\top \to$ `Bool`{.Agda}. From this
+we conclude that `Bool`{.Agda} is contractible, from which we obtain (modulo `lift`{.Agda}ing) a proof of `true`{.Agda} `≡`{.Agda} `false`{.Agda}.
 ```agda
     Bool≅⊤ : el! (Lift ℓ Bool) Sets^op.≅ el! (Lift ℓ ⊤)
     Bool≅⊤ = to-iso-⊤ (el! (Lift _ Bool)) λ _ → lift true
@@ -95,8 +96,8 @@ we conclude that `Bool`{.Agda} is contractible, from which we obtain a proof of 
     Bool-is-contr : is-contr (Lift ℓ Bool)
     Bool-is-contr = subst (is-contr ⊙ ∣_∣) (sym (Univalent.iso→path Sets^op-is-category Bool≅⊤)) hlevel!
     
-    true≡false : lift true ≡ lift false
-    true≡false = is-contr→is-prop Bool-is-contr _ _
+    true≡false : true ≡ false
+    true≡false = lift-inj $ is-contr→is-prop Bool-is-contr _ _
     
 ```
 
