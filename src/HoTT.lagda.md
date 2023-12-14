@@ -43,9 +43,12 @@ open import Data.Dec
 open import Data.Nat using (ℕ-well-ordered ; Discrete-Nat)
 open import Data.Sum
 
+open import Homotopy.Space.Suspension.Properties
 open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
 open import Homotopy.Space.Torus
+open import Homotopy.Truncation
+open import Homotopy.Wedge
 open import Homotopy.Base
 
 open import Order.Base
@@ -594,10 +597,19 @@ _ = n-Tr-elim
 <!--
 ```agda
 _ = is-n-connected
+_ = is-n-connected-Tr
+_ = relative-n-type-const
+_ = is-n-connected→n-type-const
+_ = n-type-const→is-n-connected
+_ = is-n-connected-point
+_ = point-is-n-connected
 ```
 -->
 
-* Definition 7.5.1: `is-n-connected`{.Agda}
+* Definition 7.5.1: `is-n-connected`{.Agda}, `is-n-connected-Tr`{.Agda}
+* Lemma 7.5.7: `relative-n-type-const`{.Agda}
+* Corollary 7.5.9: `is-n-connected→n-type-const`{.Agda}, `n-type-const→is-n-connected`{.Agda}
+* Lemma 7.5.11: `is-n-connected-point`{.Agda}, `point-is-n-connected`{.Agda}
 
 # Part 2 Mathematics
 
@@ -625,6 +637,28 @@ _ = ΩS¹≃integers
 * Lemma 8.1.7: `S¹Path.encode-decode`{.Agda}
 * Lemma 8.1.8: `S¹Path.encode-loopⁿ`{.Agda}
 * Corollary 8.1.10: `ΩS¹≃integers`{.Agda}
+
+### 8.2 Connectedness of suspensions
+
+<!--
+```
+_ = Susp-is-connected
+```
+-->
+
+* Theorem 8.2.1: `Susp-is-connected`{.Agda}
+
+### 8.6 The Freudenthal suspension theorem
+
+<!--
+```agda
+_ = relative-n-type-const-plus
+_ = Wedge.elim
+```
+-->
+
+* Lemma 8.6.1: `relative-n-type-const-plus`{.Agda}
+* Lemma 8.6.2: `Wedge.elim`{.Agda}
 
 ## Chapter 9 Category theory
 
