@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Prelude
+open import 1Lab.Reflection.Marker
 ```
 -->
 
@@ -90,7 +91,7 @@ We then use [univalence for $n$-types] to directly establish that $(A
     (A Sets.≅ B)    ≃∎
 ```
 
-## Sets^op is also a Category
+## Sets^op is also a category
 
 ```agda
   import Cat.Reasoning (Sets ℓ ^op) as Sets^op
@@ -115,17 +116,15 @@ First we show that isomorphism is invariant under `^op`{.Agda}.
       the-iso .snd .is-iso.linv _ = refl
 ```
 
-This fact lets us re-use the `to-path`{.Agda} component of `Sets-is-category`{.Agda}. A somewhat gross calculation gives us `to-path-over`{.Agda}.
+This fact lets us re-use the `to-path`{.Agda} component of `Sets-is-category`{.Agda}. Some calculation gives us `to-path-over`{.Agda}.
 
 ```agda
   Sets^op-is-category : is-category (Sets ℓ ^op)
   Sets^op-is-category .to-path = Sets-is-category .to-path ⊙ transport (ua iso-op-invariant)
   Sets^op-is-category .to-path-over {a} {b} p = Sets^op.≅-pathp refl _ $ funext-dep λ {x₀} {x₁} q →
-    x₀                                                 ≡⟨ ap (_$ x₀) (sym p.invr) ⟩ 
-    p.to (p.from x₀)                                   ≡˘⟨ (λ i → p.to (transport-refl (p.from (transport-refl x₀ i)) i)) ⟩ 
-    p.to (transport refl (p.from (transport refl x₀))) ≡⟨ ap p.to (equiv→inverse (ua-pathp≃path _ .snd) q) ⟩ 
-    p.to x₁                                            ∎
-    where
-      module p = Sets^op._≅_ p
-
-```
+    x₀                                                    ≡˘⟨ ap (_$ x₀) p.invr ⟩ 
+    p.to ⌜ p.from x₀ ⌝                                    ≡˘⟨ ap¡ Regularity.reduce! ⟩ 
+    p.to ⌜ transport refl $ p.from $ transport refl x₀ ⌝  ≡⟨ ap! (λ i → unglue (∂ i) (q i)) ⟩
+    p.to x₁                                               ∎
+    where module p = Sets^op._≅_ p
+```  
