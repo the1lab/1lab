@@ -7,7 +7,6 @@ open import Algebra.Group.Homotopy
 open import Algebra.Monoid
 open import Algebra.Group
 
-open import Cat.Instances.Sets.CartesianClosed
 open import Cat.Instances.Sets.Congruences
 open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Hom.Representable
@@ -16,11 +15,13 @@ open import Cat.Functor.Equivalence.Path
 open import Cat.Univalent.Rezk.Universal
 open import Cat.Instances.Sets.Complete
 open import Cat.Functor.Adjoint.Unique
+open import Cat.Regular.Instances.Sets
 open import Cat.Displayed.Univalence
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Equivalence
 open import Cat.Diagram.Congruence
 open import Cat.Functor.Properties
+open import Cat.Instances.Discrete
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
 open import Cat.Functor.Adjoint
@@ -36,9 +37,11 @@ open import Cat.Univalent
 open import Cat.Morphism
 open import Cat.Bi.Base
 open import Cat.Prelude
+open import Cat.Gaunt
 
 open import Data.Set.Surjection
 open import Data.Wellfounded.W
+open import Data.Set.Material
 open import Data.Fin.Finite using (Finite-choice)
 open import Data.Dec
 open import Data.Nat using (ℕ-well-ordered ; Discrete-Nat)
@@ -699,7 +702,10 @@ _ = Hom-transport
 _ = path→to-sym
 _ = path→to-∙
 _ = Poset
+_ = is-gaunt
+_ = Disc
 _ = Rel
+_ = Sets
 _ = Sets-is-category
 ```
 -->
@@ -710,6 +716,7 @@ _ = Sets-is-category
 * Definition 9.1.2: `is-invertible`{.Agda}, `_≅_`{.Agda}
 * Lemma 9.1.3: `is-invertible-is-prop`{.Agda}, `≅-is-set`{.Agda}
 * Lemma 9.1.4: `path→iso`{.Agda}
+* Example 9.1.5: `Sets`{.Agda}
 * Definition 9.1.6^[We use a slightly different definition of univalence
 for categories. It is shown equivalent to the usual formulation by
 `equiv-path→identity-system`]: `is-category`{.Agda}
@@ -717,6 +724,8 @@ for categories. It is shown equivalent to the usual formulation by
 * Lemma 9.1.8: `Univalent.Ob-is-groupoid`{.Agda}
 * Lemma 9.1.9: `Hom-transport`{.Agda} (9.1.10), `path→to-sym`{.Agda} (9.1.11), `path→to-∙`{.Agda} (9.1.12/9.1.13)
 * Example 9.1.14: `Poset`{.Agda}
+* Example 9.1.15: `is-gaunt`{.Agda}
+* Example 9.1.16: `Disc`{.Agda}
 * Example 9.1.19: `Rel`{.Agda}
 
 ### 9.2 Functors and Transformations
@@ -894,3 +903,56 @@ _ = Slice
 * Exercise 9.2: `Total-space`{.Agda}, `Total-space-is-ff`{.Agda}, `Total-space-is-eso`{.Agda}
 * Exercise 9.3: `is-equivalence.F⁻¹⊣F`{.Agda}
 * Exercise 9.4: `Prebicategory`{.Agda}
+
+## Chapter 10 Set theory
+
+### 10.1 The category of sets
+
+<!--
+```agda
+_ = Sets-is-complete
+_ = Sets-is-cocomplete
+_ = Sets-regular
+_ = surjective→regular-epi
+_ = epi→surjective
+_ = Sets-effective-congruences
+_ = effective
+```
+-->
+
+* 10.1.1 Limits and colimits: `Sets-is-complete`{.Agda}, `Sets-is-cocomplete`{.Agda}
+* Theorem 10.1.5: `Sets-regular`{.Agda}, `surjective→regular-epi`{.Agda}, `epi→surjective`{.Agda}
+* 10.1.3 Quotients: `Sets-effective-congruences`{.Agda}
+* Lemma 10.1.8: `effective`{.Agda}
+
+### 10.5 The cumulative hierarchy
+
+<!--
+```agda
+_ = V
+_ = presentation
+_ = Presentation.members
+_ = extensionality
+_ = empty-set
+_ = pairing
+_ = zero∈ℕ
+_ = suc∈ℕ
+_ = union
+_ = ∈-induction
+_ = replacement
+_ = separation
+```
+-->
+
+* Definition 10.5.1: `V`{.Agda}
+* Lemma 10.5.6: `presentation`{.Agda}
+* Definition 10.5.7: `Presentation.members`{.Agda}
+* Theorem 10.5.8:
+  * (i): `extensionality`{.Agda}
+  * (ii): `empty-set`{.Agda}
+  * (iii): `pairing`{.Agda}
+  * (iv): `zero∈ℕ`{.Agda}, `suc∈ℕ`{.Agda}
+  * (v): `union`{.Agda}
+  * (vii): `∈-induction`{.Agda}
+  * (viii): `replacement`{.Agda}
+  * (ix): `separation`{.Agda}
