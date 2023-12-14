@@ -11,7 +11,6 @@ module Cat.Diagram.Initial {o h} (C : Precategory o h) where
 <!--
 ```agda
 open import Cat.Morphism C
-open import Cat.Strict
 ```
 -->
 
