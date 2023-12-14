@@ -1,9 +1,10 @@
 <!--
 ```agda
-open import Cat.Prelude
-open import Cat.Instances.Sets using (Sets^op-is-category)
 open import Cat.Instances.Sets.Cocomplete using (Sets-initial)
 open import Cat.Diagram.Initial
+open import Cat.Instances.Sets using (Sets^op-is-category)
+open import Cat.Prelude
+
 open import Data.Bool
 ```
 -->
@@ -25,6 +26,7 @@ To show our goal, we need to find a categorical property that holds in `Sets`{.A
 First we note that both `Sets`{.Agda} and `Sets`{.Agda} `^op`{.Agda} have an initial object.
 
 In `Sets`{.Agda}:
+  
 ```agda
 _ : Initial (Sets ℓ)
 _ = Sets-initial
@@ -32,6 +34,7 @@ _ = Sets-initial
 
 
 In `Sets`{.Agda} `^op`{.Agda}:
+
 ```agda
 Sets^op-initial : Initial (Sets ℓ ^op)
 Sets^op-initial .Initial.bot = el! (Lift _ ⊤)
@@ -42,8 +45,10 @@ Sets^op-initial .Initial.has⊥ x = hlevel!
 _ = ⊥
 ``` 
 -->
+
 Now we can observe an interesting property of the initial object of `Sets`{.Agda}: every morphism into it is in fact an *iso*morphism.
 Intuitively, if you can write a function $X \to \bot$  then $X$ must itself be empty.
+
 ```agda
 hom-into→iso : ∀ {o h} (C : Precategory o h) → C .Precategory.Ob → Type _
 hom-into→iso C A = ∀ X → Hom X A → X ≅ A
@@ -79,7 +84,9 @@ that any function $\top \to X$ is an isomorphism, or equivalently, every inhabit
     open Initial
     open import Cat.Morphism
 ```
+
 `Sets`{.Agda} `^op`{.Agda} is univalent, so we invoke the propositionality of its initial object so we can work with `⊤`{.Agda}, for convenience.
+
 ```agda
     I≡⊤ : I ≡ Sets^op-initial
     I≡⊤ = ⊥-is-prop _ Sets^op-is-category _ _
@@ -87,8 +94,10 @@ that any function $\top \to X$ is an isomorphism, or equivalently, every inhabit
     to-iso-⊤ : (A : Set ℓ) → (Lift ℓ ⊤ → ⌞ A ⌟) → A Sets^op.≅ el! (Lift ℓ ⊤)
     to-iso-⊤ = subst (λ I → hom-into→iso _ (I .bot)) I≡⊤ mk-iso
 ```
+
 Using our ill-fated hypothesis, we can construct an iso between `Bool`{.Agda} and `⊤`{.Agda} from a function $\top \to$ `Bool`{.Agda}. From this
 we conclude that `Bool`{.Agda} is contractible, from which we obtain (modulo `lift`{.Agda}ing) a proof of `true`{.Agda} `≡`{.Agda} `false`{.Agda}.
+
 ```agda
     Bool≅⊤ : el! (Lift ℓ Bool) Sets^op.≅ el! (Lift ℓ ⊤)
     Bool≅⊤ = to-iso-⊤ (el! (Lift _ Bool)) λ _ → lift true

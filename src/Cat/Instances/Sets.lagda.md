@@ -1,7 +1,8 @@
 <!--
 ```agda
-open import Cat.Prelude
 open import 1Lab.Reflection.Marker
+
+open import Cat.Prelude
 ```
 -->
 
