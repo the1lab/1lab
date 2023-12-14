@@ -105,13 +105,13 @@ This is an instance of the more general notion of [van Kempen colimits].
 is-strict-initial : Initial → Type _
 is-strict-initial i = ∀ X → Hom X (i .bot) → X ≅ i .bot
 
-record StrictInitial : Type (o ⊔ h) where
+record Strict-initial : Type (o ⊔ h) where
   field
     initial : Initial
     has-is-strict : is-strict-initial initial
 ```
 
-Strictness is a property of initial objects
+Strictness is a property of, not structure on, an initial object.
 
 ```agda
 is-strict-initial-is-prop : ∀ i → is-prop (is-strict-initial i)
