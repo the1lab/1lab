@@ -100,9 +100,9 @@ We use this to prove that lists preserve h-levels for $n \ge 2$, i.e. if
     Code-is-hlevel {x ∷ x₁} {x₂ ∷ y} = ×-is-hlevel (suc n) (ahl _ _) Code-is-hlevel
 
   instance
-    H-Level-List : ∀ {n} {k} → ⦃ H-Level A (2 + n) ⦄ → H-Level (List A) (2 + n + k)
+    H-Level-List : ∀ {n} → ⦃ H-Level A (2 + n) ⦄ → H-Level (List A) (2 + n)
     H-Level-List {n = n} ⦃ x ⦄ =
-      basic-instance (2 + n) (List-is-hlevel n (H-Level.has-hlevel x))
+      record { has-hlevel = List-is-hlevel n (H-Level.has-hlevel x) }
 
   is-set→List-is-set : is-set A → is-set (List A)
   is-set→List-is-set = List-is-hlevel zero

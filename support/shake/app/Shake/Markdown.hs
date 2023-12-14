@@ -17,6 +17,7 @@ import qualified Data.Text.Encoding as Text
 import qualified Data.Map.Lazy as Map
 import qualified Data.Text.IO as Text
 import qualified Data.Text as Text
+import qualified Data.Set as Set
 
 import Data.Digest.Pure.SHA
 import Data.Foldable
@@ -367,10 +368,16 @@ renderMarkdown authors references modname baseUrl markdown = do
   setTranslations (Lang "en" Nothing Nothing [] [] [])
   writeHtml5String options markdown
 
+-- | Simple textual list of starting identifiers not to fold
+don'tFold :: Set.Set Text
+don'tFold = Set.fromList
+  [ "`⟨" -- used in CC.Lambda
+  ]
+
 -- | Removes the RHS of equation reasoning steps?? IDK, ask Amelia.
 foldEquations :: Bool -> [Tag Text] -> [Tag Text]
 foldEquations _ (to@(TagOpen "a" attrs):tt@(TagText t):tc@(TagClose "a"):rest)
-  | Text.length t > 1, Text.last t == '⟨', Just href <- lookup "href" attrs =
+  | t `Set.notMember` don'tFold, Text.length t > 1, Text.last t == '⟨', Just href <- lookup "href" attrs =
   [ TagOpen "span" [("class", "reasoning-step")]
   , TagOpen "span" [("class", "as-written " <> fromMaybe "" (lookup "class" attrs))]
   , to, tt, tc ] ++ go href rest

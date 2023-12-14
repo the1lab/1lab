@@ -129,3 +129,10 @@ using lemmas on transport in pathspaces. </summary>
     merid S (i ∧ j)
 ```
 </details>
+
+<!--
+```agda
+Sⁿ : Nat → Type∙ lzero
+Sⁿ n = Sⁿ⁻¹ (suc n) , N
+```
+-->
