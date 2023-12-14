@@ -53,12 +53,22 @@ Intuitively, if you can write a function $X \to \bot$ then $X$ must itself be em
 
 ```agda
 Sets-strict-initial : Strict-initial (Sets ℓ)
-Sets-strict-initial .Strict-initial.initial = Sets-initial
-Sets-strict-initial .Strict-initial.has-is-strict X f .Sets.to = f
-Sets-strict-initial .Strict-initial.has-is-strict X f .Sets.from ()
-Sets-strict-initial .Strict-initial.has-is-strict X f .Sets.inverses .Sets.Inverses.invl = ext λ ()
-Sets-strict-initial .Strict-initial.has-is-strict X f .Sets.inverses .Sets.Inverses.invr = ext λ x → absurd (f x .Lift.lower)
-
+Sets-strict-initial = si
+  where
+```
+<!--
+```agda
+    open Strict-initial
+    open Sets.is-invertible
+    open Sets.Inverses
+```
+-->
+```agda
+    si : Strict-initial (Sets ℓ)
+    si .initial = Sets-initial
+    si .has-is-strict x f .inv ()
+    si .has-is-strict x f .inverses .invl = ext λ ()
+    si .has-is-strict x f .inverses .invr = ext λ x → absurd (f x .Lift.lower)
 ```
 
 <!-- 
@@ -74,13 +84,17 @@ that any function $\top \to X$ is an isomorphism, or equivalently, every inhabit
 
 ```agda
 ¬Sets^op-strict-initial : ¬ Strict-initial (Sets ℓ ^op)
-¬Sets^op-strict-initial si = true≠false $ true≡false
+¬Sets^op-strict-initial si = true≠false true≡false
   where
+```
+<!--
+```agda
     open Initial
     open Strict-initial
     open import Cat.Morphism
 
 ```
+-->
 
 $\Sets\op$ is univalent, so we invoke the propositionality of its initial object to let us work with `⊤`{.Agda}, for convenience.
 
@@ -89,7 +103,7 @@ $\Sets\op$ is univalent, so we invoke the propositionality of its initial object
     si≡⊤ = ⊥-is-prop _ Sets^op-is-category _ _
 
     to-iso-⊤ : (A : Set ℓ) → (Lift ℓ ⊤ → ⌞ A ⌟) → A Sets^op.≅ el! (Lift ℓ ⊤)
-    to-iso-⊤ = subst (is-strict-initial (Sets ℓ ^op)) si≡⊤ (si .has-is-strict)
+    to-iso-⊤ A f = invertible→iso _ _ (subst (is-strict-initial (Sets ℓ ^op)) si≡⊤ (si .has-is-strict) A f)
 ```
 
 Using our ill-fated hypothesis, we can construct an iso between `Bool`{.Agda} and `⊤`{.Agda} from a function $\top \to$ `Bool`{.Agda}. From this
@@ -104,7 +118,6 @@ we conclude that `Bool`{.Agda} is contractible, from which we obtain (modulo `li
     
     true≡false : true ≡ false
     true≡false = lift-inj $ is-contr→is-prop Bool-is-contr _ _
-    
 ```
 
 We've shown that a categorical property holds in $\Sets$ and fails in $\Sets\op$, but paths between categories preserve categorical properties,

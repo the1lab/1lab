@@ -103,7 +103,7 @@ This is an instance of the more general notion of [van Kampen colimits].
 
 ```agda
 is-strict-initial : Initial → Type _
-is-strict-initial i = ∀ x → Hom x (i .bot) → x ≅ i .bot
+is-strict-initial i = ∀ x → (f : Hom x (i .bot)) → is-invertible f
 
 record Strict-initial : Type (o ⊔ h) where
   field
@@ -115,5 +115,5 @@ Strictness is a property of, not structure on, an initial object.
 
 ```agda
 is-strict-initial-is-prop : ∀ i → is-prop (is-strict-initial i)
-is-strict-initial-is-prop i = Π-is-hlevel² 1 λ x hom a b → ≅-pathp-from refl refl (¡-unique₂ i _ _)
+is-strict-initial-is-prop i = hlevel!
 ```
