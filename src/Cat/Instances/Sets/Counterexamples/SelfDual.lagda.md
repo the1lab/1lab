@@ -52,12 +52,12 @@ Intuitively, if you can write a function $X \to \bot$ then $X$ must itself be em
 [strict]: Cat.Diagram.Initial.html#strictness
 
 ```agda
-Sets-strict-initial : StrictInitial (Sets ℓ)
-Sets-strict-initial .StrictInitial.initial = Sets-initial
-Sets-strict-initial .StrictInitial.has-is-strict X f .Sets.to = f
-Sets-strict-initial .StrictInitial.has-is-strict X f .Sets.from ()
-Sets-strict-initial .StrictInitial.has-is-strict X f .Sets.inverses .Sets.Inverses.invl = ext λ ()
-Sets-strict-initial .StrictInitial.has-is-strict X f .Sets.inverses .Sets.Inverses.invr = ext λ x → absurd (f x .Lift.lower)
+Sets-strict-initial : Strict-initial (Sets ℓ)
+Sets-strict-initial .Strict-initial.initial = Sets-initial
+Sets-strict-initial .Strict-initial.has-is-strict X f .Sets.to = f
+Sets-strict-initial .Strict-initial.has-is-strict X f .Sets.from ()
+Sets-strict-initial .Strict-initial.has-is-strict X f .Sets.inverses .Sets.Inverses.invl = ext λ ()
+Sets-strict-initial .Strict-initial.has-is-strict X f .Sets.inverses .Sets.Inverses.invr = ext λ x → absurd (f x .Lift.lower)
 
 ```
 
@@ -73,11 +73,11 @@ that any function $\top \to X$ is an isomorphism, or equivalently, every inhabit
 
 
 ```agda
-¬Sets^op-strict-initial : ¬ StrictInitial (Sets ℓ ^op)
+¬Sets^op-strict-initial : ¬ Strict-initial (Sets ℓ ^op)
 ¬Sets^op-strict-initial si = true≠false $ true≡false
   where
     open Initial
-    open StrictInitial
+    open Strict-initial
     open import Cat.Morphism
 
 ```
@@ -112,7 +112,6 @@ so we have a contradiction!
 
 ```agda
 Sets≠Sets^op : ¬ (Sets ℓ ≡ Sets ℓ ^op)
-Sets≠Sets^op p = ¬Sets^op-strict-initial (subst StrictInitial p Sets-strict-initial)
-```
+Sets≠Sets^op p = ¬Sets^op-strict-initial (subst Strict-initial p Sets-strict-initial)
 ```
   
