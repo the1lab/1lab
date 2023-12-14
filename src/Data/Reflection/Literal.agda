@@ -11,7 +11,6 @@ open import Data.Word.Base
 open import Data.Dec.Base
 open import Data.Nat.Base
 open import Data.Id.Base
-open import Data.List
 
 module Data.Reflection.Literal where
 

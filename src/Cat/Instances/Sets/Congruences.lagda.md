@@ -68,7 +68,7 @@ Sets-effective-congruences {A = A} R = epi where
 
   open Congruence hiding (quotient)
   undo : ∀ {x y} → inc x ≡ inc y → rel x y
-  undo = equiv→inverse $ effective λ where
+  undo = effective λ where
     ._∼_ → rel
     .has-is-prop x y → rel-prop x y
     .reflᶜ → rel-refl
