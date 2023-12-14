@@ -11,6 +11,7 @@ module Cat.Diagram.Initial {o h} (C : Precategory o h) where
 <!--
 ```agda
 open import Cat.Morphism C
+open import Cat.Strict
 ```
 -->
 
@@ -88,4 +89,32 @@ a proposition:
     (λ i → is-contr-is-prop
       {A = Hom (Univalent.iso→path ccat (⊥-unique x1 x2) i) _})
     (x1 .has⊥ ob) (x2 .has⊥ ob) i
+```
+
+## Strictness
+
+An initial object is said to be *[strict]* if every morphism into it is an *iso*morphism.
+This is a categorical generalization of the fact that if one can write a function $X \to \bot$ then $X$ must itself be empty.
+
+This is an instance of the more general notion of [van Kempen colimits].
+
+[strict]: https://ncatlab.org/nlab/show/strict+initial+object
+[van Kempen colimits]: https://ncatlab.org/nlab/show/van+Kempen+colimit
+
+
+```agda
+is-strict-initial : Initial → Type _
+is-strict-initial i = ∀ X → Hom X (i .bot) → X ≅ i .bot
+
+record StrictInitial : Type (o ⊔ h) where
+  field
+    initial : Initial
+    has-is-strict : is-strict-initial initial
+```
+
+Strictness is a property of initial objects
+
+```agda
+is-strict-initial-is-prop : ∀ i → is-prop (is-strict-initial i)
+is-strict-initial-is-prop i = Π-is-hlevel² 1 λ X hom a b → ≅-pathp-from refl refl (¡-unique₂ i _ _)
 ```
