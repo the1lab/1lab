@@ -97,7 +97,9 @@ We then use [univalence for $n$-types] to directly establish that $(A
 ```agda
   import Cat.Reasoning (Sets ℓ ^op) as Sets^op
 ```
+
 First we show that isomorphism is invariant under `^op`{.Agda}.
+
 ```agda
   iso-op-invariant : ∀ {A B : Set ℓ} → (A Sets^op.≅ B) ≃ (A Sets.≅ B)
   iso-op-invariant {A} {B} = Iso→Equiv the-iso
