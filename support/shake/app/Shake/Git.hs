@@ -1,7 +1,8 @@
 {-# LANGUAGE BlockArguments, GeneralizedNewtypeDeriving, TypeFamilies #-}
 
 module Shake.Git
-  ( gitCommit
+  ( gitFiles
+  , gitCommit
   , gitAuthors
   , gitRules
   ) where
@@ -21,6 +22,15 @@ import Development.Shake
 -- around https://github.blog/2022-04-12-git-security-vulnerability-announced/
 gitCommand :: CmdResult r => [String] -> Action r
 gitCommand args = command [] "git" (["--git-dir", ".git"] ++ args)
+
+newtype GitFiles = GitFiles ()
+  deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
+
+type instance RuleResult GitFiles = [FilePath]
+
+-- | Get the list of files tracked by git.
+gitFiles :: Action [FilePath]
+gitFiles = askOracle (GitFiles ())
 
 newtype GitCommit = GitCommit ()
   deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
@@ -62,6 +72,10 @@ doGitAuthors (GitAuthors path) = do
 -- | Shake rules required for reading Git information.
 gitRules :: Rules()
 gitRules = versioned 1 do
+  _ <- addOracle \(GitFiles ()) -> do
+    Stdout t <- gitCommand ["ls-files", "--full-name"]
+    pure (lines t)
+
   _ <- addOracle \(GitCommit ()) -> do
     Stdout t <- gitCommand ["rev-parse", "--verify", "HEAD"]
     pure (head (lines t))
