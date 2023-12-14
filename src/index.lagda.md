@@ -559,6 +559,7 @@ open import Cat.Instances.Sets.Complete -- is complete
 open import Cat.Instances.Sets.Cocomplete -- is cocomplete, with disjoint coproducts
 open import Cat.Instances.Sets.Congruences -- has effective congruences
 open import Cat.Instances.Sets.CartesianClosed -- and is locally cartesian closed
+open import Cat.Instances.Sets.Counterexamples.SelfDual -- and is not self-dual
 ```
 
 The category of polynomial functors:
