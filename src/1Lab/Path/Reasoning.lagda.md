@@ -67,7 +67,7 @@ paste p q r s = pasteP p q r s
     k (j = i1) → p (~ i ∨ k)
     k (k = i0) → (p (~ i ∧ j))
 
-module _ (p≡refl : p ≡ refl) where
+module _ (p≡refl : p ≡ refl) where opaque
   ∙-eliml : p ∙ q ≡ q
   ∙-eliml {q = q} = sym $ paste (ap sym p≡refl) refl refl refl (∙-filler' p q)
 
