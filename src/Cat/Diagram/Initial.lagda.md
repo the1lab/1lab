@@ -95,10 +95,10 @@ a proposition:
 An initial object is said to be *[strict]* if every morphism into it is an *iso*morphism.
 This is a categorical generalization of the fact that if one can write a function $X \to \bot$ then $X$ must itself be empty.
 
-This is an instance of the more general notion of [van Kempen colimits].
+This is an instance of the more general notion of [van Kampen colimits].
 
 [strict]: https://ncatlab.org/nlab/show/strict+initial+object
-[van Kempen colimits]: https://ncatlab.org/nlab/show/van+Kempen+colimit
+[van Kampen colimits]: https://ncatlab.org/nlab/show/van+Kampen+colimit
 
 
 ```agda
