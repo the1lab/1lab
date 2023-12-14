@@ -14,7 +14,7 @@ module Cat.Instances.Sets.Counterexamples.SelfDual {ℓ} where
 ```
 # Sets is not self-dual
 
-We show that the category of Sets is not self-dual, that is, there cannot exit a path between `Sets`{.Agda} and `Sets`{.Agda} `^op`{.Agda}.
+We show that the category of Sets is not self-dual, that is, there cannot exit a path between $\Sets$ and $\Sets\op$.
 
 ```agda
 import Cat.Reasoning (Sets ℓ) as Sets
@@ -22,10 +22,10 @@ import Cat.Reasoning (Sets ℓ ^op) as Sets^op
 ```
 
 
-To show our goal, we need to find a categorical property that holds in `Sets`{.Agda} but _not_ in `Sets`{.Agda} `^op`{.Agda}.
-First we note that both `Sets`{.Agda} and `Sets`{.Agda} `^op`{.Agda} have an initial object.
+To show our goal, we need to find a categorical property that holds in $\Sets$ but _not_ in $\Sets\op$.
+First we note that both $\Sets$ and $\Sets\op$ have an initial object.
 
-In `Sets`{.Agda}:
+In $\Sets$:
   
 ```agda
 _ : Initial (Sets ℓ)
@@ -33,7 +33,7 @@ _ = Sets-initial
 ```
 
 
-In `Sets`{.Agda} `^op`{.Agda}:
+In $\Sets\op$:
 
 ```agda
 Sets^op-initial : Initial (Sets ℓ ^op)
@@ -46,7 +46,7 @@ _ = ⊥
 ``` 
 -->
 
-Now we can observe an interesting property of the initial object of `Sets`{.Agda}: every morphism into it is in fact an *iso*morphism.
+Now we can observe an interesting property of the initial object of $\Sets$: every morphism into it is in fact an *iso*morphism.
 Intuitively, if you can write a function $X \to \bot$  then $X$ must itself be empty.
 
 ```agda
@@ -72,7 +72,7 @@ _ = true≠false
 ```
 -->
 
-Crucially, this is property is not shared by the initial object of `Sets`{.Agda} `^op`{.Agda}! Unfolding definitions, it says 
+Crucially, this is property is not shared by the initial object of $\Sets\op$! Unfolding definitions, it says 
 that any function $\top \to X$ is an isomorphism, or equivalently, every inhabited set is contractible. But is this is certainly false:
 `Bool`{.Agda} is inhabited, but not contractible, since `true≠false`{.Agda}.
 
@@ -85,7 +85,7 @@ that any function $\top \to X$ is an isomorphism, or equivalently, every inhabit
     open import Cat.Morphism
 ```
 
-`Sets`{.Agda} `^op`{.Agda} is univalent, so we invoke the propositionality of its initial object to let us work with `⊤`{.Agda}, for convenience.
+$\Sets\op$ is univalent, so we invoke the propositionality of its initial object to let us work with `⊤`{.Agda}, for convenience.
 
 ```agda
     I≡⊤ : I ≡ Sets^op-initial
@@ -110,7 +110,7 @@ we conclude that `Bool`{.Agda} is contractible, from which we obtain (modulo `li
     
 ```
 
-We've shown that a categorical property holds in `Sets`{.Agda} and fails in `Sets`{.Agda} `^op`{.Agda}, but paths between categories preserve categorical properties,
+We've shown that a categorical property holds in $\Sets$ and fails in $\Sets\op$, but paths between categories preserve categorical properties,
 so we have a contradiction!
 
 ```agda
