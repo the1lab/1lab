@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import 1Lab.Counterexamples.GlobalChoice
 open import 1Lab.Equiv.Biinv
 
 open import Algebra.Group.Homotopy
@@ -121,7 +122,7 @@ _ = ap-∙
 ### 2.3 Type families are fibrations
 
 <!--
-```
+```agda
 _ = subst
 _ = Σ-pathp
 _ = transport-refl
@@ -229,7 +230,7 @@ _ = ⊎Path.Code≃Path
 ### 3.1 Sets and n-types
 
 <!--
-```
+```agda
 _ = is-set
 _ = Nat-is-set
 _ = ×-is-hlevel
@@ -247,10 +248,22 @@ _ = is-hlevel-suc
 * Definition 3.1.7: `is-groupoid`{.Agda}
 * Lemma 3.1.8: `is-hlevel-suc`{.Agda} (special case)
 
+### 3.2 Propositions as types?
+
+<!--
+```agda
+_ = ¬DNE∞
+_ = ¬LEM∞
+```
+-->
+
+* Theorem 3.2.2: `¬DNE∞`{.Agda}
+* Corollary 3.2.7: `¬LEM∞`{.Agda}
+
 ### 3.3 Mere propositions
 
 <!--
-```
+```agda
 _ = is-prop
 _ = prop-ext
 _ = is-prop→is-set
@@ -332,6 +345,7 @@ _ = is-contr-if-inhabited→is-prop
 _ = is-prop∙→is-contr
 _ = H-Level-Dec
 _ = disjoint-⊎-is-prop
+_ = ¬global-choice
 _ = ℕ-well-ordered
 _ = is-prop≃equiv∥-∥
 _ = Finite-choice
@@ -344,6 +358,7 @@ _ = Finite-choice
 * Exercise 3.5: `is-contr-if-inhabited→is-prop`{.Agda}, `is-prop∙→is-contr`{.Agda}
 * Exercise 3.6: `H-Level-Dec`{.Agda}
 * Exercise 3.7: `disjoint-⊎-is-prop`{.Agda}
+* Exercise 3.11: `¬global-choice`{.Agda}
 * Exercise 3.19: `ℕ-well-ordered`{.Agda}
 * Exercise 3.21: `is-prop≃equiv∥-∥`{.Agda}
 * Exercise 3.22: `Finite-choice`{.Agda}
