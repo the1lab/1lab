@@ -14,7 +14,7 @@ module Cat.Instances.Sets.Counterexamples.SelfDual {ℓ} where
 ```
 # Sets is not self-dual
 
-We show that the category of Sets is not self-dual, that is, there cannot exit a path between $\Sets$ and $\Sets\op$.
+We show that the category of sets is not self-dual, that is, there cannot exist a path between $\Sets$ and $\Sets\op$.
 
 ```agda
 import Cat.Reasoning (Sets ℓ) as Sets
