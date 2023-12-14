@@ -4,8 +4,8 @@ open import 1Lab.Reflection.Induction
 open import 1Lab.Prelude
 open import 1Lab.Rewrite
 
-open import Algebra.Group.Homotopy
 open import Algebra.Group.Cat.Base
+open import Algebra.Group.Homotopy
 open import Algebra.Group.Ab
 open import Algebra.Group
 

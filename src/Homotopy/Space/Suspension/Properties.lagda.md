@@ -2,12 +2,12 @@
 ```agda
 open import 1Lab.Prelude
 
+open import Data.Set.Truncation
+
 open import Homotopy.Space.Suspension
 open import Homotopy.Connectedness
 open import Homotopy.Truncation
 open import Homotopy.Base
-
-open import Data.Set.Truncation
 ```
 -->
 
