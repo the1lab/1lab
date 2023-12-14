@@ -3,6 +3,7 @@
 open import Cat.Instances.Sets.Cocomplete using (Sets-initial)
 open import Cat.Diagram.Initial
 open import Cat.Instances.Sets using (Sets^op-is-category)
+open import Cat.Morphism
 open import Cat.Prelude
 
 open import Data.Bool
@@ -51,19 +52,19 @@ Intuitively, if you can write a function $X \to \bot$ then $X$ must itself be em
 
 [strict]: Cat.Diagram.Initial.html#strictness
 
+<!--
+```agda
+open Initial
+open Strict-initial
+open Sets.is-invertible
+open Sets.Inverses
+```
+-->
+
 ```agda
 Sets-strict-initial : Strict-initial (Sets ℓ)
 Sets-strict-initial = si
   where
-```
-<!--
-```agda
-    open Strict-initial
-    open Sets.is-invertible
-    open Sets.Inverses
-```
--->
-```agda
     si : Strict-initial (Sets ℓ)
     si .initial = Sets-initial
     si .has-is-strict x f .inv ()
@@ -81,20 +82,11 @@ Crucially, this is property is not shared by the initial object of $\Sets\op$! U
 that any function $\top \to X$ is an isomorphism, or equivalently, every inhabited set is contractible. But is this is certainly false:
 `Bool`{.Agda} is inhabited, but not contractible, since `true≠false`{.Agda}.
 
-
 ```agda
 ¬Sets^op-strict-initial : ¬ Strict-initial (Sets ℓ ^op)
 ¬Sets^op-strict-initial si = true≠false true≡false
   where
 ```
-<!--
-```agda
-    open Initial
-    open Strict-initial
-    open import Cat.Morphism
-
-```
--->
 
 $\Sets\op$ is univalent, so we invoke the propositionality of its initial object to let us work with `⊤`{.Agda}, for convenience.
 
