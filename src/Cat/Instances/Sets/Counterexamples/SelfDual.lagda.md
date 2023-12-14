@@ -46,24 +46,19 @@ _ = ⊥
 ``` 
 -->
 
-Now we can observe an interesting property of the initial object of $\Sets$: every morphism into it is in fact an *iso*morphism.
-Intuitively, if you can write a function $X \to \bot$  then $X$ must itself be empty.
+Now we can observe an interesting property of the initial object of $\Sets$: it is *[strict]*, meaning every morphism into it is in fact an *iso*morphism.
+Intuitively, if you can write a function $X \to \bot$ then $X$ must itself be empty. 
+
+[strict]: Cat.Diagram.Initial.html#strictness
 
 ```agda
-hom-into→iso : ∀ {o h} (C : Precategory o h) → C .Precategory.Ob → Type _
-hom-into→iso C A = ∀ X → Hom X A → X ≅ A
-  where
-    open import Cat.Morphism C
+Sets-strict-initial : StrictInitial (Sets ℓ)
+Sets-strict-initial .StrictInitial.initial = Sets-initial
+Sets-strict-initial .StrictInitial.has-is-strict X f .Sets.to = f
+Sets-strict-initial .StrictInitial.has-is-strict X f .Sets.from ()
+Sets-strict-initial .StrictInitial.has-is-strict X f .Sets.inverses .Sets.Inverses.invl = ext λ ()
+Sets-strict-initial .StrictInitial.has-is-strict X f .Sets.inverses .Sets.Inverses.invr = ext λ x → absurd (f x .Lift.lower)
 
-hom-into-initial→iso : ∀ {o h} (C : Precategory o h) → Type _
-hom-into-initial→iso C = Σ[ I ∈ Initial C ] hom-into→iso C (I .Initial.bot)
-
-holds-in-Sets : hom-into-initial→iso (Sets ℓ)
-holds-in-Sets = Sets-initial , λ where 
-  X f .Sets.to → f
-  X f .Sets.from () 
-  X f .Sets.inverses .Sets.Inverses.invl → ext λ ()
-  X f .Sets.inverses .Sets.Inverses.invr → ext λ x → absurd (f x .Lift.lower)
 ```
 
 <!-- 
@@ -78,21 +73,23 @@ that any function $\top \to X$ is an isomorphism, or equivalently, every inhabit
 
 
 ```agda
-¬holds-in-Sets^op : ¬ hom-into-initial→iso (Sets ℓ ^op)
-¬holds-in-Sets^op (I , mk-iso) = true≠false $ true≡false
+¬Sets^op-strict-initial : ¬ StrictInitial (Sets ℓ ^op)
+¬Sets^op-strict-initial si = true≠false $ true≡false
   where
     open Initial
+    open StrictInitial
     open import Cat.Morphism
+
 ```
 
 $\Sets\op$ is univalent, so we invoke the propositionality of its initial object to let us work with `⊤`{.Agda}, for convenience.
 
 ```agda
-    I≡⊤ : I ≡ Sets^op-initial
-    I≡⊤ = ⊥-is-prop _ Sets^op-is-category _ _
+    si≡⊤ : si .initial ≡ Sets^op-initial
+    si≡⊤ = ⊥-is-prop _ Sets^op-is-category _ _
 
     to-iso-⊤ : (A : Set ℓ) → (Lift ℓ ⊤ → ⌞ A ⌟) → A Sets^op.≅ el! (Lift ℓ ⊤)
-    to-iso-⊤ = subst (λ I → hom-into→iso _ (I .bot)) I≡⊤ mk-iso
+    to-iso-⊤ = subst (is-strict-initial (Sets ℓ ^op)) si≡⊤ (si .has-is-strict)
 ```
 
 Using our ill-fated hypothesis, we can construct an iso between `Bool`{.Agda} and `⊤`{.Agda} from a function $\top \to$ `Bool`{.Agda}. From this
@@ -115,6 +112,7 @@ so we have a contradiction!
 
 ```agda
 Sets≠Sets^op : ¬ (Sets ℓ ≡ Sets ℓ ^op)
-Sets≠Sets^op p = ¬holds-in-Sets^op (subst hom-into-initial→iso p holds-in-Sets)
+Sets≠Sets^op p = ¬Sets^op-strict-initial (subst StrictInitial p Sets-strict-initial)
+```
 ```
   
