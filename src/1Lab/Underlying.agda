@@ -1,5 +1,5 @@
-open import 1Lab.HLevel.Universe
 open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Universe
 open import 1Lab.Resizing
 open import 1Lab.HLevel
 open import 1Lab.Path
@@ -85,13 +85,8 @@ record
     -- The underlying function (infix).
     _#_ : ∀ {A B} → F A B → ⌞ A ⌟ → ⌞ B ⌟
 
-    -- _#_ must be an injection. Really this should ask for an
-    -- embedding, but the most common use-cases have F valued in sets.
-    ext : ∀ {A B} {f g : F A B} → (∀ x → f # x ≡ g # x) → f ≡ g
-
-open Funlike ⦃ ... ⦄ using ( _#_ ; ext ) public
+open Funlike ⦃ ... ⦄ using (_#_) public
 {-# DISPLAY Funlike._#_ p f x = f # x #-}
-{-# DISPLAY Funlike.ext p q = ext q #-}
 
 -- Sections of the _#_ operator tend to be badly-behaved since they
 -- introduce an argument x : ⌞ ?0 ⌟ whose Underlying instance meta
@@ -103,12 +98,20 @@ apply
   → ∀ {a b} → F a b → ⌞ a ⌟ → ⌞ b ⌟
 apply = _#_
 
+-- Shortcut for ap (apply ...)
+ap#
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {F : A → B → Type ℓ''}
+  → ⦃ _ : Funlike F ⦄
+  → ∀ {a : A} {b : B} (f : F a b) → ∀ {x y : ⌞ a ⌟} → x ≡ y → f # x ≡ f # y
+ap# f = ap (apply f)
+
 -- Generalised happly.
 _#ₚ_
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {F : A → B → Type ℓ''}
   → ⦃ _ : Funlike F ⦄
   → {a : A} {b : B} {f g : F a b} → f ≡ g → ∀ (x : ⌞ a ⌟) → f # x ≡ g # x
 f #ₚ x = ap₂ _#_ f refl
+
 
 instance
   -- Agda really dislikes inferring the level parameters here.
@@ -117,5 +120,4 @@ instance
     → Funlike {lsuc ℓ} {lsuc ℓ'} {ℓ ⊔ ℓ'} {Type ℓ} {Type ℓ'} λ x y → x → y
   Funlike-Fun = record
     { _#_ = _$_
-    ; ext = funext
     }

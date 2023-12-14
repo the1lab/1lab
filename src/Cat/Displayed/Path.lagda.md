@@ -26,7 +26,7 @@ corresponding bases, is a [[displayed functor]]
 
 ~~~{.quiver}
 \[\begin{tikzcd}
-  {\mathcal{E}} && {\mathcal{E}} \\
+  {\mathcal{E}} && {\mathcal{F}} \\
   \\
   {\mathcal{B}_0} && {\mathcal{B}_1}
   \arrow["{\mathrm{path}(\mathcal{B})}"', from=3-1, to=3-3]
@@ -213,11 +213,11 @@ like
   {\mathcal{E}[x]} && {\mathcal{F}[x]} \\
   \\
   {\mathcal{F}[Fx]} && {\mathcal{F}[x]}
-  \arrow[""{name=0, anchor=center, inner sep=0}, "{\mathcal{F}(\operatorname{unglue}(\partial i, x)}"', from=3-1, to=3-3]
+  \arrow[""{name=0, anchor=center, inner sep=0}, "{\mathcal{F}(\unglue(\partial i, x))}"', from=3-1, to=3-3]
   \arrow["{F_0'}"', from=1-1, to=3-1]
   \arrow["{\mathrm{id}}", from=1-3, to=3-3]
   \arrow[""{name=1, anchor=center, inner sep=0}, dashed, from=1-1, to=1-3]
-  \arrow["{\mathrm{Glue}\ ...}"{description}, draw=none, from=1, to=0]
+  \arrow["{\Glue\ ...}"{description}, draw=none, from=1, to=0]
 \end{tikzcd}\]
 ~~~
 

@@ -214,5 +214,5 @@ having to munge paths sometimes. This is one of those times:
         )
     ·· ap (μ .map) (Σ-pathp (ap (μ .map) (ap (f .fst ,_)
         (Σ-prop-path (λ _ → hlevel 1) refl)))
-           (Σ-pathp-dep refl (is-prop→pathp (λ _ → hlevel 1) _ _))))
+           (Σ-pathp refl (is-prop→pathp (λ _ → hlevel 1) _ _))))
 ```

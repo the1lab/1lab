@@ -138,7 +138,7 @@ the general $n$-truncation uniformly.
 
 ```agda
 is-n-connected-Tr : ∀ {ℓ} {A : Type ℓ} n → is-n-connected A (suc n) → is-contr (n-Tr A (suc n))
-is-n-connected-Tr zero a-conn = ∥-∥-proj do
+is-n-connected-Tr zero a-conn = ∥-∥-proj! do
   pt ← a-conn
   pure $ contr (inc pt) (λ x → n-Tr-is-hlevel 0 _ _)
 is-n-connected-Tr (suc zero) a-conn =
@@ -260,7 +260,7 @@ is-n-connected→n-type-const
   → is-equiv {B = A → B} (λ b a → b)
 is-n-connected→n-type-const {B = B} {A = A} n B-hl A-conn =
   subst is-equiv (λ i x z → transp (λ i → B) i x) $ snd $
-  B                      ≃⟨ is-contr→points (is-n-connected-Tr n A-conn) e⁻¹ ⟩
+  B                      ≃⟨ Π-contr-eqv (is-n-connected-Tr n A-conn) e⁻¹ ⟩
   (n-Tr A (suc n) → B)   ≃⟨ n-Tr-univ n B-hl ⟩
   (A → B)                ≃∎
 ```
@@ -331,7 +331,7 @@ we have the following chain of equivalences suffices.
 
 ```agda
   rem₁ =
-    ((b : B) → P b)                             ≃⟨ Π-cod≃ (λ x → is-contr→points {B = λ _ → P x} (is-n-connected-Tr _ (n-conn x)) e⁻¹) ⟩
+    ((b : B) → P b)                             ≃⟨ Π-cod≃ (λ x → Π-contr-eqv {B = λ _ → P x} (is-n-connected-Tr _ (n-conn x)) e⁻¹) ⟩
     ((b : B) → n-Tr (fibre f b) (suc n) → P b)  ≃⟨ Π-cod≃ (λ x → n-Tr-univ n (phl _)) ⟩
     ((b : B) → fibre f b → P b)                 ≃⟨ shuffle ⟩
     ((a : A) → P (f a))                         ≃∎

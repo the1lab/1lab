@@ -18,7 +18,7 @@ module Cat.Displayed.Cartesian.Identity
   where
 ```
 
-# Identity of Cartesian lifts
+# Identity of cartesian lifts
 
 In this module, we prove that [[Cartesian morphisms]] are unique up to
 _vertical_ isomorphism, which, if the [[displayed category]] is univalent

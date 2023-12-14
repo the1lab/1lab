@@ -1,13 +1,18 @@
 <!--
 ```agda
-open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
+open import Data.Dec.Base
 open import Data.Nat.Base
+open import Data.Sum.Base
+open import Data.Id.Base
+open import Data.Bool
+
+open import Meta.Idiom
 ```
 -->
 
@@ -15,6 +20,7 @@ open import Data.Nat.Base
 module Data.List where
 
 open import Data.List.Base public
+open import Data.List.Membership public
 ```
 
 # Lists
@@ -31,29 +37,7 @@ private variable
 ```
 -->
 
-## Path Space
-
-We begin by characteristing the behaviour of paths of lists. For
-instance, `∷`{.Agda} is injective in both its arguments:
-
-```agda
-∷-head-inj : ∀ {x y : A} {xs ys} → (x ∷ xs) ≡ (y ∷ ys) → x ≡ y
-∷-head-inj {x = x} p = ap (head x) p
-
-∷-tail-inj : ∀ {x y : A} {xs ys} → (x ∷ xs) ≡ (y ∷ ys) → xs ≡ ys
-∷-tail-inj p = ap tail p
-```
-
-Similarly, it is possible to distinguish `_ ∷ _` from `[]`{.Agda}, so
-they are not identical:
-
-```agda
-∷≠[] : ∀ {x : A} {xs} → ¬ (x ∷ xs) ≡ []
-∷≠[] {A = A} p = subst distinguish p tt where
-  distinguish : List A → Type
-  distinguish []     = ⊥
-  distinguish (_ ∷ _) = ⊤
-```
+## Path space
 
 Using these lemmas, we can characterise the path space of `List A` in
 terms of the path space of `A`. For this, we define by induction a type
@@ -116,9 +100,9 @@ We use this to prove that lists preserve h-levels for $n \ge 2$, i.e. if
     Code-is-hlevel {x ∷ x₁} {x₂ ∷ y} = ×-is-hlevel (suc n) (ahl _ _) Code-is-hlevel
 
   instance
-    H-Level-List : ∀ {n} {k} → ⦃ H-Level A (2 + n) ⦄ → H-Level (List A) (2 + n + k)
+    H-Level-List : ∀ {n} → ⦃ H-Level A (2 + n) ⦄ → H-Level (List A) (2 + n)
     H-Level-List {n = n} ⦃ x ⦄ =
-      basic-instance (2 + n) (List-is-hlevel n (H-Level.has-hlevel x))
+      record { has-hlevel = List-is-hlevel n (H-Level.has-hlevel x) }
 
   is-set→List-is-set : is-set A → is-set (List A)
   is-set→List-is-set = List-is-hlevel zero
@@ -157,6 +141,21 @@ ap-∷ x≡y xs≡ys i = x≡y i ∷ xs≡ys i
 ⚠️ TODO: Explain these ⚠️
 
 ```agda
+map-id
+  : ∀ {ℓ} {A : Type ℓ}
+  → (xs : List A)
+  → map id xs ≡ xs
+map-id [] = refl
+map-id (x ∷ xs) = ap (x ∷_) (map-id xs)
+
+map-++
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → (f : A → B)
+  → (xs ys : List A)
+  → map f (xs ++ ys) ≡ map f xs ++ map f ys
+map-++ f [] ys = refl
+map-++ f (x ∷ xs) ys = ap (f x ∷_) (map-++ f xs ys)
+
 
 take-length : ∀ {ℓ} {A : Type ℓ} (xs : List A) → take (length xs) xs ≡ xs
 take-length [] = refl
@@ -169,11 +168,98 @@ take-length-more
 take-length-more [] zero wit = refl
 take-length-more [] (suc n) wit = refl
 take-length-more (x ∷ xs) (suc n) (s≤s wit) = ap (x ∷_) (take-length-more xs n wit)
-
-instance
-  -- List isn't really a type on the same footing as all the others, but
-  -- we're here, so we might as well, right?
-  decomp-list : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (List A)
-  decomp-list = decomp (quote ListPath.List-is-hlevel) (`level-minus 2 ∷ `search ∷ [])
 ```
 -->
+
+<!--
+```agda
+all-of-++
+  : ∀ {ℓ} {A : Type ℓ}
+  → (f : A → Bool)
+  → (xs ys : List A)
+  → all-of f (xs ++ ys) ≡ and (all-of f xs) (all-of f ys)
+all-of-++ f [] ys = refl
+all-of-++ f (x ∷ xs) ys =
+  ap (and (f x)) (all-of-++ f xs ys)
+  ∙ and-associative (f x) (all-of f xs) (all-of f ys)
+
+all-of-map
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → (f : B → Bool)
+  → (g : A → B)
+  → (xs : List A)
+  → all-of f (map g xs) ≡ all-of (f ∘ g) xs
+all-of-map f g [] = refl
+all-of-map f g (x ∷ xs) = ap (and (f (g x))) (all-of-map f g xs)
+
+any-of-++
+  : ∀ {ℓ} {A : Type ℓ}
+  → (f : A → Bool)
+  → (xs ys : List A)
+  → any-of f (xs ++ ys) ≡ or (any-of f xs) (any-of f ys)
+any-of-++ f [] ys = refl
+any-of-++ f (x ∷ xs) ys =
+  ap (or (f x)) (any-of-++ f xs ys)
+  ∙ or-associative (f x) (any-of f xs) (any-of f ys)
+
+any-of-map
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → (f : B → Bool)
+  → (g : A → B)
+  → (xs : List A)
+  → any-of f (map g xs) ≡ any-of (f ∘ g) xs
+any-of-map f g [] = refl
+any-of-map f g (x ∷ xs) = ap (or (f (g x))) (any-of-map f g xs)
+
+all-of-or
+  : ∀ {ℓ} {A : Type ℓ}
+  → (f : A → Bool)
+  → (b : Bool) (xs : List A)
+  → all-of (λ x → or b (f x)) xs ≡ or b (all-of f xs)
+all-of-or f b [] = sym (or-truer b)
+all-of-or f b (x ∷ xs) =
+  ap (and (or b (f x))) (all-of-or f b xs)
+  ∙ sym (or-distrib-andl b (f x) (all-of f xs))
+
+not-all-of
+  : ∀ {ℓ} {A : Type ℓ}
+  → (f : A → Bool)
+  → (xs : List A)
+  → not (all-of f xs) ≡ any-of (not ∘ f) xs
+not-all-of f [] = refl
+not-all-of f (x ∷ xs) =
+  not-and≡or-not (f x) (all-of f xs)
+  ∙ ap (or (not (f x))) (not-all-of f xs)
+
+not-any-of
+  : ∀ {ℓ} {A : Type ℓ}
+  → (f : A → Bool)
+  → (xs : List A)
+  → not (any-of f xs) ≡ all-of (not ∘ f) xs
+not-any-of f [] = refl
+not-any-of f (x ∷ xs) =
+  not-or≡and-not (f x) (any-of f xs)
+  ∙ ap (and (not (f x))) (not-any-of f xs)
+
+any-one-of
+  : ∀ {ℓ} {A : Type ℓ}
+  → (f : A → Bool)
+  → (x : A) (xs : List A)
+  → x ∈ₗ xs → f x ≡ true
+  → any-of f xs ≡ true
+any-one-of f x (y ∷ xs) (here x=y) x-true =
+  ap₂ or (subst (λ e → f e ≡ true) x=y x-true) refl
+any-one-of f x (y ∷ xs) (there x∈xs) x-true =
+  ap₂ or refl (any-one-of f x xs x∈xs x-true) ∙ or-truer _
+```
+-->
+
+```agda
+is-empty : List A → Type
+is-empty [] = ⊤
+is-empty (_ ∷ _) = ⊥
+
+is-empty? : ∀ (xs : List A) → Dec (is-empty xs)
+is-empty? [] = yes tt
+is-empty? (x ∷ xs) = no id
+```

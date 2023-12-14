@@ -1,5 +1,7 @@
 <!--
 ```agda
+open import 1Lab.Reflection.Induction
+
 open import Algebra.Group.Cat.Base
 open import Algebra.Group
 
@@ -27,7 +29,7 @@ open ↓Hom
 ```
 -->
 
-# Free Groups {defines=free-group-construction}
+# Free groups {defines=free-group-construction}
 
 We give a direct, higher-inductive constructor of the **free group
 $F(A)$ on a type $A$ of generators**. While we allow the parameter to be
@@ -90,41 +92,23 @@ Free-elim-prop
   : ∀ {ℓ} (B : Free-group A → Type ℓ)
   → (∀ x → is-prop (B x))
   → (∀ x → B (inc x))
-  → (∀ x y → B x → B y → B (x ◆ y))
+  → (∀ x → B x → ∀ y → B y → B (x ◆ y))
   → (∀ x → B x → B (inv x))
   → B nil
   → ∀ x → B x
 ```
 
-<details>
-<summary>
 The proof of it is a direct (by which I mean repetitive) case analysis,
-so I've put it in a `<details>`{.html} tag.
-</summary>
+so we let our reflection machinery handle it for us.
 
 ```agda
-Free-elim-prop B bp bi bd binv bnil = go where
-  go : ∀ x → B x
-  go (inc x) = bi x
-  go (x ◆ y) = bd x y (go x) (go y)
-  go (inv x) = binv x (go x)
-  go nil = bnil
-  go (f-assoc x y z i) =
-    is-prop→pathp (λ i → bp (f-assoc x y z i))
-      (bd x (y ◆ z) (go x) (bd y z (go y) (go z)))
-      (bd (x ◆ y) z (bd x y (go x) (go y)) (go z))
-      i
-  go (f-invl x i) =
-    is-prop→pathp (λ i → bp (f-invl x i)) (bd (inv x) x (binv x (go x)) (go x)) bnil i
-  go (f-idl x i) = is-prop→pathp (λ i → bp (f-idl x i)) (bd nil x bnil (go x)) (go x) i
-  go (squash x y p q i j) =
-    is-prop→squarep (λ i j → bp (squash x y p q i j))
-      (λ i → go x) (λ i → go (p i)) (λ i → go (q i)) (λ i → go y) i j
+unquoteDef Free-elim-prop = make-elim-with (default-elim-visible into 1)
+  Free-elim-prop (quote Free-group)
 ```
 
 </details>
 
-## Universal Property {defines=free-group}
+## Universal property {defines=free-group}
 
 We now prove the universal property of `Free-group`{.Agda}, or, more
 specifically, of the map `inc`{.Agda}: It gives a [universal way of
@@ -191,9 +175,9 @@ make-free-group .Ml.unit _ = inc
 make-free-group .Ml.universal f = fold-free-group f
 make-free-group .Ml.commutes f = refl
 make-free-group .Ml.unique {y = y} {g = g} p =
-  Homomorphism-path $ Free-elim-prop _ (λ _ → hlevel!)
+  ext $ Free-elim-prop _ (λ _ → hlevel!)
     (p $ₚ_)
-    (λ a b p q → ap₂ y._⋆_ p q ∙ sym (g .preserves .is-group-hom.pres-⋆ _ _))
+    (λ a p b q → ap₂ y._⋆_ p q ∙ sym (g .preserves .is-group-hom.pres-⋆ _ _))
     (λ a p → ap y.inverse p ∙ sym (is-group-hom.pres-inv (g .preserves)))
     (sym (is-group-hom.pres-id (g .preserves)))
   where module y = Group-on (y .snd)

@@ -15,7 +15,7 @@ import Cat.Reasoning
 module Cat.CartesianClosed.Lambda
 ```
 
-# Simply-typed lambda calculus {defines="simply-typed-lambda-calculus"}
+# Simply-typed lambda calculus {defines="simply-typed-lambda-calculus STLC"}
 
 <!--
 ```agda

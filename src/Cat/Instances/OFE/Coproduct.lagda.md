@@ -14,7 +14,7 @@ open import Data.Sum.Base
 module Cat.Instances.OFE.Coproduct where
 ```
 
-# Coroducts of OFEs
+# Coproducts of OFEs
 
 The [category of OFEs][OFE] admits binary [coproducts]. Unlike the
 [construction of products][ofe-prod], in which we could define the
@@ -190,8 +190,8 @@ unique: but it suffices to reason at the level of sets.
   mk .in₀ = in0
   mk .in₁ = in1
   mk .has-is-coproduct .is-coproduct.[_,_] {Q = Q} f g = disj f g
-  mk .has-is-coproduct .in₀∘factor = Homomorphism-path λ x → refl
-  mk .has-is-coproduct .in₁∘factor = Homomorphism-path λ x → refl
+  mk .has-is-coproduct .in₀∘factor = trivial!
+  mk .has-is-coproduct .in₁∘factor = trivial!
   mk .has-is-coproduct .unique other p q = Homomorphism-path λ where
     (inl x) → p #ₚ x
     (inr x) → q #ₚ x

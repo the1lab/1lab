@@ -1,12 +1,16 @@
 <!--
 ```agda
 {-# OPTIONS --lossy-unification #-}
+open import Cat.Bi.Instances.Discrete
 open import Cat.Displayed.Cartesian
 open import Cat.Instances.Discrete
 open import Cat.Instances.Functor
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
+open import Cat.Bi.Base
 open import Cat.Prelude
+
+open import Data.Id.Base
 
 import Cat.Displayed.Fibre.Reasoning
 import Cat.Displayed.Reasoning
@@ -37,7 +41,7 @@ private
 ```
 -->
 
-# Reindexing for Cartesian fibrations
+# Reindexing for cartesian fibrations
 
 A [[cartesian fibration]] can be thought of as a [[displayed category]]
 $\cE$ whose [[fibre categories]] $\cE^*(b)$ depend ([pseudo])functorially

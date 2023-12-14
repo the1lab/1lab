@@ -137,6 +137,19 @@ is-equiv→is-embedding
   → is-embedding f
 is-equiv→is-embedding eqv x = is-contr→is-prop (eqv .is-eqv x)
 
+Equiv→Embedding
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → A ≃ B
+  → A ↪ B
+Equiv→Embedding e .fst = e .fst
+Equiv→Embedding e .snd = is-equiv→is-embedding (e .snd)
+
+Iso→Embedding
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → Iso A B
+  → A ↪ B
+Iso→Embedding f = Equiv→Embedding (Iso→Equiv f)
+
 monic→is-embedding
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {f : A → B}
   → is-set B

@@ -28,7 +28,7 @@ private variable
 ```agda
 Acc-is-prop : ∀ x → is-prop (Acc R x)
 Acc-is-prop x (acc s) (acc t) =
-  ap acc (funext λ y → funext λ y<x → Acc-is-prop y (s y y<x) (t y y<x))
+  ap acc (ext λ y y<x → Acc-is-prop y (s y y<x) (t y y<x))
 
 Wf-is-prop : is-prop (Wf R)
 Wf-is-prop = Π-is-hlevel 1 Acc-is-prop

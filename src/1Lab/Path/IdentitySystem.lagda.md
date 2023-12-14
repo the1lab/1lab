@@ -23,7 +23,7 @@ module 1Lab.Path.IdentitySystem where
 
 An **identity system** is a way of characterising the path spaces of a
 particular type, without necessarily having to construct a full
-encode-decode equaivalence. Essentially, the data of an identity system
+encode-decode equivalence. Essentially, the data of an identity system
 is precisely the data required to implement _path induction_, a.k.a. the
 J eliminator. Any type with the data of an identity system satisfies its
 own J, and conversely, if the type satisfies J, it is an identity
@@ -105,6 +105,14 @@ to-path-refl
   → (ids : is-identity-system R r)
   → ids .to-path (r a) ≡ refl
 to-path-refl {r = r} {a = a} ids = ap (ap fst) $ to-path-refl-coh ids a
+
+to-path-over-refl
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a} {a : A}
+  → (ids : is-identity-system R r)
+  → PathP (λ i → PathP (λ j → R a (to-path-refl {a = a} ids i j)) (r a) (r a))
+      (ids .to-path-over (r a))
+      refl
+to-path-over-refl {a = a} ids = ap (ap snd) $ to-path-refl-coh ids a
 ```
 -->
 
@@ -173,7 +181,7 @@ $A$.
 ```agda
 module
   _ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'}
-    {R : B → B → Type ℓ''} {r : ∀ a → R a a}
+    {R : B → B → Type ℓ''} {r : ∀ b → R b b}
     (ids : is-identity-system R r)
     (f : A ↪ B)
   where
@@ -189,6 +197,20 @@ module
       k (k = i0) → ids .to-path-over p (~ k)
       k (i = i0) → ids .to-path-over p (~ k ∨ i)
       k (i = i1) → p
+```
+
+This is actually part of an equivalence: if the equality identity
+system on $B$ (thus any identity system) can be pulled back along $f$,
+then $f$ is an embedding.
+
+```agda
+identity-system→embedding
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → (f : A → B)
+  → is-identity-system (λ x y → f x ≡ f y) (λ _ → refl)
+  → is-embedding f
+identity-system→embedding f ids = cancellable→embedding
+  (identity-system-gives-path ids)
 ```
 
 <!--
@@ -226,6 +248,11 @@ univalence-identity-system .to-path-over p =
 
 <!--
 ```agda
+Path-identity-system
+  : ∀ {ℓ} {A : Type ℓ} → is-identity-system (Path A) (λ _ → refl)
+Path-identity-system .to-path p = p
+Path-identity-system .to-path-over p i j = p (i ∧ j)
+
 is-identity-system-is-prop
   : ∀ {ℓ ℓ'} {A : Type ℓ} {R : A → A → Type ℓ'} {r : ∀ a → R a a}
   → is-prop (is-identity-system R r)
@@ -329,7 +356,7 @@ Discrete→is-set {A = A} dec =
     funext λ h → absurd (g h)
   where
     stable : {x y : A} → ¬ ¬ x ≡ y → x ≡ y
-    stable {x = x} {y = y} ¬¬p with dec x y
+    stable {x = x} {y = y} ¬¬p with dec {x} {y}
     ... | yes p = p
     ... | no ¬p = absurd (¬¬p ¬p)
 ```

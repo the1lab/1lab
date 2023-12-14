@@ -2,7 +2,7 @@
 module index where
 ```
 
-# 1lab {style="margin-top: 0;"}
+# 1lab
 
 A formalised, cross-linked reference resource for cubical methods in
 Homotopy Type Theory. Unlike the [@HoTT], the 1lab is not a "linear"
@@ -150,7 +150,7 @@ project. No part of these projects is redistributed.
 And, of course, the formalisation would not be possible without
 [Agda](https://github.com/agda/agda).
 
-# Type Theory
+# Type theory
 
 ::: warning
 Most of the modules in the 1Lab assume a baseline knowledge of type
@@ -265,6 +265,7 @@ open import Data.Sum  -- Coproduct types
 open import Data.Dec  -- Decisions and decidable types
 open import Data.Bool -- The booleans
 open import Data.List -- Finite lists
+open import Data.Maybe -- The Maybe type
 ```
 
 We also consider "data types" to encompass properties of properties, or,
@@ -275,7 +276,7 @@ open import Data.Power -- Power sets
 open import Data.Power.Complemented -- Complemented or decidable subobjects
 ```
 
-# Category Theory
+# Category theory
 
 In addition to providing a framework for the synthetic study of higher
 groupoids, HoTT also provides a natural place to develop constructive
@@ -408,6 +409,7 @@ About [[adjoint functors]], and their associated monads:
 open import Cat.Diagram.Monad -- Definition of monads
 open import Cat.Functor.Adjoint -- Unit-counit adjunctions and universal arrows
 open import Cat.Functor.Adjoint.Hom -- Adjoints in terms of Hom-isomorphisms
+open import Cat.Functor.Adjoint.Representable -- Adjoints in terms of representables
 open import Cat.Functor.Adjoint.Monad -- Monad from an adjunction
 open import Cat.Functor.Adjoint.Unique -- Uniqueness of adjoints
 open import Cat.Functor.Adjoint.Monadic -- Monadic adjunctions
@@ -445,6 +447,7 @@ open import Cat.Functor.Hom -- Hom functor, Yoneda embedding
 open import Cat.Functor.Hom.Cocompletion -- Universal property of PSh(C)
 open import Cat.Functor.Hom.Coyoneda -- The Coyoneda lemma
 open import Cat.Functor.Hom.Representable -- Representable functors
+open import Cat.Functor.Hom.Duality -- Duality of Hom functors
 
 open import Cat.Functor.Hom.Displayed
   -- Hom functors of displayed categories
@@ -467,7 +470,7 @@ open import Cat.Univalent.Instances.Algebra
   -- Eilenberg-Moore categories preserve univalence
 ```
 
-## Strict Categories
+## Strict categories
 
 In general, precategories do not have a set of objects. We call categories
 that do **strict**.
@@ -614,7 +617,7 @@ open import Cat.Allegory.Morphism -- Morphisms in allegories
 open import Cat.Allegory.Reasoning -- Reasoning combinators
 ```
 
-## Restriction Categories
+## Restriction categories
 
 Restriction categories axiomatize categories of partial maps by adding
 n restriction operation $(-)\downarrow : \cC(X,Y) \to \cC(X,X)$ that
@@ -676,6 +679,9 @@ open import Cat.Displayed.Morphism.Duality
 open import Cat.Displayed.Instances.Elements
 -- The category of elements of a presheaf, instantiated as being
 -- displayed over the domain.
+
+open import Cat.Displayed.Instances.TotalProduct
+-- The total product of two displayed categories.
 
 open import Cat.Displayed.Composition
   -- Composition of displayed categories
@@ -775,7 +781,7 @@ open import Cat.Displayed.Instances.Identity
 -- The bifibration associated with the identity functor.
 ```
 
-### Structures in Fibrations
+### Structures in fibrations
 
 ```agda
 open import Cat.Displayed.InternalSum
@@ -784,7 +790,7 @@ open import Cat.Displayed.GenericObject
 -- Generic objects in fibrations.
 ```
 
-### Logical Structure of Fibrations
+### Logical structure of fibrations
 
 Fibrations serve as an excellent foundation for exploring various
 logical and type-theoretic phenomena.
@@ -801,7 +807,7 @@ open import Cat.Displayed.Comprehension.Coproduct.VeryStrong
 ```
 
 
-## Internal Categories
+## Internal categories
 
 The theory of internal categories. Internal category theory generalizes
 [[strict category]] theory by replacing the ambient category
@@ -954,7 +960,7 @@ open import Order.Instances.Pointwise -- The pointwise ordering on A→B
 open import Order.Instances.Pointwise.Diagrams
 ```
 
-## Domain Theory
+## Domain theory
 
 Domain theory is the study of posets that are complete
 under various classes of least upper bounds. These posets are used
@@ -967,6 +973,16 @@ open import Order.DCPO.Pointed -- Pointed directed-complete partial orders
 open import Order.DCPO.Free -- Free DCPOs and free pointed DCPOs
 ```
 
+# Logic
+
+```agda
+open import Logic.Propositional.Classical
+-- Classical logic, soundness, completeness
+open import Logic.Propositional.Classical.CNF
+-- Conjunctive normal forms
+open import Logic.Propositional.Classical.SAT
+-- DPLL SAT solver
+```
 
 # Algebra
 

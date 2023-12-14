@@ -158,15 +158,15 @@ Fibre→slice : ∀ {x} → Functor (Fibre Slices x) (Slice B x)
 Fibre→slice .F₀ x = x
 Fibre→slice .F₁ f ./-Hom.map = f .to
 Fibre→slice .F₁ f ./-Hom.commutes = sym (f .commute) ∙ eliml refl
-Fibre→slice .F-id = /-Hom-path refl
-Fibre→slice .F-∘ f g = /-Hom-path (transport-refl _)
+Fibre→slice .F-id = trivial!
+Fibre→slice .F-∘ f g = ext (transport-refl _)
 
 Fibre→slice-is-ff : ∀ {x} → is-fully-faithful (Fibre→slice {x = x})
 Fibre→slice-is-ff {_} {x} {y} = is-iso→is-equiv isom where
   isom : is-iso (Fibre→slice .F₁)
   isom .is-iso.inv hom =
     slice-hom (hom ./-Hom.map) (eliml refl ∙ sym (hom ./-Hom.commutes))
-  isom .is-iso.rinv x = /-Hom-path refl
+  isom .is-iso.rinv x = ext refl
   isom .is-iso.linv x = Slice-pathp refl refl
 
 Fibre→slice-is-equiv : ∀ {x} → is-equivalence (Fibre→slice {x})
@@ -176,7 +176,7 @@ Fibre→slice-is-equiv = is-precat-iso→is-equivalence $
          }
 ```
 
-## Cartesian Maps
+## Cartesian maps
 
 A map $f' : x' \to y'$ over $f : x \to y$ in the codomain fibration is
 cartesian if and only if it forms a pullback square as below:
@@ -293,7 +293,7 @@ categories, then the interpretation of Cartesian fibrations as
 reinterpret the above results as, essentially, giving the [[pullback
 functors]] between slice categories.
 
-## As an Opfibration
+## As an opfibration
 
 The canonical self-indexing is *always* an opfibration, where
 opreindexing is given by postcomposition. If we think about slices as

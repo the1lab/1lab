@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import 1Lab.Reflection.Induction
 open import 1Lab.Prelude
 
 open import Algebra.Group.Cat.Base
@@ -25,7 +26,7 @@ private variable
 ```
 -->
 
-# Homotopy Groups {defines="homotopy-group fundamental-group"}
+# Homotopy groups {defines="homotopy-group fundamental-group"}
 
 Given a `pointed type`{.Agda ident=Type∙} $(A, a)$ we refer to the type
 $a = a$ as the **loop space of $A$**, and refer to it in short as

@@ -8,7 +8,7 @@ open import 1Lab.Prelude
 module Homotopy.Space.Sinfty where
 ```
 
-# The Infinite Sphere
+# The infinite sphere
 
 The $(n+1)$-sphere can be constructed from the $n$-sphere via suspension.
 By writing a recursive HIT, we can define a type which is its own
@@ -28,7 +28,7 @@ contractible. In Homotopy Type Theory, then, the only meaningful statement that
 can be made of `S∞`{.Agda} is that it is contractible. We prove this in two
 different ways.
 
-## The Book HoTT Approach
+## The Book HoTT approach
 
 ```agda
 open is-contr
@@ -66,7 +66,7 @@ is-contrS∞' .centre = N
 is-contrS∞' .paths = pathsS∞'
 ```
 
-## The Cubical Approach
+## The cubical approach
 
 The cubical approach essentially acomplishes the same thing as the previous
 proof, without using any helper lemmas, by way of drawing a slightly clever

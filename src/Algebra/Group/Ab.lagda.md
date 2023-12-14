@@ -174,8 +174,8 @@ Ab↪Grp : ∀ {ℓ} → Functor (Ab ℓ) (Groups ℓ)
 Ab↪Grp .F₀ (X , A) = X , Abelian→Group-on A
 Ab↪Grp .F₁ f .hom = f .hom
 Ab↪Grp .F₁ f .preserves = f .preserves
-Ab↪Grp .F-id = total-hom-path _ refl refl
-Ab↪Grp .F-∘ f g = total-hom-path _ refl refl
+Ab↪Grp .F-id = trivial!
+Ab↪Grp .F-∘ f g = trivial!
 ```
 -->
 

@@ -59,9 +59,8 @@ elimination principle for $\| f^*x \| \to F$, since $F$ is a set.
 surjective→regular-epi c d f surj .has-is-coeq = coeqs where
   go : ∀ {F} (e' : ∣ c ∣ → ∣ F ∣) p (x : ∣ d ∣) → ∥ fibre f x ∥ → ∣ F ∣
   go e' p x =
-    ∥-∥-rec-set (λ x → e' (x .fst))
+    ∥-∥-rec-set hlevel! (λ x → e' (x .fst))
       (λ x y → p $ₚ (x .fst , y .fst , x .snd ∙ sym (y .snd)))
-      hlevel!
 ```
 
 After a small amount of computation to move the witnesses of

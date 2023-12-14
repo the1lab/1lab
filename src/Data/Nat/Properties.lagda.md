@@ -1,11 +1,13 @@
 <!--
 ```agda
+open import 1Lab.Rewrite
 open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Nat.Order
 open import Data.Dec.Base
 open import Data.Nat.Base
+open import Data.Bool
 ```
 -->
 
@@ -13,7 +15,7 @@ open import Data.Nat.Base
 module Data.Nat.Properties where
 ```
 
-# Natural Numbers - Properties
+# Natural numbers - properties
 
 This module contains proofs of arithmetic identities for [the natural
 numbers]. Since they're mostly simple inductive arguments written in
@@ -112,7 +114,7 @@ numbers]. Since they're mostly simple inductive arguments written in
 *-suc-inj : ∀ k x y → x * suc k ≡ y * suc k → x ≡ y
 *-suc-inj k zero zero p = refl
 *-suc-inj k zero (suc y) p = absurd (zero≠suc p)
-*-suc-inj k (suc x) zero p = absurd (zero≠suc (sym p))
+*-suc-inj k (suc x) zero p = absurd (suc≠zero p)
 *-suc-inj k (suc x) (suc y) p = ap suc (*-suc-inj k x y (+-inj _ _ _ p))
 
 *-suc-inj' : ∀ k x y → suc k * x ≡ suc k * y → x ≡ y
@@ -224,7 +226,7 @@ arithmetic operators:
 difference→≤ : ∀ {x z} y → x + y ≡ z → x ≤ z
 difference→≤ {x} {z} zero p            = subst (x ≤_) (sym (+-zeror x) ∙ p) ≤-refl
 difference→≤ {zero}  {z}     (suc y) p = 0≤x
-difference→≤ {suc x} {zero}  (suc y) p = absurd (zero≠suc (sym p))
+difference→≤ {suc x} {zero}  (suc y) p = absurd (suc≠zero p)
 difference→≤ {suc x} {suc z} (suc y) p = s≤s (difference→≤ (suc y) (suc-inj p))
 ```
 
@@ -286,6 +288,20 @@ max-≤r zero zero = 0≤x
 max-≤r zero (suc y) = ≤-refl
 max-≤r (suc x) zero = 0≤x
 max-≤r (suc x) (suc y) = s≤s (max-≤r x y)
+
+max-is-lub : (x y z : Nat) → x ≤ z → y ≤ z → max x y ≤ z
+max-is-lub zero zero z 0≤x 0≤x = 0≤x
+max-is-lub zero (suc y) (suc z) 0≤x (s≤s q) = s≤s q
+max-is-lub (suc x) zero (suc z) (s≤s p) 0≤x = s≤s p
+max-is-lub (suc x) (suc y) (suc z) (s≤s p) (s≤s q) = s≤s (max-is-lub x y z p q)
+
+max-zerol : (x : Nat) → max 0 x ≡ x
+max-zerol zero = refl
+max-zerol (suc x) = refl
+
+max-zeror : (x : Nat) → max x 0 ≡ x
+max-zeror zero = refl
+max-zeror (suc x) = refl
 ```
 
 ### Minimum
@@ -312,4 +328,16 @@ min-≤r zero zero = 0≤x
 min-≤r zero (suc y) = 0≤x
 min-≤r (suc x) zero = 0≤x
 min-≤r (suc x) (suc y) = s≤s (min-≤r x y)
+
+min-is-glb : (x y z : Nat) → z ≤ x → z ≤ y → z ≤ min x y
+min-is-glb x y zero 0≤x 0≤x = 0≤x
+min-is-glb (suc x) (suc y) (suc z) (s≤s p) (s≤s q) = s≤s (min-is-glb x y z p q)
+
+min-zerol : (x : Nat) → min 0 x ≡ 0
+min-zerol zero = refl
+min-zerol (suc x) = refl
+
+min-zeror : (x : Nat) → min x 0 ≡ 0
+min-zeror zero = refl
+min-zeror (suc x) = refl
 ```

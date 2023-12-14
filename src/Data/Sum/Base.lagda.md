@@ -13,7 +13,7 @@ open import Data.Dec.Base
 module Data.Sum.Base where
 ```
 
-# Sum Types
+# Sum types
 
 Sum types are one of the fundamental ingredients of type theory. They
 play a dual role to the [[product type]]; if products allow us to state
@@ -39,7 +39,7 @@ private variable
 -->
 
 
-## Universal Properties
+## Universal properties
 
 One of the most important things about sum types is the following property:
 given two functions `A → C` and `B → C`, we can construct a function
@@ -147,12 +147,12 @@ and thus it can be shown they are equivalences:
 from-dec-is-equiv : {A : Type a} → is-equiv (from-dec {A = A})
 from-dec-is-equiv = is-iso→is-equiv (iso to-dec p q) where
   p : _
-  p (inl x) = refl
-  p (inr x) = refl
+  p (inl x)  = refl
+  p (inr ¬x) = refl
 
   q : _
   q (yes x) = refl
-  q (no x) = refl
+  q (no x)  = refl
 ```
 
 

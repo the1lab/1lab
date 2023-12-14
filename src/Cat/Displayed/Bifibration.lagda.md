@@ -43,7 +43,7 @@ private
 -->
 
 
-# Bifibrations
+# Bifibrations {defines="bifibration"}
 
 A [[displayed category]] $\cE \liesover \cB$ is a **bifibration** if is
 it both a [[fibration|cartesian fibration]] and an opfibration. This
@@ -73,7 +73,7 @@ record is-bifibration : Type (o ⊔ ℓ ⊔ o' ⊔ ℓ') where
   module opfibration = Cocartesian-fibration opfibration
 ```
 
-# Bifibrations and Adjoints
+# Bifibrations and adjoints
 
 If $\cE$ is a bifibration, then its opreindexing functors are [[left
 adjoints]] to its reindexing functors.  To show this, it will suffice to
@@ -96,7 +96,7 @@ module _ (bifib : is-bifibration) where
     → cobase-change f ⊣ base-change f
   cobase-change⊣base-change {x} {y} f =
     hom-natural-iso→adjoints $
-      (opfibration→hom-iso opfibration f ni⁻¹) ni∘ fibration→hom-iso fibration f
+      (opfibration→hom-iso opfibration f ni⁻¹) ∘ni fibration→hom-iso fibration f
 ```
 
 In fact, if $\cE \liesover \cB$ is a cartesian fibration where every
@@ -127,7 +127,7 @@ module _ (fib : Cartesian-fibration) where
   left-adjoint-base-change→opfibration L adj =
     cartesian+weak-opfibration→opfibration fib $
     hom-iso→weak-opfibration L λ u →
-      fibration→hom-iso-from fib u ni∘ (adjunct-hom-iso-from (adj u) _ ni⁻¹)
+      fibration→hom-iso-from fib u ∘ni (adjunct-hom-iso-from (adj u) _ ni⁻¹)
 ```
 
 <!--

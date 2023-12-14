@@ -25,7 +25,7 @@ the [[connectedness]] of a space.
 ```agda
 Susp-is-connected : ∀ {ℓ} {A : Type ℓ} n → is-n-connected A n → is-n-connected (Susp A) (suc n)
 Susp-is-connected 0 a-conn = inc N
-Susp-is-connected 1 a-conn = ∥-∥-proj do
+Susp-is-connected 1 a-conn = ∥-∥-proj! do
   pt ← a-conn
   pure $ is-connected∙→is-connected λ where
     N           → inc refl

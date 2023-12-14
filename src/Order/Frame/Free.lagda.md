@@ -1,6 +1,6 @@
 <!--
 ```agda
-{-# OPTIONS --lossy-unification -vtc.decl:5 #-}
+{-# OPTIONS --lossy-unification -vtc.decl:5 -vtactic.hlevel:30 #-}
 open import Algebra.Monoid
 
 open import Cat.Displayed.Univalence.Thin
@@ -20,7 +20,7 @@ open import Order.Frame
 open import Order.Base
 
 import Order.Frame.Reasoning as Frm
-import Order.Reasoning as Poset
+import Order.Reasoning
 ```
 -->
 
@@ -56,8 +56,8 @@ Frame↪SLat .F₁ f .hom = f .hom
 Frame↪SLat .F₁ f .preserves .Monoid-hom.pres-id = f .preserves .is-frame-hom.pres-⊤
 Frame↪SLat .F₁ f .preserves .Monoid-hom.pres-⋆ = f .preserves .is-frame-hom.pres-∩
 
-Frame↪SLat .F-id = Homomorphism-path λ _ → refl
-Frame↪SLat .F-∘ f g = Homomorphism-path λ _ → refl
+Frame↪SLat .F-id = trivial!
+Frame↪SLat .F-∘ f g = trivial!
 ```
 
 The question this module seeks to answer is: is there a way to freely
@@ -76,23 +76,23 @@ propositions], $\Omega$.
 
 ```agda
 Lower-sets-frame : ∀ {ℓ} → Semilattice ℓ → Frame ℓ
-Lower-sets-frame A = Lower-sets A.po .fst , to-frame-on mk↓A where
+Lower-sets-frame A = el! ⌞ Lower-sets A.po ⌟ , to-frame-on mk↓A where
   module A = Semilattice A
-  module DA = Poset (Lower-sets A.po)
+  module DA = Order.Reasoning (Lower-sets A.po)
 
   module fcp = Finitely-complete-poset
   DA-meets : Finitely-complete-poset _ _
   DA-meets .fcp.poset = Lower-sets A.po
   DA-meets .fcp._∩_ x y             = Lower-sets-meets A.po x y .fst
   DA-meets .fcp.has-is-meet {x} {y} = Lower-sets-meets A.po x y .snd
-  DA-meets .fcp.top = Lower-sets-complete A.po absurd .fst
+  DA-meets .fcp.top = Lower-sets-complete A.po (λ x → absurd x) .fst
   DA-meets .fcp.has-is-top {x} =
-    Lower-sets-complete A.po absurd .snd .is-glb.greatest x λ x → absurd x
+    Lower-sets-complete A.po (λ j → absurd j) .snd .is-glb.greatest x λ x → absurd x
   DAm = fc-poset→semilattice DA-meets
-  module DAm = Semilattice DAm
+  module DAm = Semilattice DAm hiding (module HLevel-instance)
 
   mk↓A : make-frame (Lower-set A.po)
-  mk↓A .make-frame.has-is-set  = hlevel!
+  mk↓A .make-frame.has-is-set  = hlevel 2
   mk↓A .make-frame.top         = DAm.top
   mk↓A .make-frame._cap_       = DAm._∩_
   mk↓A .make-frame.cup {I} f   = Lower-sets-cocomplete A.po f .fst
@@ -109,7 +109,7 @@ Lower-sets-frame A = Lower-sets A.po .fst , to-frame-on mk↓A where
     fcp.le→meet DA-meets {y = Lower-sets-cocomplete A.po f .fst} $
       Lower-sets-cocomplete A.po f .snd .is-lub.fam≤lub i
 
-  mk↓A .make-frame.distrib x f = Σ-prop-path! $ funext λ arg →
+  mk↓A .make-frame.distrib x f = ext λ arg →
     Ω-ua (λ { (x , box) → □-map (λ { (i , arg∈fi) → i , x , arg∈fi }) box })
          (□-rec! λ { (i , x , arg∈fi) → x , inc (i , arg∈fi) })
 ```
@@ -158,16 +158,17 @@ performing this construction. Let's abbreviate it:
 
 ```agda
     f-monotone : ⌞ Monotone A.po B.po ⌟
-    f-monotone = f .hom , Meet-semi-lattice .F₁ f .preserves
+    f-monotone .hom x = f # x
+    f-monotone .pres-≤ = Meet-semi-lattice .F₁ f .pres-≤
 ```
 
 The easy part is an appeal to the existing machinery for free
-cocompletions: Any monotone map $A \to B$ extneds to a _cocontinuous_
+cocompletions: Any monotone map $A \to B$ extends to a _cocontinuous_
 map $DA \to B$, because $B$, being a frame, is cocomplete.
 
 ```agda
     mkhom : Frames.Hom ℓ (Lower-sets-frame A) B
-    mkhom .hom = Lan↓₀ A.po B.po B.cocomplete f-monotone
+    mkhom .hom = apply (Lan↓ A.po B.po B.cocomplete f-monotone)
     mkhom .preserves .is-frame-hom.pres-⋃ g =
       Lan↓-cocontinuous A.po B.po B.cocomplete f-monotone g
 ```
@@ -192,11 +193,11 @@ preserves meets, and the third step follows from the infinite
 distributive law in $B$.
 
 ```agda
-    mkhom .preserves .is-frame-hom.pres-∩ (S , s-lower) (T , t-lower) =
-      B.⋃ {I = Σ _ λ a → a ∈ S × a ∈ T} (λ i → f # i .fst)  ≡⟨ lemma ⟩
-      B.⋃ (λ i → f # (i .fst .fst A.∩ i .snd .fst))         ≡⟨ ap B.⋃ (funext λ i → f .preserves .pres-⋆ _ _) ⟩
-      B.⋃ (λ i → f # i .fst .fst B.∩ f # i .snd .fst)       ≡˘⟨ B.⋃-∩-product _ _ ⟩
-      B.⋃ (λ i → f # i .fst) B.∩ B.⋃ (λ i → f # i .fst)     ∎
+    mkhom .preserves .is-frame-hom.pres-∩ S T =
+      B.⋃ {I = Σ _ λ a → a ∈ apply S × a ∈ apply T} (λ i → f # i .fst)  ≡⟨ lemma ⟩
+      B.⋃ (λ i → f # (i .fst .fst A.∩ i .snd .fst))                     ≡⟨ ap B.⋃ (funext λ i → f .preserves .pres-⋆ _ _) ⟩
+      B.⋃ (λ i → f # i .fst .fst B.∩ f # i .snd .fst)                   ≡˘⟨ B.⋃-∩-product _ _ ⟩
+      B.⋃ (λ i → f # i .fst) B.∩ B.⋃ (λ i → f # i .fst)                 ∎
 ```
 
 <details>
@@ -206,8 +207,8 @@ an intersection of two lower sets as a join of their intersection.
 
 ```agda
       where
-        lemma : B.⋃ {I = Σ _ λ a → a ∈ S × a ∈ T} (λ i → f # i .fst)
-              ≡ B.⋃ {I = (Σ _ (_∈ S)) × (Σ _ (_∈ T))}
+        lemma : B.⋃ {I = Σ _ λ a → a ∈ apply S × a ∈ apply T} (λ i → f # i .fst)
+              ≡ B.⋃ {I = (Σ _ (_∈ apply S)) × (Σ _ (_∈ apply T))}
                     (λ i → f # (i .fst .fst A.∩ i .snd .fst))
         lemma = B.≤-antisym
           (B.⋃-universal _ (λ { (i , i∈S , i∈T) →
@@ -215,7 +216,7 @@ an intersection of two lower sets as a join of their intersection.
             f # (i A.∩ i)                                  B.≤⟨ B.⋃-colimiting ((i , i∈S) , i , i∈T) _ ⟩
             B.⋃ (λ i → f # (i .fst .fst A.∩ i .snd .fst))  B.≤∎}))
           (B.⋃-universal _ (λ { ((i , i∈S) , j , i∈T) →
-            B.⋃-colimiting (i A.∩ j , s-lower _ _ A.∩≤l i∈S , t-lower _ _ A.∩≤r i∈T) _
+            B.⋃-colimiting (i A.∩ j , S .pres-≤ A.∩≤l i∈S , T .pres-≤ A.∩≤r i∈T) _
             }))
 ```
 
@@ -226,7 +227,8 @@ map $\widehat{f}$ satisfies $\widehat{f}(\darr x) = f(x)$.
 
 ```agda
     mkcomm : ∀ x → f .hom x ≡ mkhom .hom (↓ A.po x)
-    mkcomm x = sym (Lan↓-commutes A.po B.po B.cocomplete f-monotone x)
+    mkcomm x =
+      sym (Lan↓-commutes A.po B.po B.cocomplete f-monotone x)
 ```
 
 Now we must define the unit map. We've already committed to defining
@@ -245,11 +247,11 @@ $\land$.
     go : Precategory.Hom (Semilattices ℓ) S (Frame↪SLat .F₀ (Lower-sets-frame S))
     go .hom = ↓ (Semilattice.po S)
 
-    go .preserves .pres-id = Σ-prop-path! $ funext λ b →
+    go .preserves .pres-id = ext λ b →
       Ω-ua (λ _ → inc λ j → absurd j)
            (λ _ → inc (sym S.∩-idr))
 
-    go .preserves .pres-⋆ x y = Σ-prop-path! $ funext λ b → Ω-ua
+    go .preserves .pres-⋆ x y = ext λ b → Ω-ua
       (□-rec! {pa = Σ-is-hlevel 1 squash λ _ → squash} λ b≤x∩y →
           inc (S.≤-trans b≤x∩y S.∩≤l)
         , inc (S.≤-trans b≤x∩y S.∩≤r))
@@ -271,12 +273,17 @@ cocontinuous extensions to tie everything up:
   go .commutes {A} {B} f = Homomorphism-path (Mk.mkcomm A B f)
   go .unique {A} {B} {f = f} {g} wit = Homomorphism-path q where
     open Mk A B f
-    p = Lan↓-unique A.po B.po B.cocomplete f-monotone
-      (g .hom , λ x y w → Meet-semi-lattice .F₁ (Frame↪SLat .F₁ g) .preserves x y
-        (le-meet (Lower-sets A.po) w (Lower-sets-meets A.po x y .snd)))
+
+    gᵐ : Monotone (Lower-sets A.po) B.po
+    gᵐ .hom x = g # x
+    gᵐ .pres-≤ {x} {y} w =
+      Meet-semi-lattice .F₁ (Frame↪SLat .F₁ g) .pres-≤ $
+        (le-meet (Lower-sets A.po) w (Lower-sets-meets A.po x y .snd))
+
+    p = Lan↓-unique A.po B.po B.cocomplete f-monotone gᵐ
       (g .preserves .is-frame-hom.pres-⋃)
       λ x → ap (_# x) (sym wit)
 
-    q : ∀ x → Lan↓₀ A.po B.po B.cocomplete f-monotone x ≡ g .hom x
-    q x = ap fst (sym p) $ₚ x
+    q : ∀ x → Lan↓ A.po B.po B.cocomplete f-monotone # x ≡ g .hom x
+    q x = sym p #ₚ x
 ```

@@ -1,7 +1,11 @@
 <!--
 ```agda
+open import 1Lab.Path
 open import 1Lab.Type
 
+open import Data.Dec.Base
+
+open import Meta.Traversable
 open import Meta.Idiom
 open import Meta.Bind
 open import Meta.Alt
@@ -10,8 +14,6 @@ open import Meta.Alt
 
 ```agda
 module Data.Maybe.Base where
-
-open import Prim.Data.Maybe public
 ```
 
 # The Maybe type
@@ -28,35 +30,80 @@ private variable
 Write something informative here
 -->
 
+```agda
+data Maybe {ℓ} (A : Type ℓ) : Type ℓ where
+  nothing : Maybe A
+  just    : A → Maybe A
+
+{-# BUILTIN MAYBE Maybe #-}
+```
 
 ```agda
-map : (A → B) → Maybe A → Maybe B
-map f (just x) = just (f x)
-map f nothing  = nothing
+instance
+  Map-Maybe : Map (eff Maybe)
+  Map-Maybe .map f (just x) = just (f x)
+  Map-Maybe .map f nothing  = nothing
 
-extend : Maybe A → (A → Maybe B) → Maybe B
-extend (just x) k = k x
-extend nothing k  = nothing
+  Idiom-Maybe : Idiom (eff Maybe)
+  Idiom-Maybe .Idiom.Map-idiom = Map-Maybe
+
+  Idiom-Maybe .Idiom.pure  = just
+
+  Idiom-Maybe .Idiom._<*>_ (just f) (just x) = just (f x)
+  Idiom-Maybe .Idiom._<*>_ (just f) nothing  = nothing
+  Idiom-Maybe .Idiom._<*>_ nothing  _        = nothing
+
+  Bind-Maybe : Bind (eff Maybe)
+  Bind-Maybe .Bind.Idiom-bind = Idiom-Maybe
+
+  Bind-Maybe ._>>=_ (just x) f = f x
+  Bind-Maybe ._>>=_ nothing  f = nothing
+
+  Alt-Maybe : Alt (eff Maybe)
+  Alt-Maybe .Alt.fail = nothing
+  Alt-Maybe .Alt._<|>_ (just x) y = just x
+  Alt-Maybe .Alt._<|>_ nothing y = y
+
+  Traversable-Maybe : Traversable (eff Maybe)
+  Traversable-Maybe .Traversable.traverse f nothing  = pure nothing
+  Traversable-Maybe .Traversable.traverse f (just x) = just <$> f x
 
 Maybe-rec : (A → B) → B → Maybe A → B
 Maybe-rec f b (just x) = f x
 Maybe-rec f b nothing = b
 ```
 
+```agda
+from-just : A → Maybe A → A
+from-just def (just x) = x
+from-just def nothing = def
+```
+
 <!--
 ```agda
+is-just : Maybe A → Type
+is-just (just _) = ⊤
+is-just nothing = ⊥
+
+is-nothing : Maybe A → Type
+is-nothing (just _) = ⊥
+is-nothing nothing = ⊤
+
+nothing≠just : {x : A} → ¬ (nothing ≡ just x)
+nothing≠just p = subst is-nothing p tt
+
+just≠nothing : {x : A} → ¬ (just x ≡ nothing)
+just≠nothing p = subst is-just p tt
+
+just-inj : ∀ {x y : A} → just x ≡ just y → x ≡ y
+just-inj {x = x} = ap (from-just x)
+
 instance
-  Map-Maybe : Map (eff Maybe)
-  Map-Maybe .Map._<$>_ = map
-
-  Idiom-Maybe : Idiom (eff Maybe)
-  Idiom-Maybe .Idiom.pure = just
-  Idiom-Maybe .Idiom._<*>_ = λ where
-    (just f) (just x) → just (f x)
-    _ _ → nothing
-
-  Bind-Maybe : Bind (eff Maybe)
-  Bind-Maybe .Bind._>>=_ = extend
+  Discrete-Maybe : ⦃ d : Discrete A ⦄ → Discrete (Maybe A)
+  Discrete-Maybe {x = just x} {just y}   = Dec-map (ap just) just-inj (x ≡? y)
+  Discrete-Maybe {x = just x} {nothing}  = no just≠nothing
+  Discrete-Maybe {x = nothing} {just x}  = no nothing≠just
+  Discrete-Maybe {x = nothing} {nothing} = yes refl
 ```
 -->
 

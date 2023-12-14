@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Displayed.Total
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
@@ -15,20 +16,19 @@ import Order.Reasoning as Poset
 module Order.Instances.Discrete where
 ```
 
-# Discrete Orders
+# Discrete orders
 
 Every set $A$ can be turned into a [[poset]] by defining $x \le y$ to
 be $x = y$.
 
 ```agda
 Disc : ∀ {ℓ} → Set ℓ → Poset ℓ ℓ
-Disc A = to-poset ∣ A ∣ mk-disc where
-  mk-disc : make-poset _ (A .∣_∣)
-  mk-disc .make-poset.rel = _≡_
-  mk-disc .make-poset.id = refl
-  mk-disc .make-poset.thin = A .is-tr _ _
-  mk-disc .make-poset.trans = _∙_
-  mk-disc .make-poset.antisym p _ = p
+Disc A .Poset.Ob = ⌞ A ⌟
+Disc A .Poset._≤_ = _≡_
+Disc A .Poset.≤-thin = A .is-tr _ _
+Disc A .Poset.≤-refl = refl
+Disc A .Poset.≤-trans = _∙_
+Disc A .Poset.≤-antisym p _ = p
 ```
 
 This extends to a functor from $\Sets$ into the category of posets.
@@ -36,31 +36,27 @@ This extends to a functor from $\Sets$ into the category of posets.
 ```agda
 DiscF : ∀ {ℓ} → Functor (Sets ℓ) (Posets ℓ ℓ)
 DiscF .Functor.F₀ = Disc
-DiscF .Functor.F₁ f = total-hom f (λ _ _ p → ap f p)
-DiscF .Functor.F-id = total-hom-path _ refl refl
-DiscF .Functor.F-∘ f g = total-hom-path _ refl refl
+DiscF .Functor.F₁ f .hom = f
+DiscF .Functor.F₁ f .pres-≤ = ap f
+DiscF .Functor.F-id = trivial!
+DiscF .Functor.F-∘ f g = trivial!
 ```
 
 Furthermore, this functor is a [[left adjoint]] to the forgetful functor
 into $\Sets$.
 
 ```agda
-DiscF⊣Forget : ∀ {ℓ} → DiscF {ℓ} ⊣ πᶠ _
+DiscF⊣Forget : ∀ {ℓ} → DiscF {ℓ} ⊣ Forget-poset
 DiscF⊣Forget ._⊣_.unit ._=>_.η A x = x
 DiscF⊣Forget ._⊣_.unit ._=>_.is-natural _ _ _ = refl
-DiscF⊣Forget ._⊣_.counit ._=>_.η P =
-  total-hom (λ x → x) (λ _ _ → Poset.path→≤ P)
-DiscF⊣Forget ._⊣_.counit ._=>_.is-natural P Q f =
-  total-hom-path _ refl
-    (funext λ _ → funext λ _ → funext λ _ → Poset.≤-thin Q _ _)
-DiscF⊣Forget ._⊣_.zig {A = A} =
-  total-hom-path _ refl $
-  funext λ x → funext λ y → funext λ p →
-  J (λ y p → transport (λ i → p (~ i) ≡ y) refl ≡ p) (transport-refl _) p
+DiscF⊣Forget ._⊣_.counit ._=>_.η P .hom x = x
+DiscF⊣Forget ._⊣_.counit ._=>_.η P .pres-≤ = Poset.path→≤ P
+DiscF⊣Forget ._⊣_.counit ._=>_.is-natural P Q f = trivial!
+DiscF⊣Forget ._⊣_.zig {A = A} = trivial!
 DiscF⊣Forget ._⊣_.zag = refl
 ```
 
-## Least Upper Bounds
+## Least upper bounds
 
 If $f : I \to A$ has a [[least upper bound]] in the discrete poset on
 $A$, then $f$ must be a constant family.

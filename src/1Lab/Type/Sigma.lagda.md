@@ -6,7 +6,6 @@ open import 1Lab.Path
 open import 1Lab.Type
 ```
 -->
-
 ```agda
 module 1Lab.Type.Sigma where
 ```
@@ -15,7 +14,7 @@ module 1Lab.Type.Sigma where
 ```
 private variable
   ℓ ℓ₁ : Level
-  A A' X X' : Type ℓ
+  A A' X X' Y Y' Z Z' : Type ℓ
   B P Q : A → Type ℓ
 ```
 -->
@@ -252,25 +251,28 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
 
 <!--
 ```agda
+Σ-map
+  : (f : A → A')
+  → ({x : A} → P x → Q (f x)) → Σ _ P → Σ _ Q
+Σ-map f g (x , y) = f x , g y
+
 Σ-map₂ : ({x : A} → P x → Q x) → Σ _ P → Σ _ Q
 Σ-map₂ f (x , y) = (x , f y)
 
 ×-map : (A → A') → (X → X') → A × X → A' × X'
 ×-map f g (x , y) = (f x , g y)
+
+×-map₁ : (A → A') → A × X → A' × X
+×-map₁ f = ×-map f id
+
+×-map₂ : (X → X') → A × X → A × X'
+×-map₂ f = ×-map id f
 ```
 -->
 
 <!--
 ```agda
-Σ-pathp-dep
-  : ∀ {ℓ ℓ'} {A : I → Type ℓ} {B : ∀ i → A i → Type ℓ'}
-  → {x : Σ _ (B i0)} {y : Σ _ (B i1)}
-  → (p : PathP A (x .fst) (y .fst))
-  → PathP (λ i → B i (p i)) (x .snd) (y .snd)
-  → PathP (λ i → Σ (A i) (B i)) x y
-Σ-pathp-dep p q i = p i , q i
-
-_,ₚ_ = Σ-pathp-dep
+_,ₚ_ = Σ-pathp
 infixr 4 _,ₚ_
 
 Σ-prop-pathp
@@ -315,5 +317,15 @@ infixr 4 _,ₚ_
   .is-iso.inv x → _ , x
   .is-iso.rinv x → ap (λ e → subst B e x) (is-contr→is-set c _ _ _ _) ∙ transport-refl x
   .is-iso.linv x → Σ-path (c .paths _) (transport⁻transport (ap B (sym (c .paths (x .fst)))) (x .snd))
+```
+-->
+
+<!--
+```agda
+curry : ((X × Y) → Z) → X → Y → Z
+curry f a b = f (a , b)
+
+uncurry : (X → Y → Z) → (X × Y) → Z
+uncurry f (a , b) = f a b
 ```
 -->

@@ -12,6 +12,8 @@ open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
 open import Data.List
+
+import Meta.Idiom
 ```
 -->
 
@@ -29,6 +31,10 @@ open Monoid-on
 open Functor
 open _=>_
 open _⊣_
+
+private
+  map : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → (A → B) → List A → List B
+  map = Meta.Idiom.map
 ```
 -->
 
@@ -127,14 +133,6 @@ We call this functor `Free`{.Agda}, since it is a [[left adjoint]] to the
 a `set`{.Agda ident=Set} into a monoid in the most efficient way.
 
 ```agda
-map-id : ∀ {ℓ} {A : Type ℓ} (xs : List A) → map (λ x → x) xs ≡ xs
-map-id [] = refl
-map-id (x ∷ xs) = ap (x ∷_) (map-id xs)
-
-map-++ : ∀ {ℓ} {x y : Type ℓ} (f : x → y) xs ys → map f (xs ++ ys) ≡ map f xs ++ map f ys
-map-++ f [] ys = refl
-map-++ f (x ∷ xs) ys = ap (f x ∷_) (map-++ f xs ys)
-
 Free : ∀ {ℓ} → Functor (Sets ℓ) (Monoids ℓ)
 Free .F₀ A = el! (List ∣ A ∣) , List-is-monoid (A .is-tr)
 ```
@@ -145,8 +143,8 @@ concatenation, identity and composition by induction on the list.
 
 ```agda
 Free .F₁ f = total-hom (map f) record { pres-id = refl ; pres-⋆  = map-++ f }
-Free .F-id = Homomorphism-path map-id
-Free .F-∘ f g = Homomorphism-path map-∘ where
+Free .F-id = ext map-id
+Free .F-∘ f g = ext map-∘ where
   map-∘ : ∀ xs → map (λ x → f (g x)) xs ≡ map f (map g xs)
   map-∘ [] = refl
   map-∘ (x ∷ xs) = ap (f (g x) ∷_) (map-∘ xs)
@@ -209,9 +207,9 @@ Free⊣Forget .unit .η _ x = x ∷ []
 Free⊣Forget .unit .is-natural x y f = refl
 Free⊣Forget .counit .η M = total-hom (fold _) record { pres-id = refl ; pres-⋆ = fold-++ }
 Free⊣Forget .counit .is-natural x y th =
-  Homomorphism-path $ fold-natural (th .hom) (th .preserves)
+  ext $ fold-natural (th .hom) (th .preserves)
 Free⊣Forget .zig {A = A} =
-  Homomorphism-path $ fold-pure {X = A}
+  ext $ fold-pure {X = A}
 Free⊣Forget .zag {B = B} i x = B .snd .idr {x = x} i
 ```
 
@@ -263,10 +261,10 @@ properties of the underlying map.
 
 ```agda
     from∘to : is-right-inverse from comparison.₁
-    from∘to x = Algebra-hom-path _ refl
+    from∘to x = trivial!
 
     to∘from : is-left-inverse from comparison.₁
-    to∘from x = Homomorphism-path λ _ → refl
+    to∘from x = trivial!
 ```
 
 Showing that the functor is essentially surjective is significantly more

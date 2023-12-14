@@ -96,11 +96,11 @@ property (rather than data).
   functor→displayed .id' = E.id , B.elimr P.F-id ∙ B.introl refl
   functor→displayed ._∘'_ (f , φ) (g , ψ) = f E.∘ g ,
     ap₂ B._∘_ refl (P.F-∘ f g) ∙ B.pulll φ ∙ B.pullr ψ ∙ B.assoc _ _ _
-  functor→displayed .idr' f' = Σ-pathp-dep (E.idr _) $
+  functor→displayed .idr' f' = Σ-pathp (E.idr _) $
     is-set→squarep (λ _ _ → hlevel 2) _ _ _ _
-  functor→displayed .idl' f' = Σ-pathp-dep (E.idl _) $
+  functor→displayed .idl' f' = Σ-pathp (E.idl _) $
     is-set→squarep (λ _ _ → hlevel 2) _ _ _ _
-  functor→displayed .assoc' f' g' h' = Σ-pathp-dep (E.assoc _ _ _) $
+  functor→displayed .assoc' f' g' h' = Σ-pathp (E.assoc _ _ _) $
     is-set→squarep (λ _ _ → hlevel 2) _ _ _ _
 ```
 

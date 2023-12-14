@@ -142,33 +142,30 @@ computations using naturality. It's not very enlightening.
 </summary>
 
 ```agda
-    Nerve-is-lan .σ {M = M} α .η d .is-natural x y f =
-      funext λ g →
-        M.₁ (g D.∘ F.₁ f) .η y (α .η y .η y C.id)          ≡⟨ M.F-∘ g (F .F₁ f) ηₚ _ $ₚ _ ⟩
-        M.₁ g .η y (M .F₁ (F.₁ f) .η y (α .η y .η y C.id)) ≡˘⟨ ap (M.F₁ g .η y) (α .is-natural _ _ _ ηₚ _ $ₚ _) ⟩
-        M.₁ g .η y (α .η x .η y ⌜ f C.∘ C.id ⌝)            ≡⟨ ap! C.id-comm ⟩
-        M.₁ g .η y (α .η x .η y (C.id C.∘ f))              ≡⟨ ap (M.₁ g .η y) (α .η _ .is-natural _ _ _ $ₚ _) ⟩
-        M.₁ g .η y (M.₀ (F.₀ x) .F₁ f (α .η x .η x C.id))  ≡⟨ M.₁ g .is-natural _ _ _ $ₚ _ ⟩
-        M.₀ d .F₁ f (M.₁ g .η x (α .η x .η x C.id))        ∎
+    Nerve-is-lan .σ {M = M} α .η d .is-natural x y f = funext λ g →
+      M.₁ (g D.∘ F.₁ f) .η y (α .η y .η y C.id)          ≡⟨ M.F-∘ g (F .F₁ f) ηₚ _ $ₚ _ ⟩
+      M.₁ g .η y (M .F₁ (F.₁ f) .η y (α .η y .η y C.id)) ≡˘⟨ ap (M.F₁ g .η y) (α .is-natural _ _ _ ηₚ _ $ₚ _) ⟩
+      M.₁ g .η y (α .η x .η y ⌜ f C.∘ C.id ⌝)            ≡⟨ ap! C.id-comm ⟩
+      M.₁ g .η y (α .η x .η y (C.id C.∘ f))              ≡⟨ ap (M.₁ g .η y) (α .η _ .is-natural _ _ _ $ₚ _) ⟩
+      M.₁ g .η y (M.₀ (F.₀ x) .F₁ f (α .η x .η x C.id))  ≡⟨ M.₁ g .is-natural _ _ _ $ₚ _ ⟩
+      M.₀ d .F₁ f (M.₁ g .η x (α .η x .η x C.id))        ∎
       where module M = Functor M
 
-    Nerve-is-lan .σ {M = M} α .is-natural x y f =
-      Nat-path λ z → funext λ g → M .F-∘ f g ηₚ _ $ₚ _
+    Nerve-is-lan .σ {M = M} α .is-natural x y f = ext λ z g →
+      M .F-∘ f g ηₚ _ $ₚ _
 
-    Nerve-is-lan .σ-comm {M = M} {α = α} =
-      Nat-path λ x → Nat-path λ y → funext λ f →
-        M.₁ (F.₁ f) .η y (α .η y .η y C.id) ≡˘⟨ α .is-natural _ _ _ ηₚ _ $ₚ _ ⟩
-        α .η x .η y (f C.∘ C.id)            ≡⟨ ap (α .η x .η y) (C.idr _) ⟩
-        α .η x .η y f                       ∎
+    Nerve-is-lan .σ-comm {M = M} {α = α} = ext λ x y f →
+      M.₁ (F.₁ f) .η y (α .η y .η y C.id) ≡˘⟨ α .is-natural _ _ _ ηₚ _ $ₚ _ ⟩
+      α .η x .η y (f C.∘ C.id)            ≡⟨ ap (α .η x .η y) (C.idr _) ⟩
+      α .η x .η y f                       ∎
       where module M = Functor M
 
-    Nerve-is-lan .σ-uniq {M = M} {α = α} {σ' = σ'} p =
-      Nat-path λ x → Nat-path λ y → funext λ f →
-        M.₁ f .η y (α .η y .η y C.id)          ≡⟨ ap (M.₁ f .η y) (p ηₚ _ ηₚ _ $ₚ _) ⟩
-        M.₁ f .η y (σ' .η _ .η y ⌜ F.₁ C.id ⌝) ≡⟨ ap! F.F-id ⟩
-        M.₁ f .η y (σ' .η _ .η y D.id)         ≡˘⟨ σ' .is-natural _ _ _ ηₚ _ $ₚ _ ⟩
-        σ' .η x .η y (f D.∘ D.id)              ≡⟨ ap (σ' .η x .η y) (D.idr _) ⟩
-        σ' .η x .η y f                         ∎
+    Nerve-is-lan .σ-uniq {M = M} {α = α} {σ' = σ'} p = ext λ x y f →
+      M.₁ f .η y (α .η y .η y C.id)          ≡⟨ ap (M.₁ f .η y) (p ηₚ _ ηₚ _ $ₚ _) ⟩
+      M.₁ f .η y (σ' .η _ .η y ⌜ F.₁ C.id ⌝) ≡⟨ ap! F.F-id ⟩
+      M.₁ f .η y (σ' .η _ .η y D.id)         ≡˘⟨ σ' .is-natural _ _ _ ηₚ _ $ₚ _ ⟩
+      σ' .η x .η y (f D.∘ D.id)              ≡⟨ ap (σ' .η x .η y) (D.idr _) ⟩
+      σ' .η x .η y f                         ∎
       where module M = Functor M
 ```
 </summary>

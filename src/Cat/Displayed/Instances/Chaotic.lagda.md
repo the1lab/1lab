@@ -28,7 +28,7 @@ open Displayed
 open Total-hom
 ```
 
-# The Chaotic Bifibration
+# The chaotic bifibration
 
 Let $\cB$ and $\cJ$ be precategories. We define the
 **chaotic bifibration** of $\cJ$ over $\cB$ to be the [[displayed
@@ -149,7 +149,7 @@ Chaotic-bifibration .is-bifibration.fibration = Chaotic-fibration
 Chaotic-bifibration .is-bifibration.opfibration = Chaotic-opfibration
 ```
 
-## Fibre Categories
+## Fibre categories
 
 Unsurprisingly, the [[fibre categories]] of the chaotic bifibration are
 isomorphic to $\cJ$.
@@ -166,7 +166,7 @@ ChaoticFib-is-iso x .is-precat-iso.has-is-ff = id-equiv
 ChaoticFib-is-iso x .is-precat-iso.has-is-iso = id-equiv
 ```
 
-## Total Category
+## Total category
 
 The [[total category]] of the chaotic bifibration is isomorphic to the
 product of $\cB$ and $\cJ$.

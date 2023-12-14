@@ -8,7 +8,7 @@ open import Cat.Prelude
 module Cat.Strict where
 ```
 
-# Strict Precategories {defines="strict-category strict-categories"}
+# Strict precategories {defines="strict-category strict-categories"}
 
 We call a precategory **strict** if its type of objects is a `Set`{.Agda
 ident=is-set}.

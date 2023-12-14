@@ -17,7 +17,7 @@ import Cat.Reasoning as Cr
 module Cat.Regular where
 ```
 
-# Regular categories
+# Regular categories {defines="regular-category"}
 
 A **regular category** is a category with [[pullback]]-stable [[image
 factorisations]]. To define regular categories, we use the theory of

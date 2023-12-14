@@ -382,7 +382,7 @@ module _ {f' : Hom[ f ] x' y'} {g' : Hom[ g ] x' y'} (p : f ≡ g) where abstrac
   shiftr q i = from-pathp (λ j → q (i ∧ ~ j)) (~ i)
 ```
 
-## Path Actions
+## Path actions
 
 Due to the plethora of `PathP`{.Agda}, we can no longer perform `ap`{.Agda} as easily.
 This is especially true when we have a `PathP`{.Agda} as well as a path between
@@ -414,7 +414,7 @@ module _ {f' : Hom[ f ] y' z'} {g' : Hom[ g ] x' y'} {p : f ∘ g ≡ a} where a
 ```
 
 
-## Generalized Category Laws
+## Generalized category laws
 
 In the definition of displayed categories, the identity and associativity
 laws are defined over `idl`{.Agda}, `idr`{.Agda}, and `assoc`{.Agda}. However,
@@ -439,7 +439,7 @@ assoc[] {a = a} {b = b} {c =  c} {a' = a'} {b' = b'} {c' = c'} {p = p} {q = q} =
   hom[ q ] ((a' ∘' b') ∘' c')                       ∎
 ```
 
-## Identity Morphisms
+## Identity morphisms
 
 These are the displayed counterparts to the
 [identity morphism combinators] for categories.

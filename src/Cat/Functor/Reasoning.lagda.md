@@ -30,7 +30,7 @@ private variable
 -->
 
 
-# Reasoning Combinators for Functors
+# Reasoning combinators for functors
 
 The combinators exposed in [category reasoning] abstract out a lot of common
 algebraic manipulations, and make proofs much more concise. However, once functors
@@ -40,7 +40,7 @@ This module is meant to be imported qualified.
 
 [category reasoning]: Cat.Reasoning.html
 
-## Identity Morphisms
+## Identity morphisms
 
 ```agda
 module _ (a≡id : a ≡ 𝒞.id) where

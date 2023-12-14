@@ -19,7 +19,7 @@ import Data.Nat.Base as Nat
 module Data.Fin.Base where
 ```
 
-# Finite Sets {defines=standard-finite-set}
+# Finite sets {defines=standard-finite-set}
 
 The type `Fin`{.Agda} is the type of size `n`.  These are defined as an
 inductive family over `Nat`{.Agda}, such that `Fin 0` has 0 elements,
@@ -55,9 +55,9 @@ the indices of `Fin`{.Agda}, rather than on the path.
 
 ```agda
 cast : ∀ {m n} → m ≡ n → Fin m → Fin n
-cast {suc m} {zero} p fzero = absurd (Nat.zero≠suc (sym p))
+cast {suc m} {zero} p fzero = absurd (Nat.suc≠zero p)
 cast {suc m} {suc n} p fzero = fzero
-cast {suc m} {zero} p (fsuc i) = absurd (Nat.zero≠suc (sym p))
+cast {suc m} {zero} p (fsuc i) = absurd (Nat.suc≠zero p)
 cast {suc m} {suc n} p (fsuc i) = fsuc (cast (Nat.suc-inj p) i)
 ```
 
@@ -144,16 +144,14 @@ Finally, we pull everything together to show that `Fin`{.Agda} is
 is discrete), but it's useful nonetheless!
 
 ```agda
-Discreteᵢ-Fin : ∀ {n} → Discreteᵢ (Fin n)
-Discreteᵢ-Fin fzero fzero = yes reflᵢ
-Discreteᵢ-Fin fzero (fsuc j) = no λ ()
-Discreteᵢ-Fin (fsuc i) fzero = no λ ()
-Discreteᵢ-Fin (fsuc i) (fsuc j) with Discreteᵢ-Fin i j
-... | yes reflᵢ = yes reflᵢ
-... | no ¬i≡j = no λ { reflᵢ → ¬i≡j reflᵢ }
-
-Discrete-Fin : ∀ {n} → Discrete (Fin n)
-Discrete-Fin = Discreteᵢ→discrete Discreteᵢ-Fin
+instance
+  Discrete-Fin : ∀ {n} → Discrete (Fin n)
+  Discrete-Fin {x = fzero}  {fzero} = yes refl
+  Discrete-Fin {x = fzero}  {fsuc j} = no fzero≠fsuc
+  Discrete-Fin {x = fsuc i} {fzero} = no (fzero≠fsuc ∘ sym)
+  Discrete-Fin {x = fsuc i} {fsuc j} with Discrete-Fin {x = i} {j}
+  ... | yes p   = yes (ap fsuc p)
+  ... | no ¬i≡j = no λ si=sj → ¬i≡j (fsuc-inj si=sj)
 ```
 
 [[Hedberg's theorem]] implies that `Fin`{.Agda} is a [[set]], i.e., it only
@@ -259,6 +257,24 @@ weaken-≤ : ∀ {m n} → m Nat.≤ n → Fin m → Fin n
 weaken-≤ {suc m} {suc n} m≤n fzero = fzero
 weaken-≤ {suc m} {suc n} (Nat.s≤s m≤n) (fsuc i) = fsuc (weaken-≤ m≤n i)
 
+shift-≤ : ∀ {m n} → m Nat.≤ n → Fin m → Fin n
+shift-≤ {n = suc zero} (Nat.s≤s 0≤x) i = i
+shift-≤ {n = suc (suc n)} (Nat.s≤s 0≤x) i = fsuc (shift-≤ (Nat.s≤s 0≤x) i)
+shift-≤ {n = n} (Nat.s≤s (Nat.s≤s m≤n)) fzero = weaken (shift-≤ (Nat.s≤s m≤n) fzero)
+shift-≤ {n = n} (Nat.s≤s (Nat.s≤s m≤n)) (fsuc i) = fsuc (shift-≤ (Nat.s≤s m≤n) i)
+
+split-+ : ∀ {m n} → Fin (m + n) → Fin m ⊎ Fin n
+split-+ {m = zero} i = inr i
+split-+ {m = suc m} fzero = inl fzero
+split-+ {m = suc m} (fsuc i) = ⊎-map fsuc id (split-+ i)
+
+avoid : ∀ {n} (i j : Fin (suc n)) → (¬ i ≡ j) → Fin n
+avoid {n = zero} fzero fzero i≠j = absurd (i≠j refl)
+avoid {n = suc n} fzero fzero i≠j = absurd (i≠j refl)
+avoid {n = suc n} fzero (fsuc j) i≠j = j
+avoid {n = suc n} (fsuc i) fzero i≠j = fzero
+avoid {n = suc n} (fsuc i) (fsuc j) i≠j = fsuc (avoid i j (i≠j ∘ ap fsuc))
+
 fshift : ∀ {n} (m : Nat) → Fin n → Fin (m + n)
 fshift zero i = i
 fshift (suc m) i = fsuc (fshift m i)
@@ -266,4 +282,23 @@ fshift (suc m) i = fsuc (fshift m i)
 opposite : ∀ {n} → Fin n → Fin n
 opposite {n = suc n} fzero = from-nat n
 opposite {n = suc n} (fsuc i) = weaken (opposite i)
+```
+
+## Vector operations
+
+```agda
+_[_≔_]
+  : ∀ {ℓ} {A : Type ℓ} {n}
+  → (Fin n → A) → Fin (suc n) → A
+  → Fin (suc n) → A
+_[_≔_] {n = n} ρ fzero a fzero = a
+_[_≔_] {n = n} ρ fzero a (fsuc j) = ρ j
+_[_≔_] {n = suc n} ρ (fsuc i) a fzero = ρ fzero
+_[_≔_] {n = suc n} ρ (fsuc i) a (fsuc j) = ((ρ ∘ fsuc) [ i ≔ a ]) j
+
+delete
+  : ∀ {ℓ} {A : Type ℓ} {n}
+  → (Fin (suc n) → A) → Fin (suc n)
+  → Fin n → A
+delete ρ i j = ρ (skip i j)
 ```

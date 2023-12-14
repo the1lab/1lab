@@ -45,8 +45,8 @@ Sliced F X .F₁ sh = sh' where
   sh' : /-Hom _ _
   sh' .map = F .F₁ (sh .map)
   sh' .commutes = sym (F .F-∘ _ _) ∙ ap (F .F₁) (sh .commutes)
-Sliced F X .F-id = /-Hom-path (F .F-id)
-Sliced F X .F-∘ f g = /-Hom-path (F .F-∘ _ _)
+Sliced F X .F-id = ext (F .F-id)
+Sliced F X .F-∘ f g = ext (F .F-∘ _ _)
 ```
 
 # Faithful, fully faithful
@@ -71,7 +71,7 @@ the sliced functors are also [[fully faithful]].
 
 ```agda
   Sliced-faithful : is-faithful F → is-faithful (Sliced F X)
-  Sliced-faithful faith p = /-Hom-path (faith (ap map p))
+  Sliced-faithful faith p = ext (faith (ap map p))
 
   Sliced-ff : is-fully-faithful F → is-fully-faithful (Sliced F X)
   Sliced-ff eqv = is-iso→is-equiv isom where
@@ -81,8 +81,8 @@ the sliced functors are also [[fully faithful]].
       ; commutes = ap fst $ is-contr→is-prop (eqv .is-eqv _)
         (_ , F .F-∘ _ _ ∙ ap₂ D._∘_ refl (equiv→counit eqv _) ∙ sh .commutes) (_ , refl)
       }
-    isom .is-iso.rinv x = /-Hom-path (equiv→counit eqv _)
-    isom .is-iso.linv x = /-Hom-path (equiv→unit eqv _)
+    isom .is-iso.rinv x = ext (equiv→counit eqv _)
+    isom .is-iso.linv x = ext (equiv→unit eqv _)
 ```
 
 # Left exactness
@@ -149,13 +149,15 @@ Sliced-adjoints {C = C} {D} {L} {R} adj {X} = adj' where
   module D = Cat.Reasoning D
 
   adj' : (Σf (adj .counit .η _) F∘ Sliced L (R .F₀ X)) ⊣ Sliced R X
-  adj' .unit .η x .map = adj.unit.η _
-  adj' .unit .is-natural x y f = /-Hom-path (adj.unit.is-natural _ _ _)
-  adj' .counit .η x .map = adj.counit.ε _
-  adj' .counit .η x .commutes = sym (adj.counit.is-natural _ _ _)
-  adj' .counit .is-natural x y f = /-Hom-path (adj.counit.is-natural _ _ _)
-  adj' .zig = /-Hom-path adj.zig
-  adj' .zag = /-Hom-path adj.zag
+  adj' .unit .η x .map         = adj.unit.η _
+  adj' .unit .is-natural x y f = ext (adj.unit.is-natural _ _ _)
+
+  adj' .counit .η x .map         = adj.counit.ε _
+  adj' .counit .η x .commutes    = sym (adj.counit.is-natural _ _ _)
+  adj' .counit .is-natural x y f = ext (adj.counit.is-natural _ _ _)
+
+  adj' .zig = ext adj.zig
+  adj' .zag = ext adj.zag
 ```
 
 80% of the adjunction transfers as-is (I didn't quite count, but the

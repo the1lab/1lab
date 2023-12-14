@@ -85,7 +85,7 @@ eso→pre-faithful
   → is-eso H → (γ δ : F => G)
   → (∀ b → γ .η (H .F₀ b) ≡ δ .η (H .F₀ b)) → γ ≡ δ
 eso→pre-faithful {A = A} {B = B} {C = C} H {F} {G} h-eso γ δ p =
-  Nat-path λ b → ∥-∥-proj {ap = C.Hom-set _ _ _ _} do
+  Nat-path λ b → ∥-∥-proj (C.Hom-set _ _ _ _) do
   (b' , m) ← h-eso b
   ∥_∥.inc $
     γ .η b                                      ≡⟨ C.intror (F-map-iso F m .invl) ⟩
@@ -190,7 +190,7 @@ this file in Agda and poke around the proof.
 ```agda
       lemma : (a : A.Ob) (f : H.₀ a B.≅ b)
             → γ.η a ≡ G.₁ (f .from) C.∘ g C.∘ F.₁ (f .to)
-      lemma a f = ∥-∥-proj {ap = C.Hom-set _ _ _ _} do
+      lemma a f = ∥-∥-proj (C.Hom-set _ _ _ _) do
         (k , p)   ← H-full (h.from B.∘ B.to f)
         (k⁻¹ , q) ← H-full (B.from f B.∘ h.to)
         ∥_∥.inc $
@@ -215,7 +215,7 @@ over $b$ is a proposition.
     T-prop : ∀ b → is-prop (T b)
     T-prop b (g , coh) (g' , coh') =
       Σ-prop-path (λ x → Π-is-hlevel² 1 λ _ _ → C.Hom-set _ _ _ _) $
-        ∥-∥-proj {ap = C.Hom-set _ _ _ _} do
+        ∥-∥-proj (C.Hom-set _ _ _ _) do
         (a₀ , h) ← H-eso b
         pure $ C.iso→epic (F-map-iso F h) _ _
           (C.iso→monic (F-map-iso G (h B.Iso⁻¹)) _ _
@@ -235,7 +235,7 @@ $(a,h)$ pair.
       ∥_∥.inc (Mk.g b a₀ h , Mk.lemma b a₀ h)
 
     mkT : ∀ b → T b
-    mkT b = ∥-∥-proj {ap = T-prop b} (mkT' b (H-eso b))
+    mkT b = ∥-∥-proj (T-prop b) (mkT' b (H-eso b))
 ```
 
 Another calculation shows that, since $H$ is full, given any pair of
@@ -259,7 +259,7 @@ the transformation we're defining, too.
         module h = B._≅_ h
 
       naturality : _
-      naturality = ∥-∥-proj {ap = C.Hom-set _ _ _ _} do
+      naturality = ∥-∥-proj (C.Hom-set _ _ _ _) do
         (k , p) ← H-full (h'.from B.∘ f B.∘ h.to)
         pure $ C.pullr (C.pullr (F.weave (sym
                   (B.pushl p ∙ ap₂ B._∘_ refl (B.cancelr h.invl)))))
@@ -280,8 +280,8 @@ $- \circ H$ is faithful, and now we've shown it is full, it is fully faithful.
     δ : F => G
     δ .η b = mkT b .fst
     δ .is-natural b b' f = ∥-∥-elim₂
-      {P = λ α β → ∥-∥-proj {ap = T-prop b'} (mkT' b' α) .fst C.∘ F.₁ f
-                 ≡ G.₁ f C.∘ ∥-∥-proj {ap = T-prop b} (mkT' b β) .fst}
+      {P = λ α β → ∥-∥-proj (T-prop b') (mkT' b' α) .fst C.∘ F.₁ f
+                 ≡ G.₁ f C.∘ ∥-∥-proj (T-prop b) (mkT' b β) .fst}
       (λ _ _ → C.Hom-set _ _ _ _)
       (λ (a' , h') (a , h) → naturality f a a' h h') (H-eso b') (H-eso b)
 
@@ -289,7 +289,7 @@ $- \circ H$ is faithful, and now we've shown it is full, it is fully faithful.
   full {x = x} {y = y} γ = pure (δ _ _ γ , Nat-path p) where
     p : ∀ b → δ _ _ γ .η (H.₀ b) ≡ γ .η b
     p b = subst
-      (λ e → ∥-∥-proj {ap = T-prop _ _ γ (H.₀ b)} (mkT' _ _ γ (H.₀ b) e) .fst
+      (λ e → ∥-∥-proj (T-prop _ _ γ (H.₀ b)) (mkT' _ _ γ (H.₀ b) e) .fst
            ≡ γ .η b)
       (squash (inc (b , B.id-iso)) (H-eso (H.₀ b)))
       (C.eliml (y .F-id) ∙ C.elimr (x .F-id))
@@ -376,7 +376,7 @@ candidate over it.
 <!--
 ```agda
     summon : ∀ {b} → ∥ Essential-fibre H b ∥ → is-contr (Obs b)
-    summon f = ∥-∥-proj {ap = is-contr-is-prop} do
+    summon f = ∥-∥-proj is-contr-is-prop do
       f ← f
       pure $ contr (obj' f) (Obs-is-prop f)
 
@@ -487,7 +487,7 @@ This proof _really_ isn't commented. I'm sorry.
         (λ _ → compat-prop f) (sym (Homs-prop' f _ _ _ _ h')))
 
     Homs-contr : ∀ {b b'} (f : B.Hom b b') → is-contr (Homs f)
-    Homs-contr f = ∥-∥-proj (Homs-contr' f)
+    Homs-contr f = ∥-∥-proj! (Homs-contr' f)
 
     G₁ : ∀ {b b'} → B.Hom b b' → C.Hom (G₀ b) (G₀ b')
     G₁ f = Homs-contr f .centre .fst
@@ -551,7 +551,7 @@ a set --- a proposition --- these choices don't matter, so we can use
 essential surjectivity of $H$.
 
 ```agda
-    G .F-∘ {x} {y} {z} f g = ∥-∥-proj do
+    G .F-∘ {x} {y} {z} f g = ∥-∥-proj! do
       (ax , hx) ← H-eso x
       (ay , hy) ← H-eso y
       (az , hz) ← H-eso z

@@ -13,7 +13,6 @@ data SearchTerm = SearchTerm
   { idIdent   :: Text
   , idAnchor  :: Text
   , idType    :: Maybe Text
-  , idDesc    :: Maybe Text
   , idDefines :: Maybe [Text]
   }
   deriving (Eq, Show, Ord, Generic, ToJSON, FromJSON)

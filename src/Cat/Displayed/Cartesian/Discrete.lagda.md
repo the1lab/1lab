@@ -77,7 +77,7 @@ module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} (E : Displayed B o' ℓ') where
         → is-contr (Σ[ x' ∈ E.Ob[ x ] ] E.Hom[ f ] x' y')
 ```
 
-## Discrete fibrations are Cartesian
+## Discrete fibrations are cartesian
 
 To prove that discrete fibrations deserve the name discrete
 _fibrations_, we prove that any discrete fibration is a [[Cartesian
@@ -172,7 +172,7 @@ are unique, we have $f = g$.
     where open Discrete-fibration disc
 ```
 
-## Morphisms in Discrete Fibrations
+## Morphisms in discrete fibrations
 
 If $\cE$ is a discrete fibration, then the only vertical morphisms
 are identities. This follows directly from lifts being contractible.
@@ -204,7 +204,7 @@ that every vertical morphism in a discrete fibration is invertible.
       x''≡x' = ap fst (discrete→vertical-id disc (x' , f'))
 ```
 
-## Discrete Fibrations are Presheaves
+## Discrete fibrations are presheaves
 
 As noted earlier, a discrete fibration over $\cB$ encodes the same
 data as a presheaf on $\cB$. First, let us show that we can construct

@@ -21,7 +21,7 @@ private variable
 ```
 -->
 
-# Solver for Categories
+# Solver for categories
 
 This module is split pretty cleanly into two halves: the first half
 implements an algorithm for reducing, in a systematic way, problems
@@ -148,7 +148,7 @@ module Reflection where
 
   cat-solver : Term → SimpleSolver
   cat-solver cat .SimpleSolver.dont-reduce = dont-reduce
-  cat-solver cat .SimpleSolver.build-expr tm = returnTC $ build-expr tm
+  cat-solver cat .SimpleSolver.build-expr tm = pure $ build-expr tm
   cat-solver cat .SimpleSolver.invoke-solver = “solve” cat
   cat-solver cat .SimpleSolver.invoke-normaliser = “nf” cat
 

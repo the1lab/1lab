@@ -7,7 +7,7 @@ open import 1Lab.Prelude
   renaming ( _↪_ to _↣_
            ; _∘_ to _⊙_ -- \o.
            )
-  hiding (id)
+  hiding (id ; map)
   public
 
 open import Data.Set.Truncation public
@@ -20,3 +20,5 @@ open import Cat.Univalent
         ; Hom-transport ; Hom-pathp-refll ; Hom-pathp-reflr
         ; module Univalent )
   public
+
+open import Cat.Morphism.Extensionality public

@@ -14,7 +14,7 @@ open import Cat.Prelude
 module Cat.Abelian.Functor where
 ```
 
-# Ab-enriched Functors
+# Ab-enriched functors
 
 Since [$\Ab$-categories] are additionally equipped with the structure of
 [[abelian groups]] on their $\hom$-sets, it's natural that we ask that

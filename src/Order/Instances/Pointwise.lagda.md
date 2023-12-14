@@ -16,23 +16,27 @@ module Order.Instances.Pointwise where
 
 # The pointwise ordering
 
-If $(B, \le)$ is a [[partially ordered set]], then so is $A \to B$, for
-any type $A$ which we might choose! There might be other ways of making
-$A \to B$ into a poset, of course, but the canonical way we're talking
-about here is the **pointwise ordering** on $A \to B$, where $f \le g$
-iff $f(x) \le g(x)$ for all $x$.
+The product of a family of [[partially ordered sets]] $\prod_{i : I} P_i$ is a
+poset, for any index type $I$ which we might choose! There might be other ways
+of making $\prod_{i : I} P_i$ into a poset, of course, but the canonical way
+we're talking about here is the **pointwise ordering** on $\prod_{i : I} P_i$,
+where $f \le g$ iff $f(x) \le g(x)$ for all $x$.
+
+[partially ordered sets]: Order.Base.html
 
 ```agda
-Pointwise : ∀ {ℓ ℓₐ ℓᵣ} → Type ℓ → Poset ℓₐ ℓᵣ → Poset (ℓ ⊔ ℓₐ) (ℓ ⊔ ℓᵣ)
-Pointwise A B = to-poset (A → ⌞ B ⌟) mk-pwise where
-  open Pr B
-  mk-pwise : make-poset _ _
-  mk-pwise .make-poset.rel f g         = ∀ x → f x ≤ g x
-  mk-pwise .make-poset.thin            = hlevel 1
-  mk-pwise .make-poset.id x            = ≤-refl
-  mk-pwise .make-poset.trans f<g g<h x = ≤-trans (f<g x) (g<h x)
-  mk-pwise .make-poset.antisym f<g g<f = funext λ x → ≤-antisym (f<g x) (g<f x)
+Pointwise : ∀ {ℓ ℓₐ ℓᵣ} (I : Type ℓ) (P : I → Poset ℓₐ ℓᵣ)
+  → Poset (ℓ ⊔ ℓₐ) (ℓ ⊔ ℓᵣ)
+Pointwise I P = po where
+  open module PrP {i : I} = Pr (P i)
 
+  po : Poset _ _
+  po .Poset.Ob = (i : I) → ⌞ P i ⌟
+  po .Poset._≤_ f g = ∀ x → f x ≤ g x
+  po .Poset.≤-thin = hlevel!
+  po .Poset.≤-refl x = ≤-refl
+  po .Poset.≤-trans f≤g g≤h x = ≤-trans (f≤g x) (g≤h x)
+  po .Poset.≤-antisym f≤g g≤f = funext λ x → ≤-antisym (f≤g x) (g≤f x)
 ```
 
 A very important particular case of the pointwise ordering is the poset
@@ -40,7 +44,7 @@ of subsets of a fixed type, which has underlying set $A \to \Omega$.
 
 ```agda
 Subsets : ∀ {ℓ} → Type ℓ → Poset ℓ ℓ
-Subsets A = Pointwise A Props
+Subsets A = Pointwise A (λ _ → Props)
 ```
 
 Another important case: when your domain is not an arbitrary type but
@@ -48,13 +52,18 @@ another poset, you might want to consider the full subposet of $P \to Q$
 consisting of the monotone maps:
 
 ```agda
-Monotone : ∀ {ℓₒ ℓᵣ ℓₒ' ℓᵣ'}
+Poset[_,_] : ∀ {ℓₒ ℓᵣ ℓₒ' ℓᵣ'}
          → Poset ℓₒ ℓᵣ
          → Poset ℓₒ' ℓᵣ'
          → Poset (ℓₒ ⊔ ℓᵣ ⊔ ℓₒ' ⊔ ℓᵣ') (ℓₒ ⊔ ℓᵣ')
-Monotone P Q =
-  Full-subposet (Pointwise ⌞ P ⌟ Q) λ f →
-    el! (∀ x y → x P.≤ y → f x Q.≤ f y)
-  where module P = Pr P
-        module Q = Pr Q
+Poset[_,_] P Q = po where
+  open Pr Q
+
+  po : Poset _ _
+  po .Poset.Ob = Monotone P Q
+  po .Poset._≤_ f g = ∀ (x : ⌞ P ⌟) → f # x ≤ g # x
+  po .Poset.≤-thin = hlevel!
+  po .Poset.≤-refl _ = ≤-refl
+  po .Poset.≤-trans f≤g g≤h x = ≤-trans (f≤g x) (g≤h x)
+  po .Poset.≤-antisym f≤g g≤f = ext (λ x → ≤-antisym (f≤g x) (g≤f x))
 ```

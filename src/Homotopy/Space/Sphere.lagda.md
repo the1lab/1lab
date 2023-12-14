@@ -11,7 +11,7 @@ open import Homotopy.Space.Circle
 module Homotopy.Space.Sphere where
 ```
 
-# The -1 and 0 Spheres
+# The -1 and 0 spheres
 
 In classical topology, the _topological space_ $S^n$ is typically
 defined as the subspace of $\bb{R}^{n+1}$ consisting of all points

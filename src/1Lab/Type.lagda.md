@@ -29,7 +29,7 @@ level-of : {ℓ : Level} → Type ℓ → Level
 level-of {ℓ} _ = ℓ
 ```
 
-## Built-in Types
+## Built-in types
 
 We re-export the following very important types:
 
@@ -44,7 +44,7 @@ Additionally, we define the empty type:
 ```agda
 data ⊥ : Type where
 
-absurd : ∀ {ℓ} {A : Type ℓ} → ⊥ → A
+absurd : ∀ {ℓ} {A : Type ℓ} → .⊥ → A
 absurd ()
 
 ¬_ : ∀ {ℓ} → Type ℓ → Type ℓ
@@ -101,11 +101,15 @@ id : ∀ {ℓ} {A : Type ℓ} → A → A
 id x = x
 {-# INLINE id #-}
 
-infixr -1 _$_ _$ₛ_
+infixr -1 _$_ _$ᵢ_ _$ₛ_
 
 _$_ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : A → Type ℓ₂} → ((x : A) → B x) → ((x : A) → B x)
 f $ x = f x
 {-# INLINE _$_ #-}
+
+_$ᵢ_ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : .A → Type ℓ₂} → (.(x : A) → B x) → (.(x : A) → B x)
+f $ᵢ x = f x
+{-# INLINE _$ᵢ_ #-}
 
 _$ₛ_ : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} {B : A → SSet ℓ₂} → ((x : A) → B x) → ((x : A) → B x)
 f $ₛ x = f x
@@ -118,5 +122,14 @@ open import Prim.Literals public
 
 auto : ∀ {ℓ} {A : Type ℓ} → ⦃ A ⦄ → A
 auto ⦃ a ⦄ = a
+
+case_of_ : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → A → (A → B) → B
+case x of f = f x
+
+case_return_of_ : ∀ {ℓ ℓ'} {A : Type ℓ} (x : A) (B : A → Type ℓ') (f : (x : A) → B x) → B x
+case x return P of f = f x
+
+{-# INLINE case_of_        #-}
+{-# INLINE case_return_of_ #-}
 ```
 -->

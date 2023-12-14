@@ -85,7 +85,7 @@ predicate→subgroup {G = G} H p = record { map = it ; monic = ism } where
   ism = Homomorphism-monic it (λ p → Σ-prop-path (λ _ → hlevel!) p)
 ```
 
-# Kernels and Images
+# Kernels and images
 
 To a group homomorphism $f : A \to B$ we can associate two canonical
 subgroups, one of $A$ and one of $B$: $f$'s [[**image factorisation**]],
@@ -266,7 +266,7 @@ elide the zero composite $e' \circ 0$.
           (p : e' Groups.∘ Zero.zero→ ∅ᴳ ≡ e' Groups.∘ Kerf.kernel)
       → ∀ {x : ⌞ B ⌟} → ∥ fibre (apply f) x ∥ → _
     elim {F = F} {e' = e'} p {x} =
-      ∥-∥-rec-set ((e' #_) ⊙ fst) const (F .snd .Group-on.has-is-set) where abstract
+      ∥-∥-rec-set (F .snd .Group-on.has-is-set) ((e' #_) ⊙ fst) const where abstract
       module e' = is-group-hom (e' .preserves)
       module F = Group-on (F .snd)
 ```
@@ -580,8 +580,8 @@ predicate $\rm{inc}(x) = \rm{inc}(0)$ recovers the subgroup $H$; And
     from .hom (x , p) = x , quot (subst (_∈ H) (sym idr ∙ ap (_ ⋆_) (sym inv-unit)) p)
     from .preserves .is-group-hom.pres-⋆ _ _ = Σ-prop-path (λ _ → squash _ _) refl
 
-    il = Homomorphism-path λ x → Σ-prop-path (λ _ → H _ .is-tr) refl
-    ir = Homomorphism-path λ x → Σ-prop-path (λ _ → squash _ _) refl
+    il = ext λ x → Σ-prop-path (λ _ → H _ .is-tr) refl
+    ir = ext λ x → Σ-prop-path (λ _ → squash _ _) refl
 ```
 
 To show that these are equal as subgroups of $G$, we must show that the

@@ -303,6 +303,10 @@ is-prop→is-hlevel-suc {n = suc n} aprop =
 is-contr→is-hlevel : ∀ {ℓ} {A : Type ℓ} n → is-contr A → is-hlevel A n
 is-contr→is-hlevel zero c = c
 is-contr→is-hlevel (suc n) c = is-prop→is-hlevel-suc (is-contr→is-prop c)
+
+is-set→is-hlevel+2
+  : ∀ {ℓ} {A : Type ℓ} {n : Nat} → is-set A → is-hlevel A (2 + n)
+is-set→is-hlevel+2 aset x y = is-prop→is-hlevel-suc (aset x y)
 ```
 -->
 
@@ -407,7 +411,7 @@ is-hlevel-is-hlevel-suc k n = is-prop→is-hlevel-suc (is-hlevel-is-prop n)
 ```
 -->
 
-# Dependent h-Levels
+# Dependent h-levels
 
 In cubical type theory, it's natural to consider a notion of _dependent_
 h-level for a _family_ of types, where, rather than having (e.g.)

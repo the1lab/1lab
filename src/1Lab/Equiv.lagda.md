@@ -605,7 +605,7 @@ is-empty→≃⊥ : ∀ {ℓ} {A : Type ℓ} → ¬ A → A ≃ ⊥
 is-empty→≃⊥ ¬a = _ , ¬-is-equiv ¬a
 ```
 
-# Equivalence Reasoning
+# Equivalence reasoning
 
 To make composing equivalences more intuitive, we implement operators to
 do equivalence reasoning in the same style as equational reasoning.
@@ -697,7 +697,7 @@ infixr 2 _≃⟨⟩_ _≃⟨_⟩_
 infix  3 _≃∎
 ```
 
-# Propositional Extensionality
+# Propositional extensionality
 
 The following observation is not very complex, but it is incredibly
 useful: Equivalence of propositions is the same as biimplication.

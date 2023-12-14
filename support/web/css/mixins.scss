@@ -50,3 +50,8 @@
   }
 
 }
+
+@mixin monospaced {
+  font-family: 'Julia Mono', 'Iosevka', 'Fantasque Sans Mono', 'Roboto Mono', monospace;
+  font-weight: 400;
+}

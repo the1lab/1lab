@@ -88,7 +88,7 @@ function≃ dom rng = Iso→Equiv the-iso where
 ```
 
 
-## Dependent Funext
+## Dependent funext
 
 When the domain and codomain are simple types (rather than a higher
 shape), paths in function spaces are characterised by `funext`{.Agda}.
@@ -197,14 +197,28 @@ funext-square
   → Square p q s r
 funext-square p i j a = p a i j
 
-is-contr→points
+Π-⊤-eqv
+  : ∀ {ℓ ℓ'} {B : Lift ℓ ⊤ → Type ℓ'}
+  → (∀ a → B a) ≃ B _
+Π-⊤-eqv .fst b = b _
+Π-⊤-eqv .snd = is-iso→is-equiv λ where
+  .is-iso.inv b _ → b
+  .is-iso.rinv b → refl
+  .is-iso.linv b → refl
+
+Π-contr-eqv
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : A → Type ℓ'}
   → (c : is-contr A)
-  → (∀ x → B x) ≃ B (c .centre)
-is-contr→points {A = A} {B} c = Iso→Equiv λ where
-  .fst              f     → f _
-  .snd .is-iso.inv  x _   → subst B (c .paths _) x
-  .snd .is-iso.rinv x     → ap (λ e → subst B e x) (is-contr→is-set c _ _ _ _) ∙ transport-refl x
-  .snd .is-iso.linv f i z → transp (λ j → B (c .paths z (i ∨ j))) i (f (c .paths z i))
+  → (∀ a → B a) ≃ B (c .centre)
+Π-contr-eqv c .fst b = b (c .centre)
+Π-contr-eqv {B = B} c .snd = is-iso→is-equiv λ where
+  .is-iso.inv b a → subst B (c .paths a) b
+  .is-iso.rinv b → ap (λ e → subst B e b) (is-contr→is-set c _ _ _ _) ∙ transport-refl b
+  .is-iso.linv b → funext λ a → from-pathp (ap b (c .paths a))
+
+flip
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {C : A → B → Type ℓ''}
+  → (∀ a b → C a b) → (∀ b a → C a b)
+flip f b a = f a b
 ```
 -->

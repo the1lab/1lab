@@ -346,7 +346,7 @@ directly:
 ```agda
   pb .unitor-r {B = B} = to-natural-iso ni where
     module B = Cr B
-    ni : make-natural-iso _ _
+    ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
     ni .make-natural-iso.eta x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
     ni .make-natural-iso.inv x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
     ni .make-natural-iso.eta∘inv x = Nat-path λ _ → B.idl _
@@ -356,7 +356,7 @@ directly:
 
   pb .unitor-l {B = B} = to-natural-iso ni where
     module B = Cr B
-    ni : make-natural-iso _ _
+    ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
     ni .make-natural-iso.eta x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
     ni .make-natural-iso.inv x = NT (λ _ → B.id) λ _ _ _ → B.id-comm-sym
     ni .make-natural-iso.eta∘inv x = Nat-path λ _ → B.idl _
@@ -365,7 +365,7 @@ directly:
 
   pb .associator {A} {B} {C} {D} = to-natural-iso ni where
     module D = Cr D
-    ni : make-natural-iso _ _
+    ni : make-natural-iso {D = Cat[ _ , _ ]} _ _
     ni .make-natural-iso.eta x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
     ni .make-natural-iso.inv x = NT (λ _ → D.id) λ _ _ _ → D.id-comm-sym
     ni .make-natural-iso.eta∘inv x = Nat-path λ _ → D.idl _

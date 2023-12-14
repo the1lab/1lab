@@ -18,7 +18,7 @@ private variable
 ```
 -->
 
-# Set Coequalisers
+# Set coequalisers
 
 In their most general form, colimits can be pictured as taking disjoint
 unions and then "gluing together" some parts. The "gluing together" part
@@ -246,24 +246,23 @@ Coeq-rec₂ {f = f} {g} {f'} {g'} cset ci r1 r2 (glue x i) (glue y j) =
 
 Coeq-rec₂ {f = f} {g} {f'} {g'} cset ci r1 r2 (glue x i) (squash y z p q j k) =
   is-hlevel-suc 2 cset
-    (map (glue x i) y) (map (glue x i) z)
-    (λ j → map (glue x i) (p j))
-    (λ j → map (glue x i) (q j))
+    (go (glue x i) y) (go (glue x i) z)
+    (λ j → go (glue x i) (p j))
+    (λ j → go (glue x i) (q j))
     (λ i j → exp i j) (λ i j → exp i j)
     i j k
   where
-    map = Coeq-rec₂ cset ci r1 r2
+    go = Coeq-rec₂ cset ci r1 r2
     exp : I → I → _
     exp l m = cset
-      (map (glue x i) y) (map (glue x i) z)
-      (λ j → map (glue x i) (p j))
-      (λ j → map (glue x i) (q j))
+      (go (glue x i) y) (go (glue x i) z)
+      (λ j → go (glue x i) (p j))
+      (λ j → go (glue x i) (q j))
       l m
 
 Coeq-rec₂ cset ci r1 r2 (squash x y p q i j) z =
-  cset (map x z) (map y z) (λ j → map (p j) z) (λ j → map (q j) z) i j
-  where
-    map = Coeq-rec₂ cset ci r1 r2
+  cset (go x z) (go y z) (λ j → go (p j) z) (λ j → go (q j) z) i j
+  where go = Coeq-rec₂ cset ci r1 r2
 
 instance
   H-Level-coeq : ∀ {f g : A → B} {n} → H-Level (Coeq f g) (2 + n)
@@ -271,7 +270,7 @@ instance
 ```
 -->
 
-# Quotients
+# Quotients {defines=quotient}
 
 With dependent sums, we can recover quotients as a special case of
 coequalisers. Observe that, by taking the total space of a relation $R :
@@ -411,11 +410,10 @@ Quot-op₂ Rr Sr op resp =
 
 Discrete-quotient
   : ∀ {A : Type ℓ} (R : Congruence A ℓ')
-  → Discrete A
   → (∀ x y → Dec (Congruence.relation R x y))
   → Discrete (Congruence.quotient R)
-Discrete-quotient cong adisc rdec =
-  Coeq-elim-prop₂ (λ x y → hlevel 1) go where
+Discrete-quotient cong rdec =
+  Coeq-elim-prop₂ {C = λ x y → Dec (x ≡ y)} (λ x y → hlevel 1) go _ _ where
   go : ∀ x y → Dec (inc x ≡ inc y)
   go x y with rdec x y
   ... | yes xRy = yes (quot xRy)

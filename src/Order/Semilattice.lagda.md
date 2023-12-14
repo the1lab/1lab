@@ -15,7 +15,7 @@ open import Order.Base
 
 import Cat.Reasoning
 
-import Order.Reasoning as Poset
+import Order.Reasoning
 ```
 -->
 
@@ -65,6 +65,7 @@ record Semilattice-on {ℓ} (A : Type ℓ) : Type ℓ where
     _∩_ : A → A → A
     has-is-semilattice : is-semilattice top _∩_
   open is-semilattice has-is-semilattice public
+  infixr 25 _∩_
 ```
 
 <!--
@@ -111,7 +112,7 @@ Semilattice-structure ℓ =
 ```agda
   SLat↪Mon : ∀ x → Semilattice-on x ↣ Monoid-on x
   SLat↪Mon x .fst = Semilattice-on.to-monoid
-  SLat↪Mon x .snd a (S , p) (T , q) = Σ-pathp {A = Semilattice-on x}
+  SLat↪Mon x .snd a (S , p) (T , q) = Σ-pathp {A = λ _ → Semilattice-on x}
     (λ { i .Semilattice-on.top → (p ∙ sym q) i .Monoid-on.identity
        ; i .Semilattice-on._∩_ → (p ∙ sym q) i .Monoid-on._⋆_
        ; i .Semilattice-on.has-is-semilattice → r i
@@ -204,14 +205,14 @@ posets.
 
 ```agda
 Meet-semi-lattice : ∀ {ℓ} → Functor (Semilattices ℓ) (Posets ℓ ℓ)
-Meet-semi-lattice .F₀ X = X .fst , po where
-  open Poset-on
-  open is-partial-order
+Meet-semi-lattice .F₀ X = po where
+  open Poset
   module X = Semilattice-on (X .snd)
-  po : Poset-on _ ⌞ X ⌟
+  po : Poset _ _
+  po .Ob = ⌞ X ⌟
   po ._≤_ x y = x ≡ x X.∩ y
-  po .has-is-poset .≤-thin = hlevel 1
-  po .has-is-poset .≤-refl = sym X.idempotent
+  po .≤-thin = hlevel 1
+  po .≤-refl = sym X.idempotent
 ```
 
 Proving that our now-familiar semilattice-induced order _is_ a partial
@@ -221,13 +222,13 @@ antisymmetry: it is only for reflexivity, where $x \le x$ directly
 translates to $x = x \land x$.
 
 ```agda
-  po .has-is-poset .≤-trans {x} {y} {z} x=x∧y y=y∧z =
+  po .≤-trans {x} {y} {z} x=x∧y y=y∧z =
     x                 ≡⟨ x=x∧y ⟩
     x X.∩ ⌜ y ⌝       ≡⟨ ap! y=y∧z ⟩
     x X.∩ (y X.∩ z)   ≡⟨ X.associative ⟩
     ⌜ x X.∩ y ⌝ X.∩ z ≡˘⟨ ap¡ x=x∧y ⟩
     x X.∩ z           ∎
-  po .has-is-poset .≤-antisym {x} {y} x=x∧y y=y∧x =
+  po .≤-antisym {x} {y} x=x∧y y=y∧x =
     x       ≡⟨ x=x∧y ⟩
     x X.∩ y ≡⟨ X.commutative ⟩
     y X.∩ x ≡˘⟨ y=y∧x ⟩
@@ -239,9 +240,9 @@ semilattice homomorphism is a monotone map under the induced ordering.
 
 ```agda
 Meet-semi-lattice .F₁ f .hom = f .hom
-Meet-semi-lattice .F₁ f .preserves x y p = ap (f .hom) p ∙ f .preserves .Monoid-hom.pres-⋆ _ _
-Meet-semi-lattice .F-id    = Homomorphism-path λ _ → refl
-Meet-semi-lattice .F-∘ f g = Homomorphism-path λ _ → refl
+Meet-semi-lattice .F₁ f .pres-≤ p = ap (f .hom) p ∙ f .preserves .Monoid-hom.pres-⋆ _ _
+Meet-semi-lattice .F-id    = trivial!
+Meet-semi-lattice .F-∘ f g = trivial!
 ```
 
 ## The interface
@@ -265,7 +266,7 @@ for free, a bunch of combinators for handling big meet expressions.
 module Semilattice {ℓ} (A : Semilattice ℓ) where
   po : Poset _ _
   po = Meet-semi-lattice .F₀ A
-  open Poset po public
+  open Order.Reasoning po public
 
   private module X = Semilattice-on (A .snd) renaming
             ( associative to ∩-assoc

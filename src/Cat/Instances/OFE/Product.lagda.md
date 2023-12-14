@@ -83,10 +83,9 @@ OFE-Product A B .has-is-product .⟨_,_⟩ f g .hom x = f # x , g # x
 OFE-Product A B .has-is-product .⟨_,_⟩ f g .preserves .pres-≈ p =
   f .preserves .pres-≈ p , g .preserves .pres-≈ p
 
-OFE-Product A B .has-is-product .π₁∘factor = Homomorphism-path λ x → refl
-OFE-Product A B .has-is-product .π₂∘factor = Homomorphism-path λ x → refl
-OFE-Product A B .has-is-product .unique o p q = Homomorphism-path λ x →
-  ap₂ _,_ (p #ₚ x) (q #ₚ x)
+OFE-Product A B .has-is-product .π₁∘factor = trivial!
+OFE-Product A B .has-is-product .π₂∘factor = trivial!
+OFE-Product A B .has-is-product .unique o p q = ext λ x → p #ₚ x , q #ₚ x
 ```
 
 <!--
@@ -182,7 +181,7 @@ OFE-Indexed-product F .π i .preserves .pres-≈ α =
 OFE-Indexed-product F .has-is-ip .tuple f .hom x i = f i # x
 OFE-Indexed-product F .has-is-ip .tuple f .preserves .pres-≈ wit =
   lift $ inc λ i → f i .preserves .pres-≈ wit
-OFE-Indexed-product F .has-is-ip .commute = Homomorphism-path λ x → refl
+OFE-Indexed-product F .has-is-ip .commute = trivial!
 OFE-Indexed-product F .has-is-ip .unique f prf =
-  Homomorphism-path λ x → funext λ y → prf y #ₚ x
+  ext λ x y → prf y #ₚ x
 ```

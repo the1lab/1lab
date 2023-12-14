@@ -129,7 +129,7 @@ As noted earlier, limits and colimits are pointwise Kan extensions.
   colimit→pointwise colim x = よ-reverses-colimits x colim
 ```
 
-## Computing Pointwise Extensions
+## Computing pointwise extensions
 
 One useful fact about pointwise left Kan extensions (resp. right) is
 that they can be computed via colimits (resp. limits). We will focus on
@@ -415,7 +415,7 @@ words, the extension we constructed is pointwise.
       (よ-reverses-colimits d)
 ```
 
-## All Pointwise Extensions are Computed via (Co)limits
+## All pointwise extensions are computed via (co)limits
 
 As we've seen earlier, we can compute the extension of $F : \cC \to \cD$
 along $p : \cC \to \cC'$ when $\cD$ has enough colimits, and that this
@@ -508,7 +508,7 @@ the usual Yoneda-like argument.
         pointwise-↓cocone d α .η c' C'.id
       inv .is-natural x y f = funext λ α →
         pointwise.σ-uniq y {σ' = pointwise-↓cocone x α ∘nt (_=>_.op (よ₁ D f) ◂ L)}
-          (Nat-path λ c → funext λ g → D.pushr (sym (pointwise.σ-comm x ηₚ _ $ₚ _))) ηₚ c' $ₚ C'.id
+          (ext λ c g → D.pushr (sym (pointwise.σ-comm x ηₚ _ $ₚ _))) ηₚ c' $ₚ C'.id
 ```
 
 <details>
@@ -519,7 +519,7 @@ _pointwise_, and remember that we're working with a Kan extension.
 
 ```agda
       invl : Hom-into-inj (↓cocone c') ∘nt inv ≡ idnt
-      invl = Nat-path λ d → funext λ α → Nat-path λ p↓c' →
+      invl = ext λ d α p↓c' →
         pointwise-↓cocone d α .η _ C'.id D.∘ L .Functor.F₁ (p↓c' .map) D.∘ eta .η _ ≡⟨ D.pulll (pointwise.σ d (represent-↓cocone d α) .is-natural _ _ _ $ₚ _) ⟩
         pointwise-↓cocone d α .η _ ⌜ C'.id C'.∘ p↓c' .map ⌝ D.∘ eta .η _            ≡⟨ ap! (C'.idl _) ⟩
         pointwise-↓cocone d α .η _ (p↓c' .map) D.∘ eta .η (x p↓c')                  ≡⟨ pointwise.σ-comm d ηₚ _ $ₚ p↓c' .map ⟩
@@ -536,7 +536,7 @@ _pointwise_, and remember that we're working with a Kan extension.
       invr : inv ∘nt Hom-into-inj (↓cocone c') ≡ idnt
       invr = Nat-path λ d → funext λ α →
         pointwise.σ-uniq d {σ' = vaguely-yoneda α}
-          (Nat-path λ c → funext λ f → D.assoc _ _ _) ηₚ c' $ₚ C'.id
+          (ext λ c f → D.assoc _ _ _) ηₚ c' $ₚ C'.id
         ∙ D.elimr (L .F-id)
 ```
 </details>

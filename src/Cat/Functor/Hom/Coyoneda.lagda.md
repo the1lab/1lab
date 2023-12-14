@@ -28,7 +28,7 @@ open _=>_
 ```
 -->
 
-## The Coyoneda Lemma
+## The Coyoneda lemma
 
 The Coyoneda lemma is, like its dual, a statement about presheaves.  It
 states that "every presheaf is a colimit of representables", which, in
@@ -76,8 +76,7 @@ $px : P(X)$. Then, to construct the injection map, we can just use the
     colim .ψ x .η y f = P.F₁ f (x .section)
     colim .ψ x .is-natural y z f =
       funext (λ g → happly (P.F-∘ f g) (x .section))
-    colim .commutes {x = x} {y = y} f =
-      Nat-path λ z → funext λ g →
+    colim .commutes {x = x} {y = y} f = ext λ z g →
       P.F₁ (f .hom ∘ g) (y .section)      ≡⟨ happly (P.F-∘ g (f .hom)) (y .section) ⟩
       P.F₁ g (P.F₁ (f .hom) (y .section)) ≡⟨ ap (P.F₁ g) (f .commute) ⟩
       P.F₁ g (x .section)                 ∎
@@ -111,7 +110,7 @@ of $K$. The tricky bit of the proof here is that we need to use
 `induce`{.Agda} to regard `f` as a morphism in the category of elements.
 
 ```agda
-    colim .factors {o} eps comm = Nat-path λ x → funext λ f →
+    colim .factors {o} eps comm = ext λ x f →
       eps (elem x (P.F₁ f (o .section))) .η x id ≡˘⟨ (λ i → comm (induce f (o .section)) i .η x id) ⟩
       eps o .η x (f ∘ id)                        ≡⟨ ap (eps o .η x) (idr f) ⟩
       eps o .η x f ∎
@@ -121,7 +120,7 @@ Finally, uniqueness: This just follows by the commuting conditions on
 `α`.
 
 ```agda
-    colim .unique eps comm α p = Nat-path λ x → funext λ px →
+    colim .unique eps comm α p = ext λ x px →
        α .η x px               ≡˘⟨ ap (α .η x) (happly P.F-id px) ⟩
        α .η x (P.F₁ id px)     ≡⟨ happly (p _ ηₚ x) id ⟩
        eps (elem x px) .η x id ∎
@@ -235,7 +234,7 @@ private module _ where private
     → f ≡ g
   よ-cancelr sep =
     fully-faithful→faithful {F = よ} よ-is-fully-faithful $
-      Representables-generate-presheaf λ h → Nat-path λ x → funext λ a →
+      Representables-generate-presheaf λ h → ext λ x a →
         sep (h .η x a)
 ```
 

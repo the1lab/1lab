@@ -63,11 +63,11 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
     → is-prop (Σ[ g ∈ x C.≅ y ] (F-map-iso F g ≡ f))
   faithful→iso-fibre-prop F faithful f (g , p) (g' , q) =
     Σ-prop-path (λ _ → D.≅-is-set _ _) $
-    C.≅-pathp refl refl (faithful (ap D.to (p ∙ sym q)))
+    ext (faithful (ap D.to (p ∙ sym q)))
 ```
 -->
 
-## Fully Faithful Functors {defines="fully-faithful-functor fully-faithful ff"}
+## Fully faithful functors {defines="fully-faithful-functor fully-faithful ff"}
 
 A functor is **fully faithful** (abbreviated **ff**) when its action on
 hom-sets is an equivalence. Since Hom-sets are sets, it suffices for the
@@ -171,7 +171,7 @@ the domain category to serve as an inverse for $f$:
     im' .inverses .Cm.Inverses.invr = invr
 ```
 
-## Essential Fibres {defines="essential-fibre"}
+## Essential fibres {defines="essential-fibre"}
 
 The **essential fibre** of a functor $F : C \to D$ over an object $y :
 D$ is the space of objects of $C$ which $F$ takes, up to isomorphism, to
@@ -214,12 +214,12 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} where
   is-ff→F-map-iso-is-equiv {F = F} ff = is-iso→is-equiv isom where
     isom : is-iso _
     isom .is-iso.inv    = is-ff→essentially-injective {F = F} ff
-    isom .is-iso.rinv x = D.≅-pathp refl refl (equiv→counit ff _)
-    isom .is-iso.linv x = C.≅-pathp refl refl (equiv→unit ff _)
+    isom .is-iso.rinv x = ext (equiv→counit ff _)
+    isom .is-iso.linv x = ext (equiv→unit ff _)
 ```
 -->
 
-## Pseudomonic Functors {defines="pseudomonic pseudomonic-functor"}
+## Pseudomonic functors {defines="pseudomonic pseudomonic-functor"}
 
 A functor is **pseudomonic** if it is faithful and full on isomorphisms.
 Pseudomonic functors are arguably the correct notion of subcategory, as
@@ -298,10 +298,10 @@ essentially injective.
   ff→pseudomonic {F} ff .faithful = fully-faithful→faithful {F = F} ff
   ff→pseudomonic {F} ff .isos-full f =
     inc (is-ff→essentially-injective {F = F} ff f ,
-         D.≅-pathp refl refl (equiv→counit ff (D.to f)))
+         ext (equiv→counit ff (D.to f)))
 ```
 
-## Equivalence on Objects Functors
+## Equivalence on objects functors
 
 A functor $F : \cC \to \cD$ is an **equivalence on objects** if its action
 on objects is an equivalence.

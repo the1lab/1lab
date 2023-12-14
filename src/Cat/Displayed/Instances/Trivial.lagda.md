@@ -27,7 +27,7 @@ open Total-hom
 ```
 -->
 
-# The Trivial Bifibration
+# The trivial bifibration
 
 Any category $\ca{C}$ can be regarded as being displayed over the
 [[terminal category]] $\top$.

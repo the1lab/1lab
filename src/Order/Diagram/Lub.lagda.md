@@ -64,7 +64,7 @@ private unquoteDecl eqv = declare-record-iso eqv (quote is-lub)
 is-lub-is-prop
   : ∀ {ℓᵢ} {I : Type ℓᵢ} {F : I → Ob} {lub : Ob}
   → is-prop (is-lub F lub)
-is-lub-is-prop = Iso→is-hlevel 1 eqv (hlevel 1)
+is-lub-is-prop = Iso→is-hlevel 1 eqv hlevel!
 
 instance
   H-Level-is-lub
@@ -181,7 +181,7 @@ const-inhabited-fam→lub {I = I} {F = F} is-const =
       const-inhabited-fam→is-lub (λ j → is-const j i) (inc i)
 ```
 
-## Joins
+## Joins {defines="join"}
 
 In the binary case, a least upper bound is called a **join**. A short
 computation shows that being a join is _precisely_ being the lub of a
@@ -225,7 +225,7 @@ instance
   H-Level-is-join
     : ∀ {a b lub : Ob} {n}
     → H-Level (is-join a b lub) (suc n)
-  H-Level-is-join = prop-instance $ Iso→is-hlevel 1 eqv' (hlevel 1)
+  H-Level-is-join = prop-instance $ Iso→is-hlevel 1 eqv' hlevel!
 
 join-unique
   : ∀ {a b x y}
@@ -317,17 +317,17 @@ record Bottom : Type (o ⊔ ℓ) where
   ¡ : ∀ {x} → bot ≤ x
   ¡ = has-bottom _
 
-is-bottom→is-lub : ∀ {lub} → is-bottom lub → is-lub absurd lub
+is-bottom→is-lub : ∀ {lub} {f : ⊥ → _} → is-bottom lub → is-lub f lub
 is-bottom→is-lub is-bot .least x _ = is-bot x
 
-is-lub→is-bottom : ∀ {lub} → is-lub absurd lub → is-bottom lub
+is-lub→is-bottom : ∀ {lub} {f : ⊥ → _} → is-lub f lub → is-bottom lub
 is-lub→is-bottom lub x = lub .least x λ ()
 ```
 
 <!--
 ```agda
 is-bottom-is-prop : ∀ x → is-prop (is-bottom x)
-is-bottom-is-prop _ = hlevel 1
+is-bottom-is-prop _ = hlevel!
 
 bottom-unique : ∀ {x y} → is-bottom x → is-bottom y → x ≡ y
 bottom-unique p q = ≤-antisym (p _) (q _)
@@ -346,18 +346,18 @@ instance
     → H-Level Bottom (suc n)
   H-Level-Bottom = prop-instance Bottom-is-prop
 
-Bottom→Lub : Bottom → Lub absurd
+Bottom→Lub : ∀ {f : ⊥ → _} → Bottom → Lub f
 Bottom→Lub bottom .Lub.lub = Bottom.bot bottom
 Bottom→Lub bottom .Lub.has-lub = is-bottom→is-lub (Bottom.has-bottom bottom)
 
-Lub→Bottom : Lub absurd → Bottom
+Lub→Bottom : ∀ {f : ⊥ → _} → Lub f → Bottom
 Lub→Bottom lub .Bottom.bot = Lub.lub lub
 Lub→Bottom lub .Bottom.has-bottom = is-lub→is-bottom (Lub.has-lub lub)
 
-is-bottom≃is-lub : ∀ {lub} → is-equiv (is-bottom→is-lub {lub})
+is-bottom≃is-lub : ∀ {lub} {f} → is-equiv (is-bottom→is-lub {lub} {f})
 is-bottom≃is-lub = prop-ext! _ is-lub→is-bottom .snd
 
-Bottom≃Lub : is-equiv Bottom→Lub
+Bottom≃Lub : ∀ {f} → is-equiv (Bottom→Lub {f})
 Bottom≃Lub = prop-ext! _ Lub→Bottom .snd
 ```
 -->

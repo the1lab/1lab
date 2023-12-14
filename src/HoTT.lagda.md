@@ -153,7 +153,7 @@ _ = _∙e_
 * Lemma 2.4.4: `homotopy-invert`{.Agda}
 * Lemma 2.4.6: `is-iso`{.Agda}
 * Example 2.4.9: `transport⁻transport`{.Agda}
-* Lemma 2.4.12: `id-equiv`{.Agda}, `Equiv.inverse`{.Agda}, `_∙e_`
+* Lemma 2.4.12: `id-equiv`{.Agda}, `Equiv.inverse`{.Agda}, `_∙e_`{.Agda}
 
 ### 2.7 Cartesian product types
 
@@ -299,7 +299,7 @@ _ = ∥-∥-proj
 -->
 
 * Lemma 3.9.1: `is-prop→equiv∥-∥`{.Agda}
-* Lemma 3.9.2: Implicit in e.g. `∥-∥-univ`, `∥-∥-proj`{.Agda}
+* Lemma 3.9.2: Implicit in e.g. `∥-∥-univ`{.Agda}, `∥-∥-proj`{.Agda}
 
 ### 3.11 Contractibility
 
@@ -309,6 +309,8 @@ _ = is-contr
 _ = is-contr-is-prop
 _ = retract→is-contr
 _ = Singleton-is-contr
+_ = Σ-contract
+_ = Σ-contr-eqv
 ```
 -->
 
@@ -316,6 +318,7 @@ _ = Singleton-is-contr
 * Definition 3.11.4: `is-contr-is-prop`{.Agda}
 * Definition 3.11.7: `retract→is-contr`{.Agda}
 * Definition 3.11.8: `Singleton-is-contr`{.Agda}
+* Lemma 3.11.9: `Σ-contract`{.Agda}, `Σ-contr-eqv`{.Agda}
 
 ### Exercises
 
@@ -366,8 +369,8 @@ _ = is-iso→is-contr-rinv
 
 * Definition 4.2.1: `is-half-adjoint-equiv`{.Agda}
 * Definition 4.2.3: `is-iso→is-half-adjoint-equiv`{.Agda}
-* Definition 4.2.4: `fibre`
-* Lemma 4.2.5: `fibre-paths`
+* Definition 4.2.4: `fibre`{.Agda}
+* Lemma 4.2.5: `fibre-paths`{.Agda}
 * Theorem 4.2.6: `is-half-adjoint-equiv→is-equiv`{.Agda}
 * Definition 4.2.7: `linv`{.Agda}, `rinv`{.Agda}
 * Lemma 4.2.8: `is-equiv→pre-is-equiv`{.Agda}, `is-equiv→post-is-equiv`{.Agda}
@@ -798,14 +801,14 @@ _ = hom-iso→adjoints
 
 * Definition 9.5.1: `_^op`{.Agda}
 * Definition 9.5.2: `_×ᶜ_`{.Agda}
-* Lemma 9.5.3: `Curry`{.Agda}, `Uncurry`
+* Lemma 9.5.3: `Curry`{.Agda}, `Uncurry`{.Agda}
   * The $\hom$-functor: `Hom[-,-]`{.Agda}
   * The Yoneda embedding: `よ`{.Agda}
 * Corollary 9.5.6: `よ-is-fully-faithful`{.Agda}
 * Corollary 9.5.7: _As a corollary of `Representation-is-prop`{.Agda}_
 * Definition 9.5.8: `Representation`{.Agda}
 * Theorem 9.5.9: `Representation-is-prop`{.Agda}
-* Lemma 9.5.10: `hom-iso→adjoints`
+* Lemma 9.5.10: [Adjoints in terms of representability](Cat.Functor.Adjoint.Representable.html)
 
 ### 9.6 Strict categories
 

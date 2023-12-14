@@ -308,10 +308,10 @@ in the relevant comma categories.
     dh .α = tt
     dh .β .map = the-lifting .centre .fst
     dh .β .commutes = the-lifting .centre .snd .snd
-    dh .sq = /-Hom-path (idr _ ∙ sym (the-lifting .centre .snd .fst))
+    dh .sq = ext (idr _ ∙ sym (the-lifting .centre .snd .fst))
 
     unique : ∀ om → dh ≡ om
-    unique om = ↓Hom-path _ _ refl $ /-Hom-path $ ap fst $ the-lifting .paths $
+    unique om = ↓Hom-path _ _ refl $ ext $ ap fst $ the-lifting .paths $
       om .β .map , sym (ap map (om .sq)) ∙ idr _ , om .β .commutes
 ```
 

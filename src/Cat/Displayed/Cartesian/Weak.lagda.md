@@ -38,7 +38,7 @@ private module Fib = FibR ℰ
 ```
 -->
 
-# Weak Cartesian Morphisms
+# Weak cartesian morphisms
 
 Some authors use a weaker notion of [[cartesian morphism]] when defining
 fibrations, referred to as a "weak cartesian" or "hypocartesian"
@@ -200,7 +200,7 @@ weak-cartesian→postcompose-equiv wcart =
         (λ h' → sym $ wcart .unique _ (to-pathp refl))
 ```
 
-## Weak Cartesian Lifts {defines=weak-cartesian-fibration}
+## Weak cartesian lifts {defines=weak-cartesian-fibration}
 
 We can also define a notion of weak cartesian lifts, much like we can
 with their stronger cousins.
@@ -443,7 +443,7 @@ a cartesian lift of $f$.
     f-lift .Cartesian-lift.cartesian = f*-cartesian
 ```
 
-## Factorisations in Weak Fibrations
+## Factorisations in weak fibrations
 
 If $\cE$ is a weak fibration, then every morphism factorizes into
 a vertical morphism followed by a weak cartesian morphism.
@@ -489,7 +489,7 @@ weak-fibration→weak-cartesian-factors {y' = y'} {f = f} wfib f' = weak-factor 
   weak-factor .factors = symP $ f-lift.commutes f'
 ```
 
-## Weak Fibrations and Equivalence of Hom Sets
+## Weak fibrations and equivalence of Hom sets
 
 If $\cE$ is a weak fibration, then the hom sets $x' \to_f y'$ and
 $x' \to_{id} f^{*}(y')$ are equivalent, where $f^{*}(y')$ is the domain

@@ -9,7 +9,7 @@ open import 1Lab.Type
 module Data.Product.NAry where
 ```
 
-# n-Ary Products
+# n-Ary products
 
 This is an alternative definition of the type of n-ary products, which,
 unlike [`Vec`](Data.Vec.Base.html), is defined by _recursion_ on the

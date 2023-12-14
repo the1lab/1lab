@@ -24,7 +24,7 @@ _ = ap-sym
 ```
 -->
 
-# Types are Groupoids
+# Types are groupoids
 
 The `Path`{.Agda} types equip every `Type`{.Agda} with the structure of
 an _$\infty$-groupoid_. The higher structure of a type begins with its

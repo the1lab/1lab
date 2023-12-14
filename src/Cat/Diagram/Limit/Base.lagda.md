@@ -237,7 +237,7 @@ triangles
 
 The rest of the data says that $\psi$ is the universal family of maps
 with this property: If $\eta_j : x \to Fj$ is another family of maps
-with the same commutativty property, then each $\eta_j$ factors through
+with the same commutativity property, then each $\eta_j$ factors through
 the apex by a single, _unique_ universal morphism:
 
 ```agda
@@ -669,7 +669,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```
 
 
-# Preservation of Limits
+# Preservation of limits
 
 <!--
 ```agda

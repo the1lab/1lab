@@ -17,7 +17,7 @@ open _=>_
 ```
 -->
 
-# Monadic Adjunctions
+# Monadic adjunctions
 
 An adjunction $F \dashv G$ between functors $F : C \to D$ and $G : D \to
 C$ is _monadic_ if the induced `comparison functor`{.Agda
@@ -84,8 +84,8 @@ Comparison .F₁ x = hom where
     R.₁ (x D.∘ adj.counit.ε _)            ≡⟨ ap R.₁ (sym (adj.counit.is-natural _ _ _)) ⟩
     R.₁ (adj.counit.ε _ D.∘ L.₁ (R.₁ x))  ≡⟨ R.F-∘ _ _ ⟩
     R.₁ (adj.counit.ε _) C.∘ M₁ (R.₁ x)   ∎
-Comparison .F-id    = Algebra-hom-path _ R.F-id
-Comparison .F-∘ f g = Algebra-hom-path _ (R.F-∘ _ _)
+Comparison .F-id    = ext R.F-id
+Comparison .F-∘ f g = ext (R.F-∘ _ _)
 ```
 </details>
 

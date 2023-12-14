@@ -8,7 +8,7 @@ open import Cat.Prelude
 module Cat.Restriction.Base where
 ```
 
-# Restriction Categories
+# Restriction categories
 
 Much of computer science involves the study of partial functions.
 Unfortunately, partial functions are somewhat tedious to work with,

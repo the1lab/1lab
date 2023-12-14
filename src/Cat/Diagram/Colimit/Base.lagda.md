@@ -546,7 +546,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```
 
 
-# Preservation of Colimits
+# Preservation of colimits
 
 The definitions here are the same idea as [preservation of limits], just
 dualized.
@@ -652,9 +652,9 @@ is-cocontinuous oshape hshape {C = C} F =
   → preserves-colimit F Diagram
 ```
 
-## Cocompleteness
+# Cocompleteness
 
-A category is **cocomplete** if admits for limits of arbitrary shape.
+A category is **cocomplete** if it admits colimits for diagrams of arbitrary shape.
 However, in the presence of excluded middle, if a category admits
 coproducts indexed by its class of morphisms, then it is automatically
 [thin]. Since excluded middle is independent of type theory, we can not

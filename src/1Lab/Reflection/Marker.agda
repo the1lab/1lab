@@ -72,7 +72,7 @@ macro
   -- with _≡⟨_⟩_.
   ap! : ∀ {ℓ} {A : Type ℓ} {x y : A} → x ≡ y → Term → TC ⊤
   ap! path goal = do
-    goalt ← inferType goal
+    goalt ← infer-type goal
     just (l , r) ← get-boundary goalt
       where nothing → typeError (strErr "ap!: Goal type " ∷
                                  termErr goalt ∷
@@ -90,7 +90,7 @@ macro
   -- with _≡˘⟨_⟩_.
   ap¡ : ∀ {ℓ} {A : Type ℓ} {x y : A} → x ≡ y → Term → TC ⊤
   ap¡ path goal = do
-    goalt ← inferType goal
+    goalt ← infer-type goal
     just (l , r) ← get-boundary goalt
       where nothing → typeError (strErr "ap¡: Goal type " ∷
                                  termErr goalt ∷

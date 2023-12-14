@@ -3,7 +3,7 @@
     "module": "esNext",
     "moduleResolution": "node",
     "target": "es6",
-    "lib": ["es2015", "dom"],
+    "lib": ["es2019", "dom"],
     "newLine": "LF",
 
     // Additional compile options
@@ -16,7 +16,7 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "importsNotUsedAsValues": "error",
+    "verbatimModuleSyntax": true,
     "isolatedModules": true,
 
     "forceConsistentCasingInFileNames": true,

@@ -78,6 +78,14 @@ Furthermore, `_≤_`{.Agda} is decidable:
 ... | no ¬x≤y = no (λ { (s≤s x≤y) → ¬x≤y x≤y })
 ```
 
+<!--
+```agda
+instance
+  Dec-≤ : ∀ {x y} → Dec (x ≤ y)
+  Dec-≤ = ≤-dec _ _
+```
+-->
+
 We also have that a successor is never smaller than the number it
 succeeds:
 
@@ -116,7 +124,7 @@ their strict ordering:
 <-not-equal {suc x} (s≤s p) q = <-not-equal p (suc-inj q)
 
 <-irrefl : ∀ {x y} → x ≡ y → ¬ (x < y)
-<-irrefl {suc x} {zero}  p      q  = absurd (zero≠suc (sym p))
+<-irrefl {suc x} {zero}  p      q  = absurd (suc≠zero p)
 <-irrefl {zero}  {suc y} p      _  = absurd (zero≠suc p)
 <-irrefl {suc x} {suc y} p (s≤s q) = <-irrefl (suc-inj p) q
 
@@ -190,21 +198,17 @@ an inhabited subset.
     min-suc zero ¬p0 nmins (suc k) psk    = s≤s 0≤x
     min-suc (suc n) ¬p0 nmins (suc k) psk = s≤s (nmins k psk)
 
-    wo-suc
-      : ∀ {P : Nat → Type ℓ} n
-      → P (suc n) → Dec (P 0) → minimal-solution (λ n → P (suc n))
-      → minimal-solution P
-    wo-suc n psn (yes p0) (a , pa , x) = 0 , p0 , λ k _ → 0≤x
-    wo-suc {P} n psn (no ¬p0) (a , pa , x) = suc a , pa , min-suc {P} a ¬p0 x
-
   ℕ-minimal-solution
-    : ∀ (P : Nat → Type _)
+    : ∀ (P : Nat → Type ℓ)
     → (∀ n → Dec (P n))
     → (n : Nat) → P n
     → minimal-solution P
   ℕ-minimal-solution P decp zero p = 0 , p , λ k _ → 0≤x
-  ℕ-minimal-solution P decp (suc n) p = wo-suc n p (decp zero)
-    (ℕ-minimal-solution (λ x → P (suc x)) (λ x → decp (suc x)) n p)
+  ℕ-minimal-solution P decp (suc n) p = case decp zero of λ where
+    (yes p0) → 0 , p0 , λ k _ → 0≤x
+    (no ¬p0) →
+      let (a , pa , x) = ℕ-minimal-solution (P ∘ suc) (decp ∘ suc) n p
+       in suc a , pa , min-suc {P} a ¬p0 x
 
   ℕ-well-ordered
     : (∀ n → Dec ∣ P n ∣)

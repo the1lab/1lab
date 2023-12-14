@@ -1,8 +1,10 @@
 <!--
 ```agda
 open import Cat.Instances.Product
+open import Cat.Functor.Compose
 open import Cat.Prelude
 
+import Cat.Functor.Reasoning
 import Cat.Reasoning
 
 open Precategory
@@ -91,7 +93,7 @@ Uncurry {C = C} {D = D} {E = E} F = uncurried where
       ((F.₁ f .η _ E.∘ F₁ (F.₀ _) g) E.∘ (F.₁ f' .η _ E.∘ F₁ (F.₀ _) g')) ∎
 ```
 
-## Constant Diagrams
+## Constant diagrams
 
 There is a functor from $\cC$ to $[\cJ, \cC]$ that takes an object
 $x : \cC$ to the constant functor $j \mapsto x$.
@@ -142,24 +144,28 @@ module
     {C : Precategory o ℓ} {D : Precategory o' ℓ'} {E : Precategory o'' ℓ''}
   where
     private
+      module CD = Cat.Reasoning Cat[ C , D ]
       module DE = Cat.Reasoning Cat[ D , E ]
       module CE = Cat.Reasoning Cat[ C , E ]
 
     F∘-iso-l : {F F' : Functor D E} {G : Functor C D}
              → F DE.≅ F' → (F F∘ G) CE.≅ (F' F∘ G)
     F∘-iso-l {F} {F'} {G} isom =
-      CE.make-iso to from
+      CE.make-iso (isom.to ◂ G) (isom.from ◂ G)
         (Nat-path λ x → isom.invl ηₚ _)
         (Nat-path λ x → isom.invr ηₚ _)
       where
         module isom = DE._≅_ isom
-        to : (F F∘ G) => (F' F∘ G)
-        to .η _ = isom.to .η _
-        to .is-natural _ _ _ = isom.to .is-natural _ _ _
 
-        from : (F' F∘ G) => (F F∘ G)
-        from .η _ = isom.from .η _
-        from .is-natural _ _ _ = isom.from .is-natural _ _ _
+    F∘-iso-r : {F : Functor D E} {G G' : Functor C D}
+             → G CD.≅ G' → (F F∘ G) CE.≅ (F F∘ G')
+    F∘-iso-r {F} {G} {G'} isom =
+      CE.make-iso (F ▸ isom.to) (F ▸ isom.from)
+        (Nat-path λ x → F.annihilate (isom.invl ηₚ _))
+        (Nat-path λ x → F.annihilate (isom.invr ηₚ _))
+      where
+        module isom = CD._≅_ isom
+        module F = Cat.Functor.Reasoning F
 
 open import Cat.Functor.Naturality public
 
