@@ -85,7 +85,7 @@ that any function $\top \to X$ is an isomorphism, or equivalently, every inhabit
     open import Cat.Morphism
 ```
 
-`Sets`{.Agda} `^op`{.Agda} is univalent, so we invoke the propositionality of its initial object so we can work with `⊤`{.Agda}, for convenience.
+`Sets`{.Agda} `^op`{.Agda} is univalent, so we invoke the propositionality of its initial object to let us work with `⊤`{.Agda}, for convenience.
 
 ```agda
     I≡⊤ : I ≡ Sets^op-initial
