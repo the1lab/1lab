@@ -78,7 +78,7 @@ _ = true≠false
 ```
 -->
 
-Crucially, this is property is not shared by the initial object of $\Sets\op$! Unfolding definitions, it says 
+Crucially, this property is not shared by the initial object of $\Sets\op$! Unfolding definitions, it says 
 that any function $\top \to X$ is an isomorphism, or equivalently, every inhabited set is contractible. But is this is certainly false:
 `Bool`{.Agda} is inhabited, but not contractible, since `true≠false`{.Agda}.
 
