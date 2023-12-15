@@ -36,10 +36,19 @@ _ = Sets-initial
 
 In $\Sets\op$:
 
+<!--
+```agda
+open Initial
+open Strict-initial
+open Sets.is-invertible
+open Sets.Inverses
+```
+-->
+
 ```agda
 Sets^op-initial : Initial (Sets ℓ ^op)
-Sets^op-initial .Initial.bot = el! (Lift _ ⊤)
-Sets^op-initial .Initial.has⊥ x = hlevel!
+Sets^op-initial .bot = el! (Lift _ ⊤)
+Sets^op-initial .has⊥ x = hlevel!
 ```
 <!--
 ```agda
@@ -51,15 +60,6 @@ Now we can observe an interesting property of the initial object of $\Sets$: it 
 Intuitively, if you can write a function $X \to \bot$ then $X$ must itself be empty. 
 
 [strict]: Cat.Diagram.Initial.html#strictness
-
-<!--
-```agda
-open Initial
-open Strict-initial
-open Sets.is-invertible
-open Sets.Inverses
-```
--->
 
 ```agda
 Sets-strict-initial : Strict-initial (Sets ℓ)
