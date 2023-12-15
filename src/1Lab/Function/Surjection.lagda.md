@@ -1,10 +1,9 @@
 <!--
 ```agda
-open import 1Lab.HIT.Truncation
-
 open import 1Lab.Function.Embedding
 open import 1Lab.Reflection.HLevel
 open import 1Lab.HLevel.Retracts
+open import 1Lab.HIT.Truncation
 open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Path

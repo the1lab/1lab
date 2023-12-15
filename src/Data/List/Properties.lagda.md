@@ -8,11 +8,11 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.List.Base
+open import Data.Dec.Base
+open import Data.Fin.Base using (Fin ; fzero ; fsuc)
 open import Data.Nat.Base
 open import Data.Sum.Base
-open import Data.Dec.Base
 open import Data.Id.Base
-open import Data.Fin.Base using (Fin ; fzero ; fsuc)
 open import Data.Bool
 
 open import Meta.Idiom

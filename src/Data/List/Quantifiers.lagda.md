@@ -4,8 +4,8 @@ open import 1Lab.Prelude
 
 open import Data.List.Membership
 open import Data.List.Base
-open import Data.Sum.Base
 open import Data.Dec.Base
+open import Data.Sum.Base
 ```
 -->
 

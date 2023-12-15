@@ -7,8 +7,8 @@ open import 1Lab.HLevel
 open import 1Lab.Equiv
 open import 1Lab.Type
 
-open import Data.Fin.Indexed
 open import Data.List.Membership
+open import Data.Fin.Indexed
 open import Data.List.Base
 open import Data.Dec.Base
 open import Data.Fin

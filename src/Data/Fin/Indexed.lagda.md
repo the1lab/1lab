@@ -4,8 +4,8 @@ open import 1Lab.Prelude
 
 open import Data.Dec.Base
 open import Data.Power
-open import Data.Sum
 open import Data.Fin
+open import Data.Sum
 ```
 -->
 
