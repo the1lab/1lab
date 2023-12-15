@@ -63,13 +63,10 @@ Intuitively, if you can write a function $X \to \bot$ then $X$ must itself be em
 
 ```agda
 Sets-strict-initial : Strict-initial (Sets ℓ)
-Sets-strict-initial = si
-  where
-    si : Strict-initial (Sets ℓ)
-    si .initial = Sets-initial
-    si .has-is-strict x f .inv ()
-    si .has-is-strict x f .inverses .invl = ext λ ()
-    si .has-is-strict x f .inverses .invr = ext λ x → absurd (f x .Lift.lower)
+Sets-strict-initial .initial = Sets-initial
+Sets-strict-initial .has-is-strict x f .inv ()
+Sets-strict-initial .has-is-strict x f .inverses .invl = ext λ ()
+Sets-strict-initial .has-is-strict x f .inverses .invr = ext λ x → absurd (f x .Lift.lower)
 ```
 
 <!-- 
