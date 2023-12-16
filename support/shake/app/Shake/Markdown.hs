@@ -47,6 +47,7 @@ import Shake.LinkReferences
 import Shake.SearchData
 import Shake.Highlights
 import Shake.Options
+import Shake.Digest
 import Shake.KaTeX
 import Shake.Git
 
@@ -198,8 +199,18 @@ buildMarkdown modname input output = do
   need dependencies
 
   baseUrl <- getBaseUrl
+  digest <- do
+    cssDigest <- getFileDigest "_build/html/css/default.css"
+    startJsDigest <- getFileDigest "_build/html/start.js"
+    mainJsDigest <- getFileDigest "_build/html/main.js"
+    pure . Context . Map.fromList $
+      [ ("css",       toVal (Text.pack cssDigest))
+      , ("start-js",  toVal (Text.pack startJsDigest))
+      , ("main-js",   toVal (Text.pack mainJsDigest))
+      ]
+
   text <- liftIO $ either (fail . show) pure =<<
-    runIO (renderMarkdown authors references modname baseUrl markdown)
+    runIO (renderMarkdown authors references modname baseUrl digest markdown)
 
   let tags = foldEquations False (parseTags text)
   tags <- renderHighlights tags
@@ -343,8 +354,9 @@ renderMarkdown :: PandocMonad m
                -> [Val Text]   -- ^ List of references
                -> String       -- ^ Name of the current module
                -> String       -- ^ Base URL
+               -> Context Text -- ^ Digests of the various files.
                -> Pandoc -> m Text
-renderMarkdown authors references modname baseUrl markdown = do
+renderMarkdown authors references modname baseUrl digest markdown = do
   template <- getTemplate templateName >>= runWithPartials . compileTemplate templateName
                 >>= either (throwError . PandocTemplateError . Text.pack) pure
   let
@@ -358,6 +370,7 @@ renderMarkdown authors references modname baseUrl markdown = do
       , ("authors",      toVal authors')
       , ("reference",    toVal references)
       , ("base-url",     toVal (Text.pack baseUrl))
+      , ("digest",       toVal digest)
       ]
 
     options = def { writerTemplate        = Just template
