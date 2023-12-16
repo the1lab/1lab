@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 ```
@@ -71,6 +72,9 @@ Dec-map
   → Dec A → Dec B
 Dec-map to from (yes a) = yes (to a)
 Dec-map to from (no ¬a) = no (¬a ∘ from)
+
+Dec-≃ : A ≃ B → Dec A → Dec B
+Dec-≃ e = Dec-map (Equiv.to e) (Equiv.from e)
 ```
 
 This lets us show the following useful lemma: if $A$ injects into a
