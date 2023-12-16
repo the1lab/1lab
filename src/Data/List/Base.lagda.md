@@ -297,5 +297,12 @@ lookup x [] = nothing
 lookup x ((k , v) ∷ xs) with x ≡? k
 ... | yes _ = just v
 ... | no  _ = lookup x xs
+
+
+filter-map : (A → Maybe B) → List A → List B
+filter-map f [] = []
+filter-map f (x ∷ xs) with f x
+... | nothing = filter-map f xs
+... | just y  = y ∷ filter-map f xs
 ```
 -->
