@@ -348,13 +348,13 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
   -- Entry point for calling the tactic.
   search : List Nat → Nat → Bool → Term → Nat → Term → TC ⊤
   -- Give up if we're out of fuel:
-  search ctx-prfs under has-alts _     zero    goal = unify goal unknown
+  search ctx-prfs depth has-alts _     zero    goal = unify goal unknown
 
   -- Actual main loop: try using the hints database, try treating the
   -- goal as an n-type, fall back to instance search.
-  search ctx-prfs under has-alts level (suc n) goal =
-      use-context
-      <|> use-projections
+  search ctx-prfs depth has-alts level (suc n) goal =
+      use-projections
+      <|> use-context
       <|> use-hints
       <|> use-instance-search has-alts goal
       <|> typeError "Search failed!!"
@@ -366,7 +366,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
         (wanted-ty , wanted-lv) ← decompose-is-hlevel goal
         debugPrint "tactic.hlevel" 20 $ "Attempting to use context for goal\n  " ∷ termErr wanted-ty ∷ []
         nondet (eff List) ctx-prfs λ idx → do
-          let idx = idx + under
+          let idx = idx + depth
           -- debugPrint "tactic.hlevel" 20 $
             -- "Considering context entry " ∷ termErr prf ∷ " with type is-hlevel " ∷ termErr have-ty ∷ " " ∷ termErr have-level ∷ []
           (have-ty , have-lv) ← decompose-is-hlevel (var₀ idx)
@@ -514,7 +514,7 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
           cont
           -- go back under the new scope to recursively search for
           -- levels.
-          gounder ⊤ $ search ctx-prfs under has-alts unknown n mv
+          gounder ⊤ $ search ctx-prfs (depth + under) has-alts unknown n mv
 
       -- Try all the candidate hints in order. This is a version of
       -- 'nondet' which additionally threads whether we're looking at
