@@ -40,6 +40,7 @@ poset→category P = cat module poset-to-category where
   cat .Hom-set x y = is-prop→is-set P.≤-thin
 
 {-# DISPLAY poset-to-category.cat P = poset→category P #-}
+{-# COMPILE 1Lab poset→category HoTT: Example 9.1.4 #-}
 ```
 
 Our functor into $\strcat$ is similarly easy to describe: Monotonicity

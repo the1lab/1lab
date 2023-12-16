@@ -47,6 +47,7 @@ record is-contr {ℓ} (A : Type ℓ) : Type ℓ where
   field
     centre : A
     paths : (x : A) → centre ≡ x
+{-# COMPILE 1Lab is-contr HoTT: Definition 3.11.1 #-}
 ```
 :::
 
@@ -82,6 +83,8 @@ type.
   interval-contractible .paths ii0 i = ii0
   interval-contractible .paths ii1 i = seg i
   interval-contractible .paths (seg i) j = seg (i ∧ j)
+
+{-# COMPILE 1Lab interval-contractible HoTT: Lemma 6.3.1 #-}
 ```
 
 :::{.definition #proposition alias="property"}
@@ -95,6 +98,7 @@ two elements are connected by a path.
 ```agda
 is-prop : ∀ {ℓ} → Type ℓ → Type _
 is-prop A = (x y : A) → x ≡ y
+{-# COMPILE 1Lab is-prop HoTT: Definition 3.3.1 #-}
 ```
 
 With this, we can define the `is-hlevel`{.Agda} predicate. For h-levels
@@ -105,6 +109,7 @@ is-hlevel : ∀ {ℓ} → Type ℓ → Nat → Type _
 is-hlevel A 0 = is-contr A
 is-hlevel A 1 = is-prop A
 is-hlevel A (suc n) = (x y : A) → is-hlevel (Path A x y) n
+{-# COMPILE 1Lab is-hlevel HoTT: Definition 7.1.1 #-}
 ```
 
 :::{.definition #set}
@@ -119,6 +124,7 @@ correspondingly, called **Set**.
 ```agda
 is-set : ∀ {ℓ} → Type ℓ → Type ℓ
 is-set A = is-hlevel A 2
+{-# COMPILE 1Lab is-set HoTT: Definition 3.1.1 #-}
 ```
 
 :::{.definition #groupoid}
@@ -128,6 +134,7 @@ Similarly, the types of h-level 3 are called **groupoids**.
 ```agda
 is-groupoid : ∀ {ℓ} → Type ℓ → Type ℓ
 is-groupoid A = is-hlevel A 3
+{-# COMPILE 1Lab is-groupoid HoTT: Definition 3.1.7 #-}
 ```
 
 ---
@@ -197,6 +204,7 @@ is-contr-if-inhabited→is-prop cont x y = is-contr→is-prop (cont x) x y
 is-prop∙→is-contr : ∀ {ℓ} {A : Type ℓ} → is-prop A → A → is-contr A
 is-prop∙→is-contr prop x .centre = x
 is-prop∙→is-contr prop x .paths y = prop x y
+{-# COMPILE 1Lab is-prop∙→is-contr HoTT: Lemma 3.3.2 #-}
 ```
 
 The proof that any contractible type is a proposition is not too
@@ -227,6 +235,7 @@ is-prop→is-set h x y p q i j = hcomp (∂ i ∨ ∂ j) λ where
   k (j = i0) → h x x k
   k (j = i1) → h x y k
   k (k = i0) → x
+{-# COMPILE 1Lab is-prop→is-set HoTT: Lemma 3.3.4 #-}
 ```
 
 The proof that any proposition is a set is slightly more complicated.
@@ -277,6 +286,7 @@ is-hlevel-suc : ∀ {ℓ} {A : Type ℓ} (n : Nat) → is-hlevel A n → is-hlev
 is-hlevel-suc 0 x = is-contr→is-prop x
 is-hlevel-suc 1 x = is-prop→is-set x
 is-hlevel-suc (suc (suc n)) h x y = is-hlevel-suc (suc n) (h x y)
+{-# COMPILE 1Lab is-hlevel-suc HoTT: Lemma 3.1.8, Theorem 7.1.7 #-}
 ```
 
 By another inductive argument, we can prove that any offset works:
@@ -381,6 +391,7 @@ is-contr-is-prop {A = A} (contr c₁ h₁) (contr c₂ h₂) i .paths x j =
     k (j = i0) → h₁ (h₁ c₂ i) k
     k (j = i1) → h₁ x k
     k (k = i0) → c₁
+{-# COMPILE 1Lab is-contr-is-prop HoTT: Lemma 3.11.4 #-}
 ```
 
 First, we prove that being contractible is a proposition. Next, we prove
@@ -391,6 +402,7 @@ always give homotopic paths.
 ```agda
 is-prop-is-prop : is-prop (is-prop A)
 is-prop-is-prop {A = A} h₁ h₂ i x y = is-prop→is-set h₁ x y (h₁ x y) (h₂ x y) i
+{-# COMPILE 1Lab is-prop-is-prop HoTT: Lemma 3.3.5 #-}
 ```
 
 Now we can prove the general case by the same inductive argument we used
@@ -402,6 +414,7 @@ is-hlevel-is-prop 0 = is-contr-is-prop
 is-hlevel-is-prop 1 = is-prop-is-prop
 is-hlevel-is-prop (suc (suc n)) x y i a b =
   is-hlevel-is-prop (suc n) (x a b) (y a b) i
+{-# COMPILE 1Lab is-hlevel-is-prop HoTT: Lemma 3.3.5, Theorem 7.1.10 #-}
 ```
 
 <!--

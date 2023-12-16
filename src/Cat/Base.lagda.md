@@ -144,6 +144,8 @@ We can define the type of *all* morphisms in a precategory as the total space of
     instance
       H-Level-Hom : ∀ {x y} {k} → H-Level (Hom x y) (2 + k)
       H-Level-Hom = basic-instance 2 (Hom-set _ _)
+
+{-# COMPILE 1Lab Precategory HoTT: Definition 9.1.1 #-}
 ```
 -->
 
@@ -184,6 +186,7 @@ opposite precategory: For `idr`{.Agda} one has to show $f \circ_{op}
 
 ```agda
 (C ^op) .Precategory.assoc f g h i = Precategory.assoc C h g f (~ i)
+{-# COMPILE 1Lab _^op HoTT: Definition 9.5.1 #-}
 ```
 
 For associativity, consider the case of `assoc`{.Agda} for the
@@ -316,6 +319,7 @@ C\op \to D\op$.
 
 <!--
 ```agda
+{-# COMPILE 1Lab Functor HoTT: Definition 9.2.1 #-}
 F^op^op≡F : ∀ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} {F : Functor C D}
           → Functor.op (Functor.op F) ≡ F
 F^op^op≡F {F = F} i .Functor.F₀ = F .Functor.F₀
@@ -393,6 +397,7 @@ the witnesses that $F$ and $G$ are functorial.
 
 <!--
 ```agda
+{-# COMPILE 1Lab _F∘_ HoTT: Definition 9.2.6 #-}
 {-# DISPLAY F∘.comps F G = F F∘ G #-}
 ```
 -->
@@ -481,6 +486,8 @@ Natural transformations also dualize. The opposite of $\eta : F
 
 <!--
 ```agda
+{-# COMPILE 1Lab _=>_ HoTT: Definition 9.2.2 #-}
+
 {-# INLINE NT #-}
 
 is-natural-transformation
@@ -565,6 +572,9 @@ is a proposition:
            → ((x : _) → a .η x ≡ b .η x)
            → a ≡ b
   Nat-path = Nat-pathp refl refl
+
+  {-# COMPILE 1Lab Nat-is-set HoTT: Definition 9.2.2.i #-}
+  {-# COMPILE 1Lab Nat-path HoTT: Definition 9.2.2.i #-}
 
   _ηₚ_ : ∀ {a b : F => G} → a ≡ b → ∀ x → a .η x ≡ b .η x
   p ηₚ x = ap (λ e → e .η x) p

@@ -43,6 +43,8 @@ map into must be a set, as required by the `squash`{.Agda} constructor.
     (λ _ → g x) (λ i → g (p i)) (λ i → g (q i)) (λ i → g y) i j
   where g = ∥-∥₀-elim Bset binc
 
+{-# COMPILE 1Lab ∥-∥₀-elim HoTT: Lemma 6.9.1 #-}
+
 ∥-∥₀-rec
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → is-set B
   → (A → B) → ∥ A ∥₀ → B

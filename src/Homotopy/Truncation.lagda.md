@@ -126,6 +126,7 @@ characterisations of truncation in terms of hubs-and-spokes.
 n-Tr-is-hlevel
   : ∀ {ℓ} {A : Type ℓ} n → is-hlevel (n-Tr A (suc n)) (suc n)
 n-Tr-is-hlevel n = hubs-and-spokes→hlevel n λ sph → hub sph , spokes sph
+{-# COMPILE 1Lab n-Tr-is-hlevel HoTT: Lemma 7.3.1 #-}
 
 instance
   n-tr-decomp : ∀ {ℓ} {A : Type ℓ} {n} → hlevel-decomposition (n-Tr A (suc n))
@@ -154,6 +155,8 @@ n-Tr-elim {A = A} {n} P ptrunc pbase = go where
   go (inc x)        = pbase x
   go (hub r)        = hub' r (λ x → go (r x))
   go (spokes r x i) = spokes' r (λ x → go (r x)) x i
+
+{-# COMPILE 1Lab n-Tr-elim HoTT: Theorem 7.3.2 #-}
 ```
 
 <!--
@@ -244,6 +247,8 @@ induction`{.Agda id=J} and the induction principle for $\|A\|_{n+2}$.
   isom : Iso (inc x ≡ inc y) (n-Tr (x ≡ y) (suc n))
   isom = encode' _ (inc _)
        , iso (decode' _ (inc _)) (rinv _ (inc _)) (linv _ (inc _))
+
+{-# COMPILE 1Lab n-Tr-path-equiv HoTT: Lemma 7.3.12 #-}
 ```
 
 ```agda
@@ -256,6 +261,8 @@ n-Tr-univ n b-hl = Iso→Equiv λ where
   .snd .is-iso.inv  f → n-Tr-rec b-hl f
   .snd .is-iso.rinv f → refl
   .snd .is-iso.linv f → funext $ n-Tr-elim _ (λ x → Path-is-hlevel (suc n) b-hl) λ _ → refl
+
+{-# COMPILE 1Lab n-Tr-univ HoTT: Lemma 7.3.3 #-}
 ```
 
 ```agda
@@ -290,4 +297,6 @@ n-Tr-product {A = A} {B} {n} = distrib , distrib-is-equiv module n-Tr-product wh
   distrib-is-iso .linv = n-Tr-elim! _ λ x → refl
 
   distrib-is-equiv = is-iso→is-equiv distrib-is-iso
+
+{-# COMPILE 1Lab n-Tr-product HoTT: Lemma 7.3.8 #-}
 ```

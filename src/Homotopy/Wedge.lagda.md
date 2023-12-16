@@ -103,4 +103,6 @@ by the specified coherence $f(*) = g(*)$.
 
     β-path : β₂ b₀ ∙ sym coh ≡ β₁ a₀
     β-path = square→commutes (ap snd (worker .snd $ₚ tt)) ∙ ∙-idr _
+
+{-# COMPILE 1Lab Wedge.elim HoTT: Lemma 8.6.2 #-}
 ```

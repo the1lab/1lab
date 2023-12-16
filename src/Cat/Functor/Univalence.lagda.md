@@ -47,6 +47,8 @@ Functor-is-category {D = D} {C = C} d-cat .to-path {F} {G} im =
 Functor-is-category {D = D} d-cat .to-path-over p =
   ≅ⁿ-pathp _ _ (λ x → Hom-pathp-reflr-iso (Precategory.idr D (Isoⁿ.to p .η x)))
   where open Univalent d-cat
+
+{-# COMPILE 1Lab Functor-is-category HoTT: Theorem 9.2.5 #-}
 ```
 
 <!--

@@ -167,4 +167,5 @@ Luckily, this is completely straightforward.
 ```agda
     coherent : Square (λ i → unique i ∘ W-algebra .snd) refl hom (λ i → c ∘ P₁ (unique i))
     coherent = transpose (flip₁ (∙-filler _ _))
+{-# COMPILE 1Lab W-initial HoTT: Theorem 5.4.7 #-}
 ```

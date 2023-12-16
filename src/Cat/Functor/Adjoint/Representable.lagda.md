@@ -64,6 +64,8 @@ module _ {o'} {D : Precategory o' ℓ}
   left-adjoint→objectwise-rep c .corepresents =
     adjunct-hom-iso-into L⊣R c
     ∘ni path→iso (sym (Hom-from-op _))
+
+  {-# COMPILE 1Lab left-adjoint→objectwise-rep HoTT: Lemma 9.5.10 #-}
 ```
 
 The other direction should be more surprising: if we only have a family of objects
@@ -138,6 +140,8 @@ module _ {o'} {D : Precategory o' ℓ}
 
   objectwise-rep→L⊣R : objectwise-rep→L ⊣ R
   objectwise-rep→L⊣R = universal-maps→L⊣R R objectwise-rep→universal-maps
+
+  {-# COMPILE 1Lab objectwise-rep→L⊣R HoTT: Lemma 9.5.10 #-}
 ```
 
 ## Right adjoints into Sets are representable

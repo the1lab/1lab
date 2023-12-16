@@ -70,6 +70,8 @@ record Representation (F : Functor (C ^op) (Sets κ)) : Type (o ⊔ κ) where
 
 open Representation
 open Representation using (module Rep) public
+
+{-# COMPILE 1Lab Representation HoTT: Definition 9.5.8 #-}
 ```
 
 This definition is _deceptively_ simple: the idea of representable
@@ -128,6 +130,8 @@ Representation-is-prop {F = F} c-cat x y = path where
                        ·· ap X.Rep.to (C.idl _)
                        ·· X.Rep.ε _)))
      i
+
+{-# COMPILE 1Lab Representation HoTT: Theorem 9.5.9 #-}
 ```
 
 ## As terminal objects

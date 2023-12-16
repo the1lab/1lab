@@ -65,6 +65,8 @@ linv f = Σ[ g ∈ (_ → _) ] (g ∘ f ≡ id)
 
 rinv : (A → B) → Type _
 rinv f = Σ[ h ∈ (_ → _) ] (f ∘ h ≡ id)
+{-# COMPILE 1Lab linv HoTT: Definition 4.2.7 #-}
+{-# COMPILE 1Lab rinv HoTT: Definition 4.2.7 #-}
 ```
 
 A map $f$ equipped with a choice of left- and right- inverse is said to
@@ -76,6 +78,7 @@ notion of equivalence].
 ```agda
 is-biinv : (A → B) → Type _
 is-biinv f = linv f × rinv f
+{-# COMPILE 1Lab is-biinv HoTT: Definition 4.3.1 #-}
 ```
 
 If $f$ is an equivalence, then so are pre- and post- composition with
@@ -120,6 +123,9 @@ is-equiv→post-is-equiv {f = f} f-eqv = is-iso→is-equiv isiso where
   isiso .is-iso.inv f x = f (f⁻¹ x)
   isiso .is-iso.rinv f = funext λ x → ap f (f-iso .is-iso.linv _)
   isiso .is-iso.linv f = funext λ x → ap f (f-iso .is-iso.rinv _)
+
+{-# COMPILE 1Lab is-equiv→pre-is-equiv  HoTT: Lemma 4.2.8 #-}
+{-# COMPILE 1Lab is-equiv→post-is-equiv HoTT: Lemma 4.2.8 #-}
 ```
 </details>
 
@@ -135,6 +141,9 @@ is-iso→is-contr-linv isiso =
 is-iso→is-contr-rinv : {f : A → B} → is-iso f → is-contr (rinv f)
 is-iso→is-contr-rinv isiso =
   is-equiv→pre-is-equiv (is-iso→is-equiv isiso) .is-eqv id
+
+{-# COMPILE 1Lab is-iso→is-contr-linv HoTT: Lemma 4.2.9 #-}
+{-# COMPILE 1Lab is-iso→is-contr-rinv HoTT: Lemma 4.2.9 #-}
 ```
 
 This is because `linv(f)`{.Agda} is the fibre of $(- \circ f)$ over
@@ -178,6 +187,7 @@ is-biinv-is-prop {f = f} = is-contr-if-inhabited→is-prop contract where
                   (is-iso→is-contr-rinv iiso)
     where
       iiso = is-biinv→is-iso ibiinv
+{-# COMPILE 1Lab is-biinv-is-prop HoTT: Theorem 4.3.2 #-}
 ```
 
 Since `is-biinv`{.Agda} is a product of contractibles whenever it is

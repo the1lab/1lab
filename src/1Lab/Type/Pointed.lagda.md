@@ -20,6 +20,8 @@ Type∙ ℓ = Σ (Type ℓ) (λ A → A)
 
 <!--
 ```agda
+{-# COMPILE 1Lab Type∙ HoTT: Definition 2.1.7 #-}
+
 private variable
   ℓ ℓ' : Level
   A B : Type∙ ℓ

@@ -125,6 +125,8 @@ F∘-assoc
   → F F∘ (G F∘ H) ≡ (F F∘ G) F∘ H
 F∘-assoc = Functor-path (λ x → refl) λ x → refl
 
+{-# COMPILE 1Lab F∘-assoc HoTT: Lemma 9.2.9 #-}
+
 F∘-idl
   : ∀ {o'' ℓ'' o₃ ℓ₃}
       {E : Precategory o'' ℓ''} {E' : Precategory o₃ ℓ₃}
@@ -138,6 +140,9 @@ F∘-idr
       {F : Functor E E'}
   → F F∘ Id ≡ F
 F∘-idr = Functor-path (λ x → refl) λ x → refl
+
+{-# COMPILE 1Lab F∘-idl HoTT: Lemma 9.2.11 #-}
+{-# COMPILE 1Lab F∘-idr HoTT: Lemma 9.2.11 #-}
 
 module
   _ {o ℓ o' ℓ' o'' ℓ''}

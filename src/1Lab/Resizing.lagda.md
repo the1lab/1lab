@@ -76,6 +76,7 @@ universe.
 
 <!--
 ```agda
+{-# COMPILE 1Lab □ HoTT: Theorem 3.5.5 #-}
 instance
   H-Level-□ : ∀ {ℓ} {T : Type ℓ} {n} → H-Level (□ T) (suc n)
   H-Level-□ = prop-instance squash

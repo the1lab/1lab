@@ -108,6 +108,7 @@ morphisms gives isomorphisms in the respective functor categories:
            ; unit-iso   = λ x → D.is-invertible-inverse (counit-iso _)
            ; counit-iso = λ x → C.is-invertible-inverse (unit-iso _)
            }
+{-# COMPILE 1Lab is-equivalence HoTT: Definition 9.4.1 #-}
 ```
 -->
 
@@ -378,6 +379,8 @@ needs an appeal to faithfulness (two, actually):
       open Σ (eso (F₀ F x)) renaming (fst to f*x ; snd to f*x-iso)
       ffx = f*x-iso .di.from
       ftx = f*x-iso .di.to
+
+  {-# COMPILE 1Lab ff+split-eso→is-equivalence HoTT: Lemma 9.4.5.i #-}
 ```
 
 ### Between categories
@@ -482,6 +485,8 @@ we call this result the _theorem of choice_.
 ```agda
     they're-equal = Σ-pathp x≡y over
 
+  {-# COMPILE 1Lab Essential-fibre-between-cats-is-prop HoTT: Lemma 9.4.7 #-}
+
   Theorem-of-choice : is-eso F → is-split-eso F
   Theorem-of-choice eso y =
     ∥-∥-elim (λ _ → Essential-fibre-between-cats-is-prop y)
@@ -536,6 +541,8 @@ record is-precat-iso (F : Functor C D) : Type (adj-level C D) where
   field
     has-is-ff  : is-fully-faithful F
     has-is-iso : is-equiv (F₀ F)
+
+{-# COMPILE 1Lab is-precat-iso HoTT: Definition 9.4.8 #-}
 ```
 
 Such a functor is (immediately) fully faithful, and the inverse
@@ -564,6 +571,8 @@ precategories.
 
 <!--
 ```agda
+  {-# COMPILE 1Lab is-precat-iso→is-equivalence HoTT: Lemma 9.4.14 #-}
+
 open is-equivalence
 open Precategory
 open _⊣_
@@ -617,6 +626,9 @@ module
     (e.F⁻¹ .F₀ y) ,
     D.invertible→iso (e.counit .η y) (e.counit-iso y)
 
+  {-# COMPILE 1Lab is-equivalence→is-ff HoTT: Lemma 9.4.5.ii #-}
+  {-# COMPILE 1Lab is-equivalence→is-split-eso HoTT: Lemma 9.4.5.ii #-}
+
   is-equivalence→is-eso : is-eso F
   is-equivalence→is-eso y =
     inc ((e.F⁻¹ .F₀ y) , D.invertible→iso (e.counit .η y) (e.counit-iso y))
@@ -630,6 +642,8 @@ module
     is-equivalence→is-ff
   is-equivalence→is-precat-iso c-cat d-cat .has-is-iso =
     is-cat-equivalence→equiv-on-objects c-cat d-cat eqv
+
+  {-# COMPILE 1Lab is-equivalence→is-precat-iso HoTT: Lemma 9.4.14 #-}
 ```
 -->
 

@@ -166,6 +166,8 @@ is-left-adjoint-is-prop cc F (G , a) (G' , a') i = G≡G' cd i , a≡a' cd i
       is-set→squarep (λ i j → C.Hom-set (G≡G' i .F₀ A) (G≡G' i .F₀ A))
         (λ i → G≡G' i .F₁ (same-eps i .η A) C.∘ same-eta i .η (G≡G' i .F₀ A))
         (a .zag) (a' .zag) (λ _ → C.id) i
+
+{-# COMPILE 1Lab is-left-adjoint-is-prop HoTT: Lemma 9.3.2 #-}
 ```
 -->
 

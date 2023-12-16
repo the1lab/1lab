@@ -45,6 +45,7 @@ is-n-connected A zero = Lift _ ⊤
 is-n-connected A (suc zero) = ∥ A ∥
 is-n-connected A (suc (suc zero)) = is-contr ∥ A ∥₀
 is-n-connected A n@(suc (suc (suc _))) = is-contr (n-Tr A n)
+{-# COMPILE 1Lab is-n-connected HoTT: Definition 7.5.1 #-}
 ```
 
 Being $n$-connected is a proposition:
@@ -148,6 +149,8 @@ is-n-connected-Tr (suc zero) a-conn =
     (n-Tr-elim _ (λ _ → is-prop→is-set (n-Tr-is-hlevel 1 _ _)) λ _ → refl)
     a-conn
 is-n-connected-Tr (suc (suc n)) a-conn = a-conn
+
+{-# COMPILE 1Lab is-n-connected-Tr HoTT: Definition 7.5.1 #-}
 ```
 
 <!--
@@ -364,6 +367,9 @@ relative-n-type-const {B = B} {A = A} P f 1 n-conn phl =
   prop-ext (Π-is-hlevel 1 phl) (Π-is-hlevel 1 λ _ → phl _)
     _ (λ g b → ∥-∥-rec (phl b) (λ (a , p) → subst P p (g a)) (n-conn b))
     .snd
+
+{-# COMPILE 1Lab n-type-const→is-n-connected HoTT: Lemma 7.5.7 #-}
+{-# COMPILE 1Lab is-n-connected→n-type-const HoTT: Lemma 7.5.7 #-}
 ```
 -->
 
@@ -421,6 +427,9 @@ point-is-n-connected a₀ n a-conn =
     (retract→is-n-connected (suc n) (tt ,_) snd (λ _ → refl)
       (Path-is-connected {y = a₀} (suc n) a-conn))
     a-conn
+
+{-# COMPILE 1Lab point-is-n-connected HoTT: Lemma 7.5.11 #-}
+{-# COMPILE 1Lab is-n-connected-point HoTT: Lemma 7.5.11 #-}
 ```
 
 <!--
@@ -472,5 +481,7 @@ relative-n-type-const-plus {A = A} {B = B} P f n (suc k) f-conn P-hl it = done w
     retract→is-hlevel k (from _ _) (to _ _) (linv _ _) $
       relative-n-type-const-plus (Q x y) f n k f-conn
         (λ x → Path-is-hlevel' (k + n) (P-hl x) _ _) _
+
+{-# COMPILE 1Lab relative-n-type-const-plus HoTT: Lemma 8.6.1 #-}
 ```
 -->

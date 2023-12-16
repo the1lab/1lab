@@ -96,6 +96,8 @@ whenever it is a family of propositions, by providing a case for
 ∥-∥-proj : ∀ {ℓ} {A : Type ℓ} → is-prop A → ∥ A ∥ → A
 ∥-∥-proj ap = ∥-∥-rec ap λ x → x
 
+{-# COMPILE 1Lab ∥-∥-proj HoTT: Corollary 3.9.2 #-}
+
 ∥-∥-rec₂ : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ''} {P : Type ℓ'}
          → is-prop P
          → (A → B → P)
@@ -169,6 +171,7 @@ nothing:
 ```agda
 is-prop→equiv∥-∥ : ∀ {ℓ} {P : Type ℓ} → is-prop P → P ≃ ∥ P ∥
 is-prop→equiv∥-∥ pprop = prop-ext pprop squash inc (∥-∥-proj pprop)
+{-# COMPILE 1Lab is-prop→equiv∥-∥ HoTT: Lemma 3.9.1 #-}
 ```
 
 In fact, an alternative definition of `is-prop`{.Agda} is given by "being

@@ -88,6 +88,7 @@ distinct elements. We go with the circle, `S¹`{.Agda}:
             k (j = i1) → loop (k ∧ i)
         })
       base
+  {-# COMPILE 1Lab ¬is-prop-loops HoTT: Lemma 6.4.2 #-}
 ```
 
 Hence, a contradiction:

@@ -137,6 +137,8 @@ $$
 ```agda
   Σ-map∙≃map∙-Ω : (Σ∙ A∙ →∙ B∙) ≃ (A∙ →∙ Ωⁿ 1 B∙)
   Σ-map∙≃map∙-Ω = Σ-map∙≃loops ∙e loops≃map∙-Ω
+
+{-# COMPILE 1Lab Σ-map∙≃map∙-Ω HoTT: Lemma 6.5.4 #-}
 ```
 
 ### Loop spaces are equivalently based maps out of spheres
@@ -184,4 +186,5 @@ at either point) are the same thing as points of $A$.
   ((Susp (Sⁿ⁻¹ n) , N) →∙ Ωⁿ 1 A) ≃⟨ Ωⁿ≃Sⁿ-map n ⟩
   Ωⁿ n (Ωⁿ 1 A) .fst              ≃⟨ path→equiv (ap fst (reassoc-Ω n)) ⟩
   Ωⁿ (suc n) A .fst               ≃∎
+{-# COMPILE 1Lab Ωⁿ≃Sⁿ-map HoTT: Lemma 6.2.9 #-}
 ```

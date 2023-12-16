@@ -16,6 +16,7 @@ ident=is-set}.
 ```agda
 is-strict : ∀ {o ℓ} → Precategory o ℓ → Type o
 is-strict C = is-set (Precategory.Ob C)
+{-# COMPILE 1Lab is-strict HoTT: Definition 9.6.1 #-}
 ```
 
 Strictness is a very strong condition to impose on categories, since it

@@ -39,6 +39,7 @@ which we denote $\Omega^n A$.
 Ωⁿ zero A    = A
 Ωⁿ (suc n) (A , x) with Ωⁿ n (A , x)
 ... | (T , x) = Path T x x , refl
+{-# COMPILE 1Lab Ωⁿ HoTT: Definition 2.1.8 #-}
 ```
 
 For positive $n$, we can give $\Omega^n A$ a `Group`{.Agda} structure,
@@ -87,6 +88,7 @@ commutative, independent of $A$.
          ≡ ap (λ x → ∙-idl x k) q ∙ ap (λ x → ∙-idr x k) p)
     (λ i → (λ j → p (j ∧ ~ i) ∙ q (j ∧ i))
          ∙ (λ j → p (~ i ∨ j) ∙ q (i ∨ j)))
+{-# COMPILE 1Lab Ωⁿ⁺²-is-abelian-group HoTT: Theorem 2.1.6 #-}
 ```
 
 <!--
@@ -100,6 +102,7 @@ commutative, independent of $A$.
   .make-group.assoc        → ∙-assoc
   .make-group.invl         → ∙-invl
   .make-group.idl          → ∙-idl
+{-# COMPILE 1Lab π₁Groupoid HoTT: Example 6.11.4 #-}
 ```
 -->
 

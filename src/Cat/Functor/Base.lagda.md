@@ -80,6 +80,8 @@ Cat[ C , D ] .Pc._∘_ = _∘nt_
 Cat[ C , D ] .Pc.idr f       = ext λ x → Pc.idr D _
 Cat[ C , D ] .Pc.idl f       = ext λ x → Pc.idl D _
 Cat[ C , D ] .Pc.assoc f g h = ext λ x → Pc.assoc D _ _ _
+
+{-# COMPILE 1Lab Cat[_,_] HoTT: Definition 9.2.3 #-}
 ```
 
 We'll also need the following foundational tool, characterising paths

@@ -63,6 +63,7 @@ make it clearer, we can also define a recursion principle:
 S¹-rec : ∀ {ℓ} {A : Type ℓ} (b : A) (l : b ≡ b) → S¹ → A
 S¹-rec b l base     = b
 S¹-rec b l (loop i) = l i
+{-# COMPILE 1Lab S¹-rec HoTT: Lemma 6.2.5 #-}
 ```
 
 <!--
@@ -92,6 +93,8 @@ _ = refl
 
 refl≠loop : ¬ refl ≡ loop
 refl≠loop path = true≠false (ap parity path)
+
+{-# COMPILE 1Lab refl≠loop HoTT: Lemma 6.4.1 #-}
 ```
 
 ## Fundamental group
@@ -120,6 +123,8 @@ to be the integers:
   Cover : S¹ → Type
   Cover base     = ℤ
   Cover (loop i) = ua rotate i
+
+  {-# COMPILE 1Lab Cover HoTT: Definition 8.1.1 #-}
 ```
 
 We can define a function from paths $\rm{base} \equiv \rm{base}$ to
@@ -131,6 +136,8 @@ choice of point, then is $\rm{Cover}(x)$.
 ```agda
   encode : ∀ x → base ≡ x → Cover x
   encode x p = subst Cover p point
+
+  {-# COMPILE 1Lab encode HoTT: Definition 8.1.5 #-}
 ```
 
 Let us now define the inverse function: one from integer to paths. By
@@ -149,6 +156,8 @@ non-trivial path, $e = \rm{loop}$.
 
   loopⁿ : ℤ → base ≡ base
   loopⁿ n = map-out refl post-loop n
+
+  {-# COMPILE 1Lab loopⁿ HoTT: Definition 8.1.1 #-}
 ```
 
 To prove that the map $n \mapsto \rm{loop}^n$ is an equivalence, we
@@ -234,9 +243,13 @@ $\mathrm{loop}^{n-1}\mathrm{loop} = \mathrm{loop}^{n}$. The proof is now
 straightforward to wrap up:
 
 ```agda
+  {-# COMPILE 1Lab decode HoTT: Definition 8.1.6 #-}
+
   encode-decode : ∀ x (p : base ≡ x) → decode x (encode x p) ≡ p
   encode-decode _ = J (λ x p → decode x (encode x p) ≡ p) $
     ap loopⁿ (transport-refl point) ∙ map-out-point _ _
+
+  {-# COMPILE 1Lab encode-decode HoTT: Lemma 8.1.7 #-}
 
   encode-loopⁿ : (n : ℤ) → encode base (loopⁿ n) ≡ n
   encode-loopⁿ n = p ∙ sym (map-out-unique id refl (λ _ → refl) n) where
@@ -248,9 +261,13 @@ straightforward to wrap up:
           ·· uaβ rotate (subst Cover (loopⁿ x) point))
       n
 
+  {-# COMPILE 1Lab encode-loopⁿ HoTT: Lemma 8.1.8 #-}
+
   ΩS¹≃integers : (base ≡ base) ≃ ℤ
   ΩS¹≃integers = Iso→Equiv $
     encode base , iso loopⁿ encode-loopⁿ (encode-decode base)
+
+  {-# COMPILE 1Lab ΩS¹≃integers HoTT: Corollary 8.1.10 #-}
 
 open S¹Path Int-integers public
 ```

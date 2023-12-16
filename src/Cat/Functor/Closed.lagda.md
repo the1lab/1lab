@@ -94,4 +94,7 @@ functoriality constraints.
       F.₁ f .η _ E.∘ ⌜ F.₁ f' .η _ E.∘ F₁ (F.₀ _) g ⌝ E.∘ F₁ (F.₀ _) g'   ≡⟨ ap! (F.₁ f' .is-natural _ _ _) ⟩
       F.₁ f .η _ E.∘ (F₁ (F.₀ _) g E.∘ F.₁ f' .η _) E.∘ F₁ (F.₀ _) g'     ≡⟨ cat! E ⟩
       ((F.₁ f .η _ E.∘ F₁ (F.₀ _) g) E.∘ (F.₁ f' .η _ E.∘ F₁ (F.₀ _) g')) ∎
+
+{-# COMPILE 1Lab Curry HoTT: Lemma 9.5.3.i #-}
+{-# COMPILE 1Lab Uncurry HoTT: Lemma 9.5.3.ii #-}
 ```

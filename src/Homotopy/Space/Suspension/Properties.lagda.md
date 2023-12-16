@@ -51,4 +51,6 @@ Susp-is-connected {A = A} (suc (suc n)) a-conn =
 
     rem₂ : Σ (inc N ≡ inc S) (λ p → ∀ x → ap n-Tr.inc (merid x) ≡ p)
     rem₂ = _ , λ x → sym (rem₁ .is-eqv _ .centre .snd) $ₚ x
+
+{-# COMPILE 1Lab Susp-is-connected HoTT: Theorem 8.2.1 #-}
 ```

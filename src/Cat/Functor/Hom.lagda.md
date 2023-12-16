@@ -138,6 +138,8 @@ embedding functor is [[fully faithful]].
   isom .rinv nt = ext λ c g →
     happly (sym (nt .is-natural _ _ _)) _ ∙ ap (nt .η c) (idl g)
   isom .linv _ = idr _
+
+{-# COMPILE 1Lab よ-is-fully-faithful HoTT: Corollary 9.5.6 #-}
 ```
 
 ## The covariant yoneda embedding

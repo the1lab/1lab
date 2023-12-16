@@ -20,6 +20,7 @@ then, is a proof assigning decisions to values of a certain type.
 data Dec {ℓ} (A : Type ℓ) : Type ℓ where
   yes : (a  :   A) → Dec A
   no  : (¬a : ¬ A) → Dec A
+{-# COMPILE 1Lab Dec HoTT: Definition 3.4.3.i #-}
 
 Dec-elim
   : ∀ {ℓ ℓ'} {A : Type ℓ} (P : Dec A → Type ℓ')
@@ -52,6 +53,7 @@ A type is _discrete_ if it has decidable equality.
 ```agda
 Discrete : ∀ {ℓ} → Type ℓ → Type ℓ
 Discrete A = {x y : A} → Dec (x ≡ y)
+{-# COMPILE 1Lab Discrete HoTT: Definition 3.4.3.iii #-}
 ```
 
 <!--

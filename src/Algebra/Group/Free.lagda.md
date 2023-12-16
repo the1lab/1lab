@@ -182,4 +182,5 @@ make-free-group .Ml.unique {y = y} {g = g} p =
     (sym (is-group-hom.pres-id (g .preserves)))
   where module y = Group-on (y .snd)
 module Free-groups {ℓ} = make-left-adjoint (make-free-group {ℓ = ℓ})
+{-# COMPILE 1Lab make-free-group HoTT: Theorem 6.11.6 #-}
 ```

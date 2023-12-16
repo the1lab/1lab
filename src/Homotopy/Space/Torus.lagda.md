@@ -35,6 +35,7 @@ data T² : Type where
   loopA : base ≡ base
   loopB : base ≡ base
   square : Square loopA loopB loopB loopA
+{-# COMPILE 1Lab T² HoTT: Example 6.6.1 #-}
 ```
 
 The resulting HIT is equivalent to the product of two circles.

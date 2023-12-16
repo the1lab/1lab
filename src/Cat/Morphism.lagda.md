@@ -414,6 +414,8 @@ record is-invertible (f : Hom a b) : Type h where
   op .inverses .Inverses.invl = invr inverses
   op .inverses .Inverses.invr = invl inverses
 
+{-# COMPILE 1Lab is-invertible HoTT: Definition 9.1.2 #-}
+
 record _≅_ (a b : Ob) : Type h where
   field
     to       : Hom a b
@@ -421,6 +423,8 @@ record _≅_ (a b : Ob) : Type h where
     inverses : Inverses to from
 
   open Inverses inverses public
+
+{-# COMPILE 1Lab _≅_ HoTT: Definition 9.1.2 #-}
 
 open _≅_ public
 ```
@@ -449,6 +453,8 @@ is-invertible-is-prop {a = a} {b = b} {f = f} g h = p where
   p i .is-invertible.inv = g≡h i
   p i .is-invertible.inverses =
     is-prop→pathp (λ i → Inverses-are-prop {g = g≡h i}) g.inverses h.inverses i
+
+{-# COMPILE 1Lab is-invertible-is-prop HoTT: Lemma 9.1.3 #-}
 ```
 
 We note that the identity morphism is always iso, and that isos compose:

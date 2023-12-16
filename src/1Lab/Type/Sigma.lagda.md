@@ -60,6 +60,13 @@ is-iso.linv (snd Σ-pathp-iso) x = refl
             Σ-pathp-iso
 ```
 
+<!--
+```agda
+{-# COMPILE 1Lab Σ-pathp-iso HoTT: Theorem 2.7.2 #-}
+{-# COMPILE 1Lab Σ-path-iso HoTT: Theorem 2.7.2 #-}
+```
+-->
+
 ## Closure under equivalences
 
 Univalence automatically implies that every type former respects
@@ -159,6 +166,7 @@ projections:
             → {x y : Σ _ B}
             → (x .fst ≡ y .fst) → x ≡ y
 Σ-prop-path bp {x} {y} p i = p i , is-prop→pathp (λ i → bp (p i)) (x .snd) (y .snd) i
+{-# COMPILE 1Lab Σ-prop-path HoTT: Lemma 3.5.1 #-}
 ```
 
 The proof that this is an equivalence uses a cubical argument, but the
@@ -247,6 +255,7 @@ If `B` is a family of contractible types, then `Σ B ≃ A`:
   the-iso .snd .is-iso.inv x = x , bcontr _ .centre
   the-iso .snd .is-iso.rinv x = refl
   the-iso .snd .is-iso.linv (a , b) i = a , bcontr a .paths b i
+{-# COMPILE 1Lab Σ-contract HoTT: Lemma 3.11.9 #-}
 ```
 
 <!--
@@ -317,6 +326,7 @@ infixr 4 _,ₚ_
   .is-iso.inv x → _ , x
   .is-iso.rinv x → ap (λ e → subst B e x) (is-contr→is-set c _ _ _ _) ∙ transport-refl x
   .is-iso.linv x → Σ-path (c .paths _) (transport⁻transport (ap B (sym (c .paths (x .fst)))) (x .snd))
+{-# COMPILE 1Lab Σ-contr-eqv HoTT: Lemma 3.11.9 #-}
 ```
 -->
 

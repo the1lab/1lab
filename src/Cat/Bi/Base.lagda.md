@@ -379,6 +379,8 @@ directly:
       (E.eliml (ap (f .F₁) (ap (g .F₁) (h .F-id)) ·· ap (f .F₁) (g .F-id) ·· f .F-id))
       (E.elimr (E.eliml (f .F-id)))
     where module E = Cr E
+
+{-# COMPILE 1Lab Cat HoTT: Lemma 9.2.10 #-}
 ```
 
 # Lax functors

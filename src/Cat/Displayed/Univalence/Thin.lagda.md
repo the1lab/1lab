@@ -70,6 +70,7 @@ record
       → ∣ is-hom (λ x → x) s t ∣ → ∣ is-hom (λ x → x) t s ∣ → s ≡ t
 
 open Thin-structure public
+{-# COMPILE 1Lab Thin-structure HoTT: Definition 9.8.1 #-}
 
 module _
   {ℓ o' ℓ'} {S : Type ℓ → Type o'}
@@ -110,6 +111,8 @@ the type of $H$-homomorphic $\cB$-isomorphisms.
         (λ _ _ _ → ≅[]-path _ (spec .is-hom _ _ _ .is-tr _ _))
         ( spec .id-hom-unique (x .snd .from') (x .snd .to')
         ∙ spec .id-hom-unique (y .snd .to') (y .snd .from'))
+
+  {-# COMPILE 1Lab Structured-objects-is-category HoTT: Theorem 9.8.2 #-}
 ```
 
 By construction, such a category of structured objects admits a

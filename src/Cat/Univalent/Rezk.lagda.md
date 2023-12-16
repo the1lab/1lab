@@ -116,6 +116,8 @@ module _ (A : Precategory o h) where
   Rezk-completion .idr   = PSh[A].idr
   Rezk-completion .idl   = PSh[A].idl
   Rezk-completion .assoc = PSh[A].assoc
+
+  {-# COMPILE 1Lab Rezk-completion HoTT: Theorem 9.9.5 #-}
 ```
 
 Our resized Rezk completion $\widehat{\cA}$ factors the Yoneda

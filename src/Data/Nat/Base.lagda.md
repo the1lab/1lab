@@ -132,6 +132,8 @@ opaque
   Nat-is-set : is-set Nat
   Nat-is-set = Discrete→is-set Discrete-Nat
 
+{-# COMPILE 1Lab Nat-is-set HoTT: Example 3.1.4 #-}
+
 instance
   H-Level-Nat : ∀ {n} → H-Level Nat (2 + n)
   H-Level-Nat = basic-instance 2 Nat-is-set

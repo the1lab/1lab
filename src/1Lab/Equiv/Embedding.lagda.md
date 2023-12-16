@@ -91,6 +91,7 @@ propositional fibres:
 ```agda
 is-embedding : (A → B) → Type _
 is-embedding f = ∀ x → is-prop (fibre f x)
+{-# COMPILE 1Lab is-embedding HoTT: Definition 4.6.1.ii #-}
 
 _↪_ : Type ℓ → Type ℓ₁ → Type _
 A ↪ B = Σ[ f ∈ (A → B) ] is-embedding f
@@ -136,6 +137,8 @@ is-equiv→is-embedding
   → is-equiv f
   → is-embedding f
 is-equiv→is-embedding eqv x = is-contr→is-prop (eqv .is-eqv x)
+
+{-# COMPILE 1Lab is-equiv→is-embedding HoTT: Theorem 2.11.1 #-}
 
 Equiv→Embedding
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
@@ -197,5 +200,7 @@ module _ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
       → is-hlevel A (suc n)
     embedding→is-hlevel n emb a-hl = is-hlevel≃ (suc n) (Total-equiv f) $
       Σ-is-hlevel (suc n) a-hl λ x → is-prop→is-hlevel-suc (emb x)
+
+{-# COMPILE 1Lab embedding→is-hlevel HoTT: Theorem 7.1.6 #-}
 ```
 -->

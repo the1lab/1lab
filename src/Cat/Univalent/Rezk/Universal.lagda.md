@@ -97,6 +97,7 @@ eso→pre-faithful {A = A} {B = B} {C = C} H {F} {G} h-eso γ δ p =
   where module C = Cat.Reasoning C
         module F = Functor F
         module G = Functor G
+{-# COMPILE 1Lab eso→pre-faithful HoTT: Lemma 9.9.1 #-}
 ```
 
 The above is, unfortunately, the simplest result in this module. The
@@ -297,6 +298,8 @@ $- \circ H$ is faithful, and now we've shown it is full, it is fully faithful.
   res : is-fully-faithful (precompose H)
   res = full+faithful→ff (precompose H) full λ {F} {G} {γ} {δ} p →
     eso→pre-faithful H H-eso γ δ λ b → p ηₚ b
+
+{-# COMPILE 1Lab eso-full→pre-ff HoTT: Lemma 9.9.2 #-}
 ```
 
 ## Essential surjectivity
@@ -638,6 +641,7 @@ $G$ is an equivalence of types.
   weak-equiv→pre-iso = is-equivalence→is-precat-iso (precompose H) weak-equiv→pre-equiv
     (Functor-is-category c-cat)
     (Functor-is-category c-cat)
+  {-# COMPILE 1Lab weak-equiv→pre-iso HoTT: Theorem 9.9.4 #-}
 ```
 
 Restating the result that $- \circ H$ acts on objects as an equivalence of

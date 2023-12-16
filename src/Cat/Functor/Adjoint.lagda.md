@@ -95,6 +95,7 @@ transformations to make sure these match:
     zag : ∀ {B} → F₁ R (counit.ε B) C.∘ unit.η (F₀ R B) ≡ C.id
 
 infixr 15 _⊣_
+{-# COMPILE 1Lab _⊣_ HoTT: Definition 9.3.1 #-}
 ```
 
 These are called "triangle identities" because of the shape they have as

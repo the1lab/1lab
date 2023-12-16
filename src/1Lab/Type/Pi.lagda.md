@@ -119,6 +119,8 @@ the identity when staying at a variable point in the interval.
 
 <!--
 ```agda
+{-# COMPILE 1Lab funext-dep HoTT: Lemma 2.9.6 #-}
+
 funext-dep≃
   : {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ₁}
     {f : (x : A i0) → B i0 x} {g : (x : A i1) → B i1 x}

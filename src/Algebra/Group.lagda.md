@@ -163,6 +163,8 @@ We have that a map `is a group homomorphism`{.Agda ident=is-group-hom} if
 it `preserves the multiplication`{.Agda ident=pres-⋆}.
 
 ```agda
+{-# COMPILE 1Lab Group-on HoTT: Definition 6.11.2 #-}
+
 record
   is-group-hom
     {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}

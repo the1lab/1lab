@@ -319,6 +319,8 @@ sym p i = p (~ i)
 
 <!--
 ```
+{-# COMPILE 1Lab sym HoTT: Lemma 2.1.1 #-}
+
 symP : ∀ {ℓ₁} {A : I → Type ℓ₁} {x : A i0} {y : A i1}
      → PathP A x y → PathP (λ i → A (~ i)) y x
 symP p i = p (~ i)
@@ -329,10 +331,10 @@ As a minor improvement over "Book HoTT", this operation is
 _definitionally_ involutive:
 
 ```agda
-module _ {ℓ} {A : Type ℓ} {x y : A} {p : x ≡ y} where
-  private
-    sym-invol : sym (sym p) ≡ p
-    sym-invol i = p
+module _ {ℓ} {A : Type ℓ} {x y : A} {p : x ≡ y} where private
+  sym-invol : sym (sym p) ≡ p
+  sym-invol i = p
+  {-# COMPILE 1Lab sym-invol HoTT: Lemma 2.1.4.iii #-}
 ```
 
 Given a `Square`{.Agda}, we can "flip" it along either dimension, or along the main diagonal:
@@ -421,6 +423,9 @@ that transporting along `refl`{.Agda} is `id`{.Agda} is as follows:
 transport-refl : ∀ {ℓ} {A : Type ℓ} (x : A)
                → transport (λ i → A) x ≡ x
 transport-refl {A = A} x i = transp (λ _ → A) i x
+
+{-# NOINLINE transport-refl #-}
+{-# COMPILE 1Lab transport-refl HoTT: Lemma 2.3.5 #-}
 ```
 
 Since `λ i → A` is a constant function, the definition of
@@ -472,6 +477,7 @@ principle of _indiscernibility of identicals_:
 subst : ∀ {ℓ₁ ℓ₂} {A : Type ℓ₁} (P : A → Type ℓ₂) {x y : A}
       → x ≡ y → P x → P y
 subst P p x = transp (λ i → P (p i)) i0 x
+{-# COMPILE 1Lab subst HoTT: Lemma 2.3.1 #-}
 ```
 
 ### Computation
@@ -591,6 +597,7 @@ Singleton-is-contr : ∀ {ℓ} {A : Type ℓ} {x : A} (y : Singleton x)
 Singleton-is-contr {x = x} (y , path) i = path i , square i where
   square : Square refl refl path path
   square i j = path (i ∧ j)
+{-# COMPILE 1Lab Singleton-is-contr HoTT: Lemma 3.11.8 #-}
 ```
 
 Thus, the definition of `J`{.Agda}: `transport`{.Agda} +
@@ -1052,6 +1059,12 @@ p ∙ q = refl ·· p ·· q
 infixr 30 _∙_
 ```
 
+<!--
+```agda
+{-# COMPILE 1Lab _∙_ HoTT: Lemma 2.1.2 #-}
+```
+-->
+
 The ordinary, “single composite” of $p$ and $q$ is the dashed face in
 the diagram above.  Since we bound `··-filler`{.Agda} above, and defined
 `_∙_`{.Agda} in terms of `_··_··_`{.Agda}, we can reuse the latter's
@@ -1258,6 +1271,7 @@ ap : ∀ {a b} {A : Type a} {B : A → Type b} (f : (x : A) → B x) {x y : A}
    → (p : x ≡ y) → PathP (λ i → B (p i)) (f x) (f y)
 ap f p i = f (p i)
 {-# NOINLINE ap #-}
+{-# COMPILE 1Lab ap HoTT: Lemma 2.2.1 #-}
 ```
 
 The following function expresses the same thing as `ap`{.Agda}, but for
@@ -1298,6 +1312,7 @@ ap-square
   → (α : Square p q s r)
   → SquareP (λ i j → B (α i j)) (ap f p) (ap f q) (ap f s) (ap f r)
 ap-square f α i j = f (α i j)
+{-# COMPILE 1Lab ap-square HoTT: Lemma 6.4.4 #-}
 ```
 -->
 
@@ -1313,17 +1328,20 @@ module _ where
     f : A → B
     g : B → C
 
+  ap-sym : {x y : A} {p : x ≡ y}
+         → sym (ap f p) ≡ ap f (sym p)
+  ap-sym = refl
+  {-# COMPILE 1Lab ap-sym HoTT: Lemma 2.2.2.ii #-}
+
   ap-∘ : {x y : A} {p : x ≡ y}
        → ap (λ x → g (f x)) p ≡ ap g (ap f p)
   ap-∘ = refl
+  {-# COMPILE 1Lab ap-∘ HoTT: Lemma 2.2.2.iii #-}
 
   ap-id : {x y : A} {p : x ≡ y}
         → ap (λ x → x) p ≡ p
   ap-id = refl
-
-  ap-sym : {x y : A} {p : x ≡ y}
-         → sym (ap f p) ≡ ap f (sym p)
-  ap-sym = refl
+  {-# COMPILE 1Lab ap-id HoTT: Lemma 2.2.2.iv #-}
 
   ap-refl : {x : A} → ap f (λ i → x) ≡ (λ i → f x)
   ap-refl = refl
@@ -1343,6 +1361,7 @@ for the open box with sides `refl`, `ap f p` and `ap f q`, so they must be equal
   ap-∙ : (f : A → B) {x y z : A} (p : x ≡ y) (q : y ≡ z)
        → ap f (p ∙ q) ≡ ap f p ∙ ap f q
   ap-∙ f p q = ap-·· f refl p q
+  {-# COMPILE 1Lab ap-∙ HoTT: Lemma 2.2.2.i #-}
 ```
 
 # Syntax sugar
@@ -1508,6 +1527,8 @@ module _ {ℓ} {A : I → Type ℓ} {x : A i0} {y : A i1} where
 
   from-pathp : PathP A x y → coe0→1 A x ≡ y
   from-pathp p i = transp (λ j → A (i ∨ j)) i (p i)
+{-# COMPILE 1Lab to-pathp   HoTT: Remark 6.2.3 #-}
+{-# COMPILE 1Lab from-pathp HoTT: Remark 6.2.3 #-}
 ```
 
 Note that by composing the functions `to-pathp`{.Agda} and
@@ -1625,6 +1646,7 @@ path `p : a ≡ x`, and a path between `b` and `y` laying over `p`.
   → PathP (λ i → B i (p i)) (x .snd) (y .snd)
   → PathP (λ i → Σ (A i) (B i)) x y
 Σ-pathp p q i = p i , q i
+{-# COMPILE 1Lab Σ-pathp HoTT: Lemma 2.3.2 #-}
 ```
 
 We can also use the book characterisation of dependent paths, which is
@@ -1664,6 +1686,11 @@ funext : ∀ {a b} {A : Type a} {B : A → Type b}
        → ((x : A) → f x ≡ g x) → f ≡ g
 funext p i x = p x i
 ```
+<!--
+```agda
+{-# COMPILE 1Lab funext HoTT: Theorem 2.9.3 #-}
+```
+-->
 
 Furthermore, we know (since types are groupoids, and functions are
 functors) that, by analogy with 1-category theory, paths in a function
@@ -1682,6 +1709,7 @@ homotopy-natural {f = f} {g = g} H {x} {y} p = ∙-unique _ λ i j →
     k (i = i0) → f (p (j ∧ k))
     k (j = i0) → f x
     k (j = i1) → H (p k) i
+{-# COMPILE 1Lab homotopy-natural HoTT: Lemma 2.4.3 #-}
 ```
 
 ## Paths
@@ -1781,6 +1809,14 @@ subst-path-both : ∀ {ℓ} {A : Type ℓ} {x x' : A}
                 → subst (λ x → x ≡ x) adj p ≡ sym adj ∙ p ∙ adj
 subst-path-both p adj = transport-path p adj adj
 ```
+
+<!--
+```agda
+{-# COMPILE 1Lab subst-path-left  HoTT: Lemma 2.11.2 #-}
+{-# COMPILE 1Lab subst-path-right HoTT: Lemma 2.11.2 #-}
+{-# COMPILE 1Lab subst-path-both  HoTT: Lemma 2.11.2 #-}
+```
+-->
 
 <!--
 TODO: Explain these whiskerings

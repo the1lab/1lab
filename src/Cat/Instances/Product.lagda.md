@@ -76,6 +76,7 @@ C ×ᶜ D = prodcat module ×ᶜ where
     C.assoc f g h i , D.assoc f' g' h' i
 
 {-# DISPLAY ×ᶜ.prodcat a b = a ×ᶜ b #-}
+{-# COMPILE 1Lab _×ᶜ_ HoTT: Definition 9.5.2 #-}
 infixr 20 _×ᶜ_
 ```
 

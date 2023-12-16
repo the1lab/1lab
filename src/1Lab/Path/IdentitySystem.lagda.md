@@ -359,4 +359,8 @@ Discrete→is-set {A = A} dec =
     stable {x = x} {y = y} ¬¬p with dec {x} {y}
     ... | yes p = p
     ... | no ¬p = absurd (¬¬p ¬p)
+
+{-# COMPILE 1Lab set-identity-system       HoTT: Theorem 7.2.2 #-}
+{-# COMPILE 1Lab ¬¬-stable-identity-system HoTT: Corollary 7.2.3 #-}
+{-# COMPILE 1Lab Discrete→is-set           HoTT: Theorem 7.2.5 #-}
 ```

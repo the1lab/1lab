@@ -59,6 +59,7 @@ shortest and most aesthetic: `fibre`{.Agda}.
 ```agda
 fibre : (A → B) → B → Type _
 fibre f y = Σ _ λ x → f x ≡ y
+{-# COMPILE 1Lab fibre HoTT: Definition 4.2.4 #-}
 ```
 
 A function `f` is an equivalence if every one of its fibres is
@@ -74,6 +75,7 @@ record is-equiv (f : A → B) : Type (level-of A ⊔ level-of B) where
     is-eqv : (y : B) → is-contr (fibre f y)
 
 open is-equiv public
+{-# COMPILE 1Lab is-equiv HoTT: Definition 4.4.1 #-}
 
 _≃_ : ∀ {ℓ₁ ℓ₂} → Type ℓ₁ → Type ℓ₂ → Type _
 _≃_ A B = Σ (A → B) is-equiv
@@ -168,6 +170,8 @@ is-equiv-is-prop f p q i .is-eqv y =
      k (j = i0) → p2 (q2 w (~ k)) i
      k (j = i1) → w
      k (k = i0) → p2 w (i ∨ j)
+
+{-# COMPILE 1Lab is-equiv-is-prop HoTT: Lemma 4.4.4 #-}
 ```
 </details>
 
@@ -203,6 +207,7 @@ record is-iso (f : A → B) : Type (level-of A ⊔ level-of B) where
   inv inverse = f
   rinv inverse = linv
   linv inverse = rinv
+{-# COMPILE 1Lab is-iso HoTT: Definition 2.4.6 #-}
 
 Iso : ∀ {ℓ₁ ℓ₂} → Type ℓ₁ → Type ℓ₂ → Type _
 Iso A B = Σ (A → B) is-iso
@@ -231,7 +236,10 @@ equiv→zig {f = f} eqv x i j = hcomp (∂ i ∨ ∂ j) λ where
    k (j = i0) → equiv→counit eqv (f x) (i ∧ ~ k)
    k (j = i1) → f x
    k (k = i0) → eqv .is-eqv (f x) .paths (x , refl) j .snd i
+```
 
+<!--
+```agda
 equiv→zag
   : ∀ {f : A → B} (eqv : is-equiv f) x
   → ap (equiv→inverse eqv) (equiv→counit eqv x)
@@ -250,8 +258,18 @@ equiv→zag {f = f} eqv b =
     k (j = i1) → η a (i ∧ ~ k)
     k (k = i0) → η a (i ∧ j)
 
+-- Theorem 4.4.3 is "isContr(f) → is-hae(f)"
+{-# COMPILE 1Lab equiv→inverse HoTT: Theorem 4.4.3.i #-}
+{-# COMPILE 1Lab equiv→unit    HoTT: Theorem 4.4.3.ii #-}
+{-# COMPILE 1Lab equiv→counit  HoTT: Theorem 4.4.3.ii #-}
+{-# COMPILE 1Lab equiv→zig     HoTT: Theorem 4.4.3.iii #-}
+{-# COMPILE 1Lab equiv→zag     HoTT: Theorem 4.4.3.iii #-}
+```
+-->
+
+```agda
 is-equiv→is-iso : {f : A → B} → is-equiv f → is-iso f
-is-iso.inv (is-equiv→is-iso eqv) = equiv→inverse eqv
+is-equiv→is-iso eqv .is-iso.inv = equiv→inverse eqv
 ```
 
 We can get an element of `x` from the proof that `f` is an equivalence -
@@ -259,15 +277,14 @@ it's the point of `A` mapped to `y`, which we get from centre of
 contraction for the fibres of `f` over `y`.
 
 ```agda
-is-iso.rinv (is-equiv→is-iso eqv) y =
-  eqv .is-eqv y .centre .snd
+is-equiv→is-iso eqv .is-iso.rinv y = eqv .is-eqv y .centre .snd
 ```
 
 Similarly, that one fibre gives us a proof that the function above is a
 right inverse to `f`.
 
 ```agda
-is-iso.linv (is-equiv→is-iso {f = f} eqv) x i =
+is-equiv→is-iso {f = f} eqv .is-iso.linv x i =
   eqv .is-eqv (f x) .paths (x , refl) i .fst
 ```
 
@@ -659,6 +676,10 @@ infix 31 _e⁻¹
            → is-equiv (λ x → g (f x))
 ∙-is-equiv {f = f} {g = g} e e' = ((f , e) ∙e (g , e')) .snd
 
+{-# COMPILE 1Lab id-equiv HoTT: Lemma 2.4.12.i #-}
+{-# COMPILE 1Lab _e⁻¹ HoTT: Lemma 2.4.12.ii #-}
+{-# COMPILE 1Lab _∙e_ HoTT: Lemma 2.4.12.iii #-}
+
 module Equiv {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A ≃ B) where
   to = f .fst
   from = equiv→inverse (f .snd)
@@ -711,6 +732,7 @@ prop-ext pprop qprop p→q q→p .fst = p→q
 prop-ext pprop qprop p→q q→p .snd .is-eqv y .centre = q→p y , qprop _ _
 prop-ext pprop qprop p→q q→p .snd .is-eqv y .paths (p' , path) =
   Σ-path (pprop _ _) (is-prop→is-set qprop _ _ _ _)
+{-# COMPILE 1Lab prop-ext HoTT: Lemma 3.3.3 #-}
 ```
 
 <!--

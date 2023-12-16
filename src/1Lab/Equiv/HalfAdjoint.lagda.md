@@ -45,6 +45,7 @@ is-half-adjoint-equiv {A = A} {B = B} f =
   Σ[ η ∈ ((x : A) → g (f x) ≡ x) ]
   Σ[ ε ∈ ((y : B) → f (g y) ≡ y) ]
   ((x : A) → ap f (η x) ≡ ε (f x))
+{-# COMPILE 1Lab is-half-adjoint-equiv HoTT: Definition 4.2.1 #-}
 ```
 
 The argument is an adaptation of a standard result of both category
@@ -101,6 +102,8 @@ cancel:
       sym (ε (f (g (f x))))  ∙ ⌜ ap (f ∘ g ∘ f) (η x) ∙ ε (f x) ⌝ ≡˘⟨ ap¡ (homotopy-natural ε _) ⟩
       sym (ε (f (g (f x))))  ∙ ε (f (g (f x)))      ∙ ap f (η x)  ≡⟨ ∙-cancell (ε (f (g (f x)))) (ap f (η x)) ⟩
       ap f (η x)                                                  ∎
+
+{-# COMPILE 1Lab is-half-adjoint-equiv HoTT: Theorem 4.2.3 #-}
 ```
 
 The notion of `half-adjoint equivalence`{.Agda ident=is-half-adjoint-equiv} is a useful
@@ -149,6 +152,8 @@ fibre-paths {f = f} {y} {f1} {f2} =
       J (λ x' γ → ∀ p' → (subst (λ x → f x ≡ _) γ (f1 .snd) ≡ p')
                        ≡ (ap f γ ∙ p' ≡ f1 .snd))
         helper p p'
+
+{-# COMPILE 1Lab fibre-paths HoTT: Lemma 4.2.5 #-}
 ```
 </details>
 
@@ -193,6 +198,8 @@ $\varepsilon$ lets us "push it past $p$" to get something we can cancel:
       ap (f ∘ g) refl ∙ ε y                       ≡⟨⟩
       refl ∙ ε y                                  ≡⟨ ∙-idl (ε y) ⟩
       ε y                                         ∎
+
+{-# COMPILE 1Lab is-half-adjoint-equiv→is-equiv HoTT: Lemma 4.2.6 #-}
 ```
 
 Putting these together, we get an alternative definition of

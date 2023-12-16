@@ -34,6 +34,7 @@ A functor is **full** when its action on hom-sets is surjective:
 is-full : Functor C D → Type _
 is-full {C = C} {D = D} F =
   ∀ {x y} (g : D .Hom (F₀ F x) (F₀ F y)) → ∃[ f ∈ C .Hom x y ] (F₁ F f ≡ g)
+{-# COMPILE 1Lab is-full HoTT: Definition 9.4.3 #-}
 ```
 :::
 
@@ -43,6 +44,7 @@ A functor is **faithful** when its action on hom-sets is injective:
 ```agda
 is-faithful : Functor C D → Type _
 is-faithful F = ∀ {x y} → injective (F₁ F {x = x} {y})
+{-# COMPILE 1Lab is-faithful HoTT: Definition 9.4.3 #-}
 ```
 :::
 
@@ -78,6 +80,7 @@ prove the conjunction as a theorem.
 ```agda
 is-fully-faithful : Functor C D → Type _
 is-fully-faithful F = ∀ {x y} → is-equiv (F₁ F {x = x} {y})
+{-# COMPILE 1Lab is-fully-faithful HoTT: Definition 9.4.3 #-}
 
 fully-faithful→faithful : {F : Functor C D} → is-fully-faithful F → is-faithful F
 fully-faithful→faithful f = Equiv.injective (_ , f)
@@ -196,6 +199,9 @@ is-split-eso F = ∀ y → Essential-fibre F y
 
 is-eso : Functor C D → Type _
 is-eso F = ∀ y → ∥ Essential-fibre F y ∥
+
+{-# COMPILE 1Lab is-split-eso HoTT: Definition 9.4.4 #-}
+{-# COMPILE 1Lab is-eso HoTT: Definition 9.4.6 #-}
 ```
 
 <!--

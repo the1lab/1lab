@@ -154,6 +154,9 @@ to an invertible natural transformation, resp. natural isomorphism.
     mk .inv∘eta x = is x .D.invr
     mk .natural _ _ = nat
 
+  {-# COMPILE 1Lab iso→isoⁿ HoTT: Lemma 9.2.4 #-}
+  {-# COMPILE 1Lab isoⁿ→iso HoTT: Lemma 9.2.4 #-}
+
   is-invertibleⁿ→isoⁿ : ∀ {F G} {α : F => G} → is-invertibleⁿ α → F ≅ⁿ G
   is-invertibleⁿ→isoⁿ nat-inv = CD.invertible→iso _ nat-inv
 

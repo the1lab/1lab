@@ -207,6 +207,8 @@ Precategory-identity-system .to-path-over {C} {D} (F , i) =
       F.₁ (_ C.∘ f i0 C.∘ _)                                          ≡˘⟨ ap F.₁ (Hom-transport C (λ i → x i) (λ i → y i) (f i0)) ⟩
       F.₁ (coe0→1 (λ z → C.Hom (x z) (y z)) (f i0))                   ≡⟨ ap F.₁ (from-pathp (λ i → f i)) ⟩
       F.₁ (f i1)                                                      ∎
+
+{-# COMPILE 1Lab Precategory-identity-system HoTT: Lemma 9.4.15 #-}
 ```
 
 Note that we did not need to concern ourselves with the actual witness
@@ -317,4 +319,6 @@ the necessary paths for showing that $F_0$ is an equivalence of types.
         .is-iso.inv    → eqv .F⁻¹ .F₀
         .is-iso.rinv x → dcat .to-path       $ isoⁿ→iso (F∘F⁻¹≅Id eqv) _
         .is-iso.linv x → sym $ ccat .to-path $ isoⁿ→iso (Id≅F⁻¹∘F eqv) _
+
+{-# COMPILE 1Lab Category-identity-system HoTT: Theorem 9.4.16 #-}
 ```

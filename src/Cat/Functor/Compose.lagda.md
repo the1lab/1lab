@@ -90,6 +90,9 @@ _▸_ : (H : Functor E C) → F => G → H F∘ F => H F∘ G
 _▸_ H nt .η x = H .F₁ (nt .η x)
 _▸_ H nt .is-natural x y f =
   sym (H .F-∘ _ _) ∙ ap (H .F₁) (nt .is-natural _ _ _) ∙ H .F-∘ _ _
+
+{-# COMPILE 1Lab _◂_ HoTT: Definition 9.2.7 #-}
+{-# COMPILE 1Lab _▸_ HoTT: Definition 9.2.7 #-}
 ```
 
 With the whiskerings already defined, defining $- \circ p$ and $p \circ -$ is easy:

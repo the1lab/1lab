@@ -278,6 +278,8 @@ Rel ℓ .dual-≤ f≤g x y w = f≤g y x w
 Rel ℓ .∩-le-l x y (a , _) = a
 Rel ℓ .∩-le-r x y (_ , b) = b
 Rel ℓ .∩-univ h≤f h≤g x y h = h≤f x y h , h≤g x y h
+
+{-# COMPILE 1Lab Rel HoTT: Example 9.1.19 #-}
 ```
 
 </details>

@@ -138,6 +138,8 @@ Coeq-univ {C = C} {f = f} {g = g} cset =
 
     islinv : is-left-inverse cr' (λ h → h ∘ inc , λ i z → h (glue z i))
     islinv f = funext (Coeq-elim-prop (λ x → cset _ _) λ x → refl)
+
+{-# COMPILE 1Lab Coeq-univ HoTT: Definition 6.10.3 #-}
 ```
 
 </div>

@@ -174,6 +174,9 @@ for the composition operation.
 
   ∙-idl : (p : x ≡ y) → refl ∙ p ≡ p
   ∙-idl p = sym (∙-filler' refl p)
+
+  {-# COMPILE 1Lab ∙-idl HoTT: Lemma 2.1.4.i #-}
+  {-# COMPILE 1Lab ∙-idr HoTT: Lemma 2.1.4.i #-}
 ```
 
 For associativity, we use both:
@@ -182,6 +185,8 @@ For associativity, we use both:
   ∙-assoc : (p : w ≡ x) (q : x ≡ y) (r : y ≡ z)
           → p ∙ (q ∙ r) ≡ (p ∙ q) ∙ r
   ∙-assoc p q r i = ∙-filler p q i ∙ ∙-filler' q r (~ i)
+
+  {-# COMPILE 1Lab ∙-assoc HoTT: Lemma 2.1.4.iv #-}
 ```
 
 For cancellation, we need to sketch an open cube where the missing
@@ -204,6 +209,9 @@ equal to `sym (sym p)`. In that case, we show that `sym p ∙ sym (sym p)
 ```agda
   ∙-invl : (p : x ≡ y) → sym p ∙ p ≡ refl
   ∙-invl p = ∙-invr (sym p)
+
+  {-# COMPILE 1Lab ∙-invl HoTT: Lemma 2.1.4.ii #-}
+  {-# COMPILE 1Lab ∙-invr HoTT: Lemma 2.1.4.ii #-}
 ```
 
 In addition to the groupoid identities for paths in a type, it has been
@@ -271,6 +279,13 @@ more than a handful of intermediate steps:
     ·· ∙-cancelr r (sym p)
 ```
 
+<!--
+```agda
+{-# COMPILE 1Lab commutes→square HoTT: Theorem 2.11.5 #-}
+{-# COMPILE 1Lab square→commutes HoTT: Theorem 2.11.5 #-}
+```
+-->
+
 # Groupoid structure of types (cont.)
 
 A useful fact is that if $H$ is a homotopy $f \sim \id$, then it
@@ -299,4 +314,6 @@ homotopy-invert {f = f} H {x} i j = hcomp (∂ i ∨ ∂ j) λ where
   k (j = i1) → H x       (~ k ∧ i)
   k (i = i0) → H (f x)   (~ k ∨ j)
   k (i = i1) → H (H x j) (~ k)
+
+{-# COMPILE 1Lab homotopy-invert HoTT: Corollary 2.4.4 #-}
 ```

@@ -211,6 +211,8 @@ Free⊣Forget .counit .is-natural x y th =
 Free⊣Forget .zig {A = A} =
   ext $ fold-pure {X = A}
 Free⊣Forget .zag {B = B} i x = B .snd .idr {x = x} i
+
+{-# COMPILE 1Lab Free⊣Forget HoTT: Lemma 6.11.5 #-}
 ```
 
 This concludes the proof that `Monoids`{.Agda} has free objects. We now

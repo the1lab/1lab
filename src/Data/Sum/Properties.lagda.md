@@ -115,6 +115,12 @@ structure, we can establish its h-level by induction:
   Code≃Path = Iso→Equiv (encode , iso decode encode-decode decode-encode)
 ```
 
+<!--
+```agda
+{-# COMPILE 1Lab ⊎Path.Code≃Path HoTT: Theorem 2.12.5 #-}
+```
+-->
+
 ```agda
 open ⊎Path
 

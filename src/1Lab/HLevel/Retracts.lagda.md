@@ -54,6 +54,7 @@ retract→is-contr f g h isC .paths x =
   f (isC .centre) ≡⟨ ap f (isC .paths _) ⟩
   f (g x)         ≡⟨ h _ ⟩
   x               ∎
+{-# COMPILE 1Lab retract→is-contr HoTT: Lemma 3.11.7 #-}
 ```
 
 We must also show that retracts of _propositions_ are propositions:
@@ -110,6 +111,7 @@ homotopy.
       (sym (h x) ∙ h x) ∙ path                  ≡⟨ ap₂ _∙_ (∙-invl (h x)) refl ⟩
       refl ∙ path                               ≡⟨ ∙-idl path ⟩
       path                                      ∎
+{-# COMPILE 1Lab retract→is-hlevel HoTT: Theorem 7.1.4 #-}
 ```
 
 The proof that this function _does_ invert `ap g` on the left is boring,
@@ -133,6 +135,8 @@ iso→is-hlevel n f is-iso =
 equiv→is-hlevel : (n : Nat) (f : A → B) → is-equiv f → is-hlevel A n → is-hlevel B n
 equiv→is-hlevel n f eqv = iso→is-hlevel n f (is-equiv→is-iso eqv)
 
+{-# COMPILE 1Lab equiv→is-hlevel HoTT: Corollary 7.1.5 #-}
+
 is-hlevel≃ : (n : Nat) → (B ≃ A) → is-hlevel A n → is-hlevel B n
 is-hlevel≃ n f = iso→is-hlevel n (Equiv.from f) (iso (Equiv.to f) (Equiv.η f) (Equiv.ε f))
 
@@ -155,6 +159,7 @@ homotopy n-type is itself a homotopy n-type.
 Π-is-hlevel (suc (suc n)) bhl f g =
   retract→is-hlevel (suc n) funext happly (λ x → refl)
     (Π-is-hlevel (suc n) λ x → bhl x (f x) (g x))
+{-# COMPILE 1Lab Π-is-hlevel HoTT: Example 3.1.6, Theorem 7.1.9 #-}
 ```
 
 <!--
@@ -230,6 +235,7 @@ closed under h-levels.
     (is-iso.inverse (Σ-path-iso .snd) .is-iso.inv)
     (Σ-path-iso .snd)
     (Σ-is-hlevel (suc n) (h1 (fst x) (fst y)) λ x → h2 _ _ _)
+{-# COMPILE 1Lab Σ-is-hlevel HoTT: Theorem 7.1.8 #-}
 ```
 
 Similarly for dependent products and functions, there is a non-dependent
@@ -242,6 +248,7 @@ version of `Σ-is-hlevel`{.Agda} that expresses closure of h-levels under
             → is-hlevel A n → is-hlevel B n
             → is-hlevel (A × B) n
 ×-is-hlevel n ahl bhl = Σ-is-hlevel n ahl (λ _ → bhl)
+{-# COMPILE 1Lab ×-is-hlevel HoTT: Example 3.1.5 #-}
 ```
 
 Similarly, `Lift`{.Agda} does not induce a change of h-levels, i.e. if

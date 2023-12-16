@@ -30,6 +30,8 @@ family of isomorphisms is an [[identity system]].
 ```agda
 is-category : ∀ {o h} (C : Precategory o h) → Type (o ⊔ h)
 is-category C = is-identity-system (Isomorphism C) (λ a → id-iso C)
+
+{-# COMPILE 1Lab is-category HoTT: Definition 9.1.6 #-}
 ```
 
 This notion of univalent category corresponds to the usual notion ---
@@ -43,6 +45,8 @@ path→iso
   : ∀ {o h} {C : Precategory o h} {A B}
   → A ≡ B → Isomorphism C A B
 path→iso {C = C} {A} p = transport (λ i → Isomorphism C A (p i)) (id-iso C)
+
+{-# COMPILE 1Lab path→iso HoTT: Lemma 9.1.4 #-}
 
 module Univalent' {o h} {C : Precategory o h} (r : is-category C) where
   module path→iso = Ids r
@@ -67,6 +71,8 @@ of objects in any univalent category is a proposition:
 ```agda
   Ob-is-groupoid : is-groupoid (C .Precategory.Ob)
   Ob-is-groupoid = path→iso.hlevel 2 λ _ _ → ≅-is-set
+
+  {-# COMPILE 1Lab Ob-is-groupoid HoTT: Lemma 9.1.8 #-}
 ```
 
 :::{.definition #transport-in-hom}
@@ -107,6 +113,8 @@ paths in `Hom`{.Agda}-sets.
             → PathP (λ i → Hom (p i) (q i)) h h'
   Hom-pathp {p = p} {q} {h} {h'} prf =
     to-pathp (subst (_≡ h') (sym (Hom-transport p q h)) prf)
+
+  {-# COMPILE 1Lab Hom-pathp HoTT: Lemma 9.1.9 #-}
 ```
 
 <!--

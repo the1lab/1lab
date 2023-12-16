@@ -406,6 +406,7 @@ module](1Lab.Equiv.FromPath.html).
 ```agda
 path→equiv : {A B : Type ℓ} → A ≡ B → A ≃ B
 path→equiv p = line→equiv (λ i → p i)
+{-# COMPILE 1Lab path→equiv HoTT: Lemma 2.10.1 #-}
 ```
 
 Since identity of equivalences is determined by identity of their
@@ -488,6 +489,14 @@ univalence-lift {ℓ = ℓ} = is-iso→is-equiv morp where
     x                                      ∎
   morp .is-iso.linv x = Path≃Equiv .snd .is-iso.linv _
 ```
+
+<!--
+```agda
+{-# COMPILE 1Lab univalence HoTT: Theorem 2.10.3 #-}
+{-# COMPILE 1Lab ua HoTT: Theorem 2.10.3.i #-}
+{-# COMPILE 1Lab uaβ HoTT: Theorem 2.10.3.ii #-}
+```
+-->
 
 ## Equivalence induction {defines="equivalence-induction"}
 
@@ -664,6 +673,10 @@ with propositional fibres are precisely the injective maps.
 
 <!--
 ```
+{-# COMPILE 1Lab Fibre-equiv     HoTT: Lemma 4.8.1 #-}
+{-# COMPILE 1Lab Total-equiv     HoTT: Lemma 4.8.2 #-}
+{-# COMPILE 1Lab Fibration-equiv HoTT: Theorem 4.8.3 #-}
+
 _ = is-prop
 ```
 -->
@@ -756,6 +769,10 @@ sym-ua {A = A} {B = B} e i j = Glue B λ where
       id-equiv (((e e⁻¹) ∙e e) .snd) i
   (j = i1) → A , e
 
+{-# COMPILE 1Lab ua-id-equiv HoTT: Theorem 2.10.3.iii #-}
+{-# COMPILE 1Lab ua∙ HoTT: Theorem 2.10.3.iii #-}
+{-# COMPILE 1Lab sym-ua HoTT: Theorem 2.10.3.iii #-}
+
 ua→ : ∀ {ℓ ℓ'} {A₀ A₁ : Type ℓ} {e : A₀ ≃ A₁} {B : (i : I) → Type ℓ'}
   {f₀ : A₀ → B i0} {f₁ : A₁ → B i1}
   → ((a : A₀) → PathP B (f₀ a) (f₁ (e .fst a)))
@@ -788,6 +805,6 @@ subst-∙ : ∀ {ℓ ℓ'} {A : Type ℓ} → (B : A → Type ℓ')
         → subst B (p ∙ q) u ≡ subst B q (subst B p u)
 subst-∙ B p q Bx i =
   transport (ap B (∙-filler' p q (~ i))) (transport-filler-ext (ap B p) i Bx)
-
+{-# COMPILE 1Lab subst-∙ HoTT: Lemma 2.3.9 #-}
 ```
 -->
