@@ -268,6 +268,17 @@ Lift-is-hlevel'
 Lift-is-hlevel' n lift-hl = retract→is-hlevel n Lift.lower lift (λ _ → refl) lift-hl
 ```
 
+The `fibre`{.Agda}s of a function between $n$-types are $n$-types.
+
+```agda
+fibre-is-hlevel
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → (n : Nat)
+  → is-hlevel A n → is-hlevel B n
+  → (f : A → B)
+  → ∀ b → is-hlevel (fibre f b) n
+fibre-is-hlevel n Ah Bh f b = Σ-is-hlevel n Ah λ _ → Path-is-hlevel n Bh
+```
 
 # Automation
 

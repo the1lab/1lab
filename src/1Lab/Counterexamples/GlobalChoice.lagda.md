@@ -66,22 +66,22 @@ Hence `b`{.Agda} negates to itself, which is a contradiction.
   ¬global-choice = not-no-fixed b≡notb
 ```
 
-## ∞-excluded middle is inconsistent with univalence
+## ∞-excluded middle is inconsistent with univalence {defines="LEM-infty"}
 
-As a corollary, we also get that the "naïve" statement of the law of excluded middle,
-saying that every type is [[decidable]], is inconsistent with univalence.
+As a corollary, we also get that the "naïve" statement of the [[law of excluded
+middle]], saying that *every* type is [[decidable]], is inconsistent with univalence.
 
 First, since $\| A \| \to \neg \neg A$, we get that the naïve formulation of
 double negation elimination is false:
 
 ```agda
 ¬DNE∞ : (∀ {ℓ} (A : Type ℓ) → ¬ ¬ A → A) → ⊥
-¬DNE∞ DNE∞ = ¬global-choice λ A a → DNE∞ A (λ ¬A → ∥-∥-rec! ¬A a)
+¬DNE∞ dne∞ = ¬global-choice λ A a → dne∞ A (λ ¬A → ∥-∥-rec! ¬A a)
 ```
 
 Thus $\rm{LEM}_\infty$, which is equivalent to $\rm{DNE}_\infty$, also fails:
 
 ```agda
 ¬LEM∞ : (∀ {ℓ} (A : Type ℓ) → Dec A) → ⊥
-¬LEM∞ LEM∞ = ¬DNE∞ λ A ¬¬a → Dec-rec id (λ ¬a → absurd (¬¬a ¬a)) (LEM∞ A)
+¬LEM∞ lem∞ = ¬DNE∞ λ A ¬¬a → Dec-rec id (λ ¬a → absurd (¬¬a ¬a)) (lem∞ A)
 ```

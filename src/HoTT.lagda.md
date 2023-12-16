@@ -2,6 +2,7 @@
 ```agda
 open import 1Lab.Counterexamples.GlobalChoice
 open import 1Lab.Equiv.Biinv
+open import 1Lab.Classical
 
 open import Algebra.Group.Homotopy
 open import Algebra.Monoid
@@ -280,6 +281,23 @@ _ = is-hlevel-is-prop
 * Lemma 3.3.4: `is-prop→is-set`{.Agda}
 * Lemma 3.3.5: `is-prop-is-prop`{.Agda}, `is-hlevel-is-prop`{.Agda}
 
+### 3.4 Classical vs. intuitionistic logic
+
+<!--
+```agda
+_ = LEM
+_ = DNE
+_ = Dec
+_ = Discrete
+```
+-->
+
+* Definition 3.4.1: `LEM`{.Agda}
+* Definition 3.4.2: `DNE`{.Agda}
+* Definition 3.4.3:
+  * (i): `Dec`{.Agda}
+  * (iii): `Discrete`{.Agda}
+
 ### 3.5 Subsets and propositional resizing
 
 <!--
@@ -305,6 +323,16 @@ _ = ∃
 The type itself is defined as a higher-inductive type `∥_∥`{.Agda}. We
 also define `∃`{.Agda} as a shorthand for the truncation of `Σ`{.Agda}.
 
+### 3.8 The axiom of choice
+
+<!--
+```agda
+_ = Axiom-of-choice
+```
+-->
+
+* Definition 3.8.3: `Axiom-of-choice`{.Agda}
+
 ### 3.9 The principle of unique choice
 
 <!--
@@ -316,7 +344,7 @@ _ = ∥-∥-proj
 -->
 
 * Lemma 3.9.1: `is-prop→equiv∥-∥`{.Agda}
-* Lemma 3.9.2: Implicit in e.g. `∥-∥-univ`{.Agda}, `∥-∥-proj`{.Agda}
+* Corollary 3.9.2: Implicit in e.g. `∥-∥-univ`{.Agda}, `∥-∥-proj`{.Agda}
 
 ### 3.11 Contractibility
 
@@ -349,7 +377,10 @@ _ = is-prop∙→is-contr
 _ = H-Level-Dec
 _ = disjoint-⊎-is-prop
 _ = ¬global-choice
+_ = ∥-∥-elim
+_ = LEM≃DNE
 _ = ℕ-well-ordered
+_ = Σ-contr-eqv
 _ = is-prop≃equiv∥-∥
 _ = Finite-choice
 ```
@@ -362,7 +393,10 @@ _ = Finite-choice
 * Exercise 3.6: `H-Level-Dec`{.Agda}
 * Exercise 3.7: `disjoint-⊎-is-prop`{.Agda}
 * Exercise 3.11: `¬global-choice`{.Agda}
+* Exercise 3.17: `∥-∥-elim`{.Agda}
+* Exercise 3.18: `LEM≃DNE`{.Agda}
 * Exercise 3.19: `ℕ-well-ordered`{.Agda}
+* Exercise 3.20: `Σ-contr-eqv`{.Agda}
 * Exercise 3.21: `is-prop≃equiv∥-∥`{.Agda}
 * Exercise 3.22: `Finite-choice`{.Agda}
 
@@ -917,6 +951,9 @@ _ = surjective→regular-epi
 _ = epi→surjective
 _ = Sets-effective-congruences
 _ = effective
+_ = Susp-prop-is-set
+_ = Susp-prop-path
+_ = AC→LEM
 ```
 -->
 
@@ -924,6 +961,8 @@ _ = effective
 * Theorem 10.1.5: `Sets-regular`{.Agda}, `surjective→regular-epi`{.Agda}, `epi→surjective`{.Agda}
 * 10.1.3 Quotients: `Sets-effective-congruences`{.Agda}
 * Lemma 10.1.8: `effective`{.Agda}
+* Lemma 10.1.13: `Susp-prop-is-set`{.Agda}, `Susp-prop-path`{.Agda}
+* Theorem 10.1.14: `AC→LEM`{.Agda}
 
 ### 10.5 The cumulative hierarchy
 

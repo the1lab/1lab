@@ -1,5 +1,6 @@
 <!--
 ```
+open import 1Lab.Reflection.Induction
 open import 1Lab.Prelude
 ```
 -->
@@ -66,6 +67,20 @@ Susp-elim
 Susp-elim P pN pS pmerid N = pN
 Susp-elim P pN pS pmerid S = pS
 Susp-elim P pN pS pmerid (merid x i) = pmerid x i
+
+unquoteDecl Susp-elim-prop = make-elim-n 1 Susp-elim-prop (quote Susp)
+```
+
+Every suspension admits a surjection from the booleans:
+
+```agda
+2→Σ : ∀ {ℓ} {A : Type ℓ} → Bool → Susp A
+2→Σ true = N
+2→Σ false = S
+
+2→Σ-surjective : ∀ {ℓ} {A : Type ℓ} (s : Susp A) → ∥ fibre 2→Σ s ∥
+2→Σ-surjective = Susp-elim-prop (λ _ → hlevel 1)
+  (inc (true , refl)) (inc (false , refl))
 ```
 
 The suspension operation [[increases|connectedness of suspensions]] the

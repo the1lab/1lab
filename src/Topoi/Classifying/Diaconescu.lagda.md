@@ -20,7 +20,7 @@ import Cat.Reasoning
 module Topoi.Classifying.Diaconescu where
 ```
 
-# Diaconescu's theorem
+# Diaconescu's theorem {defines="Diaconescu's-theorem"}
 
 Let $\Sigma$ be a **signature** consisting of sorts $A, B, C\dots$,
 function symbols $f, \dots : A \to B$, and  relation symbols $~, \dots$.
