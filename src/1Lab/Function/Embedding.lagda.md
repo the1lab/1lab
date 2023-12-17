@@ -20,7 +20,7 @@ open import 1Lab.Type
 -->
 
 ```agda
-module 1Lab.Equiv.Embedding where
+module 1Lab.Function.Embedding where
 ```
 
 <!--
@@ -46,7 +46,7 @@ $1 \coprod 1$.
 
 To develop this correspondence, we note that, if a map is
 `injective`{.Agda} and its codomain is a [set], then all the
-`fibres`{.Agda} $f^*(x)$ of $f$ are [propositions].
+`fibres`{.Agda ident=fibre} $f^*(x)$ of $f$ are [propositions].
 
 [set]: 1Lab.HLevel.html#is-set
 [propositions]: 1Lab.HLevel.html#is-prop
@@ -158,6 +158,12 @@ monic→is-embedding
 monic→is-embedding {f = f} bset monic =
   injective→is-embedding bset _ λ {x} {y} p →
     happly (monic {C = el (Lift _ ⊤) (λ _ _ _ _ i j → lift tt)} (λ _ → x) (λ _ → y) (funext (λ _ → p))) _
+
+right-inverse→injective
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → {f : A → B} (g : B → A)
+  → is-right-inverse f g → injective f
+right-inverse→injective g rinv {x} {y} p = sym (rinv x) ∙ ap g p ∙ rinv y
 ```
 -->
 

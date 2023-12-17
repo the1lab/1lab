@@ -36,17 +36,15 @@ Let $f : A \to B$ be an ordinary function between sets (or, indeed,
 arbitrary types). Its **image** $\im f$ can be computed as the subset
 $\{ b \in B : (\exists a)\ b = f(a) \}$, but this description does not
 carry over to more general categories: More abstractly, we can say that
-the image [embeds into] $B$, and admits a map from $A$ (in material set
-theory, this is $f$ itself --- structurally, it is called the
+the image [[embeds into|embedding]] $B$, and admits a map from $A$ (in
+material set theory, this is $f$ itself --- structurally, it is called
+the
 **corestriction** of $f$). Furthermore, these two maps _factor_ $f$, in
 that:
 
 $$
 (A \xto{e} \im f \xmono{m} B) = (A \xto{f} B)
 $$
-
-
-[embeds into]: 1Lab.Equiv.Embedding.html
 
 While these are indeed two necessary properties of an _image_, they fail
 to accurately represent the set-theoretic construction: Observe that,

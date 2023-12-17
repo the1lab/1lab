@@ -592,6 +592,10 @@ span.qed {
   float: right;
 }
 
+span.shaded {
+  background-color: var(--diagram-shaded-bg);
+}
+
 /* The \liesover{} macro: It's awful and I hate it. The \liesover{} arrow
  * is just hspace --- KaTeX needs to know the actual size of the thing,
  * so we let *it* control the sizing --- and here, we draw an arrow over

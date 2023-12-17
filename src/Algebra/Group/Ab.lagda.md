@@ -151,9 +151,12 @@ record make-abelian-group (T : Type ℓ) : Type ℓ where
   to-ab .fst .is-tr = ab-is-set
   to-ab .snd = to-abelian-group-on
 
+is-commutative-group : ∀ {ℓ} → Group ℓ → Type ℓ
+is-commutative-group G = ∀ x y → Group-on._⋆_ (G .snd) x y ≡ Group-on._⋆_ (G .snd) y x
+
 from-commutative-group
   : ∀ {ℓ} (G : Group ℓ)
-  → (∀ x y → Group-on._⋆_ (G .snd) x y ≡ Group-on._⋆_ (G .snd) y x)
+  → is-commutative-group G
   → Abelian-group ℓ
 from-commutative-group G comm .fst = G .fst
 from-commutative-group G comm .snd .Abelian-group-on._*_ =

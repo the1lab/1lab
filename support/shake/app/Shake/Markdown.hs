@@ -17,6 +17,7 @@ import qualified Data.Text.Encoding as Text
 import qualified Data.Map.Lazy as Map
 import qualified Data.Text.IO as Text
 import qualified Data.Text as Text
+import qualified Data.Set as Set
 
 import Data.Digest.Pure.SHA
 import Data.Foldable
@@ -46,6 +47,7 @@ import Shake.LinkReferences
 import Shake.SearchData
 import Shake.Highlights
 import Shake.Options
+import Shake.Digest
 import Shake.KaTeX
 import Shake.Git
 
@@ -197,8 +199,18 @@ buildMarkdown modname input output = do
   need dependencies
 
   baseUrl <- getBaseUrl
+  digest <- do
+    cssDigest <- getFileDigest "_build/html/css/default.css"
+    startJsDigest <- getFileDigest "_build/html/start.js"
+    mainJsDigest <- getFileDigest "_build/html/main.js"
+    pure . Context . Map.fromList $
+      [ ("css",       toVal (Text.pack cssDigest))
+      , ("start-js",  toVal (Text.pack startJsDigest))
+      , ("main-js",   toVal (Text.pack mainJsDigest))
+      ]
+
   text <- liftIO $ either (fail . show) pure =<<
-    runIO (renderMarkdown authors references modname baseUrl markdown)
+    runIO (renderMarkdown authors references modname baseUrl digest markdown)
 
   let tags = foldEquations False (parseTags text)
   tags <- renderHighlights tags
@@ -342,8 +354,9 @@ renderMarkdown :: PandocMonad m
                -> [Val Text]   -- ^ List of references
                -> String       -- ^ Name of the current module
                -> String       -- ^ Base URL
+               -> Context Text -- ^ Digests of the various files.
                -> Pandoc -> m Text
-renderMarkdown authors references modname baseUrl markdown = do
+renderMarkdown authors references modname baseUrl digest markdown = do
   template <- getTemplate templateName >>= runWithPartials . compileTemplate templateName
                 >>= either (throwError . PandocTemplateError . Text.pack) pure
   let
@@ -357,6 +370,7 @@ renderMarkdown authors references modname baseUrl markdown = do
       , ("authors",      toVal authors')
       , ("reference",    toVal references)
       , ("base-url",     toVal (Text.pack baseUrl))
+      , ("digest",       toVal digest)
       ]
 
     options = def { writerTemplate        = Just template
@@ -367,10 +381,16 @@ renderMarkdown authors references modname baseUrl markdown = do
   setTranslations (Lang "en" Nothing Nothing [] [] [])
   writeHtml5String options markdown
 
+-- | Simple textual list of starting identifiers not to fold
+don'tFold :: Set.Set Text
+don'tFold = Set.fromList
+  [ "`⟨" -- used in CC.Lambda
+  ]
+
 -- | Removes the RHS of equation reasoning steps?? IDK, ask Amelia.
 foldEquations :: Bool -> [Tag Text] -> [Tag Text]
 foldEquations _ (to@(TagOpen "a" attrs):tt@(TagText t):tc@(TagClose "a"):rest)
-  | Text.length t > 1, Text.last t == '⟨', Just href <- lookup "href" attrs =
+  | t `Set.notMember` don'tFold, Text.length t > 1, Text.last t == '⟨', Just href <- lookup "href" attrs =
   [ TagOpen "span" [("class", "reasoning-step")]
   , TagOpen "span" [("class", "as-written " <> fromMaybe "" (lookup "class" attrs))]
   , to, tt, tc ] ++ go href rest

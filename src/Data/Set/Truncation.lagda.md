@@ -29,14 +29,6 @@ data ∥_∥₀ {ℓ} (A : Type ℓ) : Type ℓ where
   squash : is-set ∥ A ∥₀
 ```
 
-<!--
-```agda
-instance
-  H-Level-∥-∥₀ : ∀ {n} {ℓ} {A : Type ℓ} → H-Level ∥ A ∥₀ (suc (suc n))
-  H-Level-∥-∥₀ = basic-instance 2 squash
-```
--->
-
 We begin by defining the induction principle. The (family of) type(s) we
 map into must be a set, as required by the `squash`{.Agda} constructor.
 
@@ -68,7 +60,7 @@ Indeed, as required, the counit `inc`{.Agda} is an equivalence:
 ∥-∥₀-idempotent : ∀ {ℓ} {A : Type ℓ} → is-set A
                 → is-equiv (inc {A = A})
 ∥-∥₀-idempotent {A = A} aset = is-iso→is-equiv (iso proj inc∘proj λ _ → refl)
-  where
+  module ∥-∥₀-idempotent where
     proj : ∥ A ∥₀ → A
     proj (inc x) = x
     proj (squash x y p q i j) =
@@ -145,3 +137,11 @@ using `is-set→squarep`{.Agda}.
 module ∥-∥₀-path {ℓ} {A : Type ℓ} {x} {y}
   = Equiv (∥-∥₀-path-equiv {A = A} {x} {y})
 ```
+
+<!--
+```agda
+instance
+  H-Level-∥-∥₀ : ∀ {ℓ} {A : Type ℓ} {n : Nat} → H-Level ∥ A ∥₀ (2 + n)
+  H-Level-∥-∥₀ {n = n} = basic-instance 2 squash
+```
+-->

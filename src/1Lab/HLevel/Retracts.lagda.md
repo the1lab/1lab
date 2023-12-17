@@ -134,7 +134,7 @@ equiv→is-hlevel : (n : Nat) (f : A → B) → is-equiv f → is-hlevel A n →
 equiv→is-hlevel n f eqv = iso→is-hlevel n f (is-equiv→is-iso eqv)
 
 is-hlevel≃ : (n : Nat) → (B ≃ A) → is-hlevel A n → is-hlevel B n
-is-hlevel≃ n f = iso→is-hlevel n (Equiv.from f) (iso (Equiv.to f) (Equiv.η f) (Equiv.ε f))
+is-hlevel≃ n f = iso→is-hlevel n (equiv→inverse (f .snd)) (iso (f .fst) (equiv→unit (f .snd)) (equiv→counit (f .snd)))
 
 Iso→is-hlevel : (n : Nat) → Iso B A → is-hlevel A n → is-hlevel B n
 Iso→is-hlevel n (f , isic) = iso→is-hlevel n (isic .is-iso.inv) $
@@ -268,6 +268,17 @@ Lift-is-hlevel'
 Lift-is-hlevel' n lift-hl = retract→is-hlevel n Lift.lower lift (λ _ → refl) lift-hl
 ```
 
+The `fibre`{.Agda}s of a function between $n$-types are $n$-types.
+
+```agda
+fibre-is-hlevel
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → (n : Nat)
+  → is-hlevel A n → is-hlevel B n
+  → (f : A → B)
+  → ∀ b → is-hlevel (fibre f b) n
+fibre-is-hlevel n Ah Bh f b = Σ-is-hlevel n Ah λ _ → Path-is-hlevel n Bh
+```
 
 # Automation
 

@@ -6,7 +6,7 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
-open import Data.List
+open import Data.List.Base
 
 module 1Lab.Univalence.SIP.Auto where
 

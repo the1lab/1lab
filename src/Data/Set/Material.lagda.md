@@ -238,12 +238,10 @@ showing that each set has exactly one presentation.
 
 Whereas any pair $(A, f)$ could be said to "present" a set --- the
 literal $\rm{set}(A, f)$ ---, we shall only say "presentation" when $f :
-A \mono V$ is an [embedding] into the universe of material sets. Note
+A \mono V$ is an [[embedding]] into the universe of material sets. Note
 that any presentation has an underlying _set_ $A$, which we call the
 **type of members** of the associated set. Put explicitly, a
 presentation for a set $X$ consists of the following data:
-
-[embedding]: 1Lab.Equiv.Embedding.html
 
 ```agda
 record Presentation {ℓ} (X : V ℓ) : Type (lsuc ℓ) where

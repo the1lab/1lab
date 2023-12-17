@@ -1,5 +1,6 @@
 <!--
 ```agda
+{-# OPTIONS -vtactic.hlevel:30 #-}
 open import Cat.Instances.Functor
 open import Cat.Functor.Hom
 open import Cat.Prelude
