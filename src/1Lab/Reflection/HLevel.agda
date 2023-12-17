@@ -369,7 +369,6 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
       use-context : TC ⊤
       use-context = do
         (wanted-ty , wanted-lv) ← decompose-is-hlevel goal
-        -- wait-principal-arg wanted-ty
         wait-principal-arg wanted-ty
         debugPrint "tactic.hlevel" 10 $ "Attempting to use context for goal\n  " ∷ termErr wanted-ty ∷ []
         nondet (eff List) ctx-prfs λ idx → do
