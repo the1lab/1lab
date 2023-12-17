@@ -252,7 +252,7 @@ As usual with these things, we can establish properties of
 From which surjectivity follows immediately:
 
 ```agda
-  inc-is-surjective : ∀ a → ∥ fibre inc a ∥
+  inc-is-surjective : is-surjective inc
   inc-is-surjective = Image-elim-prop (λ _ → squash) (λ x → inc (x , refl))
 ```
 

@@ -92,7 +92,7 @@ Surjections-split : Typeω
 Surjections-split =
   ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → is-set A → is-set B
   → (f : A → B)
-  → (∀ b → ∥ fibre f b ∥)
+  → is-surjective f
   → ∥ (∀ b → fibre f b) ∥
 ```
 

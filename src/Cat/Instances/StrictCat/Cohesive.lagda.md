@@ -388,6 +388,6 @@ Points→Pieces : Γ {ℓ} {ℓ} => Π₀
 Points→Pieces .η _ x = inc x
 Points→Pieces .is-natural x y f i o = inc (F₀ f o)
 
-pieces-have-points : ∀ {x} y → ∥ fibre (Points→Pieces {ℓ} .η x) y ∥
+pieces-have-points : ∀ {x} → is-surjective (Points→Pieces {ℓ} .η x)
 pieces-have-points = Coeq-elim-prop (λ _ → squash) λ x → inc (x , refl)
 ```

@@ -35,7 +35,7 @@ open /-Obj
 There is a canonical way of viewing any category $\cB$ as displayed over
 _itself_, given [[fibrewise|fibre categories]] by taking [slice
 categories]. Following [@relativect], we refer to this construction as
-the **canonical-self indexing** of $\cB$ and denote it
+the **canonical self-indexing** of $\cB$ and denote it
 $\underline{\cB}$. Recall that the objects in the slice over $y$ are
 pairs consisting of an object $x$ and a map $f : x \to y$. The core idea
 is that _any morphism_ lets us view an object $x$ as being "structure
@@ -90,7 +90,7 @@ obtained by considering the canonical self-indexing of $\Sets_\kappa$.
 First, recall that an object $f : \Sets/X$ is equivalently a $X$-indexed
 family of sets, with the value of the family at each point $x : X$ being
 the fibre $f^*(x)$. A function $X \to Y$ of sets then corresponds to a
-_reindexing_, which takes an $X$-family of sets to a $Y$-family of sets
+_reindexing_, which takes an $Y$-family of sets to a $X$-family of sets
 ([in a functorial way]). A morphism $X' \to Y'$ in the canonical
 self-indexing of $\Sets$ lying over a map $f : X \to Y$ is then a
 function between the families $X' \to Y'$ which commutes with the
@@ -232,12 +232,12 @@ pullback→cartesian {x} {y} {x'} {y'} {f} {f'} pb = cart where
 
 If (and only if) $\cB$ has all [[pullbacks]], then its self-indexing is
 a [[Cartesian fibration]]. This is almost by definition, and is in fact
-where the "Cartesian" in "Cartesian fibration" (recall that another term
+where the "Cartesian" in "Cartesian fibration" comes from (recall that another term
 for "pullback square" is "cartesian square"). Since the total space
 $\int \underline{\cB}$ is equivalently the arrow category of $\cB$, with
 the projection functor $\pi : \int \underline{\cB} \to \cB$
 corresponding under this equivalence to the codomain functor, we refer
-to $\underline{ca{B}}$ regarded as a Cartesian fibration as the
+to $\underline{\cB}$ regarded as a Cartesian fibration as the
 **codomain fibration**.
 
 ```agda

@@ -124,7 +124,7 @@ these types are propositions, so we have a bunch of equivalences].
 connected-cofibre→surjective
   : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} (f : A → B)
   → is-connected (Cofibre f)
-  → ∀ x → ∥ fibre f x ∥
+  → is-surjective f
 connected-cofibre→surjective {A = A} {B = B} f conn x = transport cen (lift tt) where
 ```
 

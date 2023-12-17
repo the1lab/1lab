@@ -152,7 +152,7 @@ record make-abelian-group (T : Type ℓ) : Type ℓ where
   to-ab .snd = to-abelian-group-on
 
 is-commutative-group : ∀ {ℓ} → Group ℓ → Type ℓ
-is-commutative-group G = ∀ x y → Group-on._⋆_ (G .snd) x y ≡ Group-on._⋆_ (G .snd) y x
+is-commutative-group G = Group-on-is-abelian (G .snd)
 
 from-commutative-group
   : ∀ {ℓ} (G : Group ℓ)
