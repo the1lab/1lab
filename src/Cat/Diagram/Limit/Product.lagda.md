@@ -34,7 +34,7 @@ open _=>_
 ```
 -->
 
-# Products are limits 
+# Products are limits
 
 We establish the correspondence between binary products $A \times B$ and
 limits over the functor out of $\rm{Disc}(\{0,1\})$ which maps $0$
