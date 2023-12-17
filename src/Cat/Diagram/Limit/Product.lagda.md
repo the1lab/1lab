@@ -142,7 +142,7 @@ defined above.
 
 ```agda
 canonical-functors
-  : ∀ (F : Functor (Disc! Bool) C)
+  : ∀ (F : Functor 2-object-category C)
   → F ≡ 2-object-diagram (F₀ F true) (F₀ F false)
 canonical-functors F = Functor-path p q where
   p : ∀ x → _
