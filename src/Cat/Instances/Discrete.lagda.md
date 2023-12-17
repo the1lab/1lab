@@ -130,7 +130,7 @@ computations with equalities and a whole waterfall of absurd cases:
 <!--
 ```
 Disc-adjunct
-  : {X : Type ℓ} {@(tactic hlevel-tactic-worker) h : is-groupoid ⌞ X ⌟}
+  : {X : Type ℓ} {@(tactic hlevel-tactic-worker) h : is-groupoid X}
   → (X → Ob C)
   → Functor (Disc! X) C
 Disc-adjunct {C = C} F .F₀ = F
