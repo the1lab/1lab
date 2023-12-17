@@ -155,13 +155,6 @@ private
     quote is-set ∷
     quote is-groupoid ∷
     []
-  
-  hlevel-lift-types : List Name 
-  hlevel-lift-types =
-    quote is-contr→is-prop ∷ 
-    quote is-prop→is-set ∷
-    quote is-hlevel-suc ∷
-    []
 
   pattern nat-lit n =
     def (quote Number.fromNat) (_ ∷ _ ∷ _ ∷ lit (nat n) v∷ _)
