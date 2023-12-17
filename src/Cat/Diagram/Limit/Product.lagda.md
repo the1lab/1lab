@@ -6,6 +6,7 @@ description: |
 
 <!--
 ```agda
+{-# OPTIONS -vtactic.hlevel:10 #-}
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Product.Indexed
 open import Cat.Diagram.Limit.Base
@@ -34,7 +35,7 @@ open _=>_
 ```
 -->
 
-# Products are limits
+# Products are limits 
 
 We establish the correspondence between binary products $A \times B$ and
 limits over the functor out of $\rm{Disc}(\{0,1\})$ which maps $0$
@@ -43,7 +44,7 @@ existing infrastructure):
 
 ```agda
 2-object-category : Precategory _ _
-2-object-category = Disc' (el Bool Bool-is-set)
+2-object-category = Disc! Bool
 
 2-object-diagram : Ob → Ob → Functor 2-object-category C
 2-object-diagram a b = Disc-diagram λ where
@@ -142,7 +143,7 @@ defined above.
 
 ```agda
 canonical-functors
-  : ∀ (F : Functor 2-object-category C)
+  : ∀ (F : Functor (Disc! Bool) C)
   → F ≡ 2-object-diagram (F₀ F true) (F₀ F false)
 canonical-functors F = Functor-path p q where
   p : ∀ x → _
@@ -176,7 +177,7 @@ module _ {ℓ} {I : Type ℓ} (i-is-grpd : is-groupoid I) (F : I → Ob) where
   open _=>_
 
   Proj→Cone : ∀ {x} → (∀ i → Hom x (F i))
-            → Const x => Disc-adjunct {C = C} {iss = i-is-grpd} F
+            → Const x => Disc-adjunct {C = C} F
   Proj→Cone π .η i = π i
   Proj→Cone π .is-natural i j p =
     J (λ j p →  π j ∘ id ≡ subst (Hom (F i) ⊙ F) p id ∘ π i)
@@ -205,7 +206,7 @@ module _ {ℓ} {I : Type ℓ} (i-is-grpd : is-groupoid I) (F : I → Ob) where
 
   is-limit→is-indexed-product
     : ∀ {K : Functor ⊤Cat C}
-    → {eta : K F∘ !F => Disc-adjunct {iss = i-is-grpd} F}
+    → {eta : K F∘ !F => Disc-adjunct F}
     → is-ran !F (Disc-adjunct F) K eta
     → is-indexed-product C F (eta .η)
   is-limit→is-indexed-product {K = K} {eta} lim = ip where
@@ -222,12 +223,12 @@ module _ {ℓ} {I : Type ℓ} (i-is-grpd : is-groupoid I) (F : I → Ob) where
     ip .unique k comm =
       lim.unique _ _ _ comm
 
-  IP→Limit : Indexed-product C F → Limit {C = C} (Disc-adjunct {iss = i-is-grpd} F)
+  IP→Limit : Indexed-product C F → Limit {C = C} (Disc-adjunct F)
   IP→Limit ip =
     to-limit (is-indexed-product→is-limit has-is-ip)
     where open Indexed-product ip
 
-  Limit→IP : Limit {C = C} (Disc-adjunct {iss = i-is-grpd} F) → Indexed-product C F
+  Limit→IP : Limit {C = C} (Disc-adjunct F) → Indexed-product C F
   Limit→IP lim .Indexed-product.ΠF = _
   Limit→IP lim .Indexed-product.π = _
   Limit→IP lim .Indexed-product.has-is-ip =

@@ -149,7 +149,19 @@ private
   -- an application of is-hlevel/is-prop/is-set into an 'underlying
   -- type' and level arguments.
   hlevel-types : List Name
-  hlevel-types = quote is-hlevel ∷ quote is-prop ∷ quote is-set ∷ quote is-groupoid ∷ []
+  hlevel-types =
+    quote is-hlevel ∷
+    quote is-prop ∷
+    quote is-set ∷
+    quote is-groupoid ∷
+    []
+  
+  hlevel-lift-types : List Name 
+  hlevel-lift-types =
+    quote is-contr→is-prop ∷ 
+    quote is-prop→is-set ∷
+    quote is-hlevel-suc ∷
+    []
 
   pattern nat-lit n =
     def (quote Number.fromNat) (_ ∷ _ ∷ _ ∷ lit (nat n) v∷ _)
@@ -364,16 +376,22 @@ from the wanted level (k + n) until is-hlevel-+ n (sucᵏ' n) w works.
       use-context : TC ⊤
       use-context = do
         (wanted-ty , wanted-lv) ← decompose-is-hlevel goal
-        debugPrint "tactic.hlevel" 20 $ "Attempting to use context for goal\n  " ∷ termErr wanted-ty ∷ []
+        -- wait-principal-arg wanted-ty
+        wait-principal-arg wanted-ty
+        debugPrint "tactic.hlevel" 10 $ "Attempting to use context for goal\n  " ∷ termErr wanted-ty ∷ []
         nondet (eff List) ctx-prfs λ idx → do
           let idx = idx + depth
-          -- debugPrint "tactic.hlevel" 20 $
-            -- "Considering context entry " ∷ termErr prf ∷ " with type is-hlevel " ∷ termErr have-ty ∷ " " ∷ termErr have-level ∷ []
           (have-ty , have-lv) ← decompose-is-hlevel (var₀ idx)
+          debugPrint "tactic.hlevel" 20 
+            [ "Considering context entry " , termErr (var₀ idx) , " with type is-hlevel " , termErr have-ty , " " , termErr have-lv ]
           have-lv ← normalise have-lv
           wanted-lv ← normalise wanted-lv
-          lifting-loop 0 (var₀ idx) goal have-lv wanted-lv
-          commitTC
+          let try-solve = do
+            unify wanted-ty have-ty
+            lifting-loop 0 (var₀ idx) goal have-lv wanted-lv
+            commitTC
+            debugPrint "tactic.hlevel" 10 [ "Solved using context entry " , termErr (var₀ idx) ]
+          try-solve <|> backtrack "Failed to unify context type"
 
       -- Nondeterministically use a projection for establishing the
       -- result. This follows the approach described in [Using
