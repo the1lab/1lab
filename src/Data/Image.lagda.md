@@ -142,13 +142,11 @@ the construction and _actually work with it_, which is also important.
 3. So that points from $a$ are identified in $\im f$ exactly how they
 would be identified in $b$ under $f$.
 
-If we _had_ such a type, we could define an [embedding] $f' : \im f
+If we _had_ such a type, we could define an [[embedding]] $f' : \im f
 \mono B$, which tells us how to compute the path spaces in $\im f$: $(x
 \equiv y) \simeq (f'(x) \equiv f'(y))$. In fact, since images are almost
 entirely characterised by having such an embedding, we can use our
 hypothetical $f'$ to rewrite the third bullet point:
-
-[embedding]: 1Lab.Equiv.Embedding.html
 
 3. With a constructor coherently mapping proofs of $f'(x) \equiv f'(y)$
 to $x \equiv y$.

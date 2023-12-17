@@ -177,7 +177,7 @@ open import 1Lab.Path.IdentitySystem.Strict -- Identity systems on sets
 open import 1Lab.Equiv -- “Contractible fibres” equivalences
 open import 1Lab.Equiv.Biinv -- Biinvertible maps
 open import 1Lab.Equiv.FromPath -- Transport is an equivalence, cubically
-open import 1Lab.Equiv.Embedding -- Embeddings
+open import 1Lab.Function.Embedding -- Embeddings
 open import 1Lab.Equiv.Fibrewise -- Fibrewise equivalences
 open import 1Lab.Equiv.HalfAdjoint -- Half-adjoint equivalences
 

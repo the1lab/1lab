@@ -950,7 +950,7 @@ _ = Sets-regular
 _ = surjective→regular-epi
 _ = epi→surjective
 _ = Sets-effective-congruences
-_ = effective
+_ = Congruence.is-effective
 _ = Susp-prop-is-set
 _ = Susp-prop-path
 _ = AC→LEM
@@ -960,7 +960,7 @@ _ = AC→LEM
 * 10.1.1 Limits and colimits: `Sets-is-complete`{.Agda}, `Sets-is-cocomplete`{.Agda}
 * Theorem 10.1.5: `Sets-regular`{.Agda}, `surjective→regular-epi`{.Agda}, `epi→surjective`{.Agda}
 * 10.1.3 Quotients: `Sets-effective-congruences`{.Agda}
-* Lemma 10.1.8: `effective`{.Agda}
+* Lemma 10.1.8: `Congruence.is-effective`{.Agda}
 * Lemma 10.1.13: `Susp-prop-is-set`{.Agda}, `Susp-prop-path`{.Agda}
 * Theorem 10.1.14: `AC→LEM`{.Agda}
 

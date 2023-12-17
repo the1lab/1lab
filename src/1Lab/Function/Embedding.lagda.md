@@ -20,7 +20,7 @@ open import 1Lab.Type
 -->
 
 ```agda
-module 1Lab.Equiv.Embedding where
+module 1Lab.Function.Embedding where
 ```
 
 <!--

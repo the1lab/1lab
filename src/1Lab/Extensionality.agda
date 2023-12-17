@@ -1,8 +1,8 @@
 open import 1Lab.Reflection.Signature
 open import 1Lab.Path.IdentitySystem
+open import 1Lab.Function.Embedding
 open import 1Lab.Reflection.HLevel
 open import 1Lab.Reflection.Subst
-open import 1Lab.Equiv.Embedding
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Reflection
 open import 1Lab.Type.Sigma

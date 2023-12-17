@@ -1,7 +1,7 @@
 <!--
 ```agda
 {-# OPTIONS --lossy-unification #-}
-open import 1Lab.Equiv.Embedding
+open import 1Lab.Function.Embedding
 
 open import Cat.Displayed.Univalence
 open import Cat.Functor.Properties

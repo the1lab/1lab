@@ -321,7 +321,24 @@ Quot-elim : ∀ {ℓ} {B : A / R → Type ℓ}
 Quot-elim bset f r = Coeq-elim bset f λ { (x , y , w) → r x y w }
 ```
 
-## Effectivity
+<!--
+```agda
+inc-is-surjective : {f g : A → B} → is-surjective {B = Coeq f g} inc
+inc-is-surjective (inc x) = inc (x , refl)
+inc-is-surjective {f = f} {g = g} (glue x i) = is-prop→pathp
+  (λ i → ∥_∥.squash {A = fibre Coeq.inc (glue x i)})
+  (∥_∥.inc (f x , refl))
+  (∥_∥.inc (g x , refl)) i
+inc-is-surjective (squash x y p q i j) = is-prop→squarep
+  (λ i j → ∥_∥.squash {A = fibre inc (squash x y p q i j)})
+  (λ i → inc-is-surjective x)
+  (λ j → inc-is-surjective (p j))
+  (λ j → inc-is-surjective (q j))
+  (λ i → inc-is-surjective y) i j
+```
+-->
+
+## Effectivity {defines="congruence quotients-are-effective"}
 
 The most well-behaved case of quotients is when $R : A \to A \to \ty$
 takes values in propositions, is reflexive, transitive and symmetric (an
@@ -341,9 +358,6 @@ record Congruence {ℓ} (A : Type ℓ) ℓ' : Type (ℓ ⊔ lsuc ℓ') where
 
   quotient : Type _
   quotient = A / _∼_
-
-module _ {A : Type ℓ} (R : Congruence A ℓ') where
-  private module R = Congruence R
 ```
 
 We will show this using an encode-decode method. For each $x : A$, we
@@ -355,14 +369,14 @@ establish effectivity of the quotient.
 
 ```agda
   private
-    Code : A → R.quotient → Prop ℓ'
+    Code : A → quotient → Prop ℓ'
     Code x = Quot-elim
       (λ x → n-Type-is-hlevel 1)
-      (λ y → el (x R.∼ y) (R.has-is-prop x y) {- 1 -})
+      (λ y → el (x ∼ y) (has-is-prop x y) {- 1 -})
       λ y z r →
-        n-ua (prop-ext (R.has-is-prop _ _) (R.has-is-prop _ _)
-          (λ z → z R.∙ᶜ r)
-          λ z → z R.∙ᶜ (R.symᶜ r))
+        n-ua (prop-ext (has-is-prop _ _) (has-is-prop _ _)
+          (λ z → z ∙ᶜ r)
+          λ z → z ∙ᶜ (symᶜ r))
 ```
 
 We do quotient induction into the `type of propositions`{.Agda
@@ -375,7 +389,7 @@ assumption that $R$ is an equivalence relation (`{- 2 -}`{.Agda}).
 
 ```agda
     encode : ∀ x y (p : inc x ≡ y) → ∣ Code x y ∣
-    encode x y p = subst (λ y → ∣ Code x y ∣) p R.reflᶜ
+    encode x y p = subst (λ y → ∣ Code x y ∣) p reflᶜ
 
     decode : ∀ x y (p : ∣ Code x y ∣) → inc x ≡ y
     decode x y p =
@@ -391,10 +405,17 @@ constructor `quot`{.Agda} says. Putting this all together, we get a
 proof that equivalence relations are `effective`{.Agda}.
 
 ```agda
-  effective : ∀ {x y : A} → is-equiv (quot {R = R.relation})
-  effective {x = x} {y} =
-    prop-ext (R.has-is-prop x y) (squash _ _) (decode x (inc y)) (encode x (inc y)) .snd
+  is-effective : ∀ {x y : A} → is-equiv (quot {R = relation})
+  is-effective {x = x} {y} =
+    prop-ext (has-is-prop x y) (squash _ _) (decode x (inc y)) (encode x (inc y)) .snd
 ```
+
+<!--
+```agda
+  effective : ∀ {x y : A} → Path quotient (inc x) (inc y) → x ∼ y
+  effective = equiv→inverse is-effective
+```
+-->
 
 <!--
 ```agda
@@ -417,6 +438,98 @@ Discrete-quotient cong rdec =
   go : ∀ x y → Dec (inc x ≡ inc y)
   go x y with rdec x y
   ... | yes xRy = yes (quot xRy)
-  ... | no ¬xRy = no λ p → ¬xRy (equiv→inverse (effective cong) p)
+  ... | no ¬xRy = no λ p → ¬xRy (Congruence.effective cong p)
 ```
 -->
+
+## Relation to surjections {defines="surjections-are-quotient-maps"}
+
+<!--
+```agda
+open Congruence
+```
+-->
+
+As mentioned in the definition of [[surjection]], we can view a cover $f
+: A \to B$ as expressing a way of _gluing together_ the type $B$ by
+adding paths between the elements of $A$. When $A$ and $B$ are sets,
+this sounds a lot like a quotient! And, indeed, we can prove that every
+surjection induces an equivalence between its codomain and a quotient of
+its domain.
+
+First, we define the **kernel pair** of a function $f : A \to B$, the
+congruence on $A$ defined to be _identity under $f$._
+
+```agda
+Kernel-pair
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → is-set B → (A → B)
+  → Congruence A ℓ'
+Kernel-pair b-set f ._∼_ a b = f a ≡ f b
+Kernel-pair b-set f .has-is-prop x y = b-set (f x) (f y)
+Kernel-pair b-set f .reflᶜ = refl
+Kernel-pair b-set f ._∙ᶜ_  = _∙_
+Kernel-pair b-set f .symᶜ  = sym
+```
+
+We can then set about proving that, if $f : A \epi B$ is a surjection
+into a set, then $B$ is the quotient of $A$ under the kernel pair of
+$f$.
+
+<!--
+```agda
+surjection→is-quotient
+  : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
+  → (b-set : is-set B)
+  → (f : A ↠ B)
+  → B ≃ Congruence.quotient (Kernel-pair b-set (f .fst))
+surjection→is-quotient {A = A} {B} b-set (f , surj) =
+  _ , injective-surjective→is-equiv! g'-inj g'-surj
+  where
+
+  private module c = Congruence (Kernel-pair b-set f)
+```
+-->
+
+The construction is pretty straightforward: each fibre $(a, p) : f^*x$
+defines an element $[a] : A/\ker f$; If we have another fibre $(b, q)$,
+then $[a] = [b]$ because
+
+$$
+f(a) \overset{p}{\equiv} x \overset{q}{\equiv} f(b) \text{,}
+$$
+
+so the function $f^*x \to A/\ker f$ is constant, and factors through the
+[[propositional truncation]] $\| f^*x \|$.
+
+```agda
+  g₀ : ∀ {x} → fibre f x → c.quotient
+  g₀ (a , p) = inc a
+
+  abstract
+    g₀-const : ∀ {x} (p₁ p₂ : fibre f x) → g₀ p₁ ≡ g₀ p₂
+    g₀-const (_ , p) (_ , q) = quot (p ∙ sym q)
+
+  g₁ : ∀ {x} → ∥ fibre f x ∥ → c.quotient
+  g₁ f = ∥-∥-rec-set hlevel! g₀ g₀-const f
+```
+
+Since each $\| f^*x \|$ is inhabited, all of these functions glue
+together to give a function $B \to A/\ker f$. A simple calculation shows
+that this function is both injective and surjective; since its codomain
+is a set, that means it's an equivalence.
+
+```agda
+  g' : B → c.quotient
+  g' x = g₁ (surj x)
+
+  g'-inj : injective g'
+  g'-inj {x} {y} = ∥-∥-elim₂ {P = λ a b → g₁ a ≡ g₁ b → x ≡ y}
+    (λ _ _ → fun-is-hlevel 1 (b-set _ _))
+    (λ (_ , p) (_ , q) r → sym p ∙ c.effective r ∙ q)
+    (surj x) (surj y)
+
+  g'-surj : is-surjective g'
+  g'-surj x = do
+    (y , p) ← inc-is-surjective x
+    pure (f y , ap g₁ (squash (surj (f y)) (inc (y , refl))) ∙ p)
+```
