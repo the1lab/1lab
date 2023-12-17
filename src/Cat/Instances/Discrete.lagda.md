@@ -43,16 +43,8 @@ Disc A A-grpd .idr _ = ∙-idl _
 Disc A A-grpd .idl _ = ∙-idr _
 Disc A A-grpd .assoc _ _ _ = sym (∙-assoc _ _ _)
 
--- Disc' : Set ℓ → Precategory ℓ ℓ
--- Disc' A = Disc ∣ A ∣ h where abstract
---   h : is-groupoid ∣ A ∣
---   h = is-hlevel-suc 2 (A .is-tr)
-
 Disc! : {T : Type ℓ} ⦃ u : Underlying T ⦄ (A : T) {@(tactic hlevel-tactic-worker) is-grpd : is-groupoid ⌞ A ⌟} → Precategory (u .Underlying.ℓ-underlying) (u .Underlying.ℓ-underlying)
 Disc! A {is-grpd} = Disc ⌞ A ⌟ is-grpd
-  -- where abstract
-    -- h : is-groupoid ⌞ A ⌟
-    -- h = is-grpd
 ```
 
 We can lift any function between the underlying types to a functor
