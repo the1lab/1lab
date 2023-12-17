@@ -249,6 +249,11 @@ more than a handful of intermediate steps:
       k (j = i0) → ∙-filler p s (~ k) i
       k (j = i1) → ∙-filler₂ q r k i
 
+  double-connection
+    : (p : x ≡ y) (q : y ≡ z)
+    → Square p p q q
+  double-connection _ _ = commutes→square refl
+
   square→commutes
     : {p : w ≡ x} {q : w ≡ y} {s : x ≡ z} {r : y ≡ z}
     → Square p q s r → p ∙ s ≡ q ∙ r

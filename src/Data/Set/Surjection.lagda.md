@@ -22,6 +22,8 @@ open Coequaliser
 ```
 -->
 
+# Surjections between sets {defines="surjection-between-sets"}
+
 Here we prove that surjective maps are exactly the [regular epimorphisms]
 in the category of sets: Really, we prove that surjections are regular
 epimorphisms (this is straightforward), then we prove that every
@@ -41,7 +43,7 @@ any morphisms, it certainly coequalises its kernel pair.
 ```agda
 surjective→regular-epi
   : ∀ {ℓ} (c d : n-Type ℓ 2) (f : ∣ c ∣ → ∣ d ∣)
-  → (∀ x → ∥ fibre f x ∥)
+  → is-surjective f
   → is-regular-epi (Sets ℓ) {c} {d} f
 surjective→regular-epi c _ f x .r = el! (Σ ∣ c ∣ λ x → Σ ∣ c ∣ λ y → f x ≡ f y)
 surjective→regular-epi _ _ f x .arr₁ = λ (y , _ , _) → y
@@ -214,7 +216,7 @@ all surjections!
 epi→surjective
   : ∀ {ℓ} (c d : n-Type ℓ 2) (f : ∣ c ∣ → ∣ d ∣)
   → Cr.is-epic (Sets ℓ) {c} {d} f
-  → ∀ x → ∥ fibre f x ∥
+  → is-surjective f
 epi→surjective {ℓ} c d f epi x =
   connected-cofibre→surjective f (epi→connected-cofibre c d f (λ {x} → epi {x})) x
 ```

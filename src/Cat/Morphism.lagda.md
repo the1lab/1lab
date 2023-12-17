@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import 1Lab.Prelude hiding (_∘_ ; id ; _↪_ ; module Extensionality)
+open import 1Lab.Prelude hiding (_∘_ ; id ; _↪_ ; _↠_ ; module Extensionality)
 
 open import Cat.Solver
 open import Cat.Base

@@ -1,7 +1,7 @@
 <!--
 ```agda
 {-# OPTIONS --lossy-unification #-}
-open import 1Lab.Equiv.Embedding
+open import 1Lab.Function.Embedding
 
 open import Cat.Displayed.Univalence
 open import Cat.Functor.Properties
@@ -162,6 +162,15 @@ record is-equational {ℓ o' ℓ'} {S : Type ℓ → Type o'} (spec : Thin-struc
   private
     module So = Precategory (Structured-objects spec)
     module Som = Cat.Morphism (Structured-objects spec)
+
+  equiv-hom→inverse-hom
+    : ∀ {a b : So.Ob}
+    → (f : ⌞ a ⌟ ≃ ⌞ b ⌟)
+    → ∣ spec .is-hom (Equiv.to f) (a .snd) (b .snd) ∣
+    → ∣ spec .is-hom (Equiv.from f) (b .snd) (a .snd) ∣
+  equiv-hom→inverse-hom {a = a} {b = b} f e =
+    EquivJ (λ B e → ∀ st → ∣ spec .is-hom (e .fst) (a .snd) st ∣ → ∣ spec .is-hom (Equiv.from e) st (a .snd) ∣)
+      (λ _ → invert-id-hom) f (b .snd) e
 
   ∫-Path
     : ∀ {a b : So.Ob}

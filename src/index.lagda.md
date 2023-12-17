@@ -177,7 +177,7 @@ open import 1Lab.Path.IdentitySystem.Strict -- Identity systems on sets
 open import 1Lab.Equiv -- “Contractible fibres” equivalences
 open import 1Lab.Equiv.Biinv -- Biinvertible maps
 open import 1Lab.Equiv.FromPath -- Transport is an equivalence, cubically
-open import 1Lab.Equiv.Embedding -- Embeddings
+open import 1Lab.Function.Embedding -- Embeddings
 open import 1Lab.Equiv.Fibrewise -- Fibrewise equivalences
 open import 1Lab.Equiv.HalfAdjoint -- Half-adjoint equivalences
 
@@ -194,9 +194,12 @@ open import 1Lab.Type.Sigma -- Properties of dependent coproducts
 
 open import 1Lab.HIT.Truncation -- Propositional truncation
 
+open import 1Lab.Classical -- Classical logic
+
 open import 1Lab.Counterexamples.IsIso -- Counterexample: is-iso is not a prop
 open import 1Lab.Counterexamples.Russell -- Counterexample: Russell's paradox
 open import 1Lab.Counterexamples.Sigma -- Counterexample: Sigma is not prop
+open import 1Lab.Counterexamples.GlobalChoice -- Counterexample: global choice is inconsistent with univalence
 ```
 
 ## Data types
@@ -559,6 +562,7 @@ open import Cat.Instances.Sets.Complete -- is complete
 open import Cat.Instances.Sets.Cocomplete -- is cocomplete, with disjoint coproducts
 open import Cat.Instances.Sets.Congruences -- has effective congruences
 open import Cat.Instances.Sets.CartesianClosed -- and is locally cartesian closed
+open import Cat.Instances.Sets.Counterexamples.SelfDual -- and is not self-dual
 ```
 
 The category of polynomial functors:

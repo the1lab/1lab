@@ -1,8 +1,8 @@
 open import 1Lab.Reflection.Signature
 open import 1Lab.Path.IdentitySystem
+open import 1Lab.Function.Embedding
 open import 1Lab.Reflection.HLevel
 open import 1Lab.Reflection.Subst
-open import 1Lab.Equiv.Embedding
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Reflection
 open import 1Lab.Type.Sigma
@@ -290,6 +290,16 @@ iso→extensional
 iso→extensional f ext =
   embedding→extensional (Iso→Embedding f) ext
 
+injection→extensional
+  : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
+  → is-set B
+  → {f : A → B}
+  → (∀ {x y} → f x ≡ f y → x ≡ y)
+  → Extensional B ℓr
+  → Extensional A ℓr
+injection→extensional b-set {f} inj ext =
+  embedding→extensional (f , injective→is-embedding b-set f inj) ext
+
 injection→extensional!
   : ∀ {ℓ ℓ' ℓr} {A : Type ℓ} {B : Type ℓ'}
   → {@(tactic hlevel-tactic-worker) sb : is-set B}
@@ -297,5 +307,4 @@ injection→extensional!
   → (∀ {x y} → f x ≡ f y → x ≡ y)
   → Extensional B ℓr
   → Extensional A ℓr
-injection→extensional! {sb = b-set} {f} inj ext =
-  embedding→extensional (f , injective→is-embedding b-set f inj) ext
+injection→extensional! {sb = b-set} = injection→extensional b-set
