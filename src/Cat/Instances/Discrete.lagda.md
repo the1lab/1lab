@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtactic.hlevel:10 -vtactic:50 #-}
 open import Cat.Prelude
 
 open import Data.Id.Base

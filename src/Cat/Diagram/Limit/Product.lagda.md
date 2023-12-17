@@ -6,7 +6,6 @@ description: |
 
 <!--
 ```agda
-{-# OPTIONS -vtactic.hlevel:10 #-}
 open import Cat.Instances.Shape.Terminal
 open import Cat.Diagram.Product.Indexed
 open import Cat.Diagram.Limit.Base
