@@ -16,6 +16,7 @@ open import Data.Int
 open import Homotopy.Space.Delooping
 open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
+open import Homotopy.Conjugation
 
 open is-group-hom
 open Precategory
@@ -214,12 +215,12 @@ We define a [[functor]] from concrete groups to abstract groups.
 The object mapping is given by taking the `fundamental group`{.Agda ident=π₁B}.
 Given a pointed map $f : \B{G} \to \B{H}$, we can `ap`{.Agda}ply it to a loop
 on $\point{G}$ to get a loop on $f(\point{G})$; then, we use the fact that $f$
-is pointed to get a loop on $\point{H}$.
+is pointed to get a loop on $\point{H}$ by [[conjugation]].
 
 ```agda
 Π₁ : Functor (ConcreteGroups ℓ) (Groups ℓ)
 Π₁ .F₀ = π₁B
-Π₁ .F₁ (f , ptf) .hom x = sym ptf ·· ap f x ·· ptf
+Π₁ .F₁ (f , ptf) .hom x = conj ptf (ap f x)
 ```
 
 By some simple path yoga, this preserves multiplication, and the construction is
@@ -227,15 +228,15 @@ functorial:
 
 ```agda
 Π₁ .F₁ (f , ptf) .preserves .pres-⋆ x y =
-  (sym ptf ·· ⌜ ap f (x ∙ y) ⌝ ·· ptf)                    ≡⟨ ap! (ap-∙ f _ _) ⟩
-  (sym ptf ·· ap f x ∙ ap f y ·· ptf)                     ≡˘⟨ ··-chain ⟩
-  (sym ptf ·· ap f x ·· ptf) ∙ (sym ptf ·· ap f y ·· ptf) ∎
+  conj ptf ⌜ ap f (x ∙ y) ⌝             ≡⟨ ap! (ap-∙ f _ _) ⟩
+  conj ptf (ap f x ∙ ap f y)            ≡⟨ conj-of-∙ _ _ _ ⟩
+  conj ptf (ap f x) ∙ conj ptf (ap f y) ∎
 
-Π₁ .F-id = ext λ _ → sym (··-filler _ _ _)
+Π₁ .F-id = ext conj-refl
 Π₁ .F-∘ (f , ptf) (g , ptg) = ext λ x →
-  (sym (ap f ptg ∙ ptf) ·· ap (f ⊙ g) x ·· (ap f ptg ∙ ptf))         ≡˘⟨ ··-stack ⟩
-  (sym ptf ·· ⌜ ap f (sym ptg) ·· ap (f ⊙ g) x ·· ap f ptg ⌝ ·· ptf) ≡˘⟨ ap¡ (ap-·· f _ _ _) ⟩
-  (sym ptf ·· ap f (sym ptg ·· ap g x ·· ptg) ·· ptf)                ∎
+  conj (ap f ptg ∙ ptf) (ap (f ⊙ g) x)        ≡˘⟨ conj-∙ _ _ _ ⟩
+  conj ptf ⌜ conj (ap f ptg) (ap (f ⊙ g) x) ⌝ ≡˘⟨ ap¡ (ap-conj f _ _) ⟩
+  conj ptf (ap f (conj ptg (ap g x)))         ∎
 ```
 
 We start by showing that `Π₁`{.Agda} is [[split essentially surjective]]. This is the
@@ -346,7 +347,7 @@ right inverse to $\Pi_1$:
     f # ω ∙ p refl         ∎
 
   rinv : Π₁ .F₁ g ≡ f
-  rinv = ext λ ω → sym (··-unique' (symP (f≡apg ω)))
+  rinv = ext λ ω → pathp→conj (symP (f≡apg ω))
 ```
 
 We are most of the way there. In order to get a proper equivalence, we must check that
@@ -370,8 +371,11 @@ This is a [[property]], and $\point{G}$ has it:
 ```agda
   C'-contr : is-contr (C' (pt G))
   C'-contr .centre .fst = f .snd ∙ sym (g .snd)
-  C'-contr .centre .snd α = transport (sym Square≡double-composite-path) $
-    ··-∙-assoc ∙ sym (f-p α refl) ∙ ap p (∙-idr _)
+  C'-contr .centre .snd α = commutes→square $
+    f .snd ∙ p ⌜ α ⌝                                ≡˘⟨ ap¡ (∙-idr _) ⟩
+    f .snd ∙ ⌜ p (α ∙ refl) ⌝                       ≡⟨ ap! (f-p α refl) ⟩
+    f .snd ∙ conj (f .snd) (ap (f .fst) α) ∙ p refl ≡˘⟨ ∙-extendl (∙-swapl (sym (conj-defn _ _))) ⟩
+    ap (f .fst) α ∙ f .snd ∙ p refl                 ∎
   C'-contr .paths (eq , eq-paths) = Σ-prop-path! $
     sym (∙-unique _ (transpose (eq-paths refl)))
 ```

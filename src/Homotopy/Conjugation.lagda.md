@@ -8,7 +8,7 @@ open import 1Lab.Prelude
 module Homotopy.Conjugation where
 ```
 
-# Conjugation of paths {defines="conjugation-of-paths"}
+# Conjugation of paths {defines="conjugation-of-paths conjugation"}
 
 <!--
 ```agda
@@ -78,6 +78,17 @@ opaque
 
 ```agda
 opaque
+  unfolding conj
+
+  ap-conj
+    : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} {x y : A}
+    → (f : A → B) (p : y ≡ x) (q : y ≡ y)
+    → ap f (conj p q) ≡ conj (ap f p) (ap f q)
+  ap-conj f p q = ap-·· f _ _ _
+```
+
+```agda
+opaque
   conj⁻conj : conj (sym p) (conj p q) ≡ q
   conj⁻conj {p = p} {q = q} =
        ap (conj _) (conj-defn' _ _)
@@ -87,7 +98,9 @@ opaque
 
 ```agda
 opaque
-  pathp→conj : {p q₁ q₂ : y ≡ y} → PathP (λ i → p i ≡ p i) q₁ q₂ → conj p q₁ ≡ q₂
+  pathp→conj
+    : {p : y ≡ x} {q₁ : y ≡ y} {q₂ : x ≡ x}
+    → PathP (λ i → p i ≡ p i) q₁ q₂ → conj p q₁ ≡ q₂
   pathp→conj p = conj-defn' _ _ ∙ from-pathp p
 ```
 
