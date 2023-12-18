@@ -607,6 +607,13 @@ is-empty→≃⊥ : ∀ {ℓ} {A : Type ℓ} → ¬ A → A ≃ ⊥
 is-empty→≃⊥ ¬a = _ , ¬-is-equiv ¬a
 ```
 
+Any involution is an equivalence:
+
+```agda
+is-involutive→is-equiv : ∀ {ℓ} {A : Type ℓ} {f : A → A} → (∀ a → f (f a) ≡ a) → is-equiv f
+is-involutive→is-equiv inv = is-iso→is-equiv (iso _ inv inv)
+```
+
 # Equivalence reasoning
 
 To make composing equivalences more intuitive, we implement operators to
