@@ -6,16 +6,10 @@ on:
       - opened
       - reopened
       - synchronize
-      - closed
-
-permissions:
-  pull-requests: write
 
 jobs:
   pr-preview:
     runs-on: ubuntu-latest
-
-    if: github.event.pull_request.head.repo.full_name == github.repository
 
     env:
       mailmap: ${{ secrets.MAILMAP }}
@@ -56,23 +50,13 @@ jobs:
           NIX_BUILD_SHELL: bash
           build_command: |
             set -eu
-            1lab-shake -j all --skip-agda -b "https://plt-amy.github.io/1lab-previews/pr-${{ github.event.number }}"
+            1lab-shake -j all --skip-agda -b "https://preview.1lab.dev/${{ github.event.number }}/"
             eval "$installPhase"
-            cp -rv _build/site pr-${{ github.event.number }}
+            echo "${{ github.event.number }}" > _build/site/.pr-number
+            # cp -rv _build/site pr-${{ github.event.number }}
 
-      - name: Upload 📦
-        uses: dmnemec/copy_file_to_another_repo_action@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.PREVIEW_TOKEN }}
+      - name: Archive 📦
+        uses: actions/upload-artifact@v3
         with:
-          source_file: pr-${{ github.event.number }}
-          destination_repo: 'plt-amy/1lab-previews'
-          user_email: 'me@amelia.how'
-          user_name: 'plt-amy'
-          commit_message: 'Preview of PR #${{ github.event.number }}'
-
-      - name: Inform ℹ️
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          message: |
-            [Rendered preview](https://plt-amy.github.io/1lab-previews/pr-${{ github.event.number }})
+          name: pr-preview
+          path: _build/site
