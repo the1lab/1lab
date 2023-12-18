@@ -61,25 +61,8 @@ jobs:
             echo "${{ github.event.number }}" > _build/site/.pr-number
             # cp -rv _build/site pr-${{ github.event.number }}
 
-      - name: Archive
+      - name: Archive 📦
         uses: actions/upload-artifact@v3
         with:
           name: pr-preview
           path: _build/site
-
-      # - name: Upload 📦
-      #   uses: dmnemec/copy_file_to_another_repo_action@main
-      #   env:
-      #     API_TOKEN_GITHUB: ${{ secrets.PREVIEW_TOKEN }}
-      #   with:
-      #     source_file: pr-${{ github.event.number }}
-      #     destination_repo: 'plt-amy/1lab-previews'
-      #     user_email: 'me@amelia.how'
-      #     user_name: 'plt-amy'
-      #     commit_message: 'Preview of PR #${{ github.event.number }}'
-
-      # - name: Inform ℹ️
-      #   uses: marocchino/sticky-pull-request-comment@v2
-      #   with:
-      #     message: |
-      #       [Rendered preview](https://plt-amy.github.io/1lab-previews/pr-${{ github.event.number }})
