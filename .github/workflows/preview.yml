@@ -58,6 +58,7 @@ jobs:
             set -eu
             1lab-shake -j all --skip-agda -b "https://plt-amy.github.io/1lab-previews/pr-${{ github.event.number }}"
             eval "$installPhase"
+            echo "${{ github.event.number }}" > _build/site/.pr-number
             # cp -rv _build/site pr-${{ github.event.number }}
 
       - name: Archive
