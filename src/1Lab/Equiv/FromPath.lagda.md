@@ -16,7 +16,7 @@ open import 1Lab.Type
 module 1Lab.Equiv.FromPath {ℓ} (P : (i : I) → Type ℓ) where
 ```
 
-# Equivs from Paths
+# Equivs from paths
 
 In [@CCHM], a direct _cubical_ construction of an equivalence `A ≃ B`
 from a path `A ≡ B` is presented. This is in contrast with the

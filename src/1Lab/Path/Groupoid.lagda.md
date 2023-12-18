@@ -24,7 +24,7 @@ _ = ap-sym
 ```
 -->
 
-# Types are Groupoids
+# Types are groupoids
 
 The `Path`{.Agda} types equip every `Type`{.Agda} with the structure of
 an _$\infty$-groupoid_. The higher structure of a type begins with its
@@ -248,6 +248,11 @@ more than a handful of intermediate steps:
       k (i = i1) → s (~ k ∨ j)
       k (j = i0) → ∙-filler p s (~ k) i
       k (j = i1) → ∙-filler₂ q r k i
+
+  double-connection
+    : (p : x ≡ y) (q : y ≡ z)
+    → Square p p q q
+  double-connection _ _ = commutes→square refl
 
   square→commutes
     : {p : w ≡ x} {q : w ≡ y} {s : x ≡ z} {r : y ≡ z}

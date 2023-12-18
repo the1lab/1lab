@@ -242,21 +242,16 @@ the Beck-Chevalley condition.
 <!--
 ```agda
   ≤-Poset : ∀ {x : Ob} → Poset o' ℓ'
-  ∣ ≤-Poset {x = x} .fst ∣    = ℙ.Ob[ x ]
-  ≤-Poset {x = x} .fst .is-tr = has-is-set _
-
-  ≤-Poset {x = x} .snd .Poset-on._≤_ = ℙ.Hom[ id ]
-  ≤-Poset {x = x} .snd .Poset-on.has-is-poset = po where
-    open is-partial-order
-    po : is-partial-order ℙ.Hom[ id ]
-    po .≤-thin    = has-is-thin _ _
-    po .≤-refl    = ℙ.id'
-    po .≤-trans α β = Precategory._∘_ (Fibre ℙ _) β α
-    po .≤-antisym α β = has-univalence _ .to-path $
+  ≤-Poset {x = x} .Poset.Ob = ℙ.Ob[ x ]
+  ≤-Poset {x = x} .Poset._≤_ = ℙ.Hom[ id ]
+  ≤-Poset {x = x} .Poset.≤-thin = has-is-thin _ _
+  ≤-Poset {x = x} .Poset.≤-refl = ℙ.id'
+  ≤-Poset {x = x} .Poset.≤-trans α β = Precategory._∘_ (Fibre ℙ _) β α
+  ≤-Poset {x = x} .Poset.≤-antisym α β = has-univalence _ .to-path $
       Cat.make-iso (Fibre ℙ _) α β (has-is-thin _ _ _ _) (has-is-thin _ _ _ _)
 
   module _ {x} where
-    open Order.Reasoning (≤-Poset {x}) hiding (has-is-set ; Ob) public
+    open Order.Reasoning (≤-Poset {x}) hiding (Ob-is-set ; Ob) public
   open Disp ℙ public
   subst-∘ : ∀ {x y z} (f : Hom y z) (g : Hom x y) {α} → (α [ f ]) [ g ] ≡ α [ f ∘ g ]
   subst-∘ f g = ≤-antisym

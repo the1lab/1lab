@@ -129,7 +129,7 @@ As noted earlier, limits and colimits are pointwise Kan extensions.
   colimit→pointwise colim x = よ-reverses-colimits x colim
 ```
 
-## Computing Pointwise Extensions
+## Computing pointwise extensions
 
 One useful fact about pointwise left Kan extensions (resp. right) is
 that they can be computed via colimits (resp. limits). We will focus on
@@ -415,7 +415,7 @@ words, the extension we constructed is pointwise.
       (よ-reverses-colimits d)
 ```
 
-## All Pointwise Extensions are Computed via (Co)limits
+## All pointwise extensions are computed via (co)limits
 
 As we've seen earlier, we can compute the extension of $F : \cC \to \cD$
 along $p : \cC \to \cC'$ when $\cD$ has enough colimits, and that this

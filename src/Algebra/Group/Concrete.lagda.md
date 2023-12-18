@@ -13,6 +13,7 @@ open import Cat.Prelude
 
 open import Data.Int
 
+open import Homotopy.Space.Delooping
 open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
 
@@ -100,6 +101,9 @@ ConcreteGroup-path {G = G} {H} p = go prop! prop! where
 A central example of a concrete group is the [[circle]]: the delooping of the [[integers]].
 
 ```agda
+S¹-is-connected : is-connected∙ (S¹ , base)
+S¹-is-connected = S¹-elim (inc refl) prop!
+
 S¹-is-groupoid : is-groupoid S¹
 S¹-is-groupoid = connected∙-elim-prop S¹-is-connected hlevel!
                $ connected∙-elim-prop S¹-is-connected hlevel!
@@ -172,8 +176,8 @@ ConcreteGroups-is-category : is-category (ConcreteGroups ℓ)
 ConcreteGroups-is-category .to-path im = ConcreteGroup-path $
   Σ-pathp (ua (iso→equiv im)) (path→ua-pathp _ (im .to .snd))
 ConcreteGroups-is-category {ℓ} .to-path-over im = ≅-pathp (ConcreteGroups ℓ) _ _ $
-  Σ-pathp-dep (funextP λ _ → path→ua-pathp _ refl)
-              (λ i j → path→ua-pathp (iso→equiv im) (λ i → im .to .snd (i ∧ j)) i)
+  Σ-pathp (funextP λ _ → path→ua-pathp _ refl)
+    (λ i j → path→ua-pathp (iso→equiv im) (λ i → im .to .snd (i ∧ j)) i)
 ```
 -->
 

@@ -1,5 +1,5 @@
-open import 1Lab.HLevel.Universe
 open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Universe
 open import 1Lab.Resizing
 open import 1Lab.HLevel
 open import 1Lab.Path
@@ -69,6 +69,12 @@ _∈_ : ∀ {ℓ ℓ'} {A : Type ℓ} {P : Type ℓ'} ⦃ u : Underlying P ⦄
     → A → (A → P) → Type (u .ℓ-underlying)
 x ∈ P = ⌞ P x ⌟
 
+-- Generalised "total space" notation.
+∫ₚ
+  : ∀ {ℓ ℓ'} {X : Type ℓ} {P : Type ℓ'} ⦃ u : Underlying P ⦄
+  → (X → P) → Type _
+∫ₚ P = Σ _ (_∈ P)
+
 -- Notation class for type families which are "function-like" (always
 -- nondependent). Slight generalisation of the homs of concrete
 -- categories.
@@ -98,12 +104,20 @@ apply
   → ∀ {a b} → F a b → ⌞ a ⌟ → ⌞ b ⌟
 apply = _#_
 
+-- Shortcut for ap (apply ...)
+ap#
+  : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {F : A → B → Type ℓ''}
+  → ⦃ _ : Funlike F ⦄
+  → ∀ {a : A} {b : B} (f : F a b) → ∀ {x y : ⌞ a ⌟} → x ≡ y → f # x ≡ f # y
+ap# f = ap (apply f)
+
 -- Generalised happly.
 _#ₚ_
   : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} {F : A → B → Type ℓ''}
   → ⦃ _ : Funlike F ⦄
   → {a : A} {b : B} {f g : F a b} → f ≡ g → ∀ (x : ⌞ a ⌟) → f # x ≡ g # x
 f #ₚ x = ap₂ _#_ f refl
+
 
 instance
   -- Agda really dislikes inferring the level parameters here.

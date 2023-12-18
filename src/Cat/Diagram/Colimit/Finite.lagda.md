@@ -24,7 +24,7 @@ module _ {ℓ ℓ'} (C : Precategory ℓ ℓ') where
 ```
 -->
 
-# Finitely Cocomplete Categories {defines="finite-colimit finitely-cocomplete finitely-cocomplete-category"}
+# Finitely cocomplete categories {defines="finite-colimit finitely-cocomplete finitely-cocomplete-category"}
 
 Finitely **cocomplete** categories are dual to [[finitely complete
 categories]] in that they admit colimits for all diagrams of

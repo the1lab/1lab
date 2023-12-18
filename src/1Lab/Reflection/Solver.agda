@@ -4,7 +4,7 @@ open import 1Lab.Prelude
 open import 1Lab.Reflection
 open import 1Lab.Reflection.Variables
 
-open import Data.List
+open import Data.List.Base
 
 private variable
   ℓ : Level
@@ -54,7 +54,7 @@ module _ (solver : SimpleSolver) where
   mk-simple-solver hole =
     withNormalisation false $
     withReduceDefs (false , dont-reduce) $ do
-    goal ← inferType hole >>= reduce
+    goal ← infer-type hole >>= reduce
     just (lhs , rhs) ← get-boundary goal
       where nothing → typeError $ strErr "Can't determine boundary: " ∷
                                   termErr goal ∷ []
@@ -94,7 +94,7 @@ module _ {ℓ} {A : Type ℓ} (solver : VariableSolver A) where
   mk-var-solver hole =
     withNormalisation false $
     withReduceDefs (false , dont-reduce) $ do
-    goal ← inferType hole >>= reduce
+    goal ← infer-type hole >>= reduce
     just (lhs , rhs) ← get-boundary goal
       where nothing → typeError $ strErr "Can't determine boundary: " ∷
                                   termErr goal ∷ []

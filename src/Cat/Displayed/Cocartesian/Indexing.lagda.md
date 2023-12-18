@@ -27,7 +27,7 @@ open Functor
 ```
 -->
 
-# Opreindexing for Cocartesian fibrations
+# Opreindexing for cocartesian fibrations
 
 [Opfibrations] are dual to [fibrations], so they inherit the ability
 to [reindex along morphisms in the base]. However, this reindexing is

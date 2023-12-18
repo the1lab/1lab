@@ -14,7 +14,7 @@ module Data.Fin.Properties where
 
 ```
 
-# Finite Sets - Properties
+# Finite sets - properties
 
 ## Ordering
 
@@ -101,7 +101,7 @@ Fin-peel {l} {k} sl≃sk = (Iso→Equiv (l→k , (iso k→l b→a→b a→b→a)
   ... | fsuc y , _ = y
   ... | fzero , q = absurd (fzero≠fsuc (sk≃sl.injective₂ q p))
 
-  absurd-path : ∀ {ℓ} {A : Type ℓ} {y : A} {x : ⊥} → absurd x ≡ y
+  absurd-path : ∀ {ℓ} {A : Type ℓ} {y : A} .{x : ⊥} → absurd x ≡ y
   absurd-path {x = ()}
 
   a→b→a : ∀ a → k→l (l→k a) ≡ a
@@ -114,14 +114,14 @@ Fin-peel {l} {k} sl≃sk = (Iso→Equiv (l→k , (iso k→l b→a→b a→b→a)
     contra = fzero≠fsuc (sym (r ∙ q'))
   a→b→a a | fzero , p' with inspect (sl≃sk.to fzero)
   a→b→a a | fzero , p' | fsuc x , q' with inspect (sk≃sl.to (fsuc x))
-  a→b→a a | fzero , p' | fsuc x , q' | fsuc y , r' = absurd $
+  a→b→a a | fzero , p' | fsuc x , q' | fsuc y , r' = absurd do
     fzero≠fsuc (sym (sym r' ∙ ap sk≃sl.to (sym q') ∙ sl≃sk.η fzero))
   a→b→a a | fzero , p' | fsuc x , q' | fzero , r' with inspect (sk≃sl.to fzero)
   a→b→a a | fzero , p' | fsuc x , q' | fzero , r' | fsuc z , s = fsuc-inj $
     sym s ∙ ap sk≃sl.to (sym p') ∙ sl≃sk.η (fsuc a)
   a→b→a a | fzero , p' | fsuc x , q' | fzero , r' | fzero , s = absurd-path
-  a→b→a a | fzero , p' | fzero , q' = absurd $ fzero≠fsuc $
-    sl≃sk.injective₂ q' p'
+  a→b→a a | fzero , p' | fzero , q' = absurd (fzero≠fsuc $
+    sl≃sk.injective₂ q' p')
 
   b→a→b : ∀ b → l→k (k→l b) ≡ b
   b→a→b b with inspect (sk≃sl.to (fsuc b))
@@ -133,14 +133,14 @@ Fin-peel {l} {k} sl≃sk = (Iso→Equiv (l→k , (iso k→l b→a→b a→b→a)
     contra = fzero≠fsuc (sym (r ∙ q'))
   b→a→b b | fzero , p' with inspect (sk≃sl.to fzero)
   b→a→b b | fzero , p' | fsuc x , q' with inspect (sl≃sk.to (fsuc x))
-  b→a→b b | fzero , p' | fsuc x , q' | fsuc y , r'  = absurd $ fzero≠fsuc $
-    sym (sym r' ∙ ap (sl≃sk.to) (sym q') ∙ sk≃sl.η _)
+  b→a→b b | fzero , p' | fsuc x , q' | fsuc y , r'  = absurd (fzero≠fsuc $
+    sym (sym r' ∙ ap (sl≃sk.to) (sym q') ∙ sk≃sl.η _))
   b→a→b b | fzero , p' | fsuc x , q' | fzero , r' with inspect (sl≃sk.to fzero)
   b→a→b a | fzero , p' | fsuc x , q' | fzero , r' | fsuc z , s = fsuc-inj $
     sym s ∙ ap (sl≃sk.to) (sym p') ∙ sk≃sl.η (fsuc a)
   b→a→b a | fzero , p' | fsuc x , q' | fzero , r' | fzero , s = absurd-path
-  b→a→b b | fzero , p' | fzero , q' = absurd $ fzero≠fsuc $
-    sk≃sl.injective₂ q' p'
+  b→a→b b | fzero , p' | fzero , q' = absurd (fzero≠fsuc $
+    sk≃sl.injective₂ q' p')
 
 Fin-injective : ∀ {l k} → Fin l ≃ Fin k → l ≡ k
 Fin-injective {zero} {zero} l≃k = refl
@@ -195,4 +195,49 @@ finite-surjection-split
   → (f : B → Fin n) → (∀ x → ∥ fibre f x ∥)
   → ∥ (∀ x → fibre f x) ∥
 finite-surjection-split f = finite-choice _
+```
+
+## Vector operations
+
+```agda
+avoid-insert
+  : ∀ {n} {ℓ} {A : Type ℓ}
+  → (ρ : Fin n → A)
+  → (i : Fin (suc n)) (a : A)
+  → (j : Fin (suc n))
+  → (i≠j : ¬ i ≡ j)
+  → (ρ [ i ≔ a ]) j ≡ ρ (avoid i j i≠j)
+avoid-insert {n = n} ρ fzero a fzero i≠j = absurd (i≠j refl)
+avoid-insert {n = suc n} ρ fzero a (fsuc j) i≠j = refl
+avoid-insert {n = suc n} ρ (fsuc i) a fzero i≠j = refl
+avoid-insert {n = suc n} ρ (fsuc i) a (fsuc j) i≠j =
+  avoid-insert (ρ ∘ fsuc) i a j (i≠j ∘ ap fsuc)
+
+insert-lookup
+  : ∀ {n} {ℓ} {A : Type ℓ}
+  → (ρ : Fin n → A)
+  → (i : Fin (suc n)) (a : A)
+  → (ρ [ i ≔ a ]) i ≡ a
+insert-lookup {n = n} ρ fzero a = refl
+insert-lookup {n = suc n} ρ (fsuc i) a = insert-lookup (ρ ∘ fsuc) i a
+
+delete-insert
+  : ∀ {n} {ℓ} {A : Type ℓ}
+  → (ρ : Fin n → A)
+  → (i : Fin (suc n)) (a : A)
+  → ∀ j → delete (ρ [ i ≔ a ]) i j ≡ ρ j
+delete-insert ρ fzero a j = refl
+delete-insert ρ (fsuc i) a fzero = refl
+delete-insert ρ (fsuc i) a (fsuc j) = delete-insert (ρ ∘ fsuc) i a j
+
+insert-delete
+  : ∀ {n} {ℓ} {A : Type ℓ}
+  → (ρ : Fin (suc n) → A)
+  → (i : Fin (suc n)) (a : A)
+  → ρ i ≡ a
+  → ∀ j → ((delete ρ i) [ i ≔ a ]) j ≡ ρ j
+insert-delete {n = n} ρ fzero a p fzero = sym p
+insert-delete {n = n} ρ fzero a p (fsuc j) = refl
+insert-delete {n = suc n} ρ (fsuc i) a p fzero = refl
+insert-delete {n = suc n} ρ (fsuc i) a p (fsuc j) = insert-delete (ρ ∘ fsuc) i a p j
 ```

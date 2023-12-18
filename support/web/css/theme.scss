@@ -1,0 +1,134 @@
+@import "vars.scss";
+
+:root, :root.light-theme {
+  --text-bg:     #{$light-text-bg};
+  --text-fg:     #{$light-text-fg};
+  --text-fg-alt: #{$bluegray-800};
+  --shadow:    #000;
+
+  --primary:   #{$light-code-blue};
+  --secondary: #{$light-code-purple};
+  --active:    #{$light-code-blue};
+
+  --modal-bg: #ccccccaa;
+
+  --warning-bg:   #{$yellow-400};
+  --warning-icon: #{$yellow-700};
+
+  --note-bg:   #{$violet-500};
+  --note-icon: #{$violet-600};
+
+  --terminology-bg:   #{$cyan-600};
+  --terminology-icon: #{$cyan-900};
+
+  --code-bg: var(--text-bg);
+  --code-fg: var(--text-fg);
+
+  --code-keyword:     #{$light-code-orange};
+  --code-string:      #{$light-code-red};
+  --code-number:      #{$light-code-pink};
+  --code-module:      #{$light-code-pink};
+  --code-field:       #{$light-code-purple};
+  --code-constructor: #{$light-code-green};
+  --code-highlight: #F5DEB3;
+
+  --search-selected: #{$violet-800};
+
+  --details-summary: #{$cyan-100};
+  --details-open:    #{$cyan-200};
+
+  --depgraph-edge: #eee;
+  --blockquote-bg: #{$purple-300};
+
+  --tooltip-bg:      #{$zinc-300};
+  --button-hover-bg: #{$light-button-hover-bg};
+
+  --input-bg:     #{$light-text-bg};
+  --input-border: #{lighten($light-text-fg, 30%)};
+
+  --popup-bg:     #{$light-text-bg};
+  --icon-filter:  none;
+
+  --diagram-shaded-bg: #cfc;
+
+  .diagram-dark {
+    display: none !important;
+  }
+
+  .diagram-light {
+    display: block !important;
+  }
+}
+
+@mixin dark-theme-vars {
+  --text-bg: #{$dark-text-bg};
+  --text-fg: #{$dark-text-fg};
+  --text-fg-alt: #{$bluegray-200};
+  --shadow: black;
+
+  --primary:   #{$dark-code-blue};
+  --secondary: #{$dark-code-pink};
+  --active:    #4267BD;
+
+  --modal-bg: #282C34aa;
+
+  --warning-bg: #{$yellow-500};
+  --warning-icon: #{$yellow-400};
+
+  --note-bg:   #{$violet-500};
+  --note-icon: #{$violet-400};
+
+  --terminology-bg:   #{$cyan-600};
+  --terminology-icon: #{$cyan-700};
+
+  --code-bg: var(--text-bg);
+  --code-fg: var(--text-fg);
+
+  --code-keyword:     #{$dark-code-yellow};
+  --code-string:      #{$dark-code-red};
+  --code-number:      #{$dark-code-green};
+  --code-module:      #{$dark-code-cyan};
+  --code-field:       #{$dark-code-pink};
+  --code-constructor: #{$dark-code-green};
+  --code-highlight: #ef444499;
+
+  --search-selected: #{$cyan-900};
+
+  --depgraph-edge: #{$bluegray-600};
+  --blockquote-bg: #{$bluegray-600};
+
+  --input-bg:     #{$bluegray-700};
+  --input-border: #{$bluegray-600};
+
+  --popup-bg:        #282C34;
+  --button-hover-bg: #3b4454;
+  --icon-filter: invert(79%) sepia(10%) saturate(306%) hue-rotate(181deg) brightness(89%) contrast(92%);;
+
+  --diagram-shaded-bg: #2B6253;
+
+  .diagram-dark {
+    display: block !important;
+  }
+
+  .diagram-light {
+    display: none !important;
+  }
+
+  div.warning {
+    --shadow: #{$red-900};
+  }
+
+  body {
+    scrollbar-color: #3b4454 #2b2e33;
+  }
+}
+
+:root.dark-theme {
+  @include dark-theme-vars;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    @include dark-theme-vars;
+  }
+}

@@ -669,7 +669,7 @@ module _ {o₁ h₁ o₂ h₂ : _} {J : Precategory o₁ h₁} {C : Precategory 
 ```
 
 
-# Preservation of Limits
+# Preservation of limits
 
 <!--
 ```agda

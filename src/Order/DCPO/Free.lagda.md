@@ -94,7 +94,7 @@ Free-DCPO⊣Forget-DCPO .zig = trivial!
 Free-DCPO⊣Forget-DCPO .zag = refl
 ```
 
-# Free Pointed DCPOs
+# Free pointed DCPOs
 
 We construct the free [pointed DCPO] on a set $A$; IE a pointed
 DCPO $A_{\bot}$ with the property that for all pointed DCPOs $B$,
@@ -212,15 +212,13 @@ of partial elements forms a poset whenever $A$ is a set.
   ap (x .elt) (x .def .is-tr _ _) ∙ q .refines y-def
 
 Parts : (A : Set ℓ) → Poset ℓ ℓ
-Parts A = to-poset (Part ∣ A ∣) mk-parts where
-  mk-parts : make-poset _ (Part ∣ A ∣)
-  mk-parts .make-poset.rel = _⊑_
-  mk-parts .make-poset.id = ⊑-refl
-  mk-parts .make-poset.thin = ⊑-thin (A .is-tr)
-  mk-parts .make-poset.trans = ⊑-trans
-  mk-parts .make-poset.antisym = ⊑-antisym
+Parts A .Poset.Ob = Part ∣ A ∣
+Parts A .Poset._≤_ = _⊑_
+Parts A .Poset.≤-thin = ⊑-thin (A .is-tr)
+Parts A .Poset.≤-refl = ⊑-refl
+Parts A .Poset.≤-trans = ⊑-trans
+Parts A .Poset.≤-antisym = ⊑-antisym
 ```
-
 
 Furthermore, the poset of partial elements has [least upper bounds] of all
 [semidirected families].
@@ -271,7 +269,7 @@ refines both $s(i)$ and $s(j)$ to obtain the desired path.
     is-const
       : ∀ (p q : Σ[ i ∈ Ix ] is-defined (s i))
       → s (p .fst) ≡ s (q .fst)
-    is-const (i , si) (j , sj) = ∥-∥-proj {ap = Part-is-set set _ _} $ do
+    is-const (i , si) (j , sj) = ∥-∥-proj (Part-is-set set _ _) $ do
       (k , p , q) ← dir i j
       pure $ part-ext (λ _ → sj) (λ _ → si) λ si sj →
         s i .elt si              ≡˘⟨ p .refines si ⟩
@@ -327,7 +325,7 @@ bottom for computational reasons.
 
 ```agda
 never : Part A
-never .def = el ⊥ (hlevel 1)
+never .def = ⊥Ω
 
 never-⊑ : ∀ {x : Part A} → never ⊑ x
 never-⊑ .implies ()
@@ -394,7 +392,7 @@ Free-Pointed-dcpo .F₀ A =
   Parts-pointed-dcpo A
 Free-Pointed-dcpo .F₁ {x = A} f =
   to-strict-scott-bottom (part-map f)
-    (λ _ _ → part-map-⊑)
+    (part-map-⊑)
     (λ _ _ → part-map-lub {A = A} f)
     (λ _ → part-map-never)
 Free-Pointed-dcpo .F-id = ext (part-map-id $_)
@@ -407,7 +405,7 @@ of the adjunction, which takes an element $a : A$ to $\top, \lambda tt. a$.
 
 ```agda
 always : A → Part A
-always a .def = el ⊤ (hlevel 1)
+always a .def = ⊤Ω
 always a .elt _ = a
 
 always-inj : ∀ {x y : Type ℓ} → always x ≡ always y → x ≡ y
@@ -481,8 +479,8 @@ We also note that the counit preserves refinements, least upper bounds, and
 bottom elements.
 
 ```agda
-  part-counit-⊑ : (x y : Part Ob) → x ⊑ y → part-counit x ≤ part-counit y
-  part-counit-⊑ x y p =
+  part-counit-⊑ : {x y : Part Ob} → x ⊑ y → part-counit x ≤ part-counit y
+  part-counit-⊑ {x = x} {y = y} p =
     ⋃-prop-least _ _ (part-counit y) λ (lift i) →
       x .elt i                       =˘⟨ p .refines i ⟩
       y .elt (p .implies i)          ≤⟨ ⋃-prop-le _ _ (lift (p .implies i)) ⟩
@@ -507,7 +505,7 @@ bottom elements.
 
   part-counit-never
     : ∀ x → part-counit never ≤ x
-  part-counit-never x = ⋃-prop-least _ _ x (absurd ⊙ Lift.lower)
+  part-counit-never x = ⋃-prop-least _ _ x (λ ())
 ```
 
 We can tie this all together to obtain the desired adjunction.
@@ -540,7 +538,7 @@ Free-Pointed-dcpo⊣Forget-Pointed-dcpo .zag {B} =
     where module B = Pointed-dcpo B
 ```
 
-## Monad Structure
+## Monad structure
 
 The adjunction from the previous section yields a monad on the category of sets,
 but we opt to define it by hand to get better computational behaviour.
@@ -561,7 +559,7 @@ part-bind x f .elt (px , pfx) =
 ```agda
 instance
   Part-Map : Map (eff Part)
-  Part-Map .Map._<$>_ = part-map
+  Part-Map .Map.map = part-map
 
   Part-Idiom : Idiom (eff Part)
   Part-Idiom .Idiom.Map-idiom = Part-Map

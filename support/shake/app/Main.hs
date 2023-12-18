@@ -33,6 +33,7 @@ import Shake.LinkGraph
 import Shake.Markdown
 import Shake.Modules
 import Shake.Diagram
+import Shake.Digest
 import Shake.KaTeX
 import Shake.Git
 import Shake.Utils
@@ -48,6 +49,7 @@ import Timer
 rules :: Rules ()
 rules = do
   agdaRules
+  digestRules
   gitRules
   katexRules
   moduleRules
@@ -162,6 +164,7 @@ rules = do
         , "_build/html/static/search.json"
         , "_build/html/css/default.css"
         , "_build/html/main.js"
+        , "_build/html/start.js"
         , "_build/html/code-only.js"
         ]
 

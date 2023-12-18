@@ -15,7 +15,7 @@ import Cat.Reasoning
 module Cat.Diagram.Product.Solver where
 ```
 
-# A Solver for Categories with Binary Products
+# A solver for categories with binary products
 
 Much like the [category solver], this module is split into two halves.
 The first implements an algorithm for normalizing expressions in the
@@ -247,7 +247,7 @@ morphism as naively interpreting the expression.
   sound X Y e = sound-k X X Y e vid ∙ elimr (vhom-sound X X id)
 ```
 
-## Solver Interface
+## Solver interface
 
 In order to make the reflection easier later, we bundle up the soundness
 proof. Marking this as abstract is *very important*. This prevents
@@ -389,9 +389,9 @@ calls to the solver/normaliser.
 
 ```agda
   get-objects : Term → TC (Term × Term)
-  get-objects tm = ((inferType tm >>= normalise) >>= wait-just-a-bit) >>= λ where
+  get-objects tm = ((infer-type tm >>= normalise) >>= wait-just-a-bit) >>= λ where
     (def (quote Precategory.Hom) (category-field (x v∷ y v∷ []))) →
-      returnTC (x , y)
+      pure (x , y)
     tp →
       typeError $ strErr "Can't determine objects: " ∷ termErr tp ∷ []
 ```
@@ -461,7 +461,7 @@ with their actual values, which then fixes the issue.
     withReconstructed true $
     withNormalisation false $
     withReduceDefs (false , dont-reduce) $ do
-    goal ← inferType hole >>= reduce
+    goal ← infer-type hole >>= reduce
     just (lhs , rhs) ← get-boundary goal
       where nothing → typeError $ strErr "Can't determine boundary: " ∷
                                   termErr goal ∷ []

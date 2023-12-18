@@ -12,6 +12,8 @@ open import Cat.Functor.Adjoint
 open import Cat.Prelude
 
 open import Data.List
+
+import Meta.Idiom
 ```
 -->
 
@@ -29,6 +31,10 @@ open Monoid-on
 open Functor
 open _=>_
 open _⊣_
+
+private
+  map : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → (A → B) → List A → List B
+  map = Meta.Idiom.map
 ```
 -->
 
@@ -127,14 +133,6 @@ We call this functor `Free`{.Agda}, since it is a [[left adjoint]] to the
 a `set`{.Agda ident=Set} into a monoid in the most efficient way.
 
 ```agda
-map-id : ∀ {ℓ} {A : Type ℓ} (xs : List A) → map (λ x → x) xs ≡ xs
-map-id [] = refl
-map-id (x ∷ xs) = ap (x ∷_) (map-id xs)
-
-map-++ : ∀ {ℓ} {x y : Type ℓ} (f : x → y) xs ys → map f (xs ++ ys) ≡ map f xs ++ map f ys
-map-++ f [] ys = refl
-map-++ f (x ∷ xs) ys = ap (f x ∷_) (map-++ f xs ys)
-
 Free : ∀ {ℓ} → Functor (Sets ℓ) (Monoids ℓ)
 Free .F₀ A = el! (List ∣ A ∣) , List-is-monoid (A .is-tr)
 ```

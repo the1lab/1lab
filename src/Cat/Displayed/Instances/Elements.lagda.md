@@ -24,7 +24,7 @@ private
 ```
 -->
 
-# The Displayed Category of Elements
+# The displayed category of elements
 
 It is useful to view the [category of elements] of a presheaf
 `P`{.Agda} as a [[displayed category]]. Instead of considering pairs of

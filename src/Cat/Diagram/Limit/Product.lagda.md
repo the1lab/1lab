@@ -46,7 +46,7 @@ existing infrastructure):
 2-object-category = Disc' (el Bool Bool-is-set)
 
 2-object-diagram : Ob → Ob → Functor 2-object-category C
-2-object-diagram a b = Disc-diagram Discrete-Bool λ where
+2-object-diagram a b = Disc-diagram λ where
   true  → a
   false → b
 ```
@@ -62,7 +62,7 @@ Pair→Cone
   : ∀ {q a b} → Hom q a → Hom q b
   → Const q => (2-object-diagram a b)
 Pair→Cone f g = Disc-natural λ where
-  true → f
+  true  → f
   false → g
 ```
 
@@ -85,12 +85,12 @@ is-product→is-limit {x = x} {a} {b} {p1} {p2} is-prod =
     ml : make-is-limit (2-object-diagram a b) x
     ml .ψ true = p1
     ml .ψ false = p2
-    ml .commutes {true} {true} f = ap (_∘ p1) (transport-refl id) ∙ idl _
-    ml .commutes {true} {false} f = absurd (true≠false f)
-    ml .commutes {false} {true} f = absurd (true≠false $ sym f)
-    ml .commutes {false} {false} f = ap (_∘ p2) (transport-refl id) ∙ idl _
-    ml .universal eta _ = is-prod.⟨ eta true , eta false ⟩
-    ml .factors {true} eta _ = is-prod.π₁∘factor
+    ml .commutes {true}  {true}  f = idl p1
+    ml .commutes {true}  {false} f = absurd (true≠false f)
+    ml .commutes {false} {true}  f = absurd (true≠false $ sym f)
+    ml .commutes {false} {false} f = idl p2
+    ml .universal       eta _ = is-prod.⟨ eta true , eta false ⟩
+    ml .factors {true}  eta _ = is-prod.π₁∘factor
     ml .factors {false} eta _ = is-prod.π₂∘factor
     ml .unique eta p other q = is-prod.unique other (q true) (q false)
 
@@ -153,13 +153,11 @@ canonical-functors F = Functor-path p q where
   q {false} {false} p =
     F₁ F p            ≡⟨ ap (F₁ F) (Bool-is-set _ _ _ _) ⟩
     F₁ F refl         ≡⟨ F-id F ⟩
-    id                ≡˘⟨ transport-refl _ ⟩
-    transport refl id ∎
+    id                ∎
   q {true} {true} p =
     F₁ F p            ≡⟨ ap (F₁ F) (Bool-is-set _ _ _ _) ⟩
     F₁ F refl         ≡⟨ F-id F ⟩
-    id                ≡˘⟨ transport-refl _ ⟩
-    transport refl id ∎
+    id                ∎
   q {false} {true} p = absurd (true≠false (sym p))
   q {true} {false} p = absurd (true≠false p)
 ```

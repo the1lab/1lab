@@ -13,7 +13,7 @@ import Cat.Allegory.Morphism
 module Cat.Restriction.Instances.Allegory where
 ```
 
-# Restriction Categories from Allegories
+# Restriction categories from allegories
 
 Let $\cA$ be an [allegory], considered as a sort of generalized category
 of "sets and relations". Much like we can recover a category of "sets and

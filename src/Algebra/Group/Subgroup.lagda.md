@@ -32,10 +32,8 @@ private module _ {ℓ} where open Cat.Displayed.Instances.Subobjects (Groups ℓ
 A **subgroup** $m$ of a group $G$ is a [[monomorphism]] $H \xto{m} G$,
 that is, an object of the [[poset of subobjects]] $\Sub(G)$. Since group
 homomorphisms are injective exactly when their underlying function is an
-[embedding], we can alternatively describe this as a condition on a
+[[embedding]], we can alternatively describe this as a condition on a
 predicate $G \to \prop$.
-
-[embedding]: 1Lab.Equiv.Embedding.html
 
 ```agda
 Subgroup : Group ℓ → Type (lsuc ℓ)
@@ -85,7 +83,7 @@ predicate→subgroup {G = G} H p = record { map = it ; monic = ism } where
   ism = Homomorphism-monic it (λ p → Σ-prop-path (λ _ → hlevel!) p)
 ```
 
-# Kernels and Images
+# Kernels and images
 
 To a group homomorphism $f : A \to B$ we can associate two canonical
 subgroups, one of $A$ and one of $B$: $f$'s [[**image factorisation**]],
@@ -266,7 +264,7 @@ elide the zero composite $e' \circ 0$.
           (p : e' Groups.∘ Zero.zero→ ∅ᴳ ≡ e' Groups.∘ Kerf.kernel)
       → ∀ {x : ⌞ B ⌟} → ∥ fibre (apply f) x ∥ → _
     elim {F = F} {e' = e'} p {x} =
-      ∥-∥-rec-set ((e' #_) ⊙ fst) const (F .snd .Group-on.has-is-set) where abstract
+      ∥-∥-rec-set (F .snd .Group-on.has-is-set) ((e' #_) ⊙ fst) const where abstract
       module e' = is-group-hom (e' .preserves)
       module F = Group-on (F .snd)
 ```
@@ -548,7 +546,7 @@ that, if $\rm{inc}(x) = \rm{inc}(y)$, then $(x - y) \in H$.
   normal-subgroup→congruence .symᶜ = rel-sym
 
   /ᴳ-effective : ∀ {x y} → Path G/H (inc x) (inc y) → rel x y
-  /ᴳ-effective = equiv→inverse (effective normal-subgroup→congruence)
+  /ᴳ-effective = effective normal-subgroup→congruence
 ```
 
 <!--

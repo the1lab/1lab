@@ -39,7 +39,7 @@ module _ {ℓ ℓ'} (C : Precategory ℓ ℓ') where
 ```
 -->
 
-# Finitely Complete Categories {defines="finite-limit finitely-complete finitely-complete-category"}
+# Finitely complete categories {defines="finite-limit finitely-complete finitely-complete-category"}
 
 A category is said to be **finitely complete** if it admits limits for
 every diagram with a [[finite|finite category]] shape.

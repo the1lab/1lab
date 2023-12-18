@@ -17,6 +17,7 @@ import qualified Data.Text.Encoding as Text
 import qualified Data.Map.Lazy as Map
 import qualified Data.Text.IO as Text
 import qualified Data.Text as Text
+import qualified Data.Set as Set
 
 import Data.Digest.Pure.SHA
 import Data.Foldable
@@ -46,6 +47,7 @@ import Shake.LinkReferences
 import Shake.SearchData
 import Shake.Highlights
 import Shake.Options
+import Shake.Digest
 import Shake.KaTeX
 import Shake.Git
 
@@ -197,8 +199,18 @@ buildMarkdown modname input output = do
   need dependencies
 
   baseUrl <- getBaseUrl
+  digest <- do
+    cssDigest <- getFileDigest "_build/html/css/default.css"
+    startJsDigest <- getFileDigest "_build/html/start.js"
+    mainJsDigest <- getFileDigest "_build/html/main.js"
+    pure . Context . Map.fromList $
+      [ ("css",       toVal (Text.pack cssDigest))
+      , ("start-js",  toVal (Text.pack startJsDigest))
+      , ("main-js",   toVal (Text.pack mainJsDigest))
+      ]
+
   text <- liftIO $ either (fail . show) pure =<<
-    runIO (renderMarkdown authors references modname baseUrl markdown)
+    runIO (renderMarkdown authors references modname baseUrl digest markdown)
 
   let tags = foldEquations False (parseTags text)
   tags <- renderHighlights tags
@@ -342,8 +354,9 @@ renderMarkdown :: PandocMonad m
                -> [Val Text]   -- ^ List of references
                -> String       -- ^ Name of the current module
                -> String       -- ^ Base URL
+               -> Context Text -- ^ Digests of the various files.
                -> Pandoc -> m Text
-renderMarkdown authors references modname baseUrl markdown = do
+renderMarkdown authors references modname baseUrl digest markdown = do
   template <- getTemplate templateName >>= runWithPartials . compileTemplate templateName
                 >>= either (throwError . PandocTemplateError . Text.pack) pure
   let
@@ -357,6 +370,7 @@ renderMarkdown authors references modname baseUrl markdown = do
       , ("authors",      toVal authors')
       , ("reference",    toVal references)
       , ("base-url",     toVal (Text.pack baseUrl))
+      , ("digest",       toVal digest)
       ]
 
     options = def { writerTemplate        = Just template
@@ -367,10 +381,16 @@ renderMarkdown authors references modname baseUrl markdown = do
   setTranslations (Lang "en" Nothing Nothing [] [] [])
   writeHtml5String options markdown
 
+-- | Simple textual list of starting identifiers not to fold
+don'tFold :: Set.Set Text
+don'tFold = Set.fromList
+  [ "`⟨" -- used in CC.Lambda
+  ]
+
 -- | Removes the RHS of equation reasoning steps?? IDK, ask Amelia.
 foldEquations :: Bool -> [Tag Text] -> [Tag Text]
 foldEquations _ (to@(TagOpen "a" attrs):tt@(TagText t):tc@(TagClose "a"):rest)
-  | Text.length t > 1, Text.last t == '⟨', Just href <- lookup "href" attrs =
+  | t `Set.notMember` don'tFold, Text.length t > 1, Text.last t == '⟨', Just href <- lookup "href" attrs =
   [ TagOpen "span" [("class", "reasoning-step")]
   , TagOpen "span" [("class", "as-written " <> fromMaybe "" (lookup "class" attrs))]
   , to, tt, tc ] ++ go href rest
@@ -390,8 +410,8 @@ foldEquations _ (to@(TagOpen "a" attrs):tt@(TagText t):tc@(TagClose "a"):rest)
     go href (c:cs) = c:go href cs
     go _ [] = []
 foldEquations False (TagClose "html":cs) =
- [TagOpen "style" [], TagText ".equations { display: none !important; }", TagClose "style", TagClose "html"]
- ++ foldEquations True cs
+  [TagOpen "style" [], TagText ".equations { display: none !important; }", TagClose "style", TagClose "html"]
+  ++ foldEquations True cs
 foldEquations has_eqn (c:cs) = c:foldEquations has_eqn cs
 foldEquations _ [] = []
 
@@ -405,7 +425,6 @@ getHeaders module' markdown@(Pandoc (Meta meta) _) =
     { idIdent = module'
     , idAnchor = module' <> ".html"
     , idType = Nothing
-    , idDesc = stringify <$> (Map.lookup "description" meta <|> Map.lookup "pagetitle" meta)
     , idDefines = Nothing
     }
 
@@ -430,7 +449,6 @@ getHeaders module' markdown@(Pandoc (Meta meta) _) =
         { idIdent  = Text.intercalate " > " . reverse $ map snd path'
         , idAnchor = module' <> ".html#" <> hId
         , idType   = Nothing
-        , idDesc   = getDesc xs
         , idDefines = Text.words <$> lookup "defines" keys
         } <$> go xs
   go (Div (hId, _, keys) blocks:xs) | hId /= "" = do
@@ -440,7 +458,6 @@ getHeaders module' markdown@(Pandoc (Meta meta) _) =
       { idIdent  = Text.intercalate " > " . reverse $ hId:map snd path
       , idAnchor = module' <> ".html#" <> hId
       , idType   = Nothing
-      , idDesc   = getDesc blocks
       , idDefines = (:) hId . Text.words <$> lookup "alias" keys
       } <$> go xs
   go (_:xs) = go xs
@@ -451,14 +468,6 @@ getHeaders module' markdown@(Pandoc (Meta meta) _) =
   -- point, that's exactly what we want!
   write = writePlain def{ writerExtensions = enableExtension Ext_raw_html (writerExtensions def) }
   renderPlain inlines = either (error . show) id . runPure . write $ Pandoc mempty [Plain inlines]
-
-  -- | Attempt to find the "description" of a heading. Effectively, if a header
-  -- is followed by a paragraph, use its contents.
-  getDesc (Para x:_) = Just (renderPlain x)
-  getDesc (Plain x:_) = Just (renderPlain x)
-  getDesc (Div (_, cls, _) _:xs) | "warning" `elem` cls = getDesc xs
-  getDesc (BlockQuote blocks:_) = getDesc blocks
-  getDesc _ = Nothing
 
 htmlInl :: Text -> Inline
 htmlInl = RawInline "html"

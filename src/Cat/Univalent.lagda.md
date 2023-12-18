@@ -15,7 +15,7 @@ open Precategory using (Ob)
 module Cat.Univalent where
 ```
 
-# (Univalent) Categories {defines="univalent-categories univalent-category"}
+# (Univalent) categories {defines="univalent-categories univalent-category"}
 
 In much the same way that a [[partial order]] is a preorder where $x \le
 y \land y \le x \to x = y$, a **category** is a precategory where

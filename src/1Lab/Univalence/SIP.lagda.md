@@ -156,7 +156,7 @@ sip : {σ : Structure ℓ S} → is-univalent σ → {X Y : Σ _ S} → (X ≃[ 
 sip σ = SIP σ .fst
 ```
 
-# Structure Combinators
+# Structure combinators
 
 Univalent structures can be built up in an algebraic manner through the
 use of _structure combinators_. These express closure of structures
@@ -388,7 +388,7 @@ We have a similar phenomenon that happens with NAND and NOR:
     true true → refl
 ```
 
-# Transport Structures
+# Transport structures
 
 As an alternative to equipping a type family `S : Type → Type` with a
 notion of S-homomorphism, we can equip it with a notion of _action_.
@@ -586,7 +586,7 @@ Function-action-is-transport {S = S} {α = α} {β = β} α-tr β-tr eqv f =
 ```
 </details>
 
-# Adding Axioms
+# Adding axioms
 
 Most mathematical objects of interest aren't merely sets with structure.
 More often, the objects we're interested in have _stuff_ (the underlying
@@ -666,7 +666,7 @@ transfer-axioms {univ = univ} {axioms = axioms} A B eqv =
   subst (λ { (x , y) → axioms x y }) (sip univ eqv) (A .snd .snd)
 ```
 
-# A Language for Structures
+# A language for structures
 
 The structure combinators can be abstracted away into a _language_ for
 defining structures. A `Str-term`{.Agda} describes a structure, that may be
@@ -761,7 +761,7 @@ Term→action-is-transport (s s× s₁) =
     (Term→action-is-transport s) (Term→action-is-transport s₁)
 ```
 
-## Descriptions of Structures
+## Descriptions of structures
 
 To make convenient descriptions of structures-with-axioms, we introduce
 a record type, `Str-desc`{.Agda}, which packages together the structure

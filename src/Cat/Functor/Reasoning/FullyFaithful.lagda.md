@@ -17,7 +17,7 @@ module
   where
 ```
 
-# Reasoning for ff Functors
+# Reasoning for ff functors
 
 <!-- TODO [Amy 2022-12-14]
 Write something informative here

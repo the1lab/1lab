@@ -166,7 +166,7 @@ inductive.
     is-nil-is-prop nil x y = refl
   path-codep-is-prop a (cons h t) (cons h' t') (p , q , r) (p' , q' , r') =
     Σ-pathp (G.vert .is-tr _ _ _ _) $
-    Σ-pathp-dep
+    Σ-pathp
       (is-prop→pathp (λ i → PathP-is-hlevel' 1 (G.edge _ _ .is-tr) _ _) q q')
       (is-prop→pathp
         (λ i → path-codep-is-prop (λ j → G.vert .is-tr _ _ p p' i j) t t')

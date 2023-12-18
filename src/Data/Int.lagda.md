@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import 1Lab.Prelude
+open import 1Lab.Rewrite
 
 open import Data.Nat.Solver
 open import Data.Dec
@@ -88,22 +89,23 @@ difference": the construction `same-difference`{.Agda} below packages
 everything together with a bow on the top.
 
 ```agda
-same-difference : {a b c d : Nat} → a + d ≡ b + c → diff a b ≡ diff c d
-same-difference {zero} {b} {c} {d} path = sym $
-  diff c ⌜ d ⌝     ≡⟨ ap! path ⟩
-  diff c ⌜ b + c ⌝ ≡⟨ ap! (+-commutative b c) ⟩
-  diff c (c + b)   ≡⟨ offset-negative _ _ ⟩
-  diff 0 b         ∎
-same-difference {suc a} {zero} {c} {d} path =
-  sym ( diff ⌜ c ⌝ d         ≡⟨ ap! (sym path) ⟩
-        diff ⌜ suc a + d ⌝ d ≡⟨ ap! (+-commutative (suc a) d) ⟩
-        diff (d + suc a) d   ≡⟨ offset-positive _ _ ⟩
-        diff (suc a) 0       ∎
-      )
-same-difference {suc a} {suc b} {c} {d} path =
-  diff (suc a) (suc b) ≡˘⟨ quot _ _ ⟩
-  diff a b             ≡⟨ same-difference (suc-inj path) ⟩
-  diff c d             ∎
+opaque
+  same-difference : {a b c d : Nat} → a + d ≡ b + c → diff a b ≡ diff c d
+  same-difference {zero} {b} {c} {d} path = sym $
+    diff c ⌜ d ⌝     ≡⟨ ap! path ⟩
+    diff c ⌜ b + c ⌝ ≡⟨ ap! (+-commutative b c) ⟩
+    diff c (c + b)   ≡⟨ offset-negative _ _ ⟩
+    diff 0 b         ∎
+  same-difference {suc a} {zero} {c} {d} path =
+    sym ( diff ⌜ c ⌝ d         ≡⟨ ap! (sym path) ⟩
+          diff ⌜ suc a + d ⌝ d ≡⟨ ap! (+-commutative (suc a) d) ⟩
+          diff (d + suc a) d   ≡⟨ offset-positive _ _ ⟩
+          diff (suc a) 0       ∎
+        )
+  same-difference {suc a} {suc b} {c} {d} path =
+    diff (suc a) (suc b) ≡˘⟨ quot _ _ ⟩
+    diff a b             ≡⟨ same-difference (suc-inj path) ⟩
+    diff c d             ∎
 ```
 
 <!--
@@ -233,9 +235,9 @@ Canonical n = Σ[ x ∈ Nat ] Σ[ y ∈ Nat ] (diff x y ≡ n)
 
 canonicalise : (n : Int) → Canonical n
 canonicalise = go where
-  lemma₁ : ∀ x y → x < y → diff 0 (y - x) ≡ diff x y
-  lemma₂ : ∀ x y → y < x → diff (x - y) 0 ≡ diff x y
-  lemma₃ : ∀ x y → x ≡ y → diff 0 0       ≡ diff x y
+  lemma₁ : ∀ x y → .(x < y) → diff 0 (y - x) ≡ diff x y
+  lemma₂ : ∀ x y → .(y < x) → diff (x - y) 0 ≡ diff x y
+  lemma₃ : ∀ x y → .(x ≡ y) → diff 0 0       ≡ diff x y
 
   work : ∀ x y → Canonical (diff x y)
   work x y with ≤-split x y
@@ -257,55 +259,41 @@ from this page. You can unfold it below if you dare:
   -- lets us prove that the paths they return respect the Int quotient
   -- without using that Int is a set (because we don't know that yet!)
 
-  lemma₁ zero (suc y) p          = refl
-  lemma₁ (suc x) (suc y) (s≤s p) = lemma₁ x y p ∙ Int.quot x y
+  lemma₁ zero    (suc y) p = refl
+  lemma₁ (suc x) (suc y) p = lemma₁ x y (≤-peel p) ∙ Int.quot x y
 
-  lemma₂ (suc x) zero p          = refl
-  lemma₂ (suc x) (suc y) (s≤s p) = lemma₂ x y p ∙ Int.quot x y
+  lemma₂ (suc x) zero    p = refl
+  lemma₂ (suc x) (suc y) p = lemma₂ x y (≤-peel p) ∙ Int.quot x y
 
   lemma₃ zero zero p       = refl
   lemma₃ zero (suc y) p    = absurd (zero≠suc p)
-  lemma₃ (suc x) zero p    = absurd (zero≠suc (sym p))
+  lemma₃ (suc x) zero p    = absurd (suc≠zero p)
   lemma₃ (suc x) (suc y) p = lemma₃ x y (suc-inj p) ∙ Int.quot x y
 
   abstract
     work-respects-quot
       : ∀ x y → PathP (λ i → Canonical (Int.quot x y i))
-        (work x y)
-        (work (suc x) (suc y))
+        (work x y) (work (suc x) (suc y))
     -- We split on (x, y) but also (1+x,1+y). This is obviously
     -- redundant to a human, but to Agda, we must do this: there is no
     -- link between these two splits.
 
-    -- These first three cases basically mirror the definition of
-    -- lemma₁, lemma₂, and lemma₃. They show that
-    --    lemma₁₂₃ (suc x) (suc y) p ≡ lemma₁₂₃ (suc x) (suc y) p' ∙ Int.quot x y
-    -- but mediating between SquareP, ··, and ∙.
     work-respects-quot x y with ≤-split x y | ≤-split (suc x) (suc y)
-    ... | inl x<y | inl (s≤s x<y') =
-      Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡double-composite-path) $
-          double-composite refl _ _
-        ·· ∙-idl _
-        ·· ap (λ e → lemma₁ x y e ∙ Int.quot x y) (≤-is-prop x<y x<y')
-    ... | inr (inl x>y) | inr (inl (s≤s x>y')) =
-      Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡double-composite-path) $
-          double-composite refl _ _
-        ·· ∙-idl _
-        ·· ap (λ e → lemma₂ x y e ∙ Int.quot x y) (≤-is-prop x>y x>y')
-    ... | inr (inr x≡y) | inr (inr x≡y') =
-      Σ-pathp-dep refl $ Σ-pathp-dep refl $ transport (sym Square≡double-composite-path) $
-          double-composite refl _ _
-        ·· ∙-idl _
-        ·· ap (λ e → lemma₃ x y e ∙ Int.quot x y) (Nat-is-set _ _ _ _)
+    ... | inl x<y | inl (s≤s x<y') = Σ-pathp refl $ Σ-pathp refl $
+      commutes→square (∙-idl _)
+    ... | inr (inl x>y) | inr (inl (s≤s x>y')) = Σ-pathp refl $ Σ-pathp refl $
+      commutes→square (∙-idl _)
+    ... | inr (inr x≡y) | inr (inr x≡y') = Σ-pathp refl $ Σ-pathp refl $
+      commutes→square (∙-idl _)
 
     -- This *barrage* of cases is to handle the cases where e.g. (x < y)
     -- but (1 + x > 1 + y), which is "obviously" impossible. But Agda
     -- doesn't care about what humans think is obvious.
-    ... | inl x<y | inr (inl (s≤s x>y)) = absurd (<-asym x<y x>y)
-    ... | inl x<y | inr (inr x≡y) = absurd (<-not-equal x<y (suc-inj x≡y))
-    ... | inr (inl x>y) | inl (s≤s x<y) = absurd (<-asym x>y x<y)
-    ... | inr (inr x≡y) | inl (s≤s x<y) = absurd (<-not-equal x<y x≡y)
-    ... | inr (inl x>y) | inr (inr x≡y) = absurd (<-not-equal x>y (sym (suc-inj x≡y)))
+    ... | inl x<y | inr (inl (s≤s x>y))       = absurd (<-asym x<y x>y)
+    ... | inl x<y | inr (inr x≡y)             = absurd (<-not-equal x<y (suc-inj x≡y))
+    ... | inr (inl x>y) | inl (s≤s x<y)       = absurd (<-asym x>y x<y)
+    ... | inr (inr x≡y) | inl (s≤s x<y)       = absurd (<-not-equal x<y x≡y)
+    ... | inr (inl x>y) | inr (inr x≡y)       = absurd (<-not-equal x>y (sym (suc-inj x≡y)))
     ... | inr (inr x≡y) | inr (inl (s≤s x>y)) = absurd (<-irrefl (sym x≡y) x>y)
 
   go : ∀ n → Canonical n
@@ -321,20 +309,17 @@ it's a retract of a set --- namely $\bb{N} \times \bb{N}$!
 ```agda
 instance abstract
   H-Level-Int : ∀ {n} → H-Level Int (2 + n)
-  H-Level-Int =
-    basic-instance 2 $
-      retract→is-hlevel 2 into from linv (hlevel 2)
-    where
-      into : (Nat × Nat) → Int
-      into (x , y) = diff x y
+  H-Level-Int = basic-instance 2 (retract→is-hlevel 2 into from linv (hlevel 2)) where
+    into : (Nat × Nat) → Int
+    into (x , y) = diff x y
 
-      from : Int → Nat × Nat
-      from x with canonicalise x
-      ... | a , b , p = a , b
+    from : Int → Nat × Nat
+    from x with canonicalise x
+    ... | a , b , p = a , b
 
-      linv : ∀ x → into (from x) ≡ x
-      linv x with canonicalise x
-      ... | a , b , p = p
+    linv : ∀ x → into (from x) ≡ x
+    linv x with canonicalise x
+    ... | a , b , p = p
 ```
 
 # Recursion
@@ -791,11 +776,27 @@ canonicalise-injective = Int-elim₂-prop (λ _ _ → hlevel 1) λ a b x y p q �
   ·· ap₂ diff p q
   ·· canonicalise (diff x y) .snd .snd
 
-Discrete-Int : Discrete Int
-Discrete-Int = Int-elim₂-prop (λ _ _ → hlevel 1) λ a b x y →
-  Dec-elim (λ _ → Dec (diff a b ≡ diff x y))
-    (yes ∘ same-difference)
-    (λ ¬sd → no λ sd → ¬sd (ℤ-Path.encode a b (diff x y) sd))
-    (Discrete-Nat (a + y) (b + x))
+instance
+  Discrete-Int : Discrete Int
+  Discrete-Int = go _ _ where
+    go₀ : (a b x y : Nat) → Dec (diff a b ≡ diff x y)
+    go₀ a b x y with inspect (a + y == b + x)
+    ... | true , p  = yes (same-difference (is-equal→path {a + y} {b + x} p))
+    ... | false , p = no λ q → is-not-equal→not-path
+      {a + y} {b + x} p (ℤ-Path.encode a b (diff x y) q)
+
+    go₁ : (a b : Nat) (y : Int) → Dec (diff a b ≡ y)
+    go₁ a b (diff x y) = go₀ a b x y
+    go₁ a b (quot m n i) = is-prop→pathp
+      (λ i → Dec-is-hlevel 1 (hlevel {T = diff a b ≡ quot m n i} 1))
+      (go₀ a b m n)
+      (go₀ a b (suc m) (suc n)) i
+
+    go : ∀ x y → Dec (x ≡ y)
+    go (diff a b) y = go₁ a b y
+    go (quot m n i) y = is-prop→pathp
+      (λ i → Dec-is-hlevel 1 (hlevel {T = quot m n i ≡ y} 1))
+      (go₁ m n y)
+      (go₁ (suc m) (suc n) y) i
 ```
 -->

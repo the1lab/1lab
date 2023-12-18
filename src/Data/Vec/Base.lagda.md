@@ -4,6 +4,7 @@ open import 1Lab.Path
 open import 1Lab.Type
 
 open import Data.Product.NAry
+open import Data.List.Base hiding (lookup ; tabulate)
 open import Data.Fin.Base
 open import Data.Nat.Base
 ```
@@ -38,7 +39,7 @@ infixr 20 _∷_
 
 private variable
   ℓ : Level
-  A B : Type ℓ
+  A B C : Type ℓ
   n k : Nat
 
 lookup : Vec A n → Fin n → A
@@ -54,7 +55,7 @@ Vec-cast {A = A} {x = x} {y = y} p xs =
     (λ { zero _ → []
        ; (suc x) p → absurd (zero≠suc p)
        })
-    (λ { {n} head tail cast-tail zero 1+n=len → absurd (zero≠suc (sym 1+n=len))
+    (λ { {n} head tail cast-tail zero 1+n=len → absurd (suc≠zero 1+n=len)
        ; {n} head tail cast-tail (suc len) 1+n=len →
           head ∷ cast-tail len (suc-inj 1+n=len)
        })
@@ -65,11 +66,11 @@ lookup-safe : Vec A n → Fin n → A
 lookup-safe {A = A} xs n =
   Fin-elim (λ {n} _ → Vec A n → A)
     (λ {k} xs → Vec-elim (λ {k'} _ → suc k ≡ k' → A)
-      (λ p → absurd (zero≠suc (sym p)))
+      (λ p → absurd (suc≠zero p))
       (λ x _ _ _ → x) xs refl)
     (λ {i} j cont vec →
       Vec-elim (λ {k'} xs → suc i ≡ k' → A)
-        (λ p → absurd (zero≠suc (sym p)))
+        (λ p → absurd (suc≠zero p))
         (λ {n} head tail _ si=sn → cont (Vec-cast (suc-inj (sym si=sn)) tail)) vec refl)
     n xs
 ```
@@ -83,6 +84,14 @@ tabulate {suc n} f = f fzero ∷ tabulate (λ x → f (fsuc x))
 map : (A → B) → Vec A n → Vec B n
 map f [] = []
 map f (x ∷ xs) = f x ∷ map f xs
+
+zip-with : (A → B → C) → Vec A n → Vec B n → Vec C n
+zip-with f [] [] = []
+zip-with f (x ∷ xs) (y ∷ ys) = f x y ∷ zip-with f xs ys
+
+replicate : (n : Nat) → A → Vec A n
+replicate zero a = []
+replicate (suc n) a = a ∷ replicate n a
 
 instance
   From-prod-Vec : From-product A (Vec A)

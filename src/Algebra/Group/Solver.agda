@@ -1,7 +1,7 @@
 module Algebra.Group.Solver where
 
 open import 1Lab.Prelude
-open import Data.List
+open import Data.List hiding (lookup)
 open import Data.Fin
 open import Data.Nat
 open import Data.Dec
@@ -48,13 +48,13 @@ module _ {ℓ} {A : Type ℓ} (G : Group-on A) where
   -- Evaluation
 
   push : Fin n → Value n → Value n
-  push n (vmul⁻¹ n' v) with Discrete-Fin n n'
+  push n (vmul⁻¹ n' v) with n ≡? n'
   ... | yes _ = v
   ... | no _  = vmul n (vmul⁻¹ n' v)
   push n v = vmul n v
 
   push-inv : Fin n → Value n → Value n
-  push-inv n (vmul n' v) with Discrete-Fin n n'
+  push-inv n (vmul n' v) with n ≡? n'
   ... | yes _ = v
   ... | no _  = vmul⁻¹ n (vmul n' v)
   push-inv n v = vmul⁻¹ n v
@@ -84,7 +84,7 @@ module _ {ℓ} {A : Type ℓ} (G : Group-on A) where
   push-sound : ∀ x v → (ρ : Vec A n) → ⟦ push x v ⟧ᵥ ρ ≡ lookup ρ x ⋆ ⟦ v ⟧ᵥ ρ
   push-sound x vunit ρ = refl
   push-sound x (vmul x' v) ρ = refl
-  push-sound x (vmul⁻¹ x' v) ρ with Discrete-Fin x x'
+  push-sound x (vmul⁻¹ x' v) ρ with x ≡? x'
   ... | yes x≡x' =
     ⟦ v ⟧ᵥ ρ                                  ≡˘⟨ idl ⟩
     unit ⋆ ⟦ v ⟧ᵥ ρ                           ≡˘⟨ ap (_⋆ ⟦ v ⟧ᵥ ρ) inverser ⟩
@@ -95,7 +95,7 @@ module _ {ℓ} {A : Type ℓ} (G : Group-on A) where
 
   push-inv-sound : ∀ x v → (ρ : Vec A n) → ⟦ push-inv x v ⟧ᵥ ρ ≡ lookup ρ x ⁻¹ ⋆ ⟦ v ⟧ᵥ ρ
   push-inv-sound x vunit ρ = refl
-  push-inv-sound x (vmul x' v) ρ with Discrete-Fin x x'
+  push-inv-sound x (vmul x' v) ρ with x ≡? x'
   ... | yes x≡x' =
     ⟦ v ⟧ᵥ ρ                                  ≡˘⟨ idl ⟩
     (unit ⋆ ⟦ v ⟧ᵥ ρ)                         ≡˘⟨ ap (_⋆ ⟦ v ⟧ᵥ ρ) inversel ⟩
@@ -205,17 +205,17 @@ module Reflection where
 
   build-expr : ∀ {ℓ} {A : Type ℓ} → Variables A → Term → TC (Term × Variables A)
   build-expr vs “unit” =
-    returnTC $ con (quote ‶unit‶) [] , vs
+    pure $ con (quote ‶unit‶) [] , vs
   build-expr vs (“⋆” t1 t2) = do
     e1 , vs ← build-expr vs t1
     e2 , vs ← build-expr vs t2
-    returnTC $ con (quote _‶⋆‶_) (e1 v∷ e2 v∷ []) , vs
+    pure $ con (quote _‶⋆‶_) (e1 v∷ e2 v∷ []) , vs
   build-expr vs (“inverse” t) = do
     e , vs ← build-expr vs t
-    returnTC $ con (quote _‶⁻¹‶) (e v∷ []) , vs
+    pure $ con (quote _‶⁻¹‶) (e v∷ []) , vs
   build-expr vs tm = do
     (v , vs) ← bind-var vs tm
-    returnTC $ con (quote ‶_‶) (v v∷ []) , vs
+    pure $ con (quote ‶_‶) (v v∷ []) , vs
 
   dont-reduce : List Name
   dont-reduce = quote is-group.unit ∷ quote Group-on._⋆_ ∷ quote is-group.inverse ∷ []
@@ -223,7 +223,7 @@ module Reflection where
   group-solver : ∀ {ℓ} {A : Type ℓ} → Group-on A → TC (VariableSolver A)
   group-solver {A = A} grp = do
     grp-tm ← quoteTC grp
-    returnTC (var-solver {A = A} dont-reduce build-expr (“solve” grp-tm) (“expand” grp-tm))
+    pure (var-solver {A = A} dont-reduce build-expr (“solve” grp-tm) (“expand” grp-tm))
 
   repr-macro : ∀ {ℓ} {A : Type ℓ} → Group-on A → Term → Term → TC ⊤
   repr-macro {A = A} grp tm hole = do

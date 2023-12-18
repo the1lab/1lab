@@ -244,7 +244,7 @@ The identity functor is obviously fibred.
 ```
 
 
-## Vertical Functors
+## Vertical functors
 
 Functors displayed over the identity functor are of particular interest.
 Such functors are known as **vertical functors**, and are commonly used
@@ -533,7 +533,7 @@ module _
   IdVf = Fibred→Vertical-fibred Idf'
 ```
 
-## Displayed Natural Transformations
+## Displayed natural transformations
 
 Just like we have defined a [displayed functor][disfct]
 $\bf{F} : \cE \to \cF$ lying over an ordinary functor $F : \cA \to \cB$

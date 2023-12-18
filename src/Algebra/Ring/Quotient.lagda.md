@@ -137,9 +137,8 @@ also discrete. This is a specialisation of a general result about
 decidable quotient sets, but we mention it here regardless:
 
 ```agda
-  Discrete-ring-quotient : Discrete ⌞ R ⌟ → (∀ x → Dec (x ∈ I)) → Discrete ⌞ R/I ⌟
-  Discrete-ring-quotient rdisc dec∈I = Discrete-quotient
+  Discrete-ring-quotient : (∀ x → Dec (x ∈ I)) → Discrete ⌞ R/I ⌟
+  Discrete-ring-quotient dec∈I = Discrete-quotient
     (normal-subgroup→congruence R.additive-group I.ideal→normal)
-    rdisc
     (λ x y → dec∈I (x R.- y))
 ```

@@ -25,7 +25,7 @@ open Binary-products B has-prods
 open Simple B has-prods
 ```
 
-# CT Structures
+# CT structures
 
 CT-Structures are a refinement of [simple fibrations], which allow us
 to model type theories where the contexts aren't necessarily
@@ -74,7 +74,7 @@ Simple-ct ct .Displayed.assoc' {f = u} {g = v} {h = w} f g h =
   (f ∘ ⟨ v ∘ π₁ , g ⟩) ∘ ⟨ w ∘ π₁ , h ⟩     ∎
 ```
 
-# Cartesian Maps
+# Cartesian maps
 
 If a map is cartesian in the simple fibration, then it is cartesian
 in a simple CT fibration.
@@ -96,7 +96,7 @@ Simple-cartesian→Simple-ct-cartesian ct x-tp y-tp cart = ct-cart where
 ```
 
 
-# Fibration Structure
+# Fibration structure
 
 Much like the simple fibration, the simple fibration associated to a
 CT-structure also deserves its name.

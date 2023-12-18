@@ -17,7 +17,7 @@ open import Cat.Reasoning C
 ```
 -->
 
-# Zero Objects
+# Zero objects
 
 In some categories, `Initial`{.Agda} and `Terminal`{.Agda} objects
 coincide. When this occurs, we call the object a **zero object**.

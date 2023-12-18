@@ -108,7 +108,7 @@ Monoid≃ : (A B : Monoid ℓ) (e : A .fst ≃ B .fst) → Type _
 Monoid≃ A B (e , _) = Monoid-hom (A .snd) (B .snd) e
 ```
 
-# Relationships to Unital Magmas
+# Relationships to unital magmas
 
 ```agda
 open import Algebra.Magma.Unital

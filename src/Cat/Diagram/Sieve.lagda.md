@@ -1,5 +1,6 @@
 <!--
 ```agda
+{-# OPTIONS -vtactic.hlevel:30 #-}
 open import Cat.Instances.Functor
 open import Cat.Functor.Hom
 open import Cat.Prelude
@@ -57,7 +58,7 @@ subobjects.
 
 ```agda
 maximal' : Sieve
-maximal' .arrows x = el ⊤ hlevel!
+maximal' .arrows x = ⊤Ω
 maximal' .closed g x = tt
 
 intersect : ∀ {I : Type κ} (F : I → Sieve) → Sieve

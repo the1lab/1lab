@@ -14,7 +14,7 @@ import Cat.Displayed.Reasoning as DR
 module Cat.Displayed.Composition where
 ```
 
-# Composition of Displayed Categories
+# Composition of displayed categories
 
 A [[displayed category]] $\cE$ over $\cB$ is equivalent to the data
 of a functor into $\cB$; the forward direction of this equivalence is

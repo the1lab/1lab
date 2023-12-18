@@ -16,7 +16,7 @@ open import 1Lab.Type
 module 1Lab.Equiv.Fibrewise where
 ```
 
-# Fibrewise Equivalences
+# Fibrewise equivalences
 
 In HoTT, a type family `P : A → Type` can be seen as a [_fibration_]
 with total space `Σ P`, with the fibration being the projection

@@ -26,6 +26,7 @@ div.sourceCode {
 div.sourceCode > pre {
   background-color: var(--code-bg);
   color:            var(--code-fg);
+
   flex-grow: 0;
 
   overflow-x: auto;
@@ -122,7 +123,7 @@ a[href].hover-highlight {
   }
 
   // background-color: $code-bg;
-  font-family: 'Julia Mono', 'Iosevka', 'Fantasque Sans Mono', 'Roboto Mono', monospace;
+  @include monospaced;
   font-weight: 400;
 
   font-size: initial;
@@ -158,7 +159,7 @@ code.do, span.do { color: var(--code-string); } /* Documentation */
 code.an, span.an { color: var(--code-string); } /* Annotation */
 code.cv, span.cv { color: var(--code-string); } /* CommentVar */
 
-.typeTooltip {
+.type-tooltip {
   position: absolute;
   z-index: 100;
 
@@ -166,6 +167,10 @@ code.cv, span.cv { color: var(--code-string); } /* CommentVar */
   color: var(--code-fg);
   background: var(--code-bg);
 
-  padding: 0.3em;
+  &.sourceCode {
+    padding: 0.3em;
+    border:  0;
+  };
+
   box-shadow: 2px 2px 6px var(--shadow);
 }

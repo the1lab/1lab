@@ -15,6 +15,10 @@ British spelling **must** be used throughout: Homotopy fib**re**,
 fib**red** category, colo**u**red operad, etc --- both in prose and in
 Agda.
 
+Headers **should** be written in sentence case, *not* title case, except
+when the concept they introduce is itself commonly written in title case
+(e.g. "Structure Identity Principle").
+
 Prose **should** be kept to a width of 72 characters.
 
 The first time a concept is introduced, it **should** appear in bold.

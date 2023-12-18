@@ -17,7 +17,7 @@ open Cat.Reasoning C
 ```
 -->
 
-# Internal Categories
+# Internal categories
 
 We often think of categories as _places where we can do mathematics_.
 This is done by translating definitions into the internal language of
@@ -559,7 +559,7 @@ module _ {ℂ 𝔻 : Internal-cat} {F G : Internal-functor ℂ 𝔻} where
   Internal-nat-set = Iso→is-hlevel 2 nat-eqv $
     Σ-is-hlevel 2 hlevel! $ λ _ →
     Σ-is-hlevel 2 hlevel! $ λ _ →
-    Π-is-hlevel' 2 λ _ → Π-is-hlevel' 2 λ _ →
+    Π-is-hlevel²' 2 λ _ _ →
     Π-is-hlevel 2 λ _ → Π-is-hlevel 2 λ _ →
     PathP-is-hlevel 2 Internal-hom-set
 

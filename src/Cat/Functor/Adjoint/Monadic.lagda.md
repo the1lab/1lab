@@ -17,7 +17,7 @@ open _=>_
 ```
 -->
 
-# Monadic Adjunctions
+# Monadic adjunctions
 
 An adjunction $F \dashv G$ between functors $F : C \to D$ and $G : D \to
 C$ is _monadic_ if the induced `comparison functor`{.Agda

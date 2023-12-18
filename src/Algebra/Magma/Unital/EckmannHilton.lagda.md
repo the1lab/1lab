@@ -12,7 +12,7 @@ open import Algebra.Monoid
 module Algebra.Magma.Unital.EckmannHilton where
 ```
 
-# The Eckmann-Hilton Argument
+# The Eckmann-Hilton argument
 
 The **Eckmann-Hilton argument** shows that two
 `unital magmas`{.Agda ident=is-unital-magma} on the same carrier type that

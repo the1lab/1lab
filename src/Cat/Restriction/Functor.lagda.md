@@ -17,7 +17,7 @@ open Functor
 ```
 -->
 
-# Restriction Functors
+# Restriction functors
 
 A functor $F : \cC \to \cD$ between [restriction categories] is a
 **restriction functor** if $F (\restrict{f}) = \restrict{(F f)}$.
@@ -59,7 +59,7 @@ F∘-restriction
 F∘-restriction F G F↓ G↓ f = ap (F .F₁) (G↓ f) ∙ F↓ (G .F₁ f)
 ```
 
-# Properties of Restriction Functors
+# Properties of restriction functors
 
 Let $F : \cC \to \cD$ be a restriction functor. Note that $F$ preserves
 [total morphisms] and [restriction idempotents].

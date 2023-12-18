@@ -1,8 +1,8 @@
 {-# OPTIONS -vtc.decl:5 #-}
 open import Cat.Instances.Functor.Limits
 open import Cat.Instances.Sets.Complete
-open import Cat.Diagram.Everything
 open import Cat.Diagram.Exponential
+open import Cat.Diagram.Everything
 open import Cat.Instances.Functor
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Sets
