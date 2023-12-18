@@ -196,7 +196,7 @@ literal, if one exists.
 
 ```agda
 has-unit-clause? : (ϕs : CNF Γ) → Dec (Σ[ x ∈ Literal Γ ] ((x ∷ []) ∈ₗ ϕs))
-has-unit-clause? [] = no (¬some-[] ∘ snd)
+has-unit-clause? [] = no λ ()
 
 has-unit-clause? ([] ∷ ϕs) with has-unit-clause? ϕs
 ... | yes (x , x∈ϕs) = yes (x , there x∈ϕs)

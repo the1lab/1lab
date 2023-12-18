@@ -22,6 +22,8 @@ open Coequaliser
 ```
 -->
 
+# Surjections between sets {defines="surjection-between-sets"}
+
 Here we prove that surjective maps are exactly the [regular epimorphisms]
 in the category of sets: Really, we prove that surjections are regular
 epimorphisms (this is straightforward), then we prove that every

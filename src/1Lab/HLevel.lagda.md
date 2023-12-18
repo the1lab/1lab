@@ -9,7 +9,7 @@ open import 1Lab.Type
 module 1Lab.HLevel where
 ```
 
-# h-Levels {defines="h-level n-type truncated"}
+# h-Levels {defines="h-level n-type truncated truncatedness"}
 
 The "homotopy level" (h-level for short) of a type is a measure of how
 [truncated] it is, where the numbering is offset by 2. Specifically, a
@@ -164,6 +164,9 @@ is-contr→extend C φ p = inS (hcomp φ
 extend→is-contr : (∀ φ (p : Partial φ A) → A [ φ ↦ p ]) → is-contr A
 extend→is-contr ext = contr (outS (ext i0 λ ())) λ x i → outS (ext i λ _ → x)
 
+subst-prop : ∀ {ℓ ℓ'} {A : Type ℓ} {P : A → Type ℓ'} → is-prop A → ∀ a → P a → ∀ b → P b
+subst-prop {P = P} prop a pa b = subst P (prop a b) pa
+
 is-contr→is-set : is-contr A → is-set A
 is-contr→is-set C x y p q i j = outS (is-contr→extend C (∂ i ∨ ∂ j) λ where
   (i = i0) → p j
@@ -300,6 +303,10 @@ is-prop→is-hlevel-suc {n = suc n} aprop =
 
 <!--
 ```agda
+is-contr→is-hlevel : ∀ {ℓ} {A : Type ℓ} n → is-contr A → is-hlevel A n
+is-contr→is-hlevel zero c = c
+is-contr→is-hlevel (suc n) c = is-prop→is-hlevel-suc (is-contr→is-prop c)
+
 is-set→is-hlevel+2
   : ∀ {ℓ} {A : Type ℓ} {n : Nat} → is-set A → is-hlevel A (2 + n)
 is-set→is-hlevel+2 aset x y = is-prop→is-hlevel-suc (aset x y)
@@ -341,6 +348,13 @@ PathP-is-hlevel' : ∀ {ℓ} {A : I → Type ℓ} (n : Nat)
                   → is-hlevel (PathP A x y) n
 PathP-is-hlevel' {A = A} n ahl x y =
   subst (λ e → is-hlevel e n) (sym (PathP≡Path A x y)) (Path-is-hlevel' n ahl _ _)
+
+Path-is-hlevel→is-hlevel
+  : ∀ {ℓ} {A : Type ℓ} n
+  → (p : (x y : A) → is-hlevel (x ≡ y) n)
+  → is-hlevel A (suc n)
+Path-is-hlevel→is-hlevel zero wit x y = wit x y .centre
+Path-is-hlevel→is-hlevel (suc n) wit = wit
 ```
 -->
 

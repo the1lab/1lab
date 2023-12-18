@@ -1,6 +1,6 @@
 {-# OPTIONS -vtactic.hlevel:20 -vtc.def:10 #-}
+open import 1Lab.Function.Embedding
 open import 1Lab.Reflection.Record
-open import 1Lab.Equiv.Embedding
 open import 1Lab.HLevel.Retracts
 open import 1Lab.HLevel.Universe
 open import 1Lab.Reflection
@@ -10,8 +10,8 @@ open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 
+open import Data.List.Base
 open import Data.Bool
-open import Data.List
 
 open import Meta.Foldable
 
@@ -214,7 +214,8 @@ private
     go (def d ds) = go* ds
     go t          = pure tt
 
-    go* (arg (arginfo visible _) t ∷ as) = go t
+    go* (arg (arginfo visible _) t ∷ as)   = go t
+    go* (arg (arginfo instance' _) t ∷ as) = go t
     go* (_ ∷ as)                         = go* as
     go* []                               = pure tt
 
@@ -744,9 +745,6 @@ instance
   -- decomposition here is a bit more flexible.
   decomp-ntype : ∀ {ℓ} {n} → hlevel-decomposition (n-Type ℓ n)
   decomp-ntype = decomp (quote n-Type-is-hlevel) (`level-minus 1 ∷ [])
-
-  decomp-list : ∀ {ℓ} {A : Type ℓ} → hlevel-decomposition (List A)
-  decomp-list = decomp (quote ListPath.List-is-hlevel) (`level-minus 2 ∷ `search ∷ [])
 
   hlevel-proj-n-type : hlevel-projection (quote n-Type.∣_∣)
   hlevel-proj-n-type .has-level = quote n-Type.is-tr

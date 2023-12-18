@@ -7,7 +7,7 @@
 
   <title>$pagetitle$ - 1Lab</title>
 
-  <link rel="stylesheet" href="$base-url$/css/default.css" />
+  <link rel="stylesheet" href="$base-url$/css/default.css?v=$digest.css$" />
   <link rel="stylesheet" href="$base-url$/css/katex.min.css" />
 
   <meta name="twitter:card" content="summary" />
@@ -29,8 +29,8 @@
   <meta name="description" content="A formalised, explorable online resource for Homotopy Type Theory." />
   $endif$
 
-  <script src="$base-url$/start.js"></script>
-  <script defer src="$base-url$/main.js"></script>
+  <script src="$base-url$/start.js?v=$digest.start-js$"></script>
+  <script defer src="$base-url$/main.js?v=$digest.main-js$"></script>
 
   <noscript>
     <style>

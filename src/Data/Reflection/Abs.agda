@@ -5,7 +5,6 @@ open import 1Lab.Type
 open import Data.String.Base
 open import Data.Dec.Base
 open import Data.Id.Base
-open import Data.List
 
 module Data.Reflection.Abs where
 

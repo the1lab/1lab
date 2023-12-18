@@ -54,7 +54,7 @@ SuspS⁻¹≃S⁰ = ua (SuspS⁻¹→S⁰ , is-iso→is-equiv iso-pf) where
   iso-pf .linv S = refl
 ```
 
-# n-Spheres
+# n-Spheres {defines="sphere"}
 
 The spheres of higher dimension can be defined inductively:
 $S^{n + 1} = \Sigma S^n$, that is, suspending the $n$-sphere constructs
@@ -129,3 +129,10 @@ using lemmas on transport in pathspaces. </summary>
     merid S (i ∧ j)
 ```
 </details>
+
+<!--
+```agda
+Sⁿ : Nat → Type∙ lzero
+Sⁿ n = Sⁿ⁻¹ (suc n) , N
+```
+-->

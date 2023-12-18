@@ -4,7 +4,7 @@ open import 1Lab.Prelude
 open import 1Lab.Reflection
 open import 1Lab.Reflection.Variables
 
-open import Data.List
+open import Data.List.Base
 
 private variable
   ℓ : Level

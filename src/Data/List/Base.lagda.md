@@ -7,6 +7,7 @@ open import 1Lab.Type
 open import Data.Product.NAry
 open import Data.Maybe.Base
 open import Data.Dec.Base
+open import Data.Fin.Base
 open import Data.Bool
 
 open import Meta.Traversable
@@ -22,7 +23,7 @@ open import Meta.Alt
 module Data.List.Base where
 ```
 
-# The type of lists
+# The type of lists {defines=list}
 
 This module contains the definition of the type of lists, and some basic
 operations on lists. Properties of these operations are in the module
@@ -62,7 +63,7 @@ instance
     go (suc (suc n)) (x , xs) = x ∷ go (suc n) xs
 
 -- Test:
-_ : [ 1 , 2 , 3 ] ≡ 1 ∷ 2 ∷ 3 ∷ []
+_ : Path (List Nat) [ 1 , 2 , 3 ] (1 ∷ 2 ∷ 3 ∷ [])
 _ = refl
 ```
 
@@ -297,5 +298,13 @@ lookup x [] = nothing
 lookup x ((k , v) ∷ xs) with x ≡? k
 ... | yes _ = just v
 ... | no  _ = lookup x xs
+
+_!_ : (l : List A) → Fin (length l) → A
+(x ∷ xs) ! fzero  = x
+(x ∷ xs) ! fsuc n = xs ! n
+
+tabulate : ∀ {n} (f : Fin n → A) → List A
+tabulate {n = zero}  f = []
+tabulate {n = suc n} f = f fzero ∷ tabulate (f ∘ fsuc)
 ```
 -->

@@ -452,20 +452,13 @@ instance
   Map-∥∥ : Map (eff ∥_∥)
   Map-∥∥ .Map.map = ∥-∥-map
 
-  {-# TERMINATING #-}
   Idiom-∥∥ : Idiom (eff ∥_∥)
   Idiom-∥∥ .Idiom.pure = inc
   Idiom-∥∥ .Idiom._<*>_ {A = A} {B = B} = go where
     go : ∥ (A → B) ∥ → ∥ A ∥ → ∥ B ∥
     go (inc f) (inc x) = inc (f x)
     go (inc f) (squash x y i) = squash (go (inc f) x) (go (inc f) y) i
-    go (squash f g i) (inc y) = squash (go f (inc y)) (go g (inc y)) i
-    go (squash f g i) (squash x y j) = hcomp (∂ i ∨ ∂ j) λ where
-      k (i = i0) → squash (go f x) (go f (squash x y j)) k
-      k (i = i1) → squash (go f x) (go g (squash x y j)) k
-      k (j = i0) → squash (go f x) (go (squash f g i) x) k
-      k (j = i1) → squash (go f x) (go (squash f g i) y) k
-      k (k = i0) → go f x
+    go (squash f g i) y = squash (go f y) (go g y) i
 
   Bind-∥∥ : Bind (eff ∥_∥)
   Bind-∥∥ .Bind._>>=_ {A = A} {B = B} = go where

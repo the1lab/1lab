@@ -69,6 +69,12 @@ _∈_ : ∀ {ℓ ℓ'} {A : Type ℓ} {P : Type ℓ'} ⦃ u : Underlying P ⦄
     → A → (A → P) → Type (u .ℓ-underlying)
 x ∈ P = ⌞ P x ⌟
 
+-- Generalised "total space" notation.
+∫ₚ
+  : ∀ {ℓ ℓ'} {X : Type ℓ} {P : Type ℓ'} ⦃ u : Underlying P ⦄
+  → (X → P) → Type _
+∫ₚ P = Σ _ (_∈ P)
+
 -- Notation class for type families which are "function-like" (always
 -- nondependent). Slight generalisation of the homs of concrete
 -- categories.

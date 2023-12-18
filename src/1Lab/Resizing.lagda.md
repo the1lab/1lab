@@ -197,6 +197,14 @@ to-is-true
   → ∣ P ∣
   → P ≡ Q
 to-is-true prf = Ω-ua (λ _ → hlevel 0 .centre) (λ _ → prf)
+
+tr-□ : ∀ {ℓ} {A : Type ℓ} → ∥ A ∥ → □ A
+tr-□ (inc x) = inc x
+tr-□ (squash x y i) = squash (tr-□ x) (tr-□ y) i
+
+□-tr : ∀ {ℓ} {A : Type ℓ} → □ A → ∥ A ∥
+□-tr (inc x) = inc x
+□-tr (squash x y i) = squash (□-tr x) (□-tr y) i
 ```
 -->
 

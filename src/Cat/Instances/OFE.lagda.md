@@ -6,7 +6,7 @@ open import Cat.Prelude
 open import Data.Nat.Properties
 open import Data.Nat.Order
 open import Data.Nat.Base
-open import Data.List hiding (map)
+open import Data.List
 ```
 -->
 

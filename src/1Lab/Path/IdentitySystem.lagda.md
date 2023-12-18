@@ -1,6 +1,6 @@
 <!--
 ```agda
-open import 1Lab.Equiv.Embedding
+open import 1Lab.Function.Embedding
 open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Type.Sigma

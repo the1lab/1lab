@@ -23,8 +23,10 @@ open import 1Lab.HLevel.Universe public
 open import 1Lab.Equiv public
 open import 1Lab.Equiv.FromPath public
 open import 1Lab.Equiv.Fibrewise public
-open import 1Lab.Equiv.Embedding public
+open import 1Lab.Function.Embedding public
 open import 1Lab.Equiv.HalfAdjoint public
+
+open import 1Lab.Function.Surjection public
 
 open import 1Lab.Univalence public
 open import 1Lab.Univalence.SIP public
