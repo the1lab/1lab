@@ -56,7 +56,7 @@ jobs:
           NIX_BUILD_SHELL: bash
           build_command: |
             set -eu
-            1lab-shake -j all --skip-agda -b "https://plt-amy.github.io/1lab-previews/pr-${{ github.event.number }}"
+            1lab-shake -j all --skip-agda -b "https://preview.1lab.dev/${{ github.event.number }}/"
             eval "$installPhase"
             echo "${{ github.event.number }}" > _build/site/.pr-number
             # cp -rv _build/site pr-${{ github.event.number }}
