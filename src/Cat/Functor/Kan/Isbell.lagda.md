@@ -5,8 +5,8 @@ description: |
 
 <!--
 ```agda
-open import Cat.Prelude
 open import Cat.Functor.Adjoint
+open import Cat.Prelude
 ```
 -->
 
@@ -44,7 +44,7 @@ open import Cat.Diagram.Limit.Base
 ```
 -->
 
-We will require the fact that the opposite of a complete category is cocomplete, this is a direct consequence of duality for diagrams
+We will require the fact that the opposite of a complete category is cocomplete, this is a direct consequence of duality for diagrams.
 ```agda
 module _ {o}{l}{x} {y} {C : Precategory o l} where
 
@@ -55,7 +55,7 @@ module _ {o}{l}{x} {y} {C : Precategory o l} where
 ```
 
 Next we prove that Copresheaves are co-complete this is a direct consequence of opposites swapping completeness for cocompletess,
-together with completeness of the functor category and Sets
+together with completeness of the functor category and Sets.
 ```agda
 module _ {o ℓ} (C : Precategory o ℓ) where
 
@@ -68,13 +68,13 @@ module _ {o ℓ} (C : Precategory o ℓ) where
 
 ## Isbell duality itself
 
-As a next step we define half of the adjunction going from Co-presheaves to presheaves. This is the nerve of the Co-yoneda embedding
+As a next step we define half of the adjunction going from Co-presheaves to presheaves. This is the nerve of the Co-yoneda embedding.
 ```agda
 Spec : ∀ κ (C : Precategory κ κ) → Functor (CoPSh κ C) (PSh κ C)
 Spec κ C = Nerve (z _)
 ```
 
-Now the Isbell duality is just a wrapping of the abstract non-sense coming from the Realisation⊣Nerve duality for co-presheaves as they are co-complete
+Now the Isbell duality is just a wrapping of the abstract non-sense coming from the Realisation⊣Nerve duality for co-presheaves as they are co-complete.
 ```agda
 -- agda refused to figure out implicits quickly so we help it
 IsbellDuality : ∀ κ  {C : Precategory κ κ} -> _ ⊣ Spec _ C
