@@ -80,7 +80,7 @@ can name. However, all three of these terms are definitionally
 S¹₂→S¹ north = base
 ```
 
-The question now arrises how we map `east`{.Agda} and `west`{.Agda} onto
+The question now arises how we map `east`{.Agda} and `west`{.Agda} onto
 `S¹`{.Agda}. Recall that the composition `east ∙ west` should map to
 `loop`{.Agda}. If we map `east`{.Agda} to `refl`{.Agda}, and
 `west`{.Agda} to `loop`{.Agda}, then there will indeed be a path from
