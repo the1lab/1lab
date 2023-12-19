@@ -98,6 +98,12 @@ module _ (pq≡s : p ∙ q ≡ s) where
   ∙-pullr : (r ∙ p) ∙ q ≡ r ∙ s
   ∙-pullr {r = r} = sym (∙-assoc r p q) ∙ ap (r ∙_) pq≡s
 
+  ∙-swapl : q ≡ sym p ∙ s
+  ∙-swapl = ∙-introl (∙-invl p) ∙ ∙-pullr
+
+  ∙-swapr : p ≡ s ∙ sym q
+  ∙-swapr = ∙-intror (∙-invr q) ∙ ∙-pulll
+
 module _ (s≡pq : s ≡ p ∙ q) where
   ∙-pushl : s ∙ r ≡ p ∙ q ∙ r
   ∙-pushl = sym (∙-pulll (sym s≡pq))

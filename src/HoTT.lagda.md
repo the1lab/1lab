@@ -1,6 +1,8 @@
 <!--
 ```agda
 open import 1Lab.Counterexamples.GlobalChoice
+open import 1Lab.Function.Surjection
+open import 1Lab.Function.Embedding
 open import 1Lab.Equiv.Biinv
 open import 1Lab.Classical
 
@@ -295,8 +297,8 @@ _ = Discrete
 * Definition 3.4.1: `LEM`{.Agda}
 * Definition 3.4.2: `DNE`{.Agda}
 * Definition 3.4.3:
-  * (i): `Dec`{.Agda}
-  * (iii): `Discrete`{.Agda}
+  i. `Dec`{.Agda}
+  iii. `Discrete`{.Agda}
 
 ### 3.5 Subsets and propositional resizing
 
@@ -459,6 +461,26 @@ generally use it through the interface of half-adjoint equivalences.
 * Definition 4.4.1: `is-equiv`{.Agda}
 * Theorem 4.4.3: `is-equiv→is-half-adjoint-equiv`{.Agda}
 * Lemma 4.4.4: `is-equiv-is-prop`{.Agda}
+
+### 4.6 Surjections and embeddings
+
+<!--
+```agda
+_ = is-surjective
+_ = is-embedding
+_ = embedding→cancellable
+_ = injective
+_ = is-equiv→is-surjective
+_ = is-equiv→is-embedding
+_ = embedding-surjective→is-equiv
+```
+-->
+
+* Definition 4.6.1:
+  i. `is-surjective`{.Agda}
+  ii. `is-embedding`{.Agda}, `embedding→cancellable`{.Agda}
+* Definition 4.6.2: `injective`{.Agda}
+* Theorem 4.6.3: `is-equiv→is-surjective`{.Agda}, `is-equiv→is-embedding`{.Agda}, `embedding-surjective→is-equiv`{.Agda}
 
 ### 4.8 The object classifier
 
@@ -987,11 +1009,11 @@ _ = separation
 * Lemma 10.5.6: `presentation`{.Agda}
 * Definition 10.5.7: `Presentation.members`{.Agda}
 * Theorem 10.5.8:
-  * (i): `extensionality`{.Agda}
-  * (ii): `empty-set`{.Agda}
-  * (iii): `pairing`{.Agda}
-  * (iv): `zero∈ℕ`{.Agda}, `suc∈ℕ`{.Agda}
-  * (v): `union`{.Agda}
-  * (vii): `∈-induction`{.Agda}
-  * (viii): `replacement`{.Agda}
-  * (ix): `separation`{.Agda}
+  i. `extensionality`{.Agda}
+  ii. `empty-set`{.Agda}
+  iii. `pairing`{.Agda}
+  iv. `zero∈ℕ`{.Agda}, `suc∈ℕ`{.Agda}
+  v. `union`{.Agda}
+  vii. `∈-induction`{.Agda}
+  viii. `replacement`{.Agda}
+  ix. `separation`{.Agda}

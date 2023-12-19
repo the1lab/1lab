@@ -143,8 +143,14 @@ general structure:
   **must** appear in this order.
 
   The tool `support/sort-imports.hs` **should** be used to update code
-  to comply to these rules. The modules to format are given as
-  command-line arguments.
+  to comply to these rules. It can be run as a standalone executable if `stack` is
+  available, or with Nix using the following command:
+
+  ```sh
+  nix run --experimental-features nix-command -f . sort-imports
+  ```
+
+  The modules to format are given as command-line arguments.
 
 - The top-level module name, together with any parameters, **must**
   appear before any prose (incl. the initial header), and **must not**
