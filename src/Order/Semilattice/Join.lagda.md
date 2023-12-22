@@ -3,6 +3,8 @@
 open import Cat.Functor.Subcategory
 open import Cat.Prelude
 
+open import Data.Fin.Indexed
+open import Data.Fin.Finite
 open import Data.Fin.Base hiding (_≤_)
 
 open import Order.Diagram.Lub.Reasoning
@@ -139,6 +141,48 @@ record is-join-slat-hom
     f # (k fzero) Qₗ.∪ f # (Pₗ.⋃ᶠ (k ⊙ fsuc)) ≡⟨ ap₂ Qₗ._∪_ refl (pres-⋃ᶠ (k ⊙ fsuc)) ⟩
     Qₗ.⋃ᶠ (apply f ⊙ k)                       ∎
 
+  pres-fin-lub
+    : ∀ {n} (k : Fin n → ⌞ P ⌟) (x : ⌞ P ⌟)
+    → is-lub P k x
+    → is-lub Q (λ x → f # (k x)) (f # x)
+  pres-fin-lub k x P-lub .is-lub.fam≤lub i =
+    f .pres-≤ (is-lub.fam≤lub P-lub i)
+  pres-fin-lub k x P-lub .is-lub.least ub' fk≤ub =
+    f # x               Q.≤⟨ f .pres-≤ (is-lub.least P-lub (Pₗ.⋃ᶠ k) Pₗ.⋃ᶠ-inj) ⟩
+    f # Pₗ.⋃ᶠ k         Q.=⟨ pres-⋃ᶠ k ⟩
+    Qₗ.⋃ᶠ (apply f ⊙ k) Q.≤⟨ Qₗ.⋃ᶠ-universal ub' fk≤ub ⟩
+    ub'                 Q.≤∎
+
+  pres-finite-lub
+    : ∀ {ℓᵢ} {I : Type ℓᵢ} 
+    → Finite I
+    → (k : I → ⌞ P ⌟)
+    → (x : ⌞ P ⌟)
+    → is-lub P k x
+    → is-lub Q (λ x → f # (k x)) (f # x)
+  pres-finite-lub I-finite k x P-lub =
+    ∥-∥-rec (is-lub-is-prop Q)
+      (λ enum →
+        cast-is-lub Q (enum e⁻¹) (λ _ → refl) $
+        pres-fin-lub (k ⊙ Equiv.from enum) x $
+        cast-is-lub P enum (λ x → sym (ap k (Equiv.η enum x))) P-lub)
+      (I-finite .enumeration)
+
+  pres-finitely-indexed-lub
+    : ∀ {ℓᵢ} {I : Type ℓᵢ}
+    → is-finitely-indexed I
+    → (k : I → ⌞ P ⌟)
+    → (x : ⌞ P ⌟)
+    → is-lub P k x
+    → is-lub Q (λ x → f # (k x)) (f # x)
+  pres-finitely-indexed-lub I-fin-indexed k x P-lub =
+    □-rec! {pa = is-lub-is-prop Q}
+      (λ cov →
+        cover-reflects-is-lub Q (Finite-cover.is-cover cov) $
+        pres-fin-lub (k ⊙ Finite-cover.cover cov) x $
+        cover-preserves-is-lub P (Finite-cover.is-cover cov) P-lub)
+      I-fin-indexed
+
 open is-join-slat-hom
 ```
 
@@ -201,6 +245,9 @@ Join-slats o ℓ = Subcategory (Join-slats-subcat o ℓ)
 
 ```agda
 module Join-slats {o} {ℓ} = Cat.Reasoning (Join-slats o ℓ)
+
+Forget-join-slat : ∀ {o ℓ} → Functor (Join-slats o ℓ) (Posets o ℓ)
+Forget-join-slat = Forget-subcat
 
 Join-semilattice : ∀ o ℓ → Type _
 Join-semilattice o ℓ = Join-slats.Ob {o} {ℓ}

@@ -175,7 +175,7 @@ not an issue here.
         (inr x) → g x .fst , inc (inr (g x .snd))
 
       surj' : ∀ x → ∥ fibre cover' x ∥
-      surj' xf = □-tr (xf .snd) >>= λ where
+      surj' xf = (xf .snd) >>= λ where
         (inl p) → do
           (ix , p) ← f-surj (xf .fst , p)
           pure (inl ix , Σ-prop-path! (ap fst p))
@@ -189,7 +189,7 @@ not an issue here.
 Moreover, we have that a singleton set is $K$-finite, as well.
 
 ```agda
-  singleton-is-K-finite : is-set T → (x : T) → is-K-finite (λ y → elΩ (x ≡ y))
+  singleton-is-K-finite : is-set T → (x : T) → is-K-finite (singleton x)
   singleton-is-K-finite t-set x = inc (cover {cardinality = 1} (λ _ → x , inc refl)
     λ (y , p) → inc (fzero , Σ-prop-path (λ _ → squash) (out! {pa = t-set _ _} p)))
 ```

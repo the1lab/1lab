@@ -6,6 +6,8 @@ open import Data.Sum
 
 open import Order.Diagram.Glb
 open import Order.Diagram.Lub
+open import Order.Semilattice.Meet
+open import Order.Semilattice.Join
 open import Order.Base
 ```
 -->
@@ -72,3 +74,15 @@ Props-has-lubs {I = I} Ps .Lub.lub = ∃Ω I Ps
 Props-has-lubs Ps .Lub.has-lub .is-lub.fam≤lub i pi = inc (i , pi)
 Props-has-lubs Ps .Lub.has-lub .is-lub.least R k x = □-rec! (λ { (i , pi) → k i pi }) x
 ```
+
+<!--
+```agda
+Props-is-meet-slat : is-meet-semilattice Props
+Props-is-meet-slat .is-meet-semilattice.has-meets = Props-has-meets
+Props-is-meet-slat .is-meet-semilattice.has-top = Props-has-top
+
+Props-is-join-slat : is-join-semilattice Props
+Props-is-join-slat .is-join-semilattice.has-joins = Props-has-joins
+Props-is-join-slat .is-join-semilattice.has-bottom = Props-has-bot
+```
+-->

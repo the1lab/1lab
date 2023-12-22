@@ -115,11 +115,18 @@ module Lubs (lubs : ∀ {I : Type o} → (f : I → Ob) → Lub f) where
 ```
 
 ```agda
+  ⋃≤⋃-over
+    : ∀ {I J : Type o} {f : I → Ob} {g : J → Ob}
+    → (to : I → J)
+    → (∀ i → f i ≤ g (to i))
+    → ⋃ f ≤ ⋃ g
+  ⋃≤⋃-over to p = ⋃-universal _ λ i → ≤-trans (p i) (⋃-inj (to i))
+
   ⋃≤⋃
     : ∀ {I : Type o} {f g : I → Ob}
     → (∀ i → f i ≤ g i)
     → ⋃ f ≤ ⋃ g
-  ⋃≤⋃ p = ⋃-universal _ (λ i → ≤-trans (p i) (⋃-inj _))
+  ⋃≤⋃ = ⋃≤⋃-over (λ i → i)
 
   ⋃-singleton
     : ∀ {I : Type o} {f : I → Ob}
@@ -128,6 +135,7 @@ module Lubs (lubs : ∀ {I : Type o} → (f : I → Ob) → Lub f) where
   ⋃-singleton {f = f} p = ≤-antisym
     (⋃-universal _ λ i → path→≥ $ ap f (p .paths i))
     (⋃-inj _)
+
 ```
 
 ```agda

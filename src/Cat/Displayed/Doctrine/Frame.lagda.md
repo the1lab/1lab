@@ -95,8 +95,8 @@ function which is constantly the top element.
 ```agda
   prod : ∀ {S : Set κ} (f g : ⌞ S ⌟ → ⌞ F ⌟) → Product (Fibre disp S) f g
   prod f g .apex x = f x F.∩ g x
-  prod f g .π₁ i   = F.∩-≤l
-  prod f g .π₂ i   = F.∩-≤r
+  prod f g .π₁ i   = F.∩≤l
+  prod f g .π₂ i   = F.∩≤r
   prod f g .has-is-product .⟨_,_⟩ α β i = F.∩-universal _ (α i) (β i)
 ```
 
@@ -181,7 +181,7 @@ a calculation:
 ```agda
     lifted : Cocartesian-lift disp f g
     lifted .y' y      = exist y
-    lifted .lifting i = F.fam≤⋃ (g i , inc (i , refl , refl))
+    lifted .lifting i = F.⋃-inj (g i , inc (i , refl , refl))
     lifted .cocartesian .universal {u' = u'} m h' i = F.⋃-universal _ λ (e , b) →
       □-rec! (λ { (x , p , q) →
         e            F.=⟨ sym q ⟩
@@ -231,7 +231,7 @@ distributive law in $F$:
   idx .frobenius {X} {Y} f {α} {β} = funext λ i → F.≤-antisym
     ( exist α i F.∩ β i                         F.=⟨ F.⋃-distribr _ _ ⟩
       F.⋃ {I = img α i} (λ (x , _) → x F.∩ β i) F.≤⟨
-        F.⋃-universal _ (λ img → F.fam≤⋃
+        F.⋃-universal _ (λ img → F.⋃-inj
           ( img .fst F.∩ β i
           , □-map (λ { (x , p , q) → x , p , ap₂ F._∩_ q (ap β p) }) (img .snd)))
       ⟩
@@ -240,7 +240,7 @@ distributive law in $F$:
         F.⋃-universal _ (λ (e , p) → □-rec! (λ { (x , p , q) →
           e                                         F.=⟨ sym q ⟩
           α x F.∩ β (f x)                           F.=⟨ ap (α x F.∩_) (ap β p) ⟩
-          α x F.∩ β i                               F.≤⟨ F.fam≤⋃ (α x , inc (x , p , refl)) ⟩
+          α x F.∩ β i                               F.≤⟨ F.⋃-inj (α x , inc (x , p , refl)) ⟩
           F.⋃ {I = img α i} (λ (x , _) → x F.∩ β i) F.≤∎ }) p)
       ⟩
       F.⋃ {I = img α i} (λ (x , _) → x F.∩ β i) F.=⟨ sym (F.⋃-distribr _ _) ⟩

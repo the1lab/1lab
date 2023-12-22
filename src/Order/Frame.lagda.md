@@ -194,6 +194,9 @@ Frame o ℓ = Frames.Ob {o} {ℓ}
 module Frame {o ℓ} (F : Frame o ℓ) where
   open Order.Reasoning (F .fst) public
   open is-frame (F .snd) public
+
+  po : Poset o ℓ
+  po = F .fst
 ```
 -->
 
@@ -270,11 +273,11 @@ open is-meet-semilattice
 Power-frame : ∀ {ℓ} (A : Type ℓ) → Frame ℓ ℓ
 Power-frame {ℓ = ℓ} A .fst = Subsets A
 Power-frame A .snd .has-meets =
-  Pointwise-has-meets Props-has-meets
+  Pointwise-has-meets (λ _ → Props-has-meets)
 Power-frame A .snd .has-top =
-  Pointwise-has-top Props-has-top
+  Pointwise-has-top (λ _ → Props-has-top)
 Power-frame A .snd .has-lubs =
-  Pointwise-has-lubs Props-has-lubs
+  Pointwise-has-lubs (λ _ → Props-has-lubs)
 Power-frame A .snd .⋃-distribl x f = funext λ i → Ω-ua
     (λ (x , i) → □-map (λ (y , z) → _ , x , z) i)
     (λ r → □-rec! (λ { (x , y , z) → y , inc (_ , z) }) r)

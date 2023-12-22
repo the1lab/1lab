@@ -9,6 +9,9 @@ open import Order.Diagram.Glb
 open import Order.Diagram.Lub
 open import Order.Frame
 open import Order.Base
+
+import Order.Semilattice.Meet.Reasoning
+import Order.Semilattice.Join.Reasoning
 ```
 -->
 
@@ -34,6 +37,9 @@ meets = (B .fst) , has-meet-slat
 
 joins : Join-semilattice o ℓ
 joins = B .fst , has-join-slat
+
+open Order.Semilattice.Meet.Reasoning meets using (∩-idl; ∩-idr; module ∩) public
+open Order.Semilattice.Join.Reasoning joins using (∪-idl; ∪-idr; module ∪) public
 ```
 
 Using this ordering, we can show that the underlying poset of a frame is

@@ -219,13 +219,6 @@ image : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → (A → B) → Type _
 image {A = A} {B = B} f = Σ[ b ∈ B ] ∃[ a ∈ A ] (f a ≡ b)
 ```
 
-<!--
-```agda
-is-surjective : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'} → (A → B) → Type _
-is-surjective f = ∀ x → ∥ fibre f x ∥
-```
--->
-
 To see that the `image`{.Agda} indeed implements the concept of image,
 we define a way to factor any map through its image. By the definition
 of image, we have that the map `f-image`{.Agda} is always surjective,

@@ -84,6 +84,15 @@ module Meets (meets : ∀ x y → Meet x y) where
 ```
 
 ```agda
+  ∩≤∩l : ∀ {x y x'} → x ≤ x' → x ∩ y ≤ x' ∩ y
+  ∩≤∩l p = ∩≤∩ p ≤-refl
+
+  ∩≤∩r : ∀ {x y y'} → y ≤ y' → x ∩ y ≤ x ∩ y'
+  ∩≤∩r p = ∩≤∩ ≤-refl p
+```
+
+
+```agda
   ∩-path→≤ : ∀ {x y} → x ∩ y ≡ x → x ≤ y
   ∩-path→≤ {x} {y} p =
     x       =˘⟨ p ⟩

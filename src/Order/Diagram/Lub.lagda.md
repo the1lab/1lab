@@ -140,6 +140,26 @@ module _ {ℓᵢ ℓᵢ'} {Ix : Type ℓᵢ} {Im : Type ℓᵢ'} {f : Ix → Im}
   cover-reflects-lub : Lub (F ⊙ f) → Lub F
   cover-reflects-lub l .Lub.lub     = _
   cover-reflects-lub l .Lub.has-lub = cover-reflects-is-lub (l .Lub.has-lub)
+
+cast-is-lub
+  : ∀ {ℓᵢ ℓᵢ'} {I : Type ℓᵢ} {I' : Type ℓᵢ'} {F : I → Ob} {G : I' → Ob} {lub}
+  → (e : I ≃ I')
+  → (∀ i → F i ≡ G (Equiv.to e i))
+  → is-lub F lub
+  → is-lub G lub
+cast-is-lub {G = G} e p has-lub .fam≤lub i' =
+  ≤-trans
+    (path→≥ (p (Equiv.from e i') ∙ ap G (Equiv.ε e i')))
+    (has-lub .fam≤lub (Equiv.from e i'))
+cast-is-lub e p has-lub .least ub G≤ub =
+  has-lub .least ub (λ i → ≤-trans (path→≤ (p i)) (G≤ub (Equiv.to e i)))
+  
+cast-is-lubᶠ
+  : ∀ {ℓᵢ} {I : Type ℓᵢ} {F G : I → Ob} {lub}
+  → (∀ i → F i ≡ G i)
+  → is-lub F lub
+  → is-lub G lub
+cast-is-lubᶠ {lub = lub} p has-lub = cast-is-lub (_ , id-equiv) p has-lub
 ```
 -->
 

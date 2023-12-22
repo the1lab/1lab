@@ -18,30 +18,35 @@ import Order.Reasoning
 -->
 
 ```agda
-module Order.Semilattice.Meet.Reasoning where
+module Order.Semilattice.Meet.Reasoning
+  {o ℓ}
+  (L : Meet-semilattice o ℓ)
+  where
 ```
 
 ```agda
-module Meet-semilattice {o ℓ} (L : Meet-semilattice o ℓ) where
-  open Order.Reasoning (L .fst) public
-  open is-meet-semilattice (L .snd) public
+open Order.Reasoning (L .fst) public
+open is-meet-semilattice (L .snd) public
 
-  ∩-idl : ∀ {x} → top ∩ x ≡ x
-  ∩-idl = ≤-antisym ∩≤r (∩-universal _ ! ≤-refl)
+po : Poset o ℓ
+po = L .fst
 
-  ∩-idr : ∀ {x} → x ∩ top ≡ x
-  ∩-idr = ≤-antisym ∩≤l (∩-universal _ ≤-refl !)
+∩-idl : ∀ {x} → top ∩ x ≡ x
+∩-idl = ≤-antisym ∩≤r (∩-universal _ ! ≤-refl)
 
-  ∩-is-monoid : is-monoid top _∩_
-  ∩-is-monoid .has-is-semigroup = ∩-is-semigroup
-  ∩-is-monoid .idl = ∩-idl
-  ∩-is-monoid .idr = ∩-idr
+∩-idr : ∀ {x} → x ∩ top ≡ x
+∩-idr = ≤-antisym ∩≤l (∩-universal _ ≤-refl !)
 
-  ∩-monoid : Monoid-on ⌞ L ⌟
-  ∩-monoid .Monoid-on.identity = top
-  ∩-monoid .Monoid-on._⋆_ = _∩_
-  ∩-monoid .Monoid-on.has-is-monoid = ∩-is-monoid
+∩-is-monoid : is-monoid top _∩_
+∩-is-monoid .has-is-semigroup = ∩-is-semigroup
+∩-is-monoid .idl = ∩-idl
+∩-is-monoid .idr = ∩-idr
 
-  open Cat.Reasoning (B ∩-monoid) public
+∩-monoid : Monoid-on ⌞ L ⌟
+∩-monoid .Monoid-on.identity = top
+∩-monoid .Monoid-on._⋆_ = _∩_
+∩-monoid .Monoid-on.has-is-monoid = ∩-is-monoid
+
+module ∩ = Cat.Reasoning (B ∩-monoid) hiding (Ob)
 ```
 
