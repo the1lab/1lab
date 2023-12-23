@@ -169,9 +169,9 @@ module _ (inv : p ∙ q ≡ refl) where abstract
 ## Notation
 
 When doing equational reasoning, it's often somewhat clumsy to have to write
-`ap (f ∘_) p` when proving that `f ∘ g ≡ f ∘ h`. To fix this, we define steal
+`ap (f ∙_) p` when proving that `f ∙ g ≡ f ∙ h`. To fix this, we steal
 some cute mixfix notation from `agda-categories` which allows us to write
-`≡⟨ refl⟩∘⟨ p ⟩` instead, which is much more aesthetically pleasing!
+`≡⟨ refl⟩∙⟨ p ⟩` instead, which is much more aesthetically pleasing!
 
 ```agda
 _⟩∙⟨_ : p ≡ q → r ≡ s → p ∙ r ≡ q ∙ s

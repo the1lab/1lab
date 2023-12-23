@@ -1,6 +1,6 @@
 module Cat.Diagram.Monad.Solver where
 
-open import 1Lab.Prelude hiding (id; _∘_)
+open import 1Lab.Prelude hiding (id; _∘_; refl⟩∘⟨_; _⟩∘⟨refl)
 open import 1Lab.Reflection hiding (_++_)
 
 open import Cat.Base
