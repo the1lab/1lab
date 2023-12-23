@@ -290,7 +290,7 @@ Iso-prism {a = a} {b} {c} {d} {e} {f} {g} {h} {i} top left right front =
 ## Notation
 
 When doing equational reasoning, it's often somewhat clumsy to have to write
-`ap (f ∘_) p` when proving that `f ∘ g ≡ f ∘ h`. To fix this, we define steal
+`ap (f ∘_) p` when proving that `f ∘ g ≡ f ∘ h`. To fix this, we steal
 some cute mixfix notation from `agda-categories` which allows us to write
 `≡⟨ refl⟩∘⟨ p ⟩` instead, which is much more aesthetically pleasing!
 
