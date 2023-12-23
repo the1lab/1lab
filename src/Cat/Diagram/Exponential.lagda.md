@@ -34,7 +34,7 @@ $$
 
 standing for the essence of function application: if I have a function
 $f : A \to B$, and I have an $x : A$, then application gives me an $f(x)
-: A$.
+: B$.
 
 <!--
 ```agda
@@ -330,9 +330,9 @@ which sends an object $X$ to the product projection $\pi_2 : X \times B
 \to B$. Following [@Elephant, A1.5.2], we have the following
 characterisation of exponentiability: In a category with pullbacks, an
 object $B$ is exponentiable iff. we have a right adjoint functor
-$\Delta_B \vdash \Pi_B$.
+$\Delta_B \dashv \Pi_B$.
 
-Suppose $B$ is exponentiable. The value $\Pi_B(h)$ on a family $h : A
+Suppose $B$ is exponentiable. The value $\Pi_B(f)$ on a family $f : A
 \to B$ is defined to be the pullback
 
 ~~~{.quiver}

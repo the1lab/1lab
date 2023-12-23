@@ -74,7 +74,7 @@ inverses are given by `inverting paths`{.Agda ident=sym}.
 ```
 
 A direct cubical transcription of the Eckmann-Hilton argument tells us
-that path concatenation is commutative for $\Omega^{n + 2} A$ is
+that path concatenation for $\Omega^{n + 2} A$ is
 commutative, independent of $A$.
 
 ```agda
