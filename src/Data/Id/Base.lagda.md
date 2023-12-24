@@ -3,6 +3,7 @@
 {-# OPTIONS -WUnsupportedIndexedMatch #-}
 open import 1Lab.Path.IdentitySystem.Interface
 open import 1Lab.Path.IdentitySystem
+open import 1Lab.HLevel.Retracts
 open import 1Lab.Type.Sigma
 open import 1Lab.Univalence
 open import 1Lab.Rewrite
@@ -140,5 +141,51 @@ instance
       (yes q) → yes (ap₂ _,_ refl q)
       (no ¬q) → no λ p → ¬q (Σ-inj-set (Discrete→is-set auto) p)
     (no ¬p) → no λ p → ¬p (Id≃path.from (ap fst p))
+
+abstract
+  Id-is-hlevel
+    : ∀ {ℓ} {A : Type ℓ} (n : Nat)
+    → is-hlevel A n
+    → ∀ {a b : A}
+    → is-hlevel (a ≡ᵢ b) n
+  Id-is-hlevel n p = is-hlevel≃ n Id≃path (Path-is-hlevel n p)
+
+  Id-is-hlevel'
+    : ∀ {ℓ} {A : Type ℓ} (n : Nat)
+     → is-hlevel A (suc n)
+    → ∀ {a b : A}
+    → is-hlevel (a ≡ᵢ b) n
+  Id-is-hlevel' n p = is-hlevel≃ n Id≃path (Path-is-hlevel' n p _ _)
+
+substᵢ-filler-set : ∀ {ℓ ℓ'} {A : Type ℓ} (P : A → Type ℓ')
+                → is-set A
+                → {a : A}
+                → (p : a ≡ᵢ a)
+                → ∀ x → x ≡ substᵢ P p x 
+substᵢ-filler-set P is-set-A p x = subst (λ q → x ≡ substᵢ P q x) (is-set→is-setᵢ is-set-A _ _ reflᵢ p) refl
+
+record Recallᵢ
+  {a b} {A : Type a} {B : A → Type b}
+  (f : (x : A) → B x) (x : A) (y : B x)
+  : Type (a ⊔ b)
+  where
+    constructor ⟪_⟫ᵢ
+    field
+      eq : f x ≡ᵢ y
+
+recallᵢ
+  : ∀ {a b} {A : Type a} {B : A → Type b}
+  → (f : (x : A) → B x) (x : A)
+  → Recallᵢ f x (f x)
+recallᵢ f x = ⟪ reflᵢ ⟫ᵢ
+
+
+symᵢ : ∀ {a} {A : Type a} {x y : A} → x ≡ᵢ y → y ≡ᵢ x
+symᵢ reflᵢ = reflᵢ
+
+_∙ᵢ_ : ∀ {a} {A : Type a} {x y z : A} → x ≡ᵢ y → y ≡ᵢ z → x ≡ᵢ z
+reflᵢ ∙ᵢ q = q
+
+
 ```
 -->
