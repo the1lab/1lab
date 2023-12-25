@@ -36,7 +36,7 @@ category where $\hom(a,b)$ is the collection of spans from $a$ to $b$.
 
 However, we can make spans in $\cC$ the _objects_ of a category, and
 the hom-sets are the maps in $\cC$ between the vertices which
-"commute with the legs". Diagramatically, a map between spans is the
+"commute with the legs". Diagrammatically, a map between spans is the
 dashed line in
 
 ~~~{.quiver}
@@ -226,7 +226,7 @@ S \To S$. The right unitor is analogous.
 ```
 
 For the associator, while doing the construction in elementary terms is
-quite complicated, we observe that, diagramatically, the composite of
+quite complicated, we observe that, diagrammatically, the composite of
 three morphisms fits into a diagram like
 
 ~~~{.quiver}

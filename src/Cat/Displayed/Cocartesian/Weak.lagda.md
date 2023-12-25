@@ -326,7 +326,7 @@ Composing $m^{*}$ and $h^{**}$ gives the desired factorisation.
       where open Morphisms m h'
 ```
 
-Showing that $m^{*} \cdot h^{**} = h'$ is best understood diagramatically;
+Showing that $m^{*} \cdot h^{**} = h'$ is best understood diagrammatically;
 both the $m^{*} \cdot h^{*} = h'$ and $h^{**} \cdot f' = h^{*}$ cells
 commute.
 

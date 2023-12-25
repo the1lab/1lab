@@ -338,7 +338,7 @@ is used. We want to construct a _line_, which we can do by exhibiting
 that line as the missing face in a _square_. We have equations $g\ y ≡
 g\ y$ (`refl`{.Agda}), $g\ (f\ x_0) ≡ g\ y$ (the action of `g` on `p0`),
 and $g\ (f\ x_0) = x_0$ by the assumption that $g$ is a right inverse to
-$f$.  Diagramatically, these fit together into a square:
+$f$.  Diagrammatically, these fit together into a square:
 
 ~~~{.quiver}
 \[\begin{tikzcd}

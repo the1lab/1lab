@@ -34,7 +34,7 @@ private variable a b : Ob
 A **regular monomorphism** is a morphism that behaves like an
 _embedding_, i.e. it is an isomorphism onto its [[image]]. Since images
 of arbitrary morphisms do not exist in every category, we must find a
-definition which implies this property but only speaks diagramatically
+definition which implies this property but only speaks diagrammatically
 about objects directly involved in the definition.
 
 The definition is as follows: A **regular monomorphism** $f : a \mono b$
