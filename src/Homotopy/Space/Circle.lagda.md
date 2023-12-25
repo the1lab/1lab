@@ -94,7 +94,7 @@ refl≠loop : ¬ refl ≡ loop
 refl≠loop path = true≠false (ap parity path)
 ```
 
-## Fundamental group
+## Fundamental group {defines="loop-space-of-the-circle"}
 
 We now calculate the loop space of the circle, relative to an
 _arbitrary_ implementation of the integers: any type that satisfies
